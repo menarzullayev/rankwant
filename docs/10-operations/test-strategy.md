@@ -272,7 +272,8 @@ Har birida tekshiriladi: ma'lumot yo'qolmadimi, foydalanuvchi tushunarli xato ko
 | Security — sandbox escape | ✅ | `services/bakeoff` izolyatsiya case'lari + `tests/security/run.sh` |
 | Security — ilova (IDOR, PAT scope, rate limit) | ✅ | testlar + `tests/security/run.sh` |
 | E2E | ✅ | `tests/e2e/` — CI da compose stack'iga qarshi |
-| Load / Stress / Spike / Soak | ✅ skript | `tests/load/main.js` |
+| Load | ✅ | `tests/load/main.js` `ci` ssenariysi — nightly, compose stack |
+| Stress / Spike / Soak | ✅ skript | `tests/load/main.js` — staging kerak |
 | Chaos | ✅ skript | `tests/chaos/run.sh` — faqat staging |
 | Smoke | ✅ | `tests/smoke/` — CI da to'liq compose stack |
 | Compatibility — til matritsasi | ✅ | `tests/compatibility/` — nightly |

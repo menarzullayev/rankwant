@@ -53,6 +53,13 @@ const SCENARIOS = {
       { duration: "1m", target: 2000 },
     ],
   },
+  // CI uchun: haqiqiy o'lchov beradi, lekin runner'ni yiqitmaydi.
+  // `--vus 1 --duration 1s` sintaksis tekshiruvi edi, o'lchov emas.
+  ci: {
+    executor: "constant-vus",
+    vus: Number(__ENV.CI_VUS || 20),
+    duration: __ENV.CI_DURATION || "30s",
+  },
   soak: {
     executor: "constant-vus",
     vus: 100,

@@ -28,6 +28,20 @@ Judge hostlar **gorizontal** miqyoslanadi — navbat uzunligi oshsa worker qo'sh
 | 4 | 5.4 submit/s | 952 ms |
 | 8 | 8.0 submit/s | 1360 ms |
 
+### API o'qish sig'imi (o'lchangan, 2026-09-07)
+
+`tests/load/main.js` `ci` ssenariysi, compose stack (gunicorn 4 worker):
+
+| O'lchov | Qiymat | NFR |
+| ------- | ------ | --- |
+| So'rov  | 57 req/s (20 VU) | — |
+| `/problems/` p95 | 23 ms | < 1000 ms ✅ |
+| Standings p95 | 38 ms | < 300 ms ✅ |
+| Xato ulushi | 0% | < 1% ✅ |
+
+Bu **o'qish** yo'li; judge sig'imi yuqoridagi jadvalda va u alohida
+chegara.
+
 **Miqyoslash chiziqli emas** — `total_ms` ning ~830 ms i kompilyatsiya, u
 CPU-bound. Bitta host'da yadrolar tugagach worker qo'shish kam foyda beradi.
 
@@ -40,6 +54,31 @@ PRD NFR contest spike: **500 submit / 10 s = 50 submit/s**. Bunga yetish uchun:
 
 Contest oldidan judge hostlarni **oldindan ko'paytirish** kerak — autoscale
 spike'ga ulgurmaydi (contest boshlanishi 10 soniyalik hodisa).
+
+## Ochiq risk: NAT ortidagi maktablar va anon rate limit
+
+**Holat:** hal qilinmagan — mahsulot qarori kerak.
+
+Anon throttle IP bo'yicha ishlaydi: `60/min`. Yuklama sinovi buni
+ko'rsatdi — bitta manbadan kelgan 20 ta parallel foydalanuvchining
+94% so'rovi `429` oldi.
+
+Nega bu O'zbekiston uchun muhim: maktab kompyuter sinfi, kollej va
+internet-kafe odatda **bitta ommaviy IP** ortida bo'ladi. Bitta sahifa
+ko'rinishi bir nechta API so'rovi qiladi, ya'ni 60/min butun sinfga
+yetmaydi. Aynan o'qituvchi sinfi ([P2-2](../09-development-plan/README.md))
+mo'ljallangan auditoriya shu holatda.
+
+Variantlar (tanlanmagan):
+
+| # | Variant | Suiiste'moldan himoya | Sinf uchun |
+| - | ------- | --------------------- | ---------- |
+| 1 | Anon limitni ko'tarish | ⚠️ zaiflashadi | ✅ |
+| 2 | Katalog (o'qish) endpointlarini throttle'dan chiqarish, yozishni qattiqroq cheklash | ✅ | ✅ |
+| 3 | Sinf IP larini oq ro'yxatga olish | ✅ | ⚠️ qo'lda ish |
+
+Limitlar endi `THROTTLE_ANON` / `THROTTLE_USER` / `THROTTLE_SUBMIT`
+orqali sozlanadi, ya'ni qaror qabul qilinganda kod o'zgarishi shart emas.
 
 ## Muhitlar
 

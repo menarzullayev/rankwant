@@ -12,6 +12,11 @@ services:
     ports: !reset []
   api:
     ports: !reset []
+    environment:
+      # Yuklama sinovi bitta IP dan keladi: anon throttle sig'imdan oldin
+      # ishga tushib, o'lchovni ma'nosiz qilardi (94% 429).
+      THROTTLE_ANON: 100000/min
+      THROTTLE_USER: 100000/min
   web:
     ports: !reset []
 

@@ -166,7 +166,14 @@ REST_FRAMEWORK = {
         "rest_framework.throttling.UserRateThrottle",
     ],
     # ADR-0008 rate limitlari
-    "DEFAULT_THROTTLE_RATES": {"anon": "60/min", "user": "300/min", "submit": "6/min"},
+    # Yuklama sinovi bitta IP dan keladi, ya'ni anon throttle sig'imdan
+    # oldin ishga tushadi va o'lchov ma'nosini yo'qotadi. Shuning uchun
+    # sozlanadigan — production qiymatlari standart.
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": os.environ.get("THROTTLE_ANON", "60/min"),
+        "user": os.environ.get("THROTTLE_USER", "300/min"),
+        "submit": os.environ.get("THROTTLE_SUBMIT", "6/min"),
+    },
 }
 
 SPECTACULAR_SETTINGS = {

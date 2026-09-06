@@ -14,19 +14,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - name: k6 sintaksisi
+      - name: Stack
+        if: ${{ vars.STAGING_URL == '' }}
         run: |
-          # STAGING_URL yo'q bo'lsa faqat stsenariy sintaksisi tekshiriladi:
-          # yuklama sinovini o'z CI runner'iga qarshi ishlatish ma'nosiz.
-          docker run --rm -v "$PWD:/w" -w /w grafana/k6:latest \
-            run --vus 1 --duration 1s -e SCENARIO=load tests/load/main.js \
-            2>&1 | tail -20 || echo "::notice::k6 stsenariysi tekshirildi (target yo'q)"
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build --wait
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
+            python manage.py seed_demo
+      - name: k6 — chegaralangan yuklama
+        if: ${{ vars.STAGING_URL == '' }}
+        # `--vus 1 --duration 1s` sintaksis tekshiruvi edi. `ci` ssenariysi
+        # runner'ni yiqitmaydigan, lekin haqiqiy raqam beradigan o'lchov.
+        # CI stack'ida anon throttle ko'tarilgan — aks holda o'lchov
+        # sig'imni emas, rate limitni ko'rsatadi (94% 429 bo'lgan edi).
+        run: |
+          docker run --rm --network rankwant_default -v "$PWD:/w" -w /w \
+            -e SCENARIO=ci -e API_BASE=http://api:8000/api/v1 \
+            grafana/k6:latest run tests/load/main.js
       - name: Staging yuklamasi
         if: ${{ vars.STAGING_URL != '' }}
         run: |
           docker run --rm -v "$PWD:/w" -w /w grafana/k6:latest \
             run -e SCENARIO=spike -e API_BASE="${{ vars.STAGING_URL }}/api/v1" \
             tests/load/main.js
+      - name: Tozalash
+        if: always()
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
 
   e2e:
     name: E2E — to'liq brauzer matritsasi
