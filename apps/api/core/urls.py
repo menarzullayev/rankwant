@@ -13,5 +13,13 @@ urlpatterns = [
     path("auth/login/", views.LoginView.as_view(), name="login"),
     path("auth/logout/", views.LogoutView.as_view(), name="logout"),
     path("me/", views.MeView.as_view(), name="me"),
+    path(
+        "users/<str:username>/rating-history/",
+        views.RatingHistoryView.as_view(),
+        name="rating-history",
+    ),
+    path(
+        "users/<str:username>/solved/", views.SolvedProblemsView.as_view(), name="solved-problems"
+    ),
     path("", include(router.urls)),
 ]

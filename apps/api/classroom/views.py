@@ -32,24 +32,49 @@ class ClassroomViewSet(viewsets.ModelViewSet[Classroom]):
     pagination_class = None
     http_method_names = ["get", "post", "patch", "delete"]
 
+    #: O'zgartirish va o'chirish FAQAT egasiga. `get_queryset` a'zolarni ham
+    #: qaytaradi (ular sinfni ko'rishi kerak), shuning uchun ruxsat alohida
+    #: tekshirilmasa o'quvchi o'qituvchining sinfini o'chira olardi.
+    OWNER_ONLY_ACTIONS = frozenset({"update", "partial_update", "destroy"})
+
     def get_queryset(self):  # type: ignore[no-untyped-def]
         assert isinstance(self.request.user, User)
-        # Egasi bo'lgan yoki a'zo bo'lgan sinflar
-        # Egasi bo'lgan YOKI a'zo bo'lgan sinflar
+        base = Classroom.objects.filter(is_active=True)
+        if self.action in self.OWNER_ONLY_ACTIONS:
+            base = base.filter(owner=self.request.user)
+        else:
+            # Ko'rish uchun: egasi YOKI a'zo
+            base = base.filter(Q(owner=self.request.user) | Q(members__user=self.request.user))
         return (
-            Classroom.objects.filter(is_active=True)
-            .filter(Q(owner=self.request.user) | Q(members__user=self.request.user))
-            .annotate(member_count=Count("members", distinct=True))
+            base.annotate(member_count=Count("members", distinct=True))
             .select_related("owner")
             .distinct()
         )
+
+    def _is_owner(self) -> bool:
+        obj = getattr(self, "_cached_object", None)
+        if obj is None:
+            return False
+        return bool(obj.owner_id == self.request.user.pk)
+
+    def get_object(self) -> Classroom:
+        obj = super().get_object()
+        self._cached_object = obj
+        return obj
 
     def get_serializer_class(self):  # type: ignore[no-untyped-def]
         if self.action == "create":
             return ClassroomCreateSerializer
         if self.action == "retrieve":
-            return ClassroomOwnerSerializer
+            # `join_code` va a'zolar ro'yxati FAQAT egasiga: kod bilan
+            # istalgan odam sinfga qo'shila oladi, a'zolar ro'yxati esa
+            # sinfdoshlarning reytingini oshkor qiladi.
+            return ClassroomOwnerSerializer if self._is_owner() else ClassroomSerializer
         return ClassroomSerializer
+
+    def retrieve(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        instance = self.get_object()
+        return Response(self.get_serializer(instance).data)
 
     def perform_create(self, serializer: Any) -> None:
         serializer.save(owner=self.request.user)

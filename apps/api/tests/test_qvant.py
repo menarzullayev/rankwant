@@ -478,3 +478,72 @@ class TestMarathon:
             a = Attempt.objects.create(user=user, problem=p, language=lang, source_code="x")
             apply_result({"attempt_id": a.pk, "verdict": "AC"})
         assert check_completion(user) == 0
+
+
+@pytest.mark.django_db
+class TestRatingHistoryApi:
+    """05-domain-model 🔒 dagi endpoint — principle #2 ning ko'rinadigan qismi."""
+
+    def test_tarix_ommaviy(self, user, catalogue, problem, language) -> None:
+        from judging.models import Attempt
+        from judging.services import apply_result
+
+        attempt = Attempt.objects.create(
+            user=user, problem=problem, language=language, source_code="x"
+        )
+        apply_result({"attempt_id": attempt.pk, "verdict": "AC"})
+
+        body = APIClient().get(reverse("rating-history", args=[user.username])).json()
+        skills = [r for r in body["results"] if r["rating_type"] == "skills"]
+        assert skills[0]["delta"] == 800
+        assert skills[0]["reason"] == "problem_solved"
+        assert skills[0]["ref_id"] == problem.slug
+
+    def test_tur_boyicha_filtr(self, user, catalogue, problem, language) -> None:
+        from judging.models import Attempt
+        from judging.services import apply_result
+
+        attempt = Attempt.objects.create(
+            user=user, problem=problem, language=language, source_code="x"
+        )
+        apply_result({"attempt_id": attempt.pk, "verdict": "AC"})
+        body = (
+            APIClient()
+            .get(reverse("rating-history", args=[user.username]), {"type": "activity"})
+            .json()
+        )
+        assert all(r["rating_type"] == "activity" for r in body["results"])
+
+    def test_yechilgan_masalalar(self, user, catalogue, problem, language) -> None:
+        from judging.models import Attempt
+        from judging.services import apply_result
+
+        attempt = Attempt.objects.create(
+            user=user, problem=problem, language=language, source_code="x"
+        )
+        apply_result({"attempt_id": attempt.pk, "verdict": "AC"})
+        body = APIClient().get(reverse("solved-problems", args=[user.username])).json()
+        row = body["results"][0]
+        assert row["slug"] == problem.slug
+        assert row["difficulty"] == row["difficulty_at_solve"] == 800
+
+    def test_qayta_baholangach_farq_korinadi(self, user, catalogue, problem, language) -> None:
+        """ADR-0007 auditi: joriy va yechilgandagi qiyinlik farqi ko'rinadi."""
+        from judging.models import Attempt
+        from judging.services import apply_result
+        from ratings.services import recalc_skills_for_problem
+
+        attempt = Attempt.objects.create(
+            user=user, problem=problem, language=language, source_code="x"
+        )
+        apply_result({"attempt_id": attempt.pk, "verdict": "AC"})
+        problem.difficulty = 1500
+        problem.save()
+        recalc_skills_for_problem(problem.pk)
+
+        row = APIClient().get(reverse("solved-problems", args=[user.username])).json()["results"][0]
+        assert row["difficulty"] == 1500
+        assert row["difficulty_at_solve"] == 800
+
+    def test_notanish_foydalanuvchi_404(self) -> None:
+        assert APIClient().get(reverse("rating-history", args=["yoq"])).status_code == 404

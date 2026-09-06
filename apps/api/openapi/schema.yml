@@ -294,7 +294,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClassroomOwner'
+                $ref: '#/components/schemas/Classroom'
           description: ''
     patch:
       operationId: classrooms_partial_update
@@ -1506,6 +1506,88 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserPublic'
           description: ''
+  /api/v1/users/{username}/rating-history/:
+    get:
+      operationId: users_rating_history_list
+      description: "Reyting o'zgarishlari tarixi — 05-domain-model \U0001F512.\n\nOmmaviy:
+        reyting qanday shakllanganini har kim ko'ra olishi kerak\n(principle #2).
+        Sabab, eski va yangi qiymat, contest holatida esa\nseed va rank ham beriladi."
+      parameters:
+      - name: cursor
+        required: false
+        in: query
+        description: The pagination cursor value.
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRatingHistoryList'
+          description: ''
+  /api/v1/users/{username}/solved/:
+    get:
+      operationId: users_solved_list
+      description: Foydalanuvchi yechgan masalalar — Skills reytingining manbai.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSolvedProblemList'
+          description: ''
 components:
   schemas:
     ApiToken:
@@ -1921,75 +2003,6 @@ components:
       required:
       - name
       - slug
-    ClassroomMember:
-      type: object
-      properties:
-        username:
-          type: string
-          readOnly: true
-        role:
-          $ref: '#/components/schemas/ClassroomMemberRoleEnum'
-        rating_skills:
-          type: integer
-          readOnly: true
-        joined_at:
-          type: string
-          format: date-time
-          readOnly: true
-      required:
-      - joined_at
-      - rating_skills
-      - username
-    ClassroomMemberRoleEnum:
-      enum:
-      - student
-      - assistant
-      type: string
-      description: |-
-        * `student` - O'quvchi
-        * `assistant` - Yordamchi
-    ClassroomOwner:
-      type: object
-      description: Egasi uchun — qo'shilish kodi ko'rinadi.
-      properties:
-        slug:
-          type: string
-          maxLength: 120
-          pattern: ^[-a-zA-Z0-9_]+$
-        name:
-          type: string
-          maxLength: 150
-        description:
-          type: string
-        owner:
-          type: string
-          readOnly: true
-        member_count:
-          type: integer
-          readOnly: true
-          default: 0
-        created_at:
-          type: string
-          format: date-time
-          readOnly: true
-        join_code:
-          type: string
-          maxLength: 12
-        is_active:
-          type: boolean
-        members:
-          type: array
-          items:
-            $ref: '#/components/schemas/ClassroomMember'
-          readOnly: true
-      required:
-      - created_at
-      - join_code
-      - member_count
-      - members
-      - name
-      - owner
-      - slug
     Contest:
       type: object
       properties:
@@ -2228,21 +2241,11 @@ components:
           type: integer
           readOnly: true
         role:
-          $ref: '#/components/schemas/LinkedProblemRoleEnum'
+          $ref: '#/components/schemas/RoleEnum'
       required:
       - difficulty
       - slug
       - title
-    LinkedProblemRoleEnum:
-      enum:
-      - practice
-      - example
-      - editorial
-      type: string
-      description: |-
-        * `practice` - Mashq uchun
-        * `example` - Maqoladagi misol
-        * `editorial` - Yechim tushuntirishi
     LocaleEnum:
       enum:
       - uz
@@ -2561,6 +2564,48 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ProblemList'
+    PaginatedRatingHistoryList:
+      type: object
+      required:
+      - results
+      properties:
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?cursor=cD00ODY%3D"
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?cursor=cj0xJnA9NDg3
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/RatingHistory'
+    PaginatedSolvedProblemList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SolvedProblem'
     PaginatedStandingList:
       type: object
       required:
@@ -2947,22 +2992,85 @@ components:
       - reward
       - title_uz
       - type
-    ReasonEnum:
+    RatingHistory:
+      type: object
+      description: |-
+        Reyting o'zgarishlarining ochiq tarixi.
+
+        Vision principle #2 ning ko'rinadigan qismi: foydalanuvchi HAR BIR
+        o'zgarishning sababini ko'radi. Contest holatida `seed` va `rank` ham
+        beriladi — Elo hisobini qayta tekshirish mumkin bo'lsin.
+      properties:
+        rating_type:
+          $ref: '#/components/schemas/RatingTypeEnum'
+        value_before:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        value_after:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        delta:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        reason:
+          $ref: '#/components/schemas/RatingHistoryReasonEnum'
+        ref_type:
+          type: string
+          maxLength: 24
+        ref_id:
+          type: string
+          maxLength: 64
+        seed:
+          type: number
+          format: double
+          nullable: true
+        rank:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - delta
+      - rating_type
+      - reason
+      - value_after
+      - value_before
+    RatingHistoryReasonEnum:
       enum:
-      - quest
-      - streak
+      - problem_solved
+      - problem_rerated
       - contest
-      - purchase
-      - refund
-      - admin
+      - recalculation
       type: string
       description: |-
-        * `quest` - Quest
-        * `streak` - Streak yutug'i
+        * `problem_solved` - Masala yechildi
+        * `problem_rerated` - Masala qayta baholandi
         * `contest` - Musobaqa
-        * `purchase` - Xarid
-        * `refund` - Qaytarish
-        * `admin` - Admin
+        * `recalculation` - Qayta hisoblash
+    RatingTypeEnum:
+      enum:
+      - skills
+      - contest
+      - activity
+      - challenges
+      type: string
+      description: |-
+        * `skills` - Skills
+        * `contest` - Contests
+        * `activity` - Activity
+        * `challenges` - Challenges
     Register:
       type: object
       properties:
@@ -3078,6 +3186,16 @@ components:
       - article
       - order
       - problem
+    RoleEnum:
+      enum:
+      - practice
+      - example
+      - editorial
+      type: string
+      description: |-
+        * `practice` - Mashq uchun
+        * `example` - Maqoladagi misol
+        * `editorial` - Yechim tushuntirishi
     ScopesEnum:
       enum:
       - read
@@ -3131,6 +3249,33 @@ components:
       - owned
       - price
       - title_uz
+    SolvedProblem:
+      type: object
+      properties:
+        slug:
+          type: string
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        difficulty:
+          type: integer
+          readOnly: true
+        difficulty_at_solve:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        first_ac_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - difficulty
+      - difficulty_at_solve
+      - first_ac_at
+      - slug
+      - title
     Standing:
       type: object
       properties:
@@ -3193,7 +3338,7 @@ components:
           format: int64
           description: Musbat = topildi, manfiy = sarflandi
         reason:
-          $ref: '#/components/schemas/ReasonEnum'
+          $ref: '#/components/schemas/TransactionReasonEnum'
         ref_type:
           type: string
           maxLength: 24
@@ -3215,6 +3360,22 @@ components:
       - created_at
       - id
       - reason
+    TransactionReasonEnum:
+      enum:
+      - quest
+      - streak
+      - contest
+      - purchase
+      - refund
+      - admin
+      type: string
+      description: |-
+        * `quest` - Quest
+        * `streak` - Streak yutug'i
+        * `contest` - Musobaqa
+        * `purchase` - Xarid
+        * `refund` - Qaytarish
+        * `admin` - Admin
     TypeEnum:
       enum:
       - daily

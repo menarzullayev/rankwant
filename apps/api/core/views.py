@@ -8,6 +8,7 @@ from typing import Any
 from django.contrib.auth import authenticate as django_authenticate
 from django.contrib.auth import login, logout
 from django.db.models import QuerySet
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import generics, status, viewsets
@@ -17,6 +18,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.models import ApiToken, User
+from core.pagination import StandardPagination, TimeCursorPagination
 from core.serializers import (
     ApiTokenCreateSerializer,
     ApiTokenSerializer,
@@ -108,6 +110,55 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet[User]):
     queryset = User.objects.filter(is_active=True)
     ordering_fields = ["rating_skills", "rating_contest", "date_joined"]
     ordering = ["-rating_skills"]
+
+
+class RatingHistoryView(generics.ListAPIView[Any]):
+    """Reyting o'zgarishlari tarixi — 05-domain-model 🔒.
+
+    Ommaviy: reyting qanday shakllanganini har kim ko'ra olishi kerak
+    (principle #2). Sabab, eski va yangi qiymat, contest holatida esa
+    seed va rank ham beriladi.
+    """
+
+    permission_classes = [AllowAny]
+    pagination_class = TimeCursorPagination
+
+    def get_serializer_class(self):  # type: ignore[no-untyped-def]
+        from ratings.serializers import RatingHistorySerializer
+
+        return RatingHistorySerializer
+
+    def get_queryset(self):  # type: ignore[no-untyped-def]
+        from ratings.models import RatingHistory
+
+        user = get_object_or_404(User, username=self.kwargs["username"], is_active=True)
+        qs = RatingHistory.objects.filter(user=user)
+        rating_type = self.request.query_params.get("type")
+        if rating_type:
+            qs = qs.filter(rating_type=rating_type)
+        return qs
+
+
+class SolvedProblemsView(generics.ListAPIView[Any]):
+    """Foydalanuvchi yechgan masalalar — Skills reytingining manbai."""
+
+    permission_classes = [AllowAny]
+    pagination_class = StandardPagination
+
+    def get_serializer_class(self):  # type: ignore[no-untyped-def]
+        from ratings.serializers import SolvedProblemSerializer
+
+        return SolvedProblemSerializer
+
+    def get_queryset(self):  # type: ignore[no-untyped-def]
+        from ratings.models import UserSolvedProblem
+
+        user = get_object_or_404(User, username=self.kwargs["username"], is_active=True)
+        return (
+            UserSolvedProblem.objects.filter(user=user)
+            .select_related("problem")
+            .order_by("-problem__difficulty")
+        )
 
 
 class ApiTokenViewSet(viewsets.ModelViewSet[ApiToken]):

@@ -184,3 +184,61 @@ class TestMirrorContest:
         assert contest.is_rated is True
         mirror = create_mirror(contest, "mirror-2", timezone.now() + timedelta(days=1))
         assert mirror.is_rated is False
+
+
+@pytest.mark.django_db
+class TestClassroomAuthorization:
+    """Fon xavfsizlik tekshiruvi topgan ikkita nuqson uchun regressiya.
+
+    Ikkalasi ham `get_queryset` a'zolarni ham qaytargani, ruxsat esa
+    alohida tekshirilmagani sababli yuzaga kelgan edi.
+    """
+
+    def _client(self, user) -> APIClient:
+        c = APIClient()
+        c.force_authenticate(user=user)
+        return c
+
+    def test_oquvchi_sinfni_ochira_olmaydi(self, user, other_user) -> None:
+        room = Classroom.objects.create(name="9-A", slug="9a", owner=user)
+        join(other_user, room.join_code)
+        r = self._client(other_user).delete(reverse("classroom-detail", args=["9a"]))
+        assert r.status_code == 404
+        assert Classroom.objects.filter(slug="9a").exists()
+
+    def test_oquvchi_sinfni_ozgartira_olmaydi(self, user, other_user) -> None:
+        room = Classroom.objects.create(name="9-A", slug="9a", owner=user)
+        join(other_user, room.join_code)
+        r = self._client(other_user).patch(
+            reverse("classroom-detail", args=["9a"]), {"name": "Meniki"}
+        )
+        assert r.status_code == 404
+        room.refresh_from_db()
+        assert room.name == "9-A"
+
+    def test_egasi_ozgartira_oladi(self, user) -> None:
+        Classroom.objects.create(name="9-A", slug="9a", owner=user)
+        r = self._client(user).patch(reverse("classroom-detail", args=["9a"]), {"name": "9-B"})
+        assert r.status_code == 200
+
+    def test_oquvchi_join_code_ni_kormaydi(self, user, other_user) -> None:
+        """Kod bilan istalgan odam sinfga qo'shila oladi."""
+        room = Classroom.objects.create(name="9-A", slug="9a", owner=user)
+        join(other_user, room.join_code)
+        body = self._client(other_user).get(reverse("classroom-detail", args=["9a"])).json()
+        assert "join_code" not in body
+        assert "members" not in body
+
+    def test_egasi_join_code_ni_koradi(self, user, other_user) -> None:
+        room = Classroom.objects.create(name="9-A", slug="9a", owner=user)
+        join(other_user, room.join_code)
+        body = self._client(user).get(reverse("classroom-detail", args=["9a"])).json()
+        assert body["join_code"] == room.join_code
+        assert len(body["members"]) == 1
+
+    def test_begona_sinfga_kira_olmaydi(self, user, other_user) -> None:
+        Classroom.objects.create(name="9-A", slug="9a", owner=user)
+        assert (
+            self._client(other_user).get(reverse("classroom-detail", args=["9a"])).status_code
+            == 404
+        )
