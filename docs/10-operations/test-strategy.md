@@ -209,7 +209,15 @@ Har biri `SECURITY_VIOLATION` verdicti va **alert** chiqarishi kerak.
 
 Staging'da ataylab buzish: judge worker'ni tekshiruv o'rtasida `kill -9` · DB latency `+5s` · S3 `500` qaytarish · Redis paket yo'qotish · **contest davomida** judge host o'chirish.
 
-Har birida tekshiriladi: ma'lumot yo'qolmadimi, foydalanuvchi tushunarli xato ko'rdimi, tizim o'zi tiklandimi.
+Har birida tekshiriladi: ma'lumot yo'qolmadimi, foydalanuvchi tushunarli
+xato ko'rdimi, tizim o'zi tiklandimi. Skript endi shu uchtasini
+TASDIQLAYDI — avval faqat health kodini chop etib, xulosani odamga
+qoldirardi.
+
+Ilk haqiqiy ishga tushirish ikkita nuqson topdi: `/health/` shartsiz
+`ok` qaytarardi (Postgres o'lganda ham 200), va Redis uzilganda throttle
+backend'i yiqilib har so'rov 500 berardi — 10-operations va'da qilgan
+«toza 503» o'rniga.
 
 ## 15. Compatibility
 
@@ -267,14 +275,14 @@ Har birida tekshiriladi: ma'lumot yo'qolmadimi, foydalanuvchi tushunarli xato ko
 | ------ | ----- | ---- |
 | Unit (formulalar, ledger, verdict) | ✅ | `apps/api/tests/`, `services/judge-py/test_judge.py` |
 | Integration (submit → verdict → reyting) | ✅ | `apps/api/tests/test_judging.py` |
-| Functional (API shartnomasi) | ✅ | `apps/api/tests/` — 185 test |
+| Functional (API shartnomasi) | ✅ | `apps/api/tests/` — 190 test |
 | Regression (golden set) | ✅ | `services/bakeoff/cases/` — 14 case |
 | Security — sandbox escape | ✅ | `services/bakeoff` izolyatsiya case'lari + `tests/security/run.sh` |
 | Security — ilova (IDOR, PAT scope, rate limit) | ✅ | testlar + `tests/security/run.sh` |
 | E2E | ✅ | `tests/e2e/` — CI da compose stack'iga qarshi |
 | Load | ✅ | `tests/load/main.js` `ci` ssenariysi — nightly, compose stack |
 | Stress / Spike / Soak | ✅ skript | `tests/load/main.js` — staging kerak |
-| Chaos | ✅ skript | `tests/chaos/run.sh` — faqat staging |
+| Chaos | ✅ | `tests/chaos/run.sh` — nightly, compose stack |
 | Smoke | ✅ | `tests/smoke/` — CI da to'liq compose stack |
 | Compatibility — til matritsasi | ✅ | `tests/compatibility/` — nightly |
 | Compatibility — brauzer | ✅ | Chromium · Firefox · WebKit · mobil — nightly |

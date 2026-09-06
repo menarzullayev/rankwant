@@ -5,8 +5,11 @@ from __future__ import annotations
 from datetime import timedelta
 from typing import Any
 
+import redis
+from django.conf import settings
 from django.contrib.auth import authenticate as django_authenticate
 from django.contrib.auth import login, logout
+from django.db import connection
 from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -32,14 +35,50 @@ MAX_TOKEN_LIFETIME = timedelta(days=365)
 
 
 class HealthView(APIView):
-    """Smoke test uchun — 10-operations § deploy."""
+    """Readiness — 10-operations § deploy va monitoring.
+
+    Bog'liqliklar HAQIQATAN tekshiriladi. Shartsiz `ok` qaytaradigan
+    health endpoint yo'qidan yomonroq: DB o'lganda ham load balancer
+    trafikni shu instansiyaga yuborishda davom etadi, chaos sinovi esa
+    hech narsani o'lchamaydi.
+    """
 
     permission_classes = [AllowAny]
     authentication_classes: list[Any] = []
+    #: Throttle kesh (Redis) ga tayanadi. Health aynan shu bog'liqlik
+    #: haqida hisobot beradi, ya'ni unga tayana olmaydi: Redis o'lganda
+    #: throttle o'zi 500 bilan yiqilib, hisobotni bermay qo'yardi.
+    throttle_classes: list[Any] = []
 
-    @extend_schema(responses={200: OpenApiResponse(description="OK")})
+    @extend_schema(
+        responses={
+            200: OpenApiResponse(description="Barcha bog'liqliklar javob beradi"),
+            503: OpenApiResponse(description="Bog'liqlik yetib bo'lmaydi"),
+        }
+    )
     def get(self, request: Request) -> Response:
-        return Response({"status": "ok"})
+        checks = {"database": _check_database(), "redis": _check_redis()}
+        healthy = all(v == "ok" for v in checks.values())
+        return Response(
+            {"status": "ok" if healthy else "degraded", "checks": checks},
+            status=status.HTTP_200_OK if healthy else status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+
+def _check_database() -> str:
+    try:
+        connection.ensure_connection()
+    except Exception as exc:
+        return type(exc).__name__
+    return "ok"
+
+
+def _check_redis() -> str:
+    try:
+        redis.Redis.from_url(settings.REDIS_URL, socket_connect_timeout=2).ping()
+    except Exception as exc:
+        return type(exc).__name__
+    return "ok"
 
 
 class RegisterView(generics.CreateAPIView[User]):

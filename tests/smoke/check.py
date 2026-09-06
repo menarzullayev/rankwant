@@ -59,6 +59,14 @@ def request(path: str, data: dict | None = None, cookie: str = "", base: str = "
 def main() -> int:
     print("Smoke:")
 
+    def health() -> dict:
+        body, _ = request("/health/")
+        if body.get("status") != "ok":
+            raise AssertionError(f"bog'liqlik javob bermayapti: {body.get('checks')}")
+        return body
+
+    check("Health barcha bog'liqliklarni tasdiqlaydi", health)
+
     problems = check("API masalalar ro'yxatini beradi", lambda: request("/problems/")[0])
     if problems and not problems.get("results"):
         failures.append("masalalar ro'yxati bo'sh — seed ishlamagan")

@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.utils import timezone
 from rest_framework.test import APIClient
 
+from core import views
 from core.models import ApiToken
 
 
@@ -127,3 +128,62 @@ class TestApiToken:
         assert client.delete(reverse("apitoken-detail", args=[token.pk])).status_code == 204
         token.refresh_from_db()
         assert token.revoked_at is not None
+
+
+@pytest.mark.django_db
+class TestHealth:
+    """Readiness bog'liqliklarni haqiqatan tekshirishi kerak.
+
+    Avval endpoint shartsiz `ok` qaytarardi: chaos sinovi Postgres'ni
+    o'chirganda ham 200 olardi, ya'ni hech narsa o'lchanmasdi.
+    """
+
+    def test_hammasi_ishlaganda_200(self, monkeypatch) -> None:
+        monkeypatch.setattr(views, "_check_redis", lambda: "ok")
+        r = APIClient().get(reverse("health"))
+        assert r.status_code == 200
+        assert r.json() == {"status": "ok", "checks": {"database": "ok", "redis": "ok"}}
+
+    def test_redis_yiqilganda_503(self, monkeypatch) -> None:
+        monkeypatch.setattr(views, "_check_redis", lambda: "ConnectionError")
+        r = APIClient().get(reverse("health"))
+        assert r.status_code == 503
+        assert r.json()["status"] == "degraded"
+        assert r.json()["checks"]["redis"] == "ConnectionError"
+
+    def test_db_yiqilganda_503(self, monkeypatch) -> None:
+        monkeypatch.setattr(views, "_check_database", lambda: "OperationalError")
+        monkeypatch.setattr(views, "_check_redis", lambda: "ok")
+        r = APIClient().get(reverse("health"))
+        assert r.status_code == 503
+        assert r.json()["checks"]["database"] == "OperationalError"
+
+    def test_health_throttle_kesh_ga_tayanmaydi(self) -> None:
+        """Redis o'lganda throttle o'zi yiqilib, hisobotni bermay qo'yardi."""
+        from core.views import HealthView
+
+        assert HealthView.throttle_classes == []
+
+
+@pytest.mark.django_db
+class TestDependencyErrors:
+    """Bog'liqlik uzilishi 500 emas, toza 503 bo'lishi kerak (10-operations)."""
+
+    def test_redis_uzilishi_503(self) -> None:
+        import redis as redis_lib
+
+        from core.errors import exception_handler
+
+        r = exception_handler(redis_lib.exceptions.ConnectionError("down"), {})
+        assert r is not None
+        assert r.status_code == 503
+        assert r.data["error"]["code"] == "dependency_unavailable"
+
+    def test_db_uzilishi_503(self) -> None:
+        from django.db.utils import OperationalError
+
+        from core.errors import exception_handler
+
+        r = exception_handler(OperationalError("down"), {})
+        assert r is not None
+        assert r.status_code == 503

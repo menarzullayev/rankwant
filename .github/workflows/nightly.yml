@@ -66,19 +66,25 @@ jobs:
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
 
   chaos:
-    name: Chaos (staging)
+    name: Chaos — bog'liqlik uzilishi
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - name: Chaos
+      - name: Stack
         run: |
-          # Chaos servislarni ATAYLAB buzadi — faqat staging'da, va
-          # STAGING_URL sozlanganda. CI runner'ida ishlatish ma'nosiz.
-          if [ -z "${{ vars.STAGING_URL }}" ]; then
-            echo "::notice::STAGING_URL sozlanmagan — chaos o'tkazib yuborildi"
-            exit 0
-          fi
-          I_UNDERSTAND_THIS_IS_STAGING=yes tests/chaos/run.sh
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build --wait
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
+            python manage.py seed_demo
+      - name: Chaos
+        # Chaos servislarni ATAYLAB buzadi. Runner'ning o'z stack'i —
+        # buziladigan boshqa narsa yo'q, shuning uchun staging shart emas.
+        env:
+          COMPOSE: docker compose -f docker-compose.yml -f docker-compose.ci.yml
+          I_UNDERSTAND_THIS_IS_STAGING: 'yes'
+        run: tests/chaos/run.sh
+      - name: Tozalash
+        if: always()
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
 
   compatibility:
     name: Til matritsasi
