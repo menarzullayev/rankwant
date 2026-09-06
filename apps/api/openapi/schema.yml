@@ -660,14 +660,22 @@ paths:
   /api/v1/health/:
     get:
       operationId: health_retrieve
-      description: Smoke test uchun — 10-operations § deploy.
+      description: |-
+        Readiness — 10-operations § deploy va monitoring.
+
+        Bog'liqliklar HAQIQATAN tekshiriladi. Shartsiz `ok` qaytaradigan
+        health endpoint yo'qidan yomonroq: DB o'lganda ham load balancer
+        trafikni shu instansiyaga yuborishda davom etadi, chaos sinovi esa
+        hech narsani o'lchamaydi.
       tags:
       - health
       security:
       - {}
       responses:
         '200':
-          description: OK
+          description: Barcha bog'liqliklar javob beradi
+        '503':
+          description: Bog'liqlik yetib bo'lmaydi
   /api/v1/languages/:
     get:
       operationId: languages_list
