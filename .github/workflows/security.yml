@@ -22,7 +22,7 @@ jobs:
         run: |
           pip install pip-audit
           if [ -f apps/api/requirements.txt ]; then pip-audit -r apps/api/requirements.txt; fi
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '22'
       - name: npm audit

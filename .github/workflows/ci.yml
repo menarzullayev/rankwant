@@ -108,7 +108,7 @@ jobs:
             echo "ready=false" >> "$GITHUB_OUTPUT"
             echo "::notice::apps/web hali scaffold qilinmagan (Sprint 1) — o'tkazib yuborildi"
           fi
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         if: steps.check.outputs.ready == 'true'
         with:
           node-version: '22'
