@@ -4,7 +4,7 @@ from typing import Any
 
 from rest_framework import serializers
 
-from judging.models import MAX_SOURCE_BYTES, Attempt, AttemptTestResult
+from judging.models import MAX_SOURCE_BYTES, Attempt, AttemptTestResult, CustomRun
 from problems.models import Language, Problem
 
 
@@ -69,7 +69,25 @@ class AttemptCreateSerializer(serializers.Serializer[dict[str, Any]]):
         return value
 
 
-class CustomTestSerializer(serializers.Serializer[dict[str, Any]]):
+class CustomRunSerializer(serializers.ModelSerializer[CustomRun]):
+    language = serializers.SlugRelatedField[Language](slug_field="code", read_only=True)
+
+    class Meta:
+        model = CustomRun
+        fields = [
+            "id",
+            "language",
+            "verdict",
+            "stdout",
+            "compile_output",
+            "time_ms",
+            "memory_kb",
+            "created_at",
+            "judged_at",
+        ]
+
+
+class CustomRunCreateSerializer(serializers.Serializer[dict[str, Any]]):
     """PRD P0-4 — foydalanuvchi stdin → output."""
 
     language = serializers.SlugField()
@@ -78,5 +96,19 @@ class CustomTestSerializer(serializers.Serializer[dict[str, Any]]):
 
     def validate_source_code(self, value: str) -> str:
         if len(value.encode()) > MAX_SOURCE_BYTES:
-            raise serializers.ValidationError("Manba juda katta")
+            raise serializers.ValidationError(
+                f"Manba {MAX_SOURCE_BYTES // 1024} KB dan oshmasligi kerak"
+            )
+        if not value.strip():
+            raise serializers.ValidationError("Manba bo'sh")
+        return value
+
+    def validate_stdin(self, value: str) -> str:
+        if len(value.encode()) > 64 * 1024:
+            raise serializers.ValidationError("Kirish 64 KB dan oshmasligi kerak")
+        return value
+
+    def validate_language(self, value: str) -> str:
+        if not Language.objects.filter(code=value, is_active=True).exists():
+            raise serializers.ValidationError("Til qo'llab-quvvatlanmaydi")
         return value

@@ -38,7 +38,7 @@ Idea
 | 06  | Architecture      | **Locked**      | Stack + xavfsizlik chegarasi — 2026-09-06 |
 | 07  | ADR               | **living**      | 0001–0003, 0005–0009 accepted; 0004 bake-off    |
 | 08  | Tech spec         | **Locked**      | Auth, API, judge protokoli — 2026-09-06   |
-| 09  | Dev plan          | **Locked**      | Kritik yo'l, DoD, launch gate — 2026-09-06 |
+| 09  | Dev plan          | **Locked**      | Sprint 1–4 bajarildi — 2026-09-06         |
 | 10  | Operations        | **draft**       | Topologiya, siyosat, incident turlari     |
 
 ## Qanday qaror qabul qilamiz

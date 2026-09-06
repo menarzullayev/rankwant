@@ -7,7 +7,7 @@ import logging
 from celery import shared_task
 
 from judging.provider import get_provider
-from judging.services import apply_result
+from judging.services import apply_custom_result, apply_result
 
 log = logging.getLogger(__name__)
 
@@ -26,7 +26,10 @@ def drain_results(max_items: int = 100) -> int:
         if result is None:
             break
         try:
-            if apply_result(result) is not None:
+            handled = (
+                apply_custom_result(result) if result.get("custom_run_id") else apply_result(result)
+            )
+            if handled is not None:
                 applied += 1
         except Exception:
             log.exception("natijani yozib bo'lmadi: %s", result.get("job_id"))

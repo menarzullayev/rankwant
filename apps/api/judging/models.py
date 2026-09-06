@@ -82,3 +82,33 @@ class AttemptTestResult(models.Model):
 
     def __str__(self) -> str:
         return f"attempt {self.attempt_id} test #{self.index}: {self.verdict}"
+
+
+class CustomRun(models.Model):
+    """PRD P0-4 — foydalanuvchi o'z stdin'i bilan kodni sinab ko'radi.
+
+    Attempt EMAS: urinishlar tarixiga tushmaydi, reytingga ta'sir qilmaydi,
+    masalaga bog'lanmaydi. Faqat "kodim ishlaydimi" savoliga javob.
+    """
+
+    user = models.ForeignKey("core.User", on_delete=models.CASCADE, related_name="custom_runs")
+    language = models.ForeignKey(
+        "problems.Language", on_delete=models.PROTECT, related_name="custom_runs"
+    )
+    source_code = models.TextField()
+    stdin = models.TextField(blank=True)
+
+    verdict = models.CharField(max_length=24, choices=Verdict.choices, default=Verdict.PENDING)
+    stdout = models.TextField(blank=True)
+    compile_output = models.TextField(blank=True)
+    time_ms = models.PositiveIntegerField(default=0)
+    memory_kb = models.PositiveIntegerField(default=0)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    judged_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering: ClassVar = ["-created_at"]
+
+    def __str__(self) -> str:
+        return f"custom #{self.pk} {self.verdict}"

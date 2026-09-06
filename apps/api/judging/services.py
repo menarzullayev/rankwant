@@ -9,7 +9,7 @@ from django.db import transaction
 from django.db.models import F
 from django.utils import timezone
 
-from judging.models import Attempt, AttemptTestResult
+from judging.models import Attempt, AttemptTestResult, CustomRun
 from judging.provider import JudgeJob, get_provider, new_job_id
 from judging.verdicts import ALERTING, Verdict
 from problems.models import Problem, TestCase
@@ -68,6 +68,64 @@ def enqueue(attempt: Attempt) -> str:
     job = build_job(attempt)
     get_provider().submit(job)
     return job.job_id
+
+
+#: Custom test uchun cheklovlar — masala limitlari yo'q, shuning uchun
+#: konservativ standart qiymatlar.
+CUSTOM_LIMITS = {
+    "compile_time_ms": 10_000,
+    "time_ms": 5_000,
+    "memory_kb": 262_144,
+    "output_kb": 1_024,
+    "processes": 1,
+}
+
+
+def enqueue_custom(run: CustomRun) -> str:
+    """PRD P0-4 — stdin bilan bir marta ishga tushirish.
+
+    `mode="custom"`: judge chiqishni kutilgan javob bilan SOLISHTIRMAYDI,
+    shunchaki stdout ni qaytaradi.
+    """
+    job = JudgeJob(
+        job_id=new_job_id(),
+        attempt_id=0,
+        custom_run_id=run.pk,
+        language={
+            "code": run.language.code,
+            "compile": run.language.compile_cmd,
+            "run": run.language.run_cmd,
+        },
+        source=run.source_code,
+        limits=dict(CUSTOM_LIMITS),
+        tests=[{"index": 1, "input": run.stdin, "expected": None}],
+        checker={"type": "standard"},
+        mode="custom",
+    )
+    get_provider().submit(job)
+    return job.job_id
+
+
+@transaction.atomic
+def apply_custom_result(result: dict[str, Any]) -> CustomRun | None:
+    run_id = result.get("custom_run_id")
+    if not run_id:
+        return None
+    try:
+        run = CustomRun.objects.select_for_update().get(pk=run_id)
+    except CustomRun.DoesNotExist:
+        log.warning("natija topilmagan custom run uchun keldi: %s", run_id)
+        return None
+
+    per_test = result.get("per_test") or []
+    run.verdict = result.get("verdict", Verdict.IE)
+    run.stdout = (per_test[0].get("stdout") if per_test else "") or result.get("stdout") or ""
+    run.compile_output = result.get("compile_output") or ""
+    run.time_ms = int(result.get("time_ms") or 0)
+    run.memory_kb = int(result.get("memory_kb") or 0)
+    run.judged_at = timezone.now()
+    run.save()
+    return run
 
 
 @transaction.atomic

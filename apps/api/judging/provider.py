@@ -24,6 +24,8 @@ class JudgeJob:
     tests: list[dict[str, Any]]
     checker: dict[str, Any]
     mode: str = "acm"
+    #: Custom test bo'lsa — natija shu yozuvga yoziladi (attempt_id 0 bo'ladi)
+    custom_run_id: int | None = None
 
     def to_json(self) -> str:
         return json.dumps(
@@ -36,6 +38,7 @@ class JudgeJob:
                 "tests": self.tests,
                 "checker": self.checker,
                 "mode": self.mode,
+                "custom_run_id": self.custom_run_id,
             }
         )
 

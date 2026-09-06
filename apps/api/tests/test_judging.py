@@ -198,3 +198,84 @@ class TestSourceVisibility:
         c = APIClient()
         c.force_authenticate(user=user)
         assert c.get(reverse("attempt-detail", args=[attempt.pk])).json()["source_code"] == "MENIKI"
+
+
+@pytest.mark.django_db
+class TestCustomRun:
+    """PRD P0-4 — custom test."""
+
+    def _client(self, user):
+        c = APIClient()
+        c.force_authenticate(user=user)
+        return c
+
+    def test_custom_run_navbatga_tushadi(self, user, language, memory_judge) -> None:
+        from django.urls import reverse as rev
+
+        r = self._client(user).post(
+            rev("customrun-list"),
+            {
+                "language": language.code,
+                "source_code": "print(input())",
+                "stdin": "salom",
+            },
+        )
+        assert r.status_code == 201
+        assert r.json()["verdict"] == Verdict.PENDING
+        job = memory_judge.jobs[-1]
+        assert job.mode == "custom"
+        assert job.custom_run_id is not None
+        assert job.tests[0]["input"] == "salom"
+
+    def test_natija_yoziladi(self, user, language) -> None:
+        from judging.models import CustomRun
+        from judging.services import apply_custom_result
+
+        run = CustomRun.objects.create(user=user, language=language, source_code="x", stdin="1 2")
+        apply_custom_result(
+            {
+                "custom_run_id": run.pk,
+                "verdict": "AC",
+                "time_ms": 8,
+                "memory_kb": 2000,
+                "per_test": [{"index": 1, "verdict": "AC", "stdout": "3\n"}],
+            }
+        )
+        run.refresh_from_db()
+        assert run.verdict == Verdict.AC
+        assert run.stdout == "3\n"
+        assert run.judged_at is not None
+
+    def test_boshqa_foydalanuvchi_kormaydi(self, user, other_user, language) -> None:
+        from django.urls import reverse as rev
+
+        from judging.models import CustomRun
+
+        run = CustomRun.objects.create(user=user, language=language, source_code="MAXFIY")
+        r = self._client(other_user).get(rev("customrun-detail", args=[run.pk]))
+        assert r.status_code == 404
+
+    def test_reytingga_tegmaydi(self, user, language) -> None:
+        """Custom test urinishlar tarixiga ham, reytingga ham ta'sir qilmaydi."""
+        from judging.models import Attempt, CustomRun
+        from judging.services import apply_custom_result
+
+        run = CustomRun.objects.create(user=user, language=language, source_code="x")
+        apply_custom_result({"custom_run_id": run.pk, "verdict": "AC"})
+        user.refresh_from_db()
+        assert user.rating_skills == 0
+        assert Attempt.objects.count() == 0
+        assert not UserSolvedProblem.objects.exists()
+
+    def test_bosh_manba_rad_etiladi(self, user, language) -> None:
+        from django.urls import reverse as rev
+
+        r = self._client(user).post(
+            rev("customrun-list"),
+            {
+                "language": language.code,
+                "source_code": "  ",
+                "stdin": "",
+            },
+        )
+        assert r.status_code == 400

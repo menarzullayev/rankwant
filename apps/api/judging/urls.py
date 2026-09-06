@@ -5,5 +5,6 @@ from judging import views
 
 router = DefaultRouter()
 router.register("attempts", views.AttemptViewSet, basename="attempt")
+router.register("custom-test", views.CustomRunViewSet, basename="customrun")
 
 urlpatterns = [path("", include(router.urls))]

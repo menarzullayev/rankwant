@@ -39,14 +39,19 @@ type Checker struct {
 }
 
 type Job struct {
-	JobID     string   `json:"job_id"`
-	AttemptID int64    `json:"attempt_id"`
-	Language  Language `json:"language"`
-	Source    string   `json:"source"`
-	Limits    Limits   `json:"limits"`
-	Tests     []Test   `json:"tests"`
-	Checker   Checker  `json:"checker"`
-	Mode      string   `json:"mode"` // acm | ioi
+	JobID     string `json:"job_id"`
+	AttemptID int64  `json:"attempt_id"`
+	//: Custom test bo'lsa to'ldiriladi; natijada qaytariladi.
+	CustomRunID *int64   `json:"custom_run_id,omitempty"`
+	Language    Language `json:"language"`
+	Source      string   `json:"source"`
+	Limits      Limits   `json:"limits"`
+	Tests       []Test   `json:"tests"`
+	Checker     Checker  `json:"checker"`
+	// acm | ioi | custom.
+	// custom: chiqish kutilgan javob bilan SOLISHTIRILMAYDI — foydalanuvchi
+	// o'z stdin'i bilan kodini sinab ko'ryapti (PRD P0-4).
+	Mode string `json:"mode"`
 }
 
 type TestResult struct {
@@ -54,6 +59,9 @@ type TestResult struct {
 	Verdict  string `json:"verdict"`
 	TimeMS   int64  `json:"time_ms"`
 	MemoryKB int64  `json:"memory_kb"`
+	// Faqat custom rejimda to'ldiriladi: foydalanuvchiga chiqishni
+	// qaytarish kerak. Oddiy tekshiruvda chiqish saqlanmaydi.
+	Stdout string `json:"stdout,omitempty"`
 }
 
 type JudgeMeta struct {
@@ -66,6 +74,7 @@ type JudgeMeta struct {
 
 type Result struct {
 	JobID           string       `json:"job_id"`
+	CustomRunID     *int64       `json:"custom_run_id,omitempty"`
 	Verdict         string       `json:"verdict"`
 	Score           int          `json:"score"`
 	TimeMS          int64        `json:"time_ms"`

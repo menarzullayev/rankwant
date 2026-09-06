@@ -15,7 +15,7 @@ O'zbekiston va global bozor uchun **sport dasturlash + musobaqa (CP/OJ)** platfo
 | Market + raqobatchi | 🔒 locked (2026-09-06)         |
 | PRD (MVP scope)   | 🔒 locked (2026-09-06)           |
 | Domain / arxitektura | 📝 draft                      |
-| Kod               | ❌ hali yo'q                     |
+| MVP kodi (Phase 0) | ✅ API + web + judge            |
 
 ## Tez havolalar
 

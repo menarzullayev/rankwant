@@ -50,12 +50,18 @@ To'liq mezonlar: [ADR-0004 § Baholash mezonlari](../07-adr/0004-judge-engine.md
 
 ## Sprint 1–4 — MVP (Phase 0)
 
-| Sprint | Ish                                                            | PRD          |
-| ------ | -------------------------------------------------------------- | ------------ |
-| **1**  | Repo scaffold, CI (mypy strict + lint + test), Auth, `ApiToken` | P0-1         |
-| **2**  | Problem bank + Django admin + test yuklash; i18n poydevori     | P0-2, P0-7   |
-| **3**  | Judge integratsiya (bake-off g'olibi), Attempt + 20 verdict, custom test | P0-3, P0-4 |
-| **4**  | Contest ACM + standings (SSE), profil + Skills/Contests reyting, minimal Next.js UI | P0-5, P0-6 |
+| Sprint | Ish                                                            | PRD          | Holat |
+| ------ | -------------------------------------------------------------- | ------------ | ----- |
+| **1**  | Repo scaffold, CI (mypy strict + lint + test), Auth, `ApiToken` | P0-1         | ✅ |
+| **2**  | Problem bank + Django admin + test yuklash; i18n poydevori     | P0-2, P0-7   | ✅ |
+| **3**  | Judge integratsiya (`JudgeProvider`), Attempt + 20 verdict, custom test | P0-3, P0-4 | ✅ |
+| **4**  | Contest ACM + standings (SSE), profil + Skills/Contests reyting, Next.js UI | P0-5, P0-6 | ✅ |
+
+**Phase 0 (P0-1 … P0-7) to'liq bajarildi.**
+
+Holat (2026-09-06): 65 test o'tadi · mypy strict toza (62 fayl) · ruff toza ·
+OpenAPI 23 endpoint, 0 xato · Next.js build, lint va typecheck toza · 0 zaiflik ·
+judge bake-off 14/14.
 
 MVP **dasturlash tillari** (judge): C++, Python, Java. UI tillari alohida — 04-prd P0-7: uz/ru/en.
 
@@ -64,8 +70,8 @@ MVP **dasturlash tillari** (judge): C++, Python, Java. UI tillari alohida — 04
 - [ ] [08 § Xavfsizlik checklist](../08-technical-spec/README.md) to'liq bajarilgan
 - [ ] **Tashqi xavfsizlik auditi** o'tkazilgan ([ADR-0004](../07-adr/0004-judge-engine.md) sharti)
 - [ ] Judge latency o'lchangan: p50 < 5s, p95 < 15s
-- [ ] 4 reyting formulasi **UI da ochiq** (principle #2)
-- [ ] Faqat Phase 0 reytinglari ko'rinadi (Skills, Contests) — [ADR-0006](../07-adr/0006-rating-model.md) fazali ochilish
+- [x] 4 reyting formulasi **UI da ochiq** (principle #2) — `/rating` sahifasi
+- [x] Faqat Phase 0 reytinglari ko'rinadi (Skills, Contests) — [ADR-0006](../07-adr/0006-rating-model.md) fazali ochilish
 - [ ] Huquqiy: litsenziya tahlili yurist tomonidan tasdiqlangan ([ADR-0003](../07-adr/0003-stack-django-next.md))
 
 ## Sprint 5–8 — Phase 1

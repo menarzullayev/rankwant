@@ -55,7 +55,8 @@ func subst(args []string, src, bin string) []string {
 // judge — bitta job ni to'liq bajaradi.
 func judge(ctx context.Context, job *Job) *Result {
 	t0 := time.Now()
-	res := &Result{JobID: job.JobID, Verdict: VIE, PerTest: []TestResult{},
+	res := &Result{JobID: job.JobID, CustomRunID: job.CustomRunID,
+		Verdict: VIE, PerTest: []TestResult{},
 		Meta: JudgeMeta{Worker: "judge-go", Sandbox: "nsjail"}}
 
 	work, err := os.MkdirTemp("", "rw-judge-*")
@@ -137,6 +138,15 @@ func judge(ctx context.Context, job *Job) *Result {
 			break
 		}
 		v := classify(out, test, job.Limits)
+		// Custom rejimda javob solishtirilmaydi: dastur muvaffaqiyatli
+		// tugagan bo'lsa AC, va chiqish foydalanuvchiga qaytariladi.
+		var stdout string
+		if job.Mode == "custom" {
+			stdout = out.Stdout
+			if v == VWA {
+				v = VAC
+			}
+		}
 
 		if out.CPUMs > maxCPU {
 			maxCPU = out.CPUMs
@@ -145,7 +155,8 @@ func judge(ctx context.Context, job *Job) *Result {
 			maxMem = out.PeakKB
 		}
 		res.PerTest = append(res.PerTest, TestResult{
-			Index: test.Index, Verdict: v, TimeMS: out.CPUMs, MemoryKB: out.PeakKB})
+			Index: test.Index, Verdict: v, TimeMS: out.CPUMs,
+			MemoryKB: out.PeakKB, Stdout: stdout})
 
 		if v == VAC {
 			passed++

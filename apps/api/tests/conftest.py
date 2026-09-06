@@ -12,6 +12,20 @@ from problems.models import Language, Problem
 
 
 @pytest.fixture(autouse=True)
+def clear_throttle_cache():
+    """DRF throttling holatini keshda saqlaydi.
+
+    Tozalanmasa, bitta testdagi submitlar keyingi testda 429 keltirib
+    chiqaradi va nosozlik testlar TARTIBIGA bog'liq bo'lib qoladi.
+    """
+    from django.core.cache import cache
+
+    cache.clear()
+    yield
+    cache.clear()
+
+
+@pytest.fixture(autouse=True)
 def memory_judge():
     """Testlarda judge navbatga tegmaydi."""
     provider = InMemoryJudgeProvider()

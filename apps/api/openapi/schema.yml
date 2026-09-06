@@ -266,6 +266,62 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedStandingList'
           description: ''
+  /api/v1/custom-test/:
+    post:
+      operationId: custom_test_create
+      description: |-
+        PRD P0-4 — custom test.
+
+        Attempt EMAS: tarixga tushmaydi, reytingga ta'sir qilmaydi. Submit bilan
+        bir xil rate limit qo'llanadi — bu ham judge resursini yeydi.
+      tags:
+      - custom-test
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomRunCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CustomRunCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CustomRunCreate'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomRun'
+          description: ''
+  /api/v1/custom-test/{id}/:
+    get:
+      operationId: custom_test_retrieve
+      description: |-
+        PRD P0-4 — custom test.
+
+        Attempt EMAS: tarixga tushmaydi, reytingga ta'sir qilmaydi. Submit bilan
+        bir xil rate limit qo'llanadi — bu ham judge resursini yeydi.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - custom-test
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomRun'
+          description: ''
   /api/v1/health/:
     get:
       operationId: health_retrieve
@@ -1059,6 +1115,58 @@ components:
       - index_letter
       - slug
       - title
+    CustomRun:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        language:
+          type: string
+          readOnly: true
+        verdict:
+          $ref: '#/components/schemas/VerdictEnum'
+        stdout:
+          type: string
+        compile_output:
+          type: string
+        time_ms:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        memory_kb:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        judged_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - created_at
+      - id
+      - language
+    CustomRunCreate:
+      type: object
+      description: PRD P0-4 — foydalanuvchi stdin → output.
+      properties:
+        language:
+          type: string
+          pattern: ^[-a-zA-Z0-9_]+$
+        source_code:
+          type: string
+        stdin:
+          type: string
+          default: ''
+      required:
+      - language
+      - source_code
     Language:
       type: object
       properties:
