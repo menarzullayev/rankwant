@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log/slog"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -53,11 +54,18 @@ func subst(args []string, src, bin string) []string {
 }
 
 // judge — bitta job ni to'liq bajaradi.
-func judge(ctx context.Context, job *Job) *Result {
+func judge(ctx context.Context, job *Job, tests *store) *Result {
 	t0 := time.Now()
-	res := &Result{JobID: job.JobID, CustomRunID: job.CustomRunID,
+	res := &Result{JobID: job.JobID, AttemptID: job.AttemptID, CustomRunID: job.CustomRunID,
 		Verdict: VIE, PerTest: []TestResult{},
 		Meta: JudgeMeta{Worker: "judge-go", Sandbox: "nsjail"}}
+
+	// Testsiz job — sozlama xatosi. Bunday holatda "hammasi o'tdi" deb
+	// AC qaytarish masalani yechilgan deb ko'rsatib qo'yardi.
+	if len(job.Tests) == 0 && job.Mode != "custom" {
+		slog.Error("job testsiz keldi", "job", job.JobID)
+		return res
+	}
 
 	work, err := os.MkdirTemp("", "rw-judge-*")
 	if err != nil {
@@ -132,6 +140,13 @@ func judge(ctx context.Context, job *Job) *Result {
 	passed := 0
 
 	for _, test := range job.Tests {
+		// Havola yechilmasa IE qaytaramiz. Ilgari bo'sh test bilan davom
+		// etilardi va HAR submission WA olardi — sabab ko'rinmasdan.
+		if err := resolve(ctx, &test, tests); err != nil {
+			slog.Error("test ma'lumotini olish", "job", job.JobID, "test", test.Index, "err", err)
+			worst = VIE
+			break
+		}
 		out, err := runSandboxed(ctx, work, runCmd, test.Input, job.Limits, wallLimit)
 		if err != nil {
 			worst = VIE
@@ -209,4 +224,26 @@ func classify(out *runOutcome, test Test, lim Limits) string {
 		}
 		return VRE
 	}
+}
+
+// resolve test ma'lumotini S3 dan oladi. Inline `input`/`expected`
+// berilgan bo'lsa (bake-off harness), S3 ga umuman murojaat qilinmaydi.
+func resolve(ctx context.Context, test *Test, tests *store) error {
+	for _, field := range []struct {
+		ref string
+		dst *string
+	}{
+		{test.InputRef, &test.Input},
+		{test.ExpectedRef, &test.Expected},
+	} {
+		if *field.dst != "" || field.ref == "" {
+			continue
+		}
+		data, err := tests.get(ctx, field.ref)
+		if err != nil {
+			return err
+		}
+		*field.dst = string(data)
+	}
+	return nil
 }

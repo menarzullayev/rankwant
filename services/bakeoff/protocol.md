@@ -47,6 +47,7 @@ Worker `DATABASE_URL` **olmaydi**. Faqat `REDIS_URL` va S3 (bake-off'da local ka
 ```json
 {
   "job_id": "uuid",
+  "attempt_id": 12345,
   "verdict": "AC",
   "score": 100,
   "time_ms": 12,

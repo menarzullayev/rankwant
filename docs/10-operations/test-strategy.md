@@ -98,13 +98,19 @@ kunlik quest bajarish → +10 Qvant → ledgerda yozuv
 
 ## 5. Smoke
 
-Deploydan keyin, tez va kam sonli:
+Deploydan keyin, tez va kam sonli. `tests/smoke/check.py` — compose
+tarmog'i ichida ishlaydi, CI da har PR da to'liq stack ko'tariladi:
 
-- [ ] `/health` → 200
-- [ ] Postgres va Redis ulanishi
-- [ ] Judge worker heartbeat
-- [ ] **Canary submit** — ma'lum masalaga ma'lum yechim → `AC` qaytishi shart
-- [ ] Bosh sahifa SSR render bo'ladi
+- [x] API masalalar ro'yxatini beradi
+- [x] OpenAPI sxemasi ochiladi
+- [x] SSR api'dan ma'lumot oladi (brauzer va server manzillari boshqa)
+- [x] Autentifikatsiya: register → login → himoyalangan endpoint
+- [x] **Canary submit** — `a-plus-b` ga to'g'ri yechim → `AC`
+
+Oxirgi qadam API va judge'ni birga ishlatadigan yagona joy. U qo'shilganda
+darhol uchta uzilish topdi: compose'da Celery worker/beat yo'q edi, API
+`input_ref` yuborib judge `input` kutardi, va judge natijada `attempt_id`
+qaytarmasdi. Uchalasi ham alohida test to'plamlarida ko'rinmagan edi.
 
 Canary submit **eng muhimi**: qolgan hammasi tirik bo'lib, judge o'lik bo'lishi mumkin.
 
@@ -268,7 +274,7 @@ Har birida tekshiriladi: ma'lumot yo'qolmadimi, foydalanuvchi tushunarli xato ko
 | E2E | ✅ skript | `tests/e2e/` — staging talab qiladi |
 | Load / Stress / Spike / Soak | ✅ skript | `tests/load/main.js` |
 | Chaos | ✅ skript | `tests/chaos/run.sh` — faqat staging |
-| Smoke | ⬜ | deploy quvuri qurilgach |
+| Smoke | ✅ | `tests/smoke/` — CI da to'liq compose stack |
 | Compatibility — til matritsasi | ✅ | `tests/compatibility/` — nightly |
 | Compatibility — brauzer | ⬜ | brauzer matritsasi kerak |
 

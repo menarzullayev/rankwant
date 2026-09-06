@@ -189,6 +189,13 @@ CELERY_TASK_ALWAYS_EAGER = env_bool("CELERY_EAGER", False)
 # Davriy tasklar. Judge natijalari tez-tez o'qiladi, chunki foydalanuvchi
 # verdictni kutib turadi (NFR: p50 < 5s) — navbat bo'sh bo'lsa BRPOP
 # darhol qaytadi, ya'ni bu qimmat emas.
+# Test ma'lumoti va statement asset'lari — S3/R2 (local: MinIO)
+S3_ENDPOINT = os.environ.get("S3_ENDPOINT", "")
+S3_BUCKET = os.environ.get("S3_BUCKET", "rankwant")
+S3_KEY = os.environ.get("S3_KEY", "")
+S3_SECRET = os.environ.get("S3_SECRET", "")
+S3_REGION = os.environ.get("S3_REGION", "us-east-1")
+
 CELERY_BEAT_SCHEDULE = {
     "drain-judge-results": {
         "task": "judging.drain_results",

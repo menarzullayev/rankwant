@@ -21,6 +21,10 @@ type Test struct {
 	Index    int    `json:"index"`
 	Input    string `json:"input"`
 	Expected string `json:"expected"`
+	// API test ma'lumotini emas, S3 havolasini yuboradi (08-technical-spec).
+	// Inline maydonlar bake-off harness'i uchun qoladi.
+	InputRef    string `json:"input_ref"`
+	ExpectedRef string `json:"output_ref"`
 }
 
 type Interactor struct {
@@ -73,7 +77,10 @@ type JudgeMeta struct {
 }
 
 type Result struct {
-	JobID           string       `json:"job_id"`
+	JobID string `json:"job_id"`
+	// API natijani shu maydon orqali urinishga bog'laydi. Tushib qolsa
+	// verdict hech qachon yozilmaydi va urinish PENDING qoladi.
+	AttemptID       int64        `json:"attempt_id"`
 	CustomRunID     *int64       `json:"custom_run_id,omitempty"`
 	Verdict         string       `json:"verdict"`
 	Score           int          `json:"score"`

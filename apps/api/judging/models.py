@@ -38,6 +38,10 @@ class Attempt(models.Model):
     memory_kb = models.PositiveIntegerField(default=0)
     failed_test_index = models.PositiveIntegerField(null=True, blank=True)
     compile_output = models.TextField(blank=True)
+    #: Judge telemetriyasi: worker, sandbox, queue_wait_ms, total_ms.
+    #: `latency_ms` umumiy kechikishni beradi, bu esa sababini —
+    #: navbatda kutishmi yoki bajarishmi (ADR-0004 sig'im rejasi).
+    judge_meta = models.JSONField(default=dict, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     judged_at = models.DateTimeField(null=True, blank=True)

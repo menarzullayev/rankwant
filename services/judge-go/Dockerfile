@@ -15,7 +15,7 @@ RUN git clone --depth 1 --branch "${NSJAIL_REF}" https://github.com/google/nsjai
     && cd /src && make -j"$(nproc)"
 
 # ── 2. worker ────────────────────────────────────────────────────────
-FROM golang:1.22-bookworm AS go-build
+FROM golang:1.25-bookworm AS go-build
 WORKDIR /app
 COPY go.mod go.sum* ./
 RUN go mod download

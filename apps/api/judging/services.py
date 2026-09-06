@@ -150,6 +150,7 @@ def apply_result(result: dict[str, Any]) -> Attempt | None:
     attempt.memory_kb = int(result.get("memory_kb") or 0)
     attempt.failed_test_index = result.get("failed_test_index")
     attempt.compile_output = result.get("compile_output") or ""
+    attempt.judge_meta = result.get("judge_meta") or {}
     attempt.judged_at = timezone.now()
     attempt.save()
 

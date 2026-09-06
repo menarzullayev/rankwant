@@ -53,7 +53,8 @@ To'liq mezonlar: [ADR-0004 § Baholash mezonlari](../07-adr/0004-judge-engine.md
 | Sprint | Ish                                                            | PRD          | Holat |
 | ------ | -------------------------------------------------------------- | ------------ | ----- |
 | **1**  | Repo scaffold, CI (mypy strict + lint + test), Auth, `ApiToken` | P0-1         | ✅ |
-| **2**  | Problem bank + Django admin + test yuklash; i18n poydevori     | P0-2, P0-7   | ✅ |
+| **2**  | Problem bank + Django admin; i18n poydevori                    | P0-2, P0-7   | ✅ |
+| **2a** | Test ma'lumoti S3 da (judge o'qiydi) — masala tuzuvchi uchun yuklash UI hali yo'q | P0-2 | ⚠️ qisman |
 | **3**  | Judge integratsiya (`JudgeProvider`), Attempt + 20 verdict, custom test | P0-3, P0-4 | ✅ |
 | **4**  | Contest ACM + standings (SSE), profil + Skills/Contests reyting, Next.js UI | P0-5, P0-6 | ✅ |
 

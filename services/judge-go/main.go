@@ -59,6 +59,16 @@ func main() {
 	}
 	log.Info("cgroup preflight o'tdi — pids va memory limitlari ishlaydi")
 
+	tests, err := newStore()
+	if err != nil {
+		log.Error("S3 mijozi yaratilmadi", "err", err)
+		os.Exit(1)
+	}
+	if tests == nil {
+		// Ref'li joblar IE bo'ladi — jim WA dan ko'ra ko'rinadigan xato yaxshi.
+		log.Warn("S3_ENDPOINT sozlanmagan — faqat inline testli joblar bajariladi")
+	}
+
 	log.Info("judge-go ishga tushdi", "sandbox", "nsjail", "queue", jobsKey)
 
 	for {
@@ -84,7 +94,7 @@ func main() {
 			continue
 		}
 
-		res := judge(ctx, &job)
+		res := judge(ctx, &job, tests)
 		res.Meta.QueueWaitMS = time.Since(received).Milliseconds() - res.Meta.TotalMS
 		if res.Meta.QueueWaitMS < 0 {
 			res.Meta.QueueWaitMS = 0

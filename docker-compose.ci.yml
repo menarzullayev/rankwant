@@ -1,0 +1,27 @@
+# CI/smoke uchun override: host portlari e'lon qilinmaydi.
+#
+# Nega: smoke sinovi compose tarmog'i ICHIDA ishlaydi, ya'ni host portlari
+# kerak emas. Ularni e'lon qilmaslik runner'da (va ishlab chiquvchi
+# mashinasida) band port sababli tushib qolishning oldini oladi.
+services:
+  postgres:
+    ports: !reset []
+  redis:
+    ports: !reset []
+  minio:
+    ports: !reset []
+  api:
+    ports: !reset []
+  web:
+    ports: !reset []
+
+  # Smoke tarmoq ICHIDA ishlaydi: host portlari kerak emas.
+  smoke:
+    image: python:3.13-slim
+    profiles: ['smoke']
+    volumes: ['./tests/smoke:/smoke:ro']
+    command: ['python', '/smoke/check.py']
+    depends_on:
+      api: { condition: service_healthy }
+      web: { condition: service_started }
+      judge: { condition: service_started }

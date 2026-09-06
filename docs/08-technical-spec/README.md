@@ -94,11 +94,15 @@ API                    Redis navbat              Judge worker
   "language": {"code": "cpp23", "compile_cmd": "...", "run_cmd": "..."},
   "source_ref": "s3://…/12345.cpp",
   "limits": {"time_ms": 1000, "memory_kb": 262144, "output_kb": 65536},
-  "testset_ref": "s3://…/problem-42/tests/",
+  "tests": [{"index": 1, "input_ref": "s3://…/1.in", "output_ref": "s3://…/1.out"}],
   "checker": {"type": "standard", "ref": null},
   "mode": "acm"
 }
 ```
+
+> Testlar bitta `testset_ref` katalogi emas, har biri alohida havola bilan
+> yuboriladi — subtask bog'lanishi va tartib uchun
+> ([ADR-0010](../07-adr/0010-per-test-refs.md)).
 
 ### Verdict kodlari (20)
 

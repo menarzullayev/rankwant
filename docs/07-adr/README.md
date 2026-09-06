@@ -27,6 +27,7 @@ Har bir ADR:
 | [0007](0007-skills-uses-current-difficulty.md)   | Skills — joriy qiyinlikdan          | **accepted**           |
 | [0008](0008-auth-session-plus-pat.md)            | Auth — session + PAT                | **accepted**           |
 | [0009](0009-monorepo.md)                         | Monorepo                            | **accepted**           |
+| [0010](0010-per-test-refs.md)                    | Job da har test uchun S3 havolasi   | **accepted**           |
 
 ## Qoidalar
 

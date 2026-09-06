@@ -4,8 +4,16 @@
  * (ADR-0008: birinchi tomon web uchun cookie, PAT emas).
  */
 
+/**
+ * Brauzer va server bir xil manzildan foydalana olmaydi: brauzer host'dagi
+ * `localhost:8000` ni ko'radi, konteyner ichidagi SSR esa u yerda hech
+ * nima topmaydi (ECONNREFUSED). Shuning uchun server tomon uchun alohida
+ * ichki manzil — sozlanmasa, ommaviy manzilga qaytadi.
+ */
 export const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8000/api/v1";
+  (typeof window === "undefined"
+    ? process.env.API_BASE_INTERNAL || process.env.NEXT_PUBLIC_API_BASE
+    : process.env.NEXT_PUBLIC_API_BASE) ?? "http://localhost:8000/api/v1";
 
 export type Paginated<T> = {
   count: number;

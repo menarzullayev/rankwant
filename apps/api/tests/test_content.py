@@ -15,6 +15,8 @@ from classroom.services import ClassroomError, assignment_progress, join
 from content.models import Article, ArticleProblemLink, Roadmap, RoadmapStep
 from judging.models import Attempt
 from judging.services import apply_result
+from problems import storage
+from problems.models import TestCase as ProblemTestCase
 
 
 @pytest.mark.django_db
@@ -254,6 +256,18 @@ class TestSeedDemo:
     orqali bilib bo'lardi.
     """
 
+    @pytest.fixture(autouse=True)
+    def _fake_s3(self, monkeypatch):
+        """MinIO unit testda yo'q — yuklashni yozib boradigan soxta bilan almashtiramiz."""
+        self.uploaded: dict[str, str] = {}
+
+        def put(key: str, content: str) -> str:
+            self.uploaded[key] = content
+            return f"s3://rankwant/{key}"
+
+        monkeypatch.setattr(storage, "ensure_bucket", lambda: None)
+        monkeypatch.setattr(storage, "put_test_data", put)
+
     def test_seed_ishlaydi_va_takrorlanadi(self) -> None:
         call_command("seed_demo", verbosity=0)
         call_command("seed_demo", verbosity=0)  # idempotent
@@ -263,6 +277,20 @@ class TestSeedDemo:
         classroom = Classroom.objects.get(slug="11-a-sinf")
         assert classroom.members.count() == 3
         assert classroom.assignments.get().problems.count() == 3
+
+    def test_testlar_haqiqiy_S3_ga_yuklanadi(self) -> None:
+        """Test ma'lumoti mavjud bo'lmasa to'g'ri yechim ham WA oladi."""
+        call_command("seed_demo", verbosity=0)
+
+        assert self.uploaded["tests/a-plus-b/1.in"] == "1 2\n"
+        assert self.uploaded["tests/a-plus-b/1.out"] == "3\n"
+        first = ProblemTestCase.objects.get(problem__slug="a-plus-b", order=1)
+        assert first.input_ref.startswith("s3://")
+
+    def test_testsiz_masalada_soxta_ref_yoq(self) -> None:
+        """Yozilmagan masalaga soxta test qo'yilsa, u har doim WA berardi."""
+        call_command("seed_demo", verbosity=0)
+        assert not ProblemTestCase.objects.filter(problem__slug="ryukzak").exists()
 
     def test_roadmap_qadamlari_toliq(self) -> None:
         """Har qadamda maqola ham, masala ham bo'lishi kerak."""

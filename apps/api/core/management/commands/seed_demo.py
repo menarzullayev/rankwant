@@ -16,6 +16,7 @@ from classroom.models import Assignment, Classroom, ClassroomMember
 from content.models import Article, Roadmap, RoadmapStep
 from contests.models import Contest, ContestProblem
 from core.models import User
+from problems import storage
 from problems.models import Language, Problem, TestCase, Topic
 
 LANGUAGES = [
@@ -32,14 +33,49 @@ TOPICS = [
     ("greedy", "Ochko'zlik"),
 ]
 
+#: (slug, sarlavha, qiyinlik, mavzular, matn, [(kirish, chiqish), ...])
+#:
+#: Testlar HAQIQIY: matnsiz masala va bo'sh test bilan to'g'ri yechim ham
+#: WA oladi, ya'ni demo hech narsani ko'rsatmaydi.
 PROBLEMS = [
-    ("a-plus-b", "A + B", 800, ["implementation"]),
-    ("juft-toq", "Juft yoki toq", 800, ["implementation", "math"]),
-    ("eng-katta", "Massivdagi eng katta son", 900, ["implementation"]),
-    ("fibonacci", "Fibonachchi sonlari", 1200, ["dp", "math"]),
-    ("ryukzak", "Ryukzak masalasi", 1600, ["dp"]),
-    ("eng-qisqa-yol", "Eng qisqa yo'l", 2000, ["graphs"]),
-    ("mintaqalar", "Mintaqalarni bo'lish", 2500, ["graphs", "greedy"]),
+    (
+        "a-plus-b",
+        "A + B",
+        800,
+        ["implementation"],
+        "Bitta qatorda ikkita butun son `a` va `b` berilgan.\n\nUlarning yig'indisini chiqaring.",
+        [("1 2\n", "3\n"), ("100 -40\n", "60\n"), ("0 0\n", "0\n")],
+    ),
+    (
+        "juft-toq",
+        "Juft yoki toq",
+        800,
+        ["implementation", "math"],
+        "Butun son `n` berilgan. Juft bo'lsa `JUFT`, aks holda `TOQ` chiqaring.",
+        [("4\n", "JUFT\n"), ("7\n", "TOQ\n"), ("0\n", "JUFT\n")],
+    ),
+    (
+        "eng-katta",
+        "Massivdagi eng katta son",
+        900,
+        ["implementation"],
+        "Birinchi qatorda `n`, keyingi qatorda `n` ta butun son.\n\nEng kattasini chiqaring.",
+        [("5\n3 1 4 1 5\n", "5\n"), ("1\n-7\n", "-7\n"), ("3\n2 2 2\n", "2\n")],
+    ),
+    (
+        "fibonacci",
+        "Fibonachchi sonlari",
+        1200,
+        ["dp", "math"],
+        "`n` berilgan (0 ≤ n ≤ 90). `F(0)=0`, `F(1)=1` bo'lganda `F(n)` ni chiqaring.",
+        [("0\n", "0\n"), ("10\n", "55\n"), ("50\n", "12586269025\n")],
+    ),
+    # Quyidagi uchtasi qiyin masalalar: matn ham, test ham yozilmagan.
+    # Ataylab TESTSIZ qoldirilgan — soxta test to'g'ri yechimni ham
+    # yiqitadi, judge esa testsiz job'ni IE deb qaytaradi.
+    ("ryukzak", "Ryukzak masalasi", 1600, ["dp"], "", []),
+    ("eng-qisqa-yol", "Eng qisqa yo'l", 2000, ["graphs"], "", []),
+    ("mintaqalar", "Mintaqalarni bo'lish", 2500, ["graphs", "greedy"], "", []),
 ]
 
 
@@ -97,12 +133,16 @@ class Command(BaseCommand):
             topic, _ = Topic.objects.update_or_create(slug=slug, defaults={"name_uz": name})
             topics[slug] = topic
 
-        for slug, title, difficulty, topic_slugs in PROBLEMS:
+        storage.ensure_bucket()
+
+        for slug, title, difficulty, topic_slugs, statement, tests in PROBLEMS:
             problem, _ = Problem.objects.update_or_create(
                 slug=slug,
                 defaults={
                     "title": title,
-                    "statement": f"## {title}\n\nMasala matni bu yerda bo'ladi.",
+                    "statement": f"## {title}\n\n{statement}"
+                    if statement
+                    else f"## {title}\n\n_Matn hali yozilmagan._",
                     "difficulty": difficulty,
                     "is_public": True,
                     "time_limit_ms": 1000,
@@ -110,13 +150,16 @@ class Command(BaseCommand):
                 },
             )
             problem.topics.set([topics[s] for s in topic_slugs])
-            if not problem.tests.exists():
-                TestCase.objects.create(
+
+            for i, (test_in, test_out) in enumerate(tests, start=1):
+                TestCase.objects.update_or_create(
                     problem=problem,
-                    order=1,
-                    input_ref=f"s3://tests/{slug}/1.in",
-                    output_ref=f"s3://tests/{slug}/1.out",
-                    is_sample=True,
+                    order=i,
+                    defaults={
+                        "input_ref": storage.put_test_data(f"tests/{slug}/{i}.in", test_in),
+                        "output_ref": storage.put_test_data(f"tests/{slug}/{i}.out", test_out),
+                        "is_sample": i == 1,
+                    },
                 )
 
         if not User.objects.filter(username="admin").exists():

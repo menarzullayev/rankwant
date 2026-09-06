@@ -33,21 +33,83 @@ services:
     ports: ['9000:9000', '9001:9001']
     volumes: ['miniodata:/data']
 
+  # Migratsiya alohida bir martalik servis: gunicorn 4 worker bilan
+  # ishlaydi, ya'ni migratsiyani entrypoint'ga qo'yish ularni bir-biriga
+  # poyga qildiradi.
+  migrate:
+    build: ./apps/api
+    command: ['python', 'manage.py', 'migrate', '--no-input']
+    environment:
+      DATABASE_URL: postgres://rankwant:dev@postgres:5432/rankwant
+      REDIS_URL: redis://redis:6379/0
+      S3_ENDPOINT: http://minio:9000
+      S3_BUCKET: rankwant
+      S3_KEY: rankwant
+      S3_SECRET: devdevdev
+    restart: 'no'
+    depends_on:
+      postgres: { condition: service_healthy }
+
   api:
     build: ./apps/api
     environment:
       DATABASE_URL: postgres://rankwant:dev@postgres:5432/rankwant
       REDIS_URL: redis://redis:6379/0
+      S3_ENDPOINT: http://minio:9000
+      S3_BUCKET: rankwant
+      S3_KEY: rankwant
+      S3_SECRET: devdevdev
       DJANGO_DEBUG: "1"
       CORS_ALLOWED_ORIGINS: http://localhost:3000
     ports: ['8000:8000']
     depends_on:
       postgres: { condition: service_healthy }
       redis: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/problems/')"
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  # Verdict natijalarini navbatdan olib, urinishga yozadi
+  # (CELERY_BEAT_SCHEDULE: judging.drain_results har 2s). Bularsiz
+  # submit qabul qilinadi, judge ishlaydi, lekin natija navbatda qoladi.
+  worker:
+    build: ./apps/api
+    command: ['celery', '-A', 'config', 'worker', '-l', 'info', '--concurrency', '2']
+    environment:
+      DATABASE_URL: postgres://rankwant:dev@postgres:5432/rankwant
+      REDIS_URL: redis://redis:6379/0
+      S3_ENDPOINT: http://minio:9000
+      S3_BUCKET: rankwant
+      S3_KEY: rankwant
+      S3_SECRET: devdevdev
+    depends_on:
+      redis: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
+
+  beat:
+    build: ./apps/api
+    command: ['celery', '-A', 'config', 'beat', '-l', 'info']
+    environment:
+      DATABASE_URL: postgres://rankwant:dev@postgres:5432/rankwant
+      REDIS_URL: redis://redis:6379/0
+      S3_ENDPOINT: http://minio:9000
+      S3_BUCKET: rankwant
+      S3_KEY: rankwant
+      S3_SECRET: devdevdev
+    depends_on:
+      redis: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
 
   web:
     build: ./apps/web
     environment:
+      # Brauzer host portiga, SSR compose tarmog'iga murojaat qiladi.
+      API_BASE_INTERNAL: http://api:8000/api/v1
       NEXT_PUBLIC_API_BASE: http://localhost:8000/api/v1
     ports: ['3000:3000']
     depends_on: [api]
@@ -58,6 +120,10 @@ services:
     cgroup: host
     environment:
       REDIS_URL: redis://redis:6379/0
+      S3_ENDPOINT: http://minio:9000
+      S3_BUCKET: rankwant
+      S3_KEY: rankwant
+      S3_SECRET: devdevdev
       # DIQQAT: DATABASE_URL ATAYLAB YO'Q. Judge host'da DB credential
       # bo'lmasligi kerak (06-architecture 🔒). Worker DATABASE_URL
       # berilgan bo'lsa ishga tushmaydi.
