@@ -2,6 +2,8 @@ name: Security
 
 on:
   pull_request:
+  push:
+    branches: [main]      # branch protection yo'q (private + free plan) — main ham skanerlanadi
   schedule:
     - cron: '0 3 * * *'
 
