@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Havola, jadval, yozuv va STATUS tekshiruvi
@@ -72,7 +72,7 @@ jobs:
             echo "ready=false" >> "$GITHUB_OUTPUT"
             echo "::notice::apps/api hali scaffold qilinmagan (Sprint 1) — o'tkazib yuborildi"
           fi
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         if: steps.check.outputs.ready == 'true'
         with:
           python-version: '3.12'
@@ -144,7 +144,7 @@ jobs:
           else
             echo "judge-go hali scaffold qilinmagan — o'tkazib yuborildi"
           fi
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Python judge test
@@ -162,7 +162,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Schema generatsiya va diff
