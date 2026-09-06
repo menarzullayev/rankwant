@@ -78,6 +78,24 @@ Rejudge **partiyada** va e'lon bilan. Contest natijasiga ta'sir qilsa: standings
 
 [ADR-0007](../07-adr/0007-skills-uses-current-difficulty.md) siyosati: yakka-yakka emas, **partiyada va oldindan e'lon bilan**; ta'sirlangan foydalanuvchilarga bildirishnoma; har o'zgarish `RatingHistory` da.
 
+## Repo boshqaruvi
+
+Repo: `menarzullayev/rankwant` — **private** ([ADR-0003](../07-adr/0003-stack-django-next.md) yopiq/tijorat qaroriga ko'ra).
+
+| Mexanizm | Holat | Izoh |
+| -------- | ----- | ---- |
+| CI (har PR va push) | ✅ | lint, mypy, test, OpenAPI diff, hujjat yaxlitligi |
+| Dependabot | ✅ | 5 ekotizim, haftalik |
+| gitleaks | ✅ | push va PR da; secret scanning o'rnini bosadi |
+| Squash-only merge, branch avto-o'chirish | ✅ | |
+| **Branch protection / rulesets** | ❌ | private repo + free plan → GitHub Pro yoki org Team talab qiladi |
+| **Secret scanning + push protection** | ❌ | shu sabab; gitleaks qoplaydi |
+
+**2026-09-06 qarori:** hozircha shunday qoldiriladi — pul sarflanmaydi, CI baribir qizil ko'rsatadi.
+Narxi: `main` ga to'g'ridan-to'g'ri push va qizil CI bilan merge **texnik jihatdan mumkin**; DoD intizomga tayanadi.
+
+**Qayta ko'rib chiqiladi:** ikkinchi odam jamoaga qo'shilishidan **oldin**. Yolg'iz ishlashda qabul qilsa bo'ladigan xavf, jamoada emas.
+
 ## Test strategiyasi
 
 To'liq hujjat: **[test-strategy.md](test-strategy.md)** — 15 qatlam (functional, unit, integration, E2E, smoke, regression, load, stress, spike, soak, security, abuse, recovery, chaos, compatibility), CI/CD pipeline va vositalar.

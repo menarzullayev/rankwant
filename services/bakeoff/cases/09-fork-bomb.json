@@ -1,0 +1,34 @@
+{
+  "id": "09-fork-bomb",
+  "title": "Fork bomb",
+  "measures": "process limiti host'ni himoya qiladimi",
+  "language": {
+    "code": "py312",
+    "compile": null,
+    "run": [
+      "python3",
+      "{src}"
+    ]
+  },
+  "source": "import os\nwhile True:\n    try: os.fork()\n    except Exception: pass\n",
+  "limits": {
+    "compile_time_ms": 10000,
+    "time_ms": 2000,
+    "memory_kb": 262144,
+    "output_kb": 65536,
+    "processes": 1
+  },
+  "tests": [
+    {
+      "index": 1,
+      "input": "",
+      "expected": ""
+    }
+  ],
+  "expect_verdict": "SECURITY_VIOLATION",
+  "must_hold": [
+    "host barqaror qoladi",
+    "RE ham qabul qilinadi, lekin host yiqilmasligi SHART"
+  ],
+  "mode": "acm"
+}

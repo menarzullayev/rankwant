@@ -1,0 +1,40 @@
+{
+  "id": "03-tle-cpu",
+  "title": "CPU sikli — TLE",
+  "measures": "CPU vs wall time farqlanadimi",
+  "language": {
+    "code": "cpp23",
+    "compile": [
+      "g++",
+      "-std=c++23",
+      "-O2",
+      "-o",
+      "{bin}",
+      "{src}"
+    ],
+    "run": [
+      "{bin}"
+    ]
+  },
+  "source": "#include <bits/stdc++.h>\nint main(){volatile unsigned long long x=0;for(;;)x+=1;}\n",
+  "limits": {
+    "compile_time_ms": 10000,
+    "time_ms": 500,
+    "memory_kb": 262144,
+    "output_kb": 65536,
+    "processes": 1
+  },
+  "tests": [
+    {
+      "index": 1,
+      "input": "",
+      "expected": ""
+    }
+  ],
+  "expect_verdict": "TLE",
+  "must_hold": [
+    "time_ms >= 500",
+    "time_ms < 2000  # wall emas, CPU o'lchanishi kerak"
+  ],
+  "mode": "acm"
+}

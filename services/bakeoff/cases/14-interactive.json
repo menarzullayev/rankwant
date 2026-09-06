@@ -1,0 +1,33 @@
+{
+  "id": "14-interactive",
+  "title": "Interactive — ikki tomonlama I/O",
+  "measures": "interactive qo'llab-quvvatlanadimi",
+  "language": {
+    "code": "py312",
+    "compile": null,
+    "run": [
+      "python3",
+      "{src}"
+    ]
+  },
+  "source": "import sys\nlo, hi = 1, 100\nwhile lo < hi:\n    mid = (lo + hi) // 2\n    print(mid, flush=True)\n    r = sys.stdin.readline().strip()\n    if r == \"<\": hi = mid\n    elif r == \">\": lo = mid + 1\n    else: break\nprint(\"!\", lo, flush=True)\n",
+  "limits": {
+    "compile_time_ms": 10000,
+    "time_ms": 1000,
+    "memory_kb": 262144,
+    "output_kb": 65536,
+    "processes": 1
+  },
+  "tests": [
+    {
+      "index": 1,
+      "input": "__interactive__",
+      "expected": "!42"
+    }
+  ],
+  "expect_verdict": "AC",
+  "must_hold": [
+    "interactive checker bilan ishlashi kerak"
+  ],
+  "mode": "acm"
+}

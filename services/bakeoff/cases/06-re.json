@@ -1,0 +1,37 @@
+{
+  "id": "06-re",
+  "title": "Runtime error",
+  "measures": "RE aniqlanadimi",
+  "language": {
+    "code": "cpp23",
+    "compile": [
+      "g++",
+      "-std=c++23",
+      "-O2",
+      "-o",
+      "{bin}",
+      "{src}"
+    ],
+    "run": [
+      "{bin}"
+    ]
+  },
+  "source": "int main(){int*p=nullptr;return *p;}\n",
+  "limits": {
+    "compile_time_ms": 10000,
+    "time_ms": 1000,
+    "memory_kb": 262144,
+    "output_kb": 65536,
+    "processes": 1
+  },
+  "tests": [
+    {
+      "index": 1,
+      "input": "",
+      "expected": ""
+    }
+  ],
+  "expect_verdict": "RE",
+  "must_hold": [],
+  "mode": "acm"
+}

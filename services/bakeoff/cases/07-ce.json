@@ -1,0 +1,39 @@
+{
+  "id": "07-ce",
+  "title": "Kompilyatsiya xatosi",
+  "measures": "CE va compile_output",
+  "language": {
+    "code": "cpp23",
+    "compile": [
+      "g++",
+      "-std=c++23",
+      "-O2",
+      "-o",
+      "{bin}",
+      "{src}"
+    ],
+    "run": [
+      "{bin}"
+    ]
+  },
+  "source": "int main(){ this is not c++ }\n",
+  "limits": {
+    "compile_time_ms": 10000,
+    "time_ms": 1000,
+    "memory_kb": 262144,
+    "output_kb": 65536,
+    "processes": 1
+  },
+  "tests": [
+    {
+      "index": 1,
+      "input": "",
+      "expected": ""
+    }
+  ],
+  "expect_verdict": "CE",
+  "must_hold": [
+    "compile_output bo'sh emas"
+  ],
+  "mode": "acm"
+}

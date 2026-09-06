@@ -1,0 +1,39 @@
+{
+  "id": "05-mle",
+  "title": "Katta massiv — MLE",
+  "measures": "peak RSS aniqligi",
+  "language": {
+    "code": "cpp23",
+    "compile": [
+      "g++",
+      "-std=c++23",
+      "-O2",
+      "-o",
+      "{bin}",
+      "{src}"
+    ],
+    "run": [
+      "{bin}"
+    ]
+  },
+  "source": "#include <bits/stdc++.h>\nint main(){std::vector<char> v(400ll*1024*1024, 1);std::cout<<(int)v[0];}\n",
+  "limits": {
+    "compile_time_ms": 10000,
+    "time_ms": 1000,
+    "memory_kb": 65536,
+    "output_kb": 65536,
+    "processes": 1
+  },
+  "tests": [
+    {
+      "index": 1,
+      "input": "",
+      "expected": ""
+    }
+  ],
+  "expect_verdict": "MLE",
+  "must_hold": [
+    "memory_kb >= 65536 chegarasida to'xtagan"
+  ],
+  "mode": "acm"
+}
