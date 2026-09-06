@@ -1,7 +1,7 @@
 {
   "id": "14-interactive",
   "title": "Interactive — ikki tomonlama I/O",
-  "measures": "interactive qo'llab-quvvatlanadimi",
+  "measures": "interactive checker HALI YOZILMAGAN — sandbox nosozligi emas",
   "language": {
     "code": "py312",
     "compile": null,
@@ -29,5 +29,6 @@
   "must_hold": [
     "interactive checker bilan ishlashi kerak"
   ],
-  "mode": "acm"
+  "mode": "acm",
+  "implemented": false
 }

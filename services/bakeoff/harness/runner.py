@@ -33,9 +33,19 @@ RESULTS_KEY = "rankwant:judge:results"
 HOST_ARTIFACTS = {
     "10-file-write": pathlib.Path("/etc/rankwant_pwned"),
 }
-# Bu case'larda SECURITY_VIOLATION ideal, lekin RE ham qabul qilinadi —
-# muhimi host himoyalanishi.
-ISOLATION_TOLERANT = {"09-fork-bomb", "10-file-write", "12-proc-read", "13-symlink"}
+# Bu case'larda SECURITY_VIOLATION ideal, lekin RE ham qabul qilinadi.
+#
+# Sabab: SECURITY_VIOLATION sandbox jarayonni O'LDIRGAN holat uchun (seccomp/SIGSYS).
+# Bloklangan tarmoq yoki fayl urinishi esa dasturda oddiy istisno bo'ladi va
+# jarayon o'zi nolga teng bo'lmagan kod bilan chiqadi — bu RE. Ya'ni verdict
+# satri xavfsizlik kafolatining dalili EMAS.
+#
+# Haqiqiy kafolat quyidagi MODDIY tekshiruvlar bilan tasdiqlanadi:
+#   - /etc/rankwant_pwned yaratilmagan
+#   - chiqishda CONNECTED yo'q
+#   - chiqishda host jarayon ma'lumoti yo'q
+ISOLATION_TOLERANT = {"09-fork-bomb", "10-file-write", "11-network",
+                      "12-proc-read", "13-symlink"}
 ISOLATION_CASES = {"09-fork-bomb", "10-file-write", "11-network", "12-proc-read", "13-symlink"}
 
 
@@ -63,7 +73,15 @@ def collect(r: "redis.Redis", expected: int, timeout_s: int) -> dict[str, dict]:
     got: dict[str, dict] = {}
     deadline = time.monotonic() + timeout_s
     while len(got) < expected and time.monotonic() < deadline:
-        item = r.brpop(RESULTS_KEY, timeout=2)
+        try:
+            item = r.brpop(RESULTS_KEY, timeout=2)
+        except redis.exceptions.TimeoutError:
+            # brpop blokirovkasi socket timeout'idan uzunroq bo'lsa yuz beradi.
+            # Bu nosozlik emas — navbat bo'sh, kutishda davom etamiz.
+            continue
+        except redis.exceptions.ConnectionError:
+            time.sleep(0.5)
+            continue
         if not item:
             continue
         res = json.loads(item[1])
@@ -81,7 +99,12 @@ def judge_case(case: dict, res: dict | None) -> tuple[str, list[str]]:
     want = case["expect_verdict"]
 
     ok = verdict == want
-    if not ok and case["id"] in ISOLATION_TOLERANT and verdict in {"RE", "SECURITY_VIOLATION"}:
+    # Fork bomb cgroup pids.max da qamalsa, jarayonlar CPU limitiga uriladi →
+    # TLE. Bu ham to'g'ri natija: muhimi host himoyalangani, verdict satri emas.
+    tolerated = {"RE", "SECURITY_VIOLATION"}
+    if case["id"] == "09-fork-bomb":
+        tolerated.add("TLE")
+    if not ok and case["id"] in ISOLATION_TOLERANT and verdict in tolerated:
         ok = True
         notes.append(f"{verdict} (SECURITY_VIOLATION o'rniga qabul qilindi)")
 
@@ -94,9 +117,17 @@ def judge_case(case: dict, res: dict | None) -> tuple[str, list[str]]:
         return "FAIL", notes + [f"XAVFSIZLIK: {artifact} yaratilgan — sandbox yorilgan"]
 
     if case["id"] == "11-network":
-        out = json.dumps(res.get("per_test", []))
+        out = json.dumps(res.get("per_test", []), ensure_ascii=False)
         if "CONNECTED" in out:
             return "FAIL", notes + ["XAVFSIZLIK: tarmoqqa chiqish muvaffaqiyatli bo'lgan"]
+        notes.append("tarmoq bloklangan (moddiy tekshiruv)")
+
+    if case["id"] == "12-proc-read":
+        # Host PID 1 cmdline sizganini aniqlash: verdict WA/AC bo'lsa, dastur
+        # /proc ni MUVAFFAQIYATLI o'qigan demak — bu izolyatsiya teshigi.
+        if verdict in {"AC", "WA"}:
+            return "FAIL", notes + ["XAVFSIZLIK: host /proc o'qilgan (dastur xatosiz yakunlandi)"]
+        notes.append("/proc niqoblangan (moddiy tekshiruv)")
 
     meta = res.get("judge_meta") or {}
     if not meta.get("total_ms"):
@@ -131,19 +162,60 @@ def main() -> int:
     ap.add_argument("--out", default=None, help="hisobotni faylga yozish (markdown)")
     args = ap.parse_args()
 
-    r = redis.Redis.from_url(args.redis)
+    # socket_timeout brpop blokirovkasidan (2s) kattaroq bo'lishi shart
+    r = redis.Redis.from_url(args.redis, socket_timeout=30, socket_connect_timeout=10)
     r.delete(JOBS_KEY, RESULTS_KEY)
 
     cases = load_cases()
     print(f"Nomzod: {args.worker} · {len(cases)} ta case\n")
 
-    ids = {submit(r, c): c for c in cases}
+    # ── XAVFSIZLIK DARVOZASI ────────────────────────────────────────────
+    # 09-fork-bomb host'ni yiqitishi mumkin, agar worker cgroup limitlarini
+    # qo'ya olmasa. 2026-09-06 da aynan shu bo'ldi: limitlar jimgina
+    # qo'yilmagan, fork bomb cheklovsiz ko'paygan, global OOM va swap
+    # thrashing mashinani ikki marta qotirgan.
+    #
+    # Shuning uchun: avval 05-mle ni yuboramiz. U MLE qaytarsa, xotira
+    # limiti HAQIQATAN ishlayapti degani. Faqat shundan keyin fork bomb.
+    # Hali yozilmagan funksiyalar nomzodni rad etmasligi kerak —
+    # ular sandbox sifati emas, ish hajmi masalasi.
+    pending = [c for c in cases if c.get("implemented") is False]
+    cases = [c for c in cases if c.get("implemented") is not False]
+
+    DANGEROUS = {"09-fork-bomb"}
+    safe = [c for c in cases if c["id"] not in DANGEROUS]
+    dangerous = [c for c in cases if c["id"] in DANGEROUS]
+
+    ids = {submit(r, c): c for c in safe}
     t0 = time.monotonic()
-    results = collect(r, len(cases), args.timeout)
+    results = collect(r, len(safe), args.timeout)
+
+    mle = next((v for k, v in results.items()
+                if ids[k]["id"] == "05-mle"), None)
+    limits_proven = bool(mle) and mle.get("verdict") == "MLE"
+
+    if dangerous:
+        if limits_proven:
+            print("  ✓ xotira limiti tasdiqlandi (05-mle → MLE) — fork bomb ishga tushirilmoqda")
+            dids = {submit(r, c): c for c in dangerous}
+            ids.update(dids)
+            results.update(collect(r, len(dids), args.timeout))
+        else:
+            got = mle.get("verdict") if mle else "natija yo'q"
+            print(f"  ⚠ XAVFSIZLIK DARVOZASI: 05-mle → {got} (MLE emas).")
+            print("    Xotira limiti ishlashi isbotlanmadi — fork bomb O'TKAZIB YUBORILDI.")
+            print("    Sabab: limitsiz fork bomb host'ni global OOM ga olib boradi.")
+            for c in dangerous:
+                ids[f"__skipped__{c['id']}"] = c
     wall = time.monotonic() - t0
 
     rows, failures, latencies = [], 0, []
     for job_id, case in ids.items():
+        if job_id.startswith("__skipped__"):
+            rows.append((case["id"], case["expect_verdict"], "—", "SKIP", "—",
+                         "xavfsizlik darvozasi: limitlar isbotlanmagan"))
+            failures += 1
+            continue
         res = results.get(job_id)
         status, notes = judge_case(case, res)
         if status != "PASS":
@@ -153,6 +225,10 @@ def main() -> int:
             latencies.append(float(meta["total_ms"]))
         rows.append((case["id"], case["expect_verdict"], (res or {}).get("verdict", "—"),
                      status, meta.get("total_ms", "—"), "; ".join(notes)))
+
+    for c in pending:
+        rows.append((c["id"], c["expect_verdict"], "—", "PENDING", "—",
+                     "hali yozilmagan — ADR-0004 da ochiq band"))
 
     iso_fail = [rid for rid, _, _, st, _, _ in rows if st != "PASS" and rid in ISOLATION_CASES]
 
@@ -177,7 +253,7 @@ def main() -> int:
           "| Case | Kutilgan | Kelgan | Holat | total_ms | Izoh |",
           "| ---- | -------- | ------ | ----- | -------- | ---- |"]
     for rid, want, got, st, ms, note in rows:
-        mark = {"PASS": "✅", "FAIL": "❌", "TIMEOUT": "⏱"}[st]
+        mark = {"PASS": "✅", "FAIL": "❌", "TIMEOUT": "⏱", "SKIP": "⏭", "PENDING": "🔧"}[st]
         md.append(f"| `{rid}` | {want} | {got} | {mark} | {ms} | {note} |")
 
     md += ["", "## Latency (funksional to'plam)", "",

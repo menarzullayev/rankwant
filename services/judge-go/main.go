@@ -48,6 +48,17 @@ func main() {
 		log.Error("Redis ga ulanib bo'lmadi", "err", err)
 		os.Exit(1)
 	}
+	// PREFLIGHT: cgroup limitlarini qo'ya olmasak, ishlamaymiz.
+	// Cheklovsiz judge foydalanuvchi kodini host'ga qo'yib yuboradi —
+	// bu 2026-09-06 da mashinani ikki marta yiqitgan.
+	if err := PreflightCgroup(); err != nil {
+		log.Error("cgroup preflight muvaffaqiyatsiz — worker ishga tushmaydi", "err", err)
+		log.Error("konteyner --privileged --cgroupns=host bilan ishlashi va " +
+			"/sys/fs/cgroup yozilishi mumkin bo'lishi kerak")
+		os.Exit(1)
+	}
+	log.Info("cgroup preflight o'tdi — pids va memory limitlari ishlaydi")
+
 	log.Info("judge-go ishga tushdi", "sandbox", "nsjail", "queue", jobsKey)
 
 	for {
