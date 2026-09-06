@@ -9,11 +9,12 @@ from django.urls import reverse
 from django.utils import timezone
 from rest_framework.test import APIClient
 
-from contests.models import Contest, ContestProblem, Standing
+from contests.models import Contest, ContestProblem, ContestRegistration, Standing
 from contests.services import WRONG_ATTEMPT_PENALTY_MIN, finalize_contest, rebuild_standings
 from core.models import User
 from judging.models import Attempt
 from judging.verdicts import Verdict
+from problems.models import Problem
 from ratings.models import RatingHistory
 
 
@@ -244,3 +245,68 @@ class TestVirtualContest:
         r = c.post(reverse("contest-virtual", args=[running.slug]))
         assert r.status_code == 400
         assert r.json()["error"]["code"] == "not_finished"
+
+
+@pytest.mark.django_db
+class TestContestSubmission:
+    """Musobaqaga submit — urinish contestga bog'lanishi kerak.
+
+    Avval `contest` maydoni serializerda bor edi, lekin view uni
+    ishlatmasdi: har urinish `contest=None` bo'lib yozilar, standings
+    esa hech qachon to'lmasdi. Unit testlar buni ko'rmagan, chunki ular
+    `rebuild_standings` ni contestga bog'langan urinishlar bilan
+    to'g'ridan-to'g'ri chaqirardi.
+    """
+
+    @pytest.fixture
+    def running(self, db, problem) -> Contest:
+        """Umumiy `contest` fixture'i TUGAGAN musobaqa — submit uchun faol kerak."""
+        now = timezone.now()
+        c = Contest.objects.create(
+            slug="faol-round",
+            title="Faol Round",
+            start_at=now - timedelta(hours=1),
+            end_at=now + timedelta(hours=1),
+            is_rated=True,
+        )
+        ContestProblem.objects.create(contest=c, problem=problem, index_letter="A")
+        return c
+
+    def _submit(self, client, slug="a-plus-b", contest="demo"):
+        payload = {"problem": slug, "language": "cpp23", "source_code": "int main(){}"}
+        if contest:
+            payload["contest"] = contest
+        return client.post(reverse("attempt-list"), payload)
+
+    def test_urinish_contestga_boglanadi(self, user, running, language) -> None:
+        ContestRegistration.objects.create(contest=running, user=user)
+        c = APIClient()
+        c.force_authenticate(user=user)
+
+        r = self._submit(c, contest=running.slug)
+        assert r.status_code == 201
+        assert Attempt.objects.get(pk=r.json()["id"]).contest_id == running.pk
+
+    def test_royxatdan_otmagan_submit_qila_olmaydi(self, user, running, language) -> None:
+        c = APIClient()
+        c.force_authenticate(user=user)
+        r = self._submit(c, contest=running.slug)
+        assert r.status_code == 400
+        assert "ro'yxatdan" in str(r.json()).lower()
+
+    def test_contestda_yoq_masala_rad_etiladi(self, user, running, language) -> None:
+        ContestRegistration.objects.create(contest=running, user=user)
+        other = Problem.objects.create(
+            slug="boshqa", title="Boshqa", difficulty=800, is_public=True
+        )
+        c = APIClient()
+        c.force_authenticate(user=user)
+        r = self._submit(c, slug=other.slug, contest=running.slug)
+        assert r.status_code == 400
+
+    def test_contestsiz_submit_hamon_ishlaydi(self, user, problem, language) -> None:
+        c = APIClient()
+        c.force_authenticate(user=user)
+        r = self._submit(c, contest=None)
+        assert r.status_code == 201
+        assert Attempt.objects.get(pk=r.json()["id"]).contest_id is None

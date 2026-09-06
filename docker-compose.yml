@@ -106,7 +106,11 @@ services:
       migrate: { condition: service_completed_successfully }
 
   web:
-    build: ./apps/web
+    build:
+      context: ./apps/web
+      args:
+        # Brauzer bundle'i uchun — deploy manzili bilan mos bo'lishi shart.
+        NEXT_PUBLIC_API_BASE: ${NEXT_PUBLIC_API_BASE:-http://localhost:8000/api/v1}
     environment:
       # Brauzer host portiga, SSR compose tarmog'iga murojaat qiladi.
       API_BASE_INTERNAL: http://api:8000/api/v1

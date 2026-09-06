@@ -4,6 +4,7 @@ from typing import Any
 
 from rest_framework import serializers
 
+from contests.models import Contest, ContestProblem, ContestRegistration
 from judging.models import MAX_SOURCE_BYTES, Attempt, AttemptTestResult, CustomRun
 from problems.models import Language, Problem
 
@@ -67,6 +68,34 @@ class AttemptCreateSerializer(serializers.Serializer[dict[str, Any]]):
         if not Language.objects.filter(code=value, is_active=True).exists():
             raise serializers.ValidationError("Til qo'llab-quvvatlanmaydi")
         return value
+
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        """Musobaqa submission'i uchun shartlar.
+
+        `contest` maydoni serializerda bor edi, lekin view uni umuman
+        ishlatmasdi: har urinish `contest=None` bo'lib yozilar, natijada
+        standings hech qachon to'lmasdi.
+        """
+        slug = attrs.get("contest")
+        if not slug:
+            return attrs
+
+        contest = Contest.objects.filter(slug=slug, is_public=True).first()
+        if contest is None:
+            raise serializers.ValidationError({"contest": "Musobaqa topilmadi"})
+        if not contest.is_running:
+            raise serializers.ValidationError({"contest": "Musobaqa faol emas"})
+
+        user = self.context["request"].user
+        if not ContestRegistration.objects.filter(contest=contest, user=user).exists():
+            raise serializers.ValidationError({"contest": "Musobaqaga ro'yxatdan o'ting"})
+        if not ContestProblem.objects.filter(
+            contest=contest, problem__slug=attrs["problem"]
+        ).exists():
+            raise serializers.ValidationError({"problem": "Masala bu musobaqada yo'q"})
+
+        attrs["contest_obj"] = contest
+        return attrs
 
 
 class CustomRunSerializer(serializers.ModelSerializer[CustomRun]):

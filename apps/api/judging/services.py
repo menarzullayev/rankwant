@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+from django.core.cache import cache
 from django.db import transaction
 from django.db.models import F
 from django.utils import timezone
@@ -182,4 +183,22 @@ def apply_result(result: dict[str, Any]) -> Attempt | None:
         on_accept_revoked(attempt)
     else:
         on_attempt_judged(attempt)
+
+    if attempt.contest_id:
+        _schedule_standings_rebuild(attempt.contest_id)
     return attempt
+
+
+#: Contest spike'da 500 submit/10s bo'ladi. Har verdictda to'liq qayta
+#: hisoblash — barcha urinishlarni skanerlash — ma'nosiz qimmat, mijoz
+#: esa standings'ni har 10 s da yangilaydi (SSE_INTERVAL_S).
+STANDINGS_DEBOUNCE_S = 5
+
+
+def _schedule_standings_rebuild(contest_id: int) -> None:
+    key = f"standings-rebuild:{contest_id}"
+    if not cache.add(key, "1", STANDINGS_DEBOUNCE_S):
+        return
+    from contests.tasks import rebuild_standings_task
+
+    rebuild_standings_task.apply_async((contest_id,), countdown=STANDINGS_DEBOUNCE_S)

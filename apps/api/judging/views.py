@@ -75,7 +75,7 @@ class AttemptViewSet(
 
     @extend_schema(request=AttemptCreateSerializer, responses={201: AttemptSerializer})
     def create(self, request: Request, *args: Any, **kwargs: Any) -> Response:
-        serializer = AttemptCreateSerializer(data=request.data)
+        serializer = AttemptCreateSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
 
@@ -85,6 +85,7 @@ class AttemptViewSet(
             problem=Problem.objects.get(slug=data["problem"]),
             language=Language.objects.get(code=data["language"]),
             source_code=data["source_code"],
+            contest=data.get("contest_obj"),
             verdict=Verdict.PENDING,
         )
         # Attempt AVVAL saqlanadi, keyin navbatga — navbat yiqilsa ham
