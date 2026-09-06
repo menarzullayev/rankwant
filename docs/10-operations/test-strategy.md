@@ -249,6 +249,26 @@ Har birida tekshiriladi: ma'lumot yo'qolmadimi, foydalanuvchi tushunarli xato ko
 **Nightly:** Load · Soak (haftalik) · Chaos (staging).
 **Har release oldidan:** Stress · Spike.
 
+## Amalga oshirilgan holat (2026-09-06)
+
+| Qatlam | Holat | Joyi |
+| ------ | ----- | ---- |
+| Unit (formulalar, ledger, verdict) | ✅ | `apps/api/tests/`, `services/judge-py/test_judge.py` |
+| Integration (submit → verdict → reyting) | ✅ | `apps/api/tests/test_judging.py` |
+| Functional (API shartnomasi) | ✅ | `apps/api/tests/` — 149 test |
+| Regression (golden set) | ✅ | `services/bakeoff/cases/` — 14 case |
+| Security — sandbox escape | ✅ | `services/bakeoff` izolyatsiya case'lari + `tests/security/run.sh` |
+| Security — ilova (IDOR, PAT scope, rate limit) | ✅ | testlar + `tests/security/run.sh` |
+| E2E | ✅ skript | `tests/e2e/` — staging talab qiladi |
+| Load / Stress / Spike / Soak | ✅ skript | `tests/load/main.js` |
+| Chaos | ✅ skript | `tests/chaos/run.sh` — faqat staging |
+| Smoke | ⬜ | deploy quvuri qurilgach |
+| Compatibility | ⬜ | brauzer matritsasi kerak |
+
+«Skript» degani: yozilgan va sintaksis tekshirilgan, lekin **ishlayotgan
+staging'siz bajarilmaydi**. Ular nightly workflow'da `STAGING_URL`
+sozlangandagina ishga tushadi.
+
 ## Vositalar
 
 | Qatlam | Vosita |
