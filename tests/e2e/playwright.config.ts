@@ -4,9 +4,8 @@ import { defineConfig, devices } from "@playwright/test";
  * E2E — test-strategy.md § 4.
  *
  * Bu testlar ISHLAYOTGAN stack'ni talab qiladi (API + web + judge).
- * CI da ular staging deploy'dan keyin ishlaydi, PR da emas: judge
- * konteyneri privileged rejim talab qiladi va uni har PR da ko'tarish
- * qimmat.
+ * CI da compose stack'iga qarshi ishlaydi (`docker-compose.ci.yml`),
+ * staging kutilmaydi.
  */
 export default defineConfig({
   testDir: "./specs",
@@ -20,5 +19,12 @@ export default defineConfig({
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
   },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  // Brauzer matritsasi — test-strategy § 15 compatibility.
+  // Mobil viewport alohida: SSR jadvallari tor ekranda sinadi.
+  projects: [
+    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
+    { name: "firefox", use: { ...devices["Desktop Firefox"] } },
+    { name: "webkit", use: { ...devices["Desktop Safari"] } },
+    { name: "mobile", use: { ...devices["Pixel 7"] } },
+  ],
 });

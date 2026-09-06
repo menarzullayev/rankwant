@@ -267,20 +267,26 @@ Har birida tekshiriladi: ma'lumot yo'qolmadimi, foydalanuvchi tushunarli xato ko
 | ------ | ----- | ---- |
 | Unit (formulalar, ledger, verdict) | ✅ | `apps/api/tests/`, `services/judge-py/test_judge.py` |
 | Integration (submit → verdict → reyting) | ✅ | `apps/api/tests/test_judging.py` |
-| Functional (API shartnomasi) | ✅ | `apps/api/tests/` — 183 test |
+| Functional (API shartnomasi) | ✅ | `apps/api/tests/` — 185 test |
 | Regression (golden set) | ✅ | `services/bakeoff/cases/` — 14 case |
 | Security — sandbox escape | ✅ | `services/bakeoff` izolyatsiya case'lari + `tests/security/run.sh` |
 | Security — ilova (IDOR, PAT scope, rate limit) | ✅ | testlar + `tests/security/run.sh` |
-| E2E | ✅ skript | `tests/e2e/` — staging talab qiladi |
+| E2E | ✅ | `tests/e2e/` — CI da compose stack'iga qarshi |
 | Load / Stress / Spike / Soak | ✅ skript | `tests/load/main.js` |
 | Chaos | ✅ skript | `tests/chaos/run.sh` — faqat staging |
 | Smoke | ✅ | `tests/smoke/` — CI da to'liq compose stack |
 | Compatibility — til matritsasi | ✅ | `tests/compatibility/` — nightly |
-| Compatibility — brauzer | ⬜ | brauzer matritsasi kerak |
+| Compatibility — brauzer | ✅ | Chromium · Firefox · WebKit · mobil — nightly |
 
 «Skript» degani: yozilgan va sintaksis tekshirilgan, lekin **ishlayotgan
 staging'siz bajarilmaydi**. Ular nightly workflow'da `STAGING_URL`
 sozlangandagina ishga tushadi.
+
+E2E avval shu toifada edi. Uni compose stack'iga qarshi haqiqatan ishga
+tushirgach uchta nosozlik chiqdi: `package-lock.json` commit qilinmagan
+(ya'ni `npm ci` ishlamas edi), sarlavha regex'ida `+` ekranlanmagan, va
+sessiya bilan POST qilishda CSRF sarlavhasi yuborilmagan. Yozilgan, lekin
+hech qachon bajarilmagan test — bajarilgan test emas.
 
 ## Vositalar
 

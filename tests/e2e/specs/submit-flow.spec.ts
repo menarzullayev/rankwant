@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import type { APIRequestContext } from "@playwright/test";
 
 /**
  * Oqim A (test-strategy § 4): ro'yxatdan o'tish → submit → AC →
@@ -9,6 +10,17 @@ import { expect, test } from "@playwright/test";
  */
 
 const API = process.env.E2E_API_BASE ?? "http://localhost:8000/api/v1";
+
+/**
+ * Sessiya cookie bilan yuborilgan POST da DRF CSRF token talab qiladi
+ * (ADR-0008: birinchi tomon web uchun cookie). Brauzerdagi mijoz ham
+ * xuddi shuni qiladi, shuning uchun test ham shunday qilishi kerak.
+ */
+async function csrf(request: APIRequestContext): Promise<Record<string, string>> {
+  const state = await request.storageState();
+  const token = state.cookies.find((c) => c.name === "csrftoken")?.value;
+  return token ? { "X-CSRFToken": token, Referer: API } : {};
+}
 
 test("birinchi AC Skills reytingini oshiradi", async ({ request }) => {
   const username = `e2e_${Date.now()}`;
@@ -33,6 +45,7 @@ test("birinchi AC Skills reytingini oshiradi", async ({ request }) => {
   test.skip(languages.count === 0, "til sozlanmagan");
 
   const submit = await request.post(`${API}/attempts/`, {
+    headers: await csrf(request),
     data: {
       problem: problem.slug,
       language: languages.results[0].code,
@@ -53,6 +66,7 @@ test("read scope'li token submit qila olmaydi", async ({ request }) => {
 
   const expires = new Date(Date.now() + 86_400_000).toISOString();
   const created = await request.post(`${API}/me/tokens/`, {
+    headers: await csrf(request),
     data: { name: "e2e", scopes: ["read"], expires_at: expires },
   });
   expect(created.status()).toBe(201);

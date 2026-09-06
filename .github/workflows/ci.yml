@@ -203,7 +203,7 @@ jobs:
           }
 
   smoke:
-    name: Smoke — to'liq stack
+    name: Smoke va E2E — to'liq stack
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -216,6 +216,13 @@ jobs:
         # judge'ni BIRGA ishlatadigan yagona joy — ular alohida sinalganda
         # ikkita shartnoma nomuvofiqligi ko'rinmay qolgan edi.
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm smoke
+      - name: E2E (faqat chromium — to'liq matritsa nightly da)
+        run: |
+          docker run --rm --network rankwant_default \
+            -v "$PWD/tests/e2e:/e2e" -w /e2e \
+            -e E2E_BASE_URL=http://web:3000 -e E2E_API_BASE=http://api:8000/api/v1 -e CI=1 \
+            mcr.microsoft.com/playwright:v1.63.0-noble \
+            sh -c 'npm ci --silent && npx playwright test --project=chromium --reporter=list'
       - name: Loglar (yiqilganda)
         if: failure()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs --tail 60

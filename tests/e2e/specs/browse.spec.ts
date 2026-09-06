@@ -21,7 +21,10 @@ test("masala sahifasida o'z metadata si bor", async ({ page }) => {
   const first = page.locator("tbody tr a").first();
   const title = await first.textContent();
   await first.click();
-  await expect(page).toHaveTitle(new RegExp(title!.trim()));
+  // Sarlavhada `+` bo'lishi mumkin ("A + B") — ekranlashsiz u regex
+  // kvantifikatoriga aylanadi va hech qachon mos kelmaydi.
+  const escaped = title!.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  await expect(page).toHaveTitle(new RegExp(escaped));
 });
 
 test("reyting formulalari ochiq", async ({ page }) => {
