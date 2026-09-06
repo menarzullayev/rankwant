@@ -9,6 +9,7 @@ router.register("me/tokens", views.ApiTokenViewSet, basename="apitoken")
 
 urlpatterns = [
     path("health/", views.HealthView.as_view(), name="health"),
+    path("stats/", views.PlatformStatsView.as_view(), name="platform-stats"),
     path("auth/register/", views.RegisterView.as_view(), name="register"),
     path("auth/login/", views.LoginView.as_view(), name="login"),
     path("auth/logout/", views.LogoutView.as_view(), name="logout"),

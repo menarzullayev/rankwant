@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { Badge } from "@/components/ui/Badge";
+
 export const metadata: Metadata = {
   title: "Reyting qanday hisoblanadi",
   description:
@@ -26,22 +28,16 @@ function Section({
 }) {
   return (
     <section
-      className="rounded-lg border p-5"
-      style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+      className="rounded-2xl border border-gray-200 bg-white shadow-theme-xs
+        dark:border-[#232936] dark:bg-[#141821]"
     >
-      <h2 className="flex items-center gap-3 font-medium">
-        {title}
-        <span
-          className="rounded px-2 py-0.5 text-xs"
-          style={{
-            background: active ? "var(--accent)" : "var(--border)",
-            color: active ? "#06101f" : "var(--muted)",
-          }}
-        >
-          {phase}
-        </span>
-      </h2>
-      <div className="mt-3 space-y-2 text-sm" style={{ color: "var(--muted)" }}>
+      <div className="flex items-center justify-between gap-3 border-b border-gray-100 px-5 py-4 dark:border-[#232936]">
+        <h2 className="text-theme-xl font-semibold text-gray-800 dark:text-white/90">
+          {title}
+        </h2>
+        <Badge color={active ? "brand" : "neutral"}>{phase}</Badge>
+      </div>
+      <div className="space-y-2 px-5 py-4 text-theme-sm text-gray-500 dark:text-gray-400">
         {children}
       </div>
     </section>
@@ -63,8 +59,10 @@ export default function RatingPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold">Reyting qanday hisoblanadi</h1>
-        <p className="mt-2 text-sm" style={{ color: "var(--muted)" }}>
+        <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
+          Reyting qanday hisoblanadi
+        </h1>
+        <p className="mt-2 max-w-3xl text-theme-sm text-gray-500 dark:text-gray-400">
           Barcha formulalar ochiq. Yashirin og&apos;irlik yoki e&apos;lon
           qilinmagan bonus yo&apos;q. Har bir o&apos;zgarish sababi bilan
           profilingizda yozib boriladi.

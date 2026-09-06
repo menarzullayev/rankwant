@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
 import { StandingsTable } from "@/components/StandingsTable";
+import { Badge } from "@/components/ui/Badge";
+import { Card } from "@/components/ui/Card";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -36,30 +38,50 @@ export default async function ContestPage({ params }: Props) {
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold">{contest.title}</h1>
-      <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
-        {new Date(contest.start_at).toLocaleString(locale)} —{" "}
-        {new Date(contest.end_at).toLocaleString(locale)}
-        {contest.is_rated && ` · ${t(locale, "contests.rated")}`}
-      </p>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
+          {contest.title}
+        </h1>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <Badge color={contest.is_running ? "success" : contest.is_finished ? "neutral" : "info"}>
+            {t(
+              locale,
+              contest.is_running
+                ? "contests.running"
+                : contest.is_finished
+                  ? "contests.finished"
+                  : "contests.upcoming",
+            )}
+          </Badge>
+          {contest.is_rated && <Badge color="brand">{t(locale, "contests.rated")}</Badge>}
+          <span className="text-theme-xs text-gray-500 dark:text-gray-400">
+            {new Date(contest.start_at).toLocaleString(locale)} —{" "}
+            {new Date(contest.end_at).toLocaleString(locale)}
+          </span>
+        </div>
+      </div>
 
       {contest.is_finished && (
-        <p className="mt-3 text-sm" style={{ color: "var(--muted)" }}>
-          Musobaqa tugagan — uni <strong>virtual</strong> tarzda o&apos;z
-          vaqtingizda yechishingiz mumkin. Virtual natija reytingga
-          ta&apos;sir qilmaydi va rasmiy jadvalga kirmaydi.
-        </p>
+        <div
+          className="rounded-2xl border border-gray-200 bg-white p-5 text-theme-sm text-gray-500
+            dark:border-[#232936] dark:bg-[#141821] dark:text-gray-400"
+        >
+          Musobaqa tugagan — uni <strong>virtual</strong> tarzda o&apos;z vaqtingizda
+          yechishingiz mumkin. Virtual natija reytingga ta&apos;sir qilmaydi va rasmiy
+          jadvalga kirmaydi.
+        </div>
       )}
 
-      <h2 className="mt-8 mb-3 text-lg font-medium">{t(locale, "standings.title")}</h2>
-      {/* Contest ketayotgan bo'lsa SSE bilan jonli, aks holda statik */}
-      <StandingsTable
-        slug={slug}
-        initial={standings}
-        live={contest.is_running}
-        locale={locale}
-      />
+      <Card title={t(locale, "standings.title")} bodyClassName="p-0">
+        {/* Contest ketayotgan bo'lsa SSE bilan jonli, aks holda statik */}
+        <StandingsTable
+          slug={slug}
+          initial={standings}
+          live={contest.is_running}
+          locale={locale}
+        />
+      </Card>
     </div>
   );
 }

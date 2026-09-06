@@ -35,28 +35,28 @@ Maqsad: [ADR-0004](../07-adr/0004-judge-engine.md) ni `proposed` → `accepted`.
 **Nomzodlar:** A — Go worker + nsjail (Apache-2.0) · B — Python worker + isolate (GPL-2.0+)
 Ikkalasi ham `JudgeProvider` interfeysi va **pull** protokoli ortida.
 
-| Sinov                | Nimani tekshiradi                         |
-| -------------------- | ----------------------------------------- |
-| Oddiy A+B            | Bazaviy oqim, start latency               |
-| Og'ir sikl (TLE)     | CPU vs wall time o'lchash aniqligi        |
-| Katta massiv (MLE)   | Peak memory o'lchash aniqligi             |
-| Fork bomb            | Process limiti ushlaydimi                 |
-| Fayl / tarmoq / `/proc` urinishi | Izolyatsiya haqiqatan ishlaydimi |
-| Interactive masala   | Ikki tomonlama I/O qo'llab-quvvatlanadimi |
-| 100 test × 50 submit | Parallel yuklamada barqarorlik            |
+| Sinov                            | Nimani tekshiradi                         |
+| -------------------------------- | ----------------------------------------- |
+| Oddiy A+B                        | Bazaviy oqim, start latency               |
+| Og'ir sikl (TLE)                 | CPU vs wall time o'lchash aniqligi        |
+| Katta massiv (MLE)               | Peak memory o'lchash aniqligi             |
+| Fork bomb                        | Process limiti ushlaydimi                 |
+| Fayl / tarmoq / `/proc` urinishi | Izolyatsiya haqiqatan ishlaydimi          |
+| Interactive masala               | Ikki tomonlama I/O qo'llab-quvvatlanadimi |
+| 100 test × 50 submit             | Parallel yuklamada barqarorlik            |
 
 **O'tish sharti:** NFR byudjeti — **p50 < 5s, p95 < 15s**; izolyatsiya sinovlarining **hammasi** o'tishi shart.
 To'liq mezonlar: [ADR-0004 § Baholash mezonlari](../07-adr/0004-judge-engine.md).
 
 ## Sprint 1–4 — MVP (Phase 0)
 
-| Sprint | Ish                                                            | PRD          | Holat |
-| ------ | -------------------------------------------------------------- | ------------ | ----- |
-| **1**  | Repo scaffold, CI (mypy strict + lint + test), Auth, `ApiToken` | P0-1         | ✅ |
-| **2**  | Problem bank + Django admin; i18n poydevori                    | P0-2, P0-7   | ✅ |
-| **2a** | Test ma'lumoti S3 da (judge o'qiydi) — masala tuzuvchi uchun yuklash UI hali yo'q | P0-2 | ⚠️ qisman |
-| **3**  | Judge integratsiya (`JudgeProvider`), Attempt + 20 verdict, custom test | P0-3, P0-4 | ✅ |
-| **4**  | Contest ACM + standings (SSE), profil + Skills/Contests reyting, Next.js UI | P0-5, P0-6 | ✅ |
+| Sprint | Ish                                                                               | PRD        | Holat     |
+| ------ | --------------------------------------------------------------------------------- | ---------- | --------- |
+| **1**  | Repo scaffold, CI (mypy strict + lint + test), Auth, `ApiToken`                   | P0-1       | ✅        |
+| **2**  | Problem bank + Django admin; i18n poydevori                                       | P0-2, P0-7 | ✅        |
+| **2a** | Test ma'lumoti S3 da (judge o'qiydi) — masala tuzuvchi uchun yuklash UI hali yo'q | P0-2       | ⚠️ qisman |
+| **3**  | Judge integratsiya (`JudgeProvider`), Attempt + 20 verdict, custom test           | P0-3, P0-4 | ✅        |
+| **4**  | Contest ACM + standings (SSE), profil + Skills/Contests reyting, Next.js UI       | P0-5, P0-6 | ✅        |
 
 **Phase 0 (P0-1 … P0-7) to'liq bajarildi.** Phase 1 dan: Qvant va Activity (Sprint 5).
 
@@ -77,17 +77,17 @@ MVP **dasturlash tillari** (judge): C++, Python, Java. UI tillari alohida — 04
 
 ## Sprint 5–8 — Phase 1
 
-| Ish | PRD | Holat |
-| --- | --- | ----- |
-| **Qvant** — wallet + ledger + kunlik quest + streak yutuqlari | P1-5 | ✅ |
-| **Streak** + streak yutuqlari (7/30/365) | P1-6 | ✅ |
-| **Activity reyting** yoqildi (UI da ko'rinadi) | P1-7 | ✅ |
-| **Qvant do'kon** (minimal, 6 kosmetik narsa) | P1-8 | ✅ |
-| **Virtual contest** — tugagan musobaqani o'z vaqtida yechish | P1-1 | ✅ |
-| **Masala tavsiyasi** — darajaga mos, yechilmaganlar | P1-2 | ✅ |
-| **Blog / yangiliklar** + e'lon bildirishnomasi | P1-3 | ✅ |
-| **Bildirishnomalar** — ADR-0007 majburiyati ham shu bilan yopildi | P1-4 | ✅ |
-| **Haftalik marafon** — determinlashgan 10 masala | P1-9 | ✅ |
+| Ish                                                               | PRD  | Holat |
+| ----------------------------------------------------------------- | ---- | ----- |
+| **Qvant** — wallet + ledger + kunlik quest + streak yutuqlari     | P1-5 | ✅    |
+| **Streak** + streak yutuqlari (7/30/365)                          | P1-6 | ✅    |
+| **Activity reyting** yoqildi (UI da ko'rinadi)                    | P1-7 | ✅    |
+| **Qvant do'kon** (minimal, 6 kosmetik narsa)                      | P1-8 | ✅    |
+| **Virtual contest** — tugagan musobaqani o'z vaqtida yechish      | P1-1 | ✅    |
+| **Masala tavsiyasi** — darajaga mos, yechilmaganlar               | P1-2 | ✅    |
+| **Blog / yangiliklar** + e'lon bildirishnomasi                    | P1-3 | ✅    |
+| **Bildirishnomalar** — ADR-0007 majburiyati ham shu bilan yopildi | P1-4 | ✅    |
+| **Haftalik marafon** — determinlashgan 10 masala                  | P1-9 | ✅    |
 
 **Phase 1 to'liq bajarildi (P1-1 … P1-9).**
 
@@ -97,14 +97,14 @@ Ledger auditi: kesh va tranzaksiya yig'indisi har doim mos
 
 ## Sprint 9+ — Phase 2
 
-| Ish | PRD | Holat |
-| --- | --- | ----- |
-| **Mirror contest** — masalalar ko'chiriladi, reytingsiz | P2-1 | ✅ |
-| **O'qituvchi sinfi** — sinf, a'zolik, uy vazifasi, progress | P2-2 | ✅ |
-| **O'z o'qish kontenti** — maqola ↔ masala ↔ roadmap ([ADR-0005](../07-adr/0005-content-strategy-own-content.md)) | P2-5 | ✅ |
-| Obuna (Free/Plus/Pro) | P2-3 | ⛔ **narx ADR'i kerak** |
-| Qvant do'kon kengaytirish (mavsumiy) | P2-4 | ⬜ |
-| MCQ quiz | P2-6 | ⬜ |
+| Ish                                                                                                              | PRD  | Holat                   |
+| ---------------------------------------------------------------------------------------------------------------- | ---- | ----------------------- |
+| **Mirror contest** — masalalar ko'chiriladi, reytingsiz                                                          | P2-1 | ✅                      |
+| **O'qituvchi sinfi** — sinf, a'zolik, uy vazifasi, progress                                                      | P2-2 | ✅                      |
+| **O'z o'qish kontenti** — maqola ↔ masala ↔ roadmap ([ADR-0005](../07-adr/0005-content-strategy-own-content.md)) | P2-5 | ✅                      |
+| Obuna (Free/Plus/Pro)                                                                                            | P2-3 | ⛔ **narx ADR'i kerak** |
+| Qvant do'kon kengaytirish (mavsumiy)                                                                             | P2-4 | ⬜                      |
+| MCQ quiz                                                                                                         | P2-6 | ⬜                      |
 
 `P2-3` bloklangan: narx modeli mahsulot qarori, texnik ish emas.
 
@@ -124,11 +124,11 @@ Har PR uchun:
 
 [03 § Bozor hajmi](../03-market-research/README.md) dan; North Star — **haftalik faol yechuvchi**:
 
-| Bosqich          | Ro'yxatdan o'tgan | North Star  |
-| ---------------- | ----------------- | ----------- |
-| MVP launch + 3 oy | ~1k              | ~100        |
-| Yil 1            | ~5k               | ~300–500    |
-| Yil 2            | ~12k              | ~700–1 200  |
+| Bosqich           | Ro'yxatdan o'tgan | North Star |
+| ----------------- | ----------------- | ---------- |
+| MVP launch + 3 oy | ~1k               | ~100       |
+| Yil 1             | ~5k               | ~300–500   |
+| Yil 2             | ~12k              | ~700–1 200 |
 
 ## Jamoa
 
@@ -157,14 +157,20 @@ O'zgartirish = yangi ADR (`docs/07-adr/`). Sprint ichidagi vazifa taqsimoti bu h
 
 - 2026-09-06 — domen/handle ro'yxatdan o'tkazish **shoshilinch emas** deb belgilandi (nomlar uzoq vaqt bo'sh; talab past). `03-market-research/brand-discovery.md` dagi «tez ro'yxatdan o'tkazish» tavsiyasi tadqiqot vaqtidagi baho edi — bajarilish muddati shu yerda belgilanadi.
 
+## Frontend — TailAdmin migratsiya
+
+**Task (Claude Code):** [../tasks/TASK-tailadmin-frontend.md](../tasks/TASK-tailadmin-frontend.md)
+
+Manba: [TailAdmin free Next.js](https://github.com/TailAdmin/free-nextjs-admin-dashboard) (MIT). Shell + mavjud sahifalar; Monaco/submit keyingi task.
+
 ## Xavf
 
-| Xavf                        | Mitigatsiya                                                              |
-| --------------------------- | ------------------------------------------------------------------------ |
-| **Sandbox escape**          | Judge host izolyatsiyasi (pull, port yo'q, DB creds yo'q) + tashqi audit  |
-| Judge murakkabligi          | Sprint 0.5 bake-off; sandbox primitivi tayyor olinadi                    |
-| **0 user cold start**       | Maktab B2B pilot va mirror olimpiada — network effekt kutmaydi           |
+| Xavf                        | Mitigatsiya                                                                         |
+| --------------------------- | ----------------------------------------------------------------------------------- |
+| **Sandbox escape**          | Judge host izolyatsiyasi (pull, port yo'q, DB creds yo'q) + tashqi audit            |
+| Judge murakkabligi          | Sprint 0.5 bake-off; sandbox primitivi tayyor olinadi                               |
+| **0 user cold start**       | Maktab B2B pilot va mirror olimpiada — network effekt kutmaydi                      |
 | RoboContest network effekti | Tor SAM: o'zbek kontent + OJ bir joyda ([03](../03-market-research/positioning.md)) |
-| Narx modeli yo'q            | Phase 2 gacha kerak emas; alohida ADR                                    |
-| Scope creep                 | PRD fazalari 🔒; o'zgartirish = ADR                                       |
-| Ikki til (Py + TS)          | Qabul qilingan narx; chegara REST/OpenAPI                                |
+| Narx modeli yo'q            | Phase 2 gacha kerak emas; alohida ADR                                               |
+| Scope creep                 | PRD fazalari 🔒; o'zgartirish = ADR                                                 |
+| Ikki til (Py + TS)          | Qabul qilingan narx; chegara REST/OpenAPI                                           |

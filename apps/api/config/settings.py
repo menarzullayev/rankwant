@@ -143,6 +143,15 @@ CORS_ALLOWED_ORIGINS = [
 ]
 CORS_ALLOW_CREDENTIALS = True
 
+# Frontend API dan BOSHQA origin'da (dev: boshqa port, prod: boshqa
+# subdomen). Django 4+ sessiya bilan yuborilgan POST da `Origin` ni shu
+# ro'yxat bilan solishtiradi, ya'ni usiz brauzerdagi har bir
+# autentifikatsiyalangan so'rov «CSRF Failed: Origin checking failed»
+# bo'lardi. Standart — CORS ro'yxati bilan bir xil.
+CSRF_TRUSTED_ORIGINS = [
+    o for o in env("CSRF_TRUSTED_ORIGINS", ",".join(CORS_ALLOWED_ORIGINS)).split(",") if o
+]
+
 # ── DRF ──────────────────────────────────────────────────────────────
 REST_FRAMEWORK = {
     # PAT BIRINCHI: DRF `WWW-Authenticate` sarlavhasini birinchi

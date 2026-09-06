@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Markdown } from "@/components/Markdown";
+import { Badge, DifficultyBadge } from "@/components/ui/Badge";
+import { Card } from "@/components/ui/Card";
 import { notFound } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
@@ -39,18 +41,31 @@ export default async function ProblemPage({ params }: Props) {
   }
 
   return (
-    <article>
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold">{problem.title}</h1>
-        <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
-          <span className={`level-${problem.level}`}>{problem.level_label}</span>
-          {" · "}
-          {t(locale, "problems.limits")}: {problem.time_limit_ms} ms,{" "}
-          {Math.round(problem.memory_limit_kb / 1024)} MB
-          {problem.topics.length > 0 && ` · ${problem.topics.join(", ")}`}
-        </p>
+    <article className="space-y-6">
+      <header>
+        <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
+          {problem.title}
+        </h1>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <DifficultyBadge value={problem.difficulty} />
+          <span className={`level-${problem.level} text-theme-sm font-medium`}>
+            {problem.level_label}
+          </span>
+          <Badge>
+            {t(locale, "problems.limits")}: {problem.time_limit_ms} ms,{" "}
+            {Math.round(problem.memory_limit_kb / 1024)} MB
+          </Badge>
+          {problem.topics.map((topic) => (
+            <Badge key={topic} color="info">
+              {topic}
+            </Badge>
+          ))}
+        </div>
       </header>
-      <Markdown>{problem.statement}</Markdown>
+
+      <Card>
+        <Markdown>{problem.statement}</Markdown>
+      </Card>
     </article>
   );
 }

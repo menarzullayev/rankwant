@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import "./globals.css";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import AppShell from "@/layout/AppShell";
+import { DEFAULT_LOCALE } from "@/i18n/messages";
 
 export const metadata: Metadata = {
   title: {
@@ -13,40 +13,20 @@ export const metadata: Metadata = {
     "musobaqa va ochiq reyting.",
 };
 
-const NAV = [
-  { href: "/problems", key: "nav.problems" },
-  { href: "/learn", key: "nav.learn" },
-  { href: "/contests", key: "nav.contests" },
-  { href: "/leaderboard", key: "nav.leaderboard" },
-  { href: "/qvant", key: "nav.qvant" },
-  { href: "/blog", key: "nav.blog" },
-  { href: "/notifications", key: "nav.notifications" },
-  { href: "/rating", key: "nav.ratingInfo" },
-] as const;
+/** Tema klassini hidratsiyadan OLDIN qo'yadi — aks holda qorong'u
+ *  sozlamadagi foydalanuvchi har yuklanishda oq chaqnash ko'radi. */
+const THEME_INIT = `try{var t=localStorage.getItem("theme");
+if(t!=="light")document.documentElement.classList.add("dark")}catch(e){
+document.documentElement.classList.add("dark")}`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const locale = DEFAULT_LOCALE;
   return (
-    <html lang={locale}>
+    <html lang={DEFAULT_LOCALE} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
+      </head>
       <body>
-        <header className="border-b" style={{ borderColor: "var(--border)" }}>
-          <nav className="mx-auto flex max-w-5xl items-center gap-6 px-4 py-4">
-            <Link href="/" className="text-lg font-bold">
-              Rank<span style={{ color: "var(--accent)" }}>Want</span>
-            </Link>
-            {NAV.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="text-sm hover:underline"
-                style={{ color: "var(--muted)" }}
-              >
-                {t(locale, item.key)}
-              </Link>
-            ))}
-          </nav>
-        </header>
-        <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );

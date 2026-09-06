@@ -1,6 +1,101 @@
 @import "tailwindcss";
 
+/* TailAdmin (MIT) dizayn tokenlari — apps/web/README.md ga qarang.
+   Brend ranglari RankWant niki: brand-* palitrasi accent #5b8cff atrofida. */
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --breakpoint-2xsm: 375px;
+  --breakpoint-xsm: 425px;
+  --breakpoint-3xl: 2000px;
+
+  --text-title-md: 36px;
+  --text-title-md--line-height: 44px;
+  --text-title-sm: 30px;
+  --text-title-sm--line-height: 38px;
+  --text-theme-xl: 20px;
+  --text-theme-xl--line-height: 30px;
+  --text-theme-sm: 14px;
+  --text-theme-sm--line-height: 20px;
+  --text-theme-xs: 12px;
+  --text-theme-xs--line-height: 18px;
+
+  /* Brend — TailAdmin ko'ki emas, RankWant accent #5b8cff */
+  --color-brand-25: #f4f7ff;
+  --color-brand-50: #eef3ff;
+  --color-brand-100: #dde7ff;
+  --color-brand-200: #c3d4ff;
+  --color-brand-300: #9dbaff;
+  --color-brand-400: #7ba3ff;
+  --color-brand-500: #5b8cff;
+  --color-brand-600: #4470e6;
+  --color-brand-700: #3357c4;
+  --color-brand-800: #2a459c;
+  --color-brand-900: #24397c;
+  --color-brand-950: #16224d;
+
+  --color-gray-25: #fcfcfd;
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f2f4f7;
+  --color-gray-200: #e4e7ec;
+  --color-gray-300: #d0d5dd;
+  --color-gray-400: #98a2b3;
+  --color-gray-500: #667085;
+  --color-gray-600: #475467;
+  --color-gray-700: #344054;
+  --color-gray-800: #1d2939;
+  --color-gray-900: #101828;
+  --color-gray-950: #0c111d;
+  /* Qorong'u rejim sirtlari — mavjud RankWant palitrasi */
+  --color-gray-dark: #141821;
+  --color-gray-darker: #0b0d12;
+
+  --color-success-50: #ecfdf3;
+  --color-success-400: #32d583;
+  --color-success-500: #12b76a;
+  --color-success-600: #039855;
+
+  --color-error-50: #fef3f2;
+  --color-error-400: #f97066;
+  --color-error-500: #f04438;
+  --color-error-600: #d92d20;
+
+  --color-warning-50: #fffaeb;
+  --color-warning-400: #fdb022;
+  --color-warning-500: #f79009;
+  --color-warning-600: #dc6803;
+
+  --color-blue-light-50: #f0f9ff;
+  --color-blue-light-400: #36bffa;
+  --color-blue-light-500: #0ba5ec;
+
+  --shadow-theme-xs: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+  --shadow-theme-sm: 0px 1px 3px 0px rgba(16, 24, 40, 0.1), 0px 1px 2px 0px rgba(16, 24, 40, 0.06);
+  --shadow-theme-md: 0px 4px 8px -2px rgba(16, 24, 40, 0.1), 0px 2px 4px -2px rgba(16, 24, 40, 0.06);
+  --shadow-theme-lg: 0px 12px 16px -4px rgba(16, 24, 40, 0.08), 0px 4px 6px -2px rgba(16, 24, 40, 0.03);
+  --shadow-focus-ring: 0px 0px 0px 4px rgba(91, 140, 255, 0.12);
+
+  --z-index-1: 1;
+  --z-index-9: 9;
+  --z-index-99: 99;
+  --z-index-999: 999;
+  --z-index-9999: 9999;
+  --z-index-99999: 99999;
+}
+
+/* Mavjud CSS o'zgaruvchilari — inline style bilan yozilgan sahifalar
+   hali ularga tayanadi, shuning uchun saqlanadi va tema bilan almashadi. */
 :root {
+  --bg: #f9fafb;
+  --surface: #ffffff;
+  --border: #e4e7ec;
+  --text: #101828;
+  --muted: #667085;
+  --accent: #4470e6;
+}
+
+.dark {
   --bg: #0b0d12;
   --surface: #141821;
   --border: #232936;
@@ -9,18 +104,78 @@
   --accent: #5b8cff;
 }
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+  .dark *,
+  .dark ::after,
+  .dark ::before,
+  .dark ::backdrop,
+  .dark ::file-selector-button {
+    border-color: #232936;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  body {
+    @apply relative z-1 bg-gray-50 text-gray-800 dark:bg-[#0b0d12] dark:text-gray-100;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+}
+
+/* Sidebar menyu holatlari — TailAdmin utility'lari */
+@utility menu-item {
+  @apply relative flex items-center w-full gap-3 px-3 py-2 font-medium rounded-lg text-theme-sm;
+}
+@utility menu-item-active {
+  @apply bg-brand-50 text-brand-600 dark:bg-brand-500/12 dark:text-brand-400;
+}
+@utility menu-item-inactive {
+  @apply text-gray-600 hover:bg-gray-100 hover:text-gray-800
+    dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-200;
+}
+@utility menu-item-icon-active {
+  @apply text-brand-600 dark:text-brand-400;
+}
+@utility menu-item-icon-inactive {
+  @apply text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300;
+}
+@utility no-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+@utility custom-scrollbar {
+  &::-webkit-scrollbar {
+    @apply size-1.5;
+  }
+  &::-webkit-scrollbar-track {
+    @apply rounded-full;
+  }
+  &::-webkit-scrollbar-thumb {
+    @apply bg-gray-200 rounded-full dark:bg-gray-700;
+  }
 }
 
 /* Qiyinlik darajalari — 04-prd § qiyinlik shkalasi ranglari */
-.level-beginner { color: #9aa4b8; }
-.level-intermediate { color: #4ade80; }
-.level-hard { color: #60a5fa; }
-.level-expert { color: #c084fc; }
-.level-master { color: #f87171; }
+.level-beginner { color: #667085; }
+.level-intermediate { color: #039855; }
+.level-hard { color: #2570eb; }
+.level-expert { color: #9a4bd8; }
+.level-master { color: #d92d20; }
+.dark .level-beginner { color: #9aa4b8; }
+.dark .level-intermediate { color: #4ade80; }
+.dark .level-hard { color: #60a5fa; }
+.dark .level-expert { color: #c084fc; }
+.dark .level-master { color: #f87171; }
 
 /* Markdown matni — masala, maqola, blog.
    Tailwind preflight sarlavha va ro'yxat uslublarini nolga tushiradi,

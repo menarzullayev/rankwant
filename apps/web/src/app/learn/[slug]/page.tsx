@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { Markdown } from "@/components/Markdown";
+import { Badge } from "@/components/ui/Badge";
+import { Card } from "@/components/ui/Card";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
@@ -33,34 +35,44 @@ export default async function ArticlePage({ params }: Props) {
   }
 
   return (
-    <article>
-      <h1 className="text-2xl font-bold">{article.title}</h1>
-      <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
-        {article.reading_minutes} {t(locale, "learn.minutes")}
-        {article.author && ` · ${article.author}`}
-        {article.topics.length > 0 && ` · ${article.topics.join(", ")}`}
-      </p>
+    <article className="mx-auto max-w-4xl space-y-6">
+      <header>
+        <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
+          {article.title}
+        </h1>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <Badge>
+            {article.reading_minutes} {t(locale, "learn.minutes")}
+          </Badge>
+          {article.author && <Badge color="brand">{article.author}</Badge>}
+          {article.topics.map((topic) => (
+            <Badge key={topic} color="info">
+              {topic}
+            </Badge>
+          ))}
+        </div>
+      </header>
 
-      <div className="mt-6">
+      <Card>
         <Markdown>{article.body}</Markdown>
-      </div>
+      </Card>
 
       {article.problems.length > 0 && (
-        <section className="mt-10">
-          <h2 className="mb-3 text-lg font-medium">{t(locale, "learn.practice")}</h2>
+        <Card title={t(locale, "learn.practice")}>
           <div className="flex flex-wrap gap-2">
             {article.problems.map((p) => (
               <Link
                 key={`${p.slug}-${p.role}`}
                 href={`/problems/${p.slug}`}
-                className="rounded border px-3 py-1 text-sm"
-                style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+                className="rounded-lg border border-gray-200 px-3 py-1.5 text-theme-sm
+                  text-gray-700 transition hover:border-brand-400
+                  dark:border-[#232936] dark:text-gray-200"
               >
                 {p.title}
               </Link>
             ))}
           </div>
-        </section>
+        </Card>
       )}
     </article>
   );

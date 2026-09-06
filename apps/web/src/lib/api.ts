@@ -95,6 +95,13 @@ export type SolvedProblem = {
   first_ac_at: string;
 };
 
+export type PlatformStats = {
+  users: number;
+  problems: number;
+  contests: number;
+  attempts: number;
+};
+
 export type Wallet = {
   balance: number;
   earned_today: number;
@@ -203,7 +210,54 @@ async function get<T>(path: string, revalidate = 30): Promise<T> {
   return (await res.json()) as T;
 }
 
+/**
+ * Brauzerdan yuboriladigan POST — auth uchun.
+ *
+ * `credentials: "include"` shart: sessiya cookie'si boshqa origin'da
+ * (API alohida portda), CORS esa `allow-credentials` qaytaradi (ADR-0008).
+ * Anonim login/register uchun DRF CSRF talab qilmaydi.
+ */
+export async function postJson<T>(path: string, body: unknown): Promise<T> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  };
+  // Sessiya bilan yuborilgan POST da DRF CSRF token talab qiladi. Anonim
+  // login/register da cookie hali yo'q — o'shanda sarlavha ham kerak emas.
+  const csrf = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/)?.[1];
+  if (csrf) headers["X-CSRFToken"] = decodeURIComponent(csrf);
+
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: "POST",
+    credentials: "include",
+    headers,
+    body: JSON.stringify(body),
+  });
+  const raw = await res.text();
+  const parsed = raw ? JSON.parse(raw) : null;
+  if (!res.ok) {
+    throw new ApiError(
+      res.status,
+      parsed?.error?.code ?? "error",
+      parsed?.error?.message ?? res.statusText,
+    );
+  }
+  return parsed as T;
+}
+
+/** Joriy sessiya — brauzerda. Kirmagan bo'lsa `null`. */
+export async function fetchMe(): Promise<UserPublic | null> {
+  const res = await fetch(`${API_BASE}/me/`, {
+    credentials: "include",
+    headers: { Accept: "application/json" },
+    cache: "no-store",
+  });
+  return res.ok ? ((await res.json()) as UserPublic) : null;
+}
+
 export const api = {
+  // Mehmon bosh sahifasi raqamlari — serverda 60 s keshlanadi.
+  stats: () => get<PlatformStats>("/stats/", 60),
   problems: (query = "") => get<Paginated<Problem>>(`/problems/${query}`),
   problem: (slug: string) => get<ProblemDetail>(`/problems/${slug}/`),
   contests: () => get<Paginated<Contest>>("/contests/"),

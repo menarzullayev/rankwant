@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import timedelta
 
 import pytest
+from django.core.cache import cache
 from django.urls import reverse
 from django.utils import timezone
 from rest_framework.test import APIClient
@@ -187,3 +188,21 @@ class TestDependencyErrors:
         r = exception_handler(OperationalError("down"), {})
         assert r is not None
         assert r.status_code == 503
+
+
+@pytest.mark.django_db
+class TestPlatformStats:
+    """Mehmon bosh sahifasi raqamlari — autentifikatsiyasiz ochiq."""
+
+    def test_stats_ochiq_va_toliq(self, user, problem, contest) -> None:
+        r = APIClient().get(reverse("platform-stats"))
+        assert r.status_code == 200
+        assert set(r.json()) == {"users", "problems", "contests", "attempts"}
+        assert r.json()["problems"] >= 1
+
+    def test_urinishlar_sanaladi(self, user, problem, language) -> None:
+        from judging.models import Attempt
+
+        cache.delete("platform-stats")
+        Attempt.objects.create(user=user, problem=problem, language=language, source_code="x")
+        assert APIClient().get(reverse("platform-stats")).json()["attempts"] == 1

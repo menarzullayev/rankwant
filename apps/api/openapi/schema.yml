@@ -1400,6 +1400,23 @@ paths:
               schema:
                 $ref: '#/components/schemas/RoadmapDetail'
           description: ''
+  /api/v1/stats/:
+    get:
+      operationId: stats_retrieve
+      description: |-
+        Mehmon bosh sahifasi uchun umumiy raqamlar.
+
+        Urinishlar soni boshqa hech qayerdan olinmaydi: `/attempts/` cursor
+        paginatsiyada ishlaydi va `count` qaytarmaydi. Katta jadvalda
+        `COUNT(*)` arzon emas, shuning uchun natija keshlanadi — landing
+        raqami bir daqiqa eskirsa hech narsa yo'qotilmaydi.
+      tags:
+      - stats
+      security:
+      - {}
+      responses:
+        '200':
+          description: Platforma statistikasi
   /api/v1/topics/:
     get:
       operationId: topics_list

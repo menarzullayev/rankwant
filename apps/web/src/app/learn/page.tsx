@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { api } from "@/lib/api";
+import { Badge } from "@/components/ui/Badge";
+import { ListCard } from "@/components/ui/ListCard";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
 
 export const metadata: Metadata = {
@@ -17,65 +19,68 @@ export default async function LearnPage() {
   const [articles, roadmaps] = await Promise.all([api.articles(), api.roadmaps()]);
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold">{t(locale, "learn.title")}</h1>
-        <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
-          Har bir maqola mashq masalalari bilan bog&apos;langan — o&apos;qish va
-          yechish bir joyda.
+        <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
+          {t(locale, "learn.title")}
+        </h1>
+        <p className="mt-2 max-w-2xl text-theme-sm text-gray-500 dark:text-gray-400">
+          Har bir maqola mashq masalalari bilan bog&apos;langan — o&apos;qish va yechish bir
+          joyda.
         </p>
       </header>
 
       {roadmaps.length > 0 && (
         <section>
-          <h2 className="mb-3 text-lg font-medium">{t(locale, "learn.roadmaps")}</h2>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <h2 className="mb-3 text-theme-xl font-semibold text-gray-800 dark:text-white/90">
+            {t(locale, "learn.roadmaps")}
+          </h2>
+          <ul className="grid gap-4 md:grid-cols-2">
             {roadmaps.map((r) => (
-              <div
-                key={r.slug}
-                className="rounded-lg border p-4"
-                style={{ borderColor: "var(--border)", background: "var(--surface)" }}
-              >
-                <p className="font-medium">{r.title}</p>
-                <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
-                  {r.description}
-                </p>
-                <p className="mt-2 text-xs" style={{ color: "var(--muted)" }}>
-                  {r.step_count} qadam
-                </p>
-              </div>
+              <li key={r.slug}>
+                <ListCard
+                  title={r.title}
+                  summary={r.description}
+                  meta={<Badge color="brand">{r.step_count} qadam</Badge>}
+                />
+              </li>
             ))}
-          </div>
+          </ul>
         </section>
       )}
 
       <section>
-        <h2 className="mb-3 text-lg font-medium">{t(locale, "learn.articles")}</h2>
-        <ul className="space-y-3">
+        <h2 className="mb-3 text-theme-xl font-semibold text-gray-800 dark:text-white/90">
+          {t(locale, "learn.articles")}
+        </h2>
+        <ul className="grid gap-4 md:grid-cols-2">
           {articles.results.map((a) => (
-            <li
-              key={a.slug}
-              className="rounded-lg border p-4"
-              style={{ borderColor: "var(--border)", background: "var(--surface)" }}
-            >
-              <Link href={`/learn/${a.slug}`} className="font-medium hover:underline">
-                {a.title}
-              </Link>
-              {a.summary && (
-                <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
-                  {a.summary}
-                </p>
-              )}
-              <p className="mt-2 text-xs" style={{ color: "var(--muted)" }}>
-                {a.reading_minutes} {t(locale, "learn.minutes")}
-                {a.problem_count > 0 && ` · ${a.problem_count} masala`}
-                {a.topics.length > 0 && ` · ${a.topics.join(", ")}`}
-              </p>
+            <li key={a.slug}>
+              <ListCard
+                href={`/learn/${a.slug}`}
+                title={a.title}
+                summary={a.summary}
+                meta={
+                  <>
+                    <Badge>
+                      {a.reading_minutes} {t(locale, "learn.minutes")}
+                    </Badge>
+                    {a.problem_count > 0 && (
+                      <Badge color="success">{a.problem_count} masala</Badge>
+                    )}
+                    {a.topics.map((topic) => (
+                      <Badge key={topic} color="info">
+                        {topic}
+                      </Badge>
+                    ))}
+                  </>
+                }
+              />
             </li>
           ))}
         </ul>
         {articles.count === 0 && (
-          <p style={{ color: "var(--muted)" }}>{t(locale, "empty")}</p>
+          <p className="text-theme-sm text-gray-400">{t(locale, "empty")}</p>
         )}
       </section>
     </div>

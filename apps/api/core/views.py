@@ -9,6 +9,7 @@ import redis
 from django.conf import settings
 from django.contrib.auth import authenticate as django_authenticate
 from django.contrib.auth import login, logout
+from django.core.cache import cache
 from django.db import connection
 from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404
@@ -20,6 +21,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from contests.models import Contest
 from core.models import ApiToken, User
 from core.pagination import StandardPagination, TimeCursorPagination
 from core.serializers import (
@@ -30,6 +32,8 @@ from core.serializers import (
     RegisterSerializer,
     UserPublicSerializer,
 )
+from judging.models import Attempt
+from problems.models import Problem
 
 MAX_TOKEN_LIFETIME = timedelta(days=365)
 
@@ -79,6 +83,33 @@ def _check_redis() -> str:
     except Exception as exc:
         return type(exc).__name__
     return "ok"
+
+
+class PlatformStatsView(APIView):
+    """Mehmon bosh sahifasi uchun umumiy raqamlar.
+
+    Urinishlar soni boshqa hech qayerdan olinmaydi: `/attempts/` cursor
+    paginatsiyada ishlaydi va `count` qaytarmaydi. Katta jadvalda
+    `COUNT(*)` arzon emas, shuning uchun natija keshlanadi — landing
+    raqami bir daqiqa eskirsa hech narsa yo'qotilmaydi.
+    """
+
+    permission_classes = [AllowAny]
+    authentication_classes: list[Any] = []
+    CACHE_S = 60
+
+    @extend_schema(responses={200: OpenApiResponse(description="Platforma statistikasi")})
+    def get(self, request: Request) -> Response:
+        stats = cache.get("platform-stats")
+        if stats is None:
+            stats = {
+                "users": User.objects.filter(is_active=True).count(),
+                "problems": Problem.objects.filter(is_public=True).count(),
+                "contests": Contest.objects.filter(is_public=True).count(),
+                "attempts": Attempt.objects.count(),
+            }
+            cache.set("platform-stats", stats, self.CACHE_S)
+        return Response(stats)
 
 
 class RegisterView(generics.CreateAPIView[User]):

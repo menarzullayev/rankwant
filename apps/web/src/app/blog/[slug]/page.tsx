@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Markdown } from "@/components/Markdown";
+import { Card } from "@/components/ui/Card";
 import { notFound } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
 import { DEFAULT_LOCALE } from "@/i18n/messages";
@@ -29,15 +30,19 @@ export default async function PostPage({ params }: Props) {
   }
 
   return (
-    <article>
-      <h1 className="text-2xl font-bold">{post.title}</h1>
-      <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
-        {new Date(post.published_at).toLocaleDateString(DEFAULT_LOCALE)}
-        {post.author && ` · ${post.author}`}
-      </p>
-      <div className="mt-6">
+    <article className="mx-auto max-w-4xl space-y-6">
+      <header>
+        <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
+          {post.title}
+        </h1>
+        <p className="mt-2 text-theme-sm text-gray-500 dark:text-gray-400">
+          {new Date(post.published_at).toLocaleDateString(DEFAULT_LOCALE)}
+          {post.author && ` · ${post.author}`}
+        </p>
+      </header>
+      <Card>
         <Markdown>{post.body}</Markdown>
-      </div>
+      </Card>
     </article>
   );
 }

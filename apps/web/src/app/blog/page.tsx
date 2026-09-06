@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { api } from "@/lib/api";
+import { Badge } from "@/components/ui/Badge";
+import { ListCard } from "@/components/ui/ListCard";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
 
 export const metadata: Metadata = { title: "Yangiliklar" };
@@ -11,31 +13,28 @@ export default async function BlogPage() {
   const data = await api.posts();
 
   return (
-    <div>
-      <h1 className="mb-6 text-2xl font-bold">{t(locale, "blog.title")}</h1>
-      <ul className="space-y-3">
+    <div className="space-y-6">
+      <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
+        {t(locale, "blog.title")}
+      </h1>
+      <ul className="grid gap-4 md:grid-cols-2">
         {data.results.map((post) => (
-          <li
-            key={post.slug}
-            className="rounded-lg border p-4"
-            style={{ borderColor: "var(--border)", background: "var(--surface)" }}
-          >
-            <Link href={`/blog/${post.slug}`} className="font-medium hover:underline">
-              {post.title}
-            </Link>
-            {post.summary && (
-              <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
-                {post.summary}
-              </p>
-            )}
-            <p className="mt-2 text-xs" style={{ color: "var(--muted)" }}>
-              {new Date(post.published_at).toLocaleDateString(locale)}
-              {post.author && ` · ${post.author}`}
-            </p>
+          <li key={post.slug}>
+            <ListCard
+              href={`/blog/${post.slug}`}
+              title={post.title}
+              summary={post.summary}
+              meta={
+                <>
+                  <span>{new Date(post.published_at).toLocaleDateString(locale)}</span>
+                  {post.author && <Badge>{post.author}</Badge>}
+                </>
+              }
+            />
           </li>
         ))}
       </ul>
-      {data.count === 0 && <p style={{ color: "var(--muted)" }}>{t(locale, "empty")}</p>}
+      {data.count === 0 && <p className="text-theme-sm text-gray-400">{t(locale, "empty")}</p>}
     </div>
   );
 }

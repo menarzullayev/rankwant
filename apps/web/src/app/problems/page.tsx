@@ -1,7 +1,11 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { api, ApiError, type Recommendation } from "@/lib/api";
+
+import { Badge, DifficultyBadge } from "@/components/ui/Badge";
+import { Card } from "@/components/ui/Card";
+import { EmptyRow, TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { api, ApiError, type Recommendation } from "@/lib/api";
 
 // Jonli ma'lumot: har so'rovda serverda render qilinadi.
 // Build vaqtida prerender qilinmaydi — CI da API ishlamaydi, va reyting
@@ -27,59 +31,78 @@ export default async function ProblemsPage() {
   }
 
   return (
-    <div>
-      <h1 className="mb-6 text-2xl font-bold">{t(locale, "problems.title")}</h1>
+    <div className="space-y-6">
+      <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
+        {t(locale, "problems.title")}
+      </h1>
 
       {recommended && recommended.results.length > 0 && (
-        <section className="mb-8">
-          <h2 className="mb-1 text-lg font-medium">{t(locale, "recommend.title")}</h2>
-          <p className="mb-3 text-xs" style={{ color: "var(--muted)" }}>
-            {t(locale, "recommend.target")}: {recommended.target_difficulty}
-          </p>
+        <Card
+          title={t(locale, "recommend.title")}
+          action={
+            <Badge color="brand">
+              {t(locale, "recommend.target")}: {recommended.target_difficulty}
+            </Badge>
+          }
+        >
           <div className="flex flex-wrap gap-2">
             {recommended.results.slice(0, 6).map((p) => (
               <Link
                 key={p.slug}
                 href={`/problems/${p.slug}`}
-                className={`rounded border px-3 py-1 text-sm level-${p.level}`}
-                style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+                className={`level-${p.level} rounded-lg border border-gray-200 px-3 py-1.5
+                  text-theme-sm font-medium transition hover:border-brand-400
+                  dark:border-[#232936]`}
               >
                 {p.title}
               </Link>
             ))}
           </div>
-        </section>
+        </Card>
       )}
-      <table className="w-full text-sm">
-        <thead>
-          <tr style={{ color: "var(--muted)" }} className="text-left">
-            <th className="pb-2">#</th>
-            <th className="pb-2">{t(locale, "problems.title")}</th>
-            <th className="pb-2">{t(locale, "problems.difficulty")}</th>
-            <th className="pb-2 text-right">{t(locale, "problems.solved")}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.results.map((p, i) => (
-            <tr key={p.slug} className="border-t" style={{ borderColor: "var(--border)" }}>
-              <td className="py-2" style={{ color: "var(--muted)" }}>{i + 1}</td>
-              <td className="py-2">
-                <Link href={`/problems/${p.slug}`} className="hover:underline">
-                  {p.title}
-                </Link>
-                <span className="ml-2 text-xs" style={{ color: "var(--muted)" }}>
-                  {p.topics.join(", ")}
-                </span>
-              </td>
-              <td className={`py-2 level-${p.level}`}>{p.level_label}</td>
-              <td className="py-2 text-right" style={{ color: "var(--muted)" }}>
-                {p.solved_count}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {data.count === 0 && <p style={{ color: "var(--muted)" }}>{t(locale, "empty")}</p>}
+
+      <Card bodyClassName="p-0">
+        <Table>
+          <THead>
+            <TH>#</TH>
+            <TH>{t(locale, "problems.name")}</TH>
+            <TH>{t(locale, "problems.difficulty")}</TH>
+            <TH align="right">{t(locale, "problems.solved")}</TH>
+          </THead>
+          <TBody>
+            {data.results.map((p, i) => (
+              <TR key={p.slug}>
+                <TD className="text-gray-400">{i + 1}</TD>
+                <TD>
+                  <Link
+                    href={`/problems/${p.slug}`}
+                    className="font-medium text-gray-800 hover:text-brand-500 dark:text-white/90"
+                  >
+                    {p.title}
+                  </Link>
+                  {p.topics.length > 0 && (
+                    <div className="mt-1 flex flex-wrap gap-1">
+                      {p.topics.map((topic) => (
+                        <Badge key={topic}>{topic}</Badge>
+                      ))}
+                    </div>
+                  )}
+                </TD>
+                <TD>
+                  <div className="flex items-center gap-2">
+                    <DifficultyBadge value={p.difficulty} />
+                    <span className={`level-${p.level} text-theme-xs`}>{p.level_label}</span>
+                  </div>
+                </TD>
+                <TD align="right" className="text-gray-400">
+                  {p.solved_count}
+                </TD>
+              </TR>
+            ))}
+            {data.count === 0 && <EmptyRow colSpan={4}>{t(locale, "empty")}</EmptyRow>}
+          </TBody>
+        </Table>
+      </Card>
     </div>
   );
 }

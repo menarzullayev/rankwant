@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { API_BASE, type Standing } from "@/lib/api";
 import { type Locale, t } from "@/i18n/messages";
+import { EmptyRow, TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
 
 type Payload = { frozen: boolean; results: Standing[] };
 
@@ -70,39 +71,35 @@ export function StandingsTable({
   return (
     <>
       {data.frozen && (
-        <p className="mb-2 text-sm" style={{ color: "var(--accent)" }}>
+        <div
+          className="mb-4 rounded-lg bg-warning-50 px-3 py-2 text-theme-sm text-warning-600
+            dark:bg-warning-500/12 dark:text-warning-400"
+        >
           {t(locale, "standings.frozen")}
-        </p>
+        </div>
       )}
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="text-left" style={{ color: "var(--muted)" }}>
-            <th className="pb-2">{t(locale, "standings.rank")}</th>
-            <th className="pb-2">{t(locale, "standings.user")}</th>
-            <th className="pb-2 text-right">{t(locale, "standings.solved")}</th>
-            <th className="pb-2 text-right">{t(locale, "standings.penalty")}</th>
-          </tr>
-        </thead>
-        <tbody>
+      {/* `<table>` va `<tbody>` saqlanadi — E2E shu selektorlarga tayanadi. */}
+      <Table>
+        <THead>
+          <TH>{t(locale, "standings.rank")}</TH>
+          <TH>{t(locale, "standings.user")}</TH>
+          <TH align="right">{t(locale, "standings.solved")}</TH>
+          <TH align="right">{t(locale, "standings.penalty")}</TH>
+        </THead>
+        <TBody>
           {data.results.map((row) => (
-            <tr
-              key={row.username}
-              className="border-t"
-              style={{ borderColor: "var(--border)" }}
-            >
-              <td className="py-2">{row.rank}</td>
-              <td className="py-2">{row.username}</td>
-              <td className="py-2 text-right">{row.solved_count}</td>
-              <td className="py-2 text-right" style={{ color: "var(--muted)" }}>
+            <TR key={row.username}>
+              <TD className="font-semibold text-gray-800 dark:text-white/90">{row.rank}</TD>
+              <TD>{row.username}</TD>
+              <TD align="right">{row.solved_count}</TD>
+              <TD align="right" className="text-gray-400">
                 {row.penalty}
-              </td>
-            </tr>
+              </TD>
+            </TR>
           ))}
-        </tbody>
-      </table>
-      {data.results.length === 0 && (
-        <p style={{ color: "var(--muted)" }}>{t(locale, "empty")}</p>
-      )}
+          {data.results.length === 0 && <EmptyRow colSpan={4}>{t(locale, "empty")}</EmptyRow>}
+        </TBody>
+      </Table>
     </>
   );
 }

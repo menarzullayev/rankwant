@@ -1,7 +1,10 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { api } from "@/lib/api";
+
+import { Card } from "@/components/ui/Card";
+import { EmptyRow, TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { api } from "@/lib/api";
 
 // Jonli ma'lumot: har so'rovda serverda render qilinadi.
 // Build vaqtida prerender qilinmaydi — CI da API ishlamaydi, va reyting
@@ -11,51 +14,65 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = { title: "Reyting" };
 
+/** Birinchi uchtalik — TailAdmin jadvalida ham ko'zga tashlansin. */
+const MEDAL = ["text-warning-500", "text-gray-400", "text-orange-400"];
+
 export default async function LeaderboardPage() {
   const locale = DEFAULT_LOCALE;
   const data = await api.leaderboard();
 
   return (
-    <div>
-      <h1 className="mb-2 text-2xl font-bold">{t(locale, "leaderboard.title")}</h1>
-      {/* ADR-0006 fazali ochilish: Phase 0 da faqat Skills va Contests */}
-      <p className="mb-6 text-sm" style={{ color: "var(--muted)" }}>
-        <Link href="/rating" className="underline">
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
+          {t(locale, "leaderboard.title")}
+        </h1>
+        {/* ADR-0006 fazali ochilish: Phase 0 da faqat Skills va Contests */}
+        <Link
+          href="/rating"
+          className="mt-1 inline-block text-theme-sm text-brand-500 hover:underline"
+        >
           {t(locale, "nav.ratingInfo")}
         </Link>
-      </p>
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="text-left" style={{ color: "var(--muted)" }}>
-            <th className="pb-2">#</th>
-            <th className="pb-2">{t(locale, "standings.user")}</th>
-            <th className="pb-2 text-right">{t(locale, "leaderboard.skills")}</th>
-            <th className="pb-2 text-right">{t(locale, "leaderboard.contest")}</th>
+      </div>
+
+      <Card bodyClassName="p-0">
+        <Table>
+          <THead>
+            <TH>#</TH>
+            <TH>{t(locale, "standings.user")}</TH>
+            <TH align="right">{t(locale, "leaderboard.skills")}</TH>
+            <TH align="right">{t(locale, "leaderboard.contest")}</TH>
             {/* Activity — ADR-0006 fazali ochilish, Phase 1 da yoqildi */}
-            <th className="pb-2 text-right">{t(locale, "leaderboard.activity")}</th>
-            <th className="pb-2 text-right">{t(locale, "leaderboard.streak")}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.results.map((u, i) => (
-            <tr key={u.username} className="border-t" style={{ borderColor: "var(--border)" }}>
-              <td className="py-2" style={{ color: "var(--muted)" }}>{i + 1}</td>
-              <td className="py-2">
-                <Link href={`/users/${u.username}`} className="hover:underline">
-                  {u.display_name || u.username}
-                </Link>
-              </td>
-              <td className="py-2 text-right">{u.rating_skills}</td>
-              <td className="py-2 text-right">{u.rating_contest}</td>
-              <td className="py-2 text-right">{u.rating_activity}</td>
-              <td className="py-2 text-right" style={{ color: "var(--muted)" }}>
-                {u.streak_count}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {data.count === 0 && <p style={{ color: "var(--muted)" }}>{t(locale, "empty")}</p>}
+            <TH align="right">{t(locale, "leaderboard.activity")}</TH>
+            <TH align="right">{t(locale, "leaderboard.streak")}</TH>
+          </THead>
+          <TBody>
+            {data.results.map((u, i) => (
+              <TR key={u.username}>
+                <TD className={`font-semibold ${MEDAL[i] ?? "text-gray-400"}`}>{i + 1}</TD>
+                <TD>
+                  <Link
+                    href={`/users/${u.username}`}
+                    className="font-medium text-gray-800 hover:text-brand-500 dark:text-white/90"
+                  >
+                    {u.display_name || u.username}
+                  </Link>
+                </TD>
+                <TD align="right" className="font-semibold text-gray-800 dark:text-white/90">
+                  {u.rating_skills}
+                </TD>
+                <TD align="right">{u.rating_contest}</TD>
+                <TD align="right">{u.rating_activity}</TD>
+                <TD align="right" className="text-gray-400">
+                  {u.streak_count}
+                </TD>
+              </TR>
+            ))}
+            {data.count === 0 && <EmptyRow colSpan={6}>{t(locale, "empty")}</EmptyRow>}
+          </TBody>
+        </Table>
+      </Card>
     </div>
   );
 }
