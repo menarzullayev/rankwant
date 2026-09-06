@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   load:
-    name: Load va spike (staging)
+    name: Load — o'qish sig'imi
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
