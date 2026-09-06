@@ -58,3 +58,17 @@ jobs:
             exit 0
           fi
           I_UNDERSTAND_THIS_IS_STAGING=yes tests/chaos/run.sh
+
+  compatibility:
+    name: Til matritsasi
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Judge image
+        run: docker build -t rankwant/judge-go:ci services/judge-go
+      - name: E'lon qilingan versiyalar image bilan mos
+        # Har til o'z runtime versiyasini chop etadi. Bu tekshiruv
+        # "Python 3.12" deb ko'rsatib 3.11 ishlatish holatini ushlaydi —
+        # bunday nomuvofiqlik foydalanuvchiga tushunarsiz SyntaxError
+        # bo'lib ko'rinadi.
+        run: python3 tests/compatibility/check_languages.py rankwant/judge-go:ci

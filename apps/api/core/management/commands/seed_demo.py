@@ -20,8 +20,8 @@ from problems.models import Language, Problem, TestCase, Topic
 
 LANGUAGES = [
     ("cpp23", "C++", "23", ["g++", "-std=c++23", "-O2", "-o", "{bin}", "{src}"], ["{bin}"]),
-    ("py312", "Python", "3.12", [], ["python3", "{src}"]),
-    ("java17", "Java", "17", ["javac", "{src}"], ["java", "-cp", "/box", "Main"]),
+    ("py313", "Python", "3.13", [], ["python3", "{src}"]),
+    ("java21", "Java", "21", ["javac", "{src}"], ["java", "-cp", "/box", "Main"]),
 ]
 
 TOPICS = [

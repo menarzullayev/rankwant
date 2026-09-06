@@ -207,6 +207,12 @@ Har birida tekshiriladi: ma'lumot yo'qolmadimi, foydalanuvchi tushunarli xato ko
 
 ## 15. Compatibility
 
+- **Til matritsasi:** e'lon qilingan versiya judge image'idagi haqiqat bilan
+  bir xilmi (`tests/compatibility/check_languages.py`). Har til o'z runtime
+  versiyasini chop etadi, ya'ni e'londan mustaqil manba. Ilk ishga tushirishda
+  ikki nomuvofiqlik topdi: `py312` amalda Python 3.11 edi, `cpp23` esa GCC 12
+  da C++2b qoralamasi. Bunday farq foydalanuvchiga tushunarsiz `SyntaxError`
+  bo'lib ko'rinadi va u aybni o'z kodidan qidiradi.
 - Brauzer: Chrome, Firefox, Safari + mobil
 - **i18n:** uz/ru/en render; masala matnidagi LaTeX/MathJax
 - Kod muharriri: katta manba (64 KB chegarasi), unicode, tab/space
@@ -255,7 +261,7 @@ Har birida tekshiriladi: ma'lumot yo'qolmadimi, foydalanuvchi tushunarli xato ko
 | ------ | ----- | ---- |
 | Unit (formulalar, ledger, verdict) | ✅ | `apps/api/tests/`, `services/judge-py/test_judge.py` |
 | Integration (submit → verdict → reyting) | ✅ | `apps/api/tests/test_judging.py` |
-| Functional (API shartnomasi) | ✅ | `apps/api/tests/` — 149 test |
+| Functional (API shartnomasi) | ✅ | `apps/api/tests/` — 183 test |
 | Regression (golden set) | ✅ | `services/bakeoff/cases/` — 14 case |
 | Security — sandbox escape | ✅ | `services/bakeoff` izolyatsiya case'lari + `tests/security/run.sh` |
 | Security — ilova (IDOR, PAT scope, rate limit) | ✅ | testlar + `tests/security/run.sh` |
@@ -263,7 +269,8 @@ Har birida tekshiriladi: ma'lumot yo'qolmadimi, foydalanuvchi tushunarli xato ko
 | Load / Stress / Spike / Soak | ✅ skript | `tests/load/main.js` |
 | Chaos | ✅ skript | `tests/chaos/run.sh` — faqat staging |
 | Smoke | ⬜ | deploy quvuri qurilgach |
-| Compatibility | ⬜ | brauzer matritsasi kerak |
+| Compatibility — til matritsasi | ✅ | `tests/compatibility/` — nightly |
+| Compatibility — brauzer | ⬜ | brauzer matritsasi kerak |
 
 «Skript» degani: yozilgan va sintaksis tekshirilgan, lekin **ishlayotgan
 staging'siz bajarilmaydi**. Ular nightly workflow'da `STAGING_URL`

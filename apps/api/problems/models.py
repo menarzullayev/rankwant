@@ -46,7 +46,7 @@ class Topic(models.Model):
 class Language(models.Model):
     """Judge tillari — til obrazlari bilan bir manbadan (ADR-0004)."""
 
-    code = models.SlugField(unique=True)  # cpp23, py312, java17
+    code = models.SlugField(unique=True)  # cpp23, py313, java21
     name = models.CharField(max_length=50)
     version = models.CharField(max_length=50, blank=True)
     compile_cmd = models.JSONField(default=list, blank=True)  # bo'sh = kompilyatsiya yo'q

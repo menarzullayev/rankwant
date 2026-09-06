@@ -4,7 +4,7 @@
 # Ishga tushirish muhitida submission tillari bo'ladi, LEKIN DB mijozi YO'Q.
 
 # ── 1. nsjail ────────────────────────────────────────────────────────
-FROM debian:bookworm AS nsjail-build
+FROM debian:trixie AS nsjail-build
 RUN apt-get update && apt-get install -y --no-install-recommends \
         git ca-certificates build-essential pkg-config \
         bison flex protobuf-compiler libprotobuf-dev \
@@ -23,12 +23,13 @@ COPY *.go ./
 RUN CGO_ENABLED=0 go build -trimpath -o /out/judge-go .
 
 # ── 3. runtime ───────────────────────────────────────────────────────
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        # nsjail runtime bog'liqliklari
-        libprotobuf32 libnl-3-200 libnl-route-3-200 \
+        # nsjail runtime bog'liqliklari (trixie t64 o'tishi: libprotobuf32t64)
+        libprotobuf32t64 libnl-3-200 libnl-route-3-200 \
         # submission tillari (MVP: C++, Python, Java — 09-development-plan)
-        g++ python3 openjdk-17-jdk-headless \
+        # trixie: GCC 14 (to'liq C++23), Python 3.13, JDK 21
+        g++ python3 openjdk-21-jdk-headless \
         ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 

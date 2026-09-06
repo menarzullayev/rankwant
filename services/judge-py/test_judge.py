@@ -103,8 +103,8 @@ class TestClassify:
 class TestCommandBuilding:
     def test_manba_nomi(self) -> None:
         assert src_name("cpp23") == "main.cpp"
-        assert src_name("py312") == "main.py"
-        assert src_name("java17") == "Main.java"
+        assert src_name("py313") == "main.py"
+        assert src_name("java21") == "Main.java"
 
     def test_shablon_almashtirish(self) -> None:
         assert subst(["{bin}"], "main.cpp", "prog") == ["prog"]
