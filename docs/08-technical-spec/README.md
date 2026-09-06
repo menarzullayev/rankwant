@@ -186,5 +186,5 @@ O'zgartirish = yangi ADR (`docs/07-adr/`).
 
 ## Referens
 
-- KEP endpoint ro'yxati: [kep-uz-platform-analysis.md](../../../kep-uz-platform-analysis.md)
-- rankglass tech spec: [rankglass/docs/08-technical-spec/](../../../rankglass/docs/08-technical-spec/)
+- KEP endpoint ro'yxati: `kep-uz-platform-analysis.md`
+- rankglass tech spec: `rankglass/docs/08-technical-spec/`

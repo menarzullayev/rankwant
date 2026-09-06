@@ -12,11 +12,11 @@ Bozor, raqobatchilar va RankWant positioning.
 | [brand-discovery.md](brand-discovery.md)       | Nom qidiruv, RankWant + Qvant, availability |
 | [positioning.md](positioning.md)               | SWOT va differensial                        |
 
-## To'liq tahlillar (workspace root)
+## To'liq tahlillar (workspace root — **repo tarkibida emas**)
 
-- [kep-uz-platform-analysis.md](../../../kep-uz-platform-analysis.md) — 102 REST endpoint, kepcoin, Aurora
-- [robocontest-uz-platform-analysis.md](../../../robocontest-uz-platform-analysis.md) — ~197k user, Laravel+Inertia, robocoin
-- cp.uz — [../../../cp-uz/](../../../cp-uz/) repo (learning, articles, seasons; OJ yo'q)
+- `kep-uz-platform-analysis.md` — 102 REST endpoint, kepcoin, Aurora
+- `robocontest-uz-platform-analysis.md` — ~197k user, Laravel+Inertia, robocoin
+- cp.uz — `cp-uz/` repo (learning, articles, seasons; OJ yo'q)
 
 ## Bozor xulosa (2026-09-06)
 
