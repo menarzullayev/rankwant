@@ -1,0 +1,72 @@
+"""judge-py — bake-off nomzod B: Python worker + isolate.
+
+PULL protokoli (ADR-0004): navbatdan ish tortadi, kiruvchi port ochmaydi.
+DB credential OLMAYDI — faqat REDIS_URL.
+"""
+from __future__ import annotations
+
+import json
+import logging
+import os
+import signal
+import sys
+import time
+
+import redis
+
+from judge import judge
+from protocol import Job
+
+JOBS_KEY = "rankwant:judge:jobs"
+RESULTS_KEY = "rankwant:judge:results"
+
+logging.basicConfig(level=logging.INFO, format='{"level":"%(levelname)s","msg":"%(message)s"}')
+log = logging.getLogger("judge-py")
+
+_stop = False
+
+
+def _handle_stop(*_: object) -> None:
+    global _stop
+    _stop = True
+    log.info("to'xtatish signali — navbat bo'shatilmoqda")
+
+
+def main() -> int:
+    if os.environ.get("DATABASE_URL"):
+        # 06-architecture xavfsizlik chegarasi: judge host'da DB credential bo'lmaydi
+        log.error("DATABASE_URL berilgan — judge host'da DB credential bo'lmasligi shart")
+        return 1
+
+    signal.signal(signal.SIGTERM, _handle_stop)
+    signal.signal(signal.SIGINT, _handle_stop)
+
+    url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+    rdb = redis.Redis.from_url(url)
+    rdb.ping()
+    log.info("judge-py ishga tushdi (sandbox=isolate)")
+
+    while not _stop:
+        item = rdb.brpop(JOBS_KEY, timeout=2)
+        if not item:
+            continue
+        received = time.monotonic()
+        try:
+            job = Job.from_json(json.loads(item[1]))
+        except Exception as exc:
+            log.error("job parse qilinmadi: %s", exc)
+            continue
+
+        result = judge(job)
+        elapsed = int((time.monotonic() - received) * 1000)
+        result["judge_meta"]["queue_wait_ms"] = max(0, elapsed - result["judge_meta"]["total_ms"])
+
+        rdb.lpush(RESULTS_KEY, json.dumps(result))
+        log.info("bajarildi job=%s verdict=%s cpu_ms=%s mem_kb=%s total_ms=%s",
+                 job.job_id, result["verdict"], result["time_ms"],
+                 result["memory_kb"], result["judge_meta"]["total_ms"])
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
