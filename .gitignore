@@ -48,3 +48,6 @@ apps/web/node_modules/
 # Playwright
 tests/e2e/test-results/
 tests/e2e/playwright-report/
+
+# Public preview uchun yaratilgan admin paroli
+.admin-password.txt

@@ -80,6 +80,32 @@ Variantlar (tanlanmagan):
 Limitlar endi `THROTTLE_ANON` / `THROTTLE_USER` / `THROTTLE_SUBMIT`
 orqali sozlanadi, ya'ni qaror qabul qilinganda kod o'zgarishi shart emas.
 
+## Ommaviy preview (rankwant.bugvector.uz)
+
+**Bu production EMAS** — yuqoridagi to'rt-hostli topologiya o'rniga bitta
+mashinada ishlaydigan ko'rsatuv nusxasi.
+
+```bash
+docker compose --env-file .env.public \
+  -f docker-compose.yml -f docker-compose.public.yml up -d --build --wait
+```
+
+| Nima | Qanday |
+| ---- | ------ |
+| Tashqi kirish | Cloudflare Tunnel (`/etc/cloudflared/config.yml`), ochiq port yo'q |
+| Marshrutlash | `/api/*` → API, qolgani → Next.js — **bitta origin**, ya'ni CORS/CSRF cross-origin muammosi yo'q |
+| Sirlar | `.env.public` (gitignore): `DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS` |
+| `DJANGO_DEBUG` | `0` — aks holda xato sahifasi sozlamalarni oshkor qiladi |
+| Django admin | tunnel'dan **chiqarilmagan**; faqat `127.0.0.1:8301/admin/` |
+
+### Ochiq risklar
+
+| Risk | Holat |
+| ---- | ----- |
+| Judge ommaviy koddan bajaradi | Sandbox 14/14 izolyatsiya sinovidan o'tgan, lekin konteyner `--privileged`. To'xtatish: `docker compose ... stop judge` |
+| Demo hisoblar (`ustoz`, `oquvchi1..3`) zaif parolli | Ko'rsatuv uchun ataylab qoldirilgan; ommaviy e'lon oldidan o'chirilsin |
+| Ro'yxatdan o'tish ochiq | Cheklov yo'q — abuse qatlami ([test-strategy § 12](test-strategy.md)) hali qurilmagan |
+
 ## Muhitlar
 
 | Muhit    | Manzil                  | Izoh                                       |

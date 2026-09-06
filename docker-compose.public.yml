@@ -1,0 +1,66 @@
+# Ommaviy preview — bitta domen ortida (masalan rankwant.bugvector.uz).
+#
+# Web va API BIR XIL origin'da: `/api/*` API ga, qolgani web ga yo'naltiriladi
+# (reverse proxy yoki Cloudflare Tunnel ingress). Shu sababli CORS ham,
+# CSRF cross-origin tekshiruvi ham umuman ishga tushmaydi.
+#
+# Sirlar `.env.public` da (gitignore). Ishga tushirish:
+#   docker compose --env-file .env.public \
+#     -f docker-compose.yml -f docker-compose.public.yml up -d --build --wait
+#
+# DIQQAT: bu 10-operations dagi to'rt-hostli production topologiyasi EMAS —
+# bitta mashinada ishlaydigan ko'rsatuv nusxasi.
+# Mashina qayta yuklansa stack o'zi ko'tarilsin — aks holda sayt
+# jimgina o'chib qoladi.
+x-restart: &restart
+  restart: unless-stopped
+
+services:
+  postgres:
+    <<: *restart
+    ports: !reset []
+  redis:
+    <<: *restart
+    ports: !reset []
+  minio:
+    <<: *restart
+    ports: !reset []
+
+  migrate:
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      DJANGO_DEBUG: "0"
+
+  api:
+    <<: *restart
+    # Faqat localhost: tashqariga Cloudflare Tunnel chiqaradi, port emas.
+    ports: !override ['127.0.0.1:8301:8000']
+    environment:
+      DJANGO_DEBUG: "0"
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS}
+      CORS_ALLOWED_ORIGINS: ${PUBLIC_ORIGIN}
+      CSRF_TRUSTED_ORIGINS: ${PUBLIC_ORIGIN}
+
+  worker:
+    <<: *restart
+    environment:
+      DJANGO_DEBUG: "0"
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+
+  beat:
+    <<: *restart
+    environment:
+      DJANGO_DEBUG: "0"
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+
+  web:
+    <<: *restart
+    build:
+      args:
+        # Brauzer bundle'i — o'sha domenning o'zi, ya'ni same-origin.
+        NEXT_PUBLIC_API_BASE: ${PUBLIC_ORIGIN}/api/v1
+    ports: !override ['127.0.0.1:8300:3000']
+
+  judge:
+    <<: *restart
