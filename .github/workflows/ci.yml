@@ -20,7 +20,7 @@ jobs:
       web: ${{ steps.filter.outputs.web }}
       judge: ${{ steps.filter.outputs.judge }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -33,7 +33,7 @@ jobs:
     name: Hujjat yaxlitligi
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -62,7 +62,7 @@ jobs:
           --health-timeout 5s --health-retries 5
         ports: ['6379:6379']
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Scaffold qilinganmi?
         id: check
         run: |
@@ -98,7 +98,7 @@ jobs:
     if: needs.changes.outputs.web == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Scaffold qilinganmi?
         id: check
         run: |
@@ -133,7 +133,7 @@ jobs:
     if: needs.changes.outputs.judge == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-go@v5
         with:
           go-version: '1.23'
@@ -161,7 +161,7 @@ jobs:
     if: needs.changes.outputs.api == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
