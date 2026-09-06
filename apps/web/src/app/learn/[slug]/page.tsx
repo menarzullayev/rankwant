@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Markdown } from "@/components/Markdown";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
@@ -40,7 +41,9 @@ export default async function ArticlePage({ params }: Props) {
         {article.topics.length > 0 && ` · ${article.topics.join(", ")}`}
       </p>
 
-      <div className="mt-6 whitespace-pre-wrap leading-relaxed">{article.body}</div>
+      <div className="mt-6">
+        <Markdown>{article.body}</Markdown>
+      </div>
 
       {article.problems.length > 0 && (
         <section className="mt-10">

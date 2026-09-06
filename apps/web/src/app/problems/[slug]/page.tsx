@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Markdown } from "@/components/Markdown";
 import { notFound } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
@@ -49,7 +50,7 @@ export default async function ProblemPage({ params }: Props) {
           {problem.topics.length > 0 && ` · ${problem.topics.join(", ")}`}
         </p>
       </header>
-      <div className="whitespace-pre-wrap leading-relaxed">{problem.statement}</div>
+      <Markdown>{problem.statement}</Markdown>
     </article>
   );
 }

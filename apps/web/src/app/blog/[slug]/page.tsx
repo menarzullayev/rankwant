@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Markdown } from "@/components/Markdown";
 import { notFound } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
 import { DEFAULT_LOCALE } from "@/i18n/messages";
@@ -34,7 +35,9 @@ export default async function PostPage({ params }: Props) {
         {new Date(post.published_at).toLocaleDateString(DEFAULT_LOCALE)}
         {post.author && ` · ${post.author}`}
       </p>
-      <div className="mt-6 whitespace-pre-wrap leading-relaxed">{post.body}</div>
+      <div className="mt-6">
+        <Markdown>{post.body}</Markdown>
+      </div>
     </article>
   );
 }
