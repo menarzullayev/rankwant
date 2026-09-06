@@ -11,8 +11,9 @@ from core.models import ApiToken, User
 class UserPublicSerializer(serializers.ModelSerializer[User]):
     """Ommaviy profil.
 
-    ADR-0006 fazali ochilish: Phase 0 da faqat Skills va Contests ko'rinadi.
-    Activity (Phase 1) va Challenges (Phase 3) bu yerda BERILMAYDI.
+    ADR-0006 fazali ochilish: Skills va Contests — Phase 0, Activity —
+    Phase 1 (yoqildi). Challenges (Phase 3) hali BERILMAYDI: duels/arena
+    funksiyasi yo'q, ya'ni qiymat ma'nosiz bo'lardi.
     """
 
     class Meta:
@@ -24,6 +25,8 @@ class UserPublicSerializer(serializers.ModelSerializer[User]):
             "bio",
             "rating_skills",
             "rating_contest",
+            "rating_activity",
+            "streak_count",
             "date_joined",
         ]
 
@@ -42,10 +45,21 @@ class MeSerializer(serializers.ModelSerializer[User]):
             "theme",
             "rating_skills",
             "rating_contest",
+            "rating_activity",
             "streak_count",
+            "streak_freeze_until",
             "date_joined",
         ]
-        read_only_fields = ["id", "username", "rating_skills", "rating_contest", "date_joined"]
+        read_only_fields = [
+            "id",
+            "username",
+            "rating_skills",
+            "rating_contest",
+            "rating_activity",
+            "streak_count",
+            "streak_freeze_until",
+            "date_joined",
+        ]
 
 
 class RegisterSerializer(serializers.ModelSerializer[User]):

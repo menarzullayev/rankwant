@@ -359,3 +359,41 @@ class TestProfileQuest:
         c.force_authenticate(user=user)
         c.patch(reverse("me"), {"display_name": "Aziz"})
         assert ledger.get_wallet(user).balance == 0
+
+
+@pytest.mark.django_db
+class TestPhasedReveal:
+    """ADR-0006 fazali ochilish — API shartnomasi.
+
+    Bu testlar yozilmagani uchun Activity serializerga qo'shilmay qolgan
+    edi: kod yozilgan, UI kutgan, API esa bermagan.
+    """
+
+    def test_ommaviy_profil_activity_beradi(self, user, catalogue) -> None:
+        user.rating_activity = 42
+        user.streak_count = 3
+        user.save()
+        body = APIClient().get(reverse("user-detail", args=[user.username])).json()
+        assert body["rating_activity"] == 42
+        assert body["streak_count"] == 3
+
+    def test_challenges_hali_berilmaydi(self, user) -> None:
+        """Phase 3 — duels yo'q, ya'ni qiymat ma'nosiz."""
+        body = APIClient().get(reverse("user-detail", args=[user.username])).json()
+        assert "rating_challenges" not in body
+
+    def test_me_activity_beradi(self, user) -> None:
+        c = APIClient()
+        c.force_authenticate(user=user)
+        body = c.get(reverse("me")).json()
+        assert "rating_activity" in body
+        assert "streak_count" in body
+
+    def test_reyting_maydonlari_faqat_oqish(self, user) -> None:
+        """Reytingni API orqali o'zgartirib bo'lmasligi kerak."""
+        c = APIClient()
+        c.force_authenticate(user=user)
+        c.patch(reverse("me"), {"rating_skills": 99999, "rating_activity": 99999})
+        user.refresh_from_db()
+        assert user.rating_skills == 0
+        assert user.rating_activity == 0

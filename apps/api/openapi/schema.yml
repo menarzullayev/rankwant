@@ -1482,11 +1482,17 @@ components:
         rating_contest:
           type: integer
           readOnly: true
+        rating_activity:
+          type: integer
+          readOnly: true
         streak_count:
           type: integer
-          maximum: 9223372036854775807
-          minimum: 0
-          format: int64
+          readOnly: true
+        streak_freeze_until:
+          type: string
+          format: date
+          readOnly: true
+          nullable: true
         date_joined:
           type: string
           format: date-time
@@ -1494,8 +1500,11 @@ components:
       required:
       - date_joined
       - id
+      - rating_activity
       - rating_contest
       - rating_skills
+      - streak_count
+      - streak_freeze_until
       - username
     PaginatedApiTokenList:
       type: object
@@ -1738,11 +1747,17 @@ components:
         rating_contest:
           type: integer
           readOnly: true
+        rating_activity:
+          type: integer
+          readOnly: true
         streak_count:
           type: integer
-          maximum: 9223372036854775807
-          minimum: 0
-          format: int64
+          readOnly: true
+        streak_freeze_until:
+          type: string
+          format: date
+          readOnly: true
+          nullable: true
         date_joined:
           type: string
           format: date-time
@@ -2111,8 +2126,9 @@ components:
       description: |-
         Ommaviy profil.
 
-        ADR-0006 fazali ochilish: Phase 0 da faqat Skills va Contests ko'rinadi.
-        Activity (Phase 1) va Challenges (Phase 3) bu yerda BERILMAYDI.
+        ADR-0006 fazali ochilish: Skills va Contests — Phase 0, Activity —
+        Phase 1 (yoqildi). Challenges (Phase 3) hali BERILMAYDI: duels/arena
+        funksiyasi yo'q, ya'ni qiymat ma'nosiz bo'lardi.
       properties:
         username:
           type: string
@@ -2141,6 +2157,16 @@ components:
           type: integer
           maximum: 9223372036854775807
           minimum: -9223372036854775808
+          format: int64
+        rating_activity:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        streak_count:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
           format: int64
         date_joined:
           type: string
