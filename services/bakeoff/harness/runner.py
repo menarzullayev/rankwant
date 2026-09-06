@@ -62,7 +62,7 @@ def submit(r: "redis.Redis", case: dict) -> str:
         "source": case["source"],
         "limits": case["limits"],
         "tests": case["tests"],
-        "checker": {"type": "interactive" if case["id"] == "14-interactive" else "standard"},
+        "checker": case.get("checker") or {"type": "standard"},
         "mode": case["mode"],
     }
     r.lpush(JOBS_KEY, json.dumps(job))

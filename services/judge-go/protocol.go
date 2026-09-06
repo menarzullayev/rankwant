@@ -23,8 +23,19 @@ type Test struct {
 	Expected string `json:"expected"`
 }
 
+type Interactor struct {
+	Code    string   `json:"code"`
+	Compile []string `json:"compile"`
+	Run     []string `json:"run"`
+	Source  string   `json:"source"`
+}
+
 type Checker struct {
 	Type string `json:"type"` // standard | interactive
+	// Interactive masalalarda ISHONCHLI interactor dasturi masala bilan
+	// birga keladi. U sandbox TASHQARISIDA ishlaydi — u bizniki, submission
+	// esa emas. Verdict interactor ning chiqish kodi bilan beriladi.
+	Interactor *Interactor `json:"interactor,omitempty"`
 }
 
 type Job struct {

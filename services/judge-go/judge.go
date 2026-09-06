@@ -101,8 +101,28 @@ func judge(ctx context.Context, job *Job) *Result {
 		}
 	}
 
-	// ── Testlar ────────────────────────────────────────────────────
 	runCmd := subst(job.Language.Run, "/box/"+src, "/box/prog")
+
+	// ── Interactive masala ─────────────────────────────────────────
+	if job.Checker.Type == "interactive" {
+		verdict, out, err := runInteractive(ctx, work, job, runCmd)
+		if err != nil {
+			res.Verdict = VIE
+			res.CompileOutput = err.Error()
+		} else {
+			res.Verdict = verdict
+			if out != nil {
+				res.TimeMS, res.MemoryKB = out.CPUMs, out.PeakKB
+			}
+			if verdict == VAC {
+				res.Score = 100
+			}
+		}
+		res.Meta.TotalMS = time.Since(t0).Milliseconds()
+		return res
+	}
+
+	// ── Testlar ────────────────────────────────────────────────────
 	// Wall chegarasi CPU chegarasidan kattaroq: farqi IDLENESS ni ochib beradi.
 	wallLimit := job.Limits.TimeMS*3 + 1000
 

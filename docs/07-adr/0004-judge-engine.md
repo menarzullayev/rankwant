@@ -36,7 +36,20 @@ Ikkala nomzod ham bir xil shartnoma, bir xil 14 case va bir xil host'da o'lchand
 To'liq hisobotlar: [result-judge-go.md](../../services/bakeoff/result-judge-go.md) ·
 [result-judge-py.md](../../services/bakeoff/result-judge-py.md)
 
-**Ikkalasi ham O'TDI** — 13/13 bajarilgan case, 5 izolyatsiya sinovining hammasi.
+**Ikkalasi ham O'TDI.** A — **14/14** (interactive ham yozildi), B — 13/13.
+
+Interactive masalalar `judge-go` da qo'llab-quvvatlanadi: submission va
+**ishonchli** interactor o'zaro quvurlar orqali gaplashadi, verdict interactor
+ning chiqish kodidan olinadi. Sinovdan o'tkazildi:
+
+| Submission | Verdict |
+| ---------- | ------- |
+| ikkilik qidiruv (to'g'ri) | `AC` 11 ms |
+| noto'g'ri javob | `WA` 10 ms |
+| javob kutadi, so'ramaydi (deadlock) | `IDLENESS` 5002 ms |
+| axlat chiqish | `WA` 11 ms |
+
+`judge-py` da interactive **yozilmagan** — B faol bo'lmagani uchun.
 
 | Case | A — Go + nsjail | B — Python + isolate |
 | ---- | ---------------: | -------------------: |

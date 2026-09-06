@@ -220,6 +220,64 @@ func nsjailArgs(work string, lim Limits, wallSec int) []string {
 	return args
 }
 
+// startSandboxed — sandbox'li jarayonni TAYYORLAB beradi, lekin ishga
+// tushirmaydi va kutmaydi. Interactive masalalarda quvurlarni ulash uchun
+// kerak: chaqiruvchi Stdin/Stdout ni o'zi biriktiradi.
+//
+// Qaytaradi: cmd, o'lchov uchun cgroup, tozalash funksiyasi.
+func startSandboxed(ctx context.Context, work string, cmd []string,
+	lim Limits, wallLimitMs int) (*exec.Cmd, *cgroup, func(), error) {
+
+	if len(cmd) == 0 {
+		return nil, nil, func() {}, errors.New("bo'sh buyruq")
+	}
+	cg, err := newCgroup(fmt.Sprintf("i%d", time.Now().UnixNano()))
+	if err != nil {
+		return nil, nil, func() {}, err
+	}
+	cleanup := func() { cg.remove() }
+
+	if err := applyLimits(cg, lim); err != nil {
+		cleanup()
+		return nil, nil, func() {}, err
+	}
+
+	wallSec := (wallLimitMs + 999) / 1000
+	if wallSec < 1 {
+		wallSec = 1
+	}
+	args := append(nsjailArgs(work, lim, wallSec), "--")
+	args = append(args, cmd...)
+
+	proc := exec.CommandContext(ctx, "nsjail", args...)
+	if fd, err := os.Open(cg.path); err == nil {
+		proc.SysProcAttr = &syscall.SysProcAttr{UseCgroupFD: true, CgroupFD: int(fd.Fd())}
+		cleanup = func() { fd.Close(); cg.remove() }
+	}
+	return proc, cg, cleanup, nil
+}
+
+// applyLimits — limitlarni cgroup'ga yozadi. Xato bo'lsa QAYTARADI:
+// limitsiz ishonchsiz kod ishga tushmasligi kerak.
+func applyLimits(cg *cgroup, lim Limits) error {
+	pids := "64"
+	if lim.Processes > 0 {
+		pids = strconv.Itoa(lim.Processes + 4)
+	}
+	if err := cg.set("pids.max", pids); err != nil {
+		return fmt.Errorf("jarayon limiti qo'yilmadi: %w", err)
+	}
+	if lim.MemoryKB > 0 {
+		if err := cg.set("memory.max", strconv.FormatInt(int64(lim.MemoryKB)*1024, 10)); err != nil {
+			return fmt.Errorf("xotira limiti qo'yilmadi: %w", err)
+		}
+	}
+	if err := cg.set("memory.swap.max", "0"); err != nil {
+		return fmt.Errorf("swap limiti qo'yilmadi: %w", err)
+	}
+	return nil
+}
+
 // runSandboxed — buyruqni nsjail ostida ishga tushiradi va resurslarni o'lchaydi.
 func runSandboxed(ctx context.Context, work string, cmd []string, stdin string,
 	lim Limits, wallLimitMs int) (*runOutcome, error) {
