@@ -65,7 +65,7 @@ Idea
 
 **Namuna loyihalar (shu workspace):**
 
-- [rankglass/docs/README.md](../../rankglass/docs/README.md) — Pogona; pipeline locked, Next.js MVP bor
+- `rankglass/docs/README.md` — Pogona; pipeline locked, Next.js MVP bor
 - project-alpha — faqat hujjat, kod yo'q
 
 ## Agentlar uchun

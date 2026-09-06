@@ -31,9 +31,11 @@ O'zbekiston va global bozor uchun **sport dasturlash + musobaqa (CP/OJ)** platfo
 
 ## Tashqi tahlillar (to'liq versiya)
 
-- [../kep-uz-platform-analysis.md](../kep-uz-platform-analysis.md)
-- [../robocontest-uz-platform-analysis.md](../robocontest-uz-platform-analysis.md)
-- cp.uz repo: [../cp-uz/](../cp-uz/)
+> Bu fayllar **repo tarkibida emas** — `Web_Projects/` workspace ildizida turadi.
+
+- `kep-uz-platform-analysis.md`
+- `robocontest-uz-platform-analysis.md`
+- cp.uz repo: `cp-uz/`
 
 ## Monorepo tuzilishi
 
