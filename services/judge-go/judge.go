@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -40,6 +41,14 @@ func subst(args []string, src, bin string) []string {
 		a = strings.ReplaceAll(a, "{src}", src)
 		out[i] = strings.ReplaceAll(a, "{bin}", bin)
 	}
+	// Sandbox ichida PATH bo'yicha qidiruv yo'q — birinchi element MUTLAQ
+	// yo'l bo'lishi shart, aks holda execve ENOENT beradi. Til ta'rifi
+	// "g++" deb yozilishi mumkin, shuning uchun jail'ga kirishdan oldin hal qilamiz.
+	if len(out) > 0 && !strings.HasPrefix(out[0], "/") {
+		if abs, err := exec.LookPath(out[0]); err == nil {
+			out[0] = abs
+		}
+	}
 	return out
 }
 
@@ -70,7 +79,7 @@ func judge(ctx context.Context, job *Job) *Result {
 		cl := job.Limits
 		cl.MemoryKB = 1024 * 1024 // kompilyator uchun kengroq
 		cl.Processes = 16
-		out, err := runSandboxed(ctx, work, subst(job.Language.Compile, "/"+src, "/prog"),
+		out, err := runSandboxed(ctx, work, subst(job.Language.Compile, "/box/"+src, "/box/prog"),
 			"", cl, job.Limits.CompileTimeMS)
 		if err != nil {
 			res.CompileOutput = err.Error()
@@ -89,7 +98,7 @@ func judge(ctx context.Context, job *Job) *Result {
 	}
 
 	// ── Testlar ────────────────────────────────────────────────────
-	runCmd := subst(job.Language.Run, "/"+src, "/prog")
+	runCmd := subst(job.Language.Run, "/box/"+src, "/box/prog")
 	// Wall chegarasi CPU chegarasidan kattaroq: farqi IDLENESS ni ochib beradi.
 	wallLimit := job.Limits.TimeMS*3 + 1000
 

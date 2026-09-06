@@ -35,8 +35,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY --from=nsjail-build /src/nsjail /usr/local/bin/nsjail
 COPY --from=go-build     /out/judge-go /usr/local/bin/judge-go
 
-# nsjail user/group namespace uchun nobody kerak
-RUN mkdir -p /sys/fs/cgroup/rankwant
+# cgroup subtree'ni worker RUNTIME da yaratadi (/sys/fs/cgroup build vaqtida read-only).
+# Konteyner --privileged yoki --cap-add=SYS_ADMIN --cgroupns=host bilan ishlashi kerak.
 
 ENV REDIS_URL=redis://redis:6379/0
 ENTRYPOINT ["/usr/local/bin/judge-go"]

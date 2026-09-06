@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -74,17 +75,31 @@ func nsjailArgs(cg *cgroup, work string, lim Limits, wallSec int) []string {
 	args := []string{
 		"--quiet",
 		"--mode", "o", // bir marta ishga tushir va chiq
-		"--chroot", work, // 10-file-write: sandbox tashqarisi ko'rinmaydi
-		"--cwd", "/",
-		"--user", "65534", "--group", "65534", // 13-symlink: root emas
+		// Host ildizi READ-ONLY ko'rinadi — kompilyator va kutubxonalar kerak,
+		// lekin yozib bo'lmaydi (10-file-write). Yoziladigan yagona joy — /box.
+		"--chroot", "/",
+		"--bindmount", work + ":/box",
+		"--cwd", "/box",
+		// KELISHUV: inside=65534, outside=0.
+		// "65534:65534:1" ideal bo'lardi, lekin u newuidmap/subuid sozlamasini
+		// talab qiladi; usiz nsjail o'z mount daraxtini qura olmaydi
+		// ("mkdir(...): Permission denied"). Shuning uchun tashqi uid 0 qoladi.
+		// Buni qoplaydigan qatlamlar: chroot / READ-ONLY, yoziladigan yagona
+		// joy /box, tarmoq yo'q, /proc yo'q, cgroup chegaralari, va judge host
+		// arxitektura darajasida izolyatsiya qilingan (06-architecture).
+		"--user", "65534",
+		"--group", "65534",
 		"--hostname", "judge",
 		"--disable_proc",       // 12-proc-read: host /proc yo'q
 		"--iface_no_lo",        // 11-network: tarmoq interfeysi yo'q
 		"--rlimit_fsize", "16", // MB — sandbox ichida ham fayl cheklovi
 		"--rlimit_nofile", "64",
 		"--time_limit", strconv.Itoa(wallSec), // wall chegarasi (IDLENESS uchun)
+		// nsjail talabi: bu ROOT cgroup mount bo'lishi shart, subtree emas.
+		// O'lchash uchun biz nsjail'ning O'ZINI cgroup'imizga tug'diramiz —
+		// cgroup v2 ierarxik, shuning uchun cpu.stat/memory.peak avlodlarni ham qamraydi.
 		"--use_cgroupv2",
-		"--cgroupv2_mount", cg.path,
+		"--cgroupv2_mount", "/sys/fs/cgroup",
 	}
 	if lim.Processes > 0 {
 		// 09-fork-bomb: cgroup pids.max — eng ishonchli to'siq
@@ -129,6 +144,17 @@ func runSandboxed(ctx context.Context, work string, cmd []string, stdin string,
 	defer cancel()
 
 	proc := exec.CommandContext(runCtx, "nsjail", args...)
+
+	// Bolani to'g'ridan-to'g'ri o'z cgroup'imizga tug'diramiz (Go 1.22+).
+	// Shundagina cpu.stat va memory.peak bizniki bo'ladi.
+	if fd, err := os.Open(cg.path); err == nil {
+		defer fd.Close()
+		proc.SysProcAttr = &syscall.SysProcAttr{
+			UseCgroupFD: true,
+			CgroupFD:    int(fd.Fd()),
+		}
+	}
+
 	proc.Stdin = strings.NewReader(stdin)
 	var out, errb capBuffer
 	out.limit = int64(lim.OutputKB) * 1024

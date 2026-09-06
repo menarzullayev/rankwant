@@ -37,4 +37,4 @@ staticfiles/
 .vscode/
 
 # Bake-off natijalari (mahalliy o'lchov)
-services/bakeoff/result-*.md
+services/bakeoff/result-*-scratch.md
