@@ -78,6 +78,31 @@ export type Quest = {
   done: boolean;
 };
 
+export type Notification = {
+  id: number;
+  kind: string;
+  title: string;
+  body: string;
+  is_read: boolean;
+  created_at: string;
+};
+
+export type Post = {
+  slug: string;
+  kind: string;
+  title: string;
+  summary: string;
+  author: string | null;
+  published_at: string;
+};
+
+export type PostDetail = Post & { body: string };
+
+export type Recommendation = {
+  target_difficulty: number;
+  results: Problem[];
+};
+
 export type ShopItem = {
   code: string;
   category: string;
@@ -131,6 +156,11 @@ export const api = {
   wallet: () => get<Wallet>("/qvant/wallet/", 0),
   quests: () => get<Quest[]>("/qvant/quests/", 0),
   shop: () => get<ShopItem[]>("/qvant/shop/", 30),
+  // Bildirishnomalar shaxsiy va tez o'zgaradi — keshlanmaydi
+  notifications: () => get<Paginated<Notification>>("/notifications/", 0),
+  recommendations: () => get<Recommendation>("/problems/recommendation/", 0),
+  posts: () => get<Paginated<Post>>("/posts/"),
+  post: (slug: string) => get<PostDetail>(`/posts/${slug}/`),
 };
 
 export { ApiError };

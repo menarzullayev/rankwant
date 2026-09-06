@@ -40,7 +40,8 @@ Kafolat zaiflashgani uchun **shaffoflik kuchaytiriladi**:
 
 1. **`RatingHistory` audit yozuvi** — har bir o'zgarish sababi bilan saqlanadi:
    `«Masala #123 qayta baholandi: 2000 → 1500 · Skills: 4 820 → 4 735 (−85)»`
-2. **Foydalanuvchiga bildirishnoma** — reyting qayta baholash tufayli o'zgarsa xabar beriladi
+2. **Foydalanuvchiga bildirishnoma** ✅ — `notifications` app, `PROBLEM_RERATED` turi;
+   xabarda eski va yangi qiymat hamda «bu sizning harakatingiz emas» izohi bo'ladi
 3. **Qayta baholash siyosati** — yakka-yakka emas, **partiyada va oldindan e'lon bilan**; kamida N ta submit statistikasi to'planganidan keyin
 4. **Profil sahifasida** «Skills reyting qanday hisoblanadi» havolasi — formula va qayta baholash siyosati ochiq
 

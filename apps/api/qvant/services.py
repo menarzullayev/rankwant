@@ -48,7 +48,26 @@ def on_first_accepted(user: User) -> dict[str, object]:
     """
     current, streak_quests = streak.touch(user)
     daily = quests.on_accepted(user, ac_count_today=_ac_count_today(user))
+
+    from qvant.marathon import check_completion
+
+    if check_completion(user):
+        daily.append("weekly_marathon")
+
     recalc_activity(user)
+    if streak_quests:
+        from notifications.models import Notification
+        from notifications.services import notify
+
+        notify(
+            user,
+            Notification.Kind.STREAK_MILESTONE,
+            f"{current} kunlik streak!",
+            body="Streak yutug'i uchun Qvant qo'shildi.",
+            ref_type="streak",
+            ref_id=str(current),
+        )
+
     return {"streak": current, "quests": [*daily, *streak_quests]}
 
 

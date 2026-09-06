@@ -82,11 +82,15 @@ MVP **dasturlash tillari** (judge): C++, Python, Java. UI tillari alohida — 04
 | **Streak** + streak yutuqlari (7/30/365) | P1-6 | ✅ |
 | **Activity reyting** yoqildi (UI da ko'rinadi) | P1-7 | ✅ |
 | **Qvant do'kon** (minimal, 6 kosmetik narsa) | P1-8 | ✅ |
-| Haftalik marafon | P1-9 | ⬜ |
-| Virtual contest | P1-1 | ⬜ |
-| Problem recommendation · Notifications · Blog | P1-2…P1-4 | ⬜ |
+| **Virtual contest** — tugagan musobaqani o'z vaqtida yechish | P1-1 | ✅ |
+| **Masala tavsiyasi** — darajaga mos, yechilmaganlar | P1-2 | ✅ |
+| **Blog / yangiliklar** + e'lon bildirishnomasi | P1-3 | ✅ |
+| **Bildirishnomalar** — ADR-0007 majburiyati ham shu bilan yopildi | P1-4 | ✅ |
+| **Haftalik marafon** — determinlashgan 10 masala | P1-9 | ✅ |
 
-Sprint 5 holati: 108 test · mypy strict toza (77 fayl) · 32 endpoint.
+**Phase 1 to'liq bajarildi (P1-1 … P1-9).**
+
+Holat: 149 test · mypy strict toza (97 fayl) · 39 endpoint · 0 zaiflik.
 Ledger auditi: kesh va tranzaksiya yig'indisi har doim mos
 ([ADR-0002](../07-adr/0002-qvant-economy.md) sharti).
 

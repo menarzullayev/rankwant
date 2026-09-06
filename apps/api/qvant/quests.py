@@ -23,6 +23,7 @@ log = logging.getLogger(__name__)
 DAILY_SOLVE = "daily_solve"
 DAILY_THREE_AC = "daily_three_ac"
 CONTEST_FINISH = "contest_finish"
+WEEKLY_MARATHON = "weekly_marathon"
 PROFILE_COMPLETE = "profile_complete"
 STREAK_7 = "streak_7"
 STREAK_30 = "streak_30"
@@ -38,6 +39,7 @@ CATALOGUE: dict[str, tuple[str, int, str]] = {
     DAILY_SOLVE: (QvantQuest.Type.DAILY, 10, "Kuniga kamida bitta masala yeching"),
     DAILY_THREE_AC: (QvantQuest.Type.DAILY, 15, "Bir kunda 3 ta masala yeching"),
     CONTEST_FINISH: (QvantQuest.Type.WEEKLY, 30, "Reytingli musobaqani yakunlang"),
+    WEEKLY_MARATHON: (QvantQuest.Type.WEEKLY, 100, "Haftalik marafonni yakunlang"),
     PROFILE_COMPLETE: (QvantQuest.Type.ACHIEVEMENT, 50, "Profilingizni to'ldiring"),
     STREAK_7: (QvantQuest.Type.ACHIEVEMENT, 50, "7 kunlik streak"),
     STREAK_30: (QvantQuest.Type.ACHIEVEMENT, 250, "30 kunlik streak"),

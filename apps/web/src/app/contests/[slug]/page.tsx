@@ -44,6 +44,14 @@ export default async function ContestPage({ params }: Props) {
         {contest.is_rated && ` · ${t(locale, "contests.rated")}`}
       </p>
 
+      {contest.is_finished && (
+        <p className="mt-3 text-sm" style={{ color: "var(--muted)" }}>
+          Musobaqa tugagan — uni <strong>virtual</strong> tarzda o&apos;z
+          vaqtingizda yechishingiz mumkin. Virtual natija reytingga
+          ta&apos;sir qilmaydi va rasmiy jadvalga kirmaydi.
+        </p>
+      )}
+
       <h2 className="mt-8 mb-3 text-lg font-medium">{t(locale, "standings.title")}</h2>
       {/* Contest ketayotgan bo'lsa SSE bilan jonli, aks holda statik */}
       <StandingsTable

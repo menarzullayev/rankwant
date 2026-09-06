@@ -11,4 +11,6 @@ urlpatterns = [
     path("", include("judging.urls")),
     path("", include("contests.urls")),
     path("", include("qvant.urls")),
+    path("", include("notifications.urls")),
+    path("", include("blog.urls")),
 ]

@@ -397,3 +397,84 @@ class TestPhasedReveal:
         user.refresh_from_db()
         assert user.rating_skills == 0
         assert user.rating_activity == 0
+
+
+@pytest.mark.django_db
+class TestMarathon:
+    """PRD P1-9 — haftalik marafon."""
+
+    def _archive(self, n: int) -> None:
+        from problems.models import Problem
+
+        for i in range(n):
+            Problem.objects.create(
+                slug=f"m{i}",
+                title=f"M{i}",
+                statement="…",
+                difficulty=800 + (i % 10) * 100,
+                is_public=True,
+            )
+
+    def test_kichik_arxivda_marafon_yoq(self, db, catalogue) -> None:
+        """Arxiv kichik bo'lsa marafon bo'lmasligi kerak.
+
+        Aks holda bitta masala yechish +100 Qvant berardi.
+        """
+        from qvant.marathon import marathon_problems
+
+        self._archive(5)
+        assert marathon_problems() == []
+
+    def test_yetarli_arxivda_marafon_bor(self, db, catalogue) -> None:
+        from qvant.marathon import MARATHON_SIZE, marathon_problems
+
+        self._archive(30)
+        assert len(marathon_problems()) == MARATHON_SIZE
+
+    def test_toplam_barqaror(self, db, catalogue) -> None:
+        """Bir haftada hamma bir xil to'plamni ko'radi."""
+        from qvant.marathon import marathon_problems
+
+        self._archive(30)
+        first = [p.pk for p in marathon_problems()]
+        second = [p.pk for p in marathon_problems()]
+        assert first == second
+
+    def test_haftalar_farq_qiladi(self, db, catalogue) -> None:
+        from datetime import timedelta
+
+        from qvant.marathon import marathon_problems
+
+        self._archive(40)
+        today = timezone.localdate()
+        this_week = [p.pk for p in marathon_problems(today)]
+        other = [p.pk for p in marathon_problems(today - timedelta(weeks=5))]
+        assert this_week != other
+
+    def test_toliq_yechilganda_mukofot(self, user, catalogue) -> None:
+        from judging.models import Attempt
+        from problems.models import Language
+        from qvant.marathon import check_completion, marathon_problems
+
+        self._archive(12)
+        lang = Language.objects.create(code="py", name="Python", run_cmd=["python3"])
+        for p in marathon_problems():
+            a = Attempt.objects.create(user=user, problem=p, language=lang, source_code="x")
+            apply_result({"attempt_id": a.pk, "verdict": "AC"})
+        # AC lar davomida allaqachon berilgan bo'lishi mumkin
+        assert (
+            check_completion(user) > 0
+            or UserQuestCompletion.objects.filter(user=user, quest__code="weekly_marathon").exists()
+        )
+
+    def test_qisman_yechilganda_mukofot_yoq(self, user, catalogue) -> None:
+        from judging.models import Attempt
+        from problems.models import Language
+        from qvant.marathon import check_completion, marathon_problems
+
+        self._archive(20)
+        lang = Language.objects.create(code="py", name="Python", run_cmd=["python3"])
+        for p in marathon_problems()[:3]:
+            a = Attempt.objects.create(user=user, problem=p, language=lang, source_code="x")
+            apply_result({"attempt_id": a.pk, "verdict": "AC"})
+        assert check_completion(user) == 0

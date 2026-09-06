@@ -173,3 +173,74 @@ class TestContestApi:
             freeze_minutes=30,
         )
         assert frozen.is_frozen is True
+
+
+@pytest.mark.django_db
+class TestVirtualContest:
+    """PRD P1-1 — virtual ishtirok."""
+
+    def test_tugagan_contestda_boshlash(self, contest, user) -> None:
+        from contests.services import start_virtual, virtual_deadline
+
+        reg = start_virtual(contest, user)
+        assert reg.virtual_start_at is not None
+        expected = contest.end_at - contest.start_at
+        assert virtual_deadline(reg) - reg.virtual_start_at == expected
+
+    def test_ketayotgan_contestda_boshlab_bolmaydi(self, problem, user) -> None:
+        from contests.services import start_virtual
+
+        now = timezone.now()
+        running = Contest.objects.create(
+            slug="live2",
+            title="Live",
+            start_at=now - timedelta(minutes=5),
+            end_at=now + timedelta(hours=1),
+        )
+        with pytest.raises(ValueError):
+            start_virtual(running, user)
+
+    def test_ikki_marta_boshlanmaydi(self, contest, user) -> None:
+        from contests.services import start_virtual
+
+        first = start_virtual(contest, user).virtual_start_at
+        assert start_virtual(contest, user).virtual_start_at == first
+
+    def test_virtual_rasmiy_jadvalga_kirmaydi(
+        self, contest, problem, language, user, other_user
+    ) -> None:
+        """Virtual ishtirokchi javoblarni bilib turib yechadi — uning
+        natijasi rasmiy jadvalga va reytingga TUSHMASLIGI kerak."""
+        from contests.services import rebuild_standings, start_virtual
+
+        submit(other_user, contest, problem, language, Verdict.AC, 10)
+        start_virtual(contest, user)
+        submit(user, contest, problem, language, Verdict.AC, 5)
+
+        rebuild_standings(contest)
+        usernames = set(
+            Standing.objects.filter(contest=contest).values_list("user__username", flat=True)
+        )
+        assert other_user.username in usernames
+        assert user.username not in usernames
+
+    def test_api_endpointi(self, contest, user) -> None:
+        c = APIClient()
+        c.force_authenticate(user=user)
+        r = c.post(reverse("contest-virtual", args=[contest.slug]))
+        assert r.status_code == 201
+        assert r.json()["virtual_start_at"] is not None
+
+    def test_ketayotgan_contestda_api_400(self, problem, user) -> None:
+        now = timezone.now()
+        running = Contest.objects.create(
+            slug="live3",
+            title="Live",
+            start_at=now - timedelta(minutes=5),
+            end_at=now + timedelta(hours=1),
+        )
+        c = APIClient()
+        c.force_authenticate(user=user)
+        r = c.post(reverse("contest-virtual", args=[running.slug]))
+        assert r.status_code == 400
+        assert r.json()["error"]["code"] == "not_finished"

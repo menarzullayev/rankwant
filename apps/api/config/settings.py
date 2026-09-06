@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     "contests",
     "ratings",
     "qvant",
+    "notifications",
+    "blog",
 ]
 
 MIDDLEWARE = [
@@ -181,6 +183,30 @@ JUDGE_RESULTS_KEY = "rankwant:judge:results"
 CELERY_BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = REDIS_URL
 CELERY_TASK_ALWAYS_EAGER = env_bool("CELERY_EAGER", False)
+
+# Davriy tasklar. Judge natijalari tez-tez o'qiladi, chunki foydalanuvchi
+# verdictni kutib turadi (NFR: p50 < 5s) — navbat bo'sh bo'lsa BRPOP
+# darhol qaytadi, ya'ni bu qimmat emas.
+CELERY_BEAT_SCHEDULE = {
+    "drain-judge-results": {
+        "task": "judging.drain_results",
+        "schedule": 2.0,
+    },
+    "finalize-due-contests": {
+        "task": "contests.finalize_due",
+        "schedule": 60.0,
+    },
+    "announce-published-posts": {
+        "task": "blog.announce_published",
+        "schedule": 300.0,
+    },
+    # Activity 30 kunlik siljuvchi oyna — hech kim faol bo'lmasa ham
+    # kunlik pasayishi kerak, aks holda reyting muzlab qoladi.
+    "decay-activity-ratings": {
+        "task": "ratings.refresh_activity",
+        "schedule": 3600.0,
+    },
+}
 
 LOGGING = {
     "version": 1,

@@ -67,6 +67,24 @@ def recalc_skills(
             ref_type="problem",
             ref_id=ref_id,
         )
+        if reason == RatingHistory.Reason.PROBLEM_RERATED:
+            # ADR-0007 sharti: reyting foydalanuvchi HARAKATISIZ o'zgardi —
+            # sababini ko'rsatmasak principle #2 buziladi.
+            from notifications.models import Notification
+            from notifications.services import notify
+
+            notify(
+                user,
+                Notification.Kind.PROBLEM_RERATED,
+                f"Skills reytingingiz {new_value - before:+d} ga o'zgardi",
+                body=(
+                    f"Siz yechgan masala qayta baholandi. "
+                    f"Skills: {before} → {new_value}. Bu sizning harakatingiz "
+                    f"emas — masala qiyinligi statistika asosida yangilandi."
+                ),
+                ref_type="problem",
+                ref_id=ref_id,
+            )
     return new_value
 
 
@@ -197,5 +215,16 @@ def apply_contest_ratings(contest) -> int:  # type: ignore[no-untyped-def]
             ref_id=contest.slug,
             seed=formulas.seed(before, [r for r in ratings if r != before] or others),
             rank=standing.rank,
+        )
+        from notifications.models import Notification
+        from notifications.services import notify
+
+        notify(
+            user,
+            Notification.Kind.CONTEST_RESULT,
+            f"{contest.title}: {standing.rank}-o'rin, reyting {after - before:+d}",
+            body=f"Contests reytingi: {before} → {after}",
+            ref_type="contest",
+            ref_id=contest.slug,
         )
     return len(standings)

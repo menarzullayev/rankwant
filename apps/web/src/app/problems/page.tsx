@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { api } from "@/lib/api";
+import { api, ApiError, type Recommendation } from "@/lib/api";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
 
 // Jonli ma'lumot: har so'rovda serverda render qilinadi.
@@ -15,9 +15,41 @@ export default async function ProblemsPage() {
   const locale = DEFAULT_LOCALE;
   const data = await api.problems();
 
+  // Tavsiya faqat kirgan foydalanuvchi uchun — chiqmasa sahifa baribir
+  // ishlayveradi (arxiv hamma uchun ochiq).
+  let recommended: Recommendation | null = null;
+  try {
+    recommended = await api.recommendations();
+  } catch (error) {
+    if (!(error instanceof ApiError) || (error.status !== 401 && error.status !== 403)) {
+      throw error;
+    }
+  }
+
   return (
     <div>
       <h1 className="mb-6 text-2xl font-bold">{t(locale, "problems.title")}</h1>
+
+      {recommended && recommended.results.length > 0 && (
+        <section className="mb-8">
+          <h2 className="mb-1 text-lg font-medium">{t(locale, "recommend.title")}</h2>
+          <p className="mb-3 text-xs" style={{ color: "var(--muted)" }}>
+            {t(locale, "recommend.target")}: {recommended.target_difficulty}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {recommended.results.slice(0, 6).map((p) => (
+              <Link
+                key={p.slug}
+                href={`/problems/${p.slug}`}
+                className={`rounded border px-3 py-1 text-sm level-${p.level}`}
+                style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+              >
+                {p.title}
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
       <table className="w-full text-sm">
         <thead>
           <tr style={{ color: "var(--muted)" }} className="text-left">

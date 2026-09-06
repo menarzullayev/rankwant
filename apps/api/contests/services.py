@@ -9,7 +9,7 @@ from datetime import datetime
 from django.db import transaction
 from django.utils import timezone
 
-from contests.models import Contest, ContestProblem, Standing
+from contests.models import Contest, ContestProblem, ContestRegistration, Standing
 from judging.models import Attempt
 from judging.verdicts import Verdict
 
@@ -48,8 +48,16 @@ def rebuild_standings(contest: Contest) -> int:
     if not problem_ids:
         return 0
 
+    # Virtual ishtirokchilar rasmiy jadvalga KIRMAYDI: ular musobaqadan
+    # keyin, javoblar ma'lum bo'lgan sharoitda yechishadi.
+    virtual_user_ids = set(
+        ContestRegistration.objects.filter(
+            contest=contest, virtual_start_at__isnull=False
+        ).values_list("user_id", flat=True)
+    )
     attempts = (
         Attempt.objects.filter(contest=contest, problem_id__in=problem_ids)
+        .exclude(user_id__in=virtual_user_ids)
         .order_by("created_at")
         .values("user_id", "problem_id", "verdict", "created_at")
     )
@@ -100,6 +108,32 @@ def rebuild_standings(contest: Contest) -> int:
         ]
     )
     return len(rows)
+
+
+@transaction.atomic
+def start_virtual(contest: Contest, user) -> ContestRegistration:  # type: ignore[no-untyped-def]
+    """PRD P1-1 — arxivdagi musobaqani o'z vaqtingizda boshlash.
+
+    Virtual ishtirok **reytingga ta'sir qilmaydi**: `apply_contest_ratings`
+    faqat `Standing` jadvalidan o'qiydi, virtual urinishlar esa u yerga
+    tushmaydi (`rebuild_standings` `virtual_start_at is null` bo'yicha
+    filtrlaydi). Aks holda kimdir javoblarni bilib turib reyting yig'ardi.
+    """
+    if not contest.is_finished:
+        raise ValueError("Virtual ishtirok faqat tugagan musobaqada mumkin")
+
+    reg, _ = ContestRegistration.objects.get_or_create(contest=contest, user=user)
+    if reg.virtual_start_at is None:
+        reg.virtual_start_at = timezone.now()
+        reg.save(update_fields=["virtual_start_at"])
+    return reg
+
+
+def virtual_deadline(reg: ContestRegistration) -> datetime:
+    """Virtual ishtirokchi uchun tugash vaqti — asl musobaqa davomiyligi."""
+    duration = reg.contest.end_at - reg.contest.start_at
+    assert reg.virtual_start_at is not None
+    return reg.virtual_start_at + duration
 
 
 @transaction.atomic

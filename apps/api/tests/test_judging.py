@@ -279,3 +279,47 @@ class TestCustomRun:
             },
         )
         assert r.status_code == 400
+
+
+@pytest.mark.django_db
+class TestRecommendation:
+    """PRD P1-2 — masala tavsiyasi."""
+
+    def test_yangi_foydalanuvchiga_eng_oson(self, user, problem, hard_problem) -> None:
+        from problems.recommend import recommend, target_difficulty
+
+        assert target_difficulty(user) == 800
+        assert problem in list(recommend(user))
+
+    def test_yechilganlar_chiqarib_tashlanadi(self, user, problem, language) -> None:
+        from problems.recommend import recommend
+
+        attempt = Attempt.objects.create(
+            user=user, problem=problem, language=language, source_code="x"
+        )
+        apply_result({"attempt_id": attempt.pk, "verdict": "AC"})
+        assert problem not in list(recommend(user))
+
+    def test_daraja_oshadi(self, user, problem, hard_problem, language) -> None:
+        from problems.recommend import target_difficulty
+
+        attempt = Attempt.objects.create(
+            user=user, problem=hard_problem, language=language, source_code="x"
+        )
+        apply_result({"attempt_id": attempt.pk, "verdict": "AC"})
+        # 2500 yechildi → keyingi qadam 2600
+        assert target_difficulty(user) == 2600
+
+    def test_api(self, user, problem) -> None:
+        from django.urls import reverse as rev
+
+        c = APIClient()
+        c.force_authenticate(user=user)
+        body = c.get(rev("recommendation")).json()
+        assert body["target_difficulty"] == 800
+        assert any(p["slug"] == problem.slug for p in body["results"])
+
+    def test_anonim_kira_olmaydi(self) -> None:
+        from django.urls import reverse as rev
+
+        assert APIClient().get(rev("recommendation")).status_code in (401, 403)

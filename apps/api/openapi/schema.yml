@@ -266,6 +266,31 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedStandingList'
           description: ''
+  /api/v1/contests/{slug}/virtual/:
+    post:
+      operationId: contests_virtual_create
+      description: |-
+        PRD P1-1 — tugagan musobaqani o'z vaqtingizda boshlash.
+
+        Virtual ishtirok reytingga ta'sir qilmaydi va rasmiy jadvalga
+        kirmaydi (contests.services.rebuild_standings).
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - contests
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Registration'
+          description: ''
   /api/v1/custom-test/:
     post:
       operationId: custom_test_create
@@ -547,6 +572,143 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/notifications/:
+    get:
+      operationId: notifications_list
+      parameters:
+      - name: cursor
+        required: false
+        in: query
+        description: The pagination cursor value.
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - notifications
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNotificationList'
+          description: ''
+  /api/v1/notifications/mark-read/:
+    post:
+      operationId: notifications_mark_read_create
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarkRead'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MarkRead'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MarkRead'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/notifications/unread_count/:
+    get:
+      operationId: notifications_unread_count_retrieve
+      tags:
+      - notifications
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/posts/:
+    get:
+      operationId: posts_list
+      description: Yozish Django admin orqali — API faqat o'qish uchun.
+      parameters:
+      - in: query
+        name: kind
+        schema:
+          type: string
+          enum:
+          - announcement
+          - editorial
+          - news
+        description: |-
+          * `news` - Yangilik
+          * `announcement` - E'lon
+          * `editorial` - Muharrir maqolasi
+      - in: query
+        name: locale
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - posts
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPostListList'
+          description: ''
+  /api/v1/posts/{slug}/:
+    get:
+      operationId: posts_retrieve
+      description: Yozish Django admin orqali — API faqat o'qish uchun.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - posts
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostDetail'
+          description: ''
   /api/v1/problems/:
     get:
       operationId: problems_list
@@ -653,6 +815,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
+          description: ''
+  /api/v1/problems/recommendation/:
+    get:
+      operationId: problems_recommendation_list
+      description: PRD P1-2 — darajangizga mos, yechmagan masalalaringiz.
+      tags:
+      - problems
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProblemList'
           description: ''
   /api/v1/qvant/inventory/:
     get:
@@ -1403,6 +1582,16 @@ components:
       - id
       - item
       - purchased_at
+    Kind59eEnum:
+      enum:
+      - news
+      - announcement
+      - editorial
+      type: string
+      description: |-
+        * `news` - Yangilik
+        * `announcement` - E'lon
+        * `editorial` - Muharrir maqolasi
     Language:
       type: object
       properties:
@@ -1440,6 +1629,13 @@ components:
       required:
       - password
       - username
+    MarkRead:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: integer
     Me:
       type: object
       properties:
@@ -1506,6 +1702,54 @@ components:
       - streak_count
       - streak_freeze_until
       - username
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        kind:
+          $ref: '#/components/schemas/NotificationKindEnum'
+        title:
+          type: string
+          maxLength: 200
+        body:
+          type: string
+        ref_type:
+          type: string
+          maxLength: 24
+        ref_id:
+          type: string
+          maxLength: 64
+        is_read:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - is_read
+      - kind
+      - title
+    NotificationKindEnum:
+      enum:
+      - rating_changed
+      - problem_rerated
+      - contest_result
+      - quest_awarded
+      - streak_milestone
+      - system
+      type: string
+      description: |-
+        * `rating_changed` - Reyting o'zgardi
+        * `problem_rerated` - Masala qayta baholandi
+        * `contest_result` - Musobaqa natijasi
+        * `quest_awarded` - Vazifa bajarildi
+        * `streak_milestone` - Streak yutug'i
+        * `system` - Tizim
     PaginatedApiTokenList:
       type: object
       required:
@@ -1594,6 +1838,48 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Language'
+    PaginatedNotificationList:
+      type: object
+      required:
+      - results
+      properties:
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?cursor=cD00ODY%3D"
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?cursor=cj0xJnA9NDg3
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notification'
+    PaginatedPostListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PostList'
     PaginatedProblemListList:
       type: object
       required:
@@ -1762,6 +2048,68 @@ components:
           type: string
           format: date-time
           readOnly: true
+    PostDetail:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        kind:
+          $ref: '#/components/schemas/Kind59eEnum'
+        title:
+          type: string
+          maxLength: 200
+        summary:
+          type: string
+          maxLength: 300
+        locale:
+          type: string
+          maxLength: 2
+        author:
+          type: string
+          readOnly: true
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        body:
+          type: string
+          description: Markdown
+      required:
+      - author
+      - body
+      - slug
+      - title
+    PostList:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        kind:
+          $ref: '#/components/schemas/Kind59eEnum'
+        title:
+          type: string
+          maxLength: 200
+        summary:
+          type: string
+          maxLength: 300
+        locale:
+          type: string
+          maxLength: 2
+        author:
+          type: string
+          readOnly: true
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - author
+      - slug
+      - title
     ProblemDetail:
       type: object
       properties:

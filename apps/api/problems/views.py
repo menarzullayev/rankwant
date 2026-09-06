@@ -1,11 +1,17 @@
 from __future__ import annotations
 
+from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.request import Request
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
+from core.models import User
 from core.pagination import StandardPagination
 from problems.filters import ProblemFilter
 from problems.models import Language, Problem, Topic
+from problems.recommend import recommend, target_difficulty
 from problems.serializers import (
     LanguageSerializer,
     ProblemDetailSerializer,
@@ -36,6 +42,24 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
 
     def get_serializer_class(self):  # type: ignore[no-untyped-def]
         return ProblemDetailSerializer if self.action == "retrieve" else ProblemListSerializer
+
+
+class RecommendationView(APIView):
+    """PRD P1-2 — darajangizga mos, yechmagan masalalaringiz."""
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(responses={200: ProblemListSerializer(many=True)})
+    def get(self, request: Request) -> Response:
+        assert isinstance(request.user, User)
+        limit = min(int(request.query_params.get("limit", 10)), 50)
+        problems = recommend(request.user, limit=limit)
+        return Response(
+            {
+                "target_difficulty": target_difficulty(request.user),
+                "results": ProblemListSerializer(problems, many=True).data,
+            }
+        )
 
 
 class TopicViewSet(viewsets.ReadOnlyModelViewSet[Topic]):

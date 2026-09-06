@@ -21,6 +21,7 @@ from contests.serializers import (
     RegistrationSerializer,
     StandingSerializer,
 )
+from contests.services import start_virtual, virtual_deadline
 from core.models import User
 
 #: SSE oralig'i — 04-prd: standings 10–30 s da yangilansa yetarli.
@@ -71,6 +72,27 @@ class ContestViewSet(viewsets.ReadOnlyModelViewSet[Contest]):
             RegistrationSerializer(reg).data,
             status=status.HTTP_201_CREATED if created else status.HTTP_200_OK,
         )
+
+    @extend_schema(request=None, responses={201: RegistrationSerializer})
+    @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
+    def virtual(self, request: Request, slug: str | None = None) -> Response:
+        """PRD P1-1 — tugagan musobaqani o'z vaqtingizda boshlash.
+
+        Virtual ishtirok reytingga ta'sir qilmaydi va rasmiy jadvalga
+        kirmaydi (contests.services.rebuild_standings).
+        """
+        contest = self.get_object()
+        assert isinstance(request.user, User)
+        try:
+            reg = start_virtual(contest, request.user)
+        except ValueError as exc:
+            return Response(
+                {"error": {"code": "not_finished", "message": str(exc), "details": {}}},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        data = RegistrationSerializer(reg).data
+        data["deadline"] = virtual_deadline(reg)
+        return Response(data, status=status.HTTP_201_CREATED)
 
 
 def standings_stream(request: Any, slug: str) -> StreamingHttpResponse:

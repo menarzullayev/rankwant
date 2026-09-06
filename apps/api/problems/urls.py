@@ -8,4 +8,7 @@ router.register("problems", views.ProblemViewSet, basename="problem")
 router.register("topics", views.TopicViewSet, basename="topic")
 router.register("languages", views.LanguageViewSet, basename="language")
 
-urlpatterns = [path("", include(router.urls))]
+urlpatterns = [
+    path("problems/recommendation/", views.RecommendationView.as_view(), name="recommendation"),
+    path("", include(router.urls)),
+]
