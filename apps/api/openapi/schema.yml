@@ -1216,17 +1216,23 @@ components:
           description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
             only.
         email:
-          type: string
-          format: email
           title: Email address
-          maxLength: 254
+          oneOf:
+          - type: string
+            format: email
+            maxLength: 254
+          - type: string
+            maxLength: 0
         display_name:
           type: string
           maxLength: 100
         avatar_url:
-          type: string
-          format: uri
-          maxLength: 200
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
         bio:
           type: string
         locale:
@@ -1447,17 +1453,23 @@ components:
           description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
             only.
         email:
-          type: string
-          format: email
           title: Email address
-          maxLength: 254
+          oneOf:
+          - type: string
+            format: email
+            maxLength: 254
+          - type: string
+            maxLength: 0
         display_name:
           type: string
           maxLength: 100
         avatar_url:
-          type: string
-          format: uri
-          maxLength: 200
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
         bio:
           type: string
         locale:
@@ -1538,9 +1550,12 @@ components:
           type: string
           maxLength: 100
         source_url:
-          type: string
-          format: uri
-          maxLength: 200
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
       required:
       - difficulty
       - level
@@ -1602,10 +1617,13 @@ components:
           pattern: ^[\w.@+-]+$
           maxLength: 150
         email:
-          type: string
-          format: email
           title: Email address
-          maxLength: 254
+          oneOf:
+          - type: string
+            format: email
+            maxLength: 254
+          - type: string
+            maxLength: 0
         password:
           type: string
           writeOnly: true
@@ -1714,9 +1732,12 @@ components:
           type: string
           maxLength: 100
         avatar_url:
-          type: string
-          format: uri
-          maxLength: 200
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
         bio:
           type: string
         rating_skills:

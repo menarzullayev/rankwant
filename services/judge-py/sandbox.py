@@ -6,14 +6,15 @@ cgroup v2 da ishlaydi, ya'ni GRUB'ga `systemd.unified_cgroup_hierarchy=0`
 yozish kerak bo'ladi. Bu bake-off'ning asosiy o'lchov nuqtalaridan biri
 (ADR-0004 § cgroup v2 muvofiqligi).
 """
+
 from __future__ import annotations
 
-import os
 import re
 import shutil
 import subprocess
 import time
 from pathlib import Path
+from typing import Self
 
 from protocol import Limits, RunOutcome
 
@@ -31,10 +32,12 @@ class Box:
         self.box_id = box_id
         self.path: Path | None = None
 
-    def __enter__(self) -> "Box":
+    def __enter__(self) -> Self:
         out = subprocess.run(
             [ISOLATE, f"--box-id={self.box_id}", "--cg", "--init"],
-            capture_output=True, text=True,
+            capture_output=True,
+            text=True,
+            check=False,
         )
         if out.returncode != 0:
             raise IsolateError(f"isolate --init: {out.stderr.strip()}")
@@ -45,6 +48,7 @@ class Box:
         subprocess.run(
             [ISOLATE, f"--box-id={self.box_id}", "--cg", "--cleanup"],
             capture_output=True,
+            check=False,
         )
 
     def put(self, name: str, content: str, mode: int = 0o644) -> None:
@@ -102,13 +106,13 @@ def run_sandboxed(
     args = [
         ISOLATE,
         f"--box-id={box.box_id}",
-        "--cg",                                   # cgroup orqali cheklash va o'lchash
+        "--cg",  # cgroup orqali cheklash va o'lchash
         f"--meta={meta}",
-        f"--time={lim.time_ms / 1000:.3f}",       # CPU vaqti
-        f"--wall-time={wall_limit_ms / 1000:.3f}",# wall — IDLENESS uchun
+        f"--time={lim.time_ms / 1000:.3f}",  # CPU vaqti
+        f"--wall-time={wall_limit_ms / 1000:.3f}",  # wall — IDLENESS uchun
         f"--cg-mem={lim.memory_kb}",
         f"--fsize={lim.output_kb}",
-        f"--processes={procs}",                   # 09-fork-bomb
+        f"--processes={procs}",  # 09-fork-bomb
         # Jail ichida muhit bo'sh: PATH bo'lmasa g++ ishga tushadi, lekin
         # collect2 'ld' ni topa olmay "cannot find 'ld'" beradi.
         "--env=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
@@ -119,20 +123,28 @@ def run_sandboxed(
         "--stderr=__stderr",
         # Izolyatsiya: tarmoq default'da yopiq (11-network),
         # /proc mount qilinmaydi (12-proc-read), box tashqarisi ko'rinmaydi (10-file-write).
-        "--run", "--",
+        "--run",
+        "--",
     ] + cmd
 
     start = time.monotonic()
-    proc = subprocess.run(args, capture_output=True, text=True)
+    # Natija `meta` faylidan o'qiladi, subprocess chiqishidan emas.
+    subprocess.run(args, capture_output=True, text=True, check=False)
     wall = int((time.monotonic() - start) * 1000)
 
     m = _parse_meta(meta)
-    stdout = (box.path / "__stdout").read_text(encoding="utf-8", errors="replace") \
-        if (box.path / "__stdout").exists() else ""
-    stderr = (box.path / "__stderr").read_text(encoding="utf-8", errors="replace") \
-        if (box.path / "__stderr").exists() else ""
+    stdout = (
+        (box.path / "__stdout").read_text(encoding="utf-8", errors="replace")
+        if (box.path / "__stdout").exists()
+        else ""
+    )
+    stderr = (
+        (box.path / "__stderr").read_text(encoding="utf-8", errors="replace")
+        if (box.path / "__stderr").exists()
+        else ""
+    )
 
-    status = m.get("status", "")          # RE | SG | TO | XX
+    status = m.get("status", "")  # RE | SG | TO | XX
     message = m.get("message", "")
     cpu_ms = int(float(m.get("time", "0")) * 1000)
     peak_kb = int(m.get("cg-mem", m.get("max-rss", "0")) or 0)
@@ -159,6 +171,6 @@ def run_sandboxed(
         # isolate qoidani buzganda o'ldiradi; buni RE dan ajratamiz
         killed_by_sandbox=(
             status == "SG"
-            and bool(re.search(r"forbidden|not allowed|permission", message, re.I))
+            and bool(re.search(r"forbidden|not allowed|permission", message, re.IGNORECASE))
         ),
     )

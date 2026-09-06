@@ -1,9 +1,13 @@
-Django==5.2.*
-djangorestframework==3.15.*
-drf-spectacular==0.27.*
-django-filter==24.*
-psycopg[binary]==3.2.*
-redis==5.2.*
-celery==5.4.*
-django-cors-headers==4.6.*
-gunicorn==23.*
+# Django 5.2 — LTS, ADR-0003 da ataylab tanlangan (6.x emas).
+# Qolgan paketlarda pastki chegara qo'yiladi: xotiradan yozilgan aniq
+# versiya eskirgan va CVE'li bo'lib chiqishi mumkin (2026-09-06 da
+# djangorestframework 3.15.2 va next 15.1.3 aynan shunday bo'ldi).
+Django>=5.2.17,<6.0
+djangorestframework>=3.17.2
+drf-spectacular>=0.27
+django-filter>=24
+psycopg[binary]>=3.2
+redis>=5.2
+celery>=5.4
+django-cors-headers>=4.6
+gunicorn>=23

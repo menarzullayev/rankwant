@@ -14,6 +14,7 @@ da jarayonlari bor cgroup kontrollerlarni delegatsiya qila olmaydi).
 Yechim judge-go dagi bilan bir xil: root ostida TOZA cgroup yaratamiz va
 kontrollerlarni o'zimiz delegatsiya qilamiz.
 """
+
 from __future__ import annotations
 
 import subprocess
@@ -81,8 +82,12 @@ def check() -> None:
     _prepare_cgroup()
     _point_isolate_at_cgroup()
 
-    box = subprocess.run([ISOLATE, "--box-id=99", "--cg", "--init"],
-                         capture_output=True, text=True)
+    box = subprocess.run(
+        [ISOLATE, "--box-id=99", "--cg", "--init"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
     if box.returncode != 0:
         raise PreflightError(f"isolate --init: {box.stdout.strip()} {box.stderr.strip()}")
     box_path = Path(box.stdout.strip()) / "box"
@@ -92,18 +97,31 @@ def check() -> None:
         (box_path / "probe.py").write_text("a = bytearray(400*1024*1024)\nprint(len(a))\n")
         with tempfile.NamedTemporaryFile("r", suffix=".txt") as meta:
             subprocess.run(
-                [ISOLATE, "--box-id=99", "--cg", f"--meta={meta.name}",
-                 "--cg-mem=65536", "--time=10", "--wall-time=20", "-p4",
-                 "--run", "--", "/usr/bin/python3", "probe.py"],
-                capture_output=True, text=True,
+                [
+                    ISOLATE,
+                    "--box-id=99",
+                    "--cg",
+                    f"--meta={meta.name}",
+                    "--cg-mem=65536",
+                    "--time=10",
+                    "--wall-time=20",
+                    "-p4",
+                    "--run",
+                    "--",
+                    "/usr/bin/python3",
+                    "probe.py",
+                ],
+                capture_output=True,
+                text=True,
+                check=False,
             )
-            report = dict(
-                line.split(":", 1) for line in meta.read().splitlines() if ":" in line
-            )
+            report = dict(line.split(":", 1) for line in meta.read().splitlines() if ":" in line)
         if report.get("cg-oom-killed") != "1":
             raise PreflightError(
                 "xotira limiti MAJBURLANMADI: 64 MB chegarada 400 MB ajratildi "
                 f"(meta: {report}). Cheklovsiz judge ishga tushirilmaydi."
             )
     finally:
-        subprocess.run([ISOLATE, "--box-id=99", "--cg", "--cleanup"], capture_output=True)
+        subprocess.run(
+            [ISOLATE, "--box-id=99", "--cg", "--cleanup"], capture_output=True, check=False
+        )

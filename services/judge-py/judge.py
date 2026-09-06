@@ -1,11 +1,12 @@
 """Bitta job ni to'liq bajaradi — judge-go/judge.go bilan bir xil mantiq."""
+
 from __future__ import annotations
 
 import shutil
 import time
 
 import protocol as P
-from protocol import Job, Limits, RunOutcome, Test
+from protocol import Job, JudgeMetaDict, Limits, ResultDict, RunOutcome, Test
 from sandbox import Box, IsolateError, run_sandboxed
 
 BOX_ID = 0
@@ -64,13 +65,26 @@ def classify(out: RunOutcome, test: Test, lim: Limits) -> str:
     return P.RE
 
 
-def judge(job: Job) -> dict:
+def judge(job: Job) -> ResultDict:
     t0 = time.monotonic()
-    meta = {"worker": "judge-py", "sandbox": "isolate",
-            "queue_wait_ms": 0, "sandbox_setup_ms": 0, "total_ms": 0}
-    result = {"job_id": job.job_id, "verdict": P.IE, "score": 0, "time_ms": 0,
-              "memory_kb": 0, "failed_test_index": None, "compile_output": "",
-              "per_test": [], "judge_meta": meta}
+    meta: JudgeMetaDict = {
+        "worker": "judge-py",
+        "sandbox": "isolate",
+        "queue_wait_ms": 0,
+        "sandbox_setup_ms": 0,
+        "total_ms": 0,
+    }
+    result: ResultDict = {
+        "job_id": job.job_id,
+        "verdict": P.IE,
+        "score": 0,
+        "time_ms": 0,
+        "memory_kb": 0,
+        "failed_test_index": None,
+        "compile_output": "",
+        "per_test": [],
+        "judge_meta": meta,
+    }
 
     try:
         with Box(BOX_ID) as box:
@@ -82,12 +96,17 @@ def judge(job: Job) -> dict:
             # ── Kompilyatsiya ──────────────────────────────────────
             compile_cmd = job.language.get("compile")
             if compile_cmd:
-                clim = Limits(**{**job.limits.__dict__})
+                clim = Limits(**job.limits.__dict__)
                 clim.time_ms = job.limits.compile_time_ms
                 clim.memory_kb = 1024 * 1024
-                out = run_sandboxed(box, subst(compile_cmd, src, "prog"), "",
-                                    clim, job.limits.compile_time_ms,
-                                    allow_many_processes=True)
+                out = run_sandboxed(
+                    box,
+                    subst(compile_cmd, src, "prog"),
+                    "",
+                    clim,
+                    job.limits.compile_time_ms,
+                    allow_many_processes=True,
+                )
                 if out.timeout:
                     result["verdict"] = P.COMPILE_TIMEOUT
                     result["compile_output"] = out.stderr
@@ -110,9 +129,14 @@ def judge(job: Job) -> dict:
                 verdict = classify(out, test, job.limits)
                 max_cpu = max(max_cpu, out.cpu_ms)
                 max_mem = max(max_mem, out.peak_kb)
-                result["per_test"].append({
-                    "index": test.index, "verdict": verdict,
-                    "time_ms": out.cpu_ms, "memory_kb": out.peak_kb})
+                result["per_test"].append(
+                    {
+                        "index": test.index,
+                        "verdict": verdict,
+                        "time_ms": out.cpu_ms,
+                        "memory_kb": out.peak_kb,
+                    }
+                )
                 if verdict == P.AC:
                     passed += 1
                     continue

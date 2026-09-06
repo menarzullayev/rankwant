@@ -2,10 +2,11 @@
 
 Bu tuzilmalar judge-go bilan BIR XIL bo'lishi shart — nomzodlar almashtiriladigan.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, NotRequired, TypedDict
 
 # Verdict kodlari — 08-technical-spec dagi 20 talikning bake-off qismi
 AC = "AC"
@@ -49,7 +50,7 @@ class Job:
     attempt_id: int = 0
 
     @classmethod
-    def from_json(cls, raw: dict[str, Any]) -> "Job":
+    def from_json(cls, raw: dict[str, Any]) -> Job:
         return cls(
             job_id=raw["job_id"],
             language=raw["language"],
@@ -65,13 +66,44 @@ class Job:
 @dataclass
 class RunOutcome:
     """Bitta sandbox ishga tushirishning natijasi."""
+
     stdout: str = ""
     stderr: str = ""
     exit_code: int = 0
-    cpu_ms: int = 0      # CPU vaqti — TLE shu bo'yicha, wall clock bo'yicha EMAS
-    wall_ms: int = 0     # IDLENESS aniqlash uchun
+    cpu_ms: int = 0  # CPU vaqti — TLE shu bo'yicha, wall clock bo'yicha EMAS
+    wall_ms: int = 0  # IDLENESS aniqlash uchun
     peak_kb: int = 0
     oom_kill: bool = False
     timeout: bool = False
     output_exceeded: bool = False
     killed_by_sandbox: bool = False
+
+
+class TestResultDict(TypedDict):
+    index: int
+    verdict: str
+    time_ms: int
+    memory_kb: int
+    stdout: NotRequired[str]
+
+
+class JudgeMetaDict(TypedDict):
+    worker: str
+    sandbox: str
+    queue_wait_ms: int
+    sandbox_setup_ms: int
+    total_ms: int
+
+
+class ResultDict(TypedDict):
+    """Natija shakli — judge-go/protocol.go dagi `Result` bilan bir xil."""
+
+    job_id: str
+    verdict: str
+    score: int
+    time_ms: int
+    memory_kb: int
+    failed_test_index: int | None
+    compile_output: str
+    per_test: list[TestResultDict]
+    judge_meta: JudgeMetaDict

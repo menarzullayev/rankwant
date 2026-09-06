@@ -148,23 +148,32 @@ jobs:
       - uses: actions/setup-go@v7
         with:
           go-version: '1.23'
-      - name: Go vet + test
+      - name: Go — vet, format, build, test
         run: |
-          if [ -f services/judge-go/go.mod ]; then
-            cd services/judge-go && go vet ./... && go test ./...
-          else
+          if [ ! -f services/judge-go/go.mod ]; then
             echo "judge-go hali scaffold qilinmagan — o'tkazib yuborildi"
+            exit 0
           fi
+          cd services/judge-go
+          test -z "$(gofmt -l .)" || { echo "::error::gofmt: $(gofmt -l .)"; exit 1; }
+          go vet ./...
+          go build ./...
+          go test ./...
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
-      - name: Python judge test
+      - name: Python judge — lint, types, test
         run: |
-          if [ -f services/judge-py/pyproject.toml ]; then
-            pip install -e services/judge-py[dev] && pytest services/judge-py
-          else
+          if [ ! -f services/judge-py/pyproject.toml ]; then
             echo "judge-py hali scaffold qilinmagan — o'tkazib yuborildi"
+            exit 0
           fi
+          cd services/judge-py
+          pip install -e '.[dev]'
+          ruff check .
+          ruff format --check .
+          mypy .
+          pytest
 
   openapi:
     name: OpenAPI schema diff

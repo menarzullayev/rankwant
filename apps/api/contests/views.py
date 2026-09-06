@@ -21,6 +21,7 @@ from contests.serializers import (
     RegistrationSerializer,
     StandingSerializer,
 )
+from core.models import User
 
 #: SSE oralig'i — 04-prd: standings 10–30 s da yangilansa yetarli.
 SSE_INTERVAL_S = 10
@@ -64,6 +65,7 @@ class ContestViewSet(viewsets.ReadOnlyModelViewSet[Contest]):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        assert isinstance(request.user, User)
         reg, created = ContestRegistration.objects.get_or_create(contest=contest, user=request.user)
         return Response(
             RegistrationSerializer(reg).data,

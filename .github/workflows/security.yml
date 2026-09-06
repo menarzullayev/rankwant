@@ -24,7 +24,12 @@ jobs:
       - name: pip-audit
         run: |
           pip install pip-audit
-          if [ -f apps/api/requirements.txt ]; then pip-audit -r apps/api/requirements.txt; fi
+          if [ -f apps/api/requirements.txt ]; then
+            pip-audit -r apps/api/requirements.txt
+          fi
+          if [ -f services/judge-py/pyproject.toml ]; then
+            pip-audit --path services/judge-py || true
+          fi
       - uses: actions/setup-node@v7
         with:
           node-version: '22'

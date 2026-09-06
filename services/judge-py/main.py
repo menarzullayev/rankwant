@@ -3,6 +3,7 @@
 PULL protokoli (ADR-0004): navbatdan ish tortadi, kiruvchi port ochmaydi.
 DB credential OLMAYDI — faqat REDIS_URL.
 """
+
 from __future__ import annotations
 
 import json
@@ -15,9 +16,9 @@ import time
 import redis
 
 import preflight
-
+import protocol as P
 from judge import judge
-from protocol import Job
+from protocol import Job, ResultDict
 
 JOBS_KEY = "rankwant:judge:jobs"
 RESULTS_KEY = "rankwant:judge:results"
@@ -64,18 +65,49 @@ def main() -> int:
         received = time.monotonic()
         try:
             job = Job.from_json(json.loads(item[1]))
-        except Exception as exc:
+        except (ValueError, KeyError, TypeError) as exc:
+            # Buzuq xabar — yozib qo'yamiz va davom etamiz. Bunga javob
+            # yuborib bo'lmaydi: job_id ham ishonchsiz.
             log.error("job parse qilinmadi: %s", exc)
             continue
 
-        result = judge(job)
+        result: ResultDict
+        try:
+            result = judge(job)
+        except Exception:
+            # Worker BITTA job tufayli to'xtamasligi kerak. Lekin natijasiz
+            # ham qoldirmaymiz: API PENDING holatda abadiy kutib qolardi.
+            log.exception("job bajarilmadi: %s", job.job_id)
+            result = {
+                "job_id": job.job_id,
+                "verdict": P.IE,
+                "score": 0,
+                "time_ms": 0,
+                "memory_kb": 0,
+                "failed_test_index": None,
+                "compile_output": "",
+                "per_test": [],
+                "judge_meta": {
+                    "worker": "judge-py",
+                    "sandbox": "isolate",
+                    "queue_wait_ms": 0,
+                    "sandbox_setup_ms": 0,
+                    "total_ms": int((time.monotonic() - received) * 1000),
+                },
+            }
+
         elapsed = int((time.monotonic() - received) * 1000)
         result["judge_meta"]["queue_wait_ms"] = max(0, elapsed - result["judge_meta"]["total_ms"])
 
         rdb.lpush(RESULTS_KEY, json.dumps(result))
-        log.info("bajarildi job=%s verdict=%s cpu_ms=%s mem_kb=%s total_ms=%s",
-                 job.job_id, result["verdict"], result["time_ms"],
-                 result["memory_kb"], result["judge_meta"]["total_ms"])
+        log.info(
+            "bajarildi job=%s verdict=%s cpu_ms=%s mem_kb=%s total_ms=%s",
+            job.job_id,
+            result["verdict"],
+            result["time_ms"],
+            result["memory_kb"],
+            result["judge_meta"]["total_ms"],
+        )
     return 0
 
 
