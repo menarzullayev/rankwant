@@ -13,7 +13,7 @@ jobs:
     name: Load va spike (staging)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: k6 stsenariylari
         run: |
           if [ -f tests/load/main.js ]; then
@@ -27,7 +27,7 @@ jobs:
     name: Chaos (staging)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: |
           if [ -x tests/chaos/run.sh ]; then
             tests/chaos/run.sh
