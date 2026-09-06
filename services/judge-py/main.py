@@ -14,6 +14,8 @@ import time
 
 import redis
 
+import preflight
+
 from judge import judge
 from protocol import Job
 
@@ -40,6 +42,15 @@ def main() -> int:
 
     signal.signal(signal.SIGTERM, _handle_stop)
     signal.signal(signal.SIGINT, _handle_stop)
+
+    # PREFLIGHT: limitlarni majburlay olmasak — ishlamaymiz.
+    # Cheklovsiz judge foydalanuvchi kodini host'ga qo'yib yuboradi.
+    try:
+        preflight.check()
+    except preflight.PreflightError as exc:
+        log.error("preflight muvaffaqiyatsiz — worker ishga tushmaydi: %s", exc)
+        return 1
+    log.info("preflight o'tdi — isolate limitlari majburlanadi")
 
     url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
     rdb = redis.Redis.from_url(url)

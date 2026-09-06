@@ -18,6 +18,29 @@ Bu taqsimot **xavfsizlik chegarasidan** kelib chiqadi ([06](../06-architecture/R
 
 Judge hostlar **gorizontal** miqyoslanadi — navbat uzunligi oshsa worker qo'shiladi.
 
+## Judge sig'imi (o'lchangan, 2026-09-06)
+
+[ADR-0004](../07-adr/0004-judge-engine.md) bake-off o'lchovi:
+
+| Worker | O'tkazuvchanlik | p95 |
+| ------ | --------------- | --- |
+| 1 | 2.4 submit/s | 857 ms |
+| 4 | 5.4 submit/s | 952 ms |
+| 8 | 8.0 submit/s | 1360 ms |
+
+**Miqyoslash chiziqli emas** — `total_ms` ning ~830 ms i kompilyatsiya, u
+CPU-bound. Bitta host'da yadrolar tugagach worker qo'shish kam foyda beradi.
+
+PRD NFR contest spike: **500 submit / 10 s = 50 submit/s**. Bunga yetish uchun:
+
+1. **Ko'p judge host** — worker qo'shish emas, HOST qo'shish (bitta hostda
+   ~8 worker to'yinadi). Taxminan 6–8 host kerak.
+2. **Kompilyatsiya keshi** — manba hash'i bo'yicha; rejudge va takrorlanuvchi
+   yechimlar kompilyatsiyani butunlay o'tkazib yuboradi. Eng katta yutuq.
+
+Contest oldidan judge hostlarni **oldindan ko'paytirish** kerak — autoscale
+spike'ga ulgurmaydi (contest boshlanishi 10 soniyalik hodisa).
+
 ## Muhitlar
 
 | Muhit    | Manzil                  | Izoh                                       |

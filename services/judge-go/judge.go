@@ -79,6 +79,10 @@ func judge(ctx context.Context, job *Job) *Result {
 		cl := job.Limits
 		cl.MemoryKB = 1024 * 1024 // kompilyator uchun kengroq
 		cl.Processes = 16
+		// Kompilyatsiya O'Z CPU byudjetidan foydalanadi. Aks holda
+		// masalaning ish vaqti limiti (masalan 500 ms) g++ ga qo'llanib,
+		// har bir C++ submission CE bo'lib qoladi.
+		cl.TimeMS = job.Limits.CompileTimeMS
 		out, err := runSandboxed(ctx, work, subst(job.Language.Compile, "/box/"+src, "/box/prog"),
 			"", cl, job.Limits.CompileTimeMS)
 		if err != nil {

@@ -1,6 +1,6 @@
 # ADR-0004: Judge engine — o'z engine'imiz, sandbox bake-off bilan
 
-**STATUS:** proposed (2026-09-06) — bake-off natijasidan keyin `accepted` bo'ladi
+**STATUS:** accepted (2026-09-06) — bake-off o'tkazildi, g'olib: **Go + nsjail**
 
 ## Muammo
 
@@ -30,28 +30,98 @@ Bu «mustaqillik» uchun emas, aniq talablar uchun:
 - Judge0 ning `--privileged` + **cgroup v1** talabi yo'qoladi (zamonaviy Linux cgroup v2 da; Judge0 uchun GRUB'ga `systemd.unified_cgroup_hierarchy=0` yozish kerak)
 - GPL masalasi butunlay tushadi (nsjail = Apache-2.0)
 
-## Bake-off — ikki nomzod sinaladi
+## Bake-off natijasi (2026-09-06)
 
-Qaror **o'lchovga** qoldirildi. Ikkala nomzod ham `JudgeProvider` interfeysi ortida quriladi:
+Ikkala nomzod ham bir xil shartnoma, bir xil 14 case va bir xil host'da o'lchandi.
+To'liq hisobotlar: [result-judge-go.md](../../services/bakeoff/result-judge-go.md) ·
+[result-judge-py.md](../../services/bakeoff/result-judge-py.md)
 
-| # | Nomzod                 | Sandbox litsenziyasi | Izoh                                                          |
-| - | ---------------------- | -------------------- | ------------------------------------------------------------- |
-| **A** | **Go worker + nsjail** | **Apache-2.0** ✅    | Google saqlaydi; namespace + seccomp-bpf + cgroups; <20ms start; bitta binary deploy |
-| **B** | **Python worker + isolate** | GPL-2.0+       | IOI va CMS ishlatadigan CP standarti, eng ko'p sinovdan o'tgan; backend bilan bitta til; cgroup v1 ga bog'liq |
+**Ikkalasi ham O'TDI** — 13/13 bajarilgan case, 5 izolyatsiya sinovining hammasi.
 
-### Baholash mezonlari
+| Case | A — Go + nsjail | B — Python + isolate |
+| ---- | ---------------: | -------------------: |
+| `01-aplusb` | 831 ms | 846 ms |
+| `03-tle-cpu` | **1333 ms** | 1418 ms |
+| `04-idleness` | 3003 ms | **2604 ms** |
+| `08-ole` | **12 ms** | 14 ms |
+| `09-fork-bomb` | 3004 ms | **2104 ms** |
+| Yuklama p50 / p95 (30 parallel) | 836 / 839 ms | 825 / 833 ms |
 
-| Mezon                                        | Nega hal qiluvchi                                              |
-| -------------------------------------------- | -------------------------------------------------------------- |
-| cgroup v2 muvofiqligi                        | GRUB hack keraksiz bo'lsa — ops yuki keskin kamayadi           |
-| Kerakli privilegiya darajasi                 | `--privileged` talab qilinmasa host xavfi tushadi              |
-| Sandbox start latency (p50 / p95)            | PRD maqsadi: **p50 < 5s, p95 < 15s** — nomzod shu byudjetga sig'ishi kerak |
-| CPU/wall time va peak memory o'lchash aniqligi | TLE/MLE adolatliligi — **reyting ishonchliligi** shunga bog'liq |
-| Til konfiguratsiyasi qulayligi               | 20+ compiler saqlash narxi                                     |
-| Interactive masala qo'llab-quvvatlashi       | ICPC formati uchun shart                                       |
-| Kod hajmi va saqlash yuki                    | Kichik jamoa uchun hal qiluvchi                                |
+Dastlabki o'lchovda A `08-ole` da 2007 ms va `03-tle-cpu` da 2818 ms ko'rsatgan
+edi. Ikkalasi ham **implementatsiya nuqsoni** bo'lib chiqdi va tuzatildi
+(pastga qarang) — shundan keyin A ikkala ko'rsatkichda ham B dan tezroq.
 
-Bake-off rejasi: [../09-development-plan/README.md](../09-development-plan/README.md) — Sprint 0.
+### Tuzatilgan taxmin — isolate cgroup v2 da ISHLAYDI
+
+Bu ADR dastlab «isolate cgroup v1 talab qiladi, GRUB o'zgartirib reboot kerak»
+deb yozgan edi. **Bu noto'g'ri.** isolate master cgroup v2 ni qo'llab-quvvatlaydi.
+
+Haqiqiy muammo boshqa: isolate'ning standart konfiguratsiyasi
+`cg_root = auto:/run/isolate/cgroup` systemd boshqaradigan cgroup'ni kutadi, va
+uning `cg-keeper` i konteynerning **o'z** cgroup'ida `subtree_control` yoqmoqchi
+bo'lib `Device or resource busy` oladi — cgroup v2 da jarayonlari bor cgroup
+kontrollerlarni delegatsiya qila olmaydi.
+
+Yechim judge-go dagi bilan bir xil: root ostida **toza** cgroup yaratib,
+kontrollerlarni o'zimiz delegatsiya qilamiz va `cg_root` ni unga yo'naltiramiz.
+Shundan keyin `cg-mem` limiti aniq majburlanadi (`cg-oom-killed:1`).
+
+Ya'ni **litsenziya va ops jihatidan B ni chetlatadigan asos yo'q edi** —
+qaror boshqa mezonlar bo'yicha qabul qilinishi kerak.
+
+## Tanlov: A — Go + nsjail
+
+B tezroq bo'lsa ham A tanlandi. Sabablari **performance emas**:
+
+1. **Apache-2.0 vs GPL-2.0.** O'z-o'zini hosting qilishda ikkalasi ham muammosiz
+   (tarqatish yo'q → copyleft majburiyati yo'q). Lekin PRD Phase 2 da
+   **maktab/universitet judge rejasi** bor — agar judge appliance sifatida
+   yetkazilsa, bu tarqatish bo'ladi. Apache-2.0 o'sha yo'lni ochiq qoldiradi.
+2. **isolate — setuid root binary.** Eng yuqori xavfli host'da doimiy setuid
+   root komponent qo'shimcha hujum yuzasi. nsjail setuid talab qilmaydi.
+3. **Bitta binary deploy.** Judge hostlar gorizontal miqyoslanadi; Go binary
+   uchun interpretator, paketlar yoki virtualenv kerak emas.
+
+### B aniqlagan nuqsonlar — A da YOPILDI
+
+Bake-off B ni tanlashga olib kelmadi, lekin A dagi **uchta haqiqiy nuqsonni**
+ko'rsatdi. Bular nsjail kamchiligi emas, `judge-go` implementatsiyasiniki:
+
+| Nuqson | Oldin → keyin | Tuzatish |
+| ------ | ------------- | -------- |
+| Chiqish chegarasida jarayon o'ldirilmasdi | 2007 → **12 ms** | `capBuffer` chegaraga yetganda kontekstni bekor qiladi |
+| `--rlimit_cpu` faqat butun soniya | 2818 → **1333 ms** | cgroup `cpu.stat` ni 20 ms da pollovchi kuzatuvchi |
+| Kompilyatsiya masalaning ish vaqti limitidan foydalanardi | har C++ submission CE | kompilyatsiya `compile_time_ms` byudjetidan foydalanadi |
+
+Uchinchisi **yashirin buzilish** edi: CPU kuzatuvchisi qo'shilgunicha bilinmagan,
+chunki `--rlimit_cpu` yaxlitlash tufayli g++ ga yetarli vaqt qolardi.
+
+### O'tkazuvchanlik va sig'im
+
+| Worker | O'tkazuvchanlik | p50 | p95 |
+| ------ | --------------- | --- | --- |
+| 1 | 2.4 submit/s | 848 ms | 857 ms |
+| 2 | 3.3 submit/s | 867 ms | 882 ms |
+| 4 | 5.4 submit/s | 899 ms | 952 ms |
+| 8 | 8.0 submit/s | 984 ms | 1360 ms |
+
+Miqyoslash **chiziqli emas** — 8 worker 8× emas, 3.3× beradi. Sabab: `total_ms`
+ning ~830 ms i **kompilyatsiya**, u CPU-bound va bitta host yadrolari cheklangan.
+
+PRD NFR contest spike'da 500 submit / 10 s (= 50 submit/s) talab qiladi. Bir
+host'da bunga yetib bo'lmaydi — ikki richag bor:
+
+1. **Ko'p judge host** — arxitektura bunga tayyor (pull protokoli, ADR-0004)
+2. **Kompilyatsiya keshi** — bir xil manba qayta yuborilganda (rejudge, bir xil
+   yechim) kompilyatsiya o'tkazib yuboriladi. Eng katta yutuq shu yerda.
+
+Batafsil sig'im rejasi: [10-operations](../10-operations/README.md).
+
+### judge-py taqdiri
+
+Kod **saqlanadi** (`services/judge-py`), lekin faol emas. Sabab: `JudgeProvider`
+shartnomasi ikkalasini ham qoplaydi, va yuqoridagi nuqsonlar A da yopilmasa
+yoki litsenziya sharoiti o'zgarsa, B ga qaytish arzon bo'lib qoladi.
 
 ## Oraliq yechim
 

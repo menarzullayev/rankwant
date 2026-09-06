@@ -65,6 +65,25 @@ def _parse_meta(meta_path: Path) -> dict[str, str]:
     return out
 
 
+def _exit_code(meta: dict[str, str], status: str) -> int:
+    """isolate meta'sidan chiqish kodi.
+
+    status bo'sh bo'lsa — muvaffaqiyatli yakun (0).
+    RE/SG/TO/XX bo'lsa — nolga teng bo'lmagan kod qaytariladi, aks holda
+    segfault AC deb baholanadi.
+    """
+    if status:
+        raw = meta.get("exitcode")
+        if raw and raw.isdigit() and int(raw) != 0:
+            return int(raw)
+        sig = meta.get("exitsig")
+        if sig and sig.isdigit():
+            return 128 + int(sig)
+        return 1
+    raw = meta.get("exitcode", "0")
+    return int(raw) if raw.isdigit() else 0
+
+
 def run_sandboxed(
     box: Box,
     cmd: list[str],
@@ -90,6 +109,11 @@ def run_sandboxed(
         f"--cg-mem={lim.memory_kb}",
         f"--fsize={lim.output_kb}",
         f"--processes={procs}",                   # 09-fork-bomb
+        # Jail ichida muhit bo'sh: PATH bo'lmasa g++ ishga tushadi, lekin
+        # collect2 'ld' ni topa olmay "cannot find 'ld'" beradi.
+        "--env=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+        "--env=HOME=/box",
+        "--env=LANG=C.UTF-8",
         "--stdin=__stdin",
         "--stdout=__stdout",
         "--stderr=__stderr",
@@ -120,7 +144,12 @@ def run_sandboxed(
     return RunOutcome(
         stdout=stdout[: lim.output_kb * 1024],
         stderr=stderr[:65536],
-        exit_code=int(m.get("exitcode", "0") or (1 if status else 0)),
+        # XATO EDI: `m.get("exitcode", "0") or ...` — "0" satri TRUTHY,
+        # shuning uchun `or` hech qachon ishlamagan va signal bilan o'lgan
+        # jarayon (segfault) exit_code=0 olib, AC deb baholangan.
+        # isolate meta'sida signal holatida `exitcode` UMUMAN bo'lmaydi,
+        # `status` esa RE/SG/TO/XX bo'ladi.
+        exit_code=_exit_code(m, status),
         cpu_ms=cpu_ms,
         wall_ms=wall,
         peak_kb=peak_kb,

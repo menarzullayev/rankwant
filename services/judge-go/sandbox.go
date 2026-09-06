@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync/atomic"
 	"syscall"
 	"time"
 )
@@ -281,13 +282,57 @@ func runSandboxed(ctx context.Context, work string, cmd []string, stdin string,
 	proc.Stdin = strings.NewReader(stdin)
 	var out, errb capBuffer
 	out.limit = int64(lim.OutputKB) * 1024
+	// Chegaraga yetganda kontekstni bekor qilamiz → CommandContext
+	// jarayonni darhol o'ldiradi, wall chegarasi kutilmaydi.
+	out.onExceed = cancel
 	errb.limit = 64 * 1024
+	errb.onExceed = cancel
 	proc.Stdout = &out
 	proc.Stderr = &errb
 
 	start := time.Now()
+
+	// CPU KUZATUVCHISI.
+	// --rlimit_cpu faqat BUTUN soniya qabul qiladi, ya'ni 500 ms limitli
+	// masala kamida 1-2 soniya ishlaydi. cgroup cpu.stat ni pollab,
+	// chegaraga yetganda darhol to'xtatamiz — aniqlik ~20 ms.
+	var watchdogFired atomic.Bool
+	if lim.TimeMS > 0 {
+		if err := proc.Start(); err != nil {
+			return nil, err
+		}
+		done := make(chan struct{})
+		go func() {
+			ticker := time.NewTicker(20 * time.Millisecond)
+			defer ticker.Stop()
+			budget := int64(lim.TimeMS) * 1000 // mikrosoniya
+			for {
+				select {
+				case <-done:
+					return
+				case <-ticker.C:
+					if cg.readInt("cpu.stat", "usage_usec") > budget {
+						watchdogFired.Store(true)
+						cancel()
+						return
+					}
+				}
+			}
+		}()
+		runErr := proc.Wait()
+		close(done)
+		wall := time.Since(start).Milliseconds()
+		return finishRun(cg, &out, &errb, runErr, wall, wallSec, watchdogFired.Load())
+	}
+
 	runErr := proc.Run()
 	wall := time.Since(start).Milliseconds()
+
+	return finishRun(cg, &out, &errb, runErr, wall, wallSec, false)
+}
+
+func finishRun(cg *cgroup, out, errb *capBuffer, runErr error,
+	wall int64, wallSec int, cpuKilled bool) (*runOutcome, error) {
 
 	exit := 0
 	if runErr != nil {
@@ -315,7 +360,9 @@ func runSandboxed(ctx context.Context, work string, cmd []string, stdin string,
 		WallMs:   wall,
 		PeakKB:   peak / 1024,
 		OOMKill:  oom,
-		OutputEx: out.Exceeded,
-		Timeout:  runCtx.Err() != nil || wall >= int64(wallSec*1000),
+		OutputEx: out.Exceeded || errb.Exceeded,
+		// CPU kuzatuvchisi to'xtatgan bo'lsa, bu TIMEOUT emas — CPU limiti.
+		// classify() cpu_ms ni limitga solishtirib TLE beradi.
+		Timeout: !cpuKilled && wall >= int64(wallSec*1000),
 	}, nil
 }

@@ -1,6 +1,7 @@
 """Bitta job ni to'liq bajaradi — judge-go/judge.go bilan bir xil mantiq."""
 from __future__ import annotations
 
+import shutil
 import time
 
 import protocol as P
@@ -29,7 +30,15 @@ def src_name(lang_code: str) -> str:
 
 
 def subst(args: list[str], src: str, binary: str) -> list[str]:
-    return [a.replace("{src}", src).replace("{bin}", binary) for a in args]
+    out = [a.replace("{src}", src).replace("{bin}", binary) for a in args]
+    # Sandbox ichida PATH bo'yicha qidiruv yo'q — birinchi element MUTLAQ
+    # yo'l bo'lishi shart, aks holda execve ENOENT beradi.
+    # (judge-go da ham xuddi shu tuzatish bor — nomzodlar bir xil sharoitda.)
+    if out and not out[0].startswith("/"):
+        resolved = shutil.which(out[0])
+        if resolved:
+            out[0] = resolved
+    return out
 
 
 def classify(out: RunOutcome, test: Test, lim: Limits) -> str:
