@@ -22,13 +22,13 @@ Judge bake-off tugamaguncha Sprint 3 (submit oqimi) boshlanmaydi.
 - [x] Workspace `rankwant/` + docs pipeline
 - [x] Raqobatchi tahlil (KEP, RoboContest, cp.uz)
 - [x] Hujjat bosqichlari 01–06, 08 🔒 locked
-- [x] ADR 0001–0003, 0005–0008 accepted
+- [x] ADR 0001–0009 accepted (0004 bake-off bilan yopildi)
 - [ ] Domen/handle ro'yxatdan o'tkazish — `rankwant.uz`, `qvantcoin.uz`, `@rankwant`, `@qvantcoin`
       **Shoshilinch emas** (2026-09-06 qarori): bu nomlar yillar davomida bo'sh turgan, ya'ni talab past. Launch'gacha bajarilsa yetarli.
-- [ ] GitHub monorepo `rankwant` ([ADR-0009](../07-adr/0009-monorepo.md))
-- [ ] **Judge bake-off spike** ↓
+- [x] GitHub monorepo `rankwant` ([ADR-0009](../07-adr/0009-monorepo.md))
+- [x] **Judge bake-off spike** — g'olib: Go + nsjail, 14/14 ↓
 
-## Sprint 0.5 — Judge bake-off (~1–2 hafta) · GATE
+## Sprint 0.5 — Judge bake-off · GATE ✅ YOPILDI (2026-09-06)
 
 Maqsad: [ADR-0004](../07-adr/0004-judge-engine.md) ni `proposed` → `accepted`.
 
