@@ -15,4 +15,6 @@ urlpatterns = [
     path("", include("blog.urls")),
     path("", include("content.urls")),
     path("", include("classroom.urls")),
+    path("", include("quizzes.urls")),
+    path("", include("arena.urls")),
 ]

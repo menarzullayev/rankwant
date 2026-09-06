@@ -35,6 +35,9 @@ class QvantTransaction(models.Model):
         PURCHASE = "purchase", "Xarid"
         REFUND = "refund", "Qaytarish"
         ADMIN = "admin", "Admin"
+        QUIZ = "quiz", "Test"
+        ARENA = "arena", "Arena"
+        DUEL = "duel", "Duel"
 
     user = models.ForeignKey(
         "core.User", on_delete=models.CASCADE, related_name="qvant_transactions"

@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     "blog",
     "content",
     "classroom",
+    "quizzes",
+    "arena",
 ]
 
 MIDDLEWARE = [
@@ -219,6 +221,10 @@ CELERY_BEAT_SCHEDULE = {
     },
     "finalize-due-contests": {
         "task": "contests.finalize_due",
+        "schedule": 60.0,
+    },
+    "finalize-due-arena": {
+        "task": "arena.finalize_due",
         "schedule": 60.0,
     },
     "announce-published-posts": {
