@@ -829,6 +829,207 @@ paths:
               schema:
                 $ref: '#/components/schemas/CustomRun'
           description: ''
+  /api/v1/duels/:
+    get:
+      operationId: duels_list
+      description: |-
+        1v1 — PRD Phase 3.
+
+        `list` — kutish xonasi: hozir ochiq chaqiriqlar. O'z duellari `mine` da.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - duels
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDuelList'
+          description: ''
+    post:
+      operationId: duels_create
+      description: |-
+        1v1 — PRD Phase 3.
+
+        `list` — kutish xonasi: hozir ochiq chaqiriqlar. O'z duellari `mine` da.
+      tags:
+      - duels
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DuelCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DuelCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DuelCreate'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Duel'
+          description: ''
+  /api/v1/duels/{slug}/:
+    get:
+      operationId: duels_retrieve
+      description: |-
+        1v1 — PRD Phase 3.
+
+        `list` — kutish xonasi: hozir ochiq chaqiriqlar. O'z duellari `mine` da.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - duels
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Duel'
+          description: ''
+  /api/v1/duels/{slug}/accept/:
+    post:
+      operationId: duels_accept_create
+      description: |-
+        1v1 — PRD Phase 3.
+
+        `list` — kutish xonasi: hozir ochiq chaqiriqlar. O'z duellari `mine` da.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - duels
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Duel'
+          description: ''
+  /api/v1/duels/{slug}/cancel/:
+    post:
+      operationId: duels_cancel_create
+      description: |-
+        1v1 — PRD Phase 3.
+
+        `list` — kutish xonasi: hozir ochiq chaqiriqlar. O'z duellari `mine` da.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - duels
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Duel'
+          description: ''
+  /api/v1/duels/mine/:
+    get:
+      operationId: duels_mine_list
+      description: |-
+        1v1 — PRD Phase 3.
+
+        `list` — kutish xonasi: hozir ochiq chaqiriqlar. O'z duellari `mine` da.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - duels
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDuelList'
+          description: ''
+  /api/v1/duels/record/{username}/:
+    get:
+      operationId: duels_record_retrieve
+      description: |-
+        1v1 — PRD Phase 3.
+
+        `list` — kutish xonasi: hozir ochiq chaqiriqlar. O'z duellari `mine` da.
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - duels
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DuelRecord'
+          description: ''
   /api/v1/health/:
     get:
       operationId: health_retrieve
@@ -2654,6 +2855,136 @@ components:
       required:
       - language
       - source_code
+    Duel:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 16
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 120
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        challenger:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          readOnly: true
+        opponent:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          readOnly: true
+        problem_count:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        difficulty:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        duration_minutes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        start_at:
+          type: string
+          format: date-time
+        end_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_running:
+          type: boolean
+          readOnly: true
+        winner:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          readOnly: true
+        challenger_solved:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        opponent_solved:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        is_draw:
+          type: boolean
+        problems:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          description: |-
+            Masalalar faqat BOSHLANGACH va faqat ishtirokchilarga.
+
+            Aks holda raqib masalalarni oldindan ko'rib tayyorlanib olardi.
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - challenger
+      - created_at
+      - end_at
+      - is_running
+      - opponent
+      - problems
+      - slug
+      - start_at
+      - title
+      - winner
+    DuelCreate:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 120
+        problem_count:
+          type: integer
+          maximum: 8
+          minimum: 1
+          default: 4
+        difficulty:
+          type: integer
+          maximum: 3500
+          minimum: 800
+          default: 1200
+        duration_minutes:
+          type: integer
+          maximum: 240
+          minimum: 15
+          default: 60
+        start_at:
+          type: string
+          format: date-time
+          description: Kamida 5 daqiqadan keyin
+      required:
+      - start_at
+      - title
+    DuelRecord:
+      type: object
+      properties:
+        wins:
+          type: integer
+        draws:
+          type: integer
+        losses:
+          type: integer
+      required:
+      - draws
+      - losses
+      - wins
     Inventory:
       type: object
       properties:
@@ -2859,6 +3190,7 @@ components:
       - contest_result
       - quest_awarded
       - streak_milestone
+      - duel
       - system
       type: string
       description: |-
@@ -2867,6 +3199,7 @@ components:
         * `contest_result` - Musobaqa natijasi
         * `quest_awarded` - Vazifa bajarildi
         * `streak_milestone` - Streak yutug'i
+        * `duel` - Duel
         * `system` - Tizim
     PaginatedApiTokenList:
       type: object
@@ -3002,6 +3335,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Contest'
+    PaginatedDuelList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Duel'
     PaginatedLanguageList:
       type: object
       required:
@@ -3740,12 +4096,14 @@ components:
       - problem_rerated
       - contest
       - recalculation
+      - duel
       type: string
       description: |-
         * `problem_solved` - Masala yechildi
         * `problem_rerated` - Masala qayta baholandi
         * `contest` - Musobaqa
         * `recalculation` - Qayta hisoblash
+        * `duel` - Duel
     RatingTypeEnum:
       enum:
       - skills
@@ -4011,6 +4369,18 @@ components:
           nullable: true
       required:
       - username
+    StatusEnum:
+      enum:
+      - open
+      - accepted
+      - finished
+      - cancelled
+      type: string
+      description: |-
+        * `open` - Kutilmoqda
+        * `accepted` - Qabul qilindi
+        * `finished` - Tugadi
+        * `cancelled` - Bekor qilindi
     Submit:
       type: object
       properties:

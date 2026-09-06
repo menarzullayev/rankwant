@@ -178,7 +178,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet[User]):
     permission_classes = [AllowAny]
     lookup_field = "username"
     queryset = User.objects.filter(is_active=True)
-    ordering_fields = ["rating_skills", "rating_contest", "date_joined"]
+    ordering_fields = ["rating_skills", "rating_contest", "rating_challenges", "date_joined"]
     ordering = ["-rating_skills"]
 
 

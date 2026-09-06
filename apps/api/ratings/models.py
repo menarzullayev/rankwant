@@ -52,6 +52,7 @@ class RatingHistory(models.Model):
         PROBLEM_RERATED = "problem_rerated", "Masala qayta baholandi"
         CONTEST = "contest", "Musobaqa"
         RECALCULATION = "recalculation", "Qayta hisoblash"
+        DUEL = "duel", "Duel"
 
     user = models.ForeignKey("core.User", on_delete=models.CASCADE, related_name="rating_history")
     rating_type = models.CharField(max_length=16, choices=Type.choices)

@@ -20,6 +20,7 @@ class Notification(models.Model):
         CONTEST_RESULT = "contest_result", "Musobaqa natijasi"
         QUEST_AWARDED = "quest_awarded", "Vazifa bajarildi"
         STREAK_MILESTONE = "streak_milestone", "Streak yutug'i"
+        DUEL = "duel", "Duel"
         SYSTEM = "system", "Tizim"
 
     user = models.ForeignKey("core.User", on_delete=models.CASCADE, related_name="notifications")

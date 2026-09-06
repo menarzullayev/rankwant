@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 
-from django.db import transaction
+from django.db import models, transaction
 
 from core.models import User
 from judging.models import Attempt
@@ -228,3 +228,45 @@ def apply_contest_ratings(contest) -> int:  # type: ignore[no-untyped-def]
             ref_id=contest.slug,
         )
     return len(standings)
+
+
+@transaction.atomic
+def apply_duel_ratings(duel) -> None:  # type: ignore[no-untyped-def]
+    """Duel yakunlangach Challenges reytingi — klassik 1v1 Elo (ADR-0006).
+
+    K yangi o'yinchi uchun katta (32), 10 dueldan keyin 16: dastlab tez
+    joylashadi, keyin barqarorlashadi.
+    """
+    from duels.models import Duel
+
+    a, b = duel.challenger, duel.opponent
+    if duel.is_draw:
+        score_a = score_b = 0.5
+    else:
+        score_a = 1.0 if duel.winner_id == a.pk else 0.0
+        score_b = 1.0 - score_a
+
+    def played(user) -> int:  # type: ignore[no-untyped-def]
+        return (
+            Duel.objects.filter(status=Duel.Status.FINISHED, ratings_applied_at__isnull=False)
+            .filter(models.Q(challenger=user) | models.Q(opponent=user))
+            .count()
+        )
+
+    ra, rb = a.rating_challenges, b.rating_challenges
+    delta_a = formulas.duel_delta(ra, rb, score_a, played(a))
+    delta_b = formulas.duel_delta(rb, ra, score_b, played(b))
+
+    for user, before, delta in ((a, ra, delta_a), (b, rb, delta_b)):
+        after = formulas.apply_floor(before + delta)
+        user.rating_challenges = after
+        user.save(update_fields=["rating_challenges"])
+        _record(
+            user,
+            RatingHistory.Type.CHALLENGES,
+            before,
+            after,
+            RatingHistory.Reason.DUEL,
+            ref_type="duel",
+            ref_id=duel.slug,
+        )
