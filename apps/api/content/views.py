@@ -24,7 +24,7 @@ class ArticleViewSet(viewsets.ReadOnlyModelViewSet[Article]):
     permission_classes = [AllowAny]
     lookup_field = "slug"
     pagination_class = StandardPagination
-    filterset_fields = ["locale", "topics__slug"]
+    filterset_fields = ["locale", "topics__slug", "kind"]
     ordering_fields = ["difficulty", "published_at"]
     ordering = ["difficulty"]
 

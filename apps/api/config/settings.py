@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     "quizzes",
     "arena",
     "duels",
+    "tournaments",
+    "hackathons",
 ]
 
 MIDDLEWARE = [

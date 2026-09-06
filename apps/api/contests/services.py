@@ -198,5 +198,11 @@ def finalize_contest(contest: Contest) -> int:
             log.exception("contest %s uchun Qvant berilmadi", contest.slug)
     contest.ratings_applied_at = timezone.now()
     contest.save(update_fields=["ratings_applied_at"])
+
+    # Bu contest chempionat bosqichi bo'lsa — yig'ma jadval yangilanadi.
+    # Import ichkarida: tournaments contests'ga bog'liq, teskarisi emas.
+    from tournaments.services import rebuild_for_contest
+
+    rebuild_for_contest(contest.pk)
     log.info("contest %s yakunlandi — %s ishtirokchi reytingi yangilandi", contest.slug, affected)
     return affected

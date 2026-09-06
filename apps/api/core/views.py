@@ -11,7 +11,7 @@ from django.contrib.auth import authenticate as django_authenticate
 from django.contrib.auth import login, logout
 from django.core.cache import cache
 from django.db import connection
-from django.db.models import QuerySet
+from django.db.models import Q, QuerySet
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from drf_spectacular.utils import OpenApiResponse, extend_schema
@@ -110,6 +110,120 @@ class PlatformStatsView(APIView):
             }
             cache.set("platform-stats", stats, self.CACHE_S)
         return Response(stats)
+
+
+class CalendarView(APIView):
+    """Barcha tadbirlar bir joyda — musobaqa, arena, chempionat, hakaton.
+
+    Duellar shaxsiy: faqat kirgan foydalanuvchining o'zinikilari.
+    """
+
+    permission_classes = [AllowAny]
+    DEFAULT_DAYS = 60
+
+    @extend_schema(responses={200: OpenApiResponse(description="Tadbirlar ro'yxati")})
+    def get(self, request: Request) -> Response:
+        from arena.models import ArenaRound
+        from duels.models import Duel
+        from hackathons.models import Hackathon
+        from tournaments.models import Tournament
+
+        now = timezone.now()
+        start = _parse_date(request.query_params.get("from")) or now - timedelta(days=7)
+        end = _parse_date(request.query_params.get("to")) or now + timedelta(days=self.DEFAULT_DAYS)
+
+        events: list[dict[str, Any]] = []
+
+        def add(kind: str, slug: str, title: str, start_at: Any, end_at: Any, **extra: Any) -> None:
+            events.append(
+                {
+                    "kind": kind,
+                    "slug": slug,
+                    "title": title,
+                    "start_at": start_at,
+                    "end_at": end_at,
+                    **extra,
+                }
+            )
+
+        for c in Contest.objects.filter(is_public=True, start_at__range=(start, end)):
+            add("contest", c.slug, c.title, c.start_at, c.end_at, is_rated=c.is_rated)
+        for a in ArenaRound.objects.filter(is_public=True, start_at__range=(start, end)):
+            add("arena", a.slug, a.title, a.start_at, a.end_at)
+        for t in Tournament.objects.filter(is_public=True, start_at__range=(start, end)):
+            add("tournament", t.slug, t.title, t.start_at, t.end_at)
+        for h in Hackathon.objects.filter(is_public=True, start_at__range=(start, end)):
+            add(
+                "hackathon",
+                h.slug,
+                h.title,
+                h.start_at,
+                h.end_at,
+                submission_deadline=h.submission_deadline,
+            )
+        if isinstance(request.user, User):
+            mine = Duel.objects.filter(
+                status=Duel.Status.ACCEPTED, start_at__range=(start, end)
+            ).filter(Q(challenger=request.user) | Q(opponent=request.user))
+            for d in mine:
+                add("duel", d.slug, d.title, d.start_at, d.end_at)
+
+        events.sort(key=lambda e: e["start_at"])
+        return Response({"from": start, "to": end, "results": events})
+
+
+def _parse_date(raw: str | None) -> Any:
+    if not raw:
+        return None
+    from django.utils.dateparse import parse_datetime
+
+    parsed = parse_datetime(raw)
+    if parsed is not None and timezone.is_naive(parsed):
+        parsed = timezone.make_aware(parsed)
+    return parsed
+
+
+class SearchView(APIView):
+    """Header qidiruvi — har turdan bir nechta natija, tez."""
+
+    permission_classes = [AllowAny]
+    PER_TYPE = 5
+
+    @extend_schema(responses={200: OpenApiResponse(description="Qidiruv natijalari")})
+    def get(self, request: Request) -> Response:
+        from content.models import Article
+
+        q = (request.query_params.get("q") or "").strip()
+        if len(q) < 2:
+            return Response({"q": q, "problems": [], "users": [], "articles": [], "contests": []})
+        n = self.PER_TYPE
+        return Response(
+            {
+                "q": q,
+                "problems": [
+                    {"slug": p.slug, "title": p.title, "difficulty": p.difficulty}
+                    for p in Problem.objects.filter(is_public=True, title__icontains=q)[:n]
+                ],
+                "users": [
+                    {
+                        "username": u.username,
+                        "display_name": u.display_name,
+                        "rating_skills": u.rating_skills,
+                    }
+                    for u in User.objects.filter(is_active=True).filter(
+                        Q(username__icontains=q) | Q(display_name__icontains=q)
+                    )[:n]
+                ],
+                "articles": [
+                    {"slug": a.slug, "title": a.title, "kind": a.kind}
+                    for a in Article.objects.filter(is_published=True, title__icontains=q)[:n]
+                ],
+                "contests": [
+                    {"slug": c.slug, "title": c.title, "start_at": c.start_at}
+                    for c in Contest.objects.filter(is_public=True, title__icontains=q)[:n]
+                ],
+            }
+        )
 
 
 class RegisterView(generics.CreateAPIView[User]):

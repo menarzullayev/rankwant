@@ -24,6 +24,7 @@ class ArticleListSerializer(serializers.ModelSerializer[Article]):
         model = Article
         fields = [
             "slug",
+            "kind",
             "title",
             "summary",
             "difficulty",

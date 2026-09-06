@@ -186,6 +186,16 @@ paths:
         bir xil naqsh).
       parameters:
       - in: query
+        name: kind
+        schema:
+          type: string
+          enum:
+          - algorithm
+          - article
+        description: |-
+          * `article` - Maqola
+          * `algorithm` - Algoritm
+      - in: query
         name: locale
         schema:
           type: string
@@ -397,6 +407,21 @@ paths:
               schema:
                 $ref: '#/components/schemas/Register'
           description: ''
+  /api/v1/calendar/:
+    get:
+      operationId: calendar_retrieve
+      description: |-
+        Barcha tadbirlar bir joyda — musobaqa, arena, chempionat, hakaton.
+
+        Duellar shaxsiy: faqat kirgan foydalanuvchining o'zinikilari.
+      tags:
+      - calendar
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: Tadbirlar ro'yxati
   /api/v1/classrooms/:
     get:
       operationId: classrooms_list
@@ -1029,6 +1054,172 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DuelRecord'
+          description: ''
+  /api/v1/hackathons/:
+    get:
+      operationId: hackathons_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - hackathons
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedHackathonList'
+          description: ''
+  /api/v1/hackathons/{slug}/:
+    get:
+      operationId: hackathons_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - hackathons
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hackathon'
+          description: ''
+  /api/v1/hackathons/{slug}/submissions/:
+    get:
+      operationId: hackathons_submissions_list
+      description: Muddatgacha faqat o'ziniki — boshqalar loyihasini ko'rib olish
+        yo'q.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - hackathons
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSubmissionList'
+          description: ''
+  /api/v1/hackathons/{slug}/submissions/{entry_id}/score/:
+    post:
+      operationId: hackathons_submissions_score_create
+      parameters:
+      - in: path
+        name: entry_id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - hackathons
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Score'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Score'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Score'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Submission'
+          description: ''
+  /api/v1/hackathons/{slug}/submit/:
+    post:
+      operationId: hackathons_submit_create
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - hackathons
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Submit'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Submit'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Submit'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Submission'
           description: ''
   /api/v1/health/:
     get:
@@ -1863,6 +2054,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/RoadmapDetail'
           description: ''
+  /api/v1/search/:
+    get:
+      operationId: search_retrieve
+      description: Header qidiruvi — har turdan bir nechta natija, tez.
+      tags:
+      - search
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: Qidiruv natijalari
   /api/v1/stats/:
     get:
       operationId: stats_retrieve
@@ -1934,6 +2137,100 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Topic'
+          description: ''
+  /api/v1/tournaments/:
+    get:
+      operationId: tournaments_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - tournaments
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTournamentList'
+          description: ''
+  /api/v1/tournaments/{slug}/:
+    get:
+      operationId: tournaments_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - tournaments
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TournamentDetail'
+          description: ''
+  /api/v1/tournaments/{slug}/standings/:
+    get:
+      operationId: tournaments_standings_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - tournaments
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTournamentStandingList'
           description: ''
   /api/v1/users/:
     get:
@@ -2298,6 +2595,8 @@ components:
           type: string
           maxLength: 120
           pattern: ^[-a-zA-Z0-9_]+$
+        kind:
+          $ref: '#/components/schemas/Kind910Enum'
         title:
           type: string
           maxLength: 200
@@ -2356,6 +2655,8 @@ components:
           type: string
           maxLength: 120
           pattern: ^[-a-zA-Z0-9_]+$
+        kind:
+          $ref: '#/components/schemas/Kind910Enum'
         title:
           type: string
           maxLength: 200
@@ -2985,6 +3286,47 @@ components:
       - draws
       - losses
       - wins
+    Hackathon:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          description: 'Markdown: shartlar, mezonlar, sovrin'
+        start_at:
+          type: string
+          format: date-time
+        submission_deadline:
+          type: string
+          format: date-time
+        end_at:
+          type: string
+          format: date-time
+          description: Natijalar e'lon qilinadigan vaqt
+        submission_count:
+          type: integer
+          readOnly: true
+        accepts_submissions:
+          type: boolean
+          readOnly: true
+        is_finished:
+          type: boolean
+          readOnly: true
+      required:
+      - accepts_submissions
+      - end_at
+      - is_finished
+      - slug
+      - start_at
+      - submission_count
+      - submission_deadline
+      - title
     Inventory:
       type: object
       properties:
@@ -3023,6 +3365,14 @@ components:
         * `news` - Yangilik
         * `announcement` - E'lon
         * `editorial` - Muharrir maqolasi
+    Kind910Enum:
+      enum:
+      - article
+      - algorithm
+      type: string
+      description: |-
+        * `article` - Maqola
+        * `algorithm` - Algoritm
     Language:
       type: object
       properties:
@@ -3358,6 +3708,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Duel'
+    PaginatedHackathonList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Hackathon'
     PaginatedLanguageList:
       type: object
       required:
@@ -3534,6 +3907,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Standing'
+    PaginatedSubmissionList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Submission'
     PaginatedTopicList:
       type: object
       required:
@@ -3557,6 +3953,52 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Topic'
+    PaginatedTournamentList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tournament'
+    PaginatedTournamentStandingList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TournamentStanding'
     PaginatedTransactionList:
       type: object
       required:
@@ -4272,6 +4714,18 @@ components:
         * `read` - O'qish
         * `submit` - Yechim yuborish
         * `contest:manage` - Contest boshqaruvi
+    Score:
+      type: object
+      properties:
+        score:
+          type: integer
+          maximum: 100
+          minimum: 0
+        feedback:
+          type: string
+          default: ''
+      required:
+      - score
     ScoringTypeEnum:
       enum:
       - acm
@@ -4342,6 +4796,47 @@ components:
       - first_ac_at
       - slug
       - title
+    Stage:
+      type: object
+      properties:
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        title:
+          type: string
+          maxLength: 120
+        contest:
+          type: string
+          readOnly: true
+        contest_title:
+          type: string
+          readOnly: true
+        start_at:
+          type: string
+          format: date-time
+          readOnly: true
+        end_at:
+          type: string
+          format: date-time
+          readOnly: true
+        weight:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        is_finished:
+          type: boolean
+          readOnly: true
+      required:
+      - contest
+      - contest_title
+      - end_at
+      - is_finished
+      - order
+      - start_at
+      - title
     Standing:
       type: object
       properties:
@@ -4381,15 +4876,81 @@ components:
         * `accepted` - Qabul qilindi
         * `finished` - Tugadi
         * `cancelled` - Bekor qilindi
+    Submission:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+        team_name:
+          type: string
+          maxLength: 100
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          description: Markdown
+        repo_url:
+          type: string
+          format: uri
+          maxLength: 200
+        demo_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        submitted_at:
+          type: string
+          format: date-time
+          readOnly: true
+        score:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+          description: 0–100
+        feedback:
+          type: string
+      required:
+      - description
+      - id
+      - repo_url
+      - submitted_at
+      - title
+      - username
     Submit:
       type: object
       properties:
-        answers:
-          type: object
-          additionalProperties:
-            type: integer
+        team_name:
+          type: string
+          default: ''
+          maxLength: 100
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        repo_url:
+          type: string
+          format: uri
+        demo_url:
+          oneOf:
+          - type: string
+            format: uri
+            default: ''
+          - type: string
+            maxLength: 0
       required:
-      - answers
+      - description
+      - repo_url
+      - title
     Topic:
       type: object
       properties:
@@ -4412,6 +4973,117 @@ components:
       required:
       - name_uz
       - slug
+    Tournament:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          description: Markdown
+        start_at:
+          type: string
+          format: date-time
+        end_at:
+          type: string
+          format: date-time
+        stage_count:
+          type: integer
+          readOnly: true
+        is_running:
+          type: boolean
+          readOnly: true
+        is_finished:
+          type: boolean
+          readOnly: true
+      required:
+      - end_at
+      - is_finished
+      - is_running
+      - slug
+      - stage_count
+      - start_at
+      - title
+    TournamentDetail:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          description: Markdown
+        start_at:
+          type: string
+          format: date-time
+        end_at:
+          type: string
+          format: date-time
+        stage_count:
+          type: integer
+          readOnly: true
+        is_running:
+          type: boolean
+          readOnly: true
+        is_finished:
+          type: boolean
+          readOnly: true
+        stages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Stage'
+          readOnly: true
+      required:
+      - end_at
+      - is_finished
+      - is_running
+      - slug
+      - stage_count
+      - stages
+      - start_at
+      - title
+    TournamentStanding:
+      type: object
+      properties:
+        rank:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        username:
+          type: string
+          readOnly: true
+        display_name:
+          type: string
+          readOnly: true
+        points:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        solved_total:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        stages_played:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+      required:
+      - display_name
+      - rank
+      - username
     Transaction:
       type: object
       properties:

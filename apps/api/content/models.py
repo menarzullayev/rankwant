@@ -20,7 +20,15 @@ from django.utils import timezone
 class Article(models.Model):
     """O'quv maqolasi. Masalalarga bog'lanadi."""
 
+    class Kind(models.TextChoices):
+        ARTICLE = "article", "Maqola"
+        #: Algoritm ma'lumotnomasi — qisqa, formal, kod bilan (RoboContest «Algoritmlar»)
+        ALGORITHM = "algorithm", "Algoritm"
+
     slug = models.SlugField(unique=True, max_length=120)
+    kind = models.CharField(
+        max_length=12, choices=Kind.choices, default=Kind.ARTICLE, db_index=True
+    )
     title = models.CharField(max_length=200)
     summary = models.CharField(max_length=300, blank=True)
     body = models.TextField(help_text="Markdown + LaTeX")
