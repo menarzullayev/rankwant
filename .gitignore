@@ -35,3 +35,6 @@ staticfiles/
 .DS_Store
 .idea/
 .vscode/
+
+# Bake-off natijalari (mahalliy o'lchov)
+services/bakeoff/result-*.md
