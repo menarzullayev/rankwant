@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import os
+import secrets
 import sys
 import time
 import urllib.error
@@ -78,7 +79,9 @@ def main() -> int:
     creds = {
         "username": f"smoke{suffix}",
         "email": f"smoke{suffix}@rankwant.uz",
-        "password": "SmokeTest12345",
+        # Bir martalik hisob uchun runtime parol: repoda parolga o'xshash
+        # satr qoldirmaslik kerak, sekret skaneri uni to'g'ri belgilaydi.
+        "password": secrets.token_urlsafe(24),
     }
 
     check("Ro'yxatdan o'tish", lambda: request("/auth/register/", creds)[0])
