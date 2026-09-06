@@ -1,6 +1,6 @@
 # Raqobatchilar — qisqa xulosa
 
-> To'liq: [kep-uz-platform-analysis.md](../../../kep-uz-platform-analysis.md), [robocontest-uz-platform-analysis.md](../../../robocontest-uz-platform-analysis.md)
+> To'liq: `kep-uz-platform-analysis.md`, `robocontest-uz-platform-analysis.md`
 
 ## Jadval
 
