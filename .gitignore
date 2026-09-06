@@ -42,3 +42,5 @@ services/bakeoff/result-*-scratch.md
 # Django
 apps/api/db.sqlite3
 apps/api/staticfiles/
+apps/web/.next/
+apps/web/node_modules/

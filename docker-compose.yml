@@ -33,11 +33,36 @@ services:
     ports: ['9000:9000', '9001:9001']
     volumes: ['miniodata:/data']
 
-  # api:      Sprint 1 da qo'shiladi
-  # worker:   Celery — Sprint 1
-  # web:      Next.js — Sprint 1
-  # judge:    bake-off g'olibi — Sprint 0.5 dan keyin
-  #           DIQQAT: judge ga DATABASE_URL BERILMAYDI (faqat REDIS_URL va S3)
+  api:
+    build: ./apps/api
+    environment:
+      DATABASE_URL: postgres://rankwant:dev@postgres:5432/rankwant
+      REDIS_URL: redis://redis:6379/0
+      DJANGO_DEBUG: "1"
+      CORS_ALLOWED_ORIGINS: http://localhost:3000
+    ports: ['8000:8000']
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+
+  web:
+    build: ./apps/web
+    environment:
+      NEXT_PUBLIC_API_BASE: http://localhost:8000/api/v1
+    ports: ['3000:3000']
+    depends_on: [api]
+
+  judge:
+    build: ./services/judge-go
+    privileged: true          # nsjail namespace va cgroup uchun
+    cgroup: host
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      # DIQQAT: DATABASE_URL ATAYLAB YO'Q. Judge host'da DB credential
+      # bo'lmasligi kerak (06-architecture 🔒). Worker DATABASE_URL
+      # berilgan bo'lsa ishga tushmaydi.
+    depends_on:
+      redis: { condition: service_healthy }
 
 volumes:
   pgdata:
