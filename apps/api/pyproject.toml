@@ -1,0 +1,50 @@
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+exclude = ["*/migrations/*"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "DJ", "RUF"]
+ignore = [
+    # Kirill/lotin o'xshash harflar — hujjat va xabarlar o'zbek tilida
+    "RUF001", "RUF002", "RUF003",
+    # Django/DRF da `permission_classes = [...]` kabi atributlar odatiy;
+    # ClassVar talab qilish framework uslubiga zid.
+    "RUF012",
+]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
+exclude = ["migrations/"]
+warn_unused_ignores = false
+
+[[tool.mypy.overrides]]
+module = ["celery.*", "factory.*", "django_filters.*", "redis.*"]
+ignore_missing_imports = true
+
+# Testlarda pytest fixture argumentlari tabiiy ravishda tipsiz —
+# ularga strict talab qo'yish qiymat bermaydi, faqat shovqin qo'shadi.
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+disallow_untyped_decorators = false
+disallow_untyped_calls = false
+disallow_any_generics = false
+
+# Django admin va Celery dekoratorlari generik parametr talab qiladi;
+# bu framework konvensiyasi, biznes logikaga aloqasi yo'q.
+[[tool.mypy.overrides]]
+module = ["*.admin", "*.tasks"]
+disallow_any_generics = false
+disallow_untyped_decorators = false
+
+[tool.django-stubs]
+django_settings_module = "config.settings"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["test_*.py"]
+addopts = "-q --strict-markers"

@@ -38,3 +38,7 @@ staticfiles/
 
 # Bake-off natijalari (mahalliy o'lchov)
 services/bakeoff/result-*-scratch.md
+
+# Django
+apps/api/db.sqlite3
+apps/api/staticfiles/

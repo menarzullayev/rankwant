@@ -1,0 +1,171 @@
+"""Auth va token endpointlari — ADR-0008."""
+
+from __future__ import annotations
+
+from datetime import timedelta
+from typing import Any
+
+from django.contrib.auth import authenticate as django_authenticate
+from django.contrib.auth import login, logout
+from django.db.models import QuerySet
+from django.utils import timezone
+from drf_spectacular.utils import OpenApiResponse, extend_schema
+from rest_framework import generics, status, viewsets
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.request import Request
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from core.models import ApiToken, User
+from core.serializers import (
+    ApiTokenCreateSerializer,
+    ApiTokenSerializer,
+    LoginSerializer,
+    MeSerializer,
+    RegisterSerializer,
+    UserPublicSerializer,
+)
+
+MAX_TOKEN_LIFETIME = timedelta(days=365)
+
+
+class HealthView(APIView):
+    """Smoke test uchun — 10-operations § deploy."""
+
+    permission_classes = [AllowAny]
+    authentication_classes: list[Any] = []
+
+    @extend_schema(responses={200: OpenApiResponse(description="OK")})
+    def get(self, request: Request) -> Response:
+        return Response({"status": "ok"})
+
+
+class RegisterView(generics.CreateAPIView[User]):
+    serializer_class = RegisterSerializer
+    permission_classes = [AllowAny]
+    queryset = User.objects.all()
+
+
+class LoginView(APIView):
+    permission_classes = [AllowAny]
+
+    @extend_schema(request=LoginSerializer, responses={200: MeSerializer})
+    def post(self, request: Request) -> Response:
+        serializer = LoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = django_authenticate(
+            request,
+            username=serializer.validated_data["username"],
+            password=serializer.validated_data["password"],
+        )
+        if user is None:
+            return Response(
+                {
+                    "error": {
+                        "code": "invalid_credentials",
+                        "message": "Login yoki parol noto'g'ri",
+                        "details": {},
+                    }
+                },
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+        login(request, user)
+        return Response(MeSerializer(user).data)
+
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(request=None, responses={204: None})
+    def post(self, request: Request) -> Response:
+        logout(request)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class MeView(generics.RetrieveUpdateAPIView[User]):
+    serializer_class = MeSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self) -> User:
+        assert isinstance(self.request.user, User)
+        return self.request.user
+
+
+class UserViewSet(viewsets.ReadOnlyModelViewSet[User]):
+    """Ommaviy profil va leaderboard."""
+
+    serializer_class = UserPublicSerializer
+    permission_classes = [AllowAny]
+    lookup_field = "username"
+    queryset = User.objects.filter(is_active=True)
+    ordering_fields = ["rating_skills", "rating_contest", "date_joined"]
+    ordering = ["-rating_skills"]
+
+
+class ApiTokenViewSet(viewsets.ModelViewSet[ApiToken]):
+    """PAT boshqaruvi. Ochiq token FAQAT yaratilganda qaytariladi."""
+
+    serializer_class = ApiTokenSerializer
+    permission_classes = [IsAuthenticated]
+    http_method_names = ["get", "post", "delete"]
+
+    def get_queryset(self) -> QuerySet[ApiToken]:
+        assert isinstance(self.request.user, User)
+        return ApiToken.objects.filter(user=self.request.user).order_by("-created_at")
+
+    @extend_schema(request=ApiTokenCreateSerializer, responses={201: ApiTokenSerializer})
+    def create(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        assert isinstance(request.user, User)
+        user = request.user
+
+        serializer = ApiTokenCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        active = ApiToken.objects.filter(user=user, revoked_at__isnull=True).count()
+        if active >= ApiToken.MAX_ACTIVE_PER_USER:
+            return Response(
+                {
+                    "error": {
+                        "code": "token_limit",
+                        "message": f"Maksimal {ApiToken.MAX_ACTIVE_PER_USER} ta faol token",
+                        "details": {},
+                    }
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        expires_at = data["expires_at"]
+        if expires_at <= timezone.now():
+            return Response(
+                {
+                    "error": {
+                        "code": "invalid_expiry",
+                        "message": "Muddat kelajakda bo'lishi kerak",
+                        "details": {},
+                    }
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if expires_at > timezone.now() + MAX_TOKEN_LIFETIME:
+            return Response(
+                {
+                    "error": {
+                        "code": "invalid_expiry",
+                        "message": "Maksimal muddat — 1 yil",
+                        "details": {},
+                    }
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        token, raw = ApiToken.issue(user, data["name"], data["scopes"], expires_at)
+        payload = ApiTokenSerializer(token).data
+        # Ochiq token faqat SHU YERDA, bir marta.
+        payload["token"] = raw
+        return Response(payload, status=status.HTTP_201_CREATED)
+
+    def perform_destroy(self, instance: ApiToken) -> None:
+        # O'chirmaymiz — bekor qilamiz. Audit izi saqlanadi.
+        instance.revoked_at = timezone.now()
+        instance.save(update_fields=["revoked_at"])

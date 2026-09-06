@@ -1,0 +1,200 @@
+"""Submit → verdict → reyting zanjiri. DoD: qamrov MAJBURIY."""
+
+from __future__ import annotations
+
+import pytest
+from django.urls import reverse
+from rest_framework.test import APIClient
+
+from judging.models import Attempt, AttemptTestResult
+from judging.services import apply_result, build_job
+from judging.verdicts import Verdict
+from ratings.models import RatingHistory, UserSolvedProblem
+
+
+@pytest.fixture
+def client(user) -> APIClient:
+    c = APIClient()
+    c.force_authenticate(user=user)
+    return c
+
+
+@pytest.mark.django_db
+class TestSubmit:
+    def test_submit_navbatga_tushadi(
+        self, client: APIClient, problem, language, memory_judge
+    ) -> None:
+        r = client.post(
+            reverse("attempt-list"),
+            {
+                "problem": problem.slug,
+                "language": language.code,
+                "source_code": "int main(){}",
+            },
+        )
+        assert r.status_code == 201
+        assert r.json()["verdict"] == Verdict.PENDING
+        assert len(memory_judge.jobs) == 1
+
+    def test_attempt_avval_saqlanadi(self, client: APIClient, problem, language) -> None:
+        """Navbat yiqilsa ham submission yo'qolmasligi kerak."""
+        client.post(
+            reverse("attempt-list"),
+            {
+                "problem": problem.slug,
+                "language": language.code,
+                "source_code": "x",
+            },
+        )
+        assert Attempt.objects.count() == 1
+
+    def test_katta_manba_rad_etiladi(self, client: APIClient, problem, language) -> None:
+        r = client.post(
+            reverse("attempt-list"),
+            {
+                "problem": problem.slug,
+                "language": language.code,
+                "source_code": "x" * (64 * 1024 + 1),
+            },
+        )
+        assert r.status_code == 400
+
+    def test_bosh_manba_rad_etiladi(self, client: APIClient, problem, language) -> None:
+        r = client.post(
+            reverse("attempt-list"),
+            {
+                "problem": problem.slug,
+                "language": language.code,
+                "source_code": "   ",
+            },
+        )
+        assert r.status_code == 400
+
+    def test_anonim_submit_qila_olmaydi(self, problem, language) -> None:
+        r = APIClient().post(
+            reverse("attempt-list"),
+            {
+                "problem": problem.slug,
+                "language": language.code,
+                "source_code": "x",
+            },
+        )
+        assert r.status_code in (401, 403)
+
+    def test_job_limitlarni_masaladan_oladi(self, user, problem, language) -> None:
+        attempt = Attempt.objects.create(
+            user=user, problem=problem, language=language, source_code="x"
+        )
+        job = build_job(attempt)
+        assert job.limits["time_ms"] == problem.time_limit_ms
+        assert job.limits["memory_kb"] == problem.memory_limit_kb
+        assert job.language["code"] == language.code
+
+
+@pytest.mark.django_db
+class TestApplyResult:
+    def _attempt(self, user, problem, language) -> Attempt:
+        return Attempt.objects.create(
+            user=user, problem=problem, language=language, source_code="x"
+        )
+
+    def test_ac_reytingni_oshiradi(self, user, problem, language) -> None:
+        attempt = self._attempt(user, problem, language)
+        apply_result(
+            {
+                "attempt_id": attempt.pk,
+                "verdict": "AC",
+                "score": 100,
+                "time_ms": 12,
+                "memory_kb": 3000,
+                "per_test": [{"index": 1, "verdict": "AC", "time_ms": 12, "memory_kb": 3000}],
+            }
+        )
+        attempt.refresh_from_db()
+        user.refresh_from_db()
+        assert attempt.verdict == Verdict.AC
+        assert attempt.judged_at is not None
+        assert UserSolvedProblem.objects.filter(user=user, problem=problem).exists()
+        assert user.rating_skills == 800
+        assert AttemptTestResult.objects.filter(attempt=attempt).count() == 1
+
+    def test_wa_reytingga_tegmaydi(self, user, problem, language) -> None:
+        attempt = self._attempt(user, problem, language)
+        apply_result({"attempt_id": attempt.pk, "verdict": "WA", "failed_test_index": 2})
+        user.refresh_from_db()
+        assert user.rating_skills == 0
+        assert not UserSolvedProblem.objects.exists()
+
+    def test_ikkinchi_ac_qayta_hisoblamaydi(self, user, problem, language) -> None:
+        """Faqat BIRINCHI AC hisoblanadi."""
+        for _ in range(2):
+            attempt = self._attempt(user, problem, language)
+            apply_result({"attempt_id": attempt.pk, "verdict": "AC"})
+        user.refresh_from_db()
+        assert UserSolvedProblem.objects.count() == 1
+        assert user.rating_skills == 800
+
+    def test_rating_history_sabab_bilan(self, user, problem, language) -> None:
+        """Principle #2: har o'zgarishning sababi yoziladi."""
+        attempt = self._attempt(user, problem, language)
+        apply_result({"attempt_id": attempt.pk, "verdict": "AC"})
+        entry = RatingHistory.objects.get(user=user, rating_type="skills")
+        assert entry.delta == 800
+        assert entry.reason == RatingHistory.Reason.PROBLEM_SOLVED
+        assert entry.ref_id == problem.slug
+
+    def test_notanish_attempt_yiqilmaydi(self) -> None:
+        assert apply_result({"attempt_id": 999999, "verdict": "AC"}) is None
+
+    def test_security_violation_yoziladi(self, user, problem, language) -> None:
+        attempt = self._attempt(user, problem, language)
+        apply_result({"attempt_id": attempt.pk, "verdict": "SECURITY_VIOLATION"})
+        attempt.refresh_from_db()
+        assert attempt.verdict == Verdict.SECURITY_VIOLATION
+
+
+@pytest.mark.django_db
+class TestReratingAffectsSkills:
+    def test_qiyinlik_ozgarsa_qayta_hisoblanadi(self, user, problem, language) -> None:
+        """ADR-0007: Skills JORIY qiyinlikdan hisoblanadi."""
+        from ratings.services import recalc_skills_for_problem
+
+        attempt = Attempt.objects.create(
+            user=user, problem=problem, language=language, source_code="x"
+        )
+        apply_result({"attempt_id": attempt.pk, "verdict": "AC"})
+        user.refresh_from_db()
+        assert user.rating_skills == 800
+
+        problem.difficulty = 1500
+        problem.save()
+        assert recalc_skills_for_problem(problem.pk) == 1
+
+        user.refresh_from_db()
+        assert user.rating_skills == 1500
+        assert RatingHistory.objects.filter(
+            user=user, reason=RatingHistory.Reason.PROBLEM_RERATED
+        ).exists()
+
+
+@pytest.mark.django_db
+class TestSourceVisibility:
+    def test_boshqa_foydalanuvchi_manbani_kormaydi(
+        self, user, other_user, problem, language
+    ) -> None:
+        """IDOR himoyasi — test-strategy § security."""
+        attempt = Attempt.objects.create(
+            user=user, problem=problem, language=language, source_code="MAXFIY"
+        )
+        c = APIClient()
+        c.force_authenticate(user=other_user)
+        data = c.get(reverse("attempt-detail", args=[attempt.pk])).json()
+        assert "source_code" not in data
+
+    def test_egasi_koradi(self, user, problem, language) -> None:
+        attempt = Attempt.objects.create(
+            user=user, problem=problem, language=language, source_code="MENIKI"
+        )
+        c = APIClient()
+        c.force_authenticate(user=user)
+        assert c.get(reverse("attempt-detail", args=[attempt.pk])).json()["source_code"] == "MENIKI"

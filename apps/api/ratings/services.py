@@ -1,0 +1,159 @@
+"""Reyting hisoblash — formulalar `ratings.formulas` da, DB mantiqi shu yerda."""
+
+from __future__ import annotations
+
+import logging
+
+from django.db import transaction
+
+from core.models import User
+from judging.models import Attempt
+from judging.verdicts import Verdict
+from ratings import formulas
+from ratings.models import RatingHistory, UserSolvedProblem
+
+log = logging.getLogger(__name__)
+
+
+def _record(
+    user: User,
+    rating_type: str,
+    before: int,
+    after: int,
+    reason: str,
+    *,
+    ref_type: str = "",
+    ref_id: str = "",
+    seed: float | None = None,
+    rank: int | None = None,
+) -> None:
+    if before == after:
+        return
+    RatingHistory.objects.create(
+        user=user,
+        rating_type=rating_type,
+        value_before=before,
+        value_after=after,
+        delta=after - before,
+        reason=reason,
+        ref_type=ref_type,
+        ref_id=str(ref_id),
+        seed=seed,
+        rank=rank,
+    )
+
+
+@transaction.atomic
+def recalc_skills(
+    user: User, reason: str = RatingHistory.Reason.PROBLEM_SOLVED, ref_id: str = ""
+) -> int:
+    """Skills ni JORIY qiyinliklardan qayta hisoblaydi (ADR-0007)."""
+    difficulties = list(
+        UserSolvedProblem.objects.filter(user=user)
+        .select_related("problem")
+        .values_list("problem__difficulty", flat=True)
+    )
+    new_value = formulas.skills_rating(difficulties)
+    before = user.rating_skills
+    if new_value != before:
+        user.rating_skills = new_value
+        user.save(update_fields=["rating_skills"])
+        _record(
+            user,
+            RatingHistory.Type.SKILLS,
+            before,
+            new_value,
+            reason,
+            ref_type="problem",
+            ref_id=ref_id,
+        )
+    return new_value
+
+
+@transaction.atomic
+def on_attempt_judged(attempt: Attempt) -> None:
+    """Verdict yozilgandan keyin chaqiriladi."""
+    if attempt.verdict != Verdict.AC:
+        return
+
+    _, created = UserSolvedProblem.objects.get_or_create(
+        user=attempt.user,
+        problem=attempt.problem,
+        defaults={
+            "first_ac_attempt": attempt,
+            "difficulty_at_solve": attempt.problem.difficulty,
+        },
+    )
+    if not created:
+        return  # faqat birinchi AC
+
+    from django.db.models import F
+
+    type(attempt.problem).objects.filter(pk=attempt.problem_id).update(
+        solved_count=F("solved_count") + 1
+    )
+    recalc_skills(attempt.user, ref_id=attempt.problem.slug)
+
+
+@transaction.atomic
+def recalc_skills_for_problem(problem_id: int) -> int:
+    """Masala qayta baholanganda — ADR-0007.
+
+    Bu ARZON OPERATSIYA EMAS: mashhur masalada minglab foydalanuvchi
+    qayta hisoblanadi. Partiyada va e'lon bilan bajarilishi kerak.
+    """
+    user_ids = UserSolvedProblem.objects.filter(problem_id=problem_id).values_list(
+        "user_id", flat=True
+    )
+    count = 0
+    for user in User.objects.filter(pk__in=list(user_ids)):
+        recalc_skills(user, reason=RatingHistory.Reason.PROBLEM_RERATED, ref_id=str(problem_id))
+        count += 1
+    log.info("masala %s qayta baholandi — %s foydalanuvchi yangilandi", problem_id, count)
+    return count
+
+
+@transaction.atomic
+def apply_contest_ratings(contest) -> int:  # type: ignore[no-untyped-def]
+    """Musobaqa yakunlangach Contests reytingini yangilaydi.
+
+    Faqat `is_rated` va >= MIN_RATED_PARTICIPANTS ishtirokchi bo'lganda.
+    """
+    from contests.models import Standing
+
+    if not contest.is_rated:
+        return 0
+
+    standings = list(
+        Standing.objects.filter(contest=contest).select_related("user").order_by("rank")
+    )
+    if len(standings) < formulas.MIN_RATED_PARTICIPANTS:
+        log.info("contest %s: %s ishtirokchi — reyting hisoblanmadi", contest.pk, len(standings))
+        return 0
+
+    users = [s.user for s in standings]
+    ratings = [u.rating_contest for u in users]
+    ranks = [s.rank for s in standings]
+    counts = [u.rated_contest_count for u in users]
+
+    deltas = formulas.contest_deltas(ratings, ranks, counts)
+
+    for user, standing, delta in zip(users, standings, deltas, strict=True):
+        before = user.rating_contest
+        after = formulas.apply_floor(before + delta)
+        others = [r for r in ratings if r is not before] or ratings
+        user.rating_contest = after
+        user.rated_contest_count += 1
+        user.save(update_fields=["rating_contest", "rated_contest_count"])
+        _record(
+            user,
+            RatingHistory.Type.CONTEST,
+            before,
+            after,
+            RatingHistory.Reason.CONTEST,
+            ref_type="contest",
+            ref_id=contest.slug,
+            seed=formulas.seed(before, [r for r in ratings if r != before] or others),
+            rank=standing.rank,
+        )
+    return len(standings)

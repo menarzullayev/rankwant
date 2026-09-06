@@ -1,0 +1,1677 @@
+openapi: 3.0.3
+info:
+  title: RankWant API
+  version: 1.0.0
+  description: Sport dasturlash va olimpiada platformasi — ochiq REST API
+paths:
+  /api/v1/attempts/:
+    get:
+      operationId: attempts_list
+      description: Submit va urinishlar tarixi — PRD P0-3.
+      parameters:
+      - name: cursor
+        required: false
+        in: query
+        description: The pagination cursor value.
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - attempts
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAttemptList'
+          description: ''
+    post:
+      operationId: attempts_create
+      description: Submit va urinishlar tarixi — PRD P0-3.
+      tags:
+      - attempts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttemptCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AttemptCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AttemptCreate'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attempt'
+          description: ''
+  /api/v1/attempts/{id}/:
+    get:
+      operationId: attempts_retrieve
+      description: Submit va urinishlar tarixi — PRD P0-3.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this attempt.
+        required: true
+      tags:
+      - attempts
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttemptDetail'
+          description: ''
+  /api/v1/auth/login/:
+    post:
+      operationId: auth_login_create
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Login'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Login'
+        required: true
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+          description: ''
+  /api/v1/auth/logout/:
+    post:
+      operationId: auth_logout_create
+      tags:
+      - auth
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/auth/register/:
+    post:
+      operationId: auth_register_create
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Register'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Register'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Register'
+        required: true
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Register'
+          description: ''
+  /api/v1/contests/:
+    get:
+      operationId: contests_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - contests
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedContestList'
+          description: ''
+  /api/v1/contests/{slug}/:
+    get:
+      operationId: contests_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - contests
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContestDetail'
+          description: ''
+  /api/v1/contests/{slug}/register/:
+    post:
+      operationId: contests_register_create
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - contests
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Registration'
+          description: ''
+  /api/v1/contests/{slug}/standings/:
+    get:
+      operationId: contests_standings_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - contests
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStandingList'
+          description: ''
+  /api/v1/health/:
+    get:
+      operationId: health_retrieve
+      description: Smoke test uchun — 10-operations § deploy.
+      tags:
+      - health
+      security:
+      - {}
+      responses:
+        '200':
+          description: OK
+  /api/v1/languages/:
+    get:
+      operationId: languages_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - languages
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLanguageList'
+          description: ''
+  /api/v1/languages/{code}/:
+    get:
+      operationId: languages_retrieve
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+        required: true
+      tags:
+      - languages
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Language'
+          description: ''
+  /api/v1/me/:
+    get:
+      operationId: me_retrieve
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+          description: ''
+    put:
+      operationId: me_update
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Me'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Me'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Me'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+          description: ''
+    patch:
+      operationId: me_partial_update
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMe'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMe'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMe'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+          description: ''
+  /api/v1/me/tokens/:
+    get:
+      operationId: me_tokens_list
+      description: PAT boshqaruvi. Ochiq token FAQAT yaratilganda qaytariladi.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedApiTokenList'
+          description: ''
+    post:
+      operationId: me_tokens_create
+      description: PAT boshqaruvi. Ochiq token FAQAT yaratilganda qaytariladi.
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiTokenCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ApiTokenCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ApiTokenCreate'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiToken'
+          description: ''
+  /api/v1/me/tokens/{id}/:
+    get:
+      operationId: me_tokens_retrieve
+      description: PAT boshqaruvi. Ochiq token FAQAT yaratilganda qaytariladi.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiToken'
+          description: ''
+    delete:
+      operationId: me_tokens_destroy
+      description: PAT boshqaruvi. Ochiq token FAQAT yaratilganda qaytariladi.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/problems/:
+    get:
+      operationId: problems_list
+      description: |-
+        Ommaviy masala arxivi.
+
+        Yozish Django admin orqali (PRD P0-2) — API faqat o'qish uchun.
+      parameters:
+      - in: query
+        name: checker_type
+        schema:
+          type: string
+          enum:
+          - interactive
+          - special
+          - standard
+        description: |-
+          * `standard` - Standart
+          * `special` - Maxsus
+          * `interactive` - Interactive
+      - in: query
+        name: difficulty
+        schema:
+          type: integer
+      - in: query
+        name: difficulty__gte
+        schema:
+          type: integer
+      - in: query
+        name: difficulty__lte
+        schema:
+          type: integer
+      - in: query
+        name: level
+        schema:
+          type: string
+          enum:
+          - beginner
+          - expert
+          - hard
+          - intermediate
+          - master
+        description: |-
+          * `beginner` - Boshlang'ich
+          * `intermediate` - O'rta
+          * `hard` - Qiyin
+          * `expert` - Ekspert
+          * `master` - Master
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: topics
+        schema:
+          type: string
+      tags:
+      - problems
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProblemListList'
+          description: ''
+  /api/v1/problems/{slug}/:
+    get:
+      operationId: problems_retrieve
+      description: |-
+        Ommaviy masala arxivi.
+
+        Yozish Django admin orqali (PRD P0-2) — API faqat o'qish uchun.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - problems
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: ''
+  /api/v1/topics/:
+    get:
+      operationId: topics_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - topics
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTopicList'
+          description: ''
+  /api/v1/topics/{slug}/:
+    get:
+      operationId: topics_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - topics
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Topic'
+          description: ''
+  /api/v1/users/:
+    get:
+      operationId: users_list
+      description: Ommaviy profil va leaderboard.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - users
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserPublicList'
+          description: ''
+  /api/v1/users/{username}/:
+    get:
+      operationId: users_retrieve
+      description: Ommaviy profil va leaderboard.
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+        required: true
+      tags:
+      - users
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPublic'
+          description: ''
+components:
+  schemas:
+    ApiToken:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        prefix:
+          type: string
+          readOnly: true
+        scopes: {}
+        expires_at:
+          type: string
+          format: date-time
+        last_used_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        revoked_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_active:
+          type: boolean
+          readOnly: true
+      required:
+      - created_at
+      - expires_at
+      - id
+      - is_active
+      - last_used_at
+      - name
+      - prefix
+      - revoked_at
+    ApiTokenCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        scopes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScopesEnum'
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - expires_at
+      - name
+      - scopes
+    Attempt:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+        problem:
+          type: string
+          readOnly: true
+        language:
+          type: string
+          readOnly: true
+        verdict:
+          $ref: '#/components/schemas/VerdictEnum'
+        score:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        time_ms:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        memory_kb:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        failed_test_index:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        judged_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - created_at
+      - id
+      - language
+      - problem
+      - username
+    AttemptCreate:
+      type: object
+      properties:
+        problem:
+          type: string
+          pattern: ^[-a-zA-Z0-9_]+$
+        language:
+          type: string
+          pattern: ^[-a-zA-Z0-9_]+$
+        source_code:
+          type: string
+        contest:
+          type: string
+          nullable: true
+          pattern: ^[-a-zA-Z0-9_]+$
+      required:
+      - language
+      - problem
+      - source_code
+    AttemptDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+        problem:
+          type: string
+          readOnly: true
+        language:
+          type: string
+          readOnly: true
+        verdict:
+          $ref: '#/components/schemas/VerdictEnum'
+        score:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        time_ms:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        memory_kb:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        failed_test_index:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        judged_at:
+          type: string
+          format: date-time
+          nullable: true
+        source_code:
+          type: string
+        compile_output:
+          type: string
+        test_results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttemptTestResult'
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - language
+      - problem
+      - source_code
+      - test_results
+      - username
+    AttemptTestResult:
+      type: object
+      properties:
+        index:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        verdict:
+          $ref: '#/components/schemas/VerdictEnum'
+        time_ms:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        memory_kb:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+      required:
+      - index
+      - verdict
+    CheckerTypeEnum:
+      enum:
+      - standard
+      - special
+      - interactive
+      type: string
+      description: |-
+        * `standard` - Standart
+        * `special` - Maxsus
+        * `interactive` - Interactive
+    Contest:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        start_at:
+          type: string
+          format: date-time
+        end_at:
+          type: string
+          format: date-time
+        scoring_type:
+          $ref: '#/components/schemas/ScoringTypeEnum'
+        is_rated:
+          type: boolean
+        is_virtual:
+          type: boolean
+        freeze_minutes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          description: Oxirgi N daqiqada standings muzlatiladi
+        is_running:
+          type: boolean
+          readOnly: true
+        is_finished:
+          type: boolean
+          readOnly: true
+        is_frozen:
+          type: boolean
+          readOnly: true
+      required:
+      - end_at
+      - is_finished
+      - is_frozen
+      - is_running
+      - slug
+      - start_at
+      - title
+    ContestDetail:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        start_at:
+          type: string
+          format: date-time
+        end_at:
+          type: string
+          format: date-time
+        scoring_type:
+          $ref: '#/components/schemas/ScoringTypeEnum'
+        is_rated:
+          type: boolean
+        is_virtual:
+          type: boolean
+        freeze_minutes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          description: Oxirgi N daqiqada standings muzlatiladi
+        is_running:
+          type: boolean
+          readOnly: true
+        is_finished:
+          type: boolean
+          readOnly: true
+        is_frozen:
+          type: boolean
+          readOnly: true
+        description:
+          type: string
+        problems:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContestProblem'
+          readOnly: true
+      required:
+      - end_at
+      - is_finished
+      - is_frozen
+      - is_running
+      - problems
+      - slug
+      - start_at
+      - title
+    ContestProblem:
+      type: object
+      properties:
+        index_letter:
+          type: string
+          maxLength: 3
+        slug:
+          type: string
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        points:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+      required:
+      - index_letter
+      - slug
+      - title
+    Language:
+      type: object
+      properties:
+        code:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        name:
+          type: string
+          maxLength: 50
+        version:
+          type: string
+          maxLength: 50
+      required:
+      - code
+      - name
+    LocaleEnum:
+      enum:
+      - uz
+      - ru
+      - en
+      type: string
+      description: |-
+        * `uz` - O'zbekcha
+        * `ru` - Русский
+        * `en` - English
+    Login:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - password
+      - username
+    Me:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        display_name:
+          type: string
+          maxLength: 100
+        avatar_url:
+          type: string
+          format: uri
+          maxLength: 200
+        bio:
+          type: string
+        locale:
+          $ref: '#/components/schemas/LocaleEnum'
+        theme:
+          type: string
+          maxLength: 16
+        rating_skills:
+          type: integer
+          readOnly: true
+        rating_contest:
+          type: integer
+          readOnly: true
+        streak_count:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - date_joined
+      - id
+      - rating_contest
+      - rating_skills
+      - username
+    PaginatedApiTokenList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApiToken'
+    PaginatedAttemptList:
+      type: object
+      required:
+      - results
+      properties:
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?cursor=cD00ODY%3D"
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?cursor=cj0xJnA9NDg3
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attempt'
+    PaginatedContestList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contest'
+    PaginatedLanguageList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Language'
+    PaginatedProblemListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProblemList'
+    PaginatedStandingList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Standing'
+    PaginatedTopicList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Topic'
+    PaginatedUserPublicList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserPublic'
+    PatchedMe:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        display_name:
+          type: string
+          maxLength: 100
+        avatar_url:
+          type: string
+          format: uri
+          maxLength: 200
+        bio:
+          type: string
+        locale:
+          $ref: '#/components/schemas/LocaleEnum'
+        theme:
+          type: string
+          maxLength: 16
+        rating_skills:
+          type: integer
+          readOnly: true
+        rating_contest:
+          type: integer
+          readOnly: true
+        streak_count:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+    ProblemDetail:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        difficulty:
+          type: integer
+          maximum: 3500
+          minimum: 800
+          description: 800–3500, qadam 100
+        level:
+          type: string
+          readOnly: true
+        level_label:
+          type: string
+          readOnly: true
+        topics:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        solved_count:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        attempt_count:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        statement:
+          type: string
+          description: Markdown + LaTeX
+        statement_locale:
+          type: string
+          maxLength: 2
+        time_limit_ms:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        memory_limit_kb:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        checker_type:
+          $ref: '#/components/schemas/CheckerTypeEnum'
+        source:
+          type: string
+          maxLength: 100
+        source_url:
+          type: string
+          format: uri
+          maxLength: 200
+      required:
+      - difficulty
+      - level
+      - level_label
+      - slug
+      - statement
+      - title
+      - topics
+    ProblemList:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        difficulty:
+          type: integer
+          maximum: 3500
+          minimum: 800
+          description: 800–3500, qadam 100
+        level:
+          type: string
+          readOnly: true
+        level_label:
+          type: string
+          readOnly: true
+        topics:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        solved_count:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        attempt_count:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+      required:
+      - difficulty
+      - level
+      - level_label
+      - slug
+      - title
+      - topics
+    Register:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        password:
+          type: string
+          writeOnly: true
+          minLength: 8
+        display_name:
+          type: string
+          maxLength: 100
+      required:
+      - password
+      - username
+    Registration:
+      type: object
+      properties:
+        registered_at:
+          type: string
+          format: date-time
+          readOnly: true
+        virtual_start_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - registered_at
+    ScopesEnum:
+      enum:
+      - read
+      - submit
+      - contest:manage
+      type: string
+      description: |-
+        * `read` - O'qish
+        * `submit` - Yechim yuborish
+        * `contest:manage` - Contest boshqaruvi
+    ScoringTypeEnum:
+      enum:
+      - acm
+      - ioi
+      type: string
+      description: |-
+        * `acm` - ACM/ICPC
+        * `ioi` - IOI
+    Standing:
+      type: object
+      properties:
+        rank:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        username:
+          type: string
+          readOnly: true
+        solved_count:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        penalty:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        last_ac_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - username
+    Topic:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        name_uz:
+          type: string
+          maxLength: 100
+        name_ru:
+          type: string
+          maxLength: 100
+        name_en:
+          type: string
+          maxLength: 100
+        parent:
+          type: integer
+          nullable: true
+      required:
+      - name_uz
+      - slug
+    UserPublic:
+      type: object
+      description: |-
+        Ommaviy profil.
+
+        ADR-0006 fazali ochilish: Phase 0 da faqat Skills va Contests ko'rinadi.
+        Activity (Phase 1) va Challenges (Phase 3) bu yerda BERILMAYDI.
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        display_name:
+          type: string
+          maxLength: 100
+        avatar_url:
+          type: string
+          format: uri
+          maxLength: 200
+        bio:
+          type: string
+        rating_skills:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        rating_contest:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        date_joined:
+          type: string
+          format: date-time
+      required:
+      - username
+    VerdictEnum:
+      enum:
+      - PENDING
+      - RUNNING
+      - AC
+      - WA
+      - TLE
+      - MLE
+      - OLE
+      - RE
+      - CE
+      - PE
+      - PARTIAL
+      - IE
+      - SKIPPED
+      - COMPILE_TIMEOUT
+      - IDLENESS
+      - SECURITY_VIOLATION
+      - CHECKER_ERROR
+      - TESTING_ABORTED
+      - RATE_LIMITED
+      - DENIAL_OF_JUDGEMENT
+      type: string
+      description: |-
+        * `PENDING` - Navbatda
+        * `RUNNING` - Tekshirilmoqda
+        * `AC` - Accepted
+        * `WA` - Wrong Answer
+        * `TLE` - Time Limit Exceeded
+        * `MLE` - Memory Limit Exceeded
+        * `OLE` - Output Limit Exceeded
+        * `RE` - Runtime Error
+        * `CE` - Compilation Error
+        * `PE` - Presentation Error
+        * `PARTIAL` - Qisman ball
+        * `IE` - Internal Error
+        * `SKIPPED` - O'tkazib yuborildi
+        * `COMPILE_TIMEOUT` - Kompilyatsiya cho'zildi
+        * `IDLENESS` - Idleness Limit Exceeded
+        * `SECURITY_VIOLATION` - Xavfsizlik qoidasi buzildi
+        * `CHECKER_ERROR` - Checker xatosi
+        * `TESTING_ABORTED` - Tekshiruv bekor qilindi
+        * `RATE_LIMITED` - Submit limiti
+        * `DENIAL_OF_JUDGEMENT` - Infra nosozligi
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
