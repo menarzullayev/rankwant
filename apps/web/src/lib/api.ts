@@ -56,12 +56,35 @@ export type Standing = {
 export type UserPublic = {
   username: string;
   display_name: string;
+  avatar_url: string;
+  bio: string;
   rating_skills: number;
   rating_contest: number;
   /** Phase 1 da yoqildi — ADR-0006 fazali ochilish */
   rating_activity: number;
   streak_count: number;
   date_joined: string;
+};
+
+export type RatingChange = {
+  rating_type: string;
+  value_before: number;
+  value_after: number;
+  delta: number;
+  reason: string;
+  ref_type: string;
+  ref_id: string;
+  seed: number | null;
+  rank: number | null;
+  created_at: string;
+};
+
+export type SolvedProblem = {
+  slug: string;
+  title: string;
+  difficulty: number;
+  difficulty_at_solve: number;
+  first_ac_at: string;
 };
 
 export type Wallet = {
@@ -195,6 +218,10 @@ export const api = {
   articles: () => get<Paginated<Article>>("/articles/", 300),
   article: (slug: string) => get<ArticleDetail>(`/articles/${slug}/`, 300),
   roadmaps: () => get<Roadmap[]>("/roadmaps/", 300),
+  ratingHistory: (username: string) =>
+    get<Paginated<RatingChange>>(`/users/${username}/rating-history/`, 30),
+  solved: (username: string) =>
+    get<Paginated<SolvedProblem>>(`/users/${username}/solved/`, 30),
 };
 
 export { ApiError };

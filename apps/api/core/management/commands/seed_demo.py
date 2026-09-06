@@ -12,6 +12,8 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
 
+from classroom.models import Assignment, Classroom, ClassroomMember
+from content.models import Article, Roadmap, RoadmapStep
 from contests.models import Contest, ContestProblem
 from core.models import User
 from problems.models import Language, Problem, TestCase, Topic
@@ -38,6 +40,39 @@ PROBLEMS = [
     ("ryukzak", "Ryukzak masalasi", 1600, ["dp"]),
     ("eng-qisqa-yol", "Eng qisqa yo'l", 2000, ["graphs"]),
     ("mintaqalar", "Mintaqalarni bo'lish", 2500, ["graphs", "greedy"]),
+]
+
+
+ARTICLES = [
+    (
+        "kirish-cpp",
+        "C++ da kirish/chiqish",
+        800,
+        ["implementation"],
+        "Tez kirish/chiqish, `cin`/`cout` va `scanf` farqi.",
+    ),
+    (
+        "dp-asoslari",
+        "Dinamik dasturlash asoslari",
+        1400,
+        ["dp"],
+        "Qism-masala, memoizatsiya va pastdan-yuqoriga yondashuv.",
+    ),
+    (
+        "graf-bfs-dfs",
+        "Graflarda BFS va DFS",
+        1600,
+        ["graphs"],
+        "Kenglik va chuqurlik bo'yicha izlash, qachon qaysi biri.",
+    ),
+]
+
+ROADMAP_STEPS = [
+    ("kirish-cpp", "a-plus-b"),
+    ("kirish-cpp", "juft-toq"),
+    ("dp-asoslari", "fibonacci"),
+    ("dp-asoslari", "ryukzak"),
+    ("graf-bfs-dfs", "eng-qisqa-yol"),
 ]
 
 
@@ -107,9 +142,80 @@ class Command(BaseCommand):
                 defaults={"problem": Problem.objects.get(slug=slug)},
             )
 
+        articles = {}
+        for slug, title, difficulty, topic_slugs, summary in ARTICLES:
+            article, _ = Article.objects.update_or_create(
+                slug=slug,
+                defaults={
+                    "title": title,
+                    "summary": summary,
+                    "body": f"## {title}\n\n{summary}\n\nMaqola matni bu yerda bo'ladi.",
+                    "difficulty": difficulty,
+                    "is_published": True,
+                },
+            )
+            article.topics.set([topics[s] for s in topic_slugs])
+            articles[slug] = article
+
+        roadmap, _ = Roadmap.objects.update_or_create(
+            slug="boshlangich",
+            defaults={
+                "title": "Boshlang'ich yo'l",
+                "description": "Noldan birinchi contestgacha.",
+                "is_published": True,
+                "order": 1,
+            },
+        )
+        for i, (article_slug, problem_slug) in enumerate(ROADMAP_STEPS, start=1):
+            RoadmapStep.objects.update_or_create(
+                roadmap=roadmap,
+                order=i,
+                defaults={
+                    "article": articles[article_slug],
+                    "problem": Problem.objects.get(slug=problem_slug),
+                },
+            )
+
+        teacher, created = User.objects.get_or_create(
+            username="ustoz", defaults={"email": "ustoz@rankwant.uz", "display_name": "Ustoz"}
+        )
+        if created:
+            teacher.set_password("ustoz12345")
+            teacher.save()
+            self.stdout.write("ustoz / ustoz12345 yaratildi")
+
+        classroom, _ = Classroom.objects.update_or_create(
+            slug="11-a-sinf",
+            defaults={
+                "name": "11-A sinf",
+                "owner": teacher,
+                "description": "Maktab olimpiada guruhi.",
+            },
+        )
+        for i in range(1, 4):
+            student, made = User.objects.get_or_create(
+                username=f"oquvchi{i}",
+                defaults={"email": f"oquvchi{i}@rankwant.uz", "display_name": f"O'quvchi {i}"},
+            )
+            if made:
+                student.set_password("oquvchi12345")
+                student.save()
+            ClassroomMember.objects.get_or_create(classroom=classroom, user=student)
+
+        assignment, _ = Assignment.objects.update_or_create(
+            classroom=classroom,
+            title="1-hafta: kirish",
+            defaults={
+                "description": "Birinchi uchta masala.",
+                "due_at": now + timedelta(days=7),
+            },
+        )
+        assignment.problems.set(Problem.objects.filter(slug__in=[p[0] for p in PROBLEMS[:3]]))
+
         self.stdout.write(
             self.style.SUCCESS(
                 f"Demo tayyor: {Problem.objects.count()} masala, "
-                f"{Language.objects.count()} til, {Contest.objects.count()} contest"
+                f"{Language.objects.count()} til, {Contest.objects.count()} contest, "
+                f"{Article.objects.count()} maqola, {Classroom.objects.count()} sinf"
             )
         )

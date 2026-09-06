@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import timedelta
 
 import pytest
+from django.core.management import call_command
 from django.urls import reverse
 from django.utils import timezone
 from rest_framework.test import APIClient
@@ -242,3 +243,30 @@ class TestClassroomAuthorization:
             self._client(other_user).get(reverse("classroom-detail", args=["9a"])).status_code
             == 404
         )
+
+
+@pytest.mark.django_db
+class TestSeedDemo:
+    """seed_demo — local ishga tushirishning birinchi qadami.
+
+    Sinaladi, chunki buzilgan seed yangi ishlab chiquvchi uchun bo'sh
+    `/learn` va `/classroom` degani, va buni faqat qo'lda ochib ko'rish
+    orqali bilib bo'lardi.
+    """
+
+    def test_seed_ishlaydi_va_takrorlanadi(self) -> None:
+        call_command("seed_demo", verbosity=0)
+        call_command("seed_demo", verbosity=0)  # idempotent
+
+        assert Article.objects.filter(is_published=True).count() == 3
+        assert RoadmapStep.objects.count() == 5
+        classroom = Classroom.objects.get(slug="11-a-sinf")
+        assert classroom.members.count() == 3
+        assert classroom.assignments.get().problems.count() == 3
+
+    def test_roadmap_qadamlari_toliq(self) -> None:
+        """Har qadamda maqola ham, masala ham bo'lishi kerak."""
+        call_command("seed_demo", verbosity=0)
+        for step in RoadmapStep.objects.all():
+            assert step.article is not None
+            assert step.problem is not None

@@ -40,7 +40,11 @@ export default async function LeaderboardPage() {
           {data.results.map((u, i) => (
             <tr key={u.username} className="border-t" style={{ borderColor: "var(--border)" }}>
               <td className="py-2" style={{ color: "var(--muted)" }}>{i + 1}</td>
-              <td className="py-2">{u.display_name || u.username}</td>
+              <td className="py-2">
+                <Link href={`/users/${u.username}`} className="hover:underline">
+                  {u.display_name || u.username}
+                </Link>
+              </td>
               <td className="py-2 text-right">{u.rating_skills}</td>
               <td className="py-2 text-right">{u.rating_contest}</td>
               <td className="py-2 text-right">{u.rating_activity}</td>

@@ -377,6 +377,26 @@ class TestPhasedReveal:
         assert body["rating_activity"] == 42
         assert body["streak_count"] == 3
 
+    def test_ommaviy_profil_maydonlari_qulflangan(self, user) -> None:
+        """Aniq to'plam — serializer o'zgarsa frontend tipi jim qolmasin.
+
+        `bio` va `avatar_url` serializerda bor edi, apps/web tipida yo'q edi:
+        maydon borligini tekshirish bunday siljishni ushlamaydi, to'plam esa
+        ushlaydi.
+        """
+        body = APIClient().get(reverse("user-detail", args=[user.username])).json()
+        assert set(body) == {
+            "username",
+            "display_name",
+            "avatar_url",
+            "bio",
+            "rating_skills",
+            "rating_contest",
+            "rating_activity",
+            "streak_count",
+            "date_joined",
+        }
+
     def test_challenges_hali_berilmaydi(self, user) -> None:
         """Phase 3 — duels yo'q, ya'ni qiymat ma'nosiz."""
         body = APIClient().get(reverse("user-detail", args=[user.username])).json()
