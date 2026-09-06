@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     "qvant",
     "notifications",
     "blog",
+    "content",
+    "classroom",
 ]
 
 MIDDLEWARE = [

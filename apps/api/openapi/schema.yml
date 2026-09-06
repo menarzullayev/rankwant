@@ -4,6 +4,79 @@ info:
   version: 1.0.0
   description: Sport dasturlash va olimpiada platformasi — ochiq REST API
 paths:
+  /api/v1/articles/:
+    get:
+      operationId: articles_list
+      description: |-
+        O'z o'qish kontenti — ADR-0005 differensiatori.
+
+        Yozish Django admin orqali; API faqat o'qish uchun (masala arxivi bilan
+        bir xil naqsh).
+      parameters:
+      - in: query
+        name: locale
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: topics__slug
+        schema:
+          type: string
+      tags:
+      - articles
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedArticleListList'
+          description: ''
+  /api/v1/articles/{slug}/:
+    get:
+      operationId: articles_retrieve
+      description: |-
+        O'z o'qish kontenti — ADR-0005 differensiatori.
+
+        Yozish Django admin orqali; API faqat o'qish uchun (masala arxivi bilan
+        bir xil naqsh).
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - articles
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleDetail'
+          description: ''
   /api/v1/attempts/:
     get:
       operationId: attempts_list
@@ -151,6 +224,243 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Register'
+          description: ''
+  /api/v1/classrooms/:
+    get:
+      operationId: classrooms_list
+      description: PRD P2-2 — o'qituvchi sinfi.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      tags:
+      - classrooms
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Classroom'
+          description: ''
+    post:
+      operationId: classrooms_create
+      description: PRD P2-2 — o'qituvchi sinfi.
+      tags:
+      - classrooms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClassroomCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ClassroomCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ClassroomCreate'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClassroomCreate'
+          description: ''
+  /api/v1/classrooms/{slug}/:
+    get:
+      operationId: classrooms_retrieve
+      description: PRD P2-2 — o'qituvchi sinfi.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - classrooms
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClassroomOwner'
+          description: ''
+    patch:
+      operationId: classrooms_partial_update
+      description: PRD P2-2 — o'qituvchi sinfi.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - classrooms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedClassroom'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedClassroom'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedClassroom'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Classroom'
+          description: ''
+    delete:
+      operationId: classrooms_destroy
+      description: PRD P2-2 — o'qituvchi sinfi.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - classrooms
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/classrooms/{slug}/assignments/:
+    get:
+      operationId: classrooms_assignments_list
+      description: PRD P2-2 — o'qituvchi sinfi.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - classrooms
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Assignment'
+          description: ''
+    post:
+      operationId: classrooms_assignments_create
+      description: PRD P2-2 — o'qituvchi sinfi.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - classrooms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Classroom'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Classroom'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Classroom'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Assignment'
+          description: ''
+  /api/v1/classrooms/{slug}/assignments/{id}/progress/:
+    get:
+      operationId: classrooms_assignments_progress_retrieve
+      description: PRD P2-2 — o'qituvchi sinfi.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - classrooms
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/classrooms/join/:
+    post:
+      operationId: classrooms_join_create
+      description: PRD P2-2 — o'qituvchi sinfi.
+      tags:
+      - classrooms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Join'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Join'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Join'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Classroom'
           description: ''
   /api/v1/contests/:
     get:
@@ -1037,6 +1347,51 @@ paths:
               schema:
                 $ref: '#/components/schemas/Wallet'
           description: ''
+  /api/v1/roadmaps/:
+    get:
+      operationId: roadmaps_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      tags:
+      - roadmaps
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RoadmapList'
+          description: ''
+  /api/v1/roadmaps/{slug}/:
+    get:
+      operationId: roadmaps_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - roadmaps
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoadmapDetail'
+          description: ''
   /api/v1/topics/:
     get:
       operationId: topics_list
@@ -1212,6 +1567,137 @@ components:
       - expires_at
       - name
       - scopes
+    ArticleDetail:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        summary:
+          type: string
+          maxLength: 300
+        difficulty:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        locale:
+          type: string
+          maxLength: 2
+        topics:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        reading_minutes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        problem_count:
+          type: integer
+          readOnly: true
+          default: 0
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        body:
+          type: string
+          description: Markdown + LaTeX
+        author:
+          type: string
+          readOnly: true
+        problems:
+          type: array
+          items:
+            $ref: '#/components/schemas/LinkedProblem'
+          readOnly: true
+      required:
+      - author
+      - body
+      - problem_count
+      - problems
+      - slug
+      - title
+      - topics
+    ArticleList:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        summary:
+          type: string
+          maxLength: 300
+        difficulty:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        locale:
+          type: string
+          maxLength: 2
+        topics:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        reading_minutes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        problem_count:
+          type: integer
+          readOnly: true
+          default: 0
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - problem_count
+      - slug
+      - title
+      - topics
+    Assignment:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        problems:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        due_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - problems
+      - title
     Attempt:
       type: object
       properties:
@@ -1391,6 +1877,119 @@ components:
         * `standard` - Standart
         * `special` - Maxsus
         * `interactive` - Interactive
+    Classroom:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        name:
+          type: string
+          maxLength: 150
+        description:
+          type: string
+        owner:
+          type: string
+          readOnly: true
+        member_count:
+          type: integer
+          readOnly: true
+          default: 0
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - member_count
+      - name
+      - owner
+      - slug
+    ClassroomCreate:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        name:
+          type: string
+          maxLength: 150
+        description:
+          type: string
+      required:
+      - name
+      - slug
+    ClassroomMember:
+      type: object
+      properties:
+        username:
+          type: string
+          readOnly: true
+        role:
+          $ref: '#/components/schemas/ClassroomMemberRoleEnum'
+        rating_skills:
+          type: integer
+          readOnly: true
+        joined_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - joined_at
+      - rating_skills
+      - username
+    ClassroomMemberRoleEnum:
+      enum:
+      - student
+      - assistant
+      type: string
+      description: |-
+        * `student` - O'quvchi
+        * `assistant` - Yordamchi
+    ClassroomOwner:
+      type: object
+      description: Egasi uchun — qo'shilish kodi ko'rinadi.
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        name:
+          type: string
+          maxLength: 150
+        description:
+          type: string
+        owner:
+          type: string
+          readOnly: true
+        member_count:
+          type: integer
+          readOnly: true
+          default: 0
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        join_code:
+          type: string
+          maxLength: 12
+        is_active:
+          type: boolean
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClassroomMember'
+          readOnly: true
+      required:
+      - created_at
+      - join_code
+      - member_count
+      - members
+      - name
+      - owner
+      - slug
     Contest:
       type: object
       properties:
@@ -1582,6 +2181,14 @@ components:
       - id
       - item
       - purchased_at
+    Join:
+      type: object
+      properties:
+        join_code:
+          type: string
+          maxLength: 12
+      required:
+      - join_code
     Kind59eEnum:
       enum:
       - news
@@ -1608,6 +2215,34 @@ components:
       required:
       - code
       - name
+    LinkedProblem:
+      type: object
+      properties:
+        slug:
+          type: string
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        difficulty:
+          type: integer
+          readOnly: true
+        role:
+          $ref: '#/components/schemas/LinkedProblemRoleEnum'
+      required:
+      - difficulty
+      - slug
+      - title
+    LinkedProblemRoleEnum:
+      enum:
+      - practice
+      - example
+      - editorial
+      type: string
+      description: |-
+        * `practice` - Mashq uchun
+        * `example` - Maqoladagi misol
+        * `editorial` - Yechim tushuntirishi
     LocaleEnum:
       enum:
       - uz
@@ -1773,6 +2408,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ApiToken'
+    PaginatedArticleListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArticleList'
     PaginatedAttemptList:
       type: object
       required:
@@ -1991,6 +2649,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserPublic'
+    PatchedClassroom:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        name:
+          type: string
+          maxLength: 150
+        description:
+          type: string
+        owner:
+          type: string
+          readOnly: true
+        member_count:
+          type: integer
+          readOnly: true
+          default: 0
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
     PatchedMe:
       type: object
       properties:
@@ -2322,6 +3003,81 @@ components:
           nullable: true
       required:
       - registered_at
+    RoadmapDetail:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        locale:
+          type: string
+          maxLength: 2
+        step_count:
+          type: integer
+          readOnly: true
+          default: 0
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoadmapStep'
+          readOnly: true
+      required:
+      - slug
+      - step_count
+      - steps
+      - title
+    RoadmapList:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        locale:
+          type: string
+          maxLength: 2
+        step_count:
+          type: integer
+          readOnly: true
+          default: 0
+      required:
+      - slug
+      - step_count
+      - title
+    RoadmapStep:
+      type: object
+      properties:
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        title:
+          type: string
+          maxLength: 200
+        article:
+          type: string
+          readOnly: true
+        problem:
+          type: string
+          readOnly: true
+        is_optional:
+          type: boolean
+      required:
+      - article
+      - order
+      - problem
     ScopesEnum:
       enum:
       - read

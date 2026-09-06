@@ -103,6 +103,36 @@ export type Recommendation = {
   results: Problem[];
 };
 
+export type Article = {
+  slug: string;
+  title: string;
+  summary: string;
+  difficulty: number;
+  topics: string[];
+  reading_minutes: number;
+  problem_count: number;
+};
+
+export type LinkedProblem = {
+  slug: string;
+  title: string;
+  difficulty: number;
+  role: string;
+};
+
+export type ArticleDetail = Article & {
+  body: string;
+  author: string | null;
+  problems: LinkedProblem[];
+};
+
+export type Roadmap = {
+  slug: string;
+  title: string;
+  description: string;
+  step_count: number;
+};
+
 export type ShopItem = {
   code: string;
   category: string;
@@ -161,6 +191,10 @@ export const api = {
   recommendations: () => get<Recommendation>("/problems/recommendation/", 0),
   posts: () => get<Paginated<Post>>("/posts/"),
   post: (slug: string) => get<PostDetail>(`/posts/${slug}/`),
+  // O'z o'qish kontenti — ADR-0005 differensiatori. SEO uchun keshlanadi.
+  articles: () => get<Paginated<Article>>("/articles/", 300),
+  article: (slug: string) => get<ArticleDetail>(`/articles/${slug}/`, 300),
+  roadmaps: () => get<Roadmap[]>("/roadmaps/", 300),
 };
 
 export { ApiError };

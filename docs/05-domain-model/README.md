@@ -170,7 +170,11 @@ To'liq iqtisodiyot: [ADR-0002](../07-adr/0002-qvant-economy.md).
 
 ## Keyingi fazalar (eskiz)
 
-- **Phase 2:** `Team`, `Classroom` + `ClassroomMember`, `Article` + `ArticleProblemLink` (o'z kontent — [ADR-0005](../07-adr/0005-content-strategy-own-content.md)), `Subscription`
+- **Phase 2 (bajarildi):** `Classroom` + `ClassroomMember` + `Assignment`,
+  `Article` + `ArticleProblemLink`, `Roadmap` + `RoadmapStep`
+  (o'z kontent — [ADR-0005](../07-adr/0005-content-strategy-own-content.md)),
+  `Notification`, `Post`
+- **Phase 2 (qolgan):** `Team`, `Subscription` — narx ADR'idan keyin
 - **Phase 3:** `Duel` (Challenges reytingi manbasi)
 
 ## Indekslar (kritik)

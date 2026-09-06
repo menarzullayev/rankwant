@@ -13,4 +13,6 @@ urlpatterns = [
     path("", include("qvant.urls")),
     path("", include("notifications.urls")),
     path("", include("blog.urls")),
+    path("", include("content.urls")),
+    path("", include("classroom.urls")),
 ]

@@ -96,9 +96,16 @@ Ledger auditi: kesh va tranzaksiya yig'indisi har doim mos
 
 ## Sprint 9+ — Phase 2
 
-- Mirror contest · O'qituvchi sinfi + Judge panel
-- **O'z o'qish kontenti** (maqola + roadmap) — [ADR-0005](../07-adr/0005-content-strategy-own-content.md)
-- Obuna (narx ADR'idan keyin) · Qvant do'kon kengaytirish
+| Ish | PRD | Holat |
+| --- | --- | ----- |
+| **Mirror contest** — masalalar ko'chiriladi, reytingsiz | P2-1 | ✅ |
+| **O'qituvchi sinfi** — sinf, a'zolik, uy vazifasi, progress | P2-2 | ✅ |
+| **O'z o'qish kontenti** — maqola ↔ masala ↔ roadmap ([ADR-0005](../07-adr/0005-content-strategy-own-content.md)) | P2-5 | ✅ |
+| Obuna (Free/Plus/Pro) | P2-3 | ⛔ **narx ADR'i kerak** |
+| Qvant do'kon kengaytirish (mavsumiy) | P2-4 | ⬜ |
+| MCQ quiz | P2-6 | ⬜ |
+
+`P2-3` bloklangan: narx modeli mahsulot qarori, texnik ish emas.
 
 ## Definition of Done
 

@@ -111,6 +111,43 @@ def rebuild_standings(contest: Contest) -> int:
 
 
 @transaction.atomic
+def create_mirror(source: Contest, slug: str, start_at, title: str = "") -> Contest:  # type: ignore[no-untyped-def]
+    """PRD P2-1 — rasmiy olimpiadaning ko'zgu nusxasi.
+
+    Masalalar va scoring asl musobaqadan ko'chiriladi, vaqt esa yangi.
+    Mirror **reytingsiz** yaratiladi: asl musobaqa ishtirokchilari
+    javoblarni bilishadi, ya'ni reytingga qo'shish adolatsiz bo'lardi.
+    Kerak bo'lsa admin uni qo'lda `is_rated` qilishi mumkin.
+    """
+    duration = source.end_at - source.start_at
+    mirror = Contest.objects.create(
+        slug=slug,
+        title=title or f"{source.title} (mirror)",
+        description=source.description,
+        start_at=start_at,
+        end_at=start_at + duration,
+        freeze_minutes=source.freeze_minutes,
+        scoring_type=source.scoring_type,
+        is_rated=False,
+        is_public=source.is_public,
+        mirror_of=source,
+    )
+    ContestProblem.objects.bulk_create(
+        [
+            ContestProblem(
+                contest=mirror,
+                problem=cp.problem,
+                index_letter=cp.index_letter,
+                points=cp.points,
+            )
+            for cp in ContestProblem.objects.filter(contest=source)
+        ]
+    )
+    log.info("mirror yaratildi: %s ← %s", mirror.slug, source.slug)
+    return mirror
+
+
+@transaction.atomic
 def start_virtual(contest: Contest, user) -> ContestRegistration:  # type: ignore[no-untyped-def]
     """PRD P1-1 — arxivdagi musobaqani o'z vaqtingizda boshlash.
 
