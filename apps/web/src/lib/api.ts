@@ -58,7 +58,33 @@ export type UserPublic = {
   display_name: string;
   rating_skills: number;
   rating_contest: number;
+  /** Phase 1 da yoqildi — ADR-0006 fazali ochilish */
+  rating_activity: number;
+  streak_count: number;
   date_joined: string;
+};
+
+export type Wallet = {
+  balance: number;
+  earned_today: number;
+  remaining_today: number;
+};
+
+export type Quest = {
+  code: string;
+  type: "daily" | "weekly" | "achievement";
+  title_uz: string;
+  reward: number;
+  done: boolean;
+};
+
+export type ShopItem = {
+  code: string;
+  category: string;
+  title_uz: string;
+  price: number;
+  is_consumable: boolean;
+  owned: boolean;
 };
 
 class ApiError extends Error {
@@ -101,6 +127,10 @@ export const api = {
     get<{ frozen: boolean; results: Standing[] }>(`/contests/${slug}/standings/`, 5),
   leaderboard: () => get<Paginated<UserPublic>>("/users/?ordering=-rating_skills"),
   user: (username: string) => get<UserPublic>(`/users/${username}/`),
+  // Qvant — Phase 1. Balans va questlar shaxsiy, kesh yo'q.
+  wallet: () => get<Wallet>("/qvant/wallet/", 0),
+  quests: () => get<Quest[]>("/qvant/quests/", 0),
+  shop: () => get<ShopItem[]>("/qvant/shop/", 30),
 };
 
 export { ApiError };

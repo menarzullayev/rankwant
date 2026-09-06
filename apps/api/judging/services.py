@@ -140,8 +140,8 @@ def apply_result(result: dict[str, Any]) -> Attempt | None:
         log.warning("natija topilmagan attempt uchun keldi: %s", attempt_id)
         return None
 
-    if attempt.verdict in {Verdict.AC} and result.get("verdict") != Verdict.AC:
-        # Rejudge natijasi — yozamiz, lekin reyting qayta hisoblanadi
+    accept_revoked = attempt.verdict == Verdict.AC and result.get("verdict") != Verdict.AC
+    if accept_revoked:
         log.info("attempt %s verdicti o'zgardi: AC → %s", attempt_id, result.get("verdict"))
 
     attempt.verdict = result.get("verdict", Verdict.IE)
@@ -175,7 +175,10 @@ def apply_result(result: dict[str, Any]) -> Attempt | None:
             attempt.verdict,
         )
 
-    from ratings.services import on_attempt_judged
+    from ratings.services import on_accept_revoked, on_attempt_judged
 
-    on_attempt_judged(attempt)
+    if accept_revoked:
+        on_accept_revoked(attempt)
+    else:
+        on_attempt_judged(attempt)
     return attempt

@@ -94,6 +94,48 @@ def on_attempt_judged(attempt: Attempt) -> None:
     )
     recalc_skills(attempt.user, ref_id=attempt.problem.slug)
 
+    # Phase 1 — Qvant va Activity. Qvant hodisasi Skills dan KEYIN:
+    # reyting yozuvi Qvant xatosidan qat'i nazar saqlanishi kerak.
+    try:
+        from qvant.services import on_first_accepted
+
+        on_first_accepted(attempt.user)
+    except Exception:
+        # Qvant retention mexanizmi; u yiqilsa ham verdict va Skills
+        # to'g'ri qolishi shart.
+        log.exception("Qvant hodisasi bajarilmadi: attempt %s", attempt.pk)
+
+
+@transaction.atomic
+def on_accept_revoked(attempt: Attempt) -> None:
+    """Rejudge AC ni bekor qildi — ADR-0002 qaytarish qoidasi.
+
+    Yechilgan masala yozuvi olib tashlanadi, Skills qayta hisoblanadi va
+    shu urinish uchun berilgan Qvant qaytariladi.
+    """
+    deleted, _ = UserSolvedProblem.objects.filter(
+        user=attempt.user, problem=attempt.problem, first_ac_attempt=attempt
+    ).delete()
+    if not deleted:
+        return
+
+    from django.db.models import F
+
+    type(attempt.problem).objects.filter(pk=attempt.problem_id).update(
+        solved_count=F("solved_count") - 1
+    )
+    recalc_skills(
+        attempt.user,
+        reason=RatingHistory.Reason.RECALCULATION,
+        ref_id=attempt.problem.slug,
+    )
+    try:
+        from qvant.services import revoke_for_attempt
+
+        revoke_for_attempt(attempt.user, attempt.pk)
+    except Exception:
+        log.exception("Qvant qaytarilmadi: attempt %s", attempt.pk)
+
 
 @transaction.atomic
 def recalc_skills_for_problem(problem_id: int) -> int:

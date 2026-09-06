@@ -1,6 +1,6 @@
 # ADR-0002: Qvant iqtisodiyoti — yopiq loop, kosmetik sink
 
-**STATUS:** accepted (2026-09-06) — scope ataylab tor, kengaytirish = yangi ADR
+**STATUS:** accepted (2026-09-06) · **amalga oshirildi** Sprint 5 da — scope ataylab tor, kengaytirish = yangi ADR
 
 ## Muammo
 
@@ -39,7 +39,7 @@ Kosmetik sink esa: mahsulot qiymatini kamaytirmaydi, daromadga tegmaydi, regulya
 
 | Hodisa                                   | Qvant | Cheklov                          |
 | ---------------------------------------- | ----- | -------------------------------- |
-| Kunlik quest: kunning masalasini yechish | +10   | kuniga 1 marta                   |
+| Kunlik quest: kuniga kamida 1 masala¹    | +10   | kuniga 1 marta                   |
 | Kunlik quest: kuniga ≥3 AC               | +15   | kuniga 1 marta                   |
 | Contest tugatish (rated)                 | +30   | contest boshiga                  |
 | Haftalik marafon yakunlash               | +100  | haftada 1 marta                  |
@@ -47,6 +47,10 @@ Kosmetik sink esa: mahsulot qiymatini kamaytirmaydi, daromadga tegmaydi, regulya
 | Streak yutug'i — 30 kun                  | +250  | bir marta / davr                 |
 | Streak yutug'i — 365 kun                 | +2000 | bir marta / davr                 |
 | Profil to'ldirish                        | +50   | **bir marta**, umrbod            |
+
+¹ ADR «kunning masalasi» degan edi. Masala-of-the-day funksiyasi PRD da yo'q,
+shuning uchun quest «kuniga kamida bitta masala» sifatida amalga oshirildi.
+Kunlik masala qo'shilsa, quest o'sha masalaga bog'lanadi — mukofot va davr o'zgarmaydi.
 
 **Anti-farm qoidalari** (majburiy):
 

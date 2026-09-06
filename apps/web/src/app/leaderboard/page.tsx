@@ -31,6 +31,9 @@ export default async function LeaderboardPage() {
             <th className="pb-2">{t(locale, "standings.user")}</th>
             <th className="pb-2 text-right">{t(locale, "leaderboard.skills")}</th>
             <th className="pb-2 text-right">{t(locale, "leaderboard.contest")}</th>
+            {/* Activity — ADR-0006 fazali ochilish, Phase 1 da yoqildi */}
+            <th className="pb-2 text-right">{t(locale, "leaderboard.activity")}</th>
+            <th className="pb-2 text-right">{t(locale, "leaderboard.streak")}</th>
           </tr>
         </thead>
         <tbody>
@@ -40,6 +43,10 @@ export default async function LeaderboardPage() {
               <td className="py-2">{u.display_name || u.username}</td>
               <td className="py-2 text-right">{u.rating_skills}</td>
               <td className="py-2 text-right">{u.rating_contest}</td>
+              <td className="py-2 text-right">{u.rating_activity}</td>
+              <td className="py-2 text-right" style={{ color: "var(--muted)" }}>
+                {u.streak_count}
+              </td>
             </tr>
           ))}
         </tbody>

@@ -117,7 +117,7 @@ soʻng: barcha dᵢ dan Σd/n ayiriladi (musobaqa reytingni shishirmaydi)`}</For
         </ul>
       </Section>
 
-      <Section title="Activity" phase="Phase 1" active={false}>
+      <Section title="Activity" phase="Faol" active>
         <p>Oxirgi 30 kunlik siljuvchi oyna.</p>
         <Formula>{`Activity = 10 × faol_kun + 5 × bajarilgan_quest + min(2 × streak_kun, 60)`}</Formula>
         <p>

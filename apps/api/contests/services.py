@@ -115,6 +115,16 @@ def finalize_contest(contest: Contest) -> int:
     from ratings.services import apply_contest_ratings
 
     affected = apply_contest_ratings(contest)
+
+    # Phase 1 — contest yakunlash questi (ADR-0002: +30, contest boshiga)
+    if contest.is_rated:
+        try:
+            from qvant.services import on_contest_finished
+
+            for standing in Standing.objects.filter(contest=contest).select_related("user"):
+                on_contest_finished(standing.user, contest.slug)
+        except Exception:
+            log.exception("contest %s uchun Qvant berilmadi", contest.slug)
     contest.ratings_applied_at = timezone.now()
     contest.save(update_fields=["ratings_applied_at"])
     log.info("contest %s yakunlandi — %s ishtirokchi reytingi yangilandi", contest.slug, affected)

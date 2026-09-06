@@ -43,7 +43,7 @@ Barcha 4 reyting domain modelda **boshidan** loyihalanadi (keyin migratsiya qilm
 | -------------- | ------------------------------- | --------------------- |
 | **Skills**     | masala + contest natijalari     | Phase 0 (MVP)         |
 | **Contests**   | contest standings, Elo          | Phase 0 (MVP)         |
-| **Activity**   | Qvant quest, daily login, streak | Phase 1 (P1-5, P1-6)  |
+| **Activity**   | Qvant quest, daily login, streak | ✅ Phase 1 — yoqildi   |
 | **Challenges** | duels / arena                   | Phase 3               |
 
 Bo'sh yoki nol reyting UI da ko'rsatilmaydi.

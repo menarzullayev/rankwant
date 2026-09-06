@@ -57,7 +57,7 @@ To'liq mezonlar: [ADR-0004 § Baholash mezonlari](../07-adr/0004-judge-engine.md
 | **3**  | Judge integratsiya (`JudgeProvider`), Attempt + 20 verdict, custom test | P0-3, P0-4 | ✅ |
 | **4**  | Contest ACM + standings (SSE), profil + Skills/Contests reyting, Next.js UI | P0-5, P0-6 | ✅ |
 
-**Phase 0 (P0-1 … P0-7) to'liq bajarildi.**
+**Phase 0 (P0-1 … P0-7) to'liq bajarildi.** Phase 1 dan: Qvant va Activity (Sprint 5).
 
 Holat (2026-09-06): 65 test o'tadi · mypy strict toza (62 fayl) · ruff toza ·
 OpenAPI 23 endpoint, 0 xato · Next.js build, lint va typecheck toza · 0 zaiflik ·
@@ -76,11 +76,19 @@ MVP **dasturlash tillari** (judge): C++, Python, Java. UI tillari alohida — 04
 
 ## Sprint 5–8 — Phase 1
 
-- Virtual contest · Problem recommendation · Notifications · Blog
-- **Qvant** — wallet + ledger + kunlik quest + streak yutuqlari ([ADR-0002](../07-adr/0002-qvant-economy.md))
-- **Qvant minimal do'kon** — 4 kosmetik narsa; earn bilan **bir fazada**
-- Activity reyting yoqiladi
-- Haftalik marafon
+| Ish | PRD | Holat |
+| --- | --- | ----- |
+| **Qvant** — wallet + ledger + kunlik quest + streak yutuqlari | P1-5 | ✅ |
+| **Streak** + streak yutuqlari (7/30/365) | P1-6 | ✅ |
+| **Activity reyting** yoqildi (UI da ko'rinadi) | P1-7 | ✅ |
+| **Qvant do'kon** (minimal, 6 kosmetik narsa) | P1-8 | ✅ |
+| Haftalik marafon | P1-9 | ⬜ |
+| Virtual contest | P1-1 | ⬜ |
+| Problem recommendation · Notifications · Blog | P1-2…P1-4 | ⬜ |
+
+Sprint 5 holati: 108 test · mypy strict toza (77 fayl) · 32 endpoint.
+Ledger auditi: kesh va tranzaksiya yig'indisi har doim mos
+([ADR-0002](../07-adr/0002-qvant-economy.md) sharti).
 
 ## Sprint 9+ — Phase 2
 

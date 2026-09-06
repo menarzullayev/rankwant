@@ -90,6 +90,14 @@ class MeView(generics.RetrieveUpdateAPIView[User]):
         assert isinstance(self.request.user, User)
         return self.request.user
 
+    def perform_update(self, serializer: Any) -> None:
+        user = serializer.save()
+        # Profil to'ldirilgan bo'lsa — bir martalik quest (ADR-0002)
+        from qvant.quests import on_profile_completed, profile_is_complete
+
+        if profile_is_complete(user):
+            on_profile_completed(user)
+
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet[User]):
     """Ommaviy profil va leaderboard."""
