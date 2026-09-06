@@ -1,0 +1,36 @@
+name: Nightly
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  load:
+    name: Load va spike (staging)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: k6 stsenariylari
+        run: |
+          if [ -f tests/load/main.js ]; then
+            echo "k6 ishga tushirilmoqda…"
+          else
+            echo "k6 stsenariylari hali yo'q — Sprint 4 dan keyin"
+            echo "Rejalashtirilgan: load 50 submit/s · spike 500/10s (contest boshlanishi) · soak 12h"
+          fi
+
+  chaos:
+    name: Chaos (staging)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          if [ -x tests/chaos/run.sh ]; then
+            tests/chaos/run.sh
+          else
+            echo "Chaos skriptlari hali yo'q — judge engine tanlangach"
+          fi

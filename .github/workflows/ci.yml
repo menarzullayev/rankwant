@@ -1,0 +1,147 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      api: ${{ steps.filter.outputs.api }}
+      web: ${{ steps.filter.outputs.web }}
+      judge: ${{ steps.filter.outputs.judge }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            api:   ['apps/api/**']
+            web:   ['apps/web/**']
+            judge: ['services/**']
+
+  docs:
+    name: Hujjat yaxlitligi
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Havola, jadval, yozuv va STATUS tekshiruvi
+        run: python3 tools/check_docs.py
+
+  api:
+    name: API — lint, types, tests
+    needs: changes
+    if: needs.changes.outputs.api == 'true'
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: rankwant_test
+        options: >-
+          --health-cmd pg_isready --health-interval 10s
+          --health-timeout 5s --health-retries 5
+        ports: ['5432:5432']
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 10s
+          --health-timeout 5s --health-retries 5
+        ports: ['6379:6379']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r apps/api/requirements-dev.txt
+      - name: Ruff
+        run: ruff check apps/api
+      - name: mypy (strict)
+        run: mypy apps/api
+      - name: pytest
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/rankwant_test
+          REDIS_URL: redis://localhost:6379/0
+        run: pytest apps/api --cov --cov-report=term-missing
+
+  web:
+    name: Web — lint, types, build
+    needs: changes
+    if: needs.changes.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - run: npm ci
+        working-directory: apps/web
+      - run: npm run lint
+        working-directory: apps/web
+      - run: npm run typecheck
+        working-directory: apps/web
+      - run: npm run build
+        working-directory: apps/web
+
+  judge:
+    name: Judge — bake-off nomzodlari
+    needs: changes
+    if: needs.changes.outputs.judge == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+      - name: Go vet + test
+        run: |
+          if [ -f services/judge-go/go.mod ]; then
+            cd services/judge-go && go vet ./... && go test ./...
+          else
+            echo "judge-go hali scaffold qilinmagan — o'tkazib yuborildi"
+          fi
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Python judge test
+        run: |
+          if [ -f services/judge-py/pyproject.toml ]; then
+            pip install -e services/judge-py[dev] && pytest services/judge-py
+          else
+            echo "judge-py hali scaffold qilinmagan — o'tkazib yuborildi"
+          fi
+
+  openapi:
+    name: OpenAPI schema diff
+    needs: [changes, api]
+    if: needs.changes.outputs.api == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r apps/api/requirements-dev.txt
+      - name: Schema generatsiya va diff
+        run: |
+          python apps/api/manage.py spectacular --file /tmp/schema.yml
+          diff -u apps/api/openapi/schema.yml /tmp/schema.yml || {
+            echo "::error::OpenAPI schema o'zgardi. Yangilang: make schema"
+            exit 1
+          }
