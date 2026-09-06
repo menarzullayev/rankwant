@@ -4,7 +4,7 @@ const config: NextConfig = {
   // SSR — masala va maqola sahifalari SEO uchun serverda render qilinadi
   // (ADR-0003 dagi Next.js tanlovining asosiy sababi).
   reactStrictMode: true,
-  experimental: { typedRoutes: true },
+  typedRoutes: true,  // Next 16 da experimental dan chiqdi
 };
 
 export default config;
