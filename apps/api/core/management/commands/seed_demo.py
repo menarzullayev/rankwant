@@ -5,6 +5,7 @@ Ishlatish:  python manage.py seed_demo
 
 from __future__ import annotations
 
+import secrets
 from datetime import timedelta
 from typing import Any
 
@@ -288,13 +289,18 @@ class Command(BaseCommand):
                 },
             )
 
-        teacher, created = User.objects.get_or_create(
+        # Demo hisoblar o'qituvchi huquqiga ega (sinf yaratish, o'quvchi
+        # qo'shish) va sayt ochiq internetda — qat'iy parol har safar
+        # qaytadan beriladi, aks holda eski oson parol saqlanib qolardi.
+        credentials: list[tuple[str, str]] = []
+
+        teacher, _ = User.objects.get_or_create(
             username="ustoz", defaults={"email": "ustoz@rankwant.uz", "display_name": "Ustoz"}
         )
-        if created:
-            teacher.set_password("ustoz12345")
-            teacher.save()
-            self.stdout.write("ustoz / ustoz12345 yaratildi")
+        teacher_password = secrets.token_urlsafe(12)
+        teacher.set_password(teacher_password)
+        teacher.save()
+        credentials.append(("ustoz", teacher_password))
 
         classroom, _ = Classroom.objects.update_or_create(
             slug="11-a-sinf",
@@ -305,13 +311,14 @@ class Command(BaseCommand):
             },
         )
         for i in range(1, 4):
-            student, made = User.objects.get_or_create(
+            student, _ = User.objects.get_or_create(
                 username=f"oquvchi{i}",
                 defaults={"email": f"oquvchi{i}@rankwant.uz", "display_name": f"O'quvchi {i}"},
             )
-            if made:
-                student.set_password("oquvchi12345")
-                student.save()
+            student_password = secrets.token_urlsafe(12)
+            student.set_password(student_password)
+            student.save()
+            credentials.append((f"oquvchi{i}", student_password))
             ClassroomMember.objects.get_or_create(classroom=classroom, user=student)
 
         assignment, _ = Assignment.objects.update_or_create(
@@ -417,6 +424,11 @@ class Command(BaseCommand):
                 duration_minutes=45,
                 start_at=now + timedelta(hours=1),
             )
+
+        self.stdout.write("--- demo parollar ---")
+        for username, password in credentials:
+            self.stdout.write(f"{username} / {password}")
+        self.stdout.write("--- demo parollar tugadi ---")
 
         self.stdout.write(
             self.style.SUCCESS(
