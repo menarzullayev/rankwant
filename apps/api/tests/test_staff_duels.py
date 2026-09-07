@@ -72,6 +72,12 @@ def _ac(user: User, problem: Problem, when) -> None:
     Attempt.objects.filter(pk=a.pk).update(created_at=when)
 
 
+def _first(duel):  # type: ignore[no-untyped-def]
+    p = duel.problems.first()
+    assert p is not None
+    return p
+
+
 @pytest.mark.django_db
 class TestStaffDuelAccess:
     def test_anonim(self) -> None:
@@ -176,7 +182,7 @@ class TestStaffDuelFinalize:
 
     def test_muddati_otgan_yakunlanadi(self, staff_client, user, other_user, pool) -> None:
         duel = _accepted(user, other_user, minutes_ago=120)
-        _ac(user, duel.problems.first(), duel.start_at + timedelta(minutes=5))
+        _ac(user, _first(duel), duel.start_at + timedelta(minutes=5))
         r = staff_client.post(reverse("staff-duel-finalize", args=[duel.slug]))
         assert r.status_code == 200
         body = r.json()
@@ -197,7 +203,7 @@ class TestStaffDuelFinalize:
     ) -> None:
         """Davom etayotgan duel majburan yakunlanganda o'ynalgan AC'lar sanaladi."""
         duel = _accepted(user, other_user, minutes_ago=10)
-        _ac(other_user, duel.problems.first(), duel.start_at + timedelta(minutes=5))
+        _ac(other_user, _first(duel), duel.start_at + timedelta(minutes=5))
         r = staff_client.post(
             reverse("staff-duel-finalize", args=[duel.slug]), {"force": True}, format="json"
         )

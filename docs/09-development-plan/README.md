@@ -118,6 +118,7 @@ Ledger auditi: kesh va tranzaksiya yig'indisi har doim mos
 | Hakaton — loyiha topshirish, hakam bahosi | ✅ |
 | Taqvim, qidiruv, Algoritmlar ma'lumotnomasi | ✅ |
 | Menyu qayta nomlandi — [menu.md](../10-operations/menu.md) | ✅ |
+| **Admin UI** — 14 bo'lim, `staff/*` API (IsAdminUser), masala uchun test yuklash S3 ga | ✅ |
 
 ## Definition of Done
 

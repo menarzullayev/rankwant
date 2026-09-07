@@ -2066,6 +2066,3116 @@ paths:
       responses:
         '200':
           description: Qidiruv natijalari
+  /api/v1/staff/arena/:
+    get:
+      operationId: staff_arena_list
+      description: '`questions` — tartiblangan savol id''lari; yozishda to''liq almashtiriladi.'
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffArenaList'
+          description: ''
+    post:
+      operationId: staff_arena_create
+      description: '`questions` — tartiblangan savol id''lari; yozishda to''liq almashtiriladi.'
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffArena'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffArena'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffArena'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffArena'
+          description: ''
+  /api/v1/staff/arena/{slug}/:
+    get:
+      operationId: staff_arena_retrieve
+      description: '`questions` — tartiblangan savol id''lari; yozishda to''liq almashtiriladi.'
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffArena'
+          description: ''
+    put:
+      operationId: staff_arena_update
+      description: '`questions` — tartiblangan savol id''lari; yozishda to''liq almashtiriladi.'
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffArena'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffArena'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffArena'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffArena'
+          description: ''
+    patch:
+      operationId: staff_arena_partial_update
+      description: '`questions` — tartiblangan savol id''lari; yozishda to''liq almashtiriladi.'
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffArena'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffArena'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffArena'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffArena'
+          description: ''
+    delete:
+      operationId: staff_arena_destroy
+      description: '`questions` — tartiblangan savol id''lari; yozishda to''liq almashtiriladi.'
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/staff/arena/{slug}/finalize/:
+    post:
+      operationId: staff_arena_finalize_create
+      description: '`questions` — tartiblangan savol id''lari; yozishda to''liq almashtiriladi.'
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinalizeResult'
+          description: ''
+  /api/v1/staff/arena/{slug}/reschedule/:
+    post:
+      operationId: staff_arena_reschedule_create
+      description: Yangi `start_at`; qayta o'tkazilgan raund uchun mukofot belgisi
+        tozalanadi.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reschedule'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Reschedule'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Reschedule'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffArena'
+          description: ''
+  /api/v1/staff/arena/{slug}/reset/:
+    post:
+      operationId: staff_arena_reset_create
+      description: 'Demo uchun: ishtirokchilar va javoblar o''chiriladi, mukofot belgisi
+        tozalanadi.'
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffArena'
+          description: ''
+  /api/v1/staff/articles/:
+    get:
+      operationId: staff_articles_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffArticleList'
+          description: ''
+    post:
+      operationId: staff_articles_create
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffArticle'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffArticle'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffArticle'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffArticle'
+          description: ''
+  /api/v1/staff/articles/{slug}/:
+    get:
+      operationId: staff_articles_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffArticle'
+          description: ''
+    put:
+      operationId: staff_articles_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffArticle'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffArticle'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffArticle'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffArticle'
+          description: ''
+    patch:
+      operationId: staff_articles_partial_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffArticle'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffArticle'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffArticle'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffArticle'
+          description: ''
+    delete:
+      operationId: staff_articles_destroy
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/staff/contests/:
+    get:
+      operationId: staff_contests_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffContestList'
+          description: ''
+    post:
+      operationId: staff_contests_create
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffContest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffContest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffContest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffContest'
+          description: ''
+  /api/v1/staff/contests/{slug}/:
+    get:
+      operationId: staff_contests_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffContest'
+          description: ''
+    put:
+      operationId: staff_contests_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffContest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffContest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffContest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffContest'
+          description: ''
+    patch:
+      operationId: staff_contests_partial_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffContest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffContest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffContest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffContest'
+          description: ''
+    delete:
+      operationId: staff_contests_destroy
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/staff/contests/{slug}/finalize/:
+    post:
+      operationId: staff_contests_finalize_create
+      description: Standings + reyting. Tugamagan yoki allaqachon yakunlangan → affected
+        0.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: ''
+  /api/v1/staff/contests/{slug}/problems/:
+    get:
+      operationId: staff_contests_problems_list
+      description: |-
+        Masalalar ro'yxati.
+
+        GET — joriy ro'yxat. PUT/POST — `[{problem, index_letter, points?}]`
+        yoki `{"problems": [...]}` ko'rinishida; mavjud ContestProblem
+        qatorlari TO'LIQ almashtiriladi (qisman yangilash yo'q).
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffContestProblemList'
+          description: ''
+    post:
+      operationId: staff_contests_problems_create
+      description: |-
+        Masalalar ro'yxati.
+
+        GET — joriy ro'yxat. PUT/POST — `[{problem, index_letter, points?}]`
+        yoki `{"problems": [...]}` ko'rinishida; mavjud ContestProblem
+        qatorlari TO'LIQ almashtiriladi (qisman yangilash yo'q).
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffContestProblemList'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffContestProblemList'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffContestProblemList'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffContestProblemList'
+          description: ''
+    put:
+      operationId: staff_contests_problems_update
+      description: |-
+        Masalalar ro'yxati.
+
+        GET — joriy ro'yxat. PUT/POST — `[{problem, index_letter, points?}]`
+        yoki `{"problems": [...]}` ko'rinishida; mavjud ContestProblem
+        qatorlari TO'LIQ almashtiriladi (qisman yangilash yo'q).
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffContestProblemList'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffContestProblemList'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffContestProblemList'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffContestProblemList'
+          description: ''
+  /api/v1/staff/contests/{slug}/rebuild-standings/:
+    post:
+      operationId: staff_contests_rebuild_standings_create
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: ''
+  /api/v1/staff/duels/:
+    get:
+      operationId: staff_duels_list
+      description: |-
+        `staff/duels/` — barcha holatdagi duellar.
+
+        Yaratish/tahrirlash/o'chirish yo'q: duel foydalanuvchilar o'rtasidagi
+        kelishuv, xodim faqat kuzatadi va zarurat bo'lsa to'xtatadi.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffDuelList'
+          description: ''
+    post:
+      operationId: staff_duels_create
+      description: |-
+        `staff/duels/` — barcha holatdagi duellar.
+
+        Yaratish/tahrirlash/o'chirish yo'q: duel foydalanuvchilar o'rtasidagi
+        kelishuv, xodim faqat kuzatadi va zarurat bo'lsa to'xtatadi.
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffDuel'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffDuel'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffDuel'
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffDuel'
+          description: ''
+  /api/v1/staff/duels/{slug}/:
+    get:
+      operationId: staff_duels_retrieve
+      description: |-
+        `staff/duels/` — barcha holatdagi duellar.
+
+        Yaratish/tahrirlash/o'chirish yo'q: duel foydalanuvchilar o'rtasidagi
+        kelishuv, xodim faqat kuzatadi va zarurat bo'lsa to'xtatadi.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffDuel'
+          description: ''
+  /api/v1/staff/duels/{slug}/cancel/:
+    post:
+      operationId: staff_duels_cancel_create
+      description: |-
+        `staff/duels/` — barcha holatdagi duellar.
+
+        Yaratish/tahrirlash/o'chirish yo'q: duel foydalanuvchilar o'rtasidagi
+        kelishuv, xodim faqat kuzatadi va zarurat bo'lsa to'xtatadi.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffDuel'
+          description: ''
+  /api/v1/staff/duels/{slug}/finalize/:
+    post:
+      operationId: staff_duels_finalize_create
+      description: |-
+        `staff/duels/` — barcha holatdagi duellar.
+
+        Yaratish/tahrirlash/o'chirish yo'q: duel foydalanuvchilar o'rtasidagi
+        kelishuv, xodim faqat kuzatadi va zarurat bo'lsa to'xtatadi.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffDuelFinalize'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffDuelFinalize'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffDuelFinalize'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffDuel'
+          description: ''
+  /api/v1/staff/hackathons/:
+    get:
+      operationId: staff_hackathons_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffHackathonList'
+          description: ''
+    post:
+      operationId: staff_hackathons_create
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffHackathon'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffHackathon'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffHackathon'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffHackathon'
+          description: ''
+  /api/v1/staff/hackathons/{slug}/:
+    get:
+      operationId: staff_hackathons_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffHackathon'
+          description: ''
+    put:
+      operationId: staff_hackathons_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffHackathon'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffHackathon'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffHackathon'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffHackathon'
+          description: ''
+    patch:
+      operationId: staff_hackathons_partial_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffHackathon'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffHackathon'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffHackathon'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffHackathon'
+          description: ''
+    delete:
+      operationId: staff_hackathons_destroy
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/staff/hackathons/{slug}/submissions/:
+    get:
+      operationId: staff_hackathons_submissions_list
+      description: Muddatdan qat'i nazar BARCHA loyihalar — hakam baholashi uchun.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffSubmissionList'
+          description: ''
+  /api/v1/staff/hackathons/{slug}/submissions/{entry_id}/score/:
+    post:
+      operationId: staff_hackathons_submissions_score_create
+      parameters:
+      - in: path
+        name: entry_id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Score'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Score'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Score'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffSubmission'
+          description: ''
+  /api/v1/staff/posts/:
+    get:
+      operationId: staff_posts_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffPostList'
+          description: ''
+    post:
+      operationId: staff_posts_create
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffPost'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffPost'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffPost'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffPost'
+          description: ''
+  /api/v1/staff/posts/{slug}/:
+    get:
+      operationId: staff_posts_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffPost'
+          description: ''
+    put:
+      operationId: staff_posts_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffPost'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffPost'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffPost'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffPost'
+          description: ''
+    patch:
+      operationId: staff_posts_partial_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffPost'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffPost'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffPost'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffPost'
+          description: ''
+    delete:
+      operationId: staff_posts_destroy
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/staff/posts/{slug}/publish/:
+    post:
+      operationId: staff_posts_publish_create
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffPost'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffPost'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffPost'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffPost'
+          description: ''
+  /api/v1/staff/posts/{slug}/unpublish/:
+    post:
+      operationId: staff_posts_unpublish_create
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffPost'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffPost'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffPost'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffPost'
+          description: ''
+  /api/v1/staff/problems/:
+    get:
+      operationId: staff_problems_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffProblemList'
+          description: ''
+    post:
+      operationId: staff_problems_create
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffProblem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffProblem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffProblem'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffProblem'
+          description: ''
+  /api/v1/staff/problems/{slug}/:
+    get:
+      operationId: staff_problems_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffProblem'
+          description: ''
+    put:
+      operationId: staff_problems_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffProblem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffProblem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffProblem'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffProblem'
+          description: ''
+    patch:
+      operationId: staff_problems_partial_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffProblem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffProblem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffProblem'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffProblem'
+          description: ''
+    delete:
+      operationId: staff_problems_destroy
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/staff/problems/{slug}/tests/:
+    get:
+      operationId: staff_problems_tests_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffTestCaseList'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffTestCase'
+          description: ''
+    post:
+      operationId: staff_problems_tests_create
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestCaseUpload'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TestCaseUpload'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TestCaseUpload'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffTestCaseList'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffTestCase'
+          description: ''
+  /api/v1/staff/problems/{slug}/tests/{order}/:
+    delete:
+      operationId: staff_problems_tests_destroy
+      parameters:
+      - in: path
+        name: order
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/staff/questions/:
+    get:
+      operationId: staff_questions_list
+      description: Savol banki — variantlar savol bilan birga (ichma-ich) tahrirlanadi.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffQuestionList'
+          description: ''
+    post:
+      operationId: staff_questions_create
+      description: Savol banki — variantlar savol bilan birga (ichma-ich) tahrirlanadi.
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffQuestion'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffQuestion'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffQuestion'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffQuestion'
+          description: ''
+  /api/v1/staff/questions/{id}/:
+    get:
+      operationId: staff_questions_retrieve
+      description: Savol banki — variantlar savol bilan birga (ichma-ich) tahrirlanadi.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this question.
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffQuestion'
+          description: ''
+    put:
+      operationId: staff_questions_update
+      description: Savol banki — variantlar savol bilan birga (ichma-ich) tahrirlanadi.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this question.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffQuestion'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffQuestion'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffQuestion'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffQuestion'
+          description: ''
+    patch:
+      operationId: staff_questions_partial_update
+      description: Savol banki — variantlar savol bilan birga (ichma-ich) tahrirlanadi.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this question.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffQuestion'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffQuestion'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffQuestion'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffQuestion'
+          description: ''
+    delete:
+      operationId: staff_questions_destroy
+      description: Savol banki — variantlar savol bilan birga (ichma-ich) tahrirlanadi.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this question.
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/staff/quests/:
+    get:
+      operationId: staff_quests_list
+      description: |-
+        Quest ta'riflari. Kodlar `qvant.quests` dagi hodisalarga bog'lanadi —
+        yangi kod qo'shish uni avtomatik ishga tushirmaydi, faqat katalogga kiradi.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffQuestList'
+          description: ''
+    post:
+      operationId: staff_quests_create
+      description: |-
+        Quest ta'riflari. Kodlar `qvant.quests` dagi hodisalarga bog'lanadi —
+        yangi kod qo'shish uni avtomatik ishga tushirmaydi, faqat katalogga kiradi.
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffQuest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffQuest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffQuest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffQuest'
+          description: ''
+  /api/v1/staff/quests/{code}/:
+    get:
+      operationId: staff_quests_retrieve
+      description: |-
+        Quest ta'riflari. Kodlar `qvant.quests` dagi hodisalarga bog'lanadi —
+        yangi kod qo'shish uni avtomatik ishga tushirmaydi, faqat katalogga kiradi.
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffQuest'
+          description: ''
+    put:
+      operationId: staff_quests_update
+      description: |-
+        Quest ta'riflari. Kodlar `qvant.quests` dagi hodisalarga bog'lanadi —
+        yangi kod qo'shish uni avtomatik ishga tushirmaydi, faqat katalogga kiradi.
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffQuest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffQuest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffQuest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffQuest'
+          description: ''
+    patch:
+      operationId: staff_quests_partial_update
+      description: |-
+        Quest ta'riflari. Kodlar `qvant.quests` dagi hodisalarga bog'lanadi —
+        yangi kod qo'shish uni avtomatik ishga tushirmaydi, faqat katalogga kiradi.
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffQuest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffQuest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffQuest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffQuest'
+          description: ''
+    delete:
+      operationId: staff_quests_destroy
+      description: |-
+        Quest ta'riflari. Kodlar `qvant.quests` dagi hodisalarga bog'lanadi —
+        yangi kod qo'shish uni avtomatik ishga tushirmaydi, faqat katalogga kiradi.
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/staff/quests/sync/:
+    post:
+      operationId: staff_quests_sync_create
+      description: |-
+        ADR-0002 earn jadvalini bazaga qayta yozadi.
+
+        Katalogdagi kodlar uchun tur/mukofot/nom asl holiga qaytadi va
+        `is_active=True` bo'ladi; qo'lda qo'shilgan questlarga tegilmaydi.
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffQuest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffQuest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffQuest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffQuest'
+          description: ''
+  /api/v1/staff/quizzes/:
+    get:
+      operationId: staff_quizzes_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffQuizList'
+          description: ''
+    post:
+      operationId: staff_quizzes_create
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffQuiz'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffQuiz'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffQuiz'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffQuiz'
+          description: ''
+  /api/v1/staff/quizzes/{slug}/:
+    get:
+      operationId: staff_quizzes_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffQuiz'
+          description: ''
+    put:
+      operationId: staff_quizzes_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffQuiz'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffQuiz'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffQuiz'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffQuiz'
+          description: ''
+    patch:
+      operationId: staff_quizzes_partial_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffQuiz'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffQuiz'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffQuiz'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffQuiz'
+          description: ''
+    delete:
+      operationId: staff_quizzes_destroy
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/staff/roadmaps/:
+    get:
+      operationId: staff_roadmaps_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffRoadmapList'
+          description: ''
+    post:
+      operationId: staff_roadmaps_create
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmap'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmap'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmap'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffRoadmap'
+          description: ''
+  /api/v1/staff/roadmaps/{slug}/:
+    get:
+      operationId: staff_roadmaps_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffRoadmap'
+          description: ''
+    put:
+      operationId: staff_roadmaps_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmap'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmap'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmap'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffRoadmap'
+          description: ''
+    patch:
+      operationId: staff_roadmaps_partial_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffRoadmap'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffRoadmap'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffRoadmap'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffRoadmap'
+          description: ''
+    delete:
+      operationId: staff_roadmaps_destroy
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/staff/shop-items/:
+    get:
+      operationId: staff_shop_items_list
+      description: 'Do''kon katalogi — ADR-0002: faqat kosmetika va qulaylik.'
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffShopItemList'
+          description: ''
+    post:
+      operationId: staff_shop_items_create
+      description: 'Do''kon katalogi — ADR-0002: faqat kosmetika va qulaylik.'
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffShopItem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffShopItem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffShopItem'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffShopItem'
+          description: ''
+  /api/v1/staff/shop-items/{code}/:
+    get:
+      operationId: staff_shop_items_retrieve
+      description: 'Do''kon katalogi — ADR-0002: faqat kosmetika va qulaylik.'
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffShopItem'
+          description: ''
+    put:
+      operationId: staff_shop_items_update
+      description: 'Do''kon katalogi — ADR-0002: faqat kosmetika va qulaylik.'
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffShopItem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffShopItem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffShopItem'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffShopItem'
+          description: ''
+    patch:
+      operationId: staff_shop_items_partial_update
+      description: 'Do''kon katalogi — ADR-0002: faqat kosmetika va qulaylik.'
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffShopItem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffShopItem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffShopItem'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffShopItem'
+          description: ''
+    delete:
+      operationId: staff_shop_items_destroy
+      description: 'Do''kon katalogi — ADR-0002: faqat kosmetika va qulaylik.'
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/staff/topics/:
+    get:
+      operationId: staff_topics_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffTopicList'
+          description: ''
+    post:
+      operationId: staff_topics_create
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffTopic'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffTopic'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffTopic'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffTopic'
+          description: ''
+  /api/v1/staff/topics/{slug}/:
+    get:
+      operationId: staff_topics_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffTopic'
+          description: ''
+    put:
+      operationId: staff_topics_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffTopic'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffTopic'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffTopic'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffTopic'
+          description: ''
+    patch:
+      operationId: staff_topics_partial_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffTopic'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffTopic'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffTopic'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffTopic'
+          description: ''
+    delete:
+      operationId: staff_topics_destroy
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/staff/tournaments/:
+    get:
+      operationId: staff_tournaments_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffTournamentList'
+          description: ''
+    post:
+      operationId: staff_tournaments_create
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffTournament'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffTournament'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffTournament'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffTournament'
+          description: ''
+  /api/v1/staff/tournaments/{slug}/:
+    get:
+      operationId: staff_tournaments_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffTournament'
+          description: ''
+    put:
+      operationId: staff_tournaments_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffTournament'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffTournament'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffTournament'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffTournament'
+          description: ''
+    patch:
+      operationId: staff_tournaments_partial_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffTournament'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffTournament'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffTournament'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffTournament'
+          description: ''
+    delete:
+      operationId: staff_tournaments_destroy
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/staff/tournaments/{slug}/rebuild/:
+    post:
+      operationId: staff_tournaments_rebuild_create
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: ''
+  /api/v1/staff/users/:
+    get:
+      operationId: staff_users_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffUserList'
+          description: ''
+    post:
+      operationId: staff_users_create
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffUser'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffUser'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffUser'
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffUser'
+          description: ''
+  /api/v1/staff/users/{username}/:
+    get:
+      operationId: staff_users_retrieve
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffUser'
+          description: ''
+    patch:
+      operationId: staff_users_partial_update
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffUser'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffUser'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffUser'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffUser'
+          description: ''
+  /api/v1/staff/users/{username}/notify/:
+    post:
+      operationId: staff_users_notify_create
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffUser'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffUser'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffUser'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffUser'
+          description: ''
+  /api/v1/staff/users/{username}/qvant/:
+    post:
+      operationId: staff_users_qvant_create
+      description: 'Qvant tuzatish: musbat — kunlik shiftsiz kredit, manfiy — debit.'
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffUser'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffUser'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffUser'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffUser'
+          description: ''
+  /api/v1/staff/users/broadcast/:
+    post:
+      operationId: staff_users_broadcast_create
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffUser'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffUser'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffUser'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffUser'
+          description: ''
   /api/v1/stats/:
     get:
       operationId: stats_retrieve
@@ -3286,6 +6396,18 @@ components:
       - draws
       - losses
       - wins
+    FinalizeResult:
+      type: object
+      properties:
+        awarded:
+          type: integer
+        rewards_applied_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - awarded
+      - rewards_applied_at
     Hackathon:
       type: object
       properties:
@@ -3441,6 +6563,11 @@ components:
         id:
           type: integer
           readOnly: true
+        is_staff:
+          type: boolean
+          readOnly: true
+          title: Staff status
+          description: Designates whether the user can log into this admin site.
         username:
           type: string
           readOnly: true
@@ -3495,6 +6622,7 @@ components:
       required:
       - date_joined
       - id
+      - is_staff
       - rating_activity
       - rating_contest
       - rating_skills
@@ -3884,6 +7012,420 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SolvedProblem'
+    PaginatedStaffArenaList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffArena'
+    PaginatedStaffArticleList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffArticle'
+    PaginatedStaffContestList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffContest'
+    PaginatedStaffContestProblemList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffContestProblem'
+    PaginatedStaffDuelList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffDuel'
+    PaginatedStaffHackathonList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffHackathon'
+    PaginatedStaffPostList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffPost'
+    PaginatedStaffProblemList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffProblem'
+    PaginatedStaffQuestList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffQuest'
+    PaginatedStaffQuestionList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffQuestion'
+    PaginatedStaffQuizList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffQuiz'
+    PaginatedStaffRoadmapList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffRoadmap'
+    PaginatedStaffShopItemList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffShopItem'
+    PaginatedStaffSubmissionList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffSubmission'
+    PaginatedStaffTestCaseList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffTestCase'
+    PaginatedStaffTopicList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffTopic'
+    PaginatedStaffTournamentList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffTournament'
+    PaginatedStaffUserList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffUser'
     PaginatedStandingList:
       type: object
       required:
@@ -4070,6 +7612,11 @@ components:
         id:
           type: integer
           readOnly: true
+        is_staff:
+          type: boolean
+          readOnly: true
+          title: Staff status
+          description: Designates whether the user can log into this admin site.
         username:
           type: string
           readOnly: true
@@ -4121,6 +7668,619 @@ components:
           type: string
           format: date-time
           readOnly: true
+    PatchedStaffArena:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        start_at:
+          type: string
+          format: date-time
+        end_at:
+          type: string
+          format: date-time
+          readOnly: true
+        seconds_per_question:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        reward_qvant:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        is_public:
+          type: boolean
+        questions:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+          writeOnly: true
+        question_count:
+          type: integer
+          readOnly: true
+        participant_count:
+          type: integer
+          readOnly: true
+        is_running:
+          type: boolean
+          readOnly: true
+        is_finished:
+          type: boolean
+          readOnly: true
+        rewards_applied_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedStaffArticle:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        kind:
+          $ref: '#/components/schemas/Kind910Enum'
+        title:
+          type: string
+          maxLength: 200
+        summary:
+          type: string
+          maxLength: 300
+        body:
+          type: string
+          description: Markdown + LaTeX
+        locale:
+          type: string
+          maxLength: 2
+        difficulty:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        topics:
+          type: array
+          items:
+            type: string
+        is_published:
+          type: boolean
+        reading_minutes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        problems:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffArticleProblemLink'
+        problem_count:
+          type: integer
+          readOnly: true
+          default: 0
+        author:
+          type: string
+          readOnly: true
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedStaffContest:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        start_at:
+          type: string
+          format: date-time
+        end_at:
+          type: string
+          format: date-time
+        freeze_minutes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          description: Oxirgi N daqiqada standings muzlatiladi
+        scoring_type:
+          $ref: '#/components/schemas/ScoringTypeEnum'
+        is_rated:
+          type: boolean
+        is_virtual:
+          type: boolean
+        is_public:
+          type: boolean
+        mirror_of:
+          type: string
+          nullable: true
+        ratings_applied_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        problems:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffContestProblem'
+          readOnly: true
+        is_running:
+          type: boolean
+          readOnly: true
+        is_finished:
+          type: boolean
+          readOnly: true
+    PatchedStaffHackathon:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          description: 'Markdown: shartlar, mezonlar, sovrin'
+        start_at:
+          type: string
+          format: date-time
+        submission_deadline:
+          type: string
+          format: date-time
+        end_at:
+          type: string
+          format: date-time
+          description: Natijalar e'lon qilinadigan vaqt
+        is_public:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        submission_count:
+          type: integer
+          readOnly: true
+        accepts_submissions:
+          type: boolean
+          readOnly: true
+        is_finished:
+          type: boolean
+          readOnly: true
+    PatchedStaffPost:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        kind:
+          $ref: '#/components/schemas/Kind59eEnum'
+        title:
+          type: string
+          maxLength: 200
+        summary:
+          type: string
+          maxLength: 300
+        body:
+          type: string
+          description: Markdown
+        locale:
+          type: string
+          maxLength: 2
+        author:
+          type: string
+          readOnly: true
+        is_published:
+          type: boolean
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        notify_users:
+          type: boolean
+          description: Nashr qilinganda foydalanuvchilarga xabar berish
+        notified_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedStaffProblem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        slug:
+          type: string
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        statement:
+          type: string
+          description: Markdown + LaTeX
+        statement_locale:
+          type: string
+          maxLength: 2
+        difficulty:
+          type: integer
+          maximum: 3500
+          minimum: 800
+          description: 800–3500, qadam 100
+        topics:
+          type: array
+          items:
+            type: string
+        time_limit_ms:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        memory_limit_kb:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        checker_type:
+          $ref: '#/components/schemas/CheckerTypeEnum'
+        interactor_source:
+          type: string
+        interactor_language:
+          type: string
+          nullable: true
+        is_public:
+          type: boolean
+        source:
+          type: string
+          maxLength: 100
+        source_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        solved_count:
+          type: integer
+          readOnly: true
+        attempt_count:
+          type: integer
+          readOnly: true
+        test_count:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedStaffQuest:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        code:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        title_uz:
+          type: string
+          maxLength: 120
+        title_ru:
+          type: string
+          maxLength: 120
+        title_en:
+          type: string
+          maxLength: 120
+        reward:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        is_active:
+          type: boolean
+        completion_count:
+          type: integer
+          readOnly: true
+          default: 0
+    PatchedStaffQuestion:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        text:
+          type: string
+          description: Markdown + LaTeX
+        explanation:
+          type: string
+          description: Javobdan keyin ko'rsatiladi
+        difficulty:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        topics:
+          type: array
+          items:
+            type: string
+        is_active:
+          type: boolean
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffChoice'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedStaffQuiz:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        reward_qvant:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        is_published:
+          type: boolean
+        questions:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedStaffRoadmap:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        locale:
+          type: string
+          maxLength: 2
+        is_published:
+          type: boolean
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffRoadmapStep'
+        step_count:
+          type: integer
+          readOnly: true
+          default: 0
+    PatchedStaffShopItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        code:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        category:
+          $ref: '#/components/schemas/CategoryEnum'
+        title_uz:
+          type: string
+          maxLength: 120
+        title_ru:
+          type: string
+          maxLength: 120
+        title_en:
+          type: string
+          maxLength: 120
+        price:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        asset_ref:
+          type: string
+          maxLength: 200
+        is_active:
+          type: boolean
+        is_consumable:
+          type: boolean
+        owner_count:
+          type: integer
+          readOnly: true
+          default: 0
+    PatchedStaffTopic:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        slug:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        name_uz:
+          type: string
+          maxLength: 100
+        name_ru:
+          type: string
+          maxLength: 100
+        name_en:
+          type: string
+          maxLength: 100
+        parent:
+          type: string
+          nullable: true
+    PatchedStaffTournament:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          description: Markdown
+        start_at:
+          type: string
+          format: date-time
+        end_at:
+          type: string
+          format: date-time
+        is_public:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        stages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffStage'
+        stage_count:
+          type: integer
+          readOnly: true
+    PatchedStaffUser:
+      type: object
+      description: |-
+        Admin ko'rinishi. Tahrirlanadigan: display_name, bio, is_active, is_staff.
+
+        Parol va login ma'lumotlari bu yuzada YO'Q — admin parolni ko'rmaydi
+        ham, o'rnatmaydi ham.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+        email:
+          type: string
+          format: email
+          readOnly: true
+          title: Email address
+        display_name:
+          type: string
+          maxLength: 100
+        bio:
+          type: string
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this user should be treated as active. Unselect
+            this instead of deleting accounts.
+        is_staff:
+          type: boolean
+          title: Staff status
+          description: Designates whether the user can log into this admin site.
+        is_superuser:
+          type: boolean
+          readOnly: true
+          title: Superuser status
+          description: Designates that this user has all permissions without explicitly
+            assigning them.
+        rating_skills:
+          type: integer
+          readOnly: true
+        rating_contest:
+          type: integer
+          readOnly: true
+        rating_activity:
+          type: integer
+          readOnly: true
+        rating_challenges:
+          type: integer
+          readOnly: true
+        qvant_balance:
+          type: integer
+          readOnly: true
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+        last_login:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+          title: Oxirgi kirish
     PostDetail:
       type: object
       properties:
@@ -4598,6 +8758,14 @@ components:
           nullable: true
       required:
       - registered_at
+    Reschedule:
+      type: object
+      properties:
+        start_at:
+          type: string
+          format: date-time
+      required:
+      - start_at
     ReviewItem:
       type: object
       properties:
@@ -4796,6 +8964,1032 @@ components:
       - first_ac_at
       - slug
       - title
+    StaffArena:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        start_at:
+          type: string
+          format: date-time
+        end_at:
+          type: string
+          format: date-time
+          readOnly: true
+        seconds_per_question:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        reward_qvant:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        is_public:
+          type: boolean
+        questions:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+          writeOnly: true
+        question_count:
+          type: integer
+          readOnly: true
+        participant_count:
+          type: integer
+          readOnly: true
+        is_running:
+          type: boolean
+          readOnly: true
+        is_finished:
+          type: boolean
+          readOnly: true
+        rewards_applied_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - end_at
+      - is_finished
+      - is_running
+      - participant_count
+      - question_count
+      - rewards_applied_at
+      - slug
+      - start_at
+      - title
+    StaffArticle:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        kind:
+          $ref: '#/components/schemas/Kind910Enum'
+        title:
+          type: string
+          maxLength: 200
+        summary:
+          type: string
+          maxLength: 300
+        body:
+          type: string
+          description: Markdown + LaTeX
+        locale:
+          type: string
+          maxLength: 2
+        difficulty:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        topics:
+          type: array
+          items:
+            type: string
+        is_published:
+          type: boolean
+        reading_minutes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        problems:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffArticleProblemLink'
+        problem_count:
+          type: integer
+          readOnly: true
+          default: 0
+        author:
+          type: string
+          readOnly: true
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - author
+      - body
+      - created_at
+      - problem_count
+      - published_at
+      - slug
+      - title
+      - updated_at
+    StaffArticleProblemLink:
+      type: object
+      properties:
+        problem:
+          type: string
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+      required:
+      - problem
+    StaffChoice:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        text:
+          type: string
+          maxLength: 500
+        is_correct:
+          type: boolean
+      required:
+      - id
+      - order
+      - text
+    StaffContest:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        start_at:
+          type: string
+          format: date-time
+        end_at:
+          type: string
+          format: date-time
+        freeze_minutes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          description: Oxirgi N daqiqada standings muzlatiladi
+        scoring_type:
+          $ref: '#/components/schemas/ScoringTypeEnum'
+        is_rated:
+          type: boolean
+        is_virtual:
+          type: boolean
+        is_public:
+          type: boolean
+        mirror_of:
+          type: string
+          nullable: true
+        ratings_applied_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        problems:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffContestProblem'
+          readOnly: true
+        is_running:
+          type: boolean
+          readOnly: true
+        is_finished:
+          type: boolean
+          readOnly: true
+      required:
+      - created_at
+      - end_at
+      - is_finished
+      - is_running
+      - problems
+      - ratings_applied_at
+      - slug
+      - start_at
+      - title
+    StaffContestProblem:
+      type: object
+      description: '`PUT staff/contests/<slug>/problems/` ro''yxatining bitta elementi.'
+      properties:
+        problem:
+          type: string
+        index_letter:
+          type: string
+          maxLength: 3
+        points:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        title:
+          type: string
+          readOnly: true
+      required:
+      - index_letter
+      - problem
+      - title
+    StaffContestProblemList:
+      type: object
+      description: Masalalar ro'yxatini to'liq almashtirish uchun kirish.
+      properties:
+        problems:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffContestProblem'
+      required:
+      - problems
+    StaffDuel:
+      type: object
+      description: |-
+        Nazorat uchun to'liq ko'rinish — barcha maydonlar faqat o'qishga.
+
+        Xodim duelni tahrirlamaydi: bekor qilish va yakunlash alohida amallar.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          readOnly: true
+        challenger:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          readOnly: true
+        opponent:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          readOnly: true
+        problem_count:
+          type: integer
+          readOnly: true
+        difficulty:
+          type: integer
+          readOnly: true
+        duration_minutes:
+          type: integer
+          readOnly: true
+        start_at:
+          type: string
+          format: date-time
+          readOnly: true
+        end_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_due:
+          type: boolean
+          readOnly: true
+        problems:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        winner:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          readOnly: true
+        challenger_solved:
+          type: integer
+          readOnly: true
+        opponent_solved:
+          type: integer
+          readOnly: true
+        is_draw:
+          type: boolean
+          readOnly: true
+        ratings_applied_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - challenger
+      - challenger_solved
+      - created_at
+      - difficulty
+      - duration_minutes
+      - end_at
+      - id
+      - is_draw
+      - is_due
+      - opponent
+      - opponent_solved
+      - problem_count
+      - problems
+      - ratings_applied_at
+      - slug
+      - start_at
+      - status
+      - title
+      - winner
+    StaffDuelFinalize:
+      type: object
+      properties:
+        force:
+          type: boolean
+          default: false
+    StaffHackathon:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          description: 'Markdown: shartlar, mezonlar, sovrin'
+        start_at:
+          type: string
+          format: date-time
+        submission_deadline:
+          type: string
+          format: date-time
+        end_at:
+          type: string
+          format: date-time
+          description: Natijalar e'lon qilinadigan vaqt
+        is_public:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        submission_count:
+          type: integer
+          readOnly: true
+        accepts_submissions:
+          type: boolean
+          readOnly: true
+        is_finished:
+          type: boolean
+          readOnly: true
+      required:
+      - accepts_submissions
+      - created_at
+      - end_at
+      - is_finished
+      - slug
+      - start_at
+      - submission_count
+      - submission_deadline
+      - title
+    StaffPost:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        kind:
+          $ref: '#/components/schemas/Kind59eEnum'
+        title:
+          type: string
+          maxLength: 200
+        summary:
+          type: string
+          maxLength: 300
+        body:
+          type: string
+          description: Markdown
+        locale:
+          type: string
+          maxLength: 2
+        author:
+          type: string
+          readOnly: true
+        is_published:
+          type: boolean
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        notify_users:
+          type: boolean
+          description: Nashr qilinganda foydalanuvchilarga xabar berish
+        notified_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - author
+      - body
+      - created_at
+      - notified_at
+      - slug
+      - title
+      - updated_at
+    StaffProblem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        slug:
+          type: string
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        statement:
+          type: string
+          description: Markdown + LaTeX
+        statement_locale:
+          type: string
+          maxLength: 2
+        difficulty:
+          type: integer
+          maximum: 3500
+          minimum: 800
+          description: 800–3500, qadam 100
+        topics:
+          type: array
+          items:
+            type: string
+        time_limit_ms:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        memory_limit_kb:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        checker_type:
+          $ref: '#/components/schemas/CheckerTypeEnum'
+        interactor_source:
+          type: string
+        interactor_language:
+          type: string
+          nullable: true
+        is_public:
+          type: boolean
+        source:
+          type: string
+          maxLength: 100
+        source_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        solved_count:
+          type: integer
+          readOnly: true
+        attempt_count:
+          type: integer
+          readOnly: true
+        test_count:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - attempt_count
+      - created_at
+      - difficulty
+      - id
+      - slug
+      - solved_count
+      - statement
+      - test_count
+      - title
+      - updated_at
+    StaffQuest:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        code:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        title_uz:
+          type: string
+          maxLength: 120
+        title_ru:
+          type: string
+          maxLength: 120
+        title_en:
+          type: string
+          maxLength: 120
+        reward:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        is_active:
+          type: boolean
+        completion_count:
+          type: integer
+          readOnly: true
+          default: 0
+      required:
+      - code
+      - completion_count
+      - id
+      - reward
+      - title_uz
+      - type
+    StaffQuestion:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        text:
+          type: string
+          description: Markdown + LaTeX
+        explanation:
+          type: string
+          description: Javobdan keyin ko'rsatiladi
+        difficulty:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        topics:
+          type: array
+          items:
+            type: string
+        is_active:
+          type: boolean
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffChoice'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - choices
+      - created_at
+      - id
+      - text
+    StaffQuiz:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        reward_qvant:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        is_published:
+          type: boolean
+        questions:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - slug
+      - title
+    StaffRoadmap:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        locale:
+          type: string
+          maxLength: 2
+        is_published:
+          type: boolean
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffRoadmapStep'
+        step_count:
+          type: integer
+          readOnly: true
+          default: 0
+      required:
+      - slug
+      - step_count
+      - title
+    StaffRoadmapStep:
+      type: object
+      properties:
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        title:
+          type: string
+          maxLength: 200
+        article:
+          type: string
+          nullable: true
+        problem:
+          type: string
+          nullable: true
+        is_optional:
+          type: boolean
+      required:
+      - order
+    StaffShopItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        code:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        category:
+          $ref: '#/components/schemas/CategoryEnum'
+        title_uz:
+          type: string
+          maxLength: 120
+        title_ru:
+          type: string
+          maxLength: 120
+        title_en:
+          type: string
+          maxLength: 120
+        price:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        asset_ref:
+          type: string
+          maxLength: 200
+        is_active:
+          type: boolean
+        is_consumable:
+          type: boolean
+        owner_count:
+          type: integer
+          readOnly: true
+          default: 0
+      required:
+      - category
+      - code
+      - id
+      - owner_count
+      - price
+      - title_uz
+    StaffStage:
+      type: object
+      properties:
+        order:
+          type: integer
+          minimum: 1
+        title:
+          type: string
+          maxLength: 120
+        contest:
+          type: string
+        contest_title:
+          type: string
+          readOnly: true
+        weight:
+          type: integer
+          minimum: 1
+          default: 1
+      required:
+      - contest
+      - contest_title
+      - order
+      - title
+    StaffSubmission:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+        team_name:
+          type: string
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        description:
+          type: string
+          readOnly: true
+          description: Markdown
+        repo_url:
+          type: string
+          format: uri
+          readOnly: true
+        demo_url:
+          type: string
+          format: uri
+          readOnly: true
+        submitted_at:
+          type: string
+          format: date-time
+          readOnly: true
+        score:
+          type: integer
+          readOnly: true
+          nullable: true
+          description: 0–100
+        feedback:
+          type: string
+          readOnly: true
+        scored_by:
+          type: string
+          readOnly: true
+        scored_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - demo_url
+      - description
+      - feedback
+      - id
+      - repo_url
+      - score
+      - scored_at
+      - scored_by
+      - submitted_at
+      - team_name
+      - title
+      - username
+    StaffTestCase:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        is_sample:
+          type: boolean
+        points:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        input_ref:
+          type: string
+          maxLength: 500
+        output_ref:
+          type: string
+          maxLength: 500
+      required:
+      - id
+      - input_ref
+      - order
+      - output_ref
+    StaffTopic:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        slug:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        name_uz:
+          type: string
+          maxLength: 100
+        name_ru:
+          type: string
+          maxLength: 100
+        name_en:
+          type: string
+          maxLength: 100
+        parent:
+          type: string
+          nullable: true
+      required:
+      - id
+      - name_uz
+      - slug
+    StaffTournament:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          description: Markdown
+        start_at:
+          type: string
+          format: date-time
+        end_at:
+          type: string
+          format: date-time
+        is_public:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        stages:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffStage'
+        stage_count:
+          type: integer
+          readOnly: true
+      required:
+      - created_at
+      - end_at
+      - slug
+      - stage_count
+      - start_at
+      - title
+    StaffUser:
+      type: object
+      description: |-
+        Admin ko'rinishi. Tahrirlanadigan: display_name, bio, is_active, is_staff.
+
+        Parol va login ma'lumotlari bu yuzada YO'Q — admin parolni ko'rmaydi
+        ham, o'rnatmaydi ham.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+        email:
+          type: string
+          format: email
+          readOnly: true
+          title: Email address
+        display_name:
+          type: string
+          maxLength: 100
+        bio:
+          type: string
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this user should be treated as active. Unselect
+            this instead of deleting accounts.
+        is_staff:
+          type: boolean
+          title: Staff status
+          description: Designates whether the user can log into this admin site.
+        is_superuser:
+          type: boolean
+          readOnly: true
+          title: Superuser status
+          description: Designates that this user has all permissions without explicitly
+            assigning them.
+        rating_skills:
+          type: integer
+          readOnly: true
+        rating_contest:
+          type: integer
+          readOnly: true
+        rating_activity:
+          type: integer
+          readOnly: true
+        rating_challenges:
+          type: integer
+          readOnly: true
+        qvant_balance:
+          type: integer
+          readOnly: true
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+        last_login:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+          title: Oxirgi kirish
+      required:
+      - date_joined
+      - email
+      - id
+      - is_superuser
+      - last_login
+      - qvant_balance
+      - rating_activity
+      - rating_challenges
+      - rating_contest
+      - rating_skills
+      - username
     Stage:
       type: object
       properties:
@@ -4951,6 +10145,28 @@ components:
       - description
       - repo_url
       - title
+    TestCaseUpload:
+      type: object
+      description: Test matni S3 ga ketadi, DB da faqat havola qoladi (05-domain-model).
+      properties:
+        order:
+          type: integer
+          minimum: 1
+        input:
+          type: string
+        expected:
+          type: string
+        is_sample:
+          type: boolean
+          default: false
+        points:
+          type: integer
+          minimum: 0
+          default: 0
+      required:
+      - expected
+      - input
+      - order
     Topic:
       type: object
       properties:

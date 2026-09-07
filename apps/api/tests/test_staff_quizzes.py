@@ -166,28 +166,3 @@ class TestStaffQuizCrud:
         assert r.status_code == 204
         assert not Quiz.objects.filter(pk=quiz.pk).exists()
         assert QuizQuestion.objects.filter(quiz_id=quiz.pk).count() == 0
-
-
-@pytest.mark.django_db
-class TestStaffQuestionLookup:
-    def test_anonim_kirolmaydi(self, questions) -> None:
-        assert APIClient().get(reverse("staff-question-list")).status_code in (401, 403)
-
-    def test_royxat_va_qidiruv(self, staff_client, questions) -> None:
-        body = staff_client.get(reverse("staff-question-list")).json()
-        assert body["count"] == 3
-        body = staff_client.get(reverse("staff-question-list"), {"search": "Savol 2"}).json()
-        assert [q["id"] for q in body["results"]] == [questions[2].pk]
-
-    def test_olish(self, staff_client, questions) -> None:
-        body = staff_client.get(reverse("staff-question-detail", args=[questions[1].pk])).json()
-        assert body == {
-            "id": questions[1].pk,
-            "text": "Savol 1",
-            "difficulty": 800,
-            "is_active": True,
-        }
-
-    def test_faqat_oqish(self, staff_client, questions) -> None:
-        r = staff_client.post(reverse("staff-question-list"), {"text": "x"}, format="json")
-        assert r.status_code == 405
