@@ -22,8 +22,8 @@ document.documentElement.classList.add("dark")}`;
 /** Uslub ham hidratsiyadan oldin qo'yiladi — `data-style` butun token
  * qatlamini almashtiradi, kechikkanda sahifa ko'z oldida sakrardi. */
 const STYLE_INIT = `try{var s=localStorage.getItem("style");
-document.documentElement.dataset.style=s||"dashboard"}catch(e){
-document.documentElement.dataset.style="dashboard"}`;
+document.documentElement.dataset.style=s||"clay"}catch(e){
+document.documentElement.dataset.style="clay"}`;
 
 export default function RootLayout({
   children,

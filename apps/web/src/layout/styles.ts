@@ -66,7 +66,7 @@ export const STYLES: StyleDef[] = [
   { id: "skeu", label: "Skeuomorfizm", hint: "Metall va relyef", dual: false },
 ];
 
-export const DEFAULT_STYLE: StyleId = "dashboard";
+export const DEFAULT_STYLE: StyleId = "clay";
 
 export const STYLE_IDS: StyleId[] = STYLES.map((s) => s.id);
 
