@@ -1,15 +1,10 @@
 import type { Metadata } from "next";
 
-import { Card } from "@/components/ui/Card";
+import { ShopAdmin } from "@/components/admin/ShopAdmin";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Admin · shop" };
+export const metadata: Metadata = { title: "Admin · Do'kon" };
 
-// STUB — admin/shop bo'limi alohida agent tomonidan to'ldiriladi.
 export default function AdminShopPage() {
-  return (
-    <Card>
-      <p className="text-theme-sm text-gray-400">shop — tez orada</p>
-    </Card>
-  );
+  return <ShopAdmin />;
 }
