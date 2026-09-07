@@ -183,8 +183,13 @@ REST_FRAMEWORK = {
     # Yuklama sinovi bitta IP dan keladi, ya'ni anon throttle sig'imdan
     # oldin ishga tushadi va o'lchov ma'nosini yo'qotadi. Shuning uchun
     # sozlanadigan — production qiymatlari standart.
+    #
+    # Anon limiti IP bo'yicha, maktab kompyuter sinfi esa bitta tashqi IP
+    # dan chiqadi — 30 o'quvchi dars boshida birdan kiradi. Daqiqalik oyna
+    # shu portlashda uriladi, soatlik oyna esa o'tkazadi va uzluksiz
+    # scraping'ni baribir to'sadi.
     "DEFAULT_THROTTLE_RATES": {
-        "anon": os.environ.get("THROTTLE_ANON", "60/min"),
+        "anon": os.environ.get("THROTTLE_ANON", "1500/hour"),
         "user": os.environ.get("THROTTLE_USER", "300/min"),
         "submit": os.environ.get("THROTTLE_SUBMIT", "6/min"),
     },
