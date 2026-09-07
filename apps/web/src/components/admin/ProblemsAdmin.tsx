@@ -1,0 +1,395 @@
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+
+import { CrudPage, type FieldDef } from "@/components/admin/CrudPage";
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { ApiError } from "@/lib/api";
+import { staff } from "@/lib/staff";
+
+type StaffProblem = {
+  id: number;
+  slug: string;
+  title: string;
+  statement: string;
+  statement_locale: string;
+  difficulty: number;
+  topics: string[];
+  time_limit_ms: number;
+  memory_limit_kb: number;
+  checker_type: "standard" | "special" | "interactive";
+  interactor_source: string;
+  interactor_language: string | null;
+  is_public: boolean;
+  source: string;
+  source_url: string;
+  solved_count: number;
+  attempt_count: number;
+  test_count: number;
+  [key: string]: unknown;
+};
+
+type StaffTopic = {
+  id: number;
+  slug: string;
+  name_uz: string;
+  name_ru: string;
+  name_en: string;
+  parent: string | null;
+  [key: string]: unknown;
+};
+
+type StaffTestCase = {
+  id: number;
+  order: number;
+  is_sample: boolean;
+  points: number;
+  input_ref: string;
+  output_ref: string;
+};
+
+const PROBLEM_FIELDS: FieldDef[] = [
+  {
+    name: "slug",
+    label: "Slug",
+    type: "slug",
+    required: true,
+    readonlyOnEdit: true,
+  },
+  { name: "title", label: "Sarlavha", required: true },
+  {
+    name: "difficulty",
+    label: "Qiyinlik (800–3500, qadam 100)",
+    type: "number",
+    required: true,
+    min: 800,
+    max: 3500,
+    step: 100,
+  },
+  {
+    name: "statement_locale",
+    label: "Matn tili (uz/ru/en)",
+    help: "2 harf, standart: uz",
+  },
+  {
+    name: "statement",
+    label: "Shart (Markdown + LaTeX)",
+    type: "textarea",
+    required: true,
+    rows: 12,
+  },
+  { name: "topics", label: "Mavzular (slug, vergul bilan)", type: "list" },
+  { name: "time_limit_ms", label: "Vaqt limiti, ms", type: "number", min: 100 },
+  {
+    name: "memory_limit_kb",
+    label: "Xotira limiti, KB",
+    type: "number",
+    min: 1024,
+  },
+  {
+    name: "checker_type",
+    label: "Checker",
+    type: "select",
+    required: true,
+    options: [
+      { value: "standard", label: "Standart" },
+      { value: "special", label: "Maxsus" },
+      { value: "interactive", label: "Interactive" },
+    ],
+  },
+  {
+    name: "interactor_language",
+    label: "Interactor tili (kod, masalan cpp23)",
+    help: "Bo'sh = yo'q",
+  },
+  {
+    name: "interactor_source",
+    label: "Interactor manbasi",
+    type: "textarea",
+    rows: 8,
+  },
+  { name: "source", label: "Manba" },
+  { name: "source_url", label: "Manba URL" },
+  { name: "is_public", label: "Ommaviy", type: "checkbox" },
+];
+
+const TOPIC_FIELDS: FieldDef[] = [
+  {
+    name: "slug",
+    label: "Slug",
+    type: "slug",
+    required: true,
+    readonlyOnEdit: true,
+  },
+  { name: "name_uz", label: "Nomi (uz)", required: true },
+  { name: "name_ru", label: "Nomi (ru)" },
+  { name: "name_en", label: "Nomi (en)" },
+  { name: "parent", label: "Ota mavzu (slug)", help: "Bo'sh = ildiz" },
+];
+
+const input =
+  "w-full rounded-lg border border-gray-200 bg-white px-3 text-theme-sm outline-none " +
+  "focus:border-brand-400 dark:border-[#232936] dark:bg-[#0b0d12] dark:text-white/90";
+
+/** Masala testlari — S3 ga yuklanadi, DB da faqat havola (05-domain-model). */
+function ProblemTestsPanel({
+  problem,
+  reload,
+}: {
+  problem: StaffProblem;
+  reload: () => void;
+}) {
+  const locale = DEFAULT_LOCALE;
+  const path = `/staff/problems/${problem.slug}/tests/`;
+  const [tests, setTests] = useState<StaffTestCase[]>([]);
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  const load = useCallback(async () => {
+    try {
+      setTests(await staff.get<StaffTestCase[]>(path));
+      setError("");
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : String(e));
+    }
+  }, [path]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void load();
+  }, [load]);
+
+  const nextOrder = tests.reduce((m, tc) => Math.max(m, tc.order), 0) + 1;
+
+  async function upload(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formEl = e.currentTarget;
+    const form = new FormData(formEl);
+    setBusy(true);
+    setError("");
+    setSaved(false);
+    try {
+      await staff.action(path, {
+        order: Number(form.get("order")),
+        input: String(form.get("input") ?? ""),
+        expected: String(form.get("expected") ?? ""),
+        is_sample: form.get("is_sample") === "on",
+        points: Number(form.get("points") || 0),
+      });
+      formEl.reset();
+      setSaved(true);
+      await load();
+      reload();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : String(err));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function remove(tc: StaffTestCase) {
+    if (!window.confirm(t(locale, "admin.confirmDelete"))) return;
+    try {
+      await staff.remove(`${path}${tc.order}/`);
+      await load();
+      reload();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : String(err));
+    }
+  }
+
+  return (
+    <div className="space-y-3">
+      <p className="text-theme-xs text-gray-500 dark:text-gray-400">
+        Judge testlarni DB dan emas, S3 dan o&apos;qiydi: matn yuklanganda{" "}
+        <code>tests/{problem.slug}/&lt;order&gt;.in/.out</code> sifatida
+        saqlanadi, bu yerda faqat havola ko&apos;rinadi. Bir xil tartib raqami
+        qayta yuklansa — ustiga yoziladi.
+      </p>
+
+      {error && (
+        <p className="rounded-lg bg-error-50 px-3 py-2 text-theme-sm text-error-600 dark:bg-error-500/12 dark:text-error-400">
+          {error}
+        </p>
+      )}
+
+      <table className="min-w-full text-left text-theme-xs">
+        <thead className="text-gray-500 uppercase dark:text-gray-400">
+          <tr>
+            <th className="px-2 py-1">#</th>
+            <th className="px-2 py-1">Namuna</th>
+            <th className="px-2 py-1">Ball</th>
+            <th className="px-2 py-1">Kirish</th>
+            <th className="px-2 py-1">Chiqish</th>
+            <th className="px-2 py-1 text-right">
+              {t(locale, "admin.actions")}
+            </th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-100 dark:divide-[#232936]">
+          {tests.map((tc) => (
+            <tr key={tc.id}>
+              <td className="px-2 py-1 font-medium">{tc.order}</td>
+              <td className="px-2 py-1">
+                {tc.is_sample ? <Badge>namuna</Badge> : "—"}
+              </td>
+              <td className="px-2 py-1">{tc.points}</td>
+              <td className="px-2 py-1 font-mono text-gray-500">
+                {tc.input_ref}
+              </td>
+              <td className="px-2 py-1 font-mono text-gray-500">
+                {tc.output_ref}
+              </td>
+              <td className="px-2 py-1 text-right">
+                <button
+                  type="button"
+                  onClick={() => remove(tc)}
+                  className="text-error-500 hover:underline"
+                >
+                  {t(locale, "admin.delete")}
+                </button>
+              </td>
+            </tr>
+          ))}
+          {tests.length === 0 && (
+            <tr>
+              <td colSpan={6} className="px-2 py-3 text-center text-gray-400">
+                Hali test yo&apos;q — yechimlar tekshirilmaydi.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+
+      <form
+        key={`${problem.slug}-${tests.length}`}
+        onSubmit={upload}
+        className="grid gap-3 md:grid-cols-2"
+      >
+        <p className="text-theme-sm font-medium text-gray-700 md:col-span-2 dark:text-gray-300">
+          Test qo&apos;shish
+        </p>
+        <label className="block">
+          <span className="mb-1 block text-theme-xs text-gray-600 dark:text-gray-300">
+            Tartib raqami *
+          </span>
+          <input
+            name="order"
+            type="number"
+            min={1}
+            required
+            defaultValue={nextOrder}
+            className={`${input} h-9`}
+          />
+        </label>
+        <label className="block">
+          <span className="mb-1 block text-theme-xs text-gray-600 dark:text-gray-300">
+            Ball
+          </span>
+          <input
+            name="points"
+            type="number"
+            min={0}
+            defaultValue={0}
+            className={`${input} h-9`}
+          />
+        </label>
+        <label className="block">
+          <span className="mb-1 block text-theme-xs text-gray-600 dark:text-gray-300">
+            Kirish (input)
+          </span>
+          <textarea
+            name="input"
+            rows={6}
+            className={`${input} py-2 font-mono`}
+            spellCheck={false}
+          />
+        </label>
+        <label className="block">
+          <span className="mb-1 block text-theme-xs text-gray-600 dark:text-gray-300">
+            Kutilgan chiqish (expected)
+          </span>
+          <textarea
+            name="expected"
+            rows={6}
+            className={`${input} py-2 font-mono`}
+            spellCheck={false}
+          />
+        </label>
+        <label className="flex items-center gap-2 text-theme-xs text-gray-600 dark:text-gray-300">
+          <input name="is_sample" type="checkbox" className="size-4" />
+          Namuna test (shartda ko&apos;rsatiladi)
+        </label>
+        <div className="flex items-center justify-end gap-2">
+          {saved && (
+            <span className="text-theme-xs text-success-600">
+              {t(locale, "admin.saved")}
+            </span>
+          )}
+          <Button type="submit" className="h-9" disabled={busy}>
+            {t(locale, "admin.save")}
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+export function ProblemsAdmin() {
+  return (
+    <div className="space-y-6">
+      <CrudPage<StaffProblem>
+        title="Masalalar"
+        path="/staff/problems/"
+        idField="slug"
+        ordering="-pk"
+        columns={[
+          { key: "slug", label: "Slug" },
+          { key: "title", label: "Sarlavha" },
+          { key: "difficulty", label: "Qiyinlik", align: "right" },
+          {
+            key: "topics",
+            label: "Mavzular",
+            render: (p) => (p.topics.length ? p.topics.join(", ") : "—"),
+          },
+          { key: "test_count", label: "Testlar", align: "right" },
+          {
+            key: "is_public",
+            label: "Holat",
+            render: (p) => (
+              <Badge>{p.is_public ? "ommaviy" : "yashirin"}</Badge>
+            ),
+          },
+        ]}
+        fields={PROBLEM_FIELDS}
+        toPayload={(values) => ({
+          ...values,
+          statement_locale: values.statement_locale || "uz",
+          interactor_language: values.interactor_language || null,
+          time_limit_ms: values.time_limit_ms ?? 1000,
+          memory_limit_kb: values.memory_limit_kb ?? 262144,
+        })}
+        rowExtra={(p, reload) => (
+          <ProblemTestsPanel problem={p} reload={reload} />
+        )}
+      />
+
+      <CrudPage<StaffTopic>
+        title="Mavzular"
+        path="/staff/topics/"
+        idField="slug"
+        ordering="slug"
+        columns={[
+          { key: "slug", label: "Slug" },
+          { key: "name_uz", label: "Nomi" },
+          { key: "parent", label: "Ota", render: (tp) => tp.parent ?? "—" },
+        ]}
+        fields={TOPIC_FIELDS}
+        toPayload={(values) => ({ ...values, parent: values.parent || null })}
+      />
+    </div>
+  );
+}
