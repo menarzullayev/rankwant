@@ -7,5 +7,13 @@ from quizzes.staff_views import StaffQuestionViewSet
 router = DefaultRouter()
 router.register("quizzes", views.QuizViewSet, basename="quiz")
 router.register("staff/questions", StaffQuestionViewSet, "staff-question")  # staff: questions
+from quizzes.staff_quiz_views import StaffQuestionLookupViewSet, StaffQuizViewSet
+
+router = DefaultRouter()
+router.register("quizzes", views.QuizViewSet, basename="quiz")
+router.register("staff/quizzes", StaffQuizViewSet, basename="staff-quiz")  # staff: quizzes
+router.register(
+    "staff/questions", StaffQuestionLookupViewSet, basename="staff-question"
+)  # staff: questions (fallback)
 
 urlpatterns = [path("", include(router.urls))]
