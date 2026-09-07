@@ -108,6 +108,17 @@ Ledger auditi: kesh va tranzaksiya yig'indisi har doim mos
 
 `P2-3` bloklangan: narx modeli mahsulot qarori, texnik ish emas.
 
+### Phase 3 va yangi formatlar ([ADR-0011](../07-adr/0011-competition-formats.md))
+
+| Ish | Holat |
+| --- | ----- |
+| Duel — 1v1, Challenges reytingi | ✅ |
+| Arena — jonli taymerli raund | ✅ |
+| Chempionat — contest seriyasi, ochiq formula | ✅ |
+| Hakaton — loyiha topshirish, hakam bahosi | ✅ |
+| Taqvim, qidiruv, Algoritmlar ma'lumotnomasi | ✅ |
+| Menyu qayta nomlandi — [menu.md](../10-operations/menu.md) | ✅ |
+
 ## Definition of Done
 
 Har PR uchun:

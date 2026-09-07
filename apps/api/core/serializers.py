@@ -12,8 +12,7 @@ class UserPublicSerializer(serializers.ModelSerializer[User]):
     """Ommaviy profil.
 
     ADR-0006 fazali ochilish: Skills va Contests — Phase 0, Activity —
-    Phase 1 (yoqildi). Challenges (Phase 3) hali BERILMAYDI: duels/arena
-    funksiyasi yo'q, ya'ni qiymat ma'nosiz bo'lardi.
+    Phase 1, Challenges — Phase 3 (duel qurilgach yoqildi).
     """
 
     class Meta:
@@ -26,6 +25,7 @@ class UserPublicSerializer(serializers.ModelSerializer[User]):
             "rating_skills",
             "rating_contest",
             "rating_activity",
+            "rating_challenges",
             "streak_count",
             "date_joined",
         ]

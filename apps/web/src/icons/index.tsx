@@ -126,3 +126,105 @@ export const CheckIcon = (p: IconProps) => (
     <path d="m5 13 4 4L19 7" />
   </Icon>
 );
+
+export const SearchIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="11" cy="11" r="7" />
+    <path d="m20 20-3.5-3.5" />
+  </Icon>
+);
+
+export const CalendarIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <rect x="3" y="5" width="18" height="16" rx="2" />
+    <path d="M3 10h18M8 3v4M16 3v4" />
+  </Icon>
+);
+
+export const AttemptsIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4 12h4l2-6 4 12 2-6h4" />
+  </Icon>
+);
+
+export const QuizIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <rect x="4" y="3" width="16" height="18" rx="2" />
+    <path d="m8 12 2 2 4-4M8 17h8" />
+  </Icon>
+);
+
+export const RoadmapIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4 19c4-1 4-6 8-7s4-6 8-7" />
+    <circle cx="4" cy="19" r="1.5" />
+    <circle cx="12" cy="12" r="1.5" />
+    <circle cx="20" cy="5" r="1.5" />
+  </Icon>
+);
+
+export const AlgorithmIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="m8 7-4 5 4 5M16 7l4 5-4 5M14 4l-4 16" />
+  </Icon>
+);
+
+export const ClassroomIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <rect x="3" y="4" width="18" height="12" rx="2" />
+    <path d="M8 20h8M12 16v4" />
+  </Icon>
+);
+
+export const ArenaIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" />
+  </Icon>
+);
+
+export const DuelIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="m4 20 6-6M20 4l-6 6M4 20l-.5-4L14 5.5l1 1L20 4l.5 4L9.5 18.5l-1-1L4 20Z" />
+  </Icon>
+);
+
+export const TournamentIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M3 5h5v4H3zM3 15h5v4H3zM16 10h5v4h-5zM8 7h4v10H8M12 12h4" />
+  </Icon>
+);
+
+export const HackathonIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M5 19c0-3 1-5 3-7 2-3 6-5 11-7-2 5-4 9-7 11-2 2-4 3-7 3Z" />
+    <path d="M9 15 5 19M14 6l4 4" />
+  </Icon>
+);
+
+export const InfoIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 11v5M12 8h.01" />
+  </Icon>
+);
+
+export const TeamIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="9" cy="8" r="3.5" />
+    <circle cx="17" cy="9" r="2.5" />
+    <path d="M3 20a6 6 0 0 1 12 0M15 20a5 5 0 0 1 6-4.5" />
+  </Icon>
+);
+
+export const ShopIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4 8h16l-1.5 11a2 2 0 0 1-2 1.8h-9a2 2 0 0 1-2-1.8L4 8Z" />
+    <path d="M9 8V6a3 3 0 0 1 6 0v2" />
+  </Icon>
+);
+
+export const FlameIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3 1-6 1-9Z" />
+  </Icon>
+);

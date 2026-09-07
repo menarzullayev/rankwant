@@ -1,0 +1,48 @@
+import type { Metadata } from "next";
+
+import { Badge } from "@/components/ui/Badge";
+import { ListCard } from "@/components/ui/ListCard";
+import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { api } from "@/lib/api";
+
+export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Arena" };
+
+export default async function ArenaListPage() {
+  const locale = DEFAULT_LOCALE;
+  const data = await api.arenas();
+  return (
+    <div className="space-y-6">
+      <header>
+        <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
+          {t(locale, "nav.arena")}
+        </h1>
+        <p className="mt-2 max-w-2xl text-theme-sm text-gray-500 dark:text-gray-400">
+          Jonli raund: hamma bir vaqtda, har savolga bir necha soniya, standings jonli.
+        </p>
+      </header>
+      <ul className="grid gap-4 md:grid-cols-2">
+        {data.results.map((a) => (
+          <li key={a.slug}>
+            <ListCard
+              href={`/arena/${a.slug}`}
+              title={a.title}
+              summary={a.description}
+              meta={
+                <>
+                  <Badge color={a.is_running ? "success" : a.is_finished ? "neutral" : "info"}>
+                    {t(locale, a.is_running ? "contests.running" : a.is_finished ? "contests.finished" : "contests.upcoming")}
+                  </Badge>
+                  <Badge>{a.question_count} {t(locale, "quiz.questions")} · {a.seconds_per_question}{t(locale, "arena.perQuestion")}</Badge>
+                  <Badge color="brand">{a.participant_count} 👤</Badge>
+                  <span>{new Date(a.start_at).toLocaleString(locale)}</span>
+                </>
+              }
+            />
+          </li>
+        ))}
+      </ul>
+      {data.count === 0 && <p className="text-theme-sm text-gray-400">{t(locale, "empty")}</p>}
+    </div>
+  );
+}

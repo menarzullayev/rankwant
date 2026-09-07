@@ -45,6 +45,8 @@ export default async function LeaderboardPage() {
             <TH align="right">{t(locale, "leaderboard.contest")}</TH>
             {/* Activity — ADR-0006 fazali ochilish, Phase 1 da yoqildi */}
             <TH align="right">{t(locale, "leaderboard.activity")}</TH>
+            {/* Challenges — Phase 3, duel qurilgach ochildi */}
+            <TH align="right">{t(locale, "leaderboard.challenges")}</TH>
             <TH align="right">{t(locale, "leaderboard.streak")}</TH>
           </THead>
           <TBody>
@@ -64,12 +66,13 @@ export default async function LeaderboardPage() {
                 </TD>
                 <TD align="right">{u.rating_contest}</TD>
                 <TD align="right">{u.rating_activity}</TD>
+                <TD align="right">{u.rating_challenges}</TD>
                 <TD align="right" className="text-gray-400">
                   {u.streak_count}
                 </TD>
               </TR>
             ))}
-            {data.count === 0 && <EmptyRow colSpan={6}>{t(locale, "empty")}</EmptyRow>}
+            {data.count === 0 && <EmptyRow colSpan={7}>{t(locale, "empty")}</EmptyRow>}
           </TBody>
         </Table>
       </Card>

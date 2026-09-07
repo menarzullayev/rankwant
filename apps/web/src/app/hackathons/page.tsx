@@ -1,0 +1,47 @@
+import type { Metadata } from "next";
+
+import { Badge } from "@/components/ui/Badge";
+import { ListCard } from "@/components/ui/ListCard";
+import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { api } from "@/lib/api";
+
+export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Hakaton" };
+
+export default async function HackathonsPage() {
+  const locale = DEFAULT_LOCALE;
+  const data = await api.hackathons();
+  return (
+    <div className="space-y-6">
+      <header>
+        <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
+          {t(locale, "nav.hackathons")}
+        </h1>
+        <p className="mt-2 max-w-2xl text-theme-sm text-gray-500 dark:text-gray-400">
+          Masala emas — loyiha. Repozitoriy va demo topshirasiz, hakamlar baholaydi.
+        </p>
+      </header>
+      <ul className="grid gap-4 md:grid-cols-2">
+        {data.results.map((h) => (
+          <li key={h.slug}>
+            <ListCard
+              href={`/hackathons/${h.slug}`}
+              title={h.title}
+              summary={h.description.slice(0, 160)}
+              meta={
+                <>
+                  <Badge color={h.accepts_submissions ? "success" : h.is_finished ? "neutral" : "info"}>
+                    {h.accepts_submissions ? t(locale, "contests.running") : h.is_finished ? t(locale, "contests.finished") : t(locale, "contests.upcoming")}
+                  </Badge>
+                  <Badge>{h.submission_count} {t(locale, "hackathon.entries").toLowerCase()}</Badge>
+                  <span>{t(locale, "hackathon.deadline")}: {new Date(h.submission_deadline).toLocaleString(locale)}</span>
+                </>
+              }
+            />
+          </li>
+        ))}
+      </ul>
+      {data.count === 0 && <p className="text-theme-sm text-gray-400">{t(locale, "empty")}</p>}
+    </div>
+  );
+}

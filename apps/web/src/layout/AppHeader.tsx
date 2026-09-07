@@ -6,6 +6,8 @@ import { useSidebar } from "@/context/SidebarContext";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
 import { MenuIcon } from "@/icons";
 import { NAV } from "./nav";
+import HeaderStatus from "./HeaderStatus";
+import SearchBox from "./SearchBox";
 import ThemeToggle from "./ThemeToggle";
 import UserMenu from "./UserMenu";
 
@@ -34,6 +36,8 @@ export default function AppHeader() {
       </span>
 
       <div className="ml-auto flex items-center gap-2">
+        <SearchBox />
+        <HeaderStatus />
         <ThemeToggle />
         <UserMenu />
       </div>

@@ -5157,8 +5157,7 @@ components:
         Ommaviy profil.
 
         ADR-0006 fazali ochilish: Skills va Contests — Phase 0, Activity —
-        Phase 1 (yoqildi). Challenges (Phase 3) hali BERILMAYDI: duels/arena
-        funksiyasi yo'q, ya'ni qiymat ma'nosiz bo'lardi.
+        Phase 1, Challenges — Phase 3 (duel qurilgach yoqildi).
       properties:
         username:
           type: string
@@ -5189,6 +5188,11 @@ components:
           minimum: -9223372036854775808
           format: int64
         rating_activity:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        rating_challenges:
           type: integer
           maximum: 9223372036854775807
           minimum: -9223372036854775808

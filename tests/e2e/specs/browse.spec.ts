@@ -36,11 +36,10 @@ test("reyting formulalari ochiq", async ({ page }) => {
   await expect(page.getByText("0.95")).toBeVisible();
 });
 
-test("leaderboard Phase 0 va Phase 1 reytinglarini ko'rsatadi", async ({ page }) => {
+test("leaderboard to'rtala reytingni ko'rsatadi", async ({ page }) => {
   await page.goto("/leaderboard");
-  await expect(page.getByText("Skills")).toBeVisible();
-  await expect(page.getByText("Contests")).toBeVisible();
-  await expect(page.getByText("Activity")).toBeVisible();
-  // Challenges — Phase 3, hali ko'rinmasligi kerak
-  await expect(page.getByText("Challenges")).toHaveCount(0);
+  // ADR-0006 fazali ochilish: Challenges Phase 3 da (duel) ochildi
+  for (const name of ["Skills", "Contests", "Activity", "Challenges"]) {
+    await expect(page.locator("main").getByText(name, { exact: true })).toBeVisible();
+  }
 });

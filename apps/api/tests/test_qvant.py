@@ -393,14 +393,15 @@ class TestPhasedReveal:
             "rating_skills",
             "rating_contest",
             "rating_activity",
+            "rating_challenges",
             "streak_count",
             "date_joined",
         }
 
-    def test_challenges_hali_berilmaydi(self, user) -> None:
-        """Phase 3 — duels yo'q, ya'ni qiymat ma'nosiz."""
+    def test_challenges_endi_beriladi(self, user) -> None:
+        """Phase 3 — duel qurildi, reyting ochildi."""
         body = APIClient().get(reverse("user-detail", args=[user.username])).json()
-        assert "rating_challenges" not in body
+        assert body["rating_challenges"] == 1400
 
     def test_me_activity_beradi(self, user) -> None:
         c = APIClient()

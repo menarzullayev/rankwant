@@ -272,11 +272,24 @@ class TestSeedDemo:
         call_command("seed_demo", verbosity=0)
         call_command("seed_demo", verbosity=0)  # idempotent
 
-        assert Article.objects.filter(is_published=True).count() == 3
+        assert Article.objects.filter(is_published=True, kind=Article.Kind.ARTICLE).count() == 3
         assert RoadmapStep.objects.count() == 5
         classroom = Classroom.objects.get(slug="11-a-sinf")
         assert classroom.members.count() == 3
         assert classroom.assignments.get().problems.count() == 3
+
+        from arena.models import ArenaRound
+        from duels.models import Duel
+        from hackathons.models import Hackathon
+        from quizzes.models import Quiz
+        from tournaments.models import Tournament
+
+        assert Quiz.objects.get(slug="algoritm-asoslari").items.count() == 4
+        assert ArenaRound.objects.get(slug="demo-arena").items.count() == 4
+        assert Tournament.objects.get(slug="demo-mavsum").stages.count() == 2
+        assert Hackathon.objects.get(slug="demo-hakaton").accepts_submissions
+        assert Duel.objects.filter(status=Duel.Status.OPEN).count() == 1  # idempotent
+        assert Article.objects.filter(kind=Article.Kind.ALGORITHM).count() == 1
 
     def test_testlar_haqiqiy_S3_ga_yuklanadi(self) -> None:
         """Test ma'lumoti mavjud bo'lmasa to'g'ri yechim ham WA oladi."""

@@ -12,12 +12,17 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
 
+from arena.models import ArenaQuestion, ArenaRound
 from classroom.models import Assignment, Classroom, ClassroomMember
 from content.models import Article, Roadmap, RoadmapStep
 from contests.models import Contest, ContestProblem
 from core.models import User
+from duels.models import Duel
+from hackathons.models import Hackathon
 from problems import storage
 from problems.models import Language, Problem, TestCase, Topic
+from quizzes.models import Choice, Question, Quiz, QuizQuestion
+from tournaments.models import Tournament, TournamentStage
 
 LANGUAGES = [
     ("cpp23", "C++", "23", ["g++", "-std=c++23", "-O2", "-o", "{bin}", "{src}"], ["{bin}"]),
@@ -112,6 +117,57 @@ ROADMAP_STEPS = [
 ]
 
 
+ALGO_BODY = """## G'oya
+
+Oraliqni har qadamda ikkiga bo'lamiz.
+
+```cpp
+int lo = 0, hi = n - 1;
+while (lo <= hi) {
+  int mid = (lo + hi) / 2;
+  if (a[mid] == x) return mid;
+  if (a[mid] < x) lo = mid + 1; else hi = mid - 1;
+}
+```
+
+Murakkablik: $O(\\log n)$.
+"""
+
+#: (matn, [(variant, to'g'rimi), ...], tushuntirish)
+QUESTIONS = [
+    (
+        "Ikkilik qidiruvning vaqt murakkabligi?",
+        [("O(log n)", True), ("O(n)", False), ("O(n log n)", False), ("O(1)", False)],
+        "Har qadamda oraliq ikkiga bo'linadi.",
+    ),
+    (
+        "Qaysi struktura LIFO tartibida ishlaydi?",
+        [("Stek", True), ("Navbat", False), ("Bog'langan ro'yxat", False), ("Hash-jadval", False)],
+        "Last In, First Out — oxirgi kirgan birinchi chiqadi.",
+    ),
+    (
+        "Dijkstra algoritmi qachon ISHLAMAYDI?",
+        [
+            ("Manfiy og'irlikli qirralar bo'lsa", True),
+            ("Graf yo'naltirilgan bo'lsa", False),
+            ("Uzellar ko'p bo'lsa", False),
+            ("Qirralar teng og'irlikda bo'lsa", False),
+        ],
+        "Manfiy qirra ochko'z tanlovni buzadi — Bellman-Ford kerak.",
+    ),
+    (
+        "Fibonachchi uchun memoizatsiya nimani kamaytiradi?",
+        [
+            ("Takroriy hisoblarni", True),
+            ("Xotira sarfini", False),
+            ("Kod uzunligini", False),
+            ("Rekursiya chuqurligini", False),
+        ],
+        "F(n) bir marta hisoblanadi va saqlanadi.",
+    ),
+]
+
+
 class Command(BaseCommand):
     help = "Demo ma'lumot yaratadi (til, mavzu, masala, contest, foydalanuvchi)"
 
@@ -200,6 +256,19 @@ class Command(BaseCommand):
             article.topics.set([topics[s] for s in topic_slugs])
             articles[slug] = article
 
+        algo, _ = Article.objects.update_or_create(
+            slug="ikkilik-qidiruv",
+            defaults={
+                "title": "Ikkilik qidiruv",
+                "kind": Article.Kind.ALGORITHM,
+                "summary": "Saralangan massivda O(log n) qidiruv.",
+                "body": ALGO_BODY,
+                "difficulty": 1000,
+                "is_published": True,
+            },
+        )
+        algo.topics.set([topics["implementation"]])
+
         roadmap, _ = Roadmap.objects.update_or_create(
             slug="boshlangich",
             defaults={
@@ -255,10 +324,106 @@ class Command(BaseCommand):
         )
         assignment.problems.set(Problem.objects.filter(slug__in=[p[0] for p in PROBLEMS[:3]]))
 
+        # ── Testlar va Arena — bitta savol banki ──
+        questions = []
+        for text, choices, explanation in QUESTIONS:
+            q, _ = Question.objects.get_or_create(text=text, defaults={"explanation": explanation})
+            if not q.choices.exists():
+                for i, (label, ok) in enumerate(choices, start=1):
+                    Choice.objects.create(question=q, order=i, text=label, is_correct=ok)
+            questions.append(q)
+        quiz, _ = Quiz.objects.update_or_create(
+            slug="algoritm-asoslari",
+            defaults={
+                "title": "Algoritm asoslari",
+                "description": "4 ta savol, +10 Qvant",
+                "is_published": True,
+                "reward_qvant": 10,
+            },
+        )
+        for i, q in enumerate(questions, start=1):
+            QuizQuestion.objects.get_or_create(quiz=quiz, question=q, defaults={"order": i})
+
+        # Arena: seed'dan 3 daqiqa keyin boshlanadi — jonli sinab ko'rish uchun
+        arena, _ = ArenaRound.objects.update_or_create(
+            slug="demo-arena",
+            defaults={
+                "title": "Demo Arena",
+                "description": "4 savol, har biriga 45 s",
+                "start_at": now + timedelta(minutes=3),
+                "seconds_per_question": 45,
+                "reward_qvant": 15,
+                "rewards_applied_at": None,
+            },
+        )
+        for i, q in enumerate(questions, start=1):
+            ArenaQuestion.objects.get_or_create(round=arena, question=q, defaults={"order": i})
+
+        # ── Chempionat: demo contest + final ──
+        final, _ = Contest.objects.update_or_create(
+            slug="demo-final",
+            defaults={
+                "title": "Demo Final",
+                "description": "Chempionat finali",
+                "start_at": now + timedelta(days=3),
+                "end_at": now + timedelta(days=3, hours=2),
+                "is_rated": True,
+            },
+        )
+        for i, (slug, *_rest) in enumerate(PROBLEMS[:4]):
+            ContestProblem.objects.update_or_create(
+                contest=final,
+                index_letter=chr(ord("A") + i),
+                defaults={"problem": Problem.objects.get(slug=slug)},
+            )
+        tournament, _ = Tournament.objects.update_or_create(
+            slug="demo-mavsum",
+            defaults={
+                "title": "Demo mavsum",
+                "description": "Ikki bosqich: raund va final (×2).",
+                "start_at": now - timedelta(days=1),
+                "end_at": now + timedelta(days=4),
+            },
+        )
+        TournamentStage.objects.update_or_create(
+            tournament=tournament, order=1, defaults={"title": "1-raund", "contest": contest}
+        )
+        TournamentStage.objects.update_or_create(
+            tournament=tournament,
+            order=2,
+            defaults={"title": "Final", "contest": final, "weight": 2},
+        )
+
+        # ── Hakaton: hozir ochiq ──
+        Hackathon.objects.update_or_create(
+            slug="demo-hakaton",
+            defaults={
+                "title": "Demo Hakaton",
+                "description": "## Mavzu\n\nMaktab uchun foydali bot yoki sayt.\n\n"
+                "Mezonlar: foydalilik, kod sifati, demo.",
+                "start_at": now - timedelta(days=1),
+                "submission_deadline": now + timedelta(days=5),
+                "end_at": now + timedelta(days=7),
+            },
+        )
+
+        # ── Duel: ustozdan ochiq chaqiriq ──
+        if not Duel.objects.filter(challenger=teacher, status=Duel.Status.OPEN).exists():
+            Duel.objects.create(
+                challenger=teacher,
+                title="Boshlang'ich duel",
+                problem_count=3,
+                difficulty=900,
+                duration_minutes=45,
+                start_at=now + timedelta(hours=1),
+            )
+
         self.stdout.write(
             self.style.SUCCESS(
                 f"Demo tayyor: {Problem.objects.count()} masala, "
                 f"{Language.objects.count()} til, {Contest.objects.count()} contest, "
-                f"{Article.objects.count()} maqola, {Classroom.objects.count()} sinf"
+                f"{Article.objects.count()} maqola, {Classroom.objects.count()} sinf, "
+                f"{Quiz.objects.count()} test, {ArenaRound.objects.count()} arena, "
+                f"{Tournament.objects.count()} chempionat, {Hackathon.objects.count()} hakaton"
             )
         )

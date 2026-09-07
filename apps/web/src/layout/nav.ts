@@ -1,49 +1,101 @@
 import {
-  BellIcon,
+  AlgorithmIcon,
+  ArenaIcon,
+  AttemptsIcon,
   BlogIcon,
+  CalendarIcon,
+  ClassroomIcon,
   ContestIcon,
+  DuelIcon,
   FormulaIcon,
+  HackathonIcon,
+  InfoIcon,
   LeaderboardIcon,
   LearnIcon,
   ProblemsIcon,
-  QvantIcon,
+  QuizIcon,
+  RoadmapIcon,
+  ShopIcon,
+  TeamIcon,
+  TournamentIcon,
 } from "@/icons";
 
 /**
- * Sidebar guruhlari.
+ * Menyu — nomlash sessiyasida (2026-09-07) band-ma-band tanlangan.
  *
- * Guruhlash foydalanuvchi niyati bo'yicha: mashq qilish, musobaqalashish,
- * jamiyat. Route yo'llari TASK cheklovi bo'yicha o'zgarmaydi.
+ * Guruhlar bitta institut binosi: Laboratoriya · Kutubxona · Auditoriya ·
+ * Kampus. Bandlar esa deyarli hammasi ommaviy — GitHub yondashuvi
+ * (Issues/Pull requests ommaviy, Actions/Copilot o'ziniki).
+ * Qaror: docs/10-operations/menu.md
  */
 type NavItem = {
-  href: "/problems" | "/learn" | "/rating" | "/contests" | "/leaderboard" | "/blog"
-    | "/qvant" | "/notifications";
+  href:
+    | "/problems"
+    | "/attempts"
+    | "/quizzes"
+    | "/learn"
+    | "/roadmaps"
+    | "/algorithms"
+    | "/classroom"
+    | "/contests"
+    | "/arena"
+    | "/duels"
+    | "/tournaments"
+    | "/hackathons"
+    | "/calendar"
+    | "/leaderboard"
+    | "/blog"
+    | "/rating"
+    | "/qvant"
+    | "/about"
+    | "/team";
   key: string;
   Icon: (props: { className?: string }) => React.JSX.Element;
 };
 
 export const NAV_GROUPS: { key: string; items: NavItem[] }[] = [
   {
-    key: "navGroup.practice",
+    key: "navGroup.lab",
     items: [
       { href: "/problems", key: "nav.problems", Icon: ProblemsIcon },
-      { href: "/learn", key: "nav.learn", Icon: LearnIcon },
-      { href: "/rating", key: "nav.ratingInfo", Icon: FormulaIcon },
+      { href: "/attempts", key: "nav.attempts", Icon: AttemptsIcon },
+      { href: "/quizzes", key: "nav.quizzes", Icon: QuizIcon },
+    ],
+  },
+  {
+    key: "navGroup.library",
+    items: [
+      { href: "/learn", key: "nav.articles", Icon: LearnIcon },
+      { href: "/roadmaps", key: "nav.roadmap", Icon: RoadmapIcon },
+      { href: "/algorithms", key: "nav.algorithms", Icon: AlgorithmIcon },
+      { href: "/classroom", key: "nav.classroom", Icon: ClassroomIcon },
     ],
   },
   {
     key: "navGroup.compete",
     items: [
       { href: "/contests", key: "nav.contests", Icon: ContestIcon },
-      { href: "/leaderboard", key: "nav.leaderboard", Icon: LeaderboardIcon },
+      { href: "/arena", key: "nav.arena", Icon: ArenaIcon },
+      { href: "/duels", key: "nav.duels", Icon: DuelIcon },
+      { href: "/tournaments", key: "nav.tournaments", Icon: TournamentIcon },
+      { href: "/hackathons", key: "nav.hackathons", Icon: HackathonIcon },
+      { href: "/calendar", key: "nav.calendar", Icon: CalendarIcon },
     ],
   },
   {
-    key: "navGroup.community",
+    key: "navGroup.campus",
     items: [
+      { href: "/leaderboard", key: "nav.leaderboard", Icon: LeaderboardIcon },
       { href: "/blog", key: "nav.blog", Icon: BlogIcon },
-      { href: "/qvant", key: "nav.qvant", Icon: QvantIcon },
-      { href: "/notifications", key: "nav.notifications", Icon: BellIcon },
+    ],
+  },
+  {
+    key: "navGroup.platform",
+    items: [
+      { href: "/rating", key: "nav.formulas", Icon: FormulaIcon },
+      { href: "/qvant", key: "nav.shop", Icon: ShopIcon },
+      { href: "/about", key: "nav.about", Icon: InfoIcon },
+      { href: "/team", key: "nav.team", Icon: TeamIcon },
     ],
   },
 ];

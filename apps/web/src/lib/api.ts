@@ -70,6 +70,8 @@ export type UserPublic = {
   rating_contest: number;
   /** Phase 1 da yoqildi — ADR-0006 fazali ochilish */
   rating_activity: number;
+  /** Phase 3 — duel qurilgach ochildi */
+  rating_challenges: number;
   streak_count: number;
   date_joined: string;
 };
@@ -143,6 +145,7 @@ export type Recommendation = {
 
 export type Article = {
   slug: string;
+  kind: "article" | "algorithm";
   title: string;
   summary: string;
   difficulty: number;
@@ -169,6 +172,197 @@ export type Roadmap = {
   title: string;
   description: string;
   step_count: number;
+};
+
+export type Attempt = {
+  id: number;
+  username: string;
+  problem: string;
+  language: string;
+  verdict: string;
+  score: number;
+  time_ms: number;
+  memory_kb: number;
+  failed_test_index: number | null;
+  created_at: string;
+  judged_at: string | null;
+};
+
+export type Choice = { id: number; order: number; text: string };
+export type Question = {
+  id: number;
+  text: string;
+  difficulty: number;
+  topics: string[];
+  choices: Choice[];
+};
+export type Quiz = {
+  slug: string;
+  title: string;
+  description: string;
+  reward_qvant: number;
+  question_count: number;
+  best_score: number | null;
+  created_at: string;
+};
+export type QuizDetail = Quiz & { questions: Question[] };
+export type QuizResult = {
+  id: number;
+  score: number;
+  total: number;
+  qvant_awarded: number;
+  review: {
+    question_id: number;
+    chosen: number | null;
+    correct: number | null;
+    is_correct: boolean;
+    explanation: string;
+  }[];
+};
+
+export type Arena = {
+  slug: string;
+  title: string;
+  description: string;
+  start_at: string;
+  end_at: string;
+  seconds_per_question: number;
+  question_count: number;
+  participant_count: number;
+  reward_qvant: number;
+  is_running: boolean;
+  is_finished: boolean;
+};
+export type ArenaDetail = Arena & { current_index: number | null; joined: boolean };
+export type ArenaCurrent = {
+  index: number;
+  deadline: string;
+  seconds_per_question: number;
+  question: Question;
+  answered: boolean;
+};
+export type ArenaStanding = {
+  rank: number;
+  username: string;
+  display_name: string;
+  score: number;
+  correct_count: number;
+  total_ms: number;
+};
+
+export type Duel = {
+  slug: string;
+  title: string;
+  status: "open" | "accepted" | "finished" | "cancelled";
+  challenger: string;
+  opponent: string | null;
+  problem_count: number;
+  difficulty: number;
+  duration_minutes: number;
+  start_at: string;
+  end_at: string;
+  is_running: boolean;
+  winner: string | null;
+  challenger_solved: number;
+  opponent_solved: number;
+  is_draw: boolean;
+  problems: { order: number; slug: string; title: string; difficulty: number }[];
+  created_at: string;
+};
+export type DuelRecord = { wins: number; draws: number; losses: number };
+
+export type Tournament = {
+  slug: string;
+  title: string;
+  description: string;
+  start_at: string;
+  end_at: string;
+  stage_count: number;
+  is_running: boolean;
+  is_finished: boolean;
+};
+export type TournamentStage = {
+  order: number;
+  title: string;
+  contest: string;
+  contest_title: string;
+  start_at: string;
+  end_at: string;
+  weight: number;
+  is_finished: boolean;
+};
+export type TournamentDetail = Tournament & { stages: TournamentStage[] };
+export type TournamentStanding = {
+  rank: number;
+  username: string;
+  display_name: string;
+  points: number;
+  solved_total: number;
+  stages_played: number;
+};
+
+export type Hackathon = {
+  slug: string;
+  title: string;
+  description: string;
+  start_at: string;
+  submission_deadline: string;
+  end_at: string;
+  submission_count: number;
+  accepts_submissions: boolean;
+  is_finished: boolean;
+};
+export type HackathonSubmission = {
+  id: number;
+  username: string;
+  team_name: string;
+  title: string;
+  description: string;
+  repo_url: string;
+  demo_url: string;
+  submitted_at: string;
+  score: number | null;
+  feedback: string;
+};
+
+export type CalendarEvent = {
+  kind: "contest" | "arena" | "tournament" | "hackathon" | "duel";
+  slug: string;
+  title: string;
+  start_at: string;
+  end_at: string;
+  is_rated?: boolean;
+  submission_deadline?: string;
+};
+
+export type SearchResult = {
+  q: string;
+  problems: { slug: string; title: string; difficulty: number }[];
+  users: { username: string; display_name: string; rating_skills: number }[];
+  articles: { slug: string; title: string; kind: string }[];
+  contests: { slug: string; title: string; start_at: string }[];
+};
+
+export type Classroom = {
+  slug: string;
+  name: string;
+  description: string;
+  owner: string;
+  member_count: number;
+  created_at: string;
+};
+export type ClassroomDetail = Classroom & {
+  join_code?: string;
+  is_active?: boolean;
+  members?: { username: string; role: string; rating_skills: number; joined_at: string }[];
+};
+export type Assignment = {
+  id: number;
+  title: string;
+  description: string;
+  problems: string[];
+  due_at: string | null;
+  created_at: string;
 };
 
 export type ShopItem = {
@@ -245,6 +439,20 @@ export async function postJson<T>(path: string, body: unknown): Promise<T> {
   return parsed as T;
 }
 
+/** Brauzerdan sessiya bilan GET — shaxsiy ma'lumot (sinf, duel masalalari). */
+export async function getJson<T>(path: string): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`, {
+    credentials: "include",
+    headers: { Accept: "application/json" },
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    throw new ApiError(res.status, body?.error?.code ?? "error", body?.error?.message ?? res.statusText);
+  }
+  return (await res.json()) as T;
+}
+
 /** Joriy sessiya — brauzerda. Kirmagan bo'lsa `null`. */
 export async function fetchMe(): Promise<UserPublic | null> {
   const res = await fetch(`${API_BASE}/me/`, {
@@ -280,6 +488,25 @@ export const api = {
   articles: () => get<Paginated<Article>>("/articles/", 300),
   article: (slug: string) => get<ArticleDetail>(`/articles/${slug}/`, 300),
   roadmaps: () => get<Roadmap[]>("/roadmaps/", 300),
+  attempts: () => get<Paginated<Attempt>>("/attempts/", 0),
+  quizzes: () => get<Paginated<Quiz>>("/quizzes/", 60),
+  quiz: (slug: string) => get<QuizDetail>(`/quizzes/${slug}/`, 60),
+  arenas: () => get<Paginated<Arena>>("/arena/", 10),
+  arena: (slug: string) => get<ArenaDetail>(`/arena/${slug}/`, 0),
+  arenaStandings: (slug: string) =>
+    get<{ results: ArenaStanding[] }>(`/arena/${slug}/standings/`, 0),
+  duels: () => get<Paginated<Duel>>("/duels/", 0),
+  duel: (slug: string) => get<Duel>(`/duels/${slug}/`, 0),
+  tournaments: () => get<Paginated<Tournament>>("/tournaments/", 60),
+  tournament: (slug: string) => get<TournamentDetail>(`/tournaments/${slug}/`, 60),
+  tournamentStandings: (slug: string) =>
+    get<{ results: TournamentStanding[] }>(`/tournaments/${slug}/standings/`, 30),
+  hackathons: () => get<Paginated<Hackathon>>("/hackathons/", 60),
+  hackathon: (slug: string) => get<Hackathon>(`/hackathons/${slug}/`, 60),
+  hackathonSubmissions: (slug: string) =>
+    get<{ results: HackathonSubmission[] }>(`/hackathons/${slug}/submissions/`, 0),
+  calendar: () => get<{ results: CalendarEvent[] }>("/calendar/", 60),
+  algorithms: () => get<Paginated<Article>>("/articles/?kind=algorithm", 300),
   ratingHistory: (username: string) =>
     get<Paginated<RatingChange>>(`/users/${username}/rating-history/`, 30),
   solved: (username: string) =>
