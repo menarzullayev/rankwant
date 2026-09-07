@@ -35,6 +35,16 @@ export default function UserMenu() {
 
   return (
     <div className="flex items-center gap-2">
+      {user.is_staff && (
+        <Link
+          href="/admin"
+          className="flex h-10 items-center rounded-lg border border-brand-300 px-3 text-theme-sm
+            font-medium text-brand-600 transition hover:bg-brand-50
+            dark:border-brand-500/40 dark:text-brand-400 dark:hover:bg-brand-500/12"
+        >
+          Admin
+        </Link>
+      )}
       <Link
         href={`/users/${user.username}`}
         className="flex h-10 items-center gap-2 rounded-lg border border-gray-200 px-3

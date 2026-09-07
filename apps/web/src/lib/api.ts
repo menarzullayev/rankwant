@@ -72,6 +72,8 @@ export type UserPublic = {
   rating_activity: number;
   /** Phase 3 — duel qurilgach ochildi */
   rating_challenges: number;
+  /** Faqat /me/ da keladi */
+  is_staff?: boolean;
   streak_count: number;
   date_joined: string;
 };

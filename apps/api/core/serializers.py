@@ -36,6 +36,7 @@ class MeSerializer(serializers.ModelSerializer[User]):
         model = User
         fields = [
             "id",
+            "is_staff",
             "username",
             "email",
             "display_name",
@@ -51,6 +52,7 @@ class MeSerializer(serializers.ModelSerializer[User]):
             "date_joined",
         ]
         read_only_fields = [
+            "is_staff",
             "id",
             "username",
             "rating_skills",
