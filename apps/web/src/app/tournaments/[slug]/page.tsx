@@ -5,7 +5,15 @@ import { notFound } from "next/navigation";
 import { Markdown } from "@/components/Markdown";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
-import { EmptyRow, TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
+import {
+  EmptyRow,
+  TBody,
+  TD,
+  TH,
+  THead,
+  TR,
+  Table,
+} from "@/components/ui/Table";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
 import { api, ApiError } from "@/lib/api";
 
@@ -36,27 +44,43 @@ export default async function TournamentPage({ params }: Props) {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">{tn.title}</h1>
-        <p className="mt-2 text-theme-xs text-gray-400">
-          {new Date(tn.start_at).toLocaleDateString(locale)} — {new Date(tn.end_at).toLocaleDateString(locale)}
+        <h1 className="text-title-sm font-bold rw-strong">{tn.title}</h1>
+        <p className="mt-2 text-theme-xs rw-faint">
+          {new Date(tn.start_at).toLocaleDateString(locale)} —{" "}
+          {new Date(tn.end_at).toLocaleDateString(locale)}
         </p>
       </header>
-      {tn.description && <Card><Markdown>{tn.description}</Markdown></Card>}
+      {tn.description && (
+        <Card>
+          <Markdown>{tn.description}</Markdown>
+        </Card>
+      )}
 
       <Card title={t(locale, "tournament.stages")} bodyClassName="p-0">
-        <ul className="divide-y divide-gray-100 dark:divide-[#232936]">
+        <ul className="divide-y rw-divide">
           {tn.stages.map((s) => (
             <li key={s.order} className="flex items-center gap-4 px-5 py-3">
-              <span className="w-8 text-theme-sm font-semibold text-gray-400">{s.order}</span>
+              <span className="w-8 text-theme-sm font-semibold rw-faint">
+                {s.order}
+              </span>
               <div className="min-w-0 flex-1">
-                <Link href={`/contests/${s.contest}`} className="font-medium text-gray-800 hover:text-brand-500 dark:text-white/90">
+                <Link
+                  href={`/contests/${s.contest}`}
+                  className="font-medium rw-strong rw-link-hover"
+                >
                   {s.title}
                 </Link>
-                <p className="text-theme-xs text-gray-400">{s.contest_title} · {new Date(s.start_at).toLocaleString(locale)}</p>
+                <p className="text-theme-xs rw-faint">
+                  {s.contest_title} ·{" "}
+                  {new Date(s.start_at).toLocaleString(locale)}
+                </p>
               </div>
               {s.weight > 1 && <Badge color="brand">×{s.weight}</Badge>}
               <Badge color={s.is_finished ? "neutral" : "info"}>
-                {t(locale, s.is_finished ? "contests.finished" : "contests.upcoming")}
+                {t(
+                  locale,
+                  s.is_finished ? "contests.finished" : "contests.upcoming",
+                )}
               </Badge>
             </li>
           ))}
@@ -64,7 +88,9 @@ export default async function TournamentPage({ params }: Props) {
       </Card>
 
       <Card title={t(locale, "standings.title")} bodyClassName="p-0">
-        <p className="px-5 pt-3 text-theme-xs text-gray-400">{t(locale, "tournament.formula")}</p>
+        <p className="px-5 pt-3 text-theme-xs rw-faint">
+          {t(locale, "tournament.formula")}
+        </p>
         <Table>
           <THead>
             <TH>#</TH>
@@ -78,16 +104,25 @@ export default async function TournamentPage({ params }: Props) {
               <TR key={r.username}>
                 <TD className="font-semibold">{r.rank}</TD>
                 <TD>
-                  <Link href={`/users/${r.username}`} className="font-medium hover:text-brand-500">
+                  <Link
+                    href={`/users/${r.username}`}
+                    className="font-medium rw-link-hover"
+                  >
                     {r.display_name || r.username}
                   </Link>
                 </TD>
-                <TD align="right" className="font-semibold">{r.points}</TD>
+                <TD align="right" className="font-semibold">
+                  {r.points}
+                </TD>
                 <TD align="right">{r.solved_total}</TD>
-                <TD align="right" className="text-gray-400">{r.stages_played}</TD>
+                <TD align="right" className="rw-faint">
+                  {r.stages_played}
+                </TD>
               </TR>
             ))}
-            {results.length === 0 && <EmptyRow colSpan={5}>{t(locale, "empty")}</EmptyRow>}
+            {results.length === 0 && (
+              <EmptyRow colSpan={5}>{t(locale, "empty")}</EmptyRow>
+            )}
           </TBody>
         </Table>
       </Card>

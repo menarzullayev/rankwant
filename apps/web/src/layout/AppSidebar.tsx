@@ -9,7 +9,13 @@ import { CloseIcon } from "@/icons";
 import { NAV_GROUPS } from "./nav";
 
 export default function AppSidebar() {
-  const { isExpanded, isMobileOpen, isHovered, setIsHovered, closeMobileSidebar } = useSidebar();
+  const {
+    isExpanded,
+    isMobileOpen,
+    isHovered,
+    setIsHovered,
+    closeMobileSidebar,
+  } = useSidebar();
   const pathname = usePathname();
   const locale = DEFAULT_LOCALE;
 
@@ -21,26 +27,30 @@ export default function AppSidebar() {
     <aside
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`fixed top-0 left-0 z-50 flex h-screen flex-col border-r border-gray-200 bg-white
-        px-4 transition-all duration-300 dark:border-[#232936] dark:bg-[#141821]
-        ${wide ? "w-[260px]" : "w-[86px]"}
-        ${isMobileOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
+      className={`fixed top-0 left-0 z-50 flex h-screen flex-col border-r rw-line rw-chrome
+ px-4 transition-all duration-300
+ ${wide ? "w-[260px]" : "w-[86px]"}
+ ${isMobileOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
     >
       <div className="flex h-16 items-center justify-between">
-        <Link href="/" className="text-lg font-bold" onClick={closeMobileSidebar}>
+        <Link
+          href="/"
+          className="text-lg font-bold"
+          onClick={closeMobileSidebar}
+        >
           {wide ? (
             <>
-              Rank<span className="text-brand-500">Want</span>
+              Rank<span className="rw-accent-ink">Want</span>
             </>
           ) : (
-            <span className="text-brand-500">R</span>
+            <span className="rw-accent-ink">R</span>
           )}
         </Link>
         <button
           type="button"
           onClick={closeMobileSidebar}
           aria-label={t(locale, "nav.close")}
-          className="text-gray-500 lg:hidden dark:text-gray-400"
+          className="rw-dim lg:hidden"
         >
           <CloseIcon />
         </button>
@@ -50,15 +60,16 @@ export default function AppSidebar() {
         {NAV_GROUPS.map((group) => (
           <div key={group.key} className="mb-5">
             {wide ? (
-              <p className="mb-2 px-3 text-theme-xs font-medium tracking-wider text-gray-400 uppercase">
+              <p className="mb-2 px-3 text-theme-xs font-medium tracking-wider rw-faint uppercase">
                 {t(locale, group.key)}
               </p>
             ) : (
-              <div className="mx-3 mb-2 border-t border-gray-100 dark:border-[#232936]" />
+              <div className="mx-3 mb-2 border-t rw-line" />
             )}
             <ul className="flex flex-col gap-1">
               {group.items.map(({ href, key, Icon }) => {
-                const active = pathname === href || pathname.startsWith(`${href}/`);
+                const active =
+                  pathname === href || pathname.startsWith(`${href}/`);
                 return (
                   <li key={href}>
                     <Link
@@ -72,10 +83,14 @@ export default function AppSidebar() {
                     >
                       <Icon
                         className={`size-5 shrink-0 ${
-                          active ? "menu-item-icon-active" : "menu-item-icon-inactive"
+                          active
+                            ? "menu-item-icon-active"
+                            : "menu-item-icon-inactive"
                         }`}
                       />
-                      {wide && <span className="truncate">{t(locale, key)}</span>}
+                      {wide && (
+                        <span className="truncate">{t(locale, key)}</span>
+                      )}
                     </Link>
                   </li>
                 );

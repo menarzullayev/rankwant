@@ -14,11 +14,12 @@ export default async function AlgorithmsPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
+        <h1 className="text-title-sm font-bold rw-strong">
           {t(locale, "nav.algorithms")}
         </h1>
-        <p className="mt-2 max-w-2xl text-theme-sm text-gray-500 dark:text-gray-400">
-          Qisqa ma&apos;lumotnoma: g&apos;oya, murakkablik, kod, mashq masalalari.
+        <p className="mt-2 max-w-2xl text-theme-sm rw-dim">
+          Qisqa ma&apos;lumotnoma: g&apos;oya, murakkablik, kod, mashq
+          masalalari.
         </p>
       </header>
       <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -31,14 +32,20 @@ export default async function AlgorithmsPage() {
               meta={
                 <>
                   <DifficultyBadge value={a.difficulty} />
-                  {a.topics.map((tp) => <Badge key={tp} color="info">{tp}</Badge>)}
+                  {a.topics.map((tp) => (
+                    <Badge key={tp} color="info">
+                      {tp}
+                    </Badge>
+                  ))}
                 </>
               }
             />
           </li>
         ))}
       </ul>
-      {data.count === 0 && <p className="text-theme-sm text-gray-400">{t(locale, "empty")}</p>}
+      {data.count === 0 && (
+        <p className="text-theme-sm rw-faint">{t(locale, "empty")}</p>
+      )}
     </div>
   );
 }

@@ -30,13 +30,15 @@ export default async function QuizPage({ params }: Props) {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <header>
-        <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">{quiz.title}</h1>
+        <h1 className="text-title-sm font-bold rw-strong">{quiz.title}</h1>
         <div className="mt-2 flex gap-2">
-          <Badge>{quiz.question_count} {t(DEFAULT_LOCALE, "quiz.questions")}</Badge>
+          <Badge>
+            {quiz.question_count} {t(DEFAULT_LOCALE, "quiz.questions")}
+          </Badge>
           <Badge color="brand">+{quiz.reward_qvant} Qvant</Badge>
         </div>
         {quiz.description && (
-          <p className="mt-2 text-theme-sm text-gray-500 dark:text-gray-400">{quiz.description}</p>
+          <p className="mt-2 text-theme-sm rw-dim">{quiz.description}</p>
         )}
       </header>
       <QuizPlayer quiz={quiz} />

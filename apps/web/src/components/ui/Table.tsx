@@ -1,7 +1,7 @@
 /** TailAdmin jadval patterni.
  *
- *  `<table>` va `<tbody>` saqlanadi: E2E `tbody tr a` va `table`
- *  selektorlariga tayanadi (tests/e2e/specs). */
+ * `<table>` va `<tbody>` saqlanadi: E2E `tbody tr a` va `table`
+ * selektorlariga tayanadi (tests/e2e/specs). */
 export function Table({ children }: { children: React.ReactNode }) {
   return (
     <div className="custom-scrollbar overflow-x-auto">
@@ -12,7 +12,7 @@ export function Table({ children }: { children: React.ReactNode }) {
 
 export function THead({ children }: { children: React.ReactNode }) {
   return (
-    <thead className="border-b border-gray-100 dark:border-[#232936]">
+    <thead className="border-b rw-line">
       <tr>{children}</tr>
     </thead>
   );
@@ -27,8 +27,8 @@ export function TH({
 }) {
   return (
     <th
-      className={`px-4 py-3 text-theme-xs font-medium text-gray-500 uppercase dark:text-gray-400
-        ${align === "right" ? "text-right" : align === "center" ? "text-center" : "text-left"}`}
+      className={`px-4 py-3 text-theme-xs font-medium rw-dim uppercase 
+ ${align === "right" ? "text-right" : align === "center" ? "text-center" : "text-left"}`}
     >
       {children}
     </th>
@@ -36,13 +36,11 @@ export function TH({
 }
 
 export function TBody({ children }: { children: React.ReactNode }) {
-  return (
-    <tbody className="divide-y divide-gray-100 dark:divide-[#232936]">{children}</tbody>
-  );
+  return <tbody className="divide-y rw-divide">{children}</tbody>;
 }
 
 export function TR({ children }: { children: React.ReactNode }) {
-  return <tr className="transition hover:bg-gray-50 dark:hover:bg-white/[0.03]">{children}</tr>;
+  return <tr className="transition rw-hover-bg">{children}</tr>;
 }
 
 export function TD({
@@ -56,19 +54,28 @@ export function TD({
 }) {
   return (
     <td
-      className={`px-4 py-3 text-theme-sm text-gray-700 dark:text-gray-300
-        ${align === "right" ? "text-right" : align === "center" ? "text-center" : "text-left"}
-        ${className}`}
+      className={`px-4 py-3 text-theme-sm rw-strong 
+ ${align === "right" ? "text-right" : align === "center" ? "text-center" : "text-left"}
+ ${className}`}
     >
       {children}
     </td>
   );
 }
 
-export function EmptyRow({ colSpan, children }: { colSpan: number; children: React.ReactNode }) {
+export function EmptyRow({
+  colSpan,
+  children,
+}: {
+  colSpan: number;
+  children: React.ReactNode;
+}) {
   return (
     <tr>
-      <td colSpan={colSpan} className="px-4 py-10 text-center text-theme-sm text-gray-400">
+      <td
+        colSpan={colSpan}
+        className="px-4 py-10 text-center text-theme-sm rw-faint"
+      >
         {children}
       </td>
     </tr>

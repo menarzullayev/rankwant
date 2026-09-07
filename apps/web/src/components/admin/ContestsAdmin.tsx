@@ -122,8 +122,8 @@ const COLUMNS: ColumnDef<ContestRow>[] = [
 ];
 
 const INPUT =
-  "h-9 rounded-lg border border-gray-200 bg-white px-2 text-theme-sm outline-none " +
-  "focus:border-brand-400 dark:border-[#232936] dark:bg-[#0b0d12] dark:text-white/90";
+  "h-9 rw-radius-sm border rw-line rw-surface px-2 text-theme-sm outline-none " +
+  "rw-focus-line rw-field-bg ";
 
 /** Qator paneli: masalalar ro'yxati (to'liq almashtiriladi) + amallar. */
 function ContestRowPanel({
@@ -215,7 +215,7 @@ function ContestRowPanel({
   return (
     <div className="space-y-4">
       <div>
-        <p className="mb-2 text-theme-xs font-medium text-gray-600 uppercase dark:text-gray-300">
+        <p className="mb-2 text-theme-xs font-medium rw-dim-2 uppercase">
           Masalalar
         </p>
         <div className="space-y-2">
@@ -243,21 +243,21 @@ function ContestRowPanel({
                 title="Ball"
               />
               {r.title && (
-                <span className="text-theme-xs text-gray-400">{r.title}</span>
+                <span className="text-theme-xs rw-faint">{r.title}</span>
               )}
               <button
                 type="button"
                 onClick={() =>
                   setRows((prev) => prev.filter((_, j) => j !== i))
                 }
-                className="text-theme-xs text-error-500 hover:underline"
+                className="text-theme-xs rw-bad-ink hover:underline"
               >
                 {t(locale, "admin.delete")}
               </button>
             </div>
           ))}
           {rows.length === 0 && (
-            <p className="text-theme-xs text-gray-400">
+            <p className="text-theme-xs rw-faint">
               {t(locale, "admin.noRows")}
             </p>
           )}
@@ -287,7 +287,7 @@ function ContestRowPanel({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2 border-t border-gray-100 pt-3 dark:border-[#232936]">
+      <div className="flex flex-wrap items-center gap-2 border-t rw-line pt-3">
         <Button
           type="button"
           variant="outline"
@@ -313,7 +313,7 @@ function ContestRowPanel({
         </Button>
         {msg && (
           <span
-            className={`text-theme-xs ${msg.ok ? "text-success-600 dark:text-success-400" : "text-error-600 dark:text-error-400"}`}
+            className={`text-theme-xs ${msg.ok ? "rw-ok-ink " : "rw-bad-ink "}`}
           >
             {msg.text}
           </span>

@@ -1,12 +1,13 @@
-export type BadgeColor = "brand" | "success" | "error" | "warning" | "info" | "neutral";
+export type BadgeColor =
+  "brand" | "success" | "error" | "warning" | "info" | "neutral";
 
 const COLORS: Record<BadgeColor, string> = {
-  brand: "bg-brand-50 text-brand-600 dark:bg-brand-500/12 dark:text-brand-400",
-  success: "bg-success-50 text-success-600 dark:bg-success-500/12 dark:text-success-400",
-  error: "bg-error-50 text-error-600 dark:bg-error-500/12 dark:text-error-400",
-  warning: "bg-warning-50 text-warning-600 dark:bg-warning-500/12 dark:text-warning-400",
+  brand: "rw-accent-soft rw-accent-ink ",
+  success: "rw-ok-soft rw-ok-ink ",
+  error: "rw-bad-soft rw-bad-ink ",
+  warning: "rw-warn-soft rw-warn-ink ",
   info: "bg-blue-light-50 text-blue-light-500 dark:bg-blue-light-500/12 dark:text-blue-light-400",
-  neutral: "bg-gray-100 text-gray-600 dark:bg-white/5 dark:text-gray-300",
+  neutral: "rw-chip rw-dim-2 ",
 };
 
 export function Badge({
@@ -19,7 +20,7 @@ export function Badge({
   return (
     <span
       className={`inline-flex items-center justify-center gap-1 rounded-full px-2.5 py-0.5
-        text-theme-xs font-medium ${COLORS[color]}`}
+ text-theme-xs font-medium ${COLORS[color]}`}
     >
       {children}
     </span>
@@ -40,8 +41,8 @@ export function DifficultyBadge({ value }: { value: number }) {
             : "master";
   return (
     <span
-      className={`level-${level} inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5
-        text-theme-xs font-semibold dark:bg-white/5`}
+      className={`level-${level} inline-flex items-center rounded-full rw-chip px-2.5 py-0.5
+ text-theme-xs font-semibold `}
     >
       {value}
     </span>

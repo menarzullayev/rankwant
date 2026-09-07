@@ -34,8 +34,8 @@ type ArenaRow = {
 const PATH = "/staff/arena/";
 
 const INPUT =
-  "h-9 rounded-lg border border-gray-200 bg-white px-3 text-theme-sm outline-none " +
-  "focus:border-brand-400 dark:border-[#232936] dark:bg-[#0b0d12] dark:text-white/90";
+  "h-9 rw-radius-sm border rw-line rw-surface px-3 text-theme-sm outline-none " +
+  "rw-focus-line rw-field-bg ";
 
 function toLocalInput(iso: string): string {
   const d = new Date(iso);
@@ -165,19 +165,19 @@ function ArenaRowPanel({
   return (
     <div className="grid gap-4 text-theme-sm md:grid-cols-2">
       <div>
-        <p className="mb-2 font-medium text-gray-700 dark:text-gray-300">
+        <p className="mb-2 font-medium rw-strong">
           {"Savollar (tartib bo'yicha)"} <Badge>{ids.length}</Badge>
         </p>
         <ol className="mb-2 space-y-1">
           {ids.map((id, i) => (
             <li key={id} className="flex items-center gap-2">
-              <span className="w-6 text-right text-gray-400">{i + 1}.</span>
+              <span className="w-6 text-right rw-faint">{i + 1}.</span>
               <span className="font-mono">#{id}</span>
               <button
                 type="button"
                 onClick={() => move(i, -1)}
                 disabled={i === 0}
-                className="text-brand-500 disabled:opacity-30"
+                className="rw-accent-ink disabled:opacity-30"
               >
                 ↑
               </button>
@@ -185,21 +185,21 @@ function ArenaRowPanel({
                 type="button"
                 onClick={() => move(i, 1)}
                 disabled={i === ids.length - 1}
-                className="text-brand-500 disabled:opacity-30"
+                className="rw-accent-ink disabled:opacity-30"
               >
                 ↓
               </button>
               <button
                 type="button"
                 onClick={() => setIds(ids.filter((x) => x !== id))}
-                className="text-error-500"
+                className="rw-bad-ink"
               >
                 ✕
               </button>
             </li>
           ))}
           {ids.length === 0 && (
-            <li className="text-gray-400">{t(locale, "admin.noRows")}</li>
+            <li className="rw-faint">{t(locale, "admin.noRows")}</li>
           )}
         </ol>
         <div className="flex gap-2">
@@ -242,9 +242,7 @@ function ArenaRowPanel({
 
       <div className="space-y-3">
         <div>
-          <p className="mb-2 font-medium text-gray-700 dark:text-gray-300">
-            Qayta rejalashtirish
-          </p>
+          <p className="mb-2 font-medium rw-strong">Qayta rejalashtirish</p>
           <div className="flex gap-2">
             <input
               type="datetime-local"
@@ -267,7 +265,7 @@ function ArenaRowPanel({
               Saqlash
             </Button>
           </div>
-          <p className="mt-1 text-theme-xs text-gray-400">
+          <p className="mt-1 text-theme-xs rw-faint">
             Tugash: {fmt(item.end_at)} · Ishtirokchi: {item.participant_count} ·
             Mukofot: {fmt(item.rewards_applied_at)}
           </p>
@@ -303,8 +301,8 @@ function ArenaRowPanel({
           </Button>
         </div>
 
-        {msg && <p className="text-success-600 dark:text-success-400">{msg}</p>}
-        {error && <p className="text-error-600 dark:text-error-400">{error}</p>}
+        {msg && <p className="rw-ok-ink">{msg}</p>}
+        {error && <p className="rw-bad-ink">{error}</p>}
       </div>
     </div>
   );

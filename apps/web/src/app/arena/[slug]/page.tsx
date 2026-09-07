@@ -31,15 +31,22 @@ export default async function ArenaPage({ params }: Props) {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">{arena.title}</h1>
+        <h1 className="text-title-sm font-bold rw-strong">{arena.title}</h1>
         <div className="mt-2 flex flex-wrap items-center gap-2">
-          <Badge>{arena.question_count} {t(locale, "quiz.questions")}</Badge>
-          <Badge>{arena.seconds_per_question}{t(locale, "arena.perQuestion")}</Badge>
+          <Badge>
+            {arena.question_count} {t(locale, "quiz.questions")}
+          </Badge>
+          <Badge>
+            {arena.seconds_per_question}
+            {t(locale, "arena.perQuestion")}
+          </Badge>
           <Badge color="brand">+{arena.reward_qvant} Qvant</Badge>
-          <span className="text-theme-xs text-gray-400">{new Date(arena.start_at).toLocaleString(locale)}</span>
+          <span className="text-theme-xs rw-faint">
+            {new Date(arena.start_at).toLocaleString(locale)}
+          </span>
         </div>
         {arena.description && (
-          <p className="mt-2 text-theme-sm text-gray-500 dark:text-gray-400">{arena.description}</p>
+          <p className="mt-2 text-theme-sm rw-dim">{arena.description}</p>
         )}
       </header>
       <ArenaPlayer initial={arena} />

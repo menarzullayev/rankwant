@@ -37,9 +37,7 @@ export default async function ArticlePage({ params }: Props) {
   return (
     <article className="mx-auto max-w-4xl space-y-6">
       <header>
-        <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
-          {article.title}
-        </h1>
+        <h1 className="text-title-sm font-bold rw-strong">{article.title}</h1>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <Badge>
             {article.reading_minutes} {t(locale, "learn.minutes")}
@@ -64,9 +62,7 @@ export default async function ArticlePage({ params }: Props) {
               <Link
                 key={`${p.slug}-${p.role}`}
                 href={`/problems/${p.slug}`}
-                className="rounded-lg border border-gray-200 px-3 py-1.5 text-theme-sm
-                  text-gray-700 transition hover:border-brand-400
-                  dark:border-[#232936] dark:text-gray-200"
+                className="rw-radius-sm border rw-line px-3 py-1.5 text-theme-sm rw-strong transition rw-hover-line"
               >
                 {p.title}
               </Link>

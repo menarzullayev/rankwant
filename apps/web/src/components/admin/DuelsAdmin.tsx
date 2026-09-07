@@ -66,7 +66,7 @@ const COLUMNS: ColumnDef<Duel>[] = [
 ];
 
 /** Bekor qilish / yakunlash — ikkalasi ham tasdiq bilan. Muddati o'tmagan duel
- *  avval `not_due` bilan rad etiladi; keyin majburiy yakunlash alohida tasdiqlanadi. */
+ * avval `not_due` bilan rad etiladi; keyin majburiy yakunlash alohida tasdiqlanadi. */
 function DuelActions({ duel, reload }: { duel: Duel; reload: () => void }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -120,27 +120,27 @@ function DuelActions({ duel, reload }: { duel: Duel; reload: () => void }) {
 
   return (
     <div className="space-y-3 text-theme-sm">
-      <dl className="grid gap-x-6 gap-y-1 text-gray-600 sm:grid-cols-2 lg:grid-cols-4 dark:text-gray-300">
+      <dl className="grid gap-x-6 gap-y-1 rw-dim-2 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <dt className="text-theme-xs text-gray-400">Slug</dt>
+          <dt className="text-theme-xs rw-faint">Slug</dt>
           <dd className="font-mono">{duel.slug}</dd>
         </div>
         <div>
-          <dt className="text-theme-xs text-gray-400">Masalalar</dt>
+          <dt className="text-theme-xs rw-faint">Masalalar</dt>
           <dd>
             {duel.problems.length ? duel.problems.join(", ") : "—"} (
             {duel.problem_count} ta, ~{duel.difficulty})
           </dd>
         </div>
         <div>
-          <dt className="text-theme-xs text-gray-400">Tugash</dt>
+          <dt className="text-theme-xs rw-faint">Tugash</dt>
           <dd>
             {new Date(duel.end_at).toLocaleString(DEFAULT_LOCALE)} ·{" "}
             {duel.duration_minutes} daq
           </dd>
         </div>
         <div>
-          <dt className="text-theme-xs text-gray-400">Reyting</dt>
+          <dt className="text-theme-xs rw-faint">Reyting</dt>
           <dd>
             {duel.ratings_applied_at
               ? new Date(duel.ratings_applied_at).toLocaleString(DEFAULT_LOCALE)
@@ -167,7 +167,7 @@ function DuelActions({ duel, reload }: { duel: Duel; reload: () => void }) {
           )}
         </div>
       )}
-      {error && <p className="text-error-500">{error}</p>}
+      {error && <p className="rw-bad-ink">{error}</p>}
     </div>
   );
 }

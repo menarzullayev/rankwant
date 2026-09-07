@@ -15,10 +15,8 @@ export function AdminNav() {
           <Link
             key={s.href}
             href={s.href}
-            className={`shrink-0 rounded-lg px-3 py-1.5 text-theme-sm font-medium transition ${
-              active
-                ? "bg-brand-500 text-white"
-                : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5"
+            className={`shrink-0 rw-radius-sm px-3 py-1.5 text-theme-sm font-medium transition ${
+              active ? "rw-accent-bg" : "rw-dim-2 rw-hover-bg "
             }`}
           >
             {s.label}

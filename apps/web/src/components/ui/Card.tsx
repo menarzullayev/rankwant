@@ -13,16 +13,11 @@ export function Card({
   bodyClassName?: string;
 }) {
   return (
-    <section
-      className={`rounded-2xl border border-gray-200 bg-white shadow-theme-xs
-        dark:border-[#232936] dark:bg-[#141821] ${className}`}
-    >
+    <section className={`rw-panel ${className}`}>
       {(title || action) && (
-        <div className="flex items-center justify-between gap-3 border-b border-gray-100 px-5 py-4 dark:border-[#232936]">
+        <div className="flex items-center justify-between gap-3 border-b rw-line px-5 py-4">
           {typeof title === "string" ? (
-            <h2 className="text-theme-xl font-semibold text-gray-800 dark:text-white/90">
-              {title}
-            </h2>
+            <h2 className="text-theme-xl font-semibold rw-strong">{title}</h2>
           ) : (
             title
           )}
@@ -47,21 +42,15 @@ export function StatCard({
   icon?: React.ReactNode;
 }) {
   return (
-    <div
-      className="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs
-        dark:border-[#232936] dark:bg-[#141821]"
-    >
+    <div className="rw-panel p-5">
       {icon && (
-        <div
-          className="mb-4 flex size-11 items-center justify-center rounded-xl bg-brand-50
-            text-brand-600 dark:bg-brand-500/12 dark:text-brand-400"
-        >
+        <div className="mb-4 flex size-11 items-center justify-center rw-radius rw-accent-soft rw-accent-ink">
           {icon}
         </div>
       )}
-      <p className="text-theme-sm text-gray-500 dark:text-gray-400">{label}</p>
-      <p className="mt-1 text-title-sm font-bold text-gray-800 dark:text-white/90">{value}</p>
-      {hint && <p className="mt-1 text-theme-xs text-gray-400 dark:text-gray-500">{hint}</p>}
+      <p className="text-theme-sm rw-dim">{label}</p>
+      <p className="mt-1 text-title-sm font-bold rw-strong">{value}</p>
+      {hint && <p className="mt-1 text-theme-xs rw-faint">{hint}</p>}
     </div>
   );
 }

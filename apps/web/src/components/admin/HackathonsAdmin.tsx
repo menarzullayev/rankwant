@@ -134,8 +134,8 @@ const COLUMNS: ColumnDef<Hackathon>[] = [
 ];
 
 const INPUT =
-  "h-9 rounded-lg border border-gray-200 bg-white px-2 text-theme-sm outline-none " +
-  "focus:border-brand-400 dark:border-[#232936] dark:bg-[#0b0d12] dark:text-white/90";
+  "h-9 rw-radius-sm border rw-line rw-surface px-2 text-theme-sm outline-none " +
+  "rw-focus-line rw-field-bg ";
 
 /** Bitta loyiha uchun ball (0–100) + fikr formasi. */
 function ScoreForm({
@@ -195,7 +195,7 @@ function ScoreForm({
         {t(locale, "admin.save")}
       </Button>
       {saved && <Badge color="success">{t(locale, "admin.saved")}</Badge>}
-      {error && <span className="text-theme-xs text-error-500">{error}</span>}
+      {error && <span className="text-theme-xs rw-bad-ink">{error}</span>}
     </form>
   );
 }
@@ -236,7 +236,7 @@ function SubmissionsPanel({
 
   return (
     <div className="space-y-2">
-      {error && <p className="text-theme-xs text-error-500">{error}</p>}
+      {error && <p className="text-theme-xs rw-bad-ink">{error}</p>}
       <Table>
         <THead>
           <TH>Foydalanuvchi</TH>
@@ -252,10 +252,8 @@ function SubmissionsPanel({
               <TD>@{s.username}</TD>
               <TD>{s.team_name || "—"}</TD>
               <TD>
-                <span className="font-medium text-gray-800 dark:text-white/90">
-                  {s.title}
-                </span>
-                <span className="block text-theme-xs text-gray-400">
+                <span className="font-medium rw-strong">{s.title}</span>
+                <span className="block text-theme-xs rw-faint">
                   {fmt(s.submitted_at)}
                 </span>
               </TD>
@@ -265,7 +263,7 @@ function SubmissionsPanel({
                     href={s.repo_url}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-brand-500 hover:underline"
+                    className="rw-accent-ink hover:underline"
                   >
                     repo
                   </a>
@@ -274,7 +272,7 @@ function SubmissionsPanel({
                       href={s.demo_url}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-brand-500 hover:underline"
+                      className="rw-accent-ink hover:underline"
                     >
                       demo
                     </a>

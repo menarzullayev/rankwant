@@ -27,7 +27,7 @@ export default async function DuelPage({ params }: Props) {
   }
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">{duel.title}</h1>
+      <h1 className="text-title-sm font-bold rw-strong">{duel.title}</h1>
       <DuelDetail initial={duel} />
     </div>
   );

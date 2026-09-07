@@ -18,7 +18,10 @@ const base = {
   strokeLinejoin: "round" as const,
 };
 
-function Icon({ className, children }: IconProps & { children: React.ReactNode }) {
+function Icon({
+  className,
+  children,
+}: IconProps & { children: React.ReactNode }) {
   return (
     <svg {...base} className={className ?? "size-5"} aria-hidden="true">
       {children}
@@ -99,6 +102,15 @@ export const SunIcon = (p: IconProps) => (
   <Icon {...p}>
     <circle cx="12" cy="12" r="4" />
     <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+  </Icon>
+);
+
+export const PaletteIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 3a9 9 0 1 0 0 18c.9 0 1.6-.7 1.6-1.6 0-.4-.2-.8-.5-1.1-.3-.3-.4-.6-.4-1 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5c0-4.1-4-7.7-9-7.7Z" />
+    <circle cx="7.5" cy="11.5" r="1" />
+    <circle cx="10.5" cy="7.5" r="1" />
+    <circle cx="15.5" cy="8.5" r="1" />
   </Icon>
 );
 

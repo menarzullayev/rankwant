@@ -43,9 +43,7 @@ export default async function ProblemPage({ params }: Props) {
   return (
     <article className="space-y-6">
       <header>
-        <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
-          {problem.title}
-        </h1>
+        <h1 className="text-title-sm font-bold rw-strong">{problem.title}</h1>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <DifficultyBadge value={problem.difficulty} />
           <span className={`level-${problem.level} text-theme-sm font-medium`}>

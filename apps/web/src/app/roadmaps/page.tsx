@@ -14,10 +14,10 @@ export default async function RoadmapsPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
+        <h1 className="text-title-sm font-bold rw-strong">
           {t(locale, "nav.roadmap")}
         </h1>
-        <p className="mt-2 max-w-2xl text-theme-sm text-gray-500 dark:text-gray-400">
+        <p className="mt-2 max-w-2xl text-theme-sm rw-dim">
           Noldan cho&apos;qqigacha bosqichma-bosqich: maqola → masala → maqola.
         </p>
       </header>
@@ -33,7 +33,9 @@ export default async function RoadmapsPage() {
           </li>
         ))}
       </ul>
-      {roadmaps.length === 0 && <p className="text-theme-sm text-gray-400">{t(locale, "empty")}</p>}
+      {roadmaps.length === 0 && (
+        <p className="text-theme-sm rw-faint">{t(locale, "empty")}</p>
+      )}
     </div>
   );
 }

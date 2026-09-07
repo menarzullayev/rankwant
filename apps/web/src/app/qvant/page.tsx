@@ -4,7 +4,13 @@ import { Badge } from "@/components/ui/Badge";
 import { Card, StatCard } from "@/components/ui/Card";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
 import { CheckIcon, QvantIcon } from "@/icons";
-import { api, ApiError, type Quest, type ShopItem, type Wallet } from "@/lib/api";
+import {
+  api,
+  ApiError,
+  type Quest,
+  type ShopItem,
+  type Wallet,
+} from "@/lib/api";
 
 export const metadata: Metadata = { title: "Qvant" };
 
@@ -18,10 +24,17 @@ export default async function QvantPage() {
   let quests: Quest[] = [];
   let shop: ShopItem[] = [];
   try {
-    [wallet, quests, shop] = await Promise.all([api.wallet(), api.quests(), api.shop()]);
+    [wallet, quests, shop] = await Promise.all([
+      api.wallet(),
+      api.quests(),
+      api.shop(),
+    ]);
   } catch (error) {
     // Kirmagan foydalanuvchi hamyonni ko'ra olmaydi — do'kon ochiq qoladi.
-    if (!(error instanceof ApiError) || (error.status !== 401 && error.status !== 403)) {
+    if (
+      !(error instanceof ApiError) ||
+      (error.status !== 401 && error.status !== 403)
+    ) {
       throw error;
     }
     shop = await api.shop();
@@ -30,12 +43,12 @@ export default async function QvantPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
+        <h1 className="text-title-sm font-bold rw-strong">
           {t(locale, "qvant.title")}
         </h1>
-        <p className="mt-2 max-w-2xl text-theme-sm text-gray-500 dark:text-gray-400">
-          Vazifalarni bajarib Qvant to&apos;plang. Qvant reytingga ta&apos;sir qilmaydi — u
-          faqat do&apos;kon uchun.
+        <p className="mt-2 max-w-2xl text-theme-sm rw-dim">
+          Vazifalarni bajarib Qvant to&apos;plang. Qvant reytingga ta&apos;sir
+          qilmaydi — u faqat do&apos;kon uchun.
         </p>
       </header>
 
@@ -46,12 +59,18 @@ export default async function QvantPage() {
             value={wallet.balance}
             icon={<QvantIcon />}
           />
-          <StatCard label={t(locale, "qvant.today")} value={wallet.earned_today} />
-          <StatCard label={t(locale, "qvant.remaining")} value={wallet.remaining_today} />
+          <StatCard
+            label={t(locale, "qvant.today")}
+            value={wallet.earned_today}
+          />
+          <StatCard
+            label={t(locale, "qvant.remaining")}
+            value={wallet.remaining_today}
+          />
         </section>
       ) : (
         <Card>
-          <p className="text-theme-sm text-gray-500 dark:text-gray-400">
+          <p className="text-theme-sm rw-dim">
             Balansni ko&apos;rish uchun tizimga kiring.
           </p>
         </Card>
@@ -59,29 +78,28 @@ export default async function QvantPage() {
 
       {quests.length > 0 && (
         <Card title={t(locale, "qvant.quests")} bodyClassName="p-0">
-          <ul className="divide-y divide-gray-100 dark:divide-[#232936]">
+          <ul className="divide-y rw-divide">
             {quests.map((quest) => (
-              <li key={quest.code} className="flex items-center gap-3 px-5 py-3">
+              <li
+                key={quest.code}
+                className="flex items-center gap-3 px-5 py-3"
+              >
                 <span
                   className={`flex size-6 shrink-0 items-center justify-center rounded-full
-                    ${
-                      quest.done
-                        ? "bg-success-50 text-success-600 dark:bg-success-500/12 dark:text-success-400"
-                        : "border border-gray-200 dark:border-[#232936]"
-                    }`}
+ ${quest.done ? "rw-ok-soft rw-ok-ink " : "border rw-line "}`}
                 >
                   {quest.done && <CheckIcon className="size-3.5" />}
                 </span>
                 <span
                   className={`flex-1 text-theme-sm ${
-                    quest.done
-                      ? "text-gray-400 line-through"
-                      : "text-gray-700 dark:text-gray-200"
+                    quest.done ? "rw-faint line-through" : "rw-strong "
                   }`}
                 >
                   {quest.title_uz}
                 </span>
-                <Badge color={quest.done ? "neutral" : "brand"}>+{quest.reward}</Badge>
+                <Badge color={quest.done ? "neutral" : "brand"}>
+                  +{quest.reward}
+                </Badge>
               </li>
             ))}
           </ul>
@@ -93,12 +111,9 @@ export default async function QvantPage() {
           {shop.map((item) => (
             <div
               key={item.code}
-              className="flex items-center justify-between gap-3 rounded-xl border
-                border-gray-200 px-4 py-3 dark:border-[#232936]"
+              className="flex items-center justify-between gap-3 rw-radius border rw-line px-4 py-3"
             >
-              <span className="text-theme-sm text-gray-700 dark:text-gray-200">
-                {item.title_uz}
-              </span>
+              <span className="text-theme-sm rw-strong">{item.title_uz}</span>
               <Badge color={item.owned ? "success" : "brand"}>
                 {item.owned ? t(locale, "qvant.owned") : `${item.price} Qvant`}
               </Badge>
@@ -106,7 +121,7 @@ export default async function QvantPage() {
           ))}
         </div>
         {shop.length === 0 && (
-          <p className="text-theme-sm text-gray-400">{t(locale, "empty")}</p>
+          <p className="text-theme-sm rw-faint">{t(locale, "empty")}</p>
         )}
       </Card>
     </div>

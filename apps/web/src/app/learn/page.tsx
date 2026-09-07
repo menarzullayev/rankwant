@@ -16,23 +16,26 @@ export const dynamic = "force-dynamic";
 
 export default async function LearnPage() {
   const locale = DEFAULT_LOCALE;
-  const [articles, roadmaps] = await Promise.all([api.articles(), api.roadmaps()]);
+  const [articles, roadmaps] = await Promise.all([
+    api.articles(),
+    api.roadmaps(),
+  ]);
 
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
+        <h1 className="text-title-sm font-bold rw-strong">
           {t(locale, "learn.title")}
         </h1>
-        <p className="mt-2 max-w-2xl text-theme-sm text-gray-500 dark:text-gray-400">
-          Har bir maqola mashq masalalari bilan bog&apos;langan — o&apos;qish va yechish bir
-          joyda.
+        <p className="mt-2 max-w-2xl text-theme-sm rw-dim">
+          Har bir maqola mashq masalalari bilan bog&apos;langan — o&apos;qish va
+          yechish bir joyda.
         </p>
       </header>
 
       {roadmaps.length > 0 && (
         <section>
-          <h2 className="mb-3 text-theme-xl font-semibold text-gray-800 dark:text-white/90">
+          <h2 className="mb-3 text-theme-xl font-semibold rw-strong">
             {t(locale, "learn.roadmaps")}
           </h2>
           <ul className="grid gap-4 md:grid-cols-2">
@@ -50,7 +53,7 @@ export default async function LearnPage() {
       )}
 
       <section>
-        <h2 className="mb-3 text-theme-xl font-semibold text-gray-800 dark:text-white/90">
+        <h2 className="mb-3 text-theme-xl font-semibold rw-strong">
           {t(locale, "learn.articles")}
         </h2>
         <ul className="grid gap-4 md:grid-cols-2">
@@ -80,7 +83,7 @@ export default async function LearnPage() {
           ))}
         </ul>
         {articles.count === 0 && (
-          <p className="text-theme-sm text-gray-400">{t(locale, "empty")}</p>
+          <p className="text-theme-sm rw-faint">{t(locale, "empty")}</p>
         )}
       </section>
     </div>

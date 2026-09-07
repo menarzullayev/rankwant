@@ -14,11 +14,12 @@ export default async function ArenaListPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
+        <h1 className="text-title-sm font-bold rw-strong">
           {t(locale, "nav.arena")}
         </h1>
-        <p className="mt-2 max-w-2xl text-theme-sm text-gray-500 dark:text-gray-400">
-          Jonli raund: hamma bir vaqtda, har savolga bir necha soniya, standings jonli.
+        <p className="mt-2 max-w-2xl text-theme-sm rw-dim">
+          Jonli raund: hamma bir vaqtda, har savolga bir necha soniya, standings
+          jonli.
         </p>
       </header>
       <ul className="grid gap-4 md:grid-cols-2">
@@ -30,10 +31,29 @@ export default async function ArenaListPage() {
               summary={a.description}
               meta={
                 <>
-                  <Badge color={a.is_running ? "success" : a.is_finished ? "neutral" : "info"}>
-                    {t(locale, a.is_running ? "contests.running" : a.is_finished ? "contests.finished" : "contests.upcoming")}
+                  <Badge
+                    color={
+                      a.is_running
+                        ? "success"
+                        : a.is_finished
+                          ? "neutral"
+                          : "info"
+                    }
+                  >
+                    {t(
+                      locale,
+                      a.is_running
+                        ? "contests.running"
+                        : a.is_finished
+                          ? "contests.finished"
+                          : "contests.upcoming",
+                    )}
                   </Badge>
-                  <Badge>{a.question_count} {t(locale, "quiz.questions")} · {a.seconds_per_question}{t(locale, "arena.perQuestion")}</Badge>
+                  <Badge>
+                    {a.question_count} {t(locale, "quiz.questions")} ·{" "}
+                    {a.seconds_per_question}
+                    {t(locale, "arena.perQuestion")}
+                  </Badge>
                   <Badge color="brand">{a.participant_count} 👤</Badge>
                   <span>{new Date(a.start_at).toLocaleString(locale)}</span>
                 </>
@@ -42,7 +62,9 @@ export default async function ArenaListPage() {
           </li>
         ))}
       </ul>
-      {data.count === 0 && <p className="text-theme-sm text-gray-400">{t(locale, "empty")}</p>}
+      {data.count === 0 && (
+        <p className="text-theme-sm rw-faint">{t(locale, "empty")}</p>
+      )}
     </div>
   );
 }

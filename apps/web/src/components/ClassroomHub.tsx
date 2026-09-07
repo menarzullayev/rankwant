@@ -18,7 +18,10 @@ export function ClassroomHub() {
   const [rooms, setRooms] = useState<Classroom[]>([]);
   const [error, setError] = useState("");
 
-  const load = () => getJson<Classroom[]>("/classrooms/").then(setRooms).catch(() => setRooms([]));
+  const load = () =>
+    getJson<Classroom[]>("/classrooms/")
+      .then(setRooms)
+      .catch(() => setRooms([]));
   useEffect(() => {
     if (user) void load();
   }, [user]);
@@ -50,17 +53,27 @@ export function ClassroomHub() {
   }
 
   if (ready && !user) {
-    return <Card><p className="text-theme-sm text-gray-400">{t(locale, "auth.login")} →</p></Card>;
+    return (
+      <Card>
+        <p className="text-theme-sm rw-faint">{t(locale, "auth.login")} →</p>
+      </Card>
+    );
   }
 
   return (
     <div className="space-y-6">
-      {error && <p className="text-theme-sm text-error-500">{error}</p>}
+      {error && <p className="text-theme-sm rw-bad-ink">{error}</p>}
       <div className="grid gap-4 md:grid-cols-2">
         <Card title={t(locale, "classroom.join")}>
           <form onSubmit={join} className="flex gap-2">
-            <Field label={t(locale, "classroom.code")} name="join_code" required />
-            <div className="flex items-end"><Button type="submit">→</Button></div>
+            <Field
+              label={t(locale, "classroom.code")}
+              name="join_code"
+              required
+            />
+            <div className="flex items-end">
+              <Button type="submit">→</Button>
+            </div>
           </form>
         </Card>
         <Card title={t(locale, "classroom.create")}>
@@ -68,22 +81,35 @@ export function ClassroomHub() {
             <Field label="Nomi" name="name" required />
             <Field label="Slug" name="slug" required pattern="[a-z0-9-]+" />
             <Field label="Tavsif" name="description" />
-            <div><Button type="submit">{t(locale, "classroom.create")}</Button></div>
+            <div>
+              <Button type="submit">{t(locale, "classroom.create")}</Button>
+            </div>
           </form>
         </Card>
       </div>
       <Card title={t(locale, "nav.classroom")} bodyClassName="p-0">
-        <ul className="divide-y divide-gray-100 dark:divide-[#232936]">
+        <ul className="divide-y rw-divide">
           {rooms.map((r) => (
             <li key={r.slug} className="flex items-center gap-3 px-5 py-3">
-              <Link href={`/classroom/${r.slug}`} className="min-w-0 flex-1 font-medium text-gray-800 hover:text-brand-500 dark:text-white/90">
+              <Link
+                href={`/classroom/${r.slug}`}
+                className="min-w-0 flex-1 font-medium rw-strong rw-link-hover"
+              >
                 {r.name}
-                <span className="ml-2 text-theme-xs font-normal text-gray-400">@{r.owner}</span>
+                <span className="ml-2 text-theme-xs font-normal rw-faint">
+                  @{r.owner}
+                </span>
               </Link>
-              <Badge>{r.member_count} {t(locale, "classroom.members").toLowerCase()}</Badge>
+              <Badge>
+                {r.member_count} {t(locale, "classroom.members").toLowerCase()}
+              </Badge>
             </li>
           ))}
-          {rooms.length === 0 && <li className="px-5 py-6 text-center text-theme-sm text-gray-400">{t(locale, "empty")}</li>}
+          {rooms.length === 0 && (
+            <li className="px-5 py-6 text-center text-theme-sm rw-faint">
+              {t(locale, "empty")}
+            </li>
+          )}
         </ul>
       </Card>
     </div>

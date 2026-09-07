@@ -32,10 +32,8 @@ export default async function PostPage({ params }: Props) {
   return (
     <article className="mx-auto max-w-4xl space-y-6">
       <header>
-        <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
-          {post.title}
-        </h1>
-        <p className="mt-2 text-theme-sm text-gray-500 dark:text-gray-400">
+        <h1 className="text-title-sm font-bold rw-strong">{post.title}</h1>
+        <p className="mt-2 text-theme-sm rw-dim">
           {new Date(post.published_at).toLocaleDateString(DEFAULT_LOCALE)}
           {post.author && ` · ${post.author}`}
         </p>

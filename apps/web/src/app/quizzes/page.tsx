@@ -13,7 +13,7 @@ export default async function QuizzesPage() {
   const data = await api.quizzes();
   return (
     <div className="space-y-6">
-      <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
+      <h1 className="text-title-sm font-bold rw-strong">
         {t(locale, "nav.quizzes")}
       </h1>
       <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -25,11 +25,14 @@ export default async function QuizzesPage() {
               summary={q.description}
               meta={
                 <>
-                  <Badge>{q.question_count} {t(locale, "quiz.questions")}</Badge>
+                  <Badge>
+                    {q.question_count} {t(locale, "quiz.questions")}
+                  </Badge>
                   <Badge color="brand">+{q.reward_qvant} Qvant</Badge>
                   {q.best_score !== null && (
                     <Badge color="success">
-                      {t(locale, "quiz.best")}: {q.best_score}/{q.question_count}
+                      {t(locale, "quiz.best")}: {q.best_score}/
+                      {q.question_count}
                     </Badge>
                   )}
                 </>
@@ -38,7 +41,9 @@ export default async function QuizzesPage() {
           </li>
         ))}
       </ul>
-      {data.count === 0 && <p className="text-theme-sm text-gray-400">{t(locale, "empty")}</p>}
+      {data.count === 0 && (
+        <p className="text-theme-sm rw-faint">{t(locale, "empty")}</p>
+      )}
     </div>
   );
 }

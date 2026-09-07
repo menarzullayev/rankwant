@@ -51,9 +51,19 @@ export function AuthForm({ mode }: { mode: Mode }) {
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
-      <Field label={t(locale, "auth.username")} name="username" required autoComplete="username" />
+      <Field
+        label={t(locale, "auth.username")}
+        name="username"
+        required
+        autoComplete="username"
+      />
       {mode === "register" && (
-        <Field label={t(locale, "auth.email")} name="email" type="email" required />
+        <Field
+          label={t(locale, "auth.email")}
+          name="email"
+          type="email"
+          required
+        />
       )}
       <Field
         label={t(locale, "auth.password")}
@@ -64,7 +74,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
       />
 
       {error && (
-        <p className="rounded-lg bg-error-50 px-3 py-2 text-theme-sm text-error-600 dark:bg-error-500/12 dark:text-error-400">
+        <p className="rw-radius-sm rw-bad-soft px-3 py-2 text-theme-sm rw-bad-ink">
           {error}
         </p>
       )}
@@ -73,11 +83,11 @@ export function AuthForm({ mode }: { mode: Mode }) {
         {t(locale, mode === "login" ? "auth.login" : "auth.register")}
       </Button>
 
-      <p className="text-center text-theme-sm text-gray-500 dark:text-gray-400">
+      <p className="text-center text-theme-sm rw-dim">
         {t(locale, mode === "login" ? "auth.noAccount" : "auth.hasAccount")}{" "}
         <Link
           href={mode === "login" ? "/register" : "/login"}
-          className="font-medium text-brand-500 hover:underline"
+          className="font-medium rw-accent-ink hover:underline"
         >
           {t(locale, mode === "login" ? "auth.register" : "auth.login")}
         </Link>

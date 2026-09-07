@@ -3,7 +3,15 @@
 import { useEffect, useState } from "react";
 import { API_BASE, type Standing } from "@/lib/api";
 import { type Locale, t } from "@/i18n/messages";
-import { EmptyRow, TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
+import {
+  EmptyRow,
+  TBody,
+  TD,
+  TH,
+  THead,
+  TR,
+  Table,
+} from "@/components/ui/Table";
 
 type Payload = { frozen: boolean; results: Standing[] };
 
@@ -44,7 +52,9 @@ export function StandingsTable({
     };
 
     try {
-      source = new EventSource(`${API_BASE}/contests/${slug}/standings/stream/`);
+      source = new EventSource(
+        `${API_BASE}/contests/${slug}/standings/stream/`,
+      );
       source.addEventListener("standings", (event) => {
         sawEvent = true;
         setData(JSON.parse((event as MessageEvent).data));
@@ -71,10 +81,7 @@ export function StandingsTable({
   return (
     <>
       {data.frozen && (
-        <div
-          className="mb-4 rounded-lg bg-warning-50 px-3 py-2 text-theme-sm text-warning-600
-            dark:bg-warning-500/12 dark:text-warning-400"
-        >
+        <div className="mb-4 rw-radius-sm rw-warn-soft px-3 py-2 text-theme-sm rw-warn-ink">
           {t(locale, "standings.frozen")}
         </div>
       )}
@@ -89,15 +96,17 @@ export function StandingsTable({
         <TBody>
           {data.results.map((row) => (
             <TR key={row.username}>
-              <TD className="font-semibold text-gray-800 dark:text-white/90">{row.rank}</TD>
+              <TD className="font-semibold rw-strong">{row.rank}</TD>
               <TD>{row.username}</TD>
               <TD align="right">{row.solved_count}</TD>
-              <TD align="right" className="text-gray-400">
+              <TD align="right" className="rw-faint">
                 {row.penalty}
               </TD>
             </TR>
           ))}
-          {data.results.length === 0 && <EmptyRow colSpan={4}>{t(locale, "empty")}</EmptyRow>}
+          {data.results.length === 0 && (
+            <EmptyRow colSpan={4}>{t(locale, "empty")}</EmptyRow>
+          )}
         </TBody>
       </Table>
     </>

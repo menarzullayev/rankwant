@@ -10,11 +10,12 @@ export default function ClassroomPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
+        <h1 className="text-title-sm font-bold rw-strong">
           {t(locale, "nav.classroom")}
         </h1>
-        <p className="mt-2 max-w-2xl text-theme-sm text-gray-500 dark:text-gray-400">
-          O&apos;qituvchi sinf yaratadi, o&apos;quvchilar kod bilan qo&apos;shiladi, uy vazifasi va progress bir joyda.
+        <p className="mt-2 max-w-2xl text-theme-sm rw-dim">
+          O&apos;qituvchi sinf yaratadi, o&apos;quvchilar kod bilan
+          qo&apos;shiladi, uy vazifasi va progress bir joyda.
         </p>
       </header>
       <ClassroomHub />

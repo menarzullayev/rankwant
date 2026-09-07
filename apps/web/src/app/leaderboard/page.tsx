@@ -2,7 +2,15 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import { Card } from "@/components/ui/Card";
-import { EmptyRow, TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
+import {
+  EmptyRow,
+  TBody,
+  TD,
+  TH,
+  THead,
+  TR,
+  Table,
+} from "@/components/ui/Table";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
 import { api } from "@/lib/api";
 
@@ -15,7 +23,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Reyting" };
 
 /** Birinchi uchtalik — TailAdmin jadvalida ham ko'zga tashlansin. */
-const MEDAL = ["text-warning-500", "text-gray-400", "text-orange-400"];
+const MEDAL = ["rw-warn-ink", "rw-faint", "text-orange-400"];
 
 export default async function LeaderboardPage() {
   const locale = DEFAULT_LOCALE;
@@ -24,13 +32,13 @@ export default async function LeaderboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
+        <h1 className="text-title-sm font-bold rw-strong">
           {t(locale, "leaderboard.title")}
         </h1>
         {/* ADR-0006 fazali ochilish: Phase 0 da faqat Skills va Contests */}
         <Link
           href="/rating"
-          className="mt-1 inline-block text-theme-sm text-brand-500 hover:underline"
+          className="mt-1 inline-block text-theme-sm rw-accent-ink hover:underline"
         >
           {t(locale, "nav.ratingInfo")}
         </Link>
@@ -52,27 +60,31 @@ export default async function LeaderboardPage() {
           <TBody>
             {data.results.map((u, i) => (
               <TR key={u.username}>
-                <TD className={`font-semibold ${MEDAL[i] ?? "text-gray-400"}`}>{i + 1}</TD>
+                <TD className={`font-semibold ${MEDAL[i] ?? "rw-faint"}`}>
+                  {i + 1}
+                </TD>
                 <TD>
                   <Link
                     href={`/users/${u.username}`}
-                    className="font-medium text-gray-800 hover:text-brand-500 dark:text-white/90"
+                    className="font-medium rw-strong rw-link-hover"
                   >
                     {u.display_name || u.username}
                   </Link>
                 </TD>
-                <TD align="right" className="font-semibold text-gray-800 dark:text-white/90">
+                <TD align="right" className="font-semibold rw-strong">
                   {u.rating_skills}
                 </TD>
                 <TD align="right">{u.rating_contest}</TD>
                 <TD align="right">{u.rating_activity}</TD>
                 <TD align="right">{u.rating_challenges}</TD>
-                <TD align="right" className="text-gray-400">
+                <TD align="right" className="rw-faint">
                   {u.streak_count}
                 </TD>
               </TR>
             ))}
-            {data.count === 0 && <EmptyRow colSpan={7}>{t(locale, "empty")}</EmptyRow>}
+            {data.count === 0 && (
+              <EmptyRow colSpan={7}>{t(locale, "empty")}</EmptyRow>
+            )}
           </TBody>
         </Table>
       </Card>

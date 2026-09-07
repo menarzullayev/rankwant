@@ -3,22 +3,22 @@ import Link from "next/link";
 type Variant = "primary" | "outline";
 
 const STYLES: Record<Variant, string> = {
-  primary: "bg-brand-500 text-white hover:bg-brand-600",
-  outline:
-    "border border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-[#232936] " +
-    "dark:text-gray-300 dark:hover:bg-white/5",
+  primary: "rw-accent-bg ",
+  outline: "border rw-line rw-strong rw-hover-bg " + " ",
 };
 
 const BASE =
-  "inline-flex h-11 items-center justify-center gap-2 rounded-lg px-4 text-theme-sm " +
-  "font-medium transition disabled:opacity-60";
+  "inline-flex h-11 items-center justify-center gap-2 rw-btn-radius px-4 text-theme-sm " +
+  "font-medium transition rw-btn-label disabled:opacity-60";
 
 export function Button({
   variant = "primary",
   className = "",
   ...props
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: Variant }) {
-  return <button className={`${BASE} ${STYLES[variant]} ${className}`} {...props} />;
+  return (
+    <button className={`${BASE} ${STYLES[variant]} ${className}`} {...props} />
+  );
 }
 
 /** `href` tipi Next'ning o'zinikidan olinadi — typedRoutes tekshiruvi saqlanadi. */

@@ -14,7 +14,10 @@ export default async function NotificationsPage() {
   try {
     items = (await api.notifications()).results;
   } catch (error) {
-    if (error instanceof ApiError && (error.status === 401 || error.status === 403)) {
+    if (
+      error instanceof ApiError &&
+      (error.status === 401 || error.status === 403)
+    ) {
       signedIn = false;
     } else {
       throw error;
@@ -24,7 +27,7 @@ export default async function NotificationsPage() {
   if (!signedIn) {
     return (
       <Card>
-        <p className="text-theme-sm text-gray-500 dark:text-gray-400">
+        <p className="text-theme-sm rw-dim">
           Bildirishnomalarni ko&apos;rish uchun tizimga kiring.
         </p>
       </Card>
@@ -33,35 +36,33 @@ export default async function NotificationsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
+      <h1 className="text-title-sm font-bold rw-strong">
         {t(locale, "notif.title")}
       </h1>
 
       <Card bodyClassName="p-0">
-        <ul className="divide-y divide-gray-100 dark:divide-[#232936]">
+        <ul className="divide-y rw-divide">
           {items.map((n) => (
             <li key={n.id} className="flex gap-3 px-5 py-4">
               {/* O'qilmagan bildirishnoma — chap chetida brend nuqtasi */}
               <span
                 className={`mt-1.5 size-2 shrink-0 rounded-full ${
-                  n.is_read ? "bg-transparent" : "bg-brand-500"
+                  n.is_read ? "bg-transparent" : "rw-accent-bg"
                 }`}
               />
               <div className="min-w-0 flex-1">
-                <p className="font-medium text-gray-800 dark:text-white/90">{n.title}</p>
+                <p className="font-medium rw-strong">{n.title}</p>
                 {n.body && (
-                  <p className="mt-1 text-theme-sm text-gray-500 dark:text-gray-400">
-                    {n.body}
-                  </p>
+                  <p className="mt-1 text-theme-sm rw-dim">{n.body}</p>
                 )}
-                <p className="mt-1 text-theme-xs text-gray-400">
+                <p className="mt-1 text-theme-xs rw-faint">
                   {new Date(n.created_at).toLocaleString(locale)}
                 </p>
               </div>
             </li>
           ))}
           {items.length === 0 && (
-            <li className="px-5 py-10 text-center text-theme-sm text-gray-400">
+            <li className="px-5 py-10 text-center text-theme-sm rw-faint">
               {t(locale, "empty")}
             </li>
           )}

@@ -31,7 +31,10 @@ export default async function ContestPage({ params }: Props) {
   let contest;
   let standings;
   try {
-    [contest, standings] = await Promise.all([api.contest(slug), api.standings(slug)]);
+    [contest, standings] = await Promise.all([
+      api.contest(slug),
+      api.standings(slug),
+    ]);
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) notFound();
     throw error;
@@ -40,11 +43,17 @@ export default async function ContestPage({ params }: Props) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
-          {contest.title}
-        </h1>
+        <h1 className="text-title-sm font-bold rw-strong">{contest.title}</h1>
         <div className="mt-2 flex flex-wrap items-center gap-2">
-          <Badge color={contest.is_running ? "success" : contest.is_finished ? "neutral" : "info"}>
+          <Badge
+            color={
+              contest.is_running
+                ? "success"
+                : contest.is_finished
+                  ? "neutral"
+                  : "info"
+            }
+          >
             {t(
               locale,
               contest.is_running
@@ -54,8 +63,10 @@ export default async function ContestPage({ params }: Props) {
                   : "contests.upcoming",
             )}
           </Badge>
-          {contest.is_rated && <Badge color="brand">{t(locale, "contests.rated")}</Badge>}
-          <span className="text-theme-xs text-gray-500 dark:text-gray-400">
+          {contest.is_rated && (
+            <Badge color="brand">{t(locale, "contests.rated")}</Badge>
+          )}
+          <span className="text-theme-xs rw-dim">
             {new Date(contest.start_at).toLocaleString(locale)} —{" "}
             {new Date(contest.end_at).toLocaleString(locale)}
           </span>
@@ -63,13 +74,10 @@ export default async function ContestPage({ params }: Props) {
       </div>
 
       {contest.is_finished && (
-        <div
-          className="rounded-2xl border border-gray-200 bg-white p-5 text-theme-sm text-gray-500
-            dark:border-[#232936] dark:bg-[#141821] dark:text-gray-400"
-        >
-          Musobaqa tugagan — uni <strong>virtual</strong> tarzda o&apos;z vaqtingizda
-          yechishingiz mumkin. Virtual natija reytingga ta&apos;sir qilmaydi va rasmiy
-          jadvalga kirmaydi.
+        <div className="rw-radius border rw-line rw-surface p-5 text-theme-sm rw-dim">
+          Musobaqa tugagan — uni <strong>virtual</strong> tarzda o&apos;z
+          vaqtingizda yechishingiz mumkin. Virtual natija reytingga ta&apos;sir
+          qilmaydi va rasmiy jadvalga kirmaydi.
         </div>
       )}
 

@@ -37,8 +37,8 @@ type Tournament = {
 const PATH = "/staff/tournaments/";
 
 const INPUT =
-  "h-9 w-full rounded-lg border border-gray-200 bg-white px-2 text-theme-sm outline-none " +
-  "focus:border-brand-400 dark:border-[#232936] dark:bg-[#0b0d12] dark:text-white/90";
+  "h-9 w-full rw-radius-sm border rw-line rw-surface px-2 text-theme-sm outline-none " +
+  "rw-focus-line rw-field-bg ";
 
 function fmt(iso: string): string {
   return new Date(iso).toLocaleString("uz-UZ", {
@@ -167,17 +167,17 @@ function StageEditor({
     <div className="space-y-3">
       {msg && (
         <p
-          className={`rounded-lg px-3 py-2 text-theme-sm ${
+          className={`rw-radius-sm px-3 py-2 text-theme-sm ${
             msg.kind === "ok"
-              ? "bg-success-50 text-success-600 dark:bg-success-500/12 dark:text-success-400"
-              : "bg-error-50 text-error-600 dark:bg-error-500/12 dark:text-error-400"
+              ? "rw-ok-soft rw-ok-ink "
+              : "rw-bad-soft rw-bad-ink "
           }`}
         >
           {msg.text}
         </p>
       )}
 
-      <div className="grid grid-cols-[4rem_1fr_1fr_5rem_auto] gap-2 text-theme-xs font-medium text-gray-500 dark:text-gray-400">
+      <div className="grid grid-cols-[4rem_1fr_1fr_5rem_auto] gap-2 text-theme-xs font-medium rw-dim">
         <span>Tartib</span>
         <span>Nomi</span>
         <span>Contest slug</span>
@@ -210,7 +210,7 @@ function StageEditor({
               className={`${INPUT} font-mono`}
             />
             {s.contest_title && (
-              <span className="mt-0.5 block text-theme-xs text-gray-400">
+              <span className="mt-0.5 block text-theme-xs rw-faint">
                 {s.contest_title}
               </span>
             )}
@@ -225,14 +225,14 @@ function StageEditor({
           <button
             type="button"
             onClick={() => setStages((prev) => prev.filter((_, j) => j !== i))}
-            className="text-theme-xs text-error-500 hover:underline"
+            className="text-theme-xs rw-bad-ink hover:underline"
           >
             {t(locale, "admin.delete")}
           </button>
         </div>
       ))}
       {stages.length === 0 && (
-        <p className="text-theme-xs text-gray-400">
+        <p className="text-theme-xs rw-faint">
           {"Bosqichlar yo'q — contest qo'shing."}
         </p>
       )}

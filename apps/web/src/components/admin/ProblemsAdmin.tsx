@@ -130,8 +130,8 @@ const TOPIC_FIELDS: FieldDef[] = [
 ];
 
 const input =
-  "w-full rounded-lg border border-gray-200 bg-white px-3 text-theme-sm outline-none " +
-  "focus:border-brand-400 dark:border-[#232936] dark:bg-[#0b0d12] dark:text-white/90";
+  "w-full rw-radius-sm border rw-line rw-surface px-3 text-theme-sm outline-none " +
+  "rw-focus-line rw-field-bg ";
 
 /** Masala testlari — S3 ga yuklanadi, DB da faqat havola (05-domain-model). */
 function ProblemTestsPanel({
@@ -203,7 +203,7 @@ function ProblemTestsPanel({
 
   return (
     <div className="space-y-3">
-      <p className="text-theme-xs text-gray-500 dark:text-gray-400">
+      <p className="text-theme-xs rw-dim">
         Judge testlarni DB dan emas, S3 dan o&apos;qiydi: matn yuklanganda{" "}
         <code>tests/{problem.slug}/&lt;order&gt;.in/.out</code> sifatida
         saqlanadi, bu yerda faqat havola ko&apos;rinadi. Bir xil tartib raqami
@@ -211,13 +211,13 @@ function ProblemTestsPanel({
       </p>
 
       {error && (
-        <p className="rounded-lg bg-error-50 px-3 py-2 text-theme-sm text-error-600 dark:bg-error-500/12 dark:text-error-400">
+        <p className="rw-radius-sm rw-bad-soft px-3 py-2 text-theme-sm rw-bad-ink">
           {error}
         </p>
       )}
 
       <table className="min-w-full text-left text-theme-xs">
-        <thead className="text-gray-500 uppercase dark:text-gray-400">
+        <thead className="rw-dim uppercase">
           <tr>
             <th className="px-2 py-1">#</th>
             <th className="px-2 py-1">Namuna</th>
@@ -229,7 +229,7 @@ function ProblemTestsPanel({
             </th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-100 dark:divide-[#232936]">
+        <tbody className="divide-y rw-divide">
           {tests.map((tc) => (
             <tr key={tc.id}>
               <td className="px-2 py-1 font-medium">{tc.order}</td>
@@ -237,17 +237,13 @@ function ProblemTestsPanel({
                 {tc.is_sample ? <Badge>namuna</Badge> : "—"}
               </td>
               <td className="px-2 py-1">{tc.points}</td>
-              <td className="px-2 py-1 font-mono text-gray-500">
-                {tc.input_ref}
-              </td>
-              <td className="px-2 py-1 font-mono text-gray-500">
-                {tc.output_ref}
-              </td>
+              <td className="px-2 py-1 font-mono rw-dim">{tc.input_ref}</td>
+              <td className="px-2 py-1 font-mono rw-dim">{tc.output_ref}</td>
               <td className="px-2 py-1 text-right">
                 <button
                   type="button"
                   onClick={() => remove(tc)}
-                  className="text-error-500 hover:underline"
+                  className="rw-bad-ink hover:underline"
                 >
                   {t(locale, "admin.delete")}
                 </button>
@@ -256,7 +252,7 @@ function ProblemTestsPanel({
           ))}
           {tests.length === 0 && (
             <tr>
-              <td colSpan={6} className="px-2 py-3 text-center text-gray-400">
+              <td colSpan={6} className="px-2 py-3 text-center rw-faint">
                 Hali test yo&apos;q — yechimlar tekshirilmaydi.
               </td>
             </tr>
@@ -269,11 +265,11 @@ function ProblemTestsPanel({
         onSubmit={upload}
         className="grid gap-3 md:grid-cols-2"
       >
-        <p className="text-theme-sm font-medium text-gray-700 md:col-span-2 dark:text-gray-300">
+        <p className="text-theme-sm font-medium rw-strong md:col-span-2">
           Test qo&apos;shish
         </p>
         <label className="block">
-          <span className="mb-1 block text-theme-xs text-gray-600 dark:text-gray-300">
+          <span className="mb-1 block text-theme-xs rw-dim-2">
             Tartib raqami *
           </span>
           <input
@@ -286,9 +282,7 @@ function ProblemTestsPanel({
           />
         </label>
         <label className="block">
-          <span className="mb-1 block text-theme-xs text-gray-600 dark:text-gray-300">
-            Ball
-          </span>
+          <span className="mb-1 block text-theme-xs rw-dim-2">Ball</span>
           <input
             name="points"
             type="number"
@@ -298,7 +292,7 @@ function ProblemTestsPanel({
           />
         </label>
         <label className="block">
-          <span className="mb-1 block text-theme-xs text-gray-600 dark:text-gray-300">
+          <span className="mb-1 block text-theme-xs rw-dim-2">
             Kirish (input)
           </span>
           <textarea
@@ -309,7 +303,7 @@ function ProblemTestsPanel({
           />
         </label>
         <label className="block">
-          <span className="mb-1 block text-theme-xs text-gray-600 dark:text-gray-300">
+          <span className="mb-1 block text-theme-xs rw-dim-2">
             Kutilgan chiqish (expected)
           </span>
           <textarea
@@ -319,13 +313,13 @@ function ProblemTestsPanel({
             spellCheck={false}
           />
         </label>
-        <label className="flex items-center gap-2 text-theme-xs text-gray-600 dark:text-gray-300">
+        <label className="flex items-center gap-2 text-theme-xs rw-dim-2">
           <input name="is_sample" type="checkbox" className="size-4" />
           Namuna test (shartda ko&apos;rsatiladi)
         </label>
         <div className="flex items-center justify-end gap-2">
           {saved && (
-            <span className="text-theme-xs text-success-600">
+            <span className="text-theme-xs rw-ok-ink">
               {t(locale, "admin.saved")}
             </span>
           )}

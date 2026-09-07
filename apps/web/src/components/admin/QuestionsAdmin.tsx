@@ -19,8 +19,8 @@ import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
 /** Variantlar savol bilan birga yuboriladi va serverda TO'LIQ almashtiriladi
- *  (`quizzes/staff_serializers.py`). Shuning uchun CrudPage'ning FormData
- *  formasi to'g'ri kelmaydi — sahifa o'zi boshqariladigan forma bilan qurilgan. */
+ * (`quizzes/staff_serializers.py`). Shuning uchun CrudPage'ning FormData
+ * formasi to'g'ri kelmaydi — sahifa o'zi boshqariladigan forma bilan qurilgan. */
 
 type Choice = { id?: number; order: number; text: string; is_correct: boolean };
 
@@ -59,11 +59,10 @@ const EMPTY: FormState = {
 };
 
 const INPUT =
-  "h-10 w-full rounded-lg border border-gray-200 bg-white px-3 text-theme-sm outline-none " +
-  "focus:border-brand-400 dark:border-[#232936] dark:bg-[#0b0d12] dark:text-white/90";
+  "h-10 w-full rw-radius-sm border rw-line rw-surface px-3 text-theme-sm outline-none " +
+  "rw-focus-line rw-field-bg ";
 
-const LABEL =
-  "mb-1 block text-theme-xs font-medium text-gray-600 dark:text-gray-300";
+const LABEL = "mb-1 block text-theme-xs font-medium rw-dim-2 ";
 
 function fromItem(item: Question): FormState {
   return {
@@ -206,7 +205,7 @@ export function QuestionsAdmin() {
   return (
     <div className="space-y-4">
       {error && (
-        <p className="rounded-lg bg-error-50 px-3 py-2 text-theme-sm text-error-600 dark:bg-error-500/12 dark:text-error-400">
+        <p className="rw-radius-sm rw-bad-soft px-3 py-2 text-theme-sm rw-bad-ink">
           {error}
         </p>
       )}
@@ -236,7 +235,7 @@ export function QuestionsAdmin() {
           <form
             key={editing ? editing.id : "new"}
             onSubmit={submit}
-            className="grid gap-3 border-b border-gray-100 p-5 md:grid-cols-2 dark:border-[#232936]"
+            className="grid gap-3 border-b rw-line p-5 md:grid-cols-2"
           >
             <label className="block md:col-span-2">
               <span className={LABEL}>Savol matni (Markdown + LaTeX) *</span>
@@ -293,9 +292,7 @@ export function QuestionsAdmin() {
                 }
                 className="size-4"
               />
-              <span className="text-theme-sm text-gray-700 dark:text-gray-300">
-                Faol
-              </span>
+              <span className="text-theme-sm rw-strong">Faol</span>
             </label>
 
             <div className="md:col-span-2">
@@ -306,7 +303,7 @@ export function QuestionsAdmin() {
                 <button
                   type="button"
                   onClick={addChoice}
-                  className="text-theme-xs text-brand-500 hover:underline"
+                  className="text-theme-xs rw-accent-ink hover:underline"
                 >
                   + Variant
                 </button>
@@ -333,7 +330,7 @@ export function QuestionsAdmin() {
                       placeholder={`Variant ${c.order}`}
                       className={INPUT}
                     />
-                    <label className="flex shrink-0 items-center gap-1 text-theme-xs text-gray-600 dark:text-gray-300">
+                    <label className="flex shrink-0 items-center gap-1 text-theme-xs rw-dim-2">
                       <input
                         type="radio"
                         name="correct"
@@ -347,7 +344,7 @@ export function QuestionsAdmin() {
                       type="button"
                       onClick={() => removeChoice(i)}
                       disabled={form.choices.length <= 2}
-                      className="text-theme-xs text-error-500 hover:underline disabled:opacity-40"
+                      className="text-theme-xs rw-bad-ink hover:underline disabled:opacity-40"
                     >
                       ✕
                     </button>
@@ -421,14 +418,14 @@ export function QuestionsAdmin() {
                     <button
                       type="button"
                       onClick={() => open(item)}
-                      className="text-theme-xs text-brand-500 hover:underline"
+                      className="text-theme-xs rw-accent-ink hover:underline"
                     >
                       {t(locale, "admin.edit")}
                     </button>
                     <button
                       type="button"
                       onClick={() => remove(item)}
-                      className="text-theme-xs text-error-500 hover:underline"
+                      className="text-theme-xs rw-bad-ink hover:underline"
                     >
                       {t(locale, "admin.delete")}
                     </button>
@@ -442,7 +439,7 @@ export function QuestionsAdmin() {
           </TBody>
         </Table>
         {count > rows.length && (
-          <div className="flex items-center justify-end gap-2 border-t border-gray-100 px-4 py-2 text-theme-xs dark:border-[#232936]">
+          <div className="flex items-center justify-end gap-2 border-t rw-line px-4 py-2 text-theme-xs">
             <button
               type="button"
               disabled={page <= 1}

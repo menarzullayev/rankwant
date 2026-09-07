@@ -7,7 +7,13 @@ import { DEFAULT_LOCALE, t } from "@/i18n/messages";
 import { SearchIcon } from "@/icons";
 import { API_BASE, type SearchResult } from "@/lib/api";
 
-const EMPTY: SearchResult = { q: "", problems: [], users: [], articles: [], contests: [] };
+const EMPTY: SearchResult = {
+  q: "",
+  problems: [],
+  users: [],
+  articles: [],
+  contests: [],
+};
 
 export default function SearchBox() {
   const [q, setQ] = useState("");
@@ -31,7 +37,8 @@ export default function SearchBox() {
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
-      if (box.current && !box.current.contains(e.target as Node)) setOpen(false);
+      if (box.current && !box.current.contains(e.target as Node))
+        setOpen(false);
     };
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
@@ -39,12 +46,15 @@ export default function SearchBox() {
 
   const shown = active ? result : EMPTY;
   const total =
-    shown.problems.length + shown.users.length + shown.articles.length + shown.contests.length;
+    shown.problems.length +
+    shown.users.length +
+    shown.articles.length +
+    shown.contests.length;
 
   return (
     <div ref={box} className="relative hidden md:block">
       <label className="relative block">
-        <SearchIcon className="pointer-events-none absolute top-2.5 left-3 size-5 text-gray-400" />
+        <SearchIcon className="pointer-events-none absolute top-2.5 left-3 size-5 rw-faint" />
         <input
           value={q}
           onChange={(e) => {
@@ -53,39 +63,50 @@ export default function SearchBox() {
           }}
           onFocus={() => setOpen(true)}
           placeholder={t(DEFAULT_LOCALE, "header.search")}
-          className="h-10 w-64 rounded-lg border border-gray-200 bg-transparent pr-3 pl-10
-            text-theme-sm outline-none focus:border-brand-400 focus:shadow-focus-ring
-            dark:border-[#232936] dark:text-white/90 xl:w-80"
+          className="h-10 w-64 rw-radius-sm border rw-line bg-transparent pr-3 pl-10 text-theme-sm outline-none rw-focus-line rw-focus-ring xl:w-80"
         />
       </label>
       {open && total > 0 && (
-        <div
-          className="absolute top-12 left-0 z-40 w-full overflow-hidden rounded-xl border
-            border-gray-200 bg-white shadow-theme-lg dark:border-[#232936] dark:bg-[#141821]"
-        >
+        <div className="absolute top-12 left-0 z-40 w-full overflow-hidden rw-radius border rw-line rw-surface rw-shadow">
           {shown.problems.map((p) => (
-            <Link key={`p-${p.slug}`} href={`/problems/${p.slug}`} onClick={() => setOpen(false)}
-              className="flex items-center justify-between px-4 py-2 text-theme-sm hover:bg-gray-50 dark:hover:bg-white/5">
+            <Link
+              key={`p-${p.slug}`}
+              href={`/problems/${p.slug}`}
+              onClick={() => setOpen(false)}
+              className="flex items-center justify-between px-4 py-2 text-theme-sm rw-hover-bg"
+            >
               <span>{p.title}</span>
-              <span className="text-theme-xs text-gray-400">{p.difficulty}</span>
+              <span className="text-theme-xs rw-faint">{p.difficulty}</span>
             </Link>
           ))}
           {shown.users.map((u) => (
-            <Link key={`u-${u.username}`} href={`/users/${u.username}`} onClick={() => setOpen(false)}
-              className="flex items-center justify-between px-4 py-2 text-theme-sm hover:bg-gray-50 dark:hover:bg-white/5">
+            <Link
+              key={`u-${u.username}`}
+              href={`/users/${u.username}`}
+              onClick={() => setOpen(false)}
+              className="flex items-center justify-between px-4 py-2 text-theme-sm rw-hover-bg"
+            >
               <span>@{u.username}</span>
-              <span className="text-theme-xs text-gray-400">{u.rating_skills}</span>
+              <span className="text-theme-xs rw-faint">{u.rating_skills}</span>
             </Link>
           ))}
           {shown.articles.map((a) => (
-            <Link key={`a-${a.slug}`} href={`/learn/${a.slug}`} onClick={() => setOpen(false)}
-              className="block px-4 py-2 text-theme-sm hover:bg-gray-50 dark:hover:bg-white/5">
+            <Link
+              key={`a-${a.slug}`}
+              href={`/learn/${a.slug}`}
+              onClick={() => setOpen(false)}
+              className="block px-4 py-2 text-theme-sm rw-hover-bg"
+            >
               {a.title}
             </Link>
           ))}
           {shown.contests.map((c) => (
-            <Link key={`c-${c.slug}`} href={`/contests/${c.slug}`} onClick={() => setOpen(false)}
-              className="block px-4 py-2 text-theme-sm hover:bg-gray-50 dark:hover:bg-white/5">
+            <Link
+              key={`c-${c.slug}`}
+              href={`/contests/${c.slug}`}
+              onClick={() => setOpen(false)}
+              className="block px-4 py-2 text-theme-sm rw-hover-bg"
+            >
               {c.title}
             </Link>
           ))}

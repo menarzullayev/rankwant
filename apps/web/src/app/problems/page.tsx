@@ -3,7 +3,15 @@ import type { Metadata } from "next";
 
 import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
-import { EmptyRow, TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
+import {
+  EmptyRow,
+  TBody,
+  TD,
+  TH,
+  THead,
+  TR,
+  Table,
+} from "@/components/ui/Table";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
 import { api, ApiError, type Recommendation } from "@/lib/api";
 
@@ -25,14 +33,17 @@ export default async function ProblemsPage() {
   try {
     recommended = await api.recommendations();
   } catch (error) {
-    if (!(error instanceof ApiError) || (error.status !== 401 && error.status !== 403)) {
+    if (
+      !(error instanceof ApiError) ||
+      (error.status !== 401 && error.status !== 403)
+    ) {
       throw error;
     }
   }
 
   return (
     <div className="space-y-6">
-      <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
+      <h1 className="text-title-sm font-bold rw-strong">
         {t(locale, "problems.title")}
       </h1>
 
@@ -50,9 +61,9 @@ export default async function ProblemsPage() {
               <Link
                 key={p.slug}
                 href={`/problems/${p.slug}`}
-                className={`level-${p.level} rounded-lg border border-gray-200 px-3 py-1.5
-                  text-theme-sm font-medium transition hover:border-brand-400
-                  dark:border-[#232936]`}
+                className={`level-${p.level} rw-radius-sm border rw-line px-3 py-1.5
+ text-theme-sm font-medium transition rw-hover-line
+ `}
               >
                 {p.title}
               </Link>
@@ -72,11 +83,11 @@ export default async function ProblemsPage() {
           <TBody>
             {data.results.map((p, i) => (
               <TR key={p.slug}>
-                <TD className="text-gray-400">{i + 1}</TD>
+                <TD className="rw-faint">{i + 1}</TD>
                 <TD>
                   <Link
                     href={`/problems/${p.slug}`}
-                    className="font-medium text-gray-800 hover:text-brand-500 dark:text-white/90"
+                    className="font-medium rw-strong rw-link-hover"
                   >
                     {p.title}
                   </Link>
@@ -91,15 +102,19 @@ export default async function ProblemsPage() {
                 <TD>
                   <div className="flex items-center gap-2">
                     <DifficultyBadge value={p.difficulty} />
-                    <span className={`level-${p.level} text-theme-xs`}>{p.level_label}</span>
+                    <span className={`level-${p.level} text-theme-xs`}>
+                      {p.level_label}
+                    </span>
                   </div>
                 </TD>
-                <TD align="right" className="text-gray-400">
+                <TD align="right" className="rw-faint">
                   {p.solved_count}
                 </TD>
               </TR>
             ))}
-            {data.count === 0 && <EmptyRow colSpan={4}>{t(locale, "empty")}</EmptyRow>}
+            {data.count === 0 && (
+              <EmptyRow colSpan={4}>{t(locale, "empty")}</EmptyRow>
+            )}
           </TBody>
         </Table>
       </Card>

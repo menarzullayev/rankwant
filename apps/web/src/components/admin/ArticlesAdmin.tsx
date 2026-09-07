@@ -97,8 +97,8 @@ const FIELDS: FieldDef[] = [
 ];
 
 const input =
-  "h-9 rounded-lg border border-gray-200 bg-white px-2 text-theme-sm outline-none " +
-  "focus:border-brand-400 dark:border-[#232936] dark:bg-[#0b0d12] dark:text-white/90";
+  "h-9 rw-radius-sm border rw-line rw-surface px-2 text-theme-sm outline-none " +
+  "rw-focus-line rw-field-bg ";
 
 /** Maqola ↔ masala bog'lanishlari — PATCH `problems` butun ro'yxatni almashtiradi. */
 function ProblemLinksEditor({
@@ -138,10 +138,10 @@ function ProblemLinksEditor({
 
   return (
     <div className="space-y-2">
-      <p className="text-theme-xs font-medium text-gray-500 uppercase">
+      <p className="text-theme-xs font-medium rw-dim uppercase">
         {"Bog'langan masalalar"}
       </p>
-      {error && <p className="text-theme-xs text-error-500">{error}</p>}
+      {error && <p className="text-theme-xs rw-bad-ink">{error}</p>}
       {links.map((l, i) => (
         <div key={i} className="flex flex-wrap items-center gap-2">
           <input
@@ -177,7 +177,7 @@ function ProblemLinksEditor({
               setLinks((prev) => prev.filter((_, j) => j !== i));
               setSaved(false);
             }}
-            className="text-theme-xs text-error-500 hover:underline"
+            className="text-theme-xs rw-bad-ink hover:underline"
           >
             {t(DEFAULT_LOCALE, "admin.delete")}
           </button>
@@ -202,7 +202,7 @@ function ProblemLinksEditor({
           {t(DEFAULT_LOCALE, "admin.save")}
         </Button>
         {saved && (
-          <span className="text-theme-xs text-success-500">
+          <span className="text-theme-xs rw-ok-ink">
             {t(DEFAULT_LOCALE, "admin.saved")}
           </span>
         )}

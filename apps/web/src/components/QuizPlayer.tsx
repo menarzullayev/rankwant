@@ -8,7 +8,12 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useSession } from "@/context/SessionContext";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
-import { ApiError, postJson, type QuizDetail, type QuizResult } from "@/lib/api";
+import {
+  ApiError,
+  postJson,
+  type QuizDetail,
+  type QuizResult,
+} from "@/lib/api";
 
 export function QuizPlayer({ quiz }: { quiz: QuizDetail }) {
   const locale = DEFAULT_LOCALE;
@@ -22,7 +27,11 @@ export function QuizPlayer({ quiz }: { quiz: QuizDetail }) {
     setBusy(true);
     setError("");
     try {
-      setResult(await postJson<QuizResult>(`/quizzes/${quiz.slug}/submit/`, { answers }));
+      setResult(
+        await postJson<QuizResult>(`/quizzes/${quiz.slug}/submit/`, {
+          answers,
+        }),
+      );
     } catch (e) {
       setError(e instanceof ApiError ? e.message : String(e));
     } finally {
@@ -37,10 +46,12 @@ export function QuizPlayer({ quiz }: { quiz: QuizDetail }) {
       {result && (
         <Card title={t(locale, "quiz.result")}>
           <div className="flex flex-wrap items-center gap-3">
-            <span className="text-title-sm font-bold text-gray-800 dark:text-white/90">
+            <span className="text-title-sm font-bold rw-strong">
               {result.score} / {result.total}
             </span>
-            {result.qvant_awarded > 0 && <Badge color="brand">+{result.qvant_awarded} Qvant</Badge>}
+            {result.qvant_awarded > 0 && (
+              <Badge color="brand">+{result.qvant_awarded} Qvant</Badge>
+            )}
           </div>
         </Card>
       )}
@@ -53,18 +64,20 @@ export function QuizPlayer({ quiz }: { quiz: QuizDetail }) {
             <div className="mt-4 grid gap-2">
               {q.choices.map((c) => {
                 const chosen = answers[q.id] === c.id;
-                let tone = "border-gray-200 dark:border-[#232936]";
+                let tone = "rw-line ";
                 if (r) {
-                  if (c.id === r.correct) tone = "border-success-500 bg-success-50 dark:bg-success-500/12";
-                  else if (chosen && !r.is_correct) tone = "border-error-500 bg-error-50 dark:bg-error-500/12";
-                } else if (chosen) tone = "border-brand-500 bg-brand-50 dark:bg-brand-500/12";
+                  if (c.id === r.correct)
+                    tone = "border-success-500 rw-ok-soft ";
+                  else if (chosen && !r.is_correct)
+                    tone = "border-error-500 rw-bad-soft ";
+                } else if (chosen) tone = "rw-accent-line rw-accent-soft ";
                 return (
                   <button
                     key={c.id}
                     type="button"
                     disabled={!!result}
                     onClick={() => setAnswers((a) => ({ ...a, [q.id]: c.id }))}
-                    className={`rounded-lg border px-4 py-2.5 text-left text-theme-sm transition ${tone}`}
+                    className={`rw-radius-sm border px-4 py-2.5 text-left text-theme-sm transition ${tone}`}
                   >
                     {c.text}
                   </button>
@@ -72,20 +85,22 @@ export function QuizPlayer({ quiz }: { quiz: QuizDetail }) {
               })}
             </div>
             {r?.explanation && (
-              <p className="mt-3 text-theme-sm text-gray-500 dark:text-gray-400">{r.explanation}</p>
+              <p className="mt-3 text-theme-sm rw-dim">{r.explanation}</p>
             )}
           </Card>
         );
       })}
 
-      {error && <p className="text-theme-sm text-error-500">{error}</p>}
-      {!result && ready && (
-        user ? (
-          <Button onClick={submit} disabled={busy}>{t(locale, "quiz.submit")}</Button>
+      {error && <p className="text-theme-sm rw-bad-ink">{error}</p>}
+      {!result &&
+        ready &&
+        (user ? (
+          <Button onClick={submit} disabled={busy}>
+            {t(locale, "quiz.submit")}
+          </Button>
         ) : (
-          <p className="text-theme-sm text-gray-400">{t(locale, "auth.login")} →</p>
-        )
-      )}
+          <p className="text-theme-sm rw-faint">{t(locale, "auth.login")} →</p>
+        ))}
     </div>
   );
 }

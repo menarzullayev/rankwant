@@ -27,19 +27,12 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section
-      className="rounded-2xl border border-gray-200 bg-white shadow-theme-xs
-        dark:border-[#232936] dark:bg-[#141821]"
-    >
-      <div className="flex items-center justify-between gap-3 border-b border-gray-100 px-5 py-4 dark:border-[#232936]">
-        <h2 className="text-theme-xl font-semibold text-gray-800 dark:text-white/90">
-          {title}
-        </h2>
+    <section className="rw-radius border rw-line rw-surface rw-shadow">
+      <div className="flex items-center justify-between gap-3 border-b rw-line px-5 py-4">
+        <h2 className="text-theme-xl font-semibold rw-strong">{title}</h2>
         <Badge color={active ? "brand" : "neutral"}>{phase}</Badge>
       </div>
-      <div className="space-y-2 px-5 py-4 text-theme-sm text-gray-500 dark:text-gray-400">
-        {children}
-      </div>
+      <div className="space-y-2 px-5 py-4 text-theme-sm rw-dim">{children}</div>
     </section>
   );
 }
@@ -59,10 +52,10 @@ export default function RatingPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
+        <h1 className="text-title-sm font-bold rw-strong">
           Reyting qanday hisoblanadi
         </h1>
-        <p className="mt-2 max-w-3xl text-theme-sm text-gray-500 dark:text-gray-400">
+        <p className="mt-2 max-w-3xl text-theme-sm rw-dim">
           Barcha formulalar ochiq. Yashirin og&apos;irlik yoki e&apos;lon
           qilinmagan bonus yo&apos;q. Har bir o&apos;zgarish sababi bilan
           profilingizda yozib boriladi.
@@ -75,7 +68,7 @@ export default function RatingPage() {
           tartibida saralanadi va kamayuvchi koeffitsient bilan qo&apos;shiladi.
           Ball — masalaning <strong>joriy</strong> qiyinligi.
         </p>
-        <Formula>{`Skills = Σ  pᵢ × 0.95^(i−1)     (p₁ ≥ p₂ ≥ … , pᵢ = qiyinlik)`}</Formula>
+        <Formula>{`Skills = Σ pᵢ × 0.95^(i−1) (p₁ ≥ p₂ ≥ … , pᵢ = qiyinlik)`}</Formula>
         <ul className="list-disc space-y-1 pl-5">
           <li>
             Yangi masala yechish reytingni <strong>hech qachon</strong>{" "}
@@ -88,8 +81,8 @@ export default function RatingPage() {
           </li>
           <li>
             Masala qayta baholansa reyting o&apos;zgarishi mumkin. Bu
-            foydalanuvchi harakati emas, platforma qarori — sizga xabar
-            beriladi va sabab tarixda yoziladi.
+            foydalanuvchi harakati emas, platforma qarori — sizga xabar beriladi
+            va sabab tarixda yoziladi.
           </li>
         </ul>
         <p className="text-xs">
@@ -100,17 +93,19 @@ export default function RatingPage() {
 
       <Section title="Contests" phase="Faol" active>
         <p>
-          Codeforces uslubidagi Elo. Faqat <strong>reytingli</strong> va
-          kamida 10 ishtirokchili musobaqalar hisoblanadi.
+          Codeforces uslubidagi Elo. Faqat <strong>reytingli</strong> va kamida
+          10 ishtirokchili musobaqalar hisoblanadi.
         </p>
         <Formula>{`P(i,j) = 1 / (1 + 10^((Rⱼ − Rᵢ) / 400))
-seedᵢ  = 1 + Σ P(j, i)              kutilgan o'rin
-mᵢ     = √(seedᵢ × rankᵢ)           kutilgan va haqiqiy o'rin o'rtachasi
-dᵢ     = (R*ᵢ − Rᵢ) / 2             R*ᵢ — mᵢ ga mos reyting
+seedᵢ = 1 + Σ P(j, i) kutilgan o'rin
+mᵢ = √(seedᵢ × rankᵢ) kutilgan va haqiqiy o'rin o'rtachasi
+dᵢ = (R*ᵢ − Rᵢ) / 2 R*ᵢ — mᵢ ga mos reyting
 soʻng: barcha dᵢ dan Σd/n ayiriladi (musobaqa reytingni shishirmaydi)`}</Formula>
         <ul className="list-disc space-y-1 pl-5">
           <li>Boshlang&apos;ich reyting — 1400.</li>
-          <li>Birinchi 6 reytingli musobaqada o&apos;zgarish 1.5 baravar tezroq.</li>
+          <li>
+            Birinchi 6 reytingli musobaqada o&apos;zgarish 1.5 baravar tezroq.
+          </li>
           <li>Reyting 0 dan pastga tushmaydi.</li>
         </ul>
       </Section>
@@ -126,9 +121,9 @@ soʻng: barcha dᵢ dan Σd/n ayiriladi (musobaqa reytingni shishirmaydi)`}</For
 
       <Section title="Challenges" phase="Phase 3" active={false}>
         <p>1v1 duel uchun klassik Elo.</p>
-        <Formula>{`E  = 1 / (1 + 10^((R_raqib − R) / 400))
-R' = R + K × (S − E)        S ∈ {1 = g'alaba, 0.5 = durang, 0}
-K  = 32 (birinchi 10 duel), keyin 16`}</Formula>
+        <Formula>{`E = 1 / (1 + 10^((R_raqib − R) / 400))
+R' = R + K × (S − E) S ∈ {1 = g'alaba, 0.5 = durang, 0}
+K = 32 (birinchi 10 duel), keyin 16`}</Formula>
       </Section>
 
       <p className="text-xs" style={{ color: "var(--muted)" }}>

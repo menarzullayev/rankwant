@@ -24,8 +24,7 @@ export default function UserMenu() {
     return (
       <Link
         href="/login"
-        className="flex h-10 items-center gap-2 rounded-lg bg-brand-500 px-4 text-theme-sm
-          font-medium text-white transition hover:bg-brand-600"
+        className="flex h-10 items-center gap-2 rw-radius-sm rw-accent-bg px-4 text-theme-sm font-medium text-white transition"
       >
         <UserIcon className="size-4" />
         {t(locale, "auth.login")}
@@ -38,27 +37,24 @@ export default function UserMenu() {
       {user.is_staff && (
         <Link
           href="/admin"
-          className="flex h-10 items-center rounded-lg border border-brand-300 px-3 text-theme-sm
-            font-medium text-brand-600 transition hover:bg-brand-50
-            dark:border-brand-500/40 dark:text-brand-400 dark:hover:bg-brand-500/12"
+          className="flex h-10 items-center rw-radius-sm border rw-line px-3 text-theme-sm font-medium rw-accent-ink transition rw-hover-accent"
         >
           Admin
         </Link>
       )}
       <Link
         href={`/users/${user.username}`}
-        className="flex h-10 items-center gap-2 rounded-lg border border-gray-200 px-3
-          text-theme-sm font-medium text-gray-700 transition hover:bg-gray-50
-          dark:border-[#232936] dark:text-gray-200 dark:hover:bg-white/5"
+        className="flex h-10 items-center gap-2 rw-radius-sm border rw-line px-3 text-theme-sm font-medium rw-strong transition rw-hover-bg"
       >
         <UserIcon className="size-4" />
-        <span className="hidden sm:inline">{user.display_name || user.username}</span>
+        <span className="hidden sm:inline">
+          {user.display_name || user.username}
+        </span>
       </Link>
       <button
         type="button"
         onClick={logout}
-        className="h-10 rounded-lg px-3 text-theme-sm text-gray-500 transition
-          hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+        className="h-10 rw-radius-sm px-3 text-theme-sm rw-dim transition rw-hover-strong"
       >
         {t(locale, "auth.logout")}
       </button>

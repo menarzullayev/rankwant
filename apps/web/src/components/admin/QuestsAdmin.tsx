@@ -130,11 +130,7 @@ function SyncCatalogue() {
 
   return (
     <div className="flex items-center justify-end gap-3">
-      {msg && (
-        <span className="text-theme-xs text-gray-500 dark:text-gray-400">
-          {msg}
-        </span>
-      )}
+      {msg && <span className="text-theme-xs rw-dim">{msg}</span>}
       <Button variant="outline" className="h-9" disabled={busy} onClick={sync}>
         Katalogni tiklash
       </Button>

@@ -4,7 +4,15 @@ import { notFound } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
 import { DifficultyBadge } from "@/components/ui/Badge";
 import { Card, StatCard } from "@/components/ui/Card";
-import { EmptyRow, TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
+import {
+  EmptyRow,
+  TBody,
+  TD,
+  TH,
+  THead,
+  TR,
+  Table,
+} from "@/components/ui/Table";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
 
 type Props = { params: Promise<{ username: string }> };
@@ -49,38 +57,39 @@ export default async function ProfilePage({ params }: Props) {
 
   return (
     <div className="space-y-6">
-      <header
-        className="flex flex-wrap items-center gap-4 rounded-2xl border border-gray-200
-          bg-white p-6 shadow-theme-xs dark:border-[#232936] dark:bg-[#141821]"
-      >
-        <span
-          className="flex size-14 items-center justify-center rounded-full bg-brand-50
-            text-theme-xl font-bold text-brand-600 dark:bg-brand-500/12 dark:text-brand-400"
-        >
+      <header className="flex flex-wrap items-center gap-4 rw-radius border rw-line rw-surface p-6 rw-shadow">
+        <span className="flex size-14 items-center justify-center rounded-full rw-accent-soft text-theme-xl font-bold rw-accent-ink">
           {(user.display_name || user.username).charAt(0).toUpperCase()}
         </span>
         <div>
-          <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
+          <h1 className="text-title-sm font-bold rw-strong">
             {user.display_name || user.username}
           </h1>
-          {user.bio && (
-            <p className="mt-1 text-theme-sm text-gray-500 dark:text-gray-400">{user.bio}</p>
-          )}
+          {user.bio && <p className="mt-1 text-theme-sm rw-dim">{user.bio}</p>}
         </div>
       </header>
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Skills" value={user.rating_skills} />
         <StatCard label="Contests" value={user.rating_contest} />
-        <StatCard label={t(locale, "leaderboard.activity")} value={user.rating_activity} />
-        <StatCard label={t(locale, "leaderboard.streak")} value={user.streak_count} />
+        <StatCard
+          label={t(locale, "leaderboard.activity")}
+          value={user.rating_activity}
+        />
+        <StatCard
+          label={t(locale, "leaderboard.streak")}
+          value={user.streak_count}
+        />
       </section>
 
       {/* Principle #2 ning ko'rinadigan qismi: har o'zgarish sababi bilan */}
       <Card
         title={t(locale, "profile.history")}
         action={
-          <Link href="/rating" className="text-theme-sm text-brand-500 hover:underline">
+          <Link
+            href="/rating"
+            className="text-theme-sm rw-accent-ink hover:underline"
+          >
             {t(locale, "nav.ratingInfo")}
           </Link>
         }
@@ -96,27 +105,25 @@ export default async function ProfilePage({ params }: Props) {
           <TBody>
             {history.results.map((row, i) => (
               <TR key={`${row.created_at}-${i}`}>
-                <TD className="font-medium text-gray-800 dark:text-white/90">
-                  {row.rating_type}
-                </TD>
+                <TD className="font-medium rw-strong">{row.rating_type}</TD>
                 <TD align="right">
                   <span
                     className={
                       row.delta >= 0
-                        ? "font-semibold text-success-500"
-                        : "font-semibold text-error-500"
+                        ? "font-semibold rw-ok-ink"
+                        : "font-semibold rw-bad-ink"
                     }
                   >
                     {row.delta > 0 ? "+" : ""}
                     {row.delta}
                   </span>
                 </TD>
-                <TD className="text-gray-500 dark:text-gray-400">
+                <TD className="rw-dim">
                   {REASON_LABEL[row.reason] ?? row.reason}
                   {row.rank !== null && ` · ${row.rank}-o'rin`}
                   {row.ref_id && ` · ${row.ref_id}`}
                 </TD>
-                <TD align="right" className="text-gray-400">
+                <TD align="right" className="rw-faint">
                   {new Date(row.created_at).toLocaleDateString(locale)}
                 </TD>
               </TR>
@@ -134,8 +141,7 @@ export default async function ProfilePage({ params }: Props) {
             <Link
               key={p.slug}
               href={`/problems/${p.slug}`}
-              className="flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-1.5
-                text-theme-sm transition hover:border-brand-400 dark:border-[#232936]"
+              className="flex items-center gap-2 rw-radius-sm border rw-line px-3 py-1.5 text-theme-sm transition rw-hover-line"
               // Joriy va yechilgandagi qiyinlik farq qilsa — qayta baholangan
               title={
                 p.difficulty !== p.difficulty_at_solve
@@ -143,17 +149,17 @@ export default async function ProfilePage({ params }: Props) {
                   : undefined
               }
             >
-              <span className="text-gray-700 dark:text-gray-200">{p.title}</span>
+              <span className="rw-strong">{p.title}</span>
               <DifficultyBadge value={p.difficulty} />
               {p.difficulty !== p.difficulty_at_solve && (
-                <span className="text-warning-500" aria-hidden="true">
+                <span className="rw-warn-ink" aria-hidden="true">
                   *
                 </span>
               )}
             </Link>
           ))}
           {solved.results.length === 0 && (
-            <p className="text-theme-sm text-gray-400">{t(locale, "empty")}</p>
+            <p className="text-theme-sm rw-faint">{t(locale, "empty")}</p>
           )}
         </div>
       </Card>

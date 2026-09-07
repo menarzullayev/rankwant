@@ -6,7 +6,15 @@ import { Markdown } from "@/components/Markdown";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { EmptyRow, TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
+import {
+  EmptyRow,
+  TBody,
+  TD,
+  TH,
+  THead,
+  TR,
+  Table,
+} from "@/components/ui/Table";
 import { useSession } from "@/context/SessionContext";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
 import {
@@ -20,7 +28,7 @@ import {
 } from "@/lib/api";
 
 /** Jonli raund. Joriy savol serverdan har 2 s so'raladi — server vaqti
- *  haqiqat manbai (mijoz taymeri emas), standings SSE bilan. */
+ * haqiqat manbai (mijoz taymeri emas), standings SSE bilan. */
 export function ArenaPlayer({ initial }: { initial: ArenaDetail }) {
   const locale = DEFAULT_LOCALE;
   const { user, ready } = useSession();
@@ -62,7 +70,14 @@ export function ArenaPlayer({ initial }: { initial: ArenaDetail }) {
   useEffect(() => {
     if (!current) return;
     const h = setInterval(() => {
-      setLeft(Math.max(0, Math.round((new Date(current.deadline).getTime() - Date.now()) / 1000)));
+      setLeft(
+        Math.max(
+          0,
+          Math.round(
+            (new Date(current.deadline).getTime() - Date.now()) / 1000,
+          ),
+        ),
+      );
     }, 250);
     return () => clearInterval(h);
   }, [current]);
@@ -78,7 +93,9 @@ export function ArenaPlayer({ initial }: { initial: ArenaDetail }) {
         .catch(() => {});
     void fetchRows();
     try {
-      source = new EventSource(`${API_BASE}/arena/${arena.slug}/standings/stream/`);
+      source = new EventSource(
+        `${API_BASE}/arena/${arena.slug}/standings/stream/`,
+      );
       source.addEventListener("standings", (e) => {
         const d = JSON.parse((e as MessageEvent).data);
         setRows(d.results ?? []);
@@ -122,25 +139,40 @@ export function ArenaPlayer({ initial }: { initial: ArenaDetail }) {
   return (
     <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
       <div className="space-y-4">
-        {error && <p className="text-theme-sm text-error-500">{error}</p>}
-        {ready && !user && <Card><p className="text-theme-sm text-gray-400">{t(locale, "auth.login")} →</p></Card>}
+        {error && <p className="text-theme-sm rw-bad-ink">{error}</p>}
+        {ready && !user && (
+          <Card>
+            <p className="text-theme-sm rw-faint">
+              {t(locale, "auth.login")} →
+            </p>
+          </Card>
+        )}
         {user && !arena.joined && !arena.is_finished && (
-          <Card><Button onClick={join}>{t(locale, "arena.join")}</Button></Card>
+          <Card>
+            <Button onClick={join}>{t(locale, "arena.join")}</Button>
+          </Card>
         )}
         {user && arena.joined && !current && !arena.is_finished && (
           <Card>
             <Badge color="success">{t(locale, "arena.joined")}</Badge>
-            <p className="mt-2 text-theme-sm text-gray-400">
-              {t(locale, "arena.waiting")} — {new Date(arena.start_at).toLocaleTimeString(locale)}
+            <p className="mt-2 text-theme-sm rw-faint">
+              {t(locale, "arena.waiting")} —{" "}
+              {new Date(arena.start_at).toLocaleTimeString(locale)}
             </p>
           </Card>
         )}
-        {arena.is_finished && <Card><Badge>{t(locale, "arena.finished")}</Badge></Card>}
+        {arena.is_finished && (
+          <Card>
+            <Badge>{t(locale, "arena.finished")}</Badge>
+          </Card>
+        )}
         {current && (
           <Card
             title={`${current.index + 1} / ${arena.question_count}`}
             action={
-              <span className={`text-title-sm font-bold ${left <= 5 ? "text-error-500" : "text-brand-500"}`}>
+              <span
+                className={`text-title-sm font-bold ${left <= 5 ? "rw-bad-ink" : "rw-accent-ink"}`}
+              >
                 {left}s
               </span>
             }
@@ -153,15 +185,14 @@ export function ArenaPlayer({ initial }: { initial: ArenaDetail }) {
                   type="button"
                   disabled={current.answered}
                   onClick={() => answer(c.id)}
-                  className="rounded-lg border border-gray-200 px-4 py-2.5 text-left text-theme-sm
-                    transition hover:border-brand-400 disabled:opacity-60 dark:border-[#232936]"
+                  className="rw-radius-sm border rw-line px-4 py-2.5 text-left text-theme-sm transition rw-hover-line disabled:opacity-60"
                 >
                   {c.text}
                 </button>
               ))}
             </div>
             {current.answered && (
-              <p className="mt-3 text-theme-sm font-medium text-gray-500">
+              <p className="mt-3 text-theme-sm font-medium rw-dim">
                 {t(locale, "arena.answered")} {feedback}
               </p>
             )}
@@ -180,13 +211,17 @@ export function ArenaPlayer({ initial }: { initial: ArenaDetail }) {
           <TBody>
             {rows.map((r) => (
               <TR key={r.username}>
-                <TD className="text-gray-400">{r.rank}</TD>
+                <TD className="rw-faint">{r.rank}</TD>
                 <TD className="font-medium">{r.display_name || r.username}</TD>
-                <TD align="right" className="font-semibold">{r.score}</TD>
+                <TD align="right" className="font-semibold">
+                  {r.score}
+                </TD>
                 <TD align="right">{r.correct_count}</TD>
               </TR>
             ))}
-            {rows.length === 0 && <EmptyRow colSpan={4}>{t(locale, "empty")}</EmptyRow>}
+            {rows.length === 0 && (
+              <EmptyRow colSpan={4}>{t(locale, "empty")}</EmptyRow>
+            )}
           </TBody>
         </Table>
       </Card>

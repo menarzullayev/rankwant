@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 import { fetchMe, type UserPublic } from "@/lib/api";
 
@@ -16,13 +22,14 @@ const SessionContext = createContext<Session | undefined>(undefined);
 
 export function useSession() {
   const context = useContext(SessionContext);
-  if (!context) throw new Error("useSession SessionProvider ichida ishlatilishi kerak");
+  if (!context)
+    throw new Error("useSession SessionProvider ichida ishlatilishi kerak");
   return context;
 }
 
 /** Sessiya cookie'ga bog'liq, ya'ni serverda o'qib bo'lmaydi: sahifalar
- *  `force-dynamic` bo'lsa ham cookie SSR fetch'iga uzatilmaydi. Holat
- *  bu yerda saqlanadi, shunda kirgandan keyin header darhol yangilanadi. */
+ * `force-dynamic` bo'lsa ham cookie SSR fetch'iga uzatilmaydi. Holat
+ * bu yerda saqlanadi, shunda kirgandan keyin header darhol yangilanadi. */
 export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserPublic | null>(null);
   const [ready, setReady] = useState(false);

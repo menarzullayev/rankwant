@@ -102,9 +102,9 @@ function fmtDate(iso: string | null): string {
 
 /** Nashr holati tugmasi.
  *
- *  Jadvalni ham qayta yuklaydi: aks holda faqat tugma yangilanib, qator
- *  eski `is_published` bilan qolardi va keyingi «Tahrirlash» formasi shu
- *  eski qiymatni yuborib nashrni jimgina qaytarib qo'yardi. */
+ * Jadvalni ham qayta yuklaydi: aks holda faqat tugma yangilanib, qator
+ * eski `is_published` bilan qolardi va keyingi «Tahrirlash» formasi shu
+ * eski qiymatni yuborib nashrni jimgina qaytarib qo'yardi. */
 function PublishToggle({ post, reload }: { post: Post; reload?: () => void }) {
   const [published, setPublished] = useState(post.is_published);
   const [busy, setBusy] = useState(false);
@@ -157,7 +157,11 @@ const COLUMNS: ColumnDef<Post>[] = [
     label: "Holat",
     // key: holat formadan o'zgarsa tugma qayta o'rnatiladi
     render: (p, reload) => (
-      <PublishToggle key={`${p.slug}-${p.is_published}`} post={p} reload={reload} />
+      <PublishToggle
+        key={`${p.slug}-${p.is_published}`}
+        post={p}
+        reload={reload}
+      />
     ),
   },
   {

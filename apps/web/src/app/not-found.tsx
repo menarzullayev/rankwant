@@ -8,7 +8,9 @@ export default function NotFound() {
       <p className="text-5xl font-bold" style={{ color: "var(--muted)" }}>
         404
       </p>
-      <h1 className="mt-4 text-xl font-medium">{t(locale, "notFound.title")}</h1>
+      <h1 className="mt-4 text-xl font-medium">
+        {t(locale, "notFound.title")}
+      </h1>
       <p className="mt-2 text-sm" style={{ color: "var(--muted)" }}>
         {t(locale, "notFound.body")}
       </p>

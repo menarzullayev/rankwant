@@ -13,12 +13,12 @@ export default async function DuelsPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
+        <h1 className="text-title-sm font-bold rw-strong">
           {t(locale, "nav.duels")}
         </h1>
-        <p className="mt-2 max-w-2xl text-theme-sm text-gray-500 dark:text-gray-400">
-          Chaqiriq tashlang, kimdir qabul qiladi, belgilangan vaqtda bir xil masalalarni yechasiz.
-          G&apos;olib Challenges reytingida Elo oladi.
+        <p className="mt-2 max-w-2xl text-theme-sm rw-dim">
+          Chaqiriq tashlang, kimdir qabul qiladi, belgilangan vaqtda bir xil
+          masalalarni yechasiz. G&apos;olib Challenges reytingida Elo oladi.
         </p>
       </header>
       <DuelActions waiting={waiting.results} />

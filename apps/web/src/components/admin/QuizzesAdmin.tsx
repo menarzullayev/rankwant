@@ -152,24 +152,22 @@ function QuestionsPanel({ quiz, reload }: { quiz: Quiz; reload: () => void }) {
 
   const dirty = ids.join(",") !== quiz.questions.join(",");
   const iconBtn =
-    "rounded px-1.5 text-theme-xs text-gray-500 hover:bg-gray-100 disabled:opacity-30 dark:hover:bg-white/10";
+    "rounded px-1.5 text-theme-xs rw-dim rw-hover-bg disabled:opacity-30 dark:hover:bg-white/10";
 
   return (
     <div className="space-y-3">
-      <p className="text-theme-xs font-medium text-gray-500 uppercase dark:text-gray-400">
+      <p className="text-theme-xs font-medium rw-dim uppercase">
         Savollar ({ids.length})
       </p>
       {ids.length === 0 ? (
-        <p className="text-theme-sm text-gray-400">
-          {t(locale, "admin.noRows")}
-        </p>
+        <p className="text-theme-sm rw-faint">{t(locale, "admin.noRows")}</p>
       ) : (
         <ol className="space-y-1">
           {ids.map((id, i) => (
             <li key={id} className="flex items-center gap-2 text-theme-sm">
-              <span className="w-6 text-right text-gray-400">{i + 1}.</span>
-              <span className="font-mono text-gray-500">#{id}</span>
-              <span className="min-w-0 flex-1 truncate text-gray-700 dark:text-gray-300">
+              <span className="w-6 text-right rw-faint">{i + 1}.</span>
+              <span className="font-mono rw-dim">#{id}</span>
+              <span className="min-w-0 flex-1 truncate rw-strong">
                 {texts[id] ?? "…"}
               </span>
               <button
@@ -193,7 +191,7 @@ function QuestionsPanel({ quiz, reload }: { quiz: Quiz; reload: () => void }) {
               <button
                 type="button"
                 onClick={() => setIds(ids.filter((x) => x !== id))}
-                className={`${iconBtn} text-error-500`}
+                className={`${iconBtn} rw-bad-ink`}
                 title="Olib tashlash"
               >
                 ✕
@@ -214,7 +212,7 @@ function QuestionsPanel({ quiz, reload }: { quiz: Quiz; reload: () => void }) {
           }}
           inputMode="numeric"
           placeholder="Savol ID"
-          className="h-9 w-32 rounded-lg border border-gray-200 bg-white px-3 text-theme-sm outline-none focus:border-brand-400 dark:border-[#232936] dark:bg-[#0b0d12] dark:text-white/90"
+          className="h-9 w-32 rw-radius-sm border rw-line rw-surface px-3 text-theme-sm outline-none rw-focus-line rw-field-bg"
         />
         <Button
           type="button"
@@ -232,8 +230,8 @@ function QuestionsPanel({ quiz, reload }: { quiz: Quiz; reload: () => void }) {
         >
           {t(locale, "admin.save")}
         </Button>
-        {msg && <span className="text-theme-xs text-success-600">{msg}</span>}
-        {error && <span className="text-theme-xs text-error-500">{error}</span>}
+        {msg && <span className="text-theme-xs rw-ok-ink">{msg}</span>}
+        {error && <span className="text-theme-xs rw-bad-ink">{error}</span>}
       </div>
     </div>
   );

@@ -35,8 +35,8 @@ type StaffUser = {
 const PATH = "/staff/users/";
 
 const INPUT =
-  "h-10 w-full rounded-lg border border-gray-200 bg-white px-3 text-theme-sm outline-none " +
-  "focus:border-brand-400 dark:border-[#232936] dark:bg-[#0b0d12] dark:text-white/90";
+  "h-10 w-full rw-radius-sm border rw-line rw-surface px-3 text-theme-sm outline-none " +
+  "rw-focus-line rw-field-bg ";
 
 const COLUMNS: ColumnDef<StaffUser>[] = [
   { key: "username", label: "Login" },
@@ -74,7 +74,7 @@ const COLUMNS: ColumnDef<StaffUser>[] = [
       ) : u.is_staff ? (
         <Badge color="info">xodim</Badge>
       ) : (
-        <span className="text-gray-400">—</span>
+        <span className="rw-faint">—</span>
       ),
   },
   {
@@ -123,16 +123,8 @@ function useAction() {
   }
   const status = (
     <>
-      {msg && (
-        <p className="text-theme-xs text-success-600 dark:text-success-400">
-          {msg}
-        </p>
-      )}
-      {err && (
-        <p className="text-theme-xs text-error-600 dark:text-error-400">
-          {err}
-        </p>
-      )}
+      {msg && <p className="text-theme-xs rw-ok-ink">{msg}</p>}
+      {err && <p className="text-theme-xs rw-bad-ink">{err}</p>}
     </>
   );
   return { busy, run, status };
@@ -161,9 +153,9 @@ function QvantForm({ user, reload }: { user: StaffUser; reload: () => void }) {
 
   return (
     <form onSubmit={submit} className="space-y-2">
-      <p className="text-theme-sm font-medium text-gray-700 dark:text-gray-300">
+      <p className="text-theme-sm font-medium rw-strong">
         Qvant tuzatish{" "}
-        <span className="font-normal text-gray-400">
+        <span className="font-normal rw-faint">
           (balans: {user.qvant_balance ?? 0})
         </span>
       </p>
@@ -211,9 +203,7 @@ function NotifyForm({ user }: { user: StaffUser }) {
 
   return (
     <form onSubmit={submit} className="space-y-2">
-      <p className="text-theme-sm font-medium text-gray-700 dark:text-gray-300">
-        Bildirishnoma
-      </p>
+      <p className="text-theme-sm font-medium rw-strong">Bildirishnoma</p>
       <input
         name="title"
         required

@@ -13,7 +13,7 @@ export default function AdminIndex() {
       {ADMIN_SECTIONS.map((s) => (
         <Link key={s.href} href={s.href}>
           <Card>
-            <p className="font-semibold text-gray-800 dark:text-white/90">{s.label}</p>
+            <p className="font-semibold rw-strong">{s.label}</p>
           </Card>
         </Link>
       ))}

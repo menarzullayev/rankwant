@@ -33,15 +33,26 @@ export default async function HackathonPage({ params }: Props) {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">{h.title}</h1>
-        <div className="mt-2 flex flex-wrap items-center gap-2 text-theme-xs text-gray-400">
+        <h1 className="text-title-sm font-bold rw-strong">{h.title}</h1>
+        <div className="mt-2 flex flex-wrap items-center gap-2 text-theme-xs rw-faint">
           <Badge color={h.accepts_submissions ? "success" : "neutral"}>
-            {h.accepts_submissions ? t(locale, "contests.running") : h.is_finished ? t(locale, "contests.finished") : t(locale, "contests.upcoming")}
+            {h.accepts_submissions
+              ? t(locale, "contests.running")
+              : h.is_finished
+                ? t(locale, "contests.finished")
+                : t(locale, "contests.upcoming")}
           </Badge>
-          <span>{t(locale, "hackathon.deadline")}: {new Date(h.submission_deadline).toLocaleString(locale)}</span>
+          <span>
+            {t(locale, "hackathon.deadline")}:{" "}
+            {new Date(h.submission_deadline).toLocaleString(locale)}
+          </span>
         </div>
       </header>
-      {h.description && <Card><Markdown>{h.description}</Markdown></Card>}
+      {h.description && (
+        <Card>
+          <Markdown>{h.description}</Markdown>
+        </Card>
+      )}
       <HackathonEntries hackathon={h} />
     </div>
   );

@@ -11,7 +11,7 @@ export default function LoginPage() {
     <div className="mx-auto max-w-md py-10">
       <div className="mb-6 text-center">
         <p className="text-2xl font-bold">
-          Rank<span className="text-brand-500">Want</span>
+          Rank<span className="rw-accent-ink">Want</span>
         </p>
       </div>
       <Card title={t(DEFAULT_LOCALE, "auth.login")}>

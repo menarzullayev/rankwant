@@ -14,7 +14,7 @@ export default async function BlogPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-title-sm font-bold text-gray-800 dark:text-white/90">
+      <h1 className="text-title-sm font-bold rw-strong">
         {t(locale, "blog.title")}
       </h1>
       <ul className="grid gap-4 md:grid-cols-2">
@@ -26,7 +26,9 @@ export default async function BlogPage() {
               summary={post.summary}
               meta={
                 <>
-                  <span>{new Date(post.published_at).toLocaleDateString(locale)}</span>
+                  <span>
+                    {new Date(post.published_at).toLocaleDateString(locale)}
+                  </span>
                   {post.author && <Badge>{post.author}</Badge>}
                 </>
               }
@@ -34,7 +36,9 @@ export default async function BlogPage() {
           </li>
         ))}
       </ul>
-      {data.count === 0 && <p className="text-theme-sm text-gray-400">{t(locale, "empty")}</p>}
+      {data.count === 0 && (
+        <p className="text-theme-sm rw-faint">{t(locale, "empty")}</p>
+      )}
     </div>
   );
 }

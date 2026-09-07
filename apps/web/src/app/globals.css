@@ -86,65 +86,650 @@
 
 /* Mavjud CSS o'zgaruvchilari — inline style bilan yozilgan sahifalar
    hali ularga tayanadi, shuning uchun saqlanadi va tema bilan almashadi. */
-:root {
-  --bg: #f9fafb;
-  --surface: #ffffff;
-  --border: #e4e7ec;
-  --text: #101828;
-  --muted: #667085;
-  --accent: #4470e6;
+
+/* ═══════════════════════════════════════════════════════════════════
+   USLUB TIZIMI
+   Har sirt shu tokenlardan oladi, `dark:bg-[#141821]` kabi qotib
+   qolgan ranglardan emas — shuning uchun `<html data-style>` ni
+   almashtirish butun saytni qayta bo'yaydi.
+
+   Uslub tanlovi: src/context/StyleContext.tsx · picker header'da.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root,
+[data-style="dashboard"] {
+  --rw-ground: #f9fafb;
+  --rw-surface: #ffffff;
+  --rw-surface-2: #f2f4f7;
+  --rw-line: #e4e7ec;
+  --rw-line-w: 1px;
+  --rw-radius: 16px;
+  --rw-radius-sm: 8px;
+  --rw-shadow: 0 1px 2px rgba(16, 24, 40, .05);
+  --rw-text: #1d2939;
+  --rw-text-2: #475467;
+  --rw-muted: #667085;
+  --rw-faint: #98a2b3;
+  --rw-accent: #5b8cff;
+  --rw-accent-fg: #ffffff;
+  --rw-accent-ink: #4470e6;
+  --rw-accent-soft: #eef3ff;
+  --rw-ok-ink: #039855;   --rw-ok-soft: #ecfdf3;
+  --rw-warn-ink: #b54708; --rw-warn-soft: #fffaeb;
+  --rw-bad-ink: #d92d20;  --rw-bad-soft: #fef3f2;
+  --rw-chip: #f2f4f7;
+  --rw-hover: #f9fafb;
+  --rw-field: #ffffff;
+  --rw-font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --rw-font-display: var(--rw-font);
+  --rw-font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --rw-btn-radius: var(--rw-radius-sm);
+  --rw-btn-shadow: none;
+  --rw-btn-weight: 500;
+  --rw-heading-weight: 600;
+  --rw-tracking: -.01em;
+  --rw-uppercase: none;
+  --rw-level-1: #667085; --rw-level-2: #039855; --rw-level-3: #2570eb;
+  --rw-level-4: #9a4bd8; --rw-level-5: #d92d20;
+}
+[data-style="dashboard"].dark {
+  --rw-ground: #0b0d12;
+  --rw-surface: #141821;
+  --rw-surface-2: #1b202b;
+  --rw-line: #232936;
+  --rw-text: #e6e9ef;
+  --rw-text-2: #b9c2d0;
+  --rw-muted: #8b94a7;
+  --rw-faint: #6b7484;
+  --rw-accent: #5b8cff;
+  --rw-accent-ink: #7ea4ff;
+  --rw-accent-soft: rgba(91, 140, 255, .12);
+  --rw-ok-ink: #4ade80;   --rw-ok-soft: rgba(74, 222, 128, .12);
+  --rw-warn-ink: #fdb022; --rw-warn-soft: rgba(253, 176, 34, .12);
+  --rw-bad-ink: #f87171;  --rw-bad-soft: rgba(248, 113, 113, .12);
+  --rw-chip: rgba(255, 255, 255, .05);
+  --rw-hover: rgba(255, 255, 255, .03);
+  --rw-field: #0b0d12;
+  --rw-level-1: #9aa4b8; --rw-level-2: #4ade80; --rw-level-3: #60a5fa;
+  --rw-level-4: #c084fc; --rw-level-5: #f87171;
 }
 
-.dark {
-  --bg: #0b0d12;
-  --surface: #141821;
-  --border: #232936;
-  --text: #e6e9ef;
-  --muted: #8b94a7;
-  --accent: #5b8cff;
+/* ── Shveycha: to'r, chiziq, bo'shliq. Karta yo'q. ── */
+[data-style="swiss"] {
+  --rw-ground: #fbfbfa;
+  --rw-surface: #ffffff;
+  --rw-surface-2: #f2f2f0;
+  --rw-line: #111111;
+  --rw-line-w: 1px;
+  --rw-radius: 0px;
+  --rw-radius-sm: 0px;
+  --rw-shadow: none;
+  --rw-text: #111111;
+  --rw-text-2: #3d3d3d;
+  --rw-muted: #6a6a6a;
+  --rw-faint: #9a9a9a;
+  --rw-accent: #1b3a6b;
+  --rw-accent-fg: #ffffff;
+  --rw-accent-ink: #1b3a6b;
+  --rw-accent-soft: #eaeff7;
+  --rw-ok-ink: #1f6b45;   --rw-ok-soft: #eef6f1;
+  --rw-warn-ink: #8a5a00; --rw-warn-soft: #fbf5e8;
+  --rw-bad-ink: #a3241d;  --rw-bad-soft: #faeeed;
+  --rw-chip: #f2f2f0;
+  --rw-hover: #f2f2f0;
+  --rw-field: #ffffff;
+  --rw-btn-radius: 0px;
+  --rw-btn-weight: 500;
+  --rw-heading-weight: 500;
+  --rw-tracking: -.02em;
+  --rw-uppercase: uppercase;
+  --rw-level-1: #6a6a6a; --rw-level-2: #1f6b45; --rw-level-3: #1b3a6b;
+  --rw-level-4: #5c3a86; --rw-level-5: #a3241d;
+}
+[data-style="swiss"].dark {
+  --rw-ground: #0e0e0d;
+  --rw-surface: #141413;
+  --rw-surface-2: #1c1c1a;
+  --rw-line: #e8e8e5;
+  --rw-text: #f2f2ef;
+  --rw-text-2: #c9c9c4;
+  --rw-muted: #97978f;
+  --rw-faint: #6e6e68;
+  --rw-accent: #9db8e8;
+  --rw-accent-fg: #0e0e0d;
+  --rw-accent-ink: #9db8e8;
+  --rw-accent-soft: #1a2130;
+  --rw-chip: #1c1c1a;
+  --rw-hover: #1c1c1a;
+  --rw-field: #0e0e0d;
+}
+
+/* ── Terminal: monospace, ustunlar, ikki-uch rang. ── */
+[data-style="terminal"] {
+  --rw-ground: #05070a;
+  --rw-surface: #080b10;
+  --rw-surface-2: #0c1016;
+  --rw-line: #1f6f43;
+  --rw-line-w: 1px;
+  --rw-radius: 0px;
+  --rw-radius-sm: 0px;
+  --rw-shadow: none;
+  --rw-text: #7dfaa8;
+  --rw-text-2: #46d67f;
+  --rw-muted: #2f8f57;
+  --rw-faint: #256b43;
+  --rw-accent: #46d67f;
+  --rw-accent-fg: #05070a;
+  --rw-accent-ink: #7dfaa8;
+  --rw-accent-soft: rgba(70, 214, 127, .12);
+  --rw-ok-ink: #7dfaa8;   --rw-ok-soft: rgba(125, 250, 168, .12);
+  --rw-warn-ink: #e5c76b; --rw-warn-soft: rgba(229, 199, 107, .12);
+  --rw-bad-ink: #ff6b6b;  --rw-bad-soft: rgba(255, 107, 107, .12);
+  --rw-chip: rgba(70, 214, 127, .08);
+  --rw-hover: rgba(70, 214, 127, .07);
+  --rw-field: #05070a;
+  --rw-font: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --rw-font-display: var(--rw-font);
+  --rw-btn-radius: 0px;
+  --rw-btn-weight: 500;
+  --rw-heading-weight: 500;
+  --rw-tracking: 0;
+  --rw-level-1: #2f8f57; --rw-level-2: #46d67f; --rw-level-3: #6bd5e5;
+  --rw-level-4: #c99bff; --rw-level-5: #ff6b6b;
+}
+
+/* ── Editorial: serif, bo'shliq, chiziq. ── */
+[data-style="editorial"] {
+  --rw-ground: #ffffff;
+  --rw-surface: #ffffff;
+  --rw-surface-2: #f6f5f2;
+  --rw-line: #14181f;
+  --rw-line-w: 1px;
+  --rw-radius: 0px;
+  --rw-radius-sm: 0px;
+  --rw-shadow: none;
+  --rw-text: #14181f;
+  --rw-text-2: #3c4350;
+  --rw-muted: #5a6172;
+  --rw-faint: #8b91a0;
+  --rw-accent: #1b3a6b;
+  --rw-accent-fg: #ffffff;
+  --rw-accent-ink: #1b3a6b;
+  --rw-accent-soft: #eef1f7;
+  --rw-ok-ink: #1f6b45;   --rw-ok-soft: #eef6f1;
+  --rw-warn-ink: #8a5a00; --rw-warn-soft: #fbf5e8;
+  --rw-bad-ink: #9c2c24;  --rw-bad-soft: #f9eeed;
+  --rw-chip: #f6f5f2;
+  --rw-hover: #f6f5f2;
+  --rw-field: #ffffff;
+  --rw-font: "IBM Plex Serif", Georgia, "Times New Roman", serif;
+  --rw-font-display: var(--rw-font);
+  --rw-btn-radius: 0px;
+  --rw-btn-weight: 400;
+  --rw-heading-weight: 400;
+  --rw-tracking: -.015em;
+  --rw-level-1: #5a6172; --rw-level-2: #1f6b45; --rw-level-3: #1b3a6b;
+  --rw-level-4: #5c3a86; --rw-level-5: #9c2c24;
+}
+[data-style="editorial"].dark {
+  --rw-ground: #12100e;
+  --rw-surface: #171512;
+  --rw-surface-2: #201d19;
+  --rw-line: #e8e3da;
+  --rw-text: #f2eee7;
+  --rw-text-2: #cec8bd;
+  --rw-muted: #9c968a;
+  --rw-faint: #6f6a60;
+  --rw-accent: #b9cdf0;
+  --rw-accent-fg: #12100e;
+  --rw-accent-ink: #b9cdf0;
+  --rw-accent-soft: #1b2331;
+  --rw-chip: #201d19;
+  --rw-hover: #201d19;
+  --rw-field: #12100e;
+}
+
+/* ── Neo-brutalizm: qalin chegara, siljigan qattiq soya. ── */
+[data-style="brutal"] {
+  --rw-ground: #f5e900;
+  --rw-surface: #ffffff;
+  --rw-surface-2: #f0f0f0;
+  --rw-line: #000000;
+  --rw-line-w: 3px;
+  --rw-radius: 0px;
+  --rw-radius-sm: 0px;
+  --rw-shadow: 6px 6px 0 #000000;
+  --rw-text: #000000;
+  --rw-text-2: #1a1a1a;
+  --rw-muted: #333333;
+  --rw-faint: #555555;
+  --rw-accent: #ff5c00;
+  --rw-accent-fg: #000000;
+  --rw-accent-ink: #0a58c4;
+  --rw-accent-soft: #00d4ff;
+  --rw-ok-ink: #056d3a;   --rw-ok-soft: #7bf7a8;
+  --rw-warn-ink: #6b4400; --rw-warn-soft: #ffd166;
+  --rw-bad-ink: #9c0000;  --rw-bad-soft: #ff9d9d;
+  --rw-chip: #00d4ff;
+  --rw-hover: #f0f0f0;
+  --rw-field: #ffffff;
+  --rw-btn-radius: 0px;
+  --rw-btn-shadow: 4px 4px 0 #000000;
+  --rw-btn-weight: 700;
+  --rw-heading-weight: 700;
+  --rw-tracking: -.03em;
+  --rw-uppercase: uppercase;
+  --rw-level-1: #333333; --rw-level-2: #056d3a; --rw-level-3: #0a58c4;
+  --rw-level-4: #7b1fa2; --rw-level-5: #9c0000;
+}
+[data-style="brutal"].dark {
+  --rw-ground: #12121a;
+  --rw-surface: #1c1c26;
+  --rw-surface-2: #24242f;
+  --rw-line: #f5e900;
+  --rw-shadow: 6px 6px 0 #f5e900;
+  --rw-text: #f5f5f5;
+  --rw-text-2: #dcdcdc;
+  --rw-muted: #b0b0b0;
+  --rw-faint: #8a8a8a;
+  --rw-accent: #ff5c00;
+  --rw-accent-fg: #12121a;
+  --rw-accent-ink: #00d4ff;
+  --rw-accent-soft: #003b4d;
+  --rw-chip: #003b4d;
+  --rw-hover: #24242f;
+  --rw-field: #12121a;
+  --rw-btn-shadow: 4px 4px 0 #f5e900;
+}
+
+/* ── Flat: soya ham, gradient ham yo'q. ── */
+[data-style="flat"] {
+  --rw-ground: #ecf0f1;
+  --rw-surface: #ffffff;
+  --rw-surface-2: #e4e9ea;
+  --rw-line: #d3dadb;
+  --rw-line-w: 1px;
+  --rw-radius: 0px;
+  --rw-radius-sm: 0px;
+  --rw-shadow: none;
+  --rw-text: #2c3e50;
+  --rw-text-2: #46596b;
+  --rw-muted: #7f8c8d;
+  --rw-faint: #a3adae;
+  --rw-accent: #e74c3c;
+  --rw-accent-fg: #ffffff;
+  --rw-accent-ink: #c0392b;
+  --rw-accent-soft: #fdecea;
+  --rw-ok-ink: #16a085;   --rw-ok-soft: #e6f6f3;
+  --rw-warn-ink: #d68910; --rw-warn-soft: #fdf3e3;
+  --rw-bad-ink: #c0392b;  --rw-bad-soft: #fdecea;
+  --rw-chip: #e4e9ea;
+  --rw-hover: #e4e9ea;
+  --rw-field: #ffffff;
+  --rw-btn-radius: 0px;
+  --rw-btn-weight: 600;
+  --rw-heading-weight: 600;
+  --rw-tracking: 0;
+  --rw-level-1: #7f8c8d; --rw-level-2: #16a085; --rw-level-3: #2980b9;
+  --rw-level-4: #8e44ad; --rw-level-5: #c0392b;
+}
+[data-style="flat"].dark {
+  --rw-ground: #22313f;
+  --rw-surface: #2c3e50;
+  --rw-surface-2: #34495e;
+  --rw-line: #3d5266;
+  --rw-text: #ecf0f1;
+  --rw-text-2: #cdd6d8;
+  --rw-muted: #95a5a6;
+  --rw-faint: #7a8a8b;
+  --rw-accent-ink: #ff7f6e;
+  --rw-accent-soft: #4a2b26;
+  --rw-chip: #34495e;
+  --rw-hover: #34495e;
+  --rw-field: #22313f;
+}
+
+/* ── Material: balandlik va siyoh. ── */
+[data-style="material"] {
+  --rw-ground: #eceff1;
+  --rw-surface: #ffffff;
+  --rw-surface-2: #f5f5f5;
+  --rw-line: #e0e0e0;
+  --rw-line-w: 0px;
+  --rw-radius: 4px;
+  --rw-radius-sm: 4px;
+  --rw-shadow: 0 1px 3px rgba(0, 0, 0, .16), 0 3px 8px rgba(0, 0, 0, .10);
+  --rw-text: #212121;
+  --rw-text-2: #424242;
+  --rw-muted: #757575;
+  --rw-faint: #9e9e9e;
+  --rw-accent: #6200ee;
+  --rw-accent-fg: #ffffff;
+  --rw-accent-ink: #6200ee;
+  --rw-accent-soft: #ede7fb;
+  --rw-ok-ink: #2e7d32;   --rw-ok-soft: #e8f5e9;
+  --rw-warn-ink: #ef6c00; --rw-warn-soft: #fff3e0;
+  --rw-bad-ink: #c62828;  --rw-bad-soft: #ffebee;
+  --rw-chip: #f5f5f5;
+  --rw-hover: #f5f5f5;
+  --rw-field: #ffffff;
+  --rw-btn-radius: 4px;
+  --rw-btn-shadow: 0 1px 3px rgba(98, 0, 238, .4);
+  --rw-btn-weight: 500;
+  --rw-heading-weight: 500;
+  --rw-tracking: 0;
+  --rw-uppercase: uppercase;
+  --rw-level-1: #757575; --rw-level-2: #2e7d32; --rw-level-3: #1565c0;
+  --rw-level-4: #6a1b9a; --rw-level-5: #c62828;
+}
+[data-style="material"].dark {
+  --rw-ground: #121212;
+  --rw-surface: #1e1e1e;
+  --rw-surface-2: #2a2a2a;
+  --rw-line: #2f2f2f;
+  --rw-shadow: 0 1px 3px rgba(0, 0, 0, .5), 0 3px 8px rgba(0, 0, 0, .4);
+  --rw-text: #e8e8e8;
+  --rw-text-2: #c7c7c7;
+  --rw-muted: #9e9e9e;
+  --rw-faint: #7a7a7a;
+  --rw-accent: #bb86fc;
+  --rw-accent-fg: #1e1e1e;
+  --rw-accent-ink: #bb86fc;
+  --rw-accent-soft: #2b1f3d;
+  --rw-chip: #2a2a2a;
+  --rw-hover: #2a2a2a;
+  --rw-field: #121212;
+  --rw-btn-shadow: 0 1px 3px rgba(187, 134, 252, .4);
+}
+
+/* ── Glassmorphism: muzlatilgan oyna, rangli fon shart. ── */
+[data-style="glass"] {
+  --rw-ground: linear-gradient(135deg, #6a3ec7 0%, #2b6fd6 55%, #17a2a2 100%) fixed;
+  --rw-surface: rgba(255, 255, 255, .14);
+  --rw-surface-2: rgba(255, 255, 255, .22);
+  --rw-line: rgba(255, 255, 255, .3);
+  --rw-line-w: 1px;
+  --rw-radius: 16px;
+  --rw-radius-sm: 10px;
+  --rw-shadow: 0 8px 32px rgba(0, 0, 0, .2);
+  --rw-text: #ffffff;
+  --rw-text-2: rgba(255, 255, 255, .88);
+  --rw-muted: rgba(255, 255, 255, .72);
+  --rw-faint: rgba(255, 255, 255, .55);
+  --rw-accent: rgba(255, 255, 255, .92);
+  --rw-accent-fg: #24306b;
+  --rw-accent-ink: #ffffff;
+  --rw-accent-soft: rgba(255, 255, 255, .2);
+  --rw-ok-ink: #9dffc7;   --rw-ok-soft: rgba(157, 255, 199, .18);
+  --rw-warn-ink: #ffe08a; --rw-warn-soft: rgba(255, 224, 138, .18);
+  --rw-bad-ink: #ffb3ad;  --rw-bad-soft: rgba(255, 179, 173, .18);
+  --rw-chip: rgba(255, 255, 255, .18);
+  --rw-hover: rgba(255, 255, 255, .1);
+  --rw-field: rgba(255, 255, 255, .14);
+  --rw-btn-radius: 10px;
+  --rw-btn-weight: 600;
+  --rw-heading-weight: 600;
+  --rw-tracking: -.01em;
+  --rw-blur: blur(14px) saturate(150%);
+  --rw-chrome: rgba(26, 18, 62, .38);
+  --rw-level-1: rgba(255,255,255,.7); --rw-level-2: #9dffc7; --rw-level-3: #a8d8ff;
+  --rw-level-4: #e0b3ff; --rw-level-5: #ffb3ad;
+}
+
+/* ── Neumorphism: fondan bo'rtib chiqqan. ── */
+[data-style="neu"] {
+  --rw-ground: #e2e6ee;
+  --rw-surface: #e2e6ee;
+  --rw-surface-2: #e2e6ee;
+  --rw-line: transparent;
+  --rw-line-w: 0px;
+  --rw-radius: 20px;
+  --rw-radius-sm: 12px;
+  --rw-shadow: 7px 7px 15px #c3c7cf, -7px -7px 15px #ffffff;
+  --rw-text: #4a5262;
+  --rw-text-2: #5c6577;
+  --rw-muted: #8b93a5;
+  --rw-faint: #a4abba;
+  --rw-accent: #5b7cc9;
+  --rw-accent-fg: #ffffff;
+  --rw-accent-ink: #4a68b0;
+  --rw-accent-soft: #d8dfee;
+  --rw-ok-ink: #2f8f6a;   --rw-ok-soft: #d8ece5;
+  --rw-warn-ink: #a0741f; --rw-warn-soft: #eee5d0;
+  --rw-bad-ink: #b4514c;  --rw-bad-soft: #eedcdb;
+  --rw-chip: #e2e6ee;
+  --rw-hover: #dce0e8;
+  --rw-field: #e2e6ee;
+  --rw-btn-radius: 12px;
+  --rw-btn-shadow: 5px 5px 10px #c3c7cf, -5px -5px 10px #ffffff;
+  --rw-btn-weight: 600;
+  --rw-heading-weight: 600;
+  --rw-tracking: -.01em;
+  --rw-level-1: #8b93a5; --rw-level-2: #2f8f6a; --rw-level-3: #4a68b0;
+  --rw-level-4: #8264ad; --rw-level-5: #b4514c;
+}
+
+/* ── Claymorphism: yumshoq plastilin. ── */
+[data-style="clay"] {
+  --rw-ground: #ede4ff;
+  --rw-surface: #fbf7ff;
+  --rw-surface-2: #f2ebff;
+  --rw-line: transparent;
+  --rw-line-w: 0px;
+  --rw-radius: 26px;
+  --rw-radius-sm: 16px;
+  --rw-shadow: 0 14px 28px rgba(120, 80, 200, .22),
+               inset 0 -6px 12px rgba(160, 120, 235, .18),
+               inset 0 6px 10px rgba(255, 255, 255, .9);
+  --rw-text: #4a2d75;
+  --rw-text-2: #5f3f8c;
+  --rw-muted: #8a76ab;
+  --rw-faint: #a99ac4;
+  --rw-accent: #8b5cf6;
+  --rw-accent-fg: #ffffff;
+  --rw-accent-ink: #7c3aed;
+  --rw-accent-soft: #ede4ff;
+  --rw-ok-ink: #2f9e6d;   --rw-ok-soft: #d9f7ea;
+  --rw-warn-ink: #c08a1e; --rw-warn-soft: #fdf1d6;
+  --rw-bad-ink: #d1547f;  --rw-bad-soft: #ffd8ea;
+  --rw-chip: #ffd8ea;
+  --rw-hover: #f2ebff;
+  --rw-field: #fbf7ff;
+  --rw-btn-radius: 16px;
+  --rw-btn-shadow: 0 8px 16px rgba(139, 92, 246, .4),
+                   inset 0 -4px 8px rgba(90, 40, 180, .3),
+                   inset 0 3px 6px rgba(255, 255, 255, .35);
+  --rw-btn-weight: 700;
+  --rw-heading-weight: 700;
+  --rw-tracking: -.01em;
+  --rw-level-1: #8a76ab; --rw-level-2: #2f9e6d; --rw-level-3: #4f7fe0;
+  --rw-level-4: #8b5cf6; --rw-level-5: #d1547f;
+}
+
+/* ── Aurora: qorong'u fonda xiralashgan rangli dog'lar. ── */
+[data-style="aurora"] {
+  --rw-ground: #07070f;
+  --rw-surface: rgba(18, 18, 32, .74);
+  --rw-surface-2: rgba(28, 28, 48, .8);
+  --rw-line: rgba(160, 130, 255, .22);
+  --rw-line-w: 1px;
+  --rw-radius: 16px;
+  --rw-radius-sm: 10px;
+  --rw-shadow: 0 8px 30px rgba(0, 0, 0, .45);
+  --rw-text: #f2f0ff;
+  --rw-text-2: #cfc9ea;
+  --rw-muted: #9a94b8;
+  --rw-faint: #746e92;
+  --rw-accent: #7b2ff7;
+  --rw-accent-fg: #ffffff;
+  --rw-accent-ink: #c9a8ff;
+  --rw-accent-soft: rgba(123, 47, 247, .22);
+  --rw-ok-ink: #4fe0bd;   --rw-ok-soft: rgba(0, 194, 168, .16);
+  --rw-warn-ink: #ffcf72; --rw-warn-soft: rgba(255, 207, 114, .14);
+  --rw-bad-ink: #ff8095;  --rw-bad-soft: rgba(255, 128, 149, .14);
+  --rw-chip: rgba(123, 47, 247, .18);
+  --rw-hover: rgba(255, 255, 255, .05);
+  --rw-field: rgba(10, 10, 22, .7);
+  --rw-btn-radius: 10px;
+  --rw-btn-weight: 600;
+  --rw-heading-weight: 600;
+  --rw-tracking: -.015em;
+  --rw-blur: blur(10px);
+  --rw-level-1: #9a94b8; --rw-level-2: #4fe0bd; --rw-level-3: #7fb0ff;
+  --rw-level-4: #c9a8ff; --rw-level-5: #ff8095;
+}
+
+/* ── Skeuomorfizm: materialga taqlid. ── */
+[data-style="skeu"] {
+  --rw-ground: #b7bfc9;
+  --rw-surface: linear-gradient(#fdfdfd, #dfe3e8);
+  --rw-surface-2: linear-gradient(#f0f2f5, #d5dae0);
+  --rw-line: #9aa3ae;
+  --rw-line-w: 1px;
+  --rw-radius: 9px;
+  --rw-radius-sm: 6px;
+  --rw-shadow: inset 0 1px 0 #ffffff, 0 3px 6px rgba(0, 0, 0, .34);
+  --rw-text: #303840;
+  --rw-text-2: #4a535c;
+  --rw-muted: #6a737e;
+  --rw-faint: #8a939e;
+  --rw-accent: linear-gradient(#6fa84f, #4a7c30);
+  --rw-accent-fg: #ffffff;
+  --rw-accent-ink: #3a6ba8;
+  --rw-accent-soft: linear-gradient(#dfe8f5, #c7d5e8);
+  --rw-ok-ink: #3d6b28;   --rw-ok-soft: linear-gradient(#e2f0d9, #cfe4c2);
+  --rw-warn-ink: #8a6414; --rw-warn-soft: linear-gradient(#f7ecd2, #ecdcb5);
+  --rw-bad-ink: #93342c;  --rw-bad-soft: linear-gradient(#f7dedb, #ecc6c2);
+  --rw-chip: linear-gradient(#f0f2f5, #d5dae0);
+  --rw-hover: linear-gradient(#ffffff, #e8ebef);
+  --rw-field: linear-gradient(#e8ebef, #fdfdfd);
+  --rw-btn-radius: 6px;
+  --rw-btn-shadow: inset 0 1px 0 rgba(255, 255, 255, .4), 0 2px 3px rgba(0, 0, 0, .3);
+  --rw-btn-weight: 700;
+  --rw-heading-weight: 700;
+  --rw-tracking: 0;
+  --rw-text-emboss: 0 1px 0 rgba(255, 255, 255, .85);
+  --rw-level-1: #6a737e; --rw-level-2: #3d6b28; --rw-level-3: #3a6ba8;
+  --rw-level-4: #6b4a91; --rw-level-5: #93342c;
+}
+
+/* ═══ Semantik klasslar — komponentlar shulardan foydalanadi ═══ */
+.rw-panel {
+  background: var(--rw-surface);
+  border: var(--rw-line-w) solid var(--rw-line);
+  border-radius: var(--rw-radius);
+  box-shadow: var(--rw-shadow);
+  backdrop-filter: var(--rw-blur, none);
+  -webkit-backdrop-filter: var(--rw-blur, none);
+}
+.rw-chrome {
+  background: var(--rw-chrome, var(--rw-surface));
+  backdrop-filter: var(--rw-blur, none);
+  -webkit-backdrop-filter: var(--rw-blur, none);
+}
+.rw-surface { background: var(--rw-surface); backdrop-filter: var(--rw-blur, none); -webkit-backdrop-filter: var(--rw-blur, none); }
+.rw-ground-bg { background: var(--rw-ground); }
+.rw-line { border-color: var(--rw-line); }
+.rw-divide > * + * { border-color: var(--rw-line); }
+.rw-shadow { box-shadow: var(--rw-shadow); }
+.rw-strong { color: var(--rw-text); text-shadow: var(--rw-text-emboss, none); }
+.rw-dim-2 { color: var(--rw-text-2); }
+.rw-dim { color: var(--rw-muted); }
+.rw-faint { color: var(--rw-faint); }
+.rw-accent-ink { color: var(--rw-accent-ink); }
+.rw-accent-bg { background: var(--rw-accent); color: var(--rw-accent-fg); box-shadow: var(--rw-btn-shadow); }
+.rw-accent-bg:hover { filter: brightness(1.08); }
+.rw-accent-soft { background: var(--rw-accent-soft); color: var(--rw-accent-ink); }
+.rw-ok-ink { color: var(--rw-ok-ink); }      .rw-ok-soft { background: var(--rw-ok-soft); color: var(--rw-ok-ink); }
+.rw-warn-ink { color: var(--rw-warn-ink); }  .rw-warn-soft { background: var(--rw-warn-soft); color: var(--rw-warn-ink); }
+.rw-bad-ink { color: var(--rw-bad-ink); }    .rw-bad-soft { background: var(--rw-bad-soft); color: var(--rw-bad-ink); }
+.rw-chip { background: var(--rw-chip); color: var(--rw-text-2); }
+.rw-accent-line { border-color: var(--rw-accent); }
+.rw-placeholder::placeholder { color: var(--rw-faint); }
+.rw-hover-accent:hover { background: var(--rw-accent-soft); }
+.rw-hover-strong:hover { color: var(--rw-text); }
+.rw-hover-bg:hover { background: var(--rw-hover); }
+.rw-link-hover:hover { color: var(--rw-accent-ink); }
+.rw-hover-line:hover { border-color: var(--rw-accent); }
+.rw-focus-line:focus { border-color: var(--rw-accent); outline: none; }
+.rw-focus-ring:focus { box-shadow: 0 0 0 4px var(--rw-accent-soft); }
+.rw-field-bg { background: var(--rw-field); }
+.rw-radius { border-radius: var(--rw-radius); }
+.rw-radius-sm { border-radius: var(--rw-radius-sm); }
+.rw-btn-radius { border-radius: var(--rw-btn-radius); }
+.rw-btn-label { font-weight: var(--rw-btn-weight); text-transform: var(--rw-uppercase, none); }
+
+/* Uslubga xos tuzilma — token bilan ifodalab bo'lmaydigan qism */
+[data-style="brutal"] .rw-accent-bg:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--rw-line); }
+[data-style="neu"] .rw-accent-bg:active,
+[data-style="skeu"] .rw-accent-bg:active { box-shadow: inset 4px 4px 8px rgba(0, 0, 0, .22); }
+[data-style="material"] .rw-accent-bg:hover { box-shadow: 0 4px 10px rgba(98, 0, 238, .5); }
+[data-style="terminal"] .rw-accent-bg:hover { filter: none; background: var(--rw-accent-ink); }
+
+/* Aurora va glass fonidagi rangli dog'lar */
+[data-style="aurora"] body::before,
+[data-style="glass"] body::before {
+  content: "";
+  position: fixed;
+  inset: -20vh -20vw;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(38vw 38vw at 12% 8%, rgba(123, 47, 247, .55), transparent 65%),
+    radial-gradient(34vw 34vw at 88% 82%, rgba(0, 194, 168, .5), transparent 65%);
+  filter: blur(46px);
+}
+[data-style="glass"] body::before {
+  background:
+    radial-gradient(34vw 34vw at 10% 6%, rgba(255, 95, 162, .6), transparent 62%),
+    radial-gradient(30vw 30vw at 90% 88%, rgba(255, 209, 102, .5), transparent 62%);
+}
+
+/* Eski o'zgaruvchilar — inline `style` qolgan joylar uchun ko'prik */
+:root {
+  --bg: var(--rw-ground);
+  --surface: var(--rw-surface);
+  --border: var(--rw-line);
+  --text: var(--rw-text);
+  --muted: var(--rw-muted);
+  --accent: var(--rw-accent-ink);
 }
 
 @layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
-  }
-  .dark *,
-  .dark ::after,
-  .dark ::before,
-  .dark ::backdrop,
-  .dark ::file-selector-button {
-    border-color: #232936;
-  }
-  button:not(:disabled),
-  [role="button"]:not(:disabled) {
-    cursor: pointer;
-  }
+  * , ::after, ::before, ::backdrop, ::file-selector-button { border-color: var(--rw-line); }
+  button:not(:disabled), [role="button"]:not(:disabled) { cursor: pointer; }
   body {
-    @apply relative z-1 bg-gray-50 text-gray-800 dark:bg-[#0b0d12] dark:text-gray-100;
-    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--rw-ground);
+    background-attachment: fixed;
+    color: var(--rw-text);
+    font-family: var(--rw-font);
+    position: relative;
+    z-index: 0;
   }
+  h1, h2, h3 { font-family: var(--rw-font-display); font-weight: var(--rw-heading-weight); letter-spacing: var(--rw-tracking); }
 }
 
-/* Sidebar menyu holatlari — TailAdmin utility'lari */
+.level-beginner { color: var(--rw-level-1); }
+.level-intermediate { color: var(--rw-level-2); }
+.level-hard { color: var(--rw-level-3); }
+.level-expert { color: var(--rw-level-4); }
+.level-master { color: var(--rw-level-5); }
+
 @utility menu-item {
   @apply relative flex items-center w-full gap-3 px-3 py-2 font-medium rounded-lg text-theme-sm;
 }
 @utility menu-item-active {
-  @apply bg-brand-50 text-brand-600 dark:bg-brand-500/12 dark:text-brand-400;
+  background: var(--rw-accent-soft);
+  color: var(--rw-accent-ink);
 }
 @utility menu-item-inactive {
-  @apply text-gray-600 hover:bg-gray-100 hover:text-gray-800
-    dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-200;
+  color: var(--rw-text-2);
 }
 @utility menu-item-icon-active {
-  @apply text-brand-600 dark:text-brand-400;
+  color: var(--rw-accent-ink);
 }
 @utility menu-item-icon-inactive {
-  @apply text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300;
+  color: var(--rw-faint);
 }
 @utility no-scrollbar {
   &::-webkit-scrollbar {
@@ -166,16 +751,8 @@
 }
 
 /* Qiyinlik darajalari — 04-prd § qiyinlik shkalasi ranglari */
-.level-beginner { color: #667085; }
-.level-intermediate { color: #039855; }
-.level-hard { color: #2570eb; }
-.level-expert { color: #9a4bd8; }
-.level-master { color: #d92d20; }
-.dark .level-beginner { color: #9aa4b8; }
-.dark .level-intermediate { color: #4ade80; }
-.dark .level-hard { color: #60a5fa; }
-.dark .level-expert { color: #c084fc; }
-.dark .level-master { color: #f87171; }
+
+.menu-item-inactive:hover { background: var(--rw-hover); color: var(--rw-text); }
 
 /* Markdown matni — masala, maqola, blog.
    Tailwind preflight sarlavha va ro'yxat uslublarini nolga tushiradi,
@@ -194,17 +771,17 @@
 .rw-md ul { list-style: disc; }
 .rw-md ol { list-style: decimal; }
 .rw-md li { margin: 0.25em 0; }
-.rw-md a { color: var(--accent); text-decoration: underline; }
+.rw-md a { color: var(--rw-accent-ink); text-decoration: underline; }
 .rw-md code {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--rw-surface-2);
+  border: 1px solid var(--rw-line);
   border-radius: 4px;
   padding: 0.1em 0.35em;
   font-size: 0.9em;
 }
 .rw-md pre {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--rw-surface-2);
+  border: 1px solid var(--rw-line);
   border-radius: 8px;
   padding: 0.9rem;
   overflow-x: auto;   /* uzun kod satrlari sahifani cho'zmasin */
@@ -212,13 +789,13 @@
 }
 .rw-md pre code { background: none; border: 0; padding: 0; }
 .rw-md blockquote {
-  border-left: 3px solid var(--border);
+  border-left: 3px solid var(--rw-line);
   padding-left: 1rem;
-  color: var(--muted);
+  color: var(--rw-muted);
   margin: 1em 0;
 }
 .rw-md table { border-collapse: collapse; margin: 1em 0; display: block; overflow-x: auto; }
-.rw-md th, .rw-md td { border: 1px solid var(--border); padding: 0.4rem 0.7rem; }
-.rw-md th { background: var(--surface); text-align: left; }
-.rw-md hr { border: 0; border-top: 1px solid var(--border); margin: 1.5em 0; }
+.rw-md th, .rw-md td { border: 1px solid var(--rw-line); padding: 0.4rem 0.7rem; }
+.rw-md th { background: var(--rw-surface-2); text-align: left; }
+.rw-md hr { border: 0; border-top: 1px solid var(--rw-line); margin: 1.5em 0; }
 .rw-md img { max-width: 100%; height: auto; }
