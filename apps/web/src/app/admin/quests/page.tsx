@@ -1,15 +1,10 @@
 import type { Metadata } from "next";
 
-import { Card } from "@/components/ui/Card";
+import { QuestsAdmin } from "@/components/admin/QuestsAdmin";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Admin · quests" };
+export const metadata: Metadata = { title: "Admin · Questlar" };
 
-// STUB — admin/quests bo'limi alohida agent tomonidan to'ldiriladi.
 export default function AdminQuestsPage() {
-  return (
-    <Card>
-      <p className="text-theme-sm text-gray-400">quests — tez orada</p>
-    </Card>
-  );
+  return <QuestsAdmin />;
 }
