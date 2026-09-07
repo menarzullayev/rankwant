@@ -2,10 +2,12 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from core import views
+from core.staff_views import StaffUserViewSet
 
 router = DefaultRouter()
 router.register("users", views.UserViewSet, basename="user")
 router.register("me/tokens", views.ApiTokenViewSet, basename="apitoken")
+router.register("staff/users", StaffUserViewSet, basename="staff-user")  # staff: users
 
 urlpatterns = [
     path("health/", views.HealthView.as_view(), name="health"),
