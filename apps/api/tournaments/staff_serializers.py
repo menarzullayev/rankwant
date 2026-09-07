@@ -60,6 +60,13 @@ class StaffTournamentSerializer(serializers.ModelSerializer[Tournament]):
         return attrs
 
     def _validate_stages(self, stages: list[dict[str, Any]]) -> None:
+        # PATCH da DRF bolalar maydonlarini ham ixtiyoriy qiladi, ya'ni
+        # majburiy deb e'lon qilish yetmaydi — indekslashdan oldin
+        # tekshirmasak KeyError → 500 bo'lardi.
+        missing = [k for k in ("order", "contest") if any(k not in s for s in stages)]
+        if missing:
+            fields = ", ".join(f"`{m}`" for m in missing)
+            raise serializers.ValidationError({"stages": f"Har bosqichda {fields} bo'lishi kerak"})
         orders = [s["order"] for s in stages]
         if len(orders) != len(set(orders)):
             raise serializers.ValidationError({"stages": "Bosqich tartib raqamlari takrorlanmasin"})

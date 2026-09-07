@@ -99,6 +99,10 @@ class StaffRoadmapStepSerializer(serializers.ModelSerializer[RoadmapStep]):
         slug_field="slug", queryset=Problem.objects.all(), required=False, allow_null=True
     )
 
+    #: ModelSerializer buni unique-constraint sababli ixtiyoriy qilib qo'yadi,
+    #: keyin `validate_*` dagi indekslash KeyError → 500 berardi.
+    order = serializers.IntegerField(min_value=1)
+
     class Meta:
         model = RoadmapStep
         fields = ["order", "title", "article", "problem", "is_optional"]
@@ -128,6 +132,11 @@ class StaffRoadmapSerializer(serializers.ModelSerializer[Roadmap]):
         ]
 
     def validate_steps(self, value: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        # PATCH da DRF bolalar maydonlarini ham ixtiyoriy qiladi, ya'ni
+        # majburiy deb e'lon qilish yetmaydi — indekslashdan oldin
+        # tekshirmasak KeyError → 500 bo'lardi.
+        if any("order" not in step for step in value):
+            raise serializers.ValidationError("Har qadamda `order` bo'lishi kerak")
         orders = [step["order"] for step in value]
         if len(orders) != len(set(orders)):
             raise serializers.ValidationError("Qadam tartib raqamlari takrorlanmasligi kerak")

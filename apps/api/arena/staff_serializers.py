@@ -93,6 +93,8 @@ class StaffArenaSerializer(serializers.ModelSerializer[ArenaRound]):
 
 class RescheduleSerializer(serializers.Serializer[dict[str, Any]]):
     start_at = serializers.DateTimeField()
+    #: Mukofot berilgan raundni qayta rejalashda ishtirokchilarni tozalash
+    reset = serializers.BooleanField(required=False, default=False)
 
 
 class FinalizeResultSerializer(serializers.Serializer[dict[str, Any]]):

@@ -15,8 +15,14 @@ from rest_framework import serializers
 from problems.models import Topic
 from quizzes.models import Choice, Question
 
+ANSWERED_MSG = "Bu savolga arenada javob berilgan — variantlarni o'zgartirib bo'lmaydi"
+
 
 class StaffChoiceSerializer(serializers.ModelSerializer[Choice]):
+    #: ModelSerializer buni unique-constraint sababli ixtiyoriy qilib qo'yadi,
+    #: keyin `validate_*` dagi indekslash KeyError → 500 berardi.
+    order = serializers.IntegerField(min_value=1)
+
     class Meta:
         model = Choice
         fields = ["id", "order", "text", "is_correct"]
@@ -48,6 +54,11 @@ class StaffQuestionSerializer(serializers.ModelSerializer[Question]):
             raise serializers.ValidationError("Kamida 2 ta variant bo'lishi kerak")
         if sum(1 for c in value if c.get("is_correct")) != 1:
             raise serializers.ValidationError("Aynan bitta to'g'ri variant bo'lishi kerak")
+        # PATCH da DRF bolalar maydonlarini ham ixtiyoriy qiladi, ya'ni
+        # majburiy deb e'lon qilish yetmaydi — indekslashdan oldin
+        # tekshirmasak KeyError → 500 bo'lardi.
+        if any("order" not in c for c in value):
+            raise serializers.ValidationError("Har variantda `order` bo'lishi kerak")
         orders = [c["order"] for c in value]
         if len(set(orders)) != len(orders):
             raise serializers.ValidationError("Variant tartib raqamlari takrorlanmasligi kerak")
@@ -55,6 +66,17 @@ class StaffQuestionSerializer(serializers.ModelSerializer[Question]):
 
     @staticmethod
     def _replace_choices(question: Question, choices: list[dict[str, Any]]) -> None:
+        """Variantlarni almashtirish — javob berilgan savolda TAQIQLANGAN.
+
+        `ArenaAnswer.choice` CASCADE: eski variantni o'chirish javoblarni
+        ham o'chiradi, `ArenaParticipation.score`/`correct_count` esa
+        denormallashgan — natijada tugagan raundning jadvali yolg'on
+        bo'lib qolardi. Savolni o'zgartirish kerak bo'lsa nusxa oling.
+        """
+        from arena.models import ArenaAnswer
+
+        if ArenaAnswer.objects.filter(question=question).exists():
+            raise serializers.ValidationError({"choices": ANSWERED_MSG})
         question.choices.all().delete()
         Choice.objects.bulk_create(Choice(question=question, **c) for c in choices)
 

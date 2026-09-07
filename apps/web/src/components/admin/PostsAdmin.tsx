@@ -100,8 +100,12 @@ function fmtDate(iso: string | null): string {
     : "—";
 }
 
-/** Nashr holati tugmasi — qatorni qayta yuklamasdan javobdagi holatni ko'rsatadi. */
-function PublishToggle({ post }: { post: Post }) {
+/** Nashr holati tugmasi.
+ *
+ *  Jadvalni ham qayta yuklaydi: aks holda faqat tugma yangilanib, qator
+ *  eski `is_published` bilan qolardi va keyingi «Tahrirlash» formasi shu
+ *  eski qiymatni yuborib nashrni jimgina qaytarib qo'yardi. */
+function PublishToggle({ post, reload }: { post: Post; reload?: () => void }) {
   const [published, setPublished] = useState(post.is_published);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -114,6 +118,7 @@ function PublishToggle({ post }: { post: Post }) {
         `${PATH}${post.slug}/${published ? "unpublish" : "publish"}/`,
       );
       setPublished(updated.is_published);
+      reload?.();
     } catch (e) {
       setError(e instanceof ApiError ? e.message : String(e));
     } finally {
@@ -151,8 +156,8 @@ const COLUMNS: ColumnDef<Post>[] = [
     key: "is_published",
     label: "Holat",
     // key: holat formadan o'zgarsa tugma qayta o'rnatiladi
-    render: (p) => (
-      <PublishToggle key={`${p.slug}-${p.is_published}`} post={p} />
+    render: (p, reload) => (
+      <PublishToggle key={`${p.slug}-${p.is_published}`} post={p} reload={reload} />
     ),
   },
   {

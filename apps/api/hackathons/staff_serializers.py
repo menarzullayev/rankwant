@@ -6,6 +6,8 @@ kabi faqat xodimga kerak maydonlar ochiladi.
 
 from __future__ import annotations
 
+from typing import Any
+
 from rest_framework import serializers
 
 from hackathons.models import Hackathon, HackathonSubmission
@@ -37,6 +39,30 @@ class StaffHackathonSerializer(serializers.ModelSerializer[Hackathon]):
             "is_finished",
         ]
         read_only_fields = ["created_at"]
+
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        """start_at ≤ submission_deadline ≤ end_at.
+
+        Aks holda `accepts_submissions` hech qachon rost bo'lmaydi va
+        hakaton jimgina yopiq qolardi.
+        """
+        merged = {
+            **{
+                f: getattr(self.instance, f, None)
+                for f in ("start_at", "submission_deadline", "end_at")
+            },
+            **attrs,
+        }
+        start, deadline, end = merged["start_at"], merged["submission_deadline"], merged["end_at"]
+        if start and deadline and deadline < start:
+            raise serializers.ValidationError(
+                {"submission_deadline": "Topshirish muddati boshlanishdan oldin bo'la olmaydi"}
+            )
+        if deadline and end and end < deadline:
+            raise serializers.ValidationError(
+                {"end_at": "Yakun topshirish muddatidan oldin bo'la olmaydi"}
+            )
+        return attrs
 
 
 class StaffSubmissionSerializer(serializers.ModelSerializer[HackathonSubmission]):

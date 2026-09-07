@@ -31,6 +31,8 @@ from qvant.models import QvantTransaction
 class StaffUserViewSet(StaffViewSet):
     serializer_class = StaffUserSerializer
     lookup_field = "username"
+    #: Standart router shabloni nuqtani kesadi — `a.b` username 404 berardi.
+    lookup_value_regex = "[^/]+"
     search_fields = ["username", "display_name", "email"]
     ordering_fields = ["date_joined", "rating_skills"]
     ordering = ["-date_joined"]

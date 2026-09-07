@@ -5038,8 +5038,7 @@ paths:
         name: username
         schema:
           type: string
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
+          pattern: ^[^/]+$
         required: true
       tags:
       - staff
@@ -5059,8 +5058,7 @@ paths:
         name: username
         schema:
           type: string
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
+          pattern: ^[^/]+$
         required: true
       tags:
       - staff
@@ -5092,8 +5090,7 @@ paths:
         name: username
         schema:
           type: string
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
+          pattern: ^[^/]+$
         required: true
       tags:
       - staff
@@ -5126,8 +5123,7 @@ paths:
         name: username
         schema:
           type: string
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
+          pattern: ^[^/]+$
         required: true
       tags:
       - staff
@@ -8764,6 +8760,9 @@ components:
         start_at:
           type: string
           format: date-time
+        reset:
+          type: boolean
+          default: false
       required:
       - start_at
     ReviewItem:
@@ -9125,9 +9124,7 @@ components:
           readOnly: true
         order:
           type: integer
-          maximum: 9223372036854775807
-          minimum: 0
-          format: int64
+          minimum: 1
         text:
           type: string
           maxLength: 500
@@ -9675,9 +9672,7 @@ components:
       properties:
         order:
           type: integer
-          maximum: 9223372036854775807
-          minimum: 0
-          format: int64
+          minimum: 1
         title:
           type: string
           maxLength: 200

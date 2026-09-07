@@ -8,6 +8,7 @@ from __future__ import annotations
 from typing import Any
 
 import redis
+from django.db.models import ProtectedError
 from django.db.utils import OperationalError
 from rest_framework import exceptions, status
 from rest_framework.response import Response
@@ -19,6 +20,21 @@ UNAVAILABLE = (redis.exceptions.ConnectionError, redis.exceptions.TimeoutError, 
 
 
 def exception_handler(exc: Exception, context: dict[str, Any]) -> Response | None:
+    # Boshqa yozuvga bog'langan obyektni o'chirish (PROTECT) — xodimning
+    # xatosi, kodniki emas. Ishlov berilmasa admin UI da 500 chiqardi.
+    if isinstance(exc, ProtectedError):
+        blockers = sorted({str(type(o)._meta.verbose_name) for o in exc.protected_objects})
+        return Response(
+            {
+                "error": {
+                    "code": "protected",
+                    "message": "Bu yozuv boshqa joyda ishlatilmoqda, avval bog'lanishni uzing",
+                    "details": {"used_by": blockers},
+                }
+            },
+            status=status.HTTP_409_CONFLICT,
+        )
+
     if isinstance(exc, UNAVAILABLE):
         return Response(
             {

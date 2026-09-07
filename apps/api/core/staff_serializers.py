@@ -82,7 +82,11 @@ class StaffUserSerializer(serializers.ModelSerializer[User]):
 
 
 class QvantAdjustSerializer(serializers.Serializer[dict[str, Any]]):
-    amount = serializers.IntegerField()
+    #: Chegara Postgres integer'idan ancha past — qo'l bilan kiritilgan
+    #: nol ortiqcha 500 emas, tushunarli xato bersin.
+    MAX_ADJUST = 1_000_000
+
+    amount = serializers.IntegerField(min_value=-MAX_ADJUST, max_value=MAX_ADJUST)
     note = serializers.CharField(max_length=200)
 
     def validate_amount(self, value: int) -> int:

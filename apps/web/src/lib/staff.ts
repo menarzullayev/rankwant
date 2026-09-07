@@ -26,8 +26,11 @@ export async function staffFetch<T>(
   const raw = await res.text();
   const parsed = raw ? JSON.parse(raw) : null;
   if (!res.ok) {
-    const details = parsed?.error?.details ?? parsed ?? {};
-    const firstField =
+    // Maydon xatolari `details` da keladi, `message` esa umumiy
+    // («Kiritilgan ma'lumot noto'g'ri»). Umumiysi birinchi bo'lsa
+    // xodim aynan qaysi maydon xato ekanini ko'rmasdi.
+    const details = parsed?.error?.details ?? {};
+    const fields =
       details && typeof details === "object"
         ? Object.entries(details)
             .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(", ") : String(v)}`)
@@ -37,7 +40,7 @@ export async function staffFetch<T>(
     throw new ApiError(
       res.status,
       parsed?.error?.code ?? "error",
-      parsed?.error?.message ?? firstField ?? res.statusText,
+      fields || parsed?.error?.message || res.statusText,
     );
   }
   return parsed as T;

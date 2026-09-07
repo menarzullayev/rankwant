@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -39,10 +39,14 @@ export type ColumnDef<T> = {
   key: string;
   label: string;
   align?: "left" | "right";
-  render?: (item: T) => React.ReactNode;
+  /** `reload` — amal bajargan ustunlar jadvalni yangilay olishi uchun. */
+  render?: (item: T, reload: () => void) => React.ReactNode;
 };
 
 type Row = Record<string, unknown>;
+
+/** `core.pagination.StandardPagination` bilan bir xil bo'lishi shart. */
+const PAGE_SIZE = 25;
 
 export type CrudPageProps<T extends Row> = {
   title: string;
@@ -265,7 +269,9 @@ export function CrudPage<T extends Row>({
                       step={f.step}
                       min={f.min}
                       max={f.max}
-                      pattern={f.type === "slug" ? "[a-z0-9-]+" : undefined}
+                      // Quest va do'kon kodlari pastki chiziq ishlatadi
+                      // (`weekly_marathon`), shuning uchun u ham ruxsat etiladi.
+                      pattern={f.type === "slug" ? "[a-z0-9_-]+" : undefined}
                       className={input}
                     />
                   )}
@@ -291,11 +297,11 @@ export function CrudPage<T extends Row>({
           </THead>
           <TBody>
             {rows.map((item) => (
-              <>
-                <TR key={idOf(item)}>
+              <Fragment key={idOf(item)}>
+                <TR>
                   {columns.map((c) => (
                     <TD key={c.key} align={c.align}>
-                      {c.render ? c.render(item) : String(item[c.key] ?? "")}
+                      {c.render ? c.render(item, load) : String(item[c.key] ?? "")}
                     </TD>
                   ))}
                   <TD align="right">
@@ -319,22 +325,38 @@ export function CrudPage<T extends Row>({
                   </TD>
                 </TR>
                 {rowExtra && expanded === idOf(item) && (
-                  <tr key={`${idOf(item)}-extra`} className="bg-gray-50 dark:bg-white/[0.02]">
+                  <tr className="bg-gray-50 dark:bg-white/[0.02]">
                     <td colSpan={columns.length + 1} className="px-4 py-4">
                       {rowExtra(item, load)}
                     </td>
                   </tr>
                 )}
-              </>
+              </Fragment>
             ))}
             {rows.length === 0 && <EmptyRow colSpan={columns.length + 1}>{t(locale, "admin.noRows")}</EmptyRow>}
           </TBody>
         </Table>
-        {count > rows.length && (
+        {count > PAGE_SIZE && (
           <div className="flex items-center justify-end gap-2 border-t border-gray-100 px-4 py-2 text-theme-xs dark:border-[#232936]">
-            <button type="button" disabled={page <= 1} onClick={() => setPage((p) => p - 1)} className="disabled:opacity-40">←</button>
+            <button
+              type="button"
+              disabled={page <= 1}
+              onClick={() => setPage((p) => p - 1)}
+              className="disabled:opacity-40"
+            >
+              ←
+            </button>
             <span>{page}</span>
-            <button type="button" disabled={page * rows.length >= count} onClick={() => setPage((p) => p + 1)} className="disabled:opacity-40">→</button>
+            <button
+              type="button"
+              // Oxirgi sahifa to'la bo'lmasa ham «keyingi» ochiq qolardi va
+              // API «Invalid page» (404) qaytarardi.
+              disabled={page >= Math.ceil(count / PAGE_SIZE)}
+              onClick={() => setPage((p) => p + 1)}
+              className="disabled:opacity-40"
+            >
+              →
+            </button>
           </div>
         )}
       </Card>

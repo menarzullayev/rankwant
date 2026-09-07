@@ -40,6 +40,29 @@ class StaffArenaViewSet(StaffViewSet):
         arena = self.get_object()
         serializer = RescheduleSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
+        # Mukofot berilgan raundda ishtirokchilarni saqlab qayta rejalash —
+        # ikkinchi to'lov degani (`finalize` yana hammaga Qvant beradi).
+        # Shuning uchun bunday holatda ishtirok yozuvlari tozalanishi shart.
+        paid = arena.rewards_applied_at is not None
+        has_runs = arena.participants.exists()
+        if paid and has_runs and not serializer.validated_data.get("reset"):
+            return Response(
+                {
+                    "error": {
+                        "code": "already_paid",
+                        "message": (
+                            "Raund mukofoti berilgan. Qayta rejalash uchun "
+                            "ishtirokchilarni tozalash kerak: reset=true"
+                        ),
+                        "details": {},
+                    }
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if serializer.validated_data.get("reset"):
+            arena.participants.all().delete()
+
         arena.start_at = serializer.validated_data["start_at"]
         arena.rewards_applied_at = None
         arena.save(update_fields=["start_at", "rewards_applied_at"])
