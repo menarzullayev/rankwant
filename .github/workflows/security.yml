@@ -24,8 +24,8 @@ jobs:
       - name: pip-audit
         run: |
           pip install pip-audit
-          if [ -f apps/api/requirements.txt ]; then
-            pip-audit -r apps/api/requirements.txt
+          if [ -f apps/api/requirements.lock ]; then
+            pip-audit -r apps/api/requirements.lock
           fi
           if [ -f services/judge-py/pyproject.toml ]; then
             pip-audit --path services/judge-py || true
