@@ -126,6 +126,59 @@ def cancel(user: User, duel: Duel) -> Duel:
     return duel
 
 
+def staff_cancel(duel: Duel) -> Duel:
+    """Xodim bekor qilishi — ochiq yoki qabul qilingan duel.
+
+    Qabul qilingan duelda raqib allaqachon vaqt ajratgan — ikkalasiga ham
+    bildirishnoma ketadi. Ochiq chaqiriqda hali hech kim kutmayapti.
+    """
+    if duel.status not in (Duel.Status.OPEN, Duel.Status.ACCEPTED):
+        raise DuelError(
+            "not_cancellable", "Faqat ochiq yoki qabul qilingan duelni bekor qilish mumkin"
+        )
+    was_accepted = duel.status == Duel.Status.ACCEPTED
+    duel.status = Duel.Status.CANCELLED
+    duel.save(update_fields=["status"])
+    if was_accepted:
+        from notifications.models import Notification
+        from notifications.services import notify
+
+        for user in duel.participants():
+            notify(
+                user,
+                Notification.Kind.DUEL,
+                "Duel administrator tomonidan bekor qilindi",
+                body=f"«{duel.title}» o'tkazilmaydi.",
+                ref_type="duel",
+                ref_id=duel.slug,
+            )
+    return duel
+
+
+@transaction.atomic
+def staff_finalize(duel: Duel, *, force: bool = False) -> Duel:
+    """Xodim yakunlashi. Muddati o'tmagan duel faqat `force` bilan.
+
+    Majburlashda oyna [hozir − davomiylik, hozir) ga suriladi: muddati
+    o'tmagan duelning asl boshlanishi shu oyna ichida, shuning uchun
+    haqiqiy AC'lar yo'qolmaydi, `finalize` esa uni «tugagan» deb ko'radi.
+    """
+    duel = Duel.objects.select_for_update().get(pk=duel.pk)
+    if duel.status != Duel.Status.ACCEPTED or duel.opponent is None:
+        raise DuelError("not_accepted", "Faqat qabul qilingan duelni yakunlash mumkin")
+    if not duel.is_due:
+        if not force:
+            raise DuelError(
+                "not_due", "Duel hali tugamagan — majburiy yakunlash uchun force=true yuboring"
+            )
+        duel.start_at = timezone.now() - timedelta(minutes=duel.duration_minutes, seconds=1)
+        duel.save(update_fields=["start_at"])
+    if not finalize(duel):
+        raise DuelError("not_due", "Duelni yakunlab bo'lmadi")
+    duel.refresh_from_db()
+    return duel
+
+
 def solved_in_window(duel: Duel, user: User) -> tuple[int, datetime | None]:
     """Nechta masala yechildi va oxirgi AC qachon (teng bo'lsa tezroq yutadi)."""
     accepted = (
