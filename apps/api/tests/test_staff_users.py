@@ -216,3 +216,30 @@ class TestNotify:
             user.username,
         }
         assert Notification.objects.filter(kind=Notification.Kind.SYSTEM).count() == 2
+
+
+@pytest.mark.django_db
+class TestPrivilegedTargets:
+    """Oddiy xodim imtiyozli hisoblarni bloklay olmaydi — superuser esa oladi."""
+
+    def test_xodim_superuserni_bloklay_olmaydi(self, staff, superuser) -> None:
+        r = as_user(staff).patch(detail(superuser.username), {"is_active": False}, format="json")
+        assert r.status_code == 400
+        superuser.refresh_from_db()
+        assert superuser.is_active
+
+    def test_xodim_boshqa_xodimni_bloklay_olmaydi(self, staff, db) -> None:
+        other = User.objects.create_user("staff_b", password="x", is_staff=True)
+        r = as_user(staff).patch(detail(other.username), {"is_active": False}, format="json")
+        assert r.status_code == 400
+
+    def test_superuser_xodimni_bloklaydi(self, superuser, staff) -> None:
+        r = as_user(superuser).patch(detail(staff.username), {"is_active": False}, format="json")
+        assert r.status_code == 200
+        staff.refresh_from_db()
+        assert not staff.is_active
+
+    def test_xodim_oddiy_foydalanuvchini_bloklaydi(self, staff, user) -> None:
+        """Cheklov faqat imtiyozli hisoblar uchun — oddiy ban ishlayveradi."""
+        r = as_user(staff).patch(detail(user.username), {"is_active": False}, format="json")
+        assert r.status_code == 200

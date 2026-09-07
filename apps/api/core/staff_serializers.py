@@ -66,14 +66,18 @@ class StaffUserSerializer(serializers.ModelSerializer[User]):
                         {field: "O'z hisobingizning bu maydonini o'zgartira olmaysiz"}
                     )
 
-        if (
-            "is_staff" in attrs
-            and attrs["is_staff"] != instance.is_staff
-            and not actor.is_superuser
-        ):
-            raise serializers.ValidationError(
-                {"is_staff": "Xodim huquqini faqat superuser o'zgartira oladi"}
-            )
+        if not actor.is_superuser:
+            if "is_staff" in attrs and attrs["is_staff"] != instance.is_staff:
+                raise serializers.ValidationError(
+                    {"is_staff": "Xodim huquqini faqat superuser o'zgartira oladi"}
+                )
+            # Oddiy xodim boshqa xodimni yoki superuser'ni bloklay olmaydi —
+            # aks holda bitta xodim butun boshqaruvni qulflab qo'yardi.
+            privileged = instance.is_staff or instance.is_superuser
+            if privileged and "is_active" in attrs and attrs["is_active"] != instance.is_active:
+                raise serializers.ValidationError(
+                    {"is_active": "Xodim yoki superuser hisobini faqat superuser bloklashi mumkin"}
+                )
         return attrs
 
 

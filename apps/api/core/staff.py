@@ -7,16 +7,32 @@ o'zgarmaydi — bu alohida, yozadigan yuza.
 
 from __future__ import annotations
 
-from typing import ClassVar
+from typing import Any, ClassVar
 
-from rest_framework import filters, viewsets
+from rest_framework import filters, permissions, viewsets
 from rest_framework.permissions import IsAdminUser
 
+from core.models import ApiToken
 from core.pagination import StandardPagination
 
 
+class SessionOnly(permissions.BasePermission):
+    """Staff yuzasi PAT bilan ishlamaydi — faqat sessiya.
+
+    ADR-0008: PAT ochiq API va bot uchun. Aks holda xodimning oddiy
+    `read` tokeni sizib chiqsa u bilan foydalanuvchini bloklash yoki
+    masala o'chirish mumkin bo'lardi — scope tekshiruvi bazaviy
+    viewset'da yo'q edi va IsAdminUser buni farqlamaydi.
+    """
+
+    message = "Boshqaruv API'si faqat sessiya bilan ishlaydi, token bilan emas"
+
+    def has_permission(self, request: Any, view: Any) -> bool:
+        return not isinstance(getattr(request, "auth", None), ApiToken)
+
+
 class StaffViewSet(viewsets.ModelViewSet):  # type: ignore[type-arg]
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser, SessionOnly]
     pagination_class = StandardPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields: ClassVar[list[str]] = []
