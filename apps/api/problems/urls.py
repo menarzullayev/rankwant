@@ -13,6 +13,7 @@ router.register("staff/topics", staff_views.StaffTopicViewSet, basename="staff-t
 urlpatterns = [
     path("problems/recommendation/", views.RecommendationView.as_view(), name="recommendation"),
     path("problems/progress/", views.ProgressView.as_view(), name="problem-progress"),
+    path("problems/skills/", views.TopicSkillsView.as_view(), name="problem-skills"),
     path(
         "problems/<slug:slug>/stats/",
         views.ProblemStatsView.as_view(),

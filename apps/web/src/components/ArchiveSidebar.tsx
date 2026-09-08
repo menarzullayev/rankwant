@@ -8,6 +8,7 @@ import type {
   CalendarEvent,
   Problem,
   Roadmap,
+  TopicSkill,
 } from "@/lib/api";
 
 /** Daraja bo'yicha progress — KEP'ning «Difficulty breakdown» bloki.
@@ -222,8 +223,72 @@ function Digest({
   );
 }
 
+/** Mavzu kesimidagi kuch.
+ *
+ * Umumiy Skills reytingi bitta raqam va u «keyin nima qilay?» degan
+ * savolga javob bermaydi. Bu blok beradi: qaysi mavzuda kuchlisiz va
+ * qayerda urinib, yecha olmagansiz. Ikkinchisi qimmatroq — taqalgan
+ * joy o'rganish uchun eng foydali nuqta.
+ *
+ * Faqat kirgan foydalanuvchi uchun: mehmonda hamma qator nol bo'lardi. */
+function TopicStrength({ topics }: { topics: TopicSkill[] }) {
+  const strong = topics.filter((t) => t.solved > 0).slice(0, 5);
+  const stuck = topics
+    .filter((t) => t.solved === 0 && t.stuck > 0)
+    .sort((a, b) => b.stuck - a.stuck)
+    .slice(0, 3);
+
+  if (strong.length === 0 && stuck.length === 0) return null;
+
+  const peak = Math.max(...strong.map((t) => t.rating), 1);
+
+  return (
+    <Card title="Mavzu bo'yicha kuch" bodyClassName="space-y-3">
+      {strong.map((topic) => (
+        <div key={topic.slug}>
+          <div className="flex items-baseline justify-between gap-2 text-theme-xs">
+            <Link
+              href={`/problems?topics=${topic.slug}`}
+              className="font-medium rw-strong rw-link-hover"
+            >
+              {topic.label}
+            </Link>
+            <span className="rw-faint tabular-nums">
+              {topic.solved} / {topic.total}
+            </span>
+          </div>
+          <div className="mt-1 h-1.5 overflow-hidden rounded-full rw-chip">
+            <div
+              className="h-full rounded-full rw-accent-bg"
+              style={{ width: `${Math.round((topic.rating / peak) * 100)}%` }}
+            />
+          </div>
+        </div>
+      ))}
+
+      {stuck.length > 0 && (
+        <p className="text-theme-xs rw-dim">
+          Urinib, hali yecha olmaganingiz:{" "}
+          {stuck.map((topic, index) => (
+            <span key={topic.slug}>
+              {index > 0 && ", "}
+              <Link
+                href={`/problems?topics=${topic.slug}&status=attempted`}
+                className="font-medium rw-accent-ink"
+              >
+                {topic.label}
+              </Link>
+            </span>
+          ))}
+        </p>
+      )}
+    </Card>
+  );
+}
+
 export function ArchiveSidebar({
   progress,
+  skills,
   resume,
   upcoming,
   roadmaps,
@@ -231,6 +296,7 @@ export function ArchiveSidebar({
   popular,
 }: {
   progress: ArchiveProgress;
+  skills: TopicSkill[];
   resume: Problem | null;
   upcoming: CalendarEvent | null;
   roadmaps: Roadmap[];
@@ -241,6 +307,7 @@ export function ArchiveSidebar({
     <aside className="space-y-4">
       {resume && <Continue problem={resume} />}
       <Progress data={progress} />
+      <TopicStrength topics={skills} />
       {upcoming && <Upcoming event={upcoming} />}
       {roadmaps.length > 0 && <Roadmaps items={roadmaps} />}
       <Digest attempts={attempts} popular={popular} />

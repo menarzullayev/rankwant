@@ -263,6 +263,16 @@ export type ProblemStats = {
   }[];
 };
 
+/** Mavzu kesimidagi kuch. `stuck` — urinilgan, lekin yechilmagan. */
+export type TopicSkill = {
+  slug: string;
+  label: string;
+  total: number;
+  solved: number;
+  stuck: number;
+  rating: number;
+};
+
 export type ArchiveProgress = {
   levels: { code: string; label: string; total: number; solved: number }[];
   total: number;
@@ -746,6 +756,7 @@ export const api = {
   // Filtr paneli mavzularni TO'LIQ ko'rsatishi kerak — birinchi 25 tasi
   // emas, aks holda tanlab bo'lmaydigan yorliqlar paydo bo'lardi.
   topics: () => get<Paginated<Topic>>("/topics/?page_size=100", 300),
+  topicSkills: () => get<{ topics: TopicSkill[] }>("/problems/skills/"),
   quizzes: () => get<Paginated<Quiz>>("/quizzes/", 60),
   quiz: (slug: string) => get<QuizDetail>(`/quizzes/${slug}/`, 60),
   arenas: () => get<Paginated<Arena>>("/arena/", 10),

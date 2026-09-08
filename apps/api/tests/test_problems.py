@@ -523,3 +523,46 @@ def test_import_muallifiga_havola_qoyilmaydi(problem, db) -> None:
         "display_name": "Nazarbek Baltabaev",
         "has_profile": False,
     }
+
+
+# ── Mavzu kesimidagi kuch ────────────────────────────────────────────
+@pytest.fixture
+def topic_history(problem, hard_problem, user, language, db) -> None:
+    from judging.models import Attempt
+    from problems.models import Topic
+    from ratings.models import UserSolvedProblem
+
+    dp = Topic.objects.create(slug="dp", name_uz="Dinamik dasturlash")
+    graphs = Topic.objects.create(slug="graphs", name_uz="Graflar")
+    problem.topics.add(dp)
+    hard_problem.topics.add(graphs)
+
+    UserSolvedProblem.objects.create(
+        user=user, problem=problem, difficulty_at_solve=problem.difficulty
+    )
+    # Graflarda urindi, lekin yechmadi — «taqalib qolgan» signali.
+    Attempt.objects.create(
+        user=user, problem=hard_problem, language=language, source_code="x", verdict="WA"
+    )
+
+
+def test_mavzu_kuchi_global_skills_formulasi_bilan(topic_history, problem, user) -> None:
+    from ratings.formulas import skills_rating
+
+    client = APIClient()
+    client.force_authenticate(user)
+
+    rows = {t["slug"]: t for t in client.get(reverse("problem-skills")).data["topics"]}
+
+    assert rows["dp"]["solved"] == 1
+    assert rows["dp"]["rating"] == skills_rating([problem.difficulty])
+    assert rows["graphs"]["solved"] == 0
+    assert rows["graphs"]["stuck"] == 1, "urinilgan, lekin yechilmagan"
+
+
+def test_mehmonga_arxiv_hajmi_korinadi(topic_history) -> None:
+    rows = APIClient().get(reverse("problem-skills")).data["topics"]
+
+    assert {t["slug"] for t in rows} == {"dp", "graphs"}
+    assert all(t["solved"] == 0 and t["rating"] == 0 for t in rows)
+    assert all(t["total"] == 1 for t in rows)

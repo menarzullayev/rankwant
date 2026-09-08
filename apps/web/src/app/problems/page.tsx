@@ -24,6 +24,7 @@ import {
   api,
   ApiError,
   type ArchiveProgress,
+  type TopicSkill,
   type Paginated,
   type Problem,
   type Recommendation,
@@ -85,6 +86,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
     stats,
     me,
     progress,
+    skills,
     roadmaps,
     calendar,
     attempts,
@@ -97,6 +99,9 @@ export default async function ProblemsPage({ searchParams }: Props) {
     api.stats(),
     getWithSession<UserPublic>("/me/").catch(() => null),
     getWithSession<ArchiveProgress>("/problems/progress/"),
+    getWithSession<{ topics: TopicSkill[] }>("/problems/skills/").catch(() => ({
+      topics: [],
+    })),
     api.roadmaps().catch(() => []),
     api.calendar().catch(() => ({ results: [] })),
     api.attempts().catch(() => ({ results: [] })),
@@ -338,6 +343,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
 
         <ArchiveSidebar
           progress={progress}
+          skills={skills.topics}
           resume={resume}
           upcoming={upcoming}
           roadmaps={roadmaps}

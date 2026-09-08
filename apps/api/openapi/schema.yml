@@ -1923,6 +1923,27 @@ paths:
                 items:
                   $ref: '#/components/schemas/ProblemList'
           description: ''
+  /api/v1/problems/skills/:
+    get:
+      operationId: problems_skills_retrieve
+      description: |-
+        Mavzu kesimidagi kuch — Codeforces API tahlilidan kelgan g'oya.
+
+        `rating_skills` bitta raqam va u «keyin nima qilay?» degan savolga
+        javob bermaydi. Mavzu kesimi beradi: «graflarda uch marta urindingiz,
+        bittasi ham yechilmagan» — bu aniq keyingi qadam.
+
+        Formula GLOBAL Skills bilan bir xil (`skills_rating`, ADR-0006/0007),
+        faqat mavzu bo'yicha ajratilgan — shunda ikki raqam bir-biriga zid
+        kelmaydi va principle #2 saqlanadi.
+      tags:
+      - problems
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: Mavzu bo'yicha kuch
   /api/v1/quizzes/:
     get:
       operationId: quizzes_list

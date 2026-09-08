@@ -344,6 +344,77 @@ class ProgressView(APIView):
         )
 
 
+class TopicSkillsView(APIView):
+    """Mavzu kesimidagi kuch — Codeforces API tahlilidan kelgan g'oya.
+
+    `rating_skills` bitta raqam va u «keyin nima qilay?» degan savolga
+    javob bermaydi. Mavzu kesimi beradi: «graflarda uch marta urindingiz,
+    bittasi ham yechilmagan» — bu aniq keyingi qadam.
+
+    Formula GLOBAL Skills bilan bir xil (`skills_rating`, ADR-0006/0007),
+    faqat mavzu bo'yicha ajratilgan — shunda ikki raqam bir-biriga zid
+    kelmaydi va principle #2 saqlanadi.
+    """
+
+    permission_classes = [AllowAny]
+
+    @extend_schema(responses={200: OpenApiResponse(description="Mavzu bo'yicha kuch")})
+    def get(self, request: Request) -> Response:
+        from ratings.formulas import skills_rating
+        from ratings.models import UserSolvedProblem
+
+        solved_ids: set[int] = set()
+        attempted_ids: set[int] = set()
+        if request.user.is_authenticated:
+            from judging.models import Attempt
+
+            solved_ids = set(
+                UserSolvedProblem.objects.filter(user=request.user).values_list(
+                    "problem_id", flat=True
+                )
+            )
+            attempted_ids = set(
+                Attempt.objects.filter(user=request.user)
+                .values_list("problem_id", flat=True)
+                .distinct()
+            )
+
+        # Bitta so'rov: (masala, qiyinlik, mavzu). Mavzu soniga qarab
+        # so'rov ko'paymaydi — arxivda 148 ta mavzu bor.
+        rows = Problem.objects.filter(is_public=True).values_list(
+            "pk", "difficulty", "topics__slug", "topics__name_uz"
+        )
+
+        totals: Counter[str] = Counter()
+        labels: dict[str, str] = {}
+        solved_difficulties: dict[str, list[int]] = {}
+        attempted: Counter[str] = Counter()
+        for problem_id, difficulty, slug, label in rows:
+            if slug is None:  # mavzusiz masala
+                continue
+            totals[slug] += 1
+            labels[slug] = label
+            if problem_id in solved_ids:
+                solved_difficulties.setdefault(slug, []).append(difficulty)
+            elif problem_id in attempted_ids:
+                attempted[slug] += 1
+
+        topics: list[dict[str, Any]] = [
+            {
+                "slug": slug,
+                "label": labels[slug],
+                "total": total,
+                "solved": len(solved_difficulties.get(slug, [])),
+                # Urinilgan, LEKIN yechilmagan — «taqalib qolgan» signali.
+                "stuck": attempted[slug],
+                "rating": skills_rating(solved_difficulties.get(slug, [])),
+            }
+            for slug, total in totals.items()
+        ]
+        topics.sort(key=lambda row: (-int(row["rating"]), -int(row["solved"]), str(row["slug"])))
+        return Response({"topics": topics})
+
+
 class TopicViewSet(viewsets.ReadOnlyModelViewSet[Topic]):
     """Filtr paneli uchun mavzular.
 
