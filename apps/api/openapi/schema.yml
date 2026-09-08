@@ -5400,6 +5400,13 @@ paths:
   /api/v1/topics/:
     get:
       operationId: topics_list
+      description: |-
+        Filtr paneli uchun mavzular.
+
+        Faqat OMMAVIY masalasi bori: import qilingan arxiv 140 dan ortiq
+        teg olib keladi va ularning ko'pi hali qoralamalarga tegishli —
+        hech narsa topmaydigan yorliq filtrni shovqinga aylantiradi.
+        Xodimlar to'liq ro'yxatni `staff/topics/` da ko'radi.
       parameters:
       - name: ordering
         required: false
@@ -5434,6 +5441,13 @@ paths:
   /api/v1/topics/{slug}/:
     get:
       operationId: topics_retrieve
+      description: |-
+        Filtr paneli uchun mavzular.
+
+        Faqat OMMAVIY masalasi bori: import qilingan arxiv 140 dan ortiq
+        teg olib keladi va ularning ko'pi hali qoralamalarga tegishli —
+        hech narsa topmaydigan yorliq filtrni shovqinga aylantiradi.
+        Xodimlar to'liq ro'yxatni `staff/topics/` da ko'radi.
       parameters:
       - in: path
         name: slug

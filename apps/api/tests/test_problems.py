@@ -488,3 +488,19 @@ def test_oxshash_masalalar_faqat_ommaviysi(problem, hard_problem, db) -> None:
 
     assert [row["slug"] for row in data["similar"]] == [hard_problem.slug]
     assert data["similar"][0]["score"] == 0.9
+
+
+def test_mavzular_royxatida_faqat_ommaviy_masalasi_bori(problem, db) -> None:
+    from problems.models import Problem, Topic
+
+    ishlatilgan = Topic.objects.create(slug="dp", name_uz="Dinamik dasturlash")
+    problem.topics.add(ishlatilgan)
+    # Import qilingan teg — hali faqat qoralamada.
+    qoralama = Problem.objects.create(
+        slug="import", title="Import", statement="x", difficulty=900, is_public=False
+    )
+    qoralama.topics.add(Topic.objects.create(slug="aiohttp", name_uz="aiohttp"))
+
+    data = APIClient().get(reverse("topic-list")).data
+
+    assert [t["slug"] for t in data["results"]] == ["dp"]

@@ -676,12 +676,18 @@ export const setFavourite = (slug: string, on: boolean) =>
     : deleteJson<{ is_favourite: boolean }>(`/problems/${slug}/favourite/`);
 
 export const voteProblem = (slug: string, value: -1 | 0 | 1) =>
-  postJson<{ up: number; down: number; mine: number }>(`/problems/${slug}/vote/`, {
-    value,
-  });
+  postJson<{ up: number; down: number; mine: number }>(
+    `/problems/${slug}/vote/`,
+    {
+      value,
+    },
+  );
 
 export const unlockEditorial = (slug: string) =>
-  postJson<{ editorial: string; price: number }>(`/problems/${slug}/editorial/`, {});
+  postJson<{ editorial: string; price: number }>(
+    `/problems/${slug}/editorial/`,
+    {},
+  );
 
 export const rateProblem = (slug: string, score: number) =>
   postJson<{ average: number | null; count: number; my_rating: number }>(
@@ -732,7 +738,9 @@ export const api = {
   attempts: () => get<Paginated<Attempt>>("/attempts/", 0),
   // Tillar deyarli o'zgarmaydi — judge obrazi bilan bir manbadan (ADR-0004).
   languages: () => get<Paginated<Language>>("/languages/", 300),
-  topics: () => get<Paginated<Topic>>("/topics/", 300),
+  // Filtr paneli mavzularni TO'LIQ ko'rsatishi kerak — birinchi 25 tasi
+  // emas, aks holda tanlab bo'lmaydigan yorliqlar paydo bo'lardi.
+  topics: () => get<Paginated<Topic>>("/topics/?page_size=100", 300),
   quizzes: () => get<Paginated<Quiz>>("/quizzes/", 60),
   quiz: (slug: string) => get<QuizDetail>(`/quizzes/${slug}/`, 60),
   arenas: () => get<Paginated<Arena>>("/arena/", 10),

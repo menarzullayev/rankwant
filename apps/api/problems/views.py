@@ -163,7 +163,6 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
             }
         )
 
-
     @extend_schema(request=VoteSerializer, responses={200: {"type": "object"}})
     @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
     def vote(self, request: Request, slug: str | None = None) -> Response:
@@ -345,10 +344,18 @@ class ProgressView(APIView):
 
 
 class TopicViewSet(viewsets.ReadOnlyModelViewSet[Topic]):
+    """Filtr paneli uchun mavzular.
+
+    Faqat OMMAVIY masalasi bori: import qilingan arxiv 140 dan ortiq
+    teg olib keladi va ularning ko'pi hali qoralamalarga tegishli —
+    hech narsa topmaydigan yorliq filtrni shovqinga aylantiradi.
+    Xodimlar to'liq ro'yxatni `staff/topics/` da ko'radi.
+    """
+
     permission_classes = [AllowAny]
     serializer_class = TopicSerializer
     lookup_field = "slug"
-    queryset = Topic.objects.all().order_by("slug")
+    queryset = Topic.objects.filter(problems__is_public=True).distinct().order_by("slug")
 
 
 class LanguageViewSet(viewsets.ReadOnlyModelViewSet[Language]):
