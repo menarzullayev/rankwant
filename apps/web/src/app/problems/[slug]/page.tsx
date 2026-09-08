@@ -77,6 +77,16 @@ export default async function ProblemPage({ params, searchParams }: Props) {
               </Badge>
             ))}
           </div>
+
+          {/* Yechilish foizi — masala qanchalik qiyinligini raqamdan
+              ko'ra aniqroq ko'rsatadi (RoboContest «Murakkablik», CF da
+              solve count). Urinish bo'lmasa foiz ma'nosiz. */}
+          <p className="mt-3 text-theme-sm rw-dim">
+            {problem.solved_count} kishi yechdi · {problem.attempt_count}{" "}
+            urinish
+            {problem.attempt_count > 0 &&
+              ` · ${Math.round((problem.solved_count / problem.attempt_count) * 100)}% muvaffaqiyat`}
+          </p>
         </header>
 
         {contest && (

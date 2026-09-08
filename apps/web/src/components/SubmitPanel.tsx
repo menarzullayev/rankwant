@@ -359,6 +359,8 @@ export default function SubmitPanel({
         }
         bodyClassName="space-y-3"
       >
+        <EditorTools source={source} onSource={setSource} onError={setError} />
+
         <CodeEditor
           language={editorLanguage(language)}
           value={source}
@@ -446,6 +448,70 @@ export default function SubmitPanel({
         )}
         {tab === "history" && <HistoryView items={history} />}
       </Card>
+    </div>
+  );
+}
+
+/** Muharrir asboblari — uchala taqqoslangan platformada ham bor:
+ * fayldan yuklash, nusxalash, tozalash va manba hajmi. */
+function EditorTools({
+  source,
+  onSource,
+  onError,
+}: {
+  source: string;
+  onSource: (next: string) => void;
+  onError: (message: string | null) => void;
+}) {
+  const [copied, setCopied] = useState(false);
+  const bytes = new TextEncoder().encode(source).length;
+
+  async function upload(file: File | undefined) {
+    if (!file) return;
+    if (file.size > MAX_SOURCE_BYTES) {
+      onError(`Fayl ${MAX_SOURCE_BYTES / 1024} KB dan oshmasligi kerak`);
+      return;
+    }
+    onError(null);
+    onSource(await file.text());
+  }
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(source);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // Clipboard ruxsati yo'q — kod muharrirda ko'rinib turibdi.
+    }
+  }
+
+  const action =
+    "rw-radius-sm px-2 py-1 text-theme-xs font-medium rw-dim transition rw-hover-bg";
+
+  return (
+    <div className="flex flex-wrap items-center gap-1">
+      <label className={`${action} cursor-pointer`}>
+        Fayldan yuklash
+        <input
+          type="file"
+          accept=".cpp,.cc,.cxx,.c,.py,.java,.kt,.go,.rs,.cs,.js,.ts,.txt"
+          className="hidden"
+          onChange={(e) => {
+            void upload(e.target.files?.[0]);
+            e.target.value = "";
+          }}
+        />
+      </label>
+      <button type="button" onClick={copy} className={action}>
+        {copied ? "Nusxalandi" : "Nusxalash"}
+      </button>
+      <button type="button" onClick={() => onSource("")} className={action}>
+        Tozalash
+      </button>
+      <span className="ml-auto font-mono text-theme-xs rw-faint">
+        {bytes} / {MAX_SOURCE_BYTES}
+      </span>
     </div>
   );
 }
