@@ -32,7 +32,9 @@ export async function generateMetadata({
   try {
     const problem = await api.problem(slug);
     return {
-      title: problem.title,
+      title: problem.code
+        ? `#${String(problem.code).padStart(4, "0")} · ${problem.title}`
+        : problem.title,
       description: `${problem.title} — qiyinlik ${problem.difficulty}. RankWant masala arxivi.`,
     };
   } catch {
@@ -63,7 +65,17 @@ export default async function ProblemPage({ params, searchParams }: Props) {
     <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,560px)]">
       <article className="space-y-6">
         <header>
-          <h1 className="text-title-sm font-bold rw-strong">{problem.title}</h1>
+          <div className="flex flex-wrap items-baseline gap-3">
+            {/* Ommaviy raqam — og'zaki muomala uchun ("431-masala"). */}
+            {problem.code !== null && (
+              <span className="font-mono text-theme-sm rw-faint tabular-nums">
+                #{String(problem.code).padStart(4, "0")}
+              </span>
+            )}
+            <h1 className="text-title-sm font-bold rw-strong">
+              {problem.title}
+            </h1>
+          </div>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <DifficultyBadge value={problem.difficulty} />
             <span

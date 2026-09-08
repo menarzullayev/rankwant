@@ -90,3 +90,11 @@ test("namunalar kirish va chiqish bilan ko'rinadi", async ({ page }) => {
     page.getByRole("button", { name: /namuna kirishini nusxalash/ }).first(),
   ).toBeVisible();
 });
+
+test("masala sahifasida ommaviy raqam ko'rinadi", async ({ page }) => {
+  await page.goto(PROBLEM);
+
+  await expect(page.getByText(/^#\d{4}$/)).toBeVisible();
+  // Sarlavhada ham — qidiruv natijasida masalani raqami bilan tanish uchun.
+  await expect(page).toHaveTitle(/#\d{4}/);
+});
