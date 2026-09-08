@@ -122,6 +122,23 @@ class TestToFields:
             "code_template": "",
         }
 
+    def test_manfiy_limit_cheklov_yoqligini_bildiradi(self):
+        # KEP `-1` yozadi; uni o'tkazish manfiy limit bo'lib bazani buzardi.
+        entry = {"lang": "cpp", "timeLimit": 1000, "memoryLimit": -1, "codeTemplate": ""}
+        assert kep.language_limits(entry, 256)["memory_limit_kb"] is None
+        assert kep.to_fields({"id": 1, "memoryLimit": -1})["memory_limit_kb"] == 256 * 1024
+
+    def test_biriktirmalar(self):
+        payload = {
+            "attachments": [
+                {"id": 10, "name": "poly.zip", "url": "https://s3/poly.zip", "size": 1630},
+                {"name": "havolasiz", "url": "", "size": 5},
+            ]
+        }
+        assert kep.attachments(payload) == [
+            {"url": "https://s3/poly.zip", "name": "poly.zip", "size_bytes": 1630}
+        ]
+
 
 @pytest.fixture
 def kep_api(monkeypatch) -> None:
@@ -146,7 +163,9 @@ def kep_api(monkeypatch) -> None:
             ],
             "sampleTests": [],
             "similarProblems": [{"id": 2, "score": 0.9}],
-            "attachments": [],
+            "attachments": [
+                {"name": "poly.zip", "url": "https://s3/poly.zip", "size": 1630}
+            ],
             "checkInputSource": None,
             "likesCount": 0,
             "dislikesCount": 0,
@@ -227,6 +246,11 @@ class TestImportCommand:
         assert author.username == "kep-admin"
         assert author.is_active is False
         assert author.has_usable_password() is False
+
+    def test_biriktirma_koradi(self, kep_api, language):
+        self.run()
+        attachment = Problem.objects.get(slug="ikki-son").attachments.get()
+        assert (attachment.name, attachment.size_bytes) == ("poly.zip", 1630)
 
     def test_oxshashlik_grafi(self, kep_api, language):
         self.run()

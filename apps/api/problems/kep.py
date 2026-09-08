@@ -124,7 +124,7 @@ def to_fields(payload: dict[str, Any]) -> dict[str, Any]:
     degani. Uni `checker_type` ga o'tkazish hamma masalani noto'g'ri
     maxsus qilib qo'yardi.
     """
-    memory_mb = payload.get("memoryLimit") or 256
+    memory_mb = positive(payload.get("memoryLimit")) or 256
     # KEP tahlilni kepcoin bilan ochtiradi; bizda ham shunday (ADR-0013).
     # `null` — narx belgilanmagan, ya'ni bizning standart narx qolsin.
     price = payload.get("solutionKepcoinValue")
@@ -148,15 +148,41 @@ def to_fields(payload: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def positive(value: Any) -> int | None:
+    """Musbat butun son, aks holda None.
+
+    KEP `-1` ni «cheklov yo'q» ma'nosida ishlatadi; uni ko'r-ko'rona
+    o'tkazish manfiy limit yozib, bazadagi cheklovni buzardi.
+    """
+    try:
+        number = int(value)
+    except (TypeError, ValueError):
+        return None
+    return number if number > 0 else None
+
+
 def language_limits(entry: dict[str, Any], memory_mb_default: int) -> dict[str, Any]:
     """`availableLanguages` yozuvidan ustma-ust limitlar.
 
     `null` — «masala limiti ishlaydi», shuning uchun u NULL bo'lib
     qoladi va bizning modelda ham xuddi shu ma'noni bildiradi.
     """
-    memory_mb = entry.get("memoryLimit")
+    memory_mb = positive(entry.get("memoryLimit"))
     return {
-        "time_limit_ms": entry.get("timeLimit") or None,
-        "memory_limit_kb": (memory_mb or memory_mb_default) * 1024 if memory_mb else None,
+        "time_limit_ms": positive(entry.get("timeLimit")),
+        "memory_limit_kb": memory_mb * 1024 if memory_mb else None,
         "code_template": (entry.get("codeTemplate") or "").replace("\r\n", "\n").strip(),
     }
+
+
+def attachments(payload: dict[str, Any]) -> list[dict[str, Any]]:
+    """Biriktirilgan fayllar — nomi, havolasi va hajmi bilan."""
+    return [
+        {
+            "url": row["url"],
+            "name": (row.get("name") or "fayl")[:200],
+            "size_bytes": max(0, positive(row.get("size")) or 0),
+        }
+        for row in payload.get("attachments") or []
+        if row.get("url")
+    ]

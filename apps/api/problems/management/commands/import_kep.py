@@ -25,6 +25,7 @@ from problems import kep, storage
 from problems.models import (
     Language,
     Problem,
+    ProblemAttachment,
     ProblemLanguage,
     SimilarProblem,
     TestCase,
@@ -75,7 +76,6 @@ class Command(BaseCommand):
         #: chunki A→B havolasi B import qilinmaguncha yasalmaydi.
         self.imported: dict[int, Problem] = {}
         self.similar: dict[int, list[tuple[int, float]]] = {}
-        self.attachment_warnings = 0
         self.failed: list[int] = []
 
         if self.with_samples:
@@ -116,11 +116,6 @@ class Command(BaseCommand):
                     f"{len(self.failed)} masala olinmadi — qayta yuritish uchun: "
                     f"--ids {','.join(str(i) for i in self.failed[:50])}"
                 )
-            )
-        if self.attachment_warnings:
-            self.stdout.write(
-                f"DIQQAT: {self.attachment_warnings} masalada biriktirma bor — "
-                "ular hali ko'chirilmaydi"
             )
 
     # ── manba ro'yxati ──────────────────────────────────────────────
@@ -184,9 +179,7 @@ class Command(BaseCommand):
         if self.with_samples:
             self.apply_samples(problem, payload)
         self.apply_validator(problem, payload)
-
-        if payload.get("attachments"):
-            self.attachment_warnings += 1
+        self.apply_attachments(problem, payload)
 
         self.imported[kep_id] = problem
         self.similar[kep_id] = [
@@ -240,6 +233,16 @@ class Command(BaseCommand):
                 },
             )
         problem.tests.filter(order__gt=len(samples)).delete()
+
+    def apply_attachments(self, problem: Problem, payload: dict[str, Any]) -> None:
+        rows = kep.attachments(payload)
+        problem.attachments.exclude(url__in=[row["url"] for row in rows]).delete()
+        for row in rows:
+            ProblemAttachment.objects.update_or_create(
+                problem=problem,
+                url=row["url"],
+                defaults={"name": row["name"], "size_bytes": row["size_bytes"]},
+            )
 
     def apply_validator(self, problem: Problem, payload: dict[str, Any]) -> None:
         """Kirish validatori — hacking uchun kerak bo'ladi (ADR muhokamasi).
