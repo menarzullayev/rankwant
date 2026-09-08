@@ -7,17 +7,34 @@ on:
   schedule:
     - cron: '0 3 * * *'
 
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
   security-events: write
   pull-requests: read
 
 jobs:
-  deps:
-    name: Bog'liqlik auditi
+  # Uchala tekshiruv bitta job'da: birgalikda 43 soniya ishlaydi, lekin
+  # alohida turganda GitHub har birini daqiqagacha yaxlitlab hisoblardi —
+  # 43 soniyalik ish 3 daqiqa bo'lib ketardi.
+  audit:
+    name: Xavfsizlik tekshiruvlari
     runs-on: ubuntu-latest
     steps:
+      # gitleaks butun tarixni ko'radi, shuning uchun to'liq klon.
       - uses: actions/checkout@v7
+        with: { fetch-depth: 0 }
+
+      - name: gitleaks
+        # Action emas, to'g'ridan-to'g'ri skaner: GitHub API ruxsatiga bog'liq emas,
+        # shuning uchun Dependabot PR'larida ham (read-only token) ishlaydi.
+        run: |
+          docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:latest \
+            detect --source /repo --redact --no-banner --verbose
+
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
@@ -30,6 +47,7 @@ jobs:
           if [ -f services/judge-py/pyproject.toml ]; then
             pip-audit --path services/judge-py || true
           fi
+
       - uses: actions/setup-node@v7
         with:
           node-version: '22'
@@ -39,25 +57,7 @@ jobs:
             cd apps/web && npm audit --audit-level=high
           fi
 
-  secrets:
-    name: Secret sizishi
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-        with: { fetch-depth: 0 }
-      - name: gitleaks
-        # Action emas, to'g'ridan-to'g'ri skaner: GitHub API ruxsatiga bog'liq emas,
-        # shuning uchun Dependabot PR'larida ham (read-only token) ishlaydi.
-        run: |
-          docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:latest \
-            detect --source /repo --redact --no-banner --verbose
-
-  sandbox:
-    name: Judge sandbox izolyatsiyasi
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - name: Escape sinovlari
+      - name: Judge sandbox — escape sinovlari
         run: |
           if [ -x tests/security/run.sh ]; then
             tests/security/run.sh
