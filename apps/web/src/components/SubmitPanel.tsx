@@ -718,15 +718,13 @@ function EveryoneView({
   if (items === null)
     return <p className="text-theme-sm rw-faint">Yuklanmoqda…</p>;
 
-  if (items.length === 0)
-    return (
-      <p className="text-theme-sm rw-faint">
-        Bu masalaga hali hech kim urinmagan. Birinchi bo&apos;ling.
-      </p>
-    );
-
   return (
     <div className="space-y-3">
+      {items.length === 0 && (
+        <p className="text-theme-sm rw-faint">
+          Bu masalaga hali hech kim urinmagan. Birinchi bo&apos;ling.
+        </p>
+      )}
       <ul className="rw-divide divide-y">
         {items.map((item) => (
           <li
