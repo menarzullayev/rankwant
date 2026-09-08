@@ -20,6 +20,7 @@ type StaffProblem = {
   output_format: string;
   note: string;
   editorial: string;
+  editorial_price: number;
   statement_locale: string;
   difficulty: number;
   topics: string[];
@@ -111,7 +112,14 @@ const PROBLEM_FIELDS: FieldDef[] = [
     label: "Yechim tahlili",
     type: "textarea",
     rows: 8,
-    help: "Sahifada spoyler ortida turadi",
+    help: "Masalani yechgan bepul ko'radi (ADR-0013)",
+  },
+  {
+    name: "editorial_price",
+    label: "Tahlilni ochish narxi, Qvant",
+    type: "number",
+    min: 0,
+    help: "Yechmaganlar uchun. 0 — hammaga bepul",
   },
   { name: "topics", label: "Mavzular (slug, vergul bilan)", type: "list" },
   { name: "time_limit_ms", label: "Vaqt limiti, ms", type: "number", min: 100 },
