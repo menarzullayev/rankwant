@@ -63,6 +63,11 @@ class TestHtmlToMarkdown:
         source = "<p>Funksiya <code>get_students</code> tuzing.</p>"
         assert html_to_markdown(source) == "Funksiya `get_students` tuzing."
 
+    def test_formulada_qattiq_boshliq_oddiysiga_aylanadi(self):
+        # KaTeX 160-belgini «tanilmagan» deb ogohlantiradi.
+        source = '<span class="mathjax-latex">\\(n\xa0(1 \\le n)\\)</span>'
+        assert html_to_markdown(source) == "$n (1 \\le n)$"
+
     def test_formuladagi_belgilar_qochirilmaydi(self):
         source = '<span class="mathjax-latex">\\(a_1 \\le 10^5\\)</span>'
         assert html_to_markdown(source) == "$a_1 \\le 10^5$"

@@ -261,7 +261,9 @@ class _Converter(HTMLParser):
 
     # ── matematika ──────────────────────────────────────────────────
     def _flush_math(self) -> None:
-        raw = "".join(self._math or []).strip()
+        # Qattiq bo'shliq formulada ma'no bermaydi, KaTeX esa uni
+        # «tanilmagan belgi» deb ogohlantiradi.
+        raw = "".join(self._math or []).replace("\xa0", " ").strip()
         self._math = None
         if not raw:
             return
