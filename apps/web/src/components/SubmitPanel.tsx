@@ -90,7 +90,7 @@ function useStored(key: string): string | null {
   );
 }
 
-type Tab = "verdict" | "samples" | "custom" | "history";
+type Tab = "verdict" | "samples" | "custom" | "history" | "everyone";
 
 type SampleResult = {
   order: number;
@@ -133,6 +133,7 @@ export default function SubmitPanel({
   const [stdin, setStdin] = useState("");
   const [customRun, setCustomRun] = useState<CustomRun | null>(null);
   const [sampleResults, setSampleResults] = useState<SampleResult[]>([]);
+  const [everyone, setEveryone] = useState<Attempt[] | null>(null);
 
   const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -172,16 +173,25 @@ export default function SubmitPanel({
 
   const loadHistory = useCallback(() => {
     if (!user) return;
-    fetchProblemAttempts(problem)
-      .then((page) =>
-        setHistory(page.results.filter((a) => a.username === user.username)),
-      )
+    // Backend `username` bo'yicha filtrlaydi — mijozda filtrlash sahifadan
+    // tashqaridagi o'z urinishlarini yo'qotardi.
+    fetchProblemAttempts(problem, user.username)
+      .then((page) => setHistory(page.results))
       .catch(() => {});
   }, [problem, user]);
 
   useEffect(() => {
     loadHistory();
   }, [loadHistory]);
+
+  // Boshqalarning urinishlari faqat tab ochilganda — arxivning har
+  // sahifasida ortiqcha so'rov yubormaslik uchun.
+  useEffect(() => {
+    if (tab !== "everyone" || everyone !== null) return;
+    fetchProblemAttempts(problem)
+      .then((page) => setEveryone(page.results))
+      .catch(() => setEveryone([]));
+  }, [tab, everyone, problem]);
 
   useEffect(
     () => () => {
@@ -409,8 +419,9 @@ export default function SubmitPanel({
                 ["custom", "O'z testim"],
                 [
                   "history",
-                  `Urinishlar${history.length ? ` (${history.length})` : ""}`,
+                  `Urinishlarim${history.length ? ` (${history.length})` : ""}`,
                 ],
+                ["everyone", "Hammasi"],
               ] as const
             ).map(([key, label]) => (
               <button
@@ -447,6 +458,7 @@ export default function SubmitPanel({
           />
         )}
         {tab === "history" && <HistoryView items={history} />}
+        {tab === "everyone" && <EveryoneView items={everyone} />}
       </Card>
     </div>
   );
@@ -690,6 +702,47 @@ function SamplesView({
         </div>
       )}
     </div>
+  );
+}
+
+/** Boshqalarning urinishlari — kim yechganini va qaysi tilda ekanini
+ * ko'rish uchun. Manba ko'rsatilmaydi: backend uni faqat egasiga va
+ * xodimga qaytaradi. */
+function EveryoneView({ items }: { items: Attempt[] | null }) {
+  if (items === null)
+    return <p className="text-theme-sm rw-faint">Yuklanmoqda…</p>;
+
+  if (items.length === 0)
+    return (
+      <p className="text-theme-sm rw-faint">
+        Bu masalaga hali hech kim urinmagan. Birinchi bo&apos;ling.
+      </p>
+    );
+
+  return (
+    <ul className="rw-divide divide-y">
+      {items.map((item) => (
+        <li
+          key={item.id}
+          className="flex flex-wrap items-center gap-3 py-2 text-theme-sm"
+        >
+          <Link
+            href={`/users/${item.username}`}
+            className="font-medium rw-strong rw-link-hover"
+          >
+            {item.username}
+          </Link>
+          <VerdictBadge verdict={item.verdict} />
+          <span className="rw-dim">{item.language}</span>
+          <span className="rw-faint">
+            {item.time_ms} ms · {Math.round(item.memory_kb / 1024)} MB
+          </span>
+          <time className="ml-auto rw-faint" dateTime={item.created_at}>
+            {new Date(item.created_at).toLocaleDateString("uz")}
+          </time>
+        </li>
+      ))}
+    </ul>
   );
 }
 

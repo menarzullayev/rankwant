@@ -553,8 +553,11 @@ export function submitAttempt(body: {
 export const fetchAttempt = (id: number) =>
   getJson<AttemptDetail>(`/attempts/${id}/`);
 
-export const fetchProblemAttempts = (slug: string) =>
-  getJson<Paginated<Attempt>>(`/attempts/?problem=${encodeURIComponent(slug)}`);
+export const fetchProblemAttempts = (slug: string, username?: string) =>
+  getJson<Paginated<Attempt>>(
+    `/attempts/?problem=${encodeURIComponent(slug)}` +
+      (username ? `&username=${encodeURIComponent(username)}` : ""),
+  );
 
 /** PRD P0-4 — o'z kiritmasi bilan sinash. Urinish tarixiga tushmaydi. */
 export function runCustomTest(body: {

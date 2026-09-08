@@ -5,6 +5,7 @@ import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { Editorial } from "@/components/Editorial";
 import { SampleTests } from "@/components/SampleTests";
+import { StatementSize } from "@/components/StatementSize";
 import SubmitPanel from "@/components/SubmitPanel";
 import { notFound } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
@@ -100,26 +101,30 @@ export default async function ProblemPage({ params, searchParams }: Props) {
           </p>
         )}
 
-        <Card bodyClassName="space-y-5">
-          <Markdown>{problem.statement}</Markdown>
+        <Card>
+          <StatementSize>
+            <div className="space-y-5">
+              <Markdown>{problem.statement}</Markdown>
 
-          {problem.input_format && (
-            <section>
-              <h2 className="mb-1.5 text-theme-lg font-semibold rw-strong">
-                Kiruvchi ma&apos;lumot
-              </h2>
-              <Markdown>{problem.input_format}</Markdown>
-            </section>
-          )}
+              {problem.input_format && (
+                <section>
+                  <h2 className="mb-1.5 text-theme-lg font-semibold rw-strong">
+                    Kiruvchi ma&apos;lumot
+                  </h2>
+                  <Markdown>{problem.input_format}</Markdown>
+                </section>
+              )}
 
-          {problem.output_format && (
-            <section>
-              <h2 className="mb-1.5 text-theme-lg font-semibold rw-strong">
-                Chiquvchi ma&apos;lumot
-              </h2>
-              <Markdown>{problem.output_format}</Markdown>
-            </section>
-          )}
+              {problem.output_format && (
+                <section>
+                  <h2 className="mb-1.5 text-theme-lg font-semibold rw-strong">
+                    Chiquvchi ma&apos;lumot
+                  </h2>
+                  <Markdown>{problem.output_format}</Markdown>
+                </section>
+              )}
+            </div>
+          </StatementSize>
         </Card>
 
         <SampleTests samples={problem.samples} />

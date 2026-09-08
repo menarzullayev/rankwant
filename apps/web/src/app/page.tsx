@@ -6,7 +6,44 @@ import { Card, StatCard } from "@/components/ui/Card";
 import { TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
 import { ContestIcon, LeaderboardIcon, ProblemsIcon, QvantIcon } from "@/icons";
-import { api, ApiError, type Contest, type Post } from "@/lib/api";
+import {
+  api,
+  ApiError,
+  type Attempt,
+  type Contest,
+  type Paginated,
+  type Post,
+  type ProblemDetail,
+  type Recommendation,
+  type UserPublic,
+} from "@/lib/api";
+import { getWithSession } from "@/lib/api.server";
+
+/** Kirgan foydalanuvchi uchun «qayerdan davom etaman» savoliga javob:
+ * avval tugallanmagan urinish, bo'lmasa tavsiya. Mehmonga `null`. */
+async function resumeTarget(
+  me: UserPublic | null,
+): Promise<{ slug: string; title: string } | null> {
+  if (!me) return null;
+
+  const attempts = await getWithSession<Paginated<Attempt>>(
+    `/attempts/?username=${encodeURIComponent(me.username)}`,
+  ).catch(() => null);
+
+  const pending = attempts?.results.find((a) => a.verdict !== "AC");
+  if (pending) {
+    const problem = await api
+      .problem(pending.problem)
+      .catch((): ProblemDetail | null => null);
+    if (problem) return { slug: problem.slug, title: problem.title };
+  }
+
+  const recommended = await getWithSession<Recommendation>(
+    "/problems/recommendation/",
+  ).catch(() => null);
+  const first = recommended?.results[0];
+  return first ? { slug: first.slug, title: first.title } : null;
+}
 
 export const dynamic = "force-dynamic";
 
@@ -38,26 +75,45 @@ export default async function Home() {
     if (!(error instanceof ApiError)) throw error;
   }
 
+  const me = await getWithSession<UserPublic>("/me/").catch(() => null);
+  const resume = await resumeTarget(me);
+
   const soon = upcoming(contests.results);
   const top = users.results.slice(0, 5);
 
   return (
     <div className="space-y-6">
       <section className="rw-radius border rw-line rw-surface px-6 py-10 rw-shadow">
-        <h1 className="text-title-sm font-bold rw-strong">RankWant</h1>
+        <h1 className="text-title-sm font-bold rw-strong">
+          {me ? `Salom, ${me.display_name || me.username}!` : "RankWant"}
+        </h1>
         <p className="mt-3 max-w-2xl text-theme-sm rw-dim">
-          Reyting xohlaganlar uchun: masala yeching, musobaqada qatnashing,
-          darajangizni ko&apos;ring.
+          {me
+            ? "To'xtagan joyingizdan davom eting yoki yaqin musobaqaga yoziling."
+            : "Reyting xohlaganlar uchun: masala yeching, musobaqada qatnashing, darajangizni ko'ring."}
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
-          <ButtonLink href="/register">{t(locale, "home.start")}</ButtonLink>
-          <ButtonLink href="/problems" variant="outline">
-            {t(locale, "nav.problems")}
+          {resume ? (
+            <ButtonLink href={{ pathname: `/problems/${resume.slug}` }}>
+              Davom etish · {resume.title}
+            </ButtonLink>
+          ) : (
+            <ButtonLink href={me ? "/problems" : "/register"}>
+              {me ? t(locale, "nav.problems") : t(locale, "home.start")}
+            </ButtonLink>
+          )}
+          <ButtonLink
+            href={resume ? "/problems" : "/contests"}
+            variant="outline"
+          >
+            {resume ? t(locale, "nav.problems") : t(locale, "nav.contests")}
           </ButtonLink>
         </div>
-        <p className="mt-4 text-theme-xs rw-faint">
-          {t(locale, "home.guestHint")}
-        </p>
+        {!me && (
+          <p className="mt-4 text-theme-xs rw-faint">
+            {t(locale, "home.guestHint")}
+          </p>
+        )}
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
