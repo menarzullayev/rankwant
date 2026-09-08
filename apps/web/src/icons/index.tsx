@@ -235,6 +235,18 @@ export const ShopIcon = (p: IconProps) => (
   </Icon>
 );
 
+export const StarIcon = ({
+  filled,
+  ...p
+}: IconProps & { filled?: boolean }) => (
+  <Icon {...p}>
+    <path
+      fill={filled ? "currentColor" : "none"}
+      d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.7l5.9-.9Z"
+    />
+  </Icon>
+);
+
 export const FlameIcon = (p: IconProps) => (
   <Icon {...p}>
     <path d="M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3 1-6 1-9Z" />

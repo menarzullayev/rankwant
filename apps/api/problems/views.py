@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from django.db.models import Avg, Count
+from django.db.models import Avg, Count, Max
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
@@ -43,21 +43,48 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
     ordering = ["difficulty"]
 
     def get_queryset(self):  # type: ignore[no-untyped-def]
+        # Baho ro'yxatda ham ko'rinadi — har qatorga alohida so'rov
+        # bo'lmasligi uchun annotatsiya.
         return (
             Problem.objects.filter(is_public=True)
             .prefetch_related("topics")
+            .annotate(
+                rating_avg=Avg("ratings__score"),
+                rating_count=Count("ratings", distinct=True),
+            )
             .order_by("difficulty", "slug")
         )
 
     def get_serializer_context(self):  # type: ignore[no-untyped-def]
         context: dict[str, Any] = dict(super().get_serializer_context())
         user = self.request.user
-        if user.is_authenticated:
-            from ratings.models import UserSolvedProblem
+        if not user.is_authenticated:
+            return context
 
-            context["solved_slugs"] = set(
-                UserSolvedProblem.objects.filter(user=user).values_list("problem__slug", flat=True)
-            )
+        from judging.models import Attempt
+        from problems.models import Favourite
+        from ratings.models import UserSolvedProblem
+
+        # Uchalasi ham foydalanuvchi bo'yicha bitta so'rov — qator soniga
+        # bog'liq emas.
+        context["solved_slugs"] = set(
+            UserSolvedProblem.objects.filter(user=user).values_list("problem__slug", flat=True)
+        )
+        context["favourite_ids"] = set(
+            Favourite.objects.filter(user=user).values_list("problem_id", flat=True)
+        )
+        # Oxirgi urinish verdikti — «urindim, WA oldim» signali. Ikkita
+        # so'rov, ikkalasi ham urinilgan masalalar soni bilan chegaralangan
+        # (`DISTINCT ON` Postgres'ga bog'lab qo'yardi, testlar SQLite'da).
+        last_ids = dict(
+            Attempt.objects.filter(user=user).values_list("problem_id").annotate(last=Max("pk"))
+        )
+        verdicts = dict(
+            Attempt.objects.filter(pk__in=last_ids.values()).values_list("pk", "verdict")
+        )
+        context["my_verdicts"] = {
+            problem_id: verdicts.get(attempt_id) for problem_id, attempt_id in last_ids.items()
+        }
         return context
 
     def get_serializer_class(self):  # type: ignore[no-untyped-def]

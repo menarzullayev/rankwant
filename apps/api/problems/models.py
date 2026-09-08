@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from typing import ClassVar
+from typing import Any, ClassVar
 
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db import models
+from django.db import IntegrityError, models, transaction
 
 DIFFICULTY_MIN = 800
 DIFFICULTY_MAX = 3500
@@ -57,6 +57,31 @@ class Language(models.Model):
         return f"{self.name} {self.version}".strip()
 
 
+class ProblemCodeSequence(models.Model):
+    """Berilgan oxirgi ommaviy raqam.
+
+    `max(code) + 1` yetarli emas: eng oxirgi masala o'chirilsa uning
+    raqami bo'shab qolar va keyingi masalaga o'tardi — tarqalgan `#0431`
+    havolasi boshqa masalani ko'rsatib qolardi. Hisoblagich faqat oldinga
+    yuradi.
+    """
+
+    value = models.PositiveIntegerField(default=0)
+
+    def __str__(self) -> str:
+        return f"#{self.value:04d}"
+
+    @classmethod
+    def next_code(cls) -> int:
+        counter = cls.objects.select_for_update().first()
+        if counter is None:
+            counter = cls.objects.create(value=0)
+            counter = cls.objects.select_for_update().get(pk=counter.pk)
+        counter.value += 1
+        counter.save(update_fields=["value"])
+        return counter.value
+
+
 class Problem(models.Model):
     class Checker(models.TextChoices):
         STANDARD = "standard", "Standart"
@@ -64,6 +89,11 @@ class Problem(models.Model):
         INTERACTIVE = "interactive", "Interactive"
 
     slug = models.SlugField(unique=True, max_length=100)
+    #: Ommaviy qisqa raqam — `#0431`. Slug'dan farqli: og'zaki muomala
+    #: uchun ("431-masalani yeching") va hech qachon o'zgarmaydi.
+    #: `pk` EMAS: qoralamalar va o'chirilgan yozuvlar teshik qoldirardi,
+    #: shu bois raqam faqat masala e'lon qilinganda beriladi.
+    code = models.PositiveIntegerField(unique=True, null=True, blank=True, db_index=True)
     title = models.CharField(max_length=200)
     statement = models.TextField(help_text="Markdown + LaTeX")
     # Kiruvchi/chiquvchi alohida maydon, statement ichidagi sarlavha emas:
@@ -114,6 +144,23 @@ class Problem(models.Model):
 
     def __str__(self) -> str:
         return f"{self.slug} ({self.difficulty})"
+
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        # Raqam e'lon qilinganda beriladi — barcha yo'llarda (admin, staff
+        # API, seed) bir xil ishlashi uchun `save()` da. Yagona indeks
+        # poyga holatini ushlaydi; publish kamdan-kam amal, shu bois
+        # qayta urinish yetarli.
+        for _ in range(4):
+            if not self.is_public or self.code:
+                return super().save(*args, **kwargs)
+            try:
+                with transaction.atomic():
+                    self.code = ProblemCodeSequence.next_code()
+                    return super().save(*args, **kwargs)
+            except IntegrityError:
+                self.code = None
+                kwargs.pop("force_insert", None)
+        raise IntegrityError("masala raqamini berib bo'lmadi")
 
     @property
     def level(self) -> str:

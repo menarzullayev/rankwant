@@ -8492,6 +8492,11 @@ components:
           maximum: 9223372036854775807
           minimum: 0
           format: int64
+        success_rate:
+          type: integer
+          nullable: true
+          description: Yechilgan / urinilgan, foizda. Urinish bo'lmasa ma'nosiz.
+          readOnly: true
         is_solved:
           type: boolean
           description: |-
@@ -8501,11 +8506,37 @@ components:
             aks holda har qatorga alohida so'rov ketardi. Mehmon uchun `None`,
             ya'ni hammasi `false`.
           readOnly: true
+        is_favourite:
+          type: boolean
+          readOnly: true
+        rating:
+          type: object
+          additionalProperties: {}
+          description: Jamoa bahosi — queryset'da annotatsiya qilinadi (N+1 emas).
+          readOnly: true
+        has_editorial:
+          type: boolean
+          readOnly: true
+        my_attempt_id:
+          type: integer
+          nullable: true
+          description: Shu masala bo'yicha oxirgi urinishim — ro'yxatdan to'g'ridan-to'g'ri.
+          readOnly: true
+        code:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
         samples:
           type: array
           items:
             type: object
             additionalProperties: {}
+          readOnly: true
+        my_rating:
+          type: integer
+          nullable: true
           readOnly: true
         statement:
           type: string
@@ -8524,17 +8555,6 @@ components:
           description: Markdown + LaTeX
         author:
           type: string
-          readOnly: true
-        rating:
-          type: object
-          additionalProperties: {}
-          readOnly: true
-        my_rating:
-          type: integer
-          nullable: true
-          readOnly: true
-        is_favourite:
-          type: boolean
           readOnly: true
         statement_locale:
           type: string
@@ -8564,15 +8584,18 @@ components:
       required:
       - author
       - difficulty
+      - has_editorial
       - is_favourite
       - is_solved
       - level
       - level_label
+      - my_attempt_id
       - my_rating
       - rating
       - samples
       - slug
       - statement
+      - success_rate
       - title
       - topics
     ProblemList:
@@ -8611,6 +8634,11 @@ components:
           maximum: 9223372036854775807
           minimum: 0
           format: int64
+        success_rate:
+          type: integer
+          nullable: true
+          description: Yechilgan / urinilgan, foizda. Urinish bo'lmasa ma'nosiz.
+          readOnly: true
         is_solved:
           type: boolean
           description: |-
@@ -8620,12 +8648,39 @@ components:
             aks holda har qatorga alohida so'rov ketardi. Mehmon uchun `None`,
             ya'ni hammasi `false`.
           readOnly: true
+        is_favourite:
+          type: boolean
+          readOnly: true
+        rating:
+          type: object
+          additionalProperties: {}
+          description: Jamoa bahosi — queryset'da annotatsiya qilinadi (N+1 emas).
+          readOnly: true
+        has_editorial:
+          type: boolean
+          readOnly: true
+        my_attempt_id:
+          type: integer
+          nullable: true
+          description: Shu masala bo'yicha oxirgi urinishim — ro'yxatdan to'g'ridan-to'g'ri.
+          readOnly: true
+        code:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
       required:
       - difficulty
+      - has_editorial
+      - is_favourite
       - is_solved
       - level
       - level_label
+      - my_attempt_id
+      - rating
       - slug
+      - success_rate
       - title
       - topics
     Purchase:

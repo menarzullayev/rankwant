@@ -161,3 +161,85 @@ def test_baho_ozgartiriladi_va_ortacha_hisoblanadi(problem, user, other_user) ->
     detail = APIClient().get(reverse("problem-detail", args=[problem.slug]))
     assert detail.data["rating"] == {"average": 4.0, "count": 2}
     assert detail.data["my_rating"] is None, "mehmonda o'z bahosi yo'q"
+
+
+class TestProblemCode:
+    """Ommaviy raqam — `#0431`. Berilgach o'zgarmaydi va qayta ishlatilmaydi."""
+
+    def test_qoralamaga_raqam_berilmaydi(self, db) -> None:
+        from problems.models import Problem
+
+        draft = Problem.objects.create(
+            slug="qoralama", title="Qoralama", statement="…", difficulty=800, is_public=False
+        )
+        assert draft.code is None
+
+    def test_elon_qilinganda_raqam_beriladi(self, db, problem) -> None:
+        from problems.models import Problem
+
+        assert problem.code is not None
+
+        draft = Problem.objects.create(
+            slug="ikkinchi", title="Ikkinchi", statement="…", difficulty=900, is_public=False
+        )
+        draft.is_public = True
+        draft.save()
+        draft.refresh_from_db()
+
+        assert draft.code == problem.code + 1
+
+    def test_raqam_ochirilgandan_keyin_qayta_ishlatilmaydi(self, db, problem) -> None:
+        from problems.models import Problem
+
+        first = problem.code
+        second = Problem.objects.create(
+            slug="uchinchi", title="Uchinchi", statement="…", difficulty=900, is_public=True
+        )
+        assert second.code == first + 1
+
+        second.delete()
+        third = Problem.objects.create(
+            slug="tortinchi", title="To'rtinchi", statement="…", difficulty=900, is_public=True
+        )
+        # Teshik qoladi — bu ataylab: tarqalgan raqam boshqa masalaga o'tmasin.
+        assert third.code == first + 2
+
+    def test_qayta_saqlash_raqamni_ozgartirmaydi(self, db, problem) -> None:
+        original = problem.code
+        problem.title = "Boshqa nom"
+        problem.save()
+        problem.refresh_from_db()
+        assert problem.code == original
+
+
+def test_royxat_qator_soniga_qarab_sorov_kopaytirmaydi(
+    db, user, problem, hard_problem, django_assert_num_queries
+) -> None:
+    """Sevimli, baho va oxirgi urinish — guruh so'rovlar bilan.
+
+    Qator ortganda so'rov soni o'zgarmasligi kerak; aks holda 100 masalali
+    sahifa 300 ta so'rov qilardi.
+    """
+    from problems.models import Favourite
+
+    client = APIClient()
+    client.force_authenticate(user)
+    Favourite.objects.create(user=user, problem=problem)
+
+    from django.db import connection
+    from django.test.utils import CaptureQueriesContext
+
+    url = reverse("problem-list")
+    with CaptureQueriesContext(connection) as ctx:
+        client.get(url)
+    baseline = len(ctx.captured_queries)
+
+    from problems.models import Problem
+
+    for i in range(8):
+        Problem.objects.create(
+            slug=f"yuk-{i}", title=f"Yuk {i}", statement="…", difficulty=1000, is_public=True
+        )
+
+    with django_assert_num_queries(baseline):
+        client.get(url)

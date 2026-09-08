@@ -140,3 +140,48 @@ test("kirgan foydalanuvchi holat filtrini va bo'lim havolalarini ko'radi", async
     page.getByRole("button", { name: /^Filtrlar \d+$/ }),
   ).toBeVisible();
 });
+
+test("arxiv qatorida masala raqami va statistikasi ko'rinadi", async ({
+  page,
+}) => {
+  await page.goto("/problems");
+
+  // Raqam sahifadagi o'rin emas — barqaror identifikator.
+  await expect(page.getByText(/^#\d{4}$/).first()).toBeVisible();
+  await expect(page.getByRole("columnheader", { name: "%" })).toBeVisible();
+});
+
+test("kirgan foydalanuvchi sevimliga qo'sha oladi", async ({ page }) => {
+  const api = process.env.E2E_API_BASE ?? "";
+  const site = process.env.E2E_BASE_URL ?? "http://localhost:3000";
+  test.skip(
+    new URL(api, site).origin !== new URL(site).origin,
+    "sayt va API alohida originda — sessiya cookie yetmaydi",
+  );
+
+  const username = `e2efav_${Date.now()}`;
+  const password = "E2eParol!12345";
+  await page.request.post(`${api}/auth/register/`, {
+    data: { username, password, email: `${username}@example.uz` },
+  });
+  await page.request.post(`${api}/auth/login/`, {
+    data: { username, password },
+  });
+
+  await page.goto("/problems");
+
+  const star = page
+    .getByRole("button", { name: /sevimlilarga qo'shish/ })
+    .first();
+  await expect(star).toBeVisible();
+  await star.click();
+  await expect(
+    page.getByRole("button", { name: /sevimlilardan olib tashlash/ }).first(),
+  ).toBeVisible();
+
+  // Qayta yuklangach ham saqlanib qolishi kerak — serverga yozilgan.
+  await page.reload();
+  await expect(
+    page.getByRole("button", { name: /sevimlilardan olib tashlash/ }).first(),
+  ).toBeVisible();
+});

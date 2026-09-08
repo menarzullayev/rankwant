@@ -23,7 +23,16 @@ export type Paginated<T> = {
 };
 
 export type Problem = {
+  /** Ommaviy raqam — `#0431`. Qoralamada `null`. */
+  code: number | null;
   is_solved: boolean;
+  is_favourite: boolean;
+  rating: { average: number | null; count: number };
+  has_editorial: boolean;
+  /** Oxirgi urinishim verdikti — hech urinmaganda `null`. */
+  my_verdict: string | null;
+  /** Yechilgan / urinilgan, foizda. Urinish bo'lmasa `null`. */
+  success_rate: number | null;
   slug: string;
   title: string;
   difficulty: number;

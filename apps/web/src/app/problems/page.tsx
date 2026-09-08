@@ -14,9 +14,11 @@ import {
   Table,
 } from "@/components/ui/Table";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
-import { CheckIcon } from "@/icons";
+import { BlogIcon, CheckIcon } from "@/icons";
 import { ProblemFilters } from "@/components/ProblemFilters";
+import { FavouriteToggle } from "@/components/FavouriteToggle";
 import { TopicBadges } from "@/components/TopicBadges";
+import { VerdictBadge } from "@/components/VerdictBadge";
 import {
   api,
   ApiError,
@@ -181,34 +183,68 @@ export default async function ProblemsPage({ searchParams }: Props) {
             <TH>#</TH>
             <TH>{t(locale, "problems.name")}</TH>
             <TH>{t(locale, "problems.difficulty")}</TH>
-            <TH align="right">{t(locale, "problems.solved")}</TH>
+            {/* Statistika ustunlari tor ekranda yig'iladi — nom, raqam va
+                qiyinlik telefonda ham ko'rinib turishi kerak. */}
+            <TH align="center" className="hidden md:table-cell">
+              ★
+            </TH>
+            <TH align="right" className="hidden sm:table-cell">
+              {t(locale, "problems.solved")}
+            </TH>
+            <TH align="right" className="hidden lg:table-cell">
+              %
+            </TH>
+            {me && (
+              <TH align="center">
+                <span className="sr-only">Sevimlilar</span>☆
+              </TH>
+            )}
           </THead>
           <TBody>
-            {data.results.map((p, i) => (
+            {data.results.map((p) => (
               <TR key={p.slug}>
                 <TD className="rw-faint">
-                  {/* Yechilganini bir qarashda ko'rish arxivning eng ko'p
-                      ishlatiladigan belgisi — uchala platformada ham bor. */}
-                  {p.is_solved ? (
-                    <span
-                      title={t(locale, "problems.solvedByYou")}
-                      aria-label={t(locale, "problems.solvedByYou")}
-                      role="img"
-                      className="inline-flex"
-                    >
-                      <CheckIcon className="size-4 rw-ok-ink" />
-                    </span>
-                  ) : (
-                    (page - 1) * pageSize + i + 1
-                  )}
+                  <span className="font-mono text-theme-xs tabular-nums">
+                    {p.code === null
+                      ? "—"
+                      : `#${String(p.code).padStart(4, "0")}`}
+                  </span>
                 </TD>
                 <TD>
-                  <Link
-                    href={`/problems/${p.slug}`}
-                    className="font-medium rw-strong rw-link-hover"
-                  >
-                    {p.title}
-                  </Link>
+                  <div className="flex items-center gap-1.5">
+                    {/* Yechilganini bir qarashda ko'rish arxivning eng ko'p
+                        ishlatiladigan belgisi — uchala platformada ham bor. */}
+                    {p.is_solved && (
+                      <span
+                        title={t(locale, "problems.solvedByYou")}
+                        aria-label={t(locale, "problems.solvedByYou")}
+                        role="img"
+                        className="inline-flex shrink-0"
+                      >
+                        <CheckIcon className="size-4 rw-ok-ink" />
+                      </span>
+                    )}
+                    <Link
+                      href={`/problems/${p.slug}`}
+                      className="font-medium rw-strong rw-link-hover"
+                    >
+                      {p.title}
+                    </Link>
+                    {p.has_editorial && (
+                      <span
+                        title="Yechim tahlili bor"
+                        aria-label="Yechim tahlili bor"
+                        role="img"
+                        className="inline-flex shrink-0 rw-faint"
+                      >
+                        <BlogIcon className="size-3.5" />
+                      </span>
+                    )}
+                    {/* Yechilmagan, lekin urinilgan — «WA oldim» signali */}
+                    {!p.is_solved && p.my_verdict && (
+                      <VerdictBadge verdict={p.my_verdict} />
+                    )}
+                  </div>
                   <TopicBadges topics={p.topics} solved={p.is_solved} />
                 </TD>
                 <TD>
@@ -219,13 +255,43 @@ export default async function ProblemsPage({ searchParams }: Props) {
                     </span>
                   </div>
                 </TD>
-                <TD align="right" className="rw-faint">
+                <TD align="center" className="hidden md:table-cell">
+                  {p.rating.average === null ? (
+                    <span className="rw-faint">—</span>
+                  ) : (
+                    <span
+                      className="text-theme-xs rw-dim-2 tabular-nums"
+                      title={`${p.rating.count} baho`}
+                    >
+                      {p.rating.average.toFixed(1)}
+                    </span>
+                  )}
+                </TD>
+                <TD
+                  align="right"
+                  className="hidden rw-faint tabular-nums sm:table-cell"
+                >
                   {p.solved_count}
                 </TD>
+                <TD
+                  align="right"
+                  className="hidden rw-faint tabular-nums lg:table-cell"
+                >
+                  {p.success_rate === null ? "—" : `${p.success_rate}%`}
+                </TD>
+                {me && (
+                  <TD align="center">
+                    <FavouriteToggle
+                      slug={p.slug}
+                      initial={p.is_favourite}
+                      title={p.title}
+                    />
+                  </TD>
+                )}
               </TR>
             ))}
             {data.count === 0 && (
-              <EmptyRow colSpan={4}>{t(locale, "empty")}</EmptyRow>
+              <EmptyRow colSpan={me ? 7 : 6}>{t(locale, "empty")}</EmptyRow>
             )}
           </TBody>
         </Table>

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import Any
 
-from django.db.models import Avg, Count
 from rest_framework import serializers
 
 from problems import storage
@@ -41,8 +40,37 @@ class RateProblemSerializer(serializers.Serializer[dict[str, Any]]):
 class ProblemListSerializer(serializers.ModelSerializer[Problem]):
     level = serializers.CharField(read_only=True)
     is_solved = serializers.SerializerMethodField()
+    is_favourite = serializers.SerializerMethodField()
+    rating = serializers.SerializerMethodField()
+    has_editorial = serializers.SerializerMethodField()
+    my_verdict = serializers.SerializerMethodField()
+    success_rate = serializers.SerializerMethodField()
     level_label = serializers.CharField(read_only=True)
     topics = serializers.SlugRelatedField[Topic](many=True, read_only=True, slug_field="slug")
+
+    def get_is_favourite(self, problem: Problem) -> bool:
+        return problem.pk in (self.context.get("favourite_ids") or ())
+
+    def get_rating(self, problem: Problem) -> dict[str, Any]:
+        """Jamoa bahosi — queryset'da annotatsiya qilinadi (N+1 emas)."""
+        average = getattr(problem, "rating_avg", None)
+        return {
+            "average": round(average, 1) if average is not None else None,
+            "count": getattr(problem, "rating_count", 0),
+        }
+
+    def get_has_editorial(self, problem: Problem) -> bool:
+        return bool(problem.editorial)
+
+    def get_my_verdict(self, problem: Problem) -> str | None:
+        """Shu masala bo'yicha oxirgi urinishim verdikti."""
+        return (self.context.get("my_verdicts") or {}).get(problem.pk)
+
+    def get_success_rate(self, problem: Problem) -> int | None:
+        """Yechilgan / urinilgan, foizda. Urinish bo'lmasa ma'nosiz."""
+        if not problem.attempt_count:
+            return None
+        return round(problem.solved_count / problem.attempt_count * 100)
 
     def get_is_solved(self, problem: Problem) -> bool:
         """Foydalanuvchi shu masalani yechganmi.
@@ -65,7 +93,13 @@ class ProblemListSerializer(serializers.ModelSerializer[Problem]):
             "topics",
             "solved_count",
             "attempt_count",
+            "success_rate",
             "is_solved",
+            "is_favourite",
+            "rating",
+            "has_editorial",
+            "my_verdict",
+            "code",
         ]
 
 
@@ -73,17 +107,7 @@ class ProblemDetailSerializer(ProblemListSerializer):
     samples = serializers.SerializerMethodField()
 
     author = serializers.CharField(source="author.username", read_only=True, default=None)
-    rating = serializers.SerializerMethodField()
     my_rating = serializers.SerializerMethodField()
-    is_favourite = serializers.SerializerMethodField()
-
-    def get_rating(self, problem: Problem) -> dict[str, Any]:
-        stats = problem.ratings.aggregate(average=Avg("score"), count=Count("pk"))
-        average = stats["average"]
-        return {
-            "average": round(average, 1) if average is not None else None,
-            "count": stats["count"],
-        }
 
     def _user(self) -> Any:
         request = self.context.get("request")
@@ -97,10 +121,6 @@ class ProblemDetailSerializer(ProblemListSerializer):
         mine = problem.ratings.filter(user=user).first()
         return mine.score if mine else None
 
-    def get_is_favourite(self, problem: Problem) -> bool:
-        user = self._user()
-        return user is not None and problem.favourites.filter(user=user).exists()
-
     def get_samples(self, problem: Problem) -> list[dict[str, Any]]:
         return storage.sample_tests(problem)
 
@@ -108,15 +128,13 @@ class ProblemDetailSerializer(ProblemListSerializer):
         fields = [
             *ProblemListSerializer.Meta.fields,
             "samples",
+            "my_rating",
             "statement",
             "input_format",
             "output_format",
             "note",
             "editorial",
             "author",
-            "rating",
-            "my_rating",
-            "is_favourite",
             "statement_locale",
             "time_limit_ms",
             "memory_limit_kb",
