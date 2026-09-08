@@ -35,8 +35,19 @@ class SampleTestSerializer(serializers.Serializer[dict[str, Any]]):
 
 class ProblemListSerializer(serializers.ModelSerializer[Problem]):
     level = serializers.CharField(read_only=True)
+    is_solved = serializers.SerializerMethodField()
     level_label = serializers.CharField(read_only=True)
     topics = serializers.SlugRelatedField[Topic](many=True, read_only=True, slug_field="slug")
+
+    def get_is_solved(self, problem: Problem) -> bool:
+        """Foydalanuvchi shu masalani yechganmi.
+
+        Slug to'plamini viewset bitta so'rovda tayyorlaydi (`context`) —
+        aks holda har qatorga alohida so'rov ketardi. Mehmon uchun `None`,
+        ya'ni hammasi `false`.
+        """
+        solved = self.context.get("solved_slugs")
+        return problem.slug in solved if solved else False
 
     class Meta:
         model = Problem
@@ -49,6 +60,7 @@ class ProblemListSerializer(serializers.ModelSerializer[Problem]):
             "topics",
             "solved_count",
             "attempt_count",
+            "is_solved",
         ]
 
 

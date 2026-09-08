@@ -104,3 +104,20 @@ def test_test_yuklanganda_kesh_tozalanadi(samples, problem, staff_client, monkey
     assert APIClient().get(url).data["samples"] == [
         {"order": 1, "input": "7 8\n", "expected": "15\n"}
     ]
+
+
+def test_yechilgan_masala_royxatda_belgilanadi(problem, user) -> None:
+    from ratings.models import UserSolvedProblem
+
+    url = reverse("problem-list")
+    client = APIClient()
+
+    assert client.get(url).data["results"][0]["is_solved"] is False, "mehmonga false"
+
+    client.force_authenticate(user)
+    assert client.get(url).data["results"][0]["is_solved"] is False
+
+    UserSolvedProblem.objects.create(
+        user=user, problem=problem, difficulty_at_solve=problem.difficulty
+    )
+    assert client.get(url).data["results"][0]["is_solved"] is True

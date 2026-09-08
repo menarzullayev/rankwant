@@ -8375,6 +8375,15 @@ components:
           maximum: 9223372036854775807
           minimum: 0
           format: int64
+        is_solved:
+          type: boolean
+          description: |-
+            Foydalanuvchi shu masalani yechganmi.
+
+            Slug to'plamini viewset bitta so'rovda tayyorlaydi (`context`) —
+            aks holda har qatorga alohida so'rov ketardi. Mehmon uchun `None`,
+            ya'ni hammasi `false`.
+          readOnly: true
         samples:
           type: array
           items:
@@ -8411,6 +8420,7 @@ components:
             maxLength: 0
       required:
       - difficulty
+      - is_solved
       - level
       - level_label
       - samples
@@ -8454,8 +8464,18 @@ components:
           maximum: 9223372036854775807
           minimum: 0
           format: int64
+        is_solved:
+          type: boolean
+          description: |-
+            Foydalanuvchi shu masalani yechganmi.
+
+            Slug to'plamini viewset bitta so'rovda tayyorlaydi (`context`) —
+            aks holda har qatorga alohida so'rov ketardi. Mehmon uchun `None`,
+            ya'ni hammasi `false`.
+          readOnly: true
       required:
       - difficulty
+      - is_solved
       - level
       - level_label
       - slug

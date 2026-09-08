@@ -13,7 +13,14 @@ import {
   Table,
 } from "@/components/ui/Table";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
-import { api, ApiError, type Recommendation } from "@/lib/api";
+import { CheckIcon } from "@/icons";
+import {
+  ApiError,
+  type Paginated,
+  type Problem,
+  type Recommendation,
+} from "@/lib/api";
+import { getWithSession } from "@/lib/api.server";
 
 // Jonli ma'lumot: har so'rovda serverda render qilinadi.
 // Build vaqtida prerender qilinmaydi — CI da API ishlamaydi, va reyting
@@ -25,13 +32,17 @@ export const metadata: Metadata = { title: "Masalalar" };
 
 export default async function ProblemsPage() {
   const locale = DEFAULT_LOCALE;
-  const data = await api.problems();
+  // Sessiya bilan — `is_solved` foydalanuvchiga xos, `get()` esa
+  // cookie uzatmaydi va hamma uchun `false` qaytarardi.
+  const data = await getWithSession<Paginated<Problem>>("/problems/");
 
   // Tavsiya faqat kirgan foydalanuvchi uchun — chiqmasa sahifa baribir
   // ishlayveradi (arxiv hamma uchun ochiq).
   let recommended: Recommendation | null = null;
   try {
-    recommended = await api.recommendations();
+    recommended = await getWithSession<Recommendation>(
+      "/problems/recommendation/",
+    );
   } catch (error) {
     if (
       !(error instanceof ApiError) ||
@@ -83,7 +94,22 @@ export default async function ProblemsPage() {
           <TBody>
             {data.results.map((p, i) => (
               <TR key={p.slug}>
-                <TD className="rw-faint">{i + 1}</TD>
+                <TD className="rw-faint">
+                  {/* Yechilganini bir qarashda ko'rish arxivning eng ko'p
+                      ishlatiladigan belgisi — uchala platformada ham bor. */}
+                  {p.is_solved ? (
+                    <span
+                      title={t(locale, "problems.solvedByYou")}
+                      aria-label={t(locale, "problems.solvedByYou")}
+                      role="img"
+                      className="inline-flex"
+                    >
+                      <CheckIcon className="size-4 rw-ok-ink" />
+                    </span>
+                  ) : (
+                    i + 1
+                  )}
+                </TD>
                 <TD>
                   <Link
                     href={`/problems/${p.slug}`}

@@ -23,6 +23,7 @@ export type Paginated<T> = {
 };
 
 export type Problem = {
+  is_solved: boolean;
   slug: string;
   title: string;
   difficulty: number;

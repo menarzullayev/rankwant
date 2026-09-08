@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -39,6 +41,17 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
             .prefetch_related("topics")
             .order_by("difficulty", "slug")
         )
+
+    def get_serializer_context(self):  # type: ignore[no-untyped-def]
+        context: dict[str, Any] = dict(super().get_serializer_context())
+        user = self.request.user
+        if user.is_authenticated:
+            from ratings.models import UserSolvedProblem
+
+            context["solved_slugs"] = set(
+                UserSolvedProblem.objects.filter(user=user).values_list("problem__slug", flat=True)
+            )
+        return context
 
     def get_serializer_class(self):  # type: ignore[no-untyped-def]
         return ProblemDetailSerializer if self.action == "retrieve" else ProblemListSerializer
