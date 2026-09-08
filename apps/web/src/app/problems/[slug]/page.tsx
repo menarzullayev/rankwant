@@ -5,6 +5,7 @@ import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { Editorial } from "@/components/Editorial";
 import { ProblemActions } from "@/components/ProblemActions";
+import { ProblemTabs } from "@/components/ProblemTabs";
 import { SampleTests } from "@/components/SampleTests";
 import { StatementSize } from "@/components/StatementSize";
 import SubmitPanel from "@/components/SubmitPanel";
@@ -64,6 +65,8 @@ export default async function ProblemPage({ params, searchParams }: Props) {
   return (
     <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,560px)]">
       <article className="space-y-6">
+        <ProblemTabs slug={slug} current="statement" />
+
         <header>
           <div className="flex flex-wrap items-baseline gap-3">
             {/* Ommaviy raqam — og'zaki muomala uchun ("431-masala"). */}

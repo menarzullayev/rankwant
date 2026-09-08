@@ -3,7 +3,8 @@ from __future__ import annotations
 from collections import Counter
 from typing import Any
 
-from django.db.models import Avg, Count, F, Max
+from django.db.models import Avg, Count, F, Max, Q
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import viewsets
@@ -16,6 +17,7 @@ from rest_framework.views import APIView
 
 from core.models import User
 from core.pagination import StandardPagination
+from judging.verdicts import Verdict
 from problems.filters import ProblemFilter
 from problems.models import (
     DIFFICULTY_LEVELS,
@@ -159,6 +161,70 @@ class RecommendationView(APIView):
             {
                 "target_difficulty": target_difficulty(request.user),
                 "results": ProblemListSerializer(problems, many=True).data,
+            }
+        )
+
+
+class ProblemStatsView(APIView):
+    """Masala statistikasi — verdikt/til taqsimoti va yechganlar.
+
+    Ochiq: raqamlar hech kimning manbasini oshkor qilmaydi.
+    """
+
+    permission_classes = [AllowAny]
+    #: Yechganlar ro'yxati cheklanadi — ommabop masalada minglab bo'lishi
+    #: mumkin, sahifada esa bir nechtasi kifoya.
+    SOLVER_LIMIT = 50
+
+    @extend_schema(responses={200: OpenApiResponse(description="Masala statistikasi")})
+    def get(self, request: Request, slug: str) -> Response:
+        from judging.models import Attempt
+
+        problem = get_object_or_404(Problem, slug=slug, is_public=True)
+        attempts = Attempt.objects.filter(problem=problem)
+
+        verdicts = [
+            {"verdict": row["verdict"], "count": row["n"]}
+            for row in attempts.values("verdict").annotate(n=Count("pk")).order_by("-n")
+        ]
+        languages = [
+            {"language": row["language__code"], "count": row["n"], "solved": row["ac"]}
+            for row in attempts.values("language__code")
+            .annotate(n=Count("pk"), ac=Count("pk", filter=Q(verdict=Verdict.AC)))
+            .order_by("-n")
+        ]
+
+        # Har foydalanuvchining BIRINCHI AC si. `DISTINCT ON` Postgres'ga
+        # bog'lab qo'yardi (testlar SQLite'da), shuning uchun eng erta
+        # AC'lar id bo'yicha olinib, Python'da bir marta filtrlanadi.
+        seen: set[int] = set()
+        solvers = []
+        for attempt in (
+            attempts.filter(verdict=Verdict.AC)
+            .select_related("user", "language")
+            .order_by("pk")[: self.SOLVER_LIMIT * 4]
+        ):
+            if attempt.user_id in seen:
+                continue
+            seen.add(attempt.user_id)
+            solvers.append(
+                {
+                    "username": attempt.user.username,
+                    "language": attempt.language.code,
+                    "time_ms": attempt.time_ms,
+                    "memory_kb": attempt.memory_kb,
+                    "created_at": attempt.created_at,
+                }
+            )
+            if len(solvers) >= self.SOLVER_LIMIT:
+                break
+
+        return Response(
+            {
+                "total": attempts.count(),
+                "verdicts": verdicts,
+                "languages": languages,
+                "solvers": solvers,
             }
         )
 

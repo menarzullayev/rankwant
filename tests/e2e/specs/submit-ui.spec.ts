@@ -66,7 +66,11 @@ test("kirgan foydalanuvchi yuborish va sinab ko'rishni oladi", async ({
   await expect(
     page.getByRole("button", { name: "Namunada sinash" }),
   ).toBeVisible();
-  await expect(page.getByRole("button", { name: /Urinishlar/ })).toBeVisible();
+  // Urinishlar sahifa tepasidagi bo'limga ko'chdi — panelda faqat ishchi
+  // tablar qoldi.
+  await expect(page.getByRole("button", { name: /^Urinishlar/ })).toHaveCount(
+    0,
+  );
 
   await page.getByRole("button", { name: "O'z testim" }).click();
   await expect(
@@ -99,16 +103,14 @@ test("masala sahifasida ommaviy raqam ko'rinadi", async ({ page }) => {
   await expect(page).toHaveTitle(/#\d{4}/);
 });
 
-test("«Hammasi» tabidan to'liq urinishlar sahifasiga o'tiladi", async ({
-  page,
-}) => {
+test("bo'lim tablari sahifalar orasida yuradi", async ({ page }) => {
   await page.goto(PROBLEM);
-  await page.getByRole("button", { name: "Hammasi" }).click();
 
-  const link = page.getByRole("link", { name: /Barcha urinishlar/ });
-  await expect(link).toBeVisible();
-  await link.click();
+  // Yon menyuda ham «Urinishlar» havolasi bor — bo'lim navigatsiyasi
+  // bilan cheklaymiz.
+  const tabs = page.getByRole("navigation", { name: "Masala bo'limlari" });
 
+  await tabs.getByRole("link", { name: "Urinishlar" }).click();
   await page.waitForURL(/\/status$/);
   await expect(
     page.getByRole("columnheader", { name: "Foydalanuvchi" }),
@@ -117,4 +119,14 @@ test("«Hammasi» tabidan to'liq urinishlar sahifasiga o'tiladi", async ({
   await expect(
     page.getByRole("columnheader", { name: /manba|source/i }),
   ).toHaveCount(0);
+
+  await tabs.getByRole("link", { name: "Statistika" }).click();
+  await page.waitForURL(/\/stats$/);
+  await expect(page.getByRole("heading", { name: "Verdiktlar" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Tillar" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Yechganlar" })).toBeVisible();
+
+  await tabs.getByRole("link", { name: "Tavsif" }).click();
+  await page.waitForURL(/\/problems\/[^/]+$/);
+  await expect(page.getByRole("heading", { name: "Yechim" })).toBeVisible();
 });

@@ -205,6 +205,19 @@ export type ArticleDetail = Article & {
   problems: LinkedProblem[];
 };
 
+export type ProblemStats = {
+  total: number;
+  verdicts: { verdict: string; count: number }[];
+  languages: { language: string; count: number; solved: number }[];
+  solvers: {
+    username: string;
+    language: string;
+    time_ms: number;
+    memory_kb: number;
+    created_at: string;
+  }[];
+};
+
 export type ArchiveProgress = {
   levels: { code: string; label: string; total: number; solved: number }[];
   total: number;
@@ -659,6 +672,8 @@ export const api = {
   roadmaps: () => get<Roadmap[]>("/roadmaps/", 300),
   // Progress foydalanuvchiga xos — SSR da `getWithSession` bilan olinadi.
   progress: () => get<ArchiveProgress>("/problems/progress/", 0),
+  problemStats: (slug: string) =>
+    get<ProblemStats>(`/problems/${slug}/stats/`, 30),
   /** Masalaning barcha urinishlari — ochiq. Manba begonaga ko'rinmaydi
    * (backend uni faqat egasiga qaytaradi). */
   problemAttempts: (slug: string, cursor = "") =>

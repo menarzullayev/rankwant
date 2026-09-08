@@ -1807,6 +1807,27 @@ paths:
               schema:
                 type: object
           description: ''
+  /api/v1/problems/{slug}/stats/:
+    get:
+      operationId: problems_stats_retrieve
+      description: |-
+        Masala statistikasi — verdikt/til taqsimoti va yechganlar.
+
+        Ochiq: raqamlar hech kimning manbasini oshkor qilmaydi.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - problems
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: Masala statistikasi
   /api/v1/problems/progress/:
     get:
       operationId: problems_progress_retrieve

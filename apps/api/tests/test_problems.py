@@ -297,3 +297,52 @@ def test_korish_soni_sahifa_ochilganda_ortadi(problem) -> None:
     problem.refresh_from_db()
 
     assert problem.view_count == 2
+
+
+class TestProblemStats:
+    """Statistika sahifasi — verdikt/til taqsimoti va yechganlar."""
+
+    @pytest.fixture
+    def attempts(self, db, user, other_user, problem, language):
+        from judging.models import Attempt
+
+        made = []
+        for owner, verdict in [
+            (user, "WA"),
+            (user, "AC"),
+            (user, "AC"),  # ikkinchi AC — ro'yxatda takrorlanmasligi kerak
+            (other_user, "TLE"),
+        ]:
+            made.append(
+                Attempt.objects.create(
+                    user=owner,
+                    problem=problem,
+                    language=language,
+                    source_code="x",
+                    verdict=verdict,
+                )
+            )
+        return made
+
+    def test_verdikt_va_til_taqsimoti(self, attempts, problem) -> None:
+        data = APIClient().get(reverse("problem-stats", args=[problem.slug])).data
+
+        assert data["total"] == 4
+        assert {v["verdict"]: v["count"] for v in data["verdicts"]} == {
+            "AC": 2,
+            "WA": 1,
+            "TLE": 1,
+        }
+        assert data["languages"][0]["count"] == 4
+        assert data["languages"][0]["solved"] == 2
+
+    def test_yechganlar_royxatida_har_kim_bir_marta(self, attempts, problem, user) -> None:
+        data = APIClient().get(reverse("problem-stats", args=[problem.slug])).data
+
+        assert [s["username"] for s in data["solvers"]] == [user.username]
+
+    def test_yopiq_masala_korinmaydi(self, db, problem) -> None:
+        problem.is_public = False
+        problem.save()
+
+        assert APIClient().get(reverse("problem-stats", args=[problem.slug])).status_code == 404

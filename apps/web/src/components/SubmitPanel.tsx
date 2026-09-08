@@ -17,7 +17,6 @@ import { ApiError } from "@/lib/api";
 import {
   fetchAttempt,
   fetchCustomRun,
-  fetchProblemAttempts,
   runCustomTest,
   submitAttempt,
   type Attempt,
@@ -90,7 +89,7 @@ function useStored(key: string): string | null {
   );
 }
 
-type Tab = "verdict" | "samples" | "custom" | "history" | "everyone";
+type Tab = "verdict" | "samples" | "custom";
 
 type SampleResult = {
   order: number;
@@ -128,12 +127,10 @@ export default function SubmitPanel({
   const [tab, setTab] = useState<Tab>("verdict");
 
   const [attempt, setAttempt] = useState<AttemptDetail | null>(null);
-  const [history, setHistory] = useState<Attempt[]>([]);
 
   const [stdin, setStdin] = useState("");
   const [customRun, setCustomRun] = useState<CustomRun | null>(null);
   const [sampleResults, setSampleResults] = useState<SampleResult[]>([]);
-  const [everyone, setEveryone] = useState<Attempt[] | null>(null);
 
   const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -171,28 +168,6 @@ export default function SubmitPanel({
     return () => clearTimeout(handle);
   }, [language, key, edits]);
 
-  const loadHistory = useCallback(() => {
-    if (!user) return;
-    // Backend `username` bo'yicha filtrlaydi — mijozda filtrlash sahifadan
-    // tashqaridagi o'z urinishlarini yo'qotardi.
-    fetchProblemAttempts(problem, user.username)
-      .then((page) => setHistory(page.results))
-      .catch(() => {});
-  }, [problem, user]);
-
-  useEffect(() => {
-    loadHistory();
-  }, [loadHistory]);
-
-  // Boshqalarning urinishlari faqat tab ochilganda — arxivning har
-  // sahifasida ortiqcha so'rov yubormaslik uchun.
-  useEffect(() => {
-    if (tab !== "everyone" || everyone !== null) return;
-    fetchProblemAttempts(problem)
-      .then((page) => setEveryone(page.results))
-      .catch(() => setEveryone([]));
-  }, [tab, everyone, problem]);
-
   useEffect(
     () => () => {
       if (pollRef.current) clearTimeout(pollRef.current);
@@ -210,7 +185,6 @@ export default function SubmitPanel({
               poll(id, tries + 1);
             } else {
               setBusy(false);
-              loadHistory();
             }
           })
           .catch(() => setBusy(false));
@@ -417,11 +391,6 @@ export default function SubmitPanel({
                   ? ([["samples", "Namunalar"]] as const)
                   : []),
                 ["custom", "O'z testim"],
-                [
-                  "history",
-                  `Urinishlarim${history.length ? ` (${history.length})` : ""}`,
-                ],
-                ["everyone", "Hammasi"],
               ] as const
             ).map(([key, label]) => (
               <button
@@ -457,8 +426,6 @@ export default function SubmitPanel({
             disabled={!canSubmit || busy || !source.trim()}
           />
         )}
-        {tab === "history" && <HistoryView items={history} />}
-        {tab === "everyone" && <EveryoneView items={everyone} slug={problem} />}
       </Card>
     </div>
   );
@@ -708,81 +675,3 @@ function SamplesView({
 /** Boshqalarning urinishlari — kim yechganini va qaysi tilda ekanini
  * ko'rish uchun. Manba ko'rsatilmaydi: backend uni faqat egasiga va
  * xodimga qaytaradi. */
-function EveryoneView({
-  items,
-  slug,
-}: {
-  items: Attempt[] | null;
-  slug: string;
-}) {
-  if (items === null)
-    return <p className="text-theme-sm rw-faint">Yuklanmoqda…</p>;
-
-  return (
-    <div className="space-y-3">
-      {items.length === 0 && (
-        <p className="text-theme-sm rw-faint">
-          Bu masalaga hali hech kim urinmagan. Birinchi bo&apos;ling.
-        </p>
-      )}
-      <ul className="rw-divide divide-y">
-        {items.map((item) => (
-          <li
-            key={item.id}
-            className="flex flex-wrap items-center gap-3 py-2 text-theme-sm"
-          >
-            <Link
-              href={`/users/${item.username}`}
-              className="font-medium rw-strong rw-link-hover"
-            >
-              {item.username}
-            </Link>
-            <VerdictBadge verdict={item.verdict} />
-            <span className="rw-dim">{item.language}</span>
-            <span className="rw-faint">
-              {item.time_ms} ms · {Math.round(item.memory_kb / 1024)} MB
-            </span>
-            <time className="ml-auto rw-faint" dateTime={item.created_at}>
-              {new Date(item.created_at).toLocaleDateString("uz")}
-            </time>
-          </li>
-        ))}
-      </ul>
-      <Link
-        href={`/problems/${slug}/status`}
-        className="inline-block text-theme-sm rw-accent-ink hover:underline"
-      >
-        Barcha urinishlar →
-      </Link>
-    </div>
-  );
-}
-
-function HistoryView({ items }: { items: Attempt[] }) {
-  if (items.length === 0)
-    return (
-      <p className="text-theme-sm rw-faint">
-        Bu masala bo&apos;yicha urinishlaringiz hali yo&apos;q.
-      </p>
-    );
-
-  return (
-    <ul className="rw-divide divide-y">
-      {items.map((item) => (
-        <li
-          key={item.id}
-          className="flex flex-wrap items-center gap-3 py-2 text-theme-sm"
-        >
-          <VerdictBadge verdict={item.verdict} />
-          <span className="rw-dim">{item.language}</span>
-          <span className="rw-faint">
-            {item.time_ms} ms · {Math.round(item.memory_kb / 1024)} MB
-          </span>
-          <time className="ml-auto rw-faint" dateTime={item.created_at}>
-            {new Date(item.created_at).toLocaleString("uz")}
-          </time>
-        </li>
-      ))}
-    </ul>
-  );
-}

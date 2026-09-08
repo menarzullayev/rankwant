@@ -2,6 +2,7 @@ import type { Metadata, Route } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { ProblemTabs } from "@/components/ProblemTabs";
 import { VerdictBadge } from "@/components/VerdictBadge";
 import { Card } from "@/components/ui/Card";
 import {
@@ -70,15 +71,11 @@ export default async function ProblemStatusPage({
               #{String(problem.code).padStart(4, "0")}
             </span>
           )}
-          {problem.title} — urinishlar
+          {problem.title}
         </h1>
-        <Link
-          href={`/problems/${slug}`}
-          className="text-theme-sm rw-accent-ink hover:underline"
-        >
-          Masalaga qaytish
-        </Link>
       </div>
+
+      <ProblemTabs slug={slug} current="status" />
 
       <Card bodyClassName="p-0">
         <Table>
