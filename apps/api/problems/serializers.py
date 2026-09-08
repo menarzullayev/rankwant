@@ -67,6 +67,8 @@ class ProblemListSerializer(serializers.ModelSerializer[Problem]):
 class ProblemDetailSerializer(ProblemListSerializer):
     samples = serializers.SerializerMethodField()
 
+    author = serializers.CharField(source="author.username", read_only=True, default=None)
+
     def get_samples(self, problem: Problem) -> list[dict[str, Any]]:
         return storage.sample_tests(problem)
 
@@ -75,6 +77,11 @@ class ProblemDetailSerializer(ProblemListSerializer):
             *ProblemListSerializer.Meta.fields,
             "samples",
             "statement",
+            "input_format",
+            "output_format",
+            "note",
+            "editorial",
+            "author",
             "statement_locale",
             "time_limit_ms",
             "memory_limit_kb",

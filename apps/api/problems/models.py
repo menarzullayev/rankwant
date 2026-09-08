@@ -66,6 +66,16 @@ class Problem(models.Model):
     slug = models.SlugField(unique=True, max_length=100)
     title = models.CharField(max_length=200)
     statement = models.TextField(help_text="Markdown + LaTeX")
+    # Kiruvchi/chiquvchi alohida maydon, statement ichidagi sarlavha emas:
+    # RoboContest, KEP va Codeforces uchalasida ham bu qat'iy bo'lim va
+    # solver ularni matndan ajratib qidiradi. Konvensiyaga tayanish
+    # muallifga bog'liq bo'lardi, maydon esa tuzilmani kafolatlaydi.
+    input_format = models.TextField(blank=True, help_text="Markdown + LaTeX")
+    output_format = models.TextField(blank=True, help_text="Markdown + LaTeX")
+    #: Codeforces «Note» — namunalar nega shunday ekanini tushuntiradi.
+    note = models.TextField(blank=True, help_text="Markdown + LaTeX")
+    #: Yechim tahlili. Yechmagan foydalanuvchiga spoyler sifatida yopiq.
+    editorial = models.TextField(blank=True, help_text="Markdown + LaTeX")
     statement_locale = models.CharField(max_length=2, default="uz")
 
     difficulty = models.PositiveIntegerField(

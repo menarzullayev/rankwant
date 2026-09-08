@@ -84,6 +84,33 @@ PROBLEMS = [
     ("mintaqalar", "Mintaqalarni bo'lish", 2500, ["graphs", "greedy"], "", []),
 ]
 
+#: Kiruvchi/chiquvchi va izoh — slug bo'yicha. Tuple shaklini
+#: o'zgartirmaslik uchun alohida: matni yozilmagan masalalar bo'sh qoladi.
+FORMATS: dict[str, tuple[str, str, str]] = {
+    "a-plus-b": (
+        "Yagona qatorda ikkita butun son $a$ va $b$ ($-10^9 \\le a, b \\le 10^9$).",
+        "Yagona qatorda $a + b$ yig'indisini chiqaring.",
+        "",
+    ),
+    "juft-toq": (
+        "Yagona qatorda butun son $n$ ($-10^9 \\le n \\le 10^9$).",
+        "Agar $n$ juft bo'lsa `JUFT`, aks holda `TOQ` chiqaring.",
+        "Nol juft son hisoblanadi.",
+    ),
+    "eng-katta": (
+        "Birinchi qatorda $n$ ($1 \\le n \\le 10^5$).\n\n"
+        "Ikkinchi qatorda $n$ ta butun son ($-10^9 \\le a_i \\le 10^9$).",
+        "Yagona qatorda eng katta sonni chiqaring.",
+        "",
+    ),
+    "fibonacci": (
+        "Yagona qatorda butun son $n$ ($0 \\le n \\le 90$).",
+        "Yagona qatorda $F(n)$ ni chiqaring.",
+        "$F(0) = 0$, $F(1) = 1$, keyingilari $F(n) = F(n-1) + F(n-2)$.\n\n"
+        "$F(90)$ 64-bitli songa sig'adi, `int` esa yetmaydi.",
+    ),
+}
+
 
 ARTICLES = [
     (
@@ -172,6 +199,13 @@ QUESTIONS = [
 class Command(BaseCommand):
     help = "Demo ma'lumot yaratadi (til, mavzu, masala, contest, foydalanuvchi)"
 
+    def add_arguments(self, parser: Any) -> None:
+        parser.add_argument(
+            "--rotate-passwords",
+            action="store_true",
+            help="Mavjud demo hisoblarga ham yangi parol beradi",
+        )
+
     @transaction.atomic
     def handle(self, *args: Any, **options: Any) -> None:
         for code, name, version, compile_cmd, run_cmd in LANGUAGES:
@@ -200,6 +234,9 @@ class Command(BaseCommand):
                     "statement": f"## {title}\n\n{statement}"
                     if statement
                     else f"## {title}\n\n_Matn hali yozilmagan._",
+                    "input_format": FORMATS.get(slug, ("", "", ""))[0],
+                    "output_format": FORMATS.get(slug, ("", "", ""))[1],
+                    "note": FORMATS.get(slug, ("", "", ""))[2],
                     "difficulty": difficulty,
                     "is_public": True,
                     "time_limit_ms": 1000,
@@ -290,17 +327,21 @@ class Command(BaseCommand):
             )
 
         # Demo hisoblar o'qituvchi huquqiga ega (sinf yaratish, o'quvchi
-        # qo'shish) va sayt ochiq internetda — qat'iy parol har safar
-        # qaytadan beriladi, aks holda eski oson parol saqlanib qolardi.
+        # qo'shish) va sayt ochiq internetda — parol qat'iy va tasodifiy.
+        # Yaratilganda beriladi; mavjud hisobga tegmaydi, aks holda har
+        # kontent seed'i ulashilgan ma'lumotni yaroqsiz qilardi.
         credentials: list[tuple[str, str]] = []
 
-        teacher, _ = User.objects.get_or_create(
+        rotate = bool(options.get("rotate_passwords"))
+
+        teacher, created = User.objects.get_or_create(
             username="ustoz", defaults={"email": "ustoz@rankwant.uz", "display_name": "Ustoz"}
         )
-        teacher_password = secrets.token_urlsafe(12)
-        teacher.set_password(teacher_password)
-        teacher.save()
-        credentials.append(("ustoz", teacher_password))
+        if created or rotate:
+            teacher_password = secrets.token_urlsafe(12)
+            teacher.set_password(teacher_password)
+            teacher.save()
+            credentials.append(("ustoz", teacher_password))
 
         classroom, _ = Classroom.objects.update_or_create(
             slug="11-a-sinf",
@@ -311,14 +352,15 @@ class Command(BaseCommand):
             },
         )
         for i in range(1, 4):
-            student, _ = User.objects.get_or_create(
+            student, made = User.objects.get_or_create(
                 username=f"oquvchi{i}",
                 defaults={"email": f"oquvchi{i}@rankwant.uz", "display_name": f"O'quvchi {i}"},
             )
-            student_password = secrets.token_urlsafe(12)
-            student.set_password(student_password)
-            student.save()
-            credentials.append((f"oquvchi{i}", student_password))
+            if made or rotate:
+                student_password = secrets.token_urlsafe(12)
+                student.set_password(student_password)
+                student.save()
+                credentials.append((f"oquvchi{i}", student_password))
             ClassroomMember.objects.get_or_create(classroom=classroom, user=student)
 
         assignment, _ = Assignment.objects.update_or_create(
@@ -425,10 +467,13 @@ class Command(BaseCommand):
                 start_at=now + timedelta(hours=1),
             )
 
-        self.stdout.write("--- demo parollar ---")
-        for username, password in credentials:
-            self.stdout.write(f"{username} / {password}")
-        self.stdout.write("--- demo parollar tugadi ---")
+        if credentials:
+            self.stdout.write("--- demo parollar ---")
+            for username, password in credentials:
+                self.stdout.write(f"{username} / {password}")
+            self.stdout.write("--- demo parollar tugadi ---")
+        else:
+            self.stdout.write("Demo parollar o'zgarmadi (--rotate-passwords bilan yangilanadi)")
 
         self.stdout.write(
             self.style.SUCCESS(

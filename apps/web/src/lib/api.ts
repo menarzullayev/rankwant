@@ -39,6 +39,11 @@ export type Sample = { order: number; input: string; expected: string };
 export type ProblemDetail = Problem & {
   samples: Sample[];
   statement: string;
+  input_format: string;
+  output_format: string;
+  note: string;
+  editorial: string;
+  author: string | null;
   statement_locale: string;
   time_limit_ms: number;
   memory_limit_kb: number;

@@ -14,6 +14,10 @@ type StaffProblem = {
   slug: string;
   title: string;
   statement: string;
+  input_format: string;
+  output_format: string;
+  note: string;
+  editorial: string;
   statement_locale: string;
   difficulty: number;
   topics: string[];
@@ -79,6 +83,33 @@ const PROBLEM_FIELDS: FieldDef[] = [
     type: "textarea",
     required: true,
     rows: 12,
+  },
+  {
+    name: "input_format",
+    label: "Kiruvchi ma'lumot",
+    type: "textarea",
+    rows: 4,
+    help: "Sahifada alohida bo'lim bo'lib chiqadi",
+  },
+  {
+    name: "output_format",
+    label: "Chiquvchi ma'lumot",
+    type: "textarea",
+    rows: 4,
+  },
+  {
+    name: "note",
+    label: "Izoh",
+    type: "textarea",
+    rows: 4,
+    help: "Namunalar nega shunday ekanini tushuntiradi",
+  },
+  {
+    name: "editorial",
+    label: "Yechim tahlili",
+    type: "textarea",
+    rows: 8,
+    help: "Sahifada spoyler ortida turadi",
   },
   { name: "topics", label: "Mavzular (slug, vergul bilan)", type: "list" },
   { name: "time_limit_ms", label: "Vaqt limiti, ms", type: "number", min: 100 },

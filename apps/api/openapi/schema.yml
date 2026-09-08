@@ -7942,6 +7942,18 @@ components:
         statement:
           type: string
           description: Markdown + LaTeX
+        input_format:
+          type: string
+          description: Markdown + LaTeX
+        output_format:
+          type: string
+          description: Markdown + LaTeX
+        note:
+          type: string
+          description: Markdown + LaTeX
+        editorial:
+          type: string
+          description: Markdown + LaTeX
         statement_locale:
           type: string
           maxLength: 2
@@ -8397,6 +8409,21 @@ components:
         statement:
           type: string
           description: Markdown + LaTeX
+        input_format:
+          type: string
+          description: Markdown + LaTeX
+        output_format:
+          type: string
+          description: Markdown + LaTeX
+        note:
+          type: string
+          description: Markdown + LaTeX
+        editorial:
+          type: string
+          description: Markdown + LaTeX
+        author:
+          type: string
+          readOnly: true
         statement_locale:
           type: string
           maxLength: 2
@@ -8423,6 +8450,7 @@ components:
           - type: string
             maxLength: 0
       required:
+      - author
       - difficulty
       - is_solved
       - level
@@ -9482,6 +9510,18 @@ components:
           type: string
           maxLength: 200
         statement:
+          type: string
+          description: Markdown + LaTeX
+        input_format:
+          type: string
+          description: Markdown + LaTeX
+        output_format:
+          type: string
+          description: Markdown + LaTeX
+        note:
+          type: string
+          description: Markdown + LaTeX
+        editorial:
           type: string
           description: Markdown + LaTeX
         statement_locale:

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Markdown } from "@/components/Markdown";
 import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
+import { Editorial } from "@/components/Editorial";
 import { SampleTests } from "@/components/SampleTests";
 import SubmitPanel from "@/components/SubmitPanel";
 import { notFound } from "next/navigation";
@@ -82,6 +83,7 @@ export default async function ProblemPage({ params, searchParams }: Props) {
               ko'ra aniqroq ko'rsatadi (RoboContest «Murakkablik», CF da
               solve count). Urinish bo'lmasa foiz ma'nosiz. */}
           <p className="mt-3 text-theme-sm rw-dim">
+            {problem.author && `Muallif: ${problem.author} · `}
             {problem.solved_count} kishi yechdi · {problem.attempt_count}{" "}
             urinish
             {problem.attempt_count > 0 &&
@@ -98,11 +100,37 @@ export default async function ProblemPage({ params, searchParams }: Props) {
           </p>
         )}
 
-        <Card>
+        <Card bodyClassName="space-y-5">
           <Markdown>{problem.statement}</Markdown>
+
+          {problem.input_format && (
+            <section>
+              <h2 className="mb-1.5 text-theme-lg font-semibold rw-strong">
+                Kiruvchi ma&apos;lumot
+              </h2>
+              <Markdown>{problem.input_format}</Markdown>
+            </section>
+          )}
+
+          {problem.output_format && (
+            <section>
+              <h2 className="mb-1.5 text-theme-lg font-semibold rw-strong">
+                Chiquvchi ma&apos;lumot
+              </h2>
+              <Markdown>{problem.output_format}</Markdown>
+            </section>
+          )}
         </Card>
 
         <SampleTests samples={problem.samples} />
+
+        {problem.note && (
+          <Card title="Izoh">
+            <Markdown>{problem.note}</Markdown>
+          </Card>
+        )}
+
+        {problem.editorial && <Editorial text={problem.editorial} />}
       </article>
 
       <SubmitPanel
