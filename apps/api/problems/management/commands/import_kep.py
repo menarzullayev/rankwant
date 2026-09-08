@@ -33,6 +33,16 @@ from problems.models import (
 )
 
 
+def clean_test(data: str | None) -> str:
+    """Veb muharrir qoldirgan iflosliklarni tozalaydi.
+
+    KEP namunalarining yarmidan ko'pi CRLF da saqlangan va ba'zilarida
+    qattiq bo'shliq bor. Ikkalasi ham test MAZMUNI emas: `\r` ni
+    dastur satr qismi deb o'qiydi va to'g'ri yechim ham yiqiladi.
+    """
+    return (data or "").replace("\r\n", "\n").replace("\r", "\n").replace("\xa0", " ")
+
+
 class Command(BaseCommand):
     help = "KEP.uz arxividan masalalarni import qiladi (standart holda qoralama)."
 
@@ -214,10 +224,10 @@ class Command(BaseCommand):
                 order=order,
                 defaults={
                     "input_ref": storage.put_test_data(
-                        f"tests/{problem.slug}/{order}.in", sample.get("input") or ""
+                        f"tests/{problem.slug}/{order}.in", clean_test(sample.get("input"))
                     ),
                     "output_ref": storage.put_test_data(
-                        f"tests/{problem.slug}/{order}.out", sample.get("output") or ""
+                        f"tests/{problem.slug}/{order}.out", clean_test(sample.get("output"))
                     ),
                     "is_sample": True,
                 },

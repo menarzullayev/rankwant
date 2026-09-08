@@ -242,3 +242,13 @@ class TestImportCommand:
         self.run(refresh=True)
         assert Problem.objects.count() == 2
         assert SimilarProblem.objects.count() == 1
+
+
+class TestCleanTest:
+    def test_crlf_va_qattiq_boshliq_tozalanadi(self):
+        from problems.management.commands.import_kep import clean_test
+
+        # `\r` ni dastur satr qismi deb o'qiydi — to'g'ri yechim yiqilardi.
+        assert clean_test("5\r\n2\r\n") == "5\n2\n"
+        assert clean_test("a\xa0b") == "a b"
+        assert clean_test(None) == ""
