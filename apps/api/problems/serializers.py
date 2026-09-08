@@ -11,6 +11,12 @@ from problems.models import Language, Problem, ProblemAttachment, ProblemVote, T
 
 
 class TopicSerializer(serializers.ModelSerializer[Topic]):
+    # Slug, `pk` emas: hech bir ommaviy javob mavzu `id` sini bermaydi,
+    # ya'ni raqam mijoz uchun hech narsaga bog'lanmasdi.
+    parent = serializers.SlugRelatedField[Topic](  # type: ignore[assignment]
+        slug_field="slug", read_only=True
+    )
+
     class Meta:
         model = Topic
         fields = ["slug", "name_uz", "name_ru", "name_en", "parent"]
