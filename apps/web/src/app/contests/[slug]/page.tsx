@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
@@ -79,6 +80,34 @@ export default async function ContestPage({ params }: Props) {
           vaqtingizda yechishingiz mumkin. Virtual natija reytingga ta&apos;sir
           qilmaydi va rasmiy jadvalga kirmaydi.
         </div>
+      )}
+
+      {contest.problems.length > 0 && (
+        <Card title="Masalalar" bodyClassName="p-0">
+          <ul className="rw-divide divide-y">
+            {contest.problems.map((entry) => (
+              <li key={entry.slug}>
+                <Link
+                  href={{
+                    pathname: `/problems/${entry.slug}`,
+                    query: { contest: slug },
+                  }}
+                  className="flex items-center gap-3 px-5 py-3 transition rw-hover-bg"
+                >
+                  <span className="flex size-7 shrink-0 items-center justify-center rw-radius-sm rw-chip text-theme-xs font-semibold rw-dim-2">
+                    {entry.index_letter}
+                  </span>
+                  <span className="min-w-0 flex-1 truncate text-theme-sm font-medium rw-strong">
+                    {entry.title}
+                  </span>
+                  <span className="text-theme-xs rw-faint">
+                    {entry.points} ball
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </Card>
       )}
 
       <Card title={t(locale, "standings.title")} bodyClassName="p-0">
