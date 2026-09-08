@@ -53,6 +53,18 @@ export type Contest = {
   is_frozen: boolean;
 };
 
+export type ContestProblem = {
+  index_letter: string;
+  slug: string;
+  title: string;
+  points: number;
+};
+
+export type ContestDetail = Contest & {
+  description: string;
+  problems: ContestProblem[];
+};
+
 export type Standing = {
   rank: number;
   username: string;
@@ -190,6 +202,35 @@ export type Attempt = {
   judged_at: string | null;
 };
 
+export type Language = { code: string; name: string; version: string };
+
+export type TestResult = {
+  index: number;
+  verdict: string;
+  time_ms: number;
+  memory_kb: number;
+};
+
+/** `source_code` va `compile_output` faqat urinish egasiga va xodimga
+ * qaytariladi (backend IDOR himoyasi), shuning uchun ixtiyoriy. */
+export type AttemptDetail = Attempt & {
+  source_code?: string;
+  compile_output?: string;
+  test_results: TestResult[];
+};
+
+export type CustomRun = {
+  id: number;
+  language: string;
+  verdict: string;
+  stdout: string;
+  compile_output: string;
+  time_ms: number;
+  memory_kb: number;
+  created_at: string;
+  judged_at: string | null;
+};
+
 export type Choice = { id: number; order: number; text: string };
 export type Question = {
   id: number;
@@ -235,7 +276,10 @@ export type Arena = {
   is_running: boolean;
   is_finished: boolean;
 };
-export type ArenaDetail = Arena & { current_index: number | null; joined: boolean };
+export type ArenaDetail = Arena & {
+  current_index: number | null;
+  joined: boolean;
+};
 export type ArenaCurrent = {
   index: number;
   deadline: string;
@@ -268,7 +312,12 @@ export type Duel = {
   challenger_solved: number;
   opponent_solved: number;
   is_draw: boolean;
-  problems: { order: number; slug: string; title: string; difficulty: number }[];
+  problems: {
+    order: number;
+    slug: string;
+    title: string;
+    difficulty: number;
+  }[];
   created_at: string;
 };
 export type DuelRecord = { wins: number; draws: number; losses: number };
@@ -356,7 +405,12 @@ export type Classroom = {
 export type ClassroomDetail = Classroom & {
   join_code?: string;
   is_active?: boolean;
-  members?: { username: string; role: string; rating_skills: number; joined_at: string }[];
+  members?: {
+    username: string;
+    role: string;
+    rating_skills: number;
+    joined_at: string;
+  }[];
 };
 export type Assignment = {
   id: number;
@@ -450,7 +504,11 @@ export async function getJson<T>(path: string): Promise<T> {
   });
   if (!res.ok) {
     const body = await res.json().catch(() => null);
-    throw new ApiError(res.status, body?.error?.code ?? "error", body?.error?.message ?? res.statusText);
+    throw new ApiError(
+      res.status,
+      body?.error?.code ?? "error",
+      body?.error?.message ?? res.statusText,
+    );
   }
   return (await res.json()) as T;
 }
@@ -465,17 +523,49 @@ export async function fetchMe(): Promise<UserPublic | null> {
   return res.ok ? ((await res.json()) as UserPublic) : null;
 }
 
+/** Submit. Javob `PENDING` bilan qaytadi — verdikt keyin pollinglanadi. */
+export function submitAttempt(body: {
+  problem: string;
+  language: string;
+  source_code: string;
+  contest?: string;
+}): Promise<Attempt> {
+  return postJson<Attempt>("/attempts/", body);
+}
+
+export const fetchAttempt = (id: number) =>
+  getJson<AttemptDetail>(`/attempts/${id}/`);
+
+export const fetchProblemAttempts = (slug: string) =>
+  getJson<Paginated<Attempt>>(`/attempts/?problem=${encodeURIComponent(slug)}`);
+
+/** PRD P0-4 — o'z kiritmasi bilan sinash. Urinish tarixiga tushmaydi. */
+export function runCustomTest(body: {
+  language: string;
+  source_code: string;
+  stdin: string;
+}): Promise<CustomRun> {
+  return postJson<CustomRun>("/custom-test/", body);
+}
+
+export const fetchCustomRun = (id: number) =>
+  getJson<CustomRun>(`/custom-test/${id}/`);
+
 export const api = {
   // Mehmon bosh sahifasi raqamlari — serverda 60 s keshlanadi.
   stats: () => get<PlatformStats>("/stats/", 60),
   problems: (query = "") => get<Paginated<Problem>>(`/problems/${query}`),
   problem: (slug: string) => get<ProblemDetail>(`/problems/${slug}/`),
   contests: () => get<Paginated<Contest>>("/contests/"),
-  contest: (slug: string) => get<Contest & { problems: unknown[] }>(`/contests/${slug}/`),
+  contest: (slug: string) => get<ContestDetail>(`/contests/${slug}/`),
   // Standings tez o'zgaradi — kesh qisqa
   standings: (slug: string) =>
-    get<{ frozen: boolean; results: Standing[] }>(`/contests/${slug}/standings/`, 5),
-  leaderboard: () => get<Paginated<UserPublic>>("/users/?ordering=-rating_skills"),
+    get<{ frozen: boolean; results: Standing[] }>(
+      `/contests/${slug}/standings/`,
+      5,
+    ),
+  leaderboard: () =>
+    get<Paginated<UserPublic>>("/users/?ordering=-rating_skills"),
   user: (username: string) => get<UserPublic>(`/users/${username}/`),
   // Qvant — Phase 1. Balans va questlar shaxsiy, kesh yo'q.
   wallet: () => get<Wallet>("/qvant/wallet/", 0),
@@ -491,6 +581,8 @@ export const api = {
   article: (slug: string) => get<ArticleDetail>(`/articles/${slug}/`, 300),
   roadmaps: () => get<Roadmap[]>("/roadmaps/", 300),
   attempts: () => get<Paginated<Attempt>>("/attempts/", 0),
+  // Tillar deyarli o'zgarmaydi — judge obrazi bilan bir manbadan (ADR-0004).
+  languages: () => get<Paginated<Language>>("/languages/", 300),
   quizzes: () => get<Paginated<Quiz>>("/quizzes/", 60),
   quiz: (slug: string) => get<QuizDetail>(`/quizzes/${slug}/`, 60),
   arenas: () => get<Paginated<Arena>>("/arena/", 10),
@@ -500,13 +592,20 @@ export const api = {
   duels: () => get<Paginated<Duel>>("/duels/", 0),
   duel: (slug: string) => get<Duel>(`/duels/${slug}/`, 0),
   tournaments: () => get<Paginated<Tournament>>("/tournaments/", 60),
-  tournament: (slug: string) => get<TournamentDetail>(`/tournaments/${slug}/`, 60),
+  tournament: (slug: string) =>
+    get<TournamentDetail>(`/tournaments/${slug}/`, 60),
   tournamentStandings: (slug: string) =>
-    get<{ results: TournamentStanding[] }>(`/tournaments/${slug}/standings/`, 30),
+    get<{ results: TournamentStanding[] }>(
+      `/tournaments/${slug}/standings/`,
+      30,
+    ),
   hackathons: () => get<Paginated<Hackathon>>("/hackathons/", 60),
   hackathon: (slug: string) => get<Hackathon>(`/hackathons/${slug}/`, 60),
   hackathonSubmissions: (slug: string) =>
-    get<{ results: HackathonSubmission[] }>(`/hackathons/${slug}/submissions/`, 0),
+    get<{ results: HackathonSubmission[] }>(
+      `/hackathons/${slug}/submissions/`,
+      0,
+    ),
   calendar: () => get<{ results: CalendarEvent[] }>("/calendar/", 60),
   algorithms: () => get<Paginated<Article>>("/articles/?kind=algorithm", 300),
   ratingHistory: (username: string) =>

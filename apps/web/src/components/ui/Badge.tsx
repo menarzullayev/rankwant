@@ -6,7 +6,7 @@ const COLORS: Record<BadgeColor, string> = {
   success: "rw-ok-soft rw-ok-ink ",
   error: "rw-bad-soft rw-bad-ink ",
   warning: "rw-warn-soft rw-warn-ink ",
-  info: "bg-blue-light-50 text-blue-light-500 dark:bg-blue-light-500/12 dark:text-blue-light-400",
+  info: "rw-chip rw-accent-ink",
   neutral: "rw-chip rw-dim-2 ",
 };
 
