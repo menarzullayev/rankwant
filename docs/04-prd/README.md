@@ -69,13 +69,18 @@ Mahsulot funksional talablari — fazalar bo'yicha.
 `Problem.difficulty` — butun son **800–3500**, qadam 100 (Codeforces bilan mos → tashqi arxiv importi yo'qotishsiz).
 Foydalanuvchi raqamni emas, **darajani** ko'radi:
 
-| Raqam     | Daraja           | Rang        |
-| --------- | ---------------- | ----------- |
-| 800–1199  | Boshlang'ich     | kulrang     |
-| 1200–1599 | O'rta            | yashil      |
-| 1600–2099 | Qiyin            | ko'k        |
-| 2100–2599 | Ekspert          | binafsha    |
-| 2600+     | Master           | qizil       |
+Shkala [ADR-0012](../07-adr/0012-seven-difficulty-levels.md) bilan yettiga
+bo'lindi — pastki yarmi mayda, chunki o'quvchi eng ko'p o'sha yerda turadi:
+
+| Raqam     | Daraja           | Kod            |
+| --------- | ---------------- | -------------- |
+| 800–999   | Boshlang'ich     | `beginner`     |
+| 1000–1199 | Asosiy           | `basic`        |
+| 1200–1499 | O'rta            | `intermediate` |
+| 1500–1799 | Yaxshi           | `upper`        |
+| 1800–2199 | Qiyin            | `hard`         |
+| 2200–2699 | Ekspert          | `expert`       |
+| 2700+     | Master           | `master`       |
 
 ### 1. Skills reyting — Phase 0
 

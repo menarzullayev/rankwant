@@ -1632,14 +1632,18 @@ paths:
         schema:
           type: string
           enum:
+          - basic
           - beginner
           - expert
           - hard
           - intermediate
           - master
+          - upper
         description: |-
           * `beginner` - Boshlang'ich
+          * `basic` - Asosiy
           * `intermediate` - O'rta
+          * `upper` - Yaxshi
           * `hard` - Qiyin
           * `expert` - Ekspert
           * `master` - Master
@@ -1803,6 +1807,23 @@ paths:
               schema:
                 type: object
           description: ''
+  /api/v1/problems/progress/:
+    get:
+      operationId: problems_progress_retrieve
+      description: |-
+        Daraja bo'yicha yechilganlar — arxiv yon panelidagi progress bloki.
+
+        Mehmonda ham ochiladi: o'shanda faqat jami masalalar ko'rinadi va
+        `solved` nol bo'ladi, ya'ni blok arxiv hajmini ko'rsatuvchi kartaga
+        aylanadi.
+      tags:
+      - problems
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: Daraja bo'yicha progress
   /api/v1/problems/recommendation/:
     get:
       operationId: problems_recommendation_list

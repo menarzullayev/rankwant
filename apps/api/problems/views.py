@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+from collections import Counter
 from typing import Any
 
 from django.db.models import Avg, Count, Max
 from django_filters.rest_framework import DjangoFilterBackend
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter, SearchFilter
@@ -16,7 +17,15 @@ from rest_framework.views import APIView
 from core.models import User
 from core.pagination import StandardPagination
 from problems.filters import ProblemFilter
-from problems.models import Favourite, Language, Problem, ProblemRating, Topic
+from problems.models import (
+    DIFFICULTY_LEVELS,
+    Favourite,
+    Language,
+    Problem,
+    ProblemRating,
+    Topic,
+    difficulty_level,
+)
 from problems.recommend import recommend, target_difficulty
 from problems.serializers import (
     LanguageSerializer,
@@ -137,6 +146,44 @@ class RecommendationView(APIView):
             {
                 "target_difficulty": target_difficulty(request.user),
                 "results": ProblemListSerializer(problems, many=True).data,
+            }
+        )
+
+
+class ProgressView(APIView):
+    """Daraja bo'yicha yechilganlar — arxiv yon panelidagi progress bloki.
+
+    Mehmonda ham ochiladi: o'shanda faqat jami masalalar ko'rinadi va
+    `solved` nol bo'ladi, ya'ni blok arxiv hajmini ko'rsatuvchi kartaga
+    aylanadi.
+    """
+
+    permission_classes = [AllowAny]
+
+    @extend_schema(responses={200: OpenApiResponse(description="Daraja bo'yicha progress")})
+    def get(self, request: Request) -> Response:
+        totals: Counter[str] = Counter()
+        for value in Problem.objects.filter(is_public=True).values_list("difficulty", flat=True):
+            totals[difficulty_level(value)[0]] += 1
+
+        solved: Counter[str] = Counter()
+        if request.user.is_authenticated:
+            from ratings.models import UserSolvedProblem
+
+            for value in UserSolvedProblem.objects.filter(
+                user=request.user, problem__is_public=True
+            ).values_list("problem__difficulty", flat=True):
+                solved[difficulty_level(value)[0]] += 1
+
+        levels = [
+            {"code": code, "label": label, "total": totals[code], "solved": solved[code]}
+            for _, code, label in DIFFICULTY_LEVELS
+        ]
+        return Response(
+            {
+                "levels": levels,
+                "total": sum(totals.values()),
+                "solved": sum(solved.values()),
             }
         )
 

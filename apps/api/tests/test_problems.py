@@ -242,3 +242,46 @@ def test_royxat_qator_soniga_qarab_sorov_kopaytirmaydi(
 
     with django_assert_num_queries(baseline):
         client.get(url)
+
+
+class TestProgress:
+    """Yon paneldagi progress bloki — 04-prd shkalasi bo'yicha."""
+
+    def test_mehmonga_arxiv_hajmi_korinadi(self, problem, hard_problem) -> None:
+        data = APIClient().get(reverse("problem-progress")).data
+
+        assert data["total"] == 2
+        assert data["solved"] == 0
+        # Barcha darajalar qaytadi, bo'shlari ham — chiziqlar joyida tursin.
+        assert [level["code"] for level in data["levels"]] == [
+            "beginner",
+            "basic",
+            "intermediate",
+            "upper",
+            "hard",
+            "expert",
+            "master",
+        ]
+
+    def test_yechilganlar_darajasi_boyicha_sanaladi(self, user, problem, hard_problem) -> None:
+        from ratings.models import UserSolvedProblem
+
+        UserSolvedProblem.objects.create(
+            user=user, problem=problem, difficulty_at_solve=problem.difficulty
+        )
+        client = APIClient()
+        client.force_authenticate(user)
+
+        data = client.get(reverse("problem-progress")).data
+        levels = {level["code"]: level for level in data["levels"]}
+
+        assert data["solved"] == 1
+        # 800 → beginner (<1000), 2500 → expert (<2700)
+        assert levels["beginner"] == {
+            "code": "beginner",
+            "label": "Boshlang'ich",
+            "total": 1,
+            "solved": 1,
+        }
+        assert levels["expert"]["total"] == 1
+        assert levels["expert"]["solved"] == 0

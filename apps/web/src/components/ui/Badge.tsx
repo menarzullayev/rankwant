@@ -29,16 +29,22 @@ export function Badge({
 
 /** Qiyinlik — 04-prd shkalasi. Rang `.level-*` bilan bir xil mantiqda. */
 export function DifficultyBadge({ value }: { value: number }) {
+  // Chegaralar `apps/api/problems/models.py` dagi DIFFICULTY_LEVELS bilan
+  // bir xil bo'lishi shart.
   const level =
-    value < 1200
+    value < 1000
       ? "beginner"
-      : value < 1600
-        ? "intermediate"
-        : value < 2100
-          ? "hard"
-          : value < 2600
-            ? "expert"
-            : "master";
+      : value < 1200
+        ? "basic"
+        : value < 1500
+          ? "intermediate"
+          : value < 1800
+            ? "upper"
+            : value < 2200
+              ? "hard"
+              : value < 2700
+                ? "expert"
+                : "master";
   return (
     <span
       className={`level-${level} inline-flex items-center rounded-full rw-chip px-2.5 py-0.5

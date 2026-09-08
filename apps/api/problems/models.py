@@ -13,11 +13,17 @@ DIFFICULTY_STEP = 100
 
 # 04-prd § Poydevor — qiyinlik shkalasi. Foydalanuvchi raqamni emas,
 # DARAJANI ko'radi.
+#
+# Pastki yarmi ataylab mayda: 800–1800 oralig'ida o'quvchi oylab turadi
+# va keng daraja ichida siljish sezilmasdi (KEP shu sababli 7 ta daraja
+# ishlatadi). Yuqori qismida masala kam, mayda bo'lish keraksiz.
 DIFFICULTY_LEVELS: tuple[tuple[int, str, str], ...] = (
-    (1200, "beginner", "Boshlang'ich"),
-    (1600, "intermediate", "O'rta"),
-    (2100, "hard", "Qiyin"),
-    (2600, "expert", "Ekspert"),
+    (1000, "beginner", "Boshlang'ich"),
+    (1200, "basic", "Asosiy"),
+    (1500, "intermediate", "O'rta"),
+    (1800, "upper", "Yaxshi"),
+    (2200, "hard", "Qiyin"),
+    (2700, "expert", "Ekspert"),
     (10**9, "master", "Master"),
 )
 

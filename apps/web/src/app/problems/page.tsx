@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/Table";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
 import { BlogIcon, CheckIcon } from "@/icons";
+import { ArchiveSidebar } from "@/components/ArchiveSidebar";
 import { ProblemFilters } from "@/components/ProblemFilters";
 import { FavouriteToggle } from "@/components/FavouriteToggle";
 import { TopicBadges } from "@/components/TopicBadges";
@@ -22,6 +23,7 @@ import { VerdictBadge } from "@/components/VerdictBadge";
 import {
   api,
   ApiError,
+  type ArchiveProgress,
   type Paginated,
   type Problem,
   type Recommendation,
@@ -77,14 +79,27 @@ export default async function ProblemsPage({ searchParams }: Props) {
     ? Number(raw.page_size)
     : DEFAULT_PAGE_SIZE;
 
-  const [data, topics, stats, me] = await Promise.all([
-    getWithSession<Paginated<Problem>>(
-      `/problems/${query.size ? `?${query}` : ""}`,
-    ),
-    api.topics(),
-    api.stats(),
-    getWithSession<UserPublic>("/me/").catch(() => null),
-  ]);
+  const [data, topics, stats, me, progress, roadmaps, calendar] =
+    await Promise.all([
+      getWithSession<Paginated<Problem>>(
+        `/problems/${query.size ? `?${query}` : ""}`,
+      ),
+      api.topics(),
+      api.stats(),
+      getWithSession<UserPublic>("/me/").catch(() => null),
+      getWithSession<ArchiveProgress>("/problems/progress/"),
+      api.roadmaps().catch(() => []),
+      api.calendar().catch(() => ({ results: [] })),
+    ]);
+
+  // «Davom ettirish» — urinilgan, lekin yechilmagan birinchi masala.
+  // Ro'yxat qiyinlik bo'yicha saralangani uchun bu eng oson qolgani.
+  const resume =
+    data.results.find((p) => !p.is_solved && p.my_verdict !== null) ?? null;
+
+  const upcoming =
+    calendar.results.find((event) => new Date(event.start_at) > new Date()) ??
+    null;
 
   // Sahifa havolasi qolgan filtrlarni saqlaydi.
   const pageHref = (next: number) => {
@@ -177,134 +192,143 @@ export default async function ProblemsPage({ searchParams }: Props) {
         </Card>
       )}
 
-      <Card bodyClassName="p-0">
-        <Table>
-          <THead>
-            <TH>#</TH>
-            <TH>{t(locale, "problems.name")}</TH>
-            <TH>{t(locale, "problems.difficulty")}</TH>
-            {/* Statistika ustunlari tor ekranda yig'iladi — nom, raqam va
+      <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,300px)]">
+        <Card bodyClassName="p-0">
+          <Table>
+            <THead>
+              <TH>#</TH>
+              <TH>{t(locale, "problems.name")}</TH>
+              <TH>{t(locale, "problems.difficulty")}</TH>
+              {/* Statistika ustunlari tor ekranda yig'iladi — nom, raqam va
                 qiyinlik telefonda ham ko'rinib turishi kerak. */}
-            <TH align="center" className="hidden md:table-cell">
-              ★
-            </TH>
-            <TH align="right" className="hidden sm:table-cell">
-              {t(locale, "problems.solved")}
-            </TH>
-            <TH align="right" className="hidden lg:table-cell">
-              %
-            </TH>
-            {me && (
-              <TH align="center">
-                <span className="sr-only">Sevimlilar</span>☆
+              <TH align="center" className="hidden md:table-cell">
+                ★
               </TH>
-            )}
-          </THead>
-          <TBody>
-            {data.results.map((p) => (
-              <TR key={p.slug}>
-                <TD className="rw-faint">
-                  <span className="font-mono text-theme-xs tabular-nums">
-                    {p.code === null
-                      ? "—"
-                      : `#${String(p.code).padStart(4, "0")}`}
-                  </span>
-                </TD>
-                <TD>
-                  <div className="flex items-center gap-1.5">
-                    {/* Yechilganini bir qarashda ko'rish arxivning eng ko'p
-                        ishlatiladigan belgisi — uchala platformada ham bor. */}
-                    {p.is_solved && (
-                      <span
-                        title={t(locale, "problems.solvedByYou")}
-                        aria-label={t(locale, "problems.solvedByYou")}
-                        role="img"
-                        className="inline-flex shrink-0"
-                      >
-                        <CheckIcon className="size-4 rw-ok-ink" />
-                      </span>
-                    )}
-                    <Link
-                      href={`/problems/${p.slug}`}
-                      className="font-medium rw-strong rw-link-hover"
-                    >
-                      {p.title}
-                    </Link>
-                    {p.has_editorial && (
-                      <span
-                        title="Yechim tahlili bor"
-                        aria-label="Yechim tahlili bor"
-                        role="img"
-                        className="inline-flex shrink-0 rw-faint"
-                      >
-                        <BlogIcon className="size-3.5" />
-                      </span>
-                    )}
-                    {/* Yechilmagan, lekin urinilgan — «WA oldim» signali */}
-                    {!p.is_solved && p.my_verdict && (
-                      <VerdictBadge verdict={p.my_verdict} />
-                    )}
-                  </div>
-                  <TopicBadges topics={p.topics} solved={p.is_solved} />
-                </TD>
-                <TD>
-                  <div className="flex items-center gap-2">
-                    <DifficultyBadge value={p.difficulty} />
-                    <span className={`level-${p.level} text-theme-xs`}>
-                      {p.level_label}
+              <TH align="right" className="hidden sm:table-cell">
+                {t(locale, "problems.solved")}
+              </TH>
+              <TH align="right" className="hidden lg:table-cell">
+                %
+              </TH>
+              {me && (
+                <TH align="center">
+                  <span className="sr-only">Sevimlilar</span>☆
+                </TH>
+              )}
+            </THead>
+            <TBody>
+              {data.results.map((p) => (
+                <TR key={p.slug}>
+                  <TD className="rw-faint">
+                    <span className="font-mono text-theme-xs tabular-nums">
+                      {p.code === null
+                        ? "—"
+                        : `#${String(p.code).padStart(4, "0")}`}
                     </span>
-                  </div>
-                </TD>
-                <TD align="center" className="hidden md:table-cell">
-                  {p.rating.average === null ? (
-                    <span className="rw-faint">—</span>
-                  ) : (
-                    <span
-                      className="text-theme-xs rw-dim-2 tabular-nums"
-                      title={`${p.rating.count} baho`}
-                    >
-                      {p.rating.average.toFixed(1)}
-                    </span>
-                  )}
-                </TD>
-                <TD
-                  align="right"
-                  className="hidden rw-faint tabular-nums sm:table-cell"
-                >
-                  {p.solved_count}
-                </TD>
-                <TD
-                  align="right"
-                  className="hidden rw-faint tabular-nums lg:table-cell"
-                >
-                  {p.success_rate === null ? "—" : `${p.success_rate}%`}
-                </TD>
-                {me && (
-                  <TD align="center">
-                    <FavouriteToggle
-                      slug={p.slug}
-                      initial={p.is_favourite}
-                      title={p.title}
-                    />
                   </TD>
-                )}
-              </TR>
-            ))}
-            {data.count === 0 && (
-              <EmptyRow colSpan={me ? 7 : 6}>{t(locale, "empty")}</EmptyRow>
-            )}
-          </TBody>
-        </Table>
+                  <TD>
+                    <div className="flex items-center gap-1.5">
+                      {/* Yechilganini bir qarashda ko'rish arxivning eng ko'p
+                        ishlatiladigan belgisi — uchala platformada ham bor. */}
+                      {p.is_solved && (
+                        <span
+                          title={t(locale, "problems.solvedByYou")}
+                          aria-label={t(locale, "problems.solvedByYou")}
+                          role="img"
+                          className="inline-flex shrink-0"
+                        >
+                          <CheckIcon className="size-4 rw-ok-ink" />
+                        </span>
+                      )}
+                      <Link
+                        href={`/problems/${p.slug}`}
+                        className="font-medium rw-strong rw-link-hover"
+                      >
+                        {p.title}
+                      </Link>
+                      {p.has_editorial && (
+                        <span
+                          title="Yechim tahlili bor"
+                          aria-label="Yechim tahlili bor"
+                          role="img"
+                          className="inline-flex shrink-0 rw-faint"
+                        >
+                          <BlogIcon className="size-3.5" />
+                        </span>
+                      )}
+                      {/* Yechilmagan, lekin urinilgan — «WA oldim» signali */}
+                      {!p.is_solved && p.my_verdict && (
+                        <VerdictBadge verdict={p.my_verdict} />
+                      )}
+                    </div>
+                    <TopicBadges topics={p.topics} solved={p.is_solved} />
+                  </TD>
+                  <TD>
+                    <div className="flex items-center gap-2">
+                      <DifficultyBadge value={p.difficulty} />
+                      <span className={`level-${p.level} text-theme-xs`}>
+                        {p.level_label}
+                      </span>
+                    </div>
+                  </TD>
+                  <TD align="center" className="hidden md:table-cell">
+                    {p.rating.average === null ? (
+                      <span className="rw-faint">—</span>
+                    ) : (
+                      <span
+                        className="text-theme-xs rw-dim-2 tabular-nums"
+                        title={`${p.rating.count} baho`}
+                      >
+                        {p.rating.average.toFixed(1)}
+                      </span>
+                    )}
+                  </TD>
+                  <TD
+                    align="right"
+                    className="hidden rw-faint tabular-nums sm:table-cell"
+                  >
+                    {p.solved_count}
+                  </TD>
+                  <TD
+                    align="right"
+                    className="hidden rw-faint tabular-nums lg:table-cell"
+                  >
+                    {p.success_rate === null ? "—" : `${p.success_rate}%`}
+                  </TD>
+                  {me && (
+                    <TD align="center">
+                      <FavouriteToggle
+                        slug={p.slug}
+                        initial={p.is_favourite}
+                        title={p.title}
+                      />
+                    </TD>
+                  )}
+                </TR>
+              ))}
+              {data.count === 0 && (
+                <EmptyRow colSpan={me ? 7 : 6}>{t(locale, "empty")}</EmptyRow>
+              )}
+            </TBody>
+          </Table>
 
-        <Pager
-          page={page}
-          count={data.count}
-          pageSize={pageSize}
-          href={pageHref}
-          sizeHref={sizeHref}
-          label="masala"
+          <Pager
+            page={page}
+            count={data.count}
+            pageSize={pageSize}
+            href={pageHref}
+            sizeHref={sizeHref}
+            label="masala"
+          />
+        </Card>
+
+        <ArchiveSidebar
+          progress={progress}
+          resume={resume}
+          upcoming={upcoming}
+          roadmaps={roadmaps}
         />
-      </Card>
+      </div>
     </div>
   );
 }

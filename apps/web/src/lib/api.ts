@@ -203,6 +203,12 @@ export type ArticleDetail = Article & {
   problems: LinkedProblem[];
 };
 
+export type ArchiveProgress = {
+  levels: { code: string; label: string; total: number; solved: number }[];
+  total: number;
+  solved: number;
+};
+
 export type Roadmap = {
   slug: string;
   title: string;
@@ -647,6 +653,8 @@ export const api = {
   articles: () => get<Paginated<Article>>("/articles/", 300),
   article: (slug: string) => get<ArticleDetail>(`/articles/${slug}/`, 300),
   roadmaps: () => get<Roadmap[]>("/roadmaps/", 300),
+  // Progress foydalanuvchiga xos — SSR da `getWithSession` bilan olinadi.
+  progress: () => get<ArchiveProgress>("/problems/progress/", 0),
   attempts: () => get<Paginated<Attempt>>("/attempts/", 0),
   // Tillar deyarli o'zgarmaydi — judge obrazi bilan bir manbadan (ADR-0004).
   languages: () => get<Paginated<Language>>("/languages/", 300),

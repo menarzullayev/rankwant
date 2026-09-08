@@ -18,7 +18,9 @@ const SORTS = [
 
 const LEVELS = [
   ["beginner", "Boshlang'ich"],
+  ["basic", "Asosiy"],
   ["intermediate", "O'rta"],
+  ["upper", "Yaxshi"],
   ["hard", "Qiyin"],
   ["expert", "Ekspert"],
   ["master", "Master"],

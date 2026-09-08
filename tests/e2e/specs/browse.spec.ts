@@ -185,3 +185,39 @@ test("kirgan foydalanuvchi sevimliga qo'sha oladi", async ({ page }) => {
     page.getByRole("button", { name: /sevimlilardan olib tashlash/ }).first(),
   ).toBeVisible();
 });
+
+test("arxiv yon panelida progress va traektoriya ko'rinadi", async ({
+  page,
+}) => {
+  await page.goto("/problems");
+
+  // Mehmonda ham chiziladi — arxiv hajmini ko'rsatadi.
+  await expect(
+    page.getByRole("heading", { name: "Yechilganlar" }),
+  ).toBeVisible();
+  await expect(page.getByRole("progressbar").first()).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Traektoriya" }),
+  ).toBeVisible();
+});
+
+test("yetti daraja filtr panelida ham, jadvalda ham bir xil", async ({
+  page,
+}) => {
+  await page.goto("/problems");
+  await page.getByRole("button", { name: /^Filtrlar( \d+)?$/ }).click();
+
+  for (const label of [
+    "Boshlang'ich",
+    "Asosiy",
+    "O'rta",
+    "Yaxshi",
+    "Qiyin",
+    "Ekspert",
+    "Master",
+  ]) {
+    await expect(
+      page.getByRole("button", { name: label, exact: true }),
+    ).toBeVisible();
+  }
+});

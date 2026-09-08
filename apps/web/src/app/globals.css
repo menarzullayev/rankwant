@@ -709,8 +709,12 @@
   h1, h2, h3 { font-family: var(--rw-font-display); font-weight: var(--rw-heading-weight); letter-spacing: var(--rw-tracking); }
 }
 
+/* Yetti daraja, beshta tokendan: oraliq ikkitasi `color-mix` bilan
+   hosil qilinadi, shunda har bir uslub bloki tegilmasdan qoladi. */
 .level-beginner { color: var(--rw-level-1); }
+.level-basic { color: color-mix(in oklab, var(--rw-level-1), var(--rw-level-2)); }
 .level-intermediate { color: var(--rw-level-2); }
+.level-upper { color: color-mix(in oklab, var(--rw-level-2), var(--rw-level-3)); }
 .level-hard { color: var(--rw-level-3); }
 .level-expert { color: var(--rw-level-4); }
 .level-master { color: var(--rw-level-5); }
