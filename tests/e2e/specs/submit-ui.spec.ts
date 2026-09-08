@@ -64,12 +64,29 @@ test("kirgan foydalanuvchi yuborish va sinab ko'rishni oladi", async ({
 
   await expect(page.getByRole("button", { name: "Yuborish" })).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "Sinab ko'rish" }),
+    page.getByRole("button", { name: "Namunada sinash" }),
   ).toBeVisible();
   await expect(page.getByRole("button", { name: /Urinishlar/ })).toBeVisible();
+
+  await page.getByRole("button", { name: "O'z testim" }).click();
+  await expect(
+    page.getByRole("button", { name: "Ishga tushirish" }),
+  ).toBeVisible();
 });
 
 test("musobaqadan kelgan havola kontekstni ko'rsatadi", async ({ page }) => {
   await page.goto(`${PROBLEM}?contest=demo-contest`);
   await expect(page.getByText(/musobaqasi hisobiga yoziladi/)).toBeVisible();
+});
+
+test("namunalar kirish va chiqish bilan ko'rinadi", async ({ page }) => {
+  await page.goto(PROBLEM);
+
+  const samples = page.getByRole("heading", { name: "Namunalar" });
+  await expect(samples).toBeVisible();
+  // Namuna matni SSR ga kiradi — qidiruv ham, mehmon ham ko'radi.
+  await expect(page.getByText("Kirish", { exact: true }).first()).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: /namuna kirishini nusxalash/ }).first(),
+  ).toBeVisible();
 });

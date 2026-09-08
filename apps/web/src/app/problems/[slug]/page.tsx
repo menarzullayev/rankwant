@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Markdown } from "@/components/Markdown";
 import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
+import { SampleTests } from "@/components/SampleTests";
 import SubmitPanel from "@/components/SubmitPanel";
 import { notFound } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
@@ -90,9 +91,16 @@ export default async function ProblemPage({ params, searchParams }: Props) {
         <Card>
           <Markdown>{problem.statement}</Markdown>
         </Card>
+
+        <SampleTests samples={problem.samples} />
       </article>
 
-      <SubmitPanel problem={slug} languages={languages} contest={contest} />
+      <SubmitPanel
+        problem={slug}
+        languages={languages}
+        samples={problem.samples}
+        contest={contest}
+      />
     </div>
   );
 }

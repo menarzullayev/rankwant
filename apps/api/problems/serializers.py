@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+from typing import Any
+
 from rest_framework import serializers
 
-from problems.models import Language, Problem, TestCase, Topic
+from problems import storage
+from problems.models import Language, Problem, Topic
 
 
 class TopicSerializer(serializers.ModelSerializer[Topic]):
@@ -17,10 +20,17 @@ class LanguageSerializer(serializers.ModelSerializer[Language]):
         fields = ["code", "name", "version"]
 
 
-class SampleTestSerializer(serializers.ModelSerializer[TestCase]):
-    class Meta:
-        model = TestCase
-        fields = ["order"]
+class SampleTestSerializer(serializers.Serializer[dict[str, Any]]):
+    """Namuna test — kirish va kutilgan chiqish matni bilan.
+
+    Kiruvchi/chiquvchi formatini faqat matndan tushunib bo'lmaydi, shuning
+    uchun namunalar masala sahifasining ajralmas qismi (RoboContest, KEP,
+    Codeforces — uchalasida ham shunday) va SSR ga kiradi.
+    """
+
+    order = serializers.IntegerField(read_only=True)
+    input = serializers.CharField(read_only=True)
+    expected = serializers.CharField(read_only=True)
 
 
 class ProblemListSerializer(serializers.ModelSerializer[Problem]):
@@ -43,9 +53,15 @@ class ProblemListSerializer(serializers.ModelSerializer[Problem]):
 
 
 class ProblemDetailSerializer(ProblemListSerializer):
+    samples = serializers.SerializerMethodField()
+
+    def get_samples(self, problem: Problem) -> list[dict[str, Any]]:
+        return storage.sample_tests(problem)
+
     class Meta(ProblemListSerializer.Meta):
         fields = [
             *ProblemListSerializer.Meta.fields,
+            "samples",
             "statement",
             "statement_locale",
             "time_limit_ms",

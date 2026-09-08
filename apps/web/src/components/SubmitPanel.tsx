@@ -24,6 +24,7 @@ import {
   type AttemptDetail,
   type CustomRun,
   type Language,
+  type Sample,
 } from "@/lib/api";
 import CodeEditor from "./CodeEditor";
 
@@ -89,15 +90,36 @@ function useStored(key: string): string | null {
   );
 }
 
-type Tab = "verdict" | "custom" | "history";
+type Tab = "verdict" | "samples" | "custom" | "history";
+
+type SampleResult = {
+  order: number;
+  ok: boolean;
+  got: string;
+  expected: string;
+  verdict: string;
+};
+
+/** Standart checker satr oxiridagi bo'shliqni va oxirgi bo'sh qatorni
+ * hisobga olmaydi — namunani taqqoslash ham shunday bo'lishi kerak,
+ * aks holda to'g'ri yechim «xato» ko'rinardi. */
+const normalise = (text: string) =>
+  text
+    .replace(/\r\n/g, "\n")
+    .split("\n")
+    .map((line) => line.trimEnd())
+    .join("\n")
+    .trimEnd();
 
 export default function SubmitPanel({
   problem,
   languages,
+  samples,
   contest,
 }: {
   problem: string;
   languages: Language[];
+  samples: Sample[];
   contest?: string;
 }) {
   const { user, ready } = useSession();
@@ -110,6 +132,7 @@ export default function SubmitPanel({
 
   const [stdin, setStdin] = useState("");
   const [customRun, setCustomRun] = useState<CustomRun | null>(null);
+  const [sampleResults, setSampleResults] = useState<SampleResult[]>([]);
 
   const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -221,6 +244,65 @@ export default function SubmitPanel({
     }
   }
 
+  function waitForRun(id: number): Promise<CustomRun> {
+    return new Promise((resolve, reject) => {
+      let tries = 0;
+      const tick = () => {
+        fetchCustomRun(id)
+          .then((run) => {
+            if (!isPending(run.verdict) || tries >= POLL_LIMIT)
+              return resolve(run);
+            tries += 1;
+            pollRef.current = setTimeout(
+              tick,
+              tries < POLL_FAST_COUNT ? POLL_FAST_MS : POLL_SLOW_MS,
+            );
+          })
+          .catch(reject);
+      };
+      pollRef.current = setTimeout(tick, POLL_FAST_MS);
+    });
+  }
+
+  /** Namunalar ketma-ket yuritiladi va birinchi mos kelmaganda to'xtaydi:
+   * custom-test submit bilan bitta limitni bo'lishadi (6/daq), va xato
+   * odatda birinchi namunada ko'rinadi. */
+  async function runSamples() {
+    if (!language || busy) return;
+    setError(null);
+    setBusy(true);
+    setTab("samples");
+    setSampleResults([]);
+    try {
+      for (const sample of samples) {
+        const created = await runCustomTest({
+          language,
+          source_code: source,
+          stdin: sample.input,
+        });
+        const finished = await waitForRun(created.id);
+        const ok =
+          finished.verdict === "AC" &&
+          normalise(finished.stdout) === normalise(sample.expected);
+        setSampleResults((current) => [
+          ...current,
+          {
+            order: sample.order,
+            ok,
+            got: finished.stdout,
+            expected: sample.expected,
+            verdict: finished.verdict,
+          },
+        ]);
+        if (!ok) break;
+      }
+    } catch (caught) {
+      setError(describe(caught));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   function pollCustom(id: number, tries: number) {
     pollRef.current = setTimeout(
       () => {
@@ -298,13 +380,15 @@ export default function SubmitPanel({
               Yuborish uchun kiring
             </Link>
           )}
-          <Button
-            variant="outline"
-            onClick={runCustom}
-            disabled={!canSubmit || busy || !source.trim()}
-          >
-            Sinab ko&apos;rish
-          </Button>
+          {samples.length > 0 && (
+            <Button
+              variant="outline"
+              onClick={runSamples}
+              disabled={!canSubmit || busy || !source.trim()}
+            >
+              Namunada sinash
+            </Button>
+          )}
           <span className="ml-auto text-theme-xs rw-faint">
             Qoralama shu brauzerda saqlanadi
           </span>
@@ -317,6 +401,9 @@ export default function SubmitPanel({
             {(
               [
                 ["verdict", "Natija"],
+                ...(samples.length > 0
+                  ? ([["samples", "Namunalar"]] as const)
+                  : []),
                 ["custom", "O'z testim"],
                 [
                   "history",
@@ -341,8 +428,21 @@ export default function SubmitPanel({
         }
       >
         {tab === "verdict" && <VerdictView attempt={attempt} />}
+        {tab === "samples" && (
+          <SamplesView
+            results={sampleResults}
+            total={samples.length}
+            busy={busy}
+          />
+        )}
         {tab === "custom" && (
-          <CustomView stdin={stdin} onStdin={setStdin} run={customRun} />
+          <CustomView
+            stdin={stdin}
+            onStdin={setStdin}
+            run={customRun}
+            onRun={runCustom}
+            disabled={!canSubmit || busy || !source.trim()}
+          />
         )}
         {tab === "history" && <HistoryView items={history} />}
       </Card>
@@ -406,10 +506,14 @@ function CustomView({
   stdin,
   onStdin,
   run,
+  onRun,
+  disabled,
 }: {
   stdin: string;
   onStdin: (value: string) => void;
   run: CustomRun | null;
+  onRun: () => void;
+  disabled: boolean;
 }) {
   return (
     <div className="space-y-3">
@@ -425,6 +529,10 @@ function CustomView({
           className="w-full rw-radius-sm border rw-line rw-field-bg p-3 font-mono text-theme-xs rw-strong outline-none rw-focus-line"
         />
       </label>
+
+      <Button variant="outline" onClick={onRun} disabled={disabled}>
+        Ishga tushirish
+      </Button>
 
       {run && (
         <div className="space-y-2">
@@ -445,6 +553,72 @@ function CustomView({
             <p className="mb-1 text-theme-xs rw-faint">Chiqish</p>
             <pre className="max-h-56 overflow-auto rw-radius-sm rw-field-bg p-3 text-theme-xs rw-strong">
               {run.stdout || "—"}
+            </pre>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SamplesView({
+  results,
+  total,
+  busy,
+}: {
+  results: SampleResult[];
+  total: number;
+  busy: boolean;
+}) {
+  if (results.length === 0)
+    return (
+      <p className="text-theme-sm rw-faint">
+        {busy
+          ? "Namunalar yuritilmoqda…"
+          : "«Namunada sinash» — kodni yuborishdan oldin namunalarda tekshiradi."}
+      </p>
+    );
+
+  const failed = results.find((result) => !result.ok);
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center gap-2">
+        {results.map((result) => (
+          <span
+            key={result.order}
+            className={`rw-radius-sm px-2 py-0.5 text-theme-xs font-medium ${
+              result.ok ? "rw-ok-soft rw-ok-ink" : "rw-bad-soft rw-bad-ink"
+            }`}
+          >
+            Namuna {result.order} ·{" "}
+            {result.ok
+              ? "mos"
+              : result.verdict === "AC"
+                ? "chiqish mos emas"
+                : result.verdict}
+          </span>
+        ))}
+        {busy && <span className="text-theme-xs rw-faint">yuritilmoqda…</span>}
+        {!busy && !failed && results.length === total && (
+          <span className="text-theme-xs rw-ok-ink">
+            Barcha namunalar mos — yuborishingiz mumkin
+          </span>
+        )}
+      </div>
+
+      {failed && (
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="min-w-0">
+            <p className="mb-1 text-theme-xs rw-faint">Sizning chiqishingiz</p>
+            <pre className="max-h-48 overflow-auto rw-radius-sm rw-field-bg p-3 font-mono text-theme-xs rw-bad-ink">
+              {failed.got || "—"}
+            </pre>
+          </div>
+          <div className="min-w-0">
+            <p className="mb-1 text-theme-xs rw-faint">Kutilgan</p>
+            <pre className="max-h-48 overflow-auto rw-radius-sm rw-field-bg p-3 font-mono text-theme-xs rw-strong">
+              {failed.expected}
             </pre>
           </div>
         </div>

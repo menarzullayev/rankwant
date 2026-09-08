@@ -33,7 +33,10 @@ export type Problem = {
   attempt_count: number;
 };
 
+export type Sample = { order: number; input: string; expected: string };
+
 export type ProblemDetail = Problem & {
+  samples: Sample[];
   statement: string;
   statement_locale: string;
   time_limit_ms: number;

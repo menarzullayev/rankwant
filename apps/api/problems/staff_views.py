@@ -8,6 +8,7 @@ endpointlar orqali boshqariladi:
 
 from __future__ import annotations
 
+from django.core.cache import cache
 from django.db.models import Count
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
@@ -66,6 +67,7 @@ class StaffProblemViewSet(StaffViewSet):
         storage.ensure_bucket()
         input_ref = storage.put_test_data(f"tests/{problem.slug}/{order}.in", data["input"])
         output_ref = storage.put_test_data(f"tests/{problem.slug}/{order}.out", data["expected"])
+        cache.delete(storage.samples_cache_key(problem.slug))
         test, created = TestCase.objects.update_or_create(
             problem=problem,
             order=order,
@@ -90,4 +92,5 @@ class StaffProblemViewSet(StaffViewSet):
         deleted, _ = TestCase.objects.filter(problem=problem, order=int(order or 0)).delete()
         if not deleted:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        cache.delete(storage.samples_cache_key(problem.slug))
         return Response(status=status.HTTP_204_NO_CONTENT)

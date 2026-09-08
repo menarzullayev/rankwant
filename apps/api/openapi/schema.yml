@@ -8375,6 +8375,12 @@ components:
           maximum: 9223372036854775807
           minimum: 0
           format: int64
+        samples:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          readOnly: true
         statement:
           type: string
           description: Markdown + LaTeX
@@ -8407,6 +8413,7 @@ components:
       - difficulty
       - level
       - level_label
+      - samples
       - slug
       - statement
       - title
