@@ -1,8 +1,10 @@
 import Link from "next/link";
 
 import { Card } from "@/components/ui/Card";
+import { VerdictBadge } from "@/components/VerdictBadge";
 import type {
   ArchiveProgress,
+  Attempt,
   CalendarEvent,
   Problem,
   Roadmap,
@@ -101,10 +103,13 @@ function Upcoming({ event }: { event: CalendarEvent }) {
   );
 }
 
+/** O'quv rejalari — KEP'ning «Study plans» bloki, progress bilan.
+ * Progress alohida modeldan emas: traektoriya qadamining masalasi
+ * yechilganmi, shundan hisoblanadi. */
 function Roadmaps({ items }: { items: Roadmap[] }) {
   return (
     <Card
-      title="Traektoriya"
+      title="O'quv rejalari"
       action={
         <Link
           href="/roadmaps"
@@ -113,22 +118,106 @@ function Roadmaps({ items }: { items: Roadmap[] }) {
           Hammasi
         </Link>
       }
-      bodyClassName="rw-divide divide-y"
+      bodyClassName="space-y-3"
     >
-      {items.slice(0, 3).map((roadmap) => (
-        <Link
-          key={roadmap.slug}
-          href={`/roadmaps#${roadmap.slug}`}
-          className="flex items-baseline justify-between gap-3 py-2 first:pt-0 last:pb-0"
-        >
-          <span className="text-theme-sm font-medium rw-strong">
-            {roadmap.title}
-          </span>
-          <span className="shrink-0 text-theme-xs rw-faint">
-            {roadmap.step_count} qadam
-          </span>
-        </Link>
-      ))}
+      {items.slice(0, 3).map((roadmap) => {
+        const percent = roadmap.step_count
+          ? Math.round((roadmap.solved_steps / roadmap.step_count) * 100)
+          : 0;
+        return (
+          <Link key={roadmap.slug} href="/roadmaps" className="block">
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="text-theme-sm font-medium rw-strong">
+                {roadmap.title}
+              </span>
+              <span className="shrink-0 text-theme-xs rw-faint tabular-nums">
+                {roadmap.solved_steps} / {roadmap.step_count}
+              </span>
+            </div>
+            <div
+              className="mt-1 h-1.5 overflow-hidden rounded-full rw-chip"
+              role="progressbar"
+              aria-valuenow={roadmap.solved_steps}
+              aria-valuemin={0}
+              aria-valuemax={roadmap.step_count}
+              aria-label={roadmap.title}
+            >
+              <div
+                className="h-full rounded-full rw-accent-bg"
+                style={{ width: `${percent}%` }}
+              />
+            </div>
+          </Link>
+        );
+      })}
+    </Card>
+  );
+}
+
+/** «Oxirgi musobaqa / urinishlar / ko'p ko'rilgan» — KEP'ning uch tabli
+ * bloki. Server komponenti bo'lib qolishi uchun tab o'rniga uchtasi
+ * ketma-ket: mijoz holati kerak emas va SSR da hammasi ko'rinadi. */
+function Digest({
+  attempts,
+  popular,
+}: {
+  attempts: Attempt[];
+  popular: Problem[];
+}) {
+  if (attempts.length === 0 && popular.length === 0) return null;
+
+  return (
+    <Card title="Hamjamiyat" bodyClassName="space-y-4">
+      {attempts.length > 0 && (
+        <div>
+          <p className="mb-1.5 text-theme-xs font-medium tracking-wider rw-faint uppercase">
+            Oxirgi urinishlar
+          </p>
+          <ul className="space-y-1">
+            {attempts.slice(0, 5).map((attempt) => (
+              <li
+                key={attempt.id}
+                className="flex items-center gap-2 text-theme-xs"
+              >
+                <VerdictBadge verdict={attempt.verdict} />
+                <Link
+                  href={`/problems/${attempt.problem}`}
+                  className="min-w-0 flex-1 truncate rw-dim-2 rw-link-hover"
+                >
+                  {attempt.problem}
+                </Link>
+                <span className="shrink-0 rw-faint">{attempt.username}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {popular.length > 0 && (
+        <div>
+          <p className="mb-1.5 text-theme-xs font-medium tracking-wider rw-faint uppercase">
+            Ko&apos;p ko&apos;rilgan
+          </p>
+          <ul className="space-y-1">
+            {popular.slice(0, 5).map((problem) => (
+              <li
+                key={problem.slug}
+                className="flex items-baseline gap-2 text-theme-xs"
+              >
+                <Link
+                  href={`/problems/${problem.slug}`}
+                  className="min-w-0 flex-1 truncate rw-dim-2 rw-link-hover"
+                >
+                  {problem.title}
+                </Link>
+                <span className="shrink-0 rw-faint tabular-nums">
+                  {problem.view_count}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </Card>
   );
 }
@@ -138,11 +227,15 @@ export function ArchiveSidebar({
   resume,
   upcoming,
   roadmaps,
+  attempts,
+  popular,
 }: {
   progress: ArchiveProgress;
   resume: Problem | null;
   upcoming: CalendarEvent | null;
   roadmaps: Roadmap[];
+  attempts: Attempt[];
+  popular: Problem[];
 }) {
   return (
     <aside className="space-y-4">
@@ -150,6 +243,7 @@ export function ArchiveSidebar({
       <Progress data={progress} />
       {upcoming && <Upcoming event={upcoming} />}
       {roadmaps.length > 0 && <Roadmaps items={roadmaps} />}
+      <Digest attempts={attempts} popular={popular} />
     </aside>
   );
 }

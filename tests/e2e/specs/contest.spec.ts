@@ -10,10 +10,14 @@ test("contest sahifasi standings bilan ochiladi", async ({ page }) => {
   const first = page.locator("main li a").first();
   test.skip((await page.locator("main li a").count()) === 0, "musobaqa yo'q");
   await first.click();
-  await expect(page.getByRole("heading", { name: "Natijalar jadvali" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Natijalar jadvali" }),
+  ).toBeVisible();
 });
 
-test("standings SSE oqimi ochiladi yoki polling'ga tushadi", async ({ page }) => {
+test("standings SSE oqimi ochiladi yoki polling'ga tushadi", async ({
+  page,
+}) => {
   await page.goto("/contests");
   test.skip((await page.locator("main li a").count()) === 0, "musobaqa yo'q");
   await page.locator("main li a").first().click();

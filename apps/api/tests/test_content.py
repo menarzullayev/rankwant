@@ -311,3 +311,24 @@ class TestSeedDemo:
         for step in RoadmapStep.objects.all():
             assert step.article is not None
             assert step.problem is not None
+
+
+def test_traektoriya_progressi_yechilgan_masalalardan(db, user, problem) -> None:
+    """Alohida progress modeli yo'q — qadam masalasi yechilganmi, shundan."""
+    from content.models import Roadmap, RoadmapStep
+    from ratings.models import UserSolvedProblem
+
+    roadmap = Roadmap.objects.create(slug="yol", title="Yo'l", is_published=True)
+    RoadmapStep.objects.create(roadmap=roadmap, order=1, problem=problem)
+    RoadmapStep.objects.create(roadmap=roadmap, order=2, title="Faqat maqola")
+
+    client = APIClient()
+    assert client.get(reverse("roadmap-list")).data[0]["solved_steps"] == 0
+
+    client.force_authenticate(user)
+    assert client.get(reverse("roadmap-list")).data[0]["solved_steps"] == 0
+
+    UserSolvedProblem.objects.create(
+        user=user, problem=problem, difficulty_at_solve=problem.difficulty
+    )
+    assert client.get(reverse("roadmap-list")).data[0]["solved_steps"] == 1

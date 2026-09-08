@@ -8517,6 +8517,11 @@ components:
           maximum: 9223372036854775807
           minimum: 0
           format: int64
+        view_count:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
         success_rate:
           type: integer
           nullable: true
@@ -8655,6 +8660,11 @@ components:
           minimum: 0
           format: int64
         attempt_count:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        view_count:
           type: integer
           maximum: 9223372036854775807
           minimum: 0
@@ -9068,6 +9078,15 @@ components:
           type: integer
           readOnly: true
           default: 0
+        solved_steps:
+          type: integer
+          description: |-
+            Traektoriyaning nechta masalasi yechilgan.
+
+            Alohida progress modeli yo'q — qadam masalaga bog'langan, yechilgan
+            masalalar esa `UserSolvedProblem` da. Slug to'plamini viewset bitta
+            so'rovda tayyorlaydi.
+          readOnly: true
         steps:
           type: array
           items:
@@ -9075,6 +9094,7 @@ components:
           readOnly: true
       required:
       - slug
+      - solved_steps
       - step_count
       - steps
       - title
@@ -9097,8 +9117,18 @@ components:
           type: integer
           readOnly: true
           default: 0
+        solved_steps:
+          type: integer
+          description: |-
+            Traektoriyaning nechta masalasi yechilgan.
+
+            Alohida progress modeli yo'q — qadam masalaga bog'langan, yechilgan
+            masalalar esa `UserSolvedProblem` da. Slug to'plamini viewset bitta
+            so'rovda tayyorlaydi.
+          readOnly: true
       required:
       - slug
+      - solved_steps
       - step_count
       - title
     RoadmapStep:

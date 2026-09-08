@@ -98,3 +98,23 @@ test("masala sahifasida ommaviy raqam ko'rinadi", async ({ page }) => {
   // Sarlavhada ham — qidiruv natijasida masalani raqami bilan tanish uchun.
   await expect(page).toHaveTitle(/#\d{4}/);
 });
+
+test("«Hammasi» tabidan to'liq urinishlar sahifasiga o'tiladi", async ({
+  page,
+}) => {
+  await page.goto(PROBLEM);
+  await page.getByRole("button", { name: "Hammasi" }).click();
+
+  const link = page.getByRole("link", { name: /Barcha urinishlar/ });
+  await expect(link).toBeVisible();
+  await link.click();
+
+  await page.waitForURL(/\/status$/);
+  await expect(
+    page.getByRole("columnheader", { name: "Foydalanuvchi" }),
+  ).toBeVisible();
+  // Begonaga manba ko'rinmasligi kerak — jadvalda umuman ustun yo'q.
+  await expect(
+    page.getByRole("columnheader", { name: /manba|source/i }),
+  ).toHaveCount(0);
+});

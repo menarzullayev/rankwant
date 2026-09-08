@@ -16,7 +16,9 @@ const API = process.env.E2E_API_BASE ?? "http://localhost:8000/api/v1";
  * (ADR-0008: birinchi tomon web uchun cookie). Brauzerdagi mijoz ham
  * xuddi shuni qiladi, shuning uchun test ham shunday qilishi kerak.
  */
-async function csrf(request: APIRequestContext): Promise<Record<string, string>> {
+async function csrf(
+  request: APIRequestContext,
+): Promise<Record<string, string>> {
   const state = await request.storageState();
   const token = state.cookies.find((c) => c.name === "csrftoken")?.value;
   return token ? { "X-CSRFToken": token, Referer: API } : {};

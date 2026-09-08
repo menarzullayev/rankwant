@@ -44,6 +44,17 @@ class RoadmapViewSet(viewsets.ReadOnlyModelViewSet[Roadmap]):
     lookup_field = "slug"
     pagination_class = None
 
+    def get_serializer_context(self):  # type: ignore[no-untyped-def]
+        context = dict(super().get_serializer_context())
+        user = self.request.user
+        if user.is_authenticated:
+            from ratings.models import UserSolvedProblem
+
+            context["solved_problem_ids"] = set(
+                UserSolvedProblem.objects.filter(user=user).values_list("problem_id", flat=True)
+            )
+        return context
+
     def get_queryset(self):  # type: ignore[no-untyped-def]
         return (
             Roadmap.objects.filter(is_published=True)

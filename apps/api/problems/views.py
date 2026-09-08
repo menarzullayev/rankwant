@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import Counter
 from typing import Any
 
-from django.db.models import Avg, Count, Max
+from django.db.models import Avg, Count, F, Max
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import viewsets
@@ -48,7 +48,13 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
     pagination_class = StandardPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     search_fields = ["title", "slug"]
-    ordering_fields = ["difficulty", "solved_count", "attempt_count", "created_at"]
+    ordering_fields = [
+        "difficulty",
+        "solved_count",
+        "attempt_count",
+        "view_count",
+        "created_at",
+    ]
     ordering = ["difficulty"]
 
     def get_queryset(self):  # type: ignore[no-untyped-def]
@@ -95,6 +101,13 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
             problem_id: verdicts.get(attempt_id) for problem_id, attempt_id in last_ids.items()
         }
         return context
+
+    def retrieve(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        response = super().retrieve(request, *args, **kwargs)
+        # Bitta arzon UPDATE, o'qishdan keyin — sanoq xato bo'lsa ham
+        # sahifa ochilishi buzilmasin.
+        Problem.objects.filter(slug=kwargs.get("slug")).update(view_count=F("view_count") + 1)
+        return response
 
     def get_serializer_class(self):  # type: ignore[no-untyped-def]
         return ProblemDetailSerializer if self.action == "retrieve" else ProblemListSerializer

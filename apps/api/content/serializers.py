@@ -54,11 +54,36 @@ class RoadmapStepSerializer(serializers.ModelSerializer[RoadmapStep]):
 
 
 class RoadmapListSerializer(serializers.ModelSerializer[Roadmap]):
+    solved_steps = serializers.SerializerMethodField()
+
+    def get_solved_steps(self, roadmap: Roadmap) -> int:
+        """Traektoriyaning nechta masalasi yechilgan.
+
+        Alohida progress modeli yo'q — qadam masalaga bog'langan, yechilgan
+        masalalar esa `UserSolvedProblem` da. Slug to'plamini viewset bitta
+        so'rovda tayyorlaydi.
+        """
+        solved = self.context.get("solved_problem_ids")
+        if not solved:
+            return 0
+        return sum(
+            1
+            for step in roadmap.steps.all()
+            if step.problem_id is not None and step.problem_id in solved
+        )
+
     step_count = serializers.IntegerField(read_only=True, default=0)
 
     class Meta:
         model = Roadmap
-        fields = ["slug", "title", "description", "locale", "step_count"]
+        fields = [
+            "slug",
+            "title",
+            "description",
+            "locale",
+            "step_count",
+            "solved_steps",
+        ]
 
 
 class RoadmapDetailSerializer(RoadmapListSerializer):

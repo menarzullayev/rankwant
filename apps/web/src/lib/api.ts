@@ -31,6 +31,8 @@ export type Problem = {
   has_editorial: boolean;
   /** Oxirgi urinishim verdikti — hech urinmaganda `null`. */
   my_verdict: string | null;
+  /** Masala sahifasi ochilishi soni. */
+  view_count: number;
   /** Yechilgan / urinilgan, foizda. Urinish bo'lmasa `null`. */
   success_rate: number | null;
   slug: string;
@@ -214,6 +216,8 @@ export type Roadmap = {
   title: string;
   description: string;
   step_count: number;
+  /** Traektoriyaning nechta masalasi yechilgan (mehmonda 0). */
+  solved_steps: number;
 };
 
 export type Attempt = {
@@ -655,6 +659,13 @@ export const api = {
   roadmaps: () => get<Roadmap[]>("/roadmaps/", 300),
   // Progress foydalanuvchiga xos — SSR da `getWithSession` bilan olinadi.
   progress: () => get<ArchiveProgress>("/problems/progress/", 0),
+  /** Masalaning barcha urinishlari — ochiq. Manba begonaga ko'rinmaydi
+   * (backend uni faqat egasiga qaytaradi). */
+  problemAttempts: (slug: string, cursor = "") =>
+    get<Paginated<Attempt>>(
+      `/attempts/?problem=${encodeURIComponent(slug)}${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
+      0,
+    ),
   attempts: () => get<Paginated<Attempt>>("/attempts/", 0),
   // Tillar deyarli o'zgarmaydi — judge obrazi bilan bir manbadan (ADR-0004).
   languages: () => get<Paginated<Language>>("/languages/", 300),

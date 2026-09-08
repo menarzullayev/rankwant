@@ -141,6 +141,9 @@ class Problem(models.Model):
     # Denormalizatsiya — filtr va statistika uchun
     solved_count = models.PositiveIntegerField(default=0)
     attempt_count = models.PositiveIntegerField(default=0)
+    #: Masala sahifasi ochilishi. «Ko'p ko'rilgan» ro'yxati uchun; yechish
+    #: statistikasidan farqli — ko'rgan, lekin urinmaganlarni ham sanaydi.
+    view_count = models.PositiveIntegerField(default=0, db_index=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

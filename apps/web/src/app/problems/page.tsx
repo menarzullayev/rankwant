@@ -79,18 +79,32 @@ export default async function ProblemsPage({ searchParams }: Props) {
     ? Number(raw.page_size)
     : DEFAULT_PAGE_SIZE;
 
-  const [data, topics, stats, me, progress, roadmaps, calendar] =
-    await Promise.all([
-      getWithSession<Paginated<Problem>>(
-        `/problems/${query.size ? `?${query}` : ""}`,
-      ),
-      api.topics(),
-      api.stats(),
-      getWithSession<UserPublic>("/me/").catch(() => null),
-      getWithSession<ArchiveProgress>("/problems/progress/"),
-      api.roadmaps().catch(() => []),
-      api.calendar().catch(() => ({ results: [] })),
-    ]);
+  const [
+    data,
+    topics,
+    stats,
+    me,
+    progress,
+    roadmaps,
+    calendar,
+    attempts,
+    popular,
+  ] = await Promise.all([
+    getWithSession<Paginated<Problem>>(
+      `/problems/${query.size ? `?${query}` : ""}`,
+    ),
+    api.topics(),
+    api.stats(),
+    getWithSession<UserPublic>("/me/").catch(() => null),
+    getWithSession<ArchiveProgress>("/problems/progress/"),
+    api.roadmaps().catch(() => []),
+    api.calendar().catch(() => ({ results: [] })),
+    api.attempts().catch(() => ({ results: [] })),
+    // «Ko'p ko'rilgan» — arxiv filtridan mustaqil, alohida so'rov.
+    api
+      .problems("?ordering=-view_count&page_size=5")
+      .catch(() => ({ results: [] })),
+  ]);
 
   // «Davom ettirish» — urinilgan, lekin yechilmagan birinchi masala.
   // Ro'yxat qiyinlik bo'yicha saralangani uchun bu eng oson qolgani.
@@ -327,6 +341,8 @@ export default async function ProblemsPage({ searchParams }: Props) {
           resume={resume}
           upcoming={upcoming}
           roadmaps={roadmaps}
+          attempts={attempts.results}
+          popular={popular.results}
         />
       </div>
     </div>

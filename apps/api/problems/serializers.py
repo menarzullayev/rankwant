@@ -93,6 +93,7 @@ class ProblemListSerializer(serializers.ModelSerializer[Problem]):
             "topics",
             "solved_count",
             "attempt_count",
+            "view_count",
             "success_rate",
             "is_solved",
             "is_favourite",

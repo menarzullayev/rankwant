@@ -285,3 +285,15 @@ class TestProgress:
         }
         assert levels["expert"]["total"] == 1
         assert levels["expert"]["solved"] == 0
+
+
+def test_korish_soni_sahifa_ochilganda_ortadi(problem) -> None:
+    """«Ko'p ko'rilgan» ro'yxatining manbai."""
+    url = reverse("problem-detail", args=[problem.slug])
+    client = APIClient()
+
+    client.get(url)
+    client.get(url)
+    problem.refresh_from_db()
+
+    assert problem.view_count == 2

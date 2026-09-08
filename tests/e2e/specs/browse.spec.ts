@@ -186,9 +186,7 @@ test("kirgan foydalanuvchi sevimliga qo'sha oladi", async ({ page }) => {
   ).toBeVisible();
 });
 
-test("arxiv yon panelida progress va traektoriya ko'rinadi", async ({
-  page,
-}) => {
+test("arxiv yon panelida progress bloki ko'rinadi", async ({ page }) => {
   await page.goto("/problems");
 
   // Mehmonda ham chiziladi — arxiv hajmini ko'rsatadi.
@@ -196,9 +194,6 @@ test("arxiv yon panelida progress va traektoriya ko'rinadi", async ({
     page.getByRole("heading", { name: "Yechilganlar" }),
   ).toBeVisible();
   await expect(page.getByRole("progressbar").first()).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: "Traektoriya" }),
-  ).toBeVisible();
 });
 
 test("yetti daraja filtr panelida ham, jadvalda ham bir xil", async ({
@@ -220,4 +215,13 @@ test("yetti daraja filtr panelida ham, jadvalda ham bir xil", async ({
       page.getByRole("button", { name: label, exact: true }),
     ).toBeVisible();
   }
+});
+
+test("yon panelda o'quv rejalari va hamjamiyat bloki bor", async ({ page }) => {
+  await page.goto("/problems");
+
+  await expect(
+    page.getByRole("heading", { name: "O'quv rejalari" }),
+  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Hamjamiyat" })).toBeVisible();
 });

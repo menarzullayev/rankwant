@@ -458,7 +458,7 @@ export default function SubmitPanel({
           />
         )}
         {tab === "history" && <HistoryView items={history} />}
-        {tab === "everyone" && <EveryoneView items={everyone} />}
+        {tab === "everyone" && <EveryoneView items={everyone} slug={problem} />}
       </Card>
     </div>
   );
@@ -708,7 +708,13 @@ function SamplesView({
 /** Boshqalarning urinishlari — kim yechganini va qaysi tilda ekanini
  * ko'rish uchun. Manba ko'rsatilmaydi: backend uni faqat egasiga va
  * xodimga qaytaradi. */
-function EveryoneView({ items }: { items: Attempt[] | null }) {
+function EveryoneView({
+  items,
+  slug,
+}: {
+  items: Attempt[] | null;
+  slug: string;
+}) {
   if (items === null)
     return <p className="text-theme-sm rw-faint">Yuklanmoqda…</p>;
 
@@ -720,29 +726,37 @@ function EveryoneView({ items }: { items: Attempt[] | null }) {
     );
 
   return (
-    <ul className="rw-divide divide-y">
-      {items.map((item) => (
-        <li
-          key={item.id}
-          className="flex flex-wrap items-center gap-3 py-2 text-theme-sm"
-        >
-          <Link
-            href={`/users/${item.username}`}
-            className="font-medium rw-strong rw-link-hover"
+    <div className="space-y-3">
+      <ul className="rw-divide divide-y">
+        {items.map((item) => (
+          <li
+            key={item.id}
+            className="flex flex-wrap items-center gap-3 py-2 text-theme-sm"
           >
-            {item.username}
-          </Link>
-          <VerdictBadge verdict={item.verdict} />
-          <span className="rw-dim">{item.language}</span>
-          <span className="rw-faint">
-            {item.time_ms} ms · {Math.round(item.memory_kb / 1024)} MB
-          </span>
-          <time className="ml-auto rw-faint" dateTime={item.created_at}>
-            {new Date(item.created_at).toLocaleDateString("uz")}
-          </time>
-        </li>
-      ))}
-    </ul>
+            <Link
+              href={`/users/${item.username}`}
+              className="font-medium rw-strong rw-link-hover"
+            >
+              {item.username}
+            </Link>
+            <VerdictBadge verdict={item.verdict} />
+            <span className="rw-dim">{item.language}</span>
+            <span className="rw-faint">
+              {item.time_ms} ms · {Math.round(item.memory_kb / 1024)} MB
+            </span>
+            <time className="ml-auto rw-faint" dateTime={item.created_at}>
+              {new Date(item.created_at).toLocaleDateString("uz")}
+            </time>
+          </li>
+        ))}
+      </ul>
+      <Link
+        href={`/problems/${slug}/status`}
+        className="inline-block text-theme-sm rw-accent-ink hover:underline"
+      >
+        Barcha urinishlar →
+      </Link>
+    </div>
   );
 }
 

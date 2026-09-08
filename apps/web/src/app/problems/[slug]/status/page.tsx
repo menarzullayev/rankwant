@@ -1,0 +1,168 @@
+import type { Metadata, Route } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+
+import { VerdictBadge } from "@/components/VerdictBadge";
+import { Card } from "@/components/ui/Card";
+import {
+  EmptyRow,
+  TBody,
+  TD,
+  TH,
+  THead,
+  TR,
+  Table,
+} from "@/components/ui/Table";
+import { api, ApiError } from "@/lib/api";
+
+type Props = {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ cursor?: string }>;
+};
+
+export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: Pick<Props, "params">): Promise<Metadata> {
+  const { slug } = await params;
+  return { title: `Urinishlar · ${slug}` };
+}
+
+/** Masalaning barcha urinishlari — Codeforces'ning STATUS sahifasi.
+ *
+ * Panel tabida oxirgi o'ntasi ko'rinadi; bu yerda to'liq oqim, ulashsa
+ * bo'ladigan havola bilan. Manba begonaga ko'rinmaydi — backend uni
+ * faqat egasiga qaytaradi. */
+export default async function ProblemStatusPage({
+  params,
+  searchParams,
+}: Props) {
+  const { slug } = await params;
+  const { cursor } = await searchParams;
+
+  let problem;
+  let page;
+  try {
+    [problem, page] = await Promise.all([
+      api.problem(slug),
+      api.problemAttempts(slug, cursor ?? ""),
+    ]);
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) notFound();
+    throw error;
+  }
+
+  // Kursorli sahifalash: `next` to'liq URL, bizga faqat kursor kerak.
+  const nextCursor = page.next
+    ? new URL(page.next).searchParams.get("cursor")
+    : null;
+  const previousCursor = page.previous
+    ? new URL(page.previous).searchParams.get("cursor")
+    : null;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-baseline justify-between gap-3">
+        <h1 className="text-title-sm font-bold rw-strong">
+          {problem.code !== null && (
+            <span className="mr-2 font-mono text-theme-sm rw-faint tabular-nums">
+              #{String(problem.code).padStart(4, "0")}
+            </span>
+          )}
+          {problem.title} — urinishlar
+        </h1>
+        <Link
+          href={`/problems/${slug}`}
+          className="text-theme-sm rw-accent-ink hover:underline"
+        >
+          Masalaga qaytish
+        </Link>
+      </div>
+
+      <Card bodyClassName="p-0">
+        <Table>
+          <THead>
+            <TH>Foydalanuvchi</TH>
+            <TH>Verdikt</TH>
+            <TH>Til</TH>
+            <TH align="right">Vaqt</TH>
+            <TH align="right" className="hidden sm:table-cell">
+              Xotira
+            </TH>
+            <TH align="right" className="hidden md:table-cell">
+              Sana
+            </TH>
+          </THead>
+          <TBody>
+            {page.results.map((attempt) => (
+              <TR key={attempt.id}>
+                <TD>
+                  <Link
+                    href={`/users/${attempt.username}`}
+                    className="font-medium rw-strong rw-link-hover"
+                  >
+                    {attempt.username}
+                  </Link>
+                </TD>
+                <TD>
+                  <VerdictBadge verdict={attempt.verdict} />
+                </TD>
+                <TD className="rw-dim">{attempt.language}</TD>
+                <TD align="right" className="rw-faint tabular-nums">
+                  {attempt.time_ms} ms
+                </TD>
+                <TD
+                  align="right"
+                  className="hidden rw-faint tabular-nums sm:table-cell"
+                >
+                  {Math.round(attempt.memory_kb / 1024)} MB
+                </TD>
+                <TD align="right" className="hidden rw-faint md:table-cell">
+                  <time dateTime={attempt.created_at}>
+                    {new Date(attempt.created_at).toLocaleString("uz")}
+                  </time>
+                </TD>
+              </TR>
+            ))}
+            {page.results.length === 0 && (
+              <EmptyRow colSpan={6}>Hali urinish yo&apos;q.</EmptyRow>
+            )}
+          </TBody>
+        </Table>
+
+        {(previousCursor || nextCursor) && (
+          <nav
+            aria-label="Sahifalar"
+            className="flex items-center justify-between gap-3 px-5 py-4"
+          >
+            {previousCursor ? (
+              <Link
+                href={
+                  `/problems/${slug}/status?cursor=${encodeURIComponent(previousCursor)}` as Route
+                }
+                rel="prev"
+                className="text-theme-sm rw-dim-2 hover:underline"
+              >
+                ← Oldingi
+              </Link>
+            ) : (
+              <span />
+            )}
+            {nextCursor && (
+              <Link
+                href={
+                  `/problems/${slug}/status?cursor=${encodeURIComponent(nextCursor)}` as Route
+                }
+                rel="next"
+                className="text-theme-sm rw-dim-2 hover:underline"
+              >
+                Keyingi →
+              </Link>
+            )}
+          </nav>
+        )}
+      </Card>
+    </div>
+  );
+}
