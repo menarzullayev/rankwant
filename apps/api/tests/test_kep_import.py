@@ -31,6 +31,21 @@ class TestHtmlToMarkdown:
         source = "<p><strong><strong>b</strong></strong></p>"
         assert html_to_markdown(source) == "**b**"
 
+    def test_qoshni_takidlar_birlashadi(self):
+        # `**n****(n < 1000).**` ni remark qalin EMAS, oddiy yulduzcha
+        # deb o'qiydi — tekshirilgan.
+        source = "<p>son <strong>n</strong><strong>(n &lt; 1000).</strong></p>"
+        assert html_to_markdown(source) == "son **n(n < 1000).**"
+
+    def test_harf_raqamsiz_takid_belgisiz_qoladi(self):
+        source = "<p><strong>ShopCard</strong><strong><em>.</em></strong></p>"
+        assert html_to_markdown(source) == "**ShopCard.**"
+
+    def test_matndagi_dollar_qochiriladi(self):
+        # Qochirilmasa `$5 va $7` orasi formulaga aylanardi.
+        source = "<p>narx $5 va $7</p>"
+        assert html_to_markdown(source) == "narx \\$5 va \\$7"
+
     def test_bosh_takid_yoqoladi(self):
         source = "<p><strong>&nbsp;</strong>matn</p>"
         assert html_to_markdown(source) == "matn"

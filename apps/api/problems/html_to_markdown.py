@@ -18,7 +18,7 @@ import re
 from html.parser import HTMLParser
 
 #: Markdown'da ma'noga ega belgilar. Matematikaning TASHQARISIDA qochiriladi.
-_ESCAPE = re.compile(r"([\\`*_\[\]#])")
+_ESCAPE = re.compile(r"([\\`*_\[\]#$])")
 
 _SKIP = {"script", "style", "head", "meta", "link"}
 
@@ -45,6 +45,8 @@ class _Converter(HTMLParser):
         # qo'yardi.
         self._depth: dict[str, int] = {"**": 0, "*": 0}
         self._opened_at: dict[str, int] = {}
+        #: Yopilgan, lekin hali yozilmagan ta'kid: (belgi, orqadagi bo'shliq).
+        self._pending: tuple[str, str] | None = None
 
     # ── yordamchilar ────────────────────────────────────────────────
     @property
@@ -52,9 +54,11 @@ class _Converter(HTMLParser):
         return self.out if self._cell is None else self._cell
 
     def _emit(self, text: str) -> None:
+        self._flush()
         self._buf.append(text)
 
     def _newline(self, count: int = 1) -> None:
+        self._flush()
         buf = self._buf
         have = 0
         for chunk in reversed(buf):
@@ -178,12 +182,19 @@ class _Converter(HTMLParser):
             case "p" | "div" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6":
                 self._newline(2)
 
+    def close(self) -> None:
+        super().close()
+        self._flush()
+
     def handle_data(self, data: str) -> None:
         if self._skip_depth:
             return
         if self._math is not None:
             self._math.append(data)
             return
+        # `&nbsp;` matnda qattiq bo'shliq bo'lib keladi — oddiy bo'shliqqa
+        # aylantiramiz, aks holda Markdown uni matn deb qabul qiladi.
+        data = data.replace("\xa0", " ")
         if self._pre:
             # Ochilish fenceidan keyingi bo'sh qator ortiqcha.
             if self._fence is not None and not any(self.out[self._fence + 1 :]):
@@ -191,9 +202,7 @@ class _Converter(HTMLParser):
             self._emit(data)
             return
 
-        # `&nbsp;` matnda qattiq bo'shliq bo'lib keladi — oddiy bo'shliqqa
-        # aylantiramiz, aks holda Markdown uni matn deb qabul qiladi.
-        text = data.replace("\xa0", " ")
+        text = data
         if not text.strip():
             buf = self._buf
             if buf and not buf[-1].endswith((" ", "\n")):
@@ -202,28 +211,53 @@ class _Converter(HTMLParser):
         self._emit(text if self._code else _ESCAPE.sub(r"\\\1", text))
 
     # ── ta'kid ──────────────────────────────────────────────────────
+    def _flush(self) -> None:
+        if self._pending is None:
+            return
+        marker, tail = self._pending
+        self._pending = None
+        self._buf.append(marker)
+        if tail:
+            self._buf.append(tail)
+
     def _open(self, marker: str) -> None:
         if self._depth[marker] == 0:
+            # `</strong><strong>` — ikki qo'shni ta'kid `a****b` beradi va
+            # remark uni QALIN EMAS, oddiy yulduzcha deb o'qiydi
+            # (tekshirilgan). Yopuvchi hali yozilmagani uchun ikkalasini
+            # bitta ta'kidga qo'shib yuboramiz.
+            if self._pending == (marker, ""):
+                self._pending = None
+                self._depth[marker] = 1
+                return
+            self._flush()
             self._opened_at[marker] = len(self._buf)
-            self._emit(marker)
+            self._buf.append(marker)
         self._depth[marker] += 1
 
     def _close(self, marker: str) -> None:
         self._depth[marker] = max(0, self._depth[marker] - 1)
         if self._depth[marker]:
             return
+        self._flush()
         buf = self._buf
         start = self._opened_at.pop(marker, len(buf))
         inner = "".join(buf[start + 1 :])
-        if inner.strip():
-            lead = inner[: len(inner) - len(inner.lstrip())]
-            tail = inner[len(inner.rstrip()) :]
-            buf[start:] = [lead, marker, inner.strip(), marker, tail]
+        # Harf-raqamsiz ta'kid — «.» yoki «→» ustidagi qalinlik muharrir
+        # shovqini. Uni saqlashning imkoni ham yo'q: qo'shni ta'kid
+        # yonida Markdown `**a*.***` ni umuman ifodalay olmaydi.
+        if not any(char.isalnum() for char in inner):
+            del buf[start:]
+            if inner.strip():
+                buf.append(inner)
+            elif inner and buf and not buf[-1].endswith((" ", "\n")):
+                buf.append(" ")
             return
-        # Ichi bo'sh ta'kid — o'rniga bir bo'shliq qoldiramiz.
-        del buf[start:]
-        if inner and buf and not buf[-1].endswith((" ", "\n")):
-            buf.append(" ")
+        lead = inner[: len(inner) - len(inner.lstrip())]
+        tail = inner[len(inner.rstrip()) :]
+        buf[start:] = [lead, marker, inner.strip()]
+        self._opened_at[marker] = start + 1
+        self._pending = (marker, tail)
 
     # ── matematika ──────────────────────────────────────────────────
     def _flush_math(self) -> None:
