@@ -1661,6 +1661,10 @@ paths:
         description: Number of results to return per page.
         schema:
           type: integer
+      - in: query
+        name: recommended
+        schema:
+          type: boolean
       - name: search
         required: false
         in: query
@@ -1671,6 +1675,10 @@ paths:
         name: solved
         schema:
           type: boolean
+      - in: query
+        name: statement_locale
+        schema:
+          type: string
       - in: query
         name: topics
         schema:

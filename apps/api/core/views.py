@@ -107,6 +107,15 @@ class PlatformStatsView(APIView):
                 "problems": Problem.objects.filter(is_public=True).count(),
                 "contests": Contest.objects.filter(is_public=True).count(),
                 "attempts": Attempt.objects.count(),
+                # Arxivdagi til filtri faqat bir nechta til bo'lganda
+                # ko'rsatiladi — bitta variantli tanlov shovqin.
+                "statement_locales": sorted(
+                    set(
+                        Problem.objects.filter(is_public=True).values_list(
+                            "statement_locale", flat=True
+                        )
+                    )
+                ),
             }
             cache.set("platform-stats", stats, self.CACHE_S)
         return Response(stats)

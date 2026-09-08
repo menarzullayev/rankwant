@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { CloseIcon, SearchIcon } from "@/icons";
+import { useHideTags } from "@/lib/hideTags";
 
 export type FilterTopic = { slug: string; label: string };
 
@@ -27,19 +28,36 @@ const STATUSES = [
   ["solved=false", "Yechilmagan"],
   ["solved=true", "Yechilgan"],
   ["favourite=true", "Sevimlilarim"],
+  ["recommended=true", "Menga tavsiya"],
 ] as const;
 
 /** Panelda boshqariladigan kalitlar — saralash va qidiruv panelda emas,
  * shuning uchun rozetkada ular hisoblanmaydi. */
-const PANEL_KEYS = ["level", "topics", "solved", "favourite"] as const;
+const PANEL_KEYS = [
+  "level",
+  "topics",
+  "solved",
+  "favourite",
+  "recommended",
+  "statement_locale",
+] as const;
+
+const LOCALE_LABELS: Record<string, string> = {
+  uz: "O'zbekcha",
+  ru: "Ruscha",
+  en: "Inglizcha",
+};
 
 export function ProblemFilters({
   topics,
+  locales,
   signedIn,
 }: {
   topics: FilterTopic[];
+  locales: string[];
   signedIn: boolean;
 }) {
+  const [hideTags, setHideTags] = useHideTags();
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -65,6 +83,7 @@ export function ProblemFilters({
     const next = new URLSearchParams(params);
     next.delete("solved");
     next.delete("favourite");
+    next.delete("recommended");
     if (value) {
       const [key, raw] = value.split("=");
       next.set(key, raw);
@@ -83,7 +102,9 @@ export function ProblemFilters({
     set("topics", next.join(","));
   };
 
-  // Qidiruv har harfda so'rov yubormaydi — yozib bo'lgach.
+  // Qidiruv har harfda so'rov yubormaydi — yozib bo'lgach. Manzil
+  // o'zgarmasa push ham qilinmaydi: aks holda `params` yangilanishi
+  // effektni qayta ishga tushirib, cheksiz navigatsiya hosil qilardi.
   useEffect(() => {
     if (!typed.current) return;
     const handle = setTimeout(() => {
@@ -92,16 +113,20 @@ export function ProblemFilters({
       if (value) next.set("search", value);
       else next.delete("search");
       next.delete("page");
-      router.push(`${pathname}${next.size ? `?${next}` : ""}` as Route);
+      const target = `${pathname}${next.size ? `?${next}` : ""}`;
+      const current = `${pathname}${params.size ? `?${params}` : ""}`;
+      if (target !== current) router.push(target as Route);
     }, 400);
     return () => clearTimeout(handle);
   }, [term, params, pathname, router]);
 
-  const activeStatus = params.get("favourite")
-    ? "favourite=true"
-    : params.get("solved")
-      ? `solved=${params.get("solved")}`
-      : "";
+  const activeStatus = params.get("recommended")
+    ? "recommended=true"
+    : params.get("favourite")
+      ? "favourite=true"
+      : params.get("solved")
+        ? `solved=${params.get("solved")}`
+        : "";
 
   const activeCount = PANEL_KEYS.filter((key) => params.get(key)).length;
   const sort = params.get("ordering") ?? "difficulty";
@@ -212,6 +237,32 @@ export function ProblemFilters({
                 label={topic.label}
               />
             ))}
+          </Group>
+
+          {locales.length > 1 && (
+            <Group label="Matn tili">
+              <Option
+                active={!params.get("statement_locale")}
+                onClick={() => set("statement_locale", "")}
+                label="Hammasi"
+              />
+              {locales.map((code) => (
+                <Option
+                  key={code}
+                  active={params.get("statement_locale") === code}
+                  onClick={() => set("statement_locale", code)}
+                  label={LOCALE_LABELS[code] ?? code}
+                />
+              ))}
+            </Group>
+          )}
+
+          <Group label="Ko'rinish">
+            <Option
+              active={hideTags}
+              onClick={() => setHideTags(!hideTags)}
+              label="Yechilmaganlarda mavzuni yashirish"
+            />
           </Group>
 
           {activeCount > 0 && (

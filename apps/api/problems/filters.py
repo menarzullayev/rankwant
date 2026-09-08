@@ -22,10 +22,13 @@ class ProblemFilter(filters.FilterSet):  # type: ignore[misc]
     # Mehmon uchun ma'nosiz: filtr qo'llanmaydi, arxiv to'liq ko'rinadi.
     solved = filters.BooleanFilter(method="filter_solved")
     favourite = filters.BooleanFilter(method="filter_favourite")
+    # Tavsiya alohida sahifa emas, arxivning bir rejimi: filtr, saralash va
+    # sahifalash o'sha-o'sha ishlayveradi.
+    recommended = filters.BooleanFilter(method="filter_recommended")
 
     class Meta:
         model = Problem
-        fields = ["difficulty", "checker_type"]
+        fields = ["difficulty", "checker_type", "statement_locale"]
 
     def filter_solved(self, queryset, name: str, value: bool):  # type: ignore[no-untyped-def]
         user = getattr(self.request, "user", None)
@@ -46,6 +49,15 @@ class ProblemFilter(filters.FilterSet):  # type: ignore[misc]
         if user is None or not user.is_authenticated or not value:
             return queryset
         return queryset.filter(favourites__user=user)
+
+    def filter_recommended(self, queryset, name: str, value: bool):  # type: ignore[no-untyped-def]
+        user = getattr(self.request, "user", None)
+        if user is None or not user.is_authenticated or not value:
+            return queryset
+
+        from problems.recommend import recommend
+
+        return queryset.filter(pk__in=recommend(user, limit=50).values("pk"))
 
     def filter_level(self, queryset, name: str, value: str):  # type: ignore[no-untyped-def]
         lower = 0

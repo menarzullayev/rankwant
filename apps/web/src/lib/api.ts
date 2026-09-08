@@ -128,6 +128,7 @@ export type PlatformStats = {
   problems: number;
   contests: number;
   attempts: number;
+  statement_locales: string[];
 };
 
 export type Wallet = {

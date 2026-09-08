@@ -92,3 +92,51 @@ test("sahifalash yozuv sonini ko'rsatadi", async ({ page }) => {
   await page.goto("/problems");
   await expect(page.getByLabel("Sahifalar")).toContainText("masala");
 });
+
+test("yechilmagan masalada mavzuni yashirish sozlamasi ishlaydi", async ({
+  page,
+}) => {
+  await page.goto("/problems");
+  const badges = page.locator("tbody .rounded-full");
+  const before = await badges.count();
+
+  await page.getByRole("button", { name: /^Filtrlar( \d+)?$/ }).click();
+  await page
+    .getByRole("button", { name: "Yechilmaganlarda mavzuni yashirish" })
+    .click();
+
+  // Qiyinlik belgisi qoladi, mavzu tegi ketadi.
+  await expect(badges).not.toHaveCount(before);
+});
+
+test("kirgan foydalanuvchi holat filtrini va bo'lim havolalarini ko'radi", async ({
+  page,
+}) => {
+  const api = process.env.E2E_API_BASE ?? "";
+  const site = process.env.E2E_BASE_URL ?? "http://localhost:3000";
+  test.skip(
+    new URL(api, site).origin !== new URL(site).origin,
+    "sayt va API alohida originda — sessiya cookie yetmaydi",
+  );
+
+  const username = `e2earx_${Date.now()}`;
+  const password = "E2eParol!12345";
+  await page.request.post(`${api}/auth/register/`, {
+    data: { username, password, email: `${username}@example.uz` },
+  });
+  await page.request.post(`${api}/auth/login/`, {
+    data: { username, password },
+  });
+
+  await page.goto("/problems");
+
+  await expect(page.getByRole("link", { name: "Urinishlarim" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Statistikam" })).toBeVisible();
+
+  await page.getByRole("button", { name: /^Filtrlar( \d+)?$/ }).click();
+  await page.getByRole("button", { name: "Menga tavsiya" }).click();
+  await page.waitForURL(/recommended=true/);
+  await expect(
+    page.getByRole("button", { name: /^Filtrlar \d+$/ }),
+  ).toBeVisible();
+});

@@ -197,8 +197,16 @@ class TestPlatformStats:
     def test_stats_ochiq_va_toliq(self, user, problem, contest) -> None:
         r = APIClient().get(reverse("platform-stats"))
         assert r.status_code == 200
-        assert set(r.json()) == {"users", "problems", "contests", "attempts"}
+        assert set(r.json()) == {
+            "users",
+            "problems",
+            "contests",
+            "attempts",
+            "statement_locales",
+        }
         assert r.json()["problems"] >= 1
+        # Arxivdagi til filtri shu ro'yxatga qarab ko'rsatiladi.
+        assert r.json()["statement_locales"] == ["uz"]
 
     def test_urinishlar_sanaladi(self, user, problem, language) -> None:
         from judging.models import Attempt

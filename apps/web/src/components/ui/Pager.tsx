@@ -25,11 +25,14 @@ function pages(current: number, total: number): (number | "gap")[] {
 const cell =
   "flex h-9 min-w-9 items-center justify-center rw-radius-sm px-2.5 text-theme-sm transition";
 
+export const PAGE_SIZES = [25, 50, 100] as const;
+
 export function Pager({
   page,
   count,
   pageSize,
   href,
+  sizeHref,
   label = "yozuv",
 }: {
   page: number;
@@ -37,6 +40,8 @@ export function Pager({
   pageSize: number;
   /** Berilgan sahifa uchun to'liq URL — chaqiruvchi qolgan filtrlarni saqlaydi. */
   href: (page: number) => Route;
+  /** Sahifa hajmini almashtiruvchi URL. Berilmasa tanlagich chizilmaydi. */
+  sizeHref?: (size: number) => Route;
   label?: string;
 }) {
   const total = Math.max(1, Math.ceil(count / pageSize));
@@ -50,9 +55,34 @@ export function Pager({
       aria-label="Sahifalar"
       className="flex flex-wrap items-center justify-between gap-3 px-5 py-4"
     >
-      <p className="text-theme-sm rw-dim">
-        {from}–{to} / {count} {label}
-      </p>
+      <div className="flex flex-wrap items-center gap-3">
+        <p className="text-theme-sm rw-dim">
+          {from}–{to} / {count} {label}
+        </p>
+        {sizeHref && count > PAGE_SIZES[0] && (
+          <span className="flex items-center gap-1">
+            {PAGE_SIZES.map((size) =>
+              size === pageSize ? (
+                <span
+                  key={size}
+                  aria-current="true"
+                  className="rw-radius-sm px-2 py-0.5 text-theme-xs font-medium rw-accent-ink"
+                >
+                  {size}
+                </span>
+              ) : (
+                <Link
+                  key={size}
+                  href={sizeHref(size)}
+                  className="rw-radius-sm px-2 py-0.5 text-theme-xs rw-faint transition rw-hover-bg"
+                >
+                  {size}
+                </Link>
+              ),
+            )}
+          </span>
+        )}
+      </div>
 
       {total > 1 && (
         <div className="flex flex-wrap items-center gap-1">

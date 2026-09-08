@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
-import { Pager } from "@/components/ui/Pager";
+import { PAGE_SIZES, Pager } from "@/components/ui/Pager";
 import {
   EmptyRow,
   TBody,
@@ -16,6 +16,7 @@ import {
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
 import { CheckIcon } from "@/icons";
 import { ProblemFilters } from "@/components/ProblemFilters";
+import { TopicBadges } from "@/components/TopicBadges";
 import {
   api,
   ApiError,
@@ -44,9 +45,12 @@ const ALLOWED = [
   "ordering",
   "search",
   "page",
+  "page_size",
+  "recommended",
+  "statement_locale",
 ] as const;
 
-const PAGE_SIZE = 25; // core.pagination.StandardPagination bilan bir xil
+const DEFAULT_PAGE_SIZE = 25; // core.pagination.StandardPagination bilan bir xil
 
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -65,12 +69,18 @@ export default async function ProblemsPage({ searchParams }: Props) {
   // Sessiya bilan — `is_solved` foydalanuvchiga xos, `get()` esa
   // cookie uzatmaydi va hamma uchun `false` qaytarardi.
   const page = Math.max(1, Number(raw.page) || 1);
+  const pageSize = PAGE_SIZES.includes(
+    Number(raw.page_size) as (typeof PAGE_SIZES)[number],
+  )
+    ? Number(raw.page_size)
+    : DEFAULT_PAGE_SIZE;
 
-  const [data, topics, me] = await Promise.all([
+  const [data, topics, stats, me] = await Promise.all([
     getWithSession<Paginated<Problem>>(
       `/problems/${query.size ? `?${query}` : ""}`,
     ),
     api.topics(),
+    api.stats(),
     getWithSession<UserPublic>("/me/").catch(() => null),
   ]);
 
@@ -79,6 +89,15 @@ export default async function ProblemsPage({ searchParams }: Props) {
     const params = new URLSearchParams(query);
     if (next > 1) params.set("page", String(next));
     else params.delete("page");
+    return `/problems${params.size ? `?${params}` : ""}` as Route;
+  };
+
+  // Hajm o'zgarsa sahifa raqami ma'nosini yo'qotadi — boshidan.
+  const sizeHref = (size: number) => {
+    const params = new URLSearchParams(query);
+    params.delete("page");
+    if (size === DEFAULT_PAGE_SIZE) params.delete("page_size");
+    else params.set("page_size", String(size));
     return `/problems${params.size ? `?${params}` : ""}` as Route;
   };
 
@@ -100,12 +119,31 @@ export default async function ProblemsPage({ searchParams }: Props) {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-title-sm font-bold rw-strong">
-        {t(locale, "problems.title")}
-      </h1>
+      <div className="flex flex-wrap items-baseline justify-between gap-3">
+        <h1 className="text-title-sm font-bold rw-strong">
+          {t(locale, "problems.title")}
+        </h1>
+        {me && (
+          <nav className="flex flex-wrap items-center gap-4 text-theme-sm">
+            <Link
+              href={{ pathname: "/attempts" }}
+              className="rw-accent-ink hover:underline"
+            >
+              Urinishlarim
+            </Link>
+            <Link
+              href={{ pathname: `/users/${me.username}` }}
+              className="rw-accent-ink hover:underline"
+            >
+              Statistikam
+            </Link>
+          </nav>
+        )}
+      </div>
 
       <ProblemFilters
         signedIn={me !== null}
+        locales={stats.statement_locales}
         topics={topics.results.map((topic) => ({
           slug: topic.slug,
           label: topic[`name_${locale}`] || topic.slug,
@@ -161,7 +199,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
                       <CheckIcon className="size-4 rw-ok-ink" />
                     </span>
                   ) : (
-                    (page - 1) * PAGE_SIZE + i + 1
+                    (page - 1) * pageSize + i + 1
                   )}
                 </TD>
                 <TD>
@@ -171,13 +209,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
                   >
                     {p.title}
                   </Link>
-                  {p.topics.length > 0 && (
-                    <div className="mt-1 flex flex-wrap gap-1">
-                      {p.topics.map((topic) => (
-                        <Badge key={topic}>{topic}</Badge>
-                      ))}
-                    </div>
-                  )}
+                  <TopicBadges topics={p.topics} solved={p.is_solved} />
                 </TD>
                 <TD>
                   <div className="flex items-center gap-2">
@@ -201,8 +233,9 @@ export default async function ProblemsPage({ searchParams }: Props) {
         <Pager
           page={page}
           count={data.count}
-          pageSize={PAGE_SIZE}
+          pageSize={pageSize}
           href={pageHref}
+          sizeHref={sizeHref}
           label="masala"
         />
       </Card>
