@@ -11,7 +11,7 @@ permissions:
 jobs:
   load:
     name: Load — o'qish sig'imi
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, rankwant]
     steps:
       - uses: actions/checkout@v7
       - name: Stack
@@ -27,7 +27,7 @@ jobs:
         # CI stack'ida anon throttle ko'tarilgan — aks holda o'lchov
         # sig'imni emas, rate limitni ko'rsatadi (94% 429 bo'lgan edi).
         run: |
-          docker run --rm --network rankwant_default -v "$PWD:/w" -w /w \
+          docker run --rm --network rankwant-ci_default -v "$PWD:/w" -w /w \
             -e SCENARIO=ci -e API_BASE=http://api:8000/api/v1 \
             grafana/k6:latest run tests/load/main.js
       - name: Staging yuklamasi
@@ -42,7 +42,7 @@ jobs:
 
   e2e:
     name: E2E — to'liq brauzer matritsasi
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, rankwant]
     steps:
       - uses: actions/checkout@v7
       - name: Stack
@@ -54,7 +54,7 @@ jobs:
             python manage.py seed_demo
       - name: Chromium, Firefox, WebKit va mobil
         run: |
-          docker run --rm --network rankwant_default \
+          docker run --rm --network rankwant-ci_default \
             -v "$PWD/tests/e2e:/e2e" -w /e2e \
             -e E2E_BASE_URL="${{ vars.STAGING_URL || 'http://web:3000' }}" \
             -e E2E_API_BASE="${{ vars.STAGING_URL && format('{0}/api/v1', vars.STAGING_URL) || 'http://api:8000/api/v1' }}" \
@@ -67,7 +67,7 @@ jobs:
 
   chaos:
     name: Chaos — bog'liqlik uzilishi
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, rankwant]
     steps:
       - uses: actions/checkout@v7
       - name: Stack
@@ -88,7 +88,7 @@ jobs:
 
   compatibility:
     name: Til matritsasi
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, rankwant]
     steps:
       - uses: actions/checkout@v7
       - name: Judge image

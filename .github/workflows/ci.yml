@@ -18,7 +18,7 @@ jobs:
   # — alohida turganda ular oyiga ~86 daqiqa yeb turardi.
   changes:
     name: O'zgarishlar va hujjat yaxlitligi
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, rankwant]
     outputs:
       api: ${{ steps.filter.outputs.api }}
       web: ${{ steps.filter.outputs.web }}
@@ -46,7 +46,7 @@ jobs:
     name: API — lint, types, tests
     needs: changes
     if: needs.changes.outputs.api == 'true'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, rankwant]
     services:
       postgres:
         image: postgres:16
@@ -109,7 +109,7 @@ jobs:
     name: Web — lint, types, build
     needs: changes
     if: needs.changes.outputs.web == 'true'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, rankwant]
     steps:
       - uses: actions/checkout@v7
       - name: Scaffold qilinganmi?
@@ -144,7 +144,7 @@ jobs:
     name: Judge — bake-off nomzodlari
     needs: changes
     if: needs.changes.outputs.judge == 'true'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, rankwant]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v7
@@ -181,7 +181,7 @@ jobs:
     name: OpenAPI schema diff
     needs: [changes, api]
     if: needs.changes.outputs.api == 'true'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, rankwant]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
@@ -204,7 +204,7 @@ jobs:
 
   smoke:
     name: Smoke va E2E — to'liq stack
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, rankwant]
     needs: changes
     if: needs.changes.outputs.code == 'true'
     steps:

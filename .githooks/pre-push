@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# Push'dan oldingi darvoza.
+#
+# CI o'z mashinamizda (self-hosted runner) ishlaydi, ya'ni buzuq commit
+# faqat GitHub'da emas, shu kompyuterda ham vaqt yeydi. Shuning uchun
+# tekshiruvlar push'dan OLDIN, mahalliy muhitda o'tadi.
+#
+# Faqat o'zgargan qismlar ishlaydi: hujjat commit'i uchun hech narsa.
+# Chetlab o'tish: git push --no-verify
+set -uo pipefail
+
+root="$(git rev-parse --show-toplevel)"
+cd "$root"
+
+remote_head="$(git rev-parse --verify --quiet '@{upstream}' || echo '')"
+range="${remote_head:+$remote_head..}HEAD"
+files="$(git diff --name-only "$range" 2>/dev/null || git diff --name-only HEAD)"
+[ -z "$files" ] && exit 0
+
+has() { grep -qE "$1" <<<"$files"; }
+fail=0
+
+step() {
+  printf '\n\033[1m→ %s\033[0m\n' "$1"; shift
+  if ! "$@"; then printf '\033[31m✗ yiqildi\033[0m\n'; fail=1; fi
+}
+
+if has '^apps/api/'; then
+  cd apps/api
+  step "API — ruff" uv run ruff check .
+  step "API — format" uv run ruff format --check .
+  step "API — mypy" uv run mypy .
+  step "API — pytest" uv run pytest -q
+  cd "$root"
+fi
+
+if has '^apps/web/'; then
+  cd apps/web
+  step "Web — eslint" npm run lint
+  step "Web — typecheck" npm run typecheck
+  cd "$root"
+fi
+
+if has '^(docs/|README)'; then
+  step "Hujjat yaxlitligi" python3 tools/check_docs.py
+fi
+
+if has '^(services/|apps/api/judging/)'; then
+  step "Judge shartnomasi" python3 tools/check_contract.py
+fi
+
+if [ "$fail" -ne 0 ]; then
+  printf '\n\033[31mPush to'\''xtatildi.\033[0m Tuzating yoki: git push --no-verify\n\n'
+  exit 1
+fi
+
+printf '\n\033[32m✓ Darvozalar o'\''tdi\033[0m\n\n'

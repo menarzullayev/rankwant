@@ -22,7 +22,7 @@ jobs:
   # 43 soniyalik ish 3 daqiqa bo'lib ketardi.
   audit:
     name: Xavfsizlik tekshiruvlari
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, rankwant]
     steps:
       # gitleaks butun tarixni ko'radi, shuning uchun to'liq klon.
       - uses: actions/checkout@v7

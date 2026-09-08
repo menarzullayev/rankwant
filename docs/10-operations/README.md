@@ -196,6 +196,39 @@ Judge izolyatsiya sinovlari (fork bomb, fayl, tarmoq, `/proc`, symlink) — **CI
 GitHub Actions: lint → `mypy` strict → test → OpenAPI diff → build → staging deploy.
 Prod deploy **qo'lda tasdiqlash** bilan (contest oynasi tekshiruvi tufayli).
 
+### Runner
+
+Joblar **self-hosted runner** da ishlaydi (`runs-on: [self-hosted, rankwant]`):
+`nsn-pc` dagi `actions.runner.menarzullayev-rankwant.nsn-pc-rankwant`
+systemd xizmati. Sababi — repo private, GitHub'ning bulut runnerlari esa
+oyiga 2000 daqiqa bilan cheklangan va u kvota hisobdagi boshqa
+repolar bilan bo'lishiladi. O'z mashinasida Actions bepul va cheksiz.
+
+Buning evaziga muhit mustaqilligi yo'qoladi: CI ishlab chiqish mashinasida
+ishlaydi, ya'ni «menda ishlayapti» sinfidagi muammolarni toza bulut
+runneri kabi tutmaydi.
+
+**Muhim:** CI stack'i `docker-compose.ci.yml` dagi `name: rankwant-ci`
+bilan alohida compose loyihasida turadi. Loyiha nomi katalogdan olinsa
+runner'ning ish katalogi (`_work/rankwant/rankwant`) jonli preview
+stack'i bilan bir loyihaga tushar va CI tozalashdagi `down -v` uning
+bazasini o'chirib yuborardi. Shu sababli test tarmog'i ham
+`rankwant-ci_default`.
+
+### Push'dan oldingi darvoza
+
+`.githooks/pre-push` (repo bilan versiyalanadi, `core.hooksPath` orqali
+yoqiladi) o'zgargan qismlarga qarab lint, tip va testlarni push'dan
+oldin ishlatadi. Runner o'sha mashinada bo'lgani uchun buzuq commit
+GitHub vaqtini emas, kompyuter vaqtini yeydi — darvoza uni oldinroq
+to'xtatadi. Chetlab o'tish: `git push --no-verify`.
+
+Yangi klonda yoqish:
+
+```bash
+git config core.hooksPath .githooks
+```
+
 ## Keyinroq to'ldiriladi
 
 - [ ] Hosting provayderi va narx modeli
