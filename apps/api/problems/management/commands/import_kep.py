@@ -68,7 +68,7 @@ class Command(BaseCommand):
         self.with_samples: bool = not options["no_samples"]
 
         self.topics: dict[tuple[str, int], Topic] = {}
-        self.authors: dict[str, User | None] = {}
+        self.authors: dict[str, User] = {}
         self.languages = {lang.code: lang for lang in Language.objects.all()}
         self.taken_slugs = set(Problem.objects.values_list("slug", flat=True))
         #: KEP raqami → bizdagi masala. O'xshashlik grafi uchun kerak,
@@ -88,6 +88,9 @@ class Command(BaseCommand):
             # importni davom ettirish butun arxivni qaytadan yuklardi.
             if not options["refresh"] and self.existing(kep_id):
                 continue
+            # Tanaffus so'rovdan OLDIN: xato yo'lida uni tashlab ketish
+            # 429 dan keyin yana tezroq urishga olib kelardi.
+            time.sleep(self.sleep)
             # Bitta buzuq masala butun yurishni to'xtatmasin: oxirida
             # o'xshashlik grafi quriladi va u yo'qolib ketardi.
             try:
@@ -98,7 +101,6 @@ class Command(BaseCommand):
                 continue
             if index % 25 == 0:
                 self.stdout.write(f"  … {index} ta ko'rildi, {len(self.imported)} import qilindi")
-            time.sleep(self.sleep)
 
         links = self.link_similar()
         note = "ommaviy" if self.publish else "qoralama"
@@ -161,13 +163,18 @@ class Command(BaseCommand):
         kep_id = int(payload["id"])
         fields = kep.to_fields(payload)
         fields["author"] = self.author(payload.get("authorUsername"))
-        fields["is_public"] = self.publish
 
         problem = self.existing(kep_id)
         if problem is None:
             fields["slug"] = kep.make_slug(fields["title"], kep_id, self.taken_slugs)
+            fields["is_public"] = self.publish
             problem = Problem.objects.create(**fields)
         else:
+            # `--refresh` matnni yangilaydi, HOLATNI emas: aks holda
+            # matnni yangilash uchun yuritilgan import allaqachon
+            # e'lon qilingan masalalarni jimgina yashirib qo'yardi.
+            if self.publish:
+                fields["is_public"] = True
             for key, value in fields.items():
                 setattr(problem, key, value)
             problem.save()

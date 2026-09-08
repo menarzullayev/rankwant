@@ -237,6 +237,14 @@ class TestImportCommand:
             "kep.uz",
         )
 
+    def test_refresh_elon_qilinganni_yashirmaydi(self, kep_api, language):
+        self.run(publish=True)
+        assert Problem.objects.filter(is_public=True).count() == 2
+
+        # Matnni yangilash uchun yuritilgan import HOLATGA tegmaydi.
+        self.run(refresh=True)
+        assert Problem.objects.filter(is_public=True).count() == 2
+
     def test_qayta_yuritish_takrorlamaydi(self, kep_api, language):
         self.run()
         self.run(refresh=True)
