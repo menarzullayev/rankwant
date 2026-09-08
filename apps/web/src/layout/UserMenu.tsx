@@ -37,7 +37,7 @@ export default function UserMenu() {
       {user.is_staff && (
         <Link
           href="/admin"
-          className="flex h-10 items-center rw-radius-sm border rw-line px-3 text-theme-sm font-medium rw-accent-ink transition rw-hover-accent"
+          className="hidden h-10 items-center rw-radius-sm border rw-line px-3 text-theme-sm font-medium rw-accent-ink transition rw-hover-accent sm:flex"
         >
           Admin
         </Link>

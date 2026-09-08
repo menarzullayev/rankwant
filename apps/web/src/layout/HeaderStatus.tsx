@@ -40,12 +40,12 @@ export default function HeaderStatus() {
 
   return (
     <div className="flex items-center gap-2">
-      <Link href="/qvant" className={pill} title="Qvant">
+      <Link href="/qvant" className={`${pill} hidden sm:flex`} title="Qvant">
         <QvantIcon className="size-4 rw-accent-ink" />
         {balance ?? "…"}
       </Link>
       <span
-        className={pill}
+        className={`${pill} hidden sm:flex`}
         title={`${user.streak_count} ${t(DEFAULT_LOCALE, "header.streak")}`}
       >
         <FlameIcon className="size-4 rw-warn-ink" />

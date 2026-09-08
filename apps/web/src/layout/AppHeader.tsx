@@ -31,7 +31,7 @@ export default function AppHeader() {
         <MenuIcon />
       </button>
 
-      <span className="text-theme-sm font-medium rw-strong">
+      <span className="hidden text-theme-sm font-medium rw-strong sm:inline">
         {current ? t(locale, current.key) : "RankWant"}
       </span>
 
