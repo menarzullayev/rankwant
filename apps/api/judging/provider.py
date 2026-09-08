@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Protocol
 
 from django.conf import settings
@@ -23,6 +23,8 @@ class JudgeJob:
     limits: dict[str, int]
     tests: list[dict[str, Any]]
     checker: dict[str, Any]
+    #: IOI ballash uchun guruhlar: `{id, points, scoring}`. Bo'sh bo'lsa ACM.
+    subtasks: list[dict[str, Any]] = field(default_factory=list)
     mode: str = "acm"
     #: Custom test bo'lsa — natija shu yozuvga yoziladi (attempt_id 0 bo'ladi)
     custom_run_id: int | None = None
@@ -37,6 +39,7 @@ class JudgeJob:
                 "limits": self.limits,
                 "tests": self.tests,
                 "checker": self.checker,
+                "subtasks": self.subtasks,
                 "mode": self.mode,
                 "custom_run_id": self.custom_run_id,
             }

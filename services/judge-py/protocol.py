@@ -22,6 +22,9 @@ SECURITY_VIOLATION = "SECURITY_VIOLATION"
 IE = "IE"
 
 
+_TEST_KEYS = {"index", "input", "expected", "subtask", "points"}
+
+
 @dataclass
 class Limits:
     compile_time_ms: int = 10_000
@@ -34,8 +37,18 @@ class Limits:
 @dataclass
 class Test:
     index: int
-    input: str
-    expected: str
+    input: str = ""
+    expected: str = ""
+    #: IOI ballash guruhi (0 = guruhsiz) va `sum` ballashda test bali.
+    subtask: int = 0
+    points: int = 0
+
+
+@dataclass
+class Subtask:
+    id: int
+    points: int = 0
+    scoring: str = "min"
 
 
 @dataclass
@@ -47,6 +60,7 @@ class Job:
     tests: list[Test]
     mode: str = "acm"
     checker: dict[str, Any] = field(default_factory=lambda: {"type": "standard"})
+    subtasks: list[Subtask] = field(default_factory=list)
     attempt_id: int = 0
 
     @classmethod
@@ -56,9 +70,13 @@ class Job:
             language=raw["language"],
             source=raw["source"],
             limits=Limits(**raw["limits"]),
-            tests=[Test(**t) for t in raw["tests"]],
+            # API test HAVOLASINI ham yuboradi (`input_ref`) — bu nomzod
+            # inline ma'lumot bilan ishlaydi, shuning uchun notanish
+            # kalitlar tashlanadi, TypeError bermaydi.
+            tests=[Test(**{k: v for k, v in t.items() if k in _TEST_KEYS}) for t in raw["tests"]],
             mode=raw.get("mode", "acm"),
             checker=raw.get("checker") or {"type": "standard"},
+            subtasks=[Subtask(**st) for st in raw.get("subtasks") or []],
             attempt_id=raw.get("attempt_id", 0),
         )
 

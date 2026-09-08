@@ -124,6 +124,8 @@ def judge(job: Job) -> ResultDict:
             wall_limit = job.limits.time_ms * 3 + 1000
 
             worst, max_cpu, max_mem, passed = P.AC, 0, 0, 0
+            by_group: dict[int, list[int]] = {}
+            failed_group: set[int] = set()
             for test in job.tests:
                 out = run_sandboxed(box, run_cmd, test.input, job.limits, wall_limit)
                 verdict = classify(out, test, job.limits)
@@ -139,17 +141,23 @@ def judge(job: Job) -> ResultDict:
                 )
                 if verdict == P.AC:
                     passed += 1
+                    by_group.setdefault(test.subtask, []).append(test.points)
                     continue
                 worst = verdict
-                result["failed_test_index"] = test.index
+                failed_group.add(test.subtask)
+                if result["failed_test_index"] is None:
+                    result["failed_test_index"] = test.index
                 if job.mode != "ioi":
                     break
 
-            result["verdict"] = worst
             result["time_ms"] = max_cpu
             result["memory_kb"] = max_mem
-            if job.tests:
-                result["score"] = passed * 100 // len(job.tests)
+            result["score"] = _score(job, passed, by_group, failed_group)
+            # Qisman ball olingan bo'lsa PARTIAL — birinchi yiqilgan
+            # testning verdicti emas.
+            if job.mode == "ioi" and worst not in (P.AC, P.IE) and result["score"] > 0:
+                worst = "PARTIAL"
+            result["verdict"] = worst
 
     except IsolateError as exc:
         result["verdict"] = P.IE
@@ -157,3 +165,27 @@ def judge(job: Job) -> ResultDict:
 
     meta["total_ms"] = int((time.monotonic() - t0) * 1000)
     return result
+
+
+def _score(job: Job, passed: int, by_group: dict[int, list[int]], failed_group: set[int]) -> int:
+    """Ball — rejimga qarab.
+
+    ACM: hammasi o'tsa 100, aks holda 0.
+    IOI subtask bilan: `min` da guruh TO'LIQ o'tsagina ball beriladi,
+    `sum` da o'tgan testlarning ballari yig'iladi.
+    Subtasksiz IOI: o'tgan testlar ulushi (eski xatti-harakat).
+    """
+    if not job.tests:
+        return 0
+    if job.mode != "ioi":
+        return 100 if passed == len(job.tests) else 0
+    if not job.subtasks:
+        return passed * 100 // len(job.tests)
+
+    total = 0
+    for st in job.subtasks:
+        if st.scoring == "sum":
+            total += sum(by_group.get(st.id, []))
+        elif st.id not in failed_group:
+            total += st.points
+    return total

@@ -138,6 +138,29 @@ func judge(ctx context.Context, job *Job, tests *store) *Result {
 	worst := VAC
 	var maxCPU, maxMem int64
 	passed := 0
+	// Guruh bo'yicha: qaysi testlar o'tdi va qaysi guruh yiqildi.
+	byGroup := map[int][]int{}
+	failedGroup := map[int]bool{}
+
+	// Tashqi checker bir marta tayyorlanadi — har testda qayta
+	// kompilyatsiya vaqtni test soniga ko'paytirardi.
+	var checkerCmd []string
+	useChecker := job.Checker.Type == "special" || job.Checker.Type == "scorer"
+	if useChecker {
+		if job.Checker.Program == nil {
+			res.Verdict = VIE
+			res.CompileOutput = "checker dasturi berilmagan"
+			return res
+		}
+		var err error
+		if checkerCmd, err = prepareChecker(ctx, work, job.Checker.Program); err != nil {
+			res.Verdict = VCheckerErr
+			res.CompileOutput = err.Error()
+			return res
+		}
+	}
+	// `scorer` da har test o'z bahosini beradi, o'rtachasi olinadi.
+	scoreSum := 0
 
 	for _, test := range job.Tests {
 		// Havola yechilmasa IE qaytaramiz. Ilgari bo'sh test bilan davom
@@ -153,6 +176,18 @@ func judge(ctx context.Context, job *Job, tests *store) *Result {
 			break
 		}
 		v := classify(out, test, job.Limits)
+		// Chiqish to'g'ri kelgan bo'lsa (dastur normal tugadi), yakuniy
+		// so'z checkerniki: tenglik solishtiruvi maxsus masalada noto'g'ri.
+		if useChecker && (v == VAC || v == VWA) {
+			cv, err := runChecker(ctx, work, checkerCmd, job.Checker.Type,
+				test.Input, out.Stdout, test.Expected)
+			if err != nil {
+				v = VIE
+			} else {
+				v = cv.Verdict
+				scoreSum += cv.Score
+			}
+		}
 		// Custom rejimda javob solishtirilmaydi: dastur muvaffaqiyatli
 		// tugagan bo'lsa AC, va chiqish foydalanuvchiga qaytariladi.
 		var stdout string
@@ -175,21 +210,36 @@ func judge(ctx context.Context, job *Job, tests *store) *Result {
 
 		if v == VAC {
 			passed++
+			byGroup[test.Subtask] = append(byGroup[test.Subtask], test.Points)
 			continue
 		}
 		worst = v
-		idx := test.Index
-		res.FailedTestIndex = &idx
+		failedGroup[test.Subtask] = true
+		if res.FailedTestIndex == nil {
+			idx := test.Index
+			res.FailedTestIndex = &idx
+		}
 		if job.Mode != "ioi" {
 			break // ACM: birinchi mag'lubiyatda to'xtaymiz
 		}
 	}
 
-	res.Verdict = worst
 	res.TimeMS, res.MemoryKB = maxCPU, maxMem
-	if len(job.Tests) > 0 {
-		res.Score = passed * 100 / len(job.Tests)
+	if job.Checker.Type == "scorer" && len(job.Tests) > 0 {
+		// Mutlaq ball: testlar bo'yicha o'rtacha. Boshqalarning yechimiga
+		// bog'liq emas, ya'ni qayta hisoblash zanjiri yo'q.
+		res.Score = scoreSum / len(job.Tests)
+	} else {
+		res.Score = score(job, passed, byGroup, failedGroup)
 	}
+
+	// IOI: qisman ball olingan bo'lsa verdict PARTIAL — birinchi yiqilgan
+	// testning verdicti emas. Aks holda 90 ball olgan yechim «WA» ko'rinardi.
+	if (job.Mode == "ioi" || job.Checker.Type == "scorer") &&
+		worst != VAC && worst != VIE && res.Score > 0 {
+		worst = VPartial
+	}
+	res.Verdict = worst
 	res.Meta.TotalMS = time.Since(t0).Milliseconds()
 	return res
 }
@@ -246,4 +296,39 @@ func resolve(ctx context.Context, test *Test, tests *store) error {
 		*field.dst = string(data)
 	}
 	return nil
+}
+
+// score — ballni rejimga qarab hisoblaydi.
+//
+// ACM: hammasi o'tsa 100, aks holda 0.
+// IOI subtask bilan: har guruh o'z bali; `min` da guruh TO'LIQ o'tsagina
+// beriladi (odatiy IOI), `sum` da o'tgan testlarning ballari yig'iladi.
+// Subtasksiz IOI: o'tgan testlar ulushi — eski xatti-harakat saqlanadi.
+func score(job *Job, passed int, byGroup map[int][]int, failedGroup map[int]bool) int {
+	if len(job.Tests) == 0 {
+		return 0
+	}
+	if job.Mode != "ioi" {
+		if passed == len(job.Tests) {
+			return 100
+		}
+		return 0
+	}
+	if len(job.Subtasks) == 0 {
+		return passed * 100 / len(job.Tests)
+	}
+
+	total := 0
+	for _, st := range job.Subtasks {
+		if st.Scoring == "sum" {
+			for _, p := range byGroup[st.ID] {
+				total += p
+			}
+			continue
+		}
+		if !failedGroup[st.ID] {
+			total += st.Points
+		}
+	}
+	return total
 }

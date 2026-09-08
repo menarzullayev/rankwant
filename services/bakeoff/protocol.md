@@ -21,8 +21,17 @@ Worker `DATABASE_URL` **olmaydi**. Faqat `REDIS_URL` va S3 (bake-off'da local ka
   "attempt_id": 12345,
   "language": {
     "code": "cpp23",
-    "compile": ["g++", "-std=c++23", "-O2", "-o", "{bin}", "{src}"],
-    "run": ["{bin}"]
+    "compile": [
+      "g++",
+      "-std=c++23",
+      "-O2",
+      "-o",
+      "{bin}",
+      "{src}"
+    ],
+    "run": [
+      "{bin}"
+    ]
   },
   "source": "…manba kod…",
   "limits": {
@@ -33,9 +42,22 @@ Worker `DATABASE_URL` **olmaydi**. Faqat `REDIS_URL` va S3 (bake-off'da local ka
     "processes": 1
   },
   "tests": [
-    {"index": 1, "input": "1 2\n", "expected": "3\n"}
+    {
+      "index": 1,
+      "input": "1 2\n",
+      "expected": "3\n"
+    }
   ],
-  "checker": {"type": "standard"},
+  "checker": {
+    "type": "standard"
+  },
+  "subtasks": [
+    {
+      "id": 1,
+      "points": 40,
+      "scoring": "min"
+    }
+  ],
   "mode": "acm"
 }
 ```

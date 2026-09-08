@@ -25,9 +25,25 @@ type Test struct {
 	// Inline maydonlar bake-off harness'i uchun qoladi.
 	InputRef    string `json:"input_ref"`
 	ExpectedRef string `json:"output_ref"`
+	// IOI ballash: test qaysi guruhga tegishli (0 = guruhsiz) va `sum`
+	// ballashda shu testning o'z bali.
+	Subtask int `json:"subtask,omitempty"`
+	Points  int `json:"points,omitempty"`
 }
 
-type Interactor struct {
+// Subtask — IOI ballash guruhi.
+//
+//	min: guruh TO'LIQ o'tsagina ball beriladi (odatiy IOI)
+//	sum: har test o'z balini olib keladi
+type Subtask struct {
+	ID      int    `json:"id"`
+	Points  int    `json:"points"`
+	Scoring string `json:"scoring"`
+}
+
+// TrustedProgram — masala bilan keladigan ishonchli dastur:
+// interactor yoki checker. Sandbox tashqarisida ishlaydi.
+type TrustedProgram struct {
 	Code    string   `json:"code"`
 	Compile []string `json:"compile"`
 	Run     []string `json:"run"`
@@ -35,23 +51,32 @@ type Interactor struct {
 }
 
 type Checker struct {
-	Type string `json:"type"` // standard | interactive
+	// standard | interactive | scorer
+	//
+	// scorer: checker chiqishning OXIRGI qatorida 0–100 oralig'ida son
+	// qaytaradi. To'g'ri/noto'g'ri emas, sifat bahosi — NP-hard va
+	// optimallashtirish masalalari uchun. Ball mutlaq: boshqalarning
+	// yechimiga bog'liq emas, ya'ni qayta hisoblash zanjiri yo'q.
+	Type string `json:"type"`
 	// Interactive masalalarda ISHONCHLI interactor dasturi masala bilan
 	// birga keladi. U sandbox TASHQARISIDA ishlaydi — u bizniki, submission
 	// esa emas. Verdict interactor ning chiqish kodi bilan beriladi.
-	Interactor *Interactor `json:"interactor,omitempty"`
+	Interactor *TrustedProgram `json:"interactor,omitempty"`
+	// special va scorer uchun checker dasturi.
+	Program *TrustedProgram `json:"program,omitempty"`
 }
 
 type Job struct {
 	JobID     string `json:"job_id"`
 	AttemptID int64  `json:"attempt_id"`
 	//: Custom test bo'lsa to'ldiriladi; natijada qaytariladi.
-	CustomRunID *int64   `json:"custom_run_id,omitempty"`
-	Language    Language `json:"language"`
-	Source      string   `json:"source"`
-	Limits      Limits   `json:"limits"`
-	Tests       []Test   `json:"tests"`
-	Checker     Checker  `json:"checker"`
+	CustomRunID *int64    `json:"custom_run_id,omitempty"`
+	Language    Language  `json:"language"`
+	Source      string    `json:"source"`
+	Limits      Limits    `json:"limits"`
+	Tests       []Test    `json:"tests"`
+	Checker     Checker   `json:"checker"`
+	Subtasks    []Subtask `json:"subtasks,omitempty"`
 	// acm | ioi | custom.
 	// custom: chiqish kutilgan javob bilan SOLISHTIRILMAYDI — foydalanuvchi
 	// o'z stdin'i bilan kodini sinab ko'ryapti (PRD P0-4).
@@ -94,15 +119,17 @@ type Result struct {
 
 // Verdict kodlari — 08-technical-spec dagi 20 talikning bake-off qismi.
 const (
-	VAC       = "AC"
-	VWA       = "WA"
-	VTLE      = "TLE"
-	VMLE      = "MLE"
-	VOLE      = "OLE"
-	VRE       = "RE"
-	VCE       = "CE"
-	VCTimeout = "COMPILE_TIMEOUT"
-	VIdle     = "IDLENESS"
-	VSecurity = "SECURITY_VIOLATION"
-	VIE       = "IE"
+	VAC         = "AC"
+	VWA         = "WA"
+	VTLE        = "TLE"
+	VMLE        = "MLE"
+	VOLE        = "OLE"
+	VRE         = "RE"
+	VCE         = "CE"
+	VCTimeout   = "COMPILE_TIMEOUT"
+	VIdle       = "IDLENESS"
+	VSecurity   = "SECURITY_VIOLATION"
+	VIE         = "IE"
+	VPartial    = "PARTIAL"
+	VCheckerErr = "CHECKER_ERROR"
 )

@@ -1605,12 +1605,14 @@ paths:
           type: string
           enum:
           - interactive
+          - scorer
           - special
           - standard
         description: |-
           * `standard` - Standart
           * `special` - Maxsus
           * `interactive` - Interactive
+          * `scorer` - Skoring
       - in: query
         name: difficulty
         schema:
@@ -6150,11 +6152,13 @@ components:
       - standard
       - special
       - interactive
+      - scorer
       type: string
       description: |-
         * `standard` - Standart
         * `special` - Maxsus
         * `interactive` - Interactive
+        * `scorer` - Skoring
     ChoicePublic:
       type: object
       description: '`is_correct` ATAYLAB yo''q — baholash serverda.'

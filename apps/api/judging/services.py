@@ -13,7 +13,7 @@ from django.utils import timezone
 from judging.models import Attempt, AttemptTestResult, CustomRun
 from judging.provider import JudgeJob, get_provider, new_job_id
 from judging.verdicts import ALERTING, Verdict
-from problems.models import Problem, TestCase
+from problems.models import Problem, ProblemLanguage, TestCase
 
 log = logging.getLogger(__name__)
 
@@ -23,8 +23,19 @@ def build_job(attempt: Attempt) -> JudgeJob:
     language = attempt.language
 
     tests: list[dict[str, Any]] = [
-        {"index": t.order, "input_ref": t.input_ref, "output_ref": t.output_ref}
+        {
+            "index": t.order,
+            "input_ref": t.input_ref,
+            "output_ref": t.output_ref,
+            "subtask": t.subtask_id or 0,
+            "points": t.points,
+        }
         for t in TestCase.objects.filter(problem=problem).order_by("order")
+    ]
+
+    subtasks = [
+        {"id": st.pk, "points": st.points, "scoring": st.scoring}
+        for st in problem.subtasks.order_by("order")
     ]
 
     checker: dict[str, Any] = {"type": problem.checker_type}
@@ -35,6 +46,12 @@ def build_job(attempt: Attempt) -> JudgeJob:
             "run": problem.interactor_language.run_cmd,
             "source": problem.interactor_source,
         }
+
+    # Til ustma-ust limiti — Python C++ dan sekinroq, shu bois masala
+    # limiti unga adolatsiz bo'lishi mumkin (KEP ham shunday qiladi).
+    override = ProblemLanguage.objects.filter(problem=problem, language=language).first()
+    time_ms = (override.time_limit_ms if override else None) or problem.time_limit_ms
+    memory_kb = (override.memory_limit_kb if override else None) or problem.memory_limit_kb
 
     return JudgeJob(
         job_id=new_job_id(),
@@ -47,14 +64,17 @@ def build_job(attempt: Attempt) -> JudgeJob:
         source=attempt.source_code,
         limits={
             "compile_time_ms": 10_000,
-            "time_ms": problem.time_limit_ms,
-            "memory_kb": problem.memory_limit_kb,
+            "time_ms": time_ms,
+            "memory_kb": memory_kb,
             "output_kb": 65_536,
             "processes": 1,
         },
         tests=tests,
         checker=checker,
-        mode="acm",
+        subtasks=subtasks,
+        # Subtask bo'lsa IOI: guruh to'liq o'tsagina ball beriladi.
+        # `scorer` da checker sonni o'zi qaytaradi.
+        mode="ioi" if subtasks else "acm",
     )
 
 

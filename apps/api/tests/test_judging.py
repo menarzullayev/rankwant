@@ -323,3 +323,79 @@ class TestRecommendation:
         from django.urls import reverse as rev
 
         assert APIClient().get(rev("recommendation")).status_code in (401, 403)
+
+
+class TestSubtaskScoring:
+    """IOI ballash — subtask bo'lsa judge `ioi` rejimida chaqiriladi."""
+
+    def test_subtasksiz_masala_acm_rejimida(self, problem, language, user) -> None:
+        from judging.models import Attempt
+        from judging.services import build_job
+
+        attempt = Attempt.objects.create(
+            user=user, problem=problem, language=language, source_code="x"
+        )
+        job = build_job(attempt)
+
+        assert job.mode == "acm"
+        assert job.subtasks == []
+
+    def test_subtask_bolsa_ioi_rejimi_va_guruhlar(self, problem, language, user) -> None:
+        from judging.models import Attempt
+        from judging.services import build_job
+        from problems.models import Subtask
+        from problems.models import TestCase as PTest
+
+        first = Subtask.objects.create(problem=problem, order=1, points=40, scoring="min")
+        second = Subtask.objects.create(problem=problem, order=2, points=60, scoring="min")
+        PTest.objects.create(
+            problem=problem,
+            order=1,
+            input_ref="s3://x/1.in",
+            output_ref="s3://x/1.out",
+            subtask=first,
+        )
+        PTest.objects.create(
+            problem=problem,
+            order=2,
+            input_ref="s3://x/2.in",
+            output_ref="s3://x/2.out",
+            subtask=second,
+        )
+
+        attempt = Attempt.objects.create(
+            user=user, problem=problem, language=language, source_code="x"
+        )
+        job = build_job(attempt)
+
+        assert job.mode == "ioi"
+        assert [s["points"] for s in job.subtasks] == [40, 60]
+        assert [t["subtask"] for t in job.tests] == [first.pk, second.pk]
+
+
+class TestLanguageLimits:
+    """Til ustma-ust limiti — Python C++ dan sekinroq."""
+
+    def test_ustma_ust_limit_qollanadi(self, problem, language, user) -> None:
+        from judging.models import Attempt
+        from judging.services import build_job
+        from problems.models import ProblemLanguage
+
+        ProblemLanguage.objects.create(problem=problem, language=language, time_limit_ms=3000)
+        attempt = Attempt.objects.create(
+            user=user, problem=problem, language=language, source_code="x"
+        )
+
+        job = build_job(attempt)
+        assert job.limits["time_ms"] == 3000
+        # Xotira ustma-ust yozilmagan — masala limiti qoladi.
+        assert job.limits["memory_kb"] == problem.memory_limit_kb
+
+    def test_ustma_ust_yoq_bolsa_masala_limiti(self, problem, language, user) -> None:
+        from judging.models import Attempt
+        from judging.services import build_job
+
+        attempt = Attempt.objects.create(
+            user=user, problem=problem, language=language, source_code="x"
+        )
+        assert build_job(attempt).limits["time_ms"] == problem.time_limit_ms

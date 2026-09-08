@@ -93,6 +93,10 @@ class Problem(models.Model):
         STANDARD = "standard", "Standart"
         SPECIAL = "special", "Maxsus"
         INTERACTIVE = "interactive", "Interactive"
+        #: Checker to'g'ri/noto'g'ri emas, 0–100 oralig'ida SIFAT bahosini
+        #: qaytaradi (TSP yo'l uzunligi, qadoqlar soni). Ball mutlaq —
+        #: boshqalarning yechimiga bog'liq emas, ya'ni qayta hisoblash yo'q.
+        SCORER = "scorer", "Skoring"
 
     slug = models.SlugField(unique=True, max_length=100)
     #: Ommaviy qisqa raqam — `#0431`. Slug'dan farqli: og'zaki muomala
@@ -139,6 +143,20 @@ class Problem(models.Model):
     source_url = models.URLField(blank=True)
 
     # Denormalizatsiya — filtr va statistika uchun
+    #: Import qilingan arxivning xom reytingi (KEP 100–2400). Bizning
+    #: shkalaga chiziqli o'tkaziladi, lekin manba yo'qolmasin — keyin
+    #: qayta xaritalash kerak bo'lishi mumkin.
+    source_rating = models.PositiveIntegerField(null=True, blank=True)
+    image = models.URLField(blank=True)
+    #: Qisman ball beriladimi. Qanday hisoblanishi `subtasks` va
+    #: `checker_type` bilan aniqlanadi: subtask bo'lsa IOI, `scorer`
+    #: bo'lsa checker qaytargan son.
+    partial_scoring = models.BooleanField(default=False)
+    #: Import qilingan tarix. O'z bahoimiz 1–5 yulduz (`ProblemRating`),
+    #: bular esa manbadagi ovozlar — aralashtirilmaydi.
+    likes_count = models.PositiveIntegerField(default=0)
+    dislikes_count = models.PositiveIntegerField(default=0)
+
     solved_count = models.PositiveIntegerField(default=0)
     attempt_count = models.PositiveIntegerField(default=0)
     #: Masala sahifasi ochilishi. «Ko'p ko'rilgan» ro'yxati uchun; yechish
@@ -229,6 +247,87 @@ class TestCase(models.Model):
 
     def __str__(self) -> str:
         return f"{self.problem.slug} #{self.order}"
+
+
+class ProblemLanguage(models.Model):
+    """Masalaga xos til sozlamalari.
+
+    Ikki vazifasi bor. Birinchisi — RUXSAT: masalada satr bo'lsa, faqat
+    sanab o'tilgan tillar qabul qilinadi (interaktiv masalada ba'zi til
+    qo'llab-quvvatlanmaydi). Satr umuman bo'lmasa hamma faol til ochiq.
+
+    Ikkinchisi — USTMA-UST limit: Python C++ dan sekinroq, shu bois
+    unga ko'proq vaqt beriladi. Bo'sh qoldirilsa masala limiti ishlaydi.
+    """
+
+    problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name="languages")
+    language = models.ForeignKey(Language, on_delete=models.CASCADE, related_name="problems")
+    time_limit_ms = models.PositiveIntegerField(null=True, blank=True)
+    memory_limit_kb = models.PositiveIntegerField(null=True, blank=True)
+    code_template = models.TextField(blank=True)
+
+    class Meta:
+        ordering: ClassVar = ["language__name"]
+        constraints: ClassVar = [
+            models.UniqueConstraint(fields=["problem", "language"], name="uniq_problem_language")
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.problem.slug} · {self.language.code}"
+
+
+class SimilarProblem(models.Model):
+    """O'xshashlik grafi. Yo'nalishli: A→B bor bo'lsa B→A shart emas."""
+
+    problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name="similar_to")
+    similar = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name="similar_from")
+    score = models.FloatField()
+    #: Kim hisoblagan — import qilingan grafni o'zimizniki bilan
+    #: aralashtirib yubormaslik uchun.
+    source = models.CharField(max_length=32, default="import")
+
+    class Meta:
+        ordering: ClassVar = ["-score"]
+        constraints: ClassVar = [
+            models.UniqueConstraint(fields=["problem", "similar"], name="uniq_similar_problem")
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.problem.slug} ~ {self.similar.slug} ({self.score:.2f})"
+
+
+class ProblemAttachment(models.Model):
+    """Masalaga biriktirilgan fayl — rasm, ma'lumot fayli, shablon."""
+
+    problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name="attachments")
+    name = models.CharField(max_length=200)
+    url = models.URLField()
+    size_bytes = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering: ClassVar = ["name"]
+
+    def __str__(self) -> str:
+        return f"{self.problem.slug} · {self.name}"
+
+
+class Validator(models.Model):
+    """Kirish validatori — test cheklovlarga mosligini tekshiruvchi dastur.
+
+    Muallif uchun emas, HACKING uchun: ishtirokchi boshqaning yechimini
+    sindirish uchun test yuborganda, u test avval shu validatordan
+    o'tishi kerak. Aks holda buzuq kiritma bilan istalgan yechimni
+    «sindirish» mumkin bo'lardi. Shu sababli u sandbox'da, ishonchsiz
+    kiritma ustida ishlaydi.
+    """
+
+    problem = models.OneToOneField(Problem, on_delete=models.CASCADE, related_name="validator")
+    language = models.ForeignKey(Language, on_delete=models.PROTECT, related_name="validators")
+    source = models.TextField()
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return f"validator · {self.problem.slug}"
 
 
 class Favourite(models.Model):
