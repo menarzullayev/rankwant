@@ -37,8 +37,9 @@ RETRIES = 5
 BACKOFF = 5.0
 
 #: KEP reytingi 100–2400, bizniki 800–3500. Ikki uchni bog'lab chiziqli
-#: o'tkazamiz: 100 → 800, 2400 → 3200. Yuqoridagi 3300–3500 ataylab bo'sh
-#: qoladi — import qilingan masala eng qiyin darajani egallab olmasin.
+#: o'tkazamiz: 100 → 800, 2400 → 3200. KEP da 2400 dan yuqori bir nechta
+#: masala ham bor — ular xuddi shu qiyalikda davom etadi va 3500 da
+#: to'xtaydi (shkalamizning tepasi).
 SOURCE_MIN, SOURCE_MAX = 100, 2400
 TARGET_MIN, TARGET_MAX = 800, 3200
 
