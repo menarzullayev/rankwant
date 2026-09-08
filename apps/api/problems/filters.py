@@ -16,9 +16,23 @@ class ProblemFilter(filters.FilterSet):  # type: ignore[misc]
         method="filter_level",
     )
 
+    # Yechilgan/yechilmagan — uchala taqqoslangan platformada ham bor.
+    # Mehmon uchun ma'nosiz: filtr qo'llanmaydi, arxiv to'liq ko'rinadi.
+    solved = filters.BooleanFilter(method="filter_solved")
+
     class Meta:
         model = Problem
         fields = ["difficulty", "checker_type"]
+
+    def filter_solved(self, queryset, name: str, value: bool):  # type: ignore[no-untyped-def]
+        user = getattr(self.request, "user", None)
+        if user is None or not user.is_authenticated:
+            return queryset
+
+        from ratings.models import UserSolvedProblem
+
+        solved = UserSolvedProblem.objects.filter(user=user).values("problem_id")
+        return queryset.filter(pk__in=solved) if value else queryset.exclude(pk__in=solved)
 
     def filter_level(self, queryset, name: str, value: str):  # type: ignore[no-untyped-def]
         lower = 0

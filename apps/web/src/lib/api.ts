@@ -206,6 +206,14 @@ export type Attempt = {
   judged_at: string | null;
 };
 
+export type Topic = {
+  slug: string;
+  name_uz: string;
+  name_ru: string;
+  name_en: string;
+  parent: string | null;
+};
+
 export type Language = { code: string; name: string; version: string };
 
 export type TestResult = {
@@ -587,6 +595,7 @@ export const api = {
   attempts: () => get<Paginated<Attempt>>("/attempts/", 0),
   // Tillar deyarli o'zgarmaydi — judge obrazi bilan bir manbadan (ADR-0004).
   languages: () => get<Paginated<Language>>("/languages/", 300),
+  topics: () => get<Paginated<Topic>>("/topics/", 300),
   quizzes: () => get<Paginated<Quiz>>("/quizzes/", 60),
   quiz: (slug: string) => get<QuizDetail>(`/quizzes/${slug}/`, 60),
   arenas: () => get<Paginated<Arena>>("/arena/", 10),

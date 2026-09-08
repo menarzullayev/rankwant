@@ -14,11 +14,14 @@ import {
 } from "@/components/ui/Table";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
 import { CheckIcon } from "@/icons";
+import { ProblemFilters } from "@/components/ProblemFilters";
 import {
+  api,
   ApiError,
   type Paginated,
   type Problem,
   type Recommendation,
+  type UserPublic,
 } from "@/lib/api";
 import { getWithSession } from "@/lib/api.server";
 
@@ -30,11 +33,33 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = { title: "Masalalar" };
 
-export default async function ProblemsPage() {
+/** URL dan API ga faqat shu kalitlar o'tadi — qolgani e'tiborsiz
+ * qoldiriladi, aks holda ixtiyoriy so'rov qatori backend'ga ochilardi. */
+const ALLOWED = ["level", "topics", "solved", "ordering"] as const;
+
+type Props = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function ProblemsPage({ searchParams }: Props) {
   const locale = DEFAULT_LOCALE;
+  const raw = await searchParams;
+
+  const query = new URLSearchParams();
+  for (const name of ALLOWED) {
+    const value = raw[name];
+    if (typeof value === "string" && value) query.set(name, value);
+  }
+
   // Sessiya bilan — `is_solved` foydalanuvchiga xos, `get()` esa
   // cookie uzatmaydi va hamma uchun `false` qaytarardi.
-  const data = await getWithSession<Paginated<Problem>>("/problems/");
+  const [data, topics, me] = await Promise.all([
+    getWithSession<Paginated<Problem>>(
+      `/problems/${query.size ? `?${query}` : ""}`,
+    ),
+    api.topics(),
+    getWithSession<UserPublic>("/me/").catch(() => null),
+  ]);
 
   // Tavsiya faqat kirgan foydalanuvchi uchun — chiqmasa sahifa baribir
   // ishlayveradi (arxiv hamma uchun ochiq).
@@ -57,6 +82,14 @@ export default async function ProblemsPage() {
       <h1 className="text-title-sm font-bold rw-strong">
         {t(locale, "problems.title")}
       </h1>
+
+      <ProblemFilters
+        signedIn={me !== null}
+        topics={topics.results.map((topic) => ({
+          slug: topic.slug,
+          label: topic[`name_${locale}`] || topic.slug,
+        }))}
+      />
 
       {recommended && recommended.results.length > 0 && (
         <Card
