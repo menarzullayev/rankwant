@@ -346,3 +346,145 @@ class TestProblemStats:
         problem.save()
 
         assert APIClient().get(reverse("problem-stats", args=[problem.slug])).status_code == 404
+
+
+# ── Yechim tahlili — ADR-0013 spoyler darvozasi ──────────────────────
+@pytest.fixture
+def with_editorial(problem) -> None:
+    problem.editorial = "Ochko'zlik: eng qisqasidan boshlab tartiblang."
+    problem.editorial_price = 30
+    problem.save()
+
+
+def test_yechmagan_odam_tahlil_matnini_umuman_olmaydi(with_editorial, problem, user) -> None:
+    client = APIClient()
+    client.force_authenticate(user)
+
+    data = client.get(reverse("problem-detail", args=[problem.slug])).data
+
+    # Frontendda yashirish yetarli emas — matn javobda BO'LMASLIGI kerak.
+    assert data["editorial"] == ""
+    assert data["editorial_state"] == {"available": True, "access": "locked", "price": 30}
+
+
+def test_yechgan_odamga_tahlil_bepul(with_editorial, problem, user) -> None:
+    from ratings.models import UserSolvedProblem
+
+    UserSolvedProblem.objects.create(
+        user=user, problem=problem, difficulty_at_solve=problem.difficulty
+    )
+    client = APIClient()
+    client.force_authenticate(user)
+
+    data = client.get(reverse("problem-detail", args=[problem.slug])).data
+
+    assert data["editorial"].startswith("Ochko'zlik")
+    assert data["editorial_state"]["access"] == "solved"
+
+
+def test_qvant_sarflab_ochiladi_va_bir_marta_yechiladi(with_editorial, problem, user) -> None:
+    from qvant import ledger
+    from qvant.models import QvantTransaction
+
+    ledger.credit(user, 100, QvantTransaction.Reason.ADMIN)
+    client = APIClient()
+    client.force_authenticate(user)
+    url = reverse("problem-editorial", args=[problem.slug])
+
+    assert client.post(url).data["editorial"].startswith("Ochko'zlik")
+    assert ledger.get_wallet(user).balance == 70
+
+    # Takroriy ochish PUL OLMAYDI — huquq abadiy.
+    assert client.post(url).status_code == 200
+    assert ledger.get_wallet(user).balance == 70
+    assert (
+        client.get(reverse("problem-detail", args=[problem.slug])).data["editorial_state"]["access"]
+        == "purchased"
+    )
+
+
+def test_balans_yetmasa_tahlil_ochilmaydi(with_editorial, problem, user) -> None:
+    client = APIClient()
+    client.force_authenticate(user)
+
+    response = client.post(reverse("problem-editorial", args=[problem.slug]))
+
+    assert response.status_code == 402
+    assert problem.unlocks.count() == 0
+
+
+def test_mehmon_tahlilni_kormaydi(with_editorial, problem) -> None:
+    data = APIClient().get(reverse("problem-detail", args=[problem.slug])).data
+
+    assert data["editorial"] == ""
+    assert data["editorial_state"]["access"] == "anonymous"
+
+
+# ── Yoqdi / yoqmadi ──────────────────────────────────────────────────
+def test_ovoz_import_sanogiga_qoshiladi(problem, user, other_user) -> None:
+    problem.likes_count = 141  # KEP dan kelgan tarix
+    problem.save()
+    url = reverse("problem-vote", args=[problem.slug])
+    client = APIClient()
+    client.force_authenticate(user)
+
+    assert client.post(url, {"value": 1}).data == {"up": 142, "down": 0, "mine": 1}
+
+    # Fikr o'zgardi — yangi qator emas, o'shaning o'zi yangilanadi.
+    assert client.post(url, {"value": -1}).data == {"up": 141, "down": 1, "mine": -1}
+
+    client.force_authenticate(other_user)
+    assert client.post(url, {"value": 1}).data["up"] == 142
+
+    client.force_authenticate(user)
+    assert client.post(url, {"value": 0}).data == {"up": 142, "down": 0, "mine": 0}
+
+
+def test_ovoz_detalda_korinadi(problem, user) -> None:
+    client = APIClient()
+    client.force_authenticate(user)
+    client.post(reverse("problem-vote", args=[problem.slug]), {"value": 1})
+
+    assert client.get(reverse("problem-detail", args=[problem.slug])).data["votes"] == {
+        "up": 1,
+        "down": 0,
+        "mine": 1,
+    }
+
+
+# ── Masalaga xos tillar va o'xshash masalalar ────────────────────────
+def test_til_royxati_bosh_bolsa_hamma_faol_til_ochiq(problem, language) -> None:
+    data = APIClient().get(reverse("problem-detail", args=[problem.slug])).data
+
+    assert [row["code"] for row in data["languages"]] == ["cpp23"]
+    assert data["languages"][0]["time_limit_ms"] == problem.time_limit_ms
+
+
+def test_til_royxati_bolsa_faqat_osha_tillar_va_ustma_ust_limit(problem, language) -> None:
+    from problems.models import ProblemLanguage
+
+    ProblemLanguage.objects.create(
+        problem=problem, language=language, time_limit_ms=3000, code_template="int main(){}"
+    )
+    data = APIClient().get(reverse("problem-detail", args=[problem.slug])).data
+
+    assert [row["code"] for row in data["languages"]] == ["cpp23"]
+    assert data["languages"][0]["time_limit_ms"] == 3000
+    # Masalada berilmagan xotira limiti masalanikidan olinadi.
+    assert data["languages"][0]["memory_limit_kb"] == problem.memory_limit_kb
+    assert data["languages"][0]["code_template"] == "int main(){}"
+
+
+def test_oxshash_masalalar_faqat_ommaviysi(problem, hard_problem, db) -> None:
+    from problems.models import Problem, SimilarProblem
+
+    draft = Problem.objects.create(
+        slug="qoralama", title="Qoralama", statement="x", difficulty=900, is_public=False
+    )
+    SimilarProblem.objects.create(problem=problem, similar=hard_problem, score=0.9)
+    SimilarProblem.objects.create(problem=problem, similar=draft, score=0.95)
+
+    data = APIClient().get(reverse("problem-detail", args=[problem.slug])).data
+
+    assert [row["slug"] for row in data["similar"]] == [hard_problem.slug]
+    assert data["similar"][0]["score"] == 0.9

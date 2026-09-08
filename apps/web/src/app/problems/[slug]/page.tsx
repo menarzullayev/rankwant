@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Attachments } from "@/components/Attachments";
 import { Markdown } from "@/components/Markdown";
+import { SimilarProblems } from "@/components/SimilarProblems";
 import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { Editorial } from "@/components/Editorial";
@@ -58,10 +60,6 @@ export default async function ProblemPage({ params, searchParams }: Props) {
     throw error;
   }
 
-  // Tillar ro'yxati serverda keshlanadi — muharrir uchun brauzerdan
-  // qo'shimcha so'rov kerak emas, mehmonga ham ko'rinadi.
-  const languages = await api.languages().then((page) => page.results);
-
   return (
     <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,560px)]">
       <article className="space-y-6">
@@ -90,6 +88,7 @@ export default async function ProblemPage({ params, searchParams }: Props) {
               {t(locale, "problems.limits")}: {problem.time_limit_ms} ms,{" "}
               {Math.round(problem.memory_limit_kb / 1024)} MB
             </Badge>
+            {problem.partial_scoring && <Badge color="info">Qisman ball</Badge>}
             {problem.topics.map((topic) => (
               <Badge key={topic} color="info">
                 {topic}
@@ -125,6 +124,17 @@ export default async function ProblemPage({ params, searchParams }: Props) {
         <Card>
           <StatementSize>
             <div className="space-y-5">
+              {problem.image && (
+                /* eslint-disable-next-line @next/next/no-img-element --
+                   rasm import qilingan arxivning tashqi domenida; uni
+                   `next/image` ga berish har bir manba uchun alohida
+                   `remotePatterns` yozishni talab qilardi. */
+                <img
+                  src={problem.image}
+                  alt=""
+                  className="w-full rw-radius-sm"
+                />
+              )}
               <Markdown>{problem.statement}</Markdown>
 
               {problem.input_format && (
@@ -156,12 +166,41 @@ export default async function ProblemPage({ params, searchParams }: Props) {
           </Card>
         )}
 
-        {problem.editorial && <Editorial text={problem.editorial} />}
+        <Attachments items={problem.attachments} />
+
+        {problem.editorial_state.available && (
+          <Editorial
+            slug={slug}
+            text={problem.editorial}
+            state={problem.editorial_state}
+          />
+        )}
+
+        <SimilarProblems items={problem.similar} />
+
+        {problem.source && (
+          <p className="text-theme-sm rw-faint">
+            Manba:{" "}
+            {problem.source_url ? (
+              <a
+                href={problem.source_url}
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                {problem.source}
+              </a>
+            ) : (
+              problem.source
+            )}
+            {problem.source_rating !== null &&
+              ` · asl reyting ${problem.source_rating}`}
+          </p>
+        )}
       </article>
 
       <SubmitPanel
         problem={slug}
-        languages={languages}
+        languages={problem.languages}
         samples={problem.samples}
         contest={contest}
       />

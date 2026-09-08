@@ -47,13 +47,43 @@ export type Problem = {
 
 export type Sample = { order: number; input: string; expected: string };
 
+/** Masalada ruxsat etilgan til — limitlari allaqachon hisoblangan. */
+export type ProblemLanguage = {
+  code: string;
+  name: string;
+  version: string;
+  time_limit_ms: number;
+  memory_limit_kb: number;
+  code_template: string;
+};
+
+export type SimilarProblem = {
+  slug: string;
+  title: string;
+  difficulty: number;
+  level: string;
+  level_label: string;
+  score: number;
+};
+
+export type Attachment = { name: string; url: string; size_bytes: number };
+
+/** ADR-0013: `access` tahlil qaysi asosda ochilganini aytadi. */
+export type EditorialState = {
+  available: boolean;
+  access: "anonymous" | "locked" | "free" | "solved" | "purchased" | "staff";
+  price: number;
+};
+
 export type ProblemDetail = Problem & {
   samples: Sample[];
   statement: string;
   input_format: string;
   output_format: string;
   note: string;
+  /** Ochilmagan bo'lsa serverdan bo'sh keladi — yashirin matn yo'q. */
   editorial: string;
+  editorial_state: EditorialState;
   author: string | null;
   rating: { average: number | null; count: number };
   my_rating: number | null;
@@ -62,6 +92,16 @@ export type ProblemDetail = Problem & {
   time_limit_ms: number;
   memory_limit_kb: number;
   checker_type: string;
+  languages: ProblemLanguage[];
+  similar: SimilarProblem[];
+  attachments: Attachment[];
+  votes: { up: number; down: number; mine: number };
+  image: string;
+  partial_scoring: boolean;
+  /** Import qilingan arxivning xom reytingi (KEP 100–2400). */
+  source_rating: number | null;
+  source: string;
+  source_url: string;
 };
 
 export type Contest = {
@@ -634,6 +674,14 @@ export const setFavourite = (slug: string, on: boolean) =>
   on
     ? postJson<{ is_favourite: boolean }>(`/problems/${slug}/favourite/`, {})
     : deleteJson<{ is_favourite: boolean }>(`/problems/${slug}/favourite/`);
+
+export const voteProblem = (slug: string, value: -1 | 0 | 1) =>
+  postJson<{ up: number; down: number; mine: number }>(`/problems/${slug}/vote/`, {
+    value,
+  });
+
+export const unlockEditorial = (slug: string) =>
+  postJson<{ editorial: string; price: number }>(`/problems/${slug}/editorial/`, {});
 
 export const rateProblem = (slug: string, score: number) =>
   postJson<{ average: number | null; count: number; my_rating: number }>(

@@ -399,3 +399,22 @@ class TestLanguageLimits:
             user=user, problem=problem, language=language, source_code="x"
         )
         assert build_job(attempt).limits["time_ms"] == problem.time_limit_ms
+
+
+def test_masala_cheklagan_tilda_yechim_qabul_qilinmaydi(problem, user, language, db) -> None:
+    """Django/SQL masalasi C++ da ma'noga ega emas — KEP ham cheklaydi."""
+    from problems.models import Language, ProblemLanguage
+
+    python = Language.objects.create(
+        code="py313", name="Python", version="3.13", run_cmd=["python3", "{src}"]
+    )
+    ProblemLanguage.objects.create(problem=problem, language=python)
+
+    client = APIClient()
+    client.force_authenticate(user)
+    payload = {"problem": problem.slug, "language": "cpp23", "source_code": "int main(){}"}
+
+    response = client.post(reverse("attempt-list"), payload)
+
+    assert response.status_code == 400
+    assert "py313" in str(response.data["error"]["details"]["language"])

@@ -14,6 +14,8 @@ from __future__ import annotations
 
 import json
 import os
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from collections.abc import Iterator
@@ -29,6 +31,10 @@ BASE = os.environ.get("KEP_API_BASE", f"{SITE}/api")
 #: O'zimizni tanitamiz — trafik kimdan kelayotgani KEP loglarida ko'rinsin.
 USER_AGENT = "RankWant-Importer/1.0 (+https://rankwant.uz)"
 TIMEOUT = 30
+#: 2000 dan ortiq so'rovda KEP 429 qaytaradi. Uni «masala yo'q» deb
+#: qabul qilib bo'lmaydi — shunda arxivda tasodifiy teshiklar qolardi.
+RETRIES = 5
+BACKOFF = 5.0
 
 #: KEP reytingi 100–2400, bizniki 800–3500. Ikki uchni bog'lab chiziqli
 #: o'tkazamiz: 100 → 800, 2400 → 3200. Yuqoridagi 3300–3500 ataylab bo'sh
@@ -49,8 +55,17 @@ def fetch(path: str, **params: Any) -> Any:
     request = urllib.request.Request(
         url, headers={"User-Agent": USER_AGENT, "Accept": "application/json"}
     )
-    with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
-        return json.load(response)
+    for attempt in range(RETRIES):
+        try:
+            with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
+                return json.load(response)
+        except urllib.error.HTTPError as error:
+            if error.code != 429 or attempt == RETRIES - 1:
+                raise
+            retry_after = error.headers.get("Retry-After")
+            wait = float(retry_after) if retry_after and retry_after.isdigit() else BACKOFF
+            time.sleep(wait * (attempt + 1))
+    raise RuntimeError("yetib bo'lmadi")  # pragma: no cover
 
 
 def tags() -> list[dict[str, Any]]:
@@ -109,7 +124,11 @@ def to_fields(payload: dict[str, Any]) -> dict[str, Any]:
     maxsus qilib qo'yardi.
     """
     memory_mb = payload.get("memoryLimit") or 256
+    # KEP tahlilni kepcoin bilan ochtiradi; bizda ham shunday (ADR-0013).
+    # `null` — narx belgilanmagan, ya'ni bizning standart narx qolsin.
+    price = payload.get("solutionKepcoinValue")
     return {
+        **({} if price is None else {"editorial_price": int(price)}),
         "title": (payload.get("title") or "").strip()[:200],
         "statement": html_to_markdown(payload.get("body")),
         "input_format": html_to_markdown(payload.get("inputData")),

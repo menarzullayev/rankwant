@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+from collections import Counter
 from typing import Any
 
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from problems import storage
-from problems.models import Language, Problem, Topic
+from problems.models import Language, Problem, ProblemAttachment, ProblemVote, Topic
 
 
 class TopicSerializer(serializers.ModelSerializer[Topic]):
@@ -18,6 +20,47 @@ class LanguageSerializer(serializers.ModelSerializer[Language]):
     class Meta:
         model = Language
         fields = ["code", "name", "version"]
+
+
+#: Tahlil matni yuboriladigan holatlar — ADR-0013. Mehmon bu yerda YO'Q:
+#: u yechganini ko'rsata olmaydi, ya'ni spoyler darvozasi u uchun yopiq.
+EDITORIAL_OPEN = frozenset({"solved", "staff", "purchased", "free"})
+
+
+class ProblemLanguageSerializer(serializers.Serializer[dict[str, Any]]):
+    """Masalada RUXSAT etilgan til va uning yakuniy limitlari.
+
+    Limitlar allaqachon hisoblangan holda keladi: masalaga xos qiymat
+    bo'lmasa masala limiti qo'yiladi. Aks holda har mijoz shu
+    mantiqni o'zi takrorlashi kerak bo'lardi.
+    """
+
+    code = serializers.CharField()
+    name = serializers.CharField()
+    version = serializers.CharField()
+    time_limit_ms = serializers.IntegerField()
+    memory_limit_kb = serializers.IntegerField()
+    code_template = serializers.CharField(allow_blank=True)
+
+
+class SimilarProblemSerializer(serializers.Serializer[dict[str, Any]]):
+    slug = serializers.CharField()
+    title = serializers.CharField()
+    difficulty = serializers.IntegerField()
+    level = serializers.CharField()
+    level_label = serializers.CharField()
+    score = serializers.FloatField()
+
+
+class AttachmentSerializer(serializers.ModelSerializer[ProblemAttachment]):
+    class Meta:
+        model = ProblemAttachment
+        fields = ["name", "url", "size_bytes"]
+
+
+class VoteSerializer(serializers.Serializer[dict[str, Any]]):
+    #: 0 — ovozni olib tashlash.
+    value = serializers.ChoiceField(choices=[-1, 0, 1])
 
 
 class SampleTestSerializer(serializers.Serializer[dict[str, Any]]):
@@ -109,6 +152,12 @@ class ProblemDetailSerializer(ProblemListSerializer):
 
     author = serializers.CharField(source="author.username", read_only=True, default=None)
     my_rating = serializers.SerializerMethodField()
+    languages = serializers.SerializerMethodField()
+    similar = serializers.SerializerMethodField()
+    attachments = AttachmentSerializer(many=True, read_only=True)
+    votes = serializers.SerializerMethodField()
+    editorial = serializers.SerializerMethodField()
+    editorial_state = serializers.SerializerMethodField()
 
     def _user(self) -> Any:
         request = self.context.get("request")
@@ -125,11 +174,113 @@ class ProblemDetailSerializer(ProblemListSerializer):
     def get_samples(self, problem: Problem) -> list[dict[str, Any]]:
         return storage.sample_tests(problem)
 
+    @extend_schema_field(ProblemLanguageSerializer(many=True))
+    def get_languages(self, problem: Problem) -> list[dict[str, Any]]:
+        rows = list(problem.languages.select_related("language"))
+        if not rows:
+            # Ro'yxat bo'sh — masala hech qanday tilni cheklamagan.
+            return [
+                {
+                    "code": language.code,
+                    "name": language.name,
+                    "version": language.version,
+                    "time_limit_ms": problem.time_limit_ms,
+                    "memory_limit_kb": problem.memory_limit_kb,
+                    "code_template": "",
+                }
+                for language in Language.objects.filter(is_active=True)
+            ]
+        return [
+            {
+                "code": row.language.code,
+                "name": row.language.name,
+                "version": row.language.version,
+                "time_limit_ms": row.time_limit_ms or problem.time_limit_ms,
+                "memory_limit_kb": row.memory_limit_kb or problem.memory_limit_kb,
+                "code_template": row.code_template,
+            }
+            for row in rows
+            if row.language.is_active
+        ]
+
+    @extend_schema_field(SimilarProblemSerializer(many=True))
+    def get_similar(self, problem: Problem) -> list[dict[str, Any]]:
+        """O'xshash masalalar — taqalib qolganda keyingi qadam.
+
+        Faqat OMMAVIY masalalar: import qilingan graf qoralamalarga ham
+        ishora qiladi va ular hali ochilmagan.
+        """
+        links = problem.similar_to.select_related("similar").filter(similar__is_public=True)[:6]
+        return [
+            {
+                "slug": link.similar.slug,
+                "title": link.similar.title,
+                "difficulty": link.similar.difficulty,
+                "level": link.similar.level,
+                "level_label": link.similar.level_label,
+                "score": round(link.score, 2),
+            }
+            for link in links
+        ]
+
+    def get_votes(self, problem: Problem) -> dict[str, Any]:
+        """Import qilingan sanoq + bizdagi ovozlar.
+
+        Ikkalasi qo'shiladi: foydalanuvchi uchun bu bitta raqam, manba
+        farqi esa faqat bizning ichki masalamiz.
+        """
+        counts = Counter(problem.votes.values_list("value", flat=True))
+        user = self._user()
+        mine = problem.votes.filter(user=user).first() if user else None
+        return {
+            "up": problem.likes_count + counts[ProblemVote.UP],
+            "down": problem.dislikes_count + counts[ProblemVote.DOWN],
+            "mine": mine.value if mine else 0,
+        }
+
+    def _editorial_access(self, problem: Problem) -> str:
+        """ADR-0013: yechgan bepul ko'radi, yechmagan Qvant sarflaydi."""
+        user = self._user()
+        if user is None:
+            return "anonymous"
+        if user.is_staff:
+            return "staff"
+        if problem.slug in (self.context.get("solved_slugs") or ()):
+            return "solved"
+        if problem.pk in (self.context.get("unlocked_ids") or ()):
+            return "purchased"
+        return "free" if not problem.editorial_price else "locked"
+
+    def get_editorial(self, problem: Problem) -> str:
+        """Ochilmagan bo'lsa MATN UMUMAN YUBORILMAYDI.
+
+        Frontendda yashirish spoylerni himoya qilmaydi — matn baribir
+        sahifa manbasida ko'rinib turardi.
+        """
+        if not problem.editorial:
+            return ""
+        return problem.editorial if self._editorial_access(problem) in EDITORIAL_OPEN else ""
+
+    def get_editorial_state(self, problem: Problem) -> dict[str, Any]:
+        return {
+            "available": bool(problem.editorial),
+            "access": self._editorial_access(problem),
+            "price": problem.editorial_price,
+        }
+
     class Meta(ProblemListSerializer.Meta):
         fields = [
             *ProblemListSerializer.Meta.fields,
             "samples",
             "my_rating",
+            "languages",
+            "similar",
+            "attachments",
+            "votes",
+            "editorial_state",
+            "image",
+            "partial_scoring",
+            "source_rating",
             "statement",
             "input_format",
             "output_format",

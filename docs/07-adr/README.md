@@ -30,6 +30,7 @@ Har bir ADR:
 | [0010](0010-per-test-refs.md)                    | Job da har test uchun S3 havolasi   | **accepted**           |
 | [0011](0011-competition-formats.md)              | Arena, Duel, Chempionat, Hakaton, Testlar | **accepted**       |
 | [0012](0012-seven-difficulty-levels.md)          | Qiyinlik shkalasi — yetti daraja          | **accepted**       |
+| [0013](0013-editorial-spoiler-gate.md)           | Yechim tahlili — spoyler darvozasi        | **accepted**       |
 
 ## Qoidalar
 

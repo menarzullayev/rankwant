@@ -22,7 +22,7 @@ import {
   type Attempt,
   type AttemptDetail,
   type CustomRun,
-  type Language,
+  type ProblemLanguage,
   type Sample,
 } from "@/lib/api";
 import CodeEditor from "./CodeEditor";
@@ -117,7 +117,7 @@ export default function SubmitPanel({
   contest,
 }: {
   problem: string;
-  languages: Language[];
+  languages: ProblemLanguage[];
   samples: Sample[];
   contest?: string;
 }) {
@@ -154,8 +154,15 @@ export default function SubmitPanel({
   const key = draftKey(problem, language);
   const [edits, setEdits] = useState<Record<string, string>>({});
   const storedDraft = useStored(key);
+  const picked = languages.find((l) => l.code === language);
+  // Masala shabloni umumiy zagotovkadan ustun: Django/SQL masalasida
+  // yechim aynan berilgan funksiya imzosini to'ldirishdan iborat.
   const source =
-    edits[key] ?? storedDraft ?? DEFAULT_SOURCE[editorLanguage(language)] ?? "";
+    edits[key] ??
+    storedDraft ??
+    picked?.code_template ??
+    DEFAULT_SOURCE[editorLanguage(language)] ??
+    "";
 
   const setSource = useCallback(
     (next: string) => setEdits((current) => ({ ...current, [key]: next })),
@@ -343,6 +350,14 @@ export default function SubmitPanel({
         }
         bodyClassName="space-y-3"
       >
+        {picked && (
+          <p className="text-theme-xs rw-faint">
+            {picked.name} {picked.version} uchun: {picked.time_limit_ms} ms ·{" "}
+            {Math.round(picked.memory_limit_kb / 1024)} MB
+            {languages.length === 1 && " · bu masala faqat shu tilda"}
+          </p>
+        )}
+
         <EditorTools source={source} onSource={setSource} onError={setError} />
 
         <CodeEditor

@@ -3,7 +3,12 @@
 import { useState } from "react";
 
 import { useSession } from "@/context/SessionContext";
-import { rateProblem, setFavourite, type ProblemDetail } from "@/lib/api";
+import {
+  rateProblem,
+  setFavourite,
+  voteProblem,
+  type ProblemDetail,
+} from "@/lib/api";
 
 const SCORES = [1, 2, 3, 4, 5];
 
@@ -15,6 +20,7 @@ export function ProblemActions({ problem }: { problem: ProblemDetail }) {
   const [favourite, setFav] = useState(problem.is_favourite);
   const [mine, setMine] = useState(problem.my_rating);
   const [rating, setRating] = useState(problem.rating);
+  const [votes, setVotes] = useState(problem.votes);
   const [busy, setBusy] = useState(false);
 
   async function toggleFavourite() {
@@ -45,7 +51,29 @@ export function ProblemActions({ problem }: { problem: ProblemDetail }) {
     }
   }
 
+  /** Ovoz — bir bosish. Yulduzli bahodan farqi shunda: yulduz masalaning
+   * SIFATINI o'lchaydi va o'ylashni talab qiladi, ovoz esa «yoqdimi?»
+   * degan oddiy savolga javob va shu sababli ancha ko'p yig'iladi. */
+  async function vote(value: -1 | 1) {
+    if (busy) return;
+    setBusy(true);
+    try {
+      // Ikkinchi marta bosish ovozni olib tashlaydi.
+      setVotes(
+        await voteProblem(problem.slug, votes.mine === value ? 0 : value),
+      );
+    } catch {
+      // Ovoz saqlanmadi — mavjud holat o'zgarmaydi.
+    } finally {
+      setBusy(false);
+    }
+  }
+
   const signedIn = ready && !!user;
+  const voteStyle = (active: boolean) =>
+    `rw-radius-sm px-2 py-1 font-medium tabular-nums transition rw-hover-bg ${
+      active ? "rw-accent-ink" : "rw-dim"
+    }`;
 
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-theme-sm">
@@ -61,6 +89,29 @@ export function ProblemActions({ problem }: { problem: ProblemDetail }) {
           {favourite ? "★ Sevimlilarda" : "☆ Sevimlilarga"}
         </button>
       )}
+
+      <div className="flex items-center gap-0.5">
+        <button
+          type="button"
+          onClick={() => vote(1)}
+          disabled={!signedIn}
+          aria-pressed={votes.mine === 1}
+          aria-label="Yoqdi"
+          className={voteStyle(votes.mine === 1)}
+        >
+          ▲ {votes.up}
+        </button>
+        <button
+          type="button"
+          onClick={() => vote(-1)}
+          disabled={!signedIn}
+          aria-pressed={votes.mine === -1}
+          aria-label="Yoqmadi"
+          className={voteStyle(votes.mine === -1)}
+        >
+          ▼ {votes.down}
+        </button>
+      </div>
 
       <div className="flex items-center gap-1.5">
         <span className="rw-faint">

@@ -156,6 +156,8 @@ class Problem(models.Model):
     #: bular esa manbadagi ovozlar — aralashtirilmaydi.
     likes_count = models.PositiveIntegerField(default=0)
     dislikes_count = models.PositiveIntegerField(default=0)
+    #: Tahlilni yechmasdan ochish narxi, Qvant (ADR-0013). 0 — bepul.
+    editorial_price = models.PositiveIntegerField(default=30)
 
     solved_count = models.PositiveIntegerField(default=0)
     attempt_count = models.PositiveIntegerField(default=0)
@@ -346,6 +348,58 @@ class Favourite(models.Model):
             models.UniqueConstraint(fields=["user", "problem"], name="uniq_favourite")
         ]
         ordering: ClassVar = ["-created_at"]
+
+    def __str__(self) -> str:
+        return f"{self.user_id} → {self.problem.slug}"
+
+
+class ProblemVote(models.Model):
+    """Masalaga «yoqdi / yoqmadi» ovozi.
+
+    Yulduzli bahodan (`ProblemRating`) ALOHIDA: yulduz masalaning
+    sifatini o'lchaydi va o'ylashni talab qiladi, ovoz esa bir bosish —
+    shu sababli u ancha ko'p yig'iladi va boshqa savolga javob beradi.
+    Import qilingan sanoqlar `Problem.likes_count` da, bular esa
+    bizniki; ko'rsatishda qo'shiladi.
+    """
+
+    UP = 1
+    DOWN = -1
+
+    user = models.ForeignKey("core.User", on_delete=models.CASCADE, related_name="problem_votes")
+    problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name="votes")
+    value = models.SmallIntegerField(choices=[(UP, "Yoqdi"), (DOWN, "Yoqmadi")])
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints: ClassVar = [
+            models.UniqueConstraint(fields=["user", "problem"], name="uniq_problem_vote")
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.problem.slug}: {self.value:+d}"
+
+
+class EditorialUnlock(models.Model):
+    """Yechim tahliliga kirish huquqi — ADR-0013.
+
+    Yozuv FAQAT Qvant sarflab ochganda paydo bo'ladi. Masalani yechgan
+    odamga tahlil baribir ochiq, unga yozuv kerak emas — aks holda
+    yechganlar soni qadar keraksiz qator yig'ilardi.
+    """
+
+    user = models.ForeignKey(
+        "core.User", on_delete=models.CASCADE, related_name="editorial_unlocks"
+    )
+    problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name="unlocks")
+    price = models.PositiveIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering: ClassVar = ["-created_at"]
+        constraints: ClassVar = [
+            models.UniqueConstraint(fields=["user", "problem"], name="uniq_editorial_unlock")
+        ]
 
     def __str__(self) -> str:
         return f"{self.user_id} → {self.problem.slug}"

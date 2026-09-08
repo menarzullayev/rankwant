@@ -66,6 +66,7 @@ class Command(BaseCommand):
         self.imported: dict[int, Problem] = {}
         self.similar: dict[int, list[tuple[int, float]]] = {}
         self.attachment_warnings = 0
+        self.failed: list[int] = []
 
         if self.with_samples:
             storage.ensure_bucket()
@@ -73,12 +74,15 @@ class Command(BaseCommand):
         self.sync_tags()
 
         for index, kep_id in enumerate(self.target_ids(options), start=1):
+            # Mavjudni SO'ROVDAN OLDIN tekshiramiz — aks holda uzilgan
+            # importni davom ettirish butun arxivni qaytadan yuklardi.
+            if not options["refresh"] and self.existing(kep_id):
+                continue
             try:
                 payload = kep.problem(kep_id)
             except Exception as error:  # tarmoq yoki o'chirilgan masala
                 self.stderr.write(f"#{kep_id} olinmadi: {error}")
-                continue
-            if not options["refresh"] and self.existing(kep_id):
+                self.failed.append(kep_id)
                 continue
             self.import_problem(payload)
             if index % 25 == 0:
@@ -93,6 +97,13 @@ class Command(BaseCommand):
                 f"{Topic.objects.count()} mavzu, {links} o'xshashlik havolasi"
             )
         )
+        if self.failed:
+            self.stdout.write(
+                self.style.WARNING(
+                    f"{len(self.failed)} masala olinmadi — qayta yuritish uchun: "
+                    f"--ids {','.join(str(i) for i in self.failed[:50])}"
+                )
+            )
         if self.attachment_warnings:
             self.stdout.write(
                 f"DIQQAT: {self.attachment_warnings} masalada biriktirma bor — "

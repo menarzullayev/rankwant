@@ -41,6 +41,7 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
             "output_format",
             "note",
             "editorial",
+            "editorial_price",
             "statement_locale",
             "difficulty",
             "topics",

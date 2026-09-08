@@ -21,10 +21,12 @@ from judging.verdicts import Verdict
 from problems.filters import ProblemFilter
 from problems.models import (
     DIFFICULTY_LEVELS,
+    EditorialUnlock,
     Favourite,
     Language,
     Problem,
     ProblemRating,
+    ProblemVote,
     Topic,
     difficulty_level,
 )
@@ -35,7 +37,10 @@ from problems.serializers import (
     ProblemListSerializer,
     RateProblemSerializer,
     TopicSerializer,
+    VoteSerializer,
 )
+from qvant import ledger
+from qvant.models import QvantTransaction
 
 
 class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
@@ -90,6 +95,9 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
         context["favourite_ids"] = set(
             Favourite.objects.filter(user=user).values_list("problem_id", flat=True)
         )
+        context["unlocked_ids"] = set(
+            EditorialUnlock.objects.filter(user=user).values_list("problem_id", flat=True)
+        )
         # Oxirgi urinish verdikti — «urindim, WA oldim» signali. Ikkita
         # so'rov, ikkalasi ham urinilgan masalalar soni bilan chegaralangan
         # (`DISTINCT ON` Postgres'ga bog'lab qo'yardi, testlar SQLite'da).
@@ -103,6 +111,15 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
             problem_id: verdicts.get(attempt_id) for problem_id, attempt_id in last_ids.items()
         }
         return context
+
+    def get_object(self) -> Problem:
+        # Detal sahifada til, biriktirma va o'xshashlik ro'yxatlari
+        # o'qiladi — har biri alohida so'rov bo'lib ketmasin.
+        queryset = self.get_queryset().prefetch_related(  # type: ignore[no-untyped-call]
+            "attachments", "languages__language", "similar_to__similar"
+        )
+        problem: Problem = get_object_or_404(queryset, slug=self.kwargs["slug"])
+        return problem
 
     def retrieve(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         response = super().retrieve(request, *args, **kwargs)
@@ -145,6 +162,66 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
                 "my_rating": serializer.validated_data["score"],
             }
         )
+
+
+    @extend_schema(request=VoteSerializer, responses={200: {"type": "object"}})
+    @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
+    def vote(self, request: Request, slug: str | None = None) -> Response:
+        """Yoqdi / yoqmadi. `value=0` — ovozni olib tashlaydi."""
+        problem = self.get_object()
+        serializer = VoteSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        assert isinstance(request.user, User)
+        value = serializer.validated_data["value"]
+        if value:
+            ProblemVote.objects.update_or_create(
+                user=request.user, problem=problem, defaults={"value": value}
+            )
+        else:
+            ProblemVote.objects.filter(user=request.user, problem=problem).delete()
+
+        counts = Counter(problem.votes.values_list("value", flat=True))
+        return Response(
+            {
+                "up": problem.likes_count + counts[ProblemVote.UP],
+                "down": problem.dislikes_count + counts[ProblemVote.DOWN],
+                "mine": value,
+            }
+        )
+
+    @extend_schema(request=None, responses={200: {"type": "object"}})
+    @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
+    def editorial(self, request: Request, slug: str | None = None) -> Response:
+        """Tahlilni Qvant sarflab ochadi — ADR-0013.
+
+        Yechgan odam bu yerga umuman kelmaydi: unga tahlil allaqachon
+        ochiq. Shu sababli bu yo'l faqat «yechmadim, lekin ko'raman»
+        holati uchun.
+        """
+        problem = self.get_object()
+        assert isinstance(request.user, User)
+        if not problem.editorial:
+            return Response({"detail": "Bu masalada tahlil yo'q"}, status=404)
+
+        already = EditorialUnlock.objects.filter(user=request.user, problem=problem).exists()
+        if not already and problem.editorial_price:
+            try:
+                ledger.debit(
+                    request.user,
+                    problem.editorial_price,
+                    QvantTransaction.Reason.PURCHASE,
+                    ref_type="editorial",
+                    ref_id=problem.slug,
+                )
+            except ledger.InsufficientBalance:
+                return Response(
+                    {"detail": f"Balans yetarli emas — {problem.editorial_price} Qvant kerak"},
+                    status=402,
+                )
+            EditorialUnlock.objects.create(
+                user=request.user, problem=problem, price=problem.editorial_price
+            )
+        return Response({"editorial": problem.editorial, "price": problem.editorial_price})
 
 
 class RecommendationView(APIView):

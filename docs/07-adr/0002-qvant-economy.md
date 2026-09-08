@@ -77,7 +77,7 @@ Quyidagilar **rad etilmadi**, keyinroq alohida ADR bilan ko'rib chiqiladi:
 | Sink                       | Nega hozir emas                                              |
 | -------------------------- | ------------------------------------------------------------ |
 | Funksiya ochish (virtual contest yaratish, rejudge, filtr) | Bepul rejani sun'iy cheklash xavfi — avval obuna modeli kerak |
-| Kontent ochish (yechim/editorial) | [ADR-0005](0005-content-strategy-own-content.md) ziddiyati    |
+| ~~Kontent ochish (yechim/editorial)~~ | **Hal qilindi:** [ADR-0013](0013-editorial-spoiler-gate.md) — spoyler darvozasi, paywall emas |
 | Obuna chegirmasi           | Daromadga ta'siri o'lchanmagan; narx modeli hali yo'q        |
 | Real pul / USDT konversiyasi | v1 da out of scope; **alohida ADR + huquqiy tahlil** shart   |
 

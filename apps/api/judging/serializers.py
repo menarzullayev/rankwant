@@ -6,7 +6,7 @@ from rest_framework import serializers
 
 from contests.models import Contest, ContestProblem, ContestRegistration
 from judging.models import MAX_SOURCE_BYTES, Attempt, AttemptTestResult, CustomRun
-from problems.models import Language, Problem
+from problems.models import Language, Problem, ProblemLanguage
 
 
 class AttemptTestResultSerializer(serializers.ModelSerializer[AttemptTestResult]):
@@ -76,6 +76,19 @@ class AttemptCreateSerializer(serializers.Serializer[dict[str, Any]]):
         ishlatmasdi: har urinish `contest=None` bo'lib yozilar, natijada
         standings hech qachon to'lmasdi.
         """
+        # Masalaga xos til ro'yxati — RUXSAT. Interaktiv yoki freymwork
+        # masalasi hamma tilda ma'noga ega emas; ro'yxat bo'sh bo'lsa
+        # cheklov ham yo'q.
+        allowed = set(
+            ProblemLanguage.objects.filter(problem__slug=attrs["problem"]).values_list(
+                "language__code", flat=True
+            )
+        )
+        if allowed and attrs["language"] not in allowed:
+            raise serializers.ValidationError(
+                {"language": f"Bu masala {', '.join(sorted(allowed))} tillarida yechiladi"}
+            )
+
         slug = attrs.get("contest")
         if not slug:
             return attrs

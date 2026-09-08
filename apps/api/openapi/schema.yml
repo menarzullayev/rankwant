@@ -1726,6 +1726,32 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
           description: ''
+  /api/v1/problems/{slug}/editorial/:
+    post:
+      operationId: problems_editorial_create
+      description: |-
+        Tahlilni Qvant sarflab ochadi — ADR-0013.
+
+        Yechgan odam bu yerga umuman kelmaydi: unga tahlil allaqachon
+        ochiq. Shu sababli bu yo'l faqat «yechmadim, lekin ko'raman»
+        holati uchun.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - problems
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: ''
   /api/v1/problems/{slug}/favourite/:
     post:
       operationId: problems_favourite_create
@@ -1830,6 +1856,39 @@ paths:
       responses:
         '200':
           description: Masala statistikasi
+  /api/v1/problems/{slug}/vote/:
+    post:
+      operationId: problems_vote_create
+      description: Yoqdi / yoqmadi. `value=0` — ovozni olib tashlaydi.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - problems
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Vote'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Vote'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Vote'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: ''
   /api/v1/problems/progress/:
     get:
       operationId: problems_progress_retrieve
@@ -5978,6 +6037,24 @@ components:
       - id
       - problems
       - title
+    Attachment:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 200
+        url:
+          type: string
+          format: uri
+          maxLength: 200
+        size_bytes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+      required:
+      - name
+      - url
     Attempt:
       type: object
       properties:
@@ -8105,6 +8182,11 @@ components:
         editorial:
           type: string
           description: Markdown + LaTeX
+        editorial_price:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
         statement_locale:
           type: string
           maxLength: 2
@@ -8593,6 +8675,49 @@ components:
           type: integer
           nullable: true
           readOnly: true
+        languages:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProblemLanguage'
+          readOnly: true
+        similar:
+          type: array
+          items:
+            $ref: '#/components/schemas/SimilarProblem'
+          readOnly: true
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attachment'
+          readOnly: true
+        votes:
+          type: object
+          additionalProperties: {}
+          description: |-
+            Import qilingan sanoq + bizdagi ovozlar.
+
+            Ikkalasi qo'shiladi: foydalanuvchi uchun bu bitta raqam, manba
+            farqi esa faqat bizning ichki masalamiz.
+          readOnly: true
+        editorial_state:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        image:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        partial_scoring:
+          type: boolean
+        source_rating:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
         statement:
           type: string
           description: Markdown + LaTeX
@@ -8607,7 +8732,12 @@ components:
           description: Markdown + LaTeX
         editorial:
           type: string
-          description: Markdown + LaTeX
+          description: |-
+            Ochilmagan bo'lsa MATN UMUMAN YUBORILMAYDI.
+
+            Frontendda yashirish spoylerni himoya qilmaydi — matn baribir
+            sahifa manbasida ko'rinib turardi.
+          readOnly: true
         author:
           type: string
           readOnly: true
@@ -8637,22 +8767,56 @@ components:
           - type: string
             maxLength: 0
       required:
+      - attachments
       - author
       - difficulty
+      - editorial
+      - editorial_state
       - has_editorial
       - is_favourite
       - is_solved
+      - languages
       - level
       - level_label
       - my_rating
       - my_verdict
       - rating
       - samples
+      - similar
       - slug
       - statement
       - success_rate
       - title
       - topics
+      - votes
+    ProblemLanguage:
+      type: object
+      description: |-
+        Masalada RUXSAT etilgan til va uning yakuniy limitlari.
+
+        Limitlar allaqachon hisoblangan holda keladi: masalaga xos qiymat
+        bo'lmasa masala limiti qo'yiladi. Aks holda har mijoz shu
+        mantiqni o'zi takrorlashi kerak bo'lardi.
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        version:
+          type: string
+        time_limit_ms:
+          type: integer
+        memory_limit_kb:
+          type: integer
+        code_template:
+          type: string
+      required:
+      - code
+      - code_template
+      - memory_limit_kb
+      - name
+      - time_limit_ms
+      - version
     ProblemList:
       type: object
       properties:
@@ -9254,6 +9418,29 @@ components:
       - owned
       - price
       - title_uz
+    SimilarProblem:
+      type: object
+      properties:
+        slug:
+          type: string
+        title:
+          type: string
+        difficulty:
+          type: integer
+        level:
+          type: string
+        level_label:
+          type: string
+        score:
+          type: number
+          format: double
+      required:
+      - difficulty
+      - level
+      - level_label
+      - score
+      - slug
+      - title
     SolvedProblem:
       type: object
       properties:
@@ -9787,6 +9974,11 @@ components:
         editorial:
           type: string
           description: Markdown + LaTeX
+        editorial_price:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
         statement_locale:
           type: string
           maxLength: 2
@@ -10753,6 +10945,16 @@ components:
           format: date-time
       required:
       - username
+    ValueEnum:
+      enum:
+      - -1
+      - 0
+      - 1
+      type: integer
+      description: |-
+        * `-1` - -1
+        * `0` - 0
+        * `1` - 1
     VerdictEnum:
       enum:
       - PENDING
@@ -10797,6 +10999,13 @@ components:
         * `TESTING_ABORTED` - Tekshiruv bekor qilindi
         * `RATE_LIMITED` - Submit limiti
         * `DENIAL_OF_JUDGEMENT` - Infra nosozligi
+    Vote:
+      type: object
+      properties:
+        value:
+          $ref: '#/components/schemas/ValueEnum'
+      required:
+      - value
     Wallet:
       type: object
       properties:
