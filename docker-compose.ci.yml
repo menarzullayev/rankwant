@@ -1,3 +1,5 @@
+name: rankwant-ci
+
 # CI/smoke uchun override: host portlari e'lon qilinmaydi.
 #
 # Nega: smoke sinovi compose tarmog'i ICHIDA ishlaydi, ya'ni host portlari
