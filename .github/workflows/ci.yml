@@ -5,6 +5,14 @@ on:
   push:
     branches: [main]
 
+# Self-hosted runner ishlab chiqish mashinasida, `nsn` foydalanuvchisi
+# sifatida ishlaydi — Python `~/.local/lib/.../site-packages` ni ham
+# ko'radi. U yerdagi begona paketlar (masalan `dash`) pytest plaginini
+# ro'yxatdan o'tkazadi va pytest ularni avtomatik yuklaydi. Ish faqat
+# o'z muhitidan foydalanishi kerak.
+env:
+  PYTHONNOUSERSITE: '1'
+
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
