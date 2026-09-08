@@ -1,9 +1,8 @@
-"""Masala sahifasidagi namuna testlar.
+"""Masala arxivi va masala sahifasi.
 
-Namunasiz kirish formatini matndan tushunib bo'lmaydi — RoboContest,
-KEP va Codeforces uchalasida ham ular masala sahifasining bir qismi.
-Ma'lumot DB da emas, S3 da (05-domain-model), shuning uchun bu yerda
-o'qish, keshlash va S3 yiqilgandagi xatti-harakat tekshiriladi.
+Qamrov: namuna testlar (S3 dan o'qish, keshlash, S3 yiqilgandagi
+xatti-harakat), sevimlilar, jamoa bahosi, ommaviy raqam va ro'yxatning
+so'rov soni — qator ortganda u o'zgarmasligi kerak.
 """
 
 from __future__ import annotations
