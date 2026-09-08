@@ -43,14 +43,18 @@ test("birinchi AC Skills reytingini oshiradi", async ({ request }) => {
   test.skip(problems.count === 0, "arxiv bo'sh");
   const problem = problems.results[0];
 
-  const languages = await (await request.get(`${API}/languages/`)).json();
-  test.skip(languages.count === 0, "til sozlanmagan");
+  // Global ro'yxatdan emas, MASALANING o'z ro'yxatidan: masala tilni
+  // cheklashi mumkin (Django/SQL masalasi C++ ni qabul qilmaydi).
+  const detail = await (
+    await request.get(`${API}/problems/${problem.slug}/`)
+  ).json();
+  test.skip(detail.languages.length === 0, "til sozlanmagan");
 
   const submit = await request.post(`${API}/attempts/`, {
     headers: await csrf(request),
     data: {
       problem: problem.slug,
-      language: languages.results[0].code,
+      language: detail.languages[0].code,
       source_code: "int main(){return 0;}",
     },
   });
