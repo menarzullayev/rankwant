@@ -40,7 +40,7 @@ jobs:
           python-version: '3.12'
       - name: pip-audit
         run: |
-          pip install pip-audit
+          pip install pip-audit pyyaml
           if [ -f apps/api/requirements.lock ]; then
             pip-audit -r apps/api/requirements.lock
           fi
