@@ -121,3 +121,43 @@ def test_yechilgan_masala_royxatda_belgilanadi(problem, user) -> None:
         user=user, problem=problem, difficulty_at_solve=problem.difficulty
     )
     assert client.get(url).data["results"][0]["is_solved"] is True
+
+
+def test_sevimlilar_qo_shiladi_va_olib_tashlanadi(problem, user) -> None:
+    client = APIClient()
+    url = reverse("problem-favourite", args=[problem.slug])
+    detail = reverse("problem-detail", args=[problem.slug])
+
+    assert client.post(url).status_code in (401, 403), "mehmon belgilay olmaydi"
+
+    client.force_authenticate(user)
+    assert client.post(url).data["is_favourite"] is True
+    assert client.get(detail).data["is_favourite"] is True
+    # Takroriy POST xato bermaydi — tugma ikki marta bosilishi mumkin.
+    assert client.post(url).data["is_favourite"] is True
+
+    assert client.delete(url).data["is_favourite"] is False
+    assert client.get(detail).data["is_favourite"] is False
+
+
+def test_baho_ozgartiriladi_va_ortacha_hisoblanadi(problem, user, other_user) -> None:
+    url = reverse("problem-rate", args=[problem.slug])
+    client = APIClient()
+
+    client.force_authenticate(user)
+    assert client.post(url, {"score": 5}, format="json").data["average"] == 5.0
+    # Qayta baholash yangi yozuv emas, o'zgartirish.
+    body = client.post(url, {"score": 3}, format="json").data
+    assert (body["average"], body["count"]) == (3.0, 1)
+    assert client.post(url, {"score": 9}, format="json").status_code == 400
+
+    client.force_authenticate(other_user)
+    assert client.post(url, {"score": 5}, format="json").data == {
+        "average": 4.0,
+        "count": 2,
+        "my_rating": 5,
+    }
+
+    detail = APIClient().get(reverse("problem-detail", args=[problem.slug]))
+    assert detail.data["rating"] == {"average": 4.0, "count": 2}
+    assert detail.data["my_rating"] is None, "mehmonda o'z bahosi yo'q"

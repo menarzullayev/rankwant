@@ -1702,6 +1702,89 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
           description: ''
+  /api/v1/problems/{slug}/favourite/:
+    post:
+      operationId: problems_favourite_create
+      description: |-
+        Ommaviy masala arxivi.
+
+        Yozish Django admin orqali (PRD P0-2) — API faqat o'qish uchun.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - problems
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: ''
+    delete:
+      operationId: problems_favourite_destroy
+      description: |-
+        Ommaviy masala arxivi.
+
+        Yozish Django admin orqali (PRD P0-2) — API faqat o'qish uchun.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - problems
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: ''
+  /api/v1/problems/{slug}/rate/:
+    post:
+      operationId: problems_rate_create
+      description: |-
+        Ommaviy masala arxivi.
+
+        Yozish Django admin orqali (PRD P0-2) — API faqat o'qish uchun.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - problems
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RateProblem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RateProblem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RateProblem'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: ''
   /api/v1/problems/recommendation/:
     get:
       operationId: problems_recommendation_list
@@ -8424,6 +8507,17 @@ components:
         author:
           type: string
           readOnly: true
+        rating:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        my_rating:
+          type: integer
+          nullable: true
+          readOnly: true
+        is_favourite:
+          type: boolean
+          readOnly: true
         statement_locale:
           type: string
           maxLength: 2
@@ -8452,9 +8546,12 @@ components:
       required:
       - author
       - difficulty
+      - is_favourite
       - is_solved
       - level
       - level_label
+      - my_rating
+      - rating
       - samples
       - slug
       - statement
@@ -8692,6 +8789,15 @@ components:
       - created_at
       - id
       - review
+    RateProblem:
+      type: object
+      properties:
+        score:
+          type: integer
+          maximum: 5
+          minimum: 1
+      required:
+      - score
     RatingHistory:
       type: object
       description: |-

@@ -173,3 +173,48 @@ class TestCase(models.Model):
 
     def __str__(self) -> str:
         return f"{self.problem.slug} #{self.order}"
+
+
+class Favourite(models.Model):
+    """Keyinroq qaytish uchun belgilangan masala.
+
+    RoboContest va Codeforces'dagi «sevimlilar» — uzun arxivda yo'qolib
+    ketmaslikning eng oddiy usuli.
+    """
+
+    user = models.ForeignKey("core.User", on_delete=models.CASCADE, related_name="favourites")
+    problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name="favourites")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints: ClassVar = [
+            models.UniqueConstraint(fields=["user", "problem"], name="uniq_favourite")
+        ]
+        ordering: ClassVar = ["-created_at"]
+
+    def __str__(self) -> str:
+        return f"{self.user_id} → {self.problem.slug}"
+
+
+class ProblemRating(models.Model):
+    """Foydalanuvchining masalaga bergan bahosi (1–5).
+
+    RoboContest sahifada «3.2 · 10 baholar» ko'rsatadi — muallif uchun
+    ham, tanlayotgan solver uchun ham signal.
+    """
+
+    user = models.ForeignKey("core.User", on_delete=models.CASCADE, related_name="problem_ratings")
+    problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name="ratings")
+    score = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints: ClassVar = [
+            models.UniqueConstraint(fields=["user", "problem"], name="uniq_problem_rating")
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.problem.slug}: {self.score}"

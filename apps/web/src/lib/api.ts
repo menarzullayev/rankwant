@@ -44,6 +44,9 @@ export type ProblemDetail = Problem & {
   note: string;
   editorial: string;
   author: string | null;
+  rating: { average: number | null; count: number };
+  my_rating: number | null;
+  is_favourite: boolean;
   statement_locale: string;
   time_limit_ms: number;
   memory_limit_kb: number;
@@ -512,6 +515,29 @@ export async function postJson<T>(path: string, body: unknown): Promise<T> {
   return parsed as T;
 }
 
+/** Brauzerdan sessiya bilan DELETE — `postJson` bilan bir xil CSRF talabi. */
+export async function deleteJson<T>(path: string): Promise<T> {
+  const headers: Record<string, string> = { Accept: "application/json" };
+  const csrf = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/)?.[1];
+  if (csrf) headers["X-CSRFToken"] = decodeURIComponent(csrf);
+
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: "DELETE",
+    credentials: "include",
+    headers,
+  });
+  const raw = await res.text();
+  const parsed = raw ? JSON.parse(raw) : null;
+  if (!res.ok) {
+    throw new ApiError(
+      res.status,
+      parsed?.error?.code ?? "error",
+      parsed?.error?.message ?? res.statusText,
+    );
+  }
+  return parsed as T;
+}
+
 /** Brauzerdan sessiya bilan GET — shaxsiy ma'lumot (sinf, duel masalalari). */
 export async function getJson<T>(path: string): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
@@ -570,6 +596,17 @@ export function runCustomTest(body: {
 
 export const fetchCustomRun = (id: number) =>
   getJson<CustomRun>(`/custom-test/${id}/`);
+
+export const setFavourite = (slug: string, on: boolean) =>
+  on
+    ? postJson<{ is_favourite: boolean }>(`/problems/${slug}/favourite/`, {})
+    : deleteJson<{ is_favourite: boolean }>(`/problems/${slug}/favourite/`);
+
+export const rateProblem = (slug: string, score: number) =>
+  postJson<{ average: number | null; count: number; my_rating: number }>(
+    `/problems/${slug}/rate/`,
+    { score },
+  );
 
 export const api = {
   // Mehmon bosh sahifasi raqamlari — serverda 60 s keshlanadi.

@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from typing import Any
 
+from django.db.models import Avg, Count
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -12,12 +14,13 @@ from rest_framework.views import APIView
 from core.models import User
 from core.pagination import StandardPagination
 from problems.filters import ProblemFilter
-from problems.models import Language, Problem, Topic
+from problems.models import Favourite, Language, Problem, ProblemRating, Topic
 from problems.recommend import recommend, target_difficulty
 from problems.serializers import (
     LanguageSerializer,
     ProblemDetailSerializer,
     ProblemListSerializer,
+    RateProblemSerializer,
     TopicSerializer,
 )
 
@@ -55,6 +58,38 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
 
     def get_serializer_class(self):  # type: ignore[no-untyped-def]
         return ProblemDetailSerializer if self.action == "retrieve" else ProblemListSerializer
+
+    @extend_schema(request=None, responses={200: {"type": "object"}})
+    @action(detail=True, methods=["post", "delete"], permission_classes=[IsAuthenticated])
+    def favourite(self, request: Request, slug: str | None = None) -> Response:
+        problem = self.get_object()
+        assert isinstance(request.user, User)
+        if request.method == "DELETE":
+            Favourite.objects.filter(user=request.user, problem=problem).delete()
+            return Response({"is_favourite": False})
+        Favourite.objects.get_or_create(user=request.user, problem=problem)
+        return Response({"is_favourite": True})
+
+    @extend_schema(request=RateProblemSerializer, responses={200: {"type": "object"}})
+    @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated], url_path="rate")
+    def rate(self, request: Request, slug: str | None = None) -> Response:
+        problem = self.get_object()
+        serializer = RateProblemSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        assert isinstance(request.user, User)
+        ProblemRating.objects.update_or_create(
+            user=request.user,
+            problem=problem,
+            defaults={"score": serializer.validated_data["score"]},
+        )
+        stats = problem.ratings.aggregate(average=Avg("score"), count=Count("pk"))
+        return Response(
+            {
+                "average": round(stats["average"], 1) if stats["average"] else None,
+                "count": stats["count"],
+                "my_rating": serializer.validated_data["score"],
+            }
+        )
 
 
 class RecommendationView(APIView):

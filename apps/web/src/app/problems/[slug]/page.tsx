@@ -4,11 +4,13 @@ import { Markdown } from "@/components/Markdown";
 import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { Editorial } from "@/components/Editorial";
+import { ProblemActions } from "@/components/ProblemActions";
 import { SampleTests } from "@/components/SampleTests";
 import { StatementSize } from "@/components/StatementSize";
 import SubmitPanel from "@/components/SubmitPanel";
 import { notFound } from "next/navigation";
-import { api, ApiError } from "@/lib/api";
+import { api, ApiError, type ProblemDetail } from "@/lib/api";
+import { getWithSession } from "@/lib/api.server";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
 
 type Props = {
@@ -47,7 +49,7 @@ export default async function ProblemPage({ params, searchParams }: Props) {
 
   let problem;
   try {
-    problem = await api.problem(slug);
+    problem = await getWithSession<ProblemDetail>(`/problems/${slug}/`);
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) notFound();
     throw error;
@@ -90,6 +92,10 @@ export default async function ProblemPage({ params, searchParams }: Props) {
             {problem.attempt_count > 0 &&
               ` · ${Math.round((problem.solved_count / problem.attempt_count) * 100)}% muvaffaqiyat`}
           </p>
+
+          <div className="mt-2">
+            <ProblemActions problem={problem} />
+          </div>
         </header>
 
         {contest && (
