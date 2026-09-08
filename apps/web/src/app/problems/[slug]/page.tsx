@@ -100,7 +100,22 @@ export default async function ProblemPage({ params, searchParams }: Props) {
               ko'ra aniqroq ko'rsatadi (RoboContest «Murakkablik», CF da
               solve count). Urinish bo'lmasa foiz ma'nosiz. */}
           <p className="mt-3 text-theme-sm rw-dim">
-            {problem.author && `Muallif: ${problem.author} · `}
+            {problem.author && (
+              <>
+                Muallif:{" "}
+                {problem.author.has_profile ? (
+                  <Link
+                    href={`/users/${problem.author.username}`}
+                    className="rw-link-hover"
+                  >
+                    {problem.author.display_name}
+                  </Link>
+                ) : (
+                  problem.author.display_name
+                )}{" "}
+                ·{" "}
+              </>
+            )}
             {problem.solved_count} kishi yechdi · {problem.attempt_count}{" "}
             urinish
             {problem.attempt_count > 0 &&

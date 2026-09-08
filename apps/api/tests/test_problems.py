@@ -504,3 +504,22 @@ def test_mavzular_royxatida_faqat_ommaviy_masalasi_bori(problem, db) -> None:
     data = APIClient().get(reverse("topic-list")).data
 
     assert [t["slug"] for t in data["results"]] == ["dp"]
+
+
+def test_import_muallifiga_havola_qoyilmaydi(problem, db) -> None:
+    """Soya hisob nofaol — profil sahifasi yo'q, havola 404 ga olib borardi."""
+    from core.models import User
+
+    author = User.objects.create(
+        username="kep-admin", display_name="Nazarbek Baltabaev", is_active=False
+    )
+    problem.author = author
+    problem.save()
+
+    data = APIClient().get(reverse("problem-detail", args=[problem.slug])).data
+
+    assert data["author"] == {
+        "username": "kep-admin",
+        "display_name": "Nazarbek Baltabaev",
+        "has_profile": False,
+    }

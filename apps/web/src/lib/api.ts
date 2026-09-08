@@ -84,7 +84,12 @@ export type ProblemDetail = Problem & {
   /** Ochilmagan bo'lsa serverdan bo'sh keladi — yashirin matn yo'q. */
   editorial: string;
   editorial_state: EditorialState;
-  author: string | null;
+  /** `has_profile` — nofaol import mualliflarining profil sahifasi yo'q. */
+  author: {
+    username: string;
+    display_name: string;
+    has_profile: boolean;
+  } | null;
   rating: { average: number | null; count: number };
   my_rating: number | null;
   is_favourite: boolean;

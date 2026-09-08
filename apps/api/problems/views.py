@@ -115,7 +115,8 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
     def get_object(self) -> Problem:
         # Detal sahifada til, biriktirma va o'xshashlik ro'yxatlari
         # o'qiladi — har biri alohida so'rov bo'lib ketmasin.
-        queryset = self.get_queryset().prefetch_related(  # type: ignore[no-untyped-call]
+        base = self.get_queryset()  # type: ignore[no-untyped-call]
+        queryset = base.select_related("author").prefetch_related(
             "attachments", "languages__language", "similar_to__similar"
         )
         problem: Problem = get_object_or_404(queryset, slug=self.kwargs["slug"])

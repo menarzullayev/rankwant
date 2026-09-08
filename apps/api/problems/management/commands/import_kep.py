@@ -78,13 +78,14 @@ class Command(BaseCommand):
             # importni davom ettirish butun arxivni qaytadan yuklardi.
             if not options["refresh"] and self.existing(kep_id):
                 continue
+            # Bitta buzuq masala butun yurishni to'xtatmasin: oxirida
+            # o'xshashlik grafi quriladi va u yo'qolib ketardi.
             try:
-                payload = kep.problem(kep_id)
-            except Exception as error:  # tarmoq yoki o'chirilgan masala
+                self.import_problem(kep.problem(kep_id))
+            except Exception as error:  # tarmoq, o'chirilgan masala, buzuq javob
                 self.stderr.write(f"#{kep_id} olinmadi: {error}")
                 self.failed.append(kep_id)
                 continue
-            self.import_problem(payload)
             if index % 25 == 0:
                 self.stdout.write(f"  … {index} ta ko'rildi, {len(self.imported)} import qilindi")
             time.sleep(self.sleep)

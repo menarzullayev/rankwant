@@ -8753,7 +8753,15 @@ components:
             sahifa manbasida ko'rinib turardi.
           readOnly: true
         author:
-          type: string
+          type: object
+          additionalProperties: {}
+          nullable: true
+          description: |-
+            Muallif — ismi bilan, va profili bormi degan javob bilan.
+
+            Import qilingan mualliflar NOFAOL soya hisoblar: ular
+            leaderboard va sanoqlarga kirmaydi, demak profil sahifasi ham
+            yo'q. Havola qo'yilsa u 404 ga olib borardi.
           readOnly: true
         statement_locale:
           type: string

@@ -150,7 +150,7 @@ class ProblemListSerializer(serializers.ModelSerializer[Problem]):
 class ProblemDetailSerializer(ProblemListSerializer):
     samples = serializers.SerializerMethodField()
 
-    author = serializers.CharField(source="author.username", read_only=True, default=None)
+    author = serializers.SerializerMethodField()
     my_rating = serializers.SerializerMethodField()
     languages = serializers.SerializerMethodField()
     similar = serializers.SerializerMethodField()
@@ -163,6 +163,22 @@ class ProblemDetailSerializer(ProblemListSerializer):
         request = self.context.get("request")
         user = getattr(request, "user", None)
         return user if user is not None and user.is_authenticated else None
+
+    def get_author(self, problem: Problem) -> dict[str, Any] | None:
+        """Muallif — ismi bilan, va profili bormi degan javob bilan.
+
+        Import qilingan mualliflar NOFAOL soya hisoblar: ular
+        leaderboard va sanoqlarga kirmaydi, demak profil sahifasi ham
+        yo'q. Havola qo'yilsa u 404 ga olib borardi.
+        """
+        author = problem.author
+        if author is None:
+            return None
+        return {
+            "username": author.username,
+            "display_name": author.display_name or author.username,
+            "has_profile": author.is_active,
+        }
 
     def get_my_rating(self, problem: Problem) -> int | None:
         user = self._user()
