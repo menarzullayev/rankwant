@@ -56,11 +56,39 @@ test("arxiv filtri ro'yxatni toraytiradi va URL da qoladi", async ({
   await page.goto("/problems");
   const all = await page.getByRole("row").count();
 
-  await page.getByLabel("Daraja").selectOption("hard");
+  await page.getByRole("button", { name: /^Filtrlar( \d+)?$/ }).click();
+  await page.getByRole("button", { name: "Qiyin", exact: true }).click();
   await page.waitForURL(/level=hard/);
 
   const filtered = await page.getByRole("row").count();
   expect(filtered).toBeLessThan(all);
-  // Filtr URL da — havolani ulashsa bo'ladi va orqaga tugmasi ishlaydi.
-  await expect(page.getByLabel("Daraja")).toHaveValue("hard");
+  // Faol filtr soni tugmada ko'rinadi va holat URL da qoladi.
+  await expect(
+    page.getByRole("button", { name: /^Filtrlar( \d+)?$/ }),
+  ).toContainText("1");
+});
+
+test("saralash tabi tartibni almashtiradi", async ({ page }) => {
+  await page.goto("/problems");
+  const first = () => page.getByRole("row").nth(1).innerText();
+  const easiest = await first();
+
+  await page.getByRole("tab", { name: "Eng qiyin" }).click();
+  await page.waitForURL(/ordering=-difficulty/);
+
+  expect(await first()).not.toBe(easiest);
+});
+
+test("qidiruv ro'yxatni toraytiradi", async ({ page }) => {
+  await page.goto("/problems?search=fibona");
+
+  await expect(page.getByRole("row")).toHaveCount(2); // sarlavha + 1 natija
+  await expect(
+    page.getByRole("searchbox", { name: "Masala qidirish" }),
+  ).toHaveValue("fibona");
+});
+
+test("sahifalash yozuv sonini ko'rsatadi", async ({ page }) => {
+  await page.goto("/problems");
+  await expect(page.getByLabel("Sahifalar")).toContainText("masala");
 });

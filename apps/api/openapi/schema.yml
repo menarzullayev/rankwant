@@ -1624,6 +1624,10 @@ paths:
         schema:
           type: integer
       - in: query
+        name: favourite
+        schema:
+          type: boolean
+      - in: query
         name: level
         schema:
           type: string
@@ -1657,6 +1661,12 @@ paths:
         description: Number of results to return per page.
         schema:
           type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
       - in: query
         name: solved
         schema:

@@ -1,8 +1,9 @@
+import type { Metadata, Route } from "next";
 import Link from "next/link";
-import type { Metadata } from "next";
 
 import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
+import { Pager } from "@/components/ui/Pager";
 import {
   EmptyRow,
   TBody,
@@ -35,7 +36,17 @@ export const metadata: Metadata = { title: "Masalalar" };
 
 /** URL dan API ga faqat shu kalitlar o'tadi — qolgani e'tiborsiz
  * qoldiriladi, aks holda ixtiyoriy so'rov qatori backend'ga ochilardi. */
-const ALLOWED = ["level", "topics", "solved", "ordering"] as const;
+const ALLOWED = [
+  "level",
+  "topics",
+  "solved",
+  "favourite",
+  "ordering",
+  "search",
+  "page",
+] as const;
+
+const PAGE_SIZE = 25; // core.pagination.StandardPagination bilan bir xil
 
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -53,6 +64,8 @@ export default async function ProblemsPage({ searchParams }: Props) {
 
   // Sessiya bilan — `is_solved` foydalanuvchiga xos, `get()` esa
   // cookie uzatmaydi va hamma uchun `false` qaytarardi.
+  const page = Math.max(1, Number(raw.page) || 1);
+
   const [data, topics, me] = await Promise.all([
     getWithSession<Paginated<Problem>>(
       `/problems/${query.size ? `?${query}` : ""}`,
@@ -60,6 +73,14 @@ export default async function ProblemsPage({ searchParams }: Props) {
     api.topics(),
     getWithSession<UserPublic>("/me/").catch(() => null),
   ]);
+
+  // Sahifa havolasi qolgan filtrlarni saqlaydi.
+  const pageHref = (next: number) => {
+    const params = new URLSearchParams(query);
+    if (next > 1) params.set("page", String(next));
+    else params.delete("page");
+    return `/problems${params.size ? `?${params}` : ""}` as Route;
+  };
 
   // Tavsiya faqat kirgan foydalanuvchi uchun — chiqmasa sahifa baribir
   // ishlayveradi (arxiv hamma uchun ochiq).
@@ -140,7 +161,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
                       <CheckIcon className="size-4 rw-ok-ink" />
                     </span>
                   ) : (
-                    i + 1
+                    (page - 1) * PAGE_SIZE + i + 1
                   )}
                 </TD>
                 <TD>
@@ -176,6 +197,14 @@ export default async function ProblemsPage({ searchParams }: Props) {
             )}
           </TBody>
         </Table>
+
+        <Pager
+          page={page}
+          count={data.count}
+          pageSize={PAGE_SIZE}
+          href={pageHref}
+          label="masala"
+        />
       </Card>
     </div>
   );

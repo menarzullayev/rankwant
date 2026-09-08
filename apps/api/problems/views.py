@@ -3,9 +3,11 @@ from __future__ import annotations
 from typing import Any
 
 from django.db.models import Avg, Count
+from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -35,7 +37,9 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
     lookup_field = "slug"
     filterset_class = ProblemFilter
     pagination_class = StandardPagination
-    ordering_fields = ["difficulty", "solved_count", "created_at"]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    search_fields = ["title", "slug"]
+    ordering_fields = ["difficulty", "solved_count", "attempt_count", "created_at"]
     ordering = ["difficulty"]
 
     def get_queryset(self):  # type: ignore[no-untyped-def]
