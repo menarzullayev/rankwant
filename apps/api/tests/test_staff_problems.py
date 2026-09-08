@@ -247,3 +247,14 @@ class TestTestCases:
         )
         assert res.status_code == 404
         assert not fake_s3
+
+
+def test_kod_xodimga_korinadi_lekin_tahrirlanmaydi(staff_client, problem) -> None:
+    """Raqam tizim tomonidan beriladi — xodim uni ko'radi, o'zgartira olmaydi."""
+    url = reverse("staff-problem-detail", args=[problem.slug])
+
+    assert staff_client.get(url).data["code"] == problem.code
+
+    staff_client.patch(url, {"code": 9999}, format="json")
+    problem.refresh_from_db()
+    assert problem.code != 9999

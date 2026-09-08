@@ -8033,6 +8033,10 @@ components:
         id:
           type: integer
           readOnly: true
+        code:
+          type: integer
+          readOnly: true
+          nullable: true
         slug:
           type: string
           maxLength: 100
@@ -8517,10 +8521,10 @@ components:
         has_editorial:
           type: boolean
           readOnly: true
-        my_attempt_id:
-          type: integer
+        my_verdict:
+          type: string
           nullable: true
-          description: Shu masala bo'yicha oxirgi urinishim — ro'yxatdan to'g'ridan-to'g'ri.
+          description: Shu masala bo'yicha oxirgi urinishim verdikti.
           readOnly: true
         code:
           type: integer
@@ -8589,8 +8593,8 @@ components:
       - is_solved
       - level
       - level_label
-      - my_attempt_id
       - my_rating
+      - my_verdict
       - rating
       - samples
       - slug
@@ -8659,10 +8663,10 @@ components:
         has_editorial:
           type: boolean
           readOnly: true
-        my_attempt_id:
-          type: integer
+        my_verdict:
+          type: string
           nullable: true
-          description: Shu masala bo'yicha oxirgi urinishim — ro'yxatdan to'g'ridan-to'g'ri.
+          description: Shu masala bo'yicha oxirgi urinishim verdikti.
           readOnly: true
         code:
           type: integer
@@ -8677,7 +8681,7 @@ components:
       - is_solved
       - level
       - level_label
-      - my_attempt_id
+      - my_verdict
       - rating
       - slug
       - success_rate
@@ -9681,6 +9685,10 @@ components:
         id:
           type: integer
           readOnly: true
+        code:
+          type: integer
+          readOnly: true
+          nullable: true
         slug:
           type: string
           maxLength: 100
@@ -9763,6 +9771,7 @@ components:
           readOnly: true
       required:
       - attempt_count
+      - code
       - created_at
       - difficulty
       - id

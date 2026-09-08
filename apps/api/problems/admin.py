@@ -19,6 +19,7 @@ class SubtaskInline(admin.TabularInline):
 @admin.register(Problem)
 class ProblemAdmin(admin.ModelAdmin):
     list_display = (
+        "code",
         "slug",
         "title",
         "difficulty",
@@ -28,9 +29,9 @@ class ProblemAdmin(admin.ModelAdmin):
         "attempt_count",
     )
     list_filter = ("is_public", "checker_type", "topics")
-    search_fields = ("slug", "title")
+    search_fields = ("slug", "title", "code")
     filter_horizontal = ("topics",)
-    readonly_fields = ("solved_count", "attempt_count", "created_at", "updated_at")
+    readonly_fields = ("code", "solved_count", "attempt_count", "created_at", "updated_at")
     inlines = [SubtaskInline, TestCaseInline]
     fieldsets = (
         (None, {"fields": ("slug", "title", "is_public", "author")}),

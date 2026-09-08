@@ -33,6 +33,7 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
         model = Problem
         fields = [
             "id",
+            "code",
             "slug",
             "title",
             "statement",
@@ -57,7 +58,7 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["solved_count", "attempt_count", "created_at", "updated_at"]
+        read_only_fields = ["code", "solved_count", "attempt_count", "created_at", "updated_at"]
 
     def get_test_count(self, obj: Problem) -> int:
         # Ro'yxatda annotatsiya bor; yaratish/tahrirlashdan keyingi javobda yo'q.

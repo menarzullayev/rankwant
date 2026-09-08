@@ -11,6 +11,8 @@ import { staff } from "@/lib/staff";
 
 type StaffProblem = {
   id: number;
+  /** Tizim beradigan ommaviy raqam — e'lon qilinganda paydo bo'ladi. */
+  code: number | null;
   slug: string;
   title: string;
   statement: string;
@@ -372,6 +374,12 @@ export function ProblemsAdmin() {
         idField="slug"
         ordering="-pk"
         columns={[
+          {
+            key: "code",
+            label: "#",
+            render: (p) =>
+              p.code === null ? "—" : `#${String(p.code).padStart(4, "0")}`,
+          },
           { key: "slug", label: "Slug" },
           { key: "title", label: "Sarlavha" },
           { key: "difficulty", label: "Qiyinlik", align: "right" },
