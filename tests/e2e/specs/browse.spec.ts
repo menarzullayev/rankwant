@@ -168,7 +168,13 @@ test("arxiv qatorida masala raqami va statistikasi ko'rinadi", async ({
 
   // Raqam sahifadagi o'rin emas — barqaror identifikator.
   await expect(page.getByText(/^#\d{4}$/).first()).toBeVisible();
-  await expect(page.getByRole("columnheader", { name: "%" })).toBeVisible();
+
+  // Statistika ustunlari tor ekranda ATAYIN yig'iladi (`hidden md:table-cell`),
+  // shuning uchun ular faqat keng ekranda kutiladi.
+  const wide = (page.viewportSize()?.width ?? 0) >= 768;
+  await expect(page.getByRole("columnheader", { name: "%" })).toHaveCount(
+    wide ? 1 : 0,
+  );
 });
 
 test("kirgan foydalanuvchi sevimliga qo'sha oladi", async ({ page }) => {

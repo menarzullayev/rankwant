@@ -190,7 +190,11 @@ export default async function ProblemsPage({ searchParams }: Props) {
         }))}
       />
 
-      <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,300px)]">
+      {/* Ustun shabloni MOBILDA HAM ko'rsatiladi: `grid-cols` siz element
+          yashirin `auto` trekka tushadi, u esa mazmun bo'yicha kengayadi va
+          `min-w-0` yordam bermaydi — keng bo'lgani TREK. O'lchandi: 412 px
+          li telefonda arxiv 629 px bo'lib, yon tomonga siljirdi. */}
+      <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,300px)]">
         <Card bodyClassName="p-0">
           <Table>
             <THead>

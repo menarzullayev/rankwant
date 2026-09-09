@@ -60,3 +60,39 @@ test("kirgan foydalanuvchi header'i ham 375px da sig'adi", async ({ page }) => {
   const size = await headerOverflow(page);
   expect(size!.content).toBeLessThanOrEqual(size!.width);
 });
+
+/**
+ * Sahifa telefon ekraniga SIG'ISHI kerak.
+ *
+ * O'lchandi: arxiv 412 px li ekranda 629 px, masala sahifasi 600 px
+ * bo'lib ketardi — sahifa yon tomonga siljir, submit panelidagi tab
+ * tugmalarini esa umuman bosib bo'lmasdi (Monaco qatlami ustiga
+ * chiqardi). Sabab `min-w-0` emas edi: mobilda `grid-cols` ko'rsatilmasa
+ * element yashirin `auto` trekka tushadi va TREK mazmun bo'yicha
+ * kengayadi.
+ *
+ * Keng jadval o'z `overflow-x-auto` konteynerida aylanishi kerak,
+ * SAHIFA emas.
+ */
+const PAGES = [
+  "/",
+  "/problems",
+  "/problems/a-plus-b",
+  "/leaderboard",
+  "/contests",
+  "/attempts",
+  "/qvant",
+  "/learn",
+  "/calendar",
+];
+
+for (const path of PAGES) {
+  test(`${path} telefon ekraniga sig'adi`, async ({ page }) => {
+    await page.goto(path);
+    const { scrollWidth, clientWidth } = await page.evaluate(() => ({
+      scrollWidth: document.documentElement.scrollWidth,
+      clientWidth: document.documentElement.clientWidth,
+    }));
+    expect(scrollWidth).toBeLessThanOrEqual(clientWidth + 4);
+  });
+}

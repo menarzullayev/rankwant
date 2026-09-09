@@ -4,7 +4,11 @@
  * selektorlariga tayanadi (tests/e2e/specs). */
 export function Table({ children }: { children: React.ReactNode }) {
   return (
-    <div className="custom-scrollbar overflow-x-auto">
+    // `min-w-0` bo'lmasa `overflow-x-auto` ISHLAMAYDI: grid yoki flex
+    // ichidagi element standart `min-width: auto` bilan mazmunidan
+    // kichrayolmaydi va jadval o'zi emas, BUTUN SAHIFA siljiydi.
+    // O'lchandi: 412 px li telefonda arxiv 629 px bo'lib ketardi.
+    <div className="custom-scrollbar min-w-0 overflow-x-auto">
       <table className="min-w-full text-left">{children}</table>
     </div>
   );

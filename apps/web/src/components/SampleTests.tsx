@@ -64,7 +64,7 @@ export function SampleTests({ samples }: { samples: Sample[] }) {
     <Card title="Namunalar" bodyClassName="p-0">
       {/* Kod ustunlari tor ekranga sig'maydi — jadval o'z ichida
           gorizontal aylanadi, sahifa emas. */}
-      <div className="overflow-x-auto">
+      <div className="min-w-0 overflow-x-auto">
         <table className="w-full min-w-[34rem] table-fixed">
           <thead>
             <tr className="border-b rw-line">

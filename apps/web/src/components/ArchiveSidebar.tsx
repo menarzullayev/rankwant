@@ -337,7 +337,7 @@ export function ArchiveSidebar({
   popular: Problem[];
 }) {
   return (
-    <aside className="space-y-4">
+    <aside className="min-w-0 space-y-4">
       {resume && <Continue problem={resume} />}
       {recommended && recommended.results.length > 0 && (
         <Recommended data={recommended} />

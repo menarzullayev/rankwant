@@ -43,8 +43,12 @@ const MAX_SOURCE_BYTES = 64 * 1024;
  * yopishtirish noto'g'ri bo'lardi. Balandligi ekranga sig'masa
  * (uzun verdikt ro'yxati) panelning o'zi aylanadi.
  */
+// `min-w-0` — grid farzandining standart `min-width: auto` uni
+// MAZMUNIDAN kichik qilmaydi, ya'ni Monaco butun sahifani cho'zib
+// yuboradi. O'lchandi: 412 px li telefonda masala sahifasi 600 px
+// bo'lib, yon tomonga siljirdi va tab tugmalarini bosib bo'lmasdi.
 const PANEL =
-  "space-y-4 xl:sticky xl:top-20 xl:max-h-[calc(100vh-5.5rem)] xl:overflow-y-auto";
+  "min-w-0 space-y-4 xl:sticky xl:top-20 xl:max-h-[calc(100vh-5.5rem)] xl:overflow-y-auto";
 
 /** Verdikt uchun SSE yo'q (musobaqa jadvalidan farqli) — pollinglaymiz.
  * Birinchi soniyalarda tez, keyin siyrak: kompilyatsiya + testlar odatda
@@ -175,7 +179,7 @@ export default function SubmitPanel({
   const current = Math.min(activeTest, customTests.length - 1);
 
   const [customRun, setCustomRun] = useState<CustomRun | null>(null);
-  //: Natija qaysi testniki — tab almashganda begona natija ko'rinmasin.
+  // Natija qaysi testniki — tab almashganda begona natija ko'rinmasin.
   const [runFor, setRunFor] = useState<number | null>(null);
   const [sampleResults, setSampleResults] = useState<SampleResult[]>([]);
 

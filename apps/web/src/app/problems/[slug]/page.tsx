@@ -63,8 +63,13 @@ export default async function ProblemPage({ params, searchParams }: Props) {
   }
 
   return (
-    <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,560px)]">
-      <article className="space-y-6">
+    // `min-w-0` bezak emas: grid farzandining standart `min-width: auto`
+    // uni MAZMUNIDAN kichik qilmaydi, ya'ni Monaco yoki keng jadval butun
+    // sahifani cho'zib yuboradi. O'lchandi — 412 px li telefonda sahifa
+    // 600 px bo'lib, yon tomonga siljirdi va tab tugmalarini bosib
+    // bo'lmasdi.
+    <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,560px)]">
+      <article className="min-w-0 space-y-6">
         <ProblemTabs slug={slug} current="statement" />
 
         <header>
