@@ -34,48 +34,21 @@ export function StandingsTable({
 }) {
   const [data, setData] = useState<Payload>(initial);
 
+  // Polling, SSE emas. Har SSE ulanish gunicorn ishchisini besh
+  // daqiqagacha band qilardi va o'lchandi — to'rtta tomoshabin butun
+  // API ni javobsiz qoldirardi. Jadval hamma uchun bir xil, ya'ni javob
+  // CDN da keshlanadi: 110 000 tomoshabin origin'ga 10 soniyada bitta
+  // so'rov bo'lib tushadi. Yangilanish 10 s o'rniga 15 s da.
   useEffect(() => {
     if (!live) return;
-
-    let source: EventSource | null = null;
-    let pollTimer: ReturnType<typeof setInterval> | null = null;
-    let sawEvent = false;
 
     const poll = async () => {
       const res = await fetch(`${API_BASE}/contests/${slug}/standings/`);
       if (res.ok) setData(await res.json());
     };
 
-    const startPolling = () => {
-      if (pollTimer) return;
-      pollTimer = setInterval(poll, 15_000);
-    };
-
-    try {
-      source = new EventSource(
-        `${API_BASE}/contests/${slug}/standings/stream/`,
-      );
-      source.addEventListener("standings", (event) => {
-        sawEvent = true;
-        setData(JSON.parse((event as MessageEvent).data));
-      });
-      source.onerror = () => {
-        source?.close();
-        startPolling();
-      };
-      // Proxy oqimni buferlayotgan bo'lsa hodisa kelmaydi — 20 s dan keyin
-      // polling'ga o'tamiz.
-      setTimeout(() => {
-        if (!sawEvent) startPolling();
-      }, 20_000);
-    } catch {
-      startPolling();
-    }
-
-    return () => {
-      source?.close();
-      if (pollTimer) clearInterval(pollTimer);
-    };
+    const timer = setInterval(poll, 15_000);
+    return () => clearInterval(timer);
   }, [slug, live]);
 
   return (

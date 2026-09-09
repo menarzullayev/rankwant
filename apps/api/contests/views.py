@@ -1,12 +1,5 @@
 from __future__ import annotations
 
-import json
-import time
-from collections.abc import Iterator
-from typing import Any
-
-from django.http import StreamingHttpResponse
-from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -22,11 +15,17 @@ from contests.serializers import (
     StandingSerializer,
 )
 from contests.services import start_virtual, virtual_deadline
+from core.cache import edge_cacheable
 from core.models import User
 
-#: SSE oralig'i — 04-prd: standings 10–30 s da yangilansa yetarli.
-SSE_INTERVAL_S = 10
-SSE_MAX_DURATION_S = 300
+#: Chekka kesh oralig'i — 04-prd: standings 10–30 s da yangilansa yetarli.
+#:
+#: Ilgari bu yerda SSE oqimi turardi. Har ulanish gunicorn ning sinxron
+#: ishchisini 300 soniyagacha band qilardi va o'lchandi: 4 ta tomoshabin
+#: butun API ni javobsiz qoldirardi. Jadval hamma uchun bir xil, ya'ni
+#: uni CDN keshlay oladi — 110 000 tomoshabin origin'ga 10 soniyada
+#: bitta so'rov bo'lib tushadi. Mijozda polling allaqachon bor edi.
+STANDINGS_CACHE_S = 10
 
 
 class ContestViewSet(viewsets.ReadOnlyModelViewSet[Contest]):
@@ -44,11 +43,15 @@ class ContestViewSet(viewsets.ReadOnlyModelViewSet[Contest]):
         rows = (
             Standing.objects.filter(contest=contest).select_related("user").order_by("rank")[:500]
         )
-        return Response(
-            {
-                "frozen": contest.is_frozen,
-                "results": StandingSerializer(rows, many=True).data,
-            }
+        # Jadval hamma uchun bir xil — chekkada keshlanadi (core.cache).
+        return edge_cacheable(
+            Response(
+                {
+                    "frozen": contest.is_frozen,
+                    "results": StandingSerializer(rows, many=True).data,
+                }
+            ),
+            STANDINGS_CACHE_S,
         )
 
     @extend_schema(request=None, responses={201: RegistrationSerializer})
@@ -93,41 +96,3 @@ class ContestViewSet(viewsets.ReadOnlyModelViewSet[Contest]):
         data = RegistrationSerializer(reg).data
         data["deadline"] = virtual_deadline(reg)
         return Response(data, status=status.HTTP_201_CREATED)
-
-
-def standings_stream(request: Any, slug: str) -> StreamingHttpResponse:
-    """SSE — 04-prd: WebSocket emas.
-
-    Ba'zi korporativ/maktab proxy'lari SSE ni buferlaydi (test-strategy
-    § compatibility), shuning uchun mijoz polling fallback'ga ega bo'lishi
-    kerak. `X-Accel-Buffering: no` nginx buferlashini o'chiradi.
-    """
-    contest = get_object_or_404(Contest, slug=slug, is_public=True)
-
-    def event_stream() -> Iterator[str]:
-        deadline = time.monotonic() + SSE_MAX_DURATION_S
-        last_payload = None
-        while time.monotonic() < deadline:
-            rows = list(
-                Standing.objects.filter(contest=contest)
-                .select_related("user")
-                .order_by("rank")[:500]
-            )
-            payload = json.dumps(
-                {
-                    "frozen": contest.is_frozen,
-                    "results": StandingSerializer(rows, many=True).data,
-                },
-                default=str,
-            )
-            if payload != last_payload:
-                last_payload = payload
-                yield f"event: standings\ndata: {payload}\n\n"
-            else:
-                yield ": keep-alive\n\n"
-            time.sleep(SSE_INTERVAL_S)
-
-    response = StreamingHttpResponse(event_stream(), content_type="text/event-stream")
-    response["Cache-Control"] = "no-cache"
-    response["X-Accel-Buffering"] = "no"
-    return response

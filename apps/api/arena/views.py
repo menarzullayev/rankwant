@@ -1,13 +1,6 @@
 from __future__ import annotations
 
-import json
-import time
-from collections.abc import Iterator
-from typing import Any
-
 from django.db.models import Count
-from django.http import StreamingHttpResponse
-from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -25,12 +18,12 @@ from arena.serializers import (
     CurrentQuestionSerializer,
 )
 from arena.services import ArenaError, answer, join, standings
+from core.cache import edge_cacheable
 from core.models import User
 from quizzes.serializers import QuestionPublicSerializer
 
 #: Arena tez — savol 30–90 s. Standings 3 s da yangilansa yetarli.
-SSE_INTERVAL_S = 3
-SSE_MAX_DURATION_S = 900
+STANDINGS_CACHE_S = 3
 
 
 def _error(exc: ArenaError, http_status: int = status.HTTP_400_BAD_REQUEST) -> Response:
@@ -127,35 +120,7 @@ class ArenaViewSet(viewsets.ReadOnlyModelViewSet[ArenaRound]):
     @extend_schema(responses={200: ArenaStandingSerializer(many=True)})
     @action(detail=True, methods=["get"], permission_classes=[AllowAny])
     def standings(self, request: Request, slug: str | None = None) -> Response:
-        return Response({"results": standings(self.get_object())})
-
-
-def standings_stream(request: Any, slug: str) -> StreamingHttpResponse:
-    """SSE — contests bilan bir xil naqsh, faqat oraliq qisqaroq."""
-    arena = get_object_or_404(ArenaRound, slug=slug, is_public=True)
-
-    def event_stream() -> Iterator[str]:
-        deadline = time.monotonic() + SSE_MAX_DURATION_S
-        last_payload = None
-        while time.monotonic() < deadline:
-            payload = json.dumps(
-                {
-                    "current_index": arena.current_index,
-                    "finished": arena.is_finished,
-                    "results": standings(arena),
-                },
-                default=str,
-            )
-            if payload != last_payload:
-                last_payload = payload
-                yield f"event: standings\ndata: {payload}\n\n"
-            else:
-                yield ": keep-alive\n\n"
-            if arena.is_finished:
-                break
-            time.sleep(SSE_INTERVAL_S)
-
-    response = StreamingHttpResponse(event_stream(), content_type="text/event-stream")
-    response["Cache-Control"] = "no-cache"
-    response["X-Accel-Buffering"] = "no"
-    return response
+        # Jadval hamma uchun bir xil — chekkada keshlanadi (core.cache).
+        return edge_cacheable(
+            Response({"results": standings(self.get_object())}), STANDINGS_CACHE_S
+        )

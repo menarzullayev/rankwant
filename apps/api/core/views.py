@@ -201,17 +201,25 @@ class SearchView(APIView):
     @extend_schema(responses={200: OpenApiResponse(description="Qidiruv natijalari")})
     def get(self, request: Request) -> Response:
         from content.models import Article
+        from problems.models import normalize_search
 
         q = (request.query_params.get("q") or "").strip()
         if len(q) < 2:
             return Response({"q": q, "problems": [], "users": [], "articles": [], "contests": []})
         n = self.PER_TYPE
+        # Masala arxivi allaqachon shunday qidiradi (problems.filters), bu
+        # yerda esa xom `title` bo'yicha edi: o'zbek klaviaturasi `ʻ` yoki
+        # `’` beradi, baza `'` bilan saqlanadi va «0 ga boʻlish» hech narsa
+        # topmasdi — o'lchandi, to'g'ri apostrof bilan 0 natija.
+        needle = normalize_search(q)
         return Response(
             {
                 "q": q,
                 "problems": [
                     {"slug": p.slug, "title": p.title, "difficulty": p.difficulty}
-                    for p in Problem.objects.filter(is_public=True, title__icontains=q)[:n]
+                    for p in Problem.objects.filter(is_public=True, title_search__icontains=needle)[
+                        :n
+                    ]
                 ],
                 "users": [
                     {

@@ -9,6 +9,5 @@ router.register("contests", views.ContestViewSet, basename="contest")
 router.register("staff/contests", StaffContestViewSet, basename="staff-contest")
 
 urlpatterns = [
-    path("contests/<slug:slug>/standings/stream/", views.standings_stream, name="standings-stream"),
     path("", include(router.urls)),
 ]

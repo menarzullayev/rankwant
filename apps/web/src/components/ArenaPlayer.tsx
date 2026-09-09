@@ -82,36 +82,18 @@ export function ArenaPlayer({ initial }: { initial: ArenaDetail }) {
     return () => clearInterval(h);
   }, [current]);
 
-  // Standings — SSE, bo'lmasa polling (test-strategy § compatibility)
+  // Standings — polling. SSE olib tashlandi: har ulanish gunicorn
+  // ishchisini band qilardi va to'rtta tomoshabin API ni to'xtatardi
+  // (contests/views.py dagi izoh). Javob chekkada keshlanadi.
   useEffect(() => {
-    let source: EventSource | null = null;
-    let poll: ReturnType<typeof setInterval> | null = null;
     const fetchRows = () =>
       fetch(`${API_BASE}/arena/${arena.slug}/standings/`)
         .then((r) => r.json())
         .then((d) => setRows(d.results ?? []))
         .catch(() => {});
     void fetchRows();
-    try {
-      source = new EventSource(
-        `${API_BASE}/arena/${arena.slug}/standings/stream/`,
-      );
-      source.addEventListener("standings", (e) => {
-        const d = JSON.parse((e as MessageEvent).data);
-        setRows(d.results ?? []);
-        if (d.finished) source?.close();
-      });
-      source.onerror = () => {
-        source?.close();
-        poll = setInterval(fetchRows, 5000);
-      };
-    } catch {
-      poll = setInterval(fetchRows, 5000);
-    }
-    return () => {
-      source?.close();
-      if (poll) clearInterval(poll);
-    };
+    const poll = setInterval(fetchRows, 5000);
+    return () => clearInterval(poll);
   }, [arena.slug]);
 
   async function join() {

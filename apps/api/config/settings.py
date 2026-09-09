@@ -52,6 +52,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # Eng tashqarida: javob to'liq shakllangach `Vary` ni tuzatadi.
+    "core.middleware.EdgeCacheHeaders",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",

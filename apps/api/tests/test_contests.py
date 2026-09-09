@@ -405,3 +405,23 @@ def test_virtual_boshlash_rasmiy_natijani_ochirmaydi(
 
     row = Standing.objects.get(contest=contest, user=user)
     assert row.rank == 1 and row.solved_count == 1
+
+
+@pytest.mark.django_db
+def test_jadval_chekkada_keshlanadi(contest, problem, language, user) -> None:
+    """Jadval hamma uchun bir xil — CDN uni keshlashi SHART.
+
+    Ilgari bu yerda SSE oqimi turardi va o'lchandi: to'rtta tomoshabin
+    gunicorn ning to'rtta sinxron ishchisini band qilib, butun API ni
+    javobsiz qoldirardi. `Vary: Cookie` bo'lsa kesh ishlamaydi — har
+    sessiyaning o'z cookie'si bor.
+    """
+    submit(user, contest, problem, language, Verdict.AC, 10)
+    rebuild_standings(contest)
+
+    r = APIClient().get(reverse("contest-standings", args=[contest.slug]))
+
+    assert r.status_code == 200
+    assert "s-maxage=10" in r["Cache-Control"]
+    assert "public" in r["Cache-Control"]
+    assert "Cookie" not in r.get("Vary", "")

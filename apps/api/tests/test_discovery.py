@@ -67,6 +67,24 @@ class TestSearch:
         users = APIClient().get(reverse("search"), {"q": user.username[:4]}).json()["users"]
         assert users[0]["username"] == user.username
 
+    def test_apostrof_turi_ahamiyatsiz(self, problem) -> None:
+        """O'zbek klaviaturasi `ʻ` yoki `’` beradi, baza `'` bilan saqlaydi.
+
+        O'lchandi: «0 ga boʻlish» to'g'ri apostrof bilan 0 natija berardi,
+        chunki bosh qidiruv xom `title` bo'yicha ishlardi.
+        """
+        type(problem).objects.create(
+            slug="nol-ga-bolish",
+            title="0 ga bo'lish",
+            statement="…",
+            difficulty=800,
+            is_public=True,
+        )
+
+        for belgi in ("'", "ʻ", "’", "‘", ""):
+            body = APIClient().get(reverse("search"), {"q": f"ga bo{belgi}lish"}).json()
+            assert [p["slug"] for p in body["problems"]] == ["nol-ga-bolish"], belgi
+
 
 @pytest.mark.django_db
 class TestAlgorithms:
