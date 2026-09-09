@@ -84,7 +84,11 @@ def rebuild_standings(contest: Contest) -> int:
             if state.solved_at is None:
                 continue
             solved += 1
-            minutes = int((state.solved_at - contest.start_at).total_seconds() // 60)
+            # Manfiy daqiqa `PositiveIntegerField` cheklovini buzadi va
+            # BUTUN jadval qurilishini to'xtatadi — bitta qator emas.
+            # Urinish start'dan oldin turishi mumkin: rejudge yoki
+            # `start_at` keyin o'zgartirilgan bo'lsa.
+            minutes = max(0, int((state.solved_at - contest.start_at).total_seconds() // 60))
             penalty += minutes + WRONG_ATTEMPT_PENALTY_MIN * state.wrong
             if last_ac is None or state.solved_at > last_ac:
                 last_ac = state.solved_at

@@ -310,3 +310,36 @@ class TestContestSubmission:
         r = self._submit(c, contest=None)
         assert r.status_code == 201
         assert Attempt.objects.get(pk=r.json()["id"]).contest_id is None
+
+
+def test_start_dan_oldingi_urinish_jadvalni_buzmaydi(db, contest, problem, user, language) -> None:
+    """Manfiy jarima butun standings qurilishini to'xtatardi.
+
+    Urinish musobaqa boshlanishidan oldin turishi mumkin: rejudge yoki
+    `start_at` keyin o'zgartirilgan bo'lsa. Bitta qator emas, HAMMASI
+    yiqilardi — `penalty` `PositiveIntegerField`.
+    """
+    from datetime import timedelta
+
+    from contests.models import ContestProblem, ContestRegistration, Standing
+    from contests.services import rebuild_standings
+    from judging.models import Attempt
+
+    ContestProblem.objects.update_or_create(
+        contest=contest, index_letter="A", defaults={"problem": problem}
+    )
+    ContestRegistration.objects.get_or_create(contest=contest, user=user)
+    attempt = Attempt.objects.create(
+        user=user,
+        problem=problem,
+        contest=contest,
+        language=language,
+        source_code="x",
+        verdict="AC",
+    )
+    Attempt.objects.filter(pk=attempt.pk).update(
+        created_at=contest.start_at - timedelta(hours=2)
+    )
+
+    assert rebuild_standings(contest) == 1
+    assert Standing.objects.get(contest=contest, user=user).penalty == 0
