@@ -74,6 +74,9 @@ export type CrudPageProps<T extends Row> = {
   /** Yaratish/tahrirlash o'chirilgan bo'lsa (masalan duel nazorati) */
   readOnly?: boolean;
   canDelete?: boolean;
+  /** Yozuv faqat tashqaridan tug'iladi (masalan foydalanuvchi xabari) —
+   *  xodim uni tahrirlaydi, lekin yaratmaydi. */
+  canCreate?: boolean;
 };
 
 function toLocalInput(iso: unknown): string {
@@ -97,6 +100,7 @@ export function CrudPage<T extends Row>({
   fromItem,
   readOnly = false,
   canDelete = true,
+  canCreate = true,
 }: CrudPageProps<T>) {
   const locale = DEFAULT_LOCALE;
   const [rows, setRows] = useState<T[]>([]);
@@ -231,7 +235,7 @@ export function CrudPage<T extends Row>({
               />
             )}
             <Badge>{count}</Badge>
-            {!readOnly && (
+            {!readOnly && canCreate && (
               <Button
                 className="h-9"
                 onClick={() => {

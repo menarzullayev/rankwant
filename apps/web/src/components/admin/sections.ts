@@ -2,6 +2,7 @@
  *  ("use client" modulidan eksport qilingan massiv serverda client-reference bo'lib qoladi.) */
 export const ADMIN_SECTIONS = [
   { href: "/admin/problems", label: "Masalalar" },
+  { href: "/admin/reports", label: "Nuqson xabarlari" },
   { href: "/admin/contests", label: "Musobaqalar" },
   { href: "/admin/questions", label: "Savol banki" },
   { href: "/admin/quizzes", label: "Testlar" },
