@@ -554,6 +554,25 @@ class TestReapStuck:
         assert attempt.judged_at is not None
         assert memory_judge.jobs == [], "ikkinchi marta navbatga qo'yilmaydi"
 
+    def test_navbat_bosh_emas_ekan_tegilmaydi(
+        self, problem, user, language, memory_judge
+    ) -> None:
+        """Kutayotgan ishni qayta qo'yish navbatni ikki barobar qilardi.
+
+        O'lchandi: oltmishta kutayotgan ish 120 ga chiqib, yana ko'proq
+        urinishni chegaradan o'tkazgan edi — o'lim spirali.
+        """
+        from judging.provider import JudgeJob
+        from judging.tasks import reap_stuck
+
+        attempt = self.stuck(problem, user, language, minutes=10)
+        memory_judge.jobs.append(JudgeJob("j1", attempt.pk, {}, "x", {}, [], {}))
+
+        assert reap_stuck() == {"requeued": 0, "failed": 0}
+        attempt.refresh_from_db()
+        assert attempt.requeued_at is None
+        assert len(memory_judge.jobs) == 1, "navbat shishmadi"
+
     def test_yangi_urinishga_tegilmaydi(self, problem, user, language, memory_judge) -> None:
         attempt = self.stuck(problem, user, language, minutes=1)
 

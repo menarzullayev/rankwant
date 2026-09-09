@@ -67,10 +67,19 @@ def reap_stuck() -> dict[str, int]:
     from judging.services import build_job
     from judging.verdicts import Verdict
 
+    provider = get_provider()
+    # Navbat bo'sh emas — judge shunchaki orqada qolgan, ish yo'qolmagan.
+    # Buni farqlamaslik o'lim spiraliga olib borardi: o'lchandi — oltmish
+    # kutayotgan ish qayta qo'yilib navbatni 120 ga chiqargan, bu esa
+    # yana ko'proq urinishni chegaradan o'tkazardi.
+    #
+    # Judge `RUNNING` holatini yozmaydi, ya'ni «navbatda» va «olingan,
+    # yo'qolgan» ni boshqa yo'l bilan ajratib bo'lmaydi.
+    if provider.pending_jobs():
+        return {"requeued": 0, "failed": 0}
+
     cutoff = timezone.now() - timedelta(minutes=STUCK_AFTER_MINUTES)
     pending = Attempt.objects.filter(verdict__in=[Verdict.PENDING, Verdict.RUNNING])
-
-    provider = get_provider()
     requeued = 0
     for attempt in pending.filter(requeued_at__isnull=True, created_at__lt=cutoff).select_related(
         "problem", "language"

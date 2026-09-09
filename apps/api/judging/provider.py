@@ -49,6 +49,10 @@ class JudgeJob:
 class JudgeProvider(Protocol):
     def submit(self, job: JudgeJob) -> str: ...
     def poll(self, timeout: int = 1) -> dict[str, Any] | None: ...
+    #: Navbatda kutayotgan ishlar soni. Qotib qolgan urinishni
+    #: yo'qolganidan ajratish uchun kerak: navbat bo'sh bo'lsa, hali
+    #: javob kelmagan ish haqiqatan yo'qolgan.
+    def pending_jobs(self) -> int: ...
 
 
 class RedisJudgeProvider:
@@ -62,6 +66,9 @@ class RedisJudgeProvider:
     def submit(self, job: JudgeJob) -> str:
         self._redis.lpush(settings.JUDGE_JOBS_KEY, job.to_json())
         return job.job_id
+
+    def pending_jobs(self) -> int:
+        return int(self._redis.llen(settings.JUDGE_JOBS_KEY))  # type: ignore[arg-type]
 
     def poll(self, timeout: int = 1) -> dict[str, Any] | None:
         item = self._redis.brpop([settings.JUDGE_RESULTS_KEY], timeout=timeout)
@@ -81,6 +88,9 @@ class InMemoryJudgeProvider:
     def submit(self, job: JudgeJob) -> str:
         self.jobs.append(job)
         return job.job_id
+
+    def pending_jobs(self) -> int:
+        return len(self.jobs)
 
     def poll(self, timeout: int = 1) -> dict[str, Any] | None:
         return self.results.pop(0) if self.results else None
