@@ -29,6 +29,8 @@ const LEVELS = [
 const STATUSES = [
   ["solved=false", "Yechilmagan"],
   ["solved=true", "Yechilgan"],
+  // Urinilgan — `solved=false` bilan birga «taqalib qolganlar».
+  ["attempted=true", "Urinib ko'rgan"],
   ["favourite=true", "Sevimlilarim"],
   ["recommended=true", "Menga tavsiya"],
 ] as const;
@@ -39,6 +41,7 @@ const PANEL_KEYS = [
   "level",
   "topics",
   "solved",
+  "attempted",
   "favourite",
   "recommended",
   "statement_locale",
@@ -84,6 +87,7 @@ export function ProblemFilters({
   const setStatus = (value: string) => {
     const next = new URLSearchParams(params);
     next.delete("solved");
+    next.delete("attempted");
     next.delete("favourite");
     next.delete("recommended");
     if (value) {
@@ -126,9 +130,11 @@ export function ProblemFilters({
     ? "recommended=true"
     : params.get("favourite")
       ? "favourite=true"
-      : params.get("solved")
-        ? `solved=${params.get("solved")}`
-        : "";
+      : params.get("attempted")
+        ? "attempted=true"
+        : params.get("solved")
+          ? `solved=${params.get("solved")}`
+          : "";
 
   const activeCount = PANEL_KEYS.filter((key) => params.get(key)).length;
   const sort = params.get("ordering") ?? "difficulty";

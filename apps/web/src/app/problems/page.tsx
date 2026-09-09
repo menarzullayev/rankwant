@@ -46,6 +46,7 @@ const ALLOWED = [
   "level",
   "topics",
   "solved",
+  "attempted",
   "favourite",
   "ordering",
   "search",

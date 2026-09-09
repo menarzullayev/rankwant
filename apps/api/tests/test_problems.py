@@ -615,3 +615,25 @@ def test_mavzu_filtri_hammasini_talab_qiladi(problem, hard_problem, db) -> None:
     both = client.get(url, {"topics": "dp,trees"}).data["results"]
     # YOKI bo'lganda bu yerda ikkalasi qaytardi va filtr ma'nosini yo'qotardi.
     assert [row["slug"] for row in both] == [hard_problem.slug]
+
+
+def test_taqalib_qolganlar_filtri(problem, hard_problem, user, language, db) -> None:
+    """`attempted=true&solved=false` — urinib, yecha olmaganlar."""
+    from judging.models import Attempt
+    from ratings.models import UserSolvedProblem
+
+    for target, verdict in [(problem, "AC"), (hard_problem, "WA")]:
+        Attempt.objects.create(
+            user=user, problem=target, language=language, source_code="x", verdict=verdict
+        )
+    UserSolvedProblem.objects.create(
+        user=user, problem=problem, difficulty_at_solve=problem.difficulty
+    )
+
+    client = APIClient()
+    client.force_authenticate(user)
+    rows = client.get(
+        reverse("problem-list"), {"attempted": "true", "solved": "false"}
+    ).data["results"]
+
+    assert [row["slug"] for row in rows] == [hard_problem.slug]

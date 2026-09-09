@@ -22,6 +22,9 @@ class ProblemFilter(filters.FilterSet):  # type: ignore[misc]
     # Yechilgan/yechilmagan — uchala taqqoslangan platformada ham bor.
     # Mehmon uchun ma'nosiz: filtr qo'llanmaydi, arxiv to'liq ko'rinadi.
     solved = filters.BooleanFilter(method="filter_solved")
+    #: Urinish bo'lganmi. `solved=false` bilan birga «taqalib qolganlar»
+    #: ni beradi — o'rganish uchun eng foydali ro'yxat.
+    attempted = filters.BooleanFilter(method="filter_attempted")
     favourite = filters.BooleanFilter(method="filter_favourite")
     # Tavsiya alohida sahifa emas, arxivning bir rejimi: filtr, saralash va
     # sahifalash o'sha-o'sha ishlayveradi.
@@ -40,6 +43,16 @@ class ProblemFilter(filters.FilterSet):  # type: ignore[misc]
 
         solved = UserSolvedProblem.objects.filter(user=user).values("problem_id")
         return queryset.filter(pk__in=solved) if value else queryset.exclude(pk__in=solved)
+
+    def filter_attempted(self, queryset, name: str, value: bool):  # type: ignore[no-untyped-def]
+        user = getattr(self.request, "user", None)
+        if user is None or not user.is_authenticated:
+            return queryset
+
+        from judging.models import Attempt
+
+        tried = Attempt.objects.filter(user=user).values("problem_id")
+        return queryset.filter(pk__in=tried) if value else queryset.exclude(pk__in=tried)
 
     def filter_topics(self, queryset, name: str, value: str):  # type: ignore[no-untyped-def]
         """Tanlangan mavzularning HAMMASI bo'lgan masalalar.

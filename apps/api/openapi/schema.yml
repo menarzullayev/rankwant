@@ -1600,6 +1600,10 @@ paths:
         Yozish Django admin orqali (PRD P0-2) — API faqat o'qish uchun.
       parameters:
       - in: query
+        name: attempted
+        schema:
+          type: boolean
+      - in: query
         name: checker_type
         schema:
           type: string

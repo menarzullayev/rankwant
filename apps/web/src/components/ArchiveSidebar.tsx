@@ -273,7 +273,7 @@ function TopicStrength({ topics }: { topics: TopicSkill[] }) {
             <span key={topic.slug}>
               {index > 0 && ", "}
               <Link
-                href={`/problems?topics=${topic.slug}&status=attempted`}
+                href={`/problems?topics=${topic.slug}&attempted=true&solved=false`}
                 className="font-medium rw-accent-ink"
               >
                 {topic.label}
