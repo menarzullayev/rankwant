@@ -554,9 +554,7 @@ class TestReapStuck:
         assert attempt.judged_at is not None
         assert memory_judge.jobs == [], "ikkinchi marta navbatga qo'yilmaydi"
 
-    def test_navbat_bosh_emas_ekan_tegilmaydi(
-        self, problem, user, language, memory_judge
-    ) -> None:
+    def test_navbat_bosh_emas_ekan_tegilmaydi(self, problem, user, language, memory_judge) -> None:
         """Kutayotgan ishni qayta qo'yish navbatni ikki barobar qilardi.
 
         O'lchandi: oltmishta kutayotgan ish 120 ga chiqib, yana ko'proq
