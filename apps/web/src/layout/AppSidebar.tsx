@@ -60,8 +60,13 @@ export default function AppSidebar() {
       <nav className="no-scrollbar flex-1 overflow-y-auto pb-6">
         {NAV_GROUPS.map((group) => (
           <div key={group.key} className="mb-5">
+            {/* Yorliq rangi `rw-dim-2`, `rw-faint` EMAS: bular navigatsiya
+                tuzilmasi va o'qilishi shart. O'lchandi (haqiqiy piksellar,
+                12 uslub × 2 tema): `rw-faint` bilan kontrast 1.59–4.43 va
+                24 tadan BIRORTASI ham WCAG AA (4.5:1) dan o'tmagan;
+                `rw-dim-2` bilan 3.40–9.50 va 21 tasi o'tadi. */}
             {wide ? (
-              <p className="mb-2 px-3 text-theme-xs font-medium tracking-wider rw-faint uppercase">
+              <p className="mb-2 px-3 text-theme-xs font-medium tracking-wider rw-dim-2 uppercase">
                 {t(locale, group.key)}
               </p>
             ) : (
