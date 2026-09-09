@@ -337,9 +337,7 @@ def test_start_dan_oldingi_urinish_jadvalni_buzmaydi(db, contest, problem, user,
         source_code="x",
         verdict="AC",
     )
-    Attempt.objects.filter(pk=attempt.pk).update(
-        created_at=contest.start_at - timedelta(hours=2)
-    )
+    Attempt.objects.filter(pk=attempt.pk).update(created_at=contest.start_at - timedelta(hours=2))
 
     assert rebuild_standings(contest) == 1
     assert Standing.objects.get(contest=contest, user=user).penalty == 0
