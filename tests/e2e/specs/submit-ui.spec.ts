@@ -127,7 +127,16 @@ test("bo'lim tablari sahifalar orasida yuradi", async ({ page }) => {
   await page.waitForURL(/\/stats$/);
   await expect(page.getByRole("heading", { name: "Verdiktlar" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Tillar" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Yechganlar" })).toBeVisible();
+
+  // Yechganlar statistikadan ajratilgan: bu yerda taqsimot, u yerda
+  // odamlar. Ro'yxatning o'zi seed'ga bog'liq, shuning uchun manzil va
+  // faol tab tekshiriladi.
+  await tabs.getByRole("link", { name: "Yechganlar" }).click();
+  await page.waitForURL(/\/solvers$/);
+  await expect(tabs.getByRole("link", { name: "Yechganlar" })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
 
   await tabs.getByRole("link", { name: "Tavsif" }).click();
   await page.waitForURL(/\/problems\/[^/]+$/);
