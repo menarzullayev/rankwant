@@ -127,6 +127,22 @@ def enqueue_custom(run: CustomRun) -> str:
     return job.job_id
 
 
+def _verdict_of(result: dict[str, Any]) -> str:
+    """Judge bergan verdictni katalogga qarshi tekshiradi.
+
+    Ustun `choices` bilan e'lon qilingan, lekin Postgres uni majburlamaydi:
+    judge yuborgan istalgan satr shundayligicha yozilardi — o'lchandi,
+    `"HACKED"` bazaga tushdi va u yerdan statistika, jadval va UI ga
+    oqib ketardi. Tanilmagan verdict IE bo'ladi: bu aynan shu holat —
+    ichki xato.
+    """
+    given = result.get("verdict")
+    if given in Verdict.values:
+        return str(given)
+    log.error("judge tanilmagan verdict yubordi: %r (job %s)", given, result.get("job_id"))
+    return Verdict.IE
+
+
 @transaction.atomic
 def apply_custom_result(result: dict[str, Any]) -> CustomRun | None:
     run_id = result.get("custom_run_id")
@@ -139,7 +155,7 @@ def apply_custom_result(result: dict[str, Any]) -> CustomRun | None:
         return None
 
     per_test = result.get("per_test") or []
-    run.verdict = result.get("verdict", Verdict.IE)
+    run.verdict = _verdict_of(result)
     run.stdout = (per_test[0].get("stdout") if per_test else "") or result.get("stdout") or ""
     run.compile_output = result.get("compile_output") or ""
     run.time_ms = int(result.get("time_ms") or 0)
@@ -161,11 +177,12 @@ def apply_result(result: dict[str, Any]) -> Attempt | None:
         log.warning("natija topilmagan attempt uchun keldi: %s", attempt_id)
         return None
 
-    accept_revoked = attempt.verdict == Verdict.AC and result.get("verdict") != Verdict.AC
+    verdict = _verdict_of(result)
+    accept_revoked = attempt.verdict == Verdict.AC and verdict != Verdict.AC
     if accept_revoked:
-        log.info("attempt %s verdicti o'zgardi: AC → %s", attempt_id, result.get("verdict"))
+        log.info("attempt %s verdicti o'zgardi: AC → %s", attempt_id, verdict)
 
-    attempt.verdict = result.get("verdict", Verdict.IE)
+    attempt.verdict = verdict
     attempt.score = int(result.get("score") or 0)
     attempt.time_ms = int(result.get("time_ms") or 0)
     attempt.memory_kb = int(result.get("memory_kb") or 0)

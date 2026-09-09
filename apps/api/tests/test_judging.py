@@ -610,3 +610,32 @@ def test_kursor_bir_xil_vaqtda_ham_qator_tushirmaydi(db, problem, user, language
 
     assert len(seen) == len(set(seen)), "takror qator"
     assert set(seen) == {a.pk for a in made}, "qator tushib qoldi"
+
+
+def test_tanilmagan_verdict_ie_ga_aylanadi(db, problem, user, language) -> None:
+    """Ustunning `choices` i Postgres'da majburlanmaydi — judge yuborgan
+    istalgan satr bazaga tushardi. O'lchandi: `"HACKED"` yozilib qoldi."""
+    attempt = Attempt.objects.create(
+        user=user, problem=problem, language=language, source_code="x", verdict=Verdict.PENDING
+    )
+
+    apply_result({"attempt_id": attempt.pk, "verdict": "HACKED"})
+
+    attempt.refresh_from_db()
+    assert attempt.verdict == Verdict.IE
+
+
+def test_tanilmagan_verdict_ac_ni_bekor_qiladi(db, problem, user, language) -> None:
+    """IE ga aylantirish AC ni bekor qilish yo'lini ham ishga tushirishi
+    kerak — aks holda buzuq natija yechimni kuchda qoldirardi."""
+    attempt = Attempt.objects.create(
+        user=user, problem=problem, language=language, source_code="x", verdict=Verdict.PENDING
+    )
+    apply_result({"attempt_id": attempt.pk, "verdict": "AC"})
+    assert UserSolvedProblem.objects.filter(user=user, problem=problem).exists()
+
+    apply_result({"attempt_id": attempt.pk, "verdict": "nima-bu"})
+
+    attempt.refresh_from_db()
+    assert attempt.verdict == Verdict.IE
+    assert not UserSolvedProblem.objects.filter(user=user, problem=problem).exists()
