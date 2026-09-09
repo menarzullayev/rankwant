@@ -42,11 +42,11 @@ class ProblemFilter(filters.FilterSet):  # type: ignore[misc]
     def filter_search(self, queryset, name: str, value: str):  # type: ignore[no-untyped-def]
         """Sarlavha, slug va MAVZU bo'yicha qidiradi.
 
-Mavzu ham qidiriladi, chunki «dinamik» deb yozgan odam
-        «Dinamik dasturlash» masalalarini kutadi — 109 ta mavzudan
-        filtr panelida tanlashdan ko'ra tezroq. Mavzu tomonida `slug`
-        ishlatiladi: u allaqachon apostrofsiz va kichik harfda, ya'ni
-        normallashtirilgan shaklning o'zi.
+        Mavzu ham qidiriladi, chunki «dinamik» deb yozgan odam
+                «Dinamik dasturlash» masalalarini kutadi — 109 ta mavzudan
+                filtr panelida tanlashdan ko'ra tezroq. Mavzu tomonida `slug`
+                ishlatiladi: u allaqachon apostrofsiz va kichik harfda, ya'ni
+                normallashtirilgan shaklning o'zi.
         """
         needle = normalize_search(value)
         if not needle:
