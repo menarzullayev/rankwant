@@ -27,9 +27,11 @@ type StaffProblem = {
   topics: string[];
   time_limit_ms: number;
   memory_limit_kb: number;
-  checker_type: "standard" | "special" | "interactive";
+  checker_type: "standard" | "special" | "interactive" | "scorer";
   interactor_source: string;
   interactor_language: string | null;
+  checker_source: string;
+  checker_language: string | null;
   is_public: boolean;
   source: string;
   source_url: string;
@@ -139,18 +141,32 @@ const PROBLEM_FIELDS: FieldDef[] = [
       { value: "standard", label: "Standart" },
       { value: "special", label: "Maxsus" },
       { value: "interactive", label: "Interactive" },
+      // Modelda bor edi, ro'yxatda esa yo'q — ya'ni tanlab bo'lmasdi.
+      { value: "scorer", label: "Skoring (0–100)" },
     ],
   },
   {
     name: "interactor_language",
     label: "Interactor tili (kod, masalan cpp23)",
-    help: "Bo'sh = yo'q",
+    help: "Faqat Interactive uchun. Bo'sh = yo'q",
   },
   {
     name: "interactor_source",
     label: "Interactor manbasi",
     type: "textarea",
     rows: 8,
+  },
+  {
+    name: "checker_language",
+    label: "Checker tili (kod, masalan cpp23)",
+    help: "Maxsus va Skoring uchun. Bo'sh bo'lsa har yuborish IE bo'ladi",
+  },
+  {
+    name: "checker_source",
+    label: "Checker manbasi",
+    type: "textarea",
+    rows: 8,
+    help: "testlib chaqiruvi: checker <input> <output> <answer>",
   },
   { name: "source", label: "Manba" },
   { name: "source_url", label: "Manba URL" },
