@@ -59,6 +59,7 @@ export const es: Record<MessageKey, string> = {
   "notFound.title": "Página no encontrada",
   "notFound.body": "El enlace está obsoleto o la dirección es incorrecta.",
   "notFound.home": "Ir al inicio",
+  "nav.skipToContent": "Ir al contenido principal",
   "nav.close": "Cerrar",
   "nav.menu": "Menú",
   "theme.light": "Modo claro",

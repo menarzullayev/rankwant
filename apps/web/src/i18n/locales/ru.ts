@@ -59,6 +59,7 @@ export const ru: Record<MessageKey, string> = {
   "notFound.title": "Страница не найдена",
   "notFound.body": "Ссылка устарела или адрес неверный.",
   "notFound.home": "На главную",
+  "nav.skipToContent": "Перейти к содержимому",
   "nav.close": "Закрыть",
   "nav.menu": "Меню",
   "theme.light": "Светлая тема",

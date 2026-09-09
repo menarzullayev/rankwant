@@ -59,6 +59,7 @@ export const kaa: Record<MessageKey, string> = {
   "notFound.title": "Bet tabılmadı",
   "notFound.body": "Siltewish eskirgen yamasa mánzil qáte.",
   "notFound.home": "Bas betke",
+  "nav.skipToContent": "Tiykarǵı mazmunǵa ótiw",
   "nav.close": "Jabıw",
   "nav.menu": "Menyu",
   "theme.light": "Jaqtı rejim",

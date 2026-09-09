@@ -59,6 +59,7 @@ export const zh: Record<MessageKey, string> = {
   "notFound.title": "页面未找到",
   "notFound.body": "链接已失效或地址有误。",
   "notFound.home": "返回首页",
+  "nav.skipToContent": "跳到主要内容",
   "nav.close": "关闭",
   "nav.menu": "菜单",
   "theme.light": "浅色模式",

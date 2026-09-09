@@ -59,6 +59,7 @@ export const en: Record<MessageKey, string> = {
   "notFound.title": "Page not found",
   "notFound.body": "The link is outdated or the address is wrong.",
   "notFound.home": "Go home",
+  "nav.skipToContent": "Skip to main content",
   "nav.close": "Close",
   "nav.menu": "Menu",
   "theme.light": "Light mode",

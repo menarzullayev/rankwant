@@ -63,6 +63,7 @@ export const uz = {
   "notFound.title": "Sahifa topilmadi",
   "notFound.body": "Havola eskirgan yoki manzil noto'g'ri.",
   "notFound.home": "Bosh sahifaga",
+  "nav.skipToContent": "Asosiy mazmunga o'tish",
   "nav.close": "Yopish",
   "nav.menu": "Menyu",
   "theme.light": "Yorug' rejim",

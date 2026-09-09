@@ -96,3 +96,14 @@ for (const path of PAGES) {
     expect(scrollWidth).toBeLessThanOrEqual(clientWidth + 4);
   });
 }
+
+test("birinchi Tab mazmunga o'tish havolasini beradi", async ({ page }) => {
+  // WCAG 2.4.1 — o'lchandi: usiz mazmunga yetish uchun yigirmadan ortiq
+  // yon menyu havolasini Tab bilan kesib o'tish kerak edi, HAR sahifada.
+  await page.goto("/problems");
+  await page.keyboard.press("Tab");
+
+  const skip = page.locator("a[href='#main']");
+  await expect(skip).toBeFocused();
+  await expect(skip).toBeVisible(); // fokusda ko'rinadi
+});

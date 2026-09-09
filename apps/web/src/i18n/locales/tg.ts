@@ -59,6 +59,7 @@ export const tg: Record<MessageKey, string> = {
   "notFound.title": "Саҳифа ёфт нашуд",
   "notFound.body": "Пайванд кӯҳна шудааст ё суроға нодуруст аст.",
   "notFound.home": "Ба саҳифаи асосӣ",
+  "nav.skipToContent": "Гузаштан ба мӯҳтавои асосӣ",
   "nav.close": "Пӯшидан",
   "nav.menu": "Меню",
   "theme.light": "Ҳолати равшан",

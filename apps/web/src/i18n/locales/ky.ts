@@ -59,6 +59,7 @@ export const ky: Record<MessageKey, string> = {
   "notFound.title": "Барак табылган жок",
   "notFound.body": "Шилтеме эскирген же дарек туура эмес.",
   "notFound.home": "Башкы бетке",
+  "nav.skipToContent": "Негизги мазмунга өтүү",
   "nav.close": "Жабуу",
   "nav.menu": "Меню",
   "theme.light": "Жарык режим",

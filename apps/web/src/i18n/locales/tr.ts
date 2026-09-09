@@ -59,6 +59,7 @@ export const tr: Record<MessageKey, string> = {
   "notFound.title": "Sayfa bulunamadı",
   "notFound.body": "Bağlantı eskimiş veya adres yanlış.",
   "notFound.home": "Ana sayfaya",
+  "nav.skipToContent": "Ana içeriğe geç",
   "nav.close": "Kapat",
   "nav.menu": "Menü",
   "theme.light": "Açık tema",

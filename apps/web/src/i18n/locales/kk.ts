@@ -59,6 +59,7 @@ export const kk: Record<MessageKey, string> = {
   "notFound.title": "Бет табылмады",
   "notFound.body": "Сілтеме ескірген немесе мекенжай қате.",
   "notFound.home": "Басты бетке",
+  "nav.skipToContent": "Негізгі мазмұнға өту",
   "nav.close": "Жабу",
   "nav.menu": "Мәзір",
   "theme.light": "Жарық режим",
