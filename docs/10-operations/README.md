@@ -133,6 +133,17 @@ Staging'da ham judge **alohida** konteynerda — izolyatsiyani local'da sinash u
 
 Tiklash sinovi o'tkazilmasa, backup **yo'q deb hisoblanadi**.
 
+Preview (bitta mashina) uchun: `tools/backup.sh` — Postgres dump va MinIO
+nusxasi, 30 kun saqlanadi. Cron:
+
+```
+0 4 * * * /path/to/rankwant/tools/backup.sh >> ~/backups/rankwant/backup.log 2>&1
+```
+
+Har yurishda dump butunligi tekshiriladi; choraklik to'liq sinov —
+`tools/backup.sh --restore-test` (alohida bazaga tiklaydi va qator
+sonlarini asl baza bilan solishtiradi).
+
 ## Monitoring va alert
 
 | Metrika                    | Alert sharti           | Sabab                             |
