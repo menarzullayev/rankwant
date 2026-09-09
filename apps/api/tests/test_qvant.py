@@ -571,3 +571,37 @@ class TestRatingHistoryApi:
 
     def test_notanish_foydalanuvchi_404(self) -> None:
         assert APIClient().get(reverse("rating-history", args=["yoq"])).status_code == 404
+
+
+@pytest.mark.django_db
+class TestQvantAudit:
+    """`verify_balance` bittasini tekshiradi — 10 000 hamyonda farq ko'rinmay qolardi."""
+
+    def audit(self, **kwargs):
+        from io import StringIO
+
+        from django.core.management import call_command
+
+        out = StringIO()
+        call_command("qvant_audit", stdout=out, **kwargs)
+        return out.getvalue()
+
+    def test_mos_kelganda_jim(self, user) -> None:
+        ledger.credit(user, 40, QvantTransaction.Reason.ADMIN)
+
+        assert "hammasi mos" in self.audit()
+
+    def test_farqni_topadi_va_tuzatadi(self, user) -> None:
+        ledger.credit(user, 40, QvantTransaction.Reason.ADMIN)
+        # Ledgerni chetlab yozish — aynan shu holat sinovda uchradi.
+        QvantTransaction.objects.create(
+            user=user, amount=300, reason=QvantTransaction.Reason.ADMIN, balance_after=0
+        )
+
+        report = self.audit()
+        assert "farq bor" in report
+        assert ledger.get_wallet(user).balance == 40
+
+        self.audit(fix=True)
+        # Ledger — haqiqat manbai (ADR-0002), kesh unga moslashadi.
+        assert ledger.get_wallet(user).balance == 340
