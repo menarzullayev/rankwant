@@ -1,13 +1,18 @@
 from __future__ import annotations
 
 import django_filters as filters
+from django.db.models import Q
 
-from problems.models import DIFFICULTY_LEVELS, Problem
+from problems.models import DIFFICULTY_LEVELS, Problem, normalize_search
 
 
 class ProblemFilter(filters.FilterSet):  # type: ignore[misc]
     """PRD P0-2: qiyinlik / mavzu / til bo'yicha filtr."""
 
+    # Qidiruv DRF `SearchFilter` da emas, shu yerda: so'rovni ham,
+    # sarlavhani ham bir ko'rinishga keltirish kerak, aks holda qaysi
+    # apostrofni yozganingizga qarab natija o'zgarardi.
+    search = filters.CharFilter(method="filter_search")
     difficulty__gte = filters.NumberFilter(field_name="difficulty", lookup_expr="gte")
     difficulty__lte = filters.NumberFilter(field_name="difficulty", lookup_expr="lte")
     # Vergul bilan bir nechta mavzu: `?topics=dp,trees` — HAMMASI bo'lgan
@@ -33,6 +38,25 @@ class ProblemFilter(filters.FilterSet):  # type: ignore[misc]
     class Meta:
         model = Problem
         fields = ["difficulty", "checker_type", "statement_locale"]
+
+    def filter_search(self, queryset, name: str, value: str):  # type: ignore[no-untyped-def]
+        """Sarlavha, slug va MAVZU bo'yicha qidiradi.
+
+        Mavzu ham qidiriladi, chunki «dinamik» deb yozgan odam
+        «Dinamik dasturlash» masalalarini kutadi — 109 ta mavzudan
+        filtr panelida tanlashdan ko'ra tezroq. Mavzu tomonida `slug`
+        ishlatiladi: u allaqachon apostrofsiz va kichik harfda, ya'ni
+        normallashtirilgan shaklning o'zi.
+        """
+        needle = normalize_search(value)
+        if not needle:
+            return queryset
+        hyphenated = needle.replace(" ", "-")
+        return queryset.filter(
+            Q(title_search__icontains=needle)
+            | Q(slug__icontains=hyphenated)
+            | Q(topics__slug__icontains=hyphenated)
+        ).distinct()
 
     def filter_solved(self, queryset, name: str, value: bool):  # type: ignore[no-untyped-def]
         user = getattr(self.request, "user", None)

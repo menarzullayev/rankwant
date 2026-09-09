@@ -20,6 +20,11 @@ urlpatterns = [
     path("problems/progress/", views.ProgressView.as_view(), name="problem-progress"),
     path("problems/skills/", views.TopicSkillsView.as_view(), name="problem-skills"),
     path(
+        "problems/<slug:slug>/solvers/",
+        views.ProblemSolversView.as_view(),
+        name="problem-solvers",
+    ),
+    path(
         "problems/<slug:slug>/stats/",
         views.ProblemStatsView.as_view(),
         name="problem-stats",

@@ -3,13 +3,13 @@ from __future__ import annotations
 from collections import Counter
 from typing import Any
 
-from django.db.models import Avg, Count, Exists, F, Max, OuterRef, Q
+from django.db.models import Avg, Count, Exists, F, Max, Min, OuterRef, Q
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -56,8 +56,9 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
     lookup_field = "slug"
     filterset_class = ProblemFilter
     pagination_class = StandardPagination
-    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    search_fields = ["title", "slug"]
+    # `SearchFilter` YO'Q: `?search=` `ProblemFilter` da, chunki u
+    # so'rovni normallashtirishi va mavzuni ham qamrashi kerak.
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = [
         "difficulty",
         "solved_count",
@@ -356,6 +357,78 @@ class ProblemStatsView(APIView):
                 "fastest": fastest,
             }
         )
+
+
+class ProblemSolversView(APIView):
+    """Masalani yechganlar — alohida bo'lim (KEP dagi «Solvers»).
+
+    Statistika verdikt taqsimotini ko'rsatadi, bu yerda esa ODAMLAR:
+    kim, nechanchi urinishda va qanday kod bilan yechgan. Ikkalasi bir
+    sahifada bo'lsa, ikkalasi ham siqilib qolardi.
+    """
+
+    permission_classes = [AllowAny]
+    LIMIT = 50
+
+    ORDERINGS = {
+        "first": "solved_at",
+        "fast": "time_ms",
+        "short": "code_length",
+        "tries": "attempts",
+    }
+
+    @extend_schema(responses={200: OpenApiResponse(description="Yechganlar ro'yxati")})
+    def get(self, request: Request, slug: str) -> Response:
+        from django.db.models.functions import Length
+
+        from judging.models import Attempt
+
+        problem = get_object_or_404(Problem, slug=slug, is_public=True)
+        accepted = Attempt.objects.filter(problem=problem, verdict=Verdict.AC)
+
+        # Har foydalanuvchining BIRINCHI AC si — `DISTINCT ON` Postgres'ga
+        # bog'lab qo'yardi (testlar SQLite'da), shuning uchun eng erta
+        # id'lar bitta agregat so'rov bilan olinadi.
+        first_ids = list(
+            accepted.values("user_id").annotate(first=Min("pk")).values_list("first", flat=True)
+        )
+        rows = list(
+            Attempt.objects.filter(pk__in=first_ids)
+            .select_related("user", "language")
+            .annotate(code_length=Length("source_code"))
+            .order_by("pk")[: self.LIMIT]
+        )
+
+        # Nechanchi urinishda yechgan: shu masaladagi, AC gacha bo'lgan
+        # urinishlar. Faqat ko'rsatiladigan foydalanuvchilar bo'yicha,
+        # ya'ni so'rov ro'yxat uzunligi bilan chegaralangan.
+        first_ac = {row.user_id: row.pk for row in rows}
+        tries: Counter[int] = Counter()
+        for user_id, pk in Attempt.objects.filter(
+            problem=problem, user_id__in=first_ac
+        ).values_list("user_id", "pk"):
+            if pk <= first_ac[user_id]:
+                tries[user_id] += 1
+
+        solvers = [
+            {
+                "username": row.user.username,
+                "rating_skills": row.user.rating_skills,
+                "language": row.language.code,
+                "time_ms": row.time_ms,
+                "memory_kb": row.memory_kb,
+                "code_length": row.code_length,
+                "attempts": tries[row.user_id],
+                "solved_at": row.created_at,
+            }
+            for row in rows
+        ]
+
+        key = self.ORDERINGS.get(str(request.query_params.get("ordering", "first")))
+        if key and key != "solved_at":
+            solvers.sort(key=lambda row: row[key])  # type: ignore[arg-type,return-value]
+
+        return Response({"count": len(first_ids), "results": solvers})
 
 
 class ProgressView(APIView):

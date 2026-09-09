@@ -1675,10 +1675,8 @@ paths:
         name: recommended
         schema:
           type: boolean
-      - name: search
-        required: false
-        in: query
-        description: A search term.
+      - in: query
+        name: search
         schema:
           type: string
       - in: query
@@ -1877,6 +1875,29 @@ paths:
               schema:
                 type: object
           description: ''
+  /api/v1/problems/{slug}/solvers/:
+    get:
+      operationId: problems_solvers_retrieve
+      description: |-
+        Masalani yechganlar — alohida bo'lim (KEP dagi «Solvers»).
+
+        Statistika verdikt taqsimotini ko'rsatadi, bu yerda esa ODAMLAR:
+        kim, nechanchi urinishda va qanday kod bilan yechgan. Ikkalasi bir
+        sahifada bo'lsa, ikkalasi ham siqilib qolardi.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - problems
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: Yechganlar ro'yxati
   /api/v1/problems/{slug}/stats/:
     get:
       operationId: problems_stats_retrieve

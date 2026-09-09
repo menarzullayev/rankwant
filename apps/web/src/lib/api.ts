@@ -284,6 +284,19 @@ export type TopicSkill = {
   rating: number;
 };
 
+export type Solver = {
+  username: string;
+  rating_skills: number;
+  language: string;
+  time_ms: number;
+  memory_kb: number;
+  /** Yuborilgan manba uzunligi, belgi. */
+  code_length: number;
+  /** AC gacha bo'lgan urinishlar soni. */
+  attempts: number;
+  solved_at: string;
+};
+
 export type ArchiveProgress = {
   levels: { code: string; label: string; total: number; solved: number }[];
   total: number;
@@ -709,11 +722,7 @@ export const REPORT_REASONS = [
   ["other", "Boshqa"],
 ] as const;
 
-export const reportProblem = (
-  slug: string,
-  reason: string,
-  comment: string,
-) =>
+export const reportProblem = (slug: string, reason: string, comment: string) =>
   postJson<{ reported: boolean }>(`/problems/${slug}/report/`, {
     reason,
     comment,
@@ -770,6 +779,10 @@ export const api = {
   roadmaps: () => get<Roadmap[]>("/roadmaps/", 300),
   // Progress foydalanuvchiga xos — SSR da `getWithSession` bilan olinadi.
   progress: () => get<ArchiveProgress>("/problems/progress/", 0),
+  problemSolvers: (slug: string, ordering = "first") =>
+    get<{ count: number; results: Solver[] }>(
+      `/problems/${slug}/solvers/?ordering=${ordering}`,
+    ),
   problemStats: (slug: string) =>
     get<ProblemStats>(`/problems/${slug}/stats/`, 30),
   /** Masalaning barcha urinishlari — ochiq. Manba begonaga ko'rinmaydi

@@ -11,12 +11,13 @@ export function ProblemTabs({
   current,
 }: {
   slug: string;
-  current: "statement" | "status" | "stats";
+  current: "statement" | "status" | "stats" | "solvers";
 }) {
   const tabs = [
     ["statement", "Tavsif", `/problems/${slug}`],
     ["status", "Urinishlar", `/problems/${slug}/status`],
     ["stats", "Statistika", `/problems/${slug}/stats`],
+    ["solvers", "Yechganlar", `/problems/${slug}/solvers`],
   ] as const;
 
   return (

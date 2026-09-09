@@ -691,3 +691,108 @@ def test_xabarlar_faqat_xodimga_korinadi(problem, user, staff_client) -> None:
     assert [(r["problem"], r["username"], r["status"]) for r in rows] == [
         (problem.slug, user.username, "open")
     ]
+
+
+# ── Qidiruv ──────────────────────────────────────────────────────────
+@pytest.fixture
+def searchable(db) -> None:
+    from problems.models import Problem, Topic
+
+    dp = Topic.objects.create(slug="dinamik-dasturlash", name_uz="Dinamik dasturlash")
+    # Import qilingan sarlavhalarda apostrof besh xil belgi bilan keladi.
+    for slug, title in [
+        ("ikki-sonni-yigindisi", "Ikki sonni yig'indisi"),
+        ("uchta-sonni-yigindisi", "Uchta sonni yig`indisi"),
+        ("ryukzak", "Ryukzak masalasi"),
+    ]:
+        problem = Problem.objects.create(
+            slug=slug, title=title, statement="x", difficulty=800, is_public=True
+        )
+        if slug == "ryukzak":
+            problem.topics.add(dp)
+
+
+def test_qidiruv_apostrofdan_qatiy_nazar_bir_xil(searchable) -> None:
+    url = reverse("problem-list")
+    client = APIClient()
+
+    def found(term: str) -> set[str]:
+        rows = client.get(url, {"search": term}).data["results"]
+        return {row["slug"] for row in rows}
+
+    kutilgan = {"ikki-sonni-yigindisi", "uchta-sonni-yigindisi"}
+    # Uchala yozuv ham bir xil natija berishi kerak.
+    assert found("yig'indi") == kutilgan
+    assert found("yig`indi") == kutilgan
+    assert found("yigindi") == kutilgan
+    assert found("YIG'INDI") == kutilgan
+
+
+def test_qidiruv_mavzuni_ham_qamraydi(searchable) -> None:
+    rows = APIClient().get(reverse("problem-list"), {"search": "dinamik"}).data["results"]
+
+    # Sarlavhada «dinamik» yo'q — mavzu orqali topiladi.
+    assert [row["slug"] for row in rows] == ["ryukzak"]
+
+
+def test_qidiruv_takror_qator_bermaydi(searchable, db) -> None:
+    from problems.models import Problem, Topic
+
+    problem = Problem.objects.get(slug="ryukzak")
+    problem.topics.add(Topic.objects.create(slug="dinamik-2", name_uz="Dinamik #2"))
+
+    rows = APIClient().get(reverse("problem-list"), {"search": "dinamik"}).data["results"]
+
+    # Ikki mavzu mos keladi — masala BIR MARTA chiqishi kerak.
+    assert [row["slug"] for row in rows] == ["ryukzak"]
+
+
+# ── Yechganlar bo'limi ───────────────────────────────────────────────
+@pytest.fixture
+def solvers_history(problem, user, other_user, language) -> None:
+    from judging.models import Attempt
+
+    # `user` ikkinchi urinishda yechdi, `other_user` birinchisida.
+    for owner, verdict, source, ms in [
+        (user, "WA", "int main(){}", 0),
+        (user, "AC", "int main(){return 0;}", 120),
+        (user, "AC", "x", 10),  # AC dan keyingi urinish sanalmaydi
+        (other_user, "AC", "main(){}", 45),
+    ]:
+        Attempt.objects.create(
+            user=owner,
+            problem=problem,
+            language=language,
+            source_code=source,
+            verdict=verdict,
+            time_ms=ms,
+        )
+
+
+def test_yechganlar_urinish_soni_va_kod_uzunligi(solvers_history, problem, user) -> None:
+    data = APIClient().get(reverse("problem-solvers", args=[problem.slug])).data
+
+    assert data["count"] == 2
+    mine = next(row for row in data["results"] if row["username"] == user.username)
+    # AC gacha ikki urinish; AC dan keyingisi sanalmaydi.
+    assert mine["attempts"] == 2
+    assert mine["code_length"] == len("int main(){return 0;}")
+
+
+def test_yechganlarni_saralash(solvers_history, problem, user, other_user) -> None:
+    client = APIClient()
+    url = reverse("problem-solvers", args=[problem.slug])
+
+    def order(term: str) -> list[str]:
+        return [row["username"] for row in client.get(url, {"ordering": term}).data["results"]]
+
+    assert order("first") == [user.username, other_user.username], "birinchi yechgan"
+    assert order("fast") == [other_user.username, user.username], "eng tez"
+    assert order("short") == [other_user.username, user.username], "eng qisqa kod"
+
+
+def test_yopiq_masalada_yechganlar_korinmaydi(solvers_history, problem) -> None:
+    problem.is_public = False
+    problem.save()
+
+    assert APIClient().get(reverse("problem-solvers", args=[problem.slug])).status_code == 404

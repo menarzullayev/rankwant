@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import Any, ClassVar
 
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -26,6 +27,19 @@ DIFFICULTY_LEVELS: tuple[tuple[int, str, str], ...] = (
     (2700, "expert", "Ekspert"),
     (10**9, "master", "Master"),
 )
+
+
+#: O'zbek lotinida apostrof besh xil belgi bilan yoziladi va import
+#: qilingan sarlavhalarda beshalasi ham uchraydi (`'` 414, backtick 7,
+#: `’` 2, `‘` 1, `ʻ` 1). Qidiruvda ular FARQLANMASLIGI kerak:
+#: «yig'indi» va «yigindi» bir xil natija berishi shart.
+_APOSTROPHES = "'’ʻ‘`´"
+_APOSTROPHE_RE = re.compile(f"[{re.escape(_APOSTROPHES)}]")
+
+
+def normalize_search(text: str) -> str:
+    """Qidiruv uchun matnni bir ko'rinishga keltiradi."""
+    return " ".join(_APOSTROPHE_RE.sub("", text).lower().split())
 
 
 def difficulty_level(value: int) -> tuple[str, str]:
@@ -105,6 +119,9 @@ class Problem(models.Model):
     #: shu bois raqam faqat masala e'lon qilinganda beriladi.
     code = models.PositiveIntegerField(unique=True, null=True, blank=True, db_index=True)
     title = models.CharField(max_length=200)
+    #: Sarlavhaning qidiruv shakli — apostrofsiz, kichik harfda.
+    #: `save()` da to'ldiriladi, qo'lda yozilmaydi.
+    title_search = models.CharField(max_length=200, blank=True, db_index=True)
     statement = models.TextField(help_text="Markdown + LaTeX")
     # Kiruvchi/chiquvchi alohida maydon, statement ichidagi sarlavha emas:
     # RoboContest, KEP va Codeforces uchalasida ham bu qat'iy bo'lim va
@@ -175,6 +192,7 @@ class Problem(models.Model):
         return f"{self.slug} ({self.difficulty})"
 
     def save(self, *args: Any, **kwargs: Any) -> None:
+        self.title_search = normalize_search(self.title)
         # Raqam e'lon qilinganda beriladi — barcha yo'llarda (admin, staff
         # API, seed) bir xil ishlashi uchun `save()` da. Yagona indeks
         # poyga holatini ushlaydi; publish kamdan-kam amal, shu bois
