@@ -84,7 +84,7 @@ class TestHtmlToMarkdown:
 class TestMapDifficulty:
     @pytest.mark.parametrize(
         ("source_rating", "expected"),
-        [(100, 800), (2400, 3200), (400, 1100), (900, 1600), (None, 800)],
+        [(100, 800), (2800, 3500), (2400, 3100), (400, 1100), (900, 1600), (None, 800)],
     )
     def test_chiziqli_xaritalash(self, source_rating, expected):
         assert kep.map_difficulty(source_rating) == expected
@@ -289,3 +289,63 @@ class TestCleanTest:
         assert clean_test("5\r\n2\r\n") == "5\n2\n"
         assert clean_test("a\xa0b") == "a b"
         assert clean_test(None) == ""
+
+
+@pytest.mark.django_db
+class TestRemapAndPublish:
+    def make(self, **kwargs: Any) -> Problem:
+        defaults = {
+            "title": "Sinov",
+            "statement": "x",
+            "difficulty": 800,
+            "source": "KEP.uz",
+            "is_public": False,
+        }
+        return Problem.objects.create(**{**defaults, **kwargs})
+
+    def test_qiyinlik_manba_reytingidan_qayta_hisoblanadi(self):
+        from django.core.management import call_command
+
+        problem = self.make(slug="eski", source_rating=2800, difficulty=3200)
+        boshqa = self.make(slug="qolgan", source_rating=None, difficulty=1500)
+
+        call_command("remap_difficulty")
+
+        problem.refresh_from_db()
+        boshqa.refresh_from_db()
+        assert problem.difficulty == 3500
+        # Manba reytingi yo'q masala o'z qiyinligida qoladi.
+        assert boshqa.difficulty == 1500
+
+    def test_elon_qilinganda_ommaviy_raqam_beriladi(self):
+        from django.core.management import call_command
+
+        birinchi = self.make(slug="b")
+        ikkinchi = self.make(slug="a")
+
+        call_command("publish_problems", source="KEP.uz")
+
+        birinchi.refresh_from_db()
+        ikkinchi.refresh_from_db()
+        assert birinchi.is_public and ikkinchi.is_public
+        # `update()` bilan qilinsa raqam berilmay qolardi.
+        assert birinchi.code is not None
+        assert ikkinchi.code == birinchi.code + 1, "yaratilish tartibida"
+
+    def test_testsizlarini_qoldirish_mumkin(self):
+        from django.core.management import call_command
+
+        from problems.models import TestCase as ProblemTest
+
+        testli = self.make(slug="testli")
+        ProblemTest.objects.create(
+            problem=testli, order=1, input_ref="s3://a/1.in", output_ref="s3://a/1.out"
+        )
+        testsiz = self.make(slug="testsiz")
+
+        call_command("publish_problems", source="KEP.uz", require_tests=True)
+
+        testli.refresh_from_db()
+        testsiz.refresh_from_db()
+        assert testli.is_public is True
+        assert testsiz.is_public is False

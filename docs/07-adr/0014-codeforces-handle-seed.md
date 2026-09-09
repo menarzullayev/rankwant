@@ -1,7 +1,7 @@
 # ADR-0014: Codeforces handle'i — tavsiyani urug'lantirish
 
-**STATUS:** proposed (2026-09-09)
-**Ta'siri:** [ADR-0005](0005-content-strategy-own-content.md) 🔒 «to'liq mustaqil» qarori
+**STATUS:** rejected (2026-09-09)
+**Ta'siri:** yo'q — [ADR-0005](0005-content-strategy-own-content.md) 🔒 kuchida qoladi
 
 ## Muammo
 
@@ -43,7 +43,20 @@ Bu taklif o'sha qarorga tegadi, shuning uchun ADR kerak.
    odatiy usul: profilga vaqtinchalik kod, yoki maxsus masalaga
    compile error yuborish).
 
-## Tavsiya: 2-variant
+## Qaror: 1-variant — qilmaymiz
+
+Egasi 2026-09-09 da 1-variantni tanladi: [ADR-0005](0005-content-strategy-own-content.md)
+ning «to'liq mustaqil» qarori **o'zgarmaydi**. Codeforces integratsiyasi
+qurilmaydi.
+
+Sovuq start boshqa yo'l bilan yopiladi — arxiv endi 2089 masaladan
+iborat va [mavzu kesimidagi kuch](../../apps/api/problems/views.py)
+bloki foydalanuvchining O'Z urinishlaridan birinchi kunlardayoq signal
+beradi. Qiyinlik filtri esa qo'lda sozlanadi.
+
+Quyidagi tahlil qayta muhokamaning oldini olish uchun saqlanadi.
+
+## Rad etilgan tavsiya: 2-variant
 
 ADR-0005 uchinchi tomonni **differensiator** va **schema bog'liqligi**
 sifatida rad etgan. 2-variant ikkalasi ham emas:

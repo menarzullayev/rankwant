@@ -37,11 +37,15 @@ RETRIES = 5
 BACKOFF = 5.0
 
 #: KEP reytingi 100–2400, bizniki 800–3500. Ikki uchni bog'lab chiziqli
-#: o'tkazamiz: 100 → 800, 2400 → 3200. KEP da 2400 dan yuqori bir nechta
-#: masala ham bor — ular xuddi shu qiyalikda davom etadi va 3500 da
-#: to'xtaydi (shkalamizning tepasi).
-SOURCE_MIN, SOURCE_MAX = 100, 2400
-TARGET_MIN, TARGET_MAX = 800, 3200
+#: o'tkazamiz: 100 → 800, 2800 → 3500, ya'ni ikkala uchi ham HAQIQIY
+#: chegara (KEP arxividagi maksimum o'lchandi: 2800). Ikki oraliq bir xil
+#: kenglikda bo'lgani uchun formula amalda `800 + (reyting − 100)` ga
+#: aylanadi.
+#:
+#: Avvalgi 2400 → 3200 xaritasi arxivning 12 % ini Master darajasiga
+#: qo'yardi; eng yuqori daraja bunchalik gavjum bo'lmasligi kerak.
+SOURCE_MIN, SOURCE_MAX = 100, 2800
+TARGET_MIN, TARGET_MAX = 800, 3500
 
 #: KEP til kodi → bizning `Language.code`. Qolganlari (rs, go, php, hs…)
 #: judge obrazimizda yo'q; ular tashlab ketiladi, masala esa bor
