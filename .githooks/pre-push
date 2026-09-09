@@ -20,6 +20,13 @@ files="$(git diff --name-only "$range" 2>/dev/null || git diff --name-only HEAD)
 has() { grep -qE "$1" <<<"$files"; }
 fail=0
 
+schema_matches() {
+  uv run python manage.py spectacular --file /tmp/rw-schema.yml >/dev/null 2>&1 || return 1
+  diff -q openapi/schema.yml /tmp/rw-schema.yml >/dev/null && return 0
+  printf '  Yangilang: cd apps/api && uv run python manage.py spectacular --file openapi/schema.yml\n'
+  return 1
+}
+
 step() {
   printf '\n\033[1m→ %s\033[0m\n' "$1"; shift
   if ! "$@"; then printf '\033[31m✗ yiqildi\033[0m\n'; fail=1; fi
@@ -31,6 +38,10 @@ if has '^apps/api/'; then
   step "API — format" uv run ruff format --check .
   step "API — mypy" uv run mypy .
   step "API — pytest" uv run pytest -q
+  # CI dagi «OpenAPI schema diff» darvozasining nusxasi. Endpoint
+  # qo'shilganda sxemani yangilash oson unutiladi va xato faqat CI da
+  # chiqadi — ya'ni bir necha daqiqa keyin, boshqa commit ustiga.
+  step "API — OpenAPI schema" schema_matches
   cd "$root"
 fi
 

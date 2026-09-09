@@ -2145,6 +2145,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/Inventory'
           description: ''
+  /api/v1/qvant/marathon/:
+    get:
+      operationId: qvant_marathon_retrieve
+      description: |-
+        Haftalik marafon — PRD P1-9.
+
+        Ilgari to'plam faqat serverda hisoblanardi va hech qayerda
+        ko'rsatilmasdi: foydalanuvchi qaysi masalalarni yechish kerakligini
+        bilmasdi va 100 Qvant amalda faqat tasodifan tegardi.
+      tags:
+      - qvant
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: Haftalik marafon
   /api/v1/qvant/quests/:
     get:
       operationId: qvant_quests_list
