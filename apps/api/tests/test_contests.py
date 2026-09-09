@@ -425,3 +425,93 @@ def test_jadval_chekkada_keshlanadi(contest, problem, language, user) -> None:
     assert "s-maxage=10" in r["Cache-Control"]
     assert "public" in r["Cache-Control"]
     assert "Cookie" not in r.get("Vary", "")
+
+
+@pytest.mark.django_db
+class TestVirtualYuborish:
+    """PRD P1-1 — virtual ishtirok BOSHDAN OXIRIGACHA ishlashi kerak.
+
+    O'lchandi: «boshlash» tugmasi muddat ko'rsatardi, keyin har yuborish
+    400 qaytarardi — `is_running` tugagan musobaqada hech qachon rost
+    emas, virtual esa faqat tugaganida mumkin.
+    """
+
+    def _submit(self, client, problem, language, slug):
+        return client.post(
+            reverse("attempt-list"),
+            {
+                "problem": problem.slug,
+                "language": language.code,
+                "source_code": "print(1)",
+                "contest": slug,
+            },
+            format="json",
+        )
+
+    def test_virtual_oyna_ichida_yuborish_otadi(self, contest, problem, language, user) -> None:
+        from contests.services import start_virtual
+
+        ContestProblem.objects.update_or_create(
+            contest=contest, index_letter="A", defaults={"problem": problem}
+        )
+        start_virtual(contest, user)
+
+        client = APIClient()
+        client.force_authenticate(user=user)
+        r = self._submit(client, problem, language, contest.slug)
+
+        assert r.status_code == 201
+        assert Attempt.objects.filter(user=user, contest=contest).count() == 1
+
+    def test_muddat_otgach_yuborish_rad_etiladi(self, contest, problem, language, user) -> None:
+        from contests.services import start_virtual
+
+        ContestProblem.objects.update_or_create(
+            contest=contest, index_letter="A", defaults={"problem": problem}
+        )
+        reg = start_virtual(contest, user)
+        duration = contest.end_at - contest.start_at
+        ContestRegistration.objects.filter(pk=reg.pk).update(
+            virtual_start_at=timezone.now() - duration - timedelta(minutes=1)
+        )
+
+        client = APIClient()
+        client.force_authenticate(user=user)
+        r = self._submit(client, problem, language, contest.slug)
+
+        assert r.status_code == 400
+        assert not Attempt.objects.filter(user=user, contest=contest).exists()
+
+    def test_virtualsiz_tugagan_musobaqaga_yuborib_bolmaydi(
+        self, contest, problem, language, user
+    ) -> None:
+        ContestProblem.objects.update_or_create(
+            contest=contest, index_letter="A", defaults={"problem": problem}
+        )
+        ContestRegistration.objects.get_or_create(contest=contest, user=user)
+
+        client = APIClient()
+        client.force_authenticate(user=user)
+
+        assert self._submit(client, problem, language, contest.slug).status_code == 400
+
+    def test_virtual_urinish_rasmiy_jadvalga_kirmaydi(
+        self, contest, problem, language, user, other_user
+    ) -> None:
+        from contests.services import rebuild_standings, start_virtual
+
+        ContestProblem.objects.update_or_create(
+            contest=contest, index_letter="A", defaults={"problem": problem}
+        )
+        submit(other_user, contest, problem, language, Verdict.AC, 10)
+        start_virtual(contest, user)
+        client = APIClient()
+        client.force_authenticate(user=user)
+        self._submit(client, problem, language, contest.slug)
+        Attempt.objects.filter(user=user, contest=contest).update(verdict=Verdict.AC)
+
+        rebuild_standings(contest)
+
+        assert list(
+            Standing.objects.filter(contest=contest).values_list("user__username", flat=True)
+        ) == [other_user.username]

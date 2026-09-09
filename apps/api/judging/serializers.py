@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from django.utils import timezone
 from rest_framework import serializers
 
 from contests.models import Contest, ContestProblem, ContestRegistration
@@ -43,6 +44,15 @@ class AttemptDetailSerializer(AttemptSerializer):
 
     class Meta(AttemptSerializer.Meta):
         fields = [*AttemptSerializer.Meta.fields, "source_code", "compile_output", "test_results"]
+
+
+def _virtual_window_open(registration: ContestRegistration) -> bool:
+    """Virtual ishtirok oynasi hali ochiqmi."""
+    if registration.virtual_start_at is None:
+        return False
+    from contests.services import virtual_deadline
+
+    return timezone.now() < virtual_deadline(registration)
 
 
 class AttemptCreateSerializer(serializers.Serializer[dict[str, Any]]):
@@ -103,12 +113,20 @@ class AttemptCreateSerializer(serializers.Serializer[dict[str, Any]]):
         contest = Contest.objects.filter(slug=slug, is_public=True).first()
         if contest is None:
             raise serializers.ValidationError({"contest": "Musobaqa topilmadi"})
-        if not contest.is_running:
-            raise serializers.ValidationError({"contest": "Musobaqa faol emas"})
 
         user = self.context["request"].user
-        if not ContestRegistration.objects.filter(contest=contest, user=user).exists():
+        registration = ContestRegistration.objects.filter(contest=contest, user=user).first()
+        if registration is None:
             raise serializers.ValidationError({"contest": "Musobaqaga ro'yxatdan o'ting"})
+
+        # Virtual ishtirok TUGAGAN musobaqada bo'ladi, ya'ni `is_running`
+        # unda hech qachon rost emas. Ilgari tekshiruv faqat shunga
+        # tayanardi va virtual butunlay ishlamasdi: «boshlash» tugmasi
+        # muddat ko'rsatar, keyin har yuborish 400 qaytarardi.
+        # Rasmiy jadval xavfsiz — u `end_at` gacha kelgan urinishlarni
+        # oladi (contests.services.rebuild_standings).
+        if not contest.is_running and not _virtual_window_open(registration):
+            raise serializers.ValidationError({"contest": "Musobaqa faol emas"})
         if not ContestProblem.objects.filter(
             contest=contest, problem__slug=attrs["problem"]
         ).exists():
