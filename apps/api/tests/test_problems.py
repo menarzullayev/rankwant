@@ -812,3 +812,35 @@ def test_yopiq_masalada_yechganlar_korinmaydi(solvers_history, problem) -> None:
     problem.save()
 
     assert APIClient().get(reverse("problem-solvers", args=[problem.slug])).status_code == 404
+
+
+def test_tahlil_takroriy_ochilganda_pul_bir_marta_yechiladi(with_editorial, problem, user) -> None:
+    """Tugmani ikki marta bosish 30 emas, 60 Qvant yechardi.
+
+    Ilgari tartib teskari edi: `exists()` → pul → yozuv. Bir vaqtda
+    kelgan olti so'rov 180 Qvant yechib, beshtasi 500 qaytargan edi.
+    """
+    from qvant import ledger
+    from qvant.models import QvantTransaction
+
+    ledger.credit(user, 100, QvantTransaction.Reason.ADMIN)
+    client = APIClient()
+    client.force_authenticate(user)
+    url = reverse("problem-editorial", args=[problem.slug])
+
+    for _ in range(4):
+        assert client.post(url).status_code == 200
+
+    assert ledger.get_wallet(user).balance == 70
+    assert problem.unlocks.count() == 1
+
+
+def test_balans_yetmasa_yozuv_qolmaydi(with_editorial, problem, user) -> None:
+    """Yozuv AVVAL yaratiladi — pul yechilmasa u ham qaytarib olinishi shart."""
+    client = APIClient()
+    client.force_authenticate(user)
+
+    assert client.post(reverse("problem-editorial", args=[problem.slug])).status_code == 402
+
+    # Aks holda foydalanuvchi to'lamasdan tahlilga ega bo'lardi.
+    assert problem.unlocks.count() == 0

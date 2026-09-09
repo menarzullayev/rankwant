@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections import Counter
 from typing import Any
 
+from django.db import transaction
 from django.db.models import Avg, Count, Exists, F, Max, Min, OuterRef, Q
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -44,6 +45,33 @@ from problems.serializers import (
 )
 from qvant import ledger
 from qvant.models import QvantTransaction
+
+
+@transaction.atomic
+def _unlock_editorial(user: User, problem: Problem) -> None:
+    """Tahlilni ochadi va faqat BIR MARTA pul yechadi.
+
+    Yozuv AVVAL yaratiladi: `unique(user, problem)` cheklovi bir vaqtda
+    kelgan so'rovlarni ketma-ket qo'yadi, ya'ni `created` faqat
+    bittasida rost bo'ladi. Ilgari tartib teskari edi — `exists()`
+    tekshiriladi, keyin pul yechiladi, keyin yozuv — va olti parallel
+    so'rov o'ttiz o'rniga YUZ SAKSON Qvant yechib, beshtasi 500
+    qaytargan edi (o'lchandi).
+
+    Balans yetmasa istisno tashqariga chiqadi va `atomic` yaratilgan
+    yozuvni ham qaytarib oladi — ochilmagan tahlil uchun yozuv qolmaydi.
+    """
+    _, created = EditorialUnlock.objects.get_or_create(
+        user=user, problem=problem, defaults={"price": problem.editorial_price}
+    )
+    if created and problem.editorial_price:
+        ledger.debit(
+            user,
+            problem.editorial_price,
+            QvantTransaction.Reason.PURCHASE,
+            ref_type="editorial",
+            ref_id=problem.slug,
+        )
 
 
 class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
@@ -231,23 +259,12 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
         if not problem.editorial:
             return Response({"detail": "Bu masalada tahlil yo'q"}, status=404)
 
-        already = EditorialUnlock.objects.filter(user=request.user, problem=problem).exists()
-        if not already and problem.editorial_price:
-            try:
-                ledger.debit(
-                    request.user,
-                    problem.editorial_price,
-                    QvantTransaction.Reason.PURCHASE,
-                    ref_type="editorial",
-                    ref_id=problem.slug,
-                )
-            except ledger.InsufficientBalance:
-                return Response(
-                    {"detail": f"Balans yetarli emas — {problem.editorial_price} Qvant kerak"},
-                    status=402,
-                )
-            EditorialUnlock.objects.create(
-                user=request.user, problem=problem, price=problem.editorial_price
+        try:
+            _unlock_editorial(request.user, problem)
+        except ledger.InsufficientBalance:
+            return Response(
+                {"detail": f"Balans yetarli emas — {problem.editorial_price} Qvant kerak"},
+                status=402,
             )
         return Response({"editorial": problem.editorial, "price": problem.editorial_price})
 
