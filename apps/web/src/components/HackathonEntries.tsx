@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
 import { useSession } from "@/context/SessionContext";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { t } from "@/i18n/messages";
 import {
   ApiError,
   getJson,
@@ -17,7 +18,7 @@ import {
 } from "@/lib/api";
 
 export function HackathonEntries({ hackathon }: { hackathon: Hackathon }) {
-  const locale = DEFAULT_LOCALE;
+  const locale = useLocale();
   const { user, ready } = useSession();
   const [entries, setEntries] = useState<HackathonSubmission[]>([]);
   const [error, setError] = useState("");

@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
 import { api, ApiError, type Notification } from "@/lib/api";
 import { Card } from "@/components/ui/Card";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { getLocale } from "@/i18n/server";
+import { t } from "@/i18n/messages";
 
-export const metadata: Metadata = { title: "Bildirishnomalar" };
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: t(await getLocale(), "notif.title") };
+}
 export const dynamic = "force-dynamic";
 
 export default async function NotificationsPage() {
-  const locale = DEFAULT_LOCALE;
+  const locale = await getLocale();
 
   let items: Notification[] = [];
   let signedIn = true;

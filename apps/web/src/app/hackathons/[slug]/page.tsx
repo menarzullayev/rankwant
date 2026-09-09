@@ -5,7 +5,8 @@ import { HackathonEntries } from "@/components/HackathonEntries";
 import { Markdown } from "@/components/Markdown";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { getLocale } from "@/i18n/server";
+import { t } from "@/i18n/messages";
 import { api, ApiError } from "@/lib/api";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -22,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function HackathonPage({ params }: Props) {
   const { slug } = await params;
-  const locale = DEFAULT_LOCALE;
+  const locale = await getLocale();
   let h;
   try {
     h = await api.hackathon(slug);

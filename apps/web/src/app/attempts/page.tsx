@@ -12,14 +12,17 @@ import {
   Table,
 } from "@/components/ui/Table";
 import { VerdictBadge } from "@/components/ui/VerdictBadge";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { getLocale } from "@/i18n/server";
+import { t } from "@/i18n/messages";
 import { api } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Urinishlar" };
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: t(await getLocale(), "attempts.title") };
+}
 
 export default async function AttemptsPage() {
-  const locale = DEFAULT_LOCALE;
+  const locale = await getLocale();
   const data = await api.attempts();
   return (
     <div className="space-y-6">

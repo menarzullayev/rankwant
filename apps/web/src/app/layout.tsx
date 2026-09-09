@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import AppShell from "@/layout/AppShell";
+import { LocaleProvider } from "@/i18n/LocaleProvider";
+import { getLocale } from "@/i18n/server";
 import { DEFAULT_LOCALE } from "@/i18n/messages";
 
 export const metadata: Metadata = {
@@ -25,13 +27,14 @@ const STYLE_INIT = `try{var s=localStorage.getItem("style");
 document.documentElement.dataset.style=s||"clay"}catch(e){
 document.documentElement.dataset.style="clay"}`;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const locale = await getLocale();
   return (
-    <html lang={DEFAULT_LOCALE} suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -51,7 +54,9 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: STYLE_INIT }} />
       </head>
       <body>
-        <AppShell>{children}</AppShell>
+        <LocaleProvider locale={locale}>
+          <AppShell>{children}</AppShell>
+        </LocaleProvider>
       </body>
     </html>
   );

@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
 import { useSession } from "@/context/SessionContext";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { t } from "@/i18n/messages";
 import {
   ApiError,
   getJson,
@@ -27,7 +28,7 @@ function DuelRow({
   me: string | null;
   onAction: (slug: string, a: string) => void;
 }) {
-  const locale = DEFAULT_LOCALE;
+  const locale = useLocale();
   const color =
     d.status === "open"
       ? "info"
@@ -83,7 +84,7 @@ function DuelRow({
 }
 
 export function DuelActions({ waiting }: { waiting: Duel[] }) {
-  const locale = DEFAULT_LOCALE;
+  const locale = useLocale();
   const router = useRouter();
   const { user, ready } = useSession();
   const [mine, setMine] = useState<{

@@ -18,7 +18,8 @@ import {
   TR,
   Table,
 } from "@/components/ui/Table";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { t } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -147,7 +148,7 @@ function ScoreForm({
   entry: Submission;
   onSaved: () => Promise<void>;
 }) {
-  const locale = DEFAULT_LOCALE;
+  const locale = useLocale();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
@@ -208,7 +209,7 @@ function SubmissionsPanel({
   slug: string;
   reload: () => void;
 }) {
-  const locale = DEFAULT_LOCALE;
+  const locale = useLocale();
   const [rows, setRows] = useState<Submission[]>([]);
   const [error, setError] = useState("");
 

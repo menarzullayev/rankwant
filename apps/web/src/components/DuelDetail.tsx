@@ -6,13 +6,14 @@ import { useEffect, useState } from "react";
 import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { useSession } from "@/context/SessionContext";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { t } from "@/i18n/messages";
 import { getJson, type Duel } from "@/lib/api";
 
 /** Masalalar faqat ishtirokchiga va faqat boshlangach — sessiya kerak,
  * shuning uchun brauzerda qayta so'raladi. */
 export function DuelDetail({ initial }: { initial: Duel }) {
-  const locale = DEFAULT_LOCALE;
+  const locale = useLocale();
   const { user } = useSession();
   const [duel, setDuel] = useState(initial);
 

@@ -15,7 +15,8 @@ import {
   Table,
 } from "@/components/ui/Table";
 import { useSession } from "@/context/SessionContext";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { t } from "@/i18n/messages";
 import {
   getJson,
   type Assignment,
@@ -23,7 +24,7 @@ import {
 } from "@/lib/api";
 
 export function ClassroomDetail({ slug }: { slug: string }) {
-  const locale = DEFAULT_LOCALE;
+  const locale = useLocale();
   const { user, ready } = useSession();
   const [room, setRoom] = useState<Detail | null>(null);
   const [assignments, setAssignments] = useState<Assignment[]>([]);

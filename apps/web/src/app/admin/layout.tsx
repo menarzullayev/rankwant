@@ -3,7 +3,8 @@
 import { AdminNav } from "@/components/admin/AdminNav";
 import { Card } from "@/components/ui/Card";
 import { useSession } from "@/context/SessionContext";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { t } from "@/i18n/messages";
 
 /** Admin UI — faqat `is_staff`. Haqiqiy himoya API'da (IsAdminUser);
  * bu yerdagi tekshiruv faqat UI ni yashirish uchun. */
@@ -13,7 +14,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const { user, ready } = useSession();
-  const locale = DEFAULT_LOCALE;
+  const locale = useLocale();
   if (!ready) return null;
   if (!user?.is_staff) {
     return (

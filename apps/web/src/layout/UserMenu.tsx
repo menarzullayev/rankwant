@@ -3,12 +3,13 @@
 import Link from "next/link";
 
 import { useSession } from "@/context/SessionContext";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { t } from "@/i18n/messages";
 import { UserIcon } from "@/icons";
 import { postJson } from "@/lib/api";
 
 export default function UserMenu() {
-  const locale = DEFAULT_LOCALE;
+  const locale = useLocale();
   const { user, ready, clear } = useSession();
 
   async function logout() {

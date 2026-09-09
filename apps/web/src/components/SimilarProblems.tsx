@@ -20,9 +20,7 @@ export function SimilarProblems({ items }: { items: SimilarProblem[] }) {
               className="flex flex-wrap items-center gap-x-3 gap-y-1 px-5 py-2.5 text-theme-sm transition rw-hover-bg"
             >
               <span className="font-medium rw-strong">{item.title}</span>
-              <span
-                className={`level-${item.level} text-theme-xs font-medium`}
-              >
+              <span className={`level-${item.level} text-theme-xs font-medium`}>
                 {item.level_label}
               </span>
               <span className="ml-auto rw-faint tabular-nums">

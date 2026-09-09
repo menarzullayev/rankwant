@@ -3,13 +3,16 @@ import type { Metadata } from "next";
 import { api } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { ListCard } from "@/components/ui/ListCard";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { getLocale } from "@/i18n/server";
+import { t } from "@/i18n/messages";
 
-export const metadata: Metadata = { title: "Yangiliklar" };
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: t(await getLocale(), "blog.title") };
+}
 export const dynamic = "force-dynamic";
 
 export default async function BlogPage() {
-  const locale = DEFAULT_LOCALE;
+  const locale = await getLocale();
   const data = await api.posts();
 
   return (

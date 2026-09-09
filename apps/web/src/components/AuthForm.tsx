@@ -7,13 +7,14 @@ import { useState } from "react";
 import { useSession } from "@/context/SessionContext";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { t } from "@/i18n/messages";
 import { ApiError, postJson } from "@/lib/api";
 
 type Mode = "login" | "register";
 
 export function AuthForm({ mode }: { mode: Mode }) {
-  const locale = DEFAULT_LOCALE;
+  const locale = useLocale();
   const router = useRouter();
   const { reload } = useSession();
   const [error, setError] = useState("");

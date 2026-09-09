@@ -5,7 +5,8 @@ import { useCallback, useEffect, useState } from "react";
 import { CrudPage, type FieldDef } from "@/components/admin/CrudPage";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { t } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -182,7 +183,7 @@ function ProblemTestsPanel({
   problem: StaffProblem;
   reload: () => void;
 }) {
-  const locale = DEFAULT_LOCALE;
+  const locale = useLocale();
   const path = `/staff/problems/${problem.slug}/tests/`;
   const [tests, setTests] = useState<StaffTestCase[]>([]);
   const [error, setError] = useState("");

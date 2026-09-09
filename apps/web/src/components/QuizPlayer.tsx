@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useSession } from "@/context/SessionContext";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { t } from "@/i18n/messages";
 import {
   ApiError,
   postJson,
@@ -16,7 +17,7 @@ import {
 } from "@/lib/api";
 
 export function QuizPlayer({ quiz }: { quiz: QuizDetail }) {
-  const locale = DEFAULT_LOCALE;
+  const locale = useLocale();
   const { user, ready } = useSession();
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [result, setResult] = useState<QuizResult | null>(null);

@@ -2,11 +2,15 @@ import type { Metadata } from "next";
 
 import { AuthForm } from "@/components/AuthForm";
 import { Card } from "@/components/ui/Card";
+import { getLocale } from "@/i18n/server";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
 
-export const metadata: Metadata = { title: t(DEFAULT_LOCALE, "auth.login") };
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: t(await getLocale(), "auth.login") };
+}
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const locale = await getLocale();
   return (
     <div className="mx-auto max-w-md py-10">
       <div className="mb-6 text-center">
@@ -14,7 +18,7 @@ export default function LoginPage() {
           Rank<span className="rw-accent-ink">Want</span>
         </p>
       </div>
-      <Card title={t(DEFAULT_LOCALE, "auth.login")}>
+      <Card title={t(locale, "auth.login")}>
         <AuthForm mode="login" />
       </Card>
     </div>

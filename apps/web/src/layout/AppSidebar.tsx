@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { useSidebar } from "@/context/SidebarContext";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { t } from "@/i18n/messages";
 import { CloseIcon } from "@/icons";
 import { NAV_GROUPS } from "./nav";
 
@@ -17,7 +18,7 @@ export default function AppSidebar() {
     closeMobileSidebar,
   } = useSidebar();
   const pathname = usePathname();
-  const locale = DEFAULT_LOCALE;
+  const locale = useLocale();
 
   // Yig'ilgan sidebar sichqoncha ustiga kelganda vaqtincha ochiladi —
   // shunda ikonka-rejimda ham band nomini o'qish mumkin.

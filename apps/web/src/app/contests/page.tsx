@@ -2,7 +2,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import { Badge, type BadgeColor } from "@/components/ui/Badge";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { getLocale } from "@/i18n/server";
+import { t } from "@/i18n/messages";
 import { ContestIcon } from "@/icons";
 import { api } from "@/lib/api";
 
@@ -12,7 +13,9 @@ import { api } from "@/lib/api";
 // ISR keyinroq optimizatsiya sifatida qo'shilishi mumkin.
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Musobaqalar" };
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: t(await getLocale(), "contests.title") };
+}
 
 function status(c: { is_running: boolean; is_finished: boolean }): {
   key: string;
@@ -24,7 +27,7 @@ function status(c: { is_running: boolean; is_finished: boolean }): {
 }
 
 export default async function ContestsPage() {
-  const locale = DEFAULT_LOCALE;
+  const locale = await getLocale();
   const data = await api.contests();
 
   return (

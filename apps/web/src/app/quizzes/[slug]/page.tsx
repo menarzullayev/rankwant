@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { QuizPlayer } from "@/components/QuizPlayer";
 import { Badge } from "@/components/ui/Badge";
+import { getLocale } from "@/i18n/server";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
 import { api, ApiError } from "@/lib/api";
 
@@ -19,6 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function QuizPage({ params }: Props) {
+  const locale = await getLocale();
   const { slug } = await params;
   let quiz;
   try {
@@ -33,7 +35,7 @@ export default async function QuizPage({ params }: Props) {
         <h1 className="text-title-sm font-bold rw-strong">{quiz.title}</h1>
         <div className="mt-2 flex gap-2">
           <Badge>
-            {quiz.question_count} {t(DEFAULT_LOCALE, "quiz.questions")}
+            {quiz.question_count} {t(locale, "quiz.questions")}
           </Badge>
           <Badge color="brand">+{quiz.reward_qvant} Qvant</Badge>
         </div>

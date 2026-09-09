@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { getLocale } from "@/i18n/server";
+import { t } from "@/i18n/messages";
 
-export default function NotFound() {
-  const locale = DEFAULT_LOCALE;
+export default async function NotFound() {
+  const locale = await getLocale();
   return (
     <div className="py-24 text-center">
       <p className="text-5xl font-bold" style={{ color: "var(--muted)" }}>

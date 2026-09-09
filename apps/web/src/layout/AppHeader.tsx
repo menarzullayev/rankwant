@@ -3,19 +3,21 @@
 import { usePathname } from "next/navigation";
 
 import { useSidebar } from "@/context/SidebarContext";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { t } from "@/i18n/messages";
 import { MenuIcon } from "@/icons";
 import { NAV } from "./nav";
 import HeaderStatus from "./HeaderStatus";
 import SearchBox from "./SearchBox";
 import StylePicker from "./StylePicker";
+import { LocaleSwitch } from "./LocaleSwitch";
 import ThemeToggle from "./ThemeToggle";
 import UserMenu from "./UserMenu";
 
 export default function AppHeader() {
   const { toggleMobileSidebar } = useSidebar();
   const pathname = usePathname();
-  const locale = DEFAULT_LOCALE;
+  const locale = useLocale();
   const current = NAV.find(
     (n) => pathname === n.href || pathname.startsWith(`${n.href}/`),
   );
@@ -39,6 +41,7 @@ export default function AppHeader() {
         <SearchBox />
         <HeaderStatus />
         <StylePicker />
+        <LocaleSwitch />
         <ThemeToggle />
         <UserMenu />
       </div>

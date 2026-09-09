@@ -60,6 +60,9 @@ if has '^apps/web/'; then
   step "Web — eslint" npm run lint
   step "Web — typecheck" npm run typecheck
   cd "$root"
+  # Tiplar kalit yetishmasligini ushlaydi, lekin bo'sh satrni yoki
+  # tarjimasiz qoldirilgan nusxani ko'rmaydi.
+  step "Web — i18n to'liqligi" python3 tools/check_i18n.py
 fi
 
 if has '^(docs/|README)'; then

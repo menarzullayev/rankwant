@@ -3,11 +3,14 @@ import type { Metadata } from "next";
 
 import { Badge, type BadgeColor } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
+import { getLocale } from "@/i18n/server";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
 import { api, type CalendarEvent } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Taqvim" };
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: t(await getLocale(), "calendar.title") };
+}
 
 const KIND: Record<
   CalendarEvent["kind"],
@@ -76,7 +79,7 @@ function splitByNow(results: CalendarEvent[]) {
 }
 
 export default async function CalendarPage() {
-  const locale = DEFAULT_LOCALE;
+  const locale = await getLocale();
   const { results } = await api.calendar();
   const { upcoming, past } = splitByNow(results);
 

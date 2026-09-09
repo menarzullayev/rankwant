@@ -4,7 +4,8 @@ import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/Button";
 import { Card, StatCard } from "@/components/ui/Card";
 import { TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { getLocale } from "@/i18n/server";
+import { t } from "@/i18n/messages";
 import { ContestIcon, LeaderboardIcon, ProblemsIcon, QvantIcon } from "@/icons";
 import {
   api,
@@ -56,7 +57,7 @@ function upcoming(contests: Contest[]): Contest[] {
 }
 
 export default async function Home() {
-  const locale = DEFAULT_LOCALE;
+  const locale = await getLocale();
 
   // Barchasi mustaqil — ketma-ket kutish bosh sahifani sekinlashtirardi.
   const [stats, contests, users, articles, roadmaps] = await Promise.all([

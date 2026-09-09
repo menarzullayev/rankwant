@@ -146,6 +146,11 @@ jobs:
       - if: steps.check.outputs.ready == 'true'
         run: npm run typecheck
         working-directory: apps/web
+      # Tiplar kalit yetishmasligini ushlaydi, lekin bo'sh satrni yoki
+      # tarjimasiz qoldirilgan nusxani ko'rmaydi.
+      - name: i18n to'liqligi
+        if: steps.check.outputs.ready == 'true'
+        run: python3 tools/check_i18n.py
       - if: steps.check.outputs.ready == 'true'
         run: npm run build
         working-directory: apps/web

@@ -9,7 +9,8 @@ import {
 } from "@/components/admin/CrudPage";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { t } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -83,7 +84,7 @@ async function fetchQuestion(id: number): Promise<QuestionRef> {
 }
 
 function QuestionsPanel({ quiz, reload }: { quiz: Quiz; reload: () => void }) {
-  const locale = DEFAULT_LOCALE;
+  const locale = useLocale();
   const [ids, setIds] = useState<number[]>(quiz.questions);
   const [texts, setTexts] = useState<Record<number, string>>({});
   const [newId, setNewId] = useState("");

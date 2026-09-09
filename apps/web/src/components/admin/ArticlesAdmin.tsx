@@ -5,6 +5,7 @@ import { useState } from "react";
 import { CrudPage, type FieldDef } from "@/components/admin/CrudPage";
 import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { useLocale } from "@/i18n/LocaleProvider";
 import { DEFAULT_LOCALE, t } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
@@ -108,6 +109,7 @@ function ProblemLinksEditor({
   article: Article;
   reload: () => void;
 }) {
+  const locale = useLocale();
   const [links, setLinks] = useState<ProblemLink[]>(article.problems ?? []);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
@@ -179,7 +181,7 @@ function ProblemLinksEditor({
             }}
             className="text-theme-xs rw-bad-ink hover:underline"
           >
-            {t(DEFAULT_LOCALE, "admin.delete")}
+            {t(locale, "admin.delete")}
           </button>
         </div>
       ))}
@@ -199,11 +201,11 @@ function ProblemLinksEditor({
           + Masala
         </Button>
         <Button type="button" className="h-9" disabled={busy} onClick={save}>
-          {t(DEFAULT_LOCALE, "admin.save")}
+          {t(locale, "admin.save")}
         </Button>
         {saved && (
           <span className="text-theme-xs rw-ok-ink">
-            {t(DEFAULT_LOCALE, "admin.saved")}
+            {t(locale, "admin.saved")}
           </span>
         )}
       </div>
@@ -212,6 +214,7 @@ function ProblemLinksEditor({
 }
 
 export function ArticlesAdmin() {
+  const locale = useLocale();
   return (
     <CrudPage<Article>
       title="Maqolalar"

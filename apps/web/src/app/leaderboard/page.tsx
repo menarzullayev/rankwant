@@ -11,7 +11,8 @@ import {
   TR,
   Table,
 } from "@/components/ui/Table";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { getLocale } from "@/i18n/server";
+import { t } from "@/i18n/messages";
 import { api } from "@/lib/api";
 
 // Jonli ma'lumot: har so'rovda serverda render qilinadi.
@@ -20,13 +21,15 @@ import { api } from "@/lib/api";
 // ISR keyinroq optimizatsiya sifatida qo'shilishi mumkin.
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Reyting" };
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: t(await getLocale(), "leaderboard.title") };
+}
 
 /** Birinchi uchtalik — TailAdmin jadvalida ham ko'zga tashlansin. */
 const MEDAL = ["rw-warn-ink", "rw-faint", "text-orange-400"];
 
 export default async function LeaderboardPage() {
-  const locale = DEFAULT_LOCALE;
+  const locale = await getLocale();
   const data = await api.leaderboard();
 
   return (

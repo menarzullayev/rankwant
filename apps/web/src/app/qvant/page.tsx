@@ -3,7 +3,8 @@ import Link from "next/link";
 
 import { Badge } from "@/components/ui/Badge";
 import { Card, StatCard } from "@/components/ui/Card";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { getLocale } from "@/i18n/server";
+import { t } from "@/i18n/messages";
 import { CheckIcon, QvantIcon } from "@/icons";
 import {
   api,
@@ -14,13 +15,15 @@ import {
   type Wallet,
 } from "@/lib/api";
 
-export const metadata: Metadata = { title: "Qvant" };
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: t(await getLocale(), "qvant.title") };
+}
 
 // Balans va questlar shaxsiy — keshlanmaydi.
 export const dynamic = "force-dynamic";
 
 export default async function QvantPage() {
-  const locale = DEFAULT_LOCALE;
+  const locale = await getLocale();
 
   let wallet: Wallet | null = null;
   let quests: Quest[] = [];

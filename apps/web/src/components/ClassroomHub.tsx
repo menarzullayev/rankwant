@@ -8,12 +8,13 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
 import { useSession } from "@/context/SessionContext";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { t } from "@/i18n/messages";
 import { ApiError, getJson, postJson, type Classroom } from "@/lib/api";
 
 /** Sinflar shaxsiy (egasi yoki a'zo) — sessiya kerak, brauzerda yuklanadi. */
 export function ClassroomHub() {
-  const locale = DEFAULT_LOCALE;
+  const locale = useLocale();
   const { user, ready } = useSession();
   const [rooms, setRooms] = useState<Classroom[]>([]);
   const [error, setError] = useState("");

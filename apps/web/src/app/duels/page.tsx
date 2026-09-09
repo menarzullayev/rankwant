@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
 
 import { DuelActions } from "@/components/DuelActions";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { getLocale } from "@/i18n/server";
+import { t } from "@/i18n/messages";
 import { api } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Duel" };
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: t(await getLocale(), "nav.duels") };
+}
 
 export default async function DuelsPage() {
-  const locale = DEFAULT_LOCALE;
+  const locale = await getLocale();
   const waiting = await api.duels();
   return (
     <div className="space-y-6">

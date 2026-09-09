@@ -2,9 +2,12 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import { Card } from "@/components/ui/Card";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { getLocale } from "@/i18n/server";
+import { t } from "@/i18n/messages";
 
-export const metadata: Metadata = { title: "Qanday ishlaydi" };
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: t(await getLocale(), "nav.about") };
+}
 
 const STEPS = [
   [
@@ -29,8 +32,8 @@ const STEPS = [
   ],
 ];
 
-export default function AboutPage() {
-  const locale = DEFAULT_LOCALE;
+export default async function AboutPage() {
+  const locale = await getLocale();
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <h1 className="text-title-sm font-bold rw-strong">

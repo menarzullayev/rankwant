@@ -16,7 +16,8 @@ import {
   Table,
 } from "@/components/ui/Table";
 import { useSession } from "@/context/SessionContext";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { t } from "@/i18n/messages";
 import {
   API_BASE,
   ApiError,
@@ -30,7 +31,7 @@ import {
 /** Jonli raund. Joriy savol serverdan har 2 s so'raladi — server vaqti
  * haqiqat manbai (mijoz taymeri emas), standings SSE bilan. */
 export function ArenaPlayer({ initial }: { initial: ArenaDetail }) {
-  const locale = DEFAULT_LOCALE;
+  const locale = useLocale();
   const { user, ready } = useSession();
   const [arena, setArena] = useState(initial);
   const [current, setCurrent] = useState<ArenaCurrent | null>(null);

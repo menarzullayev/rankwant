@@ -2,14 +2,17 @@ import type { Metadata } from "next";
 
 import { Badge } from "@/components/ui/Badge";
 import { ListCard } from "@/components/ui/ListCard";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { getLocale } from "@/i18n/server";
+import { t } from "@/i18n/messages";
 import { api } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Traektoriya" };
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: t(await getLocale(), "nav.roadmap") };
+}
 
 export default async function RoadmapsPage() {
-  const locale = DEFAULT_LOCALE;
+  const locale = await getLocale();
   const roadmaps = await api.roadmaps();
   return (
     <div className="space-y-6">

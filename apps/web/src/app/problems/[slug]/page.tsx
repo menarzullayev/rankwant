@@ -15,7 +15,8 @@ import SubmitPanel from "@/components/SubmitPanel";
 import { notFound } from "next/navigation";
 import { api, ApiError, type ProblemDetail } from "@/lib/api";
 import { getWithSession } from "@/lib/api.server";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { getLocale } from "@/i18n/server";
+import { t } from "@/i18n/messages";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -51,7 +52,7 @@ export default async function ProblemPage({ params, searchParams }: Props) {
   // Musobaqa sahifasidan kelgan bo'lsa urinish o'sha musobaqaga yoziladi —
   // aks holda jadval yangilanmasdi (`AttemptCreateSerializer.contest`).
   const { contest } = await searchParams;
-  const locale = DEFAULT_LOCALE;
+  const locale = await getLocale();
 
   let problem;
   try {

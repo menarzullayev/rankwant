@@ -14,7 +14,8 @@ import {
   TR,
   Table,
 } from "@/components/ui/Table";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { t } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -76,7 +77,7 @@ function fromItem(item: Question): FormState {
 }
 
 export function QuestionsAdmin() {
-  const locale = DEFAULT_LOCALE;
+  const locale = useLocale();
   const [rows, setRows] = useState<Question[]>([]);
   const [count, setCount] = useState(0);
   const [page, setPage] = useState(1);

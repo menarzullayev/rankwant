@@ -9,7 +9,8 @@ import {
 } from "@/components/admin/CrudPage";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { t } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -96,7 +97,7 @@ function StageEditor({
   item: Tournament;
   reload: () => void;
 }) {
-  const locale = DEFAULT_LOCALE;
+  const locale = useLocale();
   const [stages, setStages] = useState<Stage[]>(() =>
     item.stages.map((s) => ({ ...s })),
   );

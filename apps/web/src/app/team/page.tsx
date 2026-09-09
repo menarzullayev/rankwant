@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 
 import { Card } from "@/components/ui/Card";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { getLocale } from "@/i18n/server";
+import { t } from "@/i18n/messages";
 
-export const metadata: Metadata = { title: "Jamoa" };
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: t(await getLocale(), "team.title") };
+}
 
-export default function TeamPage() {
-  const locale = DEFAULT_LOCALE;
+export default async function TeamPage() {
+  const locale = await getLocale();
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <h1 className="text-title-sm font-bold rw-strong">

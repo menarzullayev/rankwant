@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 
 import { ArenaPlayer } from "@/components/ArenaPlayer";
 import { Badge } from "@/components/ui/Badge";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { getLocale } from "@/i18n/server";
+import { t } from "@/i18n/messages";
 import { api, ApiError } from "@/lib/api";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -20,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ArenaPage({ params }: Props) {
   const { slug } = await params;
-  const locale = DEFAULT_LOCALE;
+  const locale = await getLocale();
   let arena;
   try {
     arena = await api.arena(slug);

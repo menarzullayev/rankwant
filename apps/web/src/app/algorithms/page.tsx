@@ -2,14 +2,17 @@ import type { Metadata } from "next";
 
 import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { ListCard } from "@/components/ui/ListCard";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { getLocale } from "@/i18n/server";
+import { t } from "@/i18n/messages";
 import { api } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Algoritmlar" };
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: t(await getLocale(), "nav.algorithms") };
+}
 
 export default async function AlgorithmsPage() {
-  const locale = DEFAULT_LOCALE;
+  const locale = await getLocale();
   const data = await api.algorithms();
   return (
     <div className="space-y-6">

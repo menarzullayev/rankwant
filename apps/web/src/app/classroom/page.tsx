@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 
 import { ClassroomHub } from "@/components/ClassroomHub";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { getLocale } from "@/i18n/server";
+import { t } from "@/i18n/messages";
 
-export const metadata: Metadata = { title: "Auditoriya" };
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: t(await getLocale(), "nav.classroom") };
+}
 
-export default function ClassroomPage() {
-  const locale = DEFAULT_LOCALE;
+export default async function ClassroomPage() {
+  const locale = await getLocale();
   return (
     <div className="space-y-6">
       <header>

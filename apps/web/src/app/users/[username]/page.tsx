@@ -13,7 +13,8 @@ import {
   TR,
   Table,
 } from "@/components/ui/Table";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { getLocale } from "@/i18n/server";
+import { t } from "@/i18n/messages";
 
 type Props = { params: Promise<{ username: string }> };
 
@@ -41,7 +42,7 @@ const REASON_LABEL: Record<string, string> = {
 
 export default async function ProfilePage({ params }: Props) {
   const { username } = await params;
-  const locale = DEFAULT_LOCALE;
+  const locale = await getLocale();
 
   let user;
   try {

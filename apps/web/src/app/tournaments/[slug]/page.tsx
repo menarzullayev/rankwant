@@ -14,7 +14,8 @@ import {
   TR,
   Table,
 } from "@/components/ui/Table";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { getLocale } from "@/i18n/server";
+import { t } from "@/i18n/messages";
 import { api, ApiError } from "@/lib/api";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -31,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function TournamentPage({ params }: Props) {
   const { slug } = await params;
-  const locale = DEFAULT_LOCALE;
+  const locale = await getLocale();
   let tn;
   try {
     tn = await api.tournament(slug);

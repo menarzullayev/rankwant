@@ -13,7 +13,8 @@ import {
   TR,
   Table,
 } from "@/components/ui/Table";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { getLocale } from "@/i18n/server";
+import { t, topicName } from "@/i18n/messages";
 import { BlogIcon, CheckIcon } from "@/icons";
 import { ArchiveSidebar } from "@/components/ArchiveSidebar";
 import { ProblemFilters } from "@/components/ProblemFilters";
@@ -38,7 +39,9 @@ import { getWithSession } from "@/lib/api.server";
 // ISR keyinroq optimizatsiya sifatida qo'shilishi mumkin.
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Masalalar" };
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: t(await getLocale(), "problems.title") };
+}
 
 /** URL dan API ga faqat shu kalitlar o'tadi — qolgani e'tiborsiz
  * qoldiriladi, aks holda ixtiyoriy so'rov qatori backend'ga ochilardi. */
@@ -63,7 +66,7 @@ type Props = {
 };
 
 export default async function ProblemsPage({ searchParams }: Props) {
-  const locale = DEFAULT_LOCALE;
+  const locale = await getLocale();
   const raw = await searchParams;
 
   const query = new URLSearchParams();
@@ -183,7 +186,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
         locales={stats.statement_locales}
         topics={topics.results.map((topic) => ({
           slug: topic.slug,
-          label: topic[`name_${locale}`] || topic.slug,
+          label: topicName(topic, locale),
         }))}
       />
 
