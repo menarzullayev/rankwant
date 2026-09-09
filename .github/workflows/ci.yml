@@ -151,6 +151,9 @@ jobs:
       - name: i18n to'liqligi
         if: steps.check.outputs.ready == 'true'
         run: python3 tools/check_i18n.py
+      - name: Matn kontrasti (WCAG AA)
+        if: steps.check.outputs.ready == 'true'
+        run: python3 tools/check_contrast.py
       - if: steps.check.outputs.ready == 'true'
         run: npm run build
         working-directory: apps/web
