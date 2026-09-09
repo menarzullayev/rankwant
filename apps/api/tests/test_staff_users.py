@@ -290,3 +290,46 @@ class TestPruneTestUsers:
         self.prune(prefix="e2e", dry_run=True)
 
         assert User.objects.filter(username="e2e_1").exists()
+
+
+@pytest.mark.django_db
+class TestSeedStress:
+    """10 000 neytron — reyting va sahifalash haqiqiy yuk ostida sinaladi."""
+
+    def seed(self, **kwargs):
+        from django.core.management import call_command
+
+        call_command("seed_stress", **kwargs)
+
+    def test_yaratiladi_va_reytinglar_har_xil(self) -> None:
+        self.seed(users=50, seed=1)
+
+        rows = User.objects.filter(username__startswith="neytron_")
+        assert rows.count() == 50
+        assert rows.filter(username="neytron_000001").exists()
+        # Bir xil reyting saralash yukini soxta qilardi.
+        assert len(set(rows.values_list("rating_skills", flat=True))) > 10
+
+    def test_parolsiz_hisob_kira_olmaydi(self) -> None:
+        self.seed(users=3)
+
+        assert User.objects.get(username="neytron_000001").has_usable_password() is False
+
+    def test_parol_berilsa_kirish_mumkin(self) -> None:
+        self.seed(users=3, password="Sinov!12345")
+
+        assert User.objects.get(username="neytron_000002").check_password("Sinov!12345")
+
+    def test_qayta_yuritish_takrorlamaydi(self) -> None:
+        self.seed(users=5, seed=1)
+        self.seed(users=8, seed=1)
+
+        assert User.objects.filter(username__startswith="neytron_").count() == 8
+
+    def test_prune_neytronlarni_ham_oladi(self) -> None:
+        from django.core.management import call_command
+
+        self.seed(users=5)
+        call_command("prune_test_users", prefix="neytron")
+
+        assert User.objects.filter(username__startswith="neytron_").count() == 0
