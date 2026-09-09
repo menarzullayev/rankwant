@@ -341,3 +341,38 @@ def test_start_dan_oldingi_urinish_jadvalni_buzmaydi(db, contest, problem, user,
 
     assert rebuild_standings(contest) == 1
     assert Standing.objects.get(contest=contest, user=user).penalty == 0
+
+
+@pytest.mark.django_db
+def test_muzlatilgan_oynadagi_ac_jadvalga_tushmaydi(contest, problem, language, user) -> None:
+    """Freeze faqat bayroq edi — `rebuild_standings` uni umuman ko'rmasdi.
+
+    O'lchandi: `is_frozen=True` bo'lgan oynada kelgan AC jadvalga darhol
+    tushib, oxirgi daqiqalardagi kurashni oshkor qilardi.
+    """
+    ContestProblem.objects.update_or_create(
+        contest=contest, index_letter="A", defaults={"problem": problem}
+    )
+    now = timezone.now()
+    Contest.objects.filter(pk=contest.pk).update(
+        start_at=now - timedelta(hours=2), end_at=now + timedelta(minutes=10), freeze_minutes=30
+    )
+    contest.refresh_from_db()
+    assert contest.is_frozen
+
+    late = Attempt.objects.create(
+        user=user,
+        problem=problem,
+        contest=contest,
+        language=language,
+        source_code="x",
+        verdict=Verdict.AC,
+    )
+    assert rebuild_standings(contest) == 0
+
+    # Tugagach muzlatish tarqaydi va haqiqiy jadval quriladi.
+    Contest.objects.filter(pk=contest.pk).update(end_at=now - timedelta(seconds=1))
+    contest.refresh_from_db()
+    assert rebuild_standings(contest) == 1
+    assert Standing.objects.get(contest=contest, user=user).solved_count == 1
+    assert late.verdict == Verdict.AC

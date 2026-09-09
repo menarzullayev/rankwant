@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timedelta
 from typing import ClassVar
 
 from django.db import models
@@ -50,13 +51,17 @@ class Contest(models.Model):
         return timezone.now() >= self.end_at
 
     @property
+    def freeze_at(self) -> datetime | None:
+        """Muzlatish boshlanadigan payt — yo'q bo'lsa None."""
+        if not self.freeze_minutes:
+            return None
+        return self.end_at - timedelta(minutes=self.freeze_minutes)
+
+    @property
     def is_frozen(self) -> bool:
         """Oxirgi `freeze_minutes` — standings yangilanishi to'xtaydi."""
-        if not self.freeze_minutes or not self.is_running:
-            return False
-        from datetime import timedelta
-
-        return timezone.now() >= self.end_at - timedelta(minutes=self.freeze_minutes)
+        frozen_from = self.freeze_at
+        return bool(frozen_from and self.is_running and timezone.now() >= frozen_from)
 
 
 class ContestProblem(models.Model):

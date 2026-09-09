@@ -61,6 +61,14 @@ def rebuild_standings(contest: Contest) -> int:
         .order_by("created_at")
         .values("user_id", "problem_id", "verdict", "created_at")
     )
+    # ICPC muzlatishi: oxirgi daqiqalarda jadval freeze paytidagi holatda
+    # qotadi. Kesish URINISHLAR bo'yicha, rebuild'ni butunlay o'tkazib
+    # yuborish bo'yicha emas — aks holda freeze'dan sal oldin kelgan AC
+    # debounce tufayli navbatga tushib, jadvalga umuman kirmay qolardi.
+    # Contest tugagach `is_frozen` False bo'ladi va `finalize_contest`
+    # to'liq, haqiqiy jadvalni quradi.
+    if contest.is_frozen:
+        attempts = attempts.filter(created_at__lt=contest.freeze_at)
 
     per_user: dict[int, dict[int, _ProblemState]] = {}
     for a in attempts:
