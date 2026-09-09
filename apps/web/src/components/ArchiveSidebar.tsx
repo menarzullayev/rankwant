@@ -2,11 +2,13 @@ import Link from "next/link";
 
 import { Card } from "@/components/ui/Card";
 import { VerdictBadge } from "@/components/VerdictBadge";
+import { Badge } from "@/components/ui/Badge";
 import type {
   ArchiveProgress,
   Attempt,
   CalendarEvent,
   Problem,
+  Recommendation,
   Roadmap,
   TopicSkill,
 } from "@/lib/api";
@@ -286,9 +288,39 @@ function TopicStrength({ topics }: { topics: TopicSkill[] }) {
   );
 }
 
+/** Tavsiya — jadval ustida emas, yon panelda.
+ *
+ * O'lchandi: jadval ustida u 171 px olardi va 873 px ekranda 25
+ * qatordan atigi 7 tasi ko'rinardi. Arxivga kelgan odam avval arxivni
+ * ko'rishi kerak; tavsiya esa filtrdagi «Menga tavsiya» rejimi bilan
+ * ham ochiladi, ya'ni bu yerda u eslatma vazifasini bajaradi. */
+function Recommended({ data }: { data: Recommendation }) {
+  return (
+    <Card
+      title="Sizga tavsiya"
+      action={<Badge color="brand">{data.target_difficulty}</Badge>}
+      bodyClassName="space-y-1"
+    >
+      {data.results.slice(0, 5).map((problem) => (
+        <Link
+          key={problem.slug}
+          href={`/problems/${problem.slug}`}
+          className="block truncate rw-radius-sm px-2 py-1 text-theme-sm rw-strong transition rw-hover-bg"
+        >
+          <span className={`level-${problem.level} mr-2 text-theme-xs`}>
+            {problem.difficulty}
+          </span>
+          {problem.title}
+        </Link>
+      ))}
+    </Card>
+  );
+}
+
 export function ArchiveSidebar({
   progress,
   skills,
+  recommended,
   resume,
   upcoming,
   roadmaps,
@@ -297,6 +329,7 @@ export function ArchiveSidebar({
 }: {
   progress: ArchiveProgress;
   skills: TopicSkill[];
+  recommended: Recommendation | null;
   resume: Problem | null;
   upcoming: CalendarEvent | null;
   roadmaps: Roadmap[];
@@ -306,6 +339,9 @@ export function ArchiveSidebar({
   return (
     <aside className="space-y-4">
       {resume && <Continue problem={resume} />}
+      {recommended && recommended.results.length > 0 && (
+        <Recommended data={recommended} />
+      )}
       <Progress data={progress} />
       <TopicStrength topics={skills} />
       {upcoming && <Upcoming event={upcoming} />}

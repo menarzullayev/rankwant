@@ -1,7 +1,7 @@
 import type { Metadata, Route } from "next";
 import Link from "next/link";
 
-import { Badge, DifficultyBadge } from "@/components/ui/Badge";
+import { DifficultyBadge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { PAGE_SIZES, Pager } from "@/components/ui/Pager";
 import {
@@ -187,31 +187,6 @@ export default async function ProblemsPage({ searchParams }: Props) {
         }))}
       />
 
-      {recommended && recommended.results.length > 0 && (
-        <Card
-          title={t(locale, "recommend.title")}
-          action={
-            <Badge color="brand">
-              {t(locale, "recommend.target")}: {recommended.target_difficulty}
-            </Badge>
-          }
-        >
-          <div className="flex flex-wrap gap-2">
-            {recommended.results.slice(0, 6).map((p) => (
-              <Link
-                key={p.slug}
-                href={`/problems/${p.slug}`}
-                className={`level-${p.level} rw-radius-sm border rw-line px-3 py-1.5
- text-theme-sm font-medium transition rw-hover-line
- `}
-              >
-                {p.title}
-              </Link>
-            ))}
-          </div>
-        </Card>
-      )}
-
       <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,300px)]">
         <Card bodyClassName="p-0">
           <Table>
@@ -356,6 +331,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
         <ArchiveSidebar
           progress={progress}
           skills={skills.topics}
+          recommended={recommended}
           resume={resume}
           upcoming={upcoming}
           roadmaps={roadmaps}
