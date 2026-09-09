@@ -8,6 +8,8 @@ endpointlar orqali boshqariladi:
 
 from __future__ import annotations
 
+from typing import Any
+
 from django.core.cache import cache
 from django.db.models import Count
 from drf_spectacular.utils import extend_schema
@@ -62,6 +64,25 @@ class StaffProblemViewSet(StaffViewSet):
     search_fields = ["slug", "title", "source"]
     ordering_fields = ["slug", "difficulty", "solved_count", "created_at", "pk"]
     ordering = ["-pk"]
+
+    def perform_update(self, serializer: Any) -> None:
+        """Qiyinlik o'zgarsa yechganlarning Skills reytingi eskiradi.
+
+        ADR-0007: Skills JORIY qiyinlikdan hisoblanadi, ya'ni masalani
+        qayta baholash uni yechgan HAMMANING reytingini o'zgartiradi.
+        O'lchandi: 800 → 2400 qilingach yechuvchining reytingi 800 da
+        qotib qolardi — funksiya ham, Celery task ham bor edi, faqat
+        ularni hech kim ulamagan.
+
+        Navbatga tashlanadi, chunki bu arzon emas: o'lchandi — 2929
+        yechuvchili masala 3.3 s va 9000 dan ortiq so'rov.
+        """
+        oldingi = serializer.instance.difficulty
+        problem = serializer.save()
+        if problem.difficulty != oldingi:
+            from ratings.tasks import recalc_skills_for_problem_task
+
+            recalc_skills_for_problem_task.delay(problem.pk)
 
     @extend_schema(
         request=TestCaseUploadSerializer,

@@ -18,6 +18,17 @@ from problems.storage import MEDIA_PREFIX, get_media
 
 CACHE_SECONDS = 31_536_000  # bir yil
 
+#: BRAUZERDA ochilishi mumkin bo'lgan yagona turlar.
+#:
+#: Fayllar tashqi arxivdan ko'chirilgan, ya'ni ularning turi bizniki
+#: emas. `text/html` yoki `image/svg+xml` ni o'z originimizdan berish
+#: saqlanadigan XSS bo'lardi — sessiya cookie'si aynan shu originda.
+#: Ro'yxatdan tashqarisi yuklab olinadi, ko'rsatilmaydi.
+INLINE_TYPES = frozenset(
+    {"image/png", "image/jpeg", "image/gif", "image/webp", "image/avif", "application/pdf"}
+)
+FALLBACK_TYPE = "application/octet-stream"
+
 
 @require_safe
 @cache_control(public=True, max_age=CACHE_SECONDS, immutable=True)
@@ -25,9 +36,14 @@ def media(request: HttpRequest, path: str) -> HttpResponse:
     if ".." in path or path.startswith("/"):
         raise Http404
     try:
-        body, content_type = get_media(MEDIA_PREFIX + path)
+        body, stored_type = get_media(MEDIA_PREFIX + path)
     except Exception as exc:
         raise Http404("fayl topilmadi") from exc
-    response = HttpResponse(body, content_type=content_type)
+
+    content_type = stored_type.split(";")[0].strip().lower()
+    inline = content_type in INLINE_TYPES
+    response = HttpResponse(body, content_type=content_type if inline else FALLBACK_TYPE)
     response["X-Content-Type-Options"] = "nosniff"
+    if not inline:
+        response["Content-Disposition"] = "attachment"
     return response

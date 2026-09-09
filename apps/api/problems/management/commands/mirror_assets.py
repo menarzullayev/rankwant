@@ -16,8 +16,10 @@ saqlanmaydi va manzil hech qachon boshqa faylni bermaydi.
 from __future__ import annotations
 
 import hashlib
+import ipaddress
 import mimetypes
 import re
+import socket
 import urllib.request
 from argparse import ArgumentParser
 from typing import Any
@@ -36,9 +38,49 @@ USER_AGENT = "RankWant-Importer/1.0 (+https://rankwant.uz)"
 TIMEOUT = 20
 
 
+def _check_public(url: str) -> None:
+    """Manzil OMMAVIY internetga qaraydimi.
+
+    Havolalar tashqi arxivdan keladi, ya'ni ular bizning ichki tarmog'imizga
+    ham qarab turishi mumkin: `http://169.254.169.254/…` (bulut metadata),
+    `http://minio:9000/…` yoki `http://127.0.0.1/…`. Bu buyruq ularni olib
+    kelib, OMMAVIY manzilda e'lon qilib qo'yardi.
+    """
+    parsed = urlparse(url)
+    if parsed.scheme not in ("http", "https"):
+        raise ValueError(f"sxema ruxsat etilmagan: {parsed.scheme}")
+    host = parsed.hostname
+    if not host:
+        raise ValueError("host yo'q")
+    try:
+        infos = socket.getaddrinfo(host, parsed.port or (443 if parsed.scheme == "https" else 80))
+    except OSError as exc:
+        raise ValueError(f"nom yechilmadi: {exc}") from exc
+    for info in infos:
+        address = ipaddress.ip_address(info[4][0])
+        if not address.is_global:
+            raise ValueError(f"ichki manzil: {address}")
+
+
+class _CheckedRedirects(urllib.request.HTTPRedirectHandler):
+    """Har yo'naltirishni QAYTA tekshiradi.
+
+    Boshlang'ich manzilni tekshirish yetarli emas: tashqi host 302 bilan
+    `http://127.0.0.1/…` ga yuborishi mumkin edi.
+    """
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):  # type: ignore[no-untyped-def]
+        _check_public(newurl)
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+_opener = urllib.request.build_opener(_CheckedRedirects)
+
+
 def _fetch(url: str) -> tuple[bytes, str]:
+    _check_public(url)
     request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-    with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
+    with _opener.open(request, timeout=TIMEOUT) as response:
         body = response.read(MAX_MEDIA_BYTES + 1)
         if len(body) > MAX_MEDIA_BYTES:
             raise ValueError(f"fayl {MAX_MEDIA_BYTES // 1024 // 1024} MB dan katta")

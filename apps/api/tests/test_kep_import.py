@@ -370,3 +370,43 @@ class TestRemapAndPublish:
         assert list(problem.topics.all()) == [keep]
         assert list(article.topics.all()) == [keep]
         assert child.parent == keep
+
+
+class TestMirrorSSRF:
+    """Ko'chiriladigan havolalar TASHQI arxivdan keladi.
+
+    Ular bizning ichki tarmog'imizga qarab turishi mumkin — bulut
+    metadata, MinIO yoki localhost — va buyruq ularni olib kelib ommaviy
+    manzilda e'lon qilib qo'yardi.
+    """
+
+    def _fetch(self, url: str):
+        from problems.management.commands.mirror_assets import _fetch
+
+        return _fetch(url)
+
+    @pytest.mark.parametrize(
+        "url",
+        [
+            "http://127.0.0.1/x.png",
+            "http://localhost/x.png",
+            "http://169.254.169.254/latest/meta-data/",
+            "http://10.0.0.5/x.png",
+            "http://192.168.1.1/x.png",
+            "http://[::1]/x.png",
+            "file:///etc/passwd",
+            "gopher://example.uz/x",
+        ],
+    )
+    def test_ichki_manzil_rad_etiladi(self, url: str) -> None:
+        with pytest.raises(ValueError):
+            self._fetch(url)
+
+    def test_yonaltirish_ham_tekshiriladi(self) -> None:
+        """Boshlang'ich manzilni tekshirish yetarli emas: tashqi host 302
+        bilan `http://127.0.0.1/…` ga yuborishi mumkin."""
+        from problems.management.commands.mirror_assets import _CheckedRedirects
+
+        handler = _CheckedRedirects()
+        with pytest.raises(ValueError):
+            handler.redirect_request(None, None, 302, "Found", {}, "http://127.0.0.1/x.png")

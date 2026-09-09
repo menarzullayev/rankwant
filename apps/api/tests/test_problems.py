@@ -967,6 +967,35 @@ class TestMediaEndpointi:
         assert APIClient().get(self._url("../../etc/passwd")).status_code == 404
         assert chaqirildi == []
 
+    def test_html_inline_berilmaydi(self, monkeypatch) -> None:
+        """Fayllar tashqi arxivdan ko'chirilgan — turi bizniki emas.
+
+        `text/html` ni O'Z originimizdan berish saqlanadigan XSS bo'lardi:
+        sessiya cookie'si aynan shu originda.
+        """
+        from problems import media_views
+
+        monkeypatch.setattr(
+            media_views, "get_media", lambda key: (b"<script>alert(1)</script>", "text/html")
+        )
+
+        r = APIClient().get(self._url("yovuz.html"))
+
+        assert r.status_code == 200
+        assert r["Content-Type"] == "application/octet-stream"
+        assert r["Content-Disposition"] == "attachment"
+
+    def test_svg_ham_inline_berilmaydi(self, monkeypatch) -> None:
+        """SVG ichida `<script>` bo'lishi mumkin — rasm bo'lsa ham."""
+        from problems import media_views
+
+        monkeypatch.setattr(media_views, "get_media", lambda key: (b"<svg/>", "image/svg+xml"))
+
+        r = APIClient().get(self._url("x.svg"))
+
+        assert r["Content-Type"] == "application/octet-stream"
+        assert r["Content-Disposition"] == "attachment"
+
     def test_yozish_metodlari_rad_etiladi(self, monkeypatch) -> None:
         from problems import media_views
 

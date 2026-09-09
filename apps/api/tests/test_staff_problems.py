@@ -267,3 +267,52 @@ def test_kod_xodimga_korinadi_lekin_tahrirlanmaydi(staff_client, problem) -> Non
     staff_client.patch(url, {"code": 9999}, format="json")
     problem.refresh_from_db()
     assert problem.code != 9999
+
+
+@pytest.fixture
+def rerate_calls(monkeypatch):
+    """`recalc_skills_for_problem_task.delay` chaqiruvlarini yozib boradi."""
+    from ratings import tasks
+
+    calls: list[int] = []
+    monkeypatch.setattr(
+        tasks.recalc_skills_for_problem_task, "delay", lambda pid: calls.append(pid)
+    )
+    return calls
+
+
+@pytest.mark.django_db
+def test_qiyinlik_ozgarsa_qayta_hisoblash_navbatga_tushadi(
+    staff_client, problem, rerate_calls
+) -> None:
+    """ADR-0007: Skills JORIY qiyinlikdan hisoblanadi.
+
+    O'lchandi: staff qiyinlikni 800 dan 2400 ga ko'targach yechuvchining
+    reytingi 800 da qotib qolardi — funksiya ham, Celery task ham bor
+    edi, faqat ularni hech kim ulamagan.
+
+    Navbatga tashlanadi, sinxron emas: o'lchandi — 2929 yechuvchili
+    masala 3.3 s va 9000 dan ortiq so'rov.
+    """
+    r = staff_client.patch(
+        reverse("staff-problem-detail", args=[problem.slug]),
+        {"difficulty": 2400},
+        format="json",
+    )
+
+    assert r.status_code == 200
+    problem.refresh_from_db()
+    assert problem.difficulty == 2400
+    assert rerate_calls == [problem.pk]
+
+
+@pytest.mark.django_db
+def test_qiyinlik_ozgarmasa_qayta_hisoblanmaydi(staff_client, problem, rerate_calls) -> None:
+    """Har tahrirda minglab foydalanuvchini qayta hisoblash qimmat."""
+    staff_client.patch(
+        reverse("staff-problem-detail", args=[problem.slug]),
+        {"title": "Yangi sarlavha"},
+        format="json",
+    )
+
+    assert rerate_calls == []
