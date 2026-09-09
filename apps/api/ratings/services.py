@@ -198,6 +198,8 @@ def apply_contest_ratings(contest) -> int:  # type: ignore[no-untyped-def]
     counts = [u.rated_contest_count for u in users]
 
     deltas = formulas.contest_deltas(ratings, ranks, counts)
+    # Har bir yozuv uchun alohida `seed()` chaqirish yana O(n²) berardi.
+    seeds = formulas.contest_seeds(ratings)
 
     from notifications.models import Notification
 
@@ -228,7 +230,7 @@ def apply_contest_ratings(contest) -> int:  # type: ignore[no-untyped-def]
                     # `r != before` turardi va teng reytingdagilarning
                     # HAMMASI tashlab yuborilardi — 1200 da turgan yuzta
                     # yangi foydalanuvchi bir-birining seed'ini buzardi.
-                    seed=formulas.seed(before, ratings[:i] + ratings[i + 1 :]),
+                    seed=seeds[i],
                     rank=standing.rank,
                 )
             )

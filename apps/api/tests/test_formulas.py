@@ -60,6 +60,21 @@ class TestContestElo:
         n = len(ratings)
         assert abs(sum(seeds) - (n + n * (n - 1) / 2)) < 1e-6
 
+    @given(
+        st.lists(st.integers(min_value=1, max_value=3500), min_size=2, max_size=40),
+    )
+    @settings(max_examples=50, deadline=None)
+    def test_partiyaviy_seed_bittalab_hisoblash_bilan_bir_xil(self, ratings: list[int]) -> None:
+        """`contest_seeds` tezlik uchun gistogrammadan foydalanadi — u
+        `seed()` ni har biriga alohida chaqirish bilan bir xil javob
+        berishi SHART, chunki bu qiymat foydalanuvchiga ko'rsatiladi."""
+        batch = formulas.contest_seeds(ratings)
+        one_by_one = [
+            formulas.seed(r, ratings[:i] + ratings[i + 1 :]) for i, r in enumerate(ratings)
+        ]
+        for got, want in zip(batch, one_by_one, strict=True):
+            assert abs(got - want) < 1e-9
+
     def test_inflyatsiya_nolga_teng(self) -> None:
         """Musobaqa umumiy reytingni shishirmaydi."""
         deltas = formulas.contest_deltas([1400, 1500, 1600, 1200], [1, 2, 3, 4])
