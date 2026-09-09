@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from problems import staff_views, views
+from problems import media_views, staff_views, views
 
 router = DefaultRouter()
 router.register("problems", views.ProblemViewSet, basename="problem")
@@ -29,5 +29,6 @@ urlpatterns = [
         views.ProblemStatsView.as_view(),
         name="problem-stats",
     ),
+    path("media/<path:path>", media_views.media, name="media"),
     path("", include(router.urls)),
 ]

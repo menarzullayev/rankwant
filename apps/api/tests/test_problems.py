@@ -917,3 +917,59 @@ def test_recount_problems_ochirilgan_foydalanuvchidan_keyin_tuzatadi(
     problem.refresh_from_db()
     assert problem.solved_count == 1
     assert problem.attempt_count == 1
+
+
+@pytest.mark.django_db
+class TestMediaEndpointi:
+    """Ko'chirilgan rasm va fayllar shu yerdan beriladi (ADR-0005).
+
+    Saqlash tashqariga ochilmagan, tunnel esa `/api/*` ni API ga
+    yo'naltiradi — shuning uchun yo'l API ostida.
+    """
+
+    def _url(self, path: str) -> str:
+        return reverse("media", args=[path])
+
+    def test_fayl_beriladi_va_abadiy_keshlanadi(self, monkeypatch) -> None:
+        from problems import media_views
+
+        monkeypatch.setattr(media_views, "get_media", lambda key: (b"\x89PNG data", "image/png"))
+
+        r = APIClient().get(self._url("abc123.png"))
+
+        assert r.status_code == 200
+        assert r["Content-Type"] == "image/png"
+        assert r["X-Content-Type-Options"] == "nosniff"
+        assert "immutable" in r["Cache-Control"]
+        assert "max-age=31536000" in r["Cache-Control"]
+
+    def test_yoq_fayl_404(self, monkeypatch) -> None:
+        from problems import media_views
+
+        def yiqil(key: str) -> tuple[bytes, str]:
+            raise OSError("yo'q")
+
+        monkeypatch.setattr(media_views, "get_media", yiqil)
+
+        assert APIClient().get(self._url("yoq.png")).status_code == 404
+
+    def test_yol_boylab_chiqib_bolmaydi(self, monkeypatch) -> None:
+        from problems import media_views
+
+        chaqirildi: list[str] = []
+
+        def kuzat(key: str) -> tuple[bytes, str]:
+            chaqirildi.append(key)
+            return b"", "text/plain"
+
+        monkeypatch.setattr(media_views, "get_media", kuzat)
+
+        assert APIClient().get(self._url("../../etc/passwd")).status_code == 404
+        assert chaqirildi == []
+
+    def test_yozish_metodlari_rad_etiladi(self, monkeypatch) -> None:
+        from problems import media_views
+
+        monkeypatch.setattr(media_views, "get_media", lambda key: (b"x", "image/png"))
+
+        assert APIClient().post(self._url("abc.png")).status_code == 405

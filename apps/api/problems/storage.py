@@ -103,3 +103,34 @@ def sample_tests(problem: Any) -> list[dict[str, Any]]:
 
     cache_set(key, samples, SAMPLES_TTL if complete else FAILURE_TTL)
     return samples
+
+
+#: Ko'chirilgan media obyektlari shu prefiks ostida turadi
+MEDIA_PREFIX = "media/"
+#: Bitta faylning cheklovi — tashqi host qanchalik katta fayl bersa ham
+MAX_MEDIA_BYTES = 20 * 1024 * 1024
+
+
+def put_media(key: str, body: bytes, content_type: str) -> None:
+    """Ko'chirilgan faylni saqlaydi. Kalit MEDIA_PREFIX bilan boshlanadi."""
+    client().put_object(
+        Bucket=settings.S3_BUCKET,
+        Key=key,
+        Body=body,
+        ContentType=content_type or "application/octet-stream",
+    )
+
+
+def media_exists(key: str) -> bool:
+    try:
+        client().head_object(Bucket=settings.S3_BUCKET, Key=key)
+    except Exception:
+        return False
+    return True
+
+
+def get_media(key: str) -> tuple[bytes, str]:
+    """Ko'chirilgan faylni o'qiydi. Qaytaradi: (bayt, content-type)."""
+    obj = client().get_object(Bucket=settings.S3_BUCKET, Key=key)
+    body: bytes = obj["Body"].read(MAX_MEDIA_BYTES)
+    return body, str(obj.get("ContentType") or "application/octet-stream")
