@@ -144,11 +144,14 @@ class Command(BaseCommand):
         cached = self.topics.get((kind, kep_id))
         if cached is not None:
             return cached
-        # Bir xil nomli ikki teg bitta mavzuga qo'shiladi — bu ataylab:
-        # arxivda «Satrlar» ikki marta bo'lsa ham foydalanuvchi uchun u
-        # bitta filtr bo'lishi kerak.
-        slug = slugify(name)[:50].strip("-") or f"mavzu-{kep_id}"
-        topic, _ = Topic.objects.get_or_create(slug=slug, defaults={"name_uz": name})
+        # Avval NOM bo'yicha qidiriladi, slug bo'yicha emas. Bizdagi
+        # `dp` ham, KEP dagi `dinamik-dasturlash` ham «Dinamik
+        # dasturlash» deb ataladi — slug bo'yicha izlash filtr panelida
+        # bir xil nomli ikkita katakcha qoldirardi.
+        topic = Topic.objects.filter(name_uz__iexact=name).first()
+        if topic is None:
+            slug = slugify(name)[:50].strip("-") or f"mavzu-{kep_id}"
+            topic = Topic.objects.get_or_create(slug=slug, defaults={"name_uz": name})[0]
         self.topics[(kind, kep_id)] = topic
         return topic
 

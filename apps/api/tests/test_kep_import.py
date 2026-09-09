@@ -347,3 +347,22 @@ class TestRemapAndPublish:
         testsiz.refresh_from_db()
         assert testli.is_public is True
         assert testsiz.is_public is False
+
+    def test_takroriy_nomli_mavzular_birlashadi(self):
+        from django.core.management import call_command
+
+        from problems.models import Topic
+
+        keep = Topic.objects.create(slug="dp", name_uz="Dinamik dasturlash")
+        dupe = Topic.objects.create(slug="dinamik-dasturlash", name_uz="dinamik dasturlash")
+        child = Topic.objects.create(slug="bola", name_uz="Bola", parent=dupe)
+        problem = self.make(slug="masala")
+        problem.topics.add(dupe)
+
+        call_command("merge_topics")
+
+        child.refresh_from_db()
+        assert Topic.objects.filter(slug="dinamik-dasturlash").exists() is False
+        # Masala ham, bola mavzu ham saqlanib qolgan yozuvga o'tadi.
+        assert list(problem.topics.all()) == [keep]
+        assert child.parent == keep

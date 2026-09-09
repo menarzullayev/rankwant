@@ -245,14 +245,11 @@ export function ProblemFilters({
                   : ""
             }`}
           >
-            {topics.map((topic) => (
-              <Option
-                key={topic.slug}
-                active={selectedTopics.includes(topic.slug)}
-                onClick={() => toggleTopic(topic.slug)}
-                label={topic.label}
-              />
-            ))}
+            <TopicOptions
+              topics={topics}
+              selected={selectedTopics}
+              onToggle={toggleTopic}
+            />
           </Group>
 
           {locales.length > 1 && (
@@ -298,6 +295,62 @@ export function ProblemFilters({
         </div>
       )}
     </div>
+  );
+}
+
+/** Mavzu tanlash.
+ *
+ * Arxiv 2000 masalaga yetganda mavzu ham 100 dan oshdi va tekis ro'yxat
+ * ishlamay qoldi: kerakli yorliqni ko'z bilan izlash panelni ochishdan
+ * ko'ra uzoqroq. Qidiruv maydoni ro'yxat uzun bo'lgandagina chiqadi —
+ * beshta mavzu uchun u ortiqcha bo'lardi.
+ *
+ * Tanlanganlar qidiruvdan QAT'IY NAZAR yuqorida qoladi, aks holda
+ * yozishni boshlash bilan ular ko'zdan yo'qolardi va foydalanuvchi
+ * nimani tanlaganini unutardi. */
+function TopicOptions({
+  topics,
+  selected,
+  onToggle,
+}: {
+  topics: FilterTopic[];
+  selected: string[];
+  onToggle: (slug: string) => void;
+}) {
+  const [query, setQuery] = useState("");
+  const needle = query.trim().toLocaleLowerCase("uz");
+  const shown = topics.filter(
+    (topic) =>
+      selected.includes(topic.slug) ||
+      topic.label.toLocaleLowerCase("uz").includes(needle),
+  );
+
+  return (
+    <>
+      {topics.length > 15 && (
+        <input
+          type="search"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder={`${topics.length} ta mavzudan qidirish…`}
+          aria-label="Mavzu qidirish"
+          className="mb-1.5 h-8 w-full rw-radius-sm border rw-line rw-field-bg px-2.5 text-theme-sm rw-strong rw-focus-line"
+        />
+      )}
+      <div className="flex max-h-64 flex-wrap gap-1.5 overflow-y-auto">
+        {shown.map((topic) => (
+          <Option
+            key={topic.slug}
+            active={selected.includes(topic.slug)}
+            onClick={() => onToggle(topic.slug)}
+            label={topic.label}
+          />
+        ))}
+        {shown.length === 0 && (
+          <p className="text-theme-sm rw-faint">Bunday mavzu yo&apos;q</p>
+        )}
+      </div>
+    </>
   );
 }
 
