@@ -632,8 +632,8 @@ def test_taqalib_qolganlar_filtri(problem, hard_problem, user, language, db) -> 
 
     client = APIClient()
     client.force_authenticate(user)
-    rows = client.get(
-        reverse("problem-list"), {"attempted": "true", "solved": "false"}
-    ).data["results"]
+    rows = client.get(reverse("problem-list"), {"attempted": "true", "solved": "false"}).data[
+        "results"
+    ]
 
     assert [row["slug"] for row in rows] == [hard_problem.slug]

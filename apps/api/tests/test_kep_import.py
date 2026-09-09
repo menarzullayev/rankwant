@@ -168,9 +168,7 @@ def kep_api(monkeypatch) -> None:
             ],
             "sampleTests": [],
             "similarProblems": [{"id": 2, "score": 0.9}],
-            "attachments": [
-                {"name": "poly.zip", "url": "https://s3/poly.zip", "size": 1630}
-            ],
+            "attachments": [{"name": "poly.zip", "url": "https://s3/poly.zip", "size": 1630}],
             "checkInputSource": None,
             "likesCount": 0,
             "dislikesCount": 0,
