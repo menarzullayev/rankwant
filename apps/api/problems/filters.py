@@ -42,7 +42,7 @@ class ProblemFilter(filters.FilterSet):  # type: ignore[misc]
     def filter_search(self, queryset, name: str, value: str):  # type: ignore[no-untyped-def]
         """Sarlavha, slug va MAVZU bo'yicha qidiradi.
 
-        Mavzu ham qidiriladi, chunki «dinamik» deb yozgan odam
+Mavzu ham qidiriladi, chunki «dinamik» deb yozgan odam
         «Dinamik dasturlash» masalalarini kutadi — 109 ta mavzudan
         filtr panelida tanlashdan ko'ra tezroq. Mavzu tomonida `slug`
         ishlatiladi: u allaqachon apostrofsiz va kichik harfda, ya'ni
@@ -56,6 +56,7 @@ class ProblemFilter(filters.FilterSet):  # type: ignore[misc]
             Q(title_search__icontains=needle)
             | Q(slug__icontains=hyphenated)
             | Q(topics__slug__icontains=hyphenated)
+            | Q(topics__name_search__icontains=needle)
         ).distinct()
 
     def filter_solved(self, queryset, name: str, value: bool):  # type: ignore[no-untyped-def]

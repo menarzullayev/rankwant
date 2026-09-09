@@ -735,6 +735,21 @@ def test_qidiruv_mavzuni_ham_qamraydi(searchable) -> None:
     assert [row["slug"] for row in rows] == ["ryukzak"]
 
 
+def test_mavzu_slugi_inglizcha_bolsa_ham_topiladi(searchable, db) -> None:
+    """Birlashtirilgan mavzuda slug inglizcha qoladi (`dp`), nomi esa
+    o'zbekcha — qidiruv NOM bo'yicha ham ishlashi kerak."""
+    from problems.models import Problem, Topic
+
+    topic = Topic.objects.get(slug="dinamik-dasturlash")
+    topic.slug = "dp"
+    topic.save()
+
+    rows = APIClient().get(reverse("problem-list"), {"search": "dinamik"}).data["results"]
+
+    assert [row["slug"] for row in rows] == ["ryukzak"]
+    assert Problem.objects.get(slug="ryukzak").topics.get().slug == "dp"
+
+
 def test_qidiruv_takror_qator_bermaydi(searchable, db) -> None:
     from problems.models import Problem, Topic
 

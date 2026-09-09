@@ -53,6 +53,10 @@ def difficulty_level(value: int) -> tuple[str, str]:
 class Topic(models.Model):
     slug = models.SlugField(unique=True)
     name_uz = models.CharField(max_length=100)
+    #: Nomning qidiruv shakli. Slug yetarli emas: birlashtirilgan
+    #: mavzuda u inglizcha qolishi mumkin (`dp` = «Dinamik dasturlash»),
+    #: ya'ni «dinamik» so'rovi slug orqali hech narsa topmasdi.
+    name_search = models.CharField(max_length=100, blank=True, db_index=True)
     name_ru = models.CharField(max_length=100, blank=True)
     name_en = models.CharField(max_length=100, blank=True)
     parent = models.ForeignKey(
@@ -61,6 +65,10 @@ class Topic(models.Model):
 
     def __str__(self) -> str:
         return self.name_uz
+
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        self.name_search = normalize_search(self.name_uz)
+        super().save(*args, **kwargs)
 
 
 class Language(models.Model):
