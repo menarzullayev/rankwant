@@ -30,6 +30,11 @@ DEBUG = env_bool("DJANGO_DEBUG", True)
 #: o'lchandi. Bu himoya SOZLAMADA emas, ingress qoidasida yashaydi va
 #: kimdir uni o'zgartirsa panel bir zumda ommaviy bo'lardi.
 ADMIN_ENABLED = env_bool("DJANGO_ADMIN", DEBUG)
+
+#: Mijozning haqiqiy IP si qaysi sarlavhada keladi (`core.throttling`).
+#: Bo'sh bo'lsa faqat `REMOTE_ADDR` ishonchli deb qaraladi — xom
+#: `X-Forwarded-For` ni mijozning o'zi yozishi mumkin.
+TRUSTED_CLIENT_IP_HEADER = env("TRUSTED_CLIENT_IP_HEADER", "")
 ALLOWED_HOSTS = [h for h in env("DJANGO_ALLOWED_HOSTS", "*").split(",") if h]
 
 INSTALLED_APPS = [

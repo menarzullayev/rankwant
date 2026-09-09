@@ -352,3 +352,38 @@ def test_admin_marshruti_productionda_yoq() -> None:
         return
     with pytest.raises(NoReverseMatch):
         reverse("admin:index")
+
+
+@pytest.mark.django_db
+class TestThrottleKaliti:
+    """Cheklov kaliti MIJOZ yozadigan sarlavhadan olinmasligi kerak.
+
+    O'lchandi: `NUM_PROXIES` siz DRF butun `X-Forwarded-For` ni kalit
+    qiladi — bitta manzildan 1600 so'rovning 1270 tasi 429 bo'lgan, keyin
+    sarlavhani almashtirib yuborilgan 10 so'rovning hammasi o'tgan.
+    """
+
+    def _ident(self, settings, header: str, **meta) -> str:
+        from django.test import RequestFactory
+
+        from core.throttling import ResilientAnonRateThrottle
+
+        settings.TRUSTED_CLIENT_IP_HEADER = header
+        request = RequestFactory().get("/api/v1/problems/", REMOTE_ADDR="10.0.0.1", **meta)
+        return ResilientAnonRateThrottle().get_ident(request)
+
+    def test_xom_forwarded_for_ga_ishonilmaydi(self, settings) -> None:
+        soxta = {"HTTP_X_FORWARDED_FOR": "1.2.3.4"}
+        assert self._ident(settings, "", **soxta) == "10.0.0.1"
+
+    def test_ishonchli_sarlavha_ishlatiladi(self, settings) -> None:
+        meta = {"HTTP_CF_CONNECTING_IP": "85.132.1.5", "HTTP_X_FORWARDED_FOR": "1.2.3.4"}
+        assert self._ident(settings, "HTTP_CF_CONNECTING_IP", **meta) == "85.132.1.5"
+
+    def test_sarlavha_yoq_bolsa_remote_addr(self, settings) -> None:
+        assert self._ident(settings, "HTTP_CF_CONNECTING_IP") == "10.0.0.1"
+
+    def test_har_foydalanuvchi_oz_kalitini_oladi(self, settings) -> None:
+        birinchi = self._ident(settings, "HTTP_CF_CONNECTING_IP", HTTP_CF_CONNECTING_IP="85.1.1.1")
+        ikkinchi = self._ident(settings, "HTTP_CF_CONNECTING_IP", HTTP_CF_CONNECTING_IP="85.1.1.2")
+        assert birinchi != ikkinchi

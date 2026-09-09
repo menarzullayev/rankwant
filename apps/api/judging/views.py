@@ -9,11 +9,11 @@ from rest_framework import mixins, status, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.throttling import ScopedRateThrottle
 
 from core.models import User
 from core.pagination import TimeCursorPagination
 from core.permissions import CanSubmit
+from core.throttling import ResilientScopedRateThrottle
 from judging.models import Attempt, CustomRun
 from judging.serializers import (
     AttemptCreateSerializer,
@@ -44,7 +44,7 @@ class AttemptViewSet(
         return [AllowAny()]
 
     def get_throttles(self):  # type: ignore[no-untyped-def]
-        return [ScopedRateThrottle()] if self.action == "create" else []
+        return [ResilientScopedRateThrottle()] if self.action == "create" else []
 
     def get_queryset(self):  # type: ignore[no-untyped-def]
         params = self.request.query_params
@@ -124,7 +124,7 @@ class CustomRunViewSet(
     throttle_scope = "submit"
 
     def get_throttles(self):  # type: ignore[no-untyped-def]
-        return [ScopedRateThrottle()] if self.action == "create" else []
+        return [ResilientScopedRateThrottle()] if self.action == "create" else []
 
     def get_queryset(self) -> QuerySet[CustomRun]:
         # Faqat o'z ishga tushirishlaringiz ko'rinadi
