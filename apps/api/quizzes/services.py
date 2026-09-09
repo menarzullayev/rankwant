@@ -54,6 +54,12 @@ def submit(user: User, quiz: Quiz, answers: dict[int, int]) -> tuple[QuizAttempt
 
     # Qvant faqat BIRINCHI yakunlashda — qayta topshirib fermerlik
     # qilib bo'lmaydi (ADR-0002 anti-farm).
+    #
+    # `QuizAttempt` da uniq cheklov yo'q (qayta topshirish ruxsat etilgan),
+    # shuning uchun tekshiruvni hamyon qulfi ushlab turadi. O'lchandi:
+    # qulfsiz 6 ta parallel topshirish 25 o'rniga 100 Qvant bergan —
+    # va faqat kunlik shift to'xtatgani uchun 150 emas.
+    ledger.lock_wallet(user)
     first_time = not QuizAttempt.objects.filter(user=user, quiz=quiz).exists()
     awarded = 0
     if first_time and quiz.reward_qvant and total:

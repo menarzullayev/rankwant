@@ -84,3 +84,39 @@ class TestQuiz:
         quiz.is_published = False
         quiz.save()
         assert APIClient().get(reverse("quiz-list")).json()["count"] == 0
+
+
+@pytest.mark.django_db(transaction=True)
+def test_parallel_topshirishda_mukofot_bir_marta(user, quiz) -> None:
+    """`exists()` bilan `credit()` orasidagi oyna — o'lchandi.
+
+    Olti parallel topshirish 25 lik mukofotni to'rt marta bergan (100
+    Qvant), va faqat kunlik shift uchinchi-to'rtinchisidan keyin
+    to'xtatgani uchun undan ham ko'p emas.
+    """
+    import threading
+
+    from django.db import connection, connections
+
+    from quizzes.services import submit
+
+    if connection.vendor != "postgresql":
+        pytest.skip("qulf semantikasi faqat Postgres'da tekshiriladi")
+
+    answers = {int(k): v for k, v in _correct_answers(quiz).items()}
+    barrier = threading.Barrier(6)
+
+    def send():
+        try:
+            barrier.wait()
+            submit(user, quiz, answers)
+        finally:
+            connections.close_all()
+
+    threads = [threading.Thread(target=send) for _ in range(6)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    assert ledger.get_wallet(user).balance == quiz.reward_qvant
