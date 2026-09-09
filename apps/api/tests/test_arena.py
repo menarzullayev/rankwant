@@ -55,6 +55,11 @@ class TestArenaMechanics:
         assert points_for(30_000, 60) == 500
         assert points_for(60_000, 60) == 100  # oxirgi soniyada ham nol emas
 
+    def test_ball_chegaradan_chiqmaydi(self) -> None:
+        """Manfiy `elapsed_ms` MAX dan oshiq ball berardi: −100 ms → 1002."""
+        for elapsed in (-10_000, -100, -1, 0, 1, 59_999, 60_000, 10**9):
+            assert 100 <= points_for(elapsed, 60) <= 1000
+
     def test_javob_faqat_joriy_savolga(self, user, running) -> None:
         join(user, running)
         next_q, next_choice = _correct(running, 1)

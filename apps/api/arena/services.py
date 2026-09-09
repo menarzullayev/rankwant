@@ -30,7 +30,14 @@ class ArenaError(Exception):
 
 
 def points_for(elapsed_ms: int, limit_s: int) -> int:
-    fraction_left = max(0.0, 1 - elapsed_ms / (limit_s * 1000))
+    """Tezlikka bog'liq ball — MIN_POINTS bilan MAX_POINTS orasida.
+
+    Yuqoridan ham qisiladi: manfiy `elapsed_ms` MAX_POINTS dan oshiq ball
+    berardi (−100 ms → 1002). Server vaqtni o'zi hisoblagani uchun bunga
+    yo'l yo'q, lekin formula ochiq e'lon qilingan (principle #2) va
+    chegarasi kafolat bo'lishi kerak.
+    """
+    fraction_left = min(1.0, max(0.0, 1 - elapsed_ms / (limit_s * 1000)))
     return max(MIN_POINTS, round(MAX_POINTS * fraction_left))
 
 
