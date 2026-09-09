@@ -13,11 +13,17 @@ log = logging.getLogger(__name__)
 
 
 @shared_task(name="judging.drain_results")
-def drain_results(max_items: int = 100) -> int:
+def drain_results(max_items: int = 500) -> int:
     """Judge natijalari navbatini bo'shatadi.
 
     Beat orqali tez-tez chaqiriladi. Har bir natija alohida tranzaksiyada
     yoziladi — bittasi yiqilsa qolganlari saqlanadi.
+
+    Shift ataylab keng: judge o'lchandi — 66 yechim/s, eski 100 talik
+    chegara esa (2 s da, ikkita worker bilan) ~100/s berardi, ya'ni
+    zaxira atigi 1.5 barobar edi. Navbat bo'sh bo'lsa sikl birinchi
+    bo'sh o'qishda uziladi, ya'ni keng shift bo'sh turganda hech
+    narsani qimmatlashtirmaydi.
     """
     provider = get_provider()
     applied = 0

@@ -488,3 +488,23 @@ class TestAttemptFilters:
         rows = APIClient().get(reverse("attempt-list"), {"problem": problem.slug}).data["results"]
 
         assert rows[0]["source_size"] == len(b"// salom o'zbek")
+
+
+def test_drain_results_bosh_navbatda_darhol_tugaydi(db, memory_judge) -> None:
+    """Shift keng (500), lekin bo'sh navbatda sikl birinchi o'qishda uziladi.
+
+    Aks holda har chaqiruv 500 marta bo'sh o'qib, worker'ni band qilardi.
+    """
+    from judging.tasks import drain_results
+
+    calls = {"n": 0}
+    original = memory_judge.poll
+
+    def counting(timeout: int = 1):
+        calls["n"] += 1
+        return original(timeout)
+
+    memory_judge.poll = counting  # type: ignore[method-assign]
+
+    assert drain_results() == 0
+    assert calls["n"] == 1, "bo'sh navbatda bitta o'qish yetarli"
