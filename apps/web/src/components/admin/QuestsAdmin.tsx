@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { errorText } from "@/i18n/messages";
 
 import {
   CrudPage,
@@ -107,6 +109,7 @@ const fields: FieldDef[] = [
 
 /** ADR-0002 earn jadvalini qayta yozish — katalogdagi questlar asl holiga qaytadi. */
 function SyncCatalogue() {
+  const locale = useLocale();
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
 
@@ -122,7 +125,11 @@ function SyncCatalogue() {
       const res = await staff.action<{ synced: number }>("/staff/quests/sync/");
       setMsg(`${res.synced} ta quest tiklandi — sahifani yangilang`);
     } catch (e) {
-      setMsg(e instanceof ApiError ? e.message : String(e));
+      setMsg(
+        e instanceof ApiError
+          ? errorText(locale, e.code, e.message)
+          : String(e),
+      );
     } finally {
       setBusy(false);
     }
@@ -139,6 +146,7 @@ function SyncCatalogue() {
 }
 
 export function QuestsAdmin() {
+  const locale = useLocale();
   return (
     <div className="space-y-4">
       <SyncCatalogue />

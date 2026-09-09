@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { errorText } from "@/i18n/messages";
 
 import {
   CrudPage,
@@ -106,6 +108,7 @@ function fmtDate(iso: string | null): string {
  * eski `is_published` bilan qolardi va keyingi «Tahrirlash» formasi shu
  * eski qiymatni yuborib nashrni jimgina qaytarib qo'yardi. */
 function PublishToggle({ post, reload }: { post: Post; reload?: () => void }) {
+  const locale = useLocale();
   const [published, setPublished] = useState(post.is_published);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -120,7 +123,11 @@ function PublishToggle({ post, reload }: { post: Post; reload?: () => void }) {
       setPublished(updated.is_published);
       reload?.();
     } catch (e) {
-      setError(e instanceof ApiError ? e.message : String(e));
+      setError(
+        e instanceof ApiError
+          ? errorText(locale, e.code, e.message)
+          : String(e),
+      );
     } finally {
       setBusy(false);
     }
@@ -184,6 +191,7 @@ const COLUMNS: ColumnDef<Post>[] = [
 ];
 
 export function PostsAdmin() {
+  const locale = useLocale();
   return (
     <CrudPage<Post>
       title="Yangiliklar"

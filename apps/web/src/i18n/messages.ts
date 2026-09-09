@@ -95,3 +95,24 @@ export function topicName(
     locale === "ru" ? topic.name_ru : locale === "en" ? topic.name_en : "";
   return translated || topic.name_uz || topic.slug;
 }
+
+/** API xatosining matni — kod bo'yicha, server matni zaxira sifatida.
+ *
+ * API barqaror `code` beradi (`08-technical-spec` xato formati), matn
+ * esa o'zbekcha keladi: `LocaleMiddleware` va `USE_I18N` yoqilgan, lekin
+ * `locale/` katalogi yo'q va birorta ham `gettext` chaqiruvi yo'q —
+ * o'lchandi. Kodni shu yerda tarjima qilish gettext'dan yaxshiroq:
+ * bitta tarjima tizimi, `.po` fayllarsiz va qurish quroli talab
+ * qilmasdan.
+ *
+ * Tanilmagan kod uchun server matni ko'rsatiladi — bo'sh joydan yaxshi.
+ */
+export function errorText(
+  locale: Locale,
+  code: string,
+  fallback: string,
+): string {
+  const key = `error.${code}`;
+  const dict = messages[locale] as Record<string, string>;
+  return dict[key] ?? fallback ?? t(locale, "error.error");
+}

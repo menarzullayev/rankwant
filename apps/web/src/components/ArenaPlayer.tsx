@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/Table";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t } from "@/i18n/messages";
+import { t, errorText } from "@/i18n/messages";
 import {
   API_BASE,
   ApiError,
@@ -101,7 +101,11 @@ export function ArenaPlayer({ initial }: { initial: ArenaDetail }) {
     try {
       setArena(await postJson<ArenaDetail>(`/arena/${arena.slug}/join/`, {}));
     } catch (e) {
-      setError(e instanceof ApiError ? e.message : String(e));
+      setError(
+        e instanceof ApiError
+          ? errorText(locale, e.code, e.message)
+          : String(e),
+      );
     }
   }
 
@@ -115,7 +119,11 @@ export function ArenaPlayer({ initial }: { initial: ArenaDetail }) {
       setFeedback(r.is_correct ? `✓ +${r.points}` : "✗ 0");
       setCurrent({ ...current, answered: true });
     } catch (e) {
-      setError(e instanceof ApiError ? e.message : String(e));
+      setError(
+        e instanceof ApiError
+          ? errorText(locale, e.code, e.message)
+          : String(e),
+      );
     }
   }
 

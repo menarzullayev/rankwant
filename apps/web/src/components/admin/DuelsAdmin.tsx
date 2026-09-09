@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale } from "@/i18n/LocaleProvider";
 
 import { CrudPage, type ColumnDef } from "@/components/admin/CrudPage";
 import { Badge, type BadgeColor } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { DEFAULT_LOCALE } from "@/i18n/messages";
+import { DEFAULT_LOCALE, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -68,6 +69,7 @@ const COLUMNS: ColumnDef<Duel>[] = [
 /** Bekor qilish / yakunlash — ikkalasi ham tasdiq bilan. Muddati o'tmagan duel
  * avval `not_due` bilan rad etiladi; keyin majburiy yakunlash alohida tasdiqlanadi. */
 function DuelActions({ duel, reload }: { duel: Duel; reload: () => void }) {
+  const locale = useLocale();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
@@ -78,7 +80,11 @@ function DuelActions({ duel, reload }: { duel: Duel; reload: () => void }) {
       await fn();
       reload();
     } catch (e) {
-      setError(e instanceof ApiError ? e.message : String(e));
+      setError(
+        e instanceof ApiError
+          ? errorText(locale, e.code, e.message)
+          : String(e),
+      );
     } finally {
       setBusy(false);
     }
@@ -173,6 +179,7 @@ function DuelActions({ duel, reload }: { duel: Duel; reload: () => void }) {
 }
 
 export function DuelsAdmin() {
+  const locale = useLocale();
   return (
     <CrudPage<Duel>
       title="Duellar"

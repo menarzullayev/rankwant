@@ -6,7 +6,7 @@ import { CrudPage, type FieldDef } from "@/components/admin/CrudPage";
 import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { DEFAULT_LOCALE, t, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -132,7 +132,11 @@ function ProblemLinksEditor({
       setSaved(true);
       reload();
     } catch (e) {
-      setError(e instanceof ApiError ? e.message : String(e));
+      setError(
+        e instanceof ApiError
+          ? errorText(locale, e.code, e.message)
+          : String(e),
+      );
     } finally {
       setBusy(false);
     }

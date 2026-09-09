@@ -15,7 +15,7 @@ import {
   Table,
 } from "@/components/ui/Table";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t } from "@/i18n/messages";
+import { t, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -96,9 +96,13 @@ export function QuestionsAdmin() {
       setCount(data.count);
       setError("");
     } catch (e) {
-      setError(e instanceof ApiError ? e.message : String(e));
+      setError(
+        e instanceof ApiError
+          ? errorText(locale, e.code, e.message)
+          : String(e),
+      );
     }
-  }, [page, q]);
+  }, [page, q, locale]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -187,7 +191,11 @@ export function QuestionsAdmin() {
       close();
       await load();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : String(err));
+      setError(
+        err instanceof ApiError
+          ? errorText(locale, err.code, err.message)
+          : String(err),
+      );
     } finally {
       setBusy(false);
     }
@@ -199,7 +207,11 @@ export function QuestionsAdmin() {
       await staff.remove(`${PATH}${item.id}/`);
       await load();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : String(err));
+      setError(
+        err instanceof ApiError
+          ? errorText(locale, err.code, err.message)
+          : String(err),
+      );
     }
   }
 

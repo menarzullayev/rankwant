@@ -8,7 +8,7 @@ import { useSession } from "@/context/SessionContext";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t } from "@/i18n/messages";
+import { t, errorText } from "@/i18n/messages";
 import { ApiError, postJson } from "@/lib/api";
 
 type Mode = "login" | "register";
@@ -44,7 +44,11 @@ export function AuthForm({ mode }: { mode: Mode }) {
       await reload();
       router.push("/");
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : String(err));
+      setError(
+        err instanceof ApiError
+          ? errorText(locale, err.code, err.message)
+          : String(err),
+      );
     } finally {
       setBusy(false);
     }

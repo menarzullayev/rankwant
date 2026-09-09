@@ -10,7 +10,7 @@ import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t } from "@/i18n/messages";
+import { t, errorText } from "@/i18n/messages";
 import {
   ApiError,
   getJson,
@@ -116,7 +116,11 @@ export function DuelActions({ waiting }: { waiting: Duel[] }) {
       router.refresh();
       if (user) setMine(await getJson("/duels/mine/"));
     } catch (e) {
-      setError(e instanceof ApiError ? e.message : String(e));
+      setError(
+        e instanceof ApiError
+          ? errorText(locale, e.code, e.message)
+          : String(e),
+      );
     }
   }
 
@@ -136,7 +140,11 @@ export function DuelActions({ waiting }: { waiting: Duel[] }) {
       router.refresh();
       if (user) setMine(await getJson("/duels/mine/"));
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : String(err));
+      setError(
+        err instanceof ApiError
+          ? errorText(locale, err.code, err.message)
+          : String(err),
+      );
     }
   }
 

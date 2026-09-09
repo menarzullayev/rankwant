@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t } from "@/i18n/messages";
+import { t, errorText } from "@/i18n/messages";
 import {
   ApiError,
   postJson,
@@ -34,7 +34,11 @@ export function QuizPlayer({ quiz }: { quiz: QuizDetail }) {
         }),
       );
     } catch (e) {
-      setError(e instanceof ApiError ? e.message : String(e));
+      setError(
+        e instanceof ApiError
+          ? errorText(locale, e.code, e.message)
+          : String(e),
+      );
     } finally {
       setBusy(false);
     }

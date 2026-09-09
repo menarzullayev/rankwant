@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { errorText as translateError, type Locale } from "@/i18n/messages";
 
 import {
   type ColumnDef,
@@ -100,12 +102,15 @@ const FIELDS: FieldDef[] = [
   },
 ];
 
-function errorText(e: unknown): string {
-  return e instanceof ApiError ? e.message : String(e);
+function errorText(locale: Locale, e: unknown): string {
+  return e instanceof ApiError
+    ? translateError(locale, e.code, e.message)
+    : String(e);
 }
 
 /** Bitta amal formasi holati: yuborilmoqda / natija / xato. */
 function useAction() {
+  const locale = useLocale();
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
@@ -116,7 +121,7 @@ function useAction() {
     try {
       setMsg(await fn());
     } catch (e) {
-      setErr(errorText(e));
+      setErr(errorText(locale, e));
     } finally {
       setBusy(false);
     }
@@ -271,6 +276,7 @@ function BroadcastForm() {
 }
 
 export function UsersAdmin() {
+  const locale = useLocale();
   return (
     <div className="space-y-4">
       <BroadcastForm />

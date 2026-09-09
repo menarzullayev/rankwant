@@ -6,7 +6,7 @@ import { CrudPage, type FieldDef } from "@/components/admin/CrudPage";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t } from "@/i18n/messages";
+import { t, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -195,9 +195,13 @@ function ProblemTestsPanel({
       setTests(await staff.get<StaffTestCase[]>(path));
       setError("");
     } catch (e) {
-      setError(e instanceof ApiError ? e.message : String(e));
+      setError(
+        e instanceof ApiError
+          ? errorText(locale, e.code, e.message)
+          : String(e),
+      );
     }
-  }, [path]);
+  }, [path, locale]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -226,7 +230,11 @@ function ProblemTestsPanel({
       await load();
       reload();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : String(err));
+      setError(
+        err instanceof ApiError
+          ? errorText(locale, err.code, err.message)
+          : String(err),
+      );
     } finally {
       setBusy(false);
     }
@@ -239,7 +247,11 @@ function ProblemTestsPanel({
       await load();
       reload();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : String(err));
+      setError(
+        err instanceof ApiError
+          ? errorText(locale, err.code, err.message)
+          : String(err),
+      );
     }
   }
 

@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t } from "@/i18n/messages";
+import { t, errorText } from "@/i18n/messages";
 import { ApiError, getJson, postJson, type Classroom } from "@/lib/api";
 
 /** Sinflar shaxsiy (egasi yoki a'zo) — sessiya kerak, brauzerda yuklanadi. */
@@ -36,7 +36,11 @@ export function ClassroomHub() {
       (e.target as HTMLFormElement).reset();
       await load();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : String(err));
+      setError(
+        err instanceof ApiError
+          ? errorText(locale, err.code, err.message)
+          : String(err),
+      );
     }
   }
 
@@ -49,7 +53,11 @@ export function ClassroomHub() {
       (e.target as HTMLFormElement).reset();
       await load();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : String(err));
+      setError(
+        err instanceof ApiError
+          ? errorText(locale, err.code, err.message)
+          : String(err),
+      );
     }
   }
 

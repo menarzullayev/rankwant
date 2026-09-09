@@ -19,7 +19,7 @@ import {
   Table,
 } from "@/components/ui/Table";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t } from "@/i18n/messages";
+import { t, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -167,7 +167,11 @@ function ScoreForm({
       setSaved(true);
       await onSaved();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : String(err));
+      setError(
+        err instanceof ApiError
+          ? errorText(locale, err.code, err.message)
+          : String(err),
+      );
     } finally {
       setBusy(false);
     }
@@ -221,9 +225,13 @@ function SubmissionsPanel({
       setRows(data.results);
       setError("");
     } catch (e) {
-      setError(e instanceof ApiError ? e.message : String(e));
+      setError(
+        e instanceof ApiError
+          ? errorText(locale, e.code, e.message)
+          : String(e),
+      );
     }
-  }, [slug]);
+  }, [slug, locale]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
