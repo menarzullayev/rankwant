@@ -212,6 +212,16 @@ export type Quest = {
   done: boolean;
 };
 
+/** Haftalik marafon — har foydalanuvchiga o'z to'plami (PRD P1-9). */
+export type Marathon = {
+  week: string;
+  reward: number;
+  completed: boolean;
+  solved_count: number;
+  total: number;
+  problems: (Problem & { marathon_solved: boolean })[];
+};
+
 export type Notification = {
   id: number;
   kind: string;
@@ -780,6 +790,7 @@ export const api = {
   // Qvant — Phase 1. Balans va questlar shaxsiy, kesh yo'q.
   wallet: () => get<Wallet>("/qvant/wallet/", 0),
   quests: () => get<Quest[]>("/qvant/quests/", 0),
+  marathon: () => get<Marathon>("/qvant/marathon/", 0),
   shop: () => get<ShopItem[]>("/qvant/shop/", 30),
   // Bildirishnomalar shaxsiy va tez o'zgaradi — keshlanmaydi
   notifications: () => get<Paginated<Notification>>("/notifications/", 0),

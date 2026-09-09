@@ -486,7 +486,7 @@ class TestMarathon:
                 is_public=True,
             )
 
-    def test_kichik_arxivda_marafon_yoq(self, db, catalogue) -> None:
+    def test_kichik_arxivda_marafon_yoq(self, user, catalogue) -> None:
         """Arxiv kichik bo'lsa marafon bo'lmasligi kerak.
 
         Aks holda bitta masala yechish +100 Qvant berardi.
@@ -494,33 +494,80 @@ class TestMarathon:
         from qvant.marathon import marathon_problems
 
         self._archive(5)
-        assert marathon_problems() == []
+        assert marathon_problems(user) == []
 
-    def test_yetarli_arxivda_marafon_bor(self, db, catalogue) -> None:
+    def test_yetarli_arxivda_marafon_bor(self, user, catalogue) -> None:
         from qvant.marathon import MARATHON_SIZE, marathon_problems
 
         self._archive(30)
-        assert len(marathon_problems()) == MARATHON_SIZE
+        assert len(marathon_problems(user)) == MARATHON_SIZE
 
-    def test_toplam_barqaror(self, db, catalogue) -> None:
-        """Bir haftada hamma bir xil to'plamni ko'radi."""
+    def test_toplam_barqaror(self, user, catalogue) -> None:
+        """To'plam hafta davomida o'zgarmaydi."""
         from qvant.marathon import marathon_problems
 
         self._archive(30)
-        first = [p.pk for p in marathon_problems()]
-        second = [p.pk for p in marathon_problems()]
+        first = [p.pk for p in marathon_problems(user)]
+        second = [p.pk for p in marathon_problems(user)]
         assert first == second
 
-    def test_haftalar_farq_qiladi(self, db, catalogue) -> None:
+    def test_haftalar_farq_qiladi(self, user, catalogue) -> None:
         from datetime import timedelta
 
         from qvant.marathon import marathon_problems
 
         self._archive(40)
         today = timezone.localdate()
-        this_week = [p.pk for p in marathon_problems(today)]
-        other = [p.pk for p in marathon_problems(today - timedelta(weeks=5))]
+        this_week = [p.pk for p in marathon_problems(user, today)]
+        other = [p.pk for p in marathon_problems(user, today - timedelta(weeks=5))]
         assert this_week != other
+
+    def test_har_kimga_oz_toplami(self, user, other_user, catalogue) -> None:
+        """Umumiy to'plamda oldin yechilgan bitta masala butun haftani
+        qulflab qo'yardi — o'lchandi: 700 masala yechganning imkoni 1.7 %."""
+        from qvant.marathon import marathon_problems
+
+        self._archive(40)
+        assert [p.pk for p in marathon_problems(user)] != [
+            p.pk for p in marathon_problems(other_user)
+        ]
+
+    def test_oldin_yechilgan_masala_toplamga_kirmaydi(self, user, catalogue) -> None:
+        from datetime import timedelta
+
+        from problems.models import Problem
+        from qvant.marathon import marathon_problems, week_start
+        from ratings.models import UserSolvedProblem
+
+        self._archive(30)
+        before = marathon_problems(user)
+        row = UserSolvedProblem.objects.create(
+            user=user, problem=before[0], difficulty_at_solve=before[0].difficulty
+        )
+        UserSolvedProblem.objects.filter(pk=row.pk).update(
+            first_ac_at=timezone.now() - timedelta(days=week_start().weekday() + 8)
+        )
+
+        after = marathon_problems(user)
+
+        assert before[0].pk not in {p.pk for p in after}
+        assert len(after) == len(before)
+        assert Problem.objects.filter(is_public=True).count() == 30
+
+    def test_shu_hafta_yechilgani_toplamdan_chiqmaydi(self, user, catalogue) -> None:
+        """To'plam hafta boshiga mahkamlangan: yechish uni o'zgartirmaydi,
+        aks holda marafon hech qachon tugamasdi."""
+        from qvant.marathon import marathon_problems, solved_this_week
+        from ratings.models import UserSolvedProblem
+
+        self._archive(30)
+        chosen = marathon_problems(user)
+        UserSolvedProblem.objects.create(
+            user=user, problem=chosen[0], difficulty_at_solve=chosen[0].difficulty
+        )
+
+        assert [p.pk for p in marathon_problems(user)] == [p.pk for p in chosen]
+        assert solved_this_week(user) == {chosen[0].pk}
 
     def test_toliq_yechilganda_mukofot(self, user, catalogue) -> None:
         from judging.models import Attempt
@@ -529,7 +576,7 @@ class TestMarathon:
 
         self._archive(12)
         lang = Language.objects.create(code="py", name="Python", run_cmd=["python3"])
-        for p in marathon_problems():
+        for p in marathon_problems(user):
             a = Attempt.objects.create(user=user, problem=p, language=lang, source_code="x")
             apply_result({"attempt_id": a.pk, "verdict": "AC"})
         # AC lar davomida allaqachon berilgan bo'lishi mumkin
@@ -545,7 +592,7 @@ class TestMarathon:
 
         self._archive(20)
         lang = Language.objects.create(code="py", name="Python", run_cmd=["python3"])
-        for p in marathon_problems()[:3]:
+        for p in marathon_problems(user)[:3]:
             a = Attempt.objects.create(user=user, problem=p, language=lang, source_code="x")
             apply_result({"attempt_id": a.pk, "verdict": "AC"})
         assert check_completion(user) == 0
@@ -843,3 +890,37 @@ def test_takroriy_narsa_qulfdan_keyin_ham_qayta_sotiladi(user) -> None:
     purchase(user, item.code)
 
     assert UserInventory.objects.filter(user=user, item=item).count() == 2
+
+
+@pytest.mark.django_db
+def test_marafon_endpointi_toplamni_va_progressni_beradi(user, catalogue) -> None:
+    """Marafon ilgari hech qayerda ko'rinmasdi — foydalanuvchi qaysi
+    masalalarni yechish kerakligini bilolmasdi."""
+    from problems.models import Problem
+    from qvant.marathon import MARATHON_REWARD, MARATHON_SIZE, marathon_problems
+    from ratings.models import UserSolvedProblem
+
+    for i in range(30):
+        Problem.objects.create(
+            slug=f"mm{i}", title=f"MM{i}", statement="…", difficulty=800, is_public=True
+        )
+    chosen = marathon_problems(user)
+    UserSolvedProblem.objects.create(
+        user=user, problem=chosen[0], difficulty_at_solve=chosen[0].difficulty
+    )
+
+    c = APIClient()
+    c.force_authenticate(user=user)
+    body = c.get(reverse("qvant-marathon")).json()
+
+    assert body["total"] == MARATHON_SIZE
+    assert body["reward"] == MARATHON_REWARD
+    assert body["solved_count"] == 1
+    assert body["completed"] is False
+    assert [p["slug"] for p in body["problems"]] == [p.slug for p in chosen]
+    assert [p["marathon_solved"] for p in body["problems"]].count(True) == 1
+
+
+@pytest.mark.django_db
+def test_marafon_endpointi_kirishni_talab_qiladi() -> None:
+    assert APIClient().get(reverse("qvant-marathon")).status_code == 401

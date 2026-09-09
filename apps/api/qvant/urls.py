@@ -13,5 +13,6 @@ router.register("staff/shop-items", staff_views.StaffShopItemViewSet, basename="
 urlpatterns = [
     path("qvant/wallet/", views.WalletView.as_view(), name="qvant-wallet"),
     path("qvant/quests/", views.QuestListView.as_view(), name="qvant-quests"),
+    path("qvant/marathon/", views.MarathonView.as_view(), name="qvant-marathon"),
     path("", include(router.urls)),
 ]

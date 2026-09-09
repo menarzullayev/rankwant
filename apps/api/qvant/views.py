@@ -6,7 +6,7 @@ from datetime import timedelta
 from typing import Any
 
 from django.utils import timezone
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -16,7 +16,7 @@ from rest_framework.views import APIView
 
 from core.models import User
 from core.pagination import TimeCursorPagination
-from qvant import ledger
+from qvant import ledger, quests
 from qvant.models import QvantQuest, QvantTransaction, ShopItem, UserInventory, UserQuestCompletion
 from qvant.serializers import (
     InventorySerializer,
@@ -84,6 +84,47 @@ class QuestListView(APIView):
             )
             payload.append(data)
         return Response(payload)
+
+
+class MarathonView(APIView):
+    """Haftalik marafon — PRD P1-9.
+
+    Ilgari to'plam faqat serverda hisoblanardi va hech qayerda
+    ko'rsatilmasdi: foydalanuvchi qaysi masalalarni yechish kerakligini
+    bilmasdi va 100 Qvant amalda faqat tasodifan tegardi.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(responses={200: OpenApiResponse(description="Haftalik marafon")})
+    def get(self, request: Request) -> Response:
+        from problems.serializers import ProblemListSerializer
+        from qvant import marathon
+
+        assert isinstance(request.user, User)
+        problems = marathon.marathon_problems(request.user)
+        solved = marathon.solved_this_week(request.user)
+        done = UserQuestCompletion.objects.filter(
+            user=request.user,
+            quest__code=marathon.MARATHON_QUEST,
+            period_key=quests.week_key(),
+        ).exists()
+        return Response(
+            {
+                "week": quests.week_key(),
+                "reward": marathon.MARATHON_REWARD,
+                "completed": done,
+                "solved_count": len(solved),
+                "total": len(problems),
+                "problems": [
+                    {
+                        **ProblemListSerializer(p, context={"request": request}).data,
+                        "marathon_solved": p.pk in solved,
+                    }
+                    for p in problems
+                ],
+            }
+        )
 
 
 class ShopViewSet(viewsets.ReadOnlyModelViewSet[ShopItem]):

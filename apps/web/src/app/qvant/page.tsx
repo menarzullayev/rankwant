@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { Badge } from "@/components/ui/Badge";
 import { Card, StatCard } from "@/components/ui/Card";
@@ -7,6 +8,7 @@ import { CheckIcon, QvantIcon } from "@/icons";
 import {
   api,
   ApiError,
+  type Marathon,
   type Quest,
   type ShopItem,
   type Wallet,
@@ -23,11 +25,13 @@ export default async function QvantPage() {
   let wallet: Wallet | null = null;
   let quests: Quest[] = [];
   let shop: ShopItem[] = [];
+  let marathon: Marathon | null = null;
   try {
-    [wallet, quests, shop] = await Promise.all([
+    [wallet, quests, shop, marathon] = await Promise.all([
       api.wallet(),
       api.quests(),
       api.shop(),
+      api.marathon(),
     ]);
   } catch (error) {
     // Kirmagan foydalanuvchi hamyonni ko'ra olmaydi — do'kon ochiq qoladi.
@@ -100,6 +104,59 @@ export default async function QvantPage() {
                 <Badge color={quest.done ? "neutral" : "brand"}>
                   +{quest.reward}
                 </Badge>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
+
+      {marathon && marathon.total > 0 && (
+        <Card
+          title="Haftalik marafon"
+          bodyClassName="p-0"
+          action={
+            <Badge color={marathon.completed ? "success" : "brand"}>
+              {marathon.completed
+                ? "Yakunlandi"
+                : `${marathon.solved_count}/${marathon.total} · +${marathon.reward}`}
+            </Badge>
+          }
+        >
+          <p className="px-5 pt-3 text-theme-sm rw-dim">
+            Bu to&apos;plam faqat sizniki va hafta oxirigacha o&apos;zgarmaydi.
+            Hammasini yeching — +{marathon.reward} Qvant.
+          </p>
+          <ul className="mt-3 divide-y rw-divide">
+            {marathon.problems.map((problem) => (
+              <li key={problem.slug}>
+                <Link
+                  href={`/problems/${problem.slug}`}
+                  className="flex items-center gap-3 px-5 py-2.5 transition rw-hover-bg"
+                >
+                  <span
+                    className={`flex size-6 shrink-0 items-center justify-center rounded-full ${
+                      problem.marathon_solved
+                        ? "rw-ok-soft rw-ok-ink"
+                        : "border rw-line"
+                    }`}
+                  >
+                    {problem.marathon_solved && (
+                      <CheckIcon className="size-3.5" />
+                    )}
+                  </span>
+                  <span
+                    className={`flex-1 truncate text-theme-sm ${
+                      problem.marathon_solved
+                        ? "rw-faint line-through"
+                        : "rw-strong"
+                    }`}
+                  >
+                    {problem.title}
+                  </span>
+                  <span className="shrink-0 text-theme-xs rw-faint tabular-nums">
+                    {problem.difficulty}
+                  </span>
+                </Link>
               </li>
             ))}
           </ul>
