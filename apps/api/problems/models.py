@@ -159,6 +159,17 @@ class Problem(models.Model):
     interactor_language = models.ForeignKey(
         Language, null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
     )
+    #: `special` va `scorer` uchun checker dasturi — testlib chaqiruvi:
+    #: `checker <input> <output> <answer>`. Interactor kabi ISHONCHLI:
+    #: masala bilan birga keladi va sandbox tashqarisida ishlaydi.
+    #:
+    #: Judge buni allaqachon biladi, model tomonida esa yo'q edi: `special`
+    #: tanlangan masalaga har yuborish «checker dasturi berilmagan» degan
+    #: IE qaytarardi.
+    checker_source = models.TextField(blank=True)
+    checker_language = models.ForeignKey(
+        Language, null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
 
     is_public = models.BooleanField(default=False, db_index=True)
     author = models.ForeignKey(

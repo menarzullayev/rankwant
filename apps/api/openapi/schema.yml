@@ -8554,6 +8554,11 @@ components:
         interactor_language:
           type: string
           nullable: true
+        checker_source:
+          type: string
+        checker_language:
+          type: string
+          nullable: true
         is_public:
           type: boolean
         source:
@@ -10414,6 +10419,11 @@ components:
         interactor_source:
           type: string
         interactor_language:
+          type: string
+          nullable: true
+        checker_source:
+          type: string
+        checker_language:
           type: string
           nullable: true
         is_public:

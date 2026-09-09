@@ -50,6 +50,9 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
     interactor_language = serializers.SlugRelatedField[Language](
         slug_field="code", queryset=Language.objects.all(), allow_null=True, required=False
     )
+    checker_language = serializers.SlugRelatedField[Language](
+        slug_field="code", queryset=Language.objects.all(), allow_null=True, required=False
+    )
     test_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -73,6 +76,8 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
             "checker_type",
             "interactor_source",
             "interactor_language",
+            "checker_source",
+            "checker_language",
             "is_public",
             "source",
             "source_url",

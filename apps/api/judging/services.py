@@ -13,7 +13,7 @@ from django.utils import timezone
 from judging.models import Attempt, AttemptTestResult, CustomRun
 from judging.provider import JudgeJob, get_provider, new_job_id
 from judging.verdicts import ALERTING, Verdict
-from problems.models import Problem, ProblemLanguage, TestCase
+from problems.models import Language, Problem, ProblemLanguage, TestCase
 
 log = logging.getLogger(__name__)
 
@@ -38,14 +38,27 @@ def build_job(attempt: Attempt) -> JudgeJob:
         for st in problem.subtasks.order_by("order")
     ]
 
-    checker: dict[str, Any] = {"type": problem.checker_type}
-    if problem.checker_type == Problem.Checker.INTERACTIVE and problem.interactor_language:
-        checker["interactor"] = {
-            "code": problem.interactor_language.code,
-            "compile": problem.interactor_language.compile_cmd,
-            "run": problem.interactor_language.run_cmd,
-            "source": problem.interactor_source,
+    def _program(lang: Language | None, source: str) -> dict[str, Any] | None:
+        if lang is None or not source:
+            return None
+        return {
+            "code": lang.code,
+            "compile": lang.compile_cmd,
+            "run": lang.run_cmd,
+            "source": source,
         }
+
+    checker: dict[str, Any] = {"type": problem.checker_type}
+    if problem.checker_type == Problem.Checker.INTERACTIVE:
+        interactor = _program(problem.interactor_language, problem.interactor_source)
+        if interactor:
+            checker["interactor"] = interactor
+    elif problem.checker_type in (Problem.Checker.SPECIAL, Problem.Checker.SCORER):
+        # Judge `special` va `scorer` da checker dasturini KUTADI; berilmasa
+        # har yuborish IE bo'ladi. Model tomonida bu maydonlar yo'q edi.
+        program = _program(problem.checker_language, problem.checker_source)
+        if program:
+            checker["program"] = program
 
     # Til ustma-ust limiti — Python C++ dan sekinroq, shu bois masala
     # limiti unga adolatsiz bo'lishi mumkin (KEP ham shunday qiladi).

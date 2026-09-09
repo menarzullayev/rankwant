@@ -639,3 +639,63 @@ def test_tanilmagan_verdict_ac_ni_bekor_qiladi(db, problem, user, language) -> N
     attempt.refresh_from_db()
     assert attempt.verdict == Verdict.IE
     assert not UserSolvedProblem.objects.filter(user=user, problem=problem).exists()
+
+
+class TestCheckerJobga:
+    """`special` va `scorer` da judge checker DASTURINI kutadi.
+
+    O'lchandi: judge uni to'liq qo'llab-quvvatlaydi va berilmasa
+    «checker dasturi berilmagan» degan IE qaytaradi — model tomonida esa
+    bu maydonlar umuman yo'q edi, ya'ni bunday masalaga har yuborish IE
+    bo'lardi.
+    """
+
+    def _job(self, problem, user, language):
+        from judging.services import build_job
+
+        attempt = Attempt.objects.create(
+            user=user, problem=problem, language=language, source_code="x"
+        )
+        return build_job(attempt)
+
+    def test_standartda_dastur_yuborilmaydi(self, db, problem, user, language) -> None:
+        job = self._job(problem, user, language)
+        assert job.checker == {"type": "standard"}
+
+    def test_special_checker_dasturi_yuboriladi(self, db, problem, user, language) -> None:
+        problem.checker_type = problem.Checker.SPECIAL
+        problem.checker_language = language
+        problem.checker_source = "int main(){return 0;}"
+        problem.save()
+
+        job = self._job(problem, user, language)
+
+        assert job.checker["type"] == "special"
+        assert job.checker["program"]["source"] == "int main(){return 0;}"
+        assert job.checker["program"]["code"] == language.code
+
+    def test_scorer_ham_yuboriladi(self, db, problem, user, language) -> None:
+        problem.checker_type = problem.Checker.SCORER
+        problem.checker_language = language
+        problem.checker_source = "x"
+        problem.save()
+
+        assert self._job(problem, user, language).checker["program"]["source"] == "x"
+
+    def test_manba_yoq_bolsa_kalit_qoshilmaydi(self, db, problem, user, language) -> None:
+        """Judge nil ni o'zi ushlaydi — bo'sh dastur yuborish yomonroq."""
+        problem.checker_type = problem.Checker.SPECIAL
+        problem.save()
+
+        assert "program" not in self._job(problem, user, language).checker
+
+    def test_interactive_ozgarmadi(self, db, problem, user, language) -> None:
+        problem.checker_type = problem.Checker.INTERACTIVE
+        problem.interactor_language = language
+        problem.interactor_source = "interactor"
+        problem.save()
+
+        job = self._job(problem, user, language)
+
+        assert job.checker["interactor"]["source"] == "interactor"
+        assert "program" not in job.checker
