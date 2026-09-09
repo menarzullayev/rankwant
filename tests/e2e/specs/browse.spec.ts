@@ -97,8 +97,11 @@ test("yechilmagan masalada mavzuni yashirish sozlamasi ishlaydi", async ({
   page,
 }) => {
   await page.goto("/problems");
-  const badges = page.locator("tbody .rounded-full");
-  const before = await badges.count();
+  // Mavzu MATNI bo'yicha tekshiriladi, CSS sinfi bo'yicha emas: teg
+  // ilgari badge edi, endi kichik kulrang matn — ko'rinish o'zgarganda
+  // test yiqilmasligi kerak, xatti-harakat o'sha-o'sha.
+  const topics = page.locator("tbody [data-topics]");
+  await expect(topics.first()).toBeVisible();
 
   await page.getByRole("button", { name: /^Filtrlar( \d+)?$/ }).click();
   await page
@@ -106,7 +109,7 @@ test("yechilmagan masalada mavzuni yashirish sozlamasi ishlaydi", async ({
     .click();
 
   // Qiyinlik belgisi qoladi, mavzu tegi ketadi.
-  await expect(badges).not.toHaveCount(before);
+  await expect(topics).toHaveCount(0);
 });
 
 test("kirgan foydalanuvchi holat filtrini va bo'lim havolalarini ko'radi", async ({

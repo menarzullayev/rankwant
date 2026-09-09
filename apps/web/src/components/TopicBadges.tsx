@@ -30,7 +30,7 @@ export function TopicBadges({
   const rest = topics.length - shown.length;
 
   return (
-    <p className="mt-0.5 truncate text-theme-xs rw-faint">
+    <p data-topics className="mt-0.5 truncate text-theme-xs rw-faint">
       {shown.join(" · ")}
       {rest > 0 && (
         <span title={topics.slice(VISIBLE).join(", ")}> +{rest}</span>
