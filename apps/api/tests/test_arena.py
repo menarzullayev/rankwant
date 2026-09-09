@@ -145,3 +145,27 @@ class TestArenaApi:
         assert body["results"][0]["question_count"] == 2
         assert body["results"][0]["is_running"] is True
         assert ArenaParticipation.objects.count() == 0
+
+
+def test_standings_chegaralangan(running) -> None:
+    """Cheklovsiz jadval SSE oqimida har 3 soniyada megabaytlab yuborilardi."""
+    from arena.models import ArenaParticipation
+    from arena.services import TOP_LIMIT, standings
+    from core.models import User
+
+    ArenaParticipation.objects.bulk_create(
+        [
+            ArenaParticipation(
+                round=running,
+                user=User.objects.create_user(f"neytron_{i:05d}"),
+                score=i,
+            )
+            for i in range(TOP_LIMIT + 20)
+        ]
+    )
+
+    rows = standings(running)
+
+    assert len(rows) == TOP_LIMIT
+    # Kesish saralashdan KEYIN bo'lishi kerak — eng yuqori ball birinchi.
+    assert rows[0]["score"] > rows[-1]["score"]

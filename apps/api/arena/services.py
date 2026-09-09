@@ -86,8 +86,14 @@ def answer(user: User, arena: ArenaRound, question_id: int, choice_id: int) -> A
     return record
 
 
-def standings(arena: ArenaRound) -> list[dict[str, object]]:
-    rows = ArenaParticipation.objects.filter(round=arena).select_related("user")
+#: Jadvalning ko'rinadigan qismi — contests bilan bir xil chegara.
+#: Cheklovsiz qoldirilganda 10 000 ishtirokchi 1.19 MB javob berardi va
+#: SSE oqimi uni HAR 3 SONIYADA har bir tomoshabinga yuborardi.
+TOP_LIMIT = 500
+
+
+def standings(arena: ArenaRound, limit: int = TOP_LIMIT) -> list[dict[str, object]]:
+    rows = ArenaParticipation.objects.filter(round=arena).select_related("user")[:limit]
     return [
         {
             "rank": i + 1,
