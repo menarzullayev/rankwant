@@ -42,6 +42,12 @@ class Command(BaseCommand):
             help="Berilsa hammasi shu parol bilan kira oladi. Berilmasa — kira olmaydi.",
         )
         parser.add_argument("--seed", type=int, default=0, help="Takrorlanadigan tasodif")
+        parser.add_argument(
+            "--attempts",
+            type=int,
+            default=0,
+            help="Har foydalanuvchiga o'rtacha urinish. 0 — faqat hisob yaratiladi.",
+        )
 
     def handle(self, *args: Any, **options: Any) -> None:
         count: int = options["users"]
@@ -83,3 +89,92 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(f"{len(rows)} ta {PREFIX} yaratildi — {note}"))
         if len(rows) < count:
             self.stdout.write(f"({count - len(rows)} tasi allaqachon bor edi)")
+
+        if options["attempts"]:
+            self.seed_attempts(rng, options["attempts"])
+
+    def seed_attempts(self, rng: random.Random, per_user: int) -> None:
+        """Urinish va yechilgan masalalar.
+
+        Hisobning o'zi arxiv, statistika va yechganlar bo'limini
+        sinamaydi — ular URINISHGA tayanadi. Masala mashhurligi
+        ataylab notekis: haqiqiy arxivda bir nechta masala minglab
+        urinish oladi, qolganlari bir nechtadan, va aynan o'sha
+        gavjum masala cho'kish nuqtasi bo'ladi.
+        """
+        from django.db.models import Count, Q
+
+        from judging.models import Attempt
+        from problems.models import Language, Problem
+        from ratings.models import UserSolvedProblem
+
+        languages = list(Language.objects.filter(is_active=True))
+        problems = list(
+            Problem.objects.filter(is_public=True, tests__isnull=False)
+            .distinct()
+            .values_list("pk", flat=True)
+        )
+        users = list(
+            User.objects.filter(username__startswith=f"{PREFIX}_").values_list("pk", flat=True)
+        )
+        if not (languages and problems and users):
+            raise CommandError("Til, testli masala yoki foydalanuvchi topilmadi")
+
+        # Zipf: birinchi masalalar eng gavjum bo'ladi.
+        weights = [1 / (i + 1) ** 0.8 for i in range(len(problems))]
+        source = "int main(){return 0;}\n"
+
+        attempts: list[Attempt] = []
+        solved: set[tuple[int, int]] = set()
+        for user_id in users:
+            for _ in range(max(0, int(rng.gauss(per_user, per_user / 2)))):
+                problem_id = rng.choices(problems, weights=weights, k=1)[0]
+                verdict = rng.choices(
+                    ["AC", "WA", "TLE", "RE", "CE"], weights=[30, 40, 15, 10, 5], k=1
+                )[0]
+                attempts.append(
+                    Attempt(
+                        user_id=user_id,
+                        problem_id=problem_id,
+                        language=rng.choice(languages),
+                        source_code=source,
+                        # `bulk_create` `save()` ni chetlab o'tadi — hisoblab
+                        # qo'yamiz, aks holda ustun nolda qolardi.
+                        source_size=len(source.encode()),
+                        verdict=verdict,
+                        time_ms=rng.randint(1, 900),
+                        memory_kb=rng.randint(1024, 65536),
+                    )
+                )
+                if verdict == "AC":
+                    solved.add((user_id, problem_id))
+
+        Attempt.objects.bulk_create(attempts, batch_size=2000)
+        UserSolvedProblem.objects.bulk_create(
+            [
+                UserSolvedProblem(user_id=u, problem_id=p, difficulty_at_solve=800)
+                for u, p in solved
+            ],
+            batch_size=2000,
+            ignore_conflicts=True,
+        )
+
+        # Denormallashtirilgan sanoqlar — aks holda arxivda hamma joyda
+        # nol turardi va ro'yxat soxta ko'rinardi.
+        # `solved_count` — YECHGAN ODAMLAR soni, AC urinishlar soni emas
+        # (jonli kodda u birinchi AC da bir marta oshadi). Shu sababli
+        # `attempts__user` bo'yicha distinct.
+        counts = Problem.objects.filter(is_public=True).annotate(
+            n=Count("attempts", distinct=True),
+            ac=Count("attempts__user", filter=Q(attempts__verdict="AC"), distinct=True),
+        )
+        updates = []
+        for problem in counts:
+            problem.attempt_count = problem.n
+            problem.solved_count = problem.ac
+            updates.append(problem)
+        Problem.objects.bulk_update(updates, ["attempt_count", "solved_count"], batch_size=500)
+
+        self.stdout.write(
+            self.style.SUCCESS(f"{len(attempts)} urinish, {len(solved)} yechilgan masala yozildi")
+        )

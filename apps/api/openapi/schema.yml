@@ -6392,13 +6392,14 @@ components:
           nullable: true
         source_size:
           type: integer
-          readOnly: true
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
       required:
       - created_at
       - id
       - language
       - problem
-      - source_size
       - username
     AttemptCreate:
       type: object
@@ -6467,7 +6468,9 @@ components:
           nullable: true
         source_size:
           type: integer
-          readOnly: true
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
         source_code:
           type: string
         compile_output:
@@ -6483,7 +6486,6 @@ components:
       - language
       - problem
       - source_code
-      - source_size
       - test_results
       - username
     AttemptTestResult:

@@ -355,8 +355,6 @@ class ProblemSolversView(APIView):
 
     @extend_schema(responses={200: OpenApiResponse(description="Yechganlar ro'yxati")})
     def get(self, request: Request, slug: str) -> Response:
-        from django.db.models.functions import Length
-
         from judging.models import Attempt
 
         problem = get_object_or_404(Problem, slug=slug, is_public=True)
@@ -368,10 +366,12 @@ class ProblemSolversView(APIView):
         first_ids = list(
             accepted.values("user_id").annotate(first=Min("pk")).values_list("first", flat=True)
         )
+        # `source_size` modelda saqlanadi (`Attempt.save()`) — uni SQL da
+        # qayta hisoblash manba matnini butunlay o'qishni talab qilardi.
         rows = list(
             Attempt.objects.filter(pk__in=first_ids)
             .select_related("user", "language")
-            .annotate(code_length=Length("source_code"))
+            .defer("source_code", "compile_output")
             .order_by("pk")[: self.LIMIT]
         )
 
@@ -393,7 +393,7 @@ class ProblemSolversView(APIView):
                 "language": row.language.code,
                 "time_ms": row.time_ms,
                 "memory_kb": row.memory_kb,
-                "code_length": row.code_length,
+                "code_length": row.source_size,
                 "attempts": tries[row.user_id],
                 "solved_at": row.created_at,
             }

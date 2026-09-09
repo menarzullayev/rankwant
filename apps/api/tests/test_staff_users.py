@@ -333,3 +333,25 @@ class TestSeedStress:
         call_command("prune_test_users", prefix="neytron")
 
         assert User.objects.filter(username__startswith="neytron_").count() == 0
+
+    def test_urinishlar_va_yechilganlar_yoziladi(self, problem, language) -> None:
+        from judging.models import Attempt
+        from problems.models import TestCase as ProblemTest
+        from ratings.models import UserSolvedProblem
+
+        ProblemTest.objects.create(
+            problem=problem, order=1, input_ref="s3://a/1.in", output_ref="s3://a/1.out"
+        )
+
+        self.seed(users=20, attempts=5, seed=7)
+
+        assert Attempt.objects.count() > 0
+        # `bulk_create` `save()` ni chetlab o'tadi — hajm nolda qolmasin.
+        assert Attempt.objects.filter(source_size=0).count() == 0
+        assert UserSolvedProblem.objects.count() > 0
+
+        problem.refresh_from_db()
+        assert problem.attempt_count == Attempt.objects.filter(problem=problem).count()
+        assert problem.solved_count == Attempt.objects.filter(
+            problem=problem, verdict="AC"
+        ).values("user").distinct().count()

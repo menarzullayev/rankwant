@@ -480,6 +480,11 @@ class TestAttemptFilters:
         client.force_authenticate(user)
         assert {row[0] for row in self.query(client, problem, mine="true")} == {user.username}
 
-    def test_manba_uzunligi_beriladi(self, history, problem) -> None:
+    def test_manba_uzunligi_baytda_beriladi(self, problem, user, language) -> None:
+        """Model saqlagan qiymat — belgi emas, BAYT (`Attempt.save()`)."""
+        Attempt.objects.create(
+            user=user, problem=problem, language=language, source_code="// salom o'zbek"
+        )
         rows = APIClient().get(reverse("attempt-list"), {"problem": problem.slug}).data["results"]
-        assert all(row["source_size"] == 3 for row in rows)
+
+        assert rows[0]["source_size"] == len(b"// salom o'zbek")
