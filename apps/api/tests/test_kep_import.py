@@ -410,3 +410,41 @@ class TestMirrorSSRF:
         handler = _CheckedRedirects()
         with pytest.raises(ValueError):
             handler.redirect_request(None, None, 302, "Found", {}, "http://127.0.0.1/x.png")
+
+
+@pytest.mark.django_db
+def test_import_kochirishni_qayta_yuritadi(kep_api, monkeypatch) -> None:
+    """Import matnni MANBADAGI holatiga qaytaradi — ya'ni avval
+    ko'chirilgan rasmlar yana tashqi hostga qarab qoladi.
+
+    O'lchandi: `--refresh` bitta masalada mahalliy rasmni
+    `cpython.s3.amazonaws.com` ga qaytargan.
+    """
+    from io import StringIO
+
+    from django.core.management import call_command
+
+    from problems.management.commands import import_kep
+
+    chaqirildi: list[str] = []
+    monkeypatch.setattr(import_kep, "call_command", lambda nom, *a, **kw: chaqirildi.append(nom))
+
+    call_command("import_kep", "--ids", "1", "--no-samples", stdout=StringIO())
+
+    assert chaqirildi == ["mirror_assets"]
+
+
+@pytest.mark.django_db
+def test_no_mirror_bilan_kochirilmaydi(kep_api, monkeypatch) -> None:
+    from io import StringIO
+
+    from django.core.management import call_command
+
+    from problems.management.commands import import_kep
+
+    chaqirildi: list[str] = []
+    monkeypatch.setattr(import_kep, "call_command", lambda nom, *a, **kw: chaqirildi.append(nom))
+
+    call_command("import_kep", "--ids", "1", "--no-samples", "--no-mirror", stdout=StringIO())
+
+    assert chaqirildi == []

@@ -16,6 +16,7 @@ import time
 from argparse import ArgumentParser
 from typing import Any
 
+from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils.text import slugify
@@ -62,6 +63,11 @@ class Command(BaseCommand):
             help="Ommaga chiqaradi. Testlar yo'q — faqat sinov uchun.",
         )
         parser.add_argument("--no-samples", action="store_true", help="S3 ga tegmaydi")
+        parser.add_argument(
+            "--no-mirror",
+            action="store_true",
+            help="Rasm va fayllarni o'z saqlashimizga ko'chirmaydi",
+        )
 
     def handle(self, *args: Any, **options: Any) -> None:
         self.sleep: float = options["sleep"]
@@ -117,6 +123,15 @@ class Command(BaseCommand):
                     f"--ids {','.join(str(i) for i in self.failed[:50])}"
                 )
             )
+
+        # Import matn va rasm havolalarini MANBADAGI holatiga qaytaradi,
+        # ya'ni avval ko'chirilgan fayllar yana tashqi hostga qarab
+        # qoladi — o'lchandi, `--refresh` bitta masalada mahalliy rasmni
+        # `cpython.s3.amazonaws.com` ga qaytardi. `mirror_assets`
+        # idempotent (kalit mazmundan), shuning uchun faqat yangisini
+        # oladi (ADR-0005).
+        if self.imported and not options["no_mirror"]:
+            call_command("mirror_assets")
 
     # ── manba ro'yxati ──────────────────────────────────────────────
     def target_ids(self, options: dict[str, Any]) -> list[int]:
