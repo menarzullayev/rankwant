@@ -21,10 +21,20 @@ has() { grep -qE "$1" <<<"$files"; }
 fail=0
 
 schema_matches() {
-  uv run python manage.py spectacular --file /tmp/rw-schema.yml >/dev/null 2>&1 || return 1
-  diff -q openapi/schema.yml /tmp/rw-schema.yml >/dev/null && return 0
-  printf '  Yangilang: cd apps/api && uv run python manage.py spectacular --file openapi/schema.yml\n'
-  return 1
+  # `mktemp` — qat'iy nom emas: /tmp hammaga yoziladigan joy, o'sha
+  # nomni oldindan yaratib qo'yish yoki symlink qilish mumkin edi.
+  # `trap … RETURN` ISHLATILMAYDI: u keyingi funksiyalardan qaytishda
+  # ham otiladi va `set -u` ostida hookni yiqitadi.
+  local tmp rc=1
+  tmp="$(mktemp)" || return 1
+  if uv run python manage.py spectacular --file "$tmp" >/dev/null 2>&1 &&
+     diff -q openapi/schema.yml "$tmp" >/dev/null; then
+    rc=0
+  else
+    printf '  Yangilang: cd apps/api && uv run python manage.py spectacular --file openapi/schema.yml\n'
+  fi
+  rm -f "$tmp"
+  return "$rc"
 }
 
 step() {

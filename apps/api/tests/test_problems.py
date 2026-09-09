@@ -884,3 +884,36 @@ def test_s3_yiqilganda_qolgan_testlar_urinilmaydi(samples, problem, monkeypatch)
 
 def _raise_s3(ref: str) -> str:
     raise OSError("saqlash yiqildi")
+
+
+@pytest.mark.django_db
+def test_recount_problems_ochirilgan_foydalanuvchidan_keyin_tuzatadi(
+    problem, user, other_user, language
+) -> None:
+    """Foydalanuvchi o'chirilsa `UserSolvedProblem` kaskad bilan ketadi,
+    `solved_count` esa qolaveradi — o'lchandi: arxiv «N kishi yechgan» ni
+    doimiy ravishda oshirib ko'rsatardi."""
+    from io import StringIO
+
+    from django.core.management import call_command
+
+    from judging.models import Attempt
+    from judging.services import apply_result
+
+    for u in (user, other_user):
+        attempt = Attempt.objects.create(
+            user=u, problem=problem, language=language, source_code="x"
+        )
+        apply_result({"attempt_id": attempt.pk, "verdict": "AC"})
+    problem.refresh_from_db()
+    assert problem.solved_count == 2
+
+    other_user.delete()
+    problem.refresh_from_db()
+    assert problem.solved_count == 2  # drift: qator ketdi, sanoq qoldi
+
+    call_command("recount_problems", stdout=StringIO())
+
+    problem.refresh_from_db()
+    assert problem.solved_count == 1
+    assert problem.attempt_count == 1

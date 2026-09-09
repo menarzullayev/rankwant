@@ -14,6 +14,7 @@ from __future__ import annotations
 from argparse import ArgumentParser
 from typing import Any
 
+from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import router
 from django.db.models.deletion import Collector
@@ -57,3 +58,8 @@ class Command(BaseCommand):
         removed = victims.count()
         victims.delete()
         self.stdout.write(self.style.SUCCESS(f"{removed} test hisobi o'chirildi"))
+
+        # Foydalanuvchi bilan birga uning `UserSolvedProblem` va `Attempt`
+        # qatorlari kaskad bilan ketadi, masaladagi denormal sanoqlar esa
+        # qolaveradi — arxiv «N kishi yechgan» ni oshirib ko'rsatardi.
+        call_command("recount_problems")
