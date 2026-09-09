@@ -605,3 +605,40 @@ class TestQvantAudit:
         self.audit(fix=True)
         # Ledger — haqiqat manbai (ADR-0002), kesh unga moslashadi.
         assert ledger.get_wallet(user).balance == 340
+
+
+@pytest.mark.django_db(transaction=True)
+def test_kunlik_shift_parallel_mukofotda_ham_ushlaydi(user) -> None:
+    """ADR-0002 anti-farm: shift qulf OSTIDA hisoblanishi shart.
+
+    Ilgari u qulfdan oldin hisoblanardi va bir vaqtda kelgan sakkizta
+    mukofot 100 lik shiftda 400 Qvant bergan edi (jonli o'lchov).
+    Bitta foydalanuvchining bir necha yechimi bitta `drain_results`
+    partiyasida tekshirilsa, mukofotlar aynan shunday keladi.
+    """
+    import threading
+
+    from django.db import connection, connections
+
+    # SQLite `select_for_update` ni qo'llab-quvvatlamaydi («table is
+    # locked»). CI Postgres'da ishlaydi, ya'ni sinov o'sha yerda haqiqiy.
+    if connection.vendor != "postgresql":
+        pytest.skip("qulf semantikasi faqat Postgres'da tekshiriladi")
+
+    barrier = threading.Barrier(6)
+
+    def award():
+        try:
+            barrier.wait()
+            ledger.credit(user, 50, QvantTransaction.Reason.QUEST)
+        finally:
+            connections.close_all()
+
+    threads = [threading.Thread(target=award) for _ in range(6)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    assert ledger.earned_today(user) == DAILY_EARN_CAP
+    assert ledger.get_wallet(user).balance == DAILY_EARN_CAP

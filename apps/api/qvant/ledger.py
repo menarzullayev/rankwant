@@ -67,6 +67,12 @@ def credit(
     if amount <= 0:
         raise ValueError("credit musbat miqdor talab qiladi")
 
+    # Qulf AVVAL olinadi. Ilgari shift qulfdan oldin hisoblanardi va bir
+    # vaqtda kelgan mukofotlar bir-birini ko'rmasdi: o'lchandi — 100
+    # lik shiftda sakkizta parallel mukofot 400 Qvant bergan. Qulf
+    # ostida `remaining_today` allaqachon yozilganlarni ko'radi.
+    wallet = QvantWallet.objects.select_for_update().get_or_create(user=user)[0]
+
     if respect_cap and reason not in CAP_EXEMPT:
         available = remaining_today(user)
         if available <= 0:
@@ -74,7 +80,6 @@ def credit(
             return None
         amount = min(amount, available)
 
-    wallet = QvantWallet.objects.select_for_update().get_or_create(user=user)[0]
     wallet.balance += amount
     wallet.save(update_fields=["balance", "updated_at"])
     return QvantTransaction.objects.create(
