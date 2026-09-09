@@ -8704,6 +8704,9 @@ components:
           minimum: 0
           format: int64
           nullable: true
+        has_tests:
+          type: boolean
+          readOnly: true
         samples:
           type: array
           items:
@@ -8820,6 +8823,7 @@ components:
       - editorial
       - editorial_state
       - has_editorial
+      - has_tests
       - is_favourite
       - is_solved
       - languages
@@ -8941,9 +8945,13 @@ components:
           minimum: 0
           format: int64
           nullable: true
+        has_tests:
+          type: boolean
+          readOnly: true
       required:
       - difficulty
       - has_editorial
+      - has_tests
       - is_favourite
       - is_solved
       - level

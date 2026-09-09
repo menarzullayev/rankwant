@@ -35,6 +35,9 @@ export type Problem = {
   view_count: number;
   /** Yechilgan / urinilgan, foizda. Urinish bo'lmasa `null`. */
   success_rate: number | null;
+  /** Judge tekshira oladimi. Import qilingan masalalarning bir qismida
+   * hali test yo'q va ularga yuborish qabul qilinmaydi. */
+  has_tests: boolean;
   slug: string;
   title: string;
   difficulty: number;

@@ -34,7 +34,12 @@ class Command(BaseCommand):
                 continue
             keeper, *extras = rows
             for extra in extras:
+                # Mavzuga UCHTA bog'lanish bor — masala, maqola va test
+                # savoli. Bittasi unutilsa, o'chirish M2M qatorlarini
+                # birga olib ketardi va bog'lanish jimgina yo'qolardi.
                 keeper.problems.add(*extra.problems.all())
+                keeper.articles.add(*extra.articles.all())
+                keeper.questions.add(*extra.questions.all())
                 extra.children.update(parent=keeper)
                 self.stdout.write(f"{extra.slug} → {keeper.slug} ({keeper.name_uz})")
                 extra.delete()

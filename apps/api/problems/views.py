@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import Counter
 from typing import Any
 
-from django.db.models import Avg, Count, F, Max, Q
+from django.db.models import Avg, Count, Exists, F, Max, OuterRef, Q
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import OpenApiResponse, extend_schema
@@ -27,6 +27,7 @@ from problems.models import (
     Problem,
     ProblemRating,
     ProblemVote,
+    TestCase,
     Topic,
     difficulty_level,
 )
@@ -73,6 +74,9 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
             .annotate(
                 rating_avg=Avg("ratings__score"),
                 rating_count=Count("ratings", distinct=True),
+                # `Exists` — `Count` emas: qo'shimcha JOIN boshqa
+                # agregatlarni ko'paytirib yuborardi.
+                has_tests=Exists(TestCase.objects.filter(problem=OuterRef("pk"))),
             )
             .order_by("difficulty", "slug")
         )

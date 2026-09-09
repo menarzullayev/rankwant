@@ -95,6 +95,9 @@ class ProblemListSerializer(serializers.ModelSerializer[Problem]):
     my_verdict = serializers.SerializerMethodField()
     success_rate = serializers.SerializerMethodField()
     level_label = serializers.CharField(read_only=True)
+    #: Judge tekshira oladimi. Import qilingan arxivning 41 % ida test
+    #: yo'q va u yerda har qanday yuborish IE bilan tugaydi.
+    has_tests = serializers.BooleanField(read_only=True)
     topics = serializers.SlugRelatedField[Topic](many=True, read_only=True, slug_field="slug")
 
     def get_is_favourite(self, problem: Problem) -> bool:
@@ -150,6 +153,7 @@ class ProblemListSerializer(serializers.ModelSerializer[Problem]):
             "has_editorial",
             "my_verdict",
             "code",
+            "has_tests",
         ]
 
 

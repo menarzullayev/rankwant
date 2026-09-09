@@ -115,11 +115,13 @@ export default function SubmitPanel({
   languages,
   samples,
   contest,
+  hasTests,
 }: {
   problem: string;
   languages: ProblemLanguage[];
   samples: Sample[];
   contest?: string;
+  hasTests: boolean;
 }) {
   const { user, ready } = useSession();
   const [busy, setBusy] = useState(false);
@@ -329,7 +331,23 @@ export default function SubmitPanel({
     }
   }
 
-  const canSubmit = ready && !!user;
+  const canSubmit = ready && !!user && hasTests;
+
+  // Testsiz masalada judge tekshiradigan narsa yo'q — tugmani ochiq
+  // qoldirish foydalanuvchining vaqtini olib, ichki xato qaytarardi.
+  if (!hasTests)
+    return (
+      <div className="space-y-4">
+        <Card title="Yechim">
+          <p className="text-theme-sm rw-dim">
+            Bu masalaning <strong>testlari hali tayyorlanmagan</strong>, shu
+            sababli yechim qabul qilinmaydi. Matnni o&apos;qib, o&apos;zingiz
+            uchun yechib ko&apos;rishingiz mumkin — testlar qo&apos;shilishi
+            bilan yuborish ochiladi.
+          </p>
+        </Card>
+      </div>
+    );
 
   return (
     <div className="space-y-4">

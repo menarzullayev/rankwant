@@ -179,6 +179,15 @@ class TestTopicCrud:
 class TestTestCases:
     """Bu slice'ning yadrosi — avval masala tuzuvchilar test yuklay olmasdi."""
 
+    @pytest.fixture(autouse=True)
+    def bosh_masala(self, problem):
+        """Test ro'yxatini NOLDAN boshqarishni sinaymiz.
+
+        Umumiy fixture masalaga bitta test qo'shadi (testsiz masalaga
+        yuborib bo'lmaydi), bu yerda esa u ortiqcha.
+        """
+        problem.tests.all().delete()
+
     def test_yuklash_s3_va_db(self, staff_client, problem, fake_s3) -> None:
         url = reverse("staff-problem-tests", args=[problem.slug])
         res = staff_client.post(

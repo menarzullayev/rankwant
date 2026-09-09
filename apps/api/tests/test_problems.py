@@ -637,3 +637,15 @@ def test_taqalib_qolganlar_filtri(problem, hard_problem, user, language, db) -> 
     ]
 
     assert [row["slug"] for row in rows] == [hard_problem.slug]
+
+
+def test_testsiz_masala_belgilanadi(problem, samples, hard_problem) -> None:
+    """41 % arxivda test yo'q — foydalanuvchi buni oldindan bilishi kerak."""
+    client = APIClient()
+
+    rows = {row["slug"]: row for row in client.get(reverse("problem-list")).data["results"]}
+    assert rows[problem.slug]["has_tests"] is True
+    assert rows[hard_problem.slug]["has_tests"] is False
+
+    detail = client.get(reverse("problem-detail", args=[hard_problem.slug])).data
+    assert detail["has_tests"] is False

@@ -218,6 +218,7 @@ export default async function ProblemPage({ params, searchParams }: Props) {
         languages={problem.languages}
         samples={problem.samples}
         contest={contest}
+        hasTests={problem.has_tests}
       />
     </div>
   );

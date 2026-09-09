@@ -11,6 +11,7 @@ from typing import Any
 
 import pytest
 
+from content.models import Article
 from core.models import User
 from problems import kep
 from problems.html_to_markdown import html_to_markdown
@@ -358,11 +359,14 @@ class TestRemapAndPublish:
         child = Topic.objects.create(slug="bola", name_uz="Bola", parent=dupe)
         problem = self.make(slug="masala")
         problem.topics.add(dupe)
+        article = Article.objects.create(slug="maqola", title="Maqola", body="x")
+        article.topics.add(dupe)
 
         call_command("merge_topics")
 
         child.refresh_from_db()
         assert Topic.objects.filter(slug="dinamik-dasturlash").exists() is False
-        # Masala ham, bola mavzu ham saqlanib qolgan yozuvga o'tadi.
+        # Masala, maqola va bola mavzu — hammasi saqlangan yozuvga o'tadi.
         assert list(problem.topics.all()) == [keep]
+        assert list(article.topics.all()) == [keep]
         assert child.parent == keep

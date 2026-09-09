@@ -60,8 +60,14 @@ class AttemptCreateSerializer(serializers.Serializer[dict[str, Any]]):
         return value
 
     def validate_problem(self, value: str) -> str:
-        if not Problem.objects.filter(slug=value, is_public=True).exists():
+        problem = Problem.objects.filter(slug=value, is_public=True).first()
+        if problem is None:
             raise serializers.ValidationError("Masala topilmadi")
+        # Testsiz masalada judge IE qaytaradi. Tugmani frontendda
+        # yashirish yetarli emas: API mijozi baribir yuborardi va
+        # foydalanuvchi tushunarsiz ichki xato ko'rardi.
+        if not problem.tests.exists():
+            raise serializers.ValidationError("Bu masalaning testlari hali tayyorlanmagan")
         return value
 
     def validate_language(self, value: str) -> str:

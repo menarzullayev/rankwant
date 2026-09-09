@@ -276,6 +276,17 @@ export default async function ProblemsPage({ searchParams }: Props) {
                           <BlogIcon className="size-3.5" />
                         </span>
                       )}
+                      {/* Testsiz masala — yuborib bo'lmaydi. Ro'yxatda
+                          ko'rsatiladi, aks holda foydalanuvchi ochib,
+                          qaytib chiqishga vaqt sarflardi. */}
+                      {!p.has_tests && (
+                        <span
+                          title="Testlar tayyorlanmagan — yechim qabul qilinmaydi"
+                          className="shrink-0 rw-radius-sm rw-warn-soft px-1.5 py-0.5 text-theme-xs rw-warn-ink"
+                        >
+                          testsiz
+                        </span>
+                      )}
                       {/* Yechilmagan, lekin urinilgan — «WA oldim» signali */}
                       {!p.is_solved && p.my_verdict && (
                         <VerdictBadge verdict={p.my_verdict} />

@@ -346,6 +346,9 @@ class TestSubtaskScoring:
         from problems.models import Subtask
         from problems.models import TestCase as PTest
 
+        # Fixture bergan testni olib tashlaymiz — bu test masalaning
+        # testlari AYNAN quyidagi ikkitasi ekaniga tayanadi.
+        problem.tests.all().delete()
         first = Subtask.objects.create(problem=problem, order=1, points=40, scoring="min")
         second = Subtask.objects.create(problem=problem, order=2, points=60, scoring="min")
         PTest.objects.create(
@@ -418,3 +421,19 @@ def test_masala_cheklagan_tilda_yechim_qabul_qilinmaydi(problem, user, language,
 
     assert response.status_code == 400
     assert "py313" in str(response.data["error"]["details"]["language"])
+
+
+def test_testsiz_masalaga_yuborib_bolmaydi(hard_problem, user, language) -> None:
+    """Judge testsiz job uchun IE qaytaradi — bunga yo'l qo'ymaymiz."""
+    client = APIClient()
+    client.force_authenticate(user)
+    payload = {
+        "problem": hard_problem.slug,
+        "language": language.code,
+        "source_code": "int main(){}",
+    }
+
+    response = client.post(reverse("attempt-list"), payload)
+
+    assert response.status_code == 400
+    assert "test" in str(response.data["error"]["details"]["problem"]).lower()

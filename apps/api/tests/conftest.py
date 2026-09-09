@@ -8,7 +8,7 @@ from django.utils import timezone
 from contests.models import Contest, ContestProblem
 from core.models import User
 from judging.provider import InMemoryJudgeProvider, set_provider
-from problems.models import Language, Problem
+from problems.models import Language, Problem, TestCase
 
 
 @pytest.fixture(autouse=True)
@@ -57,13 +57,23 @@ def language(db) -> Language:
 
 @pytest.fixture
 def problem(db) -> Problem:
-    return Problem.objects.create(
+    """Oddiy ommaviy masala — TESTI BILAN.
+
+    Testsiz masalaga yuborish rad etiladi (judge IE qaytarardi), ya'ni
+    testsiz fixture haqiqiy masalani ifodalamaydi. Tartib raqami ataylab
+    katta: namuna testlar qo'shadigan fixture'lar 1-dan boshlanadi.
+    """
+    created = Problem.objects.create(
         slug="a-plus-b",
         title="A+B",
         statement="a va b ni qo'shing",
         difficulty=800,
         is_public=True,
     )
+    TestCase.objects.create(
+        problem=created, order=10, input_ref="s3://x/10.in", output_ref="s3://x/10.out"
+    )
+    return created
 
 
 @pytest.fixture
