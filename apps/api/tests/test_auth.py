@@ -304,3 +304,36 @@ class TestCacheOutage:
 
         with pytest.raises(ConnectionError):
             client.post(reverse("problem-favourite", args=[problem.slug]))
+
+
+@pytest.mark.django_db
+class TestRoyxatdanOtishDarvozasi:
+    """O'lchandi: registr farqi bilan taqlid, parol sifatida username."""
+
+    URL = "/api/v1/auth/register/"
+
+    def _post(self, **over):
+        data = {
+            "username": "aziz",
+            "email": "aziz@example.uz",
+            "password": "Parol!12345",
+            **over,
+        }
+        return APIClient().post(self.URL, data, format="json")
+
+    def test_registr_farqi_bilan_taqlid_qilib_bolmaydi(self) -> None:
+        assert self._post().status_code == 201
+        r = self._post(username="Aziz", email="aziz2@example.uz")
+        assert r.status_code == 400
+        assert "username" in r.json().get("error", {}).get("details", r.json())
+
+    def test_parol_username_ga_oxshay_olmaydi(self) -> None:
+        """`validate_password` ga foydalanuvchi berilmasa,
+        `UserAttributeSimilarityValidator` jim qolardi."""
+        assert self._post(username="azizbekxon", password="azizbekxon").status_code == 400
+
+    def test_parol_emailga_oxshay_olmaydi(self) -> None:
+        assert self._post(password="azizbek@example.uz").status_code == 400
+
+    def test_normal_royxat_otadi(self) -> None:
+        assert self._post(username="dilnoza", password="Kuchli!Parol9").status_code == 201

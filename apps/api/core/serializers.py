@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from django.contrib.auth.password_validation import validate_password
+from django.db import IntegrityError
 from rest_framework import serializers
 
 from core.models import ApiToken, User
@@ -139,15 +140,39 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
         model = User
         fields = ["username", "email", "password", "display_name"]
 
-    def validate_password(self, value: str) -> str:
-        validate_password(value)
+    def validate_username(self, value: str) -> str:
+        # Registr farqi bilan taqlid qilishning oldini oladi: `Aziz` va
+        # `aziz` bitta nom hisoblanadi. Reyting va profil obro'ga
+        # bog'langan platformada bu xavfsizlik masalasi — o'lchandi,
+        # mavjud nomning katta harfli nusxasini olish mumkin edi.
+        if User.objects.filter(username__iexact=value).exists():
+            raise serializers.ValidationError("Bu username band")
         return value
+
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        # `validate_password` ga foydalanuvchi BERILISHI shart: usiz
+        # `UserAttributeSimilarityValidator` umuman ishlamaydi va parol
+        # sifatida username ni kiritish qabul qilinardi (o'lchandi).
+        validate_password(
+            attrs["password"],
+            User(
+                username=attrs.get("username", ""),
+                email=attrs.get("email", ""),
+                display_name=attrs.get("display_name", ""),
+            ),
+        )
+        return attrs
 
     def create(self, validated_data: dict[str, Any]) -> User:
         password = validated_data.pop("password")
         user = User(**validated_data)
         user.set_password(password)
-        user.save()
+        try:
+            user.save()
+        except IntegrityError:
+            # Nom bandligi serializerda, yozuv esa bazada tekshiriladi —
+            # oradagi oynada bir vaqtda kelgan so'rovlar 500 berardi.
+            raise serializers.ValidationError({"username": "Bu username band"}) from None
         return user
 
 

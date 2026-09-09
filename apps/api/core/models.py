@@ -9,6 +9,7 @@ from typing import ClassVar
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models.functions import Lower
 from django.utils import timezone
 
 
@@ -48,6 +49,12 @@ class User(AbstractUser):
         indexes: ClassVar = [
             models.Index(fields=["-rating_skills"], name="user_skills_desc"),
             models.Index(fields=["-rating_contest"], name="user_contest_desc"),
+        ]
+        constraints: ClassVar = [
+            # `Aziz` va `aziz` bir xil nom. Serializerdagi tekshiruv
+            # parallel so'rovda o'tkazib yuborishi mumkin — kafolat
+            # bazada bo'lishi shart.
+            models.UniqueConstraint(Lower("username"), name="uniq_username_ci"),
         ]
 
     def __str__(self) -> str:
