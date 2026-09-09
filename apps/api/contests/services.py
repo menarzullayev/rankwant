@@ -48,16 +48,22 @@ def rebuild_standings(contest: Contest) -> int:
     if not problem_ids:
         return 0
 
-    # Virtual ishtirokchilar rasmiy jadvalga KIRMAYDI: ular musobaqadan
-    # keyin, javoblar ma'lum bo'lgan sharoitda yechishadi.
-    virtual_user_ids = set(
-        ContestRegistration.objects.filter(
-            contest=contest, virtual_start_at__isnull=False
-        ).values_list("user_id", flat=True)
-    )
+    # Rasmiy jadvalga FAQAT musobaqa oynasida yuborilgan urinishlar
+    # kiradi. Shu bilan virtual ishtirok ham chetda qoladi: `start_virtual`
+    # faqat TUGAGAN musobaqada ishlaydi, ya'ni virtual urinish har doim
+    # `end_at` dan keyin turadi.
+    #
+    # Ilgari bu yerda foydalanuvchi bo'yicha chiqarib tashlash turardi va
+    # musobaqada haqiqatan qatnashgan odam keyin uni virtual takrorlasa,
+    # RASMIY natijasi jadvaldan o'chib ketardi (o'lchandi).
+    #
+    # Pastki chegara ataylab ochiq: rejudge yoki keyin o'zgartirilgan
+    # `start_at` tufayli urinish musobaqa boshidan oldin turishi mumkin —
+    # bunday urinishning jarimasi quyida nolga qisiladi.
     attempts = (
-        Attempt.objects.filter(contest=contest, problem_id__in=problem_ids)
-        .exclude(user_id__in=virtual_user_ids)
+        Attempt.objects.filter(
+            contest=contest, problem_id__in=problem_ids, created_at__lt=contest.end_at
+        )
         .order_by("created_at")
         .values("user_id", "problem_id", "verdict", "created_at")
     )

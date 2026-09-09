@@ -211,12 +211,18 @@ class TestVirtualContest:
         self, contest, problem, language, user, other_user
     ) -> None:
         """Virtual ishtirokchi javoblarni bilib turib yechadi — uning
-        natijasi rasmiy jadvalga va reytingga TUSHMASLIGI kerak."""
+        natijasi rasmiy jadvalga va reytingga TUSHMASLIGI kerak.
+
+        Virtual yechim musobaqa TUGAGANIDAN keyin yuboriladi (boshqacha
+        bo'lishi mumkin emas: `start_virtual` tugamagan musobaqani rad
+        etadi) — fixture ham shuni aks ettiradi.
+        """
         from contests.services import rebuild_standings, start_virtual
 
         submit(other_user, contest, problem, language, Verdict.AC, 10)
         start_virtual(contest, user)
-        submit(user, contest, problem, language, Verdict.AC, 5)
+        after_end = int((contest.end_at - contest.start_at).total_seconds() // 60) + 5
+        submit(user, contest, problem, language, Verdict.AC, after_end)
 
         rebuild_standings(contest)
         usernames = set(
@@ -368,6 +374,8 @@ def test_muzlatilgan_oynadagi_ac_jadvalga_tushmaydi(contest, problem, language, 
         source_code="x",
         verdict=Verdict.AC,
     )
+    # Muzlatish oynasi ichida, lekin tugashdan oldin — haqiqiy holat.
+    Attempt.objects.filter(pk=late.pk).update(created_at=now - timedelta(minutes=5))
     assert rebuild_standings(contest) == 0
 
     # Tugagach muzlatish tarqaydi va haqiqiy jadval quriladi.
@@ -376,3 +384,24 @@ def test_muzlatilgan_oynadagi_ac_jadvalga_tushmaydi(contest, problem, language, 
     assert rebuild_standings(contest) == 1
     assert Standing.objects.get(contest=contest, user=user).solved_count == 1
     assert late.verdict == Verdict.AC
+
+
+@pytest.mark.django_db
+def test_virtual_boshlash_rasmiy_natijani_ochirmaydi(
+    contest, problem, language, user, other_user
+) -> None:
+    """Ilgari jadval foydalanuvchi bo'yicha filtrlanardi — o'lchandi:
+    musobaqada haqiqatan qatnashgan odam keyin uni virtual takrorlasa,
+    rasmiy qatori jadvaldan butunlay yo'qolardi."""
+    from contests.services import rebuild_standings, start_virtual
+
+    submit(user, contest, problem, language, Verdict.AC, 20)
+    submit(other_user, contest, problem, language, Verdict.AC, 30)
+    rebuild_standings(contest)
+    assert Standing.objects.filter(contest=contest).count() == 2
+
+    start_virtual(contest, user)
+    rebuild_standings(contest)
+
+    row = Standing.objects.get(contest=contest, user=user)
+    assert row.rank == 1 and row.solved_count == 1
