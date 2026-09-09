@@ -269,3 +269,38 @@ def test_leaderboardda_orin_hisoblanmaydi(db) -> None:
 
     assert row["ranks"] == {}
     assert row["solved_by_level"] == []
+
+
+class TestCacheOutage:
+    """Redis uzilganda butun API 503 bo'lib qolgan edi — o'lchandi."""
+
+    def raising_cache(self, monkeypatch):
+        from django.core.cache import cache
+
+        def boom(*args, **kwargs):
+            raise ConnectionError("redis yiqildi")
+
+        monkeypatch.setattr(cache, "get", boom)
+        monkeypatch.setattr(cache, "set", boom)
+        monkeypatch.setattr(cache, "get_many", boom)
+
+    def test_oqish_kesh_yiqilganda_ham_ishlaydi(self, db, problem, monkeypatch) -> None:
+        from django.urls import reverse
+        from rest_framework.test import APIClient
+
+        self.raising_cache(monkeypatch)
+
+        assert APIClient().get(reverse("problem-list")).status_code == 200
+        assert APIClient().get(reverse("platform-stats")).status_code == 200
+
+    def test_yozish_kesh_yiqilganda_rad_etiladi(self, db, problem, user, monkeypatch) -> None:
+        """Limitsiz yozishga ruxsat berish suiiste'molga eshik ochardi."""
+        from django.urls import reverse
+        from rest_framework.test import APIClient
+
+        client = APIClient()
+        client.force_authenticate(user)
+        self.raising_cache(monkeypatch)
+
+        with pytest.raises(ConnectionError):
+            client.post(reverse("problem-favourite", args=[problem.slug]))

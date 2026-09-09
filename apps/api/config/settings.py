@@ -175,9 +175,10 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 25,
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "EXCEPTION_HANDLER": "core.errors.exception_handler",
+    # Kesh yiqilganda o'qish ishlashda davom etadi — `core.throttling`.
     "DEFAULT_THROTTLE_CLASSES": [
-        "rest_framework.throttling.AnonRateThrottle",
-        "rest_framework.throttling.UserRateThrottle",
+        "core.throttling.ResilientAnonRateThrottle",
+        "core.throttling.ResilientUserRateThrottle",
     ],
     # ADR-0008 rate limitlari
     # Yuklama sinovi bitta IP dan keladi, ya'ni anon throttle sig'imdan

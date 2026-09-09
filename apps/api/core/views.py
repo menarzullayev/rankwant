@@ -9,7 +9,6 @@ import redis
 from django.conf import settings
 from django.contrib.auth import authenticate as django_authenticate
 from django.contrib.auth import login, logout
-from django.core.cache import cache
 from django.db import connection
 from django.db.models import Q, QuerySet
 from django.shortcuts import get_object_or_404
@@ -22,6 +21,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from contests.models import Contest
+from core.cache import cache_get, cache_set
 from core.models import ApiToken, User
 from core.pagination import StandardPagination, TimeCursorPagination
 from core.serializers import (
@@ -100,7 +100,7 @@ class PlatformStatsView(APIView):
 
     @extend_schema(responses={200: OpenApiResponse(description="Platforma statistikasi")})
     def get(self, request: Request) -> Response:
-        stats = cache.get("platform-stats")
+        stats = cache_get("platform-stats")
         if stats is None:
             stats = {
                 "users": User.objects.filter(is_active=True).count(),
@@ -117,7 +117,7 @@ class PlatformStatsView(APIView):
                     )
                 ),
             }
-            cache.set("platform-stats", stats, self.CACHE_S)
+            cache_set("platform-stats", stats, self.CACHE_S)
         return Response(stats)
 
 

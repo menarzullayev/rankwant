@@ -13,7 +13,8 @@ from typing import Any
 import boto3
 from botocore.config import Config
 from django.conf import settings
-from django.core.cache import cache
+
+from core.cache import cache_get, cache_set
 
 log = logging.getLogger(__name__)
 
@@ -78,7 +79,7 @@ def sample_tests(problem: Any) -> list[dict[str, Any]]:
     matni baribir ochilishi kerak, shuning uchun xato yutiladi.
     """
     key = samples_cache_key(problem.slug)
-    cached = cache.get(key)
+    cached = cache_get(key)
     if cached is not None:
         return cached  # type: ignore[no-any-return]
 
@@ -100,5 +101,5 @@ def sample_tests(problem: Any) -> list[dict[str, Any]]:
             complete = False
             break
 
-    cache.set(key, samples, SAMPLES_TTL if complete else FAILURE_TTL)
+    cache_set(key, samples, SAMPLES_TTL if complete else FAILURE_TTL)
     return samples
