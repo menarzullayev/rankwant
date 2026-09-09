@@ -199,35 +199,57 @@ def apply_contest_ratings(contest) -> int:  # type: ignore[no-untyped-def]
 
     deltas = formulas.contest_deltas(ratings, ranks, counts)
 
-    for user, standing, delta in zip(users, standings, deltas, strict=True):
+    from notifications.models import Notification
+
+    # 10 000 ishtirokchida qatorma-qator yozish 30 000 so'rov beradi va
+    # ularning hammasi BITTA tranzaksiyada 10 000 user qatorini qulflab
+    # turadi (o'lchandi: 3 so'rov/kishi). Partiyada yoziladi.
+    histories: list[RatingHistory] = []
+    notes: list[Notification] = []
+
+    for i, (user, standing, delta) in enumerate(zip(users, standings, deltas, strict=True)):
         before = user.rating_contest
         after = formulas.apply_floor(before + delta)
-        others = [r for r in ratings if r is not before] or ratings
         user.rating_contest = after
         user.rated_contest_count += 1
-        user.save(update_fields=["rating_contest", "rated_contest_count"])
-        _record(
-            user,
-            RatingHistory.Type.CONTEST,
-            before,
-            after,
-            RatingHistory.Reason.CONTEST,
-            ref_type="contest",
-            ref_id=contest.slug,
-            seed=formulas.seed(before, [r for r in ratings if r != before] or others),
-            rank=standing.rank,
-        )
-        from notifications.models import Notification
-        from notifications.services import notify
 
-        notify(
-            user,
-            Notification.Kind.CONTEST_RESULT,
-            f"{contest.title}: {standing.rank}-o'rin, reyting {after - before:+d}",
-            body=f"Contests reytingi: {before} → {after}",
-            ref_type="contest",
-            ref_id=contest.slug,
+        if before != after:
+            histories.append(
+                RatingHistory(
+                    user=user,
+                    rating_type=RatingHistory.Type.CONTEST,
+                    value_before=before,
+                    value_after=after,
+                    delta=after - before,
+                    reason=RatingHistory.Reason.CONTEST,
+                    ref_type="contest",
+                    ref_id=contest.slug,
+                    # Faqat O'ZINI chiqarib tashlaydi. Ilgari bu yerda
+                    # `r != before` turardi va teng reytingdagilarning
+                    # HAMMASI tashlab yuborilardi — 1200 da turgan yuzta
+                    # yangi foydalanuvchi bir-birining seed'ini buzardi.
+                    seed=formulas.seed(before, ratings[:i] + ratings[i + 1 :]),
+                    rank=standing.rank,
+                )
+            )
+        notes.append(
+            Notification(
+                user=user,
+                kind=Notification.Kind.CONTEST_RESULT,
+                title=f"{contest.title}: {standing.rank}-o'rin, reyting {after - before:+d}",
+                body=f"Contests reytingi: {before} → {after}",
+                ref_type="contest",
+                ref_id=contest.slug,
+            )
         )
+
+    User.objects.bulk_update(users, ["rating_contest", "rated_contest_count"], batch_size=500)
+    RatingHistory.objects.bulk_create(histories, batch_size=500)
+    try:
+        Notification.objects.bulk_create(notes, batch_size=500)
+    except Exception:
+        # Bildirishnoma reytingni ushlab qolmasligi kerak (notifications.notify).
+        log.exception("contest %s natijalari e'lon qilinmadi", contest.slug)
     return len(standings)
 
 
