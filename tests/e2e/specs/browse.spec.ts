@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+import { skipUnlessLocal } from "./guard";
+
 /** Anonim foydalanuvchi uchun ochiq sahifalar — smoke qatlami. */
 
 test("bosh sahifa ochiladi", async ({ page }) => {
@@ -115,6 +117,7 @@ test("yechilmagan masalada mavzuni yashirish sozlamasi ishlaydi", async ({
 test("kirgan foydalanuvchi holat filtrini va bo'lim havolalarini ko'radi", async ({
   page,
 }) => {
+  skipUnlessLocal();
   const api = process.env.E2E_API_BASE ?? "";
   const site = process.env.E2E_BASE_URL ?? "http://localhost:3000";
   test.skip(
@@ -155,6 +158,7 @@ test("arxiv qatorida masala raqami va statistikasi ko'rinadi", async ({
 });
 
 test("kirgan foydalanuvchi sevimliga qo'sha oladi", async ({ page }) => {
+  skipUnlessLocal();
   const api = process.env.E2E_API_BASE ?? "";
   const site = process.env.E2E_BASE_URL ?? "http://localhost:3000";
   test.skip(

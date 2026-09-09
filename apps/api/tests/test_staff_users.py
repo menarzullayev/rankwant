@@ -243,3 +243,50 @@ class TestPrivilegedTargets:
         """Cheklov faqat imtiyozli hisoblar uchun — oddiy ban ishlayveradi."""
         r = as_user(staff).patch(detail(user.username), {"is_active": False}, format="json")
         assert r.status_code == 200
+
+
+@pytest.mark.django_db
+class TestPruneTestUsers:
+    """Stress sinovi minglab hisob yaratadi — ularni tozalash yo'li kerak."""
+
+    def prune(self, **kwargs):
+        from django.core.management import call_command
+
+        call_command("prune_test_users", **kwargs)
+
+    def test_prefiksdagilar_ochiriladi(self) -> None:
+        from core.models import User
+
+        User.objects.create_user("e2e_1")
+        User.objects.create_user("e2e_2")
+        haqiqiy = User.objects.create_user("aziz")
+
+        self.prune(prefix="e2e")
+
+        assert list(User.objects.values_list("username", flat=True)) == [haqiqiy.username]
+
+    def test_xodim_hech_qachon_ochirilmaydi(self) -> None:
+        """Nomi mos kelib qolgan admin bilan kirish huquqi ham ketardi."""
+        from core.models import User
+
+        User.objects.create_user("e2e_admin", is_staff=True)
+        User.objects.create_user("e2e_oddiy")
+
+        self.prune(prefix="e2e")
+
+        assert list(User.objects.values_list("username", flat=True)) == ["e2e_admin"]
+
+    def test_qisqa_prefiks_rad_etiladi(self) -> None:
+        from django.core.management.base import CommandError
+
+        with pytest.raises(CommandError):
+            self.prune(prefix="e")
+
+    def test_dry_run_ochirmaydi(self) -> None:
+        from core.models import User
+
+        User.objects.create_user("e2e_1")
+
+        self.prune(prefix="e2e", dry_run=True)
+
+        assert User.objects.filter(username="e2e_1").exists()

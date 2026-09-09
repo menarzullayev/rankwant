@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+import { skipUnlessLocal } from "./guard";
+
 /**
  * Header mobilda sig'ishi kerak.
  *
@@ -33,6 +35,7 @@ test("mehmon header'i 375px da sig'adi", async ({ page }) => {
 });
 
 test("kirgan foydalanuvchi header'i ham 375px da sig'adi", async ({ page }) => {
+  skipUnlessLocal();
   test.skip(
     !sameOrigin,
     "sayt va API alohida originda — sessiya cookie yetmaydi",

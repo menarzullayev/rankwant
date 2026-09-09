@@ -1,4 +1,6 @@
 import { expect, test } from "@playwright/test";
+
+import { skipUnlessLocal } from "./guard";
 import type { APIRequestContext } from "@playwright/test";
 
 /**
@@ -25,6 +27,7 @@ async function csrf(
 }
 
 test("birinchi AC Skills reytingini oshiradi", async ({ request }) => {
+  skipUnlessLocal();
   const username = `e2e_${Date.now()}`;
   const password = "E2eParol!12345";
 
@@ -63,6 +66,7 @@ test("birinchi AC Skills reytingini oshiradi", async ({ request }) => {
 });
 
 test("read scope'li token submit qila olmaydi", async ({ request }) => {
+  skipUnlessLocal();
   const username = `e2e_scope_${Date.now()}`;
   const password = "E2eParol!12345";
   await request.post(`${API}/auth/register/`, {

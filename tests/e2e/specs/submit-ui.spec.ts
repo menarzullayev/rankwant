@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+import { skipUnlessLocal } from "./guard";
+
 /**
  * Submit oynasi — asosiy oqim shu yerdan boshlanadi.
  *
@@ -41,6 +43,7 @@ test("mehmonga panel ko'rinadi, lekin yuborish kirishni talab qiladi", async ({
 test("kirgan foydalanuvchi yuborish va sinab ko'rishni oladi", async ({
   page,
 }) => {
+  skipUnlessLocal();
   test.skip(
     !sameOrigin,
     "sayt va API alohida originda — sessiya cookie yetmaydi",
