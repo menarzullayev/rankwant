@@ -23,6 +23,12 @@ bakeoff/
 
 ## Ishga tushirish
 
+> **To'liq stack ishlab turgan bo'lsa avval `docker compose stop worker beat`.**
+> `judging.drain_results` har 2 soniyada o'sha natijalar navbatini bo'shatadi
+> va natijalarni harness'dan oldin olib ketadi — o'shanda case'lar «natija
+> kelmadi» bo'lib, hisobot XAVFSIZLIKDAN O'TMADI deb yozadi. Runner buni
+> endi o'zi sezadi va to'xtaydi, lekin sabab shu.
+
 ```bash
 docker compose up -d redis
 pip install redis

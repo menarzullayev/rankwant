@@ -69,6 +69,29 @@ def submit(r: "redis.Redis", case: dict) -> str:
     return job_id
 
 
+def other_consumer(r: "redis.Redis") -> bool:
+    """Natijalar navbatini BOSHQA kimdir bo'shatyaptimi.
+
+    To'liq stack ustida yurgizilganda `judging.drain_results` (Celery
+    beat, har 2 s) natijalarni bizdan oldin olib ketadi — o'shanda case
+    «natija kelmadi» bo'ladi va hisobot XAVFSIZLIKDAN O'TMADI deb yozadi.
+    O'lchandi: aynan shu holatda 11-network va 13-symlink «yiqilgan»
+    ko'rindi, worker to'xtatilgach ikkalasi ham o'tdi.
+
+    Yolg'on xavfsizlik signali chinidan xavfliroq: u ishonchni yo'qotadi
+    va keyingi safar haqiqiy signal ham e'tiborsiz qoladi.
+    """
+    probe = json.dumps({"job_id": "__bakeoff_probe__", "verdict": "PROBE"})
+    r.lpush(RESULTS_KEY, probe)
+    time.sleep(3)
+    # O'zimiz qo'ygan yozuv joyidamikan?
+    for item in r.lrange(RESULTS_KEY, 0, -1):
+        if b"__bakeoff_probe__" in (item if isinstance(item, bytes) else item.encode()):
+            r.lrem(RESULTS_KEY, 1, item)
+            return False
+    return True
+
+
 def collect(r: "redis.Redis", expected: int, timeout_s: int) -> dict[str, dict]:
     got: dict[str, dict] = {}
     deadline = time.monotonic() + timeout_s
@@ -168,6 +191,19 @@ def main() -> int:
 
     cases = load_cases()
     print(f"Nomzod: {args.worker} · {len(cases)} ta case\n")
+
+    # Boshqa iste'molchi natijalarni olib ketsa, hisobot XAVFSIZLIK
+    # yiqilishi bo'lib chiqadi — aslida sandbox soz. Buni oldindan
+    # aytamiz, chunki yolg'on xavfsizlik signali chinidan xavfliroq.
+    if other_consumer(r):
+        print(
+            "TO'XTATILDI: natijalar navbatini boshqa jarayon bo'shatyapti.\n"
+            "  To'liq stack ishlayotgan bo'lsa `judging.drain_results` (Celery beat)\n"
+            "  natijalarni bizdan oldin oladi va case'lar «natija kelmadi» bo'ladi.\n"
+            "  Yechim: `docker compose stop worker beat` yoki alohida Redis.\n",
+            file=sys.stderr,
+        )
+        return 2
 
     # ── XAVFSIZLIK DARVOZASI ────────────────────────────────────────────
     # 09-fork-bomb host'ni yiqitishi mumkin, agar worker cgroup limitlarini
