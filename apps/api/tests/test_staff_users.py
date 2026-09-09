@@ -352,6 +352,10 @@ class TestSeedStress:
 
         problem.refresh_from_db()
         assert problem.attempt_count == Attempt.objects.filter(problem=problem).count()
-        assert problem.solved_count == Attempt.objects.filter(
-            problem=problem, verdict="AC"
-        ).values("user").distinct().count()
+        assert (
+            problem.solved_count
+            == Attempt.objects.filter(problem=problem, verdict="AC")
+            .values("user")
+            .distinct()
+            .count()
+        )
