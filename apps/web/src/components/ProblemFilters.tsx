@@ -229,7 +229,15 @@ export function ProblemFilters({
           )}
 
           <Group
-            label={`Mavzular${selectedTopics.length ? ` (${selectedTopics.length})` : ""}`}
+            // Ikkitadan ko'p tanlanganda semantikani aytib qo'yish kerak:
+            // filtr HAMMASI bo'lgan masalalarni beradi, yig'indini emas.
+            label={`Mavzular${
+              selectedTopics.length > 1
+                ? ` (${selectedTopics.length} — hammasi)`
+                : selectedTopics.length
+                  ? ` (${selectedTopics.length})`
+                  : ""
+            }`}
           >
             {topics.map((topic) => (
               <Option

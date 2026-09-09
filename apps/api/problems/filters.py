@@ -10,8 +10,9 @@ class ProblemFilter(filters.FilterSet):  # type: ignore[misc]
 
     difficulty__gte = filters.NumberFilter(field_name="difficulty", lookup_expr="gte")
     difficulty__lte = filters.NumberFilter(field_name="difficulty", lookup_expr="lte")
-    # Vergul bilan bir nechta mavzu: `?topics=dp,graphs` — panelda ko'p
-    # tanlash uchun. Bitta qiymat ham shu yo'l bilan ishlaydi.
+    # Vergul bilan bir nechta mavzu: `?topics=dp,trees` — HAMMASI bo'lgan
+    # masalalar (Codeforces `?tags=` bilan bir xil). Bitta qiymat ham shu
+    # yo'l bilan ishlaydi.
     topics = filters.CharFilter(method="filter_topics")
     level = filters.ChoiceFilter(
         choices=[(code, label) for _, code, label in DIFFICULTY_LEVELS],
@@ -41,8 +42,20 @@ class ProblemFilter(filters.FilterSet):  # type: ignore[misc]
         return queryset.filter(pk__in=solved) if value else queryset.exclude(pk__in=solved)
 
     def filter_topics(self, queryset, name: str, value: str):  # type: ignore[no-untyped-def]
-        slugs = [part.strip() for part in value.split(",") if part.strip()]
-        return queryset.filter(topics__slug__in=slugs).distinct() if slugs else queryset
+        """Tanlangan mavzularning HAMMASI bo'lgan masalalar.
+
+        Ilgari `__in` edi, ya'ni YOKI: «dp» va «daraxtlar» ni birga
+        tanlagan odam ikkalasining yig'indisini olardi. Yettita masalada
+        farqi yo'q edi, 2089 tasida esa bu filtrni ishdan chiqaradi —
+        «daraxtlardagi dinamika» aniq so'rov, «dinamika yoki daraxtlar»
+        esa arxivning yarmi. Codeforces `?tags=` ham shunday ishlaydi.
+
+        Har mavzu alohida `filter()` bo'lishi SHART: bitta chaqiruvdagi
+        `__in` M2M da hech qachon VA bermaydi.
+        """
+        for slug in (part.strip() for part in value.split(",") if part.strip()):
+            queryset = queryset.filter(topics__slug=slug)
+        return queryset.distinct()
 
     def filter_favourite(self, queryset, name: str, value: bool):  # type: ignore[no-untyped-def]
         user = getattr(self.request, "user", None)

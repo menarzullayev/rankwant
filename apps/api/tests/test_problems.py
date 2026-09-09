@@ -595,3 +595,23 @@ def test_mehmonga_arxiv_hajmi_korinadi(topic_history) -> None:
     assert {t["slug"] for t in rows} == {"dp", "graphs"}
     assert all(t["solved"] == 0 and t["rating"] == 0 for t in rows)
     assert all(t["total"] == 1 for t in rows)
+
+
+def test_mavzu_filtri_hammasini_talab_qiladi(problem, hard_problem, db) -> None:
+    """`?topics=dp,trees` — ikkalasi ham bor masalalar (Codeforces kabi)."""
+    from problems.models import Topic
+
+    dp = Topic.objects.create(slug="dp", name_uz="Dinamik dasturlash")
+    trees = Topic.objects.create(slug="trees", name_uz="Daraxtlar")
+    problem.topics.add(dp)
+    hard_problem.topics.add(dp, trees)
+
+    url = reverse("problem-list")
+    client = APIClient()
+
+    only_dp = client.get(url, {"topics": "dp"}).data["results"]
+    assert {row["slug"] for row in only_dp} == {problem.slug, hard_problem.slug}
+
+    both = client.get(url, {"topics": "dp,trees"}).data["results"]
+    # YOKI bo'lganda bu yerda ikkalasi qaytardi va filtr ma'nosini yo'qotardi.
+    assert [row["slug"] for row in both] == [hard_problem.slug]
