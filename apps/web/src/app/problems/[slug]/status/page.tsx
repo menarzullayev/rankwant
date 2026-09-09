@@ -14,11 +14,17 @@ import {
   TR,
   Table,
 } from "@/components/ui/Table";
+import { AttemptFilters } from "@/components/AttemptFilters";
 import { api, ApiError } from "@/lib/api";
 
 type Props = {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ cursor?: string }>;
+  searchParams: Promise<{
+    cursor?: string;
+    verdict?: string;
+    language?: string;
+    mine?: string;
+  }>;
 };
 
 export const dynamic = "force-dynamic";
@@ -40,14 +46,27 @@ export default async function ProblemStatusPage({
   searchParams,
 }: Props) {
   const { slug } = await params;
-  const { cursor } = await searchParams;
+  const { cursor, verdict, language, mine } = await searchParams;
+
+  // Filtrlar serverda qo'llanadi — ro'yxat kursorli, ya'ni mijozda
+  // filtrlash faqat joriy sahifani kesib, qolganini yashirardi.
+  const filters = new URLSearchParams();
+  if (verdict) filters.set("verdict", verdict);
+  if (language) filters.set("language", language);
+  if (mine === "true") filters.set("mine", "true");
+  const query = filters.toString();
 
   let problem;
   let page;
   try {
     [problem, page] = await Promise.all([
       api.problem(slug),
-      api.problemAttempts(slug, cursor ?? ""),
+      api.problemAttempts(
+        slug,
+        [query, cursor ? `cursor=${encodeURIComponent(cursor)}` : ""]
+          .filter(Boolean)
+          .join("&"),
+      ),
     ]);
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) notFound();
@@ -77,6 +96,14 @@ export default async function ProblemStatusPage({
 
       <ProblemTabs slug={slug} current="status" />
 
+      <AttemptFilters
+        slug={slug}
+        languages={problem.languages.map((l) => l.code)}
+        verdict={verdict}
+        language={language}
+        mine={mine === "true"}
+      />
+
       <Card bodyClassName="p-0">
         <Table>
           <THead>
@@ -86,6 +113,9 @@ export default async function ProblemStatusPage({
             <TH align="right">Vaqt</TH>
             <TH align="right" className="hidden sm:table-cell">
               Xotira
+            </TH>
+            <TH align="right" className="hidden lg:table-cell">
+              Hajm
             </TH>
             <TH align="right" className="hidden md:table-cell">
               Sana
@@ -115,6 +145,12 @@ export default async function ProblemStatusPage({
                 >
                   {Math.round(attempt.memory_kb / 1024)} MB
                 </TD>
+                <TD
+                  align="right"
+                  className="hidden rw-faint tabular-nums lg:table-cell"
+                >
+                  {attempt.source_size} B
+                </TD>
                 <TD align="right" className="hidden rw-faint md:table-cell">
                   <time dateTime={attempt.created_at}>
                     {new Date(attempt.created_at).toLocaleString("uz")}
@@ -123,7 +159,9 @@ export default async function ProblemStatusPage({
               </TR>
             ))}
             {page.results.length === 0 && (
-              <EmptyRow colSpan={6}>Hali urinish yo&apos;q.</EmptyRow>
+              <EmptyRow colSpan={7}>
+                {query ? "Bu filtrga mos urinish yo'q." : "Hali urinish yo'q."}
+              </EmptyRow>
             )}
           </TBody>
         </Table>

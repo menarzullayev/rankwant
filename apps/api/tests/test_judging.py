@@ -437,3 +437,49 @@ def test_testsiz_masalaga_yuborib_bolmaydi(hard_problem, user, language) -> None
 
     assert response.status_code == 400
     assert "test" in str(response.data["error"]["details"]["problem"]).lower()
+
+
+@pytest.mark.django_db
+class TestAttemptFilters:
+    """Ommabop masalada filtrsiz ro'yxat o'qib bo'lmaydigan oqim bo'lardi."""
+
+    @pytest.fixture
+    def history(self, problem, user, other_user, language):
+        from problems.models import Language
+
+        python = Language.objects.create(
+            code="py313", name="Python", version="3.13", run_cmd=["python3", "{src}"]
+        )
+        for owner, lang, verdict in [
+            (user, language, "AC"),
+            (user, python, "WA"),
+            (other_user, language, "TLE"),
+        ]:
+            Attempt.objects.create(
+                user=owner, problem=problem, language=lang, source_code="xyz", verdict=verdict
+            )
+
+    def query(self, client, problem, **params):
+        rows = client.get(reverse("attempt-list"), {"problem": problem.slug, **params}).data
+        return {(r["username"], r["language"], r["verdict"]) for r in rows["results"]}
+
+    def test_verdikt_boyicha(self, history, problem, user, language) -> None:
+        rows = self.query(APIClient(), problem, verdict="AC")
+        assert rows == {(user.username, language.code, "AC")}
+
+    def test_til_boyicha(self, history, problem, user) -> None:
+        assert self.query(APIClient(), problem, language="py313") == {
+            (user.username, "py313", "WA")
+        }
+
+    def test_faqat_meniki(self, history, problem, user, other_user) -> None:
+        client = APIClient()
+        # Mehmonda «meniki» ma'nosiz — filtr qo'llanmaydi.
+        assert len(self.query(client, problem, mine="true")) == 3
+
+        client.force_authenticate(user)
+        assert {row[0] for row in self.query(client, problem, mine="true")} == {user.username}
+
+    def test_manba_uzunligi_beriladi(self, history, problem) -> None:
+        rows = APIClient().get(reverse("attempt-list"), {"problem": problem.slug}).data["results"]
+        assert all(row["source_size"] == 3 for row in rows)

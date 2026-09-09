@@ -17,6 +17,12 @@ class AttemptTestResultSerializer(serializers.ModelSerializer[AttemptTestResult]
 
 class AttemptSerializer(serializers.ModelSerializer[Attempt]):
     username = serializers.CharField(source="user.username", read_only=True)
+    #: Manba uzunligi — KEP dagi «Size». Kodning o'zi ochilmaydi,
+    #: uzunlik esa yechim uslubi haqida ma'lumot beradi.
+    source_size = serializers.SerializerMethodField()
+
+    def get_source_size(self, attempt: Attempt) -> int:
+        return len(attempt.source_code)
     problem = serializers.SlugRelatedField[Problem](slug_field="slug", read_only=True)
     language = serializers.SlugRelatedField[Language](slug_field="code", read_only=True)
 
@@ -34,6 +40,7 @@ class AttemptSerializer(serializers.ModelSerializer[Attempt]):
             "failed_test_index",
             "created_at",
             "judged_at",
+            "source_size",
         ]
 
 

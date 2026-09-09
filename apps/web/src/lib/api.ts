@@ -313,6 +313,16 @@ export type Roadmap = {
   solved_steps: number;
 };
 
+/** Urinishlar ro'yxatidagi filtrlar — KEP dagi kabi. */
+export const VERDICT_FILTERS = [
+  ["AC", "Accepted"],
+  ["WA", "Wrong Answer"],
+  ["TLE", "Time Limit"],
+  ["MLE", "Memory Limit"],
+  ["RE", "Runtime Error"],
+  ["CE", "Compile Error"],
+] as const;
+
 export type Attempt = {
   id: number;
   username: string;
@@ -325,6 +335,8 @@ export type Attempt = {
   failed_test_index: number | null;
   created_at: string;
   judged_at: string | null;
+  /** Yuborilgan manba uzunligi, belgi. Kodning o'zi emas. */
+  source_size: number;
 };
 
 export type Topic = {
@@ -788,9 +800,9 @@ export const api = {
     get<ProblemStats>(`/problems/${slug}/stats/`, 30),
   /** Masalaning barcha urinishlari — ochiq. Manba begonaga ko'rinmaydi
    * (backend uni faqat egasiga qaytaradi). */
-  problemAttempts: (slug: string, cursor = "") =>
+  problemAttempts: (slug: string, query = "") =>
     get<Paginated<Attempt>>(
-      `/attempts/?problem=${encodeURIComponent(slug)}${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
+      `/attempts/?problem=${encodeURIComponent(slug)}${query ? `&${query}` : ""}`,
       0,
     ),
   attempts: () => get<Paginated<Attempt>>("/attempts/", 0),

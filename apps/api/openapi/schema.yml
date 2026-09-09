@@ -6390,11 +6390,15 @@ components:
           type: string
           format: date-time
           nullable: true
+        source_size:
+          type: integer
+          readOnly: true
       required:
       - created_at
       - id
       - language
       - problem
+      - source_size
       - username
     AttemptCreate:
       type: object
@@ -6461,6 +6465,9 @@ components:
           type: string
           format: date-time
           nullable: true
+        source_size:
+          type: integer
+          readOnly: true
         source_code:
           type: string
         compile_output:
@@ -6476,6 +6483,7 @@ components:
       - language
       - problem
       - source_code
+      - source_size
       - test_results
       - username
     AttemptTestResult:

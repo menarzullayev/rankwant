@@ -47,13 +47,28 @@ class AttemptViewSet(
         return [ScopedRateThrottle()] if self.action == "create" else []
 
     def get_queryset(self):  # type: ignore[no-untyped-def]
+        params = self.request.query_params
         qs = Attempt.objects.select_related("user", "problem", "language")
-        problem = self.request.query_params.get("problem")
+
+        problem = params.get("problem")
         if problem:
             qs = qs.filter(problem__slug=problem)
-        username = self.request.query_params.get("username")
+        username = params.get("username")
         if username:
             qs = qs.filter(user__username=username)
+
+        # Ommabop masalada urinish minglab bo'ladi va filtrsiz ro'yxat
+        # o'qib bo'lmaydigan oqimga aylanadi (KEP ham verdikt, til va
+        # «faqat meniki» filtrlarini beradi).
+        verdict = params.get("verdict")
+        if verdict:
+            qs = qs.filter(verdict=verdict)
+        language = params.get("language")
+        if language:
+            qs = qs.filter(language__code=language)
+        if params.get("mine") in ("true", "1") and self.request.user.is_authenticated:
+            qs = qs.filter(user=self.request.user)
+
         return qs.order_by("-created_at")
 
     def get_serializer_class(self):  # type: ignore[no-untyped-def]
