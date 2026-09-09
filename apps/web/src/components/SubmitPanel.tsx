@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { t } from "@/i18n/messages";
 import {
   useCallback,
   useEffect,
@@ -154,6 +156,7 @@ export default function SubmitPanel({
   contest?: string;
   hasTests: boolean;
 }) {
+  const locale = useLocale();
   const { user, ready } = useSession();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -409,6 +412,7 @@ export default function SubmitPanel({
           <select
             value={language}
             onChange={(e) => pickLanguage(e.target.value)}
+            aria-label={t(locale, "attempts.language")}
             className="h-9 rw-radius-sm border rw-line rw-field-bg px-3 text-theme-sm rw-strong rw-focus-line"
           >
             {languages.map((l) => (

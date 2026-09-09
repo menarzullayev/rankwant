@@ -56,14 +56,21 @@ test("arxiv filtri ro'yxatni toraytiradi va URL da qoladi", async ({
   page,
 }) => {
   await page.goto("/problems");
-  const all = await page.getByRole("row").count();
 
   await page.getByRole("button", { name: /^Filtrlar( \d+)?$/ }).click();
   await page.getByRole("button", { name: "Qiyin", exact: true }).click();
   await page.waitForURL(/level=hard/);
 
-  const filtered = await page.getByRole("row").count();
-  expect(filtered).toBeLessThan(all);
+  // Qatorlar SONI emas, MAZMUNI tekshiriladi: to'liq arxivda birinchi
+  // sahifa filtrsiz ham, filtr bilan ham to'ladi va sanoq o'zgarmaydi —
+  // o'lchandi, 2096 masalada ikkalasi ham 25 qator.
+  const hardRows = page
+    .getByRole("row")
+    .filter({ has: page.locator(".level-hard") });
+  await expect(hardRows.first()).toBeVisible();
+  const rows = await page.getByRole("row").count();
+  expect(await hardRows.count()).toBe(rows - 1); // sarlavha qatori
+
   // Faol filtr soni tugmada ko'rinadi va holat URL da qoladi.
   await expect(
     page.getByRole("button", { name: /^Filtrlar( \d+)?$/ }),
@@ -84,7 +91,14 @@ test("saralash tabi tartibni almashtiradi", async ({ page }) => {
 test("qidiruv ro'yxatni toraytiradi", async ({ page }) => {
   await page.goto("/problems?search=fibona");
 
-  await expect(page.getByRole("row")).toHaveCount(2); // sarlavha + 1 natija
+  // Har bir natija so'rovga mos kelishi kerak. Aniq SON tekshirilmaydi:
+  // u arxiv hajmiga bog'liq bo'lardi — o'lchandi, to'liq arxivda
+  // «fibona» bitta emas, to'rtta masalaga tushadi.
+  const titles = page.getByRole("row").locator("td a[href^='/problems/']");
+  await expect(titles.first()).toBeVisible();
+  for (const text of await titles.allInnerTexts()) {
+    expect(text.toLowerCase()).toContain("fibona");
+  }
   await expect(
     page.getByRole("searchbox", { name: "Masala qidirish" }),
   ).toHaveValue("fibona");

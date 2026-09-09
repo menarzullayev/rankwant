@@ -31,9 +31,13 @@ test("mehmonga panel ko'rinadi, lekin yuborish kirishni talab qiladi", async ({
 
   await expect(page.getByRole("heading", { name: "Yechim" })).toBeVisible();
   // Tillar serverda olinadi — mehmon ham ko'radi (SSR).
-  await expect(page.getByRole("combobox", { name: /|/ }).first()).toContainText(
-    /C\+\+|Python|Java/,
-  );
+  //
+  // ANIQ nom bo'yicha, «birinchi combobox» bo'yicha emas: header'da UI
+  // tilini tanlash ham select va u sahifada birinchi turadi. Testlar
+  // standart tilda (o'zbekcha) ishlaydi, ya'ni nom aniq.
+  await expect(
+    page.getByRole("combobox", { name: "Til", exact: true }),
+  ).toContainText(/C\+\+|Python|Java/);
   await expect(
     page.getByRole("link", { name: "Yuborish uchun kiring" }),
   ).toBeVisible();
