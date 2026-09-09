@@ -296,12 +296,37 @@ class ProblemStatsView(APIView):
             if len(solvers) >= self.SOLVER_LIMIT:
                 break
 
+        # Eng tez yechim — TILMA-TIL. Python'ni C++ bilan bir jadvalda
+        # taqqoslash ma'nosiz bo'lardi: farq yechimda emas, tilda.
+        # Codeforces va RoboContest ikkalasi ham shu bo'limni ko'rsatadi
+        # va u optimallashtirishga sabab beradi.
+        fastest = []
+        for row in languages:
+            best = (
+                attempts.filter(verdict=Verdict.AC, language__code=row["language"])
+                .select_related("user")
+                .order_by("time_ms", "pk")
+                .first()
+            )
+            if best is not None:
+                fastest.append(
+                    {
+                        "language": row["language"],
+                        "username": best.user.username,
+                        "time_ms": best.time_ms,
+                        "memory_kb": best.memory_kb,
+                        "created_at": best.created_at,
+                    }
+                )
+        fastest.sort(key=lambda row: row["time_ms"])
+
         return Response(
             {
                 "total": attempts.count(),
                 "verdicts": verdicts,
                 "languages": languages,
                 "solvers": solvers,
+                "fastest": fastest,
             }
         )
 

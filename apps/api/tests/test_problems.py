@@ -336,6 +336,35 @@ class TestProblemStats:
         assert data["languages"][0]["count"] == 4
         assert data["languages"][0]["solved"] == 2
 
+    def test_eng_tez_yechim_tilma_til(self, problem, user, other_user, language, db) -> None:
+        from judging.models import Attempt
+        from problems.models import Language
+
+        python = Language.objects.create(
+            code="py313", name="Python", version="3.13", run_cmd=["python3", "{src}"]
+        )
+        for owner, lang, ms in [
+            (user, language, 120),
+            (other_user, language, 45),
+            (user, python, 900),
+        ]:
+            Attempt.objects.create(
+                user=owner,
+                problem=problem,
+                language=lang,
+                source_code="x",
+                verdict="AC",
+                time_ms=ms,
+            )
+
+        data = APIClient().get(reverse("problem-stats", args=[problem.slug])).data
+
+        # Python C++ bilan bitta jadvalda taqqoslanmaydi — har til alohida.
+        assert [(row["language"], row["username"], row["time_ms"]) for row in data["fastest"]] == [
+            ("cpp23", other_user.username, 45),
+            ("py313", user.username, 900),
+        ]
+
     def test_yechganlar_royxatida_har_kim_bir_marta(self, attempts, problem, user) -> None:
         data = APIClient().get(reverse("problem-stats", args=[problem.slug])).data
 

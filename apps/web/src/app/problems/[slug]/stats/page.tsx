@@ -109,6 +109,41 @@ export default async function ProblemStatsPage({ params }: Props) {
             ))}
           </Card>
 
+          {stats.fastest.length > 0 && (
+            <Card
+              title="Eng tez yechimlar"
+              className="lg:col-span-2"
+              bodyClassName="p-0"
+            >
+              {/* Tilma-til: Python'ni C++ bilan bir jadvalda taqqoslash
+                  yechim emas, tilni o'lchagan bo'lardi. */}
+              <ul className="rw-divide divide-y">
+                {stats.fastest.map((row) => (
+                  <li
+                    key={row.language}
+                    className="flex flex-wrap items-center gap-3 px-5 py-2.5 text-theme-sm"
+                  >
+                    <span className="font-medium rw-strong">
+                      {row.language}
+                    </span>
+                    <Link
+                      href={`/users/${row.username}`}
+                      className="rw-dim rw-link-hover"
+                    >
+                      {row.username}
+                    </Link>
+                    <span className="ml-auto font-medium rw-accent-ink tabular-nums">
+                      {row.time_ms} ms
+                    </span>
+                    <span className="rw-faint tabular-nums">
+                      {Math.round(row.memory_kb / 1024)} MB
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          )}
+
           <Card
             title="Yechganlar"
             className="lg:col-span-2"

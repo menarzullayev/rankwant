@@ -261,6 +261,14 @@ export type ProblemStats = {
     memory_kb: number;
     created_at: string;
   }[];
+  /** Har til uchun eng tez AC. Tillar aralashtirilmaydi. */
+  fastest: {
+    language: string;
+    username: string;
+    time_ms: number;
+    memory_kb: number;
+    created_at: string;
+  }[];
 };
 
 /** Mavzu kesimidagi kuch. `stuck` — urinilgan, lekin yechilmagan. */
