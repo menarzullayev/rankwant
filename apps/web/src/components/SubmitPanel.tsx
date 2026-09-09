@@ -29,6 +29,21 @@ import CodeEditor from "./CodeEditor";
 
 const MAX_SOURCE_BYTES = 64 * 1024;
 
+/** Ikki ustunli ko'rinishda muharrir MATN BILAN BIRGA aylanmasin.
+ *
+ * O'lchandi: 1440×900 da matn ustuni 1825 px, muharrir esa 772 px.
+ * Namunalargacha aylantirilganda muharrir ekrandan 949 px yuqoriga
+ * chiqib ketardi — ya'ni masalani o'qib bo'lib, kod yozish uchun
+ * qaytib yuqoriga ko'tarilish kerak edi. KEP va RoboContest ikkalasi
+ * ham panellarni alohida aylantiradi.
+ *
+ * Faqat `xl` da: undan pastda muharrir matn ostida turadi va u yerda
+ * yopishtirish noto'g'ri bo'lardi. Balandligi ekranga sig'masa
+ * (uzun verdikt ro'yxati) panelning o'zi aylanadi.
+ */
+const PANEL =
+  "space-y-4 xl:sticky xl:top-20 xl:max-h-[calc(100vh-5.5rem)] xl:overflow-y-auto";
+
 /** Verdikt uchun SSE yo'q (musobaqa jadvalidan farqli) — pollinglaymiz.
  * Birinchi soniyalarda tez, keyin siyrak: kompilyatsiya + testlar odatda
  * 1–3 s, lekin navbat band bo'lsa uzoq kutish ham bo'ladi. */
@@ -337,7 +352,7 @@ export default function SubmitPanel({
   // qoldirish foydalanuvchining vaqtini olib, ichki xato qaytarardi.
   if (!hasTests)
     return (
-      <div className="space-y-4">
+      <div className={PANEL}>
         <Card title="Yechim">
           <p className="text-theme-sm rw-dim">
             Bu masalaning <strong>testlari hali tayyorlanmagan</strong>, shu
@@ -350,7 +365,7 @@ export default function SubmitPanel({
     );
 
   return (
-    <div className="space-y-4">
+    <div className={PANEL}>
       <Card
         title="Yechim"
         action={
