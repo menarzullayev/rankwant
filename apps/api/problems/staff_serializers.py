@@ -6,7 +6,14 @@ from typing import Any
 
 from rest_framework import serializers
 
-from problems.models import DIFFICULTY_STEP, Language, Problem, TestCase, Topic
+from problems.models import (
+    DIFFICULTY_STEP,
+    Language,
+    Problem,
+    ProblemReport,
+    TestCase,
+    Topic,
+)
 
 
 class StaffTopicSerializer(serializers.ModelSerializer[Topic]):
@@ -18,6 +25,22 @@ class StaffTopicSerializer(serializers.ModelSerializer[Topic]):
     class Meta:
         model = Topic
         fields = ["id", "slug", "name_uz", "name_ru", "name_en", "parent"]
+
+
+class StaffProblemReportSerializer(serializers.ModelSerializer[ProblemReport]):
+    """Xabar — xodim uchun. Faqat `status` o'zgartiriladi.
+
+    Sabab va izohni xodim tahrirlay olmaydi: xabar foydalanuvchining
+    so'zi, uni o'zgartirish yozuvni ma'nosiz qilardi.
+    """
+
+    problem = serializers.SlugRelatedField[Problem](slug_field="slug", read_only=True)
+    username = serializers.CharField(source="user.username", read_only=True)
+
+    class Meta:
+        model = ProblemReport
+        fields = ["id", "problem", "username", "reason", "comment", "status", "created_at"]
+        read_only_fields = ["problem", "username", "reason", "comment", "created_at"]
 
 
 class StaffProblemSerializer(serializers.ModelSerializer[Problem]):

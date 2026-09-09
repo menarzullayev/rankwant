@@ -9,6 +9,11 @@ router.register("topics", views.TopicViewSet, basename="topic")
 router.register("languages", views.LanguageViewSet, basename="language")
 router.register("staff/problems", staff_views.StaffProblemViewSet, basename="staff-problem")
 router.register("staff/topics", staff_views.StaffTopicViewSet, basename="staff-topic")
+router.register(
+    "staff/problem-reports",
+    staff_views.StaffProblemReportViewSet,
+    basename="staff-problem-report",
+)
 
 urlpatterns = [
     path("problems/recommendation/", views.RecommendationView.as_view(), name="recommendation"),

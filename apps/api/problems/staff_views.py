@@ -18,8 +18,9 @@ from rest_framework.response import Response
 
 from core.staff import StaffViewSet
 from problems import storage
-from problems.models import Problem, TestCase, Topic
+from problems.models import Problem, ProblemReport, TestCase, Topic
 from problems.staff_serializers import (
+    StaffProblemReportSerializer,
     StaffProblemSerializer,
     StaffTestCaseSerializer,
     StaffTopicSerializer,
@@ -34,6 +35,20 @@ class StaffTopicViewSet(StaffViewSet):
     search_fields = ["slug", "name_uz", "name_ru", "name_en"]
     ordering_fields = ["slug", "name_uz", "pk"]
     ordering = ["slug"]
+
+
+class StaffProblemReportViewSet(StaffViewSet):
+    """Foydalanuvchilar yuborgan nuqson xabarlari.
+
+    Standart tartib — ochiqlari birinchi: navbat shu yerdan ko'riladi.
+    """
+
+    serializer_class = StaffProblemReportSerializer
+    queryset = ProblemReport.objects.select_related("problem", "user")
+    filterset_fields = ["status", "reason"]
+    search_fields = ["problem__slug", "problem__title", "comment"]
+    ordering_fields = ["created_at", "status", "pk"]
+    ordering = ["status", "-created_at"]
 
 
 class StaffProblemViewSet(StaffViewSet):

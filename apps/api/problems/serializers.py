@@ -7,7 +7,14 @@ from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from problems import storage
-from problems.models import Language, Problem, ProblemAttachment, ProblemVote, Topic
+from problems.models import (
+    Language,
+    Problem,
+    ProblemAttachment,
+    ProblemReport,
+    ProblemVote,
+    Topic,
+)
 
 
 class TopicSerializer(serializers.ModelSerializer[Topic]):
@@ -62,6 +69,12 @@ class AttachmentSerializer(serializers.ModelSerializer[ProblemAttachment]):
     class Meta:
         model = ProblemAttachment
         fields = ["name", "url", "size_bytes"]
+
+
+class ReportProblemSerializer(serializers.ModelSerializer[ProblemReport]):
+    class Meta:
+        model = ProblemReport
+        fields = ["reason", "comment"]
 
 
 class VoteSerializer(serializers.Serializer[dict[str, Any]]):

@@ -26,6 +26,7 @@ from problems.models import (
     Language,
     Problem,
     ProblemRating,
+    ProblemReport,
     ProblemVote,
     TestCase,
     Topic,
@@ -37,6 +38,7 @@ from problems.serializers import (
     ProblemDetailSerializer,
     ProblemListSerializer,
     RateProblemSerializer,
+    ReportProblemSerializer,
     TopicSerializer,
     VoteSerializer,
 )
@@ -192,6 +194,27 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
                 "mine": value,
             }
         )
+
+    @extend_schema(request=ReportProblemSerializer, responses={201: {"type": "object"}})
+    @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
+    def report(self, request: Request, slug: str | None = None) -> Response:
+        """Masaladagi nuqson haqida xabar.
+
+        Takroriy bosish yangi yozuv YARATMAYDI — ochiq xabar bittadan
+        ortiq bo'lmasligi indeks bilan kafolatlangan, bu yerda esa u
+        shunchaki yangilanadi.
+        """
+        problem = self.get_object()
+        serializer = ReportProblemSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        assert isinstance(request.user, User)
+        ProblemReport.objects.update_or_create(
+            user=request.user,
+            problem=problem,
+            status=ProblemReport.Status.OPEN,
+            defaults=serializer.validated_data,
+        )
+        return Response({"reported": True}, status=201)
 
     @extend_schema(request=None, responses={200: {"type": "object"}})
     @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])

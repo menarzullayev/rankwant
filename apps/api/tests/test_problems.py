@@ -649,3 +649,45 @@ def test_testsiz_masala_belgilanadi(problem, samples, hard_problem) -> None:
 
     detail = client.get(reverse("problem-detail", args=[hard_problem.slug])).data
     assert detail["has_tests"] is False
+
+
+# ── Nuqson haqida xabar ──────────────────────────────────────────────
+def test_xabar_yuboriladi_va_takrorlanmaydi(problem, user) -> None:
+    from problems.models import ProblemReport
+
+    url = reverse("problem-report", args=[problem.slug])
+    client = APIClient()
+
+    assert client.post(url, {"reason": "tests"}).status_code in (401, 403)
+
+    client.force_authenticate(user)
+    assert client.post(url, {"reason": "tests", "comment": "3-test noto'g'ri"}).status_code == 201
+
+    # Tugmani ikki marta bosish navbatni to'ldirmaydi — o'sha yozuv
+    # yangilanadi.
+    assert client.post(url, {"reason": "statement"}).status_code == 201
+    report = ProblemReport.objects.get()
+    assert (report.reason, report.status) == ("statement", "open")
+
+
+def test_notogri_sabab_rad_etiladi(problem, user) -> None:
+    client = APIClient()
+    client.force_authenticate(user)
+
+    response = client.post(reverse("problem-report", args=[problem.slug]), {"reason": "yoq"})
+
+    assert response.status_code == 400
+
+
+def test_xabarlar_faqat_xodimga_korinadi(problem, user, staff_client) -> None:
+    from problems.models import ProblemReport
+
+    ProblemReport.objects.create(user=user, problem=problem, reason="tests")
+
+    guest = APIClient()
+    assert guest.get(reverse("staff-problem-report-list")).status_code in (401, 403)
+
+    rows = staff_client.get(reverse("staff-problem-report-list")).data["results"]
+    assert [(r["problem"], r["username"], r["status"]) for r in rows] == [
+        (problem.slug, user.username, "open")
+    ]

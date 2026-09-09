@@ -1839,6 +1839,44 @@ paths:
               schema:
                 type: object
           description: ''
+  /api/v1/problems/{slug}/report/:
+    post:
+      operationId: problems_report_create
+      description: |-
+        Masaladagi nuqson haqida xabar.
+
+        Takroriy bosish yangi yozuv YARATMAYDI — ochiq xabar bittadan
+        ortiq bo'lmasligi indeks bilan kafolatlangan, bu yerda esa u
+        shunchaki yangilanadi.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - problems
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportProblem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReportProblem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReportProblem'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: ''
   /api/v1/problems/{slug}/stats/:
     get:
       operationId: problems_stats_retrieve
@@ -3702,6 +3740,192 @@ paths:
               schema:
                 $ref: '#/components/schemas/StaffPost'
           description: ''
+  /api/v1/staff/problem-reports/:
+    get:
+      operationId: staff_problem_reports_list
+      description: |-
+        Foydalanuvchilar yuborgan nuqson xabarlari.
+
+        Standart tartib — ochiqlari birinchi: navbat shu yerdan ko'riladi.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffProblemReportList'
+          description: ''
+    post:
+      operationId: staff_problem_reports_create
+      description: |-
+        Foydalanuvchilar yuborgan nuqson xabarlari.
+
+        Standart tartib — ochiqlari birinchi: navbat shu yerdan ko'riladi.
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffProblemReport'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffProblemReport'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffProblemReport'
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffProblemReport'
+          description: ''
+  /api/v1/staff/problem-reports/{id}/:
+    get:
+      operationId: staff_problem_reports_retrieve
+      description: |-
+        Foydalanuvchilar yuborgan nuqson xabarlari.
+
+        Standart tartib — ochiqlari birinchi: navbat shu yerdan ko'riladi.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this problem report.
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffProblemReport'
+          description: ''
+    put:
+      operationId: staff_problem_reports_update
+      description: |-
+        Foydalanuvchilar yuborgan nuqson xabarlari.
+
+        Standart tartib — ochiqlari birinchi: navbat shu yerdan ko'riladi.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this problem report.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffProblemReport'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffProblemReport'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffProblemReport'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffProblemReport'
+          description: ''
+    patch:
+      operationId: staff_problem_reports_partial_update
+      description: |-
+        Foydalanuvchilar yuborgan nuqson xabarlari.
+
+        Standart tartib — ochiqlari birinchi: navbat shu yerdan ko'riladi.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this problem report.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffProblemReport'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffProblemReport'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffProblemReport'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffProblemReport'
+          description: ''
+    delete:
+      operationId: staff_problem_reports_destroy
+      description: |-
+        Foydalanuvchilar yuborgan nuqson xabarlari.
+
+        Standart tartib — ochiqlari birinchi: navbat shu yerdan ko'riladi.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this problem report.
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/staff/problems/:
     get:
       operationId: staff_problems_list
@@ -6540,7 +6764,7 @@ components:
           type: string
           maxLength: 120
         status:
-          $ref: '#/components/schemas/StatusEnum'
+          $ref: '#/components/schemas/Status8d9Enum'
         challenger:
           type: string
           description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
@@ -7459,6 +7683,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/StaffProblem'
+    PaginatedStaffProblemReportList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffProblemReport'
     PaginatedStaffQuestList:
       type: object
       required:
@@ -8281,6 +8528,36 @@ components:
           format: date-time
           readOnly: true
         updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedStaffProblemReport:
+      type: object
+      description: |-
+        Xabar — xodim uchun. Faqat `status` o'zgartiriladi.
+
+        Sabab va izohni xodim tahrirlay olmaydi: xabar foydalanuvchining
+        so'zi, uni o'zgartirish yozuvni ma'nosiz qilardi.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        problem:
+          type: string
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+        reason:
+          allOf:
+          - $ref: '#/components/schemas/Reason432Enum'
+          readOnly: true
+        comment:
+          type: string
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/StaffProblemReportStatusEnum'
+        created_at:
           type: string
           format: date-time
           readOnly: true
@@ -9231,6 +9508,20 @@ components:
         * `contest` - Contests
         * `activity` - Activity
         * `challenges` - Challenges
+    Reason432Enum:
+      enum:
+      - statement
+      - tests
+      - translation
+      - duplicate
+      - other
+      type: string
+      description: |-
+        * `statement` - Matnda xato
+        * `tests` - Testlar noto'g'ri
+        * `translation` - Tarjima xato
+        * `duplicate` - Takroriy masala
+        * `other` - Boshqa
     Register:
       type: object
       properties:
@@ -9271,6 +9562,16 @@ components:
           nullable: true
       required:
       - registered_at
+    ReportProblem:
+      type: object
+      properties:
+        reason:
+          $ref: '#/components/schemas/Reason432Enum'
+        comment:
+          type: string
+          maxLength: 2000
+      required:
+      - reason
     Reschedule:
       type: object
       properties:
@@ -9809,7 +10110,7 @@ components:
           readOnly: true
         status:
           allOf:
-          - $ref: '#/components/schemas/StatusEnum'
+          - $ref: '#/components/schemas/Status8d9Enum'
           readOnly: true
         challenger:
           type: string
@@ -10104,6 +10405,53 @@ components:
       - test_count
       - title
       - updated_at
+    StaffProblemReport:
+      type: object
+      description: |-
+        Xabar — xodim uchun. Faqat `status` o'zgartiriladi.
+
+        Sabab va izohni xodim tahrirlay olmaydi: xabar foydalanuvchining
+        so'zi, uni o'zgartirish yozuvni ma'nosiz qilardi.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        problem:
+          type: string
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+        reason:
+          allOf:
+          - $ref: '#/components/schemas/Reason432Enum'
+          readOnly: true
+        comment:
+          type: string
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/StaffProblemReportStatusEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - comment
+      - created_at
+      - id
+      - problem
+      - reason
+      - username
+    StaffProblemReportStatusEnum:
+      enum:
+      - open
+      - accepted
+      - rejected
+      type: string
+      description: |-
+        * `open` - Ochiq
+        * `accepted` - Qabul qilindi
+        * `rejected` - Rad etildi
     StaffQuest:
       type: object
       properties:
@@ -10635,7 +10983,7 @@ components:
           nullable: true
       required:
       - username
-    StatusEnum:
+    Status8d9Enum:
       enum:
       - open
       - accepted

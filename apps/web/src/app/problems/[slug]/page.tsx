@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Attachments } from "@/components/Attachments";
 import { Markdown } from "@/components/Markdown";
+import { ReportProblem } from "@/components/ReportProblem";
 import { SimilarProblems } from "@/components/SimilarProblems";
 import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
@@ -195,6 +196,8 @@ export default async function ProblemPage({ params, searchParams }: Props) {
         )}
 
         <SimilarProblems items={problem.similar} />
+
+        <ReportProblem slug={slug} />
 
         {problem.source && (
           <p className="text-theme-sm rw-faint">

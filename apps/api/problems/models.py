@@ -427,3 +427,48 @@ class ProblemRating(models.Model):
 
     def __str__(self) -> str:
         return f"{self.problem.slug}: {self.score}"
+
+
+class ProblemReport(models.Model):
+    """Masaladagi nuqson haqida xabar.
+
+    2089 masala tashqi arxivdan ko'chirilgan: bir qismida test yo'q,
+    matnda formatlash buzilgan bo'lishi yoki tarjima xato bo'lishi
+    mumkin. Ularning hammasini o'zimiz topib chiqa olmaymiz — yechayotgan
+    odam esa darhol ko'radi. Xabar yo'li bo'lmasa, u nuqson bilan birga
+    yo'qoladi.
+    """
+
+    class Reason(models.TextChoices):
+        STATEMENT = "statement", "Matnda xato"
+        TESTS = "tests", "Testlar noto'g'ri"
+        TRANSLATION = "translation", "Tarjima xato"
+        DUPLICATE = "duplicate", "Takroriy masala"
+        OTHER = "other", "Boshqa"
+
+    class Status(models.TextChoices):
+        OPEN = "open", "Ochiq"
+        ACCEPTED = "accepted", "Qabul qilindi"
+        REJECTED = "rejected", "Rad etildi"
+
+    problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name="reports")
+    user = models.ForeignKey("core.User", on_delete=models.CASCADE, related_name="problem_reports")
+    reason = models.CharField(max_length=16, choices=Reason.choices)
+    comment = models.TextField(blank=True, max_length=2000)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.OPEN)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering: ClassVar = ["-created_at"]
+        constraints: ClassVar = [
+            # Bir odam bir masala haqida bir marta ochiq xabar qoldiradi —
+            # aks holda tugmani takror bosish navbatni to'ldirardi.
+            models.UniqueConstraint(
+                fields=["user", "problem"],
+                condition=models.Q(status="open"),
+                name="uniq_open_problem_report",
+            )
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.problem.slug}: {self.reason} ({self.status})"

@@ -701,6 +701,24 @@ export const setFavourite = (slug: string, on: boolean) =>
     ? postJson<{ is_favourite: boolean }>(`/problems/${slug}/favourite/`, {})
     : deleteJson<{ is_favourite: boolean }>(`/problems/${slug}/favourite/`);
 
+export const REPORT_REASONS = [
+  ["statement", "Matnda xato"],
+  ["tests", "Testlar noto'g'ri"],
+  ["translation", "Tarjima xato"],
+  ["duplicate", "Takroriy masala"],
+  ["other", "Boshqa"],
+] as const;
+
+export const reportProblem = (
+  slug: string,
+  reason: string,
+  comment: string,
+) =>
+  postJson<{ reported: boolean }>(`/problems/${slug}/report/`, {
+    reason,
+    comment,
+  });
+
 export const voteProblem = (slug: string, value: -1 | 0 | 1) =>
   postJson<{ up: number; down: number; mine: number }>(
     `/problems/${slug}/vote/`,
