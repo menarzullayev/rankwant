@@ -168,4 +168,5 @@ def test_standings_chegaralangan(running) -> None:
 
     assert len(rows) == TOP_LIMIT
     # Kesish saralashdan KEYIN bo'lishi kerak — eng yuqori ball birinchi.
-    assert rows[0]["score"] > rows[-1]["score"]
+    scores = [int(row["score"]) for row in rows]  # type: ignore[call-overload]
+    assert scores == sorted(scores, reverse=True)
