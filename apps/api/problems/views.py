@@ -271,15 +271,17 @@ class RecommendationView(APIView):
 
 
 class ProblemStatsView(APIView):
-    """Masala statistikasi — verdikt/til taqsimoti va yechganlar.
+    """Masala statistikasi — verdikt va til TAQSIMOTI.
+
+    Yechganlar ro'yxati bu yerda emas, `ProblemSolversView` da: bu
+    bo'lim raqamlar haqida, u yerdagisi odamlar haqida. Ikkalasi bir
+    sahifada ikki marta chizilgan edi va statistikadagisi kambag'alroq
+    edi — urinish soni ham, kod uzunligi ham yo'q edi.
 
     Ochiq: raqamlar hech kimning manbasini oshkor qilmaydi.
     """
 
     permission_classes = [AllowAny]
-    #: Yechganlar ro'yxati cheklanadi — ommabop masalada minglab bo'lishi
-    #: mumkin, sahifada esa bir nechtasi kifoya.
-    SOLVER_LIMIT = 50
 
     @extend_schema(responses={200: OpenApiResponse(description="Masala statistikasi")})
     def get(self, request: Request, slug: str) -> Response:
@@ -298,31 +300,6 @@ class ProblemStatsView(APIView):
             .annotate(n=Count("pk"), ac=Count("pk", filter=Q(verdict=Verdict.AC)))
             .order_by("-n")
         ]
-
-        # Har foydalanuvchining BIRINCHI AC si. `DISTINCT ON` Postgres'ga
-        # bog'lab qo'yardi (testlar SQLite'da), shuning uchun eng erta
-        # AC'lar id bo'yicha olinib, Python'da bir marta filtrlanadi.
-        seen: set[int] = set()
-        solvers = []
-        for attempt in (
-            attempts.filter(verdict=Verdict.AC)
-            .select_related("user", "language")
-            .order_by("pk")[: self.SOLVER_LIMIT * 4]
-        ):
-            if attempt.user_id in seen:
-                continue
-            seen.add(attempt.user_id)
-            solvers.append(
-                {
-                    "username": attempt.user.username,
-                    "language": attempt.language.code,
-                    "time_ms": attempt.time_ms,
-                    "memory_kb": attempt.memory_kb,
-                    "created_at": attempt.created_at,
-                }
-            )
-            if len(solvers) >= self.SOLVER_LIMIT:
-                break
 
         # Eng tez yechim — TILMA-TIL. Python'ni C++ bilan bir jadvalda
         # taqqoslash ma'nosiz bo'lardi: farq yechimda emas, tilda.
@@ -353,7 +330,6 @@ class ProblemStatsView(APIView):
                 "total": attempts.count(),
                 "verdicts": verdicts,
                 "languages": languages,
-                "solvers": solvers,
                 "fastest": fastest,
             }
         )

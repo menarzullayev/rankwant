@@ -365,10 +365,11 @@ class TestProblemStats:
             ("py313", user.username, 900),
         ]
 
-    def test_yechganlar_royxatida_har_kim_bir_marta(self, attempts, problem, user) -> None:
+    def test_statistikada_yechganlar_royxati_yoq(self, attempts, problem) -> None:
+        """Yechganlar alohida bo'limda — bu yerda faqat taqsimot."""
         data = APIClient().get(reverse("problem-stats", args=[problem.slug])).data
 
-        assert [s["username"] for s in data["solvers"]] == [user.username]
+        assert set(data) == {"total", "verdicts", "languages", "fastest"}
 
     def test_yopiq_masala_korinmaydi(self, db, problem) -> None:
         problem.is_public = False

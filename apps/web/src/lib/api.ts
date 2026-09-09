@@ -265,13 +265,6 @@ export type ProblemStats = {
   total: number;
   verdicts: { verdict: string; count: number }[];
   languages: { language: string; count: number; solved: number }[];
-  solvers: {
-    username: string;
-    language: string;
-    time_ms: number;
-    memory_kb: number;
-    created_at: string;
-  }[];
   /** Har til uchun eng tez AC. Tillar aralashtirilmaydi. */
   fastest: {
     language: string;

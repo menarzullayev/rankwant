@@ -144,43 +144,17 @@ export default async function ProblemStatsPage({ params }: Props) {
             </Card>
           )}
 
-          <Card
-            title="Yechganlar"
-            className="lg:col-span-2"
-            bodyClassName="p-0"
-          >
-            {stats.solvers.length === 0 ? (
-              <p className="px-5 py-4 text-theme-sm rw-faint">
-                Hali hech kim yechmagan.
-              </p>
-            ) : (
-              <ul className="rw-divide divide-y">
-                {stats.solvers.map((solver) => (
-                  <li
-                    key={solver.username}
-                    className="flex flex-wrap items-center gap-3 px-5 py-2.5 text-theme-sm"
-                  >
-                    <Link
-                      href={`/users/${solver.username}`}
-                      className="font-medium rw-strong rw-link-hover"
-                    >
-                      {solver.username}
-                    </Link>
-                    <span className="rw-dim">{solver.language}</span>
-                    <span className="rw-faint tabular-nums">
-                      {solver.time_ms} ms ·{" "}
-                      {Math.round(solver.memory_kb / 1024)} MB
-                    </span>
-                    <time
-                      className="ml-auto rw-faint"
-                      dateTime={solver.created_at}
-                    >
-                      {new Date(solver.created_at).toLocaleDateString("uz")}
-                    </time>
-                  </li>
-                ))}
-              </ul>
-            )}
+          <Card className="lg:col-span-2">
+            <p className="text-theme-sm rw-dim">
+              Kim yechgani, nechanchi urinishda va qanday kod bilan —{" "}
+              <Link
+                href={`/problems/${slug}/solvers`}
+                className="rw-accent-ink hover:underline"
+              >
+                Yechganlar
+              </Link>{" "}
+              bo&apos;limida.
+            </p>
           </Card>
         </div>
       )}

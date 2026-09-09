@@ -1902,7 +1902,12 @@ paths:
     get:
       operationId: problems_stats_retrieve
       description: |-
-        Masala statistikasi — verdikt/til taqsimoti va yechganlar.
+        Masala statistikasi — verdikt va til TAQSIMOTI.
+
+        Yechganlar ro'yxati bu yerda emas, `ProblemSolversView` da: bu
+        bo'lim raqamlar haqida, u yerdagisi odamlar haqida. Ikkalasi bir
+        sahifada ikki marta chizilgan edi va statistikadagisi kambag'alroq
+        edi — urinish soni ham, kod uzunligi ham yo'q edi.
 
         Ochiq: raqamlar hech kimning manbasini oshkor qilmaydi.
       parameters:
