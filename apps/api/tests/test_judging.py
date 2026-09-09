@@ -579,3 +579,34 @@ class TestReapStuck:
         assert reap_stuck() == {"requeued": 0, "failed": 0}
         attempt.refresh_from_db()
         assert attempt.verdict == "PENDING"
+
+
+def test_kursor_bir_xil_vaqtda_ham_qator_tushirmaydi(db, problem, user, language) -> None:
+    """`-created_at` noyob emas — teng vaqtda kursor qatorni takrorlagan edi.
+
+    O'lchandi: bir xil vaqtli 70 qatordan 69 tasi qaytgan. Contest
+    spike'ida bir necha yuborish bir mikrosoniyaga tushishi mumkin,
+    `bulk_create` esa buni har safar qiladi.
+    """
+    from django.utils import timezone
+
+    made = Attempt.objects.bulk_create(
+        [
+            Attempt(user=user, problem=problem, language=language, source_code="x", verdict="WA")
+            for _ in range(30)
+        ]
+    )
+    Attempt.objects.filter(pk__in=[a.pk for a in made]).update(created_at=timezone.now())
+
+    client = APIClient()
+    seen: list[int] = []
+    url = f"{reverse('attempt-list')}?problem={problem.slug}&page_size=7"
+    for _ in range(10):
+        page = client.get(url).json()
+        seen.extend(row["id"] for row in page["results"])
+        if not page.get("next"):
+            break
+        url = page["next"].split("testserver", 1)[-1]
+
+    assert len(seen) == len(set(seen)), "takror qator"
+    assert set(seen) == {a.pk for a in made}, "qator tushib qoldi"

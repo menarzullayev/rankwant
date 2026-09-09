@@ -17,4 +17,10 @@ class TimeCursorPagination(CursorPagination):
     page_size = 25
     max_page_size = 100
     page_size_query_param = "page_size"
-    ordering = "-created_at"
+    #: `-pk` — TIEBREAKER, bezak emas. Yolg'iz `-created_at` noyob emas:
+    #: teng vaqtli qatorlarning tartibi so'rovdan so'rovga o'zgarishi
+    #: mumkin va kursor boshqa qatorga tushadi. O'lchandi — bir xil
+    #: vaqtli 70 qatordan 69 tasi qaytgan, bittasi ikki marta, bittasi
+    #: umuman tushib qolgan. Contest spike'ida bir necha yuborish bir
+    #: mikrosoniyaga tushishi mumkin.
+    ordering = ("-created_at", "-pk")
