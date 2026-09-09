@@ -74,6 +74,22 @@ function editorLanguage(code: string): string {
 const draftKey = (problem: string, language: string) =>
   `rw:draft:${problem}:${language}`;
 
+const testsKey = (problem: string) => `rw:tests:${problem}`;
+
+/** Saqlangan o'z testlari. Buzuq qiymat bo'lsa bitta bo'sh test. */
+function parseTests(raw: string | null): string[] {
+  if (!raw) return [""];
+  try {
+    const value: unknown = JSON.parse(raw);
+    if (Array.isArray(value) && value.every((v) => typeof v === "string")) {
+      return value.length ? value : [""];
+    }
+  } catch {
+    // Eski format yoki buzuq yozuv — bo'sh testdan boshlaymiz.
+  }
+  return [""];
+}
+
 function readStorage(key: string): string | null {
   try {
     return localStorage.getItem(key);
@@ -145,8 +161,19 @@ export default function SubmitPanel({
 
   const [attempt, setAttempt] = useState<AttemptDetail | null>(null);
 
-  const [stdin, setStdin] = useState("");
+  // Bir nechta o'z testi: chegaraviy holatlarni sinashda bitta maydon
+  // yetmaydi — yangisini yozish eskisini o'chirib yuborardi. Kod
+  // qoralamasi kabi brauzerda saqlanadi.
+  const tests = testsKey(problem);
+  const storedTests = useStored(tests);
+  const [editedTests, setEditedTests] = useState<string[] | null>(null);
+  const customTests = editedTests ?? parseTests(storedTests);
+  const [activeTest, setActiveTest] = useState(0);
+  const current = Math.min(activeTest, customTests.length - 1);
+
   const [customRun, setCustomRun] = useState<CustomRun | null>(null);
+  //: Natija qaysi testniki — tab almashganda begona natija ko'rinmasin.
+  const [runFor, setRunFor] = useState<number | null>(null);
   const [sampleResults, setSampleResults] = useState<SampleResult[]>([]);
 
   const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -191,6 +218,15 @@ export default function SubmitPanel({
     const handle = setTimeout(() => writeStorage(key, edits[key]), 500);
     return () => clearTimeout(handle);
   }, [language, key, edits]);
+
+  useEffect(() => {
+    if (editedTests === null) return;
+    const handle = setTimeout(
+      () => writeStorage(tests, JSON.stringify(editedTests)),
+      500,
+    );
+    return () => clearTimeout(handle);
+  }, [tests, editedTests]);
 
   useEffect(
     () => () => {
@@ -336,9 +372,10 @@ export default function SubmitPanel({
       const created = await runCustomTest({
         language,
         source_code: source,
-        stdin,
+        stdin: customTests[current] ?? "",
       });
       setCustomRun(created);
+      setRunFor(current);
       pollCustom(created.id, 0);
     } catch (caught) {
       setError(describe(caught));
@@ -467,9 +504,11 @@ export default function SubmitPanel({
         )}
         {tab === "custom" && (
           <CustomView
-            stdin={stdin}
-            onStdin={setStdin}
-            run={customRun}
+            tests={customTests}
+            active={current}
+            onActive={setActiveTest}
+            onChange={setEditedTests}
+            run={runFor === current ? customRun : null}
             onRun={runCustom}
             disabled={!canSubmit || busy || !source.trim()}
           />
@@ -595,37 +634,101 @@ function VerdictView({ attempt }: { attempt: AttemptDetail | null }) {
   );
 }
 
+const MAX_TESTS = 8;
+
 function CustomView({
-  stdin,
-  onStdin,
+  tests,
+  active,
+  onActive,
+  onChange,
   run,
   onRun,
   disabled,
 }: {
-  stdin: string;
-  onStdin: (value: string) => void;
+  tests: string[];
+  active: number;
+  onActive: (index: number) => void;
+  onChange: (tests: string[]) => void;
   run: CustomRun | null;
   onRun: () => void;
   disabled: boolean;
 }) {
+  function edit(value: string) {
+    onChange(tests.map((test, i) => (i === active ? value : test)));
+  }
+
+  function add() {
+    onChange([...tests, ""]);
+    onActive(tests.length);
+  }
+
+  function remove() {
+    onChange(tests.filter((_, i) => i !== active));
+    onActive(Math.max(0, active - 1));
+  }
+
+  const tab =
+    "rw-radius-sm px-2.5 py-1 text-theme-xs font-medium transition rw-hover-bg";
+
   return (
     <div className="space-y-3">
+      <div className="flex flex-wrap items-center gap-1">
+        {tests.map((_, index) => (
+          <button
+            key={index}
+            type="button"
+            onClick={() => onActive(index)}
+            aria-current={index === active}
+            className={`${tab} ${
+              index === active ? "rw-accent-soft rw-accent-ink" : "rw-dim"
+            }`}
+          >
+            Test {index + 1}
+          </button>
+        ))}
+        {tests.length < MAX_TESTS && (
+          <button
+            type="button"
+            onClick={add}
+            aria-label="Test qo'shish"
+            className={`${tab} rw-faint`}
+          >
+            +
+          </button>
+        )}
+        {tests.length > 1 && (
+          <button
+            type="button"
+            onClick={remove}
+            aria-label={`Test ${active + 1} ni o'chirish`}
+            className={`${tab} ml-auto rw-faint`}
+          >
+            O&apos;chirish
+          </button>
+        )}
+      </div>
+
       <label className="block">
         <span className="mb-1.5 block text-theme-sm font-medium rw-strong">
           Kiritma (stdin)
         </span>
         <textarea
-          value={stdin}
-          onChange={(e) => onStdin(e.target.value)}
+          value={tests[active] ?? ""}
+          onChange={(e) => edit(e.target.value)}
           rows={4}
           spellCheck={false}
           className="w-full rw-radius-sm border rw-line rw-field-bg p-3 font-mono text-theme-xs rw-strong outline-none rw-focus-line"
         />
       </label>
 
-      <Button variant="outline" onClick={onRun} disabled={disabled}>
-        Ishga tushirish
-      </Button>
+      <div className="flex flex-wrap items-center gap-3">
+        <Button variant="outline" onClick={onRun} disabled={disabled}>
+          Ishga tushirish
+        </Button>
+        <span className="text-theme-xs rw-faint">
+          Testlar shu brauzerda saqlanadi
+        </span>
+      </div>
 
       {run && (
         <div className="space-y-2">
