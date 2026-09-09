@@ -33,6 +33,17 @@ def get_wallet(user: User) -> QvantWallet:
     return wallet
 
 
+def lock_wallet(user: User) -> QvantWallet:
+    """Balansni tranzaksiya oxirigacha band qiladi.
+
+    Foydalanuvchining pulga tegadigan amallarini ketma-ketlashtiradi:
+    «tekshir, keyin yech» ko'rinishidagi har qanday kod uchun oynani shu
+    qator yopadi. `debit` ichida ham xuddi shu qator qulflanadi — bitta
+    tranzaksiyada takroriy qulf xavfsiz.
+    """
+    return QvantWallet.objects.select_for_update().get_or_create(user=user)[0]
+
+
 def earned_today(user: User, when: date | None = None) -> int:
     """Shiftga kiradigan bugungi emissiya."""
     day = when or timezone.localdate()

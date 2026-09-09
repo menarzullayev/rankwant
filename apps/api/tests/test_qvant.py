@@ -730,3 +730,69 @@ class TestRejudgeQaytarish:
         assert not UserQuestCompletion.objects.filter(
             user=user, quest__code=quests.DAILY_THREE_AC
         ).exists()
+
+
+@pytest.mark.django_db(transaction=True)
+def test_takrorlanmas_narsa_parallel_xaridda_bir_marta_sotiladi(user) -> None:
+    """`exists()` bilan `debit()` orasidagi oyna — o'lchandi.
+
+    `UserInventory` da uniq cheklov yo'q (streak freeze takroriy sotib
+    olinadi), shuning uchun tekshiruv poygaga ochiq edi: 6 ta parallel
+    so'rov ramkani 4 marta sotib, 100 o'rniga 400 Qvant yechgan.
+    """
+    import threading
+
+    from django.db import connection, connections
+
+    if connection.vendor != "postgresql":
+        pytest.skip("qulf semantikasi faqat Postgres'da tekshiriladi")
+
+    item = ShopItem.objects.create(
+        code="ramka",
+        category=ShopItem.Category.AVATAR_FRAME,
+        title_uz="Ramka",
+        price=100,
+        is_consumable=False,
+    )
+    ledger.credit(user, 600, QvantTransaction.Reason.ADMIN)
+
+    barrier = threading.Barrier(6)
+    ok = []
+
+    def buy():
+        try:
+            barrier.wait()
+            purchase(user, item.code)
+            ok.append(1)
+        except PurchaseError:
+            pass
+        finally:
+            connections.close_all()
+
+    threads = [threading.Thread(target=buy) for _ in range(6)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    assert len(ok) == 1
+    assert UserInventory.objects.filter(user=user, item=item).count() == 1
+    assert ledger.get_wallet(user).balance == 500
+
+
+@pytest.mark.django_db
+def test_takroriy_narsa_qulfdan_keyin_ham_qayta_sotiladi(user) -> None:
+    """Qulf streak freeze kabi consumable narsani bloklab qo'ymasligi kerak."""
+    item = ShopItem.objects.create(
+        code="muzlatgich",
+        category=ShopItem.Category.STREAK_FREEZE,
+        title_uz="Freeze",
+        price=50,
+        is_consumable=True,
+    )
+    ledger.credit(user, 200, QvantTransaction.Reason.ADMIN)
+
+    purchase(user, item.code)
+    purchase(user, item.code)
+
+    assert UserInventory.objects.filter(user=user, item=item).count() == 2

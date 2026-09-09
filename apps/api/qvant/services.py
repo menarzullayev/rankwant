@@ -146,6 +146,12 @@ def purchase(user: User, item_code: str) -> UserInventory:
     except ShopItem.DoesNotExist:
         raise PurchaseError("Narsa topilmadi") from None
 
+    # `UserInventory` da uniq cheklov YO'Q (streak freeze takroriy
+    # sotib olinadi), shuning uchun takrorlanishni faqat shu qulf
+    # ushlab turadi. O'lchandi: qulfsiz 6 ta parallel so'rov ramkani
+    # 4 marta sotib, 100 o'rniga 400 Qvant yechib yuborardi.
+    ledger.lock_wallet(user)
+
     if not item.is_consumable and UserInventory.objects.filter(user=user, item=item).exists():
         raise PurchaseError("Bu narsa sizda allaqachon bor")
 
