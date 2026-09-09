@@ -515,3 +515,89 @@ class TestVirtualYuborish:
         assert list(
             Standing.objects.filter(contest=contest).values_list("user__username", flat=True)
         ) == [other_user.username]
+
+
+@pytest.mark.django_db
+class TestIoiJadvali:
+    """IOI musobaqasi BALL bo'yicha saralanishi kerak.
+
+    O'lchandi: `scoring_type` tanlanardi va judge qisman ballarni to'g'ri
+    hisoblardi, jadval esa uni umuman o'qimasdi — 270 ballik ishtirokchi
+    200 ballikdan pastda turardi.
+    """
+
+    def _setup(self, contest, problem, language):
+        Contest.objects.filter(pk=contest.pk).update(scoring_type=Contest.Scoring.IOI)
+        contest.refresh_from_db()
+        extra = [
+            type(problem).objects.create(
+                slug=f"ioi-{i}", title=f"IOI {i}", statement="…", difficulty=1000, is_public=True
+            )
+            for i in range(2)
+        ]
+        problems = [problem, *extra]
+        for i, p in enumerate(problems):
+            ContestProblem.objects.update_or_create(
+                contest=contest, index_letter="ABC"[i], defaults={"problem": p}
+            )
+        return problems
+
+    def _submit(self, user, contest, problem, language, score, verdict, minutes):
+        attempt = Attempt.objects.create(
+            user=user,
+            problem=problem,
+            contest=contest,
+            language=language,
+            source_code="x",
+            verdict=verdict,
+            score=score,
+        )
+        Attempt.objects.filter(pk=attempt.pk).update(
+            created_at=contest.start_at + timedelta(minutes=minutes)
+        )
+
+    def test_qisman_ball_yigindisi_tartibni_belgilaydi(
+        self, contest, problem, language, user, other_user
+    ) -> None:
+        problems = self._setup(contest, problem, language)
+        # 3 × 90 = 270, hech biri to'liq emas
+        for i, p in enumerate(problems):
+            self._submit(user, contest, p, language, 90, "PARTIAL", 10 + i)
+        # 2 × 100 = 200, ikkitasi to'liq
+        for i, p in enumerate(problems[:2]):
+            self._submit(other_user, contest, p, language, 100, Verdict.AC, 10 + i)
+
+        rebuild_standings(contest)
+
+        rows = list(
+            Standing.objects.filter(contest=contest)
+            .order_by("rank")
+            .values_list("user__username", "total_score", "penalty")
+        )
+        assert rows == [(user.username, 270, 0), (other_user.username, 200, 0)]
+
+    def test_har_masaladan_eng_yaxshisi_olinadi(self, contest, problem, language, user) -> None:
+        problems = self._setup(contest, problem, language)
+        self._submit(user, contest, problems[0], language, 40, "PARTIAL", 10)
+        self._submit(user, contest, problems[0], language, 95, "PARTIAL", 20)
+        self._submit(user, contest, problems[0], language, 60, "PARTIAL", 30)
+
+        rebuild_standings(contest)
+
+        assert Standing.objects.get(contest=contest, user=user).total_score == 95
+
+    def test_acm_ozgarmadi(self, contest, problem, language, user, other_user) -> None:
+        ContestProblem.objects.update_or_create(
+            contest=contest, index_letter="A", defaults={"problem": problem}
+        )
+        submit(user, contest, problem, language, Verdict.AC, 10)
+        submit(other_user, contest, problem, language, Verdict.AC, 30)
+
+        rebuild_standings(contest)
+
+        rows = list(
+            Standing.objects.filter(contest=contest)
+            .order_by("rank")
+            .values_list("user__username", "solved_count", "penalty")
+        )
+        assert rows == [(user.username, 1, 10), (other_user.username, 1, 30)]

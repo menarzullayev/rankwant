@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Any
 
 from django.db import transaction
 from django.utils import timezone
@@ -17,6 +19,9 @@ log = logging.getLogger(__name__)
 
 #: ACM: har noto'g'ri urinish uchun jarima (daqiqa)
 WRONG_ATTEMPT_PENALTY_MIN = 20
+
+#: IOI: masalaning to'liq bali (judge shu shkalada qaytaradi).
+MAX_PROBLEM_SCORE = 100
 
 
 @dataclass
@@ -33,6 +38,8 @@ class _Row:
     solved: int
     penalty: int
     last_ac: datetime | None
+    #: IOI bali. ACM da ishlatilmaydi — u yerda tartibni `solved` belgilaydi.
+    total: int = 0
 
 
 @transaction.atomic
@@ -41,6 +48,10 @@ def rebuild_standings(contest: Contest) -> int:
 
     ACM: yechilgan masalalar soni ↓, keyin penalty ↑.
     Penalty = (birinchi AC vaqti daqiqada) + 20 × (AC gacha noto'g'ri urinishlar).
+
+    IOI: BALL ↓, keyin oxirgi ball olingan vaqt ↑. Jarima yo'q — IOI da
+    noto'g'ri urinish jazolanmaydi, har masaladan eng yaxshi natija
+    olinadi.
     """
     problem_ids = list(
         ContestProblem.objects.filter(contest=contest).values_list("problem_id", flat=True)
@@ -65,7 +76,7 @@ def rebuild_standings(contest: Contest) -> int:
             contest=contest, problem_id__in=problem_ids, created_at__lt=contest.end_at
         )
         .order_by("created_at")
-        .values("user_id", "problem_id", "verdict", "created_at")
+        .values("user_id", "problem_id", "verdict", "created_at", "score")
     )
     # ICPC muzlatishi: oxirgi daqiqalarda jadval freeze paytidagi holatda
     # qotadi. Kesish URINISHLAR bo'yicha, rebuild'ni butunlay o'tkazib
@@ -75,6 +86,9 @@ def rebuild_standings(contest: Contest) -> int:
     # to'liq, haqiqiy jadvalni quradi.
     if contest.is_frozen:
         attempts = attempts.filter(created_at__lt=contest.freeze_at)
+
+    if contest.scoring_type == Contest.Scoring.IOI:
+        return _rebuild_ioi(contest, attempts)
 
     per_user: dict[int, dict[int, _ProblemState]] = {}
     for a in attempts:
@@ -109,7 +123,11 @@ def rebuild_standings(contest: Contest) -> int:
         rows.append(_Row(user_id, solved, penalty, last_ac))
 
     rows.sort(key=lambda r: (-r.solved, r.penalty))
+    return _write(contest, rows, score=lambda r: r.solved)
 
+
+def _write(contest: Contest, rows: list[_Row], score: Callable[[_Row], int]) -> int:
+    """Saralangan qatorlarni jadvalga yozadi — tartib ALLAQACHON berilgan."""
     Standing.objects.filter(contest=contest).delete()
     Standing.objects.bulk_create(
         [
@@ -119,13 +137,51 @@ def rebuild_standings(contest: Contest) -> int:
                 rank=i + 1,
                 solved_count=row.solved,
                 penalty=row.penalty,
-                total_score=row.solved,
+                total_score=score(row),
                 last_ac_at=row.last_ac,
             )
             for i, row in enumerate(rows)
         ]
     )
     return len(rows)
+
+
+def _rebuild_ioi(contest: Contest, attempts: Any) -> int:
+    """IOI jadvali — ball bo'yicha.
+
+    O'lchandi: `scoring_type` tanlanardi, judge qisman ballarni to'g'ri
+    hisoblardi, jadval esa uni UMUMAN o'qimasdi va hammani ACM qoidasi
+    bilan saralardi — 270 ballik ishtirokchi 200 ballikdan pastda turardi.
+
+    Har masaladan ENG YAXSHI urinish olinadi (IOI shunday), jarima yo'q.
+    Tenglikda oxirgi ball olingan vaqt erta bo'lgani yuqori turadi.
+    """
+    best: dict[int, dict[int, tuple[int, datetime]]] = {}
+    for a in attempts:
+        got = int(a["score"] or 0)
+        rows = best.setdefault(a["user_id"], {})
+        current = rows.get(a["problem_id"])
+        if current is None or got > current[0]:
+            rows[a["problem_id"]] = (got, a["created_at"])
+
+    rows_out: list[_Row] = []
+    for user_id, per_problem in best.items():
+        total = sum(score for score, _ in per_problem.values())
+        scoring = [when for score, when in per_problem.values() if score > 0]
+        rows_out.append(
+            _Row(
+                user_id=user_id,
+                # `solved` — TO'LIQ yechilganlar soni; jadvalda ko'rsatiladi,
+                # lekin IOI da tartibni BALL belgilaydi.
+                solved=sum(1 for score, _ in per_problem.values() if score >= MAX_PROBLEM_SCORE),
+                penalty=0,
+                last_ac=max(scoring) if scoring else None,
+            )
+        )
+        rows_out[-1].total = total
+
+    rows_out.sort(key=lambda r: (-r.total, r.last_ac or contest.end_at))
+    return _write(contest, rows_out, score=lambda r: r.total)
 
 
 @transaction.atomic
