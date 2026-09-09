@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import timedelta
+
 import pytest
 from django.urls import reverse
 from rest_framework.test import APIClient
@@ -508,3 +510,55 @@ def test_drain_results_bosh_navbatda_darhol_tugaydi(db, memory_judge) -> None:
 
     assert drain_results() == 0
     assert calls["n"] == 1, "bo'sh navbatda bitta o'qish yetarli"
+
+
+@pytest.mark.django_db
+class TestReapStuck:
+    """Judge yiqilsa navbatdan olingan ish yo'qoladi — urinish qotib qolardi."""
+
+    def stuck(self, problem, user, language, minutes: int, requeued: bool = False):
+        from django.utils import timezone
+
+        attempt = Attempt.objects.create(
+            user=user, problem=problem, language=language, source_code="x", verdict="PENDING"
+        )
+        when = timezone.now() - timedelta(minutes=minutes)
+        Attempt.objects.filter(pk=attempt.pk).update(
+            created_at=when, requeued_at=when if requeued else None
+        )
+        return attempt
+
+    def test_qotgan_urinish_qayta_navbatga_tushadi(
+        self, problem, user, language, memory_judge
+    ) -> None:
+        from judging.tasks import reap_stuck
+
+        attempt = self.stuck(problem, user, language, minutes=10)
+
+        assert reap_stuck() == {"requeued": 1, "failed": 0}
+        attempt.refresh_from_db()
+        assert attempt.requeued_at is not None
+        assert attempt.verdict == "PENDING", "hali javob kutilmoqda"
+        assert len(memory_judge.jobs) == 1
+
+    def test_ikkinchi_marta_urinilmaydi_ie_qoyiladi(
+        self, problem, user, language, memory_judge
+    ) -> None:
+        from judging.tasks import reap_stuck
+
+        attempt = self.stuck(problem, user, language, minutes=20, requeued=True)
+
+        assert reap_stuck() == {"requeued": 0, "failed": 1}
+        attempt.refresh_from_db()
+        assert attempt.verdict == "IE"
+        assert attempt.judged_at is not None
+        assert memory_judge.jobs == [], "ikkinchi marta navbatga qo'yilmaydi"
+
+    def test_yangi_urinishga_tegilmaydi(self, problem, user, language, memory_judge) -> None:
+        attempt = self.stuck(problem, user, language, minutes=1)
+
+        from judging.tasks import reap_stuck
+
+        assert reap_stuck() == {"requeued": 0, "failed": 0}
+        attempt.refresh_from_db()
+        assert attempt.verdict == "PENDING"

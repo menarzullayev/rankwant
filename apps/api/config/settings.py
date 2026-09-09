@@ -227,6 +227,12 @@ CELERY_BEAT_SCHEDULE = {
         "task": "judging.drain_results",
         "schedule": 2.0,
     },
+    # Judge yiqilsa navbatdan olingan ish yo'qoladi — urinish abadiy
+    # PENDING bo'lib qolmasin.
+    "reap-stuck-attempts": {
+        "task": "judging.reap_stuck",
+        "schedule": 60.0,
+    },
     "finalize-due-contests": {
         "task": "contests.finalize_due",
         "schedule": 60.0,

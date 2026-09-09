@@ -45,6 +45,11 @@ class Attempt(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     judged_at = models.DateTimeField(null=True, blank=True)
+    #: Qotib qolgani uchun navbatga QAYTA qo'yilgan vaqt. Judge qayta
+    #: ishga tushsa (deploy, OOM) navbatdan olingan ish yo'qoladi va
+    #: urinish abadiy PENDING bo'lib qolardi. Bir marta qayta uriniladi;
+    #: bu maydon ikkinchi marta urinmaslik uchun.
+    requeued_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering: ClassVar = ["-created_at"]
