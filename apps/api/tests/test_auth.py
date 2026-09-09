@@ -214,3 +214,58 @@ class TestPlatformStats:
         cache.delete("platform-stats")
         Attempt.objects.create(user=user, problem=problem, language=language, source_code="x")
         assert APIClient().get(reverse("platform-stats")).json()["attempts"] == 1
+
+
+def test_profilda_orin_va_daraja_taqsimoti(db, problem, hard_problem) -> None:
+    """Reyting raqami yolg'iz o'zi ma'no bermaydi — o'rin bilan birga beriladi."""
+    from django.urls import reverse
+    from rest_framework.test import APIClient
+
+    from core.models import User
+    from ratings.models import RatingHistory, UserSolvedProblem
+
+    birinchi = User.objects.create_user("kuchli", rating_skills=2000)
+    ikkinchi = User.objects.create_user("orta", rating_skills=1000)
+    UserSolvedProblem.objects.create(
+        user=ikkinchi, problem=problem, difficulty_at_solve=problem.difficulty
+    )
+    RatingHistory.objects.create(
+        user=ikkinchi,
+        rating_type="skills",
+        value_before=0,
+        value_after=1500,
+        delta=1500,
+        reason="problem_solved",
+    )
+    RatingHistory.objects.create(
+        user=ikkinchi,
+        rating_type="skills",
+        value_before=1500,
+        value_after=1000,
+        delta=-500,
+        reason="recalculation",
+    )
+
+    data = APIClient().get(reverse("user-detail", args=[ikkinchi.username])).data
+
+    assert data["ranks"]["skills"] == 2, f"{birinchi.username} oldinda"
+    # Reyting tushgan bo'lsa ham eng yuqori qiymat saqlanadi.
+    assert data["max_ratings"]["skills"] == 1500
+    levels = {row["code"]: row["solved"] for row in data["solved_by_level"]}
+    assert levels["beginner"] == 1
+    assert levels["master"] == 0
+
+
+def test_leaderboardda_orin_hisoblanmaydi(db) -> None:
+    """Har qatorga to'rtta COUNT qo'shilsa ro'yxat sekinlashardi."""
+    from django.urls import reverse
+    from rest_framework.test import APIClient
+
+    from core.models import User
+
+    User.objects.create_user("kimdir", rating_skills=100)
+
+    row = APIClient().get(reverse("user-list")).data["results"][0]
+
+    assert row["ranks"] == {}
+    assert row["solved_by_level"] == []

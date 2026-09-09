@@ -159,7 +159,15 @@ export type UserPublic = {
   is_staff?: boolean;
   streak_count: number;
   date_joined: string;
+  /** Reyting bo'yicha o'rin. Ro'yxat javobida bo'sh — faqat profilda. */
+  ranks: Partial<Record<RatingKind, number>>;
+  /** Erishilgan eng yuqori qiymat. Ro'yxat javobida bo'sh. */
+  max_ratings: Partial<Record<RatingKind, number>>;
+  /** Daraja kesimida yechilganlar. Ro'yxat javobida bo'sh. */
+  solved_by_level: { code: string; label: string; solved: number }[];
 };
+
+export type RatingKind = "skills" | "contest" | "activity" | "challenges";
 
 export type RatingChange = {
   rating_type: string;

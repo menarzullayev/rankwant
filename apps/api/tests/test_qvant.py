@@ -396,6 +396,9 @@ class TestPhasedReveal:
             "rating_challenges",
             "streak_count",
             "date_joined",
+            "ranks",
+            "max_ratings",
+            "solved_by_level",
         }
 
     def test_challenges_endi_beriladi(self, user) -> None:

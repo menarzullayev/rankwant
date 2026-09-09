@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { api, ApiError } from "@/lib/api";
+import { api, ApiError, type RatingKind, type UserPublic } from "@/lib/api";
 import { DifficultyBadge } from "@/components/ui/Badge";
 import { Card, StatCard } from "@/components/ui/Card";
 import {
@@ -55,6 +55,9 @@ export default async function ProfilePage({ params }: Props) {
     api.solved(username),
   ]);
 
+  const solvedLevels = user.solved_by_level.filter((level) => level.solved > 0);
+  const peakLevel = Math.max(...solvedLevels.map((l) => l.solved), 1);
+
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-center gap-4 rw-radius border rw-line rw-surface p-6 rw-shadow">
@@ -69,18 +72,55 @@ export default async function ProfilePage({ params }: Props) {
         </div>
       </header>
 
+      {/* Reyting yonida O'RIN: raqamning o'zi «ko'p yoki oz» ekanini
+          aytmaydi, u faqat boshqalar bilan solishtirganda ma'lum bo'ladi
+          (KEP profilida ham shunday). Eng yuqori qiymat esa hozirgisi
+          tushib ketgan bo'lsa ham mehnat yo'qolmaganini ko'rsatadi. */}
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Skills" value={user.rating_skills} />
-        <StatCard label="Contests" value={user.rating_contest} />
+        <StatCard
+          label="Skills"
+          value={user.rating_skills}
+          hint={ratingHint(user, "skills")}
+        />
+        <StatCard
+          label="Contests"
+          value={user.rating_contest}
+          hint={ratingHint(user, "contest")}
+        />
         <StatCard
           label={t(locale, "leaderboard.activity")}
           value={user.rating_activity}
+          hint={ratingHint(user, "activity")}
         />
         <StatCard
           label={t(locale, "leaderboard.streak")}
           value={user.streak_count}
         />
       </section>
+
+      {solvedLevels.length > 0 && (
+        <Card title="Daraja bo'yicha yechilganlar" bodyClassName="space-y-2.5">
+          {solvedLevels.map((level) => (
+            <div key={level.code}>
+              <div className="flex items-baseline justify-between gap-2 text-theme-sm">
+                <span className={`level-${level.code} font-medium`}>
+                  {level.label}
+                </span>
+                <span className="rw-faint tabular-nums">{level.solved}</span>
+              </div>
+              <div className="mt-1 h-1.5 overflow-hidden rounded-full rw-chip">
+                <div
+                  className={`level-${level.code} h-full rounded-full`}
+                  style={{
+                    width: `${Math.round((level.solved / peakLevel) * 100)}%`,
+                    backgroundColor: "currentColor",
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+        </Card>
+      )}
 
       {/* Principle #2 ning ko'rinadigan qismi: har o'zgarish sababi bilan */}
       <Card
@@ -165,4 +205,14 @@ export default async function ProfilePage({ params }: Props) {
       </Card>
     </div>
   );
+}
+
+/** «#7 · eng yuqori 1500» — o'rin va erishilgan cho'qqi. */
+function ratingHint(user: UserPublic, kind: RatingKind): string | undefined {
+  const parts: string[] = [];
+  const rank = user.ranks[kind];
+  const max = user.max_ratings[kind];
+  if (rank) parts.push(`#${rank}`);
+  if (max !== undefined && max > 0) parts.push(`eng yuqori ${max}`);
+  return parts.length ? parts.join(" · ") : undefined;
 }

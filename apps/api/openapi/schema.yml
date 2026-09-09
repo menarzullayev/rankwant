@@ -11368,7 +11368,42 @@ components:
         date_joined:
           type: string
           format: date-time
+        ranks:
+          type: object
+          additionalProperties:
+            type: integer
+          description: |-
+            Har reyting bo'yicha o'rin.
+
+            Raqamning o'zi «ko'p yoki oz» ekanini aytmaydi — 800 yaxshimi
+            yoki yomonmi, faqat boshqalar bilan solishtirganda ma'lum
+            bo'ladi. KEP profilida ham har reyting yonida o'rin turadi.
+
+            Faqat detal javobida hisoblanadi: leaderboard'da har qatorga
+            to'rtta COUNT qo'shilib ketardi.
+          readOnly: true
+        max_ratings:
+          type: object
+          additionalProperties:
+            type: integer
+          description: Erishilgan eng yuqori qiymat — hozirgisi tushib ketgan bo'lsa
+            ham.
+          readOnly: true
+        solved_by_level:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          description: |-
+            Daraja kesimida yechilganlar — KEP profilidagi taqsimot.
+
+            Bitta Skills raqami «qayerda turibman» degan savolga javob
+            beradi, bu esa «nimani mashq qilishim kerak» degan savolga.
+          readOnly: true
       required:
+      - max_ratings
+      - ranks
+      - solved_by_level
       - username
     ValueEnum:
       enum:
