@@ -791,6 +791,28 @@ export const api = {
   wallet: () => get<Wallet>("/qvant/wallet/", 0),
   quests: () => get<Quest[]>("/qvant/quests/", 0),
   marathon: () => get<Marathon>("/qvant/marathon/", 0),
+  // Sitemap uchun — faqat slug kerak, lekin ro'yxat endpointi to'liq
+  // yozuvni beradi. Soatiga bir marta chaqiriladi (app/sitemap.ts).
+  problemSlugs: (page: number) =>
+    get<Paginated<{ slug: string }>>(
+      `/problems/?page=${page}&page_size=100`,
+      3600,
+    ),
+  contestSlugs: (page: number) =>
+    get<Paginated<{ slug: string }>>(
+      `/contests/?page=${page}&page_size=100`,
+      3600,
+    ),
+  articleSlugs: (page: number) =>
+    get<Paginated<{ slug: string }>>(
+      `/articles/?page=${page}&page_size=100`,
+      3600,
+    ),
+  postSlugs: (page: number) =>
+    get<Paginated<{ slug: string }>>(
+      `/posts/?page=${page}&page_size=100`,
+      3600,
+    ),
   shop: () => get<ShopItem[]>("/qvant/shop/", 30),
   // Bildirishnomalar shaxsiy va tez o'zgaradi — keshlanmaydi
   notifications: () => get<Paginated<Notification>>("/notifications/", 0),

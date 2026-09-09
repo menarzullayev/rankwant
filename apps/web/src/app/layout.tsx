@@ -4,15 +4,27 @@ import AppShell from "@/layout/AppShell";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
 import { getLocale } from "@/i18n/server";
 import { DEFAULT_LOCALE } from "@/i18n/messages";
+import { SITE_URL } from "@/lib/site";
+
+const TITLE = "RankWant — reyting xohlaganlar uchun";
+const DESCRIPTION =
+  "Sport dasturlash va informatika olimpiadasi platformasi: masala arxivi, " +
+  "musobaqa va ochiq reyting.";
 
 export const metadata: Metadata = {
-  title: {
-    default: "RankWant — reyting xohlaganlar uchun",
-    template: "%s · RankWant",
+  // `metadataBase` bo'lmasa Next nisbiy `og:url` yozadi va Telegram
+  // kabi mijozlar uni o'qiy olmaydi — ulashilgan havola yalang'och
+  // manzil bo'lib chiqadi.
+  metadataBase: new URL(SITE_URL),
+  title: { default: TITLE, template: "%s · RankWant" },
+  description: DESCRIPTION,
+  openGraph: {
+    type: "website",
+    siteName: "RankWant",
+    title: TITLE,
+    description: DESCRIPTION,
   },
-  description:
-    "Sport dasturlash va informatika olimpiadasi platformasi: masala arxivi, " +
-    "musobaqa va ochiq reyting.",
+  twitter: { card: "summary", title: TITLE, description: DESCRIPTION },
 };
 
 /** Tema klassini hidratsiyadan OLDIN qo'yadi — aks holda qorong'u

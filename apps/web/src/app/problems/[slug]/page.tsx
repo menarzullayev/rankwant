@@ -36,11 +36,24 @@ export async function generateMetadata({
   const { slug } = await params;
   try {
     const problem = await api.problem(slug);
+    const title = problem.code
+      ? `#${String(problem.code).padStart(4, "0")} · ${problem.title}`
+      : problem.title;
+    const description = `${problem.title} — qiyinlik ${problem.difficulty}. RankWant masala arxivi.`;
+    // Havolalar asosan Telegramda ulashiladi: OG'siz ular yalang'och
+    // manzil bo'lib chiqadi. `canonical` esa filtrli va til cookie'li
+    // variantlarni bitta manzilga yig'adi.
     return {
-      title: problem.code
-        ? `#${String(problem.code).padStart(4, "0")} · ${problem.title}`
-        : problem.title,
-      description: `${problem.title} — qiyinlik ${problem.difficulty}. RankWant masala arxivi.`,
+      title,
+      description,
+      alternates: { canonical: `/problems/${slug}` },
+      openGraph: {
+        type: "article",
+        title,
+        description,
+        url: `/problems/${slug}`,
+      },
+      twitter: { card: "summary", title, description },
     };
   } catch {
     return { title: "Masala topilmadi" };
