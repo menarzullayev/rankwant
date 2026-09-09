@@ -11,6 +11,7 @@ import logging
 from typing import Any
 
 import boto3
+from botocore.config import Config
 from django.conf import settings
 from django.core.cache import cache
 
@@ -20,6 +21,17 @@ log = logging.getLogger(__name__)
 #: aks holda noto'g'ri belgilangan katta test butun sahifani cho'ktirardi.
 MAX_SAMPLE_BYTES = 16 * 1024
 SAMPLES_TTL = 3600
+#: Nosozlik NATIJASI qisqa keshlanadi. Uni bir soat saqlash MinIO bir
+#: soniya uzilganda ham sahifani bir soatga namunasiz qoldirardi
+#: (o'lchandi: saqlash qaytgach ham `samples` 0 bo'lib qoldi).
+FAILURE_TTL = 60
+
+#: Saqlash yiqilganda boto3 standart sozlamada 60 soniya kutadi va besh
+#: marta qayta uradi — sahifa 15 soniya osilib qolgan edi. Yuk ostida bu
+#: gunicorn worker'larini tugatib, butun saytni cho'ktirardi.
+S3_TIMEOUT = Config(
+    connect_timeout=2, read_timeout=3, retries={"max_attempts": 2, "mode": "standard"}
+)
 
 
 @functools.lru_cache(maxsize=1)
@@ -30,6 +42,7 @@ def client() -> Any:  # boto3 mijozi tipi runtime'da yaratiladi
         aws_access_key_id=settings.S3_KEY,
         aws_secret_access_key=settings.S3_SECRET,
         region_name=settings.S3_REGION,
+        config=S3_TIMEOUT,
     )
 
 
@@ -70,6 +83,7 @@ def sample_tests(problem: Any) -> list[dict[str, Any]]:
         return cached  # type: ignore[no-any-return]
 
     samples: list[dict[str, Any]] = []
+    complete = True
     for test in problem.tests.filter(is_sample=True).order_by("order"):
         try:
             samples.append(
@@ -80,7 +94,11 @@ def sample_tests(problem: Any) -> list[dict[str, Any]]:
                 }
             )
         except Exception:
+            # Bittasi o'qilmasa saqlash yiqilgan bo'lishi ehtimoli katta —
+            # qolganini urinish har biriga yana timeout qo'shardi.
             log.warning("namuna test o'qilmadi: %s #%s", problem.slug, test.order)
+            complete = False
+            break
 
-    cache.set(key, samples, SAMPLES_TTL)
+    cache.set(key, samples, SAMPLES_TTL if complete else FAILURE_TTL)
     return samples

@@ -844,3 +844,43 @@ def test_balans_yetmasa_yozuv_qolmaydi(with_editorial, problem, user) -> None:
 
     # Aks holda foydalanuvchi to'lamasdan tahlilga ega bo'lardi.
     assert problem.unlocks.count() == 0
+
+
+def test_s3_yiqilganda_nosozlik_qisqa_keshlanadi(samples, problem, monkeypatch) -> None:
+    """Bir soatlik kesh MinIO qaytgach ham sahifani namunasiz qoldirardi."""
+    from problems import storage
+
+    cache.delete(storage.samples_cache_key(problem.slug))
+    ttls: list[int] = []
+    original = cache.set
+
+    def spy(key, value, timeout=None, **kw):
+        ttls.append(timeout)
+        return original(key, value, timeout, **kw)
+
+    monkeypatch.setattr(cache, "set", spy)
+    monkeypatch.setattr(storage, "get_test_data", _raise_s3)
+
+    assert storage.sample_tests(problem) == []
+    assert ttls == [storage.FAILURE_TTL], "nosozlik uzoq keshlanmaydi"
+
+
+def test_s3_yiqilganda_qolgan_testlar_urinilmaydi(samples, problem, monkeypatch) -> None:
+    """Har biriga alohida timeout sahifani 15 soniyaga cho'zgan edi."""
+    from problems import storage
+
+    cache.delete(storage.samples_cache_key(problem.slug))
+    calls: list[str] = []
+
+    def counting(ref: str) -> str:
+        calls.append(ref)
+        raise OSError("saqlash yiqildi")
+
+    monkeypatch.setattr(storage, "get_test_data", counting)
+    storage.sample_tests(problem)
+
+    assert len(calls) == 1, "birinchi xatodan keyin to'xtaydi"
+
+
+def _raise_s3(ref: str) -> str:
+    raise OSError("saqlash yiqildi")

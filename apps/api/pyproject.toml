@@ -21,7 +21,7 @@ exclude = ["migrations/"]
 warn_unused_ignores = false
 
 [[tool.mypy.overrides]]
-module = ["celery.*", "factory.*", "django_filters.*", "redis.*", "boto3.*"]
+module = ["celery.*", "factory.*", "django_filters.*", "redis.*", "boto3.*", "botocore.*"]
 ignore_missing_imports = true
 
 # Testlarda pytest fixture argumentlari tabiiy ravishda tipsiz —
