@@ -89,6 +89,9 @@ export default async function ProblemPage({ params, searchParams }: Props) {
               {Math.round(problem.memory_limit_kb / 1024)} MB
             </Badge>
             {problem.partial_scoring && <Badge color="info">Qisman ball</Badge>}
+            {!problem.has_tests && (
+              <Badge color="warning">Testlar tayyorlanmoqda</Badge>
+            )}
             {problem.topics.map((topic) => (
               <Badge key={topic} color="info">
                 {topic}
