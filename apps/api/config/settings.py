@@ -169,6 +169,16 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticatedOrReadOnly"],
+    # Productionda FAQAT JSON. Browsable API o'sha URL'ga `Accept: text/html`
+    # bilan kelganda butunlay boshqa javob beradi — o'lchandi, jadval 59 KB
+    # JSON o'rniga 149 KB HTML. Chekka kesh (`core.cache.edge_cacheable`)
+    # bilan bu xavfli: Cloudflare `Vary` ni faqat `Accept-Encoding` bo'yicha
+    # hisobga oladi, ya'ni bitta brauzer urinishi HTML ni o'sha manzilga
+    # keshlab qo'yishi va barcha JSON mijozlarga HTML berishi mumkin edi.
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+        *(["rest_framework.renderers.BrowsableAPIRenderer"] if DEBUG else []),
+    ],
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend",
         "rest_framework.filters.OrderingFilter",

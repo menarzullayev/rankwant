@@ -96,3 +96,21 @@ class TestAlgorithms:
         body = APIClient().get(reverse("article-list"), {"kind": "algorithm"}).json()
         assert [a["slug"] for a in body["results"]] == ["bfs"]
         assert body["results"][0]["kind"] == "algorithm"
+
+
+def test_browsable_api_faqat_debugda() -> None:
+    """Chekka kesh bilan browsable API xavfli: bir xil URL `Accept: text/html`
+    bilan 149 KB HTML qaytarardi, 59 KB JSON emas. Cloudflare `Vary: Accept`
+    ni hisobga olmaydi, ya'ni bitta brauzer urinishi o'sha manzilga HTML
+    keshlab, barcha JSON mijozlarga uni berishi mumkin edi.
+
+    Tekshiruv sozlama darajasida: DRF renderer ro'yxatini IMPORT paytida
+    `APIView.renderer_classes` ga muzlatadi, ya'ni `override_settings`
+    bilan sinab bo'lmaydi.
+    """
+    from config import settings as conf
+
+    renderers: list[str] = conf.REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"]  # type: ignore[assignment]
+
+    assert renderers[0] == "rest_framework.renderers.JSONRenderer"
+    assert any("Browsable" in r for r in renderers) is conf.DEBUG
