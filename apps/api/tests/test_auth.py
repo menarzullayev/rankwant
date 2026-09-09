@@ -337,3 +337,18 @@ class TestRoyxatdanOtishDarvozasi:
 
     def test_normal_royxat_otadi(self) -> None:
         assert self._post(username="dilnoza", password="Kuchli!Parol9").status_code == 201
+
+
+def test_admin_marshruti_productionda_yoq() -> None:
+    """Panelni hozir faqat tunnel yo'naltirishi yopib turibdi — o'lchandi:
+    API konteynerida `/admin/login/` Django login sahifasini berardi.
+    Himoya ingress qoidasida emas, sozlamada bo'lishi kerak."""
+    from django.urls import NoReverseMatch, reverse
+
+    from config import settings as conf
+
+    if conf.ADMIN_ENABLED:
+        assert reverse("admin:index") == "/admin/"
+        return
+    with pytest.raises(NoReverseMatch):
+        reverse("admin:index")

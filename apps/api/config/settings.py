@@ -21,6 +21,15 @@ def env_bool(key: str, default: bool = False) -> bool:
 
 SECRET_KEY = env("DJANGO_SECRET_KEY", "dev-only-not-for-production")
 DEBUG = env_bool("DJANGO_DEBUG", True)
+
+#: Django admin paneli. Loyihaning O'Z admin UI si bor (`/admin` web'da,
+#: `/api/v1/staff/*` API da), ya'ni bu ishlab chiqish quroli.
+#:
+#: Hozir uni faqat tunnel yo'naltirishi yopib turibdi: `/api/*` API ga,
+#: qolgani web ga ketadi va `/admin/` Next.js ning 404 iga tushadi —
+#: o'lchandi. Bu himoya SOZLAMADA emas, ingress qoidasida yashaydi va
+#: kimdir uni o'zgartirsa panel bir zumda ommaviy bo'lardi.
+ADMIN_ENABLED = env_bool("DJANGO_ADMIN", DEBUG)
 ALLOWED_HOSTS = [h for h in env("DJANGO_ALLOWED_HOSTS", "*").split(",") if h]
 
 INSTALLED_APPS = [
