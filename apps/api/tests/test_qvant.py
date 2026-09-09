@@ -642,3 +642,91 @@ def test_kunlik_shift_parallel_mukofotda_ham_ushlaydi(user) -> None:
 
     assert ledger.earned_today(user) == DAILY_EARN_CAP
     assert ledger.get_wallet(user).balance == DAILY_EARN_CAP
+
+
+@pytest.mark.django_db
+class TestRejudgeQaytarish:
+    """Rejudge AC ni yiqitganda Qvant qaytarilishi — ADR-0002.
+
+    Ilgari `revoke_for_attempt` `ref_type="attempt"` bo'yicha qidirardi,
+    lekin hech qayerda shunday havola bilan Qvant berilmasdi: o'lchandi —
+    rejudge'dan keyin skills 800→0, solved_count 1→0, Qvant esa 10 da
+    qolardi.
+    """
+
+    def _solve(self, user, problem, language):
+        from judging.models import Attempt
+        from qvant.services import on_first_accepted
+        from ratings.services import on_attempt_judged
+
+        attempt = Attempt.objects.create(
+            user=user, problem=problem, language=language, source_code="x", verdict="AC"
+        )
+        on_attempt_judged(attempt)
+        on_first_accepted(user)
+        return attempt
+
+    def _revoke(self, attempt):
+        from judging.models import Attempt
+        from ratings.services import on_accept_revoked
+
+        Attempt.objects.filter(pk=attempt.pk).update(verdict="WA")
+        attempt.refresh_from_db()
+        on_accept_revoked(attempt)
+
+    def test_yagona_ac_yiqilsa_pul_qaytariladi(self, user, problem, language) -> None:
+        quests.sync_catalogue()
+        attempt = self._solve(user, problem, language)
+        assert ledger.get_wallet(user).balance == 10
+
+        self._revoke(attempt)
+
+        assert ledger.get_wallet(user).balance == 0
+        assert not UserQuestCompletion.objects.filter(
+            user=user, quest__code=quests.DAILY_SOLVE
+        ).exists()
+        # Streak ataylab tegilmaydi — rejudge bizning xatomiz.
+        user.refresh_from_db()
+        assert user.streak_count == 1
+
+    def test_kunda_boshqa_yechim_qolsa_pul_qolaveradi(self, user, problem, language) -> None:
+        """Quest kunga bog'langan: bitta AC yiqilsa ham mukofot haqli."""
+        quests.sync_catalogue()
+        second = type(problem).objects.create(
+            slug="ikkinchi", title="Ikkinchi", statement="…", difficulty=1000, is_public=True
+        )
+        attempt = self._solve(user, problem, language)
+        self._solve(user, second, language)
+        balance = ledger.get_wallet(user).balance
+
+        self._revoke(attempt)
+
+        assert ledger.get_wallet(user).balance == balance
+        assert UserQuestCompletion.objects.filter(
+            user=user, quest__code=quests.DAILY_SOLVE
+        ).exists()
+
+    def test_uchtalik_quest_shart_buzilganda_qaytariladi(self, user, problem, language) -> None:
+        quests.sync_catalogue()
+        extra = [
+            type(problem).objects.create(
+                slug=f"qoshimcha-{i}",
+                title=f"Q{i}",
+                statement="…",
+                difficulty=1000,
+                is_public=True,
+            )
+            for i in range(2)
+        ]
+        self._solve(user, problem, language)
+        self._solve(user, extra[0], language)
+        last = self._solve(user, extra[1], language)
+        assert ledger.get_wallet(user).balance == 25  # daily_solve + daily_three_ac
+
+        self._revoke(last)
+
+        # 3→2: uchtalik quest yiqildi, kunlik quest esa qoldi.
+        assert ledger.get_wallet(user).balance == 10
+        assert not UserQuestCompletion.objects.filter(
+            user=user, quest__code=quests.DAILY_THREE_AC
+        ).exists()

@@ -143,12 +143,23 @@ def refund_ref(user: User, ref_type: str, ref_id: str) -> int:
         ).aggregate(total=Sum("amount"))["total"]
         or 0
     )
-    outstanding = granted + already  # already manfiy
-    if outstanding <= 0:
+    return take_back(user, granted + already, ref_type=ref_type, ref_id=str(ref_id))
+
+
+@transaction.atomic
+def take_back(user: User, amount: int, *, ref_type: str, ref_id: str) -> int:
+    """Berilgan miqdorni qaytarib oladi — havolasiz.
+
+    Kunlik quest ledgerda takrorlanuvchi havola bilan yozilgan
+    (`quest/daily_solve` har kuni bir xil), shuning uchun uni havola
+    bo'yicha qaytarib bo'lmaydi: `refund_ref` butun tarixni yig'ib
+    yuborardi. Miqdor `UserQuestCompletion.awarded` dan olinadi.
+    """
+    if amount <= 0:
         return 0
 
     wallet = QvantWallet.objects.select_for_update().get_or_create(user=user)[0]
-    take = min(outstanding, max(0, wallet.balance))
+    take = min(amount, max(0, wallet.balance))
     if take == 0:
         log.warning(
             "qaytarish imkonsiz: %s uchun %s %s — balans %s",

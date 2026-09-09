@@ -7,7 +7,7 @@ unga kerakli hisoblar to'planadi.
 from __future__ import annotations
 
 import logging
-from datetime import timedelta
+from datetime import date, timedelta
 
 from django.db import transaction
 from django.utils import timezone
@@ -26,13 +26,12 @@ class PurchaseError(Exception):
     """Xarid bajarilmadi."""
 
 
-def _ac_count_today(user: User) -> int:
+def _distinct_ac_count(user: User, day: date) -> int:
     from judging.models import Attempt
     from judging.verdicts import Verdict
 
-    today = timezone.localdate()
     return (
-        Attempt.objects.filter(user=user, verdict=Verdict.AC, created_at__date=today)
+        Attempt.objects.filter(user=user, verdict=Verdict.AC, created_at__date=day)
         .values("problem_id")
         .distinct()
         .count()
@@ -47,7 +46,7 @@ def on_first_accepted(user: User) -> dict[str, object]:
     AC da — ADR-0002 anti-farm: qayta yechish 0 Qvant beradi.
     """
     current, streak_quests = streak.touch(user)
-    daily = quests.on_accepted(user, ac_count_today=_ac_count_today(user))
+    daily = quests.on_accepted(user, ac_count_today=_distinct_ac_count(user, timezone.localdate()))
 
     from qvant.marathon import check_completion
 
@@ -80,10 +79,21 @@ def on_contest_finished(user: User, contest_slug: str) -> int:
 
 
 @transaction.atomic
-def revoke_for_attempt(user: User, attempt_id: int) -> int:
-    """Rejudge AC ni bekor qilganda — ADR-0002 qaytarish qoidasi."""
-    taken = ledger.refund_ref(user, "attempt", str(attempt_id))
-    if taken:
+def revoke_for_attempt(user: User, day: date) -> int:
+    """Rejudge AC ni bekor qilganda — ADR-0002 qaytarish qoidasi.
+
+    AC dan keladigan Qvant urinishga emas, kunlik questga bog'langan,
+    shuning uchun havola bo'yicha qaytarish MUMKIN emas — ilgari shu
+    yerda `refund_ref(user, "attempt", …)` turardi va hech qachon
+    mos yozuv topmasdi: rejudge skills bilan statistikani qaytarib,
+    pulni foydalanuvchida qoldirardi. Endi kun sharti qayta o'lchanadi.
+
+    Streak ATAYLAB tegilmaydi: rejudge — bizning testimiz yoki
+    checkerimiz xatosi, foydalanuvchining zanjirini orqaga qaytarib
+    buzish adolatsiz.
+    """
+    revoked, taken = quests.revoke_day_quests(user, day, ac_count=_distinct_ac_count(user, day))
+    if revoked:
         recalc_activity(user)
     return taken
 

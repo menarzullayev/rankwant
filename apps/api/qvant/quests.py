@@ -49,6 +49,10 @@ CATALOGUE: dict[str, tuple[str, int, str]] = {
 #: Streak yutuqlari shiftdan ozod (ADR-0002)
 STREAK_QUESTS = frozenset({STREAK_7, STREAK_30, STREAK_365})
 
+#: Kunlik quest → talab qilinadigan yechilgan masala soni.
+#: Rejudge AC ni yiqitganda shart shu jadval bo'yicha QAYTA o'lchanadi.
+DAY_QUEST_MIN_AC: dict[str, int] = {DAILY_SOLVE: 1, DAILY_THREE_AC: 3}
+
 
 def day_key(when: date | None = None) -> str:
     return (when or timezone.localdate()).isoformat()
@@ -111,6 +115,34 @@ def on_accepted(user: User, *, ac_count_today: int) -> list[str]:
     if ac_count_today >= 3 and award(user, DAILY_THREE_AC, key):
         granted.append(DAILY_THREE_AC)
     return granted
+
+
+@transaction.atomic
+def revoke_day_quests(user: User, day: date, *, ac_count: int) -> tuple[int, int]:
+    """Rejudge AC ni yiqitgach o'sha kunning questlarini qayta tekshiradi.
+
+    Quest KUNGA bog'langan, urinishga emas: o'sha kuni boshqa masalalar
+    ham yechilgan bo'lsa, mukofot haqli qoladi. Shuning uchun bitta AC
+    yo'qolgani uchun quest ko'r-ko'rona bekor qilinmaydi — shart
+    qaytadan o'lchanadi (ADR-0002 anti-farm: «rejudge da qaytarish»).
+
+    Qaytaradi: (bekor qilingan quest soni, qaytarib olingan Qvant).
+    """
+    key = day_key(day)
+    revoked = 0
+    taken = 0
+    for code, needed in DAY_QUEST_MIN_AC.items():
+        if ac_count >= needed:
+            continue
+        completion = UserQuestCompletion.objects.filter(
+            user=user, quest__code=code, period_key=key
+        ).first()
+        if completion is None:
+            continue
+        taken += ledger.take_back(user, completion.awarded, ref_type="quest", ref_id=code)
+        completion.delete()
+        revoked += 1
+    return revoked, taken
 
 
 def on_contest_finished(user: User, contest_slug: str) -> int:

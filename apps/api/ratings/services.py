@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 
 from django.db import models, transaction
+from django.utils import timezone
 
 from core.models import User
 from judging.models import Attempt
@@ -150,7 +151,7 @@ def on_accept_revoked(attempt: Attempt) -> None:
     try:
         from qvant.services import revoke_for_attempt
 
-        revoke_for_attempt(attempt.user, attempt.pk)
+        revoke_for_attempt(attempt.user, timezone.localtime(attempt.created_at).date())
     except Exception:
         log.exception("Qvant qaytarilmadi: attempt %s", attempt.pk)
 
