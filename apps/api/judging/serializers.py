@@ -23,6 +23,7 @@ class AttemptSerializer(serializers.ModelSerializer[Attempt]):
 
     def get_source_size(self, attempt: Attempt) -> int:
         return len(attempt.source_code)
+
     problem = serializers.SlugRelatedField[Problem](slug_field="slug", read_only=True)
     language = serializers.SlugRelatedField[Language](slug_field="code", read_only=True)
 
