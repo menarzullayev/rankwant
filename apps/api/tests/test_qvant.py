@@ -12,6 +12,7 @@ from django.urls import reverse
 from django.utils import timezone
 from rest_framework.test import APIClient
 
+from core.models import User
 from judging.models import Attempt
 from judging.services import apply_result
 from qvant import ledger, quests, streak
@@ -188,6 +189,52 @@ class TestStreak:
         user.refresh_from_db()
         count, _ = streak.touch(user, today)
         assert count == 2  # uzilmadi
+
+    def test_dokondan_olingan_bir_kunlik_freeze_ishlaydi(self, user, catalogue) -> None:
+        """Do'kon `days=1` beradi — mavjud test esa `days=3` bilan sinardi.
+
+        O'lchandi: bir kunlik muzlatgich bilan streak 5 dan 1 ga tushardi,
+        chunki taqqoslash tashlangan kun o'rniga qaytilgan kun bilan
+        qilinardi.
+        """
+        today = timezone.localdate()
+        item = ShopItem.objects.create(
+            code="freeze-1",
+            category=ShopItem.Category.STREAK_FREEZE,
+            title_uz="Muzlatgich",
+            price=50,
+            is_consumable=True,
+        )
+        ledger.credit(user, 100, QvantTransaction.Reason.ADMIN)
+
+        streak.touch(user, today - timedelta(days=2))
+        purchase(user, item.code)  # kecha emas, ikki kun oldin faol edi
+        user.refresh_from_db()
+        assert user.streak_freeze_until == today + timedelta(days=1)
+
+        count, _ = streak.touch(user, today)
+
+        assert count == 2  # kechagi bo'shliq kechirildi
+        user.refresh_from_db()
+        assert user.streak_freeze_until is None  # sarflandi
+
+    def test_freeze_ikki_kunlik_boshliqni_yopmaydi(self, user, catalogue) -> None:
+        """Bir kunlik muzlatgich faqat BIR kunni kechiradi.
+
+        `apply_freeze` doim haqiqiy bugundan hisoblaydi, shuning uchun
+        uch kun oldin sotib olingan muzlatgich qo'lda qo'yiladi: o'shanda
+        `days=1` aynan shu qiymatni bergan bo'lardi.
+        """
+        today = timezone.localdate()
+        streak.touch(user, today - timedelta(days=3))
+        User.objects.filter(pk=user.pk).update(streak_freeze_until=today - timedelta(days=2))
+        user.refresh_from_db()
+
+        # Ikki kun tashlandi (kecha va undan oldin), muzlatgich bittasini
+        # yopadi — zanjir baribir uziladi.
+        count, _ = streak.touch(user, today)
+
+        assert count == 1
 
     def test_yetti_kunda_yutuq(self, user, catalogue) -> None:
         today = timezone.localdate()

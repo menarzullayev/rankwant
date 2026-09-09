@@ -34,8 +34,14 @@ def touch(user: User, when: date | None = None) -> tuple[int, list[str]]:
         user.streak_count = 1
     elif last == today - timedelta(days=1):
         user.streak_count += 1
-    elif user.streak_freeze_until and user.streak_freeze_until >= today:
-        # Freeze bo'shliqni yopadi — streak saqlanadi va davom etadi
+    elif user.streak_freeze_until and user.streak_freeze_until >= today - timedelta(days=1):
+        # Freeze bo'shliqni yopadi — streak saqlanadi va davom etadi.
+        #
+        # Taqqoslash TASHLANGAN kun bilan, qaytilgan kun bilan emas:
+        # `apply_freeze` oxirgi tashlab ketish mumkin bo'lgan kunni
+        # yozadi, foydalanuvchi esa undan KEYIN qaytadi. Ilgari bu yerda
+        # `>= today` turardi va bir kunlik muzlatgich hech qachon
+        # ishlamasdi — o'lchandi: streak 5 dan 1 ga tushardi.
         user.streak_count += 1
         user.streak_freeze_until = None
     else:
