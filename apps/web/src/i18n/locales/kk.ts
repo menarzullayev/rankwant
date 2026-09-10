@@ -70,6 +70,8 @@ export const kk: Record<MessageKey, string> = {
   "auth.username": "Қолданушы аты",
   "auth.password": "Құпиясөз",
   "auth.email": "Email",
+  "footer.terms": "Шарттар",
+  "footer.privacy": "Құпиялылық",
   "auth.usernameHint": "3–20 таңба: латын не кирилл әріптері, сан, нүкте, астыңғы сызық",
   "auth.passwordHint": "Кемінде 8 таңба. Тек сан болмасын.",
   "auth.passwordConfirm": "Құпия сөзді растаңыз",

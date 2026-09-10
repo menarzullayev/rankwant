@@ -70,6 +70,8 @@ export const tr: Record<MessageKey, string> = {
   "auth.username": "Kullanıcı adı",
   "auth.password": "Parola",
   "auth.email": "E-posta",
+  "footer.terms": "Koşullar",
+  "footer.privacy": "Gizlilik",
   "auth.usernameHint": "3–20 karakter: Latin veya Kiril harfleri, rakam, nokta, alt çizgi",
   "auth.passwordHint": "En az 8 karakter. Yalnızca rakam olmasın.",
   "auth.passwordConfirm": "Şifreyi doğrulayın",

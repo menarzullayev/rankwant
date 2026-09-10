@@ -70,6 +70,8 @@ export const tg: Record<MessageKey, string> = {
   "auth.username": "Номи корбар",
   "auth.password": "Рамз",
   "auth.email": "Email",
+  "footer.terms": "Шартҳо",
+  "footer.privacy": "Махфият",
   "auth.usernameHint": "3–20 аломат: ҳарфҳои лотинӣ ё кириллӣ, рақам, нуқта, зерхат",
   "auth.passwordHint": "Ҳадди ақал 8 аломат. Танҳо рақам набошад.",
   "auth.passwordConfirm": "Рамзро тасдиқ кунед",

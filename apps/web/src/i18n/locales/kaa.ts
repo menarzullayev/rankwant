@@ -70,6 +70,8 @@ export const kaa: Record<MessageKey, string> = {
   "auth.username": "Paydalanıwshı atı",
   "auth.password": "Parol",
   "auth.email": "Email",
+  "footer.terms": "Shártlar",
+  "footer.privacy": "Qupıyalıq",
   "auth.usernameHint": "3–20 belgi: latın yamasa kirill háripleri, san, noqat, astı sızıq",
   "auth.passwordHint": "Keminde 8 belgi. Tek sannan ibarat bolmasın.",
   "auth.passwordConfirm": "Paroldi tastıyıqlaw",

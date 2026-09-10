@@ -70,6 +70,8 @@ export const es: Record<MessageKey, string> = {
   "auth.username": "Nombre de usuario",
   "auth.password": "Contraseña",
   "auth.email": "Correo",
+  "footer.terms": "Términos",
+  "footer.privacy": "Privacidad",
   "auth.usernameHint": "3–20 caracteres: letras latinas o cirílicas, dígitos, punto, guion bajo",
   "auth.passwordHint": "Al menos 8 caracteres. No solo dígitos.",
   "auth.passwordConfirm": "Confirma la contraseña",

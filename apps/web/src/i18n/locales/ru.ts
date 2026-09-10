@@ -70,6 +70,8 @@ export const ru: Record<MessageKey, string> = {
   "auth.username": "Имя пользователя",
   "auth.password": "Пароль",
   "auth.email": "Email",
+  "footer.terms": "Условия",
+  "footer.privacy": "Конфиденциальность",
   "auth.usernameHint": "3–20 символов: латиница или кириллица, цифры, точка, подчёркивание",
   "auth.passwordHint": "Не менее 8 символов. Не только цифры.",
   "auth.passwordConfirm": "Подтвердите пароль",

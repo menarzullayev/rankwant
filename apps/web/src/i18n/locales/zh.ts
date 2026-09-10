@@ -70,6 +70,8 @@ export const zh: Record<MessageKey, string> = {
   "auth.username": "用户名",
   "auth.password": "密码",
   "auth.email": "邮箱",
+  "footer.terms": "条款",
+  "footer.privacy": "隐私",
   "auth.usernameHint": "3–20 个字符：拉丁或西里尔字母、数字、点、下划线",
   "auth.passwordHint": "至少 8 个字符，不能全是数字。",
   "auth.passwordConfirm": "确认密码",

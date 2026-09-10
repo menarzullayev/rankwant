@@ -74,6 +74,8 @@ export const uz = {
   "auth.username": "Foydalanuvchi nomi",
   "auth.password": "Parol",
   "auth.email": "Email",
+  "footer.terms": "Shartlar",
+  "footer.privacy": "Maxfiylik",
   "auth.usernameHint": "3–20 belgi: lotin yoki kirill harflari, raqam, nuqta, pastki chiziq",
   "auth.passwordHint": "Kamida 8 belgi. Faqat raqamdan iborat bo'lmasin.",
   "auth.passwordConfirm": "Parolni tasdiqlang",

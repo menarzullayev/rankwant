@@ -4,6 +4,7 @@ import { SidebarProvider, useSidebar } from "@/context/SidebarContext";
 import { SessionProvider } from "@/context/SessionContext";
 import { StyleProvider } from "@/context/StyleContext";
 import { ThemeProvider } from "@/context/ThemeContext";
+import AppFooter from "./AppFooter";
 import AppHeader from "./AppHeader";
 import AppSidebar from "./AppSidebar";
 import { SkipLink } from "./SkipLink";
@@ -34,6 +35,7 @@ function Shell({ children }: { children: React.ReactNode }) {
         <main id="main" className="mx-auto max-w-[1400px] p-4 md:p-6">
           {children}
         </main>
+        <AppFooter />
       </div>
     </div>
   );

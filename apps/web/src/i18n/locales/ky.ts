@@ -70,6 +70,8 @@ export const ky: Record<MessageKey, string> = {
   "auth.username": "Колдонуучу аты",
   "auth.password": "Сырсөз",
   "auth.email": "Email",
+  "footer.terms": "Шарттар",
+  "footer.privacy": "Купуялуулук",
   "auth.usernameHint": "3–20 белги: латын же кирилл тамгалары, сан, чекит, астын сызуу",
   "auth.passwordHint": "Эң аз 8 белги. Жалаң сандан турбасын.",
   "auth.passwordConfirm": "Сырсөздү ырастаңыз",
