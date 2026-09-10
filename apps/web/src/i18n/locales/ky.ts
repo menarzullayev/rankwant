@@ -165,6 +165,18 @@ export const ky: Record<MessageKey, string> = {
   "admin.actions": "Аракеттер",
   "admin.saved": "Сакталды",
   empty: "Азырынча бош",
+  "settings.title": "Жөндөөлөр",
+  "settings.export": "Маалыматты жүктөп алуу",
+  "settings.exportHint":
+    "Профиль, чечимдер, рейтинг тарыхы жана Qvant операциялары — бир JSON файл.",
+  "settings.exportAction": "Жүктөп алуу",
+  "settings.delete": "Эсепти өчүрүү",
+  "settings.deleteHint":
+    "Аты, email жана баяны өчүрүлөт, эсеп анонимдүү болот. Чечимдер жана мелдеш жыйынтыктары калат — аларды алып салуу башка катышуучулардын ордун жылдырмак.",
+  "settings.deletePassword": "Сырсөзүңүз",
+  "settings.deleteAction": "Эсепти биротоло өчүрүү",
+  "settings.deleteConfirm": "Бул аракетти кайтарууга болбойт. Улантасызбы?",
+  "settings.deleteError": "Сырсөз туура эмес",
   "error.already_answered": "Бул суроого жооп бердиңиз",
   "error.already_finalized": "Мурунтан аяктаган",
   "error.already_paid": "Бул мурунтан төлөнгөн",

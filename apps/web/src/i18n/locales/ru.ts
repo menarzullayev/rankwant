@@ -165,6 +165,18 @@ export const ru: Record<MessageKey, string> = {
   "admin.actions": "Действия",
   "admin.saved": "Сохранено",
   empty: "Пока пусто",
+  "settings.title": "Настройки",
+  "settings.export": "Скачать данные",
+  "settings.exportHint":
+    "Профиль, решения, история рейтинга и операции Qvant — один файл JSON.",
+  "settings.exportAction": "Скачать",
+  "settings.delete": "Удалить аккаунт",
+  "settings.deleteHint":
+    "Имя, email и описание будут удалены, аккаунт станет анонимным. Решения и результаты соревнований останутся — их удаление сместило бы места других участников.",
+  "settings.deletePassword": "Ваш пароль",
+  "settings.deleteAction": "Удалить аккаунт навсегда",
+  "settings.deleteConfirm": "Это действие необратимо. Продолжить?",
+  "settings.deleteError": "Неверный пароль",
   "error.already_answered": "Вы уже ответили на этот вопрос",
   "error.already_finalized": "Уже завершено",
   "error.already_paid": "Уже оплачено",

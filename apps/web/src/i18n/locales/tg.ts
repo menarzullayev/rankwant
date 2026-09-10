@@ -165,6 +165,19 @@ export const tg: Record<MessageKey, string> = {
   "admin.actions": "Амалҳо",
   "admin.saved": "Нигоҳ дошта шуд",
   empty: "Ҳоло холӣ",
+  "settings.title": "Танзимот",
+  "settings.export": "Боргирии маълумот",
+  "settings.exportHint":
+    "Профил, ҳалҳо, таърихи рейтинг ва амалиёти Qvant — як файли JSON.",
+  "settings.exportAction": "Боргирӣ",
+  "settings.delete": "Ҳисобро нест кардан",
+  "settings.deleteHint":
+    "Ном, email ва тавсиф нест мешаванд, ҳисоб беном мегардад. Ҳалҳо ва натиҷаҳои мусобиқа боқӣ мемонанд — нест кардани онҳо ҷойи дигар иштирокчиёнро тағйир медод.",
+  "settings.deletePassword": "Пароли шумо",
+  "settings.deleteAction": "Ҳисобро тамоман нест кардан",
+  "settings.deleteConfirm":
+    "Ин амалро баргардонидан мумкин нест. Идома медиҳед?",
+  "settings.deleteError": "Парол нодуруст аст",
   "error.already_answered": "Шумо аллакай ба ин савол ҷавоб додаед",
   "error.already_finalized": "Аллакай анҷом ёфтааст",
   "error.already_paid": "Ин аллакай пардохт шудааст",

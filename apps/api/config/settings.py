@@ -219,6 +219,7 @@ REST_FRAMEWORK = {
         "anon": os.environ.get("THROTTLE_ANON", "1500/hour"),
         "user": os.environ.get("THROTTLE_USER", "300/min"),
         "submit": os.environ.get("THROTTLE_SUBMIT", "6/min"),
+        "export": os.environ.get("THROTTLE_EXPORT", "3/hour"),
     },
 }
 

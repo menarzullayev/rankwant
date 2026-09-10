@@ -181,6 +181,10 @@ class LoginSerializer(serializers.Serializer[dict[str, Any]]):
     password = serializers.CharField(write_only=True)
 
 
+class AccountDeleteSerializer(serializers.Serializer[dict[str, Any]]):
+    password = serializers.CharField(write_only=True)
+
+
 class ApiTokenSerializer(serializers.ModelSerializer[ApiToken]):
     is_active = serializers.BooleanField(read_only=True)
 

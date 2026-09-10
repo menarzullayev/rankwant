@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
-import { UserIcon } from "@/icons";
+import { SettingsIcon, UserIcon } from "@/icons";
 import { postJson } from "@/lib/api";
 
 export default function UserMenu() {
@@ -51,6 +51,14 @@ export default function UserMenu() {
         <span className="hidden sm:inline">
           {user.display_name || user.username}
         </span>
+      </Link>
+      <Link
+        href="/settings"
+        aria-label={t(locale, "settings.title")}
+        title={t(locale, "settings.title")}
+        className="flex size-10 items-center justify-center rw-radius-sm border rw-line rw-dim transition rw-hover-strong"
+      >
+        <SettingsIcon className="size-4" />
       </Link>
       <button
         type="button"

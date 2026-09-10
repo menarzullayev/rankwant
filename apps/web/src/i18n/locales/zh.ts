@@ -164,6 +164,18 @@ export const zh: Record<MessageKey, string> = {
   "admin.actions": "操作",
   "admin.saved": "已保存",
   empty: "暂时为空",
+  "settings.title": "设置",
+  "settings.export": "下载你的数据",
+  "settings.exportHint":
+    "个人资料、提交记录、评分历史和 Qvant 交易 — 一个 JSON 文件。",
+  "settings.exportAction": "下载",
+  "settings.delete": "删除账号",
+  "settings.deleteHint":
+    "姓名、邮箱和简介会被清除，账号将变为匿名。提交记录和比赛成绩会保留 — 删除它们会改变其他选手的名次。",
+  "settings.deletePassword": "你的密码",
+  "settings.deleteAction": "永久删除账号",
+  "settings.deleteConfirm": "此操作无法撤销。要继续吗？",
+  "settings.deleteError": "密码错误",
   "error.already_answered": "你已经回答过这道题",
   "error.already_finalized": "已经结算过了",
   "error.already_paid": "这项已经支付过",

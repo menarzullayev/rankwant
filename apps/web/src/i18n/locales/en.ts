@@ -165,6 +165,18 @@ export const en: Record<MessageKey, string> = {
   "admin.actions": "Actions",
   "admin.saved": "Saved",
   empty: "Nothing yet",
+  "settings.title": "Settings",
+  "settings.export": "Download your data",
+  "settings.exportHint":
+    "Profile, submissions, rating history and Qvant transactions — one JSON file.",
+  "settings.exportAction": "Download",
+  "settings.delete": "Delete account",
+  "settings.deleteHint":
+    "Your name, email and bio are erased and the account becomes anonymous. Submissions and contest results stay — removing them would shift everyone else's placings.",
+  "settings.deletePassword": "Your password",
+  "settings.deleteAction": "Delete account permanently",
+  "settings.deleteConfirm": "This cannot be undone. Continue?",
+  "settings.deleteError": "Wrong password",
   "error.already_answered": "You have already answered this question",
   "error.already_finalized": "Already finalised",
   "error.already_paid": "Already paid for",

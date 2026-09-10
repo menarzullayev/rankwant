@@ -165,6 +165,18 @@ export const tr: Record<MessageKey, string> = {
   "admin.actions": "İşlemler",
   "admin.saved": "Kaydedildi",
   empty: "Henüz boş",
+  "settings.title": "Ayarlar",
+  "settings.export": "Verilerini indir",
+  "settings.exportHint":
+    "Profil, gönderimler, puan geçmişi ve Qvant işlemleri — tek bir JSON dosyası.",
+  "settings.exportAction": "İndir",
+  "settings.delete": "Hesabı sil",
+  "settings.deleteHint":
+    "Ad, e-posta ve biyografi silinir, hesap anonim olur. Gönderimler ve yarışma sonuçları kalır — bunları kaldırmak diğer katılımcıların sıralamasını kaydırırdı.",
+  "settings.deletePassword": "Parolan",
+  "settings.deleteAction": "Hesabı kalıcı olarak sil",
+  "settings.deleteConfirm": "Bu işlem geri alınamaz. Devam edilsin mi?",
+  "settings.deleteError": "Parola yanlış",
   "error.already_answered": "Bu soruyu zaten cevapladınız",
   "error.already_finalized": "Zaten sonuçlandırıldı",
   "error.already_paid": "Bunun ücreti zaten ödendi",

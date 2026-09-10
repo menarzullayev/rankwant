@@ -169,6 +169,18 @@ export const uz = {
   "admin.actions": "Amallar",
   "admin.saved": "Saqlandi",
   empty: "Hozircha bo'sh",
+  "settings.title": "Sozlamalar",
+  "settings.export": "Ma'lumotni yuklab olish",
+  "settings.exportHint":
+    "Profil, yechimlar, reyting tarixi va Qvant amallari — bitta JSON fayl.",
+  "settings.exportAction": "Yuklab olish",
+  "settings.delete": "Hisobni o'chirish",
+  "settings.deleteHint":
+    "Ism, email va bio o'chadi, hisob anonim bo'ladi. Yechimlar va musobaqa natijalari joyida qoladi — ularni olib tashlash boshqa qatnashchilarning o'rnini siljitardi.",
+  "settings.deletePassword": "Parolingiz",
+  "settings.deleteAction": "Hisobni butunlay o'chirish",
+  "settings.deleteConfirm": "Bu amalni qaytarib bo'lmaydi. Davom etasizmi?",
+  "settings.deleteError": "Parol noto'g'ri",
   "error.already_answered": "Bu savolga allaqachon javob berdingiz",
   "error.already_finalized": "Allaqachon yakunlangan",
   "error.already_paid": "Bu allaqachon to'langan",

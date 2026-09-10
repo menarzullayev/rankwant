@@ -14,17 +14,19 @@ from django.db.models import Q, QuerySet
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from drf_spectacular.utils import OpenApiResponse, extend_schema
-from rest_framework import generics, status, viewsets
+from rest_framework import exceptions, generics, status, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from contests.models import Contest
+from core import account
 from core.cache import cache_get, cache_set
 from core.models import ApiToken, User
 from core.pagination import StandardPagination, TimeCursorPagination
 from core.serializers import (
+    AccountDeleteSerializer,
     ApiTokenCreateSerializer,
     ApiTokenSerializer,
     LoginSerializer,
@@ -32,6 +34,7 @@ from core.serializers import (
     RegisterSerializer,
     UserPublicSerializer,
 )
+from core.throttling import ResilientScopedRateThrottle
 from judging.models import Attempt
 from problems.models import Problem
 
@@ -285,7 +288,7 @@ class LogoutView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class MeView(generics.RetrieveUpdateAPIView[User]):
+class MeView(generics.RetrieveUpdateDestroyAPIView[User]):
     serializer_class = MeSerializer
     permission_classes = [IsAuthenticated]
 
@@ -300,6 +303,42 @@ class MeView(generics.RetrieveUpdateAPIView[User]):
 
         if profile_is_complete(user):
             on_profile_completed(user)
+
+    @extend_schema(request=AccountDeleteSerializer, responses={204: None})
+    def delete(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        """Hisobni o'chiradi — anonimlashtirish orqali (`core.account`)."""
+        user = self.get_object()
+        serializer = AccountDeleteSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        # Parol o'g'irlangan sessiya bilan hisobni yo'q qilishning oldini
+        # oladi: qaytarib bo'lmaydigan amal uchun bir marta tasdiq shart.
+        if not user.check_password(serializer.validated_data["password"]):
+            raise exceptions.ValidationError({"password": "Parol noto'g'ri"})
+        account.anonymize(user)
+        logout(request)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class MeExportView(APIView):
+    """Foydalanuvchining o'z ma'lumoti — JSON fayl.
+
+    O'chirish qaytarib bo'lmaydi, shuning uchun undan oldin hamma narsani
+    olib qolish yo'li bo'lishi kerak. Javob og'ir (ichida yuborilgan
+    kodlar bor) — shuning uchun alohida shift.
+    """
+
+    permission_classes = [IsAuthenticated]
+    # Shift `throttle_scope` orqali ishlashi uchun sinf ATAYIN
+    # ko'rsatiladi: u sozlamalardagi standart ro'yxatda yo'q.
+    throttle_classes = [ResilientScopedRateThrottle]
+    throttle_scope = "export"
+
+    @extend_schema(responses={200: OpenApiResponse(description="JSON eksport")})
+    def get(self, request: Request) -> Response:
+        assert isinstance(request.user, User)
+        response = Response(account.export(request.user))
+        response["Content-Disposition"] = 'attachment; filename="rankwant-export.json"'
+        return response
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet[User]):

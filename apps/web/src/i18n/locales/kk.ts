@@ -165,6 +165,19 @@ export const kk: Record<MessageKey, string> = {
   "admin.actions": "Әрекеттер",
   "admin.saved": "Сақталды",
   empty: "Әзірге бос",
+  "settings.title": "Параметрлер",
+  "settings.export": "Деректерді жүктеп алу",
+  "settings.exportHint":
+    "Профиль, шешімдер, рейтинг тарихы және Qvant операциялары — бір JSON файл.",
+  "settings.exportAction": "Жүктеп алу",
+  "settings.delete": "Тіркелгіні жою",
+  "settings.deleteHint":
+    "Аты, email және сипаттама өшіріледі, тіркелгі анонимді болады. Шешімдер мен жарыс нәтижелері қалады — оларды жою басқа қатысушылардың орнын ауыстырар еді.",
+  "settings.deletePassword": "Құпия сөзіңіз",
+  "settings.deleteAction": "Тіркелгіні біржола жою",
+  "settings.deleteConfirm":
+    "Бұл әрекетті қайтару мүмкін емес. Жалғастырасыз ба?",
+  "settings.deleteError": "Құпия сөз қате",
   "error.already_answered": "Бұл сұраққа жауап бердіңіз",
   "error.already_finalized": "Әлдеқашан аяқталған",
   "error.already_paid": "Бұл әлдеқашан төленген",

@@ -165,6 +165,18 @@ export const kaa: Record<MessageKey, string> = {
   "admin.actions": "Ámeller",
   "admin.saved": "Saqlandı",
   empty: "Házirshe bos",
+  "settings.title": "Sazlawlar",
+  "settings.export": "Maǵlıwmatlardı júklep alıw",
+  "settings.exportHint":
+    "Profil, sheshimler, reyting tariyxı hám Qvant ámelleri — bir JSON fayl.",
+  "settings.exportAction": "Júklep alıw",
+  "settings.delete": "Esaptı óshiriw",
+  "settings.deleteHint":
+    "At, email hám bio óshiriledi, esap anonim boladı. Sheshimler hám jarıs nátiyjeleri ornında qaladı — olardı alıp taslaw basqa qatnasıwshılardıń ornın jıljıtar edi.",
+  "settings.deletePassword": "Parolıńız",
+  "settings.deleteAction": "Esaptı tolıq óshiriw",
+  "settings.deleteConfirm": "Bul ámeldi qaytarıp bolmaydı. Dawam etesizbe?",
+  "settings.deleteError": "Parol qáte",
   "error.already_answered": "Bul sorawǵa aldın juwap berdińiz",
   "error.already_finalized": "Aldın tamamlanǵan",
   "error.already_paid": "Bul aldın tólengen",

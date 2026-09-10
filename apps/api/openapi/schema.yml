@@ -1357,6 +1357,32 @@ paths:
               schema:
                 $ref: '#/components/schemas/Me'
           description: ''
+    delete:
+      operationId: me_destroy
+      description: Hisobni o'chiradi — anonimlashtirish orqali (`core.account`).
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/me/export/:
+    get:
+      operationId: me_export_retrieve
+      description: |-
+        Foydalanuvchining o'z ma'lumoti — JSON fayl.
+
+        O'chirish qaytarib bo'lmaydi, shuning uchun undan oldin hamma narsani
+        olib qolish yo'li bo'lishi kerak. Javob og'ir (ichida yuborilgan
+        kodlar bor) — shuning uchun alohida shift.
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: JSON eksport
   /api/v1/me/tokens/:
     get:
       operationId: me_tokens_list

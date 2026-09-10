@@ -651,15 +651,17 @@ export async function postJson<T>(path: string, body: unknown): Promise<T> {
 }
 
 /** Brauzerdan sessiya bilan DELETE — `postJson` bilan bir xil CSRF talabi. */
-export async function deleteJson<T>(path: string): Promise<T> {
+export async function deleteJson<T>(path: string, body?: unknown): Promise<T> {
   const headers: Record<string, string> = { Accept: "application/json" };
   const csrf = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/)?.[1];
   if (csrf) headers["X-CSRFToken"] = decodeURIComponent(csrf);
+  if (body !== undefined) headers["Content-Type"] = "application/json";
 
   const res = await fetch(`${API_BASE}${path}`, {
     method: "DELETE",
     credentials: "include",
     headers,
+    body: body === undefined ? undefined : JSON.stringify(body),
   });
   const raw = await res.text();
   const parsed = raw ? JSON.parse(raw) : null;

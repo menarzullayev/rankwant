@@ -165,6 +165,18 @@ export const es: Record<MessageKey, string> = {
   "admin.actions": "Acciones",
   "admin.saved": "Guardado",
   empty: "Vacío por ahora",
+  "settings.title": "Ajustes",
+  "settings.export": "Descargar tus datos",
+  "settings.exportHint":
+    "Perfil, envíos, historial de rating y movimientos de Qvant — un archivo JSON.",
+  "settings.exportAction": "Descargar",
+  "settings.delete": "Eliminar cuenta",
+  "settings.deleteHint":
+    "Se borran el nombre, el correo y la biografía, y la cuenta pasa a ser anónima. Los envíos y los resultados de concursos permanecen: quitarlos alteraría la clasificación de los demás.",
+  "settings.deletePassword": "Tu contraseña",
+  "settings.deleteAction": "Eliminar la cuenta definitivamente",
+  "settings.deleteConfirm": "Esta acción no se puede deshacer. ¿Continuar?",
+  "settings.deleteError": "Contraseña incorrecta",
   "error.already_answered": "Ya has respondido a esta pregunta",
   "error.already_finalized": "Ya está finalizado",
   "error.already_paid": "Esto ya está pagado",
