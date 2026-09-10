@@ -323,14 +323,20 @@ export type Roadmap = {
   solved_steps: number;
 };
 
-/** Urinishlar ro'yxatidagi filtrlar — KEP dagi kabi. */
+/** Urinishlar ro'yxatidagi filtrlar — KEP dagi kabi.
+ *
+ * `[so'rov qiymati, yorliq kaliti]`. So'rov qiymati vergulli bo'lishi
+ * mumkin: `RE` ikkiga ajratilgandan keyin bitta «Bajarilishda xato»
+ * filtri eski qatorlarni ham, yangi `RE_SIGNAL`/`RE_EXIT` ni ham
+ * topishi kerak. Yorliq esa `verdict.<KOD>` orqali tarjima qilinadi. */
 export const VERDICT_FILTERS = [
-  ["AC", "Accepted"],
-  ["WA", "Wrong Answer"],
-  ["TLE", "Time Limit"],
-  ["MLE", "Memory Limit"],
-  ["RE", "Runtime Error"],
-  ["CE", "Compile Error"],
+  ["AC", "verdict.AC"],
+  ["WA", "verdict.WA"],
+  ["PE", "verdict.PE"],
+  ["TLE", "verdict.TLE"],
+  ["MLE", "verdict.MLE"],
+  ["RE,RE_SIGNAL,RE_EXIT", "verdict.RE"],
+  ["CE", "verdict.CE"],
 ] as const;
 
 export type Attempt = {

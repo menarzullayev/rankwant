@@ -107,7 +107,10 @@ class AttemptViewSet(
         # «faqat meniki» filtrlarini beradi).
         verdict = params.get("verdict")
         if verdict:
-            qs = qs.filter(verdict=verdict)
+            # Vergulli ro'yxat: `RE` ikkiga ajratilgandan keyin bitta
+            # «Bajarilishda xato» filtri eski `RE` ni ham, yangi
+            # `RE_SIGNAL`/`RE_EXIT` ni ham qamrashi kerak.
+            qs = qs.filter(verdict__in=[v for v in verdict.split(",") if v])
         language = params.get("language")
         if language:
             qs = qs.filter(language__code=language)

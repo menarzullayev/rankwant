@@ -201,6 +201,7 @@ export const ky: Record<MessageKey, string> = {
   "verdict.TESTING_ABORTED": "Кайра текшерилүүдө",
   "verdict.RATE_LIMITED": "Өтө тез жөнөтүлдү",
   "verdict.DENIAL_OF_JUDGEMENT": "Текшерүүгө болбоду",
+  "attempts.allVerdicts": "Бардык вердикт",
   "error.already_answered": "Бул суроого жооп бердиңиз",
   "error.already_finalized": "Мурунтан аяктаган",
   "error.already_paid": "Бул мурунтан төлөнгөн",

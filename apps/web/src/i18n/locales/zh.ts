@@ -200,6 +200,7 @@ export const zh: Record<MessageKey, string> = {
   "verdict.TESTING_ABORTED": "重新评测中",
   "verdict.RATE_LIMITED": "提交过于频繁",
   "verdict.DENIAL_OF_JUDGEMENT": "无法评测",
+  "attempts.allVerdicts": "全部结果",
   "error.already_answered": "你已经回答过这道题",
   "error.already_finalized": "已经结算过了",
   "error.already_paid": "这项已经支付过",

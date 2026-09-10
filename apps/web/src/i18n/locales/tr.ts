@@ -201,6 +201,7 @@ export const tr: Record<MessageKey, string> = {
   "verdict.TESTING_ABORTED": "Yeniden değerlendiriliyor",
   "verdict.RATE_LIMITED": "Çok hızlı gönderildi",
   "verdict.DENIAL_OF_JUDGEMENT": "Değerlendirilemedi",
+  "attempts.allVerdicts": "Tüm sonuçlar",
   "error.already_answered": "Bu soruyu zaten cevapladınız",
   "error.already_finalized": "Zaten sonuçlandırıldı",
   "error.already_paid": "Bunun ücreti zaten ödendi",

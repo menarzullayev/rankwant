@@ -201,6 +201,7 @@ export const kaa: Record<MessageKey, string> = {
   "verdict.TESTING_ABORTED": "Qayta tekseriliwde",
   "verdict.RATE_LIMITED": "Júdá tez jiberildi",
   "verdict.DENIAL_OF_JUDGEMENT": "Tekserip bolmadı",
+  "attempts.allVerdicts": "Barlıq verdikt",
   "error.already_answered": "Bul sorawǵa aldın juwap berdińiz",
   "error.already_finalized": "Aldın tamamlanǵan",
   "error.already_paid": "Bul aldın tólengen",

@@ -202,6 +202,7 @@ export const tg: Record<MessageKey, string> = {
   "verdict.TESTING_ABORTED": "Аз нав санҷида мешавад",
   "verdict.RATE_LIMITED": "Хеле зуд фиристода шуд",
   "verdict.DENIAL_OF_JUDGEMENT": "Санҷида нашуд",
+  "attempts.allVerdicts": "Ҳамаи вердиктҳо",
   "error.already_answered": "Шумо аллакай ба ин савол ҷавоб додаед",
   "error.already_finalized": "Аллакай анҷом ёфтааст",
   "error.already_paid": "Ин аллакай пардохт шудааст",

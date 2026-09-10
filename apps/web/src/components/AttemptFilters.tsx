@@ -4,6 +4,8 @@ import type { Route } from "next";
 import Link from "next/link";
 
 import { useSession } from "@/context/SessionContext";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { t } from "@/i18n/messages";
 import { VERDICT_FILTERS } from "@/lib/api";
 
 /** Urinishlar oqimining filtrlari.
@@ -28,6 +30,7 @@ export function AttemptFilters({
   language?: string;
   mine: boolean;
 }) {
+  const locale = useLocale();
   const { user, ready } = useSession();
 
   const href = (next: Record<string, string | undefined>): Route => {
@@ -52,15 +55,15 @@ export function AttemptFilters({
   return (
     <div className="flex flex-wrap items-center gap-1.5">
       <Link href={href({ verdict: undefined })} className={chip(!verdict)}>
-        Hamma verdikt
+        {t(locale, "attempts.allVerdicts")}
       </Link>
-      {VERDICT_FILTERS.map(([value, label]) => (
+      {VERDICT_FILTERS.map(([value, key]) => (
         <Link
           key={value}
           href={href({ verdict: value })}
           className={chip(verdict === value)}
         >
-          {label}
+          {t(locale, key)}
         </Link>
       ))}
 

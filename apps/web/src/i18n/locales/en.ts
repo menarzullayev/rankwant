@@ -201,6 +201,7 @@ export const en: Record<MessageKey, string> = {
   "verdict.TESTING_ABORTED": "Re-judging",
   "verdict.RATE_LIMITED": "Submitted too fast",
   "verdict.DENIAL_OF_JUDGEMENT": "Could not be judged",
+  "attempts.allVerdicts": "All verdicts",
   "error.already_answered": "You have already answered this question",
   "error.already_finalized": "Already finalised",
   "error.already_paid": "Already paid for",

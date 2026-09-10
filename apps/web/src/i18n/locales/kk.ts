@@ -202,6 +202,7 @@ export const kk: Record<MessageKey, string> = {
   "verdict.TESTING_ABORTED": "Қайта тексерілуде",
   "verdict.RATE_LIMITED": "Тым жиі жіберілді",
   "verdict.DENIAL_OF_JUDGEMENT": "Тексеру мүмкін болмады",
+  "attempts.allVerdicts": "Барлық вердикт",
   "error.already_answered": "Бұл сұраққа жауап бердіңіз",
   "error.already_finalized": "Әлдеқашан аяқталған",
   "error.already_paid": "Бұл әлдеқашан төленген",

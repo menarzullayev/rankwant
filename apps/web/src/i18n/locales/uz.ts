@@ -205,6 +205,7 @@ export const uz = {
   "verdict.TESTING_ABORTED": "Qayta tekshirilmoqda",
   "verdict.RATE_LIMITED": "Juda tez yuborildi",
   "verdict.DENIAL_OF_JUDGEMENT": "Tekshirib bo'lmadi",
+  "attempts.allVerdicts": "Hamma verdikt",
   "error.already_answered": "Bu savolga allaqachon javob berdingiz",
   "error.already_finalized": "Allaqachon yakunlangan",
   "error.already_paid": "Bu allaqachon to'langan",

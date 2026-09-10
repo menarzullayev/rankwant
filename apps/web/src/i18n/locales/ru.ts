@@ -201,6 +201,7 @@ export const ru: Record<MessageKey, string> = {
   "verdict.TESTING_ABORTED": "Перепроверяется",
   "verdict.RATE_LIMITED": "Слишком частая отправка",
   "verdict.DENIAL_OF_JUDGEMENT": "Не удалось проверить",
+  "attempts.allVerdicts": "Все вердикты",
   "error.already_answered": "Вы уже ответили на этот вопрос",
   "error.already_finalized": "Уже завершено",
   "error.already_paid": "Уже оплачено",
