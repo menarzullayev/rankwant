@@ -168,9 +168,19 @@ karta majburiy). Parol tiklash so'rovlari kun davomida notekis keladi,
 shuning uchun `core.mailer` `EMAIL_CHAIN` bo'ylab yuradi: birinchisi
 yiqilsa keyingisiga o'tadi, kaliti yo'q provayder jimgina tushib qoladi.
 
-Har provayder **o'z subdomenidan** yuboradi (`BREVO_FROM=…@mail1.rankwant.uz`):
-SPF `include:` 10 ta DNS lookup bilan cheklangan va to'rttasi bitta
-yozuvga sig'maydi.
+Har provayder **o'z subdomenidan** yuboradi: SPF `include:` 10 ta DNS
+lookup bilan cheklangan va to'rttasi bitta yozuvga sig'maydi.
+
+| Zanjirdagi o'rni | Provayder | Subdomen | Bepul kvota |
+| ---------------- | --------- | -------- | ----------- |
+| 1 | Brevo | `mail1.rankwant.bugvector.uz` | 300/kun |
+| 2 | Mailjet | `mail2.rankwant.bugvector.uz` | 200/kun |
+| 3 | Resend | `mail3.rankwant.bugvector.uz` | 100/kun |
+| 4 | MailerSend | `mail4.rankwant.bugvector.uz` | 500/oy |
+
+`rankwant.uz` hali ro'yxatdan o'tmagan, shuning uchun hozircha
+`bugvector.uz` ostida. U kelganda har provayderga ikkinchi domen
+qo'shiladi va `*_FROM` almashadi — kod o'zgarmaydi.
 
 Kalit qo'shilgandan keyin birinchi qadam — haqiqiy tekshiruv:
 
@@ -181,6 +191,14 @@ python manage.py send_test_email siz@example.com --only brevo
 Har yuborish `EmailDelivery` ga yoziladi (qaysi provayder ishlagani,
 qolganlari nega tushib qolgani). Xat **tanasi saqlanmaydi** — tiklash
 havolasi token, uni bazaga ko'chirmaymiz.
+
+Ikki tuzoq, ikkalasi ham o'lchangan:
+
+- **Resend va MailerSend API'lari Cloudflare ortida** va `urllib` ning
+  standart `User-Agent` ini bot deb bloklaydi (`error_code 1010`).
+  `core.mail_providers.USER_AGENT` shu sababli bor.
+- **Brevo'da IP oq ro'yxati yoqilgan** — server IP'si qo'lda qo'shilishi
+  kerak, aks holda Brevo jimgina rad etadi va zanjir Mailjet'ga tushadi.
 
 Judge host'da **DB credential bo'lmaydi** — u faqat Redis va S3 ni biladi.
 
