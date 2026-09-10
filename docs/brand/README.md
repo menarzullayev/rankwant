@@ -44,5 +44,4 @@ Rasm generatoridan chiqqan 24 ta konsepsiya — **arxiv**, ishlatilmaydi.
 Ular JPEG (nomi `.png` bo'lsa ham), ya'ni shaffofligi yo'q va chetlari
 notekis. Ular tanlash uchun edi, chop etish uchun emas.
 
-Promptlar: [`belgi-promptlari.md`](belgi-promptlari.md) (agar saqlangan bo'lsa)
-yoki sessiya artefaktida.
+Promptlar: [`belgi-promptlari.md`](belgi-promptlari.md).

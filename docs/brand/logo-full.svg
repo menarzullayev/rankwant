@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="RankWant">
+  <title>RankWant</title>
+  <!--
+    Generatsiya qilingan variantga SODIQ nusxa: to'q ko'k kontur va ichki
+    ikkita to'qroq qirra saqlangan. Silueti bilan `logo.svg` bir xil,
+    farqi faqat bezatishda.
+
+    Qatlam tartibi ataylab: avval to'ldirish, keyin qirralar, eng oxirida
+    kontur — aks holda qirralar konturning ichki yarmini yopib qo'yardi.
+  -->
+  <path fill="#3b82f6" d="M6 52 26 15l9 15 6-8 17 30z"/>
+  <path fill="#2f6fe0" d="M6 52 20 26l4 26z"/>
+  <path fill="#2f6fe0" d="M58 52 45.5 30 41 52z"/>
+  <path fill="none" stroke="#1e2b4a" stroke-width="3.2" stroke-linejoin="round" d="M6 52 26 15l9 15 6-8 17 30z"/>
+  <circle fill="#3b82f6" cx="26" cy="7" r="4.4"/>
+</svg>
