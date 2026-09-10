@@ -23,6 +23,22 @@ func normalise(s string) string {
 	return strings.Join(lines, "\n")
 }
 
+// sameTokens — ikki chiqish bo'shliqni hisobga olmaganda bir xilmi.
+// `strings.Fields` har qanday bo'shliq ketma-ketligini ajratgich deb
+// biladi, ya'ni probel, tabulyatsiya va qator uzilishi farq qilmaydi.
+func sameTokens(got, want string) bool {
+	a, b := strings.Fields(got), strings.Fields(want)
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
 func srcName(langCode string) string {
 	switch {
 	case strings.HasPrefix(langCode, "cpp"), strings.HasPrefix(langCode, "c++"):
@@ -64,6 +80,7 @@ func judge(ctx context.Context, job *Job, tests *store) *Result {
 	// AC qaytarish masalani yechilgan deb ko'rsatib qo'yardi.
 	if len(job.Tests) == 0 && job.Mode != "custom" {
 		slog.Error("job testsiz keldi", "job", job.JobID)
+		res.Verdict = VWrongTest
 		return res
 	}
 
@@ -269,6 +286,12 @@ func classify(out *runOutcome, test Test, lim Limits) string {
 		if normalise(out.Stdout) == normalise(test.Expected) {
 			return VAC
 		}
+		// Tokenlar mos, joylashuvi boshqa → algoritm to'g'ri, format xato.
+		// `normalise` faqat QATOR OXIRIDAGI bo'shliqni kechiradi; bu yerda
+		// esa qator uzilishi o'rniga probel qo'yilgan holat ham ushlanadi.
+		if sameTokens(out.Stdout, test.Expected) {
+			return VPE
+		}
 		return VWA
 	default:
 		// nsjail izolyatsiya qoidasini buzganda o'ldiradi; buni RE dan ajratamiz.
@@ -277,7 +300,12 @@ func classify(out *runOutcome, test Test, lim Limits) string {
 			out.ExitCode == 159 { // 128+31 (SIGSYS)
 			return VSecurity
 		}
-		return VRE
+		// nsjail signal bilan o'lgan bolani 128+N bo'lib qaytaradi
+		// (yuqoridagi 159 shundan). `-1` — bolani o'zimiz o'ldirganmiz.
+		if out.ExitCode < 0 || out.ExitCode >= 128 {
+			return VRESignal
+		}
+		return VREExit
 	}
 }
 

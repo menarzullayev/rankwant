@@ -58,7 +58,8 @@ def reap_stuck() -> dict[str, int]:
     javob ko'rmasdi.
 
     Bir marta qayta navbatga qo'yiladi — judge shunchaki sekin bo'lgan
-    bo'lishi mumkin. Qayta urinish ham qotsa, IE qo'yiladi: yolg'on
+    bo'lishi mumkin. Qayta urinish ham qotsa, `DENIAL_OF_JUDGEMENT`
+    qo'yiladi: yolg'on
     kutishdan ko'ra halol xato yaxshi.
     """
     from django.utils import timezone
@@ -79,7 +80,9 @@ def reap_stuck() -> dict[str, int]:
         return {"requeued": 0, "failed": 0}
 
     cutoff = timezone.now() - timedelta(minutes=STUCK_AFTER_MINUTES)
-    pending = Attempt.objects.filter(verdict__in=[Verdict.PENDING, Verdict.RUNNING])
+    pending = Attempt.objects.filter(
+        verdict__in=[Verdict.PENDING, Verdict.RUNNING, Verdict.TESTING_ABORTED]
+    )
     requeued = 0
     for attempt in pending.filter(requeued_at__isnull=True, created_at__lt=cutoff).select_related(
         "problem", "language"
@@ -92,9 +95,12 @@ def reap_stuck() -> dict[str, int]:
         Attempt.objects.filter(pk=attempt.pk).update(requeued_at=timezone.now())
         requeued += 1
 
+    # `IE` EMAS: u masala sozlamasi xatosini ham bildiradi va operator
+    # alertni ko'rib «infra nosozligimi yoki masala buzuqmi?» deb ajrata
+    # olmasdi. Ish yo'qolishi — infratuzilma hodisasi.
     failed = pending.filter(requeued_at__lt=cutoff).update(
-        verdict=Verdict.IE, judged_at=timezone.now()
+        verdict=Verdict.DENIAL_OF_JUDGEMENT, judged_at=timezone.now()
     )
     if requeued or failed:
-        log.warning("qotib qolgan urinishlar: %s qayta, %s IE", requeued, failed)
+        log.warning("qotib qolgan urinishlar: %s qayta, %s hukmsiz", requeued, failed)
     return {"requeued": requeued, "failed": failed}

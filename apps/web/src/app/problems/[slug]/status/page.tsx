@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ProblemTabs } from "@/components/ProblemTabs";
 import { VerdictBadge } from "@/components/VerdictBadge";
 import { Card } from "@/components/ui/Card";
+import { getLocale } from "@/i18n/server";
 import {
   EmptyRow,
   TBody,
@@ -45,6 +46,7 @@ export default async function ProblemStatusPage({
   params,
   searchParams,
 }: Props) {
+  const locale = await getLocale();
   const { slug } = await params;
   const { cursor, verdict, language, mine } = await searchParams;
 
@@ -133,7 +135,7 @@ export default async function ProblemStatusPage({
                   </Link>
                 </TD>
                 <TD>
-                  <VerdictBadge verdict={attempt.verdict} />
+                  <VerdictBadge verdict={attempt.verdict} locale={locale} />
                 </TD>
                 <TD className="rw-dim">{attempt.language}</TD>
                 <TD align="right" className="rw-faint tabular-nums">

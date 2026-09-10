@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Never
 
 from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, status, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -26,6 +27,10 @@ from judging.services import enqueue, enqueue_custom
 from judging.verdicts import Verdict
 from problems.models import Language, Problem
 
+#: Rad etilgan yuborishning manbasi tarix uchun saqlanadi, lekin to'liq
+#: emas: bu qator natija emas, iz.
+MAX_SOURCE_CHARS = 4096
+
 
 class AttemptViewSet(
     mixins.CreateModelMixin,
@@ -42,6 +47,37 @@ class AttemptViewSet(
         if self.action == "create":
             return [IsAuthenticated(), CanSubmit()]
         return [AllowAny()]
+
+    def throttled(self, request: Request, wait: float) -> Never:
+        """Shift urilganini TARIXGA yozadi, keyin odatdagidek 429 beradi.
+
+        Ilgari rad etilgan yuborish hech qanday iz qoldirmasdi:
+        foydalanuvchi «yubordim, qayoqqa ketdi?» degan savol bilan
+        qolardi. Endi urinishlar ro'yxatida `RATE_LIMITED` ko'rinadi.
+
+        Bitta portlash — BITTA qator: aks holda sekundiga yuzlab rad
+        etilgan so'rov shuncha qator yasab, bazani to'ldirish yo'liga
+        aylanardi. Oxirgi urinish allaqachon `RATE_LIMITED` bo'lsa,
+        yangisi yozilmaydi.
+        """
+        data = request.data if isinstance(request.data, dict) else {}
+        if self.action == "create" and request.user.is_authenticated:
+            oxirgi = (
+                Attempt.objects.filter(user=request.user).order_by("-created_at", "-pk").first()
+            )
+            if oxirgi is None or oxirgi.verdict != Verdict.RATE_LIMITED:
+                problem = Problem.objects.filter(slug=data.get("problem")).first()
+                language = Language.objects.filter(code=data.get("language")).first()
+                if problem and language:
+                    Attempt.objects.create(
+                        user=request.user,
+                        problem=problem,
+                        language=language,
+                        source_code=str(data.get("source_code", ""))[:MAX_SOURCE_CHARS],
+                        verdict=Verdict.RATE_LIMITED,
+                        judged_at=timezone.now(),
+                    )
+        super().throttled(request, wait)
 
     def get_throttles(self):  # type: ignore[no-untyped-def]
         return [ResilientScopedRateThrottle()] if self.action == "create" else []

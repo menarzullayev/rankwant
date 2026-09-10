@@ -1,39 +1,64 @@
 import { Badge, type BadgeColor } from "@/components/ui/Badge";
+import { type Locale, t } from "@/i18n/messages";
 
-/** 20 verdict kodi — `apps/api/judging/verdicts.py` bilan bir xil ro'yxat.
+/** Rang guruhlari: yashil = qabul qilindi, sariq = hali ketmoqda yoki
+ * qisman, qizil = FOYDALANUVCHI xatosi, kulrang = infratuzilma yoki
+ * masala nosozligi. Kulrang muhim: `IE`, `WRONG_TEST`,
+ * `DENIAL_OF_JUDGEMENT` odamning aybi emas, qizil ko'rsatish uni
+ * bekorga ayblardi.
+ *
+ * Yorliqlar bu yerda EMAS — `verdict.<KOD>` kalitlari orqali tarjima
+ * qilinadi (10 til). */
+const COLOR: Record<string, BadgeColor> = {
+  PENDING: "neutral",
+  RUNNING: "warning",
+  TESTING_ABORTED: "warning",
+  AC: "success",
+  PARTIAL: "warning",
+  WA: "error",
+  PE: "error",
+  TLE: "error",
+  MLE: "error",
+  OLE: "error",
+  RE: "error",
+  RE_SIGNAL: "error",
+  RE_EXIT: "error",
+  CE: "error",
+  COMPILE_TIMEOUT: "error",
+  IDLENESS: "error",
+  SECURITY_VIOLATION: "error",
+  RATE_LIMITED: "warning",
+  SKIPPED: "neutral",
+  IE: "neutral",
+  CHECKER_ERROR: "neutral",
+  WRONG_TEST: "neutral",
+  DENIAL_OF_JUDGEMENT: "neutral",
+};
+
+/** Verdict kodlari — `apps/api/judging/verdicts.py` bilan bir xil ro'yxat.
  *
  * Rang guruhlari: yashil = qabul qilindi, sariq = hali ketmoqda yoki
  * qisman, qizil = foydalanuvchi xatosi, kulrang = infratuzilma nosozligi
  * (foydalanuvchi aybi emas, shuning uchun qizil emas). */
-const VERDICTS: Record<string, { label: string; color: BadgeColor }> = {
-  PENDING: { label: "Navbatda", color: "neutral" },
-  RUNNING: { label: "Tekshirilmoqda", color: "warning" },
-  AC: { label: "Accepted", color: "success" },
-  PARTIAL: { label: "Qisman ball", color: "warning" },
-  WA: { label: "Wrong Answer", color: "error" },
-  TLE: { label: "Time Limit", color: "error" },
-  MLE: { label: "Memory Limit", color: "error" },
-  OLE: { label: "Output Limit", color: "error" },
-  RE: { label: "Runtime Error", color: "error" },
-  CE: { label: "Compilation Error", color: "error" },
-  PE: { label: "Presentation Error", color: "error" },
-  IDLENESS: { label: "Idleness Limit", color: "error" },
-  SECURITY_VIOLATION: { label: "Xavfsizlik buzildi", color: "error" },
-  SKIPPED: { label: "O'tkazib yuborildi", color: "neutral" },
-  COMPILE_TIMEOUT: { label: "Kompilyatsiya cho'zildi", color: "error" },
-  IE: { label: "Ichki xato", color: "neutral" },
-  CHECKER_ERROR: { label: "Checker xatosi", color: "neutral" },
-  TESTING_ABORTED: { label: "Tekshiruv to'xtadi", color: "neutral" },
-  RATE_LIMITED: { label: "Submit limiti", color: "neutral" },
-  DENIAL_OF_JUDGEMENT: { label: "Infra nosozligi", color: "neutral" },
-};
 
+/** Hali natija kutilayotgan holatlar — mijoz shu paytda pollinglaydi.
+ *
+ * `TESTING_ABORTED` ham shu yerda: rejudge eski natijani bekor qildi va
+ * yangisi yo'lda. Usiz sahifa eski verdictda qotib qolardi. */
 export const isPending = (verdict: string) =>
-  verdict === "PENDING" || verdict === "RUNNING";
+  verdict === "PENDING" ||
+  verdict === "RUNNING" ||
+  verdict === "TESTING_ABORTED";
 
-export function VerdictBadge({ verdict }: { verdict: string }) {
-  const known = VERDICTS[verdict];
-  return (
-    <Badge color={known?.color ?? "neutral"}>{known?.label ?? verdict}</Badge>
-  );
+export function VerdictBadge({
+  verdict,
+  locale,
+}: {
+  verdict: string;
+  locale: Locale;
+}) {
+  // Noma'lum kod kelsa — xom kodni ko'rsatamiz: yolg'on yorliqdan
+  // ko'ra tushunarsiz kod yaxshiroq.
+  const label = t(locale, `verdict.${verdict}` as never) || verdict;
+  return <Badge color={COLOR[verdict] ?? "neutral"}>{label}</Badge>;
 }

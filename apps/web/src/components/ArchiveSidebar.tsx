@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Card } from "@/components/ui/Card";
 import { VerdictBadge } from "@/components/VerdictBadge";
+import { type Locale } from "@/i18n/messages";
 import { Badge } from "@/components/ui/Badge";
 import type {
   ArchiveProgress,
@@ -161,9 +162,11 @@ function Roadmaps({ items }: { items: Roadmap[] }) {
  * bloki. Server komponenti bo'lib qolishi uchun tab o'rniga uchtasi
  * ketma-ket: mijoz holati kerak emas va SSR da hammasi ko'rinadi. */
 function Digest({
+  locale,
   attempts,
   popular,
 }: {
+  locale: Locale;
   attempts: Attempt[];
   popular: Problem[];
 }) {
@@ -182,7 +185,7 @@ function Digest({
                 key={attempt.id}
                 className="flex items-center gap-2 text-theme-xs"
               >
-                <VerdictBadge verdict={attempt.verdict} />
+                <VerdictBadge verdict={attempt.verdict} locale={locale} />
                 <Link
                   href={`/problems/${attempt.problem}`}
                   className="min-w-0 flex-1 truncate rw-dim-2 rw-link-hover"
@@ -318,6 +321,7 @@ function Recommended({ data }: { data: Recommendation }) {
 }
 
 export function ArchiveSidebar({
+  locale,
   progress,
   skills,
   recommended,
@@ -327,6 +331,7 @@ export function ArchiveSidebar({
   attempts,
   popular,
 }: {
+  locale: Locale;
   progress: ArchiveProgress;
   skills: TopicSkill[];
   recommended: Recommendation | null;
@@ -346,7 +351,7 @@ export function ArchiveSidebar({
       <TopicStrength topics={skills} />
       {upcoming && <Upcoming event={upcoming} />}
       {roadmaps.length > 0 && <Roadmaps items={roadmaps} />}
-      <Digest attempts={attempts} popular={popular} />
+      <Digest locale={locale} attempts={attempts} popular={popular} />
     </aside>
   );
 }

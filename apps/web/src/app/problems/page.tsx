@@ -271,7 +271,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
                       )}
                       {/* Yechilmagan, lekin urinilgan — «WA oldim» signali */}
                       {!p.is_solved && p.my_verdict && (
-                        <VerdictBadge verdict={p.my_verdict} />
+                        <VerdictBadge verdict={p.my_verdict} locale={locale} />
                       )}
                     </div>
                     <TopicBadges topics={p.topics} solved={p.is_solved} />
@@ -336,6 +336,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
         </Card>
 
         <ArchiveSidebar
+          locale={locale}
           progress={progress}
           skills={skills.topics}
           recommended={recommended}

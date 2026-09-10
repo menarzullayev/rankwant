@@ -132,4 +132,15 @@ const (
 	VIE         = "IE"
 	VPartial    = "PARTIAL"
 	VCheckerErr = "CHECKER_ERROR"
+	VPE         = "PE"
+	// RE ikkiga ajratilgan (DMOJ modeli): signal bilan o'ldirilgan dastur
+	// va o'zi nolga teng bo'lmagan kod bilan chiqqan dastur — o'rganuvchi
+	// uchun butunlay boshqa tuzatish. Eski `RE` bazadagi tarix uchun
+	// qoladi, judge endi uni chiqarmaydi.
+	VRESignal = "RE_SIGNAL"
+	VREExit   = "RE_EXIT"
+	// Masala TAYYOR EMAS: test yo'q, generator yiqilgan. Muallif aybi,
+	// foydalanuvchiniki emas — `IE` bilan bir kodda bo'lsa, foydalanuvchi
+	// platformani buzuq deb o'ylaydi.
+	VWrongTest = "WRONG_TEST"
 )

@@ -10,6 +10,7 @@ Bozor, raqobatchilar va RankWant positioning.
 | ---------------------------------------------- | ------------------------------------------- |
 | [competitor-summary.md](competitor-summary.md) | KEP vs RoboContest vs cp.uz — qisqa jadval  |
 | [brand-discovery.md](brand-discovery.md)       | Nom qidiruv, RankWant + Qvant, availability |
+| [verdicts.md](verdicts.md)                     | Verdikt turlari — bizda, raqobatchilarda, takliflar |
 | [positioning.md](positioning.md)               | SWOT va differensial                        |
 
 ## To'liq tahlillar (workspace root — **repo tarkibida emas**)

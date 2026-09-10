@@ -11546,10 +11546,13 @@ components:
       - MLE
       - OLE
       - RE
+      - RE_SIGNAL
+      - RE_EXIT
       - CE
       - PE
       - PARTIAL
       - IE
+      - WRONG_TEST
       - SKIPPED
       - COMPILE_TIMEOUT
       - IDLENESS
@@ -11568,10 +11571,13 @@ components:
         * `MLE` - Memory Limit Exceeded
         * `OLE` - Output Limit Exceeded
         * `RE` - Runtime Error
+        * `RE_SIGNAL` - Runtime Error (signal)
+        * `RE_EXIT` - Runtime Error (chiqish kodi)
         * `CE` - Compilation Error
         * `PE` - Presentation Error
         * `PARTIAL` - Qisman ball
         * `IE` - Internal Error
+        * `WRONG_TEST` - Masala testi yaroqsiz
         * `SKIPPED` - O'tkazib yuborildi
         * `COMPILE_TIMEOUT` - Kompilyatsiya cho'zildi
         * `IDLENESS` - Idleness Limit Exceeded

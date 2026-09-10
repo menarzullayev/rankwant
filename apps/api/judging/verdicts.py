@@ -1,4 +1,4 @@
-"""20 verdict kodi — 08-technical-spec 🔒."""
+"""Verdict kodlari — 08-technical-spec 🔒."""
 
 from __future__ import annotations
 
@@ -13,11 +13,17 @@ class Verdict(models.TextChoices):
     TLE = "TLE", "Time Limit Exceeded"
     MLE = "MLE", "Memory Limit Exceeded"
     OLE = "OLE", "Output Limit Exceeded"
+    #: LEGACY — judge endi chiqarmaydi, o'rniga `RE_SIGNAL`/`RE_EXIT`.
+    #: Bazadagi eski qatorlar uchun qoladi (o'lchandi: 18 163 ta).
     RE = "RE", "Runtime Error"
+    RE_SIGNAL = "RE_SIGNAL", "Runtime Error (signal)"
+    RE_EXIT = "RE_EXIT", "Runtime Error (chiqish kodi)"
     CE = "CE", "Compilation Error"
     PE = "PE", "Presentation Error"
     PARTIAL = "PARTIAL", "Qisman ball"
     IE = "IE", "Internal Error"
+    #: Masala TAYYOR EMAS — muallif aybi, foydalanuvchiniki emas.
+    WRONG_TEST = "WRONG_TEST", "Masala testi yaroqsiz"
     SKIPPED = "SKIPPED", "O'tkazib yuborildi"
     COMPILE_TIMEOUT = "COMPILE_TIMEOUT", "Kompilyatsiya cho'zildi"
     IDLENESS = "IDLENESS", "Idleness Limit Exceeded"

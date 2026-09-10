@@ -1,7 +1,7 @@
 {
-  "id": "06-re",
-  "title": "Runtime error — signal (segfault)",
-  "measures": "signal bilan o'lgan dastur ajratiladimi",
+  "id": "17-pe",
+  "title": "Presentation error — faqat format farqi",
+  "measures": "tokenlar mos, joylashuvi boshqa",
   "language": {
     "code": "cpp23",
     "compile": [
@@ -16,7 +16,7 @@
       "{bin}"
     ]
   },
-  "source": "int main(){int*p=nullptr;return *p;}\n",
+  "source": "#include <iostream>\nint main(){std::cout<<\"1 2 3\";}\n",
   "limits": {
     "compile_time_ms": 10000,
     "time_ms": 1000,
@@ -28,13 +28,13 @@
     {
       "index": 1,
       "input": "",
-      "expected": ""
+      "expected": "1\n2\n3\n"
     }
   ],
-  "expect_verdict": "RE_SIGNAL",
+  "expect_verdict": "PE",
   "must_hold": [
-    "nullptr dereference SIGSEGV beradi → 128+11",
-    "RE_EXIT emas: dastur o'zi chiqmadi, o'ldirildi"
+    "kutilgan javob qatorma-qator, chiqish esa bir qatorda",
+    "WA emas: algoritm to'g'ri, faqat chiqarish formati"
   ],
   "mode": "acm"
 }

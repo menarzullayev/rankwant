@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t } from "@/i18n/messages";
+import { type Locale, t } from "@/i18n/messages";
 import {
   useCallback,
   useEffect,
@@ -502,7 +502,7 @@ export default function SubmitPanel({
           </div>
         }
       >
-        {tab === "verdict" && <VerdictView attempt={attempt} />}
+        {tab === "verdict" && <VerdictView attempt={attempt} locale={locale} />}
         {tab === "samples" && (
           <SamplesView
             results={sampleResults}
@@ -512,6 +512,7 @@ export default function SubmitPanel({
         )}
         {tab === "custom" && (
           <CustomView
+            locale={locale}
             tests={customTests}
             active={current}
             onActive={setActiveTest}
@@ -590,7 +591,13 @@ function EditorTools({
   );
 }
 
-function VerdictView({ attempt }: { attempt: AttemptDetail | null }) {
+function VerdictView({
+  attempt,
+  locale,
+}: {
+  attempt: AttemptDetail | null;
+  locale: Locale;
+}) {
   if (!attempt)
     return (
       <p className="text-theme-sm rw-faint">
@@ -601,7 +608,7 @@ function VerdictView({ attempt }: { attempt: AttemptDetail | null }) {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-3">
-        <VerdictBadge verdict={attempt.verdict} />
+        <VerdictBadge verdict={attempt.verdict} locale={locale} />
         {!isPending(attempt.verdict) && (
           <span className="text-theme-sm rw-dim">
             {attempt.time_ms} ms · {Math.round(attempt.memory_kb / 1024)} MB
@@ -645,6 +652,7 @@ function VerdictView({ attempt }: { attempt: AttemptDetail | null }) {
 const MAX_TESTS = 8;
 
 function CustomView({
+  locale,
   tests,
   active,
   onActive,
@@ -653,6 +661,7 @@ function CustomView({
   onRun,
   disabled,
 }: {
+  locale: Locale;
   tests: string[];
   active: number;
   onActive: (index: number) => void;
@@ -741,7 +750,7 @@ function CustomView({
       {run && (
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-3">
-            <VerdictBadge verdict={run.verdict} />
+            <VerdictBadge verdict={run.verdict} locale={locale} />
             {!isPending(run.verdict) && (
               <span className="text-theme-sm rw-dim">
                 {run.time_ms} ms · {Math.round(run.memory_kb / 1024)} MB

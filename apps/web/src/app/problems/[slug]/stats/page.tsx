@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ProblemTabs } from "@/components/ProblemTabs";
 import { VerdictBadge } from "@/components/VerdictBadge";
 import { Card } from "@/components/ui/Card";
+import { getLocale } from "@/i18n/server";
 import { api, ApiError, type ProblemStats } from "@/lib/api";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -49,6 +50,7 @@ function Share({
 }
 
 export default async function ProblemStatsPage({ params }: Props) {
+  const locale = await getLocale();
   const { slug } = await params;
 
   let problem;
@@ -88,7 +90,7 @@ export default async function ProblemStatsPage({ params }: Props) {
             {stats.verdicts.map((row) => (
               <Share
                 key={row.verdict}
-                label={<VerdictBadge verdict={row.verdict} />}
+                label={<VerdictBadge verdict={row.verdict} locale={locale} />}
                 count={row.count}
                 total={stats.total}
               />

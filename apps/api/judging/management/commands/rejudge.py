@@ -29,7 +29,7 @@ from judging.verdicts import Verdict
 
 #: Hali javob kutayotgan urinishni qayta qo'yishning ma'nosi yo'q —
 #: u navbatda yoki ishlanmoqda. Ular `reap_stuck` ning ishi.
-LIVE = (Verdict.PENDING, Verdict.RUNNING)
+LIVE = (Verdict.PENDING, Verdict.RUNNING, Verdict.TESTING_ABORTED)
 
 
 class Command(BaseCommand):
@@ -73,8 +73,12 @@ class Command(BaseCommand):
                 continue
             # `enqueue` ATAYIN ishlatilmaydi: u `attempt_count` ni
             # oshiradi, qayta tekshirish esa yangi urinish emas.
+            # `PENDING` EMAS: foydalanuvchi uchun u yangi yuborishdan
+            # farq qilmasdi va eski natija qayoqqa ketganini tushunmasdi.
+            # `TESTING_ABORTED` — «oldingi natija bekor qilindi, qayta
+            # tekshirilmoqda».
             Attempt.objects.filter(pk=attempt.pk).update(
-                verdict=Verdict.PENDING, judged_at=None, requeued_at=None
+                verdict=Verdict.TESTING_ABORTED, judged_at=None, requeued_at=None
             )
             sent += 1
 

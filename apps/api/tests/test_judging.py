@@ -541,7 +541,7 @@ class TestReapStuck:
         assert attempt.verdict == "PENDING", "hali javob kutilmoqda"
         assert len(memory_judge.jobs) == 1
 
-    def test_ikkinchi_marta_urinilmaydi_ie_qoyiladi(
+    def test_ikkinchi_marta_urinilmaydi_denial_qoyiladi(
         self, problem, user, language, memory_judge
     ) -> None:
         from judging.tasks import reap_stuck
@@ -550,7 +550,8 @@ class TestReapStuck:
 
         assert reap_stuck() == {"requeued": 0, "failed": 1}
         attempt.refresh_from_db()
-        assert attempt.verdict == "IE"
+        # `IE` EMAS: ish yo'qolishi infra hodisasi, masala xatosi emas.
+        assert attempt.verdict == "DENIAL_OF_JUDGEMENT"
         assert attempt.judged_at is not None
         assert memory_judge.jobs == [], "ikkinchi marta navbatga qo'yilmaydi"
 

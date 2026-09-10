@@ -70,7 +70,8 @@ class TestRejudgeBuyrugi:
         assert len(memory_judge.jobs) == 1
         assert memory_judge.jobs[0].attempt_id == a.pk
         a.refresh_from_db()
-        assert a.verdict == Verdict.PENDING
+        # `PENDING` emas — pastdagi `TestOlikVerdiktlar` ga qarang.
+        assert a.verdict == Verdict.TESTING_ABORTED
         assert a.judged_at is None
 
     def test_dry_run_hech_narsa_yubormaydi(self, user, problem, language, memory_judge) -> None:
@@ -120,3 +121,68 @@ class TestRejudgeBuyrugi:
         call_command("rejudge", problem=problem.slug, limit=2)
 
         assert len(memory_judge.jobs) == 2
+
+
+@pytest.mark.django_db
+class TestOlikVerdiktlar:
+    """E'lon qilingan, lekin hech qanday kod yozmaydigan verdiktlar ulandi."""
+
+    def test_rejudge_testing_aborted_qoyadi(self, user, problem, language, memory_judge) -> None:
+        """`PENDING` foydalanuvchi uchun yangi yuborishdan farq qilmasdi."""
+        a = ac(user, problem, language)
+
+        call_command("rejudge", problem=problem.slug)
+
+        a.refresh_from_db()
+        assert a.verdict == Verdict.TESTING_ABORTED
+
+    def test_qayta_tekshirilayotganni_ikkinchi_marta_olmaydi(
+        self, user, problem, language, memory_judge
+    ) -> None:
+        ac(user, problem, language)
+        call_command("rejudge", problem=problem.slug)
+        memory_judge.jobs.clear()
+
+        call_command("rejudge", problem=problem.slug)
+
+        assert memory_judge.jobs == [], "allaqachon navbatda"
+
+    def test_yoqolgan_ish_denial_of_judgement(self, user, problem, language, memory_judge) -> None:
+        """`IE` masala xatosini ham bildirardi — operator ajrata olmasdi."""
+        from datetime import timedelta
+
+        from django.utils import timezone
+
+        from judging.tasks import reap_stuck
+
+        a = Attempt.objects.create(
+            user=user,
+            problem=problem,
+            language=language,
+            source_code="x",
+            verdict=Verdict.PENDING,
+        )
+        eski = timezone.now() - timedelta(hours=2)
+        Attempt.objects.filter(pk=a.pk).update(created_at=eski, requeued_at=eski)
+
+        reap_stuck()
+
+        a.refresh_from_db()
+        assert a.verdict == Verdict.DENIAL_OF_JUDGEMENT
+
+    def test_skip_ac_ni_va_yechimni_bekor_qiladi(self, user, problem, language) -> None:
+        a = ac(user, problem, language)
+        assert UserSolvedProblem.objects.filter(user=user, problem=problem).exists()
+
+        call_command("skip_attempts", user=user.username, problem=problem.slug)
+
+        a.refresh_from_db()
+        assert a.verdict == Verdict.SKIPPED
+        assert not UserSolvedProblem.objects.filter(user=user, problem=problem).exists()
+        assert Problem.objects.get(pk=problem.pk).solved_count == 0
+
+    def test_skip_filtrsiz_ishlamaydi(self, user, problem, language) -> None:
+        ac(user, problem, language)
+
+        with pytest.raises(CommandError):
+            call_command("skip_attempts", user=user.username)

@@ -95,7 +95,11 @@ Worker `DATABASE_URL` **olmaydi**. Faqat `REDIS_URL` va S3 (bake-off'da local ka
 
 Bake-off'da ishlatiladigan qism (to'liq 20 ta: [08](../../docs/08-technical-spec/README.md)):
 
-`AC` · `WA` · `TLE` · `MLE` · `OLE` · `RE` · `CE` · `COMPILE_TIMEOUT` · `IDLENESS` · `SECURITY_VIOLATION` · `IE`
+`AC` · `WA` · `PE` · `TLE` · `MLE` · `OLE` · `RE_SIGNAL` · `RE_EXIT` · `CE` · `COMPILE_TIMEOUT` · `IDLENESS` · `SECURITY_VIOLATION` · `CHECKER_ERROR` · `WRONG_TEST` · `PARTIAL` · `IE`
+
+`RE` — eski kod, judge endi uni chiqarmaydi: signal bilan o'ldirilgan
+dastur (`RE_SIGNAL`) va o'zi nolga teng bo'lmagan kod bilan chiqqan
+dastur (`RE_EXIT`) ajratildi (DMOJ modeli).
 
 ## Vaqt o'lchash — muhim farq
 
