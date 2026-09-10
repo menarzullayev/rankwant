@@ -256,6 +256,10 @@ S3_REGION = os.environ.get("S3_REGION", "us-east-1")
 EMAIL_CHAIN = [
     p.strip() for p in env("EMAIL_CHAIN", "brevo,mailjet,resend,mailersend,console").split(",")
 ]
+#: Xatdagi havolalar va logotip shu manzildan quriladi. Provayder domeniga
+#: almashtirilmaydi — ADR-0015: foydalanuvchi havolada `rankwant` so'zini
+#: ko'rishi va ko'rmasa shubhalanishi kerak.
+SITE_URL = env("PUBLIC_ORIGIN", "https://rankwant.bugvector.uz").rstrip("/")
 EMAIL_FROM = env("EMAIL_FROM", "no-reply@rankwant.uz")
 EMAIL_FROM_NAME = env("EMAIL_FROM_NAME", "RankWant")
 #: Bitta provayderga ajratilgan vaqt. Zanjir ketma-ket ishlaydi, ya'ni

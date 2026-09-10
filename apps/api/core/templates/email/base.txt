@@ -1,0 +1,17 @@
+{{ t.heading }}
+
+{{ t.body }}
+
+{{ link }}
+
+{{ t.code_hint }}
+
+    {{ code }}
+{% if request_at %}
+{{ t.meta_request }}: {{ request_at }}{% if request_ip %}
+{{ t.meta_ip }}: {{ request_ip }}{% endif %}{% if request_ua %}
+{{ t.meta_ua }}: {{ request_ua }}{% endif %}
+{% endif %}
+--
+{{ t.footer }}
+{{ site_url }}
