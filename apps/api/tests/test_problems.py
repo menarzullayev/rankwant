@@ -9,12 +9,15 @@ from __future__ import annotations
 
 import pytest
 from django.core.cache import cache
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from rest_framework.test import APIClient
 
 from core.models import User
 from problems import storage
 from problems.models import TestCase as ProblemTestCase
+from problems.models import Topic
 
 
 @pytest.fixture
@@ -1020,3 +1023,29 @@ class TestOmmaviyStatistikaKeshi:
 
         assert "public" in r["Cache-Control"]
         assert "Cookie" not in r.get("Vary", "")
+
+
+@pytest.mark.django_db
+def test_mavzular_sorov_soni_osmaydi(problem) -> None:
+    """Serializer ota-mavzuni slug bilan beradi — `select_related` bo'lmasa
+    har mavzu uchun alohida so'rov ketardi (o'lchandi: 50 tada 33 ta)."""
+    ota = Topic.objects.create(slug="ota", name_uz="Ota")
+    problem.topics.add(ota)
+    c = APIClient()
+    c.get(reverse("topic-list"))
+
+    with CaptureQueriesContext(connection) as bitta:
+        c.get(reverse("topic-list"))
+
+    for i in range(20):
+        bola = Topic.objects.create(slug=f"bola{i}", name_uz=f"Bola {i}", parent=ota)
+        problem.topics.add(bola)
+
+    with CaptureQueriesContext(connection) as kopi:
+        r = c.get(reverse("topic-list"))
+
+    assert len(r.data["results"]) == 21
+    assert len(kopi) == len(bitta), (
+        f"1 mavzuda {len(bitta)}, 21 mavzuda {len(kopi)} so'rov — "
+        "ota-mavzu har qator uchun alohida olinyapti"
+    )

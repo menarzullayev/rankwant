@@ -568,7 +568,16 @@ class TopicViewSet(viewsets.ReadOnlyModelViewSet[Topic]):
     permission_classes = [AllowAny]
     serializer_class = TopicSerializer
     lookup_field = "slug"
-    queryset = Topic.objects.filter(problems__is_public=True).distinct().order_by("slug")
+    # `select_related("parent")` — serializer ota-mavzuni slug bilan
+    # beradi, ya'ni usiz har mavzu uchun alohida so'rov ketardi.
+    # O'lchandi: 1 mavzuga 3 so'rov, 50 mavzuga 33. Staff view'da
+    # bu allaqachon bor edi, ommaviysida esa yo'q.
+    queryset = (
+        Topic.objects.filter(problems__is_public=True)
+        .select_related("parent")
+        .distinct()
+        .order_by("slug")
+    )
 
 
 class LanguageViewSet(viewsets.ReadOnlyModelViewSet[Language]):
