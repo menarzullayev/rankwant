@@ -249,7 +249,20 @@ def virtual_deadline(reg: ContestRegistration) -> datetime:
 
 @transaction.atomic
 def finalize_contest(contest: Contest) -> int:
-    """Musobaqa tugagach: standings + Contests reytingi."""
+    """Musobaqa tugagach: standings + Contests reytingi.
+
+    Qulf `duels.finalize` dagi kabi: `ratings_applied_at` ni o'qish va
+    yozish orasi ochiq qolsa, ikkinchi ishchi shu oraliqda kirib oladi.
+    Beat `finalize_due` ni har 60 soniyada yuboradi, worker esa ikkita
+    jarayonda ishlaydi — 10 ming ishtirokchili musobaqa 60 soniyadan
+    uzoq yakunlansa ikki chaqiruv ustma-ust tushadi.
+
+    O'lchandi (preview, 12 ishtirokchi): reyting to'g'ri qoldi —
+    `bulk_update` mutlaq qiymat yozadi — lekin `RatingHistory` 24 qator
+    va bildirishnoma ham 24 ta bo'ldi. Reyting tarixi principle #2 ning
+    tushuntirish yuzasi, ya'ni ikkilangan qator uni buzadi.
+    """
+    contest = Contest.objects.select_for_update().get(pk=contest.pk)
     if contest.ratings_applied_at is not None:
         return 0
     if not contest.is_finished:

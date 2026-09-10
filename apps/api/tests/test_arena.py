@@ -114,6 +114,23 @@ class TestArenaMechanics:
         assert ledger.get_wallet(other_user).balance == 0
         assert finalize(running) == 0  # ikkinchi marta hech narsa
 
+    def test_eskirgan_obyekt_qvantni_ikkilantirmaydi(self, user, running) -> None:
+        """`ledger.credit` hamyonni qulflaydi, lekin `(ref_type, ref_id)`
+        bo'yicha takrorni tanimaydi — bir xil mukofot ikki marta kelsa
+        ikkalasini ham yozadi. O'lchandi (preview, 6 ishtirokchi): qulfsiz
+        holatda 12 tranzaksiya yozildi va balans 15 o'rniga 30 bo'ldi.
+        """
+        join(user, running)
+        q, choice = _correct(running, 0)
+        answer(user, running, q, choice)
+        running.start_at = timezone.now() - timedelta(seconds=500)
+        running.save()
+        eskirgan = ArenaRound.objects.get(pk=running.pk)  # rewards_applied_at hali None
+
+        assert finalize(running) == 1
+        assert finalize(eskirgan) == 0
+        assert ledger.get_wallet(user).balance == 15
+
 
 @pytest.mark.django_db
 class TestArenaApi:

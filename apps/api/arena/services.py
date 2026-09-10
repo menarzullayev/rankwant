@@ -147,7 +147,15 @@ def my_standing(arena: ArenaRound, user: User) -> dict[str, object] | None:
 
 @transaction.atomic
 def finalize(arena: ArenaRound) -> int:
-    """Raund tugagach ishtirokchilarga Qvant. Bir marta — `rewards_applied_at`."""
+    """Raund tugagach ishtirokchilarga Qvant. Bir marta — `rewards_applied_at`.
+
+    «Bir marta» qulf bilan ta'minlanadi: `ledger.credit` hamyonni qulflaydi
+    va kunlik shiftni hisobga oladi, lekin `(ref_type, ref_id)` bo'yicha
+    takrorni tanimaydi — o'sha mukofot ikki marta kelsa ikkalasini ham
+    yozadi. O'lchandi (preview, 6 ishtirokchi): parallel ikki chaqiruv
+    12 tranzaksiya yozdi va har kimning balansi 15 o'rniga 30 bo'ldi.
+    """
+    arena = ArenaRound.objects.select_for_update().get(pk=arena.pk)
     if arena.rewards_applied_at is not None or not arena.is_finished:
         return 0
     awarded = 0

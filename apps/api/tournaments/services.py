@@ -23,6 +23,14 @@ def stage_points(weight: int, participants: int, rank: int) -> int:
 
 @transaction.atomic
 def rebuild(tournament: Tournament) -> int:
+    # Qulf: quyidagi DELETE + `bulk_create` juftligi qulfsiz bo'lsa,
+    # ustma-ust tushgan ikkinchi qayta qurish birinchisining yozgan
+    # qatorlarini o'z DELETE ida KO'RMAYDI (READ COMMITTED) va
+    # `uniq_tournament_standing` ga uriladi. Ma'lumot buzilmaydi —
+    # tranzaksiya orqaga qaytadi — lekin chaqiruvchi 500 oladi.
+    # O'lchandi: 8 parallel chaqiruvdan 7 tasi IntegrityError bergan.
+    tournament = Tournament.objects.select_for_update().get(pk=tournament.pk)
+
     points: dict[int, int] = defaultdict(int)
     solved: dict[int, int] = defaultdict(int)
     played: dict[int, int] = defaultdict(int)

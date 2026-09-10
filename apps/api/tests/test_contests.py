@@ -116,6 +116,21 @@ class TestContestRating:
         contest.refresh_from_db()
         assert finalize_contest(contest) == 0
 
+    def test_eskirgan_obyekt_qoriqchini_chetlab_otmaydi(self, contest, problem, language) -> None:
+        """Ikkinchi chaqiruv o'z obyektini ALLAQACHON o'qib olgan bo'lishi mumkin.
+
+        Beat `finalize_due` ni har 60 soniyada yuboradi, worker esa ikkita
+        jarayonda ishlaydi — uzoq yakunlanish ustma-ust tushadi. O'lchandi
+        (preview, 12 ishtirokchi): qulfsiz holatda reyting to'g'ri qoldi,
+        lekin `RatingHistory` 24 qator va bildirishnoma ham 24 ta bo'ldi.
+        """
+        self._ten_participants(contest, problem, language)
+        eskirgan = Contest.objects.get(pk=contest.pk)  # ratings_applied_at hali None
+
+        assert finalize_contest(contest) == 10
+        assert finalize_contest(eskirgan) == 0
+        assert RatingHistory.objects.filter(rating_type="contest").count() == 10
+
     def test_unrated_contest(self, contest, problem, language) -> None:
         contest.is_rated = False
         contest.save()
