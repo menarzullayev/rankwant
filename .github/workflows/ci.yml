@@ -233,6 +233,12 @@ jobs:
     runs-on: [self-hosted, rankwant]
     needs: changes
     if: needs.changes.outputs.code == 'true'
+    # Compose loyihasi HAR JOB uchun alohida. Bitta runner'da joblar
+    # ketma-ket ketgani uchun bu ilgari sezilmasdi; ikkinchi runner
+    # qo'shilishi bilan ikkita job bir xil nomdagi stack'ni ko'tarib,
+    # birining `down -v` si ikkinchisining konteynerlarini o'chirardi.
+    env:
+      COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
     steps:
       - uses: actions/checkout@v7
       - name: Stack

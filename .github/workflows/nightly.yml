@@ -16,6 +16,12 @@ jobs:
   load:
     name: Load — o'qish sig'imi
     runs-on: [self-hosted, rankwant]
+    # Compose loyihasi HAR JOB uchun alohida. Bitta runner'da joblar
+    # ketma-ket ketgani uchun bu ilgari sezilmasdi; ikkinchi runner
+    # qo'shilishi bilan ikkita job bir xil nomdagi stack'ni ko'tarib,
+    # birining `down -v` si ikkinchisining konteynerlarini o'chirardi.
+    env:
+      COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
     steps:
       - uses: actions/checkout@v7
       - name: Stack
@@ -47,6 +53,12 @@ jobs:
   e2e:
     name: E2E — to'liq brauzer matritsasi
     runs-on: [self-hosted, rankwant]
+    # Compose loyihasi HAR JOB uchun alohida. Bitta runner'da joblar
+    # ketma-ket ketgani uchun bu ilgari sezilmasdi; ikkinchi runner
+    # qo'shilishi bilan ikkita job bir xil nomdagi stack'ni ko'tarib,
+    # birining `down -v` si ikkinchisining konteynerlarini o'chirardi.
+    env:
+      COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
     steps:
       - uses: actions/checkout@v7
       - name: Stack
@@ -72,6 +84,12 @@ jobs:
   chaos:
     name: Chaos — bog'liqlik uzilishi
     runs-on: [self-hosted, rankwant]
+    # Compose loyihasi HAR JOB uchun alohida. Bitta runner'da joblar
+    # ketma-ket ketgani uchun bu ilgari sezilmasdi; ikkinchi runner
+    # qo'shilishi bilan ikkita job bir xil nomdagi stack'ni ko'tarib,
+    # birining `down -v` si ikkinchisining konteynerlarini o'chirardi.
+    env:
+      COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
     steps:
       - uses: actions/checkout@v7
       - name: Stack
@@ -93,6 +111,12 @@ jobs:
   compatibility:
     name: Til matritsasi
     runs-on: [self-hosted, rankwant]
+    # Compose loyihasi HAR JOB uchun alohida. Bitta runner'da joblar
+    # ketma-ket ketgani uchun bu ilgari sezilmasdi; ikkinchi runner
+    # qo'shilishi bilan ikkita job bir xil nomdagi stack'ni ko'tarib,
+    # birining `down -v` si ikkinchisining konteynerlarini o'chirardi.
+    env:
+      COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
     steps:
       - uses: actions/checkout@v7
       - name: Judge image
