@@ -94,6 +94,23 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
         count: int | None = getattr(obj, "test_count", None)
         return count if count is not None else obj.tests.count()
 
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        """Testsiz masala ommaga chiqmasin.
+
+        Judge nol testni «hammasi o'tdi» deb emas, IE deb qaytaradi —
+        ya'ni bunday masala arxivda ko'rinadi, ochiladi, lekin yechib
+        bo'lmaydi. O'lchandi: import qilingan arxivda 2 096 ommaviy
+        masaladan 870 tasi shu holatda edi.
+        """
+        ommaviy = attrs.get("is_public", getattr(self.instance, "is_public", False))
+        if ommaviy:
+            testlar = self.instance.tests.count() if self.instance else 0
+            if not testlar:
+                raise serializers.ValidationError(
+                    {"is_public": "Testsiz masalani ommaga chiqarib bo'lmaydi"}
+                )
+        return attrs
+
     def validate_difficulty(self, value: int) -> int:
         # Model.clean() bilan bir xil qoida — API orqali ham 100 ga karrali bo'lsin.
         if value % DIFFICULTY_STEP:

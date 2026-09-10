@@ -319,8 +319,14 @@ class TestRemapAndPublish:
     def test_elon_qilinganda_ommaviy_raqam_beriladi(self):
         from django.core.management import call_command
 
+        from problems.models import TestCase as ProblemTest
+
         birinchi = self.make(slug="b")
         ikkinchi = self.make(slug="a")
+        for problem in (birinchi, ikkinchi):
+            ProblemTest.objects.create(
+                problem=problem, order=1, input_ref="s3://a/1.in", output_ref="s3://a/1.out"
+            )
 
         call_command("publish_problems", source="KEP.uz")
 
@@ -331,7 +337,7 @@ class TestRemapAndPublish:
         assert birinchi.code is not None
         assert ikkinchi.code == birinchi.code + 1, "yaratilish tartibida"
 
-    def test_testsizlarini_qoldirish_mumkin(self):
+    def test_testsizlar_standart_holda_qoralama_qoladi(self):
         from django.core.management import call_command
 
         from problems.models import TestCase as ProblemTest
@@ -342,12 +348,23 @@ class TestRemapAndPublish:
         )
         testsiz = self.make(slug="testsiz")
 
-        call_command("publish_problems", source="KEP.uz", require_tests=True)
+        call_command("publish_problems", source="KEP.uz")
 
         testli.refresh_from_db()
         testsiz.refresh_from_db()
         assert testli.is_public is True
-        assert testsiz.is_public is False
+        assert testsiz.is_public is False, "testsiz masala yechib bo'lmaydi — chiqmasin"
+
+    def test_testsizni_ataylab_chiqarish_mumkin(self):
+        """Chetlab o'tish yo'li qoladi, lekin ataylab yozilishi kerak."""
+        from django.core.management import call_command
+
+        testsiz = self.make(slug="testsiz2")
+
+        call_command("publish_problems", source="KEP.uz", allow_testless=True)
+
+        testsiz.refresh_from_db()
+        assert testsiz.is_public is True
 
     def test_takroriy_nomli_mavzular_birlashadi(self):
         from django.core.management import call_command

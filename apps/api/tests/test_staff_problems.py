@@ -316,3 +316,32 @@ def test_qiyinlik_ozgarmasa_qayta_hisoblanmaydi(staff_client, problem, rerate_ca
     )
 
     assert rerate_calls == []
+
+
+@pytest.mark.django_db
+class TestTestsizOmmagaChiqmaydi:
+    """Judge nol testni IE deb qaytaradi — bunday masala ochiladi, lekin
+    yechib bo'lmaydi. Arxivda 2 096 dan 870 tasi shu holatda edi."""
+
+    def test_testsizni_ommaga_chiqarib_bolmaydi(self, staff_client, db) -> None:
+        p = Problem.objects.create(slug="testsiz", title="Testsiz", difficulty=800)
+
+        r = staff_client.patch(
+            reverse("staff-problem-detail", args=[p.slug]), {"is_public": True}, format="json"
+        )
+
+        assert r.status_code == 400
+        assert not Problem.objects.get(pk=p.pk).is_public
+
+    def test_testi_borni_chiqarish_mumkin(self, staff_client, db) -> None:
+        p = Problem.objects.create(slug="testli", title="Testli", difficulty=800)
+        ProblemTestCase.objects.create(
+            problem=p, order=1, input_ref="s3://x/1.in", output_ref="s3://x/1.out"
+        )
+
+        r = staff_client.patch(
+            reverse("staff-problem-detail", args=[p.slug]), {"is_public": True}, format="json"
+        )
+
+        assert r.status_code == 200
+        assert Problem.objects.get(pk=p.pk).is_public

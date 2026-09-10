@@ -22,17 +22,21 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser: ArgumentParser) -> None:
         parser.add_argument("--source", default="", help="Faqat shu manbadagilar")
+        # Ilgari bu `--require-tests` edi va IXTIYORIY: import paytida
+        # ishlatilmagani uchun 870 ta yechib bo'lmaydigan masala arxivga
+        # chiqib ketgan. Endi tekshiruv standart, chetlab o'tish esa
+        # ataylab yozilishi kerak.
         parser.add_argument(
-            "--require-tests",
+            "--allow-testless",
             action="store_true",
-            help="Testsizlarini qoralama qoldiradi",
+            help="Testsizlarini ham e'lon qiladi (odatda kerak emas)",
         )
 
     def handle(self, *args: Any, **options: Any) -> None:
         drafts = Problem.objects.filter(is_public=False)
         if options["source"]:
             drafts = drafts.filter(source=options["source"])
-        if options["require_tests"]:
+        if not options["allow_testless"]:
             drafts = drafts.filter(tests__isnull=False).distinct()
 
         # Raqamlar YARATILISH tartibida beriladi. `source_url` bo'yicha
