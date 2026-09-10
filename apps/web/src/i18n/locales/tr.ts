@@ -218,6 +218,14 @@ export const tr: Record<MessageKey, string> = {
   "settings.exportHint":
     "Profil, gönderimler, puan geçmişi ve Qvant işlemleri — tek bir JSON dosyası.",
   "settings.exportAction": "İndir",
+  "settings.social": "Bağlı hesaplar",
+  "settings.socialHint": "Google, GitHub veya Telegram ile girişi bağlayabilirsiniz. E-posta adreslerinin aynı olması gerekmez.",
+  "settings.socialConnect": "Bağla",
+  "settings.socialDisconnect": "Bağlantıyı kes",
+  "settings.socialConnected": "Bağlı",
+  "settings.socialLinked": "Hesap bağlandı",
+  "settings.socialTaken": "Bu hesap başka bir kullanıcıya bağlı",
+  "settings.socialLast": "Bu tek giriş yolunuz — önce bir parola belirleyin",
   "settings.delete": "Hesabı sil",
   "settings.deleteHint":
     "Ad, e-posta ve biyografi silinir, hesap anonim olur. Gönderimler ve yarışma sonuçları kalır — bunları kaldırmak diğer katılımcıların sıralamasını kaydırırdı.",

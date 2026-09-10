@@ -218,6 +218,14 @@ export const ru: Record<MessageKey, string> = {
   "settings.exportHint":
     "Профиль, решения, история рейтинга и операции Qvant — один файл JSON.",
   "settings.exportAction": "Скачать",
+  "settings.social": "Связанные аккаунты",
+  "settings.socialHint": "Можно привязать вход через Google, GitHub или Telegram. Адреса почты совпадать не обязаны.",
+  "settings.socialConnect": "Привязать",
+  "settings.socialDisconnect": "Отвязать",
+  "settings.socialConnected": "Привязан",
+  "settings.socialLinked": "Аккаунт привязан",
+  "settings.socialTaken": "Этот аккаунт уже привязан к другому пользователю",
+  "settings.socialLast": "Это ваш единственный способ входа — сначала задайте пароль",
   "settings.delete": "Удалить аккаунт",
   "settings.deleteHint":
     "Имя, email и описание будут удалены, аккаунт станет анонимным. Решения и результаты соревнований останутся — их удаление сместило бы места других участников.",

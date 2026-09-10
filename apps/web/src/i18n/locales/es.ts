@@ -218,6 +218,14 @@ export const es: Record<MessageKey, string> = {
   "settings.exportHint":
     "Perfil, envíos, historial de rating y movimientos de Qvant — un archivo JSON.",
   "settings.exportAction": "Descargar",
+  "settings.social": "Cuentas conectadas",
+  "settings.socialHint": "Puedes conectar el inicio de sesión con Google, GitHub o Telegram. Las direcciones no tienen que coincidir.",
+  "settings.socialConnect": "Conectar",
+  "settings.socialDisconnect": "Desconectar",
+  "settings.socialConnected": "Conectada",
+  "settings.socialLinked": "Cuenta conectada",
+  "settings.socialTaken": "Esa cuenta está conectada a otro usuario",
+  "settings.socialLast": "Es tu única forma de entrar — establece antes una contraseña",
   "settings.delete": "Eliminar cuenta",
   "settings.deleteHint":
     "Se borran el nombre, el correo y la biografía, y la cuenta pasa a ser anónima. Los envíos y los resultados de concursos permanecen: quitarlos alteraría la clasificación de los demás.",

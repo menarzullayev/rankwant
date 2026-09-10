@@ -251,3 +251,127 @@ class TestTaxallusTanlash:
         User.objects.create_user(username="admin", email="a@example.com")
 
         assert oauth.free_username("аdmin") != "аdmin"
+
+
+@pytest.mark.django_db
+class TestSozlamalardanBoglash:
+    """Kirgan holda ulash — ADR-0016 dagi bo'shliq.
+
+    Ilgari bog'lashni FAQAT kirish paytida boshlash mumkin edi va u
+    provayder pochtasi hisob pochtasiga mos kelishini talab qilardi.
+    O'lchangan oqibat: ish pochtasi bilan Google'ga kirgan odam o'z
+    hisobiga ulanish o'rniga yangi hisob ochib olardi.
+    """
+
+    def start(self, client: APIClient, user: User | None = None) -> str:
+        if user is not None:
+            client.force_login(user)
+        client.get(reverse("social-start", args=["google"]))
+        return str(client.session["social_state"])
+
+    def qaytish(self, client: APIClient, state: str) -> Any:
+        return client.get(reverse("social-callback", args=["google"]) + f"?code=c&state={state}")
+
+    def test_kirgan_odam_hisobiga_ulanadi(self, sozlangan: Any, monkeypatch: Any) -> None:
+        user = User.objects.create_user(
+            username="egasi", email="uy@example.com", password="Parol!12345"
+        )
+        kelgan(monkeypatch, "ish@example.com")
+        c = APIClient()
+        state = self.start(c, user)
+
+        r = self.qaytish(c, state)
+
+        assert "social=linked" in r.headers["Location"]
+        assert SocialAccount.objects.filter(user=user, provider="google").exists()
+        assert User.objects.count() == 1, "yangi hisob ochilmasin"
+
+    def test_pochta_mos_kelmasa_ham_ulanadi(self, sozlangan: Any, monkeypatch: Any) -> None:
+        """Bog'lashning butun mazmuni shu: odam allaqachon o'zini
+        isbotlagan, ya'ni pochta mosligiga tayanish keraksiz."""
+        user = User.objects.create_user(
+            username="egasi", email="uy@example.com", password="Parol!12345"
+        )
+        kelgan(monkeypatch, "butunlay@boshqa.com")
+        c = APIClient()
+
+        self.qaytish(c, self.start(c, user))
+
+        assert (
+            SocialAccount.objects.get(user=user, provider="google").email == "butunlay@boshqa.com"
+        )
+
+    def test_boshqa_hisobdagi_provayder_ulanmaydi(self, sozlangan: Any, monkeypatch: Any) -> None:
+        birinchi = User.objects.create_user(username="bir", email="a@example.com")
+        SocialAccount.objects.create(user=birinchi, provider="google", uid="u1")
+        ikkinchi = User.objects.create_user(
+            username="ikki", email="b@example.com", password="Parol!12345"
+        )
+        kelgan(monkeypatch, "c@example.com")
+        c = APIClient()
+
+        r = self.qaytish(c, self.start(c, ikkinchi))
+
+        assert "social=taken" in r.headers["Location"]
+        assert not SocialAccount.objects.filter(user=ikkinchi).exists()
+
+    def test_kirmagan_odam_uchun_oqim_ozgarmaydi(self, sozlangan: Any, monkeypatch: Any) -> None:
+        kelgan(monkeypatch, "yangi@example.com")
+        c = APIClient()
+
+        r = self.qaytish(c, self.start(c))
+
+        assert "social=linked" not in r.headers["Location"]
+        assert User.objects.filter(email="yangi@example.com").exists(), "hisob ochilishi kerak"
+
+
+@pytest.mark.django_db
+class TestUzish:
+    def test_uziladi(self, sozlangan: Any) -> None:
+        user = User.objects.create_user(
+            username="egasi", email="a@example.com", password="Parol!12345"
+        )
+        SocialAccount.objects.create(user=user, provider="google", uid="u1")
+        c = APIClient()
+        c.force_login(user)
+
+        r = c.delete(reverse("social-unlink", args=["google"]))
+
+        assert r.status_code == 204
+        assert not SocialAccount.objects.filter(user=user).exists()
+
+    def test_yagona_kirish_yoli_uzilmaydi(self, sozlangan: Any) -> None:
+        """Paroli yo'q va boshqa provayderi ham qolmagan odam hisobiga
+        qaytib kira olmasdi."""
+        user = User.objects.create_user(username="faqatgoogle", email="a@example.com")
+        user.set_unusable_password()
+        user.save(update_fields=["password"])
+        SocialAccount.objects.create(user=user, provider="google", uid="u1")
+        c = APIClient()
+        c.force_login(user)
+
+        r = c.delete(reverse("social-unlink", args=["google"]))
+
+        assert r.status_code == 400
+        assert SocialAccount.objects.filter(user=user).exists()
+
+    def test_ikkinchi_provayder_qolsa_uziladi(self, sozlangan: Any) -> None:
+        user = User.objects.create_user(username="ikkovi", email="a@example.com")
+        user.set_unusable_password()
+        user.save(update_fields=["password"])
+        SocialAccount.objects.create(user=user, provider="google", uid="u1")
+        SocialAccount.objects.create(user=user, provider="github", uid="u2")
+        c = APIClient()
+        c.force_login(user)
+
+        assert c.delete(reverse("social-unlink", args=["google"])).status_code == 204
+
+    def test_me_ulangan_royxatni_qaytaradi(self, sozlangan: Any) -> None:
+        user = User.objects.create_user(
+            username="egasi", email="a@example.com", password="Parol!12345"
+        )
+        SocialAccount.objects.create(user=user, provider="github", uid="u2")
+        c = APIClient()
+        c.force_login(user)
+
+        assert c.get(reverse("me")).data["social"] == ["github"]

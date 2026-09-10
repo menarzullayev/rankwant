@@ -222,6 +222,14 @@ export const uz = {
   "settings.exportHint":
     "Profil, yechimlar, reyting tarixi va Qvant amallari — bitta JSON fayl.",
   "settings.exportAction": "Yuklab olish",
+  "settings.social": "Ulangan hisoblar",
+  "settings.socialHint": "Google, GitHub yoki Telegram bilan kirishni ulashingiz mumkin. Pochta manzillari mos kelishi shart emas.",
+  "settings.socialConnect": "Ulash",
+  "settings.socialDisconnect": "Uzish",
+  "settings.socialConnected": "Ulangan",
+  "settings.socialLinked": "Hisob ulandi",
+  "settings.socialTaken": "Bu hisob boshqa foydalanuvchiga ulangan",
+  "settings.socialLast": "Bu yagona kirish yo'lingiz — avval parol o'rnating",
   "settings.delete": "Hisobni o'chirish",
   "settings.deleteHint":
     "Ism, email va bio o'chadi, hisob anonim bo'ladi. Yechimlar va musobaqa natijalari joyida qoladi — ularni olib tashlash boshqa qatnashchilarning o'rnini siljitardi.",

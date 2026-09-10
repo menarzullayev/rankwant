@@ -218,6 +218,14 @@ export const en: Record<MessageKey, string> = {
   "settings.exportHint":
     "Profile, submissions, rating history and Qvant transactions — one JSON file.",
   "settings.exportAction": "Download",
+  "settings.social": "Connected accounts",
+  "settings.socialHint": "You can connect Google, GitHub or Telegram sign-in. The addresses do not have to match.",
+  "settings.socialConnect": "Connect",
+  "settings.socialDisconnect": "Disconnect",
+  "settings.socialConnected": "Connected",
+  "settings.socialLinked": "Account connected",
+  "settings.socialTaken": "That account is connected to someone else",
+  "settings.socialLast": "This is your only way in — set a password first",
   "settings.delete": "Delete account",
   "settings.deleteHint":
     "Your name, email and bio are erased and the account becomes anonymous. Submissions and contest results stay — removing them would shift everyone else's placings.",

@@ -103,6 +103,12 @@ class UserPublicSerializer(serializers.ModelSerializer[User]):
 
 
 class MeSerializer(serializers.ModelSerializer[User]):
+    #: Ulangan provayderlar — sozlamalar sahifasi shu ro'yxatga qaraydi.
+    social = serializers.SerializerMethodField()
+
+    def get_social(self, obj: User) -> list[str]:
+        return sorted(obj.social_accounts.values_list("provider", flat=True))
+
     class Meta:
         model = User
         fields = [
@@ -112,6 +118,7 @@ class MeSerializer(serializers.ModelSerializer[User]):
             "email",
             "display_name",
             "email_verified",
+            "social",
             "avatar_url",
             "bio",
             "locale",

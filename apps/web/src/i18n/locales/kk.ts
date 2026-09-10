@@ -218,6 +218,14 @@ export const kk: Record<MessageKey, string> = {
   "settings.exportHint":
     "Профиль, шешімдер, рейтинг тарихы және Qvant операциялары — бір JSON файл.",
   "settings.exportAction": "Жүктеп алу",
+  "settings.social": "Байланысқан аккаунттар",
+  "settings.socialHint": "Google, GitHub немесе Telegram арқылы кіруді байланыстыруға болады. Пошта мекенжайлары сәйкес келуі міндетті емес.",
+  "settings.socialConnect": "Байланыстыру",
+  "settings.socialDisconnect": "Ажырату",
+  "settings.socialConnected": "Байланысқан",
+  "settings.socialLinked": "Аккаунт байланысты",
+  "settings.socialTaken": "Бұл аккаунт басқа пайдаланушыға байланысқан",
+  "settings.socialLast": "Бұл сіздің жалғыз кіру жолыңыз — алдымен құпиясөз орнатыңыз",
   "settings.delete": "Тіркелгіні жою",
   "settings.deleteHint":
     "Аты, email және сипаттама өшіріледі, тіркелгі анонимді болады. Шешімдер мен жарыс нәтижелері қалады — оларды жою басқа қатысушылардың орнын ауыстырар еді.",

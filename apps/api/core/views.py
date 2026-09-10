@@ -284,6 +284,31 @@ class RegisterView(generics.CreateAPIView[User]):
         queue(send_email_verify, user.pk, issued.raw, issued.code)
 
 
+class SocialUnlinkView(APIView):
+    """Ulangan hisobni uzadi.
+
+    Yagona kirish yo'lini uzib bo'lmaydi: paroli yo'q va boshqa
+    provayderi ham qolmagan odam o'z hisobiga qaytib kira olmasdi.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(responses={204: None})
+    def delete(self, request: Request, provider: str) -> Response:
+        assert isinstance(request.user, User)
+        user = request.user
+        row = SocialAccount.objects.filter(user=user, provider=provider).first()
+        if row is None:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        others = SocialAccount.objects.filter(user=user).exclude(pk=row.pk).exists()
+        if not user.has_usable_password() and not others:
+            raise exceptions.ValidationError(
+                {"provider": "Bu yagona kirish yo'lingiz — avval parol o'rnating"}
+            )
+        row.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class EmailVerifyView(APIView):
     """Havola yoki kod bilan pochtani tasdiqlaydi.
 
@@ -735,6 +760,13 @@ class SocialStartView(APIView):
         # begona sayt bizning callback'imizga o'z kodini yubora olmaydi.
         request.session["social_state"] = state
         request.session["social_provider"] = provider
+        # Kirgan odam uchun bu KIRISH emas, BOG'LASH: qaytganda yangi
+        # hisob ochilmasligi va parol so'ralmasligi kerak — u allaqachon
+        # o'zini isbotlagan. Pochta mosligiga tayanmaydi, ya'ni ish
+        # pochtasini shaxsiy hisobga ulash ham mumkin.
+        request.session["social_link_for"] = (
+            request.user.pk if request.user.is_authenticated else None
+        )
         return redirect(oauth.authorize_url(provider, state))
 
 
@@ -772,6 +804,26 @@ class SocialCallbackView(APIView):
             return redirect(f"{home}/login?social=error")
 
         link = SocialAccount.objects.filter(provider=ident.provider, uid=ident.uid).first()
+
+        owner_pk = request.session.pop("social_link_for", None)
+        if owner_pk is not None:
+            owner = User.objects.filter(pk=owner_pk, is_active=True).first()
+            if owner is None:
+                return redirect(f"{home}/settings?social=error")
+            if link is not None and link.user_id != owner.pk:
+                # Bitta provayder hisobi ikki joyda tura olmaydi —
+                # modeldagi `uniq_social_uid` shuni talab qiladi.
+                return redirect(f"{home}/settings?social=taken")
+            SocialAccount.objects.update_or_create(
+                user=owner,
+                provider=ident.provider,
+                defaults={"uid": ident.uid, "email": ident.email},
+            )
+            if owner.email_verified_at is None and ident.email.lower() == owner.email.lower():
+                owner.email_verified_at = timezone.now()
+                owner.save(update_fields=["email_verified_at"])
+            return redirect(f"{home}/settings?social=linked")
+
         if link is not None:
             django_login(request, link.user, backend=DEFAULT_AUTH_BACKEND)
             return redirect(f"{home}/")

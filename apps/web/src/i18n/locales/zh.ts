@@ -217,6 +217,14 @@ export const zh: Record<MessageKey, string> = {
   "settings.exportHint":
     "个人资料、提交记录、评分历史和 Qvant 交易 — 一个 JSON 文件。",
   "settings.exportAction": "下载",
+  "settings.social": "已连接的账号",
+  "settings.socialHint": "你可以连接 Google、GitHub 或 Telegram 登录。邮箱地址不必相同。",
+  "settings.socialConnect": "连接",
+  "settings.socialDisconnect": "断开",
+  "settings.socialConnected": "已连接",
+  "settings.socialLinked": "账号已连接",
+  "settings.socialTaken": "该账号已连接到其他用户",
+  "settings.socialLast": "这是你唯一的登录方式 — 请先设置密码",
   "settings.delete": "删除账号",
   "settings.deleteHint":
     "姓名、邮箱和简介会被清除，账号将变为匿名。提交记录和比赛成绩会保留 — 删除它们会改变其他选手的名次。",

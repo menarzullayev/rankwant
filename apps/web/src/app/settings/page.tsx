@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 
 import { AccountSettings } from "@/components/AccountSettings";
@@ -28,7 +29,9 @@ export default async function SettingsPage() {
       <h1 className="text-title-sm font-bold rw-strong">
         {t(locale, "settings.title")}
       </h1>
-      <AccountSettings />
+      <Suspense>
+        <AccountSettings />
+      </Suspense>
     </div>
   );
 }

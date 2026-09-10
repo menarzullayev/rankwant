@@ -162,6 +162,8 @@ export type UserPublic = {
   email_verified?: boolean;
   /** Faqat /me/ da keladi — ommaviy profilda pochta ko'rsatilmaydi. */
   email?: string;
+  /** Faqat /me/ da keladi — ulangan provayderlar. */
+  social?: string[];
   streak_count: number;
   date_joined: string;
   /** Reyting bo'yicha o'rin. Ro'yxat javobida bo'sh — faqat profilda. */

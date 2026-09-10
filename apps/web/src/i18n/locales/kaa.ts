@@ -218,6 +218,14 @@ export const kaa: Record<MessageKey, string> = {
   "settings.exportHint":
     "Profil, sheshimler, reyting tariyxı hám Qvant ámelleri — bir JSON fayl.",
   "settings.exportAction": "Júklep alıw",
+  "settings.social": "Jalǵanǵan esaplar",
+  "settings.socialHint": "Google, GitHub yamasa Telegram menen kiriwdi jalǵaw múmkin. Pochta mánzilleri sáykes keliwi shárt emes.",
+  "settings.socialConnect": "Jalǵaw",
+  "settings.socialDisconnect": "Úziw",
+  "settings.socialConnected": "Jalǵanǵan",
+  "settings.socialLinked": "Esap jalǵandı",
+  "settings.socialTaken": "Bul esap basqa paydalanıwshıǵa jalǵanǵan",
+  "settings.socialLast": "Bul jalǵız kiriw jolıńız — aldın parol ornatıń",
   "settings.delete": "Esaptı óshiriw",
   "settings.deleteHint":
     "At, email hám bio óshiriledi, esap anonim boladı. Sheshimler hám jarıs nátiyjeleri ornında qaladı — olardı alıp taslaw basqa qatnasıwshılardıń ornın jıljıtar edi.",

@@ -218,6 +218,14 @@ export const tg: Record<MessageKey, string> = {
   "settings.exportHint":
     "Профил, ҳалҳо, таърихи рейтинг ва амалиёти Qvant — як файли JSON.",
   "settings.exportAction": "Боргирӣ",
+  "settings.social": "Ҳисобҳои пайвастшуда",
+  "settings.socialHint": "Шумо метавонед вуруд тавассути Google, GitHub ё Telegram-ро пайваст кунед. Суроғаҳои почта бояд мувофиқ набошанд.",
+  "settings.socialConnect": "Пайваст кардан",
+  "settings.socialDisconnect": "Ҷудо кардан",
+  "settings.socialConnected": "Пайваст",
+  "settings.socialLinked": "Ҳисоб пайваст шуд",
+  "settings.socialTaken": "Ин ҳисоб ба корбари дигар пайваст аст",
+  "settings.socialLast": "Ин ягона роҳи вуруди шумост — аввал парол гузоред",
   "settings.delete": "Ҳисобро нест кардан",
   "settings.deleteHint":
     "Ном, email ва тавсиф нест мешаванд, ҳисоб беном мегардад. Ҳалҳо ва натиҷаҳои мусобиқа боқӣ мемонанд — нест кардани онҳо ҷойи дигар иштирокчиёнро тағйир медод.",
