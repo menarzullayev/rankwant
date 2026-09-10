@@ -29,7 +29,14 @@ export function AccountSettings() {
         credentials: "include",
         headers: { Accept: "application/json" },
       });
-      if (!res.ok) throw new ApiError(res.status, "error", res.statusText);
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        throw new ApiError(
+          res.status,
+          body?.error?.code ?? "error",
+          body?.error?.message ?? res.statusText,
+        );
+      }
       const url = URL.createObjectURL(await res.blob());
       const link = document.createElement("a");
       link.href = url;
@@ -58,9 +65,12 @@ export function AccountSettings() {
       clear();
       router.push("/");
     } catch (err) {
+      // 400 — faqat parol xatosi bo'lishi mumkin (boshqa maydon yo'q).
       setError(
-        err instanceof ApiError && err.status === 400
-          ? t(locale, "settings.deleteError")
+        err instanceof ApiError
+          ? err.status === 400
+            ? t(locale, "settings.deleteError")
+            : errorText(locale, err.code, err.message)
           : String(err),
       );
       setBusy(null);
