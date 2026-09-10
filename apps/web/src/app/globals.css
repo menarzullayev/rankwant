@@ -156,6 +156,7 @@
 
 /* ── Shveycha: to'r, chiziq, bo'shliq. Karta yo'q. ── */
 [data-style="swiss"] {
+  --rw-field-line: var(--rw-line);
   --rw-ground: #fbfbfa;
   --rw-surface: #ffffff;
   --rw-surface-2: #f2f2f0;
@@ -206,6 +207,7 @@
 
 /* ── Terminal: monospace, ustunlar, ikki-uch rang. ── */
 [data-style="terminal"] {
+  --rw-field-line: var(--rw-line);
   --rw-ground: #05070a;
   --rw-surface: #080b10;
   --rw-surface-2: #0c1016;
@@ -240,6 +242,7 @@
 
 /* ── Editorial: serif, bo'shliq, chiziq. ── */
 [data-style="editorial"] {
+  --rw-field-line: var(--rw-line);
   --rw-ground: #ffffff;
   --rw-surface: #ffffff;
   --rw-surface-2: #f6f5f2;
@@ -291,6 +294,7 @@
 
 /* ── Neo-brutalizm: qalin chegara, siljigan qattiq soya. ── */
 [data-style="brutal"] {
+  --rw-field-line: var(--rw-line);
   --rw-ground: #f5e900;
   --rw-surface: #ffffff;
   --rw-surface-2: #f0f0f0;
@@ -667,7 +671,23 @@
   outline: 2px solid var(--rw-accent-ink);
   outline-offset: 2px;
 }
-.rw-field-bg { background: var(--rw-field); }
+/* Forma maydoni: foni ham, CHEGARASI ham shu yerda.
+   WCAG 1.4.11 interfeys elementini ajratib turadigan chiziqdan 3:1
+   talab qiladi. `--rw-line` buni bermaydi — u panel va jadval
+   chiziqlari uchun ataylab yumshoq: o'lchanganda 18 palitradan 11 tasi
+   1.09–2.51:1 berardi, `material`, `neu` va `clay` da esa fon karta
+   bilan bir xil va chegara kengligi 0 bo'lgani uchun maydon UMUMAN
+   ko'rinmasdi.
+   Qiymat matn rangidan hosil qilinadi, shuning uchun yangi palitra
+   qo'shilganda ham o'zi moslashadi; 65% — o'lchangan eng past nuqta
+   3.26:1. Chegarasi uslubning kimligi bo'lgan to'rt palitra
+   `--rw-field-line` ni o'zi belgilaydi.
+   Bu qoida `.rw-line` dan KEYIN turishi shart: ikkalasi ham bitta
+   klass, ya'ni g'olibni faqat tartib hal qiladi. */
+.rw-field-bg {
+  background: var(--rw-field);
+  border-color: var(--rw-field-line, color-mix(in srgb, var(--rw-text) 65%, var(--rw-field)));
+}
 .rw-radius { border-radius: var(--rw-radius); }
 .rw-radius-sm { border-radius: var(--rw-radius-sm); }
 .rw-btn-radius { border-radius: var(--rw-btn-radius); }

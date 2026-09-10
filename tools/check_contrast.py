@@ -27,6 +27,14 @@ AA = 4.5
 #: WCAG 2.4.11 — fokus ko'rsatkichi yon rangga nisbatan shuncha bo'lishi
 #: kerak. Matndan past, chunki bu shakl, o'qiladigan matn emas.
 FOCUS_MIN = 3.0
+#: WCAG 1.4.11 forma maydonining chegarasiga ham shuncha talab qiladi:
+#: maydon qayerdaligi ko'rinmasa, unga yozib bo'lmaydi. O'lchangan
+#: oqibat: `material`, `neu` va `clay` da fon karta bilan bir xil va
+#: chegara kengligi 0 edi — maydon umuman ko'rinmasdi.
+FIELD_MIN = 3.0
+#: Chegara rangi shu ulushda matn rangidan hosil qilinadi (`globals.css`).
+FIELD_MIX = 0.65
+
 #: `globals.css` da klaviatura halqasi shu token bilan chiziladi.
 FOCUS_TOKEN = "--rw-accent-ink"
 TIERS = ("--rw-text", "--rw-text-2", "--rw-muted", "--rw-faint")
@@ -116,9 +124,17 @@ def backgrounds(tokens: dict[str, str], blobs: list[Color]) -> list[Color]:
     return ground + panels + layer(INNER, panels or ground)
 
 
+def field_lines(css: str) -> dict[str, str]:
+    """Chegarasini o'zi belgilagan uslublar — qolganlari hosil qilinadi."""
+    return dict(
+        re.findall(r'\[data-style="(\w+)"\]\s*\{[^}]*?--rw-field-line:\s*([^;]+);', css, re.S)
+    )
+
+
 def main() -> int:
     css = CSS.read_text(encoding="utf-8")
     blobs = read_blobs(css)
+    own_line = field_lines(css)
     failures: list[str] = []
     checked = 0
 
@@ -143,6 +159,34 @@ def main() -> int:
             if ratio < FOCUS_MIN:
                 failures.append(
                     f"{name}  fokus halqasi ({FOCUS_TOKEN}): {ratio:.2f}:1, kerak {FOCUS_MIN}"
+                )
+
+        field = parse(tokens.get("--rw-field", "").strip())
+        text = parse(tokens.get("--rw-text", "").strip())
+        if field is not None and text is not None:
+            checked += 1
+            surface = stops(tokens.get("--rw-surface", ""))
+            base = over(field, surface[0]) if field[3] < 1 and surface else field
+            ink = over(text, base) if text[3] < 1 else text
+            raw = own_line.get(style, "").strip()
+            if raw.startswith("var(--rw-line)"):
+                line = parse(tokens.get("--rw-line", "").strip())
+                # `transparent` o'qilmaydi va nol kenglik chizilmaydi —
+                # ikkalasi ham «chegara yo'q», ya'ni 1:1.
+                zero = tokens.get("--rw-line-w", "1px").strip() == "0px"
+                edge = None if line is None or zero else (over(line, base) if line[3] < 1 else line)
+            else:
+                edge = tuple(  # type: ignore[assignment]
+                    round(ink[i] * FIELD_MIX + base[i] * (1 - FIELD_MIX)) for i in range(3)
+                ) + (1.0,)
+            ratio = (
+                min(contrast(edge, base), *(contrast(edge, s) for s in surface or [base]))
+                if edge is not None
+                else 1.0
+            )
+            if ratio < FIELD_MIN:
+                failures.append(
+                    f"{name}  maydon chegarasi: {ratio:.2f}:1, kerak {FIELD_MIN}"
                 )
 
         for tier in TIERS:
