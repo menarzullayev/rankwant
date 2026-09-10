@@ -20,6 +20,7 @@ python3 tools/brand.py
 | `brand/mark-96.png` | **xat sarlavhasi** (48px, Retina uchun 2x) |
 | `brand/mark-180.png` | Apple touch icon |
 | `brand/mark-192.png` · `mark-512.png` | PWA manifesti |
+| `brand/bimi.svg` | **BIMI** — pochta ro'yxatidagi avatar (SVG Tiny PS profili) |
 | `favicon.ico` | brauzer yorlig'i (16/32/48 bitta faylda) |
 
 Hammasi `apps/web/public/` ichida.
@@ -58,3 +59,28 @@ edi, chop etish uchun emas — o'lchandi: 16px ga kichraytirilganda 101 xil
 rang berardi.
 
 Promptlar: [`belgi-promptlari.md`](belgi-promptlari.md).
+
+## BIMI — pochtadagi avatar
+
+Xat ro'yxatida jo'natuvchi yonida logotip ko'rinishi uchun **BIMI** kerak.
+`bimi.svg` tayyor va profil talablariga mos, lekin **hali e'lon qilinmagan**,
+chunki BIMI ishlashi uchun DMARC **majburlash** rejimida bo'lishi shart
+(`p=quarantine` yoki `p=reject`, `pct=100`). Bizda hozir `p=none` —
+[ADR-0015](../07-adr/0015-account-email.md) bosqichma-bosqich o'tishni
+tanlagan.
+
+Majburlashga o'tgach qo'shiladigan yozuv:
+
+```
+default._bimi.mail1.rankwant.bugvector.uz  TXT
+v=BIMI1; l=https://rankwant.bugvector.uz/brand/bimi.svg;
+```
+
+**Gmail va Yahoo bundan tashqari VMC sertifikatini talab qiladi** — u
+ro'yxatdan o'tgan tovar belgisini va yiliga ~$1000 ni talab qiladi
+(o'lchandi: `ebay.com`, `paypal.com`, `bankofamerica.com` yozuvlarida
+`a=https://vmc.digicert.com/…` turibdi). Sertifikatsiz ham ba'zi
+provayderlar logotipni ko'rsatadi.
+
+Diqqat: `github.com` da BIMI yozuvi **umuman yo'q** — uning logotipi
+mail.ru ning O'Z brend bazasidan keladi. Bu yo'l so'rab olinmaydi.

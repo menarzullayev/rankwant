@@ -35,6 +35,29 @@ NAVY = "#102038"
 NAVY_DARK = "#33507e"
 
 
+def bimi(svg: str) -> str:
+    """BIMI uchun SVG Tiny PS profiliga keltiradi.
+
+    BIMI (pochta ro'yxatidagi avatar) oddiy SVG ni qabul qilmaydi: profil
+    qat'iy — kvadrat `viewBox`, `baseProfile="tiny-ps"`, birinchi bola
+    sifatida `<title>`, tashqi havola/skript/animatsiya yo'q, 32 KB gacha.
+    Bizning belgimiz allaqachon faqat `fill` ishlatadi, ya'ni o'zgarish
+    sarlavhada.
+    """
+    body = svg
+    for teg in ("title", "desc", "!--"):
+        while f"<{teg}" in body:
+            boshi = body.index(f"<{teg}")
+            oxiri = body.index("-->" if teg == "!--" else f"</{teg}>", boshi)
+            oxiri += 3 if teg == "!--" else len(f"</{teg}>")
+            body = body[:boshi] + body[oxiri:]
+    boshi = body.index(">", body.index("<svg")) + 1
+    return (
+        '<svg xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny-ps"'
+        ' viewBox="0 0 1024 1024">\n  <title>RankWant</title>' + body[boshi:]
+    )
+
+
 def darken(svg: str) -> str:
     """Qorong'i fon uchun konturni ochadi. Qolgan ranglar tegilmaydi."""
     return svg.replace(NAVY, NAVY_DARK)
@@ -66,6 +89,10 @@ def main() -> int:
             check=True, capture_output=True,
         )
         print(f"  ✓ {target.relative_to(ROOT)}")
+
+    tiny = OUT / "bimi.svg"
+    tiny.write_text(bimi(svg))
+    print(f"  ✓ {tiny.relative_to(ROOT)}  ({len(tiny.read_text())} bayt, chegara 32 KB)")
 
     ico = ROOT / "apps" / "web" / "public" / "favicon.ico"
     subprocess.run(

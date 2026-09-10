@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny-ps" viewBox="0 0 1024 1024">
+  <title>RankWant</title>
+  
+  
+
+  
+
+  
+  <path
+    id="outer"
+    fill="#102038"
+    d="M116.5 799
+       L420 294.5
+       L559 501.5
+       L649 396.5
+       L914.5 798
+       L649 799.5
+       L595 826.5
+       L365 826.5
+       L313 799.5
+       Z"
+  />
+
+  
+  <path
+    id="body"
+    fill="#44A0FC"
+    d="M159.5 771
+       L420 323.5
+       L553 558.5
+       L648 421.5
+       L860.5 764
+       L666 709.5
+       L565 776.5
+       L378 776.5
+       L325 707.5
+       Z"
+  />
+
+  
+  <path fill="#1074DC" d="M162 772 L174 753 L359 562 L324 706 Z"/>
+  <path fill="#1074DC" d="M569 774 L671 584 L860 764 L667 708 Z"/>
+
+  
+  <circle cx="420.5" cy="206.76" r="44.1" fill="#44A0FC"/>
+</svg>
