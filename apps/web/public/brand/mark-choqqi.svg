@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="RankWant Choqqi mark">
+  <title>RankWant — Cho‘qqi</title>
+  <desc>
+    Two geometric mountain peaks (left taller) with a floating blue goal dot.
+    1:1 reconstruction from belgi-generated/10-choqqi.png (1024×1024).
+    Spec: mark-choqqi-params.md
+  </desc>
+
+  <!--
+    Construction:
+      1) Navy OUTER silhouette (full mountain including base)
+      2) Blue BODY (lit faces) — inset; navy remains as outline + jagged base
+      3) Mid facets on lower left/right slopes
+      4) Goal circle above left peak
+  -->
+
+  <!-- 1. Outer navy plate -->
+  <path
+    id="outer"
+    fill="#102038"
+    d="M116.5 799
+       L420 294.5
+       L559 501.5
+       L649 396.5
+       L914.5 798
+       L649 799.5
+       L595 826.5
+       L365 826.5
+       L313 799.5
+       Z"
+  />
+
+  <!-- 2. Lit blue body (contour of blue+mid fill, stroke inset) -->
+  <path
+    id="body"
+    fill="#44A0FC"
+    d="M159.5 771
+       L420 323.5
+       L553 558.5
+       L648 421.5
+       L860.5 764
+       L666 709.5
+       L565 776.5
+       L378 776.5
+       L325 707.5
+       Z"
+  />
+
+  <!-- 3. Mid facets (#1074DC) -->
+  <path fill="#1074DC" d="M162 772 L174 753 L359 562 L324 706 Z"/>
+  <path fill="#1074DC" d="M569 774 L671 584 L860 764 L667 708 Z"/>
+
+  <!-- 4. Goal dot — aligned to left peak x-axis -->
+  <circle cx="420.5" cy="206.76" r="44.1" fill="#44A0FC"/>
+</svg>
