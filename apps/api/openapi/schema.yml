@@ -403,6 +403,59 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/auth/password-reset/:
+    post:
+      operationId: auth_password_reset_create
+      description: |-
+        Tiklash xatini so'raydi (ADR-0015).
+
+        HAR DOIM 202 qaytaradi — hisob bor-yo'qligidan qat'i nazar. Aks holda
+        bu endpoint hisob mavjudligini tekshirish quroli bo'lardi: kimdir
+        manzillar ro'yxatini yuborib, qaysilari ro'yxatdan o'tganini bilib olardi.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '202':
+          description: No response body
+  /api/v1/auth/password-reset/confirm/:
+    post:
+      operationId: auth_password_reset_confirm_create
+      description: Havola yoki kod bilan yangi parol o'rnatadi.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirm'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirm'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirm'
+        required: true
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
   /api/v1/auth/register/:
     post:
       operationId: auth_register_create
@@ -8227,6 +8280,35 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserPublic'
+    PasswordResetConfirm:
+      type: object
+      description: |-
+        Tasdiqlash — havola tokeni YOKI (username + kod).
+
+        Ikkala yo'l ham qoladi: havola telefondagi pochtadan kompyuterdagi
+        brauzerga o'tmaydi, kod esa o'tadi (ADR-0015).
+      properties:
+        token:
+          type: string
+        username:
+          type: string
+        code:
+          type: string
+          maxLength: 6
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - password
+    PasswordResetRequest:
+      type: object
+      description: Tiklash so'rovi — email yoki username bo'yicha.
+      properties:
+        login:
+          type: string
+          maxLength: 254
+      required:
+      - login
     PatchedClassroom:
       type: object
       properties:

@@ -220,6 +220,10 @@ REST_FRAMEWORK = {
         "user": os.environ.get("THROTTLE_USER", "300/min"),
         "submit": os.environ.get("THROTTLE_SUBMIT", "6/min"),
         "export": os.environ.get("THROTTLE_EXPORT", "3/hour"),
+        # Asosiy cheklov `PasswordResetToken` da (hisobga 3/soat, IP'ga
+        # 10/soat) — bu esa endpointning O'ZINI himoya qiladi: kimdir
+        # mavjud bo'lmagan loginlar ro'yxatini yuborib bazani qidirmasin.
+        "password_reset": os.environ.get("THROTTLE_PASSWORD_RESET", "20/hour"),
     },
 }
 

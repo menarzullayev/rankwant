@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from datetime import timedelta
 from typing import Any
 
@@ -9,6 +10,8 @@ import redis
 from django.conf import settings
 from django.contrib.auth import authenticate as django_authenticate
 from django.contrib.auth import login, logout
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import connection
 from django.db.models import Q, QuerySet
 from django.shortcuts import get_object_or_404
@@ -21,7 +24,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from contests.models import Contest
-from core import account
+from core import account, recovery
 from core.cache import cache_get, cache_set
 from core.models import ApiToken, User
 from core.pagination import StandardPagination, TimeCursorPagination
@@ -31,14 +34,19 @@ from core.serializers import (
     ApiTokenSerializer,
     LoginSerializer,
     MeSerializer,
+    PasswordResetConfirmSerializer,
+    PasswordResetRequestSerializer,
     RegisterSerializer,
     UserPublicSerializer,
 )
+from core.tasks import send_password_reset
 from core.throttling import ResilientScopedRateThrottle
 from judging.models import Attempt
 from problems.models import Problem
 
 MAX_TOKEN_LIFETIME = timedelta(days=365)
+
+log = logging.getLogger(__name__)
 
 
 class HealthView(APIView):
@@ -468,3 +476,110 @@ class ApiTokenViewSet(viewsets.ModelViewSet[ApiToken]):
         # O'chirmaymiz — bekor qilamiz. Audit izi saqlanadi.
         instance.revoked_at = timezone.now()
         instance.save(update_fields=["revoked_at"])
+
+
+class PasswordResetRequestView(APIView):
+    """Tiklash xatini so'raydi (ADR-0015).
+
+    HAR DOIM 202 qaytaradi — hisob bor-yo'qligidan qat'i nazar. Aks holda
+    bu endpoint hisob mavjudligini tekshirish quroli bo'lardi: kimdir
+    manzillar ro'yxatini yuborib, qaysilari ro'yxatdan o'tganini bilib olardi.
+    """
+
+    permission_classes = [AllowAny]
+    throttle_classes = [ResilientScopedRateThrottle]
+    throttle_scope = "password_reset"
+
+    @extend_schema(request=PasswordResetRequestSerializer, responses={202: None})
+    def post(self, request: Request) -> Response:
+        serializer = PasswordResetRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        login = serializer.validated_data["login"].strip()
+
+        user = User.objects.filter(
+            Q(username__iexact=login) | Q(email__iexact=login), is_active=True
+        ).first()
+        if user is not None and user.email:
+            ident = ResilientScopedRateThrottle().get_ident(request)
+            try:
+                issued = recovery.issue(
+                    user, ip=ident, user_agent=request.META.get("HTTP_USER_AGENT", "")
+                )
+            except recovery.TooManyRequests:
+                # Chegaraga urilgani ham SIR: javob baribir bir xil.
+                log.info("tiklash chegarasi: %s", user.pk)
+            else:
+                send_password_reset.delay(
+                    user.pk,
+                    issued.raw,
+                    issued.code,
+                    issued.row.request_ip or "",
+                    issued.row.request_ua,
+                )
+        return Response(status=status.HTTP_202_ACCEPTED)
+
+
+class PasswordResetConfirmView(APIView):
+    """Havola yoki kod bilan yangi parol o'rnatadi."""
+
+    permission_classes = [AllowAny]
+    throttle_classes = [ResilientScopedRateThrottle]
+    throttle_scope = "password_reset"
+
+    @extend_schema(request=PasswordResetConfirmSerializer, responses={204: None})
+    def post(self, request: Request) -> Response:
+        serializer = PasswordResetConfirmSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        # Avval EGASINI aniqlaymiz, tokenni yoqmasdan: yangi parol
+        # qoidaga to'g'ri kelmasa havola omon qolishi kerak.
+        lookup = {
+            "raw": data.get("token", ""),
+            "code": data.get("code", ""),
+            "username": data.get("username", ""),
+        }
+        user = recovery.consume(**lookup, commit=False)
+        if user is None:
+            return Response(
+                {
+                    "error": {
+                        "code": "invalid_token",
+                        "message": "Havola yaroqsiz yoki muddati tugagan",
+                        "details": {},
+                    }
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Parol endi tekshiriladi: foydalanuvchi ma'lum, ya'ni
+        # `UserAttributeSimilarityValidator` ham ishlaydi.
+        try:
+            validate_password(data["password"], user)
+        except DjangoValidationError as exc:
+            return Response(
+                {"error": {"code": "invalid", "message": " ".join(exc.messages), "details": {}}},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Parol o'tdi — endi tokenni yoqamiz. Shu bir zumda boshqa so'rov
+        # uni ishlatib ulgurgan bo'lishi mumkin, shuning uchun natija
+        # tekshiriladi.
+        if recovery.consume(**lookup) is None:
+            return Response(
+                {
+                    "error": {
+                        "code": "invalid_token",
+                        "message": "Havola yaroqsiz yoki muddati tugagan",
+                        "details": {},
+                    }
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user.set_password(data["password"])
+        user.save(update_fields=["password"])
+        # Eski sessiyalar qoladi-yu, parol o'zgargani uchun ular
+        # `AbstractBaseUser.get_session_auth_hash()` bilan bekor bo'ladi.
+        log.info("parol tiklandi: %s", user.pk)
+        return Response(status=status.HTTP_204_NO_CONTENT)

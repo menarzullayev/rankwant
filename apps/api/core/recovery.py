@@ -83,8 +83,19 @@ def _live(**lookup: str) -> PasswordResetToken | None:
 
 
 @transaction.atomic
-def consume(*, raw: str = "", code: str = "", username: str = "") -> User | None:
+def consume(
+    *, raw: str = "", code: str = "", username: str = "", commit: bool = True
+) -> User | None:
     """Tokenni ishlatadi va egasini qaytaradi. Yaroqsiz bo'lsa `None`.
+
+    `commit=False` — tokenni YOQMASDAN egasini aniqlaydi. Chaqiruvchiga
+    yangi parolni tekshirish uchun kerak: parol qoidaga to'g'ri kelmasa
+    token omon qolishi va foydalanuvchi qaytadan urinishi kerak. Aks holda
+    bitta zaif parol havolani kuydirar va u yangi xat so'rashga majbur
+    bo'lardi — soatlik kvotasini yeb.
+
+    Noto'g'ri KOD esa `commit` dan qat'i nazar urinish sifatida sanaladi,
+    aks holda `commit=False` brute-force uchun bepul yo'l bo'lardi.
 
     Havola bo'yicha qidirish kalitning O'ZI bilan bo'ladi. Kod bo'yicha esa
     foydalanuvchi ham kerak — 6 xonali kod butun baza bo'ylab yagona emas
@@ -117,6 +128,7 @@ def consume(*, raw: str = "", code: str = "", username: str = "") -> User | None
     else:
         return None
 
-    row.used_at = timezone.now()
-    row.save(update_fields=["used_at"])
+    if commit:
+        row.used_at = timezone.now()
+        row.save(update_fields=["used_at"])
     return row.user

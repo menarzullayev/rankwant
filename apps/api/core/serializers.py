@@ -251,3 +251,35 @@ class ApiTokenCreateSerializer(serializers.Serializer[dict[str, Any]]):
         allow_empty=False,
     )
     expires_at = serializers.DateTimeField()
+
+
+class PasswordResetRequestSerializer(serializers.Serializer[dict[str, Any]]):
+    """Tiklash so'rovi — email yoki username bo'yicha."""
+
+    login = serializers.CharField(max_length=254)
+
+
+class PasswordResetConfirmSerializer(serializers.Serializer[dict[str, Any]]):
+    """Tasdiqlash — havola tokeni YOKI (username + kod).
+
+    Ikkala yo'l ham qoladi: havola telefondagi pochtadan kompyuterdagi
+    brauzerga o'tmaydi, kod esa o'tadi (ADR-0015).
+    """
+
+    token = serializers.CharField(required=False, allow_blank=True)
+    username = serializers.CharField(required=False, allow_blank=True)
+    code = serializers.CharField(required=False, allow_blank=True, max_length=6)
+    password = serializers.CharField(write_only=True)
+
+    # Parol bu yerda TEKSHIRILMAYDI: `validate_password` ga foydalanuvchi
+    # berilishi shart, aks holda `UserAttributeSimilarityValidator` ishlamaydi
+    # va parol sifatida username qabul qilinardi (yuqorida o'lchangan).
+    # Foydalanuvchi esa faqat token yechilgandan keyin ma'lum bo'ladi —
+    # shuning uchun tekshiruv `PasswordResetConfirmView` da.
+
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        if not attrs.get("token") and not (attrs.get("username") and attrs.get("code")):
+            raise serializers.ValidationError(
+                {"token": "Havola tokeni yoki foydalanuvchi nomi bilan kod kerak"}
+            )
+        return attrs
