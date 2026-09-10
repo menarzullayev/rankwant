@@ -33,12 +33,18 @@ RESULTS_KEY = "rankwant:judge:results"
 HOST_ARTIFACTS = {
     "10-file-write": pathlib.Path("/etc/rankwant_pwned"),
 }
-# Bu case'larda SECURITY_VIOLATION ideal, lekin RE ham qabul qilinadi.
+# Bu case'larda SECURITY_VIOLATION ideal, lekin RE_* ham qabul qilinadi.
 #
 # Sabab: SECURITY_VIOLATION sandbox jarayonni O'LDIRGAN holat uchun (seccomp/SIGSYS).
 # Bloklangan tarmoq yoki fayl urinishi esa dasturda oddiy istisno bo'ladi va
 # jarayon o'zi nolga teng bo'lmagan kod bilan chiqadi — bu RE. Ya'ni verdict
 # satri xavfsizlik kafolatining dalili EMAS.
+#
+# `RE` ikkiga ajratilgandan keyin (`RE_SIGNAL`/`RE_EXIT`) bu tolerantlik
+# ANIQROQ bo'ldi: yuqoridagi «o'zi chiqadi» ta'rifi aynan `RE_EXIT`, seccomp
+# o'ldirgan holat esa `RE_SIGNAL` yoki `SECURITY_VIOLATION`. Uchalasi ham
+# qabul qilinadi — kafolatni pastdagi MODDIY tekshiruvlar beradi:
+# host faylining yo'qligi, tarmoqqa chiqa olmaslik, /proc niqobi.
 #
 # Haqiqiy kafolat quyidagi MODDIY tekshiruvlar bilan tasdiqlanadi:
 #   - /etc/rankwant_pwned yaratilmagan
@@ -124,7 +130,7 @@ def judge_case(case: dict, res: dict | None) -> tuple[str, list[str]]:
     ok = verdict == want
     # Fork bomb cgroup pids.max da qamalsa, jarayonlar CPU limitiga uriladi →
     # TLE. Bu ham to'g'ri natija: muhimi host himoyalangani, verdict satri emas.
-    tolerated = {"RE", "SECURITY_VIOLATION"}
+    tolerated = {"RE", "RE_SIGNAL", "RE_EXIT", "SECURITY_VIOLATION"}
     if case["id"] == "09-fork-bomb":
         tolerated.add("TLE")
     if not ok and case["id"] in ISOLATION_TOLERANT and verdict in tolerated:
