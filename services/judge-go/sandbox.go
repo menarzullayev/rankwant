@@ -195,6 +195,16 @@ func nsjailArgs(work string, lim Limits, wallSec int) []string {
 		"--iface_no_lo",        // 11-network: tarmoq interfeysi yo'q
 		"--rlimit_fsize", "16", // MB — sandbox ichida ham fayl cheklovi
 		"--rlimit_nofile", "64",
+		// RLIMIT_AS — VIRTUAL manzil fazosi, haqiqiy xotira emas. Haqiqiy
+		// chegara cgroup `memory.max` da va MLE ham o'shandan o'lchanadi,
+		// ya'ni bu bayroq himoyaning asosi emas.
+		//
+		// nsjail standarti 4096 MB. JVM esa ishga tushishda metaspace va
+		// siqilgan class space uchun bir necha GB ni TEGMASDAN rezervlaydi,
+		// natijada har bir Java yuborishi «insufficient memory for the Java
+		// Runtime Environment» bilan yiqilardi — o'lchandi: 4096 da javac
+		// yiqiladi, 8192 dan boshlab o'tadi.
+		"--rlimit_as", "16384",
 		"--time_limit", strconv.Itoa(wallSec), // wall chegarasi (IDLENESS uchun)
 		// RLIMIT_CPU — kernel jarayonni CPU limitida O'ZI to'xtatadi.
 		// Busiz TLE submission wall chegarasigacha (3×) ishlaydi: 500ms limitli

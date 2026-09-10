@@ -25,10 +25,12 @@ from problems.models import Language, Problem, TestCase, Topic
 from quizzes.models import Choice, Question, Quiz, QuizQuestion
 from tournaments.models import Tournament, TournamentStage
 
+#: (kod, nom, versiya, compile, run, jarayon/oqim chegarasi)
 LANGUAGES = [
-    ("cpp23", "C++", "23", ["g++", "-std=c++23", "-O2", "-o", "{bin}", "{src}"], ["{bin}"]),
-    ("py313", "Python", "3.13", [], ["python3", "{src}"]),
-    ("java21", "Java", "21", ["javac", "{src}"], ["java", "-cp", "/box", "Main"]),
+    ("cpp23", "C++", "23", ["g++", "-std=c++23", "-O2", "-o", "{bin}", "{src}"], ["{bin}"], 1),
+    ("py313", "Python", "3.13", [], ["python3", "{src}"], 1),
+    # JVM bo'sh dasturda ham 18 ta oqim ochadi (o'lchandi).
+    ("java21", "Java", "21", ["javac", "{src}"], ["java", "-cp", "/box", "Main"], 32),
 ]
 
 TOPICS = [
@@ -208,7 +210,7 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def handle(self, *args: Any, **options: Any) -> None:
-        for code, name, version, compile_cmd, run_cmd in LANGUAGES:
+        for code, name, version, compile_cmd, run_cmd, processes in LANGUAGES:
             Language.objects.update_or_create(
                 code=code,
                 defaults={
@@ -216,6 +218,7 @@ class Command(BaseCommand):
                     "version": version,
                     "compile_cmd": compile_cmd,
                     "run_cmd": run_cmd,
+                    "process_limit": processes,
                 },
             )
 

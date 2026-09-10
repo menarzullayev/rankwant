@@ -699,3 +699,26 @@ class TestCheckerJobga:
 
         assert job.checker["interactor"]["source"] == "interactor"
         assert "program" not in job.checker
+
+
+@pytest.mark.django_db
+class TestTilJarayonChegarasi:
+    """cgroup `pids.max` OQIMLARNI ham sanaydi — JVM bitta bilan ishga tushmaydi."""
+
+    def test_job_tildan_oladi(self, user, problem, language) -> None:
+        language.process_limit = 32
+        language.save(update_fields=["process_limit"])
+        attempt = Attempt.objects.create(
+            user=user, problem=problem, language=language, source_code="x"
+        )
+
+        job = build_job(attempt)
+
+        assert job.limits["processes"] == 32
+
+    def test_standarti_bitta(self, user, problem, language) -> None:
+        attempt = Attempt.objects.create(
+            user=user, problem=problem, language=language, source_code="x"
+        )
+
+        assert build_job(attempt).limits["processes"] == 1

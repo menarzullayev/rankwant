@@ -87,7 +87,12 @@ func judge(ctx context.Context, job *Job, tests *store) *Result {
 	if len(job.Language.Compile) > 0 {
 		cl := job.Limits
 		cl.MemoryKB = 1024 * 1024 // kompilyator uchun kengroq
-		cl.Processes = 16
+		// cgroup `pids.max` OQIMLARNI ham sanaydi. `javac` — JVM, u
+		// o'lchanganda 27 ta oqimga chiqadi; 16 (+4) bilan u «unable to
+		// create native thread» berib CE bo'lardi. Kompilyator buyrug'i
+		// bizniki va qat'iy, ya'ni bu yerda kenglik xavf tug'dirmaydi —
+		// fork bomba himoyasi ishga tushirish bosqichida (09-fork-bomb).
+		cl.Processes = 64
 		// Kompilyatsiya O'Z CPU byudjetidan foydalanadi. Aks holda
 		// masalaning ish vaqti limiti (masalan 500 ms) g++ ga qo'llanib,
 		// har bir C++ submission CE bo'lib qoladi.

@@ -79,6 +79,11 @@ class Language(models.Model):
     version = models.CharField(max_length=50, blank=True)
     compile_cmd = models.JSONField(default=list, blank=True)  # bo'sh = kompilyatsiya yo'q
     run_cmd = models.JSONField(default=list)
+    #: Sandboxdagi jarayon/OQIM chegarasi — cgroup `pids.max` ikkalasini
+    #: ham sanaydi. C++ va Python uchun bitta yetadi, JVM esa bo'sh
+    #: dasturda ham 18 ta oqim ochadi (o'lchandi) va 1 bilan umuman
+    #: ishga tushmasdi.
+    process_limit = models.PositiveSmallIntegerField(default=1)
     is_active = models.BooleanField(default=True)
 
     def __str__(self) -> str:

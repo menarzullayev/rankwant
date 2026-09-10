@@ -33,6 +33,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
+# JDK kutubxonalari loader KESHIGA qo'shiladi.
+#
+# `javac` va `java` — kichik launcher'lar; ular `libjli.so` ni RPATH dagi
+# `$ORIGIN/../lib` orqali topadi, `$ORIGIN` esa dinamik loader tomonidan
+# `/proc/self/exe` dan olinadi. Sandbox `/proc` ustiga bo'sh tmpfs qo'yadi
+# (host jarayonlarini yashirish uchun), ya'ni `$ORIGIN` yechilmaydi va
+# HAR BIR Java yuborishi «libjli.so: cannot open shared object file»
+# bilan CE olardi — o'lchandi: uchta tildan biri butunlay ishlamasdi.
+#
+# Kesh orqali topilsa `$ORIGIN` kerak emas, `/proc` esa bo'sh qolaveradi.
+# O'lchandi: bu katalogdagi 34 ta kutubxonaning birortasi ham tizim
+# kutubxonasi nomini to'smaydi.
+RUN echo /usr/lib/jvm/java-21-openjdk-amd64/lib > /etc/ld.so.conf.d/jdk.conf && ldconfig
+
 COPY --from=nsjail-build /src/nsjail /usr/local/bin/nsjail
 COPY --from=go-build     /out/judge-go /usr/local/bin/judge-go
 
