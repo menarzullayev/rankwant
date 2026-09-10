@@ -5,6 +5,8 @@ from __future__ import annotations
 from datetime import timedelta
 
 import pytest
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from django.utils import timezone
 from rest_framework.test import APIClient
@@ -246,4 +248,29 @@ class TestOzQatoriArena:
         assert APIClient().get(reverse("arena-my-standing", args=[running.slug])).status_code in (
             401,
             403,
+        )
+
+
+@pytest.mark.django_db
+class TestArenaSorovSoni:
+    def test_royxat_raund_soni_bilan_osmaydi(self, running) -> None:
+        """`end_at` har murojaatda COUNT qilardi, `is_running` va
+        `is_finished` esa ikkalasi ham unga tayanadi — bitta raundga
+        uchta bir xil so'rov, ya'ni N raundda 3N."""
+        c = APIClient()
+        c.get(reverse("arena-list"))  # isitish
+
+        with CaptureQueriesContext(connection) as birinchi:
+            c.get(reverse("arena-list"))
+        bitta_raund = len(birinchi)
+
+        for offset in (-105, -206, -307, -408):
+            _round(start_offset_s=offset)
+
+        with CaptureQueriesContext(connection) as beshta:
+            c.get(reverse("arena-list"))
+
+        assert len(beshta) == bitta_raund, (
+            f"1 raundda {bitta_raund}, 5 raundda {len(beshta)} so'rov — "
+            "sanoq raund soniga bog'lanib qolgan"
         )

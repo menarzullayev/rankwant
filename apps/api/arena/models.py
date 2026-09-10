@@ -9,6 +9,7 @@ mijoz vaqtni «orqaga surib» qo'shimcha vaqt ololmaydi.
 from __future__ import annotations
 
 from datetime import datetime, timedelta
+from functools import cached_property
 from typing import ClassVar
 
 from django.db import models
@@ -36,9 +37,22 @@ class ArenaRound(models.Model):
     def __str__(self) -> str:
         return self.slug
 
+    @cached_property
+    def _item_count(self) -> int:
+        return self.items.count()
+
     @property
     def end_at(self) -> datetime:
-        return self.start_at + timedelta(seconds=self.seconds_per_question * self.items.count())
+        """Raund tugash vaqti — savollar soniga bog'liq.
+
+        Sanoq ro'yxat so'rovidagi `question_count` annotatsiyasidan
+        olinadi. Ilgari har murojaat alohida `COUNT` qilardi, `is_running`
+        va `is_finished` esa ikkalasi ham shu yerga tayanadi — o'lchandi:
+        bitta raundni serializatsiya qilish uchun uchta bir xil so'rov,
+        ya'ni N raundda 3N.
+        """
+        count = self.question_count if hasattr(self, "question_count") else self._item_count
+        return self.start_at + timedelta(seconds=self.seconds_per_question * count)
 
     @property
     def is_running(self) -> bool:
