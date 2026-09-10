@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import secrets
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import ClassVar
 
 from django.contrib.auth.models import AbstractUser
@@ -175,3 +175,51 @@ class EmailDelivery(models.Model):
 
     def __str__(self) -> str:
         return f"{self.to_email}: {self.subject}"
+
+
+class PasswordResetToken(models.Model):
+    """Parolni tiklash — havola va 6 xonali kod bitta yozuvda (ADR-0015).
+
+    Ikki yo'l bir sababga ko'ra: havola telefondagi pochtadan kompyuterdagi
+    brauzerga o'tmaydi, kod esa o'tadi. Korporativ filtr havolani oldindan
+    "bosib ko'rsa" u kuchini yo'qotardi — kod esa qoladi.
+
+    Ochiq qiymat saqlanmaydi, `ApiToken` dagi kabi SHA-256 hash yoziladi.
+    Xat tanasi ham hech qayerda saqlanmaydi (`EmailDelivery`), ya'ni
+    tokenning ikkinchi nusxasi qolmaydi.
+    """
+
+    #: Havola ham, kod ham shuncha yashaydi. Uzunroq muddat o'g'irlangan
+    #: pochta bilan hisobni egallash oynasini kengaytirardi.
+    TTL = timedelta(hours=1)
+    #: Kod atigi 6 xonali — cheksiz urinish uni bir necha daqiqada topardi.
+    MAX_ATTEMPTS = 5
+    PER_USER_HOUR = 3
+    #: IP chegarasi kengroq: maktab sinfi bitta tashqi IP ortida bo'ladi.
+    PER_IP_HOUR = 10
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reset_tokens")
+    token_hash = models.CharField(max_length=64, unique=True, db_index=True)
+    code_hash = models.CharField(max_length=64)
+    #: Xatda ko'rsatiladi, «bu men emasman» degan xulosa uchun (ADR-0015).
+    request_ip = models.GenericIPAddressField(null=True, blank=True)
+    request_ua = models.CharField(max_length=200, blank=True)
+    attempts = models.PositiveSmallIntegerField(default=0)
+    used_at = models.DateTimeField(null=True, blank=True)
+    expires_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering: ClassVar = ["-created_at"]
+        indexes: ClassVar = [models.Index(fields=["user", "-created_at"], name="reset_by_user")]
+
+    def __str__(self) -> str:
+        return f"{self.user_id} @ {self.created_at:%Y-%m-%d %H:%M}"
+
+    @staticmethod
+    def hash_value(raw: str) -> str:
+        return hashlib.sha256(raw.encode()).hexdigest()
+
+    @property
+    def is_live(self) -> bool:
+        return self.used_at is None and self.expires_at > timezone.now()
