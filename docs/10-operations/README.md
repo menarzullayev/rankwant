@@ -97,7 +97,30 @@ docker compose --env-file .env.public \
 | Sirlar | `.env.public` (gitignore): `DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS` |
 | `DJANGO_DEBUG` | `0` — aks holda xato sahifasi sozlamalarni oshkor qiladi |
 | Django admin | tunnel'dan **chiqarilmagan**; faqat `127.0.0.1:8301/admin/`. Kundalik boshqaruv esa saytning o'z admin UI'sida: `/admin` (faqat `is_staff`) |
+| Standings keshi | **Ochiq**: origin `Cache-Control: public, s-maxage=10` beradi, Cloudflare esa `cf-cache-status: DYNAMIC` qaytaradi — ya'ni keshlamaydi (standart qoidalar fayl kengaytmasiga qaraydi, `/api/v1/...` unga tushmaydi). Cache Rule kerak: `/api/v1/contests/*/standings/` va `/api/v1/arena/*/standings/` → *Eligible for cache*, *Respect origin TTL*. Nega muhimligi pastda |
 | `robots.txt` | Cloudflare **o'zining** nusxasini beradi, ya'ni bizning `Sitemap:` qatorimiz kraulerga yetmaydi. Sitemap qo'lda qo'shiladi: Search Console va Yandex Webmaster ga `https://rankwant.bugvector.uz/sitemap.xml` |
+
+### Standings sig'imi (o'lchangan, 2026-09-10)
+
+Jadval hamma uchun bir xil, ya'ni uni CDN keshlashi KERAK — bu
+optimizatsiya emas, loyihaning o'zi:
+
+| | O'lchangan |
+| --- | --- |
+| Javob (500 qator) | 45 KB |
+| Origin kechikishi | 25 ms |
+| Origin o'tkazuvchanligi | ~130 so'rov/s |
+| 110 000 tomoshabin, 15 s polling | **7 300 so'rov/s**, **330 MB/s** |
+
+Kesh ishlaganda origin 10 soniyada bitta so'rov ko'radi. Ishlamasa — ~56
+barobar sig'im yetishmaydi. Shuning uchun jadval 500 qator bilan
+cheklangan va foydalanuvchining o'z qatori ALOHIDA endpointda
+(`standings/me/`): uni umumiy javobga qo'shish javobni har kimga
+boshqacha qilib, keshni yo'q qilardi.
+
+Alohida SSE xizmati bu muammoni YECHMAYDI: 110 000 ochiq ulanishni
+ushlab turish, hamma bir xil hujjatni kutayotgan joyda, chekka keshi
+tekinga beradigan narsani qimmat qiladi.
 
 ### Ochiq risklar
 
