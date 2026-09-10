@@ -132,11 +132,31 @@ def on_accept_revoked(attempt: Attempt) -> None:
     Yechilgan masala yozuvi olib tashlanadi, Skills qayta hisoblanadi va
     shu urinish uchun berilgan Qvant qaytariladi.
     """
-    deleted, _ = UserSolvedProblem.objects.filter(
+    row = UserSolvedProblem.objects.filter(
         user=attempt.user, problem=attempt.problem, first_ac_attempt=attempt
-    ).delete()
-    if not deleted:
+    ).first()
+    if row is None:
         return
+
+    # Bir masalaga bir necha AC odatiy — odam yechimini optimallashtiradi.
+    # Rejudge faqat birinchisini yiqitsa (masalan checker qattiqlashdi),
+    # keyingisi hali AC: masala YECHILGANICHA qoladi va yozuv o'sha
+    # urinishga ko'chadi. Aks holda foydalanuvchida ishlaydigan yechim
+    # bo'la turib masala «yechilmagan» ko'rinardi va yechuvchilar sanog'i
+    # ham asossiz kamayardi.
+    keyingi = (
+        Attempt.objects.filter(user=attempt.user, problem=attempt.problem, verdict=Verdict.AC)
+        .exclude(pk=attempt.pk)
+        .order_by("created_at", "pk")
+        .first()
+    )
+    if keyingi is not None:
+        row.first_ac_attempt = keyingi
+        row.first_ac_at = keyingi.created_at
+        row.save(update_fields=["first_ac_attempt", "first_ac_at"])
+        return
+
+    row.delete()
 
     from django.db.models import F
 
