@@ -46,7 +46,7 @@ export function AccountSettings() {
     } catch (err) {
       setError(
         err instanceof ApiError
-          ? errorText(locale, err.code, err.message)
+          ? errorText(locale, err.code, err.text)
           : String(err),
       );
     } finally {
@@ -70,7 +70,7 @@ export function AccountSettings() {
         err instanceof ApiError
           ? err.status === 400
             ? t(locale, "settings.deleteError")
-            : errorText(locale, err.code, err.message)
+            : errorText(locale, err.code, err.text)
           : String(err),
       );
       setBusy(null);

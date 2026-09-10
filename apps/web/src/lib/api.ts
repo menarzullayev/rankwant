@@ -590,8 +590,25 @@ class ApiError extends Error {
     readonly status: number,
     readonly code: string,
     message: string,
+    /** Maydon xatolari — `{"email": ["Bu email band"]}`. */
+    readonly details: Record<string, unknown> = {},
   ) {
     super(message);
+  }
+
+  /**
+   * Foydalanuvchiga ko'rsatiladigan matn.
+   *
+   * API maydon xatosida umumiy «Kiritilgan ma'lumot noto'g'ri» qaytaradi,
+   * haqiqiy sabab esa `details` da qoladi — o'lchandi: band username
+   * bilan ro'yxatdan o'tganda foydalanuvchi qaysi maydon xato ekanini
+   * umuman bilmasdi.
+   */
+  get text(): string {
+    const first = Object.values(this.details)[0];
+    if (Array.isArray(first) && typeof first[0] === "string") return first[0];
+    if (typeof first === "string") return first;
+    return this.message;
   }
 }
 
@@ -645,6 +662,7 @@ export async function postJson<T>(path: string, body: unknown): Promise<T> {
       res.status,
       parsed?.error?.code ?? "error",
       parsed?.error?.message ?? res.statusText,
+      parsed?.error?.details ?? {},
     );
   }
   return parsed as T;
@@ -670,6 +688,7 @@ export async function deleteJson<T>(path: string, body?: unknown): Promise<T> {
       res.status,
       parsed?.error?.code ?? "error",
       parsed?.error?.message ?? res.statusText,
+      parsed?.error?.details ?? {},
     );
   }
   return parsed as T;
@@ -688,6 +707,7 @@ export async function getJson<T>(path: string): Promise<T> {
       res.status,
       body?.error?.code ?? "error",
       body?.error?.message ?? res.statusText,
+      body?.error?.details ?? {},
     );
   }
   return (await res.json()) as T;

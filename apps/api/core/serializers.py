@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import IntegrityError
 from rest_framework import serializers
 
@@ -132,6 +133,21 @@ class MeSerializer(serializers.ModelSerializer[User]):
             "date_joined",
         ]
 
+    def validate_email(self, value: str) -> str:
+        # Profilni tahrirlashda ham tekshiriladi: aks holda band pochtani
+        # yozish bazadagi cheklovga urilib 500 berardi.
+        if value and _email_taken(value, exclude=self.instance):
+            raise serializers.ValidationError("Bu email band")
+        return value
+
+
+def _email_taken(value: str, *, exclude: User | None = None) -> bool:
+    """Pochta boshqa hisobda bandmi — registrga qaramay."""
+    rows = User.objects.filter(email__iexact=value)
+    if exclude is not None:
+        rows = rows.exclude(pk=exclude.pk)
+    return rows.exists()
+
 
 class RegisterSerializer(serializers.ModelSerializer[User]):
     password = serializers.CharField(write_only=True, min_length=8)
@@ -139,6 +155,24 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
     class Meta:
         model = User
         fields = ["username", "email", "password", "display_name"]
+        # Pochtasiz hisobni tiklab bo'lmaydi: parolni unutgan
+        # foydalanuvchining boshqa kanali qolmaydi.
+        #
+        # `username` uchun validatorlar ATAYIN qayta beriladi: model
+        # `unique=True` bo'lgani uchun DRF o'zining `UniqueValidator`
+        # ini qo'shadi, u esa pastdagi `validate_username` dan OLDIN
+        # ishlab, inglizcha «A user with that username already exists»
+        # qaytarardi — ya'ni o'zbekcha matn hech qachon ko'rinmasdi va
+        # registrni farqlamaydigan tekshiruv ham o'tkazib yuborilardi.
+        extra_kwargs = {
+            "email": {"required": True, "allow_blank": False},
+            "username": {"validators": [UnicodeUsernameValidator()]},
+        }
+
+    def validate_email(self, value: str) -> str:
+        if _email_taken(value):
+            raise serializers.ValidationError("Bu email band")
+        return value
 
     def validate_username(self, value: str) -> str:
         # Registr farqi bilan taqlid qilishning oldini oladi: `Aziz` va
@@ -172,7 +206,13 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
         except IntegrityError:
             # Nom bandligi serializerda, yozuv esa bazada tekshiriladi —
             # oradagi oynada bir vaqtda kelgan so'rovlar 500 berardi.
-            raise serializers.ValidationError({"username": "Bu username band"}) from None
+            # Nom yoki pochta bandligi serializerda, yozuv esa bazada
+            # tekshiriladi — oradagi oynada bir vaqtda kelgan so'rovlar
+            # 500 berardi.
+            field = "email" if _email_taken(validated_data.get("email", "")) else "username"
+            raise serializers.ValidationError(
+                {field: "Bu email band" if field == "email" else "Bu username band"}
+            ) from None
         return user
 
 

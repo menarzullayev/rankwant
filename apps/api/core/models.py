@@ -55,6 +55,19 @@ class User(AbstractUser):
             # parallel so'rovda o'tkazib yuborishi mumkin — kafolat
             # bazada bo'lishi shart.
             models.UniqueConstraint(Lower("username"), name="uniq_username_ci"),
+            # Email parolni tiklash kanali — ya'ni ikki hisob bitta
+            # pochtaga bog'lansa, tiklash havolasi qaysi hisobniki
+            # ekani noaniq bo'ladi. Registr ham ahamiyatsiz: pochta
+            # xizmatlari uchun `Aziz@` va `aziz@` bitta quti.
+            #
+            # Shart BO'SHNI chetlab o'tadi: import qilingan mualliflar va
+            # stress foydalanuvchilarida pochta yo'q (10 068 ta), ular
+            # bir-biriga xalaqit bermasligi kerak.
+            models.UniqueConstraint(
+                Lower("email"),
+                condition=~models.Q(email=""),
+                name="uniq_email_ci",
+            ),
         ]
 
     def __str__(self) -> str:

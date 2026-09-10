@@ -9615,13 +9615,10 @@ components:
           pattern: ^[\w.@+-]+$
           maxLength: 150
         email:
+          type: string
+          format: email
           title: Email address
-          oneOf:
-          - type: string
-            format: email
-            maxLength: 254
-          - type: string
-            maxLength: 0
+          maxLength: 254
         password:
           type: string
           writeOnly: true
@@ -9630,6 +9627,7 @@ components:
           type: string
           maxLength: 100
       required:
+      - email
       - password
       - username
     Registration:
