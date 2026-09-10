@@ -151,7 +151,36 @@ S3_ENDPOINT, S3_BUCKET, S3_KEY, S3_SECRET
 JUDGE_QUEUE_URL, JUDGE_PROVIDER=own|judge0
 TELEGRAM_BOT_TOKEN
 SENTRY_DSN
+
+EMAIL_CHAIN=brevo,mailjet,resend,mailersend
+EMAIL_FROM, EMAIL_FROM_NAME
+BREVO_API_KEY, BREVO_FROM
+MAILJET_API_KEY, MAILJET_SECRET_KEY, MAILJET_FROM
+RESEND_API_KEY, RESEND_FROM
+MAILERSEND_API_KEY, MAILERSEND_FROM
 ```
+
+## Email — bitta provayder emas, zanjir
+
+Bepul planlar **kunlik** kvota qo'yadi: Brevo 300/kun, Mailjet 200/kun,
+Resend 100/kun, MailerSend 500/oy (≈16/kun, ustiga 100 API so'rov/kun va
+karta majburiy). Parol tiklash so'rovlari kun davomida notekis keladi,
+shuning uchun `core.mailer` `EMAIL_CHAIN` bo'ylab yuradi: birinchisi
+yiqilsa keyingisiga o'tadi, kaliti yo'q provayder jimgina tushib qoladi.
+
+Har provayder **o'z subdomenidan** yuboradi (`BREVO_FROM=…@mail1.rankwant.uz`):
+SPF `include:` 10 ta DNS lookup bilan cheklangan va to'rttasi bitta
+yozuvga sig'maydi.
+
+Kalit qo'shilgandan keyin birinchi qadam — haqiqiy tekshiruv:
+
+```
+python manage.py send_test_email siz@example.com --only brevo
+```
+
+Har yuborish `EmailDelivery` ga yoziladi (qaysi provayder ishlagani,
+qolganlari nega tushib qolgani). Xat **tanasi saqlanmaydi** — tiklash
+havolasi token, uni bazaga ko'chirmaymiz.
 
 Judge host'da **DB credential bo'lmaydi** — u faqat Redis va S3 ni biladi.
 

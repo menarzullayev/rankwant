@@ -250,6 +250,31 @@ S3_KEY = os.environ.get("S3_KEY", "")
 S3_SECRET = os.environ.get("S3_SECRET", "")
 S3_REGION = os.environ.get("S3_REGION", "us-east-1")
 
+# Email — bitta provayder emas, ZANJIR (`core.mailer`). Bepul planlarning
+# kunlik kvotasi kichik, shuning uchun birinchisi «kvota tugadi» desa
+# keyingisi yuboradi. Kaliti yo'q provayder o'zi tushib qoladi.
+EMAIL_CHAIN = [
+    p.strip() for p in env("EMAIL_CHAIN", "brevo,mailjet,resend,mailersend,console").split(",")
+]
+EMAIL_FROM = env("EMAIL_FROM", "no-reply@rankwant.uz")
+EMAIL_FROM_NAME = env("EMAIL_FROM_NAME", "RankWant")
+#: Bitta provayderga ajratilgan vaqt. Zanjir ketma-ket ishlaydi, ya'ni
+#: eng yomon holat = shu qiymat × sozlangan provayderlar soni. Shu sabab
+#: yuborish so'rov ichida emas, `core.tasks.send_email` da bajariladi.
+EMAIL_TIMEOUT = int(env("EMAIL_TIMEOUT", "10"))
+
+# Har bir provayder O'Z subdomenidan yuboradi: SPF `include:` 10 ta DNS
+# lookup bilan cheklangan va to'rttasi bitta yozuvga sig'maydi.
+BREVO_API_KEY = env("BREVO_API_KEY")
+BREVO_FROM = env("BREVO_FROM")
+MAILJET_API_KEY = env("MAILJET_API_KEY")
+MAILJET_SECRET_KEY = env("MAILJET_SECRET_KEY")
+MAILJET_FROM = env("MAILJET_FROM")
+RESEND_API_KEY = env("RESEND_API_KEY")
+RESEND_FROM = env("RESEND_FROM")
+MAILERSEND_API_KEY = env("MAILERSEND_API_KEY")
+MAILERSEND_FROM = env("MAILERSEND_FROM")
+
 CELERY_BEAT_SCHEDULE = {
     "drain-judge-results": {
         "task": "judging.drain_results",

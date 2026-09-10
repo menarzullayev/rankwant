@@ -136,3 +136,42 @@ class ApiToken(models.Model):
 
     def has_scope(self, scope: str) -> bool:
         return scope in self.scopes
+
+
+class EmailDelivery(models.Model):
+    """Har bir yuborilgan xat — bitta qator.
+
+    Bu audit emas, DIAGNOSTIKA. Zanjir bepul planlar ustiga qurilgan
+    (`core.mail_providers`), ya'ni «kvota tugadi» kundalik hodisa. Qaysi
+    provayder ishlagani va qolganlari NEGA tushib qolgani ko'rinmasa,
+    «email kelmadi» shikoyatini tekshirib bo'lmaydi.
+
+    Xat TANASI ataylab saqlanmaydi: parol tiklash havolasi — token, uni
+    bazaga yozish tokenni ikkinchi joyga ko'chirish demak.
+    """
+
+    class Purpose(models.TextChoices):
+        PASSWORD_RESET = "password_reset", "Parolni tiklash"
+        EMAIL_VERIFY = "email_verify", "Emailni tasdiqlash"
+        OTHER = "other", "Boshqa"
+
+    class Status(models.TextChoices):
+        SENT = "sent", "Yuborildi"
+        FAILED = "failed", "Yuborilmadi"
+
+    to_email = models.EmailField()
+    purpose = models.CharField(max_length=24, choices=Purpose.choices, default=Purpose.OTHER)
+    subject = models.CharField(max_length=200)
+    #: Muvaffaqiyatli provayder nomi; yuborilmagan bo'lsa bo'sh.
+    provider = models.CharField(max_length=24, blank=True)
+    status = models.CharField(max_length=8, choices=Status.choices)
+    #: Tushib qolgan urinishlar: [{"provider": "brevo", "error": "HTTP 429: …"}]
+    attempts = models.JSONField(default=list)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering: ClassVar = ["-created_at"]
+        indexes: ClassVar = [models.Index(fields=["to_email", "-created_at"])]
+
+    def __str__(self) -> str:
+        return f"{self.to_email}: {self.subject}"
