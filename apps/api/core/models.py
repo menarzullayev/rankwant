@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import secrets
 from datetime import datetime, timedelta
-from typing import ClassVar
+from typing import Any, ClassVar
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -24,6 +24,11 @@ class User(AbstractUser):
         RU = "ru", "Русский"
         EN = "en", "English"
 
+    #: Taqlidga qarshi shakl — `core.handles.skeleton`. `save()` da
+    #: to'ldiriladi, ya'ni admin, staff API va seed'da bir xil ishlaydi.
+    #: Yagonalik ikki darajada: registrsiz (`uniq_username_ci`) VA skelet
+    #: bo'yicha — ADR-0016.
+    username_skeleton = models.CharField(max_length=150, blank=True, db_index=True)
     display_name = models.CharField(max_length=100, blank=True)
     avatar_url = models.URLField(blank=True)
     bio = models.TextField(blank=True)
@@ -68,7 +73,20 @@ class User(AbstractUser):
                 condition=~models.Q(email=""),
                 name="uniq_email_ci",
             ),
+            # Taqlid: kirill va lotinda ko'zga bir xil ko'rinadigan harflar
+            # bor, ya'ni registrsiz yagonalik yetmaydi — ADR-0016.
+            models.UniqueConstraint(
+                "username_skeleton",
+                condition=~models.Q(username_skeleton=""),
+                name="uniq_username_skeleton",
+            ),
         ]
+
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        from core.handles import skeleton
+
+        self.username_skeleton = skeleton(self.username)
+        super().save(*args, **kwargs)
 
     def __str__(self) -> str:
         return self.username

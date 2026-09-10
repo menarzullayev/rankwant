@@ -3,10 +3,11 @@ from __future__ import annotations
 from typing import Any
 
 from django.contrib.auth.password_validation import validate_password
-from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import IntegrityError
 from rest_framework import serializers
 
+from core import handles
 from core.models import ApiToken, User
 
 
@@ -166,7 +167,10 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
         # registrni farqlamaydigan tekshiruv ham o'tkazib yuborilardi.
         extra_kwargs = {
             "email": {"required": True, "allow_blank": False},
-            "username": {"validators": [UnicodeUsernameValidator()]},
+            # Django ning standart validatori o'rniga o'zimizniki: u lotin,
+            # kirill, raqam, `_` va `.` ga ruxsat beradi va o'zbekcha maxsus
+            # harflarni rad etadi — ADR-0016.
+            "username": {"validators": []},
         }
 
     def validate_email(self, value: str) -> str:
@@ -175,12 +179,22 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
         return value
 
     def validate_username(self, value: str) -> str:
+        try:
+            handles.validate(value)
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError(exc.messages[0]) from None
+
         # Registr farqi bilan taqlid qilishning oldini oladi: `Aziz` va
         # `aziz` bitta nom hisoblanadi. Reyting va profil obro'ga
         # bog'langan platformada bu xavfsizlik masalasi — o'lchandi,
         # mavjud nomning katta harfli nusxasini olish mumkin edi.
         if User.objects.filter(username__iexact=value).exists():
             raise serializers.ValidationError("Bu username band")
+
+        # Ko'zga o'xshash harflar bilan taqlid: kirill va lotinda bir xil
+        # ko'rinadigan harflar bor, ya'ni registrsiz tekshiruv yetmaydi.
+        if User.objects.filter(username_skeleton=handles.skeleton(value)).exists():
+            raise serializers.ValidationError("Bu username mavjud nomga juda o'xshash")
         return value
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:

@@ -9750,7 +9750,6 @@ components:
           type: string
           description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
             only.
-          pattern: ^[\w.@+-]+$
           maxLength: 150
         email:
           type: string
