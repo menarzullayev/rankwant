@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { useSession } from "@/context/SessionContext";
@@ -26,6 +26,11 @@ type Provider = keyof typeof PROVIDER_LABEL;
 export function AuthForm({ mode }: { mode: Mode }) {
   const locale = useLocale();
   const router = useRouter();
+  const params = useSearchParams();
+  // Provayder bizni shu ikki holatda qaytaradi: bog'lash kerak
+  // (`?link=`) yoki almashuv yiqildi (`?social=`) — ADR-0016.
+  const linking = params.get("link");
+  const socialFailed = params.get("social");
   const { reload } = useSession();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -92,8 +97,20 @@ export function AuthForm({ mode }: { mode: Mode }) {
     </button>
   );
 
+  if (mode === "login" && linking) {
+    return <LinkAccount provider={linking} />;
+  }
+
   return (
     <div className="flex flex-col gap-5">
+      {socialFailed && (
+        <p
+          role="alert"
+          className="rw-radius-sm rw-bad-soft px-3 py-2 text-theme-sm rw-bad-ink"
+        >
+          {t(locale, "auth.socialError")}
+        </p>
+      )}
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
         <Field
           label={t(locale, "auth.username")}
@@ -191,6 +208,71 @@ export function AuthForm({ mode }: { mode: Mode }) {
         </Link>
       </p>
     </div>
+  );
+}
+
+/** Bog'lash HECH QACHON avtomatik emas: emailni tasdiqlash majburiy
+ *  emas, ya'ni tasdiqlanmagan begona manzil bilan ochilgan hisob o'sha
+ *  manzilning haqiqiy egasiga ochib berilardi (ADR-0016). */
+function LinkAccount({ provider }: { provider: string }) {
+  const locale = useLocale();
+  const router = useRouter();
+  const { reload } = useSession();
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+    setBusy(true);
+    const password = String(
+      new FormData(event.currentTarget).get("password") ?? "",
+    );
+    try {
+      await postJson("/auth/link/", { password });
+      await reload();
+      router.push("/");
+    } catch (err) {
+      setError(
+        err instanceof ApiError
+          ? errorText(locale, err.code, err.text)
+          : String(err),
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <form onSubmit={onSubmit} className="flex flex-col gap-4">
+      <p className="text-theme-sm rw-strong">{t(locale, "auth.linkTitle")}</p>
+      <p className="text-theme-sm rw-dim">
+        {t(locale, "auth.linkBody")} ({provider})
+      </p>
+      <Field
+        label={t(locale, "auth.password")}
+        name="password"
+        type="password"
+        required
+        autoComplete="current-password"
+      />
+      {error && (
+        <p
+          role="alert"
+          className="rw-radius-sm rw-bad-soft px-3 py-2 text-theme-sm rw-bad-ink"
+        >
+          {error}
+        </p>
+      )}
+      <Button type="submit" disabled={busy}>
+        {t(locale, "auth.linkCta")}
+      </Button>
+      <p className="text-center text-theme-sm">
+        <Link href="/parolni-tiklash" className="rw-accent-ink hover:underline">
+          {t(locale, "auth.forgot")}
+        </Link>
+      </p>
+    </form>
   );
 }
 

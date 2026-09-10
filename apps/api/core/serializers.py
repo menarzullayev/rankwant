@@ -297,3 +297,9 @@ class PasswordResetConfirmSerializer(serializers.Serializer[dict[str, Any]]):
                 {"token": "Havola tokeni yoki foydalanuvchi nomi bilan kod kerak"}
             )
         return attrs
+
+
+class SocialLinkSerializer(serializers.Serializer[dict[str, Any]]):
+    """Ijtimoiy hisobni mavjud hisobga bog'lash — parol bilan tasdiqlanadi."""
+
+    password = serializers.CharField(write_only=True)

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 import { AuthForm } from "@/components/AuthForm";
 import { Card } from "@/components/ui/Card";
@@ -19,7 +20,9 @@ export default async function LoginPage() {
         </h1>
       </div>
       <Card title={t(locale, "auth.login")}>
-        <AuthForm mode="login" />
+        <Suspense>
+          <AuthForm mode="login" />
+        </Suspense>
       </Card>
     </div>
   );

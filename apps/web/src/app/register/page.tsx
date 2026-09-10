@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 import { AuthForm } from "@/components/AuthForm";
 import { Card } from "@/components/ui/Card";
@@ -19,7 +20,9 @@ export default async function RegisterPage() {
         </h1>
       </div>
       <Card title={t(locale, "auth.register")}>
-        <AuthForm mode="register" />
+        <Suspense>
+          <AuthForm mode="register" />
+        </Suspense>
       </Card>
     </div>
   );

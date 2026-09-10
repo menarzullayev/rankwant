@@ -10,12 +10,15 @@ import redis
 from django.conf import settings
 from django.contrib.auth import authenticate as django_authenticate
 from django.contrib.auth import login, logout
+from django.contrib.auth import login as django_login
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import connection
 from django.db.models import Q, QuerySet
-from django.shortcuts import get_object_or_404
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import exceptions, generics, status, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -26,7 +29,7 @@ from rest_framework.views import APIView
 from contests.models import Contest
 from core import account, oauth, recovery
 from core.cache import cache_get, cache_set
-from core.models import ApiToken, User
+from core.models import ApiToken, SocialAccount, User
 from core.pagination import StandardPagination, TimeCursorPagination
 from core.serializers import (
     AccountDeleteSerializer,
@@ -37,6 +40,7 @@ from core.serializers import (
     PasswordResetConfirmSerializer,
     PasswordResetRequestSerializer,
     RegisterSerializer,
+    SocialLinkSerializer,
     UserPublicSerializer,
 )
 from core.tasks import send_password_reset
@@ -47,6 +51,11 @@ from problems.models import Problem
 MAX_TOKEN_LIFETIME = timedelta(days=365)
 
 log = logging.getLogger(__name__)
+
+#: `django_login()` `authenticate()` siz chaqirilganda backendni O'ZI
+#: topa olmaydi — ijtimoiy kirishda parol tekshirilmaydi, shuning uchun
+#: u aniq ko'rsatiladi.
+DEFAULT_AUTH_BACKEND = "django.contrib.auth.backends.ModelBackend"
 
 
 class HealthView(APIView):
@@ -598,3 +607,148 @@ class AuthProvidersView(APIView):
     @extend_schema(responses={200: None})
     def get(self, request: Request) -> Response:
         return Response({"providers": oauth.configured()})
+
+
+#: Bog'lash tokeni sessiyada shuncha turadi. Foydalanuvchi parolini
+#: kiritishga ulguradigan, lekin ochiq qolib ketmaydigan muddat.
+SOCIAL_LINK_TTL = 600
+
+
+class SocialStartView(APIView):
+    """Provayderning ruxsat sahifasiga yo'naltiradi."""
+
+    permission_classes = [AllowAny]
+
+    @extend_schema(responses={302: None})
+    def get(self, request: Request, provider: str) -> HttpResponseRedirect:
+        if provider not in oauth.configured():
+            return redirect(f"{settings.SITE_URL}/login?social=unavailable")
+        state = oauth.new_state()
+        # CSRF: qaytgan `state` sessiyadagisi bilan solishtiriladi, ya'ni
+        # begona sayt bizning callback'imizga o'z kodini yubora olmaydi.
+        request.session["social_state"] = state
+        request.session["social_provider"] = provider
+        return redirect(oauth.authorize_url(provider, state))
+
+
+class SocialCallbackView(APIView):
+    """Kodni almashtiradi va hisobni topadi yoki yaratadi."""
+
+    permission_classes = [AllowAny]
+
+    @extend_schema(responses={302: None})
+    def get(self, request: Request, provider: str) -> HttpResponseRedirect:
+        home = settings.SITE_URL
+        if provider not in oauth.configured():
+            return redirect(f"{home}/login?social=unavailable")
+        if request.GET.get("state") != request.session.pop("social_state", None):
+            log.warning("social state mos kelmadi: %s", provider)
+            return redirect(f"{home}/login?social=error")
+
+        try:
+            ident = oauth.identity(provider, request.GET.get("code", ""))
+        except oauth.OAuthError:
+            log.exception("social almashuv yiqildi: %s", provider)
+            return redirect(f"{home}/login?social=error")
+
+        return self._finish(request, ident)
+
+    def _finish(self, request: Request, ident: oauth.Identity) -> HttpResponseRedirect:
+        home = settings.SITE_URL
+        if not ident.uid:
+            return redirect(f"{home}/login?social=error")
+
+        link = SocialAccount.objects.filter(provider=ident.provider, uid=ident.uid).first()
+        if link is not None:
+            django_login(request, link.user, backend=DEFAULT_AUTH_BACKEND)
+            return redirect(f"{home}/")
+
+        existing = User.objects.filter(email__iexact=ident.email).first() if ident.email else None
+        if existing is not None:
+            # ADR-0016: avtomatik bog'lash hisobni egallash yo'li bo'lardi,
+            # chunki emailni tasdiqlash majburiy emas.
+            request.session["social_pending"] = {
+                "provider": ident.provider,
+                "uid": ident.uid,
+                "email": ident.email,
+                "user": existing.pk,
+                "at": timezone.now().isoformat(),
+            }
+            return redirect(f"{home}/login?link={ident.provider}")
+
+        user = User.objects.create_user(
+            username=oauth.free_username(ident.suggested),
+            email=ident.email,
+            locale=request.LANGUAGE_CODE[:2] if hasattr(request, "LANGUAGE_CODE") else "uz",
+        )
+        user.set_unusable_password()
+        user.save(update_fields=["password"])
+        SocialAccount.objects.create(
+            user=user, provider=ident.provider, uid=ident.uid, email=ident.email
+        )
+        django_login(request, user, backend=DEFAULT_AUTH_BACKEND)
+        return redirect(f"{home}/")
+
+
+class SocialTelegramView(SocialCallbackView):
+    """Telegram widget imzolangan ma'lumotni to'g'ridan-to'g'ri yuboradi —
+    kod almashuvi yo'q."""
+
+    @extend_schema(responses={302: None})
+    def get(self, request: Request, provider: str = "telegram") -> HttpResponseRedirect:
+        home = settings.SITE_URL
+        if "telegram" not in oauth.configured():
+            return redirect(f"{home}/login?social=unavailable")
+        try:
+            ident = oauth.telegram_identity(request.GET.dict())
+        except oauth.OAuthError:
+            log.warning("telegram imzosi rad etildi")
+            return redirect(f"{home}/login?social=error")
+        return self._finish(request, ident)
+
+
+class SocialLinkView(APIView):
+    """Parol bilan tasdiqlab, ijtimoiy hisobni mavjud hisobga bog'laydi."""
+
+    permission_classes = [AllowAny]
+    throttle_classes = [ResilientScopedRateThrottle]
+    throttle_scope = "password_reset"
+
+    @extend_schema(request=SocialLinkSerializer, responses={204: None})
+    def post(self, request: Request) -> Response:
+        serializer = SocialLinkSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        pending = request.session.get("social_pending")
+
+        def refuse() -> Response:
+            return Response(
+                {
+                    "error": {
+                        "code": "invalid_link",
+                        "message": "Bog'lash so'rovi topilmadi yoki muddati tugagan",
+                        "details": {},
+                    }
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not pending:
+            return refuse()
+        started = parse_datetime(pending.get("at", "")) or timezone.now()
+        if (timezone.now() - started).total_seconds() > SOCIAL_LINK_TTL:
+            request.session.pop("social_pending", None)
+            return refuse()
+
+        user = User.objects.filter(pk=pending["user"], is_active=True).first()
+        if user is None or not user.check_password(serializer.validated_data["password"]):
+            # Parol xato — so'rov saqlanadi, foydalanuvchi qayta urinsin.
+            return refuse()
+
+        request.session.pop("social_pending", None)
+        SocialAccount.objects.get_or_create(
+            user=user,
+            provider=pending["provider"],
+            defaults={"uid": pending["uid"], "email": pending["email"]},
+        )
+        django_login(request, user, backend=DEFAULT_AUTH_BACKEND)
+        return Response(status=status.HTTP_204_NO_CONTENT)

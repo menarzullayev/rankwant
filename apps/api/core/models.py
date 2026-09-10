@@ -241,3 +241,33 @@ class PasswordResetToken(models.Model):
     @property
     def is_live(self) -> bool:
         return self.used_at is None and self.expires_at > timezone.now()
+
+
+class SocialAccount(models.Model):
+    """Ijtimoiy kirish bog'lanishi — ADR-0016.
+
+    Bir foydalanuvchida har provayderdan bittadan bo'lishi mumkin, va
+    bitta provayder identifikatori faqat bitta hisobga tegishli.
+
+    Bog'lash HECH QACHON avtomatik emas: provayder bergan email allaqachon
+    parolli hisobda bo'lsa, avval parol so'raladi. Emailni tasdiqlash
+    majburiy emas, ya'ni tasdiqlanmagan begona manzil bilan ochilgan hisob
+    o'sha manzilning haqiqiy egasiga ochib berilardi.
+    """
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="social_accounts")
+    provider = models.CharField(max_length=16)
+    uid = models.CharField(max_length=64)
+    #: Provayder bergan manzil — audit uchun; hisobning o'z pochtasi
+    #: `User.email` da qoladi va bu uni almashtirmaydi.
+    email = models.EmailField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints: ClassVar = [
+            models.UniqueConstraint(fields=["provider", "uid"], name="uniq_social_uid"),
+            models.UniqueConstraint(fields=["user", "provider"], name="uniq_social_per_user"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.provider}:{self.uid} → {self.user_id}"
