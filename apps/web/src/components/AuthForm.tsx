@@ -182,45 +182,6 @@ export function AuthForm({
           {t(locale, "auth.socialError")}
         </p>
       )}
-      {/* Ijtimoiy kirish YUQORIDA: RankWant dasturchilar platformasi va
-          GitHub hisobi ko'pchilikda bor. O'lchangan naqsh emas, tanlangan
-          yo'nalish — parol formasi pastda, asosiy yo'l tepada. */}
-      {providers.length > 0 && (
-        <>
-          {/* Ustma-ust uchta to'liq kenglikdagi tugma ~150px vertikal joy
-              olardi va forma ekrandan pastga tushib ketardi. Ikkitasi
-              yonma-yon, Telegram esa ostida: uning vidjeti Telegram niki
-              va eng kichik o'lchamida ham ~110px, uchdan bir katak esa
-              mobilda ~85px bo'lardi — ya'ni vidjet qirqilardi.
-              Brend nomi tarjima qilinmaydi, shuning uchun matn shu yerda;
-              to'liq nomi (`Google orqali davom etish`) `aria-label` da. */}
-          <div className="grid grid-cols-2 gap-2">
-            {providers
-              .filter((p): p is Provider => p !== "telegram" && p in PROVIDER_LABEL)
-              .map((p) => (
-                <a
-                  key={p}
-                  href={`/api/v1/auth/${p}/start/`}
-                  aria-label={t(locale, PROVIDER_LABEL[p])}
-                  className={`flex h-11 items-center justify-center gap-2 rw-radius-sm text-theme-sm font-medium transition rw-focus-ring hover:brightness-95 ${BRAND[p]}`}
-                >
-                  {p === "google" ? <GoogleMark /> : <GithubMark />}
-                  <span className="truncate">{p === "google" ? "Google" : "GitHub"}</span>
-                </a>
-              ))}
-          </div>
-          {providers.includes("telegram") && telegramBot && (
-            <TelegramButton bot={telegramBot} />
-          )}
-          <div className="flex items-center gap-3">
-            <span className="h-px flex-1 border-t rw-line" />
-            <span className="text-theme-xs rw-dim">
-              {t(locale, "auth.orWith")}
-            </span>
-            <span className="h-px flex-1 border-t rw-line" />
-          </div>
-        </>
-      )}
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
         <Field
           label={t(locale, "auth.username")}
@@ -317,6 +278,46 @@ export function AuthForm({
         </Button>
         {mode === "register" && <Legal />}
       </form>
+
+      {/* Parol formasi asosiy yo'l bo'lib qoladi, ijtimoiy kirish esa
+          uning ostida: ajratkich tugmalardan OLDIN turadi, aks holda u
+          formadan keyin osilib qolardi. */}
+      {providers.length > 0 && (
+        <>
+          <div className="flex items-center gap-3">
+            <span className="h-px flex-1 border-t rw-line" />
+            <span className="text-theme-xs rw-dim">
+              {t(locale, "auth.orWith")}
+            </span>
+            <span className="h-px flex-1 border-t rw-line" />
+          </div>
+          {/* Ustma-ust uchta to'liq kenglikdagi tugma ~150px vertikal joy
+              olardi va forma ekrandan pastga tushib ketardi. Ikkitasi
+              yonma-yon, Telegram esa ostida: uning vidjeti Telegram niki
+              va eng kichik o'lchamida ham ~110px, uchdan bir katak esa
+              mobilda ~85px bo'lardi — ya'ni vidjet qirqilardi.
+              Brend nomi tarjima qilinmaydi, shuning uchun matn shu yerda;
+              to'liq nomi (`Google orqali davom etish`) `aria-label` da. */}
+          <div className="grid grid-cols-2 gap-2">
+            {providers
+              .filter((p): p is Provider => p !== "telegram" && p in PROVIDER_LABEL)
+              .map((p) => (
+                <a
+                  key={p}
+                  href={`/api/v1/auth/${p}/start/`}
+                  aria-label={t(locale, PROVIDER_LABEL[p])}
+                  className={`flex h-11 items-center justify-center gap-2 rw-radius-sm text-theme-sm font-medium transition rw-focus-ring hover:brightness-95 ${BRAND[p]}`}
+                >
+                  {p === "google" ? <GoogleMark /> : <GithubMark />}
+                  <span className="truncate">{p === "google" ? "Google" : "GitHub"}</span>
+                </a>
+              ))}
+          </div>
+          {providers.includes("telegram") && telegramBot && (
+            <TelegramButton bot={telegramBot} />
+          )}
+        </>
+      )}
 
       <p className="text-center text-theme-sm rw-dim">
         {t(locale, mode === "login" ? "auth.noAccount" : "auth.hasAccount")}{" "}
