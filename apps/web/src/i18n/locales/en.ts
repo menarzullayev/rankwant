@@ -224,7 +224,7 @@ export const en: Record<MessageKey, string> = {
   "settings.socialDisconnect": "Disconnect",
   "settings.socialConnected": "Connected",
   "settings.socialLinked": "Account connected",
-  "settings.socialTaken": "That account is connected to someone else",
+  "settings.socialTaken": "That account is connected to someone else. To move it, sign in with the same provider, disconnect it in settings, then come back here.",
   "settings.socialLast": "This is your only way in — set a password first",
   "settings.socialTelegramStep": "Now press the Telegram button",
   "settings.delete": "Delete account",

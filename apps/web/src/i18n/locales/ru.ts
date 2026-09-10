@@ -224,7 +224,7 @@ export const ru: Record<MessageKey, string> = {
   "settings.socialDisconnect": "Отвязать",
   "settings.socialConnected": "Привязан",
   "settings.socialLinked": "Аккаунт привязан",
-  "settings.socialTaken": "Этот аккаунт уже привязан к другому пользователю",
+  "settings.socialTaken": "Этот аккаунт уже привязан к другому пользователю. Чтобы перенести его, войдите через того же провайдера, отвяжите в настройках и вернитесь сюда.",
   "settings.socialLast": "Это ваш единственный способ входа — сначала задайте пароль",
   "settings.socialTelegramStep": "Теперь нажмите кнопку Telegram",
   "settings.delete": "Удалить аккаунт",

@@ -223,7 +223,7 @@ export const zh: Record<MessageKey, string> = {
   "settings.socialDisconnect": "断开",
   "settings.socialConnected": "已连接",
   "settings.socialLinked": "账号已连接",
-  "settings.socialTaken": "该账号已连接到其他用户",
+  "settings.socialTaken": "该账号已连接到其他用户。要迁移它，请用同一提供方登录，在设置中断开连接，然后回到这里。",
   "settings.socialLast": "这是你唯一的登录方式 — 请先设置密码",
   "settings.socialTelegramStep": "现在请点击 Telegram 按钮",
   "settings.delete": "删除账号",

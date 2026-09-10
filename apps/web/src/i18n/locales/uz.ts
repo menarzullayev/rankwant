@@ -228,7 +228,7 @@ export const uz = {
   "settings.socialDisconnect": "Uzish",
   "settings.socialConnected": "Ulangan",
   "settings.socialLinked": "Hisob ulandi",
-  "settings.socialTaken": "Bu hisob boshqa foydalanuvchiga ulangan",
+  "settings.socialTaken": "Bu hisob boshqa foydalanuvchiga ulangan. Ko'chirish uchun o'sha provayder bilan kiring, Sozlamalardan uzing va shu yerga qayting.",
   "settings.socialLast": "Bu yagona kirish yo'lingiz — avval parol o'rnating",
   "settings.socialTelegramStep": "Endi Telegram tugmasini bosing",
   "settings.delete": "Hisobni o'chirish",

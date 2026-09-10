@@ -224,7 +224,7 @@ export const kk: Record<MessageKey, string> = {
   "settings.socialDisconnect": "Ажырату",
   "settings.socialConnected": "Байланысқан",
   "settings.socialLinked": "Аккаунт байланысты",
-  "settings.socialTaken": "Бұл аккаунт басқа пайдаланушыға байланысқан",
+  "settings.socialTaken": "Бұл аккаунт басқа пайдаланушыға байланысқан. Оны көшіру үшін сол провайдермен кіріп, Параметрлерден ажыратыңыз да, осында оралыңыз.",
   "settings.socialLast": "Бұл сіздің жалғыз кіру жолыңыз — алдымен құпиясөз орнатыңыз",
   "settings.socialTelegramStep": "Енді Telegram түймесін басыңыз",
   "settings.delete": "Тіркелгіні жою",

@@ -224,7 +224,7 @@ export const ky: Record<MessageKey, string> = {
   "settings.socialDisconnect": "Ажыратуу",
   "settings.socialConnected": "Байланышкан",
   "settings.socialLinked": "Аккаунт байланышты",
-  "settings.socialTaken": "Бул аккаунт башка колдонуучуга байланышкан",
+  "settings.socialTaken": "Бул аккаунт башка колдонуучуга байланышкан. Аны которуу үчүн ошол провайдер менен кирип, Жөндөөлөрдөн ажыратып, бул жерге кайтыңыз.",
   "settings.socialLast": "Бул сиздин жалгыз кирүү жолуңуз — адегенде сырсөз коюңуз",
   "settings.socialTelegramStep": "Эми Telegram баскычын басыңыз",
   "settings.delete": "Эсепти өчүрүү",

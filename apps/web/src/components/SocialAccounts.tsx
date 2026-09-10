@@ -9,7 +9,7 @@ import { useSession } from "@/context/SessionContext";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t } from "@/i18n/messages";
+import { errorText, t } from "@/i18n/messages";
 import { ApiError, deleteJson, getJson, postJson } from "@/lib/api";
 
 const LABEL = { google: "Google", github: "GitHub", telegram: "Telegram" } as const;
@@ -127,7 +127,13 @@ export function SocialAccounts() {
                       setError("");
                       postJson(`/auth/social/${p}/link-start/`, {})
                         .then(() => setTgReady(true))
-                        .catch(() => setError(t(locale, "settings.socialTaken")))
+                        .catch((err) =>
+                          setError(
+                            err instanceof ApiError
+                              ? errorText(locale, err.code, err.text)
+                              : t(locale, "auth.socialError"),
+                          ),
+                        )
                         .finally(() => setBusy(null));
                     }}
                   >

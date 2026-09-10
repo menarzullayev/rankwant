@@ -224,7 +224,7 @@ export const kaa: Record<MessageKey, string> = {
   "settings.socialDisconnect": "Úziw",
   "settings.socialConnected": "Jalǵanǵan",
   "settings.socialLinked": "Esap jalǵandı",
-  "settings.socialTaken": "Bul esap basqa paydalanıwshıǵa jalǵanǵan",
+  "settings.socialTaken": "Bul esap basqa paydalanıwshıǵa jalǵanǵan. Kóshiriw ushın sol provayder menen kiriń, Sazlawlardan úziń hám usı jerge qaytıń.",
   "settings.socialLast": "Bul jalǵız kiriw jolıńız — aldın parol ornatıń",
   "settings.socialTelegramStep": "Endi Telegram tuymesin basıń",
   "settings.delete": "Esaptı óshiriw",

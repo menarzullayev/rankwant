@@ -224,7 +224,7 @@ export const tg: Record<MessageKey, string> = {
   "settings.socialDisconnect": "Ҷудо кардан",
   "settings.socialConnected": "Пайваст",
   "settings.socialLinked": "Ҳисоб пайваст шуд",
-  "settings.socialTaken": "Ин ҳисоб ба корбари дигар пайваст аст",
+  "settings.socialTaken": "Ин ҳисоб ба корбари дигар пайваст аст. Барои интиқол бо ҳамон провайдер ворид шавед, дар Танзимот ҷудо кунед ва ба ин ҷо баргардед.",
   "settings.socialLast": "Ин ягона роҳи вуруди шумост — аввал парол гузоред",
   "settings.socialTelegramStep": "Акнун тугмаи Telegram-ро пахш кунед",
   "settings.delete": "Ҳисобро нест кардан",

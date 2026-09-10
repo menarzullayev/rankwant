@@ -224,7 +224,7 @@ export const tr: Record<MessageKey, string> = {
   "settings.socialDisconnect": "Bağlantıyı kes",
   "settings.socialConnected": "Bağlı",
   "settings.socialLinked": "Hesap bağlandı",
-  "settings.socialTaken": "Bu hesap başka bir kullanıcıya bağlı",
+  "settings.socialTaken": "Bu hesap başka bir kullanıcıya bağlı. Taşımak için aynı sağlayıcıyla giriş yapın, Ayarlar'dan bağlantıyı kesin ve buraya dönün.",
   "settings.socialLast": "Bu tek giriş yolunuz — önce bir parola belirleyin",
   "settings.socialTelegramStep": "Şimdi Telegram düğmesine basın",
   "settings.delete": "Hesabı sil",
