@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+from datetime import timedelta
+
 import pytest
 from django.urls import reverse
 from django.utils import timezone
 from rest_framework.test import APIClient
 
-from contests.models import Contest, ContestRegistration, Standing
+from contests.models import Contest, Standing
 from core import account
 from core.models import ApiToken, User
 from judging.models import Attempt, CustomRun
@@ -40,7 +42,7 @@ def full_user(db, problem, language) -> User:
     Notification.objects.create(user=u, kind="system", title="Salom", body="…")
     CustomRun.objects.create(user=u, language=language, source_code="print(1)", stdin="")
     Favourite.objects.create(user=u, problem=problem)
-    ApiToken.issue(u, "Laptop", ["read"], timezone.now() + timezone.timedelta(days=1))
+    ApiToken.issue(u, "Laptop", ["read"], timezone.now() + timedelta(days=1))
     return u
 
 
@@ -85,8 +87,8 @@ class TestAnonimlashtirish:
         contest = Contest.objects.create(
             slug="c1",
             title="C1",
-            start_at=timezone.now() - timezone.timedelta(hours=3),
-            end_at=timezone.now() - timezone.timedelta(hours=1),
+            start_at=timezone.now() - timedelta(hours=3),
+            end_at=timezone.now() - timedelta(hours=1),
         )
         Standing.objects.create(contest=contest, user=full_user, rank=1, solved_count=3)
         Standing.objects.create(contest=contest, user=other_user, rank=2, solved_count=2)
@@ -109,9 +111,7 @@ class TestAnonimlashtirish:
         account.anonymize(full_user)
 
         c = APIClient()
-        r = c.post(
-            reverse("login"), {"username": "Aziz", "password": "Parol!12345"}, format="json"
-        )
+        r = c.post(reverse("login"), {"username": "Aziz", "password": "Parol!12345"}, format="json")
         assert r.status_code == 401
 
 
