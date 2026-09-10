@@ -16,7 +16,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from core.cache import edge_cacheable
+from core.cache import cache_get, cache_set, edge_cacheable
 from core.models import User
 from core.pagination import StandardPagination
 from judging.verdicts import Verdict
@@ -312,6 +312,15 @@ class ProblemStatsView(APIView):
         from judging.models import Attempt
 
         problem = get_object_or_404(Problem, slug=slug, is_public=True)
+
+        # Serverda ham keshlanadi, chekkada ham. Chekka kesh chekkaga
+        # yetgan so'rovni to'sadi; bu esa CDN qoidasi qo'yilmagan yoki
+        # kesh muzlagan holatda ham beshta agregatni takrorlamaydi.
+        cache_key = f"problem-stats:{problem.pk}"
+        cached = cache_get(cache_key)
+        if cached is not None:
+            return edge_cacheable(Response(cached), PUBLIC_STATS_CACHE_S)
+
         attempts = Attempt.objects.filter(problem=problem)
 
         verdicts = [
@@ -352,17 +361,14 @@ class ProblemStatsView(APIView):
         # Raqamlar hamma uchun bir xil va tez o'zgarmaydi — chekkada
         # keshlanadi. O'lchandi: har so'rov 91 ms va beshta agregat
         # so'rov, ular orasida HAR TIL uchun alohida so'rov ham bor.
-        return edge_cacheable(
-            Response(
-                {
-                    "total": attempts.count(),
-                    "verdicts": verdicts,
-                    "languages": languages,
-                    "fastest": fastest,
-                }
-            ),
-            PUBLIC_STATS_CACHE_S,
-        )
+        body = {
+            "total": attempts.count(),
+            "verdicts": verdicts,
+            "languages": languages,
+            "fastest": fastest,
+        }
+        cache_set(cache_key, body, PUBLIC_STATS_CACHE_S)
+        return edge_cacheable(Response(body), PUBLIC_STATS_CACHE_S)
 
 
 class ProblemSolversView(APIView):
