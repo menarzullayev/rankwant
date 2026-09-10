@@ -29,7 +29,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--allow-testless",
             action="store_true",
-            help="Testsizlarini ham e'lon qiladi (odatda kerak emas)",
+            help="Yashirin testi yo'qlarini ham e'lon qiladi (odatda kerak emas)",
         )
 
     def handle(self, *args: Any, **options: Any) -> None:
@@ -37,7 +37,11 @@ class Command(BaseCommand):
         if options["source"]:
             drafts = drafts.filter(source=options["source"])
         if not options["allow_testless"]:
-            drafts = drafts.filter(tests__isnull=False).distinct()
+            # YASHIRIN test shart, shunchaki test emas: hamma testi namuna
+            # bo'lsa kutilgan javob masala sahifasida ochiq turadi va uni
+            # bosib chiqargan dastur AC oladi. O'lchandi: `3-ta-son` ga
+            # `print('3 2 1')` — AC.
+            drafts = drafts.filter(tests__is_sample=False).distinct()
 
         # Raqamlar YARATILISH tartibida beriladi. `source_url` bo'yicha
         # saralash noto'g'ri bo'lardi — u satr, ya'ni `.../10` `.../2` dan

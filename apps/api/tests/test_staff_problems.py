@@ -345,3 +345,40 @@ class TestTestsizOmmagaChiqmaydi:
 
         assert r.status_code == 200
         assert Problem.objects.get(pk=p.pk).is_public
+
+    def test_faqat_namunali_masalani_chiqarib_bolmaydi(self, staff_client, db) -> None:
+        """Kutilgan javob masala sahifasida ochiq turadi.
+
+        O'lchandi: `3-ta-son` (bitta namuna test) ga kirishni o'qimaydigan
+        `print('3 2 1')` yuborildi — AC keldi.
+        """
+        p = Problem.objects.create(slug="namunali", title="Namunali", difficulty=800)
+        ProblemTestCase.objects.create(
+            problem=p, order=1, input_ref="s3://x/1.in", output_ref="s3://x/1.out", is_sample=True
+        )
+
+        r = staff_client.patch(
+            reverse("staff-problem-detail", args=[p.slug]), {"is_public": True}, format="json"
+        )
+
+        assert r.status_code == 400
+        assert not Problem.objects.get(pk=p.pk).is_public
+
+    def test_allaqachon_ommaviy_masalani_tahrirlash_toxtamaydi(self, staff_client, db) -> None:
+        """Arxivdagi 1 222 masalada yashirin test yo'q va ular tuzatilishi
+        kerak — tekshiruv E'LON QILISHDA, har saqlashda emas."""
+        p = Problem.objects.create(
+            slug="eski", title="Eski", difficulty=800, is_public=True, code=1
+        )
+        ProblemTestCase.objects.create(
+            problem=p, order=1, input_ref="s3://x/1.in", output_ref="s3://x/1.out", is_sample=True
+        )
+
+        r = staff_client.patch(
+            reverse("staff-problem-detail", args=[p.slug]),
+            {"title": "Eski (tuzatildi)"},
+            format="json",
+        )
+
+        assert r.status_code == 200
+        assert Problem.objects.get(pk=p.pk).title == "Eski (tuzatildi)"

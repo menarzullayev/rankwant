@@ -355,6 +355,26 @@ class TestRemapAndPublish:
         assert testli.is_public is True
         assert testsiz.is_public is False, "testsiz masala yechib bo'lmaydi — chiqmasin"
 
+    def test_faqat_namunali_masala_qoralama_qoladi(self):
+        """Yashirin test shart — namuna javobini bosib chiqargan dastur AC oladi."""
+        from django.core.management import call_command
+
+        from problems.models import TestCase as ProblemTest
+
+        namunali = self.make(slug="namunali")
+        ProblemTest.objects.create(
+            problem=namunali,
+            order=1,
+            input_ref="s3://a/1.in",
+            output_ref="s3://a/1.out",
+            is_sample=True,
+        )
+
+        call_command("publish_problems", source="KEP.uz")
+
+        namunali.refresh_from_db()
+        assert namunali.is_public is False
+
     def test_testsizni_ataylab_chiqarish_mumkin(self):
         """Chetlab o'tish yo'li qoladi, lekin ataylab yozilishi kerak."""
         from django.core.management import call_command

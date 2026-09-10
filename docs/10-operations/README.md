@@ -80,6 +80,46 @@ Variantlar (tanlanmagan):
 Limitlar endi `THROTTLE_ANON` / `THROTTLE_USER` / `THROTTLE_SUBMIT`
 orqali sozlanadi, ya'ni qaror qabul qilinganda kod o'zgarishi shart emas.
 
+## Ochiq risk: arxivda yashirin test yo'q
+
+**Holat:** bilib turib qoldirilgan — testlar keyinroq o'zimiz generatsiya
+qilinadi.
+
+**1 226 ta ommaviy masaladan 1 222 tasida yashirin test yo'q** — har bir
+`TestCase` da `is_sample=True`. Sababi importda: KEP'ning ochiq API'si
+faqat namuna testlarni beradi va `import_kep.apply_samples` hammasini
+namuna deb yozadi.
+
+Oqibati: kutilgan javob masala sahifasida (`/api/v1/problems/<slug>/`
+javobidagi `samples`) ochiq turadi, ya'ni uni bosib chiqargan dastur
+`AC` oladi. O'lchandi (2026-09-10, preview) — `#437 · 3 ta son` ga
+kirishni umuman o'qimaydigan `print('3 2 1')` yuborildi, verdikt `AC`.
+
+Bu 870 ta testsiz masaladan **og'irroq**: ular `WRONG_TEST` qaytarardi —
+ko'rinadigan nosozlik. Bular `AC` qaytaradi va skills reytingi shu
+`AC` lar ustiga quriladi.
+
+Yashirin testi bor 4 ta masala: `a-plus-b`, `juft-toq`, `eng-katta`,
+`fibonacci` (seed).
+
+**Hozircha qilingan ish — faqat to'siq:** yangi masala yashirin testsiz
+e'lon qilinmaydi. Tekshiruv ikki joyda va faqat E'LON QILISH paytida
+ishlaydi (arxivdagi 1 222 masala hali tahrirlanishi kerak):
+
+- `problems/staff_serializers.py` — qoralamadan ommaviyga o'tkazishda
+- `publish_problems` — standart filtr `tests__is_sample=False`
+
+**Yopilmagan qism:** mavjud 1 222 masala. Rejalashtirilgan yo'l — har
+masalaga etalon yechim yozib, undan yashirin test generatsiya qilish.
+
+Yana ikkita kichikroq nuqson o'sha o'lchovda ko'rindi:
+
+| Nuqson | Soni | Izoh |
+| ------ | ---- | ---- |
+| Statement butunlay bo'sh | 5 | `#730`, `#1447`, `#1733`, `#2043`, `#1734` |
+| Statement < 100 belgi | 164 | ko'pi haqiqatan qisqa, lekin tekshirilmagan |
+| Matnda «istalgan javob» iborasi bor, checker `standard` | 200 | ko'p javobli masala aniq moslik bilan tekshirilyapti — to'g'ri yechim WA olishi mumkin |
+
 ## Ommaviy preview (rankwant.bugvector.uz)
 
 **Bu production EMAS** — yuqoridagi to'rt-hostli topologiya o'rniga bitta

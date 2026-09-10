@@ -95,20 +95,37 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
         return count if count is not None else obj.tests.count()
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
-        """Testsiz masala ommaga chiqmasin.
+        """Testsiz — va yashirin testsiz — masala ommaga chiqmasin.
 
         Judge nol testni «hammasi o'tdi» deb emas, IE deb qaytaradi —
         ya'ni bunday masala arxivda ko'rinadi, ochiladi, lekin yechib
         bo'lmaydi. O'lchandi: import qilingan arxivda 2 096 ommaviy
         masaladan 870 tasi shu holatda edi.
+
+        Hamma testi NAMUNA bo'lsa buzilish jimroq, lekin og'irroq: kutilgan
+        javob masala sahifasida ochiq turadi, ya'ni uni bosib chiqargan
+        dastur AC oladi. O'lchandi: `3-ta-son` ga `print('3 2 1')` — AC.
         """
         ommaviy = attrs.get("is_public", getattr(self.instance, "is_public", False))
-        if ommaviy:
-            testlar = self.instance.tests.count() if self.instance else 0
-            if not testlar:
-                raise serializers.ValidationError(
-                    {"is_public": "Testsiz masalani ommaga chiqarib bo'lmaydi"}
-                )
+        if not ommaviy or self.instance is None:
+            # Yangi yozuv qoralama sifatida yaratiladi; ommaviy bo'lishi
+            # uchun avval test yuklanadi, ya'ni bu tekshiruv tahrirda ishlaydi.
+            return attrs
+        if not self.instance.tests.exists():
+            raise serializers.ValidationError(
+                {"is_public": "Testsiz masalani ommaga chiqarib bo'lmaydi"}
+            )
+        # Yashirin test faqat E'LON QILISH paytida talab qilinadi: arxivdagi
+        # 1 222 masalada u yo'q va ular hali tahrirlanishi kerak — har
+        # saqlashda to'sib qo'yish statement tuzatishni ham to'xtatardi.
+        elon_qilinyapti = not self.instance.is_public
+        if elon_qilinyapti and not self.instance.tests.filter(is_sample=False).exists():
+            raise serializers.ValidationError(
+                {
+                    "is_public": "Yashirin testsiz masalani ommaga chiqarib bo'lmaydi — "
+                    "namuna javobini bosib chiqargan dastur AC oladi"
+                }
+            )
         return attrs
 
     def validate_difficulty(self, value: int) -> int:
