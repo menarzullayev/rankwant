@@ -37,7 +37,11 @@ export default function AppHeader() {
         {current ? t(locale, current.key) : "RankWant"}
       </span>
 
-      <div className="ml-auto flex items-center gap-2">
+      {/* `min-w-0` SHART: usiz flex bolalari o'z eng kichik kengligidan
+          pastga tushmaydi va guruh sarlavhadan chiqib ketadi. O'lchandi —
+          1280px da hujjat 1339px bo'lib, butun saytda gorizontal siljish
+          paydo bo'lardi. */}
+      <div className="ml-auto flex min-w-0 items-center gap-2">
         <SearchBox />
         <HeaderStatus />
         <StylePicker />

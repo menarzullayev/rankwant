@@ -160,6 +160,8 @@ export type UserPublic = {
   /** Faqat /me/ da keladi — boshqa odamning pochtasi tasdiqlanganini
    *  ko'rsatish kerak emas, shuning uchun ommaviy profilda yo'q. */
   email_verified?: boolean;
+  /** Faqat /me/ da keladi — ommaviy profilda pochta ko'rsatilmaydi. */
+  email?: string;
   streak_count: number;
   date_joined: string;
   /** Reyting bo'yicha o'rin. Ro'yxat javobida bo'sh — faqat profilda. */

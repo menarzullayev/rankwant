@@ -54,7 +54,7 @@ export default function SearchBox() {
     shown.contests.length;
 
   return (
-    <div ref={box} className="relative hidden md:block">
+    <div ref={box} className="relative hidden min-w-0 shrink md:block">
       <label className="relative block">
         {/* Yorliqda MATN bo'lishi shart: ikonka va placeholder skrinriderga
             nom bermaydi, placeholder esa yozish boshlangach yo'qoladi. */}

@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { useSession } from "@/context/SessionContext";
 import { Button } from "@/components/ui/Button";
 import { Field, type FieldStatus } from "@/components/ui/Field";
+import { GithubMark, GoogleMark } from "@/components/ProviderMark";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t, errorText } from "@/i18n/messages";
 import { ApiError, getJson, postJson } from "@/lib/api";
@@ -23,6 +24,14 @@ const PROVIDER_LABEL = {
 } as const;
 
 type Provider = keyof typeof PROVIDER_LABEL;
+
+/** Brend ranglari — rasmiy tugma qoidalaridagi kabi. Ular mavzu
+ *  tokenlaridan olinmaydi: brend rangi palitraga qarab o'zgarmaydi. */
+const BRAND: Record<Provider, string> = {
+  google: "border rw-line bg-white text-[#1f1f1f]",
+  github: "bg-[#1f2328] text-white",
+  telegram: "",
+};
 
 export function AuthForm({
   mode,
@@ -132,7 +141,9 @@ export function AuthForm({
       // uchun `router.push` uni qayta mount qilmaydi va kirgandan keyin
       // ham «Kirish» tugmasi qolib ketardi.
       await reload();
-      router.push("/");
+      // Yangi hisob uchun `?welcome=1` — bir martalik xabar va kod
+      // kiritish maydoni shu belgi bo'yicha chiziladi.
+      router.push(mode === "register" ? "/?welcome=1" : "/");
     } catch (err) {
       setError(
         err instanceof ApiError
@@ -176,22 +187,31 @@ export function AuthForm({
           yo'nalish — parol formasi pastda, asosiy yo'l tepada. */}
       {providers.length > 0 && (
         <>
-          <div className="flex flex-col gap-2">
+          {/* Ustma-ust uchta to'liq kenglikdagi tugma ~150px vertikal joy
+              olardi va forma ekrandan pastga tushib ketardi. Ikkitasi
+              yonma-yon, Telegram esa ostida: uning vidjeti Telegram niki
+              va eng kichik o'lchamida ham ~110px, uchdan bir katak esa
+              mobilda ~85px bo'lardi — ya'ni vidjet qirqilardi.
+              Brend nomi tarjima qilinmaydi, shuning uchun matn shu yerda;
+              to'liq nomi (`Google orqali davom etish`) `aria-label` da. */}
+          <div className="grid grid-cols-2 gap-2">
             {providers
               .filter((p): p is Provider => p !== "telegram" && p in PROVIDER_LABEL)
               .map((p) => (
                 <a
                   key={p}
                   href={`/api/v1/auth/${p}/start/`}
-                  className="flex h-11 items-center justify-center gap-2 rw-radius-sm border rw-line text-theme-sm font-medium rw-strong transition rw-hover-bg rw-focus-ring"
+                  aria-label={t(locale, PROVIDER_LABEL[p])}
+                  className={`flex h-11 items-center justify-center gap-2 rw-radius-sm text-theme-sm font-medium transition rw-focus-ring hover:brightness-95 ${BRAND[p]}`}
                 >
-                  {t(locale, PROVIDER_LABEL[p])}
+                  {p === "google" ? <GoogleMark /> : <GithubMark />}
+                  <span className="truncate">{p === "google" ? "Google" : "GitHub"}</span>
                 </a>
               ))}
-            {providers.includes("telegram") && telegramBot && (
-              <TelegramButton bot={telegramBot} />
-            )}
           </div>
+          {providers.includes("telegram") && telegramBot && (
+            <TelegramButton bot={telegramBot} />
+          )}
           <div className="flex items-center gap-3">
             <span className="h-px flex-1 border-t rw-line" />
             <span className="text-theme-xs rw-dim">
@@ -206,6 +226,9 @@ export function AuthForm({
           label={t(locale, "auth.username")}
           name="username"
           required
+          // Sahifaning yagona vazifasi shu forma — kursor darhol shu
+          // yerda bo'lsin.
+          autoFocus
           autoComplete="username"
           minLength={mode === "register" ? 3 : undefined}
           maxLength={mode === "register" ? 30 : undefined}
@@ -228,6 +251,15 @@ export function AuthForm({
             status={emailStatus}
           />
         )}
+        {mode === "register" && (
+          <Field
+            label={t(locale, "auth.displayName")}
+            name="display_name"
+            autoComplete="name"
+            maxLength={100}
+            hint={t(locale, "auth.displayNameHint")}
+          />
+        )}
         <Field
           label={t(locale, "auth.password")}
           name="password"
@@ -237,7 +269,9 @@ export function AuthForm({
           autoComplete={mode === "login" ? "current-password" : "new-password"}
           value={mode === "register" ? pass : undefined}
           onChange={mode === "register" ? (e) => setPass(e.target.value) : undefined}
-          hint={mode === "register" ? t(locale, "auth.passwordHint") : undefined}
+          // Qoida BO'SH maydonda turadi; birinchi harfdan keyin uning
+          // o'rnini kuch chizig'i egallaydi — bir vaqtda bitta satr.
+          hint={mode === "register" && !pass ? t(locale, "auth.passwordHint") : undefined}
           trailing={eye}
         />
         {mode === "register" && <Strength value={pass} />}
@@ -274,7 +308,11 @@ export function AuthForm({
           </p>
         )}
 
-        <Button type="submit" disabled={busy}>
+        <Button
+          type="submit"
+          busy={busy}
+          busyLabel={t(locale, mode === "login" ? "auth.loggingIn" : "auth.registering")}
+        >
           {t(locale, mode === "login" ? "auth.login" : "auth.register")}
         </Button>
         {mode === "register" && <Legal />}
@@ -431,7 +469,7 @@ function TelegramButton({ bot }: { bot: string }) {
     script.async = true;
     script.src = "https://telegram.org/js/telegram-widget.js?22";
     script.setAttribute("data-telegram-login", bot);
-    script.setAttribute("data-size", "large");
+    script.setAttribute("data-size", "medium");
     script.setAttribute("data-radius", "8");
     script.setAttribute(
       "data-auth-url",
@@ -440,7 +478,15 @@ function TelegramButton({ bot }: { bot: string }) {
     host.appendChild(script);
   }, [bot]);
 
-  return <div ref={ref} className="flex justify-center" />;
+  // Vidjet Telegram niki: kengligini biz belgilay olmaymiz, shuning
+  // uchun katak qolgan ikkitasi bilan bir balandlikda va markazda
+  // turadi, ichidagisi esa sig'masa qisqaradi.
+  return (
+    <div
+      ref={ref}
+      className="flex h-11 items-center justify-center overflow-hidden rw-radius-sm"
+    />
+  );
 }
 
 function Eye() {

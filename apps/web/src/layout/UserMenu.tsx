@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
-import { SettingsIcon, UserIcon } from "@/icons";
+import { LogoutIcon, SettingsIcon, UserIcon } from "@/icons";
 import { postJson } from "@/lib/api";
 
 export default function UserMenu() {
@@ -60,12 +60,18 @@ export default function UserMenu() {
       >
         <SettingsIcon className="size-4" />
       </Link>
+      {/* Tor ekranda faqat ikonka: matnli tugma ~70px olardi va
+          sarlavha 390px da sig'masdan siljib ketardi. Nomi `aria-label`
+          da qoladi, ya'ni ekran o'quvchi uchun hech narsa yo'qolmaydi. */}
       <button
         type="button"
         onClick={logout}
-        className="h-10 rw-radius-sm px-3 text-theme-sm rw-dim transition rw-hover-strong"
+        aria-label={t(locale, "auth.logout")}
+        title={t(locale, "auth.logout")}
+        className="flex size-10 items-center justify-center rw-radius-sm text-theme-sm rw-dim transition rw-hover-strong sm:size-auto sm:px-3"
       >
-        {t(locale, "auth.logout")}
+        <LogoutIcon className="size-4 sm:hidden" />
+        <span className="hidden sm:inline">{t(locale, "auth.logout")}</span>
       </button>
     </div>
   );

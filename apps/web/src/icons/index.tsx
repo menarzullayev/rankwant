@@ -127,6 +127,13 @@ export const UserIcon = (p: IconProps) => (
   </Icon>
 );
 
+export const LogoutIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3" />
+    <path d="M15 16l4-4-4-4M19 12H9" />
+  </Icon>
+);
+
 export const ChevronLeftIcon = (p: IconProps) => (
   <Icon {...p}>
     <path d="m14 6-6 6 6 6" />
