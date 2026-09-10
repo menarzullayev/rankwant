@@ -176,6 +176,7 @@ export const zh: Record<MessageKey, string> = {
   "settings.deleteAction": "永久删除账号",
   "settings.deleteConfirm": "此操作无法撤销。要继续吗？",
   "settings.deleteError": "密码错误",
+  "standings.you": "你的名次",
   "error.already_answered": "你已经回答过这道题",
   "error.already_finalized": "已经结算过了",
   "error.already_paid": "这项已经支付过",

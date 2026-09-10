@@ -177,6 +177,7 @@ export const ru: Record<MessageKey, string> = {
   "settings.deleteAction": "Удалить аккаунт навсегда",
   "settings.deleteConfirm": "Это действие необратимо. Продолжить?",
   "settings.deleteError": "Неверный пароль",
+  "standings.you": "Ваше место",
   "error.already_answered": "Вы уже ответили на этот вопрос",
   "error.already_finalized": "Уже завершено",
   "error.already_paid": "Уже оплачено",

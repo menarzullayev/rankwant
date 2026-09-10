@@ -177,6 +177,7 @@ export const tr: Record<MessageKey, string> = {
   "settings.deleteAction": "Hesabı kalıcı olarak sil",
   "settings.deleteConfirm": "Bu işlem geri alınamaz. Devam edilsin mi?",
   "settings.deleteError": "Parola yanlış",
+  "standings.you": "Senin sıran",
   "error.already_answered": "Bu soruyu zaten cevapladınız",
   "error.already_finalized": "Zaten sonuçlandırıldı",
   "error.already_paid": "Bunun ücreti zaten ödendi",

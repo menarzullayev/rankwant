@@ -177,6 +177,7 @@ export const en: Record<MessageKey, string> = {
   "settings.deleteAction": "Delete account permanently",
   "settings.deleteConfirm": "This cannot be undone. Continue?",
   "settings.deleteError": "Wrong password",
+  "standings.you": "Your place",
   "error.already_answered": "You have already answered this question",
   "error.already_finalized": "Already finalised",
   "error.already_paid": "Already paid for",

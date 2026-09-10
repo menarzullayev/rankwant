@@ -178,6 +178,7 @@ export const kk: Record<MessageKey, string> = {
   "settings.deleteConfirm":
     "Бұл әрекетті қайтару мүмкін емес. Жалғастырасыз ба?",
   "settings.deleteError": "Құпия сөз қате",
+  "standings.you": "Сіздің орныңыз",
   "error.already_answered": "Бұл сұраққа жауап бердіңіз",
   "error.already_finalized": "Әлдеқашан аяқталған",
   "error.already_paid": "Бұл әлдеқашан төленген",

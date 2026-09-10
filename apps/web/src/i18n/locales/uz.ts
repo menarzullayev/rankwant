@@ -181,6 +181,7 @@ export const uz = {
   "settings.deleteAction": "Hisobni butunlay o'chirish",
   "settings.deleteConfirm": "Bu amalni qaytarib bo'lmaydi. Davom etasizmi?",
   "settings.deleteError": "Parol noto'g'ri",
+  "standings.you": "Sizning o'rningiz",
   "error.already_answered": "Bu savolga allaqachon javob berdingiz",
   "error.already_finalized": "Allaqachon yakunlangan",
   "error.already_paid": "Bu allaqachon to'langan",

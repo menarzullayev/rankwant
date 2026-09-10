@@ -27,6 +27,11 @@ from core.models import User
 #: bitta so'rov bo'lib tushadi. Mijozda polling allaqachon bor edi.
 STANDINGS_CACHE_S = 10
 
+#: Ommaviy jadval shuncha qator qaytaradi. Chegara KESH uchun: javob
+#: hamma uchun bir xil bo'lgandagina CDN uni bir marta olib, hammaga
+#: tarqata oladi. 500 qator ~45 KB (o'lchandi).
+STANDINGS_TOP = 500
+
 
 class ContestViewSet(viewsets.ReadOnlyModelViewSet[Contest]):
     permission_classes = [AllowAny]
@@ -41,7 +46,9 @@ class ContestViewSet(viewsets.ReadOnlyModelViewSet[Contest]):
     def standings(self, request: Request, slug: str | None = None) -> Response:
         contest = self.get_object()
         rows = (
-            Standing.objects.filter(contest=contest).select_related("user").order_by("rank")[:500]
+            Standing.objects.filter(contest=contest)
+            .select_related("user")
+            .order_by("rank")[:STANDINGS_TOP]
         )
         # Jadval hamma uchun bir xil — chekkada keshlanadi (core.cache).
         return edge_cacheable(
@@ -53,6 +60,36 @@ class ContestViewSet(viewsets.ReadOnlyModelViewSet[Contest]):
             ),
             STANDINGS_CACHE_S,
         )
+
+    @extend_schema(responses={200: StandingSerializer, 404: None})
+    @action(
+        detail=True,
+        methods=["get"],
+        url_path="standings/me",
+        permission_classes=[IsAuthenticated],
+    )
+    def my_standing(self, request: Request, slug: str | None = None) -> Response:
+        """Foydalanuvchining O'Z qatori — ommaviy jadvaldan alohida.
+
+        Ommaviy jadval `STANDINGS_TOP` bilan cheklangan, ya'ni 10 000
+        qatnashchili musobaqada 501-o'rindagi odam o'z natijasini umuman
+        ko'ra olmasdi.
+
+        Qatorni umumiy javobga qo'shib bo'lmaydi: o'shanda javob har
+        foydalanuvchi uchun boshqacha bo'lib, CDN uni keshlay olmaydi va
+        butun tomoshabin yuki origin'ga tushadi. Shuning uchun ALOHIDA,
+        kichik va keshlanmaydigan so'rov.
+        """
+        contest = self.get_object()
+        assert isinstance(request.user, User)
+        row = (
+            Standing.objects.filter(contest=contest, user=request.user)
+            .select_related("user")
+            .first()
+        )
+        if row is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(StandingSerializer(row).data)
 
     @extend_schema(request=None, responses={201: RegistrationSerializer})
     @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])

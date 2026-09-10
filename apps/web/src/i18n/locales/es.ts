@@ -177,6 +177,7 @@ export const es: Record<MessageKey, string> = {
   "settings.deleteAction": "Eliminar la cuenta definitivamente",
   "settings.deleteConfirm": "Esta acción no se puede deshacer. ¿Continuar?",
   "settings.deleteError": "Contraseña incorrecta",
+  "standings.you": "Tu puesto",
   "error.already_answered": "Ya has respondido a esta pregunta",
   "error.already_finalized": "Ya está finalizado",
   "error.already_paid": "Esto ya está pagado",

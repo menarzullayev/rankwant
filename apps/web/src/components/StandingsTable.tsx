@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { API_BASE, type Standing } from "@/lib/api";
+import { API_BASE, getJson, type Standing } from "@/lib/api";
 import { type Locale, t } from "@/i18n/messages";
 import {
   EmptyRow,
@@ -17,9 +17,9 @@ type Payload = { frozen: boolean; results: Standing[] };
 
 /** Standings jadvali.
  *
- * Jonli yangilanish SSE orqali (04-prd: WebSocket EMAS). Ba'zi maktab va
- * korporativ proxy'lar SSE ni buferlaydi — shuning uchun POLLING FALLBACK
- * majburiy (test-strategy § compatibility).
+ * Jonli yangilanish POLLING orqali — SSE emas (pastdagi izohga qarang).
+ * Ba'zi maktab va korporativ proxy'lar oqimni buferlaydi, ya'ni polling
+ * baribir majburiy edi (test-strategy § compatibility).
  */
 export function StandingsTable({
   slug,
@@ -33,6 +33,11 @@ export function StandingsTable({
   locale: Locale;
 }) {
   const [data, setData] = useState<Payload>(initial);
+  // Ommaviy jadval eng yaxshi 500 qatorni beradi — bu chegara CDN keshi
+  // uchun. Undan pastdagi qatnashchi o'z natijasini ko'rishi uchun qator
+  // ALOHIDA olinadi: uni umumiy javobga qo'shish javobni har foydalanuvchi
+  // uchun boshqacha qilardi va keshni yo'q qilardi.
+  const [me, setMe] = useState<Standing | null>(null);
 
   // Polling, SSE emas. Har SSE ulanish gunicorn ishchisini besh
   // daqiqagacha band qilardi va o'lchandi — to'rtta tomoshabin butun
@@ -45,11 +50,21 @@ export function StandingsTable({
     const poll = async () => {
       const res = await fetch(`${API_BASE}/contests/${slug}/standings/`);
       if (res.ok) setData(await res.json());
+      // Kirmagan yoki qatnashmagan foydalanuvchida 404 — bu xato emas.
+      setMe(
+        await getJson<Standing>(`/contests/${slug}/standings/me/`).catch(
+          () => null,
+        ),
+      );
     };
 
+    void poll();
     const timer = setInterval(poll, 15_000);
     return () => clearInterval(timer);
   }, [slug, live]);
+
+  const meShown =
+    me !== null && !data.results.some((row) => row.username === me.username);
 
   return (
     <>
@@ -77,7 +92,20 @@ export function StandingsTable({
               </TD>
             </TR>
           ))}
-          {data.results.length === 0 && (
+          {meShown && me && (
+            <TR key={me.username}>
+              <TD className="font-semibold rw-accent-ink">{me.rank}</TD>
+              <TD className="rw-accent-ink">
+                {me.username}{" "}
+                <span className="rw-dim-2">· {t(locale, "standings.you")}</span>
+              </TD>
+              <TD align="right">{me.solved_count}</TD>
+              <TD align="right" className="rw-faint">
+                {me.penalty}
+              </TD>
+            </TR>
+          )}
+          {data.results.length === 0 && !meShown && (
             <EmptyRow colSpan={4}>{t(locale, "empty")}</EmptyRow>
           )}
         </TBody>

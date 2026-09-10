@@ -773,6 +773,39 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedStandingList'
           description: ''
+  /api/v1/contests/{slug}/standings/me/:
+    get:
+      operationId: contests_standings_me_retrieve
+      description: |-
+        Foydalanuvchining O'Z qatori — ommaviy jadvaldan alohida.
+
+        Ommaviy jadval `STANDINGS_TOP` bilan cheklangan, ya'ni 10 000
+        qatnashchili musobaqada 501-o'rindagi odam o'z natijasini umuman
+        ko'ra olmasdi.
+
+        Qatorni umumiy javobga qo'shib bo'lmaydi: o'shanda javob har
+        foydalanuvchi uchun boshqacha bo'lib, CDN uni keshlay olmaydi va
+        butun tomoshabin yuki origin'ga tushadi. Shuning uchun ALOHIDA,
+        kichik va keshlanmaydigan so'rov.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - contests
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Standing'
+          description: ''
+        '404':
+          description: No response body
   /api/v1/contests/{slug}/virtual/:
     post:
       operationId: contests_virtual_create

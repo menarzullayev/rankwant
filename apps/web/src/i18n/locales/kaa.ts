@@ -177,6 +177,7 @@ export const kaa: Record<MessageKey, string> = {
   "settings.deleteAction": "Esaptı tolıq óshiriw",
   "settings.deleteConfirm": "Bul ámeldi qaytarıp bolmaydı. Dawam etesizbe?",
   "settings.deleteError": "Parol qáte",
+  "standings.you": "Sizdiń orıńız",
   "error.already_answered": "Bul sorawǵa aldın juwap berdińiz",
   "error.already_finalized": "Aldın tamamlanǵan",
   "error.already_paid": "Bul aldın tólengen",

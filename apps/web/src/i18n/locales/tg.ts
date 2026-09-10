@@ -178,6 +178,7 @@ export const tg: Record<MessageKey, string> = {
   "settings.deleteConfirm":
     "Ин амалро баргардонидан мумкин нест. Идома медиҳед?",
   "settings.deleteError": "Парол нодуруст аст",
+  "standings.you": "Ҷойи шумо",
   "error.already_answered": "Шумо аллакай ба ин савол ҷавоб додаед",
   "error.already_finalized": "Аллакай анҷом ёфтааст",
   "error.already_paid": "Ин аллакай пардохт шудааст",

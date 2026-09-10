@@ -11,6 +11,7 @@ from rest_framework.test import APIClient
 
 from contests.models import Contest, ContestProblem, ContestRegistration, Standing
 from contests.services import WRONG_ATTEMPT_PENALTY_MIN, finalize_contest, rebuild_standings
+from contests.views import STANDINGS_TOP
 from core.models import User
 from judging.models import Attempt
 from judging.verdicts import Verdict
@@ -601,3 +602,59 @@ class TestIoiJadvali:
             .values_list("user__username", "solved_count", "penalty")
         )
         assert rows == [(user.username, 1, 10), (other_user.username, 1, 30)]
+
+
+@pytest.mark.django_db
+class TestOzQatori:
+    """Ommaviy jadval `STANDINGS_TOP` bilan cheklangan — o'z qatori alohida."""
+
+    def _kop_qatnashchi(self, contest: Contest, n: int) -> User:
+        users = [User(username=f"q{i}") for i in range(n)]
+        User.objects.bulk_create(users)
+        rows = User.objects.filter(username__startswith="q").order_by("pk")
+        Standing.objects.bulk_create(
+            [
+                Standing(contest=contest, user=u, rank=i + 1, solved_count=1, penalty=i)
+                for i, u in enumerate(rows)
+            ]
+        )
+        return rows[n - 1]
+
+    def test_ommaviy_jadval_cheklangan(self, contest) -> None:
+        self._kop_qatnashchi(contest, STANDINGS_TOP + 20)
+
+        body = APIClient().get(reverse("contest-standings", args=[contest.slug])).json()
+
+        assert len(body["results"]) == STANDINGS_TOP
+
+    def test_chegaradan_tashqaridagi_ozini_koradi(self, contest) -> None:
+        oxirgi = self._kop_qatnashchi(contest, STANDINGS_TOP + 20)
+        c = APIClient()
+        c.force_authenticate(user=oxirgi)
+
+        r = c.get(reverse("contest-my-standing", args=[contest.slug]))
+
+        assert r.status_code == 200
+        assert r.data["rank"] == STANDINGS_TOP + 20
+        assert r.data["username"] == oxirgi.username
+
+    def test_ommaviy_javob_keshlanadigan_qoladi(self, contest) -> None:
+        """O'z qatorini umumiy javobga qo'shish CDN keshini yo'q qilardi."""
+        self._kop_qatnashchi(contest, 3)
+
+        r = APIClient().get(reverse("contest-standings", args=[contest.slug]))
+
+        assert "public" in r["Cache-Control"]
+        assert "Cookie" not in r.get("Vary", "")
+
+    def test_anonim_ololmaydi(self, contest) -> None:
+        assert APIClient().get(reverse("contest-my-standing", args=[contest.slug])).status_code in (
+            401,
+            403,
+        )
+
+    def test_qatnashmaganga_404(self, contest, user) -> None:
+        c = APIClient()
+        c.force_authenticate(user=user)
+
+        assert c.get(reverse("contest-my-standing", args=[contest.slug])).status_code == 404
