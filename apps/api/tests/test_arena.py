@@ -10,7 +10,17 @@ from django.utils import timezone
 from rest_framework.test import APIClient
 
 from arena.models import ArenaParticipation, ArenaQuestion, ArenaRound
-from arena.services import ArenaError, answer, finalize, join, points_for
+from arena.services import (
+    TOP_LIMIT,
+    ArenaError,
+    answer,
+    finalize,
+    join,
+    my_standing,
+    points_for,
+    standings,
+)
+from core.models import User
 from quizzes.models import Choice, Question
 from qvant import ledger
 
@@ -175,3 +185,65 @@ def test_standings_chegaralangan(running) -> None:
     # Kesish saralashdan KEYIN bo'lishi kerak — eng yuqori ball birinchi.
     scores = [int(row["score"]) for row in rows]  # type: ignore[call-overload]
     assert scores == sorted(scores, reverse=True)
+
+
+@pytest.mark.django_db
+class TestOzQatoriArena:
+    """Ommaviy jadval `TOP_LIMIT` bilan cheklangan — o'z qatori alohida."""
+
+    def _ishtirokchilar(self, arena: ArenaRound, n: int) -> list[User]:
+        users = [User(username=f"a{i}") for i in range(n)]
+        User.objects.bulk_create(users)
+        rows = list(User.objects.filter(username__startswith="a").order_by("pk"))
+        ArenaParticipation.objects.bulk_create(
+            [
+                # Ball KAMAYIB boradi: birinchi yaratilgan eng yuqorida.
+                ArenaParticipation(round=arena, user=u, score=(n - i) * 10, total_ms=i)
+                for i, u in enumerate(rows)
+            ]
+        )
+        return rows
+
+    def test_orin_ommaviy_jadval_bilan_bir_xil(self, running) -> None:
+        """Ikki manba bir xil mezondan hisoblanishi SHART."""
+        users = self._ishtirokchilar(running, 30)
+        ommaviy = standings(running)
+
+        for kutilgan in (1, 7, 30):
+            username = ommaviy[kutilgan - 1]["username"]
+            user = next(u for u in users if u.username == username)
+
+            meniki = my_standing(running, user)
+
+            assert meniki is not None
+            assert meniki["rank"] == kutilgan, f"{username}: jadvalda {kutilgan}"
+            assert meniki["score"] == ommaviy[kutilgan - 1]["score"]
+
+    def test_chegaradan_tashqarida_ham_ishlaydi(self, running) -> None:
+        users = self._ishtirokchilar(running, TOP_LIMIT + 5)
+        oxirgi = users[-1]
+
+        meniki = my_standing(running, oxirgi)
+
+        assert len(standings(running)) == TOP_LIMIT
+        assert meniki is not None
+        assert meniki["rank"] == TOP_LIMIT + 5
+
+    def test_qatnashmaganga_none(self, running, user) -> None:
+        assert my_standing(running, user) is None
+
+    def test_endpoint(self, running) -> None:
+        users = self._ishtirokchilar(running, 3)
+        c = APIClient()
+        c.force_authenticate(user=users[1])
+
+        r = c.get(reverse("arena-my-standing", args=[running.slug]))
+
+        assert r.status_code == 200
+        assert r.data["rank"] == 2
+
+    def test_anonim_ololmaydi(self, running) -> None:
+        assert APIClient().get(reverse("arena-my-standing", args=[running.slug])).status_code in (
+            401,
+            403,
+        )

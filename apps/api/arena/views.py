@@ -18,6 +18,7 @@ from arena.serializers import (
     CurrentQuestionSerializer,
 )
 from arena.services import ArenaError, answer, join, standings
+from arena.services import my_standing as my_standing_of
 from core.cache import edge_cacheable
 from core.models import User
 from quizzes.serializers import QuestionPublicSerializer
@@ -124,3 +125,18 @@ class ArenaViewSet(viewsets.ReadOnlyModelViewSet[ArenaRound]):
         return edge_cacheable(
             Response({"results": standings(self.get_object())}), STANDINGS_CACHE_S
         )
+
+    @extend_schema(responses={200: ArenaStandingSerializer, 404: None})
+    @action(
+        detail=True,
+        methods=["get"],
+        url_path="standings/me",
+        permission_classes=[IsAuthenticated],
+    )
+    def my_standing(self, request: Request, slug: str | None = None) -> Response:
+        """O'z qatori — ommaviy jadval `TOP_LIMIT` bilan cheklangani uchun."""
+        assert isinstance(request.user, User)
+        row = my_standing_of(self.get_object(), request.user)
+        if row is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(row)

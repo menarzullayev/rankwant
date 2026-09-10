@@ -36,6 +36,10 @@ export function ArenaPlayer({ initial }: { initial: ArenaDetail }) {
   const [arena, setArena] = useState(initial);
   const [current, setCurrent] = useState<ArenaCurrent | null>(null);
   const [rows, setRows] = useState<ArenaStanding[]>([]);
+  // Ommaviy jadval eng yaxshi 500 tani beradi — bu chegara CDN keshi
+  // uchun. O'z qatorini unga qo'shib bo'lmaydi (javob har kimga
+  // boshqacha bo'lib qolardi), shuning uchun alohida olinadi.
+  const [me, setMe] = useState<ArenaStanding | null>(null);
   const [left, setLeft] = useState(0);
   const [feedback, setFeedback] = useState<string>("");
   const [error, setError] = useState("");
@@ -92,8 +96,18 @@ export function ArenaPlayer({ initial }: { initial: ArenaDetail }) {
         .then((r) => r.json())
         .then((d) => setRows(d.results ?? []))
         .catch(() => {});
+    const fetchMe = () =>
+      // Kirmagan yoki qatnashmagan foydalanuvchida 404 — bu xato emas.
+      getJson<ArenaStanding>(`/arena/${arena.slug}/standings/me/`)
+        .then(setMe)
+        .catch(() => setMe(null));
+
     void fetchRows();
-    const poll = setInterval(fetchRows, 5000);
+    void fetchMe();
+    const poll = setInterval(() => {
+      void fetchRows();
+      void fetchMe();
+    }, 5000);
     return () => clearInterval(poll);
   }, [arena.slug]);
 
@@ -210,7 +224,22 @@ export function ArenaPlayer({ initial }: { initial: ArenaDetail }) {
                 <TD align="right">{r.correct_count}</TD>
               </TR>
             ))}
-            {rows.length === 0 && (
+            {me && !rows.some((r) => r.username === me.username) && (
+              <TR key={me.username}>
+                <TD className="font-semibold rw-accent-ink">{me.rank}</TD>
+                <TD className="font-medium rw-accent-ink">
+                  {me.display_name || me.username}{" "}
+                  <span className="rw-dim-2">
+                    · {t(locale, "standings.you")}
+                  </span>
+                </TD>
+                <TD align="right" className="font-semibold">
+                  {me.score}
+                </TD>
+                <TD align="right">{me.correct_count}</TD>
+              </TR>
+            )}
+            {rows.length === 0 && !me && (
               <EmptyRow colSpan={4}>{t(locale, "empty")}</EmptyRow>
             )}
           </TBody>

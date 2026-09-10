@@ -176,6 +176,29 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedArenaStandingList'
           description: ''
+  /api/v1/arena/{slug}/standings/me/:
+    get:
+      operationId: arena_standings_me_retrieve
+      description: O'z qatori — ommaviy jadval `TOP_LIMIT` bilan cheklangani uchun.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - arena
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArenaStanding'
+          description: ''
+        '404':
+          description: No response body
   /api/v1/articles/:
     get:
       operationId: articles_list

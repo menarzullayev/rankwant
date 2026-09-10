@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 
 from django.db import transaction
-from django.db.models import F
+from django.db.models import F, Q
 from django.utils import timezone
 
 from arena.models import ArenaAnswer, ArenaParticipation, ArenaRound
@@ -112,6 +112,37 @@ def standings(arena: ArenaRound, limit: int = TOP_LIMIT) -> list[dict[str, objec
         }
         for i, row in enumerate(rows)
     ]
+
+
+def my_standing(arena: ArenaRound, user: User) -> dict[str, object] | None:
+    """Foydalanuvchining O'Z qatori — `TOP_LIMIT` dan pastda bo'lsa ham.
+
+    Ommaviy jadval chekkada keshlanadi, ya'ni unga shaxsiy qator qo'shib
+    bo'lmaydi. O'rin `Meta.ordering` bilan BIR XIL mezon bo'yicha
+    sanaladi (`-score, total_ms, joined_at`) — aks holda ikkita joyda
+    ikki xil o'rin ko'rinardi.
+    """
+    row = ArenaParticipation.objects.filter(round=arena, user=user).select_related("user").first()
+    if row is None:
+        return None
+
+    oldinda = (
+        ArenaParticipation.objects.filter(round=arena)
+        .filter(
+            Q(score__gt=row.score)
+            | Q(score=row.score, total_ms__lt=row.total_ms)
+            | Q(score=row.score, total_ms=row.total_ms, joined_at__lt=row.joined_at)
+        )
+        .count()
+    )
+    return {
+        "rank": oldinda + 1,
+        "username": row.user.username,
+        "display_name": row.user.display_name,
+        "score": row.score,
+        "correct_count": row.correct_count,
+        "total_ms": row.total_ms,
+    }
 
 
 @transaction.atomic
