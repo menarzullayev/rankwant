@@ -149,6 +149,20 @@ class TestShablon:
         rasmlar = zanjir.last.html.count("<img")
         assert rasmlar == 1, "faqat logotip bo'lishi kerak"
 
+    def test_shablon_izohlari_xatga_chiqmaydi(self, zanjir: Yozib) -> None:
+        """Django'da `{# … #}` FAQAT bitta qatorda ishlaydi.
+
+        Ko'p qatorli yozilganda u izoh deb tanilmaydi va oddiy matn bo'lib
+        chiqadi. O'lchandi: mening ichki izohlarim uchta haqiqiy xatning
+        tanasida foydalanuvchiga ko'rinib turdi.
+        """
+        emails.send_password_reset(odam(), token="TOK", code="482913")
+
+        assert zanjir.last is not None
+        for qoldiq in ("{#", "#}", "{%", "%}", "{{", "}}"):
+            assert qoldiq not in zanjir.last.html, qoldiq
+            assert qoldiq not in zanjir.last.text, qoldiq
+
     def test_matnli_nusxada_html_yoq(self, zanjir: Yozib) -> None:
         emails.send_password_reset(odam(), token="TOK", code="482913")
 
