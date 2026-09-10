@@ -32,6 +32,7 @@ Har bir ADR:
 | [0012](0012-seven-difficulty-levels.md)          | Qiyinlik shkalasi — yetti daraja          | **accepted**       |
 | [0013](0013-editorial-spoiler-gate.md)           | Yechim tahlili — spoyler darvozasi        | **accepted**       |
 | [0014](0014-codeforces-handle-seed.md)           | Codeforces handle'i — tavsiya urug'i      | rejected           |
+| [0015](0015-account-email.md)                    | Hisob xatlari — brendlangan, kuzatuvsiz   | **accepted**       |
 
 ## Qoidalar
 
