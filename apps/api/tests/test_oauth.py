@@ -27,6 +27,7 @@ def sozlangan(settings: Any) -> Any:
     settings.GOOGLE_CLIENT_ID = "cid"
     settings.GOOGLE_CLIENT_SECRET = "secret"
     settings.TELEGRAM_BOT_TOKEN = BOT
+    settings.TELEGRAM_BOT_USERNAME = "rankwant_bot"
     settings.SITE_URL = "https://rankwant.bugvector.uz"
     return settings
 
@@ -96,6 +97,17 @@ class TestCallback:
         r = c.get(reverse("social-callback", args=["google"]) + "?code=c&state=soxta")
 
         assert "social=error" in r.headers["Location"]
+
+    def test_statesiz_sorov_rad_etiladi(self, sozlangan: Any, monkeypatch: Any) -> None:
+        """`None != None` yolg'on bo'lgani uchun, `state` siz kelgan so'rov
+        ochiq oqimi yo'q brauzerda tekshiruvdan o'tib ketardi — hujumchi
+        qurbonni o'z hisobiga kiritib qo'ya olardi (login CSRF)."""
+        kelgan(monkeypatch, "hujumchi@example.com")
+
+        r = APIClient().get(reverse("social-callback", args=["google"]) + "?code=c")
+
+        assert "social=error" in r.headers["Location"]
+        assert not User.objects.exists(), "hisob ochilmasin"
 
     def test_yangi_hisob_yaratiladi(self, sozlangan: Any, monkeypatch: Any) -> None:
         kelgan(monkeypatch, "yangi@example.com")

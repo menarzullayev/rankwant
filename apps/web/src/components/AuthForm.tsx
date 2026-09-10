@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { useSession } from "@/context/SessionContext";
 import { Button } from "@/components/ui/Button";
@@ -36,10 +36,14 @@ export function AuthForm({ mode }: { mode: Mode }) {
   const [busy, setBusy] = useState(false);
   const [visible, setVisible] = useState(false);
   const [providers, setProviders] = useState<Provider[]>([]);
+  const [telegramBot, setTelegramBot] = useState("");
 
   useEffect(() => {
-    getJson<{ providers: Provider[] }>("/auth/providers/")
-      .then((data) => setProviders(data.providers))
+    getJson<{ providers: Provider[]; telegram_bot: string }>("/auth/providers/")
+      .then((data) => {
+        setProviders(data.providers);
+        setTelegramBot(data.telegram_bot);
+      })
       // Ro'yxat kelmasa forma baribir ishlaydi — parol asosiy yo'l.
       .catch(() => setProviders([]));
   }, []);
@@ -185,15 +189,20 @@ export function AuthForm({ mode }: { mode: Mode }) {
             <span className="h-px flex-1 border-t rw-line" />
           </div>
           <div className="flex flex-col gap-2">
-            {providers.map((p) => (
-              <a
-                key={p}
-                href={`/api/v1/auth/${p}/start/`}
-                className="flex h-11 items-center justify-center gap-2 rw-radius-sm border rw-line text-theme-sm font-medium rw-strong transition rw-hover-bg rw-focus-ring"
-              >
-                {t(locale, PROVIDER_LABEL[p])}
-              </a>
-            ))}
+            {providers
+              .filter((p) => p !== "telegram")
+              .map((p) => (
+                <a
+                  key={p}
+                  href={`/api/v1/auth/${p}/start/`}
+                  className="flex h-11 items-center justify-center gap-2 rw-radius-sm border rw-line text-theme-sm font-medium rw-strong transition rw-hover-bg rw-focus-ring"
+                >
+                  {t(locale, PROVIDER_LABEL[p])}
+                </a>
+              ))}
+            {providers.includes("telegram") && telegramBot && (
+              <TelegramButton bot={telegramBot} />
+            )}
           </div>
         </>
       )}
@@ -274,6 +283,31 @@ function LinkAccount({ provider }: { provider: string }) {
       </p>
     </form>
   );
+}
+
+/** Telegram OAuth EMAS: u o'z widgetini chizadi va imzolangan ma'lumotni
+ *  to'g'ridan-to'g'ri callback'ga yuboradi. Shu sababli bu yerda havola
+ *  emas, provayderning o'z skripti turadi. */
+function TelegramButton({ bot }: { bot: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const host = ref.current;
+    if (!host || host.childElementCount > 0) return;
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = "https://telegram.org/js/telegram-widget.js?22";
+    script.setAttribute("data-telegram-login", bot);
+    script.setAttribute("data-size", "large");
+    script.setAttribute("data-radius", "8");
+    script.setAttribute(
+      "data-auth-url",
+      `${window.location.origin}/api/v1/auth/telegram/callback/`,
+    );
+    host.appendChild(script);
+  }, [bot]);
+
+  return <div ref={ref} className="flex justify-center" />;
 }
 
 function Eye() {

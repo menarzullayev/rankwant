@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import secrets
 from datetime import timedelta
 from typing import Any
 
@@ -606,7 +607,13 @@ class AuthProvidersView(APIView):
 
     @extend_schema(responses={200: None})
     def get(self, request: Request) -> Response:
-        return Response({"providers": oauth.configured()})
+        return Response(
+            {
+                "providers": oauth.configured(),
+                # Telegram widgetiga bot nomi kerak — u sir emas.
+                "telegram_bot": settings.TELEGRAM_BOT_USERNAME,
+            }
+        )
 
 
 #: Bog'lash tokeni sessiyada shuncha turadi. Foydalanuvchi parolini
@@ -621,7 +628,10 @@ class SocialStartView(APIView):
 
     @extend_schema(responses={302: None})
     def get(self, request: Request, provider: str) -> HttpResponseRedirect:
-        if provider not in oauth.configured():
+        if provider not in oauth.configured() or provider not in oauth.AUTHORIZE:
+            # Telegram bu yerga TUSHMAYDI: u OAuth emas va frontend uning
+            # o'z widgetini chizadi. Shunga qaramay tekshiruv turadi —
+            # aks holda bu yo'l 500 berardi.
             return redirect(f"{settings.SITE_URL}/login?social=unavailable")
         state = oauth.new_state()
         # CSRF: qaytgan `state` sessiyadagisi bilan solishtiriladi, ya'ni
@@ -641,7 +651,13 @@ class SocialCallbackView(APIView):
         home = settings.SITE_URL
         if provider not in oauth.configured():
             return redirect(f"{home}/login?social=unavailable")
-        if request.GET.get("state") != request.session.pop("social_state", None):
+        # BO'SHLIK tekshiruvi ataylab alohida: `None != None` yolg'on
+        # bo'lgani uchun, `state` siz kelgan so'rov ochiq oqimi yo'q
+        # brauzerda tekshiruvdan O'TIB KETARDI — hujumchi qurbonni o'z
+        # hisobiga kiritib qo'yishi mumkin edi (login CSRF).
+        state = request.GET.get("state", "")
+        expected = request.session.pop("social_state", "") or ""
+        if not state or not expected or not secrets.compare_digest(state, expected):
             log.warning("social state mos kelmadi: %s", provider)
             return redirect(f"{home}/login?social=error")
 

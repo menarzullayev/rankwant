@@ -39,7 +39,7 @@ USER_AGENT = "RankWant/1.0 (+https://rankwant.bugvector.uz)"
 REQUIRED: dict[str, tuple[str, ...]] = {
     "google": ("GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"),
     "github": ("GITHUB_CLIENT_ID", "GITHUB_CLIENT_SECRET"),
-    "telegram": ("TELEGRAM_BOT_TOKEN",),
+    "telegram": ("TELEGRAM_BOT_TOKEN", "TELEGRAM_BOT_USERNAME"),
 }
 
 #: Telegram widget imzosi shuncha vaqt amal qiladi. Qayta yuborishning
