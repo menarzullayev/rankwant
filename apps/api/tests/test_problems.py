@@ -1002,3 +1002,21 @@ class TestMediaEndpointi:
         monkeypatch.setattr(media_views, "get_media", lambda key: (b"x", "image/png"))
 
         assert APIClient().post(self._url("abc.png")).status_code == 405
+
+
+@pytest.mark.django_db
+class TestOmmaviyStatistikaKeshi:
+    """Raqamlar hamma uchun bir xil — chekka ularni saqlashi kerak."""
+
+    def test_stats_keshlanadi(self, problem) -> None:
+        r = APIClient().get(reverse("problem-stats", args=[problem.slug]))
+
+        assert "public" in r["Cache-Control"]
+        # `Vary: Cookie` bo'lsa CDN kirgan foydalanuvchi uchun keshlamaydi.
+        assert "Cookie" not in r.get("Vary", "")
+
+    def test_solvers_keshlanadi(self, problem) -> None:
+        r = APIClient().get(reverse("problem-solvers", args=[problem.slug]))
+
+        assert "public" in r["Cache-Control"]
+        assert "Cookie" not in r.get("Vary", "")

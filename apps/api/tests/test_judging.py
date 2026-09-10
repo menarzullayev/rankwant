@@ -722,3 +722,31 @@ class TestTilJarayonChegarasi:
         )
 
         assert build_job(attempt).limits["processes"] == 1
+
+
+@pytest.mark.django_db
+class TestMasalaFiltri:
+    """Filtr ID bo'yicha ishlaydi — natija slug bilan bir xil bo'lishi shart."""
+
+    def test_faqat_shu_masala(self, user, problem, hard_problem, language) -> None:
+        Attempt.objects.create(
+            user=user, problem=problem, language=language, source_code="a", verdict=Verdict.AC
+        )
+        Attempt.objects.create(
+            user=user, problem=hard_problem, language=language, source_code="b", verdict=Verdict.WA
+        )
+        c = APIClient()
+
+        body = c.get(reverse("attempt-list"), {"problem": problem.slug}).json()
+
+        assert [row["problem"] for row in body["results"]] == [problem.slug]
+
+    def test_notanish_slug_bosh_royxat(self, user, problem, language) -> None:
+        Attempt.objects.create(
+            user=user, problem=problem, language=language, source_code="a", verdict=Verdict.AC
+        )
+        c = APIClient()
+
+        body = c.get(reverse("attempt-list"), {"problem": "yoq-bunday-masala"}).json()
+
+        assert body["results"] == []

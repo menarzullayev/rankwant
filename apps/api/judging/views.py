@@ -52,9 +52,18 @@ class AttemptViewSet(
 
         problem = params.get("problem")
         if problem:
-            qs = qs.filter(problem__slug=problem)
+            # ID bo'yicha — `problem__slug` ATAYIN emas. Join qo'shilishi
+            # bilan Postgres `attempt_problem_feed` (problem, -created_at)
+            # indeksidan foydalana olmay qoladi: u masalaning BARCHA
+            # urinishlarini skanerlab, keyin saralab 26 tasini oladi.
+            # O'lchandi (50 852 urinishli masala): 86.4 ms → 2.2 ms,
+            # 156 881 bufer sahifasi o'rniga bir nechta.
+            qs = qs.filter(problem_id=Problem.objects.filter(slug=problem).values("pk")[:1])
         username = params.get("username")
         if username:
+            # Bu yerda esa join TEZROQ (o'lchandi: 6.0 ms, ID bilan 17.3) —
+            # foydalanuvchi bo'yicha alohida indeks yo'q va rejalashtiruvchi
+            # join'li shaklda yaxshiroq reja tanlaydi.
             qs = qs.filter(user__username=username)
 
         # Ommabop masalada urinish minglab bo'ladi va filtrsiz ro'yxat

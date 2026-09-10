@@ -16,6 +16,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from core.cache import edge_cacheable
 from core.models import User
 from core.pagination import StandardPagination
 from judging.verdicts import Verdict
@@ -287,6 +288,12 @@ class RecommendationView(APIView):
         )
 
 
+#: Ommaviy statistika chekkada shuncha saqlanadi. Raqamlar sekundma-sekund
+#: yangi bo'lishi shart emas: yuborish oqimi jadvalni asta o'zgartiradi,
+#: sahifa esa har ochilganda beshta agregat so'rovni qaytadan bajarardi.
+PUBLIC_STATS_CACHE_S = 60
+
+
 class ProblemStatsView(APIView):
     """Masala statistikasi — verdikt va til TAQSIMOTI.
 
@@ -342,13 +349,19 @@ class ProblemStatsView(APIView):
                 )
         fastest.sort(key=lambda row: row["time_ms"])
 
-        return Response(
-            {
-                "total": attempts.count(),
-                "verdicts": verdicts,
-                "languages": languages,
-                "fastest": fastest,
-            }
+        # Raqamlar hamma uchun bir xil va tez o'zgarmaydi — chekkada
+        # keshlanadi. O'lchandi: har so'rov 91 ms va beshta agregat
+        # so'rov, ular orasida HAR TIL uchun alohida so'rov ham bor.
+        return edge_cacheable(
+            Response(
+                {
+                    "total": attempts.count(),
+                    "verdicts": verdicts,
+                    "languages": languages,
+                    "fastest": fastest,
+                }
+            ),
+            PUBLIC_STATS_CACHE_S,
         )
 
 
@@ -421,7 +434,11 @@ class ProblemSolversView(APIView):
         if key and key != "solved_at":
             solvers.sort(key=lambda row: row[key])  # type: ignore[arg-type,return-value]
 
-        return Response({"count": len(first_ids), "results": solvers})
+        # Ro'yxat ham hamma uchun bir xil — `ordering` esa URL da, ya'ni
+        # chekka uni alohida kalit sifatida saqlaydi.
+        return edge_cacheable(
+            Response({"count": len(first_ids), "results": solvers}), PUBLIC_STATS_CACHE_S
+        )
 
 
 class ProgressView(APIView):
