@@ -728,6 +728,24 @@ export async function getJson<T>(
   return (await res.json()) as T;
 }
 
+export type AuthProviders = { providers: string[]; telegram_bot: string };
+
+/** Sozlangan ijtimoiy provayderlar — SERVER komponentidan chaqiriladi.
+ *
+ * Ro'yxat brauzerda emas, serverda olinadi va tugmalar HTML ga qo'shilib
+ * keladi. Sabab o'lchandi: brauzerda olinganda so'rov yiqilsa yoki JS
+ * umuman ishga tushmasa (iPhone'da shunday bo'ldi) foydalanuvchi hech
+ * qanday xabarsiz BARCHA ijtimoiy kirish yo'llarini yo'qotardi.
+ * Google va GitHub tugmasi — oddiy havola, ularga JS umuman kerak emas.
+ */
+export async function fetchProviders(): Promise<AuthProviders> {
+  try {
+    return await getJson<AuthProviders>("/auth/providers/");
+  } catch {
+    return { providers: [], telegram_bot: "" };
+  }
+}
+
 /** Joriy sessiya — brauzerda. Kirmagan bo'lsa `null`. */
 export async function fetchMe(): Promise<UserPublic | null> {
   const res = await fetch(`${API_BASE}/me/`, {

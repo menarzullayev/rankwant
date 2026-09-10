@@ -24,7 +24,16 @@ const PROVIDER_LABEL = {
 
 type Provider = keyof typeof PROVIDER_LABEL;
 
-export function AuthForm({ mode }: { mode: Mode }) {
+export function AuthForm({
+  mode,
+  providers,
+  telegramBot,
+}: {
+  mode: Mode;
+  /** Serverda olinadi — tugmalar HTML da keladi va JS ga bog'liq emas. */
+  providers: string[];
+  telegramBot: string;
+}) {
   const locale = useLocale();
   const router = useRouter();
   const params = useSearchParams();
@@ -36,8 +45,6 @@ export function AuthForm({ mode }: { mode: Mode }) {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [providers, setProviders] = useState<Provider[]>([]);
-  const [telegramBot, setTelegramBot] = useState("");
   // Yozayotgandagi tekshiruv faqat ro'yxatdan o'tishda kerak: kirishda
   // nom band ekanini aytish mavjud hisoblarni sanab chiqish yo'li bo'lardi.
   const [username, setUsername] = useState("");
@@ -48,16 +55,6 @@ export function AuthForm({ mode }: { mode: Mode }) {
   // holati shundan hosil qilinadi va uni alohida yozib qo'yish shart
   // emas — effekt ichida holat o'rnatish qayta-qayta render chaqiradi.
   const [nameCheck, setNameCheck] = useState<{ for: string; status: FieldStatus }>();
-
-  useEffect(() => {
-    getJson<{ providers: Provider[]; telegram_bot: string }>("/auth/providers/")
-      .then((data) => {
-        setProviders(data.providers);
-        setTelegramBot(data.telegram_bot);
-      })
-      // Ro'yxat kelmasa forma baribir ishlaydi — parol asosiy yo'l.
-      .catch(() => setProviders([]));
-  }, []);
 
   // Har bosilgan tugmaga so'rov yuborilmaydi: odam yozishdan
   // to'xtaganda bittasi ketadi va oldingisi bekor qilinadi — aks holda
@@ -181,7 +178,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
         <>
           <div className="flex flex-col gap-2">
             {providers
-              .filter((p) => p !== "telegram")
+              .filter((p): p is Provider => p !== "telegram" && p in PROVIDER_LABEL)
               .map((p) => (
                 <a
                   key={p}
