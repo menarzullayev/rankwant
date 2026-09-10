@@ -24,7 +24,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from contests.models import Contest
-from core import account, recovery
+from core import account, oauth, recovery
 from core.cache import cache_get, cache_set
 from core.models import ApiToken, User
 from core.pagination import StandardPagination, TimeCursorPagination
@@ -583,3 +583,18 @@ class PasswordResetConfirmView(APIView):
         # `AbstractBaseUser.get_session_auth_hash()` bilan bekor bo'ladi.
         log.info("parol tiklandi: %s", user.pk)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class AuthProvidersView(APIView):
+    """Sozlangan ijtimoiy kirish provayderlari.
+
+    Frontend shu ro'yxat bo'yicha tugma chizadi: kaliti yo'q provayder
+    tugmasi umuman ko'rinmaydi va foydalanuvchi ishlamaydigan yo'lni
+    bosmaydi (ADR-0016).
+    """
+
+    permission_classes = [AllowAny]
+
+    @extend_schema(responses={200: None})
+    def get(self, request: Request) -> Response:
+        return Response({"providers": oauth.configured()})

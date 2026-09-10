@@ -2,16 +2,26 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useSession } from "@/context/SessionContext";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t, errorText } from "@/i18n/messages";
-import { ApiError, postJson } from "@/lib/api";
+import { ApiError, getJson, postJson } from "@/lib/api";
 
 type Mode = "login" | "register";
+
+/** Provayder kaliti sozlanmagan bo'lsa tugmasi umuman ko'rinmaydi —
+ *  API `/auth/providers/` da faqat tayyorlarini qaytaradi (ADR-0016). */
+const PROVIDER_LABEL = {
+  google: "auth.withGoogle",
+  github: "auth.withGithub",
+  telegram: "auth.withTelegram",
+} as const;
+
+type Provider = keyof typeof PROVIDER_LABEL;
 
 export function AuthForm({ mode }: { mode: Mode }) {
   const locale = useLocale();
@@ -19,14 +29,29 @@ export function AuthForm({ mode }: { mode: Mode }) {
   const { reload } = useSession();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [providers, setProviders] = useState<Provider[]>([]);
+
+  useEffect(() => {
+    getJson<{ providers: Provider[] }>("/auth/providers/")
+      .then((data) => setProviders(data.providers))
+      // Ro'yxat kelmasa forma baribir ishlaydi — parol asosiy yo'l.
+      .catch(() => setProviders([]));
+  }, []);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
-    setBusy(true);
     const form = new FormData(event.currentTarget);
     const payload = Object.fromEntries(form) as Record<string, string>;
 
+    if (mode === "register" && payload.password !== payload.password2) {
+      setError(t(locale, "auth.passwordMismatch"));
+      return;
+    }
+    delete payload.password2;
+
+    setBusy(true);
     try {
       if (mode === "register") {
         await postJson("/auth/register/", payload);
@@ -54,39 +79,107 @@ export function AuthForm({ mode }: { mode: Mode }) {
     }
   }
 
+  const eye = (
+    <button
+      type="button"
+      onClick={() => setVisible((v) => !v)}
+      aria-pressed={visible}
+      aria-label={t(locale, "auth.togglePassword")}
+      title={t(locale, "auth.togglePassword")}
+      className="grid h-9 w-9 place-items-center rw-radius-sm rw-dim transition hover:rw-strong rw-focus-ring"
+    >
+      {visible ? <EyeOff /> : <Eye />}
+    </button>
+  );
+
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-4">
-      <Field
-        label={t(locale, "auth.username")}
-        name="username"
-        required
-        autoComplete="username"
-      />
-      {mode === "register" && (
+    <div className="flex flex-col gap-5">
+      <form onSubmit={onSubmit} className="flex flex-col gap-4">
         <Field
-          label={t(locale, "auth.email")}
-          name="email"
-          type="email"
+          label={t(locale, "auth.username")}
+          name="username"
           required
+          autoComplete="username"
+          minLength={mode === "register" ? 3 : undefined}
+          maxLength={mode === "register" ? 20 : undefined}
+          hint={mode === "register" ? t(locale, "auth.usernameHint") : undefined}
         />
-      )}
-      <Field
-        label={t(locale, "auth.password")}
-        name="password"
-        type="password"
-        required
-        autoComplete={mode === "login" ? "current-password" : "new-password"}
-      />
+        {mode === "register" && (
+          <Field
+            label={t(locale, "auth.email")}
+            name="email"
+            type="email"
+            required
+            autoComplete="email"
+          />
+        )}
+        <Field
+          label={t(locale, "auth.password")}
+          name="password"
+          type={visible ? "text" : "password"}
+          required
+          minLength={mode === "register" ? 8 : undefined}
+          autoComplete={mode === "login" ? "current-password" : "new-password"}
+          hint={mode === "register" ? t(locale, "auth.passwordHint") : undefined}
+          trailing={eye}
+        />
+        {mode === "register" && (
+          <Field
+            label={t(locale, "auth.passwordConfirm")}
+            name="password2"
+            type={visible ? "text" : "password"}
+            required
+            autoComplete="new-password"
+          />
+        )}
 
-      {error && (
-        <p className="rw-radius-sm rw-bad-soft px-3 py-2 text-theme-sm rw-bad-ink">
-          {error}
-        </p>
-      )}
+        {mode === "login" && (
+          <p className="-mt-1 text-right text-theme-sm">
+            <Link
+              href="/parolni-tiklash"
+              className="rw-accent-ink hover:underline"
+            >
+              {t(locale, "auth.forgot")}
+            </Link>
+          </p>
+        )}
 
-      <Button type="submit" disabled={busy}>
-        {t(locale, mode === "login" ? "auth.login" : "auth.register")}
-      </Button>
+        {error && (
+          <p
+            role="alert"
+            className="rw-radius-sm rw-bad-soft px-3 py-2 text-theme-sm rw-bad-ink"
+          >
+            {error}
+          </p>
+        )}
+
+        <Button type="submit" disabled={busy}>
+          {t(locale, mode === "login" ? "auth.login" : "auth.register")}
+        </Button>
+      </form>
+
+      {providers.length > 0 && (
+        <>
+          <div className="flex items-center gap-3">
+            <span className="h-px flex-1 border-t rw-line" />
+            <span className="text-theme-xs rw-dim">
+              {t(locale, "auth.orWith")}
+            </span>
+            <span className="h-px flex-1 border-t rw-line" />
+          </div>
+          <div className="flex flex-col gap-2">
+            {providers.map((p) => (
+              <a
+                key={p}
+                href={`/api/v1/auth/${p}/start/`}
+                className="flex h-11 items-center justify-center gap-2 rw-radius-sm border rw-line text-theme-sm font-medium rw-strong transition rw-hover-bg rw-focus-ring"
+              >
+                {t(locale, PROVIDER_LABEL[p])}
+              </a>
+            ))}
+          </div>
+        </>
+      )}
 
       <p className="text-center text-theme-sm rw-dim">
         {t(locale, mode === "login" ? "auth.noAccount" : "auth.hasAccount")}{" "}
@@ -97,6 +190,38 @@ export function AuthForm({ mode }: { mode: Mode }) {
           {t(locale, mode === "login" ? "auth.register" : "auth.login")}
         </Link>
       </p>
-    </form>
+    </div>
+  );
+}
+
+function Eye() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+      />
+      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
+function EyeOff() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M2 12s3.6-7 10-7c2 0 3.8.7 5.3 1.6M22 12s-3.6 7-10 7c-2 0-3.8-.7-5.3-1.6"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="m4 4 16 16"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
   );
 }

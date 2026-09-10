@@ -283,6 +283,15 @@ RESEND_FROM = env("RESEND_FROM")
 MAILERSEND_API_KEY = env("MAILERSEND_API_KEY")
 MAILERSEND_FROM = env("MAILERSEND_FROM")
 
+# ── Ijtimoiy kirish — ADR-0016 ───────────────────────────────────────
+# Kaliti yo'q provayder `/auth/providers/` ro'yxatiga tushmaydi va uning
+# tugmasi frontendda ko'rinmaydi.
+GOOGLE_CLIENT_ID = env("GOOGLE_CLIENT_ID")
+GOOGLE_CLIENT_SECRET = env("GOOGLE_CLIENT_SECRET")
+GITHUB_CLIENT_ID = env("GITHUB_CLIENT_ID")
+GITHUB_CLIENT_SECRET = env("GITHUB_CLIENT_SECRET")
+TELEGRAM_BOT_TOKEN = env("TELEGRAM_BOT_TOKEN")
+
 CELERY_BEAT_SCHEDULE = {
     "drain-judge-results": {
         "task": "judging.drain_results",

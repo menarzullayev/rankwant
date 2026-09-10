@@ -456,6 +456,23 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/auth/providers/:
+    get:
+      operationId: auth_providers_retrieve
+      description: |-
+        Sozlangan ijtimoiy kirish provayderlari.
+
+        Frontend shu ro'yxat bo'yicha tugma chizadi: kaliti yo'q provayder
+        tugmasi umuman ko'rinmaydi va foydalanuvchi ishlamaydigan yo'lni
+        bosmaydi (ADR-0016).
+      tags:
+      - auth
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
   /api/v1/auth/register/:
     post:
       operationId: auth_register_create
