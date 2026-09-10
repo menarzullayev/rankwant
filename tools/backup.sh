@@ -32,21 +32,57 @@ if [ "${1:-}" = "--restore-test" ]; then
   [ -n "$latest" ] || { echo "zaxira topilmadi: $dest" >&2; exit 1; }
   echo "tiklanmoqda: $latest"
 
-  counts="SELECT (SELECT count(*) FROM problems_problem), (SELECT count(*) FROM core_user),
-                 (SELECT count(*) FROM judging_attempt), (SELECT count(*) FROM qvant_qvanttransaction),
-                 (SELECT count(*) FROM problems_testcase);"
+  # Tekshiruv jonli baza bilan SOLISHTIRMAYDI. Ilgari shunday edi va u
+  # muntazam yolg'on yiqilardi: zaxira vaqt kesimi, jonli baza esa
+  # o'shandan beri o'zgargan bo'ladi — o'lchandi, 128 ta sinov hisobi
+  # o'chirilgandan keyin sinov «qator sonlari mos emas» dedi, holbuki
+  # tiklash mukammal ishlagan edi. Muntazam yolg'on ogohlantirish esa
+  # eng yomoni: odam uni e'tiborsiz qoldirishni o'rganadi.
+  #
+  # Haqiqiy savol boshqa: «shu zaxiradan tiklana olamanmi?» Uning javobi
+  # dumpning to'liq va yaxlit ekanligida.
+  tables="problems_problem core_user judging_attempt qvant_qvanttransaction problems_testcase"
+
   "${compose[@]}" exec -T postgres psql -U rankwant -d postgres -q \
     -c "DROP DATABASE IF EXISTS restore_test;" -c "CREATE DATABASE restore_test;"
-  zcat "$latest" | "${compose[@]}" exec -T postgres psql -U rankwant -d restore_test -q \
-    -v ON_ERROR_STOP=1 >/dev/null
-  tiklangan="$("${compose[@]}" exec -T postgres psql -U rankwant -d restore_test -t -A -F, -c "$counts")"
-  asl="$("${compose[@]}" exec -T postgres psql -U rankwant -d rankwant -t -A -F, -c "$counts")"
-  "${compose[@]}" exec -T postgres psql -U rankwant -d postgres -q -c "DROP DATABASE restore_test;"
+  # `ON_ERROR_STOP=1` — asosiy nosozlik turini shu ushlaydi: kesilgan yoki
+  # buzilgan dump o'rtasida to'xtaydi.
+  if ! zcat "$latest" | "${compose[@]}" exec -T postgres psql -U rankwant -d restore_test -q \
+      -v ON_ERROR_STOP=1 >/dev/null; then
+    "${compose[@]}" exec -T postgres psql -U rankwant -d postgres -q -c "DROP DATABASE restore_test;"
+    echo "XATO: dump tiklanmadi — zaxira yaroqsiz" >&2
+    exit 1
+  fi
 
-  echo "  asl:       $asl"
-  echo "  tiklangan: $tiklangan"
-  [ "$asl" = "$tiklangan" ] || { echo "XATO: qator sonlari mos emas" >&2; exit 1; }
-  echo "tiklash sinovi o'tdi"
+  fail=0
+  for t in $tables; do
+    n="$("${compose[@]}" exec -T postgres psql -U rankwant -d restore_test -t -A \
+         -c "SELECT count(*) FROM $t;" 2>/dev/null | tr -d '\r')"
+    if [ -z "$n" ]; then
+      echo "  ✗ $t — jadval yo'q"; fail=1
+    elif [ "$n" -eq 0 ]; then
+      echo "  ✗ $t — bo'sh"; fail=1
+    else
+      echo "  ✓ $t: $n qator"
+    fi
+  done
+
+  # Yaxlitlik: tiklangan nusxada osilib qolgan havola bo'lmasligi kerak.
+  # Bu ustunlarni tanlab tashlagan yoki yarim ko'chirilgan dumpni ushlaydi.
+  yetim="$("${compose[@]}" exec -T postgres psql -U rankwant -d restore_test -t -A -c "
+    SELECT (SELECT count(*) FROM judging_attempt a
+              LEFT JOIN core_user u ON u.id = a.user_id WHERE u.id IS NULL)
+         + (SELECT count(*) FROM judging_attempt a
+              LEFT JOIN problems_problem p ON p.id = a.problem_id WHERE p.id IS NULL);" 2>/dev/null | tr -d '\r')"
+  if [ "${yetim:-1}" -eq 0 ]; then
+    echo "  ✓ havolalar butun (yetim urinish yo'q)"
+  else
+    echo "  ✗ $yetim ta yetim urinish — dump yarim"; fail=1
+  fi
+
+  "${compose[@]}" exec -T postgres psql -U rankwant -d postgres -q -c "DROP DATABASE restore_test;"
+  [ "$fail" -eq 0 ] || { echo "tiklash sinovi YIQILDI" >&2; exit 1; }
+  echo "tiklash sinovi o'tdi: $latest"
   exit 0
 fi
 
