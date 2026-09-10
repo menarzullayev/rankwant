@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import pytest
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from rest_framework.test import APIClient
 
 from quizzes.models import Choice, Question, Quiz, QuizQuestion
+from quizzes.services import grade
 from qvant import ledger
 
 
@@ -120,3 +123,41 @@ def test_parallel_topshirishda_mukofot_bir_marta(user, quiz) -> None:
         t.join()
 
     assert ledger.get_wallet(user).balance == quiz.reward_qvant
+
+
+@pytest.mark.django_db
+class TestBaholashSorovSoni:
+    def test_savol_soni_bilan_osmaydi(self) -> None:
+        """`correct_choice_id` dagi `filter()` prefetch keshini chetlab
+        o'tib, har savol uchun alohida so'rov berardi."""
+
+        def yasa(slug: str, savollar: int) -> Quiz:
+            q = Quiz.objects.create(slug=slug, title=slug, is_published=True)
+            for i in range(savollar):
+                savol = Question.objects.create(text=f"s{i}", explanation="")
+                for j in range(4):
+                    Choice.objects.create(
+                        question=savol, order=j, text=f"v{j}", is_correct=(j == 0)
+                    )
+                QuizQuestion.objects.create(quiz=q, question=savol, order=i)
+            return q
+
+        kichik, katta = yasa("kichik", 2), yasa("katta", 20)
+        grade(kichik, {})
+
+        with CaptureQueriesContext(connection) as a:
+            grade(kichik, {})
+        with CaptureQueriesContext(connection) as b:
+            grade(katta, {})
+
+        assert len(b) == len(a), (
+            f"2 savolda {len(a)}, 20 savolda {len(b)} so'rov — "
+            "to'g'ri variant har savol uchun alohida olinyapti"
+        )
+
+    def test_togri_variant_hali_ham_topiladi(self) -> None:
+        savol = Question.objects.create(text="s", explanation="")
+        Choice.objects.create(question=savol, order=0, text="a", is_correct=False)
+        togri = Choice.objects.create(question=savol, order=1, text="b", is_correct=True)
+
+        assert savol.correct_choice_id == togri.pk

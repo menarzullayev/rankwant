@@ -29,8 +29,17 @@ class Question(models.Model):
 
     @property
     def correct_choice_id(self) -> int | None:
-        choice = self.choices.filter(is_correct=True).first()
-        return choice.pk if choice else None
+        """To'g'ri variant — RO'YXATDAN, `filter()` bilan emas.
+
+        `filter()` prefetch keshini chetlab o'tib yangi so'rov beradi.
+        `grade()` esa aynan shu maqsadda `prefetch_related` qiladi:
+        o'lchandi — 10 savolli test 12 ta so'rov bajarardi, ikkitasi
+        yetarli bo'lgan joyda. Variantlar soni bir savolda kichik.
+        """
+        for choice in self.choices.all():
+            if choice.is_correct:
+                return choice.pk
+        return None
 
 
 class Choice(models.Model):
