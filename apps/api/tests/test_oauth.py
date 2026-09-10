@@ -220,11 +220,13 @@ class TestTaxallusTanlash:
         assert oauth.free_username("ali") == "ali2"
 
     def test_qoidaga_mos_kelmagan_nom_tozalanadi(self) -> None:
-        """Provayder bo'sh joyli yoki chiziqchali nom berishi mumkin."""
+        """Provayder bo'sh joyli yoki kirill nom berishi mumkin —
+        chiziqcha esa endi ruxsat etilgan va saqlanadi."""
         nom = oauth.free_username("ali-valiyev jr")
 
         assert " " not in nom
-        assert "-" not in nom
+        assert "-" in nom
+        assert "лишний" not in oauth.free_username("алиlishniy")
 
     def test_taqlid_ham_hisobga_olinadi(self) -> None:
         """Yangi hisobga mavjud nomga o'xshash taxallus berilmasin."""

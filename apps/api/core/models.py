@@ -29,7 +29,19 @@ class User(AbstractUser):
     #: Yagonalik ikki darajada: registrsiz (`uniq_username_ci`) VA skelet
     #: bo'yicha — ADR-0016.
     username_skeleton = models.CharField(max_length=150, blank=True, db_index=True)
+    #: Taxallus ASCII, ISM esa cheklovsiz — kirill, lotin, har qanday
+    #: yozuv shu yerda turadi (ADR-0016).
     display_name = models.CharField(max_length=100, blank=True)
+    #: Tasdiqlash MAJBURIY EMAS: tasdiqlanmagan hisob ham to'liq ishlaydi,
+    #: faqat yuqorida eslatma turadi. Sabab — ro'yxatdan o'tishni to'sish
+    #: xat kelmagan odamni butunlay yo'qotadi, tasdiq esa asosan bizga
+    #: kerak: pochtasi ishlamaydigan hisob parolini tiklay olmaydi.
+    email_verified_at = models.DateTimeField(null=True, blank=True)
+
+    @property
+    def email_verified(self) -> bool:
+        return self.email_verified_at is not None
+
     avatar_url = models.URLField(blank=True)
     bio = models.TextField(blank=True)
     telegram_id = models.BigIntegerField(null=True, blank=True, unique=True)
@@ -193,6 +205,47 @@ class EmailDelivery(models.Model):
 
     def __str__(self) -> str:
         return f"{self.to_email}: {self.subject}"
+
+
+class EmailVerifyToken(models.Model):
+    """Pochtani tasdiqlash havolasi.
+
+    `PasswordResetToken` dan alohida, chunki qoidalari boshqa: muddati
+    uzunroq (odam xatni ertaga ham ochishi mumkin va yo'qotadigan narsa
+    yo'q), urinishlar chegarasi esa keraksiz — havola o'sha pochtaning
+    o'zidan bosiladi.
+
+    MANZIL yozib qo'yiladi. Usiz eski havola yangi manzilni tasdiqlab
+    yuborardi: odam `a@x.uz` ga xat oldi, keyin manzilni `b@y.uz` ga
+    almashtirdi va eski havolani bosib `b@y.uz` ni «tasdiqlangan» qildi —
+    holbuki u manzilga hech qanday xat bormagan.
+    """
+
+    TTL = timedelta(hours=24)
+    PER_USER_HOUR = 3
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="verify_tokens")
+    token_hash = models.CharField(max_length=64, unique=True, db_index=True)
+    code_hash = models.CharField(max_length=64)
+    #: Token chiqarilgan paytdagi manzil.
+    email = models.EmailField()
+    used_at = models.DateTimeField(null=True, blank=True)
+    expires_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        indexes: ClassVar = [models.Index(fields=["user", "-created_at"])]
+
+    def __str__(self) -> str:
+        return f"verify:{self.user_id}"
+
+    @staticmethod
+    def hash_value(value: str) -> str:
+        return hashlib.sha256(value.encode()).hexdigest()
+
+    @property
+    def is_live(self) -> bool:
+        return self.used_at is None and self.expires_at > timezone.now()
 
 
 class PasswordResetToken(models.Model):

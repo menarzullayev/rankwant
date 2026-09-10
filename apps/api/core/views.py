@@ -20,7 +20,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
-from drf_spectacular.utils import OpenApiResponse, extend_schema
+from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework import exceptions, generics, status, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
@@ -28,7 +28,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from contests.models import Contest
-from core import account, oauth, recovery
+from core import account, handles, oauth, recovery, verification
 from core.cache import cache_get, cache_set
 from core.models import ApiToken, SocialAccount, User
 from core.pagination import StandardPagination, TimeCursorPagination
@@ -36,15 +36,17 @@ from core.serializers import (
     AccountDeleteSerializer,
     ApiTokenCreateSerializer,
     ApiTokenSerializer,
+    EmailVerifySerializer,
     LoginSerializer,
     MeSerializer,
     PasswordResetConfirmSerializer,
     PasswordResetRequestSerializer,
     RegisterSerializer,
     SocialLinkSerializer,
+    UsernameCheckSerializer,
     UserPublicSerializer,
 )
-from core.tasks import send_password_reset
+from core.tasks import queue, send_email_verify, send_password_reset
 from core.throttling import ResilientScopedRateThrottle
 from judging.models import Attempt
 from problems.models import Problem
@@ -268,6 +270,101 @@ class RegisterView(generics.CreateAPIView[User]):
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
     queryset = User.objects.all()
+    # Hisob ochish botlar uchun eng qulay nishon. CAPTCHA hammaga
+    # ko'rsatilmaydi — avval shu chegara ishlaydi.
+    throttle_classes = [ResilientScopedRateThrottle]
+    throttle_scope = "register"
+
+    def perform_create(self, serializer: Any) -> None:
+        user = serializer.save()
+        # Tasdiqlash YUMSHOQ: xat ketmasa ham hisob ochilgan bo'lib
+        # qoladi, shuning uchun bu yerda hech qanday xato ushlanmaydi —
+        # `send_email` zanjiri o'zi hech qachon otmaydi.
+        issued = verification.issue(user, enforce_limit=False)
+        queue(send_email_verify, user.pk, issued.raw, issued.code)
+
+
+class EmailVerifyView(APIView):
+    """Havola yoki kod bilan pochtani tasdiqlaydi.
+
+    Kirish talab qilinmaydi: havola pochtadan, ko'pincha boshqa
+    qurilmadagi brauzerda ochiladi va u yerda sessiya bo'lmaydi.
+    """
+
+    permission_classes = [AllowAny]
+    throttle_classes = [ResilientScopedRateThrottle]
+    throttle_scope = "password_reset"
+
+    @extend_schema(request=EmailVerifySerializer, responses={204: None})
+    def post(self, request: Request) -> Response:
+        serializer = EmailVerifySerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = verification.consume(
+            raw=serializer.validated_data.get("token", ""),
+            code=serializer.validated_data.get("code", ""),
+            username=serializer.validated_data.get("username", ""),
+        )
+        if user is None:
+            raise exceptions.ValidationError({"token": "Havola yaroqsiz yoki muddati tugagan"})
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class EmailVerifyResendView(APIView):
+    """Xatni qaytadan yuboradi. Faqat o'z hisobiga."""
+
+    permission_classes = [IsAuthenticated]
+    throttle_classes = [ResilientScopedRateThrottle]
+    throttle_scope = "password_reset"
+
+    @extend_schema(request=None, responses={204: None})
+    def post(self, request: Request) -> Response:
+        assert isinstance(request.user, User)
+        user = request.user
+        if not user.email or user.email_verified_at is not None:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        try:
+            issued = verification.issue(user)
+        except verification.TooManyRequests as exc:
+            raise exceptions.Throttled(
+                detail="Juda ko'p so'rov — birozdan keyin urinib ko'ring"
+            ) from exc
+        queue(send_email_verify, user.pk, issued.raw, issued.code)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@extend_schema(
+    parameters=[OpenApiParameter("u", str, description="Tekshiriladigan taxallus")],
+    responses={200: UsernameCheckSerializer},
+)
+class UsernameCheckView(APIView):
+    """Taxallus bo'shmi — yozayotganda chaqiriladi.
+
+    Bu endpoint nomlarni sanab chiqishga yo'l ochadi. Uni yashirishning
+    ma'nosi yo'q: ro'yxatdan o'tishga urinib ham xuddi shu javob olinadi,
+    taxalluslar esa standings'da ochiq turadi. Shuning uchun himoya —
+    yashirish emas, chegara (`username_check`).
+    """
+
+    permission_classes = [AllowAny]
+    throttle_classes = [ResilientScopedRateThrottle]
+    throttle_scope = "username_check"
+
+    def get(self, request: Request) -> Response:
+        value = request.query_params.get("u", "").strip()
+        try:
+            handles.validate(value)
+        except DjangoValidationError as exc:
+            return Response({"available": False, "reason": exc.messages[0]})
+
+        taken = User.objects.filter(username__iexact=value).exists()
+        similar = User.objects.filter(username_skeleton=handles.skeleton(value)).exists()
+        if taken:
+            return Response({"available": False, "reason": "Bu username band"})
+        if similar:
+            return Response(
+                {"available": False, "reason": "Bu username mavjud nomga juda o'xshash"}
+            )
+        return Response({"available": True, "reason": ""})
 
 
 class LoginView(APIView):

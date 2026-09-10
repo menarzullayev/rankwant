@@ -18,6 +18,9 @@ urlpatterns = [
     path("auth/login/", views.LoginView.as_view(), name="login"),
     path("auth/logout/", views.LogoutView.as_view(), name="logout"),
     path("auth/providers/", views.AuthProvidersView.as_view(), name="auth-providers"),
+    path("auth/username-check/", views.UsernameCheckView.as_view(), name="username-check"),
+    path("auth/email/verify/", views.EmailVerifyView.as_view(), name="email-verify"),
+    path("auth/email/resend/", views.EmailVerifyResendView.as_view(), name="email-verify-resend"),
     path("auth/link/", views.SocialLinkView.as_view(), name="social-link"),
     path(
         "auth/telegram/callback/",

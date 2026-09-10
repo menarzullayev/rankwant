@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 from celery import shared_task
 
@@ -25,6 +26,39 @@ def send_email(
     tiklash formasi shuncha muddat osilib turishi mumkin emas.
     """
     return _send_email(to=to, subject=subject, text=text, html=html, purpose=purpose).status
+
+
+def queue(task: Any, *args: Any) -> bool:
+    """Vazifani navbatga qo'yadi; broker yiqilsa YUTADI.
+
+    Xat — yordamchi ta'sir. Broker o'chgan bo'lsa ham hisob ochilishi
+    kerak, aks holda Redis uzilishi ro'yxatdan o'tishni butunlay
+    to'xtatardi. O'lchandi: `.delay()` `OperationalError` otadi va u
+    500 ga aylanadi, foydalanuvchi esa hisobsiz qoladi.
+    """
+    try:
+        task.delay(*args)
+    except Exception:  # broker xatosi oqimni to'xtatmaydi
+        log.warning("navbatga qo'yilmadi: %s", getattr(task, "name", task), exc_info=True)
+        return False
+    return True
+
+
+@shared_task(name="core.send_email_verify")
+def send_email_verify(user_id: int, token: str, code: str) -> str:
+    """Tasdiqlash xatini renderlab zanjirga topshiradi.
+
+    Ro'yxatdan o'tish javobini kutib turmaydi: xat kelmasa ham hisob
+    ochilgan bo'lishi kerak — tasdiqlash yumshoq, ya'ni majburiy emas.
+    """
+    from core import emails
+    from core.models import User
+
+    user = User.objects.filter(pk=user_id).first()
+    if user is None or not user.email:
+        log.warning("tasdiqlash xati yuborilmadi — foydalanuvchi yo'q: %s", user_id)
+        return "skipped"
+    return emails.send_email_verify(user, token=token, code=code).status
 
 
 @shared_task(name="core.send_password_reset")

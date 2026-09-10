@@ -111,6 +111,7 @@ class MeSerializer(serializers.ModelSerializer[User]):
             "username",
             "email",
             "display_name",
+            "email_verified",
             "avatar_url",
             "bio",
             "locale",
@@ -148,6 +149,21 @@ def _email_taken(value: str, *, exclude: User | None = None) -> bool:
     if exclude is not None:
         rows = rows.exclude(pk=exclude.pk)
     return rows.exists()
+
+
+class EmailVerifySerializer(serializers.Serializer[None]):
+    """Havola yoki `username` + kod. Ikkalasi ham bo'lmasa `consume` rad etadi."""
+
+    token = serializers.CharField(required=False, allow_blank=True)
+    code = serializers.CharField(required=False, allow_blank=True)
+    username = serializers.CharField(required=False, allow_blank=True)
+
+
+class UsernameCheckSerializer(serializers.Serializer[None]):
+    """Yozayotgandagi javob. `reason` bo'sh bo'lsa nom bo'sh."""
+
+    available = serializers.BooleanField()
+    reason = serializers.CharField(allow_blank=True)
 
 
 class RegisterSerializer(serializers.ModelSerializer[User]):

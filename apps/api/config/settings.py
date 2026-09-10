@@ -224,6 +224,16 @@ REST_FRAMEWORK = {
         # 10/soat) — bu esa endpointning O'ZINI himoya qiladi: kimdir
         # mavjud bo'lmagan loginlar ro'yxatini yuborib bazani qidirmasin.
         "password_reset": os.environ.get("THROTTLE_PASSWORD_RESET", "20/hour"),
+        # Hisob ochish `anon` ga qolsa bitta IP dan soatiga 1500 ta hisob
+        # ochish mumkin edi. Maktab sinfi bitta tashqi IP dan chiqadi va
+        # dars boshida 30 o'quvchi birdan ro'yxatdan o'tishi mumkin —
+        # shuning uchun chegara o'sha portlashdan yuqori, lekin bot uchun
+        # foydasiz darajada past.
+        "register": os.environ.get("THROTTLE_REGISTER", "40/hour"),
+        # Taxallus bandligini tekshirish yozayotganda chaqiriladi, ya'ni
+        # limit odam yozish tezligiga mos bo'lishi kerak. Ayni paytda u
+        # nomlarni sanab chiqish yo'li ham — soatlik chegara shuni to'sadi.
+        "username_check": os.environ.get("THROTTLE_USERNAME_CHECK", "120/hour"),
     },
 }
 

@@ -12,17 +12,29 @@ import re
 from django.core.exceptions import ValidationError
 
 MIN_LENGTH = 3
-MAX_LENGTH = 20
+MAX_LENGTH = 30
 
-#: Kirill, lotin, raqam, pastki chiziq va nuqta. Bo'sh joy yo'q.
+#: Faqat ASCII: lotin harfi, raqam, nuqta, pastki chiziq, chiziqcha.
 #:
-#: O'zbekcha maxsus harflar ataylab TASHQARIDA: lotinda `U+02BB` (`o'`,
-#: `g'` dagi belgi), kirillda `U+045E`, `U+049B`, `U+0493`, `U+04B3`.
-#: Ular URL'da, terminalda va boshqa platformalarga ko'chirishda
-#: muammo tug'diradi, taxallus esa hamma joyda bir xil ko'chirilishi kerak.
-ALLOWED = re.compile(r"^[A-Za-z0-9._а-яА-ЯёЁ]+$")
+#: KIRILL OLIB TASHLANDI. Sabab taxmin emas, o'lchov: O'zbekistondagi
+#: ikkala yirik platformaning 379 ta taxallusi ko'rildi (RoboContest 129,
+#: KEP.uz 250) va ularning BIRORTASIDA ham ASCII bo'lmagan belgi yo'q.
+#: Ikkalasi ham bir xil naqshni ishlatadi: taxallus ASCII, ko'rsatiladigan
+#: ism esa cheklovsiz Unicode — bizda `display_name` shu vazifani bajaradi.
+#: Taxallus URL yo'lida, `@` eslatmada va terminal chiqishida turadi,
+#: kirill esa u yerda `%D0%B0%D0%BB%D0%B8` bo'lib ko'rinadi.
+#:
+#: O'zbekcha maxsus harflar ham shu sababdan tashqarida: lotinda `U+02BB`
+#: (`o'`, `g'` dagi belgi), kirillda `U+045E`, `U+049B`, `U+0493`, `U+04B3`.
+ALLOWED = re.compile(r"^[A-Za-z0-9._-]+$")
 
 #: Kirill harflari, lotinda ko'zga AYNAN bir xil ko'rinadigani bilan.
+#:
+#: Kirill endi `ALLOWED` darvozasidan o'tmaydi, ya'ni bu jadval YANGI
+#: nomlarga ta'sir qilmaydi. U saqlanadi, chunki `username_skeleton`
+#: ustuni va uning yagonalik cheklovi bazada turibdi: qoida
+#: toraytirilishidan oldin ochilgan hisoblar hamon shu skelet bilan
+#: solishtiriladi.
 #:
 #: Ro'yxat `casefold()` dan KEYIN qo'llanadi, shuning uchun katta
 #: harflardagi juftliklar ham shu yerda: `U+0412` (kirill Ve) va lotin `B`
@@ -69,6 +81,6 @@ def validate(username: str) -> None:
         raise ValidationError(f"Taxallus {MIN_LENGTH}–{MAX_LENGTH} belgi bo'lishi kerak")
     if not ALLOWED.match(username):
         raise ValidationError(
-            "Taxallusda faqat lotin yoki kirill harflari, raqam, nuqta va "
-            "pastki chiziq bo'lishi mumkin"
+            "Taxallusda faqat lotin harflari, raqam, nuqta, pastki chiziq "
+            "va chiziqcha bo'lishi mumkin"
         )

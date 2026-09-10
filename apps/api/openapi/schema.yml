@@ -402,6 +402,44 @@ paths:
       responses:
         '302':
           description: No response body
+  /api/v1/auth/email/resend/:
+    post:
+      operationId: auth_email_resend_create
+      description: Xatni qaytadan yuboradi. Faqat o'z hisobiga.
+      tags:
+      - auth
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/auth/email/verify/:
+    post:
+      operationId: auth_email_verify_create
+      description: |-
+        Havola yoki kod bilan pochtani tasdiqlaydi.
+
+        Kirish talab qilinmaydi: havola pochtadan, ko'pincha boshqa
+        qurilmadagi brauzerda ochiladi va u yerda sessiya bo'lmaydi.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailVerify'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmailVerify'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmailVerify'
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
   /api/v1/auth/link/:
     post:
       operationId: auth_link_create
@@ -574,6 +612,34 @@ paths:
       responses:
         '302':
           description: No response body
+  /api/v1/auth/username-check/:
+    get:
+      operationId: auth_username_check_retrieve
+      description: |-
+        Taxallus bo'shmi — yozayotganda chaqiriladi.
+
+        Bu endpoint nomlarni sanab chiqishga yo'l ochadi. Uni yashirishning
+        ma'nosi yo'q: ro'yxatdan o'tishga urinib ham xuddi shu javob olinadi,
+        taxalluslar esa standings'da ochiq turadi. Shuning uchun himoya —
+        yashirish emas, chegara (`username_check`).
+      parameters:
+      - in: query
+        name: u
+        schema:
+          type: string
+        description: Tekshiriladigan taxallus
+      tags:
+      - auth
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsernameCheck'
+          description: ''
   /api/v1/calendar/:
     get:
       operationId: calendar_retrieve
@@ -7161,6 +7227,17 @@ components:
       - draws
       - losses
       - wins
+    EmailVerify:
+      type: object
+      description: Havola yoki `username` + kod. Ikkalasi ham bo'lmasa `consume` rad
+        etadi.
+      properties:
+        token:
+          type: string
+        code:
+          type: string
+        username:
+          type: string
     FinalizeResult:
       type: object
       properties:
@@ -7349,6 +7426,9 @@ components:
         display_name:
           type: string
           maxLength: 100
+        email_verified:
+          type: boolean
+          readOnly: true
         avatar_url:
           oneOf:
           - type: string
@@ -7386,6 +7466,7 @@ components:
           readOnly: true
       required:
       - date_joined
+      - email_verified
       - id
       - is_staff
       - rating_activity
@@ -8450,6 +8531,9 @@ components:
         display_name:
           type: string
           maxLength: 100
+        email_verified:
+          type: boolean
+          readOnly: true
         avatar_url:
           oneOf:
           - type: string
@@ -11707,6 +11791,17 @@ components:
       - ranks
       - solved_by_level
       - username
+    UsernameCheck:
+      type: object
+      description: Yozayotgandagi javob. `reason` bo'sh bo'lsa nom bo'sh.
+      properties:
+        available:
+          type: boolean
+        reason:
+          type: string
+      required:
+      - available
+      - reason
     ValueEnum:
       enum:
       - -1
