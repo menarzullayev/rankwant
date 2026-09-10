@@ -24,6 +24,11 @@ ROOT = Path(__file__).resolve().parent.parent
 CSS = ROOT / "apps/web/src/app/globals.css"
 
 AA = 4.5
+#: WCAG 2.4.11 — fokus ko'rsatkichi yon rangga nisbatan shuncha bo'lishi
+#: kerak. Matndan past, chunki bu shakl, o'qiladigan matn emas.
+FOCUS_MIN = 3.0
+#: `globals.css` da klaviatura halqasi shu token bilan chiziladi.
+FOCUS_TOKEN = "--rw-accent-ink"
 TIERS = ("--rw-text", "--rw-text-2", "--rw-muted", "--rw-faint")
 #: Panel darajasidagi sirtlar — fon ustiga tushadi.
 PANELS = ("--rw-surface", "--rw-surface-2", "--rw-chrome")
@@ -126,6 +131,19 @@ def main() -> int:
         style_match = re.search(r'data-style="(\w+)"', name)
         style = style_match.group(1) if style_match else "dashboard"
         backs = backgrounds(tokens, blobs.get(style, []))
+
+        focus = parse(tokens.get(FOCUS_TOKEN, ""))
+        if focus is not None:
+            checked += 1
+
+            def ring(bg: Color, fg: Color = focus) -> float:
+                return contrast(over(fg, bg) if fg[3] < 1 else fg, bg)
+
+            ratio = ring(min(backs, key=ring))
+            if ratio < FOCUS_MIN:
+                failures.append(
+                    f"{name}  fokus halqasi ({FOCUS_TOKEN}): {ratio:.2f}:1, kerak {FOCUS_MIN}"
+                )
 
         for tier in TIERS:
             color = parse(tokens[tier])

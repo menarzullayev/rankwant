@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { t } from "@/i18n/messages";
+import { useLocale } from "@/i18n/LocaleProvider";
 import { SearchIcon } from "@/icons";
 import { API_BASE, type SearchResult } from "@/lib/api";
 
@@ -16,6 +17,7 @@ const EMPTY: SearchResult = {
 };
 
 export default function SearchBox() {
+  const locale = useLocale();
   const [q, setQ] = useState("");
   const [result, setResult] = useState<SearchResult>(EMPTY);
   const [open, setOpen] = useState(false);
@@ -54,6 +56,9 @@ export default function SearchBox() {
   return (
     <div ref={box} className="relative hidden md:block">
       <label className="relative block">
+        {/* Yorliqda MATN bo'lishi shart: ikonka va placeholder skrinriderga
+            nom bermaydi, placeholder esa yozish boshlangach yo'qoladi. */}
+        <span className="sr-only">{t(locale, "header.search")}</span>
         <SearchIcon className="pointer-events-none absolute top-2.5 left-3 size-5 rw-faint" />
         <input
           value={q}
@@ -62,7 +67,7 @@ export default function SearchBox() {
             setOpen(true);
           }}
           onFocus={() => setOpen(true)}
-          placeholder={t(DEFAULT_LOCALE, "header.search")}
+          placeholder={t(locale, "header.search")}
           className="h-10 w-64 rw-radius-sm border rw-line bg-transparent pr-3 pl-10 text-theme-sm outline-none rw-focus-line rw-focus-ring xl:w-80"
         />
       </label>

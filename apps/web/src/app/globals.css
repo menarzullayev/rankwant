@@ -595,7 +595,7 @@
   --rw-faint: #464d55;
   --rw-accent: linear-gradient(#6fa84f, #4a7c30);
   --rw-accent-fg: #ffffff;
-  --rw-accent-ink: #3a6ba8;
+  --rw-accent-ink: #36639c;
   --rw-accent-soft: linear-gradient(#dfe8f5, #c7d5e8);
   --rw-ok-ink: #3d6b28;   --rw-ok-soft: linear-gradient(#e2f0d9, #cfe4c2);
   --rw-warn-ink: #8a6414; --rw-warn-soft: linear-gradient(#f7ecd2, #ecdcb5);
@@ -653,6 +653,20 @@
 .rw-hover-line:hover { border-color: var(--rw-accent); }
 .rw-focus-line:focus { border-color: var(--rw-accent); outline: none; }
 .rw-focus-ring:focus { box-shadow: 0 0 0 4px var(--rw-accent-soft); }
+
+/* KLAVIATURA fokusi — WCAG 2.4.11 sirtga nisbatan kamida 3:1 talab qiladi.
+   Yuqoridagi ikkala qoida ham buni bermasdi: halqa `--rw-accent-soft`
+   bilan chizilardi va u 18 palitrada 1.07–1.81:1 berib, amalda ko'rinmasdi;
+   `rw-focus-line` esa `outline: none` qo'yib o'rniga faqat chegara rangini
+   o'zgartirardi. Natijada klaviatura bilan yurgan odam fokus qayerdaligini
+   yo'qotardi — o'lchandi: 20 ta ishlatilishdan 16 tasi halqasiz edi.
+   `--rw-accent-ink` o'lchandi: eng yomon palitrada ham 4.31:1.
+   `:focus-visible` — sichqoncha bilan bosilganda halqa chiqmaydi. */
+.rw-focus-line:focus-visible,
+.rw-focus-ring:focus-visible {
+  outline: 2px solid var(--rw-accent-ink);
+  outline-offset: 2px;
+}
 .rw-field-bg { background: var(--rw-field); }
 .rw-radius { border-radius: var(--rw-radius); }
 .rw-radius-sm { border-radius: var(--rw-radius-sm); }

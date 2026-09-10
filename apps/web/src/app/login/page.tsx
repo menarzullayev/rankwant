@@ -14,9 +14,9 @@ export default async function LoginPage() {
   return (
     <div className="mx-auto max-w-md py-10">
       <div className="mb-6 text-center">
-        <p className="text-2xl font-bold">
+        <h1 className="text-2xl font-bold">
           Rank<span className="rw-accent-ink">Want</span>
-        </p>
+        </h1>
       </div>
       <Card title={t(locale, "auth.login")}>
         <AuthForm mode="login" />
