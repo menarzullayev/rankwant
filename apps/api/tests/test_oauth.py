@@ -120,6 +120,20 @@ class TestCallback:
         assert SocialAccount.objects.filter(user=user, provider="google").exists()
         assert not user.has_usable_password(), "parol o'rnatilmagan bo'lishi kerak"
 
+    def test_provayder_pochtasi_tasdiqlangan_hisoblanadi(
+        self, sozlangan: Any, monkeypatch: Any
+    ) -> None:
+        """`oauth` moduli Google'dan `email_verified` bo'lmasa manzilni
+        UMUMAN olmaydi. Ya'ni manzil kelgan bo'lsa, uni bizdan kuchliroq
+        tomon tekshirgan — ustidan yana o'z xatimizni yuborish keraksiz.
+        O'lchandi: usiz Google bilan ochilgan hisobda «pochtangiz
+        tasdiqlanmagan» banneri turardi."""
+        kelgan(monkeypatch, "yangi@example.com")
+
+        callback(APIClient())
+
+        assert User.objects.get(email="yangi@example.com").email_verified_at is not None
+
     def test_boglangan_hisob_darhol_kiradi(self, sozlangan: Any, monkeypatch: Any) -> None:
         user = User.objects.create_user(username="bor", email="bor@example.com")
         SocialAccount.objects.create(user=user, provider="google", uid="u1")
@@ -159,8 +173,12 @@ class TestBoglash:
 
         r = c.post(reverse("social-link"), {"password": "Parol!12345"}, format="json")
 
+        user.refresh_from_db()
         assert r.status_code == 204
         assert SocialAccount.objects.filter(user=user, provider="google").exists()
+        assert user.email_verified_at is not None, (
+            "ikki isbot ham bor: provayder manzilni, foydalanuvchi parolni tasdiqladi"
+        )
 
     def test_notogri_parol_boglamaydi(self, sozlangan: Any, monkeypatch: Any) -> None:
         User.objects.create_user(username="egasi", email="bor@example.com", password="Parol!12345")

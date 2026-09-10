@@ -792,6 +792,13 @@ class SocialCallbackView(APIView):
         user = User.objects.create_user(
             username=oauth.free_username(ident.suggested),
             email=ident.email,
+            # Provayder bergan pochta ALLAQACHON tasdiqlangan: `oauth`
+            # moduli Google'dan `email_verified` bo'lmasa, GitHub'dan esa
+            # `primary and verified` bo'lmasa manzilni umuman olmaydi.
+            # Ustidan yana o'z xatimizni yuborish bizdan kuchliroq tomon
+            # tekshirgan narsani qayta so'rash bo'lardi — va o'lchandi:
+            # usiz hisobda «pochtangiz tasdiqlanmagan» banneri turardi.
+            email_verified_at=timezone.now() if ident.email else None,
             locale=request.LANGUAGE_CODE[:2] if hasattr(request, "LANGUAGE_CODE") else "uz",
         )
         user.set_unusable_password()
@@ -863,5 +870,11 @@ class SocialLinkView(APIView):
             provider=pending["provider"],
             defaults={"uid": pending["uid"], "email": pending["email"]},
         )
+        # Ikki isbot ham qo'lda: provayder manzilni tasdiqlagan va
+        # foydalanuvchi hisob parolini bildi. Bundan ortiq tasdiq
+        # so'rashning ma'nosi yo'q.
+        if user.email_verified_at is None and pending["email"].lower() == user.email.lower():
+            user.email_verified_at = timezone.now()
+            user.save(update_fields=["email_verified_at"])
         django_login(request, user, backend=DEFAULT_AUTH_BACKEND)
         return Response(status=status.HTTP_204_NO_CONTENT)
