@@ -284,6 +284,30 @@ class RegisterView(generics.CreateAPIView[User]):
         queue(send_email_verify, user.pk, issued.raw, issued.code)
 
 
+class SocialLinkStartView(APIView):
+    """Telegram'ni ulash niyatini belgilaydi.
+
+    Telegram vidjeti `SocialStartView` dan o'tmaydi va uning callback'i
+    `state` siz GET — ya'ni «kirgan bo'lsa bog'la» qoidasi hisobni
+    egallash yo'li bo'lardi: hujumchi qurbonning brauzerini o'zining
+    imzolangan ma'lumoti bilan o'sha manzilga yuborib, o'z Telegramini
+    qurbon hisobiga ulab olardi va keyin uning nomidan kirardi.
+    Shu sababli niyat SESSIYADA va faqat shu POST orqali qo'yiladi:
+    DRF sessiya autentifikatsiyasi POST'ga CSRF tekshiruvini talab
+    qiladi, ya'ni begona sayt uni chaqira olmaydi.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(request=None, responses={204: None})
+    def post(self, request: Request, provider: str) -> Response:
+        assert isinstance(request.user, User)
+        if provider not in oauth.configured():
+            raise exceptions.ValidationError({"provider": "Provayder sozlanmagan"})
+        request.session["social_link_for"] = {"user": request.user.pk, "provider": provider}
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class SocialUnlinkView(APIView):
     """Ulangan hisobni uzadi.
 
@@ -764,9 +788,13 @@ class SocialStartView(APIView):
         # hisob ochilmasligi va parol so'ralmasligi kerak — u allaqachon
         # o'zini isbotlagan. Pochta mosligiga tayanmaydi, ya'ni ish
         # pochtasini shaxsiy hisobga ulash ham mumkin.
-        request.session["social_link_for"] = (
-            request.user.pk if request.user.is_authenticated else None
-        )
+        if request.user.is_authenticated:
+            request.session["social_link_for"] = {
+                "user": request.user.pk,
+                "provider": provider,
+            }
+        else:
+            request.session.pop("social_link_for", None)
         return redirect(oauth.authorize_url(provider, state))
 
 
@@ -805,9 +833,14 @@ class SocialCallbackView(APIView):
 
         link = SocialAccount.objects.filter(provider=ident.provider, uid=ident.uid).first()
 
-        owner_pk = request.session.pop("social_link_for", None)
-        if owner_pk is not None:
-            owner = User.objects.filter(pk=owner_pk, is_active=True).first()
+        intent = request.session.pop("social_link_for", None)
+        if isinstance(intent, dict) and intent.get("provider") == ident.provider:
+            owner_pk = intent.get("user")
+            owner = (
+                User.objects.filter(pk=owner_pk, is_active=True).first()
+                if isinstance(owner_pk, int)
+                else None
+            )
             if owner is None:
                 return redirect(f"{home}/settings?social=error")
             if link is not None and link.user_id != owner.pk:

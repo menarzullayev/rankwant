@@ -619,6 +619,33 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/auth/social/{provider}/link-start/:
+    post:
+      operationId: auth_social_link_start_create
+      description: |-
+        Telegram'ni ulash niyatini belgilaydi.
+
+        Telegram vidjeti `SocialStartView` dan o'tmaydi va uning callback'i
+        `state` siz GET — ya'ni «kirgan bo'lsa bog'la» qoidasi hisobni
+        egallash yo'li bo'lardi: hujumchi qurbonning brauzerini o'zining
+        imzolangan ma'lumoti bilan o'sha manzilga yuborib, o'z Telegramini
+        qurbon hisobiga ulab olardi va keyin uning nomidan kirardi.
+        Shu sababli niyat SESSIYADA va faqat shu POST orqali qo'yiladi:
+        DRF sessiya autentifikatsiyasi POST'ga CSRF tekshiruvini talab
+        qiladi, ya'ni begona sayt uni chaqira olmaydi.
+      parameters:
+      - in: path
+        name: provider
+        schema:
+          type: string
+        required: true
+      tags:
+      - auth
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/auth/telegram/callback/:
     get:
       operationId: auth_telegram_callback_retrieve

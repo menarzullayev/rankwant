@@ -226,6 +226,7 @@ export const kaa: Record<MessageKey, string> = {
   "settings.socialLinked": "Esap jalǵandı",
   "settings.socialTaken": "Bul esap basqa paydalanıwshıǵa jalǵanǵan",
   "settings.socialLast": "Bul jalǵız kiriw jolıńız — aldın parol ornatıń",
+  "settings.socialTelegramStep": "Endi Telegram tuymesin basıń",
   "settings.delete": "Esaptı óshiriw",
   "settings.deleteHint":
     "At, email hám bio óshiriledi, esap anonim boladı. Sheshimler hám jarıs nátiyjeleri ornında qaladı — olardı alıp taslaw basqa qatnasıwshılardıń ornın jıljıtar edi.",

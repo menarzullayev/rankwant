@@ -225,6 +225,7 @@ export const zh: Record<MessageKey, string> = {
   "settings.socialLinked": "账号已连接",
   "settings.socialTaken": "该账号已连接到其他用户",
   "settings.socialLast": "这是你唯一的登录方式 — 请先设置密码",
+  "settings.socialTelegramStep": "现在请点击 Telegram 按钮",
   "settings.delete": "删除账号",
   "settings.deleteHint":
     "姓名、邮箱和简介会被清除，账号将变为匿名。提交记录和比赛成绩会保留 — 删除它们会改变其他选手的名次。",

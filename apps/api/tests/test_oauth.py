@@ -375,3 +375,68 @@ class TestUzish:
         c.force_login(user)
 
         assert c.get(reverse("me")).data["social"] == ["github"]
+
+
+@pytest.mark.django_db
+class TestTelegramniUlash:
+    """Telegram vidjeti `SocialStartView` dan o'tmaydi va uning
+    callback'i `state` siz GET. Ya'ni «kirgan bo'lsa bog'la» qoidasi
+    hisobni egallash yo'li bo'lardi — quyidagi ikkinchi test aynan shuni
+    tekshiradi."""
+
+    def imzolangan(self) -> dict[str, str]:
+        payload = {"id": "77", "username": "ali", "auth_date": str(int(time.time()))}
+        check = "\n".join(f"{k}={payload[k]}" for k in sorted(payload) if payload[k])
+        secret = hashlib.sha256(BOT.encode()).digest()
+        payload["hash"] = hmac.new(secret, check.encode(), hashlib.sha256).hexdigest()
+        return payload
+
+    def qaytish(self, client: APIClient) -> Any:
+        return client.get(reverse("social-telegram"), self.imzolangan())
+
+    def test_niyat_belgilangach_ulanadi(self, sozlangan: Any) -> None:
+        user = User.objects.create_user(
+            username="egasi", email="a@example.com", password="Parol!12345"
+        )
+        c = APIClient()
+        c.force_login(user)
+
+        assert c.post(reverse("social-link-start", args=["telegram"])).status_code == 204
+        r = self.qaytish(c)
+
+        assert "social=linked" in r.headers["Location"]
+        assert SocialAccount.objects.filter(user=user, provider="telegram").exists()
+
+    def test_niyatsiz_ulanmaydi(self, sozlangan: Any) -> None:
+        """Hujum shakli: hujumchi qurbonning brauzerini o'zining
+        imzolangan ma'lumoti bilan callback'ga yuboradi. Niyat sessiyada
+        bo'lmagani uchun bu HECH QACHON bog'lanishga aylanmasligi kerak."""
+        qurbon = User.objects.create_user(
+            username="qurbon", email="a@example.com", password="Parol!12345"
+        )
+        c = APIClient()
+        c.force_login(qurbon)
+
+        self.qaytish(c)
+
+        assert not SocialAccount.objects.filter(user=qurbon).exists(), "hisob egallanmasin"
+
+    def test_boshqa_provayder_niyati_yetmaydi(self, sozlangan: Any) -> None:
+        """Tashlab ketilgan Google urinishi keyinroq Telegram uchun eshik
+        ochib qo'ymasligi kerak — shuning uchun niyat provayderga
+        bog'langan."""
+        user = User.objects.create_user(
+            username="egasi", email="a@example.com", password="Parol!12345"
+        )
+        c = APIClient()
+        c.force_login(user)
+        c.get(reverse("social-start", args=["google"]))
+
+        self.qaytish(c)
+
+        assert not SocialAccount.objects.filter(user=user, provider="telegram").exists()
+
+    def test_kirmagan_odam_niyat_belgilay_olmaydi(self, sozlangan: Any) -> None:
+        r = APIClient().post(reverse("social-link-start", args=["telegram"]))
+
+        assert r.status_code in (401, 403)

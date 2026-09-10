@@ -226,6 +226,7 @@ export const tr: Record<MessageKey, string> = {
   "settings.socialLinked": "Hesap bağlandı",
   "settings.socialTaken": "Bu hesap başka bir kullanıcıya bağlı",
   "settings.socialLast": "Bu tek giriş yolunuz — önce bir parola belirleyin",
+  "settings.socialTelegramStep": "Şimdi Telegram düğmesine basın",
   "settings.delete": "Hesabı sil",
   "settings.deleteHint":
     "Ad, e-posta ve biyografi silinir, hesap anonim olur. Gönderimler ve yarışma sonuçları kalır — bunları kaldırmak diğer katılımcıların sıralamasını kaydırırdı.",

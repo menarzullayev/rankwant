@@ -230,6 +230,7 @@ export const uz = {
   "settings.socialLinked": "Hisob ulandi",
   "settings.socialTaken": "Bu hisob boshqa foydalanuvchiga ulangan",
   "settings.socialLast": "Bu yagona kirish yo'lingiz — avval parol o'rnating",
+  "settings.socialTelegramStep": "Endi Telegram tugmasini bosing",
   "settings.delete": "Hisobni o'chirish",
   "settings.deleteHint":
     "Ism, email va bio o'chadi, hisob anonim bo'ladi. Yechimlar va musobaqa natijalari joyida qoladi — ularni olib tashlash boshqa qatnashchilarning o'rnini siljitardi.",

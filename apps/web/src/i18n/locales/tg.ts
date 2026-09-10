@@ -226,6 +226,7 @@ export const tg: Record<MessageKey, string> = {
   "settings.socialLinked": "Ҳисоб пайваст шуд",
   "settings.socialTaken": "Ин ҳисоб ба корбари дигар пайваст аст",
   "settings.socialLast": "Ин ягона роҳи вуруди шумост — аввал парол гузоред",
+  "settings.socialTelegramStep": "Акнун тугмаи Telegram-ро пахш кунед",
   "settings.delete": "Ҳисобро нест кардан",
   "settings.deleteHint":
     "Ном, email ва тавсиф нест мешаванд, ҳисоб беном мегардад. Ҳалҳо ва натиҷаҳои мусобиқа боқӣ мемонанд — нест кардани онҳо ҷойи дигар иштирокчиёнро тағйир медод.",

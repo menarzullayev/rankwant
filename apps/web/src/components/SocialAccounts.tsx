@@ -4,12 +4,13 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { GithubMark, GoogleMark } from "@/components/ProviderMark";
+import { TelegramButton } from "@/components/TelegramButton";
 import { useSession } from "@/context/SessionContext";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
-import { ApiError, deleteJson, getJson } from "@/lib/api";
+import { ApiError, deleteJson, getJson, postJson } from "@/lib/api";
 
 const LABEL = { google: "Google", github: "GitHub", telegram: "Telegram" } as const;
 type Provider = keyof typeof LABEL;
@@ -28,12 +29,20 @@ export function SocialAccounts() {
   const params = useSearchParams();
   const { user, reload } = useSession();
   const [available, setAvailable] = useState<Provider[]>([]);
+  const [bot, setBot] = useState("");
+  // Telegram vidjeti FAQAT niyat belgilangach chiziladi: uning
+  // callback'i `state` siz GET va niyatsiz bog'lash hisobni
+  // egallash yo'li bo'lardi.
+  const [tgReady, setTgReady] = useState(false);
   const [busy, setBusy] = useState<Provider | null>(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    getJson<{ providers: Provider[] }>("/auth/providers/")
-      .then((d) => setAvailable(d.providers))
+    getJson<{ providers: Provider[]; telegram_bot: string }>("/auth/providers/")
+      .then((d) => {
+        setAvailable(d.providers);
+        setBot(d.telegram_bot);
+      })
       .catch(() => setAvailable([]));
   }, []);
 
@@ -100,7 +109,32 @@ export function SocialAccounts() {
                 >
                   {t(locale, "settings.socialDisconnect")}
                 </Button>
-              ) : p === "telegram" ? null : (
+              ) : p === "telegram" ? (
+                tgReady && bot ? (
+                  <span className="flex flex-col items-end gap-1">
+                    <TelegramButton bot={bot} />
+                    <span className="text-theme-xs rw-dim">
+                      {t(locale, "settings.socialTelegramStep")}
+                    </span>
+                  </span>
+                ) : (
+                  <Button
+                    variant="outline"
+                    className="h-9 px-3"
+                    busy={busy === p}
+                    onClick={() => {
+                      setBusy(p);
+                      setError("");
+                      postJson(`/auth/social/${p}/link-start/`, {})
+                        .then(() => setTgReady(true))
+                        .catch(() => setError(t(locale, "settings.socialTaken")))
+                        .finally(() => setBusy(null));
+                    }}
+                  >
+                    {t(locale, "settings.socialConnect")}
+                  </Button>
+                )
+              ) : (
                 <a
                   href={`/api/v1/auth/${p}/start/`}
                   className="inline-flex h-9 items-center rw-radius-sm border rw-line px-3 text-theme-sm font-medium rw-strong transition rw-hover-bg rw-focus-ring"

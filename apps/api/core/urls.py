@@ -20,6 +20,11 @@ urlpatterns = [
     path("auth/providers/", views.AuthProvidersView.as_view(), name="auth-providers"),
     path("auth/username-check/", views.UsernameCheckView.as_view(), name="username-check"),
     path(
+        "auth/social/<str:provider>/link-start/",
+        views.SocialLinkStartView.as_view(),
+        name="social-link-start",
+    ),
+    path(
         "auth/social/<str:provider>/",
         views.SocialUnlinkView.as_view(),
         name="social-unlink",

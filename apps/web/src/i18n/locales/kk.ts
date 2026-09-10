@@ -226,6 +226,7 @@ export const kk: Record<MessageKey, string> = {
   "settings.socialLinked": "Аккаунт байланысты",
   "settings.socialTaken": "Бұл аккаунт басқа пайдаланушыға байланысқан",
   "settings.socialLast": "Бұл сіздің жалғыз кіру жолыңыз — алдымен құпиясөз орнатыңыз",
+  "settings.socialTelegramStep": "Енді Telegram түймесін басыңыз",
   "settings.delete": "Тіркелгіні жою",
   "settings.deleteHint":
     "Аты, email және сипаттама өшіріледі, тіркелгі анонимді болады. Шешімдер мен жарыс нәтижелері қалады — оларды жою басқа қатысушылардың орнын ауыстырар еді.",

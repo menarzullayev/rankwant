@@ -226,6 +226,7 @@ export const ky: Record<MessageKey, string> = {
   "settings.socialLinked": "Аккаунт байланышты",
   "settings.socialTaken": "Бул аккаунт башка колдонуучуга байланышкан",
   "settings.socialLast": "Бул сиздин жалгыз кирүү жолуңуз — адегенде сырсөз коюңуз",
+  "settings.socialTelegramStep": "Эми Telegram баскычын басыңыз",
   "settings.delete": "Эсепти өчүрүү",
   "settings.deleteHint":
     "Аты, email жана баяны өчүрүлөт, эсеп анонимдүү болот. Чечимдер жана мелдеш жыйынтыктары калат — аларды алып салуу башка катышуучулардын ордун жылдырмак.",

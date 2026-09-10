@@ -226,6 +226,7 @@ export const en: Record<MessageKey, string> = {
   "settings.socialLinked": "Account connected",
   "settings.socialTaken": "That account is connected to someone else",
   "settings.socialLast": "This is your only way in — set a password first",
+  "settings.socialTelegramStep": "Now press the Telegram button",
   "settings.delete": "Delete account",
   "settings.deleteHint":
     "Your name, email and bio are erased and the account becomes anonymous. Submissions and contest results stay — removing them would shift everyone else's placings.",
