@@ -75,6 +75,8 @@ djangorestframework-stubs==3.18.1
     # via -r requirements-dev.txt
 drf-spectacular==0.30.0
     # via -r requirements.txt
+execnet==2.1.2
+    # via pytest-xdist
 factory-boy==3.3.3
     # via -r requirements-dev.txt
 faker==40.38.0
@@ -160,9 +162,12 @@ pytest==9.1.1
     #   -r requirements-dev.txt
     #   pytest-cov
     #   pytest-django
+    #   pytest-xdist
 pytest-cov==7.1.0
     # via -r requirements-dev.txt
 pytest-django==4.14.0
+    # via -r requirements-dev.txt
+pytest-xdist==3.8.0
     # via -r requirements-dev.txt
 python-dateutil==2.9.0.post0
     # via

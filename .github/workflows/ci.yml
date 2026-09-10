@@ -86,10 +86,13 @@ jobs:
           fi
       - uses: actions/setup-python@v7
         if: steps.check.outputs.ready == 'true'
+        # `cache:` ATAYIN yo'q. Runner self-hosted: `~/.npm` (1.5 GB) va
+        # pip keshi mashinada, joblar orasida saqlanadi. `cache:` ularni
+        # GitHub saqlagichidan qayta yuklaydi — o'lchandi: npm keshining
+        # 440 MB lik arxivi ~2 MB/s da 127 soniya olgan, mahalliy nusxa
+        # yonida tura turib.
         with:
           python-version: '3.12'
-          cache: pip
-          cache-dependency-path: apps/api/requirements-dev.lock
       - if: steps.check.outputs.ready == 'true'
         run: pip install -r requirements-dev.lock
         working-directory: apps/api
@@ -112,7 +115,9 @@ jobs:
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:${{ job.services.postgres.ports['5432'] }}/rankwant_test
           REDIS_URL: redis://localhost:${{ job.services.redis.ports['6379'] }}/0
-        run: pytest --cov --cov-report=term-missing
+        # `-n 4`: o'lchandi — 123 s → 39 s. `auto` EMAS: runner shu
+        # mashinada, jonli preview bilan yonma-yon ishlaydi.
+        run: pytest -n 4 --cov --cov-report=term-missing
         working-directory: apps/api
 
   web:
@@ -133,10 +138,13 @@ jobs:
           fi
       - uses: actions/setup-node@v7
         if: steps.check.outputs.ready == 'true'
+        # `cache:` ATAYIN yo'q. Runner self-hosted: `~/.npm` (1.5 GB) va
+        # pip keshi mashinada, joblar orasida saqlanadi. `cache:` ularni
+        # GitHub saqlagichidan qayta yuklaydi — o'lchandi: npm keshining
+        # 440 MB lik arxivi ~2 MB/s da 127 soniya olgan, mahalliy nusxa
+        # yonida tura turib.
         with:
           node-version: '22'
-          cache: npm
-          cache-dependency-path: apps/web/package-lock.json
       - if: steps.check.outputs.ready == 'true'
         run: npm ci
         working-directory: apps/web

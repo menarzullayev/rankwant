@@ -47,7 +47,7 @@ if has '^apps/api/'; then
   step "API — ruff" uv run ruff check .
   step "API — format" uv run ruff format --check .
   step "API — mypy" uv run mypy .
-  step "API — pytest" uv run pytest -q
+  step "API — pytest" uv run pytest -q -n 4
   # CI dagi «OpenAPI schema diff» darvozasining nusxasi. Endpoint
   # qo'shilganda sxemani yangilash oson unutiladi va xato faqat CI da
   # chiqadi — ya'ni bir necha daqiqa keyin, boshqa commit ustiga.
