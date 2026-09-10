@@ -33,6 +33,15 @@ x-email: &email
   MAILERSEND_API_KEY: ${MAILERSEND_API_KEY:-}
   MAILERSEND_FROM: ${MAILERSEND_FROM:-}
 
+# Ijtimoiy kirish — ADR-0016. Kaliti yo'q provayder `/auth/providers/`
+# ro'yxatiga tushmaydi va uning tugmasi umuman chizilmaydi.
+x-oauth: &oauth
+  GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+  GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+  GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+  GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+  TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+
 services:
   postgres:
     <<: *restart
@@ -54,7 +63,7 @@ services:
     # Faqat localhost: tashqariga Cloudflare Tunnel chiqaradi, port emas.
     ports: !override ['127.0.0.1:8301:8000']
     environment:
-      <<: *email
+      <<: [*email, *oauth]
       DJANGO_DEBUG: "0"
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
       DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS}
