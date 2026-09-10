@@ -52,10 +52,37 @@ from judging.models import Attempt
 print(Attempt.objects.count())" 2>/dev/null | tr -d '\r' || echo "-1"
 }
 
+# Ma'lumot yo'qolishini BO'SH bazada tekshirish hech narsani isbotlamaydi:
+# 0 ni 0 bilan solishtirish har doim o'tadi. Shuning uchun avval haqiqiy
+# yozuvlar yaratiladi — o'lchandi: bu qadamsiz uchala tekshiruv ham
+# mazmunsiz «✓» berardi.
+seed_attempts() {
+  $COMPOSE exec -T api python -c "
+import django, os
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+django.setup()
+from core.models import User
+from judging.models import Attempt
+from problems.models import Language, Problem
+u = User.objects.first()
+p = Problem.objects.filter(is_public=True).first()
+l = Language.objects.filter(code='cpp23').first()
+if not (u and p and l):
+    raise SystemExit('seed_demo ishga tushirilmagan')
+Attempt.objects.bulk_create([
+    Attempt(user=u, problem=p, language=l, source_code='int main(){}', verdict='WA')
+    for _ in range(5)
+])" 2>/dev/null
+}
+
 step "0. Boshlang'ich holat"
 expect 200 "$(probe)" "health sog'lom"
+seed_attempts
 before=$(attempts)
 echo "  attempt soni: $before"
+if [ "$before" -lt 1 ] 2>/dev/null; then
+  bad "sinov yozuvlari yaratilmadi — ma'lumot yo'qolishi tekshirilmaydi"
+fi
 
 step "1. Judge worker o'ldiriladi"
 echo "Kutilgan: API ishlashda davom etadi, attempt yozuvlari yo'qolmaydi"
