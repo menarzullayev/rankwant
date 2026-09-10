@@ -157,6 +157,9 @@ export type UserPublic = {
   rating_challenges: number;
   /** Faqat /me/ da keladi */
   is_staff?: boolean;
+  /** Faqat /me/ da keladi — boshqa odamning pochtasi tasdiqlanganini
+   *  ko'rsatish kerak emas, shuning uchun ommaviy profilda yo'q. */
+  email_verified?: boolean;
   streak_count: number;
   date_joined: string;
   /** Reyting bo'yicha o'rin. Ro'yxat javobida bo'sh — faqat profilda. */
@@ -701,11 +704,17 @@ export async function deleteJson<T>(path: string, body?: unknown): Promise<T> {
 }
 
 /** Brauzerdan sessiya bilan GET — shaxsiy ma'lumot (sinf, duel masalalari). */
-export async function getJson<T>(path: string): Promise<T> {
+export async function getJson<T>(
+  path: string,
+  /** `signal` — yozayotgandagi tekshiruvda eskirgan so'rovni bekor qilish
+   *  uchun: javoblar tartibsiz kelib, oxirgisi eskisi bo'lib qolmasin. */
+  init?: { signal?: AbortSignal },
+): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     credentials: "include",
     headers: { Accept: "application/json" },
     cache: "no-store",
+    signal: init?.signal,
   });
   if (!res.ok) {
     const body = await res.json().catch(() => null);

@@ -6,10 +6,11 @@ import { useEffect, useRef, useState } from "react";
 
 import { useSession } from "@/context/SessionContext";
 import { Button } from "@/components/ui/Button";
-import { Field } from "@/components/ui/Field";
+import { Field, type FieldStatus } from "@/components/ui/Field";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t, errorText } from "@/i18n/messages";
 import { ApiError, getJson, postJson } from "@/lib/api";
+import { strength } from "@/lib/password";
 
 type Mode = "login" | "register";
 
@@ -37,6 +38,16 @@ export function AuthForm({ mode }: { mode: Mode }) {
   const [visible, setVisible] = useState(false);
   const [providers, setProviders] = useState<Provider[]>([]);
   const [telegramBot, setTelegramBot] = useState("");
+  // Yozayotgandagi tekshiruv faqat ro'yxatdan o'tishda kerak: kirishda
+  // nom band ekanini aytish mavjud hisoblarni sanab chiqish yo'li bo'lardi.
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [pass, setPass] = useState("");
+  const [pass2, setPass2] = useState("");
+  // Natija QAYSI nom uchun kelgani bilan saqlanadi: «tekshirilmoqda»
+  // holati shundan hosil qilinadi va uni alohida yozib qo'yish shart
+  // emas — effekt ichida holat o'rnatish qayta-qayta render chaqiradi.
+  const [nameCheck, setNameCheck] = useState<{ for: string; status: FieldStatus }>();
 
   useEffect(() => {
     getJson<{ providers: Provider[]; telegram_bot: string }>("/auth/providers/")
@@ -47,6 +58,54 @@ export function AuthForm({ mode }: { mode: Mode }) {
       // Ro'yxat kelmasa forma baribir ishlaydi — parol asosiy yo'l.
       .catch(() => setProviders([]));
   }, []);
+
+  // Har bosilgan tugmaga so'rov yuborilmaydi: odam yozishdan
+  // to'xtaganda bittasi ketadi va oldingisi bekor qilinadi — aks holda
+  // «ali» yozgan odam uchun to'rtta javob qaytardi va ular tartibsiz
+  // kelib, oxirgisi eskisi bo'lib qolishi mumkin edi.
+  useEffect(() => {
+    if (mode !== "register" || username.length < 3) return;
+    const stop = new AbortController();
+    const timer = setTimeout(() => {
+      getJson<{ available: boolean; reason: string }>(
+        `/auth/username-check/?u=${encodeURIComponent(username)}`,
+        { signal: stop.signal },
+      )
+        .then((data) =>
+          setNameCheck({
+            for: username,
+            status: data.available
+              ? { kind: "ok", text: t(locale, "auth.usernameFree") }
+              : { kind: "bad", text: data.reason },
+          }),
+        )
+        // Tarmoq yiqilsa jim qolamiz: server baribir tekshiradi va
+        // yolg'on «band» yozuvi odamni bekorga qaytarardi.
+        .catch(() => undefined);
+    }, 400);
+    return () => {
+      clearTimeout(timer);
+      stop.abort();
+    };
+  }, [mode, username, locale]);
+
+  const nameStatus: FieldStatus | undefined =
+    mode !== "register" || username.length < 3
+      ? undefined
+      : nameCheck?.for === username
+        ? nameCheck.status
+        : { kind: "busy", text: t(locale, "auth.checking") };
+
+  const emailStatus: FieldStatus | undefined =
+    mode === "register" && email.length > 3 && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)
+      ? { kind: "bad", text: t(locale, "auth.emailInvalid") }
+      : undefined;
+
+  const matchStatus: FieldStatus | undefined = !pass2
+    ? undefined
+    : pass === pass2
+      ? { kind: "ok", text: t(locale, "auth.passwordMatch") }
+      : { kind: "bad", text: t(locale, "auth.passwordMismatch") };
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -115,6 +174,36 @@ export function AuthForm({ mode }: { mode: Mode }) {
           {t(locale, "auth.socialError")}
         </p>
       )}
+      {/* Ijtimoiy kirish YUQORIDA: RankWant dasturchilar platformasi va
+          GitHub hisobi ko'pchilikda bor. O'lchangan naqsh emas, tanlangan
+          yo'nalish — parol formasi pastda, asosiy yo'l tepada. */}
+      {providers.length > 0 && (
+        <>
+          <div className="flex flex-col gap-2">
+            {providers
+              .filter((p) => p !== "telegram")
+              .map((p) => (
+                <a
+                  key={p}
+                  href={`/api/v1/auth/${p}/start/`}
+                  className="flex h-11 items-center justify-center gap-2 rw-radius-sm border rw-line text-theme-sm font-medium rw-strong transition rw-hover-bg rw-focus-ring"
+                >
+                  {t(locale, PROVIDER_LABEL[p])}
+                </a>
+              ))}
+            {providers.includes("telegram") && telegramBot && (
+              <TelegramButton bot={telegramBot} />
+            )}
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="h-px flex-1 border-t rw-line" />
+            <span className="text-theme-xs rw-dim">
+              {t(locale, "auth.orWith")}
+            </span>
+            <span className="h-px flex-1 border-t rw-line" />
+          </div>
+        </>
+      )}
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
         <Field
           label={t(locale, "auth.username")}
@@ -122,7 +211,12 @@ export function AuthForm({ mode }: { mode: Mode }) {
           required
           autoComplete="username"
           minLength={mode === "register" ? 3 : undefined}
-          maxLength={mode === "register" ? 20 : undefined}
+          maxLength={mode === "register" ? 30 : undefined}
+          value={mode === "register" ? username : undefined}
+          onChange={
+            mode === "register" ? (e) => setUsername(e.target.value) : undefined
+          }
+          status={nameStatus}
           hint={mode === "register" ? t(locale, "auth.usernameHint") : undefined}
         />
         {mode === "register" && (
@@ -132,6 +226,9 @@ export function AuthForm({ mode }: { mode: Mode }) {
             type="email"
             required
             autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            status={emailStatus}
           />
         )}
         <Field
@@ -141,9 +238,12 @@ export function AuthForm({ mode }: { mode: Mode }) {
           required
           minLength={mode === "register" ? 8 : undefined}
           autoComplete={mode === "login" ? "current-password" : "new-password"}
+          value={mode === "register" ? pass : undefined}
+          onChange={mode === "register" ? (e) => setPass(e.target.value) : undefined}
           hint={mode === "register" ? t(locale, "auth.passwordHint") : undefined}
           trailing={eye}
         />
+        {mode === "register" && <Strength value={pass} />}
         {mode === "register" && (
           <Field
             label={t(locale, "auth.passwordConfirm")}
@@ -151,6 +251,9 @@ export function AuthForm({ mode }: { mode: Mode }) {
             type={visible ? "text" : "password"}
             required
             autoComplete="new-password"
+            value={pass2}
+            onChange={(e) => setPass2(e.target.value)}
+            status={matchStatus}
           />
         )}
 
@@ -177,35 +280,8 @@ export function AuthForm({ mode }: { mode: Mode }) {
         <Button type="submit" disabled={busy}>
           {t(locale, mode === "login" ? "auth.login" : "auth.register")}
         </Button>
+        {mode === "register" && <Legal />}
       </form>
-
-      {providers.length > 0 && (
-        <>
-          <div className="flex items-center gap-3">
-            <span className="h-px flex-1 border-t rw-line" />
-            <span className="text-theme-xs rw-dim">
-              {t(locale, "auth.orWith")}
-            </span>
-            <span className="h-px flex-1 border-t rw-line" />
-          </div>
-          <div className="flex flex-col gap-2">
-            {providers
-              .filter((p) => p !== "telegram")
-              .map((p) => (
-                <a
-                  key={p}
-                  href={`/api/v1/auth/${p}/start/`}
-                  className="flex h-11 items-center justify-center gap-2 rw-radius-sm border rw-line text-theme-sm font-medium rw-strong transition rw-hover-bg rw-focus-ring"
-                >
-                  {t(locale, PROVIDER_LABEL[p])}
-                </a>
-              ))}
-            {providers.includes("telegram") && telegramBot && (
-              <TelegramButton bot={telegramBot} />
-            )}
-          </div>
-        </>
-      )}
 
       <p className="text-center text-theme-sm rw-dim">
         {t(locale, mode === "login" ? "auth.noAccount" : "auth.hasAccount")}{" "}
@@ -217,6 +293,66 @@ export function AuthForm({ mode }: { mode: Mode }) {
         </Link>
       </p>
     </div>
+  );
+}
+
+/** Parol kuchi — to'rt bo'lakli chiziq va so'z.
+ *
+ * Rang YOLG'IZ tashuvchi emas (WCAG 1.4.1): daraja so'z bilan ham
+ * yoziladi va bo'lakchalar soni ham o'zgaradi. Bu ko'rsatkich hech
+ * narsani to'smaydi — qabul qilish qoidasi faqat serverda. */
+function Strength({ value }: { value: string }) {
+  const locale = useLocale();
+  const level = strength(value);
+  if (!level) return null;
+  const tone = level <= 1 ? "rw-bad-ink" : level === 4 ? "rw-ok-ink" : "rw-warn-ink";
+  return (
+    <p className="-mt-2 flex items-center gap-2" role="status" aria-live="polite">
+      <span className="flex flex-1 gap-1" aria-hidden>
+        {[1, 2, 3, 4].map((step) => (
+          <span
+            key={step}
+            className={`h-1 flex-1 rw-radius-sm ${
+              step <= level ? tone.replace("-ink", "-soft") : "rw-hover-bg"
+            }`}
+            style={{
+              background:
+                step <= level
+                  ? `var(--rw-${level <= 1 ? "bad" : level === 4 ? "ok" : "warn"}-ink)`
+                  : "var(--rw-line)",
+            }}
+          />
+        ))}
+      </span>
+      <span className={`text-theme-xs ${tone}`}>
+        {t(locale, `auth.strength${level}`)}
+      </span>
+    </p>
+  );
+}
+
+/** Shartlar va maxfiylik — matn tarjimada `{terms}` va `{privacy}`
+ *  o'rinlari bilan keladi, ya'ni har bir til so'z tartibini O'ZI
+ *  belgilaydi. Jumlani bo'laklab yig'ish shu sababdan. */
+function Legal() {
+  const locale = useLocale();
+  const parts = t(locale, "auth.legal").split(/(\{terms\}|\{privacy\})/);
+  return (
+    <p className="text-center text-theme-xs rw-dim">
+      {parts.map((part, i) =>
+        part === "{terms}" ? (
+          <Link key={i} href="/shartlar" className="rw-accent-ink hover:underline">
+            {t(locale, "footer.terms")}
+          </Link>
+        ) : part === "{privacy}" ? (
+          <Link key={i} href="/maxfiylik" className="rw-accent-ink hover:underline">
+            {t(locale, "footer.privacy")}
+          </Link>
+        ) : (
+          <span key={i}>{part}</span>
+        ),
+      )}
+    </p>
   );
 }
 

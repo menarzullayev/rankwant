@@ -6,6 +6,7 @@ import { StyleProvider } from "@/context/StyleContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import AppFooter from "./AppFooter";
 import AppHeader from "./AppHeader";
+import { VerifyBanner } from "@/components/VerifyBanner";
 import AppSidebar from "./AppSidebar";
 import { SkipLink } from "./SkipLink";
 
@@ -32,6 +33,7 @@ function Shell({ children }: { children: React.ReactNode }) {
         className={`transition-all duration-300 ${wide ? "lg:ml-[260px]" : "lg:ml-[86px]"}`}
       >
         <AppHeader />
+        <VerifyBanner />
         <main id="main" className="mx-auto max-w-[1400px] p-4 md:p-6">
           {children}
         </main>
