@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="RankWant">
+  <title>RankWant</title>
+  <!--
+    HAQIQAT MANBAI. Boshqa hamma format shu fayldan generatsiya qilinadi:
+        python3 tools/brand.py
+    Logotipni o'zgartirish = shu ikki shaklni o'zgartirish va buyruqni qayta ishga tushirish.
+
+    Ikki cho'qqi va ustidagi nuqta. Bir rangda — favicon o'lchamida ikkinchi
+    rang qo'shimcha ma'lumot bermaydi, faqat loyqalik beradi.
+    `fill` da `var()` ataylab: <img> sifatida yuklanganda zaxira rang
+    ishlaydi, inline qo'yilganda esa mavzuga bo'ysunadi.
+  -->
+  <path fill="#7ea4ff" d="M4 58 24 18l10 17 10-6 16 29z"/>
+  <circle fill="#7ea4ff" cx="24" cy="11" r="5"/>
+</svg>
