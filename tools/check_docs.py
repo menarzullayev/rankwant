@@ -22,7 +22,13 @@ ROOT = Path(__file__).resolve().parent.parent
 def markdown_files() -> list[Path]:
     return sorted(
         p for p in ROOT.rglob("*.md")
-        if not any(part in {".git", "node_modules", ".venv"} for part in p.parts)
+        # `test-results` — Playwright yiqilganda yozadigan nusxa. U hujjat
+        # emas, lekin ichida sahifa matni bo'lgani uchun yozuv aralashuvi
+        # tekshiruvini yiqitardi: darvoza sinovdan KEYIN ishlamay qolardi.
+        if not any(
+            part in {".git", "node_modules", ".venv", "test-results", "playwright-report"}
+            for part in p.parts
+        )
     )
 
 

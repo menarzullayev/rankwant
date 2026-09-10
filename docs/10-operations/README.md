@@ -97,6 +97,7 @@ docker compose --env-file .env.public \
 | Sirlar | `.env.public` (gitignore): `DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS` |
 | `DJANGO_DEBUG` | `0` — aks holda xato sahifasi sozlamalarni oshkor qiladi |
 | Django admin | tunnel'dan **chiqarilmagan**; faqat `127.0.0.1:8301/admin/`. Kundalik boshqaruv esa saytning o'z admin UI'sida: `/admin` (faqat `is_staff`) |
+| `robots.txt` | Cloudflare **o'zining** nusxasini beradi, ya'ni bizning `Sitemap:` qatorimiz kraulerga yetmaydi. Sitemap qo'lda qo'shiladi: Search Console va Yandex Webmaster ga `https://rankwant.bugvector.uz/sitemap.xml` |
 
 ### Ochiq risklar
 
@@ -105,6 +106,7 @@ docker compose --env-file .env.public \
 | Judge ommaviy koddan bajaradi | Sandbox 14/14 izolyatsiya sinovidan o'tgan, lekin konteyner `--privileged`. To'xtatish: `docker compose ... stop judge` |
 | Demo hisoblar (`ustoz`, `oquvchi1..3`) zaif parolli | Ko'rsatuv uchun ataylab qoldirilgan; ommaviy e'lon oldidan o'chirilsin |
 | Ro'yxatdan o'tish ochiq | Cheklov yo'q — abuse qatlami ([test-strategy § 12](test-strategy.md)) hali qurilmagan |
+| 10 tilning tarjimasi ona tilida so'zlashuvchi tomonidan ko'rilmagan | Kalitlar to'liq va `check_i18n.py` buni qo'riqlaydi, lekin matn sifati tekshirilmagan — ayniqsa qoraqalpoq, tojik va qirg'iz. Qaror (2026-09-10): shikoyat kelganda tuzatiladi |
 
 ## Muhitlar
 
