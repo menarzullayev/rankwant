@@ -15,6 +15,24 @@
 x-restart: &restart
   restart: unless-stopped
 
+# Email zanjiri (`core.mailer`) — kalitlar `.env.public` da.
+# `api` ga `send_test_email` uchun, `worker` ga `core.send_email` task'i
+# uchun kerak: zanjir so'rov ichida emas, fon rejimida yuriladi.
+# Sozlanmagani jimgina tushib qoladi, shu bois hammasining standarti bo'sh.
+x-email: &email
+  EMAIL_CHAIN: ${EMAIL_CHAIN:-brevo,mailjet,resend,mailersend}
+  EMAIL_FROM: ${EMAIL_FROM:-}
+  EMAIL_FROM_NAME: ${EMAIL_FROM_NAME:-RankWant}
+  BREVO_API_KEY: ${BREVO_API_KEY:-}
+  BREVO_FROM: ${BREVO_FROM:-}
+  MAILJET_API_KEY: ${MAILJET_API_KEY:-}
+  MAILJET_SECRET_KEY: ${MAILJET_SECRET_KEY:-}
+  MAILJET_FROM: ${MAILJET_FROM:-}
+  RESEND_API_KEY: ${RESEND_API_KEY:-}
+  RESEND_FROM: ${RESEND_FROM:-}
+  MAILERSEND_API_KEY: ${MAILERSEND_API_KEY:-}
+  MAILERSEND_FROM: ${MAILERSEND_FROM:-}
+
 services:
   postgres:
     <<: *restart
@@ -36,6 +54,7 @@ services:
     # Faqat localhost: tashqariga Cloudflare Tunnel chiqaradi, port emas.
     ports: !override ['127.0.0.1:8301:8000']
     environment:
+      <<: *email
       DJANGO_DEBUG: "0"
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
       DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS}
@@ -49,6 +68,7 @@ services:
   worker:
     <<: *restart
     environment:
+      <<: *email
       DJANGO_DEBUG: "0"
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
 

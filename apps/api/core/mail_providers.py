@@ -46,13 +46,26 @@ class SendError(Exception):
         self.detail = detail
 
 
+#: `urllib` ning standart `User-Agent` i — `Python-urllib/3.12`. Resend va
+#: MailerSend API'lari Cloudflare ortida turadi va uni bot deb bloklaydi:
+#: o'lchandi, ikkalasi ham `HTTP 403 … error_code 1010,
+#: browser_signature_banned` qaytardi. Brevo va Mailjet o'tkazib yuborardi,
+#: ya'ni bu nosozlik zanjirning yarmida jimgina yashiringan bo'lardi.
+USER_AGENT = "RankWant/1.0 (+https://rankwant.bugvector.uz)"
+
+
 def _post(url: str, payload: dict[str, object], headers: dict[str, str]) -> str:
     """POST qiladi va javob tanasini qaytaradi. Xato bo'lsa `SendError`."""
     request = urllib.request.Request(
         url,
         data=json.dumps(payload).encode(),
         method="POST",
-        headers={"Content-Type": "application/json", "Accept": "application/json", **headers},
+        headers={
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "User-Agent": USER_AGENT,
+            **headers,
+        },
     )
     try:
         with urllib.request.urlopen(request, timeout=settings.EMAIL_TIMEOUT) as response:
