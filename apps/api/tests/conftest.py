@@ -1,14 +1,49 @@
 from __future__ import annotations
 
+import os
 from datetime import timedelta
+from urllib.parse import urlsplit, urlunsplit
 
 import pytest
+from django.conf import settings
+from django.test import override_settings
 from django.utils import timezone
 
 from contests.models import Contest, ContestProblem
 from core.models import User
 from judging.provider import InMemoryJudgeProvider, set_provider
 from problems.models import Language, Problem, TestCase
+
+
+@pytest.fixture(autouse=True, scope="session")
+def isolated_cache():
+    """Har xdist worker'iga alohida Redis DB.
+
+    Quyidagi `clear_throttle_cache` keshni tozalaydi, Redis backendida
+    esa `cache.clear()` — FLUSHDB, ya'ni BUTUN bazani. Parallel ishlashda
+    bitta worker boshqasining keshini o'rtasida o'chirib yuboradi va
+    kesh testlari tasodifiy yiqiladi: o'lchandi — CI da `-n 4` ostida
+    `test_kesh_takroriy_s3_o_qishini_yo_qotadi` ikkita chaqiruv kutgan
+    joyda to'rttasini ko'rgan.
+
+    Mahalliy ishga tushirishda buni sezib bo'lmasdi: `REDIS_URL` siz
+    LocMemCache ishlaydi va u allaqachon har jarayonga alohida.
+    """
+    worker = os.environ.get("PYTEST_XDIST_WORKER", "")
+    location = settings.CACHES["default"].get("LOCATION", "")
+    if not worker.startswith("gw") or not str(location).startswith("redis"):
+        yield
+        return
+
+    parsed = urlsplit(str(location))
+    per_worker = urlunsplit(parsed._replace(path=f"/{int(worker[2:]) + 1}"))
+    with override_settings(
+        CACHES={
+            **settings.CACHES,
+            "default": {**settings.CACHES["default"], "LOCATION": per_worker},
+        }
+    ):
+        yield
 
 
 @pytest.fixture(autouse=True)
