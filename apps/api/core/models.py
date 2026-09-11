@@ -23,6 +23,16 @@ PRIVACY_FIELDS: tuple[str, ...] = (
 )
 
 
+def default_hidden_fields() -> list[str]:
+    """Pochta standart holatda yashirin, qolgan maydonlar ochiq.
+
+    Ochiq standart — foydalanuvchi tanlovi. Pochta bundan mustasno: mavjud
+    hisoblar uni «ommaviy profilda ko'rinmaydi» sharti bilan bergan, uni
+    ochish egasining ongli qarori bo'lishi kerak.
+    """
+    return ["email"]
+
+
 class User(AbstractUser):
     """Foydalanuvchi va uning 4 reytingi.
 
@@ -90,7 +100,7 @@ class User(AbstractUser):
     birth_date = models.DateField(null=True, blank=True)
     #: Ommaviy profilda YASHIRILGAN maydonlar. Bo'sh ro'yxat — hammasi
     #: ochiq: foydalanuvchi shuni tanladi, yashirish uning o'z qo'lida.
-    hidden_fields = models.JSONField(default=list, blank=True)
+    hidden_fields = models.JSONField(default=default_hidden_fields, blank=True)
     #: Ko'rinish — uslub, ovoz, mavzu almashish effekti (til va mavzu
     #: yuqoridagi alohida maydonlarda).
     ui_prefs = models.JSONField(default=dict, blank=True)

@@ -30,7 +30,7 @@ va til shunga qarab tanlandi.
 | Taxallus | Yiliga bir marta bepul, keyin 500 Qvant | Standings va havolalar taxallusga bog'langan |
 | Sessiyalar | Ro'yxat va birma-bir uzish | Parol almashganda boshqa qurilmalar yopiladi |
 | Ma'lumot | Mamlakat, viloyat, maktab, sinf, sayt | Global platforma; O'zbekistonda viloyat ro'yxatdan |
-| Maxfiylik | Standart holatda hammasi ochiq, har maydon yashiriladi | Foydalanuvchi tanlovi |
+| Maxfiylik | Standart holatda ochiq (pochtadan tashqari), har maydon yashiriladi | Foydalanuvchi tanlovi; pochta — quyida |
 | Tug'ilgan sana | To'liq sana | Yosh toifalari va olimpiada saralashi uchun |
 | Profil | Hammaga ochiq | Reyting platformasida profil — vitrina |
 | Ko'nikmalar | 0–100 slayder, o'zini baholash | KEP kabi; reytingga ta'sir qilmaydi |
@@ -44,6 +44,11 @@ va til shunga qarab tanlandi.
 
 ## Oqibatlar
 
+- **Maxfiylik.** Ma'lumot standart holatda ochiq, pochta esa yopiq:
+  mavjud o'n mingdan ortiq hisob pochtasini «ommaviy profilda
+  ko'rinmaydi» sharti bilan bergan. Birinchi deployda bu yo'q edi va
+  pochta hammaga ochilib qoldi — migratsiya uni barcha mavjud hisoblarda
+  yopdi. Ochish — egasining ongli tanlovi (sozlamalar → Ma'lumotlar).
 - **Taxallus.** Eski nom 90 kun boshqaga berilmaydi va yangi profilga
   yo'naltiradi: aks holda yangi egasi eski egasining obro'si bilan
   standings'da tura olardi. Pullik almashtirish ledger orqali

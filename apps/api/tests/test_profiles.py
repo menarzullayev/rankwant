@@ -179,9 +179,21 @@ class TestTashqiProfil:
 
 @pytest.mark.django_db
 class TestOmmaviyProfil:
-    def test_standart_holatda_hammasi_ochiq(self, user: User) -> None:
+    def test_standart_holatda_ochiq_pochta_esa_yopiq(self, user: User) -> None:
+        """Ma'lumot standart holatda ochiq, pochta esa yopiq: mavjud hisoblar
+        uni «ommaviy profilda ko'rinmaydi» sharti bilan bergan."""
         user.email = "aziz@example.com"
-        user.save(update_fields=["email"])
+        user.school = "1-maktab"
+        user.save(update_fields=["email", "school"])
+
+        body = APIClient().get(reverse("user-profile", args=[user.username])).data
+
+        assert body["info"] == {"school": "1-maktab"}
+
+    def test_pochtani_egasi_ochsa_korinadi(self, user: User) -> None:
+        user.email = "aziz@example.com"
+        user.hidden_fields = []
+        user.save(update_fields=["email", "hidden_fields"])
 
         body = APIClient().get(reverse("user-profile", args=[user.username])).data
 
