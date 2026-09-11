@@ -14,10 +14,10 @@ import type {
 } from "@/lib/api";
 import { getWithSession } from "@/lib/api.server";
 import { SLOT_OF } from "@/lib/cosmetics";
+import { formatDate } from "@/lib/format";
 import { Avatar } from "@/components/Avatar";
 
-const date = (value: string, locale: Locale) =>
-  new Date(value).toLocaleDateString(locale, { dateStyle: "medium" });
+const date = (value: string, locale: Locale) => formatDate(value, locale);
 
 function Empty({ text }: { text: string }) {
   return (

@@ -65,7 +65,7 @@ export default async function OgImage({ params }: { params: Promise<{ username: 
           )}
           <div style={{ display: "flex", flexDirection: "column" }}>
             <div style={{ fontSize: 64, fontWeight: 700 }}>{name}</div>
-            <div style={{ fontSize: 32, opacity: 0.8 }}>@{username}</div>
+            <div style={{ fontSize: 32, opacity: 0.8 }}>{`@${username}`}</div>
           </div>
         </div>
         <div style={{ display: "flex", gap: 24 }}>

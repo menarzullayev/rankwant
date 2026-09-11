@@ -4,6 +4,7 @@ import type { ExternalProfile, PrivacyField, PublicProfile } from "@/lib/api";
 import { countryName } from "@/lib/countries";
 import { regionName } from "@/lib/regions";
 import { BrandIcon, EXTERNAL_ICONS, TECH_ICONS } from "@/lib/tech-icons";
+import { formatDate } from "@/lib/format";
 
 const EXTERNAL_LABEL: Record<string, string> = {
   codeforces: "Codeforces",
@@ -66,10 +67,8 @@ export function AboutTab({
   if (info.birth_date)
     rows.push({
       label: t(locale, "settings.birthDate"),
-      value: new Date(info.birth_date).toLocaleDateString(locale, {
-        dateStyle: "long",
-        timeZone: "UTC",
-      }),
+      // Kalendar sanasi — UTC yarim tunda o'qiladi, zona siljitmasin.
+      value: formatDate(info.birth_date, locale, { dateStyle: "long", timeZone: "UTC" }),
       field: "birth_date",
     });
   if (info.email)

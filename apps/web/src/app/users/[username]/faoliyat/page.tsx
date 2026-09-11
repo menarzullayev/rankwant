@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 import { ActivityTab } from "@/components/profile/ActivityTabs";
-import { t } from "@/i18n/messages";
 import { getLocale } from "@/i18n/server";
+import { tabMetadata } from "@/lib/profile.server";
 
 type Props = {
   params: Promise<{ username: string }>;
@@ -11,8 +11,8 @@ type Props = {
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata(): Promise<Metadata> {
-  return { title: t(await getLocale(), "profile.tab.activity") };
+export function generateMetadata({ params }: Props): Promise<Metadata> {
+  return tabMetadata(params, "profile.tab.activity");
 }
 
 export default async function Page({ params, searchParams }: Props) {

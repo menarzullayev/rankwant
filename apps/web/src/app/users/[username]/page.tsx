@@ -13,6 +13,7 @@ import { Card } from "@/components/ui/Card";
 import { t } from "@/i18n/messages";
 import { getLocale } from "@/i18n/server";
 import { api } from "@/lib/api";
+import { dateKit } from "@/lib/format";
 
 type Props = {
   params: Promise<{ username: string }>;
@@ -36,6 +37,7 @@ export default async function ProfileOverviewPage({ params, searchParams }: Prop
   const { tab } = await searchParams;
   if (tab && LEGACY[tab]) redirect(`/users/${username}/${LEGACY[tab]}` as Route);
   const locale = await getLocale();
+  const kit = dateKit(locale);
 
   const [stats, series, calendar, map, topics, history] = await Promise.all([
     api.userStats(username),
@@ -52,13 +54,13 @@ export default async function ProfileOverviewPage({ params, searchParams }: Prop
 
       <Card title={t(locale, "profile.history")} bodyClassName="space-y-4">
         <SectionHint>{t(locale, "profile.ratingHint")}</SectionHint>
-        <RatingChart data={series} />
+        <RatingChart data={series} kit={kit} />
         <RatingHistoryTable rows={history.results} locale={locale} />
       </Card>
 
       <Card title={t(locale, "profile.heatmapTitle")} bodyClassName="space-y-4">
         <SectionHint>{t(locale, "profile.heatmapHint")}</SectionHint>
-        <ActivityHeatmap username={username} initial={calendar} />
+        <ActivityHeatmap username={username} initial={calendar} kit={kit} />
       </Card>
 
       <Card title={t(locale, "profile.mapTitle")} bodyClassName="space-y-4">

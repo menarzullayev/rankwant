@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { fill, t } from "@/i18n/messages";
 import { getJson, type Calendar } from "@/lib/api";
-import { dateLocales } from "@/lib/format";
+import { formatDay, type DateKit } from "@/lib/format";
 
 const CELL = 11;
 const GAP = 3;
@@ -22,7 +22,15 @@ const colour = (lvl: number) =>
     : `color-mix(in oklab, var(--rw-accent) ${MIX[lvl]}%, var(--rw-chip))`;
 
 /** Faollik xaritasi — yil bo'yicha, kun kvadratchalari (GitHub kabi). */
-export function ActivityHeatmap({ username, initial }: { username: string; initial: Calendar }) {
+export function ActivityHeatmap({
+  username,
+  initial,
+  kit,
+}: {
+  username: string;
+  initial: Calendar;
+  kit: DateKit;
+}) {
   const locale = useLocale();
   const [data, setData] = useState(initial);
   const [busy, setBusy] = useState(false);
@@ -43,18 +51,6 @@ export function ActivityHeatmap({ username, initial }: { username: string; initi
   const offset = (first.getUTCDay() + 6) % 7; // dushanba — 0
   const total = Math.round((Date.UTC(data.year + 1, 0, 1) - first.getTime()) / 86_400_000);
   const columns = Math.ceil((total + offset) / 7);
-  const label = (iso: string) =>
-    new Date(`${iso}T00:00:00Z`).toLocaleDateString(dateLocales(locale), {
-      day: "numeric",
-      month: "long",
-      timeZone: "UTC",
-    });
-  const weekday = (index: number) =>
-    new Date(Date.UTC(2024, 0, 1 + index)).toLocaleDateString(dateLocales(locale), {
-      weekday: "short",
-      timeZone: "UTC",
-    });
-
   const cells = Array.from({ length: total }, (_, i) => {
     const iso = new Date(Date.UTC(data.year, 0, 1 + i)).toISOString().slice(0, 10);
     const day = counts.get(iso);
@@ -65,10 +61,7 @@ export function ActivityHeatmap({ username, initial }: { username: string; initi
       Math.round((Date.UTC(data.year, month, 1) - first.getTime()) / 86_400_000) + offset;
     return {
       col: Math.floor(index / 7),
-      name: new Date(Date.UTC(data.year, month, 1)).toLocaleDateString(dateLocales(locale), {
-        month: "short",
-        timeZone: "UTC",
-      }),
+      name: kit.months[month],
     };
   });
 
@@ -125,7 +118,7 @@ export function ActivityHeatmap({ username, initial }: { username: string; initi
               y={TOP + row * (CELL + GAP) + CELL - 2}
               className="fill-[var(--rw-faint)] text-[9px]"
             >
-              {weekday(row)}
+              {kit.weekdays[row]}
             </text>
           ))}
           {cells.map((cell) => (
@@ -140,7 +133,7 @@ export function ActivityHeatmap({ username, initial }: { username: string; initi
             >
               <title>
                 {fill(t(locale, "profile.heatmapTip"), {
-                  date: label(cell.iso),
+                  date: formatDay(kit, cell.iso),
                   attempts: cell.attempts,
                   solved: cell.solved,
                 })}

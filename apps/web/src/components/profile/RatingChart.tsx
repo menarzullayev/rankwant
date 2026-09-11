@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
 import type { RatingPoint, RatingSeries } from "@/lib/api";
-import { dateLocales } from "@/lib/format";
+import { formatDay, type DateKit } from "@/lib/format";
 
 const KINDS = ["contest", "skills", "activity", "challenges"] as const;
 type Kind = (typeof KINDS)[number];
@@ -45,7 +45,7 @@ function build(points: RatingPoint[]) {
 
 /** Reyting tarixi — SVG, kutubxonasiz (CSP va to'plam hajmi). Contests
  *  grafigida unvon chegaralari rangli bant bo'lib chiziladi. */
-export function RatingChart({ data }: { data: RatingSeries }) {
+export function RatingChart({ data, kit }: { data: RatingSeries; kit: DateKit }) {
   const locale = useLocale();
   const available = KINDS.filter((kind) => (data.series[kind] ?? []).length > 0);
   const [kind, setKind] = useState<Kind>(
@@ -60,8 +60,7 @@ export function RatingChart({ data }: { data: RatingSeries }) {
   }
   const current = active === null ? null : points[active];
   const spot = active === null ? null : model.coords[active];
-  const date = (value: string) =>
-    new Date(value).toLocaleDateString(dateLocales(locale), { dateStyle: "medium" });
+  const date = (value: string) => formatDay(kit, value);
   const describe = (p: RatingPoint) =>
     `${date(p.at)} · ${p.title || t(locale, `profile.reason.${p.reason}`)}${
       p.rank ? ` · #${p.rank}` : ""
