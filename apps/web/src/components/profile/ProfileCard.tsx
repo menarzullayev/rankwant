@@ -9,8 +9,10 @@ import { fill, t, type Locale } from "@/i18n/messages";
 import type { ProfileRole, PublicProfile } from "@/lib/api";
 import { badgeLabel, coverClass, frameClass } from "@/lib/cosmetics";
 import { countryName } from "@/lib/countries";
+import { EXTERNAL_LABEL, externalShown, externalUrl } from "@/lib/external-links";
 import { formatDate, formatRelative } from "@/lib/format";
 import { districtName, regionName } from "@/lib/regions";
+import { BrandIcon, EXTERNAL_ICONS } from "@/lib/tech-icons";
 import { FollowButton } from "./FollowButton";
 import { Medal, achievementLabel } from "./Medal";
 import { ShareButton } from "./ShareButton";
@@ -167,6 +169,35 @@ export function ProfileCard({
             <span className="rw-dim">{t(locale, "profile.followingTab")}</span>
           </Link>
         </p>
+
+        {profile.external.length > 0 && (
+          <ul aria-label={t(locale, "settings.external")} className="mt-4 flex flex-wrap gap-2">
+            {profile.external.map((row) => {
+              const icon = EXTERNAL_ICONS[row.kind];
+              const label = `${EXTERNAL_LABEL[row.kind] ?? row.kind}: ${externalShown(row)}`;
+              return (
+                <li key={row.kind}>
+                  <a
+                    href={externalUrl(row)}
+                    target="_blank"
+                    rel="nofollow ugc noopener noreferrer"
+                    title={label}
+                    aria-label={label}
+                    className="flex size-9 items-center justify-center rw-radius-sm border rw-line rw-strong transition rw-hover-bg rw-focus-ring"
+                  >
+                    {icon ? (
+                      <BrandIcon icon={icon} className="size-4" />
+                    ) : (
+                      <span className="text-theme-xs font-bold">
+                        {(EXTERNAL_LABEL[row.kind] ?? row.kind).slice(0, 2)}
+                      </span>
+                    )}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        )}
 
         {profile.pinned.length > 0 && (
           <ul aria-label={t(locale, "profile.pinnedTitle")} className="mt-4 flex flex-wrap gap-2">

@@ -4,55 +4,8 @@ import type { ExternalProfile, PrivacyField, PublicProfile } from "@/lib/api";
 import { countryName } from "@/lib/countries";
 import { districtName, regionName } from "@/lib/regions";
 import { BrandIcon, EXTERNAL_ICONS, TECH_ICONS } from "@/lib/tech-icons";
+import { EXTERNAL_LABEL, externalUrl, hostOf } from "@/lib/external-links";
 import { formatDate } from "@/lib/format";
-
-const EXTERNAL_LABEL: Record<string, string> = {
-  codeforces: "Codeforces",
-  atcoder: "AtCoder",
-  leetcode: "LeetCode",
-  linkedin: "LinkedIn",
-  telegram: "Telegram",
-  github: "GitHub",
-  instagram: "Instagram",
-  x: "X",
-  youtube: "YouTube",
-  kaggle: "Kaggle",
-  blog: "Blog",
-};
-
-const hostOf = (url: string) => {
-  try {
-    return new URL(url).hostname;
-  } catch {
-    return url;
-  }
-};
-
-function externalUrl(row: ExternalProfile): string {
-  const handle = encodeURIComponent(row.handle);
-  switch (row.kind) {
-    case "codeforces":
-      return `https://codeforces.com/profile/${handle}`;
-    case "atcoder":
-      return `https://atcoder.jp/users/${handle}`;
-    case "leetcode":
-      return `https://leetcode.com/u/${handle}/`;
-    case "telegram":
-      return `https://t.me/${handle}`;
-    case "github":
-      return `https://github.com/${handle}`;
-    case "instagram":
-      return `https://instagram.com/${handle}`;
-    case "x":
-      return `https://x.com/${handle}`;
-    case "youtube":
-      return `https://youtube.com/@${handle}`;
-    case "kaggle":
-      return `https://www.kaggle.com/${handle}`;
-    default:
-      return row.handle;
-  }
-}
 
 const years = (start: number | null, end: number | null, locale: Locale) =>
   start || end
