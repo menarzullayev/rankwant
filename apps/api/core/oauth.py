@@ -59,6 +59,8 @@ class Identity:
     uid: str
     email: str
     suggested: str
+    #: Provayder rasmi — «avatarni ulangan hisobdan olish» uchun saqlanadi.
+    picture: str = ""
 
 
 def configured() -> list[str]:
@@ -130,7 +132,13 @@ def _google_identity(code: str) -> Identity:
         headers={"Authorization": f"Bearer {token.get('access_token', '')}"},
     )
     email = info.get("email", "") if info.get("email_verified") else ""
-    return Identity("google", str(info.get("sub", "")), email, email.split("@")[0])
+    return Identity(
+        "google",
+        str(info.get("sub", "")),
+        email,
+        email.split("@")[0],
+        str(info.get("picture", "")),
+    )
 
 
 # ── GitHub ────────────────────────────────────────────────────────────
@@ -169,7 +177,13 @@ def _github_identity(code: str) -> Identity:
             email = next((r["email"] for r in rows if r.get("primary") and r.get("verified")), "")
     except OAuthError:
         log.warning("GitHub pochtasi olinmadi")
-    return Identity("github", str(info.get("id", "")), email, str(info.get("login", "")))
+    return Identity(
+        "github",
+        str(info.get("id", "")),
+        email,
+        str(info.get("login", "")),
+        str(info.get("avatar_url", "")),
+    )
 
 
 # ── Telegram ──────────────────────────────────────────────────────────
@@ -202,7 +216,7 @@ def telegram_identity(payload: dict[str, str]) -> Identity:
     suggested = payload.get("username") or f"tg{uid}"
     # Telegram POCHTA BERMAYDI — bu bo'shlik ataylab, foydalanuvchi uni
     # keyin sozlamalarda to'ldiradi.
-    return Identity("telegram", uid, "", suggested)
+    return Identity("telegram", uid, "", suggested, payload.get("photo_url", ""))
 
 
 # ── Umumiy ────────────────────────────────────────────────────────────
@@ -234,6 +248,8 @@ def free_username(suggested: str) -> str:
     juda uzun), band bo'lishi yoki mavjud nomga o'xshab qolishi mumkin —
     uchalasi ham raqam qo'shish bilan hal qilinadi.
     """
+    from core.usernames import reserved
+
     base = "".join(ch for ch in suggested if handles.ALLOWED.match(ch or " ")) or "user"
     base = base[: handles.MAX_LENGTH - 4].strip("._") or "user"
     if len(base) < handles.MIN_LENGTH:
@@ -244,6 +260,8 @@ def free_username(suggested: str) -> str:
         taken = User.objects.filter(username__iexact=candidate).exists() or (
             User.objects.filter(username_skeleton=handles.skeleton(candidate)).exists()
         )
-        if not taken:
+        # Yaqinda boshqa hisobdan bo'shagan nom 90 kun band — avtomatik
+        # tanlangan nom ham unga tushmasligi kerak.
+        if not taken and not reserved(candidate):
             return candidate
     return f"user{secrets.token_hex(4)}"

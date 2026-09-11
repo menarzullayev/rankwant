@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     "duels",
     "tournaments",
     "hackathons",
+    "profiles",
 ]
 
 MIDDLEWARE = [
@@ -75,6 +76,8 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    # Kirilgan qurilmalar ro'yxati — autentifikatsiyadan KEYIN, `request.user` kerak.
+    "core.middleware.TrackSession",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -234,10 +237,22 @@ REST_FRAMEWORK = {
         # limit odam yozish tezligiga mos bo'lishi kerak. Ayni paytda u
         # nomlarni sanab chiqish yo'li ham — soatlik chegara shuni to'sadi.
         "username_check": os.environ.get("THROTTLE_USERNAME_CHECK", "120/hour"),
+        # Parol, pochta va taxallusni almashtirish — hisobni egallashga
+        # urinishda aynan shu uchtasi ketma-ket sinaladi.
+        "account_change": os.environ.get("THROTTLE_ACCOUNT_CHANGE", "20/hour"),
+        "avatar": os.environ.get("THROTTLE_AVATAR", "30/hour"),
     },
 }
 
 SPECTACULAR_SETTINGS = {
+    # Bir xil nomli maydonlar (`kind`, `role`) uchun barqaror nom: aks holda
+    # yangi model qo'shilganda mavjud enum'ning nomi xesh bilan o'zgarib,
+    # sxemadan tip oladigan mijozni sababsiz buzardi.
+    "ENUM_NAME_OVERRIDES": {
+        "RoleEnum": "content.models.ArticleProblemLink.Role",
+        "ExternalProfileKindEnum": "profiles.models.ExternalProfile.Kind",
+        "TeamRoleEnum": "profiles.models.TeamMember.Role",
+    },
     "TITLE": "RankWant API",
     "DESCRIPTION": "Sport dasturlash va olimpiada platformasi — ochiq REST API",
     "VERSION": "1.0.0",

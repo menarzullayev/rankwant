@@ -1,14 +1,18 @@
 from __future__ import annotations
 
+import re
+from datetime import date
 from typing import Any
 
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import IntegrityError
+from django.utils import timezone
 from rest_framework import serializers
 
-from core import handles
-from core.models import ApiToken, User
+from core import handles, usernames
+from core.models import PRIVACY_FIELDS, ApiToken, User, UserSession
+from profiles.catalog import UZ_REGIONS
 
 
 class UserPublicSerializer(serializers.ModelSerializer[User]):
@@ -102,12 +106,28 @@ class UserPublicSerializer(serializers.ModelSerializer[User]):
         ]
 
 
+#: Mavzu almashishdagi animatsiya turlari.
+UI_EFFECTS = ("none", "fade", "circle")
+
+
 class MeSerializer(serializers.ModelSerializer[User]):
     #: Ulangan provayderlar — sozlamalar sahifasi shu ro'yxatga qaraydi.
     social = serializers.SerializerMethodField()
+    #: Faqat ijtimoiy hisob bilan kirgan odamda parol yo'q — sozlamalar
+    #: «almashtirish» o'rniga «o'rnatish» formasini ko'rsatadi.
+    has_password = serializers.SerializerMethodField()
+    #: Keyingi bepul almashtirish sanasi va pullik narxi.
+    username_change = serializers.SerializerMethodField()
 
     def get_social(self, obj: User) -> list[str]:
         return sorted(obj.social_accounts.values_list("provider", flat=True))
+
+    def get_has_password(self, obj: User) -> bool:
+        return obj.has_usable_password()
+
+    def get_username_change(self, obj: User) -> dict[str, Any]:
+        free_at = usernames.next_free_at(obj)
+        return {"free_at": free_at.isoformat() if free_at else None, "price": usernames.PRICE}
 
     class Meta:
         model = User
@@ -119,10 +139,21 @@ class MeSerializer(serializers.ModelSerializer[User]):
             "display_name",
             "email_verified",
             "social",
+            "has_password",
             "avatar_url",
             "bio",
             "locale",
             "theme",
+            "country",
+            "region",
+            "school",
+            "grade",
+            "website",
+            "birth_date",
+            "hidden_fields",
+            "ui_prefs",
+            "notify_prefs",
+            "username_change",
             "rating_skills",
             "rating_contest",
             "rating_activity",
@@ -134,6 +165,11 @@ class MeSerializer(serializers.ModelSerializer[User]):
             "is_staff",
             "id",
             "username",
+            # Pochta faqat tasdiqlangan almashtirish orqali (`me/email/`),
+            # avatar esa faqat yuklash orqali: ixtiyoriy tashqi manzil har
+            # profil ko'rilishini uchinchi tomonga bildirardi.
+            "email",
+            "avatar_url",
             "rating_skills",
             "rating_contest",
             "rating_activity",
@@ -142,12 +178,59 @@ class MeSerializer(serializers.ModelSerializer[User]):
             "date_joined",
         ]
 
-    def validate_email(self, value: str) -> str:
-        # Profilni tahrirlashda ham tekshiriladi: aks holda band pochtani
-        # yozish bazadagi cheklovga urilib 500 berardi.
-        if value and _email_taken(value, exclude=self.instance):
-            raise serializers.ValidationError("Bu email band")
+    def validate_country(self, value: str) -> str:
+        value = value.upper()
+        if value and not re.fullmatch(r"[A-Z]{2}", value):
+            raise serializers.ValidationError("Mamlakat kodi noto'g'ri")
         return value
+
+    def validate_birth_date(self, value: date | None) -> date | None:
+        if value is not None and (value > timezone.localdate() or value.year < 1900):
+            raise serializers.ValidationError("Tug'ilgan sana noto'g'ri")
+        return value
+
+    def validate_hidden_fields(self, value: Any) -> list[str]:
+        if not isinstance(value, list) or any(v not in PRIVACY_FIELDS for v in value):
+            raise serializers.ValidationError("Noma'lum maydon")
+        return sorted(set(value))
+
+    def validate_ui_prefs(self, value: Any) -> dict[str, Any]:
+        if not isinstance(value, dict):
+            raise serializers.ValidationError("Obyekt kutilgan")
+        for key, item in value.items():
+            ok = (
+                (key == "style" and isinstance(item, str) and re.fullmatch(r"[a-z-]{1,20}", item))
+                or (key == "sound" and isinstance(item, bool))
+                or (key == "effect" and item in UI_EFFECTS)
+            )
+            if not ok:
+                raise serializers.ValidationError(f"Noma'lum sozlama: {key}")
+        return dict(value)
+
+    def validate_notify_prefs(self, value: Any) -> dict[str, dict[str, bool]]:
+        from notifications.models import Notification
+
+        if not isinstance(value, dict):
+            raise serializers.ValidationError("Obyekt kutilgan")
+        kinds = set(Notification.Kind.values)
+        clean: dict[str, dict[str, bool]] = {}
+        for kind, channels in value.items():
+            if kind not in kinds or not isinstance(channels, dict):
+                raise serializers.ValidationError(f"Noma'lum tur: {kind}")
+            if set(channels) - {"site", "telegram"} or not all(
+                isinstance(v, bool) for v in channels.values()
+            ):
+                raise serializers.ValidationError(f"Noto'g'ri kanal: {kind}")
+            clean[kind] = dict(channels)
+        return clean
+
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        country = attrs.get("country", self.instance.country if self.instance else "")
+        region = attrs.get("region", self.instance.region if self.instance else "")
+        # O'zbekistonda viloyat ro'yxatdan — viloyat bo'yicha reyting shunga tayanadi.
+        if country == "UZ" and region and region not in UZ_REGIONS:
+            raise serializers.ValidationError({"region": "Viloyat ro'yxatdan tanlanadi"})
+        return attrs
 
 
 def _email_taken(value: str, *, exclude: User | None = None) -> bool:
@@ -218,6 +301,12 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
         # ko'rinadigan harflar bor, ya'ni registrsiz tekshiruv yetmaydi.
         if User.objects.filter(username_skeleton=handles.skeleton(value)).exists():
             raise serializers.ValidationError("Bu username mavjud nomga juda o'xshash")
+        # Nomini almashtirgan odamning eski nomi 90 kun band — aks holda
+        # yangi egasi eski egasining obro'si bilan standings'da tura olardi.
+        if usernames.reserved(value):
+            raise serializers.ValidationError(
+                "Bu nom yaqinda boshqa foydalanuvchiga tegishli bo'lgan"
+            )
         return value
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
@@ -326,3 +415,35 @@ class SocialLinkSerializer(serializers.Serializer[dict[str, Any]]):
     """Ijtimoiy hisobni mavjud hisobga bog'lash — parol bilan tasdiqlanadi."""
 
     password = serializers.CharField(write_only=True)
+
+
+class PasswordChangeSerializer(serializers.Serializer[None]):
+    #: Paroli yo'q hisobda (faqat ijtimoiy kirish) bo'sh qoladi.
+    old_password = serializers.CharField(required=False, allow_blank=True, write_only=True)
+    new_password = serializers.CharField(write_only=True)
+
+
+class EmailChangeSerializer(serializers.Serializer[None]):
+    email = serializers.EmailField()
+    password = serializers.CharField(required=False, allow_blank=True, write_only=True)
+
+
+class UsernameChangeSerializer(serializers.Serializer[None]):
+    username = serializers.CharField(max_length=150)
+    #: Bepul almashtirish ishlatilgan bo'lsa — Qvant bilan to'lashga rozilik.
+    pay = serializers.BooleanField(required=False, default=False)
+
+
+class UserSessionSerializer(serializers.ModelSerializer[UserSession]):
+    current = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UserSession
+        fields = ["id", "user_agent", "ip", "created_at", "last_seen", "current"]
+
+    def get_current(self, obj: UserSession) -> bool:
+        return obj.session_key == self.context.get("current_key")
+
+
+class AvatarImportSerializer(serializers.Serializer[None]):
+    provider = serializers.ChoiceField(choices=["google", "github", "telegram"])

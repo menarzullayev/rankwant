@@ -16,7 +16,7 @@ import pytest
 from django.urls import reverse
 from rest_framework.test import APIClient
 
-from core import oauth
+from core import account, oauth
 from core.models import SocialAccount, User
 
 BOT = "123456:AAbbCCddEEff"
@@ -440,3 +440,53 @@ class TestTelegramniUlash:
         r = APIClient().post(reverse("social-link-start", args=["telegram"]))
 
         assert r.status_code in (401, 403)
+
+
+@pytest.mark.django_db
+class TestOchirilganVaBloklangan:
+    def test_ochirilgan_hisobning_eski_boglanishi_xalaqit_bermaydi(
+        self, sozlangan: Any, monkeypatch: Any
+    ) -> None:
+        """Hisob o'chirilishidan OLDIN qolib ketgan bog'lanish: egasi o'sha
+        Google bilan qaytsa yangi hisob ochilishi kerak, `uniq_social_uid`
+        esa band turardi."""
+        eski = User.objects.create_user(username="eski", email="e@example.com")
+        SocialAccount.objects.create(user=eski, provider="google", uid="u1", email="e@example.com")
+        eski.username = account.anonymous_name(eski)
+        eski.email = ""
+        eski.is_active = False
+        eski.save()
+        kelgan(monkeypatch, "e@example.com")
+
+        r = callback(APIClient())
+
+        assert r.status_code == 302
+        yangi = SocialAccount.objects.get(provider="google", uid="u1").user
+        assert yangi.pk != eski.pk
+        assert yangi.is_active
+
+    def test_bloklangan_hisobga_provayder_orqali_kirilmaydi(
+        self, sozlangan: Any, monkeypatch: Any
+    ) -> None:
+        odam = User.objects.create_user(username="blok", email="b@example.com")
+        SocialAccount.objects.create(user=odam, provider="google", uid="u1", email="b@example.com")
+        odam.is_active = False
+        odam.save(update_fields=["is_active"])
+        kelgan(monkeypatch, "b@example.com")
+
+        r = callback(APIClient())
+
+        assert "social=error" in str(r.headers["Location"])
+        assert SocialAccount.objects.get(provider="google", uid="u1").user == odam
+
+    def test_provayder_rasmi_saqlanadi(self, sozlangan: Any, monkeypatch: Any) -> None:
+        rasm = "https://lh3.googleusercontent.com/a/x=s96-c"
+        monkeypatch.setattr(
+            oauth,
+            "identity",
+            lambda provider, code: oauth.Identity(provider, "u9", "r@example.com", "r", rasm),
+        )
+
+        callback(APIClient())
+
+        assert SocialAccount.objects.get(uid="u9").picture == rasm

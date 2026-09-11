@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from core import views
+from core import account_views, views
 from core.staff_views import StaffUserViewSet
 
 router = DefaultRouter()
@@ -55,6 +55,14 @@ urlpatterns = [
     ),
     path("me/", views.MeView.as_view(), name="me"),
     path("me/export/", views.MeExportView.as_view(), name="me-export"),
+    path("me/password/", account_views.PasswordChangeView.as_view(), name="me-password"),
+    path("me/email/", account_views.EmailChangeView.as_view(), name="me-email"),
+    path("me/username/", account_views.UsernameChangeView.as_view(), name="me-username"),
+    path("me/sessions/", account_views.SessionListView.as_view(), name="me-sessions"),
+    path("me/sessions/<int:pk>/", account_views.SessionDetailView.as_view(), name="me-session"),
+    path("me/avatar/", account_views.AvatarView.as_view(), name="me-avatar"),
+    path("me/avatar/import/", account_views.AvatarImportView.as_view(), name="me-avatar-import"),
+    path("avatars/<str:name>", account_views.avatar_file, name="avatar-file"),
     path(
         "users/<str:username>/rating-history/",
         views.RatingHistoryView.as_view(),

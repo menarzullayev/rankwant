@@ -1681,6 +1681,138 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/me/avatar/:
+    post:
+      operationId: me_avatar_create
+      description: Rasm yuklash. Brauzer uni oldindan 256 pikselga kichraytiradi.
+      tags:
+      - me
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    delete:
+      operationId: me_avatar_destroy
+      description: Rasm yuklash. Brauzer uni oldindan 256 pikselga kichraytiradi.
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/me/avatar/import/:
+    post:
+      operationId: me_avatar_import_create
+      description: Ulangan Google/GitHub/Telegram hisobining rasmini avatar qiladi.
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvatarImport'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AvatarImport'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AvatarImport'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/me/educations/:
+    get:
+      operationId: me_educations_list
+      description: Ta'lim va ish tajribasi — bir xil «butun ro'yxatni almashtirish»
+        qoidasi.
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Education'
+          description: ''
+    put:
+      operationId: me_educations_update
+      description: Ta'lim va ish tajribasi — bir xil «butun ro'yxatni almashtirish»
+        qoidasi.
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Education'
+          application/x-www-form-urlencoded:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Education'
+          multipart/form-data:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Education'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Education'
+          description: ''
+  /api/v1/me/email/:
+    post:
+      operationId: me_email_create
+      description: |-
+        Yangi manzilga kod yuboradi. `User.email` tasdiqlangunga qadar o'zgarmaydi.
+
+        Tasdiqlash oddiy `auth/email/verify/` orqali: token maqsadini o'zi biladi.
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailChange'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmailChange'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmailChange'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '202':
+          description: No response body
   /api/v1/me/export/:
     get:
       operationId: me_export_retrieve
@@ -1697,6 +1829,246 @@ paths:
       responses:
         '200':
           description: JSON eksport
+  /api/v1/me/external/:
+    get:
+      operationId: me_external_list
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExternalOut'
+          description: ''
+    put:
+      operationId: me_external_update
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ExternalIn'
+          application/x-www-form-urlencoded:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ExternalIn'
+          multipart/form-data:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ExternalIn'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExternalOut'
+          description: ''
+  /api/v1/me/password/:
+    post:
+      operationId: me_password_create
+      description: |-
+        Parolni almashtirish — yoki ijtimoiy hisobda birinchi marta o'rnatish.
+
+        Paroli yo'q odam (faqat Google/GitHub/Telegram bilan kirgan) uchun
+        joriy parol so'ralmaydi: u yo'q. Aks holda «yagona kirish yo'lini uzib
+        bo'lmaydi — avval parol o'rnating» xabari bajarib bo'lmaydigan ishni
+        buyurardi.
+
+        Boshqa barcha sessiyalar uziladi: parol almashtirishning eng keng
+        sababi — kimdir hisobga kirib olgani.
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordChange'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordChange'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordChange'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/me/sessions/:
+    get:
+      operationId: me_sessions_list
+      description: Kirilgan qurilmalar. `DELETE` — joriydan boshqa hammasini yopadi.
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserSession'
+          description: ''
+    delete:
+      operationId: me_sessions_terminate_others
+      description: Kirilgan qurilmalar. `DELETE` — joriydan boshqa hammasini yopadi.
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/me/sessions/{id}/:
+    delete:
+      operationId: me_sessions_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/me/skills/:
+    get:
+      operationId: me_skills_list
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserSkillOut'
+          description: ''
+    put:
+      operationId: me_skills_update
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserSkillIn'
+          application/x-www-form-urlencoded:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserSkillIn'
+          multipart/form-data:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserSkillIn'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserSkillOut'
+          description: ''
+  /api/v1/me/teams/:
+    get:
+      operationId: me_teams_list
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+          description: ''
+    post:
+      operationId: me_teams_create
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TeamCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TeamCreate'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+          description: ''
+  /api/v1/me/technologies/:
+    get:
+      operationId: me_technologies_retrieve
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    put:
+      operationId: me_technologies_update
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
   /api/v1/me/tokens/:
     get:
       operationId: me_tokens_list
@@ -1794,6 +2166,85 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/me/username/:
+    post:
+      operationId: me_username_create
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsernameChange'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UsernameChange'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UsernameChange'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Me'
+          description: ''
+  /api/v1/me/work/:
+    get:
+      operationId: me_work_list
+      description: Ta'lim va ish tajribasi — bir xil «butun ro'yxatni almashtirish»
+        qoidasi.
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Work'
+          description: ''
+    put:
+      operationId: me_work_update
+      description: Ta'lim va ish tajribasi — bir xil «butun ro'yxatni almashtirish»
+        qoidasi.
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Work'
+          application/x-www-form-urlencoded:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Work'
+          multipart/form-data:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Work'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Work'
+          description: ''
   /api/v1/notifications/:
     get:
       operationId: notifications_list
@@ -2485,6 +2936,46 @@ paths:
               schema:
                 $ref: '#/components/schemas/Inventory'
           description: ''
+  /api/v1/qvant/inventory/{id}/equip/:
+    post:
+      operationId: qvant_inventory_equip_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - qvant
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+          description: ''
+  /api/v1/qvant/inventory/{id}/unequip/:
+    post:
+      operationId: qvant_inventory_unequip_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - qvant
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+          description: ''
   /api/v1/qvant/marathon/:
     get:
       operationId: qvant_marathon_retrieve
@@ -2719,6 +3210,23 @@ paths:
       responses:
         '200':
           description: Qidiruv natijalari
+  /api/v1/skills/catalog/:
+    get:
+      operationId: skills_catalog_list
+      tags:
+      - skills
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Skill'
+          description: ''
   /api/v1/staff/arena/:
     get:
       operationId: staff_arena_list
@@ -6028,6 +6536,116 @@ paths:
       responses:
         '200':
           description: Platforma statistikasi
+  /api/v1/teams/{id}/:
+    delete:
+      operationId: teams_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - teams
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/teams/{id}/leave/:
+    post:
+      operationId: teams_leave_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - teams
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/teams/{id}/members/{username}/:
+    delete:
+      operationId: teams_members_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - teams
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/teams/{id}/refresh-code/:
+    post:
+      operationId: teams_refresh_code_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - teams
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+          description: ''
+  /api/v1/teams/join/:
+    post:
+      operationId: teams_join_create
+      tags:
+      - teams
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamJoin'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TeamJoin'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TeamJoin'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+          description: ''
+  /api/v1/technologies/catalog/:
+    get:
+      operationId: technologies_catalog_retrieve
+      tags:
+      - technologies
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
   /api/v1/topics/:
     get:
       operationId: topics_list
@@ -6235,8 +6853,7 @@ paths:
         name: username
         schema:
           type: string
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
+          pattern: ^[^/]+$
         required: true
       tags:
       - users
@@ -6250,6 +6867,189 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserPublic'
           description: ''
+  /api/v1/users/{username}/achievements/:
+    get:
+      operationId: users_achievements_retrieve
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/users/{username}/activity/:
+    get:
+      operationId: users_activity_retrieve
+      parameters:
+      - in: query
+        name: before
+        schema:
+          type: string
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/users/{username}/follow/:
+    post:
+      operationId: users_follow_create
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    delete:
+      operationId: users_follow_destroy
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/users/{username}/followers/:
+    get:
+      operationId: users_followers_list
+      description: Obunachilar yoki kuzatilayotganlar — `direction` bilan.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserMiniList'
+          description: ''
+  /api/v1/users/{username}/following/:
+    get:
+      operationId: users_following_list
+      description: Obunachilar yoki kuzatilayotganlar — `direction` bilan.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserMiniList'
+          description: ''
+  /api/v1/users/{username}/profile/:
+    get:
+      operationId: users_profile_retrieve
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/users/{username}/purchases/:
+    get:
+      operationId: users_purchases_retrieve
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
   /api/v1/users/{username}/rating-history/:
     get:
       operationId: users_rating_history_list
@@ -6867,6 +7667,13 @@ components:
       required:
       - index
       - verdict
+    AvatarImport:
+      type: object
+      properties:
+        provider:
+          $ref: '#/components/schemas/ProviderEnum'
+      required:
+      - provider
     CategoryEnum:
       enum:
       - streak_freeze
@@ -7275,6 +8082,40 @@ components:
       - draws
       - losses
       - wins
+    Education:
+      type: object
+      properties:
+        organization:
+          type: string
+          maxLength: 150
+        degree:
+          type: string
+          maxLength: 100
+        start_year:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        end_year:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+      required:
+      - organization
+    EmailChange:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - email
     EmailVerify:
       type: object
       description: Havola yoki `username` + kod. Ikkalasi ham bo'lmasa `consume` rad
@@ -7286,6 +8127,59 @@ components:
           type: string
         username:
           type: string
+    ExternalIn:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/ExternalProfileKindEnum'
+        handle:
+          type: string
+          maxLength: 200
+      required:
+      - handle
+      - kind
+    ExternalOut:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/ExternalProfileKindEnum'
+        handle:
+          type: string
+          maxLength: 200
+        rating:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        max_rating:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        rank:
+          type: string
+          maxLength: 40
+        fetched_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - handle
+      - kind
+    ExternalProfileKindEnum:
+      enum:
+      - codeforces
+      - atcoder
+      - leetcode
+      - linkedin
+      type: string
+      description: |-
+        * `codeforces` - Codeforces
+        * `atcoder` - AtCoder
+        * `leetcode` - LeetCode
+        * `linkedin` - LinkedIn
     FinalizeResult:
       type: object
       properties:
@@ -7422,13 +8316,27 @@ components:
     LocaleEnum:
       enum:
       - uz
+      - kaa
       - ru
       - en
+      - kk
+      - ky
+      - tg
+      - tr
+      - zh
+      - es
       type: string
       description: |-
         * `uz` - O'zbekcha
+        * `kaa` - Qaraqalpaqsha
         * `ru` - Русский
         * `en` - English
+        * `kk` - Қазақша
+        * `ky` - Кыргызча
+        * `tg` - Тоҷикӣ
+        * `tr` - Türkçe
+        * `zh` - 中文
+        * `es` - Español
     Login:
       type: object
       properties:
@@ -7464,13 +8372,10 @@ components:
           description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
             only.
         email:
+          type: string
+          format: email
+          readOnly: true
           title: Email address
-          oneOf:
-          - type: string
-            format: email
-            maxLength: 254
-          - type: string
-            maxLength: 0
         display_name:
           type: string
           maxLength: 100
@@ -7482,13 +8387,13 @@ components:
           items:
             type: string
           readOnly: true
+        has_password:
+          type: boolean
+          readOnly: true
         avatar_url:
-          oneOf:
-          - type: string
-            format: uri
-            maxLength: 200
-          - type: string
-            maxLength: 0
+          type: string
+          format: uri
+          readOnly: true
         bio:
           type: string
         locale:
@@ -7496,6 +8401,36 @@ components:
         theme:
           type: string
           maxLength: 16
+        country:
+          type: string
+          maxLength: 2
+        region:
+          type: string
+          maxLength: 80
+        school:
+          type: string
+          maxLength: 150
+        grade:
+          type: string
+          maxLength: 40
+        website:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+        hidden_fields: {}
+        ui_prefs: {}
+        notify_prefs: {}
+        username_change:
+          type: object
+          additionalProperties: {}
+          readOnly: true
         rating_skills:
           type: integer
           readOnly: true
@@ -7518,8 +8453,11 @@ components:
           format: date-time
           readOnly: true
       required:
+      - avatar_url
       - date_joined
+      - email
       - email_verified
+      - has_password
       - id
       - is_staff
       - rating_activity
@@ -7529,6 +8467,7 @@ components:
       - streak_count
       - streak_freeze_until
       - username
+      - username_change
     Notification:
       type: object
       properties:
@@ -8483,6 +9422,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Transaction'
+    PaginatedUserMiniList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserMini'
     PaginatedUserPublicList:
       type: object
       required:
@@ -8506,6 +9468,17 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserPublic'
+    PasswordChange:
+      type: object
+      properties:
+        old_password:
+          type: string
+          writeOnly: true
+        new_password:
+          type: string
+          writeOnly: true
+      required:
+      - new_password
     PasswordResetConfirm:
       type: object
       description: |-
@@ -8575,13 +9548,10 @@ components:
           description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
             only.
         email:
+          type: string
+          format: email
+          readOnly: true
           title: Email address
-          oneOf:
-          - type: string
-            format: email
-            maxLength: 254
-          - type: string
-            maxLength: 0
         display_name:
           type: string
           maxLength: 100
@@ -8593,13 +9563,13 @@ components:
           items:
             type: string
           readOnly: true
+        has_password:
+          type: boolean
+          readOnly: true
         avatar_url:
-          oneOf:
-          - type: string
-            format: uri
-            maxLength: 200
-          - type: string
-            maxLength: 0
+          type: string
+          format: uri
+          readOnly: true
         bio:
           type: string
         locale:
@@ -8607,6 +9577,36 @@ components:
         theme:
           type: string
           maxLength: 16
+        country:
+          type: string
+          maxLength: 2
+        region:
+          type: string
+          maxLength: 80
+        school:
+          type: string
+          maxLength: 150
+        grade:
+          type: string
+          maxLength: 40
+        website:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+        hidden_fields: {}
+        ui_prefs: {}
+        notify_prefs: {}
+        username_change:
+          type: object
+          additionalProperties: {}
+          readOnly: true
         rating_skills:
           type: integer
           readOnly: true
@@ -9694,6 +10694,16 @@ components:
       - success_rate
       - title
       - topics
+    ProviderEnum:
+      enum:
+      - google
+      - github
+      - telegram
+      type: string
+      description: |-
+        * `google` - google
+        * `github` - github
+        * `telegram` - telegram
     Purchase:
       type: object
       properties:
@@ -10249,6 +11259,25 @@ components:
       - score
       - slug
       - title
+    Skill:
+      type: object
+      properties:
+        slug:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        name_uz:
+          type: string
+          maxLength: 80
+        name_ru:
+          type: string
+          maxLength: 80
+        name_en:
+          type: string
+          maxLength: 80
+      required:
+      - name_uz
+      - slug
     SocialLink:
       type: object
       description: Ijtimoiy hisobni mavjud hisobga bog'lash — parol bilan tasdiqlanadi.
@@ -11536,6 +12565,82 @@ components:
       - description
       - repo_url
       - title
+    Team:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 60
+        join_code:
+          type: string
+          maxLength: 24
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/TeamMember'
+          readOnly: true
+        role:
+          type: string
+          nullable: true
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - join_code
+      - members
+      - name
+      - role
+    TeamCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 60
+      required:
+      - name
+    TeamJoin:
+      type: object
+      properties:
+        code:
+          type: string
+          maxLength: 300
+      required:
+      - code
+    TeamMember:
+      type: object
+      properties:
+        username:
+          type: string
+        display_name:
+          type: string
+        avatar_url:
+          type: string
+        role:
+          $ref: '#/components/schemas/TeamRoleEnum'
+        joined_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - avatar_url
+      - display_name
+      - joined_at
+      - username
+    TeamRoleEnum:
+      enum:
+      - owner
+      - member
+      type: string
+      description: |-
+        * `owner` - Egasi
+        * `member` - A'zo
     TestCaseUpload:
       type: object
       description: Test matni S3 ga ketadi, DB da faqat havola qoladi (05-domain-model).
@@ -11759,6 +12864,27 @@ components:
         * `daily` - Kunlik
         * `weekly` - Haftalik
         * `achievement` - Yutuq
+    UserMini:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        display_name:
+          type: string
+          maxLength: 100
+        avatar_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+      required:
+      - username
     UserPublic:
       type: object
       description: |-
@@ -11849,6 +12975,76 @@ components:
       - max_ratings
       - ranks
       - solved_by_level
+      - username
+    UserSession:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user_agent:
+          type: string
+          maxLength: 200
+        ip:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        last_seen:
+          type: string
+          format: date-time
+        current:
+          type: boolean
+          readOnly: true
+      required:
+      - created_at
+      - current
+      - id
+    UserSkillIn:
+      type: object
+      properties:
+        skill:
+          type: string
+          pattern: ^[-a-zA-Z0-9_]+$
+        level:
+          type: integer
+          maximum: 100
+          minimum: 0
+      required:
+      - level
+      - skill
+    UserSkillOut:
+      type: object
+      properties:
+        skill:
+          type: string
+        name_uz:
+          type: string
+        name_ru:
+          type: string
+        name_en:
+          type: string
+        level:
+          type: integer
+          maximum: 100
+          minimum: 0
+      required:
+      - name_en
+      - name_ru
+      - name_uz
+      - skill
+    UsernameChange:
+      type: object
+      properties:
+        username:
+          type: string
+          maxLength: 150
+        pay:
+          type: boolean
+          default: false
+      required:
       - username
     UsernameCheck:
       type: object
@@ -11950,6 +13146,29 @@ components:
       - earned_today
       - remaining_today
       - updated_at
+    Work:
+      type: object
+      properties:
+        company:
+          type: string
+          maxLength: 150
+        title:
+          type: string
+          maxLength: 100
+        start_year:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        end_year:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+      required:
+      - company
   securitySchemes:
     cookieAuth:
       type: apiKey

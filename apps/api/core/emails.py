@@ -36,7 +36,7 @@ def _context(
         "code": code,
         # Havola BIZNING domenimizda qoladi: kuzatuv o'chirilgan (ADR-0015),
         # ya'ni foydalanuvchi manzilni ko'rib ishonch hosil qila oladi.
-        "link": f"{settings.SITE_URL}{path}?token={token}",
+        "link": f"{settings.SITE_URL}{path}" + (f"?token={token}" if token else ""),
         "site_url": settings.SITE_URL,
         "site_host": urlsplit(settings.SITE_URL).netloc,
         "request_at": timezone.localtime().strftime("%d.%m.%Y %H:%M (UTC+5)"),
@@ -72,8 +72,15 @@ def send_password_reset(
     return _send(context, EmailDelivery.Purpose.PASSWORD_RESET, user.email)
 
 
-def send_email_verify(user: User, *, token: str, code: str) -> EmailDelivery:
+def send_email_verify(user: User, *, token: str, code: str, to: str | None = None) -> EmailDelivery:
     # Tasdiqlashda kontekst ko'rsatilmaydi: foydalanuvchi bu so'rovni o'zi,
     # shu daqiqada yubordi — «bu men emasman» degan savol tug'ilmaydi.
+    # `to` — pochtani almashtirishda yangi, hali tasdiqlanmagan manzil.
     context = _context(email_text.VERIFY, user, path="/emailni-tasdiqlash", token=token, code=code)
-    return _send(context, EmailDelivery.Purpose.EMAIL_VERIFY, user.email)
+    return _send(context, EmailDelivery.Purpose.EMAIL_VERIFY, to or user.email)
+
+
+def send_email_changed(user: User, old_email: str) -> EmailDelivery:
+    """Eski manzilga ogohlantirish. Kod ham, token ham yo'q — bu faqat xabar."""
+    context = _context(email_text.CHANGED, user, path="/login", token="", code="")
+    return _send(context, EmailDelivery.Purpose.EMAIL_CHANGED, old_email)

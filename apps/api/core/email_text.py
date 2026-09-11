@@ -110,6 +110,41 @@ VERIFY: dict[str, dict[str, str]] = {
 }
 
 
+#: Eski manzilga — pochta almashtirilgach. Parolni tiklash tavsiya
+#: QILINMAYDI: hisobni egallagan odam pochtani o'zinikiga almashtirgan
+#: bo'lsa, tiklash havolasi endi aynan unga boradi.
+CHANGED: dict[str, dict[str, str]] = {
+    "subject": {
+        "uz": "RankWant: pochta manzilingiz almashtirildi",
+        "ru": "RankWant: адрес почты изменён",
+        "en": "RankWant: your email address was changed",
+    },
+    "heading": {
+        "uz": "Pochta manzili almashtirildi",
+        "ru": "Адрес почты изменён",
+        "en": "Email address changed",
+    },
+    "body": {
+        "uz": (
+            "Hisobingizning pochta manzili boshqa manzilga almashtirildi va bu "
+            "manzilga endi xat kelmaydi. Buni siz qilmagan bo'lsangiz, hisobingizga "
+            "darhol kiring, parolni almashtiring va barcha sessiyalarni yoping."
+        ),
+        "ru": (
+            "Адрес почты вашего аккаунта изменён, и на этот адрес письма больше "
+            "приходить не будут. Если это были не вы, сразу войдите в аккаунт, "
+            "смените пароль и завершите все сеансы."
+        ),
+        "en": (
+            "The email address on your account was changed, and this address will "
+            "no longer receive messages. If this was not you, sign in right away, "
+            "change your password and end all sessions."
+        ),
+    },
+    "cta": {"uz": "Hisobga kirish", "ru": "Войти в аккаунт", "en": "Sign in"},
+}
+
+
 def strings(table: dict[str, dict[str, str]], locale: str) -> dict[str, str]:
     """Bitta til uchun satrlarni tekislaydi. Noma'lum til — o'zbekcha."""
     if locale not in ("uz", "ru", "en"):

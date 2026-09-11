@@ -45,20 +45,35 @@ def queue(task: Any, *args: Any) -> bool:
 
 
 @shared_task(name="core.send_email_verify")
-def send_email_verify(user_id: int, token: str, code: str) -> str:
+def send_email_verify(user_id: int, token: str, code: str, to: str = "") -> str:
     """Tasdiqlash xatini renderlab zanjirga topshiradi.
 
     Ro'yxatdan o'tish javobini kutib turmaydi: xat kelmasa ham hisob
     ochilgan bo'lishi kerak — tasdiqlash yumshoq, ya'ni majburiy emas.
+
+    `to` — pochtani almashtirishda YANGI manzil: xat hali tasdiqlanmagan
+    manzilga ketadi, `User.email` esa hozircha eskisi.
     """
     from core import emails
     from core.models import User
 
     user = User.objects.filter(pk=user_id).first()
-    if user is None or not user.email:
+    if user is None or not (to or user.email):
         log.warning("tasdiqlash xati yuborilmadi — foydalanuvchi yo'q: %s", user_id)
         return "skipped"
-    return emails.send_email_verify(user, token=token, code=code).status
+    return emails.send_email_verify(user, token=token, code=code, to=to or None).status
+
+
+@shared_task(name="core.send_email_changed")
+def send_email_changed(user_id: int, old_email: str) -> str:
+    """Eski manzilga «pochta almashtirildi» ogohlantirishi."""
+    from core import emails
+    from core.models import User
+
+    user = User.objects.filter(pk=user_id).first()
+    if user is None or not old_email:
+        return "skipped"
+    return emails.send_email_changed(user, old_email).status
 
 
 @shared_task(name="core.send_password_reset")

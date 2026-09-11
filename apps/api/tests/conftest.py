@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import io
 import os
 from datetime import timedelta
+from typing import Any
 from urllib.parse import urlsplit, urlunsplit
 
 import pytest
@@ -134,3 +136,26 @@ def contest(db, problem) -> Contest:
     )
     ContestProblem.objects.create(contest=c, problem=problem, index_letter="A")
     return c
+
+
+class FakeS3:
+    """Xotiradagi S3 — avatar sinovlari MinIO'siz ishlaydi."""
+
+    def __init__(self) -> None:
+        self.objects: dict[str, bytes] = {}
+
+    def put_object(self, **kw: Any) -> None:
+        self.objects[kw["Key"]] = kw["Body"]
+
+    def get_object(self, **kw: Any) -> dict[str, Any]:
+        return {"Body": io.BytesIO(self.objects[kw["Key"]])}
+
+    def delete_object(self, **kw: Any) -> None:
+        self.objects.pop(kw["Key"], None)
+
+
+@pytest.fixture
+def fake_s3(monkeypatch: pytest.MonkeyPatch) -> FakeS3:
+    s3 = FakeS3()
+    monkeypatch.setattr("core.avatars._client", lambda: s3)
+    return s3

@@ -84,25 +84,33 @@ class TestEmailYagona:
 
 @pytest.mark.django_db
 class TestProfilTahriri:
-    def test_bandini_yoza_olmaydi(self, user, other_user) -> None:
-        other_user.email = "band@example.com"
-        other_user.save(update_fields=["email"])
-        c = APIClient()
-        c.force_authenticate(user=user)
-
-        r = c.patch(reverse("me"), {"email": "BAND@example.com"}, format="json")
-
-        assert r.status_code == 400
-
-    def test_ozinikini_qayta_yozishi_mumkin(self, user) -> None:
+    def test_pochta_profil_orqali_ozgarmaydi(self, user) -> None:
+        """Pochta faqat tasdiqlangan almashtirish orqali (`me/email/`) —
+        aks holda tasdiqlanmagan manzil parol tiklash kanaliga aylanardi."""
         user.email = "meniki@example.com"
         user.save(update_fields=["email"])
         c = APIClient()
         c.force_authenticate(user=user)
 
-        r = c.patch(reverse("me"), {"email": "meniki@example.com"}, format="json")
+        r = c.patch(reverse("me"), {"email": "boshqa@example.com"}, format="json")
 
         assert r.status_code == 200
+        user.refresh_from_db()
+        assert user.email == "meniki@example.com"
+
+    def test_band_manzilga_almashtirib_bolmaydi(self, user, other_user) -> None:
+        other_user.email = "band@example.com"
+        other_user.save(update_fields=["email"])
+        c = APIClient()
+        c.force_authenticate(user=user)
+
+        r = c.post(
+            reverse("me-email"),
+            {"email": "BAND@example.com", "password": "Parol!12345"},
+            format="json",
+        )
+
+        assert r.status_code == 400
 
 
 @pytest.mark.django_db

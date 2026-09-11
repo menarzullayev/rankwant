@@ -170,3 +170,45 @@ def purchase(user: User, item_code: str) -> UserInventory:
     # kamaytiradi, lekin formulada balans yo'q (ADR-0002) — aks holda
     # foydalanuvchi Qvant sarflashdan qo'rqardi.
     return entry
+
+
+# ── Kosmetika: kiyish ────────────────────────────────────────────────
+#: Profilda ko'rinadigan turkumlar. Streak freeze kiyilmaydi — u iste'mol.
+EQUIPPABLE = (
+    ShopItem.Category.PROFILE_COVER,
+    ShopItem.Category.AVATAR_FRAME,
+    ShopItem.Category.USERNAME_BADGE,
+)
+_SLOT: dict[str, str] = {
+    ShopItem.Category.PROFILE_COVER: "cover",
+    ShopItem.Category.AVATAR_FRAME: "frame",
+    ShopItem.Category.USERNAME_BADGE: "badge",
+}
+
+
+def equipped(user: User) -> dict[str, str | None]:
+    """Profilda turgan narsalar: muqova, avatar ramkasi, nom nishoni."""
+    slots: dict[str, str | None] = {"cover": None, "frame": None, "badge": None}
+    rows = UserInventory.objects.filter(
+        user=user, is_equipped=True, item__category__in=EQUIPPABLE
+    ).values_list("item__category", "item__code")
+    for category, code in rows:
+        slots[_SLOT[category]] = code
+    return slots
+
+
+@transaction.atomic
+def equip(user: User, entry_id: int, *, on: bool) -> UserInventory:
+    """Bitta turkumda bittasi kiyiladi — boshqasi o'zi yechiladi."""
+    entry = (
+        UserInventory.objects.select_for_update().select_related("item").get(pk=entry_id, user=user)
+    )
+    if entry.item.category not in EQUIPPABLE:
+        raise PurchaseError("Bu narsani kiyib bo'lmaydi")
+    if on:
+        UserInventory.objects.filter(
+            user=user, item__category=entry.item.category, is_equipped=True
+        ).exclude(pk=entry.pk).update(is_equipped=False)
+    entry.is_equipped = on
+    entry.save(update_fields=["is_equipped"])
+    return entry

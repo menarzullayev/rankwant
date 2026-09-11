@@ -1,0 +1,140 @@
+"""Tashqi platformadagi profil — handle tekshiruvi va reytingni olish.
+
+Reyting ochiq API'dan olinadi va `ExternalProfile` da keshlanadi: profil
+har ochilganda Codeforces'ga borilmaydi. Yiqilish jim — reyting shunchaki
+bo'sh qoladi.
+"""
+
+from __future__ import annotations
+
+import logging
+import re
+from collections.abc import Callable
+from typing import Any
+
+import requests
+from django.utils import timezone
+
+from profiles.models import ExternalProfile
+
+log = logging.getLogger(__name__)
+
+USER_AGENT = "RankWant/1.0 (+https://rankwant.bugvector.uz)"
+TIMEOUT = 10
+
+HANDLE_RE: dict[str, re.Pattern[str]] = {
+    ExternalProfile.Kind.CODEFORCES: re.compile(r"^[A-Za-z0-9_.-]{3,24}$"),
+    ExternalProfile.Kind.ATCODER: re.compile(r"^[A-Za-z0-9_]{3,16}$"),
+    ExternalProfile.Kind.LEETCODE: re.compile(r"^[A-Za-z0-9_-]{1,40}$"),
+}
+LINKEDIN_RE = re.compile(r"^https://([a-z]{2,3}\.)?linkedin\.com/in/[A-Za-z0-9_%-]{2,100}/?$")
+
+#: AtCoder'ning rasmiy rang chegaralari.
+ATCODER_COLORS = (
+    (400, "gray"),
+    (800, "brown"),
+    (1200, "green"),
+    (1600, "cyan"),
+    (2000, "blue"),
+    (2400, "yellow"),
+    (2800, "orange"),
+)
+
+
+def normalize(kind: str, handle: str) -> str:
+    """Handle'ni tekshiradi. Profil havolasi yuborilsa ham handle ajratiladi."""
+    value = handle.strip()
+    if kind == ExternalProfile.Kind.LINKEDIN:
+        if not LINKEDIN_RE.match(value):
+            raise ValueError("LinkedIn manzili https://linkedin.com/in/… ko'rinishida bo'lsin")
+        return value.rstrip("/")
+    value = value.rstrip("/").rsplit("/", 1)[-1]
+    pattern = HANDLE_RE.get(kind)
+    if pattern is None or not pattern.match(value):
+        raise ValueError("Handle noto'g'ri")
+    return value
+
+
+def _atcoder_color(rating: int) -> str:
+    for upper, name in ATCODER_COLORS:
+        if rating < upper:
+            return name
+    return "red"
+
+
+def _codeforces(handle: str) -> dict[str, Any] | None:
+    resp = requests.get(
+        "https://codeforces.com/api/user.info",
+        params={"handles": handle},
+        timeout=TIMEOUT,
+        headers={"User-Agent": USER_AGENT},
+    )
+    body = resp.json()
+    if body.get("status") != "OK":
+        return None
+    row = body["result"][0]
+    return {
+        "rating": row.get("rating"),
+        "max_rating": row.get("maxRating"),
+        "rank": row.get("rank", ""),
+    }
+
+
+def _atcoder(handle: str) -> dict[str, Any] | None:
+    resp = requests.get(
+        f"https://atcoder.jp/users/{handle}/history/json",
+        timeout=TIMEOUT,
+        headers={"User-Agent": USER_AGENT},
+    )
+    if resp.status_code != 200:
+        return None
+    rated = [row for row in resp.json() if row.get("IsRated")]
+    if not rated:
+        return {"rating": None, "max_rating": None, "rank": ""}
+    rating = int(rated[-1]["NewRating"])
+    return {
+        "rating": rating,
+        "max_rating": max(int(row["NewRating"]) for row in rated),
+        "rank": _atcoder_color(rating),
+    }
+
+
+def _leetcode(handle: str) -> dict[str, Any] | None:
+    resp = requests.post(
+        "https://leetcode.com/graphql",
+        json={
+            "query": "query($u: String!) { userContestRanking(username: $u) { rating } }",
+            "variables": {"u": handle},
+        },
+        timeout=TIMEOUT,
+        headers={"User-Agent": USER_AGENT, "Referer": "https://leetcode.com"},
+    )
+    ranking = (resp.json().get("data") or {}).get("userContestRanking")
+    rating = round(ranking["rating"]) if ranking and ranking.get("rating") is not None else None
+    return {"rating": rating, "max_rating": None, "rank": ""}
+
+
+FETCHERS: dict[str, Callable[[str], dict[str, Any] | None]] = {
+    ExternalProfile.Kind.CODEFORCES: _codeforces,
+    ExternalProfile.Kind.ATCODER: _atcoder,
+    ExternalProfile.Kind.LEETCODE: _leetcode,
+}
+
+
+def refresh(profile: ExternalProfile) -> bool:
+    fetch = FETCHERS.get(profile.kind)
+    if fetch is None:
+        return False
+    try:
+        result = fetch(profile.handle)
+    except (requests.RequestException, ValueError, KeyError, TypeError, IndexError):
+        log.warning("tashqi reyting olinmadi: %s/%s", profile.kind, profile.handle)
+        return False
+    if result is None:
+        return False
+    profile.rating = result["rating"]
+    profile.max_rating = result["max_rating"]
+    profile.rank = str(result["rank"] or "")[:40]
+    profile.fetched_at = timezone.now()
+    profile.save(update_fields=["rating", "max_rating", "rank", "fetched_at"])
+    return True

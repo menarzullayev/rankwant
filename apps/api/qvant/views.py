@@ -173,3 +173,30 @@ class InventoryViewSet(viewsets.ReadOnlyModelViewSet[UserInventory]):
     def get_queryset(self):  # type: ignore[no-untyped-def]
         assert isinstance(self.request.user, User)
         return UserInventory.objects.filter(user=self.request.user).select_related("item")
+
+    @extend_schema(request=None, responses={200: InventorySerializer})
+    @action(detail=True, methods=["post"])
+    def equip(self, request: Request, pk: str | None = None) -> Response:
+        return self._wear(request, pk, on=True)
+
+    @extend_schema(request=None, responses={200: InventorySerializer})
+    @action(detail=True, methods=["post"])
+    def unequip(self, request: Request, pk: str | None = None) -> Response:
+        return self._wear(request, pk, on=False)
+
+    def _wear(self, request: Request, pk: str | None, *, on: bool) -> Response:
+        from rest_framework.exceptions import NotFound
+
+        from qvant import services
+
+        assert isinstance(request.user, User)
+        try:
+            entry = services.equip(request.user, int(pk or 0), on=on)
+        except (UserInventory.DoesNotExist, ValueError):
+            raise NotFound() from None
+        except services.PurchaseError as exc:
+            return Response(
+                {"error": {"code": "equip_failed", "message": str(exc), "details": {}}},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        return Response(InventorySerializer(entry).data)

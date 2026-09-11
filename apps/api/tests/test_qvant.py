@@ -8,6 +8,7 @@ from __future__ import annotations
 from datetime import timedelta
 
 import pytest
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 from django.utils import timezone
 from rest_framework.test import APIClient
@@ -387,17 +388,17 @@ class TestApi:
 
 @pytest.mark.django_db
 class TestProfileQuest:
-    def test_profil_toldirilganda_quest(self, user, catalogue) -> None:
+    def test_profil_toldirilganda_quest(self, user, catalogue, fake_s3) -> None:
+        """Rasm faqat yuklash orqali qo'yiladi — quest ham o'sha yerda beriladi."""
         c = APIClient()
         c.force_authenticate(user=user)
-        r = c.patch(
-            reverse("me"),
-            {
-                "display_name": "Aziz",
-                "bio": "CP ishqibozi",
-                "avatar_url": "https://example.com/a.png",
-            },
-        )
+        r = c.patch(reverse("me"), {"display_name": "Aziz", "bio": "CP ishqibozi"})
+        assert r.status_code == 200
+        assert ledger.get_wallet(user).balance == 0, "rasmsiz profil hali to'liq emas"
+
+        rasm = SimpleUploadedFile("a.png", b"\x89PNG\r\n\x1a\n" + bytes(64), "image/png")
+        r = c.post(reverse("me-avatar"), {"file": rasm}, format="multipart")
+
         assert r.status_code == 200
         assert ledger.get_wallet(user).balance == 50
 

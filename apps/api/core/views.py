@@ -16,7 +16,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import connection
 from django.db.models import Q, QuerySet
-from django.http import HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
@@ -30,7 +30,7 @@ from rest_framework.views import APIView
 from contests.models import Contest
 from core import account, handles, oauth, recovery, verification
 from core.cache import cache_get, cache_set
-from core.models import ApiToken, SocialAccount, User
+from core.models import ApiToken, SocialAccount, User, UsernameHistory
 from core.pagination import StandardPagination, TimeCursorPagination
 from core.serializers import (
     AccountDeleteSerializer,
@@ -413,6 +413,15 @@ class UsernameCheckView(APIView):
             return Response(
                 {"available": False, "reason": "Bu username mavjud nomga juda o'xshash"}
             )
+        from core.usernames import reserved
+
+        if reserved(value):
+            return Response(
+                {
+                    "available": False,
+                    "reason": "Bu nom yaqinda boshqa foydalanuvchiga tegishli bo'lgan",
+                }
+            )
         return Response({"available": True, "reason": ""})
 
 
@@ -511,9 +520,30 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet[User]):
     serializer_class = UserPublicSerializer
     permission_classes = [AllowAny]
     lookup_field = "username"
+    #: Taxallusda nuqta bo'lishi mumkin (`ali.valiyev`) — router'ning
+    #: standart `[^/.]+` qolipi uni kesib, profilni 404 qilardi.
+    lookup_value_regex = "[^/]+"
     queryset = User.objects.filter(is_active=True)
     ordering_fields = ["rating_skills", "rating_contest", "rating_challenges", "date_joined"]
     ordering = ["-rating_skills"]
+
+    def retrieve(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        try:
+            return super().retrieve(request, *args, **kwargs)
+        except Http404:
+            moved = (
+                UsernameHistory.objects.filter(
+                    old_username__iexact=kwargs.get("username", ""), user__is_active=True
+                )
+                .select_related("user")
+                .order_by("-changed_at")
+                .first()
+            )
+            if moved is None:
+                raise
+            # Eski nom: javobdagi `username` yangisi — frontend unga
+            # yo'naltiradi, ya'ni eski havolalar ishlashda davom etadi.
+            return Response(self.get_serializer(moved.user).data)
 
 
 class RatingHistoryView(generics.ListAPIView[Any]):
@@ -831,7 +861,20 @@ class SocialCallbackView(APIView):
         if not ident.uid:
             return redirect(f"{home}/login?social=error")
 
-        link = SocialAccount.objects.filter(provider=ident.provider, uid=ident.uid).first()
+        link = (
+            SocialAccount.objects.filter(provider=ident.provider, uid=ident.uid)
+            .select_related("user")
+            .first()
+        )
+        if link is not None and not link.user.is_active:
+            if not account.is_anonymized(link.user):
+                # Bloklangan hisob — provayder orqali ham kirib bo'lmaydi.
+                return redirect(f"{home}/login?social=error")
+            # O'chirilgan (anonimlashtirilgan) hisobning qolib ketgan
+            # bog'lanishi: egasi shu provayder bilan yangi hisob ochishi
+            # kerak, `uniq_social_uid` esa band turardi.
+            link.delete()
+            link = None
 
         intent = request.session.pop("social_link_for", None)
         if isinstance(intent, dict) and intent.get("provider") == ident.provider:
@@ -842,22 +885,26 @@ class SocialCallbackView(APIView):
                 else None
             )
             if owner is None:
-                return redirect(f"{home}/settings?social=error")
+                return redirect(f"{home}/settings/ijtimoiy?social=error")
             if link is not None and link.user_id != owner.pk:
                 # Bitta provayder hisobi ikki joyda tura olmaydi —
                 # modeldagi `uniq_social_uid` shuni talab qiladi.
-                return redirect(f"{home}/settings?social=taken")
+                return redirect(f"{home}/settings/ijtimoiy?social=taken")
             SocialAccount.objects.update_or_create(
                 user=owner,
                 provider=ident.provider,
-                defaults={"uid": ident.uid, "email": ident.email},
+                defaults={"uid": ident.uid, "email": ident.email, "picture": ident.picture},
             )
             if owner.email_verified_at is None and ident.email.lower() == owner.email.lower():
                 owner.email_verified_at = timezone.now()
                 owner.save(update_fields=["email_verified_at"])
-            return redirect(f"{home}/settings?social=linked")
+            return redirect(f"{home}/settings/ijtimoiy?social=linked")
 
         if link is not None:
+            # Rasm yangilanadi — «avatarni ulangan hisobdan olish» eskisini bermasin.
+            if ident.picture and link.picture != ident.picture:
+                link.picture = ident.picture
+                link.save(update_fields=["picture"])
             django_login(request, link.user, backend=DEFAULT_AUTH_BACKEND)
             return redirect(f"{home}/")
 
@@ -869,11 +916,16 @@ class SocialCallbackView(APIView):
                 "provider": ident.provider,
                 "uid": ident.uid,
                 "email": ident.email,
+                "picture": ident.picture,
                 "user": existing.pk,
                 "at": timezone.now().isoformat(),
             }
             return redirect(f"{home}/login?link={ident.provider}")
 
+        # `kaa` uch harfli — ikki harfga kesish uni `ka` ga, ya'ni
+        # mavjud bo'lmagan tilga aylantirardi.
+        code = str(getattr(request, "LANGUAGE_CODE", "uz"))
+        locale = code if code in User.Locale.values else "uz"
         user = User.objects.create_user(
             username=oauth.free_username(ident.suggested),
             email=ident.email,
@@ -884,12 +936,16 @@ class SocialCallbackView(APIView):
             # tekshirgan narsani qayta so'rash bo'lardi — va o'lchandi:
             # usiz hisobda «pochtangiz tasdiqlanmagan» banneri turardi.
             email_verified_at=timezone.now() if ident.email else None,
-            locale=request.LANGUAGE_CODE[:2] if hasattr(request, "LANGUAGE_CODE") else "uz",
+            locale=locale,
         )
         user.set_unusable_password()
         user.save(update_fields=["password"])
         SocialAccount.objects.create(
-            user=user, provider=ident.provider, uid=ident.uid, email=ident.email
+            user=user,
+            provider=ident.provider,
+            uid=ident.uid,
+            email=ident.email,
+            picture=ident.picture,
         )
         django_login(request, user, backend=DEFAULT_AUTH_BACKEND)
         return redirect(f"{home}/")
@@ -953,7 +1009,11 @@ class SocialLinkView(APIView):
         SocialAccount.objects.get_or_create(
             user=user,
             provider=pending["provider"],
-            defaults={"uid": pending["uid"], "email": pending["email"]},
+            defaults={
+                "uid": pending["uid"],
+                "email": pending["email"],
+                "picture": pending.get("picture", ""),
+            },
         )
         # Ikki isbot ham qo'lda: provayder manzilni tasdiqlagan va
         # foydalanuvchi hisob parolini bildi. Bundan ortiq tasdiq

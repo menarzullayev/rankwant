@@ -12,6 +12,16 @@ from django.db import models
 from django.db.models.functions import Lower
 from django.utils import timezone
 
+#: Ommaviy profilda foydalanuvchi o'zi yashira oladigan maydonlar.
+PRIVACY_FIELDS: tuple[str, ...] = (
+    "email",
+    "birth_date",
+    "country",
+    "school",
+    "grade",
+    "website",
+)
+
 
 class User(AbstractUser):
     """Foydalanuvchi va uning 4 reytingi.
@@ -21,8 +31,15 @@ class User(AbstractUser):
 
     class Locale(models.TextChoices):
         UZ = "uz", "O'zbekcha"
+        KAA = "kaa", "Qaraqalpaqsha"
         RU = "ru", "Русский"
         EN = "en", "English"
+        KK = "kk", "Қазақша"
+        KY = "ky", "Кыргызча"
+        TG = "tg", "Тоҷикӣ"
+        TR = "tr", "Türkçe"
+        ZH = "zh", "中文"
+        ES = "es", "Español"
 
     #: Taqlidga qarshi shakl — `core.handles.skeleton`. `save()` da
     #: to'ldiriladi, ya'ni admin, staff API va seed'da bir xil ishlaydi.
@@ -55,12 +72,32 @@ class User(AbstractUser):
     # Elo volatilligi uchun — birinchi 6 rated contest
     rated_contest_count = models.PositiveIntegerField(default=0)
 
-    locale = models.CharField(max_length=2, choices=Locale.choices, default=Locale.UZ)
+    locale = models.CharField(max_length=8, choices=Locale.choices, default=Locale.UZ)
     theme = models.CharField(max_length=16, default="system")
 
     streak_count = models.PositiveIntegerField(default=0)
     streak_freeze_until = models.DateField(null=True, blank=True)
     last_active_date = models.DateField(null=True, blank=True)
+
+    # ── Profil ma'lumotlari ──────────────────────────────────────────
+    #: ISO 3166-1 alpha-2. Platforma global, ya'ni ro'yxat butun dunyo.
+    country = models.CharField(max_length=2, blank=True)
+    #: `UZ` da `profiles.catalog.UZ_REGIONS` dan kod, boshqa joyda erkin matn.
+    region = models.CharField(max_length=80, blank=True)
+    school = models.CharField(max_length=150, blank=True)
+    grade = models.CharField(max_length=40, blank=True)
+    website = models.URLField(blank=True)
+    birth_date = models.DateField(null=True, blank=True)
+    #: Ommaviy profilda YASHIRILGAN maydonlar. Bo'sh ro'yxat — hammasi
+    #: ochiq: foydalanuvchi shuni tanladi, yashirish uning o'z qo'lida.
+    hidden_fields = models.JSONField(default=list, blank=True)
+    #: Ko'rinish — uslub, ovoz, mavzu almashish effekti (til va mavzu
+    #: yuqoridagi alohida maydonlarda).
+    ui_prefs = models.JSONField(default=dict, blank=True)
+    #: Bildirishnoma turi → kanallar. Kalit yo'q bo'lsa — standart.
+    notify_prefs = models.JSONField(default=dict, blank=True)
+    #: Bepul almashtirish yiliga bir marta — shu sana bo'yicha sanaladi.
+    username_changed_at = models.DateTimeField(null=True, blank=True)
 
     class Meta(AbstractUser.Meta):  # type: ignore[name-defined,misc]
         indexes: ClassVar = [
@@ -183,6 +220,8 @@ class EmailDelivery(models.Model):
     class Purpose(models.TextChoices):
         PASSWORD_RESET = "password_reset", "Parolni tiklash"
         EMAIL_VERIFY = "email_verify", "Emailni tasdiqlash"
+        #: Eski manzilga ogohlantirish — egasi o'zi qilmagan bo'lsa bilsin.
+        EMAIL_CHANGED = "email_changed", "Pochta almashtirildi"
         OTHER = "other", "Boshqa"
 
     class Status(models.TextChoices):
@@ -227,8 +266,15 @@ class EmailVerifyToken(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="verify_tokens")
     token_hash = models.CharField(max_length=64, unique=True, db_index=True)
     code_hash = models.CharField(max_length=64)
-    #: Token chiqarilgan paytdagi manzil.
+
+    class Purpose(models.TextChoices):
+        VERIFY = "verify", "Tasdiqlash"
+        #: Yangi manzil — tasdiqlanmaguncha `User.email` o'zgarmaydi.
+        CHANGE = "change", "Almashtirish"
+
+    #: Token chiqarilgan manzil. `VERIFY` da joriy manzil, `CHANGE` da yangisi.
     email = models.EmailField()
+    purpose = models.CharField(max_length=8, choices=Purpose.choices, default=Purpose.VERIFY)
     used_at = models.DateTimeField(null=True, blank=True)
     expires_at = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
@@ -314,6 +360,8 @@ class SocialAccount(models.Model):
     #: Provayder bergan manzil — audit uchun; hisobning o'z pochtasi
     #: `User.email` da qoladi va bu uni almashtirmaydi.
     email = models.EmailField(blank=True)
+    #: Provayder bergan rasm manzili — «avatarni ulangan hisobdan olish».
+    picture = models.URLField(max_length=500, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -324,3 +372,43 @@ class SocialAccount(models.Model):
 
     def __str__(self) -> str:
         return f"{self.provider}:{self.uid} → {self.user_id}"
+
+
+class UsernameHistory(models.Model):
+    """Eski taxallus. Ikki vazifa: eski havolani yangi profilga yo'naltirish
+    va nomni 90 kun boshqaga bermaslik — aks holda yangi egasi eski
+    egasining obro'si bilan standings'da tura olardi."""
+
+    RESERVE = timedelta(days=90)
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="username_history")
+    old_username = models.CharField(max_length=150, db_index=True)
+    changed_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering: ClassVar = ["-changed_at"]
+
+    def __str__(self) -> str:
+        return f"{self.old_username} → {self.user_id}"
+
+
+class UserSession(models.Model):
+    """Kirilgan qurilma — sozlamalardagi «Sessiyalar» ro'yxati.
+
+    Haqiqat manbai Django sessiyasi: bu jadval faqat unga ko'rinish
+    beradi (qurilma, IP, oxirgi faollik). Sessiya o'chgan qator ro'yxatda
+    ko'rsatilmaydi.
+    """
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sessions")
+    session_key = models.CharField(max_length=40, unique=True)
+    user_agent = models.CharField(max_length=200, blank=True)
+    ip = models.GenericIPAddressField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_seen = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering: ClassVar = ["-last_seen"]
+
+    def __str__(self) -> str:
+        return f"{self.user_id}:{self.session_key[:6]}"

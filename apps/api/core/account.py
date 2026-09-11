@@ -44,6 +44,32 @@ def anonymize(user: User) -> None:
     Favourite.objects.filter(user=user).delete()
     ApiToken.objects.filter(user=user).delete()
 
+    from core import avatars
+    from core.models import SocialAccount, UsernameHistory, UserSession
+    from profiles import teams
+    from profiles.models import (
+        Education,
+        ExternalProfile,
+        Follow,
+        UserSkill,
+        UserTechnology,
+        WorkExperience,
+    )
+
+    # Profilning ro'yxat qismlari — hammasi shaxsiy ma'lumot.
+    for model in (UserSkill, UserTechnology, Education, WorkExperience, ExternalProfile):
+        model.objects.filter(user=user).delete()
+    Follow.objects.filter(Q(follower=user) | Q(following=user)).delete()
+    # Jamoa yo'qolmaydi: egalik qolgan a'zolarga o'tadi.
+    teams.leave_all(user)
+    # Provayder bog'lanishi o'chmasa, o'sha Google/Telegram bilan qayta
+    # kelgan odam yangi hisob ocha olmasdi — `uniq_social_uid` band qolardi.
+    SocialAccount.objects.filter(user=user).delete()
+    # Eski taxalluslar odamni yangi nomiga bog'lab turadi.
+    UsernameHistory.objects.filter(user=user).delete()
+    UserSession.objects.filter(user=user).delete()
+    old_avatar = avatars.name_from_url(user.avatar_url)
+
     user.username = anonymous_name(user)
     user.display_name = f"Neytrino {user.pk}"
     user.email = ""
@@ -52,11 +78,22 @@ def anonymize(user: User) -> None:
     user.bio = ""
     user.avatar_url = ""
     user.telegram_id = None
+    user.country = ""
+    user.region = ""
+    user.school = ""
+    user.grade = ""
+    user.website = ""
+    user.birth_date = None
+    user.hidden_fields = []
+    user.ui_prefs = {}
+    user.notify_prefs = {}
     user.is_active = False
     # Sessiya paroldan olingan hashga bog'langan — parolni yaroqsiz
     # qilish ochiq qolgan barcha sessiyalarni ham uzadi.
     user.set_unusable_password()
     user.save()
+    if old_avatar:
+        avatars.delete(old_avatar)
 
 
 def is_anonymized(user: User) -> bool:
@@ -81,6 +118,15 @@ def export(user: User) -> dict[str, Any]:
             "avatar_url": user.avatar_url,
             "locale": user.locale,
             "theme": user.theme,
+            "country": user.country,
+            "region": user.region,
+            "school": user.school,
+            "grade": user.grade,
+            "website": user.website,
+            "birth_date": user.birth_date,
+            "hidden_fields": user.hidden_fields,
+            "ui_prefs": user.ui_prefs,
+            "notify_prefs": user.notify_prefs,
             "date_joined": user.date_joined,
             "rating_skills": user.rating_skills,
             "rating_contest": user.rating_contest,
@@ -163,5 +209,64 @@ def export(user: User) -> dict[str, Any]:
             QuizAttempt.objects.filter(user=user)
             .order_by("id")
             .values("quiz__slug", "score", "total", "qvant_awarded", "created_at")
+        ),
+        **_profile_export(user),
+    }
+
+
+def _profile_export(user: User) -> dict[str, Any]:
+    """Profil bo'limlari — ko'nikma, karyera, obuna, jamoa, kirishlar."""
+    from core.models import SocialAccount, UsernameHistory, UserSession
+    from profiles.models import (
+        Education,
+        ExternalProfile,
+        Follow,
+        TeamMember,
+        UserSkill,
+        UserTechnology,
+        WorkExperience,
+    )
+
+    return {
+        "skills": list(
+            UserSkill.objects.filter(user=user).order_by("order").values("skill__slug", "level")
+        ),
+        "technologies": list(
+            UserTechnology.objects.filter(user=user)
+            .order_by("order")
+            .values_list("slug", flat=True)
+        ),
+        "educations": list(
+            Education.objects.filter(user=user)
+            .order_by("order")
+            .values("organization", "degree", "start_year", "end_year")
+        ),
+        "work": list(
+            WorkExperience.objects.filter(user=user)
+            .order_by("order")
+            .values("company", "title", "start_year", "end_year")
+        ),
+        "external_profiles": list(
+            ExternalProfile.objects.filter(user=user).values("kind", "handle")
+        ),
+        "following": list(
+            Follow.objects.filter(follower=user).values_list("following__username", flat=True)
+        ),
+        "followers": list(
+            Follow.objects.filter(following=user).values_list("follower__username", flat=True)
+        ),
+        "teams": list(
+            TeamMember.objects.filter(user=user).values("team__name", "role", "joined_at")
+        ),
+        "social_accounts": list(
+            SocialAccount.objects.filter(user=user).values("provider", "email", "created_at")
+        ),
+        "username_history": list(
+            UsernameHistory.objects.filter(user=user).values("old_username", "changed_at")
+        ),
+        "sessions": list(
+            UserSession.objects.filter(user=user).values(
+                "user_agent", "ip", "created_at", "last_seen"
+            )
         ),
     }
