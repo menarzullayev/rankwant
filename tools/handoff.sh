@@ -32,8 +32,18 @@ set -a
 . "$root/.env.handoff"
 set +a
 : "${R2_ACCOUNT_ID:?}" "${R2_ACCESS_KEY_ID:?}" "${R2_SECRET_ACCESS_KEY:?}" "${R2_BUCKET:?}"
-# Kalit buyruq qatoriga chiqmasin: `docker run -e MC_HOST_r2` qiymatni muhitdan oladi.
-export MC_HOST_r2="https://$R2_ACCESS_KEY_ID:$R2_SECRET_ACCESS_KEY@$R2_ACCOUNT_ID.r2.cloudflarestorage.com"
+
+# R2 bilan rclone gaplashadi: minio/mc image'i Docker Hub'dan olib tashlangan.
+# Sozlama muhit orqali — kalit buyruq qatoriga chiqmaydi, `docker run -e NOM`
+# qiymatni shu muhitdan oladi.
+export RCLONE_CONFIG_R2_TYPE=s3
+export RCLONE_CONFIG_R2_PROVIDER=Cloudflare
+export RCLONE_CONFIG_R2_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID"
+export RCLONE_CONFIG_R2_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY"
+export RCLONE_CONFIG_R2_ENDPOINT="https://$R2_ACCOUNT_ID.r2.cloudflarestorage.com"
+# Token faqat obyektlarga ruxsat beradi: bucket'ni tekshirish yoki yaratishga urinmasin.
+export RCLONE_CONFIG_R2_NO_CHECK_BUCKET=true
+r2="r2:$R2_BUCKET"
 
 # Loyiha nomi qat'iy: katalogdan olinsa, worktree yoki boshqa klon boshqa
 # volume'larga tushardi.
@@ -43,12 +53,29 @@ compose=(docker compose -p "$project" --env-file "$root/.env.public"
 # Postgres va MinIO'dan boshqa hammasi bazaga yozadi yoki navbatdan oladi.
 writers=(web api worker beat judge)
 
-mc() { docker run --rm -i -e MC_HOST_r2 -v "$work:/work" minio/mc --quiet "$@"; }
+# Yuklab olingan fayllar root'niki emas, joriy foydalanuvchiniki bo'lsin.
+rc() {
+  docker run --rm -i --user "$(id -u):$(id -g)" -v "$work:/work" \
+    -e RCLONE_CONFIG_R2_TYPE -e RCLONE_CONFIG_R2_PROVIDER \
+    -e RCLONE_CONFIG_R2_ACCESS_KEY_ID -e RCLONE_CONFIG_R2_SECRET_ACCESS_KEY \
+    -e RCLONE_CONFIG_R2_ENDPOINT -e RCLONE_CONFIG_R2_NO_CHECK_BUCKET \
+    rclone/rclone:1.75 -q "$@"
+}
 now() { date -u +%Y-%m-%dT%H:%M:%SZ; }
 local_export() { cat "$local_id_file" 2>/dev/null || true; }
 
 state=""
-load_state() { state="$(mc cat "r2/$R2_BUCKET/state.json" 2>/dev/null || true)"; }
+# R2 ga ulanib bo'lmasa to'xtaydi: «state.json yo'q» deb qabul qilinsa,
+# `init` mavjud holat ustiga yozib yuborardi.
+load_state() {
+  local found
+  if ! found="$(rc lsf --files-only --max-depth 1 --include state.json "$r2")"; then
+    echo "R2 ga ulanib bo'lmadi — holat o'qilmadi, hech narsa o'zgartirilmadi" >&2
+    exit 1
+  fi
+  state=""
+  if [ -n "$found" ]; then state="$(rc cat "$r2/state.json")"; fi
+}
 
 # `get owner` — state.json maydoni, yo'q bo'lsa bo'sh satr.
 get() {
@@ -62,7 +89,7 @@ PY
 
 # save_state OWNER SINCE EXPORT_ID EXPORT_AT — bo'sh qiymat null bo'ladi.
 save_state() {
-  python3 - "$@" <<'PY' | mc pipe "r2/$R2_BUCKET/state.json" >/dev/null
+  python3 - "$@" <<'PY' | rc rcat "$r2/state.json"
 import json, sys
 keys = ("owner", "since", "export_id", "export_at")
 print(json.dumps({k: (v or None) for k, v in zip(keys, sys.argv[1:5])}))
@@ -70,7 +97,7 @@ PY
 }
 
 remote_size() {
-  mc stat --json "r2/$R2_BUCKET/$1" | python3 -c 'import json, sys; print(json.load(sys.stdin)["size"])'
+  rc size --json "$r2/$1" | python3 -c 'import json, sys; print(json.load(sys.stdin)["bytes"])'
 }
 
 # Dump oxirigacha yozilganini va arxiv o'qilishini tekshiradi.
@@ -92,10 +119,12 @@ wait_healthy() {
 }
 
 # R2 da oxirgi ikkita eksport qoladi (bepul 10 GB), lokal nusxadan faqat joriysi.
+# `purge` bucket versiyasini o'qiy olmay 403 haqida yozadi — token bucket
+# sozlamalariga kirmaydi, bu kutilgan va o'chirishga ta'sir qilmaydi.
 prune() {
   local keep="$1" old
-  old="$(mc ls "r2/$R2_BUCKET/exports/" | awk '{print $NF}' | tr -d '/' | sort | head -n -2)"
-  for name in $old; do mc rm --recursive --force "r2/$R2_BUCKET/exports/$name/" >/dev/null; done
+  old="$(rc lsf --dirs-only --max-depth 1 "$r2/exports" | tr -d '/' | sort | head -n -2)"
+  for name in $old; do rc purge "$r2/exports/$name" 2>/dev/null; done
   find "$work/out" "$work/in" -mindepth 1 -maxdepth 1 ! -name "$keep" -exec rm -rf {} + 2>/dev/null || true
 }
 
@@ -104,7 +133,7 @@ import_export() {
   mkdir -p "$dir"
   echo "Eksport yuklab olinmoqda: $id"
   for f in pg.sql.gz minio.tar.gz; do
-    mc cp "r2/$R2_BUCKET/exports/$id/$f" "/work/in/$id/$f" >/dev/null
+    rc copyto "$r2/exports/$id/$f" "/work/in/$id/$f"
   done
   check_archives "$dir"
 
@@ -172,7 +201,7 @@ cmd_out() {
   check_archives "$dir"
   echo "5/6 R2 ga yuklanmoqda"
   for f in pg.sql.gz minio.tar.gz; do
-    mc cp "/work/out/$id/$f" "r2/$R2_BUCKET/exports/$id/$f" >/dev/null
+    rc copyto "/work/out/$id/$f" "$r2/exports/$id/$f"
     if [ "$(remote_size "exports/$id/$f")" != "$(stat -c %s "$dir/$f")" ]; then
       echo "R2 dagi $f hajmi mos emas — holat o'zgartirilmadi" >&2
       exit 1

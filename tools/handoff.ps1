@@ -38,14 +38,30 @@ $envFile = Join-Path $root '.env.handoff'
 if (-not (Test-Path $envFile)) { throw ".env.handoff yo'q - .env.handoff.example dan nusxa olib to'ldiring" }
 $cfg = @{}
 foreach ($line in Get-Content $envFile) {
-  if ($line -match '^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$') { $cfg[$Matches[1]] = $Matches[2].Trim('"') }
+  if ($line -match '^([A-Z0-9_]+)=(.*)$') { $cfg[$Matches[1]] = $Matches[2].Trim().Trim('"') }
 }
 foreach ($k in 'R2_ACCOUNT_ID', 'R2_ACCESS_KEY_ID', 'R2_SECRET_ACCESS_KEY', 'R2_BUCKET') {
   if (-not $cfg[$k]) { throw "$k .env.handoff da yo'q" }
 }
-$bucket = $cfg['R2_BUCKET']
-# Kalit buyruq qatoriga chiqmasin: 'docker run -e MC_HOST_r2' qiymatni muhitdan oladi.
-$env:MC_HOST_r2 = 'https://{0}:{1}@{2}.r2.cloudflarestorage.com' -f $cfg['R2_ACCESS_KEY_ID'], $cfg['R2_SECRET_ACCESS_KEY'], $cfg['R2_ACCOUNT_ID']
+
+# R2 bilan rclone gaplashadi: minio/mc image'i Docker Hub'dan olib tashlangan.
+# Sozlama muhit orqali - kalit buyruq qatoriga chiqmaydi, 'docker run -e NOM'
+# qiymatni shu muhitdan oladi.
+$env:RCLONE_CONFIG_R2_TYPE = 's3'
+$env:RCLONE_CONFIG_R2_PROVIDER = 'Cloudflare'
+$env:RCLONE_CONFIG_R2_ACCESS_KEY_ID = $cfg['R2_ACCESS_KEY_ID']
+$env:RCLONE_CONFIG_R2_SECRET_ACCESS_KEY = $cfg['R2_SECRET_ACCESS_KEY']
+$env:RCLONE_CONFIG_R2_ENDPOINT = 'https://{0}.r2.cloudflarestorage.com' -f $cfg['R2_ACCOUNT_ID']
+# Token faqat obyektlarga ruxsat beradi: bucket'ni tekshirish yoki yaratishga urinmasin.
+$env:RCLONE_CONFIG_R2_NO_CHECK_BUCKET = 'true'
+$r2 = 'r2:' + $cfg['R2_BUCKET']
+# stdin kerak bo'lgan joyda (rcat) funksiya emas, to'g'ridan-to'g'ri
+# '& docker @rcBase' chaqiriladi: PS funksiyasi pipeline'ni native buyruqqa uzatmaydi.
+$rcBase = @('run', '--rm', '-i', '-v', "${work}:/work",
+  '-e', 'RCLONE_CONFIG_R2_TYPE', '-e', 'RCLONE_CONFIG_R2_PROVIDER',
+  '-e', 'RCLONE_CONFIG_R2_ACCESS_KEY_ID', '-e', 'RCLONE_CONFIG_R2_SECRET_ACCESS_KEY',
+  '-e', 'RCLONE_CONFIG_R2_ENDPOINT', '-e', 'RCLONE_CONFIG_R2_NO_CHECK_BUCKET',
+  'rclone/rclone:1.75', '-q')
 
 # Loyiha nomi qat'iy: katalogdan olinsa boshqa klon boshqa volume'larga tushardi.
 $project = 'rankwant'
@@ -60,27 +76,31 @@ $cfLog = Join-Path $work 'cloudflared.log'
 
 function Assert-Exit([string]$what) { if ($LASTEXITCODE -ne 0) { throw "$what (exit $LASTEXITCODE)" } }
 function Compose { & docker @($composeBase + $args); Assert-Exit "docker compose $($args -join ' ')" }
-function Mc { & docker @(@('run', '--rm', '-i', '-e', 'MC_HOST_r2', '-v', "${work}:/work", 'minio/mc', '--quiet') + $args); Assert-Exit "mc $($args -join ' ')" }
+function Rc { & docker @($rcBase + $args); Assert-Exit "rclone $($args -join ' ')" }
 function Now { (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ') }
 function Get-LocalExport { if (Test-Path $localIdFile) { (Get-Content $localIdFile -Raw).Trim() } else { '' } }
 
-# state.json yo'q bo'lsa $null.
+# state.json yo'q bo'lsa $null. R2 ga ulanib bo'lmasa to'xtaydi: "yo'q" deb
+# qabul qilinsa, init mavjud holat ustiga yozib yuborardi.
 function Get-State {
-  $out = & docker run --rm -e MC_HOST_r2 minio/mc --quiet cat "r2/$bucket/state.json" 2>$null
-  if ($LASTEXITCODE -ne 0 -or -not $out) { return $null }
+  $found = & docker @($rcBase + @('lsf', '--files-only', '--max-depth', '1', '--include', 'state.json', $r2))
+  if ($LASTEXITCODE -ne 0) { throw "R2 ga ulanib bo'lmadi - holat o'qilmadi, hech narsa o'zgartirilmadi" }
+  if (-not $found) { return $null }
+  $out = & docker @($rcBase + @('cat', "$r2/state.json"))
+  Assert-Exit "state.json o'qilmadi"
   return (($out -join "`n") | ConvertFrom-Json)
 }
 
 function Save-State($owner, $since, $exportId, $exportAt) {
   $json = [ordered]@{ owner = $owner; since = $since; export_id = $exportId; export_at = $exportAt } | ConvertTo-Json -Compress
-  $json | & docker run --rm -i -e MC_HOST_r2 minio/mc --quiet pipe "r2/$bucket/state.json" | Out-Null
+  $json | & docker @($rcBase + @('rcat', "$r2/state.json")) | Out-Null
   Assert-Exit 'state.json yozilmadi'
 }
 
 function Get-RemoteSize([string]$key) {
-  $j = & docker run --rm -e MC_HOST_r2 minio/mc --quiet stat --json "r2/$bucket/$key"
-  Assert-Exit "mc stat $key"
-  return [long](($j -join "`n") | ConvertFrom-Json).size
+  $j = & docker @($rcBase + @('size', '--json', "$r2/$key"))
+  Assert-Exit "rclone size $key"
+  return [long](($j -join "`n") | ConvertFrom-Json).bytes
 }
 
 # Dump oxirigacha yozilganini va arxiv o'qilishini tekshiradi.
@@ -121,10 +141,15 @@ function Wait-Healthy {
 }
 
 # R2 da oxirgi ikkita eksport qoladi (bepul 10 GB), lokal nusxadan faqat joriysi.
+# 'purge' bucket versiyasini o'qiy olmay 403 haqida yozadi - token bucket
+# sozlamalariga kirmaydi, bu kutilgan va o'chirishga ta'sir qilmaydi.
 function Remove-OldExports([string]$keep) {
-  $names = @(& docker run --rm -e MC_HOST_r2 minio/mc --quiet ls "r2/$bucket/exports/" 2>$null |
-    ForEach-Object { (($_ -split '\s+')[-1]).TrimEnd('/') } | Where-Object { $_ } | Sort-Object)
-  foreach ($n in @($names | Select-Object -SkipLast 2)) { Mc rm --recursive --force "r2/$bucket/exports/$n/" | Out-Null }
+  $names = @(& docker @($rcBase + @('lsf', '--dirs-only', '--max-depth', '1', "$r2/exports")) |
+    ForEach-Object { "$_".TrimEnd('/') } | Where-Object { $_ } | Sort-Object)
+  foreach ($n in @($names | Select-Object -SkipLast 2)) {
+    & docker @($rcBase + @('purge', "$r2/exports/$n")) 2>$null
+    Assert-Exit "eski eksport o'chirilmadi: $n"
+  }
   foreach ($sub in 'out', 'in') {
     Get-ChildItem (Join-Path $work $sub) -Directory -ErrorAction SilentlyContinue |
       Where-Object { $_.Name -ne $keep } | Remove-Item -Recurse -Force
@@ -135,7 +160,7 @@ function Import-Export([string]$id) {
   $dir = Join-Path $work "in\$id"
   New-Item -ItemType Directory -Force -Path $dir | Out-Null
   "Eksport yuklab olinmoqda: $id"
-  foreach ($f in 'pg.sql.gz', 'minio.tar.gz') { Mc cp "r2/$bucket/exports/$id/$f" "/work/in/$id/$f" | Out-Null }
+  foreach ($f in 'pg.sql.gz', 'minio.tar.gz') { Rc copyto "$r2/exports/$id/$f" "/work/in/$id/$f" }
   Test-Archives $dir
 
   'Baza tiklanmoqda'
@@ -190,7 +215,7 @@ function Invoke-Out {
   Test-Archives $dir
   '5/6 R2 ga yuklanmoqda'
   foreach ($f in 'pg.sql.gz', 'minio.tar.gz') {
-    Mc cp "/work/out/$id/$f" "r2/$bucket/exports/$id/$f" | Out-Null
+    Rc copyto "/work/out/$id/$f" "$r2/exports/$id/$f"
     if ((Get-RemoteSize "exports/$id/$f") -ne (Get-Item (Join-Path $dir $f)).Length) {
       throw "R2 dagi $f hajmi mos emas - holat o'zgartirilmadi"
     }
