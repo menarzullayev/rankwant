@@ -7,6 +7,7 @@ rasm sifatida emas, modul-modul chiziladi — rasm kutubxonasiga ehtiyoj yo'q.
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 import segno
@@ -17,6 +18,9 @@ from fpdf import FPDF
 from contests.models import Certificate
 
 FONTS = Path(__file__).resolve().parent / "fonts"
+# fpdf2 shriftni fontTools bilan qisqartiradi, u esa har glif ro'yxatini INFO
+# darajasida yozadi — har PDF api logiga yuzlab qator tushardi (o'lchandi).
+logging.getLogger("fontTools").setLevel(logging.WARNING)
 INK = (29, 41, 57)
 MUTED = (91, 99, 118)
 ACCENT = {
