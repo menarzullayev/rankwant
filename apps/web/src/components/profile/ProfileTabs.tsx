@@ -31,14 +31,18 @@ export function ProfileTabs({
   return (
     <nav
       aria-label={t(locale, "profile.sections")}
-      className="flex gap-1 overflow-x-auto border-b rw-line"
+      // Chiziq `border` emas, ichki soya: `overflow-x-auto` bilan
+      // `overflow-y` ham avtomatik bo'ladi, `-mb-px` bilan tagiga
+      // tushirilgan faol chiziq esa 1px vertikal siljish berib, yonida
+      // aylantirish tugmasini chiqarardi (o'lchandi).
+      className="flex gap-1 overflow-x-auto shadow-[inset_0_-1px_0_var(--rw-line)]"
     >
       {TABS.map((tab) => (
         <Link
           key={tab}
           href={`/users/${username}?tab=${tab}` as Route}
           aria-current={active === tab ? "page" : undefined}
-          className={`-mb-px shrink-0 border-b-2 px-4 py-2.5 text-theme-sm font-medium transition ${
+          className={`shrink-0 border-b-2 px-4 py-2.5 text-theme-sm font-medium transition ${
             active === tab
               ? "rw-accent-line rw-accent-ink"
               : "border-transparent rw-dim rw-hover-strong"
