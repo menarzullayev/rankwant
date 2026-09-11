@@ -1,7 +1,7 @@
 # ADR-0017: Profil va sozlamalar — KEP'dan ilhomlangan, global
 
 **STATUS:** accepted (2026-09-11)
-**Yangilangan:** 2026-09-11 — profil sahifasi (pastdagi bo'lim)
+**Yangilangan:** 2026-09-11 — profil sahifasi va 3-bosqich (pastdagi bo'limlar)
 **Ta'siri:** [ADR-0002](0002-qvant-economy.md) (Qvant ledgeri),
 [ADR-0015](0015-account-email.md) (hisob xatlari),
 [ADR-0016](0016-signup-and-login.md) (ro'yxat va kirish)
@@ -86,8 +86,8 @@ va til shunga qarab tanlandi.
 robocontest.uz profili tahlil qilindi va 30 savol bo'yicha qaror qabul
 qilindi. Ish uch bosqichda: bu bo'lim birinchisini — tuzilma,
 statistika va grafiklarni yozadi. Unvon, ism rangi, rollar, onlayn holat
-va yutuqlar — [ADR-0018](0018-titles-roles-achievements.md), sertifikat
-qarorlari esa alohida ADR'da (0019) bo'ladi.
+va yutuqlar — [ADR-0018](0018-titles-roles-achievements.md), sertifikatlar —
+[ADR-0019](0019-contest-certificates.md).
 
 ### Qaror
 
@@ -130,3 +130,37 @@ qarorlari esa alohida ADR'da (0019) bo'ladi.
   qo'shardi, bizning grafiklar esa chiziq va kataklardan iborat.
 - **Tablar `?tab=` bilan, bitta sahifada** — sahifa hamma tabning
   ma'lumotini kutardi, sarlavha va havola esa hammasiga bitta bo'lardi.
+
+## Yangilanish: joy, maktab, murabbiy, havolalar (2026-09-11)
+
+Profil sahifasining 3-bosqichi.
+
+### Qaror
+
+| Savol | Tanlov | Sabab |
+| ----- | ------ | ----- |
+| Joy | O'zbekistonda viloyat → tuman yoki shahar (206 ta, ro'yxatdan); boshqa mamlakatda shahar erkin matn | Tuman bo'yicha reyting va qidiruv: ro'yxatsiz bitta tuman o'n xil yozilardi |
+| Maktab | Katalog (moderator admin panelda to'ldiradi) + erkin matn zaxirasi | Maktab reytingi va sinfdoshlar katalog bo'yicha; katalogda yo'q maktab ham yozilsin |
+| Murabbiy | O'quvchi a'zo bo'lgan faol auditoriyaning egasi, avtomatik | Qo'lda yozilgan «murabbiy» tekshirilmaydi; auditoriya — haqiqiy bog'lanish |
+| Ijtimoiy havolalar | Telegram, GitHub, Instagram, X, YouTube, Kaggle, blog + Codeforces, AtCoder, LeetCode, LinkedIn | Telegram va GitHub ulangan hisobdan bir bosishda olinadi |
+| Obunachilar | Jadval: ism (unvon rangida), maktab, Contests reytingi, oxirgi faollik; qidiruv va saralash | Ro'yxat kattalashganda kerakli odamni topish |
+| Maxfiylik | Murabbiy va ijtimoiy havolalar alohida yashiriladi | Onlayn holat kabi — har biri o'z tanlovi |
+
+### Oqibatlar
+
+- **Tumanlar** kodi API katalogida (`UZ_DISTRICTS`), nomi frontendda;
+  ikkalasi bir xil ekani test bilan tekshiriladi. Lotin tillarida
+  o'zbekcha, kirill tillarida ruscha nom — viloyatlar bilan bir xil qoida.
+  Ro'yxat qo'lda yig'ilgan (175 tuman va 31 shahar) — ona tilida
+  so'zlashuvchi tekshiruvi kerak.
+- **Viloyat almashsa** eski tuman o'zi tozalanadi; boshqa mamlakatga
+  o'tilsa tuman, O'zbekistonga qaytilsa shahar tozalanadi.
+- **Maktab** katalogda bo'lsa `school_ref` bo'lib saqlanadi, profildagi
+  havola maktab reytingiga (`/leaderboard?school=`) olib boradi. Katalogdan
+  olib tashlangan maktab erkin matn bo'lib qoladi.
+- **Taxallus.** Ijtimoiy kirishda provayder taxallusi saqlanadi (GitHub
+  `login`, Telegram `username`). Undan oldin bog'langan GitHub hisobi
+  uchun taxallus ochiq API'dan identifikator bo'yicha bir marta olinadi.
+- **Obunachilarning oxirgi faolligi** `UserSession.last_seen` dan; odam
+  onlayn holatini yashirgan bo'lsa ko'rinmaydi, maktabini yashirgan bo'lsa
+  maktab ham.
