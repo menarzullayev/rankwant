@@ -769,6 +769,13 @@
 .rw-frame-bronze { box-shadow: 0 0 0 3px #b0763a, 0 0 0 6px rgba(176, 118, 58, .3); }
 .rw-frame-silver { box-shadow: 0 0 0 3px #aeb6c2, 0 0 0 6px rgba(174, 182, 194, .3); }
 .rw-frame-neytron { box-shadow: 0 0 0 3px var(--rw-accent), 0 0 16px 2px var(--rw-accent); }
+/* Reyting grafigidagi unvon bantlari — bezak, ustiga matn tushmaydi
+   (bant nomi `rw-dim` bilan yoziladi), shuning uchun shaffof. */
+.rw-band-1 { fill: #8a94a6; } .rw-band-2 { fill: #7cc36b; } .rw-band-3 { fill: #2f9e5b; }
+.rw-band-4 { fill: #1fa7a0; } .rw-band-5 { fill: #3b7be0; } .rw-band-6 { fill: #8b5cf6; }
+.rw-band-7 { fill: #f08c2e; } .rw-band-8 { fill: #e0413b; } .rw-band-9 { fill: #d4a017; }
+[class^="rw-band-"] { fill-opacity: .14; }
+
 /* Belgilash katagi, radio va slayder uslub rangida. */
 .rw-accent-control { accent-color: var(--rw-accent); }
 

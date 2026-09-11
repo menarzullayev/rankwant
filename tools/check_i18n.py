@@ -44,11 +44,19 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         "settings.nav.profile", "profile.ratingColumn", "profile.tab.rating",
         "settings.company", "settings.effect.none", "settings.language",
         "settings.password", "settings.technologies", "settings.website",
+        # Unvon zinapoyasi va daraja nomlari — xalqaro fizika atamalari.
+        "level.expert", "level.master", "title.kvark", "title.foton", "title.elektron",
+        "title.proton", "title.atom", "title.molekula", "title.kristal", "title.galaktika",
+        "profile.reason.duel", "profile.virtual",
     },
     # «Duel» — inglizchadan o'zlashgan, ingliz tilida o'sha so'zning o'zi.
-    "en": {"nav.duels"},
+    "en": {"nav.duels", "level.master", "title.proton", "title.atom",
+           "profile.reason.duel", "profile.virtual"},
     # Turk tilida ham «Profil» — o'zbekcha bilan harfma-harf bir xil.
-    "tr": {"settings.nav.profile"},
+    "tr": {"settings.nav.profile", "title.foton", "title.elektron", "title.proton",
+           "title.atom", "title.kristal"},
+    # Ispan tilida ham «Virtual».
+    "es": {"profile.virtual"},
 }
 #: Kalit tirnoqli ham, tirnoqsiz ham bo'lishi mumkin: prettier `quoteProps`
 #: sozlamasi bilan oddiy identifikatorlardan tirnoqni olib tashlaydi va

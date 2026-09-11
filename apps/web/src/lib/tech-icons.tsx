@@ -115,6 +115,35 @@ export const EXTERNAL_ICONS: Partial<Record<string, Icon>> = {
   leetcode: siLeetcode,
 };
 
+/** Judge tili kodi (`cpp23`, `py313`, `java21`) → belgi. */
+const LANGUAGE_ICONS: [RegExp, string][] = [
+  [/^(cpp|c\+\+|gpp)/, "cplusplus"],
+  [/^c\d*$/, "c"],
+  [/^(py|pypy)/, "python"],
+  [/^(java|jdk)/, "openjdk"],
+  [/^go/, "go"],
+  [/^(rust|rs)/, "rust"],
+  [/^(kotlin|kt)/, "kotlin"],
+  [/^(cs|csharp|dotnet|mono)/, "dotnet"],
+  [/^(js|node)/, "javascript"],
+  [/^ts/, "typescript"],
+  [/^php/, "php"],
+  [/^(ruby|rb)/, "ruby"],
+  [/^swift/, "swift"],
+  [/^dart/, "dart"],
+  [/^(hs|haskell)/, "haskell"],
+  [/^scala/, "scala"],
+  [/^lua/, "lua"],
+  [/^julia/, "julia"],
+  [/^elixir/, "elixir"],
+  [/^ocaml/, "ocaml"],
+];
+
+export function languageIcon(code: string): Icon | undefined {
+  const found = LANGUAGE_ICONS.find(([pattern]) => pattern.test(code.toLowerCase()));
+  return found ? TECH_ICONS[found[1]] : undefined;
+}
+
 export function BrandIcon({
   icon,
   className = "size-4",

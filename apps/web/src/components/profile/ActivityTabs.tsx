@@ -104,7 +104,7 @@ export async function ActivityTab({
         <div className="border-t rw-line px-5 py-3">
           <Link
             href={
-              `/users/${username}?tab=activity&before=${encodeURIComponent(data.next_before)}` as Route
+              `/users/${username}/faoliyat?before=${encodeURIComponent(data.next_before)}` as Route
             }
             className="text-theme-sm rw-accent-ink hover:underline"
           >
@@ -229,7 +229,7 @@ export async function PeopleTab({
   );
   const title = t(locale, direction === "followers" ? "profile.followers" : "profile.followingTab");
   const link = (to: number) =>
-    `/users/${username}?tab=${direction}&page=${to}` as Route;
+    `/users/${username}/${direction === "followers" ? "obunachilar" : "obunalar"}?page=${to}` as Route;
 
   return (
     <Card title={`${title} · ${data.count}`} bodyClassName="p-0">

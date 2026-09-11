@@ -191,10 +191,16 @@ export type RatingChange = {
 
 export type SolvedProblem = {
   slug: string;
+  /** Ommaviy raqam — `#0431`. */
+  code: number | null;
   title: string;
   difficulty: number;
   difficulty_at_solve: number;
   first_ac_at: string;
+  best_time_ms: number | null;
+  best_memory_kb: number | null;
+  /** AC olgan tillar kodi — `cpp23`, `py313`. */
+  languages: string[];
 };
 
 export type PlatformStats = {
@@ -786,6 +792,108 @@ export type Purchase = {
   is_equipped: boolean;
 };
 
+export type LevelStat = {
+  code: string;
+  label: string;
+  solved: number;
+  total: number;
+};
+
+export type LanguageStat = {
+  code: string;
+  name: string;
+  accepted: number;
+  errors: number;
+};
+
+/** `/users/<nom>/stats/` — yechilgan/jami, daraja kesimi, tillar, verdiktlar. */
+export type UserStats = {
+  solved: number;
+  total: number;
+  levels: LevelStat[];
+  attempts: number;
+  accepted: number;
+  languages: LanguageStat[];
+  verdicts: { verdict: string; count: number }[];
+};
+
+export type CalendarDay = { date: string; attempts: number; solved: number };
+
+export type Calendar = {
+  year: number;
+  years: number[];
+  days: CalendarDay[];
+  attempts: number;
+  solved: number;
+  streak: { current: number; longest: number };
+};
+
+export type ProblemTile = {
+  code: number | null;
+  slug: string;
+  title: string;
+  level: string;
+  rate: number | null;
+  state: "solved" | "attempted" | "untouched";
+};
+
+export type RatingPoint = {
+  at: string;
+  before: number;
+  after: number;
+  delta: number;
+  reason: string;
+  ref: string;
+  /** Musobaqa nomi — faqat Contests nuqtalarida. */
+  title: string;
+  rank: number | null;
+};
+
+export type TitleBand = {
+  code: string;
+  level: number;
+  min: number;
+  max: number | null;
+};
+
+export type UserTitle = { code: string; level: number };
+
+export type RatingSeries = {
+  series: Record<RatingKind | "contest", RatingPoint[]>;
+  bands: TitleBand[];
+  title: UserTitle | null;
+};
+
+export type TopicStrength = {
+  slug: string;
+  label: string;
+  name_uz: string;
+  name_ru: string;
+  name_en: string;
+  total: number;
+  solved: number;
+  stuck: number;
+  rating: number;
+};
+
+export type ContestRow = {
+  slug: string;
+  title: string;
+  rank: number;
+  /** Teng natija oralig'i — `rank_from < rank_to` bo'lsa «33–35». */
+  rank_from: number;
+  rank_to: number;
+  solved: number;
+  score: number;
+  rating: { before: number | null; after: number | null; delta: number } | null;
+  problems: number;
+  participants: number;
+  start_at: string;
+  duration_min: number;
+  is_rated: boolean;
+  virtual: boolean;
+};
+
 class ApiError extends Error {
   constructor(
     readonly status: number,
@@ -1112,6 +1220,26 @@ export const api = {
     get<Paginated<RatingChange>>(`/users/${username}/rating-history/`, 30),
   solved: (username: string) =>
     get<Paginated<SolvedProblem>>(`/users/${username}/solved/`, 30),
+  // Profil statistikasi — backend foydalanuvchi bo'yicha keshlaydi.
+  userStats: (username: string) =>
+    get<UserStats>(`/users/${username}/stats/`, 30),
+  userCalendar: (username: string, year?: number) =>
+    get<Calendar>(
+      `/users/${username}/calendar/${year ? `?year=${year}` : ""}`,
+      30,
+    ),
+  problemMap: (username: string) =>
+    get<{ problems: ProblemTile[] }>(`/users/${username}/problem-map/`, 30),
+  ratingSeries: (username: string) =>
+    get<RatingSeries>(`/users/${username}/rating-series/`, 30),
+  userTopics: (username: string) =>
+    get<{ topics: TopicStrength[] }>(`/users/${username}/topics/`, 60),
+  userContests: (username: string, query = "") =>
+    get<Paginated<ContestRow>>(`/users/${username}/contests/${query}`, 0),
+  solvedPage: (username: string, query = "") =>
+    get<Paginated<SolvedProblem>>(`/users/${username}/solved/${query}`, 0),
+  attemptsQuery: (query: string) =>
+    get<Paginated<Attempt>>(`/attempts/${query}`, 0),
 };
 
 export { ApiError };

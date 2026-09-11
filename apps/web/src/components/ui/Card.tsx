@@ -35,11 +35,14 @@ export function StatCard({
   value,
   hint,
   icon,
+  about,
 }: {
   label: string;
   value: React.ReactNode;
   hint?: string;
   icon?: React.ReactNode;
+  /** Ko'rsatkich nimani o'lchaydi — izohsiz raqam hech narsa aytmaydi. */
+  about?: string;
 }) {
   return (
     <div className="rw-panel p-5">
@@ -51,6 +54,7 @@ export function StatCard({
       <p className="text-theme-sm rw-dim">{label}</p>
       <p className="mt-1 text-title-sm font-bold rw-strong">{value}</p>
       {hint && <p className="mt-1 text-theme-xs rw-faint">{hint}</p>}
+      {about && <p className="mt-2 text-theme-xs rw-dim">{about}</p>}
     </div>
   );
 }
