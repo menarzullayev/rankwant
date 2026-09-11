@@ -151,8 +151,10 @@ Profil sahifasining 3-bosqichi.
 - **Tumanlar** kodi API katalogida (`UZ_DISTRICTS`), nomi frontendda;
   ikkalasi bir xil ekani test bilan tekshiriladi. Lotin tillarida
   o'zbekcha, kirill tillarida ruscha nom — viloyatlar bilan bir xil qoida.
-  Ro'yxat qo'lda yig'ilgan (175 tuman va 31 shahar) — ona tilida
-  so'zlashuvchi tekshiruvi kerak.
+  Ro'yxat qo'lda yig'ilib, inglizcha Vikipediyadagi «Districts of
+  Uzbekistan» bilan solishtirildi: 14 hududda 175 tuman mos keldi. 31
+  viloyatga bo'ysunuvchi shahar manbalarda biroz farq qiladi (masalan,
+  Yangiyo'l) — ona tilida so'zlashuvchi ko'rib chiqsa yaxshi.
 - **Viloyat almashsa** eski tuman o'zi tozalanadi; boshqa mamlakatga
   o'tilsa tuman, O'zbekistonga qaytilsa shahar tozalanadi.
 - **Maktab** katalogda bo'lsa `school_ref` bo'lib saqlanadi, profildagi
