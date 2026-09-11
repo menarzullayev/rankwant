@@ -35,11 +35,10 @@ export default async function LeaderboardPage({ searchParams }: Props) {
   const locale = await getLocale();
   const { school } = await searchParams;
   // Maktab reytingi (ADR-0017) — katalogdagi maktab bo'yicha.
-  const schoolId = school && /^\d+$/.test(school) ? school : undefined;
-  const [data, schoolRow] = await Promise.all([
-    api.leaderboard(schoolId),
-    schoolId ? api.school(schoolId).catch(() => null) : null,
-  ]);
+  // Topilmagan maktab filtri e'tiborsiz qoldiriladi — bo'sh jadval o'rniga umumiy reyting.
+  const schoolRow =
+    school && /^\d+$/.test(school) ? await api.school(school).catch(() => null) : null;
+  const data = await api.leaderboard(schoolRow ? String(schoolRow.id) : undefined);
 
   return (
     <div className="space-y-6">
