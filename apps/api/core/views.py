@@ -527,6 +527,14 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet[User]):
     ordering_fields = ["rating_skills", "rating_contest", "rating_challenges", "date_joined"]
     ordering = ["-rating_skills"]
 
+    def get_queryset(self) -> QuerySet[User]:
+        queryset = super().get_queryset()
+        # Maktab reytingi va sinfdoshlar — katalogdagi maktab bo'yicha.
+        school = self.request.query_params.get("school", "")
+        if school.isdigit():
+            queryset = queryset.filter(school_ref_id=int(school))
+        return queryset
+
     def retrieve(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         try:
             return super().retrieve(request, *args, **kwargs)
@@ -956,7 +964,12 @@ class SocialCallbackView(APIView):
             SocialAccount.objects.update_or_create(
                 user=owner,
                 provider=ident.provider,
-                defaults={"uid": ident.uid, "email": ident.email, "picture": ident.picture},
+                defaults={
+                    "uid": ident.uid,
+                    "email": ident.email,
+                    "picture": ident.picture,
+                    "username": ident.handle,
+                },
             )
             if owner.email_verified_at is None and ident.email.lower() == owner.email.lower():
                 owner.email_verified_at = timezone.now()
@@ -964,10 +977,15 @@ class SocialCallbackView(APIView):
             return redirect(f"{home}/settings/ijtimoiy?social=linked")
 
         if link is not None:
-            # Rasm yangilanadi — «avatarni ulangan hisobdan olish» eskisini bermasin.
-            if ident.picture and link.picture != ident.picture:
-                link.picture = ident.picture
-                link.save(update_fields=["picture"])
+            # Rasm va taxallus yangilanadi — ulangan hisobdan olinganda eskisi chiqmasin.
+            fresh = {"picture": ident.picture, "username": ident.handle}
+            changed = [
+                field for field, value in fresh.items() if value and getattr(link, field) != value
+            ]
+            for field in changed:
+                setattr(link, field, fresh[field])
+            if changed:
+                link.save(update_fields=changed)
             django_login(request, link.user, backend=DEFAULT_AUTH_BACKEND)
             return redirect(f"{home}/")
 
@@ -980,6 +998,7 @@ class SocialCallbackView(APIView):
                 "uid": ident.uid,
                 "email": ident.email,
                 "picture": ident.picture,
+                "handle": ident.handle,
                 "user": existing.pk,
                 "at": timezone.now().isoformat(),
             }
@@ -1009,6 +1028,7 @@ class SocialCallbackView(APIView):
             uid=ident.uid,
             email=ident.email,
             picture=ident.picture,
+            username=ident.handle,
         )
         django_login(request, user, backend=DEFAULT_AUTH_BACKEND)
         return redirect(f"{home}/")
@@ -1076,6 +1096,7 @@ class SocialLinkView(APIView):
                 "uid": pending["uid"],
                 "email": pending["email"],
                 "picture": pending.get("picture", ""),
+                "username": pending.get("handle", ""),
             },
         )
         # Ikki isbot ham qo'lda: provayder manzilni tasdiqlagan va

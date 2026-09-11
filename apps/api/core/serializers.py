@@ -11,8 +11,8 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from core import handles, usernames
-from core.models import PRIVACY_FIELDS, ApiToken, User, UserSession
-from profiles.catalog import UZ_REGIONS
+from core.models import PRIVACY_FIELDS, ApiToken, School, User, UserSession
+from profiles.catalog import UZ_DISTRICTS, UZ_REGIONS
 from profiles.titles import TitleField
 
 
@@ -114,6 +114,15 @@ UI_EFFECTS = ("none", "fade", "circle")
 
 
 class MeSerializer(serializers.ModelSerializer[User]):
+    school_ref = serializers.PrimaryKeyRelatedField(
+        queryset=School.objects.filter(is_active=True), allow_null=True, required=False
+    )
+    #: Katalog maktabining nomi — sozlamalardagi maydonda ko'rsatish uchun.
+    school_name = serializers.SerializerMethodField()
+
+    def get_school_name(self, user: User) -> str:
+        return user.school_ref.name if user.school_ref is not None else ""
+
     #: Ulangan provayderlar — sozlamalar sahifasi shu ro'yxatga qaraydi.
     social = serializers.SerializerMethodField()
     #: Faqat ijtimoiy hisob bilan kirgan odamda parol yo'q — sozlamalar
@@ -149,7 +158,11 @@ class MeSerializer(serializers.ModelSerializer[User]):
             "theme",
             "country",
             "region",
+            "district",
+            "city",
             "school",
+            "school_ref",
+            "school_name",
             "grade",
             "website",
             "birth_date",
@@ -242,9 +255,21 @@ class MeSerializer(serializers.ModelSerializer[User]):
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
         country = attrs.get("country", self.instance.country if self.instance else "")
         region = attrs.get("region", self.instance.region if self.instance else "")
+        district = attrs.get("district", self.instance.district if self.instance else "")
         # O'zbekistonda viloyat ro'yxatdan — viloyat bo'yicha reyting shunga tayanadi.
         if country == "UZ" and region and region not in UZ_REGIONS:
             raise serializers.ValidationError({"region": "Viloyat ro'yxatdan tanlanadi"})
+        # Tuman — faqat O'zbekistonda va tanlangan viloyat ichidan; shahar — aksincha.
+        if country == "UZ":
+            if district and district not in UZ_DISTRICTS.get(region, ()):
+                if "district" in attrs:
+                    raise serializers.ValidationError(
+                        {"district": "Tuman viloyat ro'yxatidan tanlanadi"}
+                    )
+                attrs["district"] = ""  # viloyat almashdi — eski tuman endi to'g'ri emas
+            attrs["city"] = ""
+        else:
+            attrs["district"] = ""
         return attrs
 
 
@@ -462,3 +487,12 @@ class UserSessionSerializer(serializers.ModelSerializer[UserSession]):
 
 class AvatarImportSerializer(serializers.Serializer[None]):
     provider = serializers.ChoiceField(choices=["google", "github", "telegram"])
+
+
+class SchoolSerializer(serializers.ModelSerializer[School]):
+    #: Katalog maktabini tanlagan faol foydalanuvchilar soni.
+    members = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = School
+        fields = ["id", "name", "kind", "region", "district", "city", "members"]

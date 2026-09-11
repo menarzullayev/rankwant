@@ -10,4 +10,15 @@ router.register("staff/contests", StaffContestViewSet, basename="staff-contest")
 
 urlpatterns = [
     path("", include(router.urls)),
+    path("certificates/<uuid:pk>/", views.CertificateView.as_view(), name="certificate"),
+    path(
+        "certificates/<uuid:pk>/pdf/",
+        views.CertificatePdfView.as_view(),
+        name="certificate-pdf",
+    ),
+    path(
+        "users/<str:username>/certificates/",
+        views.UserCertificatesView.as_view(),
+        name="user-certificates",
+    ),
 ]

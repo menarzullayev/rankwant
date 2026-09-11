@@ -6,7 +6,7 @@ from functools import partial
 from typing import Any
 
 from django.db import transaction
-from django.db.models import QuerySet
+from django.db.models import OuterRef, Q, QuerySet, Subquery
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
@@ -18,7 +18,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from contests.models import Standing
-from core.models import User
+from core.models import User, UserSession
 from core.pagination import StandardPagination
 from core.tasks import queue
 from profiles import achievements, external, public, stats, teams
@@ -37,11 +37,11 @@ from profiles.serializers import (
     EducationSerializer,
     ExternalInSerializer,
     ExternalOutSerializer,
+    FollowerSerializer,
     SkillSerializer,
     TeamCreateSerializer,
     TeamJoinSerializer,
     TeamSerializer,
-    UserMiniSerializer,
     UserSkillInSerializer,
     UserSkillOutSerializer,
     WorkSerializer,
@@ -294,24 +294,57 @@ class FollowView(APIView):
 
 
 class FollowListView(generics.ListAPIView[User]):
-    """Obunachilar yoki kuzatilayotganlar — `direction` bilan."""
+    """Obunachilar yoki kuzatilayotganlar — `direction` bilan, qidiruv va saralash."""
 
     permission_classes = [AllowAny]
-    serializer_class = UserMiniSerializer
+    serializer_class = FollowerSerializer
     pagination_class = StandardPagination
     direction = "followers"
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter("q", str),
+            OpenApiParameter("ordering", str, enum=["recent", "rating", "name"]),
+        ]
+    )
+    def get(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        return super().get(request, *args, **kwargs)
 
     def get_queryset(self) -> QuerySet[User]:
         if getattr(self, "swagger_fake_view", False):
             return User.objects.none()
         owner = _profile_owner(self.kwargs["username"])
         if self.direction == "followers":
-            return User.objects.filter(following_links__following=owner, is_active=True).order_by(
-                "-following_links__created_at"
-            )
-        return User.objects.filter(follower_links__follower=owner, is_active=True).order_by(
-            "-follower_links__created_at"
+            queryset = User.objects.filter(following_links__following=owner, is_active=True)
+            recent = "-following_links__created_at"
+        else:
+            queryset = User.objects.filter(follower_links__follower=owner, is_active=True)
+            recent = "-follower_links__created_at"
+        q = self.request.query_params.get("q", "").strip()
+        if q:
+            queryset = queryset.filter(Q(username__icontains=q) | Q(display_name__icontains=q))
+        # Subquery, `Max` emas: agregat GROUP BY ni obuna sanasi bo'yicha
+        # saralash bilan aralashtirib yuborardi.
+        last = (
+            UserSession.objects.filter(user=OuterRef("pk"))
+            .order_by("-last_seen")
+            .values("last_seen")[:1]
         )
+        queryset = queryset.select_related("school_ref").annotate(last_seen=Subquery(last))
+        ordering = {"rating": ("-rating_contest", "username"), "name": ("username",)}
+        return queryset.order_by(
+            *ordering.get(self.request.query_params.get("ordering", ""), (recent,))
+        )
+
+
+class MyConnectedView(APIView):
+    """Ulangan hisobdagi taxallus — Telegram va GitHub havolasini bir bosishda to'ldirish."""
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(responses={200: None})
+    def get(self, request: Request) -> Response:
+        return Response(external.connected_handles(_me(request)))
 
 
 # ── Jamoalar ─────────────────────────────────────────────────────────

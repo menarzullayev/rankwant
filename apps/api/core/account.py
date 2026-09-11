@@ -80,6 +80,9 @@ def anonymize(user: User) -> None:
     user.telegram_id = None
     user.country = ""
     user.region = ""
+    user.district = ""
+    user.city = ""
+    user.school_ref = None
     user.school = ""
     user.grade = ""
     user.website = ""
@@ -120,6 +123,8 @@ def export(user: User) -> dict[str, Any]:
             "theme": user.theme,
             "country": user.country,
             "region": user.region,
+            "district": user.district,
+            "city": user.city,
             "school": user.school,
             "grade": user.grade,
             "website": user.website,

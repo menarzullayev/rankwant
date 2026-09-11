@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from contests.models import Contest, ContestProblem, ContestRegistration, Standing
+from contests.models import Certificate, Contest, ContestProblem, ContestRegistration, Standing
 
 
 class ContestProblemInline(admin.TabularInline):
@@ -34,3 +34,11 @@ class StandingAdmin(admin.ModelAdmin):
 
 
 admin.site.register(ContestRegistration)
+
+
+@admin.register(Certificate)
+class CertificateAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
+    list_display = ("id", "contest", "user", "place", "tier", "issued_at")
+    list_filter = ("tier",)
+    search_fields = ("user__username", "contest__slug")
+    readonly_fields = ("id", "issued_at")

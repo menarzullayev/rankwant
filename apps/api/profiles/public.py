@@ -48,9 +48,15 @@ def build_profile(user: User, viewer: User | None) -> dict[str, Any]:
         info["birth_date"] = user.birth_date.isoformat()
     if visible("country") and user.country:
         info["country"] = user.country
-        if user.region:
-            info["region"] = user.region
-    for field in ("school", "grade", "website"):
+        for field in ("region", "district", "city"):
+            if getattr(user, field):
+                info[field] = getattr(user, field)
+    if visible("school") and (user.school_ref_id or user.school):
+        # Katalogdagi maktab ustun: maktab reytingi va sinfdoshlar shunga tayanadi.
+        info["school"] = user.school_ref.name if user.school_ref is not None else user.school
+        if user.school_ref_id:
+            info["school_id"] = str(user.school_ref_id)
+    for field in ("grade", "website"):
         value = getattr(user, field)
         if visible(field) and value:
             info[field] = value
@@ -93,7 +99,9 @@ def build_profile(user: User, viewer: User | None) -> dict[str, Any]:
             ExternalProfile.objects.filter(user=user).values(
                 "kind", "handle", "rating", "max_rating", "rank"
             )
-        ),
+        )
+        if visible("social")
+        else [],
         "followers": Follow.objects.filter(following=user).count(),
         "following": Follow.objects.filter(follower=user).count(),
         "is_following": (
@@ -108,6 +116,7 @@ def build_profile(user: User, viewer: User | None) -> dict[str, Any]:
         "online": seen is not None
         and (timezone.now() - seen).total_seconds() < sessions.ONLINE_WINDOW,
         "pinned": achievements.pinned(user),
+        "coach": coaches(user) if visible("coach") else [],
     }
 
 
@@ -169,6 +178,31 @@ def activity(user: User, *, before: datetime | None = None, limit: int = 30) -> 
         "results": page,
         "next_before": page[-1]["at"].isoformat() if len(page) == limit else None,
     }
+
+
+def coaches(user: User) -> list[dict[str, Any]]:
+    """Murabbiy — o'quvchi a'zo bo'lgan faol auditoriyaning egasi (ADR-0017)."""
+    from classroom.models import ClassroomMember
+
+    owners = (
+        User.objects.filter(
+            owned_classrooms__members__user=user,
+            owned_classrooms__members__role=ClassroomMember.Role.STUDENT,
+            owned_classrooms__is_active=True,
+            is_active=True,
+        )
+        .exclude(pk=user.pk)
+        .distinct()
+        .order_by("username")[:3]
+    )
+    return [
+        {
+            "username": owner.username,
+            "display_name": owner.display_name,
+            "title": titles.user_title(owner),
+        }
+        for owner in owners
+    ]
 
 
 def roles(user: User) -> list[dict[str, str]]:

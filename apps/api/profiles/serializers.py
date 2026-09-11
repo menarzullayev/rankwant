@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Any
 
 from django.utils import timezone
@@ -92,6 +93,27 @@ class UserMiniSerializer(serializers.ModelSerializer[User]):
     class Meta:
         model = User
         fields = ["username", "display_name", "avatar_url", "title"]
+
+
+class FollowerSerializer(UserMiniSerializer):
+    """Obunachilar jadvali — maxfiylik qoidasi bilan (maktab, onlayn holat)."""
+
+    school = serializers.SerializerMethodField()
+    last_seen = serializers.SerializerMethodField()
+
+    class Meta(UserMiniSerializer.Meta):
+        fields = [*UserMiniSerializer.Meta.fields, "school", "rating_contest", "last_seen"]
+
+    def get_school(self, user: User) -> str:
+        if "school" in (user.hidden_fields or []):
+            return ""
+        return user.school_ref.name if user.school_ref is not None else user.school
+
+    def get_last_seen(self, user: User) -> datetime | None:
+        if "online" in (user.hidden_fields or []):
+            return None
+        value: datetime | None = getattr(user, "last_seen", None)
+        return value
 
 
 class TeamMemberSerializer(serializers.ModelSerializer[TeamMember]):

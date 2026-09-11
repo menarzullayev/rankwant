@@ -17,6 +17,8 @@ from collections.abc import Callable
 from typing import Any
 from urllib.parse import quote, urlencode
 
+from django.core.exceptions import ValidationError
+from django.core.validators import URLValidator
 from django.utils import timezone
 
 from profiles.models import ExternalProfile
@@ -30,6 +32,12 @@ HANDLE_RE: dict[str, re.Pattern[str]] = {
     ExternalProfile.Kind.CODEFORCES: re.compile(r"^[A-Za-z0-9_.-]{3,24}$"),
     ExternalProfile.Kind.ATCODER: re.compile(r"^[A-Za-z0-9_]{3,16}$"),
     ExternalProfile.Kind.LEETCODE: re.compile(r"^[A-Za-z0-9_-]{1,40}$"),
+    ExternalProfile.Kind.TELEGRAM: re.compile(r"^[A-Za-z][A-Za-z0-9_]{4,31}$"),
+    ExternalProfile.Kind.GITHUB: re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9]|-(?=[A-Za-z0-9])){0,38}$"),
+    ExternalProfile.Kind.INSTAGRAM: re.compile(r"^[A-Za-z0-9._]{1,30}$"),
+    ExternalProfile.Kind.X: re.compile(r"^[A-Za-z0-9_]{1,15}$"),
+    ExternalProfile.Kind.YOUTUBE: re.compile(r"^[A-Za-z0-9._-]{3,30}$"),
+    ExternalProfile.Kind.KAGGLE: re.compile(r"^[A-Za-z0-9_-]{3,40}$"),
 }
 LINKEDIN_RE = re.compile(r"^https://([a-z]{2,3}\.)?linkedin\.com/in/[A-Za-z0-9_%-]{2,100}/?$")
 
@@ -52,7 +60,14 @@ def normalize(kind: str, handle: str) -> str:
         if not LINKEDIN_RE.match(value):
             raise ValueError("LinkedIn manzili https://linkedin.com/in/… ko'rinishida bo'lsin")
         return value.rstrip("/")
-    value = value.rstrip("/").rsplit("/", 1)[-1]
+    if kind == ExternalProfile.Kind.BLOG:
+        try:
+            URLValidator(schemes=["https"])(value)
+        except ValidationError:
+            raise ValueError("Blog manzili https:// bilan boshlansin") from None
+        return value
+    # Havola (`https://t.me/nom?x=1`) yoki `@nom` yuborilsa ham taxallus ajratiladi.
+    value = value.split("?", 1)[0].rstrip("/").rsplit("/", 1)[-1].lstrip("@")
     pattern = HANDLE_RE.get(kind)
     if pattern is None or not pattern.match(value):
         raise ValueError("Handle noto'g'ri")
@@ -160,3 +175,32 @@ def refresh(profile: ExternalProfile) -> bool:
     profile.fetched_at = timezone.now()
     profile.save(update_fields=["rating", "max_rating", "rank", "fetched_at"])
     return True
+
+
+def _github_login(uid: str) -> str:
+    """GitHub taxallusi identifikatordan — ochiq API, kalitsiz."""
+    try:
+        data = _json(f"https://api.github.com/user/{uid}")
+    except (OSError, http.client.HTTPException, ValueError):
+        log.warning("GitHub taxallusi olinmadi: %s", uid)
+        return ""
+    return str(data.get("login", "")) if isinstance(data, dict) else ""
+
+
+def connected_handles(user: Any) -> dict[str, str]:
+    """Ulangan Telegram va GitHub hisobidagi taxallus — profil havolasini
+    bir bosishda to'ldirish uchun. Taxallus saqlanishidan oldin bog'langan
+    GitHub hisobi uchun u identifikatordan bir marta olinib saqlanadi."""
+    from core.models import SocialAccount
+
+    out: dict[str, str] = {}
+    for account in SocialAccount.objects.filter(user=user, provider__in=("telegram", "github")):
+        handle = account.username
+        if not handle and account.provider == "github" and account.uid.isdigit():
+            handle = _github_login(account.uid)
+            if handle:
+                account.username = handle
+                account.save(update_fields=["username"])
+        if handle:
+            out[account.provider] = handle
+    return out

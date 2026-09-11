@@ -703,6 +703,52 @@ paths:
       responses:
         '200':
           description: Tadbirlar ro'yxati
+  /api/v1/certificates/{id}/:
+    get:
+      operationId: certificates_retrieve
+      description: Sertifikatni tekshirish — QR shu ma'lumotga olib keladi.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - certificates
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Certificate'
+          description: ''
+  /api/v1/certificates/{id}/pdf/:
+    get:
+      operationId: certificates_pdf_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - certificates
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+          description: ''
   /api/v1/classrooms/:
     get:
       operationId: classrooms_list
@@ -1878,6 +1924,18 @@ paths:
                 items:
                   $ref: '#/components/schemas/ExternalOut'
           description: ''
+  /api/v1/me/external/connected/:
+    get:
+      operationId: me_external_connected_retrieve
+      description: Ulangan hisobdagi taxallus — Telegram va GitHub havolasini bir
+        bosishda to'ldirish.
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
   /api/v1/me/password/:
     post:
       operationId: me_password_create
@@ -3197,6 +3255,74 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RoadmapDetail'
+          description: ''
+  /api/v1/schools/:
+    get:
+      operationId: schools_list
+      parameters:
+      - in: query
+        name: district
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+      - in: query
+        name: region
+        schema:
+          type: string
+      tags:
+      - schools
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSchoolList'
+          description: ''
+  /api/v1/schools/{id}/:
+    get:
+      operationId: schools_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this school.
+        required: true
+      tags:
+      - schools
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/School'
           description: ''
   /api/v1/search/:
     get:
@@ -6927,6 +7053,46 @@ paths:
       responses:
         '200':
           description: No response body
+  /api/v1/users/{username}/certificates/:
+    get:
+      operationId: users_certificates_list
+      description: Profildagi «Sertifikatlar» tabi.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCertificateList'
+          description: ''
   /api/v1/users/{username}/contests/:
     get:
       operationId: users_contests_retrieve
@@ -6983,14 +7149,17 @@ paths:
   /api/v1/users/{username}/followers/:
     get:
       operationId: users_followers_list
-      description: Obunachilar yoki kuzatilayotganlar — `direction` bilan.
+      description: Obunachilar yoki kuzatilayotganlar — `direction` bilan, qidiruv
+        va saralash.
       parameters:
-      - name: ordering
-        required: false
-        in: query
-        description: Which field to use when ordering the results.
+      - in: query
+        name: ordering
         schema:
           type: string
+          enum:
+          - name
+          - rating
+          - recent
       - name: page
         required: false
         in: query
@@ -7003,6 +7172,10 @@ paths:
         description: Number of results to return per page.
         schema:
           type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
       - in: path
         name: username
         schema:
@@ -7018,19 +7191,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedUserMiniList'
+                $ref: '#/components/schemas/PaginatedFollowerList'
           description: ''
   /api/v1/users/{username}/following/:
     get:
       operationId: users_following_list
-      description: Obunachilar yoki kuzatilayotganlar — `direction` bilan.
+      description: Obunachilar yoki kuzatilayotganlar — `direction` bilan, qidiruv
+        va saralash.
       parameters:
-      - name: ordering
-        required: false
-        in: query
-        description: Which field to use when ordering the results.
+      - in: query
+        name: ordering
         schema:
           type: string
+          enum:
+          - name
+          - rating
+          - recent
       - name: page
         required: false
         in: query
@@ -7043,6 +7219,10 @@ paths:
         description: Number of results to return per page.
         schema:
           type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
       - in: path
         name: username
         schema:
@@ -7058,7 +7238,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedUserMiniList'
+                $ref: '#/components/schemas/PaginatedFollowerList'
           description: ''
   /api/v1/users/{username}/problem-map/:
     get:
@@ -7821,6 +8001,48 @@ components:
         * `avatar_frame` - Avatar ramka
         * `profile_cover` - Profil cover
         * `username_badge` - Username badge
+    Certificate:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 150
+        username:
+          type: string
+          readOnly: true
+        contest:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        place:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        participants:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        tier:
+          $ref: '#/components/schemas/TierEnum'
+        issued_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - contest
+      - id
+      - issued_at
+      - name
+      - participants
+      - place
+      - tier
+      - username
     CheckerTypeEnum:
       enum:
       - standard
@@ -8309,12 +8531,26 @@ components:
       - atcoder
       - leetcode
       - linkedin
+      - telegram
+      - github
+      - instagram
+      - x
+      - youtube
+      - kaggle
+      - blog
       type: string
       description: |-
         * `codeforces` - Codeforces
         * `atcoder` - AtCoder
         * `leetcode` - LeetCode
         * `linkedin` - LinkedIn
+        * `telegram` - Telegram
+        * `github` - GitHub
+        * `instagram` - Instagram
+        * `x` - X
+        * `youtube` - YouTube
+        * `kaggle` - Kaggle
+        * `blog` - Blog
     FinalizeResult:
       type: object
       properties:
@@ -8327,6 +8563,49 @@ components:
       required:
       - awarded
       - rewards_applied_at
+    Follower:
+      type: object
+      description: Obunachilar jadvali — maxfiylik qoidasi bilan (maktab, onlayn holat).
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        display_name:
+          type: string
+          maxLength: 100
+        avatar_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        title:
+          allOf:
+          - $ref: '#/components/schemas/UserTitle'
+          nullable: true
+          readOnly: true
+        school:
+          type: string
+          readOnly: true
+        rating_contest:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        last_seen:
+          type: string
+          format: date-time
+          nullable: true
+          readOnly: true
+      required:
+      - last_seen
+      - school
+      - title
+      - username
     Hackathon:
       type: object
       properties:
@@ -8542,9 +8821,21 @@ components:
         region:
           type: string
           maxLength: 80
+        district:
+          type: string
+          maxLength: 40
+        city:
+          type: string
+          maxLength: 100
         school:
           type: string
           maxLength: 150
+        school_ref:
+          type: integer
+          nullable: true
+        school_name:
+          type: string
+          readOnly: true
         grade:
           type: string
           maxLength: 40
@@ -8599,6 +8890,7 @@ components:
       - rating_activity
       - rating_contest
       - rating_skills
+      - school_name
       - social
       - streak_count
       - streak_freeze_until
@@ -8765,6 +9057,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Attempt'
+    PaginatedCertificateList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Certificate'
     PaginatedContestList:
       type: object
       required:
@@ -8811,6 +9126,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Duel'
+    PaginatedFollowerList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Follower'
     PaginatedHackathonList:
       type: object
       required:
@@ -8964,6 +9302,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/RatingHistory'
+    PaginatedSchoolList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/School'
     PaginatedSolvedProblemList:
       type: object
       required:
@@ -9558,29 +9919,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Transaction'
-    PaginatedUserMiniList:
-      type: object
-      required:
-      - count
-      - results
-      properties:
-        count:
-          type: integer
-          example: 123
-        next:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?page=4
-        previous:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?page=2
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserMini'
     PaginatedUserPublicList:
       type: object
       required:
@@ -9719,9 +10057,21 @@ components:
         region:
           type: string
           maxLength: 80
+        district:
+          type: string
+          maxLength: 40
+        city:
+          type: string
+          maxLength: 100
         school:
           type: string
           maxLength: 150
+        school_ref:
+          type: integer
+          nullable: true
+        school_name:
+          type: string
+          readOnly: true
         grade:
           type: string
           maxLength: 40
@@ -11308,6 +11658,45 @@ components:
         * `practice` - Mashq uchun
         * `example` - Maqoladagi misol
         * `editorial` - Yechim tushuntirishi
+    School:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        kind:
+          $ref: '#/components/schemas/SchoolKindEnum'
+        region:
+          type: string
+          maxLength: 40
+        district:
+          type: string
+          maxLength: 40
+        city:
+          type: string
+          maxLength: 100
+        members:
+          type: integer
+          readOnly: true
+      required:
+      - id
+      - members
+      - name
+    SchoolKindEnum:
+      enum:
+      - school
+      - lyceum
+      - university
+      - other
+      type: string
+      description: |-
+        * `school` - Maktab
+        * `lyceum` - Litsey
+        * `university` - Universitet
+        * `other` - Boshqa
     ScopesEnum:
       enum:
       - read
@@ -12833,6 +13222,20 @@ components:
       - expected
       - input
       - order
+    TierEnum:
+      enum:
+      - gold
+      - silver
+      - bronze
+      - top10
+      - participant
+      type: string
+      description: |-
+        * `gold` - 1-o'rin
+        * `silver` - 2-o'rin
+        * `bronze` - 3-o'rin
+        * `top10` - Eng yaxshi 10%
+        * `participant` - Ishtirokchi
     Topic:
       type: object
       properties:
@@ -13036,33 +13439,6 @@ components:
         * `daily` - Kunlik
         * `weekly` - Haftalik
         * `achievement` - Yutuq
-    UserMini:
-      type: object
-      properties:
-        username:
-          type: string
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
-          pattern: ^[\w.@+-]+$
-          maxLength: 150
-        display_name:
-          type: string
-          maxLength: 100
-        avatar_url:
-          oneOf:
-          - type: string
-            format: uri
-            maxLength: 200
-          - type: string
-            maxLength: 0
-        title:
-          allOf:
-          - $ref: '#/components/schemas/UserTitle'
-          nullable: true
-          readOnly: true
-      required:
-      - title
-      - username
     UserPublic:
       type: object
       description: |-

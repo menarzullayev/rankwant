@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+from typing import Any
+
 from rest_framework import serializers
 
-from contests.models import Contest, ContestProblem, ContestRegistration, Standing
+from contests.models import Certificate, Contest, ContestProblem, ContestRegistration, Standing
 from profiles.titles import TitleField
 
 
@@ -57,3 +59,19 @@ class RegistrationSerializer(serializers.ModelSerializer[ContestRegistration]):
     class Meta:
         model = ContestRegistration
         fields = ["registered_at", "virtual_start_at"]
+
+
+class CertificateSerializer(serializers.ModelSerializer[Certificate]):
+    username = serializers.CharField(source="user.username", read_only=True)
+    contest = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Certificate
+        fields = ["id", "name", "username", "contest", "place", "participants", "tier", "issued_at"]
+
+    def get_contest(self, cert: Certificate) -> dict[str, Any]:
+        return {
+            "slug": cert.contest.slug,
+            "title": cert.contest.title,
+            "end_at": cert.contest.end_at,
+        }

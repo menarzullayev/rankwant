@@ -291,6 +291,13 @@ def finalize_contest(contest: Contest) -> int:
                     on_rated_contest(standing.user)
         except Exception:
             log.exception("contest %s uchun yutuqlar tekshirilmadi", contest.slug)
+    try:
+        from contests.certificates import issue
+
+        with transaction.atomic():
+            issue(contest)
+    except Exception:
+        log.exception("contest %s uchun sertifikatlar berilmadi", contest.slug)
     contest.ratings_applied_at = timezone.now()
     contest.save(update_fields=["ratings_applied_at"])
 

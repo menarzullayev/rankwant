@@ -22,6 +22,10 @@ PRIVACY_FIELDS: tuple[str, ...] = (
     "website",
     #: Onlayn holat va oxirgi faollik — ijtimoiy havolalardan alohida.
     "online",
+    #: Murabbiy — o'quvchi a'zo bo'lgan auditoriya egasi; o'quvchi yashira oladi.
+    "coach",
+    #: Ijtimoiy va tashqi profil havolalari.
+    "social",
 )
 
 
@@ -96,7 +100,15 @@ class User(AbstractUser):
     country = models.CharField(max_length=2, blank=True)
     #: `UZ` da `profiles.catalog.UZ_REGIONS` dan kod, boshqa joyda erkin matn.
     region = models.CharField(max_length=80, blank=True)
+    #: `UZ` da `profiles.catalog.UZ_DISTRICTS` dan tuman yoki shahar kodi.
+    district = models.CharField(max_length=40, blank=True)
+    #: Boshqa mamlakatlarda shahar — erkin matn.
+    city = models.CharField(max_length=100, blank=True)
     school = models.CharField(max_length=150, blank=True)
+    #: Katalogdagi maktab; bo'lmasa `school` erkin matni ko'rsatiladi.
+    school_ref = models.ForeignKey(
+        "core.School", null=True, blank=True, on_delete=models.SET_NULL, related_name="students"
+    )
     grade = models.CharField(max_length=40, blank=True)
     website = models.URLField(blank=True)
     birth_date = models.DateField(null=True, blank=True)
@@ -376,6 +388,9 @@ class SocialAccount(models.Model):
     email = models.EmailField(blank=True)
     #: Provayder bergan rasm manzili — «avatarni ulangan hisobdan olish».
     picture = models.URLField(max_length=500, blank=True)
+    #: Provayderdagi taxallus (GitHub login, Telegram @username) — profil
+    #: havolasini ulangan hisobdan bir bosishda olish uchun.
+    username = models.CharField(max_length=64, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -426,3 +441,34 @@ class UserSession(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user_id}:{self.session_key[:6]}"
+
+
+class School(models.Model):
+    """Maktab katalogi (ADR-0017) — moderator admin paneldan to'ldiradi.
+
+    Katalogda yo'q maktab `User.school` erkin matnida qoladi. Maktab
+    reytingi va sinfdoshlar katalog bo'yicha quriladi: erkin matnda bitta
+    maktab o'n xil yozilardi.
+    """
+
+    class Kind(models.TextChoices):
+        SCHOOL = "school", "Maktab"
+        LYCEUM = "lyceum", "Litsey"
+        UNIVERSITY = "university", "Universitet"
+        OTHER = "other", "Boshqa"
+
+    name = models.CharField(max_length=200)
+    kind = models.CharField(max_length=12, choices=Kind.choices, default=Kind.SCHOOL)
+    country = models.CharField(max_length=2, default="UZ")
+    region = models.CharField(max_length=40, blank=True)
+    district = models.CharField(max_length=40, blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering: ClassVar = ["name"]
+        indexes: ClassVar = [models.Index(fields=["region", "district"], name="school_place")]
+
+    def __str__(self) -> str:
+        return self.name

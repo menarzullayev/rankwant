@@ -1,22 +1,32 @@
 from __future__ import annotations
 
+from uuid import UUID
+
+from django.db.models import QuerySet
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema
-from rest_framework import status, viewsets
+from rest_framework import generics, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from contests.models import Contest, ContestRegistration, Standing
+from contests import certificate_pdf
+from contests.models import Certificate, Contest, ContestRegistration, Standing
 from contests.serializers import (
+    CertificateSerializer,
     ContestDetailSerializer,
     ContestSerializer,
     RegistrationSerializer,
     StandingSerializer,
 )
 from contests.services import start_virtual, virtual_deadline
-from core.cache import edge_cacheable
+from core.cache import cache_get, cache_set, edge_cacheable
 from core.models import User
+from core.pagination import StandardPagination
 
 #: Chekka kesh oralig'i — 04-prd: standings 10–30 s da yangilansa yetarli.
 #:
@@ -133,3 +143,61 @@ class ContestViewSet(viewsets.ReadOnlyModelViewSet[Contest]):
         data = RegistrationSerializer(reg).data
         data["deadline"] = virtual_deadline(reg)
         return Response(data, status=status.HTTP_201_CREATED)
+
+
+# ── Sertifikatlar (ADR-0019) ─────────────────────────────────────────
+
+#: PDF o'zgarmaydi (ism berilgan paytdagi holatda) — bir kun keshlanadi.
+CERTIFICATE_PDF_TTL = 24 * 60 * 60
+
+
+def _certificate(pk: UUID) -> Certificate:
+    return get_object_or_404(
+        Certificate.objects.select_related("user", "contest"), pk=pk, user__is_active=True
+    )
+
+
+class CertificateView(APIView):
+    """Sertifikatni tekshirish — QR shu ma'lumotga olib keladi."""
+
+    permission_classes = [AllowAny]
+
+    @extend_schema(responses={200: CertificateSerializer})
+    def get(self, request: Request, pk: UUID) -> Response:
+        return Response(CertificateSerializer(_certificate(pk)).data)
+
+
+class CertificatePdfView(APIView):
+    permission_classes = [AllowAny]
+
+    @extend_schema(responses={(200, "application/pdf"): OpenApiTypes.BINARY})
+    def get(self, request: Request, pk: UUID) -> HttpResponse:
+        cert = _certificate(pk)
+        key = f"cert:pdf:{cert.pk}"
+        data: bytes | None = cache_get(key)
+        if data is None:
+            data = certificate_pdf.render(cert)
+            cache_set(key, data, CERTIFICATE_PDF_TTL)
+        response = HttpResponse(data, content_type="application/pdf")
+        response["Content-Disposition"] = (
+            f'inline; filename="rankwant-{cert.contest.slug}-{cert.user.username}.pdf"'
+        )
+        return response
+
+
+class UserCertificatesView(generics.ListAPIView[Certificate]):
+    """Profildagi «Sertifikatlar» tabi."""
+
+    permission_classes = [AllowAny]
+    serializer_class = CertificateSerializer
+    pagination_class = StandardPagination
+
+    def get_queryset(self) -> QuerySet[Certificate]:
+        if getattr(self, "swagger_fake_view", False):
+            return Certificate.objects.none()
+        user = get_object_or_404(User, username=self.kwargs["username"], is_active=True)
+        return (
+            Certificate.objects.filter(user=user)
+            .select_related("user", "contest")
+            .order_by("-contest__end_at", "-issued_at")
+        )

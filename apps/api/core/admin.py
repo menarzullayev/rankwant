@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from core.models import ApiToken, User
+from core.models import ApiToken, School, User
 
 
 @admin.register(User)
@@ -41,3 +41,12 @@ class ApiTokenAdmin(admin.ModelAdmin):
     list_filter = ("revoked_at",)
     search_fields = ("name", "user__username", "prefix")
     readonly_fields = ("token_hash", "prefix", "created_at", "last_used_at")
+
+
+@admin.register(School)
+class SchoolAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
+    """Maktab katalogi — moderator shu yerdan to'ldiradi (ADR-0017)."""
+
+    list_display = ("name", "kind", "region", "district", "is_active")
+    list_filter = ("kind", "region", "is_active")
+    search_fields = ("name",)

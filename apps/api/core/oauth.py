@@ -61,6 +61,8 @@ class Identity:
     suggested: str
     #: Provayder rasmi — «avatarni ulangan hisobdan olish» uchun saqlanadi.
     picture: str = ""
+    #: Provayderdagi taxallus — GitHub `login`, Telegram `username` (bo'lsa).
+    handle: str = ""
 
 
 def configured() -> list[str]:
@@ -183,6 +185,7 @@ def _github_identity(code: str) -> Identity:
         email,
         str(info.get("login", "")),
         str(info.get("avatar_url", "")),
+        handle=str(info.get("login", "")),
     )
 
 
@@ -216,7 +219,14 @@ def telegram_identity(payload: dict[str, str]) -> Identity:
     suggested = payload.get("username") or f"tg{uid}"
     # Telegram POCHTA BERMAYDI — bu bo'shlik ataylab, foydalanuvchi uni
     # keyin sozlamalarda to'ldiradi.
-    return Identity("telegram", uid, "", suggested, payload.get("photo_url", ""))
+    return Identity(
+        "telegram",
+        uid,
+        "",
+        suggested,
+        payload.get("photo_url", ""),
+        handle=payload.get("username", ""),
+    )
 
 
 # ── Umumiy ────────────────────────────────────────────────────────────

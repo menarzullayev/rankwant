@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import uuid
 from datetime import datetime, timedelta
 from typing import ClassVar
 
@@ -124,3 +125,37 @@ class Standing(models.Model):
 
     def __str__(self) -> str:
         return f"{self.contest.slug} #{self.rank} {self.user_id}"
+
+
+class Certificate(models.Model):
+    """Musobaqa sertifikati (ADR-0019).
+
+    ID — tekshirish manzilidagi noyob kalit (QR shunga olib keladi). Ism
+    berilgan paytdagi holatda saqlanadi: keyin taxallus yoki ism
+    almashsa ham hujjat o'zgarmaydi.
+    """
+
+    class Tier(models.TextChoices):
+        GOLD = "gold", "1-o'rin"
+        SILVER = "silver", "2-o'rin"
+        BRONZE = "bronze", "3-o'rin"
+        TOP10 = "top10", "Eng yaxshi 10%"
+        PARTICIPANT = "participant", "Ishtirokchi"
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey("core.User", on_delete=models.CASCADE, related_name="certificates")
+    contest = models.ForeignKey(Contest, on_delete=models.CASCADE, related_name="certificates")
+    name = models.CharField(max_length=150)
+    place = models.PositiveIntegerField()
+    participants = models.PositiveIntegerField()
+    tier = models.CharField(max_length=12, choices=Tier.choices)
+    issued_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering: ClassVar = ["-issued_at"]
+        constraints: ClassVar = [
+            models.UniqueConstraint(fields=["user", "contest"], name="uniq_certificate"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.contest_id}:{self.user_id} ({self.tier})"

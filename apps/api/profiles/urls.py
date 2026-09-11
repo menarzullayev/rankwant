@@ -14,6 +14,11 @@ urlpatterns = [
     path("me/educations/", views.MyEducationsView.as_view(), name="me-educations"),
     path("me/work/", views.MyWorkView.as_view(), name="me-work"),
     path("me/external/", views.MyExternalView.as_view(), name="me-external"),
+    path(
+        "me/external/connected/",
+        views.MyConnectedView.as_view(),
+        name="me-external-connected",
+    ),
     path("me/teams/", views.MyTeamsView.as_view(), name="me-teams"),
     path("teams/join/", views.TeamJoinView.as_view(), name="team-join"),
     path("teams/<int:pk>/", views.TeamDetailView.as_view(), name="team-detail"),

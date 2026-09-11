@@ -115,6 +115,13 @@ class ExternalProfile(models.Model):
         ATCODER = "atcoder", "AtCoder"
         LEETCODE = "leetcode", "LeetCode"
         LINKEDIN = "linkedin", "LinkedIn"
+        TELEGRAM = "telegram", "Telegram"
+        GITHUB = "github", "GitHub"
+        INSTAGRAM = "instagram", "Instagram"
+        X = "x", "X"
+        YOUTUBE = "youtube", "YouTube"
+        KAGGLE = "kaggle", "Kaggle"
+        BLOG = "blog", "Blog"
 
     user = models.ForeignKey(
         "core.User", on_delete=models.CASCADE, related_name="external_profiles"
