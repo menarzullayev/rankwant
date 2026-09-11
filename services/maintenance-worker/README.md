@@ -31,9 +31,13 @@ Route'lar `wrangler.toml` da: `rankwant.uz/*` va `www.rankwant.uz/*`.
 Dashboard orqali ham bo'ladi: Workers & Pages → Create → Worker →
 `src/index.js` ni joylash → Settings → Domains & Routes → ikkala route.
 
-**Majburiy sozlama:** route'da *Request limit failure mode* = **Fail open**.
-Aks holda bepul limit tugaganda sayt Worker xatosi bilan yopiladi; fail open
-bo'lsa so'rov to'g'ridan-to'g'ri origin'ga ketadi.
+**Majburiy sozlama:** har route'da *Request limit failure mode* = **Fail open**.
+API'da bu `request_limit_fail_open: true` — ochiq hujjatda yozilmagan, lekin
+`GET`/`PUT /zones/{zone_id}/workers/routes/{route_id}` uni qaytaradi va qabul
+qiladi. Standart qiymat `false`: bepul limit tugaganda sayt Cloudflare'ning
+1027 xatosi bilan yopiladi; fail open bo'lsa so'rov to'g'ridan-to'g'ri
+origin'ga ketadi. 2026-09-12 da uchala route'da yoqilgan — route qayta
+yaratilsa yoki yangisi qo'shilsa, qiymatni tekshiring.
 
 ## Cheklov
 
