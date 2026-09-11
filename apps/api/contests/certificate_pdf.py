@@ -18,6 +18,10 @@ from fpdf import FPDF
 from contests.models import Certificate
 
 FONTS = Path(__file__).resolve().parent / "fonts"
+#: DejaVu'da CJK yo'q — xitoycha ism uchun zaxira (Droid Sans Fallback, Apache-2.0).
+#: 4 MB: faqat matnda shunday belgi bo'lsa o'qiladi, oddiy PDF sekinlashmasin.
+FALLBACK = FONTS / "DroidSansFallbackFull.ttf"
+CJK_FROM = 0x2E80
 # fpdf2 shriftni fontTools bilan qisqartiradi, u esa har glif ro'yxatini INFO
 # darajasida yozadi — har PDF api logiga yuzlab qator tushardi (o'lchandi).
 logging.getLogger("fontTools").setLevel(logging.WARNING)
@@ -53,6 +57,9 @@ def render(cert: Certificate) -> bytes:
     pdf.set_author("RankWant")
     pdf.add_font("DejaVu", "", str(FONTS / "DejaVuSans.ttf"))
     pdf.add_font("DejaVu", "B", str(FONTS / "DejaVuSans-Bold.ttf"))
+    if any(ord(ch) >= CJK_FROM for ch in cert.name + contest.title):
+        pdf.add_font("Fallback", "", str(FALLBACK))
+        pdf.set_fallback_fonts(["Fallback"], exact_match=False)
     pdf.add_page()
     width, height = pdf.w, pdf.h
 

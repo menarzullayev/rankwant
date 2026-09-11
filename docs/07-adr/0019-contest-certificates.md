@@ -32,7 +32,10 @@ bo'lmasdi.
   yiqitgan edi (`requests` hodisasi).
 - **Shrift repoda.** DejaVu Sans (`contests/fonts`, litsenziyasi bilan):
   production image'da tizim shriftlari yo'q, ism esa lotin yoki kirill
-  yozuvida bo'lishi mumkin. Xitoycha ism glifi DejaVu'da yo'q.
+  yozuvida bo'lishi mumkin. DejaVu'da CJK yo'q, xitoy tili esa
+  qo'llab-quvvatlanadi — xitoycha ism uchun Droid Sans Fallback (Apache-2.0,
+  4 MB) zaxira shrift sifatida qo'shildi. U faqat matnda shunday belgi
+  bo'lsa o'qiladi: odatiy PDF ~50 ms, xitoycha ismli ~180 ms (o'lchandi).
 - **QR rasm emas.** Modul-modul to'rtburchak bo'lib chiziladi: rasm
   kutubxonasi kerak emas va chop etilganda ham aniq chiqadi.
 - **PDF bir kun keshlanadi** — hujjat o'zgarmaydi, chizish esa har safar

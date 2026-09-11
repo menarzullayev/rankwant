@@ -292,3 +292,22 @@ def test_finalize_sertifikat_beradi(contest: Contest, problem: Problem, language
     finalize_contest(contest)
 
     assert Certificate.objects.filter(contest=contest).count() == 3
+
+
+def test_pdf_xitoycha_ism_zaxira_shrift_bilan() -> None:
+    """DejaVu'da CJK yo'q — zaxira shrift bilan PDF baribir chiziladi."""
+    from contests import certificate_pdf
+
+    now = timezone.now()
+    contest = Contest(slug="bahor", title="春季赛", start_at=now, end_at=now)
+    cert = Certificate(
+        user=User(username="zhang"),
+        contest=contest,
+        name="张伟",
+        place=1,
+        participants=10,
+        tier=Certificate.Tier.GOLD,
+    )
+    cert.issued_at = now
+
+    assert certificate_pdf.render(cert).startswith(b"%PDF")
