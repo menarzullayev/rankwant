@@ -311,3 +311,17 @@ def test_pdf_xitoycha_ism_zaxira_shrift_bilan() -> None:
     cert.issued_at = now
 
     assert certificate_pdf.render(cert).startswith(b"%PDF")
+
+
+@pytest.mark.django_db
+def test_me_csrf_cookieni_qaytaradi(user: User) -> None:
+    """Login'da qo'yilgan CSRF cookie yo'qolsa ham saqlashlar 403 bo'lmasin."""
+    client = APIClient(enforce_csrf_checks=True)
+    client.force_login(user)
+
+    response = client.get(reverse("me"))
+    token = response.cookies["csrftoken"].value
+    saved = client.patch(reverse("me"), {"city": ""}, format="json", HTTP_X_CSRFTOKEN=token)
+
+    assert response.status_code == 200
+    assert saved.status_code == 200

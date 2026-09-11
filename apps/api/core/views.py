@@ -20,6 +20,8 @@ from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import ensure_csrf_cookie
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework import exceptions, generics, status, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -464,6 +466,13 @@ class LogoutView(APIView):
 class MeView(generics.RetrieveUpdateDestroyAPIView[User]):
     serializer_class = MeSerializer
     permission_classes = [IsAuthenticated]
+
+    @method_decorator(ensure_csrf_cookie)
+    def get(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        # CSRF cookie faqat login paytida qo'yiladi. U yo'qolib, sessiya tirik
+        # qolsa, har saqlash 403 bo'lardi — web har yuklanishda shu so'rovni
+        # yuboradi, ya'ni cookie shu yerda qaytadi.
+        return super().get(request, *args, **kwargs)
 
     def get_object(self) -> User:
         assert isinstance(self.request.user, User)
