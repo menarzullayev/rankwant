@@ -1,37 +1,15 @@
-import type { Metadata } from "next";
-import { Suspense } from "react";
+import type { Route } from "next";
 import { redirect } from "next/navigation";
 
-import { AccountSettings } from "@/components/AccountSettings";
-import { t } from "@/i18n/messages";
-import { getLocale } from "@/i18n/server";
-import type { UserPublic } from "@/lib/api";
-import { getWithSession } from "@/lib/api.server";
+type Props = { searchParams: Promise<{ social?: string }> };
 
-export async function generateMetadata(): Promise<Metadata> {
-  return {
-    title: t(await getLocale(), "settings.title"),
-    robots: { index: false },
-  };
-}
-
-export const dynamic = "force-dynamic";
-
-export default async function SettingsPage() {
-  const locale = await getLocale();
-  // Sahifa faqat o'z hisobi haqida — kirmagan foydalanuvchiga
-  // ko'rsatiladigan hech narsasi yo'q.
-  const me = await getWithSession<UserPublic>("/me/").catch(() => null);
-  if (!me) redirect("/login");
-
-  return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <h1 className="text-title-sm font-bold rw-strong">
-        {t(locale, "settings.title")}
-      </h1>
-      <Suspense>
-        <AccountSettings />
-      </Suspense>
-    </div>
+/** Sozlamalar bo'limlarga bo'lingan. Eski havola (`/settings?social=…` —
+ *  provayderdan qaytish) ijtimoiy bo'limga olib boradi. */
+export default async function SettingsPage({ searchParams }: Props) {
+  const { social } = await searchParams;
+  redirect(
+    (social
+      ? `/settings/ijtimoiy?social=${encodeURIComponent(social)}`
+      : "/settings/profil") as Route,
   );
 }

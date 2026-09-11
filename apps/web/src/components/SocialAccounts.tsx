@@ -54,7 +54,9 @@ export function SocialAccounts() {
       ? { tone: "rw-ok-soft rw-ok-ink", text: t(locale, "settings.socialLinked") }
       : flag === "taken"
         ? { tone: "rw-bad-soft rw-bad-ink", text: t(locale, "settings.socialTaken") }
-        : null;
+        : flag === "error"
+          ? { tone: "rw-bad-soft rw-bad-ink", text: t(locale, "auth.socialError") }
+          : null;
 
   if (!user || available.length === 0) return null;
   const connected = new Set(user.social ?? []);

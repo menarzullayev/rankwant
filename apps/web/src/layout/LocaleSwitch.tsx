@@ -5,6 +5,7 @@ import { useTransition } from "react";
 
 import { useLocale } from "@/i18n/LocaleProvider";
 import { LOCALES, LOCALE_NAMES, type Locale } from "@/i18n/messages";
+import { announcePrefs } from "@/lib/prefs";
 
 /** Til tanlash — cookie'ga yozadi va sahifani serverdan qayta oladi.
  *
@@ -18,6 +19,8 @@ export function LocaleSwitch() {
 
   function choose(next: string) {
     document.cookie = `rw_locale=${next}; path=/; max-age=31536000; samesite=lax`;
+    // Hisobga ham — xatlar shu tilda yuboriladi.
+    announcePrefs({ locale: next });
     startTransition(() => router.refresh());
   }
 

@@ -53,7 +53,7 @@ export default function UserMenu() {
         </span>
       </Link>
       <Link
-        href="/settings"
+        href="/settings/profil"
         aria-label={t(locale, "settings.title")}
         title={t(locale, "settings.title")}
         className="flex size-10 items-center justify-center rw-radius-sm border rw-line rw-dim transition rw-hover-strong"

@@ -598,6 +598,194 @@ export type ShopItem = {
   owned: boolean;
 };
 
+/** Profilda yashirish mumkin bo'lgan maydonlar (`core.models.PRIVACY_FIELDS`). */
+export type PrivacyField =
+  | "email"
+  | "birth_date"
+  | "country"
+  | "school"
+  | "grade"
+  | "website";
+
+export type ThemeEffect = "none" | "fade" | "circle";
+
+export type UiPrefs = { style?: string; sound?: boolean; effect?: ThemeEffect };
+
+/** Tur bo'yicha kanal tanlovi — `{"duel": {"site": true, "telegram": false}}`. */
+export type NotifyPrefs = Record<string, { site?: boolean; telegram?: boolean }>;
+
+/** `/me/` — faqat egasiga qaytadigan to'liq yozuv. */
+export type Me = {
+  id: number;
+  is_staff: boolean;
+  username: string;
+  email: string;
+  display_name: string;
+  email_verified: boolean;
+  social: string[];
+  has_password: boolean;
+  avatar_url: string;
+  bio: string;
+  locale: string;
+  theme: string;
+  country: string;
+  region: string;
+  school: string;
+  grade: string;
+  website: string;
+  birth_date: string | null;
+  hidden_fields: PrivacyField[];
+  ui_prefs: UiPrefs;
+  notify_prefs: NotifyPrefs;
+  /** `free_at` bo'sh — bepul almashtirish hozir mavjud. */
+  username_change: { free_at: string | null; price: number };
+  rating_skills: number;
+  rating_contest: number;
+  rating_activity: number;
+  streak_count: number;
+  streak_freeze_until: string | null;
+  date_joined: string;
+};
+
+export type SessionRow = {
+  id: number;
+  user_agent: string;
+  ip: string | null;
+  created_at: string;
+  last_seen: string;
+  current: boolean;
+};
+
+export type SkillName = {
+  slug: string;
+  name_uz: string;
+  name_ru: string;
+  name_en: string;
+};
+
+export type MySkill = {
+  skill: string;
+  name_uz: string;
+  name_ru: string;
+  name_en: string;
+  level: number;
+};
+
+export type Technology = { slug: string; name: string };
+
+export type Education = {
+  organization: string;
+  degree: string;
+  start_year: number | null;
+  end_year: number | null;
+};
+
+export type WorkRow = {
+  company: string;
+  title: string;
+  start_year: number | null;
+  end_year: number | null;
+};
+
+export type ExternalKind = "codeforces" | "atcoder" | "leetcode" | "linkedin";
+
+export type ExternalProfile = {
+  kind: ExternalKind;
+  handle: string;
+  rating: number | null;
+  max_rating: number | null;
+  rank: string;
+};
+
+export type UserMini = {
+  username: string;
+  display_name: string;
+  avatar_url: string;
+};
+
+export type TeamRole = "owner" | "member";
+
+export type Team = {
+  id: number;
+  name: string;
+  join_code: string;
+  created_at: string;
+  members: (UserMini & { role: TeamRole; joined_at: string })[];
+  role: TeamRole | null;
+};
+
+export type Cosmetics = {
+  cover: string | null;
+  frame: string | null;
+  badge: string | null;
+};
+
+/** `/users/<nom>/profile/` — yashirilgan maydonlar begonaga kelmaydi. */
+export type PublicProfile = {
+  username: string;
+  display_name: string;
+  avatar_url: string;
+  bio: string;
+  date_joined: string;
+  info: Partial<Record<PrivacyField | "region", string>>;
+  hidden_fields: PrivacyField[];
+  is_owner: boolean;
+  skills: (SkillName & { level: number })[];
+  technologies: Technology[];
+  educations: Education[];
+  work: WorkRow[];
+  external: ExternalProfile[];
+  followers: number;
+  following: number;
+  /** Mehmon va egasining o'zi uchun `null`. */
+  is_following: boolean | null;
+  cosmetics: Cosmetics;
+};
+
+export type ActivityEvent =
+  | {
+      type: "contest";
+      at: string;
+      ref: string;
+      delta: number;
+      value_after: number;
+      rank: number | null;
+    }
+  | {
+      type: "quest";
+      at: string;
+      code: string;
+      title_uz: string;
+      title_ru: string;
+      title_en: string;
+      awarded: number;
+    }
+  | {
+      type: "hard_solve";
+      at: string;
+      ref: string;
+      title: string;
+      difficulty: number;
+    };
+
+export type Achievement = {
+  code: string;
+  group: "solve" | "streak" | "contest" | "profile";
+  target: number;
+  progress: number;
+  done: boolean;
+};
+
+export type Purchase = {
+  code: string;
+  category: string;
+  title_uz: string;
+  title_ru: string;
+  title_en: string;
+  purchased_at: string;
+  is_equipped: boolean;
+};
+
 class ApiError extends Error {
   constructor(
     readonly status: number,
@@ -646,27 +834,27 @@ async function get<T>(path: string, revalidate = 30): Promise<T> {
 }
 
 /**
- * Brauzerdan yuboriladigan POST — auth uchun.
+ * Brauzerdan sessiya bilan yuboriladigan so'rov — POST, PUT, PATCH, DELETE.
  *
  * `credentials: "include"` shart: sessiya cookie'si boshqa origin'da
  * (API alohida portda), CORS esa `allow-credentials` qaytaradi (ADR-0008).
- * Anonim login/register uchun DRF CSRF talab qilmaydi.
+ * `FormData` yuborilsa `Content-Type` qo'yilmaydi — chegarani (boundary)
+ * brauzer o'zi yozadi, qo'lda yozilgani esa faylni buzardi.
  */
-export async function postJson<T>(path: string, body: unknown): Promise<T> {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-  };
-  // Sessiya bilan yuborilgan POST da DRF CSRF token talab qiladi. Anonim
+async function send<T>(method: string, path: string, body?: unknown): Promise<T> {
+  const headers: Record<string, string> = { Accept: "application/json" };
+  // Sessiya bilan yuborilgan so'rovda DRF CSRF token talab qiladi. Anonim
   // login/register da cookie hali yo'q — o'shanda sarlavha ham kerak emas.
   const csrf = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/)?.[1];
   if (csrf) headers["X-CSRFToken"] = decodeURIComponent(csrf);
+  const form = body instanceof FormData;
+  if (body !== undefined && !form) headers["Content-Type"] = "application/json";
 
   const res = await fetch(`${API_BASE}${path}`, {
-    method: "POST",
+    method,
     credentials: "include",
     headers,
-    body: JSON.stringify(body),
+    body: body === undefined ? undefined : form ? body : JSON.stringify(body),
   });
   const raw = await res.text();
   const parsed = raw ? JSON.parse(raw) : null;
@@ -681,31 +869,22 @@ export async function postJson<T>(path: string, body: unknown): Promise<T> {
   return parsed as T;
 }
 
-/** Brauzerdan sessiya bilan DELETE — `postJson` bilan bir xil CSRF talabi. */
-export async function deleteJson<T>(path: string, body?: unknown): Promise<T> {
-  const headers: Record<string, string> = { Accept: "application/json" };
-  const csrf = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/)?.[1];
-  if (csrf) headers["X-CSRFToken"] = decodeURIComponent(csrf);
-  if (body !== undefined) headers["Content-Type"] = "application/json";
+export const postJson = <T>(path: string, body: unknown) =>
+  send<T>("POST", path, body);
 
-  const res = await fetch(`${API_BASE}${path}`, {
-    method: "DELETE",
-    credentials: "include",
-    headers,
-    body: body === undefined ? undefined : JSON.stringify(body),
-  });
-  const raw = await res.text();
-  const parsed = raw ? JSON.parse(raw) : null;
-  if (!res.ok) {
-    throw new ApiError(
-      res.status,
-      parsed?.error?.code ?? "error",
-      parsed?.error?.message ?? res.statusText,
-      parsed?.error?.details ?? {},
-    );
-  }
-  return parsed as T;
-}
+/** Butun ro'yxatni almashtirish — ko'nikma, ta'lim, tashqi profil. */
+export const putJson = <T>(path: string, body: unknown) =>
+  send<T>("PUT", path, body);
+
+export const patchJson = <T>(path: string, body: unknown) =>
+  send<T>("PATCH", path, body);
+
+export const deleteJson = <T>(path: string, body?: unknown) =>
+  send<T>("DELETE", path, body);
+
+/** Fayl yuklash — avatar. */
+export const postForm = <T>(path: string, form: FormData) =>
+  send<T>("POST", path, form);
 
 /** Brauzerdan sessiya bilan GET — shaxsiy ma'lumot (sinf, duel masalalari). */
 export async function getJson<T>(
@@ -751,13 +930,13 @@ export async function fetchProviders(): Promise<AuthProviders> {
 }
 
 /** Joriy sessiya — brauzerda. Kirmagan bo'lsa `null`. */
-export async function fetchMe(): Promise<UserPublic | null> {
+export async function fetchMe(): Promise<Me | null> {
   const res = await fetch(`${API_BASE}/me/`, {
     credentials: "include",
     headers: { Accept: "application/json" },
     cache: "no-store",
   });
-  return res.ok ? ((await res.json()) as UserPublic) : null;
+  return res.ok ? ((await res.json()) as Me) : null;
 }
 
 /** Submit. Javob `PENDING` bilan qaytadi — verdikt keyin pollinglanadi. */

@@ -31,7 +31,7 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
     "*": {
         "nav.qvant", "qvant.title", "leaderboard.skills", "leaderboard.contest",
         "leaderboard.activity", "leaderboard.streak", "leaderboard.challenges",
-        "nav.arena", "auth.email", "hackathon.demo",
+        "nav.arena", "auth.email", "hackathon.demo", "settings.channelTelegram",
     },
     # Qoraqalpoq tili o'zbek tiliga eng yaqini — xalqaro o'zlashmalar
     # ikkalasida ham aynan bir xil yoziladi.
@@ -41,9 +41,14 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         "navGroup.platform", "nav.classroom", "nav.duels", "nav.tournaments",
         "nav.formulas", "attempts.verdict", "attempts.language",
         "tournament.points", "hackathon.score", "hackathon.repo",
+        "settings.nav.profile", "profile.ratingColumn", "profile.tab.rating",
+        "settings.company", "settings.effect.none", "settings.language",
+        "settings.password", "settings.technologies", "settings.website",
     },
     # «Duel» — inglizchadan o'zlashgan, ingliz tilida o'sha so'zning o'zi.
     "en": {"nav.duels"},
+    # Turk tilida ham «Profil» — o'zbekcha bilan harfma-harf bir xil.
+    "tr": {"settings.nav.profile"},
 }
 #: Kalit tirnoqli ham, tirnoqsiz ham bo'lishi mumkin: prettier `quoteProps`
 #: sozlamasi bilan oddiy identifikatorlardan tirnoqni olib tashlaydi va

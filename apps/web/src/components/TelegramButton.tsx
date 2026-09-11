@@ -17,6 +17,9 @@ export function TelegramButton({ bot }: { bot: string }) {
     script.setAttribute("data-telegram-login", bot);
     script.setAttribute("data-size", "medium");
     script.setAttribute("data-radius", "8");
+    // Bildirishnomalar Telegram'ga ham boradi (sozlamalar → Bildirishnomalar):
+    // bot odamga faqat u ruxsat bergan bo'lsa yoza oladi.
+    script.setAttribute("data-request-access", "write");
     script.setAttribute(
       "data-auth-url",
       `${window.location.origin}/api/v1/auth/telegram/callback/`,

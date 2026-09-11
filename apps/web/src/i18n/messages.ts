@@ -80,6 +80,26 @@ export function t(locale: Locale, key: string): string {
   );
 }
 
+/** `{nom}` o'rinlarini qiymat bilan to'ldiradi: `fill("{n} ta", { n: 3 })`. */
+export function fill(
+  text: string,
+  values: Record<string, string | number>,
+): string {
+  return text.replace(/\{(\w+)\}/g, (whole, key: string) =>
+    key in values ? String(values[key]) : whole,
+  );
+}
+
+/** Uch ustunli nom (ko'nikma, mavzu, vazifa) — tilga mosi, bo'lmasa o'zbekchasi. */
+export function localName(
+  row: { name_uz: string; name_ru: string; name_en: string },
+  locale: Locale,
+): string {
+  const translated =
+    locale === "ru" ? row.name_ru : locale === "en" ? row.name_en : "";
+  return translated || row.name_uz;
+}
+
 /** Mavzu nomi — bazada faqat uz/ru/en ustunlari bor.
  *
  * UI satrlari o'nta tilda, mavzu nomlari esa uchta ustunda: ular

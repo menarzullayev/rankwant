@@ -753,6 +753,33 @@
 .level-expert { color: var(--rw-level-4); }
 .level-master { color: var(--rw-level-5); }
 
+/* ═══ Profil kosmetikasi — do'kondagi muqova va ramkalar (`lib/cosmetics.ts`) ═══
+   Muqova ustiga matn tushmaydi — ism uning TAGIDA, panel sirtida turadi —
+   shuning uchun bu ranglar matn kontrasti zinapoyasiga kirmaydi. */
+.rw-cover { background: linear-gradient(120deg, var(--rw-accent-soft), var(--rw-chip)); }
+.rw-cover-night {
+  background:
+    radial-gradient(1.5px 1.5px at 18% 32%, #ffffff, transparent),
+    radial-gradient(1px 1px at 64% 22%, #ffffff, transparent),
+    radial-gradient(1.5px 1.5px at 86% 58%, #ffffff, transparent),
+    radial-gradient(1px 1px at 38% 72%, #ffffff, transparent),
+    linear-gradient(160deg, #0b1026 0%, #1c2350 55%, #3a2d6b 100%);
+}
+.rw-cover-steppe { background: linear-gradient(180deg, #f3d48e 0%, #e7a95c 42%, #b5b86b 68%, #6f8c46 100%); }
+.rw-frame-bronze { box-shadow: 0 0 0 3px #b0763a, 0 0 0 6px rgba(176, 118, 58, .3); }
+.rw-frame-silver { box-shadow: 0 0 0 3px #aeb6c2, 0 0 0 6px rgba(174, 182, 194, .3); }
+.rw-frame-neytron { box-shadow: 0 0 0 3px var(--rw-accent), 0 0 16px 2px var(--rw-accent); }
+/* Belgilash katagi, radio va slayder uslub rangida. */
+.rw-accent-control { accent-color: var(--rw-accent); }
+
+/* Mavzu almashishidagi doira effekti (`ThemeContext`): standart
+   cross-fade o'chiriladi, aks holda doira ustida yana bitta animatsiya yurardi. */
+:root[data-vt="circle"]::view-transition-old(root),
+:root[data-vt="circle"]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
 @utility menu-item {
   @apply relative flex items-center w-full gap-3 px-3 py-2 font-medium rounded-lg text-theme-sm;
 }

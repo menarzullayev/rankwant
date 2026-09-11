@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 
 import { SidebarProvider, useSidebar } from "@/context/SidebarContext";
+import { PrefsSync } from "@/context/PrefsSync";
 import { SessionProvider } from "@/context/SessionContext";
 import { StyleProvider } from "@/context/StyleContext";
 import { ThemeProvider } from "@/context/ThemeContext";
@@ -65,6 +66,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     <StyleProvider>
       <ThemeProvider>
         <SessionProvider>
+          <PrefsSync />
           <SidebarProvider>
             <Shell>{children}</Shell>
           </SidebarProvider>

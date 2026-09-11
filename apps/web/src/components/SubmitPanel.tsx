@@ -1,5 +1,6 @@
 "use client";
 
+import { playSuccess } from "@/lib/prefs";
 import Link from "next/link";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { type Locale, t } from "@/i18n/messages";
@@ -252,6 +253,7 @@ export default function SubmitPanel({
               poll(id, tries + 1);
             } else {
               setBusy(false);
+              if (next.verdict === "AC") playSuccess();
             }
           })
           .catch(() => setBusy(false));

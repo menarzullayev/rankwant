@@ -8,6 +8,7 @@ import {
 } from "react";
 
 import { DEFAULT_STYLE, STYLE_IDS, type StyleId } from "@/layout/styles";
+import { announcePrefs } from "@/lib/prefs";
 
 const StyleContext = createContext<
   { style: StyleId; setStyle: (next: StyleId) => void } | undefined
@@ -50,6 +51,7 @@ export function StyleProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // Private rejimda yozib bo'lmaydi — uslub sessiya davomida ishlaydi.
     }
+    announcePrefs({ style: next });
   }, []);
 
   return (

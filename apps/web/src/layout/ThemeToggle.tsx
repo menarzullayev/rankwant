@@ -17,7 +17,12 @@ export default function ThemeToggle() {
   return (
     <button
       type="button"
-      onClick={toggleTheme}
+      onClick={(event) => {
+        // Klaviaturada `clientX` 0 bo'ladi — doira burchakdan chiqardi,
+        // shuning uchun markaz tugmaning o'zidan olinadi.
+        const box = event.currentTarget.getBoundingClientRect();
+        toggleTheme({ x: box.left + box.width / 2, y: box.top + box.height / 2 });
+      }}
       aria-label={t(
         DEFAULT_LOCALE,
         theme === "dark" ? "theme.light" : "theme.dark",

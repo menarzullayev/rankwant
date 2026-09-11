@@ -8,10 +8,10 @@ import {
   useState,
 } from "react";
 
-import { fetchMe, type UserPublic } from "@/lib/api";
+import { fetchMe, type Me } from "@/lib/api";
 
 type Session = {
-  user: UserPublic | null;
+  user: Me | null;
   /** Sessiya hali aniqlanmagan bo'lsa `false` — UI chaqnamasligi uchun. */
   ready: boolean;
   reload: () => Promise<void>;
@@ -31,7 +31,7 @@ export function useSession() {
  * `force-dynamic` bo'lsa ham cookie SSR fetch'iga uzatilmaydi. Holat
  * bu yerda saqlanadi, shunda kirgandan keyin header darhol yangilanadi. */
 export function SessionProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<UserPublic | null>(null);
+  const [user, setUser] = useState<Me | null>(null);
   const [ready, setReady] = useState(false);
 
   const reload = useCallback(async () => {

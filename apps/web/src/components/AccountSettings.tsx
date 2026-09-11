@@ -5,7 +5,6 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { SocialAccounts } from "@/components/SocialAccounts";
 import { Field } from "@/components/ui/Field";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
@@ -80,7 +79,6 @@ export function AccountSettings() {
 
   return (
     <div className="space-y-6">
-      <SocialAccounts />
       <Card title={t(locale, "settings.export")}>
         <p className="text-theme-sm rw-dim">
           {t(locale, "settings.exportHint")}
