@@ -34,8 +34,10 @@ export function ProfileTabs({
       // Chiziq `border` emas, ichki soya: `overflow-x-auto` bilan
       // `overflow-y` ham avtomatik bo'ladi, `-mb-px` bilan tagiga
       // tushirilgan faol chiziq esa 1px vertikal siljish berib, yonida
-      // aylantirish tugmasini chiqarardi (o'lchandi).
-      className="flex gap-1 overflow-x-auto shadow-[inset_0_-1px_0_var(--rw-line)]"
+      // aylantirish tugmasini chiqarardi (o'lchandi). `overflow-y-hidden`
+      // esa oddiy (ustma-ust bo'lmagan) aylantirish chizig'i bo'yni
+      // qisqartirgan holat uchun — Windows'dagi tor oynada.
+      className="flex gap-1 overflow-x-auto overflow-y-hidden shadow-[inset_0_-1px_0_var(--rw-line)]"
     >
       {TABS.map((tab) => (
         <Link
