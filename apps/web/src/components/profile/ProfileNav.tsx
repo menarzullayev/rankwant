@@ -31,10 +31,11 @@ export function ProfileNav({ username }: { username: string }) {
   return (
     // Bitta qator va gorizontal aylanish: Robocontest'da tablar telefonda
     // ikki qatorga tushardi. Chiziq — ichki soya (`overflow` bilan border
-    // vertikal aylantirish tugmasini chiqarardi, o'lchandi).
+    // vertikal aylantirish tugmasini chiqarardi, o'lchandi). `px-3` bilan
+    // 1366 kenglikda sakkiz tab sig'adi (763 → 699 px, joy 719).
     <nav
       aria-label={t(locale, "profile.sections")}
-      className="flex gap-1 overflow-x-auto overflow-y-hidden shadow-[inset_0_-1px_0_var(--rw-line)]"
+      className="flex gap-1 overflow-x-auto overflow-y-hidden [scrollbar-width:thin] shadow-[inset_0_-1px_0_var(--rw-line)]"
     >
       {PROFILE_TABS.map((tab) => {
         const active = current === tab.slug;
@@ -43,7 +44,7 @@ export function ProfileNav({ username }: { username: string }) {
             key={tab.slug || "overview"}
             href={(tab.slug ? `${base}/${tab.slug}` : base) as Route}
             aria-current={active ? "page" : undefined}
-            className={`shrink-0 border-b-2 px-4 py-2.5 text-theme-sm font-medium transition ${
+            className={`shrink-0 border-b-2 px-3 py-2.5 text-theme-sm font-medium transition ${
               active ? "rw-accent-line rw-accent-ink" : "border-transparent rw-dim rw-hover-strong"
             }`}
           >

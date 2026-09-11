@@ -21,6 +21,15 @@ const GROUPS: { key: string; verdicts: string[]; color: string }[] = [
   { key: "verdict.CE", verdicts: ["CE", "COMPILE_TIMEOUT"], color: "var(--rw-accent-ink)" },
 ];
 
+/** Ulush foizda. Kichik ulush «0», deyarli to'liqi «100» bo'lib ko'rinmasin —
+ *  2 017 urinishdan 10 ta WA «0%» deb yozilardi. */
+const percent = (value: number, total: number) => {
+  const share = (value / total) * 100;
+  if (share > 0 && share < 1) return "<1";
+  if (share > 99 && share < 100) return ">99";
+  return String(Math.round(share));
+};
+
 function VerdictDonut({ stats, locale }: { stats: UserStats; locale: Locale }) {
   const counts = new Map(stats.verdicts.map((row) => [row.verdict, row.count]));
   const known = new Set(GROUPS.flatMap((group) => group.verdicts));
@@ -43,7 +52,7 @@ function VerdictDonut({ stats, locale }: { stats: UserStats; locale: Locale }) {
 
   // Aylana uzunligi 100 — `stroke-dasharray` foizda yoziladi.
   let offset = 25;
-  const rate = Math.round((stats.accepted / total) * 100);
+  const rate = percent(stats.accepted, total);
   return (
     <div className="flex flex-wrap items-center gap-6">
       <svg viewBox="0 0 42 42" className="size-36 shrink-0" role="img" aria-label={fill(t(locale, "profile.acceptance"), { rate })}>
@@ -70,13 +79,15 @@ function VerdictDonut({ stats, locale }: { stats: UserStats; locale: Locale }) {
           {rate}%
         </text>
       </svg>
-      <ul className="min-w-0 flex-1 space-y-1.5 text-theme-sm">
+      {/* Tor ustunda (22rem) legenda donut ostiga tushadi — yonida yorliqlar
+          qirqilardi («Qab…»). */}
+      <ul className="min-w-48 flex-1 space-y-1.5 text-theme-sm">
         {slices.map((slice) => (
           <li key={slice.label} className="flex items-center gap-2">
             <span aria-hidden="true" className="size-2.5 shrink-0 rounded-full" style={{ background: slice.color }} />
             <span className="min-w-0 flex-1 truncate rw-strong">{slice.label}</span>
             <span className="tabular-nums rw-faint">
-              {slice.value} · {Math.round((slice.value / total) * 100)}%
+              {slice.value} · {percent(slice.value, total)}%
             </span>
           </li>
         ))}

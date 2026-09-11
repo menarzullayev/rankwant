@@ -18,7 +18,9 @@ export function LanguageCards({
       {languages.length === 0 ? (
         <p className="text-theme-sm rw-faint">{t(locale, "empty")}</p>
       ) : (
-        <ul className="grid gap-3 sm:grid-cols-2">
+        // xl'da karta mavzular bilan yonma-yon (yarim ustun) — ikki qatorda
+        // nom 0 px ga siqilib yo'qolardi (o'lchandi: «C++» 0 / 28 px).
+        <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
           {languages.map((language) => {
             const icon = languageIcon(language.code);
             return (
@@ -33,7 +35,7 @@ export function LanguageCards({
                     <span className="text-theme-xs font-bold">{language.name.slice(0, 2)}</span>
                   )}
                 </span>
-                <span className="min-w-0 flex-1">
+                <span className="min-w-16 flex-1">
                   <span className="block truncate font-medium rw-strong">{language.name}</span>
                   <span className="text-theme-xs rw-faint">{language.code}</span>
                 </span>
