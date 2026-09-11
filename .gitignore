@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.example
+!.env.handoff.example
 *.pem
 *.key
 
@@ -51,3 +52,6 @@ tests/e2e/playwright-report/
 
 # Public preview uchun yaratilgan admin paroli
 .admin-password.txt
+
+# Ikki tizimli preview (tools/handoff.*): eksport nusxalari, tunnel PID va logi
+.handoff/
