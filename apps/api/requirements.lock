@@ -57,6 +57,8 @@ fpdf2==2.8.8
     # via -r requirements.txt
 gunicorn==26.2.0
     # via -r requirements.txt
+whitenoise==6.9.0
+    # via -r requirements.txt
 inflection==0.5.1
     # via drf-spectacular
 jmespath==1.1.0

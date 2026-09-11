@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 FROM python:3.12-slim AS base
 ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
 WORKDIR /app
@@ -7,7 +8,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.lock ./
-RUN pip install --no-cache-dir -r requirements.lock
+# --mount=type=cache: pip paketlari host'da /root/.cache/pip da saqlanadi.
+# requirements.lock o'zgarganda ham faqat YANGI paketlar yuklanadi,
+# avval yuklanganlar keshdan olinadi (~10x tezroq).
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install -r requirements.lock
 
 COPY . .
 RUN python manage.py collectstatic --noinput || true
