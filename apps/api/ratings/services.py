@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from functools import partial
 
 from django.db import models, transaction
 from django.utils import timezone
@@ -89,9 +90,22 @@ def recalc_skills(
     return new_value
 
 
+def _profile_stats_changed(user_id: int) -> None:
+    """Profil statistikasi keshini commitdan KEYIN eskirtiradi.
+
+    Tranzaksiya ichida eskirtirilsa, parallel so'rov hali commit bo'lmagan
+    eski ma'lumotni yangi versiya ostida keshlab qo'yardi. `robust` — kesh
+    xatosi verdiktni to'xtatmaydi.
+    """
+    from profiles.stats import bump
+
+    transaction.on_commit(partial(bump, user_id), robust=True)
+
+
 @transaction.atomic
 def on_attempt_judged(attempt: Attempt) -> None:
     """Verdict yozilgandan keyin chaqiriladi."""
+    _profile_stats_changed(attempt.user_id)
     if attempt.verdict != Verdict.AC:
         return
 
@@ -132,6 +146,7 @@ def on_accept_revoked(attempt: Attempt) -> None:
     Yechilgan masala yozuvi olib tashlanadi, Skills qayta hisoblanadi va
     shu urinish uchun berilgan Qvant qaytariladi.
     """
+    _profile_stats_changed(attempt.user_id)
     row = UserSolvedProblem.objects.filter(
         user=attempt.user, problem=attempt.problem, first_ac_attempt=attempt
     ).first()

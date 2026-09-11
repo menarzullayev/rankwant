@@ -6905,6 +6905,50 @@ paths:
       responses:
         '200':
           description: No response body
+  /api/v1/users/{username}/calendar/:
+    get:
+      operationId: users_calendar_retrieve
+      description: Faollik xaritasi — kunlik urinishlar va yechimlar, streak bilan.
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: year
+        schema:
+          type: integer
+      tags:
+      - users
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/users/{username}/contests/:
+    get:
+      operationId: users_contests_retrieve
+      description: Qatnashgan musobaqalar — faqat ommaviylari.
+      parameters:
+      - in: query
+        name: q
+        schema:
+          type: string
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
   /api/v1/users/{username}/follow/:
     post:
       operationId: users_follow_create
@@ -7016,6 +7060,24 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedUserMiniList'
           description: ''
+  /api/v1/users/{username}/problem-map/:
+    get:
+      operationId: users_problem_map_retrieve
+      description: 'Arxivdagi har masala: yechilgan, urinilgan yoki tegilmagan.'
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
   /api/v1/users/{username}/profile/:
     get:
       operationId: users_profile_retrieve
@@ -7092,10 +7154,34 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedRatingHistoryList'
           description: ''
+  /api/v1/users/{username}/rating-series/:
+    get:
+      operationId: users_rating_series_retrieve
+      description: To'rt reyting tarixi grafik uchun, unvon chegaralari bilan.
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
   /api/v1/users/{username}/solved/:
     get:
       operationId: users_solved_list
-      description: Foydalanuvchi yechgan masalalar — Skills reytingining manbai.
+      description: |-
+        Foydalanuvchi yechgan masalalar — Skills reytingining manbai.
+
+        `?q=` — nom yoki raqam bo'yicha qidiruv, `?ordering=` — saralash.
+        Standart tartib qiyinlik bo'yicha: profildagi chiplar shunday.
+        Jadval uchun har masalada eng yaxshi vaqt/xotira va AC olgan tillar
+        ham beriladi.
       parameters:
       - name: ordering
         required: false
@@ -7132,6 +7218,43 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedSolvedProblemList'
           description: ''
+  /api/v1/users/{username}/stats/:
+    get:
+      operationId: users_stats_retrieve
+      description: Yechilgan/jami, daraja kesimi, tillar va verdiktlar ulushi.
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/users/{username}/topics/:
+    get:
+      operationId: users_topics_retrieve
+      description: Mavzu kesimidagi kuch — `problems/skills/` bilan bitta hisob, lekin
+        ommaviy.
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
 components:
   schemas:
     Answer:
@@ -11293,6 +11416,10 @@ components:
         slug:
           type: string
           readOnly: true
+        code:
+          type: integer
+          readOnly: true
+          nullable: true
         title:
           type: string
           readOnly: true
@@ -11308,10 +11435,27 @@ components:
           type: string
           format: date-time
           readOnly: true
+        best_time_ms:
+          type: integer
+          nullable: true
+          readOnly: true
+        best_memory_kb:
+          type: integer
+          nullable: true
+          readOnly: true
+        languages:
+          type: array
+          items:
+            type: string
+          readOnly: true
       required:
+      - best_memory_kb
+      - best_time_ms
+      - code
       - difficulty
       - difficulty_at_solve
       - first_ac_at
+      - languages
       - slug
       - title
     StaffArena:

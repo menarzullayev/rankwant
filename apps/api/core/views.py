@@ -573,26 +573,89 @@ class RatingHistoryView(generics.ListAPIView[Any]):
         return qs
 
 
+def _best_accepted(rows: list[Any]) -> dict[int, dict[str, Any]]:
+    """Har yechilgan masala uchun eng yaxshi vaqt, xotira va AC olgan tillar.
+
+    Faqat joriy sahifadagi masalalar uchun bitta so'rov — sahifada 25 ta
+    masala bo'lsa ham, 25 ta so'rov emas.
+    """
+    from judging.verdicts import Verdict
+
+    if not rows:
+        return {}
+    best: dict[int, dict[str, Any]] = {}
+    for problem_id, language, time_ms, memory_kb in (
+        Attempt.objects.filter(
+            user_id=rows[0].user_id,
+            problem_id__in=[row.problem_id for row in rows],
+            verdict=Verdict.AC,
+        )
+        .order_by("created_at")
+        .values_list("problem_id", "language__code", "time_ms", "memory_kb")
+    ):
+        entry = best.setdefault(
+            problem_id, {"time_ms": time_ms, "memory_kb": memory_kb, "languages": []}
+        )
+        entry["time_ms"] = min(entry["time_ms"], time_ms)
+        entry["memory_kb"] = min(entry["memory_kb"], memory_kb)
+        if language not in entry["languages"]:
+            entry["languages"].append(language)
+    return best
+
+
 class SolvedProblemsView(generics.ListAPIView[Any]):
-    """Foydalanuvchi yechgan masalalar — Skills reytingining manbai."""
+    """Foydalanuvchi yechgan masalalar — Skills reytingining manbai.
+
+    `?q=` — nom yoki raqam bo'yicha qidiruv, `?ordering=` — saralash.
+    Standart tartib qiyinlik bo'yicha: profildagi chiplar shunday.
+    Jadval uchun har masalada eng yaxshi vaqt/xotira va AC olgan tillar
+    ham beriladi.
+    """
 
     permission_classes = [AllowAny]
     pagination_class = StandardPagination
+    ORDERINGS: dict[str, str] = {
+        "-first_ac_at": "-first_ac_at",
+        "first_ac_at": "first_ac_at",
+        "-difficulty": "-problem__difficulty",
+        "difficulty": "problem__difficulty",
+        "title": "problem__title",
+    }
 
     def get_serializer_class(self):  # type: ignore[no-untyped-def]
         from ratings.serializers import SolvedProblemSerializer
 
         return SolvedProblemSerializer
 
-    def get_queryset(self):  # type: ignore[no-untyped-def]
+    def get_queryset(self) -> QuerySet[Any]:
         from ratings.models import UserSolvedProblem
 
         user = get_object_or_404(User, username=self.kwargs["username"], is_active=True)
-        return (
-            UserSolvedProblem.objects.filter(user=user)
-            .select_related("problem")
-            .order_by("-problem__difficulty")
+        qs = UserSolvedProblem.objects.filter(user=user).select_related("problem")
+        q = self.request.query_params.get("q", "").strip()
+        if q:
+            match = Q(problem__title__icontains=q)
+            if q.lstrip("#").isdigit():
+                match |= Q(problem__code=int(q.lstrip("#")))
+            qs = qs.filter(match)
+        ordering = self.ORDERINGS.get(
+            self.request.query_params.get("ordering", ""), "-problem__difficulty"
         )
+        return qs.order_by(ordering, "pk")
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter("q", str),
+            OpenApiParameter("ordering", str, enum=list(ORDERINGS)),
+        ]
+    )
+    def list(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        queryset = self.get_queryset()
+        page = self.paginate_queryset(queryset)
+        rows = list(page if page is not None else queryset)
+        context = {**self.get_serializer_context(), "best": _best_accepted(rows)}
+        data = self.get_serializer(rows, many=True, context=context).data
+        return self.get_paginated_response(data) if page is not None else Response(data)
 
 
 class ApiTokenViewSet(viewsets.ModelViewSet[ApiToken]):

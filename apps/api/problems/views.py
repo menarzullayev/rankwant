@@ -485,6 +485,61 @@ class ProgressView(APIView):
         )
 
 
+def user_problem_sets(user: Any) -> tuple[set[int], set[int]]:
+    """(yechilgan, urinilgan) masala ID'lari."""
+    from judging.models import Attempt
+    from ratings.models import UserSolvedProblem
+
+    solved = set(UserSolvedProblem.objects.filter(user=user).values_list("problem_id", flat=True))
+    attempted = set(
+        Attempt.objects.filter(user=user).values_list("problem_id", flat=True).distinct()
+    )
+    return solved, attempted
+
+
+def topic_skills(solved_ids: set[int], attempted_ids: set[int]) -> list[dict[str, Any]]:
+    """Mavzu kesimidagi kuch — `TopicSkillsView` va ommaviy profil uchun bitta hisob."""
+    from ratings.formulas import skills_rating
+
+    # Bitta so'rov: (masala, qiyinlik, mavzu). Mavzu soniga qarab
+    # so'rov ko'paymaydi — arxivda 148 ta mavzu bor.
+    rows = Problem.objects.filter(is_public=True).values_list(
+        "pk", "difficulty", "topics__slug", "topics__name_uz", "topics__name_ru", "topics__name_en"
+    )
+
+    totals: Counter[str] = Counter()
+    names: dict[str, tuple[str, str, str]] = {}
+    solved_difficulties: dict[str, list[int]] = {}
+    attempted: Counter[str] = Counter()
+    for problem_id, difficulty, slug, name_uz, name_ru, name_en in rows:
+        if slug is None:  # mavzusiz masala
+            continue
+        totals[slug] += 1
+        names[slug] = (name_uz, name_ru or "", name_en or "")
+        if problem_id in solved_ids:
+            solved_difficulties.setdefault(slug, []).append(difficulty)
+        elif problem_id in attempted_ids:
+            attempted[slug] += 1
+
+    topics: list[dict[str, Any]] = [
+        {
+            "slug": slug,
+            "label": names[slug][0],
+            "name_uz": names[slug][0],
+            "name_ru": names[slug][1],
+            "name_en": names[slug][2],
+            "total": total,
+            "solved": len(solved_difficulties.get(slug, [])),
+            # Urinilgan, LEKIN yechilmagan — «taqalib qolgan» signali.
+            "stuck": attempted[slug],
+            "rating": skills_rating(solved_difficulties.get(slug, [])),
+        }
+        for slug, total in totals.items()
+    ]
+    topics.sort(key=lambda row: (-int(row["rating"]), -int(row["solved"]), str(row["slug"])))
+    return topics
+
+
 class TopicSkillsView(APIView):
     """Mavzu kesimidagi kuch — Codeforces API tahlilidan kelgan g'oya.
 
@@ -501,59 +556,10 @@ class TopicSkillsView(APIView):
 
     @extend_schema(responses={200: OpenApiResponse(description="Mavzu bo'yicha kuch")})
     def get(self, request: Request) -> Response:
-        from ratings.formulas import skills_rating
-        from ratings.models import UserSolvedProblem
-
-        solved_ids: set[int] = set()
-        attempted_ids: set[int] = set()
-        if request.user.is_authenticated:
-            from judging.models import Attempt
-
-            solved_ids = set(
-                UserSolvedProblem.objects.filter(user=request.user).values_list(
-                    "problem_id", flat=True
-                )
-            )
-            attempted_ids = set(
-                Attempt.objects.filter(user=request.user)
-                .values_list("problem_id", flat=True)
-                .distinct()
-            )
-
-        # Bitta so'rov: (masala, qiyinlik, mavzu). Mavzu soniga qarab
-        # so'rov ko'paymaydi — arxivda 148 ta mavzu bor.
-        rows = Problem.objects.filter(is_public=True).values_list(
-            "pk", "difficulty", "topics__slug", "topics__name_uz"
+        solved, attempted = (
+            user_problem_sets(request.user) if request.user.is_authenticated else (set(), set())
         )
-
-        totals: Counter[str] = Counter()
-        labels: dict[str, str] = {}
-        solved_difficulties: dict[str, list[int]] = {}
-        attempted: Counter[str] = Counter()
-        for problem_id, difficulty, slug, label in rows:
-            if slug is None:  # mavzusiz masala
-                continue
-            totals[slug] += 1
-            labels[slug] = label
-            if problem_id in solved_ids:
-                solved_difficulties.setdefault(slug, []).append(difficulty)
-            elif problem_id in attempted_ids:
-                attempted[slug] += 1
-
-        topics: list[dict[str, Any]] = [
-            {
-                "slug": slug,
-                "label": labels[slug],
-                "total": total,
-                "solved": len(solved_difficulties.get(slug, [])),
-                # Urinilgan, LEKIN yechilmagan — «taqalib qolgan» signali.
-                "stuck": attempted[slug],
-                "rating": skills_rating(solved_difficulties.get(slug, [])),
-            }
-            for slug, total in totals.items()
-        ]
-        topics.sort(key=lambda row: (-int(row["rating"]), -int(row["solved"]), str(row["slug"])))
-        return Response({"topics": topics})
+        return Response({"topics": topic_skills(solved, attempted)})
 
 
 class TopicViewSet(viewsets.ReadOnlyModelViewSet[Topic]):

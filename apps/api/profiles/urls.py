@@ -33,6 +33,20 @@ urlpatterns = [
     ),
     path("users/<str:username>/purchases/", views.PurchasesView.as_view(), name="user-purchases"),
     path("users/<str:username>/follow/", views.FollowView.as_view(), name="user-follow"),
+    path("users/<str:username>/stats/", views.UserStatsView.as_view(), name="user-stats"),
+    path("users/<str:username>/calendar/", views.UserCalendarView.as_view(), name="user-calendar"),
+    path(
+        "users/<str:username>/problem-map/",
+        views.UserProblemMapView.as_view(),
+        name="user-problem-map",
+    ),
+    path(
+        "users/<str:username>/rating-series/",
+        views.UserRatingSeriesView.as_view(),
+        name="user-rating-series",
+    ),
+    path("users/<str:username>/topics/", views.UserTopicsView.as_view(), name="user-topics"),
+    path("users/<str:username>/contests/", views.UserContestsView.as_view(), name="user-contests"),
     path(
         "users/<str:username>/followers/",
         views.FollowListView.as_view(direction="followers"),

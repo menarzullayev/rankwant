@@ -8,6 +8,7 @@ from typing import Any
 from django.db import transaction
 from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import exceptions, generics, status
@@ -16,10 +17,11 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from contests.models import Standing
 from core.models import User
 from core.pagination import StandardPagination
 from core.tasks import queue
-from profiles import external, public, teams
+from profiles import external, public, stats, teams
 from profiles.catalog import TECHNOLOGIES
 from profiles.models import (
     Education,
@@ -409,3 +411,95 @@ class TeamMemberView(APIView):
         except teams.TeamError as exc:
             raise _team_error(exc) from None
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# ── Profil statistikasi ──────────────────────────────────────────────
+
+
+class UserStatsView(APIView):
+    """Yechilgan/jami, daraja kesimi, tillar va verdiktlar ulushi."""
+
+    permission_classes = [AllowAny]
+
+    @extend_schema(responses={200: None})
+    def get(self, request: Request, username: str) -> Response:
+        user = _profile_owner(username)
+        return Response(stats.cached(user.pk, "overview", lambda: stats.overview(user)))
+
+
+class UserCalendarView(APIView):
+    """Faollik xaritasi — kunlik urinishlar va yechimlar, streak bilan."""
+
+    permission_classes = [AllowAny]
+
+    @extend_schema(parameters=[OpenApiParameter("year", int)], responses={200: None})
+    def get(self, request: Request, username: str) -> Response:
+        user = _profile_owner(username)
+        this_year = timezone.localdate().year
+        raw = request.query_params.get("year") or str(this_year)
+        if not raw.isdigit() or not 2000 <= int(raw) <= this_year:
+            raise exceptions.ValidationError({"year": "Yil noto'g'ri"})
+        year = int(raw)
+        return Response(
+            stats.cached(user.pk, f"calendar:{year}", lambda: stats.calendar(user, year))
+        )
+
+
+class UserProblemMapView(APIView):
+    """Arxivdagi har masala: yechilgan, urinilgan yoki tegilmagan."""
+
+    permission_classes = [AllowAny]
+
+    @extend_schema(responses={200: None})
+    def get(self, request: Request, username: str) -> Response:
+        return Response(stats.problem_map(_profile_owner(username)))
+
+
+class UserRatingSeriesView(APIView):
+    """To'rt reyting tarixi grafik uchun, unvon chegaralari bilan."""
+
+    permission_classes = [AllowAny]
+
+    @extend_schema(responses={200: None})
+    def get(self, request: Request, username: str) -> Response:
+        return Response(stats.rating_series(_profile_owner(username)))
+
+
+class UserTopicsView(APIView):
+    """Mavzu kesimidagi kuch — `problems/skills/` bilan bitta hisob, lekin ommaviy."""
+
+    permission_classes = [AllowAny]
+
+    @extend_schema(responses={200: None})
+    def get(self, request: Request, username: str) -> Response:
+        from problems.views import topic_skills
+
+        user = _profile_owner(username)
+        return Response(
+            {
+                "topics": stats.cached(
+                    user.pk, "topics", lambda: topic_skills(*stats.problem_sets(user))
+                )
+            }
+        )
+
+
+class UserContestsView(APIView):
+    """Qatnashgan musobaqalar — faqat ommaviylari."""
+
+    permission_classes = [AllowAny]
+
+    @extend_schema(parameters=[OpenApiParameter("q", str)], responses={200: None})
+    def get(self, request: Request, username: str) -> Response:
+        user = _profile_owner(username)
+        queryset = Standing.objects.filter(user=user, contest__is_public=True).select_related(
+            "contest"
+        )
+        q = request.query_params.get("q", "").strip()
+        if q:
+            queryset = queryset.filter(contest__title__icontains=q)
+        paginator = StandardPagination()
+        page = paginator.paginate_queryset(
+            queryset.order_by("-contest__start_at", "-pk"), request, view=self
+        )
+        return paginator.get_paginated_response(stats.contest_rows(user, list(page or [])))
