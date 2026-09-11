@@ -32,11 +32,12 @@ export function ProfileNav({ username }: { username: string }) {
   return (
     // Bitta qator va gorizontal aylanish: Robocontest'da tablar telefonda
     // ikki qatorga tushardi. Chiziq — ichki soya (`overflow` bilan border
-    // vertikal aylantirish tugmasini chiqarardi, o'lchandi). `px-2` bilan
-    // 1366 kenglikda to'qqiz tab sig'adi (px-3 da 804 px, joy 734).
+    // vertikal aylantirish tugmasini chiqarardi, o'lchandi). Oraliqsiz va
+    // `px-2` bilan 1366 kenglikda to'qqiz tab sig'adi — uzun sahifada
+    // scrollbar ham joy oladi (o'lchandi: 732 px, joy 719).
     <nav
       aria-label={t(locale, "profile.sections")}
-      className="flex gap-1 overflow-x-auto overflow-y-hidden [scrollbar-width:thin] shadow-[inset_0_-1px_0_var(--rw-line)]"
+      className="flex overflow-x-auto overflow-y-hidden [scrollbar-width:thin] shadow-[inset_0_-1px_0_var(--rw-line)]"
     >
       {PROFILE_TABS.map((tab) => {
         const active = current === tab.slug;
