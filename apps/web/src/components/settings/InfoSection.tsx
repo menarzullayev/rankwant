@@ -133,24 +133,21 @@ export function InfoSection() {
                   defaultValue={districtDefault}
                 >
                   <option value="">{t(locale, "settings.notChosen")}</option>
-                  <optgroup label={t(locale, "settings.districts")}>
-                    {districts
-                      .filter((row) => !row.city)
-                      .map((row) => (
-                        <option key={row.code} value={row.code}>
-                          {row.name}
-                        </option>
-                      ))}
-                  </optgroup>
-                  <optgroup label={t(locale, "settings.cities")}>
-                    {districts
-                      .filter((row) => row.city)
-                      .map((row) => (
-                        <option key={row.code} value={row.code}>
-                          {row.name}
-                        </option>
-                      ))}
-                  </optgroup>
+                  {/* Toshkent shahrida viloyat shaharlari yo'q — bo'sh guruh chizilmaydi. */}
+                  {[
+                    { key: "settings.districts", rows: districts.filter((row) => !row.city) },
+                    { key: "settings.cities", rows: districts.filter((row) => row.city) },
+                  ]
+                    .filter((group) => group.rows.length > 0)
+                    .map((group) => (
+                      <optgroup key={group.key} label={t(locale, group.key)}>
+                        {group.rows.map((row) => (
+                          <option key={row.code} value={row.code}>
+                            {row.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                    ))}
                 </Select>
               )
             : currentCountry && (
