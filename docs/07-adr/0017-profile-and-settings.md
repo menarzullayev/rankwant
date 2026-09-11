@@ -1,6 +1,7 @@
 # ADR-0017: Profil va sozlamalar — KEP'dan ilhomlangan, global
 
 **STATUS:** accepted (2026-09-11)
+**Yangilangan:** 2026-09-11 — profil sahifasi (pastdagi bo'lim)
 **Ta'siri:** [ADR-0002](0002-qvant-economy.md) (Qvant ledgeri),
 [ADR-0015](0015-account-email.md) (hisob xatlari),
 [ADR-0016](0016-signup-and-login.md) (ro'yxat va kirish)
@@ -79,3 +80,52 @@ va til shunga qarab tanlandi.
   uchinchi tomonga bildirilardi.
 - **Ko'nikmani yechimlardan avtomatik hisoblash** — keyinga qoldirildi;
   hozircha KEP kabi o'zini baholash.
+
+## Yangilanish: profil sahifasi (2026-09-11)
+
+robocontest.uz profili tahlil qilindi va 30 savol bo'yicha qaror qabul
+qilindi. Ish uch bosqichda: bu bo'lim birinchisini — tuzilma,
+statistika va grafiklarni yozadi. Unvon va sertifikat qarorlari alohida
+ADR'larda (0018, 0019) bo'ladi.
+
+### Qaror
+
+| Savol | Tanlov | Sabab |
+| ----- | ------ | ----- |
+| Tuzilma | Chapda profil kartasi, o'ngda reytinglar va tablar; telefonda bitta ustun | Kim ekani doim ko'rinadi, grafiklar keng ustunda |
+| Tablar | Har biri o'z manzilida (`/users/<nick>/urinishlar` va h.k.); eski `?tab=` yo'naltiriladi | Havola ulashiladi, «orqaga» ishlaydi, har tabning o'z sarlavhasi |
+| Reyting grafigi | To'rt reyting almashtirgich bilan, standart Contests; unvon bantlari; nuqtada musobaqa, o'rin, o'zgarish; ostida sababli jadval | Raqam emas, yo'l ko'rinadi |
+| Faollik xaritasi | Kunlik urinish va yangi yechim, yil tanlash, joriy va eng uzun streak | Doimiylik bir qarashda |
+| Masalalar xaritasi | Raqam tartibida yoki 7 daraja bo'yicha; katak shu masala urinishlarini ochadi | Arxivdagi o'rni ko'rinadi |
+| Tillar, verdiktlar | Kartalar va halqa; infra va muallif xatolari hisobga olinmaydi | Checker yoki judge aybi odamniki emas |
+| Mavzu kuchi | `/problems/skills/` hisobi, lekin hammaga ochiq | Bitta formula, ikki joyda |
+| Musobaqalar | O'rin oralig'i (33–35), reyting o'zgarishi, hajm, rasmiy/virtual, qidiruv | Natija to'liq, sahifaga o'tmasdan |
+| Ochiqlik | Yangi statistikalar hammaga ochiq | «Profil — vitrina» qarori saqlanadi |
+| Grafiklar | O'z SVG'imiz, kutubxonasiz | CSP va to'plam hajmi |
+
+### Oqibatlar
+
+- **Kesh.** Og'ir hisoblar (faollik, tillar, verdiktlar, yechilgan va
+  urinilgan to'plamlar, mavzular) foydalanuvchi bo'yicha versiyali kalit
+  ostida bir soat turadi. Versiya urinish baholangan tranzaksiya commit
+  bo'lgach oshadi: ichkarida oshirilsa, parallel so'rov commitgacha
+  bo'lgan eski ma'lumotni yangi versiya ostida keshlab qo'yardi.
+  Masalalar katalogi hamma uchun bitta, 10 daqiqa.
+- **Teng o'rinlar.** `Standing.rank` ketma-ket raqam — teng natija
+  alohida belgilanmaydi. Oraliq natijaning o'zidan olinadi: ACM'da
+  yechilganlar va jarima, IOI'da ball bir xil bo'lganlar.
+- **Grafik nuqtalari.** Bir reytingda 400 tadan ortiq nuqta siqiladi;
+  birinchi, oxirgi va eng yuqori nuqta saqlanadi.
+- **Izohlar.** Har ko'rsatkich yonida qisqa izoh — Robocontest'dagi
+  izohsiz raqamlar takrorlanmasin. Tab qatori telefonda ikki qatorga
+  tushmaydi, gorizontal aylanadi.
+- **Ulashish.** Web Share, bo'lmasa havola nusxalanadi. OG karta avatar,
+  reytinglar va yechilganlar bilan; Satori WebP o'qimaydi, shunday
+  avatar o'rniga bosh harf chiziladi.
+
+### Rad etilgan variantlar
+
+- **Chart.js** (Robocontest shuni ishlatadi) — to'plamga o'nlab kilobayt
+  qo'shardi, bizning grafiklar esa chiziq va kataklardan iborat.
+- **Tablar `?tab=` bilan, bitta sahifada** — sahifa hamma tabning
+  ma'lumotini kutardi, sarlavha va havola esa hammasiga bitta bo'lardi.
