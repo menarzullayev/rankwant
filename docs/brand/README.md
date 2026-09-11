@@ -73,7 +73,7 @@ Majburlashga o'tgach qo'shiladigan yozuv:
 
 ```
 default._bimi.mail1.rankwant.bugvector.uz  TXT
-v=BIMI1; l=https://rankwant.bugvector.uz/brand/bimi.svg;
+v=BIMI1; l=https://rankwant.uz/brand/bimi.svg;
 ```
 
 **Gmail va Yahoo bundan tashqari VMC sertifikatini talab qiladi** — u

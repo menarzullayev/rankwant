@@ -120,7 +120,7 @@ Yana ikkita kichikroq nuqson o'sha o'lchovda ko'rindi:
 | Statement < 100 belgi | 164 | ko'pi haqiqatan qisqa, lekin tekshirilmagan |
 | Matnda «istalgan javob» iborasi bor, checker `standard` | 200 | ko'p javobli masala aniq moslik bilan tekshirilyapti — to'g'ri yechim WA olishi mumkin |
 
-## Ommaviy preview (rankwant.bugvector.uz)
+## Ommaviy preview (rankwant.uz)
 
 **Bu production EMAS** — yuqoridagi to'rt-hostli topologiya o'rniga bitta
 mashinada ishlaydigan ko'rsatuv nusxasi.
@@ -133,12 +133,14 @@ docker compose --env-file .env.public \
 | Nima | Qanday |
 | ---- | ------ |
 | Tashqi kirish | Cloudflare Tunnel (`/etc/cloudflared/config.yml`), ochiq port yo'q |
+| Domen | `rankwant.uz` (Eskiz'da ro'yxatdan o'tgan, NS — Cloudflare). Eski `rankwant.bugvector.uz` o'chirilmagan: sahifalar yangi domenga 301 bo'ladi (`apps/web/src/proxy.ts`), `/api/*` esa javob beraveradi — eski avatar manzillari uchun |
+| Domen almashsa | `PUBLIC_ORIGIN` → to'liq deploy → `manage.py rehost_avatars <eski origin>`. Tashqarida: Google klientiga yangi origin va redirect URI, GitHub OAuth App'ga yangi callback (bir nechtasini qabul qiladi — eskisi qoladi), BotFather `/setdomain` (bitta domen). Cookie domenga bog'liq — hamma qaytadan kiradi |
 | Marshrutlash | `/api/*` → API, qolgani → Next.js — **bitta origin**, ya'ni CORS/CSRF cross-origin muammosi yo'q |
 | Sirlar | `.env.public` (gitignore): `DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS` |
 | `DJANGO_DEBUG` | `0` — aks holda xato sahifasi sozlamalarni oshkor qiladi |
 | Django admin | tunnel'dan **chiqarilmagan**; faqat `127.0.0.1:8301/admin/`. Kundalik boshqaruv esa saytning o'z admin UI'sida: `/admin` (faqat `is_staff`) |
 | Standings keshi | **Ochiq**: origin `Cache-Control: public, s-maxage=10` beradi, Cloudflare esa `cf-cache-status: DYNAMIC` qaytaradi — ya'ni keshlamaydi (standart qoidalar fayl kengaytmasiga qaraydi, `/api/v1/...` unga tushmaydi). Cache Rule kerak: `/api/v1/contests/*/standings/` va `/api/v1/arena/*/standings/` → *Eligible for cache*, *Respect origin TTL*. Nega muhimligi pastda |
-| `robots.txt` | Cloudflare **o'zining** nusxasini beradi, ya'ni bizning `Sitemap:` qatorimiz kraulerga yetmaydi. Sitemap qo'lda qo'shiladi: Search Console va Yandex Webmaster ga `https://rankwant.bugvector.uz/sitemap.xml` |
+| `robots.txt` | Bizniki beriladi — `rankwant.uz` zonasida Cloudflare'ning managed robots.txt'i o'chiq, ya'ni `Sitemap: https://rankwant.uz/sitemap.xml` kraulerga yetadi. Search Console va Yandex Webmaster'da domen hali ro'yxatdan o'tmagan |
 
 ### Standings sig'imi (o'lchangan, 2026-09-10)
 
