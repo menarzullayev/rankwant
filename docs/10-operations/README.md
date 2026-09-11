@@ -140,7 +140,7 @@ docker compose --env-file .env.public \
 | `DJANGO_DEBUG` | `0` — aks holda xato sahifasi sozlamalarni oshkor qiladi |
 | Django admin | tunnel'dan **chiqarilmagan**; faqat `127.0.0.1:8301/admin/`. Kundalik boshqaruv esa saytning o'z admin UI'sida: `/admin` (faqat `is_staff`) |
 | Standings keshi | **Ochiq**: origin `Cache-Control: public, s-maxage=10` beradi, Cloudflare esa `cf-cache-status: DYNAMIC` qaytaradi — ya'ni keshlamaydi (standart qoidalar fayl kengaytmasiga qaraydi, `/api/v1/...` unga tushmaydi). Cache Rule kerak: `/api/v1/contests/*/standings/` va `/api/v1/arena/*/standings/` → *Eligible for cache*, *Respect origin TTL*. Nega muhimligi pastda |
-| `robots.txt` | Bizniki beriladi — `rankwant.uz` zonasida Cloudflare'ning managed robots.txt'i o'chiq, ya'ni `Sitemap: https://rankwant.uz/sitemap.xml` kraulerga yetadi. Search Console va Yandex Webmaster'da domen hali ro'yxatdan o'tmagan |
+| `robots.txt` | Bizniki beriladi — `rankwant.uz` zonasida Cloudflare'ning managed robots.txt'i o'chiq, ya'ni `Sitemap: https://rankwant.uz/sitemap.xml` kraulerga yetadi. Search Console (domen resursi) va Yandex Webmaster'da DNS TXT orqali tasdiqlangan, sitemap ikkalasiga yuborilgan (2026-09-11) — apex'dagi `google-site-verification` va `yandex-verification` TXT'larini o'chirmang |
 
 ### Standings sig'imi (o'lchangan, 2026-09-10)
 
