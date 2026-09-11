@@ -8,6 +8,7 @@ workers_dev = false
 routes = [
   { pattern = "rankwant.uz/*", zone_name = "rankwant.uz" },
   { pattern = "www.rankwant.uz/*", zone_name = "rankwant.uz" },
-  # Eski domen boshqa zonada. O'sha zona shu Cloudflare hisobida bo'lsa oching:
-  # { pattern = "rankwant.bugvector.uz/*", zone_name = "bugvector.uz" },
+  # Eski domen boshqa zonada: sahifalari yangi domenga 301 bo'ladi, `/api/*` esa
+  # eski avatar manzillari uchun javob beraveradi (10-operations).
+  { pattern = "rankwant.bugvector.uz/*", zone_name = "bugvector.uz" },
 ]
