@@ -2,6 +2,7 @@ import type { Route } from "next";
 import Link from "next/link";
 
 import { Avatar } from "@/components/Avatar";
+import { UserName } from "@/components/UserName";
 import { Badge, type BadgeColor } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/Button";
 import { fill, t, type Locale } from "@/i18n/messages";
@@ -9,7 +10,7 @@ import type { ProfileRole, PublicProfile } from "@/lib/api";
 import { badgeLabel, coverClass, frameClass } from "@/lib/cosmetics";
 import { countryName } from "@/lib/countries";
 import { formatDate, formatRelative } from "@/lib/format";
-import { regionName } from "@/lib/regions";
+import { districtName, regionName } from "@/lib/regions";
 import { FollowButton } from "./FollowButton";
 import { Medal, achievementLabel } from "./Medal";
 import { ShareButton } from "./ShareButton";
@@ -36,12 +37,43 @@ export function ProfileCard({
   const rank = profile.title ? `rw-rank-${profile.title.level}` : "";
   const region =
     info.region && (info.country === "UZ" ? regionName(info.region, locale) : info.region);
+  const locality = info.district ? districtName(info.district, locale) : info.city;
   const place = info.country
-    ? [countryName(info.country, locale), region].filter(Boolean).join(", ")
+    ? [countryName(info.country, locale), region, locality].filter(Boolean).join(", ")
     : "";
   const rows: [string, React.ReactNode][] = [];
   if (place) rows.push([t(locale, "settings.country"), place]);
-  if (info.school) rows.push([t(locale, "settings.school"), info.school]);
+  if (info.school)
+    rows.push([
+      t(locale, "settings.school"),
+      info.school_id ? (
+        <Link
+          key="school"
+          href={`/leaderboard?school=${info.school_id}` as Route}
+          title={t(locale, "profile.schoolRanking")}
+          className="rw-accent-ink hover:underline"
+        >
+          {info.school}
+        </Link>
+      ) : (
+        info.school
+      ),
+    ]);
+  if (profile.coach.length > 0)
+    rows.push([
+      t(locale, "profile.coach"),
+      <span key="coach" className="flex flex-wrap gap-x-2">
+        {profile.coach.map((coach) => (
+          <UserName
+            key={coach.username}
+            username={coach.username}
+            name={coach.display_name}
+            title={coach.title}
+            locale={locale}
+          />
+        ))}
+      </span>,
+    ]);
   if (info.grade) rows.push([t(locale, "settings.grade"), info.grade]);
   if (info.website)
     rows.push([

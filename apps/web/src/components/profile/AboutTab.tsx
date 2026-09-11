@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/Card";
 import { localName, t, type Locale } from "@/i18n/messages";
 import type { ExternalProfile, PrivacyField, PublicProfile } from "@/lib/api";
 import { countryName } from "@/lib/countries";
-import { regionName } from "@/lib/regions";
+import { districtName, regionName } from "@/lib/regions";
 import { BrandIcon, EXTERNAL_ICONS, TECH_ICONS } from "@/lib/tech-icons";
 import { formatDate } from "@/lib/format";
 
@@ -11,6 +11,21 @@ const EXTERNAL_LABEL: Record<string, string> = {
   atcoder: "AtCoder",
   leetcode: "LeetCode",
   linkedin: "LinkedIn",
+  telegram: "Telegram",
+  github: "GitHub",
+  instagram: "Instagram",
+  x: "X",
+  youtube: "YouTube",
+  kaggle: "Kaggle",
+  blog: "Blog",
+};
+
+const hostOf = (url: string) => {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return url;
+  }
 };
 
 function externalUrl(row: ExternalProfile): string {
@@ -22,6 +37,18 @@ function externalUrl(row: ExternalProfile): string {
       return `https://atcoder.jp/users/${handle}`;
     case "leetcode":
       return `https://leetcode.com/u/${handle}/`;
+    case "telegram":
+      return `https://t.me/${handle}`;
+    case "github":
+      return `https://github.com/${handle}`;
+    case "instagram":
+      return `https://instagram.com/${handle}`;
+    case "x":
+      return `https://x.com/${handle}`;
+    case "youtube":
+      return `https://youtube.com/@${handle}`;
+    case "kaggle":
+      return `https://www.kaggle.com/${handle}`;
     default:
       return row.handle;
   }
@@ -56,7 +83,13 @@ export function AboutTab({
       info.region && (info.country === "UZ" ? regionName(info.region, locale) : info.region);
     rows.push({
       label: t(locale, "settings.country"),
-      value: [countryName(info.country, locale), region].filter(Boolean).join(", "),
+      value: [
+        countryName(info.country, locale),
+        region,
+        info.district ? districtName(info.district, locale) : info.city,
+      ]
+        .filter(Boolean)
+        .join(", "),
       field: "country",
     });
   }
@@ -152,7 +185,11 @@ export function AboutTab({
                   className="min-w-0 flex-1 truncate text-theme-sm rw-strong hover:underline"
                 >
                   {EXTERNAL_LABEL[row.kind]}
-                  {row.kind !== "linkedin" && <span className="ml-1.5 rw-dim">{row.handle}</span>}
+                  {row.kind !== "linkedin" && (
+                    <span className="ml-1.5 rw-dim">
+                      {row.kind === "blog" ? hostOf(row.handle) : row.handle}
+                    </span>
+                  )}
                 </a>
                 {row.rating !== null && (
                   <span className="text-right text-theme-sm tabular-nums rw-strong">

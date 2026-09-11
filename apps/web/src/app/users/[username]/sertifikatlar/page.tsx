@@ -1,32 +1,25 @@
 import type { Metadata } from "next";
 
-import { PeopleTab } from "@/components/profile/ActivityTabs";
+import { CertificatesTab } from "@/components/profile/CertificatesTab";
 import { getLocale } from "@/i18n/server";
 import { tabMetadata } from "@/lib/profile.server";
 
 type Props = {
   params: Promise<{ username: string }>;
-  searchParams: Promise<Record<string, string | undefined>>;
+  searchParams: Promise<{ page?: string }>;
 };
 
 export const dynamic = "force-dynamic";
 
 export function generateMetadata({ params }: Props): Promise<Metadata> {
-  return tabMetadata(params, "profile.followingTab");
+  return tabMetadata(params, "profile.tab.certificates");
 }
 
 export default async function Page({ params, searchParams }: Props) {
   const username = decodeURIComponent((await params).username);
   const locale = await getLocale();
-  const { page, q, ordering } = await searchParams;
+  const { page } = await searchParams;
   return (
-    <PeopleTab
-      username={username}
-      direction="following"
-      page={Math.max(1, Number(page) || 1)}
-      q={q ?? ""}
-      ordering={ordering ?? ""}
-      locale={locale}
-    />
+    <CertificatesTab username={username} page={Math.max(1, Number(page) || 1)} locale={locale} />
   );
 }

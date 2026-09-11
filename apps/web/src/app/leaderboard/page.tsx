@@ -13,7 +13,7 @@ import {
   Table,
 } from "@/components/ui/Table";
 import { getLocale } from "@/i18n/server";
-import { t } from "@/i18n/messages";
+import { fill, t } from "@/i18n/messages";
 import { api } from "@/lib/api";
 
 // Jonli ma'lumot: har so'rovda serverda render qilinadi.
@@ -29,16 +29,34 @@ export async function generateMetadata(): Promise<Metadata> {
 /** Birinchi uchtalik — TailAdmin jadvalida ham ko'zga tashlansin. */
 const MEDAL = ["rw-warn-ink", "rw-faint", "text-orange-400"];
 
-export default async function LeaderboardPage() {
+type Props = { searchParams: Promise<{ school?: string }> };
+
+export default async function LeaderboardPage({ searchParams }: Props) {
   const locale = await getLocale();
-  const data = await api.leaderboard();
+  const { school } = await searchParams;
+  // Maktab reytingi (ADR-0017) — katalogdagi maktab bo'yicha.
+  const schoolId = school && /^\d+$/.test(school) ? school : undefined;
+  const [data, schoolRow] = await Promise.all([
+    api.leaderboard(schoolId),
+    schoolId ? api.school(schoolId).catch(() => null) : null,
+  ]);
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-title-sm font-bold rw-strong">
-          {t(locale, "leaderboard.title")}
+          {schoolRow
+            ? fill(t(locale, "leaderboard.school"), { school: schoolRow.name })
+            : t(locale, "leaderboard.title")}
         </h1>
+        {schoolRow && (
+          <Link
+            href="/leaderboard"
+            className="mt-1 mr-4 inline-block text-theme-sm rw-accent-ink hover:underline"
+          >
+            {t(locale, "leaderboard.schoolAll")}
+          </Link>
+        )}
         {/* ADR-0006 fazali ochilish: Phase 0 da faqat Skills va Contests */}
         <Link
           href="/rating"

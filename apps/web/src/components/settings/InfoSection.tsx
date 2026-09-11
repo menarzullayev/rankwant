@@ -10,8 +10,9 @@ import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
 import { patchJson, type PrivacyField } from "@/lib/api";
 import { countryOptions } from "@/lib/countries";
-import { REGION_CODES, regionName } from "@/lib/regions";
+import { REGION_CODES, districtOptions, regionName } from "@/lib/regions";
 import { Check, Hint, Select, Status, useAction } from "./kit";
+import { SchoolField } from "./SchoolField";
 
 /** Shaxsiy ma'lumot. Hammasi ixtiyoriy va standart holatda profilda
  *  ko'rinadi — yashirish har maydon yonida, odam nimani ochiq qoldirganini
@@ -22,6 +23,7 @@ export function InfoSection() {
   const action = useAction();
   const [country, setCountry] = useState<string | null>(null);
   const [hidden, setHidden] = useState<PrivacyField[] | null>(null);
+  const [region, setRegion] = useState<string | null>(null);
   const countries = useMemo(() => countryOptions(locale), [locale]);
   if (!user) return null;
 
@@ -50,6 +52,9 @@ export function InfoSection() {
       await patchJson("/me/", {
         country: currentCountry,
         region: text("region"),
+        district: text("district"),
+        city: text("city"),
+        school_ref: text("school_ref") ? Number(text("school_ref")) : null,
         school: text("school"),
         grade: text("grade"),
         website: text("website"),
@@ -61,10 +66,14 @@ export function InfoSection() {
     if (ok) {
       setCountry(null);
       setHidden(null);
+      setRegion(null);
     }
   }
 
   const regionDefault = currentCountry === user.country ? user.region : "";
+  const currentRegion = region ?? regionDefault;
+  const districtDefault = currentRegion === user.region ? user.district : "";
+  const districts = currentCountry === "UZ" && currentRegion ? districtOptions(currentRegion, locale) : [];
 
   return (
     <Card title={t(locale, "settings.info")}>
@@ -75,7 +84,10 @@ export function InfoSection() {
             <Select
               label={t(locale, "settings.country")}
               value={currentCountry}
-              onChange={(event) => setCountry(event.target.value)}
+              onChange={(event) => {
+                setCountry(event.target.value);
+                setRegion(null);
+              }}
             >
               <option value="">{t(locale, "settings.notChosen")}</option>
               {countries.map((c) => (
@@ -92,6 +104,7 @@ export function InfoSection() {
               label={t(locale, "settings.region")}
               name="region"
               defaultValue={regionDefault}
+              onChange={(event) => setRegion(event.target.value)}
             >
               <option value="">{t(locale, "settings.notChosen")}</option>
               {REGION_CODES.map((code) => (
@@ -111,16 +124,53 @@ export function InfoSection() {
               autoComplete="address-level1"
             />
           )}
+          {currentCountry === "UZ"
+            ? districts.length > 0 && (
+                <Select
+                  key={`district:${currentRegion}`}
+                  label={t(locale, "settings.district")}
+                  name="district"
+                  defaultValue={districtDefault}
+                >
+                  <option value="">{t(locale, "settings.notChosen")}</option>
+                  <optgroup label={t(locale, "settings.districts")}>
+                    {districts
+                      .filter((row) => !row.city)
+                      .map((row) => (
+                        <option key={row.code} value={row.code}>
+                          {row.name}
+                        </option>
+                      ))}
+                  </optgroup>
+                  <optgroup label={t(locale, "settings.cities")}>
+                    {districts
+                      .filter((row) => row.city)
+                      .map((row) => (
+                        <option key={row.code} value={row.code}>
+                          {row.name}
+                        </option>
+                      ))}
+                  </optgroup>
+                </Select>
+              )
+            : currentCountry && (
+                <Field
+                  key="city"
+                  label={t(locale, "settings.city")}
+                  name="city"
+                  defaultValue={user.city}
+                  maxLength={100}
+                  autoComplete="address-level2"
+                />
+              )}
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Field
+            <SchoolField
               label={t(locale, "settings.school")}
-              name="school"
-              defaultValue={user.school}
-              maxLength={150}
-              autoComplete="organization"
+              initialName={user.school_ref ? user.school_name : user.school}
+              initialId={user.school_ref}
             />
             {visibility("school")}
           </div>
@@ -160,6 +210,8 @@ export function InfoSection() {
 
         {user.email && visibility("email", t(locale, "settings.showEmail"))}
         {visibility("online", t(locale, "settings.showOnline"))}
+        {visibility("coach", t(locale, "settings.showCoach"))}
+        {visibility("social", t(locale, "settings.showSocial"))}
 
         <Status error={action.error} done={action.done} />
         <Button type="submit" busy={action.busy} className="self-start">

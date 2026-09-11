@@ -20,11 +20,14 @@ import {
   siFlask,
   siFlutter,
   siGit,
+  siGithub,
   siGo,
   siGraphql,
   siHaskell,
+  siInstagram,
   siJavascript,
   siJulia,
+  siKaggle,
   siKotlin,
   siKubernetes,
   siLaravel,
@@ -52,9 +55,12 @@ import {
   siSpring,
   siSwift,
   siTailwindcss,
+  siTelegram,
   siTensorflow,
   siTypescript,
   siVuedotjs,
+  siX,
+  siYoutube,
 } from "simple-icons";
 
 type Icon = { title: string; path: string };
@@ -113,6 +119,12 @@ export const TECH_ICONS: Record<string, Icon> = {
 export const EXTERNAL_ICONS: Partial<Record<string, Icon>> = {
   codeforces: siCodeforces,
   leetcode: siLeetcode,
+  telegram: siTelegram,
+  github: siGithub,
+  instagram: siInstagram,
+  x: siX,
+  youtube: siYoutube,
+  kaggle: siKaggle,
 };
 
 /** Judge tili kodi (`cpp23`, `py313`, `java21`) → belgi. */

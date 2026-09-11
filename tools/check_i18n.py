@@ -50,6 +50,7 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         "profile.reason.duel", "profile.virtual",
         # Qoraqalpoqchada ham shunday: o'zlashma so'zlar.
         "role.champion", "profile.online", "tier.bronze",
+        "profile.tab.certificates", "cert.title", "cert.id", "leaderboard.school",
     },
     # «Duel» — inglizchadan o'zlashgan, ingliz tilida o'sha so'zning o'zi.
     "en": {"nav.duels", "level.master", "title.proton", "title.atom",

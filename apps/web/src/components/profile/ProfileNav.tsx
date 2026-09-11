@@ -16,6 +16,7 @@ export const PROFILE_TABS = [
   { slug: "urinishlar", key: "profile.tab.attempts" },
   { slug: "yechilganlar", key: "profile.tab.solved" },
   { slug: "musobaqalar", key: "profile.tab.contests" },
+  { slug: "sertifikatlar", key: "profile.tab.certificates" },
   { slug: "yutuqlar", key: "profile.tab.achievements" },
   { slug: "xaridlar", key: "profile.tab.purchases" },
 ] as const;

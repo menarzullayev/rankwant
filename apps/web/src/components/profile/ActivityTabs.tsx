@@ -10,13 +10,14 @@ import type {
   ActivityEvent,
   Paginated,
   Purchase,
-  UserMini,
+  Follower,
 } from "@/lib/api";
 import { getWithSession } from "@/lib/api.server";
 import { SLOT_OF } from "@/lib/cosmetics";
-import { formatDate, formatShare } from "@/lib/format";
+import { formatDate, formatRelative, formatShare } from "@/lib/format";
 import { Avatar } from "@/components/Avatar";
-import { rankClass } from "@/components/UserName";
+import { UserName } from "@/components/UserName";
+import { EmptyRow, TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
 import { MedalDot, achievementLabel } from "./Medal";
 import { PinButton } from "./PinButton";
 
@@ -230,48 +231,95 @@ export async function PeopleTab({
   username,
   direction,
   page,
+  q,
+  ordering,
   locale,
 }: {
   username: string;
   direction: "followers" | "following";
   page: number;
+  q: string;
+  ordering: string;
   locale: Locale;
 }) {
-  const data = await getWithSession<Paginated<UserMini>>(
-    `/users/${username}/${direction}/?page=${page}`,
+  const params = new URLSearchParams({ page: String(page) });
+  if (q) params.set("q", q);
+  if (ordering) params.set("ordering", ordering);
+  const data = await getWithSession<Paginated<Follower>>(
+    `/users/${username}/${direction}/?${params}`,
   );
   const title = t(locale, direction === "followers" ? "profile.followers" : "profile.followingTab");
-  const link = (to: number) =>
-    `/users/${username}/${direction === "followers" ? "obunachilar" : "obunalar"}?page=${to}` as Route;
+  const slug = direction === "followers" ? "obunachilar" : "obunalar";
+  const link = (to: number) => {
+    const next = new URLSearchParams(params);
+    next.set("page", String(to));
+    return `/users/${username}/${slug}?${next}` as Route;
+  };
+  const control =
+    "h-9 rw-radius-sm border rw-line px-3 text-theme-sm rw-strong rw-field-bg rw-focus-ring";
 
   return (
     <Card title={`${title} · ${data.count}`} bodyClassName="p-0">
-      {data.results.length === 0 ? (
-        <p className="px-5 py-4 text-theme-sm rw-faint">{t(locale, "empty")}</p>
-      ) : (
-        <ul className="divide-y rw-divide">
+      <form method="get" className="flex flex-wrap items-center gap-2 border-b rw-line px-5 py-3">
+        <input
+          type="search"
+          name="q"
+          defaultValue={q}
+          placeholder={t(locale, "profile.searchPeople")}
+          aria-label={t(locale, "profile.searchPeople")}
+          className={`min-w-0 flex-1 ${control}`}
+        />
+        <select
+          name="ordering"
+          defaultValue={ordering || "recent"}
+          aria-label={t(locale, "profile.sortBy")}
+          className={control}
+        >
+          <option value="recent">{t(locale, "profile.sortNewest")}</option>
+          <option value="rating">{t(locale, "profile.sortRating")}</option>
+          <option value="name">{t(locale, "profile.sortName")}</option>
+        </select>
+        <button type="submit" className={`font-medium rw-hover-bg ${control}`}>
+          {t(locale, "profile.search")}
+        </button>
+      </form>
+      <Table>
+        <THead>
+          <TH>{t(locale, "standings.user")}</TH>
+          <TH>{t(locale, "settings.school")}</TH>
+          <TH align="right">{t(locale, "leaderboard.contest")}</TH>
+          <TH align="right">{t(locale, "profile.lastActivityCol")}</TH>
+        </THead>
+        <TBody>
           {data.results.map((person) => (
-            <li key={person.username}>
-              <Link
-                href={`/users/${person.username}`}
-                className="flex items-center gap-3 px-5 py-3 transition rw-hover-bg"
-              >
-                <Avatar
-                  url={person.avatar_url}
-                  name={person.display_name || person.username}
-                  className="size-9 text-theme-sm"
-                />
-                <span
-                  className={`min-w-0 truncate text-theme-sm font-medium ${rankClass(person.title)}`}
-                >
-                  {person.display_name || person.username}
-                  <span className="ml-1.5 rw-faint">@{person.username}</span>
+            <TR key={person.username}>
+              <TD>
+                <span className="flex items-center gap-3">
+                  <Avatar
+                    url={person.avatar_url}
+                    name={person.display_name || person.username}
+                    className="size-8 text-theme-sm"
+                  />
+                  <UserName
+                    username={person.username}
+                    name={person.display_name}
+                    title={person.title}
+                    locale={locale}
+                  />
                 </span>
-              </Link>
-            </li>
+              </TD>
+              <TD className="rw-dim">{person.school || "—"}</TD>
+              <TD align="right" className="tabular-nums">
+                {person.rating_contest}
+              </TD>
+              <TD align="right" className="rw-faint">
+                {person.last_seen ? formatRelative(person.last_seen, locale) : "—"}
+              </TD>
+            </TR>
           ))}
-        </ul>
-      )}
+          {data.results.length === 0 && <EmptyRow colSpan={4}>{t(locale, "empty")}</EmptyRow>}
+        </TBody>
+      </Table>
       {(data.previous || data.next) && (
         <div className="flex justify-between border-t rw-line px-5 py-3 text-theme-sm">
           {data.previous ? (

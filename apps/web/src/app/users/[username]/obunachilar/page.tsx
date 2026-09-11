@@ -18,12 +18,14 @@ export function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function Page({ params, searchParams }: Props) {
   const username = decodeURIComponent((await params).username);
   const locale = await getLocale();
-  const { page } = await searchParams;
+  const { page, q, ordering } = await searchParams;
   return (
     <PeopleTab
       username={username}
       direction="followers"
       page={Math.max(1, Number(page) || 1)}
+      q={q ?? ""}
+      ordering={ordering ?? ""}
       locale={locale}
     />
   );

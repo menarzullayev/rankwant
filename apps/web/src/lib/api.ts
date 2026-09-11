@@ -618,7 +618,9 @@ export type PrivacyField =
   | "school"
   | "grade"
   | "website"
-  | "online";
+  | "online"
+  | "coach"
+  | "social";
 
 export type ThemeEffect = "none" | "fade" | "circle";
 
@@ -643,6 +645,11 @@ export type Me = {
   theme: string;
   country: string;
   region: string;
+  district: string;
+  city: string;
+  school_ref: number | null;
+  /** Katalogdagi maktab nomi — `school_ref` bo'lsa. */
+  school_name: string;
   school: string;
   grade: string;
   website: string;
@@ -700,7 +707,18 @@ export type WorkRow = {
   end_year: number | null;
 };
 
-export type ExternalKind = "codeforces" | "atcoder" | "leetcode" | "linkedin";
+export type ExternalKind =
+  | "codeforces"
+  | "atcoder"
+  | "leetcode"
+  | "linkedin"
+  | "telegram"
+  | "github"
+  | "instagram"
+  | "x"
+  | "youtube"
+  | "kaggle"
+  | "blog";
 
 export type ExternalProfile = {
   kind: ExternalKind;
@@ -741,7 +759,7 @@ export type PublicProfile = {
   avatar_url: string;
   bio: string;
   date_joined: string;
-  info: Partial<Record<PrivacyField | "region", string>>;
+  info: Partial<Record<PrivacyField | "region" | "district" | "city" | "school_id", string>>;
   hidden_fields: PrivacyField[];
   is_owner: boolean;
   skills: (SkillName & { level: number })[];
@@ -760,6 +778,39 @@ export type PublicProfile = {
   last_seen: string | null;
   online: boolean;
   pinned: PinnedAchievement[];
+  coach: CoachRef[];
+};
+
+export type CoachRef = { username: string; display_name: string; title: UserTitle | null };
+
+/** Obunachilar jadvali — maktab va onlayn holat egasining maxfiylik tanlovi bilan. */
+export type Follower = UserMini & {
+  school: string;
+  rating_contest: number;
+  last_seen: string | null;
+};
+
+export type School = {
+  id: number;
+  name: string;
+  kind: "school" | "lyceum" | "university" | "other";
+  region: string;
+  district: string;
+  city: string;
+  members: number;
+};
+
+export type CertificateTier = "gold" | "silver" | "bronze" | "top10" | "participant";
+
+export type Certificate = {
+  id: string;
+  name: string;
+  username: string;
+  contest: { slug: string; title: string; end_at: string };
+  place: number;
+  participants: number;
+  tier: CertificateTier;
+  issued_at: string;
 };
 
 export type ProfileRole =
@@ -1162,8 +1213,11 @@ export const api = {
       `/contests/${slug}/standings/`,
       5,
     ),
-  leaderboard: () =>
-    get<Paginated<UserPublic>>("/users/?ordering=-rating_skills"),
+  leaderboard: (school?: string) =>
+    get<Paginated<UserPublic>>(
+      `/users/?ordering=-rating_skills${school ? `&school=${school}` : ""}`,
+    ),
+  school: (id: string) => get<School>(`/schools/${id}/`),
   user: (username: string) => get<UserPublic>(`/users/${username}/`),
   // Qvant — Phase 1. Balans va questlar shaxsiy, kesh yo'q.
   wallet: () => get<Wallet>("/qvant/wallet/", 0),
