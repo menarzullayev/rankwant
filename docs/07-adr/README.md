@@ -35,6 +35,7 @@ Har bir ADR:
 | [0015](0015-account-email.md)                    | Hisob xatlari — brendlangan, kuzatuvsiz   | **accepted**       |
 | [0016](0016-signup-and-login.md)                 | Ro'yxat va kirish — 3 maydon, 3 provayder | **accepted**       |
 | [0017](0017-profile-and-settings.md)             | Profil va sozlamalar — KEP'dan ilhom      | **accepted**       |
+| [0018](0018-titles-roles-achievements.md)        | Unvon, ism rangi, rollar, yutuqlar        | **accepted**       |
 
 ## Qoidalar
 

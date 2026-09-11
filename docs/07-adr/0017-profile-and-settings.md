@@ -85,8 +85,9 @@ va til shunga qarab tanlandi.
 
 robocontest.uz profili tahlil qilindi va 30 savol bo'yicha qaror qabul
 qilindi. Ish uch bosqichda: bu bo'lim birinchisini — tuzilma,
-statistika va grafiklarni yozadi. Unvon va sertifikat qarorlari alohida
-ADR'larda (0018, 0019) bo'ladi.
+statistika va grafiklarni yozadi. Unvon, ism rangi, rollar, onlayn holat
+va yutuqlar — [ADR-0018](0018-titles-roles-achievements.md), sertifikat
+qarorlari esa alohida ADR'da (0019) bo'ladi.
 
 ### Qaror
 
