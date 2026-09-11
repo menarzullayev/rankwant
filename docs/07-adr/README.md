@@ -34,6 +34,7 @@ Har bir ADR:
 | [0014](0014-codeforces-handle-seed.md)           | Codeforces handle'i — tavsiya urug'i      | rejected           |
 | [0015](0015-account-email.md)                    | Hisob xatlari — brendlangan, kuzatuvsiz   | **accepted**       |
 | [0016](0016-signup-and-login.md)                 | Ro'yxat va kirish — 3 maydon, 3 provayder | **accepted**       |
+| [0017](0017-profile-and-settings.md)             | Profil va sozlamalar — KEP'dan ilhom      | **accepted**       |
 
 ## Qoidalar
 
