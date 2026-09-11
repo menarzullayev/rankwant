@@ -44,8 +44,17 @@ export function externalUrl(row: ExternalProfile): string {
       return `https://youtube.com/@${handle}`;
     case "kaggle":
       return `https://www.kaggle.com/${handle}`;
-    default:
-      return row.handle;
+    default: {
+      // Havola turlari (LinkedIn, blog) serverda https bilan tekshiriladi, lekin
+      // admin paneldan yoki eski yozuvdan kelgan qiymat `href` ga tekshiruvsiz
+      // tushmasin: faqat http(s), aks holda — hech qayerga.
+      try {
+        const url = new URL(row.handle);
+        return url.protocol === "https:" || url.protocol === "http:" ? url.toString() : "#";
+      } catch {
+        return "#";
+      }
+    }
   }
 }
 
