@@ -7,12 +7,16 @@ bo'sh qoladi.
 
 from __future__ import annotations
 
+import http.client
+import json
 import logging
 import re
+import urllib.error
+import urllib.request
 from collections.abc import Callable
 from typing import Any
+from urllib.parse import quote, urlencode
 
-import requests
 from django.utils import timezone
 
 from profiles.models import ExternalProfile
@@ -55,6 +59,33 @@ def normalize(kind: str, handle: str) -> str:
     return value
 
 
+def _json(
+    url: str, *, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None
+) -> Any:
+    """GET (`payload` bo'lsa POST) va JSON javob.
+
+    4xx — `None`: handle topilmadi (Codeforces noma'lum handle uchun 400,
+    AtCoder 404 qaytaradi). Tarmoq xatosi esa chaqiruvchiga ko'tariladi.
+    """
+    body = json.dumps(payload).encode() if payload is not None else None
+    request = urllib.request.Request(
+        url,
+        data=body,
+        headers={
+            "User-Agent": USER_AGENT,
+            **({"Content-Type": "application/json"} if body is not None else {}),
+            **(headers or {}),
+        },
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=TIMEOUT) as resp:
+            return json.loads(resp.read())
+    except urllib.error.HTTPError as exc:
+        if 400 <= exc.code < 500:
+            return None
+        raise
+
+
 def _atcoder_color(rating: int) -> str:
     for upper, name in ATCODER_COLORS:
         if rating < upper:
@@ -63,14 +94,8 @@ def _atcoder_color(rating: int) -> str:
 
 
 def _codeforces(handle: str) -> dict[str, Any] | None:
-    resp = requests.get(
-        "https://codeforces.com/api/user.info",
-        params={"handles": handle},
-        timeout=TIMEOUT,
-        headers={"User-Agent": USER_AGENT},
-    )
-    body = resp.json()
-    if body.get("status") != "OK":
+    body = _json(f"https://codeforces.com/api/user.info?{urlencode({'handles': handle})}")
+    if not body or body.get("status") != "OK":
         return None
     row = body["result"][0]
     return {
@@ -81,14 +106,10 @@ def _codeforces(handle: str) -> dict[str, Any] | None:
 
 
 def _atcoder(handle: str) -> dict[str, Any] | None:
-    resp = requests.get(
-        f"https://atcoder.jp/users/{handle}/history/json",
-        timeout=TIMEOUT,
-        headers={"User-Agent": USER_AGENT},
-    )
-    if resp.status_code != 200:
+    history = _json(f"https://atcoder.jp/users/{quote(handle)}/history/json")
+    if history is None:
         return None
-    rated = [row for row in resp.json() if row.get("IsRated")]
+    rated = [row for row in history if row.get("IsRated")]
     if not rated:
         return {"rating": None, "max_rating": None, "rank": ""}
     rating = int(rated[-1]["NewRating"])
@@ -100,16 +121,17 @@ def _atcoder(handle: str) -> dict[str, Any] | None:
 
 
 def _leetcode(handle: str) -> dict[str, Any] | None:
-    resp = requests.post(
+    body = _json(
         "https://leetcode.com/graphql",
-        json={
+        payload={
             "query": "query($u: String!) { userContestRanking(username: $u) { rating } }",
             "variables": {"u": handle},
         },
-        timeout=TIMEOUT,
-        headers={"User-Agent": USER_AGENT, "Referer": "https://leetcode.com"},
+        headers={"Referer": "https://leetcode.com"},
     )
-    ranking = (resp.json().get("data") or {}).get("userContestRanking")
+    if body is None:
+        return None
+    ranking = (body.get("data") or {}).get("userContestRanking")
     rating = round(ranking["rating"]) if ranking and ranking.get("rating") is not None else None
     return {"rating": rating, "max_rating": None, "rank": ""}
 
@@ -127,7 +149,7 @@ def refresh(profile: ExternalProfile) -> bool:
         return False
     try:
         result = fetch(profile.handle)
-    except (requests.RequestException, ValueError, KeyError, TypeError, IndexError):
+    except (OSError, http.client.HTTPException, ValueError, KeyError, TypeError, IndexError):
         log.warning("tashqi reyting olinmadi: %s/%s", profile.kind, profile.handle)
         return False
     if result is None:

@@ -3,10 +3,10 @@ bildirishnoma kanallari."""
 
 from __future__ import annotations
 
+import urllib.error
 from typing import Any
 
 import pytest
-import requests
 from django.urls import reverse
 from rest_framework.test import APIClient
 
@@ -28,15 +28,25 @@ def kirgan(user: User) -> APIClient:
 
 @pytest.fixture(autouse=True)
 def navbat(monkeypatch: pytest.MonkeyPatch) -> list[tuple[Any, ...]]:
-    """Tashqi reyting va Telegram vazifalari navbatga ketmaydi — yig'iladi."""
+    """Tashqi reyting va Telegram vazifalari navbatga ketmaydi — yig'iladi.
+
+    `.delay` almashtiriladi, `core.tasks.queue` EMAS: `queue` boshqa
+    modullarga nomi bilan import qilingan, va birinchi import shu
+    almashtirish paytiga to'g'ri kelsa soxta funksiya o'sha modulda
+    butunlay qolib, keyingi test fayllarini buzardi (o'lchandi).
+    """
     chaqiruvlar: list[tuple[Any, ...]] = []
 
-    def queue(task: Any, *args: Any) -> bool:
-        chaqiruvlar.append((task.name, *args))
-        return True
+    def yig(name: str) -> Any:
+        def delay(*args: Any) -> None:
+            chaqiruvlar.append((name, *args))
 
-    monkeypatch.setattr("profiles.views.queue", queue)
-    monkeypatch.setattr("core.tasks.queue", queue)
+        return delay
+
+    monkeypatch.setattr("profiles.tasks.refresh_external.delay", yig("profiles.refresh_external"))
+    monkeypatch.setattr(
+        "notifications.tasks.send_telegram.delay", yig("notifications.send_telegram")
+    )
     return chaqiruvlar
 
 
@@ -160,7 +170,7 @@ class TestTashqiProfil:
         profile = ExternalProfile.objects.create(user=user, kind="codeforces", handle="tourist")
 
         def yiqil(handle: str) -> dict[str, Any]:
-            raise requests.ConnectionError("tarmoq yo'q")
+            raise urllib.error.URLError("tarmoq yo'q")
 
         monkeypatch.setitem(external.FETCHERS, "codeforces", yiqil)
 
@@ -443,14 +453,11 @@ class TestBildirishnomaKanallari:
         settings.TELEGRAM_BOT_TOKEN = "123:abc"
         yuborilgan: list[dict[str, Any]] = []
 
-        class Javob:
-            status_code = 200
+        def post(url: str, payload: dict[str, Any]) -> int:
+            yuborilgan.append(payload)
+            return 200
 
-        def post(url: str, *, json: dict[str, Any], timeout: int) -> Javob:
-            yuborilgan.append(json)
-            return Javob()
-
-        monkeypatch.setattr("notifications.tasks.requests.post", post)
+        monkeypatch.setattr("notifications.tasks._post", post)
 
         assert send_telegram(telegramli.pk, "Salom") == "sent"
         assert yuborilgan == [{"chat_id": 100, "text": "Salom", "disable_web_page_preview": True}]

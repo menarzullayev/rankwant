@@ -15,10 +15,12 @@ from __future__ import annotations
 import logging
 import re
 import secrets
-from typing import Any
+import urllib.error
+import urllib.request
+from http.client import HTTPMessage
+from typing import IO, Any
 from urllib.parse import urljoin, urlsplit
 
-import requests
 from django.conf import settings
 
 log = logging.getLogger(__name__)
@@ -110,28 +112,41 @@ def _allowed(url: str) -> bool:
     )
 
 
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    """Yo'naltirishni o'zimiz kuzatamiz — har qadamda domen qayta tekshiriladi."""
+
+    def redirect_request(
+        self,
+        req: urllib.request.Request,
+        fp: IO[bytes],
+        code: int,
+        msg: str,
+        headers: HTTPMessage,
+        newurl: str,
+    ) -> urllib.request.Request | None:
+        return None
+
+
+_OPENER = urllib.request.build_opener(_NoRedirect)
+REDIRECTS = (301, 302, 303, 307, 308)
+
+
 def fetch_remote(url: str) -> bytes:
     """Provayder rasmini yuklab oladi — faqat ruxsat etilgan domenlardan."""
     for _ in range(4):
         if not _allowed(url):
             raise AvatarError("Bu manzildan rasm olinmaydi")
+        request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
         try:
-            resp = requests.get(
-                url,
-                timeout=10,
-                stream=True,
-                allow_redirects=False,
-                headers={"User-Agent": USER_AGENT},
-            )
-        except requests.RequestException as exc:
-            raise AvatarError("Provayder javob bermadi") from exc
-        with resp:
-            if resp.status_code in (301, 302, 303, 307, 308):
-                url = urljoin(url, resp.headers.get("Location", ""))
+            with _OPENER.open(request, timeout=10) as resp:
+                data: bytes = resp.read(MAX_BYTES + 1)
+        except urllib.error.HTTPError as exc:
+            if exc.code in REDIRECTS:
+                url = urljoin(url, exc.headers.get("Location", ""))
                 continue
-            if resp.status_code != 200:
-                raise AvatarError(f"Provayder rasmni bermadi (HTTP {resp.status_code})")
-            data: bytes = resp.raw.read(MAX_BYTES + 1, decode_content=True)
+            raise AvatarError(f"Provayder rasmni bermadi (HTTP {exc.code})") from exc
+        except OSError as exc:
+            raise AvatarError("Provayder javob bermadi") from exc
         if len(data) > MAX_BYTES:
             raise AvatarError("Rasm 1 MB dan oshmasligi kerak")
         return data
