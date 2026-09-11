@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import { Card } from "@/components/ui/Card";
+import { UserName } from "@/components/UserName";
 import {
   EmptyRow,
   TBody,
@@ -67,12 +68,7 @@ export default async function LeaderboardPage() {
                   {i + 1}
                 </TD>
                 <TD>
-                  <Link
-                    href={`/users/${u.username}`}
-                    className="font-medium rw-strong rw-link-hover"
-                  >
-                    {u.display_name || u.username}
-                  </Link>
+                  <UserName username={u.username} name={u.display_name} title={u.title} locale={locale} />
                 </TD>
                 <TD align="right" className="font-semibold rw-strong">
                   {u.rating_skills}

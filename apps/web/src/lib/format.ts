@@ -98,6 +98,33 @@ export function formatDay(kit: DateKit, value: string): string {
     .replace("{d}", String(d));
 }
 
+const UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
+  ["year", 365 * 86400],
+  ["month", 30 * 86400],
+  ["day", 86400],
+  ["hour", 3600],
+  ["minute", 60],
+];
+
+/** «5 daqiqa oldin» — tanlangan tilda. FAQAT serverda: brauzer ICU'sida
+ *  uz, kk, ky, tg ma'lumoti yo'q (`DateKit` izohiga qarang). */
+export function formatRelative(value: string | Date, locale: Locale, now = Date.now()): string {
+  const seconds = Math.round((new Date(value).getTime() - now) / 1000);
+  const rtf = new Intl.RelativeTimeFormat(dateLocales(locale), { numeric: "auto" });
+  for (const [unit, size] of UNITS) {
+    if (Math.abs(seconds) >= size) return rtf.format(Math.round(seconds / size), unit);
+  }
+  return rtf.format(0, "minute");
+}
+
+/** Ulush foizda, tanlangan til ajratgichi bilan: 0,05 → «<0,1», 12,3 → «12». */
+export function formatShare(value: number, locale: Locale): string {
+  const number = (n: number, digits: number) =>
+    new Intl.NumberFormat(dateLocales(locale), { maximumFractionDigits: digits }).format(n);
+  if (value > 0 && value < 0.1) return `<${number(0.1, 1)}`;
+  return number(value, value < 10 ? 1 : 0);
+}
+
 /** 135 → «2:15». */
 export function formatDuration(minutes: number): string {
   return `${Math.floor(minutes / 60)}:${String(minutes % 60).padStart(2, "0")}`;

@@ -14,8 +14,11 @@ import type {
 } from "@/lib/api";
 import { getWithSession } from "@/lib/api.server";
 import { SLOT_OF } from "@/lib/cosmetics";
-import { formatDate } from "@/lib/format";
+import { formatDate, formatShare } from "@/lib/format";
 import { Avatar } from "@/components/Avatar";
+import { rankClass } from "@/components/UserName";
+import { MedalDot, achievementLabel } from "./Medal";
+import { PinButton } from "./PinButton";
 
 const date = (value: string, locale: Locale) => formatDate(value, locale);
 
@@ -116,19 +119,15 @@ export async function ActivityTab({
   );
 }
 
-const ACHIEVEMENT_TEXT: Record<Achievement["group"], string> = {
-  solve: "profile.achSolve",
-  streak: "profile.achStreak",
-  contest: "profile.achContest",
-  profile: "profile.achProfile",
-};
-
 export async function AchievementsTab({
   username,
   locale,
+  pinned,
 }: {
   username: string;
   locale: Locale;
+  /** Egasiga — tanlangan kodlar; mehmonga `null`. */
+  pinned: string[] | null;
 }) {
   const rows = await getWithSession<Achievement[]>(`/users/${username}/achievements/`);
   const done = rows.filter((row) => row.done).length;
@@ -138,21 +137,30 @@ export async function AchievementsTab({
       <p className="text-theme-sm rw-dim">
         {fill(t(locale, "profile.achDone"), { done, total: rows.length })}
       </p>
+      {pinned && <p className="text-theme-xs rw-faint">{t(locale, "profile.pinHint")}</p>}
       <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {rows.map((row) => (
-          <li
-            key={row.code}
-            className={`rw-radius border p-4 ${row.done ? "rw-ok-soft border-transparent" : "rw-line rw-surface"}`}
-          >
-            <p className="flex items-center gap-2 text-theme-sm font-medium">
-              {row.done && <CheckIcon className="size-4 shrink-0" />}
-              <span className={row.done ? "" : "rw-strong"}>
-                {fill(t(locale, ACHIEVEMENT_TEXT[row.group]), { n: row.target })}
-              </span>
+          <li key={row.code} className="flex flex-col gap-1 rw-radius border rw-line rw-surface p-4">
+            <p className="flex items-center gap-2 text-theme-sm font-medium rw-strong">
+              <MedalDot tier={row.tier} muted={!row.done} />
+              <span className="min-w-0 flex-1">{achievementLabel(row, locale)}</span>
+              {row.done && <CheckIcon className="size-4 shrink-0 rw-ok-ink" />}
             </p>
-            {!row.done && (
+            <p className="text-theme-xs rw-faint">
+              {t(locale, `tier.${row.tier}`)} ·{" "}
+              {fill(t(locale, "profile.rarity"), { pct: formatShare(row.rarity, locale) })}
+            </p>
+            {row.done ? (
+              row.achieved_at && (
+                <p className="text-theme-xs rw-faint">
+                  {fill(t(locale, "profile.achievedOn"), {
+                    date: formatDate(row.achieved_at, locale),
+                  })}
+                </p>
+              )
+            ) : (
               <>
-                <div className="mt-3 h-1.5 overflow-hidden rounded-full rw-chip">
+                <div className="mt-2 h-1.5 overflow-hidden rounded-full rw-chip">
                   <div
                     className="h-full rounded-full"
                     style={{
@@ -161,10 +169,15 @@ export async function AchievementsTab({
                     }}
                   />
                 </div>
-                <p className="mt-1 text-theme-xs tabular-nums rw-faint">
+                <p className="text-theme-xs tabular-nums rw-faint">
                   {row.progress} / {row.target}
                 </p>
               </>
+            )}
+            {pinned && row.done && (
+              <div className="mt-2">
+                <PinButton code={row.code} pinned={pinned} />
+              </div>
             )}
           </li>
         ))}
@@ -248,7 +261,9 @@ export async function PeopleTab({
                   name={person.display_name || person.username}
                   className="size-9 text-theme-sm"
                 />
-                <span className="min-w-0 truncate text-theme-sm rw-strong">
+                <span
+                  className={`min-w-0 truncate text-theme-sm font-medium ${rankClass(person.title)}`}
+                >
                   {person.display_name || person.username}
                   <span className="ml-1.5 rw-faint">@{person.username}</span>
                 </span>

@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
+import { UserName } from "@/components/UserName";
 import { API_BASE, getJson, type Standing } from "@/lib/api";
 import { type Locale, t } from "@/i18n/messages";
 import {
@@ -85,7 +87,9 @@ export function StandingsTable({
           {data.results.map((row) => (
             <TR key={row.username}>
               <TD className="font-semibold rw-strong">{row.rank}</TD>
-              <TD>{row.username}</TD>
+              <TD>
+                <UserName username={row.username} title={row.user_title} locale={locale} />
+              </TD>
               <TD align="right">{row.solved_count}</TD>
               <TD align="right" className="rw-faint">
                 {row.penalty}

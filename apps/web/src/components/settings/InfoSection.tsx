@@ -159,6 +159,7 @@ export function InfoSection() {
         </div>
 
         {user.email && visibility("email", t(locale, "settings.showEmail"))}
+        {visibility("online", t(locale, "settings.showOnline"))}
 
         <Status error={action.error} done={action.done} />
         <Button type="submit" busy={action.busy} className="self-start">

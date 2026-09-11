@@ -131,6 +131,9 @@
   --rw-uppercase: none;
   --rw-level-1: #667085; --rw-level-2: #039855; --rw-level-3: #2570eb;
   --rw-level-4: #9a4bd8; --rw-level-5: #d92d20;
+  --rw-rank-1: #656e81; --rw-rank-2: #1e7e46; --rw-rank-3: #107884;
+  --rw-rank-4: #1e67e3; --rw-rank-5: #834fde; --rw-rank-6: #b72cbc;
+  --rw-rank-7: #af550b; --rw-rank-8: #d5231d; --rw-rank-9: #d5185d;
 }
 [data-style="dashboard"].dark {
   --rw-ground: #0b0d12;
@@ -152,6 +155,9 @@
   --rw-field: #0b0d12;
   --rw-level-1: #9aa4b8; --rw-level-2: #4ade80; --rw-level-3: #60a5fa;
   --rw-level-4: #c084fc; --rw-level-5: #f87171;
+  --rw-rank-1: #8b94a4; --rw-rank-2: #28a95e; --rw-rank-3: #16a2b1;
+  --rw-rank-4: #6093eb; --rw-rank-5: #a681e7; --rw-rank-6: #d868dc;
+  --rw-rank-7: #e9710f; --rw-rank-8: #ea6d69; --rw-rank-9: #ee6396;
 }
 
 /* ── Shveycha: to'r, chiziq, bo'shliq. Karta yo'q. ── */
@@ -186,6 +192,9 @@
   --rw-uppercase: uppercase;
   --rw-level-1: #6a6a6a; --rw-level-2: #1f6b45; --rw-level-3: #1b3a6b;
   --rw-level-4: #5c3a86; --rw-level-5: #a3241d;
+  --rw-rank-1: #646d7f; --rw-rank-2: #1d7c45; --rw-rank-3: #107884;
+  --rw-rank-4: #1c65e3; --rw-rank-5: #824ddd; --rw-rank-6: #b52cba;
+  --rw-rank-7: #ad540b; --rw-rank-8: #d3231d; --rw-rank-9: #d3175c;
 }
 [data-style="swiss"].dark {
   --rw-ground: #0e0e0d;
@@ -203,6 +212,9 @@
   --rw-chip: #1c1c1a;
   --rw-hover: #1c1c1a;
   --rw-field: #0e0e0d;
+  --rw-rank-1: #7c8598; --rw-rank-2: #249955; --rw-rank-3: #1493a1;
+  --rw-rank-4: #4984e9; --rw-rank-5: #9a6fe4; --rw-rank-6: #d14dd5;
+  --rw-rank-7: #d3660d; --rw-rank-8: #e7514b; --rw-rank-9: #ea4582;
 }
 
 /* ── Terminal: monospace, ustunlar, ikki-uch rang. ── */
@@ -238,6 +250,9 @@
   --rw-tracking: 0;
   --rw-level-1: #2f8f57; --rw-level-2: #46d67f; --rw-level-3: #6bd5e5;
   --rw-level-4: #c99bff; --rw-level-5: #ff6b6b;
+  --rw-rank-1: #7e889a; --rw-rank-2: #249955; --rw-rank-3: #1495a3;
+  --rw-rank-4: #4984e9; --rw-rank-5: #9a6fe4; --rw-rank-6: #d14fd6;
+  --rw-rank-7: #d5670e; --rw-rank-8: #e75550; --rw-rank-9: #eb4783;
 }
 
 /* ── Editorial: serif, bo'shliq, chiziq. ── */
@@ -273,6 +288,9 @@
   --rw-tracking: -.015em;
   --rw-level-1: #5a6172; --rw-level-2: #1f6b45; --rw-level-3: #1b3a6b;
   --rw-level-4: #5c3a86; --rw-level-5: #9c2c24;
+  --rw-rank-1: #666f82; --rw-rank-2: #1e7e46; --rw-rank-3: #117a86;
+  --rw-rank-4: #2168e4; --rw-rank-5: #834fde; --rw-rank-6: #b92dbe;
+  --rw-rank-7: #af550b; --rw-rank-8: #d7241d; --rw-rank-9: #d5185d;
 }
 [data-style="editorial"].dark {
   --rw-ground: #12100e;
@@ -290,6 +308,9 @@
   --rw-chip: #201d19;
   --rw-hover: #201d19;
   --rw-field: #12100e;
+  --rw-rank-1: #7e889a; --rw-rank-2: #249955; --rw-rank-3: #1495a3;
+  --rw-rank-4: #4984e9; --rw-rank-5: #9a6fe4; --rw-rank-6: #d14fd6;
+  --rw-rank-7: #d5670e; --rw-rank-8: #e75550; --rw-rank-9: #eb4783;
 }
 
 /* ── Neo-brutalizm: qalin chegara, siljigan qattiq soya. ── */
@@ -325,6 +346,9 @@
   --rw-uppercase: uppercase;
   --rw-level-1: #333333; --rw-level-2: #056d3a; --rw-level-3: #0a58c4;
   --rw-level-4: #7b1fa2; --rw-level-5: #9c0000;
+  --rw-rank-1: #484e5b; --rw-rank-2: #155b32; --rw-rank-3: #0c575f;
+  --rw-rank-4: #144aa6; --rw-rank-5: #5f25c3; --rw-rank-6: #852088;
+  --rw-rank-7: #7d3c08; --rw-rank-8: #9b1a15; --rw-rank-9: #9c1144;
 }
 [data-style="brutal"].dark {
   --rw-ground: #12121a;
@@ -344,6 +368,9 @@
   --rw-hover: #24242f;
   --rw-field: #12121a;
   --rw-btn-shadow: 4px 4px 0 #f5e900;
+  --rw-rank-1: #98a0ae; --rw-rank-2: #2bb665; --rw-rank-3: #18b0c1;
+  --rw-rank-4: #72a0ee; --rw-rank-5: #b190ea; --rw-rank-6: #dd7be0;
+  --rw-rank-7: #f1842a; --rw-rank-8: #ed817d; --rw-rank-9: #f07aa5;
 }
 
 /* ── Flat: soya ham, gradient ham yo'q. ── */
@@ -376,6 +403,9 @@
   --rw-tracking: 0;
   --rw-level-1: #7f8c8d; --rw-level-2: #16a085; --rw-level-3: #2980b9;
   --rw-level-4: #8e44ad; --rw-level-5: #c0392b;
+  --rw-rank-1: #5e6778; --rw-rank-2: #1c7641; --rw-rank-3: #0f727d;
+  --rw-rank-4: #1b60d8; --rw-rank-5: #7a43db; --rw-rank-6: #ab29b0;
+  --rw-rank-7: #a34f0a; --rw-rank-8: #c8211b; --rw-rank-9: #c81657;
 }
 [data-style="flat"].dark {
   --rw-ground: #22313f;
@@ -391,6 +421,9 @@
   --rw-chip: #34495e;
   --rw-hover: #34495e;
   --rw-field: #22313f;
+  --rw-rank-1: #b2b7c2; --rw-rank-2: #35d075; --rw-rank-3: #1bc9dc;
+  --rw-rank-4: #97b8f2; --rw-rank-5: #c4abef; --rw-rank-6: #e69ee8;
+  --rw-rank-7: #f5a563; --rw-rank-8: #f2a3a1; --rw-rank-9: #f49fbe;
 }
 
 /* ── Material: balandlik va siyoh. ── */
@@ -425,6 +458,9 @@
   --rw-uppercase: uppercase;
   --rw-level-1: #757575; --rw-level-2: #2e7d32; --rw-level-3: #1565c0;
   --rw-level-4: #6a1b9a; --rw-level-5: #c62828;
+  --rw-rank-1: #626a7c; --rw-rank-2: #1d7a43; --rw-rank-3: #107681;
+  --rw-rank-4: #1b63de; --rw-rank-5: #7f49dc; --rw-rank-6: #b12bb6;
+  --rw-rank-7: #aa530b; --rw-rank-8: #ce221c; --rw-rank-9: #cf175a;
 }
 [data-style="material"].dark {
   --rw-ground: #121212;
@@ -444,6 +480,9 @@
   --rw-hover: #2a2a2a;
   --rw-field: #121212;
   --rw-btn-shadow: 0 1px 3px rgba(187, 134, 252, .4);
+  --rw-rank-1: #8b94a4; --rw-rank-2: #27a75d; --rw-rank-3: #16a2b1;
+  --rw-rank-4: #5e92eb; --rw-rank-5: #a57ee7; --rw-rank-6: #d764db;
+  --rw-rank-7: #e9710f; --rw-rank-8: #ea6b66; --rw-rank-9: #ed6194;
 }
 
 /* ── Glassmorphism: muzlatilgan oyna, rangli fon shart. ── */
@@ -478,6 +517,9 @@
   --rw-chrome: rgba(10, 6, 26, .72);
   --rw-level-1: rgba(255,255,255,.7); --rw-level-2: #9dffc7; --rw-level-3: #a8d8ff;
   --rw-level-4: #e0b3ff; --rw-level-5: #ffb3ad;
+  --rw-rank-1: #b3b9c4; --rw-rank-2: #3fd27c; --rw-rank-3: #1bcbde;
+  --rw-rank-4: #99baf2; --rw-rank-5: #c6aeef; --rw-rank-6: #e7a2e9;
+  --rw-rank-7: #f5a868; --rw-rank-8: #f2a6a3; --rw-rank-9: #f5a1c0;
 }
 
 /* ── Neumorphism: fondan bo'rtib chiqqan. ── */
@@ -511,6 +553,9 @@
   --rw-tracking: -.01em;
   --rw-level-1: #8b93a5; --rw-level-2: #2f8f6a; --rw-level-3: #4a68b0;
   --rw-level-4: #8264ad; --rw-level-5: #b4514c;
+  --rw-rank-1: #5a6272; --rw-rank-2: #1a703e; --rw-rank-3: #0f6c76;
+  --rw-rank-4: #195bcc; --rw-rank-5: #763cda; --rw-rank-6: #a327a7;
+  --rw-rank-7: #994a0a; --rw-rank-8: #bf201a; --rw-rank-9: #be1553;
 }
 
 /* ── Claymorphism: yumshoq plastilin. ── */
@@ -548,6 +593,9 @@
   --rw-tracking: -.01em;
   --rw-level-1: #8a76ab; --rw-level-2: #2f9e6d; --rw-level-3: #4f7fe0;
   --rw-level-4: #8b5cf6; --rw-level-5: #d1547f;
+  --rw-rank-1: #5c6475; --rw-rank-2: #1b723f; --rw-rank-3: #0f6e78;
+  --rw-rank-4: #1a5dd1; --rw-rank-5: #773eda; --rw-rank-6: #a728ab;
+  --rw-rank-7: #9e4d0a; --rw-rank-8: #c1201a; --rw-rank-9: #c11554;
 }
 
 /* ── Aurora: qorong'u fonda xiralashgan rangli dog'lar. ── */
@@ -581,6 +629,9 @@
   --rw-blur: blur(10px);
   --rw-level-1: #9a94b8; --rw-level-2: #4fe0bd; --rw-level-3: #7fb0ff;
   --rw-level-4: #c9a8ff; --rw-level-5: #ff8095;
+  --rw-rank-1: #acb2be; --rw-rank-2: #2fca70; --rw-rank-3: #1ac3d5;
+  --rw-rank-4: #8eb2f1; --rw-rank-5: #c0a5ee; --rw-rank-6: #e496e6;
+  --rw-rank-7: #f49d55; --rw-rank-8: #f19b98; --rw-rank-9: #f395b8;
 }
 
 /* ── Skeuomorfizm: materialga taqlid. ── */
@@ -615,6 +666,9 @@
   --rw-text-emboss: 0 1px 0 rgba(255, 255, 255, .85);
   --rw-level-1: #6a737e; --rw-level-2: #3d6b28; --rw-level-3: #3a6ba8;
   --rw-level-4: #6b4a91; --rw-level-5: #93342c;
+  --rw-rank-1: #464c59; --rw-rank-2: #145730; --rw-rank-3: #0b535b;
+  --rw-rank-4: #14479f; --rw-rank-5: #5c24bc; --rw-rank-6: #7f1f82;
+  --rw-rank-7: #7a3b08; --rw-rank-8: #961915; --rw-rank-9: #951141;
 }
 
 /* ═══ Semantik klasslar — komponentlar shulardan foydalanadi ═══ */
@@ -769,12 +823,37 @@
 .rw-frame-bronze { box-shadow: 0 0 0 3px #b0763a, 0 0 0 6px rgba(176, 118, 58, .3); }
 .rw-frame-silver { box-shadow: 0 0 0 3px #aeb6c2, 0 0 0 6px rgba(174, 182, 194, .3); }
 .rw-frame-neytron { box-shadow: 0 0 0 3px var(--rw-accent), 0 0 16px 2px var(--rw-accent); }
+/* Unvon ranglari (ADR-0018) — `--rw-rank-N` har uslub blokida, har
+   palitrada eng yomon fonga nisbatan AA (`tools/check_contrast.py`). Ism
+   shu rangda: profil, reyting, standings, urinishlar, jamoa, obunachilar. */
+.rw-rank-1 { color: var(--rw-rank-1); } .rw-rank-2 { color: var(--rw-rank-2); }
+.rw-rank-3 { color: var(--rw-rank-3); } .rw-rank-4 { color: var(--rw-rank-4); }
+.rw-rank-5 { color: var(--rw-rank-5); } .rw-rank-6 { color: var(--rw-rank-6); }
+.rw-rank-7 { color: var(--rw-rank-7); } .rw-rank-8 { color: var(--rw-rank-8); }
+.rw-rank-9 { color: var(--rw-rank-9); font-weight: 700; }
+/* Unvon ramkasi — do'kon ramkasi kiyilmagan bo'lsa (`lib/cosmetics.ts`). */
+.rw-frame-rank-1 { --rw-frame: var(--rw-rank-1); } .rw-frame-rank-2 { --rw-frame: var(--rw-rank-2); }
+.rw-frame-rank-3 { --rw-frame: var(--rw-rank-3); } .rw-frame-rank-4 { --rw-frame: var(--rw-rank-4); }
+.rw-frame-rank-5 { --rw-frame: var(--rw-rank-5); } .rw-frame-rank-6 { --rw-frame: var(--rw-rank-6); }
+.rw-frame-rank-7 { --rw-frame: var(--rw-rank-7); } .rw-frame-rank-8 { --rw-frame: var(--rw-rank-8); }
+.rw-frame-rank-9 { --rw-frame: var(--rw-rank-9); }
+[class*="rw-frame-rank-"] {
+  box-shadow: 0 0 0 3px var(--rw-frame), 0 0 0 6px color-mix(in oklab, var(--rw-frame) 28%, transparent);
+}
+.rw-frame-rank-8, .rw-frame-rank-9 {
+  box-shadow: 0 0 0 3px var(--rw-frame), 0 0 14px 3px color-mix(in oklab, var(--rw-frame) 55%, transparent);
+}
 /* Reyting grafigidagi unvon bantlari — bezak, ustiga matn tushmaydi
    (bant nomi `rw-dim` bilan yoziladi), shuning uchun shaffof. */
-.rw-band-1 { fill: #8a94a6; } .rw-band-2 { fill: #7cc36b; } .rw-band-3 { fill: #2f9e5b; }
-.rw-band-4 { fill: #1fa7a0; } .rw-band-5 { fill: #3b7be0; } .rw-band-6 { fill: #8b5cf6; }
-.rw-band-7 { fill: #f08c2e; } .rw-band-8 { fill: #e0413b; } .rw-band-9 { fill: #d4a017; }
+.rw-band-1 { fill: var(--rw-rank-1); } .rw-band-2 { fill: var(--rw-rank-2); } .rw-band-3 { fill: var(--rw-rank-3); }
+.rw-band-4 { fill: var(--rw-rank-4); } .rw-band-5 { fill: var(--rw-rank-5); } .rw-band-6 { fill: var(--rw-rank-6); }
+.rw-band-7 { fill: var(--rw-rank-7); } .rw-band-8 { fill: var(--rw-rank-8); } .rw-band-9 { fill: var(--rw-rank-9); }
 [class^="rw-band-"] { fill-opacity: .14; }
+/* Yutuq medallari — bezak: daraja nomi yonida matn bo'lib ham yoziladi. */
+.rw-medal-bronze { background: radial-gradient(circle at 35% 30%, #f3cda6, #b0763a 72%); }
+.rw-medal-silver { background: radial-gradient(circle at 35% 30%, #ffffff, #9aa3b0 72%); }
+.rw-medal-gold { background: radial-gradient(circle at 35% 30%, #fff1b8, #d4a017 72%); }
+.rw-medal-none { background: var(--rw-chip); box-shadow: inset 0 0 0 1px var(--rw-line); }
 
 /* Belgilash katagi, radio va slayder uslub rangida. */
 .rw-accent-control { accent-color: var(--rw-accent); }

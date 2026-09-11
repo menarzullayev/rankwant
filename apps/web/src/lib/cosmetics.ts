@@ -24,8 +24,9 @@ const BADGES: Record<string, string> = {
 export const coverClass = (code: string | null) =>
   (code && COVERS[code]) || "rw-cover";
 
-export const frameClass = (code: string | null) =>
-  (code && FRAMES[code]) || "";
+/** Do'kon ramkasi ustun; kiyilmagan bo'lsa unvon ramkasi (ADR-0018). */
+export const frameClass = (code: string | null, title?: { level: number } | null) =>
+  (code && FRAMES[code]) || (title ? `rw-frame-rank-${title.level}` : "");
 
 export const badgeLabel = (code: string | null) =>
   code ? (BADGES[code] ?? code) : null;

@@ -139,6 +139,7 @@ export type ContestDetail = Contest & {
 export type Standing = {
   rank: number;
   username: string;
+  user_title: UserTitle | null;
   solved_count: number;
   penalty: number;
   last_ac_at: string | null;
@@ -149,6 +150,8 @@ export type UserPublic = {
   display_name: string;
   avatar_url: string;
   bio: string;
+  /** Unvon — Contests reytingidan; reytingli musobaqasiz `null` (ADR-0018). */
+  title: UserTitle | null;
   rating_skills: number;
   rating_contest: number;
   /** Phase 1 da yoqildi — ADR-0006 fazali ochilish */
@@ -157,6 +160,8 @@ export type UserPublic = {
   rating_challenges: number;
   /** Faqat /me/ da keladi */
   is_staff?: boolean;
+  /** Faqat /me/ da keladi — profil kartasidagi uchta yutuq. */
+  pinned_achievements?: string[];
   /** Faqat /me/ da keladi — boshqa odamning pochtasi tasdiqlanganini
    *  ko'rsatish kerak emas, shuning uchun ommaviy profilda yo'q. */
   email_verified?: boolean;
@@ -355,6 +360,7 @@ export const VERDICT_FILTERS = [
 export type Attempt = {
   id: number;
   username: string;
+  user_title: UserTitle | null;
   problem: string;
   language: string;
   verdict: string;
@@ -611,7 +617,8 @@ export type PrivacyField =
   | "country"
   | "school"
   | "grade"
-  | "website";
+  | "website"
+  | "online";
 
 export type ThemeEffect = "none" | "fade" | "circle";
 
@@ -707,6 +714,7 @@ export type UserMini = {
   username: string;
   display_name: string;
   avatar_url: string;
+  title: UserTitle | null;
 };
 
 export type TeamRole = "owner" | "member";
@@ -746,6 +754,25 @@ export type PublicProfile = {
   /** Mehmon va egasining o'zi uchun `null`. */
   is_following: boolean | null;
   cosmetics: Cosmetics;
+  title: UserTitle | null;
+  roles: ProfileRole[];
+  /** Yashirilgan yoki hech qachon kirmagan — `null`. */
+  last_seen: string | null;
+  online: boolean;
+  pinned: PinnedAchievement[];
+};
+
+export type ProfileRole =
+  | { code: "staff" | "author" | "jury" }
+  | { code: "champion"; contest: string; contest_title: string };
+
+export type AchievementTier = "bronze" | "silver" | "gold";
+
+export type PinnedAchievement = {
+  code: string;
+  group: Achievement["group"];
+  target: number;
+  tier: AchievementTier;
 };
 
 export type ActivityEvent =
@@ -780,6 +807,11 @@ export type Achievement = {
   target: number;
   progress: number;
   done: boolean;
+  tier: AchievementTier;
+  /** Egalari faol foydalanuvchilarning necha foizi. */
+  rarity: number;
+  achieved_at: string | null;
+  pinned: boolean;
 };
 
 export type Purchase = {

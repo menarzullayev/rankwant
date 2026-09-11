@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import { Avatar } from "@/components/Avatar";
+import { rankClass } from "@/components/UserName";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
@@ -47,7 +48,7 @@ function TeamCard({ team, onChange }: { team: Team; onChange: () => void }) {
             <Avatar url={member.avatar_url} name={member.display_name || member.username} className="size-8 text-theme-sm" />
             <Link
               href={`/users/${member.username}`}
-              className="min-w-0 flex-1 truncate text-theme-sm rw-strong hover:underline"
+              className={`min-w-0 flex-1 truncate text-theme-sm hover:underline ${rankClass(member.title)}`}
             >
               {member.display_name || member.username}
               <span className="ml-1.5 rw-faint">@{member.username}</span>

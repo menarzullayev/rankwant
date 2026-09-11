@@ -38,6 +38,8 @@ FIELD_MIX = 0.65
 #: `globals.css` da klaviatura halqasi shu token bilan chiziladi.
 FOCUS_TOKEN = "--rw-accent-ink"
 TIERS = ("--rw-text", "--rw-text-2", "--rw-muted", "--rw-faint")
+#: Unvon ranglari — ism shu rangda yoziladi (ADR-0018), ya'ni bu ham matn.
+RANKS = tuple(f"--rw-rank-{i}" for i in range(1, 10))
 #: Panel darajasidagi sirtlar — fon ustiga tushadi.
 PANELS = ("--rw-surface", "--rw-surface-2", "--rw-chrome")
 #: Panel ICHIDAGI sirtlar — panel ustiga tushadi.
@@ -189,7 +191,10 @@ def main() -> int:
                     f"{name}  maydon chegarasi: {ratio:.2f}:1, kerak {FIELD_MIN}"
                 )
 
-        for tier in TIERS:
+        for tier in TIERS + RANKS:
+            if tier not in tokens:
+                failures.append(f"{name}  {tier}: token yo'q")
+                continue
             color = parse(tokens[tier])
             if color is None:
                 failures.append(f"{name}  {tier}: rang o'qilmadi ({tokens[tier].strip()})")

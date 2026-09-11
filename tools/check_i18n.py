@@ -48,6 +48,8 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         "level.expert", "level.master", "title.kvark", "title.foton", "title.elektron",
         "title.proton", "title.atom", "title.molekula", "title.kristal", "title.galaktika",
         "profile.reason.duel", "profile.virtual",
+        # Qoraqalpoqchada ham shunday: o'zlashma so'zlar.
+        "role.champion", "profile.online", "tier.bronze",
     },
     # «Duel» — inglizchadan o'zlashgan, ingliz tilida o'sha so'zning o'zi.
     "en": {"nav.duels", "level.master", "title.proton", "title.atom",

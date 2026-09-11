@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import { AchievementsTab } from "@/components/profile/ActivityTabs";
 import { getLocale } from "@/i18n/server";
-import { tabMetadata } from "@/lib/profile.server";
+import { loadProfile, tabMetadata } from "@/lib/profile.server";
 
 type Props = { params: Promise<{ username: string }> };
 
@@ -14,6 +14,12 @@ export function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const username = decodeURIComponent((await params).username);
-  const locale = await getLocale();
-  return <AchievementsTab username={username} locale={locale} />;
+  const [locale, profile] = await Promise.all([getLocale(), loadProfile(username)]);
+  return (
+    <AchievementsTab
+      username={username}
+      locale={locale}
+      pinned={profile.is_owner ? profile.pinned.map((row) => row.code) : null}
+    />
+  );
 }

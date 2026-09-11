@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import { Card } from "@/components/ui/Card";
+import { UserName } from "@/components/UserName";
 import {
   EmptyRow,
   TBody,
@@ -46,12 +47,7 @@ export default async function AttemptsPage() {
               <TR key={a.id}>
                 <TD className="rw-faint">{a.id}</TD>
                 <TD>
-                  <Link
-                    href={`/users/${a.username}`}
-                    className="font-medium rw-link-hover"
-                  >
-                    {a.username}
-                  </Link>
+                  <UserName username={a.username} title={a.user_title} locale={locale} />
                 </TD>
                 <TD>
                   <Link

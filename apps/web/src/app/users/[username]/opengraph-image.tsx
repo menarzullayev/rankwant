@@ -5,6 +5,11 @@ import { api } from "@/lib/api";
 import { SITE_URL } from "@/lib/site";
 
 export const alt = "RankWant";
+
+/** Unvon ranglari to'q fonda — `globals.css` dagi dashboard.dark palitrasi. */
+const RANK_ON_DARK = [
+  "#8b94a4", "#28a95e", "#16a2b1", "#6093eb", "#a681e7", "#d868dc", "#e9710f", "#ea6d69", "#ee6396",
+];
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -19,6 +24,7 @@ export default async function OgImage({ params }: { params: Promise<{ username: 
     api.userStats(username).catch(() => null),
   ]);
   const name = user ? user.display_name || user.username : username;
+  const title = user?.title ?? null;
   const avatar = user?.avatar_url && /\.(png|jpg)$/.test(user.avatar_url) ? user.avatar_url : null;
   const numbers: [string, number | string][] = user
     ? [
@@ -65,7 +71,24 @@ export default async function OgImage({ params }: { params: Promise<{ username: 
           )}
           <div style={{ display: "flex", flexDirection: "column" }}>
             <div style={{ fontSize: 64, fontWeight: 700 }}>{name}</div>
-            <div style={{ fontSize: 32, opacity: 0.8 }}>{`@${username}`}</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+              <div style={{ fontSize: 32, opacity: 0.8 }}>{`@${username}`}</div>
+              {title && (
+                <div
+                  style={{
+                    display: "flex",
+                    fontSize: 26,
+                    fontWeight: 600,
+                    padding: "2px 16px",
+                    borderRadius: 999,
+                    border: `2px solid ${RANK_ON_DARK[title.level - 1]}`,
+                    color: RANK_ON_DARK[title.level - 1],
+                  }}
+                >
+                  {t(DEFAULT_LOCALE, `title.${title.code}`)}
+                </div>
+              )}
+            </div>
           </div>
         </div>
         <div style={{ display: "flex", gap: 24 }}>
