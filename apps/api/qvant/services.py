@@ -46,6 +46,14 @@ def on_first_accepted(user: User) -> dict[str, object]:
     AC da — ADR-0002 anti-farm: qayta yechish 0 Qvant beradi.
     """
     current, streak_quests = streak.touch(user)
+    try:
+        from profiles.achievements import on_solved
+
+        with transaction.atomic():
+            on_solved(user, streak=current)
+    except Exception:
+        # Yutuq — ko'rinish; u yiqilsa ham streak, quest va Activity yozilishi shart.
+        log.exception("yutuqlar tekshirilmadi: user %s", user.pk)
     daily = quests.on_accepted(user, ac_count_today=_distinct_ac_count(user, timezone.localdate()))
 
     from qvant.marathon import check_completion

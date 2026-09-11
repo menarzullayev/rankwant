@@ -7,10 +7,14 @@ boshqa hech kimga ko'rinmaydi. Qolgani — standart bo'yicha ochiq
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any
 
+from django.utils import timezone
+
+from core import sessions
 from core.models import User
+from profiles import titles
 from profiles.catalog import TECHNOLOGIES
 from profiles.models import (
     Education,
@@ -23,12 +27,12 @@ from profiles.models import (
 
 #: «Qiyin masala yechildi» voqeasi shu qiyinlikdan boshlanadi (`upper` darajasi).
 HARD_FROM = 1800
-SOLVE_MILESTONES = (1, 10, 100, 500, 1000)
-STREAK_MILESTONES = ((7, "streak_7"), (30, "streak_30"), (365, "streak_365"))
-CONTEST_MILESTONES = (1, 10, 50)
+#: «Chempion» nishoni g'alabadan keyin shuncha kun turadi.
+CHAMPION_DAYS = 365
 
 
 def build_profile(user: User, viewer: User | None) -> dict[str, Any]:
+    from profiles import achievements
     from qvant.services import equipped
 
     owner = viewer is not None and viewer.pk == user.pk
@@ -51,6 +55,7 @@ def build_profile(user: User, viewer: User | None) -> dict[str, Any]:
         if visible(field) and value:
             info[field] = value
 
+    seen = sessions.last_seen(user) if visible("online") else None
     return {
         "username": user.username,
         "display_name": user.display_name,
@@ -97,6 +102,12 @@ def build_profile(user: User, viewer: User | None) -> dict[str, Any]:
             else None
         ),
         "cosmetics": equipped(user),
+        "title": titles.user_title(user),
+        "roles": roles(user),
+        "last_seen": seen,
+        "online": seen is not None
+        and (timezone.now() - seen).total_seconds() < sessions.ONLINE_WINDOW,
+        "pinned": achievements.pinned(user),
     }
 
 
@@ -160,46 +171,59 @@ def activity(user: User, *, before: datetime | None = None, limit: int = 30) -> 
     }
 
 
-def achievements(user: User) -> list[dict[str, Any]]:
-    """Yutuqlar — mavjud ma'lumotdan hisoblanadi, alohida jadval yo'q."""
-    from qvant.models import UserQuestCompletion
-    from qvant.quests import PROFILE_COMPLETE
-    from ratings.models import RatingHistory, UserSolvedProblem
+def roles(user: User) -> list[dict[str, str]]:
+    """Profil nishonlari (ADR-0018): xodim, masala muallifi, hakam, chempion."""
+    from contests.models import Contest
+    from problems.models import Problem
 
-    solved = UserSolvedProblem.objects.filter(user=user).count()
-    contests = (
-        RatingHistory.objects.filter(user=user, reason=RatingHistory.Reason.CONTEST)
-        .values("ref_id")
-        .distinct()
-        .count()
+    out: list[dict[str, str]] = []
+    if user.is_staff:
+        out.append({"code": "staff"})
+    if Problem.objects.filter(author=user, is_public=True).exists():
+        out.append({"code": "author"})
+    if Contest.objects.filter(jury=user).exists():
+        out.append({"code": "jury"})
+    won = champion_of(user)
+    if won is not None:
+        out.append({"code": "champion", "contest": won.slug, "contest_title": won.title})
+    return out
+
+
+def champion_of(user: User) -> Any:
+    """Oxirgi 365 kunda reytingli musobaqada birinchi natija — virtual emas.
+
+    `Standing.rank` ketma-ket raqam: birinchi bilan TENG natija ham g'olib.
+    Hech narsa yechmagan «birinchi» chempion emas.
+    """
+    from contests.models import Contest, ContestRegistration, Standing
+
+    now = timezone.now()
+    virtual = ContestRegistration.objects.filter(user=user, virtual_start_at__isnull=False).values(
+        "contest_id"
     )
-    codes = {code for _, code in STREAK_MILESTONES} | {PROFILE_COMPLETE}
-    done = set(
-        UserQuestCompletion.objects.filter(user=user, quest__code__in=codes).values_list(
-            "quest__code", flat=True
+    rows = (
+        Standing.objects.filter(
+            user=user,
+            contest__is_rated=True,
+            contest__is_public=True,
+            contest__is_virtual=False,
+            contest__end_at__gte=now - timedelta(days=CHAMPION_DAYS),
+            contest__end_at__lte=now,
         )
+        .exclude(contest_id__in=virtual)
+        .select_related("contest")
+        .order_by("-contest__end_at")
     )
-
-    rows: list[dict[str, Any]] = []
-    for target in SOLVE_MILESTONES:
-        rows.append(_row("solve", target, solved))
-    for target, code in STREAK_MILESTONES:
-        reached = target if code in done else user.streak_count
-        rows.append(_row("streak", target, reached))
-    for target in CONTEST_MILESTONES:
-        rows.append(_row("contest", target, contests))
-    rows.append(_row("profile", 1, 1 if PROFILE_COMPLETE in done else 0))
-    return rows
-
-
-def _row(group: str, target: int, progress: int) -> dict[str, Any]:
-    return {
-        "code": f"{group}-{target}",
-        "group": group,
-        "target": target,
-        "progress": min(progress, target),
-        "done": progress >= target,
-    }
+    for row in rows:
+        top = Standing.objects.filter(contest_id=row.contest_id, rank=1).first()
+        if top is None:
+            continue
+        ioi = row.contest.scoring_type == Contest.Scoring.IOI
+        mine = (row.total_score,) if ioi else (row.solved_count, row.penalty)
+        best = (top.total_score,) if ioi else (top.solved_count, top.penalty)
+        if mine == best and mine[0] > 0:
+            return row.contest
+    return None
 
 
 def purchases(user: User) -> list[dict[str, Any]]:

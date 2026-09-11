@@ -8,6 +8,7 @@ from rest_framework import serializers
 from contests.models import Contest, ContestProblem, ContestRegistration
 from judging.models import MAX_SOURCE_BYTES, Attempt, AttemptTestResult, CustomRun
 from problems.models import Language, Problem, ProblemLanguage
+from profiles.titles import TitleField
 
 
 class AttemptTestResultSerializer(serializers.ModelSerializer[AttemptTestResult]):
@@ -18,6 +19,8 @@ class AttemptTestResultSerializer(serializers.ModelSerializer[AttemptTestResult]
 
 class AttemptSerializer(serializers.ModelSerializer[Attempt]):
     username = serializers.CharField(source="user.username", read_only=True)
+    #: `title` emas — urinish qatorida u masala nomi bilan adashtirilardi.
+    user_title = TitleField(source="user")
     problem = serializers.SlugRelatedField[Problem](slug_field="slug", read_only=True)
     language = serializers.SlugRelatedField[Language](slug_field="code", read_only=True)
 
@@ -26,6 +29,7 @@ class AttemptSerializer(serializers.ModelSerializer[Attempt]):
         fields = [
             "id",
             "username",
+            "user_title",
             "problem",
             "language",
             "verdict",

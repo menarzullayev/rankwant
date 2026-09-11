@@ -16,6 +16,7 @@ from profiles.models import (
     UserSkill,
     WorkExperience,
 )
+from profiles.titles import TitleField
 
 #: Kelajakdagi yil ham qabul qilinadi — «2027 da bitiraman».
 YEAR_AHEAD = 10
@@ -86,19 +87,22 @@ class ExternalOutSerializer(serializers.ModelSerializer[ExternalProfile]):
 
 
 class UserMiniSerializer(serializers.ModelSerializer[User]):
+    title = TitleField()
+
     class Meta:
         model = User
-        fields = ["username", "display_name", "avatar_url"]
+        fields = ["username", "display_name", "avatar_url", "title"]
 
 
 class TeamMemberSerializer(serializers.ModelSerializer[TeamMember]):
     username = serializers.CharField(source="user.username")
     display_name = serializers.CharField(source="user.display_name")
     avatar_url = serializers.CharField(source="user.avatar_url")
+    title = TitleField(source="user")
 
     class Meta:
         model = TeamMember
-        fields = ["username", "display_name", "avatar_url", "role", "joined_at"]
+        fields = ["username", "display_name", "avatar_url", "title", "role", "joined_at"]
 
 
 class TeamSerializer(serializers.ModelSerializer[Team]):

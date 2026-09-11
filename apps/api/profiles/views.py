@@ -21,7 +21,7 @@ from contests.models import Standing
 from core.models import User
 from core.pagination import StandardPagination
 from core.tasks import queue
-from profiles import external, public, stats, teams
+from profiles import achievements, external, public, stats, teams
 from profiles.catalog import TECHNOLOGIES
 from profiles.models import (
     Education,
@@ -256,7 +256,7 @@ class AchievementsView(APIView):
 
     @extend_schema(responses={200: None})
     def get(self, request: Request, username: str) -> Response:
-        return Response(public.achievements(_profile_owner(username)))
+        return Response(achievements.rows(_profile_owner(username)))
 
 
 class PurchasesView(APIView):

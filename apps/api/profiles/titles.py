@@ -8,6 +8,9 @@ from __future__ import annotations
 
 from typing import Any, TypedDict
 
+from drf_spectacular.utils import extend_schema_field
+from rest_framework import serializers
+
 #: (quyi chegara, kod), o'sish tartibida. Pog'ona = indeks + 1.
 #: Boshlang'ich reyting 1400 (`User.rating_contest`) — birinchi
 #: musobaqadan keyin odam 3-pog'ona atrofida turadi, Codeforces'dagi
@@ -56,3 +59,24 @@ def bands() -> list[dict[str, Any]]:
         }
         for i, (floor, code) in enumerate(TITLES)
     ]
+
+
+class UserTitleSerializer(serializers.Serializer[Title]):
+    code = serializers.CharField()
+    level = serializers.IntegerField()
+
+
+@extend_schema_field(UserTitleSerializer(allow_null=True))
+class TitleField(serializers.Field):  # type: ignore[type-arg]
+    """Unvon maydoni — ism rangi hamma joyda shundan olinadi.
+
+    `source` foydalanuvchiga olib boradi: foydalanuvchi serializerida
+    `"*"`, urinish, standings va jamoa qatorida `"user"`.
+    """
+
+    def __init__(self, **kwargs: Any) -> None:
+        kwargs.setdefault("source", "*")
+        super().__init__(read_only=True, **kwargs)
+
+    def to_representation(self, value: Any) -> Title | None:
+        return user_title(value)

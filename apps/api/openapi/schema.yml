@@ -7632,6 +7632,11 @@ components:
         username:
           type: string
           readOnly: true
+        user_title:
+          allOf:
+          - $ref: '#/components/schemas/UserTitle'
+          nullable: true
+          readOnly: true
         problem:
           type: string
           readOnly: true
@@ -7679,6 +7684,7 @@ components:
       - id
       - language
       - problem
+      - user_title
       - username
     AttemptCreate:
       type: object
@@ -7707,6 +7713,11 @@ components:
           readOnly: true
         username:
           type: string
+          readOnly: true
+        user_title:
+          allOf:
+          - $ref: '#/components/schemas/UserTitle'
+          nullable: true
           readOnly: true
         problem:
           type: string
@@ -7766,6 +7777,7 @@ components:
       - problem
       - source_code
       - test_results
+      - user_title
       - username
     AttemptTestResult:
       type: object
@@ -8548,6 +8560,7 @@ components:
           format: date
           nullable: true
         hidden_fields: {}
+        pinned_achievements: {}
         ui_prefs: {}
         notify_prefs: {}
         username_change:
@@ -9724,6 +9737,7 @@ components:
           format: date
           nullable: true
         hidden_fields: {}
+        pinned_achievements: {}
         ui_prefs: {}
         notify_prefs: {}
         username_change:
@@ -12606,6 +12620,11 @@ components:
         username:
           type: string
           readOnly: true
+        user_title:
+          allOf:
+          - $ref: '#/components/schemas/UserTitle'
+          nullable: true
+          readOnly: true
         solved_count:
           type: integer
           maximum: 9223372036854775807
@@ -12621,6 +12640,7 @@ components:
           format: date-time
           nullable: true
       required:
+      - user_title
       - username
     Status8d9Enum:
       enum:
@@ -12766,6 +12786,11 @@ components:
           type: string
         avatar_url:
           type: string
+        title:
+          allOf:
+          - $ref: '#/components/schemas/UserTitle'
+          nullable: true
+          readOnly: true
         role:
           $ref: '#/components/schemas/TeamRoleEnum'
         joined_at:
@@ -12776,6 +12801,7 @@ components:
       - avatar_url
       - display_name
       - joined_at
+      - title
       - username
     TeamRoleEnum:
       enum:
@@ -12987,6 +13013,7 @@ components:
       - quiz
       - arena
       - duel
+      - achievement
       type: string
       description: |-
         * `quest` - Quest
@@ -12998,6 +13025,7 @@ components:
         * `quiz` - Test
         * `arena` - Arena
         * `duel` - Duel
+        * `achievement` - Yutuq
     TypeEnum:
       enum:
       - daily
@@ -13027,7 +13055,13 @@ components:
             maxLength: 200
           - type: string
             maxLength: 0
+        title:
+          allOf:
+          - $ref: '#/components/schemas/UserTitle'
+          nullable: true
+          readOnly: true
       required:
+      - title
       - username
     UserPublic:
       type: object
@@ -13055,6 +13089,11 @@ components:
             maxLength: 0
         bio:
           type: string
+        title:
+          allOf:
+          - $ref: '#/components/schemas/UserTitle'
+          nullable: true
+          readOnly: true
         rating_skills:
           type: integer
           maximum: 9223372036854775807
@@ -13119,6 +13158,7 @@ components:
       - max_ratings
       - ranks
       - solved_by_level
+      - title
       - username
     UserSession:
       type: object
@@ -13179,6 +13219,16 @@ components:
       - name_ru
       - name_uz
       - skill
+    UserTitle:
+      type: object
+      properties:
+        code:
+          type: string
+        level:
+          type: integer
+      required:
+      - code
+      - level
     UsernameChange:
       type: object
       properties:

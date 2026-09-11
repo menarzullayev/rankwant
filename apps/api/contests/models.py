@@ -33,6 +33,8 @@ class Contest(models.Model):
         "self", null=True, blank=True, on_delete=models.SET_NULL, related_name="mirrors"
     )
     ratings_applied_at = models.DateTimeField(null=True, blank=True)
+    #: Hakamlar — profilda «Hakam» nishoni (ADR-0018); admin paneldan.
+    jury = models.ManyToManyField("core.User", blank=True, related_name="jury_contests")
 
     created_at = models.DateTimeField(auto_now_add=True)
 

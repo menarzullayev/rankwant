@@ -13,6 +13,7 @@ from rest_framework import serializers
 from core import handles, usernames
 from core.models import PRIVACY_FIELDS, ApiToken, User, UserSession
 from profiles.catalog import UZ_REGIONS
+from profiles.titles import TitleField
 
 
 class UserPublicSerializer(serializers.ModelSerializer[User]):
@@ -25,6 +26,7 @@ class UserPublicSerializer(serializers.ModelSerializer[User]):
     ranks = serializers.SerializerMethodField()
     max_ratings = serializers.SerializerMethodField()
     solved_by_level = serializers.SerializerMethodField()
+    title = TitleField()
 
     def get_ranks(self, user: User) -> dict[str, int]:
         """Har reyting bo'yicha o'rin.
@@ -94,6 +96,7 @@ class UserPublicSerializer(serializers.ModelSerializer[User]):
             "display_name",
             "avatar_url",
             "bio",
+            "title",
             "rating_skills",
             "rating_contest",
             "rating_activity",
@@ -151,6 +154,7 @@ class MeSerializer(serializers.ModelSerializer[User]):
             "website",
             "birth_date",
             "hidden_fields",
+            "pinned_achievements",
             "ui_prefs",
             "notify_prefs",
             "username_change",
@@ -193,6 +197,17 @@ class MeSerializer(serializers.ModelSerializer[User]):
         if not isinstance(value, list) or any(v not in PRIVACY_FIELDS for v in value):
             raise serializers.ValidationError("Noma'lum maydon")
         return sorted(set(value))
+
+    def validate_pinned_achievements(self, value: Any) -> list[str]:
+        from profiles.achievements import PINNED_MAX, achieved
+
+        if not isinstance(value, list) or len(value) > PINNED_MAX or len(set(value)) != len(value):
+            raise serializers.ValidationError(f"Ko'pi bilan {PINNED_MAX} ta turli yutuq")
+        assert isinstance(self.instance, User)
+        have = achieved(self.instance)
+        if any(code not in have for code in value):
+            raise serializers.ValidationError("Bu yutuq hali qo'lga kiritilmagan")
+        return value
 
     def validate_ui_prefs(self, value: Any) -> dict[str, Any]:
         if not isinstance(value, dict):

@@ -14,6 +14,7 @@ from typing import ClassVar
 from django.core.validators import MaxValueValidator
 from django.db import models
 from django.db.models import F, Q
+from django.utils import timezone
 
 
 class Skill(models.Model):
@@ -198,3 +199,22 @@ class TeamMember(models.Model):
 
     def __str__(self) -> str:
         return f"{self.team_id}:{self.user_id} ({self.role})"
+
+
+class UserAchievement(models.Model):
+    """Qo'lga kiritilgan yutuq (ADR-0018) — noyoblik va bir martalik Qvant uchun."""
+
+    user = models.ForeignKey("core.User", on_delete=models.CASCADE, related_name="achievements")
+    code = models.CharField(max_length=32)
+    achieved_at = models.DateTimeField(default=timezone.now)
+    #: Berilgan Qvant. Quest to'lagan yoki migratsiyada tiklangan yutuqda 0.
+    awarded = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        constraints: ClassVar = [
+            models.UniqueConstraint(fields=["user", "code"], name="uniq_user_achievement"),
+        ]
+        indexes: ClassVar = [models.Index(fields=["code"], name="achievement_code")]
+
+    def __str__(self) -> str:
+        return f"{self.user_id}:{self.code}"

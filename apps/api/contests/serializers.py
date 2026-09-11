@@ -3,6 +3,7 @@ from __future__ import annotations
 from rest_framework import serializers
 
 from contests.models import Contest, ContestProblem, ContestRegistration, Standing
+from profiles.titles import TitleField
 
 
 class ContestProblemSerializer(serializers.ModelSerializer[ContestProblem]):
@@ -45,10 +46,11 @@ class ContestDetailSerializer(ContestSerializer):
 
 class StandingSerializer(serializers.ModelSerializer[Standing]):
     username = serializers.CharField(source="user.username", read_only=True)
+    user_title = TitleField(source="user")
 
     class Meta:
         model = Standing
-        fields = ["rank", "username", "solved_count", "penalty", "last_ac_at"]
+        fields = ["rank", "username", "user_title", "solved_count", "penalty", "last_ac_at"]
 
 
 class RegistrationSerializer(serializers.ModelSerializer[ContestRegistration]):

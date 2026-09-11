@@ -38,6 +38,7 @@ class QvantTransaction(models.Model):
         QUIZ = "quiz", "Test"
         ARENA = "arena", "Arena"
         DUEL = "duel", "Duel"
+        ACHIEVEMENT = "achievement", "Yutuq"
 
     user = models.ForeignKey(
         "core.User", on_delete=models.CASCADE, related_name="qvant_transactions"

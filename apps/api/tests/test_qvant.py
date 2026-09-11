@@ -16,6 +16,7 @@ from rest_framework.test import APIClient
 from core.models import User
 from judging.models import Attempt
 from judging.services import apply_result
+from profiles.models import UserAchievement
 from qvant import ledger, quests, streak
 from qvant.models import (
     DAILY_EARN_CAP,
@@ -323,7 +324,8 @@ class TestJudgeIntegration:
                 user=user, problem=problem, language=language, source_code="x"
             )
             apply_result({"attempt_id": attempt.pk, "verdict": "AC"})
-        assert QvantWallet.objects.get(user=user).balance == 10  # bitta daily_solve
+        # Bitta daily_solve va «birinchi masala» yutug'i — ikkinchi AC hech narsa bermaydi.
+        assert QvantWallet.objects.get(user=user).balance == 20
 
     def test_rejudge_ac_ni_bekor_qilsa(self, user, catalogue, problem, language) -> None:
         """AC bekor qilinsa Skills tushadi va yechilgan yozuv olib tashlanadi."""
@@ -438,6 +440,8 @@ class TestPhasedReveal:
             "display_name",
             "avatar_url",
             "bio",
+            # Unvon — ism rangi hamma joyda shundan (ADR-0018).
+            "title",
             "rating_skills",
             "rating_contest",
             "rating_activity",
@@ -772,11 +776,13 @@ class TestRejudgeQaytarish:
     def test_yagona_ac_yiqilsa_pul_qaytariladi(self, user, problem, language) -> None:
         quests.sync_catalogue()
         attempt = self._solve(user, problem, language)
-        assert ledger.get_wallet(user).balance == 10
+        assert ledger.get_wallet(user).balance == 20  # daily_solve + «birinchi masala» yutug'i
 
         self._revoke(attempt)
 
+        # Ikkalasi ham qaytariladi (ADR-0002: rejudge da qaytarish).
         assert ledger.get_wallet(user).balance == 0
+        assert not UserAchievement.objects.filter(user=user).exists()
         assert not UserQuestCompletion.objects.filter(
             user=user, quest__code=quests.DAILY_SOLVE
         ).exists()
@@ -816,12 +822,12 @@ class TestRejudgeQaytarish:
         self._solve(user, problem, language)
         self._solve(user, extra[0], language)
         last = self._solve(user, extra[1], language)
-        assert ledger.get_wallet(user).balance == 25  # daily_solve + daily_three_ac
+        assert ledger.get_wallet(user).balance == 35  # daily_solve, daily_three_ac, solve-1
 
         self._revoke(last)
 
-        # 3→2: uchtalik quest yiqildi, kunlik quest esa qoldi.
-        assert ledger.get_wallet(user).balance == 10
+        # 3→2: uchtalik quest yiqildi; kunlik quest va «birinchi masala» yutug'i qoldi.
+        assert ledger.get_wallet(user).balance == 20
         assert not UserQuestCompletion.objects.filter(
             user=user, quest__code=quests.DAILY_THREE_AC
         ).exists()

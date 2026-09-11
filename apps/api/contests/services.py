@@ -283,6 +283,14 @@ def finalize_contest(contest: Contest) -> int:
                 on_contest_finished(standing.user, contest.slug)
         except Exception:
             log.exception("contest %s uchun Qvant berilmadi", contest.slug)
+        try:
+            from profiles.achievements import on_rated_contest
+
+            for standing in Standing.objects.filter(contest=contest).select_related("user"):
+                with transaction.atomic():
+                    on_rated_contest(standing.user)
+        except Exception:
+            log.exception("contest %s uchun yutuqlar tekshirilmadi", contest.slug)
     contest.ratings_applied_at = timezone.now()
     contest.save(update_fields=["ratings_applied_at"])
 

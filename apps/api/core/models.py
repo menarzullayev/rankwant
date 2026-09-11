@@ -20,6 +20,8 @@ PRIVACY_FIELDS: tuple[str, ...] = (
     "school",
     "grade",
     "website",
+    #: Onlayn holat va oxirgi faollik — ijtimoiy havolalardan alohida.
+    "online",
 )
 
 
@@ -101,6 +103,8 @@ class User(AbstractUser):
     #: Ommaviy profilda YASHIRILGAN maydonlar. Bo'sh ro'yxat — hammasi
     #: ochiq: foydalanuvchi shuni tanladi, yashirish uning o'z qo'lida.
     hidden_fields = models.JSONField(default=default_hidden_fields, blank=True)
+    #: Profil kartasida ko'rsatiladigan uchta yutuq (`profiles.achievements`).
+    pinned_achievements = models.JSONField(default=list, blank=True)
     #: Ko'rinish — uslub, ovoz, mavzu almashish effekti (til va mavzu
     #: yuqoridagi alohida maydonlarda).
     ui_prefs = models.JSONField(default=dict, blank=True)

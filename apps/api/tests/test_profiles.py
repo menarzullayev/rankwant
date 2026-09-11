@@ -228,13 +228,15 @@ class TestOmmaviyProfil:
         }
 
         assert rows["streak-7"]["done"] is True
-        assert rows["streak-30"] == {
+        subset = {k: rows["streak-30"][k] for k in ("code", "group", "target", "progress", "done")}
+        assert subset == {
             "code": "streak-30",
             "group": "streak",
             "target": 30,
             "progress": 8,
             "done": False,
         }
+        assert rows["streak-30"]["tier"] == "silver"
         assert rows["solve-1"]["done"] is False
 
     def test_bosh_faoliyat(self, user: User) -> None:

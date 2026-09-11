@@ -168,6 +168,9 @@ def on_streak_reached(user: User, streak: int) -> list[str]:
 
 def on_profile_completed(user: User) -> int:
     """Umrbod bir marta."""
+    from profiles.achievements import grant
+
+    grant(user, "profile-1")
     return award(user, PROFILE_COMPLETE, "once")
 
 

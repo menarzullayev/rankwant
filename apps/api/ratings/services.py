@@ -189,6 +189,13 @@ def on_accept_revoked(attempt: Attempt) -> None:
         revoke_for_attempt(attempt.user, timezone.localtime(attempt.created_at).date())
     except Exception:
         log.exception("Qvant qaytarilmadi: attempt %s", attempt.pk)
+    try:
+        from profiles.achievements import on_unsolved
+
+        with transaction.atomic():
+            on_unsolved(attempt.user)
+    except Exception:
+        log.exception("yutuq qaytarilmadi: attempt %s", attempt.pk)
 
 
 @transaction.atomic

@@ -21,6 +21,8 @@ class ContestAdmin(admin.ModelAdmin):
     )
     list_filter = ("is_rated", "is_virtual", "is_public", "scoring_type")
     search_fields = ("slug", "title")
+    # O'n ming foydalanuvchini ro'yxatga yuklamaslik uchun — qidiruv bilan.
+    autocomplete_fields = ("jury",)
     inlines = [ContestProblemInline]
     readonly_fields = ("ratings_applied_at", "created_at")
 
