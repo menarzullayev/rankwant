@@ -31,7 +31,7 @@ MAX_BYTES = 1024 * 1024
 PREFIX = "avatars/"
 NAME_RE = re.compile(r"^[A-Za-z0-9_-]{16,64}\.(png|jpg|webp)$")
 CONTENT_TYPES = {"png": "image/png", "jpg": "image/jpeg", "webp": "image/webp"}
-USER_AGENT = "RankWant/1.0 (+https://rankwant.bugvector.uz)"
+USER_AGENT = "RankWant/1.0 (+https://rankwant.uz)"
 
 #: Provayder rasmini FAQAT shu domenlardan olamiz (SSRF: ichki tarmoqqa
 #: so'rov yuborib bo'lmasin). Yo'naltirish ham har qadamda tekshiriladi.
@@ -91,16 +91,25 @@ def delete(name: str) -> None:
         log.warning("avatar o'chirilmadi: %s", name)
 
 
+PATH_PREFIX = "/api/v1/avatars/"
+
+
 def url_for(name: str) -> str:
-    return f"{settings.SITE_URL}/api/v1/avatars/{name}"
+    return f"{settings.SITE_URL}{PATH_PREFIX}{name}"
 
 
 def name_from_url(url: str) -> str | None:
-    """Bizning omborimizdagi rasm bo'lsa — uning nomi."""
-    prefix = f"{settings.SITE_URL}/api/v1/avatars/"
-    if not url.startswith(prefix):
+    """Bizning omborimizdagi rasm bo'lsa — uning nomi.
+
+    Domen almashganda bazada eski manzil qoladi (`rehost_avatars` ko'chiradi).
+    Shu orada ham rasm bizniki deb taniladi — host ruxsat etilganlardan bo'lsa,
+    aks holda avatar almashtirilganda eski fayl omborda qolib ketardi.
+    """
+    parts = urlsplit(url)
+    ours = {urlsplit(settings.SITE_URL).netloc, *settings.ALLOWED_HOSTS} - {"*"}
+    if parts.netloc not in ours or not parts.path.startswith(PATH_PREFIX):
         return None
-    name = url[len(prefix) :]
+    name = parts.path[len(PATH_PREFIX) :]
     return name if NAME_RE.match(name) else None
 
 

@@ -289,7 +289,7 @@ class TestJamoa:
 
     def test_havola_bilan_ham_qoshiladi(self, user: User, other_user: User) -> None:
         team = self.yarat(user)
-        havola = f"https://rankwant.bugvector.uz/settings/jamoalar?join={team['join_code']}"
+        havola = f"https://rankwant.uz/settings/jamoalar?join={team['join_code']}"
 
         r = self.qoshil(other_user, havola)
 

@@ -31,7 +31,7 @@ from core.models import User
 
 log = logging.getLogger(__name__)
 
-USER_AGENT = "RankWant/1.0 (+https://rankwant.bugvector.uz)"
+USER_AGENT = "RankWant/1.0 (+https://rankwant.uz)"
 
 #: Har provayder uchun: kalit sozlanganini bildiruvchi sozlama nomlari.
 #: Kaliti yo'q provayder ro'yxatga umuman tushmaydi va uning tugmasi

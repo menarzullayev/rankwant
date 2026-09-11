@@ -61,7 +61,7 @@ Portlar: web `127.0.0.1:8300`, API `127.0.0.1:8301`. `ALLOWED_HOSTS`
 tufayli curl'ga host sarlavhasi kerak, aks holda bo'sh 400 keladi:
 
 ```bash
-curl -H 'Host: rankwant.bugvector.uz' http://127.0.0.1:8301/api/v1/health/
+curl -H 'Host: rankwant.uz' http://127.0.0.1:8301/api/v1/health/
 ```
 
 ## Bake-off (judge izolyatsiyasi)

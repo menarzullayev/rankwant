@@ -51,7 +51,7 @@ class SendError(Exception):
 #: o'lchandi, ikkalasi ham `HTTP 403 … error_code 1010,
 #: browser_signature_banned` qaytardi. Brevo va Mailjet o'tkazib yuborardi,
 #: ya'ni bu nosozlik zanjirning yarmida jimgina yashiringan bo'lardi.
-USER_AGENT = "RankWant/1.0 (+https://rankwant.bugvector.uz)"
+USER_AGENT = "RankWant/1.0 (+https://rankwant.uz)"
 
 
 def _post(url: str, payload: dict[str, object], headers: dict[str, str]) -> str:

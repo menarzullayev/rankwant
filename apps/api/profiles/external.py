@@ -25,7 +25,7 @@ from profiles.models import ExternalProfile
 
 log = logging.getLogger(__name__)
 
-USER_AGENT = "RankWant/1.0 (+https://rankwant.bugvector.uz)"
+USER_AGENT = "RankWant/1.0 (+https://rankwant.uz)"
 TIMEOUT = 10
 
 HANDLE_RE: dict[str, re.Pattern[str]] = {

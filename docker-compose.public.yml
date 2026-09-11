@@ -1,4 +1,4 @@
-# Ommaviy preview — bitta domen ortida (masalan rankwant.bugvector.uz).
+# Ommaviy preview — bitta domen ortida (masalan rankwant.uz).
 #
 # Web va API BIR XIL origin'da: `/api/*` API ga, qolgani web ga yo'naltiriladi
 # (reverse proxy yoki Cloudflare Tunnel ingress). Shu sababli CORS ham,

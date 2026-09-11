@@ -28,7 +28,7 @@ def sozlangan(settings: Any) -> Any:
     settings.GOOGLE_CLIENT_SECRET = "secret"
     settings.TELEGRAM_BOT_TOKEN = BOT
     settings.TELEGRAM_BOT_USERNAME = "rankwant_bot"
-    settings.SITE_URL = "https://rankwant.bugvector.uz"
+    settings.SITE_URL = "https://rankwant.uz"
     return settings
 
 

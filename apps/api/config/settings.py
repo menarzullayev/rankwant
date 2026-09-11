@@ -288,7 +288,7 @@ EMAIL_CHAIN = [
 #: Xatdagi havolalar va logotip shu manzildan quriladi. Provayder domeniga
 #: almashtirilmaydi — ADR-0015: foydalanuvchi havolada `rankwant` so'zini
 #: ko'rishi va ko'rmasa shubhalanishi kerak.
-SITE_URL = env("PUBLIC_ORIGIN", "https://rankwant.bugvector.uz").rstrip("/")
+SITE_URL = env("PUBLIC_ORIGIN", "https://rankwant.uz").rstrip("/")
 EMAIL_FROM = env("EMAIL_FROM", "no-reply@rankwant.uz")
 EMAIL_FROM_NAME = env("EMAIL_FROM_NAME", "RankWant")
 #: Bitta provayderga ajratilgan vaqt. Zanjir ketma-ket ishlaydi, ya'ni

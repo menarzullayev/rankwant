@@ -34,7 +34,7 @@ def zanjir(monkeypatch: pytest.MonkeyPatch, settings: Any) -> Yozib:
     p = Yozib()
     monkeypatch.setattr("core.mailer.PROVIDERS", {p.name: p})
     settings.EMAIL_CHAIN = [p.name]
-    settings.SITE_URL = "https://rankwant.bugvector.uz"
+    settings.SITE_URL = "https://rankwant.uz"
     return p
 
 
@@ -59,7 +59,7 @@ class TestParolniTiklash:
         emails.send_password_reset(odam(), token="TOK", code="482913")
 
         assert zanjir.last is not None
-        assert "https://rankwant.bugvector.uz/parolni-tiklash?token=TOK" in zanjir.last.html
+        assert "https://rankwant.uz/parolni-tiklash?token=TOK" in zanjir.last.html
         for begona in ("mailjet.com", "brevo.com", "resend.com", "mailersend.com"):
             assert begona not in zanjir.last.html
 
