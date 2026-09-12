@@ -16,4 +16,5 @@ export const ADMIN_SECTIONS = [
   { href: "/admin/quests", label: "Questlar" },
   { href: "/admin/shop", label: "Do'kon" },
   { href: "/admin/users", label: "Foydalanuvchilar" },
+  { href: "/admin/analitika", label: "Analitika" },
 ] as const;

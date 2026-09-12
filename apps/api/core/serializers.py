@@ -348,6 +348,7 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
             "password",
             "display_name",
             "country",
+            "region",
             "terms_accepted",
             "marketing_opt_in",
         ]
@@ -370,6 +371,11 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
             # ularni sindirmaslik kerak. Frontend esa har doim yuboradi
             # (standart — `UZ`).
             "country": {"required": False, "allow_blank": True},
+            # Viloyat IXTIYORIY: A/B sinovning `b` variantida ro'yxatdan
+            # o'tishning O'ZIDA so'raladi (8-qaror), `a` variantida esa
+            # 2-qadamda to'ldiriladi — ya'ni bu maydon ikki yo'ldan ham
+            # keladi va ikkalasi ham qabul qilinishi kerak.
+            "region": {"required": False, "allow_blank": True},
         }
 
     def validate_country(self, value: str) -> str:

@@ -1,0 +1,304 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
+import { Card } from "@/components/ui/Card";
+import { ApiError } from "@/lib/api";
+import { staff } from "@/lib/staff";
+
+type FunnelRow = { name: string; sessions: number; share: number };
+type CountRow = { sessions: number };
+
+type Data = {
+  window_days: number;
+  total_events: number;
+  funnel: FunnelRow[];
+  step2: { saved: number; skipped: number; skipped_share: number };
+  variant: { control: number; variant: number; total: number; control_share: number };
+  errors: { reason: string; sessions: number }[];
+  locales: ({ locale: string } & CountRow)[];
+  countries: ({ country: string } & CountRow)[];
+  daily: { date: string; started: number; done: number }[];
+};
+
+/** Hodisa nomi → odam o'qiydigan yorliq.
+ *
+ *  Xom nom ko'rsatilsa xodim har safar `auth.form_started` ni
+ *  o'qib ma'nosini o'ylab ko'rardi. Noma'lum nom bo'lsa o'zi
+ *  ko'rsatiladi — yangi hodisa qo'shilganda dashboard uni
+ *  yashirmasligi kerak. */
+const EVENT_LABEL: Record<string, string> = {
+  "auth.form_started": "Forma boshlandi",
+  "auth.register_done": "Ro'yxatdan o'tdi",
+};
+
+/** Xato sababi → yorliq. Sabablar `AuthForm` dagi `track` chaqiruvlaridan. */
+const REASON_LABEL: Record<string, string> = {
+  username_taken: "Login band",
+  password_mismatch: "Parollar mos emas",
+  terms: "Shartlarga rozilik berilmagan",
+  email: "Email band yoki noto'g'ri",
+  server: "Server xatosi",
+  network: "Tarmoq xatosi",
+  "—": "Sababsiz",
+};
+
+const WINDOWS = [7, 30, 90] as const;
+
+export function AnalyticsDashboard() {
+  const [days, setDays] = useState<number>(30);
+  // Natija QAYSI oyna uchun kelgani bilan saqlanadi. «Yuklanmoqda»
+  // holati shundan hosil qilinadi — uni effekt ichida `setState` bilan
+  // yozish shart emas: aks holda har oyna almashishida qo'shimcha
+  // render ketadi (`react-hooks/set-state-in-effect`).
+  const [result, setResult] = useState<{ for: number; data?: Data; error?: string }>({
+    for: 0,
+  });
+
+  const busy = result.for !== days;
+  const data = result.for === days ? result.data : undefined;
+  const error = result.for === days ? (result.error ?? "") : "";
+
+  useEffect(() => {
+    // Bekor qilish bayrog'i: oyna tez almashtirilsa eski javob yangisidan
+    // keyin kelib, ekranda eski raqamlar qolib ketishi mumkin edi.
+    let stale = false;
+    staff
+      .get<Data>(`/staff/analytics/?days=${days}`)
+      .then((d) => {
+        if (!stale) setResult({ for: days, data: d });
+      })
+      .catch((err) => {
+        if (!stale) {
+          setResult({
+            for: days,
+            error: err instanceof ApiError ? err.text : String(err),
+          });
+        }
+      });
+    return () => {
+      stale = true;
+    };
+  }, [days]);
+
+  return (
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-center gap-2">
+        {WINDOWS.map((w) => (
+          <button
+            key={w}
+            type="button"
+            onClick={() => setDays(w)}
+            aria-pressed={days === w}
+            className={`rw-radius-sm px-3 py-1.5 text-theme-sm font-medium transition rw-focus-ring ${
+              days === w ? "rw-accent-bg" : "rw-dim-2 rw-hover-bg"
+            }`}
+          >
+            {w} kun
+          </button>
+        ))}
+        {busy && <span className="text-theme-xs rw-faint">yuklanmoqda…</span>}
+      </div>
+
+      {error && (
+        <p role="alert" className="rw-radius-sm rw-bad-soft px-3 py-2 text-theme-sm rw-bad-ink">
+          {error}
+        </p>
+      )}
+
+      {data && (
+        <>
+          <Card title="Ro'yxatdan o'tish voronkasi">
+            {data.total_events === 0 ? (
+              <p className="text-theme-sm rw-dim">
+                Bu oynada hodisa yo&apos;q. Funnel ro&apos;yxatdan o&apos;tish va
+                kirish sahifalarida yig&apos;iladi — trafik bo&apos;lsa paydo
+                bo&apos;ladi.
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {data.funnel.map((row, i) => (
+                  <div key={row.name}>
+                    <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-2">
+                      <span className="text-theme-sm rw-strong">
+                        {EVENT_LABEL[row.name] ?? row.name}
+                      </span>
+                      <span className="text-theme-sm rw-dim">
+                        {row.sessions} sessiya · {row.share}%
+                      </span>
+                    </div>
+                    <div
+                      className="h-2.5 overflow-hidden rw-radius-sm rw-hover-bg"
+                      role="img"
+                      aria-label={`${EVENT_LABEL[row.name] ?? row.name}: ${row.sessions} sessiya, ${row.share}%`}
+                    >
+                      {/* Rang to'g'ridan-to'g'ri tokenlardan: `rw-ok-bg`
+                          kabi klass yo'q, inline `var(--rw-*)` esa 12
+                          uslubda ham to'g'ri keladi. */}
+                      <div
+                        className="h-full"
+                        style={{
+                          width: `${Math.min(row.share, 100)}%`,
+                          background: i === 0 ? "var(--rw-accent)" : "var(--rw-ok-ink)",
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+                <p className="text-theme-xs rw-faint">
+                  Foizlar birinchi qadamga nisbatan. Sessiya bo&apos;yicha
+                  sanaladi — bir odam bir marta hisoblanadi.
+                </p>
+              </div>
+            )}
+          </Card>
+
+          <Card title="A/B: viloyat qachon so'raladi">
+            {data.variant.total === 0 ? (
+              <p className="text-theme-sm rw-dim">
+                Hali tugagan ro&apos;yxatdan o&apos;tish yo&apos;q. Guruh
+                cookie&apos;da saqlanadi va har bir hodisa bilan birga
+                yuboriladi.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                <BarList
+                  rows={[
+                    { label: "Nazorat (2-qadamda)", value: data.variant.control },
+                    { label: "Variant (ro'yxatda)", value: data.variant.variant },
+                  ]}
+                />
+                <p className="text-theme-xs rw-faint">
+                  Guruhlar {data.variant.control_share}% /{" "}
+                  {(100 - data.variant.control_share).toFixed(1)}%. Teng
+                  bo&apos;lmasa natija ishonchsiz — guruh cookie&apos;si
+                  tozalangan bo&apos;lishi mumkin.
+                </p>
+              </div>
+            )}
+          </Card>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Card title="2-qadam (joy va maktab)">
+              <div className="flex items-baseline gap-3">
+                <span className="text-title-sm font-bold rw-strong">
+                  {data.step2.skipped_share}%
+                </span>
+                <span className="text-theme-sm rw-dim">o&apos;tkazib yubordi</span>
+              </div>
+              <p className="mt-2 text-theme-sm rw-dim">
+                {data.step2.saved} saqladi · {data.step2.skipped} o&apos;tkazib yubordi
+              </p>
+              <p className="mt-2 text-theme-xs rw-faint">
+                Bu raqam yuqori bo&lsa, 2-qadam odamni charchatyapti.
+              </p>
+            </Card>
+
+            <Card title="Jami">
+              <div className="text-title-sm font-bold rw-strong">{data.total_events}</div>
+              <p className="mt-2 text-theme-sm rw-dim">
+                hodisa · oxirgi {data.window_days} kun
+              </p>
+            </Card>
+          </div>
+
+          <Card title="Xato sabablari">
+            {data.errors.length === 0 ? (
+              <p className="text-theme-sm rw-dim">Xato qayd etilmagan.</p>
+            ) : (
+              <BarList
+                rows={data.errors.map((e) => ({
+                  label: REASON_LABEL[e.reason] ?? e.reason,
+                  value: e.sessions,
+                }))}
+              />
+            )}
+          </Card>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Card title="Tillar">
+              {data.locales.length === 0 ? (
+                <p className="text-theme-sm rw-dim">Ma&apos;lumot yo&apos;q.</p>
+              ) : (
+                <BarList
+                  rows={data.locales.map((l) => ({ label: l.locale, value: l.sessions }))}
+                />
+              )}
+            </Card>
+            <Card title="Mamlakatlar">
+              {data.countries.length === 0 ? (
+                <p className="text-theme-sm rw-dim">
+                  Ma&apos;lumot yo&apos;q — mamlakat ro&apos;yxatdan o&apos;tgandan
+                  keyin ma&apos;lum bo&apos;ladi.
+                </p>
+              ) : (
+                <BarList
+                  rows={data.countries.map((c) => ({ label: c.country, value: c.sessions }))}
+                />
+              )}
+            </Card>
+          </div>
+
+          <Card title="Kunlik">
+            {data.daily.length === 0 ? (
+              <p className="text-theme-sm rw-dim">Ma&apos;lumot yo&apos;q.</p>
+            ) : (
+              <Daily rows={data.daily} />
+            )}
+          </Card>
+        </>
+      )}
+    </div>
+  );
+}
+
+/** Gorizontal ustunlar ro'yxati — eng kattasi 100% deb olinadi. */
+function BarList({ rows }: { rows: { label: string; value: number }[] }) {
+  const max = Math.max(...rows.map((r) => r.value), 1);
+  return (
+    <ul className="space-y-2">
+      {rows.map((r) => (
+        <li key={r.label} className="flex items-center gap-3">
+          <span className="w-40 shrink-0 truncate text-theme-sm rw-strong">{r.label}</span>
+          <span className="h-2 flex-1 overflow-hidden rw-radius-sm rw-hover-bg">
+            <span
+              className="block h-full rw-accent-bg"
+              style={{ width: `${(r.value / max) * 100}%` }}
+            />
+          </span>
+          <span className="w-10 shrink-0 text-right text-theme-sm rw-dim">{r.value}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** Kunlik ustunlar — balandlik eng katta qiymatga nisbatan. */
+function Daily({ rows }: { rows: { date: string; started: number; done: number }[] }) {
+  const max = Math.max(...rows.map((r) => r.started), 1);
+  return (
+    <div>
+      <div className="flex items-end gap-1" style={{ height: 120 }}>
+        {rows.map((r) => (
+          <span
+            key={r.date}
+            className="flex flex-1 flex-col justify-end gap-0.5"
+            title={`${r.date}: ${r.started} boshlandi, ${r.done} tugadi`}
+          >
+            <span
+              className="w-full rw-hover-bg"
+              style={{ height: `${(r.started / max) * 100}%` }}
+            />
+            <span
+              className="w-full rw-accent-bg"
+              style={{ height: `${(r.done / max) * 100}%` }}
+            />
+          </span>
+        ))}
+      </div>
+      <p className="mt-2 text-theme-xs rw-faint">
+        Kulrang — boshlangan, rangli — tugagan. Har ustun bir kun.
+      </p>
+    </div>
+  );
+}

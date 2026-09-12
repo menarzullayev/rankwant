@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import { useSession } from "@/context/SessionContext";
 import { Button } from "@/components/ui/Button";
 import { Field, type FieldStatus } from "@/components/ui/Field";
-import { Checkbox } from "@/components/ui/SelectField";
+import { Checkbox, SelectField } from "@/components/ui/SelectField";
 import { CountrySelect } from "@/components/ui/CountrySelect";
 import { GithubMark, GoogleMark } from "@/components/ProviderMark";
 import { TelegramButton } from "@/components/TelegramButton";
@@ -17,6 +17,8 @@ import { t, errorText, type MessageKey } from "@/i18n/messages";
 import { ApiError, getJson, postJson } from "@/lib/api";
 import { track } from "@/lib/analytics";
 import { strength } from "@/lib/password";
+import { type Variant } from "@/lib/experiments";
+import { REGION_CODES, regionName } from "@/lib/regions";
 import { safeNext } from "@/lib/site";
 
 type Mode = "login" | "register";
@@ -43,11 +45,20 @@ export function AuthForm({
   mode,
   providers,
   telegramBot,
+  geoVariant = "a",
 }: {
   mode: Mode;
   /** Serverda olinadi — tugmalar HTML da keladi va JS ga bog'liq emas. */
   providers: string[];
   telegramBot: string;
+  /** A/B guruhi (8-qaror), SERVERDA cookie'dan o'qiladi.
+   *
+   *  `b` — viloyat ro'yxatdan o'tishning o'zida so'raladi. Server
+   *  komponentida o'qiladi, mijozda emas: aks holda server `a`, mijoz
+   *  `b` chizib hidratsiya mos kelmasligi mumkin edi.
+   *
+   *  Standart `a` — guruh bo'lmasa xatti-harakat o'zgarmaydi. */
+  geoVariant?: Variant;
 }) {
   const locale = useLocale();
   const router = useRouter();
@@ -74,6 +85,9 @@ export function AuthForm({
   //: `UZ`: auditoriyaning asosiy qismi shu yerdan, ya'ni ko'pchilik
   //: hech narsa o'zgartirmaydi. Xorijiy foydalanuvchi bir marta tanlaydi.
   const [country, setCountry] = useState("UZ");
+  //: A/B `b` variantida viloyat shu formada so'raladi (8-qaror).
+  //: `a` variantida bo'sh qoladi va 2-qadamda to'ldiriladi.
+  const [region, setRegion] = useState("");
   //: Shartlar va maxfiylik — MAJBURIY (qaror 13). Ataylab `false` dan
   //: boshlanadi: oldindan belgilangan katak rozilik hisoblanmaydi.
   const [terms, setTerms] = useState(false);
@@ -167,6 +181,9 @@ export function AuthForm({
         await postJson("/auth/register/", {
           ...payload,
           country,
+          // `b` variantida viloyat shu yerda keladi, `a` da bo'sh —
+          // maydon ixtiyoriy, ya'ni ikkalasi ham to'g'ri.
+          region,
           terms_accepted: terms,
           marketing_opt_in: marketing,
         });
@@ -304,8 +321,32 @@ export function AuthForm({
           <CountrySelect
             label={t(locale, "auth.country")}
             value={country}
-            onChange={setCountry}
+            onChange={(code) => {
+              setCountry(code);
+              // Viloyat KODI faqat O'zbekiston uchun ma'noli: boshqa
+              // mamlakatlarda joy erkin matn bo'ladi (ADR-0017).
+              if (code !== "UZ") setRegion("");
+            }}
           />
+        )}
+        {mode === "register" && geoVariant === "b" && country === "UZ" && (
+          /* A/B `b` varianti (8-qaror): viloyat DARHOL so'raladi.
+             Nazorat guruhida esa bu 2-qadamda so'raladi — farq shunda,
+             ya'ni «erta so'rash odamni qaytarib yuborayaptimi» degan
+             savolga javob shu ikki guruhni taqqoslab topiladi. */
+          <SelectField
+            label={t(locale, "settings.region")}
+            name="region"
+            value={region}
+            onChange={(e) => setRegion(e.target.value)}
+          >
+            <option value="">—</option>
+            {REGION_CODES.map((code) => (
+              <option key={code} value={code}>
+                {regionName(code, locale)}
+              </option>
+            ))}
+          </SelectField>
         )}
         <Field
           label={t(locale, "auth.password")}

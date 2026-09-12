@@ -11,6 +11,7 @@
  */
 
 import { API_BASE } from "./api";
+import { GEO_EXPERIMENT, variant } from "./experiments";
 
 const ENDPOINT = `${API_BASE}/analytics/events/`;
 const MAX_BATCH = 25;
@@ -56,10 +57,19 @@ function schedule() {
 
 /** Hodisani navbatga qo'shadi. Yuborish biroz kechiktiriladi, ya'ni
  *  ketma-ket hodisalar (forma boshlandi → xato → yuborildi) bitta
- *  so'rovda ketadi. */
+ *  so'rovda ketadi.
+ *
+ *  Har bir hodisaga eksperiment guruhi QO'SHILADI: usiz A/B natijasini
+ *  hodisalardan ajratib bo'lmasdi — guruh faqat cookie'da qolib,
+ *  «qaysi variant yaxshiroq ishladi» degan savolga javob bermasdi.
+ */
 export function track(name: string, props?: Record<string, unknown>) {
   if (typeof window === "undefined") return;
-  queue.push({ name, path: window.location.pathname, props });
+  queue.push({
+    name,
+    path: window.location.pathname,
+    props: { ...props, exp: variant(GEO_EXPERIMENT) },
+  });
   schedule();
 }
 

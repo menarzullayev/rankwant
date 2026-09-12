@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 
 from core import account_views, views
 from core.school_views import SchoolViewSet
-from core.staff_views import StaffSchoolViewSet, StaffUserViewSet
+from core.staff_views import StaffAnalyticsView, StaffSchoolViewSet, StaffUserViewSet
 
 router = DefaultRouter()
 router.register("users", views.UserViewSet, basename="user")
@@ -25,6 +25,13 @@ urlpatterns = [
         "analytics/events/",
         views.AnalyticsEventView.as_view(),
         name="analytics-events",
+    ),
+    # Voronka dashboardi (qaror 7) — yozilgan hodisalarni KO'RISH yo'li.
+    # `analytics/events/` yozadi (ochiq), bu esa faqat o'qiydi (staff).
+    path(
+        "staff/analytics/",
+        StaffAnalyticsView.as_view(),
+        name="staff-analytics",
     ),
     path("auth/logout/", views.LogoutView.as_view(), name="logout"),
     path("auth/providers/", views.AuthProvidersView.as_view(), name="auth-providers"),
