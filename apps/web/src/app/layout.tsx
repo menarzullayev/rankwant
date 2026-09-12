@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { IBM_Plex_Mono, IBM_Plex_Serif } from "next/font/google";
 import "./globals.css";
 import AppShell from "@/layout/AppShell";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
@@ -7,6 +8,38 @@ import { DEFAULT_LOCALE } from "@/i18n/messages";
 import { SITE_URL } from "@/lib/site";
 
 const TITLE = "RankWant — reyting xohlaganlar uchun";
+
+/** Uslub shriftlari — endi o'z domenimizdan beriladi: `next/font`
+ *  ularni BUILD vaqtida yuklab oladi va `/_next/static/media/` dan
+ *  xizmat qiladi, ya'ni ishlash paytida Google'ga hech qanday so'rov
+ *  ketmaydi (ilgari `fonts.googleapis.com` dan render-bloklovchi CSS
+ *  olinardi).
+ *
+ * `preload: false` ATAYLAB. Bu ikki oilani 12 uslubdan faqat ikkitasi
+ * ishlatadi (`terminal` va `editorial`), standart uslub esa `clay` —
+ * ya'ni ko'pchilik foydalanuvchi ularni umuman ko'rmaydi. Preload
+ * bo'lsa brauzer fayllarni DARHOL tortardi; usiz esa `@font-face`
+ * faqat haqiqatan ishlatilganda yuklanadi.
+ *
+ * `cyrillic` — ru/kk/ky/tg uchun, `latin-ext` — tr va qoraqalpoq
+ * harflari uchun. Usiz o'sha tillarda matn zaxira shriftga tushardi.
+ */
+const plexMono = IBM_Plex_Mono({
+  subsets: ["latin", "latin-ext", "cyrillic"],
+  weight: ["400", "500", "600"],
+  variable: "--rw-plex-mono",
+  display: "swap",
+  preload: false,
+});
+
+const plexSerif = IBM_Plex_Serif({
+  subsets: ["latin", "latin-ext", "cyrillic"],
+  weight: ["400", "600"],
+  style: ["normal", "italic"],
+  variable: "--rw-plex-serif",
+  display: "swap",
+  preload: false,
+});
 const DESCRIPTION =
   "Sport dasturlash va informatika olimpiadasi platformasi: masala arxivi, " +
   "musobaqa va ochiq reyting.";
@@ -111,22 +144,12 @@ export default async function RootLayout({
 }) {
   const locale = await getLocale();
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html
+      lang={locale}
+      className={`${plexMono.variable} ${plexSerif.variable}`}
+      suppressHydrationWarning
+    >
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin=""
-        />
-        {/* Terminal monospace, editorial serif talab qiladi — uslub
-            tanlanmaguncha kerak emas, shu bois `display=swap`. */}
-        {/* eslint-disable-next-line @next/next/no-page-custom-font --
-            qoida pages router uchun; bu root layout barcha sahifalarga tegishli */}
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap"
-        />
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
         <script dangerouslySetInnerHTML={{ __html: STYLE_INIT }} />
         <script

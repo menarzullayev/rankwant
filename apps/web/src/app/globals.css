@@ -122,7 +122,7 @@
   --rw-field: #ffffff;
   --rw-font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --rw-font-display: var(--rw-font);
-  --rw-font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --rw-font-mono: var(--rw-plex-mono), ui-monospace, Menlo, monospace;
   --rw-btn-radius: var(--rw-radius-sm);
   --rw-btn-shadow: none;
   --rw-btn-weight: 500;
@@ -242,7 +242,7 @@
   --rw-chip: rgba(70, 214, 127, .08);
   --rw-hover: rgba(70, 214, 127, .07);
   --rw-field: #05070a;
-  --rw-font: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --rw-font: var(--rw-plex-mono), ui-monospace, Menlo, monospace;
   --rw-font-display: var(--rw-font);
   --rw-btn-radius: 0px;
   --rw-btn-weight: 500;
@@ -280,7 +280,7 @@
   --rw-chip: #f6f5f2;
   --rw-hover: #f6f5f2;
   --rw-field: #ffffff;
-  --rw-font: "IBM Plex Serif", Georgia, "Times New Roman", serif;
+  --rw-font: var(--rw-plex-serif), Georgia, "Times New Roman", serif;
   --rw-font-display: var(--rw-font);
   --rw-btn-radius: 0px;
   --rw-btn-weight: 400;
