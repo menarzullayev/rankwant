@@ -7,12 +7,12 @@ import {
   ComboboxOptions,
   Label,
 } from "@headlessui/react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { CountryFlag } from "@/components/ui/CountryFlag";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
-import { countryOptions } from "@/lib/countries";
+import { countryName, countryOptions } from "@/lib/countries";
 
 /** Mamlakat tanlagichi — qidiruv, klaviatura va bayroqlar bilan.
  *
@@ -45,17 +45,29 @@ export function CountrySelect({
 }) {
   const locale = useLocale();
   const [query, setQuery] = useState("");
-  const options = countryOptions(locale);
+  // `countryOptions` har renderda qayta qurilardi — endi til bo'yicha
+  // keshlanadi, qidiruv jadvali ham shunga bog'lanadi.
+  const options = useMemo(() => countryOptions(locale), [locale]);
   const selected = options.find((c) => c.code === value);
 
-  // Qidiruv ham NOM, ham KOD bo'yicha: odam «uz» deb yozsa ham topilsin.
+  // Qidiruv IKKI TILDA: nom (o'zbekcha/ruscha) + inglizcha nom + kod.
+  // Sabab: odam "qoz" ham, "kazakhstan" ham yozishi mumkin, kod esa
+  // har doim ishlaydi. Inglizcha nom alohida qo'shiladi, chunki
+  // jadvaldagi nom boshqa tilda.
+  const haystack = useMemo(
+    () =>
+      new Map(
+        options.map((c) => [
+          c.code,
+          `${c.name} ${countryName(c.code, "en")} ${c.code}`.toLowerCase(),
+        ]),
+      ),
+    [options],
+  );
+
   const needle = query.trim().toLowerCase();
   const filtered = needle
-    ? options.filter(
-        (c) =>
-          c.name.toLowerCase().includes(needle) ||
-          c.code.toLowerCase().startsWith(needle),
-      )
+    ? options.filter((c) => haystack.get(c.code)?.includes(needle))
     : options;
 
   return (
