@@ -315,9 +315,7 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
     terms_accepted = serializers.BooleanField(write_only=True)
     #: Marketing xatlari — IXTIYORIY va ALOHIDA (GDPR 7-modda: shartlar
     #: roziligi bilan birlashtirib bo'lmaydi). Standart — `False`.
-    marketing_opt_in = serializers.BooleanField(
-        write_only=True, required=False, default=False
-    )
+    marketing_opt_in = serializers.BooleanField(write_only=True, required=False, default=False)
 
     class Meta:
         model = User

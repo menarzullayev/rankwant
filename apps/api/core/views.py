@@ -463,9 +463,7 @@ class LoginView(APIView):
         # `login()` dan KEYIN chaqirilishi shart: `login()` sessiyani
         # almashtiradi va avval qo'yilgan muddatni tashlab yuboradi.
         request.session.set_expiry(
-            settings.SESSION_COOKIE_AGE
-            if serializer.validated_data.get("remember")
-            else 0
+            settings.SESSION_COOKIE_AGE if serializer.validated_data.get("remember") else 0
         )
         return Response(MeSerializer(user).data)
 
