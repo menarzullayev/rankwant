@@ -8,15 +8,14 @@ import { useEffect, useRef, useState } from "react";
 import { useSession } from "@/context/SessionContext";
 import { Button } from "@/components/ui/Button";
 import { Field, type FieldStatus } from "@/components/ui/Field";
-import { Checkbox, SelectField } from "@/components/ui/SelectField";
-import { CountryFlag } from "@/components/ui/CountryFlag";
+import { Checkbox } from "@/components/ui/SelectField";
+import { CountrySelect } from "@/components/ui/CountrySelect";
 import { GithubMark, GoogleMark } from "@/components/ProviderMark";
 import { TelegramButton } from "@/components/TelegramButton";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t, errorText } from "@/i18n/messages";
 import { ApiError, getJson, postJson } from "@/lib/api";
 import { track } from "@/lib/analytics";
-import { countryOptions } from "@/lib/countries";
 import { strength } from "@/lib/password";
 
 type Mode = "login" | "register";
@@ -288,22 +287,12 @@ export function AuthForm({
         {mode === "register" && (
           /* Mamlakat — bosqichli yig'ishning birinchi qadami (qaror 2):
              bitta tanlov, lekin butun statistika shu bo'yicha bo'linadi.
-             Nomlar `Intl.DisplayNames` dan, ya'ni 250 tasini qo'lda
-             tarjima qilish shart emas. */
-          <SelectField
+             Qidiruvli: 249 variantni qo'lda aylantirish noqulay. */
+          <CountrySelect
             label={t(locale, "auth.country")}
-            name="country"
-            autoComplete="country"
             value={country}
-            onChange={(e) => setCountry(e.target.value)}
-            leading={<CountryFlag code={country} className="h-6 w-9" />}
-          >
-            {countryOptions(locale).map((c) => (
-              <option key={c.code} value={c.code}>
-                {c.name}
-              </option>
-            ))}
-          </SelectField>
+            onChange={setCountry}
+          />
         )}
         <Field
           label={t(locale, "auth.password")}

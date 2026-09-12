@@ -640,4 +640,6 @@ export const ru: Record<MessageKey, string> = {
   "geo.nudgeTitle": "Укажите страну и школу",
   "geo.nudgeBody": "Нужно, чтобы попасть в рейтинг школ — займёт 20 секунд.",
   "geo.nudgeCta": "Заполнить",
+  "geo.searchPlaceholder": "Поиск страны",
+  "geo.noResults": "Ничего не найдено",
 };

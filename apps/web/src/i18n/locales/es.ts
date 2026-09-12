@@ -640,4 +640,6 @@ export const es: Record<MessageKey, string> = {
   "geo.nudgeTitle": "Añade tu país y escuela",
   "geo.nudgeBody": "Es necesario para aparecer en la clasificación de escuelas: toma 20 segundos.",
   "geo.nudgeCta": "Completar",
+  "geo.searchPlaceholder": "Buscar país",
+  "geo.noResults": "Sin resultados",
 };

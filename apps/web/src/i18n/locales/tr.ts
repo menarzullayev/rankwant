@@ -640,4 +640,6 @@ export const tr: Record<MessageKey, string> = {
   "geo.nudgeTitle": "Ülkenizi ve okulunuzu ekleyin",
   "geo.nudgeBody": "Okul sıralamasında görünmek için gerekli — 20 saniye sürer.",
   "geo.nudgeCta": "Doldur",
+  "geo.searchPlaceholder": "Ülke ara",
+  "geo.noResults": "Sonuç yok",
 };

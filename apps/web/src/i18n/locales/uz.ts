@@ -644,6 +644,8 @@ export const uz = {
   "geo.nudgeTitle": "Davlat va maktabingizni qo'shing",
   "geo.nudgeBody": "Maktab reytingida ko'rinish uchun kerak — 20 soniya vaqt oladi.",
   "geo.nudgeCta": "To'ldirish",
+  "geo.searchPlaceholder": "Mamlakat qidirish",
+  "geo.noResults": "Topilmadi",
 } as const;
 
 export type MessageKey = keyof typeof uz;

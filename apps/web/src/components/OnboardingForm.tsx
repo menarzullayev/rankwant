@@ -7,12 +7,11 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { SelectField } from "@/components/ui/SelectField";
-import { CountryFlag } from "@/components/ui/CountryFlag";
+import { CountrySelect } from "@/components/ui/CountrySelect";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
 import { api, patchJson, type Me, type School } from "@/lib/api";
 import { track } from "@/lib/analytics";
-import { countryOptions } from "@/lib/countries";
 import { REGION_CODES, regionName } from "@/lib/regions";
 
 /** Ro'yxatdan o'tishning 2-qadami — ixtiyoriy (qaror 3, 4).
@@ -115,25 +114,17 @@ export function OnboardingForm({ me }: { me: Me }) {
     <div className="flex flex-col gap-5">
       <p className="text-theme-sm rw-dim">{t(locale, "auth.step2Body")}</p>
 
-      <SelectField
+      <CountrySelect
         label={t(locale, "settings.country")}
-        name="country"
         value={country}
-        leading={<CountryFlag code={country} className="h-6 w-9" />}
-        onChange={(e) => {
-          setCountry(e.target.value);
+        onChange={(code) => {
+          setCountry(code);
           // Mamlakat almashsa joy ma'lumoti mos kelmay qoladi —
           // yangi mamlakatda viloyat kodi ham, shahar ham boshqa.
           setRegion("");
           setCity("");
         }}
-      >
-        {countryOptions(locale).map((c) => (
-          <option key={c.code} value={c.code}>
-            {c.name}
-          </option>
-        ))}
-      </SelectField>
+      />
 
       {isUz ? (
         <SelectField

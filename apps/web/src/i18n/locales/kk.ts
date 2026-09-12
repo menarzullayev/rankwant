@@ -641,4 +641,6 @@ export const kk: Record<MessageKey, string> = {
   "geo.nudgeTitle": "Еліңіз бен мектебіңізді қосыңыз",
   "geo.nudgeBody": "Мектеп рейтингісінде көріну үшін қажет — 20 секунд алады.",
   "geo.nudgeCta": "Толтыру",
+  "geo.searchPlaceholder": "Ел іздеу",
+  "geo.noResults": "Табылмады",
 };

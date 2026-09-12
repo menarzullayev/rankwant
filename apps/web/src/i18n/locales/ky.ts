@@ -640,4 +640,6 @@ export const ky: Record<MessageKey, string> = {
   "geo.nudgeTitle": "Өлкөңүз жана мектебиңизди кошуңуз",
   "geo.nudgeBody": "Мектеп рейтингинде көрүнүү үчүн керек — 20 секунд алат.",
   "geo.nudgeCta": "Толтуруу",
+  "geo.searchPlaceholder": "Өлкө издөө",
+  "geo.noResults": "Табылган жок",
 };

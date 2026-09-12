@@ -641,4 +641,6 @@ export const tg: Record<MessageKey, string> = {
   "geo.nudgeTitle": "Кишвар ва мактаби худро илова кунед",
   "geo.nudgeBody": "Барои дида шудан дар рейтинги мактабҳо лозим — 20 сония мегирад.",
   "geo.nudgeCta": "Пур кардан",
+  "geo.searchPlaceholder": "Ҷустуҷӯи кишвар",
+  "geo.noResults": "Ёфт нашуд",
 };

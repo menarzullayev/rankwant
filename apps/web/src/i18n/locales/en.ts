@@ -639,4 +639,6 @@ export const en: Record<MessageKey, string> = {
   "geo.nudgeTitle": "Add your country and school",
   "geo.nudgeBody": "This is needed to appear in the school ranking — it takes 20 seconds.",
   "geo.nudgeCta": "Fill in",
+  "geo.searchPlaceholder": "Search country",
+  "geo.noResults": "No results",
 };

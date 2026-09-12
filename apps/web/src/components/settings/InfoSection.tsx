@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { CountryFlag } from "@/components/ui/CountryFlag";
+import { CountrySelect } from "@/components/ui/CountrySelect";
 import { Field } from "@/components/ui/Field";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
@@ -82,24 +82,15 @@ export function InfoSection() {
       <form onSubmit={save} className="mt-5 flex flex-col gap-6">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Select
+            <CountrySelect
               label={t(locale, "settings.country")}
               value={currentCountry}
-              leading={
-                currentCountry ? <CountryFlag code={currentCountry} /> : undefined
-              }
-              onChange={(event) => {
-                setCountry(event.target.value);
+              allowEmpty
+              onChange={(code) => {
+                setCountry(code);
                 setRegion(null);
               }}
-            >
-              <option value="">{t(locale, "settings.notChosen")}</option>
-              {countries.map((c) => (
-                <option key={c.code} value={c.code}>
-                  {c.name}
-                </option>
-              ))}
-            </Select>
+            />
             {visibility("country")}
           </div>
           {currentCountry === "UZ" ? (

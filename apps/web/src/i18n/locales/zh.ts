@@ -637,4 +637,6 @@ export const zh: Record<MessageKey, string> = {
   "geo.nudgeTitle": "添加您的国家和学校",
   "geo.nudgeBody": "用于在学校排名中显示——只需 20 秒。",
   "geo.nudgeCta": "填写",
+  "geo.searchPlaceholder": "搜索国家",
+  "geo.noResults": "未找到",
 };

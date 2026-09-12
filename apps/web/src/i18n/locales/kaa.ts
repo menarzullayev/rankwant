@@ -640,4 +640,6 @@ export const kaa: Record<MessageKey, string> = {
   "geo.nudgeTitle": "Mámleket hám mektebińizdi qosıń",
   "geo.nudgeBody": "Mektep reytinginde kóriniw ushın kerek — 20 sekund waqıt aladı.",
   "geo.nudgeCta": "Toltırıw",
+  "geo.searchPlaceholder": "Mámleket izlew",
+  "geo.noResults": "Tabılmadı",
 };
