@@ -48,6 +48,8 @@ export function OnboardingForm({ me }: { me: Me }) {
   const [city, setCity] = useState(me.city || "");
   const [school, setSchool] = useState(me.school_name || me.school || "");
   const [schoolRef, setSchoolRef] = useState<number | null>(me.school_ref);
+  //: Telefon — IXTIYORIY (qaror 6) va ommaviy profilga chiqmaydi.
+  const [phone, setPhone] = useState(me.phone || "");
 
   const [found, setFound] = useState<{ for: string; items: School[] }>({
     for: "",
@@ -99,6 +101,7 @@ export function OnboardingForm({ me }: { me: Me }) {
         city: isUz ? "" : city.trim(),
         school: school.trim(),
         school_ref: schoolRef,
+        phone: phone.trim(),
       });
       track("auth.step2_saved", {
         country,
@@ -200,6 +203,22 @@ export function OnboardingForm({ me }: { me: Me }) {
           </p>
         )}
       </div>
+
+      {/* Telefon — IXTIYORIY (qaror 6). SMS tasdiqlash yo'q, ya'ni raqam
+          tekshirilmaydi; maqsad hisobni tiklash va musobaqa
+          bildirishnomalari uchun asos bo'lish. Ommaviy profilga
+          chiqmaydi, shuning uchun bu yerda uning ko'rinishi haqida
+          hech narsa va'da qilinmaydi. */}
+      <Field
+        label={t(locale, "settings.phone")}
+        name="phone"
+        type="tel"
+        autoComplete="tel"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+        maxLength={20}
+        hint={t(locale, "settings.phoneHint")}
+      />
 
       {error && (
         <p

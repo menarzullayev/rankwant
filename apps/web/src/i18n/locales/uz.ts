@@ -628,6 +628,8 @@ export const uz = {
   "settings.showSocial": "Ijtimoiy havolalarni ko'rsatish",
   "settings.schoolFromCatalog": "Katalogdan tanlandi — maktab reytingida ko'rinasiz",
   "settings.schoolFreeText": "Katalogdan tanlang yoki o'zingiz yozing",
+  "settings.phone": "Telefon raqami",
+  "settings.phoneHint": "Ixtiyoriy. Hisobni tiklash va musobaqa bildirishnomalari uchun. Profilingizda ko'rinmaydi.",
   "settings.fromConnected": "Ulangan hisobdan: @{handle}",
   "settings.blogHint": "https:// bilan boshlanadigan manzil",
   "leaderboard.school": "«{school}» reytingi",

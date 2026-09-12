@@ -198,6 +198,20 @@ export function InfoSection() {
             />
             {visibility("birth_date")}
           </div>
+          {/* Telefon — IXTIYORIY va ommaviy profilga chiqmaydi, shuning
+              uchun yonida ko'rinish tugmasi YO'Q: qolgan maydonlardagi
+              `visibility(...)` «reytingda ko'rsatilsinmi» degan savolga
+              javob beradi, bu yerda esa ko'rsatish umuman mumkin emas. */}
+          <div className="space-y-2">
+            <Field
+              label={t(locale, "settings.phone")}
+              name="phone"
+              type="tel"
+              defaultValue={user.phone}
+              hint={t(locale, "settings.phoneHint")}
+              autoComplete="tel"
+            />
+          </div>
         </div>
 
         {user.email && visibility("email", t(locale, "settings.showEmail"))}

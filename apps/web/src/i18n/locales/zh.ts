@@ -621,6 +621,8 @@ export const zh: Record<MessageKey, string> = {
   "settings.showSocial": "显示社交链接",
   "settings.schoolFromCatalog": "已从目录中选择——你会出现在学校排行中",
   "settings.schoolFreeText": "从目录中选择，或自行填写",
+  "settings.phone": "电话号码",
+  "settings.phoneHint": "可选。用于找回账号和比赛通知。不会显示在您的个人资料中。",
   "settings.fromConnected": "来自已关联账号：@{handle}",
   "settings.blogHint": "以 https:// 开头的地址",
   "leaderboard.school": "{school} 排行",

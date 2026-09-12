@@ -624,6 +624,8 @@ export const ky: Record<MessageKey, string> = {
   "settings.showSocial": "Социалдык шилтемелерди көрсөтүү",
   "settings.schoolFromCatalog": "Каталогдон тандалды — мектеп рейтингинде көрүнөсүз",
   "settings.schoolFreeText": "Каталогдон тандаңыз же өзүңүз жазыңыз",
+  "settings.phone": "Телефон номери",
+  "settings.phoneHint": "Милдеттүү эмес. Аккаунтту калыбына келтирүү жана мелдеш билдирүүлөрү үчүн. Профилиңизде көрүнбөйт.",
   "settings.fromConnected": "Байланган аккаунттан: @{handle}",
   "settings.blogHint": "https:// менен башталган дарек",
   "leaderboard.school": "«{school}» рейтинги",

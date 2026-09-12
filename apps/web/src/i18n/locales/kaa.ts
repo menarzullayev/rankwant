@@ -624,6 +624,8 @@ export const kaa: Record<MessageKey, string> = {
   "settings.showSocial": "Social siltemelerdi kórsetiw",
   "settings.schoolFromCatalog": "Katalogtan saylandı — mektep reytinginde kórinesiz",
   "settings.schoolFreeText": "Katalogtan saylań yamasa ózińiz jazıń",
+  "settings.phone": "Telefon nomeri",
+  "settings.phoneHint": "Ixtiyarıy. Esaptı tiklew hám jarıs bildiriwleri ushın. Profilińizde kórinbeydi.",
   "settings.fromConnected": "Baylanǵan akkaunttan: @{handle}",
   "settings.blogHint": "https:// menen baslanatuǵın mánzil",
   "leaderboard.school": "«{school}» reytingi",

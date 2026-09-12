@@ -623,6 +623,8 @@ export const en: Record<MessageKey, string> = {
   "settings.showSocial": "Show social links",
   "settings.schoolFromCatalog": "Picked from the catalog — you appear in the school ranking",
   "settings.schoolFreeText": "Pick from the catalog or type your own",
+  "settings.phone": "Phone number",
+  "settings.phoneHint": "Optional. For account recovery and contest notifications. Not shown on your profile.",
   "settings.fromConnected": "From linked account: @{handle}",
   "settings.blogHint": "An address starting with https://",
   "leaderboard.school": "{school} ranking",

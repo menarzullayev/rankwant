@@ -657,6 +657,9 @@ export type Me = {
   grade: string;
   website: string;
   birth_date: string | null;
+  /** Aloqa uchun telefon. IXTIYORIY va ommaviy profilga chiqmaydi —
+   *  faqat hisobni tiklash va bildirishnomalar uchun. */
+  phone: string;
   hidden_fields: PrivacyField[];
   ui_prefs: UiPrefs;
   notify_prefs: NotifyPrefs;

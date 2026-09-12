@@ -624,6 +624,8 @@ export const ru: Record<MessageKey, string> = {
   "settings.showSocial": "Показывать ссылки на соцсети",
   "settings.schoolFromCatalog": "Выбрано из каталога — вы в рейтинге школы",
   "settings.schoolFreeText": "Выберите из каталога или введите сами",
+  "settings.phone": "Номер телефона",
+  "settings.phoneHint": "Необязательно. Для восстановления аккаунта и уведомлений о соревнованиях. В профиле не отображается.",
   "settings.fromConnected": "Из привязанного аккаунта: @{handle}",
   "settings.blogHint": "Адрес, начинающийся с https://",
   "leaderboard.school": "Рейтинг: {school}",

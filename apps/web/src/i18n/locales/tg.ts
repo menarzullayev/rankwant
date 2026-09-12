@@ -625,6 +625,8 @@ export const tg: Record<MessageKey, string> = {
   "settings.showSocial": "Намоиши пайвандҳои иҷтимоӣ",
   "settings.schoolFromCatalog": "Аз каталог интихоб шуд — шумо дар рейтинги мактаб ҳастед",
   "settings.schoolFreeText": "Аз каталог интихоб кунед ё худатон нависед",
+  "settings.phone": "Рақами телефон",
+  "settings.phoneHint": "Ҳатмӣ нест. Барои барқарорсозии ҳисоб ва огоҳиномаҳои мусобиқа. Дар профил нишон дода намешавад.",
   "settings.fromConnected": "Аз ҳисоби пайвастшуда: @{handle}",
   "settings.blogHint": "Суроғае, ки бо https:// оғоз мешавад",
   "leaderboard.school": "Рейтинги «{school}»",

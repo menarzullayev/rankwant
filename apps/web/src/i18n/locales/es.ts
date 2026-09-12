@@ -624,6 +624,8 @@ export const es: Record<MessageKey, string> = {
   "settings.showSocial": "Mostrar enlaces sociales",
   "settings.schoolFromCatalog": "Elegida del catálogo: apareces en la clasificación de la escuela",
   "settings.schoolFreeText": "Elige del catálogo o escríbela tú",
+  "settings.phone": "Número de teléfono",
+  "settings.phoneHint": "Opcional. Para recuperar la cuenta y recibir avisos de concursos. No se muestra en tu perfil.",
   "settings.fromConnected": "Desde la cuenta vinculada: @{handle}",
   "settings.blogHint": "Una dirección que empiece por https://",
   "leaderboard.school": "Clasificación de {school}",

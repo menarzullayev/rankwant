@@ -624,6 +624,8 @@ export const tr: Record<MessageKey, string> = {
   "settings.showSocial": "Sosyal bağlantıları göster",
   "settings.schoolFromCatalog": "Katalogdan seçildi — okul sıralamasında görünürsünüz",
   "settings.schoolFreeText": "Katalogdan seçin veya kendiniz yazın",
+  "settings.phone": "Telefon numarası",
+  "settings.phoneHint": "İsteğe bağlı. Hesap kurtarma ve yarış bildirimleri için. Profilinizde gösterilmez.",
   "settings.fromConnected": "Bağlı hesaptan: @{handle}",
   "settings.blogHint": "https:// ile başlayan bir adres",
   "leaderboard.school": "{school} sıralaması",

@@ -152,6 +152,28 @@ class MeSerializer(serializers.ModelSerializer[User]):
         free_at = usernames.next_free_at(obj)
         return {"free_at": free_at.isoformat() if free_at else None, "price": usernames.PRICE}
 
+    #: Telefon — IXTIYORIY va faqat o'ziga ko'rinadi. `PRIVACY_FIELDS` ga
+    #: ATAYLAB qo'shilmagan: u ro'yxat «ommaviy profilda yashira oladigan»
+    #: maydonlar uchun, telefon esa umuman ommaviy emas — yashirish
+    #: tushunchasi yo'q.
+    def validate_phone(self, value: str) -> str:
+        """Bo'shliq va ajratgichlarni tozalab, raqamni tekshiradi.
+
+        Sabab: bir xil raqam «+998 90 123 45 67» va «+998901234567»
+        ko'rinishida ikki xil saqlansa, keyinchalik qidirish va
+        solishtirish ishlamaydi. Format erkin qoldiriladi — xalqaro
+        raqamlar har xil yoziladi.
+        """
+        cleaned = re.sub(r"[\s()\-]", "", value.strip())
+        if not cleaned:
+            return ""
+        if not re.fullmatch(r"\+?\d{7,15}", cleaned):
+            raise serializers.ValidationError(
+                "Telefon raqami noto'g'ri: raqamlar, bo'shliq, qavs, "
+                "chiziqcha va boshida `+` bo'lishi mumkin."
+            )
+        return cleaned
+
     class Meta:
         model = User
         fields = [
@@ -177,6 +199,7 @@ class MeSerializer(serializers.ModelSerializer[User]):
             "grade",
             "website",
             "birth_date",
+            "phone",
             "hidden_fields",
             "pinned_achievements",
             "ui_prefs",

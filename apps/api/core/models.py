@@ -112,6 +112,15 @@ class User(AbstractUser):
     grade = models.CharField(max_length=40, blank=True)
     website = models.URLField(blank=True)
     birth_date = models.DateField(null=True, blank=True)
+    #: Aloqa uchun telefon — IXTIYORIY va ommaviy profilga HECH QACHON
+    #: chiqmaydi (pochtadan ham maxfiyroq: u shaxsni to'g'ridan-to'g'ri
+    #: bog'laydi). Maqsad — hisobni tiklash va musobaqa bildirishnomalari.
+    #:
+    #: SMS tasdiqlash hozircha YO'Q, ya'ni raqam tekshirilmagan. Shu
+    #: sababli unga tayanib biror huquq berilmasligi kerak (masalan,
+    #: parolni tiklash faqat pochta orqali qoladi) — aks holda begona
+    #: raqam yozib hisobni egallash yo'li ochilardi.
+    phone = models.CharField(max_length=20, blank=True)
     #: Ommaviy profilda YASHIRILGAN maydonlar. Bo'sh ro'yxat — hammasi
     #: ochiq: foydalanuvchi shuni tanladi, yashirish uning o'z qo'lida.
     hidden_fields = models.JSONField(default=default_hidden_fields, blank=True)
