@@ -56,8 +56,11 @@ Tizim almashtirishdan **oldin** `tools/handoff.sh out` (Linux) yoki
 `tools\handoff.ps1 out` (Windows), yuklangandan keyin `in` — aks holda ikki
 baza jimgina ajralib ketadi. Protokol: [10-operations](docs/10-operations/README.md)
 § «Ikki tizimli preview».
-Yuklangandan keyin `in` ni `rankwant-handoff.service` o'zi chaqiradi;
-`tools/handoff.sh switch` esa `out` qilib Windows'ga qayta yuklaydi.
+Linux'da `in` ni yuklanishda `rankwant-handoff.service` o'zi chaqiradi va
+`tools/handoff.sh switch` bitta buyruqda `out` + Windows'ga qayta yuklashni
+bajaradi. Windows'da bunday `switch` yo'q: `out`, keyin qayta yuklash —
+EFI tartibi Ubuntu'ni birinchi qo'yadi. U yerda avtomatik `in` uchun logon
+vazifasi bir marta ro'yxatga olinadi (hujjatda).
 
 **Servis nomini ro'yxatlab qisqartirmang.** Django kodi API'da ham,
 `worker` da ham, `beat` da ham ishlaydi; faqat `api` ni qayta qursangiz

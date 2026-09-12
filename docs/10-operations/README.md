@@ -227,6 +227,11 @@ bajaradi, GRUB'ning bir martalik tanlovini Windows'ga qo'yadi va qayta
 yuklaydi. Doimiy yuklanish tartibi o'zgarmaydi, ya'ni keyin yana Linux
 birinchi bo'lib turadi.
 
+Windows tomonida `switch` yo'q va kerak emas: `out` dan keyin oddiy qayta
+yuklash EFI tartibi bo'yicha yana Ubuntu'ni (GRUB) beradi, Linux esa o'zini
+unit bilan ko'taradi. Ishni har ikki tizimda `status` bilan boshlash qulay —
+u egalik kimda va oxirgi eksport qaysi ekanini bir qatorda ko'rsatadi.
+
 ### Standings sig'imi (o'lchangan, 2026-09-10)
 
 Jadval hamma uchun bir xil, ya'ni uni CDN keshlashi KERAK — bu
