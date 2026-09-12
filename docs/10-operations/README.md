@@ -144,6 +144,57 @@ docker compose --env-file .env.public \
 | Standings keshi | **Ochiq**: origin `Cache-Control: public, s-maxage=10` beradi, Cloudflare esa `cf-cache-status: DYNAMIC` qaytaradi — ya'ni keshlamaydi (standart qoidalar fayl kengaytmasiga qaraydi, `/api/v1/...` unga tushmaydi). Cache Rule kerak: `/api/v1/contests/*/standings/` va `/api/v1/arena/*/standings/` → *Eligible for cache*, *Respect origin TTL*. Nega muhimligi pastda |
 | `robots.txt` | Bizniki beriladi — `rankwant.uz` zonasida Cloudflare'ning managed robots.txt'i o'chiq, ya'ni `Sitemap: https://rankwant.uz/sitemap.xml` kraulerga yetadi. Search Console (domen resursi) va Yandex Webmaster'da DNS TXT orqali tasdiqlangan, sitemap ikkalasiga yuborilgan (2026-09-11) — apex'dagi `google-site-verification` va `yandex-verification` TXT'larini o'chirmang |
 
+### Ikki tizimli preview (dual-boot)
+
+Preview mashinasi dual-boot: bitta diskda Linux va Windows. Sayt qaysi tizim
+yoniq bo'lsa, o'shandan ishlaydi, lekin har tizimning **o'z** bazasi va
+MinIO'si bor. Ma'lumot tizimdan tizimga Cloudflare R2 dagi eksport orqali
+ko'chadi; R2 dagi `state.json` hozir qaysi tizim live ekanini saqlaydi.
+Ikkala tomon bitta tunnelning ikki ulagichi, ya'ni DNS o'zgarmaydi.
+
+| Qachon | Linux | Windows |
+| ------ | ----- | ------- |
+| Boshqa tizimga o'tishdan **oldin** | `tools/handoff.sh out` | `tools\handoff.ps1 out` |
+| Tizim yuklangandan keyin | `tools/handoff.sh in` | `tools\handoff.ps1 in` |
+| Holatni ko'rish | `tools/handoff.sh status` | `tools\handoff.ps1 status` |
+
+- `out` tunnelni to'xtatadi (sayt `services/maintenance-worker` sahifasiga
+  o'tadi), yozuvchi servislarni to'xtatadi, Postgres dump va MinIO arxivini
+  R2 ga yuklaydi, hajmini solishtiradi va `state.json` ga «hech kim live
+  emas» deb yozadi. U faqat live tizimda ishlaydi — eskirgan tomon yangi
+  eksport ustiga yoza olmaydi.
+- `in` R2 dagi eksport lokal bazadan yangi bo'lsa uni import qiladi (baza
+  bo'shdan tiklanadi: `--clean` bu tomondagi ortiqcha jadvallarni
+  tashlamasdi), stekni `--build` bilan ko'taradi, `/api/v1/health/` ni kutadi
+  va faqat shundan keyin tunnelni yoqadi.
+
+**Asosiy qoida:** boshqa tizim live bo'lib qolgan bo'lsa (masalan `out`
+unutilgan), `in` rad etadi. Aks holda ikkala tomonda yangi hisob va
+urinishlar paydo bo'lib, ikki baza jimgina ajralib ketadi — ularni
+birlashtiradigan vosita yo'q. To'g'ri yo'l — o'sha tizimga qaytib `out`
+qilish. Qaytishning iloji bo'lmasa, `in --force` (`-Force`): o'sha tomonning
+oxirgi eksportdan keyingi ma'lumoti yo'qoladi.
+
+R2 da oxirgi ikkita eksport saqlanadi (bepul tarif 10 GB), lokal nusxadan
+faqat joriysi.
+
+Bir martalik sozlash:
+
+1. R2 da `rankwant-handoff` bucket va faqat shu bucket uchun *Object Read &
+   Write* API token. Qiymatlar `.env.handoff.example` bo'yicha `.env.handoff`
+   ga — ikkala tizimda bir xil.
+2. Sirlar R2 orqali **ko'chirilmaydi** — bir marta qo'lda (masalan USB
+   orqali) Windows'ga: `.env.public` repo ildiziga; `/etc/cloudflared/config.yml`
+   va tunnel kaliti (`<tunnel-id>.json`) `%USERPROFILE%\.cloudflared\` ga.
+   `config.yml` dagi `credentials-file:` Windows yo'liga almashtiriladi.
+3. Windows: `winget install --id Cloudflare.cloudflared`. U yerda tunnel xizmat
+   emas, `handoff.ps1` boshqaradigan oddiy jarayon — Docker Desktop baribir
+   foydalanuvchi tizimga kirgandagina ishlaydi.
+4. Linux: `sudo systemctl disable cloudflared` — tunnel yuklanishda o'zi
+   yoqilmasin, faqat `in` tekshiruvidan keyin. Stek `restart: unless-stopped`
+   bilan o'zi ko'tariladi, lekin tunnelsiz tashqariga chiqmaydi.
+5. Hozir live bo'lgan tizimda bir marta: `init`.
+
 ### Standings sig'imi (o'lchangan, 2026-09-10)
 
 Jadval hamma uchun bir xil, ya'ni uni CDN keshlashi KERAK — bu

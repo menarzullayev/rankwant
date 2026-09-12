@@ -51,6 +51,12 @@ yonma-yon ishlaydi.
 docker compose --env-file .env.public -f docker-compose.yml -f docker-compose.public.yml up -d --build --wait
 ```
 
+Mashina dual-boot (Linux + Windows), har tizimda preview'ning o'z bazasi bor.
+Tizim almashtirishdan **oldin** `tools/handoff.sh out` (Linux) yoki
+`tools\handoff.ps1 out` (Windows), yuklangandan keyin `in` — aks holda ikki
+baza jimgina ajralib ketadi. Protokol: [10-operations](docs/10-operations/README.md)
+§ «Ikki tizimli preview».
+
 **Servis nomini ro'yxatlab qisqartirmang.** Django kodi API'da ham,
 `worker` da ham, `beat` da ham ishlaydi; faqat `api` ni qayta qursangiz
 worker eski kodda qoladi. O'lchangan oqibat: judge yangi verdikt
