@@ -1,0 +1,14 @@
+# RankWant — tunnel o'chiq bo'lganda "texnik ishlar" sahifasi. README.md ga qarang.
+# Deploy (shu papkada): npx wrangler deploy
+name = "rankwant-maintenance"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+workers_dev = false
+
+routes = [
+  { pattern = "rankwant.uz/*", zone_name = "rankwant.uz" },
+  { pattern = "www.rankwant.uz/*", zone_name = "rankwant.uz" },
+  # Eski domen boshqa zonada: sahifalari yangi domenga 301 bo'ladi, `/api/*` esa
+  # eski avatar manzillari uchun javob beraveradi (10-operations).
+  { pattern = "rankwant.bugvector.uz/*", zone_name = "bugvector.uz" },
+]

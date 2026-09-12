@@ -133,6 +133,7 @@ docker compose --env-file .env.public \
 | Nima | Qanday |
 | ---- | ------ |
 | Tashqi kirish | Cloudflare Tunnel (`/etc/cloudflared/config.yml`), ochiq port yo'q |
+| Tunnel o'chiq bo'lsa | [`services/maintenance-worker`](../../services/maintenance-worker/README.md) — Cloudflare Worker xom `Error 1033` o'rniga `503` va "texnik ishlar" sahifasini beradi, `/api/*` ga loyiha xato formatida |
 | Domen | `rankwant.uz` (Eskiz'da ro'yxatdan o'tgan, NS — Cloudflare). Eski `rankwant.bugvector.uz` o'chirilmagan: sahifalar yangi domenga 301 bo'ladi (`apps/web/src/proxy.ts`), `/api/*` esa javob beraveradi — eski avatar manzillari uchun |
 | Kiruvchi pochta | `admin@rankwant.uz` — Zoho Mail Forever Free (5 foydalanuvchi × 5 GB, faqat web va mobil ilova, IMAP yo'q). Apex'da MX `mx/mx2/mx3.zoho.com`, SPF `include:zohomail.com`, DKIM `zmail._domainkey`. Sayt xatlarini yuboruvchi zanjir (`mail1-4.rankwant.bugvector.uz`) bunga bog'liq emas |
 | Domen almashsa | `PUBLIC_ORIGIN` → to'liq deploy → `manage.py rehost_avatars <eski origin>`. Tashqarida: Google klientiga yangi origin va redirect URI, GitHub OAuth App'ga yangi callback (bir nechtasini qabul qiladi — eskisi qoladi), BotFather `/setdomain` (bitta domen). Cookie domenga bog'liq — hamma qaytadan kiradi |
