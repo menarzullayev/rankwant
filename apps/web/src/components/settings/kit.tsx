@@ -144,20 +144,27 @@ export function TextArea({
 export function Select({
   label,
   hint,
+  leading,
   children,
   ...props
 }: React.SelectHTMLAttributes<HTMLSelectElement> & {
   label: string;
   hint?: string;
+  /** Maydon CHAPIDAGI element — mamlakat bayrog'i uchun (native
+   *  `<select>` ichida SVG ko'rinmaydi, shuning uchun yonida turadi). */
+  leading?: React.ReactNode;
 }) {
   return (
     <label className="block">
       <span className="mb-1.5 block text-theme-sm font-medium rw-strong">
         {label}
       </span>
-      <select className={`${CONTROL} h-11 px-3`} {...props}>
-        {children}
-      </select>
+      <span className="flex items-center gap-2">
+        {leading}
+        <select className={`${CONTROL} h-11 min-w-0 flex-1 px-3`} {...props}>
+          {children}
+        </select>
+      </span>
       {hint && <span className="mt-1.5 block text-theme-xs rw-dim">{hint}</span>}
     </label>
   );

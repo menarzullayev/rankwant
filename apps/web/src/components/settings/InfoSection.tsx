@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { CountryFlag } from "@/components/ui/CountryFlag";
 import { Field } from "@/components/ui/Field";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
@@ -84,6 +85,9 @@ export function InfoSection() {
             <Select
               label={t(locale, "settings.country")}
               value={currentCountry}
+              leading={
+                currentCountry ? <CountryFlag code={currentCountry} /> : undefined
+              }
               onChange={(event) => {
                 setCountry(event.target.value);
                 setRegion(null);

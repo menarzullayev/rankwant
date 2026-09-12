@@ -5,6 +5,7 @@ import { Avatar } from "@/components/Avatar";
 import { UserName } from "@/components/UserName";
 import { Badge, type BadgeColor } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/Button";
+import { CountryFlag } from "@/components/ui/CountryFlag";
 import { fill, t, type Locale } from "@/i18n/messages";
 import type { ProfileRole, PublicProfile } from "@/lib/api";
 import { badgeLabel, coverClass, frameClass } from "@/lib/cosmetics";
@@ -44,7 +45,16 @@ export function ProfileCard({
     ? [countryName(info.country, locale), region, locality].filter(Boolean).join(", ")
     : "";
   const rows: [string, React.ReactNode][] = [];
-  if (place) rows.push([t(locale, "settings.country"), place]);
+  if (place)
+    rows.push([
+      t(locale, "settings.country"),
+      // Bayroq nomning yonida — bezak (`aria-hidden`), chunki davlat nomi
+      // matn bo'lib turibdi.
+      <span key="place" className="inline-flex items-center gap-1.5">
+        <CountryFlag code={info.country ?? ""} />
+        {place}
+      </span>,
+    ]);
   if (info.school)
     rows.push([
       t(locale, "settings.school"),
