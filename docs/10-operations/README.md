@@ -195,6 +195,38 @@ Bir martalik sozlash:
    bilan o'zi ko'tariladi, lekin tunnelsiz tashqariga chiqmaydi.
 5. Hozir live bo'lgan tizimda bir marta: `init`.
 
+#### Avtomatik ko'tarilish
+
+`in` ni qo'lda yozish shart emas: har tizimda uni yuklanish jarayoni
+chaqiradi. Bu xavfsiz, chunki egalik boshqa tizimda bo'lsa `in` rad etadi
+— sayt texnik ishlar sahifasida qoladi.
+
+Linux (bir marta o'rnatiladi):
+
+```bash
+sed -e "s#__REPO__#$PWD#g" -e "s#__USER__#$USER#g" \
+  tools/systemd/rankwant-handoff.service |
+  sudo tee /etc/systemd/system/rankwant-handoff.service >/dev/null
+sudo systemctl enable rankwant-handoff.service
+```
+
+Windows (PowerShell'da bir marta):
+
+```powershell
+$repo = "$HOME\rankwant"
+$action = New-ScheduledTaskAction -Execute 'powershell.exe' `
+  -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$repo\tools\handoff.ps1`" in" `
+  -WorkingDirectory $repo
+$trigger = New-ScheduledTaskTrigger -AtLogOn
+$trigger.Delay = 'PT2M'   # Docker Desktop kirgandan keyin ko'tariladi
+Register-ScheduledTask rankwant-handoff-in -Action $action -Trigger $trigger -RunLevel Highest
+```
+
+Boshqa tizimga o'tish bitta buyruq: `tools/handoff.sh switch` — `out` ni
+bajaradi, GRUB'ning bir martalik tanlovini Windows'ga qo'yadi va qayta
+yuklaydi. Doimiy yuklanish tartibi o'zgarmaydi, ya'ni keyin yana Linux
+birinchi bo'lib turadi.
+
 ### Standings sig'imi (o'lchangan, 2026-09-10)
 
 Jadval hamma uchun bir xil, ya'ni uni CDN keshlashi KERAK — bu

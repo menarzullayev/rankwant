@@ -1,0 +1,20 @@
+[Unit]
+# Tizim yuklanganda preview'ni qaytaradi. Har yuklanishda ishlashi xavfsiz:
+# R2 dagi egalik boshqa tizimda bo'lsa `handoff.sh in` rad etadi va sayt
+# `services/maintenance-worker` sahifasida qoladi.
+Description=RankWant preview — R2 handoff (in)
+Wants=network-online.target docker.service
+After=network-online.target docker.service
+ConditionPathExists=__REPO__/.env.handoff
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+User=__USER__
+WorkingDirectory=__REPO__
+ExecStart=__REPO__/tools/handoff.sh in
+# `in` image'larni qurishi va eksportni yuklab olishi mumkin.
+TimeoutStartSec=900
+
+[Install]
+WantedBy=multi-user.target

@@ -10,6 +10,7 @@
 #   tools/handoff.sh init            # bir marta, hozir live bo'lgan tizimda
 #   tools/handoff.sh out             # boshqa tizimga o'tishdan OLDIN
 #   tools/handoff.sh in [--force]    # tizim yuklangandan keyin
+#   tools/handoff.sh switch          # out + keyingi yuklanish Windows, reboot
 #
 # Asosiy qoida: toza topshirilmagan tizim live bo'lmaydi. Aks holda ikkala
 # tomonda ham yangi hisob va urinishlar paydo bo'ladi va ularni keyin
@@ -239,10 +240,27 @@ cmd_in() {
   echo "Live: $me. Sayt tunnel orqali ochiladi."
 }
 
+# `out` dan keyin bir martaga Windows'ni tanlab qayta yuklaydi. GRUB'ning
+# `next_entry` mexanizmi doimiy tartibni o'zgartirmaydi — keyingi
+# yuklanishlarda yana odatdagi yozuv birinchi bo'ladi.
+cmd_switch() {
+  local entry
+  entry="$(sudo grep -oP "(?<=menuentry ')[^']*Windows[^']*" /boot/grub/grub.cfg | head -1 || true)"
+  if [ -z "$entry" ]; then
+    echo "GRUB'da Windows yozuvi topilmadi — 'out' qilib qo'lda yuklang" >&2
+    exit 1
+  fi
+  cmd_out
+  echo "Keyingi yuklanish: $entry"
+  sudo grub-reboot "$entry"
+  sudo systemctl reboot
+}
+
 case "${1:-}" in
   status) cmd_status ;;
   init) cmd_init ;;
   out) cmd_out ;;
   in) shift; cmd_in "$@" ;;
-  *) echo "foydalanish: $0 status | init | out | in [--force]" >&2; exit 2 ;;
+  switch) cmd_switch ;;
+  *) echo "foydalanish: $0 status | init | out | in [--force] | switch" >&2; exit 2 ;;
 esac
