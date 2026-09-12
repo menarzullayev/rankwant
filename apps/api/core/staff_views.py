@@ -8,18 +8,19 @@ from __future__ import annotations
 
 from typing import Any
 
-from django.db.models import F, QuerySet
+from django.db.models import Count, F, Q, QuerySet
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.exceptions import MethodNotAllowed, ValidationError
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from core.models import User
+from core.models import School, User
 from core.staff import StaffViewSet
 from core.staff_serializers import (
     QvantAdjustSerializer,
     StaffNotifySerializer,
+    StaffSchoolSerializer,
     StaffUserSerializer,
 )
 from notifications import services as notifications
@@ -91,3 +92,31 @@ class StaffUserViewSet(StaffViewSet):
             ref_type="admin",
         )
         return Response({"count": count}, status=status.HTTP_201_CREATED)
+
+
+class StaffSchoolViewSet(StaffViewSet):
+    """Maktab katalogi — to'liq CRUD (ADR-0017).
+
+    Nega bu API kerak bo'ldi: ADR "moderator admin paneldan to'ldiradi"
+    deydi, lekin amalda uni to'ldirishning YO'LI yo'q edi —
+    `ADMIN_ENABLED` production'da ataylab o'chiq, `SchoolViewSet` esa
+    faqat o'qish uchun. Ya'ni maktab reytingi va sinfdoshlar bo'sh
+    qolib ketardi.
+
+    Qolgan staff yuzalari bilan bir xil qoida: faqat `is_staff` va faqat
+    sessiya (PAT emas — `StaffViewSet` dagi `SessionOnly`).
+    """
+
+    serializer_class = StaffSchoolSerializer
+    search_fields = ["name", "region", "district", "city"]
+    ordering_fields = ["name", "region", "created_at"]
+    ordering = ["name"]
+    http_method_names = ["get", "post", "patch", "delete", "head", "options"]
+
+    def get_queryset(self) -> QuerySet[School]:
+        # `members` — katalog yozuvini o'chirishdan oldin moderator
+        # "nechta odam shu maktabda" ekanini ko'rishi kerak: o'chirilsa
+        # ular `school_ref` ni yo'qotadi (FK `SET_NULL`).
+        return School.objects.annotate(
+            members=Count("students", filter=Q(students__is_active=True))
+        )

@@ -8,19 +8,25 @@
 # o'tkazadi, ya'ni "yashil" ekanini bilish uchun qayta yuklash shart emas.
 #
 # Ishlatish (Git Bash, repo ildizidan):
-#   bash tools/ci-local.sh            # hammasi
-#   bash tools/ci-local.sh api        # faqat API (ruff, mypy, migratsiya, pytest)
-#   bash tools/ci-local.sh web        # faqat Web (lint, types, build)
-#   bash tools/ci-local.sh docs       # faqat hujjat/shartnoma/i18n/kontrast
+#   bash tools/ci-local.sh fast     # ~5 s: ruff, format, hujjat, i18n, kontrast
+#   bash tools/ci-local.sh api      # ~50 s: mypy, migratsiya, pytest
+#   bash tools/ci-local.sh web      # ~1 min: lint, types, build
+#   bash tools/ci-local.sh all      # hammasi
+#   bash tools/ci-local.sh rebuild  # dev image'ni majburan qayta qurish
 #
-# Docker kerak: API qadamlari `rankwant-api` image'ida ishlaydi, chunki
-# loyihaning bog'liqliklari o'sha yerda (host'da emas).
+# Tezlik haqida: to'liq tekshiruv 30 soniyaga SIG'MAYDI — mypy (strict,
+# 280 fayl) va 996 test o'zi ~60 s. Lekin ikki narsa kesilgan:
+#   1) dev bog'liqliklar bir marta o'rnatiladi (`tools/ci.Dockerfile`) —
+#      har safar `pip install` ~30 s yeyardi;
+#   2) mypy va ruff keshi volume'da saqlanadi.
+# Kundalik ish uchun `fast` bor — u 5 soniyada asosiy xatolarni topadi.
 
 set -u
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-API_IMAGE="${API_IMAGE:-rankwant-api:latest}"
+BASE_IMAGE="${BASE_IMAGE:-rankwant-api:latest}"
 NETWORK="${NETWORK:-rankwant_default}"
+CACHE_VOLUME="${CACHE_VOLUME:-rankwant-ci-cache}"
 PY="${PY:-python}"
 
 # Ranglar faqat terminalda.
@@ -45,6 +51,42 @@ step() {
   fi
 }
 
+# ── Dev image: bog'liqliklar BIR MARTA o'rnatiladi ───────────────────────
+# Teg `requirements-dev.lock` xeshiga bog'langan: fayl o'zgarsa yangi teg
+# hosil bo'ladi va image o'zi qayta quriladi. Ya'ni eskirib qolmaydi.
+LOCK="$ROOT/apps/api/requirements-dev.lock"
+if command -v sha1sum >/dev/null 2>&1; then
+  LOCK_HASH="$(sha1sum "$LOCK" | cut -c1-12)"
+else
+  LOCK_HASH="$(shasum -a 1 "$LOCK" | cut -c1-12)"
+fi
+DEV_IMAGE="${DEV_IMAGE:-rankwant-api-dev:${LOCK_HASH}}"
+
+build_dev_image() {
+  # Kontekst ATAYLAB nisbiy (`.`): `MSYS_NO_PATHCONV=1` bilan Git Bash
+  # yo'li (`/c/...`) docker'ga o'girilmasdan yetib boradi va u
+  # "path not found" derdi. Repo ildiziga o'tib `.` berish esa har ikki
+  # tomonda ham bir xil ma'noni bildiradi.
+  printf 'Dev image qurilmoqda: %s (birinchi marta ~1 daqiqa)\n' "$DEV_IMAGE"
+  cd "$ROOT" || return 1
+  MSYS_NO_PATHCONV=1 docker build \
+    -f tools/ci.Dockerfile \
+    --build-arg "BASE=$BASE_IMAGE" \
+    -t "$DEV_IMAGE" .
+}
+
+ensure_dev_image() {
+  if docker image inspect "$DEV_IMAGE" >/dev/null 2>&1; then
+    return 0
+  fi
+  if ! docker image inspect "$BASE_IMAGE" >/dev/null 2>&1; then
+    printf '%sAsosiy image yo'"'"'q: %s%s\n' "$R" "$BASE_IMAGE" "$N"
+    printf 'Avval: docker compose -p rankwant ... build api\n'
+    return 1
+  fi
+  build_dev_image
+}
+
 # ── Hujjat va shartnoma (runner kerak emas) ──────────────────────────────
 run_docs() {
   cd "$ROOT"
@@ -57,30 +99,34 @@ run_docs() {
 # ── API (konteynerda) ────────────────────────────────────────────────────
 # `--entrypoint sh` — image'ning entrypoint'i serverni ko'taradi, bizga
 # faqat muhit kerak. Kod HOST'dan ulanadi, ya'ni commit qilinmagan
-# o'zgarish ham tekshiriladi.
+# o'zgarish ham tekshiriladi. `/cache` — mypy va ruff keshi (volume).
 api_run() {
   MSYS_NO_PATHCONV=1 docker run --rm --entrypoint sh \
-    -v "${ROOT}:/repo" -w /repo/apps/api \
+    -v "${ROOT}:/repo" -v "${CACHE_VOLUME}:/cache" -w /repo/apps/api \
     --network "$NETWORK" \
     -e DATABASE_URL=postgres://rankwant:dev@postgres:5432/rankwant \
     -e REDIS_URL=redis://redis:6379/0 \
     -e DJANGO_SECRET_KEY=ci-local -e DJANGO_DEBUG=1 \
     -e PYTHONNOUSERSITE=1 \
-    "$API_IMAGE" -c "$1"
+    "$DEV_IMAGE" -c "$1"
+}
+
+run_api_fast() {
+  ensure_dev_image || return 1
+  api_run 'ruff check --cache-dir /cache/ruff . && ruff format --check .'
 }
 
 run_api() {
-  # Bog'liqliklar bir marta o'rnatiladi, keyin to'rt qadam ketma-ket:
-  # biri yiqilsa `set -e` butun blokni to'xtatadi va qaysi qadam
-  # ekani chiqishda ko'rinadi.
+  ensure_dev_image || return 1
+  # `set -e`: biri yiqilsa to'xtaydi va qaysi qadam ekani chiqishda
+  # ko'rinadi. Ketma-ket — chunki hammasi bitta konteynerda ishlaydi.
   api_run '
 set -e
-pip install -q -r requirements-dev.lock 2>&1 | grep -v "Running pip as" || true
 echo "--- ruff ---"
-ruff check . && ruff format --check .
+ruff check --cache-dir /cache/ruff . && ruff format --check .
 echo "--- mypy (strict) ---"
-mypy .
-echo "--- migratsiyalar to'\''liq yozilganmi ---"
+mypy --cache-dir /cache/mypy .
+echo "--- migratsiyalar to'"'"'liq yozilganmi ---"
 python manage.py makemigrations --check --dry-run
 echo "--- pytest ---"
 pytest -q -n 4
@@ -88,6 +134,11 @@ pytest -q -n 4
 }
 
 # ── Web ──────────────────────────────────────────────────────────────────
+run_web_types() {
+  cd "$ROOT/apps/web"
+  npm run typecheck
+}
+
 run_web() {
   cd "$ROOT/apps/web"
   npm run lint && npm run typecheck && npm run build
@@ -97,12 +148,18 @@ run_web() {
 TARGET="${1:-all}"
 
 printf '%sRankWant — mahalliy CI%s\n' "$B" "$N"
-printf 'Nishon: %s · image: %s\n\n' "$TARGET" "$API_IMAGE"
+printf 'Nishon: %s · image: %s\n\n' "$TARGET" "$DEV_IMAGE"
 
 case "$TARGET" in
+  fast)
+    step "Hujjat, shartnoma, i18n, kontrast" run_docs
+    step "Ruff (lint + format)" run_api_fast
+    ;;
   docs) step "Hujjat, shartnoma, i18n, kontrast" run_docs ;;
   api)  step "API — ruff, mypy, migratsiya, pytest" run_api ;;
   web)  step "Web — lint, types, build" run_web ;;
+  types) step "Web — types" run_web_types ;;
+  rebuild) build_dev_image ;;
   all)
     step "Hujjat, shartnoma, i18n, kontrast" run_docs
     step "API — ruff, mypy, migratsiya, pytest" run_api
@@ -113,6 +170,11 @@ case "$TARGET" in
     exit 2
     ;;
 esac
+
+if [ "$TARGET" = "rebuild" ]; then
+  printf '%sDev image qurildi: %s%s\n' "$G" "$DEV_IMAGE" "$N"
+  exit 0
+fi
 
 # ── Yakun ────────────────────────────────────────────────────────────────
 printf '%s──────────────%s\n' "$B" "$N"

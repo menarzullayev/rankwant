@@ -1,4 +1,4 @@
-"""Staff (admin UI) serializerlari — foydalanuvchilar."""
+"""Staff (admin UI) serializerlari — foydalanuvchilar va maktab katalogi."""
 
 from __future__ import annotations
 
@@ -6,7 +6,32 @@ from typing import Any
 
 from rest_framework import serializers
 
-from core.models import User
+from core.models import School, User
+
+
+class StaffSchoolSerializer(serializers.ModelSerializer[School]):
+    """Maktab katalogi (ADR-0017) — moderator shu yerdan to'ldiradi.
+
+    `members` faqat O'QISH: u so'rovda hisoblanadi, kiritilmaydi.
+    """
+
+    members = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = School
+        fields = [
+            "id",
+            "name",
+            "kind",
+            "country",
+            "region",
+            "district",
+            "city",
+            "is_active",
+            "members",
+            "created_at",
+        ]
+        read_only_fields = ["created_at"]
 
 
 class StaffUserSerializer(serializers.ModelSerializer[User]):

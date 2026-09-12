@@ -3,13 +3,15 @@ from rest_framework.routers import DefaultRouter
 
 from core import account_views, views
 from core.school_views import SchoolViewSet
-from core.staff_views import StaffUserViewSet
+from core.staff_views import StaffSchoolViewSet, StaffUserViewSet
 
 router = DefaultRouter()
 router.register("users", views.UserViewSet, basename="user")
 router.register("schools", SchoolViewSet, basename="school")
 router.register("me/tokens", views.ApiTokenViewSet, basename="apitoken")
 router.register("staff/users", StaffUserViewSet, basename="staff-user")  # staff: users
+# Maktab katalogi (ADR-0017) — moderatorsiz u bo'sh qolardi.
+router.register("staff/schools", StaffSchoolViewSet, basename="staff-school")
 
 urlpatterns = [
     path("health/", views.HealthView.as_view(), name="health"),
