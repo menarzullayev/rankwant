@@ -10,6 +10,7 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import AppFooter from "./AppFooter";
 import AppHeader from "./AppHeader";
 import { VerifyBanner } from "@/components/VerifyBanner";
+import { GeoNudge } from "@/components/GeoNudge";
 import { WelcomeNotice } from "@/components/WelcomeNotice";
 import AppSidebar from "./AppSidebar";
 import { SkipLink } from "./SkipLink";
@@ -60,6 +61,10 @@ function Shell({ children }: { children: React.ReactNode }) {
         <AppHeader />
         {!bare && <WelcomeNotice />}
         {!bare && <VerifyBanner />}
+        {/* Kontekstli nudge (qaror 16): mavjud hisoblarda mamlakat bo'sh —
+            banner shu bo'shliqni yumshoq yo'l bilan yopadi. Faqat kirgan
+            va to'ldirmagan odamga ko'rinadi, yopilsa qaytmaydi. */}
+        {!bare && <GeoNudge />}
         <main id="main" className="mx-auto max-w-[1400px] p-4 md:p-6">
           {children}
         </main>

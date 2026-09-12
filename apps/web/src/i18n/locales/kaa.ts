@@ -637,4 +637,7 @@ export const kaa: Record<MessageKey, string> = {
   "auth.skip": "Ótkerip jiberiw",
   "auth.schoolSearch": "Mektep atı boyınsha izlew",
   "auth.tagline": "Reyting qáleytuǵınlar ushın",
+  "geo.nudgeTitle": "Mámleket hám mektebińizdi qosıń",
+  "geo.nudgeBody": "Mektep reytinginde kóriniw ushın kerek — 20 sekund waqıt aladı.",
+  "geo.nudgeCta": "Toltırıw",
 };

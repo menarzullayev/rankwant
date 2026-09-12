@@ -637,4 +637,7 @@ export const tr: Record<MessageKey, string> = {
   "auth.skip": "Atla",
   "auth.schoolSearch": "Okul adına göre ara",
   "auth.tagline": "Reyting isteyenler için",
+  "geo.nudgeTitle": "Ülkenizi ve okulunuzu ekleyin",
+  "geo.nudgeBody": "Okul sıralamasında görünmek için gerekli — 20 saniye sürer.",
+  "geo.nudgeCta": "Doldur",
 };

@@ -634,4 +634,7 @@ export const zh: Record<MessageKey, string> = {
   "auth.skip": "跳过",
   "auth.schoolSearch": "按学校名称搜索",
   "auth.tagline": "为想要排名的人",
+  "geo.nudgeTitle": "添加您的国家和学校",
+  "geo.nudgeBody": "用于在学校排名中显示——只需 20 秒。",
+  "geo.nudgeCta": "填写",
 };

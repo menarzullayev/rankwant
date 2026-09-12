@@ -641,6 +641,9 @@ export const uz = {
   "auth.skip": "O'tkazib yuborish",
   "auth.schoolSearch": "Maktab nomi bo'yicha qidirish",
   "auth.tagline": "Reyting xohlaganlar uchun",
+  "geo.nudgeTitle": "Davlat va maktabingizni qo'shing",
+  "geo.nudgeBody": "Maktab reytingida ko'rinish uchun kerak — 20 soniya vaqt oladi.",
+  "geo.nudgeCta": "To'ldirish",
 } as const;
 
 export type MessageKey = keyof typeof uz;

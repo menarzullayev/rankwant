@@ -638,4 +638,7 @@ export const tg: Record<MessageKey, string> = {
   "auth.skip": "Гузаштан",
   "auth.schoolSearch": "Ҷустуҷӯ аз рӯи номи мактаб",
   "auth.tagline": "Барои хоҳишмандони рейтинг",
+  "geo.nudgeTitle": "Кишвар ва мактаби худро илова кунед",
+  "geo.nudgeBody": "Барои дида шудан дар рейтинги мактабҳо лозим — 20 сония мегирад.",
+  "geo.nudgeCta": "Пур кардан",
 };

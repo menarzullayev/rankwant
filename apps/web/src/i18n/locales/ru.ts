@@ -637,4 +637,7 @@ export const ru: Record<MessageKey, string> = {
   "auth.skip": "Пропустить",
   "auth.schoolSearch": "Поиск по названию школы",
   "auth.tagline": "Для тех, кто хочет рейтинг",
+  "geo.nudgeTitle": "Укажите страну и школу",
+  "geo.nudgeBody": "Нужно, чтобы попасть в рейтинг школ — займёт 20 секунд.",
+  "geo.nudgeCta": "Заполнить",
 };

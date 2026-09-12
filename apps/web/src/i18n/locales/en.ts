@@ -636,4 +636,7 @@ export const en: Record<MessageKey, string> = {
   "auth.skip": "Skip",
   "auth.schoolSearch": "Search by school name",
   "auth.tagline": "For those who want a rating",
+  "geo.nudgeTitle": "Add your country and school",
+  "geo.nudgeBody": "This is needed to appear in the school ranking — it takes 20 seconds.",
+  "geo.nudgeCta": "Fill in",
 };

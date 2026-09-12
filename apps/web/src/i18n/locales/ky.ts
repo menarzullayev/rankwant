@@ -637,4 +637,7 @@ export const ky: Record<MessageKey, string> = {
   "auth.skip": "Өткөрүп жиберүү",
   "auth.schoolSearch": "Мектеп аты боюнча издөө",
   "auth.tagline": "Рейтинг каалагандар үчүн",
+  "geo.nudgeTitle": "Өлкөңүз жана мектебиңизди кошуңуз",
+  "geo.nudgeBody": "Мектеп рейтингинде көрүнүү үчүн керек — 20 секунд алат.",
+  "geo.nudgeCta": "Толтуруу",
 };

@@ -638,4 +638,7 @@ export const kk: Record<MessageKey, string> = {
   "auth.skip": "Өткізіп жіберу",
   "auth.schoolSearch": "Мектеп атауы бойынша іздеу",
   "auth.tagline": "Рейтинг қалайтындар үшін",
+  "geo.nudgeTitle": "Еліңіз бен мектебіңізді қосыңыз",
+  "geo.nudgeBody": "Мектеп рейтингісінде көріну үшін қажет — 20 секунд алады.",
+  "geo.nudgeCta": "Толтыру",
 };
