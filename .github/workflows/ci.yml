@@ -106,7 +106,13 @@ jobs:
         working-directory: apps/api
       - name: mypy (strict)
         if: steps.check.outputs.ready == 'true'
-        run: mypy .
+        # `--show-traceback`: 2026-09-12 da bu qadam `INTERNAL ERROR —
+        # Error constructing plugin instance of NewSemanalDjangoPlugin`
+        # bilan yiqildi, lekin bir qatorlik xabar SABABNI ko'rsatmaydi.
+        # O'sha kod `rankwant-api` image'ida (bir xil requirements) 280
+        # faylda xatosiz o'tadi, ya'ni muammo runner muhitida — traceback
+        # uni ko'rsatadi. Sabab topilgach bu qator olib tashlanishi mumkin.
+        run: mypy --show-traceback .
         working-directory: apps/api
       - name: Migratsiyalar to'liq yozilganmi
         if: steps.check.outputs.ready == 'true'
