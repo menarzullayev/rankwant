@@ -87,6 +87,7 @@ export const tr: Record<MessageKey, string> = {
   "auth.strength3": "Orta",
   "auth.strength4": "Güçlü",
   "auth.legal": "Kaydolarak {terms} ve {privacy} politikasını kabul edersiniz.",
+  "auth.socialConsent": "Devam ederek {terms} ve {privacy} politikasını kabul edersiniz.",
   "auth.verifyTitle": "E-postayı doğrula",
   "auth.verifyPending": "E-postanız doğrulanmadı. Gönderdiğimiz iletideki bağlantıyı açın.",
   "auth.verifyResend": "İletiyi yeniden gönder",

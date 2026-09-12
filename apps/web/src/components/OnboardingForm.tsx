@@ -13,6 +13,7 @@ import { t } from "@/i18n/messages";
 import { api, patchJson, type Me, type School } from "@/lib/api";
 import { track } from "@/lib/analytics";
 import { REGION_CODES, regionName } from "@/lib/regions";
+import { safeNext } from "@/lib/site";
 
 /** Ro'yxatdan o'tishning 2-qadami — ixtiyoriy (qaror 3, 4).
  *
@@ -35,7 +36,12 @@ export function OnboardingForm({ me }: { me: Me }) {
   //: bosh sahifaga O'TKAZAMIZ — aks holda yangi hisob egasi bir
   //: martalik xabarni (va kod kiritish maydonini) ko'rmasdi.
   const welcome = params.get("welcome");
-  const home = (welcome ? `/?welcome=${welcome}` : "/") as Route;
+  //: Qaytish manzili (qaror 1): ro'yxatdan o'tish odamni shu oraliq
+  //: qadamga olib kirdi, lekin uning maqsadi boshqa sahifa edi. Belgilangan
+  //: manzil bo'lsa — o'shanga qaytamiz, bir martalik xabar esa o'sha
+  //: yerda ma'nosiz bo'lgani uchun tashlanadi.
+  const back = safeNext(params.get("next"));
+  const home = (back ?? (welcome ? `/?welcome=${welcome}` : "/")) as Route;
 
   const [country, setCountry] = useState(me.country || "UZ");
   const [region, setRegion] = useState(me.region || "");

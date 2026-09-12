@@ -63,12 +63,39 @@ def darken(svg: str) -> str:
     return svg.replace(NAVY, NAVY_DARK)
 
 
+def find_magick() -> str | None:
+    """Haqiqiy ImageMagick binarini topadi, `shutil.which` emas.
+
+    `shutil.which("convert")` Windows'da ALDANADI: u
+    `C:\\Windows\\System32\\convert.exe` ni topadi — bu diskni FAT dan
+    NTFS ga o'giradigan TIZIM vositasi, ImageMagick emas. Uni chaqirish
+    PNG o'rniga xato beradi (va niyat tushunilmasa, diskka tegib
+    ketishi mumkin). Shuning uchun nom emas, `-version` chiqishi
+    tekshiriladi.
+    """
+    for name in ("magick", "convert"):
+        path = shutil.which(name)
+        if not path:
+            continue
+        try:
+            probe = subprocess.run(
+                [path, "-version"], capture_output=True, text=True, timeout=10
+            )
+        except (OSError, subprocess.SubprocessError):
+            continue
+        if "ImageMagick" in (probe.stdout or "") + (probe.stderr or ""):
+            return path
+    return None
+
+
 def main() -> int:
     if not SOURCE.exists():
         print(f"manba topilmadi: {SOURCE}", file=sys.stderr)
         return 1
-    if shutil.which("convert") is None:
-        print("ImageMagick (`convert`) topilmadi — PNG generatsiya qilinmaydi", file=sys.stderr)
+    magick = find_magick()
+    if magick is None:
+        print("ImageMagick topilmadi — PNG generatsiya qilinmaydi", file=sys.stderr)
+        print("  Windows: winget install ImageMagick.ImageMagick", file=sys.stderr)
         return 1
 
     OUT.mkdir(parents=True, exist_ok=True)
@@ -96,7 +123,7 @@ def main() -> int:
 
     ico = ROOT / "apps" / "web" / "public" / "favicon.ico"
     subprocess.run(
-        ["convert", "-background", "none", "-density", "1200", str(light),
+        [magick, "-background", "none", "-density", "1200", str(light),
          "-define", "icon:auto-resize=16,32,48", str(ico)],
         check=True, capture_output=True,
     )

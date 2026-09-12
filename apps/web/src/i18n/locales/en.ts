@@ -87,6 +87,7 @@ export const en: Record<MessageKey, string> = {
   "auth.strength3": "Fair",
   "auth.strength4": "Strong",
   "auth.legal": "By signing up you agree to the {terms} and the {privacy} policy.",
+  "auth.socialConsent": "By continuing you agree to the {terms} and the {privacy} policy.",
   "auth.verifyTitle": "Verify email",
   "auth.verifyPending": "Your email is not verified. Open the link in the message we sent.",
   "auth.verifyResend": "Send the message again",

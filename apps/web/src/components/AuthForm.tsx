@@ -13,10 +13,11 @@ import { CountrySelect } from "@/components/ui/CountrySelect";
 import { GithubMark, GoogleMark } from "@/components/ProviderMark";
 import { TelegramButton } from "@/components/TelegramButton";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t, errorText } from "@/i18n/messages";
+import { t, errorText, type MessageKey } from "@/i18n/messages";
 import { ApiError, getJson, postJson } from "@/lib/api";
 import { track } from "@/lib/analytics";
 import { strength } from "@/lib/password";
+import { safeNext } from "@/lib/site";
 
 type Mode = "login" | "register";
 
@@ -55,6 +56,10 @@ export function AuthForm({
   // (`?link=`) yoki almashuv yiqildi (`?social=`) — ADR-0016.
   const linking = params.get("link");
   const socialFailed = params.get("social");
+  // Himoyalangan sahifadan uchirilgan odam qayerga qaytishi kerak
+  // (qaror 1). `safeNext` faqat ichki yo'lni o'tkazadi — aks holda bu
+  // ochiq redirect bo'lardi.
+  const next = safeNext(params.get("next"));
   const { reload } = useSession();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -187,8 +192,16 @@ export function AuthForm({
       // so'raladi. `?welcome=1` o'sha yerga o'tadi va 2-qadamdan keyin
       // bosh sahifada bir martalik xabar bo'lib chiqadi — aks holda
       // yangi hisob egasi uni umuman ko'rmasdi.
+      //
+      // `next` 2-qadamga KO'TARILADI: ro'yxatdan o'tish odamni oraliq
+      // qadamga olib kirdi, lekin maqsadi boshqa sahifa edi. Uni shu
+      // yerda yo'qotib qo'ysak, qaytish manzili ma'nosiz qolardi.
       router.push(
-        (mode === "register" ? "/qoshimcha-malumot?welcome=1" : "/") as Route,
+        (mode === "register"
+          ? `/qoshimcha-malumot?welcome=1${
+              next ? `&next=${encodeURIComponent(next)}` : ""
+            }`
+          : (next ?? "/")) as Route,
       );
     } catch (err) {
       // Xato MATNI yuborilmaydi: u foydalanuvchi kiritgan ma'lumotni
@@ -410,7 +423,11 @@ export function AuthForm({
               .map((p) => (
                 <a
                   key={p}
-                  href={`/api/v1/auth/${p}/start/`}
+                  // `next` provayderga ham uzatiladi: server uni sessiyada
+                  // saqlaydi va callback'da o'sha manzilga qaytaradi.
+                  href={`/api/v1/auth/${p}/start/${
+                    next ? `?next=${encodeURIComponent(next)}` : ""
+                  }`}
                   aria-label={t(locale, PROVIDER_LABEL[p])}
                   className={`flex h-11 items-center justify-center gap-2 rw-radius-sm text-theme-sm font-medium transition rw-focus-ring hover:brightness-95 ${BRAND[p]}`}
                 >
@@ -420,8 +437,12 @@ export function AuthForm({
               ))}
           </div>
           {providers.includes("telegram") && telegramBot && (
-            <TelegramButton bot={telegramBot} />
+            <TelegramButton bot={telegramBot} next={next} />
           )}
+          {/* Rozilik matni: OAuth orqali hisob ochilganda `terms_accepted_at`
+              shu matnga asoslanib yoziladi (`record_social_consent`).
+              Matnsiz yozish huquqiy jihatdan asossiz bo'lardi. */}
+          <Legal message="auth.socialConsent" />
         </>
       )}
 
@@ -475,10 +496,14 @@ function Strength({ value }: { value: string }) {
 
 /** Shartlar va maxfiylik — matn tarjimada `{terms}` va `{privacy}`
  *  o'rinlari bilan keladi, ya'ni har bir til so'z tartibini O'ZI
- *  belgilaydi. Jumlani bo'laklab yig'ish shu sababdan. */
-function Legal() {
+ *  belgilaydi. Jumlani bo'laklab yig'ish shu sababdan.
+ *
+ *  Ikki joyda ishlatiladi: ro'yxat formasining ostida (`auth.legal`) va
+ *  ijtimoiy tugmalar ostida (`auth.socialConsent`) — ikkinchisi OAuth
+ *  orqali hisob OCHILGANDA ham rozilik qayd etilishining asosi. */
+function Legal({ message = "auth.legal" }: { message?: MessageKey }) {
   const locale = useLocale();
-  const parts = t(locale, "auth.legal").split(/(\{terms\}|\{privacy\})/);
+  const parts = t(locale, message).split(/(\{terms\}|\{privacy\})/);
   return (
     <p className="text-center text-theme-xs rw-dim">
       {parts.map((part, i) =>

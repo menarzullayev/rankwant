@@ -25,3 +25,25 @@ export const SITE_URL =
 export function absolute(path: string): string {
   return new URL(path, SITE_URL).toString();
 }
+
+/** `?next=` qiymatini xavfsiz ICHKI yo'lga aylantiradi.
+ *
+ * Qiymat ishonchsiz: uni har kim manzil qatorida tahrirlay oladi, ya'ni
+ * tekshirilmasa sayt «ochiq redirect» beradigan bo'lib qoladi —
+ * `rankwant.uz/login?next=https://soxta-sayt.uz` ga o'xshash havolani
+ * firibgar yuborishi mumkin, odam esa manzilga ishonib kiradi.
+ *
+ * Rad etiladigan shakllar:
+ *   `https://evil.com` — mutlaq manzil;
+ *   `//evil.com`       — protokol-nisbiy, brauzer boshqa sayt deb o'qiydi;
+ *   `/\evil.com`       — ba'zi brauzerlar buni ham tashqi deb hisoblaydi.
+ *
+ * Ya'ni oq ro'yxat emas, QAT'IY shakl tekshiruvi: bitta `/` bilan
+ * boshlanadigan yo'l. Rad etilganda `null` — chaqiruvchi standart
+ * manzilga o'tadi.
+ */
+export function safeNext(value: string | null | undefined): string | null {
+  if (!value || !value.startsWith("/")) return null;
+  if (value.startsWith("//") || value.startsWith("/\\")) return null;
+  return value;
+}

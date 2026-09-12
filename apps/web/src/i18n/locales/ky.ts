@@ -87,6 +87,7 @@ export const ky: Record<MessageKey, string> = {
   "auth.strength3": "Орточо",
   "auth.strength4": "Күчтүү",
   "auth.legal": "Катталуу менен сиз {terms} жана {privacy} саясатына макул болосуз.",
+  "auth.socialConsent": "Улантуу менен сиз {terms} жана {privacy} саясатына макул болосуз.",
   "auth.verifyTitle": "Почтаны ырастоо",
   "auth.verifyPending": "Почтаңыз ырасталган эмес. Жиберилген каттагы шилтемени ачыңыз.",
   "auth.verifyResend": "Катты кайра жиберүү",

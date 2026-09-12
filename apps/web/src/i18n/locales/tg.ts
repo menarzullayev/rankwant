@@ -87,6 +87,7 @@ export const tg: Record<MessageKey, string> = {
   "auth.strength3": "Миёна",
   "auth.strength4": "Қавӣ",
   "auth.legal": "Бо сабти ном шумо ба {terms} ва сиёсати {privacy} розӣ мешавед.",
+  "auth.socialConsent": "Бо идома додан шумо ба {terms} ва сиёсати {privacy} розӣ мешавед.",
   "auth.verifyTitle": "Тасдиқи почта",
   "auth.verifyPending": "Почтаи шумо тасдиқ нашудааст. Пайвандро аз номаи фиристодашуда кушоед.",
   "auth.verifyResend": "Номаро дубора фиристодан",

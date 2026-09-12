@@ -935,6 +935,51 @@ class AuthProvidersView(APIView):
 SOCIAL_LINK_TTL = 600
 
 
+def record_social_consent(user: User) -> None:
+    """Ijtimoiy kirishda shartlar roziligini qayd etadi.
+
+    Email bilan ro'yxatdan o'tganlarda buni `RegisterSerializer` yozadi.
+    OAuth'da esa hech qanday forma yo'q — natijada Google/GitHub bilan
+    ochilgan hisoblarda `terms_accepted_at` NULL qolib ketardi, ya'ni
+    rozilik YOZILMAGAN hisoblar paydo bo'lardi (huquqiy nomuvofiqlik).
+
+    Asos: ijtimoiy tugmalar ostidagi matn «davom etish bilan shartlarga
+    rozilik bildirasiz» deydi (`auth.socialConsent`), ya'ni tugmani
+    bosish — rozilik. Bu — ommaviy amaliyot.
+
+    Faqat BO'SH bo'lsa yoziladi: bu yerda BIRINCHI rozilik sanasi
+    turadi, keyingi kirishlar uni yangilab yuborsa, sana hech narsani
+    bildirmay qolardi.
+    """
+    if user.terms_accepted_at is None:
+        user.terms_accepted_at = timezone.now()
+        user.save(update_fields=["terms_accepted_at"])
+
+
+def safe_next(value: str | None) -> str:
+    """`?next=` ni xavfsiz ICHKI yo'lga aylantiradi.
+
+    Qiymat ishonchsiz — uni har kim manzil qatorida tahrirlay oladi.
+    Tekshirilmasa sayt «ochiq redirect» beradigan bo'lardi: firibgar
+    `/api/v1/auth/google/start/?next=https://soxta.uz` ko'rinishidagi
+    havolani yuborib, odamni bizning domendan chiqarib yuborishi
+    mumkin edi.
+
+    Rad etiladigan shakllar: `https://...` (mutlaq manzil),
+    `//evil.com` (protokol-nisbiy — brauzer buni boshqa sayt deb
+    o'qiydi) va `/\\evil.com`. Rad etilganda bo'sh satr qaytadi.
+
+    Frontend'dagi `safeNext` (`lib/site.ts`) bilan bir xil qoida. Bu
+    yerda ham tekshiriladi: URL'ni frontend chetlab o'tib, to'g'ridan
+    to'g'ri API'ga yozish mumkin.
+    """
+    if not value or not value.startswith("/"):
+        return ""
+    if value.startswith("//") or value.startswith("/\\"):
+        return ""
+    return value
+
+
 class SocialStartView(APIView):
     """Provayderning ruxsat sahifasiga yo'naltiradi."""
 
@@ -952,6 +997,10 @@ class SocialStartView(APIView):
         # begona sayt bizning callback'imizga o'z kodini yubora olmaydi.
         request.session["social_state"] = state
         request.session["social_provider"] = provider
+        # Qaytish manzili (qaror 1). Har safar YOZILADI — bo'sh qiymat
+        # ham: oldingi urinishdan qolgan manzil yangi kirishga
+        # «yopishib» qolmasligi kerak.
+        request.session["social_next"] = safe_next(request.GET.get("next"))
         # Kirgan odam uchun bu KIRISH emas, BOG'LASH: qaytganda yangi
         # hisob ochilmasligi va parol so'ralmasligi kerak — u allaqachon
         # o'zini isbotlagan. Pochta mosligiga tayanmaydi, ya'ni ish
@@ -996,6 +1045,15 @@ class SocialCallbackView(APIView):
 
     def _finish(self, request: Request, ident: oauth.Identity) -> HttpResponseRedirect:
         home = settings.SITE_URL
+        # Muvaffaqiyatli kirishdan keyin qayerga. Himoyalangan sahifadan
+        # kelgan odam o'sha yerga qaytadi (qaror 1); `link` va xato
+        # yo'llari bunga tayanmaydi — ularning o'z manzili bor.
+        #
+        # Manba ikki xil: OAuth'da `SocialStartView` sessiyaga yozadi,
+        # Telegram'da esa sessiya bosqichi yo'q — uning vidjeti to'g'ridan
+        # to'g'ri shu yerga yuboradi, ya'ni manzil so'rovda keladi.
+        back = request.session.pop("social_next", "") or safe_next(request.GET.get("next"))
+        success = f"{home}{back}" if back else f"{home}/"
         if not ident.uid:
             return redirect(f"{home}/login?social=error")
 
@@ -1041,6 +1099,7 @@ class SocialCallbackView(APIView):
             if owner.email_verified_at is None and ident.email.lower() == owner.email.lower():
                 owner.email_verified_at = timezone.now()
                 owner.save(update_fields=["email_verified_at"])
+            record_social_consent(owner)
             return redirect(f"{home}/settings/ijtimoiy?social=linked")
 
         if link is not None:
@@ -1053,8 +1112,9 @@ class SocialCallbackView(APIView):
                 setattr(link, field, fresh[field])
             if changed:
                 link.save(update_fields=changed)
+            record_social_consent(link.user)
             django_login(request, link.user, backend=DEFAULT_AUTH_BACKEND)
-            return redirect(f"{home}/")
+            return redirect(success)
 
         existing = User.objects.filter(email__iexact=ident.email).first() if ident.email else None
         if existing is not None:
@@ -1097,8 +1157,9 @@ class SocialCallbackView(APIView):
             picture=ident.picture,
             username=ident.handle,
         )
+        record_social_consent(user)
         django_login(request, user, backend=DEFAULT_AUTH_BACKEND)
-        return redirect(f"{home}/")
+        return redirect(success)
 
 
 class SocialTelegramView(SocialCallbackView):
@@ -1172,5 +1233,6 @@ class SocialLinkView(APIView):
         if user.email_verified_at is None and pending["email"].lower() == user.email.lower():
             user.email_verified_at = timezone.now()
             user.save(update_fields=["email_verified_at"])
+        record_social_consent(user)
         django_login(request, user, backend=DEFAULT_AUTH_BACKEND)
         return Response(status=status.HTTP_204_NO_CONTENT)

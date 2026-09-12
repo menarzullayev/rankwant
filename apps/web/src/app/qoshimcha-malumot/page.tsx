@@ -24,12 +24,15 @@ export async function generateMetadata(): Promise<Metadata> {
  * sahifaning ma'nosi yo'q — login'ga qaytaramiz.
  */
 export default async function OnboardingPage() {
-  if (!(await isSignedIn())) redirect("/login");
+  // `?next=` bilan: kirgandan keyin odam AYNAN shu yerga qaytishi kerak,
+  // aks holda 2-qadamni tugatib bosh sahifaga tushardi (qaror 1).
+  if (!(await isSignedIn()))
+    redirect(`/login?next=${encodeURIComponent("/qoshimcha-malumot")}`);
 
   const locale = await getLocale();
   const me = await getWithSession<Me>("/me/").catch(() => null);
   // Sessiya cookie'i bor, lekin hisob o'chirilgan/o'chirilgan holat.
-  if (!me) redirect("/login");
+  if (!me) redirect(`/login?next=${encodeURIComponent("/qoshimcha-malumot")}`);
 
   return (
     <div className="mx-auto max-w-md py-10">

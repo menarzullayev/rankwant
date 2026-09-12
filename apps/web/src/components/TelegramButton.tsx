@@ -4,8 +4,12 @@ import { useEffect, useRef } from "react";
 
 /** Telegram OAuth EMAS: u o'z widgetini chizadi va imzolangan ma'lumotni
  *  to'g'ridan-to'g'ri callback'ga yuboradi. Shu sababli bu yerda havola
- *  emas, provayderning o'z skripti turadi. */
-export function TelegramButton({ bot }: { bot: string }) {
+ *  emas, provayderning o'z skripti turadi.
+ *
+ *  `next` — qaytish manzili (qaror 1). Sessiya bosqichi yo'q (Google va
+ *  GitHub'dan farqli), shuning uchun manzil `data-auth-url` ga
+ *  qo'shiladi: Telegram o'z imzosini o'sha manzilga qo'shib yuboradi. */
+export function TelegramButton({ bot, next }: { bot: string; next?: string | null }) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -22,10 +26,12 @@ export function TelegramButton({ bot }: { bot: string }) {
     script.setAttribute("data-request-access", "write");
     script.setAttribute(
       "data-auth-url",
-      `${window.location.origin}/api/v1/auth/telegram/callback/`,
+      `${window.location.origin}/api/v1/auth/telegram/callback/${
+        next ? `?next=${encodeURIComponent(next)}` : ""
+      }`,
     );
     host.appendChild(script);
-  }, [bot]);
+  }, [bot, next]);
 
   // Vidjet Telegram niki: kengligini biz belgilay olmaymiz, shuning
   // uchun katak qolgan ikkitasi bilan bir balandlikda va markazda

@@ -87,6 +87,7 @@ export const kk: Record<MessageKey, string> = {
   "auth.strength3": "Орташа",
   "auth.strength4": "Күшті",
   "auth.legal": "Тіркелу арқылы сіз {terms} және {privacy} саясатына келісесіз.",
+  "auth.socialConsent": "Жалғастыру арқылы сіз {terms} және {privacy} саясатына келісесіз.",
   "auth.verifyTitle": "Поштаны растау",
   "auth.verifyPending": "Поштаңыз расталмаған. Жіберілген хаттағы сілтемені ашыңыз.",
   "auth.verifyResend": "Хатты қайта жіберу",

@@ -28,9 +28,11 @@ export default async function SettingsSectionPage({ params }: Props) {
   const { section } = await params;
   if (!isSection(section)) notFound();
   // Sahifa faqat o'z hisobi haqida — kirmagan foydalanuvchiga
-  // ko'rsatiladigan hech narsasi yo'q.
+  // ko'rsatiladigan hech narsasi yo'q. `?next=` bilan qaytariladi:
+  // sozlamaga kirish uchun kirgan odam o'sha bo'limga qaytishi kerak,
+  // bosh sahifaga emas (qaror 1).
   const me = await getWithSession<Me>("/me/").catch(() => null);
-  if (!me) redirect("/login");
+  if (!me) redirect(`/login?next=${encodeURIComponent(`/settings/${section}`)}`);
 
   return (
     <Suspense>
