@@ -631,6 +631,16 @@ export const uz = {
   "settings.blogHint": "https:// bilan boshlanadigan manzil",
   "leaderboard.school": "«{school}» reytingi",
   "leaderboard.schoolAll": "Umumiy reyting",
+  "auth.country": "Mamlakat",
+  "auth.remember": "Meni eslab qol",
+  "auth.termsAccept": "Shartlar va maxfiylik siyosatiga roziman",
+  "auth.marketingOptIn": "Yangiliklar va foydali xatlarni olishni xohlayman (ixtiyoriy)",
+  "auth.termsRequired": "Shartlarga rozilik majburiy",
+  "auth.step2Title": "Joy va maktab",
+  "auth.step2Body": "Bu ma'lumot maktab reytingida ko'rinish uchun kerak. Hozir o'tkazib yuborsangiz ham bo'ladi — keyin sozlamalarda to'ldirasiz.",
+  "auth.skip": "O'tkazib yuborish",
+  "auth.schoolSearch": "Maktab nomi bo'yicha qidirish",
+  "auth.tagline": "Reyting xohlaganlar uchun",
 } as const;
 
 export type MessageKey = keyof typeof uz;

@@ -244,7 +244,14 @@ class TestTaxallus:
 
         r = APIClient().post(
             reverse("register"),
-            {"username": "aziz", "email": "x@example.com", "password": PAROL},
+            {
+                "username": "aziz",
+                "email": "x@example.com",
+                "password": PAROL,
+                # Roziliksiz 400 kelardi va test nom bandligini emas,
+                # rozilikni o'lchab qolardi.
+                "terms_accepted": True,
+            },
             format="json",
         )
         check = APIClient().get(reverse("username-check"), {"u": "aziz"})

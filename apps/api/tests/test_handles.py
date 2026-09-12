@@ -23,6 +23,8 @@ def register(username: str):
             "username": username,
             "email": f"{abs(hash(username))}@example.com",
             "password": "Parol!12345",
+            # Rozilik MAJBURIY (qaror 13).
+            "terms_accepted": True,
         },
         format="json",
     )
@@ -112,6 +114,7 @@ class TestRoyxatdanOtish:
                 "email": "a@example.com",
                 "password": "Parol!12345",
                 "display_name": "Абдужаббор Каримов",
+                "terms_accepted": True,
             },
             format="json",
         )

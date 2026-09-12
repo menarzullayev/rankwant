@@ -1,5 +1,6 @@
 "use client";
 
+import type { Route } from "next";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -7,11 +8,14 @@ import { useEffect, useRef, useState } from "react";
 import { useSession } from "@/context/SessionContext";
 import { Button } from "@/components/ui/Button";
 import { Field, type FieldStatus } from "@/components/ui/Field";
+import { Checkbox, SelectField } from "@/components/ui/SelectField";
 import { GithubMark, GoogleMark } from "@/components/ProviderMark";
 import { TelegramButton } from "@/components/TelegramButton";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t, errorText } from "@/i18n/messages";
 import { ApiError, getJson, postJson } from "@/lib/api";
+import { track } from "@/lib/analytics";
+import { countryOptions } from "@/lib/countries";
 import { strength } from "@/lib/password";
 
 type Mode = "login" | "register";
@@ -61,6 +65,22 @@ export function AuthForm({
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const [pass2, setPass2] = useState("");
+  //: Mamlakat — ro'yxatning 1-bosqichida so'raladi (qaror 2). Standart
+  //: `UZ`: auditoriyaning asosiy qismi shu yerdan, ya'ni ko'pchilik
+  //: hech narsa o'zgartirmaydi. Xorijiy foydalanuvchi bir marta tanlaydi.
+  const [country, setCountry] = useState("UZ");
+  //: Shartlar va maxfiylik — MAJBURIY (qaror 13). Ataylab `false` dan
+  //: boshlanadi: oldindan belgilangan katak rozilik hisoblanmaydi.
+  const [terms, setTerms] = useState(false);
+  //: Marketing — IXTIYORIY va alohida (GDPR 7-modda).
+  const [marketing, setMarketing] = useState(false);
+  //: «Meni eslab qol» — kirishda (qaror 7). Standart `false`: umumiy
+  //: kompyuterda hisob ochiq qolmasligi kerak.
+  const [remember, setRemember] = useState(false);
+  //: «Forma boshlandi» hodisasi BIR MARTA yuboriladi (qaror 17). Har
+  //: fokusda yuborilsa funnel shishib ketardi va raqam ma'nosini
+  //: yo'qotardi.
+  const started = useRef(false);
   // Natija QAYSI nom uchun kelgani bilan saqlanadi: «tekshirilmoqda»
   // holati shundan hosil qilinadi va uni alohida yozib qo'yish shart
   // emas — effekt ichida holat o'rnatish qayta-qayta render chaqiradi.
@@ -122,30 +142,61 @@ export function AuthForm({
 
     if (mode === "register" && payload.password !== payload.password2) {
       setError(t(locale, "auth.passwordMismatch"));
+      track("auth.form_error", { mode, reason: "password_mismatch" });
       return;
     }
     delete payload.password2;
 
+    // Rozilik serverda ham tekshiriladi (`validate_terms_accepted`), lekin
+    // bu yerda ham to'xtatamiz: aks holda odam butun formani to'ldirib,
+    // oxirida xato ko'rardi — sababi esa boshidagi katak edi.
+    if (mode === "register" && !terms) {
+      setError(t(locale, "auth.termsRequired"));
+      track("auth.form_error", { mode, reason: "terms" });
+      return;
+    }
+
     setBusy(true);
     try {
       if (mode === "register") {
-        await postJson("/auth/register/", payload);
+        await postJson("/auth/register/", {
+          ...payload,
+          country,
+          terms_accepted: terms,
+          marketing_opt_in: marketing,
+        });
         // Register sessiya ochmaydi (ADR-0008) — darhol login qilamiz.
         await postJson("/auth/login/", {
           username: payload.username,
           password: payload.password,
         });
       } else {
-        await postJson("/auth/login/", payload);
+        await postJson("/auth/login/", { ...payload, remember });
       }
       // Sessiyani darhol yangilaymiz: header client komponenti bo'lgani
       // uchun `router.push` uni qayta mount qilmaydi va kirgandan keyin
       // ham «Kirish» tugmasi qolib ketardi.
       await reload();
-      // Yangi hisob uchun `?welcome=1` — bir martalik xabar va kod
-      // kiritish maydoni shu belgi bo'yicha chiziladi.
-      router.push(mode === "register" ? "/?welcome=1" : "/");
+      // Muvaffaqiyat hodisasi `router.push` dan OLDIN yuboriladi:
+      // `keepalive` tufayli sahifa almashgach ham yetib boradi.
+      track(mode === "register" ? "auth.register_done" : "auth.login_done", {
+        mode,
+        country: mode === "register" ? country : undefined,
+      });
+      // Ro'yxatdan keyin 2-qadam (qaror 3): joy va maktab ixtiyoriy
+      // so'raladi. `?welcome=1` o'sha yerga o'tadi va 2-qadamdan keyin
+      // bosh sahifada bir martalik xabar bo'lib chiqadi — aks holda
+      // yangi hisob egasi uni umuman ko'rmasdi.
+      router.push(
+        (mode === "register" ? "/qoshimcha-malumot?welcome=1" : "/") as Route,
+      );
     } catch (err) {
+      // Xato MATNI yuborilmaydi: u foydalanuvchi kiritgan ma'lumotni
+      // (masalan emailni) o'z ichiga olishi mumkin. Faqat API kodi.
+      track("auth.form_error", {
+        mode,
+        reason: err instanceof ApiError ? err.code : "network",
+      });
       setError(
         err instanceof ApiError
           ? errorText(locale, err.code, err.text)
@@ -183,7 +234,18 @@ export function AuthForm({
           {t(locale, "auth.socialError")}
         </p>
       )}
-      <form onSubmit={onSubmit} className="flex flex-col gap-4">
+      <form
+        onSubmit={onSubmit}
+        // Fokus — «forma boshlandi» belgisi. `onSubmit` buni ushlamaydi:
+        // odam formani ochib, maydonni bosib, keyin tashlab ketishi
+        // mumkin — aynan shu holat eng qimmatli ma'lumot.
+        onFocus={() => {
+          if (started.current) return;
+          started.current = true;
+          track("auth.form_started", { mode });
+        }}
+        className="flex flex-col gap-4"
+      >
         <Field
           label={t(locale, "auth.username")}
           name="username"
@@ -222,6 +284,25 @@ export function AuthForm({
             hint={t(locale, "auth.displayNameHint")}
           />
         )}
+        {mode === "register" && (
+          /* Mamlakat — bosqichli yig'ishning birinchi qadami (qaror 2):
+             bitta tanlov, lekin butun statistika shu bo'yicha bo'linadi.
+             Nomlar `Intl.DisplayNames` dan, ya'ni 250 tasini qo'lda
+             tarjima qilish shart emas. */
+          <SelectField
+            label={t(locale, "auth.country")}
+            name="country"
+            autoComplete="country"
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
+          >
+            {countryOptions(locale).map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.name}
+              </option>
+            ))}
+          </SelectField>
+        )}
         <Field
           label={t(locale, "auth.password")}
           name="password"
@@ -251,14 +332,47 @@ export function AuthForm({
         )}
 
         {mode === "login" && (
-          <p className="-mt-1 text-right text-theme-sm">
+          /* Bitta qatorda: chapda «eslab qol», o'ngda «parolni tiklash» —
+             ikkalasi ham kirishga yordam beradi, ya'ni bir joyda turishi
+             kerak (RoboContest va KEP'da ham shunday). */
+          <div className="-mt-1 flex flex-wrap items-center justify-between gap-2">
+            <Checkbox
+              name="remember"
+              checked={remember}
+              onChange={(e) => setRemember(e.target.checked)}
+            >
+              {t(locale, "auth.remember")}
+            </Checkbox>
             <Link
               href="/parolni-tiklash"
-              className="rw-accent-ink hover:underline"
+              className="text-theme-sm rw-accent-ink hover:underline"
             >
               {t(locale, "auth.forgot")}
             </Link>
-          </p>
+          </div>
+        )}
+
+        {mode === "register" && (
+          /* Rozilik: shartlar MAJBURIY, marketing IXTIYORIY (qaror 13).
+             Ikkalasi alohida — GDPR shartlar roziligi bilan marketing
+             roziligini birlashtirishga ruxsat bermaydi. */
+          <div className="flex flex-col gap-2.5">
+            <Checkbox
+              name="terms_accepted"
+              checked={terms}
+              onChange={(e) => setTerms(e.target.checked)}
+              required
+            >
+              {t(locale, "auth.termsAccept")}
+            </Checkbox>
+            <Checkbox
+              name="marketing_opt_in"
+              checked={marketing}
+              onChange={(e) => setMarketing(e.target.checked)}
+            >
+              {t(locale, "auth.marketingOptIn")}
+            </Checkbox>
+          </div>
         )}
 
         {error && (

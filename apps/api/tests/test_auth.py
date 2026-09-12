@@ -23,9 +23,70 @@ def client() -> APIClient:
 class TestRegistrationLogin:
     def test_royxatdan_otish(self, client: APIClient) -> None:
         r = client.post(
-            reverse("register"), {"username": "yangi", "email": "y@a.uz", "password": "Parol!12345"}
+            reverse("register"),
+            {
+                "username": "yangi",
+                "email": "y@a.uz",
+                "password": "Parol!12345",
+                # Shartlarga rozilik MAJBURIY (qaror 13).
+                "terms_accepted": True,
+            },
         )
         assert r.status_code == 201
+
+    def test_roziliksiz_royxat_rad_etiladi(self, client: APIClient) -> None:
+        """GDPR sukut bo'yicha rozilikni tan olmaydi: belgilanmagan
+        checkbox «rozilik» hisoblanmaydi, ya'ni server rad etishi shart."""
+        r = client.post(
+            reverse("register"),
+            {
+                "username": "roziliksiz",
+                "email": "r@a.uz",
+                "password": "Parol!12345",
+            },
+        )
+        assert r.status_code == 400
+        assert "terms_accepted" in r.json().get("error", {}).get("details", {})
+
+    def test_rozilik_vaqti_va_marketing_saqlanadi(self, client: APIClient) -> None:
+        """Shartlar roziligi — VAQT sifatida, marketing esa alohida
+        (GDPR 7-modda: ikkalasini birlashtirib bo'lmaydi)."""
+        from core.models import User
+
+        r = client.post(
+            reverse("register"),
+            {
+                "username": "marketingli",
+                "email": "m@a.uz",
+                "password": "Parol!12345",
+                "country": "uz",
+                "terms_accepted": True,
+                "marketing_opt_in": True,
+            },
+        )
+        assert r.status_code == 201
+        user = User.objects.get(username="marketingli")
+        assert user.terms_accepted_at is not None
+        assert user.marketing_opt_in is True
+        # Mamlakat kodi katta harfga keltiriladi (ISO 3166-1 alpha-2).
+        assert user.country == "UZ"
+
+    def test_marketing_standart_ochiq_emas(self, client: APIClient) -> None:
+        """Belgi yuborilmasa marketing ROZI emas — aks holda platforma
+        roziliksiz xat yuborardi."""
+        from core.models import User
+
+        r = client.post(
+            reverse("register"),
+            {
+                "username": "marketingli2",
+                "email": "m2@a.uz",
+                "password": "Parol!12345",
+                "terms_accepted": True,
+            },
+        )
+        assert r.status_code == 201
+        assert User.objects.get(username="marketingli2").marketing_opt_in is False
 
     def test_qisqa_parol_rad_etiladi(self, client: APIClient) -> None:
         r = client.post(reverse("register"), {"username": "x", "password": "123"})
@@ -317,6 +378,10 @@ class TestRoyxatdanOtishDarvozasi:
             "username": "aziz",
             "email": "aziz@example.uz",
             "password": "Parol!12345",
+            # Rozilik MAJBURIY (qaror 13) — usiz har bir test 400 olardi
+            # va bu yerdagi tekshiruvlar (nom bandligi, parol qoidalari)
+            # umuman sinalmasdi.
+            "terms_accepted": True,
             **over,
         }
         return APIClient().post(self.URL, data, format="json")

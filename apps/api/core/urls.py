@@ -18,6 +18,12 @@ urlpatterns = [
     path("search/", views.SearchView.as_view(), name="search"),
     path("auth/register/", views.RegisterView.as_view(), name="register"),
     path("auth/login/", views.LoginView.as_view(), name="login"),
+    # Funnel hodisalari (qaror 17) — kirilmagan foydalanuvchi ham yuboradi.
+    path(
+        "analytics/events/",
+        views.AnalyticsEventView.as_view(),
+        name="analytics-events",
+    ),
     path("auth/logout/", views.LogoutView.as_view(), name="logout"),
     path("auth/providers/", views.AuthProvidersView.as_view(), name="auth-providers"),
     path("auth/username-check/", views.UsernameCheckView.as_view(), name="username-check"),

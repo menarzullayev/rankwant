@@ -298,10 +298,27 @@ class UsernameCheckSerializer(serializers.Serializer[None]):
 
 class RegisterSerializer(serializers.ModelSerializer[User]):
     password = serializers.CharField(write_only=True, min_length=8)
+    #: Shartlar va maxfiylik siyosatiga rozilik — MAJBURIY va `True`
+    #: bo'lishi shart. GDPR sukut bo'yicha rozilikni tan olmaydi, ya'ni
+    #: belgilanmagan checkbox «rozilik» hisoblanmaydi.
+    terms_accepted = serializers.BooleanField(write_only=True)
+    #: Marketing xatlari — IXTIYORIY va ALOHIDA (GDPR 7-modda: shartlar
+    #: roziligi bilan birlashtirib bo'lmaydi). Standart — `False`.
+    marketing_opt_in = serializers.BooleanField(
+        write_only=True, required=False, default=False
+    )
 
     class Meta:
         model = User
-        fields = ["username", "email", "password", "display_name"]
+        fields = [
+            "username",
+            "email",
+            "password",
+            "display_name",
+            "country",
+            "terms_accepted",
+            "marketing_opt_in",
+        ]
         # Pochtasiz hisobni tiklab bo'lmaydi: parolni unutgan
         # foydalanuvchining boshqa kanali qolmaydi.
         #
@@ -317,7 +334,22 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
             # kirill, raqam, `_` va `.` ga ruxsat beradi va o'zbekcha maxsus
             # harflarni rad etadi — ADR-0016.
             "username": {"validators": []},
+            # Mamlakat IXTIYORIY: eski API mijozlari uni yubormaydi va
+            # ularni sindirmaslik kerak. Frontend esa har doim yuboradi
+            # (standart — `UZ`).
+            "country": {"required": False, "allow_blank": True},
         }
+
+    def validate_country(self, value: str) -> str:
+        value = value.upper()
+        if value and not re.fullmatch(r"[A-Z]{2}", value):
+            raise serializers.ValidationError("Mamlakat kodi noto'g'ri")
+        return value
+
+    def validate_terms_accepted(self, value: bool) -> bool:
+        if not value:
+            raise serializers.ValidationError("Shartlarga rozilik majburiy")
+        return value
 
     def validate_email(self, value: str) -> str:
         if _email_taken(value):
@@ -365,7 +397,12 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
 
     def create(self, validated_data: dict[str, Any]) -> User:
         password = validated_data.pop("password")
+        # `terms_accepted` — model maydoni EMAS (modelda sana turadi),
+        # ya'ni `User(**...)` ga uzatilsa `TypeError` berardi. Rozilik
+        # FAKTI serializerda tekshirildi, VAQTI esa shu yerda yoziladi.
+        validated_data.pop("terms_accepted", None)
         user = User(**validated_data)
+        user.terms_accepted_at = timezone.now()
         user.set_password(password)
         try:
             user.save()
@@ -385,10 +422,48 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
 class LoginSerializer(serializers.Serializer[dict[str, Any]]):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
+    #: «Meni eslab qol» — belgilansa sessiya `SESSION_COOKIE_AGE` (30 kun)
+    #: yashaydi, aks holda brauzer yopilganda tugaydi. Standart `False`:
+    #: umumiy kompyuterda (maktab, kutubxona) hisob ochiq qolmasligi kerak.
+    remember = serializers.BooleanField(required=False, default=False)
 
 
 class AccountDeleteSerializer(serializers.Serializer[dict[str, Any]]):
     password = serializers.CharField(write_only=True)
+
+
+class AnalyticsEventInSerializer(serializers.Serializer[dict[str, Any]]):
+    """Bitta funnel hodisasi (qaror 17)."""
+
+    name = serializers.CharField(max_length=48)
+    path = serializers.CharField(max_length=200, required=False, allow_blank=True)
+    props = serializers.JSONField(required=False)
+
+    def validate_props(self, value: Any) -> dict[str, Any]:
+        # `props` mijozdan keladi, ya'ni unga ishonib bo'lmaydi: dict
+        # emasligi bazaga har xil shakl yozib qo'yardi, katta obyekt esa
+        # jadvalni shishirardi. Kalitlar soni cheklanadi.
+        if value is None:
+            return {}
+        if not isinstance(value, dict) or len(value) > 12:
+            raise serializers.ValidationError("props — ko'pi bilan 12 kalitli obyekt")
+        return value
+
+
+class AnalyticsBatchSerializer(serializers.Serializer[dict[str, Any]]):
+    """Hodisalar partiyasi.
+
+    Bir sahifada bir nechta hodisa yig'iladi va BITTA so'rovda yuboriladi:
+    har hodisa uchun alohida so'rov mobil tarmoqda yo'qolardi va sahifa
+    yuklanishini sekinlashtirardi.
+    """
+
+    events = AnalyticsEventInSerializer(many=True, allow_empty=False)
+
+    def validate_events(self, value: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        if len(value) > 25:
+            raise serializers.ValidationError("Ko'pi bilan 25 hodisa")
+        return value
 
 
 class ApiTokenSerializer(serializers.ModelSerializer[ApiToken]):

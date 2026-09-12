@@ -19,7 +19,15 @@ import { SkipLink } from "./SkipLink";
  *  yetish uchun 33 marta Tab bosish kerak edi va sahifada 44 ta
  *  fokuslanadigan element bor edi. Sarlavha qoladi: til tanlash va
  *  logotip kerak. */
-const BARE = ["/login", "/register", "/parolni-tiklash", "/emailni-tasdiqlash"];
+const BARE = [
+  "/login",
+  "/register",
+  "/parolni-tiklash",
+  "/emailni-tasdiqlash",
+  // Ro'yxatdan o'tishning 2-qadami — oqimning davomi, ya'ni yon panel
+  // ham, banner ham kerak emas: odam hali saytga kirmagan.
+  "/qoshimcha-malumot",
+];
 
 /** Sahifalar SERVER komponenti bo'lib qoladi — bu yerga `children` sifatida
  * uzatiladi, ya'ni SSR (ADR-0003 dagi SEO sababi) buzilmaydi. */

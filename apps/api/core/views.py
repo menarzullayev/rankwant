@@ -32,10 +32,17 @@ from rest_framework.views import APIView
 from contests.models import Contest
 from core import account, handles, oauth, recovery, verification
 from core.cache import cache_get, cache_set
-from core.models import ApiToken, SocialAccount, User, UsernameHistory
+from core.models import (
+    AnalyticsEvent,
+    ApiToken,
+    SocialAccount,
+    User,
+    UsernameHistory,
+)
 from core.pagination import StandardPagination, TimeCursorPagination
 from core.serializers import (
     AccountDeleteSerializer,
+    AnalyticsBatchSerializer,
     ApiTokenCreateSerializer,
     ApiTokenSerializer,
     EmailVerifySerializer,
@@ -451,7 +458,60 @@ class LoginView(APIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
         login(request, user)
+        # «Meni eslab qol» (qaror 7): belgilansa sessiya 30 kun yashaydi,
+        # belgilanmasa `0` — brauzer yopilganda tugaydi. `set_expiry`
+        # `login()` dan KEYIN chaqirilishi shart: `login()` sessiyani
+        # almashtiradi va avval qo'yilgan muddatni tashlab yuboradi.
+        request.session.set_expiry(
+            settings.SESSION_COOKIE_AGE
+            if serializer.validated_data.get("remember")
+            else 0
+        )
         return Response(MeSerializer(user).data)
+
+
+class AnalyticsEventView(APIView):
+    """Funnel hodisalarini qabul qiladi (qaror 17).
+
+    `AllowAny` — ATAYIN: eng qimmatli ma'lumot ro'yxatdan O'TMAGAN
+    odamdan keladi (qaysi maydonda ketdi), ya'ni kirish talab qilinsa
+    funnel umuman ko'rinmasdi. Throttle esa bazani to'ldirishga yo'l
+    qo'ymaydi.
+
+    IP saqlanmaydi: u shaxsiy ma'lumot, funnel uchun esa kerak emas.
+    Sessiya kaliti bog'lanish uchun yetarli.
+    """
+
+    permission_classes = [AllowAny]
+    throttle_classes = [ResilientScopedRateThrottle]
+    throttle_scope = "analytics"
+
+    @extend_schema(request=AnalyticsBatchSerializer, responses={204: None})
+    def post(self, request: Request) -> Response:
+        serializer = AnalyticsBatchSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = request.user if request.user.is_authenticated else None
+        session_key = request.session.session_key or ""
+        locale = request.COOKIES.get("rw_locale", "")
+
+        # `bulk_create` — bitta INSERT, ya'ni 25 ta hodisa ham bir
+        # so'rovda yoziladi. Funnel yozuvi foydalanuvchini kutdirmasligi
+        # kerak, shuning uchun javob `204` va tana yo'q.
+        AnalyticsEvent.objects.bulk_create(
+            [
+                AnalyticsEvent(
+                    name=event["name"],
+                    user=user,
+                    session_key=session_key,
+                    path=event.get("path", ""),
+                    locale=locale,
+                    props=event.get("props") or {},
+                )
+                for event in serializer.validated_data["events"]
+            ]
+        )
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class LogoutView(APIView):

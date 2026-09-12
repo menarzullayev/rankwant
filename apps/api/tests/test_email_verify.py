@@ -23,7 +23,13 @@ from core.models import EmailVerifyToken, User
 def register(client: APIClient, username: str = "yangi") -> Any:
     return client.post(
         reverse("register"),
-        {"username": username, "email": f"{username}@example.com", "password": "Parol!12345"},
+        {
+            "username": username,
+            "email": f"{username}@example.com",
+            "password": "Parol!12345",
+            # Rozilik MAJBURIY (qaror 13).
+            "terms_accepted": True,
+        },
         format="json",
     )
 

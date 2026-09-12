@@ -248,6 +248,10 @@ REST_FRAMEWORK = {
         # urinishda aynan shu uchtasi ketma-ket sinaladi.
         "account_change": os.environ.get("THROTTLE_ACCOUNT_CHANGE", "20/hour"),
         "avatar": os.environ.get("THROTTLE_AVATAR", "30/hour"),
+        # Funnel hodisalari partiya bilan yuboriladi (bir sahifa bir
+        # partiya), ya'ni limit odamning navigatsiyasiga mos bo'lishi
+        # kerak — lekin bazani to'ldirib tashlashga yetmasin.
+        "analytics": os.environ.get("THROTTLE_ANALYTICS", "240/hour"),
     },
 }
 

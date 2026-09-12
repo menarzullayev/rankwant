@@ -122,6 +122,19 @@ class User(AbstractUser):
     ui_prefs = models.JSONField(default=dict, blank=True)
     #: Bildirishnoma turi → kanallar. Kalit yo'q bo'lsa — standart.
     notify_prefs = models.JSONField(default=dict, blank=True)
+
+    # ── Rozilik (huquqiy) ────────────────────────────────────────────
+    #: Shartlar va maxfiylik siyosatiga rozilik VAQTI. `null` — eski
+    #: hisoblar (import qilinganlar ham shu yerda): ular ro'yxatdan
+    #: yangi oqim bilan o'tmagan, ya'ni rozilik so'ralmagan. Bo'sh
+    #: qoldirish ularni «rozilik bermagan» deb belgilab, keyingi
+    #: kirishda qayta so'rashga yo'l ochadi.
+    terms_accepted_at = models.DateTimeField(null=True, blank=True)
+    #: Marketing xatlari uchun ALOHIDA rozilik (GDPR 7-modda): shartlar
+    #: roziligi bilan birlashtirib bo'lmaydi. Standart — `False`, ya'ni
+    #: ro'yxatdan o'tgan odamga xat yuborilmaydi.
+    marketing_opt_in = models.BooleanField(default=False)
+
     #: Bepul almashtirish yiliga bir marta — shu sana bo'yicha sanaladi.
     username_changed_at = models.DateTimeField(null=True, blank=True)
 
@@ -441,6 +454,41 @@ class UserSession(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user_id}:{self.session_key[:6]}"
+
+
+class AnalyticsEvent(models.Model):
+    """Funnel hodisasi — auth oqimini o'lchash uchun (qaror 17).
+
+    Nega alohida jadval: qaysi qadamda odam ketayotganini bilmasdan
+    formani optimallashtirib bo'lmaydi — "mamlakat dropdown'ida 40%
+    ketadi" kabi xulosa faqat shu yerdan chiqadi.
+
+    IP ATAYLAB saqlanmaydi: joylashuv ma'lumoti shaxsiy ma'lumot
+    (GDPR), funnel uchun esa kerak emas. `session_key` Django
+    sessiyasidan olinadi — u allaqachon mavjud va IP'siz.
+    """
+
+    #: `auth.form_started`, `auth.form_error`, `auth.register_done`,
+    #: `auth.step2_saved` kabi nomlar.
+    name = models.CharField(max_length=48, db_index=True)
+    user = models.ForeignKey(
+        User, null=True, blank=True, on_delete=models.SET_NULL, related_name="events"
+    )
+    session_key = models.CharField(max_length=40, blank=True)
+    path = models.CharField(max_length=200, blank=True)
+    locale = models.CharField(max_length=8, blank=True)
+    #: Erkin qo'shimcha maydonlar (`field`, `step`, `reason`).
+    props = models.JSONField(default=dict, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering: ClassVar = ["-created_at"]
+        indexes: ClassVar = [
+            models.Index(fields=["name", "-created_at"], name="event_name_time"),
+        ]
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class School(models.Model):

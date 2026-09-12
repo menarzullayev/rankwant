@@ -1218,6 +1218,16 @@ export const api = {
       `/users/?ordering=-rating_skills${school ? `&school=${school}` : ""}`,
     ),
   school: (id: string) => get<School>(`/schools/${id}/`),
+  /** Maktab katalogi — nom bo'yicha qidiruv, viloyat/tuman bo'yicha filtr.
+   *  Katalog moderator to'ldiradi (ADR-0017), ya'ni bu ro'yxat to'liq emas:
+   *  topilmagan maktab erkin matn bo'lib qoladi. */
+  schools: (params: { q?: string; region?: string; district?: string } = {}) => {
+    const query = new URLSearchParams();
+    if (params.q) query.set("q", params.q);
+    if (params.region) query.set("region", params.region);
+    if (params.district) query.set("district", params.district);
+    return get<Paginated<School>>(`/schools/${query.size ? `?${query}` : ""}`);
+  },
   user: (username: string) => get<UserPublic>(`/users/${username}/`),
   // Qvant — Phase 1. Balans va questlar shaxsiy, kesh yo'q.
   wallet: () => get<Wallet>("/qvant/wallet/", 0),

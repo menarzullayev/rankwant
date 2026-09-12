@@ -20,6 +20,9 @@ def register(**over: str):
         "username": "yangi",
         "email": "yangi@example.com",
         "password": "Parol!12345",
+        # Rozilik MAJBURIY (qaror 13) — usiz har bir chaqiruv 400 olardi
+        # va bu yerdagi email tekshiruvlari sinalmasdi.
+        "terms_accepted": True,
     }
     body.update(over)
     return APIClient().post(reverse("register"), body, format="json")
