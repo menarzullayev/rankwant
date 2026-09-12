@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { SelectField } from "@/components/ui/SelectField";
+import { CountryFlag } from "@/components/ui/CountryFlag";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
 import { api, patchJson, type Me, type School } from "@/lib/api";
@@ -118,6 +119,7 @@ export function OnboardingForm({ me }: { me: Me }) {
         label={t(locale, "settings.country")}
         name="country"
         value={country}
+        leading={<CountryFlag code={country} className="h-6 w-9" />}
         onChange={(e) => {
           setCountry(e.target.value);
           // Mamlakat almashsa joy ma'lumoti mos kelmay qoladi —

@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import { Card } from "@/components/ui/Card";
+import { CountryFlag } from "@/components/ui/CountryFlag";
 import { UserName } from "@/components/UserName";
 import {
   EmptyRow,
@@ -85,7 +86,14 @@ export default async function LeaderboardPage({ searchParams }: Props) {
                   {i + 1}
                 </TD>
                 <TD>
-                  <UserName username={u.username} name={u.display_name} title={u.title} locale={locale} />
+                  {/* Bayroq — ismning yonida. Global reytingda davlat
+                      taqsimoti ko'zga tashlanadi (qaror: hamma joyda).
+                      Yashirilgan mamlakatda `country` bo'sh keladi va
+                      `CountryFlag` hech narsa chizmaydi. */}
+                  <span className="flex items-center gap-2">
+                    <CountryFlag code={u.country} />
+                    <UserName username={u.username} name={u.display_name} title={u.title} locale={locale} />
+                  </span>
                 </TD>
                 <TD align="right" className="font-semibold rw-strong">
                   {u.rating_skills}

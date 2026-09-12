@@ -150,6 +150,9 @@ export type UserPublic = {
   display_name: string;
   avatar_url: string;
   bio: string;
+  /** ISO 3166-1 alpha-2 — bayroq uchun. Yashirilgan bo'lsa bo'sh satr
+   *  (reyting jadvali ommaviy, ya'ni `hidden_fields` hisobga olinadi). */
+  country: string;
   /** Unvon — Contests reytingidan; reytingli musobaqasiz `null` (ADR-0018). */
   title: UserTitle | null;
   rating_skills: number;

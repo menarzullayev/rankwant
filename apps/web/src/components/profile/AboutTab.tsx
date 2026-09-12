@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/Card";
+import { CountryFlag } from "@/components/ui/CountryFlag";
 import { localName, t, type Locale } from "@/i18n/messages";
 import type { ExternalProfile, PrivacyField, PublicProfile } from "@/lib/api";
 import { countryName } from "@/lib/countries";
@@ -36,13 +37,21 @@ export function AboutTab({
       info.region && (info.country === "UZ" ? regionName(info.region, locale) : info.region);
     rows.push({
       label: t(locale, "settings.country"),
-      value: [
-        countryName(info.country, locale),
-        region,
-        info.district ? districtName(info.district, locale) : info.city,
-      ]
-        .filter(Boolean)
-        .join(", "),
+      // Bayroq nomning YONIDA: u bezak (`aria-hidden`), chunki davlat
+      // nomi allaqachon matn bo'lib turibdi — skrinrider uni ikki marta
+      // o'qimasligi kerak.
+      value: (
+        <span className="inline-flex items-center gap-1.5">
+          <CountryFlag code={info.country} />
+          {[
+            countryName(info.country, locale),
+            region,
+            info.district ? districtName(info.district, locale) : info.city,
+          ]
+            .filter(Boolean)
+            .join(", ")}
+        </span>
+      ),
       field: "country",
     });
   }

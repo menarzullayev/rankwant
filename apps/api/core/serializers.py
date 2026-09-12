@@ -27,6 +27,16 @@ class UserPublicSerializer(serializers.ModelSerializer[User]):
     max_ratings = serializers.SerializerMethodField()
     solved_by_level = serializers.SerializerMethodField()
     title = TitleField()
+    #: Mamlakat — bayroq uchun (ISO 3166-1 alpha-2). `SerializerMethodField`
+    #: ATAYIN: reyting jadvali ommaviy, ya'ni `hidden_fields` ni hisobga
+    #: olish shart — `profiles/public.py` dagi bilan bir xil qoida.
+    country = serializers.SerializerMethodField()
+
+    def get_country(self, user: User) -> str:
+        """Yashirilgan bo'lsa bo'sh satr — jadvalda bayroq chizilmaydi."""
+        if "country" in (user.hidden_fields or []):
+            return ""
+        return user.country
 
     def get_ranks(self, user: User) -> dict[str, int]:
         """Har reyting bo'yicha o'rin.
@@ -103,6 +113,7 @@ class UserPublicSerializer(serializers.ModelSerializer[User]):
             "rating_challenges",
             "streak_count",
             "date_joined",
+            "country",
             "ranks",
             "max_ratings",
             "solved_by_level",

@@ -9,6 +9,7 @@ import { useSession } from "@/context/SessionContext";
 import { Button } from "@/components/ui/Button";
 import { Field, type FieldStatus } from "@/components/ui/Field";
 import { Checkbox, SelectField } from "@/components/ui/SelectField";
+import { CountryFlag } from "@/components/ui/CountryFlag";
 import { GithubMark, GoogleMark } from "@/components/ProviderMark";
 import { TelegramButton } from "@/components/TelegramButton";
 import { useLocale } from "@/i18n/LocaleProvider";
@@ -295,6 +296,7 @@ export function AuthForm({
             autoComplete="country"
             value={country}
             onChange={(e) => setCountry(e.target.value)}
+            leading={<CountryFlag code={country} className="h-6 w-9" />}
           >
             {countryOptions(locale).map((c) => (
               <option key={c.code} value={c.code}>

@@ -442,6 +442,9 @@ class TestPhasedReveal:
             "bio",
             # Unvon — ism rangi hamma joyda shundan (ADR-0018).
             "title",
+            # Mamlakat — reyting jadvalidagi bayroq uchun (yashirilgan
+            # bo'lsa bo'sh satr keladi, maydon esa baribir qoladi).
+            "country",
             "rating_skills",
             "rating_contest",
             "rating_activity",
@@ -457,6 +460,22 @@ class TestPhasedReveal:
         """Phase 3 — duel qurildi, reyting ochildi."""
         body = APIClient().get(reverse("user-detail", args=[user.username])).json()
         assert body["rating_challenges"] == 1400
+
+    def test_yashirilgan_mamlakat_bosh_keladi(self, user) -> None:
+        """Reyting jadvali OMMAVIY: mamlakatni yashirgan odamda bayroq
+        chizilmasligi kerak, ya'ni maydon bo'sh satr bo'lib keladi."""
+        user.country = "UZ"
+        user.hidden_fields = ["country"]
+        user.save()
+        body = APIClient().get(reverse("user-detail", args=[user.username])).json()
+        assert body["country"] == ""
+
+    def test_ochiq_mamlakat_keladi(self, user) -> None:
+        user.country = "UZ"
+        user.hidden_fields = []
+        user.save()
+        body = APIClient().get(reverse("user-detail", args=[user.username])).json()
+        assert body["country"] == "UZ"
 
     def test_me_activity_beradi(self, user) -> None:
         c = APIClient()
