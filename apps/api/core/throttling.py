@@ -14,6 +14,7 @@ ham qolmaydi.
 from __future__ import annotations
 
 import logging
+from ipaddress import ip_address
 from typing import Any
 
 from django.conf import settings
@@ -68,12 +69,61 @@ class CacheOutageTolerant:
             raise
 
 
-class ResilientAnonRateThrottle(TrustedClientIdent, CacheOutageTolerant, AnonRateThrottle):
-    pass
+class InternalRenderRate:
+    """SSR chaqiruvlarini alohida, kengroq chegarada hisoblaydi.
+
+    Next.js sahifani SERVERDA renderlab API'ga xususiy tarmoq manzilidan,
+    proksi sarlavhasisiz murojaat qiladi — ya'ni butun saytning server
+    tomoni bitta kalitga tushadi. O'lchandi (2026-09-12): krauler
+    `/users/*` sahifalarini aylanib chiqqanda `anon` chegara tugadi va
+    sahifalar 429 ni ushlamay 500 ga aylantirdi, ya'ni sayt hamma uchun
+    ochilmay qoldi.
+
+    `TRUSTED_CLIENT_IP_HEADER` sozlanmagan joyda hech narsa ichki deb
+    hisoblanmaydi: aks holda proksi sarlavhasi yo'qolib qolganda himoya
+    jimgina kengayib ketardi.
+
+    `scope_internal` `None` bo'lsa ichki so'rov bu throttle'dan o'tib
+    ketadi — anonim SSR so'rovi `user` chegarasida ham IP bo'yicha
+    kalit olardi (DRF autentifikatsiyasiz `UserRateThrottle` ni IP ga
+    tushiradi), ya'ni yana bitta umumiy idish paydo bo'lardi.
+    """
+
+    scope: str | None
+    scope_internal: str | None = None
+
+    def allow_request(self, request: Any, view: Any) -> bool:
+        if self._is_internal(request):
+            if self.scope_internal is None:
+                return True
+            self.scope = self.scope_internal
+            self.rate = self.get_rate()  # type: ignore[attr-defined]
+            self.num_requests, self.duration = self.parse_rate(self.rate)  # type: ignore[attr-defined]
+        return bool(super().allow_request(request, view))  # type: ignore[misc]
+
+    @staticmethod
+    def _is_internal(request: Any) -> bool:
+        header = getattr(settings, "TRUSTED_CLIENT_IP_HEADER", "")
+        if not header or request.META.get(header):
+            return False
+        try:
+            return ip_address(str(request.META.get("REMOTE_ADDR", ""))).is_private
+        except ValueError:
+            return False
 
 
-class ResilientUserRateThrottle(TrustedClientIdent, CacheOutageTolerant, UserRateThrottle):
-    pass
+class ResilientAnonRateThrottle(
+    TrustedClientIdent, InternalRenderRate, CacheOutageTolerant, AnonRateThrottle
+):
+    scope_internal = "anon_internal"
+
+
+class ResilientUserRateThrottle(
+    TrustedClientIdent, InternalRenderRate, CacheOutageTolerant, UserRateThrottle
+):
+    # Ichki anonim so'rov `anon_internal` da hisoblangan — bu yerda yana
+    # sanalmaydi. Kirgan foydalanuvchi esa o'z pk'si bo'yicha sanaladi.
+    scope_internal = None
 
 
 class ResilientScopedRateThrottle(TrustedClientIdent, CacheOutageTolerant, ScopedRateThrottle):

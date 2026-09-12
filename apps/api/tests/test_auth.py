@@ -387,3 +387,54 @@ class TestThrottleKaliti:
         birinchi = self._ident(settings, "HTTP_CF_CONNECTING_IP", HTTP_CF_CONNECTING_IP="85.1.1.1")
         ikkinchi = self._ident(settings, "HTTP_CF_CONNECTING_IP", HTTP_CF_CONNECTING_IP="85.1.1.2")
         assert birinchi != ikkinchi
+
+
+@pytest.mark.django_db
+class TestIchkiRenderChegarasi:
+    """SSR chaqiruvlari tashrifchilar bilan bitta idishda turmasligi kerak.
+
+    O'lchandi (2026-09-12): krauler `/users/*` sahifalarini aylanib
+    chiqqanda `anon` chegara tugadi, SSR esa 429 ni ushlamay 500 ga
+    aylantirdi — sayt hamma uchun ochilmay qoldi.
+    """
+
+    def _scope(self, settings, header: str, **meta) -> str | None:
+        from django.contrib.auth.models import AnonymousUser
+        from django.test import RequestFactory
+
+        from core.throttling import ResilientAnonRateThrottle
+
+        settings.TRUSTED_CLIENT_IP_HEADER = header
+        request = RequestFactory().get("/api/v1/problems/", REMOTE_ADDR="172.18.0.7", **meta)
+        request.user = AnonymousUser()
+        throttle = ResilientAnonRateThrottle()
+        throttle.allow_request(request, None)
+        return throttle.scope
+
+    def test_ichki_render_alohida_idishda(self, settings) -> None:
+        assert self._scope(settings, "HTTP_CF_CONNECTING_IP") == "anon_internal"
+
+    def test_tashrifchi_anon_idishida(self, settings) -> None:
+        scope = self._scope(settings, "HTTP_CF_CONNECTING_IP", HTTP_CF_CONNECTING_IP="85.1.1.1")
+        assert scope == "anon"
+
+    def test_ichki_render_user_chegarasida_sanalmaydi(self, settings) -> None:
+        # DRF `UserRateThrottle` ni autentifikatsiyasiz IP ga tushiradi, ya'ni
+        # SSR uchun daqiqalik yana bitta umumiy idish paydo bo'lardi.
+        from django.contrib.auth.models import AnonymousUser
+        from django.core.cache import cache
+        from django.test import RequestFactory
+
+        from core.throttling import ResilientUserRateThrottle
+
+        settings.TRUSTED_CLIENT_IP_HEADER = "HTTP_CF_CONNECTING_IP"
+        cache.clear()
+        request = RequestFactory().get("/api/v1/problems/", REMOTE_ADDR="172.18.0.7")
+        request.user = AnonymousUser()
+        assert ResilientUserRateThrottle().allow_request(request, None) is True
+        assert cache.get("throttle_user_172.18.0.7") is None
+
+    def test_sozlama_bosh_bolsa_hammasi_anon(self, settings) -> None:
+        # Proksi sarlavhasi sozlanmagan joyda hamma so'rov xususiy manzildan
+        # keladi — himoya kengayib ketmasligi kerak.
+        assert self._scope(settings, "") == "anon"
