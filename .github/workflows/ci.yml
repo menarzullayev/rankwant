@@ -19,6 +19,10 @@ concurrency:
 
 permissions:
   contents: read
+  # `dorny/paths-filter` PR'dagi o'zgargan fayllarni GitHub API'dan
+  # oladi; bu ruxsatsiz u «Resource not accessible by integration» deb
+  # yiqiladi va butun CI shu yerda to'xtaydi.
+  pull-requests: read
 
 jobs:
   # Yo'l filtri va hujjat tekshiruvi bitta job'da: ikkalasi ham bir necha
