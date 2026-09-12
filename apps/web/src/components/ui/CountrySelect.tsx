@@ -5,6 +5,7 @@ import {
   ComboboxInput,
   ComboboxOption,
   ComboboxOptions,
+  Label,
 } from "@headlessui/react";
 import { useState } from "react";
 
@@ -62,12 +63,16 @@ export function CountrySelect({
       value={value}
       onChange={(code: string | null) => onChange(code ?? "")}
       name={name}
-      // `<select>` bilan bir xil semantika: yorliq va izoh bog'lanadi.
-      aria-label={label}
+      // `as="div"` SHART: usiz Headless UI Fragment render qiladi va
+      // o'z propslarini (`data-headlessui-state`) uzatib bo'lmaydi —
+      // natijada SSR yiqiladi va butun sahifa ochilmaydi.
+      as="div"
     >
-      <span className="mb-1.5 block text-theme-sm font-medium rw-strong">
+      {/* `Label` — Headless UI input bilan yorliqni O'ZI bog'laydi
+          (`htmlFor`/`id`), ya'ni `aria-label` yozish shart emas. */}
+      <Label className="mb-1.5 block text-theme-sm font-medium rw-strong">
         {label}
-      </span>
+      </Label>
       <div className="relative">
         {/* Bayroq trigger ICHIDA — chapda, ya'ni yopiq holatda ham
             tanlangan davlat ko'rinadi (native `<select>` da buning
