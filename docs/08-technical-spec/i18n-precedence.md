@@ -103,19 +103,28 @@ Accept-Language: zh → lang="zh"
 Accept-Language: kk → lang="kk"
 ```
 
-Two placements were tried and both were **measured** to fail:
+Three placements were tried and all three were **measured** to fail:
 
 1. `next.config.ts` `headers()` — the rule *is* emitted into
    `routes-manifest.json`, but never reaches the response. Next.js overwrites
    `Vary` with its own list.
 2. `src/proxy.ts` (the Next.js 16 file convention; `middleware.ts` is rejected
-   in 16.x) — a control header proves the proxy runs: `x-rw-probe: alive`
-   survives while `Vary` does not. The clobbering is specific to `Vary`.
+   in 16.x) using `headers.set("Vary", ...)` — a control header proves the proxy
+   runs: `x-rw-probe: alive` survives while `Vary` does not. The clobbering is
+   specific to `Vary`.
+3. The same proxy using `headers.append("Vary", ...)`. The hypothesis was that
+   Next.js replaces the *value* but preserves a *list*, so appending would
+   survive. It does not — the response is byte-for-byte the same as (2). The
+   replacement is unconditional.
 
 This is undocumented internal behaviour — the `proxy` file-convention reference
-does not mention `Vary` at all. Note that `middleware.ts` and `proxy.ts` cannot
-coexist; Next.js 16 fails the build with *"Both middleware file and proxy file
-are detected"*.
+does not mention `Vary` at all, and the `headers` config reference does not
+either. Note that `middleware.ts` and `proxy.ts` cannot coexist; Next.js 16
+fails the build with *"Both middleware file and proxy file are detected"*.
+
+⚠️ The lesson from (3): when a framework discards a header, check whether it
+discards the *value* or the *key*. Here it is the key, so no amount of
+in-process header manipulation will work — the fix has to sit outside Next.js.
 
 **Why this is latent rather than live:** responses currently carry
 `Cache-Control: private, no-cache, no-store, max-age=0, must-revalidate`, so no

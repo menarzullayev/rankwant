@@ -62,15 +62,20 @@ export function proxy(request: NextRequest): NextResponse {
   //     Vary: rsc, next-router-state-tree, next-router-prefetch,
   //           next-router-segment-prefetch, Accept-Encoding
   //
-  // Ikki joy sinaldi va ikkalasi ham o'lchov bilan rad etildi:
+  // Uch joy sinaldi va uchalasi ham o'lchov bilan rad etildi:
   //   1. `next.config.ts` `headers()` — qoida `routes-manifest.json` ga
   //      yoziladi (tekshirildi), javobda esa yo'q.
   //   2. shu fayl (proxy) — `x-rw-probe: alive` omon qoladi, `Vary` esa
   //      yo'q. Ya'ni proxy ISHLAYDI; klobbers faqat `Vary` ga tegishli.
+  //   3. `set()` o'rniga `append()` — "qiymat almashtiriladi, ro'yxat
+  //      saqlanadi" degan gipoteza. O'LCHANDI: javob (2) bilan AYNAN bir
+  //      xil. Ya'ni almashtirish SHARTSIZ va KALIT darajasida — Next.js
+  //      ichida header qo'shib bo'lmaydi, tuzatish tashqarida bo'lishi
+  //      shart.
   //
   // Bu Next.js'ning ichki xatti-harakati, hujjatda yozilmagan
   // (`/docs/app/api-reference/file-conventions/proxy` da `Vary` umuman
-  // tilga olinmaydi).
+  // tilga olinmaydi; `headers()` konfiguratsiya sahifasida ham yo'q).
   //
   // NEGA HOZIR ZARARSIZ: javob `Cache-Control: private, no-cache,
   // no-store, max-age=0, must-revalidate` bilan keladi (o'lchandi) —
