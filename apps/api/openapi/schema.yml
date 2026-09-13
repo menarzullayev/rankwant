@@ -4,6 +4,39 @@ info:
   version: 1.0.0
   description: Sport dasturlash va olimpiada platformasi — ochiq REST API
 paths:
+  /api/v1/analytics/events/:
+    post:
+      operationId: analytics_events_create
+      description: |-
+        Funnel hodisalarini qabul qiladi (qaror 17).
+
+        `AllowAny` — ATAYIN: eng qimmatli ma'lumot ro'yxatdan O'TMAGAN
+        odamdan keladi (qaysi maydonda ketdi), ya'ni kirish talab qilinsa
+        funnel umuman ko'rinmasdi. Throttle esa bazani to'ldirishga yo'l
+        qo'ymaydi.
+
+        IP saqlanmaydi: u shaxsiy ma'lumot, funnel uchun esa kerak emas.
+        Sessiya kaliti bog'lanish uchun yetarli.
+      tags:
+      - analytics
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnalyticsBatch'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AnalyticsBatch'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AnalyticsBatch'
+        required: true
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
   /api/v1/arena/:
     get:
       operationId: arena_list
@@ -618,47 +651,6 @@ paths:
       - cookieAuth: []
       responses:
         '204':
-          description: No response body
-  /api/v1/auth/social/{provider}/link-start/:
-    post:
-      operationId: auth_social_link_start_create
-      description: |-
-        Telegram'ni ulash niyatini belgilaydi.
-
-        Telegram vidjeti `SocialStartView` dan o'tmaydi va uning callback'i
-        `state` siz GET — ya'ni «kirgan bo'lsa bog'la» qoidasi hisobni
-        egallash yo'li bo'lardi: hujumchi qurbonning brauzerini o'zining
-        imzolangan ma'lumoti bilan o'sha manzilga yuborib, o'z Telegramini
-        qurbon hisobiga ulab olardi va keyin uning nomidan kirardi.
-        Shu sababli niyat SESSIYADA va faqat shu POST orqali qo'yiladi:
-        DRF sessiya autentifikatsiyasi POST'ga CSRF tekshiruvini talab
-        qiladi, ya'ni begona sayt uni chaqira olmaydi.
-      parameters:
-      - in: path
-        name: provider
-        schema:
-          type: string
-        required: true
-      tags:
-      - auth
-      security:
-      - cookieAuth: []
-      responses:
-        '204':
-          description: No response body
-  /api/v1/auth/telegram/callback/:
-    get:
-      operationId: auth_telegram_callback_retrieve
-      description: |-
-        Telegram widget imzolangan ma'lumotni to'g'ridan-to'g'ri yuboradi —
-        kod almashuvi yo'q.
-      tags:
-      - auth
-      security:
-      - cookieAuth: []
-      - {}
-      responses:
-        '302':
           description: No response body
   /api/v1/auth/username-check/:
     get:
@@ -1684,6 +1676,7 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/Me'
+        required: true
       security:
       - cookieAuth: []
       responses:
@@ -3353,6 +3346,36 @@ paths:
                 items:
                   $ref: '#/components/schemas/Skill'
           description: ''
+  /api/v1/staff/analytics/:
+    get:
+      operationId: staff_analytics_retrieve
+      description: |-
+        Ro'yxatdan o'tish voronkasi — `AnalyticsEvent` dan jamlanadi.
+
+        Nega kerak: hodisalar yozila boshlagan edi, lekin ularni KO'RISH
+        yo'li yo'q edi — ya'ni yig'ilgan ma'lumot ishlatilmayotgan edi
+        (qaror 7). Qaysi qadamda odam ketayotganini bilmasdan formani
+        optimallashtirib bo'lmaydi.
+
+        SESSIYA bo'yicha sanaladi, xom hodisa bo'yicha emas: bitta odam
+        xatoni o'n marta ko'rishi mumkin, «qancha odam shu qadamda
+        to'xtadi» degan savolga esa faqat sessiya javob beradi.
+
+        Faqat o'qish. `StaffViewSet` dan meros olmaydi — bu agregatsiya,
+        CRUD emas, ya'ni ro'yxat/paginatsiya tushunchalari yo'q.
+      parameters:
+      - in: query
+        name: days
+        schema:
+          type: integer
+        description: Oyna uzunligi (kun). 1–365, standart 30.
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: Voronka jamlanmasi
   /api/v1/staff/arena/:
     get:
       operationId: staff_arena_list
@@ -5934,6 +5957,193 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/staff/schools/:
+    get:
+      operationId: staff_schools_list
+      description: |-
+        Maktab katalogi — to'liq CRUD (ADR-0017).
+
+        Nega bu API kerak bo'ldi: ADR "moderator admin paneldan to'ldiradi"
+        deydi, lekin amalda uni to'ldirishning YO'LI yo'q edi —
+        `ADMIN_ENABLED` production'da ataylab o'chiq, `SchoolViewSet` esa
+        faqat o'qish uchun. Ya'ni maktab reytingi va sinfdoshlar bo'sh
+        qolib ketardi.
+
+        Qolgan staff yuzalari bilan bir xil qoida: faqat `is_staff` va faqat
+        sessiya (PAT emas — `StaffViewSet` dagi `SessionOnly`).
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffSchoolList'
+          description: ''
+    post:
+      operationId: staff_schools_create
+      description: |-
+        Maktab katalogi — to'liq CRUD (ADR-0017).
+
+        Nega bu API kerak bo'ldi: ADR "moderator admin paneldan to'ldiradi"
+        deydi, lekin amalda uni to'ldirishning YO'LI yo'q edi —
+        `ADMIN_ENABLED` production'da ataylab o'chiq, `SchoolViewSet` esa
+        faqat o'qish uchun. Ya'ni maktab reytingi va sinfdoshlar bo'sh
+        qolib ketardi.
+
+        Qolgan staff yuzalari bilan bir xil qoida: faqat `is_staff` va faqat
+        sessiya (PAT emas — `StaffViewSet` dagi `SessionOnly`).
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffSchool'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffSchool'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffSchool'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffSchool'
+          description: ''
+  /api/v1/staff/schools/{id}/:
+    get:
+      operationId: staff_schools_retrieve
+      description: |-
+        Maktab katalogi — to'liq CRUD (ADR-0017).
+
+        Nega bu API kerak bo'ldi: ADR "moderator admin paneldan to'ldiradi"
+        deydi, lekin amalda uni to'ldirishning YO'LI yo'q edi —
+        `ADMIN_ENABLED` production'da ataylab o'chiq, `SchoolViewSet` esa
+        faqat o'qish uchun. Ya'ni maktab reytingi va sinfdoshlar bo'sh
+        qolib ketardi.
+
+        Qolgan staff yuzalari bilan bir xil qoida: faqat `is_staff` va faqat
+        sessiya (PAT emas — `StaffViewSet` dagi `SessionOnly`).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this school.
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffSchool'
+          description: ''
+    patch:
+      operationId: staff_schools_partial_update
+      description: |-
+        Maktab katalogi — to'liq CRUD (ADR-0017).
+
+        Nega bu API kerak bo'ldi: ADR "moderator admin paneldan to'ldiradi"
+        deydi, lekin amalda uni to'ldirishning YO'LI yo'q edi —
+        `ADMIN_ENABLED` production'da ataylab o'chiq, `SchoolViewSet` esa
+        faqat o'qish uchun. Ya'ni maktab reytingi va sinfdoshlar bo'sh
+        qolib ketardi.
+
+        Qolgan staff yuzalari bilan bir xil qoida: faqat `is_staff` va faqat
+        sessiya (PAT emas — `StaffViewSet` dagi `SessionOnly`).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this school.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffSchool'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffSchool'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffSchool'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffSchool'
+          description: ''
+    delete:
+      operationId: staff_schools_destroy
+      description: |-
+        Maktab katalogi — to'liq CRUD (ADR-0017).
+
+        Nega bu API kerak bo'ldi: ADR "moderator admin paneldan to'ldiradi"
+        deydi, lekin amalda uni to'ldirishning YO'LI yo'q edi —
+        `ADMIN_ENABLED` production'da ataylab o'chiq, `SchoolViewSet` esa
+        faqat o'qish uchun. Ya'ni maktab reytingi va sinfdoshlar bo'sh
+        qolib ketardi.
+
+        Qolgan staff yuzalari bilan bir xil qoida: faqat `is_staff` va faqat
+        sessiya (PAT emas — `StaffViewSet` dagi `SessionOnly`).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this school.
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/staff/shop-items/:
     get:
       operationId: staff_shop_items_list
@@ -6440,6 +6650,303 @@ paths:
               schema:
                 type: object
           description: ''
+  /api/v1/staff/updates/:
+    get:
+      operationId: staff_updates_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffSystemUpdateList'
+          description: ''
+    post:
+      operationId: staff_updates_create
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffSystemUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffSystemUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffSystemUpdate'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffSystemUpdate'
+          description: ''
+  /api/v1/staff/updates/{id}/:
+    get:
+      operationId: staff_updates_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this system update.
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffSystemUpdate'
+          description: ''
+    put:
+      operationId: staff_updates_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this system update.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffSystemUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffSystemUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffSystemUpdate'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffSystemUpdate'
+          description: ''
+    patch:
+      operationId: staff_updates_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this system update.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffSystemUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffSystemUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffSystemUpdate'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffSystemUpdate'
+          description: ''
+    delete:
+      operationId: staff_updates_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this system update.
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/staff/updates/{id}/disable/:
+    post:
+      operationId: staff_updates_disable_create
+      description: Feature flag o'chirish — rollback (qaror 17-savol).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this system update.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffSystemUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffSystemUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffSystemUpdate'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffSystemUpdate'
+          description: ''
+  /api/v1/staff/updates/{id}/enable/:
+    post:
+      operationId: staff_updates_enable_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this system update.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffSystemUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffSystemUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffSystemUpdate'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffSystemUpdate'
+          description: ''
+  /api/v1/staff/updates/{id}/publish/:
+    post:
+      operationId: staff_updates_publish_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this system update.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffSystemUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffSystemUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffSystemUpdate'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffSystemUpdate'
+          description: ''
+  /api/v1/staff/updates/{id}/withdraw/:
+    post:
+      operationId: staff_updates_withdraw_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this system update.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffSystemUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffSystemUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffSystemUpdate'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffSystemUpdate'
+          description: ''
   /api/v1/staff/users/:
     get:
       operationId: staff_users_list
@@ -6935,6 +7442,348 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedTournamentStandingList'
           description: ''
+  /api/v1/updates/:
+    get:
+      operationId: updates_list
+      description: '`/updates/` — arxiv. Har yozuv doimiy havola oladi (SEO, tashqi
+        havola).'
+      parameters:
+      - in: query
+        name: kind
+        schema:
+          type: string
+          enum:
+          - breaking
+          - content
+          - deprecated
+          - design
+          - fixed
+          - improved
+          - infrastructure
+          - new
+          - performance
+          - security
+        description: |-
+          * `new` - Yangi
+          * `improved` - Yaxshilandi
+          * `fixed` - Tuzatildi
+          * `performance` - Tezlik
+          * `security` - Xavfsizlik
+          * `design` - Dizayn
+          * `content` - Kontent
+          * `infrastructure` - Infratuzilma
+          * `breaking` - Buzuvchi
+          * `deprecated` - Olib tashlanadi
+      - in: query
+        name: module
+        schema:
+          type: string
+          enum:
+          - arena
+          - classroom
+          - content
+          - contests
+          - core
+          - design
+          - judge
+          - problems
+          - profile
+          - quizzes
+          - qvant
+          - ratings
+        description: |-
+          * `problems` - Masalalar
+          * `contests` - Musobaqalar
+          * `arena` - Bellashuvlar
+          * `judge` - Tekshiruv
+          * `ratings` - Reyting
+          * `qvant` - Qvant
+          * `profile` - Profil
+          * `classroom` - Sinf
+          * `quizzes` - Testlar
+          * `content` - Kontent
+          * `design` - Dizayn
+          * `core` - Umumiy
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: version
+        schema:
+          type: string
+      tags:
+      - updates
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSystemUpdateList'
+          description: ''
+  /api/v1/updates/{id}/:
+    get:
+      operationId: updates_retrieve
+      description: '`/updates/` — arxiv. Har yozuv doimiy havola oladi (SEO, tashqi
+        havola).'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this system update.
+        required: true
+      tags:
+      - updates
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemUpdate'
+          description: ''
+  /api/v1/updates/mark-read/:
+    post:
+      operationId: updates_mark_read_create
+      description: '`ids` bo''sh bo''lsa — hammasi o''qilgan ("Hammasi o''qildi").'
+      tags:
+      - updates
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMarkRead'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UpdateMarkRead'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UpdateMarkRead'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/updates/unread/:
+    get:
+      operationId: updates_unread_list
+      description: O'qilmaganlar — qo'ng'iroq paneli uchun (qaror 6-savol).
+      parameters:
+      - in: query
+        name: kind
+        schema:
+          type: string
+          enum:
+          - breaking
+          - content
+          - deprecated
+          - design
+          - fixed
+          - improved
+          - infrastructure
+          - new
+          - performance
+          - security
+        description: |-
+          * `new` - Yangi
+          * `improved` - Yaxshilandi
+          * `fixed` - Tuzatildi
+          * `performance` - Tezlik
+          * `security` - Xavfsizlik
+          * `design` - Dizayn
+          * `content` - Kontent
+          * `infrastructure` - Infratuzilma
+          * `breaking` - Buzuvchi
+          * `deprecated` - Olib tashlanadi
+      - in: query
+        name: module
+        schema:
+          type: string
+          enum:
+          - arena
+          - classroom
+          - content
+          - contests
+          - core
+          - design
+          - judge
+          - problems
+          - profile
+          - quizzes
+          - qvant
+          - ratings
+        description: |-
+          * `problems` - Masalalar
+          * `contests` - Musobaqalar
+          * `arena` - Bellashuvlar
+          * `judge` - Tekshiruv
+          * `ratings` - Reyting
+          * `qvant` - Qvant
+          * `profile` - Profil
+          * `classroom` - Sinf
+          * `quizzes` - Testlar
+          * `content` - Kontent
+          * `design` - Dizayn
+          * `core` - Umumiy
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: version
+        schema:
+          type: string
+      tags:
+      - updates
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSystemUpdateList'
+          description: ''
+  /api/v1/updates/unread-by-module/:
+    get:
+      operationId: updates_unread_by_module_list
+      description: Nav chipi uchun — modul bo'yicha o'qilmaganlar (qaror 6-savol).
+      parameters:
+      - in: query
+        name: kind
+        schema:
+          type: string
+          enum:
+          - breaking
+          - content
+          - deprecated
+          - design
+          - fixed
+          - improved
+          - infrastructure
+          - new
+          - performance
+          - security
+        description: |-
+          * `new` - Yangi
+          * `improved` - Yaxshilandi
+          * `fixed` - Tuzatildi
+          * `performance` - Tezlik
+          * `security` - Xavfsizlik
+          * `design` - Dizayn
+          * `content` - Kontent
+          * `infrastructure` - Infratuzilma
+          * `breaking` - Buzuvchi
+          * `deprecated` - Olib tashlanadi
+      - in: query
+        name: module
+        schema:
+          type: string
+          enum:
+          - arena
+          - classroom
+          - content
+          - contests
+          - core
+          - design
+          - judge
+          - problems
+          - profile
+          - quizzes
+          - qvant
+          - ratings
+        description: |-
+          * `problems` - Masalalar
+          * `contests` - Musobaqalar
+          * `arena` - Bellashuvlar
+          * `judge` - Tekshiruv
+          * `ratings` - Reyting
+          * `qvant` - Qvant
+          * `profile` - Profil
+          * `classroom` - Sinf
+          * `quizzes` - Testlar
+          * `content` - Kontent
+          * `design` - Dizayn
+          * `core` - Umumiy
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: version
+        schema:
+          type: string
+      tags:
+      - updates
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUnreadModuleList'
+          description: ''
+  /api/v1/updates/unread-count/:
+    get:
+      operationId: updates_unread_count_retrieve
+      description: '`/updates/` — arxiv. Har yozuv doimiy havola oladi (SEO, tashqi
+        havola).'
+      tags:
+      - updates
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
   /api/v1/users/:
     get:
       operationId: users_list
@@ -7437,6 +8286,34 @@ paths:
           description: No response body
 components:
   schemas:
+    AnalyticsBatch:
+      type: object
+      description: |-
+        Hodisalar partiyasi.
+
+        Bir sahifada bir nechta hodisa yig'iladi va BITTA so'rovda yuboriladi:
+        har hodisa uchun alohida so'rov mobil tarmoqda yo'qolardi va sahifa
+        yuklanishini sekinlashtirardi.
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnalyticsEventIn'
+      required:
+      - events
+    AnalyticsEventIn:
+      type: object
+      description: Bitta funnel hodisasi (qaror 17).
+      properties:
+        name:
+          type: string
+          maxLength: 48
+        path:
+          type: string
+          maxLength: 200
+        props: {}
+      required:
+      - name
     Answer:
       type: object
       properties:
@@ -8675,6 +9552,18 @@ components:
           maxLength: 12
       required:
       - join_code
+    Kind598Enum:
+      enum:
+      - school
+      - lyceum
+      - university
+      - other
+      type: string
+      description: |-
+        * `school` - Maktab
+        * `lyceum` - Litsey
+        * `university` - Universitet
+        * `other` - Boshqa
     Kind59eEnum:
       enum:
       - news
@@ -8693,6 +9582,30 @@ components:
       description: |-
         * `article` - Maqola
         * `algorithm` - Algoritm
+    KindD6cEnum:
+      enum:
+      - new
+      - improved
+      - fixed
+      - performance
+      - security
+      - design
+      - content
+      - infrastructure
+      - breaking
+      - deprecated
+      type: string
+      description: |-
+        * `new` - Yangi
+        * `improved` - Yaxshilandi
+        * `fixed` - Tuzatildi
+        * `performance` - Tezlik
+        * `security` - Xavfsizlik
+        * `design` - Dizayn
+        * `content` - Kontent
+        * `infrastructure` - Infratuzilma
+        * `breaking` - Buzuvchi
+        * `deprecated` - Olib tashlanadi
     Language:
       type: object
       properties:
@@ -8753,15 +9666,30 @@ components:
         * `es` - Español
     Login:
       type: object
+      description: |-
+        Kirish — bitta maydon: foydalanuvchi nomi YOKI email (4-qaror).
+
+        Ilgari maydon `username` edi va faqat nom qabul qilinardi. Emailini
+        yoddan bilgan, lekin taxallusini eslay olmaydigan odam «Login yoki
+        parol noto'g'ri» olardi — holbuki u to'g'ri ma'lumot kiritgan edi.
+        Qaror: maydon BITTA qoladi (ikki maydon kiritishni ikki barobar
+        oshiradi), lekin qiymat ikki ustun bo'yicha qidiriladi.
+
+        Maydon nomi ham `identifier` ga o'zgardi: `username` deb qolsa,
+        email yuborilishi API shartnomasida ko'rinmasdi va hujjatda
+        noto'g'ri taassurot qolardi.
       properties:
-        username:
+        identifier:
           type: string
         password:
           type: string
           writeOnly: true
+        remember:
+          type: boolean
+          default: false
       required:
+      - identifier
       - password
-      - username
     MarkRead:
       type: object
       properties:
@@ -8782,9 +9710,10 @@ components:
           description: Designates whether the user can log into this admin site.
         username:
           type: string
-          readOnly: true
           description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
             only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
         email:
           type: string
           format: email
@@ -8850,6 +9779,9 @@ components:
           type: string
           format: date
           nullable: true
+        phone:
+          type: string
+          maxLength: 20
         hidden_fields: {}
         pinned_achievements: {}
         ui_prefs: {}
@@ -8896,6 +9828,34 @@ components:
       - streak_freeze_until
       - username
       - username_change
+    ModuleEnum:
+      enum:
+      - problems
+      - contests
+      - arena
+      - judge
+      - ratings
+      - qvant
+      - profile
+      - classroom
+      - quizzes
+      - content
+      - design
+      - core
+      type: string
+      description: |-
+        * `problems` - Masalalar
+        * `contests` - Musobaqalar
+        * `arena` - Bellashuvlar
+        * `judge` - Tekshiruv
+        * `ratings` - Reyting
+        * `qvant` - Qvant
+        * `profile` - Profil
+        * `classroom` - Sinf
+        * `quizzes` - Testlar
+        * `content` - Kontent
+        * `design` - Dizayn
+        * `core` - Umumiy
     Notification:
       type: object
       properties:
@@ -9647,6 +10607,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/StaffRoadmap'
+    PaginatedStaffSchoolList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffSchool'
     PaginatedStaffShopItemList:
       type: object
       required:
@@ -9693,6 +10676,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/StaffSubmission'
+    PaginatedStaffSystemUpdateList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffSystemUpdate'
     PaginatedStaffTestCaseList:
       type: object
       required:
@@ -9831,6 +10837,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Submission'
+    PaginatedSystemUpdateList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SystemUpdate'
     PaginatedTopicList:
       type: object
       required:
@@ -9919,6 +10948,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Transaction'
+    PaginatedUnreadModuleList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnreadModule'
     PaginatedUserPublicList:
       type: object
       required:
@@ -10018,9 +11070,10 @@ components:
           description: Designates whether the user can log into this admin site.
         username:
           type: string
-          readOnly: true
           description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
             only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
         email:
           type: string
           format: email
@@ -10086,6 +11139,9 @@ components:
           type: string
           format: date
           nullable: true
+        phone:
+          type: string
+          maxLength: 20
         hidden_fields: {}
         pinned_achievements: {}
         ui_prefs: {}
@@ -10627,6 +11683,42 @@ components:
           type: integer
           readOnly: true
           default: 0
+    PatchedStaffSchool:
+      type: object
+      description: |-
+        Maktab katalogi (ADR-0017) — moderator shu yerdan to'ldiradi.
+
+        `members` faqat O'QISH: u so'rovda hisoblanadi, kiritilmaydi.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        kind:
+          $ref: '#/components/schemas/Kind598Enum'
+        country:
+          type: string
+          maxLength: 2
+        region:
+          type: string
+          maxLength: 40
+        district:
+          type: string
+          maxLength: 40
+        city:
+          type: string
+          maxLength: 100
+        is_active:
+          type: boolean
+        members:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
     PatchedStaffShopItem:
       type: object
       properties:
@@ -10664,6 +11756,74 @@ components:
           type: integer
           readOnly: true
           default: 0
+    PatchedStaffSystemUpdate:
+      type: object
+      description: Staff yozadi. Tarjimalar ichma-ich keladi (10 til bir yozuvda).
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        kind:
+          $ref: '#/components/schemas/KindD6cEnum'
+        module:
+          $ref: '#/components/schemas/ModuleEnum'
+        status:
+          $ref: '#/components/schemas/StaffSystemUpdateStatusEnum'
+        version:
+          type: string
+          maxLength: 32
+        title:
+          type: string
+          maxLength: 200
+        body:
+          type: string
+          description: Markdown
+        locale:
+          type: string
+          maxLength: 5
+        image:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        source_repo:
+          type: string
+          maxLength: 120
+        source_refs: {}
+        source_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        released_at:
+          type: string
+          format: date
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        is_enabled:
+          type: boolean
+        author:
+          type: string
+          readOnly: true
+        translations:
+          type: array
+          items:
+            $ref: '#/components/schemas/SystemUpdateTranslation'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
     PatchedStaffTopic:
       type: object
       properties:
@@ -11494,10 +12654,27 @@ components:
         display_name:
           type: string
           maxLength: 100
+        country:
+          type: string
+          maxLength: 2
+        region:
+          type: string
+          maxLength: 80
+        terms_accepted:
+          type: boolean
+          writeOnly: true
+        marketing_opt_in:
+          type: boolean
+          writeOnly: true
+          default: false
+        turnstile_token:
+          type: string
+          writeOnly: true
+          default: ''
       required:
       - email
       - password
-      - username
+      - terms_accepted
     Registration:
       type: object
       properties:
@@ -11668,7 +12845,7 @@ components:
           type: string
           maxLength: 200
         kind:
-          $ref: '#/components/schemas/SchoolKindEnum'
+          $ref: '#/components/schemas/Kind598Enum'
         region:
           type: string
           maxLength: 40
@@ -11685,18 +12862,6 @@ components:
       - id
       - members
       - name
-    SchoolKindEnum:
-      enum:
-      - school
-      - lyceum
-      - university
-      - other
-      type: string
-      description: |-
-        * `school` - Maktab
-        * `lyceum` - Litsey
-        * `university` - Universitet
-        * `other` - Boshqa
     ScopesEnum:
       enum:
       - read
@@ -12658,6 +13823,47 @@ components:
           type: boolean
       required:
       - order
+    StaffSchool:
+      type: object
+      description: |-
+        Maktab katalogi (ADR-0017) — moderator shu yerdan to'ldiradi.
+
+        `members` faqat O'QISH: u so'rovda hisoblanadi, kiritilmaydi.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        kind:
+          $ref: '#/components/schemas/Kind598Enum'
+        country:
+          type: string
+          maxLength: 2
+        region:
+          type: string
+          maxLength: 40
+        district:
+          type: string
+          maxLength: 40
+        city:
+          type: string
+          maxLength: 100
+        is_active:
+          type: boolean
+        members:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - members
+      - name
     StaffShopItem:
       type: object
       properties:
@@ -12785,6 +13991,94 @@ components:
       - team_name
       - title
       - username
+    StaffSystemUpdate:
+      type: object
+      description: Staff yozadi. Tarjimalar ichma-ich keladi (10 til bir yozuvda).
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        kind:
+          $ref: '#/components/schemas/KindD6cEnum'
+        module:
+          $ref: '#/components/schemas/ModuleEnum'
+        status:
+          $ref: '#/components/schemas/StaffSystemUpdateStatusEnum'
+        version:
+          type: string
+          maxLength: 32
+        title:
+          type: string
+          maxLength: 200
+        body:
+          type: string
+          description: Markdown
+        locale:
+          type: string
+          maxLength: 5
+        image:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        source_repo:
+          type: string
+          maxLength: 120
+        source_refs: {}
+        source_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        released_at:
+          type: string
+          format: date
+        published_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        is_enabled:
+          type: boolean
+        author:
+          type: string
+          readOnly: true
+        translations:
+          type: array
+          items:
+            $ref: '#/components/schemas/SystemUpdateTranslation'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - author
+      - created_at
+      - id
+      - kind
+      - module
+      - published_at
+      - released_at
+      - title
+      - updated_at
+    StaffSystemUpdateStatusEnum:
+      enum:
+      - draft
+      - published
+      - withdrawn
+      type: string
+      description: |-
+        * `draft` - Qoralama
+        * `published` - Nashr etilgan
+        * `withdrawn` - Nashrdan olingan
     StaffTestCase:
       type: object
       properties:
@@ -13118,6 +14412,91 @@ components:
       - description
       - repo_url
       - title
+    SystemUpdate:
+      type: object
+      description: Ochiq o'qish — mehmon ham ko'radi (qaror 8-savol).
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        kind:
+          $ref: '#/components/schemas/KindD6cEnum'
+        module:
+          $ref: '#/components/schemas/ModuleEnum'
+        version:
+          type: string
+          maxLength: 32
+        title:
+          type: string
+          readOnly: true
+        body:
+          type: string
+          readOnly: true
+        image:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        released_at:
+          type: string
+          format: date
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        source_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        is_actionable:
+          type: boolean
+          readOnly: true
+        is_read:
+          type: boolean
+          nullable: true
+          description: '`None` — mehmon. Mehmon uchun o''qilmagan holat yo''q (qaror
+            8-savol).'
+          readOnly: true
+        is_translated:
+          type: boolean
+          readOnly: true
+      required:
+      - body
+      - id
+      - is_actionable
+      - is_read
+      - is_translated
+      - kind
+      - module
+      - released_at
+      - title
+    SystemUpdateTranslation:
+      type: object
+      properties:
+        locale:
+          type: string
+          maxLength: 5
+        title:
+          type: string
+          maxLength: 200
+        body:
+          type: string
+          description: Markdown
+        is_machine:
+          type: boolean
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - locale
+      - title
+      - updated_at
     Team:
       type: object
       properties:
@@ -13439,6 +14818,30 @@ components:
         * `daily` - Kunlik
         * `weekly` - Haftalik
         * `achievement` - Yutuq
+    UnreadModule:
+      type: object
+      description: 'Nav chipi uchun: qaysi modulda nechta o''qilmagan yozuv bor.'
+      properties:
+        module:
+          type: string
+        count:
+          type: integer
+      required:
+      - count
+      - module
+    UpdateMarkRead:
+      type: object
+      description: |-
+        Nom `notifications.MarkReadSerializer` bilan to'qnashmasligi kerak.
+
+        drf-spectacular komponent nomini sinf nomidan oladi: ikkalasi ham
+        `MarkRead` bo'lsa sxemada bitta komponent qoladi va noto'g'ri
+        hujjat chiqadi. O'lchandi — generatsiya ogohlantirish bergan edi.
+      properties:
+        ids:
+          type: array
+          items:
+            type: integer
     UserPublic:
       type: object
       description: |-
@@ -13498,6 +14901,10 @@ components:
         date_joined:
           type: string
           format: date-time
+        country:
+          type: string
+          description: Yashirilgan bo'lsa bo'sh satr — jadvalda bayroq chizilmaydi.
+          readOnly: true
         ranks:
           type: object
           additionalProperties:
@@ -13531,6 +14938,7 @@ components:
             beradi, bu esa «nimani mashq qilishim kerak» degan savolga.
           readOnly: true
       required:
+      - country
       - max_ratings
       - ranks
       - solved_by_level

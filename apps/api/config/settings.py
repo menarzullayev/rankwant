@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "ratings",
     "qvant",
     "notifications",
+    "updates",
     "blog",
     "content",
     "classroom",
