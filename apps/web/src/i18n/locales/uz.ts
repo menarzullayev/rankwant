@@ -6,6 +6,16 @@
 
 export const uz = {
 
+  "customizer.tab.appearance": "Ko'rinish",
+  "customizer.template.classic": "Klassik",
+  "customizer.template.day": "Kun",
+  "customizer.template.night": "Tun",
+  "customizer.template.console": "Konsol",
+  "customizer.template.journal": "Jurnal",
+  "customizer.template.focus": "Fokus",
+  "customizer.template.soft": "Yumshoq",
+  "customizer.template.aurora": "Aurora",
+
   "customizer.copyLink": "Havolani nusxalash",
   "customizer.linkCopied": "Havola nusxalandi",
 

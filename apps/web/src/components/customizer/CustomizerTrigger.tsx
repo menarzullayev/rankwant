@@ -3,7 +3,7 @@
 import { useCustomizer } from "@/context/CustomizerContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
-import { UpdatesIcon } from "@/icons";
+import { PaletteIcon } from "@/icons";
 
 /** Header'dagi kirish nuqtasi (D3).
  *
@@ -15,6 +15,10 @@ import { UpdatesIcon } from "@/icons";
  *  Bu ikonka telefonda ham SHART: u yerda suzuvchi tugma yo'q (D32),
  *  ya'ni bu — asosiy kirish nuqtasi. Shu sababli `lg:` bilan
  *  yashirilmaydi.
+ *
+ *  ⚠️ `PaletteIcon`, `UpdatesIcon` EMAS: ilgari ikkinchisi ishlatilgan
+ *  edi va u yangilanishlar qo'ng'irog'i bilan AYNI ikonka — ikki xil
+ *  vazifa, bir xil belgi. Palitra — ko'rinish sozlagichining aniq belgisi.
  */
 export function CustomizerTrigger() {
   const locale = useLocale();
@@ -29,7 +33,7 @@ export function CustomizerTrigger() {
       title={`${t(locale, "customizer.title")} (Ctrl+.)`}
       className="flex size-10 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg"
     >
-      <UpdatesIcon />
+      <PaletteIcon />
     </button>
   );
 }

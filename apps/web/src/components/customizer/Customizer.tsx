@@ -6,7 +6,7 @@ import { useCustomizer } from "@/context/CustomizerContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
-import { CheckIcon, CloseIcon, UpdatesIcon } from "@/icons";
+import { CheckIcon, CloseIcon, PaletteIcon } from "@/icons";
 import { STYLES, isDual, type StyleId } from "@/layout/styles";
 import type { A11yPrefs } from "@/lib/api";
 import { passes } from "@/lib/theme/apply";
@@ -107,7 +107,7 @@ export function Customizer() {
         title={t(locale, "customizer.show")}
         className="fixed end-0 top-1/3 z-40 hidden size-10 items-center justify-center rw-radius-sm border rw-line rw-surface rw-dim-2 shadow-lg transition rw-hover-bg lg:flex"
       >
-        <UpdatesIcon className="size-4" />
+        <PaletteIcon className="size-4" />
       </button>
     );
   }
@@ -126,7 +126,7 @@ export function Customizer() {
           title={`${t(locale, "customizer.title")} (Ctrl+.)`}
           className="fixed end-0 top-1/3 z-40 hidden flex-col items-center gap-1 rw-radius-sm border rw-line rw-surface px-1.5 py-3 text-theme-xs rw-dim-2 shadow-lg transition rw-hover-bg lg:flex"
         >
-          <UpdatesIcon className="size-4" />
+          <PaletteIcon className="size-4" />
           <span className="[writing-mode:vertical-rl]">
             {t(locale, "customizer.short")}
           </span>
@@ -289,7 +289,14 @@ function AppearanceTab() {
               onClick={() => setAppearance({ font: value })}
               className={chip((appearance.font ?? null) === value)}
             >
-              {value ? t(locale, `customizer.font.${value}`) : t(locale, "customizer.font.default")}
+              {value
+            ? // Shrift nomi BREND nomi — tarjima qilinmaydi ("Inter"
+              // hamma tilda "Inter"). `t()` orqali o'tkazilsa, kalit
+              // qo'shilmagani uchun xom nom chiqardi.
+              { inter: "Inter", jakarta: "Plus Jakarta", roboto: "Roboto", "dm-sans": "DM Sans" }[
+                value
+              ]
+            : t(locale, "customizer.font.default")}
             </button>
           ))}
         </div>

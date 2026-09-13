@@ -2,6 +2,16 @@ import type { MessageKey } from "./uz";
 
 export const kaa: Record<MessageKey, string> = {
 
+  "customizer.tab.appearance": "Kórinis",
+  "customizer.template.classic": "Klassik",
+  "customizer.template.day": "Kún",
+  "customizer.template.night": "Tún",
+  "customizer.template.console": "Konsol",
+  "customizer.template.journal": "Jurnal",
+  "customizer.template.focus": "Fokus",
+  "customizer.template.soft": "Jumsaq",
+  "customizer.template.aurora": "Aurora",
+
   "customizer.copyLink": "Siltemeni nusqalaw",
   "customizer.linkCopied": "Silteme nusqalandı",
 

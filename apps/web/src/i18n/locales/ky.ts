@@ -2,6 +2,16 @@ import type { MessageKey } from "./uz";
 
 export const ky: Record<MessageKey, string> = {
 
+  "customizer.tab.appearance": "Көрүнүш",
+  "customizer.template.classic": "Классикалык",
+  "customizer.template.day": "Күндүзгү",
+  "customizer.template.night": "Түнкү",
+  "customizer.template.console": "Консол",
+  "customizer.template.journal": "Журнал",
+  "customizer.template.focus": "Фокус",
+  "customizer.template.soft": "Жумшак",
+  "customizer.template.aurora": "Аврора",
+
   "customizer.copyLink": "Шилтемени көчүрүү",
   "customizer.linkCopied": "Шилтеме көчүрүлдү",
 

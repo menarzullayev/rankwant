@@ -2,6 +2,16 @@ import type { MessageKey } from "./uz";
 
 export const es: Record<MessageKey, string> = {
 
+  "customizer.tab.appearance": "Apariencia",
+  "customizer.template.classic": "Clásico",
+  "customizer.template.day": "Día",
+  "customizer.template.night": "Noche",
+  "customizer.template.console": "Consola",
+  "customizer.template.journal": "Revista",
+  "customizer.template.focus": "Enfoque",
+  "customizer.template.soft": "Suave",
+  "customizer.template.aurora": "Aurora",
+
   "customizer.copyLink": "Copiar enlace",
   "customizer.linkCopied": "Enlace copiado",
 

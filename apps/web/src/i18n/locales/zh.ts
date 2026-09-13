@@ -2,6 +2,16 @@ import type { MessageKey } from "./uz";
 
 export const zh: Record<MessageKey, string> = {
 
+  "customizer.tab.appearance": "外观",
+  "customizer.template.classic": "经典",
+  "customizer.template.day": "日间",
+  "customizer.template.night": "夜间",
+  "customizer.template.console": "控制台",
+  "customizer.template.journal": "刊物",
+  "customizer.template.focus": "专注",
+  "customizer.template.soft": "柔和",
+  "customizer.template.aurora": "极光",
+
   "customizer.copyLink": "复制链接",
   "customizer.linkCopied": "链接已复制",
 

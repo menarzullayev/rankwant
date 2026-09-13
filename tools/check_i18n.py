@@ -34,6 +34,14 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         "nav.arena", "auth.email", "hackathon.demo", "settings.channelTelegram",
         # Updates: modul nomi — atoqli nom, hech qaysi tilda tarjima qilinmaydi.
         "update.module.qvant",
+        # Shablon nomlari — atoqli nom. "Aurora", "Konsol", "Jurnal" kabi
+        # so'zlar bir qancha tillarda aynan yoziladi va bu TO'G'RI; ularni
+        # majburan o'girish sun'iy ko'rinardi.
+        "customizer.template.classic",
+        "customizer.template.console",
+        "customizer.template.journal",
+        "customizer.template.focus",
+        "customizer.template.aurora",
     },
     # Qoraqalpoq tili o'zbek tiliga eng yaqini — xalqaro o'zlashmalar
     # ikkalasida ham aynan bir xil yoziladi.
