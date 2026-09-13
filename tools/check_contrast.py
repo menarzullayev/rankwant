@@ -58,6 +58,14 @@ FOCUS_TOKEN = "--rw-accent-ink"
 #: Gradient ham bo'lishi mumkin (`skeu`), shuning uchun har bir pog'ona
 #: alohida o'lchanadi: matn eng yorug' pog'onada eng kam kontrast beradi.
 ACCENT_PAIR = ("--rw-accent-fg", "--rw-accent")
+#: Accent MATN sifatida. `.rw-accent-ink` havola rangida (fon/sirt ustida),
+#: `.rw-accent-soft` esa chip fonida ishlatiladi. 2026-09-14 gacha bu
+#: juftlik TEKSHIRILMAGAN edi: `FOCUS_TOKEN` xuddi shu tokenni ishlatadi,
+#: lekin u klaviatura halqasi uchun (3:1), matn uchun emas. O'lchangan
+#: oqibat: `dashboard` da uch joyda AA dan yiqilgan — ground 4.27:1,
+#: surface 4.46:1, soft 4.02:1 — va CI buni ko'rmagan.
+ACCENT_INK = "--rw-accent-ink"
+ACCENT_SOFT = "--rw-accent-soft"
 TIERS = ("--rw-text", "--rw-text-2", "--rw-muted", "--rw-faint")
 #: Unvon ranglari — ism shu rangda yoziladi (ADR-0018), ya'ni bu ham matn.
 RANKS = tuple(f"--rw-rank-{i}" for i in range(1, 10))
@@ -448,6 +456,33 @@ def main() -> int:
                     f"{label}  tugma matni ({ACCENT_PAIR[0]} ustida "
                     f"{ACCENT_PAIR[1]}): {ratio:.2f}:1 "
                     f"(fon #{worst[0]:02x}{worst[1]:02x}{worst[2]:02x}), kerak {AA}"
+                )
+
+    # Accent MATN sifatida — tugma juftligidan ALOHIDA tekshiruv.
+    # `.rw-accent-ink` havola matnida, `.rw-accent-soft` chip fonida
+    # ishlatiladi; `--rw-accent-ink` ikkalasiga ham sig'ishi kerak.
+    for (style, mode), tokens in sorted(style_tokens(css).items()):
+        if "--rw-ground" not in tokens:
+            continue
+        label = f'{style}{".dark" if mode == "dark" else ""}'
+        ink = parse(tokens.get(ACCENT_INK, "").strip())
+        if ink is None:
+            failures.append(f"{label}  {ACCENT_INK}: token yo'q")
+            continue
+        targets = list(backgrounds(tokens, blobs.get(style, [])))
+        soft = parse(tokens.get(ACCENT_SOFT, "").strip())
+        if soft is not None:
+            # Shaffof `soft` (qorong'i mavzuda rgba) ostidagi eng yomon fon
+            # bilan qo'shiladi — xuddi tugma tekshiruvidagi kabi.
+            targets.append(over(soft, targets[0]) if soft[3] < 1 else soft)
+        for bg in targets:
+            checked += 1
+            ratio = contrast(over(ink, bg) if ink[3] < 1 else ink, bg)
+            if ratio < AA:
+                failures.append(
+                    f"{label}  accent matni ({ACCENT_INK} ustida fon): "
+                    f"{ratio:.2f}:1 "
+                    f"(fon #{bg[0]:02x}{bg[1]:02x}{bg[2]:02x}), kerak {AA}"
                 )
 
     failures += check_kinds(css)

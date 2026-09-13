@@ -116,7 +116,7 @@
      yechim bo'la olmadi, u ham 4.46:1. */
   --rw-accent: #476dc7;
   --rw-accent-fg: #ffffff;
-  --rw-accent-ink: #4470e6;
+  --rw-accent-ink: #3c66dc;
   --rw-accent-soft: #eef3ff;
   --rw-ok-ink: #039855;   --rw-ok-soft: #ecfdf3;
   --rw-warn-ink: #b54708; --rw-warn-soft: #fffaeb;
@@ -358,7 +358,7 @@
   --rw-faint: #4f4f4f;
   --rw-accent: #ff5c00;
   --rw-accent-fg: #000000;
-  --rw-accent-ink: #0a58c4;
+  --rw-accent-ink: #0048b3;
   --rw-accent-soft: #00d4ff;
   --rw-ok-ink: #056d3a;   --rw-ok-soft: #7bf7a8;
   --rw-warn-ink: #6b4400; --rw-warn-soft: #ffd166;
@@ -427,7 +427,7 @@
      to'g'ri quyuq variant — 5.44:1. Yangi rang o'ylab topilmadi. */
   --rw-accent: #c0392b;
   --rw-accent-fg: #ffffff;
-  --rw-accent-ink: #c0392b;
+  --rw-accent-ink: #bd3629;
   --rw-accent-soft: #fdecea;
   --rw-ok-ink: #16a085;   --rw-ok-soft: #e6f6f3;
   --rw-warn-ink: #d68910; --rw-warn-soft: #fdf3e3;
@@ -461,7 +461,7 @@
      ham shu uslubning o'z tokenlari — 5.39:1. */
   --rw-accent: #ff7f6e;
   --rw-accent-fg: #22313f;
-  --rw-accent-ink: #ff7f6e;
+  --rw-accent-ink: #ff9d8a;
   --rw-accent-soft: #4a2b26;
   --rw-chip: #34495e;
   --rw-hover: #34495e;
@@ -601,7 +601,7 @@
      (#4a68b0) to'g'ri quyuq variant: 5.39:1. */
   --rw-accent: #4a68b0;
   --rw-accent-fg: #ffffff;
-  --rw-accent-ink: #4a68b0;
+  --rw-accent-ink: #425fa7;
   --rw-accent-soft: #d8dfee;
   --rw-ok-ink: #2f8f6a;   --rw-ok-soft: #d8ece5;
   --rw-warn-ink: #a0741f; --rw-warn-soft: #eee5d0;
@@ -643,7 +643,7 @@
      Yangi rang kiritilmadi, mavjud token tugma foniga ko'chirildi. */
   --rw-accent: #7c3aed;
   --rw-accent-fg: #ffffff;
-  --rw-accent-ink: #7c3aed;
+  --rw-accent-ink: #7936ea;
   --rw-accent-soft: #ede4ff;
   --rw-ok-ink: #2f9e6d;   --rw-ok-soft: #d9f7ea;
   --rw-warn-ink: #c08a1e; --rw-warn-soft: #fdf1d6;
@@ -723,7 +723,7 @@
      `--rw-ok-ink` qiymati, ya'ni palitradan tashqariga chiqilmadi. */
   --rw-accent: linear-gradient(#527d38, #3d6b28);
   --rw-accent-fg: #ffffff;
-  --rw-accent-ink: #36639c;
+  --rw-accent-ink: #204d84;
   --rw-accent-soft: linear-gradient(#dfe8f5, #c7d5e8);
   --rw-ok-ink: #3d6b28;   --rw-ok-soft: linear-gradient(#e2f0d9, #cfe4c2);
   --rw-warn-ink: #8a6414; --rw-warn-soft: linear-gradient(#f7ecd2, #ecdcb5);
