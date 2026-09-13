@@ -5,6 +5,7 @@ import AppShell from "@/layout/AppShell";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
 import { getLocale } from "@/i18n/server";
 import { DEFAULT_LOCALE } from "@/i18n/messages";
+import { messagesFor } from "@/i18n/messages.server";
 import type { Me } from "@/lib/api";
 import { getSessionUser } from "@/lib/api.server";
 import { SITE_URL } from "@/lib/site";
@@ -148,6 +149,12 @@ export default async function RootLayout({
   // birga o'qiladi. `getSessionUser` cookie bo'lmasa so'rov yubormaydi,
   // ya'ni anonim tashrifchi ortiqcha `/me/` 401 ni ko'rmaydi.
   const [locale, me] = await Promise.all([getLocale(), getSessionUser<Me>()]);
+
+  // Faqat AKTIV tilning lug'ati mijozga ketadi. Ilgari o'ntasi ham JS
+  // to'plamida bo'lardi — o'lchandi: 91 kB tarmoqda, holbuki bitta til
+  // uchun 34 kB yetadi. U `LocaleProvider` ga PROP bo'lib uzatiladi,
+  // inline skript bilan emas: React inline `<script>` elementini RSC
+  // uzatmasiga ham qo'shib, lug'at HTML'da ikki nusxada ketardi.
   return (
     <html
       lang={locale}
@@ -167,7 +174,7 @@ export default async function RootLayout({
         />
       </head>
       <body>
-        <LocaleProvider locale={locale}>
+        <LocaleProvider locale={locale} dict={messagesFor(locale)}>
           <AppShell initialUser={me}>{children}</AppShell>
         </LocaleProvider>
       </body>
