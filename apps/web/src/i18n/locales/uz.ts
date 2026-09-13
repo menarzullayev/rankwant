@@ -16,6 +16,8 @@ export const uz = {
   "update.actionableHint": "Bu o'zgarishlar sizdan biror amal talab qiladi — eski usul ishlamay qolishi mumkin.",
   "update.source": "Manbani ko'rish",
   "update.withdrawn": "Bu yozuv nashrdan olingan. U arxivda qoladi, lekin mazmuni endi amal qilmaydi.",
+  "update.markAllRead": "Hammasi o'qildi",
+  "update.allRead": "Hammasi o'qilgan",
   "update.originUz": "Bu yozuv hali tarjima qilinmagan — o'zbekcha ko'rsatilmoqda.",
   "update.back": "Barcha o'zgarishlar",
   "update.releasedOn": "Chiqarilgan sana",

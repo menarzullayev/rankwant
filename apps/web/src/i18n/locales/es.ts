@@ -12,6 +12,8 @@ export const es: Record<MessageKey, string> = {
   "update.actionableHint": "Estos cambios requieren acción: el método anterior puede dejar de funcionar.",
   "update.source": "Ver la fuente",
   "update.withdrawn": "Esta entrada se retiró. Permanece en el archivo, pero su contenido ya no es válido.",
+  "update.markAllRead": "Marcar todo como leído",
+  "update.allRead": "Todo leído",
   "update.originUz": "Esta entrada aún no está traducida: se muestra en uzbeko.",
   "update.back": "Todos los cambios",
   "update.releasedOn": "Fecha de salida",

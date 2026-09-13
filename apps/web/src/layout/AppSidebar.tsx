@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { useSidebar } from "@/context/SidebarContext";
+import { useUpdates } from "@/context/UpdatesContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
 import { CloseIcon } from "@/icons";
@@ -17,6 +18,7 @@ export default function AppSidebar() {
     setIsHovered,
     closeMobileSidebar,
   } = useSidebar();
+  const { count } = useUpdates();
   const pathname = usePathname();
   const locale = useLocale();
 
@@ -76,6 +78,11 @@ export default function AppSidebar() {
               {group.items.map(({ href, key, Icon }) => {
                 const active =
                   pathname === href || pathname.startsWith(`${href}/`);
+                // O'qilmagan o'zgarishlar chipi (qaror 6). Son
+                // `UpdatesProvider` dan keladi — header belgisi ham o'sha
+                // holatni ko'rsatadi, ya'ni ikki joyda ikki xil raqam
+                // chiqmaydi.
+                const unread = href === "/updates" ? count : 0;
                 return (
                   <li key={href}>
                     <Link
@@ -83,7 +90,7 @@ export default function AppSidebar() {
                       onClick={closeMobileSidebar}
                       aria-current={active ? "page" : undefined}
                       title={t(locale, key)}
-                      className={`menu-item group ${
+                      className={`menu-item group relative ${
                         active ? "menu-item-active" : "menu-item-inactive"
                       } ${wide ? "" : "justify-center"}`}
                     >
@@ -97,6 +104,15 @@ export default function AppSidebar() {
                       {wide && (
                         <span className="truncate">{t(locale, key)}</span>
                       )}
+                      {unread > 0 &&
+                        (wide ? (
+                          <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-semibold rw-accent-bg">
+                            {unread > 99 ? "99+" : unread}
+                          </span>
+                        ) : (
+                          // Yig'ilgan panelda matn yo'q — nuqta yetarli.
+                          <span className="absolute top-1.5 right-1.5 size-2 rounded-full rw-accent-bg" />
+                        ))}
                     </Link>
                   </li>
                 );

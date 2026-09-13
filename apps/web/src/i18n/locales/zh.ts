@@ -12,6 +12,8 @@ export const zh: Record<MessageKey, string> = {
   "update.actionableHint": "这些变更需要您采取行动——旧的方式可能不再可用。",
   "update.source": "查看来源",
   "update.withdrawn": "此条记录已撤回。它仍保留在归档中，但内容不再生效。",
+  "update.markAllRead": "全部标为已读",
+  "update.allRead": "全部已读",
   "update.originUz": "此条记录尚未翻译——当前以乌兹别克语显示。",
   "update.back": "全部变更",
   "update.releasedOn": "发布日期",

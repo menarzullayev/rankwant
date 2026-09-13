@@ -12,6 +12,8 @@ export const kaa: Record<MessageKey, string> = {
   "update.actionableHint": "Bul ózgerisler sizden bir ámel talap etedi — eski usıl islemey qalıwı múmkin.",
   "update.source": "Derekti kóriw",
   "update.withdrawn": "Bul jazıw nashrdan alınǵan. Ol arxivte qaladı, biraq mazmunı endi kúshke iye emes.",
+  "update.markAllRead": "Barlıǵı oqıldı",
+  "update.allRead": "Barlıǵı oqılǵan",
   "update.originUz": "Bul jazıw ele awdarmalanbaǵan — ózbek tilinde kórsetilmekte.",
   "update.back": "Barlıq ózgerisler",
   "update.releasedOn": "Shıǵarılǵan sáne",

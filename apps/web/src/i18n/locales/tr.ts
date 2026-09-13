@@ -12,6 +12,8 @@ export const tr: Record<MessageKey, string> = {
   "update.actionableHint": "Bu değişiklikler sizden işlem bekler — eski yöntem çalışmayabilir.",
   "update.source": "Kaynağı aç",
   "update.withdrawn": "Bu kayıt geri çekildi. Arşivde kalır, ancak içeriği artık geçerli değil.",
+  "update.markAllRead": "Tümünü okundu işaretle",
+  "update.allRead": "Tümü okundu",
   "update.originUz": "Bu kayıt henüz çevrilmedi — Özbekçe gösteriliyor.",
   "update.back": "Tüm değişiklikler",
   "update.releasedOn": "Çıkış tarihi",

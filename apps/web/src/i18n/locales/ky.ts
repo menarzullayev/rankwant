@@ -12,6 +12,8 @@ export const ky: Record<MessageKey, string> = {
   "update.actionableHint": "Бул өзгөрүүлөр сизден аракетти талап кылат — эски ыкма иштебей калышы мүмкүн.",
   "update.source": "Булагын ачуу",
   "update.withdrawn": "Бул жазуу жарыялоодон алынды. Ал архивде калат, бирок мазмуну эми колдонулбайт.",
+  "update.markAllRead": "Баарын окулду деп белгилөө",
+  "update.allRead": "Баары окулду",
   "update.originUz": "Бул жазуу али которулган эмес — өзбек тилинде көрсөтүлүүдө.",
   "update.back": "Бардык өзгөрүүлөр",
   "update.releasedOn": "Чыгарылган күнү",

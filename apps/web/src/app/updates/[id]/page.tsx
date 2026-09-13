@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { Card } from "@/components/ui/Card";
 import { Markdown } from "@/components/Markdown";
+import { UpdateReadMarker } from "@/components/UpdateReadMarker";
 import {
   UpdateKindBadge,
   UpdateModuleBadge,
@@ -48,6 +49,10 @@ export default async function UpdatePage({ params }: Props) {
 
   return (
     <article className="space-y-6">
+      {/* Ko'rinmas: yozuv ochilganda o'qilgan deb belgilanadi (qaror 7).
+          Sahifaning o'zi server komponenti bo'lib qoladi — SEO buzilmaydi. */}
+      <UpdateReadMarker id={row.id} />
+
       <Link
         href={"/updates" as Route}
         className="inline-block text-theme-sm rw-accent-ink hover:underline"

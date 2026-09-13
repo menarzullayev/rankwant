@@ -12,6 +12,8 @@ export const kk: Record<MessageKey, string> = {
   "update.actionableHint": "Бұл өзгерістер сізден әрекет талап етеді — ескі тәсіл жұмыс істемеуі мүмкін.",
   "update.source": "Дереккөзді ашу",
   "update.withdrawn": "Бұл жазба жариялаудан алынды. Ол мұрағатта қалады, бірақ мазмұны енді қолданылмайды.",
+  "update.markAllRead": "Барлығын оқылды деп белгілеу",
+  "update.allRead": "Барлығы оқылды",
   "update.originUz": "Бұл жазба әлі аударылмаған — өзбек тілінде көрсетілуде.",
   "update.back": "Барлық өзгерістер",
   "update.releasedOn": "Шығарылған күні",

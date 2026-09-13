@@ -1262,6 +1262,22 @@ export async function fetchMe(): Promise<Me | null> {
   return res.ok ? ((await res.json()) as Me) : null;
 }
 
+/** O'qilmagan o'zgarishlar — qo'ng'iroq paneli uchun.
+ *
+ *  Faqat KIRGAN foydalanuvchi chaqirsin: endpoint `IsAuthenticated`
+ *  talab qiladi, ya'ni mehmon uchun 401 qaytadi va brauzer uni konsolga
+ *  xato qilib yozadi (Lighthouse `errors-in-console`). Shu sababli
+ *  chaqiruv `SessionContext`dagi `user` bo'lgandagina bo'ladi. */
+export const fetchUpdateUnread = (query = "") =>
+  getJson<Paginated<SystemUpdate>>(`/updates/unread/${query}`);
+
+export const fetchUpdateUnreadCount = () =>
+  getJson<UpdateUnread>("/updates/unread-count/");
+
+/** O'qilgan deb belgilash. `ids` berilmasa — hammasi ("Hammasi o'qildi"). */
+export const markUpdatesRead = (ids?: number[]) =>
+  postJson<{ updated: number }>("/updates/mark-read/", ids ? { ids } : {});
+
 /** Submit. Javob `PENDING` bilan qaytadi — verdikt keyin pollinglanadi. */
 export function submitAttempt(body: {
   problem: string;

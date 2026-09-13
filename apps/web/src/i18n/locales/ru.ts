@@ -12,6 +12,8 @@ export const ru: Record<MessageKey, string> = {
   "update.actionableHint": "Эти изменения требуют от вас действий — старый способ может перестать работать.",
   "update.source": "Открыть источник",
   "update.withdrawn": "Эта запись отозвана. Она остаётся в архиве, но её содержание больше не действует.",
+  "update.markAllRead": "Отметить всё прочитанным",
+  "update.allRead": "Всё прочитано",
   "update.originUz": "Эта запись ещё не переведена — показана на узбекском языке.",
   "update.back": "Все изменения",
   "update.releasedOn": "Дата выпуска",

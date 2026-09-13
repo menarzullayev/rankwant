@@ -7,6 +7,7 @@ import { PrefsSync } from "@/context/PrefsSync";
 import { SessionProvider } from "@/context/SessionContext";
 import { StyleProvider } from "@/context/StyleContext";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { UpdatesProvider } from "@/context/UpdatesContext";
 import type { Me } from "@/lib/api";
 import AppFooter from "./AppFooter";
 import AppHeader from "./AppHeader";
@@ -99,9 +100,11 @@ export default function AppShell({
       <ThemeProvider>
         <SessionProvider initialUser={initialUser}>
           <PrefsSync />
-          <SidebarProvider>
-            <Shell>{children}</Shell>
-          </SidebarProvider>
+          <UpdatesProvider>
+            <SidebarProvider>
+              <Shell>{children}</Shell>
+            </SidebarProvider>
+          </UpdatesProvider>
         </SessionProvider>
       </ThemeProvider>
     </StyleProvider>

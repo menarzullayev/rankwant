@@ -12,6 +12,7 @@ import SearchBox from "./SearchBox";
 import StylePicker from "./StylePicker";
 import { LocaleSwitch } from "./LocaleSwitch";
 import ThemeToggle from "./ThemeToggle";
+import UpdatesBell from "@/components/UpdatesBell";
 import UserMenu from "./UserMenu";
 
 export default function AppHeader() {
@@ -59,6 +60,10 @@ export default function AppHeader() {
       <div className="ml-auto flex min-w-0 items-center gap-2">
         {!auth && <SearchBox />}
         <HeaderStatus />
+        {/* O'zgarishlar belgisi — bildirishnomalar qo'ng'irog'idan keyin,
+            lekin alohida ikonka bilan: ikkalasi bir xil ko'rinishda
+            bo'lsa qaysi biri nima ekanini ajratib bo'lmasdi. */}
+        <UpdatesBell />
         {!auth && <StylePicker />}
         <LocaleSwitch />
         <ThemeToggle />

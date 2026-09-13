@@ -12,6 +12,8 @@ export const en: Record<MessageKey, string> = {
   "update.actionableHint": "These changes require action — the old way may stop working.",
   "update.source": "View source",
   "update.withdrawn": "This entry has been withdrawn. It stays in the archive, but its content no longer applies.",
+  "update.markAllRead": "Mark all as read",
+  "update.allRead": "Everything is read",
   "update.originUz": "This entry is not translated yet — shown in Uzbek.",
   "update.back": "All changes",
   "update.releasedOn": "Released",
