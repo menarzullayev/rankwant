@@ -13,6 +13,11 @@ export const ADMIN_SECTIONS = [
   { href: "/admin/articles", label: "Maqolalar" },
   { href: "/admin/roadmaps", label: "Traektoriya" },
   { href: "/admin/posts", label: "Yangiliklar" },
+  // Changelog va yo'l xaritasi: o'tmish va kelajak — shuning uchun yonma-yon.
+  // ⚠️ "Traektoriya" (`/admin/roadmaps`) BOSHQA narsa — ta'lim yo'li.
+  { href: "/admin/updates", label: "O'zgarishlar" },
+  { href: "/admin/platform-roadmap", label: "Yo'l xaritasi" },
+  { href: "/admin/roadmap-comments", label: "Reja izohlari" },
   { href: "/admin/quests", label: "Questlar" },
   { href: "/admin/shop", label: "Do'kon" },
   { href: "/admin/users", label: "Foydalanuvchilar" },
