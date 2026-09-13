@@ -134,6 +134,8 @@ def main() -> int:
         return 1
 
     problems += check_usage(source)
+    problems += check_templates(source)
+    problems += check_server_registry()
 
     if problems:
         print("i18n to'liq emas:")
@@ -141,7 +143,11 @@ def main() -> int:
             print(f"  {row}")
         return 1
 
-    print(f"Tekshirildi: {len(codes)} til × {len(source)} kalit — to'liq ✓")
+    templates = len(template_keys())
+    print(
+        f"Tekshirildi: {len(codes)} til × {len(source)} kalit "
+        f"+ {templates} shablon oila — to'liq ✓"
+    )
     return 0
 
 #: `t(locale, "kalit")` — kalit qo'lda yozilgan joylar. Shablon satrlari
@@ -161,16 +167,26 @@ SOURCE_SUFFIXES = (".ts", ".tsx")
 SOURCE_DIR = ROOT / "apps/web/src"
 
 
-def used_keys() -> dict[str, list[str]]:
-    """Kodda `t(locale, "...")` bilan chaqirilgan kalitlar → fayllar."""
-    found: dict[str, list[str]] = {}
+def _source_files() -> list[Path]:
+    """Tekshiriladigan manba fayllar — `i18n/` katalogidan tashqari.
+
+    ⚠️ `pathlib.glob` qavs kengaytmasini (`*.{ts,tsx}`) QO'LLAB-
+    QUVVATLAMAYDI — u bash xususiyati. Bir marta shu xato qilingan edi:
+    glob hech narsa topmagan, tekshiruv esa «to'liq ✓» deb turgan
+    (salbiy test tutdi). Shu sababli kengaytmalar ALOHIDA aylanadi.
+    """
     files = [p for suffix in SOURCE_SUFFIXES for p in SOURCE_DIR.rglob(f"*{suffix}")]
+    files = [p for p in files if "i18n" not in p.parts]
     if not files:
         # Ko'r bo'lib qolmasin: fayl topilmasa bu XATO.
         raise SystemExit(f"i18n: manba fayllar topilmadi ({SOURCE_DIR})")
-    for path in files:
-        if "i18n" in path.parts:
-            continue
+    return files
+
+
+def used_keys() -> dict[str, list[str]]:
+    """Kodda `t(locale, "...")` bilan chaqirilgan kalitlar → fayllar."""
+    found: dict[str, list[str]] = {}
+    for path in _source_files():
         try:
             text = path.read_text(encoding="utf-8")
         except (OSError, UnicodeDecodeError):
@@ -188,6 +204,114 @@ def check_usage(source: dict[str, str]) -> list[str]:
     """
     missing = sorted(key for key in used_keys() if key not in source)
     return [f"ishlatilgan, lekin manbada yo'q: {key}" for key in missing[:10]]
+
+
+#: `t(locale, `prefix.${expr}`)` — kalit qismi SHABLON satridan yasaladi.
+#:
+#: Nega kerak (13-band): `CALL_RE` faqat qo'lda yozilgan kalitlarni
+#: ko'radi, shablon satrlari esa **statik emas**. Natijada
+#: `customizer.template.${item.id}` uchun `customizer.template.aurora`
+#: yo'q bo'lsa ham tekshiruv yashil turardi — foydalanuvchi esa xom
+#: kalit ko'rardi. Aynan shu sinf bir marta panelda 9 ta xom kalit
+#: bergan edi.
+#:
+#: Shablonni TO'LIQ hal qilib bo'lmaydi (qiymat ish vaqtida ma'lum),
+#: lekin qamrovni TEKSHIRISH mumkin: prefiksga mos BARCHA kalitlar
+#: ro'yxatga olinadi va har bir `` `prefiks.${x}` `` uchun shablondan
+#: oldin va keyin keladigan matn bo'yicha mos kalit borligi talab
+#: qilinadi.
+TEMPLATE_CALL = re.compile(r"\bt\([^()]*,\s*(`[^`]+`)\s*\)")
+TEMPLATE_RE = re.compile(
+    r"`([a-zA-Z0-9_.]*)\$\{[^}]+\}([a-zA-Z0-9_.]*)`",
+)
+
+
+def template_keys() -> dict[str, list[str]]:
+    """Shablon kalitlar → fayllar. Faqat `t(...)` ichidagilar."""
+    found: dict[str, list[str]] = {}
+    for path in _source_files():
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        for call in TEMPLATE_CALL.finditer(text):
+            template = call.group(1)
+            # Faqat kalitga o'xshagan shablonlar: `foo.${x}` / `${x}`.
+            for prefix, suffix in TEMPLATE_RE.findall(template):
+                if not prefix and not suffix:
+                    continue
+                key = f"{prefix}*{suffix}"
+                found.setdefault(key, []).append(path.name)
+    return found
+
+
+def check_templates(source: dict[str, str]) -> list[str]:
+    """Har bir shablon kalit uchun mos kalit HAQIQATAN mavjud bo'lsin."""
+    problems: list[str] = []
+    for template, files in sorted(template_keys().items()):
+        prefix, suffix = template.split("*", 1)
+        # Prefiks va suffiksga mos kalitlar (suffiks bo'sh bo'lsa — hammasi).
+        matches = [
+            key
+            for key in source
+            if key.startswith(prefix) and (not suffix or key.endswith(suffix))
+        ]
+        # Kalit prefiksning O'ZI bo'lmasin: `customizer.tab` mos kelmaydi.
+        matches = [key for key in matches if key != prefix.rstrip(".")]
+        if not matches:
+            problems.append(
+                f"shablon kalitga mos kalit yo'q: `{template}` ({', '.join(files)})"
+            )
+    return problems
+
+
+def check_server_registry() -> list[str]:
+    """Server BARCHA tillarni ro'yxatga olishini tekshiradi.
+
+    ⚠️ Nega kerak: bir marta `registerMessages` ichiga shartsiz
+    `registry.clear()` qo'yilgan edi va `messages.server.ts` dagi tsikl
+    faqat OXIRGI tilni qoldirardi. Natijada SSR'da o'nlab xom kalit
+    chiqdi (`home.start`, `nav.contests`, …) — holbuki lint, types,
+    build va shu tekshiruvning o'zi YASHIL turgan edi (o'lchandi,
+    brauzerda). Bu statik nazorat o'sha sinfni qaytaradi.
+    """
+    path = ROOT / "apps/web/src/i18n/messages.server.ts"
+    if not path.exists():
+        return [f"messages.server.ts topilmadi ({path})"]
+    text = path.read_text(encoding="utf-8")
+
+    problems: list[str] = []
+    # 1. Tsikl `evict` bermasdan chaqirishi shart.
+    #
+    #    ⚠️ Uchinchi argumentni NOMI bo'yicha emas, MAVJUDLIGI bo'yicha
+    #    tekshiramiz: uni `true`, `1`, yoki `evict` deb yozish mumkin.
+    #    Faqat `evict` so'zini qidirish o'lik tekshiruv bo'lardi —
+    #    birinchi yozganimda aynan shunday bo'ldi va salbiy test tutdi.
+    calls = re.findall(r"registerMessages\(([^)]*)\)", text)
+    if not calls:
+        problems.append("messages.server.ts: registerMessages chaqiruvi yo'q")
+    for args in calls:
+        if len([a for a in args.split(",") if a.strip()]) > 2:
+            problems.append(
+                "messages.server.ts: serverda uchinchi argument berilmasin "
+                "(`evict` faqat klient uchun — aks holda bir til qoladi)"
+            )
+            break
+    # 2. O'nta tilning hammasi `ALL` da bo'lishi shart.
+    #    Yozuv qisqa shaklda (`uz,`) ham, to'liq shaklda (`uz: uz,`) ham
+    #    bo'lishi mumkin — ikkalasi ham qabul qilinadi.
+    block = re.search(r"const ALL[^{]*\{(.*?)\n\};", text, re.S)
+    if block is None:
+        problems.append("messages.server.ts: `ALL` lug'ati topilmadi")
+    else:
+        codes = re.findall(
+            r"^\s*([a-z]{2,3})\s*(?::|,)", block.group(1), re.M
+        )
+        if len(codes) != 10:
+            problems.append(
+                f"messages.server.ts: `ALL` da {len(codes)} til bor, 10 kutilgan"
+            )
+    return problems
 
 
 if __name__ == "__main__":

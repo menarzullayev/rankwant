@@ -193,11 +193,126 @@ def neg_docs_broken_link() -> tuple[bool, str]:
         path.write_text(original, encoding="utf-8")
 
 
+def neg_email_missing_locale() -> tuple[bool, str]:
+    """Bitta satrdan bitta til olib tashlansa — tutilsinmi?
+
+    Ilgari til jimgina `uz` ga tushardi; bu tekshiruv o'sha holatni CI da
+    to'xtatadi.
+    """
+    path = ROOT / "apps/api/core/email_text.py"
+    old = '        "es": "RankWant — restablecer contraseña",'
+    if old not in path.read_text(encoding="utf-8"):
+        return False, "email/til: sinov uchun qator topilmadi"
+    with Mutation(path, old + "\n", ""):
+        return expect_fail("email_locales", "email/yetishmayotgan til")
+
+
+def neg_email_blank_value() -> tuple[bool, str]:
+    """Bitta matn bo'sh qolsa — tutilsinmi?"""
+    path = ROOT / "apps/api/core/email_text.py"
+    old = "        \"en\": \"Sign in\","
+    new = "        \"en\": \"   \","
+    if old not in path.read_text(encoding="utf-8"):
+        return False, "email/bo'sh: sinov uchun qator topilmadi"
+    with Mutation(path, old, new):
+        return expect_fail("email_locales", "email/bo'sh matn")
+
+
+def neg_email_undeclared_locale() -> tuple[bool, str]:
+    """Ro'yxatda yo'q til qo'shilsa — tutilsinmi?"""
+    path = ROOT / "apps/api/core/email_text.py"
+    old = '        "es": "RankWant",'
+    new = '        "es": "RankWant",\n        "xx": "RankWant",'
+    if old not in path.read_text(encoding="utf-8"):
+        return False, "email/e'lon qilinmagan: sinov uchun qator topilmadi"
+    with Mutation(path, old, new):
+        return expect_fail("email_locales", "email/ro'yxatda yo'q til")
+
+
+# ── locales parity ───────────────────────────────────────────────────────
+
+
+def neg_parity_missing_locale() -> tuple[bool, str]:
+    """`LANGUAGES` dan bitta til olib tashlansa — tutilsinmi?
+
+    Bu AYnan ilgari bo'lgan holat: `LANGUAGES` 3 ta edi, `User.Locale`
+    esa 10 ta. Brauzeri `ky` bo'lgan odam jimgina `uz` ko'rardi.
+    """
+    path = ROOT / "apps/api/config/settings.py"
+    old = '    ("ky", "Кыргызча"),\n'
+    if old not in path.read_text(encoding="utf-8"):
+        return False, "parity/yetishmaydi: sinov uchun qator topilmadi"
+    with Mutation(path, old, ""):
+        return expect_fail("locales_parity", "parity/LANGUAGES da til yetishmaydi")
+
+
+def neg_parity_extra_locale() -> tuple[bool, str]:
+    """`LOCALES` ga `User.Locale` da yo'q til qo'shilsa — tutilsinmi?"""
+    path = ROOT / "apps/api/core/email_text.py"
+    old = '"zh", "es")'
+    new = '"zh", "es", "xx")'
+    if old not in path.read_text(encoding="utf-8"):
+        return False, "parity/ortiqcha: sinov uchun qator topilmadi"
+    with Mutation(path, old, new):
+        return expect_fail("locales_parity", "parity/LOCALES da ortiqcha til")
+
+
+def neg_i18n_template_family() -> tuple[bool, str]:
+    """Shablon oilaning BARCHA kaliti o'chirilsa — tutilsinmi?
+
+    13-band: `t(locale, `customizer.template.${id}`)` — shablon kalit.
+    Birortasi yo'q bo'lsa foydalanuvchi xom kalit ko'radi, `CALL_RE`
+    esa buni ko'rmaydi (shablon statik emas).
+    """
+    path = ROOT / "apps/web/src/i18n/locales/uz.ts"
+    text = path.read_text(encoding="utf-8")
+    removed = 0
+    lines = []
+    for line in text.split("\n"):
+        if re.match(r'^\s*"customizer\.template\.', line):
+            removed += 1
+            continue
+        lines.append(line)
+    if removed == 0:
+        return False, "i18n/shablon: `customizer.template.*` topilmadi"
+    with Mutation(path, text, "\n".join(lines)):
+        return expect_fail("i18n", "i18n/shablon oila kalitisiz")
+
+
+def neg_i18n_server_drops_locales() -> tuple[bool, str]:
+    """Server `evict` bersa — tutilsinmi?
+
+    Aynan shu nuqson bo'lgan: `messages.server.ts` dagi tsikl o'nta
+    tilni ro'yxatga oladi, lekin chegaralash faqat OXIRGISINI
+    qoldirardi → SSR'da o'nlab xom kalit (o'lchandi, brauzerda).
+    """
+    path = ROOT / "apps/web/src/i18n/messages.server.ts"
+    old = "registerMessages(locale as Locale, dict);"
+    new = "registerMessages(locale as Locale, dict, true);"
+    if old not in path.read_text(encoding="utf-8"):
+        return False, "i18n/server evict: langar topilmadi"
+    with Mutation(path, old, new):
+        return expect_fail("i18n", "i18n/server evict bilan chegaralangan")
+
+
+def neg_i18n_server_missing_locale() -> tuple[bool, str]:
+    """`ALL` dan bitta til olib tashlansa — tutilsinmi?"""
+    path = ROOT / "apps/web/src/i18n/messages.server.ts"
+    old = "  tg,\n"
+    if old not in path.read_text(encoding="utf-8"):
+        return False, "i18n/server yetishmaydi: langar topilmadi"
+    with Mutation(path, old, ""):
+        return expect_fail("i18n", "i18n/server lug'atda til yetishmaydi")
+
+
 CASES: list[tuple[str, list[tuple[str, object]]]] = [
     ("i18n", [
         ("bo'sh qiymat", neg_i18n_blank_value),
         ("yetishmayotgan kalit", neg_i18n_missing_key),
         ("kodda bor, manbada yo'q", neg_i18n_used_but_absent),
+        ("shablon oila kalitisiz", neg_i18n_template_family),
+        ("server evict bilan chegaralangan", neg_i18n_server_drops_locales),
+        ("server lug'atda til yetishmaydi", neg_i18n_server_missing_locale),
     ]),
     ("contrast", [
         ("buzilgan juftlik", neg_contrast_bad_pair),
@@ -205,6 +320,15 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
     ]),
     ("docs", [
         ("buzilgan havola", neg_docs_broken_link),
+    ]),
+    ("email_locales", [
+        ("yetishmayotgan til", neg_email_missing_locale),
+        ("bo'sh matn", neg_email_blank_value),
+        ("ro'yxatda yo'q til", neg_email_undeclared_locale),
+    ]),
+    ("locales_parity", [
+        ("LANGUAGES da til yetishmaydi", neg_parity_missing_locale),
+        ("LOCALES da ortiqcha til", neg_parity_extra_locale),
     ]),
 ]
 

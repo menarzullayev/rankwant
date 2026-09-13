@@ -137,8 +137,15 @@ run_docs() {
   "$PY" tools/check_docs.py &&
     "$PY" tools/check_contract.py &&
     "$PY" tools/check_i18n.py &&
+    "$PY" tools/check_email_locales.py &&
+    "$PY" tools/check_locales_parity.py &&
     "$PY" tools/check_contrast.py &&
-    "$PY" tools/check_gradient_styles.py
+    "$PY" tools/check_gradient_styles.py &&
+    # Tekshiruvlarning O'ZLARINI sinaydi: har biriga ataylab buzilgan
+    # holat beriladi va `exit 1` talab qilinadi. Bu qadam eng muhimi —
+    # "yashil, lekin yolg'on" natija shu loyihada bir kunda to'rt marta
+    # uchragan, ya'ni tekshiruv o'zi ham tekshirilishi kerak.
+    "$PY" tools/check_negative.py
 }
 
 # ── API (konteynerda) ────────────────────────────────────────────────────
