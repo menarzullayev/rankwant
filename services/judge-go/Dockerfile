@@ -11,6 +11,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libnl-3-dev libnl-route-3-dev \
     && rm -rf /var/lib/apt/lists/*
 ARG NSJAIL_REF=master
+# `NSJAIL_REF` — bu qadamning kesh kaliti. Natija Docker qatlam keshida
+# saqlanadi: `NSJAIL_REF` va buyruq matni o'zgarmasa, klonlash va `make`
+# UMUMAN ishlamaydi (keshdan olinadi).
+#
+# `--mount=type=cache` bu yerda ATAYLAB YO'Q: u `make` ning obyekt
+# fayllarini saqlab qolardi, lekin `git clone` yangi ish katalogini
+# yaratadi, ya'ni obyektlar baribir qayta qurilardi — foyda yo'q, faqat
+# murakkablik qo'shilardi. Qatlam keshi shu ishni to'liq bajaradi.
+#
+# Diqqat: `master` — harakatlanuvchi havola. Yangi commit chiqsa ham
+# Docker buni BILMAYDI va keshdan oladi. Sandbox versiyasini ataylab
+# yangilash kerak bo'lganda `--build-arg NSJAIL_REF=<commit-sha>` bering.
 RUN git clone --depth 1 --branch "${NSJAIL_REF}" https://github.com/google/nsjail.git /src \
     && cd /src && make -j"$(nproc)"
 
@@ -18,9 +30,19 @@ RUN git clone --depth 1 --branch "${NSJAIL_REF}" https://github.com/google/nsjai
 FROM golang:1.25-bookworm AS go-build
 WORKDIR /app
 COPY go.mod go.sum* ./
-RUN go mod download
+# `--mount=type=cache,target=/go/pkg/mod` — Go modul keshi qatlam keshidan
+# ALOHIDA saqlanadi. `go.sum` o'zgarmasa modullar umuman yuklanmaydi;
+# o'zgarganda faqat YANGI modul olinadi (api/web Dockerfile'lardagi
+# pip/npm kesh bilan bir xil qoida).
+RUN --mount=type=cache,target=/go/pkg/mod \
+    go mod download
 COPY *.go ./
-RUN CGO_ENABLED=0 go build -trimpath -o /out/judge-go .
+# Kompilyatsiya keshi ham alohida: `golang:1.25-bookworm` image'ida
+# GOCACHE allaqachon `/root/.cache/go-build`, ya'ni `go build` uni
+# ishlatadi. Uni ham konteyner qatlami sifatida saqlash `go mod download`
+# qatlamini har build'da takrorlanishdan qutqaradi.
+RUN --mount=type=cache,target=/root/.cache/go-build \
+    CGO_ENABLED=0 go build -trimpath -o /out/judge-go .
 
 # ── 3. runtime ───────────────────────────────────────────────────────
 FROM debian:trixie-slim

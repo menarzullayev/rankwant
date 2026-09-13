@@ -14,6 +14,16 @@ COPY requirements.lock ./
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install -r requirements.lock
 
+# Butun kod ENG OXIRIDA: bu qatlam har commit'da o'zgaradi, ya'ni
+# undan keyin og'ir qatlam turmasligi kerak.
+#
+# `collectstatic` shu sababli `COPY . .` dan KEYIN qoladi (u statik
+# fayl manbalarini o'qiydi, ya'ni kod kontekstda bo'lishi shart).
+# Uning narxi ARZON: o'lchandi — ~0.4 s, shuning uchun `COPY . .`
+# qatlami bilan birga yangilanishi build'ni sezilarli cho'zmaydi.
+# Uni alohida qatlam qilib `COPY config/ ./config/` bilan oldinga
+# chiqarish ham mumkin edi, lekin `core/` va boshqa ilovalarga ham
+# bog'liq — qo'shimcha mo'rtlikka arzimaydi.
 COPY . .
 RUN python manage.py collectstatic --noinput || true
 

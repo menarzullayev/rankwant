@@ -1,7 +1,13 @@
 FROM node:22-slim AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci
+# `--mount=type=cache`: npm'ning o'z HTTP keshi `node_modules` dan
+# ALOHIDA saqlanadi. `package-lock.json` o'zgarganda ham faqat YANGI
+# paketlar yuklanadi (api Dockerfile'dagi pip kesh bilan bir xil qoida).
+# `target=/root/.npm` — root foydalanuvchining standart npm keshi.
+# O'lchandi: import qadami ~23 s, keshsiz har o'zgarishda takrorlanardi.
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci
 
 FROM node:22-slim AS build
 WORKDIR /app
@@ -12,7 +18,10 @@ COPY . .
 # standings jonli yangilanishi qotib qolgan manzilga urinardi.
 ARG NEXT_PUBLIC_API_BASE=http://localhost:8000/api/v1
 ENV NEXT_PUBLIC_API_BASE=$NEXT_PUBLIC_API_BASE
-RUN npm run build
+# Next.js'ning o'z keshi `.next/cache` da (webpack/SWC). U ham qatlam
+# keshiga qo'shiladi: kod o'zgarganda qayta kompilyatsiya tezroq ketadi.
+RUN --mount=type=cache,target=/app/.next/cache \
+    npm run build
 
 FROM node:22-slim
 WORKDIR /app

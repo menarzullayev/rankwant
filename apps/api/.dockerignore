@@ -1,7 +1,33 @@
+# Build konteksti — bu fayl Docker'ga nima YUBORILMASLIGINI aytadi.
+#
+# Nega kerak: har bir `COPY . .` yangi kesh qatlami yozadi va uning
+# kaliti kontekstdagi fayllar mazmuniga bog'lanadi. Keshga tushmasligi
+# kerak bo'lgan narsa kontekstda turishi qatlamni behuda bekor qiladi.
+
+# Virtual muhit — bog'liqliklar image ichida `pip install` bilan o'rnatiladi.
 .venv/
+
+# Python keshlari — har test/mypy yurishida o'zgaradi va `COPY . .`
+# qatlamini behuda yangilaydi. O'lchandi: `.mypy_cache` — 22 MB.
 __pycache__/
-*.pyc
-db.sqlite3
-.pytest_cache/
+*.py[cod]
 .mypy_cache/
 .ruff_cache/
+.pytest_cache/
+.hypothesis/
+
+# Lokal baza va muhit fayllari — sirlar image'ga tushmasligi kerak.
+db.sqlite3
+*.sqlite3
+.env
+.env.*
+!.env.example
+
+# Test qamrovi chiqishi.
+.coverage
+.coverage.*
+htmlcov/
+
+# Git tarixi — kerak emas.
+.git/
+.gitignore
