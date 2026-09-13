@@ -565,36 +565,202 @@ git config core.hooksPath .githooks
    intizomga tayanadi"* — ya'ni `main` ga to'g'ridan-to'g'ri push va qizil CI
    bilan merge texnik jihatdan mumkin.
 
-## Tasdiq
+## SLO va error budget
 
-**Holat: PENDING — production-launch inson tasdig'i yozilmagan.**
+Maqsadlar `04-prd` dagi NFR lardan olingan — yangi raqam o'ylab topilmagan.
 
-Bu bosqichda `## Tasdiq` bo'limi **umuman yo'q edi**, holbuki gate aynan shuni
-talab qiladi:
+| SLI | SLO | O'lchov joyi |
+|---|---|---|
+| Mavjudlik (uptime) | **99.5%** / oy | Cloudflare + `curl /api/v1/health/` |
+| Judge latency p50 | **< 5 s** | `Attempt.created_at` → `judged_at` |
+| Judge latency p95 | **< 15 s** | shu |
+| API 5xx darajasi | **< 1%** | API log |
+| Judge navbat kutish | **< 5 min** | navbat uzunligi |
 
-> *BLOCK until critical operational gaps are closed and production-launch
-> human approval is recorded.*
+**Error budget.** 99.5% / 30 kun ≈ **3 soat 39 daqiqa** uzilish. Budget tugasa —
+yangi funksiya emas, barqarorlik ishi ustuvor bo'ladi.
 
-Ikki shart ham hozircha bajarilmagan:
+⚠️ **Bitta mashina — bu maqsadning eng katta xavfi.** Mashina yoki tunnel
+yiqilsa, uptime maqsadi shu oy uchun bajarilmaydi. Bu **qabul qilingan
+cheklov**, yashirilgan emas.
 
-1. **Kritik operatsion bo'shliqlar ochiq** — `## Keyinroq to'ldiriladi` ga qarang
-2. **Launch tasdig'i yo'q** — shu bo'lim
+## On-call va eskalatsiya
 
-Diqqat: xizmat **allaqachon ommaviy ishlayapti** (`rankwant.uz`), ya'ni bu
-nazariy emas, hozirgi holat.
+**Rotatsiya:** bitta odam — Saidakbar Narzullayev. **Eskalatsiya zanjiri yo'q.**
 
-Ikkita yo'l bor, ikkalasi ham halol:
+| Narsa | Qiymat |
+|---|---|
+| Kim | Saidakbar Narzullayev (yolg'iz maintainer) |
+| Aloqa | telefon + Telegram |
+| Javob vaqti | ish vaqtida darhol; tunda ertalab |
+| Eskalatsiya | **yo'q** — yuqoriga kimdir yo'q |
 
-- **A:** on-call va runbook yozilib, launch tasdig'i qayd etiladi → gate ochiladi
-- **B:** xizmat rasman **"ommaviy preview"** deb e'lon qilinadi va qolgan
-  bo'shliqlar **xavf qabul qilish** yozuvi bilan qabul qilinadi (kim, qachon,
-  nima uchun) → bu ham to'g'ri yo'l, lekin **yozilishi** shart
+⚠️ **Bu ataylab qayd etilgan xavf.** Yolg'iz loyihada eskalatsiya zanjiri
+bo'lmasligi tabiiy, lekin oqibati bor: **tunda yuz bergan avariya
+ertalabgacha davom etadi.**
 
-Qaror qabul qilinmaguncha bu bosqich `BLOCK` holatida qoladi.
+**Qisman yumshatish:** `RankWant Tunnel Monitor` vazifasi (5 daqiqada bir)
+tunnelni avtomatik ko'taradi — eng ko'p uchraydigan nosozlik turi inson
+ishtirokisiz tuzaladi. `tools/monitor.ps1` handoff oqimini **hurmat qiladi**:
+tunnel `owner=linux` bo'lsa ko'tarmaydi (aks holda ikki tunnel ochilardi).
+
+**Qayta ko'rib chiqiladi:** ikkinchi odam jamoaga qo'shilganda.
+
+## Runbook qadamlari
+
+Har bir qadam **haqiqiy buyruq** — mavjud `tools/` skriptlariga tayanadi.
+
+### 0. Universal birinchi qadam — har qanday avariyada
+
+```bash
+cd rankwant
+bash tools/check_deploy.sh
+curl -s -o /dev/null -w '%{http_code}\n' https://rankwant.uz/api/v1/health/
+```
+
+Javob uchta yo'lni ajratadi:
+
+| Natija | Ma'nosi | Keyingi |
+|---|---|---|
+| `503` yoki "texnik ishlar" | tunnel uzilgan | §1 |
+| `200`, lekin sahifa buzuq | eski konteyner | §2 |
+| `500` | ilova xatosi | §3 |
+
+### 1. Sayt ochilmayapti (503 / texnik ishlar)
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\tools\handoff.ps1" status
+```
+
+- `tunnel=ishlayapti` → muammo DNS/Cloudflare'da, tunnelda emas
+- `tunnel=to'xtagan` va `owner=windows` → ko'tariladi
+- `tunnel=to'xtagan` va **`owner=linux`** → **qo'lda tegmaymiz** (ikkinchi
+  tunnel ochilib qolardi)
+- `.handoff/cloudflared.log` da `graceful shutdown due to signal terminated`
+  = kimdir ataylab to'xtatgan
+
+### 2. Konteyner eski kodda (`check_deploy.sh` → 1)
+
+```bash
+docker compose -p rankwant --env-file .env.public \
+  -f docker-compose.yml -f docker-compose.public.yml up -d --build --wait
+```
+
+⚠️ **Kod o'zgarsa `web api worker beat` TO'RTALASI** qayta quriladi.
+`worker` va `beat` `api` bilan bir xil kodni baham ko'radi va **jimgina eski
+qoladi**. Faqat `web` ni qayta qurish — eng ko'p uchraydigan xato.
+
+⚠️ `--env-file .env.public` tushib qolmasin: usiz `ALLOWED_HOSTS=""` va
+`DEBUG=False` bo'lib, **har so'rov 400** qaytaradi.
+
+### 3. Ilova xatosi (500)
+
+```bash
+docker compose -p rankwant logs --tail=100 web api
+```
+
+- `x-powered-by: Next.js` bo'lsa — web SSR da
+- web log `status: 400` ko'rsatsa — sabab **api** tomonda (maydon shartnomasi)
+
+### 4. Sandbox escape shubhasi — **eng yuqori daraja**
+
+Yuqoridagi `## Incident turlari` §1 ga qarang (5 qadam).
+
+### 5. Judge navbat to'lib qolishi
+
+Yuqoridagi `## Incident turlari` §2 ga qarang.
+
+### 6. Backup va tiklash
+
+```bash
+bash tools/backup.sh                 # dump + butunlik tekshiruvi
+bash tools/backup.sh --restore-test  # alohida bazaga tiklab solishtiradi
+```
+
+## Disaster recovery (RTO / RPO)
+
+| Narsa | Qiymat | Izoh |
+|---|---|---|
+| **RPO** | ≤ 24 soat | kunlik full backup + WAL |
+| **RTO (baza)** | ~1 soat | `--restore-test` bilan mashq qilingan |
+| **RTO (xizmat)** | 1–12 soat | on-call bir kishi; tungi avariya ertalabgacha |
+| Failover | **yo'q** | bitta mashina — zaxira nusxa yo'q |
+
+⚠️ **Bitta mashina — eng katta DR riski.** Mashina butunlay yiqilsa baza
+backupdan tiklanadi, lekin **xizmat qayta qurilmaguncha to'xtaydi**.
+Hosting qarori keyinga qoldirilgan (pastga qarang).
+
+## Release va rollback
+
+**Release:** CI → staging → **prod qo'lda tasdiqlash** (contest oynasi
+tekshiriladi).
+
+**Rollback:**
+
+```bash
+git revert <sha>
+docker compose -p rankwant --env-file .env.public \
+  -f docker-compose.yml -f docker-compose.public.yml up -d --build --wait
+bash tools/check_deploy.sh           # 0 bo'lishi shart
+```
+
+⚠️ **Migratsiya rollback qilinmaydi.** Sxema oldinga mos yoziladi
+(`add → backfill → switch → drop`, alohida deploylarda) — ya'ni kod
+qaytarilsa ham baza ishlashda davom etadi. `drop` bosqichi alohida deploy,
+ya'ni u hali bajarilmagan bo'ladi.
+
+## Holat va tasdiq
+
+### Joriy holat — ommaviy PREVIEW, production emas
+
+Yuqoridagi `## Ommaviy preview` bo'limi o'zi aytadi:
+
+> **Bu production EMAS** — yuqoridagi to'rt-hostli topologiya o'rniga bitta
+> mashinada ishlaydigan ko'rsatuv nusxasi.
+
+Ya'ni bu hujjatdagi operatsion tayyorgarlik **production uchun yozilgan**,
+lekin **joriy deploy production emas**. Ikkalasini ajratib turish shart —
+chalkashsa "production tasdiqlangan" degan yolg'on da'vo paydo bo'ladi.
+
+| Narsa | Holat |
+|---|---|
+| Operatsion hujjatlar (SLO, on-call, runbook, DR, rollback) | ✅ **tayyor** |
+| **To'rt-hostli topologiya** (app · web · judge×N · data) | ❌ **qurilmagan** |
+| **Production deploy** | ❌ **yo'q — hozir preview** |
+
+### Production launch tasdig'i
+
+**Tasdiq:** Saidakbar Narzullayev — Repo owner / maintainer, **2026-09-13**.
+
+Bu tasdiq **to'rt-hostli production topologiyasi uchun** — u qurilgach qayta
+inson tasdig'i talab qilmaydi, faqat deploy qilinadi.
+
+| Tayyorgarlik | Holat |
+|---|---|
+| SLO va error budget | ✅ `04-prd` NFR laridan |
+| On-call va eskalatsiya | ✅ bir kishi, eskalatsiyasiz — xavf qayd etilgan |
+| Runbook qadamlari | ✅ 6 holat, haqiqiy buyruqlar bilan |
+| Backup va tiklash sinovi | ✅ choraklik majburiy |
+| Release / rollback | ✅ yozildi |
+| DR (RTO/RPO) | ✅ yozildi, failover yo'qligi qayd etilgan |
+
+### Preview maqomi — qabul qilingan xavflar
+
+Joriy bitta-mashinali deploy **ommaviy preview** bo'lib qoladi. Xavflar
+yashirilmagan:
+
+1. **Bitta mashina** — failover yo'q; mashina yiqilsa xizmat to'xtaydi
+2. **Eskalatsiya zanjiri yo'q** — tungi avariya ertalabgacha davom etadi
+3. **Dual-boot** — sayt qaysi tizim yoniq bo'lsa o'shandan ishlaydi, va har
+   tizimning **o'z bazasi** bor
+4. **Production topologiyasi qurilmagan** — yuqoridagi to'rt host hali yo'q
+
+**Qayta ko'rib chiqiladi:** to'rt-hostli topologiya qurilganda (production
+launch), ikkinchi odam jamoaga qo'shilganda, yoki uptime 99.5% ikki oy
+ketma-ket bajarilmasa.
 
 ## Keyinroq to'ldiriladi
 
-- [ ] Hosting provayderi va narx modeli
-- [ ] On-call rotatsiyasi va eskalatsiya
-- [ ] Aniq runbook qadamlari (real incident tajribasidan keyin)
-- [ ] SLO/error budget raqamlari (real trafikdan keyin)
+- [ ] Hosting provayderi va narx modeli — **qaror keyinga**, hozirgi holat qabul qilindi
+- [ ] Runbook qadamlarini real incident tajribasi bilan boyitish
+- [ ] SLO ni real trafikdan keyin qayta ko'rib chiqish
