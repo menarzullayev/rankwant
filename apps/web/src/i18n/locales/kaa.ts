@@ -812,4 +812,5 @@ export const kaa: Record<MessageKey, string> = {
   "locale.group.broad": "Keń qamtıw",
   "locale.loading": "Júklenbekte",
   "locale.listLabel": "Tiller dizimi",
+  "content.uzOnly": "Bul atama ózbek tilinde — awdarması tayarlanbaqta",
 };

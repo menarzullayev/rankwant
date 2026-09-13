@@ -812,4 +812,5 @@ export const tr: Record<MessageKey, string> = {
   "locale.group.broad": "Geniş kapsam",
   "locale.loading": "Yükleniyor",
   "locale.listLabel": "Dil listesi",
+  "content.uzOnly": "Bu ad Özbekçe — çevirisi hazırlanıyor",
 };

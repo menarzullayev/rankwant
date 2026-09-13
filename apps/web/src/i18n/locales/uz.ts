@@ -816,6 +816,7 @@ export const uz = {
   "locale.group.broad": "Keng qamrov",
   "locale.loading": "Yuklanmoqda",
   "locale.listLabel": "Tilllar ro'yxati",
+  "content.uzOnly": "Bu nom o'zbekcha — tarjimasi tayyorlanmoqda",
 } as const;
 
 export type MessageKey = keyof typeof uz;

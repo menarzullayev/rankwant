@@ -809,4 +809,5 @@ export const zh: Record<MessageKey, string> = {
   "locale.group.broad": "广泛覆盖",
   "locale.loading": "加载中",
   "locale.listLabel": "语言列表",
+  "content.uzOnly": "此名称为乌兹别克语 — 翻译待完成",
 };

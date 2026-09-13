@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/Card";
 import { CountryFlag } from "@/components/ui/CountryFlag";
-import { localName, t, type Locale } from "@/i18n/messages";
+import { UzFallbackBadge } from "@/components/ui/UzFallbackBadge";
+import { localName, localNameInfo, t, type Locale } from "@/i18n/messages";
 import type { ExternalProfile, PrivacyField, PublicProfile } from "@/lib/api";
 import { countryName } from "@/lib/countries";
 import { districtName, regionName } from "@/lib/regions";
@@ -173,7 +174,12 @@ export function AboutTab({
             {profile.skills.map((skill) => (
               <li key={skill.slug}>
                 <div className="flex items-baseline justify-between gap-2 text-theme-sm">
-                  <span className="rw-strong">{localName(skill, locale)}</span>
+                  <span className="rw-strong">
+                    {localName(skill, locale)}
+                    {localNameInfo(skill, locale).locale === null && (
+                      <UzFallbackBadge locale={locale} />
+                    )}
+                  </span>
                   <span className="tabular-nums rw-faint">{skill.level}</span>
                 </div>
                 <div className="mt-1 h-1.5 overflow-hidden rounded-full rw-chip">

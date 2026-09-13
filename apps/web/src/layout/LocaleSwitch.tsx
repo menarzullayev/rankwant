@@ -271,36 +271,61 @@ export function LocaleSwitch() {
           className="absolute right-0 z-50 mt-1 max-h-80 w-64 overflow-y-auto rw-panel py-1
             text-theme-xs"
         >
-          {options.map((code, index) => {
-            const isAuto = code === AUTO;
-            const group = isAuto ? null : groupOf(code);
-            const startsGroup =
-              group !== null && group !== groupOf(options[index - 1] ?? "");
-            const selected = current === code;
+          {/* «Avtomatik» guruhdan tashqarida — u hech qaysi guruhga
+              tegishli emas, ya'ni uni guruh ichiga tiqish noto'g'ri
+              bo'lardi (qaror 9: «Avtomatik» BIRINCHI turadi). */}
+          <li role="presentation">
+            <div
+              role="option"
+              data-value={AUTO}
+              aria-selected={current === AUTO}
+              onClick={() => choose(AUTO)}
+              onMouseEnter={() => setActive(AUTO)}
+              className={`flex cursor-pointer items-center gap-2 px-3 py-2 text-theme-xs ${
+                active === AUTO ? "rw-hover-bg" : ""
+              } ${current === AUTO ? "font-medium" : ""}`}
+            >
+              <span className="min-w-0 flex-1 truncate">
+                {`${t(locale, "locale.auto")} — ${LOCALE_NAMES[locale]}`}
+              </span>
+              {current === AUTO && <CheckIcon className="size-3.5 shrink-0" />}
+            </div>
+          </li>
 
+          {/* ⚠️ Guruh AYNAN `role="group"` + `aria-label` bilan
+              belgilanadi. O'lchandi: ilgari sarlavha shunchaki `<div>`
+              edi va ekran o'quvchi 11 variantni GURUHSIZ, uzluksiz
+              ro'yxat qilib o'qirdi — holbuki vizual guruh bor edi.
+              `aria-label` esa tarjima qilinadi (ilgari sarlavha
+              inglizcha "CORE"/"REGIONAL" bo'lib qolgan edi — `zh`
+              sahifasida ham). */}
+          {GROUPS.map((group) => {
+            const name = t(locale, group.key);
             return (
-              <li key={code} role="presentation">
-                {startsGroup && group && (
-                  <div className="px-3 pb-1 pt-2 text-theme-xs uppercase tracking-wide rw-dim-2">
-                    {t(locale, group)}
+              <li key={group.key} role="presentation">
+                <div role="group" aria-label={name}>
+                  <div
+                    aria-hidden="true"
+                    className="px-3 pb-1 pt-2 text-theme-xs uppercase tracking-wide rw-dim-2"
+                  >
+                    {name}
                   </div>
-                )}
-                <div
-                  role="option"
-                  data-value={code}
-                  aria-selected={selected}
-                  onClick={() => choose(code)}
-                  onMouseEnter={() => setActive(code)}
-                  className={`flex cursor-pointer items-center gap-2 px-3 py-2 text-theme-xs ${
-                    active === code ? "rw-hover-bg" : ""
-                  } ${selected ? "font-medium" : ""}`}
-                >
-                  <span className="min-w-0 flex-1 truncate">
-                    {isAuto
-                      ? `${t(locale, "locale.auto")} — ${LOCALE_NAMES[locale]}`
-                      : label(code as Locale)}
-                  </span>
-                  {selected && <CheckIcon className="size-3.5 shrink-0" />}
+                  {group.locales.map((code) => (
+                    <div
+                      key={code}
+                      role="option"
+                      data-value={code}
+                      aria-selected={current === code}
+                      onClick={() => choose(code)}
+                      onMouseEnter={() => setActive(code)}
+                      className={`flex cursor-pointer items-center gap-2 px-3 py-2 text-theme-xs ${
+                        active === code ? "rw-hover-bg" : ""
+                      } ${current === code ? "font-medium" : ""}`}
+                    >
+                      <span className="min-w-0 flex-1 truncate">{label(code)}</span>
+                      {current === code && <CheckIcon className="size-3.5 shrink-0" />}
+                    </div>
+                  ))}
                 </div>
               </li>
             );
@@ -309,12 +334,6 @@ export function LocaleSwitch() {
       )}
     </div>
   );
-}
-
-/** Variant qaysi guruhga tegishli — `null` bo'lsa guruh yo'q. */
-function groupOf(code: string): string | null {
-  if (code === AUTO) return null;
-  return GROUPS.find((group) => group.locales.includes(code as Locale))?.key ?? null;
 }
 
 /** Ro'yxatdagi barcha tillar — `LOCALES` bilan bir xil bo'lishi shart.
