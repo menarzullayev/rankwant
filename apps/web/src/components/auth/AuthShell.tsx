@@ -5,7 +5,7 @@ import { t } from "@/i18n/messages";
 
 /** Kirish sahifasining yagona markazlashgan qobig'i (18-qaror).
  *
- * Ilgari `/kirish` `AuthLayout` bilan ikki ustunli split-screen edi:
+ * Ilgari `/login` `AuthLayout` bilan ikki ustunli split-screen edi:
  * chap panelda brend, statistika va yaqin musobaqa turardi. 18-qaror
  * buni bekor qildi — kirish sahifasi BITTA markazlashgan karta bo'lishi
  * kerak.

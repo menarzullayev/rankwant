@@ -61,9 +61,9 @@ export function AuthTabs({ active }: { active: TabId }) {
             <li key={tab} className="min-w-0">
               <Link
                 //: `typedRoutes` faqat STATIK marshrut qismini
-                //: tekshiradi: `/kirish` + `?tab=…` — ruxsat etilgan
+                //: tekshiradi: `/login` + `?tab=…` — ruxsat etilgan
                 //: shakl, ya'ni tip toraytirishi shart emas.
-                href={`/kirish?${query}` as Route}
+                href={`/login?${query}` as Route}
                 scroll={false}
                 aria-current={current ? "page" : undefined}
                 className={`flex min-h-11 items-center justify-center px-1 pb-2 pt-1 text-center text-theme-sm transition rw-focus-ring ${

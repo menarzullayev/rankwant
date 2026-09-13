@@ -9,7 +9,7 @@ import { api } from "@/lib/api";
  * aksi. Kirish sahifasi esa API holatiga bog'liq bo'lmasligi kerak.
  *
  * ⚠️ HUQUQIY HAVOLALAR BU YERDA YO'Q — ataylab.
- * Ular allaqachon ikki joyda bor va `/kirish` da ikkalasi ham ko'rinadi:
+ * Ular allaqachon ikki joyda bor va `/login` da ikkalasi ham ko'rinadi:
  *
  *  1. `AppFooter` — saytning HAR sahifasida (ADR-0016: Google OAuth
  *     tasdig'i maxfiylik siyosatini topib bo'ladigan joyda kutadi).

@@ -141,7 +141,7 @@ def check_register_contract() -> list[str]:
     3-qarordan keyin 1-qadamda FAQAT to'rt maydon yuboriladi:
     `email`, `password`, `terms_accepted` (+ ixtiyoriy `marketing_opt_in`).
     `username`, `display_name`, `country`, `region` 2-qadamga
-    (`/qoshimcha-malumot`) ko'chirildi.
+    (`/onboarding`) ko'chirildi.
 
     ⚠️ Nega bu tekshiruv kerak bo'ldi (2026-09-13, o'lchandi): veb-forma
     `username` ni YUBORMASDI, API esa uni MAJBURIY deb bilardi —

@@ -4,9 +4,11 @@ import { redirect } from "next/navigation";
 
 import { getLocale } from "@/i18n/server";
 
-/** Ro'yxatdan o'tish endi bitta sahifaning bo'limi (1-qaror):
- *  `/kirish?tab=register`. Sabab `/login` bilan bir xil — havola
- *  saqlanadi, `?next=` esa yo'qolmaydi (307, 301 emas). */
+/** `/register` — yo'naltiruvchi manzil, sahifa emas. Ro'yxatdan o'tish
+ *  bitta sahifaning bo'limi (1-qaror): `/login?tab=register`.
+ *  Sabab `/reset-password` bilan bir xil — `redirect()` 307 beradi,
+ *  ya'ni `?next=` yo'qolmaydi (`next.config.ts` dagi 301 qoidasi uni
+ *  tashlab yuborardi). */
 export default async function RegisterPage({
   searchParams,
 }: {
@@ -16,7 +18,7 @@ export default async function RegisterPage({
   const params = await searchParams;
   const next = params.next;
   if (typeof next === "string" && next) query.set("next", next);
-  redirect(`/kirish?${query}` as Route);
+  redirect(`/login?${query}` as Route);
 }
 
 /** Ishlatilmaydi — `redirect` oldin bajariladi. */

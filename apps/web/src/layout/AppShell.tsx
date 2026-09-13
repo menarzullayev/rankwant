@@ -23,24 +23,22 @@ import { SkipLink } from "./SkipLink";
  *  fokuslanadigan element bor edi. Sarlavha qoladi: til tanlash va
  *  logotip kerak.
  *
- *  Kirish/ro'yxat/tiklash — bitta manzil (`/kirish?tab=`), shuning uchun
- *  ro'yxatda ham bitta yozuv. Eski uchta manzil (`/login`, `/register`,
- *  `/parolni-tiklash`) bu yerga 307 bilan yo'naltiradi.
+ *  Login/register/reset — bitta manzil (`/login?tab=`), shuning uchun
+ *  ro'yxatda ham bitta yozuv. `/register` va `/reset-password` shu
+ *  manzilga 307 bilan yo'naltiradi.
  *
- *  Eski manzillar baribir shu ro'yxatda TURADI: `redirect()` klientga
- *  javob qaytarishdan oldin `usePathname()` hali ESKI qiymatni
+ *  Yo'naltiruvchi manzillar baribir shu ro'yxatda TURADI: `redirect()`
+ *  klientga javob qaytarishdan oldin `usePathname()` hali ESKI qiymatni
  *  ko'rsatadi, ya'ni ro'yxatda bo'lmasa ikki bo'limli karta bir lahza
- *  yon panel va banner bilan chizilardi. Bu allaqachon `/login` uchun
- *  amalda bo'lgan — endi izoh shuni aynan aytadi. */
+ *  yon panel va banner bilan chizilardi. */
 const BARE = [
-  "/kirish",
   "/login",
   "/register",
-  "/parolni-tiklash",
-  "/emailni-tasdiqlash",
+  "/reset-password",
+  "/verify-email",
   // Ro'yxatdan o'tishning 2-qadami — oqimning davomi, ya'ni yon panel
   // ham, banner ham kerak emas: odam hali saytga kirmagan.
-  "/qoshimcha-malumot",
+  "/onboarding",
 ];
 
 /** Sahifalar SERVER komponenti bo'lib qoladi — bu yerga `children` sifatida

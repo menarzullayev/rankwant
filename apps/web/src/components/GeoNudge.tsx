@@ -73,7 +73,7 @@ export function GeoNudge() {
           {t(locale, "geo.nudgeBody")}
         </span>
         <Link
-          href={"/qoshimcha-malumot" as Route}
+          href={"/onboarding" as Route}
           className="rw-radius-sm rw-accent-bg px-3 py-1.5 font-medium rw-focus-ring"
         >
           {t(locale, "geo.nudgeCta")}

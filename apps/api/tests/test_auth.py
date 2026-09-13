@@ -168,7 +168,7 @@ class TestRegistrationLogin:
         user = User.objects.get(email="yangi@example.com")
         # Vaqtinchalik nom berilishi shart: model `unique=True` talab
         # qiladi, ya'ni bo'sh satr ikkinchi hisobda `IntegrityError`
-        # berardi. Nom 2-qadamda (`/qoshimcha-malumot`) almashtiriladi.
+        # berardi. Nom 2-qadamda (`/onboarding`) almashtiriladi.
         assert user.username.startswith("u"), user.username
         assert len(user.username) == 13, user.username
         # Kirish darhol ishlashi kerak: web registrdan keyin shu email

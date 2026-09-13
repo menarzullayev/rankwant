@@ -11,7 +11,7 @@ const STYLES: Record<Variant, string> = {
  *
  *  `rw-focus-ring` SHART (WCAG 2.4.11). Ilgari u yo'q edi va klaviatura
  *  bilan yurgan odam faqat brauzerning ingichka standart halqasini
- *  ko'rardi — o'lchandi: `/kirish` da 17 ta fokuslanadigan elementdan
+ *  ko'rardi — o'lchandi: `/login` da 17 ta fokuslanadigan elementdan
  *  9 tasida halqa yo'q edi, shu jumladan ASOSIY tugmada. `Button`
  *  butun ilova bo'ylab ishlatiladi, ya'ni bu bitta qator butun saytni
  *  tuzatadi.

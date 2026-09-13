@@ -3,9 +3,8 @@ import type { Route } from "next";
 import { redirect } from "next/navigation";
 
 import { getLocale } from "@/i18n/server";
-import { parseTab } from "@/lib/auth-tabs";
 
-/** Kanonik manzil endi `/kirish?tab=reset-password` (1-qaror): uch
+/** Kanonik manzil endi `/login?tab=reset-password` (1-qaror): uch
  *  bo'lim bitta sahifada, ya'ni odam bo'limlar orasida erkin
  *  yurishi kerak.
  *
@@ -32,7 +31,7 @@ export default async function ResetPasswordPage({
   //: Xato bo'lsa (masalan `?token=` juda uzun) foydalanuvchi
   //: `/reset-password` da qoladi va `reset.invalid` ni ko'radi — bu
   //: havoladan ko'ra tushunarliroq.
-  redirect(`/kirish?${query}` as Route);
+  redirect(`/login?${query}` as Route);
 }
 
 /** Ishlatilmaydi — `redirect` oldin bajariladi. `Metadata` uchun til

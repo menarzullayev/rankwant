@@ -25,7 +25,7 @@ export default function UserMenu() {
   if (!user) {
     return (
       <Link
-        href={"/kirish?tab=login" as Route}
+        href={"/login?tab=login" as Route}
         className="flex h-10 items-center gap-2 rw-radius-sm rw-accent-bg px-4 text-theme-sm font-medium text-white transition"
       >
         <UserIcon className="size-4" />

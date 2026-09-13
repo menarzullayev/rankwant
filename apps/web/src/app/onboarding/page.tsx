@@ -27,12 +27,12 @@ export default async function OnboardingPage() {
   // `?next=` bilan: kirgandan keyin odam AYNAN shu yerga qaytishi kerak,
   // aks holda 2-qadamni tugatib bosh sahifaga tushardi (qaror 1).
   if (!(await isSignedIn()))
-    redirect(`/kirish?tab=login&next=${encodeURIComponent("/qoshimcha-malumot")}` as Route);
+    redirect(`/login?tab=login&next=${encodeURIComponent("/onboarding")}` as Route);
 
   const locale = await getLocale();
   const me = await getWithSession<Me>("/me/").catch(() => null);
   // Sessiya cookie'i bor, lekin hisob o'chirilgan/o'chirilgan holat.
-  if (!me) redirect(`/kirish?tab=login&next=${encodeURIComponent("/qoshimcha-malumot")}` as Route);
+  if (!me) redirect(`/login?tab=login&next=${encodeURIComponent("/onboarding")}` as Route);
 
   return (
     <div className="mx-auto max-w-md py-10">

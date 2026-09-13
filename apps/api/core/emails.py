@@ -33,7 +33,7 @@ def _context(
     strings = {**email_text.strings(email_text.SHARED, locale), **email_text.strings(table, locale)}
     # Havola BIZNING domenimizda qoladi: kuzatuv o'chirilgan (ADR-0015),
     # ya'ni foydalanuvchi manzilni ko'rib ishonch hosil qila oladi.
-    # `?tab=` bo'limni tanlaydi (1-qaror: yagona `/kirish` sahifasi),
+    # `?tab=` bo'limni tanlaydi (1-qaror: yagona `/login` sahifasi),
     # `?token=` esa havolani uzatadi. Ikkalasi ham bo'lsa — birlashtiramiz;
     # shu sababli `urlencode` ishlatiladi, qo'lda `?`/`&` yasamaymiz.
     query = urlencode({k: v for k, v in (("tab", tab), ("token", token)) if v})
@@ -68,10 +68,10 @@ def send_password_reset(
     context = _context(
         email_text.RESET,
         user,
-        # Kanonik manzil endi `/kirish?tab=reset-password` (1 va
+        # Kanonik manzil endi `/login?tab=reset-password` (1 va
         # 13-qarorlar): `?tab=` bo'limni tanlaydi, `?token=` esa
         # havolani uzatadi — `_context` ikkalasini birlashtiradi.
-        path="/kirish",
+        path="/login",
         tab="reset-password",
         token=token,
         code=code,
@@ -85,12 +85,12 @@ def send_email_verify(user: User, *, token: str, code: str, to: str | None = Non
     # Tasdiqlashda kontekst ko'rsatilmaydi: foydalanuvchi bu so'rovni o'zi,
     # shu daqiqada yubordi — «bu men emasman» degan savol tug'ilmaydi.
     # `to` — pochtani almashtirishda yangi, hali tasdiqlanmagan manzil.
-    context = _context(email_text.VERIFY, user, path="/emailni-tasdiqlash", token=token, code=code)
+    context = _context(email_text.VERIFY, user, path="/verify-email", token=token, code=code)
     return _send(context, EmailDelivery.Purpose.EMAIL_VERIFY, to or user.email)
 
 
 def send_email_changed(user: User, old_email: str) -> EmailDelivery:
     """Eski manzilga ogohlantirish. Kod ham, token ham yo'q — bu faqat xabar."""
-    # Kirish sahifasi endi `/kirish` (1-qaror).
-    context = _context(email_text.CHANGED, user, path="/kirish", token="", code="")
+    # Kirish sahifasi endi `/login` (1-qaror).
+    context = _context(email_text.CHANGED, user, path="/login", token="", code="")
     return _send(context, EmailDelivery.Purpose.EMAIL_CHANGED, old_email)
