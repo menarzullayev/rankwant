@@ -55,11 +55,19 @@ class TestParolniTiklash:
 
     def test_havola_bizning_domenda_qoladi(self, zanjir: Yozib) -> None:
         """Kuzatuv o'chirilgan (ADR-0015): foydalanuvchi manzilda `rankwant`
-        so'zini ko'rishi va ko'rmasa shubhalanishi kerak."""
+        so'zini ko'rishi va ko'rmasa shubhalanishi kerak.
+
+        Kanonik manzil — `/kirish?tab=parolni-tiklash&token=…` (1 va
+        13-qarorlar). Tartib MUHIM EMAS, ya'ni `&` va `?` almashib ketsa
+        test yiqilmasligi kerak — shuning uchun ikkala qism alohida
+        tekshiriladi.
+        """
         emails.send_password_reset(odam(), token="TOK", code="482913")
 
         assert zanjir.last is not None
-        assert "https://rankwant.uz/parolni-tiklash?token=TOK" in zanjir.last.html
+        assert "https://rankwant.uz/kirish?" in zanjir.last.html
+        assert "tab=parolni-tiklash" in zanjir.last.html
+        assert "token=TOK" in zanjir.last.html
         for begona in ("mailjet.com", "brevo.com", "resend.com", "mailersend.com"):
             assert begona not in zanjir.last.html
 
@@ -71,6 +79,39 @@ class TestParolniTiklash:
         assert "482913" in zanjir.last.html
         assert "482913" in zanjir.last.text
         assert zanjir.last.text.strip()
+
+    def test_tab_va_token_birgalikda(self, zanjir: Yozib) -> None:
+        """`_context` ikkala parametrni bitta so'rov satriga yig'adi.
+
+        Token bo'lmasa `?tab=` yolg'iz qoladi va ortiqcha `&` chiqmaydi;
+        ikkalasi bo'lsa tartib `tab` → `token` (barqaror test uchun).
+        Kod (6 xonali) esa havolaga umuman tushmaydi — u faqat qo'lda
+        kiritish uchun.
+        """
+        from core import email_text
+        from core.emails import _context
+
+        # Bitta foydalanuvchi: `odam()` har chaqiruvda yangi qator yasaydi
+        # va bir xil `username` bilan ikkinchisi IntegrityError beradi.
+        egasi = odam()
+
+        def havola(**kwargs: str) -> object:
+            return _context(email_text.CHANGED, egasi, **kwargs)["link"]  # type: ignore[arg-type]
+
+        assert (
+            havola(path="/kirish", tab="parolni-tiklash", token="", code="")
+            == "https://rankwant.uz/kirish?tab=parolni-tiklash"
+        )
+
+        assert (
+            havola(path="/kirish", tab="parolni-tiklash", token="TOK", code="482913")
+            == "https://rankwant.uz/kirish?tab=parolni-tiklash&token=TOK"
+        )
+
+        assert (
+            havola(path="/emailni-tasdiqlash", token="TOK", code="482913")
+            == "https://rankwant.uz/emailni-tasdiqlash?token=TOK"
+        )
 
     def test_kontekst_korsatiladi(self, zanjir: Yozib) -> None:
         emails.send_password_reset(

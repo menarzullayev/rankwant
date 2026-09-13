@@ -65,7 +65,7 @@ class TestRoyxatdanOtish:
         register(client)
 
         r = client.post(
-            reverse("login"), {"username": "yangi", "password": "Parol!12345"}, format="json"
+            reverse("login"), {"identifier": "yangi", "password": "Parol!12345"}, format="json"
         )
 
         assert r.status_code == 200

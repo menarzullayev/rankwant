@@ -111,7 +111,9 @@ class TestAnonimlashtirish:
         account.anonymize(full_user)
 
         c = APIClient()
-        r = c.post(reverse("login"), {"username": "Aziz", "password": "Parol!12345"}, format="json")
+        r = c.post(
+            reverse("login"), {"identifier": "Aziz", "password": "Parol!12345"}, format="json"
+        )
         assert r.status_code == 401
 
 

@@ -8,16 +8,14 @@ import { useEffect, useRef, useState } from "react";
 import { useSession } from "@/context/SessionContext";
 import { Button } from "@/components/ui/Button";
 import { Field, type FieldStatus } from "@/components/ui/Field";
-import { Checkbox, SelectField } from "@/components/ui/SelectField";
-import { CountrySelect } from "@/components/ui/CountrySelect";
+import { Checkbox } from "@/components/ui/SelectField";
 import { GithubMark, GoogleMark, TelegramMark } from "@/components/ProviderMark";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t, errorText, type Locale } from "@/i18n/messages";
-import { ApiError, getJson, postJson } from "@/lib/api";
+import { t, errorText } from "@/i18n/messages";
+import { ApiError, postJson } from "@/lib/api";
 import { track } from "@/lib/analytics";
 import { strength } from "@/lib/password";
-import { type Variant } from "@/lib/experiments";
-import { REGION_CODES, regionName } from "@/lib/regions";
+import { Turnstile } from "@/components/auth/Turnstile";
 import { safeNext } from "@/lib/site";
 
 type Mode = "login" | "register";
@@ -32,6 +30,23 @@ const PROVIDER_LABEL = {
 
 type Provider = keyof typeof PROVIDER_LABEL;
 
+/** Brend nomi — tarjima qilinmaydi (Codeforces ham «Div. 2» ni
+ *  tarjima qilmaydi). Matn shu yerda turadi, to'liq nomi esa
+ *  `aria-label` da. */
+const PROVIDER_NAME: Record<Provider, string> = {
+  google: "Google",
+  github: "GitHub",
+  telegram: "Telegram",
+};
+
+/** Tugma tartibi — Telegram BIRINCHI va to'liq kenglikda (10-qaror).
+ *
+ *  Sabab raqamda: yettita raqobatchi saytdan birortasida Telegram yo'q,
+ *  o'zbek auditoriyasida esa u asosiy messenjer. Ya'ni bu bizning
+ *  farqimiz va u birinchi ko'rinishi kerak — Google/GitHub esa ilgari
+ *  birinchi turardi va Telegram faqat ostida qolib ketardi. */
+const PROVIDER_ORDER: Provider[] = ["telegram", "google", "github"];
+
 /** Brend ranglari — rasmiy tugma qoidalaridagi kabi. Ular mavzu
  *  tokenlaridan olinmaydi: brend rangi palitraga qarab o'zgarmaydi.
  *
@@ -45,34 +60,16 @@ const BRAND: Record<Provider, string> = {
   telegram: "bg-[#1a77a4] text-white",
 };
 
-/** Til -> odatiy mamlakat. Mamlakat maydonining standart qiymati shu yerdan
- *  olinadi, qattiq `UZ` dan emas. Ro'yxatda yo'q til uchun `UZ`. */
-const DEFAULT_COUNTRY: Partial<Record<Locale, string>> = {
-  uz: "UZ",
-  kaa: "UZ",
-  ru: "UZ",
-  kk: "KZ",
-  ky: "KG",
-  tg: "TJ",
-  tr: "TR",
-};
-
 export function AuthForm({
   mode,
   providers,
-  geoVariant = "a",
+  turnstileSiteKey = "",
 }: {
   mode: Mode;
   /** Serverda olinadi — tugmalar HTML da keladi va JS ga bog'liq emas. */
   providers: string[];
-  /** A/B guruhi (8-qaror), SERVERDA cookie'dan o'qiladi.
-   *
-   *  `b` — viloyat ro'yxatdan o'tishning o'zida so'raladi. Server
-   *  komponentida o'qiladi, mijozda emas: aks holda server `a`, mijoz
-   *  `b` chizib hidratsiya mos kelmasligi mumkin edi.
-   *
-   *  Standart `a` — guruh bo'lmasa xatti-harakat o'zgarmaydi. */
-  geoVariant?: Variant;
+  /** Turnstile sayt kaliti (9-qaror). Bo'sh — tekshiruv sozlanmagan. */
+  turnstileSiteKey?: string;
 }) {
   const locale = useLocale();
   const router = useRouter();
@@ -87,23 +84,14 @@ export function AuthForm({
   const next = safeNext(params.get("next"));
   const { reload } = useSession();
   const [error, setError] = useState("");
+  //: Bloklanish qolgan soniyalar (`Retry-After`). Nolga tushgach qayta
+  //: urinish mumkin (15-qaror) — server ham, tugma ham shuni kutadi.
+  const [retryAfter, setRetryAfter] = useState(0);
   const [busy, setBusy] = useState(false);
   const [visible, setVisible] = useState(false);
-  // Yozayotgandagi tekshiruv faqat ro'yxatdan o'tishda kerak: kirishda
-  // nom band ekanini aytish mavjud hisoblarni sanab chiqish yo'li bo'lardi.
-  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const [pass2, setPass2] = useState("");
-  //: Mamlakat — ro'yxatning 1-bosqichida so'raladi (qaror 2). Standart
-  //: qiymat TILDAN kelib chiqadi: qattiq `UZ` qo'yilsa qozoq yoki qirg'iz
-  //: foydalanuvchisi o'z mamlakatini emas, O'zbekistonni ko'rib qolardi.
-  //: Til mamlakatni aniqlamasa (masalan `en`, `zh`, `es`) `UZ` qoladi —
-  //: auditoriyaning asosiy qismi shu yerdan.
-  const [country, setCountry] = useState(() => DEFAULT_COUNTRY[locale] ?? "UZ");
-  //: A/B `b` variantida viloyat shu formada so'raladi (8-qaror).
-  //: `a` variantida bo'sh qoladi va 2-qadamda to'ldiriladi.
-  const [region, setRegion] = useState("");
   //: Shartlar va maxfiylik — MAJBURIY (qaror 13). Ataylab `false` dan
   //: boshlanadi: oldindan belgilangan katak rozilik hisoblanmaydi.
   const [terms, setTerms] = useState(false);
@@ -112,51 +100,26 @@ export function AuthForm({
   //: «Meni eslab qol» — kirishda (qaror 7). Standart `false`: umumiy
   //: kompyuterda hisob ochiq qolmasligi kerak.
   const [remember, setRemember] = useState(false);
+  //: Turnstile tokeni (9-qaror). Bo'sh bo'lishi MUMKIN: tekshiruv
+  //: sozlanmagan yoki skript yuklanmagan — qarorni server beradi.
+  const [captcha, setCaptcha] = useState("");
+  //: Server maydon xatosi (14-qaror). `email` — band pochta, ya'ni
+  //: «kirish YOKI tiklash» yo'lini ko'rsatish kerak. Maydon nomi
+  //: bo'yicha ajratiladi: DRF maydon xatosida `code` har doim
+  //: `"invalid"` bo'ladi va uni sabab bilan chalkashtirib bo'lmaydi.
+  const [blocked, setBlocked] = useState<{ kind: "email" } | null>(null);
   //: «Forma boshlandi» hodisasi BIR MARTA yuboriladi (qaror 17). Har
   //: fokusda yuborilsa funnel shishib ketardi va raqam ma'nosini
   //: yo'qotardi.
   const started = useRef(false);
-  // Natija QAYSI nom uchun kelgani bilan saqlanadi: «tekshirilmoqda»
-  // holati shundan hosil qilinadi va uni alohida yozib qo'yish shart
-  // emas — effekt ichida holat o'rnatish qayta-qayta render chaqiradi.
-  const [nameCheck, setNameCheck] = useState<{ for: string; status: FieldStatus }>();
 
-  // Har bosilgan tugmaga so'rov yuborilmaydi: odam yozishdan
-  // to'xtaganda bittasi ketadi va oldingisi bekor qilinadi — aks holda
-  // «ali» yozgan odam uchun to'rtta javob qaytardi va ular tartibsiz
-  // kelib, oxirgisi eskisi bo'lib qolishi mumkin edi.
+  //: Bloklanish taymeri. Har soniyada bitta qayta render, lekin faqat
+  //: bloklangan paytda — `retryAfter` nolga tushgach effekt to'xtaydi.
   useEffect(() => {
-    if (mode !== "register" || username.length < 3) return;
-    const stop = new AbortController();
-    const timer = setTimeout(() => {
-      getJson<{ available: boolean; reason: string }>(
-        `/auth/username-check/?u=${encodeURIComponent(username)}`,
-        { signal: stop.signal },
-      )
-        .then((data) =>
-          setNameCheck({
-            for: username,
-            status: data.available
-              ? { kind: "ok", text: t(locale, "auth.usernameFree") }
-              : { kind: "bad", text: data.reason },
-          }),
-        )
-        // Tarmoq yiqilsa jim qolamiz: server baribir tekshiradi va
-        // yolg'on «band» yozuvi odamni bekorga qaytarardi.
-        .catch(() => undefined);
-    }, 400);
-    return () => {
-      clearTimeout(timer);
-      stop.abort();
-    };
-  }, [mode, username, locale]);
-
-  const nameStatus: FieldStatus | undefined =
-    mode !== "register" || username.length < 3
-      ? undefined
-      : nameCheck?.for === username
-        ? nameCheck.status
-        : { kind: "busy", text: t(locale, "auth.checking") };
+    if (retryAfter <= 0) return;
+    const timer = setTimeout(() => setRetryAfter((s) => s - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [retryAfter]);
 
   const emailStatus: FieldStatus | undefined =
     mode === "register" && email.length > 3 && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)
@@ -194,22 +157,31 @@ export function AuthForm({
     setBusy(true);
     try {
       if (mode === "register") {
+        // 1-qadam faqat TO'RT maydon (3-qaror): email, parol, tasdiq,
+        // rozilik. Foydalanuvchi nomi, ism va joy 2-qadamda
+        // (`/qoshimcha-malumot`) so'raladi — server ularni ixtiyoriy
+        // deb biladi va nom berilmasa vaqtinchalik nom qo'yadi.
         await postJson("/auth/register/", {
-          ...payload,
-          country,
-          // `b` variantida viloyat shu yerda keladi, `a` da bo'sh —
-          // maydon ixtiyoriy, ya'ni ikkalasi ham to'g'ri.
-          region,
+          email: payload.email,
+          password: payload.password,
           terms_accepted: terms,
           marketing_opt_in: marketing,
+          turnstile_token: captcha,
         });
         // Register sessiya ochmaydi (ADR-0008) — darhol login qilamiz.
+        // Aynan SHU email bilan, ya'ni yangi `identifier` maydoni
+        // orqali: nom hali tanlanmagan.
         await postJson("/auth/login/", {
-          username: payload.username,
+          identifier: payload.email,
           password: payload.password,
         });
       } else {
-        await postJson("/auth/login/", { ...payload, remember });
+        // `identifier` — foydalanuvchi nomi YOKI email (4-qaror).
+        await postJson("/auth/login/", {
+          identifier: payload.identifier,
+          password: payload.password,
+          remember,
+        });
       }
       // Sessiyani darhol yangilaymiz: header client komponenti bo'lgani
       // uchun `router.push` uni qayta mount qilmaydi va kirgandan keyin
@@ -217,9 +189,12 @@ export function AuthForm({
       await reload();
       // Muvaffaqiyat hodisasi `router.push` dan OLDIN yuboriladi:
       // `keepalive` tufayli sahifa almashgach ham yetib boradi.
+      //
+      // `country` ENDI YUBORILMAYDI: mamlakat 1-qadamda so'ralmaydi
+      // (3-qaror), ya'ni hodisada u har doim `undefined` bo'lardi —
+      // bo'sh o'lchov qatorini to'plashning ma'nosi yo'q.
       track(mode === "register" ? "auth.register_done" : "auth.login_done", {
         mode,
-        country: mode === "register" ? country : undefined,
       });
       // Ro'yxatdan keyin 2-qadam (qaror 3): joy va maktab ixtiyoriy
       // so'raladi. `?welcome=1` o'sha yerga o'tadi va 2-qadamdan keyin
@@ -243,6 +218,19 @@ export function AuthForm({
         mode,
         reason: err instanceof ApiError ? err.code : "network",
       });
+      // Bloklanish (15-qaror): server qancha kutishni AYTADI
+      // (`Retry-After`), ya'ni sahifa taxmin qilmaydi. Sarlavhani
+      // o'qib bo'lmasa (`Retry-After` yo'q) matn umumiy qoladi —
+      // «biroz kuting» — va taymer ko'rinmaydi.
+      const wait = err instanceof ApiError ? err.retryAfter : 0;
+      setRetryAfter(wait);
+      // Band pochta — server matni o'rniga YO'NALTIRUVCHI xabar
+      // (14-qaror). Matn tarjima qilinmagan bo'lishi ham mumkin, shuning
+      // uchun tayyor kalitdan olamiz; yo'naltiruvchi satr esa pastda
+      // alohida chiziladi va u `role="alert"` ni takrorlamaydi.
+      const takenEmail =
+        mode === "register" && err instanceof ApiError && err.field("email") !== null;
+      setBlocked(takenEmail ? { kind: "email" } : null);
       setError(
         err instanceof ApiError
           ? errorText(locale, err.code, err.text)
@@ -293,11 +281,14 @@ export function AuthForm({
         className="flex flex-col gap-4"
       >
         {/* HISOB — kirish uchun majburiy qism, eng avval keladi. Standart
-            naqsh: odam tanish maydonlardan boshlaydi (email + parol), keyin
-            profil. Ilgari foydalanuvchi nomi birinchi edi, ya'ni odam
-            tanish qismga yetishdan oldin qo'shimcha qaror qabul qilardi.
-            Kirishda esa identifikator — foydalanuvchi nomi, shuning uchun
-            u yerda tartib o'zgarmaydi. */}
+            naqsh: odam tanish maydonlardan boshlaydi (identifikator +
+            parol), keyin profil.
+
+            Kirishda maydon BITTA (4-qaror): foydalanuvchi nomi ham,
+            email ham qabul qilinadi. Ilgari faqat nom edi va emailini
+            yoddan bilgan odam «Login yoki parol noto'g'ri» olardi —
+            holbuki u to'g'ri ma'lumot kiritgan edi. Serverda ikkala
+            ustun bo'yicha qidiriladi. */}
         {mode === "register" ? (
           <Field
             label={t(locale, "auth.email")}
@@ -314,13 +305,14 @@ export function AuthForm({
           />
         ) : (
           <Field
-            label={t(locale, "auth.username")}
-            name="username"
+            label={t(locale, "auth.usernameOrEmail")}
+            name="identifier"
             required
             autoFocus
+            // Parol menejeri ham nom, ham email saqlashi mumkin —
+            // `username` ikkalasini qamrab oladi.
             autoComplete="username"
-            value={undefined}
-            status={nameStatus}
+            hint={t(locale, "auth.identifierHint")}
           />
         )}
         <Field
@@ -351,64 +343,19 @@ export function AuthForm({
           />
         )}
 
-        {mode === "register" && (
-          <>
-            {/* Guruh chegarasi — hisob va profil ajralib tursin. */}
-            <hr className="border-t rw-divider" />
-            {/* PROFIL. Foydalanuvchi nomi majburiy, qolgani ixtiyoriy. */}
-            <Field
-              label={t(locale, "auth.username")}
-              name="username"
-              required
-              autoComplete="username"
-              minLength={3}
-              maxLength={30}
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              status={nameStatus}
-              hint={t(locale, "auth.usernameHint")}
-            />
-            <Field
-              label={t(locale, "auth.displayName")}
-              name="display_name"
-              autoComplete="name"
-              maxLength={100}
-              hint={t(locale, "auth.displayNameHint")}
-            />
-            {/* Mamlakat — bosqichli yig'ishning birinchi qadami (qaror 2):
-                bitta tanlov, lekin butun statistika shu bo'yicha bo'linadi.
-                Qidiruvli: 249 variantni qo'lda aylantirish noqulay. */}
-            <CountrySelect
-              label={t(locale, "auth.country")}
-              value={country}
-              onChange={(code) => {
-                setCountry(code);
-                // Viloyat KODI faqat O'zbekiston uchun ma'noli: boshqa
-                // mamlakatlarda joy erkin matn bo'ladi (ADR-0017).
-                if (code !== "UZ") setRegion("");
-              }}
-            />
-            {geoVariant === "b" && country === "UZ" && (
-              /* A/B `b` varianti (8-qaror): viloyat DARHOL so'raladi.
-                 Nazorat guruhida esa bu 2-qadamda so'raladi — farq shunda,
-                 ya'ni «erta so'rash odamni qaytarib yuborayaptimi» degan
-                 savolga javob shu ikki guruhni taqqoslab topiladi. */
-              <SelectField
-                label={t(locale, "settings.region")}
-                name="region"
-                value={region}
-                onChange={(e) => setRegion(e.target.value)}
-              >
-                <option value="">—</option>
-                {REGION_CODES.map((code) => (
-                  <option key={code} value={code}>
-                    {regionName(code, locale)}
-                  </option>
-                ))}
-              </SelectField>
-            )}
-          </>
-        )}
+        {/* PROFIL maydonlari (foydalanuvchi nomi, ism, mamlakat, viloyat)
+            bu yerdan 2-QADAMGA ko'chirildi (3-qaror). Sabab o'lchovda:
+            forma to'qqizta maydon edi, raqobatchilarda esa o'rtacha
+            3–4 ta — ya'ni odam «ro'yxatdan o'tish» ni bosishdan oldin
+            to'qqiz qaror qabul qilishi kerak edi.
+            Endi 1-qadamda faqat hisob ochish uchun SHART bo'lgani bor:
+            email, parol, tasdiq va rozilik. Qolgani OnboardingForm da.
+
+            Bu yerda ilgari `geoVariant === "b"` shoxi ham bor edi —
+            viloyatni erta so'rash tajribasi. U 2-qadamga ko'chgan
+            maydonlar bilan birga ketdi: endi ikkala guruh ham viloyatni
+            bir joyda, bir xil vaqtda so'raydi, ya'ni tajriba o'lchaydigan
+            narsa qolmadi va u `OnboardingForm` da saqlanadi. */}
 
         {mode === "login" && (
           /* Bitta qatorda: chapda «eslab qol», o'ngda «parolni tiklash» —
@@ -423,7 +370,7 @@ export function AuthForm({
               {t(locale, "auth.remember")}
             </Checkbox>
             <Link
-              href="/parolni-tiklash"
+              href={"/kirish?tab=parolni-tiklash" as Route}
               className="text-theme-sm rw-accent-ink hover:underline"
             >
               {t(locale, "auth.forgot")}
@@ -455,16 +402,74 @@ export function AuthForm({
         )}
 
         {error && (
+          // `aria-live` TAQDIM ETILMAYDI: `role="alert"` allaqachon
+          // «assertive» rejimda e'lon qiladi va `aria-live` ni
+          // takrorlash ekran o'quvchini ikki marta gapirtirardi.
           <p
             role="alert"
             className="rw-radius-sm rw-bad-soft px-3 py-2 text-theme-sm rw-bad-ink"
           >
             {error}
+            {retryAfter > 0 && (
+              // Kutish soniyasi (15-qaror). Matn serverdan kelgan
+              // `Retry-After` dan hosil qilinadi, ya'ni taxmin emas.
+              // Raqam taymer bilan yangilanadi va u `error` satrining
+              // ICHIDA emas, alohida tugun — aks holda butun xato
+              // qayta e'lon qilinar va ekran o'quvchi uni har soniyada
+              // o'qib chiqardi.
+              <>
+                {" "}
+                {t(locale, "auth.throttledWait").replace(
+                  "{seconds}",
+                  String(retryAfter),
+                )}
+              </>
+            )}
           </p>
+        )}
+
+        {/* Yo'naltiruvchi xabar (14-qaror): «bu email band» — boshi berk
+            ko'cha emas, IKKI yo'l. Matnni maydon nomi bo'yicha
+            ajratamiz, chunki DRF maydon xatosida `code` har doim
+            `"invalid"` bo'ladi (`ApiError.field` izohiga qarang).
+
+            Ro'yxatdan o'tishda: «Kirish» + «Parolni tiklash».
+            Tiklashda esa email topilmasa ham xuddi shu ikki yo'l —
+            sabab bir xil, ya'ni matn bitta kalitdan keladi. */}
+        {blocked?.kind === "email" && (
+          <p className="-mt-2 text-theme-sm rw-dim">
+            {t(locale, "auth.emailTaken")}{" "}
+            <Link
+              href={"/kirish?tab=kirish" as Route}
+              className="rw-accent-ink underline rw-focus-ring"
+            >
+              {t(locale, "auth.tabLogin")}
+            </Link>
+            {" · "}
+            <Link
+              href={"/kirish?tab=parolni-tiklash" as Route}
+              className="rw-accent-ink underline rw-focus-ring"
+            >
+              {t(locale, "auth.tabReset")}
+            </Link>
+          </p>
+        )}
+
+        {/* Turnstile FAQAT ro'yxatdan o'tishda (9-qaror): hisob ochish
+            botlar uchun eng qulay nishon, kirish esa allaqachon parol
+            va throttle bilan himoyalangan. Ko'rinmas rejim, ya'ni odam
+            odatda hech narsa ko'rmaydi; tugma USTIDA turadi va o'lchami
+            nolga tushsa ham joy egallamaydi. */}
+        {mode === "register" && (
+          <Turnstile siteKey={turnstileSiteKey} onToken={setCaptcha} />
         )}
 
         <Button
           type="submit"
+          // Bloklangan paytda tugma O'CHIRILADI: server baribir rad
+          // etadi, ya'ni bosish faqat ortiqcha 429 yasardi va odam
+          // «ishlamayapti» degan taassurot olardi.
+          disabled={retryAfter > 0}
           busy={busy}
           busyLabel={t(locale, mode === "login" ? "auth.loggingIn" : "auth.registering")}
         >
@@ -491,19 +496,20 @@ export function AuthForm({
             </span>
             <span className="h-px flex-1 border-t rw-divider" />
           </div>
-          {/* Ustma-ust uchta to'liq kenglikdagi tugma ~150px vertikal joy
-              olardi va forma ekrandan pastga tushib ketardi. Ikkitasi
-              yonma-yon, Telegram esa ostida — shunda ~96px bo'ladi.
-              Brend nomi tarjima qilinmaydi, shuning uchun matn shu yerda;
-              to'liq nomi (`Google orqali davom etish`) `aria-label` da.
+          {/* Tartib `PROVIDER_ORDER` dan (10-qaror): Telegram birinchi
+              va TO'LIQ kenglikda, qolganlari ostida yonma-yon.
+              Uchtasi ham ustma-ust ~150px vertikal joy olardi va forma
+              ekrandan pastga tushib ketardi; ikkitasi yonma-yon esa
+              ~96px — shuning uchun aynan shu taqsimot.
 
-              Telegram ham endi shu naqshda: ilgari u Telegram'ning o'z
-              iframe vidjetini chizardi (o'lchamini o'zi belgilardi), endi
-              qolganlar kabi oddiy havola — oqim OIDC ga o'tdi. */}
-          <div className="grid grid-cols-2 gap-2">
-            {providers
-              .filter((p): p is Provider => p !== "telegram" && p in PROVIDER_LABEL)
-              .map((p) => (
+              Brend nomi tarjima qilinmaydi, shuning uchun matn shu
+              yerda; to'liq nomi (`Google orqali davom etish`)
+              `aria-label` da. */}
+          <div className="flex flex-col gap-2">
+            {PROVIDER_ORDER.filter((p) =>
+              providers.includes(p),
+            ).map((p) =>
+              p === "telegram" ? (
                 <a
                   key={p}
                   // `next` provayderga ham uzatiladi: server uni sessiyada
@@ -514,23 +520,29 @@ export function AuthForm({
                   aria-label={t(locale, PROVIDER_LABEL[p])}
                   className={`flex h-11 items-center justify-center gap-2 rw-radius-sm text-theme-sm font-medium transition rw-focus-ring hover:brightness-95 ${BRAND[p]}`}
                 >
+                  <TelegramMark />
+                  <span className="truncate">{PROVIDER_NAME[p]}</span>
+                </a>
+              ) : null,
+            )}
+            <div className="grid grid-cols-2 gap-2">
+              {PROVIDER_ORDER.filter(
+                (p) => p !== "telegram" && providers.includes(p),
+              ).map((p) => (
+                <a
+                  key={p}
+                  href={`/api/v1/auth/${p}/start/${
+                    next ? `?next=${encodeURIComponent(next)}` : ""
+                  }`}
+                  aria-label={t(locale, PROVIDER_LABEL[p])}
+                  className={`flex h-11 items-center justify-center gap-2 rw-radius-sm text-theme-sm font-medium transition rw-focus-ring hover:brightness-95 ${BRAND[p]}`}
+                >
                   {p === "google" ? <GoogleMark /> : <GithubMark />}
-                  <span className="truncate">{p === "google" ? "Google" : "GitHub"}</span>
+                  <span className="truncate">{PROVIDER_NAME[p]}</span>
                 </a>
               ))}
+            </div>
           </div>
-          {providers.includes("telegram") && (
-            <a
-              href={`/api/v1/auth/telegram/start/${
-                next ? `?next=${encodeURIComponent(next)}` : ""
-              }`}
-              aria-label={t(locale, PROVIDER_LABEL.telegram)}
-              className={`flex h-11 items-center justify-center gap-2 rw-radius-sm text-theme-sm font-medium transition rw-focus-ring hover:brightness-95 ${BRAND.telegram}`}
-            >
-              <TelegramMark />
-              <span className="truncate">Telegram</span>
-            </a>
-          )}
           {/* Rozilik matni: OAuth orqali hisob ochilganda `terms_accepted_at`
               shu matnga asoslanib yoziladi (`record_social_consent`).
               Matnsiz yozish huquqiy jihatdan asossiz bo'lardi. */}
@@ -538,10 +550,18 @@ export function AuthForm({
         </>
       )}
 
+      {/* Footer endi BO'LIM tugmasi bilan takrorlanmaydi: uchala forma
+          bitta kartada va almashish yuqoridagi bo'limlarda (1-qaror).
+          Ya'ni bu satr faqat SHU formasiz qolgan yo'lni ko'rsatadi —
+          kirishda «hisobingiz yo'qmi?», ro'yxatda esa aksi. */}
       <p className="text-center text-theme-sm rw-dim">
         {t(locale, mode === "login" ? "auth.noAccount" : "auth.hasAccount")}{" "}
         <Link
-          href={mode === "login" ? "/register" : "/login"}
+          href={
+            (mode === "login"
+              ? "/kirish?tab=royxat"
+              : "/kirish?tab=kirish") as Route
+          }
           // Doimiy tagchiziq: havola MATN ICHIDA turadi, ya'ni faqat rang
           // bilan ajralishi WCAG 1.4.1 ni buzardi (yuqoridagi rozilik
           // havolalari bilan bir xil sabab).
@@ -687,7 +707,10 @@ function LinkAccount({ provider }: { provider: string }) {
         {t(locale, "auth.linkCta")}
       </Button>
       <p className="text-center text-theme-sm">
-        <Link href="/parolni-tiklash" className="rw-accent-ink hover:underline">
+        <Link
+          href={"/kirish?tab=parolni-tiklash" as Route}
+          className="rw-accent-ink hover:underline"
+        >
           {t(locale, "auth.forgot")}
         </Link>
       </p>

@@ -33,7 +33,7 @@ class TestEmailMajburiy:
     def test_emailsiz_qabul_qilinmaydi(self) -> None:
         r = APIClient().post(
             reverse("register"),
-            {"username": "yangi", "password": "Parol!12345"},
+            {"identifier": "yangi", "password": "Parol!12345"},
             format="json",
         )
 

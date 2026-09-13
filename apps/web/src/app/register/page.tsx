@@ -1,48 +1,26 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
+import type { Route } from "next";
 import { redirect } from "next/navigation";
-import { Suspense } from "react";
 
-import { AuthForm } from "@/components/AuthForm";
-import { AuthFormSkeleton } from "@/components/AuthFormSkeleton";
-import { AuthLayout } from "@/components/AuthLayout";
-import { Card } from "@/components/ui/Card";
-import { fetchProviders } from "@/lib/api";
-import { EXP_COOKIE, GEO_EXPERIMENT, parseVariants } from "@/lib/experiments";
-import { isSignedIn } from "@/lib/server-session";
 import { getLocale } from "@/i18n/server";
-import { t } from "@/i18n/messages";
 
-export async function generateMetadata(): Promise<Metadata> {
-  return { title: t(await getLocale(), "auth.register") };
+/** Ro'yxatdan o'tish endi bitta sahifaning bo'limi (1-qaror):
+ *  `/kirish?tab=royxat`. Sabab `/login` bilan bir xil — havola
+ *  saqlanadi, `?next=` esa yo'qolmaydi (307, 301 emas). */
+export default async function RegisterPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const query = new URLSearchParams({ tab: "royxat" });
+  const params = await searchParams;
+  const next = params.next;
+  if (typeof next === "string" && next) query.set("next", next);
+  redirect(`/kirish?${query}` as Route);
 }
 
-export default async function RegisterPage() {
-  // Kirgan odamga bo'sh forma ko'rsatishning ma'nosi yo'q.
-  if (await isSignedIn()) redirect("/");
-
-  const [locale, auth] = await Promise.all([getLocale(), fetchProviders()]);
-  // A/B guruhi SERVERDA o'qiladi (8-qaror). Mijozda o'qilsa server `a`,
-  // mijoz `b` chizib hidratsiya mos kelmasligi mumkin edi — viloyat
-  // maydoni paydo bo'lib, sahifa sakrardi.
-  const geoVariant = parseVariants(
-    (await cookies()).get(EXP_COOKIE)?.value,
-    GEO_EXPERIMENT,
-  );
-  return (
-    <AuthLayout>
-      {/* Sarlavha `auth.register` EMAS: u tugma matni bilan bir xil
-          bo'lardi ("Ro'yxatdan o'tish" ikki marta). Sarlavha endi nima
-          yaratilayotganini aytadi, tugma esa amalni. */}
-      <Card title={t(locale, "auth.createAccount")}>
-        <Suspense fallback={<AuthFormSkeleton />}>
-          <AuthForm
-            mode="register"
-            providers={auth.providers}
-            geoVariant={geoVariant}
-          />
-        </Suspense>
-      </Card>
-    </AuthLayout>
-  );
+/** Ishlatilmaydi — `redirect` oldin bajariladi. */
+export async function generateMetadata(): Promise<Metadata> {
+  await getLocale();
+  return { title: "RankWant" };
 }

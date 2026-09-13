@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Route } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
@@ -27,12 +27,12 @@ export default async function OnboardingPage() {
   // `?next=` bilan: kirgandan keyin odam AYNAN shu yerga qaytishi kerak,
   // aks holda 2-qadamni tugatib bosh sahifaga tushardi (qaror 1).
   if (!(await isSignedIn()))
-    redirect(`/login?next=${encodeURIComponent("/qoshimcha-malumot")}`);
+    redirect(`/kirish?tab=kirish&next=${encodeURIComponent("/qoshimcha-malumot")}` as Route);
 
   const locale = await getLocale();
   const me = await getWithSession<Me>("/me/").catch(() => null);
   // Sessiya cookie'i bor, lekin hisob o'chirilgan/o'chirilgan holat.
-  if (!me) redirect(`/login?next=${encodeURIComponent("/qoshimcha-malumot")}`);
+  if (!me) redirect(`/kirish?tab=kirish&next=${encodeURIComponent("/qoshimcha-malumot")}` as Route);
 
   return (
     <div className="mx-auto max-w-md py-10">

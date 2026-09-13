@@ -983,6 +983,23 @@ export type ContestRow = {
   virtual: boolean;
 };
 
+/** `Retry-After` sarlavhasini soniyaga aylantiradi (15-qaror).
+ *
+ *  Sarlavha ikki shaklda bo'ladi: soniya (`"42"`) yoki HTTP-sana.
+ *  DRF soniya qo'yadi, lekin oraliq proksi ham qo'shishi mumkin — shu
+ *  sababli ikkalasi ham o'qiladi. O'qib bo'lmasa `0`: matn umumiy
+ *  qoladi va taymer ko'rsatilmaydi, ya'ni noto'g'ri raqam va'da
+ *  qilinmaydi. */
+function retryAfterOf(res: Response): number {
+  const raw = res.headers.get("Retry-After");
+  if (!raw) return 0;
+  const seconds = Number(raw);
+  if (Number.isFinite(seconds) && seconds > 0) return Math.ceil(seconds);
+  const at = Date.parse(raw);
+  if (Number.isNaN(at)) return 0;
+  return Math.max(0, Math.ceil((at - Date.now()) / 1000));
+}
+
 class ApiError extends Error {
   constructor(
     readonly status: number,
@@ -990,6 +1007,14 @@ class ApiError extends Error {
     message: string,
     /** Maydon xatolari — `{"email": ["Bu email band"]}`. */
     readonly details: Record<string, unknown> = {},
+    /** 429 da server aytgan kutish soniyalari (15-qaror).
+     *
+     *  `Retry-After` sarlavhasidan: DRF uni o'zi qo'yadi va qancha
+     *  kutishni ANIQ aytadi. Sarlavha bo'lmasa `0` — matn umumiy
+     *  qoladi va taymer ko'rinmaydi. O'lchandi: ilgari bu qiymat
+     *  umuman o'qilmasdi va odam «juda tez-tez» degan xabarni ko'rib,
+     *  qancha kutishni bilmasdan qayta bosardi. */
+    readonly retryAfter: number = 0,
   ) {
     super(message);
   }
@@ -1008,6 +1033,22 @@ class ApiError extends Error {
     if (typeof first === "string") return first;
     return this.message;
   }
+
+  /**
+   * Bitta maydonning xatosi, yo'q bo'lsa `null`.
+   *
+   * NEGA KERAK (14-qaror): DRF maydon xatolarida `code` HAR DOIM
+   * `"invalid"` bo'ladi — `{"error":{"code":"invalid","details":{"email":
+   * ["Bu email band"]}}}`. Ya'ni «band email» ni kod bo'yicha ajratib
+   * bo'lmaydi; yagona ishonchli belgi — `details` kaliti. `text` esa
+   * BIRINCHI maydonni oladi, tartib esa DRF'ga bog'liq.
+   */
+  field(name: string): string | null {
+    const value = this.details[name];
+    if (Array.isArray(value) && typeof value[0] === "string") return value[0];
+    if (typeof value === "string") return value;
+    return null;
+  }
 }
 
 async function get<T>(path: string, revalidate = 30): Promise<T> {
@@ -1025,7 +1066,7 @@ async function get<T>(path: string, revalidate = 30): Promise<T> {
     } catch {
       /* javob JSON emas */
     }
-    throw new ApiError(res.status, code, message);
+    throw new ApiError(res.status, code, message, {}, retryAfterOf(res));
   }
   return (await res.json()) as T;
 }
@@ -1061,6 +1102,7 @@ async function send<T>(method: string, path: string, body?: unknown): Promise<T>
       parsed?.error?.code ?? "error",
       parsed?.error?.message ?? res.statusText,
       parsed?.error?.details ?? {},
+      retryAfterOf(res),
     );
   }
   return parsed as T;
@@ -1103,12 +1145,19 @@ export async function getJson<T>(
       body?.error?.code ?? "error",
       body?.error?.message ?? res.statusText,
       body?.error?.details ?? {},
+      retryAfterOf(res),
     );
   }
   return (await res.json()) as T;
 }
 
-export type AuthProviders = { providers: string[]; telegram_bot: string };
+export type AuthProviders = {
+  providers: string[];
+  telegram_bot: string;
+  /** Turnstile SAYT kaliti (9-qaror). Bo'sh satr — sozlanmagan, ya'ni
+   *  frontend vidjetni yuklamaydi va server tekshiruvi ham o'chiq. */
+  turnstile_site_key: string;
+};
 
 /** Sozlangan ijtimoiy provayderlar — SERVER komponentidan chaqiriladi.
  *
@@ -1122,7 +1171,7 @@ export async function fetchProviders(): Promise<AuthProviders> {
   try {
     return await getJson<AuthProviders>("/auth/providers/");
   } catch {
-    return { providers: [], telegram_bot: "" };
+    return { providers: [], telegram_bot: "", turnstile_site_key: "" };
   }
 }
 

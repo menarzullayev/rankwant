@@ -30,7 +30,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from contests.models import Contest
-from core import account, handles, oauth, recovery, verification
+from core import account, handles, oauth, recovery, usernames, verification
 from core.cache import cache_get, cache_set
 from core.models import (
     AnalyticsEvent,
@@ -417,12 +417,20 @@ class LoginView(APIView):
     def post(self, request: Request) -> Response:
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        # Qiymat foydalanuvchi nomi YOKI email bo'lishi mumkin (4-qaror):
+        # qaysi ustun ekanini PARSING qilmaymiz — backend ikkalasini bir
+        # so'rovda tekshiradi. `@` belgisiga qarab shoxlash xato
+        # bo'lardi: email'da `@` bo'lmasligi ham mumkin va nomda ham
+        # uchraydi (masalan `ali@2007`).
         user = django_authenticate(
             request,
-            username=serializer.validated_data["username"],
+            username=serializer.validated_data["identifier"],
             password=serializer.validated_data["password"],
         )
         if user is None:
+            # Matn ikkala holatda BIR XIL: «bunday hisob yo'q» va «parol
+            # noto'g'ri» ni ajratib ko'rsatish mavjud nomlarni sanab
+            # chiqish yo'li bo'lardi (ADR-0015).
             return Response(
                 {
                     "error": {
@@ -513,6 +521,32 @@ class MeView(generics.RetrieveUpdateDestroyAPIView[User]):
         return self.request.user
 
     def perform_update(self, serializer: Any) -> None:
+        # Foydalanuvchi nomi -- ALOHIDA yo'l. `serializer.save()` uni
+        # to'g'ridan-to'g'ri yozardi, natijada:
+        #   1) bepul almashtirish imkoniyati sarflanmasdan nom o'zgarardi
+        #      (`username_changed_at` yangilanmasdan qolardi), ya'ni
+        #      cheklov umuman ishlamasdi;
+        #   2) `UsernameHistory` yozilmasdi -- eski profil havolasi
+        #      yo'naltirmasdi va `usernames.reserved` eski nomni
+        #      90 kun band qilmasdi.
+        # Endi ikki holat ajratiladi: VAQTINCHALIK nom (ro'yxatdan
+        # o'tishning 2-qadami, `u` bilan boshlanadi) -- `claim_temp`;
+        # qolgani -- `change` (narx va 90 kunlik bandlik bilan).
+        assert isinstance(self.request.user, User)
+        wanted = serializer.validated_data.get("username")
+        if wanted and wanted != self.request.user.username:
+            try:
+                if usernames.is_temp_username(self.request.user.username):
+                    usernames.claim_temp(self.request.user, wanted)
+                else:
+                    usernames.change(self.request.user, wanted)
+            except usernames.ChangeError as exc:
+                # `ChangeError.code` API shartnomasiga o'giriladi:
+                # DRF xatosi maydonga bog'lanadi va frontend uni
+                # maydon tagida ko'rsatadi.
+                raise exceptions.ValidationError({"username": str(exc)}) from exc
+            serializer.validated_data.pop("username", None)
+
         user = serializer.save()
         # Profil to'ldirilgan bo'lsa — bir martalik quest (ADR-0002)
         from qvant.quests import on_profile_completed, profile_is_complete
@@ -902,6 +936,12 @@ class AuthProvidersView(APIView):
                 "providers": oauth.configured(),
                 # Telegram widgetiga bot nomi kerak — u sir emas.
                 "telegram_bot": settings.TELEGRAM_BOT_USERNAME,
+                # Turnstile SAYT kaliti (9-qaror). Yashirin kalit hech
+                # qachon bu yerga tushmaydi; sayt kaliti esa ochiq
+                # bo'lishi shart — u brauzerga kerak. Bo'sh satr:
+                # «sozlanmagan», ya'ni frontend vidjetni umuman
+                # yuklamaydi va tekshiruv o'chiq qoladi.
+                "turnstile_site_key": settings.TURNSTILE_SITE_KEY,
             }
         )
 

@@ -10,8 +10,9 @@ from django.db import IntegrityError
 from django.utils import timezone
 from rest_framework import serializers
 
-from core import handles, usernames
+from core import handles, turnstile, usernames
 from core.models import PRIVACY_FIELDS, ApiToken, School, User, UserSession
+from core.throttling import TrustedClientIdent
 from profiles.catalog import UZ_DISTRICTS, UZ_REGIONS
 from profiles.titles import TitleField
 
@@ -215,7 +216,6 @@ class MeSerializer(serializers.ModelSerializer[User]):
         read_only_fields = [
             "is_staff",
             "id",
-            "username",
             # Pochta faqat tasdiqlangan almashtirish orqali (`me/email/`),
             # avatar esa faqat yuklash orqali: ixtiyoriy tashqi manzil har
             # profil ko'rilishini uchinchi tomonga bildirardi.
@@ -233,6 +233,35 @@ class MeSerializer(serializers.ModelSerializer[User]):
         value = value.upper()
         if value and not re.fullmatch(r"[A-Z]{2}", value):
             raise serializers.ValidationError("Mamlakat kodi noto'g'ri")
+        return value
+
+    def validate_username(self, value: str) -> str:
+        """Foydalanuvchi nomini AYNAN registrdagi qoidalar bilan tekshiradi.
+
+        Sabab: nom endi ro'yxatdan o'tishning 2-qadamida ham
+        o'rnatiladi (3-qaror), ya'ni bu yerga ham o'sha tekshiruv
+        kerak. Nusxa ko'chirilsa ikki yo'l vaqt o'tib bir-biridan
+        uzoqlashardi — shuning uchun mantiq `handles`/`usernames`
+        modullaridan chaqiriladi, `RegisterSerializer` esa xuddi shu
+        tartibni ishlatadi.
+
+        DIQQAT: `handles.validate` qiymat qaytarmaydi — mos kelmasa
+        `ValidationError` TASHAYDI. Bu DRF uchun to'g'ri shakl: u
+        xatoni maydonga bog'lab, 400 qaytaradi.
+
+        O'zgarishsiz yuborilgan nom qabul qilinadi: sozlamalar formasi
+        butun obyektni PATCH qiladi va nomni tegmagan bo'lsa ham
+        yuboradi — «band» deb qaytarish odamni bekorga to'xtatardi.
+        """
+        if self.instance is not None and value == self.instance.username:
+            return value
+        handles.validate(value)
+        if User.objects.filter(username__iexact=value).exists():
+            raise serializers.ValidationError("Bu username band")
+        if User.objects.filter(username_skeleton=handles.skeleton(value)).exists():
+            raise serializers.ValidationError("Bu username mavjud nomga juda o'xshash")
+        if usernames.reserved(value):
+            raise serializers.ValidationError("Bu username ajratilgan")
         return value
 
     def validate_birth_date(self, value: date | None) -> date | None:
@@ -339,6 +368,12 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
     #: Marketing xatlari — IXTIYORIY va ALOHIDA (GDPR 7-modda: shartlar
     #: roziligi bilan birlashtirib bo'lmaydi). Standart — `False`.
     marketing_opt_in = serializers.BooleanField(write_only=True, required=False, default=False)
+    #: Turnstile tokeni (9-qaror). KO'RINMAS rejim: foydalanuvchi odatda
+    #: ko'rmaydi, ya'ni token bo'lmasligi ham mumkin — kalitlar
+    #: sozlanmagan bo'lsa tekshiruv o'chiq (`turnstile.enabled()`).
+    turnstile_token = serializers.CharField(
+        write_only=True, required=False, allow_blank=True, default=""
+    )
 
     class Meta:
         model = User
@@ -351,6 +386,7 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
             "region",
             "terms_accepted",
             "marketing_opt_in",
+            "turnstile_token",
         ]
         # Pochtasiz hisobni tiklab bo'lmaydi: parolni unutgan
         # foydalanuvchining boshqa kanali qolmaydi.
@@ -361,20 +397,37 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
         # ishlab, inglizcha «A user with that username already exists»
         # qaytarardi — ya'ni o'zbekcha matn hech qachon ko'rinmasdi va
         # registrni farqlamaydigan tekshiruv ham o'tkazib yuborilardi.
+        #
+        # ⚠️ `validators: []` YETMAYDI — `required` va `allow_blank` ham
+        # SHU YERDA berilishi shart. Model maydonida `unique=True` bor,
+        # ya'ni DRF `username` ni `required=True, allow_blank=False` qilib
+        # yasaydi. 2026-09-13 da aynan shu sababdan ro'yxatdan o'tish
+        # BUTUNLAY ishlamay qolgan edi: veb-forma 1-qadamda `username`
+        # yubormaydi (3-qaror), server esa uni talab qilardi va har bir
+        # urinish `400 {"username": ["Ushbu maydon to'ldirilishi shart."]}`
+        # bilan qaytardi. O'lchandi: `required`/`allow_blank` faqat shu
+        # yozuvda turganda `username` ni umuman yubormasdan `201` olinadi.
         extra_kwargs = {
             "email": {"required": True, "allow_blank": False},
             # Django ning standart validatori o'rniga o'zimizniki: u lotin,
             # kirill, raqam, `_` va `.` ga ruxsat beradi va o'zbekcha maxsus
             # harflarni rad etadi — ADR-0016.
-            "username": {"validators": []},
-            # Mamlakat IXTIYORIY: eski API mijozlari uni yubormaydi va
-            # ularni sindirmaslik kerak. Frontend esa har doim yuboradi
-            # (standart — `UZ`).
+            "username": {"required": False, "allow_blank": True, "validators": []},
+            # Foydalanuvchi nomi, ism, mamlakat va viloyat IXTIYORIY.
+            #
+            # Sabab: 3-qarordan keyin frontend ularni ro'yxatdan
+            # o'tishning 1-qadamida YUBORMAYDI — ular 2-qadamda
+            # to'ldiriladi. Lekin ularni to'liq olib tashlash eski
+            # API mijozlarini (mobil ilova, skriptlar) sindirardi:
+            # ular hali ham shu maydonlarni yuboradi. Ya'ni
+            # `required=False` — «endi so'ralmaydi», «endi qabul
+            # qilinmaydi» emas.
+            "display_name": {"required": False, "allow_blank": True},
             "country": {"required": False, "allow_blank": True},
-            # Viloyat IXTIYORIY: A/B sinovning `b` variantida ro'yxatdan
-            # o'tishning O'ZIDA so'raladi (8-qaror), `a` variantida esa
-            # 2-qadamda to'ldiriladi — ya'ni bu maydon ikki yo'ldan ham
-            # keladi va ikkalasi ham qabul qilinishi kerak.
+            # Viloyat ham shu sababdan qoladi: A/B sinovning `b`
+            # variantida u ro'yxatdan o'tishning o'zida so'raladi
+            # (8-qaror), ya'ni bu maydon ikki yo'ldan ham keladi va
+            # ikkalasi ham qabul qilinishi kerak.
             "region": {"required": False, "allow_blank": True},
         }
 
@@ -395,6 +448,13 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
         return value
 
     def validate_username(self, value: str) -> str:
+        # Bo'sh qiymat — «hozir so'ralmadi», 2-qadamda tanlanadi (3-qaror).
+        # Bu yerda to'xtatib bo'lmaydi: 1-qadamda maydon umuman
+        # ko'rsatilmaydi, ya'ni xato berish odamni boshi berk ko'chaga
+        # olib kirardi. Nom `create` da VAQTINCHALIK beriladi va
+        # 2-qadamda haqiqiysiga almashtiriladi.
+        if not value:
+            return ""
         try:
             handles.validate(value)
         except DjangoValidationError as exc:
@@ -431,6 +491,20 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
                 display_name=attrs.get("display_name", ""),
             ),
         )
+
+        # Turnstile ENG OXIRIDA: token bir martalik, ya'ni uni parol
+        # qoidasi yoki band pochta uchun behuda sarflash odamni qayta
+        # yechishga majbur qilardi (9-qaror).
+        request = self.context.get("request")
+        # IP manbai — `TrustedClientIdent`: u `TRUSTED_CLIENT_IP_HEADER`
+        # ni hisobga oladi, xom `X-Forwarded-For` ga esa hech qachon
+        # ishonmaydi. Yangi yordamchi yozilsa ikki xil haqiqat paydo
+        # bo'lardi.
+        remote_ip = TrustedClientIdent().get_ident(request) if request is not None else ""
+        try:
+            turnstile.verify(attrs.get("turnstile_token", ""), remote_ip=remote_ip)
+        except turnstile.TurnstileError as exc:
+            raise serializers.ValidationError({"turnstile_token": str(exc)}) from None
         return attrs
 
     def create(self, validated_data: dict[str, Any]) -> User:
@@ -439,14 +513,19 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
         # ya'ni `User(**...)` ga uzatilsa `TypeError` berardi. Rozilik
         # FAKTI serializerda tekshirildi, VAQTI esa shu yerda yoziladi.
         validated_data.pop("terms_accepted", None)
+        # `turnstile_token` — model maydoni EMAS; u `validate()` da
+        # sarflandi va `User(**...)` ga tushsa `TypeError` berardi.
+        validated_data.pop("turnstile_token", None)
+        # Nom berilmagan bo'lsa VAQTINCHALIK nom: model `unique=True`
+        # talab qiladi, ya'ni bo'sh satr ikkinchi ro'yxatdan o'tishda
+        # `IntegrityError` berardi. Nom 2-qadamda tanlanadi.
+        validated_data["username"] = validated_data.get("username") or self._temp_username()
         user = User(**validated_data)
         user.terms_accepted_at = timezone.now()
         user.set_password(password)
         try:
             user.save()
         except IntegrityError:
-            # Nom bandligi serializerda, yozuv esa bazada tekshiriladi —
-            # oradagi oynada bir vaqtda kelgan so'rovlar 500 berardi.
             # Nom yoki pochta bandligi serializerda, yozuv esa bazada
             # tekshiriladi — oradagi oynada bir vaqtda kelgan so'rovlar
             # 500 berardi.
@@ -456,9 +535,42 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
             ) from None
         return user
 
+    @staticmethod
+    def _temp_username() -> str:
+        """Vaqtinchalik nom — `u` + tasodifiy 12 belgi.
+
+        `u` prefiksi `handles.ALLOWED` ga mos keladi va band bo'lgan
+        nomlar orasida ham uchramaydi (ular `usernames.reserved` da).
+        To'qnashuv ehtimoli 36^12, ya'ni amalda nol; baribir tsikl
+        bilan tekshiriladi — bazada `unique` cheklovi bor, ya'ni
+        to'qnashuv `IntegrityError` berardi va odam sababsiz xato
+        ko'rardi.
+        """
+        from secrets import choice
+        from string import ascii_lowercase, digits
+
+        alphabet = ascii_lowercase + digits
+        while True:
+            candidate = "u" + "".join(choice(alphabet) for _ in range(12))
+            if not User.objects.filter(username__iexact=candidate).exists():
+                return candidate
+
 
 class LoginSerializer(serializers.Serializer[dict[str, Any]]):
-    username = serializers.CharField()
+    """Kirish — bitta maydon: foydalanuvchi nomi YOKI email (4-qaror).
+
+    Ilgari maydon `username` edi va faqat nom qabul qilinardi. Emailini
+    yoddan bilgan, lekin taxallusini eslay olmaydigan odam «Login yoki
+    parol noto'g'ri» olardi — holbuki u to'g'ri ma'lumot kiritgan edi.
+    Qaror: maydon BITTA qoladi (ikki maydon kiritishni ikki barobar
+    oshiradi), lekin qiymat ikki ustun bo'yicha qidiriladi.
+
+    Maydon nomi ham `identifier` ga o'zgardi: `username` deb qolsa,
+    email yuborilishi API shartnomasida ko'rinmasdi va hujjatda
+    noto'g'ri taassurot qolardi.
+    """
+
+    identifier = serializers.CharField()
     password = serializers.CharField(write_only=True)
     #: «Meni eslab qol» — belgilansa sessiya `SESSION_COOKIE_AGE` (30 kun)
     #: yashaydi, aks holda brauzer yopilganda tugaydi. Standart `False`:

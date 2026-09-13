@@ -126,6 +126,27 @@ else:
     }
 
 AUTH_USER_MODEL = "core.User"
+# Django'ning standart `ModelBackend` i faqat `username` bo'yicha
+# qidiradi, ya'ni email bilan kirish ishlamasdi (4-qaror). O'zimizniki
+# ikkala ustunni bitta so'rovda qamraydi; `ModelBackend` dan meros
+# oladi, ya'ni ruxsatlar va `is_active` tekshiruvi o'zgarishsiz qoladi.
+AUTHENTICATION_BACKENDS = ["core.auth.EmailOrUsernameBackend"]
+
+# ── Cloudflare Turnstile — 9-qaror ───────────────────────────────────
+# KO'RINMAS rejim (`interaction-only` emas): foydalanuvchi odatda hech
+# narsa ko'rmaydi, shubhali bo'lsa Turnstile o'zi chaqirib tekshiradi.
+# Kalitlar bo'sh bo'lsa Tekshiruv O'CHIQ, ya'ni test va dev muhitida
+# tarmoqqa chiqilmaydi va so'rovlar bloklanmaydi.
+TURNSTILE_SITE_KEY = env("TURNSTILE_SITE_KEY", "")
+TURNSTILE_SECRET_KEY = env("TURNSTILE_SECRET_KEY", "")
+# Cloudflare'ning kanonik tekshiruv manzili — sozlanadigan qilib
+# qo'yildi, chunki test uni soxtalashtiradi.
+TURNSTILE_VERIFY_URL = env(
+    "TURNSTILE_VERIFY_URL", "https://challenges.cloudflare.com/turnstile/v0/siteverify"
+)
+# Turnstile javob bermasa: `True` — o'tkazib yuboriladi (xato sababli
+# haqiqiy odam kira olmasligi yomoni), `False` — rad etiladi.
+TURNSTILE_FAIL_OPEN = env_bool("TURNSTILE_FAIL_OPEN", True)
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},

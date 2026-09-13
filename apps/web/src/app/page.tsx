@@ -1,3 +1,4 @@
+import type { Route } from "next";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/Badge";
@@ -99,7 +100,7 @@ export default async function Home() {
               Davom etish · {resume.title}
             </ButtonLink>
           ) : (
-            <ButtonLink href={me ? "/problems" : "/register"}>
+            <ButtonLink href={me ? "/problems" : ("/kirish?tab=royxat" as Route)}>
               {me ? t(locale, "nav.problems") : t(locale, "home.start")}
             </ButtonLink>
           )}

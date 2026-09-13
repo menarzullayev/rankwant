@@ -11,7 +11,8 @@ from django.utils import timezone
 from rest_framework.test import APIClient
 
 from core import views
-from core.models import ApiToken
+from core.models import ApiToken, User
+from core.serializers import RegisterSerializer
 
 
 @pytest.fixture
@@ -51,7 +52,6 @@ class TestRegistrationLogin:
     def test_rozilik_vaqti_va_marketing_saqlanadi(self, client: APIClient) -> None:
         """Shartlar roziligi — VAQT sifatida, marketing esa alohida
         (GDPR 7-modda: ikkalasini birlashtirib bo'lmaydi)."""
-        from core.models import User
 
         r = client.post(
             reverse("register"),
@@ -74,7 +74,6 @@ class TestRegistrationLogin:
     def test_marketing_standart_ochiq_emas(self, client: APIClient) -> None:
         """Belgi yuborilmasa marketing ROZI emas — aks holda platforma
         roziliksiz xat yuborardi."""
-        from core.models import User
 
         r = client.post(
             reverse("register"),
@@ -92,13 +91,138 @@ class TestRegistrationLogin:
         r = client.post(reverse("register"), {"username": "x", "password": "123"})
         assert r.status_code == 400
 
+    def test_band_email_maydon_boyicha_qaytadi(self) -> None:
+        """14-qaror shartnomasi: band pochta `email` MAYDONIGA bog'lanadi.
+
+        Bu test SHARTNOMANI qotiradi. Sabab: DRF maydon xatolarida
+        `code` HAR DOIM `"invalid"` bo'ladi (`{"error":{"code":"invalid",
+        "details":{"email":["Bu email band"]}}}`), ya'ni «band email» ni
+        kod bo'yicha ajratib bo'lmaydi — frontend yagona ishonchli belgi
+        sifatida `details` kalitidan foydalanadi (`ApiError.field`).
+
+        Test SERIALIZER darajasida, HTTP javobida emas. Sabab
+        o'lchandi: HTTP javobida `details` ga DRF O'ZI ham maydon
+        qo'shadi (`username` majburiy bo'lsa `email` xatosi ham
+        qo'shilib ketardi) va buzuq kod ham testdan o'tib ketardi —
+        salbiy test buni ko'rsatdi. Serializerda poyga yo'q.
+        """
+        band = User.objects.create_user(
+            username="band", email="band@example.com", password="Parol!12345"
+        )
+        serializer = RegisterSerializer(data={"email": band.email, "password": "Parol!12345"})
+
+        assert not serializer.is_valid()
+        assert serializer.errors["email"] == ["Bu email band"], serializer.errors
+
+    def test_band_email_username_bilan_ham_aniqlanadi(self) -> None:
+        """`username` ham yuborilganda xato baribir `email` da qoladi.
+
+        Ya'ni 14-qaror yo'naltiruvchi xabari TO'LIQ formada ham
+        ishlaydi: `username` xatosi o'sha javobga aralashmaydi.
+        """
+        band = User.objects.create_user(
+            username="band2", email="band2@example.com", password="Parol!12345"
+        )
+        serializer = RegisterSerializer(
+            data={
+                "username": "boshqa",
+                "email": band.email,
+                "password": "Parol!12345",
+            }
+        )
+
+        assert not serializer.is_valid()
+        assert serializer.errors["email"] == ["Bu email band"], serializer.errors
+
+    def test_username_siz_royxatdan_otish_ishlaydi(self, client: APIClient) -> None:
+        """1-qadam yuki (`username`siz) QABUL QILINISHI shart.
+
+        Regressiya testi. 2026-09-13 gacha veb-forma `username`
+        yubormasdi, API esa uni majburiy deb bilardi: `extra_kwargs` da
+        faqat `validators: []` turgan, `required`/`allow_blank` esa
+        yozilmagan edi. Model maydonida `unique=True` bo'lgani uchun DRF
+        uni `required=True, allow_blank=False` qilib yasaydi — ya'ni
+        sayt orqali HECH KIM ro'yxatdan o'ta olmasdi.
+
+        Nega eski testlar buni tutmadi: ular faqat `errors["email"]` ni
+        tekshirardi (`test_band_email_...`), `username` xatosi esa
+        o'sha javobda JIMGINA yonma-yon turardi. Shuning uchun bu test
+        `is_valid()` ning O'ZINI va yaratilgan hisobni tekshiradi.
+
+        HTTP darajasida sinaladi: shartnoma aynan shu qatlamda buzilgan
+        edi (serializer `is_valid()` bermasa ham view 400 qaytaradi).
+        """
+        r = client.post(
+            reverse("register"),
+            {
+                "email": "yangi@example.com",
+                "password": "Parol!12345",
+                "terms_accepted": True,
+                "marketing_opt_in": False,
+                "turnstile_token": "",
+            },
+            format="json",
+        )
+
+        assert r.status_code == 201, r.data
+        user = User.objects.get(email="yangi@example.com")
+        # Vaqtinchalik nom berilishi shart: model `unique=True` talab
+        # qiladi, ya'ni bo'sh satr ikkinchi hisobda `IntegrityError`
+        # berardi. Nom 2-qadamda (`/qoshimcha-malumot`) almashtiriladi.
+        assert user.username.startswith("u"), user.username
+        assert len(user.username) == 13, user.username
+        # Kirish darhol ishlashi kerak: web registrdan keyin shu email
+        # bilan login qiladi (ADR-0008 — registr sessiya ochmaydi).
+        assert user.check_password("Parol!12345")
+
+    def test_username_bolsh_qiymat_bilan_ham_ishlaydi(self, client: APIClient) -> None:
+        """`username: ""` — «hozir so'ralmadi», xato emas (3-qaror).
+
+        Eski API mijozlari maydonni bo'sh yuborishi mumkin; DRF
+        modeldan `allow_blank=False` yasagani uchun bu ham
+        «This field may not be blank» bilan rad etilardi.
+        """
+        r = client.post(
+            reverse("register"),
+            {
+                "username": "",
+                "email": "bosh@example.com",
+                "password": "Parol!12345",
+                "terms_accepted": True,
+            },
+            format="json",
+        )
+
+        assert r.status_code == 201, r.data
+        assert User.objects.get(email="bosh@example.com").username.startswith("u")
+
+    def test_username_berilsa_saqlanadi(self, client: APIClient) -> None:
+        """Eski mijoz `username` yuborsa — u SAQLANADI (orqaga moslik).
+
+        `required=False` «endi qabul qilinmaydi» degani EMAS: mobil
+        ilova va skriptlar maydonni hali ham yuboradi.
+        """
+        r = client.post(
+            reverse("register"),
+            {
+                "username": "tanlangan",
+                "email": "tanlangan@example.com",
+                "password": "Parol!12345",
+                "terms_accepted": True,
+            },
+            format="json",
+        )
+
+        assert r.status_code == 201, r.data
+        assert User.objects.get(email="tanlangan@example.com").username == "tanlangan"
+
     def test_login_va_me(self, client: APIClient, user) -> None:
-        r = client.post(reverse("login"), {"username": "aziz", "password": "Parol!12345"})
+        r = client.post(reverse("login"), {"identifier": "aziz", "password": "Parol!12345"})
         assert r.status_code == 200
         assert client.get(reverse("me")).status_code == 200
 
     def test_notogri_parol(self, client: APIClient, user) -> None:
-        r = client.post(reverse("login"), {"username": "aziz", "password": "notogri"})
+        r = client.post(reverse("login"), {"identifier": "aziz", "password": "notogri"})
         assert r.status_code == 401
         assert r.json()["error"]["code"] == "invalid_credentials"
 

@@ -7,7 +7,7 @@ Ikkinchi shablon nusxa bo'lardi va biri ikkinchisidan orqada qolardi.
 
 from __future__ import annotations
 
-from urllib.parse import urlsplit
+from urllib.parse import urlencode, urlsplit
 
 from django.conf import settings
 from django.template.loader import render_to_string
@@ -25,18 +25,23 @@ def _context(
     path: str,
     token: str,
     code: str,
+    tab: str = "",
     request_ip: str = "",
     request_ua: str = "",
 ) -> dict[str, object]:
     locale = user.locale or email_text.DEFAULT_LOCALE
     strings = {**email_text.strings(email_text.SHARED, locale), **email_text.strings(table, locale)}
+    # Havola BIZNING domenimizda qoladi: kuzatuv o'chirilgan (ADR-0015),
+    # ya'ni foydalanuvchi manzilni ko'rib ishonch hosil qila oladi.
+    # `?tab=` bo'limni tanlaydi (1-qaror: yagona `/kirish` sahifasi),
+    # `?token=` esa havolani uzatadi. Ikkalasi ham bo'lsa — birlashtiramiz;
+    # shu sababli `urlencode` ishlatiladi, qo'lda `?`/`&` yasamaymiz.
+    query = urlencode({k: v for k, v in (("tab", tab), ("token", token)) if v})
     return {
         "t": strings,
         "locale": locale,
         "code": code,
-        # Havola BIZNING domenimizda qoladi: kuzatuv o'chirilgan (ADR-0015),
-        # ya'ni foydalanuvchi manzilni ko'rib ishonch hosil qila oladi.
-        "link": f"{settings.SITE_URL}{path}" + (f"?token={token}" if token else ""),
+        "link": f"{settings.SITE_URL}{path}" + (f"?{query}" if query else ""),
         "site_url": settings.SITE_URL,
         "site_host": urlsplit(settings.SITE_URL).netloc,
         "request_at": timezone.localtime().strftime("%d.%m.%Y %H:%M (UTC+5)"),
@@ -63,7 +68,11 @@ def send_password_reset(
     context = _context(
         email_text.RESET,
         user,
-        path="/parolni-tiklash",
+        # Kanonik manzil endi `/kirish?tab=parolni-tiklash` (1 va
+        # 13-qarorlar): `?tab=` bo'limni tanlaydi, `?token=` esa
+        # havolani uzatadi — `_context` ikkalasini birlashtiradi.
+        path="/kirish",
+        tab="parolni-tiklash",
         token=token,
         code=code,
         request_ip=request_ip,
@@ -82,5 +91,6 @@ def send_email_verify(user: User, *, token: str, code: str, to: str | None = Non
 
 def send_email_changed(user: User, old_email: str) -> EmailDelivery:
     """Eski manzilga ogohlantirish. Kod ham, token ham yo'q — bu faqat xabar."""
-    context = _context(email_text.CHANGED, user, path="/login", token="", code="")
+    # Kirish sahifasi endi `/kirish` (1-qaror).
+    context = _context(email_text.CHANGED, user, path="/kirish", token="", code="")
     return _send(context, EmailDelivery.Purpose.EMAIL_CHANGED, old_email)
