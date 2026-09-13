@@ -21,6 +21,12 @@ import { zh } from "./locales/zh";
  *
  *  Ro'yxatga olish MODUL ishga tushishida bo'ladi, ya'ni `t()` ni
  *  chaqiruvchi har qanday server komponentidan OLDIN bajariladi.
+ *
+ *  ⚠️ `evict` ATAYLAB berilmaydi: bu tsikl o'nta tilni ham ro'yxatga
+ *  oladi va serverda ularning barchasi kerak. Bir marta bu joyda
+ *  chegaralash (`registry.clear()`) bor edi va tsikl faqat oxirgi
+ *  tilni qoldirardi — natijada SSR'da o'nlab xom kalit chiqqan
+ *  (`home.start`, `nav.contests`, …, o'lchandi).
  */
 const ALL: Record<Locale, Record<MessageKey, string>> = {
   uz,

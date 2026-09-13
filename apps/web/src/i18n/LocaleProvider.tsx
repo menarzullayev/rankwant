@@ -34,7 +34,11 @@ export function LocaleProvider({
   auto?: boolean;
   children: React.ReactNode;
 }) {
-  registerMessages(locale, dict);
+  // `evict = true`: KLIENTDA faqat aktiv til kerak, ya'ni oldingi
+  // lug'atni o'chirish xotirani tejaydi. Serverda esa bu bayroq
+  // qo'yilmaydi — `messages.server.ts` o'nta tilni ham ro'yxatga oladi
+  // va ularning barchasi birinchi SSR chizishida kerak bo'ladi.
+  registerMessages(locale, dict, true);
   return (
     <AutoContext.Provider value={auto}>
       <LocaleContext.Provider value={locale}>{children}</LocaleContext.Provider>

@@ -69,19 +69,34 @@ const registry = new Map<Locale, Record<string, string>>();
  *  xatoni ko'mib tashlaydi. Shuning uchun har kalit BIR MARTA yoziladi. */
 const reported = new Set<string>();
 
-/** Lug'atni ro'yxatga oladi. Amalda faqat aktiv til uchun chaqiriladi.
+/** Lug'atni ro'yxatga oladi.
  *
- *  FAQAT BITTA yozuv saqlanadi: til almashtirilganda eskisi o'chiriladi.
- *  Ilgari `Map` chegaralanmagan edi — har `router.refresh()` yangi lug'at
- *  qo'shardi, 10 marta almashtirsangiz ~450 kB xotirada qolardi. Amalda
- *  faqat aktiv til kerak, ya'ni qolganlari sof yo'qotish. */
-export function registerMessages(locale: Locale, dict: Record<MessageKey, string>): void {
-  // Boshqa tillning yozuvlari kerak emas — bir zarbada tozalaymiz.
-  // `registry.clear()` eng oddiy va eng aniq: faqat shu chaqiruvdan keyin
-  // yozilgan lug'at qoladi.
-  registry.clear();
+ *  ⚠️ CHEGARA ikki xil, va bu ATAYLAB:
+ *
+ *  * **Serverda** o'nta lug'atning HAMMASI kerak: `layout.tsx` aktiv
+ *    tilni aniqlaydi, lekin sahifalar `messages.server.ts` modul
+ *    yuklanishida ro'yxatga olinadi — ya'ni har bir til uchun `t()`
+ *    ishlashi shart. Ilgari bu yerda `registry.clear()` bor edi va
+ *    modul yuklanishidagi tsikl faqat OXIRGI tilni (`es`) qoldirardi;
+ *    natijada birinchi SSR chizishida o'nlab xom kalit chiqardi
+ *    (`home.start`, `nav.contests`, …) — o'lchandi, brauzerda.
+ *  * **Klientda** faqat aktiv til kerak: `LocaleProvider` bitta lug'at
+ *    uzatadi, ya'ni chegaralash xotirani tejaydi (~450 kB → bitta).
+ *
+ *  Shuning uchun `evict` bayrog'i: serverda `false`, klientda `true`.
+ *  Ilgari chegara SHARTSIZ edi — bu jimgina nuqson tug'dirdi.
+ */
+export function registerMessages(
+  locale: Locale,
+  dict: Record<MessageKey, string>,
+  evict = false,
+): void {
+  if (evict) {
+    // Klientda boshqa tillar kerak emas — bir zarbada tozalaymiz.
+    registry.clear();
+    reported.clear();
+  }
   registry.set(locale, dict);
-  reported.clear();
 }
 
 /** Ro'yxatdagi lug'atlar soni — takroriy ro'yxatga olishni o'lchash uchun.
@@ -206,14 +221,60 @@ export function localName(
  * KONTENT, ya'ni ularni tarjima qilish alohida ish (145 ta mavzu).
  * Ustuni yo'q yoki bo'sh til uchun o'zbekchasiga qaytamiz — bo'sh
  * yorliq ko'rsatishdan ko'ra tushunarli.
+ *
+ * ⚠️ Ko'rinmas qaytish — aldamchi. `zh` foydalanuvchisi o'zbekcha
+ * matnni o'z tilidagi tarjima deb o'ylashi mumkin. Shuning uchun
+ * `localNameInfo`/`topicNameInfo` qaytishni OSHKOR qiladi va UI
+ * yonida kichik `uz` belgisini qo'yadi (qaror 10).
  */
 export function topicName(
   topic: { slug: string; name_uz: string; name_ru: string; name_en: string },
   locale: Locale,
 ): string {
+  return topicNameInfo(topic, locale).text;
+}
+
+/** Nom + u qaytish (fallback) natijasimi.
+ *
+ * `fallback` — matn o'zbekchadan olingan, ya'ni so'ralgan tilda
+ * tarjima YO'Q. So'ralgan til o'zi `uz` bo'lsa qaytish hisoblanmaydi:
+ * o'shanda bu shunchaki to'g'ri javob.
+ */
+export type NameInfo = {
+  text: string;
+  locale: Locale | null;
+  /** Matn aslida qaysi tildan olingan. */
+  source: Locale;
+};
+
+function nameInfo(
+  row: { name_uz: string; name_ru: string; name_en: string },
+  locale: Locale,
+): NameInfo {
   const translated =
-    locale === "ru" ? topic.name_ru : locale === "en" ? topic.name_en : "";
-  return translated || topic.name_uz || topic.slug;
+    locale === "ru" ? row.name_ru : locale === "en" ? row.name_en : "";
+  if (translated) return { text: translated, locale, source: locale };
+  // So'ralgan til uchun ustun umuman yo'q (`kk`, `zh`, …) yoki bo'sh.
+  return { text: row.name_uz, locale: null, source: DEFAULT_LOCALE };
+}
+
+/** `localName` + qaytish belgisi. */
+export function localNameInfo(
+  row: { name_uz: string; name_ru: string; name_en: string },
+  locale: Locale,
+): NameInfo {
+  return nameInfo(row, locale);
+}
+
+/** `topicName` + qaytish belgisi. */
+export function topicNameInfo(
+  topic: { slug: string; name_uz: string; name_ru: string; name_en: string },
+  locale: Locale,
+): NameInfo {
+  const info = nameInfo(topic, locale);
+  if (info.text) return info;
+  // Nom umuman bo'sh — slug ham matnday o'qiladi, lekin tarjima emas.
+  return { text: topic.slug, locale: null, source: DEFAULT_LOCALE };
 }
 
 /** API xatosining matni — kod bo'yicha, server matni zaxira sifatida.
