@@ -31,8 +31,9 @@ from django.db import models
 from django.utils import timezone
 
 #: Interfeys tillari — manba: `apps/web/src/i18n/locales/` (10 fayl).
-#: `settings.LANGUAGES` faqat 3 ta (uz/ru/en) va u Django i18n uchun;
-#: kontent tillari undan kengroq. Nomuvofiqlik — alohida band.
+#: Uchta ro'yxat bir xil bo'lishi shart: `User.Locale`, `settings.LANGUAGES`
+#: va `core.email_text.LOCALES`. Ular `tools/check_locales_parity.py` bilan
+#: CI da solishtiriladi — qo'lda takrorlanmaydi.
 LOCALES: tuple[str, ...] = ("uz", "ru", "en", "kk", "ky", "tg", "tr", "es", "zh", "kaa")
 
 #: Kanonik til — qolgan 9 tasi undan tarjima qilinadi.

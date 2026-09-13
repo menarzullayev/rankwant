@@ -54,6 +54,38 @@ export function proxy(request: NextRequest): NextResponse {
       )
     : NextResponse.next();
 
+  // `Vary: Accept-Language` — javob tilga bog'liq bo'lganda MAJBURIY.
+  //
+  // ⚠️⚠️ O'LCHANDI VA BU YERDA HAM ISHLAMAYDI — Next.js 16 `Vary` ni
+  // javob chizig'ining ENG OXIRIDA o'z ro'yxati bilan ALMASHTIRADI:
+  //
+  //     Vary: rsc, next-router-state-tree, next-router-prefetch,
+  //           next-router-segment-prefetch, Accept-Encoding
+  //
+  // Ikki joy sinaldi va ikkalasi ham o'lchov bilan rad etildi:
+  //   1. `next.config.ts` `headers()` — qoida `routes-manifest.json` ga
+  //      yoziladi (tekshirildi), javobda esa yo'q.
+  //   2. shu fayl (proxy) — `x-rw-probe: alive` omon qoladi, `Vary` esa
+  //      yo'q. Ya'ni proxy ISHLAYDI; klobbers faqat `Vary` ga tegishli.
+  //
+  // Bu Next.js'ning ichki xatti-harakati, hujjatda yozilmagan
+  // (`/docs/app/api-reference/file-conventions/proxy` da `Vary` umuman
+  // tilga olinmaydi).
+  //
+  // NEGA HOZIR ZARARSIZ: javob `Cache-Control: private, no-cache,
+  // no-store, max-age=0, must-revalidate` bilan keladi (o'lchandi) —
+  // ya'ni hech qanday umumiy kesh uni saqlay olmaydi. Xat xavfi
+  // KESHLASH YOQILGAN KUNI paydo bo'ladi.
+  //
+  // TODO(keshlashdan OLDIN): `Vary` ni Next.js'dan TASHQARIDA qo'shish
+  // kerak — cloudflared tunnel ingress header rewrite qo'llamaydi
+  // (o'lchandi: `cloudflared 2026.9.1`, bunday direktiva yo'q), ya'ni
+  // oldiga kichik proxy qo'yiladi yoki CDN darajasida Transformation
+  // Rule yoziladi. Batafsil: `docs/08-technical-spec/i18n-precedence.md`.
+  if (!boshqa_domen) {
+    response.headers.set("Vary", "Accept-Language");
+  }
+
   // Guruh yo'naltirishda ham belgilanadi: eski domendan kelgan birinchi
   // so'rov yangisiga o'tadi, cookie esa shu javobda qo'yiladi.
   assignExperiments(request, response);

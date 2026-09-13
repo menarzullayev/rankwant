@@ -56,13 +56,57 @@ these three states and returns `{ locale, auto }`.
 "account wins" rule: that is the point of this document. Changing it back
 would silently discard the device choice on every sign-in.
 
-## Caching
+## Caching — and a framework limit we could not work around
 
-Because the response depends on `Accept-Language`, every response carries
-`Vary: Accept-Language` (set in `apps/web/next.config.ts`). Today responses are
-`no-store`, so this is belt-and-braces — but the moment any shared cache or
-`revalidate` is introduced, a missing `Vary` poisons the cache: one URL would
-serve Russian users an English page.
+Because the response depends on `Accept-Language`, correct HTTP caching requires
+`Vary: Accept-Language` on every response. **We set it, and Next.js 16 discards
+it.** This is measured, not assumed:
+
+```
+$ curl -s -D - -H 'Host: rankwant.uz' http://127.0.0.1:8300/
+Vary: rsc, next-router-state-tree, next-router-prefetch,
+      next-router-segment-prefetch, Accept-Encoding
+```
+
+`Accept-Language` is absent — while the *same URL* returns three different
+documents:
+
+```
+Accept-Language: ru → lang="ru"
+Accept-Language: zh → lang="zh"
+Accept-Language: kk → lang="kk"
+```
+
+Two placements were tried and both were **measured** to fail:
+
+1. `next.config.ts` `headers()` — the rule *is* emitted into
+   `routes-manifest.json`, but never reaches the response. Next.js overwrites
+   `Vary` with its own list.
+2. `src/proxy.ts` (the Next.js 16 file convention; `middleware.ts` is rejected
+   in 16.x) — a control header proves the proxy runs: `x-rw-probe: alive`
+   survives while `Vary` does not. The clobbering is specific to `Vary`.
+
+This is undocumented internal behaviour — the `proxy` file-convention reference
+does not mention `Vary` at all. Note that `middleware.ts` and `proxy.ts` cannot
+coexist; Next.js 16 fails the build with *"Both middleware file and proxy file
+are detected"*.
+
+**Why this is latent rather than live:** responses currently carry
+`Cache-Control: private, no-cache, no-store, max-age=0, must-revalidate`, so no
+shared cache may store them. The defect becomes a cache-poisoning bug the day
+caching is enabled.
+
+**What must happen before caching is enabled** (options, none yet applied):
+
+- put a small reverse proxy in front of Next.js that appends `Accept-Language`
+  to `Vary`;
+- or set a CDN Transformation Rule at the edge;
+- or add the locale to the URL (`/uz/...`), which removes the dependence on
+  `Accept-Language` entirely — the option already recorded as a later step in
+  the decision log.
+
+`cloudflared` cannot do it: version `2026.9.1` has no header-rewrite directive
+in tunnel ingress rules.
 
 ## Known gaps
 

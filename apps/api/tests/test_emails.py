@@ -128,6 +128,15 @@ class TestParolniTiklash:
             ("uz", "parolni tiklash"),
             ("ru", "восстановление пароля"),
             ("en", "password reset"),
+            # Qolgan yetti til — qaror 5. Ilgari ular jimgina o'zbekchaga
+            # tushardi (o'lchandi: 10 tildan 3 tasi bor edi), ya'ni tili
+            # `zh` bo'lgan odam o'zbekcha xat olardi.
+            ("kk", "қалпына келтіру"),
+            ("ky", "калыбына келтирүү"),
+            ("tg", "барқарорсозии рамз"),
+            ("tr", "parola sıfırlama"),
+            ("zh", "重置密码"),
+            ("es", "restablecer contraseña"),
         ],
     )
     def test_foydalanuvchi_tilida(self, zanjir: Yozib, locale: str, kutilgan: str) -> None:
@@ -136,15 +145,35 @@ class TestParolniTiklash:
         assert zanjir.last is not None
         assert kutilgan in zanjir.last.subject.lower()
 
-    def test_notanish_til_ozbekchaga_tushadi(self, zanjir: Yozib) -> None:
+    def test_qoraqalpoqcha_xat_ham_tarjima_qilinadi(self, zanjir: Yozib) -> None:
+        """`kaa` — asosiy to'rtlikdan, ya'ni alohida tekshiriladi."""
+        emails.send_password_reset(odam("kaa"), token="TOK", code="482913")
+
+        assert zanjir.last is not None
+        assert "paroldi tiklew" in zanjir.last.subject.lower()
+
+    def test_notanish_til_ozbekchaga_tushadi(
+        self, zanjir: Yozib, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        """Noma'lum til — o'zbekcha, LEKIN jimgina emas.
+
+        Zaxira `warning` yozishi SHART: aks holda qamrov bo'shlig'i ishlab
+        turgan tizimda ko'rinmaydi (aynan shu holat ilgari bo'lgan).
+        """
         user = odam()
         User.objects.filter(pk=user.pk).update(locale="de")
         user.refresh_from_db()
 
-        emails.send_password_reset(user, token="TOK", code="482913")
+        with caplog.at_level("WARNING", logger="core.email_text"):
+            emails.send_password_reset(user, token="TOK", code="482913")
 
         assert zanjir.last is not None
         assert "parolni tiklash" in zanjir.last.subject.lower()
+        # `caplog.text` — shakllantirilgan matn, ya'ni `%s` o'rniga
+        # qo'yilgan qiymat ham ko'rinadi (`record.getMessage()` ishlatadi).
+        assert "de" in caplog.text and "no dictionary" in caplog.text, (
+            f"zaxira jurnalga yozilmadi — qamrov bo'shlig'i ko'rinmay qoladi: {caplog.text!r}"
+        )
 
 
 @pytest.mark.django_db
@@ -217,10 +246,21 @@ def test_notanish_til_lugatni_yiqitmaydi() -> None:
     assert email_text.strings(email_text.RESET, "de")["subject"].startswith("RankWant")
 
 
-def test_barcha_satrlar_uch_tilda(*_: Any) -> None:
-    """Bitta tarjima unutilsa xat yarim o'zbekcha bo'lib chiqardi."""
+def test_barcha_satrlar_hamma_tilda(*_: Any) -> None:
+    """Bitta tarjima unutilsa xat yarim o'zbekcha bo'lib chiqardi.
+
+    Ilgari bu yerda `{"uz", "ru", "en"}` tekshirilardi — ro'yxat 10 tilga
+    chiqqach o'sha assert eskirib qoldi va to'g'ri kodni yiqitdi.
+    Endi til ro'yxati KODDAN olinadi (`email_text.LOCALES`), ya'ni yangi
+    til qo'shilganda test o'zi ergashadi.
+
+    `tools/check_email_locales.py` xuddi shuni CI da tekshiradi; bu test
+    esa pytest ichida turadi, ya'ni ishlab chiqish paytida darhol
+    ko'rinadi.
+    """
     from core import email_text
 
-    for jadval in (email_text.SHARED, email_text.RESET, email_text.VERIFY):
+    expected = set(email_text.LOCALES)
+    for jadval in (email_text.SHARED, email_text.RESET, email_text.VERIFY, email_text.CHANGED):
         for kalit, qiymatlar in jadval.items():
-            assert set(qiymatlar) == {"uz", "ru", "en"}, kalit
+            assert set(qiymatlar) == expected, kalit

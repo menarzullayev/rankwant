@@ -156,10 +156,40 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-# ── i18n — PRD P0-7: UI uz/ru/en ─────────────────────────────────────
+# ── i18n ─────────────────────────────────────────────────────────────
+#
+# Bu build'da gettext ISHLATILMAYDI: `locale/` katalogi yo'q, `.po`/`.mo`
+# yo'q, birorta `gettext()`/`gettext_lazy()` chaqiruvi yo'q. Interfeys
+# tarjimasi `apps/web/src/i18n/` da, email matni `core/email_text.py` da,
+# yangilik tarjimasi `updates` jadvallarida. Ya'ni LOCALE_PATHS olib
+# tashlandi — u jonsiz e'lon edi.
+#
+# Lekin `USE_I18N` va `LocaleMiddleware` JONSIZ EMAS, olib tashlab
+# bo'lmaydi. Ikki haqiqiy iste'molchi bor:
+#
+#   1. `LocaleMiddleware` `request.LANGUAGE_CODE` ni o'rnatadi, uni
+#      `core/views.py` OAuth orqali kelgan yangi hisobning tilini
+#      to'g'ri tanlash uchun o'qiydi (uch harfli `kaa` ham shu yerda).
+#   2. `USE_I18N = False` bo'lsa `updates/serializers.py` dagi
+#      `get_language()` doim `None` qaytaradi va `?lang=` siz so'rov
+#      kanonik o'zbekchaga tushadi.
+#
+# Quyidagi ro'yxat `User.Locale` (10 ta) bilan AYNAN bir xil bo'lishi
+# shart: `LocaleMiddleware` `Accept-Language` ni aynan shu ro'yxat
+# bo'yicha hal qiladi, ya'ni ro'yxatda yo'q til jimgina `uz` ga tushadi.
 LANGUAGE_CODE = "uz"
-LANGUAGES = [("uz", "O'zbekcha"), ("ru", "Русский"), ("en", "English")]
-LOCALE_PATHS = [BASE_DIR / "locale"]
+LANGUAGES = [
+    ("uz", "O'zbekcha"),
+    ("kaa", "Qaraqalpaqsha"),
+    ("ru", "Русский"),
+    ("en", "English"),
+    ("kk", "Қазақша"),
+    ("ky", "Кыргызча"),
+    ("tg", "Тоҷикӣ"),
+    ("tr", "Türkçe"),
+    ("zh", "中文"),
+    ("es", "Español"),
+]
 TIME_ZONE = "Asia/Tashkent"
 USE_I18N = True
 USE_TZ = True
