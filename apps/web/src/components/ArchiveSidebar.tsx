@@ -188,7 +188,12 @@ function Digest({
                 <VerdictBadge verdict={attempt.verdict} locale={locale} />
                 <Link
                   href={`/problems/${attempt.problem}`}
-                  className="min-w-0 flex-1 truncate rw-dim-2 rw-link-hover"
+                  // `min-h-6` = 24px — WCAG 2.5.8 (Target Size). Matn
+                  // 18px, ya'ni havolaning o'zi juda past edi (O'LCHANDI:
+                  // h=18, qo'shni satr bilan oraliq 4px). Lighthouse
+                  // `target-size` ni tutdi. `flex items-center` matnni
+                  // vertikal markazda saqlaydi, ya'ni ko'rinish o'zgarmaydi.
+                  className="flex min-h-6 min-w-0 flex-1 items-center truncate rw-dim-2 rw-link-hover"
                 >
                   {attempt.problem}
                 </Link>
@@ -208,11 +213,15 @@ function Digest({
             {popular.slice(0, 5).map((problem) => (
               <li
                 key={problem.slug}
-                className="flex items-baseline gap-2 text-theme-xs"
+                className="flex items-center gap-2 text-theme-xs"
               >
                 <Link
                   href={`/problems/${problem.slug}`}
-                  className="min-w-0 flex-1 truncate rw-dim-2 rw-link-hover"
+                  // Yuqoridagi bilan bir xil sabab: WCAG 2.5.8.
+                  // `items-baseline` → `items-center`: 24px qator
+                  // ichida matn bazaviy chiziq bo'ylab emas, markazda
+                  // turishi kerak.
+                  className="flex min-h-6 min-w-0 flex-1 items-center truncate rw-dim-2 rw-link-hover"
                 >
                   {problem.title}
                 </Link>
