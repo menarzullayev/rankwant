@@ -132,8 +132,8 @@
   --rw-heading-weight: 600;
   --rw-tracking: -.01em;
   --rw-uppercase: none;
-  --rw-level-1: #667085; --rw-level-2: #039855; --rw-level-3: #2570eb;
-  --rw-level-4: #9a4bd8; --rw-level-5: #d92d20;
+  --rw-level-1: #667085; --rw-level-2: #027e46; --rw-level-3: #1666ea;
+  --rw-level-4: #9644d7; --rw-level-5: #d22c1f;
   --rw-rank-1: #656e81; --rw-rank-2: #1e7e46; --rw-rank-3: #107884;
   --rw-rank-4: #1e67e3; --rw-rank-5: #834fde; --rw-rank-6: #b72cbc;
   --rw-rank-7: #af550b; --rw-rank-8: #d5231d; --rw-rank-9: #d5185d;
@@ -220,6 +220,12 @@
   --rw-chip: #1c1c1a;
   --rw-hover: #1c1c1a;
   --rw-field: #0e0e0d;
+  /* Level ranglari shu blokda e'lon qilinmagan edi, ya'ni light
+     blokdan meros bo'lib qolgan va quyuq sirtda o'qilmasdi — eng
+     yomoni 1.04:1 (`brutal.dark`). Aniq yozildi: ohang saqlangan,
+     faqat yorqinlik AA (4.5:1) ga yetadigan darajaga ko'tarilgan. */
+  --rw-level-1: #858585; --rw-level-2: #2c9762; --rw-level-3: #5385d4;
+  --rw-level-4: #9875c3; --rw-level-5: #e05850;
   --rw-rank-1: #7c8598; --rw-rank-2: #249955; --rw-rank-3: #1493a1;
   --rw-rank-4: #4984e9; --rw-rank-5: #9a6fe4; --rw-rank-6: #d14dd5;
   --rw-rank-7: #d3660d; --rw-rank-8: #e7514b; --rw-rank-9: #ea4582;
@@ -256,7 +262,7 @@
   --rw-btn-weight: 500;
   --rw-heading-weight: 500;
   --rw-tracking: 0;
-  --rw-level-1: #2f8f57; --rw-level-2: #46d67f; --rw-level-3: #6bd5e5;
+  --rw-level-1: #32985d; --rw-level-2: #46d67f; --rw-level-3: #6bd5e5;
   --rw-level-4: #c99bff; --rw-level-5: #ff6b6b;
   --rw-rank-1: #7e889a; --rw-rank-2: #249955; --rw-rank-3: #1495a3;
   --rw-rank-4: #4984e9; --rw-rank-5: #9a6fe4; --rw-rank-6: #d14fd6;
@@ -316,6 +322,12 @@
   --rw-chip: #201d19;
   --rw-hover: #201d19;
   --rw-field: #12100e;
+  /* Level ranglari shu blokda e'lon qilinmagan edi, ya'ni light
+     blokdan meros bo'lib qolgan va quyuq sirtda o'qilmasdi — eng
+     yomoni 1.04:1 (`brutal.dark`). Aniq yozildi: ohang saqlangan,
+     faqat yorqinlik AA (4.5:1) ga yetadigan darajaga ko'tarilgan. */
+  --rw-level-1: #7e8699; --rw-level-2: #2c9963; --rw-level-3: #5787d5;
+  --rw-level-4: #9a78c5; --rw-level-5: #d96259;
   --rw-rank-1: #7e889a; --rw-rank-2: #249955; --rw-rank-3: #1495a3;
   --rw-rank-4: #4984e9; --rw-rank-5: #9a6fe4; --rw-rank-6: #d14fd6;
   --rw-rank-7: #d5670e; --rw-rank-8: #e75550; --rw-rank-9: #eb4783;
@@ -352,7 +364,7 @@
   --rw-heading-weight: 700;
   --rw-tracking: -.03em;
   --rw-uppercase: uppercase;
-  --rw-level-1: #333333; --rw-level-2: #056d3a; --rw-level-3: #0a58c4;
+  --rw-level-1: #333333; --rw-level-2: #045b31; --rw-level-3: #094ba7;
   --rw-level-4: #7b1fa2; --rw-level-5: #9c0000;
   --rw-rank-1: #484e5b; --rw-rank-2: #155b32; --rw-rank-3: #0c575f;
   --rw-rank-4: #144aa6; --rw-rank-5: #5f25c3; --rw-rank-6: #852088;
@@ -376,6 +388,12 @@
   --rw-hover: #24242f;
   --rw-field: #12121a;
   --rw-btn-shadow: 4px 4px 0 #f5e900;
+  /* Level ranglari shu blokda e'lon qilinmagan edi, ya'ni light
+     blokdan meros bo'lib qolgan va quyuq sirtda o'qilmasdi — eng
+     yomoni 1.04:1 (`brutal.dark`). Aniq yozildi: ohang saqlangan,
+     faqat yorqinlik AA (4.5:1) ga yetadigan darajaga ko'tarilgan. */
+  --rw-level-1: #a0a0a0; --rw-level-2: #08b964; --rw-level-3: #65a2f7;
+  --rw-level-4: #ca85e8; --rw-level-5: #ff7575;
   --rw-rank-1: #98a0ae; --rw-rank-2: #2bb665; --rw-rank-3: #18b0c1;
   --rw-rank-4: #72a0ee; --rw-rank-5: #b190ea; --rw-rank-6: #dd7be0;
   --rw-rank-7: #f1842a; --rw-rank-8: #ed817d; --rw-rank-9: #f07aa5;
@@ -411,8 +429,8 @@
   --rw-btn-weight: 600;
   --rw-heading-weight: 600;
   --rw-tracking: 0;
-  --rw-level-1: #7f8c8d; --rw-level-2: #16a085; --rw-level-3: #2980b9;
-  --rw-level-4: #8e44ad; --rw-level-5: #c0392b;
+  --rw-level-1: #5f696a; --rw-level-2: #107360; --rw-level-3: #236c9d;
+  --rw-level-4: #8e44ad; --rw-level-5: #bb382a;
   --rw-rank-1: #5e6778; --rw-rank-2: #1c7641; --rw-rank-3: #0f727d;
   --rw-rank-4: #1b60d8; --rw-rank-5: #7a43db; --rw-rank-6: #ab29b0;
   --rw-rank-7: #a34f0a; --rw-rank-8: #c8211b; --rw-rank-9: #c81657;
@@ -437,6 +455,12 @@
   --rw-chip: #34495e;
   --rw-hover: #34495e;
   --rw-field: #22313f;
+  /* Level ranglari shu blokda e'lon qilinmagan edi, ya'ni light
+     blokdan meros bo'lib qolgan va quyuq sirtda o'qilmasdi — eng
+     yomoni 1.04:1 (`brutal.dark`). Aniq yozildi: ohang saqlangan,
+     faqat yorqinlik AA (4.5:1) ga yetadigan darajaga ko'tarilgan. */
+  --rw-level-1: #b1b8b9; --rw-level-2: #1dceac; --rw-level-3: #85bee4;
+  --rw-level-4: #cfaade; --rw-level-5: #e9a69f;
   --rw-rank-1: #b2b7c2; --rw-rank-2: #35d075; --rw-rank-3: #1bc9dc;
   --rw-rank-4: #97b8f2; --rw-rank-5: #c4abef; --rw-rank-6: #e69ee8;
   --rw-rank-7: #f5a563; --rw-rank-8: #f2a3a1; --rw-rank-9: #f49fbe;
@@ -472,7 +496,7 @@
   --rw-heading-weight: 500;
   --rw-tracking: 0;
   --rw-uppercase: uppercase;
-  --rw-level-1: #757575; --rw-level-2: #2e7d32; --rw-level-3: #1565c0;
+  --rw-level-1: #6b6b6b; --rw-level-2: #2d7a31; --rw-level-3: #1565c0;
   --rw-level-4: #6a1b9a; --rw-level-5: #c62828;
   --rw-rank-1: #626a7c; --rw-rank-2: #1d7a43; --rw-rank-3: #107681;
   --rw-rank-4: #1b63de; --rw-rank-5: #7f49dc; --rw-rank-6: #b12bb6;
@@ -496,6 +520,12 @@
   --rw-hover: #2a2a2a;
   --rw-field: #121212;
   --rw-btn-shadow: 0 1px 3px rgba(187, 134, 252, .4);
+  /* Level ranglari shu blokda e'lon qilinmagan edi, ya'ni light
+     blokdan meros bo'lib qolgan va quyuq sirtda o'qilmasdi — eng
+     yomoni 1.04:1 (`brutal.dark`). Aniq yozildi: ohang saqlangan,
+     faqat yorqinlik AA (4.5:1) ga yetadigan darajaga ko'tarilgan. */
+  --rw-level-1: #929292; --rw-level-2: #3da743; --rw-level-3: #4a95eb;
+  --rw-level-4: #bb74e7; --rw-level-5: #e27070;
   --rw-rank-1: #8b94a4; --rw-rank-2: #27a75d; --rw-rank-3: #16a2b1;
   --rw-rank-4: #5e92eb; --rw-rank-5: #a57ee7; --rw-rank-6: #d764db;
   --rw-rank-7: #e9710f; --rw-rank-8: #ea6b66; --rw-rank-9: #ed6194;
@@ -569,8 +599,8 @@
   --rw-btn-weight: 600;
   --rw-heading-weight: 600;
   --rw-tracking: -.01em;
-  --rw-level-1: #8b93a5; --rw-level-2: #2f8f6a; --rw-level-3: #4a68b0;
-  --rw-level-4: #8264ad; --rw-level-5: #b4514c;
+  --rw-level-1: #5a6274; --rw-level-2: #246d51; --rw-level-3: #4460a2;
+  --rw-level-4: #72539d; --rw-level-5: #9d4642;
   --rw-rank-1: #5a6272; --rw-rank-2: #1a703e; --rw-rank-3: #0f6c76;
   --rw-rank-4: #195bcc; --rw-rank-5: #763cda; --rw-rank-6: #a327a7;
   --rw-rank-7: #994a0a; --rw-rank-8: #bf201a; --rw-rank-9: #be1553;
@@ -612,8 +642,8 @@
   --rw-btn-weight: 700;
   --rw-heading-weight: 700;
   --rw-tracking: -.01em;
-  --rw-level-1: #8a76ab; --rw-level-2: #2f9e6d; --rw-level-3: #4f7fe0;
-  --rw-level-4: #8b5cf6; --rw-level-5: #d1547f;
+  --rw-level-1: #6e5991; --rw-level-2: #21704e; --rw-level-3: #245cce;
+  --rw-level-4: #6f35f4; --rw-level-5: #b3305d;
   --rw-rank-1: #5c6475; --rw-rank-2: #1b723f; --rw-rank-3: #0f6e78;
   --rw-rank-4: #1a5dd1; --rw-rank-5: #773eda; --rw-rank-6: #a728ab;
   --rw-rank-7: #9e4d0a; --rw-rank-8: #c1201a; --rw-rank-9: #c11554;
@@ -648,8 +678,8 @@
   --rw-heading-weight: 600;
   --rw-tracking: -.015em;
   --rw-blur: blur(10px);
-  --rw-level-1: #9a94b8; --rw-level-2: #4fe0bd; --rw-level-3: #7fb0ff;
-  --rw-level-4: #c9a8ff; --rw-level-5: #ff8095;
+  --rw-level-1: #b2aec9; --rw-level-2: #4fe0bd; --rw-level-3: #83b3ff;
+  --rw-level-4: #c9a8ff; --rw-level-5: #ff92a4;
   --rw-rank-1: #acb2be; --rw-rank-2: #2fca70; --rw-rank-3: #1ac3d5;
   --rw-rank-4: #8eb2f1; --rw-rank-5: #c0a5ee; --rw-rank-6: #e496e6;
   --rw-rank-7: #f49d55; --rw-rank-8: #f19b98; --rw-rank-9: #f395b8;
@@ -689,8 +719,8 @@
   --rw-heading-weight: 700;
   --rw-tracking: 0;
   --rw-text-emboss: 0 1px 0 rgba(255, 255, 255, .85);
-  --rw-level-1: #6a737e; --rw-level-2: #3d6b28; --rw-level-3: #3a6ba8;
-  --rw-level-4: #6b4a91; --rw-level-5: #93342c;
+  --rw-level-1: #474d54; --rw-level-2: #305520; --rw-level-3: #2a4d79;
+  --rw-level-4: #5b3f7b; --rw-level-5: #852f28;
   --rw-rank-1: #464c59; --rw-rank-2: #145730; --rw-rank-3: #0b535b;
   --rw-rank-4: #14479f; --rw-rank-5: #5c24bc; --rw-rank-6: #7f1f82;
   --rw-rank-7: #7a3b08; --rw-rank-8: #961915; --rw-rank-9: #951141;

@@ -55,6 +55,16 @@ ACCENT_PAIR = ("--rw-accent-fg", "--rw-accent")
 TIERS = ("--rw-text", "--rw-text-2", "--rw-muted", "--rw-faint")
 #: Unvon ranglari — ism shu rangda yoziladi (ADR-0018), ya'ni bu ham matn.
 RANKS = tuple(f"--rw-rank-{i}" for i in range(1, 10))
+#: Qiyinlik darajasi — `.level-*` shu ranglarda yoziladi. Reyting kabi bu ham
+#: MATN: `DifficultyBadge` uni `--rw-chip` ustiga qo'yadi, ro'yxatlarda esa
+#: to'g'ridan-to'g'ri sirt ustida turadi. 2026-09-13 gacha tekshirilmagan edi
+#: va o'lchanganda 85 juftlikdan 50 tasi yiqilardi.
+LEVELS = tuple(f"--rw-level-{i}" for i in range(1, 6))
+#: Oraliq pog'onalar `globals.css` da ikki qo'shni rangning oklab aralashmasi
+#: sifatida yasaladi. Aralashmaning yorqinligi chetlari ORASIDA bo'ladi, ya'ni
+#: ikkala uchi o'tsa ham o'zi yiqilishi mumkin (biri fondan yorug', ikkinchisi
+#: quyuq bo'lsa) — shuning uchun alohida o'lchanadi.
+LEVEL_MIXES = ((".level-basic", 1, 2), (".level-upper", 2, 3))
 #: Panel darajasidagi sirtlar — fon ustiga tushadi.
 PANELS = ("--rw-surface", "--rw-surface-2", "--rw-chrome")
 #: Panel ICHIDAGI sirtlar — panel ustiga tushadi.
@@ -108,6 +118,50 @@ def luminance(color: Color) -> float:
 def contrast(fg: Color, bg: Color) -> float:
     a, b = luminance(fg), luminance(bg)
     return (max(a, b) + 0.05) / (min(a, b) + 0.05)
+
+
+def srgb_linear(v: float) -> float:
+    return v / 12.92 if v <= 0.04045 else ((v + 0.055) / 1.055) ** 2.4
+
+
+def linear_srgb(v: float) -> float:
+    return v * 12.92 if v <= 0.0031308 else 1.055 * (v ** (1 / 2.4)) - 0.055
+
+
+def oklab(color: Color) -> tuple[float, float, float]:
+    """sRGB -> Oklab. CSS `color-mix(in oklab, ...)` shu fazoda aralashtiradi."""
+    r, g, b = (srgb_linear(color[i] / 255) for i in range(3))
+    l = 0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b
+    m = 0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b
+    s = 0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b
+    l_, m_, s_ = l ** (1 / 3), m ** (1 / 3), s ** (1 / 3)
+    return (
+        0.2104542553 * l_ + 0.7936177850 * m_ - 0.0040720468 * s_,
+        1.9779984951 * l_ - 2.4285922050 * m_ + 0.4505937099 * s_,
+        0.0259040371 * l_ + 0.7827717662 * m_ - 0.8086757660 * s_,
+    )
+
+
+def from_oklab(lab: tuple[float, float, float]) -> Color:
+    L, a, b = lab
+    l_ = L + 0.3963377774 * a + 0.2158037573 * b
+    m_ = L - 0.1055613458 * a - 0.0638541728 * b
+    s_ = L - 0.0894841775 * a - 1.2914855480 * b
+    l, m, s = l_ ** 3, m_ ** 3, s_ ** 3
+    lin = (
+        4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+        -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+        -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s,
+    )
+    return tuple(  # type: ignore[return-value]
+        round(max(0.0, min(1.0, linear_srgb(v))) * 255) for v in lin
+    ) + (1.0,)
+
+
+def mix_oklab(first: Color, second: Color) -> Color:
+    """`color-mix(in oklab, first, second)` — teng ulushda."""
+    a, b = oklab(first), oklab(second)
+    return from_oklab(tuple((a[i] + b[i]) / 2 for i in range(3)))  # type: ignore[arg-type]
 
 
 def read_blobs(css: str) -> dict[str, list[Color]]:
@@ -230,7 +284,8 @@ def main() -> int:
                     f"{name}  maydon chegarasi: {ratio:.2f}:1, kerak {FIELD_MIN}"
                 )
 
-        for tier in TIERS + RANKS:
+        to_check: list[tuple[str, Color, str]] = []
+        for tier in TIERS + RANKS + LEVELS:
             if tier not in tokens:
                 failures.append(f"{name}  {tier}: token yo'q")
                 continue
@@ -238,6 +293,15 @@ def main() -> int:
             if color is None:
                 failures.append(f"{name}  {tier}: rang o'qilmadi ({tokens[tier].strip()})")
                 continue
+            to_check.append((tier, color, tokens[tier].strip()))
+
+        for label, lo, hi in LEVEL_MIXES:
+            first = parse(tokens.get(f"--rw-level-{lo}", ""))
+            second = parse(tokens.get(f"--rw-level-{hi}", ""))
+            if first is not None and second is not None:
+                to_check.append((label, mix_oklab(first, second), f"oklab mix(level-{lo}, level-{hi})"))
+
+        for tier, color, raw in to_check:
             checked += 1
 
             def against(bg: Color, fg: Color = color) -> float:
@@ -247,7 +311,7 @@ def main() -> int:
             ratio = against(worst_bg)
             if ratio < AA:
                 failures.append(
-                    f"{name}  {tier}: {tokens[tier].strip()} → {ratio:.2f}:1 "
+                    f"{name}  {tier}: {raw} → {ratio:.2f}:1 "
                     f"(fon #{worst_bg[0]:02x}{worst_bg[1]:02x}{worst_bg[2]:02x}), kerak {AA}"
                 )
 
