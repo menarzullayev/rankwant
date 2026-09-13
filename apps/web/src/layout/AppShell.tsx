@@ -14,6 +14,7 @@ import AppFooter from "./AppFooter";
 import AppHeader from "./AppHeader";
 import { VerifyBanner } from "@/components/VerifyBanner";
 import { Customizer } from "@/components/customizer/Customizer";
+import { CUSTOMIZER_ENABLED } from "@/lib/theme/flag";
 import { GeoNudge } from "@/components/GeoNudge";
 import { ContestInvite } from "@/components/ContestInvite";
 import { WelcomeNotice } from "@/components/WelcomeNotice";
@@ -110,8 +111,9 @@ export default function AppShell({
             </UpdatesProvider>
             {/* Suzuvchi tugma va panel — `Shell` dan tashqarida, chunki
                 ular sahifa tuzilishiga bog'liq emas va `bare` sahifalarda
-                ham kerak bo'lishi mumkin. */}
-            <Customizer />
+                ham kerak bo'lishi mumkin. Bayroq o'chiq bo'lsa umuman
+                chizilmaydi (D38). */}
+            {CUSTOMIZER_ENABLED && <Customizer />}
           </SessionProvider>
         </CustomizerProvider>
       </ThemeProvider>

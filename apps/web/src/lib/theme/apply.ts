@@ -118,9 +118,31 @@ export function applyAppearance(appearance: AppearancePrefs) {
   else delete root.dataset.density;
 }
 
-/** Qulaylik sozlamalari — hammasi `data-*` atributi orqali, CSS da
- *  qoidalar bor. JS bilan stil yozilmaydi: shunda `globals.css` yagona
- *  haqiqat manbai bo'lib qoladi. */
+/** Rang ajratolmaslik uchun TUSLAR (D44).
+ *
+ *  Protanopiya va deuteranopiyada qizil-yashil o'qi yo'qoladi, ko'k-sariq
+ *  qoladi — shuning uchun holatlar shu o'qqa ko'chiriladi. Tritanopiyada
+ *  aksincha. Bu SIMULYATSIYA emas: rang ajratolmaydigan odam o'z holatini
+ *  allaqachon shunday ko'radi, unga palitraning MOSLASHGANI kerak. */
+const VISION_HUES = {
+  protan: { ok: 210, warn: 55, bad: 32 },
+  tritan: { ok: 140, warn: 320, bad: 10 },
+} as const;
+
+/** Holat → (ink, soft) token juftliklari. */
+const STATE_TOKENS = {
+  ok: ["--rw-ok-ink", "--rw-ok-soft"],
+  warn: ["--rw-warn-ink", "--rw-warn-soft"],
+  bad: ["--rw-bad-ink", "--rw-bad-soft"],
+} as const;
+
+/** Qulaylik sozlamalari.
+ *
+ *  Uchtasi `data-*` atributi orqali (CSS da qoidalar bor). Rang
+ *  ajratolmaslik palitrasi esa INLINE yoziladi: u har palitrada boshqa
+ *  fon ustida turadi va CSS bilan statik qiymat yozib bo'lmaydi —
+ *  `[data-style].dark` bloklari har qanday `[data-vision]` qoidasidan
+ *  xoslikda ustun, ya'ni statik yechim jimgina ishlamasdi. */
 export function applyA11y(a11y: A11yPrefs) {
   const root = document.documentElement;
   const set = (key: string, value: string | undefined) => {
@@ -131,6 +153,29 @@ export function applyA11y(a11y: A11yPrefs) {
   set("motion", a11y.motion === "reduce" ? "reduce" : undefined);
   set("targets", a11y.bigTargets ? "big" : undefined);
   set("focus", a11y.strongFocus ? "strong" : undefined);
+
+  const inks = Object.values(STATE_TOKENS).map(([ink]) => ink);
+  if (!a11y.vision || a11y.vision === "normal") {
+    for (const token of inks) root.style.removeProperty(token);
+    return;
+  }
+
+  const hues = VISION_HUES[a11y.vision];
+  const backgrounds = readBackgrounds();
+  if (!backgrounds.length) {
+    // O'lchab bo'lmadi — palitra o'zgartirilmaydi. Yolg'on rang
+    // qo'yishdan ko'ra tegmaslik xavfsizroq.
+    for (const token of inks) root.style.removeProperty(token);
+    return;
+  }
+  for (const state of ["ok", "warn", "bad"] as const) {
+    const [inkToken, softToken] = STATE_TOKENS[state];
+    const soft = parseColor(readToken(softToken));
+    const targets = soft ? [...backgrounds, soft] : backgrounds;
+    const derived = deriveAccent(hues[state], 0.9, targets);
+    if (derived) root.style.setProperty(inkToken, toHex(derived));
+    else root.style.removeProperty(inkToken);
+  }
 }
 
 /** Uslub — `StyleContext` ham yozadi, lekin paneldan tanlanganda ham

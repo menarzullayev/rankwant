@@ -9,10 +9,10 @@ import { MenuIcon } from "@/icons";
 import { NAV } from "./nav";
 import HeaderStatus from "./HeaderStatus";
 import SearchBox from "./SearchBox";
-import StylePicker from "./StylePicker";
 import { LocaleSwitch } from "./LocaleSwitch";
-import ThemeToggle from "./ThemeToggle";
 import UpdatesBell from "@/components/UpdatesBell";
+import { CustomizerTrigger } from "@/components/customizer/CustomizerTrigger";
+import { CUSTOMIZER_ENABLED } from "@/lib/theme/flag";
 import UserMenu from "./UserMenu";
 
 export default function AppHeader() {
@@ -35,11 +35,11 @@ export default function AppHeader() {
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b rw-divider rw-chrome px-4 md:px-6">
-      {/* 40x40 — header'dagi boshqa tugmalar bilan bir o'lchamda
-          (`ThemeToggle`, `StylePicker`). Ilgari bosiladigan maydon faqat
-          ikonka kattaligida edi: 20x20, ya'ni WCAG 2.5.8 (AA) talab
-          qilgan 24x24 dan ham kichik. `-ml-2.5` ikonkani eski joyida
-          qoldiradi — faqat nishon kattalashadi, ko'rinish o'zgarmaydi. */}
+      {/* 40x40 — header'dagi boshqa tugmalar bilan bir o'lchamda.
+          Ilgari bosiladigan maydon faqat ikonka kattaligida edi: 20x20,
+          ya'ni WCAG 2.5.8 (AA) talab qilgan 24x24 dan ham kichik.
+          `-ml-2.5` ikonkani eski joyida qoldiradi — faqat nishon
+          kattalashadi, ko'rinish o'zgarmaydi. */}
       <button
         type="button"
         onClick={toggleMobileSidebar}
@@ -64,9 +64,13 @@ export default function AppHeader() {
             lekin alohida ikonka bilan: ikkalasi bir xil ko'rinishda
             bo'lsa qaysi biri nima ekanini ajratib bo'lmasdi. */}
         <UpdatesBell />
-        {!auth && <StylePicker />}
+        {/* Ko'rinish sozlagichi — mavzu va uslub tugmalari o'rniga
+            (D3). Ikkitasi ham bitta panelga yig'ildi, chunki bir xil
+            sozlamani ikki joydan boshqarish chalkashlik tug'diradi.
+            Bu ikonka telefonda ham kerak: u yerda suzuvchi tugma yo'q
+            (D32), ya'ni bu — asosiy kirish nuqtasi. */}
+        {!auth && CUSTOMIZER_ENABLED && <CustomizerTrigger />}
         <LocaleSwitch />
-        <ThemeToggle />
         <UserMenu />
       </div>
     </header>
