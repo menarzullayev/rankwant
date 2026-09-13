@@ -87,6 +87,75 @@ check_hash() {
 }
 
 # --- Python konteynerlari ------------------------------------------------
+# `py_inventory` — `.py` fayllar ro'yxati (nisbiy yo'l, tartiblangan).
+# `host` yoki `container:<konteyner nomi>` qabul qiladi.
+#
+# ⚠️ Chiqarib tashlash SHART: `apps/api` ichida mahalliy `.venv/` bo'ladi
+# (o'lchandi: `.venv/Lib/site-packages/_virtualenv.py`) va u konteynerda
+# yo'q — filtrsiz skript HAR doim «eskirgan» derdi va tekshiruvni
+# foydasiz qilardi. Shuning uchun `__pycache__`, nuqta bilan boshlanadigan
+# har qanday katalog (`.venv`, `.mypy_cache`, …) va `node_modules` tashlanadi.
+py_inventory() {
+  if [ "$1" = "host" ]; then
+    ( cd apps/api && find . -name '*.py' \
+        -not -path '*/__pycache__/*' -not -path '*/.*/*' \
+        -not -path '*/node_modules/*' | sort )
+  else
+    docker exec "${1#container:}" sh -c \
+      "cd /app && find . -name '*.py' \
+         -not -path '*/__pycache__/*' -not -path '*/.*/*' \
+         -not -path '*/node_modules/*' | sort" 2>/dev/null
+  fi
+}
+
+# `check_inventory NAME` — konteynerda manbadagi fayllar TO'LIQ bormi.
+#
+# Nega kerak: `core/serializers.py` hash'i — eng sezgir nishon, lekin u
+# YANGI ILOVANI ko'rsatmaydi. 2026-09-13 da aynan shunday bo'ldi:
+# `updates` ilovasi manbada bor, konteynerda yo'q, `/updates/` esa 404 —
+# skript baribir «hamma konteyner joriy kodda» derdi, chunki shartnoma
+# fayli o'zgarmagan edi.
+#
+# Faqat RO'YXAT solishtiriladi, hash emas: hash qator oxiri (CRLF ↔ LF)
+# farqidan yolg'on «ESKIRGAN» beradi — Windows'da `git checkout` fayllarni
+# CRLF ga o'giradi (git shu haqda ogohlantiradi). Ro'yxat esa bunga
+# berilmaydi va aynan kerakli narsani — fayl to'plamini — o'lchaydi.
+#
+# Farq bo'lmasa hech narsa chop etilmaydi: yuqoridagi `check_hash` qatori
+# allaqachon «joyida» deb yozgan.
+check_inventory() {
+  local name="$1" service="$2"
+  local host_list ctr_list missing extra note
+
+  host_list="$(py_inventory host)"
+  ctr_list="$(py_inventory "container:$name")"
+
+  if [ -z "$ctr_list" ]; then
+    printf '%-22s %s%-15s%s %-22s %s\n' "$name" "$Y" 'TEKSHIRILMADI' "$N" '-' \
+      "fayl ro'yxati o'qilmadi"
+    stale=$((stale + 1))
+    return
+  fi
+
+  missing="$(comm -23 <(printf '%s\n' "$host_list") <(printf '%s\n' "$ctr_list"))"
+  extra="$(comm -13 <(printf '%s\n' "$host_list") <(printf '%s\n' "$ctr_list"))"
+
+  if [ -n "$missing" ]; then
+    note="$(printf '%s\n' "$missing" | grep -c .) fayl konteynerda yo'q — $(printf '%s\n' "$missing" | head -1)"
+  elif [ -n "$extra" ]; then
+    note="$(printf '%s\n' "$extra" | grep -c .) fayl konteynerda ortiqcha — $(printf '%s\n' "$extra" | head -1)"
+  else
+    return
+  fi
+
+  # Image nomi = SERVIS nomi, konteyner nomi EMAS: `rankwant-api-1:latest`
+  # degan image yo'q, `rankwant-api:latest` bor. `check_hash` ham shu
+  # sababdan `$service` ni oladi.
+  printf '%-22s %s%-15s%s %-22s %s\n' "$name" "$R" 'ESKIRGAN' "$N" \
+    "$(img_time "rankwant-${service}:latest")" "$note"
+  stale=$((stale + 1))
+}
+
 # Ular `apps/api` dan quriladi; `core/serializers.py` — kirish
 # shartnomasi yashaydigan fayl, ya'ni eng sezgir nishon.
 for entry in \
@@ -100,6 +169,7 @@ do
     missing=$((missing + 1)); continue
   fi
   check_hash "$name" "$service" "apps/api/core/serializers.py" "/app/core/serializers.py"
+  check_inventory "$name" "$service"
 done
 
 # --- web (Next.js) ------------------------------------------------------
