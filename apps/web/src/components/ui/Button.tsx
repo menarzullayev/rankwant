@@ -7,9 +7,20 @@ const STYLES: Record<Variant, string> = {
   outline: "border rw-line rw-strong rw-hover-bg " + " ",
 };
 
+/** Umumiy tugma asosi.
+ *
+ *  `rw-focus-ring` SHART (WCAG 2.4.11). Ilgari u yo'q edi va klaviatura
+ *  bilan yurgan odam faqat brauzerning ingichka standart halqasini
+ *  ko'rardi — o'lchandi: `/kirish` da 17 ta fokuslanadigan elementdan
+ *  9 tasida halqa yo'q edi, shu jumladan ASOSIY tugmada. `Button`
+ *  butun ilova bo'ylab ishlatiladi, ya'ni bu bitta qator butun saytni
+ *  tuzatadi.
+ *
+ *  `--rw-accent-ink` `check_contrast.py` da `FOCUS_MIN` (3:1) bo'yicha
+ *  tekshiriladi — eng yomon palitrada ham 4.31:1. */
 const BASE =
   "inline-flex h-11 items-center justify-center gap-2 rw-btn-radius px-4 text-theme-sm " +
-  "font-medium transition rw-btn-label disabled:opacity-60";
+  "font-medium transition rw-btn-label rw-focus-ring disabled:opacity-60";
 
 /** Aylanuvchi halqa. `prefers-reduced-motion` da aylanmaydi, lekin
  *  ko'rinib turadi — harakat o'chirilgani holat yashirilishini
