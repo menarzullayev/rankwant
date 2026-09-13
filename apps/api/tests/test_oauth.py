@@ -7,8 +7,9 @@ bog'lash qoidasi.
 
 from __future__ import annotations
 
+import base64
 import hashlib
-import hmac
+import json
 import time
 from typing import Any
 
@@ -19,24 +20,34 @@ from rest_framework.test import APIClient
 from core import account, oauth
 from core.models import SocialAccount, User
 
-BOT = "123456:AAbbCCddEEff"
+#: Telegram OIDC credential'lari. Ataylab SOXTA: haqiqiy Client ID ham,
+#: Secret ham repoga tushmasligi kerak (`.env.public` da yashaydi).
+TG_CLIENT_ID = "123456789"
+TG_CLIENT_SECRET = "be_test_secret"
 
 
 @pytest.fixture
 def sozlangan(settings: Any) -> Any:
     settings.GOOGLE_CLIENT_ID = "cid"
     settings.GOOGLE_CLIENT_SECRET = "secret"
-    settings.TELEGRAM_BOT_TOKEN = BOT
-    settings.TELEGRAM_BOT_USERNAME = "rankwant_bot"
+    settings.TELEGRAM_CLIENT_ID = TG_CLIENT_ID
+    settings.TELEGRAM_CLIENT_SECRET = TG_CLIENT_SECRET
     settings.SITE_URL = "https://rankwant.uz"
     return settings
 
 
 def kelgan(monkeypatch: pytest.MonkeyPatch, email: str, uid: str = "u1") -> None:
+    """Kimlikni soxtalashtiradi — provayder API'siga chiqilmaydi.
+
+    Uchinchi argument (PKCE verifier) shart: callback uni har doim
+    uzatadi, provayder esa ishlatmasa ham qabul qilishi kerak.
+    """
     monkeypatch.setattr(
         oauth,
         "identity",
-        lambda provider, code: oauth.Identity(provider, uid, email, email.split("@")[0]),
+        lambda provider, code, verifier="": oauth.Identity(
+            provider, uid, email, email.split("@")[0]
+        ),
     )
 
 
@@ -49,11 +60,39 @@ def callback(client: APIClient, state: str = "s1") -> Any:
     )
 
 
+def id_token(**claims: Any) -> str:
+    """Imzosiz JWT qaytaradi.
+
+    Imzo ATAYLAB tekshirilmaydi (OIDC Core 3.1.3.7, 6-qadam — token
+    endpoint'idan to'g'ridan-to'g'ri kelgan `id_token` uchun TLS yetarli),
+    shuning uchun testda ham imzo kerak emas: faqat tuzilish muhim.
+    """
+    base: dict[str, Any] = {
+        "iss": oauth.TELEGRAM_ISSUER,
+        "aud": TG_CLIENT_ID,
+        "sub": "77",
+        "preferred_username": "ali",
+        "exp": int(time.time()) + 60,
+    }
+    base.update(claims)
+
+    def part(obj: dict[str, Any]) -> str:
+        raw = json.dumps(obj, separators=(",", ":")).encode()
+        return base64.urlsafe_b64encode(raw).rstrip(b"=").decode("ascii")
+
+    return f"{part({'alg': 'RS256', 'typ': 'JWT'})}.{part(base)}.imzo"
+
+
+def almashuv(monkeypatch: pytest.MonkeyPatch, token: str) -> None:
+    """`/token` javobini soxtalashtiradi — tarmoqqa chiqilmaydi."""
+    monkeypatch.setattr(oauth, "_request", lambda *a, **k: {"id_token": token})
+
+
 class TestSozlash:
     def test_kalitsiz_provayder_royxatda_yoq(self, settings: Any) -> None:
         settings.GOOGLE_CLIENT_ID = ""
         settings.GITHUB_CLIENT_ID = ""
-        settings.TELEGRAM_BOT_TOKEN = ""
+        settings.TELEGRAM_CLIENT_ID = ""
 
         assert oauth.configured() == []
 
@@ -200,34 +239,78 @@ class TestBoglash:
 
 
 class TestTelegram:
-    def _imzo(self, payload: dict[str, str]) -> str:
-        check = "\n".join(f"{k}={payload[k]}" for k in sorted(payload) if payload[k])
-        secret = hashlib.sha256(BOT.encode()).digest()
-        return hmac.new(secret, check.encode(), hashlib.sha256).hexdigest()
+    """OIDC: kod token'ga almashadi, kimlik `id_token` ichidan o'qiladi."""
 
-    def test_togri_imzo_qabul_qilinadi(self, sozlangan: Any) -> None:
-        payload = {"id": "77", "username": "ali", "auth_date": str(int(time.time()))}
-        payload["hash"] = self._imzo(payload)
+    def test_sub_va_taxallus_olinadi(self, sozlangan: Any, monkeypatch: Any) -> None:
+        almashuv(monkeypatch, id_token())
 
-        ident = oauth.telegram_identity(payload)
+        ident = oauth.identity("telegram", "kod", "verifier")
 
+        assert ident.provider == "telegram"
         assert ident.uid == "77"
+        assert ident.handle == "ali"
         assert ident.email == "", "Telegram pochta bermaydi"
 
-    def test_soxta_imzo_rad_etiladi(self, sozlangan: Any) -> None:
-        payload = {"id": "77", "auth_date": str(int(time.time())), "hash": "0" * 64}
+    def test_taxallus_bosh_bolsa_uid_dan_yasaladi(self, sozlangan: Any, monkeypatch: Any) -> None:
+        almashuv(monkeypatch, id_token(preferred_username=""))
+
+        ident = oauth.identity("telegram", "kod", "verifier")
+
+        assert ident.suggested == "tg77"
+
+    def test_boshqa_issuer_rad_etiladi(self, sozlangan: Any, monkeypatch: Any) -> None:
+        almashuv(monkeypatch, id_token(iss="https://soxta.example"))
+
+        with pytest.raises(oauth.OAuthError, match="iss"):
+            oauth.identity("telegram", "kod", "verifier")
+
+    def test_boshqa_audience_rad_etiladi(self, sozlangan: Any, monkeypatch: Any) -> None:
+        """Boshqa bot uchun berilgan token bizning hisob ochmasligi kerak."""
+        almashuv(monkeypatch, id_token(aud="999"))
+
+        with pytest.raises(oauth.OAuthError, match="aud"):
+            oauth.identity("telegram", "kod", "verifier")
+
+    def test_aud_royxat_bolsa_ham_qabul_qilinadi(self, sozlangan: Any, monkeypatch: Any) -> None:
+        almashuv(monkeypatch, id_token(aud=[TG_CLIENT_ID, "999"]))
+
+        assert oauth.identity("telegram", "kod", "verifier").uid == "77"
+
+    def test_muddati_tugagan_rad_etiladi(self, sozlangan: Any, monkeypatch: Any) -> None:
+        almashuv(monkeypatch, id_token(exp=int(time.time()) - 1))
+
+        with pytest.raises(oauth.OAuthError, match="muddati"):
+            oauth.identity("telegram", "kod", "verifier")
+
+    def test_sub_siz_rad_etiladi(self, sozlangan: Any, monkeypatch: Any) -> None:
+        almashuv(monkeypatch, id_token(sub=""))
+
+        with pytest.raises(oauth.OAuthError, match="sub"):
+            oauth.identity("telegram", "kod", "verifier")
+
+    def test_buzuq_token_rad_etiladi(self, sozlangan: Any, monkeypatch: Any) -> None:
+        almashuv(monkeypatch, "bu.jwt.emas")
 
         with pytest.raises(oauth.OAuthError):
-            oauth.telegram_identity(payload)
+            oauth.identity("telegram", "kod", "verifier")
 
-    def test_eskirgan_imzo_rad_etiladi(self, sozlangan: Any) -> None:
-        """Qayta yuborishning oldini oladi: eski imzolangan ma'lumot bilan
-        kirib bo'lmaydi."""
-        payload = {"id": "77", "auth_date": str(int(time.time()) - oauth.TELEGRAM_MAX_AGE - 60)}
-        payload["hash"] = self._imzo(payload)
+    def test_id_token_yoq_bolsa_rad_etiladi(self, sozlangan: Any, monkeypatch: Any) -> None:
+        monkeypatch.setattr(oauth, "_request", lambda *a, **k: {})
 
         with pytest.raises(oauth.OAuthError):
-            oauth.telegram_identity(payload)
+            oauth.identity("telegram", "kod", "verifier")
+
+    def test_pkce_challenge_s256(self) -> None:
+        """`code_challenge` — base64url(SHA256(verifier)), to'ldirishsiz."""
+        verifier, challenge = oauth.pkce_pair()
+        kutilgan = (
+            base64.urlsafe_b64encode(hashlib.sha256(verifier.encode("ascii")).digest())
+            .rstrip(b"=")
+            .decode("ascii")
+        )
+
+        assert challenge == kutilgan
+        assert "=" not in challenge, "PKCE to'ldirishsiz bo'lishi shart"
 
 
 @pytest.mark.django_db
@@ -379,38 +462,43 @@ class TestUzish:
 
 @pytest.mark.django_db
 class TestTelegramniUlash:
-    """Telegram vidjeti `SocialStartView` dan o'tmaydi va uning
-    callback'i `state` siz GET. Ya'ni «kirgan bo'lsa bog'la» qoidasi
-    hisobni egallash yo'li bo'lardi — quyidagi ikkinchi test aynan shuni
-    tekshiradi."""
+    """Telegram ham endi `SocialStartView` dan o'tadi, ya'ni `state` va
+    niyat qoidalari Google/GitHub bilan AYNAN bir xil.
 
-    def imzolangan(self) -> dict[str, str]:
-        payload = {"id": "77", "username": "ali", "auth_date": str(int(time.time()))}
-        check = "\n".join(f"{k}={payload[k]}" for k in sorted(payload) if payload[k])
-        secret = hashlib.sha256(BOT.encode()).digest()
-        payload["hash"] = hmac.new(secret, check.encode(), hashlib.sha256).hexdigest()
-        return payload
+    Ilgari u iframe vidjeti edi: callback'i `state` siz GET bo'lgani
+    uchun «kirgan bo'lsa bog'la» qoidasi hisobni egallash yo'li bo'lardi.
+    Shu sababli niyat alohida POST (`link-start`) bilan qo'yilardi —
+    o'sha yo'l ham, o'sha sinov ham endi keraksiz.
+    """
 
-    def qaytish(self, client: APIClient) -> Any:
-        return client.get(reverse("social-telegram"), self.imzolangan())
+    def qaytish(self, client: APIClient, state: str = "s1") -> Any:
+        session = client.session
+        session["social_state"] = state
+        session.save()
+        return client.get(
+            reverse("social-callback", args=["telegram"]) + f"?code=c&state={state}",
+            follow=False,
+        )
 
-    def test_niyat_belgilangach_ulanadi(self, sozlangan: Any) -> None:
+    def test_niyat_belgilangach_ulanadi(self, sozlangan: Any, monkeypatch: Any) -> None:
+        almashuv(monkeypatch, id_token())
         user = User.objects.create_user(
             username="egasi", email="a@example.com", password="Parol!12345"
         )
         c = APIClient()
         c.force_login(user)
 
-        assert c.post(reverse("social-link-start", args=["telegram"])).status_code == 204
+        c.get(reverse("social-start", args=["telegram"]))  # niyat sessiyada
         r = self.qaytish(c)
 
         assert "social=linked" in r.headers["Location"]
-        assert SocialAccount.objects.filter(user=user, provider="telegram").exists()
+        assert SocialAccount.objects.filter(user=user, provider="telegram", uid="77").exists()
 
-    def test_niyatsiz_ulanmaydi(self, sozlangan: Any) -> None:
-        """Hujum shakli: hujumchi qurbonning brauzerini o'zining
-        imzolangan ma'lumoti bilan callback'ga yuboradi. Niyat sessiyada
-        bo'lmagani uchun bu HECH QACHON bog'lanishga aylanmasligi kerak."""
+    def test_niyatsiz_ulanmaydi(self, sozlangan: Any, monkeypatch: Any) -> None:
+        """Hujum shakli: hujumchi qurbonning brauzerini o'zining kodi bilan
+        callback'ga yuboradi. Niyat sessiyada bo'lmagani uchun bu HECH
+        QACHON bog'lanishga aylanmasligi kerak."""
+        almashuv(monkeypatch, id_token())
         qurbon = User.objects.create_user(
             username="qurbon", email="a@example.com", password="Parol!12345"
         )
@@ -421,10 +509,20 @@ class TestTelegramniUlash:
 
         assert not SocialAccount.objects.filter(user=qurbon).exists(), "hisob egallanmasin"
 
-    def test_boshqa_provayder_niyati_yetmaydi(self, sozlangan: Any) -> None:
+    def test_state_siz_rad_etiladi(self, sozlangan: Any, monkeypatch: Any) -> None:
+        """`state` siz kelgan callback login CSRF bo'lardi (ADR-0016)."""
+        almashuv(monkeypatch, id_token())
+        c = APIClient()
+
+        r = c.get(reverse("social-callback", args=["telegram"]) + "?code=c")
+
+        assert "social=error" in r.headers["Location"]
+
+    def test_boshqa_provayder_niyati_yetmaydi(self, sozlangan: Any, monkeypatch: Any) -> None:
         """Tashlab ketilgan Google urinishi keyinroq Telegram uchun eshik
         ochib qo'ymasligi kerak — shuning uchun niyat provayderga
         bog'langan."""
+        almashuv(monkeypatch, id_token())
         user = User.objects.create_user(
             username="egasi", email="a@example.com", password="Parol!12345"
         )
@@ -435,11 +533,6 @@ class TestTelegramniUlash:
         self.qaytish(c)
 
         assert not SocialAccount.objects.filter(user=user, provider="telegram").exists()
-
-    def test_kirmagan_odam_niyat_belgilay_olmaydi(self, sozlangan: Any) -> None:
-        r = APIClient().post(reverse("social-link-start", args=["telegram"]))
-
-        assert r.status_code in (401, 403)
 
 
 @pytest.mark.django_db
@@ -484,7 +577,9 @@ class TestOchirilganVaBloklangan:
         monkeypatch.setattr(
             oauth,
             "identity",
-            lambda provider, code: oauth.Identity(provider, "u9", "r@example.com", "r", rasm),
+            lambda provider, code, verifier="": oauth.Identity(
+                provider, "u9", "r@example.com", "r", rasm
+            ),
         )
 
         callback(APIClient())

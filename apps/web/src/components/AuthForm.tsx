@@ -10,8 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { Field, type FieldStatus } from "@/components/ui/Field";
 import { Checkbox, SelectField } from "@/components/ui/SelectField";
 import { CountrySelect } from "@/components/ui/CountrySelect";
-import { GithubMark, GoogleMark } from "@/components/ProviderMark";
-import { TelegramButton } from "@/components/TelegramButton";
+import { GithubMark, GoogleMark, TelegramMark } from "@/components/ProviderMark";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t, errorText, type MessageKey } from "@/i18n/messages";
 import { ApiError, getJson, postJson } from "@/lib/api";
@@ -34,23 +33,26 @@ const PROVIDER_LABEL = {
 type Provider = keyof typeof PROVIDER_LABEL;
 
 /** Brend ranglari — rasmiy tugma qoidalaridagi kabi. Ular mavzu
- *  tokenlaridan olinmaydi: brend rangi palitraga qarab o'zgarmaydi. */
+ *  tokenlaridan olinmaydi: brend rangi palitraga qarab o'zgarmaydi.
+ *
+ *  Telegram niki ATAYLAB quyuqlashtirilgan: brend ko'ki `#229ED9` oq matn
+ *  bilan 3.02:1 beradi, ya'ni AA (4.5) dan yiqiladi. Ohang saqlanib
+ *  yorqinlik tushirildi — `#1a77a4` = 4.95:1. Dizayn tokenlaridagi
+ *  `--rw-accent` bilan bir xil yondashuv. */
 const BRAND: Record<Provider, string> = {
   google: "border rw-line bg-white text-[#1f1f1f]",
   github: "bg-[#1f2328] text-white",
-  telegram: "",
+  telegram: "bg-[#1a77a4] text-white",
 };
 
 export function AuthForm({
   mode,
   providers,
-  telegramBot,
   geoVariant = "a",
 }: {
   mode: Mode;
   /** Serverda olinadi — tugmalar HTML da keladi va JS ga bog'liq emas. */
   providers: string[];
-  telegramBot: string;
   /** A/B guruhi (8-qaror), SERVERDA cookie'dan o'qiladi.
    *
    *  `b` — viloyat ro'yxatdan o'tishning o'zida so'raladi. Server
@@ -453,11 +455,13 @@ export function AuthForm({
           </div>
           {/* Ustma-ust uchta to'liq kenglikdagi tugma ~150px vertikal joy
               olardi va forma ekrandan pastga tushib ketardi. Ikkitasi
-              yonma-yon, Telegram esa ostida: uning vidjeti Telegram niki
-              va eng kichik o'lchamida ham ~110px, uchdan bir katak esa
-              mobilda ~85px bo'lardi — ya'ni vidjet qirqilardi.
+              yonma-yon, Telegram esa ostida — shunda ~96px bo'ladi.
               Brend nomi tarjima qilinmaydi, shuning uchun matn shu yerda;
-              to'liq nomi (`Google orqali davom etish`) `aria-label` da. */}
+              to'liq nomi (`Google orqali davom etish`) `aria-label` da.
+
+              Telegram ham endi shu naqshda: ilgari u Telegram'ning o'z
+              iframe vidjetini chizardi (o'lchamini o'zi belgilardi), endi
+              qolganlar kabi oddiy havola — oqim OIDC ga o'tdi. */}
           <div className="grid grid-cols-2 gap-2">
             {providers
               .filter((p): p is Provider => p !== "telegram" && p in PROVIDER_LABEL)
@@ -477,12 +481,17 @@ export function AuthForm({
                 </a>
               ))}
           </div>
-          {providers.includes("telegram") && telegramBot && (
-            <TelegramButton
-              bot={telegramBot}
-              label={t(locale, PROVIDER_LABEL.telegram)}
-              next={next}
-            />
+          {providers.includes("telegram") && (
+            <a
+              href={`/api/v1/auth/telegram/start/${
+                next ? `?next=${encodeURIComponent(next)}` : ""
+              }`}
+              aria-label={t(locale, PROVIDER_LABEL.telegram)}
+              className={`flex h-11 items-center justify-center gap-2 rw-radius-sm text-theme-sm font-medium transition rw-focus-ring hover:brightness-95 ${BRAND.telegram}`}
+            >
+              <TelegramMark />
+              <span className="truncate">Telegram</span>
+            </a>
           )}
           {/* Rozilik matni: OAuth orqali hisob ochilganda `terms_accepted_at`
               shu matnga asoslanib yoziladi (`record_social_consent`).

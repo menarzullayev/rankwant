@@ -18,25 +18,32 @@ from rest_framework.test import APIClient
 from core import oauth, views
 from core.models import SocialAccount, User
 
-BOT = "123456:AAbbCCddEEff"
+TG_CLIENT_ID = "123456789"
+TG_CLIENT_SECRET = "be_test_secret"
 
 
 @pytest.fixture
 def sozlangan(settings: Any) -> Any:
     settings.GOOGLE_CLIENT_ID = "cid"
     settings.GOOGLE_CLIENT_SECRET = "secret"
-    settings.TELEGRAM_BOT_TOKEN = BOT
-    settings.TELEGRAM_BOT_USERNAME = "rankwant_bot"
+    settings.TELEGRAM_CLIENT_ID = TG_CLIENT_ID
+    settings.TELEGRAM_CLIENT_SECRET = TG_CLIENT_SECRET
     settings.SITE_URL = "https://rankwant.uz"
     return settings
 
 
 def kelgan(monkeypatch: pytest.MonkeyPatch, email: str, uid: str = "u1") -> None:
-    """Provayder API'siga chiqmasdan kimlikni soxtalashtiradi."""
+    """Provayder API'siga chiqmasdan kimlikni soxtalashtiradi.
+
+    Uchinchi argument (PKCE verifier) shart: callback uni har doim
+    uzatadi, provayder esa ishlatmasa ham qabul qilishi kerak.
+    """
     monkeypatch.setattr(
         oauth,
         "identity",
-        lambda provider, code: oauth.Identity(provider, uid, email, email.split("@")[0]),
+        lambda provider, code, verifier="": oauth.Identity(
+            provider, uid, email, email.split("@")[0]
+        ),
     )
 
 

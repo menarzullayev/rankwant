@@ -35,7 +35,6 @@ export default async function RegisterPage() {
           <AuthForm
             mode="register"
             providers={auth.providers}
-            telegramBot={auth.telegram_bot}
             geoVariant={geoVariant}
           />
         </Suspense>

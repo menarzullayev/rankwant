@@ -3,9 +3,9 @@ tuman va maktab katalogi (ADR-0017, ADR-0019)."""
 
 from __future__ import annotations
 
-import hashlib
-import hmac
+import base64
 import io
+import json
 import re
 import time
 import uuid
@@ -177,14 +177,32 @@ class TestIjtimoiyHavolalar:
         assert body == again == {"telegram": "aziz_tg", "github": "azizgh"}
         assert calls == ["https://api.github.com/user/42"], "bir marta so'raladi, keyin saqlangan"
 
-    def test_telegram_taxallusi_kirishda_olinadi(self, settings: Any) -> None:
-        settings.TELEGRAM_BOT_TOKEN = "123:abc"
-        payload = {"id": "7", "username": "aziz_tg", "auth_date": str(int(time.time()))}
-        check = "\n".join(f"{key}={payload[key]}" for key in sorted(payload))
-        secret = hashlib.sha256(b"123:abc").digest()
-        payload["hash"] = hmac.new(secret, check.encode(), hashlib.sha256).hexdigest()
+    def test_telegram_taxallusi_kirishda_olinadi(
+        self, settings: Any, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """OIDC: taxallus `id_token` ichidagi `preferred_username` dan olinadi.
 
-        assert oauth.telegram_identity(payload).handle == "aziz_tg"
+        Imzo tekshirilmaydi (OIDC Core 3.1.3.7, 6-qadam), shuning uchun
+        testda ham imzo kerak emas — faqat uch qismli tuzilish muhim.
+        """
+        settings.TELEGRAM_CLIENT_ID = "123456"
+        settings.TELEGRAM_CLIENT_SECRET = "sir"
+        claims = {
+            "iss": "https://oauth.telegram.org",
+            "aud": "123456",
+            "sub": "7",
+            "preferred_username": "aziz_tg",
+            "exp": int(time.time()) + 60,
+        }
+
+        def part(obj: dict[str, Any]) -> str:
+            raw = json.dumps(obj, separators=(",", ":")).encode()
+            return base64.urlsafe_b64encode(raw).rstrip(b"=").decode("ascii")
+
+        token = f"{part({'alg': 'RS256'})}.{part(claims)}.imzo"
+        monkeypatch.setattr(oauth, "_request", lambda *a, **k: {"id_token": token})
+
+        assert oauth.identity("telegram", "kod", "v").handle == "aziz_tg"
 
     def test_ijtimoiy_havolalar_yashiriladi(self, user: User, other_user: User) -> None:
         ExternalProfile.objects.create(user=user, kind="github", handle="aziz")

@@ -38,3 +38,19 @@ export function GithubMark({ className = "size-4" }: { className?: string }) {
     </svg>
   );
 }
+
+/** Telegram — doira ichidagi samolyot.
+ *
+ * `currentColor`, ya'ni tugma matni rangini oladi: Telegram'ning o'z
+ * tugmasi ham ko'k fonda OQ samolyot. Brend ko'kini bu yerda qotib
+ * yozish kontrastni buzardi (pastga qarang, `AuthForm.BRAND`). */
+export function TelegramMark({ className = "size-4" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0Zm5.9 8.14-1.98 9.35c-.15.66-.54.82-1.1.51l-3.03-2.24-1.47 1.41c-.16.16-.3.3-.61.3l.22-3.1 5.65-5.1c.25-.22-.05-.34-.38-.13l-6.98 4.4-3.01-.94c-.65-.2-.67-.65.14-.97L17.1 7.2c.54-.2 1.01.13.8.94Z"
+      />
+    </svg>
+  );
+}

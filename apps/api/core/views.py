@@ -293,30 +293,6 @@ class RegisterView(generics.CreateAPIView[User]):
         queue(send_email_verify, user.pk, issued.raw, issued.code)
 
 
-class SocialLinkStartView(APIView):
-    """Telegram'ni ulash niyatini belgilaydi.
-
-    Telegram vidjeti `SocialStartView` dan o'tmaydi va uning callback'i
-    `state` siz GET — ya'ni «kirgan bo'lsa bog'la» qoidasi hisobni
-    egallash yo'li bo'lardi: hujumchi qurbonning brauzerini o'zining
-    imzolangan ma'lumoti bilan o'sha manzilga yuborib, o'z Telegramini
-    qurbon hisobiga ulab olardi va keyin uning nomidan kirardi.
-    Shu sababli niyat SESSIYADA va faqat shu POST orqali qo'yiladi:
-    DRF sessiya autentifikatsiyasi POST'ga CSRF tekshiruvini talab
-    qiladi, ya'ni begona sayt uni chaqira olmaydi.
-    """
-
-    permission_classes = [IsAuthenticated]
-
-    @extend_schema(request=None, responses={204: None})
-    def post(self, request: Request, provider: str) -> Response:
-        assert isinstance(request.user, User)
-        if provider not in oauth.configured():
-            raise exceptions.ValidationError({"provider": "Provayder sozlanmagan"})
-        request.session["social_link_for"] = {"user": request.user.pk, "provider": provider}
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
 class SocialUnlinkView(APIView):
     """Ulangan hisobni uzadi.
 
@@ -988,9 +964,6 @@ class SocialStartView(APIView):
     @extend_schema(responses={302: None})
     def get(self, request: Request, provider: str) -> HttpResponseRedirect:
         if provider not in oauth.configured() or provider not in oauth.AUTHORIZE:
-            # Telegram bu yerga TUSHMAYDI: u OAuth emas va frontend uning
-            # o'z widgetini chizadi. Shunga qaramay tekshiruv turadi —
-            # aks holda bu yo'l 500 berardi.
             return redirect(f"{settings.SITE_URL}/login?social=unavailable")
         state = oauth.new_state()
         # CSRF: qaytgan `state` sessiyadagisi bilan solishtiriladi, ya'ni
@@ -1012,7 +985,18 @@ class SocialStartView(APIView):
             }
         else:
             request.session.pop("social_link_for", None)
-        return redirect(oauth.authorize_url(provider, state))
+        # PKCE faqat Telegram'da. Uning OIDC oqimi S256 ni qo'llaydi va
+        # kodni ushlab qolgan odam uni almashib bera olmasligi kerak.
+        # Verifier sessiyada qoladi — callback uni token so'roviga qo'shadi.
+        # Google/GitHub uchun tozalanadi: oldingi urinishdan qolgan qiymat
+        # yangi kirishga «yopishib» qolmasligi kerak.
+        if provider == "telegram":
+            verifier, challenge = oauth.pkce_pair()
+            request.session["social_pkce"] = verifier
+        else:
+            challenge = ""
+            request.session.pop("social_pkce", None)
+        return redirect(oauth.authorize_url(provider, state, challenge))
 
 
 class SocialCallbackView(APIView):
@@ -1035,8 +1019,11 @@ class SocialCallbackView(APIView):
             log.warning("social state mos kelmadi: %s", provider)
             return redirect(f"{home}/login?social=error")
 
+        # PKCE verifier'i `SocialStartView` yozgan. Provayder uni talab
+        # qilmasa bo'sh qoladi va o'sha holicha uzatiladi.
+        verifier = request.session.pop("social_pkce", "") or ""
         try:
-            ident = oauth.identity(provider, request.GET.get("code", ""))
+            ident = oauth.identity(provider, request.GET.get("code", ""), verifier)
         except oauth.OAuthError:
             log.exception("social almashuv yiqildi: %s", provider)
             return redirect(f"{home}/login?social=error")
@@ -1049,9 +1036,9 @@ class SocialCallbackView(APIView):
         # kelgan odam o'sha yerga qaytadi (qaror 1); `link` va xato
         # yo'llari bunga tayanmaydi — ularning o'z manzili bor.
         #
-        # Manba ikki xil: OAuth'da `SocialStartView` sessiyaga yozadi,
-        # Telegram'da esa sessiya bosqichi yo'q — uning vidjeti to'g'ridan
-        # to'g'ri shu yerga yuboradi, ya'ni manzil so'rovda keladi.
+        # Manba — sessiya: uni `SocialStartView` yozadi. Ilgari Telegram
+        # bu yerga to'g'ridan-to'g'ri vidjetdan kelardi va manzil so'rovda
+        # bo'lardi; oqim OIDC ga o'tgach u ham qolganlar bilan bir xil.
         back = request.session.pop("social_next", "") or safe_next(request.GET.get("next"))
         success = f"{home}{back}" if back else f"{home}/"
         if not ident.uid:
@@ -1160,23 +1147,6 @@ class SocialCallbackView(APIView):
         record_social_consent(user)
         django_login(request, user, backend=DEFAULT_AUTH_BACKEND)
         return redirect(success)
-
-
-class SocialTelegramView(SocialCallbackView):
-    """Telegram widget imzolangan ma'lumotni to'g'ridan-to'g'ri yuboradi —
-    kod almashuvi yo'q."""
-
-    @extend_schema(responses={302: None})
-    def get(self, request: Request, provider: str = "telegram") -> HttpResponseRedirect:
-        home = settings.SITE_URL
-        if "telegram" not in oauth.configured():
-            return redirect(f"{home}/login?social=unavailable")
-        try:
-            ident = oauth.telegram_identity(request.GET.dict())
-        except oauth.OAuthError:
-            log.warning("telegram imzosi rad etildi")
-            return redirect(f"{home}/login?social=error")
-        return self._finish(request, ident)
 
 
 class SocialLinkView(APIView):

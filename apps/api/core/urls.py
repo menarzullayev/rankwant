@@ -36,11 +36,10 @@ urlpatterns = [
     path("auth/logout/", views.LogoutView.as_view(), name="logout"),
     path("auth/providers/", views.AuthProvidersView.as_view(), name="auth-providers"),
     path("auth/username-check/", views.UsernameCheckView.as_view(), name="username-check"),
-    path(
-        "auth/social/<str:provider>/link-start/",
-        views.SocialLinkStartView.as_view(),
-        name="social-link-start",
-    ),
+    # `auth/social/<provider>/link-start/` yo'li OLIB TASHLANDI: u faqat
+    # Telegram vidjeti uchun kerak edi (callback'i `state` siz GET bo'lgani
+    # uchun niyat alohida POST bilan belgilanardi). Oqim OIDC ga o'tgach
+    # niyatni `SocialStartView` sessiyaga o'zi yozadi — Google/GitHub kabi.
     path(
         "auth/social/<str:provider>/",
         views.SocialUnlinkView.as_view(),
@@ -49,11 +48,11 @@ urlpatterns = [
     path("auth/email/verify/", views.EmailVerifyView.as_view(), name="email-verify"),
     path("auth/email/resend/", views.EmailVerifyResendView.as_view(), name="email-verify-resend"),
     path("auth/link/", views.SocialLinkView.as_view(), name="social-link"),
-    path(
-        "auth/telegram/callback/",
-        views.SocialTelegramView.as_view(),
-        name="social-telegram",
-    ),
+    # Telegram uchun ALOHIDA callback yo'li yo'q edi: vidjet imzolangan
+    # ma'lumotni to'g'ridan-to'g'ri yuborardi va kod almashinuvi bo'lmasdi.
+    # Endi u ham OIDC, ya'ni quyidagi umumiy `<provider>/callback/` uni
+    # qabul qiladi. Manzil o'zgarmadi — @BotFather'da ro'yxatga olingan
+    # `redirect_uri` aynan shu.
     path("auth/<str:provider>/start/", views.SocialStartView.as_view(), name="social-start"),
     path(
         "auth/<str:provider>/callback/",

@@ -23,11 +23,7 @@ export default async function LoginPage() {
     <AuthLayout>
       <Card title={t(locale, "auth.login")}>
         <Suspense>
-          <AuthForm
-            mode="login"
-            providers={auth.providers}
-            telegramBot={auth.telegram_bot}
-          />
+          <AuthForm mode="login" providers={auth.providers} />
         </Suspense>
       </Card>
     </AuthLayout>

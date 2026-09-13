@@ -4,16 +4,22 @@ Kutubxona qo'shilmadi. `django-allauth` o'z shablonlari, URL'lari va
 modellari bilan keladi, bizda esa API headless va frontend alohida —
 uchala provayder ham oddiy HTTP almashuvi, xuddi email zanjiridagi kabi.
 
-Telegram qolgan ikkitasidan farq qiladi: u OAuth emas, imzolangan
-ma'lumot beradi va **email bermaydi**. Shu sababli faqat Telegram bilan
-ochilgan hisobda pochta bo'lmaydi va u parolni tiklashdan foydalana
-olmaydi — foydalanuvchi keyin sozlamalarda pochta qo'shishi kerak.
+Telegram **email bermaydi**. Shu sababli faqat Telegram bilan ochilgan
+hisobda pochta bo'lmaydi va u parolni tiklashdan foydalana olmaydi —
+foydalanuvchi keyin sozlamalarda pochta qo'shishi kerak.
+
+2026-09-13 gacha Telegram iframe vidjeti bilan ishlardi: u bot tokeni
+bilan imzolangan ma'lumotni to'g'ridan-to'g'ri yuborardi. Telegram o'sha
+vidjetni legacy deb e'lon qilib, o'rniga OIDC (Authorization Code)
+taklif qildi. Endi Telegram ham qolgan ikkitasi bilan bir xil naqshda:
+havola -> provayder -> kod -> server almashuvi.
 """
 
 from __future__ import annotations
 
+import base64
+import binascii
 import hashlib
-import hmac
 import json
 import logging
 import secrets
@@ -39,12 +45,11 @@ USER_AGENT = "RankWant/1.0 (+https://rankwant.uz)"
 REQUIRED: dict[str, tuple[str, ...]] = {
     "google": ("GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"),
     "github": ("GITHUB_CLIENT_ID", "GITHUB_CLIENT_SECRET"),
-    "telegram": ("TELEGRAM_BOT_TOKEN", "TELEGRAM_BOT_USERNAME"),
+    #: `TELEGRAM_BOT_TOKEN` bu yerda EMAS: u bot bildirishnomalari uchun
+    #: qoladi (`notifications/tasks.py`), login esa Client ID/Secret ga
+    #: o'tdi. Vidjet davrida aksincha edi — token imzoni tekshirardi.
+    "telegram": ("TELEGRAM_CLIENT_ID", "TELEGRAM_CLIENT_SECRET"),
 }
-
-#: Telegram widget imzosi shuncha vaqt amal qiladi. Qayta yuborishning
-#: oldini oladi: eski imzolangan ma'lumot bilan kirib bo'lmaydi.
-TELEGRAM_MAX_AGE = 300
 
 
 class OAuthError(Exception):
@@ -99,7 +104,11 @@ def _request(
 # ── Google ────────────────────────────────────────────────────────────
 
 
-def _google_authorize(state: str) -> str:
+def _google_authorize(state: str, code_challenge: str = "") -> str:
+    # `code_challenge` ishlatilmaydi: Google PKCE ni qo'llaydi, lekin bu
+    # yerda so'ralmaydi. Imzo barcha provayderlarda bir xil turishi uchun
+    # parametr qoldirilgan — chaqiruvchi shoxlanmasin.
+    del code_challenge
     query = urllib.parse.urlencode(
         {
             "client_id": settings.GOOGLE_CLIENT_ID,
@@ -115,7 +124,8 @@ def _google_authorize(state: str) -> str:
     return f"https://accounts.google.com/o/oauth2/v2/auth?{query}"
 
 
-def _google_identity(code: str) -> Identity:
+def _google_identity(code: str, code_verifier: str = "") -> Identity:
+    del code_verifier  # PKCE so'ralmagan — `_google_authorize` ga qarang
     token = _request(
         "https://oauth2.googleapis.com/token",
         data={
@@ -146,7 +156,8 @@ def _google_identity(code: str) -> Identity:
 # ── GitHub ────────────────────────────────────────────────────────────
 
 
-def _github_authorize(state: str) -> str:
+def _github_authorize(state: str, code_challenge: str = "") -> str:
+    del code_challenge  # yuqoridagi izohga qarang (`_google_authorize`)
     query = urllib.parse.urlencode(
         {
             "client_id": settings.GITHUB_CLIENT_ID,
@@ -158,7 +169,8 @@ def _github_authorize(state: str) -> str:
     return f"https://github.com/login/oauth/authorize?{query}"
 
 
-def _github_identity(code: str) -> Identity:
+def _github_identity(code: str, code_verifier: str = "") -> Identity:
+    del code_verifier  # PKCE so'ralmagan — `_github_authorize` ga qarang
     token = _request(
         "https://github.com/login/oauth/access_token",
         data={
@@ -191,60 +203,141 @@ def _github_identity(code: str) -> Identity:
 
 # ── Telegram ──────────────────────────────────────────────────────────
 
+TELEGRAM_ISSUER = "https://oauth.telegram.org"
+TELEGRAM_AUTHORIZE = f"{TELEGRAM_ISSUER}/auth"
+TELEGRAM_TOKEN = f"{TELEGRAM_ISSUER}/token"
 
-def telegram_identity(payload: dict[str, str]) -> Identity:
-    """Widget imzosini tekshiradi.
 
-    Telegram OAuth emas: u ma'lumotni bot tokeni bilan imzolab beradi.
-    Imzo bot tokenining SHA-256 xeshi kalit qilingan HMAC — ya'ni tokenni
-    bilmasdan soxtalashtirib bo'lmaydi.
+def pkce_pair() -> tuple[str, str]:
+    """PKCE: (`code_verifier`, S256 `code_challenge`).
+
+    OAuth 2.0 Security BCP (RFC 9700) uni maxfiy klientlarga ham tavsiya
+    qiladi — kodni ushlab qolgan odam uni almashib bera olmasin. Hisob
+    stdlib bilan bo'ladi, ya'ni bu ham kutubxona talab qilmaydi.
     """
-    received = payload.get("hash", "")
-    check = "\n".join(
-        f"{key}={payload[key]}" for key in sorted(payload) if key != "hash" and payload[key]
+    verifier = secrets.token_urlsafe(64)
+    digest = hashlib.sha256(verifier.encode("ascii")).digest()
+    return verifier, base64.urlsafe_b64encode(digest).rstrip(b"=").decode("ascii")
+
+
+def _telegram_authorize(state: str, code_challenge: str = "") -> str:
+    query = urllib.parse.urlencode(
+        {
+            "client_id": settings.TELEGRAM_CLIENT_ID,
+            "redirect_uri": redirect_uri("telegram"),
+            "response_type": "code",
+            # `profile` — ism, taxallus va rasm. `phone` so'ralmaydi:
+            # kerak emas va rozilik ekranini og'irlashtiradi.
+            "scope": "openid profile",
+            "state": state,
+            "code_challenge": code_challenge,
+            "code_challenge_method": "S256",
+        }
     )
-    secret = hashlib.sha256(settings.TELEGRAM_BOT_TOKEN.encode()).digest()
-    expected = hmac.new(secret, check.encode(), hashlib.sha256).hexdigest()
-    if not hmac.compare_digest(expected, received):
-        raise OAuthError("telegram imzosi mos kelmadi")
+    return f"{TELEGRAM_AUTHORIZE}?{query}"
 
+
+def _jwt_claims(token: str) -> dict[str, Any]:
+    """JWT payload'ini ochadi. Imzo tekshirilmaydi — sababi pastda."""
+    parts = token.split(".")
+    if len(parts) != 3:
+        raise OAuthError("id_token uch qismdan iborat emas")
+    body = parts[1]
     try:
-        age = time.time() - int(payload.get("auth_date", "0"))
-    except ValueError as exc:
-        raise OAuthError("telegram auth_date yaroqsiz") from exc
-    if age > TELEGRAM_MAX_AGE:
-        raise OAuthError("telegram imzosi eskirgan")
+        claims = json.loads(base64.urlsafe_b64decode(body + "=" * (-len(body) % 4)))
+    except (binascii.Error, ValueError, UnicodeDecodeError) as exc:
+        raise OAuthError(f"id_token o'qilmadi: {exc}") from exc
+    if not isinstance(claims, dict):
+        raise OAuthError("id_token obyekt emas")
+    return claims
 
-    uid = payload.get("id", "")
-    suggested = payload.get("username") or f"tg{uid}"
+
+def _telegram_identity(code: str, code_verifier: str = "") -> Identity:
+    """Kodni token'ga almashtiradi va `id_token` claims'ini tekshiradi.
+
+    IMZO ATAYLAB TEKSHIRILMAYDI. OIDC Core 3.1.3.7 ning 6-qadami buni
+    ochiq ruxsat etadi: `id_token` token endpoint'idan to'g'ridan-to'g'ri
+    (brauzerdan o'tmasdan) kelganda TLS tekshiruvi imzo tekshiruvi
+    O'RNIGA o'tadi. Loyiha Google'da ham shunga yaqin yo'l tutgan —
+    `id_token` o'rniga `userinfo` so'raladi, faqat JWT kalit halqasini
+    ko'tarmaslik uchun. Telegram'da `userinfo` YO'Q, ya'ni claims shu
+    token ichidan o'qiladi va `iss`/`aud`/`exp` baribir tekshiriladi.
+
+    Shu tufayli kripto kutubxonasi kerak emas: `cryptography` ~8 MB
+    binary va o'z CVE tarixi bilan kelardi.
+    """
+    token = _request(
+        TELEGRAM_TOKEN,
+        data={
+            "grant_type": "authorization_code",
+            "code": code,
+            "redirect_uri": redirect_uri("telegram"),
+            "client_id": settings.TELEGRAM_CLIENT_ID,
+            "client_secret": settings.TELEGRAM_CLIENT_SECRET,
+            "code_verifier": code_verifier,
+        },
+    )
+    claims = _jwt_claims(str(token.get("id_token", "")))
+
+    if claims.get("iss") != TELEGRAM_ISSUER:
+        raise OAuthError(f"iss kutilganidan boshqa: {claims.get('iss')!r}")
+    audience = claims.get("aud")
+    audiences = audience if isinstance(audience, list) else [audience]
+    if str(settings.TELEGRAM_CLIENT_ID) not in {str(a) for a in audiences}:
+        raise OAuthError("aud bizning client_id emas")
+    try:
+        expires = int(claims.get("exp", 0))
+    except (TypeError, ValueError) as exc:
+        raise OAuthError("exp o'qilmadi") from exc
+    if expires <= int(time.time()):
+        raise OAuthError("id_token muddati tugagan")
+
+    uid = str(claims.get("sub", ""))
+    if not uid:
+        raise OAuthError("id_token da sub yo'q")
+    username = str(claims.get("preferred_username", ""))
     # Telegram POCHTA BERMAYDI — bu bo'shlik ataylab, foydalanuvchi uni
     # keyin sozlamalarda to'ldiradi.
     return Identity(
         "telegram",
         uid,
         "",
-        suggested,
-        payload.get("photo_url", ""),
-        handle=payload.get("username", ""),
+        username or f"tg{uid}",
+        str(claims.get("picture", "")),
+        handle=username,
     )
 
 
 # ── Umumiy ────────────────────────────────────────────────────────────
 
-AUTHORIZE = {"google": _google_authorize, "github": _github_authorize}
-IDENTITY = {"google": _google_identity, "github": _github_identity}
+AUTHORIZE = {
+    "google": _google_authorize,
+    "github": _github_authorize,
+    "telegram": _telegram_authorize,
+}
+IDENTITY = {
+    "google": _google_identity,
+    "github": _github_identity,
+    "telegram": _telegram_identity,
+}
 
 
-def authorize_url(provider: str, state: str) -> str:
+def authorize_url(provider: str, state: str, code_challenge: str = "") -> str:
+    """Ruxsat sahifasining manzili.
+
+    `code_challenge` faqat PKCE ishlatadigan provayderga tegadi; qolgani
+    uni e'tiborsiz qoldiradi. Imzo bir xil turishi ataylab: aks holda
+    chaqiruvchi provayderga qarab shoxlanishi kerak bo'lardi.
+    """
     if provider not in AUTHORIZE:
         raise OAuthError(f"noma'lum provayder: {provider}")
-    return AUTHORIZE[provider](state)
+    return AUTHORIZE[provider](state, code_challenge)
 
 
-def identity(provider: str, code: str) -> Identity:
+def identity(provider: str, code: str, code_verifier: str = "") -> Identity:
     if provider not in IDENTITY:
         raise OAuthError(f"noma'lum provayder: {provider}")
-    return IDENTITY[provider](code)
+    return IDENTITY[provider](code, code_verifier)
 
 
 def new_state() -> str:

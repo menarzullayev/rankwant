@@ -327,8 +327,15 @@ GOOGLE_CLIENT_SECRET = env("GOOGLE_CLIENT_SECRET")
 GITHUB_CLIENT_ID = env("GITHUB_CLIENT_ID")
 GITHUB_CLIENT_SECRET = env("GITHUB_CLIENT_SECRET")
 TELEGRAM_BOT_TOKEN = env("TELEGRAM_BOT_TOKEN")
-#: Widget bot NOMINI talab qiladi (tokenni emas) — usiz tugma chizilmaydi.
+#: Bot nomi — bot havolalari uchun. Login endi bunga tayanmaydi.
 TELEGRAM_BOT_USERNAME = env("TELEGRAM_BOT_USERNAME")
+#: Telegram Login (OIDC). Ilgari iframe vidjeti bot TOKENI bilan HMAC
+#: imzosini tekshirardi; Telegram o'sha vidjetni legacy deb e'lon qilib,
+#: Authorization Code oqimiga o'tkazdi va u Client ID + Secret talab qiladi
+#: (@BotFather -> Login Widget). Ikkalasi bo'sh bo'lsa provayder ro'yxatga
+#: tushmaydi va tugma ko'rinmaydi — qolgan provayderlar bilan bir xil qoida.
+TELEGRAM_CLIENT_ID = env("TELEGRAM_CLIENT_ID")
+TELEGRAM_CLIENT_SECRET = env("TELEGRAM_CLIENT_SECRET")
 
 CELERY_BEAT_SCHEDULE = {
     "drain-judge-results": {
