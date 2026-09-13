@@ -111,7 +111,15 @@ export function useCustomizer() {
   return context;
 }
 
-export function CustomizerProvider({ children }: { children: React.ReactNode }) {
+export function CustomizerProvider({
+  siteAppearance,
+  children,
+}: {
+  /** Jamoa belgilagan standart ko'rinish (D37). Bo'sh bo'lsa kod
+   *  standarti ishlatiladi (D26: `clay`). */
+  siteAppearance?: AppearancePrefs;
+  children: React.ReactNode;
+}) {
   // Panel yopiq holda chiziladi, ya'ni SSR va birinchi klient renderi bir
   // xil bo'ladi va `localStorage` o'qish hidratsiya nomuvofiqligini
   // keltirmaydi.
@@ -120,11 +128,16 @@ export function CustomizerProvider({ children }: { children: React.ReactNode }) 
   // ya'ni o'sha ko'rinishni ko'rishni xohladi. Effektda emas, boshlang'ich
   // qiymatda o'qiladi — effektda `setState` loyihada taqiqlangan va
   // kaskad render keltiradi.
+  // Standart qiymat: jamoa belgilagani ustuvor, bo'lmasa kod standarti.
+  // ⚠️ Bu FAQAT boshlang'ich qiymat — qurilmada yoki hisobda saqlangan
+  // tanlov har doim ustun turadi (D37: mavjud foydalanuvchilarga
+  // tegilmaydi).
+  const fallback: AppearancePrefs = { ...DEFAULT_APPEARANCE, ...siteAppearance };
   const [appearance, setAppearanceState] = useState<AppearancePrefs>(() => {
-    if (typeof window === "undefined") return DEFAULT_APPEARANCE;
+    if (typeof window === "undefined") return fallback;
     return (
       decodeAppearance(window.location.search) ??
-      readJson(APPEARANCE_KEY, DEFAULT_APPEARANCE)
+      readJson(APPEARANCE_KEY, fallback)
     );
   });
   const [a11y, setA11yState] = useState<A11yPrefs>(() =>

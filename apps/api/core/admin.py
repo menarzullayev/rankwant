@@ -1,4 +1,8 @@
+from typing import Any
+
 from django.contrib import admin
+
+from core.models import SiteAppearance
 from django.contrib.auth.admin import UserAdmin
 
 from core.models import ApiToken, School, User
@@ -50,3 +54,26 @@ class SchoolAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
     list_display = ("name", "kind", "region", "district", "is_active")
     list_filter = ("kind", "region", "is_active")
     search_fields = ("name",)
+
+
+@admin.register(SiteAppearance)
+class SiteAppearanceAdmin(admin.ModelAdmin):
+    """Standart ko'rinish — bitta qator (D37).
+
+    `appearance` — `ui_prefs.appearance` bilan AYNI shakl:
+    `{"style": "clay", "accent": {"hue": 215, "sat": 75}, "font": null,
+      "size": 100, "density": "comfortable"}`
+
+    Bo'sh qoldirilsa standart kod qiymati ishlatiladi (D26: `clay`).
+    """
+
+    list_display = ("__str__", "updated_at")
+    readonly_fields = ("updated_at",)
+
+    def has_add_permission(self, request: Any) -> bool:
+        # Singleton: ikkinchi qator qo'shish mantiqsiz va qaysi biri
+        # qo'llanishi noaniq bo'lardi.
+        return not SiteAppearance.objects.exists()
+
+    def has_delete_permission(self, request: Any, obj: Any = None) -> bool:
+        return False

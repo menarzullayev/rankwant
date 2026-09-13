@@ -14,6 +14,7 @@ import { getLocale } from "@/i18n/server";
 import { DEFAULT_LOCALE } from "@/i18n/messages";
 import { messagesFor } from "@/i18n/messages.server";
 import type { Me } from "@/lib/api";
+import { api, type AppearancePrefs } from "@/lib/api";
 import { getSessionUser } from "@/lib/api.server";
 import { SITE_URL } from "@/lib/site";
 
@@ -235,7 +236,18 @@ export default async function RootLayout({
   // Til ham, sessiya ham cookie'ga bog'liq — ketma-ket kutish o'rniga
   // birga o'qiladi. `getSessionUser` cookie bo'lmasa so'rov yubormaydi,
   // ya'ni anonim tashrifchi ortiqcha `/me/` 401 ni ko'rmaydi.
-  const [locale, me] = await Promise.all([getLocale(), getSessionUser<Me>()]);
+  // Standart ko'rinish (D37) SERVERDA olinadi va prop bo'lib uzatiladi.
+  // Mijozda so'ralsa, u kelguncha standart ko'rinish chaqnaydi; bundan
+  // tashqari bu qiymat `useState` boshlang'ich qiymatida kerak, ya'ni
+  // sinxron bo'lishi shart.
+  const [locale, me, siteAppearance] = await Promise.all([
+    getLocale(),
+    getSessionUser<Me>(),
+    api
+      .siteAppearance()
+      .then((row) => row.appearance)
+      .catch(() => ({}) as AppearancePrefs),
+  ]);
 
   // Faqat AKTIV tilning lug'ati mijozga ketadi. Ilgari o'ntasi ham JS
   // to'plamida bo'lardi — o'lchandi: 91 kB tarmoqda, holbuki bitta til
@@ -263,7 +275,9 @@ export default async function RootLayout({
       </head>
       <body>
         <LocaleProvider locale={locale} dict={messagesFor(locale)}>
-          <AppShell initialUser={me}>{children}</AppShell>
+          <AppShell initialUser={me} siteAppearance={siteAppearance}>
+            {children}
+          </AppShell>
         </LocaleProvider>
       </body>
     </html>

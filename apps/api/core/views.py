@@ -35,6 +35,7 @@ from core.cache import cache_get, cache_set
 from core.models import (
     AnalyticsEvent,
     ApiToken,
+    SiteAppearance,
     SocialAccount,
     User,
     UsernameHistory,
@@ -1246,3 +1247,29 @@ class SocialLinkView(APIView):
         record_social_consent(user)
         django_login(request, user, backend=DEFAULT_AUTH_BACKEND)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class SiteAppearanceView(APIView):
+    """Saytning standart ko'rinishi — ommaviy o'qish (D37).
+
+    Mehmon ham, yangi hisob ham shuni boshlang'ich qiymat sifatida oladi.
+    Keshlanadi: u kamdan-kam o'zgaradi, lekin har bir yangi qurilma
+    so'raydi.
+
+    Foydalanuvchi O'ZI tanlagach, bu qiymat ustun bo'lmaydi — u faqat
+    boshlanish nuqtasi.
+    """
+
+    permission_classes = [AllowAny]
+    authentication_classes: list[Any] = []
+    CACHE_S = 300
+
+    @extend_schema(
+        responses={200: OpenApiResponse(description="Standart ko'rinish")}
+    )
+    def get(self, request: Request) -> Response:
+        payload = cache_get("site-appearance")
+        if payload is None:
+            payload = {"appearance": SiteAppearance.load().appearance or {}}
+            cache_set("site-appearance", payload, self.CACHE_S)
+        return Response(payload)

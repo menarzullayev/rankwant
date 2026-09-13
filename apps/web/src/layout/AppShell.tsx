@@ -9,7 +9,7 @@ import { SessionProvider } from "@/context/SessionContext";
 import { StyleProvider } from "@/context/StyleContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { UpdatesProvider } from "@/context/UpdatesContext";
-import type { Me } from "@/lib/api";
+import type { AppearancePrefs, Me } from "@/lib/api";
 import AppFooter from "./AppFooter";
 import AppHeader from "./AppHeader";
 import { VerifyBanner } from "@/components/VerifyBanner";
@@ -92,10 +92,14 @@ function Shell({ children }: { children: React.ReactNode }) {
 
 export default function AppShell({
   initialUser,
+  siteAppearance,
   children,
 }: {
   /** `RootLayout` SSR da o'qigan sessiya. Berilmasa mijoz o'zi so'raydi. */
   initialUser?: Me | null;
+  /** Jamoa belgilagan standart ko'rinish (D37) — bo'sh bo'lsa kod
+   *  standarti ishlatiladi (D26). */
+  siteAppearance?: AppearancePrefs;
   children: React.ReactNode;
 }) {
   return (
@@ -109,7 +113,7 @@ export default function AppShell({
             bo'sh qolardi. Buni faqat brauzer ko'rsatdi — CI ham,
             `curl` ham ko'rmadi. */}
         <SessionProvider initialUser={initialUser}>
-          <CustomizerProvider>
+          <CustomizerProvider siteAppearance={siteAppearance}>
             <PrefsSync />
             <UpdatesProvider>
               <SidebarProvider>

@@ -168,3 +168,32 @@ class TestApi:
         user.refresh_from_db()
         assert user.ui_prefs["appearance"]["style"] == "swiss"
         assert user.ui_prefs["version"] == 2
+
+
+@pytest.mark.django_db
+class TestSiteAppearance:
+    """D37 — jamoa belgilagan standart ko'rinish."""
+
+    def test_bosh_bolsa_bosh_obyekt_qaytadi(self, client) -> None:
+        res = client.get("/api/v1/appearance/")
+        assert res.status_code == 200
+        assert res.json() == {"appearance": {}}
+
+    def test_belgilangan_qiymat_mehmonga_korinadi(self, client) -> None:
+        from core.models import SiteAppearance
+
+        row = SiteAppearance.load()
+        row.appearance = {"style": "terminal", "size": 110}
+        row.save(update_fields=["appearance"])
+
+        res = client.get("/api/v1/appearance/")
+        assert res.status_code == 200
+        assert res.json()["appearance"]["style"] == "terminal"
+
+    def test_singleton_bitta_qator(self) -> None:
+        """Ikkinchi qator bo'lmasin: qaysi biri qo'llanishi noaniq bo'lardi."""
+        from core.models import SiteAppearance
+
+        SiteAppearance.load()
+        SiteAppearance.load()
+        assert SiteAppearance.objects.count() == 1

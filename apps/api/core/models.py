@@ -529,3 +529,34 @@ class School(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+
+class SiteAppearance(models.Model):
+    """Saytning standart ko'rinishi — jamoa belgilaydi (D37).
+
+    **Singleton** (`pk=1`): bitta standart bo'ladi, ro'yxat emas.
+
+    Yangi foydalanuvchi shuni ko'radi; **mavjudlarga TEGILMAYDI** — ular
+    allaqachon o'z tanlovini qilgan, majburlash "mening sozlamamni
+    kimdir o'zgartirdi" degan ishonchsizlik tug'diradi.
+
+    Bu FAQAT boshlang'ich qiymat: foydalanuvchi o'zi tanlagach, uning
+    tanlovi har doim ustun turadi.
+    """
+
+    #: `ui_prefs.appearance` bilan AYNI shakl (`core/prefs.py` validatoriga
+    #: bo'ysunadi) — ya'ni qo'shimcha o'girish kerak emas.
+    appearance = models.JSONField(default=dict, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Standart ko'rinish"
+        verbose_name_plural = "Standart ko'rinish"
+
+    def __str__(self) -> str:
+        return "Standart ko'rinish"
+
+    @classmethod
+    def load(cls) -> SiteAppearance:
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj

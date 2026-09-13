@@ -1557,6 +1557,9 @@ export const api = {
     ),
   // Yo'l xaritasi — mehmon o'qiydi, ovoz/izoh/taklif uchun kirish shart.
   // Kesh YO'Q: ovoz soni tugma bosilishi bilan o'zgaradi.
+  // Saytning standart ko'rinishi (D37) — kamdan-kam o'zgaradi.
+  siteAppearance: () =>
+    get<{ appearance: AppearancePrefs }>("/appearance/", 300),
   roadmap: (query = "") =>
     get<Paginated<RoadmapItem>>(`/platform-roadmap/${query}`, 0),
   roadmapItem: (id: number) => get<RoadmapItem>(`/platform-roadmap/${id}/`, 0),
