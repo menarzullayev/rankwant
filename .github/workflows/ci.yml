@@ -4,6 +4,12 @@ on:
   pull_request:
   push:
     branches: [main]
+  # `deploy.yml` shu to'plamni `uses: ./.github/workflows/ci.yml` bilan
+  # chaqiradi. Ya'ni "test o'tdi" sharti deploy uchun majburiy bo'ladi,
+  # tekshiruvlar esa ikki nusxada saqlanmaydi: qoida bir joyda o'zgaradi.
+  # `pull_request` va `push` BU YERDA QOLADI — chaqiriladigan workflow
+  # o'z triggerlarini saqlaydi, `workflow_call` ularga qo'shimcha.
+  workflow_call:
 
 # Self-hosted runner ishlab chiqish mashinasida, `nsn` foydalanuvchisi
 # sifatida ishlaydi — Python `~/.local/lib/.../site-packages` ni ham
@@ -14,8 +20,14 @@ env:
   PYTHONNOUSERSITE: '1'
 
 concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  # `cancel-in-progress` FAQAT `pull_request` va `push` da. Deploy uni
+  # chaqirganda (`workflow_call`) bekor qilish XAVFLI: deploy `test` job'i
+  # tugashini kutadi, bekor qilingan job esa `failure`/`cancelled` bo'lib
+  # qaytadi va shartsiz deploy job'i hech qachon ishga tushmaydi —
+  # ya'ni tez ketma-ket push'larda deploy jimgina o'tkazib yuborilardi.
+  # Qayta chaqirilganda guruh ham boshqacha, to'qnashuv yo'q.
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_call' }}
 
 permissions:
   contents: read
