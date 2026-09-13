@@ -133,8 +133,55 @@ def main() -> int:
             print(f"  {row}")
         return 1
 
+    problems += check_usage(source)
+
+    if problems:
+        print("i18n to'liq emas:")
+        for row in problems:
+            print(f"  {row}")
+        return 1
+
     print(f"Tekshirildi: {len(codes)} til × {len(source)} kalit — to'liq ✓")
     return 0
+
+#: `t(locale, "kalit")` — kalit qo'lda yozilgan joylar. Shablon satrlari
+#: (`t(locale, `prefix.${x}`)`) bu yerga tushmaydi: ular statik emas.
+CALL_RE = re.compile(r'\bt\(\s*[A-Za-z_.]+\s*,\s*"([a-zA-Z0-9_.]+)"')
+#: Kalitlar qaysi fayllarda qidiriladi. ⚠️ `pathlib.glob` qavs
+#: kengaytmasini (`*.{ts,tsx}`) QO'LLAB-QUVVATLAMAYDI — u bash xususiyati.
+#: Bir marta shu xato qilingan edi: glob hech narsa topmagan, tekshiruv
+#: esa «to'liq ✓» deb turgan (salbiy test tutdi).
+SOURCE_SUFFIXES = (".ts", ".tsx")
+SOURCE_DIR = ROOT / "apps/web/src"
+
+
+def used_keys() -> dict[str, list[str]]:
+    """Kodda `t(locale, "...")` bilan chaqirilgan kalitlar → fayllar."""
+    found: dict[str, list[str]] = {}
+    files = [p for suffix in SOURCE_SUFFIXES for p in SOURCE_DIR.rglob(f"*{suffix}")]
+    if not files:
+        # Ko'r bo'lib qolmasin: fayl topilmasa bu XATO.
+        raise SystemExit(f"i18n: manba fayllar topilmadi ({SOURCE_DIR})")
+    for path in files:
+        if "i18n" in path.parts:
+            continue
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        for key in CALL_RE.findall(text):
+            found.setdefault(key, []).append(path.name)
+    return found
+
+
+def check_usage(source: dict[str, str]) -> list[str]:
+    """Har ishlatilgan kalit manbada bor bo'lsin.
+
+    Aks holda foydalanuvchi xom kalit nomini ko'radi — `t()` zaxirasi
+    kalitning o'zini qaytaradi.
+    """
+    missing = sorted(key for key in used_keys() if key not in source)
+    return [f"ishlatilgan, lekin manbada yo'q: {key}" for key in missing[:10]]
 
 
 if __name__ == "__main__":
