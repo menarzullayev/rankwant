@@ -4,8 +4,18 @@
 `globals.css` da 12 uslub bor, ularning oltitasida qorong'u varianti ham —
 jami 18 palitra. Har birida to'rt pog'onali matn zinapoyasi (`--rw-text`,
 `--rw-text-2`, `--rw-muted`, `--rw-faint`) va bir nechta sirt bor. Ko'z
-bilan tekshirib bo'lmaydi: o'lchanганda 18 palitradan 17 tasi yiqilgan,
+bilan tekshirib bo'lmaydi: o'lchanganda 18 palitradan 17 tasi yiqilgan,
 `--rw-faint` esa 161 joyda matn tashiydi.
+
+Shuningdek TUGMA juftligi tekshiriladi: `--rw-accent-fg` matni
+`--rw-accent` foni ustida. Bu yerda ko'r nuqta bor edi — 2026-09-13 da
+Lighthouse aynan shu yerda yiqilgan (`clay`: 4.23:1), tekshiruv esa
+«o'tdi» deb turgan edi, chunki u faqat matn zinapoyalari, reyting
+ranglari, fokus halqasi va maydon chegarasini ko'rardi. O'lchangan
+oqibat: to'rtta uslubda olti juftlik yiqilgan (clay, dashboard,
+flat, neu), shundan ikkitasi faqat dark rejimda — `flat.dark` va
+`dashboard.dark` `--rw-accent-fg` ni e'lon qilmasdi, ya'ni oq matn
+light blokdan meros bo'lib qolgan edi.
 
 Nozik joyi — QATLAM TARTIBI. `--rw-hover` panel ustida turadi, fon
 ustida emas; shaffof panel esa gradient VA `body::before` dog'lari
@@ -37,6 +47,11 @@ FIELD_MIX = 0.65
 
 #: `globals.css` da klaviatura halqasi shu token bilan chiziladi.
 FOCUS_TOKEN = "--rw-accent-ink"
+#: Tugma juftligi: (matn, fon). `.rw-accent-bg` shu ikkalasidan quriladi va
+#: accent `--rw-accent-ink` dan farq qiladi — u tugma FONI, bu matn/fokus.
+#: Gradient ham bo'lishi mumkin (`skeu`), shuning uchun har bir pog'ona
+#: alohida o'lchanadi: matn eng yorug' pog'onada eng kam kontrast beradi.
+ACCENT_PAIR = ("--rw-accent-fg", "--rw-accent")
 TIERS = ("--rw-text", "--rw-text-2", "--rw-muted", "--rw-faint")
 #: Unvon ranglari — ism shu rangda yoziladi (ADR-0018), ya'ni bu ham matn.
 RANKS = tuple(f"--rw-rank-{i}" for i in range(1, 10))
@@ -133,6 +148,30 @@ def field_lines(css: str) -> dict[str, str]:
     )
 
 
+def style_tokens(css: str) -> dict[tuple[str, str], dict[str, str]]:
+    """Uslub tokenlarini KASKAD bo'yicha yechadi: {(uslub, rejim): tokenlar}.
+
+    `[data-style=x].dark` faqat o'zi e'lon qilgan tokenni almashtiradi,
+    qolganini `[data-style=x]` dan oladi. Blokni alohida o'qish yolg'on
+    «o'tdi» beradi: `flat.dark` `--rw-accent`/`--rw-accent-fg` ni e'lon
+    qilmasdi, ya'ni light blokdan meros bo'lib 3.82:1 bergan edi. Faqat
+    shu sababli bu tekshiruv uni ko'rmasdi.
+    """
+    out: dict[tuple[str, str], dict[str, str]] = {}
+    for match in re.finditer(r'\[data-style="(\w+)"\](\.dark)?\s*\{([^}]*)\}', css, re.S):
+        style, dark, body = match.group(1), bool(match.group(2)), match.group(3)
+        tokens = dict(re.findall(r"(--rw-[\w-]+)\s*:\s*([^;]+);", body))
+        if not tokens:
+            continue
+        out.setdefault((style, "dark" if dark else "light"), {}).update(tokens)
+
+    for key in list(out):
+        style, mode = key
+        if mode == "dark":
+            out[key] = {**out.get((style, "light"), {}), **out[key]}
+    return out
+
+
 def main() -> int:
     css = CSS.read_text(encoding="utf-8")
     blobs = read_blobs(css)
@@ -210,6 +249,35 @@ def main() -> int:
                 failures.append(
                     f"{name}  {tier}: {tokens[tier].strip()} → {ratio:.2f}:1 "
                     f"(fon #{worst_bg[0]:02x}{worst_bg[1]:02x}{worst_bg[2]:02x}), kerak {AA}"
+                )
+
+    for (style, mode), tokens in sorted(style_tokens(css).items()):
+        if "--rw-ground" not in tokens:
+            continue
+        fg = parse(tokens.get(ACCENT_PAIR[0], "").strip())
+        if fg is None:
+            failures.append(f'{style}.{mode}  {ACCENT_PAIR[0]}: token yo\'q')
+            continue
+        label = f'{style}{".dark" if mode == "dark" else ""}'
+        backs = backgrounds(tokens, blobs.get(style, []))
+
+        for accent in stops(tokens.get(ACCENT_PAIR[1], "")):
+            # Shaffof accent ostidagi fon bilan qo'shiladi, matn esa uning
+            # ustida turadi — shuning uchun eng yomon fon olinadi. Gradient
+            # bo'lsa har bir pog'ona alohida o'lchanadi.
+            bases = [over(accent, b) for b in backs] if accent[3] < 1 else [accent]
+            checked += 1
+
+            def on(bg: Color, fg: Color = fg) -> float:
+                return contrast(over(fg, bg) if fg[3] < 1 else fg, bg)
+
+            worst = min(bases, key=on)
+            ratio = on(worst)
+            if ratio < AA:
+                failures.append(
+                    f"{label}  tugma matni ({ACCENT_PAIR[0]} ustida "
+                    f"{ACCENT_PAIR[1]}): {ratio:.2f}:1 "
+                    f"(fon #{worst[0]:02x}{worst[1]:02x}{worst[2]:02x}), kerak {AA}"
                 )
 
     if failures:

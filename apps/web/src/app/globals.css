@@ -110,7 +110,10 @@
   --rw-text-2: #475467;
   --rw-muted: #5b6376;
   --rw-faint: #636f85;
-  --rw-accent: #5b8cff;
+  /* #5b8cff oq matn bilan 3.16:1 berardi — AA (4.5) dan uzoq. Tugma foni
+     ohangni saqlab quyuqlashtirildi: 4.91:1. `--rw-accent-ink` (#4470e6)
+     yechim bo'la olmadi, u ham 4.46:1. */
+  --rw-accent: #476dc7;
   --rw-accent-fg: #ffffff;
   --rw-accent-ink: #4470e6;
   --rw-accent-soft: #eef3ff;
@@ -144,7 +147,12 @@
   --rw-text-2: #b9c2d0;
   --rw-muted: #9aa1b2;
   --rw-faint: #8c94a1;
-  --rw-accent: #5b8cff;
+  /* Dark rejimda accent-fg e'lon qilinmagan edi, ya'ni oq meros bo'lib
+     qolgan va 3.16:1 berardi. Yorug' fon + quyuq matn — material/editorial/
+     swiss dark naqshi. Ikkala qiymat ham shu uslubning o'z tokenlari:
+     ink = matn rangi, ground = tugma matni uchun quyuq fon. */
+  --rw-accent: #7ea4ff;
+  --rw-accent-fg: #0b0d12;
   --rw-accent-ink: #7ea4ff;
   --rw-accent-soft: rgba(91, 140, 255, .12);
   --rw-ok-ink: #4ade80;   --rw-ok-soft: rgba(74, 222, 128, .12);
@@ -387,7 +395,9 @@
   --rw-text-2: #425364;
   --rw-muted: #545e5e;
   --rw-faint: #5e696b;
-  --rw-accent: #e74c3c;
+  /* #e74c3c oq matn bilan 3.82:1 edi. `--rw-accent-ink` (#c0392b) allaqachon
+     to'g'ri quyuq variant — 5.44:1. Yangi rang o'ylab topilmadi. */
+  --rw-accent: #c0392b;
   --rw-accent-fg: #ffffff;
   --rw-accent-ink: #c0392b;
   --rw-accent-soft: #fdecea;
@@ -416,6 +426,12 @@
   --rw-text-2: #d1d9db;
   --rw-muted: #bfc9c9;
   --rw-faint: #afb9b9;
+  /* Bu blok `--rw-accent` va `--rw-accent-fg` ni e'lon qilmasdi: light
+     blokdan #e74c3c + oq meros bo'lib, 3.82:1 berardi. Yorug' fon + quyuq
+     matn naqshiga o'tkazildi (material/editorial/swiss dark). Ikkala qiymat
+     ham shu uslubning o'z tokenlari — 5.39:1. */
+  --rw-accent: #ff7f6e;
+  --rw-accent-fg: #22313f;
   --rw-accent-ink: #ff7f6e;
   --rw-accent-soft: #4a2b26;
   --rw-chip: #34495e;
@@ -536,7 +552,9 @@
   --rw-text-2: #464c5a;
   --rw-muted: #505768;
   --rw-faint: #596276;
-  --rw-accent: #5b7cc9;
+  /* #5b7cc9 oq matn bilan 4.06:1 edi — AA dan sal past. `--rw-accent-ink`
+     (#4a68b0) to'g'ri quyuq variant: 5.39:1. */
+  --rw-accent: #4a68b0;
   --rw-accent-fg: #ffffff;
   --rw-accent-ink: #4a68b0;
   --rw-accent-soft: #d8dfee;
@@ -574,7 +592,10 @@
   --rw-text-2: #5d3d89;
   --rw-muted: #624f82;
   --rw-faint: #6f5897;
-  --rw-accent: #8b5cf6;
+  /* Lighthouse shu yerda yiqilgan edi: #8b5cf6 + oq matn = 4.23:1, AA 4.5.
+     `--rw-accent-ink` (#7c3aed) allaqachon to'g'ri quyuq variant — 5.70:1.
+     Yangi rang kiritilmadi, mavjud token tugma foniga ko'chirildi. */
+  --rw-accent: #7c3aed;
   --rw-accent-fg: #ffffff;
   --rw-accent-ink: #7c3aed;
   --rw-accent-soft: #ede4ff;
@@ -648,7 +669,11 @@
   --rw-text-2: #31373e;
   --rw-muted: #3d4249;
   --rw-faint: #464d55;
-  --rw-accent: linear-gradient(#6fa84f, #4a7c30);
+  /* Gradient OQ matn bilan yiqilardi: yorug' pog'ona #6fa84f = 2.84:1.
+     Bitta matn rangi ikkala pog'onaga ham yetishi kerak, shuning uchun
+     oraliq toraytirildi — 4.83:1 va 6.30:1. #3d6b28 shu uslubning o'z
+     `--rw-ok-ink` qiymati, ya'ni palitradan tashqariga chiqilmadi. */
+  --rw-accent: linear-gradient(#527d38, #3d6b28);
   --rw-accent-fg: #ffffff;
   --rw-accent-ink: #36639c;
   --rw-accent-soft: linear-gradient(#dfe8f5, #c7d5e8);
