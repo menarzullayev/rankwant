@@ -25,6 +25,23 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 # chiqarish ham mumkin edi, lekin `core/` va boshqa ilovalarga ham
 # bog'liq — qo'shimcha mo'rtlikka arzimaydi.
 COPY . .
+
+# Build tamg'asi — "image eskimi?" savoliga javob beradigan yagona ishonchli
+# belgi. `tools/check_deploy.sh` aynan shu label'ni o'qiydi.
+#
+# NEGA KERAK: CI (`ci-local.sh api`) MANBA kodni vaqtinchalik konteynerga
+# o'rnatib sinaydi, ishlab turgan `rankwant-api` image'i esa umuman
+# tekshirilmaydi. Natijada CI yashil bo'lib tursa ham produksiya ESKI
+# kodni ko'rsatishi mumkin — 2026-09-13 dagi uch avariya aynan shundan.
+#
+# `apps/api/.dockerignore` dan `.git` chiqarib tashlanmagan bo'lsa ham
+# commit'ni tashqaridan uzatish to'g'riroq: `.dockerignore` o'zgarsa
+# label jimgina `unknown` bo'lib qolardi.
+ARG GIT_SHA=unknown
+ARG BUILT_AT=unknown
+LABEL org.rankwant.git-sha=$GIT_SHA
+LABEL org.rankwant.built-at=$BUILT_AT
+
 RUN python manage.py collectstatic --noinput || true
 
 # DIQQAT: bu konteynerda foydalanuvchi kodi ISHLAMAYDI.

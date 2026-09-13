@@ -222,6 +222,43 @@ $trigger.Delay = 'PT2M'   # Docker Desktop kirgandan keyin ko'tariladi
 Register-ScheduledTask rankwant-handoff-in -Action $action -Trigger $trigger -RunLevel Highest
 ```
 
+`in` faqat **tizim yuklanganda** ishlaydi. Ish paytida tunnel yiqilsa (masalan
+jarayon o'chirilsa yoki ulanish uzilsa) sayt texnik ishlar sahifasida qolib
+ketadi — 2026-09-13 da aynan shunday bo'ldi. Buning uchun alohida monitor bor:
+
+```powershell
+$repo = "$HOME\rankwant"
+$action = New-ScheduledTaskAction -Execute 'powershell.exe' `
+  -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$repo\tools\monitor.ps1`"" `
+  -WorkingDirectory $repo
+$trigger = New-ScheduledTaskTrigger -Daily -At '00:00'
+$trigger.Repetition = (New-ScheduledTaskTrigger -Once -At '00:00' `
+  -RepetitionInterval (New-TimeSpan -Minutes 5) `
+  -RepetitionDuration (New-TimeSpan -Hours 24)).Repetition
+$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries `
+  -DontStopIfGoingOnBatteries -StartWhenAvailable `
+  -MultipleInstances IgnoreNew -ExecutionTimeLimit (New-TimeSpan -Minutes 4)
+Register-ScheduledTask 'RankWant Tunnel Monitor' -Action $action `
+  -Trigger $trigger -Settings $settings -Force
+```
+
+Monitor har 5 daqiqada saytni tashqaridan tekshiradi:
+
+| Holat | Nima qiladi |
+| ----- | ----------- |
+| Sayt `200` | hech narsa (log'ga ham yozmaydi) |
+| Sayt `200` emas, origin ham javob bermayapti | ogohlantiradi — tunnelni ko'tarish yordam bermaydi, konteyner aybdor |
+| Sayt `200` emas, origin sog'lom, R2 `owner=windows` | tunnelni qayta ko'taradi |
+| Sayt `200` emas, lekin R2 `owner` boshqa (yoki noma'lum) | **tunnelni ko'tarmaydi**, ogohlantiradi — handoff qoidasi: ikki tomon bir vaqtda live bo'lmasin |
+
+Egalik tekshiruvi `handoff.ps1` bilan bir xil R2 `state.json` dan o'qiladi. R2
+javob bermasa `unknown` deb qaraladi va tunnel ko'tarilmaydi (xavfsiz tomon).
+Holat `.handoff/monitor.log` ga, muammo esa `.handoff/monitor-alert.txt` ga
+yoziladi.
+
+Linux tomonda bu kerak emas: u yerda tunnel `cloudflared` systemd xizmati
+(`Restart=always`) va `handoff.sh` uni `systemctl` bilan boshqaradi.
+
 Boshqa tizimga o'tish bitta buyruq: `tools/handoff.sh switch` — `out` ni
 bajaradi, GRUB'ning bir martalik tanlovini Windows'ga qo'yadi va qayta
 yuklaydi. Doimiy yuklanish tartibi o'zgarmaydi, ya'ni keyin yana Linux
@@ -279,6 +316,122 @@ Staging'da ham judge **alohida** konteynerda — izolyatsiyani local'da sinash u
 2. Migration'lar oldinga mos: `add column → backfill → switch → drop`, alohida deploylarda ([08](../08-technical-spec/README.md) 🔒)
 3. Judge worker'lar **navbatni bo'shatib** to'xtaydi (graceful drain) — ishlayotgan submit yo'qolmaydi
 4. Rollback: oldingi image tegi; migration rollback **rejalashtirilgan** bo'lishi shart
+5. **Kod o'zgargach deploy qilinadi — CI yashilligi deploy qilinganini bildirmaydi.** Pastdagi bo'limga qarang.
+
+### Eskirgan konteyner — CI ko'rmaydigan nosozlik sinfi
+
+`tools/ci-local.sh` **manba kodni** vaqtinchalik konteynerda sinaydi
+(`rankwant-api-dev:<hash>`), lekin **ishlab turgan** `rankwant-web` /
+`rankwant-api` image'larini umuman tekshirmaydi. Ya'ni CI to'liq yashil
+bo'lib turib, sayt eski kodni ko'rsatishi mumkin.
+
+Bu **2026-09-13 da uch marta** sodir bo'ldi — bitta kunda:
+
+| Alomat | Sabab |
+| ------ | ----- |
+| `/kirish` → 404 | web image D18/D20 kodidan oldin qurilgan |
+| Admin parol to'g'ri, lekin kirilmaydi | api image'i `username` shartnomasida qolgan |
+| Fon vazifalari jimgina ishlamasligi | worker/beat ham eski image'da edi |
+
+Shuning uchun har deploy'dan keyin:
+
+```
+bash tools/check_deploy.sh
+```
+
+Skript solishtirishni **sanaga emas, kontentga** qarab qiladi:
+
+| Konteyner | Tekshiruv |
+| --------- | --------- |
+| `api`, `worker`, `beat` | `core/serializers.py` sha256 — manba va konteyner ichidagi fayl bir xilmi |
+| `web` | image yorlig'i `org.rankwant.git-sha` ↔ `git rev-parse HEAD` |
+| `judge` | kompilyatsiya qilingan binary — hash manbada yo'q, faqat holat ko'rsatiladi |
+
+Sana bo'yicha solishtirish **yaroqsiz**: fayl tahrirlanmasa ham `touch`
+uni «yangi» qiladi (test tiklash, `git checkout`, muharrir saqlashi) va
+ishlab turgan kod aynan bir xil bo'lsa ham «eskirgan» degan yolg'on javob
+chiqadi. Shu sababli label'lar `apps/*/Dockerfile` da build vaqtida
+yoziladi.
+
+```bash
+SHA=$(git rev-parse HEAD)
+docker compose -p rankwant --env-file .env.public \
+  -f docker-compose.yml -f docker-compose.public.yml build web api worker beat \
+  --build-arg GIT_SHA="$SHA" --build-arg BUILT_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+docker compose -p rankwant --env-file .env.public \
+  -f docker-compose.yml -f docker-compose.public.yml up -d --no-deps web api worker beat
+```
+
+Chiqish kodi `0` — hamma konteyner joriy kodda; `1` — kamida bittasi
+eskirgan (tuzatish buyruqlari chop etiladi).
+
+### Eskirgan konteyner EMAS: web↔api maydon shartnomasi (2026-09-13)
+
+Yuqoridagi tekshiruv «konteyner manbadan eskimi» degan savolga javob
+beradi. Lekin **ikkala tomon ham joriy kodda bo'lib, shartnoma baribir
+buzilgan** holat bor — va u eng xavflisi, chunki hech qanday asbob
+qichqirmaydi.
+
+**Nima bo'ldi.** Ro'yxatdan o'tish (3-qaror) 1-qadamda faqat to'rt
+maydon yuboradi: `email`, `password`, `terms_accepted` (+ ixtiyoriy
+`marketing_opt_in`). `username`, `display_name`, `country`, `region`
+2-qadamga (`/qoshimcha-malumot`) ko'chirilgan. `extra_kwargs` da
+`display_name`, `country`, `region` uchun `required: False` yozilgan —
+**`username` uchun yozilmagan**. U yerda faqat `validators: []` turardi.
+
+Nima uchun bu yetarli emas: `username` model maydonida `unique=True`
+bor, ya'ni DRF `ModelSerializer` uni `required=True, allow_blank=False`
+qilib yasaydi. `validators: []` faqat validatorlar ro'yxatini
+tozalaydi, `required`/`allow_blank` ga tegmaydi. Natija — har bir
+ro'yxatdan o'tish urinishi:
+
+```
+POST /api/v1/auth/register/   {"email": "...", "password": "...", "terms_accepted": true}
+→ 400 {"error": {"details": {"username": ["Ushbu maydon to'ldirilishi shart."]}}}
+```
+
+Ya'ni **sayt orqali hech kim ro'yxatdan o'ta olmasdi**. O'lchandi
+(konteyner ichida, `R().fields`):
+
+```
+username         required=True  allow_blank=False   ← buzilgan
+display_name     required=False allow_blank=True
+country          required=False allow_blank=True
+region           required=False allow_blank=True
+```
+
+**Nega sezilmadi.** Uch qavat himoya bir sababdan ko'r bo'lgan:
+
+| Qavat | Nega tutmadi |
+| ----- | ------------ |
+| `pytest` | mavjud testlar faqat `errors["email"]` ni tekshirardi; `username` xatosi o'sha javobda jimgina yonma-yon turardi |
+| Qo'lda sinov | API'ni to'g'ridan-to'g'ri chaqirgan skript `username` yuborardi — ya'ni ishlayverardi |
+| `check_deploy.sh` | konteyner manbadan eski emas edi — nomuvofiqlik manbaning O'ZIDA |
+
+**Tuzatish** — bitta qator (`apps/api/core/serializers.py`):
+
+```python
+"username": {"required": False, "allow_blank": True, "validators": []},
+```
+
+**Qo'shilgan to'siqlar** — bu sinf qaytmasligi uchun uch joyda:
+
+| Joy | Nima qiladi |
+| --- | ----------- |
+| `tools/check_contract.py` → `check_register_contract()` | web 1-qadamda yuboradigan maydonlarni o'qib, API ularni ixtiyoriy deb bilishini talab qiladi |
+| `apps/api/tests/test_auth.py` | `test_username_siz_royxatdan_otish_ishlaydi`, `test_username_bolsh_qiymat_bilan_ham_ishlaydi`, `test_username_berilsa_saqlanadi` |
+| shu hujjat | nosozlik sinfining tavsifi |
+
+⚠️ Tekshiruv **`required: False` va `allow_blank: True` ikkalasini**
+talab qiladi. Faqat bittasi yetmaydi: `required: False` bo'lsa ham
+`allow_blank: False` qolsa, eski mijozning bo'sh satri
+(«This field may not be blank») rad etiladi.
+
+⚠️ `check_register_contract()` ichida `extra_kwargs` **qavslar sanog'i**
+bilan o'qiladi (`_brace_block`), regex bilan emas: ichma-ich lug'at
+(`"email": {"required": True}`) bor, ya'ni non-greedy `.*?` birinchi
+ichki `}` da to'xtab tanani chala o'qiydi va tekshiruv jimgina bo'sh
+qolardi.
 
 ## Backup
 

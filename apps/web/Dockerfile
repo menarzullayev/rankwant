@@ -26,6 +26,16 @@ RUN --mount=type=cache,target=/app/.next/cache \
 FROM node:22-slim
 WORKDIR /app
 ENV NODE_ENV=production
+# Build qaysi manbadan chiqqanini belgilaydi. `.git` build kontekstiga
+# kirmaydi (.dockerignore), shuning uchun commit tashqaridan beriladi.
+# Nega kerak: `tools/check_deploy.sh` ishlab turgan konteyner manbadan
+# eskimi yoki yo'qmi shu yorliq orqali aniqlaydi. Usiz Next.js'ning
+# siqilgan `.next` chiqishini solishtirishning ishonchli yo'li yo'q edi
+# va 2026-09-13 dagi «eski image» hodisasi sezilmay qoldi.
+ARG GIT_SHA=unknown
+ARG BUILT_AT=unknown
+LABEL org.rankwant.git-sha=$GIT_SHA
+LABEL org.rankwant.built-at=$BUILT_AT
 COPY --from=build /app/.next ./.next
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/package.json ./

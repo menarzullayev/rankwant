@@ -14,6 +14,19 @@
 #   bash tools/ci-local.sh all      # hammasi
 #   bash tools/ci-local.sh rebuild  # dev image'ni majburan qayta qurish
 #
+# ⚠️ BU SKRIPT MANBANI sinaydi, ISHLAB TURGAN KONTEYNERNI EMAS.
+# Ya'ni "all" yashil bo'lishi produksiyada joriy kod ketayotganini
+# BILDIRMAYDI: ishlab turgan `rankwant-web`/`rankwant-api` image'i eski
+# bo'lsa ham bu yerda hech narsa qizarmaydi (2026-09-13 dagi uchala
+# avariya aynan shundan chiqdi). Deploy holatini alohida so'rang:
+#
+#   bash tools/check_deploy.sh
+#
+# U shu ro'yxatga ATAYLAB qo'shilmagan: uni ishlatish uchun ishlab
+# turgan stack kerak, CI esa faqat manba va vaqtinchalik konteyner bilan
+# ishlashi shart (busiz u qurilmaga bog'lanib qoladi va yolg'on yashil
+# beradi).
+#
 # Tezlik haqida: to'liq tekshiruv 30 soniyaga SIG'MAYDI — mypy (strict,
 # 280 fayl) va 996 test o'zi ~60 s. Lekin ikki narsa kesilgan:
 #   1) dev bog'liqliklar bir marta o'rnatiladi (`tools/ci.Dockerfile`) —
@@ -62,6 +75,37 @@ else
 fi
 DEV_IMAGE="${DEV_IMAGE:-rankwant-api-dev:${LOCK_HASH}}"
 
+# ── mypy keshi — FAYLLAR RO'YXATI o'zgarsa bekor qilinadi ────────────────
+#
+# ⚠️ 2026-09-13 da o'lchandi: `core/turnstile.py` qo'shilgach mypy
+# `Module "core" has no attribute "turnstile"` va
+# `'Settings' object has no attribute 'TURNSTILE_SITE_KEY'` deb xato
+# berdi — fayllar joyida va import qilinadigan bo'lsa ham. Yangi kesh
+# (`--cache-dir /tmp/mc`) bilan XUDDI shu ikki fayl **0 xato** berdi.
+#
+# Sabab: mypy keshi paketdagi MODULLAR RO'YXATINI ham saqlaydi. Yangi
+# fayl paydo bo'lganda u o'z ro'yxatini yangilamaydi — ilgari `core.turnstile`
+# yo'q edi, ya'ni «yo'q» degan xulosa keshda qolib ketadi.
+#
+# Keshni butunlay olib tashlash ham yechim emas: to'liq mypy ~40 soniya,
+# kesh bilan ~8. Shuning uchun kesh PAPKA nomiga fayllar ro'yxatining
+# xeshini qo'shamiz: ro'yxat o'zgarsa yangi papka, o'zgarmasa eski kesh.
+#
+# Ruff keshi bunga muhtoj emas (u har faylni o'zi bo'yicha keshlaydi),
+# shuning uchun u o'zgarmadi.
+py_fingerprint() {
+  cd "$ROOT/apps/api" || return 1
+  if command -v sha1sum >/dev/null 2>&1; then
+    find . -name '*.py' -not -path './.venv/*' -not -path './.pytest_cache/*' |
+      LC_ALL=C sort | sha1sum | cut -c1-12
+  else
+    find . -name '*.py' -not -path './.venv/*' -not -path './.pytest_cache/*' |
+      LC_ALL=C sort | shasum -a 1 | cut -c1-12
+  fi
+}
+PY_FP="$(py_fingerprint || echo 'nohash')"
+MYPY_CACHE="/cache/mypy-${PY_FP}"
+
 build_dev_image() {
   # Kontekst ATAYLAB nisbiy (`.`): `MSYS_NO_PATHCONV=1` bilan Git Bash
   # yo'li (`/c/...`) docker'ga o'girilmasdan yetib boradi va u
@@ -93,7 +137,8 @@ run_docs() {
   "$PY" tools/check_docs.py &&
     "$PY" tools/check_contract.py &&
     "$PY" tools/check_i18n.py &&
-    "$PY" tools/check_contrast.py
+    "$PY" tools/check_contrast.py &&
+    "$PY" tools/check_gradient_styles.py
 }
 
 # ── API (konteynerda) ────────────────────────────────────────────────────
@@ -107,7 +152,7 @@ api_run() {
     -e DATABASE_URL=postgres://rankwant:dev@postgres:5432/rankwant \
     -e REDIS_URL=redis://redis:6379/0 \
     -e DJANGO_SECRET_KEY=ci-local -e DJANGO_DEBUG=1 \
-    -e PYTHONNOUSERSITE=1 \
+    -e PYTHONNOUSERSITE=1 -e MYPY_CACHE="$MYPY_CACHE" \
     "$DEV_IMAGE" -c "$1"
 }
 
@@ -125,7 +170,7 @@ set -e
 echo "--- ruff ---"
 ruff check --cache-dir /cache/ruff . && ruff format --check .
 echo "--- mypy (strict) ---"
-mypy --cache-dir /cache/mypy .
+mypy --cache-dir "$MYPY_CACHE" .
 echo "--- migratsiyalar to'"'"'liq yozilganmi ---"
 python manage.py makemigrations --check --dry-run
 echo "--- pytest ---"
