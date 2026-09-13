@@ -40,6 +40,10 @@ class SystemUpdateSerializer(serializers.ModelSerializer[SystemUpdate]):
             "id",
             "kind",
             "module",
+            # `status` — batafsil sahifa nashrdan olinganini aytishi uchun.
+            # Ro'yxatda u har doim `published` bo'ladi, ya'ni bu maydon
+            # lentani o'zgartirmaydi.
+            "status",
             "version",
             "title",
             "body",

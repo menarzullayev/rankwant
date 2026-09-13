@@ -13,9 +13,11 @@ from django.db.models import QuerySet
 from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
+from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
 
 from core.models import User
 from core.pagination import StandardPagination
@@ -37,6 +39,11 @@ class SystemUpdateViewSet(
     serializer_class = SystemUpdateSerializer
     permission_classes = [AllowAny]
     pagination_class = StandardPagination
+    # `filter_backends` ni e'lon qilish `DEFAULT_FILTER_BACKENDS` ni TO'LIQ
+    # almashtiradi — shuning uchun uchtasi ham sanab o'tiladi. `SearchFilter`
+    # busiz `search_fields` deklaratsiyasi JONLI EMAS edi: maydon e'lon
+    # qilingan, lekin `?search=` hech narsa qilmasdi.
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields: ClassVar[list[str]] = ["kind", "module", "version"]
     search_fields: ClassVar[list[str]] = ["title", "body"]
     ordering_fields: ClassVar[list[str]] = ["released_at", "published_at"]
@@ -45,6 +52,15 @@ class SystemUpdateViewSet(
     _read_ids: set[int] | None = None
 
     def get_queryset(self) -> QuerySet[SystemUpdate]:
+        """Ro'yxat — faqat lentadagi yozuvlar.
+
+        Batafsil esa nashrdan olinganini ham ochadi (qaror 20: havola
+        sindirilmaydi). Ilgari ikkalasi ham `published()` edi, ya'ni
+        `withdraw()` docstring'i "havolasi ishlaydi" deb yozib turib,
+        amalda 404 qaytarardi — hujjat bilan kod zid edi.
+        """
+        if self.action == "retrieve":
+            return services.retrievable()
         return services.published()
 
     def _read_ids_for(self, rows: list[SystemUpdate]) -> set[int] | None:
@@ -73,6 +89,21 @@ class SystemUpdateViewSet(
         ctx["locale"] = resolve_locale(self.request)
         ctx["read_ids"] = self._read_ids
         return ctx
+
+    @extend_schema(responses={200: SystemUpdateSerializer(many=True)})
+    @action(detail=False, methods=["get"], permission_classes=[AllowAny])
+    def actionable(self, request: Request) -> Response:
+        """Harakatga chaqiruvchi yozuvlar — arxiv tepasidagi alohida blok.
+
+        Nega alohida so'rov: `breaking`/`deprecated` yozuvlari KAM, lekin
+        muhim. Ular joriy sahifada umuman bo'lmasligi mumkin (arxiv 25
+        tadan sahifalanadi), ya'ni sahifalangan ro'yxatdan ularni ajratib
+        bo'lmaydi. Qaror 11 shu ikki turni rang VA joylashuvda ajratishni
+        talab qiladi — joylashuv shu blok.
+        """
+        rows = list(self.get_queryset().filter(kind__in=SystemUpdate.ACTIONABLE))
+        self._read_ids = self._read_ids_for(rows)
+        return Response(self.get_serializer(rows, many=True).data)
 
     @extend_schema(responses={200: SystemUpdateSerializer(many=True)})
     @action(detail=False, methods=["get"], permission_classes=[IsAuthenticated])

@@ -25,6 +25,24 @@ def published() -> QuerySet[SystemUpdate]:
     ).prefetch_related("translations")
 
 
+def retrievable() -> QuerySet[SystemUpdate]:
+    """Batafsil sahifa uchun — nashrdan olingan yozuv ham ochiladi.
+
+    Qaror 20-savol: nashrdan olish — o'chirish EMAS, havola
+    sindirilmaydi. Telegram kanal va Codeforces blogdagi e'lonlar shu
+    havolaga ishora qiladi, ya'ni 404 bo'lsa tashqi havola o'ladi.
+
+    Ikki istisno ATAYLAB:
+      * `draft` — tasdiqlanmagan yozuv ochiq o'qilmaydi (qaror 15-savol);
+      * `is_enabled=False` — modul darajasidagi rollback hamma joyda
+        yopadi, chunki u "butun modul o'chirildi" degani.
+    """
+    return SystemUpdate.objects.filter(
+        status__in=[SystemUpdate.Status.PUBLISHED, SystemUpdate.Status.WITHDRAWN],
+        is_enabled=True,
+    ).prefetch_related("translations")
+
+
 def unread_queryset(user: User) -> QuerySet[SystemUpdate]:
     return published().exclude(reads__user=user)
 
@@ -130,6 +148,7 @@ __all__ = [
     "mark_read",
     "prune_reads",
     "published",
+    "retrievable",
     "total_published",
     "unread_by_module",
     "unread_count",

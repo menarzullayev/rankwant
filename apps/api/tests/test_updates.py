@@ -48,20 +48,42 @@ class TestKorinish:
         make(status=SystemUpdate.Status.DRAFT)
         assert APIClient().get(reverse("update-list")).json()["count"] == 0
 
-    def test_nashrdan_olingan_korinmaydi(self) -> None:
+    def test_nashrdan_olingan_lentada_korinmaydi(self) -> None:
         """Qaror 20-savol: nashrdan olinadi, lekin o'chirilmaydi."""
         row = make()
         row.status = SystemUpdate.Status.WITHDRAWN
         row.save()
+        assert APIClient().get(reverse("update-list")).json()["count"] == 0
+
+    def test_nashrdan_olingan_havolasi_ishlaydi(self) -> None:
+        """Qaror 20-savol: `havola sindirilmaydi`.
+
+        Ilgari bu yerda 404 kutilardi va izoh "batafsil hali ham
+        ochiladi" deb yozib turardi — hujjat bilan test zid edi. Endi
+        Telegram/Codeforces'dan kelgan havola ishlaydi, sahifa esa
+        nashrdan olinganini aytadi.
+        """
+        row = make()
+        row.status = SystemUpdate.Status.WITHDRAWN
+        row.save()
         c = APIClient()
-        assert c.get(reverse("update-list")).json()["count"] == 0
-        # Batafsil hali ham ochiladi — havola sindirilmaydi.
-        assert c.get(reverse("update-detail", args=[row.pk])).status_code == 404
+        res = c.get(reverse("update-detail", args=[row.pk]))
+        assert res.status_code == 200
+        assert res.json()["status"] == "withdrawn"
+
+    def test_qoralama_havolasi_ham_yopiq(self) -> None:
+        """Qaror 15-savol: tasdiqlanmagan yozuv ochiq o'qilmaydi."""
+        row = make(status=SystemUpdate.Status.DRAFT)
+        assert APIClient().get(reverse("update-detail", args=[row.pk])).status_code == 404
 
     def test_feature_flag_ochirilsa_korinmaydi(self) -> None:
         """Qaror 17-savol: rollback bir tugma — bazadan o'chirmasdan."""
         row = make(is_enabled=False)
-        assert APIClient().get(reverse("update-list")).json()["count"] == 0
+        c = APIClient()
+        assert c.get(reverse("update-list")).json()["count"] == 0
+        # Modul darajasidagi rollback BATAFSILNI ham yopadi — u "butun
+        # modul o'chirildi" degani, "bitta yozuv qaytarib olindi" emas.
+        assert c.get(reverse("update-detail", args=[row.pk])).status_code == 404
         assert SystemUpdate.objects.filter(pk=row.pk).exists()
 
     def test_mehmon_ham_koradi(self) -> None:
@@ -178,6 +200,67 @@ class TestHarakatgaChaqiruv:
         c.force_authenticate(user)
         body = c.get(reverse("update-unread-count")).json()
         assert body == {"count": 2, "actionable": 1}
+
+
+@pytest.mark.django_db
+class TestArxiv:
+    """Arxiv sahifasi tayanadigan so'rovlar (ochiq qavat)."""
+
+    def test_tur_boyicha_filtr(self) -> None:
+        make(kind=SystemUpdate.Kind.NEW)
+        make(title="Tuzatish", kind=SystemUpdate.Kind.FIXED)
+        body = APIClient().get(reverse("update-list"), {"kind": "fixed"}).json()
+        assert body["count"] == 1
+        assert body["results"][0]["kind"] == "fixed"
+
+    def test_modul_boyicha_filtr(self) -> None:
+        make(module=SystemUpdate.Module.PROBLEMS)
+        make(title="Musobaqa", module=SystemUpdate.Module.CONTESTS)
+        body = APIClient().get(reverse("update-list"), {"module": "contests"}).json()
+        assert body["count"] == 1
+
+    def test_qidiruv_ishlaydi(self) -> None:
+        """`search_fields` ilgari JONLI EMAS edi.
+
+        `filter_backends` e'lon qilinmagani uchun `DEFAULT_FILTER_BACKENDS`
+        ishlardi va unda `SearchFilter` yo'q — ya'ni `?search=` hech narsa
+        qilmasdan to'liq ro'yxatni qaytarardi.
+        """
+        make(title="Masalalar filtri")
+        make(title="Musobaqa jadvali")
+        body = APIClient().get(reverse("update-list"), {"search": "jadval"}).json()
+        assert body["count"] == 1
+        assert body["results"][0]["title"] == "Musobaqa jadvali"
+
+    def test_sahifalash(self) -> None:
+        for index in range(3):
+            make(title=f"Yozuv {index}")
+        body = APIClient().get(reverse("update-list"), {"page_size": 2}).json()
+        assert body["count"] == 3
+        assert len(body["results"]) == 2
+
+    def test_chaqiruvchi_blok_alohida_sorov(self) -> None:
+        """`/updates/actionable/` — arxiv tepasidagi blok.
+
+        Bu yozuvlar kam uchraydi, ya'ni sahifalangan ro'yxatda umuman
+        bo'lmasligi mumkin — shuning uchun alohida so'rov kerak.
+        """
+        make(kind=SystemUpdate.Kind.BREAKING, title="API o'zgardi")
+        make(kind=SystemUpdate.Kind.DEPRECATED, title="Eski usul yopiladi")
+        make(title="Oddiy yangilik", kind=SystemUpdate.Kind.NEW)
+        rows = APIClient().get(reverse("update-actionable")).json()
+        assert {r["title"] for r in rows} == {"API o'zgardi", "Eski usul yopiladi"}
+
+    def test_chaqiruvchi_blok_nashrdan_olinganni_chiqarmaydi(self) -> None:
+        row = make(kind=SystemUpdate.Kind.BREAKING)
+        row.status = SystemUpdate.Status.WITHDRAWN
+        row.save()
+        assert APIClient().get(reverse("update-actionable")).json() == []
+
+    def test_mehmon_chaqiruvchi_blokni_koradi(self) -> None:
+        """Qaror 8-savol: mehmonga to'liq ko'rinadi."""
+        make(kind=SystemUpdate.Kind.BREAKING)
+        assert APIClient().get(reverse("update-actionable")).status_code == 200
 
 
 @pytest.mark.django_db
