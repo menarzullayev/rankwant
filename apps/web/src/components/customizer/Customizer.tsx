@@ -198,7 +198,10 @@ function AppearanceTab() {
     <>
       <Section title={t(locale, "customizer.templates")}>
         {template ? null : (
-          <p className="mb-2 text-theme-xs rw-warn-ink">
+          // `rw-warn-soft` + `rw-warn-ink` — token shartnomasi shu:
+          // `-ink` faqat o'z `-soft` foni ustida o'qiladi. Sirt ustida
+          // ishlatilsa `clay` da 2.87:1 bo'ladi (o'lchandi).
+          <p className="mb-2 rw-radius-sm rw-warn-soft px-2 py-1 text-theme-xs">
             {t(locale, "customizer.templateModified")}
           </p>
         )}
@@ -410,7 +413,9 @@ function AccentSection() {
         />
         <Indicator label={t(locale, "customizer.contrastText")} ratio={trial.ink} />
         {!ok && (
-          <p className="text-theme-xs rw-bad-ink">{t(locale, "customizer.contrastBlocked")}</p>
+          <p className="rw-radius-sm rw-bad-soft px-2 py-1 text-theme-xs">
+            {t(locale, "customizer.contrastBlocked")}
+          </p>
         )}
       </div>
 
@@ -436,7 +441,13 @@ function AccentSection() {
 function Indicator({ label, ratio }: { label: string; ratio: number | null }) {
   const good = passes(ratio);
   return (
-    <p className={`flex items-center justify-between text-theme-xs ${good ? "rw-ok-ink" : "rw-bad-ink"}`}>
+    // `-soft` foni SHART: `-ink` faqat shu fon ustida AA dan o'tadi.
+    // Holat faqat rang bilan emas — ✓/✗ belgisi ham bor (WCAG 1.4.1).
+    <p
+      className={`flex items-center justify-between rw-radius-sm px-2 py-1 text-theme-xs ${
+        good ? "rw-ok-soft" : "rw-bad-soft"
+      }`}
+    >
       <span>{label}</span>
       <span className="tabular-nums">
         {ratio === null ? "—" : `${ratio.toFixed(2)}:1`} {good ? "✓" : "✗"}

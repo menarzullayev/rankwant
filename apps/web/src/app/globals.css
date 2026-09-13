@@ -118,9 +118,9 @@
   --rw-accent-fg: #ffffff;
   --rw-accent-ink: #3c66dc;
   --rw-accent-soft: #eef3ff;
-  --rw-ok-ink: #039855;   --rw-ok-soft: #ecfdf3;
+  --rw-ok-ink: #038249;   --rw-ok-soft: #ecfdf3;
   --rw-warn-ink: #b54708; --rw-warn-soft: #fffaeb;
-  --rw-bad-ink: #d92d20;  --rw-bad-soft: #fef3f2;
+  --rw-bad-ink: #d42c1f;  --rw-bad-soft: #fef3f2;
   --rw-chip: #f2f4f7;
   --rw-hover: #f9fafb;
   --rw-field: #ffffff;
@@ -362,7 +362,7 @@
   --rw-accent-soft: #00d4ff;
   --rw-ok-ink: #056d3a;   --rw-ok-soft: #7bf7a8;
   --rw-warn-ink: #6b4400; --rw-warn-soft: #ffd166;
-  --rw-bad-ink: #9c0000;  --rw-bad-soft: #ff9d9d;
+  --rw-bad-ink: #950000;  --rw-bad-soft: #ff9d9d;
   --rw-chip: #00d4ff;
   --rw-hover: #f0f0f0;
   --rw-field: #ffffff;
@@ -429,8 +429,8 @@
   --rw-accent-fg: #ffffff;
   --rw-accent-ink: #bd3629;
   --rw-accent-soft: #fdecea;
-  --rw-ok-ink: #16a085;   --rw-ok-soft: #e6f6f3;
-  --rw-warn-ink: #d68910; --rw-warn-soft: #fdf3e3;
+  --rw-ok-ink: #117b67;   --rw-ok-soft: #e6f6f3;
+  --rw-warn-ink: #9a620c; --rw-warn-soft: #fdf3e3;
   --rw-bad-ink: #c0392b;  --rw-bad-soft: #fdecea;
   --rw-chip: #e4e9ea;
   --rw-hover: #e4e9ea;
@@ -497,7 +497,7 @@
   --rw-accent-ink: #6200ee;
   --rw-accent-soft: #ede7fb;
   --rw-ok-ink: #2e7d32;   --rw-ok-soft: #e8f5e9;
-  --rw-warn-ink: #ef6c00; --rw-warn-soft: #fff3e0;
+  --rw-warn-ink: #b45200; --rw-warn-soft: #fff3e0;
   --rw-bad-ink: #c62828;  --rw-bad-soft: #ffebee;
   --rw-chip: #f5f5f5;
   --rw-hover: #f5f5f5;
@@ -603,9 +603,9 @@
   --rw-accent-fg: #ffffff;
   --rw-accent-ink: #425fa7;
   --rw-accent-soft: #d8dfee;
-  --rw-ok-ink: #2f8f6a;   --rw-ok-soft: #d8ece5;
-  --rw-warn-ink: #a0741f; --rw-warn-soft: #eee5d0;
-  --rw-bad-ink: #b4514c;  --rw-bad-soft: #eedcdb;
+  --rw-ok-ink: #267356;   --rw-ok-soft: #d8ece5;
+  --rw-warn-ink: #845f1a; --rw-warn-soft: #eee5d0;
+  --rw-bad-ink: #9f4742;  --rw-bad-soft: #eedcdb;
   --rw-chip: #e2e6ee;
   --rw-hover: #dce0e8;
   --rw-field: #e2e6ee;
@@ -645,9 +645,9 @@
   --rw-accent-fg: #ffffff;
   --rw-accent-ink: #7936ea;
   --rw-accent-soft: #ede4ff;
-  --rw-ok-ink: #2f9e6d;   --rw-ok-soft: #d9f7ea;
-  --rw-warn-ink: #c08a1e; --rw-warn-soft: #fdf1d6;
-  --rw-bad-ink: #d1547f;  --rw-bad-soft: #ffd8ea;
+  --rw-ok-ink: #247a55;   --rw-ok-soft: #d9f7ea;
+  --rw-warn-ink: #8e6616; --rw-warn-soft: #fdf1d6;
+  --rw-bad-ink: #b4305e;  --rw-bad-soft: #ffd8ea;
   --rw-chip: #ffd8ea;
   --rw-hover: #f2ebff;
   --rw-field: #fbf7ff;
@@ -726,7 +726,7 @@
   --rw-accent-ink: #204d84;
   --rw-accent-soft: linear-gradient(#dfe8f5, #c7d5e8);
   --rw-ok-ink: #3d6b28;   --rw-ok-soft: linear-gradient(#e2f0d9, #cfe4c2);
-  --rw-warn-ink: #8a6414; --rw-warn-soft: linear-gradient(#f7ecd2, #ecdcb5);
+  --rw-warn-ink: #7d5a12; --rw-warn-soft: linear-gradient(#f7ecd2, #ecdcb5);
   --rw-bad-ink: #93342c;  --rw-bad-soft: linear-gradient(#f7dedb, #ecc6c2);
   --rw-chip: linear-gradient(#f0f2f5, #d5dae0);
   --rw-hover: linear-gradient(#ffffff, #e8ebef);

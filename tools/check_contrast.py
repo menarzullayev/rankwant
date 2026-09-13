@@ -65,6 +65,8 @@ ACCENT_PAIR = ("--rw-accent-fg", "--rw-accent")
 #: oqibat: `dashboard` da uch joyda AA dan yiqilgan — ground 4.27:1,
 #: surface 4.46:1, soft 4.02:1 — va CI buni ko'rmagan.
 ACCENT_INK = "--rw-accent-ink"
+#: Holat ranglari — matn sifatida ham, nishon sifatida ham ishlatiladi.
+SEMANTIC = ("ok", "warn", "bad")
 ACCENT_SOFT = "--rw-accent-soft"
 TIERS = ("--rw-text", "--rw-text-2", "--rw-muted", "--rw-faint")
 #: Unvon ranglari — ism shu rangda yoziladi (ADR-0018), ya'ni bu ham matn.
@@ -314,6 +316,64 @@ def check_kinds(css: str) -> list[str]:
     return problems
 
 
+def check_semantic(css: str) -> list[str]:
+    """`--rw-ok/warn/bad-ink` o'z `-soft` foni ustida o'tishini tekshiradi.
+
+    ⚠️ **Shartnoma: bu tokenlar NISHON uchun.** `ink` faqat o'z `soft`
+    foni ustida ishlatiladi — xuddi `--rw-kind-*` kabi. Ilovada yagona
+    ishlatish ham shunday (`certificates/[id]`: `rw-ok-soft` + `rw-ok-ink`).
+
+    2026-09-14 da qo'shildi: bu uchlik umuman tekshirilmagan edi va
+    o'lchanganda **14 juftlik o'z soft fonida ham** yiqilardi
+    (masalan `clay`: ok 2.96:1, warn 2.72:1) — ya'ni nishon matni
+    hech qachon AA dan o'tmagan.
+
+    Lighthouse orqali topildi: panel ularni SIRT ustida ishlatgan
+    (`clay` da 2.87:1). Bu tokenlarning xatosi emas — ishlatish xatosi.
+    Shuning uchun bu yerda sirt tekshirilmaydi: u shartnomaga kirmaydi
+    va ba'zi palitralarda umuman bajarib bo'lmaydi (sirtlar bir vaqtda
+    ham juda yorug', ham juda qorong'i).
+    """
+    problems: list[str] = []
+    blobs = read_blobs(css)
+    for (style, mode), tokens in sorted(style_tokens(css).items()):
+        if "--rw-ground" not in tokens:
+            continue
+        label = f"{style}{'.dark' if mode == 'dark' else ''}"
+        grounds = backgrounds(tokens, blobs.get(style, []))
+        if not grounds:
+            problems.append(f"{label}  fonlar o'qilmadi")
+            continue
+        base = grounds[0]
+        for state in SEMANTIC:
+            ink_raw = tokens.get(f"--rw-{state}-ink", "").strip()
+            soft_raw = tokens.get(f"--rw-{state}-soft", "").strip()
+            ink, soft = parse(ink_raw), parse(soft_raw)
+            if ink is None:
+                problems.append(
+                    f"{label}  --rw-{state}-ink o'qilmadi ({ink_raw or 'token yo`q'})"
+                )
+                continue
+            # `soft` gradient ham bo'lishi mumkin (`skeu`) — u holda eng
+            # yomon pog'ona olinadi, xuddi tugma juftligidagi kabi.
+            soft_stops = stops(soft_raw)
+            if not soft_stops:
+                problems.append(
+                    f"{label}  --rw-{state}-soft o'qilmadi ({soft_raw or 'token yo`q'})"
+                )
+                continue
+            worst_bg = min(
+                (over(s, base) if s[3] < 1 else s for s in soft_stops),
+                key=lambda bg: contrast(over(ink, bg) if ink[3] < 1 else ink, bg),
+            )
+            ratio = contrast(over(ink, worst_bg) if ink[3] < 1 else ink, worst_bg)
+            if ratio < AA:
+                problems.append(
+                    f"{label}  {state} nishon matni ({state}-ink / {state}-soft): {ratio:.2f}:1, kerak {AA}"
+                )
+    return problems
+
+
 def main() -> int:
     css = CSS.read_text(encoding="utf-8")
     blobs = read_blobs(css)
@@ -484,6 +544,9 @@ def main() -> int:
                     f"{ratio:.2f}:1 "
                     f"(fon #{bg[0]:02x}{bg[1]:02x}{bg[2]:02x}), kerak {AA}"
                 )
+
+    failures += check_semantic(css)
+    checked += 3 * sum(1 for row in style_tokens(css).values() if "--rw-ground" in row)
 
     failures += check_kinds(css)
     checked += 2 * len(KINDS)
