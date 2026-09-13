@@ -55,3 +55,6 @@ tests/e2e/playwright-report/
 
 # Ikki tizimli preview (tools/handoff.*): eksport nusxalari, tunnel PID va logi
 .handoff/
+
+# Changelog sinxronizatsiya nuqtasi (tools/sync_updates.py) — har ish joyi o'ziniki
+tools/.update-sync.json
