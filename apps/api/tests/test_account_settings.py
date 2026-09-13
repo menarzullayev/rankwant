@@ -447,10 +447,31 @@ class TestProfilMaydonlari:
         assert self.yoz(user, {"notify_prefs": {"duel": {"email": True}}}).status_code == 400
 
     def test_korinish_sozlamasi_tekshiriladi(self, user: User) -> None:
-        togri = {"style": "ocean", "sound": True, "effect": "circle"}
+        """Sxema v2 — guruhlangan (D33).
 
+        Yassi shakl endi RAD ETILADI: `style` `appearance` guruhiga o'tdi.
+        Bu ataylab — eski shaklni jimgina qabul qilish ikki xil saqlash
+        yo'lini ochib qo'yardi va qaysi biri ustun ekani noaniq bo'lardi.
+        """
+        togri = {
+            "appearance": {"style": "ocean", "size": 110, "density": "compact"},
+            "a11y": {"vision": "protan", "bigTargets": True},
+            "sound": True,
+            "effect": "circle",
+        }
         assert self.yoz(user, {"ui_prefs": togri}).status_code == 200
+
+        # Noma'lum qiymatlar rad etiladi.
         assert self.yoz(user, {"ui_prefs": {"effect": "portlash"}}).status_code == 400
+        assert (
+            self.yoz(user, {"ui_prefs": {"appearance": {"size": 115}}}).status_code == 400
+        )
+        assert (
+            self.yoz(user, {"ui_prefs": {"appearance": {"theme": "system"}}}).status_code
+            == 400
+        )
+        # Eski yassi shakl ham rad etiladi.
+        assert self.yoz(user, {"ui_prefs": {"style": "ocean"}}).status_code == 400
 
     def test_yangi_tillar_qabul_qilinadi(self, user: User) -> None:
         for locale in ("kaa", "kk", "ky", "tg", "tr", "zh", "es"):

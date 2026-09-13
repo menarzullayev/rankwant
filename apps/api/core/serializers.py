@@ -10,7 +10,7 @@ from django.db import IntegrityError
 from django.utils import timezone
 from rest_framework import serializers
 
-from core import handles, turnstile, usernames
+from core import handles, prefs, turnstile, usernames
 from core.models import PRIVACY_FIELDS, ApiToken, School, User, UserSession
 from core.throttling import TrustedClientIdent
 from profiles.catalog import UZ_DISTRICTS, UZ_REGIONS
@@ -122,7 +122,9 @@ class UserPublicSerializer(serializers.ModelSerializer[User]):
 
 
 #: Mavzu almashishdagi animatsiya turlari.
-UI_EFFECTS = ("none", "fade", "circle")
+#: Mavzu almashish effektlari. Ta'rif `core/prefs.py` ga ko'chdi (sxema
+#: bilan bir joyda tursin) — bu nom tashqi havolalar uchun qoldi.
+UI_EFFECTS = prefs.EFFECTS
 
 
 class MeSerializer(serializers.ModelSerializer[User]):
@@ -285,18 +287,32 @@ class MeSerializer(serializers.ModelSerializer[User]):
             raise serializers.ValidationError("Bu yutuq hali qo'lga kiritilmagan")
         return value
 
-    def validate_ui_prefs(self, value: Any) -> dict[str, Any]:
-        if not isinstance(value, dict):
-            raise serializers.ValidationError("Obyekt kutilgan")
-        for key, item in value.items():
-            ok = (
-                (key == "style" and isinstance(item, str) and re.fullmatch(r"[a-z-]{1,20}", item))
-                or (key == "sound" and isinstance(item, bool))
-                or (key == "effect" and item in UI_EFFECTS)
+    def validate_theme(self, value: str) -> str:
+        """`light` | `dark` | `system`.
+
+        Maydon `max_length=16` bilan har qanday satrni qabul qilardi, ya'ni
+        klient «system » yoki «Dark» yozib qo'ysa jimgina saqlanardi va
+        keyin hech qanday mavzu qo'llanmasdi. Sozlagich yozadigan maydon
+        uchun bu yetarli emas.
+        """
+        if value not in prefs.THEMES:
+            raise serializers.ValidationError(
+                f"Mavzu {', '.join(prefs.THEMES)} dan biri bo'lsin"
             )
-            if not ok:
-                raise serializers.ValidationError(f"Noma'lum sozlama: {key}")
-        return dict(value)
+        return value
+
+    def validate_ui_prefs(self, value: Any) -> dict[str, Any]:
+        """Sxema `core/prefs.py` da — guruhlangan va versiyalangan (D33).
+
+        Bu yerga mantiq yozilmaydi: sozlagich paneli ham, migratsiya ham,
+        kelajakdagi CLI ham AYNI validatorga tayanishi kerak. Ilgari bu
+        yerda uchta yassi kalit tekshirilardi va to'liq token to'plami
+        (D9) uchun joy yo'q edi.
+        """
+        try:
+            return prefs.validate(value)
+        except prefs.PrefsError as exc:
+            raise serializers.ValidationError(str(exc)) from exc
 
     def validate_notify_prefs(self, value: Any) -> dict[str, dict[str, bool]]:
         from notifications.models import Notification
