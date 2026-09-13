@@ -3,7 +3,7 @@
 Har bosqich alohida papka. **Qulflash** = jamoa tasdiqlagandan keyin `STATUS: locked`.
 
 ```
-Idea
+Idea Selection                → docs/idea-selection/
   ↓
 1. Vision                     → docs/01-vision/
   ↓
@@ -30,13 +30,14 @@ Idea
 
 | #   | Papka             | Holat           | Izoh                                      |
 | --- | ----------------- | --------------- | ----------------------------------------- |
+| 00  | Idea Selection    | **Retroaktiv**  | 2026-09-13 da yozildi; 4-variant ochiq     |
 | 01  | Vision            | **Locked**      | RankWant + Qvant — 2026-09-06             |
 | 02  | Problem discovery | **Locked**      | North Star: haftalik faol yechuvchi — 2026-09-06 |
 | 03  | Market            | **Locked**      | Raqobatchi + brend + bozor hajmi — 2026-09-06 |
 | 04  | PRD               | **Locked**      | Fazalar + reyting formulalari + Qvant — 2026-09-06 |
 | 05  | Domain            | **Locked**      | Entity, indeks, migration tartibi — 2026-09-06 |
 | 06  | Architecture      | **Locked**      | Stack + xavfsizlik chegarasi — 2026-09-06 |
-| 07  | ADR               | **living**      | 0001–0003, 0005–0009 accepted; 0004 bake-off    |
+| 07  | ADR               | **living**      | 0001–0019; 0004 accepted (bake-off 2026-09-06) |
 | 08  | Tech spec         | **Locked**      | Auth, API, judge protokoli — 2026-09-06   |
 | 09  | Dev plan          | **Locked**      | Phase 0 va Phase 1 bajarildi — 2026-09-06 |
 | 10  | Operations        | **draft**       | Topologiya, siyosat, incident turlari     |
