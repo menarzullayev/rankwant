@@ -12,7 +12,7 @@ import { Checkbox, SelectField } from "@/components/ui/SelectField";
 import { CountrySelect } from "@/components/ui/CountrySelect";
 import { GithubMark, GoogleMark, TelegramMark } from "@/components/ProviderMark";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t, errorText, type MessageKey } from "@/i18n/messages";
+import { t, errorText } from "@/i18n/messages";
 import { ApiError, getJson, postJson } from "@/lib/api";
 import { track } from "@/lib/analytics";
 import { strength } from "@/lib/password";
@@ -438,7 +438,13 @@ export function AuthForm({
         >
           {t(locale, mode === "login" ? "auth.login" : "auth.register")}
         </Button>
-        {mode === "register" && <Legal />}
+        {/* Bu yerda ilgari `auth.legal` («Ro'yxatdan o'tish orqali...»)
+            ham chizilardi. U yuqoridagi MAJBURIY checkbox bilan bir xil
+            narsani aytardi, ya'ni bir sahifada rozilik ikki marta
+            takrorlanardi — o'lchandi. Checkbox aniqroq (faol rozilik) va
+            uni chetlab o'tib bo'lmaydi, shuning uchun passiv takror
+            olib tashlandi. Ijtimoiy yo'lda esa checkbox YO'Q, ya'ni u
+            yerda passiv matn rozilikning yagona asosi bo'lib qoladi. */}
       </form>
 
       {/* Parol formasi asosiy yo'l bo'lib qoladi, ijtimoiy kirish esa
@@ -496,7 +502,7 @@ export function AuthForm({
           {/* Rozilik matni: OAuth orqali hisob ochilganda `terms_accepted_at`
               shu matnga asoslanib yoziladi (`record_social_consent`).
               Matnsiz yozish huquqiy jihatdan asossiz bo'lardi. */}
-          <Legal message="auth.socialConsent" />
+          <Legal />
         </>
       )}
 
@@ -552,21 +558,28 @@ function Strength({ value }: { value: string }) {
  *  o'rinlari bilan keladi, ya'ni har bir til so'z tartibini O'ZI
  *  belgilaydi. Jumlani bo'laklab yig'ish shu sababdan.
  *
- *  Ikki joyda ishlatiladi: ro'yxat formasining ostida (`auth.legal`) va
- *  ijtimoiy tugmalar ostida (`auth.socialConsent`) — ikkinchisi OAuth
- *  orqali hisob OCHILGANDA ham rozilik qayd etilishining asosi. */
-function Legal({ message = "auth.legal" }: { message?: MessageKey }) {
+ *  Faqat ijtimoiy tugmalar ostida chiziladi (`auth.socialConsent`).
+ *  Forma tomonida bunday passiv matn YO'Q: u yerda majburiy checkbox
+ *  bor va u aniqroq — passiv takror bir sahifada rozilikni ikki marta
+ *  ko'rsatardi.
+ *
+ *  Havolalar DOIMIY tagchiziq bilan chiziladi. Sabab WCAG 1.4.1: ular
+ *  matn ICHIDA turadi va atrofdagi so'zdan faqat rang bilan ajralsa,
+ *  farq 1.24:1 bo'ladi (talab 3:1) — ya'ni rang ko'rmaydigan odam uchun
+ *  havola umuman bilinmaydi. Lighthouse buni `link-in-text-block` deb
+ *  belgilaydi. `.rw-md a` ham xuddi shu sababdan tagchiziqli. */
+function Legal() {
   const locale = useLocale();
-  const parts = t(locale, message).split(/(\{terms\}|\{privacy\})/);
+  const parts = t(locale, "auth.socialConsent").split(/(\{terms\}|\{privacy\})/);
   return (
     <p className="text-center text-theme-xs rw-dim">
       {parts.map((part, i) =>
         part === "{terms}" ? (
-          <Link key={i} href="/shartlar" className="rw-accent-ink hover:underline">
+          <Link key={i} href="/shartlar" className="rw-accent-ink underline">
             {t(locale, "footer.terms")}
           </Link>
         ) : part === "{privacy}" ? (
-          <Link key={i} href="/maxfiylik" className="rw-accent-ink hover:underline">
+          <Link key={i} href="/maxfiylik" className="rw-accent-ink underline">
             {t(locale, "footer.privacy")}
           </Link>
         ) : (

@@ -86,7 +86,6 @@ export const kaa: Record<MessageKey, string> = {
   "auth.strength2": "Álsiz",
   "auth.strength3": "Orta",
   "auth.strength4": "Kúshli",
-  "auth.legal": "Dizimnen ótiw arqalı siz {terms} hám {privacy} siyasatına kelisim bildiresiz.",
   "auth.socialConsent": "Dawam etiw arqalı siz {terms} hám {privacy} siyasatına kelisim bildiresiz.",
   "auth.verifyTitle": "Emaildi tastıyıqlaw",
   "auth.verifyPending": "Pochtańız tastıyıqlanbaǵan. Jiberilgen xattaǵı siltemeni basıń.",

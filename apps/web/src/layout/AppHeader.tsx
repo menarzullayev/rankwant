@@ -24,11 +24,16 @@ export default function AppHeader() {
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b rw-line rw-chrome px-4 md:px-6">
+      {/* 40x40 — header'dagi boshqa tugmalar bilan bir o'lchamda
+          (`ThemeToggle`, `StylePicker`). Ilgari bosiladigan maydon faqat
+          ikonka kattaligida edi: 20x20, ya'ni WCAG 2.5.8 (AA) talab
+          qilgan 24x24 dan ham kichik. `-ml-2.5` ikonkani eski joyida
+          qoldiradi — faqat nishon kattalashadi, ko'rinish o'zgarmaydi. */}
       <button
         type="button"
         onClick={toggleMobileSidebar}
         aria-label={t(locale, "nav.menu")}
-        className="rw-dim-2 lg:hidden"
+        className="-ml-2.5 flex size-10 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg lg:hidden"
       >
         <MenuIcon />
       </button>

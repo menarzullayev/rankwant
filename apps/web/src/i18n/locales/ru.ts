@@ -86,7 +86,6 @@ export const ru: Record<MessageKey, string> = {
   "auth.strength2": "Слабый",
   "auth.strength3": "Средний",
   "auth.strength4": "Надёжный",
-  "auth.legal": "Регистрируясь, вы соглашаетесь с {terms} и {privacy}.",
   "auth.socialConsent": "Продолжая, вы соглашаетесь с {terms} и {privacy}.",
   "auth.verifyTitle": "Подтверждение почты",
   "auth.verifyPending": "Почта не подтверждена. Откройте ссылку из отправленного письма.",

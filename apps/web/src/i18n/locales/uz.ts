@@ -90,7 +90,6 @@ export const uz = {
   "auth.strength2": "Zaif",
   "auth.strength3": "O'rtacha",
   "auth.strength4": "Kuchli",
-  "auth.legal": "Ro'yxatdan o'tish orqali siz {terms} va {privacy} siyosatiga rozilik bildirasiz.",
   "auth.socialConsent": "Davom etish orqali siz {terms} va {privacy} siyosatiga rozilik bildirasiz.",
   "auth.verifyTitle": "Emailni tasdiqlash",
   "auth.verifyPending": "Pochtangiz tasdiqlanmagan. Yuborilgan xatdagi havolani bosing.",

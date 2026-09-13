@@ -86,7 +86,6 @@ export const zh: Record<MessageKey, string> = {
   "auth.strength2": "弱",
   "auth.strength3": "中等",
   "auth.strength4": "强",
-  "auth.legal": "注册即表示您同意{terms}和{privacy}政策。",
   "auth.socialConsent": "继续即表示您同意{terms}和{privacy}政策。",
   "auth.verifyTitle": "验证邮箱",
   "auth.verifyPending": "您的邮箱尚未验证。请打开我们发送的邮件中的链接。",

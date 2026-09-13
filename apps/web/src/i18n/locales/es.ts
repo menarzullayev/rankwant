@@ -86,7 +86,6 @@ export const es: Record<MessageKey, string> = {
   "auth.strength2": "Débil",
   "auth.strength3": "Media",
   "auth.strength4": "Fuerte",
-  "auth.legal": "Al registrarte aceptas los {terms} y la política de {privacy}.",
   "auth.socialConsent": "Al continuar aceptas los {terms} y la política de {privacy}.",
   "auth.verifyTitle": "Verificar el correo",
   "auth.verifyPending": "Tu correo no está verificado. Abre el enlace del mensaje que enviamos.",
