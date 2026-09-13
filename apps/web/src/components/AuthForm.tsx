@@ -478,7 +478,11 @@ export function AuthForm({
               ))}
           </div>
           {providers.includes("telegram") && telegramBot && (
-            <TelegramButton bot={telegramBot} next={next} />
+            <TelegramButton
+              bot={telegramBot}
+              label={t(locale, PROVIDER_LABEL.telegram)}
+              next={next}
+            />
           )}
           {/* Rozilik matni: OAuth orqali hisob ochilganda `terms_accepted_at`
               shu matnga asoslanib yoziladi (`record_social_consent`).

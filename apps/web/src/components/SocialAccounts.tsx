@@ -114,7 +114,7 @@ export function SocialAccounts() {
               ) : p === "telegram" ? (
                 tgReady && bot ? (
                   <span className="flex flex-col items-end gap-1">
-                    <TelegramButton bot={bot} />
+                    <TelegramButton bot={bot} label={t(locale, "auth.withTelegram")} />
                     <span className="text-theme-xs rw-dim">
                       {t(locale, "settings.socialTelegramStep")}
                     </span>
