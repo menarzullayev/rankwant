@@ -57,7 +57,7 @@ class TestParolniTiklash:
         """Kuzatuv o'chirilgan (ADR-0015): foydalanuvchi manzilda `rankwant`
         so'zini ko'rishi va ko'rmasa shubhalanishi kerak.
 
-        Kanonik manzil — `/kirish?tab=parolni-tiklash&token=…` (1 va
+        Kanonik manzil — `/login?tab=reset-password&token=…` (1 va
         13-qarorlar). Tartib MUHIM EMAS, ya'ni `&` va `?` almashib ketsa
         test yiqilmasligi kerak — shuning uchun ikkala qism alohida
         tekshiriladi.
@@ -65,8 +65,8 @@ class TestParolniTiklash:
         emails.send_password_reset(odam(), token="TOK", code="482913")
 
         assert zanjir.last is not None
-        assert "https://rankwant.uz/kirish?" in zanjir.last.html
-        assert "tab=parolni-tiklash" in zanjir.last.html
+        assert "https://rankwant.uz/login?" in zanjir.last.html
+        assert "tab=reset-password" in zanjir.last.html
         assert "token=TOK" in zanjir.last.html
         for begona in ("mailjet.com", "brevo.com", "resend.com", "mailersend.com"):
             assert begona not in zanjir.last.html
@@ -99,18 +99,18 @@ class TestParolniTiklash:
             return _context(email_text.CHANGED, egasi, **kwargs)["link"]  # type: ignore[arg-type]
 
         assert (
-            havola(path="/kirish", tab="parolni-tiklash", token="", code="")
-            == "https://rankwant.uz/kirish?tab=parolni-tiklash"
+            havola(path="/login", tab="reset-password", token="", code="")
+            == "https://rankwant.uz/login?tab=reset-password"
         )
 
         assert (
-            havola(path="/kirish", tab="parolni-tiklash", token="TOK", code="482913")
-            == "https://rankwant.uz/kirish?tab=parolni-tiklash&token=TOK"
+            havola(path="/login", tab="reset-password", token="TOK", code="482913")
+            == "https://rankwant.uz/login?tab=reset-password&token=TOK"
         )
 
         assert (
-            havola(path="/emailni-tasdiqlash", token="TOK", code="482913")
-            == "https://rankwant.uz/emailni-tasdiqlash?token=TOK"
+            havola(path="/verify-email", token="TOK", code="482913")
+            == "https://rankwant.uz/verify-email?token=TOK"
         )
 
     def test_kontekst_korsatiladi(self, zanjir: Yozib) -> None:
@@ -154,7 +154,7 @@ class TestEmailniTasdiqlash:
 
         assert row.purpose == EmailDelivery.Purpose.EMAIL_VERIFY
         assert zanjir.last is not None
-        assert "/emailni-tasdiqlash?token=TOK" in zanjir.last.html
+        assert "/verify-email?token=TOK" in zanjir.last.html
 
     def test_kontekst_korsatilmaydi(self, zanjir: Yozib) -> None:
         """Foydalanuvchi bu so'rovni o'zi, shu daqiqada yubordi — «bu men
