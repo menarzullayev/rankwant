@@ -47,6 +47,7 @@ type NavItem = {
     | "/leaderboard"
     | "/blog"
     | "/updates"
+    | "/platform-roadmap"
     | "/rating"
     | "/qvant"
     | "/about"
@@ -90,6 +91,10 @@ export const NAV_GROUPS: { key: string; items: NavItem[] }[] = [
       { href: "/leaderboard", key: "nav.leaderboard", Icon: LeaderboardIcon },
       { href: "/blog", key: "nav.blog", Icon: BlogIcon },
       { href: "/updates", key: "nav.updates", Icon: UpdatesIcon },
+      // Yo'l xaritasi changelog yonida: ikkalasi bir savolga javob beradi —
+      // "nima o'zgardi" (o'tmish) va "nima o'zgaradi" (kelajak).
+      // ⚠️ `/roadmaps` (Traektoriya) BOSHQA narsa — ta'lim yo'li.
+      { href: "/platform-roadmap", key: "nav.platformRoadmap", Icon: RoadmapIcon },
     ],
   },
   {

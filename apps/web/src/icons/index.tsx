@@ -296,3 +296,10 @@ export const UpdatesIcon = (p: IconProps) => (
     <path d="M18 3.5l1 2.5 2.5 1-2.5 1-1 2.5-1-2.5L14.5 7l2.5-1Z" />
   </Icon>
 );
+
+/** Yuqoriga strelka — ovoz tugmasi (yo'l xaritasi). */
+export const ArrowUpIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 19V5M6 11l6-6 6 6" />
+  </Icon>
+);

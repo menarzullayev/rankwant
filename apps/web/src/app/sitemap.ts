@@ -30,6 +30,7 @@ const STATIC = [
   "/hackathons",
   "/quizzes",
   "/updates",
+  "/platform-roadmap",
 ];
 
 /** Sahifalab hamma slug'ni yig'adi. Cheklov ATAYIN: buzuq javob yoki
@@ -96,20 +97,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {  const
     }
   }
 
-  // Updates yozuvlarining havolasi slug emas, `id` — shuning uchun alohida
-  // tsikl. Bu modul SEO uchun ishlaydi (qaror: marketing aktivi), ya'ni
-  // har yozuv xaritada bo'lishi kerak.
-  try {
-    for (const id of await allIds((p) => api.updateIds(p))) {
-      entries.push({
-        url: absolute(`/updates/${id}`),
-        lastModified: now,
-        changeFrequency: "monthly",
-        priority: 0.5,
-      });
+  // Updates va yo'l xaritasi yozuvlarining havolasi slug emas, `id` —
+  // shuning uchun alohida tsikl. Ikkalasi ham SEO uchun ishlaydi (qaror:
+  // modul marketing aktivi), ya'ni har yozuv xaritada bo'lishi kerak.
+  const idGroups: [string, () => Promise<number[]>][] = [
+    ["/updates", () => allIds((p) => api.updateIds(p))],
+    ["/platform-roadmap", () => allIds((p) => api.roadmapIds(p))],
+  ];
+
+  for (const [prefix, load] of idGroups) {
+    try {
+      for (const id of await load()) {
+        entries.push({
+          url: absolute(`${prefix}/${id}`),
+          lastModified: now,
+          changeFrequency: "monthly",
+          priority: 0.5,
+        });
+      }
+    } catch {
+      /* bo'lim olinmasa ham xarita beriladi */
     }
-  } catch {
-    /* arxiv olinmasa ham xarita beriladi */
   }
   return entries;
 }

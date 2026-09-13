@@ -369,6 +369,68 @@ export type SystemUpdate = {
 /** O'qilmagan yozuvlar soni — nav chipi va qo'ng'iroq uchun. */
 export type UpdateUnread = { count: number; actionable: number };
 
+/** Yo'l xaritasi — kelajak haqidagi reja bandi.
+ *
+ *  `updates` (o'tmish) dan ATAYLAB ajratilgan; bog'lanish `update`
+ *  maydoni orqali — chiqarilgan band changelog yozuviga havola qiladi.
+ *
+ *  ⚠️ Manzil `/platform-roadmap/`, `/roadmap/` EMAS: `/roadmaps/`
+ *  (ta'lim traektoriyasi) allaqachon bor va bir harf farq qiladigan
+ *  ikki manzil adashtiradi.
+ */
+export type RoadmapStatus =
+  | "suggested"
+  | "planned"
+  | "in_progress"
+  | "released"
+  | "declined";
+
+/** Kanban ustunlari tartibi — `apps/api/roadmap/models.py` `COLUMNS` bilan
+ *  bir xil. `declined` ATAYLAB yo'q: u ro'yxatda bor, lekin ustun emas
+ *  (rad etilganlar taxtani to'ldirib, "nima rejalashtirilgan" savolini
+ *  xiralashtiradi). */
+export const ROADMAP_COLUMNS: RoadmapStatus[] = [
+  "suggested",
+  "planned",
+  "in_progress",
+  "released",
+];
+
+export type RoadmapItem = {
+  id: number;
+  title: string;
+  body: string;
+  status: RoadmapStatus;
+  /** Chorak darajasidagi muddat (`2026-Q4`, `Sentabr oxiri`) — sana emas. */
+  target_quarter: string;
+  /** Ovoz soni. Nom `votes` emas: u API da ham, modelda ham
+   *  annotatsiya/teskari bog'lanish nomi bilan to'qnashardi. */
+  vote_count: number;
+  /** Joriy foydalanuvchi ovoz berganmi. Mehmon uchun har doim `false`. */
+  has_voted: boolean;
+  comment_count: number;
+  author: string | null;
+  author_name: string | null;
+  /** Chiqarilganda bog'langan changelog yozuvi — havola `/updates/<id>`. */
+  update_id: number | null;
+  update_title: string | null;
+  planned_at: string | null;
+  started_at: string | null;
+  released_at: string | null;
+  created_at: string;
+};
+
+export type RoadmapComment = {
+  id: number;
+  body: string;
+  author: string | null;
+  author_name: string | null;
+  is_mine: boolean;
+  created_at: string;
+};
+
+export type RoadmapVoteResult = { voted: boolean; vote_count: number };
+
 export type ProblemStats = {
   total: number;
   verdicts: { verdict: string; count: number }[];
@@ -1278,6 +1340,30 @@ export const fetchUpdateUnreadCount = () =>
 export const markUpdatesRead = (ids?: number[]) =>
   postJson<{ updated: number }>("/updates/mark-read/", ids ? { ids } : {});
 
+/** Ovoz berish yoki qaytarib olish — bitta manzil, `POST`/`DELETE`.
+ *
+ *  `DELETE` ni tanlash `POST` + `{"on": false}` dan yaxshiroq: amal
+ *  idempotent bo'ladi va "o'chirish" ni niyat bilan aytadi. Xuddi
+ *  `setFavourite` kabi. */
+export const voteRoadmap = (id: number, on: boolean) =>
+  on
+    ? postJson<RoadmapVoteResult>(`/platform-roadmap/${id}/vote/`, {})
+    : deleteJson<RoadmapVoteResult>(`/platform-roadmap/${id}/vote/`);
+
+export const fetchRoadmapComments = (id: number) =>
+  getJson<RoadmapComment[]>(`/platform-roadmap/${id}/comments/`);
+
+export const postRoadmapComment = (id: number, body: string) =>
+  postJson<RoadmapComment>(`/platform-roadmap/${id}/comments/`, { body });
+
+/** Taklif berish. Holatni server `suggested` qilib qo'yadi — yuborilmaydi. */
+export const suggestRoadmapItem = (title: string, body: string) =>
+  postJson<RoadmapItem>("/platform-roadmap/", { title, body });
+
+/** Mening takliflarim — rad etilganlari ham (javobsiz qolmasin). */
+export const fetchMyRoadmapItems = () =>
+  getJson<RoadmapItem[]>("/platform-roadmap/mine/");
+
 /** Submit. Javob `PENDING` bilan qaytadi — verdikt keyin pollinglanadi. */
 export function submitAttempt(body: {
   problem: string;
@@ -1424,6 +1510,20 @@ export const api = {
   updateIds: (page: number) =>
     get<Paginated<{ id: number }>>(
       `/updates/?page=${page}&page_size=100`,
+      3600,
+    ),
+  // Yo'l xaritasi — mehmon o'qiydi, ovoz/izoh/taklif uchun kirish shart.
+  // Kesh YO'Q: ovoz soni tugma bosilishi bilan o'zgaradi.
+  roadmap: (query = "") =>
+    get<Paginated<RoadmapItem>>(`/platform-roadmap/${query}`, 0),
+  roadmapItem: (id: number) => get<RoadmapItem>(`/platform-roadmap/${id}/`, 0),
+  // Izohlar sahifada SERVERDA chiziladi (SEO + JS'siz ham ko'rinadi);
+  // yozish esa brauzerda sessiya bilan ketadi (`postRoadmapComment`).
+  roadmapComments: (id: number) =>
+    get<RoadmapComment[]>(`/platform-roadmap/${id}/comments/`, 0),
+  roadmapIds: (page: number) =>
+    get<Paginated<{ id: number }>>(
+      `/platform-roadmap/?page=${page}&page_size=100`,
       3600,
     ),
   // O'z o'qish kontenti — ADR-0005 differensiatori. SEO uchun keshlanadi.
