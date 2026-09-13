@@ -121,10 +121,10 @@ if docker inspect rankwant-web-1 >/dev/null 2>&1; then
       printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-web-1' "$R" 'ESKIRGAN' "$N" "$cshow" "git-sha ${img_sha:0:7} != ${src_sha:0:7}"
       stale=$((stale + 1))
     fi
-  elif docker exec rankwant-web-1 test -d /app/.next/server/app/kirish 2>/dev/null; then
-    printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-web-1' "$G" 'joyida' "$N" "$cshow" '/kirish route bor (yorliqsiz image)'
+  elif docker exec rankwant-web-1 test -d /app/.next/server/app/login 2>/dev/null; then
+    printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-web-1' "$G" 'joyida' "$N" "$cshow" '/login route bor (yorliqsiz image)'
   else
-    printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-web-1' "$R" 'ESKIRGAN' "$N" "$cshow" '/kirish route yo`q'
+    printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-web-1' "$R" 'ESKIRGAN' "$N" "$cshow" '/login route yo`q'
     stale=$((stale + 1))
   fi
 else
