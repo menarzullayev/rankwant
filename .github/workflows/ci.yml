@@ -181,6 +181,23 @@ jobs:
       - name: i18n to'liqligi
         if: steps.check.outputs.ready == 'true'
         run: python3 tools/check_i18n.py
+      # `t()` ning ZAXIRA yo'li: dev'da otiladi, prod'da bir marta
+      # jurnalga yoziladi. `check_i18n.py` buni ko'ra olmaydi — u
+      # faqat matnni o'qiydi, shuning uchun modul Node'da ishga
+      # tushiriladi (shu qadamda `actions/setup-node` bor).
+      - name: i18n runtime (dev throw / prod log)
+        if: steps.check.outputs.ready == 'true'
+        run: node tools/check_i18n_runtime.mjs
+      # Tekshiruvlarning o'zini sinaydi — har biriga ataylab buzilgan
+      # holat beriladi va `exit 1` talab qilinadi.
+      #
+      # `NODE` shart: `check_negative.py` Node tekshiruvini ham
+      # ishga tushiradi, `node` esa PATH'da har xil nomlanishi mumkin.
+      - name: Salbiy testlar
+        if: steps.check.outputs.ready == 'true'
+        env:
+          NODE: node
+        run: python3 tools/check_negative.py
       - name: Matn kontrasti (WCAG AA)
         if: steps.check.outputs.ready == 'true'
         run: python3 tools/check_contrast.py

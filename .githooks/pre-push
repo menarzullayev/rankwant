@@ -63,6 +63,11 @@ if has '^apps/web/'; then
   # Tiplar kalit yetishmasligini ushlaydi, lekin bo'sh satrni yoki
   # tarjimasiz qoldirilgan nusxani ko'rmaydi.
   step "Web — i18n to'liqligi" python3 tools/check_i18n.py
+  # `t()` ning zaxira yo'li HAQIQIY modulda: dev'da otiladi, prod'da
+  # bir marta jurnalga yoziladi. Statik tekshiruv buni ko'rmaydi.
+  step "Web — i18n runtime" node tools/check_i18n_runtime.mjs
+  # Tekshiruvlarning o'zi buzuq holatni tutishini talab qiladi.
+  step "Tekshiruvlar — salbiy testlar" python3 tools/check_negative.py
   # 18 palitra × 4 pog'ona — ko'z bilan tekshirib bo'lmaydi.
   step "Web — matn kontrasti" python3 tools/check_contrast.py
 fi

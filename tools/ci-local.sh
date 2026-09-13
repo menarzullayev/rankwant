@@ -141,11 +141,32 @@ run_docs() {
     "$PY" tools/check_locales_parity.py &&
     "$PY" tools/check_contrast.py &&
     "$PY" tools/check_gradient_styles.py &&
+    # `t()` ning ZAXIRA yo'lini HAQIQIY modulda o'lchaydi: dev'da
+    # otilishi, prod'da bir marta jurnalga yozilishi. `check_i18n.py`
+    # buni ko'ra olmaydi — u faqat matnni o'qiydi.
+    check_i18n_runtime &&
     # Tekshiruvlarning O'ZLARINI sinaydi: har biriga ataylab buzilgan
     # holat beriladi va `exit 1` talab qilinadi. Bu qadam eng muhimi —
     # "yashil, lekin yolg'on" natija shu loyihada bir kunda to'rt marta
     # uchragan, ya'ni tekshiruv o'zi ham tekshirilishi kerak.
     "$PY" tools/check_negative.py
+}
+
+# Node'ni topish: PATH'da bo'lmasa `NODE` orqali beriladi (Windows
+# o'rnatuvchisida `node` ba'zan PATH'da bo'lmaydi). Topilmasa —
+# o'tkazib yuborilmaydi, XATO qaytariladi: jimgina o'tkazib
+# yuborish "yashil, lekin yolg'on" ning aynan o'zi.
+check_i18n_runtime() {
+  local node="${NODE:-}"
+  if [ -z "$node" ]; then
+    if command -v node >/dev/null 2>&1; then
+      node="node"
+    else
+      printf '%snode topilmadi — `NODE` muhit o'"'"'zgaruvchisini bering%s\n' "$R" "$N"
+      return 1
+    fi
+  fi
+  "$node" tools/check_i18n_runtime.mjs
 }
 
 # ── API (konteynerda) ────────────────────────────────────────────────────
