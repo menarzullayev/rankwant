@@ -46,6 +46,8 @@ fi
 PROJECT=rankwant
 stale=0
 missing=0
+#: Kod joyida bo'lib, muhit bo'sh qolgan holatlar soni (pastga qarang).
+envbad=0
 
 printf '%sDeploy holati%s (project: %s)\n\n' "$B" "$N" "$PROJECT"
 printf '%-22s %-15s %-22s %s\n' 'KONTEYNER' 'HOLAT' 'IMAGE SANASI' 'IZOH'
@@ -130,6 +132,68 @@ else
   missing=$((missing + 1))
 fi
 
+# --- Majburiy env o'zgaruvchilari ---------------------------------------
+# Uchinchi xato sinfi: konteyner TO'G'RI kodda ishlaydi, lekin MUHIT
+# noto'g'ri. Yuqoridagi ikki tekshiruv buni ko'rmaydi — hash bir xil,
+# git-sha bir xil, konteyner `Up`. 2026-09-13 da aynan shunday bo'ldi:
+#
+#   docker compose ... up -d            # --env-file .env.public YO'Q
+#
+# Natijada `${DJANGO_ALLOWED_HOSTS}` bo'sh qoldi → `ALLOWED_HOSTS = []`
+# → Django `DEBUG=False` bilan HAR so'rovni 400 bilan rad etdi →
+# web SSR 400 ni ko'tarib 500 berdi → sayt butunlay ishlamadi.
+#
+# `Up` ko'rinishi yolg'on edi: konteyner tirik, ilova esa javob bera
+# olmaydi. Shuning uchun qiymat BO'SHLIGI tekshiriladi, mavjudligi emas.
+#
+# ⚠️ `docker compose exec` bu yerda ishlatilmaydi: u `-p`/`--env-file`
+# kontekstini talab qiladi va konteyner qayta ko'tarilganda nom
+# o'zgarishi mumkin. `docker inspect .Config.Env` — eng past daraja,
+# noto'g'ri compose chaqiruvini ham ko'rsatadi.
+env_check() {
+  local name="$1" var="$2" why="$3"
+  local line val note
+
+  if ! docker inspect "$name" >/dev/null 2>&1; then
+    return   # yo'qligi yuqoridagi tsikllarda aytilgan
+  fi
+
+  # `VAR=qiymat` ko'rinishidagi yozuv. Bo'sh qiymat ham shu naqshga
+  # tushadi (`VAR=`), ya'ni `grep -q` bilan bo'shni ajratib bo'lmaydi.
+  line="$(docker inspect "$name" --format '{{range .Config.Env}}{{println .}}{{end}}' 2>/dev/null \
+          | grep "^${var}=" || true)"
+  val="${line#*=}"
+
+  # Apostrof ichida apostrof yozib bo'lmaydi, shuning uchun yorliq
+  # oldindan yasaladi — aks holda qavs `(` shell uchun sintaksis xatosi.
+  if [ -z "$line" ]; then
+    note="$var yo'q"
+  elif [ -z "$val" ]; then
+    note="$var bo'sh — $why"
+  else
+    return
+  fi
+
+  printf '%-22s %s%-15s%s %-22s %s\n' "$name" "$R" 'MUHIT' "$N" '-' "$note"
+  envbad=$((envbad + 1))
+}
+
+#: `web` SSR qaysi API manziliga murojaat qiladi. Bo'sh bo'lsa `undefined`
+#: ga aylanadi va barcha SSR so'rovlari yiqiladi. Blok oxirida tekshiriladi.
+env_check rankwant-api-1 DJANGO_ALLOWED_HOSTS "Django hamma so'rovni 400 qiladi"
+env_check rankwant-api-1 DJANGO_SECRET_KEY "sessiya/token imzosi ishlamaydi"
+env_check rankwant-api-1 CORS_ALLOWED_ORIGINS "brauzer so'rovlari bloklanadi"
+env_check rankwant-api-1 CSRF_TRUSTED_ORIGINS "POST formalar rad etiladi"
+env_check rankwant-worker-1 DJANGO_SECRET_KEY "sessiya/token imzosi ishlamaydi"
+env_check rankwant-beat-1 DJANGO_SECRET_KEY "sessiya/token imzosi ishlamaydi"
+env_check rankwant-web-1 API_BASE_INTERNAL "SSR API manzili yo'q"
+env_check rankwant-web-1 NEXT_PUBLIC_API_BASE "brauzer API manzili yo'q"
+
+#: `web` image'ini `--env-file` siz qayta qurish `NEXT_PUBLIC_API_BASE`
+#: ni bo'sh build-arg qilib qo'yadi — bunda konteyner env'i to'g'ri
+#: bo'lsa ham bundle'dagi manzil bo'sh qoladi.
+env_check rankwant-web-1 NEXT_PUBLIC_API_BASE "bundle'dagi API manzili bo'sh"
+
 # --- judge (Go, kompilyatsiya qilingan binary) --------------------------
 if docker inspect rankwant-judge-1 >/dev/null 2>&1; then
   cshow="$(img_time rankwant-judge:latest)"
@@ -143,6 +207,15 @@ printf '\n'
 if [ "$missing" -gt 0 ]; then
   printf '%s%s konteyner ishlamayapti.%s\n' "$Y" "$missing" "$N"
 fi
+if [ "$envbad" -gt 0 ]; then
+  printf '%s%s ta konteynerda majburiy muhit o'"'"'zgaruvchisi bo'"'"'sh.%s\n' "$R" "$envbad" "$N"
+  printf 'Sabab deyarli har doim bitta: `docker compose` `--env-file .env.public`\n'
+  printf 'BERMASDAN chaqirilgan. Kod to'"'"'g'"'"'ri, konteyner `Up`, lekin ilova javob\n'
+  printf 'bera olmaydi. To'"'"'g'"'"'ri shakl:\n\n'
+  printf '  docker compose -p %s --env-file .env.public \\\n' "$PROJECT"
+  printf '    -f docker-compose.yml -f docker-compose.public.yml up -d\n\n'
+  printf 'Yoki qayta ko'"'"'tarish uchun loyiha mexanizmi: tools/handoff.ps1 in\n'
+fi
 if [ "$stale" -gt 0 ]; then
   printf '%s%s konteyner eskirgan — ishlab turgan kod manbadan farq qiladi.%s\n' "$R" "$stale" "$N"
   printf 'Yangilash:\n'
@@ -150,6 +223,9 @@ if [ "$stale" -gt 0 ]; then
   printf '    -f docker-compose.yml -f docker-compose.public.yml build <servis> && \\\n'
   printf '  docker compose -p %s --env-file .env.public \\\n' "$PROJECT"
   printf '    -f docker-compose.yml -f docker-compose.public.yml up -d --no-deps <servis>\n'
+fi
+
+if [ "$stale" -gt 0 ] || [ "$envbad" -gt 0 ]; then
   exit 1
 fi
 
