@@ -7,18 +7,18 @@ import { usePathname } from "next/navigation";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
 
-/** Tablar alohida manzilda — `/users/<nom>/urinishlar`: havolani ulashish,
+/** Tablar alohida manzilda — `/users/<nom>/attempts`: havolani ulashish,
  *  orqaga qaytish va sahifa sarlavhasi to'g'ri ishlaydi. */
 export const PROFILE_TABS = [
   { slug: "", key: "profile.tab.overview" },
-  { slug: "shaxsiy", key: "profile.tab.about" },
-  { slug: "faoliyat", key: "profile.tab.activity" },
-  { slug: "urinishlar", key: "profile.tab.attempts" },
-  { slug: "yechilganlar", key: "profile.tab.solved" },
-  { slug: "musobaqalar", key: "profile.tab.contests" },
-  { slug: "sertifikatlar", key: "profile.tab.certificates" },
-  { slug: "yutuqlar", key: "profile.tab.achievements" },
-  { slug: "xaridlar", key: "profile.tab.purchases" },
+  { slug: "profile", key: "profile.tab.about" },
+  { slug: "activity", key: "profile.tab.activity" },
+  { slug: "attempts", key: "profile.tab.attempts" },
+  { slug: "solved", key: "profile.tab.solved" },
+  { slug: "contests", key: "profile.tab.contests" },
+  { slug: "certificates", key: "profile.tab.certificates" },
+  { slug: "achievements", key: "profile.tab.achievements" },
+  { slug: "purchases", key: "profile.tab.purchases" },
 ] as const;
 
 export function ProfileNav({ username }: { username: string }) {

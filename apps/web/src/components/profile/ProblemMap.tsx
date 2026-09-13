@@ -35,7 +35,7 @@ export function ProblemMap({ username, problems }: { username: string; problems:
     <Link
       key={problem.slug}
       prefetch={false}
-      href={`/users/${username}/urinishlar?problem=${encodeURIComponent(problem.slug)}` as Route}
+      href={`/users/${username}/attempts?problem=${encodeURIComponent(problem.slug)}` as Route}
       title={`#${padCode(problem.code)} · ${problem.title}${
         problem.rate === null ? "" : ` (${problem.rate}%)`
       }`}

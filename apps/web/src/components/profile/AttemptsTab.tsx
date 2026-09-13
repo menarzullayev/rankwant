@@ -41,7 +41,7 @@ export async function AttemptsTab({
     api.languages(),
   ]);
 
-  const base = `/users/${username}/urinishlar`;
+  const base = `/users/${username}/attempts`;
   const href = (next: Partial<Filters>): Route => {
     const merged: Filters = { ...filters, cursor: undefined, ...next };
     const params = new URLSearchParams();

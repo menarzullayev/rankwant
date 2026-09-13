@@ -45,7 +45,7 @@ QR_MM = 34.0
 
 
 def verify_url(cert: Certificate) -> str:
-    return f"{settings.SITE_URL}/sertifikat/{cert.pk}"
+    return f"{settings.SITE_URL}/certificates/{cert.pk}"
 
 
 def render(cert: Certificate) -> bytes:

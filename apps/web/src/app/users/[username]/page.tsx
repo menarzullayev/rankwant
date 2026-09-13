@@ -22,14 +22,14 @@ type Props = {
 
 export const dynamic = "force-dynamic";
 
-/** Oldingi `?tab=` havolalari (ulashilgan bo'lishi mumkin) yangi manzilga. */
+/** Eski `?tab=` havolalari (ulashilgan bo'lishi mumkin) yangi manzilga.
+ *
+ *  Boshqa kalitlar (`activity`, `achievements`, `purchases`, `followers`,
+ *  `following`) endi slug bilan AYNAN bir xil, ya'ni yo'naltirish kerak
+ *  emas — ular 2026-09-13 gacha `shaxsiy`/`faoliyat`/… bo'lgan, endi
+ *  inglizcha asl nomiga qaytdi. Faqat `about` mos kelmaydi. */
 const LEGACY: Record<string, string> = {
-  about: "shaxsiy",
-  activity: "faoliyat",
-  achievements: "yutuqlar",
-  purchases: "xaridlar",
-  followers: "obunachilar",
-  following: "obunalar",
+  about: "profile",
 };
 
 export default async function ProfileOverviewPage({ params, searchParams }: Props) {

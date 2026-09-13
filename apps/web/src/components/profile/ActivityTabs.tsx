@@ -108,7 +108,7 @@ export async function ActivityTab({
         <div className="border-t rw-divider px-5 py-3">
           <Link
             href={
-              `/users/${username}/faoliyat?before=${encodeURIComponent(data.next_before)}` as Route
+              `/users/${username}/activity?before=${encodeURIComponent(data.next_before)}` as Route
             }
             className="text-theme-sm rw-accent-ink hover:underline"
           >

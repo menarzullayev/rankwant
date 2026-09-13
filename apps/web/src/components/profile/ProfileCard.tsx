@@ -170,11 +170,11 @@ export function ProfileCard({
         </div>
 
         <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-theme-sm">
-          <Link href={`${base}/obunachilar` as Route} className="rw-link-hover">
+          <Link href={`${base}/followers` as Route} className="rw-link-hover">
             <strong className="tabular-nums rw-strong">{profile.followers}</strong>{" "}
             <span className="rw-dim">{t(locale, "profile.followers")}</span>
           </Link>
-          <Link href={`${base}/obunalar` as Route} className="rw-link-hover">
+          <Link href={`${base}/following` as Route} className="rw-link-hover">
             <strong className="tabular-nums rw-strong">{profile.following}</strong>{" "}
             <span className="rw-dim">{t(locale, "profile.followingTab")}</span>
           </Link>

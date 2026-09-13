@@ -50,7 +50,7 @@ export async function SolvedTab({
   if (query.ordering) params.set("ordering", query.ordering);
   const data = await api.solvedPage(username, `?${params}`);
 
-  const base = `/users/${username}/yechilganlar`;
+  const base = `/users/${username}/solved`;
   const href = (next: Partial<Query>): Route => {
     const merged: Query = { ...query, page: undefined, ...next };
     const out = new URLSearchParams();

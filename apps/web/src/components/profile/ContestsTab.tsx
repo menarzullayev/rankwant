@@ -52,7 +52,7 @@ export async function ContestsTab({
   const params = new URLSearchParams({ page: String(page), page_size: String(PAGE_SIZE) });
   if (query.q) params.set("q", query.q);
   const data = await api.userContests(username, `?${params}`);
-  const base = `/users/${username}/musobaqalar`;
+  const base = `/users/${username}/contests`;
 
   return (
     <Card bodyClassName="p-0">

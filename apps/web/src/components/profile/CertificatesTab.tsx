@@ -51,7 +51,7 @@ export function CertificateCard({
       </p>
       <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-theme-sm">
         {!withName && (
-          <Link href={`/sertifikat/${cert.id}` as Route} className="rw-accent-ink hover:underline">
+          <Link href={`/certificates/${cert.id}` as Route} className="rw-accent-ink hover:underline">
             {t(locale, "cert.verify")}
           </Link>
         )}
@@ -81,7 +81,7 @@ export async function CertificatesTab({
   const data = await getWithSession<Paginated<Certificate>>(
     `/users/${username}/certificates/?page=${page}`,
   );
-  const link = (to: number) => `/users/${username}/sertifikatlar?page=${to}` as Route;
+  const link = (to: number) => `/users/${username}/certificates?page=${to}` as Route;
 
   return (
     <section className="space-y-4">

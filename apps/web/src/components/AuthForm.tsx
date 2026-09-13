@@ -635,11 +635,11 @@ function Legal() {
     <p className="text-center text-theme-xs rw-dim">
       {parts.map((part, i) =>
         part === "{terms}" ? (
-          <Link key={i} href="/shartlar" className="rw-accent-ink underline">
+          <Link key={i} href="/terms" className="rw-accent-ink underline">
             {t(locale, "footer.terms")}
           </Link>
         ) : part === "{privacy}" ? (
-          <Link key={i} href="/maxfiylik" className="rw-accent-ink underline">
+          <Link key={i} href="/privacy" className="rw-accent-ink underline">
             {t(locale, "footer.privacy")}
           </Link>
         ) : (
