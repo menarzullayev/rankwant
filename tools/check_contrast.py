@@ -113,13 +113,39 @@ def parse(value: str) -> Color | None:
     return (int(float(parts[0])), int(float(parts[1])), int(float(parts[2])), alpha)
 
 
-def stops(value: str) -> list[Color]:
-    """Gradientni tashkil etuvchi ranglarga yoyadi; bitta rang bo'lsa — o'zi."""
-    solid = parse(value)
+class Unreadable(Exception):
+    """Token qiymatini o'qib bo'lmadi.
+
+    Qoida: **o'qib bo'lmagan qiymat = XATO.** Bu istisno aynan shu uchun
+    bor. Ilgari `stops()` o'qilmagan qiymatdan shunchaki `[]` qaytarardi,
+    ya'ni `--rw-ground: oklch(TEST` kabi buzuq qiymat fon ro'yxatidan
+    JIMGINA tushib qolardi va tekshiruv «hammasi joyida» derdi —
+    salbiy test shuni tutdi (`python tools/check_negative.py`).
+    """
+
+    def __init__(self, token: str, raw: str) -> None:
+        super().__init__(token)
+        self.token = token
+        self.raw = raw
+
+
+def stops(value: str, token: str = "") -> list[Color]:
+    """Gradientni tashkil etuvchi ranglarga yoyadi; bitta rang bo'lsa — o'zi.
+
+    O'qilmagan qiymat `[]` EMAS — `Unreadable`. Sababi yuqorida.
+    """
+    text = value.strip()
+    if not text:
+        # Bo'sh token — bu ham o'qilmagan qiymat.
+        raise Unreadable(token or "(nomsiz)", value)
+    solid = parse(text)
     if solid:
         return [solid]
-    found = re.findall(r"#[0-9a-fA-F]{3,8}|rgba?\([^)]*\)", value)
-    return [c for c in (parse(f) for f in found) if c]
+    found = re.findall(r"#[0-9a-fA-F]{3,8}|rgba?\([^)]*\)", text)
+    colors = [c for c in (parse(f) for f in found) if c]
+    if not colors:
+        raise Unreadable(token or "(nomsiz)", value)
+    return colors
 
 
 def over(top: Color, bottom: Color) -> Color:
@@ -204,15 +230,31 @@ def read_blobs(css: str) -> dict[str, list[Color]]:
     return blobs
 
 
+def read_stops(value: str, token: str) -> list[Color] | str:
+    """`stops()` ning xato-yutmaydigan ko'rinishi.
+
+    Muvaffaqiyatda ranglar ro'yxati, xatoda esa **tayyor xabar** (matn)
+    qaytaradi. Chaqiruvchi uni `failures` ga qo'shadi. Shu sabab bu
+    yordamchi bor: `main()` va `check_semantic()` uchun bir xil matn.
+    """
+    try:
+        return stops(value, token)
+    except Unreadable as exc:
+        return f"{exc.token}: rang o'qilmadi ({exc.raw or 'token yo`q'})"
+
+
 def backgrounds(tokens: dict[str, str], blobs: list[Color]) -> list[Color]:
-    ground = stops(tokens["--rw-ground"])
+    """Fon qatlamlari. O'qilmagan token — `Unreadable` (jimgina o'tilmaydi)."""
+    ground = stops(tokens.get("--rw-ground", ""), "--rw-ground")
     # Dog'lar qarama-qarshi burchakda — har biri fon ustiga ALOHIDA tushadi.
     ground += [over(blob, base) for blob in blobs for base in list(ground)]
 
     def layer(keys: tuple[str, ...], unders: list[Color]) -> list[Color]:
         out: list[Color] = []
         for key in keys:
-            for color in stops(tokens.get(key, "")):
+            if key not in tokens:
+                continue
+            for color in stops(tokens[key], key):
                 out += [over(color, u) for u in unders] if color[3] < 1 else [color]
         return out
 
@@ -356,11 +398,9 @@ def check_semantic(css: str) -> list[str]:
                 continue
             # `soft` gradient ham bo'lishi mumkin (`skeu`) — u holda eng
             # yomon pog'ona olinadi, xuddi tugma juftligidagi kabi.
-            soft_stops = stops(soft_raw)
-            if not soft_stops:
-                problems.append(
-                    f"{label}  --rw-{state}-soft o'qilmadi ({soft_raw or 'token yo`q'})"
-                )
+            soft_stops = read_stops(soft_raw, f"--rw-{state}-soft")
+            if isinstance(soft_stops, str):
+                problems.append(f"{label}  {soft_stops}")
                 continue
             worst_bg = min(
                 (over(s, base) if s[3] < 1 else s for s in soft_stops),
@@ -389,7 +429,13 @@ def main() -> int:
         tokens = dict(re.findall(r"(--rw-[\w-]+)\s*:\s*([^;]+);", body))
         style_match = re.search(r'data-style="(\w+)"', name)
         style = style_match.group(1) if style_match else "dashboard"
-        backs = backgrounds(tokens, blobs.get(style, []))
+        try:
+            backs = backgrounds(tokens, blobs.get(style, []))
+        except Unreadable as exc:
+            # O'qilmagan fon = XATO. Ilgari bu yerda o'qilmagan `--rw-ground`
+            # shunchaki ro'yxatdan tushib qolardi va paliтра «o'tdi» derdi.
+            failures.append(f"{name}  {exc.token}: rang o'qilmadi ({exc.raw})")
+            continue
 
         focus = parse(tokens.get(FOCUS_TOKEN, ""))
         if focus is not None:
@@ -408,7 +454,10 @@ def main() -> int:
         text = parse(tokens.get("--rw-text", "").strip())
         if field is not None and text is not None:
             checked += 1
-            surface = stops(tokens.get("--rw-surface", ""))
+            surface = read_stops(tokens.get("--rw-surface", ""), "--rw-surface")
+            if isinstance(surface, str):
+                failures.append(f"{name}  {surface}")
+                continue
             base = over(field, surface[0]) if field[3] < 1 and surface else field
             ink = over(text, base) if text[3] < 1 else text
             raw = own_line.get(style, "").strip()
@@ -497,9 +546,14 @@ def main() -> int:
             failures.append(f'{style}.{mode}  {ACCENT_PAIR[0]}: token yo\'q')
             continue
         label = f'{style}{".dark" if mode == "dark" else ""}'
-        backs = backgrounds(tokens, blobs.get(style, []))
+        try:
+            backs = backgrounds(tokens, blobs.get(style, []))
+            accents = stops(tokens.get(ACCENT_PAIR[1], ""), ACCENT_PAIR[1])
+        except Unreadable as exc:
+            failures.append(f"{label}  {exc.token}: rang o'qilmadi ({exc.raw})")
+            continue
 
-        for accent in stops(tokens.get(ACCENT_PAIR[1], "")):
+        for accent in accents:
             # Shaffof accent ostidagi fon bilan qo'shiladi, matn esa uning
             # ustida turadi — shuning uchun eng yomon fon olinadi. Gradient
             # bo'lsa har bir pog'ona alohida o'lchanadi.
@@ -529,7 +583,18 @@ def main() -> int:
         if ink is None:
             failures.append(f"{label}  {ACCENT_INK}: token yo'q")
             continue
-        targets = list(backgrounds(tokens, blobs.get(style, [])))
+        targets = read_stops(tokens.get("--rw-ground", ""), "--rw-ground")
+        if isinstance(targets, str):
+            failures.append(f"{label}  {targets}")
+            continue
+        # Fonlar qatlamli: yer + panellar. `backgrounds` ni ishlatsak
+        # to'liqroq bo'lardi, lekin bu yerda accent matni HAR qanday
+        # oraliq fonga tushishi mumkin — eng yomon holat shu ro'yxatda.
+        try:
+            targets = list(backgrounds(tokens, blobs.get(style, [])))
+        except Unreadable as exc:
+            failures.append(f"{label}  {exc.token}: rang o'qilmadi ({exc.raw})")
+            continue
         soft = parse(tokens.get(ACCENT_SOFT, "").strip())
         if soft is not None:
             # Shaffof `soft` (qorong'i mavzuda rgba) ostidagi eng yomon fon

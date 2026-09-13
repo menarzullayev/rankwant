@@ -60,23 +60,89 @@ export const LOCALE_NAMES: Record<Locale, string> = {
  *  Faqat BITTA yozuv bo'ladi: SSR da uni `messages.server.ts` to'ldiradi,
  *  brauzerda esa quyidagi inline-skript o'quvchi qism. Ilgari bu yerda
  *  o'nta tilning hammasi turardi. */
-const registry = new Map<string, Record<string, string>>();
+const registry = new Map<Locale, Record<string, string>>();
 
-/** Lug'atni ro'yxatga oladi. Amalda faqat aktiv til uchun chaqiriladi. */
+/** `t()` allaqachon shikoyat qilgan kalitlar.
+ *
+ *  Jurnal TO'LDIRILMAYDI: bitta yetishmagan kalit yuzlab marta chaqiriladi
+ *  (har ro'yxat qatori, har chizish) — takroriy `console.error` haqiqiy
+ *  xatoni ko'mib tashlaydi. Shuning uchun har kalit BIR MARTA yoziladi. */
+const reported = new Set<string>();
+
+/** Lug'atni ro'yxatga oladi. Amalda faqat aktiv til uchun chaqiriladi.
+ *
+ *  FAQAT BITTA yozuv saqlanadi: til almashtirilganda eskisi o'chiriladi.
+ *  Ilgari `Map` chegaralanmagan edi — har `router.refresh()` yangi lug'at
+ *  qo'shardi, 10 marta almashtirsangiz ~450 kB xotirada qolardi. Amalda
+ *  faqat aktiv til kerak, ya'ni qolganlari sof yo'qotish. */
 export function registerMessages(locale: Locale, dict: Record<MessageKey, string>): void {
+  // Boshqa tillning yozuvlari kerak emas — bir zarbada tozalaymiz.
+  // `registry.clear()` eng oddiy va eng aniq: faqat shu chaqiruvdan keyin
+  // yozilgan lug'at qoladi.
+  registry.clear();
   registry.set(locale, dict);
+  reported.clear();
+}
+
+/** Ro'yxatdagi lug'atlar soni — takroriy ro'yxatga olishni o'lchash uchun.
+ *
+ *  Bu ATAYLAB eksport qilinadi: «xotira o'smaydi» degan da'vo faqat
+ *  o'lchov bilan isbotlanadi, o'lchash uchun esa ko'rinish kerak. */
+export function registrySize(): number {
+  return registry.size;
 }
 
 export function isLocale(value: string | undefined): value is Locale {
   return !!value && (LOCALES as readonly string[]).includes(value);
 }
 
+/** Lug'at topilmaganda qanday yo'l tutish — dev'da yiqilish, prod'da
+ *  ko'rinadigan kalit.
+ *
+ *  Ikkala holat ham ATaylab: dev'da jim o'tish bugni ishlab chiqish
+ *  paytida yashiradi (aynan shu bugun ikki marta bo'ldi — panel ekranda
+ *  xom kalitlarni ko'rsatdi, holbuki hamma tekshiruv yashil edi), prod'da
+ *  esa sahifani yiqitish foydalanuvchini butunlay to'sadi. */
+const DEV = process.env.NODE_ENV !== "production";
+
+/** `t()` uchun bitta kirish nuqtasi — shu sabab `errorText()` ham
+ *  aynan bir xil yo'ldan o'tadi va ikki xil xatti-harakat bo'lib
+ *  qolmaydi. */
+function lookup(locale: Locale, key: string, fallback?: string): string {
+  const hit = registry.get(locale)?.[key];
+  if (hit !== undefined && hit !== "") {
+    reported.delete(`${locale}:${key}`);
+    return hit;
+  }
+
+  // Zaxira `uz` EMAS: u ham yuborilmaydi (34 kB) va nuqsonni yashiradi.
+  // To'liqlikni tip (`Record<MessageKey, string>`) va
+  // `tools/check_i18n.py` kafolatlaydi — bu yerga tushish faqat lug'at
+  // ro'yxatga olinmagan yoki kalit umuman mavjud bo'lmaganda bo'ladi.
+  const hasDict = registry.has(locale);
+  const detail = hasDict
+    ? `key "${key}" missing from the "${locale}" dictionary`
+    : `dictionary for locale "${locale}" is not registered`;
+
+  if (DEV) {
+    throw new Error(`i18n: ${detail}`);
+  }
+
+  const tag = `${locale}:${key}`;
+  if (!reported.has(tag)) {
+    reported.add(tag);
+    // `console.error` — `warn` emas: bu ekranga noto'g'ri matn chiqishi,
+    // ya'ni ishlab turgan mahsulotdagi ko'rinadigan nuqson.
+    console.error(`i18n: ${detail} — rendering the key instead`);
+  }
+
+  // Fallback bor bo'lsa (server matni, masalan API xatosi) — kalitdan
+  // ko'ra o'sha matn foydaliroq.
+  return fallback !== undefined && fallback !== "" ? fallback : key;
+}
+
 export function t(locale: Locale, key: string): string {
-  // Zaxira `uz` EMAS: u ham yuborilmaydi. To'liqlikni tip
-  // (`Record<MessageKey, string>`) va `tools/check_i18n.py` kafolatlaydi,
-  // ya'ni lug'atda kalit yetishmay qolmaydi — `key` ga tushish faqat
-  // `MessageKey` bo'lmagan satr uchun bo'ladi.
-  return registry.get(locale)?.[key] ?? key;
+  return lookup(locale, key);
 }
 
 /** `{nom}` o'rinlarini qiymat bilan to'ldiradi: `fill("{n} ta", { n: 3 })`. */
@@ -166,6 +232,8 @@ export function errorText(
   code: string,
   fallback: string,
 ): string {
-  const key = `error.${code}`;
-  return registry.get(locale)?.[key] ?? fallback ?? t(locale, "error.error");
+  // `t()` bilan BIR XIL yo'l: dev'da yetishmagan kod yiqiladi, prod'da
+  // server matniga tushadi va jurnalga yoziladi. Ilgari bu yerda alohida
+  // `?? fallback ?? t(...)` zanjiri bor edi — ya'ni dev'da jim o'tardi.
+  return lookup(locale, `error.${code}`, fallback || t(locale, "error.error"));
 }

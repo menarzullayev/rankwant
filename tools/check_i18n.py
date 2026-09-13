@@ -146,7 +146,13 @@ def main() -> int:
 
 #: `t(locale, "kalit")` — kalit qo'lda yozilgan joylar. Shablon satrlari
 #: (`t(locale, `prefix.${x}`)`) bu yerga tushmaydi: ular statik emas.
-CALL_RE = re.compile(r'\bt\(\s*[A-Za-z_.]+\s*,\s*"([a-zA-Z0-9_.]+)"')
+#:
+#: Birinchi argument ATAYLAB erkin: `t(locale, …)` ham, `t(useLocale(), …)`
+#: ham uchraydi. Ilgari faqat `[A-Za-z_.]+` olinardi, ya'ni funksiya
+#: chaqiruvi bilan boshlangan satr **jimgina o'tkazib yuborilardi** —
+#: salbiy test shuni tutdi (`python tools/check_negative.py`). Endi qavs
+#: va nuqtadan iborat har qanday ifoda qabul qilinadi.
+CALL_RE = re.compile(r'\bt\(\s*[A-Za-z_$][\w$]*(?:\(\s*\))?(?:\s*\.\s*[\w$]+)*\s*,\s*"([a-zA-Z0-9_.]+)"')
 #: Kalitlar qaysi fayllarda qidiriladi. ⚠️ `pathlib.glob` qavs
 #: kengaytmasini (`*.{ts,tsx}`) QO'LLAB-QUVVATLAMAYDI — u bash xususiyati.
 #: Bir marta shu xato qilingan edi: glob hech narsa topmagan, tekshiruv
