@@ -25,7 +25,9 @@ Ishlatish:
 
 from __future__ import annotations
 
+import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -57,6 +59,26 @@ def run(cmd: list[str]) -> tuple[int, str]:
 
 def run_check(checker: str, *extra: str) -> tuple[int, str]:
     return run([PY, f"tools/check_{checker}.py", *extra])
+
+
+NODE_MISSING = "node topilmadi"
+
+NODE_CASES = {"runtime dev throw yo'q", "runtime takroriy jurnal"}
+"""Node'da ishlaydigan tekshiruvga tegishli salbiy testlarning yorlig'i."""
+
+
+def run_node_check(checker: str) -> tuple[int, str]:
+    """`*.mjs` tekshiruvlar uchun runner.
+
+    ⚠️ `node` ni PATH'dan emas, `tools/ci-local.sh` bilan bir xil
+    qoidada olamiz: muhit `NODE` bilan berilishi mumkin (raw runner'da
+    `node` bo'lmasligi mumkin — Windows o'rnatuvchisida u
+    `C:/Program Files/nodejs/node.exe`).
+    """
+    node = os.environ.get("NODE") or shutil.which("node")
+    if not node:
+        return 127, NODE_MISSING
+    return run([node, f"tools/{checker}.mjs"])
 
 
 class Mutation:
@@ -92,6 +114,38 @@ def expect_fail(checker: str, label: str) -> tuple[bool, str]:
     if code == 0:
         return False, f"{label}: tekshiruv buzuq holatni O'TKAZDI (exit 0) — u o'lik"
     return True, f"{label}: buzuq holatni tutdi (exit {code})"
+
+
+def expect_node_fail(label: str) -> tuple[bool, str]:
+    """Node'da ishlaydigan tekshiruv uchun xuddi shu talab.
+
+    Faqat mutatsiyadan KEYINGI holatga qaraydi. «Tekshiruv umuman
+    ishlay oladimi?» degan old shart `main()` da BIR MARTA
+    tekshiriladi (`node_precondition`) — aks holda `node` topilmasa
+    `exit != 0` ni «buzuq holatni tutdi» deb o'qib, yolg'on yashil
+    chiqardi. Bu tuzoq o'lchandi.
+    """
+    code, _ = run_node_check("check_i18n_runtime")
+    if code == 0:
+        return False, f"{label}: tekshiruv buzuq holatni O'TKAZDI (exit 0) — u o'lik"
+    return True, f"{label}: buzuq holatni tutdi (exit {code})"
+
+
+def node_precondition() -> str | None:
+    """Node tekshiruvi o'zgarmagan manbada `exit 0` berishini talab qiladi.
+
+    `None` — hammasi joyida. Aks holda sabab qaytariladi.
+    """
+    code, out = run_node_check("check_i18n_runtime")
+    if code == 127:
+        return f"node tekshiruvi ishga tushmadi — {NODE_MISSING}"
+    if code != 0:
+        first = out.strip().splitlines()[:3]
+        return (
+            "node tekshiruvi o'zgarmagan manbada ham yiqildi "
+            f"(exit {code}): {' | '.join(first)}"
+        )
+    return None
 
 
 # ── i18n ─────────────────────────────────────────────────────────────────
@@ -305,6 +359,40 @@ def neg_i18n_server_missing_locale() -> tuple[bool, str]:
         return expect_fail("i18n", "i18n/server lug'atda til yetishmaydi")
 
 
+def neg_i18n_runtime_dev_throw() -> tuple[bool, str]:
+    """Dev'dagi `throw` olib tashlansa — runtime tekshiruvi tutsinmi?
+
+    Nega kerak: `tools/check_i18n.py` faqat MATNNI o'qiydi, ya'ni
+    `throw` o'rniga `console.error` qo'yilsa u baribir yashil qoladi.
+    Bu salbiy test aynan shu bo'shliqni yopadi.
+    """
+    path = ROOT / "apps/web/src/i18n/messages.ts"
+    old = "    throw new Error(`i18n: ${detail}`);"
+    if old not in path.read_text(encoding="utf-8"):
+        return False, "i18n/runtime dev throw: langar topilmadi"
+    new = "    void detail; // dev throw removed by negative test"
+    with Mutation(path, old, new):
+        return expect_node_fail("i18n/runtime dev throw yo'q")
+
+
+def neg_i18n_runtime_dedup() -> tuple[bool, str]:
+    """«Bir marta jurnalga yozish» olib tashlansa — tutilsinmi?
+
+    Prod shartnomasining ikkinchi yarmi: bir xil kalit yuzlab marta
+    chaqiriladi, `console.error` esa haqiqiy xatoni ko'mib tashlamasligi
+    uchun BIR MARTA yozilishi kerak.
+    """
+    path = ROOT / "apps/web/src/i18n/messages.ts"
+    old = """  if (!reported.has(tag)) {
+    reported.add(tag);"""
+    if old not in path.read_text(encoding="utf-8"):
+        return False, "i18n/runtime dedup: langar topilmadi"
+    new = """  if (true) {
+    reported.add(tag);"""
+    with Mutation(path, old, new):
+        return expect_node_fail("i18n/runtime takroriy jurnal")
+
+
 CASES: list[tuple[str, list[tuple[str, object]]]] = [
     ("i18n", [
         ("bo'sh qiymat", neg_i18n_blank_value),
@@ -313,6 +401,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         ("shablon oila kalitisiz", neg_i18n_template_family),
         ("server evict bilan chegaralangan", neg_i18n_server_drops_locales),
         ("server lug'atda til yetishmaydi", neg_i18n_server_missing_locale),
+        ("runtime dev throw yo'q", neg_i18n_runtime_dev_throw),
+        ("runtime takroriy jurnal", neg_i18n_runtime_dedup),
     ]),
     ("contrast", [
         ("buzilgan juftlik", neg_contrast_bad_pair),
@@ -337,6 +427,23 @@ def main(argv: list[str]) -> int:
     only = argv[1] if len(argv) > 1 else None
     failures: list[str] = []
     total = 0
+
+    # Old shart: Node tekshiruvi umuman ishlay oladimi? Buni BIR MARTA
+    # tekshiramiz — mutatsiya ichida qilsak, «ishga tushmadi» ni
+    # «buzuq holatni tutdi» deb o'qib qo'yardik.
+    selected = {
+        label
+        for checker, cases in CASES
+        if not only or checker == only
+        for label, _ in cases
+    }
+    if selected & NODE_CASES:
+        reason = node_precondition()
+        if reason:
+            print(f"  ✕ {reason}")
+            print()
+            print("1/1 salbiy test YIQILDI — muhit tayyor emas, o'lchov yo'q.")
+            return 1
 
     for checker, cases in CASES:
         if only and only != checker:

@@ -114,10 +114,23 @@ export function isLocale(value: string | undefined): value is Locale {
 /** Lug'at topilmaganda qanday yo'l tutish — dev'da yiqilish, prod'da
  *  ko'rinadigan kalit.
  *
- *  Ikkala holat ham ATaylab: dev'da jim o'tish bugni ishlab chiqish
+ *  Ikkala holat ham ATAYLAB: dev'da jim o'tish bugni ishlab chiqish
  *  paytida yashiradi (aynan shu bugun ikki marta bo'ldi — panel ekranda
  *  xom kalitlarni ko'rsatdi, holbuki hamma tekshiruv yashil edi), prod'da
- *  esa sahifani yiqitish foydalanuvchini butunlay to'sadi. */
+ *  esa sahifani yiqitish foydalanuvchini butunlay to'sadi.
+ *
+ *  O'LCHANDI (Node, to'rt katak — server/klient × dev/prod):
+ *  * server, dev: `t("ru","nav.contests")` → `Соревнования`,
+ *    ro'yxatda 10 lug'at; yo'q kalit →
+ *    `i18n: key "…" missing from the "ru" dictionary` (otildi);
+ *  * klient, dev: `evict` bilan 1 lug'at qoladi, shuning uchun
+ *    ro'yxatga olinmagan til ham xuddi shunday otiladi;
+ *  * prod: o'sha yo'q kalit KALIT bo'lib qaytadi (`definitely.not.a.key`)
+ *    va `console.error` FAQAT BIR MARTA yoziladi (takroriy chaqiruv
+ *    jim) — `reported` to'plami shuni ta'minlaydi;
+ *  * eski shartsiz `clear()` qaytarilsa: 10 tildan 9 tasi xom kalit
+ *    beradi (faqat oxirgisi ishlaydi) — regressiya takrorlandi.
+ */
 const DEV = process.env.NODE_ENV !== "production";
 
 /** `t()` uchun bitta kirish nuqtasi — shu sabab `errorText()` ham

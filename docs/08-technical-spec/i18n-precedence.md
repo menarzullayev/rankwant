@@ -56,6 +56,32 @@ these three states and returns `{ locale, auto }`.
 "account wins" rule: that is the point of this document. Changing it back
 would silently discard the device choice on every sign-in.
 
+### What CI checks, and what it cannot
+
+Three checkers guard this area. They are complementary — no one of them
+covers the others' blind spots.
+
+| Checker | Guards | Cannot see |
+| --- | --- | --- |
+| `tools/check_i18n.py` | every key present in all 10 dictionaries, no blank values, every key the code calls exists, dynamic template families | runtime behaviour |
+| `tools/check_locales_parity.py` | `User.Locale` ↔ `settings.LANGUAGES` ↔ `email_text.LOCALES` stay in step | anything outside those three lists |
+| `tools/check_i18n_runtime.mjs` | `t()`'s fallback path, measured in the real module | source completeness |
+
+The runtime check exists because the first two read *text*, so they cannot
+detect the difference between `throw new Error(...)` and `return key`. It
+runs the real `messages.ts` under Node in four combinations
+(server/client × dev/prod) and asserts 11 measured values — including that
+a missing key **throws** in dev, that the same key is logged **once** in
+prod, and that `registerMessages(..., evict: true)` leaves one dictionary.
+`tools/check_negative.py` mutates the source to prove each of those
+assertions can fail; a check that cannot fail is not a check.
+
+⚠️ `check_i18n_runtime.mjs` needs Node. `tools/ci-local.sh` and
+`tools/check_negative.py` both read the `NODE` environment variable and
+fail loudly if it is absent — they never skip the step, because a silent
+skip is exactly the "green but lying" outcome this project has been bitten
+by four times.
+
 ## Caching — and a framework limit we could not work around
 
 Because the response depends on `Accept-Language`, correct HTTP caching requires
