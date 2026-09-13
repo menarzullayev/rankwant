@@ -101,8 +101,15 @@ export default function AppShell({
   return (
     <StyleProvider>
       <ThemeProvider>
-        <CustomizerProvider>
-          <SessionProvider initialUser={initialUser}>
+        {/* ⚠️ TARTIB MUHIM: `CustomizerProvider` `useSession()` ni
+            chaqiradi (shablon chegarasi kirgan/mehmonga bog'liq — D21),
+            ya'ni u `SessionProvider` dan KEYIN turishi SHART. Ilgari
+            teskari edi va butun daraxt yiqilardi: sahifa 200 qaytarardi
+            (HTML qobig'i chiziladi), lekin React ishga tushmay, ekran
+            bo'sh qolardi. Buni faqat brauzer ko'rsatdi — CI ham,
+            `curl` ham ko'rmadi. */}
+        <SessionProvider initialUser={initialUser}>
+          <CustomizerProvider>
             <PrefsSync />
             <UpdatesProvider>
               <SidebarProvider>
@@ -114,8 +121,8 @@ export default function AppShell({
                 ham kerak bo'lishi mumkin. Bayroq o'chiq bo'lsa umuman
                 chizilmaydi (D38). */}
             {CUSTOMIZER_ENABLED && <Customizer />}
-          </SessionProvider>
-        </CustomizerProvider>
+          </CustomizerProvider>
+        </SessionProvider>
       </ThemeProvider>
     </StyleProvider>
   );
