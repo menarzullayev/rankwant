@@ -279,3 +279,20 @@ export const SettingsIcon = (p: IconProps) => (
     <path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z" />
   </Icon>
 );
+
+/** Ogohlantirish uchburchagi — `breaking`/`deprecated` turlari uchun.
+ *  Qaror 11: bu ikki tur harakatga chaqiradi va belgida ko'rinishi shart. */
+export const WarningIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M10.3 4.3 2.9 17a2 2 0 0 0 1.7 3h14.8a2 2 0 0 0 1.7-3L13.7 4.3a2 2 0 0 0-3.4 0Z" />
+    <path d="M12 9.5v4M12 17h.01" />
+  </Icon>
+);
+
+/** Changelog belgisi — ro'yxat + uchqun. Nav bandi uchun. */
+export const UpdatesIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4 6h11M4 12h8M4 18h11" />
+    <path d="M18 3.5l1 2.5 2.5 1-2.5 1-1 2.5-1-2.5L14.5 7l2.5-1Z" />
+  </Icon>
+);

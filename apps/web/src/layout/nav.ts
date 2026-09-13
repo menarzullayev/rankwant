@@ -18,6 +18,7 @@ import {
   ShopIcon,
   TeamIcon,
   TournamentIcon,
+  UpdatesIcon,
 } from "@/icons";
 
 /**
@@ -45,6 +46,7 @@ type NavItem = {
     | "/calendar"
     | "/leaderboard"
     | "/blog"
+    | "/updates"
     | "/rating"
     | "/qvant"
     | "/about"
@@ -87,6 +89,7 @@ export const NAV_GROUPS: { key: string; items: NavItem[] }[] = [
     items: [
       { href: "/leaderboard", key: "nav.leaderboard", Icon: LeaderboardIcon },
       { href: "/blog", key: "nav.blog", Icon: BlogIcon },
+      { href: "/updates", key: "nav.updates", Icon: UpdatesIcon },
     ],
   },
   {

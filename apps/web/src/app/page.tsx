@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/Button";
 import { Card, StatCard } from "@/components/ui/Card";
 import { TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
+import { UpdateKindBadge } from "@/components/UpdateKindBadge";
 import { getLocale } from "@/i18n/server";
 import { date, dateTime, t } from "@/i18n/messages";
 import { ContestIcon, LeaderboardIcon, ProblemsIcon, QvantIcon } from "@/icons";
@@ -17,6 +18,7 @@ import {
   type Post,
   type ProblemDetail,
   type Recommendation,
+  type SystemUpdate,
   type UserPublic,
 } from "@/lib/api";
 import { getWithSession } from "@/lib/api.server";
@@ -47,6 +49,16 @@ async function resumeTarget(
   return first ? { slug: first.slug, title: first.title } : null;
 }
 
+/** Yordamchi bo'lim yiqilsa — bo'sh ro'yxat, lekin sahifa ochiladi.
+ *
+ *  Faqat API xatosi yutiladi: boshqa xato (masalan `fetch` yiqilishi)
+ *  yashirilmaydi, aks holda nosozlik jimgina "bo'lim yo'q"ga aylanardi.
+ */
+function softFail<T>(error: unknown): T[] {
+  if (!(error instanceof ApiError)) throw error;
+  return [];
+}
+
 export const dynamic = "force-dynamic";
 
 /** Yaqin musobaqa = hozir ketayotgan yoki hali boshlanmagan, eng yaqini birinchi. */
@@ -69,13 +81,19 @@ export default async function Home() {
     api.roadmaps(),
   ]);
 
-  // Blog bo'sh yoki o'chirilgan bo'lsa bosh sahifa baribir ochilishi kerak.
-  let posts: Post[] = [];
-  try {
-    posts = (await api.posts()).results.slice(0, 3);
-  } catch (error) {
-    if (!(error instanceof ApiError)) throw error;
-  }
+  // Blog va o'zgarishlar — ikkalasi ham YORDAMCHI bo'lim: biri bo'sh yoki
+  // o'chirilgan bo'lsa bosh sahifa baribir ochilishi kerak. Lekin ularni
+  // ketma-ket kutish ortiqcha — shuning uchun bitta `Promise.all` ichida.
+  const [posts, updates] = await Promise.all([
+    api
+      .posts()
+      .then((page) => page.results.slice(0, 3))
+      .catch(softFail<Post>),
+    api
+      .updates("?page_size=4")
+      .then((page) => page.results)
+      .catch(softFail<SystemUpdate>),
+  ]);
 
   const me = await getWithSession<UserPublic>("/me/").catch(() => null);
   const resume = await resumeTarget(me);
@@ -286,37 +304,79 @@ export default async function Home() {
         </p>
       </Card>
 
-      {posts.length > 0 && (
-        <Card
-          title={t(locale, "home.announcements")}
-          action={
-            <Link
-              href="/blog"
-              className="text-theme-sm rw-accent-ink hover:underline"
-            >
-              {t(locale, "home.all")}
-            </Link>
-          }
-          bodyClassName="p-0"
-        >
-          <ul className="divide-y rw-divide">
-            {posts.map((post) => (
-              <li key={post.slug}>
+      {/* Qaror 5: o'zgarishlar bosh sahifada ham, arxivda ham ko'rinadi.
+          E'lonlar bilan yonma-yon — ikkalasi ham "platformadan xabar". */}
+      {(updates.length > 0 || posts.length > 0) && (
+        <div className="grid gap-6 lg:grid-cols-2">
+          {updates.length > 0 && (
+            <Card
+              title={t(locale, "update.home")}
+              action={
                 <Link
-                  href={`/blog/${post.slug}`}
-                  className="block px-5 py-4 transition rw-hover-bg"
+                  href={"/updates" as Route}
+                  className="text-theme-sm rw-accent-ink hover:underline"
                 >
-                  <span className="block font-medium rw-strong">
-                    {post.title}
-                  </span>
-                  <span className="mt-0.5 block text-theme-xs rw-faint">
-                    {date(post.published_at, locale)}
-                  </span>
+                  {t(locale, "home.all")}
                 </Link>
-              </li>
-            ))}
-          </ul>
-        </Card>
+              }
+              bodyClassName="p-0"
+            >
+              <ul className="divide-y rw-divide">
+                {updates.map((u) => (
+                  <li key={u.id}>
+                    <Link
+                      href={`/updates/${u.id}`}
+                      className="block px-5 py-4 transition rw-hover-bg"
+                    >
+                      <span className="flex flex-wrap items-center gap-2">
+                        <UpdateKindBadge kind={u.kind} locale={locale} />
+                        <span className="text-theme-xs rw-faint">
+                          {date(u.released_at, locale)}
+                        </span>
+                      </span>
+                      <span className="mt-2 block font-medium rw-strong">
+                        {u.title}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          )}
+
+          {posts.length > 0 && (
+            <Card
+              title={t(locale, "home.announcements")}
+              action={
+                <Link
+                  href="/blog"
+                  className="text-theme-sm rw-accent-ink hover:underline"
+                >
+                  {t(locale, "home.all")}
+                </Link>
+              }
+              bodyClassName="p-0"
+            >
+              <ul className="divide-y rw-divide">
+                {posts.map((post) => (
+                  <li key={post.slug}>
+                    <Link
+                      href={`/blog/${post.slug}`}
+                      className="block px-5 py-4 transition rw-hover-bg"
+                    >
+                      <span className="block font-medium rw-strong">
+                        {post.title}
+                      </span>
+                      <span className="mt-0.5 block text-theme-xs rw-faint">
+                        {date(post.published_at, locale)}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          )}
+        </div>
       )}
     </div>
   );

@@ -292,6 +292,83 @@ export type ArticleDetail = Article & {
   problems: LinkedProblem[];
 };
 
+/** Updates — platforma o'zgarishlari (changelog).
+ *
+ * `blog.Post` dan ATAYLAB ajratilgan: `blog` — muharrir kontenti, bu esa
+ * nima o'zgargani haqidagi yozuv (manbasi GitHub, 10 turga tasniflanadi).
+ */
+export type UpdateKind =
+  | "new"
+  | "improved"
+  | "fixed"
+  | "performance"
+  | "security"
+  | "design"
+  | "content"
+  | "infrastructure"
+  | "breaking"
+  | "deprecated";
+
+export type UpdateModule =
+  | "problems"
+  | "contests"
+  | "arena"
+  | "judge"
+  | "ratings"
+  | "qvant"
+  | "profile"
+  | "classroom"
+  | "quizzes"
+  | "content"
+  | "design"
+  | "core";
+
+/** Filtr qatori tartibi — `apps/api/updates/models.py` `Kind` bilan bir xil.
+ *  Ikkita oxirgisi (`breaking`, `deprecated`) harakatga chaqiradi va shu
+ *  sababli ro'yxat oxirida ham, alohida guruhda ham turadi. */
+export const UPDATE_KINDS: UpdateKind[] = [
+  "new",
+  "improved",
+  "fixed",
+  "performance",
+  "security",
+  "design",
+  "content",
+  "infrastructure",
+  "breaking",
+  "deprecated",
+];
+
+export type SystemUpdate = {
+  id: number;
+  kind: UpdateKind;
+  module: UpdateModule;
+  /** Ro'yxatda har doim `published`. Batafsil sahifada `withdrawn` ham
+   *  bo'ladi: nashrdan olingan yozuv o'chirilmaydi va havolasi ishlaydi
+   *  (qaror 20), lekin sahifa buni aytishi kerak. */
+  status: "draft" | "published" | "withdrawn";
+  /** Semantik versiya — bo'sh bo'lishi mumkin (`v1.4.0`). */
+  version: string;
+  /** So'ralgan tildagi matn; tarjima bo'lmasa kanonik o'zbekcha. */
+  title: string;
+  body: string;
+  image: string;
+  /** O'zgarish chiqqan sana (`YYYY-MM-DD`). */
+  released_at: string;
+  published_at: string | null;
+  /** GitHub havolasi — bo'sh bo'lishi mumkin. */
+  source_url: string;
+  /** Buzuvchi yoki olib tashlanadi — foydalanuvchi biror narsa qilishi kerak. */
+  is_actionable: boolean;
+  /** Mehmon uchun `null`: o'qilmagan holat faqat kirganlarga tegishli. */
+  is_read: boolean | null;
+  /** Matn tarjima qilinganmi yoki kanonik o'zbekcha ko'rsatilganmi. */
+  is_translated: boolean;
+};
+
+/** O'qilmagan yozuvlar soni — nav chipi va qo'ng'iroq uchun. */
+export type UpdateUnread = { count: number; actionable: number };
+
 export type ProblemStats = {
   total: number;
   verdicts: { verdict: string; count: number }[];
@@ -1316,6 +1393,23 @@ export const api = {
   recommendations: () => get<Recommendation>("/problems/recommendation/", 0),
   posts: () => get<Paginated<Post>>("/posts/"),
   post: (slug: string) => get<PostDetail>(`/posts/${slug}/`),
+  // Updates — ochiq arxiv, mehmon ham ko'radi (qaror 8-savol). Har yozuv
+  // doimiy havola oladi, chunki Telegram kanal va Codeforces blog shunga
+  // havola beradi. Kesh 60 s: yozuv qo'lda tasdiqlanadi, tez o'zgarmaydi.
+  updates: (query = "") =>
+    get<Paginated<SystemUpdate>>(`/updates/${query}`, 60),
+  update: (id: number) => get<SystemUpdate>(`/updates/${id}/`, 60),
+  /** Harakatga chaqiruvchi yozuvlar (`breaking`, `deprecated`) — arxiv
+   *  tepasidagi alohida blok uchun. Sahifalangan ro'yxatdan ularni
+   *  ajratib bo'lmaydi: kam uchraydi, ya'ni joriy sahifada umuman
+   *  bo'lmasligi mumkin. Javob sahifalanmagan — ro'yxat qisqa. */
+  updatesActionable: () => get<SystemUpdate[]>("/updates/actionable/", 60),
+  // Sitemap uchun — faqat `id` kerak. Soatiga bir marta (app/sitemap.ts).
+  updateIds: (page: number) =>
+    get<Paginated<{ id: number }>>(
+      `/updates/?page=${page}&page_size=100`,
+      3600,
+    ),
   // O'z o'qish kontenti — ADR-0005 differensiatori. SEO uchun keshlanadi.
   articles: () => get<Paginated<Article>>("/articles/", 300),
   article: (slug: string) => get<ArticleDetail>(`/articles/${slug}/`, 300),

@@ -26,3 +26,29 @@ export function Markdown({ children }: { children: string }) {
     </div>
   );
 }
+
+/**
+ * Markdown matnidan ro'yxat uchun bir qatorli parcha.
+ *
+ * NEGA KERAK: Updates arxivi va bosh sahifadagi ro'yxat matnni
+ * `line-clamp` bilan qisqartiradi, ya'ni xom `##` va `**` belgilari
+ * ko'rinib qolardi. Bu to'liq Markdown parseri EMAS — faqat eng ko'p
+ * uchraydigan belgilar olib tashlanadi. To'liq matn baribir `Markdown`
+ * bilan chiziladi, shuning uchun bu yerda aniqlik emas, o'qilish muhim.
+ */
+export function excerpt(text: string, limit = 160): string {
+  const plain = text
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/`([^`]*)`/g, "$1")
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/^\s{0,3}#{1,6}\s+/gm, "")
+    .replace(/^\s{0,3}[-*+]\s+/gm, "")
+    .replace(/^\s{0,3}>\s?/gm, "")
+    .replace(/[*_]{1,3}([^*_\n]+)[*_]{1,3}/g, "$1")
+    .replace(/\s+/g, " ")
+    .trim();
+  return plain.length > limit
+    ? `${plain.slice(0, limit - 1).trimEnd()}…`
+    : plain;
+}

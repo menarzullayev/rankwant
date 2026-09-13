@@ -744,6 +744,51 @@
   --rw-rank-7: #7a3b08; --rw-rank-8: #961915; --rw-rank-9: #951141;
 }
 
+/* ── Updates: 10 tur rangi (qaror 11) ──
+
+   Har bir tur o'z rangini oladi. Bu tokenlar ATAYLAB bitta joyda
+   e'lon qilinadi, har palitrada emas: nishon (badge) o'z fonini O'ZI
+   bilan olib yuradi, ya'ni `ink` ↔ `soft` juftligi palitradan
+   mustaqil — kontrast ham bir marta o'lchanadi. Faqat ikki holat bor:
+   yorug' va qorong'i. Har palitrada takrorlansa 18 × 20 = 360 qiymat
+   bo'lardi va ularning aksari bir xil narsani yozardi.
+
+   Blok `[data-style]` dan KEYIN turadi: teng xoslikda oxirgisi
+   yutadi, ya'ni hech bir palitra bu qiymatlarni bexosdan bosib
+   ketmaydi. Qorong'i variantda xoslik yuqoriroq (`.dark`), shuning
+   uchun tartib muhim emas.
+
+   O'lchandi (WCAG AA, 4.5:1) — eng past qiymatlar: `security` 4.73,
+   `infrastructure` 4.82, `breaking` 4.83 (yorug'), `new` 8.75
+   (qorong'i). `breaking` dastlab `#d92d20` edi va 4.44:1 bergan —
+   shu sababli `#cf2a1d` ga tushirildi. */
+:root,
+[data-style] {
+  --rw-kind-new-ink: #3b5bdb;            --rw-kind-new-soft: #eef1ff;
+  --rw-kind-improved-ink: #0e7490;       --rw-kind-improved-soft: #ecfeff;
+  --rw-kind-fixed-ink: #037a44;          --rw-kind-fixed-soft: #ecfdf3;
+  --rw-kind-performance-ink: #6d28d9;    --rw-kind-performance-soft: #f6f1ff;
+  --rw-kind-security-ink: #b45309;       --rw-kind-security-soft: #fff7ed;
+  --rw-kind-design-ink: #be185d;         --rw-kind-design-soft: #fdf2f8;
+  --rw-kind-content-ink: #4b5563;        --rw-kind-content-soft: #f3f4f6;
+  --rw-kind-infrastructure-ink: #4d7c0f; --rw-kind-infrastructure-soft: #f7fee7;
+  --rw-kind-breaking-ink: #cf2a1d;       --rw-kind-breaking-soft: #fef3f2;
+  --rw-kind-deprecated-ink: #7c2d12;     --rw-kind-deprecated-soft: #fdf1e7;
+}
+:root.dark,
+[data-style].dark {
+  --rw-kind-new-ink: #a5b8ff;            --rw-kind-new-soft: #151c33;
+  --rw-kind-improved-ink: #67e8f9;       --rw-kind-improved-soft: #0b2429;
+  --rw-kind-fixed-ink: #6ee7a8;          --rw-kind-fixed-soft: #0a2418;
+  --rw-kind-performance-ink: #c4b5fd;    --rw-kind-performance-soft: #1d1633;
+  --rw-kind-security-ink: #fcd34d;       --rw-kind-security-soft: #2a1f0a;
+  --rw-kind-design-ink: #f9a8d4;         --rw-kind-design-soft: #2b1220;
+  --rw-kind-content-ink: #cbd5e1;        --rw-kind-content-soft: #1c1f26;
+  --rw-kind-infrastructure-ink: #bef264; --rw-kind-infrastructure-soft: #1b2408;
+  --rw-kind-breaking-ink: #fca5a5;       --rw-kind-breaking-soft: #2c1211;
+  --rw-kind-deprecated-ink: #fdba74;     --rw-kind-deprecated-soft: #2a1a0d;
+}
+
 /* ═══ Semantik klasslar — komponentlar shulardan foydalanadi ═══ */
 .rw-panel {
   background: var(--rw-surface);
@@ -780,6 +825,20 @@
 .rw-warn-ink { color: var(--rw-warn-ink); }  .rw-warn-soft { background: var(--rw-warn-soft); color: var(--rw-warn-ink); }
 .rw-bad-ink { color: var(--rw-bad-ink); }    .rw-bad-soft { background: var(--rw-bad-soft); color: var(--rw-bad-ink); }
 .rw-chip { background: var(--rw-chip); color: var(--rw-text-2); }
+
+/* Updates turlari — `.rw-kind-<tur>`. `ink` matn, `soft` fon.
+   Qo'lda yozilgan: Tailwind dinamik sinfni skanerlamaydi, ya'ni
+   `rw-kind-${kind}` yig'indisi ishlamaydi. */
+.rw-kind-new { background: var(--rw-kind-new-soft); color: var(--rw-kind-new-ink); }
+.rw-kind-improved { background: var(--rw-kind-improved-soft); color: var(--rw-kind-improved-ink); }
+.rw-kind-fixed { background: var(--rw-kind-fixed-soft); color: var(--rw-kind-fixed-ink); }
+.rw-kind-performance { background: var(--rw-kind-performance-soft); color: var(--rw-kind-performance-ink); }
+.rw-kind-security { background: var(--rw-kind-security-soft); color: var(--rw-kind-security-ink); }
+.rw-kind-design { background: var(--rw-kind-design-soft); color: var(--rw-kind-design-ink); }
+.rw-kind-content { background: var(--rw-kind-content-soft); color: var(--rw-kind-content-ink); }
+.rw-kind-infrastructure { background: var(--rw-kind-infrastructure-soft); color: var(--rw-kind-infrastructure-ink); }
+.rw-kind-breaking { background: var(--rw-kind-breaking-soft); color: var(--rw-kind-breaking-ink); }
+.rw-kind-deprecated { background: var(--rw-kind-deprecated-soft); color: var(--rw-kind-deprecated-ink); }
 .rw-accent-line { border-color: var(--rw-accent); }
 .rw-placeholder::placeholder { color: var(--rw-faint); }
 .rw-hover-accent:hover { background: var(--rw-accent-soft); }

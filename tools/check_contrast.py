@@ -75,6 +75,15 @@ LEVEL_MIXES = ((".level-basic", 1, 2), (".level-upper", 2, 3))
 PANELS = ("--rw-surface", "--rw-surface-2", "--rw-chrome")
 #: Panel ICHIDAGI sirtlar — panel ustiga tushadi.
 INNER = ("--rw-chip", "--rw-field", "--rw-hover")
+#: Updates turlari — `.rw-kind-*` nishoni (10 tur, qaror 11).
+#:
+#: Bu juftliklar palitradan MUSTAQIL: nishon o'z fonini o'zi bilan olib
+#: yuradi, ya'ni `ink` ↔ `soft` kontrasti faqat shu ikki qiymatga bog'liq.
+#: Shuning uchun ular bitta blokda e'lon qilinadi va bir marta o'lchanadi.
+KINDS = (
+    "new", "improved", "fixed", "performance", "security",
+    "design", "content", "infrastructure", "breaking", "deprecated",
+)
 
 Color = tuple[int, int, int, float]
 
@@ -232,6 +241,71 @@ def style_tokens(css: str) -> dict[tuple[str, str], dict[str, str]]:
     return out
 
 
+def kind_blocks(css: str) -> dict[str, dict[str, str]]:
+    """`--rw-kind-*` bloklarini rejim bo'yicha o'qiydi.
+
+    Izohlar AVVAL olib tashlanadi: light blok izohida `.dark` so'zi bor
+    (nega tartib muhim emasligi tushuntirilgan), ya'ni izohsiz o'qilsa
+    yorug' blok qorong'i deb hisoblanardi va ikkala rejim bir xil
+    o'lchanib, yorug'dagi nuqson ko'rinmay qolardi.
+
+    Blokni ATAYLAB alohida o'qiymiz: `style_tokens()` faqat
+    `[data-style="nom"]` shaklini ko'radi, bu blok esa `[data-style]`
+    (qiymatsiz). Selektorni shu yerda takrorlamasak tekshiruv jimgina
+    o'tib ketardi.
+    """
+    clean = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
+    out: dict[str, dict[str, str]] = {}
+    for match in re.finditer(r"([^{}]*)\{([^{}]*--rw-kind-new-ink[^{}]*)\}", clean):
+        selector = re.sub(r"\s+", " ", match.group(1).strip())
+        mode = "dark" if ".dark" in selector else "light"
+        out.setdefault(mode, {}).update(
+            dict(re.findall(r"(--rw-kind-[\w-]+)\s*:\s*([^;]+);", match.group(2)))
+        )
+    return out
+
+
+def check_kinds(css: str) -> list[str]:
+    """Har turning matni o'z nishon fonida AA dan o'tishini tekshiradi.
+
+    `soft` — nishonning O'Z foni, palitra sirti emas; shuning uchun bu
+    yerda eng yomon fonni qidirish kerak emas. Lekin token umuman
+    o'qilmasa (yo'q, `transparent`, buzuq hex) — bu XATO, o'tkazib
+    yuborilmaydi.
+    """
+    problems: list[str] = []
+    blocks = kind_blocks(css)
+    if not blocks:
+        return ["--rw-kind-* bloklari topilmadi — tekshiruv ko'r bo'lib qolgan"]
+
+    for mode in ("light", "dark"):
+        tokens = blocks.get(mode)
+        if not tokens:
+            problems.append(f"kind.{mode}: blok yo'q")
+            continue
+        for kind in KINDS:
+            ink_raw = tokens.get(f"--rw-kind-{kind}-ink", "").strip()
+            soft_raw = tokens.get(f"--rw-kind-{kind}-soft", "").strip()
+            ink, soft = parse(ink_raw), parse(soft_raw)
+            if ink is None:
+                problems.append(
+                    f"kind.{mode}.{kind}: ink o'qilmadi ({ink_raw or 'token yo`q'})"
+                )
+                continue
+            if soft is None:
+                problems.append(
+                    f"kind.{mode}.{kind}: soft o'qilmadi ({soft_raw or 'token yo`q'})"
+                )
+                continue
+            ratio = contrast(ink, soft)
+            if ratio < AA:
+                problems.append(
+                    f"kind.{mode}.{kind}: {ink_raw} ustida {soft_raw} "
+                    f"→ {ratio:.2f}:1, kerak {AA}"
+                )
+    return problems
+
+
 def main() -> int:
     css = CSS.read_text(encoding="utf-8")
     blobs = read_blobs(css)
@@ -375,6 +449,9 @@ def main() -> int:
                     f"{ACCENT_PAIR[1]}): {ratio:.2f}:1 "
                     f"(fon #{worst[0]:02x}{worst[1]:02x}{worst[2]:02x}), kerak {AA}"
                 )
+
+    failures += check_kinds(css)
+    checked += 2 * len(KINDS)
 
     if failures:
         print(f"Kontrast AA dan o'tmadi ({len(failures)} ta):", file=sys.stderr)

@@ -29,6 +29,7 @@ const STATIC = [
   "/tournaments",
   "/hackathons",
   "/quizzes",
+  "/updates",
 ];
 
 /** Sahifalab hamma slug'ni yig'adi. Cheklov ATAYIN: buzuq javob yoki
@@ -46,8 +47,26 @@ async function allSlugs(
   return slugs;
 }
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const now = new Date();
+/** Xuddi `allSlugs`, lekin havola `id` bilan quriladi.
+ *
+ *  Updates yozuvlarida `slug` maydoni yo'q: kanonik havola — raqamli
+ *  `id`, chunki u hech qachon o'zgarmaydi va yozuv nashrdan olinganda ham
+ *  saqlanadi (qaror 20) — tashqi kanallardan kelgan havola sindirilmaydi.
+ */
+async function allIds(
+  fetchPage: (page: number) => Promise<Paginated<{ id: number }>>,
+  maxPages = 40,
+): Promise<number[]> {
+  const ids: number[] = [];
+  for (let page = 1; page <= maxPages; page++) {
+    const body = await fetchPage(page);
+    ids.push(...body.results.map((row) => row.id));
+    if (!body.next) break;
+  }
+  return ids;
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {  const now = new Date();
   const entries: MetadataRoute.Sitemap = STATIC.map((path) => ({
     url: absolute(path),
     lastModified: now,
@@ -75,6 +94,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     } catch {
       // Bitta bo'lim olinmasa xarita BO'SH qolmasin — qolgani beriladi.
     }
+  }
+
+  // Updates yozuvlarining havolasi slug emas, `id` — shuning uchun alohida
+  // tsikl. Bu modul SEO uchun ishlaydi (qaror: marketing aktivi), ya'ni
+  // har yozuv xaritada bo'lishi kerak.
+  try {
+    for (const id of await allIds((p) => api.updateIds(p))) {
+      entries.push({
+        url: absolute(`/updates/${id}`),
+        lastModified: now,
+        changeFrequency: "monthly",
+        priority: 0.5,
+      });
+    }
+  } catch {
+    /* arxiv olinmasa ham xarita beriladi */
   }
   return entries;
 }

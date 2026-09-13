@@ -32,6 +32,8 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         "nav.qvant", "qvant.title", "leaderboard.skills", "leaderboard.contest",
         "leaderboard.activity", "leaderboard.streak", "leaderboard.challenges",
         "nav.arena", "auth.email", "hackathon.demo", "settings.channelTelegram",
+        # Updates: modul nomi — atoqli nom, hech qaysi tilda tarjima qilinmaydi.
+        "update.module.qvant",
     },
     # Qoraqalpoq tili o'zbek tiliga eng yaqini — xalqaro o'zlashmalar
     # ikkalasida ham aynan bir xil yoziladi.
@@ -51,13 +53,17 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         # Qoraqalpoqchada ham shunday: o'zlashma so'zlar.
         "role.champion", "profile.online", "tier.bronze",
         "profile.tab.certificates", "cert.title", "cert.id", "leaderboard.school",
+        # Updates: qoraqalpoqcha o'zbekchaga eng yaqin til — "tezlik",
+        # "reyting", "profil", "dizayn" ikkalasida ham bir xil yoziladi.
+        "update.kind.performance", "update.kind.design",
+        "update.module.ratings", "update.module.profile", "update.module.design",
     },
     # «Duel» — inglizchadan o'zlashgan, ingliz tilida o'sha so'zning o'zi.
     "en": {"nav.duels", "level.master", "title.proton", "title.atom",
            "profile.reason.duel", "profile.virtual"},
     # Turk tilida ham «Profil» — o'zbekcha bilan harfma-harf bir xil.
     "tr": {"settings.nav.profile", "title.foton", "title.elektron", "title.proton",
-           "title.atom", "title.kristal"},
+           "title.atom", "title.kristal", "update.module.profile"},
     # Ispan tilida ham «Virtual».
     "es": {"profile.virtual"},
 }
