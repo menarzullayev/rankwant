@@ -18,6 +18,7 @@ import {
   APPEARANCE_KEY,
   announcePrefs,
   removeLocal,
+  rememberAccent,
   rememberAppearance,
   type StoredAccent,
 } from "@/lib/prefs";
@@ -144,11 +145,7 @@ export function CustomizerProvider({ children }: { children: React.ReactNode }) 
           soft: read("--rw-accent-soft"),
           ink: read("--rw-accent-ink"),
         };
-        try {
-          localStorage.setItem(ACCENT_KEY, JSON.stringify(stored));
-        } catch {
-          // Private rejim — kesh yozilmaydi, sozlama sessiyada ishlaydi.
-        }
+        rememberAccent(stored);
       }
       return result;
     },
@@ -161,7 +158,7 @@ export function CustomizerProvider({ children }: { children: React.ReactNode }) 
       applyAppearance(next);
       applyA11y(nextA11y);
       applyAndCacheAccent(next);
-      rememberAppearance(next, nextA11y, null);
+      rememberAppearance(next, nextA11y);
       // Hisobga — `PrefsSync` yozadi. Uslubni ham qo'shamiz, chunki
       // `StyleContext` uni boshqa yo'l bilan yozadi.
       announcePrefs({
@@ -175,46 +172,43 @@ export function CustomizerProvider({ children }: { children: React.ReactNode }) 
 
   const setAppearance = useCallback(
     (patch: Partial<AppearancePrefs>) => {
-      setAppearanceState((current) => {
-        setPrevious(current);
-        const next = { ...current, ...patch };
-        if (patch.style && patch.style !== current.style) {
-          // Uslub almashsa rang ham o'zgaradi (D10) — yangi uslubning
-          // fonlari boshqa, eski accent o'sha yerda o'qilmasligi mumkin.
-          applyStyle(patch.style);
-          setStyle(patch.style as Parameters<typeof setStyle>[0]);
-        }
-        commit(next, a11y);
-        return next;
-      });
+      // ⚠️ Yon ta'sirlar updater ICHIDA emas: React updater'ni qayta
+      // chaqirishi mumkin (StrictMode da ikki marta) va u sof bo'lishi
+      // shart. Shuning uchun qiymat tashqarida hisoblanadi.
+      setPrevious(appearance);
+      const next = { ...appearance, ...patch };
+      if (patch.style && patch.style !== appearance.style) {
+        // Uslub almashsa rang ham o'zgaradi (D10) — yangi uslubning
+        // fonlari boshqa, eski accent o'sha yerda o'qilmasligi mumkin.
+        applyStyle(patch.style);
+        setStyle(patch.style as Parameters<typeof setStyle>[0]);
+      }
+      setAppearanceState(next);
+      commit(next, a11y);
     },
-    [a11y, commit, setStyle],
+    [appearance, a11y, commit, setStyle],
   );
 
   const setA11y = useCallback(
     (patch: Partial<A11yPrefs>) => {
-      setA11yState((current) => {
-        const next = { ...current, ...patch };
-        commit(appearance, next);
-        return next;
-      });
+      const next = { ...a11y, ...patch };
+      setA11yState(next);
+      commit(appearance, next);
     },
-    [appearance, commit],
+    [appearance, a11y, commit],
   );
 
   const applyTemplate = useCallback(
     (template: Template) => {
-      setAppearanceState((current) => {
-        setPrevious(current);
-        const next = templateAppearance(template, current);
-        applyStyle(template.style);
-        setStyle(template.style);
-        if (template.theme) setMode(template.theme);
-        commit(next, a11y);
-        return next;
-      });
+      setPrevious(appearance);
+      const next = templateAppearance(template, appearance);
+      applyStyle(template.style);
+      setStyle(template.style);
+      if (template.theme) setMode(template.theme);
+      setAppearanceState(next);
+      commit(next, a11y);
     },
-    [a11y, commit, setMode, setStyle],
+    [a11y, appearance, commit, setMode, setStyle],
   );
 
   const undo = useCallback(() => {

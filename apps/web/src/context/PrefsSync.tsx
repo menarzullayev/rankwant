@@ -96,12 +96,12 @@ export function PrefsSync() {
     const accountA11y = (prefs.a11y ?? null) as A11yPrefs | null;
     if (accountAppearance) {
       applyAll(accountAppearance, accountA11y ?? {});
-      rememberAppearance(accountAppearance, accountA11y ?? {}, null);
+      rememberAppearance(accountAppearance, accountA11y ?? {});
     } else if (accountA11y) {
       // Faqat qulaylik sozlamasi bo'lsa uslubga TEGILMAYDI: `applyAll`
       // `appearance.style` bo'sh bo'lsa standartga qaytarib qo'yardi.
       applyA11y(accountA11y);
-      rememberAppearance({}, accountA11y, null);
+      rememberAppearance({}, accountA11y);
     }
 
     const cookie = document.cookie.match(/(?:^|;\s*)rw_locale=([^;]+)/)?.[1];    if (isLocale(cookie)) {

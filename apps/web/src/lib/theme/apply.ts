@@ -16,7 +16,7 @@ import {
   accentSoft,
   contrast,
   deriveAccent,
-  isDarkMode,
+  environmentIsDark,
   luminance,
   parseColor,
   readBackgrounds,
@@ -74,7 +74,7 @@ export function applyAccent(hue: number, sat: number): AccentResult {
     return { ok: false, button: null, ink: null, error: "yorqinlik yetmadi" };
   }
 
-  const dark = isDarkMode();
+  const dark = environmentIsDark(backgrounds);
   const soft = accentSoft(hue, sat / 100, dark);
   // Ink chip ustida ham, fon ustida ham o'qilishi kerak — eng qat'iy
   // talab qaysi biri bo'lsa, o'shanga moslashadi.
@@ -159,7 +159,7 @@ export function previewAccent(hue: number, sat: number): AccentResult {
   }
   const accent = deriveAccent(hue, sat / 100, backgrounds);
   if (!accent) return { ok: false, button: null, ink: null, error: "yorqinlik yetmadi" };
-  const soft = accentSoft(hue, sat / 100, isDarkMode());
+  const soft = accentSoft(hue, sat / 100, environmentIsDark(backgrounds));
   const ink = deriveAccent(hue, sat / 100, [...backgrounds, soft]) ?? accent;
   const lightInk = parseColor("#ffffff") as RGB;
   const groundInk = parseColor(readToken("--rw-ground")) ?? (parseColor("#000000") as RGB);

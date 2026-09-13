@@ -77,16 +77,19 @@ export function removeLocal(key: string) {
   }
 }
 
-/** Sozlagich tanlovini qurilmaga yozadi (hisobga `PrefsSync` yozadi). */
-export function rememberAppearance(
-  appearance: AppearancePrefs,
-  a11y: A11yPrefs,
-  accent: StoredAccent | null,
-) {
+/** Sozlagich tanlovini qurilmaga yozadi (hisobga `PrefsSync` yozadi).
+ *
+ *  ⚠️ Accent keshiga TEGMAYDI: uni `applyAccent` yozadi, chunki u
+ *  hisoblangan qiymatni biladi. Ilgari bu funksiya `null` bilan
+ *  chaqirilib keshni o'chirib qo'yardi — natijada accent saqlanmasdi. */
+export function rememberAppearance(appearance: AppearancePrefs, a11y: A11yPrefs) {
   writeLocal(APPEARANCE_KEY, JSON.stringify(appearance));
   writeLocal(A11Y_KEY, JSON.stringify(a11y));
-  // Accent HISOBLANGAN holda saqlanadi — boot skript uni o'lchovsiz
-  // qo'llay olsin (fon yorqinligini o'sha paytda o'lchab bo'lmaydi).
+}
+
+/** Accent HISOBLANGAN holda saqlanadi — boot skript uni o'lchovsiz
+ *  qo'llay olsin (fon yorqinligini o'sha paytda o'lchab bo'lmaydi). */
+export function rememberAccent(accent: (StoredAccent & { style: string }) | null) {
   if (accent) writeLocal(ACCENT_KEY, JSON.stringify(accent));
   else removeLocal(ACCENT_KEY);
 }

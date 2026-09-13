@@ -174,7 +174,9 @@ export function accentInk(accent: RGB, lightInk: RGB, darkInk: RGB): RGB {
   return onDark >= onLight ? darkInk : lightInk;
 }
 
-/** Accent'ning och/qorong'i nusxasi — chip foni (`.rw-accent-soft`). */
+/** Accent'ning och/qorong'i nusxasi — chip foni (`.rw-accent-soft`).
+ *
+ *  `dark` — O'LCHANGAN muhit (`environmentIsDark`), klass emas. */
 export function accentSoft(hue: number, sat: number, dark: boolean): RGB {
   return dark ? hslToRgb(hue, Math.min(sat, 0.5), 0.14) : hslToRgb(hue, Math.min(sat, 0.6), 0.95);
 }
@@ -212,5 +214,22 @@ export function readBackgrounds(): RGB[] {
   return out;
 }
 
-/** Joriy mavzu qorong'imi — `<html>` dagi `dark` klassi (haqiqat manbai). */
-export const isDarkMode = () => document.documentElement.classList.contains("dark");
+/** Joriy muhit qorong'imi — O'LCHANGAN fon yorqinligidan.
+ *
+ *  ⚠️ `<html>` dagi `dark` klassi bu yerda ISHLATILMAYDI: bir muhitli
+ *  uslublarda (`dual: false` — `clay`, `terminal`, `aurora`…) u yolg'on
+ *  gapiradi. `clay` da `dark` klassi turibdi, lekin uning barcha fonlari
+ *  YORUG' (`--rw-ground: #ede4ff`), chunki `[data-style="clay"].dark`
+ *  bloki umuman yo'q.
+ *
+ *  Bu o'lchov bilan topilgan xato edi: klassga qarab chip qorong'i
+ *  qilinardi, fonlar esa yorug' qolardi, natijada yorug' va qorong'i
+ *  aralash ro'yxat hosil bo'lib, hech qanday ink ikkalasiga ham sig'masdi.
+ *  Oqibat: `--rw-accent-ink` accent'ning o'ziga tushib qolardi va havola
+ *  matni 2.74:1 bo'lardi.
+ */
+export function environmentIsDark(backgrounds: RGB[]): boolean {
+  const ground = parseColor(readToken("--rw-ground"));
+  const base = ground ?? backgrounds[0];
+  return base ? luminance(base) < 0.5 : false;
+}
