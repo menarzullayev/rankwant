@@ -550,6 +550,48 @@ Yangi klonda yoqish:
 git config core.hooksPath .githooks
 ```
 
+## Assumptions
+
+1. **Bitta mashina preview uchun yetarli.** Deploy topologiyasi shunga
+   qurilgan; `disaster recovery` bo'limi yo'q — ya'ni mashina yiqilsa
+   xizmat to'xtaydi degan **qabul qilingan** holat.
+2. **Self-hosted runner xavfi qabul qilinadi.** *"Yolg'iz ishlashda qabul
+   qilsa bo'ladigan xavf, jamoada emas"* — va qayta ko'rib chiqish sharti
+   yozilgan (ikkinchi odam qo'shilishidan oldin).
+3. **Kunlik backup + choraklik tiklash sinovi yetarli.** RTO/RPO raqami
+   yo'q, lekin *"tiklash sinovi o'tkazilmasa, backup yo'q deb hisoblanadi"*
+   tamoyili qo'llanadi.
+4. **Branch protection va secret scanning siz ishlash mumkin.** *"DoD
+   intizomga tayanadi"* — ya'ni `main` ga to'g'ridan-to'g'ri push va qizil CI
+   bilan merge texnik jihatdan mumkin.
+
+## Tasdiq
+
+**Holat: PENDING — production-launch inson tasdig'i yozilmagan.**
+
+Bu bosqichda `## Tasdiq` bo'limi **umuman yo'q edi**, holbuki gate aynan shuni
+talab qiladi:
+
+> *BLOCK until critical operational gaps are closed and production-launch
+> human approval is recorded.*
+
+Ikki shart ham hozircha bajarilmagan:
+
+1. **Kritik operatsion bo'shliqlar ochiq** — `## Keyinroq to'ldiriladi` ga qarang
+2. **Launch tasdig'i yo'q** — shu bo'lim
+
+Diqqat: xizmat **allaqachon ommaviy ishlayapti** (`rankwant.uz`), ya'ni bu
+nazariy emas, hozirgi holat.
+
+Ikkita yo'l bor, ikkalasi ham halol:
+
+- **A:** on-call va runbook yozilib, launch tasdig'i qayd etiladi → gate ochiladi
+- **B:** xizmat rasman **"ommaviy preview"** deb e'lon qilinadi va qolgan
+  bo'shliqlar **xavf qabul qilish** yozuvi bilan qabul qilinadi (kim, qachon,
+  nima uchun) → bu ham to'g'ri yo'l, lekin **yozilishi** shart
+
+Qaror qabul qilinmaguncha bu bosqich `BLOCK` holatida qoladi.
+
 ## Keyinroq to'ldiriladi
 
 - [ ] Hosting provayderi va narx modeli

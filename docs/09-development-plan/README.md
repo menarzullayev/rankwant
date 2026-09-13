@@ -160,7 +160,33 @@ Judge/DevOps roli **eng kam almashtiriladigan** — sandbox xavfsizligi shu odam
 - **rankglass (Pogona)** — boshqa mahsulot; docs pipeline namunasi va Next.js tajribasi
 - **cp-uz** — raqobatchi benchmark (o'qish kontenti); hamkor emas, fork emas
 
+## Assumptions
+
+1. **Sprint darajasidagi reja yetarli.** Qulflash o'zi aytadi: *"Sprint ichidagi
+   vazifa taqsimoti bu hujjatga kirmaydi — u issue tracker'da"*. Ya'ni
+   story/task darajasi **ataylab** bu hujjatda emas.
+2. **`Sprint 1–4` MVP uchun yetarli.** Phase 0 (P0-1 … P0-7) to'rt sprintga
+   sig'adi — sprint davomiyligi ko'rsatilmagan, lekin shu taxmin qilingan.
+3. **0 user cold start yengiladi.** *"Maktab B2B pilot va mirror olimpiada —
+   network effekt kutmaydi"* — ya'ni B2B piloti organik o'sishsiz ishlaydi.
+4. **Sandbox primitivi tayyor olinadi.** *"sandbox primitivi tayyor olinadi"* —
+   ya'ni nsjail/isolate ni noldan yozish kerak emas.
+
+## Open questions
+
+1. **`Estimates` yo'q — rejaning vaqt o'qi yo'q.** Sprintlar `Sprint 1–4` deb
+   nomlangan, lekin bir sprint qancha davom etishi va jami timeline yozilmagan.
+2. **`Epics` / `Stories` / `Tasks` bo'limlari yo'q.** Issue tracker'da bo'lishi
+   mumkin, lekin hujjatdan **tekshirib bo'lmaydi** — ya'ni reja o'z-o'zidan
+   yetarli emas.
+3. **Domen/handle ro'yxatdan o'tkazish** — ochiq checkbox: `rankwant.uz`,
+   `qvantcoin.uz`, `@rankwant`, `@qvantcoin`. *"Launch'gacha bajarilsa yetarli"*.
+4. **ADR-0004 holati** — bu hujjat gate yopilganini yozadi, `07-adr/README.md`
+   esa `proposed` deb turardi. **2026-09-13 da tuzatildi** (endi `accepted`).
+
 ## Qulflash
+
+**Tasdiq:** Saidakbar Narzullayev — Repo owner / maintainer, 2026-09-06.
 
 2026-09-06: kritik yo'l, sprintlar, **Definition of Done**, **launch gate**, milestone maqsadlari va xavflar tasdiqlandi.
 O'zgartirish = yangi ADR (`docs/07-adr/`). Sprint ichidagi vazifa taqsimoti bu hujjatga kirmaydi — u issue tracker'da.

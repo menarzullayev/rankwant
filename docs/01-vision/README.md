@@ -84,7 +84,27 @@ Batafsil: [../03-market-research/brand-discovery.md](../03-market-research/brand
 - Qvant aylanmasi (retention signal)
 - Masala arxivi o'sishi (o'zbek + xalqaro)
 
+## Strategic assumptions
+
+Matnda yozilgan, lekin taxmin sifatida belgilanmagan da'volar. Har biri
+tekshirilishi mumkin — tekshirilgach shu ro'yxatdan chiqadi.
+
+1. **Birinchi bozor — O'zbekiston.** *"Birinchi to'lqin: O'zbekiston CP/olimpiada iqtidorlari"* — ya'ni mahalliy auditoriya yetarli hajmda va mahsulot shundan boshlanadi. **Tekshirish:** 03 dagi bozor hajmi.
+2. **Nom global, kontent mahalliy.** *"Nom va UI global; kontent va mirror — mahalliy kuch"* — ya'ni o'zbek tilidagi kontent raqobat ustunligi bo'ladi.
+3. **RankWant + Qvant juftligi farqlanadi.** Brend risklari bo'limi fonetik yaqin nomlarni sanaydi (Kvants, Kuant) — ya'ni chalkashlik **bo'lmaydi** degan taxmin.
+4. **Beshta segment bitta mahsulot bilan qondiriladi.** `Kim uchun` jadvalidagi 5 segment Phase 0 da bir xil funksiyalar bilan xizmat qilinadi.
+5. **O'zbek kontenti yetarli hajmda yoziladi.** Goal #2 (o'z maqola + roadmap) resurs talab qiladi — kim yozishi taxmin qilingan, lekin yozilmagan.
+
+## Open questions
+
+1. **Domen va handle.** *"`qvant.com` band; `.uz` / `qvantcoin.*` hozircha bo'sh (2026-09-06)"*, `@qvant` Telegram band → rasmiy handle `@qvantcoin`. Qaysi domen olinadi va qachon? Hozircha ochiq.
+2. **Asosiy segment qaysi?** 5 segment teng sanalgan. Vision "birinchi to'lqin" ni aytadi, lekin bitta segmentni **asosiy** deb belgilamaydi (02 da ham bir xil bo'shliq).
+3. **B2B qachon?** O'qituvchi/maktab "keyingi fazalar" deb belgilangan — aniq faza yo'q.
+4. **Real pul sovrinlari.** *"ehtiyotkor, keyinroq ADR"* deyilgan — yo'nalish hali yo'q.
+
 ## Qulflash
+
+**Tasdiq:** Saidakbar Narzullayev — Repo owner / maintainer, 2026-09-06.
 
 2026-09-06: **RankWant + Qvant** tasdiqlandi. Platforma motivatsion brend; coin alohida va qisqa. O'zgartirish = yangi ADR (`docs/07-adr/`).
 

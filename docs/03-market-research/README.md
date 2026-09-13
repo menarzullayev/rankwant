@@ -51,7 +51,41 @@ Bozor, raqobatchilar va RankWant positioning.
 
 **Nima uchun RoboContest ulushini olish emas.** 197k network effekti bilan to'g'ridan-to'g'ri raqobat 0 userli platforma uchun yutuqsiz. SAM ataylab tor: **o'zbek o'qish kontenti + OJ bir joyda** (hech kim bermayapti) va **maktab B2B** (Robo Judge rejasi isbotlagan, lekin to'yinmagan).
 
+## Assumptions
+
+Bozor hajmi bo'limi o'zi ogohlantiradi (*"kuzatilgan raqobatchi raqamlaridan
+chiqarilgan taxmin, rasmiy statistika emas"*) — bu quyidagilar shu taxminning
+tarkibiy qismlari.
+
+1. **TAM ≈ 200–250k.** RoboContest'ning `~197k` ro'yxatdan o'tgan soni
+   *"O'zbekiston CP/informatika auditoriyasining amalda ko'rsatilgan shifti"*
+   deb olinadi. Ya'ni **bir raqobatchining 10+ yildagi natijasi = bozor shifti**
+   degan taxmin.
+2. **Haftalik faol ulush 5–10%.** North Star prognozi shu koeffitsientga
+   tayanadi (`1-yil ~300–500`, `3-yil ~1 500–2 500`).
+3. **Maktab B2B to'yinmagan.** *"Robo Judge rejasi isbotlagan, lekin
+   to'yinmagan"* — ya'ni talab bor, lekin raqobatchi uni qondirmagan.
+4. **Raqamlar manbasi repo'dan tashqarida.** `~197k`, `~9k`, `102 endpoint`,
+   `1477 masala` — hammasi `kep-uz-platform-analysis.md` va
+   `robocontest-uz-platform-analysis.md` dan, va **bu fayllar repo'da yo'q**.
+
+## Open questions
+
+1. **Ikki tahlil fayli repo'ga ko'chiriladimi?** Hozir butun bozor hajmi
+   repo ichidan **tekshirib bo'lmaydi**. Bu eng muhim ochiq savol.
+2. **`Substitutes` tahlili yo'q.** Global platformalar (`Codeforces`,
+   `AtCoder`) `verdicts.md` da faqat verdikt kodlari uchun uchraydi. O'zbek
+   o'quvchisi uchun eng katta o'rinbosar — Codeforces (bepul, global reyting).
+   Offline repetitor va maktab to'garagi ham tahlil qilinmagan.
+3. **Narx modeli.** *"RankWant narxlari PRD/ADR dan keyin"* — yo'nalish yo'q.
+4. **Voyaga yetmaganlar ma'lumotlari.** Mahsulot maktab o'quvchilariga
+   qaratilgan (02 dagi 1-segment), lekin butun `docs/` bo'ylab `GDPR`,
+   "shaxsiy ma'lumot" yoki "voyaga yetmagan" bo'yicha birorta yozuv yo'q.
+   SWOT `Threats` da faqat *"Coin/regulyatsiya (real pul sovrin)"* bor.
+
 ## Qulflash
+
+**Tasdiq:** Saidakbar Narzullayev — Repo owner / maintainer, 2026-09-06.
 
 2026-09-06: raqobatchi tahlili, brend (RankWant + Qvant), positioning va **bozor hajmi** tasdiqlandi.
 Bog'liq qarorlar: [ADR-0003](../07-adr/0003-stack-django-next.md) stack · [ADR-0005](../07-adr/0005-content-strategy-own-content.md) kontent · [ADR-0006](../07-adr/0006-rating-model.md) reyting.

@@ -185,11 +185,29 @@ Judge latency maqsadi [ADR-0004](../07-adr/0004-judge-engine.md) bake-off mezoni
 - Qvant bilan kontent yoki obuna sotib olish
 - cp.uz fork
 
-## Ochiq nuqta
+## Assumptions
 
-**Narx modeli** (P2-3 Free/Plus/Pro) — summalar hali yo'q. RoboContest 4 tier benchmark mavjud ([03-market-research](../03-market-research/positioning.md)). Bu Phase 2 masalasi va **alohida ADR** bo'ladi; MVP scope'ini bloklamaydi.
+1. **Reyting parametrlari — sozlash tanlovi.** `0.95` susayish koeffitsienti,
+   yangi foydalanuvchi uchun `abs(d) × 1.5`, `K = 32 → 16`. Monotonlik
+   **200k tasodifiy holatda tekshirilgan**, lekin bu parametrlarning
+   *qiymatlari* emas — faqat formulaning xossasi.
+2. **NFR maqsadlariga erishiladi.** `p50 < 5s, p95 < 15s` — lekin judge hali
+   tanlanmagan (`07-adr/0004` bake-off). Maqsad ADR-0004 mezoniga bog'langan.
+3. **Qiyinlik shkalasi Codeforces bilan mos.** `800–3500`, qadam 100 —
+   *"tashqi arxiv importi yo'qotishsiz"* bo'ladi degan taxmin.
+4. **4 reyting boshidan modellashtiriladi**, UI da fazali ochiladi — ya'ni
+   ishlatilmayotgan maydonlar Phase 0 dan bazada turadi.
+
+## Open questions
+
+1. **Narx modeli** (P2-3 Free/Plus/Pro) — summalar hali yo'q. RoboContest 4 tier benchmark mavjud ([03-market-research](../03-market-research/positioning.md)). Bu Phase 2 masalasi va **alohida ADR** bo'ladi; MVP scope'ini bloklamaydi.
+2. **Phase 1–3 uchun acceptance criteria yo'q.** Faqat Phase 0 da `Acceptance` ustuni bor, va u ham *"Ro'yxat, login, `/me`"* kabi feature ro'yxati — sinov sharti emas.
+3. **Traceability muammolarga yo'q.** Feature'lar ADR'ga havola beradi, lekin `02-problem-discovery` dagi og'riqqa emas. Masalan P1-5 (Qvant) 02 dagi *"Motivatsiya — faqat reyting yetmaydi"* dan kelib chiqqani yozilmagan.
+4. **Yangi foydalanuvchi koeffitsienti (`× 1.5`) asoslanganmi?** Nega aynan 1.5 va nega 6 contest — sabab yozilmagan.
 
 ## Qulflash
+
+**Tasdiq:** Saidakbar Narzullayev — Repo owner / maintainer, 2026-09-06.
 
 2026-09-06: fazalar (P0–P3), user story'lar, **4 reyting formulasi**, Qvant iqtisodiyoti va NFR tasdiqlandi.
 Bog'liq qarorlar: [ADR-0002](../07-adr/0002-qvant-economy.md) · [ADR-0003](../07-adr/0003-stack-django-next.md) · [ADR-0004](../07-adr/0004-judge-engine.md) · [ADR-0005](../07-adr/0005-content-strategy-own-content.md) · [ADR-0006](../07-adr/0006-rating-model.md)

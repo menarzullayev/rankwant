@@ -216,7 +216,37 @@ To'liq iqtisodiyot: [ADR-0002](../07-adr/0002-qvant-economy.md).
 /api/v1/schema/            OpenAPI — drf-spectacular
 ```
 
+## Assumptions
+
+1. **Test ma'lumoti GB darajasiga yetadi.** *"hajmi GB darajasiga yetadi"* —
+   shu sababli S3/R2 da saqlanadi, DB da emas. Kichik hajmda bu qaror ortiqcha
+   murakkablik bo'lardi.
+2. **Denormalizatsiya maydonlari sinxron qoladi.** `Problem.solved_count` va
+   `attempt_count` — *"filtr va statistika uchun"*. Ularni yangilovchi kod
+   yozilmagan, lekin ajralib ketmasligi taxmin qilinadi.
+3. **`QvantWallet.balance` — ishonchli kesh.** *"haqiqat manbai ledger"* —
+   ya'ni kesh hech qachon ledgerdan ajralib qolmaydi degan taxmin.
+4. **`Standing` materializatsiyasi yetarli.** Har judged attempt'dan keyin
+   Celery inkremental yangilaydi — 500 parallel submit ostida ham ulguradi.
+
+## Open questions
+
+1. **Value objects va aggregates tushuncha sifatida yo'q.** Ularning mazmuni
+   bor (verdict kodlari, qiyinlik shkalasi, ACM/IOI scoring — `04-prd` da;
+   modul chegaralari — guruhlashda), lekin shu hujjatda **nomlanmagan**.
+2. **Lifecycle holat mashinalari yo'q.** Faqat soft-delete qoidasi bor
+   (`is_active` / `is_public`). Yo'q: contest (`scheduled → running → frozen →
+   finished`), attempt (`pending → judging → judged`), Qvant quest
+   (`available → completed`). Bularsiz arxitektura bosqichi ularni **taxmin**
+   qiladi.
+3. **Denormalizatsiya sinxronligi qanday ta'minlanadi?** Signal, service layer
+   yoki Celery — yozilmagan.
+4. **`difficulty_at_solve` nima uchun saqlanadi?** *"audit uchun; formulada
+   ishlatilmaydi"* — lekin audit uni qanday ishlatishi ko'rsatilmagan.
+
 ## Qulflash
+
+**Tasdiq:** Saidakbar Narzullayev — Repo owner / maintainer, 2026-09-06.
 
 2026-09-06: entitylar, maydonlar, indekslar va migration tartibi tasdiqlandi.
 Bog'liq qarorlar: [ADR-0002](../07-adr/0002-qvant-economy.md) Qvant · [ADR-0003](../07-adr/0003-stack-django-next.md) stack · [ADR-0006](../07-adr/0006-rating-model.md) 4 reyting · [ADR-0007](../07-adr/0007-skills-uses-current-difficulty.md) joriy qiyinlik.

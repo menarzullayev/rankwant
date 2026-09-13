@@ -59,7 +59,25 @@ Hisoblash: `COUNT(DISTINCT user_id)` — `attempt.verdict = AC` bo'lgan, `create
 - Crypto/USDT sovrin (ADR kerak)
 - cp.uz security audit/fix (alohida scope)
 
+## Assumptions
+
+Matnda yozilgan, lekin taxmin sifatida belgilanmagan da'volar.
+
+1. **Haftalik faol ulush 5–10%.** `03-market-research` da *"OJ platformalarida haftalik faol ulush odatda 5–10% (taxmin)"* — bu North Star prognozining butun asosi. **Tekshirish:** o'z trafigimizdagi birinchi o'lchov.
+2. **Motivatsiya — reyting yetmaydi.** *"faqat reyting yetmaydi; coin/quest/streak (KEP/RoboContest isbotlagan) kerak"* — bu **gipoteza**: raqobatchilarda gamification borligi uning *sabab* ekanini isbotlamaydi.
+3. **Raqobatchi da'volari.** *"RoboContest API yopiq (Inertia)"*, *"KEP.uz ochiq REST, lekin kichikroq jamoa (~9k)"*, *"Aurora white-label cheklovlari"* — manba va sana ko'rsatilmagan.
+4. **North Star MVP birinchi kunidan o'lchanadi.** *"qo'shimcha infra talab qilmaydi"* — `Attempt.verdict` va `created_at` yetarli degan taxmin.
+
+## Open questions
+
+1. **Asosiy segment qaysi?** 5 segment teng sanalgan; "primary" deb hech biri tanlanmagan. Vision'dagi *"Birinchi to'lqin: O'zbekiston CP/olimpiada iqtidorlari"* ni shu yerga ko'chirish kerak.
+2. **Og'riqlarning kuchi (severity) qanday?** Har bir og'riq teng vazn bilan sanalgan — qaysi biri kuchliroq, qaysi biri to'lovga olib keladi, degan savol ochiq.
+3. **Voronka maqsadlari realmi?** Jadvalda *"Maqsad (misol)"* deb yozilgan — `< 7 kun`, `> 30%`, `> 60%`, `pilot 5+ maktab` qiymatlari misolmi yoki majburiyatmi?
+4. **`~9k` va `~197k` raqamlari qachon o'lchangan?** Manba `03` da ham yo'q.
+
 ## Qulflash
+
+**Tasdiq:** Saidakbar Narzullayev — Repo owner / maintainer, 2026-09-06.
 
 2026-09-06: target user, pain point, use case va **North Star** tasdiqlandi.
 Kontent strategiyasi — [ADR-0005](../07-adr/0005-content-strategy-own-content.md) (cp.uz bog'liqlik emas).

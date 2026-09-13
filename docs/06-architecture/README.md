@@ -79,13 +79,33 @@ Batafsil: [ADR-0004 § Xavfsizlik shartlari](../07-adr/0004-judge-engine.md).
 
 Batafsil: [ADR-0008](../07-adr/0008-auth-session-plus-pat.md).
 
+## Assumptions
+
+1. **SSE + qisqa polling standings uchun yetarli.** *"standings 10–30s da
+   yetarli; WS keyin"* — ya'ni real vaqt talabi past deb baholanadi.
+2. **Redis bitta instans yetarli.** U bir vaqtda session, Celery broker va
+   judge navbatini ko'taradi — uch vazifa uchun ajratish kerak emas degan taxmin.
+3. **Judge izolyatsiyasi sandbox bilan ta'minlanadi.** *"Til obrazlari va
+   sandbox versiyalari pin qilinadi"* — lekin qaysi sandbox hali tanlanmagan
+   (ADR-0004 bake-off).
+4. **Bitta mashina preview uchun yetarli.** Deploy topologiyasi *"alohida
+   hostlarga"* deyilgan, lekin hozirgi preview bitta mashinada.
+
+## Open questions
+
+1. **Judge nomzodi** ([ADR-0004](../07-adr/0004-judge-engine.md) bake-off) — `JudgeProvider` interfeysi ortida, arxitekturani o'zgartirmaydi.
+2. **`Deployment` bo'limi yo'q.** Faqat *"deploy esa alohida hostlarga"* deyilgan. Yo'q: muhitlar (dev/staging/prod), CI/CD oqimi, host spetsifikatsiyasi, migratsiya deploy bilan qanday bog'lanishi, rollback. Diqqat: bu bo'shliq **amalda allaqachon muammo bo'lgan** — `tools/check_deploy.sh` ning mavjudligi sababi shu.
+3. **`Data flow` yozma emas.** Diagrammada strelkalar bor, lekin zanjir matnda yo'q: `submit → navbat → judge → verdict → AttemptTestResult → Standing → reyting`. NFR maqsadi (`p50 < 5s`) qaysi qadamga tegishli ekani ko'rinmaydi.
+4. **`Reliability / scalability` yo'q.** `500 parallel submit` NFR bor, lekin unga qanday erishish: worker soni, navbat sig'imi, DB ulanish hovuzi, nosozlik holatlari (Redis yiqilsa nima bo'ladi).
+5. **`Key trade-offs` yozma emas.** Rad etilgan variantlar ADR-0003 ga havola qilingan, lekin *nima yo'qotilgani* shu hujjatda yo'q (masalan API va web'ni ajratish → operatsion murakkablik).
+
 ## Qulflash
+
+**Tasdiq:** Saidakbar Narzullayev — Repo owner / maintainer, 2026-09-06.
 
 2026-09-06: maqsad arxitektura, stack, servis chegaralari, **xavfsizlik chegarasi** va auth kanallari tasdiqlandi.
 Bog'liq qarorlar: [ADR-0003](../07-adr/0003-stack-django-next.md) · [ADR-0004](../07-adr/0004-judge-engine.md) · [ADR-0008](../07-adr/0008-auth-session-plus-pat.md).
 O'zgartirish = yangi ADR (`docs/07-adr/`).
-
-**Ochiq:** judge nomzodi ([ADR-0004](../07-adr/0004-judge-engine.md) bake-off) — `JudgeProvider` interfeysi ortida, arxitekturani o'zgartirmaydi.
 
 ## Keyingi qadam
 

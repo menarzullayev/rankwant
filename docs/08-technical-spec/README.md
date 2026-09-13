@@ -223,7 +223,22 @@ Judge host'da **DB credential bo'lmaydi** — u faqat Redis va S3 ni biladi.
 - [ ] Rate limit barcha auth endpointlarida
 - [ ] **Tashqi xavfsizlik auditi** ([ADR-0004](../07-adr/0004-judge-engine.md) sharti)
 
+## Assumptions
+
+1. **Bepul email kvotalari yetarli.** Zanjir jami ≈ 616 xat/kun (Brevo 300 +
+   Mailjet 200 + Resend 100 + MailerSend ≈16). Parol tiklash so'rovlari shu
+   hajmga sig'adi degan taxmin; **real yuklamada o'lchanmagan**.
+2. **Har provayder alohida subdomen oladi.** Sabab yozilgan: SPF `include:`
+   10 DNS lookup bilan cheklangan va to'rttasi bitta yozuvga sig'maydi.
+3. **`drf-spectacular` sxemasi shartnoma sifatida yetarli.** *"Har PR da schema
+   diff tekshiriladi"* — ya'ni OpenAPI haqiqat manbai, qo'lda yozilgan API
+   hujjati kerak emas.
+4. **Redis bitta instans uch vazifani ko'taradi** — session, Celery broker,
+   judge navbat (arxitekturadagi bir xil taxmin).
+
 ## Qulflash
+
+**Tasdiq:** Saidakbar Narzullayev — Repo owner / maintainer, 2026-09-06.
 
 2026-09-06: stack versiyalari, auth, API konvensiyalari, judge protokoli, Celery tasklari, env/secrets, observability va xavfsizlik checklist'i tasdiqlandi.
 Bog'liq qarorlar: [ADR-0003](../07-adr/0003-stack-django-next.md) · [ADR-0004](../07-adr/0004-judge-engine.md) · [ADR-0007](../07-adr/0007-skills-uses-current-difficulty.md) · [ADR-0008](../07-adr/0008-auth-session-plus-pat.md).

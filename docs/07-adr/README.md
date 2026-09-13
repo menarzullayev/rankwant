@@ -21,7 +21,7 @@ Har bir ADR:
 | [0001](0001-brand-rankwant-qvant.md)             | Platforma RankWant, coin Qvant      | **accepted**           |
 | [0002](0002-qvant-economy.md)                    | Qvant iqtisodiyoti — yopiq loop     | **accepted**           |
 | [0003](0003-stack-django-next.md)                | Stack — Django 5.2 LTS + DRF + Next | **accepted**           |
-| [0004](0004-judge-engine.md)                     | Judge engine — o'z engine, bake-off | proposed (bake-off)    |
+| [0004](0004-judge-engine.md)                     | Judge engine — o'z engine, bake-off | **accepted** (bake-off 2026-09-06: Go + nsjail, 14/14) |
 | [0005](0005-content-strategy-own-content.md)     | Kontent strategiyasi — o'z kontent  | **accepted**           |
 | [0006](0006-rating-model.md)                     | Reyting modeli — 4 reyting          | **accepted**           |
 | [0007](0007-skills-uses-current-difficulty.md)   | Skills — joriy qiyinlikdan          | **accepted**           |
@@ -42,3 +42,36 @@ Har bir ADR:
 
 - Locked bosqichni buzish = yangi ADR
 - Rad etilgan variantlar ham saqlanadi (qayta muhokama oldini olish)
+
+## Assumptions
+
+1. **Jadvaldagi holatlar joriy.** Bu taxmin **2026-09-13 da buzilgani aniqlandi**:
+   `0004` `proposed (bake-off)` deb turardi, holbuki
+   [`09-development-plan`](../09-development-plan/README.md) bake-off gate'i
+   2026-09-06 da yopilganini yozadi (g'olib Go + nsjail, 14/14). Holat
+   tuzatildi — lekin sabab qayd etiladi: **holat qo'lda yangilanadi, ya'ni
+   eskirishi mumkin.**
+2. **5 bo'limli format yetarli.** Muammo · Variantlar · Tanlov · Sabab ·
+   Oqibatlar — shu format barcha 19 ADR uchun qo'llaniladi.
+3. **`rejected` ADR ham qiymatli.** ADR-0014 saqlanadi, chunki qayta muhokama
+   oldini oladi.
+
+## Open questions
+
+1. **`Qaytarilishi` (reversibility) bo'limi — 19 tadan 0 tasida.** Qaysi qaror
+   qaytarilishi mumkin, qaysi biri qaytarilmasligi hech qayerda yozilmagan.
+   Holbuki qaytarilmas qaror boshqacha ehtiyot talab qiladi.
+2. **`Tasdiq` (approval) bo'limi — 19 tadan 0 tasida.** Yuqori ta'sirli yoki
+   qaytarilmas qarorlar uchun inson tasdig'i talab qilinadi, lekin hech bir ADR
+   kim tasdiqlaganini yozmaydi.
+3. **`Evidence` alohida bo'lim emas.** ADR-0004 da bake-off natijalari bor
+   (o'lchovlar, sig'im hisoblari) — ya'ni dalil **mavjud**, lekin standart
+   bo'lim sifatida ajratilmagan.
+
+## Tasdiq
+
+**Bosqich:** living — qulflanmaydi, qarorlar to'planib boradi.
+
+Yuqori ta'sirli va qaytarilmas qarorlar uchun inson tasdig'i alohida
+yozilishi kerak (yuqoridagi 2-band). Hozircha hech bir ADR da bunday yozuv
+yo'q — eng ustuvor nomzod `0004` (qaytarilmas, xavfsizlik uchun kritik).
