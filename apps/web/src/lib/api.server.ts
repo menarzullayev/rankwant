@@ -37,3 +37,23 @@ export async function getWithSession<T>(path: string): Promise<T> {
   }
   return (await res.json()) as T;
 }
+
+/** Django standart sessiya cookie'si (`SESSION_COOKIE_NAME` o'zgartirilmagan). */
+const SESSION_COOKIE = "sessionid";
+
+/**
+ * SSR da joriy foydalanuvchini o'qiydi; anonim bo'lsa `null`.
+ *
+ * Cookie yo'q bo'lsa so'rov UMUMAN yuborilmaydi. Sabab: `/me/`
+ * `IsAuthenticated` talab qiladi, ya'ni anonim tashrifchiga 401 qaytaradi.
+ * Bu javob to'g'ri, lekin brauzer uni konsolga xato qilib yozadi va
+ * Lighthouse `errors-in-console` auditini yiqitadi (o'lchandi: Best
+ * Practices 96). Cookie bor bo'lsa foydalanuvchi SSR dayoq ma'lum bo'ladi
+ * va mijoz mount'da ortiqcha so'rov yubormaydi — ya'ni bu shunchaki
+ * ogohlantirishni yashirish emas, bitta aylanma yo'lni ham yo'q qiladi.
+ */
+export async function getSessionUser<T>(): Promise<T | null> {
+  const jar = await cookies();
+  if (!jar.has(SESSION_COOKIE)) return null;
+  return getWithSession<T>("/me/").catch(() => null);
+}

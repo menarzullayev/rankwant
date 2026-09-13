@@ -5,6 +5,8 @@ import AppShell from "@/layout/AppShell";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
 import { getLocale } from "@/i18n/server";
 import { DEFAULT_LOCALE } from "@/i18n/messages";
+import type { Me } from "@/lib/api";
+import { getSessionUser } from "@/lib/api.server";
 import { SITE_URL } from "@/lib/site";
 
 const TITLE = "RankWant — reyting xohlaganlar uchun";
@@ -142,7 +144,10 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const locale = await getLocale();
+  // Til ham, sessiya ham cookie'ga bog'liq — ketma-ket kutish o'rniga
+  // birga o'qiladi. `getSessionUser` cookie bo'lmasa so'rov yubormaydi,
+  // ya'ni anonim tashrifchi ortiqcha `/me/` 401 ni ko'rmaydi.
+  const [locale, me] = await Promise.all([getLocale(), getSessionUser<Me>()]);
   return (
     <html
       lang={locale}
@@ -163,7 +168,7 @@ export default async function RootLayout({
       </head>
       <body>
         <LocaleProvider locale={locale}>
-          <AppShell>{children}</AppShell>
+          <AppShell initialUser={me}>{children}</AppShell>
         </LocaleProvider>
       </body>
     </html>

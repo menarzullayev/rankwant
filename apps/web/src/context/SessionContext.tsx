@@ -27,12 +27,23 @@ export function useSession() {
   return context;
 }
 
-/** Sessiya cookie'ga bog'liq, ya'ni serverda o'qib bo'lmaydi: sahifalar
- * `force-dynamic` bo'lsa ham cookie SSR fetch'iga uzatilmaydi. Holat
- * bu yerda saqlanadi, shunda kirgandan keyin header darhol yangilanadi. */
-export function SessionProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<Me | null>(null);
-  const [ready, setReady] = useState(false);
+/** Sessiya cookie'ga bog'liq. SSR uni `api.server.ts` dagi `getWithSession`
+ * orqali ko'radi — `RootLayout` shu yo'l bilan o'qib, natijani `initialUser`
+ * sifatida beradi. Holat shu yerda saqlanadi, shunda kirgandan keyin header
+ * darhol yangilanadi. */
+export function SessionProvider({
+  initialUser,
+  children,
+}: {
+  /** SSR aniqlagan sessiya. `undefined` — aniqlanmagan, mijoz o'zi so'raydi;
+   * `null` — SSR tekshirdi va foydalanuvchi yo'q, so'rov kerak emas. */
+  initialUser?: Me | null;
+  children: React.ReactNode;
+}) {
+  const [user, setUser] = useState<Me | null>(initialUser ?? null);
+  // SSR javob bergan bo'lsa `ready` darhol `true`: aks holda header bir kadr
+  // «chaqnamaydi» va sahifa sakragandek ko'rinadi.
+  const [ready, setReady] = useState(initialUser !== undefined);
 
   const reload = useCallback(async () => {
     const me = await fetchMe().catch(() => null);
@@ -41,13 +52,17 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    // Sessiya faqat brauzerda o'qiladi (cookie SSR fetch'iga uzatilmaydi),
-    // ya'ni mount'dan keyin so'rov yuborishdan boshqa yo'l yo'q. Qoida
-    // render tsiklini nazarda tutadi — bu yerda holat bir marta, javob
-    // kelganda o'rnatiladi.
+    // SSR sessiyani allaqachon aniqlagan bo'lsa, mount'da so'rov
+    // yuborilmaydi. Anonim tashrifchi uchun bu so'rov 401 bo'lardi: javob
+    // to'g'ri, lekin brauzer uni konsolga xato qilib yozadi va Lighthouse
+    // `errors-in-console` auditini yiqitadi.
+    if (initialUser !== undefined) return;
+    // Sessiya faqat brauzerda o'qiladi, ya'ni mount'dan keyin so'rov
+    // yuborishdan boshqa yo'l yo'q. Qoida render tsiklini nazarda tutadi —
+    // bu yerda holat bir marta, javob kelganda o'rnatiladi.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     void reload();
-  }, [reload]);
+  }, [reload, initialUser]);
 
   const clear = useCallback(() => setUser(null), []);
 

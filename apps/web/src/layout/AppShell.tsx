@@ -7,6 +7,7 @@ import { PrefsSync } from "@/context/PrefsSync";
 import { SessionProvider } from "@/context/SessionContext";
 import { StyleProvider } from "@/context/StyleContext";
 import { ThemeProvider } from "@/context/ThemeContext";
+import type { Me } from "@/lib/api";
 import AppFooter from "./AppFooter";
 import AppHeader from "./AppHeader";
 import { VerifyBanner } from "@/components/VerifyBanner";
@@ -74,11 +75,18 @@ function Shell({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function AppShell({ children }: { children: React.ReactNode }) {
+export default function AppShell({
+  initialUser,
+  children,
+}: {
+  /** `RootLayout` SSR da o'qigan sessiya. Berilmasa mijoz o'zi so'raydi. */
+  initialUser?: Me | null;
+  children: React.ReactNode;
+}) {
   return (
     <StyleProvider>
       <ThemeProvider>
-        <SessionProvider>
+        <SessionProvider initialUser={initialUser}>
           <PrefsSync />
           <SidebarProvider>
             <Shell>{children}</Shell>
