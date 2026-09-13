@@ -1,0 +1,31 @@
+# Line endings
+#
+# `core.autocrlf=true` (Windows default) checks files out with CRLF. That
+# is harmless for most text, but it breaks two things in this repo:
+#
+#   1. `.githooks/*` — git runs them through a shell. A CRLF shebang or a
+#      stray CR inside `case`/`[[ ]]` makes the hook fail, and a hook that
+#      fails silently is worse than no hook at all (pushes get rejected
+#      with a confusing "bad interpreter" message).
+#   2. `tools/*.sh` — same reason.
+#
+# `eol=lf` pins the worktree copy to LF regardless of the local
+# `core.autocrlf` setting, so every clone gets a runnable script.
+# `text` keeps git normalising on commit.
+
+.githooks/**  text eol=lf
+tools/*.sh    text eol=lf
+tools/*.mjs   text eol=lf
+
+# Go sources are formatted by gofmt, which requires LF.
+*.go          text eol=lf
+
+# Binary — never touch.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.webp binary
+*.ico  binary
+*.woff binary
+*.woff2 binary
+*.pdf  binary
