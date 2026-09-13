@@ -71,5 +71,7 @@ Idea
 ## Agentlar uchun
 
 - Birinchi o'qish: [../INDEX.md](../INDEX.md)
-- Raqobatchi to'liq tahlil: `Web_Projects/kep-uz-platform-analysis.md`, `robocontest-uz-platform-analysis.md`
+- Raqobatchi to'liq tahlil: `kep-uz-platform-analysis.md`, `robocontest-uz-platform-analysis.md`
+  — ⚠️ ikkalasi ham **repo'da yo'q, Linux bo'limida qolgan**
+  ([03-market-research](03-market-research/README.md) ga qarang)
 - Brend tekshiruv skriptlari: `/home/nsn/Telegram/handlechecker/scripts/checkers/`

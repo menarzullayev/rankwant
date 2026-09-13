@@ -252,5 +252,7 @@ O'zgartirish = yangi ADR (`docs/07-adr/`).
 
 ## Referens
 
-- KEP endpoint ro'yxati: `kep-uz-platform-analysis.md`
+- KEP endpoint ro'yxati: `kep-uz-platform-analysis.md` — ⚠️ **repo'da yo'q,
+  Linux bo'limida qolgan** ([03-market-research](../03-market-research/README.md)
+  ga qarang). Endpoint ro'yxati hozir tekshirib bo'lmaydi.
 - rankglass tech spec: `rankglass/docs/08-technical-spec/`

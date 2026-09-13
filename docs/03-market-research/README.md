@@ -13,11 +13,22 @@ Bozor, raqobatchilar va RankWant positioning.
 | [verdicts.md](verdicts.md)                     | Verdikt turlari — bizda, raqobatchilarda, takliflar |
 | [positioning.md](positioning.md)               | SWOT va differensial                        |
 
-## To'liq tahlillar (workspace root — **repo tarkibida emas**)
+## To'liq tahlillar — ⚠️ repo'da YO'Q, Linux bo'limida qolgan
+
+Bu ikki fayl **Linux o'rnatilmasida** (`/home/nsn/project/cp/` atrofida —
+`INDEX.md` dagi `/home/nsn/...` yo'llariga qarang), Windows nusxasida emas.
+
+Windows'da qidirildi va **topilmadi**: workspace (chuqurlik cheklovisiz),
+`C:\Users\nsn` (depth 7), `C:\` (depth 5), Desktop/Downloads/Documents/OneDrive,
+`project.zip`. Handoff eksporti ham ularni olmaydi — u faqat `pg.sql.gz` va
+`minio.tar.gz` ni tashiydi.
 
 - `kep-uz-platform-analysis.md` — 102 REST endpoint, kepcoin, Aurora
 - `robocontest-uz-platform-analysis.md` — ~197k user, Laravel+Inertia, robocoin
 - cp.uz — `cp-uz/` repo (learning, articles, seasons; OJ yo'q)
+
+⚠️ **Quyidagi bozor hajmi raqamlari shu ikki faylga tayanadi va hozir
+TEKSHIRIB BO'LMAYDI.** Fayllar Linux'dan ko'chirilgach qayta tekshiriladi.
 
 ## Bozor xulosa (2026-09-06)
 

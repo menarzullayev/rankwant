@@ -1,0 +1,108 @@
+[
+  {
+    "folder": "01-robocontest-register",
+    "url": "https://robocontest.uz/register",
+    "title": "RoboContest",
+    "lang": "uz",
+    "htmlKB": 53,
+    "nodes": 410,
+    "fields": 6,
+    "buttons": 14,
+    "transferKB": 0,
+    "resources": 91,
+    "externalHosts": [
+      "www.googletagmanager.com",
+      "fonts.googleapis.com",
+      "mc.yandex.ru",
+      "www.google-analytics.com",
+      "snt.multimock.uz"
+    ],
+    "shot": true,
+    "info": "RoboContest"
+  },
+  {
+    "folder": "02-robocontest-login",
+    "url": "https://robocontest.uz/login",
+    "title": "RoboContest",
+    "lang": "uz",
+    "htmlKB": 41,
+    "nodes": 343,
+    "fields": 3,
+    "buttons": 9,
+    "transferKB": 0,
+    "resources": 91,
+    "externalHosts": [
+      "www.googletagmanager.com",
+      "fonts.googleapis.com",
+      "mc.yandex.ru",
+      "www.google-analytics.com",
+      "snt.multimock.uz",
+      "telegram.org",
+      "oauth.telegram.org"
+    ],
+    "shot": true,
+    "info": "RoboContest"
+  },
+  {
+    "folder": "03-kep-login",
+    "url": "https://kep.uz/login?returnUrl=%2F",
+    "title": "Login - KEP.uz",
+    "lang": "en",
+    "htmlKB": 139,
+    "nodes": 393,
+    "fields": 2,
+    "buttons": 3,
+    "transferKB": 1,
+    "resources": 42,
+    "externalHosts": [
+      "www.googletagmanager.com",
+      "fonts.googleapis.com",
+      "static.cloudflareinsights.com",
+      "cdn.jsdelivr.net",
+      "www.google-analytics.com",
+      "api.iconify.design"
+    ],
+    "shot": true,
+    "info": "Login - KEP.uz"
+  },
+  {
+    "folder": "04-rankwant-login",
+    "url": "https://rankwant.uz/login",
+    "title": "Kirish · RankWant",
+    "lang": "uz",
+    "htmlKB": 24,
+    "nodes": 156,
+    "fields": 5,
+    "buttons": 4,
+    "transferKB": 1,
+    "resources": 17,
+    "externalHosts": [
+      "fonts.googleapis.com",
+      "static.cloudflareinsights.com",
+      "telegram.org",
+      "oauth.telegram.org"
+    ],
+    "shot": true,
+    "info": "Kirish · RankWant"
+  },
+  {
+    "folder": "05-rankwant-register",
+    "url": "https://rankwant.uz/register",
+    "title": "Ro'yxatdan o'tish · RankWant",
+    "lang": "uz",
+    "htmlKB": 37,
+    "nodes": 269,
+    "fields": 10,
+    "buttons": 4,
+    "transferKB": 1,
+    "resources": 18,
+    "externalHosts": [
+      "fonts.googleapis.com",
+      "static.cloudflareinsights.com",
+      "telegram.org",
+      "oauth.telegram.org"
+    ],
+    "shot": false,
+    "info": "Ro'yxatdan o'tish · RankWant"
+  }
+]

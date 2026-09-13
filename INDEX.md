@@ -13,10 +13,15 @@
 
 ## Tashqi manbalar (o'zgartirmaslik)
 
+⚠️ Quyidagi uchta yo'l **Linux o'rnatilmasiga** tegishli
+(`/home/nsn/...`). Windows nusxasida ular **yo'q** — 2026-09-13 da
+qidirildi. Windows'da ishlayotganingizda bu fayllar mavjud emas deb
+hisoblang.
+
 | Fayl                    | Yo'l                                                                    |
 | ----------------------- | ----------------------------------------------------------------------- |
-| KEP tahlili             | `../kep-uz-platform-analysis.md`                                        |
-| RoboContest tahlili     | `../robocontest-uz-platform-analysis.md`                                |
+| KEP tahlili             | `../kep-uz-platform-analysis.md` — ⚠️ Linux'da, Windows'da yo'q          |
+| RoboContest tahlili     | `../robocontest-uz-platform-analysis.md` — ⚠️ Linux'da, Windows'da yo'q   |
 | cp.uz klon (benchmark)  | `../cp-uz/`                                                             |
 | Brend availability JSON | `/home/nsn/Telegram/handlechecker/results/rank_brand_availability.json` |
 

@@ -1,0 +1,236 @@
+{
+  "url": "https://rankwant.uz/register",
+  "title": "Ro'yxatdan o'tish · RankWant",
+  "lang": "uz",
+  "meta": {
+    "viewport": "width=device-width, initial-scale=1",
+    "description": "Sport dasturlash va informatika olimpiadasi platformasi: masala arxivi, musobaqa va ochiq reyting.",
+    "og:title": "RankWant — reyting xohlaganlar uchun",
+    "og:description": "Sport dasturlash va informatika olimpiadasi platformasi: masala arxivi, musobaqa va ochiq reyting.",
+    "og:site_name": "RankWant",
+    "og:type": "website",
+    "twitter:card": "summary",
+    "twitter:title": "RankWant — reyting xohlaganlar uchun",
+    "twitter:description": "Sport dasturlash va informatika olimpiadasi platformasi: masala arxivi, musobaqa va ochiq reyting."
+  },
+  "fields": [
+    {
+      "tag": "input",
+      "type": "text",
+      "name": "",
+      "id": "",
+      "placeholder": "Qidirish…",
+      "autocomplete": "",
+      "required": false,
+      "label": "Qidirish…"
+    },
+    {
+      "tag": "select",
+      "type": "select-one",
+      "name": "",
+      "id": "",
+      "placeholder": "",
+      "autocomplete": "",
+      "required": false,
+      "label": "Til / LanguageO'zbekchaQaraqalpaqshaРусскийEnglishҚазақшаКыргызчаТоҷикӣTürkçe中文Español",
+      "options": [
+        "O'zbekcha",
+        "Qaraqalpaqsha",
+        "Русский",
+        "English",
+        "Қазақша",
+        "Кыргызча",
+        "Тоҷикӣ",
+        "Türkçe",
+        "中文",
+        "Español"
+      ]
+    },
+    {
+      "tag": "input",
+      "type": "text",
+      "name": "username",
+      "id": "",
+      "placeholder": "",
+      "autocomplete": "username",
+      "required": true,
+      "label": "Foydalanuvchi nomi3–30 belgi: lotin harflari, raqam, nuqta, pastki chiziq, chiziqcha"
+    },
+    {
+      "tag": "input",
+      "type": "email",
+      "name": "email",
+      "id": "",
+      "placeholder": "",
+      "autocomplete": "email",
+      "required": true,
+      "label": "Email"
+    },
+    {
+      "tag": "input",
+      "type": "text",
+      "name": "display_name",
+      "id": "",
+      "placeholder": "",
+      "autocomplete": "name",
+      "required": false,
+      "label": "IsmIxtiyoriy. Reytingda taxallus bilan birga ko'rinadi."
+    },
+    {
+      "tag": "input",
+      "type": "text",
+      "name": "",
+      "id": "headlessui-combobox-input-_r_3_",
+      "placeholder": "Mamlakat qidirish",
+      "autocomplete": "off",
+      "required": false,
+      "label": "Mamlakat"
+    },
+    {
+      "tag": "input",
+      "type": "password",
+      "name": "password",
+      "id": "",
+      "placeholder": "",
+      "autocomplete": "new-password",
+      "required": true,
+      "label": "ParolKamida 8 belgi. Faqat raqamdan iborat bo'lmasin."
+    },
+    {
+      "tag": "input",
+      "type": "password",
+      "name": "password2",
+      "id": "",
+      "placeholder": "",
+      "autocomplete": "new-password",
+      "required": true,
+      "label": "Parolni tasdiqlang"
+    },
+    {
+      "tag": "input",
+      "type": "checkbox",
+      "name": "terms_accepted",
+      "id": "",
+      "placeholder": "",
+      "autocomplete": "",
+      "required": true,
+      "label": "Shartlar va maxfiylik siyosatiga roziman"
+    },
+    {
+      "tag": "input",
+      "type": "checkbox",
+      "name": "marketing_opt_in",
+      "id": "",
+      "placeholder": "",
+      "autocomplete": "",
+      "required": false,
+      "label": "Yangiliklar va foydali xatlarni olishni xohlayman (ixtiyoriy)"
+    }
+  ],
+  "buttons": [
+    {
+      "text": "",
+      "type": "button",
+      "aria": "Menyu"
+    },
+    {
+      "text": "",
+      "type": "button",
+      "aria": "Uslubni tanlash"
+    },
+    {
+      "text": "",
+      "type": "button",
+      "aria": "Parolni ko'rsatish"
+    },
+    {
+      "text": "Ro'yxatdan o'tish",
+      "type": "submit",
+      "aria": ""
+    }
+  ],
+  "links": [
+    {
+      "text": "Asosiy mazmunga o'tish",
+      "href": "#main"
+    },
+    {
+      "text": "Kirish",
+      "href": "/login"
+    },
+    {
+      "text": "Shartlar",
+      "href": "/shartlar"
+    },
+    {
+      "text": "Maxfiylik",
+      "href": "/maxfiylik"
+    },
+    {
+      "text": "Google",
+      "href": "/api/v1/auth/google/start/"
+    },
+    {
+      "text": "GitHub",
+      "href": "/api/v1/auth/github/start/"
+    },
+    {
+      "text": "Kirish",
+      "href": "/login"
+    },
+    {
+      "text": "Shartlar",
+      "href": "/shartlar"
+    },
+    {
+      "text": "Maxfiylik",
+      "href": "/maxfiylik"
+    }
+  ],
+  "counts": {
+    "nodes": 269,
+    "forms": 2,
+    "fields": 10,
+    "buttons": 4,
+    "links": 9,
+    "scripts": 20,
+    "stylesheets": 2,
+    "images": 0,
+    "svg": 14
+  },
+  "perf": {
+    "domContentLoaded": 211,
+    "load": 274,
+    "transferKB": 1,
+    "resources": 18,
+    "byType": {
+      "link": {
+        "count": 3,
+        "bytes": 0
+      },
+      "script": {
+        "count": 12,
+        "bytes": 0
+      },
+      "fetch": {
+        "count": 1,
+        "bytes": 409
+      },
+      "xmlhttprequest": {
+        "count": 1,
+        "bytes": 300
+      },
+      "iframe": {
+        "count": 1,
+        "bytes": 0
+      }
+    }
+  },
+  "externalHosts": {
+    "fonts.googleapis.com": 1,
+    "static.cloudflareinsights.com": 1,
+    "telegram.org": 1,
+    "oauth.telegram.org": 1
+  },
+  "bodyText": "Asosiy mazmunga o'tish RankWant Qidirish… Til / Language O'zbekcha Qaraqalpaqsha Русский English Қазақша Кыргызча Тоҷикӣ Türkçe 中文 Español Kirish RankWant Reyting xohlaganlar uchun 1226 Masalalar 3 Musobaqalar 10008 Reyting Ro'yxatdan o'tish Foydalanuvchi nomi 3–30 belgi: lotin harflari, raqam, nuqta, pastki chiziq, chiziqcha Email Ism Ixtiyoriy. Reytingda taxallus bilan birga ko'rinadi. Mamlakat Parol Kamida 8 belgi. Faqat raqamdan iborat bo'lmasin. Parolni tasdiqlang Shartlar va maxfiylik siyosatiga roziman Yangiliklar va foydali xatlarni olishni xohlayman (ixtiyoriy) Ro'yxatdan o'tish Ro'yxatdan o'tish orqali siz Shartlar va Maxfiylik siyosatiga rozilik bildirasiz. yoki Google GitHub Hisobingiz bormi? Kirish RankWant Shartlar Maxfiylik"
+}

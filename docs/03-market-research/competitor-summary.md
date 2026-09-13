@@ -1,6 +1,9 @@
 # Raqobatchilar — qisqa xulosa
 
 > To'liq: `kep-uz-platform-analysis.md`, `robocontest-uz-platform-analysis.md`
+> — ⚠️ ikkalasi ham **repo'da yo'q, Linux bo'limida qolgan**
+> ([README.md](README.md) ga qarang). Quyidagi raqamlar hozir tekshirib
+> bo'lmaydi.
 
 ## Jadval
 

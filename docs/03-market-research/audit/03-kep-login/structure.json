@@ -1,0 +1,106 @@
+{
+  "url": "https://kep.uz/login?returnUrl=%2F",
+  "title": "Login - KEP.uz",
+  "lang": "en",
+  "meta": {
+    "viewport": "width=device-width, initial-scale=1.0",
+    "description": "KEP.uz platform"
+  },
+  "fields": [
+    {
+      "tag": "input",
+      "type": "text",
+      "name": "username",
+      "id": "username",
+      "placeholder": "",
+      "autocomplete": "username",
+      "required": false,
+      "label": "Username"
+    },
+    {
+      "tag": "input",
+      "type": "password",
+      "name": "password",
+      "id": "password",
+      "placeholder": "",
+      "autocomplete": "current-password",
+      "required": false,
+      "label": "Password"
+    }
+  ],
+  "buttons": [
+    {
+      "text": "",
+      "type": "button",
+      "aria": ""
+    },
+    {
+      "text": "Login",
+      "type": "submit",
+      "aria": ""
+    },
+    {
+      "text": "Customize",
+      "type": "button",
+      "aria": "Customize"
+    }
+  ],
+  "links": [
+    {
+      "text": "KEP.uz",
+      "href": "/"
+    },
+    {
+      "text": "Signup with Google",
+      "href": "/login/google-oauth2/?next=%2F"
+    },
+    {
+      "text": "Signup with Github",
+      "href": "/login/github/?next=%2F"
+    }
+  ],
+  "counts": {
+    "nodes": 393,
+    "forms": 1,
+    "fields": 2,
+    "buttons": 3,
+    "links": 3,
+    "scripts": 7,
+    "stylesheets": 2,
+    "images": 0,
+    "svg": 7
+  },
+  "perf": {
+    "domContentLoaded": 134,
+    "load": 318,
+    "transferKB": 1,
+    "resources": 42,
+    "byType": {
+      "script": {
+        "count": 8,
+        "bytes": 0
+      },
+      "link": {
+        "count": 2,
+        "bytes": 0
+      },
+      "fetch": {
+        "count": 30,
+        "bytes": 0
+      },
+      "xmlhttprequest": {
+        "count": 2,
+        "bytes": 678
+      }
+    }
+  },
+  "externalHosts": {
+    "www.googletagmanager.com": 1,
+    "fonts.googleapis.com": 1,
+    "static.cloudflareinsights.com": 1,
+    "cdn.jsdelivr.net": 1,
+    "www.google-analytics.com": 2,
+    "api.iconify.design": 28
+  },
+  "bodyText": "KEP.uz Welcome to KEP Please sign-in to your account and start the adventure Signup with Google Signup with Github OR Username Password Login CUSTOMIZE"
+}
