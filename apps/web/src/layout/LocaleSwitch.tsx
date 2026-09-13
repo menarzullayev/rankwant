@@ -243,7 +243,14 @@ export function LocaleSwitch() {
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={open ? listId : undefined}
-        aria-label={t(locale, "locale.switchLabel")}
+        // ⚠️ `aria-label` KO'RINADIGAN matnni O'Z ICHIGA OLISHI shart
+        // (WCAG 2.5.3, «Label in Name»). Ilgari bu yerda faqat
+        // `switchLabel` turardi ("Выберите язык"), ko'rinadigan matn esa
+        // joriy til nomi ("Русский") — ya'ni ovoz bilan boshqaradigan
+        // foydalanuvchi tugmani ekranda ko'rgan so'zi bilan
+        // chaqira olmasdi. Lighthouse tutdi:
+        // `label-content-name-mismatch` — accessibility 100 dan tushdi.
+        aria-label={`${currentLabel} — ${t(locale, "locale.switchLabel")}`}
         onClick={() => (open ? setOpen(false) : openList())}
         onKeyDown={onButtonKeyDown}
         className="flex h-10 items-center gap-1.5 rw-radius-sm border rw-line rw-field-bg px-2.5
