@@ -12,6 +12,7 @@ import AppFooter from "./AppFooter";
 import AppHeader from "./AppHeader";
 import { VerifyBanner } from "@/components/VerifyBanner";
 import { GeoNudge } from "@/components/GeoNudge";
+import { ContestInvite } from "@/components/ContestInvite";
 import { WelcomeNotice } from "@/components/WelcomeNotice";
 import AppSidebar from "./AppSidebar";
 import { SkipLink } from "./SkipLink";
@@ -20,8 +21,19 @@ import { SkipLink } from "./SkipLink";
  *  ham bu yerda ko'rinmaydi. O'lchandi — panel bilan birinchi maydonga
  *  yetish uchun 33 marta Tab bosish kerak edi va sahifada 44 ta
  *  fokuslanadigan element bor edi. Sarlavha qoladi: til tanlash va
- *  logotip kerak. */
+ *  logotip kerak.
+ *
+ *  Kirish/ro'yxat/tiklash — bitta manzil (`/kirish?tab=`), shuning uchun
+ *  ro'yxatda ham bitta yozuv. Eski uchta manzil (`/login`, `/register`,
+ *  `/parolni-tiklash`) bu yerga 307 bilan yo'naltiradi.
+ *
+ *  Eski manzillar baribir shu ro'yxatda TURADI: `redirect()` klientga
+ *  javob qaytarishdan oldin `usePathname()` hali ESKI qiymatni
+ *  ko'rsatadi, ya'ni ro'yxatda bo'lmasa ikki bo'limli karta bir lahza
+ *  yon panel va banner bilan chizilardi. Bu allaqachon `/login` uchun
+ *  amalda bo'lgan — endi izoh shuni aynan aytadi. */
 const BARE = [
+  "/kirish",
   "/login",
   "/register",
   "/parolni-tiklash",
@@ -61,6 +73,7 @@ function Shell({ children }: { children: React.ReactNode }) {
       >
         <AppHeader />
         {!bare && <WelcomeNotice />}
+        {!bare && <ContestInvite />}
         {!bare && <VerifyBanner />}
         {/* Kontekstli nudge (qaror 16): mavjud hisoblarda mamlakat bo'sh —
             banner shu bo'shliqni yumshoq yo'l bilan yopadi. Faqat kirgan

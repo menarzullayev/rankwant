@@ -1,5 +1,6 @@
 "use client";
 
+import type { Route } from "next";
 import { useState } from "react";
 
 import { Markdown } from "@/components/Markdown";
@@ -55,7 +56,7 @@ export function Editorial({
       <Card title="Yechim tahlili">
         <p className="text-theme-sm rw-faint">
           Tahlil hisobga kirgan foydalanuvchilar uchun.{" "}
-          <Link href="/login" className="underline rw-accent-ink">
+          <Link href={"/kirish?tab=kirish" as Route} className="underline rw-accent-ink">
             Kirish
           </Link>
         </p>

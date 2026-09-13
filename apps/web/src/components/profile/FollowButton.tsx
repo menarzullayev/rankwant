@@ -1,5 +1,6 @@
 "use client";
 
+import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -29,7 +30,7 @@ export function FollowButton({
   if (!ready) return <div className="h-11 w-28" />;
   if (!user) {
     return (
-      <ButtonLink href="/login" variant="outline">
+      <ButtonLink href={"/kirish?tab=kirish" as Route} variant="outline">
         {t(locale, "profile.follow")}
       </ButtonLink>
     );

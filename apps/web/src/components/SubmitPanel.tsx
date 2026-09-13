@@ -1,5 +1,6 @@
 "use client";
 
+import type { Route } from "next";
 import { playSuccess } from "@/lib/prefs";
 import Link from "next/link";
 import { useLocale } from "@/i18n/LocaleProvider";
@@ -455,7 +456,7 @@ export default function SubmitPanel({
             </Button>
           ) : (
             <Link
-              href="/login"
+              href={"/kirish?tab=kirish" as Route}
               className="inline-flex h-11 items-center rw-btn-radius rw-accent-bg px-4 text-theme-sm font-medium rw-btn-label"
             >
               Yuborish uchun kiring

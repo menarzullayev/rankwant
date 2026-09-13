@@ -1,5 +1,6 @@
 "use client";
 
+import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -36,7 +37,7 @@ export function FavouriteToggle({
         caught instanceof ApiError &&
         (caught.status === 401 || caught.status === 403)
       ) {
-        router.push("/login");
+        router.push("/kirish?tab=kirish" as Route);
       }
     } finally {
       setBusy(false);

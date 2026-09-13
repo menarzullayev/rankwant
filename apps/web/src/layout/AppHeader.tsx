@@ -25,7 +25,12 @@ export default function AppHeader() {
   // tanlash ham kirmagan odamga kerak emas — qidiradigan narsasi ham,
   // saqlaydigan sozlamasi ham yo'q. Til va mavzu qoladi, chunki ular
   // sahifani o'qish uchun kerak bo'lishi mumkin.
-  const auth = pathname === "/login" || pathname === "/register";
+  //
+  // Uch bo'lim (kirish/ro'yxat/tiklash) bitta manzilda (1-qaror), ya'ni
+  // tekshiruv ham bitta: `usePathname()` `?tab=` ni ko'rsatmaydi va
+  // ko'rsatishi ham shart emas — qidiruv baribir barcha bo'limlarda
+  // keraksiz.
+  const auth = pathname === "/kirish";
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b rw-divider rw-chrome px-4 md:px-6">

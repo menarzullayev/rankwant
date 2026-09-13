@@ -1,5 +1,6 @@
 "use client";
 
+import type { Route } from "next";
 import Link from "next/link";
 
 import { useSession } from "@/context/SessionContext";
@@ -24,7 +25,7 @@ export default function UserMenu() {
   if (!user) {
     return (
       <Link
-        href="/login"
+        href={"/kirish?tab=kirish" as Route}
         className="flex h-10 items-center gap-2 rw-radius-sm rw-accent-bg px-4 text-theme-sm font-medium text-white transition"
       >
         <UserIcon className="size-4" />

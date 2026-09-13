@@ -1,5 +1,6 @@
 "use client";
 
+import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -256,7 +257,7 @@ function SessionsCard({ version }: { version: number }) {
       await deleteJson(`/me/sessions/${row.id}/`);
       if (row.current) {
         clear();
-        router.push("/login");
+        router.push("/kirish?tab=kirish" as Route);
         return;
       }
       sessions.reload();
