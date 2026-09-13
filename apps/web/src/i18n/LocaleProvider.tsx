@@ -5,6 +5,11 @@ import { createContext, useContext } from "react";
 import { DEFAULT_LOCALE, registerMessages, type Locale, type MessageKey } from "./messages";
 
 const LocaleContext = createContext<Locale>(DEFAULT_LOCALE);
+/** Til avtomatik aniqlanganmi — «Avtomatik» variantining belgisi shu.
+ *
+ *  `locale` doim ANIQ til bo'ladi (`Accept-Language` dan yechilgan),
+ *  ya'ni qaysi holatdaligini faqat shu bayroq bildiradi. */
+const AutoContext = createContext<boolean>(true);
 
 /** Mijoz komponentlari `cookies()` ni o'qiy olmaydi — til yuqoridan beriladi.
  *
@@ -20,18 +25,27 @@ const LocaleContext = createContext<Locale>(DEFAULT_LOCALE);
 export function LocaleProvider({
   locale,
   dict,
+  auto = true,
   children,
 }: {
   locale: Locale;
   dict: Record<MessageKey, string>;
+  /** Til `Accept-Language` dan aniqlanganmi (ya'ni odam tanlamaganmi). */
+  auto?: boolean;
   children: React.ReactNode;
 }) {
   registerMessages(locale, dict);
   return (
-    <LocaleContext.Provider value={locale}>{children}</LocaleContext.Provider>
+    <AutoContext.Provider value={auto}>
+      <LocaleContext.Provider value={locale}>{children}</LocaleContext.Provider>
+    </AutoContext.Provider>
   );
 }
 
 export function useLocale(): Locale {
   return useContext(LocaleContext);
+}
+
+export function useLocaleAuto(): boolean {
+  return useContext(AutoContext);
 }

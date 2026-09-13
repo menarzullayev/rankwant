@@ -805,4 +805,12 @@ export const tg: Record<MessageKey, string> = {
   "geo.nudgeCta": "Пур кардан",
   "geo.searchPlaceholder": "Ҷустуҷӯи кишвар",
   "geo.noResults": "Ёфт нашуд",
+  "locale.switchLabel": "Забонро интихоб кунед",
+  "locale.auto": "Худкор",
+  "locale.autoDetected": "Худкор ({language})",
+  "locale.group.core": "Асосӣ",
+  "locale.group.region": "Минтақавӣ",
+  "locale.group.broad": "Фароҳи васеъ",
+  "locale.loading": "Боргирӣ",
+  "locale.listLabel": "Рӯйхати забонҳо",
 };

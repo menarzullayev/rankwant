@@ -804,4 +804,12 @@ export const kaa: Record<MessageKey, string> = {
   "geo.nudgeCta": "Toltırıw",
   "geo.searchPlaceholder": "Mámleket izlew",
   "geo.noResults": "Tabılmadı",
+  "locale.switchLabel": "Tildi saylań",
+  "locale.auto": "Avtomatikalıq",
+  "locale.autoDetected": "Avtomatikalıq ({language})",
+  "locale.group.core": "Tiykarǵı",
+  "locale.group.region": "Aymaq",
+  "locale.group.broad": "Keń qamtıw",
+  "locale.loading": "Júklenbekte",
+  "locale.listLabel": "Tiller dizimi",
 };

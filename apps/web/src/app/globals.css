@@ -96,6 +96,21 @@
    Uslub tanlovi: src/context/StyleContext.tsx · picker header'da.
    ═══════════════════════════════════════════════════════════════════ */
 
+:root {
+  /* Native boshqaruvlar (ro'yxat, scrollbar, sana tanlagich) shu
+     qiymatga ergashadi. Uslub bloklarida EMAS — bu bir marta, ildizda
+     e'lon qilinadi va `.dark` uni almashtiradi.
+
+     ⚠️ `light` shart: aks holda OS qorong'i rejimda bo'lgan iOS/Windows
+     foydalanuvchisi YORUG' mavzuda ham qorong'i ro'yxat ko'radi
+     (`color-scheme: normal` — ilgari shunday edi, o'lchandi). */
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
 :root,
 [data-style="dashboard"] {
   --rw-ground: #f9fafb;

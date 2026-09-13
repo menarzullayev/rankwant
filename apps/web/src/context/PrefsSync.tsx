@@ -104,7 +104,26 @@ export function PrefsSync() {
       rememberAppearance({}, accountA11y);
     }
 
-    const cookie = document.cookie.match(/(?:^|;\s*)rw_locale=([^;]+)/)?.[1];    if (isLocale(cookie)) {
+    // ── Til: QURILMA ustun, hisob — urug' ───────────────────────────
+    //
+    // ⚠️ Bu D4 dan ATAYLAB chetlanish (u yerda mavzu uchun hisob ustun).
+    // Sabab: til — qurilmaning xususiyati. Bitta odam telefonda
+    // o'zbekcha, ish kompyuterida inglizcha o'qishi mumkin; hisob
+    // ularning ikkalasini ham bosib ketmasligi kerak. Shuning uchun:
+    //
+    //   cookie bor    → u ustun (odam shu qurilmada tanlagan).
+    //   cookie yo'q   → hisobdagi til URUG' bo'lib qurilmaga yoziladi.
+    //
+    // «Avtomatik» tanlansa cookie o'chiriladi va bu tarmoq ishga
+    // tushmasligi SHART — aks holda tanlov darhol bekor bo'lardi.
+    // Buni `rw_locale=auto` markeri ajratib turadi: u «tanlov yo'q
+    // emas, ataylab avtomatik» ma'nosini bildiradi va `server.ts` uni
+    // sarlavhadan aniqlashga o'tkazadi.
+    const cookie = document.cookie.match(/(?:^|;\s*)rw_locale=([^;]+)/)?.[1];
+    const explicitAuto = cookie === "auto";
+    if (explicitAuto) {
+      // Odam avtomatikni tanlagan — hisob urug'i qo'llanmaydi.
+    } else if (isLocale(cookie)) {
       if (cookie !== user.locale) patch.locale = cookie;
     } else if (isLocale(user.locale) && user.locale !== DEFAULT_LOCALE) {
       document.cookie = `rw_locale=${user.locale}; path=/; max-age=31536000; samesite=lax`;
@@ -121,7 +140,13 @@ export function PrefsSync() {
       const change = (event as CustomEvent<PrefsChange>).detail;
       const body: Record<string, unknown> = {};
       if (change.theme) body.theme = change.theme;
-      if (change.locale) body.locale = change.locale;
+      // `locale` da `null` — «Avtomatik» tanlandi. Hisobga YOZILMAYDI:
+      // `User.locale` da `blank=False` va `choices` bor, ya'ni bo'sh satr
+      // 400 beradi (o'lchandi). «Avtomatik» faqat cookie'ni o'chiradi —
+      // hisobdagi til urug' bo'lib qoladi va qurilma tanlovi bo'lmaganda
+      // ishlatiladi. Bu D4 dan ataylab chetlanish: qurilma ustun
+      // (`docs/i18n-precedence.md`).
+      if (typeof change.locale === "string") body.locale = change.locale;
       if (change.style || change.appearance || change.a11y || change.templates) {
         const current = user.ui_prefs ?? {};
         const appearance = (current.appearance ?? {}) as Record<string, unknown>;

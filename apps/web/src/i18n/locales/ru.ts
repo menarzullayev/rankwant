@@ -804,4 +804,12 @@ export const ru: Record<MessageKey, string> = {
   "geo.nudgeCta": "Заполнить",
   "geo.searchPlaceholder": "Поиск страны",
   "geo.noResults": "Ничего не найдено",
+  "locale.switchLabel": "Выберите язык",
+  "locale.auto": "Автоматически",
+  "locale.autoDetected": "Автоматически ({language})",
+  "locale.group.core": "Основные",
+  "locale.group.region": "Региональные",
+  "locale.group.broad": "Широкий охват",
+  "locale.loading": "Загрузка",
+  "locale.listLabel": "Список языков",
 };

@@ -804,4 +804,12 @@ export const ky: Record<MessageKey, string> = {
   "geo.nudgeCta": "Толтуруу",
   "geo.searchPlaceholder": "Өлкө издөө",
   "geo.noResults": "Табылган жок",
+  "locale.switchLabel": "Тилди тандаңыз",
+  "locale.auto": "Автоматтык",
+  "locale.autoDetected": "Автоматтык ({language})",
+  "locale.group.core": "Негизги",
+  "locale.group.region": "Регионалдык",
+  "locale.group.broad": "Кеңири камтуу",
+  "locale.loading": "Жүктөлүүдө",
+  "locale.listLabel": "Тилдер тизмеси",
 };

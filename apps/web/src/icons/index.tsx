@@ -303,3 +303,33 @@ export const ArrowUpIcon = (p: IconProps) => (
     <path d="M12 19V5M6 11l6-6 6 6" />
   </Icon>
 );
+
+/** Globus — til tanlagich uchun.
+ *
+ *  Ilgari bu joyda ikonka umuman yo'q edi va boshqaruv ikonkalar
+ *  qatorida forma maydoni bo'lib ko'rinardi. `PaletteIcon` ni qayta
+ *  ishlatib bo'lmaydi: u ko'rinish sozlagichida turadi va bir xil
+ *  ikonka ikki ma'noni bildirsa ajratib bo'lmaydi. */
+export const GlobeIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M3 12h18" />
+    <path d="M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18Z" />
+  </Icon>
+);
+
+/** Pastga uchburchak — ochiladigan ro'yxat belgisi. */
+export const ChevronDownIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M6 9.5l6 6 6-6" />
+  </Icon>
+);
+
+/** Aylanadigan kutish belgisi. `prefers-reduced-motion` hisobga olinadi
+ *  — harakatni kamaytirishni so'ragan foydalanuvchida aylanmaydi
+ *  (foydalanuvchi sozlagichidagi qoida). */
+export const SpinnerIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 3a9 9 0 1 0 9 9" />
+  </Icon>
+);

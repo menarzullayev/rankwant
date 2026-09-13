@@ -805,4 +805,12 @@ export const kk: Record<MessageKey, string> = {
   "geo.nudgeCta": "Толтыру",
   "geo.searchPlaceholder": "Ел іздеу",
   "geo.noResults": "Табылмады",
+  "locale.switchLabel": "Тілді таңдаңыз",
+  "locale.auto": "Автоматты",
+  "locale.autoDetected": "Автоматты ({language})",
+  "locale.group.core": "Негізгі",
+  "locale.group.region": "Аймақтық",
+  "locale.group.broad": "Кең қамту",
+  "locale.loading": "Жүктелуде",
+  "locale.listLabel": "Тілдер тізімі",
 };

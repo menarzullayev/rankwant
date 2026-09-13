@@ -10,7 +10,7 @@ import {
 import "./globals.css";
 import AppShell from "@/layout/AppShell";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
-import { getLocale } from "@/i18n/server";
+import { getLocaleState } from "@/i18n/server";
 import { DEFAULT_LOCALE } from "@/i18n/messages";
 import { messagesFor } from "@/i18n/messages.server";
 import type { Me } from "@/lib/api";
@@ -240,8 +240,8 @@ export default async function RootLayout({
   // Mijozda so'ralsa, u kelguncha standart ko'rinish chaqnaydi; bundan
   // tashqari bu qiymat `useState` boshlang'ich qiymatida kerak, ya'ni
   // sinxron bo'lishi shart.
-  const [locale, me, siteAppearance] = await Promise.all([
-    getLocale(),
+  const [{ locale, auto }, me, siteAppearance] = await Promise.all([
+    getLocaleState(),
     getSessionUser<Me>(),
     api
       .siteAppearance()
@@ -274,7 +274,7 @@ export default async function RootLayout({
         />
       </head>
       <body>
-        <LocaleProvider locale={locale} dict={messagesFor(locale)}>
+        <LocaleProvider locale={locale} dict={messagesFor(locale)} auto={auto}>
           <AppShell initialUser={me} siteAppearance={siteAppearance}>
             {children}
           </AppShell>

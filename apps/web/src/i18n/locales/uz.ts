@@ -808,6 +808,14 @@ export const uz = {
   "geo.nudgeCta": "To'ldirish",
   "geo.searchPlaceholder": "Mamlakat qidirish",
   "geo.noResults": "Topilmadi",
+  "locale.switchLabel": "Tilni tanlang",
+  "locale.auto": "Avtomatik",
+  "locale.autoDetected": "Avtomatik ({language})",
+  "locale.group.core": "Asosiy",
+  "locale.group.region": "Mintaqa",
+  "locale.group.broad": "Keng qamrov",
+  "locale.loading": "Yuklanmoqda",
+  "locale.listLabel": "Tilllar ro'yxati",
 } as const;
 
 export type MessageKey = keyof typeof uz;

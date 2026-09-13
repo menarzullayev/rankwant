@@ -801,4 +801,12 @@ export const zh: Record<MessageKey, string> = {
   "geo.nudgeCta": "填写",
   "geo.searchPlaceholder": "搜索国家",
   "geo.noResults": "未找到",
+  "locale.switchLabel": "选择语言",
+  "locale.auto": "自动",
+  "locale.autoDetected": "自动（{language}）",
+  "locale.group.core": "主要",
+  "locale.group.region": "区域",
+  "locale.group.broad": "广泛覆盖",
+  "locale.loading": "加载中",
+  "locale.listLabel": "语言列表",
 };

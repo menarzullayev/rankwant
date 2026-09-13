@@ -23,7 +23,10 @@ export const PREFS_EVENT = "rw:prefs";
 export type PrefsChange = {
   theme?: "light" | "dark" | "system";
   style?: string;
-  locale?: string;
+  /** `null` — «Avtomatik» tanlandi, ya'ni cookie o'chirilsin va til
+   *  `Accept-Language` dan aniqlansin. Faqat shu qiymat `undefined`
+   *  (o'zgarish yo'q) dan farq qiladi. */
+  locale?: string | null;
   /** Sozlagichdan kelgan o'zgarishlar — `PrefsSync` ularni `ui_prefs`
    *  ning `appearance`/`a11y` guruhlariga qo'shadi (D33). */
   appearance?: Partial<AppearancePrefs>;

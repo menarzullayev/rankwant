@@ -5,6 +5,18 @@ import { DEFAULT_LOCALE, isLocale, type Locale } from "./messages";
 /** Til tanlovi saqlanadigan cookie. */
 export const LOCALE_COOKIE = "rw_locale";
 
+/** «Avtomatik» markeri — odam tanlagan, til esa sarlavhadan aniqlanadi.
+ *
+ *  Cookie'ni BUTUNLAY o'chirib bo'lmaydi: `PrefsSync` cookie yo'qligini
+ *  «hali tanlanmagan» deb tushunadi va hisobdagi til bilan qayta
+ *  to'ldiradi, ya'ni «Avtomatik» darhol bekor bo'lardi (o'lchandi —
+ *  kod oqimidan). Shu sababli ikki holat ajratiladi:
+ *
+ *    cookie yo'q      → hali tanlanmagan, hisob urug'i qo'llanadi
+ *    `rw_locale=auto` → ataylab avtomatik, urug' qo'llanmaydi
+ */
+export const LOCALE_AUTO = "auto";
+
 /** `Accept-Language` sarlavhasidan mos tilni tanlaydi.
  *
  * Faqat COOKIE bo'lmaganda ishlatiladi: cookie — odamning O'ZI tanlagan
@@ -43,13 +55,36 @@ function fromAcceptLanguage(header: string | null): Locale | null {
  * Ustunlik tartibi: cookie (odam tanlagan) → `Accept-Language` (brauzer
  * taklif qilgan) → standart. Ya'ni avtomatik aniqlash odamning tanlovini
  * HECH QACHON bekor qilmaydi — u faqat tanlov bo'lmaganda ishlaydi.
+ *
+ * `rw_locale=auto` — odam «Avtomatik» ni ATAYLAB tanlagan holat: cookie
+ * bor, lekin u til emas, shuning uchun sarlavhadan aniqlashga o'tamiz.
+ *
+ * ⚠️ `Vary: Accept-Language` shu funksiya uchun SHART: javob sarlavhaga
+ * bog'liq, ya'ni kesh uni alohida saqlashi kerak. Bugun `no-store`
+ * turganda zarari yo'q, lekin keshlash yoqilsa bir zumda kesh-zaharlash
+ * xatosiga aylanadi — bir xil URL rus foydalanuvchisiga inglizcha
+ * beriladi (o'lchandi: bitta URL, to'rt til).
  */
-export async function getLocale(): Promise<Locale> {
+/** Joriy til VA u avtomatik aniqlanganmi.
+ *
+ *  `locale` — ko'rsatiladigan til; `auto` — odam «Avtomatik» ni
+ *  tanlaganmi. Ikkalasi kerak: tanlagich qaysi variant belgilanganini
+ *  shu bilan biladi, holbuki `locale` doim aniq til bo'ladi.
+ */
+export async function getLocaleState(): Promise<{ locale: Locale; auto: boolean }> {
   const chosen = (await cookies()).get(LOCALE_COOKIE)?.value;
-  if (isLocale(chosen)) return chosen;
+  if (isLocale(chosen)) return { locale: chosen, auto: false };
 
-  return (
-    fromAcceptLanguage((await headers()).get("accept-language")) ??
-    DEFAULT_LOCALE
-  );
+  const detected = fromAcceptLanguage((await headers()).get("accept-language"));
+  return {
+    locale: detected ?? DEFAULT_LOCALE,
+    // `auto` markeri ham, umuman cookie yo'qligi ham avtomatik holat.
+    auto: true,
+  };
+}
+
+/** Server komponentlari uchun joriy til — faqat `locale` (qarang:
+ *  `getLocaleState`, u `auto` ni ham qaytaradi). */
+export async function getLocale(): Promise<Locale> {
+  return (await getLocaleState()).locale;
 }

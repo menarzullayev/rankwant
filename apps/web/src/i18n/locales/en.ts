@@ -803,4 +803,12 @@ export const en: Record<MessageKey, string> = {
   "geo.nudgeCta": "Fill in",
   "geo.searchPlaceholder": "Search country",
   "geo.noResults": "No results",
+  "locale.switchLabel": "Choose language",
+  "locale.auto": "Automatic",
+  "locale.autoDetected": "Automatic ({language})",
+  "locale.group.core": "Core",
+  "locale.group.region": "Regional",
+  "locale.group.broad": "Wider reach",
+  "locale.loading": "Loading",
+  "locale.listLabel": "Language list",
 };

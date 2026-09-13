@@ -804,4 +804,12 @@ export const tr: Record<MessageKey, string> = {
   "geo.nudgeCta": "Doldur",
   "geo.searchPlaceholder": "Ülke ara",
   "geo.noResults": "Sonuç yok",
+  "locale.switchLabel": "Dil seçin",
+  "locale.auto": "Otomatik",
+  "locale.autoDetected": "Otomatik ({language})",
+  "locale.group.core": "Temel",
+  "locale.group.region": "Bölgesel",
+  "locale.group.broad": "Geniş kapsam",
+  "locale.loading": "Yükleniyor",
+  "locale.listLabel": "Dil listesi",
 };
