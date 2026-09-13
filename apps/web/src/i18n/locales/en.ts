@@ -2,6 +2,15 @@ import type { MessageKey } from "./uz";
 
 export const en: Record<MessageKey, string> = {
 
+  "customizer.copyLink": "Copy link",
+  "customizer.linkCopied": "Link copied",
+
+  "customizer.myTemplates": "My templates",
+  "customizer.templateName": "Template name",
+  "customizer.save": "Save",
+  "customizer.delete": "Delete",
+  "customizer.templateLimit": "You have reached the template limit",
+
   "customizer.show": "Show customizer",
   "customizer.title": "Appearance customizer",
   "customizer.short": "Appearance",

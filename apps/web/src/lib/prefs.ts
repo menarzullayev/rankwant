@@ -6,7 +6,12 @@
  * hali o'qilmagan — shuning uchun qiymat `localStorage` da ham turadi.
  */
 
-import type { A11yPrefs, AppearancePrefs, ThemeEffect } from "@/lib/api";
+import type {
+  A11yPrefs,
+  AppearancePrefs,
+  ThemeEffect,
+  ThemeTemplate,
+} from "@/lib/api";
 
 export const PREFS_EVENT = "rw:prefs";
 
@@ -23,6 +28,8 @@ export type PrefsChange = {
    *  ning `appearance`/`a11y` guruhlariga qo'shadi (D33). */
   appearance?: Partial<AppearancePrefs>;
   a11y?: Partial<A11yPrefs>;
+  /** Shaxsiy shablonlar (D21) — butun ro'yxat, bo'lak emas. */
+  templates?: ThemeTemplate[];
 };
 
 /** Sozlagichning qurilmadagi nusxasi — hidratsiyadan OLDIN qo'llanadi.
@@ -33,6 +40,7 @@ export type PrefsChange = {
 export const APPEARANCE_KEY = "rw:appearance";
 export const A11Y_KEY = "rw:a11y";
 export const ACCENT_KEY = "rw:accent";
+export const TEMPLATES_KEY = "rw:templates";
 
 export type StoredAccent = {
   accent: string;
@@ -82,9 +90,14 @@ export function removeLocal(key: string) {
  *  ⚠️ Accent keshiga TEGMAYDI: uni `applyAccent` yozadi, chunki u
  *  hisoblangan qiymatni biladi. Ilgari bu funksiya `null` bilan
  *  chaqirilib keshni o'chirib qo'yardi — natijada accent saqlanmasdi. */
-export function rememberAppearance(appearance: AppearancePrefs, a11y: A11yPrefs) {
+export function rememberAppearance(
+  appearance: AppearancePrefs,
+  a11y: A11yPrefs,
+  templates: ThemeTemplate[] = [],
+) {
   writeLocal(APPEARANCE_KEY, JSON.stringify(appearance));
   writeLocal(A11Y_KEY, JSON.stringify(a11y));
+  writeLocal(TEMPLATES_KEY, JSON.stringify(templates));
 }
 
 /** Accent HISOBLANGAN holda saqlanadi — boot skript uni o'lchovsiz

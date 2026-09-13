@@ -122,7 +122,7 @@ export function PrefsSync() {
       const body: Record<string, unknown> = {};
       if (change.theme) body.theme = change.theme;
       if (change.locale) body.locale = change.locale;
-      if (change.style || change.appearance || change.a11y) {
+      if (change.style || change.appearance || change.a11y || change.templates) {
         const current = user.ui_prefs ?? {};
         const appearance = (current.appearance ?? {}) as Record<string, unknown>;
         body.ui_prefs = {
@@ -136,6 +136,9 @@ export function PrefsSync() {
           ...(change.a11y
             ? { a11y: { ...(current.a11y ?? {}), ...change.a11y } }
             : {}),
+          // Shablonlar BUTUN ro'yxat bo'lib keladi: ularni birlashtirish
+          // o'chirishni imkonsiz qilardi.
+          ...(change.templates ? { templates: change.templates } : {}),
         };
       }
       if (Object.keys(body).length)

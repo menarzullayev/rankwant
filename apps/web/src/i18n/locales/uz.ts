@@ -6,6 +6,15 @@
 
 export const uz = {
 
+  "customizer.copyLink": "Havolani nusxalash",
+  "customizer.linkCopied": "Havola nusxalandi",
+
+  "customizer.myTemplates": "Mening shablonlarim",
+  "customizer.templateName": "Shablon nomi",
+  "customizer.save": "Saqlash",
+  "customizer.delete": "O'chirish",
+  "customizer.templateLimit": "Shablon chegarasiga yetdingiz",
+
   "customizer.show": "Sozlagichni ko'rsatish",
   "customizer.title": "Ko'rinish sozlagichi",
   "customizer.short": "Ko'rinish",

@@ -9,13 +9,15 @@ import {
   useState,
 } from "react";
 
+import { useSession } from "@/context/SessionContext";
 import { useStyle } from "@/context/StyleContext";
 import { useTheme } from "@/context/ThemeContext";
-import type { A11yPrefs, AppearancePrefs } from "@/lib/api";
+import type { A11yPrefs, AppearancePrefs, ThemeTemplate } from "@/lib/api";
 import {
   ACCENT_KEY,
   A11Y_KEY,
   APPEARANCE_KEY,
+  TEMPLATES_KEY,
   announcePrefs,
   removeLocal,
   rememberAccent,
@@ -24,12 +26,14 @@ import {
 } from "@/lib/prefs";
 import {
   applyAccent,
+  applyAll,
   applyA11y,
   applyAppearance,
   applyStyle,
   previewAccent,
   type AccentResult,
 } from "@/lib/theme/apply";
+import { decodeAppearance, shareUrl, stripAppearance } from "@/lib/theme/share";
 import {
   TEMPLATES,
   matchTemplate,
@@ -84,8 +88,17 @@ const CustomizerContext = createContext<
       canUndo: boolean;
       /** «Zavod sozlamalari» (D25, 3-bosqich) — tasdiq chaqiruvchida. */
       resetAll: () => void;
+      /** Shaxsiy shablonlar (D21) — hisobda 5 tagacha, mehmonda 2 ta. */
+      templates: ThemeTemplate[];
+      saveTemplate: (name: string) => void;
+      removeTemplate: (name: string) => void;
+      applySaved: (template: ThemeTemplate) => void;
+      /** Chegara: mehmon 2 ta, kirgan 5 ta (D21). */
+      templateLimit: number;
       /** Panel ko'rsatkichi uchun — qo'llamasdan o'lchaydi. */
       preview: (hue: number, sat: number) => AccentResult;
+      /** Joriy ko'rinishning ulashish havolasi (D22). */
+      shareLink: () => string;
     }
   | undefined
 >(undefined);
@@ -103,19 +116,29 @@ export function CustomizerProvider({ children }: { children: React.ReactNode }) 
   // xil bo'ladi va `localStorage` o'qish hidratsiya nomuvofiqligini
   // keltirmaydi.
   const [open, setOpen] = useState(false);
-  const [appearance, setAppearanceState] = useState<AppearancePrefs>(() =>
-    typeof window === "undefined"
-      ? DEFAULT_APPEARANCE
-      : readJson(APPEARANCE_KEY, DEFAULT_APPEARANCE),
-  );
+  // Havoladagi sozlamalar (D22) ustun turadi: odam shu havolani ochdi,
+  // ya'ni o'sha ko'rinishni ko'rishni xohladi. Effektda emas, boshlang'ich
+  // qiymatda o'qiladi — effektda `setState` loyihada taqiqlangan va
+  // kaskad render keltiradi.
+  const [appearance, setAppearanceState] = useState<AppearancePrefs>(() => {
+    if (typeof window === "undefined") return DEFAULT_APPEARANCE;
+    return (
+      decodeAppearance(window.location.search) ??
+      readJson(APPEARANCE_KEY, DEFAULT_APPEARANCE)
+    );
+  });
   const [a11y, setA11yState] = useState<A11yPrefs>(() =>
     typeof window === "undefined" ? DEFAULT_A11Y : readJson(A11Y_KEY, DEFAULT_A11Y),
+  );
+  const [templates, setTemplates] = useState<ThemeTemplate[]>(() =>
+    typeof window === "undefined" ? [] : readJson(TEMPLATES_KEY, []),
   );
   // Bekor qilish uchun bitta qadam (D24/D25) — to'liq tarix emas.
   const [previous, setPrevious] = useState<AppearancePrefs | null>(null);
 
   const { setStyle } = useStyle();
   const { mode, setMode } = useTheme();
+  const { user } = useSession();
 
   /** Accent ni qo'llaydi va hisoblangan qiymatni qurilmaga keshlaydi. */
   const applyAndCacheAccent = useCallback(
@@ -154,17 +177,18 @@ export function CustomizerProvider({ children }: { children: React.ReactNode }) 
 
   /** Tanlovni qo'llaydi, qurilmaga yozadi va hisobga yuboradi. */
   const commit = useCallback(
-    (next: AppearancePrefs, nextA11y: A11yPrefs) => {
+    (next: AppearancePrefs, nextA11y: A11yPrefs, nextTemplates: ThemeTemplate[] = []) => {
       applyAppearance(next);
       applyA11y(nextA11y);
       applyAndCacheAccent(next);
-      rememberAppearance(next, nextA11y);
+      rememberAppearance(next, nextA11y, nextTemplates);
       // Hisobga — `PrefsSync` yozadi. Uslubni ham qo'shamiz, chunki
       // `StyleContext` uni boshqa yo'l bilan yozadi.
       announcePrefs({
         style: next.style,
         appearance: next,
         a11y: nextA11y,
+        templates: nextTemplates,
       });
     },
     [applyAndCacheAccent],
@@ -233,6 +257,65 @@ export function CustomizerProvider({ children }: { children: React.ReactNode }) 
     commit(next, DEFAULT_A11Y);
   }, [appearance, commit, setMode, setStyle]);
 
+  /** Mehmon 2 ta, kirgan 5 ta (D21) — `ui_prefs` cheksiz o'smasin. */
+  const templateLimit = user ? 5 : 2;
+
+  const saveTemplate = useCallback(
+    (name: string) => {
+      const clean = name.trim().slice(0, 24);
+      if (!clean) return;
+      // Bir xil nom (katta-kichik harf farqisiz) — ustidan yoziladi:
+      // aks holda validator `unique` tekshiruvi 400 qaytarardi.
+      const next = [
+        ...templates.filter((row) => row.name.toLowerCase() !== clean.toLowerCase()),
+        { name: clean, appearance, a11y },
+      ].slice(-templateLimit);
+      setTemplates(next);
+      commit(appearance, a11y, next);
+    },
+    [a11y, appearance, commit, templateLimit, templates],
+  );
+
+  const removeTemplate = useCallback(
+    (name: string) => {
+      const next = templates.filter((row) => row.name !== name);
+      setTemplates(next);
+      commit(appearance, a11y, next);
+    },
+    [a11y, appearance, commit, templates],
+  );
+
+  const applySaved = useCallback(
+    (template: ThemeTemplate) => {
+      const next: AppearancePrefs = {
+        ...DEFAULT_APPEARANCE,
+        ...template.appearance,
+      };
+      const nextA11y: A11yPrefs = { ...DEFAULT_A11Y, ...template.a11y };
+      setPrevious(appearance);
+      applyStyle(next.style ?? "clay");
+      setStyle((next.style ?? "clay") as Parameters<typeof setStyle>[0]);
+      setAppearanceState(next);
+      setA11yState(nextA11y);
+      commit(next, nextA11y, templates);
+    },
+    [appearance, commit, setStyle, templates],
+  );
+
+  // Havoladan kelgan sozlamalar qo'llanadi va manzil TOZALANADI: aks
+  // holda har yuklanishda qayta qo'llanib, odam o'z sozlamasini
+  // o'zgartira olmay qolardi. Effektda `setState` yo'q — faqat tashqi
+  // tizim (DOM va manzil) yangilanadi.
+  useEffect(() => {
+    const fromUrl = decodeAppearance(window.location.search);
+    if (!fromUrl) return;
+    applyAll(fromUrl, a11y);
+    rememberAppearance(fromUrl, a11y);
+    window.history.replaceState(null, "", stripAppearance(window.location.search));
+    // Faqat mountda: keyingi o'zgarishlar `commit` orqali o'tadi.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const toggle = useCallback(() => setOpen((value) => !value), []);
 
   // `Ctrl+.` — barcha sahifalarda (D30). `Esc` panel ichida ishlanadi:
@@ -255,6 +338,8 @@ export function CustomizerProvider({ children }: { children: React.ReactNode }) 
 
   const preview = useCallback((hue: number, sat: number) => previewAccent(hue, sat), []);
 
+  const shareLink = useCallback(() => shareUrl(appearance), [appearance]);
+
   return (
     <CustomizerContext.Provider
       value={{
@@ -270,7 +355,13 @@ export function CustomizerProvider({ children }: { children: React.ReactNode }) 
         undo,
         canUndo: previous !== null,
         resetAll,
+        templates,
+        saveTemplate,
+        removeTemplate,
+        applySaved,
+        templateLimit,
         preview,
+        shareLink,
       }}
     >
       {children}

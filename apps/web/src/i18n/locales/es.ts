@@ -2,6 +2,15 @@ import type { MessageKey } from "./uz";
 
 export const es: Record<MessageKey, string> = {
 
+  "customizer.copyLink": "Copiar enlace",
+  "customizer.linkCopied": "Enlace copiado",
+
+  "customizer.myTemplates": "Mis plantillas",
+  "customizer.templateName": "Nombre de la plantilla",
+  "customizer.save": "Guardar",
+  "customizer.delete": "Eliminar",
+  "customizer.templateLimit": "Has alcanzado el límite de plantillas",
+
   "customizer.show": "Mostrar personalizador",
   "customizer.title": "Personalizador de apariencia",
   "customizer.short": "Apariencia",

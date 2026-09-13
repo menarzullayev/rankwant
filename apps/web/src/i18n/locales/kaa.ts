@@ -2,6 +2,15 @@ import type { MessageKey } from "./uz";
 
 export const kaa: Record<MessageKey, string> = {
 
+  "customizer.copyLink": "Siltemeni nusqalaw",
+  "customizer.linkCopied": "Silteme nusqalandı",
+
+  "customizer.myTemplates": "Meniń shablonlarım",
+  "customizer.templateName": "Shablon ataması",
+  "customizer.save": "Saqlaw",
+  "customizer.delete": "Óshiriw",
+  "customizer.templateLimit": "Shablon shegarasına jettińiz",
+
   "customizer.show": "Sazlaǵıshdı kórsetiw",
   "customizer.title": "Kórinis sazlaǵıshı",
   "customizer.short": "Kórinis",

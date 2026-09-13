@@ -2,6 +2,15 @@ import type { MessageKey } from "./uz";
 
 export const tg: Record<MessageKey, string> = {
 
+  "customizer.copyLink": "Пайвандро нусха бардоштан",
+  "customizer.linkCopied": "Пайванд нусхабардорӣ шуд",
+
+  "customizer.myTemplates": "Қолибҳои ман",
+  "customizer.templateName": "Номи қолиб",
+  "customizer.save": "Нигоҳ доштан",
+  "customizer.delete": "Нест кардан",
+  "customizer.templateLimit": "Ба ҳадди қолибҳо расидед",
+
   "customizer.show": "Нишон додани танзимгар",
   "customizer.title": "Танзими намуд",
   "customizer.short": "Намуд",

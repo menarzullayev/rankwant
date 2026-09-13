@@ -225,6 +225,8 @@ function AppearanceTab() {
         </ul>
       </Section>
 
+      <SavedTemplates />
+
       <Section title={t(locale, "customizer.theme")}>
         {dual ? (
           <div className="flex flex-wrap gap-2">
@@ -577,3 +579,92 @@ const chip = (active: boolean) =>
     active ? "rw-accent-line rw-accent-soft" : "rw-line rw-dim-2 rw-hover-bg"
   }`;
 
+
+/** Shaxsiy shablonlar (D21) — hisobda 5 tagacha, mehmonda 2 ta.
+ *
+ *  Nom oddiy matn maydonida kiritiladi, `window.prompt` bilan emas: u
+ *  bloklaydi, uslubi yo'q va mobil brauzerda ba'zan umuman ko'rinmaydi. */
+function SavedTemplates() {
+  const locale = useLocale();
+  const {
+    templates,
+    saveTemplate,
+    removeTemplate,
+    applySaved,
+    templateLimit,
+    shareLink,
+  } = useCustomizer();
+  const [name, setName] = useState("");
+  const [copied, setCopied] = useState(false);
+  const full = templates.length >= templateLimit;
+
+  return (
+    <Section title={t(locale, "customizer.myTemplates")}>
+      <button
+        type="button"
+        onClick={() => {
+          void navigator.clipboard.writeText(shareLink());
+          setCopied(true);
+        }}
+        className="mb-2 w-full rw-radius-sm border rw-line px-3 py-1.5 text-theme-sm rw-dim-2 transition rw-hover-bg"
+      >
+        {copied ? t(locale, "customizer.linkCopied") : t(locale, "customizer.copyLink")}
+      </button>
+
+      {templates.length > 0 && (
+        <ul className="mb-2 space-y-1">
+          {templates.map((row) => (
+            <li key={row.name} className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => applySaved(row)}
+                className="min-w-0 flex-1 truncate rw-radius-sm border rw-line px-2.5 py-1.5 text-start text-theme-sm rw-strong transition rw-hover-bg"
+              >
+                {row.name}
+              </button>
+              <button
+                type="button"
+                onClick={() => removeTemplate(row.name)}
+                aria-label={`${t(locale, "customizer.delete")}: ${row.name}`}
+                className="flex size-8 shrink-0 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg"
+              >
+                <CloseIcon className="size-3.5" />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {full ? (
+        <p className="text-theme-xs rw-faint">
+          {t(locale, "customizer.templateLimit")} — {templateLimit}
+        </p>
+      ) : (
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            saveTemplate(name);
+            setName("");
+          }}
+          className="flex items-center gap-2"
+        >
+          <input
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            maxLength={24}
+            placeholder={t(locale, "customizer.templateName")}
+            aria-label={t(locale, "customizer.templateName")}
+            className="min-w-0 flex-1 rw-radius-sm border rw-line rw-field-bg px-2.5 py-1.5 text-theme-sm rw-strong"
+          />
+          <button
+            type="submit"
+            disabled={name.trim() === ""}
+            className="rw-radius-sm border rw-line px-3 py-1.5 text-theme-sm rw-dim-2 transition rw-hover-bg disabled:opacity-40"
+          >
+            {t(locale, "customizer.save")}
+          </button>
+        </form>
+      )}
+    </Section>
+  );
+}

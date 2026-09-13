@@ -2,6 +2,15 @@ import type { MessageKey } from "./uz";
 
 export const zh: Record<MessageKey, string> = {
 
+  "customizer.copyLink": "复制链接",
+  "customizer.linkCopied": "链接已复制",
+
+  "customizer.myTemplates": "我的模板",
+  "customizer.templateName": "模板名称",
+  "customizer.save": "保存",
+  "customizer.delete": "删除",
+  "customizer.templateLimit": "已达模板上限",
+
   "customizer.show": "显示定制器",
   "customizer.title": "外观定制器",
   "customizer.short": "外观",

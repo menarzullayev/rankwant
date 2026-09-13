@@ -2,6 +2,15 @@ import type { MessageKey } from "./uz";
 
 export const tr: Record<MessageKey, string> = {
 
+  "customizer.copyLink": "Bağlantıyı kopyala",
+  "customizer.linkCopied": "Bağlantı kopyalandı",
+
+  "customizer.myTemplates": "Şablonlarım",
+  "customizer.templateName": "Şablon adı",
+  "customizer.save": "Kaydet",
+  "customizer.delete": "Sil",
+  "customizer.templateLimit": "Şablon sınırına ulaştınız",
+
   "customizer.show": "Özelleştiriciyi göster",
   "customizer.title": "Görünüm özelleştirici",
   "customizer.short": "Görünüm",

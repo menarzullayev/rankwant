@@ -2,6 +2,15 @@ import type { MessageKey } from "./uz";
 
 export const ru: Record<MessageKey, string> = {
 
+  "customizer.copyLink": "Скопировать ссылку",
+  "customizer.linkCopied": "Ссылка скопирована",
+
+  "customizer.myTemplates": "Мои шаблоны",
+  "customizer.templateName": "Название шаблона",
+  "customizer.save": "Сохранить",
+  "customizer.delete": "Удалить",
+  "customizer.templateLimit": "Достигнут предел шаблонов",
+
   "customizer.show": "Показать настройщик",
   "customizer.title": "Настройка вида",
   "customizer.short": "Вид",
