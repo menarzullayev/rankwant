@@ -187,12 +187,40 @@ env_check rankwant-api-1 CSRF_TRUSTED_ORIGINS "POST formalar rad etiladi"
 env_check rankwant-worker-1 DJANGO_SECRET_KEY "sessiya/token imzosi ishlamaydi"
 env_check rankwant-beat-1 DJANGO_SECRET_KEY "sessiya/token imzosi ishlamaydi"
 env_check rankwant-web-1 API_BASE_INTERNAL "SSR API manzili yo'q"
-env_check rankwant-web-1 NEXT_PUBLIC_API_BASE "brauzer API manzili yo'q"
 
-#: `web` image'ini `--env-file` siz qayta qurish `NEXT_PUBLIC_API_BASE`
-#: ni bo'sh build-arg qilib qo'yadi — bunda konteyner env'i to'g'ri
-#: bo'lsa ham bundle'dagi manzil bo'sh qoladi.
-env_check rankwant-web-1 NEXT_PUBLIC_API_BASE "bundle'dagi API manzili bo'sh"
+#: `web` SSR qaysi API manziliga murojaat qiladi.
+#
+# ⚠️ `NEXT_PUBLIC_*` BUILT vaqtida bundle'ga singib ketadi, ya'ni
+# konteynerning ISHLAB TURGAN env'i uni ko'rsatmaydi. Aynan shu tuzoq
+# 2026-09-13 da ikkinchi marta urdi:
+#
+#   docker compose ... build web     # --env-file .env.public YO'Q
+#
+# Dockerfile'dagi zaxira qiymat (`http://localhost:8000/api/v1`) bundle'ga
+# tushdi va HAR foydalanuvchining brauzeri O'Z kompyuteridagi
+# `localhost:8000` ga murojaat qildi → `TypeError: Failed to fetch`.
+# Konteyner env'i (`http://api:8000`) to'g'ri bo'lib turardi, ya'ni
+# `env_check` yolg'iz buni KO'RMAYDI.
+#
+# Shuning uchun bundle'ning O'ZIDAN o'qiladi. `localhost` — har doim xato:
+# brauzer uchun u foydalanuvchining mashinasi, server emas.
+if docker inspect rankwant-web-1 >/dev/null 2>&1; then
+  baked="$(docker exec rankwant-web-1 sh -c \
+    'grep -rhoE "https?://[a-zA-Z0-9.:_-]+/api/v1" /app/.next/static 2>/dev/null | sort -u' \
+    2>/dev/null || true)"
+
+  if [ -z "$baked" ]; then
+    printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-web-1' "$Y" 'TEKSHIRILMADI' "$N" '-' \
+      "bundle'da API manzili topilmadi"
+  elif printf '%s\n' "$baked" | grep -q '//localhost\|//127\.0\.0\.1'; then
+    printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-web-1' "$R" 'BUILD XATO' "$N" '-' \
+      "bundle'da ${baked%%$'\n'*} — brauzer o'ziga murojaat qiladi"
+    envbad=$((envbad + 1))
+  else
+    printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-web-1' "$G" 'joyida' "$N" '-' \
+      "bundle API: $(printf '%s' "$baked" | head -1)"
+  fi
+fi
 
 # --- judge (Go, kompilyatsiya qilingan binary) --------------------------
 if docker inspect rankwant-judge-1 >/dev/null 2>&1; then
