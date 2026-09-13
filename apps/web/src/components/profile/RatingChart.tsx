@@ -153,7 +153,7 @@ export function RatingChart({ data, kit }: { data: RatingSeries; kit: DateKit })
                 x2={W - PAD.right}
                 y1={model.y(tick)}
                 y2={model.y(tick)}
-                stroke="var(--rw-line)"
+                stroke="var(--rw-divider)"
                 strokeDasharray="2 4"
               />
               <text

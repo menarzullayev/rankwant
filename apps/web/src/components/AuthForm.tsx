@@ -577,7 +577,12 @@ function Strength({ value }: { value: string }) {
               background:
                 step <= level
                   ? `var(--rw-${level <= 1 ? "bad" : level === 4 ? "ok" : "warn"}-ink)`
-                  : "var(--rw-line)",
+                  // Bo'sh bo'lakchalar `--rw-divider`: `--rw-line` shaffof
+                  // bo'lgani uchun `clay` va `neu` da ular umuman
+                  // ko'rinmasdi va chiziq «4 dan 1» emas, bitta qisqa
+                  // chiziq bo'lib o'qilardi. Daraja so'z bilan ham
+                  // yoziladi, lekin bo'lakchalar SONI ham ma'no tashiydi.
+                  : "var(--rw-divider)",
             }}
           />
         ))}

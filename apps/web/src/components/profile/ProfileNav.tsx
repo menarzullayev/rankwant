@@ -37,7 +37,7 @@ export function ProfileNav({ username }: { username: string }) {
     // scrollbar ham joy oladi (o'lchandi: 732 px, joy 719).
     <nav
       aria-label={t(locale, "profile.sections")}
-      className="flex overflow-x-auto overflow-y-hidden [scrollbar-width:thin] shadow-[inset_0_-1px_0_var(--rw-line)]"
+      className="flex overflow-x-auto overflow-y-hidden [scrollbar-width:thin] shadow-[inset_0_-1px_0_var(--rw-divider)]"
     >
       {PROFILE_TABS.map((tab) => {
         const active = current === tab.slug;
