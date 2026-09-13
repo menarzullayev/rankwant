@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Serif } from "next/font/google";
+import {
+  DM_Sans,
+  IBM_Plex_Mono,
+  IBM_Plex_Serif,
+  Inter,
+  Plus_Jakarta_Sans,
+  Roboto,
+} from "next/font/google";
 import "./globals.css";
 import AppShell from "@/layout/AppShell";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
@@ -40,6 +47,50 @@ const plexSerif = IBM_Plex_Serif({
   weight: ["400", "600"],
   style: ["normal", "italic"],
   variable: "--rw-plex-serif",
+  display: "swap",
+  preload: false,
+});
+
+/** Foydalanuvchi tanlaydigan shriftlar (D13).
+ *
+ *  ⚠️ `preload: false` — SHART: `next/font` fayllarni o'zimizda saqlaydi
+ *  (tashqi so'rov yo'q, maxfiylik saqlanadi), lekin preload qilinsa
+ *  brauzer TO'RTALASINI ham yuklab olardi. Usiz faqat tanlangani
+ *  yuklanadi — `@font-face` e'lon qilinadi, lekin ishlatilmaguncha
+ *  so'ralmaydi.
+ *
+ *  Uslublar o'z shriftini saqlaydi (D14): `[data-font]` faqat neytral
+ *  uslublarga ta'sir qiladi, chunki `globals.css` da `[data-style]`
+ *  bloklari `--rw-font` ni o'ziga yozadi va u ustun turadi.
+ */
+const inter = Inter({
+  subsets: ["latin", "latin-ext", "cyrillic"],
+  weight: ["400", "500", "600"],
+  variable: "--rw-inter",
+  display: "swap",
+  preload: false,
+});
+
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600"],
+  variable: "--rw-jakarta",
+  display: "swap",
+  preload: false,
+});
+
+const roboto = Roboto({
+  subsets: ["latin", "latin-ext", "cyrillic"],
+  weight: ["400", "500", "700"],
+  variable: "--rw-roboto",
+  display: "swap",
+  preload: false,
+});
+
+const dmSans = DM_Sans({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600"],
+  variable: "--rw-dm-sans",
   display: "swap",
   preload: false,
 });
@@ -145,9 +196,36 @@ document.documentElement.classList.add("dark")}`;
 
 /** Uslub ham hidratsiyadan oldin qo'yiladi — `data-style` butun token
  * qatlamini almashtiradi, kechikkanda sahifa ko'z oldida sakrardi. */
-const STYLE_INIT = `try{var s=localStorage.getItem("style");
-document.documentElement.dataset.style=s||"clay"}catch(e){
+const STYLE_INIT = `try{var s=localStorage.getItem("style");document.documentElement.dataset.style=s||"clay"}catch(e){
 document.documentElement.dataset.style="clay"}`;
+
+/** Sozlagich tanlovi — hidratsiyadan OLDIN, chaqnashsiz.
+ *
+ *  Accent HISOBLANGAN holda saqlanadi (`rw:accent`), chunki uni hosil
+ *  qilish uchun fon yorqinligini o'lchash kerak — bu yerda DOM hali
+ *  tayyor emas. Keshlangan qiymat faqat USLUB mos kelsa qo'llanadi:
+ *  D10 bo'yicha rang uslubga bog'liq, ya'ni uslub almashsa accent ham
+ *  o'zgaradi va eski qiymat noto'g'ri bo'lardi.
+ *
+ *  Hech qanday xato ko'rsatilmaydi: bu bezak, sinishi mumkin emas. */
+const APPEARANCE_INIT = `try{
+var r=document.documentElement;
+var a=JSON.parse(localStorage.getItem("rw:appearance")||"{}");
+if(a.font)r.dataset.font=a.font;
+if(a.density)r.dataset.density=a.density;
+if(a.size&&a.size!==100)r.style.fontSize=a.size+"%";
+var k=JSON.parse(localStorage.getItem("rw:a11y")||"{}");
+if(k.vision&&k.vision!=="normal")r.dataset.vision=k.vision;
+if(k.motion==="reduce")r.dataset.motion="reduce";
+if(k.bigTargets)r.dataset.targets="big";
+if(k.strongFocus)r.dataset.focus="strong";
+var c=JSON.parse(localStorage.getItem("rw:accent")||"null");
+if(c&&c.style===r.dataset.style){
+r.style.setProperty("--rw-accent",c.accent);
+r.style.setProperty("--rw-accent-fg",c.fg);
+r.style.setProperty("--rw-accent-soft",c.soft);
+r.style.setProperty("--rw-accent-ink",c.ink);}
+}catch(e){}`;
 
 export default async function RootLayout({
   children,
@@ -167,12 +245,13 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      className={`${plexMono.variable} ${plexSerif.variable}`}
+      className={`${plexMono.variable} ${plexSerif.variable} ${inter.variable} ${jakarta.variable} ${roboto.variable} ${dmSans.variable}`}
       suppressHydrationWarning
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
         <script dangerouslySetInnerHTML={{ __html: STYLE_INIT }} />
+        <script dangerouslySetInnerHTML={{ __html: APPEARANCE_INIT }} />
         <script
           type="application/ld+json"
           // Tuzilmaviy ma'lumot — Next'ning `metadata` qatlami buni

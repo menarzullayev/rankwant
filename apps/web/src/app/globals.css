@@ -1100,3 +1100,57 @@
 .rw-md th { background: var(--rw-surface-2); text-align: left; }
 .rw-md hr { border: 0; border-top: 1px solid var(--rw-divider); margin: 1.5em 0; }
 .rw-md img { max-width: 100%; height: auto; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   TEMA SOZLAGICHI — foydalanuvchi tanlovi
+
+   Barcha qoidalar `data-*` atributiga tayanadi, JS bilan stil
+   yozilmaydi: shunda shu fayl yagona haqiqat manbai bo'lib qoladi va
+   sozlamani qayta qo'llash uchun render kerak bo'lmaydi.
+
+   Accent (`--rw-accent*`) bu yerda YO'Q: u `lib/theme/apply.ts` da
+   o'lchov asosida hosil qilinadi va inline yoziladi — CSS da statik
+   qiymat bo'lishi mumkin emas, chunki yorqinlik har uslubda boshqacha
+   (D42).
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Shrift — faqat NEYTRAAL uslublarga ta'sir qiladi (D14).
+   `[data-style]` bloklari `--rw-font` ni o'ziga yozadi va o'sha qoida
+   xoslikda ustun turadi, ya'ni Editorial (serif) va Terminal (mono)
+   o'z tipografiyasini saqlaydi. */
+[data-font="inter"] { --rw-font: var(--rw-inter), ui-sans-serif, system-ui, sans-serif; }
+[data-font="jakarta"] { --rw-font: var(--rw-jakarta), ui-sans-serif, system-ui, sans-serif; }
+[data-font="roboto"] { --rw-font: var(--rw-roboto), ui-sans-serif, system-ui, sans-serif; }
+[data-font="dm-sans"] { --rw-font: var(--rw-dm-sans), ui-sans-serif, system-ui, sans-serif; }
+
+/* Zichlik — faqat idish va qator bo'shliqlari. Shrift o'lchamiga
+   TEGILMAYDI: u alohida boshqaruv (D15) va brauzer zoom i bilan
+   takrorlanmasligi kerak. */
+[data-density="compact"] .rw-panel { padding: 0.875rem 1rem; }
+[data-density="compact"] .rw-md th,
+[data-density="compact"] .rw-md td { padding: 0.25rem 0.5rem; }
+[data-density="spacious"] .rw-panel { padding: 1.75rem 2rem; }
+[data-density="spacious"] .rw-md th,
+[data-density="spacious"] .rw-md td { padding: 0.7rem 1rem; }
+
+/* Harakatni kamaytirish — foydalanuvchi so'ragan (D18). Tizim darajasidagi
+   `prefers-reduced-motion` bilan bir xil natija, lekin qo'lda. */
+[data-motion="reduce"] *,
+[data-motion="reduce"] *::before,
+[data-motion="reduce"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Katta bosish maydonlari — WCAG 2.5.8 (24×24) emas, 44×44 (D18). */
+[data-targets="big"] button,
+[data-targets="big"] a[role="button"],
+[data-targets="big"] [role="button"] { min-height: 44px; min-width: 44px; }
+
+/* Kuchli fokus halqasi — mavjud halqa ustiga qalinroq va aniqroq. */
+[data-focus="strong"] :focus-visible {
+  outline: 3px solid var(--rw-accent-ink);
+  outline-offset: 3px;
+}

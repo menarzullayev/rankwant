@@ -6,7 +6,7 @@
  * hali o'qilmagan — shuning uchun qiymat `localStorage` da ham turadi.
  */
 
-import type { ThemeEffect } from "@/lib/api";
+import type { A11yPrefs, AppearancePrefs, ThemeEffect } from "@/lib/api";
 
 export const PREFS_EVENT = "rw:prefs";
 
@@ -19,6 +19,26 @@ export type PrefsChange = {
   theme?: "light" | "dark" | "system";
   style?: string;
   locale?: string;
+  /** Sozlagichdan kelgan o'zgarishlar — `PrefsSync` ularni `ui_prefs`
+   *  ning `appearance`/`a11y` guruhlariga qo'shadi (D33). */
+  appearance?: Partial<AppearancePrefs>;
+  a11y?: Partial<A11yPrefs>;
+};
+
+/** Sozlagichning qurilmadagi nusxasi — hidratsiyadan OLDIN qo'llanadi.
+ *
+ *  Accent bu yerda HISOBLANGAN holda turadi (hex), chunki uni hosil
+ *  qilish uchun fon yorqinligini o'lchash kerak, boot skriptda esa DOM
+ *  hali tayyor emas. Ya'ni hisob bir marta bajariladi va keshlanadi. */
+export const APPEARANCE_KEY = "rw:appearance";
+export const A11Y_KEY = "rw:a11y";
+export const ACCENT_KEY = "rw:accent";
+
+export type StoredAccent = {
+  accent: string;
+  fg: string;
+  soft: string;
+  ink: string;
 };
 
 const SOUND_KEY = "rw:sound";
@@ -47,6 +67,28 @@ export function announcePrefs(change: PrefsChange) {
 export function rememberPrefs(prefs: { sound?: boolean; effect?: ThemeEffect }) {
   if (prefs.sound !== undefined) writeLocal(SOUND_KEY, prefs.sound ? "1" : "0");
   if (prefs.effect) writeLocal(EFFECT_KEY, prefs.effect);
+}
+
+export function removeLocal(key: string) {
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    // Private rejim — yozib ham, o'chirib ham bo'lmaydi.
+  }
+}
+
+/** Sozlagich tanlovini qurilmaga yozadi (hisobga `PrefsSync` yozadi). */
+export function rememberAppearance(
+  appearance: AppearancePrefs,
+  a11y: A11yPrefs,
+  accent: StoredAccent | null,
+) {
+  writeLocal(APPEARANCE_KEY, JSON.stringify(appearance));
+  writeLocal(A11Y_KEY, JSON.stringify(a11y));
+  // Accent HISOBLANGAN holda saqlanadi — boot skript uni o'lchovsiz
+  // qo'llay olsin (fon yorqinligini o'sha paytda o'lchab bo'lmaydi).
+  if (accent) writeLocal(ACCENT_KEY, JSON.stringify(accent));
+  else removeLocal(ACCENT_KEY);
 }
 
 /** Ovoz standart holatda O'CHIQ: so'ramasdan ovoz chiqaradigan sayt

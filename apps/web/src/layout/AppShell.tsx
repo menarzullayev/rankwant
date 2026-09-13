@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 
+import { CustomizerProvider } from "@/context/CustomizerContext";
 import { SidebarProvider, useSidebar } from "@/context/SidebarContext";
 import { PrefsSync } from "@/context/PrefsSync";
 import { SessionProvider } from "@/context/SessionContext";
@@ -12,6 +13,7 @@ import type { Me } from "@/lib/api";
 import AppFooter from "./AppFooter";
 import AppHeader from "./AppHeader";
 import { VerifyBanner } from "@/components/VerifyBanner";
+import { Customizer } from "@/components/customizer/Customizer";
 import { GeoNudge } from "@/components/GeoNudge";
 import { ContestInvite } from "@/components/ContestInvite";
 import { WelcomeNotice } from "@/components/WelcomeNotice";
@@ -98,14 +100,20 @@ export default function AppShell({
   return (
     <StyleProvider>
       <ThemeProvider>
-        <SessionProvider initialUser={initialUser}>
-          <PrefsSync />
-          <UpdatesProvider>
-            <SidebarProvider>
-              <Shell>{children}</Shell>
-            </SidebarProvider>
-          </UpdatesProvider>
-        </SessionProvider>
+        <CustomizerProvider>
+          <SessionProvider initialUser={initialUser}>
+            <PrefsSync />
+            <UpdatesProvider>
+              <SidebarProvider>
+                <Shell>{children}</Shell>
+              </SidebarProvider>
+            </UpdatesProvider>
+            {/* Suzuvchi tugma va panel — `Shell` dan tashqarida, chunki
+                ular sahifa tuzilishiga bog'liq emas va `bare` sahifalarda
+                ham kerak bo'lishi mumkin. */}
+            <Customizer />
+          </SessionProvider>
+        </CustomizerProvider>
       </ThemeProvider>
     </StyleProvider>
   );

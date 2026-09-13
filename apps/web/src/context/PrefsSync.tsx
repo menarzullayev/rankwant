@@ -6,13 +6,15 @@ import { useEffect, useRef } from "react";
 import { useSession } from "@/context/SessionContext";
 import { DEFAULT_LOCALE, isLocale } from "@/i18n/messages";
 import { STYLE_IDS, type StyleId } from "@/layout/styles";
-import { patchJson } from "@/lib/api";
+import { patchJson, type A11yPrefs, type AppearancePrefs } from "@/lib/api";
 import {
   PREFS_EVENT,
+  rememberAppearance,
   rememberPrefs,
   writeLocal,
   type PrefsChange,
 } from "@/lib/prefs";
+import { applyA11y, applyAll } from "@/lib/theme/apply";
 
 const isStyle = (value: unknown): value is StyleId =>
   typeof value === "string" && STYLE_IDS.includes(value as StyleId);
@@ -87,8 +89,22 @@ export function PrefsSync() {
       }
     }
 
-    const cookie = document.cookie.match(/(?:^|;\s*)rw_locale=([^;]+)/)?.[1];
-    if (isLocale(cookie)) {
+    // Sozlagich guruhlari: hisob ustun (D4). Qurilmadagi nusxa faqat
+    // chaqnashni oldini oluvchi kesh — kirgandan keyin hisob qiymati
+    // qo'llanadi va qurilmaga ham yoziladi.
+    const accountAppearance = (prefs.appearance ?? null) as AppearancePrefs | null;
+    const accountA11y = (prefs.a11y ?? null) as A11yPrefs | null;
+    if (accountAppearance) {
+      applyAll(accountAppearance, accountA11y ?? {});
+      rememberAppearance(accountAppearance, accountA11y ?? {}, null);
+    } else if (accountA11y) {
+      // Faqat qulaylik sozlamasi bo'lsa uslubga TEGILMAYDI: `applyAll`
+      // `appearance.style` bo'sh bo'lsa standartga qaytarib qo'yardi.
+      applyA11y(accountA11y);
+      rememberAppearance({}, accountA11y, null);
+    }
+
+    const cookie = document.cookie.match(/(?:^|;\s*)rw_locale=([^;]+)/)?.[1];    if (isLocale(cookie)) {
       if (cookie !== user.locale) patch.locale = cookie;
     } else if (isLocale(user.locale) && user.locale !== DEFAULT_LOCALE) {
       document.cookie = `rw_locale=${user.locale}; path=/; max-age=31536000; samesite=lax`;
@@ -106,15 +122,20 @@ export function PrefsSync() {
       const body: Record<string, unknown> = {};
       if (change.theme) body.theme = change.theme;
       if (change.locale) body.locale = change.locale;
-      if (change.style) {
-        const appearance = ((user.ui_prefs ?? {}).appearance ?? {}) as Record<
-          string,
-          unknown
-        >;
+      if (change.style || change.appearance || change.a11y) {
+        const current = user.ui_prefs ?? {};
+        const appearance = (current.appearance ?? {}) as Record<string, unknown>;
         body.ui_prefs = {
-          ...(user.ui_prefs ?? {}),
+          ...current,
           version: 2,
-          appearance: { ...appearance, style: change.style },
+          appearance: {
+            ...appearance,
+            ...(change.appearance ?? {}),
+            ...(change.style ? { style: change.style } : {}),
+          },
+          ...(change.a11y
+            ? { a11y: { ...(current.a11y ?? {}), ...change.a11y } }
+            : {}),
         };
       }
       if (Object.keys(body).length)
