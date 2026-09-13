@@ -11,9 +11,12 @@ import type { ThemeEffect } from "@/lib/api";
 export const PREFS_EVENT = "rw:prefs";
 
 /** Sarlavhadagi tugmalar hisobni bilmaydi (provayderlar sessiyadan
- *  tashqarida) — ular hodisa yuboradi, `PrefsSync` esa uni hisobga yozadi. */
+ *  tashqarida) — ular hodisa yuboradi, `PrefsSync` esa uni hisobga yozadi.
+ *
+ *  `theme` — TANLANGAN rejim (`system` ham bo'lishi mumkin), yechilgan
+ *  mavzu emas. Server ham shu qiymatni saqlaydi (`User.theme`). */
 export type PrefsChange = {
-  theme?: "light" | "dark";
+  theme?: "light" | "dark" | "system";
   style?: string;
   locale?: string;
 };

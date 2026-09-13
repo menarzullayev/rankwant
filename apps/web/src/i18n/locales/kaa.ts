@@ -143,6 +143,7 @@ export const kaa: Record<MessageKey, string> = {
   "nav.menu": "Menyu",
   "theme.light": "Jaqtı rejim",
   "theme.dark": "Qarańǵı rejim",
+  "theme.system": "Sistema",
   "auth.login": "Kiriw",
   "auth.register": "Dizimnen ótiw",
   "auth.createAccount": "Akkaunt jaratıw",

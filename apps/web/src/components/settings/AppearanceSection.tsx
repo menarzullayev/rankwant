@@ -23,7 +23,7 @@ export function AppearanceSection() {
   const locale = useLocale();
   const router = useRouter();
   const { user, reload } = useSession();
-  const { theme, setTheme } = useTheme();
+  const { mode, setMode } = useTheme();
   const { style, setStyle } = useStyle();
   const action = useAction();
   const [pending, startTransition] = useTransition();
@@ -35,13 +35,20 @@ export function AppearanceSection() {
   const sound = prefs.sound ?? false;
   const effect = prefs.effect ?? "fade";
 
-  async function savePrefs(next: UiPrefs) {
+  async function savePrefs(next: { sound?: boolean; effect?: ThemeEffect }) {
     setLocal((current) => ({ ...current, ...next }));
     rememberPrefs(next);
     await action.run(async () => {
-      // Uslub sarlavhadan ham o'zgarishi mumkin — joriysi yoziladi, aks
-      // holda eski `ui_prefs` bilan birga eski uslub qaytib yozilardi.
-      await patchJson("/me/", { ui_prefs: { ...prefs, style, ...next } });
+      await patchJson("/me/", {
+        ui_prefs: {
+          ...prefs,
+          version: 2,
+          // Uslub sarlavhadan ham o'zgarishi mumkin — joriysi yoziladi, aks
+          // holda eski `ui_prefs` bilan birga eski uslub qaytib yozilardi.
+          appearance: { ...(prefs.appearance ?? {}), style },
+          ...next,
+        },
+      });
       await reload();
     });
   }
@@ -79,16 +86,16 @@ export function AppearanceSection() {
               {t(locale, "settings.theme")}
             </legend>
             {isDual(style) ? (
-              <div className="flex gap-2">
-                {(["light", "dark"] as const).map((mode) => (
+              <div className="flex flex-wrap gap-2">
+                {(["light", "dark", "system"] as const).map((value) => (
                   <button
-                    key={mode}
+                    key={value}
                     type="button"
-                    aria-pressed={theme === mode}
-                    onClick={() => setTheme(mode)}
-                    className={option(theme === mode)}
+                    aria-pressed={mode === value}
+                    onClick={() => setMode(value)}
+                    className={option(mode === value)}
                   >
-                    {t(locale, mode === "light" ? "theme.light" : "theme.dark")}
+                    {t(locale, `theme.${value}`)}
                   </button>
                 ))}
               </div>

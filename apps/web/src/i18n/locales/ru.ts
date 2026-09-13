@@ -143,6 +143,7 @@ export const ru: Record<MessageKey, string> = {
   "nav.menu": "Меню",
   "theme.light": "Светлая тема",
   "theme.dark": "Тёмная тема",
+  "theme.system": "Системная",
   "auth.login": "Войти",
   "auth.register": "Регистрация",
   "auth.createAccount": "Создать аккаунт",

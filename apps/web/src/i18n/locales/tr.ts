@@ -143,6 +143,7 @@ export const tr: Record<MessageKey, string> = {
   "nav.menu": "Menü",
   "theme.light": "Açık tema",
   "theme.dark": "Koyu tema",
+  "theme.system": "Sistem",
   "auth.login": "Giriş",
   "auth.register": "Kayıt ol",
   "auth.createAccount": "Hesap oluştur",

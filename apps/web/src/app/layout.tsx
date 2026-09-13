@@ -130,8 +130,17 @@ export const metadata: Metadata = {
 
 /** Tema klassini hidratsiyadan OLDIN qo'yadi — aks holda qorong'u
  * sozlamadagi foydalanuvchi har yuklanishda oq chaqnash ko'radi. */
-const THEME_INIT = `try{var t=localStorage.getItem("theme");
-if(t!=="light")document.documentElement.classList.add("dark")}catch(e){
+/** Mavzu rejimi: `light` | `dark` | `system`. Qiymat yo'q bo'lsa — `system`
+ *  (D5). `system` OS sozlamasiga ergashadi: OS darajasida qorong'i rejim
+ *  ishlatadigan odam har sayt uchun qo'lda o'chirmaydi.
+ *
+ *  Skript hidratsiyadan OLDIN ishlaydi, shuning uchun `localStorage` dan
+ *  o'qiladi (sessiya hali yo'q) — bu `lib/prefs.ts` dagi naqsh bilan bir
+ *  xil. `catch` ham qorong'iga tushadi: private rejimda o'qib bo'lmasa,
+ *  oq chaqnash ko'rsatishdan ko'ra qorong'i boshlash yaxshi. */
+const THEME_INIT = `try{var m=localStorage.getItem("theme")||"system";
+var d=m==="dark"||(m==="system"&&window.matchMedia("(prefers-color-scheme: dark)").matches);
+if(d)document.documentElement.classList.add("dark")}catch(e){
 document.documentElement.classList.add("dark")}`;
 
 /** Uslub ham hidratsiyadan oldin qo'yiladi — `data-style` butun token

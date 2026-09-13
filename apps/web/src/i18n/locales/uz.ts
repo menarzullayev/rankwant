@@ -147,6 +147,7 @@ export const uz = {
   "nav.menu": "Menyu",
   "theme.light": "Yorug' rejim",
   "theme.dark": "Qorong'u rejim",
+  "theme.system": "Tizim",
   "auth.login": "Kirish",
   "auth.register": "Ro'yxatdan o'tish",
   "auth.createAccount": "Hisob yaratish",

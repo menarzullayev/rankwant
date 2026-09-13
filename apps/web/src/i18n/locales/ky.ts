@@ -143,6 +143,7 @@ export const ky: Record<MessageKey, string> = {
   "nav.menu": "Меню",
   "theme.light": "Жарык режим",
   "theme.dark": "Караңгы режим",
+  "theme.system": "Системалык",
   "auth.login": "Кирүү",
   "auth.register": "Катталуу",
   "auth.createAccount": "Аккаунт түзүү",

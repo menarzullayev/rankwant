@@ -17,6 +17,15 @@ import {
 const isStyle = (value: unknown): value is StyleId =>
   typeof value === "string" && STYLE_IDS.includes(value as StyleId);
 
+const isMode = (value: unknown): value is "light" | "dark" | "system" =>
+  value === "light" || value === "dark" || value === "system";
+
+/** `system` ni OS sozlamasi bo'yicha yechadi. */
+const resolveMode = (mode: "light" | "dark" | "system"): boolean =>
+  mode === "system"
+    ? window.matchMedia("(prefers-color-scheme: dark)").matches
+    : mode === "dark";
+
 function readLocal(key: string): string | null {
   try {
     return localStorage.getItem(key);
@@ -48,20 +57,34 @@ export function PrefsSync() {
     const prefs = user.ui_prefs ?? {};
     const patch: Record<string, unknown> = {};
 
-    if (user.theme === "light" || user.theme === "dark") {
-      root.classList.toggle("dark", user.theme === "dark");
+    // Mavzu: hisob ustun (D4), qurilma nusxasi faqat kesh. `system` ham
+    // haqiqiy qiymat — u ham hisobdan qo'llanadi. Ilgari faqat
+    // `light`/`dark` hisobga olinardi, ya'ni hisobda `system` turib
+    // qurilmada `dark` bo'lsa qurilma ustun bo'lib qolardi.
+    if (isMode(user.theme)) {
+      root.classList.toggle("dark", resolveMode(user.theme));
       writeLocal("theme", user.theme);
     } else {
       const local = readLocal("theme");
-      if (local === "light" || local === "dark") patch.theme = local;
+      if (isMode(local)) patch.theme = local;
     }
 
-    if (isStyle(prefs.style)) {
-      root.dataset.style = prefs.style;
-      writeLocal("style", prefs.style);
+    // Sxema v2: uslub `appearance` guruhida (D33). Yassi `prefs.style`
+    // endi o'qilmaydi — eski qurilma nusxasi uchun `migrate` klientda
+    // emas, `core/prefs.py` da bajariladi, ya'ni bu yerda faqat v2.
+    const appearance = (prefs.appearance ?? {}) as Record<string, unknown>;
+    if (isStyle(appearance.style)) {
+      root.dataset.style = appearance.style;
+      writeLocal("style", appearance.style);
     } else {
       const local = readLocal("style");
-      if (isStyle(local)) patch.ui_prefs = { ...prefs, style: local };
+      if (isStyle(local)) {
+        patch.ui_prefs = {
+          ...prefs,
+          version: 2,
+          appearance: { ...appearance, style: local },
+        };
+      }
     }
 
     const cookie = document.cookie.match(/(?:^|;\s*)rw_locale=([^;]+)/)?.[1];
@@ -83,8 +106,17 @@ export function PrefsSync() {
       const body: Record<string, unknown> = {};
       if (change.theme) body.theme = change.theme;
       if (change.locale) body.locale = change.locale;
-      if (change.style)
-        body.ui_prefs = { ...(user.ui_prefs ?? {}), style: change.style };
+      if (change.style) {
+        const appearance = ((user.ui_prefs ?? {}).appearance ?? {}) as Record<
+          string,
+          unknown
+        >;
+        body.ui_prefs = {
+          ...(user.ui_prefs ?? {}),
+          version: 2,
+          appearance: { ...appearance, style: change.style },
+        };
+      }
       if (Object.keys(body).length)
         void patchJson("/me/", body).catch(() => {});
     };

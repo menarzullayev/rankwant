@@ -766,7 +766,50 @@ export type PrivacyField =
 
 export type ThemeEffect = "none" | "fade" | "circle";
 
-export type UiPrefs = { style?: string; sound?: boolean; effect?: ThemeEffect };
+/** Ko'rinish guruhi — sxema v2 (D33).
+ *
+ *  ⚠️ `theme` bu yerda YO'Q: mavzu `User.theme` maydonida saqlanadi.
+ *  Uni bu yerga ham qo'shish bir xil ma'noni ikki joyda saqlardi. */
+export type AppearancePrefs = {
+  style?: string;
+  /** TUS sifatida saqlanadi, tayyor rang emas (D42) — yorqinlik har muhit
+   *  uchun alohida hisoblanadi. `null` — uslubning o'z rangi. */
+  accent?: { hue: number; sat: number } | null;
+  /** `null` — uslubning o'z shrifti (D14). */
+  font?: string | null;
+  /** Ildiz shrift o'lchami: 90 | 100 | 110 | 120 (D16). */
+  size?: number;
+  density?: "compact" | "comfortable" | "spacious";
+};
+
+export type A11yPrefs = {
+  /** `protan` protanopiya VA deuteranopiya uchun (D44). */
+  vision?: "normal" | "protan" | "tritan";
+  motion?: "system" | "reduce";
+  bigTargets?: boolean;
+  strongFocus?: boolean;
+};
+
+export type ThemeTemplate = {
+  name: string;
+  appearance: AppearancePrefs;
+  a11y: A11yPrefs;
+};
+
+/** `User.ui_prefs` — v2, guruhlangan va versiyalangan (D33).
+ *
+ *  `sound`/`effect` yuqorida qoldi: ular ko'rinish emas, qaytarish
+ *  aloqasi — guruhga ko'chirish eski klientni buzardi. */
+export type UiPrefs = {
+  version?: number;
+  appearance?: AppearancePrefs;
+  /** Kuchli rejim (D9) — UI flag bilan O'CHIQ (D43). */
+  tokens?: Record<string, string>;
+  a11y?: A11yPrefs;
+  templates?: ThemeTemplate[];
+  sound?: boolean;
+  effect?: ThemeEffect;
+};
 
 /** Tur bo'yicha kanal tanlovi — `{"duel": {"site": true, "telegram": false}}`. */
 export type NotifyPrefs = Record<string, { site?: boolean; telegram?: boolean }>;

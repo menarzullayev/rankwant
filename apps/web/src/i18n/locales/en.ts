@@ -143,6 +143,7 @@ export const en: Record<MessageKey, string> = {
   "nav.menu": "Menu",
   "theme.light": "Light mode",
   "theme.dark": "Dark mode",
+  "theme.system": "System",
   "auth.login": "Sign in",
   "auth.register": "Sign up",
   "auth.createAccount": "Create an account",

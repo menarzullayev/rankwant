@@ -143,6 +143,7 @@ export const zh: Record<MessageKey, string> = {
   "nav.menu": "菜单",
   "theme.light": "浅色模式",
   "theme.dark": "深色模式",
+  "theme.system": "跟随系统",
   "auth.login": "登录",
   "auth.register": "注册",
   "auth.createAccount": "创建账号",

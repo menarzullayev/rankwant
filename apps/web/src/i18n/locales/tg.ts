@@ -143,6 +143,7 @@ export const tg: Record<MessageKey, string> = {
   "nav.menu": "Меню",
   "theme.light": "Ҳолати равшан",
   "theme.dark": "Ҳолати торик",
+  "theme.system": "Системавӣ",
   "auth.login": "Ворид шудан",
   "auth.register": "Сабти ном",
   "auth.createAccount": "Сохтани ҳисоб",
