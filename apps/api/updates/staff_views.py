@@ -13,7 +13,9 @@ from __future__ import annotations
 
 from typing import Any, ClassVar
 
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
+from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.request import Request
 from rest_framework.response import Response
 
@@ -26,6 +28,11 @@ from updates.serializers import StaffSystemUpdateSerializer
 class StaffUpdateViewSet(StaffViewSet):
     queryset = SystemUpdate.objects.prefetch_related("translations").select_related("author")
     serializer_class = StaffSystemUpdateSerializer
+    # `StaffViewSet` da `filter_backends` faqat Search + Ordering, ya'ni
+    # `filterset_fields` o'sha holatda JONSIZ edi — e'lon qilingan, lekin
+    # `?status=` hech narsa qilmasdan to'liq ro'yxatni qaytarardi.
+    # Ommaviy `SystemUpdateViewSet` da aynan shu nuqson topilgan edi.
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     search_fields: ClassVar[list[str]] = ["title", "body", "version"]
     ordering_fields: ClassVar[list[str]] = ["pk", "released_at", "published_at", "kind", "module"]
     filterset_fields: ClassVar[list[str]] = ["status", "kind", "module"]

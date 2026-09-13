@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "qvant",
     "notifications",
     "updates",
+    "roadmap",
     "blog",
     "content",
     "classroom",
