@@ -6,7 +6,7 @@ import { Markdown } from "@/components/Markdown";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { getLocale } from "@/i18n/server";
-import { t } from "@/i18n/messages";
+import { dateTime, t } from "@/i18n/messages";
 import { api, ApiError } from "@/lib/api";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -45,7 +45,7 @@ export default async function HackathonPage({ params }: Props) {
           </Badge>
           <span>
             {t(locale, "hackathon.deadline")}:{" "}
-            {new Date(h.submission_deadline).toLocaleString(locale)}
+            {dateTime(h.submission_deadline, locale)}
           </span>
         </div>
       </header>

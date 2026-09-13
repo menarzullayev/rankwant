@@ -291,7 +291,7 @@ function ContestRowPanel({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2 border-t rw-line pt-3">
+      <div className="flex flex-wrap items-center gap-2 border-t rw-divider pt-3">
         <Button
           type="button"
           variant="outline"

@@ -28,7 +28,7 @@ function Section({
 }) {
   return (
     <section className="rw-radius border rw-line rw-surface rw-shadow">
-      <div className="flex items-center justify-between gap-3 border-b rw-line px-5 py-4">
+      <div className="flex items-center justify-between gap-3 border-b rw-divider px-5 py-4">
         <h2 className="text-theme-xl font-semibold rw-strong">{title}</h2>
         <Badge color={active ? "brand" : "neutral"}>{phase}</Badge>
       </div>

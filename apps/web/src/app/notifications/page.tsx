@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { api, ApiError, type Notification } from "@/lib/api";
 import { Card } from "@/components/ui/Card";
 import { getLocale } from "@/i18n/server";
-import { t } from "@/i18n/messages";
+import { dateTime, t } from "@/i18n/messages";
 
 export async function generateMetadata(): Promise<Metadata> {
   return { title: t(await getLocale(), "notif.title") };
@@ -59,7 +59,7 @@ export default async function NotificationsPage() {
                   <p className="mt-1 text-theme-sm rw-dim">{n.body}</p>
                 )}
                 <p className="mt-1 text-theme-xs rw-faint">
-                  {new Date(n.created_at).toLocaleString(locale)}
+                  {dateTime(n.created_at, locale)}
                 </p>
               </div>
             </li>

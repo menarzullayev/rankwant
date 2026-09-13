@@ -4,7 +4,7 @@ import { api } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { ListCard } from "@/components/ui/ListCard";
 import { getLocale } from "@/i18n/server";
-import { t } from "@/i18n/messages";
+import { date, t } from "@/i18n/messages";
 
 export async function generateMetadata(): Promise<Metadata> {
   return { title: t(await getLocale(), "blog.title") };
@@ -30,7 +30,7 @@ export default async function BlogPage() {
               meta={
                 <>
                   <span>
-                    {new Date(post.published_at).toLocaleDateString(locale)}
+                    {date(post.published_at, locale)}
                   </span>
                   {post.author && <Badge>{post.author}</Badge>}
                 </>

@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/Table";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t } from "@/i18n/messages";
+import { date, t } from "@/i18n/messages";
 import {
   getJson,
   type Assignment,
@@ -92,7 +92,7 @@ export function ClassroomDetail({ slug }: { slug: string }) {
                 ))}
                 {a.due_at && (
                   <span className="text-theme-xs rw-faint">
-                    → {new Date(a.due_at).toLocaleDateString(locale)}
+                    → {date(a.due_at, locale)}
                   </span>
                 )}
               </div>

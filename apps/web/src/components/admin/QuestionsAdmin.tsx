@@ -248,7 +248,7 @@ export function QuestionsAdmin() {
           <form
             key={editing ? editing.id : "new"}
             onSubmit={submit}
-            className="grid gap-3 border-b rw-line p-5 md:grid-cols-2"
+            className="grid gap-3 border-b rw-divider p-5 md:grid-cols-2"
           >
             <label className="block md:col-span-2">
               <span className={LABEL}>Savol matni (Markdown + LaTeX) *</span>
@@ -452,7 +452,7 @@ export function QuestionsAdmin() {
           </TBody>
         </Table>
         {count > rows.length && (
-          <div className="flex items-center justify-end gap-2 border-t rw-line px-4 py-2 text-theme-xs">
+          <div className="flex items-center justify-end gap-2 border-t rw-divider px-4 py-2 text-theme-xs">
             <button
               type="button"
               disabled={page <= 1}

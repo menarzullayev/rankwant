@@ -60,7 +60,7 @@ export async function SolvedTab({
 
   return (
     <Card bodyClassName="p-0">
-      <div className="flex flex-wrap items-center gap-3 border-b rw-line px-5 py-4">
+      <div className="flex flex-wrap items-center gap-3 border-b rw-divider px-5 py-4">
         <div role="tablist" className="flex gap-1">
           <Link href={href({ view: undefined })} role="tab" aria-selected={!table} className={chip(!table)}>
             {t(locale, "profile.viewChips")}

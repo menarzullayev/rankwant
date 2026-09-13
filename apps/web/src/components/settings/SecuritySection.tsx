@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { fill, t } from "@/i18n/messages";
+import { dateTime, fill, t } from "@/i18n/messages";
 import { deleteJson, postJson, type SessionRow } from "@/lib/api";
 import { Hint, Loading, Status, useAction, useLoad } from "./kit";
 
@@ -287,7 +287,7 @@ function SessionsCard({ version }: { version: number }) {
                 {[
                   row.ip,
                   fill(t(locale, "settings.sessionSeen"), {
-                    time: new Date(row.last_seen).toLocaleString(locale),
+                    time: dateTime(row.last_seen, locale),
                   }),
                 ]
                   .filter(Boolean)

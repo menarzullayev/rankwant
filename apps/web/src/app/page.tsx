@@ -5,7 +5,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { Card, StatCard } from "@/components/ui/Card";
 import { TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
 import { getLocale } from "@/i18n/server";
-import { t } from "@/i18n/messages";
+import { date, dateTime, t } from "@/i18n/messages";
 import { ContestIcon, LeaderboardIcon, ProblemsIcon, QvantIcon } from "@/icons";
 import {
   api,
@@ -165,7 +165,7 @@ export default async function Home() {
                       {c.title}
                     </span>
                     <span className="mt-0.5 block text-theme-xs rw-faint">
-                      {new Date(c.start_at).toLocaleString(locale)}
+                      {dateTime(c.start_at, locale)}
                     </span>
                   </span>
                   <Badge color={c.is_running ? "success" : "info"}>
@@ -309,7 +309,7 @@ export default async function Home() {
                     {post.title}
                   </span>
                   <span className="mt-0.5 block text-theme-xs rw-faint">
-                    {new Date(post.published_at).toLocaleDateString(locale)}
+                    {date(post.published_at, locale)}
                   </span>
                 </Link>
               </li>

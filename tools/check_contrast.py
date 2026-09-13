@@ -45,6 +45,12 @@ FIELD_MIN = 3.0
 #: Chegara rangi shu ulushda matn rangidan hosil qilinadi (`globals.css`).
 FIELD_MIX = 0.65
 
+#: Ajratgich — karta chegarasidan ALOHIDA token. `--rw-line` `clay` va `neu`
+#: da ataylab shaffof, ya'ni u bilan chizilgan ajratgich ko'rinmas qolardi.
+#: Shakl uchun WCAG 1.4.11 3:1 talab qiladi (matn uchun 4.5 emas).
+DIVIDER_TOKEN = "--rw-divider"
+DIVIDER_MIN = 3.0
+
 #: `globals.css` da klaviatura halqasi shu token bilan chiziladi.
 FOCUS_TOKEN = "--rw-accent-ink"
 #: Tugma juftligi: (matn, fon). `.rw-accent-bg` shu ikkalasidan quriladi va
@@ -283,6 +289,32 @@ def main() -> int:
                 failures.append(
                     f"{name}  maydon chegarasi: {ratio:.2f}:1, kerak {FIELD_MIN}"
                 )
+
+        raw_divider = tokens.get(DIVIDER_TOKEN, "").strip()
+        if raw_divider:
+            # O'qilmagan qiymat — XATO, o'tkazib yuborilmaydi. `transparent`
+            # aynan shu yo'l bilan sirg'alib ketardi: `parse` uni `None`
+            # qaytaradi va tekshiruv jimgina o'tib ketardi — asl nuqson
+            # (`clay`/`neu` da ko'rinmas ajratgich) shu sababdan topilmagan.
+            divider = parse(raw_divider)
+            if divider is None:
+                failures.append(
+                    f"{name}  ajratgich ({DIVIDER_TOKEN}): rang o'qilmadi ({raw_divider})"
+                )
+            else:
+                checked += 1
+
+                def on_bg(bg: Color, fg: Color = divider) -> float:
+                    return contrast(over(fg, bg) if fg[3] < 1 else fg, bg)
+
+                worst_bg = min(backs, key=on_bg)
+                ratio = on_bg(worst_bg)
+                if ratio < DIVIDER_MIN:
+                    failures.append(
+                        f"{name}  ajratgich ({DIVIDER_TOKEN}): {ratio:.2f}:1, kerak {DIVIDER_MIN}"
+                    )
+        elif "--rw-faint" in tokens:
+            failures.append(f"{name}  {DIVIDER_TOKEN}: token yo'q")
 
         to_check: list[tuple[str, Color, str]] = []
         for tier in TIERS + RANKS + LEVELS:

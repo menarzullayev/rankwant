@@ -16,7 +16,7 @@ export function Table({ children }: { children: React.ReactNode }) {
 
 export function THead({ children }: { children: React.ReactNode }) {
   return (
-    <thead className="border-b rw-line">
+    <thead className="border-b rw-divider">
       <tr>{children}</tr>
     </thead>
   );

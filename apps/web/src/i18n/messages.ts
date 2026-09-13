@@ -89,6 +89,41 @@ export function fill(
   );
 }
 
+/** Brauzer ICU'sida bor til kodi; bo'lmasa `uz`.
+ *
+ *  Ba'zi kodlar ICU jadvalida YO'Q: `kaa`, `ky`, `tg` — o'lchandi,
+ *  ularning uchalasi ham jimgina `en-US` ga tushib, sanani
+ *  `9/20/2026, 7:30:00 PM` ko'rinishida beradi. Ya'ni qoraqalpoq
+ *  foydalanuvchisi o'zbekchadan ham, ruschadan ham boshqa formatni
+ *  ko'rardi. `supportedLocalesOf` ga tayanmaymiz: u ba'zi muhitda
+ *  qismiy ma'lumotli tilni ham «bor» deb qaytaradi. Buning o'rniga
+ *  natijaning o'zini tekshiramiz — ICU topa olmasa standart tilga
+ *  tushadi va bu nomdan ko'rinib turadi.
+ */
+export function intlLocale(locale: Locale): string {
+  try {
+    const resolved = new Intl.DateTimeFormat(locale).resolvedOptions().locale;
+    return resolved.toLowerCase().startsWith(locale.slice(0, 2))
+      ? locale
+      : DEFAULT_LOCALE;
+  } catch {
+    return DEFAULT_LOCALE;
+  }
+}
+
+/** Sana-vaqtni tilga mos ko'rinishda. Qarang: `intlLocale`. */
+export function dateTime(
+  value: string | number | Date,
+  locale: Locale,
+): string {
+  return new Date(value).toLocaleString(intlLocale(locale));
+}
+
+/** Faqat sana (vaqtsiz) — qarang: `intlLocale`. */
+export function date(value: string | number | Date, locale: Locale): string {
+  return new Date(value).toLocaleDateString(intlLocale(locale));
+}
+
 /** Uch ustunli nom (ko'nikma, mavzu, vazifa) — tilga mosi, bo'lmasa o'zbekchasi. */
 export function localName(
   row: { name_uz: string; name_ru: string; name_en: string },

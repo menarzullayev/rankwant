@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 import { AuthForm } from "@/components/AuthForm";
+import { AuthFormSkeleton } from "@/components/AuthFormSkeleton";
 import { AuthLayout } from "@/components/AuthLayout";
 import { Card } from "@/components/ui/Card";
 import { fetchProviders } from "@/lib/api";
@@ -30,8 +31,11 @@ export default async function RegisterPage() {
   );
   return (
     <AuthLayout>
-      <Card title={t(locale, "auth.register")}>
-        <Suspense>
+      {/* Sarlavha `auth.register` EMAS: u tugma matni bilan bir xil
+          bo'lardi ("Ro'yxatdan o'tish" ikki marta). Sarlavha endi nima
+          yaratilayotganini aytadi, tugma esa amalni. */}
+      <Card title={t(locale, "auth.createAccount")}>
+        <Suspense fallback={<AuthFormSkeleton />}>
           <AuthForm
             mode="register"
             providers={auth.providers}

@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { Badge } from "@/components/ui/Badge";
 import { getLocale } from "@/i18n/server";
-import { t } from "@/i18n/messages";
+import { t, dateTime, type Locale } from "@/i18n/messages";
 import { api, type Contest } from "@/lib/api";
 
 /** Yaqin musobaqa — hozir ketayotgani ustun, aks holda eng yaqini. */
@@ -15,6 +15,18 @@ function pickContest(contests: Contest[]): Contest | null {
   );
 }
 
+/** Brend bloki — desktop panelda ham, mobil sarlavhada ham bir xil. */
+function Brand({ locale }: { locale: Locale }) {
+  return (
+    <>
+      <p className="text-2xl font-bold">
+        Rank<span className="rw-accent-ink">Want</span>
+      </p>
+      <p className="mt-2 text-theme-md rw-dim">{t(locale, "auth.tagline")}</p>
+    </>
+  );
+}
+
 /** Kirish va ro'yxat uchun split-screen qobiq (qaror 10, 11, 12).
  *
  * Chap panel ATAYLAB rasmsiz: platformada 12 ta uslub tizimi bor, ya'ni
@@ -22,15 +34,23 @@ function pickContest(contests: Contest[]): Contest | null {
  * talab qilardi. Buning o'rniga naqsh `--rw-accent` va `--rw-line`
  * tokenlaridan chiziladi — yangi uslub qo'shilganda u o'zi moslashadi.
  *
- * Panel mobilda yashiriladi (`hidden lg:flex`): kichik ekranda u formani
- * pastga itarib, kirishni sekinlashtiradi va diqqatni bo'ladi.
+ * Kontent `justify-center` bilan MARKAZDA turadi, `justify-between` bilan
+ * emas. Sabab o'lchandi: musobaqa bo'lmaganda (odatiy hol) `pickContest`
+ * `null` qaytaradi, uchta blokdan ikkitasi qoladi va `justify-between`
+ * ularni chetga surib, orasida ~880px bo'shliq qoldirardi — panel buzuq
+ * ko'rinardi.
+ *
+ * Panel mobilda yashiriladi (`hidden lg:flex`), lekin brend butunlay
+ * yo'qolmaydi: telefonda forma ustida qisqa sarlavha chiqadi.
  */
 export async function AuthLayout({ children }: { children: React.ReactNode }) {
   const locale = await getLocale();
 
   // Statistika va musobaqa MUSTAQIL — ketma-ket kutilsa sahifa
   // sekinlashadi. Ikkalasi yiqilsa ham sahifa ochilishi kerak: kirish
-  // panelga bog'liq emas.
+  // panelga bog'liq emas. `api.*` ichida `revalidate` bor (stats 60 s,
+  // contests 30 s), ya'ni bu so'rovlar Next keshidan keladi — har
+  // yuklanishda API ga bormaydi.
   const [stats, contests] = await Promise.all([
     api.stats().catch(() => null),
     api.contests().catch(() => null),
@@ -39,11 +59,13 @@ export async function AuthLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="grid min-h-[70vh] lg:min-h-[80vh] lg:grid-cols-2">
-      <aside className="relative hidden overflow-hidden border-r rw-line rw-surface lg:flex lg:flex-col lg:justify-between lg:gap-8 lg:p-10">
-        {/* Fon naqshi — uslub tokenlaridan, ya'ni har temada to'g'ri. */}
+      <aside className="relative hidden overflow-hidden border-r rw-divider rw-surface lg:flex lg:flex-col lg:justify-center lg:gap-10 lg:p-10">
+        {/* Fon naqshi — uslub tokenlaridan, ya'ni har temada to'g'ri.
+            MARKAZDA va qirqilmasdan: ilgari `-right-24 -bottom-24` bilan
+            chetdan chiqib ketardi va tugallanmagan shaklga o'xshardi. */}
         <svg
           aria-hidden
-          className="pointer-events-none absolute -right-24 -bottom-24 size-[420px] rw-accent-ink opacity-[0.07]"
+          className="pointer-events-none absolute top-1/2 left-1/2 size-[560px] -translate-x-1/2 -translate-y-1/2 rw-accent-ink opacity-[0.10]"
           viewBox="0 0 200 200"
           fill="none"
         >
@@ -54,10 +76,7 @@ export async function AuthLayout({ children }: { children: React.ReactNode }) {
         </svg>
 
         <div className="relative">
-          <p className="text-2xl font-bold">
-            Rank<span className="rw-accent-ink">Want</span>
-          </p>
-          <p className="mt-2 text-theme-md rw-dim">{t(locale, "auth.tagline")}</p>
+          <Brand locale={locale} />
         </div>
 
         {stats && (
@@ -66,7 +85,10 @@ export async function AuthLayout({ children }: { children: React.ReactNode }) {
               [
                 [t(locale, "nav.problems"), stats.problems],
                 [t(locale, "nav.contests"), stats.contests],
-                [t(locale, "nav.leaderboard"), stats.users],
+                // `stats.users` — FOYDALANUVCHILAR soni. Ilgari bu yerda
+                // `nav.leaderboard` ("Reyting") turardi, ya'ni 10008 kabi
+                // raqam reyting balli bo'lib o'qilardi.
+                [t(locale, "auth.members"), stats.users],
               ] as const
             ).map(([label, value]) => (
               <div key={label}>
@@ -89,7 +111,7 @@ export async function AuthLayout({ children }: { children: React.ReactNode }) {
             </p>
             <p className="mt-2 truncate font-medium rw-strong">{soon.title}</p>
             <p className="mt-1 flex items-center gap-2 text-theme-xs rw-faint">
-              {new Date(soon.start_at).toLocaleString(locale)}
+              {dateTime(soon.start_at, locale)}
               <Badge color={soon.is_running ? "success" : "info"}>
                 {t(
                   locale,
@@ -101,8 +123,14 @@ export async function AuthLayout({ children }: { children: React.ReactNode }) {
         )}
       </aside>
 
-      <div className="flex items-center justify-center p-6">
-        <div className="w-full max-w-md">{children}</div>
+      <div className="flex flex-col">
+        {/* Telefonda chap panel yo'q, ya'ni kontekst umuman qolmasdi. */}
+        <div className="border-b rw-divider rw-surface px-6 py-5 lg:hidden">
+          <Brand locale={locale} />
+        </div>
+        <div className="flex flex-1 items-center justify-center p-6">
+          <div className="w-full max-w-md">{children}</div>
+        </div>
       </div>
     </div>
   );

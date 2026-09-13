@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Badge } from "@/components/ui/Badge";
 import { ListCard } from "@/components/ui/ListCard";
 import { getLocale } from "@/i18n/server";
-import { t } from "@/i18n/messages";
+import { date, t } from "@/i18n/messages";
 import { api } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
@@ -57,8 +57,8 @@ export default async function TournamentsPage() {
                     {t(locale, "tournament.stages").toLowerCase()}
                   </Badge>
                   <span>
-                    {new Date(tn.start_at).toLocaleDateString(locale)} —{" "}
-                    {new Date(tn.end_at).toLocaleDateString(locale)}
+                    {date(tn.start_at, locale)} —{" "}
+                    {date(tn.end_at, locale)}
                   </span>
                 </>
               }

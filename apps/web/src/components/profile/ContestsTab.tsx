@@ -56,7 +56,7 @@ export async function ContestsTab({
 
   return (
     <Card bodyClassName="p-0">
-      <div className="space-y-3 border-b rw-line px-5 py-4">
+      <div className="space-y-3 border-b rw-divider px-5 py-4">
         <SectionHint>{t(locale, "profile.contestsHint")}</SectionHint>
         <form action={base}>
           <label className="block max-w-sm">

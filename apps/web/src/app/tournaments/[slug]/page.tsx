@@ -15,7 +15,7 @@ import {
   Table,
 } from "@/components/ui/Table";
 import { getLocale } from "@/i18n/server";
-import { t } from "@/i18n/messages";
+import { date, dateTime, t } from "@/i18n/messages";
 import { api, ApiError } from "@/lib/api";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -47,8 +47,8 @@ export default async function TournamentPage({ params }: Props) {
       <header>
         <h1 className="text-title-sm font-bold rw-strong">{tn.title}</h1>
         <p className="mt-2 text-theme-xs rw-faint">
-          {new Date(tn.start_at).toLocaleDateString(locale)} —{" "}
-          {new Date(tn.end_at).toLocaleDateString(locale)}
+          {date(tn.start_at, locale)} —{" "}
+          {date(tn.end_at, locale)}
         </p>
       </header>
       {tn.description && (
@@ -73,7 +73,7 @@ export default async function TournamentPage({ params }: Props) {
                 </Link>
                 <p className="text-theme-xs rw-faint">
                   {s.contest_title} ·{" "}
-                  {new Date(s.start_at).toLocaleString(locale)}
+                  {dateTime(s.start_at, locale)}
                 </p>
               </div>
               {s.weight > 1 && <Badge color="brand">×{s.weight}</Badge>}

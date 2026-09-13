@@ -105,7 +105,7 @@ export async function ActivityTab({
         ))}
       </ol>
       {data.next_before && (
-        <div className="border-t rw-line px-5 py-3">
+        <div className="border-t rw-divider px-5 py-3">
           <Link
             href={
               `/users/${username}/faoliyat?before=${encodeURIComponent(data.next_before)}` as Route
@@ -260,7 +260,7 @@ export async function PeopleTab({
 
   return (
     <Card title={`${title} · ${data.count}`} bodyClassName="p-0">
-      <form method="get" className="flex flex-wrap items-center gap-2 border-b rw-line px-5 py-3">
+      <form method="get" className="flex flex-wrap items-center gap-2 border-b rw-divider px-5 py-3">
         <input
           type="search"
           name="q"
@@ -321,7 +321,7 @@ export async function PeopleTab({
         </TBody>
       </Table>
       {(data.previous || data.next) && (
-        <div className="flex justify-between border-t rw-line px-5 py-3 text-theme-sm">
+        <div className="flex justify-between border-t rw-divider px-5 py-3 text-theme-sm">
           {data.previous ? (
             <Link href={link(page - 1)} className="rw-accent-ink hover:underline">
               ← {t(locale, "profile.prev")}

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 import { Badge, type BadgeColor } from "@/components/ui/Badge";
 import { getLocale } from "@/i18n/server";
-import { t } from "@/i18n/messages";
+import { dateTime, t } from "@/i18n/messages";
 import { ContestIcon } from "@/icons";
 import { api } from "@/lib/api";
 
@@ -60,7 +60,7 @@ export default async function ContestsPage() {
                     )}
                   </span>
                   <span className="mt-2 block text-theme-xs rw-dim">
-                    {new Date(c.start_at).toLocaleString(locale)}
+                    {dateTime(c.start_at, locale)}
                   </span>
                 </span>
               </Link>

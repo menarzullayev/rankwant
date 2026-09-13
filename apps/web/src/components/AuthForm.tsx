@@ -12,7 +12,7 @@ import { Checkbox, SelectField } from "@/components/ui/SelectField";
 import { CountrySelect } from "@/components/ui/CountrySelect";
 import { GithubMark, GoogleMark, TelegramMark } from "@/components/ProviderMark";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t, errorText } from "@/i18n/messages";
+import { t, errorText, type Locale } from "@/i18n/messages";
 import { ApiError, getJson, postJson } from "@/lib/api";
 import { track } from "@/lib/analytics";
 import { strength } from "@/lib/password";
@@ -43,6 +43,18 @@ const BRAND: Record<Provider, string> = {
   google: "border rw-line bg-white text-[#1f1f1f]",
   github: "bg-[#1f2328] text-white",
   telegram: "bg-[#1a77a4] text-white",
+};
+
+/** Til -> odatiy mamlakat. Mamlakat maydonining standart qiymati shu yerdan
+ *  olinadi, qattiq `UZ` dan emas. Ro'yxatda yo'q til uchun `UZ`. */
+const DEFAULT_COUNTRY: Partial<Record<Locale, string>> = {
+  uz: "UZ",
+  kaa: "UZ",
+  ru: "UZ",
+  kk: "KZ",
+  ky: "KG",
+  tg: "TJ",
+  tr: "TR",
 };
 
 export function AuthForm({
@@ -84,9 +96,11 @@ export function AuthForm({
   const [pass, setPass] = useState("");
   const [pass2, setPass2] = useState("");
   //: Mamlakat — ro'yxatning 1-bosqichida so'raladi (qaror 2). Standart
-  //: `UZ`: auditoriyaning asosiy qismi shu yerdan, ya'ni ko'pchilik
-  //: hech narsa o'zgartirmaydi. Xorijiy foydalanuvchi bir marta tanlaydi.
-  const [country, setCountry] = useState("UZ");
+  //: qiymat TILDAN kelib chiqadi: qattiq `UZ` qo'yilsa qozoq yoki qirg'iz
+  //: foydalanuvchisi o'z mamlakatini emas, O'zbekistonni ko'rib qolardi.
+  //: Til mamlakatni aniqlamasa (masalan `en`, `zh`, `es`) `UZ` qoladi —
+  //: auditoriyaning asosiy qismi shu yerdan.
+  const [country, setCountry] = useState(() => DEFAULT_COUNTRY[locale] ?? "UZ");
   //: A/B `b` variantida viloyat shu formada so'raladi (8-qaror).
   //: `a` variantida bo'sh qoladi va 2-qadamda to'ldiriladi.
   const [region, setRegion] = useState("");
@@ -278,77 +292,36 @@ export function AuthForm({
         }}
         className="flex flex-col gap-4"
       >
-        <Field
-          label={t(locale, "auth.username")}
-          name="username"
-          required
-          // Sahifaning yagona vazifasi shu forma — kursor darhol shu
-          // yerda bo'lsin.
-          autoFocus
-          autoComplete="username"
-          minLength={mode === "register" ? 3 : undefined}
-          maxLength={mode === "register" ? 30 : undefined}
-          value={mode === "register" ? username : undefined}
-          onChange={
-            mode === "register" ? (e) => setUsername(e.target.value) : undefined
-          }
-          status={nameStatus}
-          hint={mode === "register" ? t(locale, "auth.usernameHint") : undefined}
-        />
-        {mode === "register" && (
+        {/* HISOB — kirish uchun majburiy qism, eng avval keladi. Standart
+            naqsh: odam tanish maydonlardan boshlaydi (email + parol), keyin
+            profil. Ilgari foydalanuvchi nomi birinchi edi, ya'ni odam
+            tanish qismga yetishdan oldin qo'shimcha qaror qabul qilardi.
+            Kirishda esa identifikator — foydalanuvchi nomi, shuning uchun
+            u yerda tartib o'zgarmaydi. */}
+        {mode === "register" ? (
           <Field
             label={t(locale, "auth.email")}
             name="email"
             type="email"
             required
+            // Sahifaning yagona vazifasi shu forma — kursor darhol shu
+            // yerda bo'lsin.
+            autoFocus
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             status={emailStatus}
           />
-        )}
-        {mode === "register" && (
+        ) : (
           <Field
-            label={t(locale, "auth.displayName")}
-            name="display_name"
-            autoComplete="name"
-            maxLength={100}
-            hint={t(locale, "auth.displayNameHint")}
+            label={t(locale, "auth.username")}
+            name="username"
+            required
+            autoFocus
+            autoComplete="username"
+            value={undefined}
+            status={nameStatus}
           />
-        )}
-        {mode === "register" && (
-          /* Mamlakat — bosqichli yig'ishning birinchi qadami (qaror 2):
-             bitta tanlov, lekin butun statistika shu bo'yicha bo'linadi.
-             Qidiruvli: 249 variantni qo'lda aylantirish noqulay. */
-          <CountrySelect
-            label={t(locale, "auth.country")}
-            value={country}
-            onChange={(code) => {
-              setCountry(code);
-              // Viloyat KODI faqat O'zbekiston uchun ma'noli: boshqa
-              // mamlakatlarda joy erkin matn bo'ladi (ADR-0017).
-              if (code !== "UZ") setRegion("");
-            }}
-          />
-        )}
-        {mode === "register" && geoVariant === "b" && country === "UZ" && (
-          /* A/B `b` varianti (8-qaror): viloyat DARHOL so'raladi.
-             Nazorat guruhida esa bu 2-qadamda so'raladi — farq shunda,
-             ya'ni «erta so'rash odamni qaytarib yuborayaptimi» degan
-             savolga javob shu ikki guruhni taqqoslab topiladi. */
-          <SelectField
-            label={t(locale, "settings.region")}
-            name="region"
-            value={region}
-            onChange={(e) => setRegion(e.target.value)}
-          >
-            <option value="">—</option>
-            {REGION_CODES.map((code) => (
-              <option key={code} value={code}>
-                {regionName(code, locale)}
-              </option>
-            ))}
-          </SelectField>
         )}
         <Field
           label={t(locale, "auth.password")}
@@ -376,6 +349,65 @@ export function AuthForm({
             onChange={(e) => setPass2(e.target.value)}
             status={matchStatus}
           />
+        )}
+
+        {mode === "register" && (
+          <>
+            {/* Guruh chegarasi — hisob va profil ajralib tursin. */}
+            <hr className="border-t rw-divider" />
+            {/* PROFIL. Foydalanuvchi nomi majburiy, qolgani ixtiyoriy. */}
+            <Field
+              label={t(locale, "auth.username")}
+              name="username"
+              required
+              autoComplete="username"
+              minLength={3}
+              maxLength={30}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              status={nameStatus}
+              hint={t(locale, "auth.usernameHint")}
+            />
+            <Field
+              label={t(locale, "auth.displayName")}
+              name="display_name"
+              autoComplete="name"
+              maxLength={100}
+              hint={t(locale, "auth.displayNameHint")}
+            />
+            {/* Mamlakat — bosqichli yig'ishning birinchi qadami (qaror 2):
+                bitta tanlov, lekin butun statistika shu bo'yicha bo'linadi.
+                Qidiruvli: 249 variantni qo'lda aylantirish noqulay. */}
+            <CountrySelect
+              label={t(locale, "auth.country")}
+              value={country}
+              onChange={(code) => {
+                setCountry(code);
+                // Viloyat KODI faqat O'zbekiston uchun ma'noli: boshqa
+                // mamlakatlarda joy erkin matn bo'ladi (ADR-0017).
+                if (code !== "UZ") setRegion("");
+              }}
+            />
+            {geoVariant === "b" && country === "UZ" && (
+              /* A/B `b` varianti (8-qaror): viloyat DARHOL so'raladi.
+                 Nazorat guruhida esa bu 2-qadamda so'raladi — farq shunda,
+                 ya'ni «erta so'rash odamni qaytarib yuborayaptimi» degan
+                 savolga javob shu ikki guruhni taqqoslab topiladi. */
+              <SelectField
+                label={t(locale, "settings.region")}
+                name="region"
+                value={region}
+                onChange={(e) => setRegion(e.target.value)}
+              >
+                <option value="">—</option>
+                {REGION_CODES.map((code) => (
+                  <option key={code} value={code}>
+                    {regionName(code, locale)}
+                  </option>
+                ))}
+              </SelectField>
+            )}
+          </>
         )}
 
         {mode === "login" && (
@@ -453,11 +485,11 @@ export function AuthForm({
       {providers.length > 0 && (
         <>
           <div className="flex items-center gap-3">
-            <span className="h-px flex-1 border-t rw-line" />
+            <span className="h-px flex-1 border-t rw-divider" />
             <span className="text-theme-xs rw-dim">
               {t(locale, "auth.orWith")}
             </span>
-            <span className="h-px flex-1 border-t rw-line" />
+            <span className="h-px flex-1 border-t rw-divider" />
           </div>
           {/* Ustma-ust uchta to'liq kenglikdagi tugma ~150px vertikal joy
               olardi va forma ekrandan pastga tushib ketardi. Ikkitasi
@@ -510,7 +542,10 @@ export function AuthForm({
         {t(locale, mode === "login" ? "auth.noAccount" : "auth.hasAccount")}{" "}
         <Link
           href={mode === "login" ? "/register" : "/login"}
-          className="font-medium rw-accent-ink hover:underline"
+          // Doimiy tagchiziq: havola MATN ICHIDA turadi, ya'ni faqat rang
+          // bilan ajralishi WCAG 1.4.1 ni buzardi (yuqoridagi rozilik
+          // havolalari bilan bir xil sabab).
+          className="font-medium rw-accent-ink underline"
         >
           {t(locale, mode === "login" ? "auth.register" : "auth.login")}
         </Link>

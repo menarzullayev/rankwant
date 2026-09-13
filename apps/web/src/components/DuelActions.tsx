@@ -10,7 +10,7 @@ import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t, errorText } from "@/i18n/messages";
+import { dateTime, errorText, t } from "@/i18n/messages";
 import {
   ApiError,
   getJson,
@@ -51,7 +51,7 @@ function DuelRow({
           {d.opponent && ` vs @${d.opponent}`} · {d.problem_count}{" "}
           {t(locale, "duel.problems")} · ~{d.difficulty} · {d.duration_minutes}{" "}
           {t(locale, "duel.minutes")} ·{" "}
-          {new Date(d.start_at).toLocaleString(locale)}
+          {dateTime(d.start_at, locale)}
         </p>
       </div>
       <Badge color={color}>{d.status}</Badge>
@@ -172,7 +172,7 @@ export function DuelActions({ waiting }: { waiting: Duel[] }) {
           {showForm && (
             <form
               onSubmit={create}
-              className="grid gap-3 border-b rw-line p-5 md:grid-cols-2"
+              className="grid gap-3 border-b rw-divider p-5 md:grid-cols-2"
             >
               <Field label="Nomi" name="title" required defaultValue="Blitz" />
               <Field

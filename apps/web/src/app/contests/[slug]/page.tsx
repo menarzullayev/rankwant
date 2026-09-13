@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
 import { getLocale } from "@/i18n/server";
-import { t } from "@/i18n/messages";
+import { dateTime, t } from "@/i18n/messages";
 import { StandingsTable } from "@/components/StandingsTable";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
@@ -69,8 +69,8 @@ export default async function ContestPage({ params }: Props) {
             <Badge color="brand">{t(locale, "contests.rated")}</Badge>
           )}
           <span className="text-theme-xs rw-dim">
-            {new Date(contest.start_at).toLocaleString(locale)} —{" "}
-            {new Date(contest.end_at).toLocaleString(locale)}
+            {dateTime(contest.start_at, locale)} —{" "}
+            {dateTime(contest.end_at, locale)}
           </span>
         </div>
       </div>

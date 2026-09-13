@@ -7,7 +7,7 @@ import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t } from "@/i18n/messages";
+import { dateTime, t } from "@/i18n/messages";
 import { getJson, type Duel } from "@/lib/api";
 
 /** Masalalar faqat ishtirokchiga va faqat boshlangach — sessiya kerak,
@@ -56,7 +56,7 @@ export function DuelDetail({ initial }: { initial: Duel }) {
           )}
         </div>
         <p className="mt-2 text-theme-xs rw-faint">
-          {new Date(duel.start_at).toLocaleString(locale)} —{" "}
+          {dateTime(duel.start_at, locale)} —{" "}
           {new Date(duel.end_at).toLocaleTimeString(locale)} ·{" "}
           {duel.problem_count} {t(locale, "duel.problems")} · ~{duel.difficulty}
         </p>

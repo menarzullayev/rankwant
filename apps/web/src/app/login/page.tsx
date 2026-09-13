@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 import { AuthForm } from "@/components/AuthForm";
+import { AuthFormSkeleton } from "@/components/AuthFormSkeleton";
 import { AuthLayout } from "@/components/AuthLayout";
 import { Card } from "@/components/ui/Card";
 import { fetchProviders } from "@/lib/api";
@@ -21,8 +22,10 @@ export default async function LoginPage() {
   const [locale, auth] = await Promise.all([getLocale(), fetchProviders()]);
   return (
     <AuthLayout>
-      <Card title={t(locale, "auth.login")}>
-        <Suspense>
+      {/* Sarlavhasiz: u tugma matni bilan bir xil bo'lardi ("Kirish"), va
+          bu forma qisqa — maydonlar o'zi nima ekanini aytadi. */}
+      <Card>
+        <Suspense fallback={<AuthFormSkeleton />}>
           <AuthForm mode="login" providers={auth.providers} />
         </Suspense>
       </Card>

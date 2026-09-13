@@ -55,7 +55,7 @@ export async function AttemptsTab({
 
   return (
     <Card bodyClassName="p-0">
-      <div className="space-y-2 border-b rw-line px-5 py-4">
+      <div className="space-y-2 border-b rw-divider px-5 py-4">
         {filters.problem && (
           <p className="flex flex-wrap items-center gap-2 text-theme-sm">
             <span className="rw-dim">{t(locale, "problems.name")}:</span>
@@ -130,7 +130,7 @@ export async function AttemptsTab({
         </TBody>
       </Table>
       {(newer || older) && (
-        <nav className="flex justify-between border-t rw-line px-5 py-3 text-theme-sm">
+        <nav className="flex justify-between border-t rw-divider px-5 py-3 text-theme-sm">
           {newer ? (
             <Link href={href({ cursor: newer })} className="rw-accent-ink hover:underline">
               ← {t(locale, "profile.prev")}

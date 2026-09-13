@@ -125,7 +125,7 @@ export default async function SolversPage({ params, searchParams }: Props) {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b rw-line">
+                <tr className="border-b rw-divider">
                   <th className="px-5 py-2 text-left text-theme-xs font-medium rw-faint">
                     Foydalanuvchi
                   </th>

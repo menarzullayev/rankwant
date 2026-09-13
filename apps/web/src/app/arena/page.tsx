@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Badge } from "@/components/ui/Badge";
 import { ListCard } from "@/components/ui/ListCard";
 import { getLocale } from "@/i18n/server";
-import { t } from "@/i18n/messages";
+import { dateTime, t } from "@/i18n/messages";
 import { api } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
@@ -58,7 +58,7 @@ export default async function ArenaListPage() {
                     {t(locale, "arena.perQuestion")}
                   </Badge>
                   <Badge color="brand">{a.participant_count} 👤</Badge>
-                  <span>{new Date(a.start_at).toLocaleString(locale)}</span>
+                  <span>{dateTime(a.start_at, locale)}</span>
                 </>
               }
             />

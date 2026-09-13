@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/Card";
 import { Field, type FieldStatus } from "@/components/ui/Field";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { fill, t } from "@/i18n/messages";
+import { date, fill, t } from "@/i18n/messages";
 import {
   deleteJson,
   getJson,
@@ -254,7 +254,7 @@ function UsernameCard() {
         <Hint>
           {freeAt
             ? fill(t(locale, "settings.usernameNextFree"), {
-                date: new Date(freeAt).toLocaleDateString(locale),
+                date: date(freeAt, locale),
                 price,
               })
             : t(locale, "settings.usernameFree")}

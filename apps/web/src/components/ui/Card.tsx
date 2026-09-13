@@ -15,7 +15,7 @@ export function Card({
   return (
     <section className={`rw-panel ${className}`}>
       {(title || action) && (
-        <div className="flex items-center justify-between gap-3 border-b rw-line px-5 py-4">
+        <div className="flex items-center justify-between gap-3 border-b rw-divider px-5 py-4">
           {typeof title === "string" ? (
             <h2 className="text-theme-xl font-semibold rw-strong">{title}</h2>
           ) : (

@@ -12,7 +12,7 @@ export default function AppFooter() {
   const locale = useLocale();
   return (
     <footer className="mx-auto max-w-[1400px] px-4 pb-8 pt-2 md:px-6">
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t rw-line pt-5 text-theme-xs rw-dim">
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t rw-divider pt-5 text-theme-xs rw-dim">
         <span>RankWant</span>
         <Link href="/shartlar" className="hover:underline">
           {t(locale, "footer.terms")}

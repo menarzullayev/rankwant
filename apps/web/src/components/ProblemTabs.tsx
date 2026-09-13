@@ -23,7 +23,7 @@ export function ProblemTabs({
   return (
     <nav
       aria-label="Masala bo'limlari"
-      className="flex flex-wrap items-center gap-1 border-b rw-line"
+      className="flex flex-wrap items-center gap-1 border-b rw-divider"
     >
       {tabs.map(([key, label, href]) => (
         <Link

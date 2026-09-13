@@ -46,7 +46,7 @@ function CopyButton({ text, label }: { text: string; label: string }) {
 
 function Cell({ text, label }: { text: string; label: string }) {
   return (
-    <td className="border-l rw-line px-2 py-1.5 align-top">
+    <td className="border-l rw-divider px-2 py-1.5 align-top">
       <div className="flex items-start gap-1">
         <pre className="min-w-0 grow overflow-auto rw-radius-sm rw-field-bg p-2 font-mono text-theme-xs rw-strong [max-height:14rem]">
           {text}
@@ -67,14 +67,14 @@ export function SampleTests({ samples }: { samples: Sample[] }) {
       <div className="min-w-0 overflow-x-auto">
         <table className="w-full min-w-[34rem] table-fixed">
           <thead>
-            <tr className="border-b rw-line">
+            <tr className="border-b rw-divider">
               <th className="w-10 px-3 py-2 text-left text-theme-xs font-medium rw-faint">
                 #
               </th>
-              <th className="border-l rw-line px-3 py-2 text-left text-theme-xs font-medium rw-faint">
+              <th className="border-l rw-divider px-3 py-2 text-left text-theme-xs font-medium rw-faint">
                 Kirish
               </th>
-              <th className="border-l rw-line px-3 py-2 text-left text-theme-xs font-medium rw-faint">
+              <th className="border-l rw-divider px-3 py-2 text-left text-theme-xs font-medium rw-faint">
                 Chiqish
               </th>
             </tr>

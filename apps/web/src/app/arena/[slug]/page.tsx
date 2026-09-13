@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { ArenaPlayer } from "@/components/ArenaPlayer";
 import { Badge } from "@/components/ui/Badge";
 import { getLocale } from "@/i18n/server";
-import { t } from "@/i18n/messages";
+import { dateTime, t } from "@/i18n/messages";
 import { api, ApiError } from "@/lib/api";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -43,7 +43,7 @@ export default async function ArenaPage({ params }: Props) {
           </Badge>
           <Badge color="brand">+{arena.reward_qvant} Qvant</Badge>
           <span className="text-theme-xs rw-faint">
-            {new Date(arena.start_at).toLocaleString(locale)}
+            {dateTime(arena.start_at, locale)}
           </span>
         </div>
         {arena.description && (

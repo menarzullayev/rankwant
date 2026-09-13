@@ -21,9 +21,14 @@ export default function AppHeader() {
   const current = NAV.find(
     (n) => pathname === n.href || pathname.startsWith(`${n.href}/`),
   );
+  // Kirish/ro'yxat sahifalarida header soddalashadi: qidiruv ham, uslub
+  // tanlash ham kirmagan odamga kerak emas — qidiradigan narsasi ham,
+  // saqlaydigan sozlamasi ham yo'q. Til va mavzu qoladi, chunki ular
+  // sahifani o'qish uchun kerak bo'lishi mumkin.
+  const auth = pathname === "/login" || pathname === "/register";
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b rw-line rw-chrome px-4 md:px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b rw-divider rw-chrome px-4 md:px-6">
       {/* 40x40 — header'dagi boshqa tugmalar bilan bir o'lchamda
           (`ThemeToggle`, `StylePicker`). Ilgari bosiladigan maydon faqat
           ikonka kattaligida edi: 20x20, ya'ni WCAG 2.5.8 (AA) talab
@@ -47,9 +52,9 @@ export default function AppHeader() {
           1280px da hujjat 1339px bo'lib, butun saytda gorizontal siljish
           paydo bo'lardi. */}
       <div className="ml-auto flex min-w-0 items-center gap-2">
-        <SearchBox />
+        {!auth && <SearchBox />}
         <HeaderStatus />
-        <StylePicker />
+        {!auth && <StylePicker />}
         <LocaleSwitch />
         <ThemeToggle />
         <UserMenu />

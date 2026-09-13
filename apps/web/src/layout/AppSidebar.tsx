@@ -28,7 +28,7 @@ export default function AppSidebar() {
     <aside
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`fixed top-0 left-0 z-50 flex h-screen flex-col border-r rw-line rw-chrome
+      className={`fixed top-0 left-0 z-50 flex h-screen flex-col border-r rw-divider rw-chrome
  px-4 transition-all duration-300
  ${wide ? "w-[260px]" : "w-[86px]"}
  ${isMobileOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
@@ -70,7 +70,7 @@ export default function AppSidebar() {
                 {t(locale, group.key)}
               </p>
             ) : (
-              <div className="mx-3 mb-2 border-t rw-line" />
+              <div className="mx-3 mb-2 border-t rw-divider" />
             )}
             <ul className="flex flex-col gap-1">
               {group.items.map(({ href, key, Icon }) => {

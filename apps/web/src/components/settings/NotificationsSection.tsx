@@ -63,7 +63,7 @@ export function NotificationsSection() {
       <div className="mt-4 overflow-x-auto">
         <table className="w-full text-theme-sm">
           <thead>
-            <tr className="border-b rw-line">
+            <tr className="border-b rw-divider">
               <th scope="col" className="py-2 pr-4 text-left font-medium rw-dim">
                 {t(locale, "settings.kindColumn")}
               </th>

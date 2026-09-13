@@ -219,7 +219,7 @@ export function ProfileCard({
           </ul>
         )}
 
-        <dl className="mt-4 space-y-2.5 border-t rw-line pt-4 text-theme-sm">
+        <dl className="mt-4 space-y-2.5 border-t rw-divider pt-4 text-theme-sm">
           {rows.map(([label, value]) => (
             <div key={label}>
               <dt className="text-theme-xs rw-faint">{label}</dt>
