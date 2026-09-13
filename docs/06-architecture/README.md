@@ -79,6 +79,67 @@ Batafsil: [ADR-0004 § Xavfsizlik shartlari](../07-adr/0004-judge-engine.md).
 
 Batafsil: [ADR-0008](../07-adr/0008-auth-session-plus-pat.md).
 
+## Deployment
+
+### Hozirgi holat — bitta mashina (preview)
+
+```bash
+docker compose -p rankwant --env-file .env.public \
+  -f docker-compose.yml -f docker-compose.public.yml up -d --build --wait
+```
+
+| Narsa | Qiymat |
+|---|---|
+| Host | **bitta mashina** (dual-boot Linux/Windows) |
+| Tashqi kirish | Cloudflare Tunnel — ochiq port yo'q |
+| Domen | `rankwant.uz` (NS — Cloudflare) |
+| Sirlar | `.env.public` (gitignore'da) |
+| Debug | `DJANGO_DEBUG=0` |
+| Django admin | tunnel'dan chiqarilmagan; faqat `127.0.0.1:8301/admin/` |
+
+⚠️ Bu **production emas** — [10-operations](../10-operations/README.md) uni
+"ommaviy preview" deb ataydi va sababini yozadi.
+
+### Maqsad topologiyasi — to'rt host
+
+`app` (API + worker) · `web` (Next.js) · `judge×N` · `data` (Postgres, Redis).
+Xavfsizlik chegarasidan kelib chiqadi: judge hostda **kiruvchi port yo'q**.
+Batafsil: [10-operations § Deploy topologiyasi](../10-operations/README.md).
+
+### Muhitlar
+
+| Muhit | Qayerda | Maqsad |
+|---|---|---|
+| **dev** | mahalliy mashina | ishlab chiqish (`docker-compose.ci.yml`) |
+| **prod** | bitta mashina (hozir preview) | foydalanuvchilar |
+| **staging** | — | **yo'q** |
+
+⚠️ **Staging yo'q** — prod'ga chiqishdan oldin oraliq tekshiruv bosqichi
+yo'q. Buni qisman `ci-local.sh` va `.githooks/pre-push` qoplaydi, lekin ular
+**manbani** sinaydi, ishlab turgan konteynerni emas.
+
+⚠️ **Nomuvofiqlik:** `10-operations` dagi CI/CD tavsifi *"…→ staging deploy"*
+deb yozadi, lekin staging muhiti mavjud emas. Ikkalasidan biri noto'g'ri —
+qaysi biri ekani aniqlanishi kerak.
+
+### Deploy oqimi
+
+GitHub Actions: lint → `mypy` strict → test → OpenAPI diff → build.
+Prod deploy **qo'lda tasdiqlash** bilan (contest oynasi tekshiriladi).
+
+### Rollback
+
+```bash
+git revert <sha>
+docker compose -p rankwant --env-file .env.public \
+  -f docker-compose.yml -f docker-compose.public.yml up -d --build --wait
+bash tools/check_deploy.sh           # 0 bo'lishi shart
+```
+
+⚠️ **Migratsiya rollback qilinmaydi** — sxema oldinga mos yoziladi
+(`add → backfill → switch → drop`, alohida deploylarda). Batafsil:
+[10-operations § Release va rollback](../10-operations/README.md).
+
 ## Assumptions
 
 1. **SSE + qisqa polling standings uchun yetarli.** *"standings 10–30s da
@@ -94,7 +155,9 @@ Batafsil: [ADR-0008](../07-adr/0008-auth-session-plus-pat.md).
 ## Open questions
 
 1. **Judge nomzodi** ([ADR-0004](../07-adr/0004-judge-engine.md) bake-off) — `JudgeProvider` interfeysi ortida, arxitekturani o'zgartirmaydi.
-2. **`Deployment` bo'limi yo'q.** Faqat *"deploy esa alohida hostlarga"* deyilgan. Yo'q: muhitlar (dev/staging/prod), CI/CD oqimi, host spetsifikatsiyasi, migratsiya deploy bilan qanday bog'lanishi, rollback. Diqqat: bu bo'shliq **amalda allaqachon muammo bo'lgan** — `tools/check_deploy.sh` ning mavjudligi sababi shu.
+2. **`Deployment` — ✅ yozildi (2026-09-13).** Muhitlar, deploy oqimi va
+   rollback yuqorida. **Ochiq qolgani:** staging muhiti yo'qligi va
+   `10-operations` dagi CI/CD tavsifi bilan nomuvofiqlik (yuqoriga qarang).
 3. **`Data flow` yozma emas.** Diagrammada strelkalar bor, lekin zanjir matnda yo'q: `submit → navbat → judge → verdict → AttemptTestResult → Standing → reyting`. NFR maqsadi (`p50 < 5s`) qaysi qadamga tegishli ekani ko'rinmaydi.
 4. **`Reliability / scalability` yo'q.** `500 parallel submit` NFR bor, lekin unga qanday erishish: worker soni, navbat sig'imi, DB ulanish hovuzi, nosozlik holatlari (Redis yiqilsa nima bo'ladi).
 5. **`Key trade-offs` yozma emas.** Rad etilgan variantlar ADR-0003 ga havola qilingan, lekin *nima yo'qotilgani* shu hujjatda yo'q (masalan API va web'ni ajratish → operatsion murakkablik).
