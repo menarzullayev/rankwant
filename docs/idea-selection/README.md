@@ -66,9 +66,12 @@ o'zi ishlaydi); Qvant — 5 harf, kvant/STEM nuansi, platformadan alohida "olam"
 **Yakuniy tanlov juftlik orasida:** `RankWant` vs `Rankvant` (professionalroq
 yozuv, zaxira) → **RankWant** tanlandi, *"motivatsiya ochiqroq"*.
 
-### 3. Mahsulot shakli
+### 3. Mahsulot shakli — CP ichidagi variantlar
 
 Manba: [`02-problem-discovery/README.md`](../02-problem-discovery/README.md)
+
+Foydalanuvchi tasdiqladi: ko'rilgan alternativalar **CP ichida** edi
+(boshqa soha emas). Hujjatlarda qayd etilgan shakllar:
 
 | Variant | Qaror |
 |---|---|
@@ -80,15 +83,13 @@ Manba: [`02-problem-discovery/README.md`](../02-problem-discovery/README.md)
 Sabab: 02 dagi 4-og'riq — *"Fragmentatsiya — o'qish bir joyda, yechish
 boshqa joyda"*. RankWant ikkalasini birlashtiradi.
 
-### 4. Boshqa soha g'oyalari
+⚠️ **Qayd etilmagan qism.** Foydalanuvchi CP ichida **boshqa shakllar ham**
+ko'rilganini tasdiqladi, lekin ularning ro'yxati hech qayerda yozilmagan.
+Yuqoridagi uchta — hujjatlarda izi qolganlari, xolos. Boshqa nomzodlar
+bo'lgan bo'lsa, ular shu yerga qo'shilishi kerak.
 
-⚠️ **Bu qism tiklanmadi.** Repo'da, `rankwant-audit/` da yoki `cp/` da
-CP'dan tashqari ko'rilgan g'oyalar haqida **birorta yozuv yo'q**.
-
-Foydalanuvchi bu kategoriyani tanladi, ya'ni bunday variantlar **bo'lgan** —
-lekin ularning mazmuni hujjatlashtirilmagan va men uni o'ylab topa olmayman.
-
-**To'ldirilishi kerak:** qaysi sohalar ko'rilgan, nima uchun rad etilgan.
+**Bu bo'lim to'liq emas.** To'ldirilishi kerak: qaysi shakllar ko'rilgan va
+nima uchun rad etilgan.
 
 ## Tanlangan g'oya
 
@@ -122,7 +123,8 @@ fayllari repo'da yo'q, Linux bo'limida qolgan
 
 ## Open questions
 
-1. **Boshqa soha g'oyalari** — qaysilari ko'rilgan va nima uchun rad etilgan?
+1. **CP ichidagi boshqa shakllar** — hujjatlarda izi qolgan uchtadan
+   tashqari qaysi variantlar ko'rilgan va nima uchun rad etilgan?
 2. **Tanlov sanasi** — eng qadimgi yozuv 2026-09-06 (`03` lock), lekin
    ishlab chiqish undan oldin boshlangan ko'rinadi.
 3. **Raqobatchi raqamlari** — Linux'dagi ikki fayl ko'chirilgach tekshiriladi.
@@ -135,4 +137,5 @@ Bu tasdiq **hujjatning retroaktiv ekanini** va undagi mazmun mavjud
 manbalardan tiklanganini qabul qiladi — yangi qaror emas, mavjud qaror
 yozib qo'yilishi.
 
-⚠️ **4-variant (boshqa soha g'oyalari) to'ldirilmaguncha hujjat to'liq emas.**
+⚠️ **1-savol (CP ichidagi boshqa shakllar) to'ldirilmaguncha hujjat to'liq
+emas.**
