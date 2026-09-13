@@ -12,9 +12,9 @@ import { t, type MessageKey } from "@/i18n/messages";
  *  `tsc` yiqiladi. `t()` esa noma'lum kalitni satr sifatida qaytarib,
  *  xatoni yashirardi. */
 const LABEL: Record<TabId, MessageKey> = {
-  kirish: "auth.tabLogin",
-  royxat: "auth.tabRegister",
-  "parolni-tiklash": "auth.tabReset",
+  login: "auth.tabLogin",
+  register: "auth.tabRegister",
+  "reset-password": "auth.tabReset",
 };
 
 /** Sahifadagi asosiy bo'limlar bitta manzilda (1-qaror). Ilgari uchta
@@ -22,17 +22,12 @@ const LABEL: Record<TabId, MessageKey> = {
  *  kirish sahifasidan chiqib, havolani izlashi kerak edi — endi u shu
  *  yerda, bir bosishda.
  *
- *  QATORDA IKKI BO'LIM: Kirish / Ro'yxatdan o'tish. Uchinchisi
- *  (`parolni-tiklash`) — haqiqiy bo'lim bo'lib qolaveradi (manzili,
+ *  QATORDA IKKI BO'LIM: Login / Register. Uchinchisi
+ *  (`reset-password`) — haqiqiy bo'lim bo'lib qolaveradi (manzili,
  *  xatdagi token, `/reset-password` yo'naltirishi ishlaydi), lekin
  *  qatorda ko'rsatilmaydi: uchta teng ustunda uning yozuvi har tilda
  *  deyarli kesilardi (tafsilot — `TAB_BAR` izohida, `lib/auth-tabs.ts`).
  *  Uni kirish formasidagi «Parolni unutdingizmi?» havolasi ochadi.
- *
- *  BUZILADIGAN havolalar (`/login`, `/register`, `/parolni-tiklash`)
- *  saqlanib qoldi va shu bo'limlarga yo'naltiradi: ular email'da,
- *  xatcho'pda va tashqi saytlarda uchraydi, ya'ni ularni shunchaki
- *  o'chirish havolalarni sindirardi.
  *
  *  ROL TABLIST EMAS, va bu ataylab. `role="tablist"` ARIA'da klaviatura
  *  boshqaruvini talab qiladi: fokus halqa ichida aylanadi (`←`/`→`,

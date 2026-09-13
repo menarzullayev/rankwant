@@ -68,11 +68,11 @@ def send_password_reset(
     context = _context(
         email_text.RESET,
         user,
-        # Kanonik manzil endi `/kirish?tab=parolni-tiklash` (1 va
+        # Kanonik manzil endi `/kirish?tab=reset-password` (1 va
         # 13-qarorlar): `?tab=` bo'limni tanlaydi, `?token=` esa
         # havolani uzatadi — `_context` ikkalasini birlashtiradi.
         path="/kirish",
-        tab="parolni-tiklash",
+        tab="reset-password",
         token=token,
         code=code,
         request_ip=request_ip,

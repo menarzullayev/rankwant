@@ -74,7 +74,7 @@ function Request() {
         {/* Endi bu QAYTISH emas, bo'lim almashinuvi (1-qaror): uchala
             forma bitta kartada, ya'ni odam sahifadan chiqmaydi.
             `replace` — orqaga tugmasi bo'limlar zanjirini yasamasin. */}
-        <Link href={"/kirish?tab=kirish" as Route} className="rw-accent-ink hover:underline">
+        <Link href={"/kirish?tab=login" as Route} className="rw-accent-ink hover:underline">
           {t(locale, "auth.login")}
         </Link>
       </p>
@@ -118,7 +118,7 @@ function SetNew({ token }: { token: string }) {
       <div className="flex flex-col gap-4">
         <p className="text-theme-sm rw-strong">{t(locale, "reset.done")}</p>
         <Link
-          href={"/kirish?tab=kirish" as Route}
+          href={"/kirish?tab=login" as Route}
           className="flex h-11 items-center justify-center rw-radius-sm rw-accent-bg text-theme-sm font-medium rw-accent-fg"
         >
           {t(locale, "auth.login")}

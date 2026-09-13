@@ -264,7 +264,7 @@ def check_tab_bar() -> list[str]:
             )
 
         # Har bir bo'lim uchun yozuv `LABEL` xaritasida bo'lishi shart
-        # (u yerda kalitlar `kirish: "auth.tabLogin"` shaklida yoziladi).
+        # (u yerda kalitlar `login: "auth.tabLogin"` shaklida yoziladi).
         # Yozuvsiz bo'lim `t(locale, undefined)` berib, `tsc` ni ham
         # yiqitardi — lekin bu faqat build vaqtida ko'rinadi.
         label_match = re.search(r"const LABEL[^=]*=\s*\{(.*?)\}", bar, re.S)
@@ -274,15 +274,15 @@ def check_tab_bar() -> list[str]:
             if not re.search(re.escape(key) + r"\s*:", label_body):
                 found.append(f"WEB: `TAB_BAR` dagi `{tab}` uchun yozuv `AuthTabs` da yo'q")
 
-    # `parolni-tiklash` — haqiqiy bo'lim, ya'ni `TABS` da qolishi SHART
+    # `reset-password` — haqiqiy bo'lim, ya'ni `TABS` da qolishi SHART
     # (manzil, xatdagi token, `/reset-password` yo'naltirishi ishlashi
     # kerak). Uni butunlay o'chirish havolalarni sindirardi.
     tabs_match = re.search(r"export const TABS\s*=\s*\[(.*?)\]", model, re.S)
     if not tabs_match:
         found.append("WEB: `TABS` ro'yxati topilmadi")
-    elif '"parolni-tiklash"' not in tabs_match.group(1):
+    elif '"reset-password"' not in tabs_match.group(1):
         found.append(
-            "WEB: `TABS` dan `parolni-tiklash` chiqarilgan — u haqiqiy bo'lim "
+            "WEB: `TABS` dan `reset-password` chiqarilgan — u haqiqiy bo'lim "
             "bo'lib qolishi shart (xatdagi token shu yerga keladi)"
         )
 

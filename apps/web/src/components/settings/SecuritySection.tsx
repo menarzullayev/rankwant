@@ -257,7 +257,7 @@ function SessionsCard({ version }: { version: number }) {
       await deleteJson(`/me/sessions/${row.id}/`);
       if (row.current) {
         clear();
-        router.push("/kirish?tab=kirish" as Route);
+        router.push("/kirish?tab=login" as Route);
         return;
       }
       sessions.reload();

@@ -6,18 +6,18 @@
  *  ya'ni SSR (SEO) afzalligi yo'qolardi. Bu faylda na `"use client"`,
  *  na React importi bor — faqat ro'yxat va tekshiruv.
  *
- *  SHU FAYL MANBA: `AuthTabs`, `/kirish` sahifasi va eski
- *  `/login`·`/register` yo'naltirishlari bo'lim nomlarini shu yerdan
+ *  SHU FAYL MANBA: `AuthTabs`, `/login` sahifasi va `/register`·
+ *  `/reset-password` yo'naltirishlari bo'lim nomlarini shu yerdan
  *  oladi. Ikki joyda yozilsa, biri o'zgarganda ikkinchisi jimgina
  *  eskirib qolardi.
  */
 
-export const TABS = ["kirish", "royxat", "parolni-tiklash"] as const;
+export const TABS = ["login", "register", "reset-password"] as const;
 export type TabId = (typeof TABS)[number];
 
 /** Tablar QATORIDA ko'rsatiladigan bo'limlar — `TABS` ning OST-TO'PLAMI.
  *
- *  Nega alohida ro'yxat: `parolni-tiklash` — haqiqiy bo'lim (manzili bor,
+ *  Nega alohida ro'yxat: `reset-password` — haqiqiy bo'lim (manzili bor,
  *  xatdagi `?token=` shu yerga keladi, `/reset-password` ham shu yerga
  *  yo'naltiradi), ya'ni u `TABS` dan CHIQARILMAYDI. Lekin qatorda
  *  ko'rsatilmaydi.
@@ -39,10 +39,10 @@ export type TabId = (typeof TABS)[number];
  *  Parolni tiklash shu sababli yo'qolmadi: uni kirish formasidagi
  *  "Parolni unutdingizmi?" havolasi ochadi (`AuthForm.tsx`) — bu odam
  *  uni qidiradigan joy, tab qatori emas. */
-export const TAB_BAR: readonly TabId[] = ["kirish", "royxat"];
+export const TAB_BAR: readonly TabId[] = ["login", "register"];
 
 /** Manzil qatoridagi `?tab=` bo'lmasa yoki noto'g'ri bo'lsa shu. */
-export const DEFAULT_TAB: TabId = "kirish";
+export const DEFAULT_TAB: TabId = "login";
 
 /** Manzil qatoridagi `?tab=` ni bo'limga aylantiradi — SOF funksiya.
  *

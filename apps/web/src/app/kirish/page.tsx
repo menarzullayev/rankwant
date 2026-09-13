@@ -23,9 +23,9 @@ import { t, type MessageKey } from "@/i18n/messages";
  *  takrorlardi. Ro'yxatda sarlavha «Hisob yaratish» — u QILINAYOTGAN
  *  ishni aytadi, tugma esa amalni, ya'ni takror yo'q. */
 const TITLE: Record<TabId, MessageKey | null> = {
-  kirish: null,
-  royxat: "auth.createAccount",
-  "parolni-tiklash": "reset.title",
+  login: null,
+  register: "auth.createAccount",
+  "reset-password": "reset.title",
 };
 
 type Query = Record<string, string | string[] | undefined>;
@@ -62,7 +62,7 @@ export async function generateMetadata({
     title: t(locale, title ?? "auth.login"),
     //: Tiklash bo'limida tokenli havola bo'lishi mumkin — qidiruvda
     //: kerak emas. Kirish va ro'yxat esa indekslanadi (SEO).
-    robots: tab === "parolni-tiklash" ? { index: false, follow: false } : undefined,
+    robots: tab === "reset-password" ? { index: false, follow: false } : undefined,
   };
 }
 
@@ -95,11 +95,11 @@ export default async function AuthPage({
             SHART — usiz butun marshrut dinamik bo'lib qolardi. */}
         <Suspense fallback={<AuthFormSkeleton />}>
           <AuthTabs active={tab} />
-          {tab === "parolni-tiklash" ? (
+          {tab === "reset-password" ? (
             <ResetForm />
           ) : (
             <AuthForm
-              mode={tab === "royxat" ? "register" : "login"}
+              mode={tab === "register" ? "register" : "login"}
               providers={auth.providers}
               turnstileSiteKey={auth.turnstile_site_key}
             />

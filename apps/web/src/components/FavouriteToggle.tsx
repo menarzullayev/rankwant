@@ -37,7 +37,7 @@ export function FavouriteToggle({
         caught instanceof ApiError &&
         (caught.status === 401 || caught.status === 403)
       ) {
-        router.push("/kirish?tab=kirish" as Route);
+        router.push("/kirish?tab=login" as Route);
       }
     } finally {
       setBusy(false);

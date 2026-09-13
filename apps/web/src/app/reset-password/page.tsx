@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { getLocale } from "@/i18n/server";
 import { parseTab } from "@/lib/auth-tabs";
 
-/** Kanonik manzil endi `/kirish?tab=parolni-tiklash` (1-qaror): uch
+/** Kanonik manzil endi `/kirish?tab=reset-password` (1-qaror): uch
  *  bo'lim bitta sahifada, ya'ni odam bo'limlar orasida erkin
  *  yurishi kerak.
  *
@@ -18,7 +18,7 @@ export default async function ResetPasswordPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const query = new URLSearchParams({ tab: "parolni-tiklash" });
+  const query = new URLSearchParams({ tab: "reset-password" });
   const params = await searchParams;
 
   //: `token` — xatdagi havola. U bo'lmasa bu shunchaki bo'lim almashuvi

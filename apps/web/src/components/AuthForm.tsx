@@ -370,7 +370,7 @@ export function AuthForm({
               {t(locale, "auth.remember")}
             </Checkbox>
             <Link
-              href={"/kirish?tab=parolni-tiklash" as Route}
+              href={"/kirish?tab=reset-password" as Route}
               className="text-theme-sm rw-accent-ink hover:underline"
             >
               {t(locale, "auth.forgot")}
@@ -440,14 +440,14 @@ export function AuthForm({
           <p className="-mt-2 text-theme-sm rw-dim">
             {t(locale, "auth.emailTaken")}{" "}
             <Link
-              href={"/kirish?tab=kirish" as Route}
+              href={"/kirish?tab=login" as Route}
               className="rw-accent-ink underline rw-focus-ring"
             >
               {t(locale, "auth.tabLogin")}
             </Link>
             {" · "}
             <Link
-              href={"/kirish?tab=parolni-tiklash" as Route}
+              href={"/kirish?tab=reset-password" as Route}
               className="rw-accent-ink underline rw-focus-ring"
             >
               {t(locale, "auth.tabReset")}
@@ -559,8 +559,8 @@ export function AuthForm({
         <Link
           href={
             (mode === "login"
-              ? "/kirish?tab=royxat"
-              : "/kirish?tab=kirish") as Route
+              ? "/kirish?tab=register"
+              : "/kirish?tab=login") as Route
           }
           // Doimiy tagchiziq: havola MATN ICHIDA turadi, ya'ni faqat rang
           // bilan ajralishi WCAG 1.4.1 ni buzardi (yuqoridagi rozilik
@@ -708,7 +708,7 @@ function LinkAccount({ provider }: { provider: string }) {
       </Button>
       <p className="text-center text-theme-sm">
         <Link
-          href={"/kirish?tab=parolni-tiklash" as Route}
+          href={"/kirish?tab=reset-password" as Route}
           className="rw-accent-ink hover:underline"
         >
           {t(locale, "auth.forgot")}

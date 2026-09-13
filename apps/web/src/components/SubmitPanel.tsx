@@ -456,7 +456,7 @@ export default function SubmitPanel({
             </Button>
           ) : (
             <Link
-              href={"/kirish?tab=kirish" as Route}
+              href={"/kirish?tab=login" as Route}
               className="inline-flex h-11 items-center rw-btn-radius rw-accent-bg px-4 text-theme-sm font-medium rw-btn-label"
             >
               Yuborish uchun kiring

@@ -6,7 +6,7 @@ import { getLocale } from "@/i18n/server";
 import { parseTab } from "@/lib/auth-tabs";
 
 /** Kirish va ro'yxatdan o'tish endi bitta sahifada (1-qaror):
- *  `/kirish?tab=kirish` va `/kirish?tab=royxat`.
+ *  `/kirish?tab=login` va `/kirish?tab=register`.
  *
  *  Havolalar SAQLANADI: `/login` email xatlarida, xatcho'plarda va
  *  boshqa saytlarda uchraydi. Ularni shunchaki o'chirish o'sha
@@ -17,7 +17,7 @@ import { parseTab } from "@/lib/auth-tabs";
  *  sahifadan uchirilgan odam login'dan keyin bosh sahifaga tushib
  *  qolardi — shuning uchun bu yerda `permanentRedirect` ATAYLAB
  *  ishlatilmaydi. */
-async function go(tab: "kirish" | "royxat", params: RouteQuery) {
+async function go(tab: "login" | "register", params: RouteQuery) {
   const query = new URLSearchParams({ tab });
   for (const key of ["next", "link", "social"] as const) {
     const value = params[key];
@@ -33,7 +33,7 @@ export default async function LoginPage({
 }: {
   searchParams: Promise<RouteQuery>;
 }) {
-  return go("kirish", await searchParams);
+  return go("login", await searchParams);
 }
 
 /** Ishlatilmaydi — `redirect` oldin bajariladi. Sarlavha baribir

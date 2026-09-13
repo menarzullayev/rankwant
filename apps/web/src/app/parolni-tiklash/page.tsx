@@ -28,7 +28,7 @@ export default async function LegacyResetPasswordPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const params = await searchParams;
-  const query = new URLSearchParams({ tab: "parolni-tiklash" });
+  const query = new URLSearchParams({ tab: "reset-password" });
   for (const key of ["token", "next"] as const) {
     const value = params[key];
     if (typeof value === "string" && value) query.set(key, value);

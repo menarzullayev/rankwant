@@ -100,7 +100,7 @@ export default async function Home() {
               Davom etish · {resume.title}
             </ButtonLink>
           ) : (
-            <ButtonLink href={me ? "/problems" : ("/kirish?tab=royxat" as Route)}>
+            <ButtonLink href={me ? "/problems" : ("/kirish?tab=register" as Route)}>
               {me ? t(locale, "nav.problems") : t(locale, "home.start")}
             </ButtonLink>
           )}

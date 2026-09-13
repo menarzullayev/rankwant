@@ -30,7 +30,7 @@ export function FollowButton({
   if (!ready) return <div className="h-11 w-28" />;
   if (!user) {
     return (
-      <ButtonLink href={"/kirish?tab=kirish" as Route} variant="outline">
+      <ButtonLink href={"/kirish?tab=login" as Route} variant="outline">
         {t(locale, "profile.follow")}
       </ButtonLink>
     );
