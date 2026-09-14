@@ -83,7 +83,7 @@ export default async function LearnPage() {
           ))}
         </ul>
         {articles.count === 0 && (
-          <p className="text-theme-sm rw-faint">{t(locale, "empty")}</p>
+          <p className="text-theme-sm rw-faint">{t(locale, "common.empty")}</p>
         )}
       </section>
     </div>

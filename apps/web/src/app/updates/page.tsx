@@ -226,7 +226,7 @@ export default async function UpdatesPage({ searchParams }: Props) {
 
       {data.count === 0 ? (
         <Card>
-          <p className="text-theme-sm rw-dim">{t(locale, "empty")}</p>
+          <p className="text-theme-sm rw-dim">{t(locale, "common.empty")}</p>
         </Card>
       ) : (
         days.map((group) => (

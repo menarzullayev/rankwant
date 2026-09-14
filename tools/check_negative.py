@@ -314,11 +314,10 @@ def neg_parity_extra_locale() -> tuple[bool, str]:
 def neg_i18n_bare_key() -> tuple[bool, str]:
     """Prefikssiz kalit qo'shilsa — tutilsinmi?
 
-    ⚠️ `empty` ataylab prefikssiz qolgan (34 chaqiruv, 10 til) va u
-    ALLOWED_BARE orqali istisno qilingan. Bu test istisno **juda keng**
-    bo'lib qolmaganini isbotlaydi: yangi prefikssiz nom qo'shilsa,
-    tekshiruv qizarishi shart. Aks holda `ALLOWED_BARE` jimgina hamma
-    narsani o'tkazib yuborardi.
+    ⚠️ `empty` bir vaqtlar yagona prefikssiz kalit edi va tekshiruv uni
+    istisno qilardi. Endi u `common.empty` ga ko'chirilgan, istisno esa
+    olib tashlangan — qoida istisnosiz. Bu test o'sha holatni saqlab
+    turadi: yangi prefikssiz nom qo'shilsa, tekshiruv qizarishi shart.
     """
     path = ROOT / "apps/web/src/i18n/locales/uz.ts"
     text = path.read_text(encoding="utf-8")

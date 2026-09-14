@@ -179,7 +179,7 @@ export default async function QvantPage() {
           ))}
         </div>
         {shop.length === 0 && (
-          <p className="text-theme-sm rw-faint">{t(locale, "empty")}</p>
+          <p className="text-theme-sm rw-faint">{t(locale, "common.empty")}</p>
         )}
       </Card>
     </div>

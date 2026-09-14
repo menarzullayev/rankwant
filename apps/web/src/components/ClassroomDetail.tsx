@@ -100,7 +100,7 @@ export function ClassroomDetail({ slug }: { slug: string }) {
           ))}
           {assignments.length === 0 && (
             <li className="px-5 py-6 text-center text-theme-sm rw-faint">
-              {t(locale, "empty")}
+              {t(locale, "common.empty")}
             </li>
           )}
         </ul>
@@ -130,7 +130,7 @@ export function ClassroomDetail({ slug }: { slug: string }) {
                 </TR>
               ))}
               {room.members.length === 0 && (
-                <EmptyRow colSpan={3}>{t(locale, "empty")}</EmptyRow>
+                <EmptyRow colSpan={3}>{t(locale, "common.empty")}</EmptyRow>
               )}
             </TBody>
           </Table>

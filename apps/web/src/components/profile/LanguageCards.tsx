@@ -16,7 +16,7 @@ export function LanguageCards({
     <Card title={t(locale, "profile.languagesTitle")} bodyClassName="space-y-4">
       <SectionHint>{t(locale, "profile.languagesHint")}</SectionHint>
       {languages.length === 0 ? (
-        <p className="text-theme-sm rw-faint">{t(locale, "empty")}</p>
+        <p className="text-theme-sm rw-faint">{t(locale, "common.empty")}</p>
       ) : (
         // xl'da karta mavzular bilan yonma-yon (yarim ustun) — ikki qatorda
         // nom 0 px ga siqilib yo'qolardi (o'lchandi: «C++» 0 / 28 px).

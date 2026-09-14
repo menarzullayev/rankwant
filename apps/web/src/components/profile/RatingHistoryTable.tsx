@@ -42,7 +42,7 @@ export function RatingHistoryTable({ rows, locale }: { rows: RatingChange[]; loc
               </TD>
             </TR>
           ))}
-          {rows.length === 0 && <EmptyRow colSpan={4}>{t(locale, "empty")}</EmptyRow>}
+          {rows.length === 0 && <EmptyRow colSpan={4}>{t(locale, "common.empty")}</EmptyRow>}
         </TBody>
       </Table>
     </div>

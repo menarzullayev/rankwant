@@ -354,7 +354,7 @@ export const zh: Record<MessageKey, string> = {
   "admin.noRows": "暂无内容",
   "admin.actions": "操作",
   "admin.saved": "已保存",
-  empty: "暂时为空",
+  "common.empty": "暂时为空",
   "settings.title": "设置",
   "settings.export": "下载你的数据",
   "settings.exportHint":

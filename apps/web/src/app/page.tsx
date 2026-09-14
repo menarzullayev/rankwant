@@ -205,7 +205,7 @@ export default async function Home() {
             ))}
             {soon.length === 0 && (
               <li className="px-5 py-8 text-center text-theme-sm rw-faint">
-                {t(locale, "empty")}
+                {t(locale, "common.empty")}
               </li>
             )}
           </ul>

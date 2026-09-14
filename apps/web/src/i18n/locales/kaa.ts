@@ -355,7 +355,7 @@ export const kaa: Record<MessageKey, string> = {
   "admin.noRows": "Hesh nárse joq",
   "admin.actions": "Ámeller",
   "admin.saved": "Saqlandı",
-  empty: "Házirshe bos",
+  "common.empty": "Házirshe bos",
   "settings.title": "Sazlawlar",
   "settings.export": "Maǵlıwmatlardı júklep alıw",
   "settings.exportHint":

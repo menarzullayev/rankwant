@@ -69,7 +69,7 @@ export default async function AttemptsPage() {
               </TR>
             ))}
             {data.results.length === 0 && (
-              <EmptyRow colSpan={8}>{t(locale, "empty")}</EmptyRow>
+              <EmptyRow colSpan={8}>{t(locale, "common.empty")}</EmptyRow>
             )}
           </TBody>
         </Table>

@@ -45,7 +45,7 @@ export default async function QuizzesPage() {
         ))}
       </ul>
       {data.count === 0 && (
-        <p className="text-theme-sm rw-faint">{t(locale, "empty")}</p>
+        <p className="text-theme-sm rw-faint">{t(locale, "common.empty")}</p>
       )}
     </div>
   );

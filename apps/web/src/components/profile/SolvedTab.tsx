@@ -140,7 +140,7 @@ export async function SolvedTab({
                 </TD>
               </TR>
             ))}
-            {data.results.length === 0 && <EmptyRow colSpan={7}>{t(locale, "empty")}</EmptyRow>}
+            {data.results.length === 0 && <EmptyRow colSpan={7}>{t(locale, "common.empty")}</EmptyRow>}
           </TBody>
         </Table>
       ) : (
@@ -166,7 +166,7 @@ export async function SolvedTab({
               )}
             </Link>
           ))}
-          {data.results.length === 0 && <p className="text-theme-sm rw-faint">{t(locale, "empty")}</p>}
+          {data.results.length === 0 && <p className="text-theme-sm rw-faint">{t(locale, "common.empty")}</p>}
         </div>
       )}
       <Pager

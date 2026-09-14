@@ -355,7 +355,7 @@ export const tr: Record<MessageKey, string> = {
   "admin.noRows": "Burada bir şey yok",
   "admin.actions": "İşlemler",
   "admin.saved": "Kaydedildi",
-  empty: "Henüz boş",
+  "common.empty": "Henüz boş",
   "settings.title": "Ayarlar",
   "settings.export": "Verilerini indir",
   "settings.exportHint":

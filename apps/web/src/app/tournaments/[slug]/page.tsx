@@ -122,7 +122,7 @@ export default async function TournamentPage({ params }: Props) {
               </TR>
             ))}
             {results.length === 0 && (
-              <EmptyRow colSpan={5}>{t(locale, "empty")}</EmptyRow>
+              <EmptyRow colSpan={5}>{t(locale, "common.empty")}</EmptyRow>
             )}
           </TBody>
         </Table>

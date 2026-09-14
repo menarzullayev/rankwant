@@ -320,7 +320,7 @@ export async function PeopleTab({
               </TD>
             </TR>
           ))}
-          {data.results.length === 0 && <EmptyRow colSpan={4}>{t(locale, "empty")}</EmptyRow>}
+          {data.results.length === 0 && <EmptyRow colSpan={4}>{t(locale, "common.empty")}</EmptyRow>}
         </TBody>
       </Table>
       {(data.previous || data.next) && (

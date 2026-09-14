@@ -355,7 +355,7 @@ export const es: Record<MessageKey, string> = {
   "admin.noRows": "No hay nada aquí",
   "admin.actions": "Acciones",
   "admin.saved": "Guardado",
-  empty: "Vacío por ahora",
+  "common.empty": "Vacío por ahora",
   "settings.title": "Ajustes",
   "settings.export": "Descargar tus datos",
   "settings.exportHint":

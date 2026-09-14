@@ -223,7 +223,7 @@ export function DuelActions({ waiting }: { waiting: Duel[] }) {
             ))}
             {mine && mine.results.length === 0 && (
               <li className="px-5 py-6 text-center text-theme-sm rw-faint">
-                {t(locale, "empty")}
+                {t(locale, "common.empty")}
               </li>
             )}
           </ul>
@@ -242,7 +242,7 @@ export function DuelActions({ waiting }: { waiting: Duel[] }) {
           ))}
           {waiting.length === 0 && (
             <li className="px-5 py-6 text-center text-theme-sm rw-faint">
-              {t(locale, "empty")}
+              {t(locale, "common.empty")}
             </li>
           )}
         </ul>

@@ -355,7 +355,7 @@ export const tg: Record<MessageKey, string> = {
   "admin.noRows": "Чизе нест",
   "admin.actions": "Амалҳо",
   "admin.saved": "Нигоҳ дошта шуд",
-  empty: "Ҳоло холӣ",
+  "common.empty": "Ҳоло холӣ",
   "settings.title": "Танзимот",
   "settings.export": "Боргирии маълумот",
   "settings.exportHint":

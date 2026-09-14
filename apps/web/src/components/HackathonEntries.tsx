@@ -155,7 +155,7 @@ export function HackathonEntries({ hackathon }: { hackathon: Hackathon }) {
             <li className="px-5 py-6 text-center text-theme-sm rw-faint">
               {hackathon.accepts_submissions
                 ? t(locale, "hackathon.entriesAfterDeadline")
-                : t(locale, "empty")}
+                : t(locale, "common.empty")}
             </li>
           )}
         </ul>

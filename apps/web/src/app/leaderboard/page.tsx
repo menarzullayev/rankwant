@@ -107,7 +107,7 @@ export default async function LeaderboardPage({ searchParams }: Props) {
               </TR>
             ))}
             {data.count === 0 && (
-              <EmptyRow colSpan={7}>{t(locale, "empty")}</EmptyRow>
+              <EmptyRow colSpan={7}>{t(locale, "common.empty")}</EmptyRow>
             )}
           </TBody>
         </Table>

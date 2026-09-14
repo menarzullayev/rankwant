@@ -240,7 +240,7 @@ export function ArenaPlayer({ initial }: { initial: ArenaDetail }) {
               </TR>
             )}
             {rows.length === 0 && !me && (
-              <EmptyRow colSpan={4}>{t(locale, "empty")}</EmptyRow>
+              <EmptyRow colSpan={4}>{t(locale, "common.empty")}</EmptyRow>
             )}
           </TBody>
         </Table>

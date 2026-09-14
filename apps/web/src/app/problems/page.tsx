@@ -323,7 +323,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
                 </TR>
               ))}
               {data.count === 0 && (
-                <EmptyRow colSpan={me ? 7 : 6}>{t(locale, "empty")}</EmptyRow>
+                <EmptyRow colSpan={me ? 7 : 6}>{t(locale, "common.empty")}</EmptyRow>
               )}
             </TBody>
           </Table>

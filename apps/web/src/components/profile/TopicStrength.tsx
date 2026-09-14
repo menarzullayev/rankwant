@@ -12,7 +12,7 @@ export function TopicStrength({ topics, locale }: { topics: Topic[]; locale: Loc
     <Card title={t(locale, "profile.topicsTitle")} bodyClassName="space-y-4">
       <SectionHint>{t(locale, "profile.topicsHint")}</SectionHint>
       {shown.length === 0 ? (
-        <p className="text-theme-sm rw-faint">{t(locale, "empty")}</p>
+        <p className="text-theme-sm rw-faint">{t(locale, "common.empty")}</p>
       ) : (
         <ul className="space-y-3">
           {shown.map((topic) => (

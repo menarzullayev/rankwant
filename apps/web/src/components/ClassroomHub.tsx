@@ -124,7 +124,7 @@ export function ClassroomHub() {
           ))}
           {rooms.length === 0 && (
             <li className="px-5 py-6 text-center text-theme-sm rw-faint">
-              {t(locale, "empty")}
+              {t(locale, "common.empty")}
             </li>
           )}
         </ul>

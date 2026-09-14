@@ -355,7 +355,7 @@ export const ru: Record<MessageKey, string> = {
   "admin.noRows": "Пусто",
   "admin.actions": "Действия",
   "admin.saved": "Сохранено",
-  empty: "Пока пусто",
+  "common.empty": "Пока пусто",
   "settings.title": "Настройки",
   "settings.export": "Скачать данные",
   "settings.exportHint":

@@ -110,7 +110,7 @@ export function StandingsTable({
             </TR>
           )}
           {data.results.length === 0 && !meShown && (
-            <EmptyRow colSpan={4}>{t(locale, "empty")}</EmptyRow>
+            <EmptyRow colSpan={4}>{t(locale, "common.empty")}</EmptyRow>
           )}
         </TBody>
       </Table>

@@ -355,7 +355,7 @@ export const ky: Record<MessageKey, string> = {
   "admin.noRows": "Эч нерсе жок",
   "admin.actions": "Аракеттер",
   "admin.saved": "Сакталды",
-  empty: "Азырынча бош",
+  "common.empty": "Азырынча бош",
   "settings.title": "Жөндөөлөр",
   "settings.export": "Маалыматты жүктөп алуу",
   "settings.exportHint":

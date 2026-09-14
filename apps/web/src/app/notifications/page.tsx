@@ -66,7 +66,7 @@ export default async function NotificationsPage() {
           ))}
           {items.length === 0 && (
             <li className="px-5 py-10 text-center text-theme-sm rw-faint">
-              {t(locale, "empty")}
+              {t(locale, "common.empty")}
             </li>
           )}
         </ul>

@@ -126,7 +126,7 @@ export async function AttemptsTab({
               </TD>
             </TR>
           ))}
-          {data.results.length === 0 && <EmptyRow colSpan={7}>{t(locale, "empty")}</EmptyRow>}
+          {data.results.length === 0 && <EmptyRow colSpan={7}>{t(locale, "common.empty")}</EmptyRow>}
         </TBody>
       </Table>
       {(newer || older) && (

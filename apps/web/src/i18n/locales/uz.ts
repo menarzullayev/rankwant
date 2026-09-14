@@ -359,7 +359,7 @@ export const uz = {
   "admin.noRows": "Hech narsa yo'q",
   "admin.actions": "Amallar",
   "admin.saved": "Saqlandi",
-  empty: "Hozircha bo'sh",
+  "common.empty": "Hozircha bo'sh",
   "settings.title": "Sozlamalar",
   "settings.export": "Ma'lumotni yuklab olish",
   "settings.exportHint":

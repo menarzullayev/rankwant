@@ -48,7 +48,7 @@ function VerdictDonut({ stats, locale }: { stats: UserStats; locale: Locale }) {
     },
   ].filter((slice) => slice.value > 0);
   const total = stats.attempts;
-  if (total === 0) return <p className="text-theme-sm rw-faint">{t(locale, "empty")}</p>;
+  if (total === 0) return <p className="text-theme-sm rw-faint">{t(locale, "common.empty")}</p>;
 
   // Aylana uzunligi 100 — `stroke-dasharray` foizda yoziladi.
   let offset = 25;
