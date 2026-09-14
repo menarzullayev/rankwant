@@ -16,6 +16,16 @@ export default defineConfig({
   reporter: process.env.CI ? "github" : "list",
   use: {
     baseURL: process.env.E2E_BASE_URL ?? "http://localhost:3000",
+    // ⚠️ BU QATOR BO'LMASA TESTLAR YIQILADI.
+    //
+    // Til cookie'dan (`rw_locale`) yoki `Accept-Language` dan keladi.
+    // Playwright brauzeri standart holatda `en-US` yuboradi, ya'ni server
+    // sahifani INGLIZCHA qaytaradi — `<html lang="en">`, "Problem archive".
+    // Testlar esa o'zbekcha matn kutadi ("Masalalar arxivi") va 32 tasi
+    // birinchi yugurishda aynan shu sababdan yiqildi (run 34904632282).
+    //
+    // `uz-UZ` qo'yilsa brauzer shuni yuboradi va server `uz` ga o'tadi.
+    locale: "uz-UZ",
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
   },
