@@ -39,6 +39,26 @@ qiladi. Standart qiymat `false`: bepul limit tugaganda sayt Cloudflare'ning
 origin'ga ketadi. 2026-09-12 da uchala route'da yoqilgan — route qayta
 yaratilsa yoki yangisi qo'shilsa, qiymatni tekshiring.
 
+Sozlama ko'rinmaydi (u route'da yashaydi, kodda emas), shuning uchun uni
+`tools/check_workers.sh` o'qiydi va `ci-local.sh fast` ichida ishlaydi:
+
+```bash
+bash tools/check_workers.sh    # 0 — himoya bor; 1 — yo'q; 2 — o'qib bo'lmadi
+```
+
+⚠️ Chiqish kodi **2** — «o'qib bo'lmadi» (token yo'q yoki muddati o'tgan) va
+u sayt holati haqida **hech narsa demaydi**. Uni `1` bilan qo'shib
+yubormang: odam o'zgarmagan sozlamani tuzatishga ketadi.
+
+⚠️ wrangler'ning OAuth refresh tokeni **rotatsiya** qilinadi — har
+yangilashda Cloudflare yangisini beradi va eskisini o'chirib tashlaydi.
+Skript yangi tokenni `~/.cloudflared/wrangler_refresh.json` ga saqlaydi.
+Birinchi ishlatishdan oldin bir marta brauzerda kirish kerak:
+
+```bash
+cd services/maintenance-worker && npx wrangler login
+```
+
 ## Cheklov
 
 Worker HAR so'rovda ishlaydi, sayt soz paytida ham. Bepul tarif kuniga
@@ -47,6 +67,11 @@ Cloudflare keshidan o'tadi — lekin chaqiruvlar soni baribir hisoblanadi.
 10-operations dagi katta contest ssenariysi (7 300 so'rov/s) bunga sig'maydi:
 undan oldin Workers Paid tarifiga o'tish yoki route'ni vaqtincha olib tashlash
 kerak.
+
+**2026-09-13 da limit haqiqatan tugadi:** 18:31 da 76%, 20:56 da 94%,
+22:35 da 100 000 so'rov tugadi va 00:15 da yana (limit 00:00 UTC da
+yangilanadi). Sayt yiqilmadi — sabab faqat fail-open. Ya'ni bu cheklov
+nazariy emas; katta contest oldidan tarifni ko'tarish SHART.
 
 ## Sinov
 
