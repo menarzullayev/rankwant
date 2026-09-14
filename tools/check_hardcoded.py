@@ -434,6 +434,14 @@ def check_file(path: pathlib.Path) -> list[str]:
     text = path.read_text(encoding="utf-8")
     rel = str(path.relative_to(ROOT)).replace("\\", "/")
 
+    #: `jsx-text` and `jsx-expr` are decided by the characters `>` and `{`,
+    #: which exist in `.ts` too — as generic parameters, comparisons and
+    #: object literals. Running those two rules on a plain `.ts` file
+    #: produced 90 hits in `lib/api.ts`, every one of them a fragment of
+    #: `Promise<…>` or `{ … }` rather than a string. JSX only exists in
+    #: `.tsx`, so the two rules only run there.
+    jsx = path.suffix == ".tsx"
+
     # Module specifiers are paths by definition — drop them explicitly.
     import_spans = [
         (m.start(), m.end())
@@ -451,6 +459,8 @@ def check_file(path: pathlib.Path) -> list[str]:
             continue
         position = classify(text, start)
         if position is None:
+            continue
+        if not jsx and position in {"jsx-text", "jsx-expr"}:
             continue
         # Ternary branches hold prose as often as they hold a colour name,
         # so the lowercase filter comes off — with an explicit list of the
@@ -470,13 +480,18 @@ def check_file(path: pathlib.Path) -> list[str]:
             f"{m.group(0)} — pass the active locale"
         )
 
-    for m in JSX_TEXT.finditer(text):
+    # Raw JSX text nodes — `>some text<`. `.tsx` only, for the same reason
+    # as above: in a `.ts` file every `>` is a generic or a comparison, and
+    # this loop reported 90 fragments of `Promise<…>` in `lib/api.ts`.
+    for m in JSX_TEXT.finditer(text) if jsx else ():
         body = m.group(1).strip()
         if JSX_TEXT_NOISE.match(body):
             continue
         if JSX_TEXT_CODEISH.search(body):
             continue
         if PASCAL_TOKEN.match(body):
+            continue
+        if body in CODE_TOKENS:
             continue
         if not is_prose(body, code_tokens=False):
             continue
