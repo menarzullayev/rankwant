@@ -397,6 +397,42 @@ def check_smoke_payloads() -> list[str]:
     return found
 
 
+def check_legacy_routes() -> list[str]:
+    """`TABS` dagi har bo'lim uchun sahifa fayli bo'lishi shart.
+
+    `TABS` — manzil shartnomasi: ro'yxatdagi har bir bo'lim HAQIQIY,
+    chunki xatdagi `?token=` havolalari shu yerga keladi. 2026-09-13 da
+    shu ro'yxatdagi bo'limning yo'naltirish fayli o'chib qolgan edi va
+    hech bir tekshiruv buni ko'rmadi — sahifa 404 berib, parolni
+    tiklash butunlay ishlamay qoldi.
+
+    Ro'yxat qo'lda emas, `lib/auth-tabs.ts` dan o'qiladi: yangi bo'lim
+    qo'shilsa tekshiruv o'zi kengayadi, bo'lim o'chirilsa — qizaradi.
+    """
+    found: list[str] = []
+    model = REPO / "apps/web/src/lib/auth-tabs.ts"
+    if not model.exists():
+        return [f"WEB: {model.relative_to(REPO)} topilmadi"]
+
+    match = re.search(r"export const TABS\s*=\s*\[(.*?)\]", model.read_text(), re.S)
+    if not match:
+        return ["WEB: `TABS` ro'yxati `lib/auth-tabs.ts` da topilmadi"]
+
+    tabs = re.findall(r'"([^"]+)"', match.group(1))
+    if not tabs:
+        return ["WEB: `TABS` bo'sh — tekshiruv hech narsani qamramaydi"]
+
+    app = REPO / "apps/web/src/app"
+    for tab in tabs:
+        page = app / tab / "page.tsx"
+        if not page.exists():
+            found.append(
+                f"WEB: `TABS` dagi `{tab}` bo'limi uchun "
+                f"{page.relative_to(REPO)} yo'q — havola 404 beradi"
+            )
+    return found
+
+
 def main() -> int:
     protocol = PROTOCOL.read_text()
     blocks = json_blocks(protocol)
@@ -430,6 +466,7 @@ def main() -> int:
         ("Ro'yxatdan o'tish shartnomasi nomuvofiqligi", check_register_contract()),
         ("Tablar qatori nomuvofiqligi", check_tab_bar()),
         ("Smoke yuki nomuvofiqligi", check_smoke_payloads()),
+        ("Eski manzillar nomuvofiqligi", check_legacy_routes()),
     ]
     failed = False
     for title, items in groups:
@@ -444,7 +481,8 @@ def main() -> int:
 
     print(
         f"Shartnoma mos: Job {len(job_block)} maydon, Result {len(result_block)} maydon, "
-        "kirish maydonlari, ro'yxat maydonlari, tablar qatori, smoke yuki ✓"
+        "kirish maydonlari, ro'yxat maydonlari, tablar qatori, smoke yuki, "
+        "eski manzillar ✓"
     )
     return 0
 
