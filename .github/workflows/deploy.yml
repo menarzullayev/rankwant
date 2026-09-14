@@ -53,7 +53,10 @@ jobs:
   build:
     name: Build — API, web va judge image'lari
     runs-on: [self-hosted, rankwant]
-    timeout-minutes: 30
+    # 3 daqiqa: issiq kesh bilan qurilish 166 s o'lchandi. Sovuq
+    # keshda oshib ketadi — oshsa sababini qidirish kerak (kesh),
+    # shunchaki chegarani ko'tarish emas.
+    timeout-minutes: 3
     outputs:
       version: ${{ steps.meta.outputs.version }}
     env:
@@ -64,6 +67,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Docker mavjudmi
+        timeout-minutes: 1
         run: |
           docker version --format '{{.Server.Version}}' || {
             echo "::error::Docker topilmadi — deploy job'i self-hosted runner talab qiladi"
@@ -71,6 +75,7 @@ jobs:
           }
 
       - name: Image'larni qurish
+        timeout-minutes: 3
         # `docker compose build` — build-context va build args compose
         # faylidan olinadi, ya'ni qo'lda yozilgan `docker build` buyrug'i
         # fayldan ajralib qolmaydi.
@@ -81,18 +86,30 @@ jobs:
 
       - name: Image'larni commit SHA bilan teglash
         id: meta
+        # ⚠️ Manba nomi shu job'ning `COMPOSE_PROJECT_NAME` idan keladi:
+        # compose qurilgan image'ni `<project>-<servis>` deb ataydi, ya'ni
+        # `rankwant-build-<run_id>-api`. Ilgari bu qadam `rankwant_web`
+        # qidirardi va "No such image" bilan yiqilardi — project nomi
+        # o'zgaruvchan bo'lgani uchun qidiruv emas, HISOBLASH kerak.
+        timeout-minutes: 3
         run: |
           version="${GITHUB_SHA:0:12}"
+          missing=0
           for svc in api web judge; do
-            docker image ls --format '{{.Repository}}:{{.Tag}}' \
-              | grep -q "^rankwant[\-/]${svc}:" || true
-            docker tag "rankwant-${svc}" "rankwant/${svc}:${version}" 2>/dev/null || \
-              docker tag "rankwant_${svc}" "rankwant/${svc}:${version}"
+            src="${COMPOSE_PROJECT_NAME}-${svc}:latest"
+            if ! docker image inspect "$src" >/dev/null 2>&1; then
+              echo "::error::$src topilmadi — build qadami image yaratmagan"
+              missing=1
+              continue
+            fi
+            docker tag "$src" "rankwant/${svc}:${version}"
           done
+          [ "$missing" -eq 0 ] || exit 1
           echo "version=${version}" >> "$GITHUB_OUTPUT"
           echo "::notice::Image teglari: rankwant/{api,web,judge}:${version}"
 
       - name: Image hajmi
+        timeout-minutes: 1
         # Kutilmagan o'sish (masalan `.venv` yoki `node_modules` kontekstga
         # tushib qolgan) build'ni sekinlashtiradi va registrni to'ldiradi.
         run: docker images --format '{{.Repository}}:{{.Tag}}\t{{.Size}}' | grep '^rankwant' || true

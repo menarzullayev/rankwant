@@ -43,6 +43,7 @@ jobs:
   changes:
     name: O'zgarishlar va hujjat yaxlitligi
     runs-on: [self-hosted, rankwant]
+    timeout-minutes: 2
     outputs:
       api: ${{ steps.filter.outputs.api }}
       web: ${{ steps.filter.outputs.web }}
@@ -73,6 +74,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.api == 'true'
     runs-on: [self-hosted, rankwant]
+    timeout-minutes: 3
     services:
       postgres:
         image: postgres:16
@@ -156,6 +158,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.web == 'true'
     runs-on: [self-hosted, rankwant]
+    timeout-minutes: 3
     steps:
       - uses: actions/checkout@v7
       - name: Scaffold qilinganmi?
@@ -219,6 +222,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.judge == 'true'
     runs-on: [self-hosted, rankwant]
+    timeout-minutes: 3
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v7
@@ -256,6 +260,7 @@ jobs:
     needs: [changes, api]
     if: needs.changes.outputs.api == 'true'
     runs-on: [self-hosted, rankwant]
+    timeout-minutes: 3
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
@@ -279,6 +284,7 @@ jobs:
   smoke:
     name: Smoke va E2E — to'liq stack
     runs-on: [self-hosted, rankwant]
+    timeout-minutes: 3
     needs: changes
     if: needs.changes.outputs.code == 'true'
     # Compose loyihasi HAR JOB uchun alohida. Bitta runner'da joblar
