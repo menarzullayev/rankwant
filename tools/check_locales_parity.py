@@ -108,9 +108,11 @@ class SequenceSource(Source):
                         for elt in value.elts
                         if isinstance(elt, ast.Constant) and isinstance(elt.value, str)
                     ]
-                # `LANGUAGES` — (kod, nom) juftliklaridan iborat.
-                if isinstance(value, (ast.Tuple, ast.List)):
-                    pass
+                # `LANGUAGES` — (kod, nom) juftliklari. U `PairsSource` da
+                # alohida qayta ishlanadi; bu yerda faqat satr ro'yxati
+                # kutiladi. Ilgari shu yerda bir xil shartli bo'sh `if`
+                # turardi — u yetib bo'lmaydigan edi (yuqoridagi shart
+                # ro'yxatni allaqachon qaytaradi), ya'ni o'lik kod.
         raise LookupError(f"{self.description}: {self.name} topilmadi")
 
 
