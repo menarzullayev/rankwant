@@ -393,6 +393,38 @@ def neg_i18n_runtime_dedup() -> tuple[bool, str]:
         return expect_node_fail("i18n/runtime takroriy jurnal")
 
 
+def neg_hardcoded_prose() -> tuple[bool, str]:
+    """Admin faylga qattiq yozilgan matn qo'yilsa — tekshiruv tutsin.
+
+    ⚠️ Bu tekshiruv `tools/check_i18n.py` KO'RMAYDIGAN sinf uchun: u faqat
+    kod → lug'at yo'nalishini tekshiradi, ya'ni jadval sarlavhasidagi
+    `label: "Sana"` unga ko'rinmaydi. 274 ta shunday satr «toza ✓» ostida
+    turgan edi.
+
+    Anchor — `CrudPage.tsx` dagi `ColumnDef` maydoni. U o'zgarsa test
+    shovqin bilan yiqiladi, jimgina o'lmaydi.
+    """
+    path = ROOT / "apps/web/src/components/admin/CrudPage.tsx"
+    with Mutation(path, '  align?: "left" | "right";', '  align?: "left" | "right";\n  label: "Sana";'):
+        return expect_fail("hardcoded", "qattiq yozilgan `label:`")
+
+
+def neg_hardcoded_locale_less_date() -> tuple[bool, str]:
+    """`toLocaleString()` tilni bermasa — tekshiruv tutsin.
+
+    Brauzer tilni O'ZI tanlaydi, ilova tili emas: rus tilida ishlaydigan
+    admin operatsion tizim tanlagan formatda sana ko'radi. To'rt joyda
+    shu xato topilgan edi.
+    """
+    path = ROOT / "apps/web/src/components/admin/CrudPage.tsx"
+    with Mutation(
+        path,
+        '  align?: "left" | "right";',
+        '  align?: "left" | "right";\n  x: new Date().toLocaleDateString();',
+    ):
+        return expect_fail("hardcoded", "tilsiz sana formati")
+
+
 CASES: list[tuple[str, list[tuple[str, object]]]] = [
     ("i18n", [
         ("bo'sh qiymat", neg_i18n_blank_value),
@@ -419,6 +451,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
     ("locales_parity", [
         ("LANGUAGES da til yetishmaydi", neg_parity_missing_locale),
         ("LOCALES da ortiqcha til", neg_parity_extra_locale),
+    ]),
+    ("hardcoded", [
+        ("admin faylda qattiq yozilgan matn", neg_hardcoded_prose),
+        ("tilsiz sana formati", neg_hardcoded_locale_less_date),
     ]),
 ]
 
