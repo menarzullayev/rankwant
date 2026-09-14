@@ -1,0 +1,17 @@
+# gitleaks sozlamasi — RankWant
+#
+# Nega kerak: standart `generic-api-key` qoidasi raqobatchi auditida
+# saqlangan HTML'larni ham ushlaydi. U yerdagi qiymat — brauzerga
+# chiqadigan ochiq `captchaSiteKey`: sir emas, balki saytning o'zi har
+# tashrifchiga yuboradigan kalit.
+#
+# ⚠️ Nega fingerprint (`.gitleaksignore`) emas, YO'L: fingerprint fayl
+# qayta commit qilinganda o'zgaradi (ichida commit SHA bor), ya'ni har
+# safar qaytadan qo'shish kerak edi — bu texnik qarzga aylanardi.
+title = "RankWant gitleaks"
+
+[allowlist]
+description = "Raqobatchi audit tasvirlari — ochiq captcha site key, sir emas"
+paths = [
+  '''docs/.*/audit/.*''',
+]

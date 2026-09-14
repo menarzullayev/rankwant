@@ -31,6 +31,9 @@ jobs:
   audit:
     name: Xavfsizlik tekshiruvlari
     runs-on: [self-hosted, rankwant]
+    # ⚠️ Vaqt chegarasi SHART: self-hosted runner'da hech narsa abadiy
+    # kutmasligi kerak. 3 daqiqa yetadi (o'lchandi: ~43 s + pip/npm audit).
+    timeout-minutes: 3
     steps:
       # gitleaks butun tarixni ko'radi, shuning uchun to'liq klon.
       - uses: actions/checkout@v7
@@ -39,14 +42,20 @@ jobs:
       - name: gitleaks
         # Action emas, to'g'ridan-to'g'ri skaner: GitHub API ruxsatiga bog'liq emas,
         # shuning uchun Dependabot PR'larida ham (read-only token) ishlaydi.
+        #
+        # `--config` SHART: raqobatchi audit tasvirlaridagi ochiq captcha
+        # site key'larini istisno qiladi (batafsil: `.gitleaks.toml`).
+        timeout-minutes: 3
         run: |
           docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:latest \
-            detect --source /repo --redact --no-banner --verbose
+            detect --source /repo --config /repo/.gitleaks.toml \
+            --redact --no-banner --verbose
 
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: pip-audit
+        timeout-minutes: 3
         run: |
           pip install pip-audit pyyaml
           if [ -f apps/api/requirements.lock ]; then
@@ -60,12 +69,14 @@ jobs:
         with:
           node-version: '22'
       - name: npm audit
+        timeout-minutes: 3
         run: |
           if [ -f apps/web/package-lock.json ]; then
             cd apps/web && npm audit --audit-level=high
           fi
 
       - name: Judge sandbox — escape sinovlari
+        timeout-minutes: 3
         run: |
           if [ -x tests/security/run.sh ]; then
             tests/security/run.sh
