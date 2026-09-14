@@ -371,7 +371,7 @@ export function AuthForm({
             </Checkbox>
             <Link
               href={"/login?tab=reset-password" as Route}
-              className="text-theme-sm rw-accent-ink hover:underline"
+              className="text-theme-sm rw-accent-ink underline"
             >
               {t(locale, "auth.forgot")}
             </Link>
@@ -709,7 +709,7 @@ function LinkAccount({ provider }: { provider: string }) {
       <p className="text-center text-theme-sm">
         <Link
           href={"/login?tab=reset-password" as Route}
-          className="rw-accent-ink hover:underline"
+          className="rw-accent-ink underline"
         >
           {t(locale, "auth.forgot")}
         </Link>
