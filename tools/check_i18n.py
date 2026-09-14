@@ -73,6 +73,16 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         # `profile.virtual` = "Virtual"), ya'ni majburan o'girish til
         # qoidasini buzardi.
         "admin.label.flag.virtual",
+        # Quyidagilar MATN EMAS, identifikator: belgi, xalqaro qisqartma
+        # va til kodi. Tarjima qilinsa ma'nosi buziladi, shuning uchun
+        # kalit orqali o'tadi-yu, qiymati hamma tilda bir xil qoladi.
+        "admin.label.text.num",      # "#" — ustun belgisi
+        "admin.label.text.acmIcpc",  # musobaqa platformasi nomi
+        "admin.label.text.ioi",      # olimpiada nomi
+        "admin.label.lang.uz",
+        "admin.label.lang.ru",
+        "admin.label.lang.en",
+        "admin.help.languageCodes",  # "uz / ru / en" — kodlar ro'yxati
     },
     # Qoraqalpoq tili o'zbek tiliga eng yaqini — xalqaro o'zlashmalar
     # ikkalasida ham aynan bir xil yoziladi.
@@ -108,15 +118,54 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         # «Algoritm» — qoraqalpoqchada ham shu shaklda yoziladi
         # (`nav.algorithms` = "Algoritmler"), ya'ni ildiz bir xil.
         "admin.label.text.problemExample",
+        # Qoraqalpoq tili o'zbekchaga eng yaqin: quyidagilar ikkalasida
+        # ham AYNAN shunday yoziladi. Har biri ko'rib chiqildi —
+        # majburan o'girish sun'iy ko'rinardi.
+        "admin.label.text.category",   # "Kategoriya"
+        "admin.label.text.code",       # "Kod"
+        "admin.label.text.language",   # "Til"
+        "admin.label.text.message",    # "Xabar"
+        "admin.label.text.module",     # "Modul"
+        "admin.label.text.standard",   # "Standart"
+        "admin.label.text.username",   # "Login"
+        "admin.label.text.version",    # "Versiya"
+        "admin.label.text.who",        # "Kim"
+        "admin.label.status.rejectedShort",  # "Rad etildi"
+        "admin.text.eventSessions",    # "... sessiya ..."
+        # Texnik atamalar va brend — qoraqalpoqcha ham asl holida.
+        "admin.label.text.asset",
+        "admin.label.text.bio",
+        "admin.label.text.checker",
+        "admin.label.text.email",
+        "admin.label.text.qvant",
+        "admin.label.text.repo",
+        "admin.label.text.slug",
     },
-    # «Duel» — inglizchadan o'zlashgan, ingliz tilida o'sha so'zning o'zi.
+    # Ingliz tili: «Duel» kabi so'zlar inglizchadan o'zlashgan, ya'ni
+    # tarjima AYNAN o'sha so'z bo'ladi. Quyidagilar ham shunday —
+    # o'zbekcha interfeysda allaqachon inglizcha yozilgan atamalar.
     "en": {"nav.duels", "level.master", "title.proton", "title.atom",
-           "profile.reason.duel", "profile.virtual", "admin.label.flag.virtual"},
+           "profile.reason.duel", "profile.virtual", "admin.label.flag.virtual",
+           "admin.label.text.asset", "admin.label.text.bio",
+           "admin.label.text.checker", "admin.label.text.email",
+           "admin.label.text.flag", "admin.label.text.interactive",
+           "admin.label.text.qvant", "admin.label.text.repo",
+           "admin.label.text.slug", "admin.help.ownerRepo",
+           "admin.label.shopCategory.streakFreeze",
+           "admin.label.shopCategory.usernameBadge"},
     # Turk tilida ham «Profil» — o'zbekcha bilan harfma-harf bir xil.
+    # Turk tili: bu so'zlar turkchada ham AYNAN shunday yoziladi
+    # ("kim" = кто, "kod" = код, "standart" = стандарт).
     "tr": {"settings.nav.profile", "title.foton", "title.elektron", "title.proton",
-           "title.atom", "title.kristal", "update.module.profile"},
+           "title.atom", "title.kristal", "update.module.profile",
+           "admin.label.text.code", "admin.label.text.qvant",
+           "admin.label.text.slug", "admin.label.text.standard",
+           "admin.label.text.who"},
     # Ispan tilida ham «Virtual».
-    "es": {"profile.virtual", "admin.label.flag.virtual"},
+    "es": {"profile.virtual", "admin.label.flag.virtual",
+           "admin.label.text.qvant", "admin.label.text.slug"},
+    # Xitoy tili: platforma valyutasining nomi — brend, o'girilmaydi.
+    "zh": {"admin.label.text.qvant"},
 }
 #: Kalit tirnoqli ham, tirnoqsiz ham bo'lishi mumkin: prettier `quoteProps`
 #: sozlamasi bilan oddiy identifikatorlardan tirnoqni olib tashlaydi va
