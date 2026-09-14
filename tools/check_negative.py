@@ -445,6 +445,37 @@ def neg_i18n_review_sheet_old_key() -> tuple[bool, str]:
         return expect_fail("i18n", "i18n/varaqda eski kalit qolgan")
 
 
+def neg_i18n_parity_does_not_mask() -> tuple[bool, str]:
+    """Paritet buzilganda KEYINGI qoidalar ham xabar bersinmi?
+
+    ⚠️ `main()` da erta `return 1` bor edi: paritet yiqilsa qolgan
+    qoidalar umuman ishlamasdi. Bitta uzilish ikki bosqichda ochilardi —
+    avval paritet tuzatiladi, keyin navbatdagi qoida qizaradi. Bu test
+    o'sha erta chiqish qaytib kelmasligini qo'riqlaydi: buzuq holatda
+    chiqishda **ham** paritet, **ham** varaq xabari bo'lishi shart.
+    """
+    src = ROOT / "apps/web/src/i18n/locales/uz.ts"
+    text = src.read_text(encoding="utf-8")
+    m = re.search(r'^(  "common\.empty":.*)$', text, re.M)
+    if m is None:
+        return False, "i18n: `common.empty` langari topilmadi"
+    broken = text.replace(
+        m.group(1), m.group(1) + '\n  "common.probe": "Probe",', 1
+    )
+    with Mutation(src, text, broken):
+        code, out = run_check("i18n")
+        if code == 0:
+            return False, "i18n/paritet erta chiqishi: buzuq holat o'tkazildi"
+        has_parity = "common.probe" in out
+        has_sheet = "eskirgan" in out
+        if not (has_parity and has_sheet):
+            return False, (
+                "i18n/paritet keyingi qoidani to'sdi — "
+                f"paritet={has_parity}, varaq={has_sheet}"
+            )
+        return True, "i18n/paritet keyingi qoidalarni to'smaydi (exit 1)"
+
+
 def neg_i18n_bare_key() -> tuple[bool, str]:
     """Prefikssiz kalit qo'shilsa — tutilsinmi?
 
@@ -698,6 +729,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         ("mamlakat jadvalida bo'sh qiymat", neg_i18n_country_row_blank),
         ("ko'rib chiqish varaqasi eskirgan", neg_i18n_review_sheet_stale),
         ("varaqda eski kalit qolgan", neg_i18n_review_sheet_old_key),
+        ("paritet keyingi qoidani to'smaydi", neg_i18n_parity_does_not_mask),
         ("shablon oila kalitisiz", neg_i18n_template_family),
         ("server evict bilan chegaralangan", neg_i18n_server_drops_locales),
         ("server lug'atda til yetishmaydi", neg_i18n_server_missing_locale),

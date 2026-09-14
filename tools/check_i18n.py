@@ -241,12 +241,10 @@ def main() -> int:
         if same:
             problems.append(f"{code}: {len(same)} kalit tarjimasiz (uz bilan bir xil) — {same[:5]}")
 
-    if problems:
-        print("i18n to'liq emas:")
-        for row in problems:
-            print(f"  {row}")
-        return 1
-
+    # ⚠️ Bu yerda ILGARI erta `return 1` bor edi: paritet buzilsa qolgan
+    # qoidalar umuman ishlamasdi. Natijada bitta uzilish ikki bosqichda
+    # ochilardi — avval paritet tuzatiladi, keyin navbatdagi qoida
+    # qizaradi. Endi hammasi BIR o'tishda yig'iladi.
     problems += check_usage(source)
     problems += check_templates(source)
     problems += check_server_registry()
