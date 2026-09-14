@@ -30,6 +30,12 @@ concurrency:
 permissions:
   contents: read
   actions: read
+  # `test` job'i `ci.yml` ni `uses:` bilan chaqiradi. Chaqiriladigan
+  # workflow faqat ruxsatni KAMAYTIRA oladi, ko'paytira olmaydi: `ci.yml`
+  # o'zida `pull-requests: read` so'raydi (`dorny/paths-filter` uchun),
+  # caller bermasa GitHub run'ni umuman boshlamaydi — `startup_failure`,
+  # 0 job. Bu yerda BERILISHI shart.
+  pull-requests: read
 
 env:
   # Self-hosted runner `nsn` foydalanuvchisi sifatida ishlaydi va
