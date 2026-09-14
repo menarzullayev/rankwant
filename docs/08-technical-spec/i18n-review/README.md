@@ -1,4 +1,16 @@
-# Translation review sheets
+# Translation review and verification
+
+Two kinds of material live here, both about the same problem: what the checks
+in this repository cannot see.
+
+## `browser-check.md`
+
+What the admin panel actually renders in a non-Uzbek locale, read back from
+the DOM. Every check here is static, and two defects found while translating
+the admin were invisible to all of them — `curl` returned 200 while the client
+tree was failing to render.
+
+## Review sheets
 
 Four languages ship in this app, but only some of them were translated by a
 speaker of that language. The dictionaries for **Karakalpak (`kaa`)`,
