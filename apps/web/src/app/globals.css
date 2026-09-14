@@ -141,7 +141,6 @@
   --rw-field: #ffffff;
   --rw-font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --rw-font-display: var(--rw-font);
-  --rw-font-mono: var(--rw-plex-mono), ui-monospace, Menlo, monospace;
   --rw-btn-radius: var(--rw-radius-sm);
   --rw-btn-shadow: none;
   --rw-btn-weight: 500;
