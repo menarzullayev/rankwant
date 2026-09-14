@@ -13,6 +13,13 @@
 # `core.autocrlf` setting, so every clone gets a runnable script.
 # `text` keeps git normalising on commit.
 
+# Standart qoida: git matnni o'zi aniqlaydi va HAR IKKALA tomonda LF
+# saqlaydi. `core.autocrlf` sozlamasidan qat'i nazar bir xil natija
+# beradi — ya'ni bir mashinada CI yashil, boshqasida qizil bo'lmaydi.
+#
+# Pastdagi aniq qoidalar shu satrni to'ldiradi (binary'lar `-text`).
+*             text=auto eol=lf
+
 .githooks/**  text eol=lf
 tools/*.sh    text eol=lf
 tools/*.mjs   text eol=lf
