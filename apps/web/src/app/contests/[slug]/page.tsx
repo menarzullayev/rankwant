@@ -7,6 +7,7 @@ import { dateTime, t } from "@/i18n/messages";
 import { StandingsTable } from "@/components/StandingsTable";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
+import { SITE_URL, jsonLd } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -45,6 +46,31 @@ export default async function ContestPage({ params }: Props) {
 
   return (
     <div className="space-y-6">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonLd({
+            "@context": "https://schema.org",
+            "@type": "Event",
+            name: contest.title,
+            startDate: contest.start_at,
+            endDate: contest.end_at,
+            url: `${SITE_URL}/contests/${slug}`,
+            eventStatus: contest.is_finished
+              ? "https://schema.org/EventCompleted"
+              : contest.is_running
+                ? "https://schema.org/EventInProgress"
+                : "https://schema.org/EventScheduled",
+            eventAttendanceMode:
+              "https://schema.org/OnlineEventAttendanceMode",
+            location: {
+              "@type": "VirtualLocation",
+              url: `${SITE_URL}/contests/${slug}`,
+            },
+            organizer: { "@id": `${SITE_URL}/#organization` },
+          }),
+        }}
+      />
       <div>
         <h1 className="text-title-sm font-bold rw-strong">{contest.title}</h1>
         <div className="mt-2 flex flex-wrap items-center gap-2">

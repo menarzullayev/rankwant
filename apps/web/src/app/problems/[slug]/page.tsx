@@ -15,6 +15,7 @@ import SubmitPanel from "@/components/SubmitPanel";
 import { notFound } from "next/navigation";
 import { api, ApiError, type ProblemDetail } from "@/lib/api";
 import { getWithSession } from "@/lib/api.server";
+import { SITE_URL, jsonLd } from "@/lib/site";
 import { getLocale } from "@/i18n/server";
 import { fill, t } from "@/i18n/messages";
 
@@ -86,6 +87,26 @@ export default async function ProblemPage({ params, searchParams }: Props) {
     // 600 px bo'lib, yon tomonga siljirdi va tab tugmalarini bosib
     // bo'lmasdi.
     <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,560px)]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonLd({
+            "@context": "https://schema.org",
+            "@type": "LearningResource",
+            name: problem.title,
+            description: fill(t(locale, "problem.difficultyDescription"), {
+              title: problem.title,
+              difficulty: problem.difficulty,
+            }),
+            url: `${SITE_URL}/problems/${slug}`,
+            educationalLevel: problem.level_label,
+            learningResourceType: "Problem",
+            inLanguage: locale,
+            isAccessibleForFree: true,
+            creator: { "@id": `${SITE_URL}/#organization` },
+          }),
+        }}
+      />
       <article className="min-w-0 space-y-6">
         <ProblemTabs slug={slug} current="statement" />
 

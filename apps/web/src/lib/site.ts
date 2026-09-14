@@ -42,6 +42,18 @@ export function absolute(path: string): string {
  * boshlanadigan yo'l. Rad etilganda `null` — chaqiruvchi standart
  * manzilga o'tadi.
  */
+/** `application/ld+json` blokining ichki matni.
+ *
+ *  ⚠️ `JSON.stringify` `<` belgisini qochirmaydi. Sarlavha `</script>`
+ *  o'z ichiga olsa blok shu yerda uzilib, qolgan sahifa matn sifatida
+ *  ko'rinadi — yoki yomonroq. Sarlavhalar API'dan keladi (musobaqa,
+ *  masala), ya'ni bu nazariy xavf emas. `\u003c` JSON ichida xuddi shu
+ *  belgi, lekin skript blokini buza olmaydi.
+ */
+export function jsonLd(data: unknown): string {
+  return JSON.stringify(data).replace(/</g, "\\u003c");
+}
+
 export function safeNext(value: string | null | undefined): string | null {
   if (!value || !value.startsWith("/")) return null;
   if (value.startsWith("//") || value.startsWith("/\\")) return null;
