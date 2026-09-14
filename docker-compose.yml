@@ -25,7 +25,13 @@ services:
       retries: 5
 
   minio:                      # S3/R2 o'rniga local
-    image: minio/minio
+    # ⚠️ `minio/minio` DOCKER HUB'DA YO'Q — 2025-yilda olib tashlangan.
+    # `latest` bilan yozilsa `docker pull` `pull access denied for
+    # minio/minio` beradi va CI'ning `smoke` job'i shu yerda yiqiladi
+    # (o'lchandi 2026-09-14). Rasmiy joy — quay.io. Qolgan obrazlar
+    # (`postgres`, `redis`, `hello-world`) Docker Hub'dan anonim
+    # yuklanadi, ya'ni bu faqat MinIO'ga tegishli.
+    image: quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: rankwant
