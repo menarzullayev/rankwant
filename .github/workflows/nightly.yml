@@ -16,6 +16,12 @@ jobs:
   load:
     name: Load — o'qish sig'imi
     runs-on: [self-hosted, rankwant]
+    # ⚠️ 3 daqiqadan ko'p — ONGLI istisno: bu job to'liq compose
+    # stack'ni `up -d --build --wait` bilan ko'taradi, ya'ni image
+    # qurilishi ham shu ichida. 3 daqiqa qo'yish job'ni kafolatli
+    # qizil qiladi (deploy/build da o'lchandi). Chegara BOR,
+    # chegarasizlik yo'q — asl maqsad shu.
+    timeout-minutes: 15
     # Compose loyihasi HAR JOB uchun alohida. Bitta runner'da joblar
     # ketma-ket ketgani uchun bu ilgari sezilmasdi; ikkinchi runner
     # qo'shilishi bilan ikkita job bir xil nomdagi stack'ni ko'tarib,
@@ -53,6 +59,12 @@ jobs:
   e2e:
     name: E2E — to'liq brauzer matritsasi
     runs-on: [self-hosted, rankwant]
+    # ⚠️ 3 daqiqadan ko'p — ONGLI istisno: bu job to'liq compose
+    # stack'ni `up -d --build --wait` bilan ko'taradi, ya'ni image
+    # qurilishi ham shu ichida. 3 daqiqa qo'yish job'ni kafolatli
+    # qizil qiladi (deploy/build da o'lchandi). Chegara BOR,
+    # chegarasizlik yo'q — asl maqsad shu.
+    timeout-minutes: 15
     # Compose loyihasi HAR JOB uchun alohida. Bitta runner'da joblar
     # ketma-ket ketgani uchun bu ilgari sezilmasdi; ikkinchi runner
     # qo'shilishi bilan ikkita job bir xil nomdagi stack'ni ko'tarib,
@@ -84,6 +96,12 @@ jobs:
   chaos:
     name: Chaos — bog'liqlik uzilishi
     runs-on: [self-hosted, rankwant]
+    # ⚠️ 3 daqiqadan ko'p — ONGLI istisno: bu job to'liq compose
+    # stack'ni `up -d --build --wait` bilan ko'taradi, ya'ni image
+    # qurilishi ham shu ichida. 3 daqiqa qo'yish job'ni kafolatli
+    # qizil qiladi (deploy/build da o'lchandi). Chegara BOR,
+    # chegarasizlik yo'q — asl maqsad shu.
+    timeout-minutes: 15
     # Compose loyihasi HAR JOB uchun alohida. Bitta runner'da joblar
     # ketma-ket ketgani uchun bu ilgari sezilmasdi; ikkinchi runner
     # qo'shilishi bilan ikkita job bir xil nomdagi stack'ni ko'tarib,
@@ -111,6 +129,12 @@ jobs:
   compatibility:
     name: Til matritsasi
     runs-on: [self-hosted, rankwant]
+    # ⚠️ 3 daqiqadan ko'p — ONGLI istisno: bu job to'liq compose
+    # stack'ni `up -d --build --wait` bilan ko'taradi, ya'ni image
+    # qurilishi ham shu ichida. 3 daqiqa qo'yish job'ni kafolatli
+    # qizil qiladi (deploy/build da o'lchandi). Chegara BOR,
+    # chegarasizlik yo'q — asl maqsad shu.
+    timeout-minutes: 10
     # Compose loyihasi HAR JOB uchun alohida. Bitta runner'da joblar
     # ketma-ket ketgani uchun bu ilgari sezilmasdi; ikkinchi runner
     # qo'shilishi bilan ikkita job bir xil nomdagi stack'ni ko'tarib,
