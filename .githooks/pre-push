@@ -12,6 +12,23 @@ set -uo pipefail
 root="$(git rev-parse --show-toplevel)"
 cd "$root"
 
+# `python3` — Linux nomi. Windows'da Git Bash uni faqat boshqa Python
+# PATH'da bo'lsa topadi; `python` esa oddiy o'rnatishdan keyin doim bor.
+# Qaysi biri mavjud bo'lsa, o'sha ishlatiladi — hook qaysi shelldan
+# chaqirilsa ham bir xil ishlaydi.
+#
+# Python topilmasa hook YO'QOLMAYDI: jim `exit 0` — «e'lon qilingan,
+# lekin jonsiz» darvoza bo'lardi. Buning o'rniga ochiq xato beriladi.
+if command -v python3 >/dev/null 2>&1; then
+  PY=python3
+elif command -v python >/dev/null 2>&1; then
+  PY=python
+else
+  printf '\n\033[31m✗ Python topilmadi — tekshiruvlar bajarilmadi.\033[0m\n' >&2
+  printf '  Python PATH'"'"'ga qo'"'"'shilsin, yoki: git push --no-verify\n\n' >&2
+  exit 1
+fi
+
 remote_head="$(git rev-parse --verify --quiet '@{upstream}' || echo '')"
 range="${remote_head:+$remote_head..}HEAD"
 files="$(git diff --name-only "$range" 2>/dev/null || git diff --name-only HEAD)"
@@ -62,22 +79,22 @@ if has '^apps/web/'; then
   cd "$root"
   # Tiplar kalit yetishmasligini ushlaydi, lekin bo'sh satrni yoki
   # tarjimasiz qoldirilgan nusxani ko'rmaydi.
-  step "Web — i18n to'liqligi" python3 tools/check_i18n.py
+  step "Web — i18n to'liqligi" "$PY" tools/check_i18n.py
   # `t()` ning zaxira yo'li HAQIQIY modulda: dev'da otiladi, prod'da
   # bir marta jurnalga yoziladi. Statik tekshiruv buni ko'rmaydi.
   step "Web — i18n runtime" node tools/check_i18n_runtime.mjs
   # Tekshiruvlarning o'zi buzuq holatni tutishini talab qiladi.
-  step "Tekshiruvlar — salbiy testlar" python3 tools/check_negative.py
+  step "Tekshiruvlar — salbiy testlar" "$PY" tools/check_negative.py
   # 18 palitra × 4 pog'ona — ko'z bilan tekshirib bo'lmaydi.
-  step "Web — matn kontrasti" python3 tools/check_contrast.py
+  step "Web — matn kontrasti" "$PY" tools/check_contrast.py
 fi
 
 if has '^(docs/|README)'; then
-  step "Hujjat yaxlitligi" python3 tools/check_docs.py
+  step "Hujjat yaxlitligi" "$PY" tools/check_docs.py
 fi
 
 if has '^(services/|apps/api/judging/)'; then
-  step "Judge shartnomasi" python3 tools/check_contract.py
+  step "Judge shartnomasi" "$PY" tools/check_contract.py
 fi
 
 if [ "$fail" -ne 0 ]; then
