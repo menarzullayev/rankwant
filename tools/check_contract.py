@@ -37,6 +37,9 @@ PY_SERVICES = REPO / "apps/api/judging/services.py"
 WEB_AUTH_FORM = REPO / "apps/web/src/components/AuthForm.tsx"
 WEB_API = REPO / "apps/web/src/lib/api.ts"
 API_SERIALIZERS = REPO / "apps/api/core/serializers.py"
+# Smoke — HAQIQIY API'ni sinaydigan yagona joy, ya'ni shartnomadan birinchi
+# bo'lib uziladi. Uning yuki ham shu yerda tekshiriladi (quyida).
+SMOKE = REPO / "tests/smoke/check.py"
 
 problems: list[str] = []
 
@@ -289,6 +292,111 @@ def check_tab_bar() -> list[str]:
     return found
 
 
+def _block_after(text: str, marker: str) -> str | None:
+    """`marker` dan keyingi birinchi `{ ... }` — qavslar sanog'i bilan.
+
+    `marker` ni `creds` kabi nom yoki `"/auth/login/"` kabi satr bo'lishi
+    mumkin. Yuklar ichma-ich (`{"identifier": creds["username"]}`), ya'ni
+    regex bilan o'qib bo'lmaydi.
+    """
+    m = re.search(re.escape(marker), text)
+    if not m:
+        return None
+    start = text.find("{", m.end())
+    if start == -1:
+        return None
+    depth = 0
+    for i in range(start, len(text)):
+        if text[i] == "{":
+            depth += 1
+        elif text[i] == "}":
+            depth -= 1
+            if depth == 0:
+                return text[start + 1 : i]
+    return None
+
+
+def check_smoke_payloads() -> list[str]:
+    """Smoke testining yuklari API shartnomasiga mos kelishi.
+
+    Smoke — HAQIQIY API'ni sinaydigan YAGONA joy: qolgan testlar API'ni
+    mock qiladi. Shu sabab u shartnomadan birinchi bo'lib uziladi va
+    uzilish faqat CI'da ko'rinadi.
+
+    Aynan shu yuz berdi (2026-09-14, o'lchandi): maydon `username` dan
+    `identifier` ga o'zgardi (4-qaror) va registrga majburiy
+    `terms_accepted` qo'shildi. Web forma yangilandi, smoke esa
+    yangilanmadi — u eski yukni yuborib `400` oldi, sayt esa
+    ishlayverdi. Ya'ni tekshiruvning O'ZI jimgina o'lib qolgan edi.
+
+    Shuning uchun yuk shakli shu yerda, serializer yonida tekshiriladi.
+    `check_login_contract` va `check_register_contract` faqat web
+    formani o'qiydi — smoke ularning ko'rigidan tashqarida qolgan edi.
+    """
+    found: list[str] = []
+    if not SMOKE.exists():
+        return [f"SMOKE: {SMOKE.relative_to(REPO)} topilmadi"]
+
+    smoke = SMOKE.read_text()
+
+    # ── Login: API `identifier` kutadi, `username` EMAS ──────────────
+    login_body = _block_after(smoke, '"/auth/login/"')
+    if login_body is None:
+        found.append("SMOKE: `/auth/login/` chaqiruvi topilmadi")
+    else:
+        # Kalitlar qo'shtirnoq ichida (`"identifier":`), ya'ni qo'shtirnoq
+        # ixtiyoriy bo'lishi shart — aks holda hech biri topilmaydi va
+        # tekshiruv doim qizil bo'lardi.
+        keys = set(re.findall(r'"?(\w+)"?\s*:', login_body))
+        if "identifier" not in keys:
+            found.append(
+                "SMOKE: `/auth/login/` da `identifier` yuborilmaydi — "
+                "API shu maydonni kutadi, login 400 bo'ladi"
+            )
+        if "username" in keys:
+            found.append(
+                "SMOKE: `/auth/login/` da eski `username` kaliti qolgan — "
+                "API `identifier` kutadi"
+            )
+
+    # ── Register: majburiy maydonlarning HAMMASI yuborilishi shart ───
+    serializers = API_SERIALIZERS.read_text()
+    match = re.search(r"class RegisterSerializer\(.*?\n\nclass ", serializers, re.S)
+    if not match:
+        found.append("SMOKE: RegisterSerializer topilmadi — yuk tekshirilmadi")
+        return found
+    body = match.group(0)
+
+    declared = set(re.findall(r"^\s+(\w+)\s*=\s*serializers\.", body, re.M))
+    fields_match = re.search(r"fields\s*=\s*\[(.*?)\]", body, re.S)
+    in_meta = set(re.findall(r'"(\w+)"', fields_match.group(1))) if fields_match else set()
+
+    # Ixtiyoriylar ikki yo'l bilan belgilanadi: `extra_kwargs` ichida
+    # (`{"required": False}`) yoki maydon e'lonida (`required=False`).
+    kw_body = _brace_block(body, "extra_kwargs") or ""
+    optional = set(re.findall(r'"(\w+)"\s*:\s*\{[^{}]*"required"\s*:\s*False', kw_body))
+    optional |= set(
+        re.findall(r"^\s+(\w+)\s*=\s*serializers\.\w+\([^)]*required\s*=\s*False", body, re.M)
+    )
+    required = (declared | in_meta) - optional
+
+    creds_body = _brace_block(smoke, "creds")
+    if creds_body is None:
+        found.append("SMOKE: `creds` lug'ati topilmadi — register yuki tekshirilmadi")
+        return found
+
+    sent = set(re.findall(r'"(\w+)"\s*:', creds_body))
+    for field in sorted(required - sent):
+        found.append(
+            f"SMOKE: register yukida majburiy `{field}` yo'q — "
+            "ro'yxatdan o'tish 400 bilan yiqiladi"
+        )
+    for field in sorted(sent - declared - in_meta):
+        found.append(f"SMOKE: register yuki `{field}` yuboradi, API uni bilmaydi")
+
+    return found
+
+
 def main() -> int:
     protocol = PROTOCOL.read_text()
     blocks = json_blocks(protocol)
@@ -313,36 +421,30 @@ def main() -> int:
         if key not in go_tags:
             problems.append(f"tests[].{key} — API yuboradi, judge-go o'qimaydi")
 
-    if problems:
-        print("Shartnoma nomuvofiqligi:", file=sys.stderr)
-        for p in problems:
+    # Har bir qoida BIR o'tishda yig'iladi. Ilgari har tekshiruvdan keyin
+    # erta `return` bor edi: yuqoridagi uzilish quyidagilarni to'sib,
+    # bitta nosozlikni bir necha bosqichda ochardi (2026-09-14 saboqi).
+    groups = [
+        ("Shartnoma nomuvofiqligi", problems),
+        ("Kirish shartnomasi nomuvofiqligi", check_login_contract()),
+        ("Ro'yxatdan o'tish shartnomasi nomuvofiqligi", check_register_contract()),
+        ("Tablar qatori nomuvofiqligi", check_tab_bar()),
+        ("Smoke yuki nomuvofiqligi", check_smoke_payloads()),
+    ]
+    failed = False
+    for title, items in groups:
+        if not items:
+            continue
+        failed = True
+        print(f"{title}:", file=sys.stderr)
+        for p in items:
             print(f"  - {p}", file=sys.stderr)
-        return 1
-
-    login_problems = check_login_contract()
-    if login_problems:
-        print("Kirish shartnomasi nomuvofiqligi:", file=sys.stderr)
-        for p in login_problems:
-            print(f"  - {p}", file=sys.stderr)
-        return 1
-
-    register_problems = check_register_contract()
-    if register_problems:
-        print("Ro'yxatdan o'tish shartnomasi nomuvofiqligi:", file=sys.stderr)
-        for p in register_problems:
-            print(f"  - {p}", file=sys.stderr)
-        return 1
-
-    tab_problems = check_tab_bar()
-    if tab_problems:
-        print("Tablar qatori nomuvofiqligi:", file=sys.stderr)
-        for p in tab_problems:
-            print(f"  - {p}", file=sys.stderr)
+    if failed:
         return 1
 
     print(
         f"Shartnoma mos: Job {len(job_block)} maydon, Result {len(result_block)} maydon, "
-        "kirish maydonlari, ro'yxat maydonlari, tablar qatori ✓"
+        "kirish maydonlari, ro'yxat maydonlari, tablar qatori, smoke yuki ✓"
     )
     return 0
 

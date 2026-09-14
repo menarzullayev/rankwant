@@ -90,6 +90,9 @@ def main() -> int:
         # Bir martalik hisob uchun runtime parol: repoda parolga o'xshash
         # satr qoldirmaslik kerak, sekret skaneri uni to'g'ri belgilaydi.
         "password": secrets.token_urlsafe(24),
+        # RegisterSerializer declares this required (GDPR: consent must be
+        # explicit, so the field cannot default to true).
+        "terms_accepted": True,
     }
 
     check("Ro'yxatdan o'tish", lambda: request("/auth/register/", creds)[0])
@@ -98,7 +101,8 @@ def main() -> int:
     cookies = check(
         "Login sessiya beradi",
         lambda: request(
-            "/auth/login/", {"username": creds["username"], "password": creds["password"]}
+            "/auth/login/",
+            {"identifier": creds["username"], "password": creds["password"]},
         )[1],
     )
     if not cookies:
