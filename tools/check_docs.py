@@ -36,6 +36,12 @@ def markdown_files() -> list[Path]:
         # bu yerda XATO EMAS, balki varaqning ma'nosi. Yozuv aralashuvi
         # tekshiruvi nasr uchun yozilgan, jadval uchun emas.
         and "i18n-review" not in p.parts
+        # `.workbuddy-ai/` — agentning ichki xotirasi (kunlik yozuv, playbook).
+        # U hujjat ham, manba ham emas: ichida buzuq MISOLLAR, eski raqamlar va
+        # xato sitatalari turadi (masalan `ADR-9999`). Skanerlansa qoida
+        # o'sha namunalarni haqiqiy havola deb o'qib, tekshiruvni doim qizil
+        # qiladi — bir marta aynan shunday bo'ldi.
+        and p.relative_to(ROOT).parts[0] != ".workbuddy-ai"
     )
 
 
@@ -132,6 +138,9 @@ def _source_files() -> list[Path]:
     uchun qoidaga tushib qoladi va tekshiruv O'Z testini tutib, doim
     qizil bo'ladi. Testlar `Mutation` bilan vaqtinchalik fayl yaratib
     tekshiriladi — demak ularni skanerlash shart emas.
+
+    ⚠️ `.workbuddy-ai/` ham chiqariladi: agent xotirasi manba emas, ichida
+    o'sha buzuq namunalar sitata sifatida yashaydi.
     """
     out: list[Path] = []
     for suffix in (".ts", ".tsx", ".py"):
@@ -141,7 +150,8 @@ def _source_files() -> list[Path]:
                 for part in path.parts
             ):
                 continue
-            if path.relative_to(ROOT).parts[0] == "tools":
+            # Testlar ham, agent xotirasi ham manba emas — sababi docstring'da.
+            if path.relative_to(ROOT).parts[0] in {"tools", ".workbuddy-ai"}:
                 continue
             out.append(path)
     return sorted(out)
