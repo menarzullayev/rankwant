@@ -29,6 +29,11 @@ def markdown_files() -> list[Path]:
             part in {".git", "node_modules", ".venv", "test-results", "playwright-report"}
             for part in p.parts
         )
+        # `i18n-review/` — ikki tilli jadval: bir qatorda o'zbekcha (lotin)
+        # manba va qozoqcha/qirg'izcha (kirill) qiymat turadi. Aralashuv
+        # bu yerda XATO EMAS, balki varaqning ma'nosi. Yozuv aralashuvi
+        # tekshiruvi nasr uchun yozilgan, jadval uchun emas.
+        and "i18n-review" not in p.parts
     )
 
 
