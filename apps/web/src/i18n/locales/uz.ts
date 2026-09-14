@@ -815,8 +815,293 @@ export const uz = {
   "locale.group.region": "Mintaqa",
   "locale.group.broad": "Keng qamrov",
   "locale.loading": "Yuklanmoqda",
-  "locale.listLabel": "Tilllar ro'yxati",
+  "locale.listLabel": "Tillar ro'yxati",
   "content.uzOnly": "Bu nom o'zbekcha — tarjimasi tayyorlanmoqda",
+
+  // ---- Masala sahifasi: bo'limlar, harakatlar, namunalar ----------------
+  //
+  // Bular ilgari komponentlar ichida qattiq yozilgan edi: foydalanuvchi
+  // 9 tildan birini tanlasa ham matn o'zbekcha qolardi (o'lchandi:
+  // `/problems/a-plus-b` ni `ru` da ochsak, tugmalar "Yoqdi"/"Yoqmadi").
+  "problem.tab.statement": "Tavsif",
+  "problem.tab.status": "Urinishlar",
+  "problem.tab.stats": "Statistika",
+  "problem.tab.solvers": "Yechganlar",
+  "problem.tabsLabel": "Masala bo'limlari",
+
+  "problem.solvers.count": "Bu masalani {count} kishi yechdi",
+  "problem.solvers.none": "Hali hech kim yechmagan",
+  "problem.solvers.first": "Birinchi yechgan",
+  "problem.solvers.fast": "Eng tez",
+  "problem.solvers.short": "Eng qisqa yechim",
+  "problem.solvers.tries": "Eng kam urinish",
+  "problem.voteUp": "Yoqdi",
+  "problem.voteDown": "Yoqmadi",
+  "problem.voteUpTitle": "Yoqdi — bir bosishda ovoz berish",
+  "problem.voteDownTitle": "Yoqmadi — bir bosishda ovoz berish",
+  "problem.ratingSummary": "{average} · {count} baho",
+  "problem.ratingEmpty": "Baho yo'q",
+  "problem.rateWith": "{score} baho berish",
+  "problem.inFavourites": "★ Sevimlilarda",
+  "problem.addFavourite": "☆ Sevimlilarga",
+  "problem.favouriteOn": "{title} — sevimlilardan olib tashlash",
+  "problem.favouriteOff": "{title} — sevimlilarga qo'shish",
+
+  "problem.statementSizeDown": "Shriftni kichraytirish",
+  "problem.statementSizeUp": "Shriftni kattalashtirish",
+
+  "problem.samples": "Namunalar",
+  "problem.sampleInput": "Kirish",
+  "problem.sampleOutput": "Chiqish",
+  "problem.copy": "Nusxalash",
+  "problem.copied": "Nusxalandi",
+  "problem.copyInput": "{order}-namuna kirishini nusxalash",
+  "problem.copyOutput": "{order}-namuna chiqishini nusxalash",
+
+  "problem.attachments": "Biriktirilgan fayllar",
+  "problem.similar": "O'xshash masalalar",
+
+  // ---- Masala filtri paneli --------------------------------------------
+  // `level.*` allaqachon bor (633-qator) — filtr uni qayta ishlatadi.
+  "filter.sort.easiest": "Eng oson",
+  "filter.sort.hardest": "Eng qiyin",
+  "filter.sort.mostSolved": "Ko'p yechilgan",
+  "filter.sort.newest": "Yangi",
+  "filter.status.unsolved": "Yechilmagan",
+  "filter.status.solved": "Yechilgan",
+  "filter.status.attempted": "Urinib ko'rgan",
+  "filter.status.favourites": "Sevimlilarim",
+  "filter.status.recommended": "Menga tavsiya",
+  "filter.sortLabel": "Saralash",
+  "filter.filters": "Filtrlar",
+  "filter.clear": "Filtrlarni tozalash",
+  "filter.searchPlaceholder": "Masala qidirish…",
+  "filter.searchLabel": "Masala qidirish",
+  "filter.levelLabel": "Daraja",
+  "filter.statusLabel": "Holat",
+  "filter.all": "Hammasi",
+  "filter.topicsLabel": "Mavzular",
+  "filter.showAllTopics": " (hammasi)",
+  "filter.statementLocaleLabel": "Matn tili",
+  "filter.viewLabel": "Ko'rinish",
+  "filter.hideTagsUnsolved": "Yechilmaganlarda mavzuni yashirish",
+  "filter.topicSearchPlaceholder": "{count} ta mavzudan qidirish…",
+  "filter.topicSearchLabel": "Mavzu qidirish",
+  "filter.noTopicMatch": "Bunday mavzu yo'q",
+
+  // ---- Yechim tahlili (Editorial) ---------------------------------------
+  "editorial.title": "Yechim tahlili",
+  "editorial.lockedTitle": "Tahlil hisobga kirgan foydalanuvchilar uchun.",
+  "editorial.login": "Kirish",
+  "editorial.solvedFree": "Masalani yechdingiz — tahlil ochiq.",
+  "editorial.free": "Bepul",
+  "editorial.unlockFor": "Ochish — {price} Qvant",
+  "editorial.unlocking": "Ochilmoqda…",
+  "editorial.show": "Ko'rsatish",
+  "editorial.hide": "Yashirish",
+  "editorial.open": "Tahlil ochiq.",
+  "editorial.notEnough": "Balans yetarli emas — {price} Qvant kerak",
+  "editorial.unlockFailed": "Ochib bo'lmadi, qaytadan urinib ko'ring",
+  // ⚠️ Bu matnda urg'u bor. Uni bitta satr ichida `{emphasis}` bilan
+  // bo'lish MUMKIN EMAS: so'z tartibi tillar bo'ylab farq qiladi, ya'ni
+  // «... tahlil {x} ochiladi ...» shabloni ruscha yoki xitoychada
+  // grammatikani buzadi. Shuning uchun matn IKKI mustaqil kalit: urg'uli
+  // jumla va qolgani. Komponent ularni ketma-ket chiqaradi, ya'ni har bir
+  // tarjimon o'z tilida tabiiy tartibni tanlaydi.
+  "editorial.lockedLead": "Masalani yechsangiz tahlil bepul ochiladi.",
+  "editorial.lockedBody": "Va o'shanda undan haqiqiy foyda bo'ladi. Hoziroq ko'rmoqchi bo'lsangiz {price} Qvant.",
+  "editorial.tryFirst": "O'zingiz urinib ko'rgach oching.",
+
+  // ---- Nuqson haqida xabar ---------------------------------------------
+  "report.open": "Xato topdingizmi?",
+  "report.title": "Masaladagi nuqson haqida xabar",
+  "report.commentLabel": "Izoh (ixtiyoriy) — qaysi joyda va nima noto'g'ri?",
+  "report.send": "Yuborish",
+  "report.sending": "Yuborilmoqda…",
+  "report.cancel": "Bekor qilish",
+  "report.done": "Xabaringiz yuborildi — rahmat.",
+  "report.failed": "Yuborilmadi — qaytadan urinib ko'ring",
+  "report.reason.statement": "Matnda xato",
+  "report.reason.tests": "Testlar noto'g'ri",
+  "report.reason.translation": "Tarjima xato",
+  "report.reason.duplicate": "Takroriy masala",
+  "report.reason.other": "Boshqa",
+  "report.status.open": "Ochiq",
+  "report.status.accepted": "Qabul qilindi",
+  "report.status.rejected": "Rad etildi",
+
+  // ---- Accent hisoblash xatolari ---------------------------------------
+  //
+  // `lib/theme/apply.ts` matn emas, KOD qaytaradi va u `error.<code>`
+  // konventsiyasiga bo'ysunadi (`messages.ts` → `errorText()`).
+  // Ilgari o'sha modul ichida tayyor o'zbekcha satr turardi va 9 tilda
+  // ham o'zbekcha chiqardi (o'lchandi: accent qo'llanmay qolganda
+  // panelda "fon o'qilmadi" — interfeys tili `en` bo'lsa ham).
+  "error.ground_unreadable":
+    "Fon rangini o'qib bo'lmadi — accent qo'llanmadi. Sahifani yangilab ko'ring.",
+  "error.contrast_unreachable":
+    "Bu tus bilan yetarli kontrast chiqmadi — boshqa tus tanlang.",
+
+  // ---- Vizual uslublar (layout/styles.ts) ------------------------------
+  //
+  // `label` — uslub nomi. Ko'pi atoqli ot (Dashboard, Terminal, Aurora,
+  // Neumorphism) va tarjima qilinmaydi, lekin "Shveycha" va
+  // "Neo-brutalizm" kabi o'giriladiganlari ham bor — shuning uchun
+  // hammasi kalit orqali o'tadi va bir xillari `UNTRANSLATED_OK` da.
+  // `hint` — izoh, u HAR DOIM tarjima qilinishi kerak.
+  "style.dashboard.label": "Dashboard",
+  "style.dashboard.hint": "Hozirgi — yumshoq kartalar",
+  "style.swiss.label": "Shveycha",
+  "style.swiss.hint": "Chiziq va tipografika",
+  "style.flat.label": "Flat",
+  "style.flat.hint": "Soyasiz, toza ranglar",
+  "style.material.label": "Material",
+  "style.material.hint": "Balandlik va soyalar",
+  "style.editorial.label": "Editorial",
+  "style.editorial.hint": "Serif, jurnal ko'rinishi",
+  "style.brutal.label": "Neo-brutalizm",
+  "style.brutal.hint": "Qalin chegara, qattiq soya",
+  "style.terminal.label": "Terminal",
+  "style.terminal.hint": "Monospace, konsol",
+  "style.glass.label": "Glassmorphism",
+  "style.glass.hint": "Shaffof, xiralashgan",
+  "style.neu.label": "Neumorphism",
+  "style.neu.hint": "Yumshoq bo'rtma",
+  "style.clay.label": "Claymorphism",
+  "style.clay.hint": "Gil, hajmli",
+  "style.aurora.label": "Aurora",
+  "style.aurora.hint": "Gradient fon",
+  "style.skeu.label": "Skeuomorfizm",
+  "style.skeu.hint": "Metall va relyef",
+
+  // ---- Tashqi havolalar (lib/external-links.ts) ------------------------
+  //
+  // Faqat "Blog" — qolganlari BREND (Codeforces, AtCoder, LinkedIn,
+  // Telegram, GitHub, Instagram, X, YouTube, Kaggle) va `EXTERNAL_LABEL`
+  // jadvalida atoqli ot sifatida turadi, tarjima qilinmaydi.
+  "external.blog": "Blog",
+
+  // ---- Admin bo'limlari (components/admin/sections.ts) -----------------
+  //
+  // Nom `AdminNav` va `/admin` indeksida ko'rinadi. Ilgari ikkalasi ham
+  // `sections.ts` dagi tayyor o'zbekcha matnni o'qirdi.
+  "admin.section.problems": "Masalalar",
+  "admin.section.reports": "Nuqson xabarlari",
+  "admin.section.contests": "Musobaqalar",
+  "admin.section.questions": "Savol banki",
+  "admin.section.quizzes": "Testlar",
+  "admin.section.arena": "Arena",
+  "admin.section.tournaments": "Chempionat",
+  "admin.section.hackathons": "Hakaton",
+  "admin.section.duels": "Duel",
+  "admin.section.articles": "Maqolalar",
+  "admin.section.roadmaps": "Traektoriya",
+  "admin.section.posts": "Yangiliklar",
+  "admin.section.updates": "O'zgarishlar",
+  "admin.section.platformRoadmap": "Yo'l xaritasi",
+  "admin.section.roadmapComments": "Reja izohlari",
+  "admin.section.quests": "Questlar",
+  "admin.section.shop": "Do'kon",
+  "admin.section.users": "Foydalanuvchilar",
+  "admin.section.analytics": "Analitika",
+
+  // ---- Sahifalash (components/ui/Pager.tsx) ----------------------------
+  //
+  // `pager.entries` — standart birlik nomi; chaqiruvchi aniqroq nom bersa
+  // (`problem.one`, `update.entry`) o'sha ustun turadi.
+  "pager.label": "Sahifalar",
+  "pager.entries": "yozuv",
+  "pager.previous": "Oldingi",
+  "pager.next": "Keyingi",
+  "problem.one": "masala",
+
+  // ---- Admin jadval/forma yozuvlari (components/admin/*.tsx) ----
+  "admin.label.status.running": "Yurmoqda",
+  "admin.label.status.finished": "Tugagan",
+  "admin.label.status.pending": "Kutilmoqda",
+  "admin.label.status.evaluating": "Baholanmoqda",
+  "admin.label.status.completed": "Yakunlangan",
+  "admin.label.status.accepted": "Qabul qilindi",
+  "admin.label.status.rejected": "Rad etilgan",
+  "admin.label.status.cancelled": "Bekor qilindi",
+  "admin.label.status.done": "Tugadi",
+  "admin.label.status.doneShort": "Bajarilgan",
+  "admin.label.status.inReview": "Ko'rib chiqilmoqda",
+  "admin.label.status.planned": "Rejalashtirilgan",
+  "admin.label.status.inProgress": "Ishlanmoqda",
+  "admin.label.status.shipped": "Chiqarildi",
+  "admin.label.status.enabled": "Yoqilgan",
+  "admin.label.status.busy": "Band",
+  "admin.label.date.start": "Boshlanish",
+  "admin.label.date.startAt": "Boshlanish vaqti",
+  "admin.label.date.end": "Tugash",
+  "admin.label.date.deadline": "Topshirish muddati",
+  "admin.label.date.publishedAt": "Nashr sanasi",
+  "admin.label.date.releasedAt": "Chiqarilgan sana",
+  "admin.label.date.joined": "Qo'shilgan",
+  "admin.label.duration.freezeMin": "Muzlatish (daqiqa)",
+  "admin.label.duration.secondsPerQuestion": "Savol uchun soniya",
+  "admin.label.duration.readMin": "O'qish (daqiqa)",
+  "admin.label.flag.public": "Ommaviy",
+  "admin.label.flag.rated": "Reytingli",
+  "admin.label.flag.virtual": "Virtual",
+  "admin.label.flag.mirror": "Ko'zgu (asl musobaqa slug'i)",
+  "admin.label.flag.repeatable": "Takroriy",
+  "admin.label.flag.repeatPurchase": "Takroriy sotib olinadi",
+  "admin.label.flag.submissionsOpen": "Topshirish ochiq",
+  "admin.label.flag.resultsAnnounced": "Natijalar e'loni",
+  "admin.label.flag.active": "Faol",
+  "admin.label.flag.activeHint": "Faol (bloklash uchun olib tashlang)",
+  "admin.label.flag.notifyUsers": "Foydalanuvchilarga xabar berish",
+  "admin.label.calc.rating": "Hisoblash",
+  "admin.label.value.freeze": "Hisob",
+  "admin.label.value.rewardQvant": "Mukofot (Qvant)",
+  "admin.label.value.priceQvant": "Narx (Qvant)",
+  "admin.label.value.analysisPriceQvant": "Tahlilni ochish narxi, Qvant",
+  "admin.label.value.difficulty": "Qiyinlik",
+  "admin.label.value.difficultyRange": "Qiyinlik (800–3500, qadam 100)",
+  "admin.label.value.scoring": "Skoring (0–100)",
+  "admin.label.value.timeLimit": "Vaqt limiti, ms",
+  "admin.label.value.memoryLimit": "Xotira limiti, KB",
+  "admin.label.text.title": "Sarlavha",
+  "admin.label.text.summary": "Qisqacha",
+  "admin.label.text.markdown": "Matn (Markdown)",
+  "admin.label.text.markdownLatex": "Matn (Markdown + LaTeX)",
+  "admin.label.text.descriptionMarkdown": "Tavsif (Markdown)",
+  "admin.label.text.statementLatex": "Shart (Markdown + LaTeX)",
+  "admin.label.text.articleExample": "Maqoladagi misol",
+  "admin.label.text.editorNote": "Muharrir maqolasi",
+  "admin.label.text.editorial": "Yechim tahlili",
+  "admin.label.text.solutionExplanation": "Yechim tushuntirishi",
+  "admin.label.text.problemExample": "Algoritm",
+  "admin.label.text.problemTraining": "Mashq uchun",
+  "admin.label.tech.input": "Kiruvchi ma'lumot",
+  "admin.label.tech.output": "Chiquvchi ma'lumot",
+  "admin.label.tech.topicsSlug": "Mavzular (slug, vergul bilan)",
+  "admin.label.tech.parentTopic": "Ota mavzu (slug)",
+  "admin.label.tech.parent": "Ota",
+  "admin.label.tech.sourceUrl": "Manba URL",
+  "admin.label.tech.sourceLinks": "Manba havolalari",
+  "admin.label.tech.githubUrl": "GitHub havolasi",
+  "admin.label.tech.imageUrl": "Rasm havolasi",
+  "admin.label.tech.changelogId": "Changelog yozuvi ID",
+  "admin.label.tech.checkerLanguage": "Checker tili (kod, masalan cpp23)",
+  "admin.label.tech.checkerSource": "Checker manbasi",
+  "admin.label.tech.interactorLanguage": "Interactor tili (kod, masalan cpp23)",
+  "admin.label.tech.interactorSource": "Interactor manbasi",
+  "admin.label.name.uz": "Nomi (uz)",
+  "admin.label.name.ru": "Nomi (ru)",
+  "admin.label.name.en": "Nomi (en)",
+  "admin.label.name.translation": "Tarjima",
+  "admin.label.name.language": "Matn tili (uz/ru/en)",
+  "admin.label.name.shown": "Ko'rsatiladigan ism",
+  "admin.label.ab.control": "Nazorat (2-qadamda)",
+  "admin.label.ab.variant": "Variant (ro'yxatda)",
+  "admin.label.misc.participant": "Ishtirokchi",
+  "admin.label.misc.challenger": "Chaqiruvchi",
+  "admin.label.misc.projects": "Loyihalar",
+  "admin.label.misc.news": "Yangilik",
+  "admin.label.misc.announcement": "E'lon",
 } as const;
 
 export type MessageKey = keyof typeof uz;
