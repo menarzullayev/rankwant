@@ -1,43 +1,46 @@
 # RankWant
 
-O'zbekiston va global bozor uchun **sport dasturlash + musobaqa (CP/OJ)** platformasi.
+A **competitive programming + contest (CP/OJ)** platform for Uzbekistan and
+the global market.
 
-- **Platforma brendi:** RankWant — _«Rank Want»_ = reyting xohlayman
-- **Ichki valyuta:** **Qvant** (alohida nom; `rankwantcoin` emas)
-- **Hujjatlar:** [docs/README.md](docs/README.md) — `project-alpha` uslubidagi 10 bosqichli pipeline
+- **Platform brand:** RankWant — _"Rank Want"_ = I want a rating
+- **Internal currency:** **Qvant** (its own name; not `rankwantcoin`)
+- **Docs:** [docs/README.md](docs/README.md) — a 10-stage pipeline in the
+  `project-alpha` style
 
-## Hozirgi holat
+## Current status
 
-| Bosqich           | Holat                            |
-| ----------------- | -------------------------------- |
-| Vision + brend    | 🔒 locked (2026-09-06)           |
-| Problem discovery | 🔒 locked (2026-09-06)           |
-| Market + raqobatchi | 🔒 locked (2026-09-06)         |
-| PRD (MVP scope)   | 🔒 locked (2026-09-06)           |
-| Domain / arxitektura | 📝 draft                      |
-| Phase 0 + Phase 1 | ✅ API + web + judge + Qvant     |
+| Stage               | Status                           |
+| ------------------- | -------------------------------- |
+| Vision + brand      | 🔒 locked (2026-09-06)           |
+| Problem discovery   | 🔒 locked (2026-09-06)           |
+| Market + competitors| 🔒 locked (2026-09-06)           |
+| PRD (MVP scope)     | 🔒 locked (2026-09-06)           |
+| Domain / architecture | 📝 draft                       |
+| Phase 0 + Phase 1   | ✅ API + web + judge + Qvant     |
 
-## Tez havolalar
+## Quick links
 
-| Savol                   | Fayl                                                                                     |
-| ----------------------- | ---------------------------------------------------------------------------------------- |
-| Nima va nima uchun?     | [docs/01-vision/README.md](docs/01-vision/README.md)                                     |
-| Muammo va foydalanuvchi | [docs/02-problem-discovery/README.md](docs/02-problem-discovery/README.md)               |
-| Bozor / raqobatchilar   | [docs/03-market-research/README.md](docs/03-market-research/README.md)                   |
-| Brend + Qvant           | [docs/03-market-research/brand-discovery.md](docs/03-market-research/brand-discovery.md) |
-| MVP talablar            | [docs/04-prd/README.md](docs/04-prd/README.md)                                           |
-| Domen modeli            | [docs/05-domain-model/README.md](docs/05-domain-model/README.md)                         |
-| ADR                     | [docs/07-adr/README.md](docs/07-adr/README.md)                                           |
+| Question                 | File                                                                                     |
+| ------------------------ | ---------------------------------------------------------------------------------------- |
+| What and why?            | [docs/01-vision/README.md](docs/01-vision/README.md)                                     |
+| Problem and user         | [docs/02-problem-discovery/README.md](docs/02-problem-discovery/README.md)               |
+| Market / competitors     | [docs/03-market-research/README.md](docs/03-market-research/README.md)                   |
+| Brand + Qvant            | [docs/03-market-research/brand-discovery.md](docs/03-market-research/brand-discovery.md) |
+| MVP requirements         | [docs/04-prd/README.md](docs/04-prd/README.md)                                           |
+| Domain model             | [docs/05-domain-model/README.md](docs/05-domain-model/README.md)                         |
+| ADR                      | [docs/07-adr/README.md](docs/07-adr/README.md)                                           |
 
-## Tashqi tahlillar (to'liq versiya)
+## External analyses (full version)
 
-> Bu fayllar **repo tarkibida emas** — `Web_Projects/` workspace ildizida turadi.
+> These files are **not part of this repo** — they live in the `Web_Projects/`
+> workspace root.
 
 - `kep-uz-platform-analysis.md`
 - `robocontest-uz-platform-analysis.md`
 - cp.uz repo: `cp-uz/`
 
-## Monorepo tuzilishi
+## Monorepo layout
 
 [ADR-0009](docs/07-adr/0009-monorepo.md)
 
@@ -47,24 +50,28 @@ rankwant/
 ├── apps/web/            Next.js + React 19    (Sprint 1)
 ├── services/judge-go/   bake-off A — Go + nsjail
 ├── services/judge-py/   bake-off B — Python + isolate
-├── docs/                hujjat pipeline 01–10
+├── docs/                docs pipeline 01–10
 ├── tests/               e2e · load · security · chaos
 ├── tools/               check_docs.py
 └── .github/workflows/   CI · Security · Nightly
 ```
 
-**Deploy tuzilishi repo tuzilishi emas** — judge alohida hostga, kiruvchi portsiz chiqadi
-([06-architecture § Xavfsizlik chegarasi](docs/06-architecture/README.md)).
+**The deploy layout is not the repo layout** — the judge runs on a separate
+host with no inbound ports
+([06-architecture § Security boundary](docs/06-architecture/README.md)).
 
-## Boshlash
+## Getting started
 
 ```bash
 docker compose up -d          # postgres + redis + minio
-python3 tools/check_docs.py   # hujjat yaxlitligi tekshiruvi
+python3 tools/check_docs.py   # docs integrity check
 ```
 
-Hissa qo'shish qoidalari: [CONTRIBUTING.md](CONTRIBUTING.md)
+Contribution rules: [CONTRIBUTING.md](CONTRIBUTING.md)
 
-## Hujjatlashtirish prinsipi
+## Documentation principle
 
-[menarzullayev/project-alpha](https://github.com/menarzullayev/project-alpha) — 0 dan production gacha **ketma-ket 10 bosqich**. Bu loyiha ham shu prinsipdan foydalanadi. Sabab: [docs/README.md#project-alpha-bilan-moslik](docs/README.md#project-alpha-bilan-moslik).
+[menarzullayev/project-alpha](https://github.com/menarzullayev/project-alpha) —
+**10 sequential stages** from zero to production. This project follows the same
+principle. Rationale:
+[docs/README.md#project-alpha-bilan-moslik](docs/README.md#project-alpha-bilan-moslik).
