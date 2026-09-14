@@ -16,7 +16,17 @@ COPY . .
 # NEXT_PUBLIC_* brauzer bundle'iga BUILD vaqtida yoziladi. Uni faqat
 # runtime `environment` da berish brauzerga umuman ta'sir qilmaydi —
 # standings jonli yangilanishi qotib qolgan manzilga urinardi.
-ARG NEXT_PUBLIC_API_BASE=http://localhost:8000/api/v1
+# ⚠️ Default ATAYLAB YO'Q: avval `http://localhost:8000/api/v1` edi va
+# build-arg berilmaganda JIMGINA buzuq bundle yasardi — brauzer shu
+# qotib qolgan manzilga murojaat qiladi (2026-09-13 avariyasining
+# uchinchi qavati). Endi bo'sh bo'lsa build YIQILADI: buzuq artifact
+# o'rniga aniq xato. Compose har doim qiymat beradi
+# (`docker-compose.yml`, `docker-compose.public.yml`), ya'ni hech bir
+# workflow buzilmaydi — bu faqat to'g'ridan-to'g'ri `docker build` uchun.
+ARG NEXT_PUBLIC_API_BASE
+RUN test -n "$NEXT_PUBLIC_API_BASE" \
+  || (echo "NEXT_PUBLIC_API_BASE kerak (masalan: https://rankwant.uz/api/v1)" >&2 \
+      && exit 1)
 ENV NEXT_PUBLIC_API_BASE=$NEXT_PUBLIC_API_BASE
 # Next.js'ning o'z keshi `.next/cache` da (webpack/SWC). U ham qatlam
 # keshiga qo'shiladi: kod o'zgarganda qayta kompilyatsiya tezroq ketadi.
