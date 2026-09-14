@@ -57,6 +57,25 @@ def escape(value: str) -> str:
     return value.replace("|", "\\|")
 
 
+def _regen_line(prefix: str) -> str:
+    """Varaq ichidagi "qayta yaratish" buyrug'i — ko'chirib bo'ladigan bo'lsin.
+
+    Bo'sh prefiksda `--prefix ` osilib qoladi va buyruq ishlamaydi. Bo'sh
+    prefiks "hamma kalit" degani, shuning uchun u qo'shtirnoq bilan aniq
+    yoziladi. Tire bilan boshlanadigan prefiks ham qo'shtirnoq talab qiladi
+    (aks holda argparse uni bayroq deb o'qiydi).
+    """
+    if prefix == "":
+        return (
+            'Regenerate with `python tools/export_i18n_review.py --prefix ""` '
+            "(every key)."
+        )
+    return (
+        f'Regenerate with `python tools/export_i18n_review.py '
+        f'--prefix "{prefix}"`.'
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--prefix", default="admin.", help="only keys starting with this")
@@ -96,7 +115,11 @@ def main() -> int:
             "- Proper nouns and loanwords are expected to match the source; that",
             "  is deliberate and `tools/check_i18n.py` exempts them explicitly.",
             "",
-            f"Regenerate with `python tools/export_i18n_review.py --prefix {args.prefix}`.",
+            # ⚠️ Bo'sh prefiks `--prefix ` bo'lib chiqadi va buyruq ishlamaydi.
+            # Bo'sh prefiks "hamma kalit" degani — uni aynan shunday yozish
+            # kerak, aks holda varaqni ko'chirib olgan odam buzuq buyruq
+            # oladi (o'lchandi: varaqlardagi qator shunday qolib ketgan).
+            _regen_line(args.prefix),
             "",
             f"**{len(rows)} strings.**",
             "",
@@ -107,7 +130,15 @@ def main() -> int:
         ])
         path = out_dir / f"{code}.md"
         path.write_text(body, encoding="utf-8")
-        print(f"  {path.relative_to(ROOT)}  ({len(rows)} satr)")
+        # `--out` repo TASHQARISIDA bo'lishi mumkin (masalan `.tmp/` yoki
+        # boshqa papka) — u holda `relative_to(ROOT)` ValueError beradi va
+        # buyruq yozishni tugatib bo'lgach yiqiladi. Ko'rsatish uchun
+        # nisbiy yo'l bo'lmasa, to'liq yo'lni chiqaramiz.
+        try:
+            shown = path.relative_to(ROOT)
+        except ValueError:
+            shown = path
+        print(f"  {shown}  ({len(rows)} satr)")
 
     return 0
 

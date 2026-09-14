@@ -404,6 +404,47 @@ def neg_i18n_country_row_blank() -> tuple[bool, str]:
         return expect_fail("i18n", "i18n/mamlakat jadvalida bo'sh qiymat")
 
 
+def neg_i18n_review_sheet_stale() -> tuple[bool, str]:
+    """Ko'rib chiqish varaqasi lug'atdan orqada qolsa — tutilsinmi?
+
+    ⚠️ Varaqni ona tilida so'zlashuvchi odam qo'lda o'qiydi. Eskirgan varaq
+    o'zgargan matnni ko'rsatadi va tasdiqlanmagan matn "tekshirilgan" degan
+    taassurot qoldiradi — bu jimgina o'tkazishning eng qimmat turi.
+    """
+    path = ROOT / "docs/08-technical-spec/i18n-review/kk.md"
+    if not path.exists():
+        return False, "i18n-review: `kk.md` topilmadi"
+    text = path.read_text(encoding="utf-8")
+    lines = text.splitlines(keepends=True)
+    idx = next((i for i, l in enumerate(lines) if l.startswith("| `")), None)
+    if idx is None:
+        return False, "i18n-review: `kk.md` da jadval qatori topilmadi"
+    # Bitta qatorni olib tashlaymiz -> son lug'atga mos kelmay qoladi.
+    broken = "".join(lines[:idx] + lines[idx + 1:])
+    with Mutation(path, text, broken):
+        return expect_fail("i18n", "i18n/ko'rib chiqish varaqasi eskirgan")
+
+
+def neg_i18n_review_sheet_old_key() -> tuple[bool, str]:
+    """Varaqda ko'chirilgan eski kalit qolsa — tutilsinmi?
+
+    `empty` bir vaqtlar prefikssiz edi va `common.empty` ga ko'chirildi.
+    Varaqda eski nom qolsa, odam mavjud bo'lmagan kalitni ko'rib chiqadi.
+    """
+    path = ROOT / "docs/08-technical-spec/i18n-review/kk.md"
+    if not path.exists():
+        return False, "i18n-review: `kk.md` topilmadi"
+    text = path.read_text(encoding="utf-8")
+    line = next(
+        (l for l in text.splitlines() if l.startswith("| `common.empty`")), None
+    )
+    if line is None:
+        return False, "i18n-review: `common.empty` qatori topilmadi"
+    broken = text.replace(line, "| `empty` | x | y |  |", 1)
+    with Mutation(path, text, broken):
+        return expect_fail("i18n", "i18n/varaqda eski kalit qolgan")
+
+
 def neg_i18n_bare_key() -> tuple[bool, str]:
     """Prefikssiz kalit qo'shilsa — tutilsinmi?
 
@@ -655,6 +696,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         ("mamlakat ICU tili jadvalga qo'shildi", neg_i18n_country_icu_locale_added),
         ("mamlakat jadvalida kod yetishmaydi", neg_i18n_country_row_missing),
         ("mamlakat jadvalida bo'sh qiymat", neg_i18n_country_row_blank),
+        ("ko'rib chiqish varaqasi eskirgan", neg_i18n_review_sheet_stale),
+        ("varaqda eski kalit qolgan", neg_i18n_review_sheet_old_key),
         ("shablon oila kalitisiz", neg_i18n_template_family),
         ("server evict bilan chegaralangan", neg_i18n_server_drops_locales),
         ("server lug'atda til yetishmaydi", neg_i18n_server_missing_locale),

@@ -15,7 +15,7 @@ it and it will be copied into the dictionary.
 - Proper nouns and loanwords are expected to match the source; that
   is deliberate and `tools/check_i18n.py` exempts them explicitly.
 
-Regenerate with `python tools/export_i18n_review.py --prefix `.
+Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
 **1345 strings.**
 

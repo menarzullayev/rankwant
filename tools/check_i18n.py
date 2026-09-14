@@ -253,6 +253,7 @@ def main() -> int:
     problems += check_key_shape(source)
     problems += check_country_locales()
     problems += check_country_table_coverage()
+    problems += check_review_sheets()
 
     if problems:
         print("i18n to'liq emas:")
@@ -566,6 +567,50 @@ def check_country_table_coverage() -> list[str]:
             f"country-names.ts: {blank[:8]} qatorida bo'sh qiymat — "
             f"UI da nom ko'rinmaydi"
         )
+    return problems
+
+
+def check_review_sheets() -> list[str]:
+    """Ko'rib chiqish varaqlari joriy lug'atga mos bo'lsin.
+
+    ⚠️ Nega kerak: varaqlar `docs/08-technical-spec/i18n-review/` da yotadi
+    va ona tilida so'zlashuvchi odam ularni **qo'lda** o'qiydi. Ular
+    lug'atdan orqada qolsa, odam allaqachon o'zgargan matnni ko'rib
+    chiqadi — natija behuda va bundan ham yomoni, tasdiqlanmagan matn
+    "tekshirilgan" degan taassurot qoldiradi.
+
+    Tekshiriladi: varaq bormi, kalitlar soni lug'atga tengmi, eski
+    (ko'chirilgan) kalit qolmaganmi.
+    """
+    sheets = ROOT / "docs/08-technical-spec/i18n-review"
+    if not sheets.exists():
+        return [f"i18n-review papkasi topilmadi ({sheets})"]
+
+    source = LOCALES_DIR / f"{SOURCE}.ts"
+    if not source.exists():
+        return [f"manba lug'at topilmadi ({source})"]
+    # Manbadagi `"kalit":` yozuvlari — varaqdagi qatorlar soni shunga teng.
+    want = len(re.findall(r'^\s+"([\w.]+)":\s', source.read_text(encoding="utf-8"), re.M))
+
+    problems: list[str] = []
+    for code in ("kk", "ky", "tg", "kaa"):
+        path = sheets / f"{code}.md"
+        if not path.exists():
+            problems.append(f"i18n-review/{code}.md yo'q")
+            continue
+        text = path.read_text(encoding="utf-8")
+        got = len(re.findall(r"^\|\s+`", text, re.M))
+        if got != want:
+            problems.append(
+                f"i18n-review/{code}.md: {got} qator, lug'atda {want} kalit — "
+                f"varaq eskirgan, qayta yaratish kerak"
+            )
+        # Ko'chirilgan kalit: `empty` bir vaqtlar prefikssiz edi.
+        if re.search(r"^\|\s+`empty`", text, re.M):
+            problems.append(
+                f"i18n-review/{code}.md: eski `empty` kaliti qolgan — "
+                f"`common.empty` bo'lishi kerak"
+            )
     return problems
 
 
