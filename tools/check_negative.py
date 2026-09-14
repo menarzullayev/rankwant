@@ -311,6 +311,25 @@ def neg_parity_extra_locale() -> tuple[bool, str]:
         return expect_fail("locales_parity", "parity/LOCALES da ortiqcha til")
 
 
+def neg_i18n_bare_key() -> tuple[bool, str]:
+    """Prefikssiz kalit qo'shilsa — tutilsinmi?
+
+    ⚠️ `empty` ataylab prefikssiz qolgan (34 chaqiruv, 10 til) va u
+    ALLOWED_BARE orqali istisno qilingan. Bu test istisno **juda keng**
+    bo'lib qolmaganini isbotlaydi: yangi prefikssiz nom qo'shilsa,
+    tekshiruv qizarishi shart. Aks holda `ALLOWED_BARE` jimgina hamma
+    narsani o'tkazib yuborardi.
+    """
+    path = ROOT / "apps/web/src/i18n/locales/uz.ts"
+    text = path.read_text(encoding="utf-8")
+    anchor = '  "team.intro":'
+    if anchor not in text:
+        return False, "i18n/prefiks: langar `\"team.intro\":` topilmadi"
+    injected = '  empty2: "Sinov",\n' + anchor
+    with Mutation(path, anchor, injected):
+        return expect_fail("i18n", "i18n/prefikssiz kalit")
+
+
 def neg_i18n_template_family() -> tuple[bool, str]:
     """Shablon oilaning BARCHA kaliti o'chirilsa — tutilsinmi?
 
@@ -539,6 +558,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         ("bo'sh qiymat", neg_i18n_blank_value),
         ("yetishmayotgan kalit", neg_i18n_missing_key),
         ("kodda bor, manbada yo'q", neg_i18n_used_but_absent),
+        ("prefikssiz kalit", neg_i18n_bare_key),
         ("shablon oila kalitisiz", neg_i18n_template_family),
         ("server evict bilan chegaralangan", neg_i18n_server_drops_locales),
         ("server lug'atda til yetishmaydi", neg_i18n_server_missing_locale),

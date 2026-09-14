@@ -250,6 +250,7 @@ def main() -> int:
     problems += check_usage(source)
     problems += check_templates(source)
     problems += check_server_registry()
+    problems += check_key_shape(source)
 
     if problems:
         print("i18n to'liq emas:")
@@ -425,6 +426,36 @@ def check_server_registry() -> list[str]:
             problems.append(
                 f"messages.server.ts: `ALL` da {len(codes)} til bor, 10 kutilgan"
             )
+    return problems
+
+
+def check_key_shape(source: dict[str, str]) -> list[str]:
+    """Har kalit `namespace.name` shaklida bo'lishini talab qiladi.
+
+    ⚠️ Nega kerak: `empty` kaliti ataylab PREFIKSSIZ qoldirilgan edi va
+    u 10 tilda ham, 34 chaqiruvda ham shunday ishlatilgan. U ishlaydi
+    (`MessageKey = keyof typeof uz` uni to'g'ri tip qiladi), lekin
+    qolgan 1344 kalitdan farqli — umumiy qisqa nom to'qnashuvga moyil va
+    `grep '"empty"'` kabi qidiruvlar ham prefiksli kalitlarni topmaydi.
+
+    Bu qoida MAVJUD `empty` ni istisno qiladi (aks holda tekshiruv
+    qizarib CI to'xtaydi), yangi prefikssiz kalitni esa tutadi. Istisno
+    ro'yxati ataylab SHU YERDA, ko'rinadigan joyda — yashirin emas.
+    """
+    #: Ataylab prefikssiz qolgan kalitlar. Yangi nom qo'shishdan oldin
+    #: o'ylab ko'ring: prefiksli nom odatda to'g'riroq.
+    ALLOWED_BARE = {"empty"}
+
+    problems: list[str] = []
+    for key in sorted(source):
+        if "." in key:
+            continue
+        if key in ALLOWED_BARE:
+            continue
+        problems.append(
+            f"uz.ts: `{key}` prefikssiz — kalit `namespace.name` shaklida "
+            f"bo'lsin (masalan `common.{key}`)"
+        )
     return problems
 
 
