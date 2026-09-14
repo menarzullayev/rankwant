@@ -297,6 +297,42 @@ tushirgach uchta nosozlik chiqdi: `package-lock.json` commit qilinmagan
 sessiya bilan POST qilishda CSRF sarlavhasi yuborilmagan. Yozilgan, lekin
 hech qachon bajarilmagan test — bajarilgan test emas.
 
+## Running the API suite locally
+
+Redis is **not** required to run `apps/api` tests. Run them with Celery in
+eager mode:
+
+```bash
+cd apps/api
+CELERY_EAGER=1 python -m pytest -q -n 4
+```
+
+`CELERY_EAGER=1` maps to `CELERY_TASK_ALWAYS_EAGER`. Without it, every
+`core.tasks.queue()` call (registration, password reset, notification mails)
+tries the Redis broker and retries for **~109 s** before giving up. The
+retry is swallowed by `queue()`'s `except Exception`, so the test still
+passes — it just takes 109 s per call. Measured 2026-09-14:
+
+| Run | Time |
+| --- | ---- |
+| No `CELERY_EAGER` | 14 m 54 s (1191 tests) |
+| `CELERY_EAGER=1` | 1 m 55 s (1191 tests) |
+| `tests/test_handles.py` alone, no eager | 3 m 44 s (35 tests) |
+| `tests/test_handles.py` alone, eager | 6.2 s |
+
+A cluster of tests reporting nearly identical `call` durations (e.g.
+109.0–109.6 s) is the signature of a retry loop, not of real computation.
+Diagnose with `--durations=30` before assuming a hang.
+
+## Test-ordering determinism
+
+Any DRF `ordering` declaration must end in a unique tiebreaker (`pk`), e.g.
+`["-created_at", "-pk"]`. Without it, rows sharing a timestamp come back in
+whatever order SQL chooses, which makes pagination unstable and tests flaky.
+`tools/check_ordering.py` enforces this and is wired into CI, `ci-local.sh`
+and the pre-push hook. It is covered by negative tests in
+`tools/check_negative.py` (`ordering` group).
+
 ## Vositalar
 
 | Qatlam | Vosita |

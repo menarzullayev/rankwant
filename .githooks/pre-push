@@ -93,6 +93,13 @@ if has '^(docs/|README)'; then
   step "Hujjat yaxlitligi" "$PY" tools/check_docs.py
 fi
 
+if has '^(apps/api/|tools/)'; then
+  # DRF `ordering` da tiebreaker: `["-created_at"]` yakka o'zi SQL
+  # tartibini beqaror qoldiradi. O'lchandi: `test_qidiruv_va_tartib`
+  # 5 ishga tushirishning 1 tasida shu sabab bilan yiqilardi.
+  step "DRF ordering tiebreaker" "$PY" tools/check_ordering.py
+fi
+
 if has '^(services/|apps/api/judging/)'; then
   step "Judge shartnomasi" "$PY" tools/check_contract.py
 fi

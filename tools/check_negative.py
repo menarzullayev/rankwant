@@ -974,6 +974,40 @@ def neg_ci_healthy_gate() -> tuple[bool, str]:
     return True, "ci/yashil: runner tirik + success (exit 0)"
 
 
+def neg_ordering_missing_tiebreaker() -> tuple[bool, str]:
+    """Tiebreaker'siz `ordering` — tutilsinmi?
+
+    ⚠️ Bu sinf bir marta o'tkazib yuborilgan: `test_qidiruv_va_tartib`
+    5 ishga tushirishning 1 tasida yiqilardi, sabab esa SQL tartibining
+    beqarorligi edi. Test «flaky» deb yozib qo'yilsa, haqiqiy xato
+    (sahifalash beqarori — bir odam ikki sahifada) yashirin qolardi.
+    """
+    path = ROOT / "apps/api/duels/staff_views.py"
+    old = 'ordering: ClassVar[list[str]] = ["-created_at", "-pk"]'
+    if old not in path.read_text(encoding="utf-8"):
+        return False, "ordering: sinov uchun qator topilmadi"
+    with Mutation(path, old, 'ordering: ClassVar[list[str]] = ["-created_at"]'):
+        return expect_fail("ordering", "ordering/tiebreaker yo'q")
+
+
+def neg_ordering_fields_not_confused() -> tuple[bool, str]:
+    """`ordering_fields` (ko'p maydonli) qoidaga TUSHMASLIGI kerak.
+
+    Ijobiy nazorat: qoida faqat `ordering` ni ko'rsin. Aks holda har
+    yangi saralanadigan maydon qo'shilsa CI qizarardi va odam qoidani
+    o'chirib qo'yardi.
+    """
+    path = ROOT / "apps/api/duels/staff_views.py"
+    old = 'ordering_fields: ClassVar[list[str]] = ["created_at", "start_at", "status"]'
+    if old not in path.read_text(encoding="utf-8"):
+        return False, "ordering_fields: sinov uchun qator topilmadi"
+    with Mutation(path, old, 'ordering_fields: ClassVar[list[str]] = ["created_at"]'):
+        code, _out = run_check("ordering")
+        if code != 0:
+            return False, "ordering_fields: qoida `ordering_fields` ni ham ushlab qoldi"
+    return True, "ordering_fields: qoida faqat `ordering` ga qaraydi"
+
+
 CASES: list[tuple[str, list[tuple[str, object]]]] = [
     (
         "i18n",
@@ -1053,6 +1087,13 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("startup_failure runner'dan mustaqil", neg_ci_startup_failure_is_red),
             ("o'qib bo'lmasa exit 2, «yashil» emas", neg_ci_unreadable_is_not_green),
             ("sog'lom holat yashil", neg_ci_healthy_gate),
+        ],
+    ),
+    (
+        "ordering",
+        [
+            ("tiebreaker yo'q bo'lsa qizil", neg_ordering_missing_tiebreaker),
+            ("`ordering_fields` qoidaga tushmaydi", neg_ordering_fields_not_confused),
         ],
     ),
 ]

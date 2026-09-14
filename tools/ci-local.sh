@@ -136,6 +136,10 @@ run_docs() {
   cd "$ROOT"
   "$PY" tools/check_docs.py &&
     "$PY" tools/check_contract.py &&
+    # DRF `ordering` da tiebreaker: `["-created_at"]` yakka o'zi SQL
+    # tartibini beqaror qoldiradi — bitta odam ikki sahifada chiqadi,
+    # test esa tasodifiy yiqiladi (o'lchandi: 5 dan 1).
+    "$PY" tools/check_ordering.py &&
     "$PY" tools/check_i18n.py &&
     # `check_i18n.py` faqat kod -> lug'at yo'nalishini ko'radi: u
     # `t()` chaqirilgan kalitning 10 tilda borligini tekshiradi, lekin
