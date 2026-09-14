@@ -310,10 +310,16 @@ def classify(text: str, start: int) -> str | None:
     if ch == "?":
         return "ternary"
     if ch == ":":
-        # Ternary's second branch: `cond ? "yes" : "no"`. Without this the
-        # `else` string was invisible — `"Majburan yakunlash"` sat unseen
-        # next to a flagged `"Yakunlash"`.
-        return "ternary-else"
+        # `:` is ambiguous: it introduces an object property AND the else
+        # branch of a ternary. Treating every `:` as a branch flagged 250
+        # object keys (`title: "title"`) as prose. A ternary's `:` has a
+        # `?` before it, with no comma, brace or semicolon in between —
+        # that is what separates `cond ? "a" : "b"` from `key: "value"`.
+        head = text[max(0, start - 200) : start]
+        mark = head.rfind("?")
+        if mark >= 0 and not any(ch in head[mark:] for ch in ",;{}"):
+            return "ternary-else"
+        return None
     if ch == "{":
         return "jsx-expr"
     return None
@@ -340,6 +346,22 @@ NO_LOCALE_CALL = re.compile(r"\.toLocale(?:Date|Time)?String\(\s*\)")
 #: to prevent, so the hole is closed rather than documented.
 JSX_TEXT = re.compile(r">\s*([^<>{}]+?)\s*<")
 
+#: `t()` called with a FIXED locale inside a client component.
+#:
+#: The server registers all ten dictionaries (`messages.server.ts`), but the
+#: client receives only the active one. So `t(DEFAULT_LOCALE, …)` in a
+#: `"use client"` file throws "dictionary is not registered" in every other
+#: language — and because `t()` throws in dev, it takes the whole React tree
+#: down with it. The page still answers 200 from the server, so only a
+#: browser shows the damage.
+#:
+#: Seven such calls shipped: two in the header, which renders on every page,
+#: and five in the admin. The header one made the app unusable in nine of the
+#: ten languages while every check here stayed green.
+HARDCODED_LOCALE_CALL = re.compile(
+    r'\bt\(\s*(?:DEFAULT_LOCALE|"(?:uz|en|ru|kk|ky|tg|tr|zh|es|kaa)")'
+)
+
 #: JSX text that is only punctuation/whitespace carries nothing to translate.
 JSX_TEXT_NOISE = re.compile(r"^[\s.,;:!?·—–\-/|&()\[\]]*$")
 
@@ -350,6 +372,40 @@ JSX_TEXT_CODEISH = re.compile(r"[();=]")
 
 #: A bare PascalCase token is a type or component name, not a label.
 PASCAL_TOKEN = re.compile(r"^[A-Z][a-zA-Z0-9]*$")
+
+#: Lowercase tokens that are CODE, not prose, and that appear in exactly the
+#: positions where the lowercase filter has to be switched off: Badge colours
+#: and form-field discriminants.
+#:
+#: `cond ? "ommaviy" : "yashirin"` is a label; `cond ? "success" : "warning"`
+#: is a colour. Both are lowercase, and only this list tells them apart.
+#: Kept explicit rather than inferred: a new colour means one line here, and
+#: that is a signal to look, not a nuisance.
+CODE_TOKENS = {
+    "success", "error", "warning", "info", "brand", "neutral", "muted",
+    "danger", "primary", "secondary",
+    "text", "slug", "textarea", "number", "checkbox", "datetime", "select",
+    "list", "left", "right",
+}
+
+
+def client_files() -> list[pathlib.Path]:
+    """Every `"use client"` file under `apps/web/src`.
+
+    The fixed-locale rule below is not limited to the admin panel: the two
+    calls that broke the most were in the header.
+    """
+    out: list[pathlib.Path] = []
+    for suffix in (".tsx", ".ts"):
+        for path in sorted(WEB.rglob(f"*{suffix}")):
+            rel = str(path).replace("\\", "/")
+            if any(part in SKIP_PARTS for part in path.parts):
+                continue
+            if "/i18n/" in rel:
+                continue
+            if path.read_text(encoding="utf-8").startswith(('"use client"', "'use client'")):
+                out.append(path)
+    return out
 
 
 def target_files() -> list[pathlib.Path]:
@@ -363,6 +419,15 @@ def target_files() -> list[pathlib.Path]:
             if not any(part in SKIP_PARTS for part in p.parts)
         ]
     return files
+
+
+#: `key={editing ? idOf(editing) : "new"}` — a React list key. It selects a
+#: node, it is never rendered, so a sentinel like `"new"` is not a label.
+REACT_KEY = re.compile(r"\bkey=\{[^{}]*$")
+
+
+def in_react_key(text: str, start: int) -> bool:
+    return bool(REACT_KEY.search(text[max(0, start - 200) : start]))
 
 
 def check_file(path: pathlib.Path) -> list[str]:
@@ -382,10 +447,18 @@ def check_file(path: pathlib.Path) -> list[str]:
     for start, _end, _q, body in scan_strings(text):
         if in_import(start):
             continue
+        if in_react_key(text, start):
+            continue
         position = classify(text, start)
         if position is None:
             continue
-        if not is_prose(body):
+        # Ternary branches hold prose as often as they hold a colour name,
+        # so the lowercase filter comes off — with an explicit list of the
+        # code tokens that legitimately appear there.
+        loose = position in {"ternary", "ternary-else"}
+        if body.strip() in CODE_TOKENS:
+            continue
+        if not is_prose(body, code_tokens=not loose):
             continue
         problems.append(
             f"{rel}:{line_of(text, start)} [{position}] {body.strip()}"
@@ -419,14 +492,30 @@ def main() -> int:
     for path in files:
         problems += check_file(path)
 
+    clients = client_files()
+    for path in clients:
+        text = path.read_text(encoding="utf-8")
+        rel = str(path.relative_to(ROOT)).replace("\\", "/")
+        for match in HARDCODED_LOCALE_CALL.finditer(text):
+            problems.append(
+                f"{rel}:{line_of(text, match.start())} [fixed locale] "
+                f"{match.group(0)} — use the active locale, not a constant"
+            )
+
     if problems:
-        print("Qattiq yozilgan matn topildi (admin panelda `t()` dan o'tmagan):")
+        print("Qattiq yozilgan matn topildi (`t()` dan o'tmagan):")
         for row in problems:
             print(f"  {row}")
-        print(f"\nJami: {len(problems)} satr, {len(files)} fayl tekshirildi.")
+        print(
+            f"\nJami: {len(problems)} satr — "
+            f"{len(files)} admin va {len(clients)} klient fayl tekshirildi."
+        )
         return 1
 
-    print(f"Tekshirildi: {len(files)} admin fayl — qattiq yozilgan matn yo'q ✓")
+    print(
+        f"Tekshirildi: {len(files)} admin fayl + {len(clients)} klient fayl "
+        f"— qattiq yozilgan matn yo'q ✓"
+    )
     return 0
 
 

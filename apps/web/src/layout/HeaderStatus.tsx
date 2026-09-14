@@ -4,13 +4,15 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { useSession } from "@/context/SessionContext";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { t } from "@/i18n/messages";
 import { BellIcon, FlameIcon, QvantIcon } from "@/icons";
 import { API_BASE } from "@/lib/api";
 
 /** Qo'ng'iroq + Qvant balansi + streak — RoboContest/KEP header naqshi.
  * Sessiya bo'lmasa hech narsa ko'rsatilmaydi. */
 export default function HeaderStatus() {
+  const locale = useLocale();
   const { user, ready } = useSession();
   const [unread, setUnread] = useState(0);
   const [balance, setBalance] = useState<number | null>(null);
@@ -46,7 +48,7 @@ export default function HeaderStatus() {
       </Link>
       <span
         className={`${pill} hidden sm:flex`}
-        title={`${user.streak_count} ${t(DEFAULT_LOCALE, "header.streak")}`}
+        title={`${user.streak_count} ${t(locale, "header.streak")}`}
       >
         <FlameIcon className="size-4 rw-warn-ink" />
         {user.streak_count}
@@ -54,7 +56,7 @@ export default function HeaderStatus() {
       <Link
         href="/notifications"
         className="relative flex size-10 items-center justify-center rw-radius-sm border rw-line rw-dim-2 transition rw-hover-bg"
-        title={unread ? `${unread}` : t(DEFAULT_LOCALE, "header.noUnread")}
+        title={unread ? `${unread}` : t(locale, "header.noUnread")}
       >
         <BellIcon />
         {unread > 0 && (

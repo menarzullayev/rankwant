@@ -6,7 +6,7 @@ import { useLocale } from "@/i18n/LocaleProvider";
 import { CrudPage, type FieldDef } from "@/components/admin/CrudPage";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { DEFAULT_LOCALE, t, errorText } from "@/i18n/messages";
+import { t, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -145,7 +145,7 @@ function StepsEditor({
             }}
             className="text-theme-xs rw-bad-ink hover:underline"
           >
-            {t(DEFAULT_LOCALE, "admin.delete")}
+            {t(locale, "admin.delete")}
           </button>
         </div>
       ))}
@@ -171,11 +171,11 @@ function StepsEditor({
           {t(locale, "admin.text.addStep")}
         </Button>
         <Button type="button" className="h-9" disabled={busy} onClick={save}>
-          {t(DEFAULT_LOCALE, "admin.save")}
+          {t(locale, "admin.save")}
         </Button>
         {saved && (
           <span className="text-theme-xs rw-ok-ink">
-            {t(DEFAULT_LOCALE, "admin.saved")}
+            {t(locale, "admin.saved")}
           </span>
         )}
       </div>
