@@ -1,11 +1,9 @@
 from typing import Any
 
 from django.contrib import admin
-
-from core.models import SiteAppearance
 from django.contrib.auth.admin import UserAdmin
 
-from core.models import ApiToken, School, User
+from core.models import ApiToken, School, SiteAppearance, User
 
 
 @admin.register(User)

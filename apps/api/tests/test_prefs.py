@@ -108,7 +108,9 @@ class TestValidate:
             prefs.validate({"appearance": {"size": 115}})
 
     def test_shablon_soni_cheklangan(self) -> None:
-        rows = [{"name": f"S{i}", "appearance": {}, "a11y": {}} for i in range(prefs.TEMPLATE_MAX + 1)]
+        rows = [
+            {"name": f"S{i}", "appearance": {}, "a11y": {}} for i in range(prefs.TEMPLATE_MAX + 1)
+        ]
         with pytest.raises(prefs.PrefsError):
             prefs.validate({"templates": rows})
 

@@ -31,13 +31,9 @@ class RoadmapItemSerializer(serializers.ModelSerializer[RoadmapItem]):
     comment_count = serializers.IntegerField(read_only=True, default=0)
     has_voted = serializers.BooleanField(read_only=True, default=False)
     author = serializers.CharField(source="author.username", read_only=True, default=None)
-    author_name = serializers.CharField(
-        source="author.display_name", read_only=True, default=None
-    )
+    author_name = serializers.CharField(source="author.display_name", read_only=True, default=None)
     update_id = serializers.IntegerField(source="update.id", read_only=True, default=None)
-    update_title = serializers.CharField(
-        source="update.title", read_only=True, default=None
-    )
+    update_title = serializers.CharField(source="update.title", read_only=True, default=None)
 
     class Meta:
         model = RoadmapItem
@@ -76,9 +72,7 @@ class RoadmapItemWriteSerializer(serializers.ModelSerializer[RoadmapItem]):
 
 class RoadmapCommentSerializer(serializers.ModelSerializer[RoadmapComment]):
     author = serializers.CharField(source="author.username", read_only=True, default=None)
-    author_name = serializers.CharField(
-        source="author.display_name", read_only=True, default=None
-    )
+    author_name = serializers.CharField(source="author.display_name", read_only=True, default=None)
     is_mine = serializers.SerializerMethodField()
 
     class Meta:

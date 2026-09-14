@@ -14,9 +14,7 @@ from roadmap.staff_views import StaffRoadmapCommentViewSet, StaffRoadmapViewSet
 
 router = DefaultRouter()
 router.register("platform-roadmap", views.RoadmapItemViewSet, basename="platform-roadmap")
-router.register(
-    "staff/platform-roadmap", StaffRoadmapViewSet, basename="staff-platform-roadmap"
-)
+router.register("staff/platform-roadmap", StaffRoadmapViewSet, basename="staff-platform-roadmap")
 router.register(
     "staff/platform-roadmap-comments",
     StaffRoadmapCommentViewSet,

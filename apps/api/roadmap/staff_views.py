@@ -17,7 +17,7 @@ avtomatik qoralama bo'lib keladi.
 
 from __future__ import annotations
 
-from typing import Any, ClassVar
+from typing import ClassVar
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action

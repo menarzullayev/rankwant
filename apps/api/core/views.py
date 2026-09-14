@@ -1264,9 +1264,7 @@ class SiteAppearanceView(APIView):
     authentication_classes: list[Any] = []
     CACHE_S = 300
 
-    @extend_schema(
-        responses={200: OpenApiResponse(description="Standart ko'rinish")}
-    )
+    @extend_schema(responses={200: OpenApiResponse(description="Standart ko'rinish")})
     def get(self, request: Request) -> Response:
         payload = cache_get("site-appearance")
         if payload is None:

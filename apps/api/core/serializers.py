@@ -296,9 +296,7 @@ class MeSerializer(serializers.ModelSerializer[User]):
         uchun bu yetarli emas.
         """
         if value not in prefs.THEMES:
-            raise serializers.ValidationError(
-                f"Mavzu {', '.join(prefs.THEMES)} dan biri bo'lsin"
-            )
+            raise serializers.ValidationError(f"Mavzu {', '.join(prefs.THEMES)} dan biri bo'lsin")
         return value
 
     def validate_ui_prefs(self, value: Any) -> dict[str, Any]:

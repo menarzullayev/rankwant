@@ -90,9 +90,7 @@ class RoadmapItemViewSet(
         payload = RoadmapItemWriteSerializer(data=request.data)
         payload.is_valid(raise_exception=True)
         assert isinstance(request.user, User)
-        item = payload.save(
-            author=request.user, status=RoadmapItem.Status.SUGGESTED
-        )
+        item = payload.save(author=request.user, status=RoadmapItem.Status.SUGGESTED)
         return Response(
             RoadmapItemSerializer(item, context=self.get_serializer_context()).data,
             status=http_status.HTTP_201_CREATED,
@@ -132,21 +130,15 @@ class RoadmapItemViewSet(
             payload = RoadmapCommentWriteSerializer(data=request.data)
             payload.is_valid(raise_exception=True)
             assert isinstance(request.user, User)
-            comment = services.add_comment(
-                request.user, item, payload.validated_data["body"]
-            )
+            comment = services.add_comment(request.user, item, payload.validated_data["body"])
             return Response(
-                RoadmapCommentSerializer(
-                    comment, context=self.get_serializer_context()
-                ).data,
+                RoadmapCommentSerializer(comment, context=self.get_serializer_context()).data,
                 status=http_status.HTTP_201_CREATED,
             )
 
         rows = services.comments_for(item)
         return Response(
-            RoadmapCommentSerializer(
-                rows, many=True, context=self.get_serializer_context()
-            ).data
+            RoadmapCommentSerializer(rows, many=True, context=self.get_serializer_context()).data
         )
 
     @extend_schema(responses={200: RoadmapItemSerializer(many=True)})

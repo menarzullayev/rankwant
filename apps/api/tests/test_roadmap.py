@@ -63,18 +63,14 @@ class TestTaqta:
     def test_tur_boyicha_filtr(self) -> None:
         make(status=RoadmapItem.Status.PLANNED)
         make(title="Boshqa", status=RoadmapItem.Status.RELEASED)
-        body = APIClient().get(
-            reverse("platform-roadmap-list"), {"status": "released"}
-        ).json()
+        body = APIClient().get(reverse("platform-roadmap-list"), {"status": "released"}).json()
         assert body["count"] == 1
         assert body["results"][0]["status"] == "released"
 
     def test_qidiruv_ishlaydi(self) -> None:
         make(title="Qorong'i rejim")
         make(title="Turnir jadvali")
-        body = APIClient().get(
-            reverse("platform-roadmap-list"), {"search": "turnir"}
-        ).json()
+        body = APIClient().get(reverse("platform-roadmap-list"), {"search": "turnir"}).json()
         assert body["count"] == 1
 
     def test_standart_tartib_barqaror(self) -> None:
@@ -128,9 +124,11 @@ class TestHisob:
             RoadmapVote.objects.create(item=kop, user=voter)
         RoadmapVote.objects.create(item=kam, user=user)
 
-        rows = APIClient().get(
-            reverse("platform-roadmap-list"), {"ordering": "-vote_count"}
-        ).json()["results"]
+        rows = (
+            APIClient()
+            .get(reverse("platform-roadmap-list"), {"ordering": "-vote_count"})
+            .json()["results"]
+        )
         assert [r["title"] for r in rows] == ["Ko'p ovoz", "Kam ovoz"]
 
 
@@ -348,9 +346,7 @@ class TestStaff:
         make(title="Taklif", status=RoadmapItem.Status.SUGGESTED)
         client = APIClient()
         client.force_authenticate(staff_user)
-        body = client.get(
-            reverse("staff-platform-roadmap-list"), {"status": "suggested"}
-        ).json()
+        body = client.get(reverse("staff-platform-roadmap-list"), {"status": "suggested"}).json()
         assert body["count"] == 1
 
     def test_izohni_yashirish(self, staff_user, user) -> None:

@@ -28,9 +28,7 @@ def board() -> QuerySet[RoadmapItem]:
     return visible().filter(status__in=RoadmapItem.COLUMNS)
 
 
-def with_counts(
-    queryset: QuerySet[RoadmapItem], user: User | None = None
-) -> QuerySet[RoadmapItem]:
+def with_counts(queryset: QuerySet[RoadmapItem], user: User | None = None) -> QuerySet[RoadmapItem]:
     """Ovoz soni, izoh soni va "men ovoz berdimmi" — bitta so'rovda.
 
     ⚠️ `Count` ni `distinct=True` siz ikki marta qo'shib bo'lmaydi: ikki
@@ -45,9 +43,7 @@ def with_counts(
     """
     queryset = queryset.annotate(
         vote_count=Count("votes", distinct=True),
-        comment_count=Count(
-            "comments", filter=Q(comments__is_hidden=False), distinct=True
-        ),
+        comment_count=Count("comments", filter=Q(comments__is_hidden=False), distinct=True),
     )
     if user is not None and user.is_authenticated:
         queryset = queryset.annotate(
