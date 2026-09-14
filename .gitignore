@@ -58,3 +58,10 @@ tests/e2e/playwright-report/
 
 # Changelog sinxronizatsiya nuqtasi (tools/sync_updates.py) — har ish joyi o'ziniki
 tools/.update-sync.json
+
+# Agent xotirasi (loyihaga bog'liq emas, har ish joyi o'ziniki)
+.workbuddy-ai/
+
+# Mahalliy tahlil skriptlari: i18n skaneri, kalit qo'shuvchilar, o'lchov
+# natijalari. Bir martalik ish qurollari — repoga tushmasin.
+.tmp/
