@@ -139,6 +139,13 @@ jobs:
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:${{ job.services.postgres.ports['5432'] }}/rankwant_test
           REDIS_URL: redis://localhost:${{ job.services.redis.ports['6379'] }}/0
+          # `CELERY_EAGER=1` — task'lar sinxron, broker aylanib o'tiladi.
+          # Bu Redis SERVICE'i kerak emasligi degani EMAS: `CACHES` va
+          # throttle hamon Redisdan foydalanadi. Sabab — DETERMINIZM:
+          # broker orqali o'tsa task navbatga tushadi va test uni
+          # kutmaydi, ya'ni natija ishga tushish tartibiga bog'liq
+          # bo'lib qoladi. Mahalliy o'lchov: 14m54s → 1m57s.
+          CELERY_EAGER: '1'
         # `-n 4`: o'lchandi — 123 s → 39 s. `auto` EMAS: runner shu
         # mashinada, jonli preview bilan yonma-yon ishlaydi.
         run: pytest -n 4 --cov --cov-report=term-missing

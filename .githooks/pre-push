@@ -64,7 +64,13 @@ if has '^apps/api/'; then
   step "API — ruff" uv run ruff check .
   step "API — format" uv run ruff format --check .
   step "API — mypy" uv run mypy .
-  step "API — pytest" uv run pytest -q -n 4
+  # `CELERY_EAGER=1` SHART. Usiz `core.tasks.queue()` har chaqiruvda
+  # o'chiq Redis brokeriga uradi va Celery result backend ~109 s retry
+  # qiladi — xato `except Exception` bilan yutiladi, ya'ni test YASHIL
+  # qoladi va faqat vaqt ketadi. O'lchandi: 1191 test 14m54s → 1m57s.
+  # Mahalliy ishga tushirishda Redis kerak emas (docs/10-operations/
+  # test-strategy.md).
+  step "API — pytest" env CELERY_EAGER=1 uv run pytest -q -n 4
   # CI dagi «OpenAPI schema diff» darvozasining nusxasi. Endpoint
   # qo'shilganda sxemani yangilash oson unutiladi va xato faqat CI da
   # chiqadi — ya'ni bir necha daqiqa keyin, boshqa commit ustiga.

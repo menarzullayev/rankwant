@@ -37,6 +37,25 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/appearance/:
+    get:
+      operationId: appearance_retrieve
+      description: |-
+        Saytning standart ko'rinishi — ommaviy o'qish (D37).
+
+        Mehmon ham, yangi hisob ham shuni boshlang'ich qiymat sifatida oladi.
+        Keshlanadi: u kamdan-kam o'zgaradi, lekin har bir yangi qurilma
+        so'raydi.
+
+        Foydalanuvchi O'ZI tanlagach, bu qiymat ustun bo'lmaydi — u faqat
+        boshlanish nuqtasi.
+      tags:
+      - appearance
+      security:
+      - {}
+      responses:
+        '200':
+          description: Standart ko'rinish
   /api/v1/arena/:
     get:
       operationId: arena_list
@@ -2360,6 +2379,377 @@ paths:
       responses:
         '200':
           description: No response body
+  /api/v1/platform-roadmap/:
+    get:
+      operationId: platform_roadmap_list
+      description: '`/platform-roadmap/` — taxta, batafsil, ovoz, izoh, taklif.'
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - declined
+          - in_progress
+          - planned
+          - released
+          - suggested
+        description: |-
+          * `suggested` - Ko'rib chiqilmoqda
+          * `planned` - Rejalashtirilgan
+          * `in_progress` - Ishlanmoqda
+          * `released` - Chiqarildi
+          * `declined` - Rad etilgan
+      tags:
+      - platform-roadmap
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRoadmapItemList'
+          description: ''
+    post:
+      operationId: platform_roadmap_create
+      description: |-
+        Taklif berish. Holat HAR DOIM `suggested`.
+
+        Foydalanuvchi "chiqarildi" yoki "rejalashtirilgan" deb yozib
+        qo'ya olmaydi — buni faqat jamoa o'zgartiradi.
+      tags:
+      - platform-roadmap
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoadmapItemWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RoadmapItemWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RoadmapItemWrite'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoadmapItem'
+          description: ''
+  /api/v1/platform-roadmap/{id}/:
+    get:
+      operationId: platform_roadmap_retrieve
+      description: '`/platform-roadmap/` — taxta, batafsil, ovoz, izoh, taklif.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this roadmap item.
+        required: true
+      tags:
+      - platform-roadmap
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoadmapItem'
+          description: ''
+  /api/v1/platform-roadmap/{id}/comments/:
+    get:
+      operationId: platform_roadmap_comments_list
+      description: |-
+        Izohlar: `GET` — hamma, `POST` — kirganlar.
+
+        Moderatsiya KEYIN: izoh darhol ko'rinadi, jamoa kerak bo'lsa
+        yashiradi (`is_hidden`). Oldindan tasdiq talab qilinsa muhokama
+        sekinlashadi va jamoa har izohni kutib o'tirishi kerak bo'lardi.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this roadmap item.
+        required: true
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - declined
+          - in_progress
+          - planned
+          - released
+          - suggested
+        description: |-
+          * `suggested` - Ko'rib chiqilmoqda
+          * `planned` - Rejalashtirilgan
+          * `in_progress` - Ishlanmoqda
+          * `released` - Chiqarildi
+          * `declined` - Rad etilgan
+      tags:
+      - platform-roadmap
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRoadmapCommentList'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoadmapComment'
+          description: ''
+    post:
+      operationId: platform_roadmap_comments_create
+      description: |-
+        Izohlar: `GET` — hamma, `POST` — kirganlar.
+
+        Moderatsiya KEYIN: izoh darhol ko'rinadi, jamoa kerak bo'lsa
+        yashiradi (`is_hidden`). Oldindan tasdiq talab qilinsa muhokama
+        sekinlashadi va jamoa har izohni kutib o'tirishi kerak bo'lardi.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this roadmap item.
+        required: true
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - declined
+          - in_progress
+          - planned
+          - released
+          - suggested
+        description: |-
+          * `suggested` - Ko'rib chiqilmoqda
+          * `planned` - Rejalashtirilgan
+          * `in_progress` - Ishlanmoqda
+          * `released` - Chiqarildi
+          * `declined` - Rad etilgan
+      tags:
+      - platform-roadmap
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoadmapCommentWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RoadmapCommentWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RoadmapCommentWrite'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRoadmapCommentList'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoadmapComment'
+          description: ''
+  /api/v1/platform-roadmap/{id}/vote/:
+    post:
+      operationId: platform_roadmap_vote_create
+      description: 'Ovoz berish. Idempotent: ikki marta bosilsa son o''zgarmaydi.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this roadmap item.
+        required: true
+      tags:
+      - platform-roadmap
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoadmapVote'
+          description: ''
+    delete:
+      operationId: platform_roadmap_vote_destroy
+      description: Ovozni qaytarib olish — bir xil manzil, `DELETE` metodi.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this roadmap item.
+        required: true
+      tags:
+      - platform-roadmap
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoadmapVote'
+          description: ''
+  /api/v1/platform-roadmap/mine/:
+    get:
+      operationId: platform_roadmap_mine_list
+      description: |-
+        Mening takliflarim — rad etilganlari ham.
+
+        Rad etilgan taklifni ko'rsatish shart: aks holda odam "yozdim,
+        javob bo'lmadi" degan taassurot bilan qoladi.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - declined
+          - in_progress
+          - planned
+          - released
+          - suggested
+        description: |-
+          * `suggested` - Ko'rib chiqilmoqda
+          * `planned` - Rejalashtirilgan
+          * `in_progress` - Ishlanmoqda
+          * `released` - Chiqarildi
+          * `declined` - Rad etilgan
+      tags:
+      - platform-roadmap
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRoadmapItemList'
+          description: ''
   /api/v1/posts/:
     get:
       operationId: posts_list
@@ -4555,6 +4945,505 @@ paths:
               schema:
                 $ref: '#/components/schemas/StaffSubmission'
           description: ''
+  /api/v1/staff/platform-roadmap/:
+    get:
+      operationId: staff_platform_roadmap_list
+      parameters:
+      - in: query
+        name: is_enabled
+        schema:
+          type: boolean
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - declined
+          - in_progress
+          - planned
+          - released
+          - suggested
+        description: |-
+          * `suggested` - Ko'rib chiqilmoqda
+          * `planned` - Rejalashtirilgan
+          * `in_progress` - Ishlanmoqda
+          * `released` - Chiqarildi
+          * `declined` - Rad etilgan
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffRoadmapItemList'
+          description: ''
+    post:
+      operationId: staff_platform_roadmap_create
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmapItem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmapItem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmapItem'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffRoadmapItem'
+          description: ''
+  /api/v1/staff/platform-roadmap-comments/:
+    get:
+      operationId: staff_platform_roadmap_comments_list
+      description: |-
+        Izohlar moderatsiyasi — post-modelleratsiya.
+
+        Izoh o'chirilmaydi, `is_hidden` qilinadi: qaror keyin ko'rib
+        chiqilishi va muallifga nima uchun yashirilganini aytish mumkin
+        bo'lishi kerak.
+      parameters:
+      - in: query
+        name: is_hidden
+        schema:
+          type: boolean
+      - in: query
+        name: item
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffRoadmapCommentList'
+          description: ''
+    post:
+      operationId: staff_platform_roadmap_comments_create
+      description: |-
+        Izohlar moderatsiyasi — post-modelleratsiya.
+
+        Izoh o'chirilmaydi, `is_hidden` qilinadi: qaror keyin ko'rib
+        chiqilishi va muallifga nima uchun yashirilganini aytish mumkin
+        bo'lishi kerak.
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmapComment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmapComment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmapComment'
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffRoadmapComment'
+          description: ''
+  /api/v1/staff/platform-roadmap-comments/{id}/:
+    get:
+      operationId: staff_platform_roadmap_comments_retrieve
+      description: |-
+        Izohlar moderatsiyasi — post-modelleratsiya.
+
+        Izoh o'chirilmaydi, `is_hidden` qilinadi: qaror keyin ko'rib
+        chiqilishi va muallifga nima uchun yashirilganini aytish mumkin
+        bo'lishi kerak.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this roadmap comment.
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffRoadmapComment'
+          description: ''
+    put:
+      operationId: staff_platform_roadmap_comments_update
+      description: |-
+        Izohlar moderatsiyasi — post-modelleratsiya.
+
+        Izoh o'chirilmaydi, `is_hidden` qilinadi: qaror keyin ko'rib
+        chiqilishi va muallifga nima uchun yashirilganini aytish mumkin
+        bo'lishi kerak.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this roadmap comment.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmapComment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmapComment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmapComment'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffRoadmapComment'
+          description: ''
+    patch:
+      operationId: staff_platform_roadmap_comments_partial_update
+      description: |-
+        Izohlar moderatsiyasi — post-modelleratsiya.
+
+        Izoh o'chirilmaydi, `is_hidden` qilinadi: qaror keyin ko'rib
+        chiqilishi va muallifga nima uchun yashirilganini aytish mumkin
+        bo'lishi kerak.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this roadmap comment.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffRoadmapComment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffRoadmapComment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffRoadmapComment'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffRoadmapComment'
+          description: ''
+    delete:
+      operationId: staff_platform_roadmap_comments_destroy
+      description: |-
+        Izohlar moderatsiyasi — post-modelleratsiya.
+
+        Izoh o'chirilmaydi, `is_hidden` qilinadi: qaror keyin ko'rib
+        chiqilishi va muallifga nima uchun yashirilganini aytish mumkin
+        bo'lishi kerak.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this roadmap comment.
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/staff/platform-roadmap-comments/{id}/hide/:
+    post:
+      operationId: staff_platform_roadmap_comments_hide_create
+      description: |-
+        Izohlar moderatsiyasi — post-modelleratsiya.
+
+        Izoh o'chirilmaydi, `is_hidden` qilinadi: qaror keyin ko'rib
+        chiqilishi va muallifga nima uchun yashirilganini aytish mumkin
+        bo'lishi kerak.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this roadmap comment.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmapComment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmapComment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmapComment'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffRoadmapComment'
+          description: ''
+  /api/v1/staff/platform-roadmap-comments/{id}/unhide/:
+    post:
+      operationId: staff_platform_roadmap_comments_unhide_create
+      description: |-
+        Izohlar moderatsiyasi — post-modelleratsiya.
+
+        Izoh o'chirilmaydi, `is_hidden` qilinadi: qaror keyin ko'rib
+        chiqilishi va muallifga nima uchun yashirilganini aytish mumkin
+        bo'lishi kerak.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this roadmap comment.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmapComment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmapComment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmapComment'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffRoadmapComment'
+          description: ''
+  /api/v1/staff/platform-roadmap/{id}/:
+    get:
+      operationId: staff_platform_roadmap_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this roadmap item.
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffRoadmapItem'
+          description: ''
+    put:
+      operationId: staff_platform_roadmap_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this roadmap item.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmapItem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmapItem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmapItem'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffRoadmapItem'
+          description: ''
+    patch:
+      operationId: staff_platform_roadmap_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this roadmap item.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffRoadmapItem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffRoadmapItem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffRoadmapItem'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffRoadmapItem'
+          description: ''
+    delete:
+      operationId: staff_platform_roadmap_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this roadmap item.
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/staff/platform-roadmap/{id}/set-status/:
+    post:
+      operationId: staff_platform_roadmap_set_status_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this roadmap item.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmapItem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmapItem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffRoadmapItem'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffRoadmapItem'
+          description: ''
   /api/v1/staff/posts/:
     get:
       operationId: staff_posts_list
@@ -6654,6 +7543,62 @@ paths:
     get:
       operationId: staff_updates_list
       parameters:
+      - in: query
+        name: kind
+        schema:
+          type: string
+          enum:
+          - breaking
+          - content
+          - deprecated
+          - design
+          - fixed
+          - improved
+          - infrastructure
+          - new
+          - performance
+          - security
+        description: |-
+          * `new` - Yangi
+          * `improved` - Yaxshilandi
+          * `fixed` - Tuzatildi
+          * `performance` - Tezlik
+          * `security` - Xavfsizlik
+          * `design` - Dizayn
+          * `content` - Kontent
+          * `infrastructure` - Infratuzilma
+          * `breaking` - Buzuvchi
+          * `deprecated` - Olib tashlanadi
+      - in: query
+        name: module
+        schema:
+          type: string
+          enum:
+          - arena
+          - classroom
+          - content
+          - contests
+          - core
+          - design
+          - judge
+          - problems
+          - profile
+          - quizzes
+          - qvant
+          - ratings
+        description: |-
+          * `problems` - Masalalar
+          * `contests` - Musobaqalar
+          * `arena` - Bellashuvlar
+          * `judge` - Tekshiruv
+          * `ratings` - Reyting
+          * `qvant` - Qvant
+          * `profile` - Profil
+          * `classroom` - Sinf
+          * `quizzes` - Testlar
+          * `content` - Kontent
+          * `design` - Dizayn
+          * `core` - Umumiy
       - name: ordering
         required: false
         in: query
@@ -6678,6 +7623,18 @@ paths:
         description: A search term.
         schema:
           type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - draft
+          - published
+          - withdrawn
+        description: |-
+          * `draft` - Qoralama
+          * `published` - Nashr etilgan
+          * `withdrawn` - Nashrdan olingan
       tags:
       - staff
       security:
@@ -7522,6 +8479,12 @@ paths:
         description: Number of results to return per page.
         schema:
           type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
       - in: query
         name: version
         schema:
@@ -7561,6 +8524,114 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SystemUpdate'
+          description: ''
+  /api/v1/updates/actionable/:
+    get:
+      operationId: updates_actionable_list
+      description: |-
+        Harakatga chaqiruvchi yozuvlar — arxiv tepasidagi alohida blok.
+
+        Nega alohida so'rov: `breaking`/`deprecated` yozuvlari KAM, lekin
+        muhim. Ular joriy sahifada umuman bo'lmasligi mumkin (arxiv 25
+        tadan sahifalanadi), ya'ni sahifalangan ro'yxatdan ularni ajratib
+        bo'lmaydi. Qaror 11 shu ikki turni rang VA joylashuvda ajratishni
+        talab qiladi — joylashuv shu blok.
+      parameters:
+      - in: query
+        name: kind
+        schema:
+          type: string
+          enum:
+          - breaking
+          - content
+          - deprecated
+          - design
+          - fixed
+          - improved
+          - infrastructure
+          - new
+          - performance
+          - security
+        description: |-
+          * `new` - Yangi
+          * `improved` - Yaxshilandi
+          * `fixed` - Tuzatildi
+          * `performance` - Tezlik
+          * `security` - Xavfsizlik
+          * `design` - Dizayn
+          * `content` - Kontent
+          * `infrastructure` - Infratuzilma
+          * `breaking` - Buzuvchi
+          * `deprecated` - Olib tashlanadi
+      - in: query
+        name: module
+        schema:
+          type: string
+          enum:
+          - arena
+          - classroom
+          - content
+          - contests
+          - core
+          - design
+          - judge
+          - problems
+          - profile
+          - quizzes
+          - qvant
+          - ratings
+        description: |-
+          * `problems` - Masalalar
+          * `contests` - Musobaqalar
+          * `arena` - Bellashuvlar
+          * `judge` - Tekshiruv
+          * `ratings` - Reyting
+          * `qvant` - Qvant
+          * `profile` - Profil
+          * `classroom` - Sinf
+          * `quizzes` - Testlar
+          * `content` - Kontent
+          * `design` - Dizayn
+          * `core` - Umumiy
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: version
+        schema:
+          type: string
+      tags:
+      - updates
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSystemUpdateList'
           description: ''
   /api/v1/updates/mark-read/:
     post:
@@ -7663,6 +8734,12 @@ paths:
         description: Number of results to return per page.
         schema:
           type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
       - in: query
         name: version
         schema:
@@ -7757,6 +8834,12 @@ paths:
         description: Number of results to return per page.
         schema:
           type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
       - in: query
         name: version
         schema:
@@ -10262,6 +11345,52 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/RatingHistory'
+    PaginatedRoadmapCommentList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoadmapComment'
+    PaginatedRoadmapItemList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoadmapItem'
     PaginatedSchoolList:
       type: object
       required:
@@ -10584,6 +11713,52 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/StaffQuiz'
+    PaginatedStaffRoadmapCommentList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffRoadmapComment'
+    PaginatedStaffRoadmapItemList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffRoadmapItem'
     PaginatedStaffRoadmapList:
       type: object
       required:
@@ -11683,6 +12858,94 @@ components:
           type: integer
           readOnly: true
           default: 0
+    PatchedStaffRoadmapComment:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        item:
+          type: integer
+          readOnly: true
+        item_title:
+          type: string
+          readOnly: true
+        author:
+          type: string
+          readOnly: true
+        body:
+          type: string
+          readOnly: true
+        is_hidden:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedStaffRoadmapItem:
+      type: object
+      description: |-
+        Staff yozadi.
+
+        `status` READ-ONLY: holat `set_status()` orqali o'zgaradi, chunki
+        o'sha metod o'tish vaqtini ham yozadi. To'g'ridan-to'g'ri yozish
+        tarixni bo'sh qoldirardi.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        body:
+          type: string
+          description: Markdown
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusA32Enum'
+          readOnly: true
+        target_quarter:
+          type: string
+          maxLength: 24
+        update:
+          type: integer
+          nullable: true
+        planned_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        started_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        released_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        is_enabled:
+          type: boolean
+        author:
+          type: string
+          readOnly: true
+        vote_count:
+          type: integer
+          readOnly: true
+          default: 0
+        comment_count:
+          type: integer
+          readOnly: true
+          default: 0
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
     PatchedStaffSchool:
       type: object
       description: |-
@@ -11768,7 +13031,7 @@ components:
         module:
           $ref: '#/components/schemas/ModuleEnum'
         status:
-          $ref: '#/components/schemas/StaffSystemUpdateStatusEnum'
+          $ref: '#/components/schemas/Status144Enum'
         version:
           type: string
           maxLength: 32
@@ -12730,6 +13993,43 @@ components:
       - explanation
       - is_correct
       - question_id
+    RoadmapComment:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        body:
+          type: string
+        author:
+          type: string
+          readOnly: true
+        author_name:
+          type: string
+          readOnly: true
+        is_mine:
+          type: boolean
+          description: Izohni o'chirish tugmasi faqat egasiga (va xodimga) ko'rinadi.
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - author
+      - author_name
+      - body
+      - created_at
+      - id
+      - is_mine
+    RoadmapCommentWrite:
+      type: object
+      properties:
+        body:
+          type: string
+          maxLength: 4000
+      required:
+      - body
     RoadmapDetail:
       type: object
       properties:
@@ -12768,6 +14068,92 @@ components:
       - solved_steps
       - step_count
       - steps
+      - title
+    RoadmapItem:
+      type: object
+      description: Ochiq o'qish — mehmon ham ko'radi.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        body:
+          type: string
+          description: Markdown
+        status:
+          $ref: '#/components/schemas/StatusA32Enum'
+        target_quarter:
+          type: string
+          maxLength: 24
+        vote_count:
+          type: integer
+          readOnly: true
+          default: 0
+        has_voted:
+          type: boolean
+          readOnly: true
+          default: false
+        comment_count:
+          type: integer
+          readOnly: true
+          default: 0
+        author:
+          type: string
+          readOnly: true
+        author_name:
+          type: string
+          readOnly: true
+        update_id:
+          type: integer
+          readOnly: true
+        update_title:
+          type: string
+          readOnly: true
+        planned_at:
+          type: string
+          format: date-time
+          nullable: true
+        started_at:
+          type: string
+          format: date-time
+          nullable: true
+        released_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - author
+      - author_name
+      - comment_count
+      - created_at
+      - has_voted
+      - id
+      - title
+      - update_id
+      - update_title
+      - vote_count
+    RoadmapItemWrite:
+      type: object
+      description: |-
+        Foydalanuvchi taklifi.
+
+        `status` ATAYLAB yo'q: taklif har doim `suggested` bo'lib tug'iladi
+        va uni faqat jamoa o'zgartiradi. Aks holda foydalanuvchi o'zini
+        "chiqarildi" deb belgilab qo'yishi mumkin bo'lardi.
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        body:
+          type: string
+          description: Markdown
+      required:
       - title
     RoadmapList:
       type: object
@@ -12825,6 +14211,17 @@ components:
       - article
       - order
       - problem
+    RoadmapVote:
+      type: object
+      description: Ovoz amalining javobi — UI jonli sonni shundan yangilaydi.
+      properties:
+        voted:
+          type: boolean
+        vote_count:
+          type: integer
+      required:
+      - vote_count
+      - voted
     RoleEnum:
       enum:
       - practice
@@ -13804,6 +15201,113 @@ components:
       - slug
       - step_count
       - title
+    StaffRoadmapComment:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        item:
+          type: integer
+          readOnly: true
+        item_title:
+          type: string
+          readOnly: true
+        author:
+          type: string
+          readOnly: true
+        body:
+          type: string
+          readOnly: true
+        is_hidden:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - author
+      - body
+      - created_at
+      - id
+      - item
+      - item_title
+    StaffRoadmapItem:
+      type: object
+      description: |-
+        Staff yozadi.
+
+        `status` READ-ONLY: holat `set_status()` orqali o'zgaradi, chunki
+        o'sha metod o'tish vaqtini ham yozadi. To'g'ridan-to'g'ri yozish
+        tarixni bo'sh qoldirardi.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        body:
+          type: string
+          description: Markdown
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusA32Enum'
+          readOnly: true
+        target_quarter:
+          type: string
+          maxLength: 24
+        update:
+          type: integer
+          nullable: true
+        planned_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        started_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        released_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        is_enabled:
+          type: boolean
+        author:
+          type: string
+          readOnly: true
+        vote_count:
+          type: integer
+          readOnly: true
+          default: 0
+        comment_count:
+          type: integer
+          readOnly: true
+          default: 0
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - author
+      - comment_count
+      - created_at
+      - id
+      - planned_at
+      - released_at
+      - started_at
+      - status
+      - title
+      - updated_at
+      - vote_count
     StaffRoadmapStep:
       type: object
       properties:
@@ -14003,7 +15507,7 @@ components:
         module:
           $ref: '#/components/schemas/ModuleEnum'
         status:
-          $ref: '#/components/schemas/StaffSystemUpdateStatusEnum'
+          $ref: '#/components/schemas/Status144Enum'
         version:
           type: string
           maxLength: 32
@@ -14069,16 +15573,6 @@ components:
       - released_at
       - title
       - updated_at
-    StaffSystemUpdateStatusEnum:
-      enum:
-      - draft
-      - published
-      - withdrawn
-      type: string
-      description: |-
-        * `draft` - Qoralama
-        * `published` - Nashr etilgan
-        * `withdrawn` - Nashrdan olingan
     StaffTestCase:
       type: object
       properties:
@@ -14325,6 +15819,16 @@ components:
       required:
       - user_title
       - username
+    Status144Enum:
+      enum:
+      - draft
+      - published
+      - withdrawn
+      type: string
+      description: |-
+        * `draft` - Qoralama
+        * `published` - Nashr etilgan
+        * `withdrawn` - Nashrdan olingan
     Status8d9Enum:
       enum:
       - open
@@ -14337,6 +15841,20 @@ components:
         * `accepted` - Qabul qilindi
         * `finished` - Tugadi
         * `cancelled` - Bekor qilindi
+    StatusA32Enum:
+      enum:
+      - suggested
+      - planned
+      - in_progress
+      - released
+      - declined
+      type: string
+      description: |-
+        * `suggested` - Ko'rib chiqilmoqda
+        * `planned` - Rejalashtirilgan
+        * `in_progress` - Ishlanmoqda
+        * `released` - Chiqarildi
+        * `declined` - Rad etilgan
     Submission:
       type: object
       properties:
@@ -14423,6 +15941,8 @@ components:
           $ref: '#/components/schemas/KindD6cEnum'
         module:
           $ref: '#/components/schemas/ModuleEnum'
+        status:
+          $ref: '#/components/schemas/Status144Enum'
         version:
           type: string
           maxLength: 32
