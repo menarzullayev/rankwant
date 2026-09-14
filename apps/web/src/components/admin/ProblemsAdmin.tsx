@@ -430,8 +430,12 @@ export function ProblemsAdmin() {
           {
             key: "is_public",
             labelKey: "admin.label.text.status",
-            render: (p) => (
-              <Badge>{p.is_public ? "ommaviy" : "yashirin"}</Badge>
+            render: (p, _reload, locale) => (
+              <Badge>
+              {p.is_public
+                ? t(locale, "admin.text.badgePublic")
+                : t(locale, "admin.text.badgeHidden")}
+            </Badge>
             ),
           },
         ]}

@@ -1260,4 +1260,5 @@ export const tr: Record<MessageKey, string> = {
   "admin.text.visible": "Görünür",
   "admin.text.tableRecalculated": "Tablo yeniden hesaplandı — katılımcılar: {count}",
   "admin.text.yes": "evet",
+  "admin.text.badgePublic": "herkese açık",
 };

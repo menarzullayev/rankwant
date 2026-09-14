@@ -423,7 +423,7 @@ export function QuestionsAdmin() {
                 </TD>
                 <TD>
                   <Badge color={item.is_active ? "success" : "neutral"}>
-                    {item.is_active ? "ha" : t(locale, "admin.text.no")}
+                    {item.is_active ? t(locale, "admin.text.yes") : t(locale, "admin.text.no")}
                   </Badge>
                 </TD>
                 <TD align="right">

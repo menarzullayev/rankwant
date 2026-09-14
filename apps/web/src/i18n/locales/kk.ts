@@ -1261,4 +1261,5 @@ export const kk: Record<MessageKey, string> = {
   "admin.text.visible": "Көрінеді",
   "admin.text.tableRecalculated": "Кесте қайта есептелді — қатысушылар: {count}",
   "admin.text.yes": "иә",
+  "admin.text.badgePublic": "жария",
 };

@@ -1304,6 +1304,7 @@ export const uz = {
   "admin.text.visible": "Ko'rinadi",
   "admin.text.tableRecalculated": "Jadval qayta hisoblandi — ishtirokchilar: {count}",
   "admin.text.yes": "ha",
+  "admin.text.badgePublic": "ommaviy",
 } as const;
 
 export type MessageKey = keyof typeof uz;

@@ -1260,4 +1260,5 @@ export const kaa: Record<MessageKey, string> = {
   "admin.text.visible": "Kórinedi",
   "admin.text.tableRecalculated": "Keste qayta esaplandı — qatnasıwshılar: {count}",
   "admin.text.yes": "awa",
+  "admin.text.badgePublic": "ommawiy",
 };

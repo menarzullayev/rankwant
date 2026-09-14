@@ -1260,4 +1260,5 @@ export const ky: Record<MessageKey, string> = {
   "admin.text.visible": "Көрүнөт",
   "admin.text.tableRecalculated": "Таблица кайра эсептелди — катышуучулар: {count}",
   "admin.text.yes": "ооба",
+  "admin.text.badgePublic": "ачык",
 };

@@ -1260,4 +1260,5 @@ export const es: Record<MessageKey, string> = {
   "admin.text.visible": "Visible",
   "admin.text.tableRecalculated": "Tabla recalculada — participantes: {count}",
   "admin.text.yes": "sí",
+  "admin.text.badgePublic": "público",
 };

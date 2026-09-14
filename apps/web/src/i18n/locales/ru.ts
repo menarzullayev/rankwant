@@ -1260,4 +1260,5 @@ export const ru: Record<MessageKey, string> = {
   "admin.text.visible": "Видно",
   "admin.text.tableRecalculated": "Таблица пересчитана — участников: {count}",
   "admin.text.yes": "да",
+  "admin.text.badgePublic": "публичный",
 };

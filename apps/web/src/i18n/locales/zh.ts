@@ -1257,4 +1257,5 @@ export const zh: Record<MessageKey, string> = {
   "admin.text.visible": "可见",
   "admin.text.tableRecalculated": "表格已重新计算——参与者：{count}",
   "admin.text.yes": "是",
+  "admin.text.badgePublic": "公开",
 };

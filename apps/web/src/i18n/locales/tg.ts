@@ -1261,4 +1261,5 @@ export const tg: Record<MessageKey, string> = {
   "admin.text.visible": "Намоён аст",
   "admin.text.tableRecalculated": "Ҷадвал аз нав ҳисоб шуд — иштирокчиён: {count}",
   "admin.text.yes": "ҳа",
+  "admin.text.badgePublic": "оммавӣ",
 };
