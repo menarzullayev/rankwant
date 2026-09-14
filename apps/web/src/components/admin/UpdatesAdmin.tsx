@@ -254,10 +254,10 @@ function EnabledToggle({
     <button
       type="button"
       onClick={toggle}
-      title={error || (enabled ? "O'chirish (rollback)" : "Yoqish")}
+      title={error || (enabled ? t(locale, "admin.text.deleteRollback") : t(locale, "admin.text.enable"))}
     >
       <Badge color={error ? "error" : enabled ? "success" : "warning"}>
-        {error ? "Xato" : enabled ? "Yoqilgan" : "O'chirilgan"}
+        {error ? t(locale, "admin.text.error") : enabled ? t(locale, "admin.label.status.enabled") : t(locale, "admin.text.disabled")}
       </Badge>
     </button>
   );
@@ -306,9 +306,10 @@ const COLUMNS: ColumnDef<SystemUpdate>[] = [
 ];
 
 export function UpdatesAdmin() {
+  const locale = useLocale();
   return (
     <CrudPage<SystemUpdate>
-      title="O'zgarishlar"
+      title={t(locale, "admin.section.updates")}
       path={PATH}
       idField="id"
       columns={COLUMNS}

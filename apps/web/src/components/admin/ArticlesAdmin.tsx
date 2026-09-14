@@ -34,9 +34,9 @@ type Article = {
   [key: string]: unknown;
 };
 
-const KIND_LABEL: Record<Article["kind"], string> = {
-  article: "Maqola",
-  algorithm: "Algoritm",
+const KIND_LABEL: Record<Article["kind"], MessageKey> = {
+  article: "admin.label.text.article",
+  algorithm: "admin.label.text.problemExample",
 };
 
 const ROLES: { value: ProblemLink["role"]; labelKey: MessageKey }[] = [
@@ -145,7 +145,7 @@ function ProblemLinksEditor({
   return (
     <div className="space-y-2">
       <p className="text-theme-xs font-medium rw-dim uppercase">
-        {"Bog'langan masalalar"}
+        {t(locale, "admin.text.linkedProblems")}
       </p>
       {error && <p className="text-theme-xs rw-bad-ink">{error}</p>}
       {links.map((l, i) => (
@@ -156,11 +156,11 @@ function ProblemLinksEditor({
             min={0}
             onChange={(e) => patch(i, { order: Number(e.target.value) })}
             className={`${input} w-16`}
-            title="Tartib"
+            title={t(locale, "admin.title.order")}
           />
           <input
             value={l.problem}
-            placeholder="masala slugi"
+            placeholder={t(locale, "admin.placeholder.problemSlug")}
             onChange={(e) => patch(i, { problem: e.target.value })}
             className={`${input} w-48 font-mono`}
           />
@@ -202,7 +202,7 @@ function ProblemLinksEditor({
             setSaved(false);
           }}
         >
-          + Masala
+          {t(locale, "admin.text.addProblem")}
         </Button>
         <Button type="button" className="h-9" disabled={busy} onClick={save}>
           {t(locale, "admin.save")}
@@ -221,7 +221,7 @@ export function ArticlesAdmin() {
   const locale = useLocale();
   return (
     <CrudPage<Article>
-      title="Maqolalar"
+      title={t(locale, "admin.section.articles")}
       path="/staff/articles/"
       idField="slug"
       ordering="-updated_at"
@@ -236,7 +236,7 @@ export function ArticlesAdmin() {
           labelKey: "admin.label.text.kind",
           render: (a) => (
             <Badge color={a.kind === "algorithm" ? "info" : "neutral"}>
-              {KIND_LABEL[a.kind]}
+              {t(locale, KIND_LABEL[a.kind])}
             </Badge>
           ),
         },
@@ -253,7 +253,7 @@ export function ArticlesAdmin() {
           labelKey: "admin.label.text.status",
           render: (a) => (
             <Badge color={a.is_published ? "success" : "warning"}>
-              {a.is_published ? "Nashr" : "Qoralama"}
+              {a.is_published ? t(locale, "admin.text.publish") : t(locale, "admin.label.status.draft")}
             </Badge>
           ),
         },

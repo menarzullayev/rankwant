@@ -8,6 +8,7 @@ import {
   type FieldDef,
 } from "@/components/admin/CrudPage";
 import { Badge } from "@/components/ui/Badge";
+import { useLocale } from "@/i18n/LocaleProvider";
 import { date, t, type MessageKey } from "@/i18n/messages";
 
 type Report = {
@@ -118,9 +119,10 @@ const fields: FieldDef[] = [
 ];
 
 export function ReportsAdmin() {
+  const locale = useLocale();
   return (
     <CrudPage<Report>
-      title="Nuqson xabarlari"
+      title={t(locale, "admin.section.reports")}
       path="/staff/problem-reports/"
       columns={columns}
       fields={fields}

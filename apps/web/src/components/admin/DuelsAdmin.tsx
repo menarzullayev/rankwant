@@ -6,7 +6,14 @@ import { useLocale } from "@/i18n/LocaleProvider";
 import { CrudPage, type ColumnDef } from "@/components/admin/CrudPage";
 import { Badge, type BadgeColor } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { DEFAULT_LOCALE, t, type MessageKey, errorText } from "@/i18n/messages";
+import {
+  DEFAULT_LOCALE,
+  fill,
+  t,
+  type Locale,
+  type MessageKey,
+  errorText,
+} from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -41,10 +48,10 @@ const STATUS: Record<DuelStatus, { labelKey: MessageKey; color: BadgeColor }> = 
   cancelled: { labelKey: "admin.label.status.cancelled", color: "neutral" },
 };
 
-function result(d: Duel): string {
+function result(d: Duel, locale: Locale): string {
   if (d.status !== "finished") return "—";
   const score = `${d.challenger_solved} : ${d.opponent_solved}`;
-  return d.is_draw ? `Durang (${score})` : `${d.winner ?? "?"} (${score})`;
+  return d.is_draw ? fill(t(locale, "admin.text.draw"), { score }) : `${d.winner ?? "?"} (${score})`;
 }
 
 const COLUMNS: ColumnDef<Duel>[] = [
@@ -65,7 +72,7 @@ const COLUMNS: ColumnDef<Duel>[] = [
     labelKey: "admin.label.date.start",
     render: (d) => new Date(d.start_at).toLocaleString(DEFAULT_LOCALE),
   },
-  { key: "result", labelKey: "admin.label.text.result", render: result },
+  { key: "result", labelKey: "admin.label.text.result", render: (d, _reload, locale) => result(d, locale) },
 ];
 
 /** Bekor qilish / yakunlash — ikkalasi ham tasdiq bilan. Muddati o'tmagan duel
@@ -160,7 +167,7 @@ function DuelActions({ duel, reload }: { duel: Duel; reload: () => void }) {
         <div className="flex flex-wrap gap-2">
           {canFinalize && (
             <Button className="h-9" disabled={busy} onClick={finalize}>
-              {duel.is_due ? "Yakunlash" : "Majburan yakunlash"}
+              {duel.is_due ? t(locale, "admin.text.finish") : t(locale, "admin.text.forceFinish")}
             </Button>
           )}
           {canCancel && (
@@ -170,7 +177,7 @@ function DuelActions({ duel, reload }: { duel: Duel; reload: () => void }) {
               disabled={busy}
               onClick={cancel}
             >
-              Bekor qilish
+              {t(locale, "admin.text.cancel")}
             </Button>
           )}
         </div>
@@ -184,7 +191,7 @@ export function DuelsAdmin() {
   const locale = useLocale();
   return (
     <CrudPage<Duel>
-      title="Duellar"
+      title={t(locale, "admin.title.duels")}
       path="/staff/duels/"
       idField="slug"
       columns={COLUMNS}

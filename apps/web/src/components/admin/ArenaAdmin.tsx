@@ -10,7 +10,7 @@ import {
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t, type MessageKey, errorText } from "@/i18n/messages";
+import { dateTime, t, type Locale, type MessageKey, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -45,8 +45,8 @@ function toLocalInput(iso: string): string {
     .slice(0, 16);
 }
 
-function fmt(iso: string | null): string {
-  return iso ? new Date(iso).toLocaleString() : "—";
+function fmt(iso: string | null, locale: Locale): string {
+  return iso ? dateTime(iso, locale) : "—";
 }
 
 function statusOf(item: ArenaRow): {
@@ -61,7 +61,7 @@ function statusOf(item: ArenaRow): {
 const COLUMNS: ColumnDef<ArenaRow>[] = [
   { key: "slug", labelKey: "admin.label.text.slug" },
   { key: "title", labelKey: "admin.label.text.name" },
-  { key: "start_at", labelKey: "admin.label.date.start", render: (i) => fmt(i.start_at) },
+  { key: "start_at", labelKey: "admin.label.date.start", render: (i, _reload, locale) => fmt(i.start_at, locale) },
   { key: "seconds_per_question", labelKey: "admin.label.duration.perQuestion", align: "right" },
   { key: "question_count", labelKey: "admin.label.misc.questions", align: "right" },
   { key: "participant_count", labelKey: "admin.label.misc.participant", align: "right" },
@@ -73,8 +73,8 @@ const COLUMNS: ColumnDef<ArenaRow>[] = [
       return (
         <span className="flex flex-wrap gap-1">
           <Badge color={s.color}>{t(locale, s.labelKey)}</Badge>
-          {!i.is_public && <Badge>yashirin</Badge>}
-          {i.rewards_applied_at && <Badge color="info">mukofotlangan</Badge>}
+          {!i.is_public && <Badge>{t(locale, "admin.text.badgeHidden")}</Badge>}
+          {i.rewards_applied_at && <Badge color="info">{t(locale, "admin.text.badgeRewarded")}</Badge>}
         </span>
       );
     },
@@ -171,7 +171,7 @@ function ArenaRowPanel({
     <div className="grid gap-4 text-theme-sm md:grid-cols-2">
       <div>
         <p className="mb-2 font-medium rw-strong">
-          {"Savollar (tartib bo'yicha)"} <Badge>{ids.length}</Badge>
+          {t(locale, "admin.text.questionsInOrder")} <Badge>{ids.length}</Badge>
         </p>
         <ol className="mb-2 space-y-1">
           {ids.map((id, i) => (
@@ -219,7 +219,7 @@ function ArenaRowPanel({
                 addId();
               }
             }}
-            placeholder="Savol ID"
+            placeholder={t(locale, "admin.placeholder.questionId")}
             className={`${INPUT} w-32`}
           />
           <Button
@@ -228,7 +228,7 @@ function ArenaRowPanel({
             className="h-9"
             onClick={addId}
           >
-            {"Qo'shish"}
+            {t(locale, "admin.text.add")}
           </Button>
           <Button
             type="button"
@@ -247,7 +247,7 @@ function ArenaRowPanel({
 
       <div className="space-y-3">
         <div>
-          <p className="mb-2 font-medium rw-strong">Qayta rejalashtirish</p>
+          <p className="mb-2 font-medium rw-strong">{t(locale, "admin.text.reschedule")}</p>
           <div className="flex gap-2">
             <input
               type="datetime-local"
@@ -271,8 +271,8 @@ function ArenaRowPanel({
             </Button>
           </div>
           <p className="mt-1 text-theme-xs rw-faint">
-            Tugash: {fmt(item.end_at)} · Ishtirokchi: {item.participant_count} ·
-            Mukofot: {fmt(item.rewards_applied_at)}
+            Tugash: {fmt(item.end_at, locale)} · Ishtirokchi: {item.participant_count} ·
+            Mukofot: {fmt(item.rewards_applied_at, locale)}
           </p>
         </div>
 
@@ -314,9 +314,10 @@ function ArenaRowPanel({
 }
 
 export function ArenaAdmin() {
+  const locale = useLocale();
   return (
     <CrudPage<ArenaRow>
-      title="Arena"
+      title={t(locale, "admin.section.arena")}
       path={PATH}
       idField="slug"
       columns={COLUMNS}

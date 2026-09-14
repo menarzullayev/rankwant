@@ -10,7 +10,7 @@ import {
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t, errorText } from "@/i18n/messages";
+import { dateTime, fill, t, type Locale, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff, staffFetch } from "@/lib/staff";
 
@@ -82,8 +82,8 @@ const FIELDS: FieldDef[] = [
   },
 ];
 
-function fmt(iso: string): string {
-  return new Date(iso).toLocaleString();
+function fmt(iso: string, locale: Locale): string {
+  return dateTime(iso, locale);
 }
 
 const COLUMNS: ColumnDef<ContestRow>[] = [
@@ -93,8 +93,8 @@ const COLUMNS: ColumnDef<ContestRow>[] = [
     render: (c) => <span className="font-mono">{c.slug}</span>,
   },
   { key: "title", labelKey: "admin.label.text.title" },
-  { key: "start_at", labelKey: "admin.label.date.start", render: (c) => fmt(c.start_at) },
-  { key: "end_at", labelKey: "admin.label.date.end", render: (c) => fmt(c.end_at) },
+  { key: "start_at", labelKey: "admin.label.date.start", render: (c, _reload, locale) => fmt(c.start_at, locale) },
+  { key: "end_at", labelKey: "admin.label.date.end", render: (c, _reload, locale) => fmt(c.end_at, locale) },
   {
     key: "scoring_type",
     labelKey: "admin.label.value.freeze",
@@ -103,14 +103,14 @@ const COLUMNS: ColumnDef<ContestRow>[] = [
   {
     key: "state",
     labelKey: "admin.label.text.status",
-    render: (c) => (
+    render: (c, _reload, locale) => (
       <div className="flex flex-wrap gap-1">
-        {c.is_running && <Badge color="success">jonli</Badge>}
-        {c.is_finished && <Badge>tugagan</Badge>}
-        {c.is_rated && <Badge color="brand">reytingli</Badge>}
-        {!c.is_public && <Badge color="warning">yopiq</Badge>}
-        {c.mirror_of && <Badge color="info">{`ko'zgu: ${c.mirror_of}`}</Badge>}
-        {c.ratings_applied_at && <Badge color="success">yakunlangan</Badge>}
+        {c.is_running && <Badge color="success">{t(locale, "admin.text.badgeLive")}</Badge>}
+        {c.is_finished && <Badge>{t(locale, "admin.text.badgeFinished")}</Badge>}
+        {c.is_rated && <Badge color="brand">{t(locale, "admin.text.badgeRated")}</Badge>}
+        {!c.is_public && <Badge color="warning">{t(locale, "admin.text.badgeClosed")}</Badge>}
+        {c.mirror_of && <Badge color="info">{fill(t(locale, "admin.text.mirrorOf"), { slug: c.mirror_of })}</Badge>}
+        {c.ratings_applied_at && <Badge color="success">{t(locale, "admin.text.badgeCompleted")}</Badge>}
       </div>
     ),
   },
@@ -235,7 +235,7 @@ function ContestRowPanel({
               <input
                 value={r.problem}
                 onChange={(e) => update(i, { problem: e.target.value })}
-                placeholder="masala slug'i"
+                placeholder={t(locale, "admin.placeholder.problemSlug")}
                 className={`${INPUT} w-64 font-mono`}
               />
               <input
@@ -244,7 +244,7 @@ function ContestRowPanel({
                 min={0}
                 onChange={(e) => update(i, { points: Number(e.target.value) })}
                 className={`${INPUT} w-24`}
-                title="Ball"
+                title={t(locale, "admin.title.points")}
               />
               {r.title && (
                 <span className="text-theme-xs rw-faint">{r.title}</span>
@@ -278,7 +278,7 @@ function ContestRowPanel({
               ])
             }
           >
-            + Masala
+            {t(locale, "admin.text.addProblem")}
           </Button>
           <Button
             type="button"
@@ -299,7 +299,7 @@ function ContestRowPanel({
           disabled={busy}
           onClick={rebuild}
         >
-          Standings qayta qurish
+          {t(locale, "admin.text.rebuildStandings")}
         </Button>
         <Button
           type="button"
@@ -309,7 +309,9 @@ function ContestRowPanel({
           onClick={finalize}
           title={
             contest.ratings_applied_at
-              ? `Yakunlangan: ${fmt(contest.ratings_applied_at)}`
+              ? fill(t(locale, "admin.text.ratingsAppliedAt"), {
+                date: fmt(contest.ratings_applied_at, locale),
+              })
               : ""
           }
         >
@@ -328,9 +330,10 @@ function ContestRowPanel({
 }
 
 export function ContestsAdmin() {
+  const locale = useLocale();
   return (
     <CrudPage<ContestRow>
-      title="Musobaqalar"
+      title={t(locale, "admin.section.contests")}
       path={PATH}
       idField="slug"
       columns={COLUMNS}

@@ -100,7 +100,7 @@ export function AnalyticsDashboard() {
             {w} kun
           </button>
         ))}
-        {busy && <span className="text-theme-xs rw-faint">yuklanmoqda…</span>}
+        {busy && <span className="text-theme-xs rw-faint">{t(locale, "admin.text.loading")}</span>}
       </div>
 
       {error && (
@@ -111,7 +111,7 @@ export function AnalyticsDashboard() {
 
       {data && (
         <>
-          <Card title="Ro'yxatdan o'tish voronkasi">
+          <Card title={t(locale, "admin.title.signupFunnel")}>
             {data.total_events === 0 ? (
               <p className="text-theme-sm rw-dim">
                 Bu oynada hodisa yo&apos;q. Funnel ro&apos;yxatdan o&apos;tish va
@@ -162,7 +162,7 @@ export function AnalyticsDashboard() {
             )}
           </Card>
 
-          <Card title="A/B: viloyat qachon so'raladi">
+          <Card title={t(locale, "admin.title.abRegion")}>
             {data.variant.total === 0 ? (
               <p className="text-theme-sm rw-dim">
                 Hali tugagan ro&apos;yxatdan o&apos;tish yo&apos;q. Guruh
@@ -199,11 +199,11 @@ export function AnalyticsDashboard() {
                 {data.step2.saved} saqladi · {data.step2.skipped} o&apos;tkazib yubordi
               </p>
               <p className="mt-2 text-theme-xs rw-faint">
-                Bu raqam yuqori bo&lsa, 2-qadam odamni charchatyapti.
+                {t(locale, "admin.text.highSkipRate")}
               </p>
             </Card>
 
-            <Card title="Jami">
+            <Card title={t(locale, "admin.title.total")}>
               <div className="text-title-sm font-bold rw-strong">{data.total_events}</div>
               <p className="mt-2 text-theme-sm rw-dim">
                 hodisa · oxirgi {data.window_days} kun
@@ -211,9 +211,9 @@ export function AnalyticsDashboard() {
             </Card>
           </div>
 
-          <Card title="Xato sabablari">
+          <Card title={t(locale, "admin.title.errorReasons")}>
             {data.errors.length === 0 ? (
-              <p className="text-theme-sm rw-dim">Xato qayd etilmagan.</p>
+              <p className="text-theme-sm rw-dim">{t(locale, "admin.text.noErrors")}</p>
             ) : (
               <BarList
                 rows={data.errors.map((e) => ({
@@ -227,7 +227,7 @@ export function AnalyticsDashboard() {
           </Card>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <Card title="Tillar">
+            <Card title={t(locale, "admin.title.languages")}>
               {data.locales.length === 0 ? (
                 <p className="text-theme-sm rw-dim">Ma&apos;lumot yo&apos;q.</p>
               ) : (
@@ -236,7 +236,7 @@ export function AnalyticsDashboard() {
                 />
               )}
             </Card>
-            <Card title="Mamlakatlar">
+            <Card title={t(locale, "admin.title.countries")}>
               {data.countries.length === 0 ? (
                 <p className="text-theme-sm rw-dim">
                   Ma&apos;lumot yo&apos;q — mamlakat ro&apos;yxatdan o&apos;tgandan
@@ -250,7 +250,7 @@ export function AnalyticsDashboard() {
             </Card>
           </div>
 
-          <Card title="Kunlik">
+          <Card title={t(locale, "admin.title.daily")}>
             {data.daily.length === 0 ? (
               <p className="text-theme-sm rw-dim">Ma&apos;lumot yo&apos;q.</p>
             ) : (
@@ -313,7 +313,7 @@ function Daily({ rows }: { rows: { date: string; started: number; done: number }
         ))}
       </div>
       <p className="mt-2 text-theme-xs rw-faint">
-        Kulrang — boshlangan, rangli — tugagan. Har ustun bir kun.
+        {t(locale, "admin.text.dailyLegend")}
       </p>
     </div>
   );

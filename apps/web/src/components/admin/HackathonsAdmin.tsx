@@ -19,7 +19,7 @@ import {
   Table,
 } from "@/components/ui/Table";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t, type MessageKey, errorText } from "@/i18n/messages";
+import { dateTime, t, type Locale, type MessageKey, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -88,8 +88,8 @@ const FIELDS: FieldDef[] = [
   },
 ];
 
-function fmt(iso: string): string {
-  return new Date(iso).toLocaleString();
+function fmt(iso: string, locale: Locale): string {
+  return dateTime(iso, locale);
 }
 
 function status(h: Hackathon): {
@@ -107,13 +107,13 @@ function status(h: Hackathon): {
 const COLUMNS: ColumnDef<Hackathon>[] = [
   { key: "slug", labelKey: "admin.label.text.slug" },
   { key: "title", labelKey: "admin.label.text.title" },
-  { key: "start_at", labelKey: "admin.label.date.start", render: (h) => fmt(h.start_at) },
+  { key: "start_at", labelKey: "admin.label.date.start", render: (h, _reload, locale) => fmt(h.start_at, locale) },
   {
     key: "submission_deadline",
     labelKey: "admin.label.text.deadline",
-    render: (h) => fmt(h.submission_deadline),
+    render: (h, _reload, locale) => fmt(h.submission_deadline, locale),
   },
-  { key: "end_at", labelKey: "admin.label.text.end", render: (h) => fmt(h.end_at) },
+  { key: "end_at", labelKey: "admin.label.text.end", render: (h, _reload, locale) => fmt(h.end_at, locale) },
   {
     key: "status",
     labelKey: "admin.label.text.status",
@@ -125,9 +125,9 @@ const COLUMNS: ColumnDef<Hackathon>[] = [
   {
     key: "is_public",
     labelKey: "admin.label.flag.public",
-    render: (h) => (
+    render: (h, _reload, locale) => (
       <Badge color={h.is_public ? "success" : "neutral"}>
-        {h.is_public ? "ha" : "yo'q"}
+        {h.is_public ? t(locale, "admin.text.yes") : t(locale, "admin.text.no")}
       </Badge>
     ),
   },
@@ -193,7 +193,7 @@ function ScoreForm({
         name="feedback"
         type="text"
         defaultValue={entry.feedback}
-        placeholder="Fikr"
+        placeholder={t(locale, "admin.placeholder.comment")}
         className={`${INPUT} w-48`}
       />
       <Button type="submit" disabled={busy} className="h-9 px-3">
@@ -263,7 +263,7 @@ function SubmissionsPanel({
               <TD>
                 <span className="font-medium rw-strong">{s.title}</span>
                 <span className="block text-theme-xs rw-faint">
-                  {fmt(s.submitted_at)}
+                  {fmt(s.submitted_at, locale)}
                 </span>
               </TD>
               <TD>
@@ -274,7 +274,7 @@ function SubmissionsPanel({
                     rel="noreferrer"
                     className="rw-accent-ink hover:underline"
                   >
-                    repo
+                    {t(locale, "admin.text.badgeRepo")}
                   </a>
                   {s.demo_url && (
                     <a
@@ -283,7 +283,7 @@ function SubmissionsPanel({
                       rel="noreferrer"
                       className="rw-accent-ink hover:underline"
                     >
-                      demo
+                      {t(locale, "admin.text.badgeDemo")}
                     </a>
                   )}
                 </span>
@@ -312,9 +312,10 @@ function SubmissionsPanel({
 }
 
 export function HackathonsAdmin() {
+  const locale = useLocale();
   return (
     <CrudPage<Hackathon>
-      title="Hakatonlar"
+      title={t(locale, "admin.title.hackathons")}
       path={PATH}
       idField="slug"
       columns={COLUMNS}

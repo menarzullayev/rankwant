@@ -8,7 +8,7 @@ import {
 } from "@/components/admin/CrudPage";
 import { Badge } from "@/components/ui/Badge";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { errorText } from "@/i18n/messages";
+import { t, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -67,10 +67,10 @@ function HiddenToggle({
     <button
       type="button"
       onClick={toggle}
-      title={error || (hidden ? "Qaytarish" : "Yashirish")}
+      title={error || (hidden ? t(locale, "admin.text.rollback") : t(locale, "admin.text.hide"))}
     >
       <Badge color={error ? "error" : hidden ? "warning" : "success"}>
-        {error ? "Xato" : hidden ? "Yashirilgan" : "Ko'rinadi"}
+        {error ? t(locale, "admin.text.error") : hidden ? t(locale, "admin.text.hidden") : t(locale, "admin.text.visible")}
       </Badge>
     </button>
   );
@@ -107,9 +107,10 @@ const COLUMNS: ColumnDef<RoadmapComment>[] = [
 ];
 
 export function RoadmapCommentsAdmin() {
+  const locale = useLocale();
   return (
     <CrudPage<RoadmapComment>
-      title="Yo'l xaritasi izohlari"
+      title={t(locale, "admin.title.roadmapComments")}
       path={PATH}
       idField="id"
       columns={COLUMNS}

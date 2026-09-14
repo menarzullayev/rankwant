@@ -67,9 +67,9 @@ const columns: ColumnDef<Quest>[] = [
   {
     key: "is_active",
     labelKey: "admin.label.text.status",
-    render: (q) => (
+    render: (q, _reload, locale) => (
       <Badge color={q.is_active ? "success" : "neutral"}>
-        {q.is_active ? "Faol" : "O'chiq"}
+        {q.is_active ? t(locale, "admin.label.flag.active") : t(locale, "admin.text.off")}
       </Badge>
     ),
   },
@@ -139,7 +139,7 @@ function SyncCatalogue() {
     <div className="flex items-center justify-end gap-3">
       {msg && <span className="text-theme-xs rw-dim">{msg}</span>}
       <Button variant="outline" className="h-9" disabled={busy} onClick={sync}>
-        Katalogni tiklash
+        {t(locale, "admin.text.restoreCatalog")}
       </Button>
     </div>
   );
@@ -151,7 +151,7 @@ export function QuestsAdmin() {
     <div className="space-y-4">
       <SyncCatalogue />
       <CrudPage<Quest>
-        title="Questlar"
+        title={t(locale, "admin.section.quests")}
         path="/staff/quests/"
         idField="code"
         columns={columns}

@@ -304,7 +304,7 @@ function ProblemTestsPanel({
             <tr key={tc.id}>
               <td className="px-2 py-1 font-medium">{tc.order}</td>
               <td className="px-2 py-1">
-                {tc.is_sample ? <Badge>namuna</Badge> : "—"}
+                {tc.is_sample ? <Badge>{t(locale, "admin.text.badgeSample")}</Badge> : "—"}
               </td>
               <td className="px-2 py-1">{tc.points}</td>
               <td className="px-2 py-1 font-mono rw-dim">{tc.input_ref}</td>
@@ -340,7 +340,7 @@ function ProblemTestsPanel({
         </p>
         <label className="block">
           <span className="mb-1 block text-theme-xs rw-dim-2">
-            Tartib raqami *
+            {t(locale, "admin.text.orderNumber")}
           </span>
           <input
             name="order"
@@ -403,10 +403,11 @@ function ProblemTestsPanel({
 }
 
 export function ProblemsAdmin() {
+  const locale = useLocale();
   return (
     <div className="space-y-6">
       <CrudPage<StaffProblem>
-        title="Masalalar"
+        title={t(locale, "admin.section.problems")}
         path="/staff/problems/"
         idField="slug"
         ordering="-pk"
@@ -448,7 +449,7 @@ export function ProblemsAdmin() {
       />
 
       <CrudPage<StaffTopic>
-        title="Mavzular"
+        title={t(locale, "admin.title.topics")}
         path="/staff/topics/"
         idField="slug"
         ordering="slug"

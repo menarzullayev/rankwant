@@ -138,11 +138,11 @@ function PublishToggle({ post, reload }: { post: Post; reload?: () => void }) {
       type="button"
       onClick={toggle}
       disabled={busy}
-      title={error || (published ? "Nashrdan olish" : "Nashr qilish")}
+      title={error || (published ? t(locale, "admin.text.unpublish") : t(locale, "admin.text.publishVerb"))}
       className="disabled:opacity-60"
     >
       <Badge color={error ? "error" : published ? "success" : "neutral"}>
-        {error ? "Xato" : published ? "Nashrda" : "Qoralama"}
+        {error ? t(locale, "admin.text.error") : published ? t(locale, "admin.label.status.published") : t(locale, "admin.label.status.draft")}
       </Badge>
     </button>
   );
@@ -194,7 +194,7 @@ export function PostsAdmin() {
   const locale = useLocale();
   return (
     <CrudPage<Post>
-      title="Yangiliklar"
+      title={t(locale, "admin.section.posts")}
       path={PATH}
       idField="slug"
       columns={COLUMNS}

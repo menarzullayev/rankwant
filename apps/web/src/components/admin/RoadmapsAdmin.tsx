@@ -108,7 +108,7 @@ function StepsEditor({
             min={0}
             onChange={(e) => patch(i, { order: Number(e.target.value) })}
             className={`${input} w-16`}
-            title="Tartib"
+            title={t(locale, "admin.title.order")}
           />
           <input
             value={s.title}
@@ -118,13 +118,13 @@ function StepsEditor({
           />
           <input
             value={s.article ?? ""}
-            placeholder="maqola slugi"
+            placeholder={t(locale, "admin.placeholder.articleSlug")}
             onChange={(e) => patch(i, { article: e.target.value })}
             className={`${input} w-40 font-mono`}
           />
           <input
             value={s.problem ?? ""}
-            placeholder="masala slugi"
+            placeholder={t(locale, "admin.placeholder.problemSlug")}
             onChange={(e) => patch(i, { problem: e.target.value })}
             className={`${input} w-40 font-mono`}
           />
@@ -135,7 +135,7 @@ function StepsEditor({
               onChange={(e) => patch(i, { is_optional: e.target.checked })}
               className="size-4"
             />
-            ixtiyoriy
+            {t(locale, "admin.text.badgeOptional")}
           </label>
           <button
             type="button"
@@ -168,7 +168,7 @@ function StepsEditor({
             setSaved(false);
           }}
         >
-          + Qadam
+          {t(locale, "admin.text.addStep")}
         </Button>
         <Button type="button" className="h-9" disabled={busy} onClick={save}>
           {t(DEFAULT_LOCALE, "admin.save")}
@@ -187,7 +187,7 @@ export function RoadmapsAdmin() {
   const locale = useLocale();
   return (
     <CrudPage<Roadmap>
-      title="Traektoriya"
+      title={t(locale, "admin.section.roadmaps")}
       path="/staff/roadmaps/"
       idField="slug"
       columns={[
@@ -205,7 +205,7 @@ export function RoadmapsAdmin() {
           labelKey: "admin.label.text.status",
           render: (r) => (
             <Badge color={r.is_published ? "success" : "warning"}>
-              {r.is_published ? "Nashr" : "Qoralama"}
+              {r.is_published ? t(locale, "admin.text.publish") : t(locale, "admin.label.status.draft")}
             </Badge>
           ),
         },

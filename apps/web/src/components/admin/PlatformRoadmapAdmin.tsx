@@ -157,18 +157,19 @@ const COLUMNS: ColumnDef<RoadmapItem>[] = [
   {
     key: "is_enabled",
     labelKey: "admin.label.text.flag",
-    render: (row) => (
+    render: (row, _reload, locale) => (
       <Badge color={row.is_enabled ? "success" : "warning"}>
-        {row.is_enabled ? "Yoqilgan" : "O'chirilgan"}
+        {row.is_enabled ? t(locale, "admin.label.status.enabled") : t(locale, "admin.text.disabled")}
       </Badge>
     ),
   },
 ];
 
 export function PlatformRoadmapAdmin() {
+  const locale = useLocale();
   return (
     <CrudPage<RoadmapItem>
-      title="Yo'l xaritasi"
+      title={t(locale, "admin.section.platformRoadmap")}
       path={PATH}
       idField="id"
       columns={COLUMNS}

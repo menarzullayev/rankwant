@@ -309,6 +309,11 @@ def classify(text: str, start: int) -> str | None:
         return "jsx-text"
     if ch == "?":
         return "ternary"
+    if ch == ":":
+        # Ternary's second branch: `cond ? "yes" : "no"`. Without this the
+        # `else` string was invisible — `"Majburan yakunlash"` sat unseen
+        # next to a flagged `"Yakunlash"`.
+        return "ternary-else"
     if ch == "{":
         return "jsx-expr"
     return None

@@ -7,7 +7,10 @@ import { getLocale } from "@/i18n/server";
 import { t } from "@/i18n/messages";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Admin" };
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return { title: t(locale, "admin.title.page") };
+}
 
 export default async function AdminIndex() {
   const locale = await getLocale();

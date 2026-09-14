@@ -137,6 +137,12 @@ run_docs() {
   "$PY" tools/check_docs.py &&
     "$PY" tools/check_contract.py &&
     "$PY" tools/check_i18n.py &&
+    # `check_i18n.py` faqat kod -> lug'at yo'nalishini ko'radi: u
+    # `t()` chaqirilgan kalitning 10 tilda borligini tekshiradi, lekin
+    # qattiq yozilgan matnni KO'RMAYDI. Admin panelda 274 ta shunday
+    # satr «toza ✓» ostida turgan edi — shuning uchun teskari
+    # yo'nalish ham tekshiriladi.
+    "$PY" tools/check_hardcoded.py &&
     "$PY" tools/check_email_locales.py &&
     "$PY" tools/check_locales_parity.py &&
     "$PY" tools/check_contrast.py &&

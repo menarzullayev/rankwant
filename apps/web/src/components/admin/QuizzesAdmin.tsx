@@ -180,7 +180,7 @@ function QuestionsPanel({ quiz, reload }: { quiz: Quiz; reload: () => void }) {
                 onClick={() => move(i, -1)}
                 disabled={i === 0}
                 className={iconBtn}
-                title="Yuqoriga"
+                title={t(locale, "admin.title.moveUp")}
               >
                 ↑
               </button>
@@ -189,7 +189,7 @@ function QuestionsPanel({ quiz, reload }: { quiz: Quiz; reload: () => void }) {
                 onClick={() => move(i, 1)}
                 disabled={i === ids.length - 1}
                 className={iconBtn}
-                title="Pastga"
+                title={t(locale, "admin.title.moveDown")}
               >
                 ↓
               </button>
@@ -197,7 +197,7 @@ function QuestionsPanel({ quiz, reload }: { quiz: Quiz; reload: () => void }) {
                 type="button"
                 onClick={() => setIds(ids.filter((x) => x !== id))}
                 className={`${iconBtn} rw-bad-ink`}
-                title="Olib tashlash"
+                title={t(locale, "admin.title.remove")}
               >
                 ✕
               </button>
@@ -216,7 +216,7 @@ function QuestionsPanel({ quiz, reload }: { quiz: Quiz; reload: () => void }) {
             }
           }}
           inputMode="numeric"
-          placeholder="Savol ID"
+          placeholder={t(locale, "admin.placeholder.questionId")}
           className="h-9 w-32 rw-radius-sm border rw-line rw-surface px-3 text-theme-sm outline-none rw-focus-line rw-field-bg"
         />
         <Button
@@ -243,9 +243,10 @@ function QuestionsPanel({ quiz, reload }: { quiz: Quiz; reload: () => void }) {
 }
 
 export function QuizzesAdmin() {
+  const locale = useLocale();
   return (
     <CrudPage<Quiz>
-      title="Testlar"
+      title={t(locale, "admin.section.quizzes")}
       path={PATH}
       idField="slug"
       columns={COLUMNS}

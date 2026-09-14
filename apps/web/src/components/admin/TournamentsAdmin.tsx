@@ -10,7 +10,7 @@ import {
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t, errorText } from "@/i18n/messages";
+import { fill, t, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -61,9 +61,9 @@ const COLUMNS: ColumnDef<Tournament>[] = [
   {
     key: "is_public",
     labelKey: "admin.label.flag.open",
-    render: (x) => (
+    render: (x, _reload, locale) => (
       <Badge color={x.is_public ? "success" : "neutral"}>
-        {x.is_public ? "ha" : "yo'q"}
+        {x.is_public ? t(locale, "admin.text.yes") : t(locale, "admin.text.no")}
       </Badge>
     ),
   },
@@ -155,7 +155,7 @@ function StageEditor({
       );
       setMsg({
         kind: "ok",
-        text: `Jadval qayta hisoblandi — ishtirokchilar: ${r.participants}`,
+        text: fill(t(locale, "admin.text.tableRecalculated"), { count: r.participants }),
       });
     } catch (e) {
       setMsg({
@@ -187,7 +187,7 @@ function StageEditor({
       <div className="grid grid-cols-[4rem_1fr_1fr_5rem_auto] gap-2 text-theme-xs font-medium rw-dim">
         <span>Tartib</span>
         <span>Nomi</span>
-        <span>Contest slug</span>
+        <span>{t(locale, "admin.text.contestSlug")}</span>
         <span>Vazn</span>
         <span />
       </div>
@@ -240,7 +240,7 @@ function StageEditor({
       ))}
       {stages.length === 0 && (
         <p className="text-theme-xs rw-faint">
-          {"Bosqichlar yo'q — contest qo'shing."}
+          {t(locale, "admin.text.noStages")}
         </p>
       )}
 
@@ -252,7 +252,7 @@ function StageEditor({
           onClick={add}
           disabled={busy}
         >
-          + Bosqich
+          {t(locale, "admin.text.addStage")}
         </Button>
         <Button type="button" className="h-9" onClick={save} disabled={busy}>
           {t(locale, "admin.save")}
@@ -264,7 +264,7 @@ function StageEditor({
           onClick={rebuild}
           disabled={busy}
         >
-          Jadvalni qayta hisoblash
+          {t(locale, "admin.text.recalcTable")}
         </Button>
       </div>
     </div>
@@ -272,9 +272,10 @@ function StageEditor({
 }
 
 export function TournamentsAdmin() {
+  const locale = useLocale();
   return (
     <CrudPage<Tournament>
-      title="Chempionatlar"
+      title={t(locale, "admin.title.tournaments")}
       path={PATH}
       idField="slug"
       columns={COLUMNS}

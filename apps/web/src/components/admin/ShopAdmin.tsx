@@ -48,7 +48,8 @@ const columns: ColumnDef<ShopItem>[] = [
     key: "price",
     labelKey: "admin.label.text.price",
     align: "right",
-    render: (i) => `${i.price} Qvant`,
+    render: (i, _reload, locale) =>
+      `${i.price} ${t(locale, "admin.label.text.qvant")}`,
   },
   {
     key: "is_consumable",
@@ -59,9 +60,9 @@ const columns: ColumnDef<ShopItem>[] = [
   {
     key: "is_active",
     labelKey: "admin.label.text.status",
-    render: (i) => (
+    render: (i, _reload, locale) => (
       <Badge color={i.is_active ? "success" : "neutral"}>
-        {i.is_active ? "Faol" : "O'chiq"}
+        {i.is_active ? t(locale, "admin.label.flag.active") : t(locale, "admin.text.off")}
       </Badge>
     ),
   },
@@ -114,7 +115,7 @@ export function ShopAdmin() {
   const locale = useLocale();
   return (
     <CrudPage<ShopItem>
-      title="Do'kon"
+      title={t(locale, "admin.section.shop")}
       path="/staff/shop-items/"
       idField="code"
       columns={columns}

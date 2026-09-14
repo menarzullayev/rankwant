@@ -15,7 +15,7 @@ import {
   Table,
 } from "@/components/ui/Table";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t, errorText } from "@/i18n/messages";
+import { fill, t, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -224,7 +224,7 @@ export function QuestionsAdmin() {
       )}
 
       <Card
-        title="Savol banki"
+        title={t(locale, "admin.section.questions")}
         action={
           <div className="flex items-center gap-2">
             <input
@@ -318,7 +318,7 @@ export function QuestionsAdmin() {
                   onClick={addChoice}
                   className="text-theme-xs rw-accent-ink hover:underline"
                 >
-                  + Variant
+                  {t(locale, "admin.text.addVariant")}
                 </button>
               </div>
               <div className="space-y-2">
@@ -333,14 +333,14 @@ export function QuestionsAdmin() {
                         patchChoice(i, { order: Number(e.target.value) })
                       }
                       className={`${INPUT} w-16`}
-                      aria-label="Tartib"
+                      aria-label={t(locale, "admin.title.order")}
                     />
                     <input
                       required
                       maxLength={500}
                       value={c.text}
                       onChange={(e) => patchChoice(i, { text: e.target.value })}
-                      placeholder={`Variant ${c.order}`}
+                      placeholder={fill(t(locale, "admin.text.variant"), { order: c.order })}
                       className={INPUT}
                     />
                     <label className="flex shrink-0 items-center gap-1 text-theme-xs rw-dim-2">
@@ -423,7 +423,7 @@ export function QuestionsAdmin() {
                 </TD>
                 <TD>
                   <Badge color={item.is_active ? "success" : "neutral"}>
-                    {item.is_active ? "ha" : "yo'q"}
+                    {item.is_active ? "ha" : t(locale, "admin.text.no")}
                   </Badge>
                 </TD>
                 <TD align="right">

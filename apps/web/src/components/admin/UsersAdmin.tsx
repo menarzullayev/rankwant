@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { errorText as translateError, type Locale } from "@/i18n/messages";
+import { date, t, errorText as translateError, type Locale } from "@/i18n/messages";
 
 import {
   type ColumnDef,
@@ -60,21 +60,21 @@ const COLUMNS: ColumnDef<StaffUser>[] = [
   {
     key: "is_active",
     labelKey: "admin.label.flag.active",
-    render: (u) =>
+    render: (u, _reload, locale) =>
       u.is_active ? (
-        <Badge color="success">faol</Badge>
+        <Badge color="success">{t(locale, "admin.text.badgeActive")}</Badge>
       ) : (
-        <Badge color="error">bloklangan</Badge>
+        <Badge color="error">{t(locale, "admin.text.badgeBlocked")}</Badge>
       ),
   },
   {
     key: "is_staff",
     labelKey: "admin.label.flag.staff",
-    render: (u) =>
+    render: (u, _reload, locale) =>
       u.is_superuser ? (
-        <Badge color="brand">superuser</Badge>
+        <Badge color="brand">{t(locale, "admin.text.badgeSuperuser")}</Badge>
       ) : u.is_staff ? (
-        <Badge color="info">xodim</Badge>
+        <Badge color="info">{t(locale, "admin.text.badgeStaff")}</Badge>
       ) : (
         <span className="rw-faint">—</span>
       ),
@@ -82,7 +82,7 @@ const COLUMNS: ColumnDef<StaffUser>[] = [
   {
     key: "date_joined",
     labelKey: "admin.label.date.joined",
-    render: (u) => new Date(u.date_joined).toLocaleDateString(),
+    render: (u, _reload, locale) => date(u.date_joined, locale),
   },
 ];
 
@@ -136,6 +136,7 @@ function useAction() {
 }
 
 function QvantForm({ user, reload }: { user: StaffUser; reload: () => void }) {
+  const locale = useLocale();
   const { busy, run, status } = useAction();
 
   function submit(e: React.FormEvent<HTMLFormElement>) {
@@ -170,18 +171,18 @@ function QvantForm({ user, reload }: { user: StaffUser; reload: () => void }) {
           type="number"
           required
           step={1}
-          placeholder="±miqdor"
+          placeholder={t(locale, "admin.placeholder.amount")}
           className={`${INPUT} w-28`}
         />
         <input
           name="note"
           required
           maxLength={200}
-          placeholder="Izoh (ledgerga yoziladi)"
+          placeholder={t(locale, "admin.placeholder.ledgerComment")}
           className={INPUT}
         />
         <Button type="submit" className="h-10 shrink-0" disabled={busy}>
-          {"Qo'llash"}
+          {t(locale, "admin.text.apply")}
         </Button>
       </div>
       {status}
@@ -190,6 +191,7 @@ function QvantForm({ user, reload }: { user: StaffUser; reload: () => void }) {
 }
 
 function NotifyForm({ user }: { user: StaffUser }) {
+  const locale = useLocale();
   const { busy, run, status } = useAction();
 
   function submit(e: React.FormEvent<HTMLFormElement>) {
@@ -213,13 +215,13 @@ function NotifyForm({ user }: { user: StaffUser }) {
         name="title"
         required
         maxLength={200}
-        placeholder="Sarlavha"
+        placeholder={t(locale, "admin.placeholder.title")}
         className={INPUT}
       />
       <textarea
         name="body"
         rows={2}
-        placeholder="Matn"
+        placeholder={t(locale, "admin.placeholder.text")}
         className={`${INPUT} h-auto py-2`}
       />
       <Button type="submit" variant="outline" className="h-10" disabled={busy}>
@@ -231,6 +233,7 @@ function NotifyForm({ user }: { user: StaffUser }) {
 }
 
 function BroadcastForm() {
+  const locale = useLocale();
   const { busy, run, status } = useAction();
 
   function submit(e: React.FormEvent<HTMLFormElement>) {
@@ -253,7 +256,7 @@ function BroadcastForm() {
   }
 
   return (
-    <Card title="Umumiy e'lon" bodyClassName="p-5">
+    <Card title={t(locale, "admin.title.broadcast")} bodyClassName="p-5">
       <form
         onSubmit={submit}
         className="grid gap-2 md:grid-cols-[1fr_2fr_auto]"
@@ -262,12 +265,12 @@ function BroadcastForm() {
           name="title"
           required
           maxLength={200}
-          placeholder="Sarlavha"
+          placeholder={t(locale, "admin.placeholder.title")}
           className={INPUT}
         />
-        <input name="body" placeholder="Matn (ixtiyoriy)" className={INPUT} />
+        <input name="body" placeholder={t(locale, "admin.placeholder.textOptional")} className={INPUT} />
         <Button type="submit" className="h-10" disabled={busy}>
-          Hammaga yuborish
+          {t(locale, "admin.text.sendToAll")}
         </Button>
         <div className="md:col-span-3">{status}</div>
       </form>
@@ -281,7 +284,7 @@ export function UsersAdmin() {
     <div className="space-y-4">
       <BroadcastForm />
       <CrudPage<StaffUser>
-        title="Foydalanuvchilar"
+        title={t(locale, "admin.section.users")}
         path={PATH}
         idField="username"
         columns={COLUMNS}
