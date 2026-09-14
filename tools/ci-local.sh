@@ -149,6 +149,13 @@ run_docs() {
     "$PY" tools/check_locales_parity.py &&
     "$PY" tools/check_contrast.py &&
     "$PY" tools/check_gradient_styles.py &&
+    # Cloudflare route himoyasi (`request_limit_fail_open`). Tarmoqqa
+    # chiqadi, shuning uchun `check_workers.sh` ni O'ZI chaqiramiz:
+    # u exit 2 (token yo'q) ni XATO deb hisoblamaydi — bu ataylab,
+    # aks holda tokeni yo'q har bir mashinada CI qizarardi. Ya'ni bu
+    # qadam "himoya bor" ni tasdiqlaydi, "tekshirib bo'lmadi" ni esa
+    # jimgina o'tkazadi va o'zi ham buni aytadi.
+    check_workers &&
     # `t()` ning ZAXIRA yo'lini HAQIQIY modulda o'lchaydi: dev'da
     # otilishi, prod'da bir marta jurnalga yozilishi. `check_i18n.py`
     # buni ko'ra olmaydi — u faqat matnni o'qiydi.
@@ -158,6 +165,25 @@ run_docs() {
     # "yashil, lekin yolg'on" natija shu loyihada bir kunda to'rt marta
     # uchragan, ya'ni tekshiruv o'zi ham tekshirilishi kerak.
     "$PY" tools/check_negative.py
+}
+
+# Cloudflare Worker route'lari: exit 2 («o'lchab bo'lmadi») — XATO EMAS.
+check_workers() {
+  local bash_bin="${BASH:-}"
+  if [ -z "$bash_bin" ] && [ -x "/bin/bash" ]; then
+    bash_bin="/bin/bash"
+  fi
+  if [ -z "$bash_bin" ]; then
+    printf '%sCloudflare route tekshiruvi o'"'"'tkazib yuborildi — bash yo'"'"'q%s\n' "$Y" "$N"
+    return 0
+  fi
+  "$bash_bin" tools/check_workers.sh
+  local rc=$?
+  if [ "$rc" = "2" ]; then
+    printf '%s  ! o'"'"'lchab bo'"'"'lmadi (exit 2) — CI qizarmaydi, lekin himoya TASDIQLANMAGAN%s\n' "$Y" "$N"
+    return 0
+  fi
+  return "$rc"
 }
 
 # Node'ni topish: PATH'da bo'lmasa `NODE` orqali beriladi (Windows

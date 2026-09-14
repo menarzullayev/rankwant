@@ -52,7 +52,12 @@ class Case:
 
 def run(cmd: list[str]) -> tuple[int, str]:
     proc = subprocess.run(
-        cmd, cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace"
+        cmd,
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
     )
     return proc.returncode, (proc.stdout or "") + (proc.stderr or "")
 
@@ -100,7 +105,9 @@ class Mutation:
             raise AssertionError(
                 f"salbiy test yasalmadi: {self.old!r} {self.path.name} da topilmadi"
             )
-        self.path.write_text(self.original.replace(self.old, self.new, 1), encoding="utf-8")
+        self.path.write_text(
+            self.original.replace(self.old, self.new, 1), encoding="utf-8"
+        )
         return self
 
     def __exit__(self, *_exc: object) -> None:
@@ -155,7 +162,11 @@ def neg_i18n_blank_value() -> tuple[bool, str]:
     """Bitta tarjima bo'sh qolsa — tutilsinmi?"""
     path = ROOT / "apps/web/src/i18n/locales/zh.ts"
     text = path.read_text(encoding="utf-8")
-    m = re.search(r'^(\s*)((?:"([a-zA-Z0-9_.]+)"|([A-Za-z_$][\w$]*))):\s*"((?:[^"\\]|\\.)*)",\s*$', text, re.M)
+    m = re.search(
+        r'^(\s*)((?:"([a-zA-Z0-9_.]+)"|([A-Za-z_$][\w$]*))):\s*"((?:[^"\\]|\\.)*)",\s*$',
+        text,
+        re.M,
+    )
     if m is None:
         return False, "i18n/bo'sh: sinov uchun kalit topilmadi"
     indent, key, quoted, _bare, value = m.groups()
@@ -169,7 +180,11 @@ def neg_i18n_missing_key() -> tuple[bool, str]:
     """Bitta kalit butunlay o'chirilsa — tutilsinmi?"""
     path = ROOT / "apps/web/src/i18n/locales/kk.ts"
     text = path.read_text(encoding="utf-8")
-    m = re.search(r'^\s*(?:"[a-zA-Z0-9_.]+"|[A-Za-z_$][\w$]*):\s*"(?:[^"\\]|\\.)*",\s*$', text, re.M)
+    m = re.search(
+        r'^\s*(?:"[a-zA-Z0-9_.]+"|[A-Za-z_$][\w$]*):\s*"(?:[^"\\]|\\.)*",\s*$',
+        text,
+        re.M,
+    )
     if m is None:
         return False, "i18n/yetishmaydi: sinov uchun kalit topilmadi"
     with Mutation(path, m.group(0) + "\n", ""):
@@ -189,9 +204,9 @@ def neg_i18n_used_but_absent() -> tuple[bool, str]:
     injected = text.replace(
         marker,
         marker
-        + '\n  // negative test — key deliberately absent from every dictionary\n'
+        + "\n  // negative test — key deliberately absent from every dictionary\n"
         + '  const __negativeProbe = t(locale, "negative.test.missing");\n'
-        + '  void __negativeProbe;',
+        + "  void __negativeProbe;",
         1,
     )
     with Mutation(path, text, injected):
@@ -286,8 +301,8 @@ def neg_email_missing_locale() -> tuple[bool, str]:
 def neg_email_blank_value() -> tuple[bool, str]:
     """Bitta matn bo'sh qolsa — tutilsinmi?"""
     path = ROOT / "apps/api/core/email_text.py"
-    old = "        \"en\": \"Sign in\","
-    new = "        \"en\": \"   \","
+    old = '        "en": "Sign in",'
+    new = '        "en": "   ",'
     if old not in path.read_text(encoding="utf-8"):
         return False, "email/bo'sh: sinov uchun qator topilmadi"
     with Mutation(path, old, new):
@@ -420,7 +435,7 @@ def neg_i18n_review_sheet_stale() -> tuple[bool, str]:
     if idx is None:
         return False, "i18n-review: `kk.md` da jadval qatori topilmadi"
     # Bitta qatorni olib tashlaymiz -> son lug'atga mos kelmay qoladi.
-    broken = "".join(lines[:idx] + lines[idx + 1:])
+    broken = "".join(lines[:idx] + lines[idx + 1 :])
     with Mutation(path, text, broken):
         return expect_fail("i18n", "i18n/ko'rib chiqish varaqasi eskirgan")
 
@@ -459,9 +474,7 @@ def neg_i18n_parity_does_not_mask() -> tuple[bool, str]:
     m = re.search(r'^(  "common\.empty":.*)$', text, re.M)
     if m is None:
         return False, "i18n: `common.empty` langari topilmadi"
-    broken = text.replace(
-        m.group(1), m.group(1) + '\n  "common.probe": "Probe",', 1
-    )
+    broken = text.replace(m.group(1), m.group(1) + '\n  "common.probe": "Probe",', 1)
     with Mutation(src, text, broken):
         code, out = run_check("i18n")
         if code == 0:
@@ -488,7 +501,7 @@ def neg_i18n_bare_key() -> tuple[bool, str]:
     text = path.read_text(encoding="utf-8")
     anchor = '  "team.intro":'
     if anchor not in text:
-        return False, "i18n/prefiks: langar `\"team.intro\":` topilmadi"
+        return False, 'i18n/prefiks: langar `"team.intro":` topilmadi'
     injected = '  empty2: "Sinov",\n' + anchor
     with Mutation(path, anchor, injected):
         return expect_fail("i18n", "i18n/prefikssiz kalit")
@@ -593,7 +606,11 @@ def neg_hardcoded_prose() -> tuple[bool, str]:
     hisoblamaydi), va test «tekshiruv o'lik» degan yolg'on xulosa beradi.
     """
     path = ROOT / "apps/web/src/components/admin/CrudPage.tsx"
-    with Mutation(path, '  align?: "left" | "right";', '  align?: "left" | "right";\n  label: "Sana";'):
+    with Mutation(
+        path,
+        '  align?: "left" | "right";',
+        '  align?: "left" | "right";\n  label: "Sana";',
+    ):
         return expect_fail("hardcoded", "qattiq yozilgan `label:`")
 
 
@@ -660,7 +677,7 @@ def neg_hardcoded_actual_colour_passes() -> tuple[bool, str]:
     ):
         code, _ = run_check("hardcoded")
         if code == 0:
-            return True, ""
+            return True, "hardcoded/haqiqiy rang: rang qiymatlari matn deb topilmadi"
         return False, "haqiqiy rang qiymatlari matn deb topildi"
 
 
@@ -674,12 +691,15 @@ def neg_hardcoded_number_unit_passes() -> tuple[bool, str]:
     path = ROOT / "apps/web/src/app/problems/page.tsx"
     with Mutation(
         path,
-        "<TH>{t(locale, \"problems.name\")}</TH>",
+        '<TH>{t(locale, "problems.name")}</TH>',
         '<TH label="12 MB">8 AC 45 masala</TH>',
     ):
         code, _ = run_check("hardcoded")
         if code == 1:
-            return True, ""
+            return (
+                True,
+                "hardcoded/o'lchov birligi: `45 masala` matn bo'lib qoldi (exit 1)",
+            )
         return False, "`45 masala` o'lchov birligi deb o'tkazib yuborildi"
 
 
@@ -713,55 +733,170 @@ def neg_hardcoded_viewbox_passes() -> tuple[bool, str]:
     ):
         code, _ = run_check("hardcoded")
         if code == 0:
-            return True, ""
+            return True, "hardcoded/viewBox: SVG koordinatalari matn deb topilmadi"
         return False, "viewBox koordinatalari matn deb topildi"
 
 
+def neg_workers_fail_open_false() -> tuple[bool, str]:
+    """`fail_open` yopiq bo'lsa tekshiruv yiqiladimi?
+
+    ⚠️ Cloudflare'da bu maydonning standarti `false`. Ya'ni route qayta
+    yaratilsa himoya **jimgina** yo'qoladi va sayt keyingi limit
+    tugaganda Error 1027 bilan yopiladi. Skript shuni tutishi shart.
+
+    ⚠️ Maydon ochiq API hujjatida yo'q va `GET` uni faqat haqiqiy
+    route'da qaytaradi — shuning uchun tarmoqqa chiqmaymiz: audit
+    skriptining chiqishini `CF_ROUTE_STUB` bilan almashtiramiz.
+    """
+    stub = (
+        "rankwant.uz\trankwant.uz/*\tTrue\n"
+        "rankwant.uz\twww.rankwant.uz/*\tFalse\n"
+        "bugvector.uz\trankwant.bugvector.uz/*\tTrue\n"
+    )
+    code, out = _run_workers(stub)
+    if code == 0:
+        return (
+            False,
+            "workers/fail_open: yopiq route O'TKAZILDI (exit 0) — tekshiruv o'lik",
+        )
+    if "YOQ" not in out:
+        return (
+            False,
+            f"workers/fail_open: yiqildi, lekin sabab ko'rinmadi — {out.strip()[:120]}",
+        )
+    return True, "workers/fail_open: yopiq route tutildi (exit 1)"
+
+
+def neg_workers_unreadable_is_not_green() -> tuple[bool, str]:
+    """O'qib bo'lmasa — «yaxshi» emas, «o'lchab bo'lmadi» bo'lsinmi?
+
+    ⚠️ Bu eng qimmat tuzoq: token yo'q bo'lsa skript `exit 1` bersa,
+    CI «himoya yo'q» deb qichqiradi va odam o'zgarmagan narsani
+    tuzatishga urinadi. `exit 0` bersa — yashil yolg'on. Shuning uchun
+    alohida `exit 2` bo'lishi SHART va chiqishda sayt haqida xulosa
+    chiqmasligi kerak.
+    """
+    code, out = _run_workers(None)
+    if code != 2:
+        return False, f"workers/o'qilmadi: exit {code} (2 bo'lishi kerak edi)"
+    if "xulosa YOQ" not in out:
+        return False, "workers/o'qilmadi: `xulosa YOQ` ogohlantirishi yo'q"
+    return True, "workers/o'qilmadi: exit 2 va sayt haqida xulosa chiqmaydi"
+
+
+def _bash() -> str:
+    """`bash` ning to'liq yo'li.
+
+    ⚠️ Windows'da yalang'och `bash` WSL relay'iga tushadi va
+    `execvpe(/bin/bash) failed: No such file or directory` beradi —
+    ya'ni skript umuman ishga tushmaydi va chiqish kodi 1 bo'ladi, uni
+    esa «buzuq holatni tutdi» deb o'qish oson. Shu sabab Git Bash'ning
+    to'liq yo'lini qidiramiz.
+    """
+    for candidate in (
+        os.environ.get("BASH"),
+        r"C:\Program Files\Git\bin\bash.exe",
+        shutil.which("bash"),
+    ):
+        if candidate and Path(candidate).exists():
+            return str(candidate)
+    return "bash"
+
+
+def _run_workers(stub: str | None) -> tuple[int, str]:
+    """`check_workers.sh` ni soxta audit chiqishi bilan ishga tushiradi.
+
+    `stub=None` — audit skripti `exit 2` beradi (token yo'q holati).
+    """
+    env = dict(os.environ)
+    if stub is None:
+        env["CF_ROUTE_STUB"] = ""
+        env["CF_ROUTE_FORCE_UNREADABLE"] = "1"
+    else:
+        env["CF_ROUTE_STUB"] = stub
+        env.pop("CF_ROUTE_FORCE_UNREADABLE", None)
+    proc = subprocess.run(
+        [_bash(), "tools/check_workers.sh"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        env=env,
+    )
+    return proc.returncode, (proc.stdout or "") + (proc.stderr or "")
+
+
 CASES: list[tuple[str, list[tuple[str, object]]]] = [
-    ("i18n", [
-        ("bo'sh qiymat", neg_i18n_blank_value),
-        ("yetishmayotgan kalit", neg_i18n_missing_key),
-        ("kodda bor, manbada yo'q", neg_i18n_used_but_absent),
-        ("prefikssiz kalit", neg_i18n_bare_key),
-        ("mamlakat jadvaldan til tushib qoldi", neg_i18n_country_locale_dropped),
-        ("mamlakat ICU tili jadvalga qo'shildi", neg_i18n_country_icu_locale_added),
-        ("mamlakat jadvalida kod yetishmaydi", neg_i18n_country_row_missing),
-        ("mamlakat jadvalida bo'sh qiymat", neg_i18n_country_row_blank),
-        ("ko'rib chiqish varaqasi eskirgan", neg_i18n_review_sheet_stale),
-        ("varaqda eski kalit qolgan", neg_i18n_review_sheet_old_key),
-        ("paritet keyingi qoidani to'smaydi", neg_i18n_parity_does_not_mask),
-        ("shablon oila kalitisiz", neg_i18n_template_family),
-        ("server evict bilan chegaralangan", neg_i18n_server_drops_locales),
-        ("server lug'atda til yetishmaydi", neg_i18n_server_missing_locale),
-        ("runtime dev throw yo'q", neg_i18n_runtime_dev_throw),
-        ("runtime takroriy jurnal", neg_i18n_runtime_dedup),
-    ]),
-    ("contrast", [
-        ("buzilgan juftlik", neg_contrast_bad_pair),
-        ("o'qib bo'lmaydigan qiymat", neg_contrast_unreadable_token),
-    ]),
-    ("docs", [
-        ("buzilgan havola", neg_docs_broken_link),
-        ("mavjud bo'lmagan ADR havolasi", neg_docs_missing_adr),
-    ]),
-    ("email_locales", [
-        ("yetishmayotgan til", neg_email_missing_locale),
-        ("bo'sh matn", neg_email_blank_value),
-        ("ro'yxatda yo'q til", neg_email_undeclared_locale),
-    ]),
-    ("locales_parity", [
-        ("LANGUAGES da til yetishmaydi", neg_parity_missing_locale),
-        ("LOCALES da ortiqcha til", neg_parity_extra_locale),
-    ]),
-    ("hardcoded", [
-        ("admin faylda qattiq yozilgan matn", neg_hardcoded_prose),
-        ("tilsiz sana formati", neg_hardcoded_locale_less_date),
-        ("raqam bilan boshlangan matn", neg_hardcoded_number_in_prose),
-        ("haqiqiy rang o'tadi", neg_hardcoded_actual_colour_passes),
-        ("o'lchov birligi o'tadi, so'z qoladi", neg_hardcoded_number_unit_passes),
-        ("kengaytirilgan doira o'qiladi", neg_hardcoded_wide_scope),
-        ("viewBox o'tadi", neg_hardcoded_viewbox_passes),
-    ]),
+    (
+        "i18n",
+        [
+            ("bo'sh qiymat", neg_i18n_blank_value),
+            ("yetishmayotgan kalit", neg_i18n_missing_key),
+            ("kodda bor, manbada yo'q", neg_i18n_used_but_absent),
+            ("prefikssiz kalit", neg_i18n_bare_key),
+            ("mamlakat jadvaldan til tushib qoldi", neg_i18n_country_locale_dropped),
+            ("mamlakat ICU tili jadvalga qo'shildi", neg_i18n_country_icu_locale_added),
+            ("mamlakat jadvalida kod yetishmaydi", neg_i18n_country_row_missing),
+            ("mamlakat jadvalida bo'sh qiymat", neg_i18n_country_row_blank),
+            ("ko'rib chiqish varaqasi eskirgan", neg_i18n_review_sheet_stale),
+            ("varaqda eski kalit qolgan", neg_i18n_review_sheet_old_key),
+            ("paritet keyingi qoidani to'smaydi", neg_i18n_parity_does_not_mask),
+            ("shablon oila kalitisiz", neg_i18n_template_family),
+            ("server evict bilan chegaralangan", neg_i18n_server_drops_locales),
+            ("server lug'atda til yetishmaydi", neg_i18n_server_missing_locale),
+            ("runtime dev throw yo'q", neg_i18n_runtime_dev_throw),
+            ("runtime takroriy jurnal", neg_i18n_runtime_dedup),
+        ],
+    ),
+    (
+        "contrast",
+        [
+            ("buzilgan juftlik", neg_contrast_bad_pair),
+            ("o'qib bo'lmaydigan qiymat", neg_contrast_unreadable_token),
+        ],
+    ),
+    (
+        "docs",
+        [
+            ("buzilgan havola", neg_docs_broken_link),
+            ("mavjud bo'lmagan ADR havolasi", neg_docs_missing_adr),
+        ],
+    ),
+    (
+        "email_locales",
+        [
+            ("yetishmayotgan til", neg_email_missing_locale),
+            ("bo'sh matn", neg_email_blank_value),
+            ("ro'yxatda yo'q til", neg_email_undeclared_locale),
+        ],
+    ),
+    (
+        "locales_parity",
+        [
+            ("LANGUAGES da til yetishmaydi", neg_parity_missing_locale),
+            ("LOCALES da ortiqcha til", neg_parity_extra_locale),
+        ],
+    ),
+    (
+        "hardcoded",
+        [
+            ("admin faylda qattiq yozilgan matn", neg_hardcoded_prose),
+            ("tilsiz sana formati", neg_hardcoded_locale_less_date),
+            ("raqam bilan boshlangan matn", neg_hardcoded_number_in_prose),
+            ("haqiqiy rang o'tadi", neg_hardcoded_actual_colour_passes),
+            ("o'lchov birligi o'tadi, so'z qoladi", neg_hardcoded_number_unit_passes),
+            ("kengaytirilgan doira o'qiladi", neg_hardcoded_wide_scope),
+            ("viewBox o'tadi", neg_hardcoded_viewbox_passes),
+        ],
+    ),
+    (
+        "workers",
+        [
+            ("fail_open yopiq bo'lsa tutilsin", neg_workers_fail_open_false),
+            ("o'qib bo'lmasa xato, «yaxshi» emas", neg_workers_unreadable_is_not_green),
+        ],
+    ),
 ]
 
 
@@ -804,7 +939,9 @@ def main(argv: list[str]) -> int:
 
     print()
     if failures:
-        print(f"{len(failures)}/{total} salbiy test YIQILDI — tekshiruv o'lik bo'lishi mumkin:")
+        print(
+            f"{len(failures)}/{total} salbiy test YIQILDI — tekshiruv o'lik bo'lishi mumkin:"
+        )
         for row in failures:
             print(f"  - {row}")
         return 1
