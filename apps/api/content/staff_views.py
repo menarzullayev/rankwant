@@ -38,7 +38,7 @@ class StaffRoadmapViewSet(StaffViewSet):
     lookup_field = "slug"
     search_fields = ["slug", "title"]
     ordering_fields = ["pk", "slug", "order"]
-    ordering = ["order", "slug"]
+    ordering = ["order", "slug", "pk"]
 
     def get_queryset(self) -> QuerySet[Roadmap]:
         return Roadmap.objects.prefetch_related("steps__article", "steps__problem").annotate(

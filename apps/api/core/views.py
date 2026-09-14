@@ -603,7 +603,10 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet[User]):
     lookup_value_regex = "[^/]+"
     queryset = User.objects.filter(is_active=True)
     ordering_fields = ["rating_skills", "rating_contest", "rating_challenges", "date_joined"]
-    ordering = ["-rating_skills"]
+    # `-pk` — tiebreaker: reyting teng bo'lganda tartib aks holda SQL
+    # ixtiyoriga qoladi va sahifalash beqaror bo'ladi (bir odam ikki
+    # sahifada chiqishi yoki umuman ko'rinmasligi mumkin).
+    ordering = ["-rating_skills", "-pk"]
 
     def get_queryset(self) -> QuerySet[User]:
         queryset = super().get_queryset()

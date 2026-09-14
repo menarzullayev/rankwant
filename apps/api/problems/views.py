@@ -95,7 +95,9 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
         "view_count",
         "created_at",
     ]
-    ordering = ["difficulty"]
+    # `pk` — tiebreaker: bir xil qiyinlikdagi masalalar tartibi aks holda SQL
+    # ixtiyoriga qoladi va sahifalash beqaror bo'ladi.
+    ordering = ["difficulty", "pk"]
 
     def get_queryset(self):  # type: ignore[no-untyped-def]
         # Baho ro'yxatda ham ko'rinadi — har qatorga alohida so'rov

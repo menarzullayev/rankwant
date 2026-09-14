@@ -26,7 +26,9 @@ class ArticleViewSet(viewsets.ReadOnlyModelViewSet[Article]):
     pagination_class = StandardPagination
     filterset_fields = ["locale", "topics__slug", "kind"]
     ordering_fields = ["difficulty", "published_at"]
-    ordering = ["difficulty"]
+    # `pk` — tiebreaker: bir xil `difficulty` li maqolalar tartibi aks holda
+    # SQL ixtiyoriga qoladi va sahifalash beqaror bo'ladi.
+    ordering = ["difficulty", "pk"]
 
     def get_queryset(self):  # type: ignore[no-untyped-def]
         return (

@@ -29,7 +29,13 @@ class StaffDuelViewSet(StaffViewSet):
     http_method_names = ["get", "post", "head", "options"]
     search_fields: ClassVar[list[str]] = ["title", "challenger__username", "opponent__username"]
     ordering_fields: ClassVar[list[str]] = ["created_at", "start_at", "status"]
-    ordering: ClassVar[list[str]] = ["-created_at"]
+    # `-created_at` YAKKA o'zi yetarli emas: ikkita duel bir mikrosekundda
+    # yaratilsa (testda `_open()` ketma-ket ishlaydi, `auto_now_add` esa
+    # soat aniqligida yozadi) tartib SQLite/Postgres ixtiyoriga qoladi va
+    # sahifalash beqaror bo'ladi. `-pk` — yakuniy, deterministik tiebreaker;
+    # u `-created_at` bilan bir yo'nalishda, ya'ni mavjud natija
+    # o'zgarmaydi, faqat teng holat barqarorlashadi.
+    ordering: ClassVar[list[str]] = ["-created_at", "-pk"]
 
     def get_queryset(self):  # type: ignore[no-untyped-def]
         return Duel.objects.select_related("challenger", "opponent", "winner").prefetch_related(

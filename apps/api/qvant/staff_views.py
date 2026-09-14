@@ -24,7 +24,7 @@ class StaffQuestViewSet(StaffViewSet):
     lookup_field = "code"
     search_fields: ClassVar[list[str]] = ["code", "title_uz", "title_ru", "title_en"]
     ordering_fields: ClassVar[list[str]] = ["code", "type", "reward", "is_active"]
-    ordering: ClassVar[list[str]] = ["type", "code"]
+    ordering: ClassVar[list[str]] = ["type", "code", "pk"]
 
     def get_queryset(self) -> QuerySet[QvantQuest]:
         return QvantQuest.objects.annotate(completion_count=Count("completions"))
@@ -46,7 +46,7 @@ class StaffShopItemViewSet(StaffViewSet):
     lookup_field = "code"
     search_fields: ClassVar[list[str]] = ["code", "title_uz", "title_ru", "title_en"]
     ordering_fields: ClassVar[list[str]] = ["code", "category", "price", "is_active"]
-    ordering: ClassVar[list[str]] = ["price", "code"]
+    ordering: ClassVar[list[str]] = ["price", "code", "pk"]
 
     def get_queryset(self) -> QuerySet[ShopItem]:
         return ShopItem.objects.annotate(owner_count=Count("owners"))

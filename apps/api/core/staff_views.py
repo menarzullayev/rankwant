@@ -42,7 +42,7 @@ class StaffUserViewSet(StaffViewSet):
     lookup_value_regex = "[^/]+"
     search_fields = ["username", "display_name", "email"]
     ordering_fields = ["date_joined", "rating_skills"]
-    ordering = ["-date_joined"]
+    ordering = ["-date_joined", "-pk"]
     http_method_names = ["get", "post", "patch", "head", "options"]
 
     def get_queryset(self) -> QuerySet[User]:
@@ -116,7 +116,7 @@ class StaffSchoolViewSet(StaffViewSet):
     serializer_class = StaffSchoolSerializer
     search_fields = ["name", "region", "district", "city"]
     ordering_fields = ["name", "region", "created_at"]
-    ordering = ["name"]
+    ordering = ["name", "pk"]
     http_method_names = ["get", "post", "patch", "delete", "head", "options"]
 
     def get_queryset(self) -> QuerySet[School]:

@@ -21,7 +21,7 @@ class StaffTournamentViewSet(StaffViewSet):
     lookup_field = "slug"
     search_fields: ClassVar[list[str]] = ["slug", "title"]
     ordering_fields: ClassVar[list[str]] = ["pk", "slug", "title", "start_at", "end_at"]
-    ordering: ClassVar[list[str]] = ["-start_at"]
+    ordering: ClassVar[list[str]] = ["-start_at", "-pk"]
 
     @extend_schema(request=None, responses={200: {"type": "object"}})
     @action(detail=True, methods=["post"])

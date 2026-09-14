@@ -36,7 +36,7 @@ class StaffTopicViewSet(StaffViewSet):
     queryset = Topic.objects.select_related("parent").all()
     search_fields = ["slug", "name_uz", "name_ru", "name_en"]
     ordering_fields = ["slug", "name_uz", "pk"]
-    ordering = ["slug"]
+    ordering = ["slug", "pk"]
 
 
 class StaffProblemReportViewSet(StaffViewSet):
@@ -50,7 +50,7 @@ class StaffProblemReportViewSet(StaffViewSet):
     filterset_fields = ["status", "reason"]
     search_fields = ["problem__slug", "problem__title", "comment"]
     ordering_fields = ["created_at", "status", "pk"]
-    ordering = ["status", "-created_at"]
+    ordering = ["status", "-created_at", "-pk"]
 
 
 class StaffProblemViewSet(StaffViewSet):

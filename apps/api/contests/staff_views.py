@@ -27,7 +27,9 @@ class StaffContestViewSet(StaffViewSet):
     lookup_field = "slug"
     search_fields: ClassVar[list[str]] = ["slug", "title"]
     ordering_fields: ClassVar[list[str]] = ["pk", "slug", "start_at", "end_at", "created_at"]
-    ordering: ClassVar[list[str]] = ["-start_at"]
+    # `-pk` — tiebreaker: bir xil `start_at` li musobaqalar tartibi aks holda
+    # SQL ixtiyoriga qoladi va sahifalash beqaror bo'ladi.
+    ordering: ClassVar[list[str]] = ["-start_at", "-pk"]
 
     @extend_schema(
         request=StaffContestProblemListSerializer,

@@ -29,7 +29,7 @@ class StaffHackathonViewSet(StaffViewSet):
     lookup_field = "slug"
     search_fields = ["slug", "title"]
     ordering_fields = ["start_at", "submission_deadline", "end_at", "created_at", "slug"]
-    ordering = ["-start_at"]
+    ordering = ["-start_at", "-pk"]
 
     def get_queryset(self):  # type: ignore[no-untyped-def]
         return Hackathon.objects.annotate(submission_count=Count("submissions", distinct=True))

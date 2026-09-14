@@ -31,7 +31,9 @@ class StaffArenaViewSet(StaffViewSet):
     lookup_field = "slug"
     search_fields = ["slug", "title"]
     ordering_fields = ["start_at", "created_at", "slug", "seconds_per_question"]
-    ordering = ["-start_at"]
+    # `-pk` — tiebreaker: bir xil `start_at` li raundlar tartibi aks holda
+    # SQL ixtiyoriga qoladi va sahifalash beqaror bo'ladi.
+    ordering = ["-start_at", "-pk"]
 
     @extend_schema(request=RescheduleSerializer, responses={200: StaffArenaSerializer})
     @action(detail=True, methods=["post"])
