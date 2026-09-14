@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/Card";
 import { CountryFlag } from "@/components/ui/CountryFlag";
 import { UzFallbackBadge } from "@/components/ui/UzFallbackBadge";
 import { localName, localNameInfo, t, type Locale } from "@/i18n/messages";
-import type { ExternalProfile, PrivacyField, PublicProfile } from "@/lib/api";
+import type { PrivacyField, PublicProfile } from "@/lib/api";
 import { countryName } from "@/lib/countries";
 import { districtName, regionName } from "@/lib/regions";
 import { BrandIcon, EXTERNAL_ICONS, TECH_ICONS } from "@/lib/tech-icons";

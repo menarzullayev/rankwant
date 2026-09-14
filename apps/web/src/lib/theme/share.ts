@@ -87,7 +87,7 @@ export function shareUrl(appearance: AppearancePrefs): string {
 
 /** Ko'rinish parametrlarini manzildan olib tashlaydi — qo'llangandan
  *  keyin qayta qo'llanilmasin. */
-export function stripAppearance(search: string): string {
+export function stripAppearance(): string {
   const url = new URL(window.location.href);
   for (const key of KEYS) url.searchParams.delete(key);
   return url.pathname + url.search + url.hash;

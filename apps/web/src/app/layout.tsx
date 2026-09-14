@@ -11,7 +11,6 @@ import "./globals.css";
 import AppShell from "@/layout/AppShell";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
 import { getLocaleState } from "@/i18n/server";
-import { DEFAULT_LOCALE } from "@/i18n/messages";
 import { messagesFor } from "@/i18n/messages.server";
 import type { Me } from "@/lib/api";
 import { api, type AppearancePrefs } from "@/lib/api";

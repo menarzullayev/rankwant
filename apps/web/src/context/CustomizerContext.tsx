@@ -331,7 +331,7 @@ export function CustomizerProvider({
     if (!fromUrl) return;
     applyAll(fromUrl, a11y);
     rememberAppearance(fromUrl, a11y);
-    window.history.replaceState(null, "", stripAppearance(window.location.search));
+    window.history.replaceState(null, "", stripAppearance());
     // Faqat mountda: keyingi o'zgarishlar `commit` orqali o'tadi.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -6,7 +6,7 @@ import { CrudPage, type FieldDef } from "@/components/admin/CrudPage";
 import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { DEFAULT_LOCALE, t, type MessageKey, errorText } from "@/i18n/messages";
+import { t, type MessageKey, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 

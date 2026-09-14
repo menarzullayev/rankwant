@@ -23,7 +23,6 @@ import {
   fetchCustomRun,
   runCustomTest,
   submitAttempt,
-  type Attempt,
   type AttemptDetail,
   type CustomRun,
   type ProblemLanguage,

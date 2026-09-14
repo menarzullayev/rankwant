@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { QuizPlayer } from "@/components/QuizPlayer";
 import { Badge } from "@/components/ui/Badge";
 import { getLocale } from "@/i18n/server";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { t } from "@/i18n/messages";
 import { api, ApiError } from "@/lib/api";
 
 type Props = { params: Promise<{ slug: string }> };

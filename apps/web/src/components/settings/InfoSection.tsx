@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -10,7 +10,6 @@ import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
 import { patchJson, type PrivacyField } from "@/lib/api";
-import { countryOptions } from "@/lib/countries";
 import { REGION_CODES, districtOptions, regionName } from "@/lib/regions";
 import { Check, Hint, Select, Status, useAction } from "./kit";
 import { SchoolField } from "./SchoolField";
@@ -25,7 +24,6 @@ export function InfoSection() {
   const [country, setCountry] = useState<string | null>(null);
   const [hidden, setHidden] = useState<PrivacyField[] | null>(null);
   const [region, setRegion] = useState<string | null>(null);
-  const countries = useMemo(() => countryOptions(locale), [locale]);
   if (!user) return null;
 
   const currentCountry = country ?? user.country;
