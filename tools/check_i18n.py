@@ -140,6 +140,10 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         "admin.label.text.qvant",
         "admin.label.text.repo",
         "admin.label.text.slug",
+        # Bo'lim nomlari va badge'lar ham ikkalasida bir xil yoziladi.
+        "admin.title.duels", "admin.title.hackathons", "admin.title.tournaments",
+        "admin.text.badgeRated", "admin.text.badgeRepo", "admin.text.badgeDemo",
+        "admin.text.addVariant", "admin.text.variant",
     },
     # Ingliz tili: «Duel» kabi so'zlar inglizchadan o'zlashgan, ya'ni
     # tarjima AYNAN o'sha so'z bo'ladi. Quyidagilar ham shunday —
@@ -152,7 +156,11 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
            "admin.label.text.qvant", "admin.label.text.repo",
            "admin.label.text.slug", "admin.help.ownerRepo",
            "admin.label.shopCategory.streakFreeze",
-           "admin.label.shopCategory.usernameBadge"},
+           "admin.label.shopCategory.usernameBadge",
+           "admin.text.addVariant", "admin.text.variant",   # "Variant" — atama
+           "admin.text.contestSlug", "admin.title.page",
+           "admin.text.badgeSuperuser", "admin.text.badgeRepo",
+           "admin.text.badgeDemo"},
     # Turk tilida ham «Profil» — o'zbekcha bilan harfma-harf bir xil.
     # Turk tili: bu so'zlar turkchada ham AYNAN shunday yoziladi
     # ("kim" = кто, "kod" = код, "standart" = стандарт).
@@ -160,10 +168,11 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
            "title.atom", "title.kristal", "update.module.profile",
            "admin.label.text.code", "admin.label.text.qvant",
            "admin.label.text.slug", "admin.label.text.standard",
-           "admin.label.text.who"},
+           "admin.label.text.who", "admin.text.badgeDemo"},
     # Ispan tilida ham «Virtual».
     "es": {"profile.virtual", "admin.label.flag.virtual",
-           "admin.label.text.qvant", "admin.label.text.slug"},
+           "admin.label.text.qvant", "admin.label.text.slug",
+           "admin.text.badgeDemo"},
     # Xitoy tili: platforma valyutasining nomi — brend, o'girilmaydi.
     "zh": {"admin.label.text.qvant"},
 }
