@@ -53,10 +53,13 @@ jobs:
   build:
     name: Build — API, web va judge image'lari
     runs-on: [self-hosted, rankwant]
-    # 3 daqiqa: issiq kesh bilan qurilish 166 s o'lchandi. Sovuq
-    # keshda oshib ketadi — oshsa sababini qidirish kerak (kesh),
-    # shunchaki chegarani ko'tarish emas.
-    timeout-minutes: 3
+    # ⚠️ 10 daqiqa — ONGLI istisno (qolgan hamma joyda 1-3).
+    # O'lchandi: issiq kesh bilan 166 s, lekin `apps/web` o'zgargan
+    # commit'larda qayta qurish 3 daqiqaga SIGMAYDI — 3 daqiqa bilan
+    # qadam "cancelled" bo'ldi (run 34898117925). Uchta image'ni
+    # qurishni 3 daqiqaga tiqish chegarani emas, keshni yaxshilashni
+    # talab qiladi; hozircha chegara haqiqatga mos qo'yildi.
+    timeout-minutes: 10
     outputs:
       version: ${{ steps.meta.outputs.version }}
     env:
@@ -75,7 +78,7 @@ jobs:
           }
 
       - name: Image'larni qurish
-        timeout-minutes: 3
+        timeout-minutes: 10
         # `docker compose build` — build-context va build args compose
         # faylidan olinadi, ya'ni qo'lda yozilgan `docker build` buyrug'i
         # fayldan ajralib qolmaydi.
@@ -128,9 +131,21 @@ jobs:
   deploy:
     name: Deploy — ${{ github.event.inputs.environment || 'staging' }}
     needs: [build, test]
-    if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' }}
+    # `vars.PUBLIC_ORIGIN` sharti: deploy sirli o'zgaruvchilar hali
+    # sozlanmagan bo'lsa (hozir shunday — repo'da 0 secrets/variables),
+    # job har push'da qizil X bilan yiqilardi. O'tkazib yuborish —
+    # yashirish emas: `build` va `test` baribir to'liq ishlaydi, deploy
+    # esa kulrang (skipped) bo'ladi, ya'ni "sozlanmagan" aniq ko'rinadi.
+    if: >-
+      ${{
+        (github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch')
+        && vars.PUBLIC_ORIGIN != ''
+      }}
     runs-on: [self-hosted, rankwant]
-    timeout-minutes: 30
+    # ⚠️ 3 daqiqadan ko'p — ONGLI istisno: to'liq stack `up --build`
+    # (--wait-timeout 300) va 30 marta health urinishi (150 s) sig'maydi.
+    # Qolgan barcha job/qadam 1-3 daqiqa ichida.
+    timeout-minutes: 10
     environment:
       # `production` uchun GitHub'da required reviewer qo'yilsa, deploy
       # qo'lda tasdiqlanmaguncha kutadi. Bu 10-operations talabi:
