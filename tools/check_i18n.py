@@ -42,6 +42,37 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         "customizer.template.journal",
         "customizer.template.focus",
         "customizer.template.aurora",
+        # Uslub NOMLARI (`layout/styles.ts`) — atoqli ot. "Dashboard",
+        # "Flat", "Material", "Editorial", "Terminal" va Glassmorphism /
+        # Neumorphism / Claymorphism / Aurora hech qaysi tilda o'girilmaydi
+        # (ingliz tilida shunday yoziladi, boshqalarida ham asl holida
+        # qoladi). Izohlari (`style.*.hint`) esa HAR tilda tarjima
+        # qilinadi — faqat `.label` shu ro'yxatda.
+        "style.dashboard.label",
+        "style.flat.label",
+        "style.material.label",
+        "style.editorial.label",
+        "style.terminal.label",
+        "style.glass.label",
+        "style.neu.label",
+        "style.clay.label",
+        "style.aurora.label",
+        # «Neo-brutalizm» — o'zlashma atama: o'zbek, qoraqalpoq va turk
+        # tillarida bir xil yoziladi.
+        "style.brutal.label",
+        # «Blog» — o'zlashma so'z: o'zbek, ingliz, turk, ispan va
+        # qoraqalpoq tillarida bir xil yoziladi (rus/ukrain tillarida
+        # «Блог»). Majburan o'girish sun'iy ko'rinardi.
+        "external.blog",
+        # «Arena» — xalqaro o'zlashma: ingliz, turk, ispan, qoraqalpoq va
+        # o'zbek tillarida bir xil yoziladi.
+        "admin.section.arena",
+        # «Virtual» — xalqaro o'zlashma: ingliz, ispan va qoraqalpoq
+        # tillarida aynan shu shaklda yoziladi. `kaa` da bu so'z allaqachon
+        # qabul qilingan (`contest.virtual` = "Virtual baslaw",
+        # `profile.virtual` = "Virtual"), ya'ni majburan o'girish til
+        # qoidasini buzardi.
+        "admin.label.flag.virtual",
     },
     # Qoraqalpoq tili o'zbek tiliga eng yaqini — xalqaro o'zlashmalar
     # ikkalasida ham aynan bir xil yoziladi.
@@ -65,15 +96,27 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         # "reyting", "profil", "dizayn" ikkalasida ham bir xil yoziladi.
         "update.kind.performance", "update.kind.design",
         "update.module.ratings", "update.module.profile", "update.module.design",
+        # Masala sahifasi: "Statistika" qoraqalpoqchada ham aynan shunday
+        # yoziladi — majburan o'girish sun'iy ko'rinardi.
+        "problem.tab.stats",
+        # Admin bo'limlari: qoraqalpoqcha o'zbekchaga eng yaqin til —
+        # "Traektoriya" va "Analitika" o'zlashma, ikkalasida bir xil.
+        "admin.section.roadmaps",
+        "admin.section.analytics",
+        # «Keyingi» — qoraqalpoqchada o'zbekchadagi bilan bir xil yoziladi.
+        "pager.next",
+        # «Algoritm» — qoraqalpoqchada ham shu shaklda yoziladi
+        # (`nav.algorithms` = "Algoritmler"), ya'ni ildiz bir xil.
+        "admin.label.text.problemExample",
     },
     # «Duel» — inglizchadan o'zlashgan, ingliz tilida o'sha so'zning o'zi.
     "en": {"nav.duels", "level.master", "title.proton", "title.atom",
-           "profile.reason.duel", "profile.virtual"},
+           "profile.reason.duel", "profile.virtual", "admin.label.flag.virtual"},
     # Turk tilida ham «Profil» — o'zbekcha bilan harfma-harf bir xil.
     "tr": {"settings.nav.profile", "title.foton", "title.elektron", "title.proton",
            "title.atom", "title.kristal", "update.module.profile"},
     # Ispan tilida ham «Virtual».
-    "es": {"profile.virtual"},
+    "es": {"profile.virtual", "admin.label.flag.virtual"},
 }
 #: Kalit tirnoqli ham, tirnoqsiz ham bo'lishi mumkin: prettier `quoteProps`
 #: sozlamasi bilan oddiy identifikatorlardan tirnoqni olib tashlaydi va
