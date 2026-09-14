@@ -145,6 +145,7 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         "admin.text.badgeRated", "admin.text.badgeRepo", "admin.text.badgeDemo",
         "admin.text.addVariant", "admin.text.variant",
         "problem.stats.title",   # "Statistika · {slug}"
+        "submit.testTooltip",    # birlik va ajratgich bir xil
     },
     # Ingliz tili: «Duel» kabi so'zlar inglizchadan o'zlashgan, ya'ni
     # tarjima AYNAN o'sha so'z bo'ladi. Quyidagilar ham shunday —
@@ -161,7 +162,9 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
            "admin.text.addVariant", "admin.text.variant",   # "Variant" — atama
            "admin.text.contestSlug", "admin.title.page",
            "admin.text.badgeSuperuser", "admin.text.badgeRepo",
-           "admin.text.badgeDemo"},
+           "admin.text.badgeDemo",
+           # "{index}: {verdict} · {time} ms" — birlik va ajratgich bir xil.
+           "submit.testTooltip"},
     # Turk tilida ham «Profil» — o'zbekcha bilan harfma-harf bir xil.
     # Turk tili: bu so'zlar turkchada ham AYNAN shunday yoziladi
     # ("kim" = кто, "kod" = код, "standart" = стандарт).
@@ -169,11 +172,12 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
            "title.atom", "title.kristal", "update.module.profile",
            "admin.label.text.code", "admin.label.text.qvant",
            "admin.label.text.slug", "admin.label.text.standard",
-           "admin.label.text.who", "admin.text.badgeDemo"},
+           "admin.label.text.who", "admin.text.badgeDemo",
+           "submit.testTooltip"},
     # Ispan tilida ham «Virtual».
     "es": {"profile.virtual", "admin.label.flag.virtual",
            "admin.label.text.qvant", "admin.label.text.slug",
-           "admin.text.badgeDemo"},
+           "admin.text.badgeDemo", "submit.testTooltip"},
     # Xitoy tili: platforma valyutasining nomi — brend, o'girilmaydi.
     "zh": {"admin.label.text.qvant"},
 }

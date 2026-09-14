@@ -179,9 +179,13 @@ ALLOWED_LITERALS = {
     # these through unchanged; only the separator between them is ours.
     "Edge", "Opera", "Yandex", "Firefox", "Chrome", "Safari",
     "iOS", "Android", "Windows", "macOS", "Linux",
-    # A share title: the display name plus the product. The name is
-    # data, the suffix is the brand, and only the separator is ours.
-    "{name} · RankWant",
+    # A share title: the display name plus the product. The name is data,
+    # the suffix is the brand, and only the separator is ours.
+    "${name} · RankWant",
+    # `alt` in an `opengraph-image.tsx` is a module-level export, not a
+    # component: it cannot await the request locale. These keep the brand
+    # name plus one noun — the honest state, not a translated one.
+    "RankWant musobaqasi", "RankWant masalasi",
 }
 
 #: A short list of unmistakable Uzbek stems. NOT used to decide "is this

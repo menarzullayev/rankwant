@@ -4,7 +4,7 @@ import type { Route } from "next";
 import { playSuccess } from "@/lib/prefs";
 import Link from "next/link";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { type Locale, t } from "@/i18n/messages";
+import { fill, type Locale, t } from "@/i18n/messages";
 import {
   useCallback,
   useEffect,
@@ -402,10 +402,7 @@ export default function SubmitPanel({
       <div className={PANEL}>
         <Card title={t(locale, "submit.solution")}>
           <p className="text-theme-sm rw-dim">
-            Bu masalaning <strong>testlari hali tayyorlanmagan</strong>, shu
-            sababli yechim qabul qilinmaydi. Matnni o&apos;qib, o&apos;zingiz
-            uchun yechib ko&apos;rishingiz mumkin — testlar qo&apos;shilishi
-            bilan yuborish ochiladi.
+            {t(locale, "submit.testsNotReadyBody")}
           </p>
         </Card>
       </div>
@@ -439,7 +436,12 @@ export default function SubmitPanel({
           </p>
         )}
 
-        <EditorTools source={source} onSource={setSource} onError={setError} />
+        <EditorTools
+          locale={locale}
+          source={source}
+          onSource={setSource}
+          onError={setError}
+        />
 
         <CodeEditor
           language={editorLanguage(language)}
@@ -452,14 +454,14 @@ export default function SubmitPanel({
         <div className="flex flex-wrap items-center gap-2">
           {canSubmit ? (
             <Button onClick={submit} disabled={busy || !source.trim()}>
-              {busy ? "Yuborilmoqda…" : "Yuborish"}
+              {busy ? t(locale, "roadmap.sending") : t(locale, "roadmap.suggestSend")}
             </Button>
           ) : (
             <Link
               href={"/login?tab=login" as Route}
               className="inline-flex h-11 items-center rw-btn-radius rw-accent-bg px-4 text-theme-sm font-medium rw-btn-label"
             >
-              Yuborish uchun kiring
+              {t(locale, "submit.signInToSubmit")}
             </Link>
           )}
           {samples.length > 0 && (
@@ -468,11 +470,11 @@ export default function SubmitPanel({
               onClick={runSamples}
               disabled={!canSubmit || busy || !source.trim()}
             >
-              Namunada sinash
+              {t(locale, "submit.testOnSamples")}
             </Button>
           )}
           <span className="ml-auto text-theme-xs rw-faint">
-            Qoralama shu brauzerda saqlanadi
+            {t(locale, "submit.draftSavedLocally")}
           </span>
         </div>
       </Card>
@@ -508,6 +510,7 @@ export default function SubmitPanel({
         {tab === "verdict" && <VerdictView attempt={attempt} locale={locale} />}
         {tab === "samples" && (
           <SamplesView
+            locale={locale}
             results={sampleResults}
             total={samples.length}
             busy={busy}
@@ -533,10 +536,12 @@ export default function SubmitPanel({
 /** Muharrir asboblari — uchala taqqoslangan platformada ham bor:
  * fayldan yuklash, nusxalash, tozalash va manba hajmi. */
 function EditorTools({
+  locale,
   source,
   onSource,
   onError,
 }: {
+  locale: Locale;
   source: string;
   onSource: (next: string) => void;
   onError: (message: string | null) => void;
@@ -570,7 +575,7 @@ function EditorTools({
   return (
     <div className="flex flex-wrap items-center gap-1">
       <label className={`${action} cursor-pointer`}>
-        Fayldan yuklash
+        {t(locale, "submit.loadFromFile")}
         <input
           type="file"
           accept=".cpp,.cc,.cxx,.c,.py,.java,.kt,.go,.rs,.cs,.js,.ts,.txt"
@@ -582,7 +587,7 @@ function EditorTools({
         />
       </label>
       <button type="button" onClick={copy} className={action}>
-        {copied ? "Nusxalandi" : "Nusxalash"}
+        {copied ? t(locale, "settings.teamCopied") : t(locale, "settings.teamCopy")}
       </button>
       <button type="button" onClick={() => onSource("")} className={action}>
         Tozalash
@@ -604,7 +609,7 @@ function VerdictView({
   if (!attempt)
     return (
       <p className="text-theme-sm rw-faint">
-        Hali yuborilmadi. Kod yozing va «Yuborish» ni bosing.
+        {t(locale, "submit.nothingSubmitted")}
       </p>
     );
 
@@ -636,7 +641,11 @@ function VerdictView({
           {attempt.test_results.map((test) => (
             <span
               key={test.index}
-              title={`${test.index}: ${test.verdict} · ${test.time_ms} ms`}
+              title={fill(t(locale, "submit.testTooltip"), {
+                index: test.index,
+                verdict: test.verdict,
+                time: test.time_ms,
+              })}
               className={`flex size-7 items-center justify-center rw-radius-sm text-theme-xs font-medium ${
                 test.verdict === "AC"
                   ? "rw-ok-soft rw-ok-ink"
@@ -710,7 +719,7 @@ function CustomView({
           <button
             type="button"
             onClick={add}
-            aria-label="Test qo'shish"
+            aria-label={t(locale, "submit.addTest")}
             className={`${tab} rw-faint`}
           >
             +
@@ -720,7 +729,7 @@ function CustomView({
           <button
             type="button"
             onClick={remove}
-            aria-label={`Test ${active + 1} ni o'chirish`}
+            aria-label={fill(t(locale, "submit.removeTest"), { index: active + 1 })}
             className={`${tab} ml-auto rw-faint`}
           >
             O&apos;chirish
@@ -743,10 +752,10 @@ function CustomView({
 
       <div className="flex flex-wrap items-center gap-3">
         <Button variant="outline" onClick={onRun} disabled={disabled}>
-          Ishga tushirish
+          {t(locale, "submit.run")}
         </Button>
         <span className="text-theme-xs rw-faint">
-          Testlar shu brauzerda saqlanadi
+          {t(locale, "submit.testsSavedLocally")}
         </span>
       </div>
 
@@ -778,10 +787,12 @@ function CustomView({
 }
 
 function SamplesView({
+  locale,
   results,
   total,
   busy,
 }: {
+  locale: Locale;
   results: SampleResult[];
   total: number;
   busy: boolean;
@@ -790,8 +801,8 @@ function SamplesView({
     return (
       <p className="text-theme-sm rw-faint">
         {busy
-          ? "Namunalar yuritilmoqda…"
-          : "«Namunada sinash» — kodni yuborishdan oldin namunalarda tekshiradi."}
+          ? t(locale, "submit.runningSamples")
+          : t(locale, "submit.samplesHint")}
       </p>
     );
 
@@ -807,18 +818,22 @@ function SamplesView({
               result.ok ? "rw-ok-soft rw-ok-ink" : "rw-bad-soft rw-bad-ink"
             }`}
           >
-            Namuna {result.order} ·{" "}
+            {fill(t(locale, "submit.sample"), { order: result.order })}{" "}
             {result.ok
-              ? "mos"
+              ? t(locale, "submit.matches")
               : result.verdict === "AC"
-                ? "chiqish mos emas"
+                ? t(locale, "submit.outputMismatch")
                 : result.verdict}
           </span>
         ))}
-        {busy && <span className="text-theme-xs rw-faint">yuritilmoqda…</span>}
+        {busy && (
+          <span className="text-theme-xs rw-faint">
+            {t(locale, "submit.running")}
+          </span>
+        )}
         {!busy && !failed && results.length === total && (
           <span className="text-theme-xs rw-ok-ink">
-            Barcha namunalar mos — yuborishingiz mumkin
+            {t(locale, "submit.allSamplesPass")}
           </span>
         )}
       </div>
@@ -826,7 +841,9 @@ function SamplesView({
       {failed && (
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="min-w-0">
-            <p className="mb-1 text-theme-xs rw-faint">Sizning chiqishingiz</p>
+            <p className="mb-1 text-theme-xs rw-faint">
+              {t(locale, "submit.yourOutput")}
+            </p>
             <pre className="max-h-48 overflow-auto rw-radius-sm rw-field-bg p-3 font-mono text-theme-xs rw-bad-ink">
               {failed.got || "—"}
             </pre>
