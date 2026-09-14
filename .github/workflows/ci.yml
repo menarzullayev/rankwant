@@ -284,7 +284,12 @@ jobs:
   smoke:
     name: Smoke va E2E — to'liq stack
     runs-on: [self-hosted, rankwant]
-    timeout-minutes: 3
+    # ⚠️ 20 daqiqa — ONGLI istisno. Bu job to'liq compose stack'ni QURADI
+    # (api+web+judge image'lari), demo ma'lumot yuklaydi, smoke yugurtiradi
+    # va Playwright E2E qiladi. 3 daqiqa bilan u shunchaki 'cancelled'
+    # bo'ldi (run 34902927949) — ya'ni kafolatli qizil. Har qadamga alohida
+    # chegara ham qo'yilgan: qaysi bosqich sekinligi ko'rinib turadi.
+    timeout-minutes: 20
     needs: changes
     if: needs.changes.outputs.code == 'true'
     # Compose loyihasi HAR JOB uchun alohida. Bitta runner'da joblar
@@ -296,15 +301,19 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Stack
+        timeout-minutes: 10
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build --wait
       - name: Demo ma'lumot
+        timeout-minutes: 3
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api python manage.py seed_demo
       - name: Smoke
+        timeout-minutes: 5
         # Kritik yo'l: submit → Redis → judge → verdict. Bu qadam API va
         # judge'ni BIRGA ishlatadigan yagona joy — ular alohida sinalganda
         # ikkita shartnoma nomuvofiqligi ko'rinmay qolgan edi.
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm smoke
       - name: E2E (faqat chromium — to'liq matritsa nightly da)
+        timeout-minutes: 10
         run: |
           docker run --rm --user "$(id -u):$(id -g)" --network "${COMPOSE_PROJECT_NAME}_default" \
             -v "$PWD/tests/e2e:/e2e" -w /e2e \
