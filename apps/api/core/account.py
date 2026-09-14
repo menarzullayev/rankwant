@@ -65,8 +65,15 @@ def anonymize(user: User) -> None:
     # Provayder bog'lanishi o'chmasa, o'sha Google/Telegram bilan qayta
     # kelgan odam yangi hisob ocha olmasdi — `uniq_social_uid` band qolardi.
     SocialAccount.objects.filter(user=user).delete()
-    # Eski taxalluslar odamni yangi nomiga bog'lab turadi.
-    UsernameHistory.objects.filter(user=user).delete()
+    # Eski taxalluslar SAQLANADI, faqat egasidan uziladi.
+    #
+    # Ilgari bu yerda `.delete()` edi — `usernames.reserved()` aynan shu
+    # jadvaldan o'qiydi, ya'ni 90 kunlik bandlik himoyasi ishlamasdi:
+    # odam hisobini o'chirib, taxallusini DARHOL qayta olib, eski
+    # egasining obro'si bilan standings'da turardi (o'lchandi).
+    # `user=None` — ikkala maqsad ham bajariladi: `reserved()` ishlaydi,
+    # lekin qator endi anonimlashtirilgan odamga ishora qilmaydi.
+    UsernameHistory.objects.filter(user=user).update(user=None)
     UserSession.objects.filter(user=user).delete()
     old_avatar = avatars.name_from_url(user.avatar_url)
 

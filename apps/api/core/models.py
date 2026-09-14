@@ -432,7 +432,21 @@ class UsernameHistory(models.Model):
 
     RESERVE = timedelta(days=90)
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="username_history")
+    # `null=True` + `SET_NULL` ATAYLAB. Ilgari `CASCADE` edi va
+    # `account.anonymize()` qatorlarni butunlay O'CHIRARDI — `reserved()`
+    # aynan shu jadvaldan o'qiydi, ya'ni 90 kunlik himoya ishlamasdi va
+    # odam o'z taxallusini darhol qayta olib, eski obro' bilan
+    # standings'da turardi. Endi qator SAQLANADI, faqat egasidan
+    # uziladi (`user=None`): `reserved()` ishlaydi, havola esa
+    # `user__is_active=True` filtri tufayli yetim qolmaydi
+    # (`core/views.py` — eski nomdan yangi profilga yo'naltirish).
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="username_history",
+    )
     old_username = models.CharField(max_length=150, db_index=True)
     changed_at = models.DateTimeField(auto_now_add=True, db_index=True)
 

@@ -10,8 +10,8 @@ from django.utils import timezone
 from rest_framework.test import APIClient
 
 from contests.models import Contest, Standing
-from core import account
-from core.models import ApiToken, User
+from core import account, usernames
+from core.models import ApiToken, User, UsernameHistory
 from judging.models import Attempt, CustomRun
 from notifications.models import Notification
 from problems.models import Favourite
@@ -153,6 +153,39 @@ class TestDeleteEndpoint:
 
 
 @pytest.mark.django_db
+@pytest.mark.django_db
+class TestAnonimlashtirishdanKeyinTaxallus:
+    """90 kunlik bandlik himoyasi anonimlashtirishdan keyin HAM ishlashi shart.
+
+    Ilgari `anonymize()` `UsernameHistory` qatorlarini O'CHIRARDI,
+    `usernames.reserved()` esa aynan shu jadvaldan o'qiydi. Natija:
+    odam hisobini o'chirib, taxallusini DARHOL qayta olib, eski
+    egasining obro'si (reyting, yutuqlar) bilan standings'da turardi —
+    o'lchandi, taxmin emas. Endi qator saqlanadi, faqat egasidan uziladi.
+    """
+
+    def test_eski_nom_band_qoladi(self, full_user) -> None:
+        UsernameHistory.objects.create(user=full_user, old_username="Aziz")
+
+        account.anonymize(full_user)
+
+        assert usernames.reserved("Aziz") is True
+
+    def test_qator_egasidan_uziladi(self, full_user) -> None:
+        """Bandlik saqlanadi, lekin qator endi anonim odamga ishora qilmaydi."""
+        UsernameHistory.objects.create(user=full_user, old_username="Aziz")
+
+        account.anonymize(full_user)
+
+        assert UsernameHistory.objects.get(old_username="Aziz").user_id is None
+
+    def test_yozuv_bolmasa_band_emas(self, full_user) -> None:
+        """Salbiy test: tekshiruv haqiqatan o'lchayaptimi, doim `True` qaytarmaydimi."""
+        account.anonymize(full_user)
+
+        assert usernames.reserved("hech-qachon-bolmagan-nom") is False
+
+
 class TestExport:
     def test_ozining_malumoti(self, full_user) -> None:
         c = APIClient()
