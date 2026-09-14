@@ -53,3 +53,34 @@ terms (`Arena`, `Duel`, `Menyu`, `Chempionat`) are genuine loanwords. A locale
 stuck on the source dictionary would show ~100%, not 9%. The ratio is the
 check; eyeballing two similar sentences is not.
 
+## Follow-up: the `common.empty` rename
+
+The bare `empty` key became `common.empty` (10 dictionary declarations, 34
+call sites in 31 files). `tsc` proves the key exists and the call
+type-checks; it does not prove the text reaches the screen.
+
+`common.empty` is the fallback shown on every empty list, so `/blog` was
+opened in three locales and the rendered text compared against the dictionary
+value:
+
+| locale | `<html lang>` | rendered | expected |
+| --- | --- | --- | --- |
+| `uz` | `uz` | `Hozircha bo'sh` | ✅ same |
+| `ru` | `ru` | `Пока пусто` | ✅ same |
+| `kaa` | `kaa` | `Házirshe bos` | ✅ same |
+
+`<html lang>` is recorded because it proves the locale actually switched —
+otherwise a matching string could just be a stale page.
+
+Two traps met while writing this check, both worth remembering:
+
+1. **The first locale reads as MISSING.** A freshly launched browser sits on
+   `about:blank`; the cookie written there is discarded on the first real
+   navigation. The tell was `html.lang='kaa'` on the `uz` row. Fix: write the
+   cookie, navigate, write it again, navigate.
+2. **`/attempts` was the wrong page.** It requires sign-in, so the empty
+   state never renders and the check reported three false MISSINGs. A public
+   page with an empty data set (`/blog`, `/updates`, `/roadmaps`) is required,
+   confirmed first with `curl … | grep "Hozircha bo'sh"`.
+
+
