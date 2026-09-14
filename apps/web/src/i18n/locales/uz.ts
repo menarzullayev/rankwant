@@ -1351,6 +1351,16 @@ export const uz = {
   "submit.allSamplesPass": "Barcha namunalar mos — yuborishingiz mumkin",
   "submit.yourOutput": "Sizning chiqishingiz",
   "submit.sample": "Namuna {order} ·",
+  "admin.text.noEventsInWindow": "Bu oynada hodisa yo'q. Funnel ro'yxatdan o'tish va kirish sahifalarida yig'iladi — trafik bo'lsa paydo bo'ladi.",
+  "admin.text.funnelNote": "Foizlar birinchi qadamga nisbatan. Sessiya bo'yicha sanaladi — bir odam bir marta hisoblanadi.",
+  "admin.text.noSignupYet": "Hali tugagan ro'yxatdan o'tish yo'q. Guruh cookie'da saqlanadi va har bir hodisa bilan birga yuboriladi.",
+  "admin.text.skipped": "o'tkazib yubordi",
+  "admin.text.noData": "Ma'lumot yo'q.",
+  "admin.text.noDataCountries": "Ma'lumot yo'q — mamlakat ro'yxatdan o'tgandan keyin ma'lum bo'ladi.",
+  "admin.help.testsStoredRemotely": "Judge testlarni DB dan emas, S3 dan o'qiydi: matn yuklanganda tests/{slug}/<order>.in/.out sifatida saqlanadi, bu yerda faqat havola ko'rinadi. Bir xil tartib raqami qayta yuklansa — ustiga yoziladi.",
+  "admin.text.noTestsYet": "Hali test yo'q — yechimlar tekshirilmaydi.",
+  "admin.text.addTest": "Test qo'shish",
+  "archive.mostViewed": "Ko'p ko'rilgan",
 } as const;
 
 export type MessageKey = keyof typeof uz;

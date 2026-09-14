@@ -405,6 +405,12 @@ JSX_TEXT_NOISE = re.compile(r"^[\s.,;:!?·—–\-/|&()\[\]`]*$")
 #: text node never contains a paren, a semicolon or an equals sign.
 JSX_TEXT_CODEISH = re.compile(r"[();=]")
 
+#: HTML entities inside JSX text. `bo&apos;yicha` contains a semicolon, and
+#: the code filter above read that semicolon as a statement separator — so
+#: every Uzbek sentence with an apostrophe was silently skipped. Entities are
+#: removed before the filter runs; the text itself is unaffected.
+JSX_TEXT_ENTITY = re.compile(r"&[a-zA-Z]+;|&#\d+;")
+
 #: A bare PascalCase token is a type or component name, not a label.
 PASCAL_TOKEN = re.compile(r"^[A-Z][a-zA-Z0-9]*$")
 
@@ -598,7 +604,7 @@ def check_file(path: pathlib.Path) -> list[str]:
         body = m.group(1).strip()
         if JSX_TEXT_NOISE.match(body):
             continue
-        if JSX_TEXT_CODEISH.search(body):
+        if JSX_TEXT_CODEISH.search(JSX_TEXT_ENTITY.sub("", body)):
             continue
         if PASCAL_TOKEN.match(body):
             continue

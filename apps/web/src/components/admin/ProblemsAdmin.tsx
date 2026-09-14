@@ -274,10 +274,7 @@ function ProblemTestsPanel({
   return (
     <div className="space-y-3">
       <p className="text-theme-xs rw-dim">
-        Judge testlarni DB dan emas, S3 dan o&apos;qiydi: matn yuklanganda{" "}
-        <code>tests/{problem.slug}/&lt;order&gt;.in/.out</code> sifatida
-        saqlanadi, bu yerda faqat havola ko&apos;rinadi. Bir xil tartib raqami
-        qayta yuklansa — ustiga yoziladi.
+        {t(locale, "admin.help.testsStoredRemotely")}
       </p>
 
       {error && (
@@ -323,7 +320,7 @@ function ProblemTestsPanel({
           {tests.length === 0 && (
             <tr>
               <td colSpan={6} className="px-2 py-3 text-center rw-faint">
-                Hali test yo&apos;q — yechimlar tekshirilmaydi.
+                {t(locale, "admin.text.noTestsYet")}
               </td>
             </tr>
           )}
@@ -336,7 +333,7 @@ function ProblemTestsPanel({
         className="grid gap-3 md:grid-cols-2"
       >
         <p className="text-theme-sm font-medium rw-strong md:col-span-2">
-          Test qo&apos;shish
+          {t(locale, "admin.text.addTest")}
         </p>
         <label className="block">
           <span className="mb-1 block text-theme-xs rw-dim-2">

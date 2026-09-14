@@ -114,9 +114,7 @@ export function AnalyticsDashboard() {
           <Card title={t(locale, "admin.title.signupFunnel")}>
             {data.total_events === 0 ? (
               <p className="text-theme-sm rw-dim">
-                Bu oynada hodisa yo&apos;q. Funnel ro&apos;yxatdan o&apos;tish va
-                kirish sahifalarida yig&apos;iladi — trafik bo&apos;lsa paydo
-                bo&apos;ladi.
+                {t(locale, "admin.text.noEventsInWindow")}
               </p>
             ) : (
               <div className="space-y-4">
@@ -155,8 +153,7 @@ export function AnalyticsDashboard() {
                   </div>
                 ))}
                 <p className="text-theme-xs rw-faint">
-                  Foizlar birinchi qadamga nisbatan. Sessiya bo&apos;yicha
-                  sanaladi — bir odam bir marta hisoblanadi.
+                  {t(locale, "admin.text.funnelNote")}
                 </p>
               </div>
             )}
@@ -165,9 +162,7 @@ export function AnalyticsDashboard() {
           <Card title={t(locale, "admin.title.abRegion")}>
             {data.variant.total === 0 ? (
               <p className="text-theme-sm rw-dim">
-                Hali tugagan ro&apos;yxatdan o&apos;tish yo&apos;q. Guruh
-                cookie&apos;da saqlanadi va har bir hodisa bilan birga
-                yuboriladi.
+                {t(locale, "admin.text.noSignupYet")}
               </p>
             ) : (
               <div className="space-y-3">
@@ -193,7 +188,7 @@ export function AnalyticsDashboard() {
                 <span className="text-title-sm font-bold rw-strong">
                   {data.step2.skipped_share}%
                 </span>
-                <span className="text-theme-sm rw-dim">o&apos;tkazib yubordi</span>
+                <span className="text-theme-sm rw-dim">{t(locale, "admin.text.skipped")}</span>
               </div>
               <p className="mt-2 text-theme-sm rw-dim">
                 {data.step2.saved} saqladi · {data.step2.skipped} o&apos;tkazib yubordi
@@ -229,7 +224,7 @@ export function AnalyticsDashboard() {
           <div className="grid gap-4 sm:grid-cols-2">
             <Card title={t(locale, "admin.title.languages")}>
               {data.locales.length === 0 ? (
-                <p className="text-theme-sm rw-dim">Ma&apos;lumot yo&apos;q.</p>
+                <p className="text-theme-sm rw-dim">{t(locale, "admin.text.noData")}</p>
               ) : (
                 <BarList
                   rows={data.locales.map((l) => ({ label: l.locale, value: l.sessions }))}
@@ -239,8 +234,7 @@ export function AnalyticsDashboard() {
             <Card title={t(locale, "admin.title.countries")}>
               {data.countries.length === 0 ? (
                 <p className="text-theme-sm rw-dim">
-                  Ma&apos;lumot yo&apos;q — mamlakat ro&apos;yxatdan o&apos;tgandan
-                  keyin ma&apos;lum bo&apos;ladi.
+                  {t(locale, "admin.text.noDataCountries")}
                 </p>
               ) : (
                 <BarList
@@ -252,7 +246,7 @@ export function AnalyticsDashboard() {
 
           <Card title={t(locale, "admin.title.daily")}>
             {data.daily.length === 0 ? (
-              <p className="text-theme-sm rw-dim">Ma&apos;lumot yo&apos;q.</p>
+              <p className="text-theme-sm rw-dim">{t(locale, "admin.text.noData")}</p>
             ) : (
               <Daily rows={data.daily} />
             )}

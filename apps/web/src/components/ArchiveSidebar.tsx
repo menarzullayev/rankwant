@@ -207,7 +207,7 @@ function Digest({
       {popular.length > 0 && (
         <div>
           <p className="mb-1.5 text-theme-xs font-medium tracking-wider rw-faint uppercase">
-            Ko&apos;p ko&apos;rilgan
+            {t(locale, "archive.mostViewed")}
           </p>
           <ul className="space-y-1">
             {popular.slice(0, 5).map((problem) => (
