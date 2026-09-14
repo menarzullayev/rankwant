@@ -784,6 +784,56 @@ def neg_workers_unreadable_is_not_green() -> tuple[bool, str]:
     return True, "workers/o'qilmadi: exit 2 va sayt haqida xulosa chiqmaydi"
 
 
+def neg_workers_crlf_stub_passes() -> tuple[bool, str]:
+    """CRLF bilan kelgan `True` ham «ha» deb o'qilsinmi?
+
+    ⚠️ HAQIQIY xato shu yerda yashiringan edi (2026-09-14 da o'lchandi).
+    Windows'da Python `print()` CRLF yozadi; `read` esa faqat `\\n` ni
+    ajratadi, shuning uchun qiymat `True\\r` bo'lib qoladi va
+    `[ "$failopen" = "True" ]` HECH QACHON mos kelmaydi. Natijada
+    **himoyalangan route «himoyasiz» deb ko'rinadi** — ya'ni skript
+    yolg'on XATO beradi.
+
+    Avvalgi ikkita test buni tutmadi, chunki ular stub'ni `\\n` bilan
+    uzatardi: test o'lchov muhitini takrorlamagan edi. Shuning uchun bu
+    test stub'ga ATAYLAB `\\r` qo'shadi.
+    """
+    stub = (
+        "rankwant.uz\trankwant.uz/*\tTrue\r\n"
+        "rankwant.uz\twww.rankwant.uz/*\tTrue\r\n"
+        "bugvector.uz\trankwant.bugvector.uz/*\tTrue\r\n"
+    )
+    code, out = _run_workers(stub)
+    if code != 0:
+        return False, (
+            "workers/CRLF: himoyalangan route «himoyasiz» deb o'qildi "
+            f"(exit {code}) — `\\r` tozalanmayapti"
+        )
+    if out.count("ha") < 3:
+        return False, f"workers/CRLF: 3 ta «ha» kutilgan edi — {out.strip()[:120]}"
+    return True, "workers/CRLF: `\\r` tozalanadi, 3 ta route «ha» (exit 0)"
+
+
+def neg_workers_restored_gate() -> tuple[bool, str]:
+    """Himoyalangan holat YASHIL bo'lishini talab qiladi (ijobiy nazorat).
+
+    Negativ testlar faqat «yiqiladimi?» ni so'raydi. Skript hamma narsani
+    «himoyasiz» deb qichqirsa, ularning BARCHASI yashil bo'lardi — va
+    skript foydasiz bo'lardi. Bu test teskari tomonni qo'riqlaydi.
+    """
+    stub = (
+        "rankwant.uz\trankwant.uz/*\tTrue\n"
+        "rankwant.uz\twww.rankwant.uz/*\tTrue\n"
+        "bugvector.uz\trankwant.bugvector.uz/*\tTrue\n"
+    )
+    code, out = _run_workers(stub)
+    if code != 0:
+        return False, f"workers/yashil: himoyalangan holat exit {code} berdi (0 kerak)"
+    if "himoyalangan" not in out:
+        return False, "workers/yashil: muvaffaqiyat xabari ko'rinmadi"
+    return True, "workers/yashil: 3 ta route himoyalangan (exit 0)"
+
+
 def _bash() -> str:
     """`bash` ning to'liq yo'li.
 
@@ -895,6 +945,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         [
             ("fail_open yopiq bo'lsa tutilsin", neg_workers_fail_open_false),
             ("o'qib bo'lmasa xato, «yaxshi» emas", neg_workers_unreadable_is_not_green),
+            ("CRLF li `True` ham «ha» bo'lsin", neg_workers_crlf_stub_passes),
+            ("himoyalangan holat yashil", neg_workers_restored_gate),
         ],
     ),
 ]

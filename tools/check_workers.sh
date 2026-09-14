@@ -83,7 +83,15 @@ printf '%s\n' '-----------------------------------------------------------------
 
 unprotected=0
 total=0
+# ⚠️ `failopen` dan `\r` ni OLIB TASHLASH shart. Windows'da Python `print()`
+# CRLF yozadi, `read` esa faqat `\n` ni ajratadi — natijada qiymat `True\r`
+# bo'lib qoladi va `[ "$failopen" = "True" ]` HECH QACHON mos kelmaydi.
+# Ya'ni himoyalangan route «himoyasiz» deb ko'rinadi. 2026-09-14 da
+# o'lchandi: uchala route `True` edi, skript ikkitasini «YOQ» dedi.
 while IFS=$'\t' read -r zone pattern failopen; do
+  zone="${zone%$'\r'}"
+  pattern="${pattern%$'\r'}"
+  failopen="${failopen%$'\r'}"
   [ -z "$zone" ] && continue
   total=$((total + 1))
   if [ "$failopen" = "True" ]; then
