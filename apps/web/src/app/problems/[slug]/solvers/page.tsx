@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 
 import { ProblemTabs } from "@/components/ProblemTabs";
 import { Card } from "@/components/ui/Card";
+import { date, fill, t, type Locale } from "@/i18n/messages";
+import { getLocale } from "@/i18n/server";
 import { api, ApiError, type Solver } from "@/lib/api";
 
 type Props = {
@@ -17,19 +19,20 @@ export async function generateMetadata({
   params,
 }: Pick<Props, "params">): Promise<Metadata> {
   const { slug } = await params;
-  return { title: `Yechganlar · ${slug}` };
+  const locale = await getLocale();
+  return { title: `${t(locale, "problem.tab.solvers")} · ${slug}` };
 }
 
 /** Saralash — KEP'dagi «Solvers | Latest | Rating | Shortest Code».
  *  Har biri boshqa savolga javob beradi, shuning uchun bittasi yetmaydi. */
 const ORDERINGS = [
-  ["first", "Birinchi yechganlar"],
-  ["fast", "Eng tez"],
-  ["short", "Eng qisqa kod"],
-  ["tries", "Kam urinish"],
+  ["first", "problem.solvers.first"],
+  ["fast", "problem.solvers.fast"],
+  ["short", "problem.solvers.short"],
+  ["tries", "problem.solvers.tries"],
 ] as const;
 
-function Row({ solver }: { solver: Solver }) {
+function Row({ solver, locale }: { solver: Solver; locale: Locale }) {
   return (
     <tr className="text-theme-sm">
       <td className="px-5 py-2.5">
@@ -55,7 +58,7 @@ function Row({ solver }: { solver: Solver }) {
       </td>
       <td className="hidden px-5 py-2.5 text-right rw-faint md:table-cell">
         <time dateTime={solver.solved_at}>
-          {new Date(solver.solved_at).toLocaleDateString("uz")}
+          {date(solver.solved_at, locale)}
         </time>
       </td>
     </tr>
@@ -63,6 +66,7 @@ function Row({ solver }: { solver: Solver }) {
 }
 
 export default async function SolversPage({ params, searchParams }: Props) {
+  const locale = await getLocale();
   const { slug } = await params;
   const { ordering = "first" } = await searchParams;
 
@@ -96,15 +100,17 @@ export default async function SolversPage({ params, searchParams }: Props) {
       {solvers.count === 0 ? (
         <Card>
           <p className="text-theme-sm rw-faint">
-            Bu masalani hali hech kim yechmagan — birinchi bo&apos;ling.
+            {t(locale, "problem.solvers.none")}
           </p>
         </Card>
       ) : (
         <Card
-          title={`${solvers.count} kishi yechdi`}
+          title={fill(t(locale, "problem.solvers.count"), {
+            count: solvers.count,
+          })}
           action={
             <div className="flex flex-wrap gap-1">
-              {ORDERINGS.map(([value, label]) => (
+              {ORDERINGS.map(([value, labelKey]) => (
                 <Link
                   key={value}
                   href={`/problems/${slug}/solvers?ordering=${value}`}
@@ -115,7 +121,7 @@ export default async function SolversPage({ params, searchParams }: Props) {
                       : "rw-dim rw-hover-bg"
                   }`}
                 >
-                  {label}
+                  {t(locale, labelKey)}
                 </Link>
               ))}
             </div>
@@ -141,7 +147,7 @@ export default async function SolversPage({ params, searchParams }: Props) {
               </thead>
               <tbody className="rw-divide divide-y">
                 {solvers.results.map((solver) => (
-                  <Row key={solver.username} solver={solver} />
+                  <Row key={solver.username} solver={solver} locale={locale} />
                 ))}
               </tbody>
             </table>

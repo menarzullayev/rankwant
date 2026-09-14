@@ -4,6 +4,8 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { useSession } from "@/context/SessionContext";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { t } from "@/i18n/messages";
 import { FlagIcon } from "@/icons";
 import { REPORT_REASONS, reportProblem } from "@/lib/api";
 
@@ -19,6 +21,7 @@ import { REPORT_REASONS, reportProblem } from "@/lib/api";
  */
 export function ReportProblem({ slug }: { slug: string }) {
   const { user, ready } = useSession();
+  const locale = useLocale();
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState<string>(REPORT_REASONS[0][0]);
   const [comment, setComment] = useState("");
@@ -37,7 +40,7 @@ export function ReportProblem({ slug }: { slug: string }) {
       setDone(true);
       setOpen(false);
     } catch {
-      setError("Yuborilmadi — qaytadan urinib ko'ring");
+      setError(t(locale, "report.failed"));
     } finally {
       setBusy(false);
     }
@@ -45,7 +48,7 @@ export function ReportProblem({ slug }: { slug: string }) {
 
   if (done)
     return (
-      <p className="text-theme-sm rw-ok-ink">Xabaringiz yuborildi — rahmat.</p>
+      <p className="text-theme-sm rw-ok-ink">{t(locale, "report.done")}</p>
     );
 
   if (!open)
@@ -56,18 +59,18 @@ export function ReportProblem({ slug }: { slug: string }) {
         className="inline-flex items-center gap-1.5 rw-radius-sm px-2 py-1 text-theme-sm rw-faint transition rw-hover-bg"
       >
         <FlagIcon className="size-3.5" />
-        Xato topdingizmi?
+        {t(locale, "report.open")}
       </button>
     );
 
   return (
     <div className="rw-panel space-y-3 p-4">
       <p className="text-theme-sm font-medium rw-strong">
-        Masaladagi nuqson haqida xabar
+        {t(locale, "report.title")}
       </p>
 
       <div className="flex flex-wrap gap-1.5">
-        {REPORT_REASONS.map(([value, label]) => (
+        {REPORT_REASONS.map(([value, labelKey]) => (
           <button
             key={value}
             type="button"
@@ -79,14 +82,14 @@ export function ReportProblem({ slug }: { slug: string }) {
                 : "rw-dim rw-hover-bg"
             }`}
           >
-            {label}
+            {t(locale, labelKey)}
           </button>
         ))}
       </div>
 
       <label className="block">
         <span className="mb-1 block text-theme-xs rw-faint">
-          Izoh (ixtiyoriy) — qaysi joyda va nima noto&apos;g&apos;ri?
+          {t(locale, "report.commentLabel")}
         </span>
         <textarea
           value={comment}
@@ -99,10 +102,10 @@ export function ReportProblem({ slug }: { slug: string }) {
 
       <div className="flex flex-wrap items-center gap-2">
         <Button onClick={send} disabled={busy}>
-          {busy ? "Yuborilmoqda…" : "Yuborish"}
+          {busy ? t(locale, "report.sending") : t(locale, "report.send")}
         </Button>
         <Button variant="outline" onClick={() => setOpen(false)}>
-          Bekor qilish
+          {t(locale, "report.cancel")}
         </Button>
         {error && <span className="text-theme-sm rw-bad-ink">{error}</span>}
       </div>

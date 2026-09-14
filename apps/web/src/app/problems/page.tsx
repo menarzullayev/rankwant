@@ -326,12 +326,13 @@ export default async function ProblemsPage({ searchParams }: Props) {
           </Table>
 
           <Pager
+            locale={locale}
             page={page}
             count={data.count}
             pageSize={pageSize}
             href={pageHref}
             sizeHref={sizeHref}
-            label="masala"
+            label={t(locale, "problem.one")}
           />
         </Card>
 

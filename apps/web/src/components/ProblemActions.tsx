@@ -3,6 +3,8 @@
 import { useState } from "react";
 
 import { useSession } from "@/context/SessionContext";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { fill, t } from "@/i18n/messages";
 import {
   rateProblem,
   setFavourite,
@@ -17,6 +19,7 @@ const SCORES = [1, 2, 3, 4, 5];
  * signal; sevimlilar uzun arxivda yo'qotmaslik uchun. */
 export function ProblemActions({ problem }: { problem: ProblemDetail }) {
   const { user, ready } = useSession();
+  const locale = useLocale();
   const [favourite, setFav] = useState(problem.is_favourite);
   const [mine, setMine] = useState(problem.my_rating);
   const [rating, setRating] = useState(problem.rating);
@@ -86,7 +89,7 @@ export function ProblemActions({ problem }: { problem: ProblemDetail }) {
             favourite ? "rw-accent-ink" : "rw-dim"
           }`}
         >
-          {favourite ? "★ Sevimlilarda" : "☆ Sevimlilarga"}
+          {t(locale, favourite ? "problem.inFavourites" : "problem.addFavourite")}
         </button>
       )}
 
@@ -96,7 +99,13 @@ export function ProblemActions({ problem }: { problem: ProblemDetail }) {
           onClick={() => vote(1)}
           disabled={!signedIn}
           aria-pressed={votes.mine === 1}
-          aria-label="Yoqdi"
+          // ⚠️ Ko'rinadigan matn — `▲ 12`. Ilgari `aria-label="Yoqdi"`
+          // edi, ya'ni ovoz bilan boshqaradigan foydalanuvchi ekranda
+          // ko'rgan raqamni ayta olmasdi (WCAG 2.5.3, «Label in Name»).
+          // Lighthouse tutdi: `label-content-name-mismatch`. Endi nom
+          // ko'rinadigan matnni O'Z ICHIGA OLADI.
+          aria-label={`${t(locale, "problem.voteUp")} — ▲ ${votes.up}`}
+          title={t(locale, "problem.voteUpTitle")}
           className={voteStyle(votes.mine === 1)}
         >
           ▲ {votes.up}
@@ -106,7 +115,8 @@ export function ProblemActions({ problem }: { problem: ProblemDetail }) {
           onClick={() => vote(-1)}
           disabled={!signedIn}
           aria-pressed={votes.mine === -1}
-          aria-label="Yoqmadi"
+          aria-label={`${t(locale, "problem.voteDown")} — ▼ ${votes.down}`}
+          title={t(locale, "problem.voteDownTitle")}
           className={voteStyle(votes.mine === -1)}
         >
           ▼ {votes.down}
@@ -116,8 +126,11 @@ export function ProblemActions({ problem }: { problem: ProblemDetail }) {
       <div className="flex items-center gap-1.5">
         <span className="rw-faint">
           {rating.average !== null
-            ? `${rating.average} · ${rating.count} baho`
-            : "Baho yo'q"}
+            ? fill(t(locale, "problem.ratingSummary"), {
+                average: rating.average,
+                count: rating.count,
+              })
+            : t(locale, "problem.ratingEmpty")}
         </span>
         {signedIn && (
           <span className="flex items-center">
@@ -126,7 +139,7 @@ export function ProblemActions({ problem }: { problem: ProblemDetail }) {
                 key={score}
                 type="button"
                 onClick={() => rate(score)}
-                aria-label={`${score} baho berish`}
+                aria-label={fill(t(locale, "problem.rateWith"), { score })}
                 className={`px-0.5 transition ${
                   mine !== null && score <= mine ? "rw-accent-ink" : "rw-faint"
                 }`}

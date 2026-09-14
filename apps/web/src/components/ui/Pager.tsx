@@ -1,6 +1,8 @@
 import type { Route } from "next";
 import Link from "next/link";
 
+import { t, type Locale } from "@/i18n/messages";
+
 /** Ko'rinadigan sahifa raqamlari: chetlar doim, joriyning atrofi, orasi «…».
  * Katta arxivda (2000+ masala, 80+ sahifa) hammasini chizib bo'lmaydi. */
 function pages(current: number, total: number): (number | "gap")[] {
@@ -28,13 +30,17 @@ const cell =
 export const PAGE_SIZES = [25, 50, 100] as const;
 
 export function Pager({
+  locale,
   page,
   count,
   pageSize,
   href,
   sizeHref,
-  label = "yozuv",
+  label,
 }: {
+  /** Ko'rsatiladigan til. Komponent serverda ham, klientda ham ishlaydi,
+   *  shuning uchun hook chaqirilmaydi — til yuqoridan beriladi. */
+  locale: Locale;
   page: number;
   count: number;
   pageSize: number;
@@ -42,6 +48,7 @@ export function Pager({
   href: (page: number) => Route;
   /** Sahifa hajmini almashtiruvchi URL. Berilmasa tanlagich chizilmaydi. */
   sizeHref?: (size: number) => Route;
+  /** Birlik nomi ("masala", "yozuv"). Berilmasa `pager.entries`. */
   label?: string;
 }) {
   const total = Math.max(1, Math.ceil(count / pageSize));
@@ -52,12 +59,12 @@ export function Pager({
 
   return (
     <nav
-      aria-label="Sahifalar"
+      aria-label={t(locale, "pager.label")}
       className="flex flex-wrap items-center justify-between gap-3 px-5 py-4"
     >
       <div className="flex flex-wrap items-center gap-3">
         <p className="text-theme-sm rw-dim">
-          {from}–{to} / {count} {label}
+          {from}–{to} / {count} {label ?? t(locale, "pager.entries")}
         </p>
         {sizeHref && count > PAGE_SIZES[0] && (
           <span className="flex items-center gap-1">
@@ -92,7 +99,7 @@ export function Pager({
               rel="prev"
               className={`${cell} rw-dim-2 rw-hover-bg`}
             >
-              Oldingi
+              {t(locale, "pager.previous")}
             </Link>
           )}
 
@@ -126,7 +133,7 @@ export function Pager({
               rel="next"
               className={`${cell} rw-dim-2 rw-hover-bg`}
             >
-              Keyingi
+              {t(locale, "pager.next")}
             </Link>
           )}
         </div>

@@ -4,6 +4,8 @@ import { useState } from "react";
 
 import { Card } from "@/components/ui/Card";
 import { CopyIcon } from "@/icons";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { fill, t } from "@/i18n/messages";
 import type { Sample } from "@/lib/api";
 
 /** Namunalar jadvali.
@@ -15,6 +17,7 @@ import type { Sample } from "@/lib/api";
  * (RoboContest ham shunday qiladi).
  */
 function CopyButton({ text, label }: { text: string; label: string }) {
+  const locale = useLocale();
   const [done, setDone] = useState(false);
 
   async function copy() {
@@ -34,7 +37,7 @@ function CopyButton({ text, label }: { text: string; label: string }) {
       type="button"
       onClick={copy}
       aria-label={label}
-      title={done ? "Nusxalandi" : "Nusxalash"}
+      title={done ? t(locale, "problem.copied") : t(locale, "problem.copy")}
       className={`shrink-0 rw-radius-sm p-1 transition rw-hover-bg ${
         done ? "rw-ok-ink" : "rw-faint"
       }`}
@@ -58,10 +61,11 @@ function Cell({ text, label }: { text: string; label: string }) {
 }
 
 export function SampleTests({ samples }: { samples: Sample[] }) {
+  const locale = useLocale();
   if (samples.length === 0) return null;
 
   return (
-    <Card title="Namunalar" bodyClassName="p-0">
+    <Card title={t(locale, "problem.samples")} bodyClassName="p-0">
       {/* Kod ustunlari tor ekranga sig'maydi — jadval o'z ichida
           gorizontal aylanadi, sahifa emas. */}
       <div className="min-w-0 overflow-x-auto">
@@ -72,10 +76,10 @@ export function SampleTests({ samples }: { samples: Sample[] }) {
                 #
               </th>
               <th className="border-l rw-divider px-3 py-2 text-left text-theme-xs font-medium rw-faint">
-                Kirish
+                {t(locale, "problem.sampleInput")}
               </th>
               <th className="border-l rw-divider px-3 py-2 text-left text-theme-xs font-medium rw-faint">
-                Chiqish
+                {t(locale, "problem.sampleOutput")}
               </th>
             </tr>
           </thead>
@@ -87,11 +91,15 @@ export function SampleTests({ samples }: { samples: Sample[] }) {
                 </td>
                 <Cell
                   text={sample.input}
-                  label={`${sample.order}-namuna kirishini nusxalash`}
+                  label={fill(t(locale, "problem.copyInput"), {
+                    order: sample.order,
+                  })}
                 />
                 <Cell
                   text={sample.expected}
-                  label={`${sample.order}-namuna chiqishini nusxalash`}
+                  label={fill(t(locale, "problem.copyOutput"), {
+                    order: sample.order,
+                  })}
                 />
               </tr>
             ))}

@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { Card } from "@/components/ui/Card";
 import { VerdictBadge } from "@/components/VerdictBadge";
-import { type Locale } from "@/i18n/messages";
+import { dateTime, type Locale } from "@/i18n/messages";
 import { Badge } from "@/components/ui/Badge";
 import type {
   ArchiveProgress,
@@ -89,7 +89,7 @@ function Continue({ problem }: { problem: Problem }) {
   );
 }
 
-function Upcoming({ event }: { event: CalendarEvent }) {
+function Upcoming({ event, locale }: { event: CalendarEvent; locale: Locale }) {
   return (
     <Card title="Yaqin musobaqa" bodyClassName="space-y-2">
       <Link
@@ -100,7 +100,7 @@ function Upcoming({ event }: { event: CalendarEvent }) {
       </Link>
       <p className="text-theme-xs rw-faint">
         <time dateTime={event.start_at}>
-          {new Date(event.start_at).toLocaleString("uz")}
+          {dateTime(event.start_at, locale)}
         </time>
       </p>
     </Card>
@@ -358,7 +358,7 @@ export function ArchiveSidebar({
       )}
       <Progress data={progress} />
       <TopicStrength topics={skills} />
-      {upcoming && <Upcoming event={upcoming} />}
+      {upcoming && <Upcoming event={upcoming} locale={locale} />}
       {roadmaps.length > 0 && <Roadmaps items={roadmaps} />}
       <Digest locale={locale} attempts={attempts} popular={popular} />
     </aside>

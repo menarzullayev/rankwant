@@ -7,6 +7,8 @@ import { Markdown } from "@/components/Markdown";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useSession } from "@/context/SessionContext";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { fill, t } from "@/i18n/messages";
 import { ApiError, unlockEditorial, type EditorialState } from "@/lib/api";
 import Link from "next/link";
 
@@ -25,6 +27,7 @@ export function Editorial({
   state: EditorialState;
 }) {
   const { user, ready } = useSession();
+  const locale = useLocale();
   const [open, setOpen] = useState(false);
   const [body, setBody] = useState(text);
   const [busy, setBusy] = useState(false);
@@ -41,8 +44,8 @@ export function Editorial({
     } catch (caught) {
       setError(
         caught instanceof ApiError && caught.status === 402
-          ? `Balans yetarli emas — ${state.price} Qvant kerak`
-          : "Ochib bo'lmadi, qaytadan urinib ko'ring",
+          ? fill(t(locale, "editorial.notEnough"), { price: state.price })
+          : t(locale, "editorial.unlockFailed"),
       );
     } finally {
       setBusy(false);
@@ -53,11 +56,11 @@ export function Editorial({
 
   if (!user) {
     return (
-      <Card title="Yechim tahlili">
+      <Card title={t(locale, "editorial.title")}>
         <p className="text-theme-sm rw-faint">
-          Tahlil hisobga kirgan foydalanuvchilar uchun.{" "}
+          {t(locale, "editorial.lockedTitle")}{" "}
           <Link href={"/login?tab=login" as Route} className="underline rw-accent-ink">
-            Kirish
+            {t(locale, "editorial.login")}
           </Link>
         </p>
       </Card>
@@ -66,16 +69,17 @@ export function Editorial({
 
   if (!body) {
     return (
-      <Card title="Yechim tahlili">
+      <Card title={t(locale, "editorial.title")}>
         <div className="space-y-3">
           <p className="text-theme-sm rw-faint">
-            Masalani yechsangiz tahlil <strong>bepul</strong> ochiladi — va
-            o&apos;shanda undan haqiqiy foyda bo&apos;ladi. Hoziroq
-            ko&apos;rmoqchi bo&apos;lsangiz {state.price} Qvant.
+            {t(locale, "editorial.lockedLead")}{" "}
+            {fill(t(locale, "editorial.lockedBody"), { price: state.price })}
           </p>
           <div className="flex flex-wrap items-center gap-3">
             <Button variant="outline" onClick={unlock} disabled={busy}>
-              {busy ? "Ochilmoqda…" : `Ochish — ${state.price} Qvant`}
+              {busy
+                ? t(locale, "editorial.unlocking")
+                : fill(t(locale, "editorial.unlockFor"), { price: state.price })}
             </Button>
             {error && <span className="text-theme-sm rw-bad-ink">{error}</span>}
           </div>
@@ -86,14 +90,14 @@ export function Editorial({
 
   return (
     <Card
-      title="Yechim tahlili"
+      title={t(locale, "editorial.title")}
       action={
         <button
           type="button"
           onClick={() => setOpen((value) => !value)}
           className="rw-radius-sm px-2.5 py-1 text-theme-sm font-medium rw-accent-ink transition rw-hover-accent"
         >
-          {open ? "Yashirish" : "Ko'rsatish"}
+          {open ? t(locale, "editorial.hide") : t(locale, "editorial.show")}
         </button>
       }
     >
@@ -102,9 +106,9 @@ export function Editorial({
       ) : (
         <p className="text-theme-sm rw-faint">
           {state.access === "solved"
-            ? "Masalani yechdingiz — tahlil ochiq."
-            : "Tahlil ochiq."}{" "}
-          O&apos;zingiz urinib ko&apos;rgach oching.
+            ? t(locale, "editorial.solvedFree")
+            : t(locale, "editorial.open")}{" "}
+          {t(locale, "editorial.tryFirst")}
         </p>
       )}
     </Card>

@@ -249,6 +249,7 @@ export default async function UpdatesPage({ searchParams }: Props) {
 
       <Card bodyClassName="p-0">
         <Pager
+          locale={locale}
           page={page}
           count={data.count}
           pageSize={pageSize}

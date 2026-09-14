@@ -119,6 +119,7 @@ export async function ContestsTab({
         </TBody>
       </Table>
       <Pager
+        locale={locale}
         page={page}
         count={data.count}
         pageSize={PAGE_SIZE}

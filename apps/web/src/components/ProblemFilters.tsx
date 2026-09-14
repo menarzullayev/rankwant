@@ -4,35 +4,42 @@ import type { Route } from "next";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
+import { LOCALE_NAMES, type Locale } from "@/i18n/messages";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { fill, t } from "@/i18n/messages";
 import { CloseIcon, SearchIcon } from "@/icons";
 import { useHideTags } from "@/lib/hideTags";
 
 export type FilterTopic = { slug: string; label: string };
 
+// ⚠️ Ikkala element: qiymat (URL'ga ketadi) va tarjima KALITI.
+// Ilgari ikkinchisi tayyor o'zbekcha matn edi — filtr panelining
+// hamma yozuvi 9 tilda ham o'zbekcha qolardi. Kalitlarni o'zgartirsangiz
+// `uz.ts` dagi `filter.*` kalitlarini ham yangilang.
 const SORTS = [
-  ["difficulty", "Eng oson"],
-  ["-difficulty", "Eng qiyin"],
-  ["-solved_count", "Ko'p yechilgan"],
-  ["-created_at", "Yangi"],
+  ["difficulty", "filter.sort.easiest"],
+  ["-difficulty", "filter.sort.hardest"],
+  ["-solved_count", "filter.sort.mostSolved"],
+  ["-created_at", "filter.sort.newest"],
 ] as const;
 
 const LEVELS = [
-  ["beginner", "Boshlang'ich"],
-  ["basic", "Asosiy"],
-  ["intermediate", "O'rta"],
-  ["upper", "Yaxshi"],
-  ["hard", "Qiyin"],
-  ["expert", "Ekspert"],
-  ["master", "Master"],
+  ["beginner", "level.beginner"],
+  ["basic", "level.basic"],
+  ["intermediate", "level.intermediate"],
+  ["upper", "level.upper"],
+  ["hard", "level.hard"],
+  ["expert", "level.expert"],
+  ["master", "level.master"],
 ] as const;
 
 const STATUSES = [
-  ["solved=false", "Yechilmagan"],
-  ["solved=true", "Yechilgan"],
+  ["solved=false", "filter.status.unsolved"],
+  ["solved=true", "filter.status.solved"],
   // Urinilgan — `solved=false` bilan birga «taqalib qolganlar».
-  ["attempted=true", "Urinib ko'rgan"],
-  ["favourite=true", "Sevimlilarim"],
-  ["recommended=true", "Menga tavsiya"],
+  ["attempted=true", "filter.status.attempted"],
+  ["favourite=true", "filter.status.favourites"],
+  ["recommended=true", "filter.status.recommended"],
 ] as const;
 
 /** Panelda boshqariladigan kalitlar — saralash va qidiruv panelda emas,
@@ -47,11 +54,10 @@ const PANEL_KEYS = [
   "statement_locale",
 ] as const;
 
-const LOCALE_LABELS: Record<string, string> = {
-  uz: "O'zbekcha",
-  ru: "Ruscha",
-  en: "Inglizcha",
-};
+// Til nomlari `LOCALE_NAMES` dan olinadi (messages.ts): ular ENDONIM —
+// har bir til o'z nomi bilan yoziladi va tarjima qilinmaydi. Ilgari bu
+// yerda alohida xarita bor edi va u faqat `uz`/`ru`/`en` ni bilardi,
+// ya'ni qolgan 7 til kod bo'lib chiqardi.
 
 export function ProblemFilters({
   topics,
@@ -63,6 +69,7 @@ export function ProblemFilters({
   signedIn: boolean;
 }) {
   const [hideTags, setHideTags] = useHideTags();
+  const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -148,9 +155,9 @@ export function ProblemFilters({
         <div
           className="flex flex-wrap items-center gap-1 rw-radius-sm rw-chip p-1"
           role="tablist"
-          aria-label="Saralash"
+          aria-label={t(locale, "filter.sortLabel")}
         >
-          {SORTS.map(([value, label]) => (
+          {SORTS.map(([value, labelKey]) => (
             <button
               key={value}
               type="button"
@@ -163,7 +170,7 @@ export function ProblemFilters({
                   : "rw-dim rw-hover-bg"
               }`}
             >
-              {label}
+              {t(locale, labelKey)}
             </button>
           ))}
         </div>
@@ -177,8 +184,8 @@ export function ProblemFilters({
               typed.current = true;
               setTerm(e.target.value);
             }}
-            placeholder="Masala qidirish…"
-            aria-label="Masala qidirish"
+            placeholder={t(locale, "filter.searchPlaceholder")}
+            aria-label={t(locale, "filter.searchLabel")}
             className="h-9 w-52 rw-radius-sm border rw-line bg-transparent pr-3 pl-9 text-theme-sm rw-strong outline-none rw-placeholder rw-focus-line"
           />
         </label>
@@ -189,7 +196,7 @@ export function ProblemFilters({
           aria-expanded={open}
           className={`${chip} border rw-line ${activeCount ? "rw-accent-ink" : "rw-dim-2"} rw-hover-bg`}
         >
-          Filtrlar
+          {t(locale, "filter.filters")}
           {activeCount > 0 && (
             <span className="ml-2 flex size-5 items-center justify-center rounded-full rw-accent-bg text-theme-xs">
               {activeCount}
@@ -200,35 +207,35 @@ export function ProblemFilters({
 
       {open && (
         <div className="rw-panel space-y-4 p-4">
-          <Group label="Daraja">
+          <Group label={t(locale, "filter.levelLabel")}>
             <Option
               active={!params.get("level")}
               onClick={() => set("level", "")}
-              label="Hammasi"
+              label={t(locale, "filter.all")}
             />
-            {LEVELS.map(([value, label]) => (
+            {LEVELS.map(([value, labelKey]) => (
               <Option
                 key={value}
                 active={params.get("level") === value}
                 onClick={() => set("level", value)}
-                label={label}
+                label={t(locale, labelKey)}
               />
             ))}
           </Group>
 
           {signedIn && (
-            <Group label="Holat">
+            <Group label={t(locale, "filter.statusLabel")}>
               <Option
                 active={!activeStatus}
                 onClick={() => setStatus("")}
-                label="Hammasi"
+                label={t(locale, "filter.all")}
               />
-              {STATUSES.map(([value, label]) => (
+              {STATUSES.map(([value, labelKey]) => (
                 <Option
                   key={value}
                   active={activeStatus === value}
                   onClick={() => setStatus(value)}
-                  label={label}
+                  label={t(locale, labelKey)}
                 />
               ))}
             </Group>
@@ -237,9 +244,9 @@ export function ProblemFilters({
           <Group
             // Ikkitadan ko'p tanlanganda semantikani aytib qo'yish kerak:
             // filtr HAMMASI bo'lgan masalalarni beradi, yig'indini emas.
-            label={`Mavzular${
+            label={`${t(locale, "filter.topicsLabel")}${
               selectedTopics.length > 1
-                ? ` (${selectedTopics.length} — hammasi)`
+                ? ` (${selectedTopics.length} — ${t(locale, "filter.all").toLowerCase()})`
                 : selectedTopics.length
                   ? ` (${selectedTopics.length})`
                   : ""
@@ -253,28 +260,28 @@ export function ProblemFilters({
           </Group>
 
           {locales.length > 1 && (
-            <Group label="Matn tili">
+            <Group label={t(locale, "filter.statementLocaleLabel")}>
               <Option
                 active={!params.get("statement_locale")}
                 onClick={() => set("statement_locale", "")}
-                label="Hammasi"
+                label={t(locale, "filter.all")}
               />
               {locales.map((code) => (
                 <Option
                   key={code}
                   active={params.get("statement_locale") === code}
                   onClick={() => set("statement_locale", code)}
-                  label={LOCALE_LABELS[code] ?? code}
+                  label={LOCALE_NAMES[code as Locale] ?? code}
                 />
               ))}
             </Group>
           )}
 
-          <Group label="Ko'rinish">
+          <Group label={t(locale, "filter.viewLabel")}>
             <Option
               active={hideTags}
               onClick={() => setHideTags(!hideTags)}
-              label="Yechilmaganlarda mavzuni yashirish"
+              label={t(locale, "filter.hideTagsUnsolved")}
             />
           </Group>
 
@@ -289,7 +296,7 @@ export function ProblemFilters({
               className="flex items-center gap-1.5 text-theme-sm rw-dim transition rw-hover-strong"
             >
               <CloseIcon className="size-4" />
-              Filtrlarni tozalash
+              {t(locale, "filter.clear")}
             </button>
           )}
         </div>
@@ -318,6 +325,7 @@ function TopicOptions({
   onToggle: (slug: string) => void;
 }) {
   const [query, setQuery] = useState("");
+  const locale = useLocale();
   const needle = query.trim().toLocaleLowerCase("uz");
   const shown = topics.filter(
     (topic) =>
@@ -332,8 +340,10 @@ function TopicOptions({
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder={`${topics.length} ta mavzudan qidirish…`}
-          aria-label="Mavzu qidirish"
+          placeholder={fill(t(locale, "filter.topicSearchPlaceholder"), {
+            count: topics.length,
+          })}
+          aria-label={t(locale, "filter.topicSearchLabel")}
           className="mb-1.5 h-8 w-full rw-radius-sm border rw-line rw-field-bg px-2.5 text-theme-sm rw-strong rw-focus-line"
         />
       )}
@@ -347,7 +357,9 @@ function TopicOptions({
           />
         ))}
         {shown.length === 0 && (
-          <p className="text-theme-sm rw-faint">Bunday mavzu yo&apos;q</p>
+          <p className="text-theme-sm rw-faint">
+            {t(locale, "filter.noTopicMatch")}
+          </p>
         )}
       </div>
     </>

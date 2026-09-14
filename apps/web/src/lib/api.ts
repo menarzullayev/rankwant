@@ -1443,12 +1443,21 @@ export const setFavourite = (slug: string, on: boolean) =>
     ? postJson<{ is_favourite: boolean }>(`/problems/${slug}/favourite/`, {})
     : deleteJson<{ is_favourite: boolean }>(`/problems/${slug}/favourite/`);
 
+/** Nuqson sabablari: qiymat (API'ga ketadi) + tarjima KALITI.
+ *
+ * Ilgari ikkinchi element tayyor o'zbekcha matn edi, ya'ni sabablar
+ * ro'yxati 9 tilda ham o'zbekcha ko'rinardi. Endi u `t()` kaliti:
+ * tarjima `locales/` da, kod esa faqat kalitni biladi.
+ *
+ * DIQQAT: kalitlarni bu yerda o'zgartirsangiz, `uz.ts` dagi
+ * `report.reason.*` kalitlarini ham yangilang — `check_i18n.py` buni
+ * tutadi, lekin sababini bilish uchun shu izoh kerak. */
 export const REPORT_REASONS = [
-  ["statement", "Matnda xato"],
-  ["tests", "Testlar noto'g'ri"],
-  ["translation", "Tarjima xato"],
-  ["duplicate", "Takroriy masala"],
-  ["other", "Boshqa"],
+  ["statement", "report.reason.statement"],
+  ["tests", "report.reason.tests"],
+  ["translation", "report.reason.translation"],
+  ["duplicate", "report.reason.duplicate"],
+  ["other", "report.reason.other"],
 ] as const;
 
 export const reportProblem = (slug: string, reason: string, comment: string) =>

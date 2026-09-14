@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/Card";
+import { t, type Locale } from "@/i18n/messages";
 import type { Attachment } from "@/lib/api";
 
 const unit = (bytes: number) =>
@@ -8,11 +9,17 @@ const unit = (bytes: number) =>
 
 /** Masalaga biriktirilgan fayllar — katta kiruvchi ma'lumot, shablon
  * yoki chizma. Matnga sig'maydigani shu yerda turadi. */
-export function Attachments({ items }: { items: Attachment[] }) {
+export function Attachments({
+  items,
+  locale,
+}: {
+  items: Attachment[];
+  locale: Locale;
+}) {
   if (items.length === 0) return null;
 
   return (
-    <Card title="Biriktirilgan fayllar" bodyClassName="p-0">
+    <Card title={t(locale, "problem.attachments")} bodyClassName="p-0">
       <ul className="rw-divide divide-y">
         {items.map((item) => (
           <li key={item.url}>

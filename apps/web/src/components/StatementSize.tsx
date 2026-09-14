@@ -2,12 +2,16 @@
 
 import { useState } from "react";
 
+import { useLocale } from "@/i18n/LocaleProvider";
+import { t } from "@/i18n/messages";
+
 const SIZES = [14, 16, 18, 20] as const;
 const DEFAULT_SIZE = 16;
 
 /** Masala matni uzoq o'qiladi va ekranlar har xil — RoboContest ham
  * shrift kattaligini beradi. Faqat shu qurilmada, qoralamalar kabi. */
 export function StatementSize({ children }: { children: React.ReactNode }) {
+  const locale = useLocale();
   const [size, setSize] = useState<number>(() => {
     try {
       const saved = Number(localStorage.getItem("rw:statement-size"));
@@ -37,7 +41,7 @@ export function StatementSize({ children }: { children: React.ReactNode }) {
       <div className="mb-2 flex items-center justify-end gap-1">
         <button
           type="button"
-          aria-label="Shriftni kichraytirish"
+          aria-label={t(locale, "problem.statementSizeDown")}
           onClick={() => pick(SIZES[index - 1])}
           disabled={index <= 0}
           className={button}
@@ -49,7 +53,7 @@ export function StatementSize({ children }: { children: React.ReactNode }) {
         </span>
         <button
           type="button"
-          aria-label="Shriftni kattalashtirish"
+          aria-label={t(locale, "problem.statementSizeUp")}
           onClick={() => pick(SIZES[index + 1])}
           disabled={index < 0 || index >= SIZES.length - 1}
           className={button}

@@ -204,7 +204,7 @@ export default async function ProblemPage({ params, searchParams }: Props) {
           </Card>
         )}
 
-        <Attachments items={problem.attachments} />
+        <Attachments items={problem.attachments} locale={locale} />
 
         {problem.editorial_state.available && (
           <Editorial
@@ -214,7 +214,7 @@ export default async function ProblemPage({ params, searchParams }: Props) {
           />
         )}
 
-        <SimilarProblems items={problem.similar} />
+        <SimilarProblems items={problem.similar} locale={locale} />
 
         <ReportProblem slug={slug} />
 

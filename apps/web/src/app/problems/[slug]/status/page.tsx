@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ProblemTabs } from "@/components/ProblemTabs";
 import { VerdictBadge } from "@/components/VerdictBadge";
 import { Card } from "@/components/ui/Card";
+import { dateTime, t } from "@/i18n/messages";
 import { getLocale } from "@/i18n/server";
 import {
   EmptyRow,
@@ -155,7 +156,7 @@ export default async function ProblemStatusPage({
                 </TD>
                 <TD align="right" className="hidden rw-faint md:table-cell">
                   <time dateTime={attempt.created_at}>
-                    {new Date(attempt.created_at).toLocaleString("uz")}
+                    {dateTime(attempt.created_at, locale)}
                   </time>
                 </TD>
               </TR>

@@ -1,5 +1,10 @@
+"use client";
+
 import type { Route } from "next";
 import Link from "next/link";
+
+import { useLocale } from "@/i18n/LocaleProvider";
+import { t } from "@/i18n/messages";
 
 /** Masala bo'limlari — KEP va RoboContest'dagi kabi sahifa tepasida.
  *
@@ -13,19 +18,24 @@ export function ProblemTabs({
   slug: string;
   current: "statement" | "status" | "stats" | "solvers";
 }) {
+  const locale = useLocale();
+  // Sarlavhalar endi KALIT: matn `t()` dan olinadi. Ilgari bu yerda
+  // o'zbekcha so'zlar to'g'ridan-to'g'ri turardi va matn qidiruvchi
+  // skaner ularni ko'rmasdi (JSX matni emas, massiv elementi edi) —
+  // shuning uchun ular uzoq vaqt e'tibordan chetda qoldi.
   const tabs = [
-    ["statement", "Tavsif", `/problems/${slug}`],
-    ["status", "Urinishlar", `/problems/${slug}/status`],
-    ["stats", "Statistika", `/problems/${slug}/stats`],
-    ["solvers", "Yechganlar", `/problems/${slug}/solvers`],
+    ["statement", "problem.tab.statement", `/problems/${slug}`],
+    ["status", "problem.tab.status", `/problems/${slug}/status`],
+    ["stats", "problem.tab.stats", `/problems/${slug}/stats`],
+    ["solvers", "problem.tab.solvers", `/problems/${slug}/solvers`],
   ] as const;
 
   return (
     <nav
-      aria-label="Masala bo'limlari"
+      aria-label={t(locale, "problem.tabsLabel")}
       className="flex flex-wrap items-center gap-1 border-b rw-divider"
     >
-      {tabs.map(([key, label, href]) => (
+      {tabs.map(([key, labelKey, href]) => (
         <Link
           key={key}
           href={href as Route}
@@ -36,7 +46,7 @@ export function ProblemTabs({
               : "border-transparent rw-dim rw-hover-strong"
           }`}
         >
-          {label}
+          {t(locale, labelKey)}
         </Link>
       ))}
     </nav>
