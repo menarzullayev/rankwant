@@ -64,7 +64,7 @@ export function HackathonEntries({ hackathon }: { hackathon: Hackathon }) {
         <Card title={t(locale, "hackathon.submit")}>
           <form onSubmit={submit} className="grid gap-3 md:grid-cols-2">
             <Field
-              label="Loyiha nomi"
+              label={t(locale, "hackathon.projectName")}
               name="title"
               required
               defaultValue={mine?.title}
@@ -154,7 +154,7 @@ export function HackathonEntries({ hackathon }: { hackathon: Hackathon }) {
           {entries.length === 0 && (
             <li className="px-5 py-6 text-center text-theme-sm rw-faint">
               {hackathon.accepts_submissions
-                ? "Loyihalar muddat tugagach ochiladi"
+                ? t(locale, "hackathon.entriesAfterDeadline")
                 : t(locale, "empty")}
             </li>
           )}

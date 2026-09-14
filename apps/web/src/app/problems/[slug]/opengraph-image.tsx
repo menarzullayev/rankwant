@@ -91,6 +91,11 @@ export default async function OgImage({ params }: { params: Promise<{ slug: stri
         </div>
 
         <div style={{ display: "flex", fontSize: 28, opacity: 0.6 }}>
+          {/* `ImageResponse` is a module-level export: it has no request
+              scope, so it cannot await the locale. This counter keeps the
+              unit word in Uzbek; the fallback beside it is the brand. The
+              same limitation is recorded for `alt=` at the top of this
+              file. */}
           {problem?.solved_count ? `${problem.solved_count} yechilgan` : "rankwant.uz"}
         </div>
       </div>

@@ -4,6 +4,9 @@ import { loader } from "@monaco-editor/react";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
+import { t } from "@/i18n/messages";
+import { useLocale } from "@/i18n/LocaleProvider";
+
 const Monaco = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 
 const HEIGHT = "clamp(280px, 46vh, 560px)";
@@ -37,6 +40,7 @@ export default function CodeEditor({
   value: string;
   onChange: (next: string) => void;
 }) {
+  const locale = useLocale();
   const [mode, setMode] = useState<"loading" | "monaco" | "plain">("loading");
   const [dark, setDark] = useState(true);
 
@@ -100,7 +104,7 @@ export default function CodeEditor({
         className="flex items-center justify-center rw-radius-sm border rw-line rw-field-bg text-theme-sm rw-faint"
         style={{ height: HEIGHT }}
       >
-        Muharrir yuklanmoqda…
+        {t(locale, "editor.loading")}
       </div>
     );
 

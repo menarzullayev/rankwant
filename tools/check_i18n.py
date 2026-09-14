@@ -115,6 +115,12 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         "admin.section.analytics",
         # «Keyingi» — qoraqalpoqchada o'zbekchadagi bilan bir xil yoziladi.
         "pager.next",
+        # Xuddi shu sabab: masala urinishlari sahifasidagi «Keyingi →».
+        # `pager.next` bilan bir xil holat — ikkalasi ham ko'rib chiqildi.
+        "problem.nextPage",
+        # «Kod, belgi» va «testsiz» — qoraqalpoqcha o'zbekchadagi bilan
+        # aynan bir xil yoziladi. Majburan o'girish sun'iy ko'rinardi.
+        "problem.solvers.codeColumn", "problems.noTests",
         # «Algoritm» — qoraqalpoqchada ham shu shaklda yoziladi
         # (`nav.algorithms` = "Algoritmler"), ya'ni ildiz bir xil.
         "admin.label.text.problemExample",
@@ -173,6 +179,8 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
            "admin.label.text.code", "admin.label.text.qvant",
            "admin.label.text.slug", "admin.label.text.standard",
            "admin.label.text.who", "admin.text.badgeDemo",
+           # `problems.noTests` = "testsiz" — turkchada ham aynan shunday.
+           "problems.noTests",
            "submit.testTooltip"},
     # Ispan tilida ham «Virtual».
     "es": {"profile.virtual", "admin.label.flag.virtual",

@@ -61,8 +61,18 @@ WEB = ROOT / "apps/web/src"
 #: supposed to be there. The other three are the content layer: country and
 #: region names, and the legal texts. They are translated as data, not
 #: through `t()`, and were deliberately deferred to a separate task.
+#:
+#: `opengraph-image.tsx` is a different kind of exemption: it exports an
+#: `ImageResponse` at module level, so it has no request scope and cannot
+#: `await getLocale()`. Its strings are the brand plus a bare counter, and
+#: the file says so in a comment. A key there would be unreachable.
 SKIP_PARTS = {"node_modules", ".next", "__tests__"}
-DEFERRED = ("content/legal.ts", "lib/country-names.ts", "lib/regions.ts")
+DEFERRED = (
+    "content/legal.ts",
+    "lib/country-names.ts",
+    "lib/regions.ts",
+    "opengraph-image.tsx",
+)
 
 
 # --- "provably not prose" ---------------------------------------------------
@@ -116,7 +126,18 @@ PATHY = re.compile(
 #: shape-based filter above lets it through.
 REGEXY = re.compile(r"^[\w\\\[\](){}|^$.*+?\-]+$")
 
-COLORY = re.compile(r"^(?:#|rgb|hsl|color\(|\d|var\(--)")
+#: A colour value: `#fff`, `rgb(…)`, `hsl(…)`, `var(--x)`, `12px`.
+#:
+#: ⚠️ The bare `\d` that used to lead this alternation made EVERY string
+#: starting with a digit a colour — so `"45 masala"` ("45 problems", real
+#: UI text) was invisible. A digit only means a colour when it is a CSS
+#: length or a unit-less number: `12px`, `0.5`, `1400`. Requiring the end of
+#: the string after the number, or a CSS unit, is what closes the hole.
+COLORY = re.compile(
+    r"^(?:#|rgba?\(|hsla?\(|color\(|var\(--"
+    r"|\d+(?:\.\d+)?(?:px|rem|em|vh|vw|%|deg|fr|s|ms)?$"
+    r")"
+)
 
 #: Tailwind / `rw-` utility token. Variant prefixes (`sm:`, `dark:`,
 #: `group-hover/`) are part of the token; the stem is either dash-joined
@@ -278,6 +299,12 @@ def is_prose(s: str, *, code_tokens: bool = True) -> bool:
         return False
     if ONLY_INTERP.match(t):
         return False
+    if is_number_with_unit(t):
+        return False
+    if KEYBOARD_SHORTCUT_TAIL.search(t):
+        return False
+    if GLYPH.match(t):
+        return False
     if ALLCAPS.match(t) and not UZ_WORD.search(t):
         return False
     if is_class_string(t):
@@ -321,6 +348,51 @@ def scan_strings(text: str):
 
 
 #: Rendered object keys and JSX attributes whose value the user reads.
+#: A number followed by a unit: `12 MB`, `1.5 KB`, `8 AC`, `30 px`.
+#:
+#: ⚠️ These were SIX false positives, and each one invites a bypass: a
+#: checker that cries wolf gets `# noqa`-ed, and then it is dead. "AC" is a
+#: verdict code from the API, "MB" is a unit, and neither is translated —
+#: `attachments` in every dictionary shows "MB"/"KB" unchanged.
+#:
+#: The rule is deliberately narrow: it matches a TRAILING unit after a
+#: number, in a string that is otherwise only interpolation and arithmetic.
+#: `45 masala` ("45 problems") is prose and stays flagged — the unit list
+#: holds only measurement symbols, never words.
+NUMBER_UNIT = re.compile(
+    r"^(?:.*?[\d)}])\s*(?:[KMGT]?B|AC|px|ms|s|%)[\s.,;)]*$"
+)
+
+#: A keyboard shortcut in parentheses: `Title (Ctrl+.)`.
+#:
+#: `Ctrl+.` names a physical key combination. It reads the same in all ten
+#: languages, so keying it would mean ten identical values — and the tenth
+#: would eventually drift.
+KEYBOARD_SHORTCUT_TAIL = re.compile(
+    r"\s*\(\s*(?:Ctrl|Cmd|Shift|Alt|Meta|⌘|⌥|⌃)[\s+]*[\w.+-]*\s*\)\s*$"
+)
+
+#: A bare glyph or punctuation cluster: `A−`, `→`, `←`, `·`.
+#:
+#: `A−` is the decrease-font button in `StatementSize`: an "A" plus a minus
+#: sign, drawn the same way in every language. Its sibling carries a real
+#: label (`aria-label={t(…, "problem.statementSizeDown")}`), so the glyph
+#: needs no key of its own.
+GLYPH = re.compile(r"^[A-Za-z]?[\s]*[−–—+\-×→←↑↓·°±≤≥≠~^]*$")
+
+
+def is_number_with_unit(s: str) -> bool:
+    """True for a measurement, not a sentence.
+
+    The regex alone cannot tell "12 MB" from "45 masala": both are a number
+    followed by a token. The unit list is the discriminator — every entry is
+    a measurement symbol that appears verbatim in the dictionaries, so a
+    string ending in one is a measurement regardless of what precedes it.
+    """
+    t = s.strip().rstrip(".,;)")
+    return bool(NUMBER_UNIT.match(t))
+
+
 NAMED_POSITION = re.compile(
     r"\b(label|title|help|placeholder|alt|aria-label|aria-description)"
     r"\s*[:=]\s*$"
@@ -405,6 +477,20 @@ JSX_TEXT_NOISE = re.compile(r"^[\s.,;:!?·—–\-/|&()\[\]`]*$")
 #: text node never contains a paren, a semicolon or an equals sign.
 JSX_TEXT_CODEISH = re.compile(r"[();=]")
 
+#: `viewBox={` — SVG geometry. The coordinates are numbers by definition, so
+#: `0 0 ${W} ${H}` is not a label a translator could ever touch.
+VIEWBOX_ATTR = re.compile(r"\bviewBox=\{\s*$")
+
+#: A JSX text node that is really an arithmetic or SVG-coordinate fragment:
+#: `0 && share`, `99 && share`.
+#:
+#: These come from the checker reading raw `>`…`<` spans, which in `.tsx`
+#: are as often `<` (less-than) as a text node. Two digits joined by `&&`
+#: carry no prose in any language.
+JSX_TEXT_ARITHMETIC = re.compile(
+    r"^[\s\d.${}A-Z()\[\]]*&{2}[\s\w.${}()\[\]]*$|^[\s\d.${}]+$"
+)
+
 #: HTML entities inside JSX text. `bo&apos;yicha` contains a semicolon, and
 #: the code filter above read that semicolon as a statement separator — so
 #: every Uzbek sentence with an apostrophe was silently skipped. Entities are
@@ -466,25 +552,34 @@ def client_files() -> list[pathlib.Path]:
 
 
 def target_files() -> list[pathlib.Path]:
-    """Source files whose prose is checked.
+    """Every source file under `apps/web/src` whose prose is checked.
 
-    ⚠️ The scope grows as the migration progresses, and it is deliberately
-    NOT the whole app yet. Widening it to all of `apps/web/src` today would
-    make this check fail for 111 strings that are still to be translated, and
-    a red gate is one that gets bypassed. The admin panel was the first
-    scope; the rest of `app/` and `components/` is next, and the widest
-    version of this function walks all of `WEB` minus `DEFERRED`.
+    ⚠️ This used to walk only `components/admin` and `app/admin`, because
+    widening it earlier would have made the check fail for ~190 strings that
+    were still to be translated — and a red gate is one that gets bypassed.
+    The migration is finished, so the scope is now the whole tree.
 
-    The fixed-locale rule in `main()` already covers every client file,
+    What stays out is `DEFERRED`: the content layer (`content/legal.ts`,
+    `lib/country-names.ts`, `lib/regions.ts`), translated as data rather
+    than through `t()`, and `opengraph-image.tsx`, whose `ImageResponse`
+    export has no request scope and so cannot await the locale. The
+    dictionaries themselves are skipped because every string in them is
+    supposed to be there.
+
+    The fixed-locale rule in `main()` covers every client file separately,
     because that defect is a crash rather than a missing translation.
     """
     out: list[pathlib.Path] = []
-    for target in (WEB / "components/admin", WEB / "app/admin"):
-        for suffix in (".tsx", ".ts"):
-            for path in sorted(target.rglob(f"*{suffix}")):
-                if any(part in SKIP_PARTS for part in path.parts):
-                    continue
-                out.append(path)
+    for suffix in (".tsx", ".ts"):
+        for path in sorted(WEB.rglob(f"*{suffix}")):
+            rel = str(path).replace("\\", "/")
+            if any(part in SKIP_PARTS for part in path.parts):
+                continue
+            if "/i18n/" in rel:
+                continue
+            if any(rel.endswith(name) for name in DEFERRED):
+                continue
+            out.append(path)
     return out
 
 
@@ -540,6 +635,10 @@ def in_class_attr(text: str, start: int) -> bool:
     return bool(CLASS_ATTR.search(text[max(0, start - 200) : start]))
 
 
+def in_viewbox_attr(text: str, start: int) -> bool:
+    return bool(VIEWBOX_ATTR.search(text[max(0, start - 200) : start]))
+
+
 def check_file(path: pathlib.Path) -> list[str]:
     text = path.read_text(encoding="utf-8")
     rel = str(path.relative_to(ROOT)).replace("\\", "/")
@@ -568,6 +667,8 @@ def check_file(path: pathlib.Path) -> list[str]:
         if in_react_key(text, start):
             continue
         if in_class_attr(text, start):
+            continue
+        if in_viewbox_attr(text, start):
             continue
         position = classify(text, start)
         if position is None:
@@ -606,6 +707,8 @@ def check_file(path: pathlib.Path) -> list[str]:
             continue
         if JSX_TEXT_CODEISH.search(JSX_TEXT_ENTITY.sub("", body)):
             continue
+        if JSX_TEXT_ARITHMETIC.match(body):
+            continue
         if PASCAL_TOKEN.match(body):
             continue
         if body in CODE_TOKENS:
@@ -640,12 +743,12 @@ def main() -> int:
             print(f"  {row}")
         print(
             f"\nJami: {len(problems)} satr — "
-            f"{len(files)} admin va {len(clients)} klient fayl tekshirildi."
+            f"{len(files)} manba va {len(clients)} klient fayl tekshirildi."
         )
         return 1
 
     print(
-        f"Tekshirildi: {len(files)} admin fayl + {len(clients)} klient fayl "
+        f"Tekshirildi: {len(files)} manba fayl + {len(clients)} klient fayl "
         f"— qattiq yozilgan matn yo'q ✓"
     )
     return 0

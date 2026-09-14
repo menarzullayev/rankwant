@@ -17,7 +17,29 @@ export async function generateMetadata(): Promise<Metadata> {
  * (09-development-plan). Vision principle #2 — «yashirin algoritm emas».
  *
  * Formulalar 04-prd 🔒 dan; kod `apps/api/ratings/formulas.py` da.
+ *
+ * The formulas themselves are mathematics: `Skills = Σ pᵢ × 0.95^(i−1)`
+ * reads the same in all ten languages, so they are module constants rather
+ * than dictionary entries. Only the prose around them is translated.
  */
+const FORMULA_SKILLS = "Skills = Σ pᵢ × 0.95^(i−1)  (p₁ ≥ p₂ ≥ … , pᵢ = qiyinlik)";
+
+const FORMULA_CONTESTS = [
+  "P(i,j) = 1 / (1 + 10^((Rⱼ − Rᵢ) / 400))",
+  "seedᵢ = 1 + Σ P(j, i)      kutilgan o'rin",
+  "mᵢ = √(seedᵢ × rankᵢ)      kutilgan va haqiqiy o'rin o'rtachasi",
+  "dᵢ = (R*ᵢ − Rᵢ) / 2         R*ᵢ — mᵢ ga mos reyting",
+  "soʻng: barcha dᵢ dan Σd/n ayiriladi (musobaqa reytingni shishirmaydi)",
+].join("\n");
+
+const FORMULA_ACTIVITY =
+  "Activity = 10 × faol_kun + 5 × bajarilgan_quest + min(2 × streak_kun, 60)";
+
+const FORMULA_CHALLENGES = [
+  "E = 1 / (1 + 10^((R_raqib − R) / 400))",
+  "R' = R + K × (S − E)       S ∈ {1 = g'alaba, 0.5 = durang, 0}",
+  "K = 32 (birinchi 10 duel), keyin 16",
+].join("\n");
 
 function Section({
   title,
@@ -61,79 +83,49 @@ export default async function RatingPage() {
           {t(locale, "nav.ratingInfo")}
         </h1>
         <p className="mt-2 max-w-3xl text-theme-sm rw-dim">
-          Barcha formulalar ochiq. Yashirin og&apos;irlik yoki e&apos;lon
-          qilinmagan bonus yo&apos;q. Har bir o&apos;zgarish sababi bilan
-          profilingizda yozib boriladi.
+          {t(locale, "rating.intro")}
         </p>
       </header>
 
-      <Section title="Skills" phase="Faol" active>
-        <p>
-          Birinchi marta yechgan masalalaringiz ball bo&apos;yicha kamayish
-          tartibida saralanadi va kamayuvchi koeffitsient bilan qo&apos;shiladi.
-          Ball — masalaning <strong>joriy</strong> qiyinligi.
-        </p>
-        <Formula>{`Skills = Σ pᵢ × 0.95^(i−1) (p₁ ≥ p₂ ≥ … , pᵢ = qiyinlik)`}</Formula>
+      <Section title="Skills" phase={t(locale, "rating.phase.active")} active>
+        <p>{t(locale, "rating.skills.summary")}</p>
+        <Formula>{FORMULA_SKILLS}</Formula>
         <ul className="list-disc space-y-1 pl-5">
-          <li>
-            Yangi masala yechish reytingni <strong>hech qachon</strong>{" "}
-            kamaytirmaydi.
-          </li>
-          <li>Natija eng qiyin masalangizdan 20 baravardan oshmaydi.</li>
-          <li>
-            Bir xil qiyinlikda ~45 masaladan keyin to&apos;yinadi — undan keyin
-            faqat <strong>qiyinroq</strong> masala o&apos;stiradi.
-          </li>
-          <li>
-            Masala qayta baholansa reyting o&apos;zgarishi mumkin. Bu
-            foydalanuvchi harakati emas, platforma qarori — sizga xabar beriladi
-            va sabab tarixda yoziladi.
-          </li>
+          <li>{t(locale, "rating.skills.noDecrease")}</li>
+          <li>{t(locale, "rating.skills.cap")}</li>
+          <li>{t(locale, "rating.skills.saturation")}</li>
+          <li>{t(locale, "rating.skills.revaluation")}</li>
         </ul>
-        <p className="text-xs">
-          Misol: 500 ta 800-ball = 16 000 · 20 ta 2500-ball = 32 076. Ya&apos;ni
-          chuqurlik miqdordan ustun.
-        </p>
+        <p className="text-xs">{t(locale, "rating.skills.example")}</p>
       </Section>
 
-      <Section title="Contests" phase="Faol" active>
-        <p>
-          Codeforces uslubidagi Elo. Faqat <strong>reytingli</strong> va kamida
-          10 ishtirokchili musobaqalar hisoblanadi.
-        </p>
-        <Formula>{`P(i,j) = 1 / (1 + 10^((Rⱼ − Rᵢ) / 400))
-seedᵢ = 1 + Σ P(j, i) kutilgan o'rin
-mᵢ = √(seedᵢ × rankᵢ) kutilgan va haqiqiy o'rin o'rtachasi
-dᵢ = (R*ᵢ − Rᵢ) / 2 R*ᵢ — mᵢ ga mos reyting
-soʻng: barcha dᵢ dan Σd/n ayiriladi (musobaqa reytingni shishirmaydi)`}</Formula>
+      <Section title="Contests" phase={t(locale, "rating.phase.active")} active>
+        <p>{t(locale, "rating.contests.summary")}</p>
+        <Formula>{FORMULA_CONTESTS}</Formula>
         <ul className="list-disc space-y-1 pl-5">
-          <li>Boshlang&apos;ich reyting — 1400.</li>
-          <li>
-            Birinchi 6 reytingli musobaqada o&apos;zgarish 1.5 baravar tezroq.
-          </li>
-          <li>Reyting 0 dan pastga tushmaydi.</li>
+          <li>{t(locale, "rating.contests.start")}</li>
+          <li>{t(locale, "rating.contests.provisional")}</li>
+          <li>{t(locale, "rating.contests.floor")}</li>
         </ul>
       </Section>
 
-      <Section title="Activity" phase="Faol" active>
-        <p>Oxirgi 30 kunlik siljuvchi oyna.</p>
-        <Formula>{`Activity = 10 × faol_kun + 5 × bajarilgan_quest + min(2 × streak_kun, 60)`}</Formula>
-        <p>
-          Qvant <strong>balansi</strong> ataylab hisobga olinmaydi: aks holda
-          do&apos;konda xarid qilish reytingni tushirardi.
-        </p>
+      <Section title="Activity" phase={t(locale, "rating.phase.active")} active>
+        <p>{t(locale, "rating.activity.window")}</p>
+        <Formula>{FORMULA_ACTIVITY}</Formula>
+        <p>{t(locale, "rating.activity.qvant")}</p>
       </Section>
 
-      <Section title="Challenges" phase="Phase 3" active={false}>
-        <p>1v1 duel uchun klassik Elo.</p>
-        <Formula>{`E = 1 / (1 + 10^((R_raqib − R) / 400))
-R' = R + K × (S − E) S ∈ {1 = g'alaba, 0.5 = durang, 0}
-K = 32 (birinchi 10 duel), keyin 16`}</Formula>
+      <Section
+        title="Challenges"
+        phase={t(locale, "rating.phase.phase3")}
+        active={false}
+      >
+        <p>{t(locale, "rating.challenges.summary")}</p>
+        <Formula>{FORMULA_CHALLENGES}</Formula>
       </Section>
 
       <p className="text-xs" style={{ color: "var(--muted)" }}>
-        Formulani o&apos;zgartirish alohida qaror (ADR) talab qiladi va barcha
-        reytinglar qayta hisoblanishidan oldin e&apos;lon qilinadi.
+        {t(locale, "rating.adr")}
       </p>
     </div>
   );

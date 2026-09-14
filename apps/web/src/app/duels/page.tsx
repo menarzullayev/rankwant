@@ -19,9 +19,7 @@ export default async function DuelsPage() {
         <h1 className="text-title-sm font-bold rw-strong">
           {t(locale, "nav.duels")}
         </h1>
-        <p className="mt-2 max-w-2xl text-theme-sm rw-dim">
-          Chaqiriq tashlang, kimdir qabul qiladi, belgilangan vaqtda bir xil
-          masalalarni yechasiz. G&apos;olib Challenges reytingida Elo oladi.
+        <p className="mt-2 max-w-2xl text-theme-sm rw-dim">{t(locale, "duels.intro")}
         </p>
       </header>
       <DuelActions waiting={waiting.results} />

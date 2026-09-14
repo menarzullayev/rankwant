@@ -83,7 +83,7 @@ export default async function ProblemStatsPage({ params }: Props) {
       {stats.total === 0 ? (
         <Card>
           <p className="text-theme-sm rw-faint">
-            Hali urinish yo&apos;q — statistika bo&apos;sh.
+            {t(locale, "problem.stats.empty")}
           </p>
         </Card>
       ) : (

@@ -53,9 +53,7 @@ export default async function QvantPage() {
         <h1 className="text-title-sm font-bold rw-strong">
           {t(locale, "qvant.title")}
         </h1>
-        <p className="mt-2 max-w-2xl text-theme-sm rw-dim">
-          Vazifalarni bajarib Qvant to&apos;plang. Qvant reytingga ta&apos;sir
-          qilmaydi — u faqat do&apos;kon uchun.
+        <p className="mt-2 max-w-2xl text-theme-sm rw-dim">{t(locale, "qvant.intro")}
         </p>
       </header>
 
@@ -78,7 +76,7 @@ export default async function QvantPage() {
       ) : (
         <Card>
           <p className="text-theme-sm rw-dim">
-            Balansni ko&apos;rish uchun tizimga kiring.
+            {t(locale, "qvant.signIn")}
           </p>
         </Card>
       )}

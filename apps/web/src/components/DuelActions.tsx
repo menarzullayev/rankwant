@@ -174,9 +174,14 @@ export function DuelActions({ waiting }: { waiting: Duel[] }) {
               onSubmit={create}
               className="grid gap-3 border-b rw-divider p-5 md:grid-cols-2"
             >
-              <Field label="Nomi" name="title" required defaultValue="Blitz" />
               <Field
-                label="Boshlanish"
+                label={t(locale, "admin.label.text.name")}
+                name="title"
+                required
+                defaultValue="Blitz"
+              />
+              <Field
+                label={t(locale, "duel.startAt")}
                 name="start_at"
                 type="datetime-local"
                 required

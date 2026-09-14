@@ -16,10 +16,7 @@ export default async function TeamPage() {
         {t(locale, "team.title")}
       </h1>
       <Card>
-        <p className="text-theme-sm rw-dim">
-          RankWant — O&apos;zbekiston va dunyo uchun sport dasturlash
-          platformasi. Ochiq reyting, o&apos;z judge, o&apos;z kontent. Loyiha
-          hozir ochiq preview bosqichida.
+        <p className="text-theme-sm rw-dim">{t(locale, "team.intro")}
         </p>
         <p className="mt-3 text-theme-sm rw-dim">
           Bog&apos;lanish:{" "}

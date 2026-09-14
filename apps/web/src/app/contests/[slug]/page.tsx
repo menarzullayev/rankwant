@@ -18,11 +18,12 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  const locale = await getLocale();
   try {
     const contest = await api.contest(slug);
     return { title: contest.title };
   } catch {
-    return { title: "Musobaqa topilmadi" };
+    return { title: t(locale, "contest.notFound") };
   }
 }
 
@@ -77,9 +78,7 @@ export default async function ContestPage({ params }: Props) {
 
       {contest.is_finished && (
         <div className="rw-radius border rw-line rw-surface p-5 text-theme-sm rw-dim">
-          Musobaqa tugagan — uni <strong>virtual</strong> tarzda o&apos;z
-          vaqtingizda yechishingiz mumkin. Virtual natija reytingga ta&apos;sir
-          qilmaydi va rasmiy jadvalga kirmaydi.
+          {t(locale, "contest.finishedNote")}
         </div>
       )}
 

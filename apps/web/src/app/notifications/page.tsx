@@ -31,7 +31,7 @@ export default async function NotificationsPage() {
     return (
       <Card>
         <p className="text-theme-sm rw-dim">
-          Bildirishnomalarni ko&apos;rish uchun tizimga kiring.
+          {t(locale, "notifications.signIn")}
         </p>
       </Card>
     );

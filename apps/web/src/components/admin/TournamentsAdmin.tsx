@@ -206,7 +206,7 @@ function StageEditor({
           <input
             value={s.title}
             onChange={(e) => patch(i, { title: e.target.value })}
-            placeholder="1-bosqich"
+            placeholder={t(locale, "admin.text.stepPlaceholder")}
             className={INPUT}
           />
           <div>

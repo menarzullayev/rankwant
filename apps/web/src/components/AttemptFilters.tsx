@@ -74,7 +74,7 @@ export function AttemptFilters({
             href={href({ language: undefined })}
             className={chip(!language)}
           >
-            Hamma til
+            {t(locale, "filter.allLanguages")}
           </Link>
           {languages.map((code) => (
             <Link
@@ -93,7 +93,7 @@ export function AttemptFilters({
           href={href({ mine: mine ? undefined : "true" })}
           className={`ml-auto ${chip(mine)}`}
         >
-          Faqat meniki
+          {t(locale, "filter.onlyMine")}
         </Link>
       )}
     </div>

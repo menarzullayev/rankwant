@@ -21,8 +21,7 @@ export default async function ArenaListPage() {
           {t(locale, "nav.arena")}
         </h1>
         <p className="mt-2 max-w-2xl text-theme-sm rw-dim">
-          Jonli raund: hamma bir vaqtda, har savolga bir necha soniya, standings
-          jonli.
+          {t(locale, "arena.intro")}
         </p>
       </header>
       <ul className="grid gap-4 md:grid-cols-2">

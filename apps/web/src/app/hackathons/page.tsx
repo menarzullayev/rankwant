@@ -21,8 +21,7 @@ export default async function HackathonsPage() {
           {t(locale, "nav.hackathons")}
         </h1>
         <p className="mt-2 max-w-2xl text-theme-sm rw-dim">
-          Masala emas — loyiha. Repozitoriy va demo topshirasiz, hakamlar
-          baholaydi.
+          {t(locale, "hackathons.intro")}
         </p>
       </header>
       <ul className="grid gap-4 md:grid-cols-2">

@@ -16,7 +16,7 @@ import { notFound } from "next/navigation";
 import { api, ApiError, type ProblemDetail } from "@/lib/api";
 import { getWithSession } from "@/lib/api.server";
 import { getLocale } from "@/i18n/server";
-import { t } from "@/i18n/messages";
+import { fill, t } from "@/i18n/messages";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -34,12 +34,16 @@ export async function generateMetadata({
   params,
 }: Pick<Props, "params">): Promise<Metadata> {
   const { slug } = await params;
+  const locale = await getLocale();
   try {
     const problem = await api.problem(slug);
     const title = problem.code
       ? `#${String(problem.code).padStart(4, "0")} · ${problem.title}`
       : problem.title;
-    const description = `${problem.title} — qiyinlik ${problem.difficulty}. RankWant masala arxivi.`;
+    const description = fill(t(locale, "problem.difficultyDescription"), {
+      title: problem.title,
+      difficulty: problem.difficulty,
+    });
     // Havolalar asosan Telegramda ulashiladi: OG'siz ular yalang'och
     // manzil bo'lib chiqadi. `canonical` esa filtrli va til cookie'li
     // variantlarni bitta manzilga yig'adi.
@@ -56,7 +60,7 @@ export async function generateMetadata({
       twitter: { card: "summary", title, description },
     };
   } catch {
-    return { title: "Masala topilmadi" };
+    return { title: t(locale, "problem.notFound") };
   }
 }
 
@@ -108,9 +112,11 @@ export default async function ProblemPage({ params, searchParams }: Props) {
               {t(locale, "problems.limits")}: {problem.time_limit_ms} ms,{" "}
               {Math.round(problem.memory_limit_kb / 1024)} MB
             </Badge>
-            {problem.partial_scoring && <Badge color="info">Qisman ball</Badge>}
+            {problem.partial_scoring && (
+              <Badge color="info">{t(locale, "problem.partialScoring")}</Badge>
+            )}
             {!problem.has_tests && (
-              <Badge color="warning">Testlar tayyorlanmoqda</Badge>
+              <Badge color="warning">{t(locale, "problem.testsPreparing")}</Badge>
             )}
             {problem.topics.map((topic) => (
               <Badge key={topic} color="info">
@@ -125,7 +131,7 @@ export default async function ProblemPage({ params, searchParams }: Props) {
           <p className="mt-3 text-theme-sm rw-dim">
             {problem.author && (
               <>
-                Muallif:{" "}
+                {t(locale, "problem.author")}:{" "}
                 {problem.author.has_profile ? (
                   <Link
                     href={`/users/${problem.author.username}`}
@@ -139,10 +145,16 @@ export default async function ProblemPage({ params, searchParams }: Props) {
                 ·{" "}
               </>
             )}
-            {problem.solved_count} kishi yechdi · {problem.attempt_count}{" "}
-            urinish
+            {fill(t(locale, "problem.solvedAttempts"), {
+              solved: problem.solved_count,
+              attempts: problem.attempt_count,
+            })}
             {problem.attempt_count > 0 &&
-              ` · ${Math.round((problem.solved_count / problem.attempt_count) * 100)}% muvaffaqiyat`}
+              ` · ${fill(t(locale, "problem.successRate"), {
+                percent: Math.round(
+                  (problem.solved_count / problem.attempt_count) * 100,
+                ),
+              })}`}
           </p>
 
           <div className="mt-2">
@@ -152,9 +164,9 @@ export default async function ProblemPage({ params, searchParams }: Props) {
 
         {contest && (
           <p className="rw-radius-sm rw-accent-soft px-4 py-2.5 text-theme-sm rw-accent-ink">
-            Yechim <strong>{contest}</strong> musobaqasi hisobiga yoziladi.{" "}
+            {fill(t(locale, "problem.countedInContest"), { contest })}{" "}
             <Link href={`/contests/${contest}`} className="underline">
-              Musobaqaga qaytish
+              {t(locale, "problem.backToContest")}
             </Link>
           </p>
         )}
@@ -178,7 +190,7 @@ export default async function ProblemPage({ params, searchParams }: Props) {
               {problem.input_format && (
                 <section>
                   <h2 className="mb-1.5 text-theme-lg font-semibold rw-strong">
-                    Kiruvchi ma&apos;lumot
+                    {t(locale, "problem.inputFormat")}
                   </h2>
                   <Markdown>{problem.input_format}</Markdown>
                 </section>
@@ -187,7 +199,7 @@ export default async function ProblemPage({ params, searchParams }: Props) {
               {problem.output_format && (
                 <section>
                   <h2 className="mb-1.5 text-theme-lg font-semibold rw-strong">
-                    Chiquvchi ma&apos;lumot
+                    {t(locale, "problem.outputFormat")}
                   </h2>
                   <Markdown>{problem.output_format}</Markdown>
                 </section>
@@ -220,7 +232,7 @@ export default async function ProblemPage({ params, searchParams }: Props) {
 
         {problem.source && (
           <p className="text-theme-sm rw-faint">
-            Manba:{" "}
+            {t(locale, "problem.source")}:{" "}
             {problem.source_url ? (
               <a
                 href={problem.source_url}
@@ -233,7 +245,9 @@ export default async function ProblemPage({ params, searchParams }: Props) {
               problem.source
             )}
             {problem.source_rating !== null &&
-              ` · asl reyting ${problem.source_rating}`}
+              ` · ${fill(t(locale, "problem.sourceRating"), {
+                rating: problem.source_rating,
+              })}`}
           </p>
         )}
       </article>

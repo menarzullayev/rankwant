@@ -403,6 +403,11 @@ def neg_hardcoded_prose() -> tuple[bool, str]:
 
     Anchor — `CrudPage.tsx` dagi `ColumnDef` maydoni. U o'zgarsa test
     shovqin bilan yiqiladi, jimgina o'lmaydi.
+
+    ⚠️ Langar `label:`/`title:` kabi HAQIQIY matn pozitsiyasi bo'lishi
+    shart. `type?: FieldType;` yoki `align?: …` tip pozitsiyasi — u yerga
+    qo'yilgan satr hech qachon ko'rinmaydi (checker uni matn deb
+    hisoblamaydi), va test «tekshiruv o'lik» degan yolg'on xulosa beradi.
     """
     path = ROOT / "apps/web/src/components/admin/CrudPage.tsx"
     with Mutation(path, '  align?: "left" | "right";', '  align?: "left" | "right";\n  label: "Sana";'):
@@ -423,6 +428,110 @@ def neg_hardcoded_locale_less_date() -> tuple[bool, str]:
         '  align?: "left" | "right";\n  x: new Date().toLocaleDateString();',
     ):
         return expect_fail("hardcoded", "tilsiz sana formati")
+
+
+# --- the four rules that were narrowed today ------------------------------
+#
+# Each of these guards a filter that had swallowed real prose or flagged a
+# measurement. The test is written the other way round from the first two:
+# it plants a string that LOOKS like the code shape the filter accepts, and
+# asserts the checker still reports it. A filter that is too eager is
+# invisible without a test like this — the checker simply says "toza ✓".
+
+
+def neg_hardcoded_number_in_prose() -> tuple[bool, str]:
+    """Raqam bilan boshlangan MATN rang deb hisoblanmasin.
+
+    `COLORY` avval `\\d` bilan boshlanadigan har qanday satrni rang deb
+    olardi, ya'ni `"45 masala"` (haqiqiy interfeys matni) ko'rinmas edi.
+    Bu soxta salbiy edi va u `"2-qadam (joy va maktab)"` hamda
+    `"1-bosqich"` ni yashirgan — ikkalasi bugun topildi.
+
+    Anchor — `CrudPage` dagi `label:` maydoni: o'sha pozitsiya qattiq
+    yozilgan matnni HAQIQATAN ushlaydi (`neg_hardcoded_prose` shuni
+    isbotlaydi). `align?: "left" | "right";` tip pozitsiyasi edi va u
+    hech qachon matn hisoblanmaydi — birinchi urinish shuning uchun
+    yolg'on «o'lik» natija berdi.
+    """
+    path = ROOT / "apps/web/src/components/admin/CrudPage.tsx"
+    with Mutation(
+        path,
+        '  align?: "left" | "right";',
+        '  align?: "left" | "right";\n  label: "45 masala yechildi";',
+    ):
+        return expect_fail("hardcoded", "raqam bilan boshlangan matn")
+
+
+def neg_hardcoded_actual_colour_passes() -> tuple[bool, str]:
+    """`COLORY` ning qarama-qarshi tomoni: haqiqiy rang O'TISHI kerak.
+
+    ⚠️ Bu test ham shart. `COLORY` ni toraytirib, `#fff` yoki `12px` ni
+    «matn» deb e'lon qilish oson — o'shanda tekshiruv 40 ta soxta musbat
+    beradi va odamlar uni `# noqa` bilan o'chira boshlaydi.
+    """
+    path = ROOT / "apps/web/src/components/admin/CrudPage.tsx"
+    with Mutation(
+        path,
+        '  align?: "left" | "right";',
+        '  align?: "left" | "right";\n  a: "#fff";\n  b: "12px";\n  c: "var(--bg)";',
+    ):
+        code, _ = run_check("hardcoded")
+        if code == 0:
+            return True, ""
+        return False, "haqiqiy rang qiymatlari matn deb topildi"
+
+
+def neg_hardcoded_number_unit_passes() -> tuple[bool, str]:
+    """O'lchov birligi (`12 MB`, `8 AC`) matn hisoblanmasin, lekin
+    `45 masala` matn bo'lib QOLsin — ikkisi bir testda.
+
+    Farq birlik ro'yxatida: `MB`/`AC` — o'lchov belgisi, `masala` — so'z.
+    Langar — `TD` komponentining `label=` atributi: matn pozitsiyasi.
+    """
+    path = ROOT / "apps/web/src/app/problems/page.tsx"
+    with Mutation(
+        path,
+        "<TH>{t(locale, \"problems.name\")}</TH>",
+        '<TH label="12 MB">8 AC 45 masala</TH>',
+    ):
+        code, _ = run_check("hardcoded")
+        if code == 1:
+            return True, ""
+        return False, "`45 masala` o'lchov birligi deb o'tkazib yuborildi"
+
+
+def neg_hardcoded_wide_scope() -> tuple[bool, str]:
+    """Kengaytirilgan doira HAQIQATAN o'qilishini tasdiqlasin.
+
+    `target_files()` bugun `apps/web/src` ning hammasiga ochildi. Doira
+    jimgina adminda qolib ketsa, 247 fayl haqidagi xabar yolg'on bo'lardi.
+    Langar — admin panelda BO'LMAGAN fayldagi JSX matni.
+    """
+    path = ROOT / "apps/web/src/app/rating/page.tsx"
+    with Mutation(
+        path,
+        '<Section title="Skills"',
+        '<p>Kengaytirilgan doira sinovi</p>\n      <Section title="Skills"',
+    ):
+        return expect_fail("hardcoded", "admin tashqarisidagi fayl")
+
+
+def neg_hardcoded_viewbox_passes() -> tuple[bool, str]:
+    """SVG `viewBox` koordinatalari matn hisoblanmasin.
+
+    `0 0 ${W} ${H}` JSX matni emas — SVG geometriyasi. Usiz tekshiruv
+    har bir grafik komponentda yiqilardi.
+    """
+    path = ROOT / "apps/web/src/components/profile/RatingChart.tsx"
+    with Mutation(
+        path,
+        "viewBox={`0 0 ${W} ${H}`}",
+        "viewBox={`0 0 ${W} ${H}`}\n          data-probe={`0 0 ${1} ${2}`}",
+    ):
+        code, _ = run_check("hardcoded")
+        if code == 0:
+            return True, ""
+        return False, "viewBox koordinatalari matn deb topildi"
 
 
 CASES: list[tuple[str, list[tuple[str, object]]]] = [
@@ -455,6 +564,11 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
     ("hardcoded", [
         ("admin faylda qattiq yozilgan matn", neg_hardcoded_prose),
         ("tilsiz sana formati", neg_hardcoded_locale_less_date),
+        ("raqam bilan boshlangan matn", neg_hardcoded_number_in_prose),
+        ("haqiqiy rang o'tadi", neg_hardcoded_actual_colour_passes),
+        ("o'lchov birligi o'tadi, so'z qoladi", neg_hardcoded_number_unit_passes),
+        ("kengaytirilgan doira o'qiladi", neg_hardcoded_wide_scope),
+        ("viewBox o'tadi", neg_hardcoded_viewbox_passes),
     ]),
 ]
 

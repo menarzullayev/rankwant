@@ -29,9 +29,7 @@ export default async function LearnPage() {
         <h1 className="text-title-sm font-bold rw-strong">
           {t(locale, "learn.title")}
         </h1>
-        <p className="mt-2 max-w-2xl text-theme-sm rw-dim">
-          Har bir maqola mashq masalalari bilan bog&apos;langan — o&apos;qish va
-          yechish bir joyda.
+        <p className="mt-2 max-w-2xl text-theme-sm rw-dim">{t(locale, "learn.intro")}
         </p>
       </header>
 

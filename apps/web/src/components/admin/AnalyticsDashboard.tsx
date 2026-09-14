@@ -183,7 +183,7 @@ export function AnalyticsDashboard() {
           </Card>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <Card title="2-qadam (joy va maktab)">
+            <Card title={t(locale, "admin.text.step2Funnel")}>
               <div className="flex items-baseline gap-3">
                 <span className="text-title-sm font-bold rw-strong">
                   {data.step2.skipped_share}%

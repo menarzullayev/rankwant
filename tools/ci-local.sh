@@ -141,7 +141,9 @@ run_docs() {
     # `t()` chaqirilgan kalitning 10 tilda borligini tekshiradi, lekin
     # qattiq yozilgan matnni KO'RMAYDI. Admin panelda 274 ta shunday
     # satr «toza ✓» ostida turgan edi — shuning uchun teskari
-    # yo'nalish ham tekshiriladi.
+    # yo'nalish ham tekshiriladi. Doira endi butun `apps/web/src`:
+    # 247 manba fayl, `DEFERRED` (content/legal, country-names,
+    # regions, opengraph-image) dan tashqari.
     "$PY" tools/check_hardcoded.py &&
     "$PY" tools/check_email_locales.py &&
     "$PY" tools/check_locales_parity.py &&

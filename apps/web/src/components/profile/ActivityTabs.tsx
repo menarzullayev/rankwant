@@ -249,7 +249,10 @@ export async function PeopleTab({
     `/users/${username}/${direction}/?${params}`,
   );
   const title = t(locale, direction === "followers" ? "profile.followers" : "profile.followingTab");
-  const slug = direction === "followers" ? "obunachilar" : "obunalar";
+  // `slug` is the URL segment, not a label: `/users/<name>/followers`.
+  // The two values are the API's route names, identical in all ten
+  // languages. Translating them would break the link.
+  const slug = direction;
   const link = (to: number) => {
     const next = new URLSearchParams(params);
     next.set("page", String(to));

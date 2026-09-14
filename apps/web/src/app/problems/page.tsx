@@ -14,7 +14,7 @@ import {
   Table,
 } from "@/components/ui/Table";
 import { getLocale } from "@/i18n/server";
-import { t, topicName } from "@/i18n/messages";
+import { fill, t, topicName } from "@/i18n/messages";
 import { BlogIcon, CheckIcon } from "@/icons";
 import { ArchiveSidebar } from "@/components/ArchiveSidebar";
 import { ProblemFilters } from "@/components/ProblemFilters";
@@ -266,7 +266,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
                           title={t(locale, "problem.testsNotReady")}
                           className="shrink-0 rw-radius-sm rw-warn-soft px-1.5 py-0.5 text-theme-xs rw-warn-ink"
                         >
-                          testsiz
+                          {t(locale, "problems.noTests")}
                         </span>
                       )}
                       {/* Yechilmagan, lekin urinilgan — «WA oldim» signali */}
@@ -290,7 +290,10 @@ export default async function ProblemsPage({ searchParams }: Props) {
                     ) : (
                       <span
                         className="text-theme-xs rw-dim-2 tabular-nums"
-                        title={`${p.rating.count} baho`}
+                        title={fill(t(locale, "problem.ratingSummary"), {
+                          average: p.rating.average.toFixed(1),
+                          count: p.rating.count,
+                        })}
                       >
                         {p.rating.average.toFixed(1)}
                       </span>

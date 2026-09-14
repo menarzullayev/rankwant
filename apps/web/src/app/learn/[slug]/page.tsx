@@ -15,11 +15,12 @@ export const dynamic = "force-dynamic";
 /** SSR + metadata — o'z kontent differensiatori qidiruvda topilishi shart. */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  const locale = await getLocale();
   try {
     const article = await api.article(slug);
     return { title: article.title, description: article.summary };
   } catch {
-    return { title: "Maqola topilmadi" };
+    return { title: t(locale, "learn.notFound") };
   }
 }
 

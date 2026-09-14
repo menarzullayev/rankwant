@@ -164,7 +164,9 @@ export default async function ProblemStatusPage({
             ))}
             {page.results.length === 0 && (
               <EmptyRow colSpan={7}>
-                {query ? "Bu filtrga mos urinish yo'q." : "Hali urinish yo'q."}
+                {query
+                  ? t(locale, "problem.noAttemptMatch")
+                  : t(locale, "problem.noAttemptsYet")}
               </EmptyRow>
             )}
           </TBody>
@@ -172,7 +174,7 @@ export default async function ProblemStatusPage({
 
         {(previousCursor || nextCursor) && (
           <nav
-            aria-label="Sahifalar"
+            aria-label={t(locale, "problem.pagination")}
             className="flex items-center justify-between gap-3 px-5 py-4"
           >
             {previousCursor ? (
@@ -183,7 +185,7 @@ export default async function ProblemStatusPage({
                 rel="prev"
                 className="text-theme-sm rw-dim-2 hover:underline"
               >
-                ← Oldingi
+                {t(locale, "problem.previousPage")}
               </Link>
             ) : (
               <span />
@@ -196,7 +198,7 @@ export default async function ProblemStatusPage({
                 rel="next"
                 className="text-theme-sm rw-dim-2 hover:underline"
               >
-                Keyingi →
+                {t(locale, "problem.nextPage")}
               </Link>
             )}
           </nav>

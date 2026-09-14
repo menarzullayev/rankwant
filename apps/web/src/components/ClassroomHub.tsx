@@ -87,9 +87,17 @@ export function ClassroomHub() {
         </Card>
         <Card title={t(locale, "classroom.create")}>
           <form onSubmit={create} className="grid gap-2">
-            <Field label="Nomi" name="name" required />
-            <Field label="Slug" name="slug" required pattern="[a-z0-9-]+" />
-            <Field label="Tavsif" name="description" />
+            <Field label={t(locale, "admin.label.text.name")} name="name" required />
+            <Field
+              label={t(locale, "admin.label.text.slug")}
+              name="slug"
+              required
+              pattern="[a-z0-9-]+"
+            />
+            <Field
+              label={t(locale, "admin.label.text.description")}
+              name="description"
+            />
             <div>
               <Button type="submit">{t(locale, "classroom.create")}</Button>
             </div>

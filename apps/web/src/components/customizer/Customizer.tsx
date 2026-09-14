@@ -372,7 +372,7 @@ function AccentSection() {
           <li key={`${swatch.hue}-${swatch.sat}`}>
             <button
               type="button"
-              aria-label={`hue ${swatch.hue}`}
+              aria-label={`${t(locale, "customizer.hue")} ${swatch.hue}`}
               aria-pressed={appearance.accent?.hue === swatch.hue}
               onClick={() => {
                 setHue(swatch.hue);

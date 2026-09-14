@@ -7,7 +7,7 @@ import { Card, StatCard } from "@/components/ui/Card";
 import { TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
 import { UpdateKindBadge } from "@/components/UpdateKindBadge";
 import { getLocale } from "@/i18n/server";
-import { date, dateTime, t } from "@/i18n/messages";
+import { date, dateTime, fill, t } from "@/i18n/messages";
 import { ContestIcon, LeaderboardIcon, ProblemsIcon, QvantIcon } from "@/icons";
 import {
   api,
@@ -105,12 +105,16 @@ export default async function Home() {
     <div className="space-y-6">
       <section className="rw-radius border rw-line rw-surface px-6 py-10 rw-shadow">
         <h1 className="text-title-sm font-bold rw-strong">
-          {me ? `Salom, ${me.display_name || me.username}!` : "RankWant"}
+          {me
+            ? fill(t(locale, "home.greeting"), {
+                name: me.display_name || me.username,
+              })
+            : "RankWant"}
         </h1>
         <p className="mt-3 max-w-2xl text-theme-sm rw-dim">
           {me
-            ? "To'xtagan joyingizdan davom eting yoki yaqin musobaqaga yoziling."
-            : "Reyting xohlaganlar uchun: masala yeching, musobaqada qatnashing, darajangizni ko'ring."}
+            ? t(locale, "home.resumeHint")
+            : t(locale, "home.ratingHint")}
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           {resume ? (

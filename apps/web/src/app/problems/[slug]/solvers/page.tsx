@@ -140,7 +140,7 @@ export default async function SolversPage({ params, searchParams }: Props) {
                   </th>
                   <th className={th}>Vaqt</th>
                   <th className={`${th} hidden sm:table-cell`}>Xotira</th>
-                  <th className={th}>Kod, belgi</th>
+                  <th className={th}>{t(locale, "problem.solvers.codeColumn")}</th>
                   <th className={th}>Urinish</th>
                   <th className={`${th} hidden px-5 md:table-cell`}>Sana</th>
                 </tr>
