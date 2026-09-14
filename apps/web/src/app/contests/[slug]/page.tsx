@@ -84,7 +84,7 @@ export default async function ContestPage({ params }: Props) {
       )}
 
       {contest.problems.length > 0 && (
-        <Card title="Masalalar" bodyClassName="p-0">
+        <Card title={t(locale, "contest.problems")} bodyClassName="p-0">
           <ul className="rw-divide divide-y">
             {contest.problems.map((entry) => (
               <li key={entry.slug}>

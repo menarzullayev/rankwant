@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 
 import { Badge } from "@/components/ui/Badge";
+import { getLocale } from "@/i18n/server";
+import { t } from "@/i18n/messages";
 
-export const metadata: Metadata = {
-  title: "Reyting qanday hisoblanadi",
-  description:
-    "RankWant reytinglarining to'liq formulalari: Skills, Contests, Activity, Challenges.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return {
+    title: t(locale, "nav.ratingInfo"),
+    description: t(locale, "rating.description"),
+  };
+}
 
 /**
  * Launch gate sharti: 4 reyting formulasi UI da OCHIQ bo'lishi kerak
@@ -48,12 +52,13 @@ function Formula({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function RatingPage() {
+export default async function RatingPage() {
+  const locale = await getLocale();
   return (
     <div className="space-y-6">
       <header>
         <h1 className="text-title-sm font-bold rw-strong">
-          Reyting qanday hisoblanadi
+          {t(locale, "nav.ratingInfo")}
         </h1>
         <p className="mt-2 max-w-3xl text-theme-sm rw-dim">
           Barcha formulalar ochiq. Yashirin og&apos;irlik yoki e&apos;lon

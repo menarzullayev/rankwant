@@ -400,7 +400,7 @@ export default function SubmitPanel({
   if (!hasTests)
     return (
       <div className={PANEL}>
-        <Card title="Yechim">
+        <Card title={t(locale, "submit.solution")}>
           <p className="text-theme-sm rw-dim">
             Bu masalaning <strong>testlari hali tayyorlanmagan</strong>, shu
             sababli yechim qabul qilinmaydi. Matnni o&apos;qib, o&apos;zingiz
@@ -414,7 +414,7 @@ export default function SubmitPanel({
   return (
     <div className={PANEL}>
       <Card
-        title="Yechim"
+        title={t(locale, "submit.solution")}
         action={
           <select
             value={language}

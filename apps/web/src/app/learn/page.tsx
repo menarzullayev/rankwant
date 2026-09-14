@@ -6,12 +6,13 @@ import { ListCard } from "@/components/ui/ListCard";
 import { getLocale } from "@/i18n/server";
 import { t } from "@/i18n/messages";
 
-export const metadata: Metadata = {
-  title: "O'quv materiallari",
-  description:
-    "O'zbek tilida sport dasturlash bo'yicha maqolalar va yo'l xaritalari — " +
-    "har bir mavzu mashq masalalari bilan.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return {
+    title: t(locale, "learn.title"),
+    description: t(locale, "learn.description"),
+  };
+}
 
 export const dynamic = "force-dynamic";
 

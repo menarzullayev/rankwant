@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { t } from "@/i18n/messages";
+import { getLocale } from "@/i18n/server";
 import { api } from "@/lib/api";
 
 export const alt = "RankWant musobaqasi";
@@ -26,6 +27,7 @@ function sana(iso: string): string {
  *  havolani ochmaydi.
  */
 export default async function OgImage({ params }: { params: Promise<{ slug: string }> }) {
+  const locale = await getLocale();
   const slug = decodeURIComponent((await params).slug);
   const contest = await api.contest(slug).catch(() => null);
 
@@ -33,10 +35,10 @@ export default async function OgImage({ params }: { params: Promise<{ slug: stri
   const holat = !contest
     ? ""
     : contest.is_running
-      ? "Davom etmoqda"
+      ? t(locale, "contest.running")
       : contest.is_finished
-        ? "Tugagan"
-        : "Boshlanmagan";
+        ? t(locale, "contests.finished")
+        : t(locale, "contest.notStarted");
   const holatRangi = !contest
     ? "#8f7bff"
     : contest.is_running
@@ -62,7 +64,7 @@ export default async function OgImage({ params }: { params: Promise<{ slug: stri
       >
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
           <div style={{ fontSize: 34, fontWeight: 700, opacity: 0.9 }}>RankWant</div>
-          <div style={{ fontSize: 28, opacity: 0.5 }}>{t(DEFAULT_LOCALE, "nav.contests")}</div>
+          <div style={{ fontSize: 28, opacity: 0.5 }}>{t(locale, "nav.contests")}</div>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 26 }}>

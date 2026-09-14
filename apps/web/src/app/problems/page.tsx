@@ -250,8 +250,8 @@ export default async function ProblemsPage({ searchParams }: Props) {
                       </Link>
                       {p.has_editorial && (
                         <span
-                          title="Yechim tahlili bor"
-                          aria-label="Yechim tahlili bor"
+                          title={t(locale, "problem.editorialAvailable")}
+                          aria-label={t(locale, "problem.editorialAvailable")}
                           role="img"
                           className="inline-flex shrink-0 rw-faint"
                         >
@@ -263,7 +263,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
                           qaytib chiqishga vaqt sarflardi. */}
                       {!p.has_tests && (
                         <span
-                          title="Testlar tayyorlanmagan — yechim qabul qilinmaydi"
+                          title={t(locale, "problem.testsNotReady")}
                           className="shrink-0 rw-radius-sm rw-warn-soft px-1.5 py-0.5 text-theme-xs rw-warn-ink"
                         >
                           testsiz

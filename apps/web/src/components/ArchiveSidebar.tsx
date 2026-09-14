@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { Card } from "@/components/ui/Card";
 import { VerdictBadge } from "@/components/VerdictBadge";
-import { dateTime, type Locale } from "@/i18n/messages";
+import { dateTime, t, type Locale } from "@/i18n/messages";
 import { Badge } from "@/components/ui/Badge";
 import type {
   ArchiveProgress,
@@ -18,11 +18,11 @@ import type {
  *
  * Mehmonda ham chiziladi: o'shanda arxiv hajmini ko'rsatuvchi karta
  * bo'ladi va ro'yxatdan o'tishga sabab beradi. */
-function Progress({ data }: { data: ArchiveProgress }) {
+function Progress({ data, locale }: { data: ArchiveProgress; locale: Locale }) {
   const percent = data.total ? Math.round((data.solved / data.total) * 100) : 0;
 
   return (
-    <Card title="Yechilganlar" bodyClassName="space-y-3">
+    <Card title={t(locale, "profile.tab.solved")} bodyClassName="space-y-3">
       <p className="text-theme-sm rw-dim">
         <span className="text-title-sm font-bold rw-strong tabular-nums">
           {data.solved}
@@ -68,9 +68,9 @@ function Progress({ data }: { data: ArchiveProgress }) {
 }
 
 /** Boshlangan, lekin yechilmagan masala — RoboContest'ning «Davom etish». */
-function Continue({ problem }: { problem: Problem }) {
+function Continue({ problem, locale }: { problem: Problem; locale: Locale }) {
   return (
-    <Card title="Davom ettirish" bodyClassName="space-y-2">
+    <Card title={t(locale, "archive.continue")} bodyClassName="space-y-2">
       <Link
         href={`/problems/${problem.slug}`}
         className="block font-medium rw-strong rw-link-hover"
@@ -91,7 +91,7 @@ function Continue({ problem }: { problem: Problem }) {
 
 function Upcoming({ event, locale }: { event: CalendarEvent; locale: Locale }) {
   return (
-    <Card title="Yaqin musobaqa" bodyClassName="space-y-2">
+    <Card title={t(locale, "archive.upcoming")} bodyClassName="space-y-2">
       <Link
         href={`/contests/${event.slug}`}
         className="block font-medium rw-strong rw-link-hover"
@@ -110,10 +110,10 @@ function Upcoming({ event, locale }: { event: CalendarEvent; locale: Locale }) {
 /** O'quv rejalari — KEP'ning «Study plans» bloki, progress bilan.
  * Progress alohida modeldan emas: traektoriya qadamining masalasi
  * yechilganmi, shundan hisoblanadi. */
-function Roadmaps({ items }: { items: Roadmap[] }) {
+function Roadmaps({ items, locale }: { items: Roadmap[]; locale: Locale }) {
   return (
     <Card
-      title="O'quv rejalari"
+      title={t(locale, "archive.roadmaps")}
       action={
         <Link
           href="/roadmaps"
@@ -173,11 +173,11 @@ function Digest({
   if (attempts.length === 0 && popular.length === 0) return null;
 
   return (
-    <Card title="Hamjamiyat" bodyClassName="space-y-4">
+    <Card title={t(locale, "archive.community")} bodyClassName="space-y-4">
       {attempts.length > 0 && (
         <div>
           <p className="mb-1.5 text-theme-xs font-medium tracking-wider rw-faint uppercase">
-            Oxirgi urinishlar
+            {t(locale, "archive.recentAttempts")}
           </p>
           <ul className="space-y-1">
             {attempts.slice(0, 5).map((attempt) => (
@@ -245,7 +245,7 @@ function Digest({
  * joy o'rganish uchun eng foydali nuqta.
  *
  * Faqat kirgan foydalanuvchi uchun: mehmonda hamma qator nol bo'lardi. */
-function TopicStrength({ topics }: { topics: TopicSkill[] }) {
+function TopicStrength({ topics, locale }: { topics: TopicSkill[]; locale: Locale }) {
   const strong = topics.filter((t) => t.solved > 0).slice(0, 5);
   const stuck = topics
     .filter((t) => t.solved === 0 && t.stuck > 0)
@@ -257,7 +257,7 @@ function TopicStrength({ topics }: { topics: TopicSkill[] }) {
   const peak = Math.max(...strong.map((t) => t.rating), 1);
 
   return (
-    <Card title="Mavzu bo'yicha kuch" bodyClassName="space-y-3">
+    <Card title={t(locale, "archive.topicStrength")} bodyClassName="space-y-3">
       {strong.map((topic) => (
         <div key={topic.slug}>
           <div className="flex items-baseline justify-between gap-2 text-theme-xs">
@@ -306,10 +306,10 @@ function TopicStrength({ topics }: { topics: TopicSkill[] }) {
  * qatordan atigi 7 tasi ko'rinardi. Arxivga kelgan odam avval arxivni
  * ko'rishi kerak; tavsiya esa filtrdagi «Menga tavsiya» rejimi bilan
  * ham ochiladi, ya'ni bu yerda u eslatma vazifasini bajaradi. */
-function Recommended({ data }: { data: Recommendation }) {
+function Recommended({ data, locale }: { data: Recommendation; locale: Locale }) {
   return (
     <Card
-      title="Sizga tavsiya"
+      title={t(locale, "recommend.title")}
       action={<Badge color="brand">{data.target_difficulty}</Badge>}
       bodyClassName="space-y-1"
     >
@@ -352,14 +352,14 @@ export function ArchiveSidebar({
 }) {
   return (
     <aside className="min-w-0 space-y-4">
-      {resume && <Continue problem={resume} />}
+      {resume && <Continue problem={resume} locale={locale} />}
       {recommended && recommended.results.length > 0 && (
-        <Recommended data={recommended} />
+        <Recommended data={recommended} locale={locale} />
       )}
-      <Progress data={progress} />
-      <TopicStrength topics={skills} />
+      <Progress data={progress} locale={locale} />
+      <TopicStrength topics={skills} locale={locale} />
       {upcoming && <Upcoming event={upcoming} locale={locale} />}
-      {roadmaps.length > 0 && <Roadmaps items={roadmaps} />}
+      {roadmaps.length > 0 && <Roadmaps items={roadmaps} locale={locale} />}
       <Digest locale={locale} attempts={attempts} popular={popular} />
     </aside>
   );

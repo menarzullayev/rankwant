@@ -144,6 +144,7 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         "admin.title.duels", "admin.title.hackathons", "admin.title.tournaments",
         "admin.text.badgeRated", "admin.text.badgeRepo", "admin.text.badgeDemo",
         "admin.text.addVariant", "admin.text.variant",
+        "problem.stats.title",   # "Statistika · {slug}"
     },
     # Ingliz tili: «Duel» kabi so'zlar inglizchadan o'zlashgan, ya'ni
     # tarjima AYNAN o'sha so'z bo'ladi. Quyidagilar ham shunday —

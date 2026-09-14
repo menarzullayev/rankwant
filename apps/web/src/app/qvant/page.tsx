@@ -115,12 +115,12 @@ export default async function QvantPage() {
 
       {marathon && marathon.total > 0 && (
         <Card
-          title="Haftalik marafon"
+          title={t(locale, "qvant.marathon")}
           bodyClassName="p-0"
           action={
             <Badge color={marathon.completed ? "success" : "brand"}>
               {marathon.completed
-                ? "Yakunlandi"
+                ? t(locale, "qvant.marathonFinished")
                 : `${marathon.solved_count}/${marathon.total} · +${marathon.reward}`}
             </Badge>
           }

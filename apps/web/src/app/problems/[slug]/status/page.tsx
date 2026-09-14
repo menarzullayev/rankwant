@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { ProblemTabs } from "@/components/ProblemTabs";
 import { VerdictBadge } from "@/components/VerdictBadge";
 import { Card } from "@/components/ui/Card";
-import { dateTime, t } from "@/i18n/messages";
+import { dateTime, fill, t } from "@/i18n/messages";
 import { getLocale } from "@/i18n/server";
 import {
   EmptyRow,
@@ -34,8 +34,9 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({
   params,
 }: Pick<Props, "params">): Promise<Metadata> {
+  const locale = await getLocale();
   const { slug } = await params;
-  return { title: `Urinishlar · ${slug}` };
+  return { title: fill(t(locale, "problem.status.title"), { slug }) };
 }
 
 /** Masalaning barcha urinishlari — Codeforces'ning STATUS sahifasi.

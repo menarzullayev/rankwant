@@ -179,6 +179,9 @@ ALLOWED_LITERALS = {
     # these through unchanged; only the separator between them is ours.
     "Edge", "Opera", "Yandex", "Firefox", "Chrome", "Safari",
     "iOS", "Android", "Windows", "macOS", "Linux",
+    # A share title: the display name plus the product. The name is
+    # data, the suffix is the brand, and only the separator is ours.
+    "{name} · RankWant",
 }
 
 #: A short list of unmistakable Uzbek stems. NOT used to decide "is this

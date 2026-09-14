@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ProblemTabs } from "@/components/ProblemTabs";
 import { VerdictBadge } from "@/components/VerdictBadge";
 import { Card } from "@/components/ui/Card";
+import { fill, t } from "@/i18n/messages";
 import { getLocale } from "@/i18n/server";
 import { api, ApiError, type ProblemStats } from "@/lib/api";
 
@@ -13,8 +14,9 @@ type Props = { params: Promise<{ slug: string }> };
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const locale = await getLocale();
   const { slug } = await params;
-  return { title: `Statistika · ${slug}` };
+  return { title: fill(t(locale, "problem.stats.title"), { slug }) };
 }
 
 /** Ulush chizig'i — diagramma kutubxonasi shu bitta blok uchun ortiqcha. */
@@ -86,7 +88,7 @@ export default async function ProblemStatsPage({ params }: Props) {
         </Card>
       ) : (
         <div className="grid gap-4 lg:grid-cols-2">
-          <Card title="Verdiktlar" bodyClassName="space-y-3">
+          <Card title={t(locale, "profile.verdictsTitle")} bodyClassName="space-y-3">
             {stats.verdicts.map((row) => (
               <Share
                 key={row.verdict}
@@ -97,7 +99,7 @@ export default async function ProblemStatsPage({ params }: Props) {
             ))}
           </Card>
 
-          <Card title="Tillar" bodyClassName="space-y-3">
+          <Card title={t(locale, "problem.stats.languages")} bodyClassName="space-y-3">
             {stats.languages.map((row) => (
               <Share
                 key={row.language}
@@ -113,7 +115,7 @@ export default async function ProblemStatsPage({ params }: Props) {
 
           {stats.fastest.length > 0 && (
             <Card
-              title="Eng tez yechimlar"
+              title={t(locale, "problem.stats.fastest")}
               className="lg:col-span-2"
               bodyClassName="p-0"
             >

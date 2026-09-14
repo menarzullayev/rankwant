@@ -199,7 +199,7 @@ export default async function ProblemPage({ params, searchParams }: Props) {
         <SampleTests samples={problem.samples} />
 
         {problem.note && (
-          <Card title="Izoh">
+          <Card title={t(locale, "problem.comments")}>
             <Markdown>{problem.note}</Markdown>
           </Card>
         )}
