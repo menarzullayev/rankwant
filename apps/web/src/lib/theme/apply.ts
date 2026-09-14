@@ -34,6 +34,14 @@ const ACCENT_TOKENS = [
   "--rw-accent-ink",
 ] as const;
 
+/** Accent hosil bo'lmaganda sabab. Matn EMAS: bu modul sof hisoblash
+ *  qatlami, tarjima esa ko'rsatish joyida (`errorText()`) qilinadi.
+ *  Kodlar `error.<code>` kalitlariga to'g'ri keladi — `messages.ts` dagi
+ *  umumiy xato mexanizmi bilan bir xil yo'l.
+ *  Ilgari bu yerda tayyor o'zbekcha satr qaytarilardi va u 9 tilning
+ *  hech birida tarjima qilinmasdi (o'lchandi). */
+export type AccentError = "ground_unreadable" | "contrast_unreachable";
+
 export type AccentResult = {
   /** Hosil qilindi va qo'llanildi. */
   ok: boolean;
@@ -42,7 +50,7 @@ export type AccentResult = {
   /** Accent MATN sifatida eng yomon fon ustida (`--rw-accent-ink`). */
   ink: number | null;
   /** O'lchanmagan fon bo'lsa — sabab ko'rsatiladi, "o'tdi" deyilmaydi. */
-  error?: string;
+  error?: AccentError;
 };
 
 function clearAccent() {
@@ -65,13 +73,13 @@ export function applyAccent(hue: number, sat: number): AccentResult {
   const backgrounds = readBackgrounds();
   if (!backgrounds.length) {
     clearAccent();
-    return { ok: false, button: null, ink: null, error: "fon o'qilmadi" };
+    return { ok: false, button: null, ink: null, error: "ground_unreadable" };
   }
 
   const accent = deriveAccent(hue, sat / 100, backgrounds);
   if (!accent) {
     clearAccent();
-    return { ok: false, button: null, ink: null, error: "yorqinlik yetmadi" };
+    return { ok: false, button: null, ink: null, error: "contrast_unreachable" };
   }
 
   const dark = environmentIsDark(backgrounds);
@@ -200,10 +208,10 @@ export function applyAll(appearance: AppearancePrefs, a11y: A11yPrefs): AccentRe
 export function previewAccent(hue: number, sat: number): AccentResult {
   const backgrounds = readBackgrounds();
   if (!backgrounds.length) {
-    return { ok: false, button: null, ink: null, error: "fon o'qilmadi" };
+    return { ok: false, button: null, ink: null, error: "ground_unreadable" };
   }
   const accent = deriveAccent(hue, sat / 100, backgrounds);
-  if (!accent) return { ok: false, button: null, ink: null, error: "yorqinlik yetmadi" };
+  if (!accent) return { ok: false, button: null, ink: null, error: "contrast_unreachable" };
   const soft = accentSoft(hue, sat / 100, environmentIsDark(backgrounds));
   const ink = deriveAccent(hue, sat / 100, [...backgrounds, soft]) ?? accent;
   const lightInk = parseColor("#ffffff") as RGB;

@@ -7,23 +7,31 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { fill, t } from "@/i18n/messages";
+import { fill, t, type Locale } from "@/i18n/messages";
 import { putJson, type ExternalKind, type ExternalProfile } from "@/lib/api";
+import { EXTERNAL_LABEL } from "@/lib/external-links";
 import { Hint, Loading, Status, useAction, useLoad } from "./kit";
 
-const KINDS: { kind: ExternalKind; label: string }[] = [
-  { kind: "codeforces", label: "Codeforces" },
-  { kind: "atcoder", label: "AtCoder" },
-  { kind: "leetcode", label: "LeetCode" },
-  { kind: "linkedin", label: "LinkedIn" },
-  { kind: "telegram", label: "Telegram" },
-  { kind: "github", label: "GitHub" },
-  { kind: "instagram", label: "Instagram" },
-  { kind: "x", label: "X" },
-  { kind: "youtube", label: "YouTube" },
-  { kind: "kaggle", label: "Kaggle" },
-  { kind: "blog", label: "Blog" },
+/** Tartib va nom `EXTERNAL_LABEL` dan olinadi — ilgari bu ro'yxat
+ *  o'sha jadvalni takrorlab, yana "Blog" ni ham qo'lda yozardi. Nomlarning
+ *  aksari BREND (Codeforces, GitHub, ...) va tarjima qilinmaydi; "Blog"
+ *  esa oddiy so'z, shuning uchun u tarjima qilinadi. */
+const KIND_ORDER: ExternalKind[] = [
+  "codeforces",
+  "atcoder",
+  "leetcode",
+  "linkedin",
+  "telegram",
+  "github",
+  "instagram",
+  "x",
+  "youtube",
+  "kaggle",
+  "blog",
 ];
+
+const kindLabel = (locale: Locale, kind: ExternalKind) =>
+  kind === "blog" ? t(locale, "external.blog") : EXTERNAL_LABEL[kind];
 
 /** Reytingi ochiq API'dan olinadiganlar — qolganlari faqat havola. */
 const RATED = new Set<ExternalKind>(["codeforces", "atcoder", "leetcode"]);
@@ -43,7 +51,7 @@ function ExternalCard() {
   async function save(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
-    const rows = KINDS.map(({ kind }) => ({
+    const rows = KIND_ORDER.map((kind) => ({
       kind,
       handle: String(form.get(kind) ?? "").trim(),
     })).filter((row) => row.handle);
@@ -77,14 +85,14 @@ function ExternalCard() {
         </div>
       ) : (
         <form onSubmit={save} className="mt-4 flex flex-col gap-4">
-          {KINDS.map(({ kind, label }) => {
+          {KIND_ORDER.map((kind) => {
             const handle = CONNECTED.has(kind) ? connected.data?.[kind] : undefined;
             const current = filled[kind] ?? byKind.get(kind)?.handle ?? "";
             return (
               <div key={kind} className="space-y-1.5">
                 <Field
                   key={`${kind}:${filled[kind] ?? ""}`}
-                  label={label}
+                  label={kindLabel(locale, kind)}
                   name={kind}
                   defaultValue={current}
                   hint={hintFor(kind)}

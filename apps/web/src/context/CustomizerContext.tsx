@@ -80,7 +80,7 @@ const CustomizerContext = createContext<
       a11y: A11yPrefs;
       /** Joriy holat qaysi shablonga mos keladi (`null` — o'zgartirilgan). */
       template: Template | null;
-      setAppearance: (patch: Partial<AppearancePrefs>) => void;
+      setAppearance: (patch: Partial<AppearancePrefs>) => AccentResult;
       setA11y: (patch: Partial<A11yPrefs>) => void;
       applyTemplate: (template: Template) => void;
       /** «Oxirgi o'zgarishni bekor qilish» (D25, 1-bosqich). */
@@ -188,12 +188,18 @@ export function CustomizerProvider({
     [],
   );
 
-  /** Tanlovni qo'llaydi, qurilmaga yozadi va hisobga yuboradi. */
+  /** Tanlovni qo'llaydi, qurilmaga yozadi va hisobga yuboradi.
+   *  Qaytaradi: accent natijasi — `ok: false` bo'lsa chaqiruvchi uni
+   *  foydalanuvchiga ko'rsatishi mumkin (`error` — kod, matn emas). */
   const commit = useCallback(
-    (next: AppearancePrefs, nextA11y: A11yPrefs, nextTemplates: ThemeTemplate[] = []) => {
+    (
+      next: AppearancePrefs,
+      nextA11y: A11yPrefs,
+      nextTemplates: ThemeTemplate[] = [],
+    ): AccentResult => {
       applyAppearance(next);
       applyA11y(nextA11y);
-      applyAndCacheAccent(next);
+      const accent = applyAndCacheAccent(next);
       rememberAppearance(next, nextA11y, nextTemplates);
       // Hisobga — `PrefsSync` yozadi. Uslubni ham qo'shamiz, chunki
       // `StyleContext` uni boshqa yo'l bilan yozadi.
@@ -203,12 +209,13 @@ export function CustomizerProvider({
         a11y: nextA11y,
         templates: nextTemplates,
       });
+      return accent;
     },
     [applyAndCacheAccent],
   );
 
   const setAppearance = useCallback(
-    (patch: Partial<AppearancePrefs>) => {
+    (patch: Partial<AppearancePrefs>): AccentResult => {
       // ⚠️ Yon ta'sirlar updater ICHIDA emas: React updater'ni qayta
       // chaqirishi mumkin (StrictMode da ikki marta) va u sof bo'lishi
       // shart. Shuning uchun qiymat tashqarida hisoblanadi.
@@ -221,7 +228,7 @@ export function CustomizerProvider({
         setStyle(patch.style as Parameters<typeof setStyle>[0]);
       }
       setAppearanceState(next);
-      commit(next, a11y);
+      return commit(next, a11y);
     },
     [appearance, a11y, commit, setStyle],
   );

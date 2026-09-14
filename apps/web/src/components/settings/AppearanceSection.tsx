@@ -128,9 +128,11 @@ export function AppearanceSection() {
                 </span>
                 <span className="min-w-0">
                   <span className="block truncate text-theme-sm font-medium rw-strong">
-                    {s.label}
+                    {t(locale, s.labelKey)}
                   </span>
-                  <span className="block truncate text-theme-xs rw-faint">{s.hint}</span>
+                  <span className="block truncate text-theme-xs rw-faint">
+                    {t(locale, s.hintKey)}
+                  </span>
                 </span>
               </button>
             </li>

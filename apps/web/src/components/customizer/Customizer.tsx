@@ -5,11 +5,11 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useCustomizer } from "@/context/CustomizerContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t } from "@/i18n/messages";
+import { errorText, t } from "@/i18n/messages";
 import { CheckIcon, CloseIcon, PaletteIcon } from "@/icons";
 import { STYLES, isDual, type StyleId } from "@/layout/styles";
 import type { A11yPrefs } from "@/lib/api";
-import { passes } from "@/lib/theme/apply";
+import { passes, type AccentError } from "@/lib/theme/apply";
 import { TEMPLATES } from "@/lib/theme/templates";
 
 /** Namuna tuslari (D7). 14 ta — kam bo'lsa «o'z rangimni qo'yaman»
@@ -266,10 +266,10 @@ function AppearanceTab() {
                 }`}
               >
                 <span className="block truncate font-medium rw-strong">
-                  {style.label}
+                  {t(locale, style.labelKey)}
                 </span>
                 <span className="block truncate text-theme-xs rw-faint">
-                  {style.hint}
+                  {t(locale, style.hintKey)}
                 </span>
               </button>
             </li>
@@ -347,6 +347,10 @@ function AccentSection() {
   const { appearance, setAppearance, preview } = useCustomizer();
   const [hue, setHue] = useState(appearance.accent?.hue ?? 215);
   const [sat, setSat] = useState(appearance.accent?.sat ?? 70);
+  // Accent qo'llanmay qolsa sabab shu yerda ko'rsatiladi. Ilgari
+  // `AccentResult.error` da tayyor o'zbekcha satr bor edi, lekin uni
+  // HECH KIM o'qimasdi — ya'ni nosozlik jimgina o'tardi.
+  const [failure, setFailure] = useState<AccentError | null>(null);
 
   const trial = preview(hue, sat);
   const ok = passes(trial.button) && passes(trial.ink);
@@ -355,6 +359,11 @@ function AccentSection() {
   const current = appearance.accent
     ? preview(appearance.accent.hue, appearance.accent.sat)
     : trial;
+
+  const apply = (patch: Parameters<typeof setAppearance>[0]) => {
+    const result = setAppearance(patch);
+    setFailure(result.ok ? null : (result.error ?? null));
+  };
 
   return (
     <Section title={t(locale, "customizer.accent")}>
@@ -368,7 +377,7 @@ function AccentSection() {
               onClick={() => {
                 setHue(swatch.hue);
                 setSat(swatch.sat);
-                setAppearance({ accent: { hue: swatch.hue, sat: swatch.sat } });
+                apply({ accent: { hue: swatch.hue, sat: swatch.sat } });
               }}
               style={{ background: `hsl(${swatch.hue} ${swatch.sat}% 45%)` }}
               className={`size-8 rounded-full border-2 transition ${
@@ -381,7 +390,7 @@ function AccentSection() {
           <button
             type="button"
             aria-pressed={!appearance.accent}
-            onClick={() => setAppearance({ accent: null })}
+            onClick={() => apply({ accent: null })}
             className="flex size-8 items-center justify-center rounded-full border rw-line text-theme-xs rw-dim-2"
             title={t(locale, "customizer.accentDefault")}
           >
@@ -424,12 +433,20 @@ function AccentSection() {
             {t(locale, "customizer.contrastBlocked")}
           </p>
         )}
+        {ok && failure && (
+          <p
+            role="alert"
+            className="rw-radius-sm rw-bad-soft px-2 py-1 text-theme-xs"
+          >
+            {errorText(locale, failure, "")}
+          </p>
+        )}
       </div>
 
       <button
         type="button"
         disabled={!ok}
-        onClick={() => setAppearance({ accent: { hue, sat } })}
+        onClick={() => apply({ accent: { hue, sat } })}
         className="mt-3 w-full rw-radius-sm rw-accent-bg px-3 py-2 text-theme-sm font-medium disabled:opacity-50"
       >
         {t(locale, "customizer.accentApply")}
