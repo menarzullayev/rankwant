@@ -8,7 +8,7 @@ import {
   type FieldDef,
 } from "@/components/admin/CrudPage";
 import { Badge } from "@/components/ui/Badge";
-import { date } from "@/i18n/messages";
+import { date, t, type MessageKey } from "@/i18n/messages";
 
 type Report = {
   id: number;
@@ -21,24 +21,24 @@ type Report = {
   [key: string]: unknown;
 };
 
-const REASON_LABEL: Record<string, string> = {
-  statement: "Matnda xato",
-  tests: "Testlar noto'g'ri",
-  translation: "Tarjima xato",
-  duplicate: "Takroriy masala",
-  other: "Boshqa",
+const REASON_LABEL: Record<string, MessageKey> = {
+  statement: "admin.text.reportReasonStatement",
+  tests: "admin.text.reportReasonTests",
+  translation: "admin.text.reportReasonTranslation",
+  duplicate: "admin.text.reportReasonDuplicate",
+  other: "admin.text.reportReasonOther",
 };
 
-const STATUS_LABEL: Record<Report["status"], string> = {
-  open: "Ochiq",
-  accepted: "Qabul qilindi",
-  rejected: "Rad etildi",
+const STATUS_LABEL: Record<Report["status"], MessageKey> = {
+  open: "admin.label.flag.open",
+  accepted: "admin.label.status.accepted",
+  rejected: "admin.label.status.rejectedShort",
 };
 
 const columns: ColumnDef<Report>[] = [
   {
     key: "problem",
-    label: "Masala",
+    labelKey: "admin.label.text.problem",
     render: (r) => (
       <Link
         href={`/problems/${r.problem}`}
@@ -50,12 +50,18 @@ const columns: ColumnDef<Report>[] = [
   },
   {
     key: "reason",
-    label: "Sabab",
-    render: (r) => <Badge>{REASON_LABEL[r.reason] ?? r.reason}</Badge>,
+    labelKey: "admin.label.text.reason",
+    render: (r, _reload, locale) => (
+      <Badge>
+        {REASON_LABEL[r.reason]
+          ? t(locale, REASON_LABEL[r.reason])
+          : r.reason}
+      </Badge>
+    ),
   },
   {
     key: "comment",
-    label: "Izoh",
+    labelKey: "admin.label.text.comment",
     // Izoh uzun bo'lishi mumkin — ro'yxatda kesiladi, to'lig'i hoverda.
     render: (r) =>
       r.comment ? (
@@ -66,11 +72,11 @@ const columns: ColumnDef<Report>[] = [
         <span className="rw-faint">—</span>
       ),
   },
-  { key: "username", label: "Kim" },
+  { key: "username", labelKey: "admin.label.text.who" },
   {
     key: "status",
-    label: "Holat",
-    render: (r) => (
+    labelKey: "admin.label.text.status",
+    render: (r, _reload, locale) => (
       <Badge
         color={
           r.status === "open"
@@ -80,13 +86,13 @@ const columns: ColumnDef<Report>[] = [
               : "neutral"
         }
       >
-        {STATUS_LABEL[r.status]}
+        {t(locale, STATUS_LABEL[r.status])}
       </Badge>
     ),
   },
   {
     key: "created_at",
-    label: "Sana",
+    labelKey: "admin.label.text.date",
     align: "right",
     render: (r, _reload, locale) => (
       <span className="rw-faint tabular-nums">
@@ -101,12 +107,12 @@ const columns: ColumnDef<Report>[] = [
 const fields: FieldDef[] = [
   {
     name: "status",
-    label: "Holat",
+    labelKey: "admin.label.text.status",
     type: "select",
     required: true,
     options: (["open", "accepted", "rejected"] as const).map((value) => ({
       value,
-      label: STATUS_LABEL[value],
+      labelKey: STATUS_LABEL[value],
     })),
   },
 ];

@@ -10,7 +10,7 @@ import {
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t, errorText } from "@/i18n/messages";
+import { t, type MessageKey, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -50,29 +50,29 @@ function fmt(iso: string | null): string {
 }
 
 function statusOf(item: ArenaRow): {
-  label: string;
+  labelKey: MessageKey;
   color: "success" | "warning" | "neutral";
 } {
-  if (item.is_running) return { label: "Yurmoqda", color: "success" };
-  if (item.is_finished) return { label: "Tugagan", color: "neutral" };
-  return { label: "Kutilmoqda", color: "warning" };
+  if (item.is_running) return { labelKey: "admin.label.status.running", color: "success" };
+  if (item.is_finished) return { labelKey: "admin.label.status.finished", color: "neutral" };
+  return { labelKey: "admin.label.status.pending", color: "warning" };
 }
 
 const COLUMNS: ColumnDef<ArenaRow>[] = [
-  { key: "slug", label: "Slug" },
-  { key: "title", label: "Nomi" },
-  { key: "start_at", label: "Boshlanish", render: (i) => fmt(i.start_at) },
-  { key: "seconds_per_question", label: "s/savol", align: "right" },
-  { key: "question_count", label: "Savollar", align: "right" },
-  { key: "participant_count", label: "Ishtirokchi", align: "right" },
+  { key: "slug", labelKey: "admin.label.text.slug" },
+  { key: "title", labelKey: "admin.label.text.name" },
+  { key: "start_at", labelKey: "admin.label.date.start", render: (i) => fmt(i.start_at) },
+  { key: "seconds_per_question", labelKey: "admin.label.duration.perQuestion", align: "right" },
+  { key: "question_count", labelKey: "admin.label.misc.questions", align: "right" },
+  { key: "participant_count", labelKey: "admin.label.misc.participant", align: "right" },
   {
     key: "status",
-    label: "Holat",
-    render: (i) => {
+    labelKey: "admin.label.text.status",
+    render: (i, _reload, locale) => {
       const s = statusOf(i);
       return (
         <span className="flex flex-wrap gap-1">
-          <Badge color={s.color}>{s.label}</Badge>
+          <Badge color={s.color}>{t(locale, s.labelKey)}</Badge>
           {!i.is_public && <Badge>yashirin</Badge>}
           {i.rewards_applied_at && <Badge color="info">mukofotlangan</Badge>}
         </span>
@@ -84,34 +84,34 @@ const COLUMNS: ColumnDef<ArenaRow>[] = [
 const FIELDS: FieldDef[] = [
   {
     name: "slug",
-    label: "Slug",
+    labelKey: "admin.label.text.slug",
     type: "slug",
     required: true,
     readonlyOnEdit: true,
   },
-  { name: "title", label: "Nomi", required: true },
+  { name: "title", labelKey: "admin.label.text.name", required: true },
   {
     name: "start_at",
-    label: "Boshlanish vaqti",
+    labelKey: "admin.label.date.startAt",
     type: "datetime",
     required: true,
   },
   {
     name: "seconds_per_question",
-    label: "Savol uchun soniya",
+    labelKey: "admin.label.duration.secondsPerQuestion",
     type: "number",
     min: 5,
     required: true,
   },
   {
     name: "reward_qvant",
-    label: "Mukofot (Qvant)",
+    labelKey: "admin.label.value.rewardQvant",
     type: "number",
     min: 0,
     required: true,
   },
-  { name: "is_public", label: "Ommaviy", type: "checkbox" },
-  { name: "description", label: "Tavsif", type: "textarea", rows: 4 },
+  { name: "is_public", labelKey: "admin.label.flag.public", type: "checkbox" },
+  { name: "description", labelKey: "admin.label.text.description", type: "textarea", rows: 4 },
 ];
 
 /** Har raund uchun panel: savollar tartibi, qayta rejalashtirish, reset, finalize. */

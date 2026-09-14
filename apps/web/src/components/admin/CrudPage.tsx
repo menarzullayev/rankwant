@@ -15,7 +15,7 @@ import {
   Table,
 } from "@/components/ui/Table";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { type Locale } from "@/i18n/messages";
+import { type Locale, type MessageKey } from "@/i18n/messages";
 import { t, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
@@ -32,11 +32,15 @@ export type FieldType =
 
 export type FieldDef = {
   name: string;
-  label: string;
+  /** ⚠️ Kalit, matn emas. Maydonlar modul darajasidagi massivda turadi,
+   *  ya'ni `t()` chaqira olmaydi — tarjima `CrudPage` ichida bo'ladi.
+   *  Majburiy `MessageKey` bo'lgani uchun TypeScript o'tkazib yuborilgan
+   *  satrni darhol tutadi. */
+  labelKey: MessageKey;
   type?: FieldType;
   required?: boolean;
-  help?: string;
-  options?: { value: string; label: string }[];
+  helpKey?: MessageKey;
+  options?: { value: string; labelKey: MessageKey }[];
   /** Tahrirda o'zgartirib bo'lmaydi (masalan slug) */
   readonlyOnEdit?: boolean;
   rows?: number;
@@ -47,7 +51,8 @@ export type FieldDef = {
 
 export type ColumnDef<T> = {
   key: string;
-  label: string;
+  /** Kalit, matn emas — yuqoridagi sabab bilan. */
+  labelKey: MessageKey;
   align?: "left" | "right";
   /** `reload` — amal bajargan ustunlar jadvalni yangilay olishi uchun.
    *  `locale` — ustun modul darajasidagi massivda turadi, ya'ni hook
@@ -283,7 +288,7 @@ export function CrudPage<T extends Row>({
                   className={`block ${wide ? "md:col-span-2" : ""}`}
                 >
                   <span className="mb-1 block text-theme-xs font-medium rw-dim-2">
-                    {f.label}
+                    {t(locale, f.labelKey)}
                     {f.required && " *"}
                   </span>
                   {f.type === "textarea" ? (
@@ -314,7 +319,7 @@ export function CrudPage<T extends Row>({
                       {!f.required && <option value="">—</option>}
                       {(f.options ?? []).map((o) => (
                         <option key={o.value} value={o.value}>
-                          {o.label}
+                          {t(locale, o.labelKey)}
                         </option>
                       ))}
                     </select>
@@ -340,9 +345,9 @@ export function CrudPage<T extends Row>({
                       className={input}
                     />
                   )}
-                  {f.help && (
+                  {f.helpKey && (
                     <span className="mt-1 block text-theme-xs rw-faint">
-                      {f.help}
+                      {t(locale, f.helpKey)}
                     </span>
                   )}
                 </label>
@@ -370,7 +375,7 @@ export function CrudPage<T extends Row>({
           <THead>
             {columns.map((c) => (
               <TH key={c.key} align={c.align}>
-                {c.label}
+                {t(locale, c.labelKey)}
               </TH>
             ))}
             <TH align="right">{t(locale, "admin.actions")}</TH>

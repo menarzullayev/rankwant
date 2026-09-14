@@ -63,15 +63,15 @@ type StaffTestCase = {
 const PROBLEM_FIELDS: FieldDef[] = [
   {
     name: "slug",
-    label: "Slug",
+    labelKey: "admin.label.text.slug",
     type: "slug",
     required: true,
     readonlyOnEdit: true,
   },
-  { name: "title", label: "Sarlavha", required: true },
+  { name: "title", labelKey: "admin.label.text.title", required: true },
   {
     name: "difficulty",
-    label: "Qiyinlik (800–3500, qadam 100)",
+    labelKey: "admin.label.value.difficultyRange",
     type: "number",
     required: true,
     min: 800,
@@ -80,111 +80,111 @@ const PROBLEM_FIELDS: FieldDef[] = [
   },
   {
     name: "statement_locale",
-    label: "Matn tili (uz/ru/en)",
-    help: "2 harf, standart: uz",
+    labelKey: "admin.label.name.language",
+    helpKey: "admin.help.twoLetterDefaultUz",
   },
   {
     name: "statement",
-    label: "Shart (Markdown + LaTeX)",
+    labelKey: "admin.label.text.statementLatex",
     type: "textarea",
     required: true,
     rows: 12,
   },
   {
     name: "input_format",
-    label: "Kiruvchi ma'lumot",
+    labelKey: "admin.label.tech.input",
     type: "textarea",
     rows: 4,
-    help: "Sahifada alohida bo'lim bo'lib chiqadi",
+    helpKey: "admin.help.inputFormatSection",
   },
   {
     name: "output_format",
-    label: "Chiquvchi ma'lumot",
+    labelKey: "admin.label.tech.output",
     type: "textarea",
     rows: 4,
   },
   {
     name: "note",
-    label: "Izoh",
+    labelKey: "admin.label.text.comment",
     type: "textarea",
     rows: 4,
-    help: "Namunalar nega shunday ekanini tushuntiradi",
+    helpKey: "admin.help.noteExplainsSamples",
   },
   {
     name: "editorial",
-    label: "Yechim tahlili",
+    labelKey: "admin.label.text.editorial",
     type: "textarea",
     rows: 8,
-    help: "Masalani yechgan bepul ko'radi (ADR-0013)",
+    helpKey: "admin.help.editorialFreeForSolvers",
   },
   {
     name: "editorial_price",
-    label: "Tahlilni ochish narxi, Qvant",
+    labelKey: "admin.label.value.analysisPriceQvant",
     type: "number",
     min: 0,
-    help: "Yechmaganlar uchun. 0 — hammaga bepul",
+    helpKey: "admin.help.editorialPrice",
   },
-  { name: "topics", label: "Mavzular (slug, vergul bilan)", type: "list" },
-  { name: "time_limit_ms", label: "Vaqt limiti, ms", type: "number", min: 100 },
+  { name: "topics", labelKey: "admin.label.tech.topicsSlug", type: "list" },
+  { name: "time_limit_ms", labelKey: "admin.label.value.timeLimit", type: "number", min: 100 },
   {
     name: "memory_limit_kb",
-    label: "Xotira limiti, KB",
+    labelKey: "admin.label.value.memoryLimit",
     type: "number",
     min: 1024,
   },
   {
     name: "checker_type",
-    label: "Checker",
+    labelKey: "admin.label.text.checker",
     type: "select",
     required: true,
     options: [
-      { value: "standard", label: "Standart" },
-      { value: "special", label: "Maxsus" },
-      { value: "interactive", label: "Interactive" },
+      { value: "standard", labelKey: "admin.label.text.standard" },
+      { value: "special", labelKey: "admin.label.text.special" },
+      { value: "interactive", labelKey: "admin.label.text.interactive" },
       // Modelda bor edi, ro'yxatda esa yo'q — ya'ni tanlab bo'lmasdi.
-      { value: "scorer", label: "Skoring (0–100)" },
+      { value: "scorer", labelKey: "admin.label.value.scoring" },
     ],
   },
   {
     name: "interactor_language",
-    label: "Interactor tili (kod, masalan cpp23)",
-    help: "Faqat Interactive uchun. Bo'sh = yo'q",
+    labelKey: "admin.label.tech.interactorLanguage",
+    helpKey: "admin.help.interactorOnlyInteractive",
   },
   {
     name: "interactor_source",
-    label: "Interactor manbasi",
+    labelKey: "admin.label.tech.interactorSource",
     type: "textarea",
     rows: 8,
   },
   {
     name: "checker_language",
-    label: "Checker tili (kod, masalan cpp23)",
-    help: "Maxsus va Skoring uchun. Bo'sh bo'lsa har yuborish IE bo'ladi",
+    labelKey: "admin.label.tech.checkerLanguage",
+    helpKey: "admin.help.checkerRequired",
   },
   {
     name: "checker_source",
-    label: "Checker manbasi",
+    labelKey: "admin.label.tech.checkerSource",
     type: "textarea",
     rows: 8,
-    help: "testlib chaqiruvi: checker <input> <output> <answer>",
+    helpKey: "admin.help.testlibInvocation",
   },
-  { name: "source", label: "Manba" },
-  { name: "source_url", label: "Manba URL" },
-  { name: "is_public", label: "Ommaviy", type: "checkbox" },
+  { name: "source", labelKey: "admin.label.text.source" },
+  { name: "source_url", labelKey: "admin.label.tech.sourceUrl" },
+  { name: "is_public", labelKey: "admin.label.flag.public", type: "checkbox" },
 ];
 
 const TOPIC_FIELDS: FieldDef[] = [
   {
     name: "slug",
-    label: "Slug",
+    labelKey: "admin.label.text.slug",
     type: "slug",
     required: true,
     readonlyOnEdit: true,
   },
-  { name: "name_uz", label: "Nomi (uz)", required: true },
-  { name: "name_ru", label: "Nomi (ru)" },
-  { name: "name_en", label: "Nomi (en)" },
-  { name: "parent", label: "Ota mavzu (slug)", help: "Bo'sh = ildiz" },
+  { name: "name_uz", labelKey: "admin.label.name.uz", required: true },
+  { name: "name_ru", labelKey: "admin.label.name.ru" },
+  { name: "name_en", labelKey: "admin.label.name.en" },
+  { name: "parent", labelKey: "admin.label.tech.parentTopic", helpKey: "admin.help.parentEmptyRoot" },
 ];
 
 const input =
@@ -413,22 +413,22 @@ export function ProblemsAdmin() {
         columns={[
           {
             key: "code",
-            label: "#",
+            labelKey: "admin.label.text.num",
             render: (p) =>
               p.code === null ? "—" : `#${String(p.code).padStart(4, "0")}`,
           },
-          { key: "slug", label: "Slug" },
-          { key: "title", label: "Sarlavha" },
-          { key: "difficulty", label: "Qiyinlik", align: "right" },
+          { key: "slug", labelKey: "admin.label.text.slug" },
+          { key: "title", labelKey: "admin.label.text.title" },
+          { key: "difficulty", labelKey: "admin.label.value.difficulty", align: "right" },
           {
             key: "topics",
-            label: "Mavzular",
+            labelKey: "admin.label.misc.topics",
             render: (p) => (p.topics.length ? p.topics.join(", ") : "—"),
           },
-          { key: "test_count", label: "Testlar", align: "right" },
+          { key: "test_count", labelKey: "admin.label.misc.tests", align: "right" },
           {
             key: "is_public",
-            label: "Holat",
+            labelKey: "admin.label.text.status",
             render: (p) => (
               <Badge>{p.is_public ? "ommaviy" : "yashirin"}</Badge>
             ),
@@ -453,9 +453,9 @@ export function ProblemsAdmin() {
         idField="slug"
         ordering="slug"
         columns={[
-          { key: "slug", label: "Slug" },
-          { key: "name_uz", label: "Nomi" },
-          { key: "parent", label: "Ota", render: (tp) => tp.parent ?? "—" },
+          { key: "slug", labelKey: "admin.label.text.slug" },
+          { key: "name_uz", labelKey: "admin.label.text.name" },
+          { key: "parent", labelKey: "admin.label.tech.parent", render: (tp) => tp.parent ?? "—" },
         ]}
         fields={TOPIC_FIELDS}
         toPayload={(values) => ({ ...values, parent: values.parent || null })}

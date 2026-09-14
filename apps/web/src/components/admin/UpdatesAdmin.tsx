@@ -9,7 +9,7 @@ import {
 } from "@/components/admin/CrudPage";
 import { Badge } from "@/components/ui/Badge";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { errorText } from "@/i18n/messages";
+import { t, type MessageKey, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -76,91 +76,93 @@ type SystemUpdate = {
 const PATH = "/staff/updates/";
 
 /** `apps/api/updates/models.py` `Kind` bilan bir xil tartibda. */
-const KIND: Record<UpdateKind, string> = {
-  new: "Yangi",
-  improved: "Yaxshilandi",
-  fixed: "Tuzatildi",
-  performance: "Tezlik",
-  security: "Xavfsizlik",
-  design: "Dizayn",
-  content: "Kontent",
-  infrastructure: "Infratuzilma",
-  breaking: "Buzuvchi",
-  deprecated: "Olib tashlanadi",
+// Kalitlar allaqachon mavjud (`update.kind.*`) — nusxa emas.
+const KIND: Record<UpdateKind, MessageKey> = {
+  new: "update.kind.new",
+  improved: "update.kind.improved",
+  fixed: "update.kind.fixed",
+  performance: "update.kind.performance",
+  security: "update.kind.security",
+  design: "update.kind.design",
+  content: "update.kind.content",
+  infrastructure: "update.kind.infrastructure",
+  breaking: "update.kind.breaking",
+  deprecated: "update.kind.deprecated",
 };
 
-const MODULE: Record<UpdateModule, string> = {
-  problems: "Masalalar",
-  contests: "Musobaqalar",
-  arena: "Bellashuvlar",
-  judge: "Tekshiruv",
-  ratings: "Reyting",
-  qvant: "Qvant",
-  profile: "Profil",
-  classroom: "Sinf",
-  quizzes: "Testlar",
-  content: "Kontent",
-  design: "Dizayn",
-  core: "Umumiy",
+// Kalitlar allaqachon mavjud (`update.module.*`) — nusxa emas.
+const MODULE: Record<UpdateModule, MessageKey> = {
+  problems: "update.module.problems",
+  contests: "update.module.contests",
+  arena: "update.module.arena",
+  judge: "update.module.judge",
+  ratings: "update.module.ratings",
+  qvant: "update.module.qvant",
+  profile: "update.module.profile",
+  classroom: "update.module.classroom",
+  quizzes: "update.module.quizzes",
+  content: "update.module.content",
+  design: "update.module.design",
+  core: "update.module.core",
 };
 
-const STATUS_LABEL: Record<SystemUpdate["status"], string> = {
-  draft: "Qoralama",
-  published: "Nashrda",
-  withdrawn: "Nashrdan olingan",
+const STATUS_LABEL: Record<SystemUpdate["status"], MessageKey> = {
+  draft: "admin.label.status.draft",
+  published: "admin.label.status.published",
+  withdrawn: "admin.label.status.withdrawn",
 };
 
-const options = <T extends string>(table: Record<T, string>) =>
-  (Object.keys(table) as T[]).map((value) => ({ value, label: table[value] }));
+const options = <T extends string>(table: Record<T, MessageKey>) =>
+  (Object.keys(table) as T[]).map((value) => ({ value, labelKey: table[value] }));
 
 const FIELDS: FieldDef[] = [
-  { name: "title", label: "Sarlavha", type: "text", required: true },
+  { name: "title", labelKey: "admin.label.text.title", type: "text", required: true },
   {
     name: "kind",
-    label: "Turi",
+    labelKey: "admin.label.text.kind",
     type: "select",
     required: true,
     options: options(KIND),
   },
   {
     name: "module",
-    label: "Modul",
+    labelKey: "admin.label.text.module",
     type: "select",
     required: true,
     options: options(MODULE),
   },
   {
     name: "status",
-    label: "Holat",
+    labelKey: "admin.label.text.status",
     type: "select",
     required: true,
     options: options(STATUS_LABEL),
-    help: "«Nashrda» qilib qo'yilsa `published_at` avtomatik yoziladi",
+    helpKey: "admin.help.publishedAtAuto",
   },
   {
     name: "released_at",
-    label: "Chiqarilgan sana",
+    labelKey: "admin.label.date.releasedAt",
     type: "datetime",
     required: true,
-    help: "O'zgarishning HAQIQIY sanasi — yozuv kechroq yozilishi mumkin",
+    helpKey: "admin.help.releasedAtReal",
   },
-  { name: "version", label: "Versiya", type: "text", help: "Ixtiyoriy, v1.4.0" },
+  { name: "version", labelKey: "admin.label.text.version", type: "text", helpKey: "admin.help.versionOptional" },
   {
     name: "source_refs",
-    label: "Manba havolalari",
+    labelKey: "admin.label.tech.sourceLinks",
     type: "list",
-    help: "Commit SHA, PR raqami, release tegi — vergul bilan",
+    helpKey: "admin.help.refsFormat",
   },
-  { name: "source_repo", label: "Repo", type: "text", help: "owner/repo" },
-  { name: "source_url", label: "GitHub havolasi", type: "text" },
+  { name: "source_repo", labelKey: "admin.label.text.repo", type: "text", helpKey: "admin.help.ownerRepo" },
+  { name: "source_url", labelKey: "admin.label.tech.githubUrl", type: "text" },
   {
     name: "image",
-    label: "Rasm havolasi",
+    labelKey: "admin.label.tech.imageUrl",
     type: "text",
-    help: "Faqat kerak bo'lganda — dizayn o'zgarishlari uchun skrinshot",
+    helpKey: "admin.help.screenshotWhenNeeded",
   },
-  { name: "is_enabled", label: "Yoqilgan", type: "checkbox" },
-  { name: "body", label: "Matn (Markdown)", type: "textarea", rows: 12 },
+  { name: "is_enabled", labelKey: "admin.label.status.enabled", type: "checkbox" },
+  { name: "body", labelKey: "admin.label.text.markdown", type: "textarea", rows: 12 },
 ];
 
 /** Nashr / nashrdan olish — bitta tugma, jadvalni yangilaydi.
@@ -207,9 +209,14 @@ function PublishToggle({
     <button
       type="button"
       onClick={toggle}
-      title={error || (status === "published" ? "Nashrdan olish" : "Nashr qilish")}
+      title={
+        error ||
+        t(locale, status === "published" ? "admin.text.unpublish" : "admin.text.publishVerb")
+      }
     >
-      <Badge color={color}>{error ? "Xato" : STATUS_LABEL[status]}</Badge>
+      <Badge color={color}>
+        {error ? t(locale, "admin.text.error") : t(locale, STATUS_LABEL[status])}
+      </Badge>
     </button>
   );
 }
@@ -257,39 +264,39 @@ function EnabledToggle({
 }
 
 const COLUMNS: ColumnDef<SystemUpdate>[] = [
-  { key: "title", label: "Sarlavha" },
+  { key: "title", labelKey: "admin.label.text.title" },
   {
     key: "kind",
-    label: "Turi",
-    render: (row) => (
+    labelKey: "admin.label.text.kind",
+    render: (row, _reload, locale) => (
       <Badge color={row.kind === "breaking" || row.kind === "deprecated" ? "error" : "info"}>
-        {KIND[row.kind] ?? row.kind}
+        {t(locale, KIND[row.kind])}
       </Badge>
     ),
   },
   {
     key: "module",
-    label: "Modul",
-    render: (row) => MODULE[row.module] ?? row.module,
+    labelKey: "admin.label.text.module",
+    render: (row, _reload, locale) => t(locale, MODULE[row.module]),
   },
   {
     key: "status",
-    label: "Holat",
+    labelKey: "admin.label.text.status",
     render: (row, reload) => (
       <PublishToggle key={`${row.id}-${row.status}`} row={row} reload={reload} />
     ),
   },
   {
     key: "is_enabled",
-    label: "Flag",
+    labelKey: "admin.label.text.flag",
     render: (row, reload) => (
       <EnabledToggle key={`${row.id}-${row.is_enabled}`} row={row} reload={reload} />
     ),
   },
-  { key: "released_at", label: "Sana" },
+  { key: "released_at", labelKey: "admin.label.text.date" },
   {
     key: "translations",
-    label: "Tarjima",
+    labelKey: "admin.label.name.translation",
     render: (row) => (
       <span title={row.translations.map((tr) => tr.locale).join(", ")}>
         {row.translations.length}/10

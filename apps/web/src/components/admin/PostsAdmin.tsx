@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { errorText } from "@/i18n/messages";
+import { t, type MessageKey, errorText } from "@/i18n/messages";
 
 import {
   CrudPage,
@@ -34,59 +34,59 @@ type Post = {
 
 const PATH = "/staff/posts/";
 
-const KIND: Record<PostKind, { label: string; color: BadgeColor }> = {
-  news: { label: "Yangilik", color: "info" },
-  announcement: { label: "E'lon", color: "warning" },
-  editorial: { label: "Muharrir maqolasi", color: "brand" },
+const KIND: Record<PostKind, { labelKey: MessageKey; color: BadgeColor }> = {
+  news: { labelKey: "admin.label.misc.news", color: "info" },
+  announcement: { labelKey: "admin.label.misc.announcement", color: "warning" },
+  editorial: { labelKey: "admin.label.text.editorNote", color: "brand" },
 };
 
 const FIELDS: FieldDef[] = [
   {
     name: "slug",
-    label: "Slug",
+    labelKey: "admin.label.text.slug",
     type: "slug",
     required: true,
     readonlyOnEdit: true,
   },
   {
     name: "kind",
-    label: "Turi",
+    labelKey: "admin.label.text.kind",
     type: "select",
     required: true,
     options: (Object.keys(KIND) as PostKind[]).map((k) => ({
       value: k,
-      label: KIND[k].label,
+      labelKey: KIND[k].labelKey,
     })),
   },
-  { name: "title", label: "Sarlavha", type: "text", required: true },
-  { name: "summary", label: "Qisqacha", type: "text", help: "300 belgigacha" },
+  { name: "title", labelKey: "admin.label.text.title", type: "text", required: true },
+  { name: "summary", labelKey: "admin.label.text.summary", type: "text", helpKey: "admin.help.upTo300Chars" },
   {
     name: "locale",
-    label: "Til",
+    labelKey: "admin.label.text.language",
     type: "select",
     required: true,
     options: [
-      { value: "uz", label: "uz" },
-      { value: "ru", label: "ru" },
-      { value: "en", label: "en" },
+      { value: "uz", labelKey: "admin.label.lang.uz" },
+      { value: "ru", labelKey: "admin.label.lang.ru" },
+      { value: "en", labelKey: "admin.label.lang.en" },
     ],
   },
-  { name: "is_published", label: "Nashr qilingan", type: "checkbox" },
+  { name: "is_published", labelKey: "admin.label.flag.published", type: "checkbox" },
   {
     name: "published_at",
-    label: "Nashr sanasi",
+    labelKey: "admin.label.date.publishedAt",
     type: "datetime",
-    help: "Bo'sh qolsa — birinchi nashrda avtomatik qo'yiladi",
+    helpKey: "admin.help.autoPublishAt",
   },
   {
     name: "notify_users",
-    label: "Foydalanuvchilarga xabar berish",
+    labelKey: "admin.label.flag.notifyUsers",
     type: "checkbox",
-    help: "Nashrdan keyin barcha foydalanuvchiga bir marta bildirishnoma yuboriladi",
+    helpKey: "admin.help.notifyOnce",
   },
   {
     name: "body",
-    label: "Matn (Markdown)",
+    labelKey: "admin.label.text.markdown",
     type: "textarea",
     required: true,
     rows: 14,
@@ -149,19 +149,19 @@ function PublishToggle({ post, reload }: { post: Post; reload?: () => void }) {
 }
 
 const COLUMNS: ColumnDef<Post>[] = [
-  { key: "slug", label: "Slug" },
+  { key: "slug", labelKey: "admin.label.text.slug" },
   {
     key: "kind",
-    label: "Turi",
-    render: (p) => (
-      <Badge color={KIND[p.kind]?.color}>{KIND[p.kind]?.label ?? p.kind}</Badge>
+    labelKey: "admin.label.text.kind",
+    render: (p, _reload, locale) => (
+      <Badge color={KIND[p.kind]?.color}>{KIND[p.kind] ? t(locale, KIND[p.kind]!.labelKey) : p.kind}</Badge>
     ),
   },
-  { key: "title", label: "Sarlavha" },
-  { key: "locale", label: "Til" },
+  { key: "title", labelKey: "admin.label.text.title" },
+  { key: "locale", labelKey: "admin.label.text.language" },
   {
     key: "is_published",
-    label: "Holat",
+    labelKey: "admin.label.text.status",
     // key: holat formadan o'zgarsa tugma qayta o'rnatiladi
     render: (p, reload) => (
       <PublishToggle
@@ -173,12 +173,12 @@ const COLUMNS: ColumnDef<Post>[] = [
   },
   {
     key: "published_at",
-    label: "Nashr sanasi",
+    labelKey: "admin.label.date.publishedAt",
     render: (p) => fmtDate(p.published_at),
   },
   {
     key: "notify_users",
-    label: "Xabar",
+    labelKey: "admin.label.text.message",
     render: (p) =>
       !p.notify_users ? (
         "—"

@@ -35,20 +35,20 @@ const PATH = "/staff/quizzes/";
 const COLUMNS: ColumnDef<Quiz>[] = [
   {
     key: "slug",
-    label: "Slug",
+    labelKey: "admin.label.text.slug",
     render: (q) => <span className="font-mono">{q.slug}</span>,
   },
-  { key: "title", label: "Nomi" },
+  { key: "title", labelKey: "admin.label.text.name" },
   {
     key: "questions",
-    label: "Savollar",
+    labelKey: "admin.label.misc.questions",
     align: "right",
     render: (q) => q.questions.length,
   },
-  { key: "reward_qvant", label: "Qvant", align: "right" },
+  { key: "reward_qvant", labelKey: "admin.label.text.qvant", align: "right" },
   {
     key: "is_published",
-    label: "Holat",
+    labelKey: "admin.label.text.status",
     render: (q) =>
       q.is_published ? (
         <Badge color="success">Nashr</Badge>
@@ -61,21 +61,21 @@ const COLUMNS: ColumnDef<Quiz>[] = [
 const FIELDS: FieldDef[] = [
   {
     name: "slug",
-    label: "Slug",
+    labelKey: "admin.label.text.slug",
     type: "slug",
     required: true,
     readonlyOnEdit: true,
   },
-  { name: "title", label: "Nomi", required: true },
+  { name: "title", labelKey: "admin.label.text.name", required: true },
   {
     name: "reward_qvant",
-    label: "Mukofot (Qvant)",
+    labelKey: "admin.label.value.rewardQvant",
     type: "number",
     min: 0,
     required: true,
   },
-  { name: "is_published", label: "Nashr qilingan", type: "checkbox" },
-  { name: "description", label: "Tavsif", type: "textarea", rows: 4 },
+  { name: "is_published", labelKey: "admin.label.flag.published", type: "checkbox" },
+  { name: "description", labelKey: "admin.label.text.description", type: "textarea", rows: 4 },
 ];
 
 async function fetchQuestion(id: number): Promise<QuestionRef> {

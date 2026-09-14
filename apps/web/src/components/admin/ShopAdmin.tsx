@@ -6,6 +6,8 @@ import {
   type FieldDef,
 } from "@/components/admin/CrudPage";
 import { Badge } from "@/components/ui/Badge";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { t, type MessageKey } from "@/i18n/messages";
 
 type ShopItem = {
   id: number;
@@ -23,40 +25,40 @@ type ShopItem = {
   [key: string]: unknown;
 };
 
-const CATEGORY_LABEL: Record<ShopItem["category"], string> = {
-  streak_freeze: "Streak freeze",
-  avatar_frame: "Avatar ramka",
-  profile_cover: "Profil cover",
-  username_badge: "Username badge",
+const CATEGORY_LABEL: Record<ShopItem["category"], MessageKey> = {
+  streak_freeze: "admin.label.shopCategory.streakFreeze",
+  avatar_frame: "admin.label.shopCategory.avatarFrame",
+  profile_cover: "admin.label.shopCategory.profileCover",
+  username_badge: "admin.label.shopCategory.usernameBadge",
 };
 
 const columns: ColumnDef<ShopItem>[] = [
   {
     key: "code",
-    label: "Kod",
+    labelKey: "admin.label.text.code",
     render: (i) => <span className="font-mono">{i.code}</span>,
   },
   {
     key: "category",
-    label: "Kategoriya",
-    render: (i) => CATEGORY_LABEL[i.category],
+    labelKey: "admin.label.text.category",
+    render: (i, _reload, locale) => t(locale, CATEGORY_LABEL[i.category]),
   },
-  { key: "title_uz", label: "Nomi" },
+  { key: "title_uz", labelKey: "admin.label.text.name" },
   {
     key: "price",
-    label: "Narx",
+    labelKey: "admin.label.text.price",
     align: "right",
     render: (i) => `${i.price} Qvant`,
   },
   {
     key: "is_consumable",
-    label: "Takroriy",
+    labelKey: "admin.label.flag.repeatable",
     render: (i) => (i.is_consumable ? <Badge color="info">Ha</Badge> : "—"),
   },
-  { key: "owner_count", label: "Egalari", align: "right" },
+  { key: "owner_count", labelKey: "admin.label.misc.owners", align: "right" },
   {
     key: "is_active",
-    label: "Holat",
+    labelKey: "admin.label.text.status",
     render: (i) => (
       <Badge color={i.is_active ? "success" : "neutral"}>
         {i.is_active ? "Faol" : "O'chiq"}
@@ -68,47 +70,48 @@ const columns: ColumnDef<ShopItem>[] = [
 const fields: FieldDef[] = [
   {
     name: "code",
-    label: "Kod",
+    labelKey: "admin.label.text.code",
     type: "slug",
     required: true,
     readonlyOnEdit: true,
   },
   {
     name: "category",
-    label: "Kategoriya",
+    labelKey: "admin.label.text.category",
     type: "select",
     required: true,
-    options: Object.entries(CATEGORY_LABEL).map(([value, label]) => ({
+    options: Object.entries(CATEGORY_LABEL).map(([value, labelKey]) => ({
       value,
-      label,
+      labelKey,
     })),
-    help: "ADR-0002: v1 da faqat kosmetika va qulaylik",
+    helpKey: "admin.help.cosmeticOnly",
   },
   {
     name: "price",
-    label: "Narx (Qvant)",
+    labelKey: "admin.label.value.priceQvant",
     type: "number",
     required: true,
     min: 0,
   },
   {
     name: "asset_ref",
-    label: "Asset",
-    help: "Ramka/cover fayliga havola yoki kalit",
+    labelKey: "admin.label.text.asset",
+    helpKey: "admin.help.assetRef",
   },
-  { name: "is_active", label: "Faol", type: "checkbox" },
+  { name: "is_active", labelKey: "admin.label.flag.active", type: "checkbox" },
   {
     name: "is_consumable",
-    label: "Takroriy sotib olinadi",
+    labelKey: "admin.label.flag.repeatPurchase",
     type: "checkbox",
-    help: "Streak freeze — ha, ramka — yo'q",
+    helpKey: "admin.help.repeatPerItem",
   },
-  { name: "title_uz", label: "Nomi (uz)", required: true },
-  { name: "title_ru", label: "Nomi (ru)" },
-  { name: "title_en", label: "Nomi (en)" },
+  { name: "title_uz", labelKey: "admin.label.name.uz", required: true },
+  { name: "title_ru", labelKey: "admin.label.name.ru" },
+  { name: "title_en", labelKey: "admin.label.name.en" },
 ];
 
 export function ShopAdmin() {
+  const locale = useLocale();
   return (
     <CrudPage<ShopItem>
       title="Do'kon"

@@ -9,7 +9,7 @@ import {
 } from "@/components/admin/CrudPage";
 import { Badge, type BadgeColor } from "@/components/ui/Badge";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { errorText } from "@/i18n/messages";
+import { t, type MessageKey, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -53,35 +53,35 @@ type RoadmapItem = {
 const PATH = "/staff/platform-roadmap/";
 
 /** `apps/api/roadmap/models.py` `Status` bilan bir xil. */
-const STATUS: Record<RoadmapStatus, { label: string; color: BadgeColor }> = {
-  suggested: { label: "Ko'rib chiqilmoqda", color: "info" },
-  planned: { label: "Rejalashtirilgan", color: "brand" },
-  in_progress: { label: "Ishlanmoqda", color: "warning" },
-  released: { label: "Chiqarildi", color: "success" },
-  declined: { label: "Rad etilgan", color: "neutral" },
+const STATUS: Record<RoadmapStatus, { labelKey: MessageKey; color: BadgeColor }> = {
+  suggested: { labelKey: "admin.label.status.inReview", color: "info" },
+  planned: { labelKey: "admin.label.status.planned", color: "brand" },
+  in_progress: { labelKey: "admin.label.status.inProgress", color: "warning" },
+  released: { labelKey: "admin.label.status.shipped", color: "success" },
+  declined: { labelKey: "admin.label.status.rejected", color: "neutral" },
 };
 
 const FIELDS: FieldDef[] = [
-  { name: "title", label: "Sarlavha", type: "text", required: true },
+  { name: "title", labelKey: "admin.label.text.title", type: "text", required: true },
   {
     name: "target_quarter",
-    label: "Muddat",
+    labelKey: "admin.label.text.deadline",
     type: "text",
-    help: "Chorak darajasida (2026-Q4). ANIQ SANA YOZILMAYDI — bajarilmasa ishonch buziladi",
+    helpKey: "admin.help.targetQuarter",
   },
   {
     name: "update",
-    label: "Changelog yozuvi ID",
+    labelKey: "admin.label.tech.changelogId",
     type: "number",
-    help: "Chiqarilganda bog'lanadigan yozuv raqami. Batafsil sahifada havola bo'ladi",
+    helpKey: "admin.help.changelogId",
   },
   {
     name: "is_enabled",
-    label: "Yoqilgan",
+    labelKey: "admin.label.status.enabled",
     type: "checkbox",
-    help: "O'chirilsa band ko'rinmaydi, lekin ovozlari bilan bazada qoladi",
+    helpKey: "admin.help.softDelete",
   },
-  { name: "body", label: "Tavsif (Markdown)", type: "textarea", rows: 10 },
+  { name: "body", labelKey: "admin.label.text.descriptionMarkdown", type: "textarea", rows: 10 },
 ];
 
 /** Holatni o'zgartirish — `set-status` amali orqali. */
@@ -130,7 +130,7 @@ function StatusSelect({
     >
       {(Object.keys(STATUS) as RoadmapStatus[]).map((value) => (
         <option key={value} value={value}>
-          {STATUS[value].label}
+          {t(locale, STATUS[value].labelKey)}
         </option>
       ))}
     </select>
@@ -138,25 +138,25 @@ function StatusSelect({
 }
 
 const COLUMNS: ColumnDef<RoadmapItem>[] = [
-  { key: "title", label: "Sarlavha" },
+  { key: "title", labelKey: "admin.label.text.title" },
   {
     key: "status",
-    label: "Holat",
+    labelKey: "admin.label.text.status",
     render: (row, reload) => (
       <StatusSelect key={`${row.id}-${row.status}`} row={row} reload={reload} />
     ),
   },
-  { key: "target_quarter", label: "Muddat" },
-  { key: "vote_count", label: "Ovoz", align: "right" },
-  { key: "comment_count", label: "Izoh", align: "right" },
+  { key: "target_quarter", labelKey: "admin.label.text.deadline" },
+  { key: "vote_count", labelKey: "admin.label.misc.votes", align: "right" },
+  { key: "comment_count", labelKey: "admin.label.text.comment", align: "right" },
   {
     key: "author",
-    label: "Muallif",
+    labelKey: "admin.label.text.author",
     render: (row) => row.author ?? "—",
   },
   {
     key: "is_enabled",
-    label: "Flag",
+    labelKey: "admin.label.text.flag",
     render: (row) => (
       <Badge color={row.is_enabled ? "success" : "warning"}>
         {row.is_enabled ? "Yoqilgan" : "O'chirilgan"}

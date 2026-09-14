@@ -6,7 +6,7 @@ import { CrudPage, type FieldDef } from "@/components/admin/CrudPage";
 import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { DEFAULT_LOCALE, t, errorText } from "@/i18n/messages";
+import { DEFAULT_LOCALE, t, type MessageKey, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -39,36 +39,36 @@ const KIND_LABEL: Record<Article["kind"], string> = {
   algorithm: "Algoritm",
 };
 
-const ROLES: { value: ProblemLink["role"]; label: string }[] = [
-  { value: "practice", label: "Mashq uchun" },
-  { value: "example", label: "Maqoladagi misol" },
-  { value: "editorial", label: "Yechim tushuntirishi" },
+const ROLES: { value: ProblemLink["role"]; labelKey: MessageKey }[] = [
+  { value: "practice", labelKey: "admin.label.text.problemTraining" },
+  { value: "example", labelKey: "admin.label.text.articleExample" },
+  { value: "editorial", labelKey: "admin.label.text.solutionExplanation" },
 ];
 
 const FIELDS: FieldDef[] = [
   {
     name: "slug",
-    label: "Slug",
+    labelKey: "admin.label.text.slug",
     type: "slug",
     required: true,
     readonlyOnEdit: true,
   },
   {
     name: "kind",
-    label: "Turi",
+    labelKey: "admin.label.text.kind",
     type: "select",
     required: true,
     options: [
-      { value: "article", label: "Maqola" },
-      { value: "algorithm", label: "Algoritm" },
+      { value: "article", labelKey: "admin.label.text.article" },
+      { value: "algorithm", labelKey: "admin.label.text.problemExample" },
     ],
   },
-  { name: "title", label: "Sarlavha", type: "text", required: true },
-  { name: "locale", label: "Til", type: "text", help: "uz / ru / en" },
-  { name: "summary", label: "Qisqacha", type: "text" },
+  { name: "title", labelKey: "admin.label.text.title", type: "text", required: true },
+  { name: "locale", labelKey: "admin.label.text.language", type: "text", helpKey: "admin.help.languageCodes" },
+  { name: "summary", labelKey: "admin.label.text.summary", type: "text" },
   {
     name: "difficulty",
-    label: "Qiyinlik",
+    labelKey: "admin.label.value.difficulty",
     type: "number",
     min: 800,
     max: 3500,
@@ -76,25 +76,25 @@ const FIELDS: FieldDef[] = [
   },
   {
     name: "topics",
-    label: "Mavzular",
+    labelKey: "admin.label.misc.topics",
     type: "list",
-    help: "Topic sluglari, vergul bilan",
+    helpKey: "admin.help.topicsSlug",
   },
   {
     name: "reading_minutes",
-    label: "O'qish (daqiqa)",
+    labelKey: "admin.label.duration.readMin",
     type: "number",
     min: 0,
-    help: "0 = avtomatik",
+    helpKey: "admin.help.zeroAuto",
   },
   {
     name: "body",
-    label: "Matn (Markdown + LaTeX)",
+    labelKey: "admin.label.text.markdownLatex",
     type: "textarea",
     required: true,
     rows: 14,
   },
-  { name: "is_published", label: "Nashr qilingan", type: "checkbox" },
+  { name: "is_published", labelKey: "admin.label.flag.published", type: "checkbox" },
 ];
 
 const input =
@@ -173,7 +173,7 @@ function ProblemLinksEditor({
           >
             {ROLES.map((r) => (
               <option key={r.value} value={r.value}>
-                {r.label}
+                {t(locale, r.labelKey)}
               </option>
             ))}
           </select>
@@ -228,29 +228,29 @@ export function ArticlesAdmin() {
       columns={[
         {
           key: "slug",
-          label: "Slug",
+          labelKey: "admin.label.text.slug",
           render: (a) => <span className="font-mono">{a.slug}</span>,
         },
         {
           key: "kind",
-          label: "Turi",
+          labelKey: "admin.label.text.kind",
           render: (a) => (
             <Badge color={a.kind === "algorithm" ? "info" : "neutral"}>
               {KIND_LABEL[a.kind]}
             </Badge>
           ),
         },
-        { key: "title", label: "Sarlavha" },
+        { key: "title", labelKey: "admin.label.text.title" },
         {
           key: "difficulty",
-          label: "Qiyinlik",
+          labelKey: "admin.label.value.difficulty",
           render: (a) => <DifficultyBadge value={a.difficulty} />,
         },
-        { key: "locale", label: "Til" },
-        { key: "problem_count", label: "Masalalar", align: "right" },
+        { key: "locale", labelKey: "admin.label.text.language" },
+        { key: "problem_count", labelKey: "admin.label.misc.problems", align: "right" },
         {
           key: "is_published",
-          label: "Holat",
+          labelKey: "admin.label.text.status",
           render: (a) => (
             <Badge color={a.is_published ? "success" : "warning"}>
               {a.is_published ? "Nashr" : "Qoralama"}

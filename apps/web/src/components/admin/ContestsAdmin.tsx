@@ -45,38 +45,38 @@ const PATH = "/staff/contests/";
 const FIELDS: FieldDef[] = [
   {
     name: "slug",
-    label: "Slug",
+    labelKey: "admin.label.text.slug",
     type: "slug",
     required: true,
     readonlyOnEdit: true,
   },
-  { name: "title", label: "Sarlavha", required: true },
-  { name: "start_at", label: "Boshlanish", type: "datetime", required: true },
-  { name: "end_at", label: "Tugash", type: "datetime", required: true },
+  { name: "title", labelKey: "admin.label.text.title", required: true },
+  { name: "start_at", labelKey: "admin.label.date.start", type: "datetime", required: true },
+  { name: "end_at", labelKey: "admin.label.date.end", type: "datetime", required: true },
   {
     name: "freeze_minutes",
-    label: "Muzlatish (daqiqa)",
+    labelKey: "admin.label.duration.freezeMin",
     type: "number",
     min: 0,
-    help: "Oxirgi N daqiqada standings yangilanmaydi",
+    helpKey: "admin.help.freezeStandings",
   },
   {
     name: "scoring_type",
-    label: "Hisoblash",
+    labelKey: "admin.label.calc.rating",
     type: "select",
     required: true,
     options: [
-      { value: "acm", label: "ACM/ICPC" },
-      { value: "ioi", label: "IOI" },
+      { value: "acm", labelKey: "admin.label.text.acmIcpc" },
+      { value: "ioi", labelKey: "admin.label.text.ioi" },
     ],
   },
-  { name: "mirror_of", label: "Ko'zgu (asl musobaqa slug'i)", type: "slug" },
-  { name: "is_rated", label: "Reytingli", type: "checkbox" },
-  { name: "is_virtual", label: "Virtual", type: "checkbox" },
-  { name: "is_public", label: "Ommaviy", type: "checkbox" },
+  { name: "mirror_of", labelKey: "admin.label.flag.mirror", type: "slug" },
+  { name: "is_rated", labelKey: "admin.label.flag.rated", type: "checkbox" },
+  { name: "is_virtual", labelKey: "admin.label.flag.virtual", type: "checkbox" },
+  { name: "is_public", labelKey: "admin.label.flag.public", type: "checkbox" },
   {
     name: "description",
-    label: "Tavsif (Markdown)",
+    labelKey: "admin.label.text.descriptionMarkdown",
     type: "textarea",
     rows: 6,
   },
@@ -89,20 +89,20 @@ function fmt(iso: string): string {
 const COLUMNS: ColumnDef<ContestRow>[] = [
   {
     key: "slug",
-    label: "Slug",
+    labelKey: "admin.label.text.slug",
     render: (c) => <span className="font-mono">{c.slug}</span>,
   },
-  { key: "title", label: "Sarlavha" },
-  { key: "start_at", label: "Boshlanish", render: (c) => fmt(c.start_at) },
-  { key: "end_at", label: "Tugash", render: (c) => fmt(c.end_at) },
+  { key: "title", labelKey: "admin.label.text.title" },
+  { key: "start_at", labelKey: "admin.label.date.start", render: (c) => fmt(c.start_at) },
+  { key: "end_at", labelKey: "admin.label.date.end", render: (c) => fmt(c.end_at) },
   {
     key: "scoring_type",
-    label: "Hisob",
+    labelKey: "admin.label.value.freeze",
     render: (c) => <Badge color="info">{c.scoring_type.toUpperCase()}</Badge>,
   },
   {
     key: "state",
-    label: "Holat",
+    labelKey: "admin.label.text.status",
     render: (c) => (
       <div className="flex flex-wrap gap-1">
         {c.is_running && <Badge color="success">jonli</Badge>}
@@ -116,7 +116,7 @@ const COLUMNS: ColumnDef<ContestRow>[] = [
   },
   {
     key: "problems",
-    label: "Masalalar",
+    labelKey: "admin.label.misc.problems",
     align: "right",
     render: (c) => c.problems.length,
   },

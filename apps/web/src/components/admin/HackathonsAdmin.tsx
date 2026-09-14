@@ -19,7 +19,7 @@ import {
   Table,
 } from "@/components/ui/Table";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t, errorText } from "@/i18n/messages";
+import { t, type MessageKey, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -58,33 +58,33 @@ const PATH = "/staff/hackathons/";
 const FIELDS: FieldDef[] = [
   {
     name: "slug",
-    label: "Slug",
+    labelKey: "admin.label.text.slug",
     type: "slug",
     required: true,
     readonlyOnEdit: true,
   },
-  { name: "title", label: "Sarlavha", type: "text", required: true },
-  { name: "start_at", label: "Boshlanish", type: "datetime", required: true },
+  { name: "title", labelKey: "admin.label.text.title", type: "text", required: true },
+  { name: "start_at", labelKey: "admin.label.date.start", type: "datetime", required: true },
   {
     name: "submission_deadline",
-    label: "Topshirish muddati",
+    labelKey: "admin.label.date.deadline",
     type: "datetime",
     required: true,
-    help: "Shu vaqtdan keyin topshirish yopiladi va loyihalar hammaga ochiladi",
+    helpKey: "admin.help.submissionClose",
   },
   {
     name: "end_at",
-    label: "Natijalar e'loni",
+    labelKey: "admin.label.flag.resultsAnnounced",
     type: "datetime",
     required: true,
   },
-  { name: "is_public", label: "Ommaviy", type: "checkbox" },
+  { name: "is_public", labelKey: "admin.label.flag.public", type: "checkbox" },
   {
     name: "description",
-    label: "Tavsif (Markdown)",
+    labelKey: "admin.label.text.descriptionMarkdown",
     type: "textarea",
     rows: 10,
-    help: "Shartlar, mezonlar, sovrin",
+    helpKey: "admin.help.rulesAndPrizes",
   },
 ];
 
@@ -93,45 +93,45 @@ function fmt(iso: string): string {
 }
 
 function status(h: Hackathon): {
-  label: string;
+  labelKey: MessageKey;
   color: "success" | "warning" | "neutral" | "info";
 } {
-  if (h.is_finished) return { label: "Yakunlangan", color: "neutral" };
+  if (h.is_finished) return { labelKey: "admin.label.status.completed", color: "neutral" };
   if (h.accepts_submissions)
-    return { label: "Topshirish ochiq", color: "success" };
+    return { labelKey: "admin.label.flag.submissionsOpen", color: "success" };
   if (new Date(h.start_at) > new Date())
-    return { label: "Kutilmoqda", color: "info" };
-  return { label: "Baholanmoqda", color: "warning" };
+    return { labelKey: "admin.label.status.pending", color: "info" };
+  return { labelKey: "admin.label.status.evaluating", color: "warning" };
 }
 
 const COLUMNS: ColumnDef<Hackathon>[] = [
-  { key: "slug", label: "Slug" },
-  { key: "title", label: "Sarlavha" },
-  { key: "start_at", label: "Boshlanish", render: (h) => fmt(h.start_at) },
+  { key: "slug", labelKey: "admin.label.text.slug" },
+  { key: "title", labelKey: "admin.label.text.title" },
+  { key: "start_at", labelKey: "admin.label.date.start", render: (h) => fmt(h.start_at) },
   {
     key: "submission_deadline",
-    label: "Muddat",
+    labelKey: "admin.label.text.deadline",
     render: (h) => fmt(h.submission_deadline),
   },
-  { key: "end_at", label: "Yakun", render: (h) => fmt(h.end_at) },
+  { key: "end_at", labelKey: "admin.label.text.end", render: (h) => fmt(h.end_at) },
   {
     key: "status",
-    label: "Holat",
-    render: (h) => {
+    labelKey: "admin.label.text.status",
+    render: (h, _reload, locale) => {
       const s = status(h);
-      return <Badge color={s.color}>{s.label}</Badge>;
+      return <Badge color={s.color}>{t(locale, s.labelKey)}</Badge>;
     },
   },
   {
     key: "is_public",
-    label: "Ommaviy",
+    labelKey: "admin.label.flag.public",
     render: (h) => (
       <Badge color={h.is_public ? "success" : "neutral"}>
         {h.is_public ? "ha" : "yo'q"}
       </Badge>
     ),
   },
-  { key: "submission_count", label: "Loyihalar", align: "right" },
+  { key: "submission_count", labelKey: "admin.label.misc.projects", align: "right" },
 ];
 
 const INPUT =

@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 
 import { Card } from "@/components/ui/Card";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { fill, t, type MessageKey } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -27,25 +29,26 @@ type Data = {
  *  o'qib ma'nosini o'ylab ko'rardi. Noma'lum nom bo'lsa o'zi
  *  ko'rsatiladi — yangi hodisa qo'shilganda dashboard uni
  *  yashirmasligi kerak. */
-const EVENT_LABEL: Record<string, string> = {
-  "auth.form_started": "Forma boshlandi",
-  "auth.register_done": "Ro'yxatdan o'tdi",
+const EVENT_LABEL: Record<string, MessageKey> = {
+  "auth.form_started": "admin.text.eventFormStarted",
+  "auth.register_done": "admin.text.eventRegisterDone",
 };
 
 /** Xato sababi → yorliq. Sabablar `AuthForm` dagi `track` chaqiruvlaridan. */
-const REASON_LABEL: Record<string, string> = {
-  username_taken: "Login band",
-  password_mismatch: "Parollar mos emas",
-  terms: "Shartlarga rozilik berilmagan",
-  email: "Email band yoki noto'g'ri",
-  server: "Server xatosi",
-  network: "Tarmoq xatosi",
-  "—": "Sababsiz",
+const REASON_LABEL: Record<string, MessageKey> = {
+  username_taken: "admin.text.reasonLoginTaken",
+  password_mismatch: "admin.text.reasonPasswordMismatch",
+  terms: "admin.text.reasonTermsNotAccepted",
+  email: "admin.text.reasonEmailTaken",
+  server: "admin.text.reasonServerError",
+  network: "admin.text.reasonNetworkError",
+  "—": "admin.text.reasonUnknown",
 };
 
 const WINDOWS = [7, 30, 90] as const;
 
 export function AnalyticsDashboard() {
+  const locale = useLocale();
   const [days, setDays] = useState<number>(30);
   // Natija QAYSI oyna uchun kelgani bilan saqlanadi. «Yuklanmoqda»
   // holati shundan hosil qilinadi — uni effekt ichida `setState` bilan
@@ -130,7 +133,13 @@ export function AnalyticsDashboard() {
                     <div
                       className="h-2.5 overflow-hidden rw-radius-sm rw-hover-bg"
                       role="img"
-                      aria-label={`${EVENT_LABEL[row.name] ?? row.name}: ${row.sessions} sessiya, ${row.share}%`}
+                      aria-label={fill(t(locale, "admin.text.eventSessions"), {
+                          name: EVENT_LABEL[row.name]
+                            ? t(locale, EVENT_LABEL[row.name])
+                            : row.name,
+                          sessions: row.sessions,
+                          share: row.share,
+                        })}
                     >
                       {/* Rang to'g'ridan-to'g'ri tokenlardan: `rw-ok-bg`
                           kabi klass yo'q, inline `var(--rw-*)` esa 12
@@ -164,8 +173,8 @@ export function AnalyticsDashboard() {
               <div className="space-y-3">
                 <BarList
                   rows={[
-                    { label: "Nazorat (2-qadamda)", value: data.variant.control },
-                    { label: "Variant (ro'yxatda)", value: data.variant.variant },
+                    { label: t(locale, "admin.label.ab.control"), value: data.variant.control },
+                    { label: t(locale, "admin.label.ab.variant"), value: data.variant.variant },
                   ]}
                 />
                 <p className="text-theme-xs rw-faint">
@@ -208,7 +217,9 @@ export function AnalyticsDashboard() {
             ) : (
               <BarList
                 rows={data.errors.map((e) => ({
-                  label: REASON_LABEL[e.reason] ?? e.reason,
+                  label: REASON_LABEL[e.reason]
+                    ? t(locale, REASON_LABEL[e.reason])
+                    : e.reason,
                   value: e.sessions,
                 }))}
               />
@@ -275,6 +286,7 @@ function BarList({ rows }: { rows: { label: string; value: number }[] }) {
 
 /** Kunlik ustunlar — balandlik eng katta qiymatga nisbatan. */
 function Daily({ rows }: { rows: { date: string; started: number; done: number }[] }) {
+  const locale = useLocale();
   const max = Math.max(...rows.map((r) => r.started), 1);
   return (
     <div>
@@ -283,7 +295,11 @@ function Daily({ rows }: { rows: { date: string; started: number; done: number }
           <span
             key={r.date}
             className="flex flex-1 flex-col justify-end gap-0.5"
-            title={`${r.date}: ${r.started} boshlandi, ${r.done} tugadi`}
+            title={fill(t(locale, "admin.text.funnelDay"), {
+              date: r.date,
+              started: r.started,
+              done: r.done,
+            })}
           >
             <span
               className="w-full rw-hover-bg"

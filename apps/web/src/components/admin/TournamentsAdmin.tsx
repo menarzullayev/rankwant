@@ -51,16 +51,16 @@ function fmt(iso: string): string {
 const COLUMNS: ColumnDef<Tournament>[] = [
   {
     key: "slug",
-    label: "Slug",
+    labelKey: "admin.label.text.slug",
     render: (x) => <span className="font-mono">{x.slug}</span>,
   },
-  { key: "title", label: "Nomi" },
-  { key: "start_at", label: "Boshlanish", render: (x) => fmt(x.start_at) },
-  { key: "end_at", label: "Tugash", render: (x) => fmt(x.end_at) },
-  { key: "stage_count", label: "Bosqichlar", align: "right" },
+  { key: "title", labelKey: "admin.label.text.name" },
+  { key: "start_at", labelKey: "admin.label.date.start", render: (x) => fmt(x.start_at) },
+  { key: "end_at", labelKey: "admin.label.date.end", render: (x) => fmt(x.end_at) },
+  { key: "stage_count", labelKey: "admin.label.misc.stages", align: "right" },
   {
     key: "is_public",
-    label: "Ochiq",
+    labelKey: "admin.label.flag.open",
     render: (x) => (
       <Badge color={x.is_public ? "success" : "neutral"}>
         {x.is_public ? "ha" : "yo'q"}
@@ -72,18 +72,18 @@ const COLUMNS: ColumnDef<Tournament>[] = [
 const FIELDS: FieldDef[] = [
   {
     name: "slug",
-    label: "Slug",
+    labelKey: "admin.label.text.slug",
     type: "slug",
     required: true,
     readonlyOnEdit: true,
   },
-  { name: "title", label: "Nomi", required: true },
-  { name: "start_at", label: "Boshlanish", type: "datetime", required: true },
-  { name: "end_at", label: "Tugash", type: "datetime", required: true },
-  { name: "is_public", label: "Ochiq", type: "checkbox" },
+  { name: "title", labelKey: "admin.label.text.name", required: true },
+  { name: "start_at", labelKey: "admin.label.date.start", type: "datetime", required: true },
+  { name: "end_at", labelKey: "admin.label.date.end", type: "datetime", required: true },
+  { name: "is_public", labelKey: "admin.label.flag.open", type: "checkbox" },
   {
     name: "description",
-    label: "Tavsif (Markdown)",
+    labelKey: "admin.label.text.descriptionMarkdown",
     type: "textarea",
     rows: 6,
   },

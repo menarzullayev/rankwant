@@ -77,15 +77,15 @@ function HiddenToggle({
 }
 
 const COLUMNS: ColumnDef<RoadmapComment>[] = [
-  { key: "item_title", label: "Band" },
+  { key: "item_title", labelKey: "admin.label.status.busy" },
   {
     key: "author",
-    label: "Muallif",
+    labelKey: "admin.label.text.author",
     render: (row) => row.author ?? "—",
   },
   {
     key: "body",
-    label: "Izoh",
+    labelKey: "admin.label.text.comment",
     render: (row) => (
       <span className="line-clamp-2 max-w-md" title={row.body}>
         {row.body}
@@ -94,14 +94,14 @@ const COLUMNS: ColumnDef<RoadmapComment>[] = [
   },
   {
     key: "is_hidden",
-    label: "Holat",
+    labelKey: "admin.label.text.status",
     render: (row, reload) => (
       <HiddenToggle key={`${row.id}-${row.is_hidden}`} row={row} reload={reload} />
     ),
   },
   {
     key: "created_at",
-    label: "Sana",
+    labelKey: "admin.label.text.date",
     render: (row) => new Date(row.created_at).toLocaleDateString("uz-UZ"),
   },
 ];

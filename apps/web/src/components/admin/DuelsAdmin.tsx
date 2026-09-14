@@ -6,7 +6,7 @@ import { useLocale } from "@/i18n/LocaleProvider";
 import { CrudPage, type ColumnDef } from "@/components/admin/CrudPage";
 import { Badge, type BadgeColor } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { DEFAULT_LOCALE, errorText } from "@/i18n/messages";
+import { DEFAULT_LOCALE, t, type MessageKey, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
 
@@ -34,11 +34,11 @@ type Duel = {
   created_at: string;
 };
 
-const STATUS: Record<DuelStatus, { label: string; color: BadgeColor }> = {
-  open: { label: "Ochiq", color: "info" },
-  accepted: { label: "Qabul qilindi", color: "brand" },
-  finished: { label: "Tugadi", color: "success" },
-  cancelled: { label: "Bekor qilindi", color: "neutral" },
+const STATUS: Record<DuelStatus, { labelKey: MessageKey; color: BadgeColor }> = {
+  open: { labelKey: "admin.label.flag.open", color: "info" },
+  accepted: { labelKey: "admin.label.status.accepted", color: "brand" },
+  finished: { labelKey: "admin.label.status.done", color: "success" },
+  cancelled: { labelKey: "admin.label.status.cancelled", color: "neutral" },
 };
 
 function result(d: Duel): string {
@@ -48,22 +48,24 @@ function result(d: Duel): string {
 }
 
 const COLUMNS: ColumnDef<Duel>[] = [
-  { key: "title", label: "Nomi" },
-  { key: "challenger", label: "Chaqiruvchi" },
-  { key: "opponent", label: "Raqib", render: (d) => d.opponent ?? "—" },
+  { key: "title", labelKey: "admin.label.text.name" },
+  { key: "challenger", labelKey: "admin.label.misc.challenger" },
+  { key: "opponent", labelKey: "admin.label.text.opponent", render: (d) => d.opponent ?? "—" },
   {
     key: "status",
-    label: "Holat",
-    render: (d) => (
-      <Badge color={STATUS[d.status].color}>{STATUS[d.status].label}</Badge>
+    labelKey: "admin.label.text.status",
+    render: (d, _reload, locale) => (
+      <Badge color={STATUS[d.status].color}>
+        {t(locale, STATUS[d.status].labelKey)}
+      </Badge>
     ),
   },
   {
     key: "start_at",
-    label: "Boshlanish",
+    labelKey: "admin.label.date.start",
     render: (d) => new Date(d.start_at).toLocaleString(DEFAULT_LOCALE),
   },
-  { key: "result", label: "Natija", render: result },
+  { key: "result", labelKey: "admin.label.text.result", render: result },
 ];
 
 /** Bekor qilish / yakunlash — ikkalasi ham tasdiq bilan. Muddati o'tmagan duel

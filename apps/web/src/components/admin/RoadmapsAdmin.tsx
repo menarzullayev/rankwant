@@ -33,16 +33,16 @@ type Roadmap = {
 const FIELDS: FieldDef[] = [
   {
     name: "slug",
-    label: "Slug",
+    labelKey: "admin.label.text.slug",
     type: "slug",
     required: true,
     readonlyOnEdit: true,
   },
-  { name: "title", label: "Sarlavha", type: "text", required: true },
-  { name: "locale", label: "Til", type: "text", help: "uz / ru / en" },
-  { name: "order", label: "Tartib", type: "number", min: 0 },
-  { name: "description", label: "Tavsif", type: "textarea", rows: 4 },
-  { name: "is_published", label: "Nashr qilingan", type: "checkbox" },
+  { name: "title", labelKey: "admin.label.text.title", type: "text", required: true },
+  { name: "locale", labelKey: "admin.label.text.language", type: "text", helpKey: "admin.help.languageCodes" },
+  { name: "order", labelKey: "admin.label.text.order", type: "number", min: 0 },
+  { name: "description", labelKey: "admin.label.text.description", type: "textarea", rows: 4 },
+  { name: "is_published", labelKey: "admin.label.flag.published", type: "checkbox" },
 ];
 
 const input =
@@ -191,18 +191,18 @@ export function RoadmapsAdmin() {
       path="/staff/roadmaps/"
       idField="slug"
       columns={[
-        { key: "order", label: "#", align: "right" },
+        { key: "order", labelKey: "admin.label.text.num", align: "right" },
         {
           key: "slug",
-          label: "Slug",
+          labelKey: "admin.label.text.slug",
           render: (r) => <span className="font-mono">{r.slug}</span>,
         },
-        { key: "title", label: "Sarlavha" },
-        { key: "locale", label: "Til" },
-        { key: "step_count", label: "Qadamlar", align: "right" },
+        { key: "title", labelKey: "admin.label.text.title" },
+        { key: "locale", labelKey: "admin.label.text.language" },
+        { key: "step_count", labelKey: "admin.label.misc.steps", align: "right" },
         {
           key: "is_published",
-          label: "Holat",
+          labelKey: "admin.label.text.status",
           render: (r) => (
             <Badge color={r.is_published ? "success" : "warning"}>
               {r.is_published ? "Nashr" : "Qoralama"}

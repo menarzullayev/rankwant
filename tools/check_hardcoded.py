@@ -164,8 +164,6 @@ ALLOWED_LITERALS = {
     "skills / contest / activity / challenges",
     # Example topic slugs, shown as a placeholder.
     "math, graphs",
-    # Language codes, shown as field help.
-    "uz / ru / en",
 }
 
 #: A short list of unmistakable Uzbek stems. NOT used to decide "is this

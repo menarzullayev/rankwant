@@ -41,12 +41,12 @@ const INPUT =
   "rw-focus-line rw-field-bg ";
 
 const COLUMNS: ColumnDef<StaffUser>[] = [
-  { key: "username", label: "Login" },
-  { key: "display_name", label: "Ism" },
-  { key: "email", label: "Email" },
+  { key: "username", labelKey: "admin.label.text.username" },
+  { key: "display_name", labelKey: "admin.label.text.displayName" },
+  { key: "email", labelKey: "admin.label.text.email" },
   {
     key: "ratings",
-    label: "Reytinglar",
+    labelKey: "admin.label.misc.ratings",
     render: (u) => (
       <span
         className="font-mono text-theme-xs"
@@ -59,7 +59,7 @@ const COLUMNS: ColumnDef<StaffUser>[] = [
   },
   {
     key: "is_active",
-    label: "Faol",
+    labelKey: "admin.label.flag.active",
     render: (u) =>
       u.is_active ? (
         <Badge color="success">faol</Badge>
@@ -69,7 +69,7 @@ const COLUMNS: ColumnDef<StaffUser>[] = [
   },
   {
     key: "is_staff",
-    label: "Xodim",
+    labelKey: "admin.label.flag.staff",
     render: (u) =>
       u.is_superuser ? (
         <Badge color="brand">superuser</Badge>
@@ -81,24 +81,24 @@ const COLUMNS: ColumnDef<StaffUser>[] = [
   },
   {
     key: "date_joined",
-    label: "Qo'shilgan",
+    labelKey: "admin.label.date.joined",
     render: (u) => new Date(u.date_joined).toLocaleDateString(),
   },
 ];
 
 const FIELDS: FieldDef[] = [
-  { name: "display_name", label: "Ko'rsatiladigan ism" },
-  { name: "bio", label: "Bio", type: "textarea", rows: 3 },
+  { name: "display_name", labelKey: "admin.label.name.shown" },
+  { name: "bio", labelKey: "admin.label.text.bio", type: "textarea", rows: 3 },
   {
     name: "is_active",
-    label: "Faol (bloklash uchun olib tashlang)",
+    labelKey: "admin.label.flag.activeHint",
     type: "checkbox",
   },
   {
     name: "is_staff",
-    label: "Xodim",
+    labelKey: "admin.label.flag.staff",
     type: "checkbox",
-    help: "Faqat superuser o'zgartira oladi. O'z hisobingizni o'zgartira olmaysiz.",
+    helpKey: "admin.help.staffOnlySuperuser",
   },
 ];
 
