@@ -142,10 +142,10 @@ test("kirgan foydalanuvchi holat filtrini va bo'lim havolalarini ko'radi", async
   const username = `e2earx_${Date.now()}`;
   const password = "E2eParol!12345";
   await page.request.post(`${api}/auth/register/`, {
-    data: { username, password, email: `${username}@example.uz` },
+    data: { username, password, email: `${username}@example.uz`, terms_accepted: true },
   });
   await page.request.post(`${api}/auth/login/`, {
-    data: { username, password },
+    data: { identifier: username, password },
   });
 
   await page.goto("/problems");
@@ -189,10 +189,10 @@ test("kirgan foydalanuvchi sevimliga qo'sha oladi", async ({ page }) => {
   const username = `e2efav_${Date.now()}`;
   const password = "E2eParol!12345";
   await page.request.post(`${api}/auth/register/`, {
-    data: { username, password, email: `${username}@example.uz` },
+    data: { username, password, email: `${username}@example.uz`, terms_accepted: true },
   });
   await page.request.post(`${api}/auth/login/`, {
-    data: { username, password },
+    data: { identifier: username, password },
   });
 
   await page.goto("/problems");

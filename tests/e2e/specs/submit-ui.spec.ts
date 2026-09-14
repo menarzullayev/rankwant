@@ -59,11 +59,11 @@ test("kirgan foydalanuvchi yuborish va sinab ko'rishni oladi", async ({
   // `page.request` brauzer konteksti bilan bir xil cookie idishidan
   // foydalanadi, ya'ni sessiya keyingi `goto` da ham amal qiladi.
   const register = await page.request.post(`${API}/auth/register/`, {
-    data: { username, password, email: `${username}@example.uz` },
+    data: { username, password, email: `${username}@example.uz`, terms_accepted: true },
   });
   expect(register.ok()).toBeTruthy();
   const login = await page.request.post(`${API}/auth/login/`, {
-    data: { username, password },
+    data: { identifier: username, password },
   });
   expect(login.ok()).toBeTruthy();
 

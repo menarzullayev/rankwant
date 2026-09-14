@@ -44,10 +44,10 @@ test("kirgan foydalanuvchi header'i ham 375px da sig'adi", async ({ page }) => {
   const username = `e2ehdr_${Date.now()}`;
   const password = "E2eParol!12345";
   await page.request.post(`${API}/auth/register/`, {
-    data: { username, password, email: `${username}@example.uz` },
+    data: { username, password, email: `${username}@example.uz`, terms_accepted: true },
   });
   await page.request.post(`${API}/auth/login/`, {
-    data: { username, password },
+    data: { identifier: username, password },
   });
 
   await page.setViewportSize({ width: 375, height: 812 });

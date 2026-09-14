@@ -32,12 +32,12 @@ test("birinchi AC Skills reytingini oshiradi", async ({ request }) => {
   const password = "E2eParol!12345";
 
   const register = await request.post(`${API}/auth/register/`, {
-    data: { username, password, email: `${username}@example.uz` },
+    data: { username, password, email: `${username}@example.uz`, terms_accepted: true },
   });
   expect(register.ok()).toBeTruthy();
 
   const login = await request.post(`${API}/auth/login/`, {
-    data: { username, password },
+    data: { identifier: username, password },
   });
   expect(login.ok()).toBeTruthy();
   expect((await login.json()).rating_skills).toBe(0);
@@ -70,9 +70,9 @@ test("read scope'li token submit qila olmaydi", async ({ request }) => {
   const username = `e2e_scope_${Date.now()}`;
   const password = "E2eParol!12345";
   await request.post(`${API}/auth/register/`, {
-    data: { username, password, email: `${username}@example.uz` },
+    data: { username, password, email: `${username}@example.uz`, terms_accepted: true },
   });
-  await request.post(`${API}/auth/login/`, { data: { username, password } });
+  await request.post(`${API}/auth/login/`, { data: { identifier: username, password } });
 
   const expires = new Date(Date.now() + 86_400_000).toISOString();
   const created = await request.post(`${API}/me/tokens/`, {
