@@ -877,6 +877,103 @@ def _run_workers(stub: str | None) -> tuple[int, str]:
     return proc.returncode, (proc.stdout or "") + (proc.stderr or "")
 
 
+def _run_ci(runners: str | None, runs: str) -> tuple[int, str]:
+    """`check_ci.sh` ni soxta runner/run ro'yxati bilan ishga tushiradi.
+
+    `runners=None` — «`gh` yo'q» holatini taqlid qiladi: stub berilmaydi
+    va `PATH` bo'shatiladi, ya'ni skript o'lchay olmaydi va 2 qaytarishi
+    kerak. 0 EMAS: o'lchanmagan holat «yaxshi» degani emas.
+    """
+    env = dict(os.environ)
+    env["CI_RUNS_STUB"] = runs
+    if runners is None:
+        env.pop("CI_RUNNERS_STUB", None)
+        env["PATH"] = "/nonexistent"
+    else:
+        env["CI_RUNNERS_STUB"] = runners
+    proc = subprocess.run(
+        [_bash(), "tools/check_ci.sh"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        env=env,
+    )
+    return proc.returncode, (proc.stdout or "") + (proc.stderr or "")
+
+
+def neg_ci_offline_runner_is_red() -> tuple[bool, str]:
+    """Runner oflayn bo'lsa skript QIZIL bo'lishi shart.
+
+    Bu — 2026-09-13 dagi haqiqiy holat: ikki runner ham `offline`, hamma
+    run `queued`. Skript buni «hammasi joyida» deb o'qisa, butun maqsadi
+    yo'qoladi.
+    """
+    code, out = _run_ci(
+        "nsn-pc-rankwant|Linux|offline\nnsn-pc-rankwant-2|Linux|offline",
+        "CI|queued|—|abc1234|2026-09-14T08:30:00Z",
+    )
+    if code == 0:
+        return False, "ci/offline: runner oflayn, lekin exit 0 — tekshiruv o'lik"
+    if code != 1:
+        return False, f"ci/offline: exit {code} (1 kerak edi)"
+    if "JONSIZ" not in out:
+        return False, "ci/offline: sabab matni ko'rinmadi"
+    return True, "ci/offline: runner yo'qligi tutildi (exit 1)"
+
+
+def neg_ci_startup_failure_is_red() -> tuple[bool, str]:
+    """`startup_failure` runner holatidan MUSTAQIL ravishda qizil bo'lsin.
+
+    Runner tirik bo'lsa ham bu run hech qachon boshlamaydi — ruxsat
+    xatosi. Agar skript faqat runner'ga qarasa, bu holat ko'rinmay
+    qolardi va noto'g'ri joy tuzatilardi.
+    """
+    code, out = _run_ci(
+        "nsn-pc-rankwant|Linux|online",
+        "Deploy|completed|startup_failure|abc1234|2026-09-13T21:55:00Z",
+    )
+    if code != 1:
+        return False, f"ci/startup: exit {code} (1 kerak edi)"
+    if "startup_failure" not in out:
+        return False, "ci/startup: sabab matni ko'rinmadi"
+    return True, "ci/startup: ruxsat xatosi runner tirik bo'lsa ham tutildi"
+
+
+def neg_ci_unreadable_is_not_green() -> tuple[bool, str]:
+    """O'qib bo'lmasa exit 2 — «yaxshi» emas.
+
+    O'qilmagan qiymatni «o'tdi» deb hisoblash — eng qimmat xato sinfi.
+    """
+    code, out = _run_ci(None, "CI|completed|success|abc1234|2026-09-14T12:00:00Z")
+    if code == 0:
+        return False, "ci/o'qilmadi: exit 0 — o'lchanmagan holat «yashil» deb o'qildi"
+    if code != 2:
+        return False, f"ci/o'qilmadi: exit {code} (2 kerak edi)"
+    if "gh" not in out:
+        return False, "ci/o'qilmadi: sabab matni ko'rinmadi"
+    return True, "ci/o'qilmadi: exit 2 va sabab aytiladi"
+
+
+def neg_ci_healthy_gate() -> tuple[bool, str]:
+    """Ijobiy nazorat: sog'lom holat YASHIL bo'lishi shart.
+
+    Hamma narsani qizil qiladigan skript BARCHA salbiy testlardan o'tadi
+    va baribir foydasiz bo'ladi — shuning uchun yashil yo'l alohida
+    tekshiriladi.
+    """
+    code, out = _run_ci(
+        "nsn-pc-rankwant|Linux|online",
+        "CI|completed|success|abc1234|2026-09-14T12:00:00Z",
+    )
+    if code != 0:
+        return False, f"ci/yashil: sog'lom holat exit {code} berdi (0 kerak)"
+    if "haqiqiy natija" not in out:
+        return False, "ci/yashil: muvaffaqiyat xabari ko'rinmadi"
+    return True, "ci/yashil: runner tirik + success (exit 0)"
+
+
 CASES: list[tuple[str, list[tuple[str, object]]]] = [
     (
         "i18n",
@@ -947,6 +1044,15 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("o'qib bo'lmasa xato, «yaxshi» emas", neg_workers_unreadable_is_not_green),
             ("CRLF li `True` ham «ha» bo'lsin", neg_workers_crlf_stub_passes),
             ("himoyalangan holat yashil", neg_workers_restored_gate),
+        ],
+    ),
+    (
+        "ci",
+        [
+            ("runner oflayn bo'lsa qizil", neg_ci_offline_runner_is_red),
+            ("startup_failure runner'dan mustaqil", neg_ci_startup_failure_is_red),
+            ("o'qib bo'lmasa exit 2, «yashil» emas", neg_ci_unreadable_is_not_green),
+            ("sog'lom holat yashil", neg_ci_healthy_gate),
         ],
     ),
 ]
