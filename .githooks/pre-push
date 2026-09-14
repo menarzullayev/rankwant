@@ -38,17 +38,28 @@ has() { grep -qE "$1" <<<"$files"; }
 fail=0
 
 schema_matches() {
-  # `mktemp` — qat'iy nom emas: /tmp hammaga yoziladigan joy, o'sha
-  # nomni oldindan yaratib qo'yish yoki symlink qilish mumkin edi.
-  # `trap … RETURN` ISHLATILMAYDI: u keyingi funksiyalardan qaytishda
-  # ham otiladi va `set -u` ostida hookni yiqitadi.
-  local tmp rc=1
-  tmp="$(mktemp)" || return 1
+  # ⚠️ `/tmp` ISHLATILMAYDI. Windows'da bu ikki xil joy: Git Bash `/tmp`
+  # ni MSYS ildizi deb biladi, nativ Python esa `C:\tmp\` deb ochadi.
+  # `spectacular` `exit 0` bilan `C:\tmp\` ga yozadi, biz Git Bash
+  # tomonidagi BO'SH faylni taqqoslaymiz va `diff -q` «differ» deydi —
+  # ya'ni har push'da yolg'on «sxema eskirgan» xatosi. O'lchandi
+  # (2026-09-14): fayl 0 bayt, `spectacular_rc=0`.
+  # Shuning uchun yo'l loyiha ichida va ANIQ bo'ladi — ikkala tomon ham
+  # uni bir xil ochadi.
+  local tmp=".tmp/schema_hook_check.yml" rc=1
+  mkdir -p .tmp || return 1
   if uv run python manage.py spectacular --file "$tmp" >/dev/null 2>&1 &&
+     [ -s "$tmp" ] &&
      diff -q openapi/schema.yml "$tmp" >/dev/null; then
     rc=0
   else
-    printf '  Yangilang: cd apps/api && uv run python manage.py spectacular --file openapi/schema.yml\n'
+    # Bo'sh fayl «eskirgan sxema» degani EMAS — buni ajratib aytamiz,
+    # aks holda keyingi odam sxemani behuda qayta yaratadi.
+    if [ ! -s "$tmp" ]; then
+      printf '  ✗ Sxema yaratilmadi (fayl bo`sh) — `spectacular` chiqishini ko`ring.\n'
+    else
+      printf '  Yangilang: cd apps/api && uv run python manage.py spectacular --file openapi/schema.yml\n'
+    fi
   fi
   rm -f "$tmp"
   return "$rc"
