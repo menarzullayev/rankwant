@@ -55,10 +55,14 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 WEB = ROOT / "apps/web/src"
 
-#: Where the check runs. See "Widening the scope" above.
-TARGETS = (WEB / "components/admin", WEB / "app/admin")
-
+#: Files the check does not read.
+#:
+#: `i18n/` holds the dictionaries themselves — every string in them is
+#: supposed to be there. The other three are the content layer: country and
+#: region names, and the legal texts. They are translated as data, not
+#: through `t()`, and were deliberately deferred to a separate task.
 SKIP_PARTS = {"node_modules", ".next", "__tests__"}
+DEFERRED = ("content/legal.ts", "lib/country-names.ts", "lib/regions.ts")
 
 
 # --- "provably not prose" ---------------------------------------------------
@@ -101,6 +105,9 @@ PATHY = re.compile(
     r"|@/\S*"
     r"|[\w.-]+\.(?:tsx?|jsx?|json|css|svg|png|jpe?g|webp|avif|woff2?|md|ya?ml|txt|py|sh|go|toml|lock)$"
     r"|[a-z0-9-]{2,}(?:/[a-z0-9-]+)+"
+    # A dotted host followed by a path: `github.com/owner/repo`. The host
+    # form is specific enough not to swallow prose.
+    r"|[\w-]+(?:\.[\w-]+)+/[\w./-]*"
     r")$"
 )
 
@@ -134,7 +141,7 @@ TW_TOKEN = re.compile(
 TEMPLATE_PATH = re.compile(r"^[^\s]*[\$\{=&?][^\s]*$")
 
 SORT_KEY = re.compile(r"^-?[a-z][a-z0-9_]*$")
-CSS_VALUE = re.compile(r"^(?:clamp|calc|min|max|var|rgba?|hsla?)\(|^\(prefers-")
+CSS_VALUE = re.compile(r"^(?:clamp|calc|min|max|var|rgba?|hsla?|color-mix)\(|^\(prefers-")
 CSS_VAR = re.compile(r"^--[\w-]+$")
 SVG_PATH = re.compile(r"^[Mm][\d\s.,-]")
 ONLY_INTERP = re.compile(r"^[\s\W]*(?:\$\{[^}]*\}[\s\W]*)+$")
@@ -164,6 +171,14 @@ ALLOWED_LITERALS = {
     "skills / contest / activity / challenges",
     # Example topic slugs, shown as a placeholder.
     "math, graphs",
+    # Product names. The four rating categories are branded words, the same
+    # way `Qvant` is the currency: a Russian user sees "Skills" by design,
+    # and `leaderboard.skills` is already an explicit dictionary key.
+    "RankWant", "Skills", "Contests", "Activity", "Challenges", "Qvant",
+    # Browser and platform names in `describeAgent`. A translator passes
+    # these through unchanged; only the separator between them is ours.
+    "Edge", "Opera", "Yandex", "Firefox", "Chrome", "Safari",
+    "iOS", "Android", "Windows", "macOS", "Linux",
 }
 
 #: A short list of unmistakable Uzbek stems. NOT used to decide "is this
@@ -236,6 +251,19 @@ def is_prose(s: str, *, code_tokens: bool = True) -> bool:
     if PATHY.match(t) or COLORY.match(t):
         return False
     if TEMPLATE_PATH.match(t) or SVG_PATH.match(t):
+        return False
+    # `/onboarding?welcome=1${next ? … : ""}` — a route template that spans
+    # lines, so `TEMPLATE_PATH` cannot match it. Removing the interpolations
+    # leaves the path itself, which is what decides.
+    if "${" in t:
+        remainder = strip_interpolations(t).strip()
+        if not remainder or PATHY.match(remainder):
+            return False
+    # A template that starts with `/` is a route, whatever the
+    # interpolations inside it: `/api/v1/auth/${p}/start/${next ? … : ""}`.
+    # Removing the interpolations leaves `/api/v1/auth/ /start/`, which has
+    # a space and so is not a path by shape — the leading slash decides.
+    if "${" in t and t.startswith("/"):
         return False
     if CSS_VALUE.match(t) or CSS_VAR.match(t):
         return False
@@ -363,7 +391,7 @@ HARDCODED_LOCALE_CALL = re.compile(
 )
 
 #: JSX text that is only punctuation/whitespace carries nothing to translate.
-JSX_TEXT_NOISE = re.compile(r"^[\s.,;:!?·—–\-/|&()\[\]]*$")
+JSX_TEXT_NOISE = re.compile(r"^[\s.,;:!?·—–\-/|&()\[\]`]*$")
 
 #: `>` and `<` are also comparison operators, so `>text<` matches ordinary
 #: code: `Promise.all(x)`, `(30);`, `f.type === "checkbox" ? (`. A real JSX
@@ -374,18 +402,34 @@ JSX_TEXT_CODEISH = re.compile(r"[();=]")
 PASCAL_TOKEN = re.compile(r"^[A-Z][a-zA-Z0-9]*$")
 
 #: Lowercase tokens that are CODE, not prose, and that appear in exactly the
-#: positions where the lowercase filter has to be switched off: Badge colours
-#: and form-field discriminants.
+#: positions where the lowercase filter has to be switched off: Badge colours,
+#: form-field discriminants, theme and style ids.
 #:
 #: `cond ? "ommaviy" : "yashirin"` is a label; `cond ? "success" : "warning"`
-#: is a colour. Both are lowercase, and only this list tells them apart.
-#: Kept explicit rather than inferred: a new colour means one line here, and
-#: that is a signal to look, not a nuisance.
+#: is a colour; `style === "clay" ? …` is a style id. All three are lowercase,
+#: and only this list tells them apart. Kept explicit rather than inferred: a
+#: new id means one line here, and that is a signal to look, not a nuisance.
 CODE_TOKENS = {
+    # Badge colours.
     "success", "error", "warning", "info", "brand", "neutral", "muted",
     "danger", "primary", "secondary",
+    # Field discriminants.
     "text", "slug", "textarea", "number", "checkbox", "datetime", "select",
     "list", "left", "right",
+    # Theme, style and effect ids — the same values `layout/styles.ts` uses
+    # as keys. `light`/`dark`/`system` are theme modes, not words.
+    "clay", "plain", "fade", "normal", "compact", "comfortable", "system",
+    "light", "dark", "reduce", "big", "strong", "outline", "currentColor",
+    "none",
+    # `DifficultyBadge` level keys, mirrored from
+    # `apps/api/problems/models.py`; they become `level-${level}` classes.
+    "beginner", "basic", "intermediate", "upper", "hard", "expert", "master",
+    # Routing and cache values.
+    "page", "true", "false", "vs", "daily", "weekly", "ms", "getJson",
+    "status", "polite", "busy", "idle", "network", "password", "login",
+    "register", "draw", "contest", "difficulty",
+    # Analytics event names, auth-flow keys and JSON-LD property names.
+    "auth.register_done", "auth.login_done", "@id",
 }
 
 
@@ -409,16 +453,26 @@ def client_files() -> list[pathlib.Path]:
 
 
 def target_files() -> list[pathlib.Path]:
-    files: list[pathlib.Path] = []
-    for target in TARGETS:
-        if not target.exists():
-            continue
-        files += [
-            p
-            for p in sorted(list(target.rglob("*.tsx")) + list(target.rglob("*.ts")))
-            if not any(part in SKIP_PARTS for part in p.parts)
-        ]
-    return files
+    """Source files whose prose is checked.
+
+    ⚠️ The scope grows as the migration progresses, and it is deliberately
+    NOT the whole app yet. Widening it to all of `apps/web/src` today would
+    make this check fail for 111 strings that are still to be translated, and
+    a red gate is one that gets bypassed. The admin panel was the first
+    scope; the rest of `app/` and `components/` is next, and the widest
+    version of this function walks all of `WEB` minus `DEFERRED`.
+
+    The fixed-locale rule in `main()` already covers every client file,
+    because that defect is a crash rather than a missing translation.
+    """
+    out: list[pathlib.Path] = []
+    for target in (WEB / "components/admin", WEB / "app/admin"):
+        for suffix in (".tsx", ".ts"):
+            for path in sorted(target.rglob(f"*{suffix}")):
+                if any(part in SKIP_PARTS for part in path.parts):
+                    continue
+                out.append(path)
+    return out
 
 
 #: `key={editing ? idOf(editing) : "new"}` — a React list key. It selects a
@@ -426,8 +480,51 @@ def target_files() -> list[pathlib.Path]:
 REACT_KEY = re.compile(r"\bkey=\{[^{}]*$")
 
 
+NEWLINE = chr(10)
+
+
+def strip_comments(text: str) -> str:
+    """Blank out `//` and `/* */` comments, keeping every offset in place.
+
+    Offsets matter: the reported line number comes from the original text, so
+    the replacement is spaces and newlines of the same length rather than a
+    deletion.
+    """
+    out = list(text)
+    i, n = 0, len(text)
+    while i < n:
+        if text[i] == "/" and i + 1 < n and text[i + 1] == "/":
+            j = text.find(NEWLINE, i)
+            j = n if j < 0 else j
+            for k in range(i, j):
+                out[k] = " "
+            i = j
+            continue
+        if text[i] == "/" and i + 1 < n and text[i + 1] == "*":
+            j = text.find("*/", i + 2)
+            j = n if j < 0 else j + 2
+            for k in range(i, j):
+                if text[k] != NEWLINE:
+                    out[k] = " "
+            i = j
+            continue
+        i += 1
+    return "".join(out)
+
+
 def in_react_key(text: str, start: int) -> bool:
     return bool(REACT_KEY.search(text[max(0, start - 200) : start]))
+
+
+#: `className={` / `class={` — a class expression. Whatever the string is,
+#: the user never reads it, so `is_prose` has no business judging it. Four
+#: class templates were reported as prose because a token like `group` is a
+#: Tailwind utility but is not on the bare-keyword list.
+CLASS_ATTR = re.compile(r"\b(?:class|className)=\{\s*$")
+
+
+def in_class_attr(text: str, start: int) -> bool:
+    return bool(CLASS_ATTR.search(text[max(0, start - 200) : start]))
 
 
 def check_file(path: pathlib.Path) -> list[str]:
@@ -457,6 +554,8 @@ def check_file(path: pathlib.Path) -> list[str]:
             continue
         if in_react_key(text, start):
             continue
+        if in_class_attr(text, start):
+            continue
         position = classify(text, start)
         if position is None:
             continue
@@ -483,7 +582,12 @@ def check_file(path: pathlib.Path) -> list[str]:
     # Raw JSX text nodes — `>some text<`. `.tsx` only, for the same reason
     # as above: in a `.ts` file every `>` is a generic or a comparison, and
     # this loop reported 90 fragments of `Promise<…>` in `lib/api.ts`.
-    for m in JSX_TEXT.finditer(text) if jsx else ():
+    #
+    # Comments come out first. `scan_strings` already skips them, but this
+    # regex reads the raw text, and a JSDoc example like
+    # `` * `Select` ichida ishlatiladi. */ `` matched as a text node.
+    bare = strip_comments(text)
+    for m in JSX_TEXT.finditer(bare) if jsx else ():
         body = m.group(1).strip()
         if JSX_TEXT_NOISE.match(body):
             continue
