@@ -9500,8 +9500,9 @@ components:
           readOnly: true
         seconds_per_question:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         question_count:
           type: integer
           readOnly: true
@@ -9510,8 +9511,9 @@ components:
           readOnly: true
         reward_qvant:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         is_running:
           type: boolean
           readOnly: true
@@ -9548,8 +9550,9 @@ components:
           readOnly: true
         seconds_per_question:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         question_count:
           type: integer
           readOnly: true
@@ -9558,8 +9561,9 @@ components:
           readOnly: true
         reward_qvant:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         is_running:
           type: boolean
           readOnly: true
@@ -9623,8 +9627,9 @@ components:
           maxLength: 300
         difficulty:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         locale:
           type: string
           maxLength: 2
@@ -9635,8 +9640,9 @@ components:
           readOnly: true
         reading_minutes:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         problem_count:
           type: integer
           readOnly: true
@@ -9681,8 +9687,9 @@ components:
           maxLength: 300
         difficulty:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         locale:
           type: string
           maxLength: 2
@@ -9693,8 +9700,9 @@ components:
           readOnly: true
         reading_minutes:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         problem_count:
           type: integer
           readOnly: true
@@ -9749,8 +9757,9 @@ components:
           maxLength: 200
         size_bytes:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
       required:
       - name
       - url
@@ -9778,20 +9787,24 @@ components:
           $ref: '#/components/schemas/VerdictEnum'
         score:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         time_ms:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         memory_kb:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         failed_test_index:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           nullable: true
         created_at:
           type: string
@@ -9803,8 +9816,9 @@ components:
           nullable: true
         source_size:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
       required:
       - created_at
       - id
@@ -9855,20 +9869,24 @@ components:
           $ref: '#/components/schemas/VerdictEnum'
         score:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         time_ms:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         memory_kb:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         failed_test_index:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           nullable: true
         created_at:
           type: string
@@ -9880,8 +9898,9 @@ components:
           nullable: true
         source_size:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         source_code:
           type: string
         compile_output:
@@ -9905,18 +9924,21 @@ components:
       properties:
         index:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         verdict:
           $ref: '#/components/schemas/VerdictEnum'
         time_ms:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         memory_kb:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
       required:
       - index
       - verdict
@@ -9958,12 +9980,14 @@ components:
           readOnly: true
         place:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         participants:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         tier:
           $ref: '#/components/schemas/TierEnum'
         issued_at:
@@ -10000,8 +10024,9 @@ components:
           readOnly: true
         order:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         text:
           type: string
           maxLength: 500
@@ -10077,8 +10102,9 @@ components:
           type: boolean
         freeze_minutes:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           description: Oxirgi N daqiqada standings muzlatiladi
         is_running:
           type: boolean
@@ -10121,8 +10147,9 @@ components:
           type: boolean
         freeze_minutes:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           description: Oxirgi N daqiqada standings muzlatiladi
         is_running:
           type: boolean
@@ -10163,8 +10190,9 @@ components:
           readOnly: true
         points:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
       required:
       - index_letter
       - slug
@@ -10206,12 +10234,14 @@ components:
           type: string
         time_ms:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         memory_kb:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         created_at:
           type: string
           format: date-time
@@ -10263,16 +10293,19 @@ components:
           readOnly: true
         problem_count:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         difficulty:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         duration_minutes:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         start_at:
           type: string
           format: date-time
@@ -10290,12 +10323,14 @@ components:
           readOnly: true
         challenger_solved:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         opponent_solved:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         is_draw:
           type: boolean
         problems:
@@ -10375,13 +10410,15 @@ components:
           maxLength: 100
         start_year:
           type: integer
-          maximum: 32767
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           nullable: true
         end_year:
           type: integer
-          maximum: 32767
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           nullable: true
       required:
       - organization
@@ -10428,13 +10465,15 @@ components:
           maxLength: 200
         rating:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
           nullable: true
         max_rating:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
           nullable: true
         rank:
           type: string
@@ -10514,8 +10553,9 @@ components:
           readOnly: true
         rating_contest:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
         last_seen:
           type: string
           format: date-time
@@ -12327,12 +12367,14 @@ components:
           readOnly: true
         seconds_per_question:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         reward_qvant:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         is_public:
           type: boolean
         questions:
@@ -12385,8 +12427,9 @@ components:
           maxLength: 2
         difficulty:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         topics:
           type: array
           items:
@@ -12395,8 +12438,9 @@ components:
           type: boolean
         reading_minutes:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         problems:
           type: array
           items:
@@ -12441,8 +12485,9 @@ components:
           format: date-time
         freeze_minutes:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           description: Oxirgi N daqiqada standings muzlatiladi
         scoring_type:
           $ref: '#/components/schemas/ScoringTypeEnum'
@@ -12593,8 +12638,9 @@ components:
           description: Markdown + LaTeX
         editorial_price:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         statement_locale:
           type: string
           maxLength: 2
@@ -12609,12 +12655,14 @@ components:
             type: string
         time_limit_ms:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         memory_limit_kb:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         checker_type:
           $ref: '#/components/schemas/CheckerTypeEnum'
         interactor_source:
@@ -12709,8 +12757,9 @@ components:
           maxLength: 120
         reward:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         is_active:
           type: boolean
         completion_count:
@@ -12731,8 +12780,9 @@ components:
           description: Javobdan keyin ko'rsatiladi
         difficulty:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         topics:
           type: array
           items:
@@ -12764,8 +12814,9 @@ components:
           type: string
         reward_qvant:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         is_published:
           type: boolean
         questions:
@@ -12796,8 +12847,9 @@ components:
           type: boolean
         order:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         steps:
           type: array
           items:
@@ -12953,8 +13005,9 @@ components:
           maxLength: 120
         price:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         asset_ref:
           type: string
           maxLength: 200
@@ -13244,16 +13297,19 @@ components:
           readOnly: true
         solved_count:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         attempt_count:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         view_count:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         success_rate:
           type: integer
           nullable: true
@@ -13286,8 +13342,9 @@ components:
           readOnly: true
         code:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           nullable: true
         has_tests:
           type: boolean
@@ -13341,8 +13398,9 @@ components:
           type: boolean
         source_rating:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           nullable: true
         statement:
           type: string
@@ -13380,12 +13438,14 @@ components:
           maxLength: 2
         time_limit_ms:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         memory_limit_kb:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         checker_type:
           $ref: '#/components/schemas/CheckerTypeEnum'
         source:
@@ -13478,16 +13538,19 @@ components:
           readOnly: true
         solved_count:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         attempt_count:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         view_count:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         success_rate:
           type: integer
           nullable: true
@@ -13520,8 +13583,9 @@ components:
           readOnly: true
         code:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           nullable: true
         has_tests:
           type: boolean
@@ -13578,8 +13642,9 @@ components:
           maxLength: 120
         reward:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         done:
           type: boolean
           readOnly: true
@@ -13601,8 +13666,9 @@ components:
           description: Markdown + LaTeX
         difficulty:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         topics:
           type: array
           items:
@@ -13632,8 +13698,9 @@ components:
           type: string
         reward_qvant:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         question_count:
           type: integer
           readOnly: true
@@ -13665,8 +13732,9 @@ components:
           type: string
         reward_qvant:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         question_count:
           type: integer
           readOnly: true
@@ -13699,16 +13767,19 @@ components:
           readOnly: true
         score:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         total:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         qvant_awarded:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         review:
           type: array
           items:
@@ -13744,16 +13815,19 @@ components:
           $ref: '#/components/schemas/RatingTypeEnum'
         value_before:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
         value_after:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
         delta:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
         reason:
           $ref: '#/components/schemas/RatingHistoryReasonEnum'
         ref_type:
@@ -13768,8 +13842,9 @@ components:
           nullable: true
         rank:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           nullable: true
         created_at:
           type: string
@@ -14118,8 +14193,9 @@ components:
       properties:
         order:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         title:
           type: string
           maxLength: 200
@@ -14233,8 +14309,9 @@ components:
           maxLength: 120
         price:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         is_consumable:
           type: boolean
         owned:
@@ -14316,8 +14393,9 @@ components:
           readOnly: true
         difficulty_at_solve:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         first_ac_at:
           type: string
           format: date-time
@@ -14366,12 +14444,14 @@ components:
           readOnly: true
         seconds_per_question:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         reward_qvant:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         is_public:
           type: boolean
         questions:
@@ -14435,8 +14515,9 @@ components:
           maxLength: 2
         difficulty:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         topics:
           type: array
           items:
@@ -14445,8 +14526,9 @@ components:
           type: boolean
         reading_minutes:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         problems:
           type: array
           items:
@@ -14489,8 +14571,9 @@ components:
           $ref: '#/components/schemas/RoleEnum'
         order:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
       required:
       - problem
     StaffChoice:
@@ -14531,8 +14614,9 @@ components:
           format: date-time
         freeze_minutes:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           description: Oxirgi N daqiqada standings muzlatiladi
         scoring_type:
           $ref: '#/components/schemas/ScoringTypeEnum'
@@ -14586,8 +14670,9 @@ components:
           maxLength: 3
         points:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         title:
           type: string
           readOnly: true
@@ -14846,8 +14931,9 @@ components:
           description: Markdown + LaTeX
         editorial_price:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         statement_locale:
           type: string
           maxLength: 2
@@ -14862,12 +14948,14 @@ components:
             type: string
         time_limit_ms:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         memory_limit_kb:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         checker_type:
           $ref: '#/components/schemas/CheckerTypeEnum'
         interactor_source:
@@ -14991,8 +15079,9 @@ components:
           maxLength: 120
         reward:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         is_active:
           type: boolean
         completion_count:
@@ -15020,8 +15109,9 @@ components:
           description: Javobdan keyin ko'rsatiladi
         difficulty:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         topics:
           type: array
           items:
@@ -15058,8 +15148,9 @@ components:
           type: string
         reward_qvant:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         is_published:
           type: boolean
         questions:
@@ -15095,8 +15186,9 @@ components:
           type: boolean
         order:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         steps:
           type: array
           items:
@@ -15299,8 +15391,9 @@ components:
           maxLength: 120
         price:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         asset_ref:
           type: string
           maxLength: 200
@@ -15488,14 +15581,16 @@ components:
           readOnly: true
         order:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         is_sample:
           type: boolean
         points:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         input_ref:
           type: string
           maxLength: 500
@@ -15655,8 +15750,9 @@ components:
       properties:
         order:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         title:
           type: string
           maxLength: 120
@@ -15676,8 +15772,9 @@ components:
           readOnly: true
         weight:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         is_finished:
           type: boolean
           readOnly: true
@@ -15694,8 +15791,9 @@ components:
       properties:
         rank:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         username:
           type: string
           readOnly: true
@@ -15706,12 +15804,14 @@ components:
           readOnly: true
         solved_count:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         penalty:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         last_ac_at:
           type: string
           format: date-time
@@ -15790,8 +15890,9 @@ components:
           readOnly: true
         score:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           nullable: true
           description: 0–100
         feedback:
@@ -16140,8 +16241,9 @@ components:
       properties:
         rank:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         username:
           type: string
           readOnly: true
@@ -16150,16 +16252,19 @@ components:
           readOnly: true
         points:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         solved_total:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         stages_played:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
       required:
       - display_name
       - rank
@@ -16172,8 +16277,9 @@ components:
           readOnly: true
         amount:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
           description: Musbat = topildi, manfiy = sarflandi
         reason:
           $ref: '#/components/schemas/TransactionReasonEnum'
@@ -16185,8 +16291,9 @@ components:
           maxLength: 64
         balance_after:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
         created_at:
           type: string
           format: date-time
@@ -16288,24 +16395,29 @@ components:
           readOnly: true
         rating_skills:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
         rating_contest:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
         rating_activity:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
         rating_challenges:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
         streak_count:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         date_joined:
           type: string
           format: date-time
@@ -16515,8 +16627,9 @@ components:
       properties:
         balance:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
         earned_today:
           type: integer
           readOnly: true
@@ -16542,13 +16655,15 @@ components:
           maxLength: 100
         start_year:
           type: integer
-          maximum: 32767
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           nullable: true
         end_year:
           type: integer
-          maximum: 32767
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           nullable: true
       required:
       - company
