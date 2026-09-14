@@ -251,6 +251,7 @@ def main() -> int:
     problems += check_templates(source)
     problems += check_server_registry()
     problems += check_key_shape(source)
+    problems += check_country_locales()
 
     if problems:
         print("i18n to'liq emas:")
@@ -450,6 +451,63 @@ def check_key_shape(source: dict[str, str]) -> list[str]:
         problems.append(
             f"uz.ts: `{key}` prefikssiz — kalit `namespace.name` shaklida "
             f"bo'lsin (masalan `common.{key}`)"
+        )
+    return problems
+
+
+def check_country_locales() -> list[str]:
+    """Har til mamlakat nomini o'z tilida olishini tekshiradi.
+
+    ⚠️ Nega kerak: `lib/countries.ts` jadvalni faqat uz/ru uchun
+    ishlatardi va qolgan tillar `Intl.DisplayNames` ga tushardi. Node
+    o'lchovi bu to'g'ri deb ko'rsatdi — lekin **brauzer** `kaa`, `kk`,
+    `ky`, `tg` uchun hudud ma'lumotini bermaydi va inglizchaga tushadi:
+    qoraqalpoqcha UI da "Germany" chiqardi (o'lchandi, Chrome'da).
+
+    ⚠️ Node bilan o'lchash ALDAMCHI: Node `kk`/`ky`/`tg` uchun ruscha
+    qaytaradi, Chrome yo'q. Shuning uchun bu tekshiruv **manba kodni**
+    o'qiydi — ICU qobiliyatini emas — va jadval qamrovini talab qiladi.
+
+    Qoida: ICU ma'lumoti YO'Q tillar `CYRILLIC` yoki `LATIN_UZ` da
+    bo'lishi shart. ICU ma'lumoti BOR tillar (en, tr, zh, es va boshqalar)
+    jadvalga tushmasligi kerak — aks holda tarjima buziladi (`tr` ni
+    qo'shganda "Almanya" o'rniga "Germaniya" chiqqan edi).
+    """
+    path = ROOT / "apps/web/src/lib/countries.ts"
+    if not path.exists():
+        return [f"countries.ts topilmadi ({path})"]
+    text = path.read_text(encoding="utf-8")
+
+    #: Brauzerda ICU hudud ma'lumoti YO'Q tillar (Chrome'da o'lchandi).
+    ICU_MISSING = {"uz", "kaa", "kk", "ky", "tg"}
+    #: ICU bor tillar — jadval ularga TEGMASLIGI shart.
+    ICU_OK = {"en", "tr", "zh", "es"}
+
+    def listed(name: str) -> set[str] | None:
+        m = re.search(rf"const {name}: Locale\[\] = \[(.*?)\];", text, re.S)
+        if m is None:
+            return None
+        return set(re.findall(r'"([a-z]{2,3})"', m.group(1)))
+
+    cyrillic = listed("CYRILLIC")
+    latin = listed("LATIN_UZ")
+    if cyrillic is None or latin is None:
+        return ["countries.ts: CYRILLIC yoki LATIN_UZ ro'yxati topilmadi"]
+
+    covered = cyrillic | latin
+    problems: list[str] = []
+
+    missing = sorted(ICU_MISSING - covered)
+    if missing:
+        problems.append(
+            f"countries.ts: {missing} jadvalda yo'q — brauzerda mamlakat "
+            f"nomi inglizcha chiqadi"
+        )
+    broken = sorted(covered & ICU_OK)
+    if broken:
+        problems.append(
+            f"countries.ts: {broken} jadvalga tushgan, holbuki ICU ularni "
+            f"o'zi tarjima qiladi — nom buziladi"
         )
     return problems
 

@@ -1,6 +1,8 @@
-/** Mamlakatlar — ISO 3166-1 alpha-2. Nomi brauzerning o'zidan
- *  (`Intl.DisplayNames`) olinadi: 250 ta nomni o'n tilda qo'lda saqlash
- *  shart emas va u doim to'g'ri yoziladi. */
+/** Mamlakatlar — ISO 3166-1 alpha-2.
+ *
+ * Nom ikki manbadan: `country-names.ts` jadvali (uz + ru) va brauzerning
+ * `Intl.DisplayNames` i. Ikkalasi kerak — pastga qarang.
+ */
 
 import type { Locale } from "@/i18n/messages";
 import { COUNTRY_NAMES } from "./country-names";
@@ -13,19 +15,45 @@ const CODES =
 /** Ro'yxat boshida — foydalanuvchilarning asosiy qismi shu yerdan. */
 const PINNED = ["UZ", "KZ", "KG", "TJ", "TM", "RU", "TR"];
 
+/** Jadval qaysi tillarga xizmat qiladi.
+ *
+ * ⚠️ `Intl.DisplayNames` faqat uz/ru da ishlamaydi degan taxmin NOTO'G'RI
+ * edi. Chrome'da o'lchandi: ICU to'rt tilda ham hudud ma'lumotini bermaydi
+ * va inglizchaga tushadi — `kaa`, `kk`, `ky`, `tg`. `kaa` da hatto
+ * `kaa-Latn` / `kaa-Cyrl` teglari ham bo'sh.
+ *
+ * Node bilan o'lchash ALDAMCHI: Node `kk`/`ky`/`tg` uchun ruscha qaytaradi,
+ * brauzer esa yo'q. Ya'ni bu ro'yxat brauzerdagi o'lchovga tayanishi shart.
+ *
+ * Kirill yozuvli tillar ruscha nomni oladi (qoraqalpoqchadan tashqari
+ * hammasi shu guruhda) — bu `lib/regions.ts` dagi bilan AYNAN bir xil
+ * qoida, shuning uchun viloyat va mamlakat nomlari bir uslubda chiqadi.
+ */
+const CYRILLIC: Locale[] = ["ru", "kk", "ky", "tg"];
+//: `tr` ataylab YO'Q: turkchada ICU hudud nomlarini o'zi beradi
+//: ("Almanya", "Amerika Birleşik Devletleri") va jadval uni buzardi —
+//: o'lchandi: `tr` ni qo'shganda "Almanya" o'rniga "Germaniya" chiqdi.
+const LATIN_UZ: Locale[] = ["uz", "kaa"];
+
 /** Mamlakat nomi: jadval → ICU → kod.
  *
- * Jadval BIRINCHI turadi, chunki bu Chrome'da `Intl.DisplayNames`
- * o'zbekcha nomlarni bermaydi (inglizchaga tushadi) — natijada o'zbekcha
- * UI da "Uzbekistan" chiqardi va qidiruvda "qoz" topilmasdi.
- * Boshqa tillar uchun ICU ishlaydi, ya'ni jadval faqat uz/ru ni qoplaydi.
+ * Jadval BIRINCHI turadi, chunki yuqoridagi tillarda Chrome'ning
+ * `Intl.DisplayNames` i hudud nomini bermaydi (inglizchaga tushadi) —
+ * natijada o'sha tillardagi UI da "Germany" chiqardi va qidiruvda
+ * mahalliy nom topilmasdi.
+ *
+ * `regions.ts` dagi guruhlar bilan AYNAN bir xil emas va bo'lishi ham
+ * shart emas: viloyat nomlari uchun turkcha ma'lumot yo'q, mamlakat
+ * nomlari uchun bor.
  */
 export function countryName(code: string, locale: Locale): string {
   const iso = code.toUpperCase();
   const row = COUNTRY_NAMES[iso];
-  if (row && (locale === "uz" || locale === "ru")) {
-    return locale === "ru" ? row[1] : row[0];
+  if (row) {
+    if (CYRILLIC.includes(locale)) return row[1];
+    if (LATIN_UZ.includes(locale)) return row[0];
   }
+  // `en`, `zh`, `es` — ICU shu uchtasini haqiqatan qoplaydi.
   try {
     return new Intl.DisplayNames([locale, "en"], { type: "region" }).of(iso) ?? iso;
   } catch {

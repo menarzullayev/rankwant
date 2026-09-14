@@ -83,4 +83,46 @@ Two traps met while writing this check, both worth remembering:
    page with an empty data set (`/blog`, `/updates`, `/roadmaps`) is required,
    confirmed first with `curl … | grep "Hozircha bo'sh"`.
 
+## A real defect found in the content layer: country names
+
+Checking the deliberately deferred files turned up a live bug.
+
+`lib/countries.ts` used the `country-names.ts` table only for `uz` and `ru`
+and fell through to `Intl.DisplayNames` for everything else. Measured in
+Chrome, ICU has **no region data** for `kaa`, `kk`, `ky` or `tg` — it silently
+returns English. A Karakalpak user reading an otherwise translated profile
+would see `Germany`, `United States`, `China`.
+
+| locale | before | after |
+| --- | --- | --- |
+| `uz` | `Germaniya` (table) | `Germaniya` |
+| `kaa` | `Germany` ← leaked | `Germaniya` |
+| `ru` | `Германия` (table) | `Германия` |
+| `kk` | `Germany` ← leaked | `Германия` |
+| `ky` | `Germany` ← leaked | `Германия` |
+| `tg` | `Germany` ← leaked | `Германия` |
+| `tr` | `Almanya` (ICU) | `Almanya` |
+| `zh` | `德国` (ICU) | `德国` |
+| `es` | `Alemania` (ICU) | `Alemania` |
+
+The fix mirrors the pattern already used by `lib/regions.ts`: `CYRILLIC`
+locales take the Russian name, `LATIN_UZ` takes the Uzbek one, and the rest
+keep ICU.
+
+### Node is not a valid ICU oracle here
+
+The first measurement was run under Node, which reported Russian for `kk`,
+`ky` and `tg` — so the defect looked like `kaa` only. Chrome disagreed: all
+four fall through to English. The two runtimes ship different ICU data, and
+the app runs in a browser. **Measure ICU in the engine that will execute it.**
+
+### A regression the fix introduced, caught before commit
+
+Adding `tr` to `LATIN_UZ` — copying `regions.ts` literally — replaced Turkish
+`Almanya` with Uzbek `Germaniya`. Region names have no Turkish ICU data;
+country names do. The lists are similar but must not be identical, and
+`check_country_locales()` now enforces the distinction with two negative
+tests.
+
+
 

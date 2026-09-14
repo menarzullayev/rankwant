@@ -311,6 +311,41 @@ def neg_parity_extra_locale() -> tuple[bool, str]:
         return expect_fail("locales_parity", "parity/LOCALES da ortiqcha til")
 
 
+def neg_i18n_country_locale_dropped() -> tuple[bool, str]:
+    """Jadvaldan til olib tashlansa — tutilsinmi?
+
+    ⚠️ Aynan shu nuqson bor edi: `countries.ts` jadvalni faqat uz/ru
+    uchun ishlatardi va `kaa`/`kk`/`ky`/`tg` da inglizcha nom chiqardi
+    (Chrome'da o'lchandi). Node o'lchovi buni KO'RSATMAGAN — shuning
+    uchun tekshiruv manba kodni o'qiydi.
+    """
+    path = ROOT / "apps/web/src/lib/countries.ts"
+    text = path.read_text(encoding="utf-8")
+    old = 'const CYRILLIC: Locale[] = ["ru", "kk", "ky", "tg"];'
+    new = 'const CYRILLIC: Locale[] = ["ru"];'
+    if old not in text:
+        return False, "mamlakat: langar `CYRILLIC` qatori topilmadi"
+    with Mutation(path, old, new):
+        return expect_fail("i18n", "i18n/mamlakat jadvaldan til tushib qoldi")
+
+
+def neg_i18n_country_icu_locale_added() -> tuple[bool, str]:
+    """ICU bor til jadvalga qo'shilsa — tutilsinmi?
+
+    `tr` ni jadvalga qo'shib ko'rgan edim: turkchada ICU "Almanya" beradi,
+    jadval esa "Germaniya" qilib buzdi (o'lchandi). Bu test o'sha
+    regressiyani qaytaradi.
+    """
+    path = ROOT / "apps/web/src/lib/countries.ts"
+    text = path.read_text(encoding="utf-8")
+    old = 'const LATIN_UZ: Locale[] = ["uz", "kaa"];'
+    new = 'const LATIN_UZ: Locale[] = ["uz", "kaa", "tr"];'
+    if old not in text:
+        return False, "mamlakat: langar `LATIN_UZ` qatori topilmadi"
+    with Mutation(path, old, new):
+        return expect_fail("i18n", "i18n/mamlakat ICU tili jadvalga qo'shildi")
+
+
 def neg_i18n_bare_key() -> tuple[bool, str]:
     """Prefikssiz kalit qo'shilsa — tutilsinmi?
 
@@ -558,6 +593,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         ("yetishmayotgan kalit", neg_i18n_missing_key),
         ("kodda bor, manbada yo'q", neg_i18n_used_but_absent),
         ("prefikssiz kalit", neg_i18n_bare_key),
+        ("mamlakat jadvaldan til tushib qoldi", neg_i18n_country_locale_dropped),
+        ("mamlakat ICU tili jadvalga qo'shildi", neg_i18n_country_icu_locale_added),
         ("shablon oila kalitisiz", neg_i18n_template_family),
         ("server evict bilan chegaralangan", neg_i18n_server_drops_locales),
         ("server lug'atda til yetishmaydi", neg_i18n_server_missing_locale),
