@@ -3,10 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { useLocale } from "@/i18n/LocaleProvider";
+import { t } from "@/i18n/messages";
+
 import { ADMIN_SECTIONS } from "./sections";
 
 export function AdminNav() {
   const pathname = usePathname();
+  const locale = useLocale();
   return (
     <nav className="no-scrollbar -mx-1 flex gap-1 overflow-x-auto pb-1">
       {ADMIN_SECTIONS.map((s) => {
@@ -19,7 +23,7 @@ export function AdminNav() {
               active ? "rw-accent-bg" : "rw-dim-2 rw-hover-bg "
             }`}
           >
-            {s.label}
+            {t(locale, s.labelKey)}
           </Link>
         );
       })}

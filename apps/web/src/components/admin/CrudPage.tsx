@@ -15,6 +15,7 @@ import {
   Table,
 } from "@/components/ui/Table";
 import { useLocale } from "@/i18n/LocaleProvider";
+import { type Locale } from "@/i18n/messages";
 import { t, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
 import { staff } from "@/lib/staff";
@@ -48,8 +49,11 @@ export type ColumnDef<T> = {
   key: string;
   label: string;
   align?: "left" | "right";
-  /** `reload` — amal bajargan ustunlar jadvalni yangilay olishi uchun. */
-  render?: (item: T, reload: () => void) => React.ReactNode;
+  /** `reload` — amal bajargan ustunlar jadvalni yangilay olishi uchun.
+   *  `locale` — ustun modul darajasidagi massivda turadi, ya'ni hook
+   *  chaqira olmaydi; sanani va matnni shu til bo'yicha chiqarish uchun
+   *  kerak (avval `toLocaleDateString("uz")` qattiq yozilgan edi). */
+  render?: (item: T, reload: () => void, locale: Locale) => React.ReactNode;
 };
 
 type Row = Record<string, unknown>;
@@ -378,7 +382,7 @@ export function CrudPage<T extends Row>({
                   {columns.map((c) => (
                     <TD key={c.key} align={c.align}>
                       {c.render
-                        ? c.render(item, load)
+                        ? c.render(item, load, locale)
                         : String(item[c.key] ?? "")}
                     </TD>
                   ))}

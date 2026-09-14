@@ -8,6 +8,7 @@ import {
   type FieldDef,
 } from "@/components/admin/CrudPage";
 import { Badge } from "@/components/ui/Badge";
+import { date } from "@/i18n/messages";
 
 type Report = {
   id: number;
@@ -87,9 +88,9 @@ const columns: ColumnDef<Report>[] = [
     key: "created_at",
     label: "Sana",
     align: "right",
-    render: (r) => (
+    render: (r, _reload, locale) => (
       <span className="rw-faint tabular-nums">
-        {new Date(r.created_at).toLocaleDateString("uz")}
+        {date(r.created_at, locale)}
       </span>
     ),
   },
