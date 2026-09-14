@@ -252,6 +252,7 @@ def main() -> int:
     problems += check_server_registry()
     problems += check_key_shape(source)
     problems += check_country_locales()
+    problems += check_country_table_coverage()
 
     if problems:
         print("i18n to'liq emas:")
@@ -508,6 +509,62 @@ def check_country_locales() -> list[str]:
         problems.append(
             f"countries.ts: {broken} jadvalga tushgan, holbuki ICU ularni "
             f"o'zi tarjima qiladi — nom buziladi"
+        )
+    return problems
+
+
+def check_country_table_coverage() -> list[str]:
+    """Jadval `CODES` dagi HAR kodni qoplashi shart.
+
+    ⚠️ Nega kerak: `check_country_locales()` faqat RO'YXATLARNI tekshiradi
+    ("qaysi til qaysi guruhda"). Jadvalning o'zi to'liqmi — hech qayerda
+    qo'riqlanmagan edi. Bitta kod tushib qolsa `countryName()` jimgina ICU
+    ga tushadi va o'sha til uchun **inglizcha** nom chiqadi — aynan
+    tuzatilgan xato qaytadi.
+
+    O'lchandi: `CODES` 249, jadval 249, farq 0. Bu qoida shu tenglikni
+    ushlab turadi.
+    """
+    countries = ROOT / "apps/web/src/lib/countries.ts"
+    names = ROOT / "apps/web/src/lib/country-names.ts"
+    for p in (countries, names):
+        if not p.exists():
+            return [f"{p.name} topilmadi ({p})"]
+
+    ctext = countries.read_text(encoding="utf-8")
+    m = re.search(r'const CODES\s*=\s*\n?\s*"(.*?)"\.split', ctext, re.S)
+    if m is None:
+        return ["countries.ts: CODES ro'yxati topilmadi"]
+    codes = set(m.group(1).split())
+
+    ntext = names.read_text(encoding="utf-8")
+    rows: dict[str, tuple[str, str]] = {}
+    for r in re.finditer(
+        r'"([A-Z]{2})":\s*\[\s*"([^"]*)"\s*,\s*"([^"]*)"\s*\]', ntext
+    ):
+        rows[r.group(1)] = (r.group(2), r.group(3))
+
+    problems: list[str] = []
+    missing = sorted(codes - rows.keys())
+    if missing:
+        problems.append(
+            f"country-names.ts: {len(missing)} kod jadvalda yo'q "
+            f"({', '.join(missing[:8])}{'…' if len(missing) > 8 else ''}) — "
+            f"bu tillarda nom inglizcha chiqadi"
+        )
+    extra = sorted(rows.keys() - codes)
+    if extra:
+        problems.append(
+            f"country-names.ts: {extra} jadvalda bor, lekin CODES da yo'q — "
+            f"o'lik qator"
+        )
+    # Bo'sh qiymat ham inglizchaga tushish bilan barobar: jadval topiladi,
+    # lekin `""` qaytadi va UI da mamlakat nomi ko'rinmaydi.
+    blank = sorted(c for c, (a, b) in rows.items() if not a.strip() or not b.strip())
+    if blank:
+        problems.append(
+            f"country-names.ts: {blank[:8]} qatorida bo'sh qiymat — "
+            f"UI da nom ko'rinmaydi"
         )
     return problems
 

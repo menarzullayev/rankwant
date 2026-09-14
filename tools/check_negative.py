@@ -368,6 +368,42 @@ def neg_i18n_country_icu_locale_added() -> tuple[bool, str]:
         return expect_fail("i18n", "i18n/mamlakat ICU tili jadvalga qo'shildi")
 
 
+def neg_i18n_country_row_missing() -> tuple[bool, str]:
+    """Jadvaldan bitta kod olib tashlansa — tutilsinmi?
+
+    ⚠️ `check_country_locales()` faqat til RO'YXATLARINI tekshiradi. Jadval
+    o'zi to'liqmi — qo'riqlanmagan edi. Bir kod tushib qolsa `countryName()`
+    jimgina ICU ga tushadi va o'sha tillarda **inglizcha** nom chiqadi.
+    """
+    path = ROOT / "apps/web/src/lib/country-names.ts"
+    text = path.read_text(encoding="utf-8")
+    # ⚠️ `^` ISHLATILMAYDI: jadval qatorlari ichkariga surilgan (`  "DE": …`),
+    # shuning uchun satr boshiga bog'langan langar hech qachon topilmaydi —
+    # test "langar yo'q" deb yiqiladi va qoida tekshirilmagan holda qoladi.
+    m = re.search(r'"DE":\s*\[[^\]]*\],', text)
+    if m is None:
+        return False, "mamlakat: jadvalda `DE` qatori topilmadi"
+    with Mutation(path, m.group(0), ""):
+        return expect_fail("i18n", "i18n/mamlakat jadvalida kod yetishmaydi")
+
+
+def neg_i18n_country_row_blank() -> tuple[bool, str]:
+    """Jadval qiymati bo'sh qolsa — tutilsinmi?
+
+    Bo'sh satr inglizchaga tushish bilan barobar: jadval topiladi, lekin
+    UI da mamlakat nomi umuman ko'rinmaydi.
+    """
+    path = ROOT / "apps/web/src/lib/country-names.ts"
+    text = path.read_text(encoding="utf-8")
+    m = re.search(r'"DE":\s*\["([^"]*)",\s*"([^"]*)"\],', text)
+    if m is None:
+        return False, "mamlakat: jadvalda `DE` qatori topilmadi"
+    # O'zbekcha qiymatni bo'sh qilib qo'yamiz.
+    broken = m.group(0).replace(f'"{m.group(1)}"', '""', 1)
+    with Mutation(path, m.group(0), broken):
+        return expect_fail("i18n", "i18n/mamlakat jadvalida bo'sh qiymat")
+
+
 def neg_i18n_bare_key() -> tuple[bool, str]:
     """Prefikssiz kalit qo'shilsa — tutilsinmi?
 
@@ -617,6 +653,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         ("prefikssiz kalit", neg_i18n_bare_key),
         ("mamlakat jadvaldan til tushib qoldi", neg_i18n_country_locale_dropped),
         ("mamlakat ICU tili jadvalga qo'shildi", neg_i18n_country_icu_locale_added),
+        ("mamlakat jadvalida kod yetishmaydi", neg_i18n_country_row_missing),
+        ("mamlakat jadvalida bo'sh qiymat", neg_i18n_country_row_blank),
         ("shablon oila kalitisiz", neg_i18n_template_family),
         ("server evict bilan chegaralangan", neg_i18n_server_drops_locales),
         ("server lug'atda til yetishmaydi", neg_i18n_server_missing_locale),
