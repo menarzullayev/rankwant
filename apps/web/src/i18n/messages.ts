@@ -209,13 +209,27 @@ export function intlLocale(locale: Locale): string {
 export function dateTime(
   value: string | number | Date,
   locale: Locale,
+  options?: Intl.DateTimeFormatOptions,
 ): string {
-  return new Date(value).toLocaleString(intlLocale(locale));
+  return new Date(value).toLocaleString(intlLocale(locale), options);
 }
 
 /** Faqat sana (vaqtsiz) — qarang: `intlLocale`. */
-export function date(value: string | number | Date, locale: Locale): string {
-  return new Date(value).toLocaleDateString(intlLocale(locale));
+export function date(
+  value: string | number | Date,
+  locale: Locale,
+  options?: Intl.DateTimeFormatOptions,
+): string {
+  return new Date(value).toLocaleDateString(intlLocale(locale), options);
+}
+
+/** Faqat vaqt (sanasiz) — qarang: `intlLocale`. */
+export function time(
+  value: string | number | Date,
+  locale: Locale,
+  options?: Intl.DateTimeFormatOptions,
+): string {
+  return new Date(value).toLocaleTimeString(intlLocale(locale), options);
 }
 
 /** Uch ustunli nom (ko'nikma, mavzu, vazifa) — tilga mosi, bo'lmasa o'zbekchasi. */

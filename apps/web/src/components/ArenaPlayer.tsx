@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/Table";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t, errorText } from "@/i18n/messages";
+import { t, errorText, time } from "@/i18n/messages";
 import {
   API_BASE,
   ApiError,
@@ -162,7 +162,7 @@ export function ArenaPlayer({ initial }: { initial: ArenaDetail }) {
             <Badge color="success">{t(locale, "arena.joined")}</Badge>
             <p className="mt-2 text-theme-sm rw-faint">
               {t(locale, "arena.waiting")} —{" "}
-              {new Date(arena.start_at).toLocaleTimeString(locale)}
+              {time(arena.start_at, locale)}
             </p>
           </Card>
         )}

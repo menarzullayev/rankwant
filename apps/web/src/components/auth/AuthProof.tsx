@@ -1,5 +1,5 @@
 import { getLocale } from "@/i18n/server";
-import { t } from "@/i18n/messages";
+import { intlLocale, t } from "@/i18n/messages";
 import { api } from "@/lib/api";
 
 /** Ijtimoiy dalil (12-qaror).
@@ -31,7 +31,10 @@ export async function AuthProof() {
 
   return (
     <p className="mt-5 border-t rw-divider pt-4 text-center text-theme-xs rw-dim">
-      {t(locale, "auth.socialProof").replace("{count}", stats.users.toLocaleString(locale))}
+      {t(locale, "auth.socialProof").replace(
+        "{count}",
+        stats.users.toLocaleString(intlLocale(locale)),
+      )}
     </p>
   );
 }

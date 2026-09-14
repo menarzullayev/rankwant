@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { Badge, type BadgeColor } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { getLocale } from "@/i18n/server";
-import { DEFAULT_LOCALE, t } from "@/i18n/messages";
+import { DEFAULT_LOCALE, date, dateTime, t, time } from "@/i18n/messages";
 import { api, type CalendarEvent } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
@@ -39,7 +39,7 @@ function Row({
           {start.getDate()}
         </p>
         <p className="text-theme-xs rw-faint uppercase">
-          {start.toLocaleDateString(locale, { month: "short" })}
+          {date(start, locale, { month: "short" })}
         </p>
       </div>
       <div className="min-w-0 flex-1">
@@ -50,12 +50,12 @@ function Row({
           {e.title}
         </Link>
         <p className="text-theme-xs rw-faint">
-          {start.toLocaleTimeString(locale, {
+          {time(start, locale, {
             hour: "2-digit",
             minute: "2-digit",
           })}{" "}
           —{" "}
-          {new Date(e.end_at).toLocaleString(locale, {
+          {dateTime(e.end_at, locale, {
             day: "numeric",
             month: "short",
             hour: "2-digit",

@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/Table";
 import { VerdictBadge } from "@/components/VerdictBadge";
 import { getLocale } from "@/i18n/server";
-import { t } from "@/i18n/messages";
+import { t, time } from "@/i18n/messages";
 import { api } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
@@ -64,7 +64,7 @@ export default async function AttemptsPage() {
                 <TD align="right">{a.time_ms}</TD>
                 <TD align="right">{a.memory_kb}</TD>
                 <TD align="right" className="rw-faint">
-                  {new Date(a.created_at).toLocaleTimeString(locale)}
+                  {time(a.created_at, locale)}
                 </TD>
               </TR>
             ))}
