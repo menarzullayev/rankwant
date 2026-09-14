@@ -231,6 +231,28 @@ def neg_contrast_unreadable_token() -> tuple[bool, str]:
 # ── docs / contract ──────────────────────────────────────────────────────
 
 
+def neg_docs_missing_adr() -> tuple[bool, str]:
+    """Mavjud bo'lmagan `ADR-NNNN` ga havola — tutilsinmi?
+
+    ⚠️ Aynan shu sinf bir marta o'tkazib yuborilgan: `legal.ts` izohi
+    `ADR-0016` ga ishora qilardi, u esa boshqa qaror haqida. Havola
+    mavjud faylga ishora qilgani uchun uni oddiy havola tekshiruvi
+    ko'rmaydi — shuning uchun raqam bo'yicha alohida qoida kerak.
+    """
+    adr = ROOT / "docs/07-adr/0001-brand-rankwant-qvant.md"
+    if not adr.exists():
+        return False, "docs/adr: `0001` fayli topilmadi"
+    text = adr.read_text(encoding="utf-8")
+    # Marker BO'LAKLAB yig'iladi: qoida `.py` fayllarni ham skanerlaydi, shu
+    # faylning o'zi esa manba kodi — to'liq yozilsa qoida O'Z testini tutib,
+    # `check_docs.py` doim qizil bo'lib qolardi (bir marta shunday bo'ldi).
+    marker = "ADR-" + "9999"
+    if marker in text:
+        return False, f"docs/adr: `{marker}` allaqachon matnda bor"
+    with Mutation(adr, text, text.rstrip() + f"\n\nKo'rsatma: {marker}\n"):
+        return expect_fail("docs", "docs/mavjud bo'lmagan ADR havolasi")
+
+
 def neg_docs_broken_link() -> tuple[bool, str]:
     """Hujjatda mavjud bo'lmagan havola — tutilsinmi?"""
     candidates = sorted((ROOT / "docs").glob("*.md"))
@@ -607,6 +629,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
     ]),
     ("docs", [
         ("buzilgan havola", neg_docs_broken_link),
+        ("mavjud bo'lmagan ADR havolasi", neg_docs_missing_adr),
     ]),
     ("email_locales", [
         ("yetishmayotgan til", neg_email_missing_locale),

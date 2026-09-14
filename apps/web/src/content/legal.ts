@@ -1,4 +1,10 @@
-/** Huquqiy sahifalar matni — ADR-0016.
+/** Huquqiy sahifalar matni — ADR-0015.
+ *
+ * ⚠️ Ilgari bu yerda ADR-0016 yozilgan edi — u ro'yxatdan o'tish va kirish
+ * haqida, huquqiy matn tillari haqida emas. Uch tilli qoida (uz/ru/en)
+ * ADR-0015 dan keladi: o'sha yerda xat tillari ham aynan shu uchtasi.
+ * Havola mavjud faylga ishora qilardi, shuning uchun uni na til, na tip,
+ * na havola tekshiruvi ushlay olmaydi — faqat qo'lda o'qish.
  *
  * Tarjima lug'atida EMAS: bular uzun matnlar va `messages.ts` dagi qisqa
  * satrlar bilan bir joyda turishi ikkalasini ham o'qib bo'lmas qilardi.

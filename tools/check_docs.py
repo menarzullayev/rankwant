@@ -14,6 +14,8 @@ from pathlib import Path
 
 CYRILLIC = re.compile(r"[Ѐ-ӿ]")
 LINK = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
+#: `ADR-0016` — kod izohlarida ham, hujjatlarda ham uchraydi.
+ADR_REF = re.compile(r"\bADR-(\d{4})\b")
 RU_MARKERS = ("| ru ", "Зарабатывай", "для тех", "Поднимайся")
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -85,6 +87,66 @@ def check_status(path: Path, text: str) -> list[str]:
     return []
 
 
+def check_adr_refs() -> list[str]:
+    """`ADR-NNNN` havolasi MAVJUD ADR fayliga ishora qilsin.
+
+    ⚠️ Nega kerak: kod izohida `(ADR-0016)` yozilgan edi, u esa ro'yxatdan
+    o'tish haqida — huquqiy matn tillari haqida emas. Havola mavjud faylga
+    ishora qilardi, shuning uchun na til, na tip, na oddiy havola
+    tekshiruvi uni ushlay olmasdi (o'lchandi: 441 havola, 0 buzuq — ya'ni
+    qoida kerak edi, mavjudlari yetmadi).
+
+    Bu tekshiruv faqat havolaning MAVJUDLIGINI tasdiqlaydi; raqam mazmunan
+    to'g'ri ekanini odam o'qib hal qiladi. Eski raqam butunlay o'chirilsa
+    (fayl olib tashlansa) yoki yangi raqam xato yozilsa — bu yerda
+    ushlanadi.
+    """
+    adr_dir = ROOT / "docs/07-adr"
+    if not adr_dir.exists():
+        return ["docs/07-adr topilmadi"]
+    # Fayl nomi `0015-account-email.md` — raqam BOSHIDA, `ADR-` prefiksi
+    # yo'q. Prefiksni qidirish barcha 19 faylni "yo'q" deb ko'rsatgan edi.
+    have = {
+        m.group(1)
+        for p in adr_dir.glob("*.md")
+        if (m := re.match(r"^(\d{4})-", p.stem))
+    }
+    out: list[str] = []
+    for path in [*markdown_files(), *_source_files()]:
+        text = path.read_text(encoding="utf-8")
+        for lineno, line in enumerate(text.splitlines(), 1):
+            for m in ADR_REF.finditer(line):
+                if m.group(1) not in have:
+                    out.append(
+                        f"{path.relative_to(ROOT)}:{lineno}: ADR-{m.group(1)} — "
+                        f"bunday ADR fayli yo'q"
+                    )
+    return out
+
+
+def _source_files() -> list[Path]:
+    """Kod izohlarida ham ADR havolasi uchraydi.
+
+    ⚠️ `tools/` ataylab CHIQARILMAYDI: salbiy testlar buzuq holatni matn
+    sifatida yozadi (`ADR-9999`, `empty2:`, …). Ular manba kodida turgani
+    uchun qoidaga tushib qoladi va tekshiruv O'Z testini tutib, doim
+    qizil bo'ladi. Testlar `Mutation` bilan vaqtinchalik fayl yaratib
+    tekshiriladi — demak ularni skanerlash shart emas.
+    """
+    out: list[Path] = []
+    for suffix in (".ts", ".tsx", ".py"):
+        for path in ROOT.rglob(f"*{suffix}"):
+            if any(
+                part in {".git", "node_modules", ".next", ".venv", ".tmp", "__pycache__"}
+                for part in path.parts
+            ):
+                continue
+            if path.relative_to(ROOT).parts[0] == "tools":
+                continue
+            out.append(path)
+    return sorted(out)
+
+
 def main() -> int:
     problems: list[str] = []
     files = markdown_files()
@@ -94,8 +156,9 @@ def main() -> int:
         problems += check_tables(path, text)
         problems += check_script_mixing(path, text)
         problems += check_status(path, text)
+    problems += check_adr_refs()
 
-    print(f"Tekshirildi: {len(files)} ta markdown fayl")
+    print(f"Tekshirildi: {len(files)} ta markdown fayl + ADR havolalari")
     if problems:
         print(f"\n{len(problems)} ta muammo:\n")
         for p in problems:
