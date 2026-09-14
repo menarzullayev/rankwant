@@ -51,6 +51,10 @@ export default async function OgImage({ params }: { params: Promise<{ username: 
       >
         <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
           {avatar ? (
+            // `next/image` bu yerda ishlamaydi: u brauzer optimizatsiyasi
+            // (lazy load, srcset) qiladi, bu esa satori orqali SERVERDA
+            // rasmga aylantiriladi. `<img>` — yagona to'g'ri variant.
+            // eslint-disable-next-line @next/next/no-img-element
             <img src={avatar} width={160} height={160} alt="" style={{ borderRadius: 80 }} />
           ) : (
             <div

@@ -25,6 +25,10 @@ build/
 
 # Go
 services/judge-go/bin/
+# `go build ./...` main paket uchun binary'ni shu yerga yozadi. U avval
+# git'da turardi (11.8 MB) — har build'da o'zgarib, ishchi daraxtni
+# iflos qilardi. Dockerfile o'zi quradi, ya'ni artefakt kerak emas.
+/services/judge-go/judge-go
 
 # Data / local
 data/
