@@ -65,3 +65,6 @@ tools/.update-sync.json
 # Mahalliy tahlil skriptlari: i18n skaneri, kalit qo'shuvchilar, o'lchov
 # natijalari. Bir martalik ish qurollari — repoga tushmasin.
 .tmp/
+
+# CI/CD sessiya jurnali (real vaqtda kuzatuv uchun)
+ci-cd.log
