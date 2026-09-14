@@ -15,12 +15,346 @@ it and it will be copied into the dictionary.
 - Proper nouns and loanwords are expected to match the source; that
   is deliberate and `tools/check_i18n.py` exempts them explicitly.
 
-Regenerate with `python tools/export_i18n_review.py --prefix admin.`.
+Regenerate with `python tools/export_i18n_review.py --prefix `.
 
-**319 strings.**
+**1345 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
+| `customizer.tab.appearance` | Ko'rinish | Көрүнүш |  |
+| `customizer.template.classic` | Klassik | Классикалык |  |
+| `customizer.template.day` | Kun | Күндүзгү |  |
+| `customizer.template.night` | Tun | Түнкү |  |
+| `customizer.template.console` | Konsol | Консол |  |
+| `customizer.template.journal` | Jurnal | Журнал |  |
+| `customizer.template.focus` | Fokus | Фокус |  |
+| `customizer.template.soft` | Yumshoq | Жумшак |  |
+| `customizer.template.aurora` | Aurora | Аврора |  |
+| `customizer.copyLink` | Havolani nusxalash | Шилтемени көчүрүү |  |
+| `customizer.linkCopied` | Havola nusxalandi | Шилтеме көчүрүлдү |  |
+| `customizer.myTemplates` | Mening shablonlarim | Менин шаблондорум |  |
+| `customizer.templateName` | Shablon nomi | Шаблон аталышы |  |
+| `customizer.save` | Saqlash | Сактоо |  |
+| `customizer.delete` | O'chirish | Жок кылуу |  |
+| `customizer.templateLimit` | Shablon chegarasiga yetdingiz | Шаблон чегине жеттиңиз |  |
+| `customizer.show` | Sozlagichni ko'rsatish | Ырастоочуну көрсөтүү |  |
+| `customizer.title` | Ko'rinish sozlagichi | Көрүнүш ырастоочусу |  |
+| `customizer.short` | Ko'rinish | Көрүнүш |  |
+| `customizer.close` | Yopish | Жабуу |  |
+| `customizer.tab.a11y` | Qulaylik | Жеткиликтүүлүк |  |
+| `customizer.templates` | Tayyor shablonlar | Даяр шаблондор |  |
+| `customizer.templateModified` | Shablon o'zgartirilgan | Шаблон өзгөртүлгөн |  |
+| `customizer.theme` | Mavzu | Тема |  |
+| `customizer.themeFixed` | Bu uslub faqat bitta muhitga chizilgan — mavzu unga moslashadi. | Бул стиль бир чөйрөгө гана тартылган — тема ошого ылайыкташат. |  |
+| `customizer.style` | Uslub | Стиль |  |
+| `customizer.accent` | Asosiy rang | Негизги түс |  |
+| `customizer.accentDefault` | Uslubning o'z rangi | Стилдин өз түсү |  |
+| `customizer.hue` | Tus | Түс |  |
+| `customizer.saturation` | To'yinganlik | Каныккандык |  |
+| `customizer.contrastButton` | Tugma matni | Баскыч тексти |  |
+| `customizer.contrastText` | Matn (havola) | Текст (шилтеме) |  |
+| `customizer.contrastBlocked` | Bu rang o'qilmaydi — AA (4.5:1) dan o'tmadi, saqlanmaydi. | Бул түс окулбайт — AA (4.5:1) өтпөйт, сакталбайт. |  |
+| `customizer.accentApply` | Rangni qo'llash | Түстү колдонуу |  |
+| `customizer.accentCurrent` | Joriy kontrast | Учурдагы контраст |  |
+| `customizer.font` | Shrift | Шрифт |  |
+| `customizer.font.default` | Uslubning o'zi | Стилдин өзү |  |
+| `customizer.size` | Shrift o'lchami | Шрифт өлчөмү |  |
+| `customizer.density` | Zichlik | Тыгыздык |  |
+| `customizer.density.compact` | Zich | Тыгыз |  |
+| `customizer.density.comfortable` | Qulay | Ыңгайлуу |  |
+| `customizer.density.spacious` | Keng | Кенен |  |
+| `customizer.a11y.vision` | Rang ajratish | Түс ажыратуу |  |
+| `customizer.a11y.vision.normal` | Oddiy | Кадимки |  |
+| `customizer.a11y.vision.protan` | Qizil-yashil | Кызыл-жашыл |  |
+| `customizer.a11y.vision.tritan` | Ko'k-sariq | Көк-сары |  |
+| `customizer.a11y.visionHint` | Palitra moslashadi: holat ranglari shakl va matn bilan ham ajralib turadi. | Палитра ылайыкташат: абал түстөрү форма жана текст менен да айырмаланат. |  |
+| `customizer.a11y.motion` | Harakat | Кыймыл |  |
+| `customizer.a11y.motion.system` | Tizim | Системалык |  |
+| `customizer.a11y.motion.reduce` | Kamaytirish | Азайтуу |  |
+| `customizer.a11y.more` | Qo'shimcha | Кошумча |  |
+| `customizer.a11y.bigTargets` | Katta bosish maydonlari | Чоң басуу аймактары |  |
+| `customizer.a11y.strongFocus` | Kuchli fokus halqasi | Күчтүү фокус шакеги |  |
+| `customizer.undo` | Bekor qilish | Жокко чыгаруу |  |
+| `customizer.reset` | Tiklash | Калыбына келтирүү |  |
+| `customizer.resetConfirm` | Ha, hammasini tiklash | Ооба, баарын калыбына келтирүү |  |
+| `customizer.cancel` | Yopish | Жокко чыгаруу |  |
+| `nav.platformRoadmap` | Yo'l xaritasi | Өнүгүү планы |  |
+| `roadmap.title` | Platforma yo'l xaritasi | Платформанын өнүгүү планы |  |
+| `roadmap.lead` | Platformada nima rejalashtirilgani va nima ustida ishlanayotgani. Ovoz bering yoki o'z taklifingizni qoldiring — har bir taklif ochiq ko'rinadi. | Платформада эмне пландалганы жана эмне үстүндө иш жүрүп жатканы. Добуш бериңиз же өз сунушуңузду калтырыңыз — ар бир сунуш ачык көрүнөт. |  |
+| `roadmap.suggest` | Taklif berish | Сунуш берүү |  |
+| `roadmap.suggestTitle` | Sarlavha | Аталышы |  |
+| `roadmap.suggestBody` | Tavsif | Сүрөттөмө |  |
+| `roadmap.suggestHint` | Taklif darhol shu sahifada \"Ko'rib chiqilmoqda\" holatida ko'rinadi va boshqalar ovoz bera oladi. | Сунуш ушул жерде дароо «Каралып жатат» статусу менен көрүнөт, башкалар добуш бере алат. |  |
+| `roadmap.suggestSend` | Yuborish | Жөнөтүү |  |
+| `roadmap.suggestCancel` | Bekor qilish | Жокко чыгаруу |  |
+| `roadmap.sending` | Yuborilmoqda… | Жөнөтүлүүдө… |  |
+| `roadmap.vote` | Ovoz berish | Добуш берүү |  |
+| `roadmap.voted` | Ovoz berdingiz | Сиз добуш бердиңиз |  |
+| `roadmap.voteLogin` | Ovoz berish uchun tizimga kiring | Добуш берүү үчүн кириңиз |  |
+| `roadmap.empty` | Hozircha bo'sh | Азырынча бош |  |
+| `roadmap.truncated` | Ro'yxat cheklangan: yana {count} ta band bor. | Тизме чектелген: дагы {count} жазуу бар. |  |
+| `roadmap.status.suggested` | Ko'rib chiqilmoqda | Каралып жатат |  |
+| `roadmap.status.planned` | Rejalashtirilgan | Пландалган |  |
+| `roadmap.status.in_progress` | Ishlanmoqda | Иш үстүндө |  |
+| `roadmap.status.released` | Chiqarildi | Чыгарылды |  |
+| `roadmap.status.declined` | Rad etilgan | Четке кагылды |  |
+| `roadmap.quarter` | Muddat | Мөөнөтү |  |
+| `roadmap.author` | Muallif | Автору |  |
+| `roadmap.timeline` | Holat tarixi | Статус тарыхы |  |
+| `roadmap.plannedAt` | Rejalashtirildi | Пландалды |  |
+| `roadmap.startedAt` | Boshlandi | Башталды |  |
+| `roadmap.releasedAt` | Chiqarildi | Чыгарылды |  |
+| `roadmap.changelog` | Changelogda ko'rish | Өзгөрүүлөр тизмесинде көрүү |  |
+| `roadmap.comments` | Izohlar | Комментарийлер |  |
+| `roadmap.commentCount` | Izohlar: {count} | Комментарийлер: {count} |  |
+| `roadmap.commentPlaceholder` | Fikringizni yozing… | Оюңузду жазыңыз… |  |
+| `roadmap.commentSend` | Izoh qoldirish | Комментарий калтыруу |  |
+| `roadmap.commentLogin` | Izoh qoldirish uchun tizimga kiring | Комментарий калтыруу үчүн кириңиз |  |
+| `roadmap.noComments` | Hozircha izoh yo'q — birinchi bo'ling. | Азырынча комментарий жок — биринчи болуңуз. |  |
+| `roadmap.deletedUser` | O'chirilgan hisob | Өчүрүлгөн аккаунт |  |
+| `roadmap.mine` | Mening takliflarim | Менин сунуштарым |  |
+| `roadmap.declinedTitle` | Rad etilganlar | Четке кагылгандар |  |
+| `roadmap.declinedHint` | Bu taklif rad etilgan. Sababi izohlarda bo'lishi mumkin. | Бул сунуш четке кагылды. Себеби комментарийлерде болушу мүмкүн. |  |
+| `roadmap.back` | Barcha rejalar | Бардык пландар |  |
+| `nav.updates` | O'zgarishlar | Жаңыртуулар |  |
+| `update.title` | Platforma o'zgarishlari | Платформадагы өзгөрүүлөр |  |
+| `update.lead` | Platformada nima o'zgargani: yangi imkoniyatlar, tuzatishlar va muhim ogohlantirishlar. Har bir yozuv chiqqan sanasi bilan yozib boriladi. | Платформада эмне өзгөргөнү: жаңы мүмкүнчүлүктөр, оңдоолор жана маанилүү эскертүүлөр. Ар бир жазуу чыккан күнү менен жарыяланат. |  |
+| `update.home` | So'nggi o'zgarishlar | Акыркы өзгөрүүлөр |  |
+| `update.filterAll` | Barcha turlar | Бардык түрлөрү |  |
+| `update.filterLabel` | Tur bo'yicha filtr | Түрү боюнча чыпка |  |
+| `update.actionable` | Diqqat talab qiladi | Көңүл бурууну талап кылат |  |
+| `update.actionableHint` | Bu o'zgarishlar sizdan biror amal talab qiladi — eski usul ishlamay qolishi mumkin. | Бул өзгөрүүлөр сизден аракетти талап кылат — эски ыкма иштебей калышы мүмкүн. |  |
+| `update.source` | Manbani ko'rish | Булагын ачуу |  |
+| `update.withdrawn` | Bu yozuv nashrdan olingan. U arxivda qoladi, lekin mazmuni endi amal qilmaydi. | Бул жазуу жарыялоодон алынды. Ал архивде калат, бирок мазмуну эми колдонулбайт. |  |
+| `update.markAllRead` | Hammasi o'qildi | Баарын окулду деп белгилөө |  |
+| `update.allRead` | Hammasi o'qilgan | Баары окулду |  |
+| `update.originUz` | Bu yozuv hali tarjima qilinmagan — o'zbekcha ko'rsatilmoqda. | Бул жазуу али которулган эмес — өзбек тилинде көрсөтүлүүдө. |  |
+| `update.back` | Barcha o'zgarishlar | Бардык өзгөрүүлөр |  |
+| `update.releasedOn` | Chiqarilgan sana | Чыгарылган күнү |  |
+| `update.entry` | yozuv | жазуу |  |
+| `update.unavailable` | O'zgarishlar ro'yxatini hozircha yuklab bo'lmadi. Birozdan so'ng qayta urinib ko'ring. | Өзгөрүүлөрдүн тизмесин жүктөө мүмкүн болбоду. Бир аздан кийин кайра аракет кылыңыз. |  |
+| `update.kind.new` | Yangi | Жаңы |  |
+| `update.kind.improved` | Yaxshilandi | Жакшыртылды |  |
+| `update.kind.fixed` | Tuzatildi | Оңдолду |  |
+| `update.kind.performance` | Tezlik | Ылдамдык |  |
+| `update.kind.security` | Xavfsizlik | Коопсуздук |  |
+| `update.kind.design` | Dizayn | Дизайн |  |
+| `update.kind.content` | Kontent | Мазмун |  |
+| `update.kind.infrastructure` | Infratuzilma | Инфраструктура |  |
+| `update.kind.breaking` | Buzuvchi | Бузуучу |  |
+| `update.kind.deprecated` | Olib tashlanadi | Алынат |  |
+| `update.module.problems` | Masalalar | Маселелер |  |
+| `update.module.contests` | Musobaqalar | Мелдештер |  |
+| `update.module.arena` | Bellashuvlar | Арена |  |
+| `update.module.judge` | Tekshiruv | Текшерүү |  |
+| `update.module.ratings` | Reyting | Рейтинг |  |
+| `update.module.qvant` | Qvant | Квант |  |
+| `update.module.profile` | Profil | Профиль |  |
+| `update.module.classroom` | Sinf | Класс |  |
+| `update.module.quizzes` | Testlar | Тесттер |  |
+| `update.module.content` | Kontent | Мазмун |  |
+| `update.module.design` | Dizayn | Дизайн |  |
+| `update.module.core` | Umumiy | Жалпы |  |
+| `nav.problems` | Masalalar | Маселелер |  |
+| `nav.contests` | Musobaqalar | Мелдештер |  |
+| `nav.leaderboard` | Reyting | Рейтинг |  |
+| `nav.ratingInfo` | Reyting qanday hisoblanadi | Рейтинг кантип эсептелет |  |
+| `problems.title` | Masalalar arxivi | Маселелер архиви |  |
+| `problems.difficulty` | Qiyinlik | Татаалдык |  |
+| `problems.solved` | Yechilgan | Чечилген |  |
+| `problems.solvedByYou` | Siz yechgansiz | Сиз чечкенсиз |  |
+| `problems.topics` | Mavzular | Темалар |  |
+| `problems.limits` | Cheklovlar | Чектөөлөр |  |
+| `contests.title` | Musobaqalar | Мелдештер |  |
+| `contests.running` | Ketmoqda | Жүрүп жатат |  |
+| `contests.finished` | Tugagan | Аяктаган |  |
+| `contests.upcoming` | Kelasi | Кийинки |  |
+| `contests.rated` | Reytingli | Рейтингдик |  |
+| `standings.title` | Natijalar jadvali | Жыйынтык таблицасы |  |
+| `standings.rank` | O'rin | Орун |  |
+| `standings.user` | Foydalanuvchi | Колдонуучу |  |
+| `standings.solved` | Yechildi | Чечилди |  |
+| `standings.penalty` | Jarima | Айып |  |
+| `standings.frozen` | Jadval muzlatilgan | Таблица тоңдурулган |  |
+| `leaderboard.title` | Reyting | Рейтинг |  |
+| `leaderboard.skills` | Skills | Skills |  |
+| `leaderboard.contest` | Contests | Contests |  |
+| `nav.qvant` | Qvant | Qvant |  |
+| `qvant.title` | Qvant | Qvant |  |
+| `qvant.balance` | Balans | Баланс |  |
+| `qvant.today` | Bugun topildi | Бүгүн табылды |  |
+| `qvant.remaining` | Bugun qolgan limit | Бүгүнкү калган чек |  |
+| `qvant.quests` | Vazifalar | Тапшырмалар |  |
+| `qvant.shop` | Do'kon | Дүкөн |  |
+| `qvant.done` | Bajarildi | Аткарылды |  |
+| `qvant.price` | Narx | Баа |  |
+| `qvant.owned` | Sizda bor | Сизде бар |  |
+| `leaderboard.activity` | Activity | Activity |  |
+| `leaderboard.streak` | Streak | Streak |  |
+| `nav.blog` | Yangiliklar | Жаңылыктар |  |
+| `nav.notifications` | Bildirishnomalar | Билдирүүлөр |  |
+| `blog.title` | Yangiliklar | Жаңылыктар |  |
+| `notif.title` | Bildirishnomalar | Билдирүүлөр |  |
+| `notif.unread` | O'qilmagan | Окулбаган |  |
+| `recommend.title` | Sizga tavsiya | Сизге сунуш |  |
+| `recommend.target` | Maqsad qiyinlik | Максат татаалдыгы |  |
+| `contest.virtual` | Virtual boshlash | Виртуалдык баштоо |  |
+| `nav.learn` | O'rganish | Үйрөнүү |  |
+| `learn.title` | O'quv materiallari | Окуу материалдары |  |
+| `learn.roadmaps` | Yo'l xaritalari | Жол карталары |  |
+| `learn.articles` | Maqolalar | Макалалар |  |
+| `learn.minutes` | daq | мүн |  |
+| `learn.practice` | Mashq masalalari | Көнүгүү маселелери |  |
+| `profile.history` | Reyting tarixi | Рейтинг тарыхы |  |
+| `profile.solved` | Yechilgan masalalar | Чечилген маселелер |  |
+| `profile.reason` | Sabab | Себеп |  |
+| `profile.change` | O'zgarish | Өзгөрүү |  |
+| `profile.rerated` | masala qayta baholandi | маселе кайра бааланды |  |
+| `notFound.title` | Sahifa topilmadi | Барак табылган жок |  |
+| `notFound.body` | Havola eskirgan yoki manzil noto'g'ri. | Шилтеме эскирген же дарек туура эмес. |  |
+| `notFound.home` | Bosh sahifaga | Башкы бетке |  |
+| `nav.skipToContent` | Asosiy mazmunga o'tish | Негизги мазмунга өтүү |  |
+| `nav.close` | Yopish | Жабуу |  |
+| `nav.menu` | Menyu | Меню |  |
+| `theme.light` | Yorug' rejim | Жарык режим |  |
+| `theme.dark` | Qorong'u rejim | Караңгы режим |  |
+| `theme.system` | Tizim | Системалык |  |
+| `auth.login` | Kirish | Кирүү |  |
+| `auth.register` | Ro'yxatdan o'tish | Катталуу |  |
+| `auth.createAccount` | Hisob yaratish | Аккаунт түзүү |  |
+| `auth.logout` | Chiqish | Чыгуу |  |
+| `auth.username` | Foydalanuvchi nomi | Колдонуучу аты |  |
+| `auth.password` | Parol | Сырсөз |  |
+| `auth.email` | Email | Email |  |
+| `auth.linkTitle` | Hisobni bog'lash | Эсепти байланыштыруу |  |
+| `auth.linkBody` | Bu email allaqachon ishlatilgan. Bog'lash uchun parolingizni kiriting. | Бул email мурунтан колдонулган. Байланыштыруу үчүн сырсөзүңүздү киргизиңиз. |  |
+| `auth.linkCta` | Bog'lash | Байланыштыруу |  |
+| `auth.socialError` | Kirish amalga oshmadi. Qayta urinib ko'ring. | Кирүү ишке ашпады. Кайра аракет кылыңыз. |  |
+| `footer.terms` | Shartlar | Шарттар |  |
+| `footer.privacy` | Maxfiylik | Купуялуулук |  |
+| `auth.usernameRequired` | Taxallus 3–30 belgi: bo'sh qolmasin | Лакап 3–30 белги: бош калбасын |  |
+| `auth.usernameHint` | 3–30 belgi: lotin harflari, raqam, nuqta, pastki chiziq, chiziqcha | 3–30 белги: латын тамгалары, сан, чекит, астыңкы сызык, дефис |  |
+| `auth.passwordHint` | Kamida 8 belgi. Faqat raqamdan iborat bo'lmasin. | Эң аз 8 белги. Жалаң сандан турбасын. |  |
+| `auth.usernameFree` | Bu nom bo'sh | Бул ат бош |  |
+| `auth.checking` | Tekshirilmoqda… | Текшерилүүдө… |  |
+| `auth.passwordMatch` | Parollar mos | Сырсөздөр дал келди |  |
+| `auth.emailInvalid` | Email manzili noto'g'ri | Почта дареги туура эмес |  |
+| `auth.strength1` | Juda zaif | Абдан алсыз |  |
+| `auth.strength2` | Zaif | Алсыз |  |
+| `auth.strength3` | O'rtacha | Орточо |  |
+| `auth.strength4` | Kuchli | Күчтүү |  |
+| `auth.socialConsent` | Davom etish orqali siz {terms} va {privacy} siyosatiga rozilik bildirasiz. | Улантуу менен сиз {terms} жана {privacy} саясатына макул болосуз. |  |
+| `auth.verifyTitle` | Emailni tasdiqlash | Почтаны ырастоо |  |
+| `auth.verifyPending` | Pochtangiz tasdiqlanmagan. Yuborilgan xatdagi havolani bosing. | Почтаңыз ырасталган эмес. Жиберилген каттагы шилтемени ачыңыз. |  |
+| `auth.verifyResend` | Xatni qayta yuborish | Катты кайра жиберүү |  |
+| `auth.verifySent` | Xat yuborildi | Кат жиберилди |  |
+| `auth.verifyOk` | Pochta tasdiqlandi | Почта ырасталды |  |
+| `auth.verifyFail` | Havola yaroqsiz yoki muddati tugagan | Шилтеме жараксыз же мөөнөтү өтүп кеткен |  |
+| `auth.displayName` | Ism | Аты |  |
+| `auth.displayNameHint` | Ixtiyoriy. Reytingda taxallus bilan birga ko'rinadi. | Милдеттүү эмес. Рейтингде лакап ат менен катар көрүнөт. |  |
+| `auth.loggingIn` | Kirilmoqda… | Кирүүдө… |  |
+| `auth.registering` | Ro'yxatdan o'tilmoqda… | Катталууда… |  |
+| `auth.welcome` | Xush kelibsiz! | Кош келиңиз! |  |
+| `auth.verifySentTo` | {email} ga tasdiqlash xati yubordik. Kodni shu yerga kiriting. | {email} дарегине код менен кат жибердик. Кодду ушул жерге киргизиңиз. |  |
+| `auth.dismiss` | Yopish | Жабуу |  |
+| `auth.passwordConfirm` | Parolni tasdiqlang | Сырсөздү ырастаңыз |  |
+| `auth.passwordMismatch` | Parollar mos kelmadi | Сырсөздөр дал келбейт |  |
+| `auth.togglePassword` | Parolni ko'rsatish | Сырсөздү көрсөтүү |  |
+| `auth.forgot` | Parolni unutdingizmi? | Сырсөздү унуттуңузбу? |  |
+| `auth.orWith` | yoki | же |  |
+| `auth.withGoogle` | Google orqali davom etish | Google аркылуу улантуу |  |
+| `auth.withGithub` | GitHub orqali davom etish | GitHub аркылуу улантуу |  |
+| `auth.withTelegram` | Telegram orqali davom etish | Telegram аркылуу улантуу |  |
+| `reset.title` | Parolni tiklash | Сырсөздү калыбына келтирүү |  |
+| `reset.intro` | Email yoki taxallusingizni kiriting — tiklash havolasini yuboramiz. | Email же колдонуучу атыңызды киргизиңиз — калыбына келтирүү шилтемесин жиберебиз. |  |
+| `reset.loginHint` | Email yoki taxallus | Email же колдонуучу аты |  |
+| `reset.send` | Havola yuborish | Шилтеме жиберүү |  |
+| `reset.sent` | Agar bunday hisob bo'lsa, xat yuborildi. Pochtangizni tekshiring. | Мындай эсеп болсо, кат жиберилди. Почтаңызды текшериңиз. |  |
+| `reset.newTitle` | Yangi parol | Жаңы сырсөз |  |
+| `reset.newIntro` | Yangi parolni kiriting. Havola bir soat amal qiladi. | Жаңы сырсөздү киргизиңиз. Шилтеме бир саат жарактуу. |  |
+| `reset.save` | Saqlash | Сактоо |  |
+| `reset.done` | Parol o'zgartirildi. Endi kirishingiz mumkin. | Сырсөз өзгөртүлдү. Эми кире аласыз. |  |
+| `reset.invalid` | Havola yaroqsiz yoki muddati tugagan. Yangisini so'rang. | Шилтеме жараксыз же мөөнөтү бүткөн. Жаңысын сураңыз. |  |
+| `auth.noAccount` | Hisobingiz yo'qmi? | Аккаунтуңуз жокпу? |  |
+| `auth.hasAccount` | Hisobingiz bormi? | Аккаунтуңуз барбы? |  |
+| `home.openRating` | Reyting yashirin emas | Рейтинг жашыруун эмес |  |
+| `problems.name` | Masala | Маселе |  |
+| `home.attempts` | Urinishlar | Аракеттер |  |
+| `home.start` | Bepul boshlash | Акысыз баштоо |  |
+| `home.guestHint` | Masalalarni hisobsiz ham ko'rishingiz mumkin — yechish uchun ro'yxatdan o'ting. | Маселелерди аккаунтсуз да көрө аласыз — чечүү үчүн катталыңыз. |  |
+| `home.upcoming` | Yaqin musobaqalar | Жакынкы мелдештер |  |
+| `home.topUsers` | Reyting yetakchilari | Рейтинг лидерлери |  |
+| `home.whereToStart` | Qayerdan boshlash | Кайдан баштоо |  |
+| `home.all` | Barchasi | Баары |  |
+| `home.announcements` | So'nggi e'lonlar | Акыркы жарыялар |  |
+| `navGroup.practice` | Mashq | Көнүгүү |  |
+| `navGroup.community` | Jamiyat | Коомчулук |  |
+| `navGroup.lab` | Laboratoriya | Лаборатория |  |
+| `navGroup.library` | Kutubxona | Китепкана |  |
+| `navGroup.compete` | Musobaqa | Мелдеш |  |
+| `navGroup.campus` | Kampus | Кампус |  |
+| `navGroup.platform` | Platforma | Платформа |  |
+| `nav.attempts` | Urinishlar | Аракеттер |  |
+| `nav.quizzes` | Testlar | Тесттер |  |
+| `nav.articles` | Maqolalar | Макалалар |  |
+| `nav.roadmap` | Traektoriya | Траектория |  |
+| `nav.algorithms` | Algoritmlar | Алгоритмдер |  |
+| `nav.classroom` | Auditoriya | Аудитория |  |
+| `nav.arena` | Arena | Арена |  |
+| `nav.duels` | Duel | Дуэль |  |
+| `nav.tournaments` | Chempionat | Чемпионат |  |
+| `nav.hackathons` | Hakaton | Хакатон |  |
+| `nav.calendar` | Taqvim | Календарь |  |
+| `nav.formulas` | Formulalar | Формулалар |  |
+| `nav.shop` | Do'kon | Дүкөн |  |
+| `nav.about` | Qanday ishlaydi | Кантип иштейт |  |
+| `nav.team` | Jamoa | Команда |  |
+| `header.search` | Qidirish… | Издөө… |  |
+| `header.streak` | kun | күн |  |
+| `header.noUnread` | Yangi bildirishnoma yo'q | Жаңы билдирүү жок |  |
+| `leaderboard.challenges` | Challenges | Challenges |  |
+| `attempts.title` | Urinishlar oqimi | Аракеттер агымы |  |
+| `attempts.verdict` | Verdikt | Вердикт |  |
+| `attempts.language` | Til | Тил |  |
+| `quiz.start` | Boshlash | Баштоо |  |
+| `quiz.submit` | Topshirish | Тапшыруу |  |
+| `quiz.result` | Natija | Жыйынтык |  |
+| `quiz.questions` | savol | суроо |  |
+| `quiz.best` | Eng yaxshi | Эң жакшы |  |
+| `arena.join` | Qo'shilish | Кошулуу |  |
+| `arena.joined` | Qo'shildingiz | Кошулдуңуз |  |
+| `arena.waiting` | Boshlanishini kuting | Башталышын күтүңүз |  |
+| `arena.perQuestion` | s / savol | с / суроо |  |
+| `arena.answered` | Javob berildi | Жооп берилди |  |
+| `arena.finished` | Raund tugadi | Раунд аяктады |  |
+| `duel.create` | Chaqiriq tashlash | Чакырык таштоо |  |
+| `duel.accept` | Qabul qilish | Кабыл алуу |  |
+| `duel.cancel` | Bekor qilish | Жокко чыгаруу |  |
+| `duel.waiting` | Kutish xonasi | Күтүү бөлмөсү |  |
+| `duel.mine` | Mening duellarim | Менин дуэлдерим |  |
+| `duel.record` | G/D/M | Ж/Т/Ж |  |
+| `duel.problems` | masala | маселе |  |
+| `duel.minutes` | daqiqa | мүнөт |  |
+| `tournament.stages` | Bosqichlar | Этаптар |  |
+| `tournament.points` | Ball | Упай |  |
+| `tournament.formula` | Ball = koeffitsient × (ishtirokchilar − o'rin + 1). Har bosqich alohida hisoblanadi. | Упай = коэффициент × (катышуучулар − орун + 1). Ар бир этап өзүнчө эсептелет. |  |
+| `hackathon.submit` | Loyiha topshirish | Долбоор тапшыруу |  |
+| `hackathon.deadline` | Topshirish muddati | Тапшыруу мөөнөтү |  |
+| `hackathon.entries` | Loyihalar | Долбоорлор |  |
+| `hackathon.score` | Ball | Упай |  |
+| `hackathon.repo` | Repozitoriy | Репозиторий |  |
+| `hackathon.demo` | Demo | Демо |  |
+| `hackathon.team` | Jamoa nomi | Команда аты |  |
+| `calendar.title` | Taqvim | Календарь |  |
+| `calendar.upcoming` | Kelgusi | Келечек |  |
+| `calendar.past` | O'tgan | Өткөн |  |
+| `classroom.create` | Sinf yaratish | Класс түзүү |  |
+| `classroom.join` | Kodi bilan qo'shilish | Код менен кошулуу |  |
+| `classroom.code` | Qo'shilish kodi | Кошулуу коду |  |
+| `classroom.members` | A'zolar | Мүчөлөр |  |
+| `classroom.assignments` | Vazifalar | Тапшырмалар |  |
+| `about.title` | RankWant qanday ishlaydi | RankWant кантип иштейт |  |
+| `team.title` | Jamoa | Команда |  |
 | `admin.title` | Boshqaruv | Башкаруу |  |
 | `admin.create` | Yaratish | Түзүү |  |
 | `admin.edit` | Tahrirlash | Түзөтүү |  |
@@ -33,6 +367,576 @@ Regenerate with `python tools/export_i18n_review.py --prefix admin.`.
 | `admin.noRows` | Hech narsa yo'q | Эч нерсе жок |  |
 | `admin.actions` | Amallar | Аракеттер |  |
 | `admin.saved` | Saqlandi | Сакталды |  |
+| `common.empty` | Hozircha bo'sh | Азырынча бош |  |
+| `settings.title` | Sozlamalar | Жөндөөлөр |  |
+| `settings.export` | Ma'lumotni yuklab olish | Маалыматты жүктөп алуу |  |
+| `settings.exportHint` | Profil, yechimlar, reyting tarixi va Qvant amallari — bitta JSON fayl. | Профиль, чечимдер, рейтинг тарыхы жана Qvant операциялары — бир JSON файл. |  |
+| `settings.exportAction` | Yuklab olish | Жүктөп алуу |  |
+| `settings.social` | Ulangan hisoblar | Байланышкан аккаунттар |  |
+| `settings.socialHint` | Google, GitHub yoki Telegram bilan kirishni ulashingiz mumkin. Pochta manzillari mos kelishi shart emas. | Google, GitHub же Telegram аркылуу кирүүнү байланыштырсаңыз болот. Почта дареги дал келүүсү милдеттүү эмес. |  |
+| `settings.socialConnect` | Ulash | Байланыштыруу |  |
+| `settings.socialDisconnect` | Uzish | Ажыратуу |  |
+| `settings.socialConnected` | Ulangan | Байланышкан |  |
+| `settings.socialLinked` | Hisob ulandi | Аккаунт байланышты |  |
+| `settings.socialTaken` | Bu hisob boshqa foydalanuvchiga ulangan. Ko'chirish uchun o'sha provayder bilan kiring, Sozlamalardan uzing va shu yerga qayting. | Бул аккаунт башка колдонуучуга байланышкан. Аны которуу үчүн ошол провайдер менен кирип, Жөндөөлөрдөн ажыратып, бул жерге кайтыңыз. |  |
+| `settings.socialLast` | Bu yagona kirish yo'lingiz — avval parol o'rnating | Бул сиздин жалгыз кирүү жолуңуз — адегенде сырсөз коюңуз |  |
+| `settings.socialTelegramStep` | Endi Telegram tugmasini bosing | Эми Telegram баскычын басыңыз |  |
+| `settings.delete` | Hisobni o'chirish | Эсепти өчүрүү |  |
+| `settings.deleteHint` | Ism, email va bio o'chadi, hisob anonim bo'ladi. Yechimlar va musobaqa natijalari joyida qoladi — ularni olib tashlash boshqa qatnashchilarning o'rnini siljitardi. | Аты, email жана баяны өчүрүлөт, эсеп анонимдүү болот. Чечимдер жана мелдеш жыйынтыктары калат — аларды алып салуу башка катышуучулардын ордун жылдырмак. |  |
+| `settings.deletePassword` | Parolingiz | Сырсөзүңүз |  |
+| `settings.deleteAction` | Hisobni butunlay o'chirish | Эсепти биротоло өчүрүү |  |
+| `settings.deleteConfirm` | Bu amalni qaytarib bo'lmaydi. Davom etasizmi? | Бул аракетти кайтарууга болбойт. Улантасызбы? |  |
+| `settings.deleteError` | Parol noto'g'ri | Сырсөз туура эмес |  |
+| `standings.you` | Sizning o'rningiz | Сиздин ордуңуз |  |
+| `verdict.PENDING` | Navbatda | Кезекте |  |
+| `verdict.RUNNING` | Tekshirilmoqda | Текшерилүүдө |  |
+| `verdict.AC` | Qabul qilindi | Кабыл алынды |  |
+| `verdict.WA` | Javob noto'g'ri | Жооп туура эмес |  |
+| `verdict.TLE` | Vaqt tugadi | Убакыт бүттү |  |
+| `verdict.MLE` | Xotira tugadi | Эстутум бүттү |  |
+| `verdict.OLE` | Chiqish juda katta | Чыгаруу өтө чоң |  |
+| `verdict.RE` | Bajarilishda xato | Аткаруу катасы |  |
+| `verdict.RE_SIGNAL` | Bajarilishda xato (signal) | Аткаруу катасы (сигнал) |  |
+| `verdict.RE_EXIT` | Bajarilishda xato (chiqish kodi) | Аткаруу катасы (чыгуу коду) |  |
+| `verdict.CE` | Kompilyatsiya xatosi | Компиляция катасы |  |
+| `verdict.PE` | Format xatosi | Формат катасы |  |
+| `verdict.PARTIAL` | Qisman ball | Жарым-жартылай упай |  |
+| `verdict.IE` | Ichki xato | Ички ката |  |
+| `verdict.WRONG_TEST` | Masala testi yaroqsiz | Маселенин тесттери жараксыз |  |
+| `verdict.SKIPPED` | Hisobga olinmadi | Эсепке алынган жок |  |
+| `verdict.COMPILE_TIMEOUT` | Kompilyatsiya cho'zildi | Компиляция созулду |  |
+| `verdict.IDLENESS` | Dastur kutib qoldi | Программа күтүп калды |  |
+| `verdict.SECURITY_VIOLATION` | Xavfsizlik qoidasi buzildi | Коопсуздук эрежеси бузулду |  |
+| `verdict.CHECKER_ERROR` | Tekshiruvchi xatosi | Текшерүүчү катасы |  |
+| `verdict.TESTING_ABORTED` | Qayta tekshirilmoqda | Кайра текшерилүүдө |  |
+| `verdict.RATE_LIMITED` | Juda tez yuborildi | Өтө тез жөнөтүлдү |  |
+| `verdict.DENIAL_OF_JUDGEMENT` | Tekshirib bo'lmadi | Текшерүүгө болбоду |  |
+| `attempts.allVerdicts` | Hamma verdikt | Бардык вердикт |  |
+| `error.already_answered` | Bu savolga allaqachon javob berdingiz | Бул суроого жооп бердиңиз |  |
+| `error.already_finalized` | Allaqachon yakunlangan | Мурунтан аяктаган |  |
+| `error.already_paid` | Bu allaqachon to'langan | Бул мурунтан төлөнгөн |  |
+| `error.authentication_failed` | Autentifikatsiya o'tmadi | Аутентификация өтпөдү |  |
+| `error.bad_choice` | Variant bu savolga tegishli emas | Вариант бул суроого тиешелүү эмес |  |
+| `error.closed` | Topshirish muddati ochiq emas | Тапшыруу жабык |  |
+| `error.contest_finished` | Musobaqa tugagan | Мелдеш аяктады |  |
+| `error.dependency_unavailable` | Xizmat vaqtincha mavjud emas, birozdan keyin urinib ko'ring | Кызмат убактылуу жеткиликсиз, бир аздан кийин аракет кылыңыз |  |
+| `error.error` | Nimadir noto'g'ri ketdi | Бир нерсе туура эмес кетти |  |
+| `error.expired` | Muddati o'tib ketgan | Мөөнөтү өтүп кеткен |  |
+| `error.finished` | Allaqachon tugagan | Мурунтан аяктаган |  |
+| `error.forbidden` | Bunga ruxsatingiz yo'q | Буга уруксатыңыз жок |  |
+| `error.invalid` | Kiritilgan ma'lumot noto'g'ri | Киргизилген маалымат туура эмес |  |
+| `error.invalid_credentials` | Login yoki parol noto'g'ri | Логин же сырсөз туура эмес |  |
+| `error.invalid_expiry` | Amal qilish muddati noto'g'ri | Жарактуулук мөөнөтү туура эмес |  |
+| `error.join_failed` | Qo'shilib bo'lmadi | Кошулуу мүмкүн болбоду |  |
+| `error.method_not_allowed` | Bu amal qo'llab-quvvatlanmaydi | Бул аракет колдоого алынбайт |  |
+| `error.no_problems` | Mos masala topilmadi | Ылайыктуу маселе табылган жок |  |
+| `error.not_accepted` | Faqat qabul qilingan duelni yakunlash mumkin | Кабыл алынган дуэлди гана аяктоого болот |  |
+| `error.not_authenticated` | Buning uchun tizimga kiring | Ал үчүн системага кириңиз |  |
+| `error.not_due` | Hali tugamagan | Азырынча аяктаган жок |  |
+| `error.not_finished` | Hali tugamagan | Азырынча аяктаган жок |  |
+| `error.not_found` | Topilmadi | Табылган жок |  |
+| `error.not_joined` | Avval qo'shiling | Адегенде кошулуңуз |  |
+| `error.not_open` | Chaqiriq endi ochiq emas | Чакырык эми ачык эмес |  |
+| `error.not_owner` | Bu faqat egasi uchun | Бул ээсине гана уруксат |  |
+| `error.not_running` | Hozir faol emas | Азыр активдүү эмес |  |
+| `error.parse_error` | So'rovni o'qib bo'lmadi | Сурамды окуу мүмкүн болбоду |  |
+| `error.permission_denied` | Bunga ruxsatingiz yo'q | Уруксат жок |  |
+| `error.protected` | Bu yozuv boshqa joyda ishlatilmoqda, avval bog'lanishni uzing | Бул жазуу башка жерде колдонулууда, адегенде байланышты үзүңүз |  |
+| `error.purchase_failed` | Xarid bajarilmadi | Сатып алуу аткарылган жок |  |
+| `error.range` | Qiymat ruxsat etilgan oraliqdan tashqarida | Маани уруксат берилген аралыктан тышкары |  |
+| `error.self` | O'z chaqirig'ingizni qabul qila olmaysiz | Өз чакырыгыңызды кабыл ала албайсыз |  |
+| `error.throttled` | Juda tez-tez urinyapsiz, biroz kuting | Өтө тез-тез, бир аз күтө туруңуз |  |
+| `error.token_limit` | Faol tokenlar chegarasiga yetdingiz | Активдүү токендер чегине жеттиңиз |  |
+| `error.too_many` | Juda ko'p — avval borlarini yakunlang | Өтө көп — адегенде барларын аяктаңыз |  |
+| `error.too_soon` | Boshlanish kamida 5 daqiqadan keyin bo'lishi kerak | Башталышы жок дегенде 5 мүнөттөн кийин болушу керек |  |
+| `error.wrong_question` | Bu savol hozir ochiq emas | Бул суроо азыр ачык эмес |  |
+| `profile.aboutEmpty` | Foydalanuvchi hali o'zi haqida ma'lumot qo'shmagan. | Колдонуучу өзү тууралуу азырынча маалымат кошо элек. |  |
+| `profile.achContest` | Qatnashilgan musobaqalar: {n} | Катышкан мелдештер: {n} |  |
+| `profile.achDone` | {done} / {total} yutuq qo'lga kiritilgan | {done} / {total} жетишкендик алынды |  |
+| `profile.achProfile` | Profil to'ldirilgan | Профиль толтурулган |  |
+| `profile.achSolve` | Yechilgan masalalar: {n} | Чыгарылган маселелер: {n} |  |
+| `profile.achStreak` | Uzluksiz kunlar: {n} | Үзгүлтүксүз күндөр: {n} |  |
+| `profile.activityContest` | Musobaqa | Мелдеш |  |
+| `profile.activityEmpty` | Hozircha faoliyat yo'q. | Азырынча активдүүлүк жок. |  |
+| `profile.activityHardSolve` | Qiyin masala yechildi | Татаал маселе чыгарылды |  |
+| `profile.activityOlder` | Oldingilari | Мурункулары |  |
+| `profile.activityQuest` | Vazifa bajarildi | Тапшырма аткарылды |  |
+| `profile.byLevel` | Daraja bo'yicha yechilganlar | Деңгээл боюнча чыгарылгандар |  |
+| `profile.date` | Sana | Күнү |  |
+| `profile.edit` | Profilni tahrirlash | Профилди түзөтүү |  |
+| `profile.equipped` | Kiyilgan | Кийилген |  |
+| `profile.follow` | Kuzatish | Жазылуу |  |
+| `profile.following` | Kuzatilmoqda | Жазылдыңыз |  |
+| `profile.followers` | Obunachilar | Жазылуучулар |  |
+| `profile.followingTab` | Kuzatilayotganlar | Жазылуулар |  |
+| `profile.freeze` | Streak muzlatish | Streak тоңдуруу |  |
+| `profile.hiddenChip` | faqat sizga ko'rinadi | сизге гана көрүнөт |  |
+| `profile.highest` | eng yuqori {max} | эң жогорку {max} |  |
+| `profile.joined` | Ro'yxatdan o'tgan: {date} | Катталган: {date} |  |
+| `profile.next` | Keyingi | Кийинки |  |
+| `profile.prev` | Oldingi | Мурунку |  |
+| `profile.present` | hozirgacha | азыркыга чейин |  |
+| `profile.purchasesEmpty` | Hali xarid yo'q. | Азырынча сатып алуу жок. |  |
+| `profile.ratingColumn` | Reyting | Рейтинг |  |
+| `profile.sections` | Profil bo'limlari | Профиль бөлүмдөрү |  |
+| `profile.tab.about` | Shaxsiy | Жеке |  |
+| `profile.tab.achievements` | Yutuqlar | Жетишкендиктер |  |
+| `profile.tab.activity` | Faoliyat | Активдүүлүк |  |
+| `profile.tab.purchases` | Xaridlar | Сатып алуулар |  |
+| `profile.tab.rating` | Reyting | Рейтинг |  |
+| `settings.addEducation` | Ta'lim joyi qo'shish | Окуу жайын кошуу |  |
+| `settings.addWork` | Ish joyi qo'shish | Иш ордун кошуу |  |
+| `settings.appearanceHint` | Sozlamalar hisobingizda saqlanadi — boshqa qurilmadan kirsangiz ham shunday ko'rinadi. | Жөндөөлөр аккаунтуңузда сакталат — башка түзмөктөн кирсеңиз да ошондой көрүнөт. |  |
+| `settings.avatar` | Profil rasmi | Профиль сүрөтү |  |
+| `settings.avatarBad` | Bu faylni rasm sifatida o'qib bo'lmadi. | Бул файлды сүрөт катары окуу мүмкүн болбоду. |  |
+| `settings.avatarHint` | PNG, JPEG yoki WebP. Rasm kvadrat qilib qirqiladi va 256 pikselga kichraytiriladi. | PNG, JPEG же WebP. Сүрөт чарчы кылып кесилип, 256 пикселге кичирейтилет. |  |
+| `settings.avatarImport` | {provider} rasmini olish | {provider} сүрөтүн алуу |  |
+| `settings.avatarRemove` | Rasmni olib tashlash | Сүрөттү өчүрүү |  |
+| `settings.avatarUpload` | Rasm yuklash | Сүрөт жүктөө |  |
+| `settings.bio` | O'zim haqimda | Өзүм жөнүндө |  |
+| `settings.bioHint` | Profil sahifasida ismingiz tagida ko'rinadi. | Профиль барагында атыңыздын астында көрүнөт. |  |
+| `settings.birthDate` | Tug'ilgan sana | Туулган күнү |  |
+| `settings.channelEmailSoon` | Pochta orqali yuborish keyinroq qo'shiladi. | Почта аркылуу жөнөтүү кийинчерээк кошулат. |  |
+| `settings.channelSite` | Saytda | Сайтта |  |
+| `settings.channelTelegram` | Telegram | Telegram |  |
+| `settings.company` | Kompaniya | Компания |  |
+| `settings.cosmetics` | Profil bezaklari | Профиль кооздуктары |  |
+| `settings.cosmeticsEmpty` | Hali bezak yo'q — ularni Qvant do'konidan olish mumkin. | Азырынча кооздук жок — аларды Qvant дүкөнүнөн алса болот. |  |
+| `settings.cosmeticsHint` | Do'kondan olingan muqova, ramka va nishonlar. Har turdan bittasini kiyish mumkin. | Дүкөндөн алынган мукаба, алкак жана белгилер. Ар бир түрдөн бирөөнү кийсе болот. |  |
+| `settings.cosmeticsShop` | Do'konga o'tish | Дүкөнгө өтүү |  |
+| `settings.country` | Mamlakat | Өлкө |  |
+| `settings.degree` | Yo'nalish yoki daraja | Багыт же даража |  |
+| `settings.education` | Ta'lim | Билим |  |
+| `settings.effect` | Mavzu almashish effekti | Теманы алмаштыруу эффекти |  |
+| `settings.effect.circle` | Doira | Тегерек |  |
+| `settings.effect.fade` | Silliq o'tish | Жумшак өтүү |  |
+| `settings.effect.none` | Effektsiz | Эффектсиз |  |
+| `settings.effectHint` | Harakatni kamaytirish yoqilgan qurilmada mavzu effektsiz almashadi. | Кыймылды азайтуу күйгүзүлгөн түзмөктө тема эффектсиз алмашат. |  |
+| `settings.effectsTitle` | Ovoz va effektlar | Үн жана эффекттер |  |
+| `settings.email` | Pochta manzili | Почта дареги |  |
+| `settings.emailCode` | Tasdiqlash kodi | Ырастоо коду |  |
+| `settings.emailCodeSent` | Kod {email} ga yuborildi. Uni shu yerga kiriting. | Код {email} дарегине жөнөтүлдү. Аны ушул жерге киргизиңиз. |  |
+| `settings.emailConfirm` | Tasdiqlash | Ырастоо |  |
+| `settings.emailCurrent` | Hozirgi manzil: {email} | Учурдагы дарек: {email} |  |
+| `settings.emailDone` | Pochta manzili almashtirildi | Почта дареги алмаштырылды |  |
+| `settings.emailHint` | Manzil yangi pochtaga yuborilgan kod tasdiqlangandan keyingina almashadi. Eski manzilga ogohlantirish yuboriladi. | Дарек жаңы почтага жөнөтүлгөн код ырасталгандан кийин гана алмашат. Эски дарекке эскертүү жөнөтүлөт. |  |
+| `settings.emailNew` | Yangi manzil | Жаңы дарек |  |
+| `settings.emailNone` | Pochta manzili ko'rsatilmagan | Почта дареги көрсөтүлгөн эмес |  |
+| `settings.emailSend` | Kod yuborish | Код жөнөтүү |  |
+| `settings.emailUnverified` | Tasdiqlanmagan | Ырасталган эмес |  |
+| `settings.emailVerified` | Tasdiqlangan | Ырасталган |  |
+| `settings.endYear` | Tugagan yili | Бүткөн жылы |  |
+| `settings.endYearHint` | Bo'sh qoldiring — hozir ham shu yerda | Бош калтырыңыз — азыр да ушул жерде болсоңуз |  |
+| `settings.external` | Boshqa platformalardagi profillar | Башка платформалардагы профилдер |  |
+| `settings.externalHint` | Handle yoki profil havolasini kiriting. Reyting ochiq API'dan olinadi va bizning reytingga aralashmaydi. | Handle же профиль шилтемесин киргизиңиз. Рейтинг ачык API'ден алынат жана биздин рейтингге таасир этпейт. |  |
+| `settings.externalNoRating` | Reytingli musobaqa topilmadi | Рейтингдик мелдеш табылган жок |  |
+| `settings.externalPending` | Reyting olinmoqda… | Рейтинг алынууда… |  |
+| `settings.externalRating` | Reyting: {rating} (eng yuqori {max}) | Рейтинг: {rating} (эң жогорку {max}) |  |
+| `settings.grade` | Sinf yoki kurs | Класс же курс |  |
+| `settings.info` | Shaxsiy ma'lumotlar | Жеке маалыматтар |  |
+| `settings.infoHint` | Hammasi ixtiyoriy. Standart holatda profilda ko'rinadi — istalganini yashirishingiz mumkin. | Баары милдеттүү эмес. Демейки боюнча профилде көрүнөт — каалаганын жашыра аласыз. |  |
+| `settings.kind.contest_result` | Musobaqa natijasi | Мелдештин жыйынтыгы |  |
+| `settings.kind.duel` | Duellar | Дуэлдер |  |
+| `settings.kind.problem_rerated` | Masala qayta baholandi | Маселе кайра бааланды |  |
+| `settings.kind.quest_awarded` | Vazifa mukofoti | Тапшырма сыйлыгы |  |
+| `settings.kind.rating_changed` | Reyting o'zgarishi | Рейтингдин өзгөрүшү |  |
+| `settings.kind.streak_milestone` | Streak yutug'i | Streak жетишкендиги |  |
+| `settings.kind.system` | Tizim xabarlari | Системалык билдирүүлөр |  |
+| `settings.kindColumn` | Tur | Түрү |  |
+| `settings.language` | Til | Тил |  |
+| `settings.linkedinHint` | https://linkedin.com/in/… ko'rinishida | https://linkedin.com/in/… түрүндө |  |
+| `settings.loading` | Yuklanmoqda… | Жүктөлүүдө… |  |
+| `settings.nav.account` | Hisob | Аккаунт |  |
+| `settings.nav.appearance` | Ko'rinish | Көрүнүш |  |
+| `settings.nav.career` | Ta'lim va ish | Билим жана иш |  |
+| `settings.nav.info` | Ma'lumotlar | Маалыматтар |  |
+| `settings.nav.notifications` | Bildirishnomalar | Билдирмелер |  |
+| `settings.nav.profile` | Profil | Профиль |  |
+| `settings.nav.security` | Xavfsizlik | Коопсуздук |  |
+| `settings.nav.skills` | Ko'nikmalar | Көндүмдөр |  |
+| `settings.nav.social` | Ijtimoiy tarmoqlar | Социалдык тармактар |  |
+| `settings.nav.teams` | Jamoalar | Командалар |  |
+| `settings.notChosen` | Tanlanmagan | Тандалган эмес |  |
+| `settings.notify` | Bildirishnomalar | Билдирмелер |  |
+| `settings.notifyHint` | Har bir tur uchun qayerga yuborilishini tanlang. | Ар бир түр үчүн кайда жөнөтүлөрүн тандаңыз. |  |
+| `settings.organization` | Muassasa | Окуу жайы |  |
+| `settings.password` | Parol | Сырсөз |  |
+| `settings.passwordChange` | Parolni almashtirish | Сырсөздү алмаштыруу |  |
+| `settings.passwordCurrent` | Joriy parol | Учурдагы сырсөз |  |
+| `settings.passwordDone` | Parol saqlandi. Boshqa qurilmalardagi kirishlar yopildi. | Сырсөз сакталды. Башка түзмөктөрдөгү кирүүлөр жабылды. |  |
+| `settings.passwordNew` | Yangi parol | Жаңы сырсөз |  |
+| `settings.passwordSet` | Parol o'rnatish | Сырсөз коюу |  |
+| `settings.passwordSetHint` | Hisobingizda parol yo'q — siz faqat Google, GitHub yoki Telegram bilan kirasiz. Parol o'rnatsangiz, taxallus va parol bilan ham kira olasiz. | Аккаунтуңузда сырсөз жок — сиз Google, GitHub же Telegram аркылуу гана киресиз. Сырсөз койсоңуз, лакап ат менен да кире аласыз. |  |
+| `settings.position` | Lavozim | Кызматы |  |
+| `settings.region` | Viloyat | Облус |  |
+| `settings.remove` | O'chirish | Өчүрүү |  |
+| `settings.save` | Saqlash | Сактоо |  |
+| `settings.saved` | Saqlandi | Сакталды |  |
+| `settings.school` | Maktab yoki universitet | Мектеп же университет |  |
+| `settings.section` | Bo'lim | Бөлүм |  |
+| `settings.selected` | {count} / {max} tanlangan | {count} / {max} тандалды |  |
+| `settings.sessionCurrent` | Shu qurilma | Ушул түзмөк |  |
+| `settings.sessionEnd` | Chiqarish | Чыгаруу |  |
+| `settings.sessionEndOthers` | Boshqa barcha qurilmalardan chiqish | Башка бардык түзмөктөрдөн чыгуу |  |
+| `settings.sessionSeen` | Oxirgi faollik: {time} | Акыркы активдүүлүк: {time} |  |
+| `settings.sessionUnknown` | Noma'lum qurilma | Белгисиз түзмөк |  |
+| `settings.sessions` | Kirilgan qurilmalar | Кирилген түзмөктөр |  |
+| `settings.sessionsHint` | Tanimagan qurilmani ko'rsangiz — uni chiqaring va parolni almashtiring. | Тааныш эмес түзмөктү көрсөңүз — аны чыгарып, сырсөздү алмаштырыңыз. |  |
+| `settings.showEmail` | Pochta manzilini profilda ko'rsatish | Почта дарегин профилде көрсөтүү |  |
+| `settings.showOnProfile` | Profilda ko'rsatish | Профилде көрсөтүү |  |
+| `settings.skillAdd` | Ko'nikma qo'shish… | Көндүм кошуу… |  |
+| `settings.skills` | Ko'nikmalar | Көндүмдөр |  |
+| `settings.skillsHint` | O'zingizni baholang — daraja faqat profilda ko'rinadi va reytingga ta'sir qilmaydi. | Өзүңүздү баалаңыз — деңгээл профилде гана көрүнөт жана рейтингге таасир этпейт. |  |
+| `settings.slot.badge` | Nishon | Белги |  |
+| `settings.slot.cover` | Muqova | Мукаба |  |
+| `settings.slot.frame` | Avatar ramkasi | Аватар алкагы |  |
+| `settings.sound` | Ovoz | Үн |  |
+| `settings.soundHint` | Yechim qabul qilinganda qisqa ohang chalinadi. | Чечим кабыл алынганда кыска обон ойнойт. |  |
+| `settings.soundTry` | Eshitib ko'rish | Угуп көрүү |  |
+| `settings.startYear` | Boshlangan yili | Башталган жылы |  |
+| `settings.style` | Uslub | Стиль |  |
+| `settings.takeOff` | Yechish | Чечүү |  |
+| `settings.teamCopied` | Nusxalandi | Көчүрүлдү |  |
+| `settings.teamCopy` | Nusxalash | Көчүрүү |  |
+| `settings.teamCreate` | Jamoa yaratish | Команда түзүү |  |
+| `settings.teamDelete` | Jamoani o'chirish | Команданы өчүрүү |  |
+| `settings.teamDeleteConfirm` | Jamoa butunlay o'chiriladi. Davom etasizmi? | Команда толугу менен өчүрүлөт. Улантасызбы? |  |
+| `settings.teamInvite` | Taklif havolasi | Чакыруу шилтемеси |  |
+| `settings.teamInvited` | Sizni jamoaga taklif qilishdi — «Qo'shilish» ni bosing. | Сизди командага чакырышты — «Кошулуу» баскычын басыңыз. |  |
+| `settings.teamJoin` | Qo'shilish | Кошулуу |  |
+| `settings.teamJoinCode` | Taklif kodi yoki havolasi | Чакыруу коду же шилтемеси |  |
+| `settings.teamJoined` | Jamoaga qo'shildingiz | Командага кошулдуңуз |  |
+| `settings.teamLeave` | Jamoadan chiqish | Командадан чыгуу |  |
+| `settings.teamMember` | A'zo | Мүчө |  |
+| `settings.teamName` | Jamoa nomi | Команданын аталышы |  |
+| `settings.teamOwner` | Egasi | Ээси |  |
+| `settings.teamRefresh` | Yangi havola | Жаңы шилтеме |  |
+| `settings.teamRefreshHint` | Eski havola ishlamay qoladi. | Эски шилтеме иштебей калат. |  |
+| `settings.teamRemove` | Chiqarish | Чыгаруу |  |
+| `settings.teams` | Jamoalar | Командалар |  |
+| `settings.teamsEmpty` | Siz hali hech qaysi jamoada emassiz. | Сиз азырынча эч бир командада эмессиз. |  |
+| `settings.teamsHint` | Jamoa yarating va do'stlaringizni havola orqali taklif qiling. Jamoada 10 kishigacha. | Команда түзүп, досторуңузду шилтеме аркылуу чакырыңыз. Командада 10 кишиге чейин. |  |
+| `settings.technologies` | Texnologiyalar | Технологиялар |  |
+| `settings.technologiesHint` | Ishlatadigan til va vositalaringizni belgilang. | Колдонгон тилдериңизди жана куралдарыңызды белгилеңиз. |  |
+| `settings.telegramAccess` | Bot sizga yozishi uchun Telegram orqali ulanganda xabar yuborishga ruxsat bering. | Бот сизге жаза алышы үчүн Telegram туташканда билдирүү жөнөтүүгө уруксат бериңиз. |  |
+| `settings.telegramMissing` | Telegram ulanmagan — uni shu bo'limda ulang: | Telegram туташкан эмес — аны бул бөлүмдө туташтырыңыз: |  |
+| `settings.theme` | Mavzu | Тема |  |
+| `settings.themeFixed` | Bu uslub bitta mavzuga chizilgan — yorug'/qorong'u almashmaydi. | Бул стиль бир темага арналган — жарык/караңгы алмашпайт. |  |
+| `settings.username` | Taxallus | Колдонуучу аты |  |
+| `settings.usernameChange` | Almashtirish | Алмаштыруу |  |
+| `settings.usernameConfirm` | Taxallusni «{name}» ga almashtirasizmi? | Колдонуучу атын «{name}» деп алмаштырасызбы? |  |
+| `settings.usernameDone` | Taxallus almashtirildi | Колдонуучу аты алмаштырылды |  |
+| `settings.usernameFree` | Yiliga bir marta bepul almashtirish mumkin — hozir mavjud. | Жылына бир жолу акысыз алмаштырса болот — азыр жеткиликтүү. |  |
+| `settings.usernameKept` | Eski taxallus 90 kun band turadi va sizning profilingizga yo'naltiradi. | Эски ат 90 күн ээленген бойдон калат жана профилиңизге багыттайт. |  |
+| `settings.usernameNew` | Yangi taxallus | Жаңы колдонуучу аты |  |
+| `settings.usernameNextFree` | Keyingi bepul almashtirish: {date}. Undan oldin — {price} Qvant. | Кийинки акысыз алмаштыруу: {date}. Ага чейин — {price} Qvant. |  |
+| `settings.usernamePay` | {price} Qvant evaziga almashtirish | {price} Qvant үчүн алмаштыруу |  |
+| `settings.wear` | Kiyish | Кийүү |  |
+| `settings.website` | Veb-sayt | Веб-сайт |  |
+| `settings.work` | Ish tajribasi | Иш тажрыйбасы |  |
+| `level.beginner` | Boshlang'ich | Баштапкы |  |
+| `level.basic` | Asosiy | Негизги |  |
+| `level.intermediate` | O'rta | Орто |  |
+| `level.upper` | Yaxshi | Жакшы |  |
+| `level.hard` | Qiyin | Кыйын |  |
+| `level.expert` | Ekspert | Эксперт |  |
+| `level.master` | Master | Устат |  |
+| `title.kvark` | Kvark | Кварк |  |
+| `title.foton` | Foton | Фотон |  |
+| `title.elektron` | Elektron | Электрон |  |
+| `title.proton` | Proton | Протон |  |
+| `title.atom` | Atom | Атом |  |
+| `title.molekula` | Molekula | Молекула |  |
+| `title.kristal` | Kristal | Кристалл |  |
+| `title.yulduz` | Yulduz | Жылдыз |  |
+| `title.galaktika` | Galaktika | Галактика |  |
+| `profile.acceptance` | Qabul qilingan urinishlar: {rate}% | Кабыл алынган аракеттер: {rate}% |  |
+| `profile.accepted` | qabul | кабыл |  |
+| `profile.errors` | xato | ката |  |
+| `profile.allLanguages` | Hamma tillar | Бардык тилдер |  |
+| `profile.bestMemory` | Xotira | Эс |  |
+| `profile.bestTime` | Eng yaxshi vaqt | Эң жакшы убакыт |  |
+| `profile.chartEmpty` | Reyting hali o'zgarmagan. | Рейтинг азырынча өзгөргөн жок. |  |
+| `profile.chartKeys` | Reyting grafigi: nuqtalar orasida chap va o'ng strelka bilan yuring | Рейтинг графиги: чекиттердин ортосунда сол жана оң жебе менен жылыңыз |  |
+| `profile.clearFilter` | filtrni olib tashlash | чыпканы алып салуу |  |
+| `profile.contestCol` | Musobaqa | Мелдеш |  |
+| `profile.contestsEmpty` | Hali musobaqada qatnashmagan. | Азырынча мелдешке катышкан эмес. |  |
+| `profile.contestsHint` | Faqat ommaviy musobaqalar. Teng natija bo'lsa o'rin oraliq bilan yoziladi (masalan 33–35). | Ачык мелдештер гана. Натыйжа бирдей болсо, орун аралык менен жазылат (мисалы, 33–35). |  |
+| `profile.durationCol` | Davomiyligi | Узактыгы |  |
+| `profile.filterByProblem` | Faqat shu masala urinishlari | Ушул маселенин аракеттери гана |  |
+| `profile.firstAc` | Birinchi AC | Биринчи AC |  |
+| `profile.heatmapHint` | Har kvadrat — bir kun: rang qanchalik to'q bo'lsa, shuncha ko'p urinish. Ustiga borib aniq sonni ko'ring. | Ар бир чарчы — бир күн: түсү канчалык коюу болсо, аракет ошончолук көп. Так санды көрүү үчүн үстүнө алып барыңыз. |  |
+| `profile.heatmapTip` | {date}: {attempts} ta urinish, {solved} ta yangi yechim | {date}: {attempts} аракет, {solved} жаңы чечим |  |
+| `profile.heatmapTitle` | Faollik xaritasi | Активдүүлүк картасы |  |
+| `profile.heatmapTotal` | {year}-yil: {attempts} ta urinish, {solved} ta yangi yechim | {year}-жыл: {attempts} аракет, {solved} жаңы чечим |  |
+| `profile.hintActivity` | 30 kunlik faollik: faol kunlar, vazifalar va streak. | 30 күндүк активдүүлүк: активдүү күндөр, тапшырмалар жана streak. |  |
+| `profile.hintContests` | Musobaqa natijalaridan (Elo): kimdan yuqori o'rin olganingizga qarab o'zgaradi. | Мелдеш натыйжаларынан (Elo): кимден жогору орун алганыңызга жараша өзгөрөт. |  |
+| `profile.hintSkills` | Yechilgan masalalar qiyinligidan: yangi va qiyinroq masala ko'proq qo'shadi. | Чыгарылган маселелердин татаалдыгынан: жаңы жана татаалыраак маселе көбүрөөк кошот. |  |
+| `profile.hintStreak` | Ketma-ket AC olingan kunlar soni. | Катары менен AC алынган күндөрдүн саны. |  |
+| `profile.kindCol` | Turi | Түрү |  |
+| `profile.languagesCol` | Tillar | Тилдер |  |
+| `profile.languagesHint` | Har til bo'yicha qabul qilingan va xato urinishlar. Infra xatolari hisobga olinmaydi. | Ар бир тил боюнча кабыл алынган жана ката аракеттер. Инфраструктура каталары эсептелбейт. |  |
+| `profile.languagesTitle` | Dasturlash tillari | Программалоо тилдери |  |
+| `profile.less` | Kamroq | Азыраак |  |
+| `profile.more` | Ko'proq | Көбүрөөк |  |
+| `profile.mapByCode` | Raqam tartibida | Номер боюнча |  |
+| `profile.mapByLevel` | Daraja bo'yicha | Деңгээл боюнча |  |
+| `profile.mapHint` | Arxivdagi har masala: yashil — yechilgan, sariq — urinilgan, kulrang — tegilmagan. Katak shu masaladagi urinishlarni ochadi. | Архивдеги ар бир маселе: жашыл — чыгарылган, сары — аракет кылынган, боз — тийилбеген. Уяча ушул маселедеги аракеттерди ачат. |  |
+| `profile.mapTitle` | Masalalar xaritasi | Маселелер картасы |  |
+| `profile.memberSince` | Ro'yxatdan o'tgan sana | Катталган күнү |  |
+| `profile.official` | Rasmiy | Расмий |  |
+| `profile.participants` | Ishtirokchilar | Катышуучулар |  |
+| `profile.problemsCol` | Masalalar | Маселелер |  |
+| `profile.ratingChange` | Reyting o'zgarishi | Рейтингдин өзгөрүшү |  |
+| `profile.ratingHint` | Nuqta ustiga boring: musobaqa, o'rin va o'zgarish ko'rinadi. Rangli yo'laklar — unvon chegaralari. | Чекиттин үстүнө алып барыңыз: мелдеш, орун жана өзгөрүү көрүнөт. Түстүү тилкелер — наам чектери. |  |
+| `profile.reason.contest` | musobaqa | мелдеш |  |
+| `profile.reason.duel` | duel | дуэль |  |
+| `profile.reason.problem_rerated` | masala qayta baholandi | маселе кайра бааланды |  |
+| `profile.reason.problem_solved` | masala yechildi | маселе чыгарылды |  |
+| `profile.reason.recalculation` | qayta hisoblash | кайра эсептөө |  |
+| `profile.search` | Qidirish | Издөө |  |
+| `profile.searchContests` | Musobaqa nomi… | Мелдештин аталышы… |  |
+| `profile.searchSolved` | Masala nomi yoki raqami… | Маселенин аталышы же номери… |  |
+| `profile.share` | Ulashish | Бөлүшүү |  |
+| `profile.shareCopied` | Havola nusxalandi | Шилтеме көчүрүлдү |  |
+| `profile.solvedHint` | Arxivdagi ommaviy masalalardan nechtasi yechilgan va daraja bo'yicha taqsimot. | Архивдеги ачык маселелердин канчасы чыгарылган жана деңгээл боюнча бөлүштүрүү. |  |
+| `profile.solvedTitle` | Yechilgan masalalar | Чыгарылган маселелер |  |
+| `profile.sortDifficulty` | Qiyinlik bo'yicha | Татаалдык боюнча |  |
+| `profile.sortNewest` | Avval yangilari | Адегенде жаңылары |  |
+| `profile.sortOldest` | Avval eskilari | Адегенде эскилери |  |
+| `profile.sortTitle` | Nomi bo'yicha | Аталышы боюнча |  |
+| `profile.startCol` | Boshlanishi | Башталышы |  |
+| `profile.stateAttempted` | Urinilgan | Аракет кылынган |  |
+| `profile.stateSolved` | Yechilgan | Чыгарылган |  |
+| `profile.stateUntouched` | Tegilmagan | Тийилбеген |  |
+| `profile.streakCurrent` | Joriy streak: {n} kun | Учурдагы streak: {n} күн |  |
+| `profile.streakLongest` | Eng uzuni: {n} kun | Эң узуну: {n} күн |  |
+| `profile.tab.attempts` | Urinishlar | Аракеттер |  |
+| `profile.tab.contests` | Musobaqalar | Мелдештер |  |
+| `profile.tab.overview` | Umumiy | Жалпы |  |
+| `profile.tab.solved` | Yechilganlar | Чыгарылгандар |  |
+| `profile.topicStuck` | ({n} ta tiqilgan) | ({n} тыгылган) |  |
+| `profile.topicsHint` | Skills formulasi mavzu kesimida: yechilganlar qiyinligidan. «Tiqilgan» — urinilgan, lekin yechilmagan. | Skills формуласы тема боюнча: чыгарылгандардын татаалдыгынан. «Тыгылган» — аракет кылынган, бирок чыгарылган эмес. |  |
+| `profile.topicsTitle` | Mavzular bo'yicha kuch | Темалар боюнча күч |  |
+| `profile.verdictOther` | Boshqa | Башка |  |
+| `profile.verdictsHint` | Barcha tekshirilgan urinishlar. Markazda — qabul qilinganlar ulushi. | Бардык текшерилген аракеттер. Ортосунда — кабыл алынгандардын үлүшү. |  |
+| `profile.verdictsTitle` | Verdiktlar | Вердикттер |  |
+| `profile.viewChips` | Chiplar | Белгилер |  |
+| `profile.viewTable` | Jadval | Таблица |  |
+| `profile.virtual` | Virtual | Виртуалдык |  |
+| `profile.year` | Yil | Жыл |  |
+| `role.staff` | Xodim | Кызматкер |  |
+| `role.author` | Masala muallifi | Маселе автору |  |
+| `role.jury` | Hakam | Калыс |  |
+| `role.champion` | Chempion | Чемпион |  |
+| `role.championOf` | {contest} g'olibi | {contest} жеңүүчүсү |  |
+| `profile.online` | Onlayn | Онлайн |  |
+| `profile.lastSeen` | Oxirgi faollik: {time} | Акыркы активдүүлүк: {time} |  |
+| `profile.titleHint` | Unvon Contests reytingidan | Наам Contests рейтингинен |  |
+| `settings.showOnline` | Onlayn holat va oxirgi faollikni ko'rsatish | Онлайн абалды жана акыркы активдүүлүктү көрсөтүү |  |
+| `tier.bronze` | Bronza | Коло |  |
+| `tier.silver` | Kumush | Күмүш |  |
+| `tier.gold` | Oltin | Алтын |  |
+| `profile.rarity` | {pct}% foydalanuvchida bor | {pct}% колдонуучуда бар |  |
+| `profile.achievedOn` | Olingan: {date} | Алынды: {date} |  |
+| `profile.pin` | Profilga qo'yish | Профилге бекитүү |  |
+| `profile.unpin` | Profildan olish | Бекитүүдөн алуу |  |
+| `profile.pinLimit` | Ko'pi bilan uchta yutuq tanlanadi | Эң көп үч жетишкендик бекитилет |  |
+| `profile.pinnedTitle` | Tanlangan yutuqlar | Тандалган жетишкендиктер |  |
+| `profile.pinHint` | Uchtagacha yutuqni tanlang — ular profil kartasida ko'rinadi. | Үчкө чейин жетишкендикти тандаңыз — алар профиль картасында көрүнөт. |  |
+| `profile.tab.certificates` | Sertifikatlar | Сертификаттар |  |
+| `profile.certificatesHint` | Rasmiy musobaqada kamida bitta yechim yuborgan har bir ishtirokchiga beriladi. Haqiqiyligini QR yoki ID orqali tekshirish mumkin. | Расмий мелдеште жок дегенде бир чечим жөнөткөн ар бир катышуучуга берилет. Чыныгы экенин QR же ID аркылуу текшерүүгө болот. |  |
+| `profile.certificatesEmpty` | Hali sertifikat yo'q. | Азырынча сертификат жок. |  |
+| `cert.title` | Sertifikat | Сертификат |  |
+| `cert.tier.gold` | 1-o'rin | 1-орун |  |
+| `cert.tier.silver` | 2-o'rin | 2-орун |  |
+| `cert.tier.bronze` | 3-o'rin | 3-орун |  |
+| `cert.tier.top10` | Eng yaxshi 10% | Мыкты 10% |  |
+| `cert.tier.participant` | Ishtirokchi | Катышуучу |  |
+| `cert.place` | {place}-o'rin · {total} ishtirokchi | {place}-орун · {total} катышуучу |  |
+| `cert.verify` | Tekshirish | Текшерүү |  |
+| `cert.valid` | Bu sertifikat haqiqiy — RankWant tomonidan berilgan. | Бул сертификат чыныгы — RankWant берген. |  |
+| `cert.id` | Sertifikat ID | Сертификаттын ID |  |
+| `cert.issued` | Berilgan sana | Берилген күнү |  |
+| `cert.holder` | Egasi | Ээси |  |
+| `profile.coach` | Murabbiy | Машыктыруучу |  |
+| `profile.searchPeople` | Ism yoki taxallus… | Аты же лакап аты… |  |
+| `profile.sortBy` | Saralash | Сорттоо |  |
+| `profile.sortRating` | Contests reytingi bo'yicha | Contests рейтинги боюнча |  |
+| `profile.sortName` | Taxallus bo'yicha | Лакап аты боюнча |  |
+| `profile.lastActivityCol` | Oxirgi faollik | Акыркы активдүүлүк |  |
+| `profile.schoolRanking` | Maktab reytingi | Мектеп рейтинги |  |
+| `settings.district` | Tuman yoki shahar | Район же шаар |  |
+| `settings.districts` | Tumanlar | Райондор |  |
+| `settings.cities` | Shaharlar | Шаарлар |  |
+| `settings.city` | Shahar | Шаар |  |
+| `settings.showCoach` | Murabbiyni ko'rsatish | Машыктыруучуну көрсөтүү |  |
+| `settings.showSocial` | Ijtimoiy havolalarni ko'rsatish | Социалдык шилтемелерди көрсөтүү |  |
+| `settings.schoolFromCatalog` | Katalogdan tanlandi — maktab reytingida ko'rinasiz | Каталогдон тандалды — мектеп рейтингинде көрүнөсүз |  |
+| `settings.schoolFreeText` | Katalogdan tanlang yoki o'zingiz yozing | Каталогдон тандаңыз же өзүңүз жазыңыз |  |
+| `settings.phone` | Telefon raqami | Телефон номери |  |
+| `settings.phoneHint` | Ixtiyoriy. Hisobni tiklash va musobaqa bildirishnomalari uchun. Profilingizda ko'rinmaydi. | Милдеттүү эмес. Аккаунтту калыбына келтирүү жана мелдеш билдирүүлөрү үчүн. Профилиңизде көрүнбөйт. |  |
+| `settings.fromConnected` | Ulangan hisobdan: @{handle} | Байланган аккаунттан: @{handle} |  |
+| `settings.blogHint` | https:// bilan boshlanadigan manzil | https:// менен башталган дарек |  |
+| `leaderboard.school` | «{school}» reytingi | «{school}» рейтинги |  |
+| `leaderboard.schoolAll` | Umumiy reyting | Жалпы рейтинг |  |
+| `auth.tabLogin` | Kirish | Кирүү |  |
+| `auth.tabRegister` | Ro'yxatdan o'tish | Каттоо |  |
+| `auth.tabReset` | Parolni tiklash | Сырсөздү кайра коюу |  |
+| `auth.tabHint` | Bo'limni tanlang | Бөлүмдү тандаңыз |  |
+| `auth.usernameOrEmail` | Foydalanuvchi nomi yoki email | Колдонуучу аты же email |  |
+| `auth.identifierHint` | Taxallusingizni yoki emailingizni kiriting | Лакабыңызды же emailиңизди киргизиңиз |  |
+| `auth.haveAccount` | Hisobingiz bormi? Kirish | Аккаунтуңуз барбы? Кирүү |  |
+| `auth.notFoundEmail` | Bu email bilan hisob topilmadi. Ro'yxatdan o'tishingiz mumkin. | Бул email менен аккаунт табылган жок. Каттоодон өтсөңүз болот. |  |
+| `auth.notFoundReset` | Bu email bilan hisob topilmadi. Ro'yxatdan o'tish | Бул email менен аккаунт табылган жок. Каттоо |  |
+| `auth.emailTaken` | Bu email allaqachon band. Kirish yoki parolni tiklash mumkin. | Бул email ээленген. Кирүү же сырсөздү кайра коюу мүмкүн. |  |
+| `auth.usernameTaken` | Bu foydalanuvchi nomi band. Boshqasini tanlang. | Бул колдонуучу аты ээленген. Башкасын тандаңыз. |  |
+| `auth.throttledWait` | Juda tez-tez urinyapsiz. {seconds} soniyadan keyin qayta urinib ko'ring. | Өтө көп аракет. {seconds} секунддан кийин кайталаңыз. |  |
+| `auth.step2ProfileTitle` | Taxallusni tanlang | Лакабыңызды тандаңыз |  |
+| `auth.socialProof` | {count} ta dasturchi reyting uchun bellashadi | {count} иштеп чыгуучу рейтинг үчүн мелдешет |  |
+| `auth.contestInvite` | AtCoder va Codeforcesdagi natijangizni qo'shing — reyting aniqroq bo'ladi. | AtCoder жана Codeforces жыйынтыктарыңызды кошуңуз — рейтинг так болот. |  |
+| `auth.contestInviteCta` | Natijani qo'shish | Жыйынтыкты кошуу |  |
+| `auth.country` | Mamlakat | Өлкө |  |
+| `auth.remember` | Meni eslab qol | Мени эстеп кал |  |
+| `auth.termsAccept` | Shartlar va maxfiylik siyosatiga roziman | Шарттар жана купуялык саясаты менен макулмун |  |
+| `auth.marketingOptIn` | Yangiliklar va foydali xatlarni olishni xohlayman (ixtiyoriy) | Жаңылыктар жана пайдалуу каттарды алгым келет (милдеттүү эмес) |  |
+| `auth.termsRequired` | Shartlarga rozilik majburiy | Шарттарга макулдук милдеттүү |  |
+| `auth.step2Title` | Joy va maktab | Жайгашуу жана мектеп |  |
+| `auth.step2Body` | Bu ma'lumot maktab reytingida ko'rinish uchun kerak. Hozir o'tkazib yuborsangiz ham bo'ladi — keyin sozlamalarda to'ldirasiz. | Бул маалымат мектеп рейтингинде көрүнүү үчүн керек. Азыр өткөрүп жиберсеңиз болот — кийин жөндөөлөрдө толтурасыз. |  |
+| `auth.skip` | O'tkazib yuborish | Өткөрүп жиберүү |  |
+| `auth.schoolSearch` | Maktab nomi bo'yicha qidirish | Мектеп аты боюнча издөө |  |
+| `auth.tagline` | Reyting xohlaganlar uchun | Рейтинг каалагандар үчүн |  |
+| `auth.members` | A'zolar | Катышуучулар |  |
+| `geo.nudgeTitle` | Davlat va maktabingizni qo'shing | Өлкөңүз жана мектебиңизди кошуңуз |  |
+| `geo.nudgeBody` | Maktab reytingida ko'rinish uchun kerak — 20 soniya vaqt oladi. | Мектеп рейтингинде көрүнүү үчүн керек — 20 секунд алат. |  |
+| `geo.nudgeCta` | To'ldirish | Толтуруу |  |
+| `geo.searchPlaceholder` | Mamlakat qidirish | Өлкө издөө |  |
+| `geo.noResults` | Topilmadi | Табылган жок |  |
+| `locale.switchLabel` | Tilni tanlang | Тилди тандаңыз |  |
+| `locale.auto` | Avtomatik | Автоматтык |  |
+| `locale.autoDetected` | Avtomatik ({language}) | Автоматтык ({language}) |  |
+| `locale.group.core` | Asosiy | Негизги |  |
+| `locale.group.region` | Mintaqa | Регионалдык |  |
+| `locale.group.broad` | Keng qamrov | Кеңири камтуу |  |
+| `locale.loading` | Yuklanmoqda | Жүктөлүүдө |  |
+| `locale.listLabel` | Tillar ro'yxati | Тилдер тизмеси |  |
+| `content.uzOnly` | Bu nom o'zbekcha — tarjimasi tayyorlanmoqda | Бул аталыш өзбек тилинде — которуу даярдалууда |  |
+| `problem.tab.statement` | Tavsif | Шарт |  |
+| `problem.tab.status` | Urinishlar | Жөнөтүүлөр |  |
+| `problem.tab.stats` | Statistika | Статистика |  |
+| `problem.tab.solvers` | Yechganlar | Чечкендер |  |
+| `problem.tabsLabel` | Masala bo'limlari | Маселе бөлүмдөрү |  |
+| `problem.solvers.count` | Bu masalani {count} kishi yechdi | Чечкендер: {count} |  |
+| `problem.solvers.none` | Hali hech kim yechmagan | Азырынча эч ким чечкен эмес |  |
+| `problem.solvers.first` | Birinchi yechgan | Биринчи чечкен |  |
+| `problem.solvers.fast` | Eng tez | Эң ылдам |  |
+| `problem.solvers.short` | Eng qisqa yechim | Эң кыска чечим |  |
+| `problem.solvers.tries` | Eng kam urinish | Эң аз аракет |  |
+| `problem.voteUp` | Yoqdi | Жагат |  |
+| `problem.voteDown` | Yoqmadi | Жакпайт |  |
+| `problem.voteUpTitle` | Yoqdi — bir bosishda ovoz berish | Жагат — бир басуу менен добуш берүү |  |
+| `problem.voteDownTitle` | Yoqmadi — bir bosishda ovoz berish | Жакпайт — бир басуу менен добуш берүү |  |
+| `problem.ratingSummary` | {average} · {count} baho | {average} · {count} баа |  |
+| `problem.ratingEmpty` | Baho yo'q | Баа жок |  |
+| `problem.rateWith` | {score} baho berish | {score} баа берүү |  |
+| `problem.inFavourites` | ★ Sevimlilarda | ★ Тандалмаларда |  |
+| `problem.addFavourite` | ☆ Sevimlilarga | ☆ Тандалмаларга |  |
+| `problem.favouriteOn` | {title} — sevimlilardan olib tashlash | {title} — тандалмалардан алуу |  |
+| `problem.favouriteOff` | {title} — sevimlilarga qo'shish | {title} — тандалмаларга кошуу |  |
+| `problem.statementSizeDown` | Shriftni kichraytirish | Шрифтти кичирейтүү |  |
+| `problem.statementSizeUp` | Shriftni kattalashtirish | Шрифтти чоңойтуу |  |
+| `problem.samples` | Namunalar | Мисалдар |  |
+| `problem.sampleInput` | Kirish | Кириш |  |
+| `problem.sampleOutput` | Chiqish | Чыгуу |  |
+| `problem.copy` | Nusxalash | Көчүрүү |  |
+| `problem.copied` | Nusxalandi | Көчүрүлдү |  |
+| `problem.copyInput` | {order}-namuna kirishini nusxalash | {order}-мисал киришин көчүрүү |  |
+| `problem.copyOutput` | {order}-namuna chiqishini nusxalash | {order}-мисал чыгуусун көчүрүү |  |
+| `problem.attachments` | Biriktirilgan fayllar | Тиркемелер |  |
+| `problem.similar` | O'xshash masalalar | Окшош маселелер |  |
+| `filter.sort.easiest` | Eng oson | Алгач жеңил |  |
+| `filter.sort.hardest` | Eng qiyin | Алгач кыйын |  |
+| `filter.sort.mostSolved` | Ko'p yechilgan | Көп чечилген |  |
+| `filter.sort.newest` | Yangi | Жаңылары |  |
+| `filter.status.unsolved` | Yechilmagan | Чечилбеген |  |
+| `filter.status.solved` | Yechilgan | Чечилген |  |
+| `filter.status.attempted` | Urinib ko'rgan | Аракет кылган |  |
+| `filter.status.favourites` | Sevimlilarim | Тандалмалар |  |
+| `filter.status.recommended` | Menga tavsiya | Мага сунушталган |  |
+| `filter.sortLabel` | Saralash | Иреттөө |  |
+| `filter.filters` | Filtrlar | Фильтрлер |  |
+| `filter.clear` | Filtrlarni tozalash | Фильтрлерди тазалоо |  |
+| `filter.searchPlaceholder` | Masala qidirish… | Маселе издөө… |  |
+| `filter.searchLabel` | Masala qidirish | Маселе издөө |  |
+| `filter.levelLabel` | Daraja | Деңгээл |  |
+| `filter.statusLabel` | Holat | Абалы |  |
+| `filter.all` | Hammasi | Баары |  |
+| `filter.topicsLabel` | Mavzular | Темалар |  |
+| `filter.showAllTopics` |  (hammasi) |  (баары) |  |
+| `filter.statementLocaleLabel` | Matn tili | Шарт тили |  |
+| `filter.viewLabel` | Ko'rinish | Көрүнүш |  |
+| `filter.hideTagsUnsolved` | Yechilmaganlarda mavzuni yashirish | Чечилбеген маселелердин темасын жашыру |  |
+| `filter.topicSearchPlaceholder` | {count} ta mavzudan qidirish… | {count} теманын ичинен издөө… |  |
+| `filter.topicSearchLabel` | Mavzu qidirish | Тема издөө |  |
+| `filter.noTopicMatch` | Bunday mavzu yo'q | Мындай тема жок |  |
+| `editorial.title` | Yechim tahlili | Чечим талдоосу |  |
+| `editorial.lockedTitle` | Tahlil hisobga kirgan foydalanuvchilar uchun. | Талдоо системага кирген колдонуучуларга жеткиликтүү. |  |
+| `editorial.login` | Kirish | Кирүү |  |
+| `editorial.solvedFree` | Masalani yechdingiz — tahlil ochiq. | Сиз чечтиңиз — талдоо ачык. |  |
+| `editorial.free` | Bepul | Акысыз |  |
+| `editorial.unlockFor` | Ochish — {price} Qvant | Ачуу — {price} Qvant |  |
+| `editorial.unlocking` | Ochilmoqda… | Ачылууда… |  |
+| `editorial.show` | Ko'rsatish | Көрсөтүү |  |
+| `editorial.hide` | Yashirish | Жашыруу |  |
+| `editorial.open` | Tahlil ochiq. | Талдоо ачык. |  |
+| `editorial.notEnough` | Balans yetarli emas — {price} Qvant kerak | Баланс жетишсиз — {price} Qvant керек |  |
+| `editorial.unlockFailed` | Ochib bo'lmadi, qaytadan urinib ko'ring | Ачуу мүмкүн болбоду — кайра аракет кылыңыз |  |
+| `editorial.lockedLead` | Masalani yechsangiz tahlil bepul ochiladi. | Маселени чечсеңиз, талдоо акысыз ачылат. |  |
+| `editorial.lockedBody` | Va o'shanda undan haqiqiy foyda bo'ladi. Hoziroq ko'rmoqchi bo'lsangiz {price} Qvant. | Ошондо андан чыныгы пайда болот. Азыр көрүү үчүн: {price} Qvant. |  |
+| `editorial.tryFirst` | O'zingiz urinib ko'rgach oching. | Өзүңүз аракет кылгандан кийин ачыңыз. |  |
+| `report.open` | Xato topdingizmi? | Ката таптыңызбы? |  |
+| `report.title` | Masaladagi nuqson haqida xabar | Маселедеги кемчилик тууралуу кабарлоо |  |
+| `report.commentLabel` | Izoh (ixtiyoriy) — qaysi joyda va nima noto'g'ri? | Комментарий (милдеттүү эмес) — кайда жана эмне туура эмес? |  |
+| `report.send` | Yuborish | Жөнөтүү |  |
+| `report.sending` | Yuborilmoqda… | Жөнөтүлүүдө… |  |
+| `report.cancel` | Bekor qilish | Жокко чыгаруу |  |
+| `report.done` | Xabaringiz yuborildi — rahmat. | Кабарыңыз жөнөтүлдү — рахмат. |  |
+| `report.failed` | Yuborilmadi — qaytadan urinib ko'ring | Жөнөтүлбөдү — кайра аракет кылыңыз |  |
+| `report.reason.statement` | Matnda xato | Шартта ката |  |
+| `report.reason.tests` | Testlar noto'g'ri | Тесттер туура эмес |  |
+| `report.reason.translation` | Tarjima xato | Котормо катасы |  |
+| `report.reason.duplicate` | Takroriy masala | Кайталанган маселе |  |
+| `report.reason.other` | Boshqa | Башка |  |
+| `report.status.open` | Ochiq | Ачык |  |
+| `report.status.accepted` | Qabul qilindi | Кабыл алынды |  |
+| `report.status.rejected` | Rad etildi | Четке кагылды |  |
+| `error.ground_unreadable` | Fon rangini o'qib bo'lmadi — accent qo'llanmadi. Sahifani yangilab ko'ring. | Фон түсүн окуу мүмкүн болбоду — акцент колдонулган жок. Баракты жаңыртып көрүңүз. |  |
+| `error.contrast_unreachable` | Bu tus bilan yetarli kontrast chiqmadi — boshqa tus tanlang. | Бул түс менен жетиштүү контраст чыкпады — башка түс тандаңыз. |  |
+| `style.dashboard.label` | Dashboard | Dashboard |  |
+| `style.dashboard.hint` | Hozirgi — yumshoq kartalar | Учурдагы — жумшак карталар |  |
+| `style.swiss.label` | Shveycha | Швейцариялык |  |
+| `style.swiss.hint` | Chiziq va tipografika | Сызыктар жана типография |  |
+| `style.flat.label` | Flat | Flat |  |
+| `style.flat.hint` | Soyasiz, toza ranglar | Көлөкөсүз, таза түстөр |  |
+| `style.material.label` | Material | Material |  |
+| `style.material.hint` | Balandlik va soyalar | Бийиктик жана көлөкөлөр |  |
+| `style.editorial.label` | Editorial | Editorial |  |
+| `style.editorial.hint` | Serif, jurnal ko'rinishi | Serif, журнал көрүнүшү |  |
+| `style.brutal.label` | Neo-brutalizm | Нео-брутализм |  |
+| `style.brutal.hint` | Qalin chegara, qattiq soya | Калың чек, катуу көлөкө |  |
+| `style.terminal.label` | Terminal | Terminal |  |
+| `style.terminal.hint` | Monospace, konsol | Моноширин, консоль |  |
+| `style.glass.label` | Glassmorphism | Glassmorphism |  |
+| `style.glass.hint` | Shaffof, xiralashgan | Тунук, бүдөмүк |  |
+| `style.neu.label` | Neumorphism | Neumorphism |  |
+| `style.neu.hint` | Yumshoq bo'rtma | Жумшак рельеф |  |
+| `style.clay.label` | Claymorphism | Claymorphism |  |
+| `style.clay.hint` | Gil, hajmli | Ылай, көлөмдүү |  |
+| `style.aurora.label` | Aurora | Aurora |  |
+| `style.aurora.hint` | Gradient fon | Градиент фон |  |
+| `style.skeu.label` | Skeuomorfizm | Скевоморфизм |  |
+| `style.skeu.hint` | Metall va relyef | Металл жана рельеф |  |
+| `external.blog` | Blog | Блог |  |
 | `admin.section.problems` | Masalalar | Маселелер |  |
 | `admin.section.reports` | Nuqson xabarlari | Кемчилик кабарлары |  |
 | `admin.section.contests` | Musobaqalar | Мелдештер |  |
@@ -52,6 +956,11 @@ Regenerate with `python tools/export_i18n_review.py --prefix admin.`.
 | `admin.section.shop` | Do'kon | Дүкөн |  |
 | `admin.section.users` | Foydalanuvchilar | Колдонуучулар |  |
 | `admin.section.analytics` | Analitika | Аналитика |  |
+| `pager.label` | Sahifalar | Барактоо |  |
+| `pager.entries` | yozuv | жазуу |  |
+| `pager.previous` | Oldingi | Мурунку |  |
+| `pager.next` | Keyingi | Кийинки |  |
+| `problem.one` | masala | маселе |  |
 | `admin.label.status.running` | Yurmoqda | Жүрүп жатат |  |
 | `admin.label.status.finished` | Tugagan | Аяктады |  |
 | `admin.label.status.pending` | Kutilmoqda | Күтүлүүдө |  |
@@ -340,3 +1249,120 @@ Regenerate with `python tools/export_i18n_review.py --prefix admin.`.
 | `admin.text.visible` | Ko'rinadi | Көрүнөт |  |
 | `admin.text.tableRecalculated` | Jadval qayta hisoblandi — ishtirokchilar: {count} | Таблица кайра эсептелди — катышуучулар: {count} |  |
 | `admin.text.yes` | ha | ооба |  |
+| `admin.text.badgePublic` | ommaviy | ачык |  |
+| `archive.continue` | Davom ettirish | Улантуу |  |
+| `archive.upcoming` | Yaqin musobaqa | Жакынкы мелдеш |  |
+| `archive.roadmaps` | O'quv rejalari | Окуу траекториялары |  |
+| `archive.community` | Hamjamiyat | Коомчулук |  |
+| `archive.topicStrength` | Mavzu bo'yicha kuch | Тема боюнча күч |  |
+| `archive.recentAttempts` | Oxirgi urinishlar | Акыркы аракеттер |  |
+| `contest.notFound` | Musobaqa topilmadi | Мелдеш табылган жок |  |
+| `contest.problems` | Masalalar | Маселелер |  |
+| `learn.notFound` | Maqola topilmadi | Макала табылган жок |  |
+| `problem.notFound` | Masala topilmadi | Маселе табылган жок |  |
+| `problem.comments` | Izoh | Комментарий |  |
+| `problem.stats.title` | Statistika · {slug} | Статистика · {slug} |  |
+| `problem.stats.languages` | Tillar | Тилдер |  |
+| `problem.stats.fastest` | Eng tez yechimlar | Эң ылдам чечимдер |  |
+| `problem.status.title` | Urinishlar · {slug} | Аракеттер · {slug} |  |
+| `problem.editorialAvailable` | Yechim tahlili bor | Талдоосу бар |  |
+| `problem.testsNotReady` | Testlar tayyorlanmagan — yechim qabul qilinmaydi | Тесттер даяр эмес — чечимдер кабыл алынбайт |  |
+| `qvant.marathon` | Haftalik marafon | Жумалык марафон |  |
+| `submit.solution` | Yechim | Чечим |  |
+| `contest.ogAlt` | RankWant musobaqasi | RankWant мелдеши |  |
+| `problem.ogAlt` | RankWant masalasi | RankWant маселеси |  |
+| `contest.running` | Davom etmoqda | Уланууда |  |
+| `contest.notStarted` | Boshlanmagan | Баштала элек |  |
+| `problem.solvedCount` | {count} yechilgan | {count} чечти |  |
+| `qvant.marathonFinished` | Yakunlandi | Аякталды |  |
+| `learn.description` | O'zbek tilida sport dasturlash bo'yicha maqolalar va yo'l xaritalari — har bir mavzu mashq masalalari bilan. | Кыргыз тилинде спорттук программалоо боюнча макалалар жана жол карталары — ар бир темада машыгуу маселелери бар. |  |
+| `rating.description` | RankWant reytinglarining to'liq formulalari: Skills, Contests, Activity, Challenges. | RankWant рейтингдеринин толук формулалары: Skills, Contests, Activity, Challenges. |  |
+| `submit.testsNotReadyBody` | Bu masalaning testlari hali tayyorlanmagan, shu sababli yechim qabul qilinmaydi. Matnni o'qib, o'zingiz uchun yechib ko'rishingiz mumkin — testlar qo'shilishi bilan yuborish ochiladi. | Бул маселенин тесттери али даяр эмес, ошондуктан чечимдер кабыл алынбайт. Шартын окуп, өзүңүз чече аласыз — тесттер кошулганда жөнөтүү ачылат. |  |
+| `submit.signInToSubmit` | Yuborish uchun kiring | Жөнөтүү үчүн кириңиз |  |
+| `submit.testOnSamples` | Namunada sinash | Мисалдарда текшерүү |  |
+| `submit.draftSavedLocally` | Qoralama shu brauzerda saqlanadi | Долбоор ушул браузерде сакталат |  |
+| `submit.loadFromFile` | Fayldan yuklash | Файлдан жүктөө |  |
+| `submit.nothingSubmitted` | Hali yuborilmadi. Kod yozing va «Yuborish» ni bosing. | Азырынча эч нерсе жөнөтүлгөн жок. Код жазып, «Жөнөтүү» баскычын басыңыз. |  |
+| `submit.testTooltip` | {index}: {verdict} · {time} ms | {index}: {verdict} · {time} мс |  |
+| `submit.addTest` | Test qo'shish | Тест кошуу |  |
+| `submit.removeTest` | Test {index} ni o'chirish | Тест {index} өчүрүү |  |
+| `submit.run` | Ishga tushirish | Иштетүү |  |
+| `submit.testsSavedLocally` | Testlar shu brauzerda saqlanadi | Тесттер ушул браузерде сакталат |  |
+| `submit.runningSamples` | Namunalar yuritilmoqda… | Мисалдар аткарылууда… |  |
+| `submit.samplesHint` | «Namunada sinash» — kodni yuborishdan oldin namunalarda tekshiradi. | «Мисалдарда текшерүү» — жөнөтүүдөн мурун кодду мисалдарда текшерет. |  |
+| `submit.matches` | mos | дал келет |  |
+| `submit.outputMismatch` | chiqish mos emas | чыгыш дал келбейт |  |
+| `submit.running` | yuritilmoqda… | аткарылууда… |  |
+| `submit.allSamplesPass` | Barcha namunalar mos — yuborishingiz mumkin | Бардык мисалдар дал келди — жөнөтө аласыз |  |
+| `submit.yourOutput` | Sizning chiqishingiz | Сиздин чыгыңыз |  |
+| `submit.sample` | Namuna {order} · | Мисал {order} · |  |
+| `admin.text.noEventsInWindow` | Bu oynada hodisa yo'q. Funnel ro'yxatdan o'tish va kirish sahifalarida yig'iladi — trafik bo'lsa paydo bo'ladi. | Бул терезеде окуя жок. Воронка каттоо жана кирүү барактарында жыйналат — трафик болсо пайда болот. |  |
+| `admin.text.funnelNote` | Foizlar birinchi qadamga nisbatan. Sessiya bo'yicha sanaladi — bir odam bir marta hisoblanadi. | Пайыздар биринчи кадамга салыштырмалуу. Сессия боюнча саналат — бир адам бир жолу эсептелет. |  |
+| `admin.text.noSignupYet` | Hali tugagan ro'yxatdan o'tish yo'q. Guruh cookie'da saqlanadi va har bir hodisa bilan birga yuboriladi. | Азырынча аякталган каттоо жок. Топ cookieде сакталат жана ар бир окуя менен жөнөтүлөт. |  |
+| `admin.text.skipped` | o'tkazib yubordi | өткөрүп жиберди |  |
+| `admin.text.noData` | Ma'lumot yo'q. | Маалымат жок. |  |
+| `admin.text.noDataCountries` | Ma'lumot yo'q — mamlakat ro'yxatdan o'tgandan keyin ma'lum bo'ladi. | Маалымат жок — өлкө катталгандан кийин белгилүү болот. |  |
+| `admin.help.testsStoredRemotely` | Judge testlarni DB dan emas, S3 dan o'qiydi: matn yuklanganda tests/{slug}/<order>.in/.out sifatida saqlanadi, bu yerda faqat havola ko'rinadi. Bir xil tartib raqami qayta yuklansa — ustiga yoziladi. | Каттоочу тесттерди БДдан эмес, S3тен окуйт: жүктөлгөн текст tests/{slug}/<order>.in/.out түрүндө сакталат, бул жерде шилтеме гана көрүнөт. Ошол номер кайра жүктөлсө — үстүнө жазылат. |  |
+| `admin.text.noTestsYet` | Hali test yo'q — yechimlar tekshirilmaydi. | Азырынча тест жок — чечимдер текшерилбейт. |  |
+| `admin.text.addTest` | Test qo'shish | Тест кошуу |  |
+| `archive.mostViewed` | Ko'p ko'rilgan | Көп көрүлгөн |  |
+| `rating.intro` | Barcha formulalar ochiq. Yashirin og'irlik yoki e'lon qilinmagan bonus yo'q. Har bir o'zgarish sababi bilan profilingizda yozib boriladi. | Бардык формулалар ачык. Жашыруун салмак жана жарыяланбаган бонус жок. Ар бир өзгөрүү себеби менен профилиңизде жазылат. |  |
+| `rating.skills.summary` | Birinchi marta yechgan masalalaringiz ball bo'yicha kamayish tartibida saralanadi va kamayuvchi koeffitsient bilan qo'shiladi. Ball — masalaning joriy qiyinligi. | Биринчи жолу чыгарган маселелериңиз балл боюнча кемүү тартибинде иреттелип, кемүүчү коэффициент менен кошулат. Балл — маселенин учурдагы татаалдыгы. |  |
+| `rating.skills.noDecrease` | Yangi masala yechish reytingni hech qachon kamaytirmaydi. | Жаңы маселе чыгару рейтингиңизди эч качан төмөндөтпөйт. |  |
+| `rating.skills.cap` | Natija eng qiyin masalangizdan 20 baravardan oshmaydi. | Жыйынтык эң татаал маселеңизден 20 эседен ашпайт. |  |
+| `rating.skills.saturation` | Bir xil qiyinlikda ~45 masaladan keyin to'yinadi — undan keyin faqat qiyinroq masala o'stiradi. | Бирдей татаалдыкта болжол менен 45 маселеден кийин каныгат — андан кийинкини кыйыныраак маселе гана көтөрөт. |  |
+| `rating.skills.revaluation` | Masala qayta baholansa reyting o'zgarishi mumkin. Bu foydalanuvchi harakati emas, platforma qarori — sizga xabar beriladi va sabab tarixda yoziladi. | Маселе кайра бааланса, рейтинг өзгөрүшү мүмкүн. Бул колдонуучунун аракети эмес, платформанын чечими — сизге кабарланат жана себеби тарыхка жазылат. |  |
+| `rating.skills.example` | Misol: 500 ta 800-ball = 16 000 · 20 ta 2500-ball = 32 076. Ya'ni chuqurlik miqdordan ustun. | Мисал: 500 маселе 800 баллдан = 16 000 · 20 маселе 2 500 баллдан = 32 076. Башкача айтканда, тереңдик сандан артык. |  |
+| `rating.contests.summary` | Codeforces uslubidagi Elo. Faqat reytingli va kamida 10 ishtirokchili musobaqalar hisoblanadi. | Codeforces стилиндеги Elo. Рейтингдик жана кеминде 10 катышуучусу бар мелдештер гана эсепке алынат. |  |
+| `rating.contests.start` | Boshlang'ich reyting — 1400. | Баштапкы рейтинг — 1400. |  |
+| `rating.contests.provisional` | Birinchi 6 reytingli musobaqada o'zgarish 1.5 baravar tezroq. | Алгачкы 6 рейтингдик мелдеште өзгөрүү 1,5 эсе ылдам. |  |
+| `rating.contests.floor` | Reyting 0 dan pastga tushmaydi. | Рейтинг 0дөн төмөн түшпөйт. |  |
+| `rating.activity.window` | Oxirgi 30 kunlik siljuvchi oyna. | Акыркы 30 күндүк жылуучу терезе. |  |
+| `rating.activity.qvant` | Qvant balansi ataylab hisobga olinmaydi: aks holda do'konda xarid qilish reytingni tushirardi. | Qvant балансы атайылап эсепке алынбайт: болбосо дүкөндөгү сатып алуу рейтингди төмөндөтмөк. |  |
+| `rating.challenges.summary` | 1v1 duel uchun klassik Elo. | 1v1 дуэль үчүн классикалык Elo. |  |
+| `rating.adr` | Formulani o'zgartirish alohida qaror (ADR) talab qiladi va barcha reytinglar qayta hisoblanishidan oldin e'lon qilinadi. | Формуланы өзгөртүү өзүнчө чечимди (ADR) талап кылат жана бардык рейтингдер кайра эсептелээрден мурун жарыяланат. |  |
+| `rating.phase.active` | Faol | Активдүү |  |
+| `rating.phase.phase3` | 3-bosqich | 3-баскыч |  |
+| `problem.difficultyDescription` | {title} — qiyinlik {difficulty}. RankWant masala arxivi. | {title} — татаалдыгы {difficulty}. RankWant маселелер архиви. |  |
+| `problem.partialScoring` | Qisman ball | Жарым-жартылай балл |  |
+| `problem.testsPreparing` | Testlar tayyorlanmoqda | Тесттер даярдалууда |  |
+| `problem.backToContest` | Musobaqaga qaytish | Мелдешке кайтуу |  |
+| `problem.countedInContest` | Yechim {contest} musobaqasi hisobiga yoziladi. | Чечим {contest} мелдешинин эсебине жазылат. |  |
+| `problem.inputFormat` | Kiruvchi ma'lumot | Кирүүчү маалымат |  |
+| `problem.outputFormat` | Chiquvchi ma'lumot | Чыгуучу маалымат |  |
+| `problem.author` | Muallif | Автору |  |
+| `problem.solvedAttempts` | {solved} kishi yechdi · {attempts} urinish | {solved} чечти · {attempts} аракет |  |
+| `problem.successRate` | {percent}% muvaffaqiyat | {percent}% ийгиликтүү |  |
+| `problem.source` | Manba | Булак |  |
+| `problem.sourceRating` | asl reyting {rating} | түпнуска рейтинги {rating} |  |
+| `contest.finishedNote` | Musobaqa tugagan — uni virtual tarzda o'z vaqtingizda yechishingiz mumkin. Virtual natija reytingga ta'sir qilmaydi va rasmiy jadvalga kirmaydi. | Мелдеш бүттү — аны виртуалдык түрдө өз убактыңызда чечсеңиз болот. Виртуалдык жыйынтык рейтингге таасир этпейт жана расмий таблицага кирбейт. |  |
+| `problem.noAttemptMatch` | Bu filtrga mos urinish yo'q. | Бул фильтрге дал келген аракет жок. |  |
+| `problem.noAttemptsYet` | Hali urinish yo'q. | Азырынча аракет жок. |  |
+| `problem.pagination` | Sahifalar | Барактар |  |
+| `problem.previousPage` | ← Oldingi | ← Мурунку |  |
+| `problem.nextPage` | Keyingi → | Кийинки → |  |
+| `home.greeting` | Salom, {name}! | Салам, {name}! |  |
+| `home.resumeHint` | To'xtagan joyingizdan davom eting yoki yaqin musobaqaga yoziling. | Токтогон жериңизден улантыңыз же жакынкы мелдешке катталыңыз. |  |
+| `home.ratingHint` | Reyting xohlaganlar uchun: masala yeching, musobaqada qatnashing, darajangizni ko'ring. | Рейтинг каалагандар үчүн: маселе чыгарыңыз, мелдешке катышыңыз, деңгээлиңизди көрүңүз. |  |
+| `filter.allLanguages` | Hamma til | Бардык тил |  |
+| `filter.onlyMine` | Faqat meniki | Тек меники |  |
+| `duel.startAt` | Boshlanish | Башталышы |  |
+| `hackathon.projectName` | Loyiha nomi | Долбоордун аталышы |  |
+| `hackathon.entriesAfterDeadline` | Loyihalar muddat tugagach ochiladi | Долбоорлор мөөнөт бүткөндөн кийин ачылат |  |
+| `algorithms.intro` | Qisqa ma'lumotnoma: g'oya, murakkablik, kod, mashq masalalari. | Кыскача маалымдама: идея, татаалдык, код жана машыгуу маселелери. |  |
+| `arena.intro` | Jonli raund: hamma bir vaqtda, har savolga bir necha soniya, standings jonli. | Түз раунд: баары бир убакта, ар бир суроого бир нече секунд, таблица түз эфирде. |  |
+| `classroom.intro` | O'qituvchi sinf yaratadi, o'quvchilar kod bilan qo'shiladi, uy vazifasi va progress bir joyda. | Мугалим класс түзөт, окуучулар код менен кошулат, үй тапшырмасы жана прогресс бир жерде. |  |
+| `duels.intro` | Chaqiriq tashlang, kimdir qabul qiladi, belgilangan vaqtda bir xil masalalarni yechasiz. G'olib Challenges reytingida Elo oladi. | Чакырык таштаңыз, бирөө кабыл алат, белгиленген убакта бирдей маселелерди чыгарасыз. Жеңүүчү Challenges рейтингинде Elo алат. |  |
+| `hackathons.intro` | Masala emas — loyiha. Repozitoriy va demo topshirasiz, hakamlar baholaydi. | Маселе эмес — долбоор. Репозиторий жана демо тапшырасыз, калыстар баалайт. |  |
+| `learn.intro` | Har bir maqola mashq masalalari bilan bog'langan — o'qish va yechish bir joyda. | Ар бир макала машыгуу маселелери менен байланышкан — окуу жана чечүү бир жерде. |  |
+| `notifications.signIn` | Bildirishnomalarni ko'rish uchun tizimga kiring. | Билдирүүлөрдү көрүү үчүн системага кириңиз. |  |
+| `qvant.intro` | Vazifalarni bajarib Qvant to'plang. Qvant reytingga ta'sir qilmaydi — u faqat do'kon uchun. | Тапшырмаларды аткарып Qvant топтоңуз. Qvant рейтингге таасир этпейт — ал дүкөн үчүн гана. |  |
+| `qvant.signIn` | Balansni ko'rish uchun tizimga kiring. | Балансты көрүү үчүн системага кириңиз. |  |
+| `roadmaps.intro` | Noldan cho'qqigacha bosqichma-bosqich: maqola → masala → maqola. | Нөлдөн чокуга чейин этап-этабы менен: макала → маселе → макала. |  |
+| `team.intro` | RankWant — O'zbekiston va dunyo uchun sport dasturlash platformasi. Ochiq reyting, o'z judge, o'z kontent. Loyiha hozir ochiq preview bosqichida. | RankWant — Өзбекстан жана дүйнө үчүн спорттук программалоо платформасы. Ачык рейтинг, өз judge, өз контент. Долбоор азыр ачык preview баскычында. |  |
+| `problem.solvers.codeColumn` | Kod, belgi | Код, белги |  |
+| `problem.stats.empty` | Hali urinish yo'q — statistika bo'sh. | Азырынча аракет жок — статистика бош. |  |
+| `problems.noTests` | testsiz | тестсиз |  |
+| `editor.loading` | Muharrir yuklanmoqda… | Редактор жүктөлүүдө… |  |
+| `admin.text.step2Funnel` | 2-qadam (joy va maktab) | 2-кадам (орун жана мектеп) |  |
+| `admin.text.stepPlaceholder` | 1-bosqich | 1-баскыч |  |
