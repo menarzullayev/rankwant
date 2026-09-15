@@ -42,7 +42,14 @@ type Subtask struct {
 }
 
 // TrustedProgram — masala bilan keladigan ishonchli dastur:
-// interactor yoki checker. Sandbox tashqarisida ishlaydi.
+// interactor, checker yoki validator.
+//
+// ⚠️ Ular BIR XIL joyda ishlamaydi. Interactor va checker sandbox
+// TASHQARISIDA bajariladi: dastur ham, unga beriladigan ma'lumot ham
+// bizniki. Validator esa ISHONCHSIZ kiritma ustida ishlaydi (hacker
+// yuborgan test), shuning uchun u sandbox ICHIDA bajarilishi shart —
+// aks holda buzuq kiritma validatorning o'zini cheksiz aylantirib,
+// butun navbatni to'xtatib qo'yardi.
 type TrustedProgram struct {
 	Code    string   `json:"code"`
 	Compile []string `json:"compile"`
@@ -81,6 +88,23 @@ type Job struct {
 	// custom: chiqish kutilgan javob bilan SOLISHTIRILMAYDI — foydalanuvchi
 	// o'z stdin'i bilan kodini sinab ko'ryapti (PRD P0-4).
 	Mode string `json:"mode"`
+	// Kirish validatori — test cheklovlarga mos ekanini tekshiruvchi
+	// dastur (ADR-0020). Masala bilan keladi, ya'ni ishonchli; lekin
+	// ishonchsiz kiritma ustida ishlaydi — `TrustedProgram` izohiga qarang.
+	Validator *TrustedProgram `json:"validator,omitempty"`
+	// Test kirishlari validatordan o'tkazilsinmi.
+	//
+	// ⚠️ Masalaning O'Z testlarini muallif yozgan, ya'ni ular ishonchli.
+	// Ularni har yuborishda qayta tekshirish sof isrof bo'lardi
+	// (test soni × har submission). Shuning uchun bayroq faqat job
+	// ISHONCHSIZ kiritma olib kelganda yoqiladi — hack testi kabi.
+	//
+	// ⚠️ YOPIQ YIQILISH QOIDASI: bayroq `true` bo'lsa-yu, implementatsiya
+	// validatorni qo'llab-quvvatlamasa, ish `IE` bilan RAD ETILISHI shart.
+	// Jimgina o'tkazib yuborish validatsiyani butunlay o'chirib qo'yardi va
+	// buzuq kiritma bilan istalgan to'g'ri yechimni «sindirish» mumkin
+	// bo'lardi. Nomzodlar almashtiriladigan bo'lgani uchun bu xavf real.
+	ValidateInput bool `json:"validate_input,omitempty"`
 }
 
 type TestResult struct {

@@ -17,7 +17,7 @@ Ikkalasi ham [protocol.md](protocol.md) shartnomasini bajaradi — ya'ni **almas
 ```
 bakeoff/
 ├── protocol.md        job/result JSON shartnomasi (08-technical-spec dan)
-├── cases/             14 ta sinov case — manba, limit, kutilgan verdict
+├── cases/             21 ta sinov case — manba, limit, kutilgan verdict
 └── harness/runner.py  o'lchash va hisobot
 ```
 
@@ -63,8 +63,29 @@ Chiqish kodi: `0` — hamma case o'tdi · `1` — kamida bittasi yiqildi.
 | `12-proc-read` | 🔒 | host `/proc` sizmasligi |
 | `13-symlink` | 🔒 | Judge0 **CVE-2024-28185** vektori |
 | `14-interactive` | AC | ikki tomonlama I/O |
+| `15-java-compile` | AC | JDK launcher sandbox ichida ishlaydimi |
+| `16-re-exit` | RE_EXIT | o'zi nolga teng bo'lmagan kod bilan chiqish signal bilan o'lishdan ajratiladimi |
+| `17-pe` | PE | faqat format farqi `WA` emas, `PE` beradimi |
+| `18-wrong-test` | WRONG_TEST | testsiz masala `IE` emas, muallif xatosi bo'lib ko'rinadimi |
+| `19-validator-rejects` | WRONG_TEST | yaroqsiz kiritma submission **hech bir testda** ishga tushmasdan rad etiladimi |
+| `20-validator-java` | AC | validator masala limitlarini meros olmaydimi (JVM, `processes: 1`) |
+| `21-validator-missing` | IE | validatorsiz `validate_input` yopiq yiqiladimi |
 
 🔒 = izolyatsiya sinovi. **Hammasi o'tishi shart** — bittasi yiqilsa nomzod rad etiladi.
+
+`19` va `20` da `judge-py` uchun kutilgan verdict `IE`: unda validator bosqichi yo'q va shartnoma bo'yicha u bunday ishni rad etadi ([protocol.md](protocol.md) § «Kirish validatori»).
+
+Case JSON'idagi qo'shimcha maydonlar:
+
+| Maydon | Ma'nosi |
+| ------ | ------- |
+| `expect_by_worker` | nomzodga xos kutilgan verdict — shartnoma ikki xil to'g'ri javobni tan olganda |
+| `expect_no_run` | `per_test` bo'sh bo'lishi shart: submission umuman ishga tushmagan |
+| `expect_failed_test_index` | birinchi yiqilgan testning kutilgan indeksi |
+| `expect_compile_output_contains` | `compile_output` shu satrni o'z ichiga olishi shart — masalan validatorning rad etish sababi |
+| `implemented: false` | hali yozilmagan funksiya — nomzodni rad etmaydi, `PENDING` |
+
+Faqat bir qismini ishga tushirish: `--cases 01,19,20,21` (id prefikslari).
 
 ## O'tish sharti
 

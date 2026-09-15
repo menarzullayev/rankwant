@@ -8,9 +8,14 @@ satri TRUTHY — natijada segfault AC deb baholanardi.
 
 from __future__ import annotations
 
+from typing import NoReturn
+
+import pytest
+
+import judge as judge_module
 import protocol as P
 from judge import classify, normalise, src_name, subst
-from protocol import Limits, RunOutcome
+from protocol import Job, Limits, RunOutcome
 from protocol import Test as JudgeTest
 from sandbox import _exit_code
 
@@ -113,3 +118,81 @@ class TestCommandBuilding:
         """Sandbox ichida PATH qidiruvi yo'q — mutlaq yo'l shart."""
         result = subst(["python3", "{src}"], "main.py", "prog")
         assert result[0].startswith("/"), result
+
+
+VALIDATOR: dict[str, object] = {
+    "code": "py312",
+    "compile": None,
+    "run": ["python3", "{src}"],
+    "source": "import sys\n",
+}
+
+
+def _job(*, validate_input: bool, validator: dict[str, object] | None = VALIDATOR) -> Job:
+    return Job(
+        job_id="validator-test",
+        language={"code": "py312", "compile": None, "run": ["python3", "{src}"]},
+        source="a, b = map(int, input().split())\nprint(a + b)\n",
+        limits=Limits(),
+        tests=[JudgeTest(index=1, input="0 3\n", expected="3\n")],
+        validator=validator,
+        validate_input=validate_input,
+    )
+
+
+class TestValidatorYopiqYiqilish:
+    """judge-py'da validator bosqichi YO'Q.
+
+    Shartnoma (../bakeoff/protocol.md § «Kirish validatori»): bunday nomzod
+    `validate_input` ishini IE bilan RAD ETADI va sandbox'ga umuman
+    tegmaydi. Jimgina davom etsa, buzuq kiritma bilan istalgan to'g'ri
+    yechimni «sindirish» mumkin bo'lardi.
+    """
+
+    @pytest.fixture(autouse=True)
+    def sandbox_taqiqlangan(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        def ishga_tushdi(*args: object, **kwargs: object) -> NoReturn:
+            raise AssertionError("sandbox ishga tushirildi")
+
+        monkeypatch.setattr(judge_module, "Box", ishga_tushdi)
+        monkeypatch.setattr(judge_module, "run_sandboxed", ishga_tushdi)
+
+    def test_validate_input_ie_bilan_rad_etiladi(self) -> None:
+        result = judge_module.judge(_job(validate_input=True))
+        assert result["verdict"] == P.IE
+        assert "validator" in result["compile_output"]
+        assert result["per_test"] == []
+        assert result["failed_test_index"] is None
+
+    def test_validator_berilmagan_bolsa_ham_rad_etiladi(self) -> None:
+        result = judge_module.judge(_job(validate_input=True, validator=None))
+        assert result["verdict"] == P.IE
+
+    def test_bayroqsiz_ish_sandboxga_yetib_boradi(self) -> None:
+        """Nazorat: rad etish faqat bayroqqa bog'liq, har ishga emas."""
+        with pytest.raises(AssertionError, match="sandbox ishga tushirildi"):
+            judge_module.judge(_job(validate_input=False))
+
+
+# Haqiqiy job'dagi notanish kalit (`input_ref`) jimgina tashlanadi —
+# `validate_input` esa aynan shunday tashlanmasligi shart.
+RAW_JOB: dict[str, object] = {
+    "job_id": "j",
+    "language": {"code": "py312", "run": ["python3", "{src}"]},
+    "source": "",
+    "limits": {},
+    "tests": [{"index": 1, "input": "1\n", "expected": "1\n", "input_ref": "s3://x/1.in"}],
+}
+
+
+class TestJobFromJson:
+    def test_validator_maydonlari_oqiladi(self) -> None:
+        """Bayroq tashlab yuborilsa, nomzod validatsiyani SEZMASDAN o'tkazardi."""
+        job = Job.from_json({**RAW_JOB, "validate_input": True, "validator": VALIDATOR})
+        assert job.validate_input is True
+        assert job.validator == VALIDATOR
+
+    def test_standart_qiymatlar(self) -> None:
+        job = Job.from_json(RAW_JOB)
+        assert job.validate_input is False
+        assert job.validator is None

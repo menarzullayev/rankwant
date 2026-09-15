@@ -288,6 +288,17 @@ func applyLimits(cg *cgroup, lim Limits) error {
 	return nil
 }
 
+// sandboxRun — runSandboxed imzosi.
+type sandboxRun func(ctx context.Context, work string, cmd []string, stdin string,
+	lim Limits, wallLimitMs int) (*runOutcome, error)
+
+// sandboxed — judge submission'ni ham, validatorni ham SHU orqali ishga
+// tushiradi. O'zgaruvchi bo'lishining yagona sababi — testlar: bosqichlar
+// tartibini (validator submission'dan OLDIN) nsjail'siz tekshirish uchun
+// uni soxta ijrochi bilan almashtiradi. Ishlab chiqarishda qayta
+// tayinlanmaydi.
+var sandboxed sandboxRun = runSandboxed
+
 // runSandboxed — buyruqni nsjail ostida ishga tushiradi va resurslarni o'lchaydi.
 func runSandboxed(ctx context.Context, work string, cmd []string, stdin string,
 	lim Limits, wallLimitMs int) (*runOutcome, error) {
