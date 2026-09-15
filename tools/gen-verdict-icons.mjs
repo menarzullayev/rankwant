@@ -124,12 +124,20 @@ const UI_ICON = {
   viewTable: "table",
 };
 
+// Loading shapes that need a glyph (D62). The other eight are pure CSS.
+const LOADING_ICON = {
+  spin: "arrows-clockwise",
+  pulse: "hourglass",
+  arc: "circle-notch",
+};
+
 const distinct = [
   ...new Set([
     ...Object.values(CODE_ICON),
     ...Object.values(STATUS_ICON),
     ...Object.values(EMPTY_ICON),
     ...Object.values(UI_ICON),
+    ...Object.values(LOADING_ICON),
     ...EXTRA_ICONS,
   ]),
 ].sort();
@@ -211,6 +219,11 @@ ${map(EMPTY_ICON)}
 /** Qidiruv / filtr / jadval ikonkalari (\`components/ui/\`). */
 export const UI_ICONS: Record<string, (p: IconProps) => React.JSX.Element> = {
 ${map(UI_ICON)}
+};
+
+/** Yuklanish shakllari — faqat glif kerak bo'lganlari (D62). */
+export const LOADING_ICONS: Record<string, (p: IconProps) => React.JSX.Element> = {
+${map(LOADING_ICON)}
 };
 `;
 

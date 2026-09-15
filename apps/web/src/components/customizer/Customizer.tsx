@@ -21,8 +21,10 @@ import {
   clampVerdictVariant,
 } from "@/lib/theme/verdict";
 import { STATUS_VARIANTS, clampStatusVariant } from "@/lib/theme/status";
+import { LOADING_VARIANTS, clampLoadingVariant } from "@/lib/theme/loading";
 import { Verdict } from "@/components/ui/Verdict";
 import { Status } from "@/components/ui/Status";
+import { Loading } from "@/components/ui/Loading";
 import { exportAppearance, importAppearance } from "@/lib/theme/share";
 import { TEMPLATES } from "@/lib/theme/templates";
 import {
@@ -344,6 +346,7 @@ function AppearanceTab() {
       <LookSection />
       <VerdictSection />
       <StatusSection />
+      <LoadingSection />
     </>
   );
 }
@@ -731,6 +734,43 @@ function StatusSection() {
         {(["ok", "warn", "bad", "info"] as const).map((s) => (
           <Status key={s} status={s} variant={current} />
         ))}
+      </div>
+      <p className="mt-2 text-theme-xs rw-faint">{t(locale, def.hintKey)}</p>
+    </Section>
+  );
+}
+
+/** Yuklanish ko'rinishi (D62).
+ *
+ *  Namunada bitta ko'rsatkich chiziladi. `skeleton`/`shimmer` — joy
+ *  egallovchi ko'rinishlar, ya'ni ular butun kenglikni oladi; qolganlari
+ *  o'rtada turadi. Shu sababli namuna idishining kengligi cheklangan:
+ *  aks holda skeleton butun panelni egallab, uni baholab bo'lmasdi. */
+function LoadingSection() {
+  const locale = useLocale();
+  const { appearance, setAppearance } = useCustomizer();
+  const current = clampLoadingVariant(appearance.loadingStyle);
+  const def = LOADING_VARIANTS.find((v) => v.id === current) ?? LOADING_VARIANTS[0];
+
+  return (
+    <Section title={t(locale, "customizer.loading")}>
+      <div className="flex flex-wrap gap-2">
+        {LOADING_VARIANTS.map((v) => (
+          <button
+            key={v.id}
+            type="button"
+            aria-pressed={current === v.id}
+            onClick={() => setAppearance({ loadingStyle: v.id })}
+            className={chip(current === v.id)}
+          >
+            {t(locale, v.labelKey)}
+          </button>
+        ))}
+      </div>
+      <div className="mt-3 flex items-center justify-center rw-radius-sm border rw-divider p-4">
+        <span className="w-full max-w-[14rem]">
+          <Loading variant={current} />
+        </span>
       </div>
       <p className="mt-2 text-theme-xs rw-faint">{t(locale, def.hintKey)}</p>
     </Section>

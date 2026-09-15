@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1465 strings.**
+**1487 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -683,6 +683,27 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `level.hard` | Qiyin | Қиын |  |
 | `level.expert` | Ekspert | Сарапшы |  |
 | `level.master` | Master | Шебер |  |
+| `loading.label` | Yuklanmoqda | Жүктелуде |  |
+| `loading.style.spinner` | Aylanuvchi yoy | Айналмалы доға |  |
+| `loading.style.spinnerHint` | Eng tushunarli va eng arzon. Tugma ichida ham ishlaydi. | Ең түсінікті және ең арзан. Түйме ішінде де жарайды. |  |
+| `loading.style.ring` | Uzuk | Сақина |  |
+| `loading.style.ringHint` | SVG uzuk — chiziq qalinligi bir xil, kattaroq joy uchun. | SVG сақина — қалыңдығы бірдей, үлкенірек орын үшін. |  |
+| `loading.style.skeleton` | Skeleton | Скелетон |  |
+| `loading.style.skeletonHint` | Kulrang ustunlar — kelayotgan kontent joyini oldin egallaydi. | Келе жатқан мазмұнның орнын алдын ала ұстайтын сұр жолақтар. |  |
+| `loading.style.shimmer` | Shimmer | Жарқыл |  |
+| `loading.style.shimmerHint` | Yorug'lik chapdan o'ngga o'tadi — jonli tuyuladi. | Жарық солдан оңға жүреді — тірі сезіледі. |  |
+| `loading.style.dotsBounce` | Sakrayotgan nuqtalar | Секірген нүктелер |  |
+| `loading.style.dotsBounceHint` | «Yozmoqda…» kabi qisqa kutish uchun. | «Жазып жатыр» сияқты қысқа күту үшін. |  |
+| `loading.style.dotsFade` | So'nayotgan nuqtalar | Өшіп бара жатқан нүктелер |  |
+| `loading.style.dotsFadeHint` | Sokinroq — fon amallari uchun. | Тыныш — фондық әрекеттер үшін. |  |
+| `loading.style.bars` | Ekvalayzer | Эквалайзер |  |
+| `loading.style.barsHint` | Media va real vaqt oqimi uchun. | Медиа және тікелей ағындар үшін. |  |
+| `loading.style.iconSpin` | Aylanuvchi ikonka | Айналмалы белгіше |  |
+| `loading.style.iconSpinHint` | «Yangilash» ma'nosini beradi — tugma ichida. | «Жаңарту» мағынасын береді — түйме ішінде. |  |
+| `loading.style.pulseIcon` | Pulsatsiyalanuvchi ikonka | Пульсті белгіше |  |
+| `loading.style.pulseIconHint` | Live indikator uchun. | Тікелей эфир индикаторы үшін. |  |
+| `loading.style.progress` | Progress chizig'i | Прогресс жолағы |  |
+| `loading.style.progressHint` | Sahifa yuqorisi yoki uzoq amal uchun. | Беттің жоғарысы немесе ұзақ әрекет үшін. |  |
 | `title.kvark` | Kvark | Кварк |  |
 | `title.foton` | Foton | Фотон |  |
 | `title.elektron` | Elektron | Электрон |  |
@@ -1414,6 +1435,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.status` | Holat xabarlari | Күй хабарламалары |  |
 | `customizer.hex` | Rang kodi | Түс коды |  |
 | `customizer.lineHeight` | Qator balandligi | Жол биіктігі |  |
+| `customizer.loading` | Yuklanish | Жүктелуде |  |
 | `customizer.tracking` | Harf oralig'i | Әріп аралығы |  |
 | `customizer.typeHint` | Qator balandligi va harf oralig'i uzun matnni o'qishga yordam beradi. | Жол биіктігі мен әріп аралығы ұзақ мәтінді оқуға көмектеседі. |  |
 | `customizer.width` | Kontent kengligi | Мазмұн ені |  |

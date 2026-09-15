@@ -246,6 +246,8 @@ var VD=["auto","badge","plain","icon","full","circle","dot","box","bar","percent
 if(VD.indexOf(a.verdictStyle)>0)r.dataset.verdict=a.verdictStyle;
 var ST=["auto","text","iconText","badge","circle","dot","box","alert","soft","outline","stack"];
 if(ST.indexOf(a.statusStyle)>0)r.dataset.status=a.statusStyle;
+var LD=["spinner","ring","skeleton","shimmer","dotsBounce","dotsFade","bars","iconSpin","pulseIcon","progress"];
+if(LD.indexOf(a.loadingStyle)>=0)r.dataset.loading=a.loadingStyle;
 var k=JSON.parse(localStorage.getItem("rw:a11y")||"{}");
 if(k.vision&&k.vision!=="normal")r.dataset.vision=k.vision;
 if(k.motion==="reduce")r.dataset.motion="reduce";

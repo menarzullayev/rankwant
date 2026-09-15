@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1465 strings.**
+**1487 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -683,6 +683,27 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `level.hard` | Qiyin | Qıyın |  |
 | `level.expert` | Ekspert | Ekspert |  |
 | `level.master` | Master | Master |  |
+| `loading.label` | Yuklanmoqda | Júklenip atır |  |
+| `loading.style.spinner` | Aylanuvchi yoy | Aylanbalı doǵa |  |
+| `loading.style.spinnerHint` | Eng tushunarli va eng arzon. Tugma ichida ham ishlaydi. | Eń túsіnіktі hám eń arzan. Túyme ishinde de isleydi. |  |
+| `loading.style.ring` | Uzuk | Saqına |  |
+| `loading.style.ringHint` | SVG uzuk — chiziq qalinligi bir xil, kattaroq joy uchun. | SVG saqına — qalıńlıǵı birdey, úlkenirek orın ushın. |  |
+| `loading.style.skeleton` | Skeleton | Skelet |  |
+| `loading.style.skeletonHint` | Kulrang ustunlar — kelayotgan kontent joyini oldin egallaydi. | Kiyatırǵan mazmundıń ornın aldın ala uslap turatuǵın sur jolıqlar. |  |
+| `loading.style.shimmer` | Shimmer | Jarqın |  |
+| `loading.style.shimmerHint` | Yorug'lik chapdan o'ngga o'tadi — jonli tuyuladi. | Jarıq shepten ońǵa ótedi — tiri seziledi. |  |
+| `loading.style.dotsBounce` | Sakrayotgan nuqtalar | Sekirip atırǵan nokatlar |  |
+| `loading.style.dotsBounceHint` | «Yozmoqda…» kabi qisqa kutish uchun. | «Jazıp atır» sıyaqlı qısqa kútіw ushın. |  |
+| `loading.style.dotsFade` | So'nayotgan nuqtalar | Óship atırǵan nokatlar |  |
+| `loading.style.dotsFadeHint` | Sokinroq — fon amallari uchun. | Tınıshıraq — fon jumısları ushın. |  |
+| `loading.style.bars` | Ekvalayzer | Ekvalayzer |  |
+| `loading.style.barsHint` | Media va real vaqt oqimi uchun. | Media hám tiri aǵımlar ushın. |  |
+| `loading.style.iconSpin` | Aylanuvchi ikonka | Aylanbalı belgi |  |
+| `loading.style.iconSpinHint` | «Yangilash» ma'nosini beradi — tugma ichida. | «Jańalaw» mánisin beredi — túyme ishinde. |  |
+| `loading.style.pulseIcon` | Pulsatsiyalanuvchi ikonka | Puls belgisi |  |
+| `loading.style.pulseIconHint` | Live indikator uchun. | Tiri indikator ushın. |  |
+| `loading.style.progress` | Progress chizig'i | Ilgerilew sızıǵı |  |
+| `loading.style.progressHint` | Sahifa yuqorisi yoki uzoq amal uchun. | Bettiń joqarısı yamasa uzın jumıs ushın. |  |
 | `title.kvark` | Kvark | Kvark |  |
 | `title.foton` | Foton | Foton |  |
 | `title.elektron` | Elektron | Elektron |  |
@@ -1414,6 +1435,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.status` | Holat xabarlari | Halat xabarları |  |
 | `customizer.hex` | Rang kodi | Reń kodi |  |
 | `customizer.lineHeight` | Qator balandligi | Qatar biyikligi |  |
+| `customizer.loading` | Yuklanish | Júkleniw |  |
 | `customizer.tracking` | Harf oralig'i | Hárip aralıǵı |  |
 | `customizer.typeHint` | Qator balandligi va harf oralig'i uzun matnni o'qishga yordam beradi. | Qatar biyikligi hám hárip aralıǵı uzın tekstti oqıwǵa járdem beredi. |  |
 | `customizer.width` | Kontent kengligi | Kontent keńligi |  |

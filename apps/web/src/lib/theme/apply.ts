@@ -14,6 +14,7 @@ import { clampNavMode, clampNavShape } from "@/layout/nav-config";
 import { applyTypography, clampWidth } from "@/lib/theme/typography";
 import { DEFAULT_VERDICT_VARIANT } from "@/lib/theme/verdict";
 import { DEFAULT_STATUS_VARIANT } from "@/lib/theme/status";
+import { DEFAULT_LOADING_VARIANT } from "@/lib/theme/loading";
 import {
   AA_TARGET,
   accentInk,
@@ -169,6 +170,13 @@ export function applyAppearance(appearance: AppearancePrefs) {
   const sStyle = appearance.statusStyle ?? DEFAULT_STATUS_VARIANT;
   if (sStyle !== DEFAULT_STATUS_VARIANT) root.dataset.status = sStyle;
   else delete root.dataset.status;
+
+  // Yuklanish ko'rinishi (D62). Atribut `data-loading` — boshqa
+  // ko'rinishlar bilan bir xil naqsh: sozlamani tekshirish va sinash uchun
+  // ko'rinadigan iz qoladi.
+  const lStyle = appearance.loadingStyle ?? DEFAULT_LOADING_VARIANT;
+  if (lStyle !== DEFAULT_LOADING_VARIANT) root.dataset.loading = lStyle;
+  else delete root.dataset.loading;
 }
 
 /** Rang ajratolmaslik uchun TUSLAR (D44).

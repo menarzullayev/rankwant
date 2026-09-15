@@ -47,6 +47,11 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         # Shablon nomlari — atoqli nom. "Aurora", "Konsol", "Jurnal" kabi
         # so'zlar bir qancha tillarda aynan yoziladi va bu TO'G'RI; ularni
         # majburan o'girish sun'iy ko'rinardi.
+        # Yuklanish shakllari: "Skeleton" va "Shimmer" — ingliz tilidan
+        # olingan texnik atamalar, o'zbekchada ham shunday yoziladi
+        # (o'girilgan varianti sun'iy: "skelet", "yaltiroq"). Boshqa
+        # tillarda ular tarjima qilinadi (masalan ruschada "Скелетон").
+        "loading.style.skeleton", "loading.style.shimmer",
         "customizer.template.classic",
         "customizer.template.console",
         "customizer.template.journal",
@@ -106,6 +111,9 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         # "Avtomatik" — qaraqalpoqchada ham shunday yoziladi (rus tilidan
         # olingan, "avtomat" dan). Majburan o'girish sun'iy ko'rinardi.
         "status.style.auto",
+        # "Ekvalayzer" — qaraqalpoqchada ham, o'zbekchada ham bir xil
+        # yoziladi (xalqaro atama). Qozoqcha/qirg'izcha tarjima qilinadi.
+        "loading.style.bars",
         "nav.leaderboard", "contests.rated", "leaderboard.title", "qvant.balance",
         "nav.menu", "auth.password", "navGroup.lab", "navGroup.campus",
         "navGroup.platform", "nav.classroom", "nav.duels", "nav.tournaments",

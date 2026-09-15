@@ -1499,6 +1499,206 @@
   color: var(--rw-text-2);
 }
 
+/* ═══ Yuklanish ko'rsatkichlari — o'nta shakl (D62) ═════════════════════
+   Hammasi sof CSS/SVG. Klasslar ataylab `rw-pulse`/`animate-` prefiksisiz:
+   `[data-motion="mild"]` o'sha prefikslarni butunlay o'chiradi, ya'ni
+   yuklanish indikatori yo'q bo'lib qolardi. Sabab `lib/theme/loading.ts` da.
+
+   ⚠️ Harakat o'chirilganda ham shakl KO'RINIB turishi kerak. Shuning uchun
+   har bir animatsiyaning asosiy holati ko'rinadigan qilib yozilgan:
+   yoy chizig'i, ustunlar, gradient — barchasi animatsiyasiz ham qoladi. */
+.rw-load {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35em;
+  color: var(--rw-accent);
+}
+/* Joy egallovchi ko'rinishlar — kenglik 100%, o'rtada emas. */
+.rw-load-block {
+  display: flex;
+  width: 100%;
+}
+
+/* ① Aylanuvchi yoy — chegara bilan (masshtabda qalinlik o'zgarmaydi). */
+.rw-load-arc {
+  display: block;
+  width: 1.25em;
+  height: 1.25em;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, currentColor 22%, transparent);
+  border-top-color: currentColor;
+  animation: rwLoadSpin 0.8s linear infinite;
+}
+@keyframes rwLoadSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ② SVG uzuk — `stroke-dasharray` bilan aniqroq. */
+.rw-load-ring {
+  width: 2.25em;
+  height: 2.25em;
+}
+.rw-load-ring-arc {
+  transform-origin: 20px 20px;
+  animation: rwLoadSpin 1s linear infinite;
+}
+
+/* ③ Skeleton — pulsatsiya. Ustunlar animatsiyasiz ham ko'rinadi. */
+.rw-load-skel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  width: 100%;
+}
+.rw-load-skel i {
+  display: block;
+  height: 0.7em;
+  border-radius: 0.35em;
+  background: color-mix(in srgb, var(--rw-text) 14%, transparent);
+  animation: rwLoadSkel 1.4s ease-in-out infinite;
+}
+@keyframes rwLoadSkel {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+/* ④ Shimmer — yorug'lik chapdan o'ngga. */
+.rw-load-shimmer {
+  display: block;
+  width: 100%;
+  height: 3.5em;
+  border-radius: 0.5em;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--rw-text) 12%, transparent) 25%,
+    color-mix(in srgb, var(--rw-text) 4%, transparent) 50%,
+    color-mix(in srgb, var(--rw-text) 12%, transparent) 75%
+  );
+  background-size: 220% 100%;
+  animation: rwLoadShimmer 1.5s linear infinite;
+}
+@keyframes rwLoadShimmer {
+  0% { background-position: -60% 0; }
+  100% { background-position: 160% 0; }
+}
+
+/* ⑤⑥ Nuqtalar. Sakrash va so'nish — bir xil tuzilma, boshqa animatsiya. */
+.rw-load-dots {
+  display: inline-flex;
+  gap: 0.3em;
+}
+.rw-load-dots i {
+  display: block;
+  width: 0.45em;
+  height: 0.45em;
+  border-radius: 50%;
+  background: currentColor;
+}
+.rw-load-dotsBounce .rw-load-dots i:nth-child(1) { animation: rwLoadBounce 1.1s ease-in-out infinite; }
+.rw-load-dotsBounce .rw-load-dots i:nth-child(2) { animation: rwLoadBounce 1.1s ease-in-out 0.16s infinite; }
+.rw-load-dotsBounce .rw-load-dots i:nth-child(3) { animation: rwLoadBounce 1.1s ease-in-out 0.32s infinite; }
+.rw-load-dotsFade .rw-load-dots i:nth-child(1) { animation: rwLoadFade 1.3s ease-in-out infinite; }
+.rw-load-dotsFade .rw-load-dots i:nth-child(2) { animation: rwLoadFade 1.3s ease-in-out 0.22s infinite; }
+.rw-load-dotsFade .rw-load-dots i:nth-child(3) { animation: rwLoadFade 1.3s ease-in-out 0.44s infinite; }
+@keyframes rwLoadBounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
+  40% { transform: translateY(-0.3em); opacity: 1; }
+}
+@keyframes rwLoadFade {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
+}
+
+/* ⑦ Ekvalayzer ustunlari. */
+.rw-load-bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 0.2em;
+  height: 1.4em;
+}
+.rw-load-bars i {
+  display: block;
+  width: 0.25em;
+  height: 100%;
+  border-radius: 0.15em;
+  background: currentColor;
+  transform-origin: bottom;
+  animation: rwLoadBar 1s ease-in-out infinite;
+}
+.rw-load-bars i:nth-child(2) { animation-delay: 0.12s; }
+.rw-load-bars i:nth-child(3) { animation-delay: 0.24s; }
+.rw-load-bars i:nth-child(4) { animation-delay: 0.36s; }
+@keyframes rwLoadBar {
+  0%, 100% { transform: scaleY(0.35); }
+  50% { transform: scaleY(1); }
+}
+
+/* ⑧ Aylanuvchi ikonka — «yangilash» ma'nosi. */
+.rw-load-iconspin {
+  animation: rwLoadSpin 1.2s linear infinite;
+}
+
+/* ⑨ Pulsatsiyalanuvchi ikonka + halqa. `box-shadow` bilan, ya'ni
+   qo'shimcha element kerak emas. */
+.rw-load-pulse {
+  border-radius: 50%;
+  animation: rwLoadPulse 1.6s ease-out infinite;
+}
+@keyframes rwLoadPulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 45%, transparent); }
+  70% { box-shadow: 0 0 0 0.7em transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* ⑩ Aniqlanmagan progress chizig'i. */
+.rw-load-progress {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 0.25em;
+  border-radius: 999px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--rw-text) 12%, transparent);
+}
+.rw-load-progress::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 40%;
+  border-radius: 999px;
+  background: currentColor;
+  animation: rwLoadProgress 1.3s ease-in-out infinite;
+}
+@keyframes rwLoadProgress {
+  0% { inset-inline-start: -40%; }
+  100% { inset-inline-start: 100%; }
+}
+
+/* Tizim sozlamasi: harakat kerak emas. Animatsiya to'xtaydi, lekin
+   shakl qoladi — yuklanish holat, dekoratsiya emas.
+   ⚠️ `[data-motion]` bloklari ham shu ishni qiladi, lekin ular faqat
+   foydalanuvchi sozlagichda tanlaganda ishlaydi; OS sozlamasi esa
+   atributsiz holatda ham hurmat qilinishi shart. */
+@media (prefers-reduced-motion: reduce) {
+  .rw-load-arc,
+  .rw-load-ring-arc,
+  .rw-load-skel i,
+  .rw-load-shimmer,
+  .rw-load-dots i,
+  .rw-load-bars i,
+  .rw-load-iconspin,
+  .rw-load-pulse,
+  .rw-load-progress::after {
+    animation: none !important;
+  }
+  /* Animatsiyasiz ham ko'rinib tursin. */
+  .rw-load-dots i { opacity: 0.8; }
+  .rw-load-bars i { transform: scaleY(0.7); }
+  .rw-load-progress::after { inset-inline-start: 30%; }
+}
+
 /* Kontent kengligi (D48). Qiymat `--rw-content-width` dan keladi
    (`lib/theme/apply.ts`), sozlagichda 1000–1800 px oralig'ida erkin
    tanlanadi. Ilgari Tailwind sinfi (`max-w-[1400px]`) olti joyda qotib

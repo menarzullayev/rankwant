@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1465 strings.**
+**1487 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -683,6 +683,27 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `level.hard` | Qiyin | Душвор |  |
 | `level.expert` | Ekspert | Коршинос |  |
 | `level.master` | Master | Устод |  |
+| `loading.label` | Yuklanmoqda | Бор шуда истодааст |  |
+| `loading.style.spinner` | Aylanuvchi yoy | Камончаи чархзананда |  |
+| `loading.style.spinnerHint` | Eng tushunarli va eng arzon. Tugma ichida ham ishlaydi. | Фаҳмотарин ва арзонтарин. Дар дохили тугма ҳам кор мекунад. |  |
+| `loading.style.ring` | Uzuk | Ҳалқа |  |
+| `loading.style.ringHint` | SVG uzuk — chiziq qalinligi bir xil, kattaroq joy uchun. | Ҳалқаи SVG — ғафсӣ якхела, барои ҷои калонтар. |  |
+| `loading.style.skeleton` | Skeleton | Скелетон |  |
+| `loading.style.skeletonHint` | Kulrang ustunlar — kelayotgan kontent joyini oldin egallaydi. | Хатҳои хокистарӣ, ки ҷои мазмуни ояндаро пешакӣ мегиранд. |  |
+| `loading.style.shimmer` | Shimmer | Дурахш |  |
+| `loading.style.shimmerHint` | Yorug'lik chapdan o'ngga o'tadi — jonli tuyuladi. | Рӯшноӣ аз чап ба рост меравад — зинда менамояд. |  |
+| `loading.style.dotsBounce` | Sakrayotgan nuqtalar | Нуқтаҳои ҷаҳанда |  |
+| `loading.style.dotsBounceHint` | «Yozmoqda…» kabi qisqa kutish uchun. | Барои интизори кӯтоҳ, мисли «навишта истодааст». |  |
+| `loading.style.dotsFade` | So'nayotgan nuqtalar | Нуқтаҳои хомӯшшаванда |  |
+| `loading.style.dotsFadeHint` | Sokinroq — fon amallari uchun. | Оромтар — барои амалҳои заминавӣ. |  |
+| `loading.style.bars` | Ekvalayzer | Эквалайзер |  |
+| `loading.style.barsHint` | Media va real vaqt oqimi uchun. | Барои медиа ва ҷараёнҳои зинда. |  |
+| `loading.style.iconSpin` | Aylanuvchi ikonka | Нишонаи чархзананда |  |
+| `loading.style.iconSpinHint` | «Yangilash» ma'nosini beradi — tugma ichida. | Маънои «навсозӣ» медиҳад — дар дохили тугма. |  |
+| `loading.style.pulseIcon` | Pulsatsiyalanuvchi ikonka | Нишонаи набзнок |  |
+| `loading.style.pulseIconHint` | Live indikator uchun. | Барои индикатори зинда. |  |
+| `loading.style.progress` | Progress chizig'i | Хатти пешрафт |  |
+| `loading.style.progressHint` | Sahifa yuqorisi yoki uzoq amal uchun. | Барои болои саҳифа ё кори тӯлонӣ. |  |
 | `title.kvark` | Kvark | Кварк |  |
 | `title.foton` | Foton | Фотон |  |
 | `title.elektron` | Elektron | Электрон |  |
@@ -1414,6 +1435,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.status` | Holat xabarlari | Паёмҳои ҳолат |  |
 | `customizer.hex` | Rang kodi | Рамзи ранг |  |
 | `customizer.lineHeight` | Qator balandligi | Баландии сатр |  |
+| `customizer.loading` | Yuklanish | Боркунӣ |  |
 | `customizer.tracking` | Harf oralig'i | Фосилаи ҳарфҳо |  |
 | `customizer.typeHint` | Qator balandligi va harf oralig'i uzun matnni o'qishga yordam beradi. | Баландии сатр ва фосилаи ҳарфҳо хондани матни дарозро осон мекунанд. |  |
 | `customizer.width` | Kontent kengligi | Паҳнои мундариҷа |  |

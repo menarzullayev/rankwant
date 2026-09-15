@@ -10,7 +10,7 @@
  *  bir xil glifdan foydalanadi (`check-circle`, `x-circle`). Ikkita fayl
  *  qilinsa o'sha yo'l ikki nusxada yashab, vaqt o'tib ajralib ketardi.
  *
- *  41 ta ikonka · 23 verdikt kodi ·
+ *  43 ta ikonka · 23 verdikt kodi ·
  *  4 holat.
  */
 
@@ -26,6 +26,13 @@ const base = {
 export const PhArchive = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
     <path fill="currentColor" d="M224 48H32a16 16 0 0 0-16 16v24a16 16 0 0 0 16 16v88a16 16 0 0 0 16 16h160a16 16 0 0 0 16-16v-88a16 16 0 0 0 16-16V64a16 16 0 0 0-16-16m-16 144H48v-88h160Zm16-104H32V64h192zM96 136a8 8 0 0 1 8-8h48a8 8 0 0 1 0 16h-48a8 8 0 0 1-8-8"/>
+  </svg>
+);
+
+/** Phosphor `arrows-clockwise` (MIT). */
+export const PhArrowsClockwise = (p: IconProps) => (
+  <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
+    <path fill="currentColor" d="M224 48v48a8 8 0 0 1-8 8h-48a8 8 0 0 1 0-16h28.69l-14.63-14.63a79.56 79.56 0 0 0-56.13-23.43h-.45a79.52 79.52 0 0 0-55.89 22.77a8 8 0 0 1-11.18-11.44a96 96 0 0 1 135 .79L208 76.69V48a8 8 0 0 1 16 0m-37.59 135.29a80 80 0 0 1-112.47-.66L59.31 168H88a8 8 0 0 0 0-16H40a8 8 0 0 0-8 8v48a8 8 0 0 0 16 0v-28.69l14.63 14.63A95.43 95.43 0 0 0 130 222.06h.53a95.36 95.36 0 0 0 67.07-27.33a8 8 0 0 0-11.18-11.44Z"/>
   </svg>
 );
 
@@ -68,6 +75,13 @@ export const PhChartPie = (p: IconProps) => (
 export const PhCheckCircle = (p: IconProps) => (
   <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
     <path fill="currentColor" d="M173.66 98.34a8 8 0 0 1 0 11.32l-56 56a8 8 0 0 1-11.32 0l-24-24a8 8 0 0 1 11.32-11.32L112 148.69l50.34-50.35a8 8 0 0 1 11.32 0M232 128A104 104 0 1 1 128 24a104.11 104.11 0 0 1 104 104m-16 0a88 88 0 1 0-88 88a88.1 88.1 0 0 0 88-88"/>
+  </svg>
+);
+
+/** Phosphor `circle-notch` (MIT). */
+export const PhCircleNotch = (p: IconProps) => (
+  <svg {...base} className={p.className ?? "size-5"} aria-hidden="true">
+    <path fill="currentColor" d="M232 128a104 104 0 0 1-208 0c0-41 23.81-78.36 60.66-95.27a8 8 0 0 1 6.68 14.54C60.15 61.59 40 93.27 40 128a88 88 0 0 0 176 0c0-34.73-20.15-66.41-51.34-80.73a8 8 0 0 1 6.68-14.54C208.19 49.64 232 87 232 128"/>
   </svg>
 );
 
@@ -369,4 +383,11 @@ export const UI_ICONS: Record<string, (p: IconProps) => React.JSX.Element> = {
   viewGrid: PhSquaresFour,
   viewList: PhList,
   viewTable: PhTable,
+};
+
+/** Yuklanish shakllari — faqat glif kerak bo'lganlari (D62). */
+export const LOADING_ICONS: Record<string, (p: IconProps) => React.JSX.Element> = {
+  spin: PhArrowsClockwise,
+  pulse: PhHourglass,
+  arc: PhCircleNotch,
 };
