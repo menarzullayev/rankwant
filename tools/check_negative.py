@@ -1122,6 +1122,291 @@ def neg_backup_good_dump_passes() -> tuple[bool, str]:
         return True, "backup/butun: sog'lom dump o'tdi (exit 0)"
 
 
+# ── monitor (Windows tunnel/origin monitori) ─────────────────────────────
+#
+# Nega alohida guruh: 2026-09-15 da sayt ildizi 200 qaytarardi, API esa
+# 503 — sahifalar ochilardi, lekin brauzerdagi HAR BIR API chaqiruvi
+# yiqilardi (kirish, yuborish, jadval). `monitor.ps1` faqat ildizni
+# tekshirgani uchun YASHIL qoldi va avariya o'z-o'zidan tuzalmadi. Ya'ni
+# bu «tekshiruv o'lik edi» sinfining aynan o'zi — faqat CI da emas,
+# ishlab turgan tizimda.
+#
+# ⚠️ Bu testlar HECH QACHON haqiqiy konteynerni yoki tunnelni qayta ishga
+# tushirmaydi. Taqiq `monitor.ps1` ning O'ZIDA: stub berilganda u dry-run
+# ga MAJBURIY o'tadi, ya'ni xavfsizlik testning ehtiyotkorligiga tashlab
+# qo'yilmagan. Ish katalogi ham vaqtinchalik joyga buriladi — haqiqiy
+# `.handoff/monitor.log` va ogohlantirish fayli tegilmaydi.
+
+POWERSHELL_MISSING = "powershell topilmadi"
+
+MONITOR_CASES = {
+    "API yolg'iz yiqilsa tutilsin",
+    "ikkala manzil 200 bo'lsa yashil",
+    "qatlam o'qilmasa exit 2, «yashil» emas",
+    "konteyner yiqilishi ko'prik deb o'qilmasin",
+    "ichkarida javob yo'q bo'lsa restart qilinmasin",
+    "handoff qoidasi saqlansin",
+}
+"""Windows'ga bog'liq salbiy testlarning yorlig'i (`main()` da ishlatiladi)."""
+
+#: Hamma qatlam sog'lom.
+HTTP_HEALTHY = (
+    "public-web\t200\topen\n"
+    "public-api\t200\topen\n"
+    "origin-web\t200\topen\n"
+    "origin-api\t200\topen\n"
+)
+
+#: 2026-09-15 avariyasi: sahifa ochiladi, API yiqilgan. Origin porti TCP
+#: ulanishni QABUL QILADI, lekin HTTP 000 qaytaradi — aynan shu juftlik
+#: o'lgan host port ko'prigini boshqa hamma narsadan ajratadi.
+HTTP_API_ONLY_OUTAGE = (
+    "public-web\t200\topen\n"
+    "public-api\t503\topen\n"
+    "origin-web\t200\topen\n"
+    "origin-api\t000\topen\n"
+)
+
+
+def _powershell() -> str | None:
+    """`powershell` ning to'liq yo'li, topilmasa `None`.
+
+    ⚠️ Monitor — WINDOWS darvozasi. CI runner'i Linux (o'lchandi:
+    `nsn-pc-rankwant|Linux|online`), ya'ni u yerda `powershell` yo'q.
+    Guruhni «o'tdi» deb ko'rsatish yolg'on yashil bo'lardi, «yiqildi»
+    deb ko'rsatish esa CI ni doimiy qizil qilardi — shuning uchun
+    `main()` uni OCHIQ aytib o'tkazib yuboradi. Windows'da (pre-push
+    hook, ya'ni monitor haqiqatan ishlaydigan mashina) guruh doim
+    ishlaydi.
+    """
+    for candidate in (
+        os.environ.get("POWERSHELL"),
+        shutil.which("powershell"),
+        shutil.which("pwsh"),
+    ):
+        if candidate and Path(candidate).exists():
+            return str(candidate)
+    return None
+
+
+def _run_monitor(
+    http: str,
+    docker: str | None = None,
+    owner: str = "windows",
+    tunnel: str | None = None,
+    unreadable: str | None = None,
+) -> tuple[int, str]:
+    """`tools/monitor.ps1` ni soxta o'lchovlar bilan ishga tushiradi.
+
+    Tarmoqqa ham, docker'ga ham, R2 ga ham CHIQMAYDI: har bir qatlam
+    stub muhit o'zgaruvchisi bilan almashtiriladi.
+    """
+    shell = _powershell()
+    if shell is None:
+        return 127, POWERSHELL_MISSING
+    env = dict(os.environ)
+    env["MONITOR_HTTP_STUB"] = http
+    env["MONITOR_OWNER_STUB"] = owner
+    # Ikki qavat himoya: stub berilgani ham dry-run ni yoqadi, bu esa
+    # uni ALOHIDA va ochiq talab qiladi.
+    env["MONITOR_DRY_RUN"] = "1"
+    for key, value in (
+        ("MONITOR_DOCKER_STUB", docker),
+        ("MONITOR_TUNNEL_STUB", tunnel),
+        ("MONITOR_FORCE_UNREADABLE", unreadable),
+    ):
+        if value is None:
+            env.pop(key, None)
+        else:
+            env[key] = value
+    with tempfile.TemporaryDirectory() as work:
+        env["MONITOR_WORK_DIR"] = work
+        proc = subprocess.run(
+            [
+                shell,
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                str(ROOT / "tools" / "monitor.ps1"),
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            env=env,
+        )
+    return proc.returncode, (proc.stdout or "") + (proc.stderr or "")
+
+
+def monitor_precondition() -> str | None:
+    """Monitor o'zgarmagan, sog'lom holatda `exit 0` berishini talab qiladi.
+
+    `None` — hammasi joyida. Aks holda sabab qaytariladi.
+
+    Old shart BIR MARTA tekshiriladi: `powershell` topilmasa har bir
+    chaqiruv `127` qaytarardi va uni «buzuq holatni tutdi» deb o'qish
+    oson — node tekshiruvidagi bilan aynan bir xil tuzoq.
+    """
+    if _powershell() is None:
+        return f"monitor.ps1 o'lchanmadi — {POWERSHELL_MISSING} (Windows darvozasi)"
+    code, out = _run_monitor(HTTP_HEALTHY)
+    if code != 0:
+        first = out.strip().splitlines()[:3]
+        return (
+            f"monitor.ps1 sog'lom holatda ham yiqildi (exit {code}): {' | '.join(first)}"
+        )
+    return None
+
+
+def neg_monitor_api_only_outage() -> tuple[bool, str]:
+    """Sayt 200, API yiqiq — tutilsinmi?
+
+    ⚠️ AYNAN SHU holat o'tkazib yuborilgan (2026-09-15). Eski monitorda
+    `$apiUrl` va `$originApi` e'lon qilingan edi-yu, HECH QAYERDA
+    ishlatilmasdi; `Test-Once` faqat `$siteUrl` ga qarardi. Sayt 200
+    bo'lgani uchun u darhol «OK» qaytarardi va qolgan qatlamlarga
+    umuman qaramasdi.
+    """
+    code, out = _run_monitor(
+        HTTP_API_ONLY_OUTAGE,
+        docker="rankwant-api-1\trunning\thealthy\t200",
+    )
+    if code == 0:
+        return False, (
+            "monitor/API yolg'iz: sayt 200 bo'lgani uchun O'TKAZILDI (exit 0) — "
+            "monitor o'lik"
+        )
+    if "DEAD BRIDGE" not in out:
+        return False, (
+            f"monitor/API yolg'iz: yiqildi, lekin qatlam nomi yo'q — {out.strip()[:160]}"
+        )
+    if "rankwant-api-1" not in out:
+        return False, "monitor/API yolg'iz: qaysi konteyner ekani aytilmadi"
+    if "DRY RUN" not in out:
+        return False, (
+            "monitor/API yolg'iz: dry-run emas — test haqiqiy konteynerni qayta "
+            "ishga tushirishi mumkin edi"
+        )
+    return True, (
+        "monitor/API yolg'iz: DEAD BRIDGE tutildi, faqat api konteyneri (exit 1)"
+    )
+
+
+def neg_monitor_healthy_gate() -> tuple[bool, str]:
+    """Ijobiy nazorat: hamma narsa sog'lom bo'lsa YASHIL va hech narsa qilinmasin.
+
+    Har doim qichqiradigan monitor BARCHA salbiy testlardan o'tadi va
+    baribir foydasiz bo'ladi: har 5 daqiqada yolg'on ogohlantirish
+    yozadi, keyin uni o'chirib qo'yishadi.
+    """
+    code, out = _run_monitor(HTTP_HEALTHY)
+    if code != 0:
+        return False, f"monitor/yashil: sog'lom holat exit {code} berdi (0 kerak)"
+    if "OK" not in out:
+        return False, "monitor/yashil: `OK` qatori jurnalga yozilmadi"
+    if "restart" in out:
+        return False, "monitor/yashil: sog'lom holatda qayta ishga tushirishga urindi"
+    return True, "monitor/yashil: ikkala manzil 200, hech narsa qilinmadi (exit 0)"
+
+
+def neg_monitor_unreadable_is_not_green() -> tuple[bool, str]:
+    """Qatlam o'qilmasa — «sog'lom» emas, «o'lchab bo'lmadi» bo'lsinmi?
+
+    ⚠️ `check_workers.sh` va `check_ci.sh` bilan bir xil shartnoma:
+    `exit 2`. `0` bo'lsa o'lchanmagan holat yashil deb o'qiladi; `1`
+    bo'lsa odam mavjud bo'lmagan nosozlikni tuzatishga urinadi.
+    """
+    code, out = _run_monitor(
+        HTTP_API_ONLY_OUTAGE,
+        docker="rankwant-api-1\trunning\thealthy\t200",
+        unreadable="docker",
+    )
+    if code == 0:
+        return False, (
+            "monitor/o'qilmadi: exit 0 — o'lchanmagan qatlam «yashil» deb o'qildi"
+        )
+    if code != 2:
+        return False, f"monitor/o'qilmadi: exit {code} (2 kerak edi)"
+    if "UNMEASURED" not in out:
+        return False, "monitor/o'qilmadi: `UNMEASURED` qatlami aytilmadi"
+    if "restart" in out:
+        return False, "monitor/o'qilmadi: o'lchamasdan turib tiklashga urindi"
+    return True, "monitor/o'qilmadi: exit 2 va hech narsa qilinmadi"
+
+
+def neg_monitor_container_down_is_not_bridge() -> tuple[bool, str]:
+    """Konteyner yiqilgani «o'lgan ko'prik» deb o'qilmasinmi?
+
+    Qatlamlarni ajratishning butun ma'nosi shu: ikkalasida ham origin
+    javob bermaydi, lekin DAVOSI boshqa. To'xtagan konteynerni
+    `restart` qilish — noto'g'ri joyni tuzatish.
+    """
+    code, out = _run_monitor(
+        "public-web\t200\topen\n"
+        "public-api\t503\tclosed\n"
+        "origin-web\t200\topen\n"
+        "origin-api\t000\tclosed\n",
+        docker="rankwant-api-1\texited\tnone\t000",
+    )
+    if code != 1:
+        return False, f"monitor/konteyner: exit {code} (1 kerak edi)"
+    if "CONTAINER DOWN" not in out:
+        return False, f"monitor/konteyner: qatlam nomi yo'q — {out.strip()[:160]}"
+    if "DEAD BRIDGE" in out:
+        return False, (
+            "monitor/konteyner: to'xtagan konteyner «o'lgan ko'prik» deb o'qildi"
+        )
+    return True, "monitor/konteyner: CONTAINER DOWN ko'prikdan ajratildi (exit 1)"
+
+
+def neg_monitor_app_down_is_not_restarted() -> tuple[bool, str]:
+    """Ichkarida ham javob yo'q bo'lsa — qayta ishga tushirilmasinmi?
+
+    ⚠️ Restart universal bolg'a EMAS. Ilova xatosida konteynerni qayta
+    ishga tushirish sababni yashiradi va avariyani cho'zadi: har 5
+    daqiqada qayta ko'tariladi, har safar yana yiqiladi — jurnalda esa
+    faqat restart qatorlari qoladi.
+    """
+    code, out = _run_monitor(
+        HTTP_API_ONLY_OUTAGE,
+        docker="rankwant-api-1\trunning\thealthy\t000",
+    )
+    if code != 1:
+        return False, f"monitor/ilova: exit {code} (1 kerak edi)"
+    if "APP DOWN" not in out:
+        return False, f"monitor/ilova: qatlam nomi yo'q — {out.strip()[:160]}"
+    if "restart" in out:
+        return False, (
+            "monitor/ilova: ichkarida javob yo'q, lekin restart qilishga urindi"
+        )
+    return True, "monitor/ilova: APP DOWN tutildi, restart QILINMADI (exit 1)"
+
+
+def neg_monitor_handoff_guard_holds() -> tuple[bool, str]:
+    """Egalik boshqa tizimda bo'lsa — hech narsa tiklanmasinmi?
+
+    ⚠️ Bu monitorning eng muhim cheklovi: Linux live paytida Windows
+    tunnelni ko'tarsa, ikki tomon bir vaqtda live bo'lardi va ikki baza
+    jimgina ajralib ketardi. Yangi qatlam mantig'i uni buzmasligi
+    SHART — shuning uchun qoida alohida test bilan qotirilgan.
+    """
+    code, out = _run_monitor(
+        "public-web\t503\tclosed\npublic-api\t503\tclosed\n",
+        docker="rankwant-api-1\texited\tnone\t000",
+        owner="linux",
+        tunnel="down",
+    )
+    if code != 0:
+        return False, f"monitor/handoff: exit {code} (0 kerak edi — yiqilish kutilgan)"
+    if "NOT LIVE" not in out:
+        return False, f"monitor/handoff: sabab aytilmadi — {out.strip()[:160]}"
+    if "restart" in out or "TUNNEL DOWN" in out:
+        return False, "monitor/handoff: live BO'LMAGAN tizimda tiklashga urindi"
+    return True, "monitor/handoff: owner=linux — hech narsa tiklanmadi (exit 0)"
+
+
 def neg_ordering_missing_tiebreaker() -> tuple[bool, str]:
     """Tiebreaker'siz `ordering` — tutilsinmi?
 
@@ -1475,6 +1760,26 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("yangi branch darvozasiz qolmasin", neg_hook_gates_new_branch),
         ],
     ),
+    (
+        "monitor",
+        [
+            ("API yolg'iz yiqilsa tutilsin", neg_monitor_api_only_outage),
+            ("ikkala manzil 200 bo'lsa yashil", neg_monitor_healthy_gate),
+            (
+                "qatlam o'qilmasa exit 2, «yashil» emas",
+                neg_monitor_unreadable_is_not_green,
+            ),
+            (
+                "konteyner yiqilishi ko'prik deb o'qilmasin",
+                neg_monitor_container_down_is_not_bridge,
+            ),
+            (
+                "ichkarida javob yo'q bo'lsa restart qilinmasin",
+                neg_monitor_app_down_is_not_restarted,
+            ),
+            ("handoff qoidasi saqlansin", neg_monitor_handoff_guard_holds),
+        ],
+    ),
 ]
 
 
@@ -1500,8 +1805,29 @@ def main(argv: list[str]) -> int:
             print("1/1 salbiy test YIQILDI — muhit tayyor emas, o'lchov yo'q.")
             return 1
 
+    # Monitor — WINDOWS darvozasi. Old shart mantig'i NODE bilan bir xil,
+    # LEKIN yakuni boshqa: `powershell` faqat Windows'da bor, CI runner'i
+    # esa Linux (o'lchandi). U yerda guruhni «yiqildi» deb ko'rsatish CI ni
+    # DOIMIY qizil qilardi, «o'tdi» deb ko'rsatish esa yolg'on yashil
+    # bo'lardi. Shuning uchun uchinchi yo'l: OCHIQ aytib o'tkazib
+    # yuboriladi va hisobotning oxirida ko'rinadi. Windows'da — ya'ni
+    # monitor haqiqatan ishlaydigan mashinada, pre-push hook'da — guruh
+    # har doim ishlaydi.
+    skipped: list[str] = []
+    if selected & MONITOR_CASES:
+        reason = monitor_precondition()
+        if reason:
+            if sys.platform == "win32":
+                print(f"  ✕ {reason}")
+                print()
+                print("1/1 salbiy test YIQILDI — Windows darvozasi o'lchanmadi.")
+                return 1
+            skipped.append(f"monitor guruhi — {reason}")
+
     for checker, cases in CASES:
         if only and only != checker:
+            continue
+        if checker == "monitor" and skipped:
             continue
         for label, fn in cases:
             total += 1
@@ -1516,6 +1842,12 @@ def main(argv: list[str]) -> int:
                 failures.append(message)
 
     print()
+    if skipped:
+        # Jimgina o'tkazib yuborish — yolg'on yashilning eng arzon turi.
+        # Shuning uchun u hisobotda ALOHIDA qator bo'lib turadi.
+        for row in skipped:
+            print(f"  - O'TKAZIB YUBORILDI: {row}")
+        print()
     if failures:
         print(
             f"{len(failures)}/{total} salbiy test YIQILDI — tekshiruv o'lik bo'lishi mumkin:"
