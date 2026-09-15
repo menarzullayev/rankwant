@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import { useSession } from "@/context/SessionContext";
 import { Button } from "@/components/ui/Button";
 import { Field, type FieldStatus } from "@/components/ui/Field";
+import { Icon } from "@/components/ui/Icon";
 import { Checkbox } from "@/components/ui/SelectField";
 import { Status } from "@/components/ui/Status";
 import { GithubMark, GoogleMark, TelegramMark } from "@/components/ProviderMark";
@@ -251,7 +252,7 @@ export function AuthForm({
       title={t(locale, "auth.togglePassword")}
       className="grid h-9 w-9 place-items-center rw-radius-sm rw-dim transition hover:rw-strong rw-focus-ring"
     >
-      {visible ? <EyeOff /> : <Eye />}
+      {visible ? <Icon name="action.eyeOff" /> : <Icon name="action.eye" />}
     </button>
   );
 
@@ -705,34 +706,4 @@ function LinkAccount({ provider }: { provider: string }) {
   );
 }
 
-function Eye() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-      />
-      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
-    </svg>
-  );
-}
 
-function EyeOff() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M2 12s3.6-7 10-7c2 0 3.8.7 5.3 1.6M22 12s-3.6 7-10 7c-2 0-3.8-.7-5.3-1.6"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-      <path
-        d="m4 4 16 16"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}

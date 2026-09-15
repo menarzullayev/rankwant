@@ -10,6 +10,7 @@ import {
 import { useMemo, useState } from "react";
 
 import { CountryFlag } from "@/components/ui/CountryFlag";
+import { Icon } from "@/components/ui/Icon";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
 import { countryName, countryOptions } from "@/lib/countries";
@@ -106,7 +107,7 @@ export function CountrySelect({
           placeholder={t(locale, "geo.searchPlaceholder")}
         />
         <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center rw-faint">
-          <ChevronDown />
+          <Icon name="nav.expandDown" className="size-4" />
         </span>
 
         <ComboboxOptions className="absolute z-60 mt-1 max-h-72 w-full overflow-y-auto rw-radius border rw-line rw-surface p-1.5 rw-shadow">
@@ -143,15 +144,6 @@ export function CountrySelect({
 /** Ochilish belgisi — `@/icons` dagi to'plamga bog'lanmaslik uchun shu
  *  yerda: tanlagich o'zi bilan birga ko'chiriladigan bo'lsin. */
 function ChevronDown() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="m6 9 6 6 6-6"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+  // ⚠️ Eskirgan — `Icon name="nav.expandDown"` ishlatiladi (registr).
+  return <Icon name="nav.expandDown" className="size-4" />;
 }
