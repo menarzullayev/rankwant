@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1345 strings.**
+**1361 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -216,6 +216,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `nav.skipToContent` | Asosiy mazmunga o'tish | Tiykarǵı mazmunǵa ótiw |  |
 | `nav.close` | Yopish | Jabıw |  |
 | `nav.menu` | Menyu | Menyu |  |
+| `nav.main` | Asosiy navigatsiya | Tiykarǵı navigatsiya |  |
 | `theme.light` | Yorug' rejim | Jaqtı rejim |  |
 | `theme.dark` | Qorong'u rejim | Qarańǵı rejim |  |
 | `theme.system` | Tizim | Sistema |  |
@@ -1366,3 +1367,18 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `editor.loading` | Muharrir yuklanmoqda… | Redaktor júklenbekte… |  |
 | `admin.text.step2Funnel` | 2-qadam (joy va maktab) | 2-qádem (orın hám mektep) |  |
 | `admin.text.stepPlaceholder` | 1-bosqich | 1-basqısh |  |
+| `customizer.nav` | Navigatsiya | Navigatsiya |  |
+| `customizer.navShape` | Panel shakli | Panel forması |  |
+| `customizer.sizeHint` | Butun interfeysga ta'sir qiladi — oraliqlar ham moslashadi. | Pútkil interfeyske tásir etedi — aralıqlar da ózgeredi. |  |
+| `customizer.scale` | Shkala zichligi | Shkala tıǵızlıǵı |  |
+| `customizer.scaleHint` | O'lchamlar orasidagi nisbat — katta sarlavhalar tezroq o'sadi. | Ólshemler arasındaǵı qatnas — úlken atlar tezirek ósedi. |  |
+| `navMode.sidenav.label` | Yon panel | Qaptal panel |  |
+| `navMode.sidenav.hint` | Menyu chapda; ikonkagacha yig'iladi. | Menyu shep tárepte; belgilerge shekem jıynaladı. |  |
+| `navMode.topnav.label` | Ustun panel | Ústki panel |  |
+| `navMode.topnav.hint` | Menyu tepada; guruhlar ochiladigan ro'yxatda. | Menyu ústinde; toparlar ashılatuǵın dizimde. |  |
+| `navShape.default.label` | Odatiy | Ádettegi |  |
+| `navShape.default.hint` | To'liq balandlik, yumaloq burchak. | Tolıq biyiklik, dóńgelek múyeshler. |  |
+| `navShape.slim.label` | Yupqa | Jińishke |  |
+| `navShape.slim.hint` | Bitta siqiq qator, keskin burchak. | Bir ıqsham qatar, tik múyeshler. |  |
+| `navShape.stacked.label` | Qavatma-qavat | Eki qatarlı |  |
+| `navShape.stacked.hint` | Ikki qator: ustida logo, ostida menyu. | Eki qatar: ústinde logotip, astında menyu. |  |

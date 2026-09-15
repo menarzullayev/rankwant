@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1345 strings.**
+**1361 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -216,6 +216,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `nav.skipToContent` | Asosiy mazmunga o'tish | Негизги мазмунга өтүү |  |
 | `nav.close` | Yopish | Жабуу |  |
 | `nav.menu` | Menyu | Меню |  |
+| `nav.main` | Asosiy navigatsiya | Негизги навигация |  |
 | `theme.light` | Yorug' rejim | Жарык режим |  |
 | `theme.dark` | Qorong'u rejim | Караңгы режим |  |
 | `theme.system` | Tizim | Системалык |  |
@@ -1366,3 +1367,18 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `editor.loading` | Muharrir yuklanmoqda… | Редактор жүктөлүүдө… |  |
 | `admin.text.step2Funnel` | 2-qadam (joy va maktab) | 2-кадам (орун жана мектеп) |  |
 | `admin.text.stepPlaceholder` | 1-bosqich | 1-баскыч |  |
+| `customizer.nav` | Navigatsiya | Навигация |  |
+| `customizer.navShape` | Panel shakli | Панелдин формасы |  |
+| `customizer.sizeHint` | Butun interfeysga ta'sir qiladi — oraliqlar ham moslashadi. | Бүтүндөй интерфейске таасир этет — аралыктар да өзгөрөт. |  |
+| `customizer.scale` | Shkala zichligi | Шкала тыгыздыгы |  |
+| `customizer.scaleHint` | O'lchamlar orasidagi nisbat — katta sarlavhalar tezroq o'sadi. | Өлчөмдөр ортосундагы катыш — чоң аталыштар тезирээк өсөт. |  |
+| `navMode.sidenav.label` | Yon panel | Каптал панель |  |
+| `navMode.sidenav.hint` | Menyu chapda; ikonkagacha yig'iladi. | Меню сол жакта; белгичелерге чейин жыйналат. |  |
+| `navMode.topnav.label` | Ustun panel | Үстүнкү панель |  |
+| `navMode.topnav.hint` | Menyu tepada; guruhlar ochiladigan ro'yxatda. | Меню үстүндө; топтор ачылуучу тизмеде. |  |
+| `navShape.default.label` | Odatiy | Демейки |  |
+| `navShape.default.hint` | To'liq balandlik, yumaloq burchak. | Толук бийиктик, тегерек бурчтар. |  |
+| `navShape.slim.label` | Yupqa | Ичке |  |
+| `navShape.slim.hint` | Bitta siqiq qator, keskin burchak. | Бир компакт сап, тик бурчтар. |  |
+| `navShape.stacked.label` | Qavatma-qavat | Кош катарлуу |  |
+| `navShape.stacked.hint` | Ikki qator: ustida logo, ostida menyu. | Эки сап: үстүндө логотип, астында меню. |  |

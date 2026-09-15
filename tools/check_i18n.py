@@ -87,6 +87,10 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
     # Qoraqalpoq tili o'zbek tiliga eng yaqini — xalqaro o'zlashmalar
     # ikkalasida ham aynan bir xil yoziladi.
     "kaa": {
+        # "Navigatsiya" — rus tilidan olingan va qaraqalpoqchada ham shunday
+        # yoziladi. Majburan o'girish sun'iy ko'rinardi (xuddi `nav.menu`
+        # va `settings.language` kabi qo'shnilari).
+        "customizer.nav",
         "nav.leaderboard", "contests.rated", "leaderboard.title", "qvant.balance",
         "nav.menu", "auth.password", "navGroup.lab", "navGroup.campus",
         "navGroup.platform", "nav.classroom", "nav.duels", "nav.tournaments",

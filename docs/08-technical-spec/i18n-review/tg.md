@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1345 strings.**
+**1361 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -216,6 +216,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `nav.skipToContent` | Asosiy mazmunga o'tish | Гузаштан ба мӯҳтавои асосӣ |  |
 | `nav.close` | Yopish | Пӯшидан |  |
 | `nav.menu` | Menyu | Меню |  |
+| `nav.main` | Asosiy navigatsiya | Навигатсияи асосӣ |  |
 | `theme.light` | Yorug' rejim | Ҳолати равшан |  |
 | `theme.dark` | Qorong'u rejim | Ҳолати торик |  |
 | `theme.system` | Tizim | Системавӣ |  |
@@ -1366,3 +1367,18 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `editor.loading` | Muharrir yuklanmoqda… | Муҳаррир бор мешавад… |  |
 | `admin.text.step2Funnel` | 2-qadam (joy va maktab) | Қадами 2 (ҷой ва мактаб) |  |
 | `admin.text.stepPlaceholder` | 1-bosqich | Марҳилаи 1 |  |
+| `customizer.nav` | Navigatsiya | Навигатсия |  |
+| `customizer.navShape` | Panel shakli | Шакли панел |  |
+| `customizer.sizeHint` | Butun interfeysga ta'sir qiladi — oraliqlar ham moslashadi. | Ба тамоми интерфейс таъсир мерасонад — фосилаҳо низ тағйир меёбанд. |  |
+| `customizer.scale` | Shkala zichligi | Зичии шкала |  |
+| `customizer.scaleHint` | O'lchamlar orasidagi nisbat — katta sarlavhalar tezroq o'sadi. | Таносуби байни андозаҳо — сарлавҳаҳои калон тезтар меафзоянд. |  |
+| `navMode.sidenav.label` | Yon panel | Панели паҳлӯ |  |
+| `navMode.sidenav.hint` | Menyu chapda; ikonkagacha yig'iladi. | Меню дар тарафи чап; то нишонаҳо ҷамъ мешавад. |  |
+| `navMode.topnav.label` | Ustun panel | Панели боло |  |
+| `navMode.topnav.hint` | Menyu tepada; guruhlar ochiladigan ro'yxatda. | Меню дар боло; гурӯҳҳо дар рӯйхати кушодашаванда. |  |
+| `navShape.default.label` | Odatiy | Пешфарз |  |
+| `navShape.default.hint` | To'liq balandlik, yumaloq burchak. | Баландии пурра, кунҷҳои мудаввар. |  |
+| `navShape.slim.label` | Yupqa | Борик |  |
+| `navShape.slim.hint` | Bitta siqiq qator, keskin burchak. | Як сатри паймон, кунҷҳои рост. |  |
+| `navShape.stacked.label` | Qavatma-qavat | Дуқатора |  |
+| `navShape.stacked.hint` | Ikki qator: ustida logo, ostida menyu. | Ду сатр: боло логотип, поён меню. |  |
