@@ -1185,6 +1185,124 @@
   outline-offset: 3px;
 }
 
+/* ═══ Judge natijasi — beshta ko'rinish (D56/D57) ═══════════════════════
+   Bitta ma'lumot manbasi (`lib/theme/verdict.ts`), beshta ko'rinish.
+   Farq faqat batafsil darajasida — ma'no bir xil. Ranglar inline keladi
+   (har verdikt o'z rangiga ega), shuning uchun bu yerda faqat tuzilma. */
+.rw-verdict {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* ① Faqat rangli nishon — zich jadval uchun */
+.rw-verdict-badge {
+  padding: 0.2em 0.7em;
+  border-radius: 999px;
+}
+
+/* ② Faqat ikonka — rangsiz. Eng izchil ko'rinish, lekin holat darhol
+   sezilmaydi; shuning uchun `title`/`aria-label` bilan keladi. */
+.rw-verdict-plain {
+  color: var(--rw-text-2);
+}
+
+/* ③④⑨ Ikonka + kod / to'liq nom / foiz */
+.rw-verdict-icon svg,
+.rw-verdict-full svg,
+.rw-verdict-percent svg {
+  flex: none;
+}
+.rw-verdict-pct {
+  font-style: normal;
+  font-size: 0.85em;
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ⑤ Rangli doira + oq ikonka — mobil va ixcham jadval */
+.rw-verdict-circle {
+  width: 1.6em;
+  height: 1.6em;
+  border-radius: 50%;
+  justify-content: center;
+  color: #fff;
+}
+
+/* ⑥ Rangli nuqta + kod — log ro'yxati uchun yengil variant */
+.rw-verdict-dot i {
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+  flex: none;
+}
+
+/* ⑦ Chegara + ikonka — ramkali kvadrat, faqat signal.
+   ⚠️ `--rw-line` emas, `--rw-divider`: `clay`/`neu` uslublarida
+   `--rw-line` ataylab `transparent` (chegara o'rniga soya ishlatiladi),
+   ya'ni ramka ko'rinmay qolardi. 60% aralashma — ko'rinadi, lekin
+   qichqirmaydi. */
+.rw-verdict-box {
+  width: 1.85em;
+  height: 1.85em;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--rw-divider) 60%, transparent);
+  border-radius: 0.55em;
+}
+
+/* ⑧ Chap chiziq + ikonka + nom — ogohlantirish bloki */
+.rw-verdict-bar {
+  padding: 0.15em 0.7em 0.15em 0.55em;
+  border-left: 3px solid;
+  border-radius: 0 0.45em 0.45em 0;
+  background: var(--rw-surface);
+}
+
+/* ⑩ Katta ikonka — natija kartasi.
+   Chegara ham `--rw-divider` dan (sabab ⑦ da) — `--rw-line` clay/neu da
+   shaffof bo'lgani uchun karta chegarasiz "havoda" turardi. */
+.rw-verdict-card {
+  flex-direction: column;
+  gap: 0.35em;
+  padding: 0.75em 1em;
+  border: 1px solid color-mix(in srgb, var(--rw-divider) 60%, transparent);
+  border-radius: 0.75em;
+  text-align: center;
+  min-width: 7em;
+}
+.rw-verdict-card-icon {
+  width: 2em;
+  height: 2em;
+}
+.rw-verdict-card b {
+  font-size: 0.8125rem;
+}
+.rw-verdict-card-hint {
+  font-size: 0.6875rem;
+  color: var(--rw-text-2);
+  font-weight: 400;
+  white-space: normal;
+}
+
+/* `auto` — ekranga qarab ko'rinish tanlanadi. Uch nusxa chiziladi, CSS
+   faqat bittasini ko'rsatadi: `matchMedia` SSR'da chaqnash berardi
+   (serverda o'lcham noma'lum), CSS esa buni chaqnashsiz bajaradi. */
+.rw-only-mobile { display: inline-flex; }
+.rw-only-tablet,
+.rw-only-desktop { display: none; }
+@media (min-width: 640px) {
+  .rw-only-mobile { display: none; }
+  .rw-only-tablet { display: inline-flex; }
+}
+@media (min-width: 1024px) {
+  .rw-only-tablet { display: none; }
+  .rw-only-desktop { display: inline-flex; }
+}
+
 /* Kontent kengligi (D48). Qiymat `--rw-content-width` dan keladi
    (`lib/theme/apply.ts`), sozlagichda 1000–1800 px oralig'ida erkin
    tanlanadi. Ilgari Tailwind sinfi (`max-w-[1400px]`) olti joyda qotib

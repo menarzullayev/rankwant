@@ -33,8 +33,12 @@ def markdown_files() -> list[Path]:
         # `test-results` — Playwright yiqilganda yozadigan nusxa. U hujjat
         # emas, lekin ichida sahifa matni bo'lgani uchun yozuv aralashuvi
         # tekshiruvini yiqitardi: darvoza sinovdan KEYIN ishlamay qolardi.
+        # `.claude` — agent ish daraxtlari (`git worktree`). Ular repo
+        # nusxasi, ya'ni `tools/check_docs.py` ning o'zi ham ichida bo'ladi;
+        # skanerlansa o'sha nusxadagi misol matnlar haqiqiy muammo bo'lib
+        # ko'rinadi va darvoza doim qizil bo'ladi.
         if not any(
-            part in {".git", "node_modules", ".venv", "test-results", "playwright-report"}
+            part in {".git", "node_modules", ".venv", "test-results", "playwright-report", ".claude"}
             for part in p.parts
         )
         # `i18n-review/` — ikki tilli jadval: bir qatorda o'zbekcha (lotin)
@@ -147,17 +151,21 @@ def _source_files() -> list[Path]:
 
     ⚠️ `.workbuddy-ai/` ham chiqariladi: agent xotirasi manba emas, ichida
     o'sha buzuq namunalar sitata sifatida yashaydi.
+
+    ⚠️ `.claude/` ham chiqariladi: u yerda agent ish daraxtlari
+    (`git worktree`) turadi — ular repo nusxasi, ya'ni `tools/` ning o'zi
+    ham ichida. Chiqarilmasa o'sha nusxadagi misollar qoidaga tushadi.
     """
     out: list[Path] = []
     for suffix in (".ts", ".tsx", ".py"):
         for path in ROOT.rglob(f"*{suffix}"):
             if any(
-                part in {".git", "node_modules", ".next", ".venv", ".tmp", "__pycache__"}
+                part in {".git", "node_modules", ".next", ".venv", ".tmp", "__pycache__", ".claude"}
                 for part in path.parts
             ):
                 continue
             # Testlar ham, agent xotirasi ham manba emas — sababi docstring'da.
-            if path.relative_to(ROOT).parts[0] in {"tools", ".workbuddy-ai"}:
+            if path.relative_to(ROOT).parts[0] in {"tools", ".workbuddy-ai", ".claude"}:
                 continue
             out.append(path)
     return sorted(out)

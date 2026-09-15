@@ -213,6 +213,16 @@ ALLOWED_LITERALS = {
     # component: it cannot await the request locale. These keep the brand
     # name plus one noun — the honest state, not a translated one.
     "RankWant musobaqasi", "RankWant masalasi",
+    # Judge verdict names. International terms: LeetCode, Codeforces and
+    # CodeChef all show "Accepted" untranslated, and a translated verdict
+    # would break the muscle memory of anyone who has used another judge.
+    # The short codes (AC/WA/TLE) sit next to them in `lib/theme/verdict.ts`.
+    # Their *explanations* (`verdict.hint.*`) ARE translated — a newcomer
+    # needs the plain-language line, the name itself stays as it is.
+    "Accepted", "Wrong Answer", "Time Limit Exceeded",
+    "Memory Limit Exceeded", "Runtime Error", "Compilation Error",
+    "Presentation Error", "Output Limit Exceeded", "Internal Error",
+    "Pending",
 }
 
 #: A short list of unmistakable Uzbek stems. NOT used to decide "is this

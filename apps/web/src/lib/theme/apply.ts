@@ -12,6 +12,7 @@
 import type { A11yPrefs, AppearancePrefs } from "@/lib/api";
 import { clampNavMode, clampNavShape } from "@/layout/nav-config";
 import { applyTypography, clampWidth } from "@/lib/theme/typography";
+import { DEFAULT_VERDICT_VARIANT } from "@/lib/theme/verdict";
 import {
   AA_TARGET,
   accentInk,
@@ -155,6 +156,12 @@ export function applyAppearance(appearance: AppearancePrefs) {
   const pattern = appearance.pattern ?? DEFAULT_PATTERN;
   if (pattern !== DEFAULT_PATTERN) root.dataset.pattern = pattern;
   else delete root.dataset.pattern;
+
+  // Judge natijasi ko'rinishi (D57). Atribut `data-verdict` — SSR script
+  // ham xuddi shu nomni yozadi, ya'ni birinchi chizishda mos keladi.
+  const vStyle = appearance.verdictStyle ?? DEFAULT_VERDICT_VARIANT;
+  if (vStyle !== DEFAULT_VERDICT_VARIANT) root.dataset.verdict = vStyle;
+  else delete root.dataset.verdict;
 }
 
 /** Rang ajratolmaslik uchun TUSLAR (D44).

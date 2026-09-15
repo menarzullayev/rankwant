@@ -8,6 +8,7 @@
 // yozilsa, ikkisi vaqt o'tib ajralib ketardi (va `check_hardcoded.py`
 // ularni qattiq yozilgan matn deb topardi).
 import type { NavMode, NavShape } from "@/layout/nav-config";
+import type { VerdictVariant } from "@/lib/theme/verdict";
 
 /**
  * Brauzer va server bir xil manzildan foydalana olmaydi: brauzer host'dagi
@@ -811,6 +812,8 @@ export type AppearancePrefs = {
   card?: CardStyle;
   /** Fon naqshi (D55). `none` — tekis fon. */
   pattern?: BgPattern;
+  /** Judge natijasi ko'rinishi (D57). `auto` — ekranga qarab. */
+  verdictStyle?: VerdictVariant;
 };
 
 export type A11yPrefs = {

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1394 strings.**
+**1427 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -1394,6 +1394,39 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.pattern.diagonal` | Diagonal | Диагональ |  |
 | `customizer.pattern.mesh` | Tuman | Тұман |  |
 | `customizer.patternHint` | Kontent orqasida turadi va matnni to'smaydi. | Мазмұнның артында тұрады және мәтінді жаппайды. |  |
+| `customizer.verdict` | Natija ko'rinishi | Result style |  |
+| `verdict.style.auto` | Avtomatik | Automatic |  |
+| `verdict.style.autoHint` | Shaklni ekranga qarab tanlaydi: telefonda doira, planshetda ikonka, kompyuterda to'liq nom. | Picks the shape by screen: circle on phone, icon on tablet, full name on desktop. |  |
+| `verdict.style.badge` | Faqat nishon | Badge only |  |
+| `verdict.style.badgeHint` | Rangli nishonda qisqa kod. Ixcham — zich jadvallar uchun. | Short code on a coloured pill. Compact — for dense tables. |  |
+| `verdict.style.plain` | Faqat ikonka | Тек қана белгіше |  |
+| `verdict.style.plainHint` | Faqat ikonka, rangsiz. Eng izchil ko'rinish — lekin holat darhol sezilmaydi. | Тек қана белгіше, түссіз. Ең біркелкі көрініс, бірақ күйі бірден байқалмайды. |  |
+| `verdict.style.icon` | Ikonka va rang | Icon + colour |  |
+| `verdict.style.iconHint` | Ikonka, qisqa kod va natija rangi. Eng tez o'qiladi. | Icon, short code and result colour. Reads fastest. |  |
+| `verdict.style.full` | Ikonka, rang va nom | Icon + colour + name |  |
+| `verdict.style.fullHint` | To'liq natija nomi izohi bilan. Ko'proq joy egallaydi. | Full result name with an explanation. Takes more room. |  |
+| `verdict.style.circle` | Doira va ikonka | Circle + icon |  |
+| `verdict.style.circleHint` | To'ldirilgan doirada oq ikonka. Eng kichik — mobil va tor qatorlar uchun. | Filled circle with a white icon. Smallest — for mobile and tight rows. |  |
+| `verdict.style.dot` | Nuqta va kod | Нүкте мен код |  |
+| `verdict.style.dotHint` | Rangli nuqta va qisqa kod. Jadvaldan yengilroq — log ro'yxatlari uchun. | Түсті нүкте және қысқа код. Кестеден жеңіл — лог тізімдері үшін. |  |
+| `verdict.style.box` | Chegara va ikonka | Жиек және белгіше |  |
+| `verdict.style.boxHint` | Ramkali kvadrat ichida ikonka. Faqat signal — matnsiz, lekin ajralib turadi. | Жиектелген шаршы ішіндегі белгіше. Тек сигнал — мәтінсіз, бірақ көзге түседі. |  |
+| `verdict.style.bar` | Chap chiziq va nom | Сол жақтағы жолақ және атау |  |
+| `verdict.style.barHint` | Chap tomonda rangli chiziq, yonida ikonka va to'liq nom. Ogohlantirishlar uchun. | Сол жақта түсті жолақ, қасында белгіше мен толық атау. Ескертулер үшін. |  |
+| `verdict.style.percent` | Ikonka va foiz | Белгіше және пайыз |  |
+| `verdict.style.percentHint` | Ikonka, qisqa kod va natija foizi. Baholash va qisman natijalar uchun. | Белгіше, қысқа код және нәтиже пайызы. Бағалау және ішінара нәтижелер үшін. |  |
+| `verdict.style.card` | Katta karta | Large card |  |
+| `verdict.style.cardHint` | Katta ikonka izohi bilan. Masala sahifasidagi natija paneli uchun. | Big icon with a description. For the result panel on a problem page. |  |
+| `verdict.hint.AC` | Barcha testlar o'tdi | All tests passed |  |
+| `verdict.hint.WA` | Javob kutilganiga mos emas | Output does not match |  |
+| `verdict.hint.TLE` | Belgilangan vaqtdan uzoq ishladi | Ran longer than allowed |  |
+| `verdict.hint.MLE` | Belgilangan xotiradan ko'p ishlatdi | Used more memory than allowed |  |
+| `verdict.hint.RE` | Dastur ishlash paytida to'xtadi | Program crashed while running |  |
+| `verdict.hint.CE` | Kod kompilyatsiya bo'lmadi | Code did not compile |  |
+| `verdict.hint.PE` | Ortiqcha bo'sh joy yoki qator | Extra spaces or line breaks |  |
+| `verdict.hint.OLE` | Juda ko'p ma'lumot chiqardi | Printed too much output |  |
+| `verdict.hint.IE` | Tekshiruvchi xatosi — sizda emas | Judge error, not your fault |  |
+| `verdict.hint.PD` | Navbatda kutilmoqda | Waiting in the queue |  |
 | `customizer.exportFile` | Faylga saqlash | Файлға сақтау |  |
 | `customizer.importFile` | Fayldan yuklash | Файлдан жүктеу |  |
 | `customizer.importError.parse` | Fayl to'g'ri JSON emas. | Файл дұрыс JSON емес. |  |

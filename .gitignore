@@ -41,6 +41,12 @@ staticfiles/
 .idea/
 .vscode/
 
+# Agent ish daraxtlari. `.claude/worktrees/` — `git worktree` nusxalari, ya'ni
+# repo'ning TO'LIQ ko'chirmasi (o'z `tools/`, `apps/` bilan). Kuzatilsa
+# tasodifan commit qilinishi mumkin edi; `tools/check_docs.py` ham ularni
+# skanerlab, o'sha nusxadagi misol matnlarni haqiqiy xato deb o'qirdi.
+.claude/
+
 # Bake-off natijalari (mahalliy o'lchov)
 services/bakeoff/result-*-scratch.md
 

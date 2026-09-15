@@ -16,6 +16,11 @@ import {
   type AccentError,
 } from "@/lib/theme/apply";
 import { accentToHex, hexToAccent } from "@/lib/theme/color";
+import {
+  VERDICT_VARIANTS,
+  clampVerdictVariant,
+} from "@/lib/theme/verdict";
+import { Verdict } from "@/components/ui/Verdict";
 import { exportAppearance, importAppearance } from "@/lib/theme/share";
 import { TEMPLATES } from "@/lib/theme/templates";
 import {
@@ -335,6 +340,7 @@ function AppearanceTab() {
       <NavShapeSection />
       <WidthSection />
       <LookSection />
+      <VerdictSection />
     </>
   );
 }
@@ -645,6 +651,42 @@ function LookSection() {
         </p>
       </Section>
     </>
+  );
+}
+
+/** Judge natijasi ko'rinishi (D57).
+ *
+ *  Beshta variant — hammasi bir xil ma'lumotdan, farq batafsil darajasida.
+ *  Tanlov ostida **jonli namuna**: uchta verdikt (AC · WA · TLE) shu
+ *  ko'rinishda chiziladi, ya'ni odam bosmasdan natijani ko'radi. */
+function VerdictSection() {
+  const locale = useLocale();
+  const { appearance, setAppearance } = useCustomizer();
+  const current = clampVerdictVariant(appearance.verdictStyle);
+  const def = VERDICT_VARIANTS.find((v) => v.id === current) ?? VERDICT_VARIANTS[0];
+
+  return (
+    <Section title={t(locale, "customizer.verdict")}>
+      <div className="flex flex-wrap gap-2">
+        {VERDICT_VARIANTS.map((v) => (
+          <button
+            key={v.id}
+            type="button"
+            aria-pressed={current === v.id}
+            onClick={() => setAppearance({ verdictStyle: v.id })}
+            className={chip(current === v.id)}
+          >
+            {t(locale, v.labelKey)}
+          </button>
+        ))}
+      </div>
+      <div className="mt-3 flex flex-wrap items-center gap-3 rw-radius-sm border rw-line p-3">
+        <Verdict verdict="AC" variant={current} percent={100} />
+        <Verdict verdict="WA" variant={current} percent={40} />
+        <Verdict verdict="TLE" variant={current} />
+      </div>
+      <p className="mt-2 text-theme-xs rw-faint">{t(locale, def.hintKey)}</p>
+    </Section>
   );
 }
 

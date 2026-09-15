@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1394 strings.**
+**1427 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -1394,6 +1394,39 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.pattern.diagonal` | Diagonal | Диагонал |  |
 | `customizer.pattern.mesh` | Tuman | Думонак |  |
 | `customizer.patternHint` | Kontent orqasida turadi va matnni to'smaydi. | Дар қафои мундариҷа меистад ва матнро намепӯшад. |  |
+| `customizer.verdict` | Natija ko'rinishi | Result style |  |
+| `verdict.style.auto` | Avtomatik | Automatic |  |
+| `verdict.style.autoHint` | Shaklni ekranga qarab tanlaydi: telefonda doira, planshetda ikonka, kompyuterda to'liq nom. | Picks the shape by screen: circle on phone, icon on tablet, full name on desktop. |  |
+| `verdict.style.badge` | Faqat nishon | Badge only |  |
+| `verdict.style.badgeHint` | Rangli nishonda qisqa kod. Ixcham — zich jadvallar uchun. | Short code on a coloured pill. Compact — for dense tables. |  |
+| `verdict.style.plain` | Faqat ikonka | Танҳо нишона |  |
+| `verdict.style.plainHint` | Faqat ikonka, rangsiz. Eng izchil ko'rinish — lekin holat darhol sezilmaydi. | Танҳо нишона, беранг. Намуди яксонтарин, вале ҳолат дарҳол намоён намешавад. |  |
+| `verdict.style.icon` | Ikonka va rang | Icon + colour |  |
+| `verdict.style.iconHint` | Ikonka, qisqa kod va natija rangi. Eng tez o'qiladi. | Icon, short code and result colour. Reads fastest. |  |
+| `verdict.style.full` | Ikonka, rang va nom | Icon + colour + name |  |
+| `verdict.style.fullHint` | To'liq natija nomi izohi bilan. Ko'proq joy egallaydi. | Full result name with an explanation. Takes more room. |  |
+| `verdict.style.circle` | Doira va ikonka | Circle + icon |  |
+| `verdict.style.circleHint` | To'ldirilgan doirada oq ikonka. Eng kichik — mobil va tor qatorlar uchun. | Filled circle with a white icon. Smallest — for mobile and tight rows. |  |
+| `verdict.style.dot` | Nuqta va kod | Нуқта ва рамз |  |
+| `verdict.style.dotHint` | Rangli nuqta va qisqa kod. Jadvaldan yengilroq — log ro'yxatlari uchun. | Нуқтаи рангӣ ва рамзи кӯтоҳ. Азтар аз ҷадвал — барои рӯйхати логҳо. |  |
+| `verdict.style.box` | Chegara va ikonka | Чорчӯба ва нишона |  |
+| `verdict.style.boxHint` | Ramkali kvadrat ichida ikonka. Faqat signal — matnsiz, lekin ajralib turadi. | Нишона дар дохили чорчӯбаи чоркунҷа. Танҳо сигнал — бе матн, вале намоён. |  |
+| `verdict.style.bar` | Chap chiziq va nom | Хатти чап ва ном |  |
+| `verdict.style.barHint` | Chap tomonda rangli chiziq, yonida ikonka va to'liq nom. Ogohlantirishlar uchun. | Хатти рангӣ дар тарафи чап, дар паҳлӯяш нишона ва номи пурра. Барои огоҳиномаҳо. |  |
+| `verdict.style.percent` | Ikonka va foiz | Нишона ва фоиз |  |
+| `verdict.style.percentHint` | Ikonka, qisqa kod va natija foizi. Baholash va qisman natijalar uchun. | Нишона, рамзи кӯтоҳ ва фоизи натиҷа. Барои баҳогузорӣ ва натиҷаҳои қисмӣ. |  |
+| `verdict.style.card` | Katta karta | Large card |  |
+| `verdict.style.cardHint` | Katta ikonka izohi bilan. Masala sahifasidagi natija paneli uchun. | Big icon with a description. For the result panel on a problem page. |  |
+| `verdict.hint.AC` | Barcha testlar o'tdi | All tests passed |  |
+| `verdict.hint.WA` | Javob kutilganiga mos emas | Output does not match |  |
+| `verdict.hint.TLE` | Belgilangan vaqtdan uzoq ishladi | Ran longer than allowed |  |
+| `verdict.hint.MLE` | Belgilangan xotiradan ko'p ishlatdi | Used more memory than allowed |  |
+| `verdict.hint.RE` | Dastur ishlash paytida to'xtadi | Program crashed while running |  |
+| `verdict.hint.CE` | Kod kompilyatsiya bo'lmadi | Code did not compile |  |
+| `verdict.hint.PE` | Ortiqcha bo'sh joy yoki qator | Extra spaces or line breaks |  |
+| `verdict.hint.OLE` | Juda ko'p ma'lumot chiqardi | Printed too much output |  |
+| `verdict.hint.IE` | Tekshiruvchi xatosi — sizda emas | Judge error, not your fault |  |
+| `verdict.hint.PD` | Navbatda kutilmoqda | Waiting in the queue |  |
 | `customizer.exportFile` | Faylga saqlash | Ба файл нигоҳ доштан |  |
 | `customizer.importFile` | Fayldan yuklash | Аз файл бор кардан |  |
 | `customizer.importError.parse` | Fayl to'g'ri JSON emas. | Файл JSON-и дуруст нест. |  |

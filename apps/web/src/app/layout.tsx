@@ -242,6 +242,7 @@ r.dataset.nav=(a.navMode==="topnav")?"topnav":"sidenav";
 r.dataset.navShape=(a.navShape==="slim"||a.navShape==="stacked")?a.navShape:"default";
 if(a.card&&a.card!=="default")r.dataset.card=a.card;
 if(a.pattern&&a.pattern!=="none")r.dataset.pattern=a.pattern;
+if(a.verdictStyle&&a.verdictStyle!=="auto")r.dataset.verdict=a.verdictStyle;
 var k=JSON.parse(localStorage.getItem("rw:a11y")||"{}");
 if(k.vision&&k.vision!=="normal")r.dataset.vision=k.vision;
 if(k.motion==="reduce")r.dataset.motion="reduce";
