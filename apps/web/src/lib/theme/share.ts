@@ -24,6 +24,8 @@ import {
   clampWidth,
 } from "@/lib/theme/typography";
 import { clampNavMode, clampNavShape } from "@/layout/nav-config";
+import { clampVerdictVariant } from "@/lib/theme/verdict";
+import { clampStatusVariant } from "@/lib/theme/status";
 import { DEFAULT_CARD, DEFAULT_PATTERN } from "@/lib/theme/apply";
 
 /** URL da saqlanadigan maydonlar. `KEYS` — tozalash uchun ham ishlatiladi. */
@@ -42,6 +44,8 @@ const KEYS = [
   "navShape",
   "card",
   "pattern",
+  "verdictStyle",
+  "statusStyle",
 ] as const;
 
 const DENSITIES = ["compact", "comfortable", "spacious"] as const;
@@ -88,6 +92,12 @@ export function encodeAppearance(appearance: AppearancePrefs): string {
   }
   if (appearance.pattern && appearance.pattern !== "none") {
     params.set("pattern", appearance.pattern);
+  }
+  if (appearance.verdictStyle && appearance.verdictStyle !== "auto") {
+    params.set("verdictStyle", appearance.verdictStyle);
+  }
+  if (appearance.statusStyle && appearance.statusStyle !== "auto") {
+    params.set("statusStyle", appearance.statusStyle);
   }
   return params.toString();
 }
@@ -151,6 +161,15 @@ export function decodeAppearance(search: string): AppearancePrefs | null {
   const pattern = params.get("pattern");
   if (pattern && (PATTERNS as readonly string[]).includes(pattern)) {
     out.pattern = pattern as AppearancePrefs["pattern"];
+  }
+
+  // Verdikt va holat ko'rinishlari — notanish qiymat standartga tushadi
+  // (`clamp*`), ya'ni begona havola sozlamani buza olmaydi.
+  if (params.has("verdictStyle")) {
+    out.verdictStyle = clampVerdictVariant(params.get("verdictStyle"));
+  }
+  if (params.has("statusStyle")) {
+    out.statusStyle = clampStatusVariant(params.get("statusStyle"));
   }
 
   return Object.keys(out).length ? out : null;
@@ -276,6 +295,9 @@ export function importAppearance(raw: string): ImportResult {
     (PATTERNS as readonly string[]).includes(a.pattern)
       ? a.pattern
       : DEFAULT_PATTERN;
+  // `clamp*` — fayl qo'lda tahrirlanishi mumkin, ya'ni ishonchsiz manba.
+  appearance.verdictStyle = clampVerdictVariant(a.verdictStyle);
+  appearance.statusStyle = clampStatusVariant(a.statusStyle);
 
   const k = (row.a11y ?? {}) as A11yPrefs;
   const a11y: A11yPrefs = {

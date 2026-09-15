@@ -3,7 +3,7 @@
 import { useCustomizer } from "@/context/CustomizerContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
-import { VERDICT_ICONS, VerdictIconQuestion } from "@/icons/verdict-icons";
+import { VERDICT_ICONS, PhQuestion } from "@/icons/phosphor";
 import {
   DEFAULT_VERDICT_VARIANT,
   GROUP_HINT_KEY,
@@ -65,7 +65,7 @@ export function Verdict({
   const code = known ? def.key : String(verdict ?? "").trim();
   if (!code) return null;
 
-  const Icon = known ? VERDICT_ICONS[def.key] : VerdictIconQuestion;
+  const Icon = known ? VERDICT_ICONS[def.key] : PhQuestion;
   const { color, soft } = verdictColors(def);
   const label = known ? t(locale, def.labelKey) : code;
   const hintKey = known ? (def.hintKey ?? GROUP_HINT_KEY(def.group)) : "verdict.group.unknown.hint";

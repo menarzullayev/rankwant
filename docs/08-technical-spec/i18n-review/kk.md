@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1432 strings.**
+**1463 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -393,6 +393,36 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.deleteConfirm` | Bu amalni qaytarib bo'lmaydi. Davom etasizmi? | Бұл әрекетті қайтару мүмкін емес. Жалғастырасыз ба? |  |
 | `settings.deleteError` | Parol noto'g'ri | Құпия сөз қате |  |
 | `standings.you` | Sizning o'rningiz | Сіздің орныңыз |  |
+| `status.ok` | Muvaffaqiyat | Сәтті |  |
+| `status.warn` | Ogohlantirish | Ескерту |  |
+| `status.bad` | Xato | Қате |  |
+| `status.info` | Ma'lumot | Ақпарат |  |
+| `status.hint.ok` | Amal muvaffaqiyatli bajarildi. | Әрекет сәтті орындалды. |  |
+| `status.hint.warn` | Ehtiyot bo'ling — biror narsa chegaraga yaqin. | Абайлаңыз — бір нәрсе шекке жақын. |  |
+| `status.hint.bad` | Amal bajarilmadi — sababini ko'ring. | Әрекет орындалмады — себебін қараңыз. |  |
+| `status.hint.info` | Qo'shimcha ma'lumot. | Қосымша ақпарат. |  |
+| `status.style.auto` | Avtomatik | Автоматты |  |
+| `status.style.autoHint` | Shaklni ekranga qarab tanlaydi: telefonda doira, kengroqda ikonka va matn. | Түрін экранға қарап таңдайды: телефонда шеңбер, кеңіректе белгіше мен мәтін. |  |
+| `status.style.text` | Faqat rangli matn | Тек түсті мәтін |  |
+| `status.style.textHint` | Rang va so'z, ikonka yo'q. Eng yengil, lekin rangni ko'rmaydiganlar uchun signal yo'q. | Түс пен сөз, белгіше жоқ. Ең жеңіл, бірақ түсті ажыратпайтындарға сигнал жоқ. |  |
+| `status.style.iconText` | Ikonka va matn | Белгіше және мәтін |  |
+| `status.style.iconTextHint` | Ikonka, rang va so'z. Eng ko'p ishlatiladigan ko'rinish. | Белгіше, түс және сөз. Ең көп қолданылатын түр. |  |
+| `status.style.badge` | To'ldirilgan nishon | Толтырылған белгі |  |
+| `status.style.badgeHint` | Yumshoq fonda yumaloq nishon. Ro'yxat qatorlari uchun ixcham. | Жұмсақ фондағы дөңгелек белгі. Тізім жолдары үшін ықшам. |  |
+| `status.style.circle` | Doira va ikonka | Шеңбер және белгіше |  |
+| `status.style.circleHint` | To'ldirilgan doirada oq ikonka. Eng kichik — zich jadval uchun. | Толтырылған шеңберде ақ белгіше. Ең кіші — тығыз кестелер үшін. |  |
+| `status.style.dot` | Nuqta va matn | Нүкте және мәтін |  |
+| `status.style.dotHint` | Rangli nuqta va so'z. Fon va ramka yo'q — yengil signal. | Түсті нүкте мен сөз. Фон мен жиек жоқ — жеңіл сигнал. |  |
+| `status.style.box` | Ramkali kvadrat | Жиекті шаршы |  |
+| `status.style.boxHint` | Ramkali kvadrat ichida ikonka. Faqat signal, matnsiz. | Жиекті шаршы ішіндегі белгіше. Тек сигнал, мәтінсіз. |  |
+| `status.style.alert` | Chap chiziq | Сол жақтағы жолақ |  |
+| `status.style.alertHint` | Chap tomonda rangli chiziq. Sahifa yuqorisidagi xabar uchun. | Сол жақта түсті жолақ. Беттің жоғарысындағы хабар үшін. |  |
+| `status.style.soft` | Yumshoq fonli karta | Жұмсақ фонды карта |  |
+| `status.style.softHint` | Yumshoq fon, ikonka, sarlavha va izoh. Forma natijasi uchun. | Жұмсақ фон, белгіше, тақырып және ескертпе. Форма нәтижесі үшін. |  |
+| `status.style.outline` | Ramkali karta | Жиекті карта |  |
+| `status.style.outlineHint` | Ramka, ikonka, sarlavha va izoh. Xato tafsiloti uchun. | Жиек, белгіше, тақырып және ескертпе. Қате егжей-тегжейі үшін. |  |
+| `status.style.stack` | Katta karta | Үлкен карта |  |
+| `status.style.stackHint` | Ikonka ustida, sarlavha va izoh ostida. Eng batafsil ko'rinish. | Белгіше жоғарыда, тақырып пен ескертпе төменде. Ең толық түр. |  |
 | `verdict.PENDING` | Navbatda | Кезекте |  |
 | `verdict.RUNNING` | Tekshirilmoqda | Тексерілуде |  |
 | `verdict.AC` | Qabul qilindi | Қабылданды |  |
@@ -1379,6 +1409,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.nav` | Navigatsiya | Навигация |  |
 | `customizer.navShape` | Panel shakli | Панель пішіні |  |
 | `customizer.sizeHint` | Butun interfeysga ta'sir qiladi — oraliqlar ham moslashadi. | Бүкіл интерфейске әсер етеді — аралықтар да өзгереді. |  |
+| `customizer.status` | Holat xabarlari | Күй хабарламалары |  |
 | `customizer.hex` | Rang kodi | Түс коды |  |
 | `customizer.lineHeight` | Qator balandligi | Жол биіктігі |  |
 | `customizer.tracking` | Harf oralig'i | Әріп аралығы |  |

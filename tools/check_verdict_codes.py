@@ -5,7 +5,7 @@ ajralib ketadi.
 
   * `apps/api/judging/verdicts.py` — haqiqiy manba (Django `TextChoices`).
   * `apps/web/src/lib/theme/verdict.ts` — rang, ikonka va guruh.
-  * `apps/web/src/icons/verdict-icons.tsx` — kod → ikonka xaritasi.
+  * `apps/web/src/icons/phosphor.tsx` — kod → ikonka xaritasi.
   * `apps/web/src/i18n/locales/*.ts` — `verdict.<KOD>` yorlig'i, 10 til.
 
 Bu **bir marta sodir bo'ldi**: API'da 23 ta kod bor edi, web'da 10 ta.
@@ -41,7 +41,7 @@ ROOT = Path(__file__).resolve().parent.parent
 
 API_FILE = ROOT / "apps/api/judging/verdicts.py"
 WEB_FILE = ROOT / "apps/web/src/lib/theme/verdict.ts"
-ICON_FILE = ROOT / "apps/web/src/icons/verdict-icons.tsx"
+ICON_FILE = ROOT / "apps/web/src/icons/phosphor.tsx"
 LOCALE_DIR = ROOT / "apps/web/src/i18n/locales"
 
 #: `AC = "AC", "Accepted"` — Django `TextChoices` qatori.
@@ -49,7 +49,7 @@ CHOICE_RE = re.compile(r"^\s{4}(?P<name>[A-Z][A-Z0-9_]*)\s*=\s*\"(?P<value>[A-Z0
 #: `  | "AC"` — `VerdictKey` birlashmasi a'zosi.
 UNION_RE = re.compile(r"^\s*\|\s*\"(?P<key>[A-Z][A-Z0-9_]*)\"", re.M)
 #: `  AC: VerdictIconCheckCircle,` — ikonka xaritasi qatori.
-ICONMAP_RE = re.compile(r"^\s*(?P<key>[A-Z][A-Z0-9_]*):\s*VerdictIcon", re.M)
+ICONMAP_RE = re.compile(r"^\s*(?P<key>[A-Z][A-Z0-9_]*):\s*Ph", re.M)
 #: `  "verdict.AC": "Accepted",` — i18n yorlig'i (`.hint`/`.style` emas).
 LABEL_RE = re.compile(r'^\s{2}"verdict\.(?P<key>[A-Z][A-Z0-9_]*)"\s*:', re.M)
 
@@ -111,7 +111,7 @@ def main() -> int:
     missing_icons = sorted(api - icons)
     if missing_icons:
         problems.append(
-            "`icons/verdict-icons.tsx` da yo'q (savol ikonkasi chiqadi): "
+            "`icons/phosphor.tsx` da yo'q (savol ikonkasi chiqadi): "
             + ", ".join(missing_icons)
         )
 

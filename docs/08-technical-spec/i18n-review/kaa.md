@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1432 strings.**
+**1463 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -393,6 +393,36 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.deleteConfirm` | Bu amalni qaytarib bo'lmaydi. Davom etasizmi? | Bul ámeldi qaytarıp bolmaydı. Dawam etesizbe? |  |
 | `settings.deleteError` | Parol noto'g'ri | Parol qáte |  |
 | `standings.you` | Sizning o'rningiz | Sizdiń orıńız |  |
+| `status.ok` | Muvaffaqiyat | Sátti |  |
+| `status.warn` | Ogohlantirish | Eskertiw |  |
+| `status.bad` | Xato | Qátelik |  |
+| `status.info` | Ma'lumot | Maǵlıwmat |  |
+| `status.hint.ok` | Amal muvaffaqiyatli bajarildi. | Ámel sátti orınlandı. |  |
+| `status.hint.warn` | Ehtiyot bo'ling — biror narsa chegaraga yaqin. | Abaýlań — bir nársе shekke jaqın. |  |
+| `status.hint.bad` | Amal bajarilmadi — sababini ko'ring. | Ámel orınlanbadı — sebebin kóriń. |  |
+| `status.hint.info` | Qo'shimcha ma'lumot. | Qosımsha maǵlıwmat. |  |
+| `status.style.auto` | Avtomatik | Avtomatik |  |
+| `status.style.autoHint` | Shaklni ekranga qarab tanlaydi: telefonda doira, kengroqda ikonka va matn. | Túrin ekranǵa qarap tańlaydı: telefonda sheńber, keńirekte belgi hám tekst. |  |
+| `status.style.text` | Faqat rangli matn | Tek túsli tekst |  |
+| `status.style.textHint` | Rang va so'z, ikonka yo'q. Eng yengil, lekin rangni ko'rmaydiganlar uchun signal yo'q. | Tús hám sóz, belgi joq. Eń jeńil, biraq tústi ajıratpaytuǵınlarǵa signal joq. |  |
+| `status.style.iconText` | Ikonka va matn | Belgi hám tekst |  |
+| `status.style.iconTextHint` | Ikonka, rang va so'z. Eng ko'p ishlatiladigan ko'rinish. | Belgi, tús hám sóz. Eń kóp qollanılatuǵın kórinis. |  |
+| `status.style.badge` | To'ldirilgan nishon | Toltırılǵan belgi |  |
+| `status.style.badgeHint` | Yumshoq fonda yumaloq nishon. Ro'yxat qatorlari uchun ixcham. | Jumsaq fondaǵı dóńgelek belgi. Dizim qatarları ushın ıqsham. |  |
+| `status.style.circle` | Doira va ikonka | Sheńber hám belgi |  |
+| `status.style.circleHint` | To'ldirilgan doirada oq ikonka. Eng kichik — zich jadval uchun. | Toltırılǵan sheńberdegi aq belgi. Eń kishi — tıǵız kesteler ushın. |  |
+| `status.style.dot` | Nuqta va matn | Nokat hám tekst |  |
+| `status.style.dotHint` | Rangli nuqta va so'z. Fon va ramka yo'q — yengil signal. | Túsli nokat hám sóz. Fon hám shegara joq — jeńil signal. |  |
+| `status.style.box` | Ramkali kvadrat | Shegaralı kvadrat |  |
+| `status.style.boxHint` | Ramkali kvadrat ichida ikonka. Faqat signal, matnsiz. | Shegaralı kvadrat ishindegi belgi. Tek signal, tekstsiz. |  |
+| `status.style.alert` | Chap chiziq | Shep sızıq |  |
+| `status.style.alertHint` | Chap tomonda rangli chiziq. Sahifa yuqorisidagi xabar uchun. | Shep tárepte túsli sızıq. Bettiń joqarısındaǵı xabar ushın. |  |
+| `status.style.soft` | Yumshoq fonli karta | Jumsaq fonlı karta |  |
+| `status.style.softHint` | Yumshoq fon, ikonka, sarlavha va izoh. Forma natijasi uchun. | Jumsaq fon, belgi, at hám eskertpe. Forma nátiyjesi ushın. |  |
+| `status.style.outline` | Ramkali karta | Shegaralı karta |  |
+| `status.style.outlineHint` | Ramka, ikonka, sarlavha va izoh. Xato tafsiloti uchun. | Shegara, belgi, at hám eskertpe. Qátelik bólshegi ushın. |  |
+| `status.style.stack` | Katta karta | Úlken karta |  |
+| `status.style.stackHint` | Ikonka ustida, sarlavha va izoh ostida. Eng batafsil ko'rinish. | Belgi joqarıda, at hám eskertpe tómende. Eń tolıq kórinis. |  |
 | `verdict.PENDING` | Navbatda | Gezekte |  |
 | `verdict.RUNNING` | Tekshirilmoqda | Tekseriliwde |  |
 | `verdict.AC` | Qabul qilindi | Qabıl etildi |  |
@@ -1379,6 +1409,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.nav` | Navigatsiya | Navigatsiya |  |
 | `customizer.navShape` | Panel shakli | Panel forması |  |
 | `customizer.sizeHint` | Butun interfeysga ta'sir qiladi — oraliqlar ham moslashadi. | Pútkil interfeyske tásir etedi — aralıqlar da ózgeredi. |  |
+| `customizer.status` | Holat xabarlari | Halat xabarları |  |
 | `customizer.hex` | Rang kodi | Reń kodi |  |
 | `customizer.lineHeight` | Qator balandligi | Qatar biyikligi |  |
 | `customizer.tracking` | Harf oralig'i | Hárip aralıǵı |  |

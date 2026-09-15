@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1432 strings.**
+**1463 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -393,6 +393,36 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.deleteConfirm` | Bu amalni qaytarib bo'lmaydi. Davom etasizmi? | Ин амалро баргардонидан мумкин нест. Идома медиҳед? |  |
 | `settings.deleteError` | Parol noto'g'ri | Парол нодуруст аст |  |
 | `standings.you` | Sizning o'rningiz | Ҷойи шумо |  |
+| `status.ok` | Muvaffaqiyat | Муваффақият |  |
+| `status.warn` | Ogohlantirish | Огоҳӣ |  |
+| `status.bad` | Xato | Хатогӣ |  |
+| `status.info` | Ma'lumot | Маълумот |  |
+| `status.hint.ok` | Amal muvaffaqiyatli bajarildi. | Амал бомуваффақият иҷро шуд. |  |
+| `status.hint.warn` | Ehtiyot bo'ling — biror narsa chegaraga yaqin. | Эҳтиёт бошед — чизе ба ҳад наздик аст. |  |
+| `status.hint.bad` | Amal bajarilmadi — sababini ko'ring. | Амал иҷро нашуд — сабабашро бубинед. |  |
+| `status.hint.info` | Qo'shimcha ma'lumot. | Маълумоти иловагӣ. |  |
+| `status.style.auto` | Avtomatik | Худкор |  |
+| `status.style.autoHint` | Shaklni ekranga qarab tanlaydi: telefonda doira, kengroqda ikonka va matn. | Шаклро аз рӯи экран интихоб мекунад: дар телефон доира, дар васеътар нишона ва матн. |  |
+| `status.style.text` | Faqat rangli matn | Танҳо матни рангӣ |  |
+| `status.style.textHint` | Rang va so'z, ikonka yo'q. Eng yengil, lekin rangni ko'rmaydiganlar uchun signal yo'q. | Ранг ва сухан, нишона нест. Сабуктарин, вале барои онҳое, ки рангро намебинанд, сигнал нест. |  |
+| `status.style.iconText` | Ikonka va matn | Нишона ва матн |  |
+| `status.style.iconTextHint` | Ikonka, rang va so'z. Eng ko'p ishlatiladigan ko'rinish. | Нишона, ранг ва сухан. Маъмултарин намуд. |  |
+| `status.style.badge` | To'ldirilgan nishon | Нишони пурра |  |
+| `status.style.badgeHint` | Yumshoq fonda yumaloq nishon. Ro'yxat qatorlari uchun ixcham. | Нишони мудаввар дар фони мулоим. Барои сатрҳои рӯйхат ҷамъбаст. |  |
+| `status.style.circle` | Doira va ikonka | Доира ва нишона |  |
+| `status.style.circleHint` | To'ldirilgan doirada oq ikonka. Eng kichik — zich jadval uchun. | Нишонаи сафед дар доираи пурра. Хурдтарин — барои ҷадвалҳои зич. |  |
+| `status.style.dot` | Nuqta va matn | Нуқта ва матн |  |
+| `status.style.dotHint` | Rangli nuqta va so'z. Fon va ramka yo'q — yengil signal. | Нуқтаи рангӣ ва сухан. Бе фон ва чорчӯба — сигнали сабук. |  |
+| `status.style.box` | Ramkali kvadrat | Чоркунҷаи чорчӯбадор |  |
+| `status.style.boxHint` | Ramkali kvadrat ichida ikonka. Faqat signal, matnsiz. | Нишона дар дохили чоркунҷаи чорчӯбадор. Танҳо сигнал, бе матн. |  |
+| `status.style.alert` | Chap chiziq | Хатти чап |  |
+| `status.style.alertHint` | Chap tomonda rangli chiziq. Sahifa yuqorisidagi xabar uchun. | Хатти рангӣ дар тарафи чап. Барои паёми болои саҳифа. |  |
+| `status.style.soft` | Yumshoq fonli karta | Корти фони мулоим |  |
+| `status.style.softHint` | Yumshoq fon, ikonka, sarlavha va izoh. Forma natijasi uchun. | Фони мулоим, нишона, сарлавҳа ва эзоҳ. Барои натиҷаи форм. |  |
+| `status.style.outline` | Ramkali karta | Корти чорчӯбадор |  |
+| `status.style.outlineHint` | Ramka, ikonka, sarlavha va izoh. Xato tafsiloti uchun. | Чорчӯба, нишона, сарлавҳа ва эзоҳ. Барои тафсилоти хатогӣ. |  |
+| `status.style.stack` | Katta karta | Корти калон |  |
+| `status.style.stackHint` | Ikonka ustida, sarlavha va izoh ostida. Eng batafsil ko'rinish. | Нишона дар боло, сарлавҳа ва эзоҳ дар поён. Муфассалтарин намуд. |  |
 | `verdict.PENDING` | Navbatda | Дар навбат |  |
 | `verdict.RUNNING` | Tekshirilmoqda | Санҷида мешавад |  |
 | `verdict.AC` | Qabul qilindi | Қабул шуд |  |
@@ -1379,6 +1409,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.nav` | Navigatsiya | Навигатсия |  |
 | `customizer.navShape` | Panel shakli | Шакли панел |  |
 | `customizer.sizeHint` | Butun interfeysga ta'sir qiladi — oraliqlar ham moslashadi. | Ба тамоми интерфейс таъсир мерасонад — фосилаҳо низ тағйир меёбанд. |  |
+| `customizer.status` | Holat xabarlari | Паёмҳои ҳолат |  |
 | `customizer.hex` | Rang kodi | Рамзи ранг |  |
 | `customizer.lineHeight` | Qator balandligi | Баландии сатр |  |
 | `customizer.tracking` | Harf oralig'i | Фосилаи ҳарфҳо |  |

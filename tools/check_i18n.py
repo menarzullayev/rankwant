@@ -103,6 +103,9 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         "customizer.nav",
         # "Tuman" qaraqalpoqchada ham, o'zbekchada ham bir xil yoziladi.
         "customizer.pattern.mesh",
+        # "Avtomatik" — qaraqalpoqchada ham shunday yoziladi (rus tilidan
+        # olingan, "avtomat" dan). Majburan o'girish sun'iy ko'rinardi.
+        "status.style.auto",
         "nav.leaderboard", "contests.rated", "leaderboard.title", "qvant.balance",
         "nav.menu", "auth.password", "navGroup.lab", "navGroup.campus",
         "navGroup.platform", "nav.classroom", "nav.duels", "nav.tournaments",

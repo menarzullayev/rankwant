@@ -13,6 +13,7 @@ import type { A11yPrefs, AppearancePrefs } from "@/lib/api";
 import { clampNavMode, clampNavShape } from "@/layout/nav-config";
 import { applyTypography, clampWidth } from "@/lib/theme/typography";
 import { DEFAULT_VERDICT_VARIANT } from "@/lib/theme/verdict";
+import { DEFAULT_STATUS_VARIANT } from "@/lib/theme/status";
 import {
   AA_TARGET,
   accentInk,
@@ -162,6 +163,12 @@ export function applyAppearance(appearance: AppearancePrefs) {
   const vStyle = appearance.verdictStyle ?? DEFAULT_VERDICT_VARIANT;
   if (vStyle !== DEFAULT_VERDICT_VARIANT) root.dataset.verdict = vStyle;
   else delete root.dataset.verdict;
+
+  // Holat xabari ko'rinishi (D60). `data-status` — verdikt bilan bir xil
+  // naqsh, lekin boshqa ma'no (verdikt — judge natijasi, holat — amal).
+  const sStyle = appearance.statusStyle ?? DEFAULT_STATUS_VARIANT;
+  if (sStyle !== DEFAULT_STATUS_VARIANT) root.dataset.status = sStyle;
+  else delete root.dataset.status;
 }
 
 /** Rang ajratolmaslik uchun TUSLAR (D44).

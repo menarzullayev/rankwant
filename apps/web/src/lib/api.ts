@@ -9,6 +9,7 @@
 // ularni qattiq yozilgan matn deb topardi).
 import type { NavMode, NavShape } from "@/layout/nav-config";
 import type { VerdictVariant } from "@/lib/theme/verdict";
+import type { StatusVariant } from "@/lib/theme/status";
 
 /**
  * Brauzer va server bir xil manzildan foydalana olmaydi: brauzer host'dagi
@@ -814,6 +815,8 @@ export type AppearancePrefs = {
   pattern?: BgPattern;
   /** Judge natijasi ko'rinishi (D57). `auto` — ekranga qarab. */
   verdictStyle?: VerdictVariant;
+  /** Holat xabari ko'rinishi (D60). `auto` — ekranga qarab. */
+  statusStyle?: StatusVariant;
 };
 
 export type A11yPrefs = {

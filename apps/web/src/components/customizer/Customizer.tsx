@@ -20,7 +20,9 @@ import {
   VERDICT_VARIANTS,
   clampVerdictVariant,
 } from "@/lib/theme/verdict";
+import { STATUS_VARIANTS, clampStatusVariant } from "@/lib/theme/status";
 import { Verdict } from "@/components/ui/Verdict";
+import { Status } from "@/components/ui/Status";
 import { exportAppearance, importAppearance } from "@/lib/theme/share";
 import { TEMPLATES } from "@/lib/theme/templates";
 import {
@@ -341,6 +343,7 @@ function AppearanceTab() {
       <WidthSection />
       <LookSection />
       <VerdictSection />
+      <StatusSection />
     </>
   );
 }
@@ -689,6 +692,44 @@ function VerdictSection() {
       <div className="mt-3 flex flex-wrap items-center gap-3 rw-radius-sm border rw-divider p-3">
         {sample.map((v) => (
           <Verdict key={v} verdict={v} variant={current} percent={v === "AC" ? 100 : undefined} />
+        ))}
+      </div>
+      <p className="mt-2 text-theme-xs rw-faint">{t(locale, def.hintKey)}</p>
+    </Section>
+  );
+}
+
+/** Interfeys holati ko'rinishi (D60).
+ *
+ *  Verdikt bo'limi bilan bir xil naqsh, lekin boshqa ma'no: bu yerda gap
+ *  amal bajarilgani haqida (saqlandi, ogohlantirish, xato, ma'lumot).
+ *
+ *  Namunada to'rtta holat ham ko'rsatiladi — faqat yashil va qizil
+ *  ko'rsatilsa, `info` rangi (havorang) umuman ko'rinmay qolardi. */
+function StatusSection() {
+  const locale = useLocale();
+  const { appearance, setAppearance } = useCustomizer();
+  const current = clampStatusVariant(appearance.statusStyle);
+  const def = STATUS_VARIANTS.find((v) => v.id === current) ?? STATUS_VARIANTS[0];
+
+  return (
+    <Section title={t(locale, "customizer.status")}>
+      <div className="flex flex-wrap gap-2">
+        {STATUS_VARIANTS.map((v) => (
+          <button
+            key={v.id}
+            type="button"
+            aria-pressed={current === v.id}
+            onClick={() => setAppearance({ statusStyle: v.id })}
+            className={chip(current === v.id)}
+          >
+            {t(locale, v.labelKey)}
+          </button>
+        ))}
+      </div>
+      <div className="mt-3 flex flex-wrap items-center gap-3 rw-radius-sm border rw-divider p-3">
+        {(["ok", "warn", "bad", "info"] as const).map((s) => (
+          <Status key={s} status={s} variant={current} />
         ))}
       </div>
       <p className="mt-2 text-theme-xs rw-faint">{t(locale, def.hintKey)}</p>
