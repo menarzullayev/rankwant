@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1380 strings.**
+**1394 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -1380,6 +1380,20 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.typeHint` | Qator balandligi va harf oralig'i uzun matnni o'qishga yordam beradi. | Баландии сатр ва фосилаи ҳарфҳо хондани матни дарозро осон мекунанд. |  |
 | `customizer.width` | Kontent kengligi | Паҳнои мундариҷа |  |
 | `customizer.widthHint` | Tor kenglik o'qishga qulay, keng kenglik jadvalga. | Паҳнои танг барои хондан, паҳнои васеъ барои ҷадвалҳо. |  |
+| `customizer.card` | Karta uslubi | Услуби корт |  |
+| `customizer.card.default` | Odatiy | Пешфарз |  |
+| `customizer.card.outline` | Chegara | Чорчӯба |  |
+| `customizer.card.flat` | Tekis | Ҳамвор |  |
+| `customizer.card.soft` | Yumshoq soya | Сояи нарм |  |
+| `customizer.card.square` | Keskin burchak | Кунҷи рост |  |
+| `customizer.cardHint` | Kontent bloklari qanday ajratiladi: chegara, soya yoki burchak. | Блокҳо чӣ гуна ҷудо мешаванд: чорчӯба, соя ё кунҷ. |  |
+| `customizer.pattern` | Fon naqshi | Нақши замина |  |
+| `customizer.pattern.none` | Yo'q | Нест |  |
+| `customizer.pattern.grid` | To'r | Тӯр |  |
+| `customizer.pattern.dots` | Nuqtalar | Нуқтаҳо |  |
+| `customizer.pattern.diagonal` | Diagonal | Диагонал |  |
+| `customizer.pattern.mesh` | Tuman | Думонак |  |
+| `customizer.patternHint` | Kontent orqasida turadi va matnni to'smaydi. | Дар қафои мундариҷа меистад ва матнро намепӯшад. |  |
 | `customizer.exportFile` | Faylga saqlash | Ба файл нигоҳ доштан |  |
 | `customizer.importFile` | Fayldan yuklash | Аз файл бор кардан |  |
 | `customizer.importError.parse` | Fayl to'g'ri JSON emas. | Файл JSON-и дуруст нест. |  |

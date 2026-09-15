@@ -24,6 +24,7 @@ import {
   clampWidth,
 } from "@/lib/theme/typography";
 import { clampNavMode, clampNavShape } from "@/layout/nav-config";
+import { DEFAULT_CARD, DEFAULT_PATTERN } from "@/lib/theme/apply";
 
 /** URL da saqlanadigan maydonlar. `KEYS` — tozalash uchun ham ishlatiladi. */
 const KEYS = [
@@ -39,10 +40,14 @@ const KEYS = [
   "density",
   "navMode",
   "navShape",
+  "card",
+  "pattern",
 ] as const;
 
 const DENSITIES = ["compact", "comfortable", "spacious"] as const;
 const FONTS = ["inter", "jakarta", "roboto", "dm-sans", "lexend"] as const;
+const CARDS = ["default", "outline", "flat", "soft", "square"] as const;
+const PATTERNS = ["none", "grid", "dots", "diagonal", "mesh"] as const;
 
 /** Ko'rinishni URL ga yozadi. Standart qiymatlar tushib qoladi — havola
  *  qisqa bo'lsin va faqat o'zgartirilgan narsa ko'rinsin. */
@@ -77,6 +82,12 @@ export function encodeAppearance(appearance: AppearancePrefs): string {
   }
   if (appearance.navShape && appearance.navShape !== "default") {
     params.set("navShape", appearance.navShape);
+  }
+  if (appearance.card && appearance.card !== "default") {
+    params.set("card", appearance.card);
+  }
+  if (appearance.pattern && appearance.pattern !== "none") {
+    params.set("pattern", appearance.pattern);
   }
   return params.toString();
 }
@@ -131,6 +142,15 @@ export function decodeAppearance(search: string): AppearancePrefs | null {
   if (params.has("navMode")) out.navMode = clampNavMode(params.get("navMode"));
   if (params.has("navShape")) {
     out.navShape = clampNavShape(params.get("navShape"));
+  }
+
+  const card = params.get("card");
+  if (card && (CARDS as readonly string[]).includes(card)) {
+    out.card = card as AppearancePrefs["card"];
+  }
+  const pattern = params.get("pattern");
+  if (pattern && (PATTERNS as readonly string[]).includes(pattern)) {
+    out.pattern = pattern as AppearancePrefs["pattern"];
   }
 
   return Object.keys(out).length ? out : null;
@@ -247,6 +267,15 @@ export function importAppearance(raw: string): ImportResult {
   }
   appearance.navMode = clampNavMode(a.navMode);
   appearance.navShape = clampNavShape(a.navShape);
+  appearance.card =
+    typeof a.card === "string" && (CARDS as readonly string[]).includes(a.card)
+      ? a.card
+      : DEFAULT_CARD;
+  appearance.pattern =
+    typeof a.pattern === "string" &&
+    (PATTERNS as readonly string[]).includes(a.pattern)
+      ? a.pattern
+      : DEFAULT_PATTERN;
 
   const k = (row.a11y ?? {}) as A11yPrefs;
   const a11y: A11yPrefs = {

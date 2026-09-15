@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1380 strings.**
+**1394 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -1380,6 +1380,20 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.typeHint` | Qator balandligi va harf oralig'i uzun matnni o'qishga yordam beradi. | Qatar biyikligi hám hárip aralıǵı uzın tekstti oqıwǵa járdem beredi. |  |
 | `customizer.width` | Kontent kengligi | Kontent keńligi |  |
 | `customizer.widthHint` | Tor kenglik o'qishga qulay, keng kenglik jadvalga. | Tar keńlik oqıwǵa qolaylı, keń keńlik kestege. |  |
+| `customizer.card` | Karta uslubi | Karta stili |  |
+| `customizer.card.default` | Odatiy | Ádettegi |  |
+| `customizer.card.outline` | Chegara | Shegara |  |
+| `customizer.card.flat` | Tekis | Tegis |  |
+| `customizer.card.soft` | Yumshoq soya | Jumsaq saaya |  |
+| `customizer.card.square` | Keskin burchak | Tik múyesh |  |
+| `customizer.cardHint` | Kontent bloklari qanday ajratiladi: chegara, soya yoki burchak. | Bloklar qalay ajıratıladı: shegara, saaya yamasa múyesh. |  |
+| `customizer.pattern` | Fon naqshi | Fon naǵısı |  |
+| `customizer.pattern.none` | Yo'q | Joq |  |
+| `customizer.pattern.grid` | To'r | Tor |  |
+| `customizer.pattern.dots` | Nuqtalar | Noqatlar |  |
+| `customizer.pattern.diagonal` | Diagonal | Diagonal |  |
+| `customizer.pattern.mesh` | Tuman | Tuman |  |
+| `customizer.patternHint` | Kontent orqasida turadi va matnni to'smaydi. | Kontent arqasında turadı hám teksti jappaydı. |  |
 | `customizer.exportFile` | Faylga saqlash | Faylǵa saqlaw |  |
 | `customizer.importFile` | Fayldan yuklash | Fayldan júklew |  |
 | `customizer.importError.parse` | Fayl to'g'ri JSON emas. | Fayl durıs JSON emes. |  |

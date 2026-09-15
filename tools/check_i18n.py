@@ -34,6 +34,10 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         "nav.arena", "auth.email", "hackathon.demo", "settings.channelTelegram",
         # Updates: modul nomi — atoqli nom, hech qaysi tilda tarjima qilinmaydi.
         "update.module.qvant",
+        # Fon naqshi nomlari — xalqaro so'zlar. "Diagonal" bir qancha
+        # tillarda aynan yoziladi (rus, ispan, o'zbek), bu TO'G'RI;
+        # majburan o'girish sun'iy ko'rinar edi.
+        "customizer.pattern.diagonal",
         # Shablon nomlari — atoqli nom. "Aurora", "Konsol", "Jurnal" kabi
         # so'zlar bir qancha tillarda aynan yoziladi va bu TO'G'RI; ularni
         # majburan o'girish sun'iy ko'rinardi.
@@ -91,6 +95,8 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         # yoziladi. Majburan o'girish sun'iy ko'rinardi (xuddi `nav.menu`
         # va `settings.language` kabi qo'shnilari).
         "customizer.nav",
+        # "Tuman" qaraqalpoqchada ham, o'zbekchada ham bir xil yoziladi.
+        "customizer.pattern.mesh",
         "nav.leaderboard", "contests.rated", "leaderboard.title", "qvant.balance",
         "nav.menu", "auth.password", "navGroup.lab", "navGroup.campus",
         "navGroup.platform", "nav.classroom", "nav.duels", "nav.tournaments",

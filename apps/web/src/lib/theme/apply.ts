@@ -108,6 +108,13 @@ export function applyAccent(hue: number, sat: number): AccentResult {
   };
 }
 
+/** Karta uslubi va fon naqshining standart qiymatlari (D54, D55).
+ *
+ *  Bir joyda turadi: `check_hardcoded.py` satrni matn deb topadi, ya'ni
+ *  `?? "default"` kabi yozuvlar to'rt faylda takrorlanmasligi kerak. */
+export const DEFAULT_CARD = "default";
+export const DEFAULT_PATTERN = "none";
+
 /** Shrift, o'lcham, zichlik. */
 export function applyAppearance(appearance: AppearancePrefs) {
   const root = document.documentElement;
@@ -136,6 +143,18 @@ export function applyAppearance(appearance: AppearancePrefs) {
   // Kontent kengligi (D48). `AppShell` dagi `max-w-[1400px]` o'rniga
   // o'zgaruvchi — Tailwind sinfi qotib qolgan edi.
   root.style.setProperty("--rw-content-width", `${clampWidth(appearance.width)}px`);
+
+  // Karta uslubi va fon naqshi (D54, D55). Ikkalasi ham `data-*` orqali:
+  // CSS qoidalari `globals.css` da, bu yerda faqat tanlov yoziladi.
+  // Standart qiymatda atribut OLIB TASHLANADI — aks holda `[data-card]`
+  // tanlagichi uslubning o'z kartasidan ustun turardi.
+  const card = appearance.card ?? DEFAULT_CARD;
+  if (card !== DEFAULT_CARD) root.dataset.card = card;
+  else delete root.dataset.card;
+
+  const pattern = appearance.pattern ?? DEFAULT_PATTERN;
+  if (pattern !== DEFAULT_PATTERN) root.dataset.pattern = pattern;
+  else delete root.dataset.pattern;
 }
 
 /** Rang ajratolmaslik uchun TUSLAR (D44).

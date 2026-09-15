@@ -9,7 +9,12 @@ import { errorText, t } from "@/i18n/messages";
 import { CheckIcon, CloseIcon, PaletteIcon } from "@/icons";
 import { STYLES, isDual, type StyleId } from "@/layout/styles";
 import type { A11yPrefs } from "@/lib/api";
-import { passes, type AccentError } from "@/lib/theme/apply";
+import {
+  DEFAULT_CARD,
+  DEFAULT_PATTERN,
+  passes,
+  type AccentError,
+} from "@/lib/theme/apply";
 import { accentToHex, hexToAccent } from "@/lib/theme/color";
 import { exportAppearance, importAppearance } from "@/lib/theme/share";
 import { TEMPLATES } from "@/lib/theme/templates";
@@ -329,6 +334,7 @@ function AppearanceTab() {
       <NavSection />
       <NavShapeSection />
       <WidthSection />
+      <LookSection />
     </>
   );
 }
@@ -580,6 +586,62 @@ function FontSection() {
         </div>
         <p className="mt-2 text-theme-xs rw-faint">
           {t(locale, "customizer.fontHeadingHint")}
+        </p>
+      </Section>
+    </>
+  );
+}
+
+/** Karta uslubi va fon naqshi (D54, D55).
+ *
+ *  kep.uz da ikkalasi ham bor, lekin ishlamaydi — sozlama faqat `data-*`
+ *  yozadi, sahifa esa o'zgarmaydi (o'lchandi). Bu yerda CSS qoidalari
+ *  `globals.css` da va ular haqiqatan kartaga tegadi. */
+function LookSection() {
+  const locale = useLocale();
+  const { appearance, setAppearance } = useCustomizer();
+  const CARDS = ["default", "outline", "flat", "soft", "square"] as const;
+  const PATTERNS = ["none", "grid", "dots", "diagonal", "mesh"] as const;
+  const card = appearance.card ?? DEFAULT_CARD;
+  const pattern = appearance.pattern ?? DEFAULT_PATTERN;
+
+  return (
+    <>
+      <Section title={t(locale, "customizer.card")}>
+        <div className="flex flex-wrap gap-2">
+          {CARDS.map((value) => (
+            <button
+              key={value}
+              type="button"
+              aria-pressed={card === value}
+              onClick={() => setAppearance({ card: value })}
+              className={chip(card === value)}
+            >
+              {t(locale, `customizer.card.${value}`)}
+            </button>
+          ))}
+        </div>
+        <p className="mt-2 text-theme-xs rw-faint">
+          {t(locale, "customizer.cardHint")}
+        </p>
+      </Section>
+
+      <Section title={t(locale, "customizer.pattern")}>
+        <div className="flex flex-wrap gap-2">
+          {PATTERNS.map((value) => (
+            <button
+              key={value}
+              type="button"
+              aria-pressed={pattern === value}
+              onClick={() => setAppearance({ pattern: value })}
+              className={chip(pattern === value)}
+            >
+              {t(locale, `customizer.pattern.${value}`)}
+            </button>
+          ))}
+        </div>
+        <p className="mt-2 text-theme-xs rw-faint">
+          {t(locale, "customizer.patternHint")}
         </p>
       </Section>
     </>

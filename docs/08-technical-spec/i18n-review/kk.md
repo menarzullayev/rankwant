@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1380 strings.**
+**1394 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -1380,6 +1380,20 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.typeHint` | Qator balandligi va harf oralig'i uzun matnni o'qishga yordam beradi. | Жол биіктігі мен әріп аралығы ұзақ мәтінді оқуға көмектеседі. |  |
 | `customizer.width` | Kontent kengligi | Мазмұн ені |  |
 | `customizer.widthHint` | Tor kenglik o'qishga qulay, keng kenglik jadvalga. | Тар ен оқуға қолайлы, кең ен кестеге. |  |
+| `customizer.card` | Karta uslubi | Карта стилі |  |
+| `customizer.card.default` | Odatiy | Әдеттегі |  |
+| `customizer.card.outline` | Chegara | Жиек |  |
+| `customizer.card.flat` | Tekis | Тегіс |  |
+| `customizer.card.soft` | Yumshoq soya | Жұмсақ көлеңке |  |
+| `customizer.card.square` | Keskin burchak | Тік бұрыш |  |
+| `customizer.cardHint` | Kontent bloklari qanday ajratiladi: chegara, soya yoki burchak. | Блоктар қалай бөлінеді: жиек, көлеңке немесе бұрыш. |  |
+| `customizer.pattern` | Fon naqshi | Фон өрнегі |  |
+| `customizer.pattern.none` | Yo'q | Жоқ |  |
+| `customizer.pattern.grid` | To'r | Тор |  |
+| `customizer.pattern.dots` | Nuqtalar | Нүктелер |  |
+| `customizer.pattern.diagonal` | Diagonal | Диагональ |  |
+| `customizer.pattern.mesh` | Tuman | Тұман |  |
+| `customizer.patternHint` | Kontent orqasida turadi va matnni to'smaydi. | Мазмұнның артында тұрады және мәтінді жаппайды. |  |
 | `customizer.exportFile` | Faylga saqlash | Файлға сақтау |  |
 | `customizer.importFile` | Fayldan yuklash | Файлдан жүктеу |  |
 | `customizer.importError.parse` | Fayl to'g'ri JSON emas. | Файл дұрыс JSON емес. |  |

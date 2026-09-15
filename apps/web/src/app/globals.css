@@ -1194,6 +1194,80 @@
   max-width: var(--rw-content-width, 1400px);
 }
 
+/* ── Karta uslubi (D54) ────────────────────────────────────────────────
+   kep.uz da shu sozlama bor, lekin ISHLAMAYDI: u faqat `data-*` yozadi va
+   kartalar o'zgarmaydi (o'lchandi). Bizda tokenlar allaqachon markazlashgan
+   (`.rw-surface`, `.rw-shadow`, `.rw-radius`), shuning uchun yetarlicha.
+
+   `data-card` `<html>` da, ya'ni butun sahifa qamrab olinadi. */
+[data-card="outline"] .rw-surface {
+  box-shadow: none;
+  border: 1px solid var(--rw-line);
+}
+[data-card="outline"] .rw-shadow { box-shadow: none; }
+
+/* "flat" — hech qanday soya yo'q, faqat fon farqi. */
+[data-card="flat"] .rw-shadow { box-shadow: none; }
+
+/* "soft" — soya kuchliroq va kengroq; karta fondan "ko'tarilib" turadi. */
+[data-card="soft"] .rw-shadow {
+  box-shadow: 0 10px 30px -8px rgb(0 0 0 / 0.18);
+}
+
+/* "square" — burchaklar keskin. `--rw-radius` tokeni orqali, ya'ni
+   uslubning o'z radiusi ham almashadi. */
+[data-card="square"] {
+  --rw-radius: 0px;
+  --rw-radius-sm: 0px;
+}
+
+/* ── Fon naqshi (D55) ──────────────────────────────────────────────────
+   kep.uz da 5 ta variant bor va hech biri ishlamaydi (o'lchandi).
+   Bu yerda naqsh `body::before` ga tushadi: `z-index: -1`, ya'ni kontent
+   USTIDA turmaydi, va `pointer-events: none` — bosishga xalaqit bermaydi.
+   Kontrast: naqsh `--rw-line` (ajratgich) dan olinadi, u barcha
+   uslublarda 3:1 dan o'tadi; `opacity` past, shuning uchun matn
+   o'qilishiga ta'sir qilmaydi. */
+[data-pattern] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.6;
+}
+/* ⚠️ `--rw-divider`, `--rw-line` EMAS. O'lchandi: `--rw-line` `clay` va
+   `neu` uslublarida ataylab SHAFFOF (u ikki uslubda chegara o'rniga soya
+   ishlatadi), ya'ni u bilan chizilgan naqsh ko'rinmasdan qolardi —
+   `rgba(0, 0, 0, 0)` chiqardi. `--rw-divider` esa matn rangidan hosil
+   qilinadi va barcha uslublarda 3:1 dan o'tadi. */
+[data-pattern="grid"] body::before {
+  background-image:
+    linear-gradient(var(--rw-divider) 1px, transparent 1px),
+    linear-gradient(90deg, var(--rw-divider) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+[data-pattern="dots"] body::before {
+  background-image: radial-gradient(
+    var(--rw-divider) 1.2px,
+    transparent 1.2px
+  );
+  background-size: 20px 20px;
+}
+[data-pattern="diagonal"] body::before {
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--rw-divider) 0 1px,
+    transparent 1px 16px
+  );
+}
+[data-pattern="mesh"] body::before {
+  background-image:
+    radial-gradient(circle at 18% 22%, var(--rw-accent-soft), transparent 42%),
+    radial-gradient(circle at 82% 68%, var(--rw-accent-soft), transparent 38%);
+  opacity: 0.9;
+}
+
 /* Harakat darajasi (D49). To'rt pog'ona — ilgari faqat "hammasi" yoki
    "hech narsa" bor edi, ko'pchilik uchun eng qulay nuqta esa o'rtada.
    `system` da atribut umuman yozilmaydi va qarorni OS beradi (pastdagi

@@ -775,6 +775,12 @@ export type ThemeEffect = "none" | "fade" | "circle";
  *
  *  ⚠️ `theme` bu yerda YO'Q: mavzu `User.theme` maydonida saqlanadi.
  *  Uni bu yerga ham qo'shish bir xil ma'noni ikki joyda saqlardi. */
+/** Karta uslubi (D54) — `globals.css` dagi `[data-card]` bloklari. */
+export type CardStyle = "default" | "outline" | "flat" | "soft" | "square";
+
+/** Fon naqshi (D55) — `globals.css` dagi `[data-pattern]` bloklari. */
+export type BgPattern = "none" | "grid" | "dots" | "diagonal" | "mesh";
+
 export type AppearancePrefs = {
   style?: string;
   /** TUS sifatida saqlanadi, tayyor rang emas (D42) — yorqinlik har muhit
@@ -801,6 +807,10 @@ export type AppearancePrefs = {
   navMode?: NavMode;
   /** Yuqori panel shakli (D46) — `nav-config.ts` dagi `NavShape`. */
   navShape?: NavShape;
+  /** Karta uslubi (D54): chegara · soya · burchak. */
+  card?: CardStyle;
+  /** Fon naqshi (D55). `none` — tekis fon. */
+  pattern?: BgPattern;
 };
 
 export type A11yPrefs = {

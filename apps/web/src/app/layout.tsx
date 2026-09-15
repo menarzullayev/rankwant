@@ -238,6 +238,8 @@ var sz=(typeof a.size==="number"&&isFinite(a.size))?Math.min(150,Math.max(75,Mat
 if(sz!==100)r.style.fontSize=sz+"%";
 r.dataset.nav=(a.navMode==="topnav")?"topnav":"sidenav";
 r.dataset.navShape=(a.navShape==="slim"||a.navShape==="stacked")?a.navShape:"default";
+if(a.card&&a.card!=="default")r.dataset.card=a.card;
+if(a.pattern&&a.pattern!=="none")r.dataset.pattern=a.pattern;
 var k=JSON.parse(localStorage.getItem("rw:a11y")||"{}");
 if(k.vision&&k.vision!=="normal")r.dataset.vision=k.vision;
 if(k.motion==="reduce")r.dataset.motion="reduce";
