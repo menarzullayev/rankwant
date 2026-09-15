@@ -34,6 +34,12 @@ import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
+# Chiqish quvurga yo'naltirilganda Windows uni `cp1252` deb yozadi va
+# birinchi `✓` belgisida qulaydi — sabab va o'lchov `tools/_console.py` da.
+import _console
+
+_console.force_utf8()
+
 ROOT = Path(__file__).resolve().parent.parent
 PY = sys.executable
 
@@ -91,6 +97,18 @@ class Mutation:
 
     `__enter__` paytida asl matn xotirada saqlanadi; `__exit__` da
     yoziladi. Xato bo'lsa ham tiklanishi shart — `finally` bilan.
+
+    ⚠️ O'qish ham, yozish ham BAYT darajasida. `read_text`/`write_text`
+    matn rejimida ishlaydi va satr oxirlarini TARJIMA qiladi: o'qishda
+    `\\r\\n` → `\\n`, yozishda esa `\\n` → `os.linesep`. Windows'da bu
+    shuni anglatadiki, LF bilan yozilgan fayl mutatsiyadan keyin CRLF
+    bo'lib qaytariladi — mazmuni bir xil, baytlari boshqa.
+
+    2026-09-15 da o'lchandi: bitta salbiy test yurishidan keyin `git
+    status` 19 ta begona faylni «o'zgargan» deb ko'rsatdi (`settings.py`,
+    `uz.ts`, `docs/README.md` …). Ular o'zgarmagan edi — faqat satr
+    oxirlari almashgan. Bayt darajasidagi qaytarish buni butunlay
+    yo'q qiladi.
     """
 
     def __init__(self, path: Path, old: str, new: str) -> None:
@@ -100,19 +118,19 @@ class Mutation:
         self.original: str | None = None
 
     def __enter__(self) -> "Mutation":
-        self.original = self.path.read_text(encoding="utf-8")
+        self.original = self.path.read_bytes().decode("utf-8")
         if self.old not in self.original:
             raise AssertionError(
                 f"salbiy test yasalmadi: {self.old!r} {self.path.name} da topilmadi"
             )
-        self.path.write_text(
-            self.original.replace(self.old, self.new, 1), encoding="utf-8"
+        self.path.write_bytes(
+            self.original.replace(self.old, self.new, 1).encode("utf-8")
         )
         return self
 
     def __exit__(self, *_exc: object) -> None:
         assert self.original is not None
-        self.path.write_text(self.original, encoding="utf-8")
+        self.path.write_bytes(self.original.encode("utf-8"))
 
 
 def expect_fail(checker: str, label: str) -> tuple[bool, str]:
@@ -161,7 +179,7 @@ def node_precondition() -> str | None:
 def neg_i18n_blank_value() -> tuple[bool, str]:
     """Bitta tarjima bo'sh qolsa — tutilsinmi?"""
     path = ROOT / "apps/web/src/i18n/locales/zh.ts"
-    text = path.read_text(encoding="utf-8")
+    text = path.read_bytes().decode("utf-8")
     m = re.search(
         r'^(\s*)((?:"([a-zA-Z0-9_.]+)"|([A-Za-z_$][\w$]*))):\s*"((?:[^"\\]|\\.)*)",\s*$',
         text,
@@ -179,7 +197,7 @@ def neg_i18n_blank_value() -> tuple[bool, str]:
 def neg_i18n_missing_key() -> tuple[bool, str]:
     """Bitta kalit butunlay o'chirilsa — tutilsinmi?"""
     path = ROOT / "apps/web/src/i18n/locales/kk.ts"
-    text = path.read_text(encoding="utf-8")
+    text = path.read_bytes().decode("utf-8")
     m = re.search(
         r'^\s*(?:"[a-zA-Z0-9_.]+"|[A-Za-z_$][\w$]*):\s*"(?:[^"\\]|\\.)*",\s*$',
         text,
@@ -197,7 +215,7 @@ def neg_i18n_used_but_absent() -> tuple[bool, str]:
     Aynan shu bo'shliq panelni xom kalit bilan qoldirgan edi.
     """
     path = ROOT / "apps/web/src/layout/LocaleSwitch.tsx"
-    text = path.read_text(encoding="utf-8")
+    text = path.read_bytes().decode("utf-8")
     marker = "export function LocaleSwitch() {"
     if marker not in text:
         return False, "i18n/ishlatilgan: marker topilmadi"
@@ -219,7 +237,7 @@ def neg_i18n_used_but_absent() -> tuple[bool, str]:
 def neg_contrast_bad_pair() -> tuple[bool, str]:
     """Bitta juftlik yetarli kontrast bermasa — tutilsinmi?"""
     path = ROOT / "apps/web/src/app/globals.css"
-    text = path.read_text(encoding="utf-8")
+    text = path.read_bytes().decode("utf-8")
     # `--rw-warn-ink` ni fon bilan bir xil qilib qo'yamiz: 1:1.
     m = re.search(r"(--rw-warn-ink:\s*)([^;]+)(;)", text)
     if m is None:
@@ -235,7 +253,7 @@ def neg_contrast_unreadable_token() -> tuple[bool, str]:
     qiymat jimgina o'tkazib yuborilardi.
     """
     path = ROOT / "apps/web/src/app/globals.css"
-    text = path.read_text(encoding="utf-8")
+    text = path.read_bytes().decode("utf-8")
     m = re.search(r"(--rw-ground:\s*)([^;]+)(;)", text)
     if m is None:
         return False, "contrast: `--rw-ground` topilmadi"
@@ -257,7 +275,7 @@ def neg_docs_missing_adr() -> tuple[bool, str]:
     adr = ROOT / "docs/07-adr/0001-brand-rankwant-qvant.md"
     if not adr.exists():
         return False, "docs/adr: `0001` fayli topilmadi"
-    text = adr.read_text(encoding="utf-8")
+    text = adr.read_bytes().decode("utf-8")
     # Marker BO'LAKLAB yig'iladi: qoida `.py` fayllarni ham skanerlaydi, shu
     # faylning o'zi esa manba kodi — to'liq yozilsa qoida O'Z testini tutib,
     # `check_docs.py` doim qizil bo'lib qolardi (bir marta shunday bo'ldi).
@@ -274,14 +292,15 @@ def neg_docs_broken_link() -> tuple[bool, str]:
     if not candidates:
         return False, "docs: tekshirish uchun hujjat topilmadi"
     path = candidates[0]
-    text = path.read_text(encoding="utf-8")
+    # Bayt darajasida — sabab `Mutation` docstring'ida.
+    original = path.read_bytes()
+    text = original.decode("utf-8")
     marker = text.rstrip() + "\n\n[negative test](./this-file-does-not-exist-42.md)\n"
-    original = path.read_text(encoding="utf-8")
-    path.write_text(marker, encoding="utf-8")
+    path.write_bytes(marker.encode("utf-8"))
     try:
         return expect_fail("docs", "docs/buzilgan havola")
     finally:
-        path.write_text(original, encoding="utf-8")
+        path.write_bytes(original)
 
 
 def neg_email_missing_locale() -> tuple[bool, str]:
@@ -292,7 +311,7 @@ def neg_email_missing_locale() -> tuple[bool, str]:
     """
     path = ROOT / "apps/api/core/email_text.py"
     old = '        "es": "RankWant — restablecer contraseña",'
-    if old not in path.read_text(encoding="utf-8"):
+    if old not in path.read_bytes().decode("utf-8"):
         return False, "email/til: sinov uchun qator topilmadi"
     with Mutation(path, old + "\n", ""):
         return expect_fail("email_locales", "email/yetishmayotgan til")
@@ -303,7 +322,7 @@ def neg_email_blank_value() -> tuple[bool, str]:
     path = ROOT / "apps/api/core/email_text.py"
     old = '        "en": "Sign in",'
     new = '        "en": "   ",'
-    if old not in path.read_text(encoding="utf-8"):
+    if old not in path.read_bytes().decode("utf-8"):
         return False, "email/bo'sh: sinov uchun qator topilmadi"
     with Mutation(path, old, new):
         return expect_fail("email_locales", "email/bo'sh matn")
@@ -314,7 +333,7 @@ def neg_email_undeclared_locale() -> tuple[bool, str]:
     path = ROOT / "apps/api/core/email_text.py"
     old = '        "es": "RankWant",'
     new = '        "es": "RankWant",\n        "xx": "RankWant",'
-    if old not in path.read_text(encoding="utf-8"):
+    if old not in path.read_bytes().decode("utf-8"):
         return False, "email/e'lon qilinmagan: sinov uchun qator topilmadi"
     with Mutation(path, old, new):
         return expect_fail("email_locales", "email/ro'yxatda yo'q til")
@@ -331,7 +350,7 @@ def neg_parity_missing_locale() -> tuple[bool, str]:
     """
     path = ROOT / "apps/api/config/settings.py"
     old = '    ("ky", "Кыргызча"),\n'
-    if old not in path.read_text(encoding="utf-8"):
+    if old not in path.read_bytes().decode("utf-8"):
         return False, "parity/yetishmaydi: sinov uchun qator topilmadi"
     with Mutation(path, old, ""):
         return expect_fail("locales_parity", "parity/LANGUAGES da til yetishmaydi")
@@ -342,7 +361,7 @@ def neg_parity_extra_locale() -> tuple[bool, str]:
     path = ROOT / "apps/api/core/email_text.py"
     old = '"zh", "es")'
     new = '"zh", "es", "xx")'
-    if old not in path.read_text(encoding="utf-8"):
+    if old not in path.read_bytes().decode("utf-8"):
         return False, "parity/ortiqcha: sinov uchun qator topilmadi"
     with Mutation(path, old, new):
         return expect_fail("locales_parity", "parity/LOCALES da ortiqcha til")
@@ -357,7 +376,7 @@ def neg_i18n_country_locale_dropped() -> tuple[bool, str]:
     uchun tekshiruv manba kodni o'qiydi.
     """
     path = ROOT / "apps/web/src/lib/countries.ts"
-    text = path.read_text(encoding="utf-8")
+    text = path.read_bytes().decode("utf-8")
     old = 'const CYRILLIC: Locale[] = ["ru", "kk", "ky", "tg"];'
     new = 'const CYRILLIC: Locale[] = ["ru"];'
     if old not in text:
@@ -374,7 +393,7 @@ def neg_i18n_country_icu_locale_added() -> tuple[bool, str]:
     regressiyani qaytaradi.
     """
     path = ROOT / "apps/web/src/lib/countries.ts"
-    text = path.read_text(encoding="utf-8")
+    text = path.read_bytes().decode("utf-8")
     old = 'const LATIN_UZ: Locale[] = ["uz", "kaa"];'
     new = 'const LATIN_UZ: Locale[] = ["uz", "kaa", "tr"];'
     if old not in text:
@@ -391,7 +410,7 @@ def neg_i18n_country_row_missing() -> tuple[bool, str]:
     jimgina ICU ga tushadi va o'sha tillarda **inglizcha** nom chiqadi.
     """
     path = ROOT / "apps/web/src/lib/country-names.ts"
-    text = path.read_text(encoding="utf-8")
+    text = path.read_bytes().decode("utf-8")
     # ⚠️ `^` ISHLATILMAYDI: jadval qatorlari ichkariga surilgan (`  "DE": …`),
     # shuning uchun satr boshiga bog'langan langar hech qachon topilmaydi —
     # test "langar yo'q" deb yiqiladi va qoida tekshirilmagan holda qoladi.
@@ -409,7 +428,7 @@ def neg_i18n_country_row_blank() -> tuple[bool, str]:
     UI da mamlakat nomi umuman ko'rinmaydi.
     """
     path = ROOT / "apps/web/src/lib/country-names.ts"
-    text = path.read_text(encoding="utf-8")
+    text = path.read_bytes().decode("utf-8")
     m = re.search(r'"DE":\s*\["([^"]*)",\s*"([^"]*)"\],', text)
     if m is None:
         return False, "mamlakat: jadvalda `DE` qatori topilmadi"
@@ -429,7 +448,7 @@ def neg_i18n_review_sheet_stale() -> tuple[bool, str]:
     path = ROOT / "docs/08-technical-spec/i18n-review/kk.md"
     if not path.exists():
         return False, "i18n-review: `kk.md` topilmadi"
-    text = path.read_text(encoding="utf-8")
+    text = path.read_bytes().decode("utf-8")
     lines = text.splitlines(keepends=True)
     idx = next((i for i, l in enumerate(lines) if l.startswith("| `")), None)
     if idx is None:
@@ -449,7 +468,7 @@ def neg_i18n_review_sheet_old_key() -> tuple[bool, str]:
     path = ROOT / "docs/08-technical-spec/i18n-review/kk.md"
     if not path.exists():
         return False, "i18n-review: `kk.md` topilmadi"
-    text = path.read_text(encoding="utf-8")
+    text = path.read_bytes().decode("utf-8")
     line = next(
         (l for l in text.splitlines() if l.startswith("| `common.empty`")), None
     )
@@ -470,7 +489,7 @@ def neg_i18n_parity_does_not_mask() -> tuple[bool, str]:
     chiqishda **ham** paritet, **ham** varaq xabari bo'lishi shart.
     """
     src = ROOT / "apps/web/src/i18n/locales/uz.ts"
-    text = src.read_text(encoding="utf-8")
+    text = src.read_bytes().decode("utf-8")
     m = re.search(r'^(  "common\.empty":.*)$', text, re.M)
     if m is None:
         return False, "i18n: `common.empty` langari topilmadi"
@@ -498,7 +517,7 @@ def neg_i18n_bare_key() -> tuple[bool, str]:
     turadi: yangi prefikssiz nom qo'shilsa, tekshiruv qizarishi shart.
     """
     path = ROOT / "apps/web/src/i18n/locales/uz.ts"
-    text = path.read_text(encoding="utf-8")
+    text = path.read_bytes().decode("utf-8")
     anchor = '  "team.intro":'
     if anchor not in text:
         return False, 'i18n/prefiks: langar `"team.intro":` topilmadi'
@@ -515,7 +534,7 @@ def neg_i18n_template_family() -> tuple[bool, str]:
     esa buni ko'rmaydi (shablon statik emas).
     """
     path = ROOT / "apps/web/src/i18n/locales/uz.ts"
-    text = path.read_text(encoding="utf-8")
+    text = path.read_bytes().decode("utf-8")
     removed = 0
     lines = []
     for line in text.split("\n"):
@@ -539,7 +558,7 @@ def neg_i18n_server_drops_locales() -> tuple[bool, str]:
     path = ROOT / "apps/web/src/i18n/messages.server.ts"
     old = "registerMessages(locale as Locale, dict);"
     new = "registerMessages(locale as Locale, dict, true);"
-    if old not in path.read_text(encoding="utf-8"):
+    if old not in path.read_bytes().decode("utf-8"):
         return False, "i18n/server evict: langar topilmadi"
     with Mutation(path, old, new):
         return expect_fail("i18n", "i18n/server evict bilan chegaralangan")
@@ -549,7 +568,7 @@ def neg_i18n_server_missing_locale() -> tuple[bool, str]:
     """`ALL` dan bitta til olib tashlansa — tutilsinmi?"""
     path = ROOT / "apps/web/src/i18n/messages.server.ts"
     old = "  tg,\n"
-    if old not in path.read_text(encoding="utf-8"):
+    if old not in path.read_bytes().decode("utf-8"):
         return False, "i18n/server yetishmaydi: langar topilmadi"
     with Mutation(path, old, ""):
         return expect_fail("i18n", "i18n/server lug'atda til yetishmaydi")
@@ -564,7 +583,7 @@ def neg_i18n_runtime_dev_throw() -> tuple[bool, str]:
     """
     path = ROOT / "apps/web/src/i18n/messages.ts"
     old = "    throw new Error(`i18n: ${detail}`);"
-    if old not in path.read_text(encoding="utf-8"):
+    if old not in path.read_bytes().decode("utf-8"):
         return False, "i18n/runtime dev throw: langar topilmadi"
     new = "    void detail; // dev throw removed by negative test"
     with Mutation(path, old, new):
@@ -581,7 +600,7 @@ def neg_i18n_runtime_dedup() -> tuple[bool, str]:
     path = ROOT / "apps/web/src/i18n/messages.ts"
     old = """  if (!reported.has(tag)) {
     reported.add(tag);"""
-    if old not in path.read_text(encoding="utf-8"):
+    if old not in path.read_bytes().decode("utf-8"):
         return False, "i18n/runtime dedup: langar topilmadi"
     new = """  if (true) {
     reported.add(tag);"""
@@ -984,7 +1003,7 @@ def neg_ordering_missing_tiebreaker() -> tuple[bool, str]:
     """
     path = ROOT / "apps/api/duels/staff_views.py"
     old = 'ordering: ClassVar[list[str]] = ["-created_at", "-pk"]'
-    if old not in path.read_text(encoding="utf-8"):
+    if old not in path.read_bytes().decode("utf-8"):
         return False, "ordering: sinov uchun qator topilmadi"
     with Mutation(path, old, 'ordering: ClassVar[list[str]] = ["-created_at"]'):
         return expect_fail("ordering", "ordering/tiebreaker yo'q")
@@ -999,13 +1018,226 @@ def neg_ordering_fields_not_confused() -> tuple[bool, str]:
     """
     path = ROOT / "apps/api/duels/staff_views.py"
     old = 'ordering_fields: ClassVar[list[str]] = ["created_at", "start_at", "status"]'
-    if old not in path.read_text(encoding="utf-8"):
+    if old not in path.read_bytes().decode("utf-8"):
         return False, "ordering_fields: sinov uchun qator topilmadi"
     with Mutation(path, old, 'ordering_fields: ClassVar[list[str]] = ["created_at"]'):
         code, _out = run_check("ordering")
         if code != 0:
             return False, "ordering_fields: qoida `ordering_fields` ni ham ushlab qoldi"
     return True, "ordering_fields: qoida faqat `ordering` ga qaraydi"
+
+
+# ── tooling: Windows darvozasi ───────────────────────────────────────────
+#
+# Bu ikki sinf 2026-09-15 da push'ni to'sdi va IKKALASI ham kodga emas,
+# darvozaning O'ZIGA tegishli edi: noto'g'ri interpretator tanlandi va
+# salbiy testlar begona fayllarni qayta yozdi. Shuning uchun ular ham
+# xuddi tekshiruvlar kabi salbiy test bilan qo'riqlanadi.
+
+
+STORE_STUB = (
+    "#!/bin/sh\n"
+    "echo 'Python was not found; run without arguments to install from the"
+    " Microsoft Store' >&2\n"
+    "exit 9009\n"
+)
+"""Microsoft Store'ning `python3` alias stub'i — PATH'da bor, ishga tushmaydi."""
+
+
+def _run_picker(path_dirs: list[str] | None = None) -> tuple[int, str]:
+    """`tools/pick-python.sh` ni berilgan PATH bilan ishga tushiradi."""
+    env = dict(os.environ)
+    # Test PATH'ni o'lchaydi, shuning uchun qotirilgan pin olib tashlanadi.
+    env.pop("PYTHON", None)
+    if path_dirs is not None:
+        env["PATH"] = os.pathsep.join(path_dirs)
+    proc = subprocess.run(
+        [_bash(), "tools/pick-python.sh"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        env=env,
+    )
+    return proc.returncode, (proc.stdout or "") + (proc.stderr or "")
+
+
+def neg_picker_rejects_store_stub() -> tuple[bool, str]:
+    """PATH'da faqat Store stub'i bo'lsa — XATO bo'lsinmi?
+
+    ⚠️ Aynan shu holat push'ni to'sdi. Eski mantiq `command -v python3` ga
+    tayanardi: stub PATH'da bor va bajariladigan, ya'ni u TANLANARDI.
+    Keyin har bir tekshiruv «Python was not found» bilan yiqilardi va
+    hisobotda bu KOD nuqsoni bo'lib ko'rinardi.
+
+    Talab: stub qabul qilinmasin. Ishlaydigan boshqa interpretator ham
+    bo'lmasa — `exit 1`, ya'ni ochiq xato (jim `exit 0` emas).
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+        stub = Path(tmp) / "python3"
+        stub.write_bytes(STORE_STUB.encode("utf-8"))
+        stub.chmod(0o755)
+        code, out = _run_picker([tmp])
+    if code == 0:
+        return False, (
+            "picker/stub: Store stub'i TANLANDI (exit 0) — "
+            f"«{out.strip()[:60]}»"
+        )
+    if code != 1:
+        return False, f"picker/stub: exit {code} (1 kerak edi)"
+    return True, "picker/stub: ishga tushmaydigan stub rad etildi (exit 1)"
+
+
+def neg_picker_finds_working_python() -> tuple[bool, str]:
+    """Ijobiy nazorat: haqiqiy interpretator TOPILSIN va ishlasin.
+
+    Hamma narsani rad etadigan picker yuqoridagi testdan o'tardi va
+    darvozani butunlay o'chirib qo'yardi — shuning uchun teskari tomon
+    ham o'lchanadi: chiqarilgan yo'l haqiqatan ishga tushishi shart.
+    """
+    code, out = _run_picker()
+    if code != 0:
+        return False, f"picker/ishlaydi: exit {code} — interpretator topilmadi"
+    chosen = out.strip().splitlines()[0] if out.strip() else ""
+    if not chosen:
+        return False, "picker/ishlaydi: exit 0, lekin yo'l chiqarilmadi"
+    probe = subprocess.run(
+        [chosen, "-c", "print('ok')"],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    if probe.returncode != 0 or "ok" not in (probe.stdout or ""):
+        return False, f"picker/ishlaydi: `{chosen}` ishga tushmadi"
+    return True, f"picker/ishlaydi: `{Path(chosen).name}` tanlandi va ishladi"
+
+
+def neg_mutation_restores_bytes() -> tuple[bool, str]:
+    """Mutatsiyadan keyin fayl BAYT-ANIQ qaytarilsinmi?
+
+    ⚠️ 2026-09-15: bitta salbiy test yurishidan keyin `git status` 19 ta
+    begona faylni «o'zgargan» deb ko'rsatdi. Mazmun bir xil edi — faqat
+    satr oxirlari LF dan CRLF ga o'tgan, chunki `write_text` matn
+    rejimida `\\n` ni `os.linesep` ga tarjima qiladi.
+
+    Bu jim buzilish: push toza deb o'ylagan odam 19 ta faylni tasodifan
+    commit qilishi mumkin. Shuning uchun test mazmunni emas, BAYTLARNI
+    taqqoslaydi va ataylab CRLF ham, LF ham bor faylni oladi.
+    """
+    original = b"birinchi\r\nikkinchi\nuchinchi\r\n"
+    with tempfile.TemporaryDirectory() as tmp:
+        probe = Path(tmp) / "satr-oxirlari.txt"
+        probe.write_bytes(original)
+        with Mutation(probe, "ikkinchi", "IKKINCHI"):
+            during = probe.read_bytes()
+        after = probe.read_bytes()
+    # Old shart: mutatsiya HAQIQATAN yozilganmi? Aks holda test bo'sh
+    # bo'lardi — hech narsa o'zgarmasa baytlar albatta mos keladi.
+    if b"IKKINCHI" not in during:
+        return False, "mutatsiya: o'zgarish yozilmadi — test hech narsa o'lchamadi"
+    if after != original:
+        return False, f"mutatsiya baytlarni o'zgartirdi: {original!r} → {after!r}"
+    return True, "mutatsiya: CRLF va LF bayt-aniq qaytarildi"
+
+
+def neg_checker_survives_narrow_stdout() -> tuple[bool, str]:
+    """Chiqish UTF-8 bo'lmagan oqimga ketsa tekshiruv qulamasinmi?
+
+    ⚠️ 2026-09-15 da o'lchandi: 10 ta `check_*.py` dan 8 tasi chiqish
+    QUVURGA yo'naltirilganda `UnicodeEncodeError` bilan qulardi — Windows
+    quvur uchun `cp1252` beradi, tekshiruvlar esa `✓` chiqaradi.
+
+    Bu shunchaki noqulaylik emas, YOLG'ON YASHIL manbai: `check_negative`
+    bolalarni `capture_output=True` bilan, ya'ni quvur orqali chaqiradi.
+    Qulagan bola nolga teng bo'lmagan kod qaytaradi va `expect_fail` buni
+    «buzuq holatni tutdi» deb o'qiydi — mutatsiya umuman tekshirilmagan
+    bo'lsa ham test yashil bo'lardi.
+
+    Nosozlik `PYTHONIOENCODING=cp1252` bilan ATAYLAB qayta yasaladi: shu
+    tarzda test Windows'da ham, Linux'da ham bir xil ma'noga ega bo'ladi
+    (aks holda UTF-8 lokalda u bo'sh o'tardi). Tuzatish skriptning
+    O'ZIDA bo'lishi kerak — chaqiruvchining muhitida emas.
+    """
+    env = dict(os.environ)
+    env.pop("PYTHONUTF8", None)
+    env["PYTHONIOENCODING"] = "cp1252"
+    proc = subprocess.run(
+        [PY, "tools/check_ordering.py"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        env=env,
+    )
+    out = (proc.stdout or "") + (proc.stderr or "")
+    if "UnicodeEncodeError" in out:
+        return False, "tor oqim: tekshiruv O'Z chiqishida quladi (UnicodeEncodeError)"
+    if proc.returncode != 0:
+        return False, f"tor oqim: tekshiruv exit {proc.returncode} berdi (0 kerak)"
+    return True, "tor oqim: chiqish UTF-8 ga majburlandi, tekshiruv o'tdi"
+
+
+def neg_hook_gates_new_branch() -> tuple[bool, str]:
+    """Upstream'siz branchda darvoza hammasini o'tkazib yubormasinmi?
+
+    ⚠️ 2026-09-15 da o'lchandi: hook tekshiriladigan fayllar ro'yxatini
+    `@{upstream}` dan olardi. Yangi branchda upstream hali YO'Q, `range`
+    esa jimgina `HEAD` ga tushardi — toza daraxtda
+    `git diff --name-only HEAD` BO'SH qaytaradi, va hook keyingi qatorda
+    `exit 0` qilardi.
+
+    Ya'ni har yangi branchning BIRINCHI push'i umuman tekshirilmay
+    o'tardi: darvoza e'lon qilingan, lekin jonsiz. Bu nodir chekka holat
+    emas — har bir yangi branch aynan shu yo'ldan o'tadi.
+
+    Sinov haqiqiy repo'ga TEGMAYDI: vaqtinchalik repo yasaladi, unda na
+    upstream, na `origin/main` bor — eng yomon holat.
+    """
+    hook = ROOT / ".githooks/pre-push"
+    picker = ROOT / "tools/pick-python.sh"
+    if not hook.exists() or not picker.exists():
+        return False, "hook: `.githooks/pre-push` yoki picker topilmadi"
+
+    with tempfile.TemporaryDirectory() as tmp:
+        repo = Path(tmp)
+        (repo / ".githooks").mkdir()
+        (repo / "tools").mkdir()
+        (repo / ".githooks/pre-push").write_bytes(hook.read_bytes())
+        (repo / "tools/pick-python.sh").write_bytes(picker.read_bytes())
+        (repo / "muhim.py").write_bytes(b"print('x')\n")
+
+        for cmd in (
+            ["git", "init", "-q", "-b", "yangi-branch"],
+            ["git", "config", "user.email", "test@example.com"],
+            ["git", "config", "user.name", "test"],
+            ["git", "add", "-A"],
+            ["git", "commit", "-q", "-m", "birinchi"],
+        ):
+            made = subprocess.run(cmd, cwd=repo, capture_output=True, text=True)
+            if made.returncode != 0:
+                return False, f"hook: sinov repo'si yasalmadi — {' '.join(cmd)}"
+
+        proc = subprocess.run(
+            [_bash(), ".githooks/pre-push", "--print-files"],
+            cwd=repo,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+
+    listed = [line for line in (proc.stdout or "").splitlines() if line.strip()]
+    if not listed:
+        return False, (
+            "hook/yangi branch: fayl ro'yxati BO'SH — upstream'siz push "
+            "tekshirilmay o'tardi (darvoza jonsiz)"
+        )
+    if "muhim.py" not in listed:
+        return False, f"hook/yangi branch: `muhim.py` ro'yxatda yo'q — {listed[:3]}"
+    return True, f"hook/yangi branch: {len(listed)} fayl tekshiruvga olindi"
 
 
 CASES: list[tuple[str, list[tuple[str, object]]]] = [
@@ -1094,6 +1326,16 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         [
             ("tiebreaker yo'q bo'lsa qizil", neg_ordering_missing_tiebreaker),
             ("`ordering_fields` qoidaga tushmaydi", neg_ordering_fields_not_confused),
+        ],
+    ),
+    (
+        "tooling",
+        [
+            ("Store stub'i rad etilsin", neg_picker_rejects_store_stub),
+            ("ishlaydigan python topilsin", neg_picker_finds_working_python),
+            ("mutatsiya baytlarni saqlasin", neg_mutation_restores_bytes),
+            ("tor oqimda qulamasin", neg_checker_survives_narrow_stdout),
+            ("yangi branch darvozasiz qolmasin", neg_hook_gates_new_branch),
         ],
     ),
 ]

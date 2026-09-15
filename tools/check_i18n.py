@@ -15,6 +15,12 @@ import re
 import sys
 from pathlib import Path
 
+# Chiqish quvurga yo'naltirilganda Windows uni `cp1252` deb yozadi va
+# birinchi `✓` belgisida qulaydi — sabab va o'lchov `tools/_console.py` da.
+import _console
+
+_console.force_utf8()
+
 ROOT = Path(__file__).resolve().parent.parent
 LOCALES_DIR = ROOT / "apps/web/src/i18n/locales"
 INDEX = ROOT / "apps/web/src/i18n/messages.ts"
@@ -214,7 +220,14 @@ def load(path: Path) -> dict[str, str]:
 
 
 def declared_locales() -> list[str]:
-    block = re.search(r"export const LOCALES = \[(.*?)\] as const;", INDEX.read_text(), re.S)
+    # `encoding` SHART: usiz Windows'da `charmap` kodeki ishlaydi va
+    # kirill/lotin kengaytmalari `UnicodeDecodeError` beradi — tekshiruv
+    # kod soz bo'lsa ham yiqiladi (2026-09-15 da o'lchandi).
+    block = re.search(
+        r"export const LOCALES = \[(.*?)\] as const;",
+        INDEX.read_text(encoding="utf-8"),
+        re.S,
+    )
     if block is None:
         sys.exit("messages.ts da LOCALES topilmadi")
     return re.findall(r'"([a-z-]+)"', block.group(1))

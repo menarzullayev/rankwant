@@ -20,6 +20,12 @@ import pathlib
 import re
 import sys
 
+# Chiqish quvurga yo'naltirilganda Windows uni `cp1252` deb yozadi va
+# birinchi `✓` belgisida qulaydi — sabab va o'lchov `tools/_console.py` da.
+import _console
+
+_console.force_utf8()
+
 REPO = pathlib.Path(__file__).resolve().parent.parent
 PROTOCOL = REPO / "services/bakeoff/protocol.md"
 GO_PROTOCOL = REPO / "services/judge-go/protocol.go"
@@ -88,7 +94,7 @@ def check_login_contract() -> list[str]:
     """
     found: list[str] = []
 
-    serializers = API_SERIALIZERS.read_text()
+    serializers = API_SERIALIZERS.read_text(encoding="utf-8")
     match = re.search(r"class LoginSerializer\(.*?\n\n\n", serializers, re.S)
     if not match:
         return ["API: LoginSerializer topilmadi — shartnoma tekshirilmadi"]
@@ -110,7 +116,7 @@ def check_login_contract() -> list[str]:
     # Web tomoni: AuthForm maydon nomi va login chaqiruvidagi kalit.
     # `postJson("/auth/login/", { identifier: ... })` — shu kalit API
     # kutadigan maydon nomi bilan AYNAN bir xil bo'lishi kerak.
-    form = WEB_AUTH_FORM.read_text()
+    form = WEB_AUTH_FORM.read_text(encoding="utf-8")
     if not re.search(r'name="identifier"', form):
         found.append('WEB: AuthForm da `name="identifier"` maydoni yo\'q')
 
@@ -162,14 +168,14 @@ def check_register_contract() -> list[str]:
     """
     found: list[str] = []
 
-    form = WEB_AUTH_FORM.read_text()
+    form = WEB_AUTH_FORM.read_text(encoding="utf-8")
     # 1-qadam yuki: `postJson("/auth/register/", { ... })` ichidagi kalitlar.
     calls = re.findall(r'postJson\(\s*"/auth/register/",\s*\{(.*?)\}\s*\)', form, re.S)
     if not calls:
         return ["WEB: AuthForm da `/auth/register/` chaqiruvi topilmadi"]
     web_fields = set(re.findall(r"^\s*(\w+)\s*:", calls[0], re.M))
 
-    serializers = API_SERIALIZERS.read_text()
+    serializers = API_SERIALIZERS.read_text(encoding="utf-8")
     match = re.search(r"class RegisterSerializer\(.*?\n\nclass ", serializers, re.S)
     if not match:
         return ["API: RegisterSerializer topilmadi — shartnoma tekshirilmadi"]
@@ -245,8 +251,8 @@ def check_tab_bar() -> list[str]:
     if not WEB_AUTH_TABS.exists():
         return [f"WEB: {WEB_AUTH_TABS.relative_to(REPO)} topilmadi"]
 
-    model = WEB_TAB_MODEL.read_text()
-    bar = WEB_AUTH_TABS.read_text()
+    model = WEB_TAB_MODEL.read_text(encoding="utf-8")
+    bar = WEB_AUTH_TABS.read_text(encoding="utf-8")
 
     bar_match = re.search(r"^export const TAB_BAR[^=]*=\s*\[(.*?)\]", model, re.M | re.S)
     if not bar_match:
@@ -337,7 +343,7 @@ def check_smoke_payloads() -> list[str]:
     if not SMOKE.exists():
         return [f"SMOKE: {SMOKE.relative_to(REPO)} topilmadi"]
 
-    smoke = SMOKE.read_text()
+    smoke = SMOKE.read_text(encoding="utf-8")
 
     # ── Login: API `identifier` kutadi, `username` EMAS ──────────────
     login_body = _block_after(smoke, '"/auth/login/"')
@@ -360,7 +366,7 @@ def check_smoke_payloads() -> list[str]:
             )
 
     # ── Register: majburiy maydonlarning HAMMASI yuborilishi shart ───
-    serializers = API_SERIALIZERS.read_text()
+    serializers = API_SERIALIZERS.read_text(encoding="utf-8")
     match = re.search(r"class RegisterSerializer\(.*?\n\nclass ", serializers, re.S)
     if not match:
         found.append("SMOKE: RegisterSerializer topilmadi — yuk tekshirilmadi")
@@ -414,7 +420,7 @@ def check_legacy_routes() -> list[str]:
     if not model.exists():
         return [f"WEB: {model.relative_to(REPO)} topilmadi"]
 
-    match = re.search(r"export const TABS\s*=\s*\[(.*?)\]", model.read_text(), re.S)
+    match = re.search(r"export const TABS\s*=\s*\[(.*?)\]", model.read_text(encoding="utf-8"), re.S)
     if not match:
         return ["WEB: `TABS` ro'yxati `lib/auth-tabs.ts` da topilmadi"]
 
@@ -434,15 +440,15 @@ def check_legacy_routes() -> list[str]:
 
 
 def main() -> int:
-    protocol = PROTOCOL.read_text()
+    protocol = PROTOCOL.read_text(encoding="utf-8")
     blocks = json_blocks(protocol)
     if len(blocks) < 2:
         print(f"protocol.md da Job va Result bloklari topilmadi ({len(blocks)} ta)")
         return 1
     job_block, result_block = blocks[0], blocks[1]
 
-    go_tags = go_json_tags(GO_PROTOCOL.read_text())
-    py_source = PY_PROVIDER.read_text() + PY_SERVICES.read_text()
+    go_tags = go_json_tags(GO_PROTOCOL.read_text(encoding="utf-8"))
+    py_source = PY_PROVIDER.read_text(encoding="utf-8") + PY_SERVICES.read_text(encoding="utf-8")
 
     for name, block in (("Job", job_block), ("Result", result_block)):
         for key in block:
