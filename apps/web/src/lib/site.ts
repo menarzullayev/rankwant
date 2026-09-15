@@ -26,6 +26,16 @@ export function absolute(path: string): string {
   return new URL(path, SITE_URL).toString();
 }
 
+/** Whether search engines and AI crawlers may index the site.
+ *
+ * `false` until launch. On 2026-09-15 crawlers sent ~246k requests a day
+ * (82% GPTBot, 16% Google), mostly to the profiles of 10,001 seeded
+ * `neytron_*` users, and used up the daily Cloudflare Workers quota.
+ * Flip to `true` at launch: `robots.ts` reopens with the sitemap and the
+ * root layout drops `noindex`.
+ */
+export const SITE_INDEXABLE = false;
+
 /** `?next=` qiymatini xavfsiz ICHKI yo'lga aylantiradi.
  *
  * Qiymat ishonchsiz: uni har kim manzil qatorida tahrirlay oladi, ya'ni

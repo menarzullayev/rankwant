@@ -62,7 +62,9 @@ export async function generateMetadata({
     title: t(locale, title ?? "auth.login"),
     //: Tiklash bo'limida tokenli havola bo'lishi mumkin — qidiruvda
     //: kerak emas. Kirish va ro'yxat esa indekslanadi (SEO).
-    robots: tab === "reset-password" ? { index: false, follow: false } : undefined,
+    // Omit the key instead of setting it to `undefined`: Next merges metadata
+    // with `for...in`, so `robots: undefined` wipes the root layout's noindex.
+    ...(tab === "reset-password" ? { robots: { index: false, follow: false } } : {}),
   };
 }
 

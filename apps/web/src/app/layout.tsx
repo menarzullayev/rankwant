@@ -16,7 +16,7 @@ import { messagesFor } from "@/i18n/messages.server";
 import type { Me } from "@/lib/api";
 import { api, type AppearancePrefs } from "@/lib/api";
 import { getSessionUser } from "@/lib/api.server";
-import { SITE_URL } from "@/lib/site";
+import { SITE_INDEXABLE, SITE_URL } from "@/lib/site";
 
 const TITLE = "RankWant — reyting xohlaganlar uchun";
 
@@ -156,6 +156,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: TITLE, template: "%s · RankWant" },
   description: DESCRIPTION,
+  // Until launch every page is noindex, nofollow (see SITE_INDEXABLE).
+  robots: SITE_INDEXABLE ? undefined : { index: false, follow: false },
   // O'z-o'ziga havola qiluvchi canonical: `?` bilan kelgan filtrli
   // variantlar va til cookie'si bilan ochilgan nusxalar bitta manzilga
   // yig'iladi. `"./"` — «shu sahifaning o'zi»; har sahifa uchun alohida
