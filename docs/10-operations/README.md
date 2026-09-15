@@ -457,10 +457,16 @@ yashirilgan emas.
 
 Preview (bitta mashina) uchun: `tools/backup.sh` — Postgres dump va MinIO
 nusxasi, 30 kun saqlanadi. Bitta yurish ~23 MB (o'lchandi 2026-09-15:
-pg 16.3 MB + MinIO 7.0 MB), ya'ni 30 kunlik saqlash ~700 MB. C: da atigi
-5.8 GB bo'sh — sig'adi, lekin keng joy emas. Shuning uchun skript har
+pg 16.3 MB + MinIO 7.0 MB), ya'ni 30 kunlik saqlash ~700 MB.
+
+⚠️ C: — yagona qattiq disk, va undagi bo'sh joy TEZ o'zgaradi: 2026-09-15
+kuni bir necha soat ichida 5.8 GB dan 31.5 GB gacha ko'tarildi (yolg'iz
+Docker build cache 14.7 GB, asosan qaytarib olinadigan). Shuning uchun bu
+yerga «hozir shuncha bo'sh» degan raqam YOZILMAYDI — u ertasiga yolg'on
+bo'ladi. Barqaror raqam — zaxiraning o'z narxi: ~700 MB. Skript esa har
 yurishda katalogning JAMI hajmini va o'chirilgan eski fayllar sonini
-jurnalga yozadi: zaxira joyining tugashi backup'ni jimgina o'ldiradi.
+jurnalga yozadi, chunki zaxira joyining tugashi backup'ni jimgina
+o'ldiradi.
 
 Linux, cron:
 

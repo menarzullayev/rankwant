@@ -191,14 +191,17 @@ find "$dest" -name 'pg-*.sql.gz' -mtime "+$keep_days" -delete
 find "$dest" -name 'minio-*.tar.gz' -mtime "+$keep_days" -delete
 # ⚠️ Yiqilgan yurish `.part` bo'lagini qoldiradi, saqlash qoidasi esa uni
 # KO'RMAYDI: u `pg-*.sql.gz` naqshiga tushmaydi. Ya'ni har yiqilgan yurish
-# ~17 MB ni abadiy band qilardi — 5.8 GB bo'sh joyda bu sezilarli.
-# Bir kundan eski bo'laklar tozalanadi; joriy yurishnikiga tegmaydi.
+# ~17 MB ni abadiy band qilardi va C: yagona disk bo'lgani uchun bu
+# to'planib qolardi. Bir kundan eski bo'laklar tozalanadi; joriy
+# yurishnikiga tegmaydi.
 find "$dest" -name '*.gz.part' -mtime +1 -delete
 after="$(find "$dest" -name 'pg-*.sql.gz' -o -name 'minio-*.tar.gz' | wc -l)"
 
-# Disk tor: C: da ~5.8 GB bo'sh (o'lchandi 2026-09-15). Shuning uchun
-# katalogning JAMI hajmi har yurishda yoziladi — 30 kunlik saqlash
-# ~750 MB turadi va bu raqam jimgina o'sib ketmasligi kerak.
+# ⚠️ C: — yagona qattiq disk, undagi bo'sh joy esa tez o'zgaradi
+# (2026-09-15 da bir necha soat ichida 5.8 GB dan 31.5 GB gacha). Shuning
+# uchun skript bo'sh joyga emas, o'z NARXiga qaraydi: katalogning JAMI
+# hajmi har yurishda yoziladi — 30 kunlik saqlash ~700 MB turadi va bu
+# raqam jimgina o'sib ketmasligi kerak.
 printf '%s  pg=%s  minio=%s  jami=%s  fayl=%s (-%s)\n' "$stamp" \
   "$(du -h "$sql" | cut -f1)" "$(du -h "$objects" | cut -f1)" \
   "$(du -sh "$dest" | cut -f1)" "$after" "$((before - after))"
