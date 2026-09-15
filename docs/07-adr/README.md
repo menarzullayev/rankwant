@@ -38,6 +38,7 @@ Har bir ADR:
 | [0018](0018-titles-roles-achievements.md)        | Unvon, ism rangi, rollar, yutuqlar        | **accepted**       |
 | [0019](0019-contest-certificates.md)             | Musobaqa sertifikatlari — QR, PDF         | **accepted**       |
 | [0020](0020-hacking.md)                          | Hacking — bitta dvigatel, to'rtta siyosat | **accepted**       |
+| [0021](0021-hack-reference-solution.md)          | Hack testining javobi — etalon yechimdan  | **accepted**       |
 
 ## Qoidalar
 

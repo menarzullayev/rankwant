@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "core",
     "problems",
     "judging",
+    "hacks",
     "contests",
     "ratings",
     "qvant",
@@ -282,6 +283,11 @@ REST_FRAMEWORK = {
         "anon_internal": os.environ.get("THROTTLE_ANON_INTERNAL", "20000/hour"),
         "user": os.environ.get("THROTTLE_USER", "300/min"),
         "submit": os.environ.get("THROTTLE_SUBMIT", "6/min"),
+        # Hack submit'dan qimmatroq: har bittasi judge'da uchta ish
+        # ochadi (generator, etalon yechim, himoyachi). Codeforces'da
+        # rasmiy chegara hujjatlashtirilmagan va bitta raundda bir odam
+        # 470 ta hack yuborgani muhokama qilingan (ADR-0020 § Cheklov).
+        "hack": os.environ.get("THROTTLE_HACK", "10/min"),
         "export": os.environ.get("THROTTLE_EXPORT", "3/hour"),
         # Asosiy cheklov `PasswordResetToken` da (hisobga 3/soat, IP'ga
         # 10/soat) — bu esa endpointning O'ZINI himoya qiladi: kimdir
@@ -328,6 +334,18 @@ SPECTACULAR_SETTINGS = {
 JUDGE_PROVIDER = env("JUDGE_PROVIDER", "redis")
 JUDGE_JOBS_KEY = "rankwant:judge:jobs"
 JUDGE_RESULTS_KEY = "rankwant:judge:results"
+
+# ── Hacking (ADR-0020, ADR-0021) ─────────────────────────────────────
+#: Qo'lda yozilgan hack kiritmasining chegarasi. Kattasi generator bilan
+#: yuboriladi — matn maydonini megabaytlar bilan to'ldirish yo'li emas.
+HACK_INPUT_MAX_BYTES = int(os.environ.get("HACK_INPUT_MAX_BYTES", 1024 * 1024))
+#: Generator chiqishining chegarasi: undan oshsa `GENERATOR_CRASHED`.
+HACK_GENERATOR_OUTPUT_KB = int(os.environ.get("HACK_GENERATOR_OUTPUT_KB", 4096))
+#: Uphack — «ishonchli foydalanuvchi» ta'rifi. Reyting ochiq o'lchov,
+#: ya'ni qoidani foydalanuvchi ham tekshira oladi (principle #2).
+HACK_UPHACK_MIN_RATING = int(os.environ.get("HACK_UPHACK_MIN_RATING", 1900))
+#: Musobaqa xonasining o'lchami (`contest_room`).
+HACK_ROOM_SIZE = int(os.environ.get("HACK_ROOM_SIZE", 40))
 
 CELERY_BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = REDIS_URL

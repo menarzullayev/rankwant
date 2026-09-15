@@ -273,6 +273,13 @@ class Subtask(models.Model):
 class TestCase(models.Model):
     """Test ma'lumotlari DB da EMAS — S3/R2 da (05-domain-model)."""
 
+    class Origin(models.TextChoices):
+        AUTHOR = "author", "Muallif"
+        #: Muvaffaqiyatli hack testi (ADR-0020). Manbani bilish kerak:
+        #: hack testi keyin qo'shilgan, ya'ni eski `AC` lar uni ko'rmagan
+        #: va nega qayta tekshirilgani shu ustundan ko'rinadi.
+        HACK = "hack", "Hack"
+
     problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name="tests")
     order = models.PositiveIntegerField()
     input_ref = models.CharField(max_length=500)
@@ -282,6 +289,7 @@ class TestCase(models.Model):
     subtask = models.ForeignKey(
         Subtask, null=True, blank=True, on_delete=models.SET_NULL, related_name="tests"
     )
+    origin = models.CharField(max_length=8, choices=Origin.choices, default=Origin.AUTHOR)
 
     class Meta:
         ordering: ClassVar = ["order"]
@@ -372,6 +380,37 @@ class Validator(models.Model):
 
     def __str__(self) -> str:
         return f"validator · {self.problem.slug}"
+
+
+class ReferenceSolution(models.Model):
+    """Etalon yechim — hack testining javobini beradi ([ADR-0021]).
+
+    Hacker kiritma yuboradi, himoyachining kodi shu kiritmada ishlaydi va
+    chiqish NIMADIR bilan solishtirilishi kerak. O'sha «nimadir» —
+    masalaning o'z to'g'ri yechimi bergan javob.
+
+    ⚠️ Hackerning O'Z yechimi etalon bo'la olmaydi: u ataylab chekka
+    holatda xato ishlaydigan kod bilan `AC` olib, keyin aynan o'sha
+    holatni yuborsa, TO'G'RI ishlaydigan himoyachi «sindirilgan» bo'lib
+    chiqardi. Shuning uchun etalon masala bilan keladi.
+
+    Validator kabi u ham sandbox ICHIDA ishlaydi: kod bizniki, lekin
+    kiritma ishonchsiz.
+
+    [ADR-0021]: ../../../docs/07-adr/0021-hack-reference-solution.md
+    """
+
+    problem = models.OneToOneField(
+        Problem, on_delete=models.CASCADE, related_name="reference_solution"
+    )
+    language = models.ForeignKey(
+        Language, on_delete=models.PROTECT, related_name="reference_solutions"
+    )
+    source = models.TextField()
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return f"etalon · {self.problem.slug}"
 
 
 class Favourite(models.Model):
