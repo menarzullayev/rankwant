@@ -12,26 +12,53 @@ set -uo pipefail
 root="$(git rev-parse --show-toplevel)"
 cd "$root"
 
-# `python3` — Linux nomi. Windows'da Git Bash uni faqat boshqa Python
-# PATH'da bo'lsa topadi; `python` esa oddiy o'rnatishdan keyin doim bor.
-# Qaysi biri mavjud bo'lsa, o'sha ishlatiladi — hook qaysi shelldan
-# chaqirilsa ham bir xil ishlaydi.
+# Interpretator NOMI bo'yicha emas, ISHGA TUSHISHI bo'yicha tanlanadi —
+# to'liq sabab `tools/pick-python.sh` da. Qisqasi: Windows'da `python3`
+# Microsoft Store'ning stub'iga tushadi, `command -v` uni topadi, lekin u
+# ishga tushmaydi. 2026-09-15 da shu sabab to'rtta tekshiruv «yiqildi»
+# deb ko'rsatildi, holbuki kod soz edi.
 #
 # Python topilmasa hook YO'QOLMAYDI: jim `exit 0` — «e'lon qilingan,
 # lekin jonsiz» darvoza bo'lardi. Buning o'rniga ochiq xato beriladi.
-if command -v python3 >/dev/null 2>&1; then
-  PY=python3
-elif command -v python >/dev/null 2>&1; then
-  PY=python
-else
-  printf '\n\033[31m✗ Python topilmadi — tekshiruvlar bajarilmadi.\033[0m\n' >&2
-  printf '  Python PATH'"'"'ga qo'"'"'shilsin, yoki: git push --no-verify\n\n' >&2
+if ! PY="$(bash "$root/tools/pick-python.sh")"; then
+  printf '\n\033[31m✗ Ishlaydigan Python topilmadi — tekshiruvlar bajarilmadi.\033[0m\n' >&2
+  printf "  Sababni ko'rish: bash tools/pick-python.sh\n" >&2
+  printf '  Chetlab o'"'"'tish: git push --no-verify\n\n' >&2
   exit 1
 fi
 
-remote_head="$(git rev-parse --verify --quiet '@{upstream}' || echo '')"
-range="${remote_head:+$remote_head..}HEAD"
-files="$(git diff --name-only "$range" 2>/dev/null || git diff --name-only HEAD)"
+# Nimani tekshirish kerak — shu branch OLIB KELGAN fayllar.
+#
+# ⚠️ Ilgari `@{upstream}` bo'lmasa `range` jimgina `HEAD` ga tushardi.
+# Toza daraxtda `git diff --name-only HEAD` BO'SH qaytaradi, ya'ni
+# keyingi qator `exit 0` qilardi va HAR YANGI BRANCHNING BIRINCHI
+# push'i umuman tekshirilmay o'tardi — darvoza e'lon qilingan, lekin
+# jonsiz. Yangi branchda upstream hali yo'q, ya'ni bu nodir holat emas:
+# aynan birinchi push shu yo'ldan o'tadi (2026-09-15 da o'lchandi).
+#
+# Upstream bo'lmasa asosiy branchdan boshlanadi. U ham topilmasa —
+# «o'lchab bo'lmadi» holati: jim o'tkazib yuborish EMAS, hamma fayl
+# olinadi va tekshiruvlar to'liq ishlaydi.
+base="$(git rev-parse --verify --quiet '@{upstream}' || true)"
+[ -n "$base" ] || base="$(git rev-parse --verify --quiet origin/main || true)"
+if [ -n "$base" ]; then
+  # Uch nuqta — umumiy ajdoddan beri: asosiy branchdagi begona
+  # commit'lar bu branchning ishi deb hisoblanmaydi.
+  files="$(git diff --name-only "$base...HEAD")"
+else
+  printf '\033[33m! Taqqoslash nuqtasi topilmadi — HAMMA fayl tekshiriladi.\033[0m\n' >&2
+  files="$(git ls-files)"
+fi
+
+# `--print-files` — salbiy test uchun kirish nuqtasi: qaysi fayllar
+# tanlanganini ko'rsatadi va tekshiruvlarni ISHLATMAYDI. Git hook'ni
+# chaqirganda `$1` remote nomi bo'ladi, ya'ni bu bayroq faqat qo'lda
+# chaqirilganda tushadi.
+if [ "${1:-}" = "--print-files" ]; then
+  printf '%s\n' "$files"
+  exit 0
+fi
+
 [ -z "$files" ] && exit 0
 
 has() { grep -qE "$1" <<<"$files"; }

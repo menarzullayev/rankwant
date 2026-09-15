@@ -550,6 +550,23 @@ Yangi klonda yoqish:
 git config core.hooksPath .githooks
 ```
 
+**Interpretator nomi bo'yicha tanlanmaydi.** Hook Python'ni
+`tools/pick-python.sh` orqali oladi va u har bir nomzodni ISHGA TUSHIRIB
+ko'radi. Sabab Windows'da: `python3` Microsoft Store'ning "App Execution
+Alias" stub'iga tushadi — `command -v` uni topadi, lekin ishga
+tushirilganda "Python was not found" deb chiqadi. 2026-09-15 da shu
+sabab to'rtta tekshiruv «yiqildi» deb ko'rsatilgan, holbuki kod soz edi.
+Interpretatorni qotirish kerak bo'lsa: `PYTHON=/path/to/python`.
+
+**Chiqish UTF-8 ga majburlanadi.** Tekshiruvlar `✓`/`✗` chiqaradi, Windows
+esa quvurga yozilgan oqim uchun `cp1252` beradi — 2026-09-15 da o'nta
+`check_*.py` dan sakkiztasi shu sabab `UnicodeEncodeError` bilan qulagan.
+Bu yolg'on yashil manbai edi: `check_negative.py` bolalarni quvur orqali
+chaqiradi, qulagan bola nolga teng bo'lmagan kod qaytaradi va salbiy test
+uni «buzuq holatni tutdi» deb o'qiydi. Shuning uchun har bir tekshiruv
+`tools/_console.py` dagi `force_utf8()` ni chaqiradi — tuzatish
+chaqiruvchining muhitiga emas, skriptning o'ziga bog'langan.
+
 ## Assumptions
 
 1. **Bitta mashina preview uchun yetarli.** Deploy topologiyasi shunga

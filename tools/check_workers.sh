@@ -54,12 +54,15 @@ else
   R=''; G=''; Y=''; B=''; N=''
 fi
 
-PY="${PY:-C:/Users/nsn/.workbuddy-ai/binaries/python/versions/3.13.12/python.exe}"
-if [ ! -x "$PY" ]; then
-  PY="$(command -v python3 || command -v python || true)"
+# Interpretator NOMI emas, ISHLAYDIGANI tanlanadi — sabab
+# `tools/pick-python.sh` da (Windows'da `python3` Store stub'iga tushadi).
+# Ilgari bu yerda bitta mashinaga xos yo'l qotirilgan edi; u boshqa har
+# qanday klonda ishlamasdi va zaxira yo'l ham o'sha stub'ni tanlardi.
+if [ -z "${PY:-}" ]; then
+  PY="$(bash "$ROOT/tools/pick-python.sh" || true)"
 fi
 if [ -z "$PY" ]; then
-  printf '%sTekshiruv imkonsiz%s: python topilmadi.\n' "$Y" "$N"
+  printf '%sTekshiruv imkonsiz%s: ishlaydigan python topilmadi.\n' "$Y" "$N"
   exit 2
 fi
 

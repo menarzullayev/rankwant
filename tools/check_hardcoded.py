@@ -52,6 +52,12 @@ import pathlib
 import re
 import sys
 
+# Chiqish quvurga yo'naltirilganda Windows uni `cp1252` deb yozadi va
+# birinchi `✓` belgisida qulaydi — sabab va o'lchov `tools/_console.py` da.
+import _console
+
+_console.force_utf8()
+
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 WEB = ROOT / "apps/web/src"
 

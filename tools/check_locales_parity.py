@@ -27,6 +27,12 @@ import ast
 import sys
 from pathlib import Path
 
+# Chiqish quvurga yo'naltirilganda Windows uni `cp1252` deb yozadi va
+# birinchi `✓` belgisida qulaydi — sabab va o'lchov `tools/_console.py` da.
+import _console
+
+_console.force_utf8()
+
 ROOT = Path(__file__).resolve().parent.parent
 
 MODELS = ROOT / "apps/api/core/models.py"

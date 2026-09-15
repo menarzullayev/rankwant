@@ -12,6 +12,12 @@ import re
 import sys
 from pathlib import Path
 
+# Chiqish quvurga yo'naltirilganda Windows uni `cp1252` deb yozadi va
+# birinchi `✓` belgisida qulaydi — sabab va o'lchov `tools/_console.py` da.
+import _console
+
+_console.force_utf8()
+
 CYRILLIC = re.compile(r"[Ѐ-ӿ]")
 LINK = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
 #: `ADR-0016` — kod izohlarida ham, hujjatlarda ham uchraydi.
