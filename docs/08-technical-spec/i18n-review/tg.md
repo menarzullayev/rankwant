@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1427 strings.**
+**1432 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -408,6 +408,11 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `verdict.PARTIAL` | Qisman ball | Холи қисман |  |
 | `verdict.IE` | Ichki xato | Хатои дохилӣ |  |
 | `verdict.WRONG_TEST` | Masala testi yaroqsiz | Тестҳои масъала нодурустанд |  |
+| `verdict.group.ok.hint` | Yechimingiz to'g'ri — barcha testlar o'tdi. | Ҳалли шумо дуруст — ҳамаи тестҳо гузаштанд. |  |
+| `verdict.group.warn.hint` | Hali yakunlanmagan yoki qisman bajarilgan. | Ҳанӯз тамом нашудааст ё қисман гузаштааст. |  |
+| `verdict.group.bad.hint` | Yechimingizdagi xato — tuzatib qayta yuboring. | Дар ҳалли шумо хатогӣ ҳаст — ислоҳ карда, аз нав фиристед. |  |
+| `verdict.group.neutral.hint` | Sizning xatoyingiz emas — tizim tomonidan. Qayta urinib ko'ring. | Ин хатогии шумо нест — нуқсони система. Аз нав кӯшиш кунед. |  |
+| `verdict.group.unknown.hint` | Notanish natija kodi — tizim yangilangan bo'lishi mumkin. | Рамзи натиҷаи номаълум — эҳтимол система навсозӣ шудааст. |  |
 | `verdict.SKIPPED` | Hisobga olinmadi | Ба ҳисоб гирифта нашуд |  |
 | `verdict.COMPILE_TIMEOUT` | Kompilyatsiya cho'zildi | Компилятсия дароз кашид |  |
 | `verdict.IDLENESS` | Dastur kutib qoldi | Барнома интизор монд |  |

@@ -1665,6 +1665,34 @@ def neg_hook_gates_new_branch() -> tuple[bool, str]:
     return True, f"hook/yangi branch: {len(listed)} fayl tekshiruvga olindi"
 
 
+def neg_verdict_code_missing() -> tuple[bool, str]:
+    """Web'dan bitta verdikt kodi olib tashlansa — tutilsinmi?
+
+    Bu AYnan ilgari bo'lgan holat: API'da 23 kod, web'da 10 ta, ya'ni
+    14 tasi «Navbatda» bo'lib ko'ringan. `tsc` ham, eslint ham jim
+    o'tgan — kalit oddiy `string`.
+    """
+    path = ROOT / "apps/web/src/lib/theme/verdict.ts"
+    old = '  | "WRONG_TEST"\n'
+    if old not in path.read_bytes().decode("utf-8"):
+        return False, "verdikt/kod yetishmaydi: langar topilmadi"
+    with Mutation(path, old, ""):
+        return expect_fail("verdict_codes", "verdikt/kod web'da yetishmaydi")
+
+
+def neg_verdict_label_missing() -> tuple[bool, str]:
+    """Bitta tildan verdikt yorlig'i olib tashlansa — tutilsinmi?
+
+    Yorliqsiz kod foydalanuvchiga xom kalit bo'lib ko'rinardi.
+    """
+    path = ROOT / "apps/web/src/i18n/locales/uz.ts"
+    old = '  "verdict.SKIPPED": "Hisobga olinmadi",\n'
+    if old not in path.read_bytes().decode("utf-8"):
+        return False, "verdikt/yorliq yetishmaydi: langar topilmadi"
+    with Mutation(path, old, ""):
+        return expect_fail("verdict_codes", "verdikt/yorliq bir tilda yetishmaydi")
+
+
 CASES: list[tuple[str, list[tuple[str, object]]]] = [
     (
         "i18n",
@@ -1759,6 +1787,13 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         [
             ("tiebreaker yo'q bo'lsa qizil", neg_ordering_missing_tiebreaker),
             ("`ordering_fields` qoidaga tushmaydi", neg_ordering_fields_not_confused),
+        ],
+    ),
+    (
+        "verdict_codes",
+        [
+            ("web'da kod yetishmasa qizil", neg_verdict_code_missing),
+            ("bir tilda yorliq yetishmasa qizil", neg_verdict_label_missing),
         ],
     ),
     (

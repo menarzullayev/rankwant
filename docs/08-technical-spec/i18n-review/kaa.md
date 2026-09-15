@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1427 strings.**
+**1432 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -408,6 +408,11 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `verdict.PARTIAL` | Qisman ball | Bólekley ball |  |
 | `verdict.IE` | Ichki xato | Ishki qátelik |  |
 | `verdict.WRONG_TEST` | Masala testi yaroqsiz | Máselening testi jaramsız |  |
+| `verdict.group.ok.hint` | Yechimingiz to'g'ri — barcha testlar o'tdi. | Sheshimińiz durıs — barlıq testler ótti. |  |
+| `verdict.group.warn.hint` | Hali yakunlanmagan yoki qisman bajarilgan. | Ali tamamlanbaǵan yamasa bóleklep ótken. |  |
+| `verdict.group.bad.hint` | Yechimingizdagi xato — tuzatib qayta yuboring. | Sheshimińizde qátelik bar — túzetip qayta jiberiń. |  |
+| `verdict.group.neutral.hint` | Sizning xatoyingiz emas — tizim tomonidan. Qayta urinib ko'ring. | Bul siziń qáteliǵińiz emes — sistema nuqsanı. Qayta urınıp kóriń. |  |
+| `verdict.group.unknown.hint` | Notanish natija kodi — tizim yangilangan bo'lishi mumkin. | Belgisiz nátiyje kodi — sistema jańalanǵan bolıwı múmkin. |  |
 | `verdict.SKIPPED` | Hisobga olinmadi | Esapqa alınbadı |  |
 | `verdict.COMPILE_TIMEOUT` | Kompilyatsiya cho'zildi | Kompilyatsiya sozıldı |  |
 | `verdict.IDLENESS` | Dastur kutib qoldi | Baǵdarlama kútip qaldı |  |

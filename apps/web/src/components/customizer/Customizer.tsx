@@ -656,14 +656,20 @@ function LookSection() {
 
 /** Judge natijasi ko'rinishi (D57).
  *
- *  Beshta variant — hammasi bir xil ma'lumotdan, farq batafsil darajasida.
- *  Tanlov ostida **jonli namuna**: uchta verdikt (AC · WA · TLE) shu
- *  ko'rinishda chiziladi, ya'ni odam bosmasdan natijani ko'radi. */
+ *  O'nta variant — hammasi bir xil ma'lumotdan, farq batafsil darajasida.
+ *  Tanlov ostida **jonli namuna**: beshta verdikt shu ko'rinishda chiziladi,
+ *  ya'ni odam bosmasdan natijani ko'radi.
+ *
+ *  Namuna ataylab **har xil rang guruhidan** olingan: `AC` (ok), `WA` va
+ *  `TLE` (bad), `PARTIAL` (warn), `WRONG_TEST` (neutral). Faqat yashil va
+ *  qizil ko'rsatilsa, «kulrang = infratuzilma, sizning aybingiz emas»
+ *  qoidasi ko'rinmay qolardi. */
 function VerdictSection() {
   const locale = useLocale();
   const { appearance, setAppearance } = useCustomizer();
   const current = clampVerdictVariant(appearance.verdictStyle);
   const def = VERDICT_VARIANTS.find((v) => v.id === current) ?? VERDICT_VARIANTS[0];
+  const sample = ["AC", "WA", "TLE", "PARTIAL", "WRONG_TEST"];
 
   return (
     <Section title={t(locale, "customizer.verdict")}>
@@ -680,10 +686,10 @@ function VerdictSection() {
           </button>
         ))}
       </div>
-      <div className="mt-3 flex flex-wrap items-center gap-3 rw-radius-sm border rw-line p-3">
-        <Verdict verdict="AC" variant={current} percent={100} />
-        <Verdict verdict="WA" variant={current} percent={40} />
-        <Verdict verdict="TLE" variant={current} />
+      <div className="mt-3 flex flex-wrap items-center gap-3 rw-radius-sm border rw-divider p-3">
+        {sample.map((v) => (
+          <Verdict key={v} verdict={v} variant={current} percent={v === "AC" ? 100 : undefined} />
+        ))}
       </div>
       <p className="mt-2 text-theme-xs rw-faint">{t(locale, def.hintKey)}</p>
     </Section>

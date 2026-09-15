@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1427 strings.**
+**1432 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -408,6 +408,11 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `verdict.PARTIAL` | Qisman ball | Ішінара ұпай |  |
 | `verdict.IE` | Ichki xato | Ішкі қате |  |
 | `verdict.WRONG_TEST` | Masala testi yaroqsiz | Есеп тесттері жарамсыз |  |
+| `verdict.group.ok.hint` | Yechimingiz to'g'ri — barcha testlar o'tdi. | Шешіміңіз дұрыс — барлық тесттер өтті. |  |
+| `verdict.group.warn.hint` | Hali yakunlanmagan yoki qisman bajarilgan. | Әлі аяқталмаған немесе ішінара өтті. |  |
+| `verdict.group.bad.hint` | Yechimingizdagi xato — tuzatib qayta yuboring. | Шешіміңізде қате бар — түзетіп қайта жіберіңіз. |  |
+| `verdict.group.neutral.hint` | Sizning xatoyingiz emas — tizim tomonidan. Qayta urinib ko'ring. | Бұл сіздің қатеңіз емес — жүйе ақауы. Қайта көріңіз. |  |
+| `verdict.group.unknown.hint` | Notanish natija kodi — tizim yangilangan bo'lishi mumkin. | Белгісіз нәтиже коды — жүйе жаңартылған болуы мүмкін. |  |
 | `verdict.SKIPPED` | Hisobga olinmadi | Есепке алынбады |  |
 | `verdict.COMPILE_TIMEOUT` | Kompilyatsiya cho'zildi | Компиляция созылды |  |
 | `verdict.IDLENESS` | Dastur kutib qoldi | Бағдарлама күтіп қалды |  |

@@ -3,9 +3,11 @@
 import { useCustomizer } from "@/context/CustomizerContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
-import { VERDICT_ICONS } from "@/icons/verdict-icons";
+import { VERDICT_ICONS, VerdictIconQuestion } from "@/icons/verdict-icons";
 import {
   DEFAULT_VERDICT_VARIANT,
+  GROUP_HINT_KEY,
+  verdictColors,
   verdictOf,
   type VerdictVariant,
 } from "@/lib/theme/verdict";
@@ -30,6 +32,11 @@ import {
  *  | `card`   ⑩ | katta ikonka + izoh    | holat + tushuntirish  | natija kartasi   |
  *  | `auto`     | ekranga qarab tanlaydi | —                     | standart         |
  *
+ *  ⚠️ **Notanish kod yashirilmaydi.** `verdictOf()` `null` qaytarsa, xom kod
+ *  ko'rsatiladi (kulrang + savol ikonkasi). Ilgari noma'lum kod `PD` ga
+ *  tushardi va 23 koddan 14 tasi «Navbatda» bo'lib ko'rinardi — buni hech
+ *  kim sezmasdi.
+ *
  *  ⚠️ **Matnsiz variantlar** (`plain`, `box`, `circle`) `aria-label` va
  *  `title` oladi — aks holda ekran o'quvchi verdiktni o'qiy olmaydi.
  *  Matnli variantlarda ikonka `aria-hidden` (matn yonida ortiqcha ovoz).
@@ -40,7 +47,7 @@ export function Verdict({
   percent,
   className = "",
 }: {
-  /** Verdikt kaliti (`AC`, `WA`, `TLE`…). Notanish bo'lsa — `PD`. */
+  /** Verdikt kaliti (`AC`, `WA`, `TLE`…). Notanish bo'lsa xom ko'rinadi. */
   verdict: string;
   /** Ko'rinishni majburan tanlash. Berilmasa — foydalanuvchi sozlamasi. */
   variant?: VerdictVariant;
@@ -51,22 +58,24 @@ export function Verdict({
   const locale = useLocale();
   const { appearance } = useCustomizer();
   const def = verdictOf(verdict);
-  const Icon = VERDICT_ICONS[def.key];
   const style = variant ?? appearance.verdictStyle ?? DEFAULT_VERDICT_VARIANT;
 
-  if (!Icon) return null;
+  // Noma'lum kod: xom matn, kulrang, savol ikonkasi.
+  const known = def !== null;
+  const code = known ? def.key : String(verdict ?? "").trim();
+  if (!code) return null;
 
-  const label = def.label;
-  const hint = t(locale, def.hintKey);
+  const Icon = known ? VERDICT_ICONS[def.key] : VerdictIconQuestion;
+  const { color, soft } = verdictColors(def);
+  const label = known ? t(locale, def.labelKey) : code;
+  const hintKey = known ? (def.hintKey ?? GROUP_HINT_KEY(def.group)) : "verdict.group.unknown.hint";
+  const hint = t(locale, hintKey);
   const pct = percent !== undefined ? `${percent}%` : "";
 
   // ── ① Faqat rangli nishon ──────────────────────────────────────────
   const badge = (
-    <span
-      className="rw-verdict rw-verdict-badge"
-      style={{ color: def.color, background: def.background }}
-    >
-      {def.key}
+    <span className="rw-verdict rw-verdict-badge" style={{ color, background: soft }}>
+      {code}
     </span>
   );
 
@@ -79,15 +88,15 @@ export function Verdict({
 
   // ── ③ Ikonka + kod ─────────────────────────────────────────────────
   const icon = (
-    <span className="rw-verdict rw-verdict-icon" style={{ color: def.color }}>
+    <span className="rw-verdict rw-verdict-icon" style={{ color }}>
       <Icon className="size-[1.15em]" />
-      <span>{def.key}</span>
+      <span>{code}</span>
     </span>
   );
 
   // ── ④ Ikonka + to'liq nom ──────────────────────────────────────────
   const full = (
-    <span className="rw-verdict rw-verdict-full" style={{ color: def.color }}>
+    <span className="rw-verdict rw-verdict-full" style={{ color }}>
       <Icon className="size-[1.15em]" />
       <span>{label}</span>
     </span>
@@ -97,7 +106,7 @@ export function Verdict({
   const circle = (
     <span
       className="rw-verdict rw-verdict-circle"
-      style={{ background: def.color }}
+      style={{ background: color }}
       title={label}
       role="img"
       aria-label={label}
@@ -109,8 +118,8 @@ export function Verdict({
   // ── ⑥ Rangli nuqta + kod ───────────────────────────────────────────
   const dot = (
     <span className="rw-verdict rw-verdict-dot">
-      <i style={{ background: def.color }} />
-      <span>{def.key}</span>
+      <i style={{ background: color }} />
+      <span>{code}</span>
     </span>
   );
 
@@ -118,7 +127,7 @@ export function Verdict({
   const box = (
     <span
       className="rw-verdict rw-verdict-box"
-      style={{ color: def.color }}
+      style={{ color }}
       title={label}
       role="img"
       aria-label={label}
@@ -129,7 +138,7 @@ export function Verdict({
 
   // ── ⑧ Chap chiziq + ikonka + nom ───────────────────────────────────
   const bar = (
-    <span className="rw-verdict rw-verdict-bar" style={{ borderColor: def.color, color: def.color }}>
+    <span className="rw-verdict rw-verdict-bar" style={{ borderColor: color, color }}>
       <Icon className="size-[1.05em]" />
       <span>{label}</span>
     </span>
@@ -137,9 +146,9 @@ export function Verdict({
 
   // ── ⑨ Ikonka + kod + foiz ──────────────────────────────────────────
   const percentBody = (
-    <span className="rw-verdict rw-verdict-percent" style={{ color: def.color }}>
+    <span className="rw-verdict rw-verdict-percent" style={{ color }}>
       <Icon className="size-[1.15em]" />
-      <span>{def.key}</span>
+      <span>{code}</span>
       {pct && <em className="rw-verdict-pct">{pct}</em>}
     </span>
   );
@@ -148,7 +157,7 @@ export function Verdict({
   const card = (
     <span className="rw-verdict rw-verdict-card">
       <Icon className="rw-verdict-card-icon" />
-      <b style={{ color: def.color }}>{label}</b>
+      <b style={{ color }}>{label}</b>
       <span className="rw-verdict-card-hint">{hint}</span>
     </span>
   );

@@ -133,6 +133,14 @@ if has '^apps/web/'; then
   step "Web — matn kontrasti" "$PY" tools/check_contrast.py
 fi
 
+# Verdikt kodlari ikki joyda yashaydi (`apps/api/judging/verdicts.py` va
+# `apps/web/src/lib/theme/verdict.ts`) va jimgina ajralib ketadi: bir marta
+# 23 koddan 14 tasi web'da yo'q edi va «Navbatda» bo'lib ko'ringan. `tsc`
+# ham, eslint ham buni tutmaydi — kalit oddiy `string`.
+if has '^(apps/web/|apps/api/judging/)'; then
+  step "Verdikt kodlari — API bilan moslik" "$PY" tools/check_verdict_codes.py
+fi
+
 if has '^(docs/|README)'; then
   step "Hujjat yaxlitligi" "$PY" tools/check_docs.py
 fi

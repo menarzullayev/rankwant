@@ -1,133 +1,140 @@
 /** Judge verdiktlari — yagona ma'lumot manbasi (D56).
  *
- *  Nega alohida fayl: verdikt platformada **uch joyda** ko'rinadi — urinishlar
- *  jadvali, masala sahifasi va reyting. Ilgari har biri o'z rangini qo'lda
- *  yozardi, ya'ni "Accepted" bir joyda yashil, boshqasida boshqa yashil
- *  bo'lishi mumkin edi.
+ *  Nega alohida fayl: verdikt platformada **bir necha joyda** ko'rinadi —
+ *  urinishlar jadvali, masala sahifasi, reyting, natija kartasi. Ilgari har
+ *  biri o'z rangini qo'lda yozardi, ya'ni «Accepted» bir joyda yashil,
+ *  boshqasida boshqa yashil bo'lishi mumkin edi.
  *
- *  Bu fayl nom, rang va ikonka kalitini bir joyda saqlaydi; ko'rinish esa
- *  `Verdict` komponentida (5 xil variant).
+ *  Bu fayl nom, rang va ikonkani bir joyda saqlaydi; ko'rinish esa `Verdict`
+ *  komponentida (o'nta variant).
  *
- *  ⚠️ Ranglar WCAG AA (4.5:1) bo'yicha tanlangan — oq fon ustida ham,
- *  `-soft` fon ustida ham o'qiladi. O'zgartirsang, `check_contrast.py` ni
- *  ishga tushir.
+ *  ── Kodlar ro'yxati `apps/api/judging/verdicts.py` bilan AYNAN bir xil
+ *  bo'lishi shart. Skript: `python tools/check_verdict_codes.py`.
+ *
+ *  ⚠️ Notanish kod `PENDING` ga tushadi — lekin **faqat oxirgi chora**
+ *  sifatida. Jim yashirish noto'g'ri: `Verdict` komponenti noma'lum kodni
+ *  xom holda ko'rsatadi, shunda yangi kod qo'shilganda u «Navbatda» bo'lib
+ *  ko'rinmaydi (bir marta shunday bo'lgan: 23 koddan 14 tasi «Pending»
+ *  bo'lib ko'ringan edi).
+ *
+ *  ── Rang guruhi (D56) ataylab **to'rtta**, oltita emas:
+ *
+ *  | Guruh     | Ma'nosi                                  |
+ *  |-----------|------------------------------------------|
+ *  | `ok`      | Qabul qilindi                            |
+ *  | `warn`    | Hali ketmoqda yoki qisman                |
+ *  | `bad`     | **Foydalanuvchi** xatosi                 |
+ *  | `neutral` | Infratuzilma / masala nosozligi          |
+ *
+ *  `neutral` muhim: `IE`, `WRONG_TEST`, `CHECKER_ERROR`, `DENIAL_OF_JUDGEMENT`
+ *  odamning aybi EMAS. Ularni qizil ko'rsatish foydalanuvchini bekorga
+ *  ayblardi — shuning uchun kulrang.
+ *
+ *  ⚠️ Ranglar WCAG AA (4.5:1) bo'yicha tanlangan. O'zgartirsang,
+ *  `python tools/check_contrast.py` ni ishga tushir.
  */
 
 /** Verdikt kaliti — API shu qiymatlarni qaytaradi. */
 export type VerdictKey =
+  | "PENDING"
+  | "RUNNING"
   | "AC"
   | "WA"
   | "TLE"
   | "MLE"
+  | "OLE"
   | "RE"
+  | "RE_SIGNAL"
+  | "RE_EXIT"
   | "CE"
   | "PE"
-  | "OLE"
+  | "PARTIAL"
   | "IE"
-  | "PD";
+  | "WRONG_TEST"
+  | "SKIPPED"
+  | "COMPILE_TIMEOUT"
+  | "IDLENESS"
+  | "SECURITY_VIOLATION"
+  | "CHECKER_ERROR"
+  | "TESTING_ABORTED"
+  | "RATE_LIMITED"
+  | "DENIAL_OF_JUDGEMENT";
+
+/** To'rt rang guruhi — sabab docstring'da. */
+export type VerdictGroup = "ok" | "warn" | "bad" | "neutral";
+
+/** Guruh rangi. `soft` — nishon va karta foni uchun. */
+export const VERDICT_GROUPS: Record<VerdictGroup, { color: string; soft: string }> = {
+  ok: { color: "#0a6b3d", soft: "#e6f7ee" },
+  warn: { color: "#8a5a00", soft: "#fff8e6" },
+  bad: { color: "#a32020", soft: "#fdeaea" },
+  neutral: { color: "#4b5563", soft: "#f1f3f5" },
+};
 
 export type VerdictDef = {
-  /** Qisqa kod — jadvalda ko'rinadi. */
   key: VerdictKey;
-  /** Ikonka kaliti (`icons/keys.ts` dan). */
-  icon: string;
-  /** Matn rangi — `-soft` fon ustida ham, oq fonda ham AA dan o'tadi. */
-  color: string;
-  /** Fon rangi — ① nishon va ⑤ doira uchun. */
-  background: string;
-  /** To'liq nomi — ④ va ⑩ uchun. Tarjima qilinmaydi (xalqaro atama). */
-  label: string;
-  /** Qisqa izoh — ⑩ kartada. i18n kaliti. */
-  hintKey: string;
+  group: VerdictGroup;
+  /** To'liq nom — i18n kaliti (`verdict.<KOD>`), 10 tilda mavjud. */
+  labelKey: string;
+  /** Qisqa izoh — i18n kaliti. Yo'q bo'lsa guruh izohi ishlatiladi. */
+  hintKey?: string;
 };
+
+/** Guruh izohi — karta ko'rinishida kod izohi bo'lmasa ishlatiladi. */
+export const GROUP_HINT_KEY = (g: VerdictGroup) => `verdict.group.${g}.hint`;
+
+const D = (key: VerdictKey, group: VerdictGroup, hintKey?: string): VerdictDef => ({
+  key,
+  group,
+  labelKey: `verdict.${key}`,
+  ...(hintKey ? { hintKey } : {}),
+});
 
 export const VERDICTS: Record<VerdictKey, VerdictDef> = {
-  AC: {
-    key: "AC",
-    icon: "check-circle",
-    color: "#0a6b3d",
-    background: "#e6f7ee",
-    label: "Accepted",
-    hintKey: "verdict.hint.AC",
-  },
-  WA: {
-    key: "WA",
-    icon: "x-circle",
-    color: "#a32020",
-    background: "#fdeaea",
-    label: "Wrong Answer",
-    hintKey: "verdict.hint.WA",
-  },
-  TLE: {
-    key: "TLE",
-    icon: "timer",
-    color: "#8a5a00",
-    background: "#fff8e6",
-    label: "Time Limit Exceeded",
-    hintKey: "verdict.hint.TLE",
-  },
-  MLE: {
-    key: "MLE",
-    icon: "cpu",
-    color: "#5b3fa8",
-    background: "#f0ecfb",
-    label: "Memory Limit Exceeded",
-    hintKey: "verdict.hint.MLE",
-  },
-  RE: {
-    key: "RE",
-    icon: "warning-octagon",
-    color: "#b45309",
-    background: "#fef3e2",
-    label: "Runtime Error",
-    hintKey: "verdict.hint.RE",
-  },
-  CE: {
-    key: "CE",
-    icon: "wrench",
-    color: "#4b5563",
-    background: "#f1f3f5",
-    label: "Compilation Error",
-    hintKey: "verdict.hint.CE",
-  },
-  PE: {
-    key: "PE",
-    icon: "ruler",
-    color: "#0e7490",
-    background: "#e6f6fa",
-    label: "Presentation Error",
-    hintKey: "verdict.hint.PE",
-  },
-  OLE: {
-    key: "OLE",
-    icon: "upload-simple",
-    color: "#a21caf",
-    background: "#fbeefb",
-    label: "Output Limit Exceeded",
-    hintKey: "verdict.hint.OLE",
-  },
-  IE: {
-    key: "IE",
-    icon: "gear",
-    color: "#78350f",
-    background: "#f5efe6",
-    label: "Internal Error",
-    hintKey: "verdict.hint.IE",
-  },
-  PD: {
-    key: "PD",
-    icon: "hourglass",
-    color: "#5b6472",
-    background: "#f1f3f5",
-    label: "Pending",
-    hintKey: "verdict.hint.PD",
-  },
+  PENDING: D("PENDING", "neutral"),
+  RUNNING: D("RUNNING", "warn"),
+  AC: D("AC", "ok", "verdict.hint.AC"),
+  WA: D("WA", "bad", "verdict.hint.WA"),
+  TLE: D("TLE", "bad", "verdict.hint.TLE"),
+  MLE: D("MLE", "bad", "verdict.hint.MLE"),
+  OLE: D("OLE", "bad", "verdict.hint.OLE"),
+  // `RE` — LEGACY kod, judge endi chiqarmaydi (o'rniga `RE_SIGNAL`/`RE_EXIT`).
+  // Bazadagi eski qatorlar uchun qoladi.
+  RE: D("RE", "bad", "verdict.hint.RE"),
+  RE_SIGNAL: D("RE_SIGNAL", "bad"),
+  RE_EXIT: D("RE_EXIT", "bad"),
+  CE: D("CE", "bad", "verdict.hint.CE"),
+  PE: D("PE", "bad", "verdict.hint.PE"),
+  PARTIAL: D("PARTIAL", "warn"),
+  IE: D("IE", "neutral", "verdict.hint.IE"),
+  WRONG_TEST: D("WRONG_TEST", "neutral"),
+  SKIPPED: D("SKIPPED", "neutral"),
+  COMPILE_TIMEOUT: D("COMPILE_TIMEOUT", "bad"),
+  IDLENESS: D("IDLENESS", "bad"),
+  SECURITY_VIOLATION: D("SECURITY_VIOLATION", "bad"),
+  CHECKER_ERROR: D("CHECKER_ERROR", "neutral"),
+  TESTING_ABORTED: D("TESTING_ABORTED", "warn"),
+  RATE_LIMITED: D("RATE_LIMITED", "warn"),
+  DENIAL_OF_JUDGEMENT: D("DENIAL_OF_JUDGEMENT", "neutral"),
 };
 
-/** Noto'g'ri kalit kelsa — `PD` ga tushadi (jimgina yo'qolmasin). */
-export function verdictOf(key: string | undefined | null): VerdictDef {
-  const k = String(key ?? "").toUpperCase() as VerdictKey;
-  return VERDICTS[k] ?? VERDICTS.PD;
+/** Kodni normallashtirish: kichik harf, bo'shliq va chiziqcha. */
+const normalize = (key: string) => key.trim().toUpperCase().replace(/[\s-]+/g, "_");
+
+/** Verdiktni topadi. Topilmasa — `null`, ya'ni **xom kod ko'rsatiladi**.
+ *
+ *  Nega `null`, `PENDING` emas: yangi kod qo'shilib, bu fayl yangilanmay
+ *  qolsa, u «Navbatda» bo'lib ko'rinardi va buni hech kim sezmasdi.
+ *  `null` bo'lsa `Verdict` xom kodni chiqaradi — xato darhol ko'rinadi. */
+export function verdictOf(key: string | undefined | null): VerdictDef | null {
+  if (key == null) return null;
+  const k = normalize(String(key));
+  return VERDICTS[k as VerdictKey] ?? null;
+}
+
+/** Guruh rangi va foni — `verdictOf` topmagan holat uchun ham ishlaydi. */
+export function verdictColors(def: VerdictDef | null): { color: string; soft: string } {
+  return VERDICT_GROUPS[def?.group ?? "neutral"];
 }
 
 /** 10 xil ko'rinish (D57/D59).
