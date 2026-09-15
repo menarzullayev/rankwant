@@ -152,8 +152,11 @@ export default function AppTopNav({
         break;
       }
       case "Escape":
-        // Fokus guruh tugmasiga qaytadi — ARIA talabi.
+        // Fokus guruh tugmasiga qaytadi — ARIA talabi. `stopPropagation`
+        // sababi yuqoridagi `onKey` bilan bir xil: `Customizer` panelni
+        // yopib qo'ymasin.
         event.preventDefault();
+        event.stopPropagation();
         setOpenGroup(null);
         groupRefs.current[groupIndex]?.focus();
         break;
@@ -179,7 +182,13 @@ export default function AppTopNav({
       if (!barRef.current?.contains(event.target as Node)) setOpenGroup(null);
     };
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpenGroup(null);
+      if (event.key !== "Escape") return;
+      // ⚠️ `stopPropagation` SHART: `Customizer` ham `Escape` ni global
+      // tinglaydi va panelni yopadi. O'lchandi — menyuni yopish niyatida
+      // bosilgan `Escape` butun sozlagichni ham yopib qo'yardi.
+      // `document` darajasida to'xtatilsa, hodisa `window` ga yetmaydi.
+      event.stopPropagation();
+      setOpenGroup(null);
     };
     document.addEventListener("pointerdown", onDown);
     document.addEventListener("keydown", onKey);
