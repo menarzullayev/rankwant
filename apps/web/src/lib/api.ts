@@ -4,6 +4,11 @@
  * (ADR-0008: birinchi tomon web uchun cookie, PAT emas).
  */
 
+// Navigatsiya tiplari — yagona manba `nav-config.ts`. Shu yerda qayta
+// yozilsa, ikkisi vaqt o'tib ajralib ketardi (va `check_hardcoded.py`
+// ularni qattiq yozilgan matn deb topardi).
+import type { NavMode, NavShape } from "@/layout/nav-config";
+
 /**
  * Brauzer va server bir xil manzildan foydalana olmaydi: brauzer host'dagi
  * `localhost:8000` ni ko'radi, konteyner ichidagi SSR esa u yerda hech
@@ -782,10 +787,10 @@ export type AppearancePrefs = {
   /** Tipografik shkala zichligi — 0.90…1.15 (D45). 1 = odatiy. */
   scale?: number;
   density?: "compact" | "comfortable" | "spacious";
-  /** Navigatsiya joylashuvi (D46). `sidenav` — chap panel, `topnav` — ustun. */
-  navMode?: "sidenav" | "topnav";
-  /** Yuqori panel shakli — balandlik VA burchak (D46). */
-  navShape?: "default" | "slim" | "stacked";
+  /** Navigatsiya joylashuvi (D46) — `nav-config.ts` dagi `NavMode`. */
+  navMode?: NavMode;
+  /** Yuqori panel shakli (D46) — `nav-config.ts` dagi `NavShape`. */
+  navShape?: NavShape;
 };
 
 export type A11yPrefs = {

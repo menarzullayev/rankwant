@@ -20,7 +20,12 @@ import {
   clampScale,
   clampSize,
 } from "@/lib/theme/typography";
-import { NAV_MODES, NAV_SHAPES } from "@/layout/nav-config";
+import {
+  DEFAULT_NAV_MODE,
+  DEFAULT_NAV_SHAPE,
+  NAV_MODES,
+  NAV_SHAPES,
+} from "@/layout/nav-config";
 
 /** Namuna tuslari (D7). 14 ta — kam bo'lsa «o'z rangimni qo'yaman»
  *  ehtiyoji qoladi, ko'p bo'lsa tanlash qiyinlashadi.
@@ -339,7 +344,7 @@ function AppearanceTab() {
 function NavSection() {
   const locale = useLocale();
   const { appearance, setAppearance } = useCustomizer();
-  const current = appearance.navMode ?? "sidenav";
+  const current = appearance.navMode ?? DEFAULT_NAV_MODE;
   return (
     <Section title={t(locale, "customizer.nav")}>
       <div className="flex flex-wrap gap-2">
@@ -368,9 +373,9 @@ function NavSection() {
 function NavShapeSection() {
   const locale = useLocale();
   const { appearance, setAppearance } = useCustomizer();
-  const mode = appearance.navMode ?? "sidenav";
+  const mode = appearance.navMode ?? DEFAULT_NAV_MODE;
   if (mode !== "topnav") return null;
-  const current = appearance.navShape ?? "default";
+  const current = appearance.navShape ?? DEFAULT_NAV_SHAPE;
   return (
     <Section title={t(locale, "customizer.navShape")}>
       <div className="flex flex-wrap gap-2">
