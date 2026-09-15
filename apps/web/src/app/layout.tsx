@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import {
   DM_Sans,
   Lexend,
@@ -16,6 +17,7 @@ import { messagesFor } from "@/i18n/messages.server";
 import type { Me } from "@/lib/api";
 import { api, type AppearancePrefs } from "@/lib/api";
 import { getSessionUser } from "@/lib/api.server";
+import { MARKUP_COOKIE, parseMarkupCookie } from "@/lib/prefs";
 import { SITE_INDEXABLE, SITE_URL } from "@/lib/site";
 
 const TITLE = "RankWant — reyting xohlaganlar uchun";
@@ -248,6 +250,13 @@ var ST=["auto","text","iconText","badge","circle","dot","box","alert","soft","ou
 if(ST.indexOf(a.statusStyle)>0)r.dataset.status=a.statusStyle;
 var LD=["spinner","ring","skeleton","shimmer","dotsBounce","dotsFade","bars","iconSpin","pulseIcon","progress"];
 if(LD.indexOf(a.loadingStyle)>=0)r.dataset.loading=a.loadingStyle;
+// Markup o'zgaruvchi uchtasini cookie'ga ham yozamiz (D61). Sabab: SSR
+// ularni cookie'dan o'qiydi, ya'ni cookie yo'q bo'lsa server standart
+// ko'rinishni chizadi va hidratsiya buziladi. Bu qator ESKI
+// foydalanuvchilar uchun bir martalik ko'prik: localStorage da qiymat
+// bor, cookie hali yo'q. Keyin rememberAppearance ikkalasini birga
+// yozadi, ya'ni bu shart bajarilgan holda qoladi.
+try{var m=[];if(VD.indexOf(a.verdictStyle)>0)m.push("v="+a.verdictStyle);if(ST.indexOf(a.statusStyle)>0)m.push("s="+a.statusStyle);if(LD.indexOf(a.loadingStyle)>=0)m.push("l="+a.loadingStyle);if(m.length)document.cookie="rw:markup="+m.join("&")+";path=/;max-age=31536000;SameSite=Lax";}catch(e){}
 var k=JSON.parse(localStorage.getItem("rw:a11y")||"{}");
 if(k.vision&&k.vision!=="normal")r.dataset.vision=k.vision;
 if(k.motion==="reduce")r.dataset.motion="reduce";
@@ -273,7 +282,11 @@ export default async function RootLayout({
   // Mijozda so'ralsa, u kelguncha standart ko'rinish chaqnaydi; bundan
   // tashqari bu qiymat `useState` boshlang'ich qiymatida kerak, ya'ni
   // sinxron bo'lishi shart.
-  const [{ locale, auto }, me, siteAppearance] = await Promise.all([
+  // Markup o'zgaruvchi sozlamalar cookie'dan (D61). Sabab `MARKUP_COOKIE`
+  // da: ular HTML tuzilishini o'zgartiradi, ya'ni SSR ham ularni bilishi
+  // shart — aks holda React hidratsiya xatosi beradi.
+  const [cookieStore, { locale, auto }, me, siteAppearance] = await Promise.all([
+    cookies(),
     getLocaleState(),
     getSessionUser<Me>(),
     api
@@ -281,6 +294,7 @@ export default async function RootLayout({
       .then((row) => row.appearance)
       .catch(() => ({}) as AppearancePrefs),
   ]);
+  const markupAppearance = parseMarkupCookie(cookieStore.get(MARKUP_COOKIE)?.value);
 
   // Faqat AKTIV tilning lug'ati mijozga ketadi. Ilgari o'ntasi ham JS
   // to'plamida bo'lardi — o'lchandi: 91 kB tarmoqda, holbuki bitta til
@@ -308,7 +322,11 @@ export default async function RootLayout({
       </head>
       <body>
         <LocaleProvider locale={locale} dict={messagesFor(locale)} auto={auto}>
-          <AppShell initialUser={me} siteAppearance={siteAppearance}>
+          <AppShell
+            initialUser={me}
+            siteAppearance={siteAppearance}
+            markupAppearance={markupAppearance}
+          >
             {children}
           </AppShell>
         </LocaleProvider>

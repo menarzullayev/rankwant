@@ -11,7 +11,7 @@ import {
   TR,
   Table,
 } from "@/components/ui/Table";
-import { VerdictBadge } from "@/components/VerdictBadge";
+import { Verdict } from "@/components/ui/Verdict";
 import { t, type Locale } from "@/i18n/messages";
 import { api, VERDICT_FILTERS } from "@/lib/api";
 import { formatDate } from "@/lib/format";
@@ -117,7 +117,7 @@ export async function AttemptsTab({
               </TD>
               <TD className="rw-faint">{attempt.language}</TD>
               <TD>
-                <VerdictBadge verdict={attempt.verdict} locale={locale} />
+                <Verdict verdict={attempt.verdict} />
               </TD>
               <TD align="right">{attempt.time_ms}</TD>
               <TD align="right">{attempt.memory_kb}</TD>

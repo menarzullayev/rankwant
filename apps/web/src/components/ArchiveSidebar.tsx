@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { Card } from "@/components/ui/Card";
-import { VerdictBadge } from "@/components/VerdictBadge";
+import { Verdict } from "@/components/ui/Verdict";
 import { dateTime, t, type Locale } from "@/i18n/messages";
 import { Badge } from "@/components/ui/Badge";
 import type {
@@ -185,7 +185,7 @@ function Digest({
                 key={attempt.id}
                 className="flex items-center gap-2 text-theme-xs"
               >
-                <VerdictBadge verdict={attempt.verdict} locale={locale} />
+                <Verdict verdict={attempt.verdict} />
                 <Link
                   href={`/problems/${attempt.problem}`}
                   // `min-h-6` = 24px — WCAG 2.5.8 (Target Size). Matn

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ProblemTabs } from "@/components/ProblemTabs";
-import { VerdictBadge } from "@/components/VerdictBadge";
+import { Verdict } from "@/components/ui/Verdict";
 import { Card } from "@/components/ui/Card";
 import { dateTime, fill, t } from "@/i18n/messages";
 import { getLocale } from "@/i18n/server";
@@ -137,7 +137,7 @@ export default async function ProblemStatusPage({
                   </Link>
                 </TD>
                 <TD>
-                  <VerdictBadge verdict={attempt.verdict} locale={locale} />
+                  <Verdict verdict={attempt.verdict} />
                 </TD>
                 <TD className="rw-dim">{attempt.language}</TD>
                 <TD align="right" className="rw-faint tabular-nums">

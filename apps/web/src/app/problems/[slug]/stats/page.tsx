@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 
 import { ProblemTabs } from "@/components/ProblemTabs";
-import { VerdictBadge } from "@/components/VerdictBadge";
+import { Verdict } from "@/components/ui/Verdict";
 import { Card } from "@/components/ui/Card";
 import { fill, t } from "@/i18n/messages";
 import { getLocale } from "@/i18n/server";
@@ -95,7 +95,7 @@ export default async function ProblemStatsPage({ params }: Props) {
             {stats.verdicts.map((row) => (
               <Share
                 key={row.verdict}
-                label={<VerdictBadge verdict={row.verdict} locale={locale} />}
+                label={<Verdict verdict={row.verdict} />}
                 count={row.count}
                 total={stats.total}
               />

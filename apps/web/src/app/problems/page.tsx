@@ -20,7 +20,7 @@ import { ArchiveSidebar } from "@/components/ArchiveSidebar";
 import { ProblemFilters } from "@/components/ProblemFilters";
 import { FavouriteToggle } from "@/components/FavouriteToggle";
 import { TopicBadges } from "@/components/TopicBadges";
-import { VerdictBadge } from "@/components/VerdictBadge";
+import { Verdict } from "@/components/ui/Verdict";
 import {
   api,
   ApiError,
@@ -271,7 +271,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
                       )}
                       {/* Yechilmagan, lekin urinilgan — «WA oldim» signali */}
                       {!p.is_solved && p.my_verdict && (
-                        <VerdictBadge verdict={p.my_verdict} locale={locale} />
+                        <Verdict verdict={p.my_verdict} />
                       )}
                     </div>
                     <TopicBadges topics={p.topics} solved={p.is_solved} />

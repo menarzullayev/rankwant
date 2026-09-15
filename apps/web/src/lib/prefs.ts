@@ -55,6 +55,63 @@ export type StoredAccent = {
 const SOUND_KEY = "rw:sound";
 const EFFECT_KEY = "rw:effect";
 
+/** Faqat **markup o'zgaruvchi** sozlamalar uchun cookie (D61).
+ *
+ *  ⚠️ Nega cookie, `localStorage` yetmaydimi: verdikt, holat va yuklanish
+ *  ko'rinishlari HTML **tuzilishini** o'zgartiradi (biri bitta element,
+ *  boshqasi uchta). `localStorage` ni server o'qiy olmaydi, ya'ni SSR
+ *  standart ko'rinishni chizardi, klient esa tanlanganini — natijada
+ *  React hidratsiya xatosi berardi (o'lchandi: `verdictStyle=circle`
+ *  qo'yilganda `/problems/<slug>/status` da chiqadi).
+ *
+ *  Qolgan sozlamalar cookie'ga tushmaydi: ular faqat CSS atributini
+ *  o'zgartiradi, ya'ni SSR va klient bir xil HTML chizadi. Cookie har
+ *  so'rovda yuboriladi, shuning uchun u kichik bo'lishi shart.
+ */
+export const MARKUP_COOKIE = "rw:markup";
+
+export type MarkupPrefs = Pick<
+  AppearancePrefs,
+  "verdictStyle" | "statusStyle" | "loadingStyle"
+>;
+
+/** Cookie qiymatini o'qiydi — server ham, klient ham shu funksiyani
+ *  ishlatadi, ya'ni ikkalasi bir xil natija oladi. Bu shart: aks holda
+ *  hidratsiya yana buziladi. */
+export function parseMarkupCookie(value: string | undefined | null): MarkupPrefs {
+  const out: MarkupPrefs = {};
+  if (!value) return out;
+  for (const pair of value.split("&")) {
+    const [k, v] = pair.split("=");
+    if (!v) continue;
+    if (k === "v") out.verdictStyle = v as MarkupPrefs["verdictStyle"];
+    else if (k === "s") out.statusStyle = v as MarkupPrefs["statusStyle"];
+    else if (k === "l") out.loadingStyle = v as MarkupPrefs["loadingStyle"];
+  }
+  return out;
+}
+
+export function serializeMarkupCookie(a: MarkupPrefs): string {
+  const parts: string[] = [];
+  if (a.verdictStyle && a.verdictStyle !== "auto") parts.push(`v=${a.verdictStyle}`);
+  if (a.statusStyle && a.statusStyle !== "auto") parts.push(`s=${a.statusStyle}`);
+  if (a.loadingStyle && a.loadingStyle !== "spinner") parts.push(`l=${a.loadingStyle}`);
+  return parts.join("&");
+}
+
+/** Cookie'ni yozadi. `SameSite=Lax` — sozlama, maxfiy ma'lumot emas;
+ *  bir yil yetarli. `path=/` shart, aks holda faqat bitta yo'lda ko'rinadi. */
+export function writeMarkupCookie(a: MarkupPrefs) {
+  try {
+    const value = serializeMarkupCookie(a);
+    document.cookie = value
+      ? `${MARKUP_COOKIE}=${value};path=/;max-age=31536000;SameSite=Lax`
+      : `${MARKUP_COOKIE}=;path=/;max-age=0;SameSite=Lax`;
+  } catch {
+    // Cookie yozilmadi — SSR standart ko'rinishni chizadi, xato emas.
+  }
+}
+
 function read(key: string): string | null {
   try {
     return localStorage.getItem(key);
@@ -101,6 +158,8 @@ export function rememberAppearance(
   writeLocal(APPEARANCE_KEY, JSON.stringify(appearance));
   writeLocal(A11Y_KEY, JSON.stringify(a11y));
   writeLocal(TEMPLATES_KEY, JSON.stringify(templates));
+  // Markup o'zgaruvchi uchtasi cookie'ga ham — sabab `MARKUP_COOKIE` da.
+  writeMarkupCookie(appearance);
 }
 
 /** Accent HISOBLANGAN holda saqlanadi — boot skript uni o'lchovsiz

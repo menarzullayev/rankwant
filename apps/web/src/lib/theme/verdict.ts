@@ -137,6 +137,19 @@ export function verdictColors(def: VerdictDef | null): { color: string; soft: st
   return VERDICT_GROUPS[def?.group ?? "neutral"];
 }
 
+/** Hali natija kutilayotgan kodlar — mijoz shu paytda pollinglaydi.
+ *
+ *  ⚠️ `TESTING_ABORTED` ham shu yerda: rejudge eski natijani bekor qildi
+ *  va yangisi yo'lda. Usiz sahifa eski verdictda qotib qolardi.
+ *
+ *  Bu `VerdictBadge` dan ko'chirildi (D61): u yerda qolsa, komponent
+ *  o'chirilganda polling ham o'chib qolardi. */
+const PENDING_CODES = new Set(["PENDING", "RUNNING", "TESTING_ABORTED"]);
+
+export function isPendingVerdict(verdict: string | undefined | null): boolean {
+  return PENDING_CODES.has(normalize(String(verdict ?? "")));
+}
+
 /** 10 xil ko'rinish (D57/D59).
  *
  *  Hammasi **bir xil ma'lumotdan** oziqlanadi — farq batafsil darajasida:

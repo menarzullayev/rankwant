@@ -12,7 +12,7 @@ import {
   TR,
   Table,
 } from "@/components/ui/Table";
-import { VerdictBadge } from "@/components/VerdictBadge";
+import { Verdict } from "@/components/ui/Verdict";
 import { getLocale } from "@/i18n/server";
 import { t, time } from "@/i18n/messages";
 import { api } from "@/lib/api";
@@ -59,7 +59,7 @@ export default async function AttemptsPage() {
                 </TD>
                 <TD className="rw-faint">{a.language}</TD>
                 <TD>
-                  <VerdictBadge verdict={a.verdict} locale={locale} />
+                  <Verdict verdict={a.verdict} />
                 </TD>
                 <TD align="right">{a.time_ms}</TD>
                 <TD align="right">{a.memory_kb}</TD>

@@ -112,6 +112,7 @@ function Shell({ children }: { children: React.ReactNode }) {
 export default function AppShell({
   initialUser,
   siteAppearance,
+  markupAppearance,
   children,
 }: {
   /** `RootLayout` SSR da o'qigan sessiya. Berilmasa mijoz o'zi so'raydi. */
@@ -119,6 +120,8 @@ export default function AppShell({
   /** Jamoa belgilagan standart ko'rinish (D37) — bo'sh bo'lsa kod
    *  standarti ishlatiladi (D26). */
   siteAppearance?: AppearancePrefs;
+  /** Cookie'dan o'qilgan markup o'zgaruvchi sozlamalar (D61). */
+  markupAppearance?: AppearancePrefs;
   children: React.ReactNode;
 }) {
   return (
@@ -132,7 +135,10 @@ export default function AppShell({
             bo'sh qolardi. Buni faqat brauzer ko'rsatdi — CI ham,
             `curl` ham ko'rmadi. */}
         <SessionProvider initialUser={initialUser}>
-          <CustomizerProvider siteAppearance={siteAppearance}>
+          <CustomizerProvider
+            siteAppearance={siteAppearance}
+            markupAppearance={markupAppearance}
+          >
             <PrefsSync />
             <UpdatesProvider>
               <SidebarProvider>

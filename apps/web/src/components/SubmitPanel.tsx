@@ -15,7 +15,8 @@ import {
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { VerdictBadge, isPending } from "@/components/VerdictBadge";
+import { Verdict } from "@/components/ui/Verdict";
+import { isPendingVerdict } from "@/lib/theme/verdict";
 import { useSession } from "@/context/SessionContext";
 import { ApiError } from "@/lib/api";
 import {
@@ -249,7 +250,7 @@ export default function SubmitPanel({
         fetchAttempt(id)
           .then((next) => {
             setAttempt(next);
-            if (isPending(next.verdict) && tries < POLL_LIMIT) {
+            if (isPendingVerdict(next.verdict) && tries < POLL_LIMIT) {
               poll(id, tries + 1);
             } else {
               setBusy(false);
@@ -303,7 +304,7 @@ export default function SubmitPanel({
       const tick = () => {
         fetchCustomRun(id)
           .then((run) => {
-            if (!isPending(run.verdict) || tries >= POLL_LIMIT)
+            if (!isPendingVerdict(run.verdict) || tries >= POLL_LIMIT)
               return resolve(run);
             tries += 1;
             pollRef.current = setTimeout(
@@ -362,7 +363,7 @@ export default function SubmitPanel({
         fetchCustomRun(id)
           .then((next) => {
             setCustomRun(next);
-            if (isPending(next.verdict) && tries < POLL_LIMIT)
+            if (isPendingVerdict(next.verdict) && tries < POLL_LIMIT)
               pollCustom(id, tries + 1);
             else setBusy(false);
           })
@@ -615,8 +616,8 @@ function VerdictView({
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-3">
-        <VerdictBadge verdict={attempt.verdict} locale={locale} />
-        {!isPending(attempt.verdict) && (
+        <Verdict verdict={attempt.verdict} />
+        {!isPendingVerdict(attempt.verdict) && (
           <span className="text-theme-sm rw-dim">
             {attempt.time_ms} ms · {Math.round(attempt.memory_kb / 1024)} MB
             {attempt.score > 0 && ` · ${attempt.score} ball`}
@@ -761,8 +762,8 @@ function CustomView({
       {run && (
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-3">
-            <VerdictBadge verdict={run.verdict} locale={locale} />
-            {!isPending(run.verdict) && (
+            <Verdict verdict={run.verdict} />
+            {!isPendingVerdict(run.verdict) && (
               <span className="text-theme-sm rw-dim">
                 {run.time_ms} ms · {Math.round(run.memory_kb / 1024)} MB
               </span>

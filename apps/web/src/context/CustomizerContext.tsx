@@ -116,11 +116,17 @@ export function useCustomizer() {
 
 export function CustomizerProvider({
   siteAppearance,
+  markupAppearance,
   children,
 }: {
   /** Jamoa belgilagan standart ko'rinish (D37). Bo'sh bo'lsa kod
    *  standarti ishlatiladi (D26: `clay`). */
   siteAppearance?: AppearancePrefs;
+  /** Cookie'dan o'qilgan markup o'zgaruvchi sozlamalar (D61).
+   *  ⚠️ Ular `localStorage` dan EMAS, shu yerdan olinadi: server ham,
+   *  klient ham bir xil manbani o'qishi shart, aks holda SSR va birinchi
+   *  klient renderi ajralib, React hidratsiya xatosi beradi. */
+  markupAppearance?: AppearancePrefs;
   children: React.ReactNode;
 }) {
   // Panel yopiq holda chiziladi, ya'ni SSR va birinchi klient renderi bir
@@ -136,12 +142,18 @@ export function CustomizerProvider({
   // tanlov har doim ustun turadi (D37: mavjud foydalanuvchilarga
   // tegilmaydi).
   const fallback: AppearancePrefs = { ...DEFAULT_APPEARANCE, ...siteAppearance };
+  // ⚠️ Markup o'zgaruvchi uchtasi (verdikt/holat/yuklanish) cookie'dan
+  // USTUN qo'yiladi. Sabab: ular HTML tuzilishini o'zgartiradi, ya'ni
+  // server ham ularni bilishi kerak. Cookie `localStorage` bilan birga
+  // yoziladi (`rememberAppearance`), ya'ni ikkalasi mos qoladi.
+  // Ustunlik shart: eski `localStorage` nusxasi eskirgan bo'lishi mumkin.
+  const markup: Partial<AppearancePrefs> = markupAppearance ?? {};
   const [appearance, setAppearanceState] = useState<AppearancePrefs>(() => {
-    if (typeof window === "undefined") return fallback;
-    return (
-      decodeAppearance(window.location.search) ??
-      readJson(APPEARANCE_KEY, fallback)
-    );
+    if (typeof window === "undefined") return { ...fallback, ...markup };
+    return {
+      ...(decodeAppearance(window.location.search) ?? readJson(APPEARANCE_KEY, fallback)),
+      ...markup,
+    };
   });
   const [a11y, setA11yState] = useState<A11yPrefs>(() =>
     typeof window === "undefined" ? DEFAULT_A11Y : readJson(A11Y_KEY, DEFAULT_A11Y),
