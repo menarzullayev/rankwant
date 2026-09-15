@@ -6,27 +6,87 @@
 # volume'lari yo'qolsa 2000+ masalali import qaytadan qilinishi kerak
 # bo'lardi (KEP API tezlik cheklovi bilan bir necha soat).
 #
-# Cron uchun (har kuni 04:00 da):
-#   0 4 * * * /home/nsn/Workspace/Web_Projects/rankwant/tools/backup.sh >> ~/backups/rankwant/backup.log 2>&1
+# Bitta nusxa ikkala tizim uchun: Linux'da ham, Windows'da (Git Bash)
+# ham SHU skript ishlaydi. PowerShell'dagi ikkinchi nusxa ataylab
+# yozilmagan — ikki nusxa jimgina ajralib ketadi (`runner-keepalive.ps1`
+# va `runner_keepalive.ps1` bilan bir marta shunday bo'lgan).
 #
-# Choraklik tiklash sinovi (hujjat talabi):
+# Linux, cron (har kuni 04:00 da) — yo'l repo qayerda bo'lsa o'sha:
+#   0 4 * * * "$HOME"/rankwant/tools/backup.sh >> "$HOME"/backups/rankwant/backup.log 2>&1
+#
+# Windows: `RankWant Daily Backup` rejalashtirilgan vazifasi (to'liq
+# ro'yxatga olish buyrug'i 10-operations § Backup da). Yalang'och `bash`
+# ISHLATILMAYDI — u WSL relay'iga tushadi va skript umuman ishga
+# tushmaydi; Git Bash'ning to'liq yo'li beriladi.
+#
+# Tiklash sinovi (hujjat talabi — usiz backup «yo'q» deb hisoblanadi):
 #   tools/backup.sh --restore-test
+#
+# Bitta arxiv butunligini docker'siz tekshirish (salbiy test shuni
+# ishlatadi):
+#   tools/backup.sh --verify-dump <fayl.sql.gz>
 set -euo pipefail
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 dest="${RANKWANT_BACKUP_DIR:-$HOME/backups/rankwant}"
 keep_days="${RANKWANT_BACKUP_KEEP:-30}"
 stamp="$(date +%Y%m%d-%H%M%S)"
-compose=(docker compose --env-file "$root/.env.public"
+# ⚠️ `-p rankwant` SHART. `docker-compose.yml` da `name:` yo'q, ya'ni
+# loyiha nomi KATALOGDAN olinadi. Boshqa klondan yoki git worktree'dan
+# chaqirilsa nom `agent-…` bo'lib qoladi va skript jonli stack'ni emas,
+# bo'sh loyihani ko'radi (o'lchandi 2026-09-15: worktree'da nom
+# `agent-a51a101abc58a171f`). `tools/handoff.ps1` nomni aynan shu sababdan
+# qotirib qo'ygan.
+compose=(docker compose -p rankwant --env-file "$root/.env.public"
          -f "$root/docker-compose.yml" -f "$root/docker-compose.public.yml")
+
+# ── Dump butunligi ───────────────────────────────────────────────────
+# Kunlik yurish ham, salbiy test ham SHU funksiyadan o'tadi: test
+# tekshiruvning nusxasini emas, o'zini sinaydi.
+#
+# Ikki xil nosozlik ikki xil qadamda tutiladi:
+#   `gzip -t` — arxiv kesilgan yoki buzilgan;
+#   trailer   — gzip butun, lekin dump o'rtada tugagan (pg_dump o'ldi,
+#               disk to'ldi). Ikkinchisi xavfliroq: arxiv «sog'lom»
+#               ko'rinadi va faqat tiklash kunida bilinadi.
+verify_dump() {
+  local f="${1:-}"
+  if [ -z "$f" ] || [ ! -f "$f" ]; then
+    echo "XATO: fayl yo'q — ${f:-<berilmadi>}" >&2
+    return 1
+  fi
+  if ! gzip -t "$f" 2>/dev/null; then
+    echo "XATO: arxiv buzilgan (gzip -t) — $f" >&2
+    return 1
+  fi
+  if ! zcat "$f" | tail -c 4096 | grep -q "PostgreSQL database dump complete"; then
+    echo "XATO: dump chala — yakuniy qator yo'q: $f" >&2
+    return 1
+  fi
+  echo "dump butun: $f"
+}
+
+# Bu rejim docker'ga ham, `$dest` katalogiga ham tegmaydi — shuning uchun
+# `mkdir` dan OLDIN turadi va CI da ham ishlaydi.
+if [ "${1:-}" = "--verify-dump" ]; then
+  if verify_dump "${2:-}"; then exit 0; fi
+  exit 1
+fi
 
 mkdir -p "$dest"
 umask 077
 
 # ── Tiklash sinovi ───────────────────────────────────────────────────
 # Hujjat: «Tiklash sinovi o'tkazilmasa, backup YO'Q deb hisoblanadi».
-# Eng so'nggi dump alohida bazaga tiklanadi va qator sonlari asl baza
-# bilan solishtiriladi.
+# Eng so'nggi dump ALOHIDA `restore_test` bazasiga tiklanadi, jadvallar
+# bo'sh emasligi va havolalar butunligi tekshiriladi, keyin o'sha baza
+# tashlanadi.
+#
+# ⚠️ Jonli `rankwant` bazasiga TEGILMAYDI: quyidagi har bir `psql`
+# chaqiruvi `-d postgres` (faqat `restore_test` ni yaratish/tashlash
+# uchun) yoki `-d restore_test` ga boradi, va `DROP DATABASE` hech qachon
+# `rankwant` ni nomlamaydi. Dumpning o'z `--clean` qatorlari ham
+# `restore_test` ichida bajariladi.
 if [ "${1:-}" = "--restore-test" ]; then
   latest="$(ls -t "$dest"/pg-*.sql.gz 2>/dev/null | head -1)"
   [ -n "$latest" ] || { echo "zaxira topilmadi: $dest" >&2; exit 1; }
@@ -95,22 +155,53 @@ mv "$sql.part" "$sql"
 # Dump o'qilishini TEKSHIRAMIZ: hujjat aytadi — tiklash sinovisiz backup
 # yo'q deb hisoblanadi. To'liq tiklash kunlik ish uchun qimmat, lekin
 # arxiv butunligini va oxirigacha yozilganini har safar tekshirish mumkin.
-gzip -t "$sql"
-if ! zcat "$sql" | tail -c 4096 | grep -q "PostgreSQL database dump complete"; then
-  echo "XATO: dump chala — $sql" >&2
-  exit 1
-fi
+verify_dump "$sql"
 
 # ── MinIO (masala testlari va ko'chirilgan media) ────────────────────
+#
+# ⚠️ Git Bash (MSYS) KONTEYNER ichidagi yo'llarni ham Windows yo'liga
+# aylantiradi: `-C /data` → `C:/Program Files/Git/data`, tar esa
+# «can't change directory» deb yiqiladi (o'lchandi 2026-09-15).
+# Shuning uchun docker chaqiruvida konversiya o'chiriladi.
+#
+# ⚠️ Host katalogi endi MOUNT QILINMAYDI — arxiv stdout orqali oqadi.
+# Sababi ham o'lchandi: `MSYS_NO_PATHCONV=1` bilan `-v "$dest:/out"`
+# aylantirilmay o'tadi va Docker Desktop uni Linux VM ICHIDAGI yo'l deb
+# ochadi. Buyruq `exit 0` beradi, host katalogi esa BO'SH qoladi —
+# ya'ni «muvaffaqiyatli» deb yozilgan, ichida ma'lumoti yo'q zaxira.
+# Mount bo'lmasa aylantiriladigan host yo'li ham yo'q.
+#
+# Linux'da `MSYS_NO_PATHCONV` shunchaki ishlatilmaydigan o'zgaruvchi —
+# bitta nusxa ikkala tizimda ham bir xil ishlaydi.
 objects="$dest/minio-$stamp.tar.gz"
-docker run --rm -v rankwant_miniodata:/data:ro -v "$dest:/out" alpine \
-  tar czf "/out/$(basename "$objects").part" -C /data . 
+MSYS_NO_PATHCONV=1 MSYS2_ARG_CONV_EXCL='*' \
+  docker run --rm -v rankwant_miniodata:/data:ro alpine \
+  tar czf - -C /data . > "$objects.part"
 mv "$objects.part" "$objects"
 tar tzf "$objects" >/dev/null
 
 # ── Eskilarini tozalash ──────────────────────────────────────────────
+# ⚠️ Tozalash JIMGINA ishlamay qolmasligi kerak, shuning uchun o'chirilgan
+# fayllar sanaladi va hisobotga chiqadi. `find` — GNU findutils; Git Bash
+# ham shuni beradi (o'lchandi: 4.10.0, `/usr/bin/find`). Windows'ning
+# `System32\find.exe` PATH'da keyinroq turadi va `-mtime` ni bilmaydi —
+# u tanlansa raqam 0 bo'lib qoladi va buni hisobotdan ko'rish mumkin.
+before="$(find "$dest" -name 'pg-*.sql.gz' -o -name 'minio-*.tar.gz' | wc -l)"
 find "$dest" -name 'pg-*.sql.gz' -mtime "+$keep_days" -delete
 find "$dest" -name 'minio-*.tar.gz' -mtime "+$keep_days" -delete
+# ⚠️ Yiqilgan yurish `.part` bo'lagini qoldiradi, saqlash qoidasi esa uni
+# KO'RMAYDI: u `pg-*.sql.gz` naqshiga tushmaydi. Ya'ni har yiqilgan yurish
+# ~17 MB ni abadiy band qilardi va C: yagona disk bo'lgani uchun bu
+# to'planib qolardi. Bir kundan eski bo'laklar tozalanadi; joriy
+# yurishnikiga tegmaydi.
+find "$dest" -name '*.gz.part' -mtime +1 -delete
+after="$(find "$dest" -name 'pg-*.sql.gz' -o -name 'minio-*.tar.gz' | wc -l)"
 
-printf '%s  pg=%s  minio=%s\n' "$stamp" \
-  "$(du -h "$sql" | cut -f1)" "$(du -h "$objects" | cut -f1)"
+# ⚠️ C: — yagona qattiq disk, undagi bo'sh joy esa tez o'zgaradi
+# (2026-09-15 da bir necha soat ichida 5.8 GB dan 31.5 GB gacha). Shuning
+# uchun skript bo'sh joyga emas, o'z NARXiga qaraydi: katalogning JAMI
+# hajmi har yurishda yoziladi — 30 kunlik saqlash ~700 MB turadi va bu
+# raqam jimgina o'sib ketmasligi kerak.
+printf '%s  pg=%s  minio=%s  jami=%s  fayl=%s (-%s)\n' "$stamp" \
+  "$(du -h "$sql" | cut -f1)" "$(du -h "$objects" | cut -f1)" \
+  "$(du -sh "$dest" | cut -f1)" "$after" "$((before - after))"
