@@ -34,8 +34,8 @@ import {
  *  beriladi. Berilmasa — holatning umumiy nomi va izohi ishlatiladi.
  *
  *  ⚠️ **Matnsiz variantlar** (`circle`, `box`) `aria-label` oladi.
- *  `live` berilsa `role="status"` qo'yiladi — ekran o'quvchi o'zgarishni
- *  e'lon qiladi (faqat haqiqatan o'zgaradigan xabarlar uchun).
+ *  `live` berilsa `role="status"` (muloyim), `alert` berilsa
+ *  `role="alert"` (darhol) qo'yiladi — xato uchun ikkinchisi to'g'ri.
  */
 export function Status({
   status,
@@ -43,6 +43,8 @@ export function Status({
   label,
   hint,
   live = false,
+  alert = false,
+  children,
   className = "",
 }: {
   /** Holat kaliti (`ok`, `warn`, `bad`, `info`). Notanish bo'lsa — `info`. */
@@ -53,8 +55,24 @@ export function Status({
   label?: string;
   /** Qo'shimcha izoh (faqat `soft`, `outline`, `stack` da ko'rinadi). */
   hint?: string;
-  /** O'zgaradigan xabar bo'lsa — ekran o'quvchi e'lon qiladi. */
+  /** O'zgaradigan xabar — ekran o'quvchi muloyim e'lon qiladi
+   *  (`role="status"`, `aria-live="polite"`). */
   live?: boolean;
+  /** **Xato** xabari — ekran o'quvchi DARHOL e'lon qilsin
+   *  (`role="alert"`, ya'ni assertive). `live` dan ustun turadi.
+   *
+   *  ⚠️ Farq amaliy: `polite` joriy gapni tugatishini kutadi, `assertive`
+   *  gapni BO'LADI. Saqlash xatosi uchun kutish noto'g'ri — odam tugmani
+   *  qayta bosib, ikkinchi xato yasashi mumkin. Ilgari bu naqsh har
+   *  joyda qo'lda `role="alert"` deb yozilardi. */
+  alert?: boolean;
+  /** Yorliqdan KEYIN qo'shiladigan tugunlar.
+   *
+   *  ⚠️ Alohida tugun bo'lishi ataylab: `AuthForm` da kutish soniyasi shu
+   *  yerda turadi. U `label` satriga qo'shilsa, har soniyada butun xato
+   *  qayta e'lon qilinar va ekran o'quvchi uni qayta-qayta o'qib chiqardi.
+   *  `label` bir marta, `children` o'z-o'zidan yangilanadi. */
+  children?: React.ReactNode;
   className?: string;
 }) {
   const locale = useLocale();
@@ -68,12 +86,18 @@ export function Status({
   const text = label ?? t(locale, def.labelKey);
   const sub = hint ?? t(locale, def.hintKey);
   const { color, soft } = def;
-  const liveProps = live ? { role: "status" as const, "aria-live": "polite" as const } : {};
+  const announce = alert || live;
+  const liveProps = announce
+    ? alert
+      ? { role: "alert" as const }
+      : { role: "status" as const, "aria-live": "polite" as const }
+    : {};
 
   // ── ① Faqat rangli matn ────────────────────────────────────────────
   const textOnly = (
     <span className="rw-status rw-status-text" style={{ color }} {...liveProps}>
       {text}
+      {children}
     </span>
   );
 
@@ -81,7 +105,7 @@ export function Status({
   const iconText = (
     <span className="rw-status rw-status-icon" style={{ color }} {...liveProps}>
       <Icon className="size-[1.1em]" />
-      <span>{text}</span>
+      <span>{text}{children}</span>
     </span>
   );
 
@@ -93,7 +117,7 @@ export function Status({
       {...liveProps}
     >
       <Icon className="size-[0.95em]" />
-      <span>{text}</span>
+      <span>{text}{children}</span>
     </span>
   );
 
@@ -114,7 +138,7 @@ export function Status({
   const dot = (
     <span className="rw-status rw-status-dot" {...liveProps}>
       <i style={{ background: color }} />
-      <span>{text}</span>
+      <span>{text}{children}</span>
     </span>
   );
 
@@ -132,14 +156,16 @@ export function Status({
   );
 
   // ── ⑦ Chap chiziq ──────────────────────────────────────────────────
-  const alert = (
+  // ⚠️ Nom `alert` EMAS: u endi prop (`role="alert"` uchun) va
+  // soyada qolsa `announce` hisobi buzilardi.
+  const alertBar = (
     <span
       className="rw-status rw-status-alert"
       style={{ borderColor: color, color }}
       {...liveProps}
     >
       <Icon className="size-[1.05em]" />
-      <span>{text}</span>
+      <span>{text}{children}</span>
     </span>
   );
 
@@ -148,7 +174,7 @@ export function Status({
     <span className="rw-status rw-status-soft" style={{ background: soft, color }} {...liveProps}>
       <Icon className="size-[1.25em]" />
       <span className="rw-status-col">
-        <b>{text}</b>
+        <b>{text}{children}</b>
         <em>{sub}</em>
       </span>
     </span>
@@ -159,7 +185,7 @@ export function Status({
     <span className="rw-status rw-status-outline" style={{ borderColor: color, color }} {...liveProps}>
       <Icon className="size-[1.25em]" />
       <span className="rw-status-col">
-        <b>{text}</b>
+        <b>{text}{children}</b>
         <em>{sub}</em>
       </span>
     </span>
@@ -169,7 +195,7 @@ export function Status({
   const stack = (
     <span className="rw-status rw-status-stack" style={{ background: soft, color }} {...liveProps}>
       <Icon className="size-[1.6em]" />
-      <b>{text}</b>
+      <b>{text}{children}</b>
       <em>{sub}</em>
     </span>
   );
@@ -195,7 +221,7 @@ export function Status({
     : style === "circle" ? circle
     : style === "dot" ? dot
     : style === "box" ? box
-    : style === "alert" ? alert
+    : style === "alert" ? alertBar
     : style === "soft" ? softCard
     : style === "outline" ? outline
     : stack;

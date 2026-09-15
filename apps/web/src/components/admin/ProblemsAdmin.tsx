@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { CrudPage, type FieldDef } from "@/components/admin/CrudPage";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { Status } from "@/components/ui/Status";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
@@ -277,11 +278,7 @@ function ProblemTestsPanel({
         {t(locale, "admin.help.testsStoredRemotely")}
       </p>
 
-      {error && (
-        <p className="rw-radius-sm rw-bad-soft px-3 py-2 text-theme-sm rw-bad-ink">
-          {error}
-        </p>
-      )}
+      {error && <Status status="bad" variant="alert" alert label={error} />}
 
       <table className="min-w-full text-left text-theme-xs">
         <thead className="rw-dim uppercase">

@@ -9,6 +9,7 @@ import { useSession } from "@/context/SessionContext";
 import { Button } from "@/components/ui/Button";
 import { Field, type FieldStatus } from "@/components/ui/Field";
 import { Checkbox } from "@/components/ui/SelectField";
+import { Status } from "@/components/ui/Status";
 import { GithubMark, GoogleMark, TelegramMark } from "@/components/ProviderMark";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t, errorText } from "@/i18n/messages";
@@ -261,12 +262,7 @@ export function AuthForm({
   return (
     <div className="flex flex-col gap-5">
       {socialFailed && (
-        <p
-          role="alert"
-          className="rw-radius-sm rw-bad-soft px-3 py-2 text-theme-sm rw-bad-ink"
-        >
-          {t(locale, "auth.socialError")}
-        </p>
+        <Status status="bad" variant="alert" alert label={t(locale, "auth.socialError")} />
       )}
       <form
         onSubmit={onSubmit}
@@ -405,11 +401,7 @@ export function AuthForm({
           // `aria-live` TAQDIM ETILMAYDI: `role="alert"` allaqachon
           // «assertive» rejimda e'lon qiladi va `aria-live` ni
           // takrorlash ekran o'quvchini ikki marta gapirtirardi.
-          <p
-            role="alert"
-            className="rw-radius-sm rw-bad-soft px-3 py-2 text-theme-sm rw-bad-ink"
-          >
-            {error}
+          <Status status="bad" variant="alert" alert label={error}>
             {retryAfter > 0 && (
               // Kutish soniyasi (15-qaror). Matn serverdan kelgan
               // `Retry-After` dan hosil qilinadi, ya'ni taxmin emas.
@@ -425,7 +417,7 @@ export function AuthForm({
                 )}
               </>
             )}
-          </p>
+          </Status>
         )}
 
         {/* Yo'naltiruvchi xabar (14-qaror): «bu email band» — boshi berk
@@ -696,12 +688,7 @@ function LinkAccount({ provider }: { provider: string }) {
         autoComplete="current-password"
       />
       {error && (
-        <p
-          role="alert"
-          className="rw-radius-sm rw-bad-soft px-3 py-2 text-theme-sm rw-bad-ink"
-        >
-          {error}
-        </p>
+        <Status status="bad" variant="alert" alert label={error} />
       )}
       <Button type="submit" disabled={busy}>
         {t(locale, "auth.linkCta")}

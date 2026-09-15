@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { Card } from "@/components/ui/Card";
+import { Status } from "@/components/ui/Status";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { fill, t, type MessageKey } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
@@ -103,11 +104,7 @@ export function AnalyticsDashboard() {
         {busy && <span className="text-theme-xs rw-faint">{t(locale, "admin.text.loading")}</span>}
       </div>
 
-      {error && (
-        <p role="alert" className="rw-radius-sm rw-bad-soft px-3 py-2 text-theme-sm rw-bad-ink">
-          {error}
-        </p>
-      )}
+      {error && <Status status="bad" variant="alert" alert label={error} />}
 
       {data && (
         <>

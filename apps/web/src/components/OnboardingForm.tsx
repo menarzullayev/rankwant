@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Field, type FieldStatus } from "@/components/ui/Field";
 import { SelectField } from "@/components/ui/SelectField";
 import { CountrySelect } from "@/components/ui/CountrySelect";
+import { Status } from "@/components/ui/Status";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
 import { api, getJson, patchJson, type Me, type School } from "@/lib/api";
@@ -351,12 +352,7 @@ export function OnboardingForm({ me }: { me: Me }) {
       />
 
       {error && (
-        <p
-          role="alert"
-          className="rw-radius-sm rw-bad-soft px-3 py-2 text-theme-sm rw-bad-ink"
-        >
-          {error}
-        </p>
+        <Status status="bad" variant="alert" alert label={error} />
       )}
 
       <div className="flex flex-wrap gap-3">

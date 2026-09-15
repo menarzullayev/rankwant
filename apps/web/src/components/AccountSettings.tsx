@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
+import { Status } from "@/components/ui/Status";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { errorText, t } from "@/i18n/messages";
@@ -105,11 +106,7 @@ export function AccountSettings() {
             required
             autoComplete="current-password"
           />
-          {error && (
-            <p className="rw-radius-sm rw-bad-soft px-3 py-2 text-theme-sm rw-bad-ink">
-              {error}
-            </p>
-          )}
+          {error && <Status status="bad" variant="alert" alert label={error} />}
           <Button
             type="submit"
             variant="outline"

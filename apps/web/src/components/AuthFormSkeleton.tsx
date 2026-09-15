@@ -1,23 +1,18 @@
+import { Loading } from "@/components/ui/Loading";
+
 /** Forma yuklanayotgan paytdagi ko'rinish.
  *
  *  `<Suspense>` bu sahifalarda `useSearchParams` uchun SHART, lekin
  *  fallback berilmasa karta bir lahza butunlay bo'sh qolardi va keyin
- *  to'lib ketardi — sahifa sakragandek ko'rinadi. Skeleton o'sha
- *  bo'shliqni oldindan egallaydi.
+ *  to'lib ketardi — sahifa sakragandek ko'rinadi. Yuklanish ko'rsatkichi
+ *  o'sha bo'shliqni oldindan egallaydi.
  *
- *  `aria-hidden`: bu shakl, ma'lumot emas. Ekran o'quvchi uni o'qishi
- *  shart emas — haqiqiy forma bir zumda keladi.
- */
+ *  ⚠️ Ilgari bu yerda qo'lda yasalgan, forma shakliga moslangan skeleton
+ *  bor edi (`aria-hidden` bilan). Endi umumiy `Loading` ishlatiladi —
+ *  sabab: foydalanuvchi sozlagichda yuklanish ko'rinishini tanlaydi va u
+ *  **shu yerda ham** amal qilishi kerak. Forma shakli yo'qoladi, lekin
+ *  tanlov izchil bo'ladi; `aria-hidden` ham kerak emas, chunki `Loading`
+ *  `role="status"` beradi va kutishni ekran o'quvchiga aytadi. */
 export function AuthFormSkeleton() {
-  return (
-    <div className="flex flex-col gap-4" aria-hidden>
-      {[0, 1, 2].map((i) => (
-        <div key={i} className="flex flex-col gap-1.5">
-          <div className="h-4 w-28 rw-radius-sm rw-hover-bg" />
-          <div className="h-11 border rw-radius-sm rw-field-bg" />
-        </div>
-      ))}
-      <div className="h-11 rw-radius-sm rw-hover-bg" />
-    </div>
-  );
+  return <Loading variant="skeleton" lines={4} />;
 }

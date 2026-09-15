@@ -9,6 +9,7 @@ import { getLocale } from "@/i18n/server";
 import { ApiError, type Certificate } from "@/lib/api";
 import { getWithSession } from "@/lib/api.server";
 import { formatDate } from "@/lib/format";
+import { Status } from "@/components/ui/Status";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -40,9 +41,7 @@ export default async function CertificatePage({ params }: Props) {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <h1 className="text-title-sm font-bold rw-strong">{t(locale, "cert.title")}</h1>
-      <p className="rw-radius border border-transparent rw-ok-soft px-4 py-3 text-theme-sm font-medium rw-ok-ink">
-        ✓ {t(locale, "cert.valid")}
-      </p>
+      <Status status="ok" variant="alert" live label={t(locale, "cert.valid")} />
       <CertificateCard cert={cert} locale={locale} withName />
       <dl className="grid gap-3 text-theme-sm sm:grid-cols-2">
         <div>

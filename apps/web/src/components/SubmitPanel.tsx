@@ -15,6 +15,8 @@ import {
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { Loading } from "@/components/ui/Loading";
+import { Status } from "@/components/ui/Status";
 import { Verdict } from "@/components/ui/Verdict";
 import { isPendingVerdict } from "@/lib/theme/verdict";
 import { useSession } from "@/context/SessionContext";
@@ -797,13 +799,14 @@ function SamplesView({
   total: number;
   busy: boolean;
 }) {
+  // Yuklanish — alohida shoxobcha, matn ichida emas: `Loading` o'z holatini
+  // ekran o'quvchiga e'lon qiladi (`role="status"`), oddiy matn esa buni
+  // qilmaydi.
   if (results.length === 0)
-    return (
-      <p className="text-theme-sm rw-faint">
-        {busy
-          ? t(locale, "submit.runningSamples")
-          : t(locale, "submit.samplesHint")}
-      </p>
+    return busy ? (
+      <Loading variant="dotsBounce" label={t(locale, "submit.runningSamples")} />
+    ) : (
+      <p className="text-theme-sm rw-faint">{t(locale, "submit.samplesHint")}</p>
     );
 
   const failed = results.find((result) => !result.ok);
@@ -826,15 +829,9 @@ function SamplesView({
                 : result.verdict}
           </span>
         ))}
-        {busy && (
-          <span className="text-theme-xs rw-faint">
-            {t(locale, "submit.running")}
-          </span>
-        )}
+        {busy && <Loading variant="dotsFade" label={t(locale, "submit.running")} />}
         {!busy && !failed && results.length === total && (
-          <span className="text-theme-xs rw-ok-ink">
-            {t(locale, "submit.allSamplesPass")}
-          </span>
+          <Status status="ok" variant="iconText" live label={t(locale, "submit.allSamplesPass")} />
         )}
       </div>
 

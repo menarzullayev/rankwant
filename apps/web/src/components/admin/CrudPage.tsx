@@ -5,6 +5,7 @@ import { Fragment, useCallback, useEffect, useState } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { Status } from "@/components/ui/Status";
 import {
   EmptyRow,
   TBody,
@@ -235,11 +236,7 @@ export function CrudPage<T extends Row>({
 
   return (
     <div className="space-y-4">
-      {error && (
-        <p className="rw-radius-sm rw-bad-soft px-3 py-2 text-theme-sm rw-bad-ink">
-          {error}
-        </p>
-      )}
+      {error && <Status status="bad" variant="alert" alert label={error} />}
 
       <Card
         title={title}

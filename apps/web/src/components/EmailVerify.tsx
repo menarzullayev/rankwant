@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "@/context/SessionContext";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
+import { Status } from "@/components/ui/Status";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
 import { postJson } from "@/lib/api";
@@ -59,9 +60,7 @@ export function EmailVerify() {
   if (state === "ok") {
     return (
       <div className="flex flex-col gap-4">
-        <p role="status" className="rw-radius-sm rw-ok-soft px-3 py-2 text-theme-sm rw-ok-ink">
-          ✓ {t(locale, "auth.verifyOk")}
-        </p>
+        <Status status="ok" variant="alert" live label={t(locale, "auth.verifyOk")} />
         <Link href="/" className="text-center text-theme-sm rw-accent-ink hover:underline">
           RankWant
         </Link>
@@ -83,9 +82,7 @@ export function EmailVerify() {
       }}
     >
       {state === "fail" && (
-        <p role="alert" className="rw-radius-sm rw-bad-soft px-3 py-2 text-theme-sm rw-bad-ink">
-          {t(locale, "auth.verifyFail")}
-        </p>
+        <Status status="bad" variant="alert" alert label={t(locale, "auth.verifyFail")} />
       )}
       <Field label={t(locale, "auth.username")} name="username" required autoComplete="username" />
       <Field
