@@ -21,6 +21,17 @@ yiqiladi.
 Ishlatish:
     python tools/check_negative.py          # hammasi
     python tools/check_negative.py contrast # bittasi
+
+CI'da bu to'plam `.github/workflows/ci.yml` dagi `web` job'ining «Salbiy
+testlar» qadami sifatida ishlaydi. Job `apps/web/**` YOKI `tools/**` /
+`.githooks/**` o'zgarganda ko'tariladi — ikkinchisi SHART, chunki bu
+to'plam aynan o'sha fayllardagi tekshiruvlarni sinaydi.
+
+⚠️ 2026-09-15 gacha darvoza faqat `apps/web/**` ga bog'langan edi va
+oqibati o'lchandi: faqat `tools/` ni o'zgartirgan PR'lar — jumladan shu
+faylning o'zini qayta yozgani va unga yangi guruh qo'shgani — job'ni
+`skipped` qoldirdi. Ya'ni tekshiruvlarni sinaydigan to'plam aynan o'sha
+tekshiruvlar o'zgarganda ishlamagan.
 """
 
 from __future__ import annotations
