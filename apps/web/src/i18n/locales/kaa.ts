@@ -361,6 +361,7 @@ export const kaa: Record<MessageKey, string> = {
   "admin.actions": "Ámeller",
   "admin.saved": "Saqlandı",
   "common.empty": "Házirshe bos",
+  "common.emptyHint": "Bul jerde ázirshe hesh nársе joq. Keyinirek qayta kóriń.",
   "settings.title": "Sazlawlar",
   "settings.export": "Maǵlıwmatlardı júklep alıw",
   "settings.exportHint":

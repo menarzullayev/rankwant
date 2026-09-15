@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/Badge";
 import { ListCard } from "@/components/ui/ListCard";
 import { getLocale } from "@/i18n/server";
 import { date, t } from "@/i18n/messages";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export async function generateMetadata(): Promise<Metadata> {
   return { title: t(await getLocale(), "blog.title") };
@@ -39,7 +40,7 @@ export default async function BlogPage() {
         ))}
       </ul>
       {data.count === 0 && (
-        <p className="text-theme-sm rw-faint">{t(locale, "common.empty")}</p>
+        <EmptyState variant="card" title={t(locale, "common.empty")} hint={t(locale, "common.emptyHint")} />
       )}
     </div>
   );

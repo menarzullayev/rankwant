@@ -6,6 +6,7 @@ import { getLocale } from "@/i18n/server";
 import { dateTime, t } from "@/i18n/messages";
 import { ContestIcon } from "@/icons";
 import { api } from "@/lib/api";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 // Jonli ma'lumot: har so'rovda serverda render qilinadi.
 // Build vaqtida prerender qilinmaydi — CI da API ishlamaydi, va reyting
@@ -69,7 +70,7 @@ export default async function ContestsPage() {
         })}
       </ul>
       {data.count === 0 && (
-        <p className="text-theme-sm rw-faint">{t(locale, "common.empty")}</p>
+        <EmptyState variant="card" title={t(locale, "common.empty")} hint={t(locale, "common.emptyHint")} />
       )}
     </div>
   );

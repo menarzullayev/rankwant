@@ -2,6 +2,7 @@ import type { Metadata, Route } from "next";
 import Link from "next/link";
 
 import { Card } from "@/components/ui/Card";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { excerpt } from "@/components/Markdown";
 import { RoadmapStatusBadge } from "@/components/RoadmapStatusBadge";
 import { RoadmapSuggest } from "@/components/RoadmapSuggest";
@@ -131,9 +132,11 @@ export default async function PlatformRoadmapPage() {
                 <RoadmapCard key={item.id} item={item} locale={locale} />
               ))}
               {rows.length === 0 && (
-                <p className="rw-panel p-4 text-theme-sm rw-faint">
-                  {t(locale, "roadmap.empty")}
-                </p>
+                <EmptyState
+                  variant="card"
+                  title={t(locale, "roadmap.empty")}
+                  hint={t(locale, "common.emptyHint")}
+                />
               )}
             </section>
           );

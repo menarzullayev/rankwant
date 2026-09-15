@@ -361,6 +361,7 @@ export const en: Record<MessageKey, string> = {
   "admin.actions": "Actions",
   "admin.saved": "Saved",
   "common.empty": "Nothing yet",
+  "common.emptyHint": "There is nothing here yet. Check back later.",
   "settings.title": "Settings",
   "settings.export": "Download your data",
   "settings.exportHint":

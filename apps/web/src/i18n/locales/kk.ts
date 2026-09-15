@@ -361,6 +361,7 @@ export const kk: Record<MessageKey, string> = {
   "admin.actions": "Әрекеттер",
   "admin.saved": "Сақталды",
   "common.empty": "Әзірге бос",
+  "common.emptyHint": "Мұнда әзірге ештеңе жоқ. Кейінірек қайта көріңіз.",
   "settings.title": "Параметрлер",
   "settings.export": "Деректерді жүктеп алу",
   "settings.exportHint":

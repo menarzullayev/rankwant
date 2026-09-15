@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1463 strings.**
+**1464 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -373,6 +373,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.actions` | Amallar | Ámeller |  |
 | `admin.saved` | Saqlandi | Saqlandı |  |
 | `common.empty` | Hozircha bo'sh | Házirshe bos |  |
+| `common.emptyHint` | Bu yerda hozircha hech narsa yo'q. Keyinroq qayta ko'ring. | Bul jerde ázirshe hesh nársе joq. Keyinirek qayta kóriń. |  |
 | `settings.title` | Sozlamalar | Sazlawlar |  |
 | `settings.export` | Ma'lumotni yuklab olish | Maǵlıwmatlardı júklep alıw |  |
 | `settings.exportHint` | Profil, yechimlar, reyting tarixi va Qvant amallari — bitta JSON fayl. | Profil, sheshimler, reyting tariyxı hám Qvant ámelleri — bir JSON fayl. |  |

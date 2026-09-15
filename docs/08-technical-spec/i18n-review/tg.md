@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1463 strings.**
+**1464 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -373,6 +373,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.actions` | Amallar | Амалҳо |  |
 | `admin.saved` | Saqlandi | Нигоҳ дошта шуд |  |
 | `common.empty` | Hozircha bo'sh | Ҳоло холӣ |  |
+| `common.emptyHint` | Bu yerda hozircha hech narsa yo'q. Keyinroq qayta ko'ring. | Дар ин ҷо ҳанӯз чизе нест. Баъдтар боз оед. |  |
 | `settings.title` | Sozlamalar | Танзимот |  |
 | `settings.export` | Ma'lumotni yuklab olish | Боргирии маълумот |  |
 | `settings.exportHint` | Profil, yechimlar, reyting tarixi va Qvant amallari — bitta JSON fayl. | Профил, ҳалҳо, таърихи рейтинг ва амалиёти Qvant — як файли JSON. |  |

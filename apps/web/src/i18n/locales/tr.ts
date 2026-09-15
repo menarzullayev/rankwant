@@ -361,6 +361,7 @@ export const tr: Record<MessageKey, string> = {
   "admin.actions": "İşlemler",
   "admin.saved": "Kaydedildi",
   "common.empty": "Henüz boş",
+  "common.emptyHint": "Burada henüz bir şey yok. Daha sonra tekrar bakın.",
   "settings.title": "Ayarlar",
   "settings.export": "Verilerini indir",
   "settings.exportHint":

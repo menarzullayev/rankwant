@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/Card";
 import { fill, t } from "@/i18n/messages";
 import { getLocale } from "@/i18n/server";
 import { api, ApiError, type ProblemStats } from "@/lib/api";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -82,9 +83,11 @@ export default async function ProblemStatsPage({ params }: Props) {
 
       {stats.total === 0 ? (
         <Card>
-          <p className="text-theme-sm rw-faint">
-            {t(locale, "problem.stats.empty")}
-          </p>
+          <EmptyState
+            variant="card"
+            title={t(locale, "problem.stats.empty")}
+            hint={t(locale, "common.emptyHint")}
+          />
         </Card>
       ) : (
         <div className="grid gap-4 lg:grid-cols-2">

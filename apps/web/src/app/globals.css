@@ -1419,6 +1419,86 @@
   opacity: 0.85;
 }
 
+/* ═══ Bo'sh holat va xato ekrani — uch shakl (D61) ══════════════════════
+   Uch shakl, uch vaziyat: asosiy ro'yxat (`full`), sahifa markazi
+   (`card`), landing/onboarding (`illustration`). Foydalanuvchi sozlamasi
+   emas — shakl kontekstdan keladi, shuning uchun bu yerda variant tanlash
+   yo'q, faqat tuzilma. */
+.rw-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45em;
+  text-align: center;
+  color: var(--rw-text-2);
+}
+.rw-empty b {
+  font-size: 0.9375rem;
+  color: var(--rw-text);
+}
+.rw-empty em {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 0.8125rem;
+  max-width: 32em;
+}
+.rw-empty-btn {
+  display: inline-block;
+  margin-top: 0.35em;
+  padding: 0.45em 1.1em;
+  border-radius: 0.5em;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  background: var(--rw-accent);
+  color: var(--rw-accent-fg);
+  border: 0;
+}
+.rw-empty-btn:hover {
+  filter: brightness(1.08);
+}
+
+/* ① Asosiy ro'yxat — chiziqli ramka, ikonka tepada */
+.rw-empty-full {
+  padding: 1.5em 1.25em;
+  border: 1px dashed color-mix(in srgb, var(--rw-divider) 55%, transparent);
+  border-radius: 0.75em;
+}
+
+/* ② Sahifa markazi — to'ldirilgan karta, ikonka yumshoq doirada */
+.rw-empty-card {
+  padding: 1.75em 1.5em;
+  border: 1px solid color-mix(in srgb, var(--rw-divider) 60%, transparent);
+  border-radius: 0.85em;
+  background: var(--rw-surface);
+}
+.rw-empty-soft {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75em;
+  height: 2.75em;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--rw-divider) 18%, transparent);
+  color: var(--rw-text-2);
+}
+
+/* ③ Landing / onboarding — katta och doira, ramka yo'q */
+.rw-empty-illu {
+  padding: 0.5em 0;
+}
+.rw-empty-illu-bg {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 7em;
+  height: 7em;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--rw-divider) 14%, transparent);
+  color: var(--rw-text-2);
+}
+
 /* Kontent kengligi (D48). Qiymat `--rw-content-width` dan keladi
    (`lib/theme/apply.ts`), sozlagichda 1000–1800 px oralig'ida erkin
    tanlanadi. Ilgari Tailwind sinfi (`max-w-[1400px]`) olti joyda qotib

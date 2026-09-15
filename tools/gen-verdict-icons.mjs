@@ -72,13 +72,66 @@ const camel = (s) =>
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join("");
 
-// Icons that are not tied to a code but are still needed by the component.
+// Icons that are not tied to a code but are still needed by the components.
 // `question` is the explicit "we do not know this code" glyph — an unknown
 // verdict must never silently borrow a real verdict's icon.
-const EXTRA_ICONS = ["question"];
+const EXTRA_ICONS = [
+  "question",
+  "folder-open",
+  "warning-circle",
+  "magnifying-glass",
+  "tray",
+  "users",
+  "note",
+  "archive",
+  "bell-slash",
+  "funnel",
+  "caret-down",
+  "x",
+  "plus",
+  "download-simple",
+  "squares-four",
+  "list",
+  "table",
+  "arrows-down-up",
+];
+
+// Empty-state illustration -> Phosphor icon name. Callers pass a key, so a
+// page cannot invent a glyph that the generator never emitted.
+const EMPTY_ICON = {
+  empty: "folder-open",
+  error: "warning-circle",
+  search: "magnifying-glass",
+  list: "tray",
+  people: "users",
+  note: "note",
+  archive: "archive",
+  silent: "bell-slash",
+};
+
+// Search / filter / table affordances (D61). Kept in one map so the eight
+// patterns share one glyph per meaning.
+const UI_ICON = {
+  search: "magnifying-glass",
+  filter: "funnel",
+  sort: "arrows-down-up",
+  sortDesc: "caret-down",
+  clear: "x",
+  add: "plus",
+  download: "download-simple",
+  viewGrid: "squares-four",
+  viewList: "list",
+  viewTable: "table",
+};
 
 const distinct = [
-  ...new Set([...Object.values(CODE_ICON), ...Object.values(STATUS_ICON), ...EXTRA_ICONS]),
+  ...new Set([
+    ...Object.values(CODE_ICON),
+    ...Object.values(STATUS_ICON),
+    ...Object.values(EMPTY_ICON),
+    ...Object.values(UI_ICON),
+    ...EXTRA_ICONS,
+  ]),
 ].sort();
 const compName = (ph) => `Ph${camel(ph)}`;
 
@@ -148,6 +201,16 @@ ${map(CODE_ICON)}
 /** Interfeys holati → ikonka (\`lib/theme/status.ts\`). */
 export const STATUS_ICONS: Record<string, (p: IconProps) => React.JSX.Element> = {
 ${map(STATUS_ICON)}
+};
+
+/** Bo'sh holat rasmchasi → ikonka (\`components/ui/EmptyState.tsx\`). */
+export const EMPTY_ICONS: Record<string, (p: IconProps) => React.JSX.Element> = {
+${map(EMPTY_ICON)}
+};
+
+/** Qidiruv / filtr / jadval ikonkalari (\`components/ui/\`). */
+export const UI_ICONS: Record<string, (p: IconProps) => React.JSX.Element> = {
+${map(UI_ICON)}
 };
 `;
 

@@ -5,6 +5,7 @@ import { ListCard } from "@/components/ui/ListCard";
 import { getLocale } from "@/i18n/server";
 import { dateTime, t } from "@/i18n/messages";
 import { api } from "@/lib/api";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export const dynamic = "force-dynamic";
 export async function generateMetadata(): Promise<Metadata> {
@@ -63,7 +64,7 @@ export default async function HackathonsPage() {
         ))}
       </ul>
       {data.count === 0 && (
-        <p className="text-theme-sm rw-faint">{t(locale, "common.empty")}</p>
+        <EmptyState variant="card" title={t(locale, "common.empty")} hint={t(locale, "common.emptyHint")} />
       )}
     </div>
   );
