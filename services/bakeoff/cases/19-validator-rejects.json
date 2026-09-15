@@ -1,0 +1,56 @@
+{
+  "id": "19-validator-rejects",
+  "title": "Validator yaroqsiz kiritmani rad etadi",
+  "measures": "validate_input: cheklovni buzgan test submission ishga tushmasdan WRONG_TEST beradi",
+  "language": {
+    "code": "py312",
+    "compile": null,
+    "run": [
+      "python3",
+      "{src}"
+    ]
+  },
+  "source": "a, b = map(int, input().split())\nprint(a + b)\n",
+  "limits": {
+    "compile_time_ms": 10000,
+    "time_ms": 1000,
+    "memory_kb": 262144,
+    "output_kb": 65536,
+    "processes": 1
+  },
+  "tests": [
+    {
+      "index": 1,
+      "input": "1 2\n",
+      "expected": "3\n"
+    },
+    {
+      "index": 2,
+      "input": "0 5\n",
+      "expected": "5\n"
+    }
+  ],
+  "validate_input": true,
+  "validator": {
+    "code": "py312",
+    "compile": null,
+    "run": [
+      "python3",
+      "{src}"
+    ],
+    "source": "import sys\n\nparts = sys.stdin.read().split()\nif len(parts) != 2:\n    sys.exit(\"aynan ikkita son kutilgan\")\na, b = map(int, parts)\nif not (1 <= a <= 100 and 1 <= b <= 100):\n    sys.exit(f\"1 <= a, b <= 100 buzildi: a={a}, b={b}\")\n"
+  },
+  "expect_verdict": "WRONG_TEST",
+  "expect_by_worker": {
+    "judge-py": "IE"
+  },
+  "expect_failed_test_index": 2,
+  "expect_no_run": true,
+  "must_hold": [
+    "cheklovni buzgan kiritma to'g'ri yechimni «sindira» olmaydi",
+    "submission HECH bir testda ishga tushmaydi — birinchi test to'g'ri bo'lsa ham",
+    "validator xabari compile_output da qaytadi",
+    "judge-py validator bosqichisiz: yopiq yiqilish, IE"
+  ],
+  "mode": "acm"
+}

@@ -2,15 +2,19 @@
 
 from __future__ import annotations
 
+import json
 from datetime import timedelta
+from typing import Any
 
 import pytest
 from django.urls import reverse
 from rest_framework.test import APIClient
 
 from judging.models import Attempt, AttemptTestResult
+from judging.provider import JudgeJob
 from judging.services import apply_result, build_job
 from judging.verdicts import Verdict
+from problems.models import Validator
 from ratings.models import RatingHistory, UserSolvedProblem
 
 
@@ -91,6 +95,58 @@ class TestSubmit:
         assert job.limits["time_ms"] == problem.time_limit_ms
         assert job.limits["memory_kb"] == problem.memory_limit_kb
         assert job.language["code"] == language.code
+
+
+@pytest.mark.django_db
+class TestJobValidator:
+    """ADR-0020: validator job'ga faqat SO'RALGANDA biriktiriladi.
+
+    Tekshiruv `to_json()` orqali — judge'ga aynan shu satr boradi.
+    Dataclass'da maydon bo'lib, JSON'da bo'lmasa, validatsiya judge'ga
+    jimgina yetib bormasdi va hech qanday xato chiqmasdi.
+    """
+
+    SOURCE = "#include <cstdio>\nint main(){return 0;}\n"
+
+    def _payload(self, job: JudgeJob) -> dict[str, Any]:
+        payload: dict[str, Any] = json.loads(job.to_json())
+        return payload
+
+    def _attempt(self, user, problem, language) -> Attempt:
+        return Attempt.objects.create(
+            user=user, problem=problem, language=language, source_code="x"
+        )
+
+    def test_oddiy_yuborishda_validatsiya_yoq(self, user, problem, language) -> None:
+        """Masalaning o'z testlari muallifniki — har yuborishda tekshirish isrof."""
+        Validator.objects.create(problem=problem, language=language, source=self.SOURCE)
+        payload = self._payload(build_job(self._attempt(user, problem, language)))
+        assert payload["validate_input"] is False
+        assert payload["validator"] is None
+
+    def test_soralganda_validator_dasturi_yuboriladi(self, user, problem, language) -> None:
+        Validator.objects.create(problem=problem, language=language, source=self.SOURCE)
+        job = build_job(self._attempt(user, problem, language), validate_input=True)
+        payload = self._payload(job)
+        assert payload["validate_input"] is True
+        assert payload["validator"] == {
+            "code": language.code,
+            "compile": language.compile_cmd,
+            "run": language.run_cmd,
+            "source": self.SOURCE,
+        }
+
+    def test_validator_yoq_bolsa_null_yuboriladi(self, user, problem, language) -> None:
+        """Bayroq baribir `true` ketadi — judge ishni yopiq yiqilish bilan rad etadi."""
+        job = build_job(self._attempt(user, problem, language), validate_input=True)
+        payload = self._payload(job)
+        assert payload["validate_input"] is True
+        assert payload["validator"] is None
+
+    def test_bosh_manbali_validator_null_yuboriladi(self, user, problem, language) -> None:
+        Validator.objects.create(problem=problem, language=language, source="")
+        job = build_job(self._attempt(user, problem, language), validate_input=True)
+        assert self._payload(job)["validator"] is None
 
 
 @pytest.mark.django_db

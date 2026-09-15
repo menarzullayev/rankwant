@@ -70,6 +70,10 @@ def submit(r: "redis.Redis", case: dict) -> str:
         "tests": case["tests"],
         "checker": case.get("checker") or {"type": "standard"},
         "mode": case["mode"],
+        # Kirish validatori (19–21-case'lar). Qolganlarida `false`/`null`
+        # ketadi — shartnomadagi standart qiymatlar.
+        "validate_input": case.get("validate_input", False),
+        "validator": case.get("validator"),
     }
     r.lpush(JOBS_KEY, json.dumps(job))
     return job_id
@@ -118,14 +122,24 @@ def collect(r: "redis.Redis", expected: int, timeout_s: int) -> dict[str, dict]:
     return got
 
 
-def judge_case(case: dict, res: dict | None) -> tuple[str, list[str]]:
+def expected_verdict(case: dict, worker: str) -> str:
+    """Nomzodga xos kutilgan verdict.
+
+    Shartnoma ba'zan ikki xil TO'G'RI javobni tan oladi: validator bosqichi
+    yo'q nomzod `validate_input` ishini `IE` bilan rad etishi shart
+    (protocol.md § «Kirish validatori»). Bu yiqilish emas — yopiq yiqilish.
+    """
+    return case.get("expect_by_worker", {}).get(worker, case["expect_verdict"])
+
+
+def judge_case(case: dict, res: dict | None, worker: str) -> tuple[str, list[str]]:
     """Qaytaradi: ('PASS'|'FAIL'|'TIMEOUT', izohlar)."""
     notes: list[str] = []
     if res is None:
         return "TIMEOUT", ["natija kelmadi"]
 
     verdict = res.get("verdict")
-    want = case["expect_verdict"]
+    want = expected_verdict(case, worker)
 
     ok = verdict == want
     # Fork bomb cgroup pids.max da qamalsa, jarayonlar CPU limitiga uriladi →
@@ -158,6 +172,22 @@ def judge_case(case: dict, res: dict | None) -> tuple[str, list[str]]:
             return "FAIL", notes + ["XAVFSIZLIK: host /proc o'qilgan (dastur xatosiz yakunlandi)"]
         notes.append("/proc niqoblangan (moddiy tekshiruv)")
 
+    # Validator case'lari: verdict satrining o'zi yetmaydi. `WRONG_TEST`
+    # submission bir testda ishlab bo'lgandan keyin ham kelishi mumkin —
+    # kafolat esa «submission UMUMAN ishga tushmadi».
+    if case.get("expect_no_run") and res.get("per_test"):
+        return "FAIL", notes + [
+            f"submission {len(res['per_test'])} ta testda ishga tushdi — "
+            "validatsiya undan OLDIN tugashi shart"
+        ]
+    if "expect_failed_test_index" in case and want == case["expect_verdict"]:
+        got_index = res.get("failed_test_index")
+        if got_index != case["expect_failed_test_index"]:
+            return "FAIL", notes + [
+                f"failed_test_index {got_index}, kutilgan {case['expect_failed_test_index']}"
+            ]
+        notes.append(f"birinchi yaroqsiz test #{got_index}, submission ishga tushmagan")
+
     meta = res.get("judge_meta") or {}
     if not meta.get("total_ms"):
         notes.append("judge_meta.total_ms yo'q — latency o'lchab bo'lmaydi")
@@ -189,6 +219,10 @@ def main() -> int:
     ap.add_argument("--timeout", type=int, default=180)
     ap.add_argument("--load", type=int, default=0, help="parallel submit soni (0 = o'tkazib yuborish)")
     ap.add_argument("--out", default=None, help="hisobotni faylga yozish (markdown)")
+    ap.add_argument(
+        "--cases", default="",
+        help="faqat shu case'lar — vergul bilan id prefikslari, masalan 01,19,20,21",
+    )
     args = ap.parse_args()
 
     # socket_timeout brpop blokirovkasidan (2s) kattaroq bo'lishi shart
@@ -196,6 +230,12 @@ def main() -> int:
     r.delete(JOBS_KEY, RESULTS_KEY)
 
     cases = load_cases()
+    if args.cases:
+        prefixes = tuple(p.strip() for p in args.cases.split(",") if p.strip())
+        cases = [c for c in cases if c["id"].startswith(prefixes)]
+        if not cases:
+            print(f"--cases {args.cases!r} hech bir case'ga mos kelmadi", file=sys.stderr)
+            return 2
     print(f"Nomzod: {args.worker} · {len(cases)} ta case\n")
 
     # Boshqa iste'molchi natijalarni olib ketsa, hisobot XAVFSIZLIK
@@ -259,13 +299,14 @@ def main() -> int:
             failures += 1
             continue
         res = results.get(job_id)
-        status, notes = judge_case(case, res)
+        status, notes = judge_case(case, res, args.worker)
         if status != "PASS":
             failures += 1
         meta = (res or {}).get("judge_meta") or {}
         if meta.get("total_ms"):
             latencies.append(float(meta["total_ms"]))
-        rows.append((case["id"], case["expect_verdict"], (res or {}).get("verdict", "—"),
+        want = expected_verdict(case, args.worker)
+        rows.append((case["id"], want, (res or {}).get("verdict", "—"),
                      status, meta.get("total_ms", "—"), "; ".join(notes)))
 
     for c in pending:
