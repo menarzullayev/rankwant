@@ -46,6 +46,7 @@
   },
   "expect_failed_test_index": 2,
   "expect_no_run": true,
+  "expect_compile_output_contains": "buzildi: a=0, b=5",
   "must_hold": [
     "cheklovni buzgan kiritma to'g'ri yechimni «sindira» olmaydi",
     "submission HECH bir testda ishga tushmaydi — birinchi test to'g'ri bo'lsa ham",

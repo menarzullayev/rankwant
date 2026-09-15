@@ -187,9 +187,17 @@ def judge_case(case: dict, res: dict | None, worker: str) -> tuple[str, list[str
                 f"failed_test_index {got_index}, kutilgan {case['expect_failed_test_index']}"
             ]
         notes.append(f"birinchi yaroqsiz test #{got_index}, submission ishga tushmagan")
+    if "expect_compile_output_contains" in case and want == case["expect_verdict"]:
+        needle = case["expect_compile_output_contains"]
+        if needle not in (res.get("compile_output") or ""):
+            return "FAIL", notes + [
+                f"compile_output da {needle!r} yo'q — rad etish sababi foydalanuvchiga yetmaydi"
+            ]
 
     meta = res.get("judge_meta") or {}
-    if not meta.get("total_ms"):
+    # 0 — bir zumda rad etilgan ish uchun haqiqiy qiymat. Ogohlantirish faqat
+    # maydon UMUMAN yo'q bo'lganda: aks holda tez yo'l yolg'on shikoyat olardi.
+    if meta.get("total_ms") is None:
         notes.append("judge_meta.total_ms yo'q — latency o'lchab bo'lmaydi")
 
     if case["id"] == "03-tle-cpu":

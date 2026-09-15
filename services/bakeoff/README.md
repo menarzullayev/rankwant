@@ -82,6 +82,7 @@ Case JSON'idagi qo'shimcha maydonlar:
 | `expect_by_worker` | nomzodga xos kutilgan verdict — shartnoma ikki xil to'g'ri javobni tan olganda |
 | `expect_no_run` | `per_test` bo'sh bo'lishi shart: submission umuman ishga tushmagan |
 | `expect_failed_test_index` | birinchi yiqilgan testning kutilgan indeksi |
+| `expect_compile_output_contains` | `compile_output` shu satrni o'z ichiga olishi shart — masalan validatorning rad etish sababi |
 | `implemented: false` | hali yozilmagan funksiya — nomzodni rad etmaydi, `PENDING` |
 
 Faqat bir qismini ishga tushirish: `--cases 01,19,20,21` (id prefikslari).
