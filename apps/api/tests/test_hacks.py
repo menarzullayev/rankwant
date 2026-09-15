@@ -16,7 +16,6 @@ from django.utils import timezone
 from hacks import policies
 from hacks.models import Hack
 from hacks.services import HackError, apply_hack_result, can_view_source, open_policy, submit
-from judging.models import Attempt
 from judging.verdicts import Verdict
 from problems.models import ReferenceSolution, TestCase, Validator
 from qvant.models import QvantTransaction
@@ -26,55 +25,18 @@ SOURCE = "int main(){}\n"
 
 
 @pytest.fixture(autouse=True)
-def fake_storage(monkeypatch: pytest.MonkeyPatch) -> dict[str, str]:
-    """S3 o'rniga lug'at: test ma'lumoti obyekt xotirasiga yozilmaydi."""
-    saved: dict[str, str] = {}
+def fake_storage(fake_hack_storage: dict[str, str]) -> dict[str, str]:
+    """Butun modulda S3 o'rniga lug'at — `conftest.fake_hack_storage`.
 
-    def put(key: str, content: str) -> str:
-        saved[key] = content
-        return f"s3://test/{key}"
-
-    monkeypatch.setattr("hacks.services.storage.put_test_data", put)
-    monkeypatch.setattr("hacks.services.storage.ensure_bucket", lambda: None)
-    return saved
-
-
-@pytest.fixture
-def defender_attempt(db, problem, language, user, other_user) -> Attempt:
-    """Hack qilinadigan holat: ikkala darvoza ochiq, nishon `AC`.
-
-    `user` — hacker (masalani o'zi yechgan), `other_user` — himoyachi.
+    Fixture'ning o'zi conftest'da: API qatlamining testlari ham aynan shu
+    soxta saqlashni ishlatadi va ikki nusxa vaqt o'tib ajralib ketardi.
     """
-    Validator.objects.create(problem=problem, language=language, source=SOURCE)
-    ReferenceSolution.objects.create(problem=problem, language=language, source=SOURCE)
-    attempt = Attempt.objects.create(
-        user=other_user,
-        problem=problem,
-        language=language,
-        source_code="hacked_code",
-        verdict=Verdict.AC,
-        judged_at=timezone.now(),
-    )
-    UserSolvedProblem.objects.create(
-        user=other_user,
-        problem=problem,
-        first_ac_attempt=attempt,
-        difficulty_at_solve=problem.difficulty,
-    )
-    # Hisoblagich qatorlar bilan mos bo'lishi SHART: ishlab chiqarishda uni
-    # `on_attempt_judged` oshiradi, bu yerda esa qator qo'lda yaratildi.
-    # Mos bo'lmasa bekor qilish `solved_count` ni nol ostiga tushirib,
-    # butun tranzaksiyani yiqitardi.
-    problem.solved_count = 1
-    problem.save(update_fields=["solved_count"])
-    # Hacker ham masalani yechgan — ADR-0020 ning 2-tamoyili.
-    UserSolvedProblem.objects.create(
-        user=user, problem=problem, difficulty_at_solve=problem.difficulty
-    )
-    return attempt
+    return fake_hack_storage
 
 
-def _result(hack: Hack, stage: str, verdict: str, *, stdout: str = "", detail: str = "") -> dict[str, Any]:
+def _result(
+    hack: Hack, stage: str, verdict: str, *, stdout: str = "", detail: str = ""
+) -> dict[str, Any]:
     """Judge qaytaradigan natija — marshrut bilan."""
     return {
         "hack_id": hack.pk,
@@ -285,9 +247,7 @@ class TestGenerator:
         assert memory_judge.jobs[1].tests[0]["input"] == "7 8\n"
 
     def test_generator_yiqilsa_alohida_holat(self, defender_attempt, user, language) -> None:
-        hack = submit(
-            user, defender_attempt, generator_language=language, generator_source="bad"
-        )
+        hack = submit(user, defender_attempt, generator_language=language, generator_source="bad")
         apply_hack_result(_result(hack, Hack.Stage.GENERATE, Verdict.CE, detail="xato"))
 
         hack.refresh_from_db()

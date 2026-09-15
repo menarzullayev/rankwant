@@ -6,6 +6,7 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from contests.models import Contest, ContestProblem, ContestRegistration
+from hacks.models import HackLock
 from judging.models import MAX_SOURCE_BYTES, Attempt, AttemptTestResult, CustomRun
 from problems.models import Language, Problem, ProblemLanguage
 from profiles.titles import TitleField
@@ -135,6 +136,17 @@ class AttemptCreateSerializer(serializers.Serializer[dict[str, Any]]):
             contest=contest, problem__slug=attrs["problem"]
         ).exists():
             raise serializers.ValidationError({"problem": "Masala bu musobaqada yo'q"})
+
+        # Lock qilingan masalaga QAYTA yuborib bo'lmaydi (ADR-0020): hack
+        # huquqi aynan shu narxda olinadi. Frontendda tugmani o'chirish
+        # yetarli emas — API mijozi baribir yuborardi va lock qilgan odam
+        # yechimini jimgina almashtirib, xonadagilarni aldagan bo'lardi.
+        if HackLock.objects.filter(
+            contest=contest, problem__slug=attrs["problem"], user=user
+        ).exists():
+            raise serializers.ValidationError(
+                {"problem": "Masala lock qilingan — unga qayta yuborib bo'lmaydi"}
+            )
 
         attrs["contest_obj"] = contest
         return attrs

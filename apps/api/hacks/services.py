@@ -22,7 +22,7 @@ from django.conf import settings
 from django.db import IntegrityError, transaction
 from django.utils import timezone
 
-from contests.models import Contest, ContestRegistration
+from contests.models import Contest, ContestProblem, ContestRegistration
 from core.models import User
 from hacks import policies
 from hacks.models import Hack, HackLock, HackRoom, HackRoomMember
@@ -170,6 +170,38 @@ def eligibility(user: User, attempt: Attempt, policy: Policy) -> str:
         ):
             return "Avval masalani lock qiling"
     return ""
+
+
+@transaction.atomic
+def lock(user: User, contest: Contest, problem: Problem) -> HackLock:
+    """Masalani lock qiladi. QAYTARIB BO'LMAYDI.
+
+    Codeforces qoidasi: lock qilgandan keyin o'sha masalaga qayta yuborib
+    bo'lmaydi, evaziga xonadagi yechimlar ochiladi. Ya'ni hack huquqi
+    tekin emas — o'z balli xatarga qo'yiladi. Shuning uchun ochish yo'li
+    ham yo'q.
+
+    `AC` sharti shundan kelib chiqadi: yechilmagan masalada xatarga
+    qo'yiladigan ball yo'q va lock faqat tekin ruxsatnomaga aylanardi.
+    """
+    if not contest.hack_room:
+        raise HackError("Bu musobaqada xona hackingi yoqilmagan")
+    if not contest.is_running:
+        raise HackError("Musobaqa faol emas")
+    if not ContestRegistration.objects.filter(contest=contest, user=user).exists():
+        raise HackError("Musobaqaga ro'yxatdan o'ting")
+    if not ContestProblem.objects.filter(contest=contest, problem=problem).exists():
+        raise HackError("Masala bu musobaqada yo'q")
+    if not Attempt.objects.filter(
+        contest=contest, user=user, problem=problem, verdict=Verdict.AC
+    ).exists():
+        raise HackError("Avval shu masalani musobaqada yeching")
+
+    row, _ = HackLock.objects.get_or_create(contest=contest, problem=problem, user=user)
+    # Xona aynan shu yerda taqsimlansin: hack oynasi ochilganda ro'yxat
+    # tayyor bo'ladi va birinchi hack so'rovi taqsimotni kutmaydi.
+    room_of(contest, user)
+    return row
 
 
 def can_view_source(user: User, attempt: Attempt) -> bool:
