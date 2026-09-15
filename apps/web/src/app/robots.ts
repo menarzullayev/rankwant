@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-import { absolute } from "@/lib/site";
+import { absolute, SITE_INDEXABLE } from "@/lib/site";
 
 /** Qidiruv robotlari uchun.
  *
@@ -11,6 +11,11 @@ import { absolute } from "@/lib/site";
  * talab qiladi, robot esa ularga urinib bekorga vaqt sarflardi.
  */
 export default function robots(): MetadataRoute.Robots {
+  // Closed until launch (see SITE_INDEXABLE). No sitemap line: listing URLs
+  // that robots.txt blocks only produces Search Console warnings.
+  if (!SITE_INDEXABLE) {
+    return { rules: [{ userAgent: "*", disallow: "/" }] };
+  }
   return {
     rules: [
       { userAgent: "*", allow: "/", disallow: ["/admin", "/notifications"] },
