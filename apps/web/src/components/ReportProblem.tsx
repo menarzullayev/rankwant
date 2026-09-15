@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
-import { FlagIcon } from "@/icons";
+import { Icon } from "@/components/ui/Icon";
 import { REPORT_REASONS, reportProblem } from "@/lib/api";
 
 /** Masaladagi nuqson haqida xabar.
@@ -58,7 +58,7 @@ export function ReportProblem({ slug }: { slug: string }) {
         onClick={() => setOpen(true)}
         className="inline-flex items-center gap-1.5 rw-radius-sm px-2 py-1 text-theme-sm rw-faint transition rw-hover-bg"
       >
-        <FlagIcon className="size-3.5" />
+        <Icon name="contest.flag" className="size-3.5" />
         {t(locale, "report.open")}
       </button>
     );

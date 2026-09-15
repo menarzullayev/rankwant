@@ -1,6 +1,6 @@
 import type { Locale } from "@/i18n/messages";
 import { t } from "@/i18n/messages";
-import { WarningIcon } from "@/icons";
+import { Icon } from "@/components/ui/Icon";
 import type { UpdateKind, UpdateModule } from "@/lib/api";
 
 /** Tur → CSS sinfi.
@@ -55,7 +55,7 @@ export function UpdateKindBadge({
         actionable ? "font-bold" : "font-semibold"
       } ${kindClass(kind)}`}
     >
-      {actionable && <WarningIcon className="size-3.5 shrink-0" />}
+      {actionable && <Icon name="status.warning" className="size-3.5 shrink-0" />}
       {t(locale, `update.kind.${kind}`)}
     </span>
   );

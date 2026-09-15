@@ -6,7 +6,6 @@ import { useCustomizer } from "@/context/CustomizerContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { errorText, t } from "@/i18n/messages";
-import { CheckIcon, CloseIcon, PaletteIcon } from "@/icons";
 import { STYLES, isDual, type StyleId } from "@/layout/styles";
 import type { A11yPrefs } from "@/lib/api";
 import {
@@ -150,7 +149,7 @@ export function Customizer() {
         title={t(locale, "customizer.show")}
         className="fixed end-0 top-1/3 z-40 hidden size-10 items-center justify-center rw-radius-sm border rw-line rw-surface rw-dim-2 shadow-lg transition rw-hover-bg lg:flex"
       >
-        <PaletteIcon className="size-4" />
+        <Icon name="system.palette" className="size-4" />
       </button>
     );
   }
@@ -169,7 +168,7 @@ export function Customizer() {
           title={`${t(locale, "customizer.title")} (Ctrl+.)`}
           className="fixed end-0 top-1/3 z-40 hidden flex-col items-center gap-1 rw-radius-sm border rw-line rw-surface px-1.5 py-3 text-theme-xs rw-dim-2 shadow-lg transition rw-hover-bg lg:flex"
         >
-          <PaletteIcon className="size-4" />
+          <Icon name="system.palette" className="size-4" />
           <span className="[writing-mode:vertical-rl]">
             {t(locale, "customizer.short")}
           </span>
@@ -195,7 +194,7 @@ export function Customizer() {
                 aria-label={t(locale, "customizer.close")}
                 className="flex size-9 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg"
               >
-                <CloseIcon className="size-4" />
+                <Icon name="nav.close" className="size-4" />
               </button>
             </header>
 
@@ -950,7 +949,7 @@ function AccentSection() {
             className="flex size-8 items-center justify-center rounded-full border rw-line text-theme-xs rw-dim-2"
             title={t(locale, "customizer.accentDefault")}
           >
-            <CheckIcon className="size-3.5" />
+            <Icon name="action.confirm" className="size-3.5" />
           </button>
         </li>
       </ul>
@@ -1338,7 +1337,7 @@ function SavedTemplates() {
                 aria-label={`${t(locale, "customizer.delete")}: ${row.name}`}
                 className="flex size-8 shrink-0 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg"
               >
-                <CloseIcon className="size-3.5" />
+                <Icon name="nav.close" className="size-3.5" />
               </button>
             </li>
           ))}

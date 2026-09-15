@@ -4,7 +4,7 @@ import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { StarIcon } from "@/icons";
+import { Icon } from "@/components/ui/Icon";
 import { ApiError, setFavourite } from "@/lib/api";
 
 /** Arxiv qatoridagi ☆ — sahifani qayta yuklamasdan.
@@ -52,7 +52,7 @@ export function FavouriteToggle({
       aria-label={`${title} — ${on ? "sevimlilardan olib tashlash" : "sevimlilarga qo'shish"}`}
       className={`rw-radius-sm p-1 transition rw-hover-bg ${on ? "rw-warn-ink" : "rw-faint"}`}
     >
-      <StarIcon className="size-4" filled={on} />
+      <Icon name="ranking.star" className="size-4" />
     </button>
   );
 }

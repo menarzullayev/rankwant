@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { LOCALE_NAMES, type Locale } from "@/i18n/messages";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { fill, t } from "@/i18n/messages";
-import { CloseIcon, SearchIcon } from "@/icons";
+import { Icon } from "@/components/ui/Icon";
 import { useHideTags } from "@/lib/hideTags";
 
 export type FilterTopic = { slug: string; label: string };
@@ -176,7 +176,7 @@ export function ProblemFilters({
         </div>
 
         <label className="relative ml-auto">
-          <SearchIcon className="pointer-events-none absolute top-2.5 left-3 size-4 rw-faint" />
+          <Icon name="action.search" className="pointer-events-none absolute top-2.5 left-3 size-4 rw-faint" />
           <input
             type="search"
             value={term}
@@ -295,7 +295,7 @@ export function ProblemFilters({
               }}
               className="flex items-center gap-1.5 text-theme-sm rw-dim transition rw-hover-strong"
             >
-              <CloseIcon className="size-4" />
+              <Icon name="nav.close" className="size-4" />
               {t(locale, "filter.clear")}
             </button>
           )}

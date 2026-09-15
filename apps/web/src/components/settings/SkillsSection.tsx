@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { fill, localName, t } from "@/i18n/messages";
-import { CloseIcon } from "@/icons";
+import { Icon } from "@/components/ui/Icon";
 import {
   putJson,
   type MySkill,
@@ -90,7 +90,7 @@ function SkillsCard() {
                   aria-label={`${t(locale, "settings.remove")}: ${label(row.skill)}`}
                   className="flex size-8 shrink-0 items-center justify-center rw-radius-sm rw-dim transition rw-hover-bg rw-focus-ring"
                 >
-                  <CloseIcon className="size-4" />
+                  <Icon name="nav.close" className="size-4" />
                 </button>
               </li>
             ))}

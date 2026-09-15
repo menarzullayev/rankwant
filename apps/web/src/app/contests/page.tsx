@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { Badge, type BadgeColor } from "@/components/ui/Badge";
 import { getLocale } from "@/i18n/server";
 import { dateTime, t } from "@/i18n/messages";
-import { ContestIcon } from "@/icons";
+import { Icon } from "@/components/ui/Icon";
 import { api } from "@/lib/api";
 import { EmptyState } from "@/components/ui/EmptyState";
 
@@ -48,7 +48,7 @@ export default async function ContestsPage() {
                 className="flex h-full gap-4 rw-radius border rw-line rw-surface p-5 rw-shadow transition rw-hover-line"
               >
                 <span className="flex size-11 shrink-0 items-center justify-center rw-radius rw-accent-soft rw-accent-ink">
-                  <ContestIcon />
+                  <Icon name="ranking.trophy" />
                 </span>
                 <span className="min-w-0">
                   <span className="block font-semibold rw-strong">

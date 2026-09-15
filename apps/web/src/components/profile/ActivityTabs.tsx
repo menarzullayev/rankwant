@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { fill, localName, t, type Locale } from "@/i18n/messages";
-import { CheckIcon } from "@/icons";
+import { Icon } from "@/components/ui/Icon";
 import type {
   Achievement,
   ActivityEvent,
@@ -145,7 +145,7 @@ export async function AchievementsTab({
             <p className="flex items-center gap-2 text-theme-sm font-medium rw-strong">
               <MedalDot tier={row.tier} muted={!row.done} />
               <span className="min-w-0 flex-1">{achievementLabel(row, locale)}</span>
-              {row.done && <CheckIcon className="size-4 shrink-0 rw-ok-ink" />}
+              {row.done && <Icon name="action.confirm" className="size-4 shrink-0 rw-ok-ink" />}
             </p>
             <p className="text-theme-xs rw-faint">
               {t(locale, `tier.${row.tier}`)} ·{" "}

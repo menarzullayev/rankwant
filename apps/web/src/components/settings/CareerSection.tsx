@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
-import { CloseIcon } from "@/icons";
+import { Icon } from "@/components/ui/Icon";
 import { putJson, type Education, type WorkRow } from "@/lib/api";
 import { Loading, Status, useAction, useLoad } from "./kit";
 
@@ -66,7 +66,7 @@ function RowsCard<T extends Record<string, Value>>({
                   aria-label={`${t(locale, "settings.remove")}: ${String(row[first] ?? "")}`}
                   className="absolute right-2 top-2 flex size-8 items-center justify-center rw-radius-sm rw-dim transition rw-hover-bg rw-focus-ring"
                 >
-                  <CloseIcon className="size-4" />
+                  <Icon name="nav.close" className="size-4" />
                 </button>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {columns.map((column) => (

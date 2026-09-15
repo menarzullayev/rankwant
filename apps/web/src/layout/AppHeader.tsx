@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useSidebar } from "@/context/SidebarContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
-import { MenuIcon } from "@/icons";
+import { Icon } from "@/components/ui/Icon";
 import { NAV } from "./nav";
 import HeaderStatus from "./HeaderStatus";
 import SearchBox from "./SearchBox";
@@ -46,7 +46,7 @@ export default function AppHeader() {
         aria-label={t(locale, "nav.menu")}
         className="-ml-2.5 flex size-10 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg lg:hidden"
       >
-        <MenuIcon />
+        <Icon name="nav.menu" />
       </button>
 
       <span className="hidden text-theme-sm font-medium rw-strong sm:inline">

@@ -7,7 +7,7 @@ import { useSidebar } from "@/context/SidebarContext";
 import { useUpdates } from "@/context/UpdatesContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
-import { CloseIcon } from "@/icons";
+import { Icon } from "@/components/ui/Icon";
 import { NAV_GROUPS } from "./nav";
 
 export default function AppSidebar() {
@@ -55,7 +55,7 @@ export default function AppSidebar() {
           aria-label={t(locale, "nav.close")}
           className="rw-dim lg:hidden"
         >
-          <CloseIcon />
+          <Icon name="nav.close" />
         </button>
       </div>
 

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useId, useMemo, useRef, useState, useTransition } from "react";
 
-import { CheckIcon, ChevronDownIcon, GlobeIcon, SpinnerIcon } from "@/icons";
+import { Icon } from "@/components/ui/Icon";
 import { useLocale, useLocaleAuto } from "@/i18n/LocaleProvider";
 import { LOCALES, LOCALE_NAMES, t, type Locale } from "@/i18n/messages";
 import { announcePrefs } from "@/lib/prefs";
@@ -256,14 +256,14 @@ export function LocaleSwitch() {
         className="flex h-10 items-center gap-1.5 rw-radius-sm border rw-line rw-field-bg px-2.5
           rw-dim transition rw-hover-strong"
       >
-        <GlobeIcon className="size-4 shrink-0" />
+        <Icon name="locale.globe" className="size-4 shrink-0" />
         {/* `min-w-0` + `truncate` SHART: tarjima uzunligi olti barobargacha
             farq qiladi, ya'ni eng uzun nom header'ni buzdmasin. */}
         <span className="min-w-0 max-w-[7.5rem] truncate text-theme-xs">{currentLabel}</span>
         {pending ? (
-          <SpinnerIcon className="size-3.5 shrink-0 animate-spin motion-reduce:animate-none" />
+          <Icon name="action.loading" className="size-3.5 shrink-0 animate-spin motion-reduce:animate-none" />
         ) : (
-          <ChevronDownIcon className="size-3.5 shrink-0 opacity-70" />
+          <Icon name="nav.expandDown" className="size-3.5 shrink-0 opacity-70" />
         )}
       </button>
 
@@ -295,7 +295,7 @@ export function LocaleSwitch() {
               <span className="min-w-0 flex-1 truncate">
                 {`${t(locale, "locale.auto")} — ${LOCALE_NAMES[locale]}`}
               </span>
-              {current === AUTO && <CheckIcon className="size-3.5 shrink-0" />}
+              {current === AUTO && <Icon name="action.confirm" className="size-3.5 shrink-0" />}
             </div>
           </li>
 
@@ -330,7 +330,7 @@ export function LocaleSwitch() {
                       } ${current === code ? "font-medium" : ""}`}
                     >
                       <span className="min-w-0 flex-1 truncate">{label(code)}</span>
-                      {current === code && <CheckIcon className="size-3.5 shrink-0" />}
+                      {current === code && <Icon name="action.confirm" className="size-3.5 shrink-0" />}
                     </div>
                   ))}
                 </div>

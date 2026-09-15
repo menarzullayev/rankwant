@@ -15,7 +15,7 @@ import { useSession } from "@/context/SessionContext";
 import { useUpdates } from "@/context/UpdatesContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { date, t } from "@/i18n/messages";
-import { CloseIcon, UpdatesIcon } from "@/icons";
+import { Icon } from "@/components/ui/Icon";
 import { fetchUpdateUnread, type SystemUpdate } from "@/lib/api";
 
 /** O'qilmagan o'zgarishlar — header belgisi va slide-over panel (qaror 6).
@@ -77,7 +77,7 @@ export default function UpdatesBell() {
         title={count > 0 ? `${count}` : t(locale, "update.allRead")}
         className={`relative ${iconBtn}`}
       >
-        <UpdatesIcon className="size-5" />
+        <Icon name="notification.changelog" className="size-5" />
         {count > 0 && (
           <span
             className={`absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-semibold ${
@@ -107,7 +107,7 @@ export default function UpdatesBell() {
                 aria-label={t(locale, "nav.close")}
                 className="flex size-10 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg"
               >
-                <CloseIcon />
+                <Icon name="nav.close" />
               </button>
             </header>
 

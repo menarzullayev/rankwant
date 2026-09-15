@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
-import { LogoutIcon, SettingsIcon, UserIcon } from "@/icons";
+import { Icon } from "@/components/ui/Icon";
 import { postJson } from "@/lib/api";
 
 export default function UserMenu() {
@@ -28,7 +28,7 @@ export default function UserMenu() {
         href={"/login?tab=login" as Route}
         className="flex h-10 items-center gap-2 rw-radius-sm rw-accent-bg px-4 text-theme-sm font-medium text-white transition"
       >
-        <UserIcon className="size-4" />
+        <Icon name="user.profile" className="size-4" />
         {t(locale, "auth.login")}
       </Link>
     );
@@ -48,7 +48,7 @@ export default function UserMenu() {
         href={`/users/${user.username}`}
         className="flex h-10 items-center gap-2 rw-radius-sm border rw-line px-3 text-theme-sm font-medium rw-strong transition rw-hover-bg"
       >
-        <UserIcon className="size-4" />
+        <Icon name="user.profile" className="size-4" />
         <span className="hidden sm:inline">
           {user.display_name || user.username}
         </span>
@@ -59,7 +59,7 @@ export default function UserMenu() {
         title={t(locale, "settings.title")}
         className="flex size-10 items-center justify-center rw-radius-sm border rw-line rw-dim transition rw-hover-strong"
       >
-        <SettingsIcon className="size-4" />
+        <Icon name="system.settings" className="size-4" />
       </Link>
       {/* Tor ekranda faqat ikonka: matnli tugma ~70px olardi va
           sarlavha 390px da sig'masdan siljib ketardi. Nomi `aria-label`
@@ -71,7 +71,7 @@ export default function UserMenu() {
         title={t(locale, "auth.logout")}
         className="flex size-10 items-center justify-center rw-radius-sm text-theme-sm rw-dim transition rw-hover-strong sm:size-auto sm:px-3"
       >
-        <LogoutIcon className="size-4 sm:hidden" />
+        <Icon name="user.logout" className="size-4 sm:hidden" />
         <span className="hidden sm:inline">{t(locale, "auth.logout")}</span>
       </button>
     </div>
