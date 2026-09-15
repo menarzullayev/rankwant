@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1361 strings.**
+**1376 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -1370,6 +1370,21 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.nav` | Navigatsiya | Navigatsiya |  |
 | `customizer.navShape` | Panel shakli | Panel forması |  |
 | `customizer.sizeHint` | Butun interfeysga ta'sir qiladi — oraliqlar ham moslashadi. | Pútkil interfeyske tásir etedi — aralıqlar da ózgeredi. |  |
+| `customizer.hex` | Rang kodi | Reń kodi |  |
+| `customizer.lineHeight` | Qator balandligi | Qatar biyikligi |  |
+| `customizer.tracking` | Harf oralig'i | Hárip aralıǵı |  |
+| `customizer.typeHint` | Qator balandligi va harf oralig'i uzun matnni o'qishga yordam beradi. | Qatar biyikligi hám hárip aralıǵı uzın tekstti oqıwǵa járdem beredi. |  |
+| `customizer.width` | Kontent kengligi | Kontent keńligi |  |
+| `customizer.widthHint` | Tor kenglik o'qishga qulay, keng kenglik jadvalga. | Tar keńlik oqıwǵa qolaylı, keń keńlik kestege. |  |
+| `customizer.exportFile` | Faylga saqlash | Faylǵa saqlaw |  |
+| `customizer.importFile` | Fayldan yuklash | Fayldan júklew |  |
+| `customizer.importError.parse` | Fayl to'g'ri JSON emas. | Fayl durıs JSON emes. |  |
+| `customizer.importError.shape` | Faylda ko'rinish sozlamalari yo'q. | Faylda kórinis sazlawları joq. |  |
+| `customizer.importError.version` | Fayl yangiroq versiyada yaratilgan. | Fayl jańaraq versiyada islengen. |  |
+| `customizer.a11y.motion.full` | To'liq | Tolıq |  |
+| `customizer.a11y.motion.mild` | O'rtacha | Ortasha |  |
+| `customizer.a11y.motion.off` | O'chiq | Óshirilgen |  |
+| `customizer.a11y.motionHint` | O'rtacha — o'tishlar qoladi, bezak effektlari o'chadi. | Ortasha — ótiwler qaladı, bezew effektleri óshedi. |  |
 | `customizer.scale` | Shkala zichligi | Shkala tıǵızlıǵı |  |
 | `customizer.scaleHint` | O'lchamlar orasidagi nisbat — katta sarlavhalar tezroq o'sadi. | Ólshemler arasındaǵı qatnas — úlken atlar tezirek ósedi. |  |
 | `navMode.sidenav.label` | Yon panel | Qaptal panel |  |

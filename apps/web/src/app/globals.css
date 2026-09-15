@@ -1168,3 +1168,34 @@
   outline: 3px solid var(--rw-accent-ink);
   outline-offset: 3px;
 }
+
+/* Kontent kengligi (D48). Qiymat `--rw-content-width` dan keladi
+   (`lib/theme/apply.ts`), sozlagichda 1000–1800 px oralig'ida erkin
+   tanlanadi. Ilgari Tailwind sinfi (`max-w-[1400px]`) olti joyda qotib
+   qolgan edi — katta monitorda odam o'qish uchun torroq qilib
+   o'zgartira olmasdi. */
+.rw-content {
+  max-width: var(--rw-content-width, 1400px);
+}
+
+/* Harakat darajasi (D49). To'rt pog'ona — ilgari faqat "hammasi" yoki
+   "hech narsa" bor edi, ko'pchilik uchun eng qulay nuqta esa o'rtada.
+   `system` da atribut umuman yozilmaydi va qarorni OS beradi (pastdagi
+   `prefers-reduced-motion` bloki). */
+[data-motion="off"],
+[data-motion="reduce"] {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* `mild` — o'tishlar qoladi (holat o'zgarishi sezilsin), lekin dekorativ
+   animatsiyalar o'chadi. */
+[data-motion="mild"] * {
+  transition-duration: 120ms !important;
+}
+[data-motion="mild"] [class*="animate-"],
+[data-motion="mild"] [class*="rw-pulse"] {
+  animation: none !important;
+}

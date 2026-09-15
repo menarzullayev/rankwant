@@ -1,9 +1,13 @@
-/** Shablonni havola orqali ulashish (D22).
+/** Shablonni ulashish — havola (D22) va JSON fayl (D50).
  *
- *  Sozlamalar URL parametrlariga yoziladi — moderatsiya ham, saqlash joyi
- *  ham kerak emas. Umumiy kutubxona (D22 da rad etilgan) spam va kontrast
- *  nazoratini talab qilardi; havola o'sha ehtiyojning ko'p qismini
- *  arzon qondiradi.
+ *  Havola: sozlamalar URL parametrlariga yoziladi — moderatsiya ham,
+ *  saqlash joyi ham kerak emas. Umumiy kutubxona (D22 da rad etilgan)
+ *  spam va kontrast nazoratini talab qilardi; havola o'sha ehtiyojning
+ *  ko'p qismini arzon qondiradi.
+ *
+ *  Fayl: havola yetmaydigan ikki hol uchun — (1) zaxira nusxa, (2) uzun
+ *  sozlamalarni qo'lda ko'chirish. Havola 200+ belgiga cho'zilib ketadi
+ *  va uni chatda saqlash noqulay.
  *
  *  Havolani olgan odam ko'rinishni **ko'radi** va xohlasa shablon qilib
  *  saqlaydi. Parametrlar o'qilgach manzildan olib tashlanadi
@@ -11,12 +15,36 @@
  *  odam o'z sozlamasini o'zgartira olmay qolardi.
  */
 
-import type { AppearancePrefs } from "@/lib/api";
+import type { A11yPrefs, AppearancePrefs } from "@/lib/api";
+import {
+  clampLineHeight,
+  clampScale,
+  clampSize,
+  clampTracking,
+  clampWidth,
+} from "@/lib/theme/typography";
+import { clampNavMode, clampNavShape } from "@/layout/nav-config";
 
-const KEYS = ["style", "accent", "font", "size", "density"] as const;
+/** URL da saqlanadigan maydonlar. `KEYS` — tozalash uchun ham ishlatiladi. */
+const KEYS = [
+  "style",
+  "accent",
+  "font",
+  "size",
+  "scale",
+  "lineHeight",
+  "tracking",
+  "width",
+  "density",
+  "navMode",
+  "navShape",
+] as const;
 
-/** Ko'rinishni URL ga yozadi. Bo'sh joylar tushib qoladi — havola qisqa
- *  bo'lsin va faqat o'zgartirilgan narsa ko'rinsin. */
+const DENSITIES = ["compact", "comfortable", "spacious"] as const;
+const FONTS = ["inter", "jakarta", "roboto", "dm-sans"] as const;
+
+/** Ko'rinishni URL ga yozadi. Standart qiymatlar tushib qoladi — havola
+ *  qisqa bo'lsin va faqat o'zgartirilgan narsa ko'rinsin. */
 export function encodeAppearance(appearance: AppearancePrefs): string {
   const params = new URLSearchParams();
   if (appearance.style) params.set("style", appearance.style);
@@ -27,8 +55,26 @@ export function encodeAppearance(appearance: AppearancePrefs): string {
   if (appearance.size && appearance.size !== 100) {
     params.set("size", String(appearance.size));
   }
+  if (appearance.scale && appearance.scale !== 1) {
+    params.set("scale", String(appearance.scale));
+  }
+  if (appearance.lineHeight && appearance.lineHeight !== 1) {
+    params.set("lineHeight", String(appearance.lineHeight));
+  }
+  if (appearance.tracking) {
+    params.set("tracking", String(appearance.tracking));
+  }
+  if (appearance.width && appearance.width !== 1400) {
+    params.set("width", String(appearance.width));
+  }
   if (appearance.density && appearance.density !== "comfortable") {
     params.set("density", appearance.density);
+  }
+  if (appearance.navMode && appearance.navMode !== "sidenav") {
+    params.set("navMode", appearance.navMode);
+  }
+  if (appearance.navShape && appearance.navShape !== "default") {
+    params.set("navShape", appearance.navShape);
   }
   return params.toString();
 }
@@ -37,7 +83,8 @@ export function encodeAppearance(appearance: AppearancePrefs): string {
  *
  *  Notanish qiymatlar JIMGINA tashlab yuboriladi: begona havola butun
  *  ko'rinishni buzmasligi kerak, lekin uni qo'llash ham mumkin emas.
- */
+ *  ⚠️ Har bir maydon `clamp*` orqali o'tadi — havola qo'lda tahrirlanishi
+ *  mumkin, ya'ni bu ishonchsiz manba. */
 export function decodeAppearance(search: string): AppearancePrefs | null {
   const params = new URLSearchParams(search);
   if (!KEYS.some((key) => params.has(key))) return null;
@@ -57,16 +104,26 @@ export function decodeAppearance(search: string): AppearancePrefs | null {
   }
 
   const font = params.get("font");
-  if (font && ["inter", "jakarta", "roboto", "dm-sans"].includes(font)) {
-    out.font = font;
-  }
+  if (font && (FONTS as readonly string[]).includes(font)) out.font = font;
 
-  const size = Number(params.get("size"));
-  if ([90, 100, 110, 120].includes(size)) out.size = size;
+  if (params.has("size")) out.size = clampSize(Number(params.get("size")));
+  if (params.has("scale")) out.scale = clampScale(Number(params.get("scale")));
+  if (params.has("lineHeight")) {
+    out.lineHeight = clampLineHeight(Number(params.get("lineHeight")));
+  }
+  if (params.has("tracking")) {
+    out.tracking = clampTracking(Number(params.get("tracking")));
+  }
+  if (params.has("width")) out.width = clampWidth(Number(params.get("width")));
 
   const density = params.get("density");
-  if (density && ["compact", "comfortable", "spacious"].includes(density)) {
+  if (density && (DENSITIES as readonly string[]).includes(density)) {
     out.density = density as AppearancePrefs["density"];
+  }
+
+  if (params.has("navMode")) out.navMode = clampNavMode(params.get("navMode"));
+  if (params.has("navShape")) {
+    out.navShape = clampNavShape(params.get("navShape"));
   }
 
   return Object.keys(out).length ? out : null;
@@ -91,4 +148,102 @@ export function stripAppearance(): string {
   const url = new URL(window.location.href);
   for (const key of KEYS) url.searchParams.delete(key);
   return url.pathname + url.search + url.hash;
+}
+
+/* ── JSON fayl (D50) ──────────────────────────────────────────────────── */
+
+/** Fayl formati versiyasi. Kelajakda maydon nomi o'zgarsa, eski fayllarni
+ *  tanish uchun kerak — versiyasiz fayl "buzuq" dan ajratilmaydi. */
+export const EXPORT_VERSION = 1;
+
+export type ExportedAppearance = {
+  version: number;
+  exportedAt: string;
+  appearance: AppearancePrefs;
+  a11y: A11yPrefs;
+};
+
+/** Ko'rinishni yuklab olinadigan JSON satriga aylantiradi. */
+export function exportAppearance(
+  appearance: AppearancePrefs,
+  a11y: A11yPrefs,
+): string {
+  const payload: ExportedAppearance = {
+    version: EXPORT_VERSION,
+    exportedAt: new Date().toISOString(),
+    appearance,
+    a11y,
+  };
+  return JSON.stringify(payload, null, 2);
+}
+
+export type ImportResult =
+  | { ok: true; appearance: AppearancePrefs; a11y: A11yPrefs }
+  | { ok: false; error: "parse" | "shape" | "version" };
+
+/** JSON satridan ko'rinishni tiklaydi.
+ *
+ *  ⚠️ Fayl — ishonchsiz manba: har bir maydon `clamp*` dan o'tadi va
+ *  notanish kalitlar tashlab yuboriladi. Faylni qo'lda tahrirlab
+ *  `size: 99999` yozish mumkin, ya'ni tekshiruvsiz qo'llash sahifani
+ *  o'qib bo'lmas holga keltiradi (o'lchandi: SSR script'da ham shu
+ *  sababdan chegara qo'yilgan). */
+export function importAppearance(raw: string): ImportResult {
+  let data: unknown;
+  try {
+    data = JSON.parse(raw);
+  } catch {
+    return { ok: false, error: "parse" };
+  }
+  if (!data || typeof data !== "object") return { ok: false, error: "shape" };
+
+  const row = data as Partial<ExportedAppearance>;
+  if (row.version !== undefined && row.version > EXPORT_VERSION) {
+    return { ok: false, error: "version" };
+  }
+  if (!row.appearance || typeof row.appearance !== "object") {
+    return { ok: false, error: "shape" };
+  }
+
+  const a = row.appearance as AppearancePrefs;
+  const appearance: AppearancePrefs = {};
+  if (typeof a.style === "string" && /^[a-z-]{1,20}$/.test(a.style)) {
+    appearance.style = a.style;
+  }
+  if (a.accent && typeof a.accent === "object") {
+    const hue = Number(a.accent.hue);
+    const sat = Number(a.accent.sat);
+    if (Number.isFinite(hue) && Number.isFinite(sat) && hue <= 359 && sat <= 100) {
+      appearance.accent = { hue: Math.round(hue), sat: Math.round(sat) };
+    }
+  }
+  if (typeof a.font === "string" && (FONTS as readonly string[]).includes(a.font)) {
+    appearance.font = a.font;
+  } else if (a.font === null) {
+    appearance.font = null;
+  }
+  appearance.size = clampSize(a.size);
+  appearance.scale = clampScale(a.scale);
+  appearance.lineHeight = clampLineHeight(a.lineHeight);
+  appearance.tracking = clampTracking(a.tracking);
+  appearance.width = clampWidth(a.width);
+  if (typeof a.density === "string" && (DENSITIES as readonly string[]).includes(a.density)) {
+    appearance.density = a.density as AppearancePrefs["density"];
+  }
+  appearance.navMode = clampNavMode(a.navMode);
+  appearance.navShape = clampNavShape(a.navShape);
+
+  const k = (row.a11y ?? {}) as A11yPrefs;
+  const a11y: A11yPrefs = {
+    vision:
+      k.vision === "protan" || k.vision === "tritan" ? k.vision : "normal",
+    motion:
+      k.motion === "full" || k.motion === "mild" || k.motion === "off"
+        ? k.motion
+        : "system",
+    bigTargets: Boolean(k.bigTargets),
+    strongFocus: Boolean(k.strongFocus),
+  };
+
+  return { ok: true, appearance, a11y };
 }

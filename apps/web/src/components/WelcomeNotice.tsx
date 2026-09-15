@@ -33,7 +33,7 @@ export function WelcomeNotice() {
 
   return (
     <div className="rw-ok-soft px-4 py-3 text-theme-sm rw-ok-ink">
-      <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-center gap-3">
+      <div className="rw-content mx-auto flex flex-wrap items-center justify-center gap-3">
         <span>
           <strong>{t(locale, "auth.welcome")}</strong> {sentTo}
         </span>

@@ -203,7 +203,7 @@ export default function AppTopNav({
       ref={barRef}
       className={`sticky top-0 z-40 w-full border-b rw-divider rw-chrome ${topnavShapeClass(shape)}`}
     >
-      <div className="mx-auto flex h-full w-full max-w-[1400px] items-center gap-3 px-4">
+      <div className="rw-content mx-auto flex h-full w-full items-center gap-3 px-4">
         {/* Burger — faqat tor ekranda. `lg:hidden` bilan emas, shart bilan:
             topnav rejimida sidenav umuman chizilmaydi, demak uning
             burgeri ham yo'q — bu tugma yagona kirish nuqtasi. */}

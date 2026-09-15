@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1361 strings.**
+**1376 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -1370,6 +1370,21 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.nav` | Navigatsiya | Навигация |  |
 | `customizer.navShape` | Panel shakli | Панелдин формасы |  |
 | `customizer.sizeHint` | Butun interfeysga ta'sir qiladi — oraliqlar ham moslashadi. | Бүтүндөй интерфейске таасир этет — аралыктар да өзгөрөт. |  |
+| `customizer.hex` | Rang kodi | Түс коду |  |
+| `customizer.lineHeight` | Qator balandligi | Сап бийиктиги |  |
+| `customizer.tracking` | Harf oralig'i | Тамга аралыгы |  |
+| `customizer.typeHint` | Qator balandligi va harf oralig'i uzun matnni o'qishga yordam beradi. | Сап бийиктиги жана тамга аралыгы узун текстти окууга жардам берет. |  |
+| `customizer.width` | Kontent kengligi | Мазмун кеңдиги |  |
+| `customizer.widthHint` | Tor kenglik o'qishga qulay, keng kenglik jadvalga. | Тар кеңдик окууга ыңгайлуу, кең кеңдик таблицага. |  |
+| `customizer.exportFile` | Faylga saqlash | Файлга сактоо |  |
+| `customizer.importFile` | Fayldan yuklash | Файлдан жүктөө |  |
+| `customizer.importError.parse` | Fayl to'g'ri JSON emas. | Файл туура JSON эмес. |  |
+| `customizer.importError.shape` | Faylda ko'rinish sozlamalari yo'q. | Файлда көрүнүш жөндөөлөрү жок. |  |
+| `customizer.importError.version` | Fayl yangiroq versiyada yaratilgan. | Файл жаңыраак версияда түзүлгөн. |  |
+| `customizer.a11y.motion.full` | To'liq | Толук |  |
+| `customizer.a11y.motion.mild` | O'rtacha | Орточо |  |
+| `customizer.a11y.motion.off` | O'chiq | Өчүк |  |
+| `customizer.a11y.motionHint` | O'rtacha — o'tishlar qoladi, bezak effektlari o'chadi. | Орточо — өтүүлөр калат, кооздоочу эффектилер өчөт. |  |
 | `customizer.scale` | Shkala zichligi | Шкала тыгыздыгы |  |
 | `customizer.scaleHint` | O'lchamlar orasidagi nisbat — katta sarlavhalar tezroq o'sadi. | Өлчөмдөр ортосундагы катыш — чоң аталыштар тезирээк өсөт. |  |
 | `navMode.sidenav.label` | Yon panel | Каптал панель |  |

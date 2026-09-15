@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1361 strings.**
+**1376 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -1370,6 +1370,21 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.nav` | Navigatsiya | Навигатсия |  |
 | `customizer.navShape` | Panel shakli | Шакли панел |  |
 | `customizer.sizeHint` | Butun interfeysga ta'sir qiladi — oraliqlar ham moslashadi. | Ба тамоми интерфейс таъсир мерасонад — фосилаҳо низ тағйир меёбанд. |  |
+| `customizer.hex` | Rang kodi | Рамзи ранг |  |
+| `customizer.lineHeight` | Qator balandligi | Баландии сатр |  |
+| `customizer.tracking` | Harf oralig'i | Фосилаи ҳарфҳо |  |
+| `customizer.typeHint` | Qator balandligi va harf oralig'i uzun matnni o'qishga yordam beradi. | Баландии сатр ва фосилаи ҳарфҳо хондани матни дарозро осон мекунанд. |  |
+| `customizer.width` | Kontent kengligi | Паҳнои мундариҷа |  |
+| `customizer.widthHint` | Tor kenglik o'qishga qulay, keng kenglik jadvalga. | Паҳнои танг барои хондан, паҳнои васеъ барои ҷадвалҳо. |  |
+| `customizer.exportFile` | Faylga saqlash | Ба файл нигоҳ доштан |  |
+| `customizer.importFile` | Fayldan yuklash | Аз файл бор кардан |  |
+| `customizer.importError.parse` | Fayl to'g'ri JSON emas. | Файл JSON-и дуруст нест. |  |
+| `customizer.importError.shape` | Faylda ko'rinish sozlamalari yo'q. | Дар файл танзимоти намуд нест. |  |
+| `customizer.importError.version` | Fayl yangiroq versiyada yaratilgan. | Файл бо нусхаи навтар сохта шудааст. |  |
+| `customizer.a11y.motion.full` | To'liq | Пурра |  |
+| `customizer.a11y.motion.mild` | O'rtacha | Миёна |  |
+| `customizer.a11y.motion.off` | O'chiq | Хомӯш |  |
+| `customizer.a11y.motionHint` | O'rtacha — o'tishlar qoladi, bezak effektlari o'chadi. | Миёна — гузаришҳо мемонанд, эффектҳои ороишӣ хомӯш мешаванд. |  |
 | `customizer.scale` | Shkala zichligi | Зичии шкала |  |
 | `customizer.scaleHint` | O'lchamlar orasidagi nisbat — katta sarlavhalar tezroq o'sadi. | Таносуби байни андозаҳо — сарлавҳаҳои калон тезтар меафзоянд. |  |
 | `navMode.sidenav.label` | Yon panel | Панели паҳлӯ |  |

@@ -33,7 +33,7 @@ export function ContestInvite() {
 
   return (
     <div className="rw-accent-soft px-4 py-3 text-theme-sm rw-accent-ink">
-      <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-center gap-3">
+      <div className="rw-content mx-auto flex flex-wrap items-center justify-center gap-3">
         <span>{t(locale, "auth.contestInvite")}</span>
         <Link
           href={"/settings/ijtimoiy" as Route}

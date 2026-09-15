@@ -130,6 +130,29 @@ export function rgbToHsl(color: RGB): { h: number; s: number; l: number } {
  *  Qaytaradi: `null` — hech qanday yorqinlik yetmadi (amalda bo'lmaydi,
  *  lekin jimgina yaroqsiz rang qaytarmaslik uchun ochiq qoldirilgan).
  */
+/** HEX → accent `{hue, sat}` (D51).
+ *
+ *  Sozlagichda erkin rang maydoni uchun. Tizim accent'ni TUS sifatida
+ *  saqlaydi (D42), chunki yorqinlik har muhit uchun alohida hisoblanadi —
+ *  ya'ni HEX dan faqat tus va to'yinganlik olinadi, yorqinlik tashlanadi.
+ *  Bu ataylab: `#0F62FE` ni qorong'i rejimga ko'chirish kerak, aks holda
+ *  u yerda o'qilmaydi. */
+export function hexToAccent(hex: string): { hue: number; sat: number } | null {
+  const rgb = parseColor(hex);
+  if (!rgb) return null;
+  const { h, s } = rgbToHsl(rgb);
+  // ⚠️ `rgbToHsl` to'yinganlikni 0–1 da qaytaradi (`h` esa 0–360 da),
+  // accent esa 0–100 kutadi. O'lchandi: konversiyasiz `#0F62FE` → `sat: 1`
+  // bo'lib, ko'k o'rniga KULRANG chiqardi.
+  return { hue: Math.round(h), sat: Math.round(s * 100) };
+}
+
+/** Accent → HEX — maydonni joriy rang bilan to'ldirish uchun.
+ *  Yorqinlik sozlagich namunalari bilan bir xil (45 %). */
+export function accentToHex(hue: number, sat: number): string {
+  return toHex(hslToRgb(hue, sat / 100, 0.45));
+}
+
 export function deriveAccent(
   hue: number,
   sat: number,

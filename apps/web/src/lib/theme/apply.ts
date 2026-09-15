@@ -11,7 +11,7 @@
 
 import type { A11yPrefs, AppearancePrefs } from "@/lib/api";
 import { clampNavMode, clampNavShape } from "@/layout/nav-config";
-import { applyTypography } from "@/lib/theme/typography";
+import { applyTypography, clampWidth } from "@/lib/theme/typography";
 import {
   AA_TARGET,
   accentInk,
@@ -127,6 +127,10 @@ export function applyAppearance(appearance: AppearancePrefs) {
   // har doim yoziladi — sidenav'ga o'tganda tanlov saqlanib qolsin.
   root.dataset.nav = clampNavMode(appearance.navMode);
   root.dataset.navShape = clampNavShape(appearance.navShape);
+
+  // Kontent kengligi (D48). `AppShell` dagi `max-w-[1400px]` o'rniga
+  // o'zgaruvchi — Tailwind sinfi qotib qolgan edi.
+  root.style.setProperty("--rw-content-width", `${clampWidth(appearance.width)}px`);
 }
 
 /** Rang ajratolmaslik uchun TUSLAR (D44).
@@ -161,7 +165,11 @@ export function applyA11y(a11y: A11yPrefs) {
     else delete root.dataset[key];
   };
   set("vision", a11y.vision && a11y.vision !== "normal" ? a11y.vision : undefined);
-  set("motion", a11y.motion === "reduce" ? "reduce" : undefined);
+  // `system` — OS sozlamasiga ergashadi, ya'ni atribut yozilmaydi (D49).
+  set(
+    "motion",
+    a11y.motion && a11y.motion !== "system" ? a11y.motion : undefined,
+  );
   set("targets", a11y.bigTargets ? "big" : undefined);
   set("focus", a11y.strongFocus ? "strong" : undefined);
 

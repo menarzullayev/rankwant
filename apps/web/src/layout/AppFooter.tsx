@@ -15,7 +15,7 @@ import { t } from "@/i18n/messages";
 export default function AppFooter() {
   const locale = useLocale();
   return (
-    <footer className="mx-auto max-w-[1400px] px-4 pb-8 pt-2 md:px-6">
+    <footer className="rw-content mx-auto px-4 pb-8 pt-2 md:px-6">
       <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t rw-divider pt-5 text-theme-xs rw-dim">
         <span>RankWant</span>
         <Link href="/terms" className="rw-focus-ring hover:underline">

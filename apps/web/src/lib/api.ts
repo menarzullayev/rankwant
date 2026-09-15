@@ -786,6 +786,12 @@ export type AppearancePrefs = {
   size?: number;
   /** Tipografik shkala zichligi — 0.90…1.15 (D45). 1 = odatiy. */
   scale?: number;
+  /** Qator balandligi ko'paytirgichi — 0.9…1.4 (D47). 1 = uslubning o'zi. */
+  lineHeight?: number;
+  /** Harf oralig'i qo'shimchasi, `em` — −0.02…0.06 (D47). */
+  tracking?: number;
+  /** Kontent kengligi, `px` — 1000…1800 (D48). */
+  width?: number;
   density?: "compact" | "comfortable" | "spacious";
   /** Navigatsiya joylashuvi (D46) — `nav-config.ts` dagi `NavMode`. */
   navMode?: NavMode;
@@ -796,7 +802,9 @@ export type AppearancePrefs = {
 export type A11yPrefs = {
   /** `protan` protanopiya VA deuteranopiya uchun (D44). */
   vision?: "normal" | "protan" | "tritan";
-  motion?: "system" | "reduce";
+  /** Harakat darajasi (D49). `system` — OS ga ergashadi, `full` — hammasi,
+   *  `mild` — o'tishlar qoladi, dekorativ effektlar o'chadi, `off` — hech narsa. */
+  motion?: "system" | "full" | "mild" | "off";
   bigTargets?: boolean;
   strongFocus?: boolean;
 };

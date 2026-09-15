@@ -117,7 +117,59 @@ export type TypographyPrefs = {
   size?: number;
   /** Shkala zichligi — 0.90…1.15. */
   scale?: number;
+  /** Qator balandligi ko'paytirgichi — 0.9…1.4 (D47). 1 = uslubning o'zi. */
+  lineHeight?: number;
+  /** Harf oralig'i qo'shimchasi, `em` — −0.02…0.06 (D47). 0 = o'zgarmagan. */
+  tracking?: number;
 };
+
+export const LINE_HEIGHT_MIN = 0.9;
+export const LINE_HEIGHT_MAX = 1.4;
+export const LINE_HEIGHT_DEFAULT = 1;
+
+export const TRACKING_MIN = -0.02;
+export const TRACKING_MAX = 0.06;
+export const TRACKING_DEFAULT = 0;
+
+/** Kontent kengligi (D48) — sahifaning o'qish kengligi. */
+export const WIDTH_MIN = 1000;
+export const WIDTH_MAX = 1800;
+export const WIDTH_STEP = 100;
+export const WIDTH_DEFAULT = 1400;
+
+export const WIDTH_STEPS: number[] = (() => {
+  const out: number[] = [];
+  for (let v = WIDTH_MIN; v <= WIDTH_MAX; v += WIDTH_STEP) out.push(v);
+  return out;
+})();
+
+export function clampWidth(value: number | undefined): number {
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    return WIDTH_DEFAULT;
+  }
+  const snapped = Math.round(value / WIDTH_STEP) * WIDTH_STEP;
+  return Math.min(WIDTH_MAX, Math.max(WIDTH_MIN, snapped));
+}
+
+export function clampLineHeight(value: number | undefined): number {
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    return LINE_HEIGHT_DEFAULT;
+  }
+  return Math.min(
+    LINE_HEIGHT_MAX,
+    Math.max(LINE_HEIGHT_MIN, Math.round(value * 100) / 100),
+  );
+}
+
+export function clampTracking(value: number | undefined): number {
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    return TRACKING_DEFAULT;
+  }
+  return Math.min(
+    TRACKING_MAX,
+    Math.max(TRACKING_MIN, Math.round(value * 1000) / 1000),
+  );
+}
 
 /** Mavjud Tailwind tokenlari — `globals.css` dagi ASL qiymatlar.
  *
@@ -163,7 +215,13 @@ export function applyTypography(
 ): void {
   const size = clampSize(prefs.size);
   const scale = clampScale(prefs.scale);
-  const plain = size === SIZE_DEFAULT && scale === SCALE_DEFAULT;
+  const lineHeight = clampLineHeight(prefs.lineHeight);
+  const tracking = clampTracking(prefs.tracking);
+  const plain =
+    size === SIZE_DEFAULT &&
+    scale === SCALE_DEFAULT &&
+    lineHeight === LINE_HEIGHT_DEFAULT &&
+    tracking === TRACKING_DEFAULT;
 
   if (plain) {
     for (const key of Object.keys(CSS_KEYS)) root.style.removeProperty(key);
@@ -183,14 +241,16 @@ export function applyTypography(
     const def = TYPE_SCALE[step];
     const rem = stepRem(step, scale);
     root.style.setProperty(`--rw-text-${step}`, `${rem}rem`);
+    // Qator balandligi va harf oralig'i (D47) — ko'paytirgich shkalaning
+    // O'Z qiymatiga qo'llanadi, ya'ni uslub nisbati saqlanadi.
     root.style.setProperty(
       `--rw-text-${step}--line-height`,
-      String(def.lineHeight),
+      String(Math.round(def.lineHeight * lineHeight * 1000) / 1000),
     );
     root.style.setProperty(`--rw-text-${step}--weight`, String(def.weight));
     root.style.setProperty(
       `--rw-text-${step}--tracking`,
-      `${def.letterSpacing}em`,
+      `${Math.round((def.letterSpacing + tracking) * 10000) / 10000}em`,
     );
   }
 
@@ -199,9 +259,10 @@ export function applyTypography(
   // hisoblanadi), shunda u o'lchamga proporsional ergashadi.
   for (const token of LEGACY_TOKENS) {
     root.style.setProperty(token.key, `${scalePx(token.px, scale)}px`);
+    const ratio = (token.lineHeightPx / token.px) * lineHeight;
     root.style.setProperty(
       `${token.key}--line-height`,
-      String(Math.round((token.lineHeightPx / token.px) * 1000) / 1000),
+      String(Math.round(ratio * 1000) / 1000),
     );
   }
 }

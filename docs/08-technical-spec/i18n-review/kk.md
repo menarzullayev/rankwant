@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1361 strings.**
+**1376 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -1370,6 +1370,21 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.nav` | Navigatsiya | Навигация |  |
 | `customizer.navShape` | Panel shakli | Панель пішіні |  |
 | `customizer.sizeHint` | Butun interfeysga ta'sir qiladi — oraliqlar ham moslashadi. | Бүкіл интерфейске әсер етеді — аралықтар да өзгереді. |  |
+| `customizer.hex` | Rang kodi | Түс коды |  |
+| `customizer.lineHeight` | Qator balandligi | Жол биіктігі |  |
+| `customizer.tracking` | Harf oralig'i | Әріп аралығы |  |
+| `customizer.typeHint` | Qator balandligi va harf oralig'i uzun matnni o'qishga yordam beradi. | Жол биіктігі мен әріп аралығы ұзақ мәтінді оқуға көмектеседі. |  |
+| `customizer.width` | Kontent kengligi | Мазмұн ені |  |
+| `customizer.widthHint` | Tor kenglik o'qishga qulay, keng kenglik jadvalga. | Тар ен оқуға қолайлы, кең ен кестеге. |  |
+| `customizer.exportFile` | Faylga saqlash | Файлға сақтау |  |
+| `customizer.importFile` | Fayldan yuklash | Файлдан жүктеу |  |
+| `customizer.importError.parse` | Fayl to'g'ri JSON emas. | Файл дұрыс JSON емес. |  |
+| `customizer.importError.shape` | Faylda ko'rinish sozlamalari yo'q. | Файлда көрініс параметрлері жоқ. |  |
+| `customizer.importError.version` | Fayl yangiroq versiyada yaratilgan. | Файл жаңарақ нұсқада жасалған. |  |
+| `customizer.a11y.motion.full` | To'liq | Толық |  |
+| `customizer.a11y.motion.mild` | O'rtacha | Орташа |  |
+| `customizer.a11y.motion.off` | O'chiq | Өшірулі |  |
+| `customizer.a11y.motionHint` | O'rtacha — o'tishlar qoladi, bezak effektlari o'chadi. | Орташа — ауысулар қалады, безендіру эффектілері өшеді. |  |
 | `customizer.scale` | Shkala zichligi | Шкала тығыздығы |  |
 | `customizer.scaleHint` | O'lchamlar orasidagi nisbat — katta sarlavhalar tezroq o'sadi. | Өлшемдер арасындағы қатынас — үлкен тақырыптар жылдамырақ өседі. |  |
 | `navMode.sidenav.label` | Yon panel | Бүйірлік панель |  |

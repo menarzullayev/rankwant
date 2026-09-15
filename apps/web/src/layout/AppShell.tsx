@@ -97,7 +97,10 @@ function Shell({ children }: { children: React.ReactNode }) {
             banner shu bo'shliqni yumshoq yo'l bilan yopadi. Faqat kirgan
             va to'ldirmagan odamga ko'rinadi, yopilsa qaytmaydi. */}
         {!bare && <GeoNudge />}
-        <main id="main" className="mx-auto max-w-[1400px] p-4 md:p-6">
+        {/* Kenglik `--rw-content-width` dan (D48) — sozlagichda erkin
+            tanlanadi. Tailwind sinfi qotib qolgan edi va katta monitorda
+            odam o'qish uchun tor/keng qilib o'zgartira olmasdi. */}
+        <main id="main" className="rw-content mx-auto p-4 md:p-6">
           {children}
         </main>
         <AppFooter />

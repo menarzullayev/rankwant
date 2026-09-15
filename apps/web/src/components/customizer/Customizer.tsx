@@ -10,15 +10,28 @@ import { CheckIcon, CloseIcon, PaletteIcon } from "@/icons";
 import { STYLES, isDual, type StyleId } from "@/layout/styles";
 import type { A11yPrefs } from "@/lib/api";
 import { passes, type AccentError } from "@/lib/theme/apply";
+import { accentToHex, hexToAccent } from "@/lib/theme/color";
+import { exportAppearance, importAppearance } from "@/lib/theme/share";
 import { TEMPLATES } from "@/lib/theme/templates";
 import {
+  LINE_HEIGHT_MAX,
+  LINE_HEIGHT_MIN,
   SCALE_MAX,
   SCALE_MIN,
   SIZE_MAX,
   SIZE_MIN,
   SIZE_STEP,
+  TRACKING_MAX,
+  TRACKING_MIN,
+  WIDTH_MAX,
+  WIDTH_MIN,
+  WIDTH_STEP,
+  WIDTH_STEPS,
+  clampLineHeight,
   clampScale,
   clampSize,
+  clampTracking,
+  clampWidth,
 } from "@/lib/theme/typography";
 import {
   DEFAULT_NAV_MODE,
@@ -336,6 +349,7 @@ function AppearanceTab() {
 
       <NavSection />
       <NavShapeSection />
+      <WidthSection />
     </>
   );
 }
@@ -408,6 +422,8 @@ function SizeSection() {
   const { appearance, setAppearance } = useCustomizer();
   const value = clampSize(appearance.size);
   const scale = clampScale(appearance.scale);
+  const lineHeight = clampLineHeight(appearance.lineHeight);
+  const tracking = clampTracking(appearance.tracking);
   const quick = [90, 100, 110, 120];
 
   return (
@@ -477,6 +493,85 @@ function SizeSection() {
       <p className="mt-2 text-theme-xs rw-faint">
         {t(locale, "customizer.scaleHint")}
       </p>
+
+      {/* Qator balandligi va harf oralig'i (D47). Shkalada o'lcham bor
+          edi, lekin bu ikkisi uslubda qotib qolgan — uzoq matn o'qiydigan
+          odam uchun esa aynan ular hal qiluvchi. */}
+      <label className="mt-4 block text-theme-xs rw-faint">
+        {t(locale, "customizer.lineHeight")} — ×{lineHeight.toFixed(2)}
+        <input
+          type="range"
+          min={LINE_HEIGHT_MIN}
+          max={LINE_HEIGHT_MAX}
+          step={0.05}
+          value={lineHeight}
+          onChange={(event) =>
+            setAppearance({ lineHeight: Number(event.target.value) })
+          }
+          className="mt-1 w-full"
+        />
+      </label>
+
+      <label className="mt-3 block text-theme-xs rw-faint">
+        {t(locale, "customizer.tracking")} — {tracking.toFixed(3)}em
+        <input
+          type="range"
+          min={TRACKING_MIN}
+          max={TRACKING_MAX}
+          step={0.005}
+          value={tracking}
+          onChange={(event) =>
+            setAppearance({ tracking: Number(event.target.value) })
+          }
+          className="mt-1 w-full"
+        />
+      </label>
+
+      <p className="mt-2 text-theme-xs rw-faint">
+        {t(locale, "customizer.typeHint")}
+      </p>
+    </Section>
+  );
+}
+
+/** Kontent kengligi (D48) — alohida bo'lim, chunki u matnga emas,
+ *  sahifa tuzilishiga tegishli. */
+function WidthSection() {
+  const locale = useLocale();
+  const { appearance, setAppearance } = useCustomizer();
+  const value = clampWidth(appearance.width);
+  return (
+    <Section title={t(locale, "customizer.width")}>
+      <label className="block text-theme-xs rw-faint">
+        {t(locale, "customizer.width")} — {value}px
+        <input
+          type="range"
+          min={WIDTH_MIN}
+          max={WIDTH_MAX}
+          step={WIDTH_STEP}
+          value={value}
+          onChange={(event) =>
+            setAppearance({ width: Number(event.target.value) })
+          }
+          className="mt-1 w-full"
+        />
+      </label>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {WIDTH_STEPS.map((preset) => (
+          <button
+            key={preset}
+            type="button"
+            aria-pressed={value === preset}
+            onClick={() => setAppearance({ width: preset })}
+            className={chip(value === preset)}
+          >
+            {preset}
+          </button>
+        ))}
+      </div>
+      <p className="mt-2 text-theme-xs rw-faint">
+        {t(locale, "customizer.widthHint")}
+      </p>
     </Section>
   );
 }
@@ -491,6 +586,9 @@ function AccentSection() {
   const { appearance, setAppearance, preview } = useCustomizer();
   const [hue, setHue] = useState(appearance.accent?.hue ?? 215);
   const [sat, setSat] = useState(appearance.accent?.sat ?? 70);
+  // HEX maydoni alohida holatda: foydalanuvchi yozayotganda qiymat hali
+  // to'liq emas (`#5B`), uni darhol accent'ga aylantirib bo'lmaydi.
+  const [hex, setHex] = useState(() => accentToHex(hue, sat));
   // Accent qo'llanmay qolsa sabab shu yerda ko'rsatiladi. Ilgari
   // `AccentResult.error` da tayyor o'zbekcha satr bor edi, lekin uni
   // HECH KIM o'qimasdi — ya'ni nosozlik jimgina o'tardi.
@@ -521,6 +619,7 @@ function AccentSection() {
               onClick={() => {
                 setHue(swatch.hue);
                 setSat(swatch.sat);
+                setHex(accentToHex(swatch.hue, swatch.sat));
                 apply({ accent: { hue: swatch.hue, sat: swatch.sat } });
               }}
               style={{ background: `hsl(${swatch.hue} ${swatch.sat}% 45%)` }}
@@ -543,14 +642,53 @@ function AccentSection() {
         </li>
       </ul>
 
-      <label className="block text-theme-xs rw-faint">
+      {/* Erkin rang (D51). 14 ta namuna ko'p ehtiyojni qondiradi, lekin
+          brend rangini aniq qo'yish kerak bo'lganda ular yetmaydi.
+          Kontrast nazorati o'z kuchida: HEX ham `apply()` orqali o'tadi,
+          ya'ni AA dan o'tmasa SAQLANMAYDI (D11). */}
+      <label className="mt-3 block text-theme-xs rw-faint">
+        {t(locale, "customizer.hex")}
+        <div className="mt-1 flex items-center gap-2">
+          <input
+            type="text"
+            value={hex}
+            spellCheck={false}
+            maxLength={7}
+            placeholder="#5B8CFF"
+            onChange={(event) => setHex(event.target.value)}
+            onBlur={() => {
+              const next = hexToAccent(hex);
+              if (next) {
+                setHue(next.hue);
+                setSat(next.sat);
+                apply({ accent: next });
+              } else {
+                setHex(accentToHex(hue, sat));
+              }
+            }}
+            aria-label={t(locale, "customizer.hex")}
+            className="min-w-0 flex-1 rw-radius-sm border rw-line rw-field-bg px-2.5 py-1.5 font-mono text-theme-sm rw-strong uppercase"
+          />
+          <span
+            aria-hidden="true"
+            className="size-7 shrink-0 rounded-full border rw-line"
+            style={{ background: hexToAccent(hex) ? hex : accentToHex(hue, sat) }}
+          />
+        </div>
+      </label>
+
+      <label className="mt-3 block text-theme-xs rw-faint">
         {t(locale, "customizer.hue")}
         <input
           type="range"
           min={0}
           max={359}
           value={hue}
-          onChange={(event) => setHue(Number(event.target.value))}
+          onChange={(event) => {
+            const next = Number(event.target.value);
+            setHue(next);
+            setHex(accentToHex(next, sat));
+          }}
           className="mt-1 w-full"
         />
       </label>
@@ -561,7 +699,11 @@ function AccentSection() {
           min={0}
           max={100}
           value={sat}
-          onChange={(event) => setSat(Number(event.target.value))}
+          onChange={(event) => {
+            const next = Number(event.target.value);
+            setSat(next);
+            setHex(accentToHex(hue, next));
+          }}
           className="mt-1 w-full"
         />
       </label>
@@ -654,9 +796,12 @@ function A11yTab() {
         </p>
       </Section>
 
+      {/* To'rt pog'ona (D49): ilgari faqat "hammasi" yoki "hech narsa"
+          bor edi, ko'pchilik uchun eng qulay nuqta esa o'rtada —
+          o'tishlar qoladi, dekorativ effektlar o'chadi. */}
       <Section title={t(locale, "customizer.a11y.motion")}>
         <div className="flex flex-wrap gap-2">
-          {(["system", "reduce"] as const).map((value) => (
+          {(["system", "full", "mild", "off"] as const).map((value) => (
             <button
               key={value}
               type="button"
@@ -668,6 +813,9 @@ function A11yTab() {
             </button>
           ))}
         </div>
+        <p className="mt-2 text-theme-xs rw-faint">
+          {t(locale, "customizer.a11y.motionHint")}
+        </p>
       </Section>
 
       <Section title={t(locale, "customizer.a11y.more")}>
@@ -772,10 +920,42 @@ function SavedTemplates() {
     applySaved,
     templateLimit,
     shareLink,
+    appearance,
+    a11y,
+    setAppearance,
+    setA11y,
   } = useCustomizer();
   const [name, setName] = useState("");
   const [copied, setCopied] = useState(false);
+  const [importError, setImportError] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
   const full = templates.length >= templateLimit;
+
+  /** Joriy ko'rinishni JSON fayl qilib yuklab oladi. */
+  function download() {
+    const blob = new Blob([exportAppearance(appearance, a11y)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "rankwant-appearance.json";
+    anchor.click();
+    URL.revokeObjectURL(url);
+  }
+
+  /** Fayldan ko'rinishni tiklaydi. Fayl ishonchsiz manba — validatsiya
+   *  `importAppearance` ichida, shu sababli xato jimgina o'tmaydi. */
+  async function upload(file: File) {
+    const result = importAppearance(await file.text());
+    if (!result.ok) {
+      setImportError(result.error);
+      return;
+    }
+    setImportError(null);
+    setAppearance(result.appearance);
+    setA11y(result.a11y);
+  }
 
   return (
     <Section title={t(locale, "customizer.myTemplates")}>
@@ -789,6 +969,44 @@ function SavedTemplates() {
       >
         {copied ? t(locale, "customizer.linkCopied") : t(locale, "customizer.copyLink")}
       </button>
+
+      {/* Fayl bilan ko'chirish (D50). Havola uzun sozlamalarda 200+
+          belgiga cho'ziladi va uni chatda saqlash noqulay — fayl esa
+          zaxira nusxa bo'lib ham qoladi. */}
+      <div className="mb-2 flex gap-2">
+        <button
+          type="button"
+          onClick={download}
+          className="min-w-0 flex-1 rw-radius-sm border rw-line px-3 py-1.5 text-theme-sm rw-dim-2 transition rw-hover-bg"
+        >
+          {t(locale, "customizer.exportFile")}
+        </button>
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          className="min-w-0 flex-1 rw-radius-sm border rw-line px-3 py-1.5 text-theme-sm rw-dim-2 transition rw-hover-bg"
+        >
+          {t(locale, "customizer.importFile")}
+        </button>
+      </div>
+      <input
+        ref={fileRef}
+        type="file"
+        accept="application/json,.json"
+        className="sr-only"
+        aria-label={t(locale, "customizer.importFile")}
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          if (file) void upload(file);
+          // Bir xil faylni qayta tanlash uchun maydon tozalanadi.
+          event.target.value = "";
+        }}
+      />
+      {importError && (
+        <p role="alert" className="mb-2 rw-radius-sm rw-bad-soft px-2 py-1 text-theme-xs">
+          {t(locale, `customizer.importError.${importError}`)}
+        </p>
+      )}
 
       {templates.length > 0 && (
         <ul className="mb-2 space-y-1">
