@@ -122,72 +122,24 @@ jobs:
   # tekshiruvi, pytest (+ qamrov), OpenAPI diff, smoke va E2E — compose
   # stack'iga qarshi. `fail-fast` yo'q: barcha job tugasin, aks holda
   # faqat birinchi yiqilish ko'rinadi va qolgani yashirin qoladi.
-  ci_gate:
-    name: CI natijasini kutish
-    needs: build
-    # ⚠️ SELF-HOSTED EMAS — ataylab GitHub-hosted. Bu job faqat KUTADI
-    # (API so'rovlari + sleep). Self-hosted runner'da u 5 daqiqagacha
-    # navbatni egallab, CI/Security job'larini ushlab turardi —
-    # o'lchandi: to'liq CI wall 10.1 min, shundan 6.2 min navbat.
-    # Kutish uchun o'z runner'ini band qilish — aniq boy berish.
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    outputs:
-      green: ${{ steps.wait.outputs.green }}
-    steps:
-      # Deploy CI'ni QAYTA yugurtirmasligi kerak: main'ga push bo'lganda
-      # CI allaqachon shu SHA uchun ishlaydi. Uni ikkinchi marta chaqirish
-      # ~9 min oladi VA bitta runner'da CI/Security/Deploy navbatini
-      # egallab, hammasini sekinlashtiradi (o'lchandi: CI wall 8.9 min
-      # against 5.4 min ish — farqning katta qismi aynan shu navbat).
-      - name: CI run'i yashil bo'lishini kutish
-        id: wait
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          api="repos/${{ github.repository }}/actions/runs?head_sha=${{ github.sha }}&per_page=50"
-          pick='[.workflow_runs[] | select(.name=="CI")][0]'
-          for i in $(seq 1 20); do
-            st=$(gh api "$api" --jq "$pick.status" 2>/dev/null || true)
-            con=$(gh api "$api" --jq "$pick.conclusion // empty" 2>/dev/null || true)
-            if [ "$st" = "completed" ] && [ "$con" = "success" ]; then
-              echo "CI yashil - to'plamni qayta yugurtirish shart emas"
-              echo "green=true" >> "$GITHUB_OUTPUT"; exit 0
-            fi
-            if [ "$con" = "failure" ] || [ "$con" = "cancelled" ]; then
-              echo "::error::CI $con - deploy to'xtatildi"
-              exit 1
-            fi
-            sleep 15
-          done
-          echo "CI tugamadi yoki topilmadi - to'liq to'plam ishlaydi"
-          echo "green=false" >> "$GITHUB_OUTPUT"
-
   test:
     name: Test — CI to'plami
-    needs: [build, ci_gate]
-    # CI allaqachon yashil bo'lsa qayta yugurtirmaymiz (yuqoriga qarang).
-    if: needs.ci_gate.outputs.green != 'true'
+    needs: build
     uses: ./.github/workflows/ci.yml
 
   # ── 3. DEPLOY ────────────────────────────────────────────────────────
   deploy:
     name: Deploy — ${{ github.event.inputs.environment || 'staging' }}
-    needs: [build, ci_gate, test]
+    needs: [build, test]
     # `vars.PUBLIC_ORIGIN` sharti: deploy sirli o'zgaruvchilar hali
     # sozlanmagan bo'lsa (hozir shunday — repo'da 0 secrets/variables),
     # job har push'da qizil X bilan yiqilardi. O'tkazib yuborish —
     # yashirish emas: `build` va `test` baribir to'liq ishlaydi, deploy
     # esa kulrang (skipped) bo'ladi, ya'ni "sozlanmagan" aniq ko'rinadi.
-    # `test` skipped bo'lishi mumkin (CI allaqachon yashil) — shuning
-    # uchun natija aniq tekshiriladi: ci_gate muvaffaqiyatli VA test
-    # yoki o'tgan, yoki ataylab o'tkazib yuborilgan.
     if: >-
       ${{
         (github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch')
         && vars.PUBLIC_ORIGIN != ''
-        && needs.ci_gate.result == 'success'
-        && (needs.test.result == 'success' || needs.test.result == 'skipped')
       }}
     runs-on: [self-hosted, rankwant]
     # ⚠️ 3 daqiqadan ko'p — ONGLI istisno: to'liq stack `up --build`
