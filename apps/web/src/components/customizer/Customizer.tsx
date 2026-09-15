@@ -11,6 +11,16 @@ import { STYLES, isDual, type StyleId } from "@/layout/styles";
 import type { A11yPrefs } from "@/lib/api";
 import { passes, type AccentError } from "@/lib/theme/apply";
 import { TEMPLATES } from "@/lib/theme/templates";
+import {
+  SCALE_MAX,
+  SCALE_MIN,
+  SIZE_MAX,
+  SIZE_MIN,
+  SIZE_STEP,
+  clampScale,
+  clampSize,
+} from "@/lib/theme/typography";
+import { NAV_MODES, NAV_SHAPES } from "@/layout/nav-config";
 
 /** Namuna tuslari (D7). 14 ta — kam bo'lsa «o'z rangimni qo'yaman»
  *  ehtiyoji qoladi, ko'p bo'lsa tanlash qiyinlashadi.
@@ -66,7 +76,6 @@ function writeHidden(value: boolean) {
   for (const listener of hiddenListeners) listener();
 }
 
-const SIZES = [90, 100, 110, 120] as const;
 const DENSITIES = ["compact", "comfortable", "spacious"] as const;
 
 /** Panel va suzuvchi tugma.
@@ -302,21 +311,7 @@ function AppearanceTab() {
         </div>
       </Section>
 
-      <Section title={t(locale, "customizer.size")}>
-        <div className="flex flex-wrap gap-2">
-          {SIZES.map((value) => (
-            <button
-              key={value}
-              type="button"
-              aria-pressed={(appearance.size ?? 100) === value}
-              onClick={() => setAppearance({ size: value })}
-              className={chip((appearance.size ?? 100) === value)}
-            >
-              {value}%
-            </button>
-          ))}
-        </div>
-      </Section>
+      <SizeSection />
 
       <Section title={t(locale, "customizer.density")}>
         <div className="flex flex-wrap gap-2">
@@ -333,7 +328,151 @@ function AppearanceTab() {
           ))}
         </div>
       </Section>
+
+      <NavSection />
+      <NavShapeSection />
     </>
+  );
+}
+
+/** Navigatsiya rejimi — sidenav yoki topnav (D46). */
+function NavSection() {
+  const locale = useLocale();
+  const { appearance, setAppearance } = useCustomizer();
+  const current = appearance.navMode ?? "sidenav";
+  return (
+    <Section title={t(locale, "customizer.nav")}>
+      <div className="flex flex-wrap gap-2">
+        {NAV_MODES.map((mode) => (
+          <button
+            key={mode.id}
+            type="button"
+            aria-pressed={current === mode.id}
+            onClick={() => setAppearance({ navMode: mode.id })}
+            className={chip(current === mode.id)}
+          >
+            {t(locale, mode.labelKey)}
+          </button>
+        ))}
+      </div>
+      <p className="mt-2 text-theme-xs rw-faint">
+        {t(locale, `navMode.${current}.hint`)}
+      </p>
+    </Section>
+  );
+}
+
+/** Yuqori panel shakli — faqat topnav'da ko'rinadi, aks holda odam
+ *  o'zgartirib, natijani ko'rmaydi va sozlama «ishlamaydi» deb o'ylaydi
+ *  (kep.uz dagi 4 ta sozlama aynan shu tuzoqqa tushgan). */
+function NavShapeSection() {
+  const locale = useLocale();
+  const { appearance, setAppearance } = useCustomizer();
+  const mode = appearance.navMode ?? "sidenav";
+  if (mode !== "topnav") return null;
+  const current = appearance.navShape ?? "default";
+  return (
+    <Section title={t(locale, "customizer.navShape")}>
+      <div className="flex flex-wrap gap-2">
+        {NAV_SHAPES.map((shape) => (
+          <button
+            key={shape.id}
+            type="button"
+            aria-pressed={current === shape.id}
+            onClick={() => setAppearance({ navShape: shape.id })}
+            className={chip(current === shape.id)}
+          >
+            {t(locale, shape.labelKey)}
+          </button>
+        ))}
+      </div>
+      <p className="mt-2 text-theme-xs rw-faint">
+        {t(locale, `navShape.${current}.hint`)}
+      </p>
+    </Section>
+  );
+}
+
+/** Shrift o'lchami — erkin diapazon (D45).
+ *
+ *  Slider qo'shildi: 4 ta qat'iy qiymat (90/100/110/120) o'rniga
+ *  75–150 % orasida istalgan qadam. Tez-tez ishlatiladigan to'rttasi
+ *  tugma sifatida qoldi — slider bilan aniq qiymatga tushirish qiyin. */
+function SizeSection() {
+  const locale = useLocale();
+  const { appearance, setAppearance } = useCustomizer();
+  const value = clampSize(appearance.size);
+  const scale = clampScale(appearance.scale);
+  const quick = [90, 100, 110, 120];
+
+  return (
+    <Section title={t(locale, "customizer.size")}>
+      <label className="block text-theme-xs rw-faint">
+        {t(locale, "customizer.size")} — {value}%
+        <input
+          type="range"
+          min={SIZE_MIN}
+          max={SIZE_MAX}
+          step={SIZE_STEP}
+          value={value}
+          onChange={(event) =>
+            setAppearance({ size: Number(event.target.value) })
+          }
+          className="mt-1 w-full"
+        />
+      </label>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {quick.map((preset) => (
+          <button
+            key={preset}
+            type="button"
+            aria-pressed={value === preset}
+            onClick={() => setAppearance({ size: preset })}
+            className={chip(value === preset)}
+          >
+            {preset}%
+          </button>
+        ))}
+      </div>
+      <p className="mt-2 text-theme-xs rw-faint">
+        {t(locale, "customizer.sizeHint")}
+      </p>
+
+      {/* Shkala zichligi (D45). `size` hamma narsani birga kattalashtiradi,
+          bu esa qadamlar ORASIDAGI nisbatni o'zgartiradi: katta sarlavha
+          yanada kattaroq, kichik matn deyarli o'zgarmaydi. `base` (1 rem)
+          qotib qoladi — shuning uchun sahifa siljimaydi. */}
+      <label className="mt-4 block text-theme-xs rw-faint">
+        {t(locale, "customizer.scale")} — ×{scale.toFixed(2)}
+        <input
+          type="range"
+          min={SCALE_MIN}
+          max={SCALE_MAX}
+          step={0.05}
+          value={scale}
+          onChange={(event) =>
+            setAppearance({ scale: Number(event.target.value) })
+          }
+          className="mt-1 w-full"
+        />
+      </label>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {[0.9, 1, 1.1].map((preset) => (
+          <button
+            key={preset}
+            type="button"
+            aria-pressed={scale === preset}
+            onClick={() => setAppearance({ scale: preset })}
+            className={chip(scale === preset)}
+          >
+            ×{preset.toFixed(2)}
+          </button>
+        ))}
+      </div>
+      <p className="mt-2 text-theme-xs rw-faint">
+        {t(locale, "customizer.scaleHint")}
+      </p>
+    </Section>
   );
 }
 

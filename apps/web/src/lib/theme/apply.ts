@@ -10,6 +10,8 @@
  */
 
 import type { A11yPrefs, AppearancePrefs } from "@/lib/api";
+import { clampNavMode, clampNavShape } from "@/layout/nav-config";
+import { applyTypography } from "@/lib/theme/typography";
 import {
   AA_TARGET,
   accentInk,
@@ -114,16 +116,17 @@ export function applyAppearance(appearance: AppearancePrefs) {
   if (appearance.font) root.dataset.font = appearance.font;
   else delete root.dataset.font;
 
-  // O'lcham — ildiz `font-size` shkalasi; rem asosidagi hamma narsa
-  // proporsional kattaradi (D15). 100% da inline qiymat olib tashlanadi.
-  if (appearance.size && appearance.size !== 100) {
-    root.style.fontSize = `${appearance.size}%`;
-  } else {
-    root.style.removeProperty("font-size");
-  }
+  // O'lcham va tipografik shkala — `typography.ts` yagona manba (D45).
+  // Ildiz `font-size` foizi ham, `--text-*` tokenlari ham shu yerda.
+  applyTypography(root, appearance);
 
   if (appearance.density) root.dataset.density = appearance.density;
   else delete root.dataset.density;
+
+  // Navigatsiya (D46). Shakl faqat topnav'ga ta'sir qiladi, lekin atribut
+  // har doim yoziladi — sidenav'ga o'tganda tanlov saqlanib qolsin.
+  root.dataset.nav = clampNavMode(appearance.navMode);
+  root.dataset.navShape = clampNavShape(appearance.navShape);
 }
 
 /** Rang ajratolmaslik uchun TUSLAR (D44).

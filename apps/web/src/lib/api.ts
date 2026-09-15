@@ -777,9 +777,15 @@ export type AppearancePrefs = {
   accent?: { hue: number; sat: number } | null;
   /** `null` — uslubning o'z shrifti (D14). */
   font?: string | null;
-  /** Ildiz shrift o'lchami: 90 | 100 | 110 | 120 (D16). */
+  /** Ildiz shrift o'lchami foizi — 75…150 (D45). 100 = odatiy. */
   size?: number;
+  /** Tipografik shkala zichligi — 0.90…1.15 (D45). 1 = odatiy. */
+  scale?: number;
   density?: "compact" | "comfortable" | "spacious";
+  /** Navigatsiya joylashuvi (D46). `sidenav` — chap panel, `topnav` — ustun. */
+  navMode?: "sidenav" | "topnav";
+  /** Yuqori panel shakli — balandlik VA burchak (D46). */
+  navShape?: "default" | "slim" | "stacked";
 };
 
 export type A11yPrefs = {

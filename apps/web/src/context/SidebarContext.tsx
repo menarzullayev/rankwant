@@ -9,6 +9,8 @@ type SidebarContextType = {
   toggleSidebar: () => void;
   toggleMobileSidebar: () => void;
   closeMobileSidebar: () => void;
+  /** Mobil ro'yxatni ochadi — topnav'ning burger tugmasi uchun (D46). */
+  openMobileSidebar: () => void;
   setIsHovered: (value: boolean) => void;
 };
 
@@ -48,6 +50,7 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
         toggleSidebar: () => setIsExpanded((v) => !v),
         toggleMobileSidebar: () => setIsMobileOpen((v) => !v),
         closeMobileSidebar: () => setIsMobileOpen(false),
+        openMobileSidebar: () => setIsMobileOpen(true),
         setIsHovered,
       }}
     >

@@ -2,8 +2,12 @@
 
 import { usePathname } from "next/navigation";
 
-import { CustomizerProvider } from "@/context/CustomizerContext";
+import {
+  CustomizerProvider,
+  useCustomizer,
+} from "@/context/CustomizerContext";
 import { SidebarProvider, useSidebar } from "@/context/SidebarContext";
+import { clampNavMode, clampNavShape } from "./nav-config";
 import { PrefsSync } from "@/context/PrefsSync";
 import { SessionProvider } from "@/context/SessionContext";
 import { StyleProvider } from "@/context/StyleContext";
@@ -19,6 +23,7 @@ import { GeoNudge } from "@/components/GeoNudge";
 import { ContestInvite } from "@/components/ContestInvite";
 import { WelcomeNotice } from "@/components/WelcomeNotice";
 import AppSidebar from "./AppSidebar";
+import AppTopNav from "./AppTopNav";
 import { SkipLink } from "./SkipLink";
 
 /** Bir ish uchun ochilgan sahifalar: yon panel ham, tasdiqlash banneri
@@ -50,17 +55,24 @@ const BARE = [
 function Shell({ children }: { children: React.ReactNode }) {
   const { isExpanded, isHovered, isMobileOpen, closeMobileSidebar } =
     useSidebar();
+  // Navigatsiya rejimi — `AppearancePrefs` dan (D46). Sidenav'da yon panel
+  // va uning chegarasi bo'ladi, topnav'da esa panel o'rnini `AppTopNav`
+  // egallaydi va hech qanday chap chegara qolmaydi.
+  const { appearance } = useCustomizer();
+  const navMode = clampNavMode(appearance.navMode);
+  const navShape = clampNavShape(appearance.navShape);
   const pathname = usePathname();
   const bare = BARE.includes(pathname);
   const wide = isExpanded || isHovered;
+  const sidenav = navMode === "sidenav" && !bare;
 
   return (
     <div className="min-h-screen">
       {/* WCAG 2.4.1 — klaviatura foydalanuvchisi har sahifada yigirmata
           yon menyu havolasini bosib o'tmasin. Faqat fokusda ko'rinadi. */}
       <SkipLink />
-      {!bare && <AppSidebar />}
-      {!bare && isMobileOpen && (
+      {sidenav && <AppSidebar />}
+      {sidenav && isMobileOpen && (
         <div
           className="fixed inset-0 z-40 bg-gray-900/50 lg:hidden"
           onClick={closeMobileSidebar}
@@ -68,12 +80,16 @@ function Shell({ children }: { children: React.ReactNode }) {
       )}
       <div
         className={
-          bare
-            ? ""
-            : `transition-all duration-300 ${wide ? "lg:ml-[260px]" : "lg:ml-[86px]"}`
+          sidenav
+            ? `transition-all duration-300 ${wide ? "lg:ml-[260px]" : "lg:ml-[86px]"}`
+            : ""
         }
       >
-        <AppHeader />
+        {navMode === "topnav" && !bare ? (
+          <AppTopNav shape={navShape} />
+        ) : (
+          <AppHeader />
+        )}
         {!bare && <WelcomeNotice />}
         {!bare && <ContestInvite />}
         {!bare && <VerifyBanner />}

@@ -207,13 +207,23 @@ document.documentElement.dataset.style="clay"}`;
  *  D10 bo'yicha rang uslubga bog'liq, ya'ni uslub almashsa accent ham
  *  o'zgaradi va eski qiymat noto'g'ri bo'lardi.
  *
- *  Hech qanday xato ko'rsatilmaydi: bu bezak, sinishi mumkin emas. */
+ *  Hech qanday xato ko'rsatilmaydi: bu bezak, sinishi mumkin emas.
+ *
+ *  ⚠️ CHEGARA QO'YILADI. Ilgari `size` to'g'ridan-to'g'ri yozilardi va
+ *  buzilgan `localStorage` (`size: 9999`) ildiz shriftini 1599 px ga
+ *  chiqarib, sahifani o'qib bo'lmas holga keltirardi — o'lchandi.
+ *  Qiymatlar `lib/theme/typography.ts` dagi `SIZE_MIN/SIZE_MAX/SIZE_STEP`
+ *  bilan MOS bo'lishi shart: bu satr SSR paytida, modul importidan oldin
+ *  bajariladi, shuning uchun funksiyani chaqirib bo'lmaydi. */
 const APPEARANCE_INIT = `try{
 var r=document.documentElement;
 var a=JSON.parse(localStorage.getItem("rw:appearance")||"{}");
 if(a.font)r.dataset.font=a.font;
 if(a.density)r.dataset.density=a.density;
-if(a.size&&a.size!==100)r.style.fontSize=a.size+"%";
+var sz=(typeof a.size==="number"&&isFinite(a.size))?Math.min(150,Math.max(75,Math.round(a.size/5)*5)):100;
+if(sz!==100)r.style.fontSize=sz+"%";
+r.dataset.nav=(a.navMode==="topnav")?"topnav":"sidenav";
+r.dataset.navShape=(a.navShape==="slim"||a.navShape==="stacked")?a.navShape:"default";
 var k=JSON.parse(localStorage.getItem("rw:a11y")||"{}");
 if(k.vision&&k.vision!=="normal")r.dataset.vision=k.vision;
 if(k.motion==="reduce")r.dataset.motion="reduce";

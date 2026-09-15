@@ -46,7 +46,10 @@ export const DEFAULT_APPEARANCE: AppearancePrefs = {
   accent: null,
   font: null,
   size: 100,
+  scale: 1,
   density: "comfortable",
+  navMode: "sidenav",
+  navShape: "default",
 };
 
 export const DEFAULT_A11Y: A11yPrefs = {
