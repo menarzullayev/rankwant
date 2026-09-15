@@ -21,6 +21,9 @@ class Notification(models.Model):
         QUEST_AWARDED = "quest_awarded", "Vazifa bajarildi"
         STREAK_MILESTONE = "streak_milestone", "Streak yutug'i"
         DUEL = "duel", "Duel"
+        #: Hack natijasi (ADR-0020) — ikkala tomonga ham: hacker natijani,
+        #: himoyachi esa yechimi nega bekor qilinganini biladi.
+        HACK = "hack", "Hack"
         SYSTEM = "system", "Tizim"
 
     user = models.ForeignKey("core.User", on_delete=models.CASCADE, related_name="notifications")

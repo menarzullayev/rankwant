@@ -39,6 +39,9 @@ class QvantTransaction(models.Model):
         ARENA = "arena", "Arena"
         DUEL = "duel", "Duel"
         ACHIEVEMENT = "achievement", "Yutuq"
+        #: Amaliyot siyosatidagi muvaffaqiyatli hack (ADR-0020).
+        #: Kunlik shift ledgerda — farm qilib bo'lmaydi.
+        HACK = "hack", "Hack"
 
     user = models.ForeignKey(
         "core.User", on_delete=models.CASCADE, related_name="qvant_transactions"
