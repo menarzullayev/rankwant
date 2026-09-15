@@ -25,6 +25,7 @@ Ishlatish:
 
 from __future__ import annotations
 
+import gzip
 import os
 import re
 import shutil
@@ -974,6 +975,134 @@ def neg_ci_healthy_gate() -> tuple[bool, str]:
     return True, "ci/yashil: runner tirik + success (exit 0)"
 
 
+# ── backup ───────────────────────────────────────────────────────────────
+
+
+def _tmp_dir() -> "tempfile.TemporaryDirectory[str]":
+    """Repo ICHIDA vaqtinchalik katalog.
+
+    ⚠️ `/tmp` ISHLATILMAYDI. Windows'da u ikki xil joy: Git Bash uni MSYS
+    ildizi deb biladi, nativ Python esa Windows ildizidagi boshqa katalogni
+    ochadi — ya'ni Python yozgan faylni shell ko'rmaydi va test «fayl yo'q»
+    deb yiqiladi. `.githooks/pre-push` ham aynan shu sababdan `.tmp/` ga
+    yozadi.
+    """
+    base = ROOT / ".tmp"
+    base.mkdir(exist_ok=True)
+    return tempfile.TemporaryDirectory(dir=str(base))
+
+
+def _make_dump(path: Path, *, complete: bool) -> None:
+    """Soxta `pg_dump | gzip` arxivini yasaydi.
+
+    Tana ataylab 4 KB dan KATTA: `backup.sh` yakuniy qatorni
+    `tail -c 4096` bilan qidiradi. Kichik faylda «tugallangan» va «chala»
+    orasidagi farq yo'qolib ketardi va test o'z maqsadini isbotlamasdi.
+    """
+    body = "-- negative test dump\n" + ("SELECT 1;\n" * 900)
+    if complete:
+        body += "--\n-- PostgreSQL database dump complete\n--\n"
+    else:
+        # `pg_dump` o'rtada uzilganda aynan shunday ko'rinadi: gzip butun,
+        # yakuniy qator esa yo'q.
+        body += "COPY problems_problem (id) FROM stdin;\n"
+    with gzip.open(path, "wt", encoding="utf-8") as fh:
+        fh.write(body)
+
+
+def _run_backup_verify(path: Path) -> tuple[int, str]:
+    """`backup.sh --verify-dump` ni bitta arxiv ustida ishga tushiradi.
+
+    ⚠️ Docker KERAK EMAS va jonli bazaga TEGILMAYDI: bu rejim faqat faylni
+    o'qiydi. Shuning uchun test CI da ham, stack ko'tarilmagan mashinada
+    ham o'lchaydi — `workers` va `ci` guruhlari bilan bir xil uslub.
+
+    Yo'l NISBIY uzatiladi: disk harfi ham, teskari chiziq ham shell'ga
+    umuman bormaydi.
+    """
+    rel = path.resolve().relative_to(ROOT).as_posix()
+    proc = subprocess.run(
+        [_bash(), "tools/backup.sh", "--verify-dump", rel],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    return proc.returncode, (proc.stdout or "") + (proc.stderr or "")
+
+
+def neg_backup_truncated_archive() -> tuple[bool, str]:
+    """Kesilgan arxiv RAD ETILSINMI?
+
+    Eng ko'p uchraydigan holat: disk to'ldi yoki jarayon o'ldi va `.gz`
+    yarmida tugadi. Bunday zaxira katalogda «bor» bo'lib turadi, hajmi ham
+    ishonarli — yaroqsizligi esa faqat tiklash kunida bilinadi.
+    """
+    with _tmp_dir() as tmp:
+        good = Path(tmp) / "pg-good.sql.gz"
+        _make_dump(good, complete=True)
+        chopped = Path(tmp) / "pg-truncated.sql.gz"
+        raw = good.read_bytes()
+        chopped.write_bytes(raw[: len(raw) // 2])
+        code, out = _run_backup_verify(chopped)
+        if code == 0:
+            return False, (
+                "backup/kesilgan: buzuq arxiv O'TKAZILDI (exit 0) — tekshiruv o'lik"
+            )
+        if "gzip -t" not in out:
+            return False, (
+                f"backup/kesilgan: yiqildi, lekin sabab ko'rinmadi — {out.strip()[:120]}"
+            )
+        return True, "backup/kesilgan: buzuq arxiv tutildi (exit 1)"
+
+
+def neg_backup_missing_trailer() -> tuple[bool, str]:
+    """Gzip BUTUN, lekin dump chala — tutilsinmi?
+
+    ⚠️ Xavfliroq sinf: `gzip -t` bunday faylni «sog'lom» deydi, chunki
+    arxivning o'zi butun. Yo'q narsa — `pg_dump` ning yakuniy qatori, ya'ni
+    dump o'rtada uzilgan. Faqat `gzip -t` ga tayangan tekshiruv buni
+    jimgina o'tkazib yuborardi, va zaxira «yashil» bo'lib qolardi.
+    """
+    with _tmp_dir() as tmp:
+        half = Path(tmp) / "pg-notrailer.sql.gz"
+        _make_dump(half, complete=False)
+        code, out = _run_backup_verify(half)
+        if code == 0:
+            return False, (
+                "backup/chala: yakuniy qatorsiz dump O'TKAZILDI (exit 0) — "
+                "tekshiruv o'lik"
+            )
+        if "chala" not in out:
+            return False, (
+                f"backup/chala: yiqildi, lekin sabab ko'rinmadi — {out.strip()[:120]}"
+            )
+        return True, "backup/chala: yakuniy qatorsiz dump tutildi (exit 1)"
+
+
+def neg_backup_good_dump_passes() -> tuple[bool, str]:
+    """Ijobiy nazorat: BUTUN dump o'tishi SHART.
+
+    Hamma narsani rad etadigan tekshiruv yuqoridagi ikkala salbiy testdan
+    ham o'tadi va baribir foydasiz bo'ladi: zaxira har kuni «yaroqsiz» deb
+    qichqirsa, odam uni o'chirib qo'yadi. `workers` va `ci` guruhlarida ham
+    shu sababdan yashil yo'l alohida tekshiriladi.
+    """
+    with _tmp_dir() as tmp:
+        good = Path(tmp) / "pg-good.sql.gz"
+        _make_dump(good, complete=True)
+        code, out = _run_backup_verify(good)
+        if code != 0:
+            return False, (
+                f"backup/butun: sog'lom dump exit {code} berdi (0 kerak) — "
+                f"{out.strip()[:120]}"
+            )
+        if "dump butun" not in out:
+            return False, "backup/butun: tasdiq xabari ko'rinmadi"
+        return True, "backup/butun: sog'lom dump o'tdi (exit 0)"
+
+
 def neg_ordering_missing_tiebreaker() -> tuple[bool, str]:
     """Tiebreaker'siz `ordering` — tutilsinmi?
 
@@ -1087,6 +1216,14 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("startup_failure runner'dan mustaqil", neg_ci_startup_failure_is_red),
             ("o'qib bo'lmasa exit 2, «yashil» emas", neg_ci_unreadable_is_not_green),
             ("sog'lom holat yashil", neg_ci_healthy_gate),
+        ],
+    ),
+    (
+        "backup",
+        [
+            ("kesilgan arxiv rad etilsin", neg_backup_truncated_archive),
+            ("gzip butun, dump chala — rad etilsin", neg_backup_missing_trailer),
+            ("butun dump o'tadi", neg_backup_good_dump_passes),
         ],
     ),
     (

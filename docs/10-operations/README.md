@@ -437,22 +437,73 @@ qolardi.
 
 | Nima                | Chastota           | Saqlash | Tiklash sinovi |
 | ------------------- | ------------------ | ------- | -------------- |
-| Postgres            | kunlik full + WAL  | 30 kun  | **choraklik**  |
+| Postgres            | kunlik `pg_dump`   | 30 kun  | **choraklik**  |
 | S3/R2 test data     | versiyalash yoqilgan | doimiy | choraklik      |
 | Qvant ledger        | Postgres ichida    | —       | audit so'rovi bilan |
 
 Tiklash sinovi o'tkazilmasa, backup **yo'q deb hisoblanadi**.
 
+**Mexanizm — oddiy `pg_dump`, WAL arxivlash YO'Q.** Repoda `archive_mode`,
+`wal_level`, `archive_command`, `pgbackrest`, `wal-g`, `barman`, `PITR`
+so'zlarining birortasi ham uchramaydi, `docker-compose.yml` esa standart
+`postgres:16` ni hech qanday sozlama ustiga yozmasdan ko'taradi. Mavjud
+narsa — kuniga bir marta olinadigan **mantiqiy dump** (`tools/backup.sh`).
+
+**Narxi:** nuqtadan tiklash (point-in-time recovery) **yo'q**. Avariya
+oxirgi dumpdan keyin yuz bersa, o'sha oradagi yozuvlar butunlay yo'qoladi —
+eng yomon holatda **~24 soatlik** ma'lumot. Buni kamaytirish uchun WAL
+arxivlash kerak bo'lardi; u qo'yilmagan va bu **qabul qilingan** cheklov,
+yashirilgan emas.
+
 Preview (bitta mashina) uchun: `tools/backup.sh` — Postgres dump va MinIO
-nusxasi, 30 kun saqlanadi. Cron:
+nusxasi, 30 kun saqlanadi. Bitta yurish ~23 MB (o'lchandi 2026-09-15:
+pg 16.3 MB + MinIO 7.0 MB), ya'ni 30 kunlik saqlash ~700 MB. C: da atigi
+5.8 GB bo'sh — sig'adi, lekin keng joy emas. Shuning uchun skript har
+yurishda katalogning JAMI hajmini va o'chirilgan eski fayllar sonini
+jurnalga yozadi: zaxira joyining tugashi backup'ni jimgina o'ldiradi.
+
+Linux, cron:
 
 ```
-0 4 * * * /path/to/rankwant/tools/backup.sh >> ~/backups/rankwant/backup.log 2>&1
+0 4 * * * "$HOME"/rankwant/tools/backup.sh >> "$HOME"/backups/rankwant/backup.log 2>&1
 ```
 
-Har yurishda dump butunligi tekshiriladi; choraklik to'liq sinov —
-`tools/backup.sh --restore-test` (alohida bazaga tiklaydi va qator
-sonlarini asl baza bilan solishtiradi).
+Windows — `RankWant Daily Backup` vazifasi, kuniga bir marta **13:00** da.
+Soat ataylab tunda EMAS: butun stack Docker Desktop ustida turadi, u esa
+faqat foydalanuvchi tizimga kirganda ishlaydi, ya'ni 04:00 dagi trigger
+«rejalashtirilgan» bo'lib ko'rinib, amalda hech qachon zaxira bermasdi.
+`StartWhenAvailable` mashina o'chiq bo'lgan kunni keyingi imkoniyatda
+qoplaydi — mashina dual-boot, Windows kunlab ko'tarilmasligi mumkin.
+
+```powershell
+$repo = 'C:\Users\nsn\project\cp\rankwant'
+$bash = 'C:\Program Files\Git\bin\bash.exe'
+$dest = '/c/Users/nsn/backups/rankwant'
+$inner = "RANKWANT_BACKUP_DIR=$dest '/c/Users/nsn/project/cp/rankwant/tools/backup.sh' >> $dest/backup.log 2>&1"
+$action = New-ScheduledTaskAction -Execute 'C:\WINDOWS\System32\conhost.exe' `
+  -Argument ('--headless "' + $bash + '" -lc "' + $inner + '"') -WorkingDirectory $repo
+$trigger = New-ScheduledTaskTrigger -Daily -At '13:00'
+$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries `
+  -DontStopIfGoingOnBatteries -StartWhenAvailable `
+  -MultipleInstances IgnoreNew -ExecutionTimeLimit (New-TimeSpan -Minutes 30)
+Register-ScheduledTask 'RankWant Daily Backup' -Action $action `
+  -Trigger $trigger -Settings $settings -Force
+```
+
+⚠️ Yalang'och `bash` ISHLATILMAYDI: Windows'da u WSL relay'iga tushadi va
+skript umuman ishga tushmaydi. Git Bash'ning to'liq yo'li beriladi.
+
+Har yurishda dump butunligi tekshiriladi — `gzip -t` va `pg_dump` ning
+yakuniy qatori (ikkinchisi shart: gzip butun bo'lib, dump o'rtada uzilgan
+bo'lishi mumkin). Choraklik to'liq sinov — `tools/backup.sh --restore-test`:
+dump ALOHIDA `restore_test` bazasiga tiklanadi, jadvallar bo'sh emasligi va
+havolalar butunligi tekshiriladi, keyin o'sha baza tashlanadi. Jonli
+`rankwant` bazasiga **tegilmaydi**.
+
+⚠️ Sinov jonli baza bilan qator sonlarini **SOLISHTIRMAYDI**. Ilgari shunday
+edi va muntazam yolg'on yiqilardi: zaxira — vaqt kesimi, jonli baza esa
+o'shandan beri o'zgargan bo'ladi. Muntazam yolg'on ogohlantirish eng yomoni —
+odam uni e'tiborsiz qoldirishni o'rganadi.
 
 ## Monitoring va alert
 
@@ -558,8 +609,11 @@ git config core.hooksPath .githooks
 2. **Self-hosted runner xavfi qabul qilinadi.** *"Yolg'iz ishlashda qabul
    qilsa bo'ladigan xavf, jamoada emas"* — va qayta ko'rib chiqish sharti
    yozilgan (ikkinchi odam qo'shilishidan oldin).
-3. **Kunlik backup + choraklik tiklash sinovi yetarli.** RTO/RPO raqami
-   yo'q, lekin *"tiklash sinovi o'tkazilmasa, backup yo'q deb hisoblanadi"*
+3. **Kunlik backup + choraklik tiklash sinovi yetarli.** RPO va RTO
+   raqamlari `Disaster recovery` bo'limida yozilgan (RPO ≤ 24 soat, RTO
+   ~1 soat). Ular **tanlangan maqsad emas, mexanizmning oqibati**: kuniga
+   bir marta olinadigan mantiqiy dump shundan aniqroq bo'la olmaydi.
+   Ustidan *"tiklash sinovi o'tkazilmasa, backup yo'q deb hisoblanadi"*
    tamoyili qo'llanadi.
 4. **Branch protection va secret scanning siz ishlash mumkin.** *"DoD
    intizomga tayanadi"* — ya'ni `main` ga to'g'ridan-to'g'ri push va qizil CI
@@ -674,14 +728,14 @@ Yuqoridagi `## Incident turlari` §2 ga qarang.
 
 ```bash
 bash tools/backup.sh                 # dump + butunlik tekshiruvi
-bash tools/backup.sh --restore-test  # alohida bazaga tiklab solishtiradi
+bash tools/backup.sh --restore-test  # alohida bazaga tiklaydi (jonliga tegmaydi)
 ```
 
 ## Disaster recovery (RTO / RPO)
 
 | Narsa | Qiymat | Izoh |
 |---|---|---|
-| **RPO** | ≤ 24 soat | kunlik full backup + WAL |
+| **RPO** | ≤ 24 soat | kunlik `pg_dump`; WAL arxivlash va PITR yo'q |
 | **RTO (baza)** | ~1 soat | `--restore-test` bilan mashq qilingan |
 | **RTO (xizmat)** | 1–12 soat | on-call bir kishi; tungi avariya ertalabgacha |
 | Failover | **yo'q** | bitta mashina — zaxira nusxa yo'q |
