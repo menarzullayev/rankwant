@@ -11,6 +11,7 @@ import type { NavMode, NavShape } from "@/layout/nav-config";
 import type { VerdictVariant } from "@/lib/theme/verdict";
 import type { StatusVariant } from "@/lib/theme/status";
 import type { LoadingVariant } from "@/lib/theme/loading";
+import type { IconPackId } from "@/lib/theme/icon-packs";
 
 /**
  * Brauzer va server bir xil manzildan foydalana olmaydi: brauzer host'dagi
@@ -820,6 +821,9 @@ export type AppearancePrefs = {
   statusStyle?: StatusVariant;
   /** Yuklanish ko'rinishi (D62). */
   loadingStyle?: LoadingVariant;
+  /** Ikonka to'plami (D10/D11). Qamrov: `nav`/`action`/`status`
+   *  o'zgaradi, `verdict`/`brand` qat'iy (D20 ①). */
+  iconPack?: IconPackId;
 };
 
 export type A11yPrefs = {

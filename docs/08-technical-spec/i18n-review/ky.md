@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1512 strings.**
+**1515 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -1461,6 +1461,9 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.hex` | Rang kodi | Түс коду |  |
 | `customizer.lineHeight` | Qator balandligi | Сап бийиктиги |  |
 | `customizer.loading` | Yuklanish | Жүктөлүүдө |  |
+| `customizer.iconPack` | Ikonka to'plami | Иконка топтому |  |
+| `customizer.iconPackHint` | Tanlangan to'plam navigatsiya, amallar va holat ikonkalarini o'zgartiradi. Verdikt va brend belgilari qat'iy qoladi. | Тандалган топтом навигация, аракет жана абал белгилерин өзгөртөт. Вердикт жана бренд белгилери өзгөрбөйт. |  |
+| `customizer.iconPackFixed` | Qat'iy — to'plamga bo'ysunmaydi | Бекитилген — топтомго көз каранды эмес |  |
 | `customizer.tracking` | Harf oralig'i | Тамга аралыгы |  |
 | `customizer.typeHint` | Qator balandligi va harf oralig'i uzun matnni o'qishga yordam beradi. | Сап бийиктиги жана тамга аралыгы узун текстти окууга жардам берет. |  |
 | `customizer.width` | Kontent kengligi | Мазмун кеңдиги |  |

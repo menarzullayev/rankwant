@@ -15,6 +15,7 @@ import { applyTypography, clampWidth } from "@/lib/theme/typography";
 import { DEFAULT_VERDICT_VARIANT } from "@/lib/theme/verdict";
 import { DEFAULT_STATUS_VARIANT } from "@/lib/theme/status";
 import { DEFAULT_LOADING_VARIANT } from "@/lib/theme/loading";
+import { DEFAULT_ICON_PACK } from "@/lib/theme/icon-packs";
 import {
   AA_TARGET,
   accentInk,
@@ -177,6 +178,13 @@ export function applyAppearance(appearance: AppearancePrefs) {
   const lStyle = appearance.loadingStyle ?? DEFAULT_LOADING_VARIANT;
   if (lStyle !== DEFAULT_LOADING_VARIANT) root.dataset.loading = lStyle;
   else delete root.dataset.loading;
+
+  // Ikonka to'plami (D10/D11). Atribut `data-icon-pack` — CSS unga
+  // tayanmaydi (ikonka React'da almashadi), lekin iz qoladi: sozlamani
+  // brauzerda tekshirish va sinash uchun.
+  const pack = appearance.iconPack ?? DEFAULT_ICON_PACK;
+  if (pack !== DEFAULT_ICON_PACK) root.dataset.iconPack = pack;
+  else delete root.dataset.iconPack;
 }
 
 /** Rang ajratolmaslik uchun TUSLAR (D44).

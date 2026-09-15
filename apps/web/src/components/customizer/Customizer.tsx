@@ -22,8 +22,10 @@ import {
 } from "@/lib/theme/verdict";
 import { STATUS_VARIANTS, clampStatusVariant } from "@/lib/theme/status";
 import { LOADING_VARIANTS, clampLoadingVariant } from "@/lib/theme/loading";
+import { SELECTABLE_PACKS, clampIconPack } from "@/lib/theme/icon-packs";
 import { Verdict } from "@/components/ui/Verdict";
 import { Status } from "@/components/ui/Status";
+import { Icon } from "@/components/ui/Icon";
 import { Loading } from "@/components/ui/Loading";
 import { exportAppearance, importAppearance } from "@/lib/theme/share";
 import { TEMPLATES } from "@/lib/theme/templates";
@@ -347,6 +349,7 @@ function AppearanceTab() {
       <VerdictSection />
       <StatusSection />
       <LoadingSection />
+      <IconPackSection />
     </>
   );
 }
@@ -773,6 +776,58 @@ function LoadingSection() {
         </span>
       </div>
       <p className="mt-2 text-theme-xs rw-faint">{t(locale, def.hintKey)}</p>
+    </Section>
+  );
+}
+
+/** Ikonka to'plami (D10, D11).
+ *
+ *  ⚠️ Namunada **ikkala qamrov** ko'rsatiladi: yuqoridagi ikonkalar
+ *  almashadi (`nav.*`, `action.*`), pastdagisi — **qat'iy** (`verdict.*`).
+ *  Bu ataylab: D20 ① qoidasini tushuntiradigan yagona joy shu. Aks holda
+ *  foydalanuvchi «nega verdikt o'zgarmadi?» deb o'ylardi.
+ */
+function IconPackSection() {
+  const locale = useLocale();
+  const { appearance, setAppearance } = useCustomizer();
+  const current = clampIconPack(appearance.iconPack);
+
+  return (
+    <Section title={t(locale, "customizer.iconPack")}>
+      <div className="flex flex-wrap gap-2">
+        {SELECTABLE_PACKS.map((p) => (
+          <button
+            key={p.id}
+            type="button"
+            aria-pressed={current === p.id}
+            onClick={() => setAppearance({ iconPack: p.id })}
+            className={chip(current === p.id)}
+          >
+            {p.name}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-3 space-y-3 rw-radius-sm border rw-divider p-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <Icon name="nav.problems" />
+          <Icon name="nav.leaderboard" />
+          <Icon name="nav.quiz" />
+          <Icon name="action.search" />
+          <Icon name="action.theme" />
+          <Icon name="action.logout" />
+          <Icon name="status.warning" />
+        </div>
+        <div className="flex flex-wrap items-center gap-3 border-t rw-divider pt-3">
+          <Verdict verdict="AC" variant="icon" />
+          <Verdict verdict="WA" variant="icon" />
+          <span className="text-theme-xs rw-faint">{t(locale, "customizer.iconPackFixed")}</span>
+        </div>
+      </div>
+
+      <p className="mt-2 text-theme-xs rw-faint">
+        {t(locale, "customizer.iconPackHint")}
+      </p>
     </Section>
   );
 }

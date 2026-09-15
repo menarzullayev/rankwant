@@ -250,13 +250,17 @@ var ST=["auto","text","iconText","badge","circle","dot","box","alert","soft","ou
 if(ST.indexOf(a.statusStyle)>0)r.dataset.status=a.statusStyle;
 var LD=["spinner","ring","skeleton","shimmer","dotsBounce","dotsFade","bars","iconSpin","pulseIcon","progress"];
 if(LD.indexOf(a.loadingStyle)>=0)r.dataset.loading=a.loadingStyle;
+// Ikonka to'plami (D10). Atribut — ko'rinadigan iz; ikonkani React
+// almashartiradi. Standart (lucide) uchun atribut yozilmaydi.
+var IP=["lucide","phosphor","phosphorSolid","phosphorDuotone","heroicons","heroiconsSolid","tabler","bootstrap","remix","simple"];
+if(IP.indexOf(a.iconPack)>0)r.dataset.iconPack=a.iconPack;
 // Markup o'zgaruvchi uchtasini cookie'ga ham yozamiz (D61). Sabab: SSR
 // ularni cookie'dan o'qiydi, ya'ni cookie yo'q bo'lsa server standart
 // ko'rinishni chizadi va hidratsiya buziladi. Bu qator ESKI
 // foydalanuvchilar uchun bir martalik ko'prik: localStorage da qiymat
 // bor, cookie hali yo'q. Keyin rememberAppearance ikkalasini birga
 // yozadi, ya'ni bu shart bajarilgan holda qoladi.
-try{var m=[];if(VD.indexOf(a.verdictStyle)>0)m.push("v="+a.verdictStyle);if(ST.indexOf(a.statusStyle)>0)m.push("s="+a.statusStyle);if(LD.indexOf(a.loadingStyle)>=0)m.push("l="+a.loadingStyle);if(m.length)document.cookie="rw:markup="+m.join("&")+";path=/;max-age=31536000;SameSite=Lax";}catch(e){}
+try{var m=[];if(VD.indexOf(a.verdictStyle)>0)m.push("v="+a.verdictStyle);if(ST.indexOf(a.statusStyle)>0)m.push("s="+a.statusStyle);if(LD.indexOf(a.loadingStyle)>=0)m.push("l="+a.loadingStyle);if(IP.indexOf(a.iconPack)>0)m.push("p="+a.iconPack);if(m.length)document.cookie="rw:markup="+m.join("&")+";path=/;max-age=31536000;SameSite=Lax";}catch(e){}
 var k=JSON.parse(localStorage.getItem("rw:a11y")||"{}");
 if(k.vision&&k.vision!=="normal")r.dataset.vision=k.vision;
 if(k.motion==="reduce")r.dataset.motion="reduce";

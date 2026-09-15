@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1512 strings.**
+**1515 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -1461,6 +1461,9 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.hex` | Rang kodi | Reń kodi |  |
 | `customizer.lineHeight` | Qator balandligi | Qatar biyikligi |  |
 | `customizer.loading` | Yuklanish | Júkleniw |  |
+| `customizer.iconPack` | Ikonka to'plami | Ikonka toplamı |  |
+| `customizer.iconPackHint` | Tanlangan to'plam navigatsiya, amallar va holat ikonkalarini o'zgartiradi. Verdikt va brend belgilari qat'iy qoladi. | Tańlanǵan toplam navigatsiya, háreket hám halat belgilerin ózgertedi. Verdikt hám brend belgileri ózgermeydi. |  |
+| `customizer.iconPackFixed` | Qat'iy — to'plamga bo'ysunmaydi | Bekitilgen — toplamǵa baylanıslı emes |  |
 | `customizer.tracking` | Harf oralig'i | Hárip aralıǵı |  |
 | `customizer.typeHint` | Qator balandligi va harf oralig'i uzun matnni o'qishga yordam beradi. | Qatar biyikligi hám hárip aralıǵı uzın tekstti oqıwǵa járdem beredi. |  |
 | `customizer.width` | Kontent kengligi | Kontent keńligi |  |

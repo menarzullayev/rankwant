@@ -27,6 +27,7 @@ import { clampNavMode, clampNavShape } from "@/layout/nav-config";
 import { clampVerdictVariant } from "@/lib/theme/verdict";
 import { clampStatusVariant } from "@/lib/theme/status";
 import { clampLoadingVariant } from "@/lib/theme/loading";
+import { clampIconPack } from "@/lib/theme/icon-packs";
 import { DEFAULT_CARD, DEFAULT_PATTERN } from "@/lib/theme/apply";
 
 /** URL da saqlanadigan maydonlar. `KEYS` — tozalash uchun ham ishlatiladi. */
@@ -48,6 +49,7 @@ const KEYS = [
   "verdictStyle",
   "statusStyle",
   "loadingStyle",
+  "iconPack",
 ] as const;
 
 const DENSITIES = ["compact", "comfortable", "spacious"] as const;
@@ -103,6 +105,9 @@ export function encodeAppearance(appearance: AppearancePrefs): string {
   }
   if (appearance.loadingStyle && appearance.loadingStyle !== "spinner") {
     params.set("loadingStyle", appearance.loadingStyle);
+  }
+  if (appearance.iconPack && appearance.iconPack !== "lucide") {
+    params.set("iconPack", appearance.iconPack);
   }
   return params.toString();
 }
@@ -178,6 +183,9 @@ export function decodeAppearance(search: string): AppearancePrefs | null {
   }
   if (params.has("loadingStyle")) {
     out.loadingStyle = clampLoadingVariant(params.get("loadingStyle"));
+  }
+  if (params.has("iconPack")) {
+    out.iconPack = clampIconPack(params.get("iconPack"));
   }
 
   return Object.keys(out).length ? out : null;
@@ -307,6 +315,7 @@ export function importAppearance(raw: string): ImportResult {
   appearance.verdictStyle = clampVerdictVariant(a.verdictStyle);
   appearance.statusStyle = clampStatusVariant(a.statusStyle);
   appearance.loadingStyle = clampLoadingVariant(a.loadingStyle);
+  appearance.iconPack = clampIconPack(a.iconPack);
 
   const k = (row.a11y ?? {}) as A11yPrefs;
   const a11y: A11yPrefs = {

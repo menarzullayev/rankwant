@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1512 strings.**
+**1515 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -1461,6 +1461,9 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.hex` | Rang kodi | Рамзи ранг |  |
 | `customizer.lineHeight` | Qator balandligi | Баландии сатр |  |
 | `customizer.loading` | Yuklanish | Боркунӣ |  |
+| `customizer.iconPack` | Ikonka to'plami | Маҷмӯи нишонаҳо |  |
+| `customizer.iconPackHint` | Tanlangan to'plam navigatsiya, amallar va holat ikonkalarini o'zgartiradi. Verdikt va brend belgilari qat'iy qoladi. | Маҷмӯи интихобшуда нишонаҳои навигатсия, амалҳо ва ҳолатро иваз мекунад. Нишонаҳои вердикт ва бренд бетағйир мемонанд. |  |
+| `customizer.iconPackFixed` | Qat'iy — to'plamga bo'ysunmaydi | Собит — ба маҷмӯъ вобаста нест |  |
 | `customizer.tracking` | Harf oralig'i | Фосилаи ҳарфҳо |  |
 | `customizer.typeHint` | Qator balandligi va harf oralig'i uzun matnni o'qishga yordam beradi. | Баландии сатр ва фосилаи ҳарфҳо хондани матни дарозро осон мекунанд. |  |
 | `customizer.width` | Kontent kengligi | Паҳнои мундариҷа |  |

@@ -1691,6 +1691,45 @@ def neg_hook_gates_new_branch() -> tuple[bool, str]:
     return True, f"hook/yangi branch: {len(listed)} fayl tekshiruvga olindi"
 
 
+def neg_icons_pack_missing_key() -> tuple[bool, str]:
+    """Bitta to'plamdan bitta kalit olib tashlansa — tutilsinmi?
+
+    D12 shuni talab qiladi: yetishmagan ikonka asosiy to'plamdan
+    OLINMAYDI, ya'ni jimgina zaxira yo'q. Bittasi yetishmasa,
+    foydalanuvchi tanlagan to'plamda ikonka umuman chizilmay qolardi.
+    """
+    path = ROOT / "apps/web/src/icons/packs/bootstrap.tsx"
+    src = path.read_bytes().decode("utf-8")
+    old = '  "nav.quiz": BiQuestionCircle,'
+    if old not in src:
+        # Fall back to whatever the pack resolved `nav.quiz` to.
+        import re
+
+        m = re.search(r'^\s*"nav\.quiz": (\w+),', src, re.M)
+        if not m:
+            return False, "ikonka/kalit yetishmaydi: langar topilmadi"
+        old = m.group(0)
+    with Mutation(path, old, ""):
+        return expect_fail("icons", "ikonka/to'plamda kalit yetishmaydi")
+
+
+def neg_icons_fixed_zone_leaks() -> tuple[bool, str]:
+    """Qat'iy zona registrga tushsa — tutilsinmi?
+
+    D20 ①: verdikt va brend almashmasligi kerak. Ular registrga tushsa,
+    kimdir ularni `Icon` orqali chizayotgan bo'ladi va qo'llanma tayanadigan
+    belgi foydalanuvchiga qarab o'zgarib ketadi.
+    """
+    path = ROOT / "apps/web/src/icons/packs/lucide.tsx"
+    src = path.read_bytes().decode("utf-8")
+    old = '  "nav.problems": LuBookOpen,'
+    if old not in src:
+        return False, "ikonka/qat'iy zona: langar topilmadi"
+    new = '  "nav.problems": LuBookOpen,\n  "verdict.accepted": LuCircleCheck,'
+    with Mutation(path, old, new):
+        return expect_fail("icons", "ikonka/qat'iy zona registrda")
+
+
 def neg_verdict_code_missing() -> tuple[bool, str]:
     """Web'dan bitta verdikt kodi olib tashlansa — tutilsinmi?
 
@@ -1814,6 +1853,13 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         [
             ("tiebreaker yo'q bo'lsa qizil", neg_ordering_missing_tiebreaker),
             ("`ordering_fields` qoidaga tushmaydi", neg_ordering_fields_not_confused),
+        ],
+    ),
+    (
+        "icons",
+        [
+            ("to'plamda kalit yetishmaydi", neg_icons_pack_missing_key),
+            ("qat'iy zona registrga tushsa", neg_icons_fixed_zone_leaks),
         ],
     ),
     (

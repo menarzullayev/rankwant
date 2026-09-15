@@ -141,6 +141,14 @@ if has '^(apps/web/|apps/api/judging/)'; then
   step "Verdikt kodlari — API bilan moslik" "$PY" tools/check_verdict_codes.py
 fi
 
+# Ikonka registri (D12). Uch narsani ushlaydi: to'plamlardan birida kalit
+# yetishmasligi (jimgina zaxira yo'q), qat'iy zonaning registrga tushishi
+# (D20 ①), va `icon-keys.mjs` bilan generatsiya qilingan xaritalarning
+# ajralib ketishi. Uchtasi ham `tsc` ga ko'rinmaydi — kalit oddiy `string`.
+if has '^(apps/web/src/(icons|lib/theme)/|tools/(icon-keys|gen-icon-packs))'; then
+  step "Ikonka registri — to'plamlar mosligi" "$PY" tools/check_icons.py
+fi
+
 if has '^(docs/|README)'; then
   step "Hujjat yaxlitligi" "$PY" tools/check_docs.py
 fi

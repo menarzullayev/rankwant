@@ -72,7 +72,7 @@ export const MARKUP_COOKIE = "rw:markup";
 
 export type MarkupPrefs = Pick<
   AppearancePrefs,
-  "verdictStyle" | "statusStyle" | "loadingStyle"
+  "verdictStyle" | "statusStyle" | "loadingStyle" | "iconPack"
 >;
 
 /** Cookie qiymatini o'qiydi — server ham, klient ham shu funksiyani
@@ -87,6 +87,7 @@ export function parseMarkupCookie(value: string | undefined | null): MarkupPrefs
     if (k === "v") out.verdictStyle = v as MarkupPrefs["verdictStyle"];
     else if (k === "s") out.statusStyle = v as MarkupPrefs["statusStyle"];
     else if (k === "l") out.loadingStyle = v as MarkupPrefs["loadingStyle"];
+    else if (k === "p") out.iconPack = v as MarkupPrefs["iconPack"];
   }
   return out;
 }
@@ -96,6 +97,7 @@ export function serializeMarkupCookie(a: MarkupPrefs): string {
   if (a.verdictStyle && a.verdictStyle !== "auto") parts.push(`v=${a.verdictStyle}`);
   if (a.statusStyle && a.statusStyle !== "auto") parts.push(`s=${a.statusStyle}`);
   if (a.loadingStyle && a.loadingStyle !== "spinner") parts.push(`l=${a.loadingStyle}`);
+  if (a.iconPack && a.iconPack !== "lucide") parts.push(`p=${a.iconPack}`);
   return parts.join("&");
 }
 
