@@ -1,7 +1,0 @@
-# Bir martalik smoke hisobining paroli (commit efbffa8). Hech qanday
-# tizimga kirish bermaydi: hisob smoke ishlagan compose stack'ida
-# yaratiladi va stack o'chirilganda yo'qoladi — almashtiriladigan sekret
-# yo'q. Fayl o'zi tuzatildi (parol endi runtime'da generatsiya qilinadi);
-# bu qator faqat TARIXDAGI commit uchun, chunki soxta parol uchun ommaviy
-# tarixni qayta yozish nomutanosib.
-efbffa87ed0f8b92fa358573bac3c851854ba87d:tests/smoke/check.py:generic-api-key:81
