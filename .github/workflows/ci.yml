@@ -58,6 +58,7 @@ jobs:
       web: ${{ steps.filter.outputs.web }}
       judge: ${{ steps.filter.outputs.judge }}
       code: ${{ steps.filter.outputs.code }}
+      tools: ${{ steps.filter.outputs.tools }}
     steps:
       - uses: actions/checkout@v7
       - uses: dorny/paths-filter@v4
@@ -68,6 +69,12 @@ jobs:
             web:   ['apps/web/**']
             judge: ['services/**']
             code:  ['apps/**', 'services/**', 'tools/**', 'tests/**', 'docker-compose*.yml']
+            # Tekshiruvlarning O'ZI o'zgarganda ular sinaladigan job ishga
+            # tushsin. `code` bu ish uchun juda keng: u `apps/api/**` ni ham
+            # qamraydi, ya'ni API o'zgarishi web job'ini behuda ko'tarardi.
+            # `.githooks/**` ham shu yerda — `check_negative.py` dagi
+            # `neg_hook_gates_new_branch` aynan pre-push hook'ni sinaydi.
+            tools: ['tools/**', '.githooks/**']
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
@@ -164,10 +171,26 @@ jobs:
         run: pytest -n 6 --cov --cov-report=term-missing
         working-directory: apps/api
 
+  # ⚠️ Bu job web'ni qurishdan tashqari TEKSHIRUV TO'PLAMINI ham ishlatadi
+  # (`check_i18n`, `check_i18n_runtime`, `check_negative`, `check_contrast`).
+  # Ular shu yerda turadi, chunki `check_i18n_runtime.mjs` `typescript` ni
+  # `apps/web/node_modules` dan oladi — ya'ni to'plamga quyidagi `npm ci`
+  # kerak. Boshqa job'ga ko'chirish o'sha o'rnatishni takrorlashni talab
+  # qilardi.
+  #
+  # ⚠️ Shu sababli darvoza `web` filtriga YOLG'IZ bog'lanmaydi. Ilgari
+  # shunday edi va oqibati o'lchandi (2026-09-15): faqat `tools/` ni
+  # o'zgartirgan PR'lar — jumladan `check_negative.py` ning o'zini qayta
+  # yozgan #13 va unga yangi guruh qo'shgan #14 — bu job'ni `skipped`
+  # qoldirdi. Ya'ni tekshiruvlarni sinaydigan to'plam aynan o'sha
+  # tekshiruvlar o'zgarganda ISHLAMAGAN.
   web:
-    name: Web — lint, types, build
+    name: Web — lint, types, build va tekshiruv to'plami
     needs: changes
-    if: ${{ needs.changes.outputs.web == 'true' || github.event_name == 'workflow_dispatch' }}
+    if: >-
+      ${{ needs.changes.outputs.web == 'true'
+          || needs.changes.outputs.tools == 'true'
+          || github.event_name == 'workflow_dispatch' }}
     runs-on: [self-hosted, rankwant]
     timeout-minutes: 3
     steps:
@@ -190,13 +213,21 @@ jobs:
         # yonida tura turib.
         with:
           node-version: '22'
+      # `npm ci` faqat `tools/` o'zgarganda ham ishlaydi va bu ATAYIN:
+      # `check_i18n_runtime.mjs` `typescript` ni `apps/web/node_modules`
+      # dan oladi (`createRequire`). Usiz `check_negative.py` ning
+      # `node_precondition()` si «Cannot find module 'typescript'» deb
+      # BUTUN to'plamni bitta test ishlatmasdan to'xtatadi.
       - if: steps.check.outputs.ready == 'true'
         run: npm ci
         working-directory: apps/web
-      - if: steps.check.outputs.ready == 'true'
+      # Lint/typecheck/build FAQAT web o'zgarganda. Faqat `tools/`
+      # o'zgargan yurishda ular hech narsa yangi tekshirmaydi — job esa
+      # baribir kerak, chunki tekshiruv to'plami pastda.
+      - if: ${{ steps.check.outputs.ready == 'true' && needs.changes.outputs.web == 'true' }}
         run: npm run lint
         working-directory: apps/web
-      - if: steps.check.outputs.ready == 'true'
+      - if: ${{ steps.check.outputs.ready == 'true' && needs.changes.outputs.web == 'true' }}
         run: npm run typecheck
         working-directory: apps/web
       # Tiplar kalit yetishmasligini ushlaydi, lekin bo'sh satrni yoki
@@ -224,7 +255,7 @@ jobs:
       - name: Matn kontrasti (WCAG AA)
         if: steps.check.outputs.ready == 'true'
         run: python3 tools/check_contrast.py
-      - if: steps.check.outputs.ready == 'true'
+      - if: ${{ steps.check.outputs.ready == 'true' && needs.changes.outputs.web == 'true' }}
         run: npm run build
         working-directory: apps/web
 
