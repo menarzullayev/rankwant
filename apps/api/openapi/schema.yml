@@ -16579,6 +16579,7 @@ components:
       - RE_EXIT
       - CE
       - PE
+      - HACKED
       - PARTIAL
       - IE
       - WRONG_TEST
@@ -16604,6 +16605,7 @@ components:
         * `RE_EXIT` - Runtime Error (chiqish kodi)
         * `CE` - Compilation Error
         * `PE` - Presentation Error
+        * `HACKED` - Hack qilindi
         * `PARTIAL` - Qisman ball
         * `IE` - Internal Error
         * `WRONG_TEST` - Masala testi yaroqsiz

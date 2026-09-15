@@ -100,6 +100,20 @@ class TestApplyResult:
             user=user, problem=problem, language=language, source_code="x"
         )
 
+    def test_judge_hacked_verdictini_yubora_olmaydi(self, user, problem, language) -> None:
+        """`HACKED` ni faqat hack dvigateli qo'yadi (ADR-0020).
+
+        Kod katalogda bor, ya'ni oddiy tekshiruv uni o'tkazib yuborardi.
+        Judge natijasi orqali kelgan `HACKED` esa istalgan `AC` ni bekor
+        qilish yo'li bo'lardi — shuning uchun tanilmagan kod kabi `IE`.
+        """
+        attempt = self._attempt(user, problem, language)
+
+        apply_result({"attempt_id": attempt.pk, "verdict": Verdict.HACKED})
+
+        attempt.refresh_from_db()
+        assert attempt.verdict == Verdict.IE
+
     def test_ac_reytingni_oshiradi(self, user, problem, language) -> None:
         attempt = self._attempt(user, problem, language)
         apply_result(

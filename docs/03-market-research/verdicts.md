@@ -76,8 +76,9 @@ Bizda yo'q uchtasi diqqatga sazovor:
 
 - **`CHALLENGED`** — hack qilingan yechim. Codeforces Div. 1/2 formatida
   qatnashchi boshqaning yechimini sindirishi mumkin; verdikt shu paytda
-  qo'yiladi. Bizda hack formati yo'q (ADR-0011), ya'ni bu verdikt ham
-  kerak emas — lekin format qo'shilsa, birinchi kerak bo'ladigan narsa.
+  qo'yiladi. Bu band **yopildi**: [ADR-0020](../07-adr/0020-hacking.md)
+  hacking'ni qo'shdi, kod esa `HACKED` deb ataldi — foydalanuvchi bu
+  funksiyani «hack» so'zi bilan biladi, «challenge» bilan emas.
 - **`INPUT_PREPARATION_CRASHED`** — test **generatori** yiqilgan. Bu
   `CHECKER_ERROR` dan farq qiladi: checker javobni tekshiradi, generator
   esa testni yasaydi. Ikkalasini bir kodga yig'ish muallifni noto'g'ri
@@ -214,7 +215,7 @@ yozilmagan.
    judge protokoli o'zgaradi (`services/bakeoff/protocol.md`).
 5. **`PE` bo'yicha qaror** — ishlatish yoki olib tashlash.
 6. **`SKIPPED`** — anti-plagiat ishi bilan birga.
-7. **`CHALLENGED`** — faqat hack formati qo'shilsa.
+7. ~~**`CHALLENGED`**~~ — bajarildi: `HACKED` ([ADR-0020](../07-adr/0020-hacking.md)).
 
 Ochiq savol: **RoboContest atamalarini qo'lda tekshirish**. Foydalanuvchi
 u yerdan kelsa, o'rgangan so'zi bilan bizniki mos kelishi ma'qul.

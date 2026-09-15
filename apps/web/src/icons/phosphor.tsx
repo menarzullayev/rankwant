@@ -10,7 +10,7 @@
  *  bir xil glifdan foydalanadi (`check-circle`, `x-circle`). Ikkita fayl
  *  qilinsa o'sha yo'l ikki nusxada yashab, vaqt o'tib ajralib ketardi.
  *
- *  43 ta ikonka · 23 verdikt kodi ·
+ *  43 ta ikonka · 24 verdikt kodi ·
  *  4 holat.
  */
 
@@ -338,6 +338,7 @@ export const VERDICT_ICONS: Record<string, (p: IconProps) => React.JSX.Element> 
   RE_EXIT: PhWarningOctagon,
   CE: PhWrench,
   PE: PhRuler,
+  HACKED: PhBug,
   PARTIAL: PhChartPie,
   IE: PhGear,
   WRONG_TEST: PhTestTube,

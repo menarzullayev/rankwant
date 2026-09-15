@@ -20,6 +20,10 @@ class Verdict(models.TextChoices):
     RE_EXIT = "RE_EXIT", "Runtime Error (chiqish kodi)"
     CE = "CE", "Compilation Error"
     PE = "PE", "Presentation Error"
+    #: Qabul qilingan yechim hack testida yiqildi (ADR-0020). Judge bu kodni
+    #: CHIQARMAYDI: u hack testini oddiy test deb ko'radi va `WA`/`TLE`/…
+    #: qaytaradi, verdictni esa hack dvigateli qo'yadi.
+    HACKED = "HACKED", "Hack qilindi"
     PARTIAL = "PARTIAL", "Qisman ball"
     IE = "IE", "Internal Error"
     #: Masala TAYYOR EMAS — muallif aybi, foydalanuvchiniki emas.
@@ -38,3 +42,10 @@ TERMINAL = frozenset(v for v in Verdict.values if v not in {Verdict.PENDING, Ver
 
 #: Bu verdict SECURITY alert chiqaradi — 10-operations § monitoring.
 ALERTING = frozenset({Verdict.SECURITY_VIOLATION})
+
+#: Faqat API qo'yadigan kodlar — judge natijasida kelsa, ishonmaymiz.
+#: `HACKED` ni hack dvigateli qo'yadi (ADR-0020): u kimning yechimi qachon
+#: sindirilganini biladi, judge esa bilmaydi. Ishonchsiz judge (yoki
+#: navbatga yoza olgan kimsa) shu kod bilan istalgan `AC` ni bekor qila
+#: olardi.
+API_ONLY = frozenset({Verdict.HACKED})

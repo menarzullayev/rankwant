@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1515 strings.**
+**1517 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -457,6 +457,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `verdict.RE_EXIT` | Bajarilishda xato (chiqish kodi) | Хатои иҷро (рамзи баромад) |  |
 | `verdict.CE` | Kompilyatsiya xatosi | Хатои компилятсия |  |
 | `verdict.PE` | Format xatosi | Хатои формат |  |
+| `verdict.HACKED` | Hack qilindi | Шикаст хӯрд |  |
 | `verdict.PARTIAL` | Qisman ball | Холи қисман |  |
 | `verdict.IE` | Ichki xato | Хатои дохилӣ |  |
 | `verdict.WRONG_TEST` | Masala testi yaroqsiz | Тестҳои масъала нодурустанд |  |
@@ -1512,6 +1513,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `verdict.hint.RE` | Dastur ishlash paytida to'xtadi | Program crashed while running |  |
 | `verdict.hint.CE` | Kod kompilyatsiya bo'lmadi | Code did not compile |  |
 | `verdict.hint.PE` | Ortiqcha bo'sh joy yoki qator | Extra spaces or line breaks |  |
+| `verdict.hint.HACKED` | Qabul qilingan yechim boshqa ishtirokchining to'g'ri testida yiqildi | Ҳалли қабулшуда дар тести дурусти иштирокчии дигар ноком шуд |  |
 | `verdict.hint.OLE` | Juda ko'p ma'lumot chiqardi | Printed too much output |  |
 | `verdict.hint.IE` | Tekshiruvchi xatosi — sizda emas | Judge error, not your fault |  |
 | `verdict.hint.PD` | Navbatda kutilmoqda | Waiting in the queue |  |
