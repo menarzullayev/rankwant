@@ -33,7 +33,7 @@ Har bir ADR:
 | [0013](0013-editorial-spoiler-gate.md)           | Yechim tahlili — spoyler darvozasi        | **accepted**       |
 | [0014](0014-codeforces-handle-seed.md)           | Codeforces handle'i — tavsiya urug'i      | rejected           |
 | [0015](0015-account-email.md)                    | Hisob xatlari — brendlangan, kuzatuvsiz   | **accepted**       |
-| [0016](0016-signup-and-login.md)                 | Ro'yxat va kirish — 3 maydon, 3 provayder | **accepted**       |
+| [0016](0016-signup-and-login.md)                 | Ro'yxat va kirish — 3 maydon, 3 provayder | **accepted** (sahifa tuzilishi 2026-09-15 da yangilandi: bitta sahifa, uch bo'lim) |
 | [0017](0017-profile-and-settings.md)             | Profil va sozlamalar — KEP'dan ilhom      | **accepted**       |
 | [0018](0018-titles-roles-achievements.md)        | Unvon, ism rangi, rollar, yutuqlar        | **accepted**       |
 | [0019](0019-contest-certificates.md)             | Musobaqa sertifikatlari — QR, PDF         | **accepted**       |

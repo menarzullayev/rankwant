@@ -15,6 +15,26 @@
 # line and always reports the holder as running, so the holder is never
 # actually started. `systemctl is-active` cannot lie that way.
 #
+# Measured 2026-09-15 on this machine (read-only inspection):
+#   - Scheduled task `RankWant-Runner-Keepalive` (Ready, last result 0)
+#     runs THIS script: `-File ...\tools\runner_keepalive.ps1`.
+#   - `systemctl is-active rankwant-holder.service` reports `active`, and
+#     the unit is `enabled` in `systemctl list-unit-files`. The unit lives
+#     on the machine only - there is no unit file in this repo, so a
+#     rebuilt machine must recreate it before this script can start it.
+#   - A separate task `RankWant-WSL-Holder` (Running) also holds the
+#     distro from the Windows side, with no script involved:
+#     `wsl.exe -d Ubuntu-24.04 -u root -- bash -lc "exec sleep 2147483647"`.
+#     Both belts are live at once; this script owns the distro-side one.
+#
+# An older duplicate, `tools/runner-keepalive.ps1` (hyphen), was deleted
+# on 2026-09-15. It argued the opposite - that an in-distro unit cannot
+# work - but nothing invoked it, and its holder probe matched only
+# `sleep infinity`, so it could not see the live `sleep 2147483647` holder
+# and would have spawned a second one on every run.
+#
+# Runner background: docs/10-operations/README.md, section `Runner`.
+#
 # Idempotent - safe to run on a schedule.
 #
 # Usage (PowerShell):
@@ -26,7 +46,10 @@ $distro  = 'Ubuntu-24.04'
 $runner  = 'actions.runner.menarzullayev-rankwant.nsn-pc-rankwant.service'
 $holder  = 'rankwant-holder.service'
 
-$logFile = Join-Path (Split-Path -Parent $PSScriptRoot) '.tmp\runner-keepalive.log'
+# Log name matches this script. It used to be `runner-keepalive.log`, the
+# name of the deleted hyphen script, so the two wrote to one file and the
+# log could not say which had run.
+$logFile = Join-Path (Split-Path -Parent $PSScriptRoot) '.tmp\runner_keepalive.log'
 New-Item -ItemType Directory -Force -Path (Split-Path $logFile) | Out-Null
 
 function Log {

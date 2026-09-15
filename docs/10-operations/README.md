@@ -213,7 +213,7 @@ sudo systemctl enable rankwant-handoff.service
 Windows (PowerShell'da bir marta):
 
 ```powershell
-$repo = "$HOME\rankwant"
+$repo = (git rev-parse --show-toplevel) -replace '/', '\'   # repo ichidan chaqiring
 $action = New-ScheduledTaskAction -Execute 'powershell.exe' `
   -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$repo\tools\handoff.ps1`" in" `
   -WorkingDirectory $repo
@@ -227,7 +227,7 @@ jarayon o'chirilsa yoki ulanish uzilsa) sayt texnik ishlar sahifasida qolib
 ketadi — 2026-09-13 da aynan shunday bo'ldi. Buning uchun alohida monitor bor:
 
 ```powershell
-$repo = "$HOME\rankwant"
+$repo = (git rev-parse --show-toplevel) -replace '/', '\'   # repo ichidan chaqiring
 $action = New-ScheduledTaskAction -Execute 'powershell.exe' `
   -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$repo\tools\monitor.ps1`"" `
   -WorkingDirectory $repo
