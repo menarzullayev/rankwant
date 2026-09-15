@@ -1476,6 +1476,8 @@ export const ky: Record<MessageKey, string> = {
   "customizer.iconPack": "Иконка топтому",
   "customizer.iconPackHint": "Тандалган топтом навигация, аракет жана абал белгилерин өзгөртөт. Вердикт жана бренд белгилери өзгөрбөйт.",
   "customizer.iconPackFixed": "Бекитилген — топтомго көз каранды эмес",
+  "customizer.iconGalleryShow": "Баарын көрсөтүү ({n})",
+  "customizer.iconGalleryHide": "Галереяны жабуу",
   "customizer.tracking": "Тамга аралыгы",
   "customizer.typeHint": "Сап бийиктиги жана тамга аралыгы узун текстти окууга жардам берет.",
   "customizer.width": "Мазмун кеңдиги",

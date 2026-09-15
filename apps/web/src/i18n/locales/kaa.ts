@@ -1476,6 +1476,8 @@ export const kaa: Record<MessageKey, string> = {
   "customizer.iconPack": "Ikonka toplamı",
   "customizer.iconPackHint": "Tańlanǵan toplam navigatsiya, háreket hám halat belgilerin ózgertedi. Verdikt hám brend belgileri ózgermeydi.",
   "customizer.iconPackFixed": "Bekitilgen — toplamǵa baylanıslı emes",
+  "customizer.iconGalleryShow": "Bárshesin kórsetiw ({n})",
+  "customizer.iconGalleryHide": "Galeriani jabıw",
   "customizer.tracking": "Hárip aralıǵı",
   "customizer.typeHint": "Qatar biyikligi hám hárip aralıǵı uzın tekstti oqıwǵa járdem beredi.",
   "customizer.width": "Kontent keńligi",

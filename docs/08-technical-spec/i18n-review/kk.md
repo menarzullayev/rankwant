@@ -1465,6 +1465,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.iconPack` | Ikonka to'plami | Иконка жинағы |  |
 | `customizer.iconPackHint` | Tanlangan to'plam navigatsiya, amallar va holat ikonkalarini o'zgartiradi. Verdikt va brend belgilari qat'iy qoladi. | Таңдалған жинақ навигация, әрекет және күй белгішелерін өзгертеді. Вердикт және бренд белгілері өзгермейді. |  |
 | `customizer.iconPackFixed` | Qat'iy — to'plamga bo'ysunmaydi | Бекітілген — жинаққа тәуелді емес |  |
+| `customizer.iconGalleryShow` | Barchasini ko'rsatish ({n}) | Барлығын көрсету ({n}) |  |
+| `customizer.iconGalleryHide` | Galereyani yopish | Галереяны жабу |  |
 | `customizer.tracking` | Harf oralig'i | Әріп аралығы |  |
 | `customizer.typeHint` | Qator balandligi va harf oralig'i uzun matnni o'qishga yordam beradi. | Жол биіктігі мен әріп аралығы ұзақ мәтінді оқуға көмектеседі. |  |
 | `customizer.width` | Kontent kengligi | Мазмұн ені |  |

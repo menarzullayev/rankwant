@@ -8,7 +8,7 @@ import { useSidebar } from "@/context/SidebarContext";
 import { useUpdates } from "@/context/UpdatesContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
-import { ChevronDownIcon, CloseIcon, MenuIcon } from "@/icons";
+import { Icon } from "@/components/ui/Icon";
 import HeaderStatus from "./HeaderStatus";
 import SearchBox from "./SearchBox";
 import { LocaleSwitch } from "./LocaleSwitch";
@@ -215,7 +215,7 @@ export default function AppTopNav({
           aria-label={t(locale, "nav.menu")}
           className="flex size-9 shrink-0 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg lg:hidden"
         >
-          {isMobileOpen ? <CloseIcon /> : <MenuIcon />}
+          {isMobileOpen ? <Icon name="nav.close" /> : <Icon name="nav.menu" />}
         </button>
 
         <Link href="/" className="shrink-0 text-lg font-bold">
@@ -251,9 +251,7 @@ export default function AppTopNav({
                   className={`menu-item ${hasActive ? "menu-item-active" : "menu-item-inactive"}`}
                 >
                   <span className="truncate">{t(locale, group.key)}</span>
-                  <ChevronDownIcon
-                    className={`size-4 shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
-                  />
+                  <Icon name="nav.expandDown" className={`size-4 shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
                 </button>
 
                 {open && (
@@ -263,7 +261,7 @@ export default function AppTopNav({
                     className="absolute start-0 top-full z-50 mt-1 min-w-[220px] rw-radius rw-surface rw-shadow rw-line overflow-hidden border p-1"
                     role="menu"
                   >
-                    {group.items.map(({ href, key, Icon }) => {
+                    {group.items.map(({ href, key, iconKey }) => {
                       const active =
                         pathname === href || pathname.startsWith(`${href}/`);
                       const unread = href === "/updates" ? count : 0;
@@ -277,6 +275,7 @@ export default function AppTopNav({
                             className={`menu-item ${active ? "menu-item-active" : "menu-item-inactive"}`}
                           >
                             <Icon
+                              name={iconKey}
                               className={`size-5 shrink-0 ${active ? "menu-item-icon-active" : "menu-item-icon-inactive"}`}
                             />
                             <span className="truncate">{t(locale, key)}</span>
@@ -323,7 +322,7 @@ export default function AppTopNav({
                 {t(locale, group.key)}
               </p>
               <ul className="flex flex-col gap-1">
-                {group.items.map(({ href, key, Icon }) => {
+                {group.items.map(({ href, key, iconKey }) => {
                   const active =
                     pathname === href || pathname.startsWith(`${href}/`);
                   return (
@@ -335,6 +334,7 @@ export default function AppTopNav({
                         className={`menu-item ${active ? "menu-item-active" : "menu-item-inactive"}`}
                       >
                         <Icon
+                          name={iconKey}
                           className={`size-5 shrink-0 ${active ? "menu-item-icon-active" : "menu-item-icon-inactive"}`}
                         />
                         <span className="truncate">{t(locale, key)}</span>

@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { t } from "@/i18n/messages";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { CloseIcon, SearchIcon } from "@/icons";
+import { Icon } from "@/components/ui/Icon";
 import { API_BASE, type SearchResult } from "@/lib/api";
 
 const EMPTY: SearchResult = {
@@ -83,7 +83,7 @@ export default function SearchBox() {
         {/* Yorliqda MATN bo'lishi shart: ikonka va placeholder skrinriderga
             nom bermaydi, placeholder esa yozish boshlangach yo'qoladi. */}
         <span className="sr-only">{t(locale, "header.search")}</span>
-        <SearchIcon className="pointer-events-none absolute top-2.5 left-3 size-5 rw-faint" />
+        <Icon name="action.search" className="pointer-events-none absolute top-2.5 left-3 size-5 rw-faint" />
         <input
           ref={input}
           value={q}
@@ -127,7 +127,7 @@ export default function SearchBox() {
             title={t(locale, "common.clear")}
             className="absolute top-2 right-2 flex size-6 items-center justify-center rw-radius-sm rw-faint rw-hover-bg rw-focus-ring"
           >
-            <CloseIcon className="size-4" />
+            <Icon name="nav.close" className="size-4" />
           </button>
         )}
       </label>

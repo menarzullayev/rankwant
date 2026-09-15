@@ -8,7 +8,7 @@ import { TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
 import { UpdateKindBadge } from "@/components/UpdateKindBadge";
 import { getLocale } from "@/i18n/server";
 import { date, dateTime, fill, t } from "@/i18n/messages";
-import { ContestIcon, LeaderboardIcon, ProblemsIcon, QvantIcon } from "@/icons";
+import { Icon } from "@/components/ui/Icon";
 import {
   api,
   ApiError,
@@ -144,22 +144,22 @@ export default async function Home() {
         <StatCard
           label={t(locale, "nav.problems")}
           value={stats.problems}
-          icon={<ProblemsIcon />}
+          icon={<Icon name="nav.problems" />}
         />
         <StatCard
           label={t(locale, "nav.contests")}
           value={stats.contests}
-          icon={<ContestIcon />}
+          icon={<Icon name="ranking.trophy" />}
         />
         <StatCard
           label={t(locale, "nav.leaderboard")}
           value={stats.users}
-          icon={<LeaderboardIcon />}
+          icon={<Icon name="nav.leaderboard" />}
         />
         <StatCard
           label={t(locale, "home.attempts")}
           value={stats.attempts}
-          icon={<QvantIcon />}
+          icon={<Icon name="shop.coin" />}
         />
       </section>
 

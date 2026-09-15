@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/Table";
 import { getLocale } from "@/i18n/server";
 import { fill, t, topicName } from "@/i18n/messages";
-import { BlogIcon, CheckIcon } from "@/icons";
+import { Icon } from "@/components/ui/Icon";
 import { ArchiveSidebar } from "@/components/ArchiveSidebar";
 import { ProblemFilters } from "@/components/ProblemFilters";
 import { FavouriteToggle } from "@/components/FavouriteToggle";
@@ -239,7 +239,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
                           role="img"
                           className="inline-flex shrink-0"
                         >
-                          <CheckIcon className="size-4 rw-ok-ink" />
+                          <Icon name="action.confirm" className="size-4 rw-ok-ink" />
                         </span>
                       )}
                       <Link
@@ -255,7 +255,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
                           role="img"
                           className="inline-flex shrink-0 rw-faint"
                         >
-                          <BlogIcon className="size-3.5" />
+                          <Icon name="content.article" className="size-3.5" />
                         </span>
                       )}
                       {/* Testsiz masala — yuborib bo'lmaydi. Ro'yxatda

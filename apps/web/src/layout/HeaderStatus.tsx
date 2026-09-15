@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
-import { BellIcon, FlameIcon, QvantIcon } from "@/icons";
+import { Icon } from "@/components/ui/Icon";
 import { API_BASE } from "@/lib/api";
 
 /** Qo'ng'iroq + Qvant balansi + streak — RoboContest/KEP header naqshi.
@@ -43,14 +43,14 @@ export default function HeaderStatus() {
   return (
     <div className="flex items-center gap-2">
       <Link href="/qvant" className={`${pill} hidden sm:flex`} title="Qvant">
-        <QvantIcon className="size-4 rw-accent-ink" />
+        <Icon name="shop.coin" className="size-4 rw-accent-ink" />
         {balance ?? "…"}
       </Link>
       <span
         className={`${pill} hidden sm:flex`}
         title={`${user.streak_count} ${t(locale, "header.streak")}`}
       >
-        <FlameIcon className="size-4 rw-warn-ink" />
+        <Icon name="ranking.streak" className="size-4 rw-warn-ink" />
         {user.streak_count}
       </span>
       <Link
@@ -58,7 +58,7 @@ export default function HeaderStatus() {
         className="relative flex size-10 items-center justify-center rw-radius-sm border rw-line rw-dim-2 transition rw-hover-bg"
         title={unread ? `${unread}` : t(locale, "header.noUnread")}
       >
-        <BellIcon />
+        <Icon name="notification.bell" />
         {unread > 0 && (
           <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full rw-accent-bg px-1 text-[10px] font-semibold text-white">
             {unread > 99 ? "99+" : unread}

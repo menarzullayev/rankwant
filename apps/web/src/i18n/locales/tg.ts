@@ -1477,6 +1477,8 @@ export const tg: Record<MessageKey, string> = {
   "customizer.iconPack": "Маҷмӯи нишонаҳо",
   "customizer.iconPackHint": "Маҷмӯи интихобшуда нишонаҳои навигатсия, амалҳо ва ҳолатро иваз мекунад. Нишонаҳои вердикт ва бренд бетағйир мемонанд.",
   "customizer.iconPackFixed": "Собит — ба маҷмӯъ вобаста нест",
+  "customizer.iconGalleryShow": "Ҳамаро нишон додан ({n})",
+  "customizer.iconGalleryHide": "Пӯшидани галерея",
   "customizer.tracking": "Фосилаи ҳарфҳо",
   "customizer.typeHint": "Баландии сатр ва фосилаи ҳарфҳо хондани матни дарозро осон мекунанд.",
   "customizer.width": "Паҳнои мундариҷа",

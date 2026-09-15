@@ -84,6 +84,19 @@ func judge(ctx context.Context, job *Job, tests *store) *Result {
 		return res
 	}
 
+	// ── Kirish validatori ───────────────────────────────────────────
+	// Submission'ning biror fayli paydo bo'lishidan OLDIN va o'z
+	// katalogida — sabablari `validateTests` izohida. Bayroq faqat job
+	// ISHONCHSIZ kiritma olib kelganda yoqiladi: masalaning o'z testlarini
+	// muallif yozgan, ularni har yuborishda qayta tekshirish sof isrof.
+	if job.ValidateInput {
+		if verdict, failed, msg := validateTests(ctx, job, tests); verdict != "" {
+			res.Verdict, res.FailedTestIndex, res.CompileOutput = verdict, failed, msg
+			res.Meta.TotalMS = time.Since(t0).Milliseconds()
+			return res
+		}
+	}
+
 	work, err := os.MkdirTemp("", "rw-judge-*")
 	if err != nil {
 		return res
@@ -114,7 +127,7 @@ func judge(ctx context.Context, job *Job, tests *store) *Result {
 		// masalaning ish vaqti limiti (masalan 500 ms) g++ ga qo'llanib,
 		// har bir C++ submission CE bo'lib qoladi.
 		cl.TimeMS = job.Limits.CompileTimeMS
-		out, err := runSandboxed(ctx, work, subst(job.Language.Compile, "/box/"+src, "/box/prog"),
+		out, err := sandboxed(ctx, work, subst(job.Language.Compile, "/box/"+src, "/box/prog"),
 			"", cl, job.Limits.CompileTimeMS)
 		if err != nil {
 			res.CompileOutput = err.Error()
@@ -181,6 +194,7 @@ func judge(ctx context.Context, job *Job, tests *store) *Result {
 			return res
 		}
 	}
+
 	// `scorer` da har test o'z bahosini beradi, o'rtachasi olinadi.
 	scoreSum := 0
 
@@ -192,7 +206,7 @@ func judge(ctx context.Context, job *Job, tests *store) *Result {
 			worst = VIE
 			break
 		}
-		out, err := runSandboxed(ctx, work, runCmd, test.Input, job.Limits, wallLimit)
+		out, err := sandboxed(ctx, work, runCmd, test.Input, job.Limits, wallLimit)
 		if err != nil {
 			worst = VIE
 			break

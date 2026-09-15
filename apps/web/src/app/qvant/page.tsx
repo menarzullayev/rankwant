@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Card, StatCard } from "@/components/ui/Card";
 import { getLocale } from "@/i18n/server";
 import { t } from "@/i18n/messages";
-import { CheckIcon, QvantIcon } from "@/icons";
+import { Icon } from "@/components/ui/Icon";
 import {
   api,
   ApiError,
@@ -62,7 +62,7 @@ export default async function QvantPage() {
           <StatCard
             label={t(locale, "qvant.balance")}
             value={wallet.balance}
-            icon={<QvantIcon />}
+            icon={<Icon name="shop.coin" />}
           />
           <StatCard
             label={t(locale, "qvant.today")}
@@ -93,7 +93,7 @@ export default async function QvantPage() {
                   className={`flex size-6 shrink-0 items-center justify-center rounded-full
  ${quest.done ? "rw-ok-soft rw-ok-ink " : "border rw-line "}`}
                 >
-                  {quest.done && <CheckIcon className="size-3.5" />}
+                  {quest.done && <Icon name="action.confirm" className="size-3.5" />}
                 </span>
                 <span
                   className={`flex-1 text-theme-sm ${
@@ -142,7 +142,7 @@ export default async function QvantPage() {
                     }`}
                   >
                     {problem.marathon_solved && (
-                      <CheckIcon className="size-3.5" />
+                      <Icon name="action.confirm" className="size-3.5" />
                     )}
                   </span>
                   <span

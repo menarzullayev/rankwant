@@ -12,7 +12,7 @@ import {
 import { excerpt } from "@/components/Markdown";
 import { getLocale } from "@/i18n/server";
 import { date, t, type Locale } from "@/i18n/messages";
-import { WarningIcon } from "@/icons";
+import { Icon } from "@/components/ui/Icon";
 import {
   api,
   ApiError,
@@ -180,7 +180,7 @@ export default async function UpdatesPage({ searchParams }: Props) {
         <section className="rw-panel p-5">
           <h2 className="flex items-center gap-2 text-theme-xl font-semibold rw-strong">
             <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-full rw-kind-breaking">
-              <WarningIcon className="size-4" />
+              <Icon name="status.warning" className="size-4" />
             </span>
             {t(locale, "update.actionable")}
           </h2>

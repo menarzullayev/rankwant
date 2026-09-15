@@ -1476,6 +1476,8 @@ export const tr: Record<MessageKey, string> = {
   "customizer.iconPack": "Simge seti",
   "customizer.iconPackHint": "Seçilen set gezinme, eylem ve durum simgelerini değiştirir. Sonuç ve marka işaretleri sabit kalır.",
   "customizer.iconPackFixed": "Sabit — sete bağlı değil",
+  "customizer.iconGalleryShow": "Tümünü göster ({n})",
+  "customizer.iconGalleryHide": "Galeriyi kapat",
   "customizer.tracking": "Harf aralığı",
   "customizer.typeHint": "Satır yüksekliği ve harf aralığı uzun metni okumayı kolaylaştırır.",
   "customizer.width": "İçerik genişliği",

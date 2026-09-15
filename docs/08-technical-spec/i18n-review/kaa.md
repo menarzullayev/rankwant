@@ -1465,6 +1465,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.iconPack` | Ikonka to'plami | Ikonka toplamı |  |
 | `customizer.iconPackHint` | Tanlangan to'plam navigatsiya, amallar va holat ikonkalarini o'zgartiradi. Verdikt va brend belgilari qat'iy qoladi. | Tańlanǵan toplam navigatsiya, háreket hám halat belgilerin ózgertedi. Verdikt hám brend belgileri ózgermeydi. |  |
 | `customizer.iconPackFixed` | Qat'iy — to'plamga bo'ysunmaydi | Bekitilgen — toplamǵa baylanıslı emes |  |
+| `customizer.iconGalleryShow` | Barchasini ko'rsatish ({n}) | Bárshesin kórsetiw ({n}) |  |
+| `customizer.iconGalleryHide` | Galereyani yopish | Galeriani jabıw |  |
 | `customizer.tracking` | Harf oralig'i | Hárip aralıǵı |  |
 | `customizer.typeHint` | Qator balandligi va harf oralig'i uzun matnni o'qishga yordam beradi. | Qatar biyikligi hám hárip aralıǵı uzın tekstti oqıwǵa járdem beredi. |  |
 | `customizer.width` | Kontent kengligi | Kontent keńligi |  |

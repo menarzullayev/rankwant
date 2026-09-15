@@ -1,25 +1,3 @@
-import {
-  AlgorithmIcon,
-  ArenaIcon,
-  AttemptsIcon,
-  BlogIcon,
-  CalendarIcon,
-  ClassroomIcon,
-  ContestIcon,
-  DuelIcon,
-  FormulaIcon,
-  HackathonIcon,
-  InfoIcon,
-  LeaderboardIcon,
-  LearnIcon,
-  ProblemsIcon,
-  QuizIcon,
-  RoadmapIcon,
-  ShopIcon,
-  TeamIcon,
-  TournamentIcon,
-  UpdatesIcon,
-} from "@/icons";
 
 /**
  * Menyu — nomlash sessiyasida (2026-09-07) band-ma-band tanlangan.
@@ -53,57 +31,57 @@ type NavItem = {
     | "/about"
     | "/team";
   key: string;
-  Icon: (props: { className?: string }) => React.JSX.Element;
+  iconKey: string;
 };
 
 export const NAV_GROUPS: { key: string; items: NavItem[] }[] = [
   {
     key: "navGroup.lab",
     items: [
-      { href: "/problems", key: "nav.problems", Icon: ProblemsIcon },
-      { href: "/attempts", key: "nav.attempts", Icon: AttemptsIcon },
-      { href: "/quizzes", key: "nav.quizzes", Icon: QuizIcon },
+      { href: "/problems", key: "nav.problems", iconKey: "nav.problems" },
+      { href: "/attempts", key: "nav.attempts", iconKey: "ranking.chartBar" },
+      { href: "/quizzes", key: "nav.quizzes", iconKey: "nav.quiz" },
     ],
   },
   {
     key: "navGroup.library",
     items: [
-      { href: "/learn", key: "nav.articles", Icon: LearnIcon },
-      { href: "/roadmaps", key: "nav.roadmap", Icon: RoadmapIcon },
-      { href: "/algorithms", key: "nav.algorithms", Icon: AlgorithmIcon },
-      { href: "/classroom", key: "nav.classroom", Icon: ClassroomIcon },
+      { href: "/learn", key: "nav.articles", iconKey: "content.course" },
+      { href: "/roadmaps", key: "nav.roadmap", iconKey: "content.roadmap" },
+      { href: "/algorithms", key: "nav.algorithms", iconKey: "content.algorithm" },
+      { href: "/classroom", key: "nav.classroom", iconKey: "content.course" },
     ],
   },
   {
     key: "navGroup.compete",
     items: [
-      { href: "/contests", key: "nav.contests", Icon: ContestIcon },
-      { href: "/arena", key: "nav.arena", Icon: ArenaIcon },
-      { href: "/duels", key: "nav.duels", Icon: DuelIcon },
-      { href: "/tournaments", key: "nav.tournaments", Icon: TournamentIcon },
-      { href: "/hackathons", key: "nav.hackathons", Icon: HackathonIcon },
-      { href: "/calendar", key: "nav.calendar", Icon: CalendarIcon },
+      { href: "/contests", key: "nav.contests", iconKey: "ranking.trophy" },
+      { href: "/arena", key: "nav.arena", iconKey: "contest.arena" },
+      { href: "/duels", key: "nav.duels", iconKey: "contest.duel" },
+      { href: "/tournaments", key: "nav.tournaments", iconKey: "ranking.trophy" },
+      { href: "/hackathons", key: "nav.hackathons", iconKey: "contest.hackathon" },
+      { href: "/calendar", key: "nav.calendar", iconKey: "contest.calendar" },
     ],
   },
   {
     key: "navGroup.campus",
     items: [
-      { href: "/leaderboard", key: "nav.leaderboard", Icon: LeaderboardIcon },
-      { href: "/blog", key: "nav.blog", Icon: BlogIcon },
-      { href: "/updates", key: "nav.updates", Icon: UpdatesIcon },
+      { href: "/leaderboard", key: "nav.leaderboard", iconKey: "nav.leaderboard" },
+      { href: "/blog", key: "nav.blog", iconKey: "content.article" },
+      { href: "/updates", key: "nav.updates", iconKey: "notification.changelog" },
       // Yo'l xaritasi changelog yonida: ikkalasi bir savolga javob beradi —
       // "nima o'zgardi" (o'tmish) va "nima o'zgaradi" (kelajak).
       // ⚠️ `/roadmaps` (Traektoriya) BOSHQA narsa — ta'lim yo'li.
-      { href: "/platform-roadmap", key: "nav.platformRoadmap", Icon: RoadmapIcon },
+      { href: "/platform-roadmap", key: "nav.platformRoadmap", iconKey: "content.roadmap" },
     ],
   },
   {
     key: "navGroup.platform",
     items: [
-      { href: "/rating", key: "nav.formulas", Icon: FormulaIcon },
-      { href: "/qvant", key: "nav.shop", Icon: ShopIcon },
-      { href: "/about", key: "nav.about", Icon: InfoIcon },
-      { href: "/team", key: "nav.team", Icon: TeamIcon },
+      { href: "/rating", key: "nav.formulas", iconKey: "stats.chartBar" },
+      { href: "/qvant", key: "nav.shop", iconKey: "shop.store" },
+      { href: "/about", key: "nav.about", iconKey: "status.info" },
+      { href: "/team", key: "nav.team", iconKey: "user.group" },
     ],
   },
 ];

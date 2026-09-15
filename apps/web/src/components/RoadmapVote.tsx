@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
-import { ArrowUpIcon } from "@/icons";
+import { Icon } from "@/components/ui/Icon";
 import { voteRoadmap } from "@/lib/api";
 
 /** Ovoz tugmasi.
@@ -61,7 +61,7 @@ export function RoadmapVote({
           compact ? "flex-col px-2.5 py-1.5 text-theme-xs font-semibold" : "px-4 py-3 text-theme-sm"
         }`}
       >
-        <ArrowUpIcon className={compact ? "size-4" : "size-5"} />
+        <Icon name="nav.up" className={compact ? "size-4" : "size-5"} />
         {count}
         {!compact && <span>{t(locale, "roadmap.vote")}</span>}
       </Link>
@@ -100,7 +100,7 @@ export function RoadmapVote({
           : "rw-line rw-dim-2 rw-hover-bg"
       } ${compact ? "flex-col px-2.5 py-1.5 text-theme-xs font-semibold" : "px-4 py-3 text-theme-sm font-medium"}`}
     >
-      <ArrowUpIcon className={compact ? "size-4" : "size-5"} />
+      <Icon name="nav.up" className={compact ? "size-4" : "size-5"} />
       {count}
       {!compact && (
         <span>{t(locale, voted ? "roadmap.voted" : "roadmap.vote")}</span>

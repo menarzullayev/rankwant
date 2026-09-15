@@ -7,7 +7,7 @@ import { useSidebar } from "@/context/SidebarContext";
 import { useUpdates } from "@/context/UpdatesContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
-import { CloseIcon } from "@/icons";
+import { Icon } from "@/components/ui/Icon";
 import { NAV_GROUPS } from "./nav";
 
 export default function AppSidebar() {
@@ -55,7 +55,7 @@ export default function AppSidebar() {
           aria-label={t(locale, "nav.close")}
           className="rw-dim lg:hidden"
         >
-          <CloseIcon />
+          <Icon name="nav.close" />
         </button>
       </div>
 
@@ -75,7 +75,7 @@ export default function AppSidebar() {
               <div className="mx-3 mb-2 border-t rw-divider" />
             )}
             <ul className="flex flex-col gap-1">
-              {group.items.map(({ href, key, Icon }) => {
+              {group.items.map(({ href, key, iconKey }) => {
                 const active =
                   pathname === href || pathname.startsWith(`${href}/`);
                 // O'qilmagan o'zgarishlar chipi (qaror 6). Son
@@ -95,6 +95,7 @@ export default function AppSidebar() {
                       } ${wide ? "" : "justify-center"}`}
                     >
                       <Icon
+                        name={iconKey}
                         className={`size-5 shrink-0 ${
                           active
                             ? "menu-item-icon-active"

@@ -1473,6 +1473,8 @@ export const zh: Record<MessageKey, string> = {
   "customizer.iconPack": "图标集",
   "customizer.iconPackHint": "所选图标集会改变导航、操作和状态图标。判题结果与品牌标识保持不变。",
   "customizer.iconPackFixed": "固定 — 不随图标集改变",
+  "customizer.iconGalleryShow": "显示全部（{n}）",
+  "customizer.iconGalleryHide": "关闭图库",
   "customizer.tracking": "字间距",
   "customizer.typeHint": "行高和字间距有助于阅读长文本。",
   "customizer.width": "内容宽度",

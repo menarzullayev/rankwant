@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { Card } from "@/components/ui/Card";
-import { CopyIcon } from "@/icons";
+import { Icon } from "@/components/ui/Icon";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { fill, t } from "@/i18n/messages";
 import type { Sample } from "@/lib/api";
@@ -42,7 +42,7 @@ function CopyButton({ text, label }: { text: string; label: string }) {
         done ? "rw-ok-ink" : "rw-faint"
       }`}
     >
-      <CopyIcon className="size-3.5" />
+      <Icon name="action.copy" className="size-3.5" />
     </button>
   );
 }

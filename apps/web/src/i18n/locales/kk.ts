@@ -1477,6 +1477,8 @@ export const kk: Record<MessageKey, string> = {
   "customizer.iconPack": "Иконка жинағы",
   "customizer.iconPackHint": "Таңдалған жинақ навигация, әрекет және күй белгішелерін өзгертеді. Вердикт және бренд белгілері өзгермейді.",
   "customizer.iconPackFixed": "Бекітілген — жинаққа тәуелді емес",
+  "customizer.iconGalleryShow": "Барлығын көрсету ({n})",
+  "customizer.iconGalleryHide": "Галереяны жабу",
   "customizer.tracking": "Әріп аралығы",
   "customizer.typeHint": "Жол биіктігі мен әріп аралығы ұзақ мәтінді оқуға көмектеседі.",
   "customizer.width": "Мазмұн ені",

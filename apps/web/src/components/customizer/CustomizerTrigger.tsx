@@ -3,7 +3,7 @@
 import { useCustomizer } from "@/context/CustomizerContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
-import { PaletteIcon } from "@/icons";
+import { Icon } from "@/components/ui/Icon";
 
 /** Header'dagi kirish nuqtasi (D3).
  *
@@ -33,7 +33,7 @@ export function CustomizerTrigger() {
       title={`${t(locale, "customizer.title")} (Ctrl+.)`}
       className="flex size-10 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg"
     >
-      <PaletteIcon />
+      <Icon name="system.palette" />
     </button>
   );
 }
