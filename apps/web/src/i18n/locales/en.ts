@@ -1474,6 +1474,8 @@ export const en: Record<MessageKey, string> = {
   "customizer.iconPack": "Icon pack",
   "customizer.iconPackHint": "The chosen pack changes the navigation, action and status icons. Verdict and brand marks stay fixed.",
   "customizer.iconPackFixed": "Fixed — does not follow the pack",
+  "customizer.iconGalleryShow": "Show all ({n})",
+  "customizer.iconGalleryHide": "Hide the gallery",
   "customizer.tracking": "Letter spacing",
   "customizer.typeHint": "Line height and letter spacing help long text stay readable.",
   "customizer.width": "Content width",

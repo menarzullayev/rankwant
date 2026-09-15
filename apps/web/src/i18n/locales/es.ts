@@ -1475,6 +1475,8 @@ export const es: Record<MessageKey, string> = {
   "customizer.iconPack": "Juego de iconos",
   "customizer.iconPackHint": "El juego elegido cambia los iconos de navegación, acciones y estados. Las marcas de veredicto y de marca permanecen fijas.",
   "customizer.iconPackFixed": "Fijo — no sigue el juego",
+  "customizer.iconGalleryShow": "Mostrar todo ({n})",
+  "customizer.iconGalleryHide": "Ocultar la galería",
   "customizer.tracking": "Espaciado entre letras",
   "customizer.typeHint": "La altura de línea y el espaciado ayudan a leer textos largos.",
   "customizer.width": "Ancho del contenido",

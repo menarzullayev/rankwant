@@ -1519,6 +1519,8 @@ export const uz = {
   "customizer.iconPack": "Ikonka to'plami",
   "customizer.iconPackHint": "Tanlangan to'plam navigatsiya, amallar va holat ikonkalarini o'zgartiradi. Verdikt va brend belgilari qat'iy qoladi.",
   "customizer.iconPackFixed": "Qat'iy — to'plamga bo'ysunmaydi",
+  "customizer.iconGalleryShow": "Barchasini ko'rsatish ({n})",
+  "customizer.iconGalleryHide": "Galereyani yopish",
   "customizer.tracking": "Harf oralig'i",
   "customizer.typeHint": "Qator balandligi va harf oralig'i uzun matnni o'qishga yordam beradi.",
   "customizer.width": "Kontent kengligi",

@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 import { useCustomizer } from "@/context/CustomizerContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { errorText, t } from "@/i18n/messages";
+import { errorText, fill, t } from "@/i18n/messages";
 import { STYLES, isDual, type StyleId } from "@/layout/styles";
 import type { A11yPrefs } from "@/lib/api";
 import {
@@ -25,6 +25,7 @@ import { SELECTABLE_PACKS, clampIconPack } from "@/lib/theme/icon-packs";
 import { Verdict } from "@/components/ui/Verdict";
 import { Status } from "@/components/ui/Status";
 import { Icon } from "@/components/ui/Icon";
+import { groupKeysByDomain } from "@/icons/registry";
 import { Loading } from "@/components/ui/Loading";
 import { exportAppearance, importAppearance } from "@/lib/theme/share";
 import { TEMPLATES } from "@/lib/theme/templates";
@@ -842,7 +843,64 @@ function IconPackSection() {
       <p className="mt-2 text-theme-xs rw-faint">
         {t(locale, "customizer.iconPackHint")}
       </p>
+
+      <IconGallery />
     </Section>
+  );
+}
+
+/** To'liq galereya — 226 kalit, domen bo'yicha.
+ *
+ *  Namuna 22 ta ikonka ko'rsatadi; qolgan 204 tasini ko'rish imkoni
+ *  bo'lmasdi. Galereya **yopiq** holda ochiladi: 226 ta ikonka har doim
+ *  chizilsa panel sekinlashadi.
+ *
+ *  ⚠️ Bu yerda **barcha** kalitlar chiziladi, ya'ni to'plamda biron kalit
+ *  yetishmasa u bo'sh `<svg>` bo'lib ko'rinadi — bu D12 ni brauzerda
+ *  ko'rsatishning eng sodda yo'li.
+ */
+function IconGallery() {
+  const locale = useLocale();
+  const [open, setOpen] = useState(false);
+  const groups = useMemo(() => groupKeysByDomain(), []);
+  const total = useMemo(() => groups.reduce((n, [, ks]) => n + ks.length, 0), [groups]);
+
+  return (
+    <div className="mt-3">
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+        className={`${chip(false)} w-full justify-center`}
+      >
+        {open
+          ? t(locale, "customizer.iconGalleryHide")
+          : fill(t(locale, "customizer.iconGalleryShow"), { n: total })}
+      </button>
+
+      {open && (
+        <div className="mt-3 max-h-[420px] space-y-4 overflow-y-auto rw-radius-sm border rw-divider p-3">
+          {groups.map(([domain, keys]) => (
+            <div key={domain}>
+              <div className="mb-1 text-theme-xs rw-faint">
+                <code>{domain}</code> · {keys.length}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {keys.map((k) => (
+                  <span
+                    key={k}
+                    title={k}
+                    className="inline-flex rw-radius-sm border rw-divider p-1"
+                  >
+                    <Icon name={k} size="sm" />
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 

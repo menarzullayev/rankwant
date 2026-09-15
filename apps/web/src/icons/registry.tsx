@@ -130,6 +130,29 @@ export function resolveIcon(
 }
 
 /** Testlar va `check_icons.py` uchun: qaysi to'plamlar dinamik. */
+/** Barcha semantik kalitlar — Customizer galereyasi va tekshiruv uchun.
+ *
+ *  Kalitlar ro'yxati **standart to'plamdan** olinadi: D12 bo'yicha har bir
+ *  to'plam bir xil kalitlarga ega, ya'ni bittasidan olish yetarli.
+ *  `tools/check_icons.py` bu tenglikni tekshiradi.
+ *
+ *  ⚠️ Bu ro'yxat asosiy bundle'ga qo'shiladi (LUCIDE_ICONS allaqachon
+ *  statik). Galereya ochilganda qo'shimcha yuklanish bo'lmaydi.
+ */
+export const ICON_KEYS: string[] = Object.keys(LUCIDE_ICONS).sort();
+
+/** Kalitlarni domen bo'yicha guruhlash — galereya sarlavhalari uchun. */
+export function groupKeysByDomain(): [string, string[]][] {
+  const by = new Map<string, string[]>();
+  for (const k of ICON_KEYS) {
+    const domain = k.split(".")[0];
+    const list = by.get(domain);
+    if (list) list.push(k);
+    else by.set(domain, [k]);
+  }
+  return [...by.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+}
+
 export const DYNAMIC_PACKS: IconPackId[] = (Object.keys(LOADERS) as IconPackId[]).filter(
   (p) => !STATIC_PACKS[p]
 );

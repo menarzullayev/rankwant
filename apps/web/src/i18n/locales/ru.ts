@@ -1475,6 +1475,8 @@ export const ru: Record<MessageKey, string> = {
   "customizer.iconPack": "Набор иконок",
   "customizer.iconPackHint": "Выбранный набор меняет иконки навигации, действий и состояний. Значки вердикта и бренда остаются неизменными.",
   "customizer.iconPackFixed": "Фиксировано — не зависит от набора",
+  "customizer.iconGalleryShow": "Показать все ({n})",
+  "customizer.iconGalleryHide": "Скрыть галерею",
   "customizer.tracking": "Межбуквенный интервал",
   "customizer.typeHint": "Высота строки и межбуквенный интервал помогают читать длинный текст.",
   "customizer.width": "Ширина контента",
