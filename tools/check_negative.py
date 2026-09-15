@@ -1754,6 +1754,39 @@ def neg_icons_fixed_zone_leaks() -> tuple[bool, str]:
         return expect_fail("icons", "ikonka/qat'iy zona registrda")
 
 
+def neg_markup_cookie_boot_missing() -> tuple[bool, str]:
+    """Markup sozlamasi boot skriptdan olib tashlansa — tutilsinmi?
+
+    ⚠️ Bu xato sinfi ikki marta urgan (2026-09-15, verdict va loading).
+    Sozlama `MarkupPrefs` da bor, `parseMarkupCookie` da bor, lekin boot
+    skriptda yo'q bo'lsa: klient bir xil markup chizadi, server boshqasini
+    kutadi → **hidratsiya xatosi**. `tsc` ham, eslint ham jim o'tadi.
+    """
+    path = ROOT / "apps/web/src/app/layout.tsx"
+    src = path.read_bytes().decode("utf-8")
+    old = 'if(IP.indexOf(a.iconPack)>0)m.push("p="+a.iconPack);'
+    if old not in src:
+        return False, "markup/boot: langar topilmadi"
+    with Mutation(path, old, ""):
+        return expect_fail("markup_cookie", "markup/boot skriptda sozlama yo'q")
+
+
+def neg_markup_cookie_parse_missing() -> tuple[bool, str]:
+    """Cookie o'qishdan sozlama olib tashlansa — tutilsinmi?
+
+    Server cookie'dan o'qimasa, u standart qiymatni chizadi — ya'ni
+    foydalanuvchi tanlovi birinchi yuklanishda ko'rinmaydi va keyin
+    «sakraydi». Bu ham hidratsiya sinfidagi xato.
+    """
+    path = ROOT / "apps/web/src/lib/prefs.ts"
+    src = path.read_bytes().decode("utf-8")
+    old = 'else if (k === "p") out.iconPack = v as MarkupPrefs["iconPack"];'
+    if old not in src:
+        return False, "markup/parse: langar topilmadi"
+    with Mutation(path, old, ""):
+        return expect_fail("markup_cookie", "markup/parse da sozlama yo'q")
+
+
 def neg_verdict_code_missing() -> tuple[bool, str]:
     """Web'dan bitta verdikt kodi olib tashlansa — tutilsinmi?
 
@@ -1885,6 +1918,13 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("to'plamda kalit yetishmaydi", neg_icons_pack_missing_key),
             ("qat'iy zona registrga tushsa", neg_icons_fixed_zone_leaks),
             ("camelCase kalit yetishmaydi", neg_icons_camelcase_key_missing),
+        ],
+    ),
+    (
+        "markup_cookie",
+        [
+            ("boot skriptda sozlama yo'q", neg_markup_cookie_boot_missing),
+            ("parse da sozlama yo'q", neg_markup_cookie_parse_missing),
         ],
     ),
     (

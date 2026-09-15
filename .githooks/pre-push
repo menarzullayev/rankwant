@@ -149,6 +149,14 @@ if has '^(apps/web/src/(icons|lib/theme)/|tools/(icon-keys|gen-icon-packs))'; th
   step "Ikonka registri — to'plamlar mosligi" "$PY" tools/check_icons.py
 fi
 
+# Markup'ni o'zgartiruvchi sozlama TO'RT joyda takrorlanadi: tip, parse,
+# serialize va boot skript. Biri yangilanmasa — hidratsiya buziladi, va bu
+# faqat brauzerda ko'rinadi (`tsc` ham, eslint ham jim). 2026-09-15 da
+# aynan shu ikki marta bo'lgan.
+if has '^(apps/web/src/(lib/(prefs|api)\.ts|app/layout\.tsx)|tools/check_markup)'; then
+  step "Markup cookie — 4 joy mosligi" "$PY" tools/check_markup_cookie.py
+fi
+
 if has '^(docs/|README)'; then
   step "Hujjat yaxlitligi" "$PY" tools/check_docs.py
 fi
