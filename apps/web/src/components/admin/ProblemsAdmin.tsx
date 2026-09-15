@@ -284,10 +284,10 @@ function ProblemTestsPanel({
         <thead className="rw-dim uppercase">
           <tr>
             <th className="px-2 py-1">#</th>
-            <th className="px-2 py-1">Namuna</th>
-            <th className="px-2 py-1">Ball</th>
-            <th className="px-2 py-1">Kirish</th>
-            <th className="px-2 py-1">Chiqish</th>
+            <th className="px-2 py-1">{t(locale, "col.sample")}</th>
+            <th className="px-2 py-1">{t(locale, "col.points")}</th>
+            <th className="px-2 py-1">{t(locale, "col.input")}</th>
+            <th className="px-2 py-1">{t(locale, "col.output")}</th>
             <th className="px-2 py-1 text-right">
               {t(locale, "admin.actions")}
             </th>
@@ -346,7 +346,7 @@ function ProblemTestsPanel({
           />
         </label>
         <label className="block">
-          <span className="mb-1 block text-theme-xs rw-dim-2">Ball</span>
+          <span className="mb-1 block text-theme-xs rw-dim-2">{t(locale, "col.points")}</span>
           <input
             name="points"
             type="number"

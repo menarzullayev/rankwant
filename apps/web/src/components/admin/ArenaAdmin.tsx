@@ -267,7 +267,7 @@ function ArenaRowPanel({
                 )
               }
             >
-              Saqlash
+              {t(locale, "action.save")}
             </Button>
           </div>
           <p className="mt-1 text-theme-xs rw-faint">
@@ -292,7 +292,7 @@ function ArenaRowPanel({
               void run("Raund tozalandi", () => staff.action(`${base}reset/`));
             }}
           >
-            Reset
+            {t(locale, "action.reset")}
           </Button>
           <Button
             type="button"
@@ -302,7 +302,7 @@ function ArenaRowPanel({
               run("Mukofotlar berildi", () => staff.action(`${base}finalize/`))
             }
           >
-            Finalize
+            {t(locale, "action.finalize")}
           </Button>
         </div>
 

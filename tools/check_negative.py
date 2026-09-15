@@ -750,6 +750,32 @@ def neg_hardcoded_wide_scope() -> tuple[bool, str]:
         return expect_fail("hardcoded", "admin tashqarisidagi fayl")
 
 
+def neg_hardcoded_single_word_label() -> tuple[bool, str]:
+    """Bosh harf bilan boshlangan BIR SO'ZLI JSX yorlig'i matn hisoblansin.
+
+    ⚠️ Bu teshik edi va u qimmatga tushdi: `PASCAL_TOKEN` filtri `>Vaqt<`
+    ni «komponent yoki tip nomi» deb o'tkazib yuborardi. Filtr STRING
+    literal uchun to'g'ri (`type: "Checkbox"`), lekin JSX MATNI uchun
+    noto'g'ri — u ekranga chiqadi.
+
+    O'lchandi: filtr olib tashlanganda 49 ta haqiqiy yorliq ko'rindi
+    (`<TH>Vaqt</TH>`, `<TH>Xotira</TH>`, `Saqlash`, `Yuborildi`, `Rol` …),
+    ya'ni jadval sarlavhalari va admin tugmalari 9 tilda o'zbekcha
+    qolgan edi. O'zbek tili agglyutinativ — bir so'zli yorliqlar ko'p,
+    shuning uchun bu teshik ayniqsa keng edi.
+
+    `neg_hardcoded_viewbox_passes` bilan bir juft: u yolg'on musbatni
+    to'sadi, bu esa yolg'on manfiyni.
+    """
+    path = ROOT / "apps/web/src/components/profile/RatingChart.tsx"
+    with Mutation(
+        path,
+        '<p className="text-theme-sm rw-faint">{t(locale, "profile.chartEmpty")}</p>;',
+        '<p className="text-theme-sm rw-faint">{t(locale, "profile.chartEmpty")}<span>Vaqt</span></p>;',
+    ):
+        return expect_fail("hardcoded", "hardcoded/bir so'zli JSX yorlig'i")
+
+
 def neg_hardcoded_viewbox_passes() -> tuple[bool, str]:
     """SVG `viewBox` koordinatalari matn hisoblanmasin.
 
@@ -1754,6 +1780,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("o'lchov birligi o'tadi, so'z qoladi", neg_hardcoded_number_unit_passes),
             ("kengaytirilgan doira o'qiladi", neg_hardcoded_wide_scope),
             ("viewBox o'tadi", neg_hardcoded_viewbox_passes),
+            ("bir so'zli yorliq tutilsin", neg_hardcoded_single_word_label),
         ],
     ),
     (

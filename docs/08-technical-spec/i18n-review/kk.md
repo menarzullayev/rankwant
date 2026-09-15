@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1487 strings.**
+**1512 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -373,6 +373,26 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.actions` | Amallar | Әрекеттер |  |
 | `admin.saved` | Saqlandi | Сақталды |  |
 | `common.clear` | Tozalash | Тазалау |  |
+| `common.yes` | Ha | Иә |  |
+| `common.notification` | Bildirishnoma | Хабарлама |  |
+| `col.time` | Vaqt | Уақыт |  |
+| `col.memory` | Xotira | Жады |  |
+| `col.size` | Hajm | Көлемі |  |
+| `col.attempt` | Urinish | Әрекет |  |
+| `col.sample` | Namuna | Үлгі |  |
+| `col.points` | Ball | Ұпай |  |
+| `col.input` | Kirish | Кіріс |  |
+| `col.output` | Chiqish | Шығыс |  |
+| `col.weight` | Vazn | Салмағы |  |
+| `col.score` | Baholash | Бағалау |  |
+| `col.role` | Rol | Рөл |  |
+| `col.question` | Savol | Сұрақ |  |
+| `col.options` | Variantlar | Нұсқалар |  |
+| `col.links` | Havolalar | Сілтемелер |  |
+| `col.project` | Loyiha | Жоба |  |
+| `action.save` | Saqlash | Сақтау |  |
+| `action.reset` | Reset | Қалпына келтіру |  |
+| `action.finalize` | Yakunlash | Аяқтау |  |
 | `common.empty` | Hozircha bo'sh | Әзірге бос |  |
 | `common.emptyHint` | Bu yerda hozircha hech narsa yo'q. Keyinroq qayta ko'ring. | Мұнда әзірге ештеңе жоқ. Кейінірек қайта көріңіз. |  |
 | `settings.title` | Sozlamalar | Параметрлер |  |
@@ -888,6 +908,9 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.tab.status` | Urinishlar | Жіберілімдер |  |
 | `problem.tab.stats` | Statistika | Статистика |  |
 | `problem.tab.solvers` | Yechganlar | Шешкендер |  |
+| `problem.tab.mine` | Urinishlarim | Менің әрекеттерім |  |
+| `problem.tab.myStats` | Statistikam | Менің статистикам |  |
+| `problem.tab.favourites` | Sevimlilar | Таңдаулылар |  |
 | `problem.tabsLabel` | Masala bo'limlari | Есеп бөлімдері |  |
 | `problem.solvers.count` | Bu masalani {count} kishi yechdi | Шешкендер: {count} |  |
 | `problem.solvers.none` | Hali hech kim yechmagan | Әзірге ешкім шешпеген |  |
@@ -1027,6 +1050,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.status.running` | Yurmoqda | Жүріп жатыр |  |
 | `admin.label.status.finished` | Tugagan | Аяқталды |  |
 | `admin.label.status.pending` | Kutilmoqda | Күтілуде |  |
+| `admin.status.sent` | Yuborildi | Жіберілді |  |
 | `admin.label.status.evaluating` | Baholanmoqda | Бағалануда |  |
 | `admin.label.status.completed` | Yakunlangan | Аяқталған |  |
 | `admin.label.status.accepted` | Qabul qilindi | Қабылданды |  |
@@ -1359,6 +1383,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `submit.allSamplesPass` | Barcha namunalar mos — yuborishingiz mumkin | Барлық мысалдар сәйкес — жібере аласыз |  |
 | `submit.yourOutput` | Sizning chiqishingiz | Сіздің шығысыңыз |  |
 | `submit.sample` | Namuna {order} · | Мысал {order} · |  |
+| `submit.expected` | Kutilgan | Күтілген |  |
 | `admin.text.noEventsInWindow` | Bu oynada hodisa yo'q. Funnel ro'yxatdan o'tish va kirish sahifalarida yig'iladi — trafik bo'lsa paydo bo'ladi. | Бұл терезеде оқиға жоқ. Воронка тіркелу және кіру беттерінде жиналады — трафик болса пайда болады. |  |
 | `admin.text.funnelNote` | Foizlar birinchi qadamga nisbatan. Sessiya bo'yicha sanaladi — bir odam bir marta hisoblanadi. | Пайыздар бірінші қадамға қатысты. Сессия бойынша саналады — бір адам бір рет есептеледі. |  |
 | `admin.text.noSignupYet` | Hali tugagan ro'yxatdan o'tish yo'q. Guruh cookie'da saqlanadi va har bir hodisa bilan birga yuboriladi. | Әзірге аяқталған тіркелу жоқ. Топ cookie-де сақталады және әр оқиғамен бірге жіберіледі. |  |

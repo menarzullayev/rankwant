@@ -220,7 +220,7 @@ function ContestRowPanel({
     <div className="space-y-4">
       <div>
         <p className="mb-2 text-theme-xs font-medium rw-dim-2 uppercase">
-          Masalalar
+          {t(locale, "update.module.problems")}
         </p>
         <div className="space-y-2">
           {rows.map((r, i) => (

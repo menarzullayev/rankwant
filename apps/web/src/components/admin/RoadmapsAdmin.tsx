@@ -98,7 +98,7 @@ function StepsEditor({
 
   return (
     <div className="space-y-2">
-      <p className="text-theme-xs font-medium rw-dim uppercase">Qadamlar</p>
+      <p className="text-theme-xs font-medium rw-dim uppercase">{t(locale, "admin.label.misc.steps")}</p>
       {error && <p className="text-theme-xs rw-bad-ink">{error}</p>}
       {steps.map((s, i) => (
         <div key={i} className="flex flex-wrap items-center gap-2">

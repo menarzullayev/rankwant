@@ -119,7 +119,7 @@ function Roadmaps({ items, locale }: { items: Roadmap[]; locale: Locale }) {
           href="/roadmaps"
           className="text-theme-sm rw-accent-ink hover:underline"
         >
-          Hammasi
+          {t(locale, "filter.all")}
         </Link>
       }
       bodyClassName="space-y-3"

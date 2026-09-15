@@ -210,7 +210,7 @@ function NotifyForm({ user }: { user: StaffUser }) {
 
   return (
     <form onSubmit={submit} className="space-y-2">
-      <p className="text-theme-sm font-medium rw-strong">Bildirishnoma</p>
+      <p className="text-theme-sm font-medium rw-strong">{t(locale, "common.notification")}</p>
       <input
         name="title"
         required
@@ -225,7 +225,7 @@ function NotifyForm({ user }: { user: StaffUser }) {
         className={`${INPUT} h-auto py-2`}
       />
       <Button type="submit" variant="outline" className="h-10" disabled={busy}>
-        Yuborish
+        {t(locale, "roadmap.suggestSend")}
       </Button>
       {status}
     </form>

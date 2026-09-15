@@ -54,7 +54,10 @@ const columns: ColumnDef<ShopItem>[] = [
   {
     key: "is_consumable",
     labelKey: "admin.label.flag.repeatable",
-    render: (i) => (i.is_consumable ? <Badge color="info">Ha</Badge> : "—"),
+    // ⚠️ `render:` bilan BIR QATORDA turishi shart: ko'p qatorga bo'linsa
+    // `check_hardcoded.py` ning `>…<` naqshi kodni JSX matni deb o'qiydi
+    // (`i.is_consumable ?`) — o'lchandi.
+    render: (i, _reload, locale) => (i.is_consumable ? <Badge color="info">{t(locale, "common.yes")}</Badge> : "—"),
   },
   { key: "owner_count", labelKey: "admin.label.misc.owners", align: "right" },
   {

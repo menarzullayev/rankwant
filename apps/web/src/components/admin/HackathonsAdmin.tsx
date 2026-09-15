@@ -248,12 +248,12 @@ function SubmissionsPanel({
       {error && <p className="text-theme-xs rw-bad-ink">{error}</p>}
       <Table>
         <THead>
-          <TH>Foydalanuvchi</TH>
-          <TH>Jamoa</TH>
-          <TH>Loyiha</TH>
-          <TH>Havolalar</TH>
-          <TH align="right">Ball</TH>
-          <TH>Baholash</TH>
+          <TH>{t(locale, "standings.user")}</TH>
+          <TH>{t(locale, "nav.team")}</TH>
+          <TH>{t(locale, "col.project")}</TH>
+          <TH>{t(locale, "col.links")}</TH>
+          <TH align="right">{t(locale, "col.points")}</TH>
+          <TH>{t(locale, "col.score")}</TH>
         </THead>
         <TBody>
           {rows.map((s) => (

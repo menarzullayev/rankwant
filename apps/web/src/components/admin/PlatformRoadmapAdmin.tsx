@@ -117,7 +117,7 @@ function StatusSelect({
   if (error) {
     return (
       <span title={error}>
-        <Badge color="error">Xato</Badge>
+        <Badge color="error">{t(locale, "status.bad")}</Badge>
       </span>
     );
   }

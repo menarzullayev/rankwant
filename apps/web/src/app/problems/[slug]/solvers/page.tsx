@@ -133,16 +133,16 @@ export default async function SolversPage({ params, searchParams }: Props) {
               <thead>
                 <tr className="border-b rw-divider">
                   <th className="px-5 py-2 text-left text-theme-xs font-medium rw-faint">
-                    Foydalanuvchi
+                    {t(locale, "standings.user")}
                   </th>
                   <th className="px-3 py-2 text-left text-theme-xs font-medium rw-faint">
-                    Til
+                    {t(locale, "attempts.language")}
                   </th>
-                  <th className={th}>Vaqt</th>
-                  <th className={`${th} hidden sm:table-cell`}>Xotira</th>
+                  <th className={th}>{t(locale, "col.time")}</th>
+                  <th className={`${th} hidden sm:table-cell`}>{t(locale, "col.memory")}</th>
                   <th className={th}>{t(locale, "problem.solvers.codeColumn")}</th>
-                  <th className={th}>Urinish</th>
-                  <th className={`${th} hidden px-5 md:table-cell`}>Sana</th>
+                  <th className={th}>{t(locale, "col.attempt")}</th>
+                  <th className={`${th} hidden px-5 md:table-cell`}>{t(locale, "profile.date")}</th>
                 </tr>
               </thead>
               <tbody className="rw-divide divide-y">

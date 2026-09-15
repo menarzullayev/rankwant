@@ -40,7 +40,7 @@ export default async function AttemptsPage() {
             <TH>{t(locale, "attempts.verdict")}</TH>
             <TH align="right">ms</TH>
             <TH align="right">KB</TH>
-            <TH align="right">Vaqt</TH>
+            <TH align="right">{t(locale, "col.time")}</TH>
           </THead>
           <TBody>
             {data.results.map((a) => (

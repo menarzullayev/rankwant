@@ -202,6 +202,10 @@ ALLOWED_LITERALS = {
     # way `Qvant` is the currency: a Russian user sees "Skills" by design,
     # and `leaderboard.skills` is already an explicit dictionary key.
     "RankWant", "Skills", "Contests", "Activity", "Challenges", "Qvant",
+    # Brend nomi ataylab IKKI elementga bo'lingan (`Rank<span>Want</span>`)
+    # — ikkinchisi urg'u rangini oladi. Ya'ni bo'laklar matn, lekin
+    # tarjima qilinmaydigan matn.
+    "Rank", "Want",
     # Klaviatura yorlig'i. Tugma nomlari tarjima qilinmaydi — foydalanuvchi
     # klaviaturasida aynan shu harflar turadi, ya'ni `Ctrl` ni o'girish
     # ko'rsatmani noto'g'ri qilardi.
@@ -529,6 +533,9 @@ PASCAL_TOKEN = re.compile(r"^[A-Z][a-zA-Z0-9]*$")
 #: and only this list tells them apart. Kept explicit rather than inferred: a
 #: new id means one line here, and that is a signal to look, not a nuisance.
 CODE_TOKENS = {
+    # TS builtins. `() => Promise<unknown>` da `>` va `<` oddiy
+    # qavs, ya'ni `Promise` matn emas (10 marta shunday o'qilgan edi).
+    "Promise",
     # Badge colours.
     "success", "error", "warning", "info", "brand", "neutral", "muted",
     "danger", "primary", "secondary",
@@ -729,8 +736,15 @@ def check_file(path: pathlib.Path) -> list[str]:
             continue
         if JSX_TEXT_ARITHMETIC.match(body):
             continue
-        if PASCAL_TOKEN.match(body):
-            continue
+        # ⚠️ `PASCAL_TOKEN` bu yerda QO'LLANMAYDI — va bu tuzatish edi.
+        #
+        # U `>Foo<` ni «komponent yoki tip nomi» deb o'tkazib yuborardi.
+        # Bu STRING literal uchun to'g'ri (`type: "Checkbox"`), lekin JSX
+        # MATNI uchun noto'g'ri: u ekranga chiqadi. Natijada bir so'zli
+        # HAR BIR yorliq ko'rinmas edi — o'lchandi: 52 unikal matn,
+        # 81 joyda (`<TH>Vaqt</TH>`, `<TH>Xotira</TH>`, `Saqlash`,
+        # `Yuborildi`, …). O'zbek tili agglyutinativ, ya'ni bir so'zli
+        # yorliqlar ko'p — bu teshik ayniqsa qimmatga tushardi.
         if body in CODE_TOKENS:
             continue
         if not is_prose(body, code_tokens=False):

@@ -49,11 +49,11 @@ const COLUMNS: ColumnDef<Quiz>[] = [
   {
     key: "is_published",
     labelKey: "admin.label.text.status",
-    render: (q) =>
+    render: (q, _reload, locale) =>
       q.is_published ? (
-        <Badge color="success">Nashr</Badge>
+        <Badge color="success">{t(locale, "admin.text.publish")}</Badge>
       ) : (
-        <Badge>Qoralama</Badge>
+        <Badge>{t(locale, "admin.label.status.draft")}</Badge>
       ),
   },
 ];

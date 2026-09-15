@@ -158,7 +158,7 @@ export default async function ProblemStatsPage({ params }: Props) {
                 href={`/problems/${slug}/solvers`}
                 className="rw-accent-ink hover:underline"
               >
-                Yechganlar
+                {t(locale, "problem.tab.solvers")}
               </Link>{" "}
               bo&apos;limida.
             </p>

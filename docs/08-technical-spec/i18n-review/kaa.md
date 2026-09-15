@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1487 strings.**
+**1512 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -373,6 +373,26 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.actions` | Amallar | Ámeller |  |
 | `admin.saved` | Saqlandi | Saqlandı |  |
 | `common.clear` | Tozalash | Tazalaw |  |
+| `common.yes` | Ha | Awa |  |
+| `common.notification` | Bildirishnoma | Xabarlama |  |
+| `col.time` | Vaqt | Waqıt |  |
+| `col.memory` | Xotira | Yad |  |
+| `col.size` | Hajm | Kólem |  |
+| `col.attempt` | Urinish | Urınıs |  |
+| `col.sample` | Namuna | Úlgi |  |
+| `col.points` | Ball | Ball |  |
+| `col.input` | Kirish | Kiriw |  |
+| `col.output` | Chiqish | Shıǵıw |  |
+| `col.weight` | Vazn | Salmaq |  |
+| `col.score` | Baholash | Bahalaw |  |
+| `col.role` | Rol | Rol |  |
+| `col.question` | Savol | Soraw |  |
+| `col.options` | Variantlar | Saylawlar |  |
+| `col.links` | Havolalar | Siltemeler |  |
+| `col.project` | Loyiha | Proekt |  |
+| `action.save` | Saqlash | Saqlaw |  |
+| `action.reset` | Reset | Qayta qoyıw |  |
+| `action.finalize` | Yakunlash | Tamamlaw |  |
 | `common.empty` | Hozircha bo'sh | Házirshe bos |  |
 | `common.emptyHint` | Bu yerda hozircha hech narsa yo'q. Keyinroq qayta ko'ring. | Bul jerde ázirshe hesh nársе joq. Keyinirek qayta kóriń. |  |
 | `settings.title` | Sozlamalar | Sazlawlar |  |
@@ -888,6 +908,9 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.tab.status` | Urinishlar | Jiberiwler |  |
 | `problem.tab.stats` | Statistika | Statistika |  |
 | `problem.tab.solvers` | Yechganlar | Sheshkenler |  |
+| `problem.tab.mine` | Urinishlarim | Urınıslarım |  |
+| `problem.tab.myStats` | Statistikam | Statistikam |  |
+| `problem.tab.favourites` | Sevimlilar | Tańdaular |  |
 | `problem.tabsLabel` | Masala bo'limlari | Máselе bólimleri |  |
 | `problem.solvers.count` | Bu masalani {count} kishi yechdi | Sheshkenler: {count} |  |
 | `problem.solvers.none` | Hali hech kim yechmagan | Ázirge hesh kim sheshpedi |  |
@@ -1027,6 +1050,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.status.running` | Yurmoqda | Júrmeqte |  |
 | `admin.label.status.finished` | Tugagan | Tamamlandı |  |
 | `admin.label.status.pending` | Kutilmoqda | Kútilmekte |  |
+| `admin.status.sent` | Yuborildi | Jiberildi |  |
 | `admin.label.status.evaluating` | Baholanmoqda | Bahalanbaqta |  |
 | `admin.label.status.completed` | Yakunlangan | Tamamlanǵan |  |
 | `admin.label.status.accepted` | Qabul qilindi | Qabıl etildi |  |
@@ -1359,6 +1383,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `submit.allSamplesPass` | Barcha namunalar mos — yuborishingiz mumkin | Barlıq mısallar sáykes — jiberiwińiz múmkin |  |
 | `submit.yourOutput` | Sizning chiqishingiz | Siziń shıǵısıńız |  |
 | `submit.sample` | Namuna {order} · | Mısall {order} · |  |
+| `submit.expected` | Kutilgan | Kútilgen |  |
 | `admin.text.noEventsInWindow` | Bu oynada hodisa yo'q. Funnel ro'yxatdan o'tish va kirish sahifalarida yig'iladi — trafik bo'lsa paydo bo'ladi. | Bul áynada waqıya joq. Woronka dizimnen ótiw hám kiriw betlerinde jıynaladı — trafik bolsa payda boladı. |  |
 | `admin.text.funnelNote` | Foizlar birinchi qadamga nisbatan. Sessiya bo'yicha sanaladi — bir odam bir marta hisoblanadi. | Protsentler birinshi qádemge salıstırǵanda. Sessiya boyınsha sanaladı — bir adam bir márte esaplanadı. |  |
 | `admin.text.noSignupYet` | Hali tugagan ro'yxatdan o'tish yo'q. Guruh cookie'da saqlanadi va har bir hodisa bilan birga yuboriladi. | Ele juwmaqlanǵan dizimnen ótiw joq. Top cookie de saqlanadı hám hár waqıya menen birge jiberiledi. |  |

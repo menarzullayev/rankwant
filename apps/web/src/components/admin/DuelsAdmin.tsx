@@ -137,25 +137,25 @@ function DuelActions({ duel, reload }: { duel: Duel; reload: () => void }) {
     <div className="space-y-3 text-theme-sm">
       <dl className="grid gap-x-6 gap-y-1 rw-dim-2 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <dt className="text-theme-xs rw-faint">Slug</dt>
+          <dt className="text-theme-xs rw-faint">{t(locale, "admin.label.text.slug")}</dt>
           <dd className="font-mono">{duel.slug}</dd>
         </div>
         <div>
-          <dt className="text-theme-xs rw-faint">Masalalar</dt>
+          <dt className="text-theme-xs rw-faint">{t(locale, "update.module.problems")}</dt>
           <dd>
             {duel.problems.length ? duel.problems.join(", ") : "—"} (
             {duel.problem_count} ta, ~{duel.difficulty})
           </dd>
         </div>
         <div>
-          <dt className="text-theme-xs rw-faint">Tugash</dt>
+          <dt className="text-theme-xs rw-faint">{t(locale, "admin.label.date.end")}</dt>
           <dd>
             {new Date(duel.end_at).toLocaleString(DEFAULT_LOCALE)} ·{" "}
             {duel.duration_minutes} daq
           </dd>
         </div>
         <div>
-          <dt className="text-theme-xs rw-faint">Reyting</dt>
+          <dt className="text-theme-xs rw-faint">{t(locale, "update.module.ratings")}</dt>
           <dd>
             {duel.ratings_applied_at
               ? new Date(duel.ratings_applied_at).toLocaleString(DEFAULT_LOCALE)

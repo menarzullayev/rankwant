@@ -179,13 +179,13 @@ const COLUMNS: ColumnDef<Post>[] = [
   {
     key: "notify_users",
     labelKey: "admin.label.text.message",
-    render: (p) =>
+    render: (p, _reload, locale) =>
       !p.notify_users ? (
         "—"
       ) : p.notified_at ? (
-        <Badge color="success">Yuborildi</Badge>
+        <Badge color="success">{t(locale, "admin.status.sent")}</Badge>
       ) : (
-        <Badge color="warning">Kutilmoqda</Badge>
+        <Badge color="warning">{t(locale, "admin.label.status.pending")}</Badge>
       ),
   },
 ];

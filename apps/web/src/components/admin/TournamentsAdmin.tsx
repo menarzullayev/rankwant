@@ -185,10 +185,10 @@ function StageEditor({
       )}
 
       <div className="grid grid-cols-[4rem_1fr_1fr_5rem_auto] gap-2 text-theme-xs font-medium rw-dim">
-        <span>Tartib</span>
-        <span>Nomi</span>
+        <span>{t(locale, "admin.label.text.order")}</span>
+        <span>{t(locale, "admin.label.text.name")}</span>
         <span>{t(locale, "admin.text.contestSlug")}</span>
-        <span>Vazn</span>
+        <span>{t(locale, "col.weight")}</span>
         <span />
       </div>
       {stages.map((s, i) => (

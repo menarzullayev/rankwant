@@ -111,7 +111,7 @@ export function ClassroomDetail({ slug }: { slug: string }) {
           <Table>
             <THead>
               <TH>{t(locale, "standings.user")}</TH>
-              <TH>Rol</TH>
+              <TH>{t(locale, "col.role")}</TH>
               <TH align="right">Skills</TH>
             </THead>
             <TBody>

@@ -169,13 +169,13 @@ export default async function ProblemsPage({ searchParams }: Props) {
               href={{ pathname: "/attempts" }}
               className="rw-accent-ink hover:underline"
             >
-              Urinishlarim
+              {t(locale, "problem.tab.mine")}
             </Link>
             <Link
               href={{ pathname: `/users/${me.username}` }}
               className="rw-accent-ink hover:underline"
             >
-              Statistikam
+              {t(locale, "problem.tab.myStats")}
             </Link>
           </nav>
         )}
@@ -214,7 +214,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
               </TH>
               {me && (
                 <TH align="center">
-                  <span className="sr-only">Sevimlilar</span>☆
+                  <span className="sr-only">{t(locale, "problem.tab.favourites")}</span>☆
                 </TH>
               )}
             </THead>

@@ -111,18 +111,18 @@ export default async function ProblemStatusPage({
       <Card bodyClassName="p-0">
         <Table>
           <THead>
-            <TH>Foydalanuvchi</TH>
-            <TH>Verdikt</TH>
-            <TH>Til</TH>
-            <TH align="right">Vaqt</TH>
+            <TH>{t(locale, "standings.user")}</TH>
+            <TH>{t(locale, "attempts.verdict")}</TH>
+            <TH>{t(locale, "attempts.language")}</TH>
+            <TH align="right">{t(locale, "col.time")}</TH>
             <TH align="right" className="hidden sm:table-cell">
-              Xotira
+              {t(locale, "col.memory")}
             </TH>
             <TH align="right" className="hidden lg:table-cell">
-              Hajm
+              {t(locale, "col.size")}
             </TH>
             <TH align="right" className="hidden md:table-cell">
-              Sana
+              {t(locale, "profile.date")}
             </TH>
           </THead>
           <TBody>

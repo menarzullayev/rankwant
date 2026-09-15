@@ -52,6 +52,13 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         # (o'girilgan varianti sun'iy: "skelet", "yaltiroq"). Boshqa
         # tillarda ular tarjima qilinadi (masalan ruschada "Скелетон").
         "loading.style.skeleton", "loading.style.shimmer",
+        # "Rol" — o'zbek, turk, ispan va qaraqalpoq tillarida bir xil
+        # yoziladi (hammasi fransuzcha "rôle" dan olingan). Majburan
+        # o'girish noto'g'ri bo'lardi.
+        "col.role",
+        # "Reset" — inglizcha atama o'zbekcha interfeysda ham shunday
+        # ishlatiladi (tugma yorlig'i). O'girilgan varianti sun'iy.
+        "action.reset",
         "customizer.template.classic",
         "customizer.template.console",
         "customizer.template.journal",
@@ -114,6 +121,10 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         # "Ekvalayzer" — qaraqalpoqchada ham, o'zbekchada ham bir xil
         # yoziladi (xalqaro atama). Qozoqcha/qirg'izcha tarjima qilinadi.
         "loading.style.bars",
+        # "Ball" va "Statistikam" — qaraqalpoqchada ham shunday yoziladi
+        # (xalqaro/o'zlashgan atamalar). Qozoqcha va qirg'izchada tarjima
+        # qilinadi, ya'ni bu faqat qaraqalpoq tiliga xos holat.
+        "col.points", "problem.tab.myStats",
         "nav.leaderboard", "contests.rated", "leaderboard.title", "qvant.balance",
         "nav.menu", "auth.password", "navGroup.lab", "navGroup.campus",
         "navGroup.platform", "nav.classroom", "nav.duels", "nav.tournaments",

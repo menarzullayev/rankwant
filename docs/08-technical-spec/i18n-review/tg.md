@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1487 strings.**
+**1512 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -373,6 +373,26 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.actions` | Amallar | Амалҳо |  |
 | `admin.saved` | Saqlandi | Нигоҳ дошта шуд |  |
 | `common.clear` | Tozalash | Тоза кардан |  |
+| `common.yes` | Ha | Бале |  |
+| `common.notification` | Bildirishnoma | Огоҳинома |  |
+| `col.time` | Vaqt | Вақт |  |
+| `col.memory` | Xotira | Ҳофиза |  |
+| `col.size` | Hajm | Ҳаҷм |  |
+| `col.attempt` | Urinish | Кӯшиш |  |
+| `col.sample` | Namuna | Намуна |  |
+| `col.points` | Ball | Хол |  |
+| `col.input` | Kirish | Вуруд |  |
+| `col.output` | Chiqish | Хуруҷ |  |
+| `col.weight` | Vazn | Вазн |  |
+| `col.score` | Baholash | Баҳо |  |
+| `col.role` | Rol | Нақш |  |
+| `col.question` | Savol | Савол |  |
+| `col.options` | Variantlar | Вариантҳо |  |
+| `col.links` | Havolalar | Пайвандҳо |  |
+| `col.project` | Loyiha | Лоиҳа |  |
+| `action.save` | Saqlash | Нигоҳ доштан |  |
+| `action.reset` | Reset | Аз нав |  |
+| `action.finalize` | Yakunlash | Анҷом додан |  |
 | `common.empty` | Hozircha bo'sh | Ҳоло холӣ |  |
 | `common.emptyHint` | Bu yerda hozircha hech narsa yo'q. Keyinroq qayta ko'ring. | Дар ин ҷо ҳанӯз чизе нест. Баъдтар боз оед. |  |
 | `settings.title` | Sozlamalar | Танзимот |  |
@@ -888,6 +908,9 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.tab.status` | Urinishlar | Фиристодаҳо |  |
 | `problem.tab.stats` | Statistika | Омор |  |
 | `problem.tab.solvers` | Yechganlar | Ҳалкунандагон |  |
+| `problem.tab.mine` | Urinishlarim | Кӯшишҳои ман |  |
+| `problem.tab.myStats` | Statistikam | Омори ман |  |
+| `problem.tab.favourites` | Sevimlilar | Дӯстдоштаҳо |  |
 | `problem.tabsLabel` | Masala bo'limlari | Бахшҳои масъала |  |
 | `problem.solvers.count` | Bu masalani {count} kishi yechdi | Ҳал кардаанд: {count} |  |
 | `problem.solvers.none` | Hali hech kim yechmagan | То ҳол ҳеҷ кас ҳал накардааст |  |
@@ -1027,6 +1050,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.label.status.running` | Yurmoqda | Идома дорад |  |
 | `admin.label.status.finished` | Tugagan | Анҷом ёфт |  |
 | `admin.label.status.pending` | Kutilmoqda | Дар интизор |  |
+| `admin.status.sent` | Yuborildi | Фиристода шуд |  |
 | `admin.label.status.evaluating` | Baholanmoqda | Баҳо дода мешавад |  |
 | `admin.label.status.completed` | Yakunlangan | Анҷомёфта |  |
 | `admin.label.status.accepted` | Qabul qilindi | Қабул шуд |  |
@@ -1359,6 +1383,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `submit.allSamplesPass` | Barcha namunalar mos — yuborishingiz mumkin | Ҳамаи намунаҳо мувофиқ — метавонед супорид |  |
 | `submit.yourOutput` | Sizning chiqishingiz | Хуруҷи шумо |  |
 | `submit.sample` | Namuna {order} · | Намунаи {order} · |  |
+| `submit.expected` | Kutilgan | Интизор |  |
 | `admin.text.noEventsInWindow` | Bu oynada hodisa yo'q. Funnel ro'yxatdan o'tish va kirish sahifalarida yig'iladi — trafik bo'lsa paydo bo'ladi. | Дар ин тиреза ҳодиса нест. Қиф дар саҳифаҳои сабтином ва воридшавӣ ҷамъ мешавад — бо пайдо шудани трафик пайдо мешавад. |  |
 | `admin.text.funnelNote` | Foizlar birinchi qadamga nisbatan. Sessiya bo'yicha sanaladi — bir odam bir marta hisoblanadi. | Фоизҳо нисбат ба қадами аввал. Аз рӯи сессия ҳисоб мешавад — як шахс як бор ҳисоб меёбад. |  |
 | `admin.text.noSignupYet` | Hali tugagan ro'yxatdan o'tish yo'q. Guruh cookie'da saqlanadi va har bir hodisa bilan birga yuboriladi. | Ҳанӯз сабтиноми анҷомёфта нест. Гурӯҳ дар cookie нигоҳ дошта мешавад ва бо ҳар ҳодиса фиристода мешавад. |  |

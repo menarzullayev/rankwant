@@ -302,7 +302,7 @@ export function QuestionsAdmin() {
                 }
                 className="size-4"
               />
-              <span className="text-theme-sm rw-strong">Faol</span>
+              <span className="text-theme-sm rw-strong">{t(locale, "admin.label.flag.active")}</span>
             </label>
 
             <div className="md:col-span-2">
@@ -377,11 +377,11 @@ export function QuestionsAdmin() {
         <Table>
           <THead>
             <TH>ID</TH>
-            <TH>Savol</TH>
-            <TH>Qiyinlik</TH>
-            <TH>Mavzular</TH>
-            <TH>Variantlar</TH>
-            <TH>Faol</TH>
+            <TH>{t(locale, "col.question")}</TH>
+            <TH>{t(locale, "problems.difficulty")}</TH>
+            <TH>{t(locale, "problems.topics")}</TH>
+            <TH>{t(locale, "col.options")}</TH>
+            <TH>{t(locale, "admin.label.flag.active")}</TH>
             <TH align="right">{t(locale, "admin.actions")}</TH>
           </THead>
           <TBody>

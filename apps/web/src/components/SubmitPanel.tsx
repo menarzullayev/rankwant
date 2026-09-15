@@ -592,7 +592,7 @@ function EditorTools({
         {copied ? t(locale, "settings.teamCopied") : t(locale, "settings.teamCopy")}
       </button>
       <button type="button" onClick={() => onSource("")} className={action}>
-        Tozalash
+        {t(locale, "common.clear")}
       </button>
       <span className="ml-auto font-mono text-theme-xs rw-faint">
         {bytes} / {MAX_SOURCE_BYTES}
@@ -777,7 +777,7 @@ function CustomView({
             </pre>
           )}
           <div>
-            <p className="mb-1 text-theme-xs rw-faint">Chiqish</p>
+            <p className="mb-1 text-theme-xs rw-faint">{t(locale, "col.output")}</p>
             <pre className="max-h-56 overflow-auto rw-radius-sm rw-field-bg p-3 text-theme-xs rw-strong">
               {run.stdout || "—"}
             </pre>
@@ -846,7 +846,7 @@ function SamplesView({
             </pre>
           </div>
           <div className="min-w-0">
-            <p className="mb-1 text-theme-xs rw-faint">Kutilgan</p>
+            <p className="mb-1 text-theme-xs rw-faint">{t(locale, "submit.expected")}</p>
             <pre className="max-h-48 overflow-auto rw-radius-sm rw-field-bg p-3 font-mono text-theme-xs rw-strong">
               {failed.expected}
             </pre>
