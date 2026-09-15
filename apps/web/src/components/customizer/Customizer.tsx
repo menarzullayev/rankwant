@@ -814,9 +814,24 @@ function IconPackSection() {
           <Icon name="nav.leaderboard" />
           <Icon name="nav.quiz" />
           <Icon name="action.search" />
-          <Icon name="action.theme" />
-          <Icon name="action.logout" />
+          <Icon name="action.filter" />
+          <Icon name="action.download" />
+          <Icon name="action.edit" />
           <Icon name="status.warning" />
+          <Icon name="status.verified" />
+          <Icon name="ranking.trophy" />
+          <Icon name="ranking.streak" />
+          <Icon name="ranking.chartBar" />
+          <Icon name="user.group" />
+          <Icon name="contest.duel" />
+          <Icon name="content.video" />
+          <Icon name="notification.chat" />
+          <Icon name="shop.cart" />
+          <Icon name="markdown.bold" />
+          <Icon name="stats.speed" />
+          <Icon name="system.key" />
+          <Icon name="device.phone" />
+          <Icon name="media.play" />
         </div>
         <div className="flex flex-wrap items-center gap-3 border-t rw-divider pt-3">
           <Verdict verdict="AC" variant="icon" />

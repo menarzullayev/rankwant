@@ -1713,6 +1713,30 @@ def neg_icons_pack_missing_key() -> tuple[bool, str]:
         return expect_fail("icons", "ikonka/to'plamda kalit yetishmaydi")
 
 
+def neg_icons_camelcase_key_missing() -> tuple[bool, str]:
+    """camelCase kalit bitta to'plamdan olib tashlansa — tutilsinmi?
+
+    ⚠️ Bu teshik edi. Tekshiruvchining kalit naqshi `[a-z0-9.]` edi, ya'ni
+    **faqat kichik harf**. `nav.expandDown`, `ranking.medalGold`,
+    `action.sortAsc` kabi 35 kalit ko'rinmasdi.
+
+    Nega bu jimgina o'tib ketardi: naqsh HAMMA to'plamda bir xil
+    xato qiladi, ya'ni to'plamlar o'zaro baribir mos ko'rinadi. Faqat
+    bittasidan kalit yo'qolsa — va u camelCase bo'lsa — xato sezilmaydi.
+    Kalitlar soni ham 226 o'rniga 191 chiqardi, lekin bu «yashil» natija
+    berardi.
+    """
+    path = ROOT / "apps/web/src/icons/packs/lucide.tsx"
+    src = path.read_bytes().decode("utf-8")
+    old = '  "ranking.medalGold": '
+    i = src.find(old)
+    if i < 0:
+        return False, "ikonka/camelCase: langar topilmadi"
+    end = src.find("\n", i)
+    with Mutation(path, src[i : end + 1], ""):
+        return expect_fail("icons", "ikonka/camelCase kalit yetishmaydi")
+
+
 def neg_icons_fixed_zone_leaks() -> tuple[bool, str]:
     """Qat'iy zona registrga tushsa — tutilsinmi?
 
@@ -1860,6 +1884,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         [
             ("to'plamda kalit yetishmaydi", neg_icons_pack_missing_key),
             ("qat'iy zona registrga tushsa", neg_icons_fixed_zone_leaks),
+            ("camelCase kalit yetishmaydi", neg_icons_camelcase_key_missing),
         ],
     ),
     (

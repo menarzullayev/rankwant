@@ -36,7 +36,10 @@ KEYS_MJS = ROOT / "tools/icon-keys.mjs"
 #: Shuning uchun tip tashlanmaydi: `_ICONS` dan keyin birinchi `{` va
 #: undan keyingi `\n};` olinadi.
 MAP_START_RE = re.compile(r"export const ([A-Z0-9_]+)_ICONS\b[^\n]*= \{")
-KEY_RE = re.compile(r'^\s*"([a-z][a-z0-9.]*)":', re.M)
+# ⚠️ `[a-zA-Z]` — kalitlar camelCase (`nav.expandDown`,
+# `ranking.medalGold`). Faqat kichik harf qabul qilinsa 35 kalit
+# jimgina tushib qoladi va soni 226 o'rniga 191 chiqadi.
+KEY_RE = re.compile(r'^\s*"([a-z][a-zA-Z0-9.]*)":', re.M)
 #: `export const ZONES: Record<IconZone, boolean> = { ... };`
 ZONES_RE = re.compile(r"ZONES:\s*Record<IconZone,\s*boolean>\s*=\s*\{(.*?)\n\};", re.S)
 ZONE_ENTRY_RE = re.compile(r"^\s*([a-z]+):\s*(true|false),", re.M)
@@ -95,7 +98,17 @@ def main() -> int:
     # ── 2. Kalitlar `icon-keys.mjs` bilan bir xilmi ─────────────────────
     if KEYS_MJS.exists():
         src = KEYS_MJS.read_text(encoding="utf-8")
-        declared = set(re.findall(r'^\s*"([a-z][a-z0-9.]*)":\s*\[', src, re.M))
+        # Format: `"nav.home": { d: "…", c: [...] }` — qiymat obyekt,
+        # massiv emas. Ilgari bu yerda `\[` kutilardi va `declared`
+        # bo'sh chiqib, tekshiruv doim qizarardi.
+        declared = set(
+            re.findall(r'^\s*"([a-z][a-zA-Z0-9.]*)":\s*\{', src, re.M)
+        )
+        # ⚠️ `brand.*` ataylab registrda YO'Q (D20 ①). Ular logotip:
+        # Phosphor'da Python belgisi yo'q. Ular `lib/tech-icons.tsx` da
+        # yashaydi va Simple Icons'dan keladi. Shuning uchun solishtirishdan
+        # chiqariladi — aks holda tekshiruv doim qizarardi.
+        declared = {k for k in declared if not k.startswith("brand.")}
         if declared != base:
             fail(
                 "`tools/icon-keys.mjs` va generatsiya qilingan xaritalar "

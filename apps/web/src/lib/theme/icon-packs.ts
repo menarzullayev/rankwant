@@ -33,21 +33,70 @@ export type IconPackId =
   | "remix"
   | "simple";
 
-/** Qaysi soha qaysi to'plamga bo'ysunadi (D20 ①). */
-export type IconZone = "nav" | "action" | "status" | "verdict" | "brand";
+/** Domenlar (D18: `domen.ob'ekt.holat` ning birinchi bo'lagi).
+ *
+ *  ⚠️ Kalitning birinchi bo'lagi shu ro'yxatdan bo'lishi SHART.
+ *  `tools/check_icons.py` buni tekshiradi — notanish domen jimgina o'tib
+ *  ketmasin, chunki u qat'iy hisoblanadi va foydalanuvchi kutgan ikonka
+ *  almashmay qolardi. */
+export type IconZone =
+  // Interfeys — to'plamga bo'ysunadi (D20 ①).
+  | "nav"
+  | "action"
+  | "status"
+  | "ranking"
+  | "user"
+  | "contest"
+  | "content"
+  | "notification"
+  | "shop"
+  | "markdown"
+  | "locale"
+  | "stats"
+  | "system"
+  | "device"
+  | "empty"
+  | "error"
+  | "media"
+  // Qat'iy — to'plamga bo'ysunmaydi.
+  | "verdict"
+  | "brand";
 
-/** ⚠️ Kalitning birinchi bo'lagi shu ro'yxatdan bo'lishi shart.
- *  `tools/check_icons.py` buni tekshiradi — notanish domen jimgina
- *  o'tib ketmasin. */
+/** Qaysi domen to'plamga bo'ysunadi (D20 ①).
+ *
+ *  `true`  — ikonka foydalanuvchi tanlagan to'plamdan chiziladi.
+ *  `false` — QAT'IY: verdikt va brend.
+ *
+ *  Sabab: qo'llanma, yordam sahifalari va video darsliklar verdikt
+ *  belgisiga tayanadi — u o'zgarsa hamma foydalanuvchida boshqacha
+ *  ko'rinadi. Brend logotiplarini (Telegram, GitHub, Python) o'zgartirish
+ *  esa brend siyosatini buzardi; ular `lib/tech-icons.tsx` da yashaydi. */
 export const ZONES: Record<IconZone, boolean> = {
-  // To'plam almashganda o'zgaradi.
   nav: true,
   action: true,
   status: true,
-  // Qat'iy qoladi (D20 ①).
+  ranking: true,
+  user: true,
+  contest: true,
+  content: true,
+  notification: true,
+  shop: true,
+  markdown: true,
+  locale: true,
+  stats: true,
+  system: true,
+  device: true,
+  empty: true,
+  error: true,
+  media: true,
   verdict: false,
   brand: false,
 };
+
+/** To'plamga bo'ysunmaydigan domenlar — tekshiruv va hujjat uchun. */
+export const FIXED_ZONES: IconZone[] = (Object.keys(ZONES) as IconZone[]).filter(
+  (z) => !ZONES[z]
+);
 
 /** Standart to'plam (D11). Lucide — eng keng tarqalgan va eng neytral. */
 export const DEFAULT_ICON_PACK: IconPackId = "lucide";

@@ -19,9 +19,13 @@ import {
   siFastapi,
   siFlask,
   siFlutter,
+  siDiscord,
+  siFacebook,
   siGit,
   siGithub,
   siGo,
+  siGoogle,
+  siGooglechrome,
   siGraphql,
   siHaskell,
   siInstagram,
@@ -116,11 +120,28 @@ export const TECH_ICONS: Record<string, Icon> = {
 
 /** Tashqi profillar. LinkedIn va AtCoder belgisi paketda yo'q —
  *  LinkedIn brend qoidasi sabab olib tashlangan. */
+/** LinkedIn — QO'LDA chizilgan.
+ *
+ *  ⚠️ Simple Icons'da `siLinkedin` **yo'q**: LinkedIn o'z belgisini
+ *  trademark sababli to'plamdan olib tashlagan. Shuning uchun bu yerda
+ *  o'zimiz chizamiz — "in" harflari, 24×24 to'rda. Shakl oddiy va
+ *  rasmiy belgiga mos.
+ */
+const siLinkedin: Icon = {
+  title: "LinkedIn",
+  path: "M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.65h.05a4.17 4.17 0 0 1 3.75-2.06c4 0 4.4 2.64 4.4 6.07V21h-4v-5.6c0-1.34-.03-3.07-1.87-3.07-1.87 0-2.16 1.46-2.16 2.97V21H9z",
+};
+
 export const EXTERNAL_ICONS: Partial<Record<string, Icon>> = {
   codeforces: siCodeforces,
   leetcode: siLeetcode,
   telegram: siTelegram,
   github: siGithub,
+  google: siGoogle,
+  facebook: siFacebook,
+  discord: siDiscord,
+  linkedin: siLinkedin,
+  website: siGooglechrome,
   instagram: siInstagram,
   x: siX,
   youtube: siYoutube,

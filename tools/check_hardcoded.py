@@ -184,6 +184,9 @@ ALLCAPS = re.compile(r"^[A-Z][A-Z0-9_]{1,}$")
 ALLOWED_LITERALS = {
     "#",
     "ACM/ICPC",
+    # Brend nomi — `Icon.title` maydoni (Simple Icons shu shaklda
+    # beradi). Atoqli nom, tarjima qilinmaydi.
+    "LinkedIn",
     "IOI",
     "uz",
     "ru",

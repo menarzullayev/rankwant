@@ -1,11 +1,16 @@
 // Resolve every semantic key to a concrete icon name in every pack.
 //
 // This is the step that decides whether the pack system is real or
-// aspirational: an icon that has no match in a pack cannot be swapped, and
-// D12 says there is no silent fallback. So the script reports misses
-// loudly rather than picking something close.
+// aspirational: an icon with no match in a pack cannot be swapped, and D12
+// says there is no silent fallback. So the script reports misses loudly
+// rather than picking something close.
+//
+// ⚠️ `brand.*` keys are skipped here. They are logos (Python, GitHub …),
+// which no interface pack contains — Phosphor has no Python glyph. They are
+// generated separately from Simple Icons.
 import fs from "node:fs";
-import { KEYS, PACK_SOURCES } from "./icon-keys.mjs";
+import { KEYS, PACK_SOURCES, CATEGORIES } from "./icon-keys.mjs";
+import { PACK_OVERRIDES } from "./icon-overrides.mjs";
 
 const CACHE = "C:/Users/nsn/project/cp/.tmp-verdict/pack-lists";
 
@@ -42,6 +47,10 @@ function resolve(candidates, available) {
   return null;
 }
 
+// Brand keys belong to Simple Icons, not to the interface packs.
+const interfaceKeys = Object.entries(KEYS).filter(([k]) => !k.startsWith("brand."));
+const brandKeys = Object.entries(KEYS).filter(([k]) => k.startsWith("brand."));
+
 const packs = Object.keys(PACK_SOURCES);
 const result = {};
 const misses = [];
@@ -50,13 +59,19 @@ for (const pack of packs) {
   const avail = await names(pack);
   result[pack] = {};
   let hit = 0;
-  for (const [key, cands] of Object.entries(KEYS)) {
-    const got = resolve(cands, avail);
+  const overrides = PACK_OVERRIDES[pack] ?? {};
+  for (const [key, def] of interfaceKeys) {
+    // Measured names win over the generic guesses: the override was checked
+    // against this pack's real file list, the candidate list was not.
+    const got = resolve([...(overrides[key] ?? []), ...def.c], avail);
     result[pack][key] = got;
     if (got) hit++;
-    else misses.push(`${pack}: ${key} (${cands.join(", ")})`);
+    else misses.push(`${pack}: ${key} (${def.c.slice(0, 3).join(", ")})`);
   }
-  console.log(`${pack.padEnd(16)} ${hit}/${Object.keys(KEYS).length}  (mavjud: ${avail.length})`);
+  const pct = Math.round((hit / interfaceKeys.length) * 100);
+  console.log(
+    `${pack.padEnd(16)} ${String(hit).padStart(3)}/${interfaceKeys.length}  ${String(pct).padStart(3)}%  (mavjud: ${avail.length})`
+  );
 }
 
 fs.writeFileSync(
@@ -64,6 +79,34 @@ fs.writeFileSync(
   JSON.stringify(result, null, 2) + "\n"
 );
 
-console.log(`\nJami kalit: ${Object.keys(KEYS).length} × ${packs.length} to'plam`);
-console.log(`Topilmadi: ${misses.length}`);
-for (const m of misses.slice(0, 30)) console.log("  ✕ " + m);
+// Per-category breakdown — shows where the gaps cluster.
+console.log("\nKategoriya bo'yicha:");
+for (const cat of CATEGORIES) {
+  const keys = interfaceKeys.filter(([k]) => k.split(".")[0] === cat.id);
+  if (!keys.length) {
+    if (cat.id === "brand") {
+      console.log(`  ${cat.name.padEnd(26)} ${brandKeys.length} kalit — Simple Icons`);
+    }
+    continue;
+  }
+  const full = packs.filter((p) => keys.every(([k]) => result[p][k])).length;
+  console.log(
+    `  ${cat.name.padEnd(26)} ${String(keys.length).padStart(3)} kalit · ${full}/${packs.length} to'plamda to'liq`
+  );
+}
+
+console.log(`\nInterfeys kalitlari: ${interfaceKeys.length} × ${packs.length} to'plam`);
+console.log(`Brend kalitlari:    ${brandKeys.length} (Simple Icons)`);
+console.log(`Yetishmagan:        ${misses.length}`);
+if (misses.length) {
+  const byPack = {};
+  for (const m of misses) {
+    const p = m.split(":")[0];
+    byPack[p] = (byPack[p] || 0) + 1;
+  }
+  console.log("  To'plam bo'yicha:", JSON.stringify(byPack));
+  fs.writeFileSync(
+    "C:/Users/nsn/project/cp/.tmp-verdict/pack-misses.txt",
+    misses.join("\n") + "\n"
+  );
+}
