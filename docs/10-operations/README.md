@@ -242,19 +242,63 @@ Register-ScheduledTask 'RankWant Tunnel Monitor' -Action $action `
   -Trigger $trigger -Settings $settings -Force
 ```
 
-Monitor har 5 daqiqada saytni tashqaridan tekshiradi:
+Monitor har 5 daqiqada **ikkita** ommaviy manzilni tekshiradi —
+`https://rankwant.uz/` va `https://rankwant.uz/api/v1/health/`.
 
-| Holat | Nima qiladi |
-| ----- | ----------- |
-| Sayt `200` | hech narsa (log'ga ham yozmaydi) |
-| Sayt `200` emas, origin ham javob bermayapti | ogohlantiradi — tunnelni ko'tarish yordam bermaydi, konteyner aybdor |
-| Sayt `200` emas, origin sog'lom, R2 `owner=windows` | tunnelni qayta ko'taradi |
-| Sayt `200` emas, lekin R2 `owner` boshqa (yoki noma'lum) | **tunnelni ko'tarmaydi**, ogohlantiradi — handoff qoidasi: ikki tomon bir vaqtda live bo'lmasin |
+⚠️ **Ikkinchisi 2026-09-15 dagi avariyadan keyin qo'shildi.** O'sha kuni sayt
+ildizi `200` qaytarardi, API esa `503`: sahifalar ochilardi, lekin brauzerdagi
+har bir API chaqiruvi yiqilardi — kirish, yuborish, jadval. Monitor faqat
+ildizni tekshirgani uchun **YASHIL qolgan** va avariya o'z-o'zidan tuzalmagan.
+
+Ikkalasi ham `200` bo'lsa boshqa hech narsa o'lchanmaydi (docker ham, R2 ham).
+Biror manzil yiqilsa monitor avval egalikni, keyin qatlamni aniqlaydi:
+
+| Qatlam | Nimadan bilinadi | Nima qiladi |
+| ------ | ---------------- | ----------- |
+| `OK` | ikkala manzil ham `200` | jurnalga bitta qator |
+| `NOT LIVE` | R2 `owner` boshqa tizimda | **hech narsa** — yiqilish kutilgan (handoff `out` konteynerlarni to'xtatgan) |
+| `UNMEASURED` | R2 yoki docker o'qilmadi | **hech narsa** — qatlamni ajratib bo'lmaydi, sayt holati haqida xulosa yo'q |
+| `CONTAINER DOWN` | konteyner ishlamayapti yoki yo'q | ogohlantiradi |
+| `DEAD BRIDGE` | konteyner **ichida** `/health` `200`, host portida `000` | **faqat o'sha konteynerni** `docker restart` qiladi |
+| `CONTAINER UNHEALTHY` | docker healthcheck `unhealthy`, ichkarida ham `200` yo'q | ogohlantiradi — restart davo emas |
+| `APP DOWN` | konteyner ishlayapti, ichkarida javob yo'q | ogohlantiradi — ilova xatosi |
+| `TUNNEL DOWN` | origin `200`, tunnel jarayoni yo'q | tunnelni qayta ko'taradi |
+| `EDGE` | origin `200`, tunnel bor, ommaviy URL yiqiq | ogohlantiradi — ayb Cloudflare / Worker / DNS da |
+
+`DEAD BRIDGE` — o'sha avariyaning haqiqiy sababi. Konteyner darajasidagi
+**hamma** signal yashil edi (docker `healthy`, ichkarida `/health` `200`), host
+porti esa TCP ulanishni qabul qilib HTTP `000` qaytarardi. Ya'ni "port band
+emasmi" degan tekshiruv ham yashil bo'lardi; yagona ishonchli farq —
+**ichkarida `200`, tashqarida `000`**. Shuning uchun qaror TCP ga emas, ichki
+probe'ga tayanadi.
+
+⚠️ `docker restart` obrazni **qayta qurmaydi**, shuning uchun «`api`, `worker`
+va `beat` ni birga qayta quring» qoidasi bu yerga tegishli emas — u faqat
+`--build` ga taalluqli. Bu joyni `compose up --build` ga aylantirmang: u butun
+stekni to'xtatadi va avariyani uzaytiradi.
+
+Origin manzillariga `Host: rankwant.uz` sarlavhasi yuboriladi — usiz
+`ALLOWED_HOSTS` bo'sh `400` qaytaradi va monitor buni «origin yiqilgan» deb
+o'qirdi.
 
 Egalik tekshiruvi `handoff.ps1` bilan bir xil R2 `state.json` dan o'qiladi. R2
-javob bermasa `unknown` deb qaraladi va tunnel ko'tarilmaydi (xavfsiz tomon).
-Holat `.handoff/monitor.log` ga, muammo esa `.handoff/monitor-alert.txt` ga
-yoziladi.
+javob bermasa `unknown` deb qaraladi va **hech narsa tiklanmaydi** (xavfsiz
+tomon). Holat `.handoff/monitor.log` ga, muammo esa
+`.handoff/monitor-alert.txt` ga yoziladi.
+
+Chiqish kodi `check_workers.sh` va `check_ci.sh` bilan bir xil shartnomada:
+`0` — sog'lom yoki live emas, `1` — muammo, `2` — o'lchab bo'lmadi. **`2` ni
+yashil deb o'qib bo'lmaydi.**
+
+`OK` holati ham jurnalga yoziladi (ilgari yozilmasdi). Sabab: `api` konteyneri
+HTTP so'rovlarni umuman jurnalga yozmaydi (o'lchandi — har qanday oynada 0
+qator), ya'ni uzilish qancha davom etganini boshqa hech qayerdan aniqlab
+bo'lmaydi. Kuniga ~288 qator, ~26 KB.
+
+Monitor mantig'i `tools/check_negative.py` dagi `monitor` guruhi bilan
+qo'riqlanadi: u `monitor.ps1` ni stub muhit o'zgaruvchilari orqali haydaydi,
+ya'ni tarmoqqa ham, docker'ga ham chiqmaydi va hech narsani qayta ishga
+tushirmaydi.
 
 Linux tomonda bu kerak emas: u yerda tunnel `cloudflared` systemd xizmati
 (`Restart=always`) va `handoff.sh` uni `systemctl` bilan boshqaradi.
@@ -677,9 +721,12 @@ bo'lmasligi tabiiy, lekin oqibati bor: **tunda yuz bergan avariya
 ertalabgacha davom etadi.**
 
 **Qisman yumshatish:** `RankWant Tunnel Monitor` vazifasi (5 daqiqada bir)
-tunnelni avtomatik ko'taradi — eng ko'p uchraydigan nosozlik turi inson
-ishtirokisiz tuzaladi. `tools/monitor.ps1` handoff oqimini **hurmat qiladi**:
-tunnel `owner=linux` bo'lsa ko'tarmaydi (aks holda ikki tunnel ochilardi).
+tunnelni yoki o'lgan port ko'prigini avtomatik tiklaydi — eng ko'p uchraydigan
+ikki nosozlik turi inson ishtirokisiz tuzaladi. `tools/monitor.ps1` sayt
+ildizini ham, `/api/v1/health/` ni ham tekshiradi (faqat ildizni tekshirish
+2026-09-15 da API-ning yolg'iz yiqilishini o'tkazib yuborgan) va handoff
+oqimini **hurmat qiladi**: `owner=windows` bo'lmasa hech narsa tiklanmaydi
+(aks holda ikki tomon bir vaqtda live bo'lardi).
 
 **Qayta ko'rib chiqiladi:** ikkinchi odam jamoaga qo'shilganda.
 
