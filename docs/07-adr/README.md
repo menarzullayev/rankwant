@@ -37,6 +37,7 @@ Har bir ADR:
 | [0017](0017-profile-and-settings.md)             | Profil va sozlamalar — KEP'dan ilhom      | **accepted**       |
 | [0018](0018-titles-roles-achievements.md)        | Unvon, ism rangi, rollar, yutuqlar        | **accepted**       |
 | [0019](0019-contest-certificates.md)             | Musobaqa sertifikatlari — QR, PDF         | **accepted**       |
+| [0020](0020-hacking.md)                          | Hacking — bitta dvigatel, to'rtta siyosat | **accepted**       |
 
 ## Qoidalar
 
@@ -52,16 +53,16 @@ Har bir ADR:
    tuzatildi — lekin sabab qayd etiladi: **holat qo'lda yangilanadi, ya'ni
    eskirishi mumkin.**
 2. **5 bo'limli format yetarli.** Muammo · Variantlar · Tanlov · Sabab ·
-   Oqibatlar — shu format barcha 19 ADR uchun qo'llaniladi.
+   Oqibatlar — shu format barcha 20 ADR uchun qo'llaniladi.
 3. **`rejected` ADR ham qiymatli.** ADR-0014 saqlanadi, chunki qayta muhokama
    oldini oladi.
 
 ## Open questions
 
-1. **`Qaytarilishi` (reversibility) bo'limi — 19 tadan 0 tasida.** Qaysi qaror
+1. **`Qaytarilishi` (reversibility) bo'limi — 20 tadan 0 tasida.** Qaysi qaror
    qaytarilishi mumkin, qaysi biri qaytarilmasligi hech qayerda yozilmagan.
    Holbuki qaytarilmas qaror boshqacha ehtiyot talab qiladi.
-2. **`Tasdiq` (approval) bo'limi — 19 tadan 0 tasida.** Yuqori ta'sirli yoki
+2. **`Tasdiq` (approval) bo'limi — 20 tadan 0 tasida.** Yuqori ta'sirli yoki
    qaytarilmas qarorlar uchun inson tasdig'i talab qilinadi, lekin hech bir ADR
    kim tasdiqlaganini yozmaydi.
 3. **`Evidence` alohida bo'lim emas.** ADR-0004 da bake-off natijalari bor

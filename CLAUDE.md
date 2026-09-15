@@ -1,6 +1,6 @@
 # RankWant — agent uchun kirish nuqtasi
 
-Loyiha hujjatlangan: `docs/` da 10 bo'lim, `docs/07-adr/` da 19 ta ADR.
+Loyiha hujjatlangan: `docs/` da 10 bo'lim, `docs/07-adr/` da 20 ta ADR.
 **Bu fayl ularni takrorlamaydi** — bu yerda faqat kod yozayotganda darhol
 kerak bo'ladigan buyruqlar va ilgari vaqt yegan tuzoqlar.
 
