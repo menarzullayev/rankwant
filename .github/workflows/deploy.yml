@@ -125,7 +125,12 @@ jobs:
   ci_gate:
     name: CI natijasini kutish
     needs: build
-    runs-on: [self-hosted, rankwant]
+    # ⚠️ SELF-HOSTED EMAS — ataylab GitHub-hosted. Bu job faqat KUTADI
+    # (API so'rovlari + sleep). Self-hosted runner'da u 5 daqiqagacha
+    # navbatni egallab, CI/Security job'larini ushlab turardi —
+    # o'lchandi: to'liq CI wall 10.1 min, shundan 6.2 min navbat.
+    # Kutish uchun o'z runner'ini band qilish — aniq boy berish.
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     outputs:
       green: ${{ steps.wait.outputs.green }}
