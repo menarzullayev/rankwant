@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1376 strings.**
+**1380 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -58,6 +58,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.accentCurrent` | Joriy kontrast | Контрасти ҷорӣ |  |
 | `customizer.font` | Shrift | Ҳарф |  |
 | `customizer.font.default` | Uslubning o'zi | Худи услуб |  |
+| `customizer.fontHint` | Lexend o'qish qiyinligi uchun ishlab chiqilgan. | Lexend барои душвории хондан сохта шудааст. |  |
+| `customizer.fontHeading` | Sarlavha shrifti | Шрифти сарлавҳа |  |
+| `customizer.fontHeadingHint` | Sarlavhalar uchun boshqa shrift — klassik juftlik. | Шрифти дигар барои сарлавҳаҳо — ҷуфти классикӣ. |  |
+| `customizer.font.same` | Matn bilan bir xil | Мисли матн |  |
 | `customizer.size` | Shrift o'lchami | Андозаи ҳарф |  |
 | `customizer.density` | Zichlik | Зичӣ |  |
 | `customizer.density.compact` | Zich | Зич |  |

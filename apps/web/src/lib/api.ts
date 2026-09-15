@@ -782,6 +782,10 @@ export type AppearancePrefs = {
   accent?: { hue: number; sat: number } | null;
   /** `null` — uslubning o'z shrifti (D14). */
   font?: string | null;
+  /** Sarlavhalar uchun alohida shrift (D53). `null` — matn shrifti bilan
+   *  bir xil. Shrift juftligi — tipografikaning asosiy usuli: serif
+   *  sarlavha + sans matn kabi. */
+  fontHeading?: string | null;
   /** Ildiz shrift o'lchami foizi — 75…150 (D45). 100 = odatiy. */
   size?: number;
   /** Tipografik shkala zichligi — 0.90…1.15 (D45). 1 = odatiy. */

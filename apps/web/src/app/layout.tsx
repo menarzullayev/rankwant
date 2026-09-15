@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import {
   DM_Sans,
+  Lexend,
   IBM_Plex_Mono,
   IBM_Plex_Serif,
   Inter,
@@ -91,6 +92,19 @@ const dmSans = DM_Sans({
   subsets: ["latin", "latin-ext"],
   weight: ["400", "500", "600"],
   variable: "--rw-dm-sans",
+  display: "swap",
+  preload: false,
+});
+
+/** O'qish qiyinchiligi uchun (D52). Lexend — harf shakllari ataylab
+ *  bir-biridan uzoq qilib chizilgan, so'zlar "yopishib" ko'rinmaydi.
+ *  Bu shunchaki "boshqa shrift" emas: tadqiqotlar o'qish tezligini
+ *  sezilarli oshirishini ko'rsatgan, shuning uchun u alohida turadi —
+ *  umumiy shrift ro'yxatiga aralashmaydi. */
+const lexend = Lexend({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600"],
+  variable: "--rw-lexend",
   display: "swap",
   preload: false,
 });
@@ -266,7 +280,7 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      className={`${plexMono.variable} ${plexSerif.variable} ${inter.variable} ${jakarta.variable} ${roboto.variable} ${dmSans.variable}`}
+      className={`${plexMono.variable} ${plexSerif.variable} ${inter.variable} ${jakarta.variable} ${roboto.variable} ${dmSans.variable} ${lexend.variable}`}
       suppressHydrationWarning
     >
       <head>

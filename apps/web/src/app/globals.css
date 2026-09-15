@@ -1136,6 +1136,22 @@
 [data-font="jakarta"] { --rw-font: var(--rw-jakarta), ui-sans-serif, system-ui, sans-serif; }
 [data-font="roboto"] { --rw-font: var(--rw-roboto), ui-sans-serif, system-ui, sans-serif; }
 [data-font="dm-sans"] { --rw-font: var(--rw-dm-sans), ui-sans-serif, system-ui, sans-serif; }
+/* O'qish qiyinchiligi uchun (D52). Harf orasi kengroq — Lexend ning
+   shakllari bir-biriga yopishmaydi, lekin standart holatda u zich
+   ko'rinadi, shuning uchun tracking ham qo'shiladi. */
+[data-font="lexend"] {
+  --rw-font: var(--rw-lexend), ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0.01em;
+}
+
+/* Sarlavha va matn uchun ALOHIDA shrift (D53). Standart holatda
+   `--rw-font-display` matn shriftiga teng (`globals.css:143`), ya'ni
+   `[data-font-heading]` faqat tanlanganda ishga tushadi. */
+[data-font-heading="inter"] { --rw-font-display: var(--rw-inter), ui-sans-serif, system-ui, sans-serif; }
+[data-font-heading="jakarta"] { --rw-font-display: var(--rw-jakarta), ui-sans-serif, system-ui, sans-serif; }
+[data-font-heading="roboto"] { --rw-font-display: var(--rw-roboto), ui-sans-serif, system-ui, sans-serif; }
+[data-font-heading="dm-sans"] { --rw-font-display: var(--rw-dm-sans), ui-sans-serif, system-ui, sans-serif; }
+[data-font-heading="lexend"] { --rw-font-display: var(--rw-lexend), ui-sans-serif, system-ui, sans-serif; }
 
 /* Zichlik — faqat idish va qator bo'shliqlari. Shrift o'lchamiga
    TEGILMAYDI: u alohida boshqaruv (D15) va brauzer zoom i bilan

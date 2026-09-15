@@ -306,28 +306,7 @@ function AppearanceTab() {
 
       <AccentSection />
 
-      <Section title={t(locale, "customizer.font")}>
-        <div className="flex flex-wrap gap-2">
-          {[null, "inter", "jakarta", "roboto", "dm-sans"].map((value) => (
-            <button
-              key={value ?? "default"}
-              type="button"
-              aria-pressed={(appearance.font ?? null) === value}
-              onClick={() => setAppearance({ font: value })}
-              className={chip((appearance.font ?? null) === value)}
-            >
-              {value
-            ? // Shrift nomi BREND nomi — tarjima qilinmaydi ("Inter"
-              // hamma tilda "Inter"). `t()` orqali o'tkazilsa, kalit
-              // qo'shilmagani uchun xom nom chiqardi.
-              { inter: "Inter", jakarta: "Plus Jakarta", roboto: "Roboto", "dm-sans": "DM Sans" }[
-                value
-              ]
-            : t(locale, "customizer.font.default")}
-            </button>
-          ))}
-        </div>
-      </Section>
+      <FontSection />
 
       <SizeSection />
 
@@ -534,8 +513,81 @@ function SizeSection() {
   );
 }
 
+/** Shrift — matn va sarlavha uchun ALOHIDA (D52, D53).
+ *
+ *  Shrift nomlari BREND nomi: "Inter" hamma tilda "Inter", tarjima
+ *  qilinmaydi. `t()` orqali o'tkazilsa, kalit qo'shilmagani uchun xom
+ *  nom chiqardi (o'lchandi).
+ *
+ *  `Lexend` umumiy ro'yxatda emas, oxirida va alohida izoh bilan turadi:
+ *  u "yana bitta shrift" emas, o'qish qiyinchiligi uchun (D52). */
+function FontSection() {
+  const locale = useLocale();
+  const { appearance, setAppearance } = useCustomizer();
+  const NAMES: Record<string, string> = {
+    inter: "Inter",
+    jakarta: "Plus Jakarta",
+    roboto: "Roboto",
+    "dm-sans": "DM Sans",
+    lexend: "Lexend",
+  };
+  const FONTS: (string | null)[] = [
+    null,
+    "inter",
+    "jakarta",
+    "roboto",
+    "dm-sans",
+    "lexend",
+  ];
+  const body = appearance.font ?? null;
+  const heading = appearance.fontHeading ?? null;
+
+  return (
+    <>
+      <Section title={t(locale, "customizer.font")}>
+        <div className="flex flex-wrap gap-2">
+          {FONTS.map((value) => (
+            <button
+              key={value ?? "default"}
+              type="button"
+              aria-pressed={body === value}
+              onClick={() => setAppearance({ font: value })}
+              className={chip(body === value)}
+            >
+              {value ? NAMES[value] : t(locale, "customizer.font.default")}
+            </button>
+          ))}
+        </div>
+        <p className="mt-2 text-theme-xs rw-faint">
+          {t(locale, "customizer.fontHint")}
+        </p>
+      </Section>
+
+      {/* Sarlavha shrifti — juftlik tipografikaning asosiy usuli. */}
+      <Section title={t(locale, "customizer.fontHeading")}>
+        <div className="flex flex-wrap gap-2">
+          {FONTS.map((value) => (
+            <button
+              key={value ?? "same"}
+              type="button"
+              aria-pressed={heading === value}
+              onClick={() => setAppearance({ fontHeading: value })}
+              className={chip(heading === value)}
+            >
+              {value ? NAMES[value] : t(locale, "customizer.font.same")}
+            </button>
+          ))}
+        </div>
+        <p className="mt-2 text-theme-xs rw-faint">
+          {t(locale, "customizer.fontHeadingHint")}
+        </p>
+      </Section>
+    </>
+  );
+}
+
 /** Kontent kengligi (D48) — alohida bo'lim, chunki u matnga emas,
- *  sahifa tuzilishiga tegishli. */
+  *  sahifa tuzilishiga tegishli. */
 function WidthSection() {
   const locale = useLocale();
   const { appearance, setAppearance } = useCustomizer();

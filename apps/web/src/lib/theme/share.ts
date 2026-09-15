@@ -30,6 +30,7 @@ const KEYS = [
   "style",
   "accent",
   "font",
+  "fontHeading",
   "size",
   "scale",
   "lineHeight",
@@ -41,7 +42,7 @@ const KEYS = [
 ] as const;
 
 const DENSITIES = ["compact", "comfortable", "spacious"] as const;
-const FONTS = ["inter", "jakarta", "roboto", "dm-sans"] as const;
+const FONTS = ["inter", "jakarta", "roboto", "dm-sans", "lexend"] as const;
 
 /** Ko'rinishni URL ga yozadi. Standart qiymatlar tushib qoladi — havola
  *  qisqa bo'lsin va faqat o'zgartirilgan narsa ko'rinsin. */
@@ -52,6 +53,7 @@ export function encodeAppearance(appearance: AppearancePrefs): string {
     params.set("accent", `${appearance.accent.hue}-${appearance.accent.sat}`);
   }
   if (appearance.font) params.set("font", appearance.font);
+  if (appearance.fontHeading) params.set("fontHeading", appearance.fontHeading);
   if (appearance.size && appearance.size !== 100) {
     params.set("size", String(appearance.size));
   }
@@ -105,6 +107,11 @@ export function decodeAppearance(search: string): AppearancePrefs | null {
 
   const font = params.get("font");
   if (font && (FONTS as readonly string[]).includes(font)) out.font = font;
+
+  const fontHeading = params.get("fontHeading");
+  if (fontHeading && (FONTS as readonly string[]).includes(fontHeading)) {
+    out.fontHeading = fontHeading;
+  }
 
   if (params.has("size")) out.size = clampSize(Number(params.get("size")));
   if (params.has("scale")) out.scale = clampScale(Number(params.get("scale")));
@@ -221,6 +228,14 @@ export function importAppearance(raw: string): ImportResult {
     appearance.font = a.font;
   } else if (a.font === null) {
     appearance.font = null;
+  }
+  if (
+    typeof a.fontHeading === "string" &&
+    (FONTS as readonly string[]).includes(a.fontHeading)
+  ) {
+    appearance.fontHeading = a.fontHeading;
+  } else if (a.fontHeading === null) {
+    appearance.fontHeading = null;
   }
   appearance.size = clampSize(a.size);
   appearance.scale = clampScale(a.scale);

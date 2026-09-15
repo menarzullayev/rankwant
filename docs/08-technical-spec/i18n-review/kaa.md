@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1376 strings.**
+**1380 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -58,6 +58,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.accentCurrent` | Joriy kontrast | Házirgi kontrast |  |
 | `customizer.font` | Shrift | Şrift |  |
 | `customizer.font.default` | Uslubning o'zi | Usıldıń ózi |  |
+| `customizer.fontHint` | Lexend o'qish qiyinligi uchun ishlab chiqilgan. | Lexend oqıw qıyınshılıǵı ushın islengen. |  |
+| `customizer.fontHeading` | Sarlavha shrifti | At basıp shrifti |  |
+| `customizer.fontHeadingHint` | Sarlavhalar uchun boshqa shrift — klassik juftlik. | Atlar ushın basqa shrift — klassikalıq jup. |  |
+| `customizer.font.same` | Matn bilan bir xil | Tekst penen birdey |  |
 | `customizer.size` | Shrift o'lchami | Shrift ólshemi |  |
 | `customizer.density` | Zichlik | Tıǵızlıq |  |
 | `customizer.density.compact` | Zich | Tıǵız |  |

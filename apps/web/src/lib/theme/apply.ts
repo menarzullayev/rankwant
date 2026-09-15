@@ -116,6 +116,11 @@ export function applyAppearance(appearance: AppearancePrefs) {
   if (appearance.font) root.dataset.font = appearance.font;
   else delete root.dataset.font;
 
+  // Sarlavha shrifti (D53). `null` bo'lsa atribut olib tashlanadi va
+  // `--rw-font-display` yana `--rw-font` ga qaytadi (`globals.css:143`).
+  if (appearance.fontHeading) root.dataset.fontHeading = appearance.fontHeading;
+  else delete root.dataset.fontHeading;
+
   // O'lcham va tipografik shkala — `typography.ts` yagona manba (D45).
   // Ildiz `font-size` foizi ham, `--text-*` tokenlari ham shu yerda.
   applyTypography(root, appearance);
