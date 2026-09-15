@@ -75,7 +75,7 @@ export default function AppSidebar() {
               <div className="mx-3 mb-2 border-t rw-divider" />
             )}
             <ul className="flex flex-col gap-1">
-              {group.items.map(({ href, key, Icon }) => {
+              {group.items.map(({ href, key, iconKey }) => {
                 const active =
                   pathname === href || pathname.startsWith(`${href}/`);
                 // O'qilmagan o'zgarishlar chipi (qaror 6). Son
@@ -95,6 +95,7 @@ export default function AppSidebar() {
                       } ${wide ? "" : "justify-center"}`}
                     >
                       <Icon
+                        name={iconKey}
                         className={`size-5 shrink-0 ${
                           active
                             ? "menu-item-icon-active"

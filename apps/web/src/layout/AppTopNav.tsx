@@ -261,7 +261,7 @@ export default function AppTopNav({
                     className="absolute start-0 top-full z-50 mt-1 min-w-[220px] rw-radius rw-surface rw-shadow rw-line overflow-hidden border p-1"
                     role="menu"
                   >
-                    {group.items.map(({ href, key, Icon }) => {
+                    {group.items.map(({ href, key, iconKey }) => {
                       const active =
                         pathname === href || pathname.startsWith(`${href}/`);
                       const unread = href === "/updates" ? count : 0;
@@ -275,6 +275,7 @@ export default function AppTopNav({
                             className={`menu-item ${active ? "menu-item-active" : "menu-item-inactive"}`}
                           >
                             <Icon
+                              name={iconKey}
                               className={`size-5 shrink-0 ${active ? "menu-item-icon-active" : "menu-item-icon-inactive"}`}
                             />
                             <span className="truncate">{t(locale, key)}</span>
@@ -321,7 +322,7 @@ export default function AppTopNav({
                 {t(locale, group.key)}
               </p>
               <ul className="flex flex-col gap-1">
-                {group.items.map(({ href, key, Icon }) => {
+                {group.items.map(({ href, key, iconKey }) => {
                   const active =
                     pathname === href || pathname.startsWith(`${href}/`);
                   return (
@@ -333,6 +334,7 @@ export default function AppTopNav({
                         className={`menu-item ${active ? "menu-item-active" : "menu-item-inactive"}`}
                       >
                         <Icon
+                          name={iconKey}
                           className={`size-5 shrink-0 ${active ? "menu-item-icon-active" : "menu-item-icon-inactive"}`}
                         />
                         <span className="truncate">{t(locale, key)}</span>
