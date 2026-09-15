@@ -156,7 +156,7 @@ Reference (faqat UI nusxa): [code-compete](https://github.com/Pratham-Prog861/co
 ## Claude Code uchun boshlash buyrug‘i (copy-paste)
 
 ```
-RankWant monorepo: /home/nsn/Workspace/Web_Projects/rankwant
+RankWant monorepo: repo ildizi (`git rev-parse --show-toplevel`)
 
 TASK faylini to‘liq o‘qi: docs/tasks/TASK-tailadmin-frontend.md
 

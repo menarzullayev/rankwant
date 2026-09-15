@@ -1,6 +1,6 @@
 # RankWant — agent uchun kirish nuqtasi
 
-Loyiha hujjatlangan: `docs/` da 10 bo'lim, `docs/07-adr/` da 14 ta ADR.
+Loyiha hujjatlangan: `docs/` da 10 bo'lim, `docs/07-adr/` da 19 ta ADR.
 **Bu fayl ularni takrorlamaydi** — bu yerda faqat kod yozayotganda darhol
 kerak bo'ladigan buyruqlar va ilgari vaqt yegan tuzoqlar.
 
@@ -24,7 +24,7 @@ Pre-push hook shularni o'zi ishga tushiradi, lekin ish davomida qo'lda
 chaqirish tezroq:
 
 ```bash
-cd apps/api && uv run ruff check . && uv run ruff format --check . && uv run mypy . && uv run pytest -q -n 4
+cd apps/api && uv run ruff check . && uv run ruff format --check . && uv run mypy . && env CELERY_EAGER=1 uv run pytest -q -n 4
 ```
 
 ```bash
@@ -45,11 +45,23 @@ cd apps/api && uv run python manage.py spectacular --file openapi/schema.yml
 `pytest -n 4` — `auto` EMAS: runner shu mashinada, jonli preview bilan
 yonma-yon ishlaydi.
 
+`CELERY_EAGER=1` ham **shart**. Busiz task navbatga yoziladi va test
+javobni kutib qotadi; `settings.py` uni `CELERY_TASK_ALWAYS_EAGER` ga
+o'giradi, ya'ni task chaqirilgan joyda bajariladi. Haqiqiy darvozalar
+ikkalasi ham shuni beradi (`.githooks/pre-push`, `.github/workflows/ci.yml`)
+va hook uni «SHART» deb belgilagan — o'lchangan farq: 14m54s → 1m57s.
+
 ## Preview
 
 ```bash
-docker compose --env-file .env.public -f docker-compose.yml -f docker-compose.public.yml up -d --build --wait
+docker compose -p rankwant --env-file .env.public -f docker-compose.yml -f docker-compose.public.yml up -d --build --wait
 ```
+
+**`-p rankwant` tushib qolmasin.** `docker-compose.yml` da `name:` kaliti
+yo'q, ya'ni loyiha nomi joriy KATALOG nomidan olinadi. Worktree ichidan
+bayroqsiz chaqirilsa, compose jimgina alohida stack va **alohida baza**
+ko'taradi — xato bermaydi, shunchaki boshqa ma'lumot ko'rsatadi. Faqat
+`docker-compose.ci.yml` o'z nomini (`rankwant-ci`) o'zi belgilaydi.
 
 Mashina dual-boot (Linux + Windows), har tizimda preview'ning o'z bazasi bor.
 Tizim almashtirishdan **oldin** `tools/handoff.sh out` (Linux) yoki
@@ -82,13 +94,17 @@ Ishga tushirishdan oldin `worker` va `beat` **to'xtatilishi shart** —
 «XAVFSIZLIKDAN O'TMADI» deb yozadi, aslida sandbox soz:
 
 ```bash
-docker compose --env-file .env.public -f docker-compose.yml -f docker-compose.public.yml stop worker beat
+docker compose -p rankwant --env-file .env.public -f docker-compose.yml -f docker-compose.public.yml stop worker beat
 IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' rankwant-redis-1)
 apps/api/.venv/bin/python services/bakeoff/harness/runner.py --worker judge-go --redis redis://$IP:6379/0
-docker compose --env-file .env.public -f docker-compose.yml -f docker-compose.public.yml start worker beat
+docker compose -p rankwant --env-file .env.public -f docker-compose.yml -f docker-compose.public.yml start worker beat
 ```
 
 Redis host portiga chiqarilmagan — shuning uchun konteyner IP'si olinadi.
+`rankwant-redis-1` nomi ham aynan `-p rankwant` bo'lgandagina topiladi:
+konteyner nomini compose loyiha nomidan yasaydi. Bayroq tushsa
+`docker inspect` bo'sh qaytaradi va `IP` o'zgaruvchisi jimgina bo'sh
+qoladi.
 
 ## Ish uslubi
 

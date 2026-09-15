@@ -1,6 +1,6 @@
 # ADR-0016: Ro'yxatdan o'tish va kirish — uch maydon, uch provayder
 
-**STATUS:** accepted (2026-09-10)
+**STATUS:** accepted (2026-09-10) — forma qarori kuchda; **sahifa tuzilishi 2026-09-15 da yangilandi**: uchta alohida sahifa o'rniga bitta sahifa, uch bo'lim (`/login?tab=...`). Tafsilot: «Yangilanish» bo'limi.
 **Ta'siri:** [ADR-0008](0008-auth-session-plus-pat.md) (session + PAT),
 [ADR-0015](0015-account-email.md) (hisob xatlari)
 
@@ -47,6 +47,36 @@ Har biridan bitta xulosa:
 | Qoidalar | maydon tagida, yozishdan **oldin** (AtCoder namunasi) |
 | Tiklash | kirish sahifasida havola — busiz oqim yopiq qolardi |
 | Keyin qayerga | bosh sahifaga |
+
+### Yangilanish (2026-09-15) — sahifa tuzilishi
+
+Yuqoridagi jadval **asl qaror** sifatida saqlanadi; quyidagi ikki qatori
+amalda boshqacha qurildi. Bu ADR rad etgan «bitta sahifada tab'lar»
+varianti keyinchalik AYNAN qabul qilindi.
+
+| Qator | Asl qaror | Amaldagi holat |
+| ----- | --------- | -------------- |
+| Sahifalar | `/login` va `/register` — alohida | bitta karta, uch bo'lim: `login`, `register`, `reset-password` |
+| Tiklash | kirish sahifasida havola | bo'lim (`?tab=reset-password`); havola kirish formasida qoladi |
+
+O'lchangan holat:
+
+- `/register` va `/reset-password` — sahifa emas, **307 yo'naltirish**:
+  `apps/web/src/app/register/page.tsx` va `.../reset-password/page.tsx`
+  `redirect('/login?tab=...')` qiladi. 307 ataylab: `next.config.ts` dagi
+  301 qoidasi `?token=` va `?next=` ni tashlab yuborardi va xatdagi
+  havola ishlamay qolardi.
+- Haqiqiy sahifa — `apps/web/src/app/login/page.tsx`, bo'limlar ro'yxati
+  bitta manbada: `apps/web/src/lib/auth-tabs.ts`.
+- Qatorda ikki bo'lim ko'rinadi (`AuthTabs.tsx`); `reset-password`
+  haqiqiy bo'lim bo'lib qolaveradi, lekin qatorga chiqarilmaydi — 10
+  tildan 9 tasida yozuv kesilardi (o'lchov `auth-tabs.ts` izohida).
+- `/kirish` degan manzil **yo'q** — bunday yo'l hech qachon qurilmagan.
+
+**API o'zgarmadi.** Backend'da endpointlar avvalgidek alohida:
+`auth/register/`, `auth/login/`, `auth/password-reset/`,
+`auth/password-reset/confirm/` (`apps/api/core/urls.py`). O'zgarish faqat
+frontend manzillarida.
 
 ### Parol qoidalari
 
@@ -114,7 +144,9 @@ haqiqiy mazmun bor.
 
 - **RoboContest kabi 11 maydon.** Maktab reytingi qimmatli, lekin uni
   ro'yxatdan o'tish paytida emas, kerak bo'lgan joyda so'rash mumkin.
-- **Bitta sahifada tab'lar** yoki **aqlli bitta maydon.** Ikkinchisi
+- **Bitta sahifada tab'lar** yoki **aqlli bitta maydon.** Birinchisi
+  2026-09-15 da QABUL QILINDI (yuqoridagi «Yangilanish» bo'limi) — rad
+  etish sababi faqat ikkinchisiga tegishli bo'lib chiqdi. Ikkinchisi
   «bu email ro'yxatdan o'tganmi» ma'lumotini oshkor qiladi — biz uni
   tiklash endpointida ataylab yopgandik.
 - **Avtomatik OAuth bog'lash.** Yuqorida — hisob egallash yo'li.
