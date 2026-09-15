@@ -257,7 +257,12 @@ jobs:
 
   openapi:
     name: OpenAPI schema diff
-    needs: [changes, api]
+    # `api` ATAYIN olib tashlandi: bu job faqat `changes` filter'iga
+    # qaraydi, API testlarining NATIJASIGA emas. `needs: [changes, api]`
+    # bo'lganda u API tugashini kutardi (o'lchandi: 2.7 min) va bitta
+    # runner'da umumiy vaqtni shuncha uzaytirardi. Endi u API bilan
+    # bir qatorda turadi.
+    needs: changes
     if: needs.changes.outputs.api == 'true'
     runs-on: [self-hosted, rankwant]
     timeout-minutes: 3
