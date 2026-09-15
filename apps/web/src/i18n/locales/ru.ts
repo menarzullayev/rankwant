@@ -360,6 +360,7 @@ export const ru: Record<MessageKey, string> = {
   "admin.noRows": "Пусто",
   "admin.actions": "Действия",
   "admin.saved": "Сохранено",
+  "common.clear": "Очистить",
   "common.empty": "Пока пусто",
   "common.emptyHint": "Здесь пока ничего нет. Загляните позже.",
   "settings.title": "Настройки",

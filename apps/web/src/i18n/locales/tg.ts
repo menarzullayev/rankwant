@@ -360,6 +360,7 @@ export const tg: Record<MessageKey, string> = {
   "admin.noRows": "Чизе нест",
   "admin.actions": "Амалҳо",
   "admin.saved": "Нигоҳ дошта шуд",
+  "common.clear": "Тоза кардан",
   "common.empty": "Ҳоло холӣ",
   "common.emptyHint": "Дар ин ҷо ҳанӯз чизе нест. Баъдтар боз оед.",
   "settings.title": "Танзимот",

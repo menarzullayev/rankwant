@@ -360,6 +360,7 @@ export const es: Record<MessageKey, string> = {
   "admin.noRows": "No hay nada aquí",
   "admin.actions": "Acciones",
   "admin.saved": "Guardado",
+  "common.clear": "Borrar",
   "common.empty": "Vacío por ahora",
   "common.emptyHint": "Aquí todavía no hay nada. Vuelve más tarde.",
   "settings.title": "Ajustes",

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1464 strings.**
+**1465 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -372,6 +372,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.noRows` | Hech narsa yo'q | Hesh nárse joq |  |
 | `admin.actions` | Amallar | Ámeller |  |
 | `admin.saved` | Saqlandi | Saqlandı |  |
+| `common.clear` | Tozalash | Tazalaw |  |
 | `common.empty` | Hozircha bo'sh | Házirshe bos |  |
 | `common.emptyHint` | Bu yerda hozircha hech narsa yo'q. Keyinroq qayta ko'ring. | Bul jerde ázirshe hesh nársе joq. Keyinirek qayta kóriń. |  |
 | `settings.title` | Sozlamalar | Sazlawlar |  |

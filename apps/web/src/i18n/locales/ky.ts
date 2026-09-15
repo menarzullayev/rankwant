@@ -360,6 +360,7 @@ export const ky: Record<MessageKey, string> = {
   "admin.noRows": "Эч нерсе жок",
   "admin.actions": "Аракеттер",
   "admin.saved": "Сакталды",
+  "common.clear": "Тазалоо",
   "common.empty": "Азырынча бош",
   "common.emptyHint": "Бул жерде азырынча эч нерсе жок. Кийинчерээк кайра көрүңүз.",
   "settings.title": "Жөндөөлөр",

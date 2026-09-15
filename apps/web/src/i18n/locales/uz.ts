@@ -364,6 +364,7 @@ export const uz = {
   "admin.noRows": "Hech narsa yo'q",
   "admin.actions": "Amallar",
   "admin.saved": "Saqlandi",
+  "common.clear": "Tozalash",
   "common.empty": "Hozircha bo'sh",
   "common.emptyHint": "Bu yerda hozircha hech narsa yo'q. Keyinroq qayta ko'ring.",
   "settings.title": "Sozlamalar",

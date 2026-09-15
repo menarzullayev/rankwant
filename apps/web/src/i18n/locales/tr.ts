@@ -360,6 +360,7 @@ export const tr: Record<MessageKey, string> = {
   "admin.noRows": "Burada bir şey yok",
   "admin.actions": "İşlemler",
   "admin.saved": "Kaydedildi",
+  "common.clear": "Temizle",
   "common.empty": "Henüz boş",
   "common.emptyHint": "Burada henüz bir şey yok. Daha sonra tekrar bakın.",
   "settings.title": "Ayarlar",

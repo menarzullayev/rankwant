@@ -360,6 +360,7 @@ export const kk: Record<MessageKey, string> = {
   "admin.noRows": "Ештеңе жоқ",
   "admin.actions": "Әрекеттер",
   "admin.saved": "Сақталды",
+  "common.clear": "Тазалау",
   "common.empty": "Әзірге бос",
   "common.emptyHint": "Мұнда әзірге ештеңе жоқ. Кейінірек қайта көріңіз.",
   "settings.title": "Параметрлер",

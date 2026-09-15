@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { t } from "@/i18n/messages";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { SearchIcon } from "@/icons";
+import { CloseIcon, SearchIcon } from "@/icons";
 import { API_BASE, type SearchResult } from "@/lib/api";
 
 const EMPTY: SearchResult = {
@@ -21,7 +21,9 @@ export default function SearchBox() {
   const [q, setQ] = useState("");
   const [result, setResult] = useState<SearchResult>(EMPTY);
   const [open, setOpen] = useState(false);
+  const [focused, setFocused] = useState(false);
   const box = useRef<HTMLDivElement>(null);
+  const input = useRef<HTMLInputElement>(null);
 
   // Har tugmada emas, 250 ms tinganda so'raymiz — server va ko'z uchun ham.
   const active = q.trim().length >= 2;
@@ -46,12 +48,34 @@ export default function SearchBox() {
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
+  // `Ctrl+K` / `Cmd+K` — qidiruvga sakrash (D61 ⑦).
+  //
+  // ⚠️ `preventDefault()` SHART: usiz brauzer o'z manzil qatoridagi
+  // qidiruvni ochadi va bizning maydon fokus olmay qoladi.
+  // Faqat oddiy tugmalar: `Ctrl+Shift+K` kabi birikmalar tegmaydi.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() !== "k" || e.shiftKey || e.altKey) return;
+      if (!(e.metaKey || e.ctrlKey)) return;
+      e.preventDefault();
+      input.current?.focus();
+      input.current?.select();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
+
   const shown = active ? result : EMPTY;
   const total =
     shown.problems.length +
     shown.users.length +
     shown.articles.length +
     shown.contests.length;
+
+  // Yorliq ko'rinishi: qiymat bor bo'lsa tozalash, aks holda klaviatura
+  // yorlig'i. Ikkalasi bir vaqtda turmaydi — o'ng tomon tor.
+  const showClear = q.length > 0;
+  const showKbd = !showClear && !focused;
 
   return (
     <div ref={box} className="relative hidden min-w-0 shrink md:block">
@@ -61,15 +85,51 @@ export default function SearchBox() {
         <span className="sr-only">{t(locale, "header.search")}</span>
         <SearchIcon className="pointer-events-none absolute top-2.5 left-3 size-5 rw-faint" />
         <input
+          ref={input}
           value={q}
           onChange={(e) => {
             setQ(e.target.value);
             setOpen(true);
           }}
-          onFocus={() => setOpen(true)}
+          onFocus={() => {
+            setOpen(true);
+            setFocused(true);
+          }}
+          onBlur={() => setFocused(false)}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") {
+              if (q) setQ("");
+              else e.currentTarget.blur();
+            }
+          }}
           placeholder={t(locale, "header.search")}
-          className="h-10 w-64 rw-radius-sm border rw-line bg-transparent pr-3 pl-10 text-theme-sm outline-none rw-focus-line rw-focus-ring xl:w-80"
+          aria-keyshortcuts="Control+K Meta+K"
+          className="h-10 w-64 rw-radius-sm border rw-line bg-transparent pr-16 pl-10 text-theme-sm outline-none rw-focus-line rw-focus-ring xl:w-80"
         />
+        {showKbd && (
+          <kbd
+            aria-hidden="true"
+            className="pointer-events-none absolute top-2.5 right-3 hidden rw-radius-sm border rw-line px-1.5 py-0.5 text-theme-xs rw-faint lg:inline-block"
+          >
+            Ctrl K
+          </kbd>
+        )}
+        {showClear && (
+          <button
+            type="button"
+            onClick={() => {
+              setQ("");
+              setResult(EMPTY);
+              input.current?.focus();
+            }}
+            // Yorliq kerak: ichida faqat ikonka, ya'ni nom bermaydi.
+            aria-label={t(locale, "common.clear")}
+            title={t(locale, "common.clear")}
+            className="absolute top-2 right-2 flex size-6 items-center justify-center rw-radius-sm rw-faint rw-hover-bg rw-focus-ring"
+          >
+            <CloseIcon className="size-4" />
+          </button>
+        )}
       </label>
       {open && total > 0 && (
         <div className="absolute top-12 left-0 z-40 w-full overflow-hidden rw-radius border rw-line rw-surface rw-shadow">

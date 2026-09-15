@@ -202,6 +202,10 @@ ALLOWED_LITERALS = {
     # way `Qvant` is the currency: a Russian user sees "Skills" by design,
     # and `leaderboard.skills` is already an explicit dictionary key.
     "RankWant", "Skills", "Contests", "Activity", "Challenges", "Qvant",
+    # Klaviatura yorlig'i. Tugma nomlari tarjima qilinmaydi — foydalanuvchi
+    # klaviaturasida aynan shu harflar turadi, ya'ni `Ctrl` ni o'girish
+    # ko'rsatmani noto'g'ri qilardi.
+    "Ctrl K",
     # Browser and platform names in `describeAgent`. A translator passes
     # these through unchanged; only the separator between them is ours.
     "Edge", "Opera", "Yandex", "Firefox", "Chrome", "Safari",

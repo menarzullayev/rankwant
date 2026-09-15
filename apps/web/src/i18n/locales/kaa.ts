@@ -360,6 +360,7 @@ export const kaa: Record<MessageKey, string> = {
   "admin.noRows": "Hesh nárse joq",
   "admin.actions": "Ámeller",
   "admin.saved": "Saqlandı",
+  "common.clear": "Tazalaw",
   "common.empty": "Házirshe bos",
   "common.emptyHint": "Bul jerde ázirshe hesh nársе joq. Keyinirek qayta kóriń.",
   "settings.title": "Sazlawlar",

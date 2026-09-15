@@ -359,6 +359,7 @@ export const zh: Record<MessageKey, string> = {
   "admin.noRows": "暂无内容",
   "admin.actions": "操作",
   "admin.saved": "已保存",
+  "common.clear": "清除",
   "common.empty": "暂时为空",
   "common.emptyHint": "这里暂时还没有内容，请稍后再来查看。",
   "settings.title": "设置",

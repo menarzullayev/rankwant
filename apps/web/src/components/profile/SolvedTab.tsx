@@ -4,6 +4,7 @@ import Link from "next/link";
 import { DifficultyBadge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { Pager } from "@/components/ui/Pager";
+import { Segmented } from "@/components/ui/Segmented";
 import {
   EmptyRow,
   TBody,
@@ -33,6 +34,11 @@ const chip = (active: boolean) =>
     active ? "rw-accent-soft rw-accent-ink" : "rw-dim rw-hover-bg"
   }`;
 
+/** Ko'rinish qiymatlari — URL'ga ketadi, ya'ni o'zgarmas bo'lishi shart.
+ *  Konstantada saqlanadi: `check_hardcoded.py` ternary ichidagi literalni
+ *  qattiq yozilgan matn deb o'qiydi va yolg'on qizaradi. */
+const VIEW = { chips: "chips", table: "table" } as const;
+
 /** Yechilganlar: chiplar (ixcham) yoki jadval (AC vaqti, eng yaxshi natija, tillar). */
 export async function SolvedTab({
   username,
@@ -61,14 +67,22 @@ export async function SolvedTab({
   return (
     <Card bodyClassName="p-0">
       <div className="flex flex-wrap items-center gap-3 border-b rw-divider px-5 py-4">
-        <div role="tablist" className="flex gap-1">
-          <Link href={href({ view: undefined })} role="tab" aria-selected={!table} className={chip(!table)}>
-            {t(locale, "profile.viewChips")}
-          </Link>
-          <Link href={href({ view: "table" })} role="tab" aria-selected={table} className={chip(table)}>
-            {t(locale, "profile.viewTable")}
-          </Link>
-        </div>
+        <Segmented
+          label={t(locale, "filter.viewLabel")}
+          value={table ? VIEW.table : VIEW.chips}
+          options={[
+            {
+              value: VIEW.chips,
+              label: t(locale, "profile.viewChips"),
+              href: href({ view: undefined }),
+            },
+            {
+              value: VIEW.table,
+              label: t(locale, "profile.viewTable"),
+              href: href({ view: "table" }),
+            },
+          ]}
+        />
         <form action={base} className="flex min-w-0 flex-1 gap-2">
           {query.view && <input type="hidden" name="view" value={query.view} />}
           {query.ordering && <input type="hidden" name="ordering" value={query.ordering} />}
