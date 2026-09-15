@@ -457,6 +457,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `verdict.RE_EXIT` | Bajarilishda xato (chiqish kodi) | Аткаруу катасы (чыгуу коду) |  |
 | `verdict.CE` | Kompilyatsiya xatosi | Компиляция катасы |  |
 | `verdict.PE` | Format xatosi | Формат катасы |  |
+| `verdict.HACKED` | Hack qilindi | Бузулду |  |
 | `verdict.PARTIAL` | Qisman ball | Жарым-жартылай упай |  |
 | `verdict.IE` | Ichki xato | Ички ката |  |
 | `verdict.WRONG_TEST` | Masala testi yaroqsiz | Маселенин тесттери жараксыз |  |
@@ -1514,6 +1515,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `verdict.hint.RE` | Dastur ishlash paytida to'xtadi | Program crashed while running |  |
 | `verdict.hint.CE` | Kod kompilyatsiya bo'lmadi | Code did not compile |  |
 | `verdict.hint.PE` | Ortiqcha bo'sh joy yoki qator | Extra spaces or line breaks |  |
+| `verdict.hint.HACKED` | Qabul qilingan yechim boshqa ishtirokchining to'g'ri testida yiqildi | Кабыл алынган чечим башка катышуучунун туура тестинде жыгылды |  |
 | `verdict.hint.OLE` | Juda ko'p ma'lumot chiqardi | Printed too much output |  |
 | `verdict.hint.IE` | Tekshiruvchi xatosi — sizda emas | Judge error, not your fault |  |
 | `verdict.hint.PD` | Navbatda kutilmoqda | Waiting in the queue |  |

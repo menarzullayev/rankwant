@@ -502,6 +502,7 @@ export const VERDICT_FILTERS = [
   ["AC", "verdict.AC"],
   ["WA", "verdict.WA"],
   ["PE", "verdict.PE"],
+  ["HACKED", "verdict.HACKED"],
   ["TLE", "verdict.TLE"],
   ["MLE", "verdict.MLE"],
   ["RE,RE_SIGNAL,RE_EXIT", "verdict.RE"],

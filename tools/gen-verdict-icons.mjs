@@ -44,6 +44,9 @@ const CODE_ICON = {
   RE_EXIT: "warning-octagon",
   CE: "wrench",
   PE: "ruler",
+  // `bug` ni `CHECKER_ERROR` ham ishlatadi — glif bo'lishilgan, rang esa
+  // ajratadi: `HACKED` qizil (`bad`), `CHECKER_ERROR` kulrang (`neutral`).
+  HACKED: "bug",
   PARTIAL: "chart-pie",
   IE: "gear",
   WRONG_TEST: "test-tube",
