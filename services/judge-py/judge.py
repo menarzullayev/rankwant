@@ -86,6 +86,25 @@ def judge(job: Job) -> ResultDict:
         "judge_meta": meta,
     }
 
+    # ⚠️ YOPIQ YIQILISH — shartnoma: ../bakeoff/protocol.md § «Kirish validatori».
+    #
+    # Bu nomzodda validator bosqichi YO'Q. Bayroqni jimgina e'tiborsiz
+    # qoldirish eng xavfli yo'l bo'lardi: validatsiya butunlay o'chib
+    # qolardi va buzuq kiritma bilan istalgan TO'G'RI yechimni
+    # «sindirish» mumkin bo'lib qolardi. Nomzodlar almashtiriladigan
+    # bo'lgani uchun bu xavf nazariy emas — judge-go ga sozlangan ish
+    # judge-py ga tushib qolishi mumkin.
+    #
+    # `result["verdict"]` yuqorida allaqachon `IE`: ichki xato, submission
+    # aybi emas.
+    if job.validate_input:
+        result["compile_output"] = (
+            "judge-py kirish validatorini qo'llab-quvvatlamaydi — "
+            "validate_input=true bo'lgan ish rad etildi"
+        )
+        meta["total_ms"] = int((time.monotonic() - t0) * 1000)
+        return result
+
     try:
         with Box(BOX_ID) as box:
             setup = time.monotonic()

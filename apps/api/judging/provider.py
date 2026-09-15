@@ -28,8 +28,17 @@ class JudgeJob:
     mode: str = "acm"
     #: Custom test bo'lsa — natija shu yozuvga yoziladi (attempt_id 0 bo'ladi)
     custom_run_id: int | None = None
+    #: Kirish validatori (ADR-0020): `{code, compile, run, source}`.
+    validator: dict[str, Any] | None = None
+    #: Test kirishlari validatordan o'tkazilsinmi. Oddiy urinishda HAMISHA
+    #: `False`: masalaning o'z testlarini muallif yozgan, ular ishonchli.
+    #: `True` faqat job ishonchsiz kiritma olib kelganda — hack testi kabi.
+    validate_input: bool = False
 
     def to_json(self) -> str:
+        # ⚠️ Yangi maydon shu lug'atga ham QO'SHILISHI shart. Dataclass'ga
+        # qo'shib, bu yerga qo'shmaslik — jim nuqson: maydon judge'ga
+        # umuman yetib bormaydi va hech qanday xato chiqmaydi.
         return json.dumps(
             {
                 "job_id": self.job_id,
@@ -42,6 +51,8 @@ class JudgeJob:
                 "subtasks": self.subtasks,
                 "mode": self.mode,
                 "custom_run_id": self.custom_run_id,
+                "validator": self.validator,
+                "validate_input": self.validate_input,
             }
         )
 

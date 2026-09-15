@@ -181,6 +181,28 @@ func judge(ctx context.Context, job *Job, tests *store) *Result {
 			return res
 		}
 	}
+
+	// Kirish validatori ham BIR MARTA tayyorlanadi (ADR-0020). Bayroq faqat
+	// job ISHONCHSIZ kiritma olib kelganda yoqiladi: masalaning o'z testlarini
+	// muallif yozgan, ularni har submissionda qayta tekshirish sof isrof.
+	var validatorCmd []string
+	if job.ValidateInput {
+		// YOPIQ YIQILISH: bayroq bor, dastur yo'q — ishni RAD ETAMIZ.
+		// Tekshiruvsiz davom etish buzuq kiritma bilan istalgan to'g'ri
+		// yechimni «sindirish»ga yo'l ochardi.
+		if job.Validator == nil {
+			res.Verdict = VIE
+			res.CompileOutput = "validate_input berilgan, lekin validator dasturi yo'q"
+			return res
+		}
+		var err error
+		if validatorCmd, err = prepareValidator(ctx, work, job.Validator); err != nil {
+			res.Verdict = VIE
+			res.CompileOutput = err.Error()
+			return res
+		}
+	}
+
 	// `scorer` da har test o'z bahosini beradi, o'rtachasi olinadi.
 	scoreSum := 0
 
@@ -192,6 +214,24 @@ func judge(ctx context.Context, job *Job, tests *store) *Result {
 			worst = VIE
 			break
 		}
+		// Ishonchsiz kiritma submission uni KO'RISHIDAN OLDIN validatordan
+		// o'tadi. Tartib muhim: aks holda cheklovni buzgan test bilan
+		// istalgan to'g'ri yechimni «sindirish» mumkin bo'lardi.
+		if job.ValidateInput {
+			ok, verr := validateInput(ctx, work, validatorCmd, test.Input, job.Limits)
+			if verr != nil {
+				worst = VIE
+				break
+			}
+			if !ok {
+				// Submission aybi EMAS — test yaroqsiz.
+				worst = VWrongTest
+				idx := test.Index
+				res.FailedTestIndex = &idx
+				break
+			}
+		}
+
 		out, err := runSandboxed(ctx, work, runCmd, test.Input, job.Limits, wallLimit)
 		if err != nil {
 			worst = VIE

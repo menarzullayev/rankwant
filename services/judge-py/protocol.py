@@ -62,6 +62,16 @@ class Job:
     checker: dict[str, Any] = field(default_factory=lambda: {"type": "standard"})
     subtasks: list[Subtask] = field(default_factory=list)
     attempt_id: int = 0
+    #: Kirish validatori (ADR-0020) — ishonchli dastur, ISHONCHSIZ kiritma
+    #: ustida ishlaydi, shuning uchun sandbox ICHIDA bajariladi.
+    validator: dict[str, Any] | None = None
+    #: Kiritma validatordan o'tkazilsinmi.
+    #:
+    #: ⚠️ Bu maydon ATAYLAB `from_json` da o'qiladi. Pastdagi `tests`
+    #: qatorida notanish kalitlar jimgina tashlanadi — agar bayroq ham
+    #: shunday tashlansa, bu nomzod validatsiyani SEZMASDAN o'tkazib
+    #: yuborardi va «yopiq yiqilish» qoidasi buzilardi.
+    validate_input: bool = False
 
     @classmethod
     def from_json(cls, raw: dict[str, Any]) -> Job:
@@ -78,6 +88,8 @@ class Job:
             checker=raw.get("checker") or {"type": "standard"},
             subtasks=[Subtask(**st) for st in raw.get("subtasks") or []],
             attempt_id=raw.get("attempt_id", 0),
+            validator=raw.get("validator"),
+            validate_input=bool(raw.get("validate_input", False)),
         )
 
 

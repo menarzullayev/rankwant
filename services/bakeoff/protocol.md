@@ -58,11 +58,31 @@ Worker `DATABASE_URL` **olmaydi**. Faqat `REDIS_URL` va S3 (bake-off'da local ka
       "scoring": "min"
     }
   ],
-  "mode": "acm"
+  "mode": "acm",
+  "validate_input": false,
+  "validator": null
 }
 ```
 
 `mode: acm` — birinchi muvaffaqiyatsiz testda to'xtaydi. `mode: ioi` — hamma test bajariladi.
+
+## Kirish validatori
+
+`validator` — masala bilan keladigan, test cheklovlarga mosligini tekshiruvchi dastur ([ADR-0020](../../docs/07-adr/0020-hacking.md)). Shakli `checker.program` bilan bir xil: `{code, compile, run, source}`.
+
+Chaqirilishi: kiritma **stdin** orqali beriladi. Chiqish kodi `0` — kiritma to'g'ri; nolga teng bo'lmasa — cheklov buzilgan.
+
+| Maydon | Ma'nosi |
+| ------ | ------- |
+| `validate_input` | `true` bo'lsa, har test kirishi submission ishga tushishidan OLDIN validatordan o'tadi |
+| `validator` | validator dasturi; `validate_input: true` bo'lsa MAJBURIY |
+
+Ikki qoida shartnomaning bir qismi:
+
+1. **Validator sandbox ICHIDA ishlaydi.** Checker va interactor undan farq qiladi — ular sandboxsiz bajariladi, chunki ularning kiritmasi ham bizniki. Validatorning kiritmasi esa ishonchsiz: u hacker yuborgan test bo'lishi mumkin, va u validatorning o'zini cheksiz aylantirib navbatni to'xtatib qo'yishi mumkin.
+2. **Yopiq yiqilish.** `validate_input: true` kelgan, lekin validatorni qo'llab-quvvatlamaydigan nomzod ishni `IE` bilan RAD ETISHI shart. Jimgina o'tkazib yuborish validatsiyani butunlay o'chirib qo'yardi — nomzodlar almashtiriladigan bo'lgani uchun bu xavf nazariy emas.
+
+Validatordan o'tmagan kiritma `WRONG_TEST` beradi: bu submission aybi emas, test yaroqsiz.
 
 ## Result
 

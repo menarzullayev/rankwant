@@ -13,12 +13,20 @@ from django.utils import timezone
 from judging.models import Attempt, AttemptTestResult, CustomRun
 from judging.provider import JudgeJob, get_provider, new_job_id
 from judging.verdicts import ALERTING, Verdict
-from problems.models import Language, Problem, ProblemLanguage, TestCase
+from problems.models import Language, Problem, ProblemLanguage, TestCase, Validator
 
 log = logging.getLogger(__name__)
 
 
-def build_job(attempt: Attempt) -> JudgeJob:
+def build_job(attempt: Attempt, *, validate_input: bool = False) -> JudgeJob:
+    """Urinish uchun judge ishini quradi.
+
+    `validate_input` — test kirishlari masalaning validatoridan o'tsinmi
+    (ADR-0020). Oddiy yuborishda `False`: masalaning o'z testlarini muallif
+    yozgan, ya'ni ular ishonchli, va ularni har submissionda qayta tekshirish
+    sof isrof bo'lardi. `True` faqat kiritma ISHONCHSIZ bo'lganda — hack
+    testi kabi.
+    """
     problem = attempt.problem
     language = attempt.language
 
@@ -60,6 +68,22 @@ def build_job(attempt: Attempt) -> JudgeJob:
         if program:
             checker["program"] = program
 
+    # Kirish validatori faqat SO'RALGANDA biriktiriladi.
+    #
+    # ⚠️ `problem.validator` — OneToOne, ya'ni yo'q bo'lsa unga murojaat
+    # `RelatedObjectDoesNotExist` otadi va uni `getattr(..., None)` ham
+    # to'smaydi. Shuning uchun so'rov bilan olinadi.
+    #
+    # Validator topilmasa `None` qoladi va `validate_input` baribir `True`
+    # ketadi: judge uni YOPIQ yiqilish bilan rad etadi (protocol.md
+    # § «Kirish validatori»). Bu ataylab — jimgina tekshiruvsiz davom
+    # etishdan ko'ra ochiq xato yaxshi.
+    validator: dict[str, Any] | None = None
+    if validate_input:
+        row = Validator.objects.filter(problem=problem).first()
+        if row is not None:
+            validator = _program(row.language, row.source)
+
     # Til ustma-ust limiti — Python C++ dan sekinroq, shu bois masala
     # limiti unga adolatsiz bo'lishi mumkin (KEP ham shunday qiladi).
     override = ProblemLanguage.objects.filter(problem=problem, language=language).first()
@@ -88,6 +112,8 @@ def build_job(attempt: Attempt) -> JudgeJob:
         # Subtask bo'lsa IOI: guruh to'liq o'tsagina ball beriladi.
         # `scorer` da checker sonni o'zi qaytaradi.
         mode="ioi" if subtasks else "acm",
+        validator=validator,
+        validate_input=validate_input,
     )
 
 
