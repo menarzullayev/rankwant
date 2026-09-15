@@ -1,5 +1,0 @@
-judge
-main
-preflight
-protocol
-sandbox

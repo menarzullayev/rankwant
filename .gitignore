@@ -70,5 +70,14 @@ tools/.update-sync.json
 # natijalari. Bir martalik ish qurollari — repoga tushmasin.
 .tmp/
 
+# Domen/brend nomi tanlash tahlili (2026-09-14). Bir martalik ish quroli:
+# skriptlar, nomzodlar ro'yxati va hisobotlar. Mahsulot kodi emas.
+tools/naming/
+
+# Python paket metadatasi. `pip install -e .` da AVTOMATIK qayta yoziladi —
+# kuzatilsa, har o'rnatishdan keyin "o'zgargan" shovqin beradi
+# (o'lchandi: `pyproject.toml` dagi `ruff==0.16.6` shu fayllarga ko'chgan).
+*.egg-info/
+
 # CI/CD sessiya jurnali (real vaqtda kuzatuv uchun)
 ci-cd.log
