@@ -72,6 +72,11 @@ class Job:
     #: shunday tashlansa, bu nomzod validatsiyani SEZMASDAN o'tkazib
     #: yuborardi va «yopiq yiqilish» qoidasi buzilardi.
     validate_input: bool = False
+    #: Hack dvigateli (ADR-0020) yuborgan ish — MARSHRUTLASH uchun.
+    #: Judge hack mantig'ini bilmaydi: bu ikki qiymat natijada aynan
+    #: qaytariladi va API javobni to'g'ri hack va bosqichga bog'laydi.
+    hack_id: int = 0
+    hack_stage: str = ""
 
     @classmethod
     def from_json(cls, raw: dict[str, Any]) -> Job:
@@ -90,6 +95,8 @@ class Job:
             attempt_id=raw.get("attempt_id", 0),
             validator=raw.get("validator"),
             validate_input=bool(raw.get("validate_input", False)),
+            hack_id=int(raw.get("hack_id") or 0),
+            hack_stage=str(raw.get("hack_stage") or ""),
         )
 
 
@@ -129,6 +136,9 @@ class ResultDict(TypedDict):
     """Natija shakli — judge-go/protocol.go dagi `Result` bilan bir xil."""
 
     job_id: str
+    #: Ishdan aynan ko'chiriladi — hack natijasini bog'lash yo'li shu.
+    hack_id: int
+    hack_stage: str
     verdict: str
     score: int
     time_ms: int

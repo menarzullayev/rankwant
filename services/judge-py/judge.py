@@ -76,6 +76,8 @@ def judge(job: Job) -> ResultDict:
     }
     result: ResultDict = {
         "job_id": job.job_id,
+        "hack_id": job.hack_id,
+        "hack_stage": job.hack_stage,
         "verdict": P.IE,
         "score": 0,
         "time_ms": 0,

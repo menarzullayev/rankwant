@@ -105,6 +105,15 @@ type Job struct {
 	// buzuq kiritma bilan istalgan to'g'ri yechimni «sindirish» mumkin
 	// bo'lardi. Nomzodlar almashtiriladigan bo'lgani uchun bu xavf real.
 	ValidateInput bool `json:"validate_input,omitempty"`
+	// Hack dvigateli (ADR-0020) yuborgan ish — MARSHRUTLASH uchun.
+	//
+	// Judge hack mantig'ini bilmaydi va bilishi ham shart emas: u bu ikki
+	// qiymatni shunchaki natijada qaytaradi, API esa javob qaysi hackning
+	// qaysi bosqichiga tegishli ekanini shundan aniqlaydi. Bir hack uchta
+	// ish ochadi (generator, etalon yechim, himoyachi) — bosqichsiz
+	// javoblar aralashib ketardi.
+	HackID    int64  `json:"hack_id,omitempty"`
+	HackStage string `json:"hack_stage,omitempty"`
 }
 
 type TestResult struct {
@@ -129,8 +138,11 @@ type Result struct {
 	JobID string `json:"job_id"`
 	// API natijani shu maydon orqali urinishga bog'laydi. Tushib qolsa
 	// verdict hech qachon yozilmaydi va urinish PENDING qoladi.
-	AttemptID       int64        `json:"attempt_id"`
-	CustomRunID     *int64       `json:"custom_run_id,omitempty"`
+	AttemptID   int64  `json:"attempt_id"`
+	CustomRunID *int64 `json:"custom_run_id,omitempty"`
+	// Ishdan AYNAN ko'chiriladi — hack natijasini bog'lash yo'li shu.
+	HackID          int64        `json:"hack_id,omitempty"`
+	HackStage       string       `json:"hack_stage,omitempty"`
 	Verdict         string       `json:"verdict"`
 	Score           int          `json:"score"`
 	TimeMS          int64        `json:"time_ms"`
