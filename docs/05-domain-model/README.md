@@ -126,6 +126,29 @@ Sabab: 500 parallel submit ostida live hisoblash standings so'rovini buzadi (04-
 
 `is_rated` + **≥10 ishtirokchi** — Contests reytingi faqat shunda hisoblanadi.
 
+## Hacking — ADR-0020
+
+| Entity                | Maydonlar                                                                 |
+| --------------------- | ------------------------------------------------------------------------- |
+| **Hack**              | `hacker_id`, `defender_attempt_id`, `problem_id`, `contest_id` (null), `policy`, `status`, `stage`, `input_ref`, `output_ref` (S3/R2), `input_size`, `generator_language_id` (null), `generator_source`, `defender_verdict`, `detail`, `points`, `added_test_id` (null), `created_at`, `updated_at`, `judged_at` |
+| **HackRoom**          | `contest_id`, `number` — `contest_room` siyosati uchun xona (~40 kishi)   |
+| **HackRoomMember**    | `room_id`, `contest_id`, `user_id` — uniq `(contest, user)`               |
+| **HackLock**          | `contest_id`, `problem_id`, `user_id`, `created_at` — lock qilingan masalaga qayta yuborib bo'lmaydi |
+| **ReferenceSolution** | `problem_id` (OneToOne), `language_id`, `source`, `updated_at` — [ADR-0021](../07-adr/0021-hack-reference-solution.md) |
+
+Hack natijasi va urinish verdicti — **ikki xil narsa** (ADR-0020, 4-qaror):
+hack `TESTING` → `SUCCESSFUL` / `UNSUCCESSFUL` / `INVALID_INPUT` /
+`GENERATOR_CRASHED` / `IGNORED` bo'ladi, himoyachining urinishi esa
+`HACKED` verdictini oladi.
+
+Hack testi ham odatdagidek **S3/R2 da**: hacker kiritmasi va etalon yechim
+bergan javob obyekt xotirasiga yoziladi; test to'plamga qo'shilganda
+`TestCase.origin = "hack"` bo'ladi va o'sha havolalar ishlatiladi.
+
+`Contest` ga oyna maydonlari qo'shildi (`hack_room`, `hack_open_minutes`,
+`uphack_days`, `hack_tests_added_at`, `hack_phase_closed_at`), `Standing`
+ga esa hack ballari (`hack_score`, `hacks_successful`, `hacks_unsuccessful`).
+
 ## Reyting
 
 ### UserSolvedProblem — Skills manbasi
@@ -255,6 +278,8 @@ O'zgartirish = yangi ADR (`docs/07-adr/`).
 **Lock'dan keyingi tuzatishlar:**
 
 - 2026-09-06 — [ADR-0008](../07-adr/0008-auth-session-plus-pat.md): `ApiToken` entity qo'shildi (session + PAT auth modeli).
+- 2026-09-16 — [ADR-0020](../07-adr/0020-hacking.md): `Hack`, `HackRoom`, `HackRoomMember`, `HackLock` entitylari; `TestCase.origin`; `Contest` ga hack oynasi maydonlari; `Standing` ga hack ballari; 24-verdict `HACKED`.
+- 2026-09-16 — [ADR-0021](../07-adr/0021-hack-reference-solution.md): `ReferenceSolution` — hack testining javobini beradigan etalon yechim.
 
 ## Keyingi qadam
 

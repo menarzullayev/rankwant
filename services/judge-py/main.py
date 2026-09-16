@@ -80,6 +80,11 @@ def main() -> int:
             log.exception("job bajarilmadi: %s", job.job_id)
             result = {
                 "job_id": job.job_id,
+                # Yiqilgan ish ham marshrutni olib qaytishi SHART: hack
+                # dvigateli javobni shu ikki maydondan topadi, aks holda
+                # hack abadiy «tekshirilmoqda» bo'lib qolardi.
+                "hack_id": job.hack_id,
+                "hack_stage": job.hack_stage,
                 "verdict": P.IE,
                 "score": 0,
                 "time_ms": 0,

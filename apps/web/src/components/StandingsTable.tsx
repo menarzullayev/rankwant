@@ -17,6 +17,30 @@ import {
 
 type Payload = { frozen: boolean; results: Standing[] };
 
+/** Hack ustuni: ball va qavsda muvaffaqiyatli/muvaffaqiyatsiz soni.
+ *
+ * Ball MANFIY bo'lishi mumkin (`contest_room` da −50), shuning uchun
+ * ishorasi bilan yoziladi — nol bo'lsa esa e'tiborni tortmaydi. */
+function HackCell({ row }: { row: Standing }) {
+  // `Math.sign` — taqqoslash JUFTI o'rniga: `a > 0 ? … : a < 0 ? …`
+  // yozuvida `check_hardcoded` `>` va `<` oralig'ini JSX matni deb
+  // o'qiydi va qator yolg'on «qattiq yozilgan matn» bo'lib chiqadi.
+  // Ishora bu yerda uchta holatni bildiradi, ya'ni niyat ham aniqroq.
+  const sign = Math.sign(row.hack_score);
+  const tone =
+    sign === 0 ? "rw-faint" : sign === 1 ? "rw-ok-ink" : "rw-bad-ink";
+  return (
+    <TD align="right" className={`tabular-nums ${tone}`}>
+      {sign === 1 ? `+${row.hack_score}` : row.hack_score}
+      {(row.hacks_successful > 0 || row.hacks_unsuccessful > 0) && (
+        <span className="ml-1 text-theme-xs rw-faint">
+          ({row.hacks_successful}/{row.hacks_unsuccessful})
+        </span>
+      )}
+    </TD>
+  );
+}
+
 /** Standings jadvali.
  *
  * Jonli yangilanish POLLING orqali — SSE emas (pastdagi izohga qarang).
@@ -28,11 +52,15 @@ export function StandingsTable({
   initial,
   live,
   locale,
+  hacks = false,
 }: {
   slug: string;
   initial: Payload;
   live: boolean;
   locale: Locale;
+  /** Hack ustuni ko'rsatilsinmi (ADR-0020). Hack yoqilmagan musobaqada
+   *  u har qatorda nol turadigan ortiqcha ustun bo'lardi. */
+  hacks?: boolean;
 }) {
   const [data, setData] = useState<Payload>(initial);
   // Ommaviy jadval eng yaxshi 500 qatorni beradi — bu chegara CDN keshi
@@ -81,6 +109,7 @@ export function StandingsTable({
           <TH>{t(locale, "standings.rank")}</TH>
           <TH>{t(locale, "standings.user")}</TH>
           <TH align="right">{t(locale, "standings.solved")}</TH>
+          {hacks && <TH align="right">{t(locale, "standings.hacks")}</TH>}
           <TH align="right">{t(locale, "standings.penalty")}</TH>
         </THead>
         <TBody>
@@ -91,6 +120,7 @@ export function StandingsTable({
                 <UserName username={row.username} title={row.user_title} locale={locale} />
               </TD>
               <TD align="right">{row.solved_count}</TD>
+              {hacks && <HackCell row={row} />}
               <TD align="right" className="rw-faint">
                 {row.penalty}
               </TD>
@@ -104,13 +134,14 @@ export function StandingsTable({
                 <span className="rw-dim-2">· {t(locale, "standings.you")}</span>
               </TD>
               <TD align="right">{me.solved_count}</TD>
+              {hacks && <HackCell row={me} />}
               <TD align="right" className="rw-faint">
                 {me.penalty}
               </TD>
             </TR>
           )}
           {data.results.length === 0 && !meShown && (
-            <EmptyRow colSpan={4}>{t(locale, "common.empty")}</EmptyRow>
+            <EmptyRow colSpan={hacks ? 5 : 4}>{t(locale, "common.empty")}</EmptyRow>
           )}
         </TBody>
       </Table>

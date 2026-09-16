@@ -21,6 +21,11 @@ class ContestSerializer(serializers.ModelSerializer[Contest]):
     is_running = serializers.BooleanField(read_only=True)
     is_finished = serializers.BooleanField(read_only=True)
     is_frozen = serializers.BooleanField(read_only=True)
+    #: Hack oynasi (ADR-0020) — ikkalasi ham `Contest` xossasi. Ularsiz
+    #: mijoz «hack qilsa bo'ladimi va qachongacha?» degan savolga javob
+    #: topa olmasdi: oyna vaqt bo'yicha ochiladi va yopiladi.
+    is_hack_open = serializers.BooleanField(read_only=True)
+    hack_open_until = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = Contest
@@ -36,6 +41,9 @@ class ContestSerializer(serializers.ModelSerializer[Contest]):
             "is_running",
             "is_finished",
             "is_frozen",
+            "hack_room",
+            "is_hack_open",
+            "hack_open_until",
         ]
 
 
@@ -52,7 +60,25 @@ class StandingSerializer(serializers.ModelSerializer[Standing]):
 
     class Meta:
         model = Standing
-        fields = ["rank", "username", "user_title", "solved_count", "penalty", "last_ac_at"]
+        fields = [
+            "rank",
+            "username",
+            "user_title",
+            "solved_count",
+            "penalty",
+            # IOI musobaqasida tartibni AYNAN shu belgilaydi (`_rebuild_ioi`),
+            # lekin u yuborilmasdi: ballli jadval faqat to'liq yechilganlar
+            # sonini ko'rsatib, 270 ballik ishtirokchini 200 ballikdan
+            # ajratmasdi.
+            "total_score",
+            # Hack bali ALOHIDA ustun (ADR-0020). ACM da u `total_score` ga
+            # qo'shilmaydi — u yerda tartib yechilgan masala va jarimadan
+            # iborat — ya'ni yuborilmasa umuman ko'rinmasdi.
+            "hack_score",
+            "hacks_successful",
+            "hacks_unsuccessful",
+            "last_ac_at",
+        ]
 
 
 class RegistrationSerializer(serializers.ModelSerializer[ContestRegistration]):

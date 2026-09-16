@@ -11,8 +11,10 @@ from problems.models import (
     Language,
     Problem,
     ProblemReport,
+    ReferenceSolution,
     TestCase,
     Topic,
+    Validator,
 )
 
 
@@ -139,6 +141,53 @@ class StaffTestCaseSerializer(serializers.ModelSerializer[TestCase]):
     class Meta:
         model = TestCase
         fields = ["id", "order", "is_sample", "points", "input_ref", "output_ref"]
+
+
+class _ProblemProgramSerializer(serializers.ModelSerializer):  # type: ignore[type-arg]
+    """Masalaga biriktirilgan dastur: validator yoki etalon yechim.
+
+    Ikkalasi ham bitta shaklda — til va manba. `problem` maydoni ATAYIN
+    yo'q: u URL dan olinadi. So'rov tanasidan kelsa, bitta masalani
+    tahrirlayotgan xodim boshqasining validatorini almashtirib yuborishi
+    mumkin bo'lardi.
+    """
+
+    language = serializers.SlugRelatedField[Language](
+        slug_field="code", queryset=Language.objects.all()
+    )
+    #: Manba BAYT-BAYT saqlanadi. DRF `CharField` ni standart holatda
+    #: qirqadi va oxirgi qator uzilishini jimgina yeb qo'yardi
+    #: (o'lchandi) — platforma yuklangan dasturni o'zgartirmasligi kerak,
+    #: keyin esa «men yuborgan fayl bu emas» degan savol qolardi.
+    #:
+    #: `source` nomi DRF `Field.source` atributi bilan ustma-ust tushadi
+    #: — yuqoridagi `parent` bilan bir xil holat, stub'lar uchun ignore.
+    source = serializers.CharField(trim_whitespace=False)  # type: ignore[assignment]
+
+    def validate_source(self, value: str) -> str:
+        # Bo'sh manba judge'da kompilyatsiya xatosiga aylanadi va hack
+        # yuborgan foydalanuvchi sababini masala sozlamasidan izlamaydi.
+        if not value.strip():
+            raise serializers.ValidationError("Manba bo'sh")
+        return value
+
+
+class StaffValidatorSerializer(_ProblemProgramSerializer):
+    """Kirish validatori — hackingning birinchi darvozasi (ADR-0020)."""
+
+    class Meta:
+        model = Validator
+        fields = ["language", "source", "updated_at"]
+        read_only_fields = ["updated_at"]
+
+
+class StaffReferenceSolutionSerializer(_ProblemProgramSerializer):
+    """Etalon yechim — hack testining javobi shundan chiqadi (ADR-0021)."""
+
+    class Meta:
+        model = ReferenceSolution
+        fields = ["language", "source", "updated_at"]
+        read_only_fields = ["updated_at"]
 
 
 class TestCaseUploadSerializer(serializers.Serializer[Any]):

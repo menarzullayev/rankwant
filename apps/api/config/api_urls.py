@@ -9,6 +9,7 @@ urlpatterns = [
     path("", include("core.urls")),
     path("", include("problems.urls")),
     path("", include("judging.urls")),
+    path("", include("hacks.urls")),
     path("", include("contests.urls")),
     path("", include("qvant.urls")),
     path("", include("notifications.urls")),

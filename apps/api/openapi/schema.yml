@@ -1426,6 +1426,74 @@ paths:
               schema:
                 $ref: '#/components/schemas/DuelRecord'
           description: ''
+  /api/v1/hack-locks/:
+    get:
+      operationId: hack_locks_list
+      description: |-
+        Masalani lock qilish — `contest_room` siyosatining sharti.
+
+        `destroy` ATAYIN yo'q: lock qaytarilsa u xatar bo'lmay qolardi va
+        hack huquqi tekinga aylanardi (ADR-0020).
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - hack-locks
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedHackLockList'
+          description: ''
+    post:
+      operationId: hack_locks_create
+      description: |-
+        Masalani lock qilish — `contest_room` siyosatining sharti.
+
+        `destroy` ATAYIN yo'q: lock qaytarilsa u xatar bo'lmay qolardi va
+        hack huquqi tekinga aylanardi (ADR-0020).
+      tags:
+      - hack-locks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HackLockCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HackLockCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HackLockCreate'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HackLock'
+          description: ''
   /api/v1/hackathons/:
     get:
       operationId: hackathons_list
@@ -1591,6 +1659,137 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Submission'
+          description: ''
+  /api/v1/hacks/:
+    get:
+      operationId: hacks_list
+      description: Hack yuborish va natijalar — ADR-0020.
+      parameters:
+      - name: cursor
+        required: false
+        in: query
+        description: The pagination cursor value.
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - hacks
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedHackList'
+          description: ''
+    post:
+      operationId: hacks_create
+      description: Hack yuborish va natijalar — ADR-0020.
+      tags:
+      - hacks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HackCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HackCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HackCreate'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hack'
+          description: ''
+  /api/v1/hacks/{id}/:
+    get:
+      operationId: hacks_retrieve
+      description: Hack yuborish va natijalar — ADR-0020.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this hack.
+        required: true
+      tags:
+      - hacks
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HackDetail'
+          description: ''
+  /api/v1/hacks/eligibility/:
+    get:
+      operationId: hacks_eligibility_retrieve
+      description: |-
+        «Men buni hack qila olamanmi va nega yo'q?»
+
+        UI shu javobga qarab tugmani ko'rsatadi. Tekshiruv dvigatelning
+        O'ZIDAN so'raladi, ya'ni ko'rsatilgan sabab yuborishda qo'llanadigan
+        qoida bilan bir xil bo'ladi.
+      parameters:
+      - in: query
+        name: attempt
+        schema:
+          type: integer
+        required: true
+      tags:
+      - hacks
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HackEligibility'
+          description: ''
+  /api/v1/hacks/room/:
+    get:
+      operationId: hacks_room_retrieve
+      description: O'z xonangiz va undagi ishtirokchilar (`contest_room`).
+      parameters:
+      - in: query
+        name: contest
+        schema:
+          type: string
+        required: true
+      tags:
+      - hacks
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HackRoom'
           description: ''
   /api/v1/health/:
     get:
@@ -6014,6 +6213,115 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/staff/problems/{slug}/reference-solution/:
+    get:
+      operationId: staff_problems_reference_solution_retrieve
+      description: |-
+        Etalon yechim (ADR-0021) — hack testining to'g'ri javobi.
+
+        Hackerning o'z yechimi etalon bo'la OLMAYDI, shuning uchun u
+        masala bilan keladi va faqat xodim yuklaydi.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffReferenceSolution'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffReferenceSolution'
+          description: ''
+        '204':
+          description: No response body
+    put:
+      operationId: staff_problems_reference_solution_update
+      description: |-
+        Etalon yechim (ADR-0021) — hack testining to'g'ri javobi.
+
+        Hackerning o'z yechimi etalon bo'la OLMAYDI, shuning uchun u
+        masala bilan keladi va faqat xodim yuklaydi.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffReferenceSolution'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffReferenceSolution'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffReferenceSolution'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffReferenceSolution'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffReferenceSolution'
+          description: ''
+        '204':
+          description: No response body
+    delete:
+      operationId: staff_problems_reference_solution_destroy
+      description: |-
+        Etalon yechim (ADR-0021) — hack testining to'g'ri javobi.
+
+        Hackerning o'z yechimi etalon bo'la OLMAYDI, shuning uchun u
+        masala bilan keladi va faqat xodim yuklaydi.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffReferenceSolution'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffReferenceSolution'
+          description: ''
+        '204':
+          description: No response body
   /api/v1/staff/problems/{slug}/tests/:
     get:
       operationId: staff_problems_tests_list
@@ -6145,6 +6453,118 @@ paths:
       security:
       - cookieAuth: []
       responses:
+        '204':
+          description: No response body
+  /api/v1/staff/problems/{slug}/validator/:
+    get:
+      operationId: staff_problems_validator_retrieve
+      description: |-
+        Kirish validatori (ADR-0020).
+
+        Hackingning MAJBURIY darvozasi: validatorsiz masalada hack
+        umuman ochilmaydi, ya'ni bu endpoint bo'lmasa xususiyatni hech
+        bir masalada yoqib bo'lmasdi.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffValidator'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffValidator'
+          description: ''
+        '204':
+          description: No response body
+    put:
+      operationId: staff_problems_validator_update
+      description: |-
+        Kirish validatori (ADR-0020).
+
+        Hackingning MAJBURIY darvozasi: validatorsiz masalada hack
+        umuman ochilmaydi, ya'ni bu endpoint bo'lmasa xususiyatni hech
+        bir masalada yoqib bo'lmasdi.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffValidator'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffValidator'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffValidator'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffValidator'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffValidator'
+          description: ''
+        '204':
+          description: No response body
+    delete:
+      operationId: staff_problems_validator_destroy
+      description: |-
+        Kirish validatori (ADR-0020).
+
+        Hackingning MAJBURIY darvozasi: validatorsiz masalada hack
+        umuman ochilmaydi, ya'ni bu endpoint bo'lmasa xususiyatni hech
+        bir masalada yoqib bo'lmasdi.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffValidator'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffValidator'
+          description: ''
         '204':
           description: No response body
   /api/v1/staff/questions/:
@@ -9780,6 +10200,9 @@ components:
         problem:
           type: string
           readOnly: true
+        contest:
+          type: string
+          readOnly: true
         language:
           type: string
           readOnly: true
@@ -9820,6 +10243,7 @@ components:
           minimum: 0
           format: int64
       required:
+      - contest
       - created_at
       - id
       - language
@@ -9860,6 +10284,9 @@ components:
           nullable: true
           readOnly: true
         problem:
+          type: string
+          readOnly: true
+        contest:
           type: string
           readOnly: true
         language:
@@ -9911,6 +10338,7 @@ components:
             $ref: '#/components/schemas/AttemptTestResult'
           readOnly: true
       required:
+      - contest
       - created_at
       - id
       - language
@@ -10115,10 +10543,21 @@ components:
         is_frozen:
           type: boolean
           readOnly: true
+        hack_room:
+          type: boolean
+        is_hack_open:
+          type: boolean
+          readOnly: true
+        hack_open_until:
+          type: string
+          format: date-time
+          readOnly: true
       required:
       - end_at
+      - hack_open_until
       - is_finished
       - is_frozen
+      - is_hack_open
       - is_running
       - slug
       - start_at
@@ -10160,6 +10599,15 @@ components:
         is_frozen:
           type: boolean
           readOnly: true
+        hack_room:
+          type: boolean
+        is_hack_open:
+          type: boolean
+          readOnly: true
+        hack_open_until:
+          type: string
+          format: date-time
+          readOnly: true
         description:
           type: string
         problems:
@@ -10169,8 +10617,10 @@ components:
           readOnly: true
       required:
       - end_at
+      - hack_open_until
       - is_finished
       - is_frozen
+      - is_hack_open
       - is_running
       - problems
       - slug
@@ -10566,6 +11016,272 @@ components:
       - school
       - title
       - username
+    Hack:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        hacker:
+          type: string
+          readOnly: true
+        hacker_title:
+          allOf:
+          - $ref: '#/components/schemas/UserTitle'
+          nullable: true
+          readOnly: true
+        defender:
+          type: string
+          readOnly: true
+        defender_attempt:
+          type: integer
+        problem:
+          type: string
+          readOnly: true
+        contest:
+          type: string
+          readOnly: true
+        policy:
+          $ref: '#/components/schemas/PolicyEnum'
+        status:
+          allOf:
+          - $ref: '#/components/schemas/Status713Enum'
+          default: TESTING
+        stage:
+          $ref: '#/components/schemas/StageEnum'
+        defender_verdict:
+          type: string
+          maxLength: 24
+        detail:
+          type: string
+          description: |-
+            Sabab matni — faqat egasiga.
+
+            Bu yerda validator xabari yoki generatorning kompilyatsiya xatosi
+            turadi, ya'ni hackerning o'z kodi haqidagi ma'lumot.
+          readOnly: true
+        points:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        input_size:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        judged_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - contest
+      - created_at
+      - defender
+      - defender_attempt
+      - detail
+      - hacker
+      - hacker_title
+      - id
+      - policy
+      - problem
+    HackCreate:
+      type: object
+      description: |-
+        Hack yuborish: yo tayyor kiritma, YO generator dasturi.
+
+        `trim_whitespace=False` ataylab: test kiritmasida oxirgi qator uzilishi
+        ham ma'noga ega va DRF standart holatda uni jimgina yeb qo'yardi.
+      properties:
+        attempt:
+          type: integer
+        test_input:
+          type: string
+          default: ''
+        generator_language:
+          type: string
+          nullable: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        generator_source:
+          type: string
+          default: ''
+      required:
+      - attempt
+    HackDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        hacker:
+          type: string
+          readOnly: true
+        hacker_title:
+          allOf:
+          - $ref: '#/components/schemas/UserTitle'
+          nullable: true
+          readOnly: true
+        defender:
+          type: string
+          readOnly: true
+        defender_attempt:
+          type: integer
+        problem:
+          type: string
+          readOnly: true
+        contest:
+          type: string
+          readOnly: true
+        policy:
+          $ref: '#/components/schemas/PolicyEnum'
+        status:
+          allOf:
+          - $ref: '#/components/schemas/Status713Enum'
+          default: TESTING
+        stage:
+          $ref: '#/components/schemas/StageEnum'
+        defender_verdict:
+          type: string
+          maxLength: 24
+        detail:
+          type: string
+          description: |-
+            Sabab matni — faqat egasiga.
+
+            Bu yerda validator xabari yoki generatorning kompilyatsiya xatosi
+            turadi, ya'ni hackerning o'z kodi haqidagi ma'lumot.
+          readOnly: true
+        points:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        input_size:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        judged_at:
+          type: string
+          format: date-time
+          nullable: true
+        generator_language:
+          type: string
+          readOnly: true
+        generator_source:
+          type: string
+          readOnly: true
+        test_input:
+          type: string
+          description: |-
+            Yuborilgan test — egasiga, boshiga qadar qirqilgan.
+
+            Saqlash yiqilsa bo'sh qaytadi: hack sahifasi butunlay ochilmay
+            qolgandan ko'ra kiritmasiz ochilgani yaxshi.
+          readOnly: true
+      required:
+      - contest
+      - created_at
+      - defender
+      - defender_attempt
+      - detail
+      - generator_language
+      - generator_source
+      - hacker
+      - hacker_title
+      - id
+      - policy
+      - problem
+      - test_input
+    HackEligibility:
+      type: object
+      description: |-
+        «Hack qila olamanmi?» javobi.
+
+        Sabab HAR DOIM qaytariladi (ADR-0020, 2-tamoyil): UI tugmani jimgina
+        yashirsa, foydalanuvchi nima yetishmayotganini bilmasdi.
+      properties:
+        can_hack:
+          type: boolean
+          readOnly: true
+        reason:
+          type: string
+          readOnly: true
+        policy:
+          type: string
+          readOnly: true
+          nullable: true
+        policy_label:
+          type: string
+          readOnly: true
+        needs_lock:
+          type: boolean
+          readOnly: true
+        locked:
+          type: boolean
+          readOnly: true
+      required:
+      - can_hack
+      - locked
+      - needs_lock
+      - policy
+      - policy_label
+      - reason
+    HackLock:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        contest:
+          type: string
+          readOnly: true
+        problem:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - contest
+      - created_at
+      - id
+      - problem
+    HackLockCreate:
+      type: object
+      properties:
+        contest:
+          type: string
+          pattern: ^[-a-zA-Z0-9_]+$
+        problem:
+          type: string
+          pattern: ^[-a-zA-Z0-9_]+$
+      required:
+      - contest
+      - problem
+    HackRoom:
+      type: object
+      properties:
+        number:
+          type: integer
+          readOnly: true
+        members:
+          type: array
+          items:
+            type: string
+          readOnly: true
+      required:
+      - members
+      - number
     Hackathon:
       type: object
       properties:
@@ -10979,6 +11695,7 @@ components:
       - quest_awarded
       - streak_milestone
       - duel
+      - hack
       - system
       type: string
       description: |-
@@ -10988,6 +11705,7 @@ components:
         * `quest_awarded` - Vazifa bajarildi
         * `streak_milestone` - Streak yutug'i
         * `duel` - Duel
+        * `hack` - Hack
         * `system` - Tizim
     PaginatedApiTokenList:
       type: object
@@ -11192,6 +11910,48 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Follower'
+    PaginatedHackList:
+      type: object
+      required:
+      - results
+      properties:
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?cursor=cD00ODY%3D"
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?cursor=cj0xJnA9NDg3
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Hack'
+    PaginatedHackLockList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/HackLock'
     PaginatedHackathonList:
       type: object
       required:
@@ -13207,6 +13967,18 @@ components:
           readOnly: true
           nullable: true
           title: Oxirgi kirish
+    PolicyEnum:
+      enum:
+      - contest_room
+      - open_phase
+      - practice
+      - uphack
+      type: string
+      description: |-
+        * `contest_room` - Musobaqa xonasi
+        * `open_phase` - Ochiq faza
+        * `practice` - Amaliyot
+        * `uphack` - Uphack
     PostDetail:
       type: object
       properties:
@@ -15167,6 +15939,22 @@ components:
       - id
       - slug
       - title
+    StaffReferenceSolution:
+      type: object
+      description: Etalon yechim — hack testining javobi shundan chiqadi (ADR-0021).
+      properties:
+        language:
+          type: string
+        source:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - language
+      - source
+      - updated_at
     StaffRoadmap:
       type: object
       properties:
@@ -15745,6 +16533,22 @@ components:
       - rating_contest
       - rating_skills
       - username
+    StaffValidator:
+      type: object
+      description: Kirish validatori — hackingning birinchi darvozasi (ADR-0020).
+      properties:
+        language:
+          type: string
+        source:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - language
+      - source
+      - updated_at
     Stage:
       type: object
       properties:
@@ -15786,6 +16590,18 @@ components:
       - order
       - start_at
       - title
+    StageEnum:
+      enum:
+      - generate
+      - reference
+      - defend
+      - done
+      type: string
+      description: |-
+        * `generate` - Generator
+        * `reference` - Etalon yechim
+        * `defend` - Himoyachi
+        * `done` - Tugadi
     Standing:
       type: object
       properties:
@@ -15812,6 +16628,26 @@ components:
           maximum: 9223372036854775807
           minimum: 0
           format: int64
+        total_score:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        hack_score:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        hacks_successful:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        hacks_unsuccessful:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
         last_ac_at:
           type: string
           format: date-time
@@ -15829,6 +16665,24 @@ components:
         * `draft` - Qoralama
         * `published` - Nashr etilgan
         * `withdrawn` - Nashrdan olingan
+    Status713Enum:
+      enum:
+      - TESTING
+      - SUCCESSFUL
+      - UNSUCCESSFUL
+      - INVALID_INPUT
+      - GENERATOR_CRASHED
+      - IGNORED
+      - RATE_LIMITED
+      type: string
+      description: |-
+        * `TESTING` - Tekshirilmoqda
+        * `SUCCESSFUL` - Muvaffaqiyatli
+        * `UNSUCCESSFUL` - Muvaffaqiyatsiz
+        * `INVALID_INPUT` - Kiritma yaroqsiz
+        * `GENERATOR_CRASHED` - Generator yiqildi
+        * `IGNORED` - Hisobga olinmadi
+        * `RATE_LIMITED` - Tezlik chegarasi
     Status8d9Enum:
       enum:
       - open
@@ -16316,6 +17170,7 @@ components:
       - arena
       - duel
       - achievement
+      - hack
       type: string
       description: |-
         * `quest` - Quest
@@ -16328,6 +17183,7 @@ components:
         * `arena` - Arena
         * `duel` - Duel
         * `achievement` - Yutuq
+        * `hack` - Hack
     TypeEnum:
       enum:
       - daily

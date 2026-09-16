@@ -73,6 +73,7 @@ func subst(args []string, src, bin string) []string {
 func judge(ctx context.Context, job *Job, tests *store) *Result {
 	t0 := time.Now()
 	res := &Result{JobID: job.JobID, AttemptID: job.AttemptID, CustomRunID: job.CustomRunID,
+		HackID: job.HackID, HackStage: job.HackStage,
 		Verdict: VIE, PerTest: []TestResult{},
 		Meta: JudgeMeta{Worker: "judge-go", Sandbox: "nsjail"}}
 

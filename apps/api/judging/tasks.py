@@ -38,9 +38,21 @@ def drain_results(max_items: int = 500) -> int:
         if result is None:
             break
         try:
-            handled = (
-                apply_custom_result(result) if result.get("custom_run_id") else apply_result(result)
-            )
+            # Uch xil natija egasi bor, shuning uchun tur aniq e'lon
+            # qilinadi: aks holda birinchi tarmoq turini butun o'zgaruvchiga
+            # yopishtirib qo'yardi.
+            handled: object | None
+            # Marshrut tartibi: hack ishi `attempt_id` ni 0 qilib yuboradi,
+            # ya'ni `apply_result` uni «topilmadi» deb jimgina tashlab
+            # yuborardi va hack abadiy tekshirilmoqda bo'lib qolardi.
+            if result.get("hack_id"):
+                from hacks.services import apply_hack_result
+
+                handled = apply_hack_result(result)
+            elif result.get("custom_run_id"):
+                handled = apply_custom_result(result)
+            else:
+                handled = apply_result(result)
             if handled is not None:
                 applied += 1
         except Exception:

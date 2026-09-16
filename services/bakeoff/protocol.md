@@ -19,6 +19,8 @@ Worker `DATABASE_URL` **olmaydi**. Faqat `REDIS_URL` va S3 (bake-off'da local ka
 {
   "job_id": "uuid",
   "attempt_id": 12345,
+  "hack_id": 0,
+  "hack_stage": "",
   "language": {
     "code": "cpp23",
     "compile": [
@@ -66,6 +68,20 @@ Worker `DATABASE_URL` **olmaydi**. Faqat `REDIS_URL` va S3 (bake-off'da local ka
 
 `mode: acm` — birinchi muvaffaqiyatsiz testda to'xtaydi. `mode: ioi` — hamma test bajariladi.
 
+## Hack marshruti
+
+`hack_id` va `hack_stage` — hack dvigateli ([ADR-0020](../../docs/07-adr/0020-hacking.md)) uchun marshrut belgilari. Worker ularni **talqin qilmaydi**: ishdan natijaga aynan ko'chiradi, xolos. Hack mantig'i judge ichida yo'q — bu shartnomaning qarori, chunki aks holda «bitta dvigatel» qoidasi judge ichiga ham ko'chib ketardi.
+
+Bitta hack uchta alohida ish ochadi — `generate` (kiritmani yasaydi), `reference` (kiritma validatordan o'tadi va to'g'ri javob hisoblanadi), `defend` (himoyachining kodi o'sha test bilan ishlaydi) — va javoblar navbatdan istalgan tartibda qaytadi. API javobni aynan shu ikki qiymat bilan bog'laydi; bosqichsiz javob eski bosqichning natijasi bilan aralashib ketardi.
+
+| Maydon | Oddiy urinishda | Hack ishida |
+| ------ | --------------- | ----------- |
+| `attempt_id` | urinish ID'si | `0` — natijani urinishga YOZMANG |
+| `hack_id` | `0` | hack ID'si, natijada aynan qaytariladi |
+| `hack_stage` | `""` | `generate`, `reference` yoki `defend` |
+
+Bo'sh qiymatni tushirib qoldirish mumkin (`judge-go` `omitempty` bilan yuboradi) — iste'molchi ikkalasini ham bo'sh deb qabul qiladi.
+
 ## Kirish validatori
 
 `validator` — masala bilan keladigan, test cheklovlarga mosligini tekshiruvchi dastur ([ADR-0020](../../docs/07-adr/0020-hacking.md)). Shakli `checker.program` bilan bir xil: `{code, compile, run, source}`.
@@ -104,6 +120,8 @@ Nomzodlar: `judge-go` da bosqich to'liq; `judge-py` da bosqich yo'q, 5-qoida bo'
 {
   "job_id": "uuid",
   "attempt_id": 12345,
+  "hack_id": 0,
+  "hack_stage": "",
   "verdict": "AC",
   "score": 100,
   "time_ms": 12,

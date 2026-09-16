@@ -13,8 +13,11 @@ from django.utils import timezone
 
 from contests.models import Contest, ContestProblem
 from core.models import User
+from judging.models import Attempt
 from judging.provider import InMemoryJudgeProvider, set_provider
-from problems.models import Language, Problem, TestCase
+from judging.verdicts import Verdict
+from problems.models import Language, Problem, ReferenceSolution, TestCase, Validator
+from ratings.models import UserSolvedProblem
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -159,3 +162,61 @@ def fake_s3(monkeypatch: pytest.MonkeyPatch) -> FakeS3:
     s3 = FakeS3()
     monkeypatch.setattr("core.avatars._client", lambda: s3)
     return s3
+
+
+@pytest.fixture
+def fake_hack_storage(monkeypatch: pytest.MonkeyPatch) -> dict[str, str]:
+    """S3 o'rniga lug'at: hack testi obyekt xotirasiga yozilmaydi.
+
+    Yozish ham, o'qish ham almashtiriladi — aks holda serializer
+    yozilgan kiritmani qaytarib o'qiyolmay, sukut bilan bo'sh berardi
+    va ko'rinish testi hech narsani isbotlamasdi.
+    """
+    saved: dict[str, str] = {}
+
+    def put(key: str, content: str) -> str:
+        saved[key] = content
+        return f"s3://test/{key}"
+
+    def get(ref: str) -> str:
+        return saved[ref.removeprefix("s3://test/")]
+
+    monkeypatch.setattr("problems.storage.put_test_data", put)
+    monkeypatch.setattr("problems.storage.get_test_data", get)
+    monkeypatch.setattr("problems.storage.ensure_bucket", lambda: None)
+    return saved
+
+
+@pytest.fixture
+def defender_attempt(db, problem, language, user, other_user) -> Attempt:
+    """Hack qilinadigan holat: ikkala darvoza ochiq, nishon `AC`.
+
+    `user` — hacker (masalani o'zi yechgan), `other_user` — himoyachi.
+    """
+    Validator.objects.create(problem=problem, language=language, source="int main(){}\n")
+    ReferenceSolution.objects.create(problem=problem, language=language, source="int main(){}\n")
+    attempt = Attempt.objects.create(
+        user=other_user,
+        problem=problem,
+        language=language,
+        source_code="hacked_code",
+        verdict=Verdict.AC,
+        judged_at=timezone.now(),
+    )
+    UserSolvedProblem.objects.create(
+        user=other_user,
+        problem=problem,
+        first_ac_attempt=attempt,
+        difficulty_at_solve=problem.difficulty,
+    )
+    # Hisoblagich qatorlar bilan mos bo'lishi SHART: ishlab chiqarishda uni
+    # `on_attempt_judged` oshiradi, bu yerda esa qator qo'lda yaratildi.
+    # Mos bo'lmasa bekor qilish `solved_count` ni nol ostiga tushirib,
+    # butun tranzaksiyani yiqitardi.
+    problem.solved_count = 1
+    problem.save(update_fields=["solved_count"])
+    # Hacker ham masalani yechgan — ADR-0020 ning 2-tamoyili.
+    UserSolvedProblem.objects.create(
+        user=user, problem=problem, difficulty_at_solve=problem.difficulty
+    )
+    return attempt

@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync/atomic"
@@ -149,6 +150,35 @@ func PreflightCgroup() error {
 	return nil
 }
 
+// sandboxLogLine — nsjail'ning O'Z jurnal qatori:
+// `[W][2026-09-16T00:55:49+0000][39] logParams():347 …`.
+var sandboxLogLine = regexp.MustCompile(`^\[([IWDEF])\]\[[^\]]*\]\[\d+\] `)
+
+// stripSandboxLog — sandbox jurnalini foydalanuvchiga boradigan matndan
+// olib tashlaydi.
+//
+// Bayroq (`--really_quiet`) sababni yopadi, bu esa OQIBATNI: nsjail
+// versiyasi almashsa yoki kimdir bayroqni qaytarsa, jurnal yana
+// kompilyatsiya xatosi va validator sababi bilan aralashib ketardi.
+// Ikkalasi ham arzon, matn esa foydalanuvchiga ko'rinadi.
+//
+// `[E]` va `[F]` QOLDIRILADI: sandbox ishga tusha olmaganda o'sha qator
+// yagona tashxis bo'ladi va u `IE` bilan operatorga boradi.
+func stripSandboxLog(s string) string {
+	if !strings.Contains(s, "][") {
+		return s
+	}
+	lines := strings.Split(s, "\n")
+	kept := make([]string, 0, len(lines))
+	for _, line := range lines {
+		if m := sandboxLogLine.FindStringSubmatch(line); m != nil && m[1] != "E" && m[1] != "F" {
+			continue
+		}
+		kept = append(kept, line)
+	}
+	return strings.TrimSpace(strings.Join(kept, "\n"))
+}
+
 // cpuLimitSec — RLIMIT_CPU soniyalarda; yuqoriga yaxlitlanadi va
 // 1 soniya zaxira qo'shiladi, aks holda chegaraga yaqin AC lar noto'g'ri
 // TLE bo'lib qolardi.
@@ -164,7 +194,15 @@ func cpuLimitSec(ms int) int {
 // Har bir bayroq bake-off case'iga javob beradi (services/bakeoff/cases/).
 func nsjailArgs(work string, lim Limits, wallSec int) []string {
 	args := []string{
-		"--quiet",
+		// `--quiet` EMAS: u ogohlantirishlarni ham yozadi va nsjail ularni
+		// BOLANING stderr'iga chiqaradi, ya'ni ular kompilyatsiya xatosi
+		// bilan bir oqimda foydalanuvchiga borardi. O'lchandi (uchdan-uchiga
+		// sinov): hack rad etilganda sabab sifatida validatorning xabari
+		// emas, «[W][…] logParams():347 Process will be UID/EUID=0 in the
+		// global user namespace…» ko'rindi. `--really_quiet` faqat halokatli
+		// xabarlarni qoldiradi — sandbox umuman ishga tushmasa, o'sha qator
+		// yagona tashxis bo'lgani uchun u KERAK.
+		"--really_quiet",
 		"--mode", "o", // bir marta ishga tushir va chiq
 		// Host ildizi READ-ONLY ko'rinadi — kompilyator va kutubxonalar kerak,
 		// lekin yozib bo'lmaydi (10-file-write). Yoziladigan yagona joy — /box.
@@ -432,8 +470,10 @@ func finishRun(cg *cgroup, out, errb *capBuffer, runErr error,
 	oom := cg.readInt("memory.events", "oom_kill") > 0
 
 	return &runOutcome{
-		Stdout:   out.String(),
-		Stderr:   errb.String(),
+		Stdout: out.String(),
+		// Sandbox jurnali shu yerda kesiladi — barcha iste'molchilar
+		// (kompilyatsiya chiqishi, validator sababi) toza matn oladi.
+		Stderr:   stripSandboxLog(errb.String()),
 		ExitCode: exit,
 		CPUMs:    cpuUsec / 1000,
 		WallMs:   wall,
