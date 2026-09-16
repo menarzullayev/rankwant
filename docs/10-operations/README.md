@@ -507,6 +507,27 @@ o'tkazilmagan. 9 soniya arzon, shuning uchun zaxira **yaratilgan paytda**
 tekshiriladi. Log qatorida `restore=ok|skip|YIQILDI`; sinov yiqilsa skript
 ham yiqiladi — tiklanmaydigan zaxira zaxira emas.
 
+### Har yurishda nima tekshiriladi (uch qatlam)
+
+| Qatlam | Nima ushlanadi | Qanday |
+|---|---|---|
+| Dump butunligi | arxiv kesilgan; dump o'rtada uzilgan | `gzip -t` + `PostgreSQL database dump complete` qatori |
+| **MinIO to'liqligi** | arxiv bo'sh yoki chala | obyekt soni arxivdan **oldin** o'lchanadi, keyin `arxiv >= oldingi` |
+| Tiklash | dump haqiqatan tiklanadimi | alohida `restore_test` bazasi, 5 jadval + havolalar |
+
+⚠️ **MinIO tekshiruvi 2026-09-17 da qo'shildi.** Ilgari faqat
+`tar tzf >/dev/null` bor edi — ya'ni «o'qiladigan tar», xolos: bo'sh yoki
+chala arxiv ham o'qiladi. Loyiha tarixida aynan shunday holat bo'lgan
+(mount yo'qligi sababli «muvaffaqiyatli, ichi bo'sh» zaxira).
+
+⚠️ **Tenglik emas, `>=`:** tirik tizimda arxiv olinayotganda yangi obyekt
+paydo bo'lishi normal. Tenglik talab qilinsa tekshiruv muntazam yolg'on
+yiqilardi — bu loyihada tiklash sinovida bir marta aynan shunday bo'lgan.
+
+⚠️ `tar` chaqiruvida **`--force-local` SHART**: GNU tar `C:/...` ni
+«host:yo'l» deb o'qiydi va `Cannot connect to C: resolve failed` beradi
+(o'lchandi 2026-09-17).
+
 **Mexanizm — oddiy `pg_dump`, WAL arxivlash YO'Q.** Repoda `archive_mode`,
 `wal_level`, `archive_command`, `pgbackrest`, `wal-g`, `barman`, `PITR`
 so'zlarining birortasi ham uchramaydi, `docker-compose.yml` esa standart

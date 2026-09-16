@@ -339,11 +339,38 @@ verify_dump "$sql"
 # Linux'da `MSYS_NO_PATHCONV` shunchaki ishlatilmaydigan o'zgaruvchi —
 # bitta nusxa ikkala tizimda ham bir xil ishlaydi.
 objects="$dest/minio-$stamp.tar.gz"
+
+# ⚠️ Obyekt soni arxivdan OLDIN o'lchanadi. Sabab: tirik tizimda arxiv
+# olinayotganda yangi obyekt paydo bo'lishi normal, ya'ni keyin
+# solishtirilsa «arxiv kamroq» degan yolg'on xulosa chiqardi. Oldin
+# o'lchansa, shart aniq: `arxiv >= oldingi` — ya'ni zaxiradan oldin mavjud
+# bo'lgan hamma obyekt arxivda bor.
+minio_before="$(MSYS_NO_PATHCONV=1 docker run --rm -v rankwant_miniodata:/data:ro alpine \
+  sh -c "find /data -name 'part.1' | wc -l" 2>/dev/null | tr -d '\r' | tr -d ' ')"
+if [ -z "$minio_before" ]; then
+  # «O'qilmagan qiymatni o'tdi deb hisoblama» — o'lchab bo'lmasa, zaxira
+  # tekshirilmagan, tekshirilmagan zaxira esa zaxira emas.
+  echo "XATO: MinIO hajmidagi obyektlar sonini o'qib bo'lmadi" >&2
+  exit 1
+fi
+
 MSYS_NO_PATHCONV=1 MSYS2_ARG_CONV_EXCL='*' \
   docker run --rm -v rankwant_miniodata:/data:ro alpine \
   tar czf - -C /data . > "$objects.part"
 mv "$objects.part" "$objects"
-tar tzf "$objects" >/dev/null
+
+# ⚠️ `--force-local` SHART: GNU tar `C:/...` ni «host:yo'l» deb o'qiydi va
+# «Cannot connect to C: resolve failed» bilan yiqiladi (o'lchandi
+# 2026-09-17). `RANKWANT_BACKUP_DIR` Windows ko'rinishida berilsa
+# tekshiruv ma'nosiz bo'lib qolardi.
+tar tzf "$objects" --force-local >/dev/null
+
+minio_in_tar="$(tar tzf "$objects" --force-local | grep -c 'part\.1$' || true)"
+if [ "$minio_in_tar" -lt "$minio_before" ]; then
+  echo "XATO: MinIO arxivi CHALA — $minio_in_tar obyekt, zaxiradan oldin $minio_before edi" >&2
+  exit 1
+fi
+echo "  ✓ minio: $minio_in_tar obyekt (zaxiradan oldin $minio_before)"
 
 # ── Offsite nusxa (R2) ───────────────────────────────────────────────
 # Lokal dump allaqachon yaroqli; offsite yiqilsa bu HISOBGA OLINADI va
