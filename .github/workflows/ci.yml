@@ -230,6 +230,10 @@ jobs:
       - if: ${{ steps.check.outputs.ready == 'true' && needs.changes.outputs.web == 'true' }}
         run: npm run typecheck
         working-directory: apps/web
+      - name: Unit testlar (Vitest)
+        if: ${{ steps.check.outputs.ready == 'true' && needs.changes.outputs.web == 'true' }}
+        run: npm run test
+        working-directory: apps/web
       # Tiplar kalit yetishmasligini ushlaydi, lekin bo'sh satrni yoki
       # tarjimasiz qoldirilgan nusxani ko'rmaydi.
       - name: i18n to'liqligi

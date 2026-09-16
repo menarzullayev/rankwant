@@ -14,7 +14,8 @@
     "start": "next start",
     "lint": "eslint .",
     "typegen": "next typegen",
-    "typecheck": "next typegen && tsc --noEmit"
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.10",
@@ -33,14 +34,15 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
-    "@types/node": "22.10.2",
+    "@types/node": "22.20.2",
     "@types/react": "19.0.2",
     "@types/react-dom": "19.0.2",
     "eslint": "^9.39.5",
     "eslint-config-next": "^16.3.4",
     "postcss": "^8.5.28",
     "tailwindcss": "^4.3.3",
-    "typescript": "5.7.2"
+    "typescript": "5.7.2",
+    "vitest": "5.0.0"
   },
   "overrides": {
     "dompurify": "^3.4.15"

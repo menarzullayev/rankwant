@@ -2045,6 +2045,43 @@ def neg_fingerprint_catches_config_write() -> tuple[bool, str]:
     return True, "barmoq izi: config yozuvi tutildi, o'zgarishsiz holat tinch"
 
 
+def neg_web_unit_tests_catch_broken_cookie() -> tuple[bool, str]:
+    """The Vitest gate must be alive: a broken markup-cookie parser turns it red."""
+    web = ROOT / "apps/web"
+    node = os.environ.get("NODE") or shutil.which("node")
+    vitest = web / "node_modules/vitest/vitest.mjs"
+    if not node or not vitest.exists():
+        return False, "web/unit: node yoki vitest topilmadi — apps/web da `npm ci` kerak"
+
+    def vitest_run() -> tuple[int, str]:
+        proc = subprocess.run(
+            [node, str(vitest), "run", "tests/unit/markup-cookie.test.ts"],
+            cwd=web,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+        return proc.returncode, (proc.stdout or "") + (proc.stderr or "")
+
+    # Precondition: without it a missing install would read as "caught".
+    code, out = vitest_run()
+    if code != 0:
+        return False, f"web/unit: o'zgarmagan manbada ham yiqildi (exit {code}) — {out.strip()[-160:]}"
+    path = web / "src/lib/prefs.ts"
+    text = path.read_bytes().decode("utf-8")
+    old = 'if (k === "s") out.statusStyle'
+    if old not in text:
+        return False, "web/unit: prefs.ts da mutatsiya langari topilmadi"
+    with Mutation(path, old, 'if (k === "S") out.statusStyle'):
+        code, out = vitest_run()
+    if code == 0:
+        return False, "web/unit: buzuq cookie parse'ni testlar O'TKAZDI (exit 0) — darvoza o'lik"
+    if "markup cookie" not in out:
+        return False, f"web/unit: yiqildi, lekin sabab cookie testi emas — {out.strip()[-160:]}"
+    return True, "web/unit: buzuq cookie parse'ni Vitest tutdi (exit 1)"
+
+
 def neg_icons_pack_missing_key() -> tuple[bool, str]:
     """Bitta to'plamdan bitta kalit olib tashlansa — tutilsinmi?
 
@@ -2439,6 +2476,12 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("mutatsiya baytlarni saqlasin", neg_mutation_restores_bytes),
             ("tor oqimda qulamasin", neg_checker_survives_narrow_stdout),
             ("yangi branch darvozasiz qolmasin", neg_hook_gates_new_branch),
+        ],
+    ),
+    (
+        "web_unit",
+        [
+            ("buzuq cookie parse'ni Vitest tutsin", neg_web_unit_tests_catch_broken_cookie),
         ],
     ),
     (
