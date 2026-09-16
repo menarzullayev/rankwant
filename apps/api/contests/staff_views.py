@@ -18,9 +18,15 @@ from contests.staff_serializers import (
     StaffContestProblemSerializer,
     StaffContestSerializer,
 )
+from core.openapi_docs import crud_summaries
 from core.staff import StaffViewSet
 
 
+@crud_summaries(
+    one="musobaqa",
+    many="musobaqalar",
+    extra={"rebuild_standings": "Turnik jadvalini qayta hisoblash"},
+)
 class StaffContestViewSet(StaffViewSet):
     queryset = Contest.objects.prefetch_related("problems__problem").select_related("mirror_of")
     serializer_class = StaffContestSerializer

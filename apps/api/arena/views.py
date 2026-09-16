@@ -21,6 +21,7 @@ from arena.services import ArenaError, answer, join, standings
 from arena.services import my_standing as my_standing_of
 from core.cache import edge_cacheable
 from core.models import User
+from core.openapi_docs import crud_summaries
 from quizzes.serializers import QuestionPublicSerializer
 
 #: Arena tez — savol 30–90 s. Standings 3 s da yangilansa yetarli.
@@ -33,6 +34,7 @@ def _error(exc: ArenaError, http_status: int = status.HTTP_400_BAD_REQUEST) -> R
     )
 
 
+@crud_summaries(one="arena raundi", many="arena raundlari", only=("list", "retrieve"))
 class ArenaViewSet(viewsets.ReadOnlyModelViewSet[ArenaRound]):
     """Jonli savol-javob raundi."""
 

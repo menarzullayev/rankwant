@@ -118,7 +118,11 @@ class UsernameChangeView(APIView):
     throttle_classes = [ResilientScopedRateThrottle]
     throttle_scope = "account_change"
 
-    @extend_schema(request=UsernameChangeSerializer, responses={200: MeSerializer})
+    @extend_schema(
+        summary="Username'ni o'zgartirish",
+        request=UsernameChangeSerializer,
+        responses={200: MeSerializer},
+    )
     def post(self, request: Request) -> Response:
         serializer = UsernameChangeSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -162,7 +166,7 @@ class SessionListView(APIView):
 class SessionDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(responses={204: None})
+    @extend_schema(summary="Sessiyani yopish", responses={204: None})
     def delete(self, request: Request, pk: int) -> Response:
         row = UserSession.objects.filter(user=_me(request), pk=pk).first()
         if row is None:

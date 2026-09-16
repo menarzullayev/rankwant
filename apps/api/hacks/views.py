@@ -18,6 +18,7 @@ from rest_framework.response import Response
 
 from contests.models import Contest
 from core.models import User
+from core.openapi_docs import crud_summaries
 from core.pagination import TimeCursorPagination
 from core.throttling import ResilientScopedRateThrottle
 from hacks import services
@@ -62,6 +63,7 @@ def _attempt_from(value: Any) -> Attempt | None:
     )
 
 
+@crud_summaries(one="hack urinishi", many="hack urinishlari", only=("list", "retrieve"))
 class HackViewSet(
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,
@@ -230,6 +232,7 @@ class HackViewSet(
         return Response({"number": room.number, "members": members})
 
 
+@crud_summaries(one="hack qulfi", many="hack qulflari")
 class HackLockViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,

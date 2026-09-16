@@ -18,6 +18,7 @@ from rest_framework.views import APIView
 
 from core.cache import cache_get, cache_set, edge_cacheable
 from core.models import User
+from core.openapi_docs import crud_summaries
 from core.pagination import StandardPagination
 from judging.verdicts import Verdict
 from problems.filters import ProblemFilter
@@ -588,6 +589,7 @@ class TopicViewSet(viewsets.ReadOnlyModelViewSet[Topic]):
     )
 
 
+@crud_summaries(one="til", many="tillar", only=("list", "retrieve"))
 class LanguageViewSet(viewsets.ReadOnlyModelViewSet[Language]):
     permission_classes = [AllowAny]
     serializer_class = LanguageSerializer

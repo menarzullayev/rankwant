@@ -20,6 +20,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from core.models import User
+from core.openapi_docs import crud_summaries
 from core.pagination import StandardPagination
 from updates import services
 from updates.models import SystemUpdate, UpdateRead
@@ -31,6 +32,7 @@ from updates.serializers import (
 )
 
 
+@crud_summaries(one="yangilik", many="yangiliklar", only=("list", "retrieve"))
 class SystemUpdateViewSet(
     mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet[SystemUpdate]
 ):

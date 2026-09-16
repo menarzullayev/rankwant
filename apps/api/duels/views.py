@@ -9,6 +9,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from core.models import User
+from core.openapi_docs import crud_summaries
 from duels.models import Duel
 from duels.serializers import DuelCreateSerializer, DuelRecordSerializer, DuelSerializer
 from duels.services import DuelError, accept, cancel, create, record
@@ -21,6 +22,7 @@ def _error(exc: DuelError) -> Response:
     )
 
 
+@crud_summaries(one="duel", many="duellar", only=("list", "retrieve"))
 class DuelViewSet(
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,

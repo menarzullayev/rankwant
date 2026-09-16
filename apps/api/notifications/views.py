@@ -8,12 +8,19 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from core.models import User
+from core.openapi_docs import crud_summaries
 from core.pagination import TimeCursorPagination
 from notifications.models import Notification
 from notifications.serializers import MarkReadSerializer, NotificationSerializer
 from notifications.services import mark_read, unread_count
 
 
+@crud_summaries(
+    one="bildirishnoma",
+    many="bildirishnomalar",
+    only=("list",),
+    extra={"unread_count": "O'qilmaganlar soni", "mark_read": "Hammasini o'qilgan deb belgilash"},
+)
 class NotificationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet[Notification]):
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated]

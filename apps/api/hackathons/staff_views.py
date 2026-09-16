@@ -16,6 +16,7 @@ from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from core.openapi_docs import crud_summaries
 from core.staff import StaffViewSet
 from hackathons.models import Hackathon, HackathonSubmission
 from hackathons.serializers import ScoreSerializer
@@ -23,6 +24,11 @@ from hackathons.staff_serializers import StaffHackathonSerializer, StaffSubmissi
 from hackathons.views import score_submission
 
 
+@crud_summaries(
+    one="hakaton",
+    many="hakatonlar",
+    extra={"score_entry": "Loyihani baholash (0–100)"},
+)
 class StaffHackathonViewSet(StaffViewSet):
     serializer_class = StaffHackathonSerializer
     lookup_field = "slug"

@@ -19,12 +19,23 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from core.openapi_docs import crud_summaries
 from core.staff import StaffViewSet
 from updates import services
 from updates.models import SystemUpdate
 from updates.serializers import StaffSystemUpdateSerializer
 
 
+@crud_summaries(
+    one="yangilik",
+    many="yangiliklar",
+    extra={
+        "publish": "Yangilikni nashr qilish",
+        "withdraw": "Nashrdan qaytarib olish",
+        "enable": "Yangilikni yoqish",
+        "disable": "Yangilikni o'chirish",
+    },
+)
 class StaffUpdateViewSet(StaffViewSet):
     queryset = SystemUpdate.objects.prefetch_related("translations").select_related("author")
     serializer_class = StaffSystemUpdateSerializer

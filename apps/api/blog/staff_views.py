@@ -15,9 +15,15 @@ from rest_framework.response import Response
 
 from blog.models import Post
 from blog.staff_serializers import StaffPostSerializer
+from core.openapi_docs import crud_summaries
 from core.staff import StaffViewSet
 
 
+@crud_summaries(
+    one="post",
+    many="postlar",
+    extra={"publish": "Postni nashr qilish", "unpublish": "Postni nashrdan olish"},
+)
 class StaffPostViewSet(StaffViewSet):
     queryset = Post.objects.select_related("author")
     serializer_class = StaffPostSerializer

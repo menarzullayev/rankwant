@@ -26,6 +26,7 @@ from contests.serializers import (
 from contests.services import start_virtual, virtual_deadline
 from core.cache import cache_get, cache_set, edge_cacheable
 from core.models import User
+from core.openapi_docs import crud_summaries
 from core.pagination import StandardPagination
 
 #: Chekka kesh oralig'i — 04-prd: standings 10–30 s da yangilansa yetarli.
@@ -43,6 +44,17 @@ STANDINGS_CACHE_S = 10
 STANDINGS_TOP = 500
 
 
+@crud_summaries(
+    one="musobaqa",
+    many="musobaqa",
+    only=("list", "retrieve"),
+    extra={
+        "register": "Musobaqaga ro'yxatdan o'tish",
+        "standings": "Turnik jadvali",
+        "my_standing": "O'z o'rni",
+        "virtual": "Virtual qatnashish",
+    },
+)
 class ContestViewSet(viewsets.ReadOnlyModelViewSet[Contest]):
     permission_classes = [AllowAny]
     lookup_field = "slug"
@@ -170,7 +182,10 @@ class CertificateView(APIView):
 class CertificatePdfView(APIView):
     permission_classes = [AllowAny]
 
-    @extend_schema(responses={(200, "application/pdf"): OpenApiTypes.BINARY})
+    @extend_schema(
+        summary="Sertifikat PDF'i",
+        responses={(200, "application/pdf"): OpenApiTypes.BINARY},
+    )
     def get(self, request: Request, pk: UUID) -> HttpResponse:
         cert = _certificate(pk)
         key = f"cert:pdf:{cert.pk}"

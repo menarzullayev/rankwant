@@ -9,12 +9,18 @@ from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from core.openapi_docs import crud_summaries
 from core.staff import StaffViewSet
 from tournaments import services
 from tournaments.models import Tournament
 from tournaments.staff_serializers import StaffTournamentSerializer
 
 
+@crud_summaries(
+    one="chempionat",
+    many="chempionatlar",
+    extra={"rebuild": "Yakuniy jadvalni qayta hisoblash"},
+)
 class StaffTournamentViewSet(StaffViewSet):
     queryset = Tournament.objects.prefetch_related("stages__contest")
     serializer_class = StaffTournamentSerializer

@@ -12,6 +12,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from core.models import User
+from core.openapi_docs import crud_summaries
 from core.pagination import TimeCursorPagination
 from core.permissions import CanSubmit
 from core.throttling import ResilientScopedRateThrottle
@@ -33,6 +34,7 @@ from problems.models import Language, Problem
 MAX_SOURCE_CHARS = 4096
 
 
+@crud_summaries(one="urinish", many="urinishlar", only=("list", "retrieve"))
 class AttemptViewSet(
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,
@@ -168,6 +170,7 @@ class AttemptViewSet(
         return Response(AttemptSerializer(attempt).data, status=status.HTTP_201_CREATED)
 
 
+@crud_summaries(one="namunaviy yugurish", many="namunaviy yugurishlar", only=("list", "retrieve"))
 class CustomRunViewSet(
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,

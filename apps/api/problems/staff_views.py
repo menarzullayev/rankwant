@@ -18,6 +18,7 @@ from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from core.openapi_docs import crud_summaries
 from core.staff import StaffViewSet
 from problems import storage
 from problems.models import (
@@ -39,6 +40,7 @@ from problems.staff_serializers import (
 )
 
 
+@crud_summaries(one="mavzu", many="mavzular")
 class StaffTopicViewSet(StaffViewSet):
     serializer_class = StaffTopicSerializer
     lookup_field = "slug"
@@ -62,6 +64,16 @@ class StaffProblemReportViewSet(StaffViewSet):
     ordering = ["status", "-created_at", "-pk"]
 
 
+@crud_summaries(
+    one="masala",
+    many="masalalar",
+    extra={
+        "tests": "Masala testlari bilan ishlash",
+        "delete_test": "Testni o'chirish",
+        "validator": "Tekshiruvchi (validator) yuklash",
+        "reference_solution": "Namuna yechim yuklash",
+    },
+)
 class StaffProblemViewSet(StaffViewSet):
     serializer_class = StaffProblemSerializer
     lookup_field = "slug"

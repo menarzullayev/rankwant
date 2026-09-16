@@ -77,7 +77,7 @@ def _profile_owner(username: str) -> User:
 class SkillCatalogView(APIView):
     permission_classes = [AllowAny]
 
-    @extend_schema(responses={200: SkillSerializer(many=True)})
+    @extend_schema(summary="Ko'nikmalar katalogi", responses={200: SkillSerializer(many=True)})
     def get(self, request: Request) -> Response:
         return Response(SkillSerializer(Skill.objects.all(), many=True).data)
 
@@ -85,7 +85,7 @@ class SkillCatalogView(APIView):
 class TechnologyCatalogView(APIView):
     permission_classes = [AllowAny]
 
-    @extend_schema(responses={200: None})
+    @extend_schema(summary="Texnologiyalar katalogi", responses={200: None})
     def get(self, request: Request) -> Response:
         return Response([{"slug": s, "name": n} for s, n in TECHNOLOGIES.items()])
 
@@ -96,12 +96,15 @@ class TechnologyCatalogView(APIView):
 class MySkillsView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(responses={200: UserSkillOutSerializer(many=True)})
+    @extend_schema(
+        summary="Ko'nikmalar ro'yxati", responses={200: UserSkillOutSerializer(many=True)}
+    )
     def get(self, request: Request) -> Response:
         rows = UserSkill.objects.filter(user=_me(request)).select_related("skill")
         return Response(UserSkillOutSerializer(rows, many=True).data)
 
     @extend_schema(
+        summary="Ko'nikmalarni almashtirish",
         request=UserSkillInSerializer(many=True),
         responses={200: UserSkillOutSerializer(many=True)},
     )
@@ -129,12 +132,13 @@ class MySkillsView(APIView):
 class MyTechnologiesView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(responses={200: None})
+    @extend_schema(summary="Texnologiyalar ro'yxati", responses={200: None})
     def get(self, request: Request) -> Response:
         slugs = UserTechnology.objects.filter(user=_me(request)).values_list("slug", flat=True)
         return Response([{"slug": s, "name": TECHNOLOGIES.get(s, s)} for s in slugs])
 
     @extend_schema(
+        summary="Texnologiyalarni almashtirish",
         request={"application/json": {"type": "array", "items": {"type": "string"}}},
         responses={200: None},
     )
@@ -192,13 +196,15 @@ class MyWorkView(_CareerView):
 class MyExternalView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(responses={200: ExternalOutSerializer(many=True)})
+    @extend_schema(summary="Tashqi profillar", responses={200: ExternalOutSerializer(many=True)})
     def get(self, request: Request) -> Response:
         rows = ExternalProfile.objects.filter(user=_me(request))
         return Response(ExternalOutSerializer(rows, many=True).data)
 
     @extend_schema(
-        request=ExternalInSerializer(many=True), responses={200: ExternalOutSerializer(many=True)}
+        summary="Tashqi profillarni almashtirish",
+        request=ExternalInSerializer(many=True),
+        responses={200: ExternalOutSerializer(many=True)},
     )
     def put(self, request: Request) -> Response:
         user = _me(request)
@@ -236,7 +242,7 @@ class MyExternalView(APIView):
 class PublicProfileView(APIView):
     permission_classes = [AllowAny]
 
-    @extend_schema(responses={200: None})
+    @extend_schema(summary="Ommaviy profil", responses={200: None})
     def get(self, request: Request, username: str) -> Response:
         viewer = request.user if isinstance(request.user, User) else None
         return Response(public.build_profile(_profile_owner(username), viewer))
@@ -245,7 +251,11 @@ class PublicProfileView(APIView):
 class ActivityView(APIView):
     permission_classes = [AllowAny]
 
-    @extend_schema(parameters=[OpenApiParameter("before", str)], responses={200: None})
+    @extend_schema(
+        summary="Faollik tarixi",
+        parameters=[OpenApiParameter("before", str)],
+        responses={200: None},
+    )
     def get(self, request: Request, username: str) -> Response:
         before = parse_datetime(request.query_params.get("before", "") or "")
         return Response(public.activity(_profile_owner(username), before=before))
@@ -254,7 +264,7 @@ class ActivityView(APIView):
 class AchievementsView(APIView):
     permission_classes = [AllowAny]
 
-    @extend_schema(responses={200: None})
+    @extend_schema(summary="Yutuqlar", responses={200: None})
     def get(self, request: Request, username: str) -> Response:
         return Response(achievements.rows(_profile_owner(username)))
 
@@ -262,7 +272,7 @@ class AchievementsView(APIView):
 class PurchasesView(APIView):
     permission_classes = [AllowAny]
 
-    @extend_schema(responses={200: None})
+    @extend_schema(summary="Xaridlar tarixi", responses={200: None})
     def get(self, request: Request, username: str) -> Response:
         return Response(public.purchases(_profile_owner(username)))
 
@@ -278,7 +288,7 @@ class FollowView(APIView):
             }
         )
 
-    @extend_schema(request=None, responses={200: None})
+    @extend_schema(summary="Kuzatish", request=None, responses={200: None})
     def post(self, request: Request, username: str) -> Response:
         viewer, target = _me(request), _profile_owner(username)
         if target.pk == viewer.pk:
@@ -286,7 +296,7 @@ class FollowView(APIView):
         Follow.objects.get_or_create(follower=viewer, following=target)
         return self._state(target, viewer)
 
-    @extend_schema(responses={200: None})
+    @extend_schema(summary="Kuzatishni bekor qilish", responses={200: None})
     def delete(self, request: Request, username: str) -> Response:
         viewer, target = _me(request), _profile_owner(username)
         Follow.objects.filter(follower=viewer, following=target).delete()
@@ -364,13 +374,15 @@ def _team_payload(team: Team, viewer: User) -> dict[str, Any]:
 class MyTeamsView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(responses={200: TeamSerializer(many=True)})
+    @extend_schema(summary="Mening jamoalarim", responses={200: TeamSerializer(many=True)})
     def get(self, request: Request) -> Response:
         user = _me(request)
         rows = Team.objects.filter(members__user=user).prefetch_related("members__user").distinct()
         return Response(TeamSerializer(rows, many=True, context={"viewer": user}).data)
 
-    @extend_schema(request=TeamCreateSerializer, responses={201: TeamSerializer})
+    @extend_schema(
+        summary="Jamoa yaratish", request=TeamCreateSerializer, responses={201: TeamSerializer}
+    )
     def post(self, request: Request) -> Response:
         user = _me(request)
         serializer = TeamCreateSerializer(data=request.data)
@@ -385,7 +397,9 @@ class MyTeamsView(APIView):
 class TeamJoinView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(request=TeamJoinSerializer, responses={200: TeamSerializer})
+    @extend_schema(
+        summary="Jamoaga qo'shilish", request=TeamJoinSerializer, responses={200: TeamSerializer}
+    )
     def post(self, request: Request) -> Response:
         user = _me(request)
         serializer = TeamJoinSerializer(data=request.data)
@@ -400,7 +414,7 @@ class TeamJoinView(APIView):
 class TeamDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(responses={204: None})
+    @extend_schema(summary="Jamoani o'chirish", responses={204: None})
     def delete(self, request: Request, pk: int) -> Response:
         try:
             teams.delete(get_object_or_404(Team, pk=pk), _me(request))
@@ -412,7 +426,7 @@ class TeamDetailView(APIView):
 class TeamRefreshView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(request=None, responses={200: TeamSerializer})
+    @extend_schema(summary="Taklif kodini yangilash", request=None, responses={200: TeamSerializer})
     def post(self, request: Request, pk: int) -> Response:
         user = _me(request)
         try:
@@ -425,7 +439,7 @@ class TeamRefreshView(APIView):
 class TeamLeaveView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(request=None, responses={204: None})
+    @extend_schema(summary="Jamoadan chiqish", request=None, responses={204: None})
     def post(self, request: Request, pk: int) -> Response:
         try:
             teams.leave(get_object_or_404(Team, pk=pk), _me(request))
@@ -437,7 +451,7 @@ class TeamLeaveView(APIView):
 class TeamMemberView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(responses={204: None})
+    @extend_schema(summary="A'zoni jamoadan chiqarish", responses={204: None})
     def delete(self, request: Request, pk: int, username: str) -> Response:
         try:
             teams.remove(get_object_or_404(Team, pk=pk), _me(request), username)

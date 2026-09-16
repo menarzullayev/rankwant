@@ -22,7 +22,12 @@ from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
-from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    OpenApiResponse,
+    extend_schema,
+    extend_schema_view,
+)
 from rest_framework import exceptions, generics, status, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
@@ -276,6 +281,7 @@ class SearchView(APIView):
         )
 
 
+@extend_schema_view(post=extend_schema(summary="Ro'yxatdan o'tish"))
 class RegisterView(generics.CreateAPIView[User]):
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
@@ -414,7 +420,7 @@ class UsernameCheckView(APIView):
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
-    @extend_schema(request=LoginSerializer, responses={200: MeSerializer})
+    @extend_schema(summary="Tizimga kirish", request=LoginSerializer, responses={200: MeSerializer})
     def post(self, request: Request) -> Response:
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -500,12 +506,17 @@ class AnalyticsEventView(APIView):
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @extend_schema(request=None, responses={204: None})
+    @extend_schema(summary="Tizimdan chiqish", request=None, responses={204: None})
     def post(self, request: Request) -> Response:
         logout(request)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@extend_schema_view(
+    get=extend_schema(summary="O'z profili"),
+    put=extend_schema(summary="Profilni to'liq yangilash"),
+    patch=extend_schema(summary="Profilni qisman yangilash"),
+)
 class MeView(generics.RetrieveUpdateDestroyAPIView[User]):
     serializer_class = MeSerializer
     permission_classes = [IsAuthenticated]

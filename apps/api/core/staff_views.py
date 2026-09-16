@@ -22,6 +22,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.models import AnalyticsEvent, School, User
+from core.openapi_docs import crud_summaries
 from core.staff import SessionOnly, StaffViewSet
 from core.staff_serializers import (
     QvantAdjustSerializer,
@@ -35,6 +36,15 @@ from qvant import ledger
 from qvant.models import QvantTransaction
 
 
+@crud_summaries(
+    one="foydalanuvchi",
+    many="foydalanuvchilar",
+    only=("list", "retrieve", "create", "partial_update"),
+    extra={
+        "notify": "Bitta foydalanuvchiga bildirishnoma",
+        "broadcast": "Hammaga bildirishnoma yuborish",
+    },
+)
 class StaffUserViewSet(StaffViewSet):
     serializer_class = StaffUserSerializer
     lookup_field = "username"

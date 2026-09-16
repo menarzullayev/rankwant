@@ -21,6 +21,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from core.models import User
+from core.openapi_docs import crud_summaries
 from core.pagination import StandardPagination
 from roadmap import services
 from roadmap.models import RoadmapItem
@@ -33,6 +34,7 @@ from roadmap.serializers import (
 )
 
 
+@crud_summaries(one="yo'l xaritasi bandi", many="yo'l xaritasi bandlari", only=("list", "retrieve"))
 class RoadmapItemViewSet(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,

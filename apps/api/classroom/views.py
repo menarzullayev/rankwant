@@ -21,9 +21,11 @@ from classroom.serializers import (
 )
 from classroom.services import ClassroomError, assignment_progress, join
 from core.models import User
+from core.openapi_docs import crud_summaries
 from problems.models import Problem
 
 
+@crud_summaries(one="sinf", many="sinflar")
 class ClassroomViewSet(viewsets.ModelViewSet[Classroom]):
     """PRD P2-2 — o'qituvchi sinfi."""
 

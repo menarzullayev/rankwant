@@ -93,7 +93,9 @@ def main() -> int:
             op = ops.get(method) if isinstance(ops, dict) else None
             if not isinstance(op, dict):
                 continue
-            desc = first_line(str(op.get("description") or op.get("summary") or ""))
+            # `summary` birinchi: u amalga tegishli qisqa matn, `description`
+            # esa ko'pincha butun ViewSet'ga tegishli (docstring).
+            desc = first_line(str(op.get("summary") or op.get("description") or ""))
             op_id = str(op.get("operationId", ""))
             rows.append((domain_of(path), method.upper(), path, op_id, action_of(op_id), desc))
 
@@ -111,7 +113,7 @@ def main() -> int:
 
     lines: list[str] = []
     add = lines.append
-    add(f"# RankWant API — endpointlar jadvali")
+    add("# RankWant API — endpointlar jadvali")
     add("")
     add(f"Manba: `{schema_path.as_posix()}` · OpenAPI {schema.get('openapi', '?')}")
     add("")

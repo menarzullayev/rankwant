@@ -10,6 +10,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from core.models import User
+from core.openapi_docs import crud_summaries
 from hackathons.models import Hackathon, HackathonSubmission
 from hackathons.serializers import (
     HackathonSerializer,
@@ -57,6 +58,16 @@ def score_submission(
     return Response(serializer_class(entry).data)
 
 
+@crud_summaries(
+    one="hakaton",
+    many="hakatonlar",
+    only=("list", "retrieve"),
+    extra={
+        "submit": "Loyiha topshirish",
+        "submissions": "Loyihalar ro'yxati",
+        "score_entry": "Loyihani baholash (0–100)",
+    },
+)
 class HackathonViewSet(viewsets.ReadOnlyModelViewSet[Hackathon]):
     permission_classes = [AllowAny]
     serializer_class = HackathonSerializer

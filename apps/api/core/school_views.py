@@ -10,10 +10,12 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from core.models import School
+from core.openapi_docs import crud_summaries
 from core.pagination import StandardPagination
 from core.serializers import SchoolSerializer
 
 
+@crud_summaries(one="maktab", many="maktablar", only=("list", "retrieve"))
 class SchoolViewSet(viewsets.ReadOnlyModelViewSet[School]):
     serializer_class = SchoolSerializer
     permission_classes = [AllowAny]

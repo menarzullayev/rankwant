@@ -25,6 +25,7 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from core.openapi_docs import crud_summaries
 from core.staff import StaffViewSet
 from roadmap import services
 from roadmap.models import RoadmapComment, RoadmapItem
@@ -35,6 +36,11 @@ from roadmap.serializers import (
 )
 
 
+@crud_summaries(
+    one="platforma yo'l xaritasi bandi",
+    many="platforma yo'l xaritasi bandlari",
+    extra={"set_status": "Band holatini o'zgartirish"},
+)
 class StaffRoadmapViewSet(StaffViewSet):
     queryset = RoadmapItem.objects.select_related("author", "update")
     serializer_class = StaffRoadmapItemSerializer

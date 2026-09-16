@@ -5,9 +5,11 @@ from rest_framework.permissions import AllowAny
 
 from blog.models import Post
 from blog.serializers import PostDetailSerializer, PostListSerializer
+from core.openapi_docs import crud_summaries
 from core.pagination import StandardPagination
 
 
+@crud_summaries(one="post", many="postlar", only=("list", "retrieve"))
 class PostViewSet(viewsets.ReadOnlyModelViewSet[Post]):
     """Yozish Django admin orqali — API faqat o'qish uchun."""
 

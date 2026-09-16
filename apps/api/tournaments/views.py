@@ -8,6 +8,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from core.openapi_docs import crud_summaries
 from tournaments.models import Tournament, TournamentStanding
 from tournaments.serializers import (
     TournamentDetailSerializer,
@@ -16,6 +17,12 @@ from tournaments.serializers import (
 )
 
 
+@crud_summaries(
+    one="chempionat",
+    many="chempionatlar",
+    only=("list", "retrieve"),
+    extra={"standings": "Yakuniy jadval"},
+)
 class TournamentViewSet(viewsets.ReadOnlyModelViewSet[Tournament]):
     permission_classes = [AllowAny]
     lookup_field = "slug"

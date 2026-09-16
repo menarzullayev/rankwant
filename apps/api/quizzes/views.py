@@ -11,6 +11,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from core.models import User
+from core.openapi_docs import crud_summaries
 from quizzes.models import Quiz, QuizAttempt
 from quizzes.serializers import (
     QuizDetailSerializer,
@@ -21,6 +22,7 @@ from quizzes.serializers import (
 from quizzes.services import submit
 
 
+@crud_summaries(one="test", many="testlar", only=("list", "retrieve"))
 class QuizViewSet(viewsets.ReadOnlyModelViewSet[Quiz]):
     """PRD P2-6 — nazariy testlar."""
 

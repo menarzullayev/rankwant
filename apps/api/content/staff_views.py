@@ -13,9 +13,11 @@ from rest_framework.serializers import BaseSerializer
 
 from content.models import Article, Roadmap
 from content.staff_serializers import StaffArticleSerializer, StaffRoadmapSerializer
+from core.openapi_docs import crud_summaries
 from core.staff import StaffViewSet
 
 
+@crud_summaries(one="maqola", many="maqolalar")
 class StaffArticleViewSet(StaffViewSet):
     serializer_class = StaffArticleSerializer
     lookup_field = "slug"
@@ -33,6 +35,7 @@ class StaffArticleViewSet(StaffViewSet):
         serializer.save(author=self.request.user)
 
 
+@crud_summaries(one="o'quv yo'l xaritasi", many="o'quv yo'l xaritalari")
 class StaffRoadmapViewSet(StaffViewSet):
     serializer_class = StaffRoadmapSerializer
     lookup_field = "slug"

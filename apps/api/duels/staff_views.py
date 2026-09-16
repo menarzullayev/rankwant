@@ -10,6 +10,7 @@ from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from core.openapi_docs import crud_summaries
 from core.staff import StaffViewSet
 from duels.models import Duel
 from duels.services import DuelError, staff_cancel, staff_finalize
@@ -17,6 +18,7 @@ from duels.staff_serializers import StaffDuelFinalizeSerializer, StaffDuelSerial
 from duels.views import _error
 
 
+@crud_summaries(one="duel", many="duellar")
 class StaffDuelViewSet(StaffViewSet):
     """`staff/duels/` — barcha holatdagi duellar.
 

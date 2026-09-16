@@ -11,6 +11,7 @@ from content.serializers import (
     RoadmapDetailSerializer,
     RoadmapListSerializer,
 )
+from core.openapi_docs import crud_summaries
 from core.pagination import StandardPagination
 
 
@@ -41,6 +42,7 @@ class ArticleViewSet(viewsets.ReadOnlyModelViewSet[Article]):
         return ArticleDetailSerializer if self.action == "retrieve" else ArticleListSerializer
 
 
+@crud_summaries(one="o'quv yo'l xaritasi", many="o'quv yo'l xaritalari", only=("list", "retrieve"))
 class RoadmapViewSet(viewsets.ReadOnlyModelViewSet[Roadmap]):
     permission_classes = [AllowAny]
     lookup_field = "slug"

@@ -60,6 +60,7 @@ paths:
     get:
       operationId: arena_list
       description: Jonli savol-javob raundi.
+      summary: arena raundlari ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -95,6 +96,7 @@ paths:
     get:
       operationId: arena_retrieve
       description: Jonli savol-javob raundi.
+      summary: Bitta arena raundi
       parameters:
       - in: path
         name: slug
@@ -338,6 +340,7 @@ paths:
     get:
       operationId: attempts_list
       description: Submit va urinishlar tarixi — PRD P0-3.
+      summary: urinishlar ro'yxati
       parameters:
       - name: cursor
         required: false
@@ -399,6 +402,7 @@ paths:
     get:
       operationId: attempts_retrieve
       description: Submit va urinishlar tarixi — PRD P0-3.
+      summary: Bitta urinish
       parameters:
       - in: path
         name: id
@@ -519,6 +523,7 @@ paths:
   /api/v1/auth/login/:
     post:
       operationId: auth_login_create
+      summary: Tizimga kirish
       tags:
       - auth
       requestBody:
@@ -546,6 +551,7 @@ paths:
   /api/v1/auth/logout/:
     post:
       operationId: auth_logout_create
+      summary: Tizimdan chiqish
       tags:
       - auth
       security:
@@ -626,6 +632,7 @@ paths:
   /api/v1/auth/register/:
     post:
       operationId: auth_register_create
+      summary: Ro'yxatdan o'tish
       tags:
       - auth
       requestBody:
@@ -740,6 +747,7 @@ paths:
   /api/v1/certificates/{id}/pdf/:
     get:
       operationId: certificates_pdf_retrieve
+      summary: Sertifikat PDF'i
       parameters:
       - in: path
         name: id
@@ -764,6 +772,7 @@ paths:
     get:
       operationId: classrooms_list
       description: PRD P2-2 — o'qituvchi sinfi.
+      summary: sinflar ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -787,6 +796,7 @@ paths:
     post:
       operationId: classrooms_create
       description: PRD P2-2 — o'qituvchi sinfi.
+      summary: Yangi sinf yaratish
       tags:
       - classrooms
       requestBody:
@@ -814,6 +824,7 @@ paths:
     get:
       operationId: classrooms_retrieve
       description: PRD P2-2 — o'qituvchi sinfi.
+      summary: Bitta sinf
       parameters:
       - in: path
         name: slug
@@ -834,6 +845,7 @@ paths:
     patch:
       operationId: classrooms_partial_update
       description: PRD P2-2 — o'qituvchi sinfi.
+      summary: sinfni qisman yangilash
       parameters:
       - in: path
         name: slug
@@ -865,6 +877,7 @@ paths:
     delete:
       operationId: classrooms_destroy
       description: PRD P2-2 — o'qituvchi sinfi.
+      summary: sinfni o'chirish
       parameters:
       - in: path
         name: slug
@@ -1000,6 +1013,7 @@ paths:
   /api/v1/contests/:
     get:
       operationId: contests_list
+      summary: musobaqa ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -1034,6 +1048,7 @@ paths:
   /api/v1/contests/{slug}/:
     get:
       operationId: contests_retrieve
+      summary: Bitta musobaqa
       parameters:
       - in: path
         name: slug
@@ -1055,6 +1070,7 @@ paths:
   /api/v1/contests/{slug}/register/:
     post:
       operationId: contests_register_create
+      summary: Musobaqaga ro'yxatdan o'tish
       parameters:
       - in: path
         name: slug
@@ -1075,6 +1091,7 @@ paths:
   /api/v1/contests/{slug}/standings/:
     get:
       operationId: contests_standings_list
+      summary: Turnik jadvali
       parameters:
       - name: ordering
         required: false
@@ -1125,6 +1142,7 @@ paths:
         foydalanuvchi uchun boshqacha bo'lib, CDN uni keshlay olmaydi va
         butun tomoshabin yuki origin'ga tushadi. Shuning uchun ALOHIDA,
         kichik va keshlanmaydigan so'rov.
+      summary: O'z o'rni
       parameters:
       - in: path
         name: slug
@@ -1152,6 +1170,7 @@ paths:
 
         Virtual ishtirok reytingga ta'sir qilmaydi va rasmiy jadvalga
         kirmaydi (contests.services.rebuild_standings).
+      summary: Virtual qatnashish
       parameters:
       - in: path
         name: slug
@@ -1208,6 +1227,7 @@ paths:
 
         Attempt EMAS: tarixga tushmaydi, reytingga ta'sir qilmaydi. Submit bilan
         bir xil rate limit qo'llanadi — bu ham judge resursini yeydi.
+      summary: Bitta namunaviy yugurish
       parameters:
       - in: path
         name: id
@@ -1232,6 +1252,7 @@ paths:
         1v1 — PRD Phase 3.
 
         `list` — kutish xonasi: hozir ochiq chaqiriqlar. O'z duellari `mine` da.
+      summary: duellar ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -1299,6 +1320,7 @@ paths:
         1v1 — PRD Phase 3.
 
         `list` — kutish xonasi: hozir ochiq chaqiriqlar. O'z duellari `mine` da.
+      summary: Bitta duel
       parameters:
       - in: path
         name: slug
@@ -1434,6 +1456,7 @@ paths:
 
         `destroy` ATAYIN yo'q: lock qaytarilsa u xatar bo'lmay qolardi va
         hack huquqi tekinga aylanardi (ADR-0020).
+      summary: hack qulflari ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -1471,6 +1494,7 @@ paths:
 
         `destroy` ATAYIN yo'q: lock qaytarilsa u xatar bo'lmay qolardi va
         hack huquqi tekinga aylanardi (ADR-0020).
+      summary: Yangi hack qulfi yaratish
       tags:
       - hack-locks
       requestBody:
@@ -1497,6 +1521,7 @@ paths:
   /api/v1/hackathons/:
     get:
       operationId: hackathons_list
+      summary: hakatonlar ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -1531,6 +1556,7 @@ paths:
   /api/v1/hackathons/{slug}/:
     get:
       operationId: hackathons_retrieve
+      summary: Bitta hakaton
       parameters:
       - in: path
         name: slug
@@ -1554,6 +1580,7 @@ paths:
       operationId: hackathons_submissions_list
       description: Muddatgacha faqat o'ziniki — boshqalar loyihasini ko'rib olish
         yo'q.
+      summary: Loyihalar ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -1593,6 +1620,7 @@ paths:
   /api/v1/hackathons/{slug}/submissions/{entry_id}/score/:
     post:
       operationId: hackathons_submissions_score_create
+      summary: Loyihani baholash (0–100)
       parameters:
       - in: path
         name: entry_id
@@ -1631,6 +1659,7 @@ paths:
   /api/v1/hackathons/{slug}/submit/:
     post:
       operationId: hackathons_submit_create
+      summary: Loyiha topshirish
       parameters:
       - in: path
         name: slug
@@ -1664,6 +1693,7 @@ paths:
     get:
       operationId: hacks_list
       description: Hack yuborish va natijalar — ADR-0020.
+      summary: hack urinishlari ro'yxati
       parameters:
       - name: cursor
         required: false
@@ -1725,6 +1755,7 @@ paths:
     get:
       operationId: hacks_retrieve
       description: Hack yuborish va natijalar — ADR-0020.
+      summary: Bitta hack urinishi
       parameters:
       - in: path
         name: id
@@ -1813,6 +1844,7 @@ paths:
   /api/v1/languages/:
     get:
       operationId: languages_list
+      summary: tillar ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -1847,6 +1879,7 @@ paths:
   /api/v1/languages/{code}/:
     get:
       operationId: languages_retrieve
+      summary: Bitta til
       parameters:
       - in: path
         name: code
@@ -1868,6 +1901,7 @@ paths:
   /api/v1/me/:
     get:
       operationId: me_retrieve
+      summary: O'z profili
       tags:
       - me
       security:
@@ -1881,6 +1915,7 @@ paths:
           description: ''
     put:
       operationId: me_update
+      summary: Profilni to'liq yangilash
       tags:
       - me
       requestBody:
@@ -1906,6 +1941,7 @@ paths:
           description: ''
     patch:
       operationId: me_partial_update
+      summary: Profilni qisman yangilash
       tags:
       - me
       requestBody:
@@ -2089,6 +2125,7 @@ paths:
   /api/v1/me/external/:
     get:
       operationId: me_external_list
+      summary: Tashqi profillar
       tags:
       - me
       security:
@@ -2104,6 +2141,7 @@ paths:
           description: ''
     put:
       operationId: me_external_update
+      summary: Tashqi profillarni almashtirish
       tags:
       - me
       requestBody:
@@ -2209,6 +2247,7 @@ paths:
   /api/v1/me/sessions/{id}/:
     delete:
       operationId: me_sessions_destroy
+      summary: Sessiyani yopish
       parameters:
       - in: path
         name: id
@@ -2225,6 +2264,7 @@ paths:
   /api/v1/me/skills/:
     get:
       operationId: me_skills_list
+      summary: Ko'nikmalar ro'yxati
       tags:
       - me
       security:
@@ -2240,6 +2280,7 @@ paths:
           description: ''
     put:
       operationId: me_skills_update
+      summary: Ko'nikmalarni almashtirish
       tags:
       - me
       requestBody:
@@ -2274,6 +2315,7 @@ paths:
   /api/v1/me/teams/:
     get:
       operationId: me_teams_list
+      summary: Mening jamoalarim
       tags:
       - me
       security:
@@ -2289,6 +2331,7 @@ paths:
           description: ''
     post:
       operationId: me_teams_create
+      summary: Jamoa yaratish
       tags:
       - me
       requestBody:
@@ -2315,6 +2358,7 @@ paths:
   /api/v1/me/technologies/:
     get:
       operationId: me_technologies_retrieve
+      summary: Texnologiyalar ro'yxati
       tags:
       - me
       security:
@@ -2324,6 +2368,7 @@ paths:
           description: No response body
     put:
       operationId: me_technologies_update
+      summary: Texnologiyalarni almashtirish
       tags:
       - me
       requestBody:
@@ -2438,6 +2483,7 @@ paths:
   /api/v1/me/username/:
     post:
       operationId: me_username_create
+      summary: Username'ni o'zgartirish
       tags:
       - me
       requestBody:
@@ -2517,6 +2563,7 @@ paths:
   /api/v1/notifications/:
     get:
       operationId: notifications_list
+      summary: bildirishnomalar ro'yxati
       parameters:
       - name: cursor
         required: false
@@ -2550,6 +2597,7 @@ paths:
   /api/v1/notifications/mark-read/:
     post:
       operationId: notifications_mark_read_create
+      summary: Hammasini o'qilgan deb belgilash
       tags:
       - notifications
       requestBody:
@@ -2571,6 +2619,7 @@ paths:
   /api/v1/notifications/unread_count/:
     get:
       operationId: notifications_unread_count_retrieve
+      summary: O'qilmaganlar soni
       tags:
       - notifications
       security:
@@ -2582,6 +2631,7 @@ paths:
     get:
       operationId: platform_roadmap_list
       description: '`/platform-roadmap/` — taxta, batafsil, ovoz, izoh, taklif.'
+      summary: yo'l xaritasi bandlari ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -2669,6 +2719,7 @@ paths:
     get:
       operationId: platform_roadmap_retrieve
       description: '`/platform-roadmap/` — taxta, batafsil, ovoz, izoh, taklif.'
+      summary: Bitta yo'l xaritasi bandi
       parameters:
       - in: path
         name: id
@@ -2953,6 +3004,7 @@ paths:
     get:
       operationId: posts_list
       description: Yozish Django admin orqali — API faqat o'qish uchun.
+      summary: postlar ro'yxati
       parameters:
       - in: query
         name: kind
@@ -3004,6 +3056,7 @@ paths:
     get:
       operationId: posts_retrieve
       description: Yozish Django admin orqali — API faqat o'qish uchun.
+      summary: Bitta post
       parameters:
       - in: path
         name: slug
@@ -3447,6 +3500,7 @@ paths:
     get:
       operationId: quizzes_list
       description: PRD P2-6 — nazariy testlar.
+      summary: testlar ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -3482,6 +3536,7 @@ paths:
     get:
       operationId: quizzes_retrieve
       description: PRD P2-6 — nazariy testlar.
+      summary: Bitta test
       parameters:
       - in: path
         name: slug
@@ -3536,6 +3591,7 @@ paths:
   /api/v1/qvant/inventory/:
     get:
       operationId: qvant_inventory_list
+      summary: inventar buyumlari ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -3559,6 +3615,7 @@ paths:
   /api/v1/qvant/inventory/{id}/:
     get:
       operationId: qvant_inventory_retrieve
+      summary: Bitta inventar buyumi
       parameters:
       - in: path
         name: id
@@ -3579,6 +3636,7 @@ paths:
   /api/v1/qvant/inventory/{id}/equip/:
     post:
       operationId: qvant_inventory_equip_create
+      summary: Buyumni kiyish
       parameters:
       - in: path
         name: id
@@ -3599,6 +3657,7 @@ paths:
   /api/v1/qvant/inventory/{id}/unequip/:
     post:
       operationId: qvant_inventory_unequip_create
+      summary: Buyumni yechish
       parameters:
       - in: path
         name: id
@@ -3796,6 +3855,7 @@ paths:
   /api/v1/roadmaps/:
     get:
       operationId: roadmaps_list
+      summary: o'quv yo'l xaritalari ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -3820,6 +3880,7 @@ paths:
   /api/v1/roadmaps/{slug}/:
     get:
       operationId: roadmaps_retrieve
+      summary: Bitta o'quv yo'l xaritasi
       parameters:
       - in: path
         name: slug
@@ -3841,6 +3902,7 @@ paths:
   /api/v1/schools/:
     get:
       operationId: schools_list
+      summary: maktablar ro'yxati
       parameters:
       - in: query
         name: district
@@ -3887,6 +3949,7 @@ paths:
   /api/v1/schools/{id}/:
     get:
       operationId: schools_retrieve
+      summary: Bitta maktab
       parameters:
       - in: path
         name: id
@@ -3921,6 +3984,7 @@ paths:
   /api/v1/skills/catalog/:
     get:
       operationId: skills_catalog_list
+      summary: Ko'nikmalar katalogi
       tags:
       - skills
       security:
@@ -3969,6 +4033,7 @@ paths:
     get:
       operationId: staff_arena_list
       description: '`questions` — tartiblangan savol id''lari; yozishda to''liq almashtiriladi.'
+      summary: arena raundlari ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -4008,6 +4073,7 @@ paths:
     post:
       operationId: staff_arena_create
       description: '`questions` — tartiblangan savol id''lari; yozishda to''liq almashtiriladi.'
+      summary: Yangi arena raundi yaratish
       tags:
       - staff
       requestBody:
@@ -4035,6 +4101,7 @@ paths:
     get:
       operationId: staff_arena_retrieve
       description: '`questions` — tartiblangan savol id''lari; yozishda to''liq almashtiriladi.'
+      summary: Bitta arena raundi
       parameters:
       - in: path
         name: slug
@@ -4055,6 +4122,7 @@ paths:
     put:
       operationId: staff_arena_update
       description: '`questions` — tartiblangan savol id''lari; yozishda to''liq almashtiriladi.'
+      summary: arena raundini yangilash
       parameters:
       - in: path
         name: slug
@@ -4087,6 +4155,7 @@ paths:
     patch:
       operationId: staff_arena_partial_update
       description: '`questions` — tartiblangan savol id''lari; yozishda to''liq almashtiriladi.'
+      summary: arena raundini qisman yangilash
       parameters:
       - in: path
         name: slug
@@ -4118,6 +4187,7 @@ paths:
     delete:
       operationId: staff_arena_destroy
       description: '`questions` — tartiblangan savol id''lari; yozishda to''liq almashtiriladi.'
+      summary: arena raundini o'chirish
       parameters:
       - in: path
         name: slug
@@ -4211,6 +4281,7 @@ paths:
   /api/v1/staff/articles/:
     get:
       operationId: staff_articles_list
+      summary: maqolalar ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -4249,6 +4320,7 @@ paths:
           description: ''
     post:
       operationId: staff_articles_create
+      summary: Yangi maqola yaratish
       tags:
       - staff
       requestBody:
@@ -4275,6 +4347,7 @@ paths:
   /api/v1/staff/articles/{slug}/:
     get:
       operationId: staff_articles_retrieve
+      summary: Bitta maqola
       parameters:
       - in: path
         name: slug
@@ -4294,6 +4367,7 @@ paths:
           description: ''
     put:
       operationId: staff_articles_update
+      summary: maqolani yangilash
       parameters:
       - in: path
         name: slug
@@ -4325,6 +4399,7 @@ paths:
           description: ''
     patch:
       operationId: staff_articles_partial_update
+      summary: maqolani qisman yangilash
       parameters:
       - in: path
         name: slug
@@ -4355,6 +4430,7 @@ paths:
           description: ''
     delete:
       operationId: staff_articles_destroy
+      summary: maqolani o'chirish
       parameters:
       - in: path
         name: slug
@@ -4371,6 +4447,7 @@ paths:
   /api/v1/staff/contests/:
     get:
       operationId: staff_contests_list
+      summary: musobaqalar ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -4409,6 +4486,7 @@ paths:
           description: ''
     post:
       operationId: staff_contests_create
+      summary: Yangi musobaqa yaratish
       tags:
       - staff
       requestBody:
@@ -4435,6 +4513,7 @@ paths:
   /api/v1/staff/contests/{slug}/:
     get:
       operationId: staff_contests_retrieve
+      summary: Bitta musobaqa
       parameters:
       - in: path
         name: slug
@@ -4454,6 +4533,7 @@ paths:
           description: ''
     put:
       operationId: staff_contests_update
+      summary: musobaqani yangilash
       parameters:
       - in: path
         name: slug
@@ -4485,6 +4565,7 @@ paths:
           description: ''
     patch:
       operationId: staff_contests_partial_update
+      summary: musobaqani qisman yangilash
       parameters:
       - in: path
         name: slug
@@ -4515,6 +4596,7 @@ paths:
           description: ''
     delete:
       operationId: staff_contests_destroy
+      summary: musobaqani o'chirish
       parameters:
       - in: path
         name: slug
@@ -4725,6 +4807,7 @@ paths:
   /api/v1/staff/contests/{slug}/rebuild-standings/:
     post:
       operationId: staff_contests_rebuild_standings_create
+      summary: Turnik jadvalini qayta hisoblash
       parameters:
       - in: path
         name: slug
@@ -4750,6 +4833,7 @@ paths:
 
         Yaratish/tahrirlash/o'chirish yo'q: duel foydalanuvchilar o'rtasidagi
         kelishuv, xodim faqat kuzatadi va zarurat bo'lsa to'xtatadi.
+      summary: duellar ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -4793,6 +4877,7 @@ paths:
 
         Yaratish/tahrirlash/o'chirish yo'q: duel foydalanuvchilar o'rtasidagi
         kelishuv, xodim faqat kuzatadi va zarurat bo'lsa to'xtatadi.
+      summary: Yangi duel yaratish
       tags:
       - staff
       requestBody:
@@ -4823,6 +4908,7 @@ paths:
 
         Yaratish/tahrirlash/o'chirish yo'q: duel foydalanuvchilar o'rtasidagi
         kelishuv, xodim faqat kuzatadi va zarurat bo'lsa to'xtatadi.
+      summary: Bitta duel
       parameters:
       - in: path
         name: slug
@@ -4904,6 +4990,7 @@ paths:
   /api/v1/staff/hackathons/:
     get:
       operationId: staff_hackathons_list
+      summary: hakatonlar ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -4942,6 +5029,7 @@ paths:
           description: ''
     post:
       operationId: staff_hackathons_create
+      summary: Yangi hakaton yaratish
       tags:
       - staff
       requestBody:
@@ -4968,6 +5056,7 @@ paths:
   /api/v1/staff/hackathons/{slug}/:
     get:
       operationId: staff_hackathons_retrieve
+      summary: Bitta hakaton
       parameters:
       - in: path
         name: slug
@@ -4987,6 +5076,7 @@ paths:
           description: ''
     put:
       operationId: staff_hackathons_update
+      summary: hakatonni yangilash
       parameters:
       - in: path
         name: slug
@@ -5018,6 +5108,7 @@ paths:
           description: ''
     patch:
       operationId: staff_hackathons_partial_update
+      summary: hakatonni qisman yangilash
       parameters:
       - in: path
         name: slug
@@ -5048,6 +5139,7 @@ paths:
           description: ''
     delete:
       operationId: staff_hackathons_destroy
+      summary: hakatonni o'chirish
       parameters:
       - in: path
         name: slug
@@ -5109,6 +5201,7 @@ paths:
   /api/v1/staff/hackathons/{slug}/submissions/{entry_id}/score/:
     post:
       operationId: staff_hackathons_submissions_score_create
+      summary: Loyihani baholash (0–100)
       parameters:
       - in: path
         name: entry_id
@@ -5147,6 +5240,7 @@ paths:
   /api/v1/staff/platform-roadmap/:
     get:
       operationId: staff_platform_roadmap_list
+      summary: platforma yo'l xaritasi bandlari ro'yxati
       parameters:
       - in: query
         name: is_enabled
@@ -5205,6 +5299,7 @@ paths:
           description: ''
     post:
       operationId: staff_platform_roadmap_create
+      summary: Yangi platforma yo'l xaritasi bandi yaratish
       tags:
       - staff
       requestBody:
@@ -5513,6 +5608,7 @@ paths:
   /api/v1/staff/platform-roadmap/{id}/:
     get:
       operationId: staff_platform_roadmap_retrieve
+      summary: Bitta platforma yo'l xaritasi bandi
       parameters:
       - in: path
         name: id
@@ -5533,6 +5629,7 @@ paths:
           description: ''
     put:
       operationId: staff_platform_roadmap_update
+      summary: platforma yo'l xaritasi bandini yangilash
       parameters:
       - in: path
         name: id
@@ -5565,6 +5662,7 @@ paths:
           description: ''
     patch:
       operationId: staff_platform_roadmap_partial_update
+      summary: platforma yo'l xaritasi bandini qisman yangilash
       parameters:
       - in: path
         name: id
@@ -5596,6 +5694,7 @@ paths:
           description: ''
     delete:
       operationId: staff_platform_roadmap_destroy
+      summary: platforma yo'l xaritasi bandini o'chirish
       parameters:
       - in: path
         name: id
@@ -5613,6 +5712,7 @@ paths:
   /api/v1/staff/platform-roadmap/{id}/set-status/:
     post:
       operationId: staff_platform_roadmap_set_status_create
+      summary: Band holatini o'zgartirish
       parameters:
       - in: path
         name: id
@@ -5646,6 +5746,7 @@ paths:
   /api/v1/staff/posts/:
     get:
       operationId: staff_posts_list
+      summary: postlar ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -5684,6 +5785,7 @@ paths:
           description: ''
     post:
       operationId: staff_posts_create
+      summary: Yangi post yaratish
       tags:
       - staff
       requestBody:
@@ -5710,6 +5812,7 @@ paths:
   /api/v1/staff/posts/{slug}/:
     get:
       operationId: staff_posts_retrieve
+      summary: Bitta post
       parameters:
       - in: path
         name: slug
@@ -5729,6 +5832,7 @@ paths:
           description: ''
     put:
       operationId: staff_posts_update
+      summary: postni yangilash
       parameters:
       - in: path
         name: slug
@@ -5760,6 +5864,7 @@ paths:
           description: ''
     patch:
       operationId: staff_posts_partial_update
+      summary: postni qisman yangilash
       parameters:
       - in: path
         name: slug
@@ -5790,6 +5895,7 @@ paths:
           description: ''
     delete:
       operationId: staff_posts_destroy
+      summary: postni o'chirish
       parameters:
       - in: path
         name: slug
@@ -5806,6 +5912,7 @@ paths:
   /api/v1/staff/posts/{slug}/publish/:
     post:
       operationId: staff_posts_publish_create
+      summary: Postni nashr qilish
       parameters:
       - in: path
         name: slug
@@ -5838,6 +5945,7 @@ paths:
   /api/v1/staff/posts/{slug}/unpublish/:
     post:
       operationId: staff_posts_unpublish_create
+      summary: Postni nashrdan olish
       parameters:
       - in: path
         name: slug
@@ -6056,6 +6164,7 @@ paths:
   /api/v1/staff/problems/:
     get:
       operationId: staff_problems_list
+      summary: masalalar ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -6094,6 +6203,7 @@ paths:
           description: ''
     post:
       operationId: staff_problems_create
+      summary: Yangi masala yaratish
       tags:
       - staff
       requestBody:
@@ -6120,6 +6230,7 @@ paths:
   /api/v1/staff/problems/{slug}/:
     get:
       operationId: staff_problems_retrieve
+      summary: Bitta masala
       parameters:
       - in: path
         name: slug
@@ -6139,6 +6250,7 @@ paths:
           description: ''
     put:
       operationId: staff_problems_update
+      summary: masalani yangilash
       parameters:
       - in: path
         name: slug
@@ -6170,6 +6282,7 @@ paths:
           description: ''
     patch:
       operationId: staff_problems_partial_update
+      summary: masalani qisman yangilash
       parameters:
       - in: path
         name: slug
@@ -6200,6 +6313,7 @@ paths:
           description: ''
     delete:
       operationId: staff_problems_destroy
+      summary: masalani o'chirish
       parameters:
       - in: path
         name: slug
@@ -6221,6 +6335,7 @@ paths:
 
         Hackerning o'z yechimi etalon bo'la OLMAYDI, shuning uchun u
         masala bilan keladi va faqat xodim yuklaydi.
+      summary: Namuna yechim yuklash
       parameters:
       - in: path
         name: slug
@@ -6253,6 +6368,7 @@ paths:
 
         Hackerning o'z yechimi etalon bo'la OLMAYDI, shuning uchun u
         masala bilan keladi va faqat xodim yuklaydi.
+      summary: Namuna yechim yuklash
       parameters:
       - in: path
         name: slug
@@ -6297,6 +6413,7 @@ paths:
 
         Hackerning o'z yechimi etalon bo'la OLMAYDI, shuning uchun u
         masala bilan keladi va faqat xodim yuklaydi.
+      summary: Namuna yechim yuklash
       parameters:
       - in: path
         name: slug
@@ -6325,6 +6442,7 @@ paths:
   /api/v1/staff/problems/{slug}/tests/:
     get:
       operationId: staff_problems_tests_list
+      summary: Masala testlari bilan ishlash
       parameters:
       - name: ordering
         required: false
@@ -6374,6 +6492,7 @@ paths:
           description: ''
     post:
       operationId: staff_problems_tests_create
+      summary: Masala testlari bilan ishlash
       parameters:
       - name: ordering
         required: false
@@ -6436,6 +6555,7 @@ paths:
   /api/v1/staff/problems/{slug}/tests/{order}/:
     delete:
       operationId: staff_problems_tests_destroy
+      summary: Testni o'chirish
       parameters:
       - in: path
         name: order
@@ -6464,6 +6584,7 @@ paths:
         Hackingning MAJBURIY darvozasi: validatorsiz masalada hack
         umuman ochilmaydi, ya'ni bu endpoint bo'lmasa xususiyatni hech
         bir masalada yoqib bo'lmasdi.
+      summary: Tekshiruvchi (validator) yuklash
       parameters:
       - in: path
         name: slug
@@ -6497,6 +6618,7 @@ paths:
         Hackingning MAJBURIY darvozasi: validatorsiz masalada hack
         umuman ochilmaydi, ya'ni bu endpoint bo'lmasa xususiyatni hech
         bir masalada yoqib bo'lmasdi.
+      summary: Tekshiruvchi (validator) yuklash
       parameters:
       - in: path
         name: slug
@@ -6542,6 +6664,7 @@ paths:
         Hackingning MAJBURIY darvozasi: validatorsiz masalada hack
         umuman ochilmaydi, ya'ni bu endpoint bo'lmasa xususiyatni hech
         bir masalada yoqib bo'lmasdi.
+      summary: Tekshiruvchi (validator) yuklash
       parameters:
       - in: path
         name: slug
@@ -6571,6 +6694,7 @@ paths:
     get:
       operationId: staff_questions_list
       description: Savol banki — variantlar savol bilan birga (ichma-ich) tahrirlanadi.
+      summary: savollar ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -6610,6 +6734,7 @@ paths:
     post:
       operationId: staff_questions_create
       description: Savol banki — variantlar savol bilan birga (ichma-ich) tahrirlanadi.
+      summary: Yangi savol yaratish
       tags:
       - staff
       requestBody:
@@ -6637,6 +6762,7 @@ paths:
     get:
       operationId: staff_questions_retrieve
       description: Savol banki — variantlar savol bilan birga (ichma-ich) tahrirlanadi.
+      summary: Bitta savol
       parameters:
       - in: path
         name: id
@@ -6658,6 +6784,7 @@ paths:
     put:
       operationId: staff_questions_update
       description: Savol banki — variantlar savol bilan birga (ichma-ich) tahrirlanadi.
+      summary: savolni yangilash
       parameters:
       - in: path
         name: id
@@ -6691,6 +6818,7 @@ paths:
     patch:
       operationId: staff_questions_partial_update
       description: Savol banki — variantlar savol bilan birga (ichma-ich) tahrirlanadi.
+      summary: savolni qisman yangilash
       parameters:
       - in: path
         name: id
@@ -6723,6 +6851,7 @@ paths:
     delete:
       operationId: staff_questions_destroy
       description: Savol banki — variantlar savol bilan birga (ichma-ich) tahrirlanadi.
+      summary: savolni o'chirish
       parameters:
       - in: path
         name: id
@@ -6743,6 +6872,7 @@ paths:
       description: |-
         Quest ta'riflari. Kodlar `qvant.quests` dagi hodisalarga bog'lanadi —
         yangi kod qo'shish uni avtomatik ishga tushirmaydi, faqat katalogga kiradi.
+      summary: topshiriqlar ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -6784,6 +6914,7 @@ paths:
       description: |-
         Quest ta'riflari. Kodlar `qvant.quests` dagi hodisalarga bog'lanadi —
         yangi kod qo'shish uni avtomatik ishga tushirmaydi, faqat katalogga kiradi.
+      summary: Yangi topshiriq yaratish
       tags:
       - staff
       requestBody:
@@ -6813,6 +6944,7 @@ paths:
       description: |-
         Quest ta'riflari. Kodlar `qvant.quests` dagi hodisalarga bog'lanadi —
         yangi kod qo'shish uni avtomatik ishga tushirmaydi, faqat katalogga kiradi.
+      summary: Bitta topshiriq
       parameters:
       - in: path
         name: code
@@ -6835,6 +6967,7 @@ paths:
       description: |-
         Quest ta'riflari. Kodlar `qvant.quests` dagi hodisalarga bog'lanadi —
         yangi kod qo'shish uni avtomatik ishga tushirmaydi, faqat katalogga kiradi.
+      summary: topshiriqni yangilash
       parameters:
       - in: path
         name: code
@@ -6869,6 +7002,7 @@ paths:
       description: |-
         Quest ta'riflari. Kodlar `qvant.quests` dagi hodisalarga bog'lanadi —
         yangi kod qo'shish uni avtomatik ishga tushirmaydi, faqat katalogga kiradi.
+      summary: topshiriqni qisman yangilash
       parameters:
       - in: path
         name: code
@@ -6902,6 +7036,7 @@ paths:
       description: |-
         Quest ta'riflari. Kodlar `qvant.quests` dagi hodisalarga bog'lanadi —
         yangi kod qo'shish uni avtomatik ishga tushirmaydi, faqat katalogga kiradi.
+      summary: topshiriqni o'chirish
       parameters:
       - in: path
         name: code
@@ -6949,6 +7084,7 @@ paths:
   /api/v1/staff/quizzes/:
     get:
       operationId: staff_quizzes_list
+      summary: testlar ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -6987,6 +7123,7 @@ paths:
           description: ''
     post:
       operationId: staff_quizzes_create
+      summary: Yangi test yaratish
       tags:
       - staff
       requestBody:
@@ -7013,6 +7150,7 @@ paths:
   /api/v1/staff/quizzes/{slug}/:
     get:
       operationId: staff_quizzes_retrieve
+      summary: Bitta test
       parameters:
       - in: path
         name: slug
@@ -7032,6 +7170,7 @@ paths:
           description: ''
     put:
       operationId: staff_quizzes_update
+      summary: testni yangilash
       parameters:
       - in: path
         name: slug
@@ -7063,6 +7202,7 @@ paths:
           description: ''
     patch:
       operationId: staff_quizzes_partial_update
+      summary: testni qisman yangilash
       parameters:
       - in: path
         name: slug
@@ -7093,6 +7233,7 @@ paths:
           description: ''
     delete:
       operationId: staff_quizzes_destroy
+      summary: testni o'chirish
       parameters:
       - in: path
         name: slug
@@ -7109,6 +7250,7 @@ paths:
   /api/v1/staff/roadmaps/:
     get:
       operationId: staff_roadmaps_list
+      summary: o'quv yo'l xaritalari ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -7147,6 +7289,7 @@ paths:
           description: ''
     post:
       operationId: staff_roadmaps_create
+      summary: Yangi o'quv yo'l xaritasi yaratish
       tags:
       - staff
       requestBody:
@@ -7173,6 +7316,7 @@ paths:
   /api/v1/staff/roadmaps/{slug}/:
     get:
       operationId: staff_roadmaps_retrieve
+      summary: Bitta o'quv yo'l xaritasi
       parameters:
       - in: path
         name: slug
@@ -7192,6 +7336,7 @@ paths:
           description: ''
     put:
       operationId: staff_roadmaps_update
+      summary: o'quv yo'l xaritasini yangilash
       parameters:
       - in: path
         name: slug
@@ -7223,6 +7368,7 @@ paths:
           description: ''
     patch:
       operationId: staff_roadmaps_partial_update
+      summary: o'quv yo'l xaritasini qisman yangilash
       parameters:
       - in: path
         name: slug
@@ -7253,6 +7399,7 @@ paths:
           description: ''
     delete:
       operationId: staff_roadmaps_destroy
+      summary: o'quv yo'l xaritasini o'chirish
       parameters:
       - in: path
         name: slug
@@ -7457,6 +7604,7 @@ paths:
     get:
       operationId: staff_shop_items_list
       description: 'Do''kon katalogi — ADR-0002: faqat kosmetika va qulaylik.'
+      summary: do'kon buyumlari ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -7496,6 +7644,7 @@ paths:
     post:
       operationId: staff_shop_items_create
       description: 'Do''kon katalogi — ADR-0002: faqat kosmetika va qulaylik.'
+      summary: Yangi do'kon buyumi yaratish
       tags:
       - staff
       requestBody:
@@ -7523,6 +7672,7 @@ paths:
     get:
       operationId: staff_shop_items_retrieve
       description: 'Do''kon katalogi — ADR-0002: faqat kosmetika va qulaylik.'
+      summary: Bitta do'kon buyumi
       parameters:
       - in: path
         name: code
@@ -7543,6 +7693,7 @@ paths:
     put:
       operationId: staff_shop_items_update
       description: 'Do''kon katalogi — ADR-0002: faqat kosmetika va qulaylik.'
+      summary: do'kon buyumini yangilash
       parameters:
       - in: path
         name: code
@@ -7575,6 +7726,7 @@ paths:
     patch:
       operationId: staff_shop_items_partial_update
       description: 'Do''kon katalogi — ADR-0002: faqat kosmetika va qulaylik.'
+      summary: do'kon buyumini qisman yangilash
       parameters:
       - in: path
         name: code
@@ -7606,6 +7758,7 @@ paths:
     delete:
       operationId: staff_shop_items_destroy
       description: 'Do''kon katalogi — ADR-0002: faqat kosmetika va qulaylik.'
+      summary: do'kon buyumini o'chirish
       parameters:
       - in: path
         name: code
@@ -7622,6 +7775,7 @@ paths:
   /api/v1/staff/topics/:
     get:
       operationId: staff_topics_list
+      summary: mavzular ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -7660,6 +7814,7 @@ paths:
           description: ''
     post:
       operationId: staff_topics_create
+      summary: Yangi mavzu yaratish
       tags:
       - staff
       requestBody:
@@ -7686,6 +7841,7 @@ paths:
   /api/v1/staff/topics/{slug}/:
     get:
       operationId: staff_topics_retrieve
+      summary: Bitta mavzu
       parameters:
       - in: path
         name: slug
@@ -7705,6 +7861,7 @@ paths:
           description: ''
     put:
       operationId: staff_topics_update
+      summary: mavzuni yangilash
       parameters:
       - in: path
         name: slug
@@ -7736,6 +7893,7 @@ paths:
           description: ''
     patch:
       operationId: staff_topics_partial_update
+      summary: mavzuni qisman yangilash
       parameters:
       - in: path
         name: slug
@@ -7766,6 +7924,7 @@ paths:
           description: ''
     delete:
       operationId: staff_topics_destroy
+      summary: mavzuni o'chirish
       parameters:
       - in: path
         name: slug
@@ -7782,6 +7941,7 @@ paths:
   /api/v1/staff/tournaments/:
     get:
       operationId: staff_tournaments_list
+      summary: chempionatlar ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -7820,6 +7980,7 @@ paths:
           description: ''
     post:
       operationId: staff_tournaments_create
+      summary: Yangi chempionat yaratish
       tags:
       - staff
       requestBody:
@@ -7846,6 +8007,7 @@ paths:
   /api/v1/staff/tournaments/{slug}/:
     get:
       operationId: staff_tournaments_retrieve
+      summary: Bitta chempionat
       parameters:
       - in: path
         name: slug
@@ -7865,6 +8027,7 @@ paths:
           description: ''
     put:
       operationId: staff_tournaments_update
+      summary: chempionatni yangilash
       parameters:
       - in: path
         name: slug
@@ -7896,6 +8059,7 @@ paths:
           description: ''
     patch:
       operationId: staff_tournaments_partial_update
+      summary: chempionatni qisman yangilash
       parameters:
       - in: path
         name: slug
@@ -7926,6 +8090,7 @@ paths:
           description: ''
     delete:
       operationId: staff_tournaments_destroy
+      summary: chempionatni o'chirish
       parameters:
       - in: path
         name: slug
@@ -7942,6 +8107,7 @@ paths:
   /api/v1/staff/tournaments/{slug}/rebuild/:
     post:
       operationId: staff_tournaments_rebuild_create
+      summary: Yakuniy jadvalni qayta hisoblash
       parameters:
       - in: path
         name: slug
@@ -7962,6 +8128,7 @@ paths:
   /api/v1/staff/updates/:
     get:
       operationId: staff_updates_list
+      summary: yangiliklar ro'yxati
       parameters:
       - in: query
         name: kind
@@ -8068,6 +8235,7 @@ paths:
           description: ''
     post:
       operationId: staff_updates_create
+      summary: Yangi yangilik yaratish
       tags:
       - staff
       requestBody:
@@ -8094,6 +8262,7 @@ paths:
   /api/v1/staff/updates/{id}/:
     get:
       operationId: staff_updates_retrieve
+      summary: Bitta yangilik
       parameters:
       - in: path
         name: id
@@ -8114,6 +8283,7 @@ paths:
           description: ''
     put:
       operationId: staff_updates_update
+      summary: yangilikni yangilash
       parameters:
       - in: path
         name: id
@@ -8146,6 +8316,7 @@ paths:
           description: ''
     patch:
       operationId: staff_updates_partial_update
+      summary: yangilikni qisman yangilash
       parameters:
       - in: path
         name: id
@@ -8177,6 +8348,7 @@ paths:
           description: ''
     delete:
       operationId: staff_updates_destroy
+      summary: yangilikni o'chirish
       parameters:
       - in: path
         name: id
@@ -8195,6 +8367,7 @@ paths:
     post:
       operationId: staff_updates_disable_create
       description: Feature flag o'chirish — rollback (qaror 17-savol).
+      summary: Yangilikni o'chirish
       parameters:
       - in: path
         name: id
@@ -8228,6 +8401,7 @@ paths:
   /api/v1/staff/updates/{id}/enable/:
     post:
       operationId: staff_updates_enable_create
+      summary: Yangilikni yoqish
       parameters:
       - in: path
         name: id
@@ -8261,6 +8435,7 @@ paths:
   /api/v1/staff/updates/{id}/publish/:
     post:
       operationId: staff_updates_publish_create
+      summary: Yangilikni nashr qilish
       parameters:
       - in: path
         name: id
@@ -8294,6 +8469,7 @@ paths:
   /api/v1/staff/updates/{id}/withdraw/:
     post:
       operationId: staff_updates_withdraw_create
+      summary: Nashrdan qaytarib olish
       parameters:
       - in: path
         name: id
@@ -8327,6 +8503,7 @@ paths:
   /api/v1/staff/users/:
     get:
       operationId: staff_users_list
+      summary: foydalanuvchilar ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -8365,6 +8542,7 @@ paths:
           description: ''
     post:
       operationId: staff_users_create
+      summary: Yangi foydalanuvchi yaratish
       tags:
       - staff
       requestBody:
@@ -8390,6 +8568,7 @@ paths:
   /api/v1/staff/users/{username}/:
     get:
       operationId: staff_users_retrieve
+      summary: Bitta foydalanuvchi
       parameters:
       - in: path
         name: username
@@ -8410,6 +8589,7 @@ paths:
           description: ''
     patch:
       operationId: staff_users_partial_update
+      summary: foydalanuvchini qisman yangilash
       parameters:
       - in: path
         name: username
@@ -8442,6 +8622,7 @@ paths:
   /api/v1/staff/users/{username}/notify/:
     post:
       operationId: staff_users_notify_create
+      summary: Bitta foydalanuvchiga bildirishnoma
       parameters:
       - in: path
         name: username
@@ -8507,6 +8688,7 @@ paths:
   /api/v1/staff/users/broadcast/:
     post:
       operationId: staff_users_broadcast_create
+      summary: Hammaga bildirishnoma yuborish
       tags:
       - staff
       requestBody:
@@ -8549,6 +8731,7 @@ paths:
   /api/v1/teams/{id}/:
     delete:
       operationId: teams_destroy
+      summary: Jamoani o'chirish
       parameters:
       - in: path
         name: id
@@ -8565,6 +8748,7 @@ paths:
   /api/v1/teams/{id}/leave/:
     post:
       operationId: teams_leave_create
+      summary: Jamoadan chiqish
       parameters:
       - in: path
         name: id
@@ -8581,6 +8765,7 @@ paths:
   /api/v1/teams/{id}/members/{username}/:
     delete:
       operationId: teams_members_destroy
+      summary: A'zoni jamoadan chiqarish
       parameters:
       - in: path
         name: id
@@ -8602,6 +8787,7 @@ paths:
   /api/v1/teams/{id}/refresh-code/:
     post:
       operationId: teams_refresh_code_create
+      summary: Taklif kodini yangilash
       parameters:
       - in: path
         name: id
@@ -8622,6 +8808,7 @@ paths:
   /api/v1/teams/join/:
     post:
       operationId: teams_join_create
+      summary: Jamoaga qo'shilish
       tags:
       - teams
       requestBody:
@@ -8648,6 +8835,7 @@ paths:
   /api/v1/technologies/catalog/:
     get:
       operationId: technologies_catalog_retrieve
+      summary: Texnologiyalar katalogi
       tags:
       - technologies
       security:
@@ -8728,6 +8916,7 @@ paths:
   /api/v1/tournaments/:
     get:
       operationId: tournaments_list
+      summary: chempionatlar ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -8762,6 +8951,7 @@ paths:
   /api/v1/tournaments/{slug}/:
     get:
       operationId: tournaments_retrieve
+      summary: Bitta chempionat
       parameters:
       - in: path
         name: slug
@@ -8783,6 +8973,7 @@ paths:
   /api/v1/tournaments/{slug}/standings/:
     get:
       operationId: tournaments_standings_list
+      summary: Yakuniy jadval
       parameters:
       - name: ordering
         required: false
@@ -8824,6 +9015,7 @@ paths:
       operationId: updates_list
       description: '`/updates/` — arxiv. Har yozuv doimiy havola oladi (SEO, tashqi
         havola).'
+      summary: yangiliklar ro'yxati
       parameters:
       - in: query
         name: kind
@@ -8926,6 +9118,7 @@ paths:
       operationId: updates_retrieve
       description: '`/updates/` — arxiv. Har yozuv doimiy havola oladi (SEO, tashqi
         havola).'
+      summary: Bitta yangilik
       parameters:
       - in: path
         name: id
@@ -9348,6 +9541,7 @@ paths:
   /api/v1/users/{username}/achievements/:
     get:
       operationId: users_achievements_retrieve
+      summary: Yutuqlar
       parameters:
       - in: path
         name: username
@@ -9365,6 +9559,7 @@ paths:
   /api/v1/users/{username}/activity/:
     get:
       operationId: users_activity_retrieve
+      summary: Faollik tarixi
       parameters:
       - in: query
         name: before
@@ -9470,6 +9665,7 @@ paths:
   /api/v1/users/{username}/follow/:
     post:
       operationId: users_follow_create
+      summary: Kuzatish
       parameters:
       - in: path
         name: username
@@ -9485,6 +9681,7 @@ paths:
           description: No response body
     delete:
       operationId: users_follow_destroy
+      summary: Kuzatishni bekor qilish
       parameters:
       - in: path
         name: username
@@ -9613,6 +9810,7 @@ paths:
   /api/v1/users/{username}/profile/:
     get:
       operationId: users_profile_retrieve
+      summary: Ommaviy profil
       parameters:
       - in: path
         name: username
@@ -9630,6 +9828,7 @@ paths:
   /api/v1/users/{username}/purchases/:
     get:
       operationId: users_purchases_retrieve
+      summary: Xaridlar tarixi
       parameters:
       - in: path
         name: username

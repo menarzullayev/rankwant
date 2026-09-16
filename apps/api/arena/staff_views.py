@@ -17,9 +17,11 @@ from arena.staff_serializers import (
     StaffArenaSerializer,
 )
 from arena.views import _error
+from core.openapi_docs import crud_summaries
 from core.staff import StaffViewSet
 
 
+@crud_summaries(one="arena raundi", many="arena raundlari")
 class StaffArenaViewSet(StaffViewSet):
     """`questions` — tartiblangan savol id'lari; yozishda to'liq almashtiriladi."""
 

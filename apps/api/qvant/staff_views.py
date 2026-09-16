@@ -10,12 +10,14 @@ from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from core.openapi_docs import crud_summaries
 from core.staff import StaffViewSet
 from qvant import quests
 from qvant.models import QvantQuest, ShopItem
 from qvant.staff_serializers import StaffQuestSerializer, StaffShopItemSerializer
 
 
+@crud_summaries(one="topshiriq", many="topshiriqlar")
 class StaffQuestViewSet(StaffViewSet):
     """Quest ta'riflari. Kodlar `qvant.quests` dagi hodisalarga bog'lanadi —
     yangi kod qo'shish uni avtomatik ishga tushirmaydi, faqat katalogga kiradi."""
@@ -39,6 +41,7 @@ class StaffQuestViewSet(StaffViewSet):
         return Response({"synced": quests.sync_catalogue()})
 
 
+@crud_summaries(one="do'kon buyumi", many="do'kon buyumlari")
 class StaffShopItemViewSet(StaffViewSet):
     """Do'kon katalogi — ADR-0002: faqat kosmetika va qulaylik."""
 

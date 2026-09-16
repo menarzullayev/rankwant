@@ -15,6 +15,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.models import User
+from core.openapi_docs import crud_summaries
 from core.pagination import TimeCursorPagination
 from qvant import ledger, quests
 from qvant.models import QvantQuest, QvantTransaction, ShopItem, UserInventory, UserQuestCompletion
@@ -165,6 +166,12 @@ class ShopViewSet(viewsets.ReadOnlyModelViewSet[ShopItem]):
         return Response(InventorySerializer(entry).data, status=status.HTTP_201_CREATED)
 
 
+@crud_summaries(
+    one="inventar buyumi",
+    many="inventar buyumlari",
+    only=("list", "retrieve"),
+    extra={"equip": "Buyumni kiyish", "unequip": "Buyumni yechish"},
+)
 class InventoryViewSet(viewsets.ReadOnlyModelViewSet[UserInventory]):
     serializer_class = InventorySerializer
     permission_classes = [IsAuthenticated]
