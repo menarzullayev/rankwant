@@ -248,7 +248,7 @@ noto'g'ri bajaradi — `/c/Users/...` → `C:\c\Users\...` (disk harfi ikki mart
 
 ⚠️ `MSYS_NO_PATHCONV=1` **yordam bermaydi** (tekshirildi). Muvaffaqiyatsiz  
 urinish `*.sql.gz.part` (0 MB) qoldiradi — ularni o'chirish kerak.  
-⚠️ Kunlik vazifa (`RankWant Daily Backup`) sistema Git'ini ishlatadi —  
+⚠️ Rejali vazifa (`RankWant Monthly Backup`) sistema Git'ini ishlatadi —  
 u ishlaydi. Muammo faqat agent shell'ida.
 
 ### 4.2 `wsl --shutdown` dan keyin port ko'prigi buziladi
