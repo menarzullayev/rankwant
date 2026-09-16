@@ -11,10 +11,21 @@ Ishlatish:  python3 check_languages.py [image]
 from __future__ import annotations
 
 import ast
-import json
 import pathlib
 import subprocess
 import sys
+from typing import Any
+
+# Hisobotdagi `✓` Windows'da quvurga yozilganda `cp1252` ga sig'maydi va
+# skript o'z natijasini chop etayotib quladi — sabab va batafsil izoh
+# `tools/_console.py` da. Guard shu yerda takrorlanadi: bu fayl `tests/`
+# ichida va `tools/` ni import qilmaydi.
+for _stream in (sys.stdout, sys.stderr):
+    if (getattr(_stream, "encoding", "") or "").lower().replace("-", "") != "utf8":
+        try:
+            _stream.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, ValueError, OSError):
+            pass
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
 SEED = REPO / "apps/api/core/management/commands/seed_demo.py"
@@ -42,12 +53,35 @@ PROBES = {
 }
 
 
-def declared_languages() -> list[tuple[str, str, str, list[str], list[str]]]:
-    """seed_demo dagi LANGUAGES — Django import qilmasdan o'qiydi."""
-    tree = ast.parse(SEED.read_text())
+#: `seed_demo.LANGUAGES` qatoridagi bizga kerak bo'ladigan ustunlar —
+#: AYNAN shu tartibda. Qator kengayishi mumkin (`process_limit` shunday
+#: qo'shilgan), lekin prefiks o'zgarmasligi kerak.
+COLUMNS = ("code", "name", "version", "compile_cmd", "run_cmd")
+
+
+def declared_languages() -> list[tuple[Any, ...]]:
+    """seed_demo dagi LANGUAGES — Django import qilmasdan o'qiydi.
+
+    ⚠️ Qatorni BESHTAGA ochib yubormaydi. Ilgari shunday edi va seed'ga
+    oltinchi ustun (`process_limit`) qo'shilgan kuni tekshiruv
+    `ValueError: too many values to unpack` bilan hech narsani
+    tekshirmasdan yiqila boshlagan — uni hech kim yurgizmagani uchun
+    buni ham hech kim sezmagan (o'lchandi 2026-09-16).
+    """
+    tree = ast.parse(SEED.read_text(encoding="utf-8"))
     for node in tree.body:
         if isinstance(node, ast.Assign) and node.targets[0].id == "LANGUAGES":  # type: ignore[attr-defined]
-            return ast.literal_eval(node.value)
+            rows: list[tuple[Any, ...]] = ast.literal_eval(node.value)
+            for row in rows:
+                # Qisqa qator — ustunlar tartibi o'zgargan demakdir.
+                # Jimgina davom etsak, `version` o'rniga boshqa narsani
+                # solishtirib, yolg'on yashil berardik.
+                if len(row) < len(COLUMNS):
+                    raise SystemExit(
+                        f"LANGUAGES qatori kutilganidan qisqa: {row!r}\n"
+                        f"kutilgan ustunlar: {', '.join(COLUMNS)}"
+                    )
+            return rows
     raise SystemExit(f"LANGUAGES topilmadi: {SEED}")
 
 
@@ -71,7 +105,11 @@ def main() -> int:
     image = sys.argv[1] if len(sys.argv) > 1 else "rankwant/judge-go:latest"
     failures: list[str] = []
 
-    for code, name, version, compile_cmd, run_cmd in declared_languages():
+    rows = declared_languages()
+    for row in rows:
+        # Faqat kerakli prefiks olinadi — seed qatori kengaysa ham
+        # tekshiruv ishlayveradi (`COLUMNS` ga qarang).
+        code, name, version, compile_cmd, run_cmd = row[: len(COLUMNS)]
         src, source, parse = probe_for(code)
         steps = [f"mkdir -p /box && cd /box && cat > {src} <<'EOF'\n{source}EOF"]
         for cmd in (compile_cmd, run_cmd):
