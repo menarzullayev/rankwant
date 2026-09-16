@@ -359,6 +359,35 @@ jobs:
         # judge'ni BIRGA ishlatadigan yagona joy — ular alohida sinalganda
         # ikkita shartnoma nomuvofiqligi ko'rinmay qolgan edi.
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm smoke
+      - name: Bake-off — validator case'lari (haqiqiy nsjail)
+        timeout-minutes: 3
+        # ADR-0020 ning eng muhim himoyasi: buzuq kiritma submission ishga
+        # tushishidan OLDIN rad etiladi. Uni faqat haqiqiy sandbox tasdiqlay
+        # oladi — birlik testlari `sandboxed` ni soxta ijrochi bilan
+        # almashtiradi, ya'ni nsjail, kompilyatsiya va chiqish kodi ular
+        # uchun ko'rinmas. O'lchandi: himoya olib tashlanganda 19-case
+        # `WRONG_TEST` o'rniga `AC` beradi.
+        #
+        # Shu job'da, chunki stack (judge image'i bilan) allaqachon
+        # qurilgan: qadam bir necha soniya qo'shadi. Alohida job nsjail'ni
+        # manbadan qayta qurishga majbur qilardi.
+        #
+        # Faqat 19–21: bu REGRESSIYA darvozasi, to'liq bake-off emas —
+        # qolgan case'lar nomzodlarni SOLISHTIRISH uchun va ular ancha
+        # sekin (fork bomb, tarmoq, Java).
+        #
+        # ⚠️ `worker` va `beat` to'xtatiladi: `drain_results` natijalarni
+        # navbatdan harness'dan OLDIN olib ketadi va hisobot «XAVFSIZLIKDAN
+        # O'TMADI» bo'lib chiqadi — aslida sandbox soz (CLAUDE.md § Bake-off).
+        run: |
+          C="docker compose -f docker-compose.yml -f docker-compose.ci.yml"
+          $C stop worker beat
+          set +e
+          $C --profile bakeoff run --rm bakeoff
+          status=$?
+          set -e
+          $C start worker beat
+          exit $status
       - name: E2E (faqat chromium — to'liq matritsa nightly da)
         timeout-minutes: 10
         run: |
