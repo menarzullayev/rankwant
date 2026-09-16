@@ -342,8 +342,21 @@ def _enqueue_reference(hack: Hack, test_input: str) -> None:
     validatori»). Ya'ni tekshiruv etalon yechim ishga tushishidan ham
     oldin bo'ladi.
     """
-    reference = ReferenceSolution.objects.select_related("language").get(problem=hack.problem)
-    validator = Validator.objects.select_related("language").get(problem=hack.problem)
+    reference = (
+        ReferenceSolution.objects.select_related("language").filter(problem=hack.problem).first()
+    )
+    validator = Validator.objects.select_related("language").filter(problem=hack.problem).first()
+    if reference is None or validator is None:
+        # `submit` ikkalasini ham tekshirgan, lekin generator bosqichi
+        # bilan bu bosqich orasida xodim ularni olib tashlashi mumkin.
+        # Yiqilish o'rniga hack yopiladi: aks holda istisno `drain_results`
+        # da qolib, hack abadiy `TESTING` bo'lib turardi.
+        _finish(
+            hack,
+            Hack.Status.IGNORED,
+            detail="masalaning validatori yoki etalon yechimi olib tashlandi",
+        )
+        return
     limits = _problem_limits(hack.problem, reference.language)
     _enqueue(
         JudgeJob(

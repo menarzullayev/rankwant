@@ -20,12 +20,21 @@ from rest_framework.response import Response
 
 from core.staff import StaffViewSet
 from problems import storage
-from problems.models import Problem, ProblemReport, TestCase, Topic
+from problems.models import (
+    Problem,
+    ProblemReport,
+    ReferenceSolution,
+    TestCase,
+    Topic,
+    Validator,
+)
 from problems.staff_serializers import (
     StaffProblemReportSerializer,
     StaffProblemSerializer,
+    StaffReferenceSolutionSerializer,
     StaffTestCaseSerializer,
     StaffTopicSerializer,
+    StaffValidatorSerializer,
     TestCaseUploadSerializer,
 )
 
@@ -118,6 +127,67 @@ class StaffProblemViewSet(StaffViewSet):
             StaffTestCaseSerializer(test).data,
             status=status.HTTP_201_CREATED if created else status.HTTP_200_OK,
         )
+
+    def _program(self, request: Request, model: Any, serializer_class: Any) -> Response:
+        """Masalaga biriktirilgan bitta dasturni boshqaradi.
+
+        `model` va `serializer_class` — `Validator` yoki
+        `ReferenceSolution`. Ikkalasi ham masala bilan bitta-bitta
+        bog'langan, ya'ni ro'yxat ham, ID ham yo'q: GET o'qiydi, PUT
+        yozadi yoki almashtiradi, DELETE olib tashlaydi.
+        """
+        problem = self.get_object()
+        existing = model.objects.filter(problem=problem).first()
+
+        if request.method == "GET":
+            if existing is None:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(serializer_class(existing).data)
+
+        if request.method == "DELETE":
+            if existing is None:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            existing.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        serializer = serializer_class(existing, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(problem=problem)
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK if existing else status.HTTP_201_CREATED,
+        )
+
+    @extend_schema(
+        request=StaffValidatorSerializer,
+        responses={200: StaffValidatorSerializer, 201: StaffValidatorSerializer, 204: None},
+    )
+    @action(detail=True, methods=["get", "put", "delete"], url_path="validator")
+    def validator(self, request: Request, slug: str | None = None) -> Response:
+        """Kirish validatori (ADR-0020).
+
+        Hackingning MAJBURIY darvozasi: validatorsiz masalada hack
+        umuman ochilmaydi, ya'ni bu endpoint bo'lmasa xususiyatni hech
+        bir masalada yoqib bo'lmasdi.
+        """
+        return self._program(request, Validator, StaffValidatorSerializer)
+
+    @extend_schema(
+        request=StaffReferenceSolutionSerializer,
+        responses={
+            200: StaffReferenceSolutionSerializer,
+            201: StaffReferenceSolutionSerializer,
+            204: None,
+        },
+    )
+    @action(detail=True, methods=["get", "put", "delete"], url_path="reference-solution")
+    def reference_solution(self, request: Request, slug: str | None = None) -> Response:
+        """Etalon yechim (ADR-0021) — hack testining to'g'ri javobi.
+
+        Hackerning o'z yechimi etalon bo'la OLMAYDI, shuning uchun u
+        masala bilan keladi va faqat xodim yuklaydi.
+        """
+        return self._program(request, ReferenceSolution, StaffReferenceSolutionSerializer)
 
     @extend_schema(request=None, responses={204: None})
     @action(detail=True, methods=["delete"], url_path=r"tests/(?P<order>\d+)")

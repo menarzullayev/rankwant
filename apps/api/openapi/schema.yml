@@ -6213,6 +6213,115 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/staff/problems/{slug}/reference-solution/:
+    get:
+      operationId: staff_problems_reference_solution_retrieve
+      description: |-
+        Etalon yechim (ADR-0021) — hack testining to'g'ri javobi.
+
+        Hackerning o'z yechimi etalon bo'la OLMAYDI, shuning uchun u
+        masala bilan keladi va faqat xodim yuklaydi.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffReferenceSolution'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffReferenceSolution'
+          description: ''
+        '204':
+          description: No response body
+    put:
+      operationId: staff_problems_reference_solution_update
+      description: |-
+        Etalon yechim (ADR-0021) — hack testining to'g'ri javobi.
+
+        Hackerning o'z yechimi etalon bo'la OLMAYDI, shuning uchun u
+        masala bilan keladi va faqat xodim yuklaydi.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffReferenceSolution'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffReferenceSolution'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffReferenceSolution'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffReferenceSolution'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffReferenceSolution'
+          description: ''
+        '204':
+          description: No response body
+    delete:
+      operationId: staff_problems_reference_solution_destroy
+      description: |-
+        Etalon yechim (ADR-0021) — hack testining to'g'ri javobi.
+
+        Hackerning o'z yechimi etalon bo'la OLMAYDI, shuning uchun u
+        masala bilan keladi va faqat xodim yuklaydi.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffReferenceSolution'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffReferenceSolution'
+          description: ''
+        '204':
+          description: No response body
   /api/v1/staff/problems/{slug}/tests/:
     get:
       operationId: staff_problems_tests_list
@@ -6344,6 +6453,118 @@ paths:
       security:
       - cookieAuth: []
       responses:
+        '204':
+          description: No response body
+  /api/v1/staff/problems/{slug}/validator/:
+    get:
+      operationId: staff_problems_validator_retrieve
+      description: |-
+        Kirish validatori (ADR-0020).
+
+        Hackingning MAJBURIY darvozasi: validatorsiz masalada hack
+        umuman ochilmaydi, ya'ni bu endpoint bo'lmasa xususiyatni hech
+        bir masalada yoqib bo'lmasdi.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffValidator'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffValidator'
+          description: ''
+        '204':
+          description: No response body
+    put:
+      operationId: staff_problems_validator_update
+      description: |-
+        Kirish validatori (ADR-0020).
+
+        Hackingning MAJBURIY darvozasi: validatorsiz masalada hack
+        umuman ochilmaydi, ya'ni bu endpoint bo'lmasa xususiyatni hech
+        bir masalada yoqib bo'lmasdi.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffValidator'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffValidator'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffValidator'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffValidator'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffValidator'
+          description: ''
+        '204':
+          description: No response body
+    delete:
+      operationId: staff_problems_validator_destroy
+      description: |-
+        Kirish validatori (ADR-0020).
+
+        Hackingning MAJBURIY darvozasi: validatorsiz masalada hack
+        umuman ochilmaydi, ya'ni bu endpoint bo'lmasa xususiyatni hech
+        bir masalada yoqib bo'lmasdi.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffValidator'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffValidator'
+          description: ''
         '204':
           description: No response body
   /api/v1/staff/questions/:
@@ -15688,6 +15909,22 @@ components:
       - id
       - slug
       - title
+    StaffReferenceSolution:
+      type: object
+      description: Etalon yechim — hack testining javobi shundan chiqadi (ADR-0021).
+      properties:
+        language:
+          type: string
+        source:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - language
+      - source
+      - updated_at
     StaffRoadmap:
       type: object
       properties:
@@ -16266,6 +16503,22 @@ components:
       - rating_contest
       - rating_skills
       - username
+    StaffValidator:
+      type: object
+      description: Kirish validatori — hackingning birinchi darvozasi (ADR-0020).
+      properties:
+        language:
+          type: string
+        source:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - language
+      - source
+      - updated_at
     Stage:
       type: object
       properties:
