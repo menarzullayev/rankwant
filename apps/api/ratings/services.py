@@ -173,10 +173,23 @@ def on_accept_revoked(attempt: Attempt) -> None:
 
     row.delete()
 
-    from django.db.models import F
+    from django.db.models import F, Value
+    from django.db.models.functions import Greatest
 
+    # Nol ostiga TUSHMAYDI. `solved_count` — musbat maydon, ya'ni sanoq
+    # qatorlardan past bo'lib qolgan holatda bu `update` CHECK xatosi
+    # berib BUTUN tranzaksiyani yiqitardi (o'lchandi: `sqlite3.
+    # IntegrityError: CHECK constraint failed: solved_count`). Bekor
+    # qilish yolg'iz ishlamaydi: uni hack dvigateli ham chaqiradi
+    # (`hacks.services._finish`), demak begona sabab hackni abadiy
+    # `TESTING` da qoldirardi.
+    #
+    # Sanoq qatorlardan qanday ajralib ketadi: `UserSolvedProblem` kodni
+    # chetlab yo'qolganda — foydalanuvchi o'chirilishi (kaskad), import
+    # yoki qo'lda tuzatish. Haqiqatga tenglashtirish uchun alohida vosita
+    # bor: `python manage.py recount_problems`.
     type(attempt.problem).objects.filter(pk=attempt.problem_id).update(
-        solved_count=F("solved_count") - 1
+        solved_count=Greatest(F("solved_count") - 1, Value(0))
     )
     recalc_skills(
         attempt.user,

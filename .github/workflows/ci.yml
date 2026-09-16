@@ -372,9 +372,11 @@ jobs:
         # qurilgan: qadam bir necha soniya qo'shadi. Alohida job nsjail'ni
         # manbadan qayta qurishga majbur qilardi.
         #
-        # Faqat 19–21: bu REGRESSIYA darvozasi, to'liq bake-off emas —
-        # qolgan case'lar nomzodlarni SOLISHTIRISH uchun va ular ancha
-        # sekin (fork bomb, tarmoq, Java).
+        # To'liq to'plam (21 case), faqat validator uchtasi emas: o'lchandi
+        # 2026-09-16 — hammasi 11.2 s (p50 33 ms, p95 1742 ms). «Qolganlari
+        # ancha sekin» degan taxmin NOTO'G'RI chiqdi, shuning uchun fork
+        # bomb, tarmoq, `/proc`, symlink va fayl yozish izolyatsiyasi ham
+        # shu darvozadan o'tadi.
         #
         # ⚠️ `worker` va `beat` to'xtatiladi: `drain_results` natijalarni
         # navbatdan harness'dan OLDIN olib ketadi va hisobot «XAVFSIZLIKDAN
@@ -388,6 +390,21 @@ jobs:
           set -e
           $C start worker beat
           exit $status
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Til matritsasi — e'lon qilingan versiya image'dagi bilan mos
+        timeout-minutes: 2
+        # Platforma «Python 3.13» deb ko'rsatsa, judge esa 3.11 ishlatsa,
+        # foydalanuvchi tushunarsiz `SyntaxError` oladi va buni O'Z kodidan
+        # deb o'ylaydi. Buni faqat har tilda versiyasini chop etadigan
+        # dastur ishga tushirib bilib bo'ladi, ya'ni judge IMAGE'i kerak —
+        # shuning uchun qadam shu job'da, stack qurilganidan keyin.
+        #
+        # Tekshiruvning o'zi uzoq vaqt O'LIK turgan: seed qatoriga oltinchi
+        # ustun qo'shilgach u `ValueError` bilan hech narsa tekshirmasdan
+        # yiqilar, hech bir darvoza esa uni chaqirmasdi (2026-09-16).
+        run: python3 tests/compatibility/check_languages.py "${COMPOSE_PROJECT_NAME}-judge"
       - name: E2E (faqat chromium — to'liq matritsa nightly da)
         timeout-minutes: 10
         run: |
