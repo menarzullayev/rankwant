@@ -33,10 +33,14 @@ services:
       web: { condition: service_started }
       judge: { condition: service_started }
 
-  # Bake-off validator case'lari (19–21) — ADR-0020 himoyasini HAQIQIY
-  # nsjail ostida tekshiradi. Birlik testlari `sandboxed` ni soxta ijrochi
-  # bilan almashtiradi, ya'ni sandbox, kompilyatsiya va validatorning
-  # chiqish kodi ular uchun ko'rinmas qoladi.
+  # Bake-off — sandbox xatti-harakatini HAQIQIY nsjail ostida tekshiradi:
+  # validator (19–21), fork bomb, tarmoq, `/proc`, symlink, fayl yozish,
+  # OLE/TLE/MLE. Birlik testlari `sandboxed` ni soxta ijrochi bilan
+  # almashtiradi, ya'ni bu sinfning hech biri ularga ko'rinmaydi.
+  #
+  # ⚠️ Harness KONTEYNER ichida ishlaydi, ya'ni `10-file-write` dagi
+  # "host'da fayl paydo bo'lmadi" tekshiruvi judge host'ini emas, shu
+  # konteynerni ko'radi. Asosiy da'vo — verdikt — baribir o'z kuchida.
   #
   # `api` obrazi ATAYLAB: unda `redis` kutubxonasi allaqachon bor, ya'ni
   # harness uchun na `pip install`, na tarmoq kerak — obraz esa shu job'da
@@ -50,8 +54,7 @@ services:
     volumes: ['./services/bakeoff:/bakeoff:ro']
     environment:
       REDIS_URL: redis://redis:6379/0
-    command:
-      ['python', '/bakeoff/harness/runner.py', '--worker', 'judge-go', '--cases', '19,20,21']
+    command: ['python', '/bakeoff/harness/runner.py', '--worker', 'judge-go']
     depends_on:
       redis: { condition: service_healthy }
       judge: { condition: service_started }
