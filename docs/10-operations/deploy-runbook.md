@@ -89,6 +89,40 @@ haqiqiy deploy yuqoridagi §1 qadamlarini qo'lda bajarish demakdir.
 `Bake-off — validator case'lari`), `deploy` undan ham oldin o'tkazib
 yuboriladi. Yashil CI ≠ deploy bo'lgan.
 
+### ✅ Qaror (2026-09-16): deploy **qo'lda** qoladi
+
+Bu ataylab tanlangan yo'l — «hali sozlanmagan» emas. Sabab **o'lchandi**:
+
+| # | To'siq | Dalil |
+| - | ------ | ----- |
+| 1 | **CI runner produksiya engine'ida emas** | Jonli stack — Docker Desktop engine'i (A), image `rankwant-api:latest`. Runner — WSL Ubuntu ichidagi alohida engine (B), image `rankwant/api:<sha>`. Ya'ni job o'z stack'ini **B** da ko'taradi: 8300/8301 band → `up` yiqiladi, yoki parallel stack paydo bo'ladi va unga hech kim yo'naltirmagan. |
+| 2 | **Workflow'da migration qadami YO'Q** | `deploy.yml` `up -d --build --wait` ni chaqiradi, xolos. Migration'li release'da sxema orqada qolardi (§1 ga zid). |
+| 3 | **Environment himoyasi yo'q** | `gh api .../environments` → **0 ta**. Ya'ni required reviewer qo'yilmagan: avtomatik deploy **live contest paytida ham** ketardi — qoida №1 buzilardi. |
+| 4 | **Sirlar yo'q** | `DJANGO_SECRET_KEY` (secret) + `DJANGO_ALLOWED_HOSTS`, `PUBLIC_ORIGIN`, `NEXT_PUBLIC_API_BASE` (variable). |
+
+⚠️ Ya'ni job'ni «yoqish» uchun avval 2 va 3-to'siqlar yopilishi shart;
+1-to'siq esa **topologiya** masalasi — uni faqat engine'larni
+birlashtirish yoki runner'ni A ga ko'chirish hal qiladi.
+
+**Shu sababli qo'lda yo'l birinchi darajali qilib qo'yildi:**
+
+```bash
+bash tools/deploy.sh          # interaktiv tasdiq bilan
+bash tools/deploy.sh --yes    # tasdiqsiz
+bash tools/deploy.sh --check  # hech narsani o'zgartirmaydi
+```
+
+`tools/deploy.sh` — §1 tartibining bajariladigan ko'rinishi: old shartlar →
+**live oyna tekshiruvi** → build (migrate bilan) → migrate →
+`showmigrations` tasdiqi → `up -d --no-deps` → `check_deploy.sh`.
+Qadamlar tartibi kodda, yodda emas.
+
+Live oyna tekshiruvi alohida tekshiruv: `tools/check_deploy_window.py`
+(chiqish 0 — bo'sh, 1 — faol contest bor, **2 — aniqlanmadi**).
+⚠️ Uchinchi holat ataylab ajratilgan: «API javob bermadi» ni «0 ta» deb
+o'qish yolg'on yashil berardi va aynan sayt yiqilganda — ya'ni tuzatish
+deploy'i eng kerak bo'lgan paytda — darvoza eng ishonchsiz bo'lardi.
+
 ---
 
 ## 2. Env o'zgaruvchilari

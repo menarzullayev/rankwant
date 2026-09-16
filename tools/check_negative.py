@@ -36,13 +36,17 @@ tekshiruvlar o'zgarganda ishlamagan.
 
 from __future__ import annotations
 
+import contextlib
 import gzip
+import http.server
+import json
 import os
 import re
 import shutil
 import subprocess
 import sys
 import tempfile
+import threading
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -1891,6 +1895,98 @@ def neg_verdict_label_missing() -> tuple[bool, str]:
         return expect_fail("verdict_codes", "verdikt/yorliq bir tilda yetishmaydi")
 
 
+# ── Deploy oynasi (10-operations, qoida №1) ──────────────────────────
+#
+# Qoida «live contest paytida deploy YO'Q» — ilgari u faqat odamning
+# yodida edi. Endi `tools/check_deploy_window.py` uni bajariladigan
+# qiladi, `tools/deploy.sh` esa shunga tayanadi. Bu yerda savol:
+# **darvoza haqiqatan to'xtatadimi**, yoki faqat «yashil» ko'rinadimi?
+
+
+class _StubApi(http.server.BaseHTTPRequestHandler):
+    """`is_running` bayrog'ini boshqaradigan eng kichik API nusxasi."""
+
+    live = False
+
+    def do_GET(self) -> None:  # noqa: N802 — http.server shartnomasi
+        body = json.dumps(
+            {
+                "results": [
+                    {
+                        "slug": "stub-cup",
+                        "title": "Stub kubogi",
+                        "is_running": _StubApi.live,
+                        "end_at": "2026-09-16T20:00:00Z",
+                    }
+                ]
+            }
+        ).encode()
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def log_message(self, *args: object) -> None:
+        """Jurnal kerak emas — u hisobotni iflos qiladi."""
+
+
+@contextlib.contextmanager
+def stub_api(live: bool):
+    """Vaqtinchalik API: `RANKWANT_API_BASE` shu manzilga qaratiladi."""
+    _StubApi.live = live
+    server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), _StubApi)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        yield f"http://127.0.0.1:{server.server_port}/api/v1"
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
+def run_deploy_window(base: str) -> tuple[int, str]:
+    env = dict(os.environ, RANKWANT_API_BASE=base)
+    proc = subprocess.run(
+        [PY, "tools/check_deploy_window.py"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        env=env,
+    )
+    return proc.returncode, (proc.stdout or "") + (proc.stderr or "")
+
+
+def neg_deploy_window_live_contest() -> tuple[bool, str]:
+    """Faol contest bo'lsa darvoza TO'XTAYDI va sababini aytadimi?
+
+    Uch holat ketma-ket o'lchanadi va uchtasi ham shart:
+      1) bo'sh oyna (stub) → 0 — aks holda «exit != 0» yolg'on yashil
+         bo'lardi: skript shunchaki ishga tushmay qolgan bo'lishi mumkin;
+      2) API javob bermasa → 2 — «0 ta» deb o'qilmasligi kerak;
+      3) faol contest → 1 va matnda «qoida №1» bo'lishi shart.
+    """
+    with stub_api(live=False) as base:
+        code, out = run_deploy_window(base)
+    if code != 0:
+        return False, f"oyna bo'sh bo'lsa exit 0 bo'lishi kerak, kelgan {code}: {out.strip()[:200]}"
+
+    # Yopiq port: hech kim tinglamaydi.
+    code, _ = run_deploy_window("http://127.0.0.1:1/api/v1")
+    if code != 2:
+        return False, f"API javob bermasa exit 2 bo'lishi kerak, kelgan {code}"
+
+    with stub_api(live=True) as base:
+        code, out = run_deploy_window(base)
+    if code == 0:
+        return False, "faol contest bo'lsa darvoza O'TKAZDI (exit 0) — u o'lik"
+    if "qoida №1" not in out:
+        return False, f"to'xtadi, lekin sabab ko'rinmaydi: {out.strip()[:200]}"
+    return True, "faol contest'da to'xtadi, sabab ko'rsatildi (exit 1)"
+
+
 CASES: list[tuple[str, list[tuple[str, object]]]] = [
     (
         "i18n",
@@ -2045,6 +2141,12 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
                 neg_monitor_app_down_is_not_restarted,
             ),
             ("handoff qoidasi saqlansin", neg_monitor_handoff_guard_holds),
+        ],
+    ),
+    (
+        "deploy_window",
+        [
+            ("faol contest bo'lsa deploy to'xtasin", neg_deploy_window_live_contest),
         ],
     ),
 ]

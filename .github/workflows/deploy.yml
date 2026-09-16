@@ -136,6 +136,19 @@ jobs:
     # job har push'da qizil X bilan yiqilardi. O'tkazib yuborish —
     # yashirish emas: `build` va `test` baribir to'liq ishlaydi, deploy
     # esa kulrang (skipped) bo'ladi, ya'ni "sozlanmagan" aniq ko'rinadi.
+    #
+    # ⚠️ QAROR (2026-09-16): deploy QO'LDA qoladi — bu ataylab tanlangan
+    # yo'l. Sabab o'lchandi: bu job produksiyani deploy QILA OLMAYDI,
+    # chunki jonli stack Docker Desktop engine'ida (image
+    # `rankwant-api:latest`), runner esa WSL Ubuntu ichidagi ALOHIDA
+    # engine'da (`rankwant/api:<sha>`). Ya'ni `up` o'z stack'ini ikkinchi
+    # engine'da ko'tarardi — 8300/8301 band, yoki hech kim yo'naltirmagan
+    # parallel stack. Ustiga: bu yerda migration qadami yo'q, environment
+    # himoyasi yo'q (`environments` = 0), ya'ni avtomatik deploy live
+    # contest paytida ham ketardi (qoida №1).
+    #
+    # Qo'lda yo'l: `bash tools/deploy.sh` (live oynani o'zi tekshiradi).
+    # To'liq dalillar: docs/10-operations/deploy-runbook.md § 1.
     if: >-
       ${{
         (github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch')
@@ -183,12 +196,26 @@ jobs:
 
       - name: Live contest oynasi
         # 10-operations § Deploy qoidalari, 1-qoida: contest davomida
-        # verdict yoki standings o'zgarishi natijani buzadi. Bu job'da
-        # haqiqiy tekshiruv yo'q — ogohlantirish chiqariladi.
-        # TODO: `manage.py contest_window` kabi buyruq qo'shilgach uni
-        # shu yerda chaqiring va faol contest bo'lsa `exit 1` qiling.
+        # verdict yoki standings o'zgarishi natijani buzadi.
+        #
+        # Endi HAQIQIY tekshiruv: `tools/check_deploy_window.py` jonli
+        # API'dan `is_running` ni o'qiydi. Chiqish kodlari ataylab uchta:
+        # 0 — bo'sh, 1 — faol contest bor, 2 — aniqlanmadi.
+        # Faqat 1 to'xtatadi: 2 («API javob bermadi») ni to'xtatish
+        # yiqilgan saytni tuzatish deploy'ini bloklab qo'yardi, uni
+        # «bo'sh» deb o'qish esa yolg'on yashil bo'lardi.
         run: |
-          echo "::warning::Live contest oynasi QO'LDA tekshirilsin — CI uni bilmaydi"
+          set +e
+          python3 tools/check_deploy_window.py
+          code=$?
+          set -e
+          if [ "$code" -eq 1 ]; then
+            echo "::error::Faol contest/arena bor — deploy to'xtatildi (qoida №1)"
+            exit 1
+          fi
+          if [ "$code" -ne 0 ]; then
+            echo "::warning::Oyna aniqlanmadi — qo'lda tasdiqlansin"
+          fi
 
       - name: Sirlarni oldindan ko'chirish
         if: ${{ vars.DEPLOY_HOST != '' }}
