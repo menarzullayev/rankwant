@@ -4,7 +4,7 @@
 # Nega skript: runner Linux talab qiladi (`runs-on: [self-hosted, Linux,
 # X64, rankwant]`), CI esa Docker, Postgres va `python3` ni ishlatadi —
 # Windows'ning o'zida bularning hech biri yo'q (batafsil:
-# `rankwant-review/CI-WINDOWS-ANALYSIS.md`).
+# `docs/research/2026-09-13-rankwant-review/CI-WINDOWS-ANALYSIS.md`).
 #
 # ISHLATISH (Ubuntu-24.04 distro ichida, root yoki sudo bilan):
 #

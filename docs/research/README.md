@@ -1,0 +1,40 @@
+# Tadqiqot yozuvlari
+
+Sanali sessiya yozuvlari: qaror sessiyalari, dizayn variantlari, raqobatchi va
+platforma auditlari. Bular **tirik hujjat emas** — yozilgan kunidagi holat.
+Amaldagi qoidalar `docs/01`–`docs/10` bo'limlarida va [ADR](../07-adr/) larda;
+bu yerdagi matn ular bilan zid kelsa, o'sha bo'limlar ustun.
+
+2026-09-17 gacha bu hujjatlar repo'dan tashqarida, `C:\Users\nsn\project\cp\<papka>`
+da turardi, kod va `docs/08-technical-spec` esa ularga havola qilardi — ya'ni
+qarorlarning manbai versiyalanmagan edi. Endi `.md` hujjatlar shu yerda.
+Skrinshotlar, HTML hisobotlar, xom JSON/CSV va bir martalik skriptlar repo'dan
+tashqarida, `cp/research/<sana>-<nom>/` da qoladi.
+
+Istisno — kod havola qiladigan ikki fayl:
+`2026-09-13-rankwant-updates-design/backfill/` dagi `backfill.py` va
+`updates.json` (`load_updates`, `tools/sync_updates.py`).
+
+Yozuvlar ichidagi `rankwant-review/…` kabi yo'llar **eski** joyni bildiradi:
+o'sha `.md` endi shu papkada `<sana>-<nom>/` ostida, boshqa turdagi fayl esa
+`cp/research/<sana>-<nom>/` da. Matn ataylab qayta yozilmagan.
+
+`tools/check_docs.py` bu papkada faqat **havolalarni** tekshiradi. Yozuvlarda
+ataylab qoldirilgan narsalar bor — salbiy test misollari, i18n namunalaridagi
+kirill matn, yozilganicha qolgan jadvallar.
+
+| Sana | Yozuv | Mavzu | Kim havola qiladi |
+|---|---|---|---|
+| 2026-09-13 | [auth-analysis](2026-09-13-auth-analysis/HITL_QARORLAR.md) | Login/Register qaror sessiyasi (HITL) | — |
+| 2026-09-13 | clist-analysis — faqat `cp/research/` | CLIST.by `/resources/` sahifa tahlili (HTML hisobot) | — |
+| 2026-09-13 | [kep-channel-audit](2026-09-13-kep-channel-audit/KEP-HISTORY.md) | KEP.uz Telegram kanali auditi | — |
+| 2026-09-13 | kep-updates-analysis — faqat `cp/research/` | kep.uz/updates tahlili (HTML hisobot) | — |
+| 2026-09-13 | [rankwant-review](2026-09-13-rankwant-review/STAGE-REVIEW.md) | Bosqichma-bosqich ko'rik, 09-15 qarorlari, CI Windows tahlili, yo'llarni inglizchaga o'tkazish rejasi | `tools/setup_runner.sh` |
+| 2026-09-13 | [rankwant-updates-design](2026-09-13-rankwant-updates-design/DECISION-SESSION.md) | Updates moduli: 20 qaror, 5 dizayn varianti, backfill | `apps/api/updates`, `apps/api/roadmap`, `tools/sync_updates.py` |
+| 2026-09-13 | [robocontest-audit](2026-09-13-robocontest-audit/ROBOCONTEST-HISTORY.md) | RoboContest.UZ Telegram kanali auditi | — |
+| 2026-09-14 | [rankwant-theme-customizer-design](2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) | Tema sozlagichi qarorlari (D1–D47), i18n steki tahlili | `docs/08-technical-spec/theme-customizer.md` |
+| 2026-09-15 | [appearance-comparison](2026-09-15-appearance-comparison/REPORT.md) | Appearance: RankWant va kep.uz, ikonka inventarizatsiyasi | `tools/icon-keys.mjs`, `tools/gen-catalogue.mjs` |
+| 2026-09-15 | [icon-comparison](2026-09-15-icon-comparison/DECISIONS-20.md) | Ikonka tizimi: 20 qaror, kutubxonalar, katalog (V3, generatsiya qilinadi) | `tools/gen-catalogue.mjs` |
+| 2026-09-15 | [kep-customize-audit](2026-09-15-kep-customize-audit/REPORT.md) | kep.uz CUSTOMIZE paneli auditi | — |
+| 2026-09-15 | [nav-typography-implementation](2026-09-15-nav-typography-implementation/REPORT.md) | Navigatsiya va erkin tipografiya — bajarilgan ish | — |
+| 2026-09-15 | [self-hosted-runner-guide](2026-09-15-self-hosted-runner-guide/self-hosted-runner-guide.md) | GitHub Actions self-hosted runner qo'llanmasi | — |

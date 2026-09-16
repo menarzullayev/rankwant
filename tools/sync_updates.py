@@ -4,7 +4,8 @@
 Qaror 13–16 (DECISION-SESSION.md): manba — GitHub (PR / release / commit /
 issue), matn — **AI qoralama → jamoa tahriri → AI tarjima ×10 → nashr**.
 
-`rankwant-updates-design/backfill/backfill.py` — BIR MARTALIK ish edi:
+`docs/research/2026-09-13-rankwant-updates-design/backfill/backfill.py` —
+BIR MARTALIK ish edi:
 butun tarixni qamrab oldi va yozuvlar qo'lda tuzilgan ro'yxatdan
 (`ENTRIES`) olindi. Bu skript esa DOIMIY: oxirgi sinxronizatsiya
 nuqtasidan keyingi commit'larni ko'rsatadi va nuqtani suradi.
@@ -178,7 +179,7 @@ def main() -> int:
         "  1. Yuqoridagilardan foydalanuvchi sezadigan mavzularni guruhlang\n"
         "     (muhim o'zgarish alohida, kichik tuzatishlar guruhda — qaror 10).\n"
         "  2. Har guruh uchun `kind` va `module` tanlab, JSON tayyorlang\n"
-        "     (namuna: rankwant-updates-design/backfill/updates.json).\n"
+        "     (namuna: docs/research/2026-09-13-rankwant-updates-design/backfill/updates.json).\n"
         "  3. Yuklang — standart holatda QORALAMA bo'lib tushadi:\n"
         "     docker exec rankwant-api-1 python manage.py load_updates <fayl.json>\n"
         "  4. Nuqtani suring:  python tools/sync_updates.py --advance"

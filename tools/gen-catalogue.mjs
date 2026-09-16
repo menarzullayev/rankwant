@@ -8,7 +8,10 @@ import fs from "node:fs";
 import { KEYS, CATEGORIES, PACK_SOURCES } from "./icon-keys.mjs";
 
 const RESOLVED = "C:/Users/nsn/project/cp/.tmp-verdict/pack-resolved.json";
-const OUT = "C:/Users/nsn/project/cp/icon-comparison/ICON-CATALOGUE.md";
+const OUT = new URL(
+  "../docs/research/2026-09-15-icon-comparison/ICON-CATALOGUE.md",
+  import.meta.url,
+);
 
 const resolved = JSON.parse(fs.readFileSync(RESOLVED, "utf8"));
 const packs = Object.keys(PACK_SOURCES);
@@ -38,7 +41,7 @@ const brandKeys = Object.keys(KEYS).filter((k) => k.startsWith("brand."));
 let md = `# RankWant — ikonka katalogi (V3)
 
 **Sana:** 2026-09-16 · **Holat:** bajarildi
-**Manba:** \`appearance-comparison/ICON-INVENTORY.md\` (20 kategoriya)
+**Manba:** \`docs/research/2026-09-15-appearance-comparison/ICON-INVENTORY.md\` (20 kategoriya)
 **Registr:** \`apps/web/src/icons/packs/\` · **Katalog:** \`tools/icon-keys.mjs\`
 
 > ⚠️ Bu fayl **generatsiya qilinadi** (\`tools/gen-catalogue.mjs\`). Qo'lda

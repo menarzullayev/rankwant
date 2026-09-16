@@ -26,6 +26,16 @@ RU_MARKERS = ("| ru ", "Зарабатывай", "для тех", "Подним�
 
 ROOT = Path(__file__).resolve().parent.parent
 
+# Dated session records, not living documentation: they quote broken examples
+# (negative-test ADR numbers), keep i18n samples in Cyrillic and tables as they
+# were written. Only their links are checked — a reader must be able to follow
+# them; everything else would force rewriting history.
+RECORDS = ("docs", "research")
+
+
+def is_record(path: Path) -> bool:
+    return path.relative_to(ROOT).parts[:2] == RECORDS
+
 
 def markdown_files() -> list[Path]:
     return sorted(
@@ -129,6 +139,8 @@ def check_adr_refs() -> list[str]:
     }
     out: list[str] = []
     for path in [*markdown_files(), *_source_files()]:
+        if is_record(path):
+            continue
         text = path.read_text(encoding="utf-8")
         for lineno, line in enumerate(text.splitlines(), 1):
             for m in ADR_REF.finditer(line):
@@ -177,6 +189,8 @@ def main() -> int:
     for path in files:
         text = path.read_text(encoding="utf-8")
         problems += check_links(path, text)
+        if is_record(path):
+            continue
         problems += check_tables(path, text)
         problems += check_script_mixing(path, text)
         problems += check_status(path, text)

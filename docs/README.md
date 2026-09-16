@@ -26,6 +26,9 @@ Idea Selection                → docs/idea-selection/
 10. Quality & Operations      → docs/10-operations/
 ```
 
+Sanali sessiya yozuvlari (qaror sessiyalari, dizayn variantlari, auditlar) —
+pipeline bosqichi emas, tarixiy manba: [research/](research/README.md).
+
 ## Status (2026-09-06)
 
 | #   | Papka             | Holat           | Izoh                                      |

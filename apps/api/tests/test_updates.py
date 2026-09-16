@@ -1,6 +1,6 @@
 """Updates moduli — changelog.
 
-Qaror sessiyasi: `rankwant-updates-design/DECISION-SESSION.md`.
+Qaror sessiyasi: `docs/research/2026-09-13-rankwant-updates-design/DECISION-SESSION.md`.
 Bu testlar **qarorlarni** tekshiradi, implementatsiya tafsilotini emas:
 qaysi yozuv ko'rinadi, tarjima qanday tanlanadi, o'qilmagan holat kimga
 tegishli.

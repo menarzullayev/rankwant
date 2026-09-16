@@ -1,7 +1,7 @@
 """`manage.py load_updates <fayl.json>` — git tarixidan tayyorlangan yozuvlarni yuklash.
 
-Manba: `rankwant-updates-design/backfill/backfill.py` (git tarixini kalit
-so'z bo'yicha mavzuli yozuvlarga guruhlaydi).
+Manba: `docs/research/2026-09-13-rankwant-updates-design/backfill/backfill.py`
+(git tarixini kalit so'z bo'yicha mavzuli yozuvlarga guruhlaydi).
 
 **Idempotent.** Kalit — `(released_at, title)`: bir xil faylni ikki marta
 yuklash yangi yozuv yaratmaydi, balki mavjudini yangilaydi. Bu muhim,

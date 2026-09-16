@@ -1,6 +1,7 @@
 """Platforma yo'l xaritasi — foydalanuvchi takliflari, ovozlar va izohlar.
 
-Variant C ("Yo'l xaritasi"). Manba: `rankwant-updates-design/DESIGN-VARIANTS.md`
+Variant C ("Yo'l xaritasi"). Manba:
+`docs/research/2026-09-13-rankwant-updates-design/DESIGN-VARIANTS.md`
 va faza-3 qarorlari (izohlar bilan, ovoz o'zgartirsa bo'ladi, taklif ochiq
 va ovoz yig'adi, alohida sahifa).
 
