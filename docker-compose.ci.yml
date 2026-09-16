@@ -32,3 +32,26 @@ services:
       api: { condition: service_healthy }
       web: { condition: service_started }
       judge: { condition: service_started }
+
+  # Bake-off validator case'lari (19–21) — ADR-0020 himoyasini HAQIQIY
+  # nsjail ostida tekshiradi. Birlik testlari `sandboxed` ni soxta ijrochi
+  # bilan almashtiradi, ya'ni sandbox, kompilyatsiya va validatorning
+  # chiqish kodi ular uchun ko'rinmas qoladi.
+  #
+  # `api` obrazi ATAYLAB: unda `redis` kutubxonasi allaqachon bor, ya'ni
+  # harness uchun na `pip install`, na tarmoq kerak — obraz esa shu job'da
+  # allaqachon qurilgan. Django sozlamalari ishlatilmaydi: harness mustaqil
+  # skript, u faqat Redis bilan gaplashadi.
+  #
+  # `smoke` kabi bir martalik: `profiles` tufayli `up -d` uni ko'tarmaydi.
+  bakeoff:
+    build: ./apps/api
+    profiles: ['bakeoff']
+    volumes: ['./services/bakeoff:/bakeoff:ro']
+    environment:
+      REDIS_URL: redis://redis:6379/0
+    command:
+      ['python', '/bakeoff/harness/runner.py', '--worker', 'judge-go', '--cases', '19,20,21']
+    depends_on:
+      redis: { condition: service_healthy }
+      judge: { condition: service_started }
