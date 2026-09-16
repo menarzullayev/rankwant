@@ -11,8 +11,10 @@
 // goal is that the chosen glyph still says "this is the blog section", not
 // that it always matches the page that lives at the href.
 import fs from "node:fs";
+import path from "node:path";
+import { WEB_SRC } from "./icon-paths.mjs";
 
-const FILE = "C:/Users/nsn/project/cp/rankwant/apps/web/src/layout/nav.ts";
+const FILE = path.join(WEB_SRC, "layout", "nav.ts");
 let s = fs.readFileSync(FILE, "utf8");
 
 /** Old component name -> iconKey (semantic key, D18). */

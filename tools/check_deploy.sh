@@ -34,6 +34,12 @@
 
 set -uo pipefail
 
+# Git Bash rewrites `/app/...` arguments into Windows paths before they reach
+# `docker exec`, so every in-container read fails and the report goes red for
+# the wrong reason (measured 2026-09-17 without it: "serializers.py konteynerda
+# yo'q" and "417 fayl MAZMUNI farq qiladi"; with it: 4 files). Ignored elsewhere.
+export MSYS_NO_PATHCONV=1
+
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT" || exit 2
 
@@ -392,9 +398,20 @@ if docker inspect rankwant-judge-1 >/dev/null 2>&1; then
   elif [ "$jsha" = "$src_sha" ]; then
     printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-judge-1' "$G" 'joyida' "$N" "$jshow" \
       "yorliq HEAD bilan bir xil (${jsha:0:12})"
+  # The binary is built from services/judge-go only (compose build context), so
+  # a label older than HEAD is still current when that folder has not changed
+  # since. Comparing with HEAD alone reported every docs-only commit as a stale
+  # judge (2026-09-17: label 787eaa3, no judge change after it).
+  elif ! git cat-file -e "${jsha}^{commit}" 2>/dev/null; then
+    printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-judge-1' "$Y" 'TEKSHIRILMADI' "$N" "$jshow" \
+      "yorliq ${jsha:0:12} bu klonda yo'q — git fetch, keyin qayta tekshiring"
+    stale=$((stale + 1))
+  elif git diff --quiet "$jsha" "$src_sha" -- services/judge-go; then
+    printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-judge-1' "$G" 'joyida' "$N" "$jshow" \
+      "yorliq ${jsha:0:12}: undan beri services/judge-go o'zgarmagan"
   else
     printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-judge-1' "$R" 'ESKIRGAN' "$N" "$jshow" \
-      "yorliq ${jsha:0:12} ≠ HEAD ${src_sha:0:12}"
+      "yorliq ${jsha:0:12} dan beri services/judge-go o'zgargan (HEAD ${src_sha:0:12})"
     stale=$((stale + 1))
   fi
 else

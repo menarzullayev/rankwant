@@ -2,7 +2,7 @@
 
 **Sana:** 2026-09-13
 **Manba:** 5 sahifadan CDP (Chrome DevTools Protocol) orqali yig'ilgan xom ma'lumot
-**Ma'lumot papkasi:** `C:\Users\nsn\rankwant-audit\`
+**Ma'lumot papkasi:** `docs/03-market-research/audit/` (dastlab `C:\Users\nsn\rankwant-audit\`)
 
 ---
 

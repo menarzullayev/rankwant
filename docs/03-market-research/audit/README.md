@@ -1,6 +1,8 @@
 # Raqobatchi auditi — 2026-09-13
 
-Manba: `C:\Users\nsn\rankwant-audit\` (2026-09-13 da repo'ga ko'chirildi).
+Manba: 2026-09-13 da `C:\Users\nsn\rankwant-audit\` dan repo'ga ko'chirildi. O'sha papka
+2026-09-17 da solishtirilib olib tashlandi (18 fayl qator oxirigacha bir xil, `XULOSA-VA-REJA.md`
+da repo nusxasi yangiroq) — haqiqat manbai endi faqat shu papka.
 
 ## Nima bu
 

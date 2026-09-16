@@ -24,7 +24,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const SRC = "C:/Users/nsn/project/cp/rankwant/apps/web/src";
+import { WEB_SRC as SRC } from "./icon-paths.mjs";
 
 /** Hand-drawn icon -> semantic key (D18: `domain.object.state`). */
 const MAP = {

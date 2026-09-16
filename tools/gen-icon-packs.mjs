@@ -11,9 +11,9 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const RESOLVED = "C:/Users/nsn/project/cp/.tmp-verdict/pack-resolved.json";
-const CACHE = "C:/Users/nsn/project/cp/.tmp-verdict/svg-cache";
-const OUT = "C:/Users/nsn/project/cp/rankwant/apps/web/src/icons/packs";
+import { RESOLVED, SVG_CACHE as CACHE, WEB_SRC } from "./icon-paths.mjs";
+
+const OUT = path.join(WEB_SRC, "icons", "packs");
 
 /** Pack -> prefix, base svg props, and the CDN url builder. */
 const PACKS = {

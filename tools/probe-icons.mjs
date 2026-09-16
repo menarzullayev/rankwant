@@ -2,7 +2,7 @@
 // Usage: node tools/probe-icons.mjs heroicons wifi arrow-trending-up bold
 import fs from "node:fs";
 
-const CACHE = "C:/Users/nsn/project/cp/.tmp-verdict/pack-lists";
+import { PACK_LISTS as CACHE } from "./icon-paths.mjs";
 const [pack, ...names] = process.argv.slice(2);
 if (!pack) {
   console.error("ishlatish: node tools/probe-icons.mjs <pack> <nom> [nom...]");

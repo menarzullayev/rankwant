@@ -1,7 +1,7 @@
 """5 sahifadan xom (RAW) ma'lumot yig'adi — CDP proxy orqali.
 
 Har sahifa uchun: to'liq HTML, tuzilma JSON'i, skrinshot.
-Natija: C:/Users/nsn/rankwant-audit/<NN>-<nom>/
+Natija: docs/03-market-research/audit/<NN>-<nom>/ (shu skriptning ota papkasi).
 """
 
 import json
@@ -11,7 +11,9 @@ import urllib.request
 from pathlib import Path
 
 PROXY = "http://127.0.0.1:3456"
-OUT = Path(r"C:\Users\nsn\rankwant-audit")
+# Writes next to the imported audit instead of C:\Users\nsn\rankwant-audit, the
+# machine-specific folder the data was copied from (removed on 2026-09-17).
+OUT = Path(__file__).resolve().parent.parent
 EXTRACT = Path(__file__).with_name("audit-extract.js").read_text(encoding="utf-8")
 
 PAGES = [

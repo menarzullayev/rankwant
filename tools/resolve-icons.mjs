@@ -12,7 +12,7 @@ import fs from "node:fs";
 import { KEYS, PACK_SOURCES, CATEGORIES } from "./icon-keys.mjs";
 import { PACK_OVERRIDES } from "./icon-overrides.mjs";
 
-const CACHE = "C:/Users/nsn/project/cp/.tmp-verdict/pack-lists";
+import { MISSES, PACK_LISTS as CACHE, RESOLVED } from "./icon-paths.mjs";
 
 async function fetchJson(url) {
   const r = await fetch(url);
@@ -75,7 +75,7 @@ for (const pack of packs) {
 }
 
 fs.writeFileSync(
-  "C:/Users/nsn/project/cp/.tmp-verdict/pack-resolved.json",
+  RESOLVED,
   JSON.stringify(result, null, 2) + "\n"
 );
 
@@ -106,7 +106,7 @@ if (misses.length) {
   }
   console.log("  To'plam bo'yicha:", JSON.stringify(byPack));
   fs.writeFileSync(
-    "C:/Users/nsn/project/cp/.tmp-verdict/pack-misses.txt",
+    MISSES,
     misses.join("\n") + "\n"
   );
 }
