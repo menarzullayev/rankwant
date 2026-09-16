@@ -1,6 +1,6 @@
 name: Deploy
 
-# Avtomatik build, test va deploy.
+# Build, test va deploy — faqat qo'lda ishga tushiriladi (`on:` ga qarang).
 #
 # Zanjir: build → test → deploy. Har bosqich oldingisiga `needs` bilan
 # bog'langan, ya'ni test yiqilsa deploy UMUMAN boshlanmaydi.
@@ -10,9 +10,15 @@ name: Deploy
 # chaqiradi va shu bilan "test o'tdi" degan shart deploy uchun majburiy
 # bo'ladi. Ikkinchi nusxa saqlanmaydi: qoidalar bir joyda o'zgaradi.
 
+# Manual dispatch only (2026-09-17). Deploy itself has been manual since
+# 2026-09-16 (see the `deploy` job), yet every push to main still ran this
+# workflow: an image build plus a second full `ci.yml` pass, with the deploy
+# job always skipped. On the single self-hosted runner (GitHub's free minutes
+# are used up) that doubled the queue behind each merge, and queued PR jobs
+# were cancelled with "The job was not acquired by Runner of type self-hosted
+# even after multiple attempts". `ci.yml` already tests every push to main,
+# and its smoke job builds the same images.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
     inputs:
       environment:
