@@ -108,6 +108,66 @@ py_inventory() {
   fi
 }
 
+# `py_tree_hash TARGET` — butun `.py` daraxtining BITTA xeshi, `\r` siz.
+#
+# ⚠️ Nega `\r` olib tashlanadi: hash solishtirishdan ilgari ATAYLAB voz
+# kechilgan edi, chunki Windows'da `git checkout` fayllarni CRLF ga
+# o'giradi va sog'lom konteyner «ESKIRGAN» bo'lib ko'rinardi. Lekin
+# hashesiz qolgan bo'shliq qimmatga tushdi — o'lchandi (2026-09-16):
+# `arena/views.py` konteynerda va manbada HAR XIL edi
+# (c385aecd… ↔ 1548467d…), skript esa «Hamma konteyner joriy kodda» dedi,
+# chunki fayl RO'YXATI bir xil edi.
+#
+# Ya'ni ikki tomon ham `\r` siz xeshlanadi: qator oxiri farqi ko'rinmaydi
+# (yolg'on signal yo'q), mazmun farqi esa KO'RINADI.
+#
+# ⚠️ Nega fayl-fayl emas, bitta xesh: o'lchandi — fayl boshiga alohida
+# jarayon chaqirilsa uchta konteyner uchun **64 soniya** ketadi (330 fayl
+# × 3 jarayon × 3 konteyner). Bu darvoza har deploy'da ishlaydi, ya'ni
+# sekin bo'lishi mumkin emas. Fayl nomi faqat FARQ topilganda kerak —
+# o'shanda `py_hashes` chaqiriladi.
+py_tree_hash() {
+  if [ "$1" = "host" ]; then
+    ( cd apps/api && py_file_list | xargs -0 -r cat | tr -d '\r' | sha256sum | cut -d' ' -f1 )
+  else
+    docker exec -i "${1#container:}" sh -c '
+      cd /app || exit 1
+      find . -name "*.py" -not -path "*/__pycache__/*" -not -path "*/.*/*" \
+        -not -path "*/node_modules/*" -print0 |
+        sort -z | xargs -0 -r cat | tr -d "\r" | sha256sum | cut -d" " -f1' 2>/dev/null
+  fi
+}
+
+# `py_file_list` — host tomonidagi NUL ajratilgan ro'yxat (tartiblangan).
+py_file_list() {
+  find . -name '*.py' -not -path '*/__pycache__/*' -not -path '*/.*/*' \
+    -not -path '*/node_modules/*' -print0 | sort -z
+}
+
+# `py_hashes TARGET` — `hash  yo'l` juftliklari (faqat farqni aniqlash uchun).
+# Skript BIR marta yoziladi va ikki tomonda stdin orqali bajariladi
+# (`sh -s` / `docker exec -i … sh -s`) — shunda ichma-ich qo'shtirnoq
+# qochirishdan qutulamiz, ya'ni ikkala tomon AYNAN bir xil kod yuradi.
+PY_HASH_SCRIPT='
+cd "$1" || exit 1
+find . -name "*.py" \
+  -not -path "*/__pycache__/*" -not -path "*/.*/*" \
+  -not -path "*/node_modules/*" -print0 |
+  sort -z |
+  xargs -0 -r sh -c '"'"'
+    for f in "$@"; do
+      printf "%s  %s\n" "$(tr -d "\r" < "$f" | sha256sum | cut -d" " -f1)" "$f"
+    done'"'"' _
+'
+
+py_hashes() {
+  if [ "$1" = "host" ]; then
+    printf '%s' "$PY_HASH_SCRIPT" | sh -s apps/api | sort
+  else
+    printf '%s' "$PY_HASH_SCRIPT" | docker exec -i "${1#container:}" sh -s /app 2>/dev/null | sort
+  fi
+}
+
 # `check_inventory NAME` — konteynerda manbadagi fayllar TO'LIQ bormi.
 #
 # Nega kerak: `core/serializers.py` hash'i — eng sezgir nishon, lekin u
@@ -145,6 +205,20 @@ check_inventory() {
   elif [ -n "$extra" ]; then
     note="$(printf '%s\n' "$extra" | grep -c .) fayl konteynerda ortiqcha — $(printf '%s\n' "$extra" | head -1)"
   else
+    # Ro'yxat bir xil — endi MAZMUN solishtiriladi. Busiz fayl ichidagi
+    # o'zgarish ko'rinmaydi (2026-09-16 da aynan shunday bo'ldi).
+    if [ "$(py_tree_hash host)" != "$(py_tree_hash "container:$name")" ]; then
+      # Farq BOR — endi qaysi fayl ekani aniqlanadi (sekin yo'l, faqat shu
+      # holatda ishlaydi; `HOST_HASHES` bir marta hisoblanadi).
+      [ -n "${HOST_HASHES:-}" ] || HOST_HASHES="$(py_hashes host)"
+      diff_list="$(comm -23 <(printf '%s\n' "$HOST_HASHES") \
+        <(py_hashes "container:$name") | awk '{print $NF}')"
+      n_diff="$(printf '%s\n' "$diff_list" | grep -c .)"
+      note="$n_diff fayl MAZMUNI farq qiladi — $(printf '%s\n' "$diff_list" | head -1)"
+    fi
+  fi
+
+  if [ -z "${note:-}" ]; then
     return
   fi
 
