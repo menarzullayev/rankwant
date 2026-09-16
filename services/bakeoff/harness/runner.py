@@ -19,6 +19,19 @@ import sys
 import time
 import uuid
 
+# Windows'da chiqish QUVURGA yo'naltirilganda `sys.stdout` `cp1252` bo'lib
+# qoladi va hisobotdagi birinchi `✅` da harness quladi — o'lchandi
+# 2026-09-16: uchala case ham o'tgan, natijani esa hech kim ko'rmagan
+# (`UnicodeEncodeError: '✅'`). Sabab va to'liq izoh `tools/_console.py`
+# da; guard shu yerda TAKRORLANADI, chunki harness judge yonidagi mustaqil
+# vosita va `tools/` ni import qilmaydi.
+for _stream in (sys.stdout, sys.stderr):
+    if (getattr(_stream, "encoding", "") or "").lower().replace("-", "") != "utf8":
+        try:
+            _stream.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, ValueError, OSError):
+            pass
+
 try:
     import redis
 except ImportError:
