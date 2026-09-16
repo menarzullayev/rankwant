@@ -111,6 +111,13 @@ qoladi.
 Issue ishlatilmaydi — **PR asosida**. Vazifa qo'shish
 kerak bo'lsa branch va PR ochiladi, tracker'ga ticket yozilmaydi.
 
+Til: izoh va docstring inglizcha, mavjud hujjat o'z tilida — to'liq qoida
+[CONTRIBUTING § Til](CONTRIBUTING.md#til). Mavjud izohlarni tarjima qilmang.
+
+CI faqat bitta self-hosted runner'da (GitHub'ning bepul daqiqalari tugagan —
+hosted runner taklif qilinmaydi). Bir vaqtda ko'p PR ochilsa job'lar
+«not acquired» bilan bekor bo'ladi: PR'larni ketma-ket oching.
+
 **`main` ga to'g'ridan-to'g'ri push'ni hook rad etadi** (`tools/push_guard.py`).
 GitHub bu tarifda branch protection bermaydi (403), ya'ni server hech narsani
 to'xtatmaydi — qoidani faqat shu hook ushlab turadi. Tartib: branch → PR →

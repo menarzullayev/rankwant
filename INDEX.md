@@ -1,6 +1,6 @@
 # RankWant — agent indeksi
 
-**Workspace:** `/home/nsn/Workspace/Web_Projects/rankwant/`  
+**Repo:** `menarzullayev/rankwant` (GitHub, private) · lokal yo'l mashinaga bog'liq — `git rev-parse --show-toplevel`  
 **Maqsad:** CP/OJ + musobaqa platformasi (KEP/RoboContest darajasida, o'z o'zbek kontenti bilan)
 
 ## O'qish tartibi
