@@ -419,3 +419,30 @@ jobs:
       - name: Tozalash
         if: always()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+      # ⚠️ `down -v` konteyner va volume'larni olib tashlaydi, lekin
+      # QURILGAN OBRAZLARNI QOLDIRADI — teshik shu yerda edi.
+      #
+      # 2026-09-16 da o'lchandi: 420 ta `rw-smoke-*` + 122 ta
+      # `rankwant-build-*` yig'ilib, runner'ning WSL diskini to'ldirgan
+      # (58 GB) — C: da 9.59 GB qolgandi va mashina sekinlashgan.
+      #
+      # Ikkita narsa o'chiriladi:
+      #   1. shu yurish yasagan obrazlar (`${COMPOSE_PROJECT_NAME}-*`)
+      #   2. buzilgan/yarim qolgan yurishlardan qolgan, 6 soatdan eski `rw-*`
+      #
+      # Bazaviy obrazlar (postgres, redis, minio, playwright) TEgilMAYDI:
+      # ular har yurishda qayta ishlatiladi, o'chirilsa qayta yuklanadi.
+      - name: Obrazlarni tozalash
+        if: always()
+        run: |
+          set -u
+          echo "--> shu yurish obrazlari (${COMPOSE_PROJECT_NAME}-*)"
+          docker images --format '{{.Repository}}:{{.Tag}}' \
+            | grep -E "^${COMPOSE_PROJECT_NAME}-" \
+            | xargs -r docker rmi -f || true
+          echo "--> 6 soatdan eski qoldiqlar (rw-*, rankwant-build-*)"
+          docker images --format '{{.ID}}|{{.CreatedSince}}|{{.Repository}}' \
+            | awk -F'|' '$3 ~ /^rw-/ && $2 ~ /hours|days|weeks|months/ {print $1}' \
+            | sort -u | xargs -r docker rmi -f || true
+          echo "--> build cache (24 soatdan eskisi)"
+          docker builder prune -f --filter 'until=24h' || true

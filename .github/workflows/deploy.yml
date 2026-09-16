@@ -273,5 +273,28 @@ jobs:
           docker compose -p rankwant --env-file .env.public \
             -f docker-compose.yml -f docker-compose.public.yml logs --tail 100
 
+      # ⚠️ Eski obrazlar ATAYLAB tozalanadi (2026-09-16).
+      # O'lchandi: 122 ta `rankwant-build-*` yig'ilib, runner'ning WSL
+      # diskini to'ldirgan — C: da 9.59 GB qolgandi. Bu job har safar
+      # yangi obraz quradi, eskisini hech kim o'chirmas edi.
+      #
+      # JORIY yurish obrazlari SAQLANADI: ular hozir ishlayotgan
+      # konteynerlarga bog'langan. Faqat oldingi yurishlarniki o'chadi.
+      - name: Eski obrazlarni tozalash
+        if: always()
+        run: |
+          set -u
+          echo "--> oldingi yurish obrazlari (${COMPOSE_PROJECT_NAME}-* dan boshqa)"
+          docker images --format '{{.Repository}}:{{.Tag}}' \
+            | grep -E '^rankwant-build-' \
+            | grep -v "^${COMPOSE_PROJECT_NAME}-" \
+            | xargs -r docker rmi -f || true
+          echo "--> 6 soatdan eski CI qoldiqlari (rw-*)"
+          docker images --format '{{.ID}}|{{.CreatedSince}}|{{.Repository}}' \
+            | awk -F'|' '$3 ~ /^rw-/ && $2 ~ /hours|days|weeks|months/ {print $1}' \
+            | sort -u | xargs -r docker rmi -f || true
+          echo "--> build cache (24 soatdan eskisi)"
+          docker builder prune -f --filter 'until=24h' || true
+
       # `down` ATAYLAB yo'q: bu jonli stack — uni tozalash saytni
       # o'chirib qo'yardi. Rollback kerak bo'lsa quyidagi job ishlatiladi.

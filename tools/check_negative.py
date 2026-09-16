@@ -1748,6 +1748,47 @@ def neg_icons_pack_missing_key() -> tuple[bool, str]:
         return expect_fail("icons", "ikonka/to'plamda kalit yetishmaydi")
 
 
+def neg_ci_disk_cleanup_removed() -> tuple[bool, str]:
+    """CI tozalash qadami olib tashlansa — tutilsinmi?
+
+    ⚠️ Bu 2026-09-16 dagi 58 GB muammoning o'zi: `docker compose down -v`
+    konteynerni olib tashlaydi, lekin qurilgan obrazlarni QOLDIRADI. Natija
+    420 ta `rw-smoke-*` yig'ilib, C: da 9.59 GB qolgandi. Tozalash qadami
+    olib tashlansa, birorta test qizil bo'lmaydi — muammo haftalar ichida
+    asta qaytadi. Faqat shu tekshiruv uni darhol ushlaydi.
+    """
+    path = ROOT / ".github/workflows/ci.yml"
+    src = path.read_bytes().decode("utf-8")
+    # Butun qadamni olib tashlash kerak, faqat sarlavhani emas: `run:`
+    # qismi qolsa `docker rmi` matni ham qoladi va tekshiruv uni hali ham
+    # «bor» deb o'qiydi. Birinchi urinish aynan shunday yolg'on yashil
+    # bergan edi.
+    start = src.index("      - name: Obrazlarni tozalash")
+    end = src.index("      - name:", start + 10) if "      - name:" in src[start + 10 :] else len(src)
+    old = src[start:end]
+    if not old.strip():
+        return False, "ci_disk/tozalash: langar topilmadi"
+    with Mutation(path, old, ""):
+        return expect_fail("ci_disk", "CI obrazlarni tozalamaydi")
+
+
+def neg_ci_disk_deploy_cleanup_removed() -> tuple[bool, str]:
+    """Deploy tozalash qadami olib tashlansa — tutilsinmi?
+
+    `deploy.yml` 122 ta `rankwant-build-*` obrazining manbai: har yurish
+    yangi obraz quradi, eskisini hech kim o'chirmas edi.
+    """
+    path = ROOT / ".github/workflows/deploy.yml"
+    src = path.read_bytes().decode("utf-8")
+    start = src.index("      - name: Eski obrazlarni tozalash")
+    end = src.index("      - name:", start + 10) if "      - name:" in src[start + 10 :] else len(src)
+    old = src[start:end]
+    if not old.strip():
+        return False, "ci_disk/deploy: langar topilmadi"
+    with Mutation(path, old, ""):
+        return expect_fail("ci_disk", "deploy obrazlarni tozalamaydi")
+
+
 def neg_icons_camelcase_key_missing() -> tuple[bool, str]:
     """camelCase kalit bitta to'plamdan olib tashlansa — tutilsinmi?
 
@@ -1953,6 +1994,13 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("to'plamda kalit yetishmaydi", neg_icons_pack_missing_key),
             ("qat'iy zona registrga tushsa", neg_icons_fixed_zone_leaks),
             ("camelCase kalit yetishmaydi", neg_icons_camelcase_key_missing),
+        ],
+    ),
+    (
+        "ci_disk",
+        [
+            ("CI tozalash qadami yo'q", neg_ci_disk_cleanup_removed),
+            ("deploy tozalash qadami yo'q", neg_ci_disk_deploy_cleanup_removed),
         ],
     ),
     (
