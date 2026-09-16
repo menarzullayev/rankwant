@@ -99,7 +99,7 @@ yuklanish, va tashqi `fonts.googleapis.com` (self-host qoidasiga zid).
 Ikki variantdan birini tanlash emas, **gibrid** eng to'g'ri yechim:
 
 **A) Statik standart rasm — poydevor.**
-`/brand/og-default.png` (1200×630, `mark-choqqi.svg` asosida brendlangan)
+`/brand/og-default.png` (1200×630, `mark-crest.svg` asosida brendlangan)
 `layout.tsx` dagi `openGraph.images` ga ulanadi. Barcha sahifani bir zumda
 qoplaydi, runtime xarajati nol, CDN keshlaydi. Bu — **kafolatli qatlam**.
 

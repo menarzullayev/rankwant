@@ -13,7 +13,7 @@ Birinchi o‘tish: har konsepsiyadan 1 ta PNG (1:1). Promptlar: [`../belgi-promp
 | 07 | `07-q-qidiruv.png` | qvant |
 | 08 | `08-zarra.png` | qvant |
 | 09 | `09-pyedestal.png` | musobaqa |
-| 10 | `10-choqqi.png` | ko‘tarilish |
+| 10 | `10-crest.png` | ko‘tarilish (Crest) |
 | 11 | `11-r-harfi.png` | harf |
 | 12 | `12-w-harfi.png` | harf |
 | 13 | `13-ravoq.png` | geometriya |

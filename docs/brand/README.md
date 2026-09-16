@@ -2,9 +2,9 @@
 
 ## Logotip — bitta manba
 
-[`mark-choqqi.svg`](mark-choqqi.svg) — **haqiqat manbai**. U
-[`10-choqqi.png`](belgi-generated/10-choqqi.png) dan 1:1 rekonstruksiya;
-o'lchamlar va ranglar [`mark-choqqi-params.md`](mark-choqqi-params.md) da.
+[`mark-crest.svg`](mark-crest.svg) — **haqiqat manbai**. U
+[`10-crest.png`](belgi-generated/10-crest.png) dan 1:1 rekonstruksiya;
+o'lchamlar va ranglar [`mark-crest-params.md`](mark-crest-params.md) da.
 
 Boshqa hamma format shundan generatsiya qilinadi va **qo'lda tahrirlanmaydi**:
 
@@ -14,8 +14,8 @@ python3 tools/brand.py
 
 | Chiqadigan fayl | Qayerda ishlatiladi |
 | --------------- | ------------------- |
-| `brand/mark-choqqi.svg` | sayt, hujjatlar |
-| `brand/mark-choqqi-dark.svg` | ixtiyoriy — qorong'i fonda konturga ko'proq aniqlik kerak bo'lsa |
+| `brand/mark-crest.svg` | sayt, hujjatlar |
+| `brand/mark-crest-dark.svg` | ixtiyoriy — qorong'i fonda konturga ko'proq aniqlik kerak bo'lsa |
 | `brand/mark-32.png` | kichik ikonka |
 | `brand/mark-96.png` | **xat sarlavhasi** (48px, Retina uchun 2x) |
 | `brand/mark-180.png` | Apple touch icon |
@@ -25,7 +25,7 @@ python3 tools/brand.py
 
 Hammasi `apps/web/public/` ichida.
 
-**Logotipni o'zgartirish** = `mark-choqqi.svg` ni tahrirlash va buyruqni qayta
+**Logotipni o'zgartirish** = `mark-crest.svg` ni tahrirlash va buyruqni qayta
 ishga tushirish. Yettita joyni qo'lda yangilash kerak emas — aynan shu sababli
 skript bor: kimdir bittasini unutsa, sayt ikki xil belgi ko'rsatib turardi.
 
@@ -42,12 +42,12 @@ qimmatlashadi: yuborilgan xatlar eski logotip bilan qoladi.
 
 Oxirgi qator muammo emas: siluetni **ko'k tana** ushlab turadi, kontur esa
 shunchaki orqaga chekinadi — belgi qorong'i fonda ham to'liq o'qiladi.
-Ko'proq aniqlik kerak bo'lgan joyda `mark-choqqi-dark.svg` ishlatiladi
+Ko'proq aniqlik kerak bo'lgan joyda `mark-crest-dark.svg` ishlatiladi
 (navy `#102038` → `#33507e`, qolgan ranglar tegilmaydi).
 
 ## Nusxalar
 
-`belgi-generated/10-choqqi.svg` va `apps/web/public/brand/mark-choqqi.svg` —
+`belgi-generated/10-crest.svg` va `apps/web/public/brand/mark-crest.svg` —
 manbaning nusxalari. Ikkinchisini skript qayta yozadi; birinchisi arxiv
 snapshot'i. **Ikkalasi ham tahrirlanmaydi.**
 

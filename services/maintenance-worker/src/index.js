@@ -17,8 +17,8 @@ const ORIGIN_DOWN = new Set([502, 504, 520, 521, 522, 523, 524, 525, 526, 530]);
 
 const RETRY_AFTER_SECONDS = "300";
 
-// Brend belgisi (docs/brand/mark-choqqi-params.md). Inline — origin o'chiq
-// paytda /brand/mark-choqqi.svg ham ochilmaydi.
+// Brend belgisi (docs/brand/mark-crest-params.md). Inline — origin o'chiq
+// paytda /brand/mark-crest.svg ham ochilmaydi.
 const LOGO = `<svg viewBox="0 0 1024 1024" aria-hidden="true">
 <path class="navy" d="M116.5 799L420 294.5L559 501.5L649 396.5L914.5 798L649 799.5L595 826.5L365 826.5L313 799.5Z"/>
 <path fill="#44A0FC" d="M159.5 771L420 323.5L553 558.5L648 421.5L860.5 764L666 709.5L565 776.5L378 776.5L325 707.5Z"/>

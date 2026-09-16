@@ -20,7 +20,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SOURCE = ROOT / "docs" / "brand" / "mark-choqqi.svg"
+SOURCE = ROOT / "docs" / "brand" / "mark-crest.svg"
 OUT = ROOT / "apps" / "web" / "public" / "brand"
 
 #: Xat mijozlari SVG ni ko'rsatmaydi — ularga PNG kerak, va Retina uchun 2x.
@@ -28,7 +28,7 @@ OUT = ROOT / "apps" / "web" / "public" / "brand"
 #: o'lchamlar, o'zimiz o'ylab topganimiz emas.
 SIZES = (32, 96, 180, 192, 512)
 
-#: Belgining ranglari PNG dan o'lchangan (`mark-choqqi-params.md`) va
+#: Belgining ranglari PNG dan o'lchangan (`mark-crest-params.md`) va
 #: o'zgartirilmaydi. Qorong'i fonda esa navy kontur fonga singib ketadi —
 #: shuning uchun u yerda ochroq navy ishlatiladi. Bu YAGONA farq.
 NAVY = "#102038"
@@ -101,10 +101,10 @@ def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
     svg = SOURCE.read_text()
 
-    light = OUT / "mark-choqqi.svg"
+    light = OUT / "mark-crest.svg"
     light.write_text(svg)
-    (OUT / "mark-choqqi-dark.svg").write_text(darken(svg))
-    print(f"  ✓ {light.relative_to(ROOT)}  (+ mark-choqqi-dark.svg)")
+    (OUT / "mark-crest-dark.svg").write_text(darken(svg))
+    print(f"  ✓ {light.relative_to(ROOT)}  (+ mark-crest-dark.svg)")
 
     for size in SIZES:
         target = OUT / f"mark-{size}.png"
