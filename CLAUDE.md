@@ -1,6 +1,6 @@
 # RankWant — agent uchun kirish nuqtasi
 
-Loyiha hujjatlangan: `docs/` da 10 bo'lim, `docs/07-adr/` da 20 ta ADR.
+Loyiha hujjatlangan: `docs/` da 10 bo'lim, `docs/07-adr/` da har qaror alohida ADR.
 **Bu fayl ularni takrorlamaydi** — bu yerda faqat kod yozayotganda darhol
 kerak bo'ladigan buyruqlar va ilgari vaqt yegan tuzoqlar.
 
@@ -108,5 +108,18 @@ qoladi.
 
 ## Ish uslubi
 
-Issue ishlatilmaydi — **PR asosida** (0 issue, 8 PR). Vazifa qo'shish
+Issue ishlatilmaydi — **PR asosida**. Vazifa qo'shish
 kerak bo'lsa branch va PR ochiladi, tracker'ga ticket yozilmaydi.
+
+**`main` ga to'g'ridan-to'g'ri push'ni hook rad etadi** (`tools/push_guard.py`).
+GitHub bu tarifda branch protection bermaydi (403), ya'ni server hech narsani
+to'xtatmaydi — qoidani faqat shu hook ushlab turadi. Tartib: branch → PR →
+CI yashil → GitHub'da merge. `RANKWANT_ALLOW_MAIN_PUSH=1` va `--no-verify` —
+agent uchun faqat Saidakbar akaning aniq ruxsati bilan.
+
+**Commit qilishdan oldin identity'ni tekshiring:**
+`git config --show-origin user.email`. 2026-09-16 da salbiy test haqiqiy
+repoda ishlab `.git/config` ga `test@example.com` yozib qo'ygan va 42 commit
+shu nom bilan ketgan (tarix `.mailmap` da to'g'rilangan). Hook endi soxta
+muallifli commit'ni ham, ifloslangan config'ni ham rad etadi; salbiy
+to'plam esa haqiqiy repo config'i o'zgarsa o'zi yiqiladi.
