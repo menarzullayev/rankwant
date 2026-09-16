@@ -31,14 +31,31 @@ root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 dest="${RANKWANT_BACKUP_DIR:-$HOME/backups/rankwant}"
 keep_days="${RANKWANT_BACKUP_KEEP:-30}"
 stamp="$(date +%Y%m%d-%H%M%S)"
+
+# ⚠️ Yo'l konvertatsiyasi (o'lchandi 2026-09-16).
+#
+# Git Bash'ning har xil nashri `/c/Users/...` ni turlicha o'giradi:
+#   · `C:\Program Files\Git\bin\bash.exe`  → to'g'ri
+#   · PortableGit (agent shell)            → `C:\c\Users\...` — disk harfi
+#                                            IKKI marta
+# Ikkinchisida `docker compose --env-file` faylni topolmaydi va skript
+# jim yiqiladi, ortda 0 baytli `*.sql.gz.part` qoladi. `MSYS_NO_PATHCONV=1`
+# yordam bermadi (sinab ko'rilgan).
+#
+# `cygpath -w` har ikkala holatda ham to'g'ri Windows yo'lini beradi.
+# Linux/CI da `cygpath` yo'q — u holda yo'l o'zgarishsiz qoladi.
+winpath() {
+  if command -v cygpath >/dev/null 2>&1; then cygpath -w "$1"; else printf '%s' "$1"; fi
+}
 # ⚠️ `-p rankwant` SHART. `docker-compose.yml` da `name:` yo'q, ya'ni
 # loyiha nomi KATALOGDAN olinadi. Boshqa klondan yoki git worktree'dan
 # chaqirilsa nom `agent-…` bo'lib qoladi va skript jonli stack'ni emas,
 # bo'sh loyihani ko'radi (o'lchandi 2026-09-15: worktree'da nom
 # `agent-a51a101abc58a171f`). `tools/handoff.ps1` nomni aynan shu sababdan
 # qotirib qo'ygan.
-compose=(docker compose -p rankwant --env-file "$root/.env.public"
-         -f "$root/docker-compose.yml" -f "$root/docker-compose.public.yml")
+compose=(docker compose -p rankwant --env-file "$(winpath "$root/.env.public")"
+         -f "$(winpath "$root/docker-compose.yml")"
+         -f "$(winpath "$root/docker-compose.public.yml")")
 
 # ── Dump butunligi ───────────────────────────────────────────────────
 # Kunlik yurish ham, salbiy test ham SHU funksiyadan o'tadi: test

@@ -56,25 +56,25 @@ def main() -> int:
     problems = 0
     for path, job, patterns in EXPECTED:
         if not path.exists():
-            print(f"  ✕ topilmadi: {path}")
+            print(f"  X topilmadi: {path}")
             problems += 1
             continue
         src = path.read_text(encoding="utf-8")
         steps = "\n".join(job_steps(src, job))
         if not steps:
-            print(f"  ✕ {path.name}: '{job}' job'ida qadam yo'q")
+            print(f"  X {path.name}: '{job}' job'ida qadam yo'q")
             problems += 1
             continue
         for pat in patterns:
             if not re.search(pat, steps):
                 print(
-                    f"  ✕ {path.name} / {job}: `{pat}` topilmadi — "
+                    f"  X {path.name} / {job}: `{pat}` topilmadi — "
                     f"obrazlar tozalanmaydi"
                 )
                 problems += 1
         if not re.search(r"if:\s*always\(\)", steps):
             print(
-                f"  ✕ {path.name} / {job}: tozalash `if: always()` emas — "
+                f"  X {path.name} / {job}: tozalash `if: always()` emas — "
                 f"yurish yiqilsa obrazlar qoladi"
             )
             problems += 1
@@ -82,7 +82,7 @@ def main() -> int:
     if problems:
         print(
             f"\nJami: {problems} muammo.\n"
-            "⚠️ CI har yurishda yangi Docker obrazi quradi. Tozalash "
+            "! CI har yurishda yangi Docker obrazi quradi. Tozalash "
             "bo'lmasa ular yig'ilib disk(small to'ldiradi — 2026-09-16 da "
             "58 GB ga yetgan edi."
         )
@@ -91,7 +91,7 @@ def main() -> int:
     print(
         f"Tekshirildi: {len(EXPECTED)} workflow × "
         f"({', '.join(p for p in ('docker rmi', 'builder prune'))})\n"
-        "CI disk tozalashi joyida ✓"
+        "CI disk tozalashi joyida OK"
     )
     return 0
 

@@ -42,6 +42,12 @@ services:
   # Migratsiya alohida bir martalik servis: gunicorn 4 worker bilan
   # ishlaydi, ya'ni migratsiyani entrypoint'ga qo'yish ularni bir-biriga
   # poyga qildiradi.
+  # ⚠️ `migrate` — ALOHIDA SERVIS, ya'ni o'z OBRAZI bor (o'lchandi
+  # 2026-09-16). Faqat `api`/`worker`/`beat` qayta qurilsa, migrate ESKI
+  # obrazda qoladi va yangi migration fayllarini KO'RMAYDI — natijada
+  # `migrate` "No migrations to apply" deydi, baza esa eskirgan qoladi.
+  # Har qanday qayta qurishda bu servisni ham qurish kerak:
+  #   docker compose ... build migrate && docker compose ... run --rm migrate
   migrate:
     build: ./apps/api
     command: ['python', 'manage.py', 'migrate', '--no-input']
