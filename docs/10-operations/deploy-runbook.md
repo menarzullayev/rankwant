@@ -62,6 +62,33 @@ eski obraz bilan yuradi → yangi migration fayllarini ko'rmaydi.
 emas — **barcha** servisni (migrate ham) qayta quring. Tasdiq faqat  
 `showmigrations` orqali.
 
+### 🔴 `git push` = deploy EMAS — deploy qo'lda
+
+`deploy.yml` dagi `deploy` job **doim `skipped`** bo'ladi:
+
+```yaml
+if: >-
+  ${{
+    (github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch')
+    && vars.PUBLIC_ORIGIN != ''
+  }}
+```
+
+Repo'da **0 ta variable/secret** bor, ya'ni `vars.PUBLIC_ORIGIN` bo'sh →
+shart bajarilmaydi. Bu **ataylab** shunday (izohda yozilgan): sozlanmagan
+deploy har push'da qizil X berib, haqiqiy nosozliklarni yashirardi.
+
+⚠️ **Natijasi (2026-09-16 da o'lchandi):** push'dan keyin CI to'liq yashil
+bo'ladi, lekin konteynerlar **eski kodda qoladi**. Sayt 200 ko'rsatadi —
+chunki u ishlayapti, shunchaki **eski kod bilan**.
+
+Shu sababli `check_deploy.sh` — push'dan keyingi **majburiy** qadam, va
+haqiqiy deploy yuqoridagi §1 qadamlarini qo'lda bajarish demakdir.
+
+⚠️ Yana bir tuzoq: push'dagi yugurishning *boshqa* job'i yiqilsa (masalan
+`Bake-off — validator case'lari`), `deploy` undan ham oldin o'tkazib
+yuboriladi. Yashil CI ≠ deploy bo'lgan.
+
 ---
 
 ## 2. Env o'zgaruvchilari
