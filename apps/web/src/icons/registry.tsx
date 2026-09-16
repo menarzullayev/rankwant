@@ -33,6 +33,29 @@ import { LUCIDE_ICONS } from "./packs/lucide";
  *  **bir marta** almashishni ko'radi (sessiyada bir marta — modul keshi
  *  saqlaydi). Bu ataylab: muqobil — barcha 6 to'plamni boshidan yuklash,
  *  ya'ni har bir foydalanuvchiga 30 KB, holbuki u bittasini ishlatadi.
+ *
+ *  ── Qo'lda chizilgan 4 ta holat (registrga ATAYLAB kirmagan) ─────────
+ *
+ *  Har bir SVG registrdan o'tishi shart emas: registr — **almashtiriladigan
+ *  gliflar** uchun. Quyidagi to'rttasi glif emas, ya'ni ularni boshqa
+ *  to'plam bilan almashtirish ma'nosiz yoki taqiqlangan:
+ *
+ *  1. `components/ui/Button.tsx` — Spinner. Aylanadigan yuklanish belgisi:
+ *     `motion-safe:animate-spin` bilan jonlantiriladi, ya'ni «shakl» emas,
+ *     harakat. Boshqa to'plamga o'tsa ham aylanishi kerak.
+ *  2. `components/ProviderMark.tsx` — Google/GitHub/Telegram belgilari.
+ *     `brand.*` — qat'iy zona (D20 ①): brend qoidalari ularni o'zgartirishni
+ *     taqiqlaydi, ustiga `Icon` chiziq bilan chizadi (`stroke`), bular esa
+ *     to'ldirilgan ko'p rangli shakl.
+ *  3. `components/profile/SolvedOverview.tsx` — qabul foizi halqasi.
+ *     `viewBox="0 0 42 42"` — geometriyaga bog'langan: radius 15.915
+ *     («aylana uzunligi 100»), ya'ni o'lchamni registr boshqarmaydi.
+ *  4. `components/profile/RatingChart.tsx` — reyting grafigi.
+ *     `viewBox` ma'lumotdan hisoblanadi (`0 0 ${W} ${H}`) — bu ikonka emas,
+ *     diagramma.
+ *
+ *  Registr butunligini `tools/check_icons.py` tekshiradi (9 to'plam × 226
+ *  kalit); u ham shu ro'yxatni biladi.
  */
 
 type IconFn = (p: { className?: string }) => React.JSX.Element;

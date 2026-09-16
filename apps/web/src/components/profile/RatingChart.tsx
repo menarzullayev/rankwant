@@ -114,6 +114,9 @@ export function RatingChart({ data, kit }: { data: RatingSeries; kit: DateKit })
         onKeyDown={onKey}
         aria-label={t(locale, "profile.chartKeys")}
       >
+        {/* ⚠️ Ikonka registriga ATAYLAB kirmagan: `viewBox` ma'lumotdan
+            hisoblanadi (W×H) — bu almashtiriladigan glif emas, diagramma.
+            To'liq ro'yxat: `src/icons/registry.tsx` sarlavhasi. */}
         <svg
           viewBox={`0 0 ${W} ${H}`}
           className="h-auto w-full select-none"

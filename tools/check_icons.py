@@ -17,6 +17,22 @@ Uch narsani kafolatlaydi:
 Nega Python: qolgan tekshiruvlar (`check_hardcoded.py`,
 `check_verdict_codes.py`) Python'da va ularning `tools/pick-python.sh`
 naqshini ishlatadi.
+
+⚠️ **Doiradan tashqarida 4 ta SVG bor** — registrga ataylab kirmagan va
+bu tekshiruv ularga tegmaydi. Ro'yxat `apps/web/src/icons/registry.tsx`
+sarlavhasida ham turadi (o'sha yerda o'quvchi «nega bu registrda yo'q?»
+deb so'raydi):
+
+  1. `components/ui/Button.tsx` — Spinner (`animate-spin`): harakat, glif emas.
+  2. `components/ProviderMark.tsx` — Google/GitHub/Telegram: `brand.*` qat'iy
+     zona (D20 ①), ustiga to'ldirilgan ko'p rangli shakl.
+  3. `components/profile/SolvedOverview.tsx` — halqa: `viewBox` geometriyaga
+     bog'langan.
+  4. `components/profile/RatingChart.tsx` — grafik: `viewBox` ma'lumotdan
+     hisoblanadi.
+
+Ya'ni «hamma SVG registrda» deb o'qilmasin: qoida — **almashtiriladigan
+gliflar** registrda bo'ladi.
 """
 from __future__ import annotations
 

@@ -24,7 +24,12 @@ const BASE =
 
 /** Aylanuvchi halqa. `prefers-reduced-motion` da aylanmaydi, lekin
  *  ko'rinib turadi — harakat o'chirilgani holat yashirilishini
- *  anglatmasligi kerak. */
+ *  anglatmasligi kerak.
+ *
+ *  ⚠️ Ikonka registriga ATAYLAB kirmagan (`@/icons`): registr
+ *  almashtiriladigan gliflar uchun, bu esa harakat — foydalanuvchi boshqa
+ *  to'plam tanlasa ham aylanishi kerak. To'liq ro'yxat:
+ *  `src/icons/registry.tsx` sarlavhasi. */
 function Spinner() {
   return (
     <svg

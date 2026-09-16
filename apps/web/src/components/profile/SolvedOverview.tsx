@@ -51,6 +51,9 @@ function VerdictDonut({ stats, locale }: { stats: UserStats; locale: Locale }) {
   if (total === 0) return <p className="text-theme-sm rw-faint">{t(locale, "common.empty")}</p>;
 
   // Aylana uzunligi 100 — `stroke-dasharray` foizda yoziladi.
+  // ⚠️ Ikonka registriga ATAYLAB kirmagan: `viewBox="0 0 42 42"` geometriyaga
+  // bog'langan (radius 15.915), ya'ni o'lchamni registr boshqarmaydi.
+  // To'liq ro'yxat: `src/icons/registry.tsx` sarlavhasi.
   let offset = 25;
   const rate = percent(stats.accepted, total);
   return (
