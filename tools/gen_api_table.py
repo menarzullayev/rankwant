@@ -100,7 +100,16 @@ def main() -> int:
             desc = summary or docstring
             op_id = str(op.get("operationId", ""))
             rows.append(
-                (domain_of(path), method.upper(), path, op_id, action_of(op_id), desc, docstring)
+                (
+                    domain_of(path),
+                    method.upper(),
+                    path,
+                    op_id,
+                    action_of(op_id),
+                    desc,
+                    docstring,
+                    summary,
+                )
             )
 
     by_domain: dict[str, list] = collections.defaultdict(list)
@@ -121,7 +130,11 @@ def main() -> int:
     desc_count = collections.Counter(r[6] for r in rows if r[6])
     generic = {text for text, n in desc_count.items() if n >= 3}
     #: `summary` bilan qoplangan operatsiyalar — «tavsifsiz» hisoblanmaydi.
-    explained = sum(1 for r in rows if r[5])
+    #: FAQAT `summary` — amalga tegishli matn. `desc` (yuqorida) `summary`
+    #: bo'lmasa docstring'ga tushadi, ya'ni ularni bir xil sanash
+    #: «335/335 summary bor» degan YOLG'ON xulosa berardi (o'lchandi:
+    #: aslida 259 summary + 76 docstring).
+    summary_count = sum(1 for r in rows if r[7])
 
     lines: list[str] = []
     add = lines.append
@@ -137,7 +150,8 @@ def main() -> int:
     add(f"| Operatsiyalar | **{len(rows)}** |")
     add(f"| Domenlar | **{len(by_domain)}** |")
     add(f"| Tavsifsiz operatsiya | **{len(no_desc)}** |")
-    add(f"| Amal tavsifi bor (summary) | **{explained}** |")
+    add(f"| Amal tavsifi (summary) | **{summary_count}** |")
+    add(f"| Faqat ViewSet tavsifi | **{len(rows) - summary_count}** |")
     add(f"| Umumiy (ViewSet) tavsif | **{sum(desc_count[t] for t in generic)}** |")
     add("")
     add("| Method | Soni |")
@@ -162,7 +176,7 @@ def main() -> int:
         add("")
         add("| Method | Yo'l | Amal | Vazifasi |")
         add("|---|---|---|---|")
-        for _dom, method, path, _op_id, action, desc, _doc in dom_rows:
+        for _dom, method, path, _op_id, action, desc, _doc, _sum in dom_rows:
             shown = "" if desc in generic else desc
             add(f"| {method} | `{path}` | {action or '—'} | {shown or '—'} |")
         add("")
@@ -174,7 +188,9 @@ def main() -> int:
         add("")
         add("| Method | Yo'l |")
         add("|---|---|")
-        for _dom, method, path, _op_id, _action, _desc, _doc in sorted(no_desc, key=lambda r: r[2]):
+        for _dom, method, path, _op_id, _action, _desc, _doc, _sum in sorted(
+            no_desc, key=lambda r: r[2]
+        ):
             add(f"| {method} | `{path}` |")
         add("")
 
