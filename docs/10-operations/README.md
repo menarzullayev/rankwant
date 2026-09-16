@@ -1,9 +1,12 @@
 # 10. Quality & Operations
 
-**STATUS:** draft (2026-09-06) — siyosatlar yozilgan, **runbook'lar production tajribasidan keyin**
+**STATUS:** draft (2026-09-06) — siyosatlar yozilgan.
+✅ **Runbook yozildi (2026-09-16):** [deploy-runbook.md](deploy-runbook.md) —
+migration tartibi, env kalitlari, ma'lum xatolar, reboot va zaxira.
 
 Nima **hozir** bilinadi: deploy topologiyasi, siyosatlar va incident turlari — ular arxitektura va ADR'lardan kelib chiqadi.
-Nima **hali bilinmaydi**: hosting provayderi, real narxlar, aniq runbook qadamlari.
+Nima **hali bilinmaydi**: hosting provayderi, real narxlar.
+(Runbook qadamlari endi bor — [deploy-runbook.md](deploy-runbook.md).)
 
 ## Deploy topologiyasi
 
@@ -355,6 +358,9 @@ tekinga beradigan narsani qimmat qiladi.
 Staging'da ham judge **alohida** konteynerda — izolyatsiyani local'da sinash uchun.
 
 ## Deploy qoidalari
+
+👉 **Qadam-ma-qadam buyruqlar: [deploy-runbook.md](deploy-runbook.md).**
+Quyidagilar — qoidalar, buyruqlar emas.
 
 1. **Live contest paytida deploy YO'Q.** Bu qattiq qoida — contest davomida verdict yoki standings o'zgarishi natijani buzadi. Deploy oynasi contest jadvalidan tekshiriladi.
 2. Migration'lar oldinga mos: `add column → backfill → switch → drop`, alohida deploylarda ([08](../08-technical-spec/README.md) 🔒)
