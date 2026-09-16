@@ -1632,21 +1632,27 @@ def neg_checker_survives_narrow_stdout() -> tuple[bool, str]:
     )
     if len(scripts) < 5:
         return False, f"tor oqim: tekshiruvlar topilmadi ({len(scripts)} ta)"
-    for name in scripts:
-        proc = subprocess.run(
-            [PY, f"tools/{name}"],
-            cwd=ROOT,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            env=env,
-        )
-        out = (proc.stdout or "") + (proc.stderr or "")
-        if "UnicodeEncodeError" in out:
-            return False, f"tor oqim: {name} O'Z chiqishida quladi (UnicodeEncodeError)"
-        if proc.returncode != 0:
-            return False, f"tor oqim: {name} exit {proc.returncode} berdi (0 kerak)"
+    # `check_deploy_window.py` asks the live API. On 2026-09-17 the site was
+    # down after a power cut, the script correctly answered exit 2 and this
+    # case turned CI red on `main`; a live contest would do the same with
+    # exit 1. The stub keeps the verdict about the encoding, not production.
+    with stub_api(live=False) as base:
+        env["RANKWANT_API_BASE"] = base
+        for name in scripts:
+            proc = subprocess.run(
+                [PY, f"tools/{name}"],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                env=env,
+            )
+            out = (proc.stdout or "") + (proc.stderr or "")
+            if "UnicodeEncodeError" in out:
+                return False, f"tor oqim: {name} O'Z chiqishida quladi (UnicodeEncodeError)"
+            if proc.returncode != 0:
+                return False, f"tor oqim: {name} exit {proc.returncode} berdi (0 kerak)"
     return True, f"tor oqim: {len(scripts)} ta tekshiruv UTF-8 ga majburladi va o'tdi"
 
 
