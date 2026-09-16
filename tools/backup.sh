@@ -21,10 +21,12 @@
 # ISHLATILMAYDI — u WSL relay'iga tushadi va skript umuman ishga
 # tushmaydi; Git Bash'ning to'liq yo'li beriladi.
 #
-# Offsite nusxa (Cloudflare R2, `backup/` prediksi):
-#   tools/backup.sh              # lokal + R2 (kalitlar bo'lsa)
+# Offsite nusxa (Cloudflare R2, `backups/` prefiksi) — STANDART O'CHIQ.
+# Saidakbar aka qarori (2026-09-17): zaxira faqat lokal; yoqish faqat uning
+# aniq tasdig'i bilan (CLAUDE.md § Saidakbar aka qarorlari).
+#   tools/backup.sh              # faqat lokal (standart)
 #   tools/backup.sh --offsite    # R2 majburiy — kalitlar bo'lmasa yiqiladi
-#   tools/backup.sh --no-offsite # faqat lokal
+#   tools/backup.sh --no-offsite # faqat lokal (aniq)
 #
 # Tiklash sinovi — HAR yurishda AVTOMATIK o'tkaziladi (hujjat talabi:
 # usiz backup «yo'q» deb hisoblanadi). Alohida chaqirish ham mumkin:
@@ -107,10 +109,14 @@ verify_dump() {
 # esa buyruq qatoriga chiqmaydi - faqat muhit orqali beriladi.
 #
 # Rejim (`RANKWANT_BACKUP_OFFSITE` yoki argument):
-#   auto (standart) - kalitlar bo'lsa yuklaydi, bo'lmasa ogohlantiradi
-#   on   (--offsite)     - kalitlar bo'lmasa YIQILADI
-#   off  (--no-offsite)  - umuman tegmaydi
-offsite="${RANKWANT_BACKUP_OFFSITE:-auto}"
+#   off  (standart, --no-offsite) - umuman tegmaydi
+#   on   (--offsite)              - kalitlar bo'lmasa YIQILADI
+#   auto                          - kalitlar bo'lsa yuklaydi, bo'lmasa ogohlantiradi
+# The default is `off` because the owner chose local-only backups. With `auto`,
+# the keys in `.env.handoff` made every run upload unencrypted dumps (user PII)
+# to R2 — which happened on 2026-09-17 before this default was restored.
+# tools/check_decisions.py fails CI if it changes.
+offsite="${RANKWANT_BACKUP_OFFSITE:-off}"
 r2_keep_days="${RANKWANT_BACKUP_R2_KEEP:-180}"
 
 r2_load() {

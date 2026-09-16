@@ -341,15 +341,16 @@ o'tkazilmasa, backup yo'q»* — shuning uchun u endi eslab qolishga tayanmaydi.
 jadval ham 30 kun → amalda **bitta nusxa** saqlanadi. Bitta yurish yiqilsa
 **nol nusxa** qolishi mumkin. Yechim: `RANKWANT_BACKUP_KEEP=180`.
 
-✅ **Tashqi nusxa ENDI BOR: Cloudflare R2** (2026-09-17 da qo'shildi va
-o'lchandi). Har yurishdan keyin dump va MinIO arxivi `r2:<bucket>/backups`
+**Tashqi nusxa — O'CHIQ** (Saidakbar aka qarori, 2026-09-17: zaxira faqat
+lokal). Kod bor: `--offsite` bilan dump va MinIO arxivi `r2:<bucket>/backups`
 ga yuklanadi va **hajm solishtiriladi** — «rclone exit 0» yetarli emas,
-yarim yuklangan obyekt ham 0 qaytaradi.
+yarim yuklangan obyekt ham 0 qaytaradi. Yoqish faqat egasining tasdig'i bilan
+(yoqilsa shifrlash shart — dump'da foydalanuvchi ma'lumoti bor).
 
 ```bash
-bash tools/backup.sh              # lokal + R2 (kalitlar bo'lsa)
-bash tools/backup.sh --offsite    # R2 majburiy: kalitlar bo'lmasa YIQILADI
-bash tools/backup.sh --no-offsite # faqat lokal
+bash tools/backup.sh              # faqat lokal (standart)
+bash tools/backup.sh --offsite    # R2 — faqat tasdiq bilan; kalitlar bo'lmasa YIQILADI
+bash tools/backup.sh --no-offsite # faqat lokal (aniq)
 ```
 
 Kalitlar `.env.handoff` da (`R2_*`), rclone esa **konteynerda** ishlaydi

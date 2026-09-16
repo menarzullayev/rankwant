@@ -18,6 +18,24 @@ Pul mantiqi bo'yicha bitta qoida hammasidan muhim (ADR-0002):
 **balans hech qachon to'g'ridan-to'g'ri yozilmaydi, faqat ledger orqali.**
 `qvant_audit` buni butun baza bo'yicha tekshiradi.
 
+## Saidakbar aka qarorlari
+
+Bu qarorlarni **agent o'zi bekor qilmaydi** — «yaxshilash» deb ham.
+O'zgartirish kerak bo'lsa, avval Saidakbar akadan aniq tasdiq olinadi va
+jadval shu PR'da yangilanadi. `tools/check_decisions.py` har PR'da qatorlarni
+kodda tekshiradi. Sabab (2026-09-17): «faqat lokal zaxira» qarori qabul
+qilingan kuniyoq boshqa agent R2 ga shifrsiz offsite qo'shdi (#31) va
+foydalanuvchi ma'lumoti bor dump'lar tashqariga chiqdi.
+
+| Sana | Qaror | Kodda qayerda |
+|---|---|---|
+| 2026-09-17 | Zaxira 30 kunda 1 marta, **faqat lokal**; offsite (R2, USB) yo'q | `tools/backup.sh` standarti `off`; vazifa `RankWant Monthly Backup` (`KEEP=95`, `OFFSITE=off`) |
+| 2026-09-17 | `main` ga faqat PR orqali; soxta muallif push qilinmaydi | `.githooks/pre-push` → `tools/push_guard.py` |
+| 2026-09-17 | CI faqat bitta self-hosted runner — GitHub bepul daqiqalari tugagan, hosted runner taklif qilinmaydi | har `runs-on: [self-hosted, rankwant]` |
+| 2026-09-16 | Deploy qo'lda (`tools/deploy.sh`) | `deploy.yml` faqat `workflow_dispatch` |
+| 2026-09-17 | Repo aralash tilda, migratsiya yo'q | `CONTRIBUTING.md` § Til |
+| 2026-09-17 | `cp/` faqat RankWant uchun; tadqiqot hujjatlari `docs/research/` da | `cp/README.md` (repo'dan tashqarida) |
+
 ## Darvozalar
 
 Pre-push hook shularni o'zi ishga tushiradi, lekin ish davomida qo'lda

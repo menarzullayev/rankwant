@@ -487,8 +487,8 @@ qolardi.
 
 | Nima                | Chastota           | Saqlash | Tiklash sinovi |
 | ------------------- | ------------------ | ------- | -------------- |
-| Postgres            | **oylik** `pg_dump` | 30 kun ⚠️ | **har yurishda (avtomatik)** |
-| Offsite (R2)        | har yurishda       | 180 kun | — (nusxa)      |
+| Postgres            | **oylik** `pg_dump` | 95 kun (vazifa) | **har yurishda (avtomatik)** |
+| Offsite (R2)        | **o'chiq** — faqat lokal (qaror 2026-09-17) | — | — |
 
 | S3/R2 test data     | versiyalash yoqilgan | doimiy | choraklik      |
 | Qvant ledger        | Postgres ichida    | —       | audit so'rovi bilan |
@@ -516,26 +516,25 @@ narsa — **30 kunda bir marta** olinadigan **mantiqiy dump** (`tools/backup.sh`
 **Qaror (2026-09-17, Saidakbar aka):** kunlik zaxira kerak emas — 30 kunda bir
 marta, faqat lokal; mashinadan tashqariga (R2, USB) nusxa olinmaydi.
 
-⚠️ **SAQLASH VA CHASTOTA MOS EMAS (o'lchandi 2026-09-17).**
-`tools/backup.sh` `RANKWANT_BACKUP_KEEP` bo'yicha **30 kundan eski**
-fayllarni o'chiradi (`-mtime +30`), jadval esa **30 kunda bir marta**
-yuradi. Ya'ni amalda **bitta nusxa** saqlanadi: yangisi yaratilishidan
-oldin eskisi o'chirilish chegarasiga yetadi. Bitta yurish yiqilsa —
-**nol nusxa** qolishi mumkin.
-
-**Tavsiya:** `RANKWANT_BACKUP_KEEP=180` qo'yilsin (3-6 avlod qoladi,
-narxi ~150 MB) yoki jadval kunlikka qaytarilsin. Qaror foydalanuvchida;
-hozircha oylik + 30 kun.
+**Saqlash va chastota.** Skriptning standarti `RANKWANT_BACKUP_KEEP=30` kun —
+oylik jadvalda bu bitta nusxa qoldirardi, kechikkan yoki yiqilgan yurishda esa
+nolta. Shuning uchun `RankWant Monthly Backup` vazifasi **`RANKWANT_BACKUP_KEEP=95`**
+beradi (~3 avlod; vazifa argumentlarida o'lchandi 2026-09-17). Skriptni qo'lda
+standart bilan yurgizganda shu farqni hisobga oling.
 
 **Narxi:** nuqtadan tiklash (point-in-time recovery) **yo'q**. Avariya
 oxirgi dumpdan keyin yuz bersa, o'sha oradagi yozuvlar butunlay yo'qoladi —
 eng yomon holatda **~30 kunlik** ma'lumot. Disk ham bitta (NVMe, Linux ham
 shu diskda), ya'ni disk o'lsa lokal zaxira ham ketadi.
 
-✅ **2026-09-17 dan offsite nusxa BOR:** `tools/backup.sh` har yurishdan
-keyin dump va MinIO arxivistni **Cloudflare R2** ga yuklaydi va hajmini
-solishtiradi (pastda). Qolgan cheklov — WAL arxivlash va PITR yo'qligi; u
-**qabul qilingan**, yashirilgan emas.
+**Offsite — o'chiq (qaror).** `tools/backup.sh` R2 ga yuklay oladi
+(`--offsite`), lekin standart `off`: egasi faqat lokal zaxirani tanlagan
+(2026-09-17). O'sha kuni 02:14–02:21 da offsite sinovi paytida R2 `backups/`
+ga 3 ta pg dump va 3 ta MinIO arxivi **shifrsiz** (foydalanuvchi ma'lumoti
+bilan) yuklangan edi — ular o'chirildi, lokal nusxalari hajmi bilan
+tekshirilgan. Yoqish faqat Saidakbar aka tasdig'i bilan; yoqilsa shifrlash
+shart. Qolgan cheklov — WAL arxivlash va PITR yo'qligi; u **qabul
+qilingan**, yashirilgan emas.
 
 Preview (bitta mashina) uchun: `tools/backup.sh` — Postgres dump va MinIO
 nusxasi. Saqlash `RANKWANT_BACKUP_KEEP` kun (skriptda standart 30; Windows
@@ -543,10 +542,10 @@ vazifasi 95 beradi — oylik jadvalda 30 kunlik saqlash kechikkan yurishda
 yagona nusxani qoldirardi). Bitta yurish ~24.5 MB (o'lchandi 2026-09-17:
 pg 17 MB + MinIO 7.4 MB), ya'ni ~3 ta oylik nusxa ~75 MB.
 
-Har yurishdan keyin ikkalasi **Cloudflare R2** ga ham yuklanadi
-(`backups/` prediksi, 180 kun) — ya'ni zaxira endi faqat shu diskda emas
-(2026-09-17 dan, `tools/backup.sh`). Yuklash hajmi solishtiriladi:
-«rclone exit 0» dalil emas, yarim yozilgan obyekt ham 0 qaytaradi.
+`--offsite` bilan yurgizilganda ikkalasi **Cloudflare R2** ga yuklanadi
+(`backups/` prefiksi, 180 kun) va hajm solishtiriladi: «rclone exit 0» dalil
+emas, yarim yozilgan obyekt ham 0 qaytaradi. Standart yurishda (vazifa ham
+`RANKWANT_BACKUP_OFFSITE=off` beradi) R2 ga hech narsa ketmaydi, logda `r2=skip`.
 
 Volume, WAL yoki VHDX'ga tegadigan amal oldidan rejali nusxaga suyanmang —
 u 30 kungacha eski bo'lishi mumkin. Avval qo'lda oling:

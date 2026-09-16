@@ -2082,6 +2082,67 @@ def neg_web_unit_tests_catch_broken_cookie() -> tuple[bool, str]:
     return True, "web/unit: buzuq cookie parse'ni Vitest tutdi (exit 1)"
 
 
+def _decision_broken(rel: str, old: str, new: str, rule: str) -> tuple[bool, str]:
+    """Break one owner decision in `rel`; check_decisions must name that rule."""
+    path = ROOT / rel
+    text = path.read_bytes().decode("utf-8")
+    if old not in text:
+        return False, f"decisions/{rule}: langar topilmadi ({rel})"
+    with Mutation(path, old, new):
+        code, out = run_check("decisions")
+    if code != 1:
+        return False, f"decisions/{rule}: buzilgan qaror exit {code} berdi (1 kerak)"
+    if rule not in out:
+        return False, f"decisions/{rule}: yiqildi, lekin boshqa sabab — {out.strip()[-160:]}"
+    return True, f"decisions/{rule}: bekor qilingan qaror tutildi (exit 1)"
+
+
+def neg_decisions_backup_offsite() -> tuple[bool, str]:
+    return _decision_broken(
+        "tools/backup.sh",
+        'offsite="${RANKWANT_BACKUP_OFFSITE:-off}"',
+        'offsite="${RANKWANT_BACKUP_OFFSITE:-auto}"',
+        "zaxira faqat lokal",
+    )
+
+
+def neg_decisions_push_guard_unwired() -> tuple[bool, str]:
+    return _decision_broken(
+        ".githooks/pre-push",
+        '"$root/tools/push_guard.py"',
+        '"$root/tools/push_guard_off.py"',
+        "main faqat PR orqali",
+    )
+
+
+def neg_decisions_hosted_runner() -> tuple[bool, str]:
+    return _decision_broken(
+        ".github/workflows/security.yml",
+        "runs-on: [self-hosted, rankwant]",
+        "runs-on: ubuntu-latest",
+        "CI faqat self-hosted",
+    )
+
+
+def neg_decisions_deploy_on_push() -> tuple[bool, str]:
+    return _decision_broken(
+        ".github/workflows/deploy.yml",
+        "\non:\n  workflow_dispatch:",
+        "\non:\n  push:\n    branches: [main]\n  workflow_dispatch:",
+        "deploy faqat qo'lda",
+    )
+
+
+def neg_decisions_language_rule() -> tuple[bool, str]:
+    return _decision_broken("CONTRIBUTING.md", "\n## Til\n", "\n## Tillar\n", "til qoidasi")
+
+
+def neg_decisions_table_removed() -> tuple[bool, str]:
+    return _decision_broken(
+        "CLAUDE.md", "## Saidakbar aka qarorlari", "## Qarorlar", "qarorlar jadvali"
+    )
+
+
 def neg_icons_pack_missing_key() -> tuple[bool, str]:
     """Bitta to'plamdan bitta kalit olib tashlansa — tutilsinmi?
 
@@ -2521,6 +2582,17 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         "deploy_window",
         [
             ("faol contest bo'lsa deploy to'xtasin", neg_deploy_window_live_contest),
+        ],
+    ),
+    (
+        "decisions",
+        [
+            ("offsite standarti qaytsa tutilsin", neg_decisions_backup_offsite),
+            ("push guard uzilsa tutilsin", neg_decisions_push_guard_unwired),
+            ("hosted runner qo'shilsa tutilsin", neg_decisions_hosted_runner),
+            ("deploy push'ga qaytsa tutilsin", neg_decisions_deploy_on_push),
+            ("til qoidasi o'chsa tutilsin", neg_decisions_language_rule),
+            ("qarorlar jadvali o'chsa tutilsin", neg_decisions_table_removed),
         ],
     ),
 ]
