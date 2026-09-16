@@ -487,7 +487,7 @@ qolardi.
 
 | Nima                | Chastota           | Saqlash | Tiklash sinovi |
 | ------------------- | ------------------ | ------- | -------------- |
-| Postgres            | **oylik** `pg_dump` | 30 kun ⚠️ | **choraklik** |
+| Postgres            | **oylik** `pg_dump` | 30 kun ⚠️ | **har yurishda (avtomatik)** |
 | Offsite (R2)        | har yurishda       | 180 kun | — (nusxa)      |
 
 | S3/R2 test data     | versiyalash yoqilgan | doimiy | choraklik      |
@@ -500,6 +500,12 @@ Tiklash sinovi o'tkazilmasa, backup **yo'q deb hisoblanadi**.
 `core_user` 10 033 · `judging_attempt` 384 530 · `problems_problem` 2 096 ·
 `qvant_qvanttransaction` 13 314 · `problems_testcase` 2 486 qator,
 havolalar butun. Jonli bazaga tegilmadi (`restore_test` tashlandi).
+
+✅ **2026-09-17 dan sinov HAR yurishda AVTOMATIK** o'tkaziladi: doktrina uni
+«choraklik majburiy» derdi, lekin u butunlay qo'lda edi va bir marta ham
+o'tkazilmagan. 9 soniya arzon, shuning uchun zaxira **yaratilgan paytda**
+tekshiriladi. Log qatorida `restore=ok|skip|YIQILDI`; sinov yiqilsa skript
+ham yiqiladi — tiklanmaydigan zaxira zaxira emas.
 
 **Mexanizm — oddiy `pg_dump`, WAL arxivlash YO'Q.** Repoda `archive_mode`,
 `wal_level`, `archive_command`, `pgbackrest`, `wal-g`, `barman`, `PITR`
