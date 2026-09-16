@@ -19,6 +19,22 @@ Qaerdan boshlash: [INDEX.md](INDEX.md) → [docs/README.md](docs/README.md)
 - Commit muallifi haqiqiy bo'lishi shart: `@example.com`, `.test`, `localhost` kabi soxta
   manzilli commit'lar push qilinmaydi. Eski tarix `.mailmap` orqali to'g'rilangan.
 
+## Til
+
+Qaror (2026-09-17): repo **aralash tilda qoladi**, migratsiya rejalashtirilmagan —
+qoida faqat noaniqlikni yo'qotadi.
+
+- **Kod izohi va docstring — inglizcha**, fayl qaysi tilda yozilganidan qat'i nazar.
+  Mavjud o'zbekcha izohlar tarjima qilinmaydi; bir faylda ikki til bo'lishi kutilgan
+  holat, «tozalash» uchun qayta yozilmaydi.
+- **Hujjat** (`README`, `docs/`, `CONTRIBUTING`) — yangi fayl inglizcha; mavjud fayl
+  o'z tilida davom etadi.
+- `docs/research/` — sanali yozuvlar, yozilganicha qoladi.
+- **Commit va PR** — inglizcha, conventional commits.
+- **Foydalanuvchiga ko'rinadigan matn** — faqat i18n lug'atlarida
+  (`apps/web/src/i18n/`), kodda qattiq yozilmaydi.
+- Tekshiruv skriptlarining chiqish xabarlari o'zbekcha (foydalanuvchi bilan muloqot).
+
 ## Definition of Done
 
 Har PR uchun: [09-development-plan § Definition of Done](docs/09-development-plan/README.md).

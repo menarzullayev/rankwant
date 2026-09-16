@@ -10,14 +10,21 @@ the global market.
 
 ## Current status
 
-| Stage               | Status                           |
-| ------------------- | -------------------------------- |
-| Vision + brand      | 🔒 locked (2026-09-06)           |
-| Problem discovery   | 🔒 locked (2026-09-06)           |
-| Market + competitors| 🔒 locked (2026-09-06)           |
-| PRD (MVP scope)     | 🔒 locked (2026-09-06)           |
-| Domain / architecture | 📝 draft                       |
-| Phase 0 + Phase 1   | ✅ API + web + judge + Qvant     |
+Source of truth: the `**STATUS:**` line in each `docs/NN-*/README.md`.
+
+| Stage                | Status                                   |
+| -------------------- | ---------------------------------------- |
+| Vision + brand       | 🔒 locked (2026-09-06)                   |
+| Problem discovery    | 🔒 locked (2026-09-06)                   |
+| Market + competitors | 🔒 locked (2026-09-06)                   |
+| PRD (MVP scope)      | 🔒 locked (2026-09-06)                   |
+| Domain model         | 🔒 locked (2026-09-06)                   |
+| Architecture         | 🔒 locked (2026-09-06)                   |
+| ADR                  | 🌱 living — decisions keep accumulating  |
+| Technical spec       | 🔒 locked (2026-09-06)                   |
+| Development plan     | 🔒 locked (2026-09-06)                   |
+| Operations           | 📝 draft — policies and runbooks written |
+| Phase 0 + Phase 1    | ✅ API + web + judge + Qvant             |
 
 ## Quick links
 
@@ -33,8 +40,11 @@ the global market.
 
 ## External analyses (full version)
 
-> These files are **not part of this repo** — they live in the `Web_Projects/`
-> workspace root.
+> These files are **not part of this repo** and exist only on the Linux install
+> of the dev machine; the Windows copy does not have them (searched 2026-09-13,
+> see [docs/03-market-research/README.md](docs/03-market-research/README.md)).
+> What was carried over lives in `docs/03-market-research/audit/` and
+> [docs/research/](docs/research/README.md).
 
 - `kep-uz-platform-analysis.md`
 - `robocontest-uz-platform-analysis.md`
