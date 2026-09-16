@@ -337,8 +337,24 @@ taxmin emas. Doktrina: *«tiklash sinovi o'tkazilmasa, backup yo'q»*.
 jadval ham 30 kun → amalda **bitta nusxa** saqlanadi. Bitta yurish yiqilsa
 **nol nusxa** qolishi mumkin. Yechim: `RANKWANT_BACKUP_KEEP=180`.
 
-⚠️ **Tashqi nusxa hali yo'q:** zaxira o'sha C: diskda yotadi — disk o'lsa
-zaxira ham ketadi. Keyingi qadam: R2 (`R2_*` kalitlari `.env.handoff` da bor).
+✅ **Tashqi nusxa ENDI BOR: Cloudflare R2** (2026-09-17 da qo'shildi va
+o'lchandi). Har yurishdan keyin dump va MinIO arxivi `r2:<bucket>/backups`
+ga yuklanadi va **hajm solishtiriladi** — «rclone exit 0» yetarli emas,
+yarim yuklangan obyekt ham 0 qaytaradi.
+
+```bash
+bash tools/backup.sh              # lokal + R2 (kalitlar bo'lsa)
+bash tools/backup.sh --offsite    # R2 majburiy: kalitlar bo'lmasa YIQILADI
+bash tools/backup.sh --no-offsite # faqat lokal
+```
+
+Kalitlar `.env.handoff` da (`R2_*`), rclone esa **konteynerda** ishlaydi
+(`rclone/rclone:1.75`) — host'ga hech narsa o'rnatilmaydi.
+
+⚠️ Log qatorida `r2=` **holatni** ko'rsatadi va u to'rt xil bo'ladi:
+`ok` (yuklandi) · `skip` (`--no-offsite`) · `YOQ` (kalit yo'q) · `fail`.
+Faqat `fail` nolga teng bo'lmagan kod beradi — lekin `skip`/`YOQ` ni ham
+«ok» deb o'qib bo'lmaydi, aks holda offsite yo'qligi ko'rinmay qolardi.
 
 ⚠️ **Quyidagi amallardan OLDIN zaxira majburiy:**
 

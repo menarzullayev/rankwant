@@ -488,6 +488,7 @@ qolardi.
 | Nima                | Chastota           | Saqlash | Tiklash sinovi |
 | ------------------- | ------------------ | ------- | -------------- |
 | Postgres            | **oylik** `pg_dump` | 30 kun ⚠️ | **choraklik** |
+| Offsite (R2)        | har yurishda       | 180 kun | — (nusxa)      |
 
 | S3/R2 test data     | versiyalash yoqilgan | doimiy | choraklik      |
 | Qvant ledger        | Postgres ichida    | —       | audit so'rovi bilan |
@@ -535,6 +536,11 @@ nusxasi. Saqlash `RANKWANT_BACKUP_KEEP` kun (skriptda standart 30; Windows
 vazifasi 95 beradi — oylik jadvalda 30 kunlik saqlash kechikkan yurishda
 yagona nusxani qoldirardi). Bitta yurish ~24.5 MB (o'lchandi 2026-09-17:
 pg 17 MB + MinIO 7.4 MB), ya'ni ~3 ta oylik nusxa ~75 MB.
+
+Har yurishdan keyin ikkalasi **Cloudflare R2** ga ham yuklanadi
+(`backups/` prediksi, 180 kun) — ya'ni zaxira endi faqat shu diskda emas
+(2026-09-17 dan, `tools/backup.sh`). Yuklash hajmi solishtiriladi:
+«rclone exit 0» dalil emas, yarim yozilgan obyekt ham 0 qaytaradi.
 
 Volume, WAL yoki VHDX'ga tegadigan amal oldidan rejali nusxaga suyanmang —
 u 30 kungacha eski bo'lishi mumkin. Avval qo'lda oling:

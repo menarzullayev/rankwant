@@ -21,6 +21,11 @@
 # ISHLATILMAYDI — u WSL relay'iga tushadi va skript umuman ishga
 # tushmaydi; Git Bash'ning to'liq yo'li beriladi.
 #
+# Offsite nusxa (Cloudflare R2, `backup/` prediksi):
+#   tools/backup.sh              # lokal + R2 (kalitlar bo'lsa)
+#   tools/backup.sh --offsite    # R2 majburiy — kalitlar bo'lmasa yiqiladi
+#   tools/backup.sh --no-offsite # faqat lokal
+#
 # Tiklash sinovi (hujjat talabi — usiz backup «yo'q» deb hisoblanadi):
 #   tools/backup.sh --restore-test
 #
@@ -87,6 +92,118 @@ verify_dump() {
 
 # Bu rejim docker'ga ham, `$dest` katalogiga ham tegmaydi — shuning uchun
 # `mkdir` dan OLDIN turadi va CI da ham ishlaydi.
+
+
+# ── Offsite (Cloudflare R2) ──────────────────────────────────────────
+#
+# Nega: zaxira o'sha C: diskda yotadi. Disk o'lsa (yoki o'g'irlansa,
+# yong'in bo'lsa) zaxira ham u bilan ketadi. 2026-09-17 da o'lchandi:
+# offsite nusxa YO'Q edi va bu eng katta DR teshigi edi.
+#
+# Naqsh `tools/handoff.sh` dan OLINGAN, qaytadan yozilmagan: rclone
+# KONTEYNERDA ishlaydi, ya'ni host'ga hech narsa o'rnatilmaydi, kalitlar
+# esa buyruq qatoriga chiqmaydi - faqat muhit orqali beriladi.
+#
+# Rejim (`RANKWANT_BACKUP_OFFSITE` yoki argument):
+#   auto (standart) - kalitlar bo'lsa yuklaydi, bo'lmasa ogohlantiradi
+#   on   (--offsite)     - kalitlar bo'lmasa YIQILADI
+#   off  (--no-offsite)  - umuman tegmaydi
+offsite="${RANKWANT_BACKUP_OFFSITE:-auto}"
+r2_keep_days="${RANKWANT_BACKUP_R2_KEEP:-180}"
+
+r2_load() {
+  [ -f "$root/.env.handoff" ] || return 1
+  set -a
+  # shellcheck disable=SC1091
+  . "$root/.env.handoff"
+  set +a
+  [ -n "${R2_ACCOUNT_ID:-}" ] && [ -n "${R2_ACCESS_KEY_ID:-}" ] &&
+    [ -n "${R2_SECRET_ACCESS_KEY:-}" ] && [ -n "${R2_BUCKET:-}" ]
+}
+
+r2_export() {
+  export RCLONE_CONFIG_R2_TYPE=s3
+  export RCLONE_CONFIG_R2_PROVIDER=Cloudflare
+  export RCLONE_CONFIG_R2_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID"
+  export RCLONE_CONFIG_R2_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY"
+  export RCLONE_CONFIG_R2_ENDPOINT="https://$R2_ACCOUNT_ID.r2.cloudflarestorage.com"
+  export RCLONE_CONFIG_R2_NO_CHECK_BUCKET=true
+}
+
+# Mount uchun `cygpath -m` (C:/Users/...), `-w` EMAS: teskari chiziqlar
+# `-v` argumentida ajratgich bilan chalkashadi.
+r2_mount() {
+  if command -v cygpath >/dev/null 2>&1; then cygpath -m "$dest"; else printf '%s' "$dest"; fi
+}
+
+rc() {
+  MSYS_NO_PATHCONV=1 docker run --rm -i --user "$(id -u):$(id -g)" \
+    -v "$(r2_mount):/backups" \
+    -e RCLONE_CONFIG_R2_TYPE -e RCLONE_CONFIG_R2_PROVIDER \
+    -e RCLONE_CONFIG_R2_ACCESS_KEY_ID -e RCLONE_CONFIG_R2_SECRET_ACCESS_KEY \
+    -e RCLONE_CONFIG_R2_ENDPOINT -e RCLONE_CONFIG_R2_NO_CHECK_BUCKET \
+    rclone/rclone:1.75 -q "$@"
+}
+
+# Yuklaydi va HAJMNI solishtiradi. «rclone exit 0 berdi» yetarli emas:
+# yarim yuklangan obyekt ham 0 qaytaradi.
+r2_upload() {
+  local target name local_bytes remote_bytes
+  target="r2:$R2_BUCKET/backups"
+  for f in "$sql" "$objects"; do
+    name="$(basename "$f")"
+    if ! rc copyto "/backups/$name" "$target/$name"; then
+      echo "  R2 XATO: yuklanmadi - $name" >&2
+      return 1
+    fi
+    local_bytes="$(wc -c <"$f" | tr -d ' ')"
+    remote_bytes="$(rc lsl "$target/$name" | awk '{print $1}' | tr -d ' ')"
+    if [ "$local_bytes" != "$remote_bytes" ]; then
+      echo "  R2 XATO: hajm mos emas - $name lokal=$local_bytes masofada=$remote_bytes" >&2
+      return 1
+    fi
+    echo "  R2 ok: $name ($local_bytes bayt)"
+  done
+  # Eskilarini tozalash. Faqat `backups/` prediksi ichida ishlaydi, ya'ni
+  # handoff obyektlariga tegmaydi.
+  rc delete "$target" --min-age "${r2_keep_days}d" || true
+  return 0
+}
+
+offsite_run() {
+  if [ "$offsite" = "off" ]; then
+    echo "  R2: o'tkazib yuborildi (--no-offsite)"
+    offsite_status=skip
+    return 0
+  fi
+  if ! r2_load; then
+    if [ "$offsite" = "on" ]; then
+      echo "XATO: --offsite so'raldi, lekin R2 kalitlari yo'q (.env.handoff)" >&2
+      offsite_status=fail
+      return 1
+    fi
+    echo "  R2 OGOHLANTIRISH: kalitlar yo'q (.env.handoff) - offsite nusxa YO'Q"
+    offsite_status=YOQ
+    return 0
+  fi
+  r2_export
+  echo "  R2 -> $R2_BUCKET/backups"
+  if r2_upload; then
+    offsite_status=ok
+    return 0
+  fi
+  offsite_status=fail
+  return 1
+}
+
+# Offsite rejimi argumentdan ham olinadi (blok yuqorida `auto` qo'yadi).
+for arg in "$@"; do
+  case "$arg" in
+    --offsite) offsite=on ;;
+    --no-offsite) offsite=off ;;
+  esac
+done
+
 if [ "${1:-}" = "--verify-dump" ]; then
   if verify_dump "${2:-}"; then exit 0; fi
   exit 1
@@ -199,6 +316,13 @@ MSYS_NO_PATHCONV=1 MSYS2_ARG_CONV_EXCL='*' \
 mv "$objects.part" "$objects"
 tar tzf "$objects" >/dev/null
 
+# ── Offsite nusxa (R2) ───────────────────────────────────────────────
+# Lokal dump allaqachon yaroqli; offsite yiqilsa bu HISOBGA OLINADI va
+# skript nolga teng bo'lmagan kod bilan tugaydi. Jimgina o'tib ketgan
+# offsite — eng yomon holat: zaxira bor deb o'ylaysiz, u yo'q.
+offsite_status=ok
+offsite_run || true
+
 # ── Eskilarini tozalash ──────────────────────────────────────────────
 # ⚠️ Tozalash JIMGINA ishlamay qolmasligi kerak, shuning uchun o'chirilgan
 # fayllar sanaladi va hisobotga chiqadi. `find` — GNU findutils; Git Bash
@@ -221,6 +345,15 @@ after="$(find "$dest" -name 'pg-*.sql.gz' -o -name 'minio-*.tar.gz' | wc -l)"
 # uchun skript bo'sh joyga emas, o'z NARXiga qaraydi: katalogning JAMI
 # hajmi har yurishda yoziladi — oylik jadvalda ~3 ta nusxa ~75 MB turadi
 # (kunlik jadvalda ~700 MB edi) va bu raqam jimgina o'sib ketmasligi kerak.
-printf '%s  pg=%s  minio=%s  jami=%s  fayl=%s (-%s)\n' "$stamp" \
+printf '%s  pg=%s  minio=%s  jami=%s  fayl=%s (-%s)  r2=%s\n' "$stamp" \
   "$(du -h "$sql" | cut -f1)" "$(du -h "$objects" | cut -f1)" \
-  "$(du -sh "$dest" | cut -f1)" "$after" "$((before - after))"
+  "$(du -sh "$dest" | cut -f1)" "$after" "$((before - after))" \
+  "$offsite_status"
+
+# ⚠️ `skip` va `YOQ` — xato EMAS (lokal dump yaroqli), lekin ular ham
+# «ok» bo'lib ko'rinmasligi kerak: aks holda log yashil o'qiladi-yu,
+# offsite nusxa yo'q bo'ladi.
+if [ "$offsite_status" = "fail" ]; then
+  echo "offsite nusxa YIQILDI — zaxira faqat shu diskda" >&2
+  exit 1
+fi
