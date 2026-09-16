@@ -19,6 +19,16 @@ import pathlib
 import re
 import sys
 
+# Chiqish quvurga yo'naltirilganda Windows uni `cp1252` deb yozadi va
+# birinchi `✓` belgisida qulaydi — sabab va o'lchov `tools/_console.py` da.
+# Bu bezak emas: `check_negative.py` bolalarni `capture_output=True`, ya'ni
+# QUVUR orqali chaqiradi, qulagan bola esa nolga teng bo'lmagan kod beradi
+# va salbiy test uni «buzuq holatni tutdi» deb o'qirdi — yolg'on yashil.
+# O'lchandi 2026-09-16: shu tekshiruv aynan shunday yiqilgan (1/66).
+import _console
+
+_console.force_utf8()
+
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CI = ROOT / ".github/workflows/ci.yml"
 DEPLOY = ROOT / ".github/workflows/deploy.yml"
