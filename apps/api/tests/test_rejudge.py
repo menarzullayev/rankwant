@@ -33,6 +33,28 @@ class TestAcBekorQilinganda:
         assert not UserSolvedProblem.objects.filter(user=user, problem=problem).exists()
         assert Problem.objects.get(pk=problem.pk).solved_count == 0
 
+    def test_sanoq_nol_bolsa_ham_bekor_qilish_yiqilmaydi(self, user, problem, language) -> None:
+        """Sanoq qatorlardan ajralib ketgan holat.
+
+        `solved_count` — musbat maydon, ya'ni noldan kamaytirish CHECK
+        xatosi berib BUTUN tranzaksiyani yiqitardi. Bekor qilishni hack
+        dvigateli ham chaqiradi (`hacks.services._finish`), demak begona
+        sabab hackni abadiy `TESTING` da qoldirardi.
+
+        Drift o'zi qanday paydo bo'ladi: `UserSolvedProblem` kodni
+        chetlab yo'qolganda — foydalanuvchi o'chirilishi (kaskad),
+        import yoki qo'lda tuzatish.
+        """
+        a = ac(user, problem, language)
+        Problem.objects.filter(pk=problem.pk).update(solved_count=0)
+
+        a.verdict = Verdict.WA
+        a.save(update_fields=["verdict"])
+        on_accept_revoked(a)  # yiqilmasligi SHART
+
+        assert Problem.objects.get(pk=problem.pk).solved_count == 0
+        assert not UserSolvedProblem.objects.filter(user=user, problem=problem).exists()
+
     def test_ikkinchi_ac_qolsa_yechim_qoladi(self, user, problem, language) -> None:
         """Bir masalaga bir necha AC odatiy: odam yechimni optimallashtiradi.
 
