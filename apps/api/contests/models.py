@@ -9,8 +9,10 @@ from typing import ClassVar
 from django.db import models
 from django.utils import timezone
 
+from core.mixins import TimeWindowMixin
 
-class Contest(models.Model):
+
+class Contest(TimeWindowMixin, models.Model):
     class Scoring(models.TextChoices):
         ACM = "acm", "ACM/ICPC"
         IOI = "ioi", "IOI"
@@ -61,14 +63,6 @@ class Contest(models.Model):
 
     def __str__(self) -> str:
         return self.slug
-
-    @property
-    def is_running(self) -> bool:
-        return self.start_at <= timezone.now() < self.end_at
-
-    @property
-    def is_finished(self) -> bool:
-        return timezone.now() >= self.end_at
 
     @property
     def freeze_at(self) -> datetime | None:

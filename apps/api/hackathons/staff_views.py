@@ -1,27 +1,26 @@
 """Staff API: `staff/hackathons/` — hakaton CRUD, loyihalar ro'yxati, baholash.
 
 Ommaviy `HackathonViewSet` da ham `score_entry` bor (IsAdminUser). Bu yerda
-u takrorlanadi, chunki admin UI faqat `staff/…` yuzasi bilan gaplashadi va
+u takrorlanardi, chunki admin UI faqat `staff/…` yuzasi bilan gaplashadi va
 ommaviy `submissions` muddatgacha begona loyihalarni yashiradi — xodimga
-esa hammasi kerak. Ikkalasi ham `hackathons.services.score` ga tayanadi.
+esa hammasi kerak. Endi baholash qadamlari `views.score_submission` da:
+farqi faqat chiqish serializer'ida (`scored_by` kabi maydonlar shu yerda
+ham chiqadi).
 """
 
 from __future__ import annotations
 
 from django.db.models import Count
-from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema
 from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from core.models import User
 from core.staff import StaffViewSet
 from hackathons.models import Hackathon, HackathonSubmission
 from hackathons.serializers import ScoreSerializer
-from hackathons.services import HackathonError, score
 from hackathons.staff_serializers import StaffHackathonSerializer, StaffSubmissionSerializer
-from hackathons.views import _error
+from hackathons.views import score_submission
 
 
 class StaffHackathonViewSet(StaffViewSet):
@@ -50,13 +49,9 @@ class StaffHackathonViewSet(StaffViewSet):
     def score_entry(
         self, request: Request, slug: str | None = None, entry_id: str | None = None
     ) -> Response:
-        entry = get_object_or_404(HackathonSubmission, pk=entry_id, hackathon=self.get_object())
-        serializer = ScoreSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        assert isinstance(request.user, User)
-        data = serializer.validated_data
-        try:
-            score(request.user, entry, data["score"], data.get("feedback", ""))
-        except HackathonError as exc:
-            return _error(exc)
-        return Response(StaffSubmissionSerializer(entry).data)
+        return score_submission(
+            request,
+            hackathon=self.get_object(),
+            entry_id=entry_id,
+            serializer_class=StaffSubmissionSerializer,
+        )

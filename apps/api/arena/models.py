@@ -15,8 +15,10 @@ from typing import ClassVar
 from django.db import models
 from django.utils import timezone
 
+from core.mixins import TimeWindowMixin
 
-class ArenaRound(models.Model):
+
+class ArenaRound(TimeWindowMixin, models.Model):
     slug = models.SlugField(unique=True, max_length=120)
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
@@ -53,14 +55,6 @@ class ArenaRound(models.Model):
         """
         count = self.question_count if hasattr(self, "question_count") else self._item_count
         return self.start_at + timedelta(seconds=self.seconds_per_question * count)
-
-    @property
-    def is_running(self) -> bool:
-        return self.start_at <= timezone.now() < self.end_at
-
-    @property
-    def is_finished(self) -> bool:
-        return timezone.now() >= self.end_at
 
     @property
     def current_index(self) -> int | None:

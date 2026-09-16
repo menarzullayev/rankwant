@@ -3,7 +3,7 @@ from __future__ import annotations
 from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema
-from rest_framework import status, viewsets
+from rest_framework import serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.request import Request
@@ -25,6 +25,36 @@ def _error(exc: HackathonError) -> Response:
         {"error": {"code": exc.code, "message": exc.message, "details": {}}},
         status=status.HTTP_400_BAD_REQUEST,
     )
+
+
+def score_submission(
+    request: Request,
+    *,
+    hackathon: Hackathon,
+    entry_id: str | None,
+    serializer_class: type[serializers.ModelSerializer[HackathonSubmission]],
+) -> Response:
+    """Loyihani baholash — ommaviy va staff viewset uchun bir xil.
+
+    Ikki nusxa bo'lib yozilgan edi (`views.py` va `staff_views.py`), chunki
+    chiqish serializer'i farq qiladi: ommaviy yuzada begona maydonlar yo'q,
+    staff yuzada `scored_by` kabi maydonlar ham chiqadi. Qolgan hamma qadam
+    bir xil — shu funksiyaga ko'chirildi.
+
+    `data = serializer.validated_data` `try` dan TASHQARIDA: `is_valid`
+    o'tgandan keyin u `HackathonError` bermaydi, ya'ni xato tutish doirasini
+    kengaytirish hech narsani o'zgartirmaydi.
+    """
+    entry = get_object_or_404(HackathonSubmission, pk=entry_id, hackathon=hackathon)
+    serializer = ScoreSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    assert isinstance(request.user, User)
+    data = serializer.validated_data
+    try:
+        score(request.user, entry, data["score"], data.get("feedback", ""))
+    except HackathonError as exc:
+        return _error(exc)
+    return Response(serializer_class(entry).data)
 
 
 class HackathonViewSet(viewsets.ReadOnlyModelViewSet[Hackathon]):
@@ -71,13 +101,9 @@ class HackathonViewSet(viewsets.ReadOnlyModelViewSet[Hackathon]):
     def score_entry(
         self, request: Request, slug: str | None = None, entry_id: str | None = None
     ) -> Response:
-        entry = get_object_or_404(HackathonSubmission, pk=entry_id, hackathon=self.get_object())
-        serializer = ScoreSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        assert isinstance(request.user, User)
-        try:
-            data = serializer.validated_data
-            score(request.user, entry, data["score"], data.get("feedback", ""))
-        except HackathonError as exc:
-            return _error(exc)
-        return Response(SubmissionSerializer(entry).data)
+        return score_submission(
+            request,
+            hackathon=self.get_object(),
+            entry_id=entry_id,
+            serializer_class=SubmissionSerializer,
+        )

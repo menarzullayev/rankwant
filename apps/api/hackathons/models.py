@@ -10,8 +10,10 @@ from typing import ClassVar
 from django.db import models
 from django.utils import timezone
 
+from core.mixins import TimeWindowMixin
 
-class Hackathon(models.Model):
+
+class Hackathon(TimeWindowMixin, models.Model):
     slug = models.SlugField(unique=True, max_length=120)
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True, help_text="Markdown: shartlar, mezonlar, sovrin")
@@ -31,10 +33,6 @@ class Hackathon(models.Model):
     @property
     def accepts_submissions(self) -> bool:
         return self.start_at <= timezone.now() < self.submission_deadline
-
-    @property
-    def is_finished(self) -> bool:
-        return timezone.now() >= self.end_at
 
 
 class HackathonSubmission(models.Model):

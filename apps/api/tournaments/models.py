@@ -9,10 +9,11 @@ from __future__ import annotations
 from typing import ClassVar
 
 from django.db import models
-from django.utils import timezone
+
+from core.mixins import TimeWindowMixin
 
 
-class Tournament(models.Model):
+class Tournament(TimeWindowMixin, models.Model):
     slug = models.SlugField(unique=True, max_length=120)
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True, help_text="Markdown")
@@ -26,14 +27,6 @@ class Tournament(models.Model):
 
     def __str__(self) -> str:
         return self.slug
-
-    @property
-    def is_running(self) -> bool:
-        return self.start_at <= timezone.now() < self.end_at
-
-    @property
-    def is_finished(self) -> bool:
-        return timezone.now() >= self.end_at
 
 
 class TournamentStage(models.Model):
