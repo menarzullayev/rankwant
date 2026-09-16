@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # RankWant preview zaxirasi — 10-operations § Backup.
 #
-# Postgres dump + MinIO nusxasi, 30 kun saqlanadi. Preview bitta
+# Postgres dump + MinIO nusxasi, `RANKWANT_BACKUP_KEEP` kun saqlanadi
+# (standart 30; oylik Windows vazifasi 95 beradi). Preview bitta
 # mashinada ishlaydi, ya'ni `rankwant_pgdata` va `rankwant_miniodata`
 # volume'lari yo'qolsa 2000+ masalali import qaytadan qilinishi kerak
 # bo'lardi (KEP API tezlik cheklovi bilan bir necha soat).
@@ -11,10 +12,11 @@
 # yozilmagan — ikki nusxa jimgina ajralib ketadi (`runner-keepalive.ps1`
 # va `runner_keepalive.ps1` bilan bir marta shunday bo'lgan).
 #
-# Linux, cron (har kuni 04:00 da) — yo'l repo qayerda bo'lsa o'sha:
-#   0 4 * * * "$HOME"/rankwant/tools/backup.sh >> "$HOME"/backups/rankwant/backup.log 2>&1
+# Jadval — 30 kunda bir marta, faqat lokal (2026-09-17 qarori).
+# Linux, cron (har oyning 1-kuni 04:00 da) — yo'l repo qayerda bo'lsa o'sha:
+#   0 4 1 * * RANKWANT_BACKUP_KEEP=95 "$HOME"/rankwant/tools/backup.sh >> "$HOME"/backups/rankwant/backup.log 2>&1
 #
-# Windows: `RankWant Daily Backup` rejalashtirilgan vazifasi (to'liq
+# Windows: `RankWant Monthly Backup` rejalashtirilgan vazifasi (to'liq
 # ro'yxatga olish buyrug'i 10-operations § Backup da). Yalang'och `bash`
 # ISHLATILMAYDI — u WSL relay'iga tushadi va skript umuman ishga
 # tushmaydi; Git Bash'ning to'liq yo'li beriladi.
@@ -217,8 +219,8 @@ after="$(find "$dest" -name 'pg-*.sql.gz' -o -name 'minio-*.tar.gz' | wc -l)"
 # ⚠️ C: — yagona qattiq disk, undagi bo'sh joy esa tez o'zgaradi
 # (2026-09-15 da bir necha soat ichida 5.8 GB dan 31.5 GB gacha). Shuning
 # uchun skript bo'sh joyga emas, o'z NARXiga qaraydi: katalogning JAMI
-# hajmi har yurishda yoziladi — 30 kunlik saqlash ~700 MB turadi va bu
-# raqam jimgina o'sib ketmasligi kerak.
+# hajmi har yurishda yoziladi — oylik jadvalda ~3 ta nusxa ~75 MB turadi
+# (kunlik jadvalda ~700 MB edi) va bu raqam jimgina o'sib ketmasligi kerak.
 printf '%s  pg=%s  minio=%s  jami=%s  fayl=%s (-%s)\n' "$stamp" \
   "$(du -h "$sql" | cut -f1)" "$(du -h "$objects" | cut -f1)" \
   "$(du -sh "$dest" | cut -f1)" "$after" "$((before - after))"

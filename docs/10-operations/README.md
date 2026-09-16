@@ -497,23 +497,35 @@ Tiklash sinovi o'tkazilmasa, backup **yo'q deb hisoblanadi**.
 `wal_level`, `archive_command`, `pgbackrest`, `wal-g`, `barman`, `PITR`
 so'zlarining birortasi ham uchramaydi, `docker-compose.yml` esa standart
 `postgres:16` ni hech qanday sozlama ustiga yozmasdan ko'taradi. Mavjud
-narsa — kuniga bir marta olinadigan **mantiqiy dump** (`tools/backup.sh`).
+narsa — **30 kunda bir marta** olinadigan **mantiqiy dump** (`tools/backup.sh`).
+
+**Qaror (2026-09-17, Saidakbar aka):** kunlik zaxira kerak emas — 30 kunda bir
+marta, faqat lokal; mashinadan tashqariga (R2, USB) nusxa olinmaydi.
 
 **Narxi:** nuqtadan tiklash (point-in-time recovery) **yo'q**. Avariya
 oxirgi dumpdan keyin yuz bersa, o'sha oradagi yozuvlar butunlay yo'qoladi —
-eng yomon holatda **~24 soatlik** ma'lumot. Buni kamaytirish uchun WAL
-arxivlash kerak bo'lardi; u qo'yilmagan va bu **qabul qilingan** cheklov,
-yashirilgan emas.
+eng yomon holatda **~30 kunlik** ma'lumot. Disk ham bitta (NVMe, Linux ham
+shu diskda), ya'ni disk o'lsa lokal zaxira ham ketadi; tashqaridagi yagona
+nusxa — R2'dagi handoff eksporti, u faqat `handoff out` paytidagicha yangi.
+Buni kamaytirish uchun WAL arxivlash yoki off-site nusxa kerak bo'lardi;
+ular qo'yilmagan va bu **qabul qilingan** cheklov, yashirilgan emas.
 
 Preview (bitta mashina) uchun: `tools/backup.sh` — Postgres dump va MinIO
-nusxasi, 30 kun saqlanadi. Bitta yurish ~23 MB (o'lchandi 2026-09-15:
-pg 16.3 MB + MinIO 7.0 MB), ya'ni 30 kunlik saqlash ~700 MB.
+nusxasi. Saqlash `RANKWANT_BACKUP_KEEP` kun (skriptda standart 30; Windows
+vazifasi 95 beradi — oylik jadvalda 30 kunlik saqlash kechikkan yurishda
+yagona nusxani qoldirardi). Bitta yurish ~24.5 MB (o'lchandi 2026-09-17:
+pg 17 MB + MinIO 7.4 MB), ya'ni ~3 ta oylik nusxa ~75 MB.
+
+Volume, WAL yoki VHDX'ga tegadigan amal oldidan rejali nusxaga suyanmang —
+u 30 kungacha eski bo'lishi mumkin. Avval qo'lda oling:
+`Start-ScheduledTask 'RankWant Monthly Backup'` va `backup.log` da
+`dump butun` qatorini ko'ring.
 
 ⚠️ C: — yagona qattiq disk, va undagi bo'sh joy TEZ o'zgaradi: 2026-09-15
 kuni bir necha soat ichida 5.8 GB dan 31.5 GB gacha ko'tarildi (yolg'iz
 Docker build cache 14.7 GB, asosan qaytarib olinadigan). Shuning uchun bu
 yerga «hozir shuncha bo'sh» degan raqam YOZILMAYDI — u ertasiga yolg'on
-bo'ladi. Barqaror raqam — zaxiraning o'z narxi: ~700 MB. Skript esa har
+bo'ladi. Barqaror raqam — zaxiraning o'z narxi: ~75 MB. Skript esa har
 yurishda katalogning JAMI hajmini va o'chirilgan eski fayllar sonini
 jurnalga yozadi, chunki zaxira joyining tugashi backup'ni jimgina
 o'ldiradi.
@@ -521,29 +533,32 @@ o'ldiradi.
 Linux, cron:
 
 ```
-0 4 * * * "$HOME"/rankwant/tools/backup.sh >> "$HOME"/backups/rankwant/backup.log 2>&1
+0 4 1 * * RANKWANT_BACKUP_KEEP=95 "$HOME"/rankwant/tools/backup.sh >> "$HOME"/backups/rankwant/backup.log 2>&1
 ```
 
-Windows — `RankWant Daily Backup` vazifasi, kuniga bir marta **13:00** da.
+Windows — `RankWant Monthly Backup` vazifasi, **30 kunda bir marta 13:00** da.
 Soat ataylab tunda EMAS: butun stack Docker Desktop ustida turadi, u esa
 faqat foydalanuvchi tizimga kirganda ishlaydi, ya'ni 04:00 dagi trigger
 «rejalashtirilgan» bo'lib ko'rinib, amalda hech qachon zaxira bermasdi.
 `StartWhenAvailable` mashina o'chiq bo'lgan kunni keyingi imkoniyatda
-qoplaydi — mashina dual-boot, Windows kunlab ko'tarilmasligi mumkin.
+qoplaydi — oylik jadvalda bu SHART: usiz o'tkazib yuborilgan kun butun bir
+oyga cho'ziladi (mashina dual-boot, Windows kunlab ko'tarilmasligi mumkin).
 
 ```powershell
 $repo = 'C:\Users\nsn\project\cp\rankwant'
 $bash = 'C:\Program Files\Git\bin\bash.exe'
 $dest = '/c/Users/nsn/backups/rankwant'
-$inner = "RANKWANT_BACKUP_DIR=$dest '/c/Users/nsn/project/cp/rankwant/tools/backup.sh' >> $dest/backup.log 2>&1"
+$inner = "RANKWANT_BACKUP_DIR=$dest RANKWANT_BACKUP_KEEP=95 '/c/Users/nsn/project/cp/rankwant/tools/backup.sh' >> $dest/backup.log 2>&1"
 $action = New-ScheduledTaskAction -Execute 'C:\WINDOWS\System32\conhost.exe' `
   -Argument ('--headless "' + $bash + '" -lc "' + $inner + '"') -WorkingDirectory $repo
-$trigger = New-ScheduledTaskTrigger -Daily -At '13:00'
+$trigger = New-ScheduledTaskTrigger -Daily -DaysInterval 30 -At '13:00'
 $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries `
   -DontStopIfGoingOnBatteries -StartWhenAvailable `
   -MultipleInstances IgnoreNew -ExecutionTimeLimit (New-TimeSpan -Minutes 30)
-Register-ScheduledTask 'RankWant Daily Backup' -Action $action `
+Register-ScheduledTask 'RankWant Monthly Backup' -Action $action `
   -Trigger $trigger -Settings $settings -Force
+# 2026-09-17 gacha kunlik vazifa bo'lgan — qolgan bo'lsa olib tashlang:
+Unregister-ScheduledTask 'RankWant Daily Backup' -Confirm:$false -ErrorAction SilentlyContinue
 ```
 
 ⚠️ Yalang'och `bash` ISHLATILMAYDI: Windows'da u WSL relay'iga tushadi va
@@ -682,15 +697,16 @@ chaqiruvchining muhitiga emas, skriptning o'ziga bog'langan.
 2. **Self-hosted runner xavfi qabul qilinadi.** *"Yolg'iz ishlashda qabul
    qilsa bo'ladigan xavf, jamoada emas"* — va qayta ko'rib chiqish sharti
    yozilgan (ikkinchi odam qo'shilishidan oldin).
-3. **Kunlik backup + choraklik tiklash sinovi yetarli.** RPO va RTO
-   raqamlari `Disaster recovery` bo'limida yozilgan (RPO ≤ 24 soat, RTO
-   ~1 soat). Ular **tanlangan maqsad emas, mexanizmning oqibati**: kuniga
-   bir marta olinadigan mantiqiy dump shundan aniqroq bo'la olmaydi.
-   Ustidan *"tiklash sinovi o'tkazilmasa, backup yo'q deb hisoblanadi"*
-   tamoyili qo'llanadi.
-4. **Branch protection va secret scanning siz ishlash mumkin.** *"DoD
-   intizomga tayanadi"* — ya'ni `main` ga to'g'ridan-to'g'ri push va qizil CI
-   bilan merge texnik jihatdan mumkin.
+3. **30 kunlik lokal backup + choraklik tiklash sinovi yetarli.** Bu
+   **tanlangan** chegara (2026-09-17, Saidakbar aka): kunlik zaxira kerak
+   emas, off-site nusxa olinmaydi. RPO va RTO raqamlari `Disaster recovery`
+   bo'limida (RPO ≤ 30 kun, RTO ~1 soat). Ustidan *"tiklash sinovi
+   o'tkazilmasa, backup yo'q deb hisoblanadi"* tamoyili qo'llanadi.
+4. **Branch protection va secret scanning siz ishlash mumkin.** GitHub bu
+   tarifda branch protection bermaydi (403). 2026-09-17 dan `main` ga
+   to'g'ridan-to'g'ri push'ni `.githooks/pre-push` (`tools/push_guard.py`)
+   rad etadi; qizil CI bilan merge va `--no-verify` esa hali ham texnik
+   jihatdan mumkin — bu qismi *"DoD intizomga tayanadi"*.
 
 ## SLO va error budget
 
@@ -758,6 +774,31 @@ Javob uchta yo'lni ajratadi:
 
 ### 1. Sayt ochilmayapti (503 / texnik ishlar)
 
+**Elektr uzilishi yoki reboot'dan keyin — avval shu.** 2026-09-17 da sayt
+~23 daqiqa yiqiq turdi: Docker Desktop ishga tushmagan, `monitor.ps1` esa R2
+egaligini `docker run rclone/rclone` bilan o'qiydi — Docker yo'q bo'lsa jurnalga
+`UNMEASURED ... R2 state.json o'qilmadi` yozadi va tunnelni ATAYLAB
+ko'tarmaydi. Belgisi: `docker info` xato beradi.
+
+```powershell
+Start-Process "C:\Program Files\Docker\Docker\Docker Desktop.exe"   # konteynerlar restart policy bilan o'zi ko'tariladi
+Start-ScheduledTask 'RankWant Tunnel Monitor'                         # egalikni tekshirib tunnelni tiklaydi
+```
+
+Tunnelni qo'lda ishga tushirmang — egalik tekshiruvini monitor qiladi.
+Doimiy yechim — Docker Desktop logon'da o'zi ishga tushishi, va u IKKI joyda
+yoqilgan bo'lishi shart (2026-09-17 da ikkalasi ham o'chiq edi):
+
+```powershell
+(Get-Content "$env:APPDATA\Docker\settings-store.json" -Raw | ConvertFrom-Json).AutoStart   # True
+(Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run').'Docker Desktop'[0]   # 2 = yoqiq, 3 = Task Manager'da o'chirilgan
+```
+
+Logon talab qilinadi: foydalanuvchi tizimga kirmaguncha Docker Desktop ham,
+sayt ham ko'tarilmaydi.
+
+Keyin tunnel holati:
+
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\tools\handoff.ps1" status
 ```
@@ -811,7 +852,7 @@ bash tools/backup.sh --restore-test  # alohida bazaga tiklaydi (jonliga tegmaydi
 
 | Narsa | Qiymat | Izoh |
 |---|---|---|
-| **RPO** | ≤ 24 soat | kunlik `pg_dump`; WAL arxivlash va PITR yo'q |
+| **RPO** | ≤ 30 kun | 30 kunda bir marta `pg_dump`, faqat lokal (2026-09-17 qarori); WAL arxivlash va PITR yo'q |
 | **RTO (baza)** | ~1 soat | `--restore-test` bilan mashq qilingan |
 | **RTO (xizmat)** | 1–12 soat | on-call bir kishi; tungi avariya ertalabgacha |
 | Failover | **yo'q** | bitta mashina — zaxira nusxa yo'q |
