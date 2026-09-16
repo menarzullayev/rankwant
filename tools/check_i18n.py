@@ -59,6 +59,12 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         # "Reset" — inglizcha atama o'zbekcha interfeysda ham shunday
         # ishlatiladi (tugma yorlig'i). O'girilgan varianti sun'iy.
         "action.reset",
+        # Hacking atamalari (ADR-0020). «Hack» va «Uphack» — Codeforces
+        # joriy qilgan atamalar: ingliz, turk, ispan, qoraqalpoq va xitoy
+        # interfeyslarida asl holida qoladi. Bu ro'yxat RUXSAT beradi,
+        # majburlamaydi — rus va qozoq tillarida ular o'girilgan
+        # («Взлом», «Бұзу»). «Generator» — xalqaro atama.
+        "hack.title", "hack.mode.generator", "hack.policy.uphack",
         "customizer.template.classic",
         "customizer.template.console",
         "customizer.template.journal",
@@ -189,6 +195,10 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         "admin.text.badgeRated", "admin.text.badgeRepo", "admin.text.badgeDemo",
         "admin.text.addVariant", "admin.text.variant",
         "problem.stats.title",   # "Statistika · {slug}"
+        # «Hacklar» — qaraqalpoqchada ildizi ham, ko'plik qo'shimchasi
+        # ham o'zbekchadagi bilan bir xil. Qozoq va qirg'izchada esa
+        # o'girilgan («Бұзулар», «Бузуулар»).
+        "standings.hacks",
         "submit.testTooltip",    # birlik va ajratgich bir xil
     },
     # Ingliz tili: «Duel» kabi so'zlar inglizchadan o'zlashgan, ya'ni

@@ -45,7 +45,14 @@ export default async function AttemptsPage() {
           <TBody>
             {data.results.map((a) => (
               <TR key={a.id}>
-                <TD className="rw-faint">{a.id}</TD>
+                <TD>
+                  <Link
+                    href={`/attempts/${a.id}`}
+                    className="rw-faint rw-link-hover"
+                  >
+                    {a.id}
+                  </Link>
+                </TD>
                 <TD>
                   <UserName username={a.username} title={a.user_title} locale={locale} />
                 </TD>

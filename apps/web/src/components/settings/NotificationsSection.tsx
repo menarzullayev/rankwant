@@ -18,6 +18,11 @@ const KINDS = [
   "rating_changed",
   "problem_rerated",
   "duel",
+  // Hack natijasi IKKALA tomonga ham boradi (ADR-0020): hackerga
+  // natijasi, himoyachiga yechimi nega bekor qilingani. Backend uni
+  // allaqachon yuborardi, lekin bu ro'yxatda bo'lmagani uchun uni
+  // o'chirib qo'yishning iloji yo'q edi.
+  "hack",
   "quest_awarded",
   "streak_milestone",
   "system",

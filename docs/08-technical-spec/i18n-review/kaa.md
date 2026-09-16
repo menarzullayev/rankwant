@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1517 strings.**
+**1548 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -178,6 +178,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `standings.rank` | O'rin | Orın |  |
 | `standings.user` | Foydalanuvchi | Paydalanıwshı |  |
 | `standings.solved` | Yechildi | Sheshildi |  |
+| `standings.hacks` | Hacklar | Hacklar |  |
 | `standings.penalty` | Jarima | Jaza |  |
 | `standings.frozen` | Jadval muzlatilgan | Keste muzlatılǵan |  |
 | `leaderboard.title` | Reyting | Reyting |  |
@@ -318,6 +319,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `header.streak` | kun | kún |  |
 | `header.noUnread` | Yangi bildirishnoma yo'q | Jańa xabarlama joq |  |
 | `leaderboard.challenges` | Challenges | Challenges |  |
+| `attempt.title` | Urinish #{id} | Umtılıs #{id} |  |
+| `attempt.source` | Manba kod | Dáslepki kod |  |
+| `attempt.sourceHidden` | Manba kod faqat egasiga va hack huquqi borlarga ko'rinadi | Dáslepki kod tek avtorǵa hám hack huqıqı barlarǵa kórinedi |  |
+| `attempt.failedAt` | {index}-testda to'xtadi | {index}-testte toqtadı |  |
 | `attempts.title` | Urinishlar oqimi | Urınıslar aǵımı |  |
 | `attempts.verdict` | Verdikt | Verdikt |  |
 | `attempts.language` | Til | Til |  |
@@ -457,6 +462,29 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `verdict.RE_EXIT` | Bajarilishda xato (chiqish kodi) | Orınlawda qátelik (shıǵıw kodı) |  |
 | `verdict.CE` | Kompilyatsiya xatosi | Kompilyatsiya qátesi |  |
 | `verdict.PE` | Format xatosi | Format qátesi |  |
+| `hack.title` | Hack | Hack |  |
+| `hack.closed` | Bu yechim uchun hack oynasi yopiq | Bul sheshim ushın hack áynegi jabıq |  |
+| `hack.mode.input` | Tayyor kiritma | Tayın kiris |  |
+| `hack.mode.generator` | Generator | Generator |  |
+| `hack.input` | Test kiritmasi | Test kirisi |  |
+| `hack.inputHint` | Kiritma masala cheklovlariga mos bo'lishi kerak — buni validator tekshiradi | Kiris máseleniń sheklewlerine sáykes bolıwı kerek — onı validator tekseredi |  |
+| `hack.generatorSource` | Generator manbasi | Generator kodı |  |
+| `hack.generatorHint` | Dastur kiritmani chiqarishga yozadi — katta testlar uchun | Baǵdarlama kiristi standart shıǵısqa jazadı — úlken testler ushın |  |
+| `hack.send` | Hack yuborish | Hack jiberiw |  |
+| `hack.sent` | Hack yuborildi — natija tekshiruvdan keyin ko'rinadi | Hack jiberildi — nátiyje tekseriwden keyin kórinedi |  |
+| `hack.lock` | Masalani lock qilish | Máseleni lock qılıw |  |
+| `hack.lockHint` | Lock qilsangiz bu masalaga qayta yubora olmaysiz, evaziga xonadagi yechimlar ochiladi | Lock qılsańız bul máselege qayta jibere almaysız, ornına bólmedegi sheshimler ashıladı |  |
+| `hack.status.TESTING` | Tekshirilmoqda | Tekserilmekte |  |
+| `hack.status.SUCCESSFUL` | Muvaffaqiyatli | Sátli |  |
+| `hack.status.UNSUCCESSFUL` | Ishlamadi | Islemedi |  |
+| `hack.status.INVALID_INPUT` | Kiritma yaroqsiz | Kiris jaramsız |  |
+| `hack.status.GENERATOR_CRASHED` | Generator yiqildi | Generator qulap tústi |  |
+| `hack.status.IGNORED` | Hisobga olinmadi | Esapqa alınbadı |  |
+| `hack.status.RATE_LIMITED` | Tezlik chegarasi | Tezlik shegi |  |
+| `hack.policy.contest_room` | Musobaqa xonasi | Jarıs bólmesi |  |
+| `hack.policy.open_phase` | Ochiq faza | Ashıq faza |  |
+| `hack.policy.practice` | Amaliyot | Ámeliyat |  |
+| `hack.policy.uphack` | Uphack | Uphack |  |
 | `verdict.HACKED` | Hack qilindi | Buzıldı |  |
 | `verdict.PARTIAL` | Qisman ball | Bólekley ball |  |
 | `verdict.IE` | Ichki xato | Ishki qátelik |  |
@@ -600,6 +628,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.infoHint` | Hammasi ixtiyoriy. Standart holatda profilda ko'rinadi — istalganini yashirishingiz mumkin. | Hámmesi ıqtıyarlı. Ádette profilde kórinedi — qálegenin jasırıwıńız múmkin. |  |
 | `settings.kind.contest_result` | Musobaqa natijasi | Jarıs nátiyjesi |  |
 | `settings.kind.duel` | Duellar | Duelder |  |
+| `settings.kind.hack` | Hack natijasi | Hack nátiyjesi |  |
 | `settings.kind.problem_rerated` | Masala qayta baholandi | Másele qayta bahalandı |  |
 | `settings.kind.quest_awarded` | Vazifa mukofoti | Tapsırma sıylıǵı |  |
 | `settings.kind.rating_changed` | Reyting o'zgarishi | Reyting ózgeriwi |  |

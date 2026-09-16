@@ -24,6 +24,10 @@ class AttemptSerializer(serializers.ModelSerializer[Attempt]):
     user_title = TitleField(source="user")
     problem = serializers.SlugRelatedField[Problem](slug_field="slug", read_only=True)
     language = serializers.SlugRelatedField[Language](slug_field="code", read_only=True)
+    #: Hack yuzasi masalani qaysi musobaqada lock qilishni shundan biladi
+    #: (ADR-0020). ⚠️ `AttemptViewSet` `contest` ni `select_related` ga
+    #: qo'shadi — usiz bu maydon har qatorga bitta so'rov qo'shardi.
+    contest = serializers.SlugRelatedField[Contest](slug_field="slug", read_only=True)
 
     class Meta:
         model = Attempt
@@ -32,6 +36,7 @@ class AttemptSerializer(serializers.ModelSerializer[Attempt]):
             "username",
             "user_title",
             "problem",
+            "contest",
             "language",
             "verdict",
             "score",

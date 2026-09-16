@@ -10200,6 +10200,9 @@ components:
         problem:
           type: string
           readOnly: true
+        contest:
+          type: string
+          readOnly: true
         language:
           type: string
           readOnly: true
@@ -10240,6 +10243,7 @@ components:
           minimum: 0
           format: int64
       required:
+      - contest
       - created_at
       - id
       - language
@@ -10280,6 +10284,9 @@ components:
           nullable: true
           readOnly: true
         problem:
+          type: string
+          readOnly: true
+        contest:
           type: string
           readOnly: true
         language:
@@ -10331,6 +10338,7 @@ components:
             $ref: '#/components/schemas/AttemptTestResult'
           readOnly: true
       required:
+      - contest
       - created_at
       - id
       - language

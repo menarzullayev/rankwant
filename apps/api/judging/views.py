@@ -85,7 +85,9 @@ class AttemptViewSet(
 
     def get_queryset(self):  # type: ignore[no-untyped-def]
         params = self.request.query_params
-        qs = Attempt.objects.select_related("user", "problem", "language")
+        # `contest` ham SHU YERDA: serializer uning slug'ini beradi va
+        # usiz har qator uchun alohida so'rov ketardi (N+1).
+        qs = Attempt.objects.select_related("user", "problem", "language", "contest")
 
         problem = params.get("problem")
         if problem:

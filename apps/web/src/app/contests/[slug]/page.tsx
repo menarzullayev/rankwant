@@ -143,6 +143,7 @@ export default async function ContestPage({ params }: Props) {
           initial={standings}
           live={contest.is_running}
           locale={locale}
+          hacks={contest.hack_room || contest.hack_open_until !== null}
         />
       </Card>
     </div>

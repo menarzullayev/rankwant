@@ -121,6 +121,12 @@ class HackViewSet(
         contest = params.get("contest")
         if contest:
             qs = qs.filter(contest_id=Contest.objects.filter(slug=contest).values("pk")[:1])
+        attempt = params.get("attempt")
+        if attempt and attempt.isdigit():
+            # Bitta yechimga qilingan hacklar — urinish sahifasi shuni
+            # ko'rsatadi. `isdigit` tekshiruvi SHART: xom satr bilan
+            # filtrlash `ValueError` bilan 500 qaytarardi.
+            qs = qs.filter(defender_attempt_id=int(attempt))
         status_param = params.get("status")
         if status_param:
             qs = qs.filter(status__in=[s for s in status_param.split(",") if s])
