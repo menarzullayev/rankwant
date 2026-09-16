@@ -35,6 +35,19 @@ from roadmap.serializers import (
 
 
 @crud_summaries(one="yo'l xaritasi bandi", many="yo'l xaritasi bandlari", only=("list", "retrieve"))
+@crud_summaries(
+    one="taklif",
+    many="takliflar",
+    only=("list", "retrieve", "create"),
+    extra={
+        "mine": "Mening takliflarim",
+        # `unvote` — `@vote.mapping.delete`: bitta amal POST va DELETE ni
+        # beradi, ya'ni tavsif ikkala kalitda ham turishi kerak.
+        "vote": "Ovoz berish / qaytarib olish",
+        "unvote": "Ovoz berish / qaytarib olish",
+        "comments": "Izohlar",
+    },
+)
 class RoadmapItemViewSet(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
@@ -106,7 +119,11 @@ class RoadmapItemViewSet(
         voted, count = services.set_vote(request.user, self.get_object(), True)
         return Response({"voted": voted, "vote_count": count})
 
-    @extend_schema(request=None, responses={200: RoadmapVoteSerializer})
+    @extend_schema(
+        summary="Ovozni qaytarib olish",
+        request=None,
+        responses={200: RoadmapVoteSerializer},
+    )
     @vote.mapping.delete
     def unvote(self, request: Request, pk: str | None = None) -> Response:
         """Ovozni qaytarib olish — bir xil manzil, `DELETE` metodi."""

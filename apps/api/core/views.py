@@ -77,6 +77,7 @@ log = logging.getLogger(__name__)
 DEFAULT_AUTH_BACKEND = "django.contrib.auth.backends.ModelBackend"
 
 
+@extend_schema(summary="Xizmat holati")
 class HealthView(APIView):
     """Readiness — 10-operations § deploy va monitoring.
 
@@ -124,6 +125,7 @@ def _check_redis() -> str:
     return "ok"
 
 
+@extend_schema(summary="Platforma statistikasi")
 class PlatformStatsView(APIView):
     """Mehmon bosh sahifasi uchun umumiy raqamlar.
 
@@ -160,6 +162,7 @@ class PlatformStatsView(APIView):
         return Response(stats)
 
 
+@extend_schema(summary="Faoliyat kalendari")
 class CalendarView(APIView):
     """Barcha tadbirlar bir joyda — musobaqa, arena, chempionat, hakaton.
 
@@ -231,6 +234,7 @@ def _parse_date(raw: str | None) -> Any:
     return parsed
 
 
+@extend_schema(summary="Global qidiruv")
 class SearchView(APIView):
     """Header qidiruvi — har turdan bir nechta natija, tez."""
 
@@ -301,6 +305,7 @@ class RegisterView(generics.CreateAPIView[User]):
         queue(send_email_verify, user.pk, issued.raw, issued.code)
 
 
+@extend_schema(summary="Ijtimoiy hisobni uzish")
 class SocialUnlinkView(APIView):
     """Ulangan hisobni uzadi.
 
@@ -326,6 +331,7 @@ class SocialUnlinkView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@extend_schema(summary="Email'ni kod bilan tasdiqlash")
 class EmailVerifyView(APIView):
     """Havola yoki kod bilan pochtani tasdiqlaydi.
 
@@ -351,6 +357,7 @@ class EmailVerifyView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@extend_schema(summary="Tasdiqlash kodini qayta yuborish")
 class EmailVerifyResendView(APIView):
     """Xatni qaytadan yuboradi. Faqat o'z hisobiga."""
 
@@ -378,6 +385,7 @@ class EmailVerifyResendView(APIView):
     parameters=[OpenApiParameter("u", str, description="Tekshiriladigan taxallus")],
     responses={200: UsernameCheckSerializer},
 )
+@extend_schema(summary="Username band emasligini tekshirish")
 class UsernameCheckView(APIView):
     """Taxallus bo'shmi — yozayotganda chaqiriladi.
 
@@ -460,6 +468,7 @@ class LoginView(APIView):
         return Response(MeSerializer(user).data)
 
 
+@extend_schema(summary="Analitika hodisasini qabul qilish")
 class AnalyticsEventView(APIView):
     """Funnel hodisalarini qabul qiladi (qaror 17).
 
@@ -517,6 +526,7 @@ class LogoutView(APIView):
     get=extend_schema(summary="O'z profili"),
     put=extend_schema(summary="Profilni to'liq yangilash"),
     patch=extend_schema(summary="Profilni qisman yangilash"),
+    delete=extend_schema(summary="Hisobni o'chirish (anonimlashtirish)"),
 )
 class MeView(generics.RetrieveUpdateDestroyAPIView[User]):
     serializer_class = MeSerializer
@@ -582,6 +592,7 @@ class MeView(generics.RetrieveUpdateDestroyAPIView[User]):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@extend_schema(summary="Profil ma'lumotlarini eksport qilish (JSON)")
 class MeExportView(APIView):
     """Foydalanuvchining o'z ma'lumoti — JSON fayl.
 
@@ -604,6 +615,7 @@ class MeExportView(APIView):
         return response
 
 
+@crud_summaries(one="foydalanuvchi", many="foydalanuvchilar", only=("list", "retrieve"))
 class UserViewSet(viewsets.ReadOnlyModelViewSet[User]):
     """Ommaviy profil va leaderboard."""
 
@@ -647,6 +659,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet[User]):
             return Response(self.get_serializer(moved.user).data)
 
 
+@extend_schema(summary="Reyting tarixi")
 class RatingHistoryView(generics.ListAPIView[Any]):
     """Reyting o'zgarishlari tarixi — 05-domain-model 🔒.
 
@@ -704,6 +717,7 @@ def _best_accepted(rows: list[Any]) -> dict[int, dict[str, Any]]:
     return best
 
 
+@extend_schema(summary="Yechilgan masalalar")
 class SolvedProblemsView(generics.ListAPIView[Any]):
     """Foydalanuvchi yechgan masalalar — Skills reytingining manbai.
 
@@ -833,6 +847,7 @@ class ApiTokenViewSet(viewsets.ModelViewSet[ApiToken]):
         instance.save(update_fields=["revoked_at"])
 
 
+@extend_schema(summary="Parolni tiklash havolasini so'rash")
 class PasswordResetRequestView(APIView):
     """Tiklash xatini so'raydi (ADR-0015).
 
@@ -874,6 +889,7 @@ class PasswordResetRequestView(APIView):
         return Response(status=status.HTTP_202_ACCEPTED)
 
 
+@extend_schema(summary="Parolni tiklashni tasdiqlash")
 class PasswordResetConfirmView(APIView):
     """Havola yoki kod bilan yangi parol o'rnatadi."""
 
@@ -940,6 +956,7 @@ class PasswordResetConfirmView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@extend_schema(summary="Mavjud OAuth provayderlar")
 class AuthProvidersView(APIView):
     """Sozlangan ijtimoiy kirish provayderlari.
 
@@ -1017,6 +1034,7 @@ def safe_next(value: str | None) -> str:
     return value
 
 
+@extend_schema(summary="OAuth boshlash")
 class SocialStartView(APIView):
     """Provayderning ruxsat sahifasiga yo'naltiradi."""
 
@@ -1060,6 +1078,7 @@ class SocialStartView(APIView):
         return redirect(oauth.authorize_url(provider, state, challenge))
 
 
+@extend_schema(summary="OAuth callback")
 class SocialCallbackView(APIView):
     """Kodni almashtiradi va hisobni topadi yoki yaratadi."""
 
@@ -1210,6 +1229,7 @@ class SocialCallbackView(APIView):
         return redirect(success)
 
 
+@extend_schema(summary="Ijtimoiy hisobni ulash")
 class SocialLinkView(APIView):
     """Parol bilan tasdiqlab, ijtimoiy hisobni mavjud hisobga bog'laydi."""
 
@@ -1269,6 +1289,7 @@ class SocialLinkView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@extend_schema(summary="Sayt ko'rinishi (tema)")
 class SiteAppearanceView(APIView):
     """Saytning standart ko'rinishi — ommaviy o'qish (D37).
 

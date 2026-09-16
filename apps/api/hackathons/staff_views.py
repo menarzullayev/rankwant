@@ -29,6 +29,11 @@ from hackathons.views import score_submission
     many="hakatonlar",
     extra={"score_entry": "Loyihani baholash (0–100)"},
 )
+@crud_summaries(
+    one="hakaton",
+    many="hakatonlar",
+    extra={"submissions": "Topshirilgan loyihalar"},
+)
 class StaffHackathonViewSet(StaffViewSet):
     serializer_class = StaffHackathonSerializer
     lookup_field = "slug"

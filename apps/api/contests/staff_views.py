@@ -28,6 +28,7 @@ from core.staff import StaffViewSet
     extra={
         "rebuild_standings": "Turnik jadvalini qayta hisoblash",
         "problems": "Musobaqa masalalari",
+        "finalize": "Musobaqani yakunlash",
     },
 )
 class StaffContestViewSet(StaffViewSet):

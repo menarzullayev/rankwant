@@ -17,7 +17,11 @@ from qvant.models import QvantQuest, ShopItem
 from qvant.staff_serializers import StaffQuestSerializer, StaffShopItemSerializer
 
 
-@crud_summaries(one="topshiriq", many="topshiriqlar")
+@crud_summaries(
+    one="topshiriq",
+    many="topshiriqlar",
+    extra={"sync": "Topshiriqlarni sinxronlash"},
+)
 class StaffQuestViewSet(StaffViewSet):
     """Quest ta'riflari. Kodlar `qvant.quests` dagi hodisalarga bog'lanadi —
     yangi kod qo'shish uni avtomatik ishga tushirmaydi, faqat katalogga kiradi."""

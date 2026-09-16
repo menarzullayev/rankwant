@@ -47,6 +47,13 @@ COMPOSE=(docker compose -p "$PROJECT" --env-file "$ENV_FILE"
 # (runbook § NEXT_PUBLIC).
 SERVICES=(api worker beat judge)
 
+# Manba commit — image yorlig'iga (`org.rankwant.git-sha`) uzatiladi.
+# `check_deploy.sh` judge va web'ning eskiligini AYNAN shu yorliq orqali
+# aniqlaydi; usiz ular ko'r nuqta bo'lib qoladi (2026-09-16 da judge
+# shunday qolgan edi). Compose `${GIT_SHA:-unknown}` ni o'qiydi.
+GIT_SHA="$(git rev-parse HEAD 2>/dev/null || echo unknown)"
+export GIT_SHA
+
 ASSUME_YES=0
 CHECK_ONLY=0
 for arg in "$@"; do

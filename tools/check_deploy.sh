@@ -367,9 +367,36 @@ if docker inspect rankwant-web-1 >/dev/null 2>&1; then
 fi
 
 # --- judge (Go, kompilyatsiya qilingan binary) --------------------------
+#
+# ⚠️ Fayl hash'i solishtirib bo'lmaydi: manbada `.go`, konteynerda esa
+# kompilyatsiya qilingan binary. Ilgari bu qator «binary — hash manbada
+# yo`q» deb yozardi, ya'ni judge eskiligi KO'RINMASDI — 2026-09-16 da
+# tuzatilgan wall-kill kodi CI'da yashil bo'lib, produksiya esa eski
+# binarni ishlatib turgan edi.
+#
+# Endi `apps/web` bilan bir xil naqsh: image'ga `org.rankwant.git-sha`
+# yorlig'i yoziladi (`services/judge-go/Dockerfile`; qiymat `deploy.sh`
+# dan `GIT_SHA` orqali keladi).
+#
+# ⚠️ Yorliq `unknown` bo'lsa — «tekshirilmadi» va `stale` oshadi: yorliqsiz
+# build aynan eski build demakdir, uni «mos» deb o'qish yolg'on yashil.
 if docker inspect rankwant-judge-1 >/dev/null 2>&1; then
-  cshow="$(img_time rankwant-judge:latest)"
-  printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-judge-1' "$G" 'ishlayapti' "$N" "$cshow" 'binary — hash manbada yo`q'
+  jshow="$(img_time rankwant-judge:latest)"
+  jsha="$(docker inspect rankwant-judge-1 --format '{{index .Config.Labels "org.rankwant.git-sha"}}' 2>/dev/null)"
+  src_sha="$(git rev-parse HEAD 2>/dev/null)"
+
+  if [ -z "$jsha" ] || [ "$jsha" = "<no value>" ] || [ "$jsha" = "unknown" ]; then
+    printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-judge-1' "$Y" 'TEKSHIRILMADI' "$N" "$jshow" \
+      "yorliq yo'q — binary hash'i solishtirilmaydi, qayta quring"
+    stale=$((stale + 1))
+  elif [ "$jsha" = "$src_sha" ]; then
+    printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-judge-1' "$G" 'joyida' "$N" "$jshow" \
+      "yorliq HEAD bilan bir xil (${jsha:0:12})"
+  else
+    printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-judge-1' "$R" 'ESKIRGAN' "$N" "$jshow" \
+      "yorliq ${jsha:0:12} ≠ HEAD ${src_sha:0:12}"
+    stale=$((stale + 1))
+  fi
 else
   printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-judge-1' "$Y" "YO'Q" "$N" '-' '-'
   missing=$((missing + 1))

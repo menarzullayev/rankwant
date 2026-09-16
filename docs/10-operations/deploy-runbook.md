@@ -189,6 +189,46 @@ $PY tools/check_icons.py        # 9 to'plam × 226 kalit
 | `:8300` → **000**, konteyner `Up`/`healthy` | port ko'prigi (§4)  | Docker Desktop to'liq restart               |
 | sayt 200, lekin eski kod                    | image yangilanmagan | `bash tools/check_deploy.sh` → qayta qurish |
 
+### `web` qachon qayta quriladi
+
+`tools/deploy.sh` `web` ni **ataylab** qurmaydi — u faqat `apps/web/`
+o'zgarganda kerak, sabab ikki xil:
+
+1. `NEXT_PUBLIC_*` qiymatlari **build vaqtida** bundle'ga singadi, ya'ni
+   `.env.public` o'zgarsa `up` yetarli emas — **qayta qurish** shart.
+2. Next.js chiqishi siqilgan, shuning uchun `check_deploy.sh` uni fayl
+   hash'i bilan emas, **build yorlig'i** (`org.rankwant.git-sha`) bilan
+   solishtiradi.
+
+⚠️ `apps/web/` da faqat **izoh** o'zgargan bo'lsa qayta qurish shart emas:
+xatti-harakat bir xil, saytni bekorga uzish keraksiz. Bunday holda
+`check_deploy.sh` «yorliqsiz image» deb ogohlantiradi — bu **xato emas**,
+holat bayoni.
+
+Qaror: `apps/web/` da kod o'zgarsa yoki `NEXT_PUBLIC_*` o'zgarsa —
+`bash tools/deploy.sh` dan keyin qo'shimcha:
+
+```bash
+docker compose -p rankwant --env-file .env.public   -f docker-compose.yml -f docker-compose.public.yml   build web && docker compose -p rankwant --env-file .env.public   -f docker-compose.yml -f docker-compose.public.yml   up -d --no-deps web
+```
+
+### Nega `check_deploy.sh` ga salbiy test yo'q
+
+`tools/check_negative.py` — **sof Python** tekshiruvlar uchun
+(`check_*.py`); u Docker va ishlab turgan stack'ni talab qilmaydi, shuning
+uchun CI'da arzon. `check_deploy.sh` esa aksincha: konteynerlar, image'lar
+va ularning ichidagi fayllar kerak.
+
+Uni `check_negative.py` ga tiqish ikki narsani buzardi: test to'plami
+Docker'siz umuman ishlamay qolardi va har CI yugurishi 30-60 s
+sekinlashardi.
+
+**Buning o'rniga:** mantiq **haqiqiy holatda** tasdiqlandi — 2026-09-16 da
+o'zgartirilgan 17 faylni aynan topdi (`arena/views.py` hash'i
+`c385aecd…` ↔ `1548467d…`), holbuki eski mantiq «joriy kodda» derdi.
+Qo'lda takrorlash: bitta faylni o'zgartirib (qayta qurmasdan)
+`bash tools/check_deploy.sh` → «ESKIRGAN» chiqishi kerak.
+
 ---
 
 ## 4. Ma'lum xatolar — hammasi o'lchangan (2026-09-16)

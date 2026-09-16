@@ -124,13 +124,23 @@ startup_fail=0
 queued=0
 completed=0
 shown=0
+stuck=0
 now_epoch="$(date -u +%s)"
+
+# Qotib qolgan run chegarasi. O'lchandi (2026-09-16): job 22 daqiqa
+# `in progress` bo'lib turdi, runner esa `online, busy=False` edi —
+# GitHub job'ni boshlangan deb hisoblaydi, uni bajaradigan
+# `Runner.Worker` esa yo'q (assignment eskirgan). `timeout-minutes`
+# buni TUTMAYDI: u BAJARILAYOTGAN qadamga qo'llanadi, navbatga emas.
+# Oddiy job 1-3 daqiqada tugaydi, shuning uchun 15 daqiqa — aniq signal.
+STUCK_SECONDS="${CI_STUCK_SECONDS:-900}"
 
 while IFS='|' read -r wname wstatus wconcl wsha wcreated; do
   wname="${wname%$'\r'}"; wstatus="${wstatus%$'\r'}"; wconcl="${wconcl%$'\r'}"
   wsha="${wsha%$'\r'}"; wcreated="${wcreated%$'\r'}"
   [ -z "$wname" ] && continue
   shown=$((shown + 1))
+  d=""   # oldingi iteratsiyadan qolmasin
 
   # Yoshi — `queued` ning halol sababini ajratadi: bir necha soniya
   # navbat normal, bir necha SOAT navbat = runner yo'q.
@@ -156,6 +166,11 @@ while IFS='|' read -r wname wstatus wconcl wsha wcreated; do
         age="${d}s"
       fi
     fi
+  fi
+
+  # Qotgan run: tugamagan va kutilgan vaqtdan ancha oshgan.
+  if [ -n "$d" ] && [ "$wstatus" != "completed" ] && [ "$d" -ge "$STUCK_SECONDS" ]; then
+    stuck=$((stuck + 1))
   fi
 
   label="$wstatus"
@@ -194,6 +209,19 @@ if [ "$startup_fail" -gt 0 ]; then
   printf '  Bu runner holatidan MUSTAQIL: run umuman boshlanmaydi (0 job).\n'
   printf "  Eng ko'p uchraydigan sabab — chaqiriladigan workflow (%s) o'zida\n" 'uses: ./.github/workflows/…'
   printf "  so'ragan ruxsatni caller BERMAYAPTI. Ruxsat faqat KAMAYTIRILADI.\n"
+  problems=1
+fi
+
+# Qotib qolgan run — runner TIRIK bo`lganda ham uchraydi, ya'ni yuqoridagi
+# ikki sababdan MUSTAQIL. Bugun (2026-09-16) aynan shu bo`ldi: runner
+# `online, busy=False`, run esa 22 daqiqa `queued`/`in progress`.
+if [ "$stuck" -gt 0 ]; then
+  printf '%s✗ %s ta run %s daqiqadan ortiq davom etmoqda (tugamagan).%s\n' \
+    "$R" "$stuck" "$((STUCK_SECONDS / 60))" "$N"
+  printf '  Runner tirik bo`lsa ham bu QOTISH bo`lishi mumkin: GitHub job`ni\n'
+  printf '  boshlangan deb hisoblaydi, uni bajaradigan `Runner.Worker` esa yo`q.\n'
+  printf '  Tekshirish:  wsl -d Ubuntu-24.04 -- bash -lc "pgrep -af Runner.Worker"\n'
+  printf '  Yechim:      gh run cancel <id> && sleep 20 && gh run rerun <id>\n'
   problems=1
 fi
 

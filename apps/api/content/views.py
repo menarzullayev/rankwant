@@ -15,6 +15,7 @@ from core.openapi_docs import crud_summaries
 from core.pagination import StandardPagination
 
 
+@crud_summaries(one="maqola", many="maqolalar", only=("list", "retrieve"))
 class ArticleViewSet(viewsets.ReadOnlyModelViewSet[Article]):
     """O'z o'qish kontenti — ADR-0005 differensiatori.
 
