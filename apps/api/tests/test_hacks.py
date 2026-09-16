@@ -8,6 +8,7 @@ tekshiriladi — haqiqiy sandbox bilan buni takrorlab bo'lmasdi.
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
 import pytest
@@ -131,6 +132,25 @@ class TestThreeStages:
         assert job.validate_input is True
         assert job.validator is not None
         assert job.tests[0]["input"] == "0 5\n"
+
+    def test_marshrut_maydonlari_json_bilan_ketadi(
+        self, defender_attempt, user, memory_judge
+    ) -> None:
+        """Dataclass'da bo'lishi YETMAYDI — judge JSON o'qiydi.
+
+        `JudgeJob.to_json()` maydonlarni qo'lda sanab yozadi: dataclass'ga
+        qo'shib, o'sha lug'atga qo'shmaslik jim nuqson bo'lardi — ish
+        marshrutsiz ketib, natija qaytganda uni hech kim hack bilan
+        bog'lay olmasdi va hack abadiy `TESTING` bo'lib qolardi.
+        """
+        hack = submit(user, defender_attempt, raw_input="0 5\n")
+
+        payload = json.loads(memory_judge.jobs[0].to_json())
+
+        assert payload["hack_id"] == hack.pk
+        assert payload["hack_stage"] == Hack.Stage.REFERENCE
+        assert payload["validate_input"] is True
+        assert payload["validator"]["source"]
 
     def test_toliq_oqim_muvaffaqiyatli_hack(
         self, defender_attempt, user, other_user, memory_judge, fake_storage
