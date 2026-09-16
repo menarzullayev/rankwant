@@ -190,6 +190,11 @@ if has '^(services/|apps/api/judging/)'; then
   step "Judge shartnomasi" "$PY" tools/check_contract.py
 fi
 
+# Owner decisions (CLAUDE.md § Saidakbar aka qarorlari) must stay true in code.
+if has '^(tools/(backup\.sh|push_guard\.py|check_decisions\.py)|\.githooks/|\.github/workflows/|CONTRIBUTING\.md|CLAUDE\.md)'; then
+  step "Egasining qarorlari" "$PY" tools/check_decisions.py
+fi
+
 if [ "$fail" -ne 0 ]; then
   printf '\n\033[31mPush to'\''xtatildi.\033[0m Tuzating yoki: git push --no-verify\n\n'
   exit 1
