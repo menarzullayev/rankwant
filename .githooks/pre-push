@@ -190,6 +190,11 @@ if has '^(services/|apps/api/judging/)'; then
   step "Judge shartnomasi" "$PY" tools/check_contract.py
 fi
 
+# .env.example must document every variable compose and the code read.
+if has '^(\.env\.example|docker-compose[^/]*\.yml|apps/api/|apps/web/src/|services/|tools/check_env_example\.py)'; then
+  step ".env.example to'liqligi" "$PY" tools/check_env_example.py
+fi
+
 # Owner decisions (CLAUDE.md § Saidakbar aka qarorlari) must stay true in code.
 if has '^(tools/(backup\.sh|push_guard\.py|check_decisions\.py)|\.githooks/|\.github/workflows/|CONTRIBUTING\.md|CLAUDE\.md)'; then
   step "Egasining qarorlari" "$PY" tools/check_decisions.py

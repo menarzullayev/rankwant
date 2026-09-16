@@ -2143,6 +2143,62 @@ def neg_decisions_table_removed() -> tuple[bool, str]:
     )
 
 
+def _env_example_broken(rel: str, old: str, new: str, name: str) -> tuple[bool, str]:
+    """Break `.env.example` or a source it mirrors; the checker must name `name`."""
+    path = ROOT / rel
+    text = path.read_bytes().decode("utf-8")
+    if old not in text:
+        return False, f"env_example/{name}: langar topilmadi ({rel})"
+    with Mutation(path, old, new):
+        code, out = run_check("env_example")
+    if code != 1:
+        return False, f"env_example/{name}: buzuq holat exit {code} berdi (1 kerak)"
+    if name not in out:
+        return False, f"env_example/{name}: yiqildi, lekin boshqa sabab — {out.strip()[-160:]}"
+    return True, f"env_example/{name}: tutildi (exit 1)"
+
+
+def neg_env_example_required_missing() -> tuple[bool, str]:
+    return _env_example_broken(".env.example", "\nDJANGO_SECRET_KEY=\n", "\n", "DJANGO_SECRET_KEY")
+
+
+def neg_env_example_required_commented() -> tuple[bool, str]:
+    return _env_example_broken(
+        ".env.example",
+        "\nPUBLIC_ORIGIN=https://rankwant.uz\n",
+        "\n# PUBLIC_ORIGIN=https://rankwant.uz\n",
+        "PUBLIC_ORIGIN",
+    )
+
+
+def neg_env_example_new_compose_var() -> tuple[bool, str]:
+    return _env_example_broken(
+        "docker-compose.public.yml",
+        '      DJANGO_DEBUG: "0"\n',
+        '      DJANGO_DEBUG: "0"\n      NEW_PROBE_VAR: ${NEW_PROBE_VAR}\n',
+        "NEW_PROBE_VAR",
+    )
+
+
+def neg_env_example_new_setting() -> tuple[bool, str]:
+    return _env_example_broken(
+        "apps/api/config/settings.py",
+        'SECRET_KEY = env("DJANGO_SECRET_KEY", "dev-only-not-for-production")\n',
+        'SECRET_KEY = env("DJANGO_SECRET_KEY", "dev-only-not-for-production")\n'
+        'PROBE_SETTING = env("NEW_PROBE_SETTING")\n',
+        "NEW_PROBE_SETTING",
+    )
+
+
+def neg_env_example_secret_value() -> tuple[bool, str]:
+    return _env_example_broken(
+        ".env.example",
+        "\nTELEGRAM_BOT_TOKEN=\n",
+        "\nTELEGRAM_BOT_TOKEN=123456:probe-not-a-real-token\n",
+        "TELEGRAM_BOT_TOKEN",
+    )
+
+
 def neg_icons_pack_missing_key() -> tuple[bool, str]:
     """Bitta to'plamdan bitta kalit olib tashlansa — tutilsinmi?
 
@@ -2582,6 +2638,16 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         "deploy_window",
         [
             ("faol contest bo'lsa deploy to'xtasin", neg_deploy_window_live_contest),
+        ],
+    ),
+    (
+        "env_example",
+        [
+            ("majburiy kalit o'chsa tutilsin", neg_env_example_required_missing),
+            ("majburiy kalit izohga aylansa tutilsin", neg_env_example_required_commented),
+            ("compose'ga yangi o'zgaruvchi tutilsin", neg_env_example_new_compose_var),
+            ("settings'ga yangi o'zgaruvchi tutilsin", neg_env_example_new_setting),
+            ("shablondagi sir qiymati tutilsin", neg_env_example_secret_value),
         ],
     ),
     (
