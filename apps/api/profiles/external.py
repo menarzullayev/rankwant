@@ -21,6 +21,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
 from django.utils import timezone
 
+from core.http_retry import open_with_retry
 from profiles.models import ExternalProfile
 
 log = logging.getLogger(__name__)
@@ -93,7 +94,7 @@ def _json(
         },
     )
     try:
-        with urllib.request.urlopen(request, timeout=TIMEOUT) as resp:
+        with open_with_retry(request, timeout=TIMEOUT, label=url) as resp:
             return json.loads(resp.read())
     except urllib.error.HTTPError as exc:
         if 400 <= exc.code < 500:

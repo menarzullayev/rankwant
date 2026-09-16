@@ -17,6 +17,8 @@ import urllib.request
 
 from django.conf import settings
 
+from core.http_retry import open_with_retry
+
 TIMEOUT = 5
 
 
@@ -57,7 +59,7 @@ def verify(token: str, *, remote_ip: str = "") -> None:
             data=urllib.parse.urlencode(payload).encode(),
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
-        with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
+        with open_with_retry(request, timeout=TIMEOUT, label="turnstile") as response:
             data = json.loads(response.read())
     except Exception as exc:  # tarmoq, JSON, HTTP — hammasi bir xil
         if settings.TURNSTILE_FAIL_OPEN:

@@ -33,6 +33,7 @@ from typing import Any
 from django.conf import settings
 
 from core import handles
+from core.http_retry import open_with_retry
 from core.models import User
 
 log = logging.getLogger(__name__)
@@ -92,7 +93,9 @@ def _request(
         headers={"Accept": "application/json", "User-Agent": USER_AGENT, **(headers or {})},
     )
     try:
-        with urllib.request.urlopen(req, timeout=15) as resp:
+        # Manzil log'ga yozilmaydi: `label` ataylab umumiy — ba'zi
+        # provayderlar token'ni query satrida olib yuradi.
+        with open_with_retry(req, timeout=15, label="oauth") as resp:
             return json.loads(resp.read())
     except urllib.error.HTTPError as exc:
         detail = exc.read()[:300].decode("utf-8", "replace")

@@ -14,7 +14,6 @@ from __future__ import annotations
 
 import json
 import os
-import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -23,6 +22,7 @@ from typing import Any
 
 from django.utils.text import slugify
 
+from core.http_retry import open_with_retry
 from problems.html_to_markdown import html_to_markdown
 from problems.models import DIFFICULTY_MAX, DIFFICULTY_MIN, DIFFICULTY_STEP
 
@@ -60,17 +60,18 @@ def fetch(path: str, **params: Any) -> Any:
     request = urllib.request.Request(
         url, headers={"User-Agent": USER_AGENT, "Accept": "application/json"}
     )
-    for attempt in range(RETRIES):
-        try:
-            with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
-                return json.load(response)
-        except urllib.error.HTTPError as error:
-            if error.code != 429 or attempt == RETRIES - 1:
-                raise
-            retry_after = error.headers.get("Retry-After")
-            wait = float(retry_after) if retry_after and retry_after.isdigit() else BACKOFF
-            time.sleep(wait * (attempt + 1))
-    raise RuntimeError("yetib bo'lmadi")  # pragma: no cover
+    # KEP sekin: 2000 dan ortiq so'rovda 429 qaytaradi va bir necha soniya
+    # kutishni so'raydi. Shu sabab chegara keng — `max_backoff` shu yerda
+    # standartdan (8s) kattaroq.
+    with open_with_retry(
+        request,
+        timeout=TIMEOUT,
+        retries=RETRIES,
+        backoff=BACKOFF,
+        max_backoff=BACKOFF * RETRIES,
+        label=url,
+    ) as response:
+        return json.load(response)
 
 
 def tags() -> list[dict[str, Any]]:

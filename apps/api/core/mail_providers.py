@@ -20,6 +20,8 @@ from dataclasses import dataclass
 
 from django.conf import settings
 
+from core.http_retry import open_with_retry
+
 log = logging.getLogger(__name__)
 
 
@@ -68,7 +70,7 @@ def _post(url: str, payload: dict[str, object], headers: dict[str, str]) -> str:
         },
     )
     try:
-        with urllib.request.urlopen(request, timeout=settings.EMAIL_TIMEOUT) as response:
+        with open_with_retry(request, timeout=settings.EMAIL_TIMEOUT, label=url) as response:
             return str(response.read().decode("utf-8", "replace"))
     except urllib.error.HTTPError as exc:
         detail = exc.read()[:500].decode("utf-8", "replace")

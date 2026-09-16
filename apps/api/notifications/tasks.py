@@ -11,6 +11,8 @@ from typing import Any
 from celery import shared_task
 from django.conf import settings
 
+from core.http_retry import open_with_retry
+
 log = logging.getLogger(__name__)
 
 
@@ -22,7 +24,9 @@ def _post(url: str, payload: dict[str, Any]) -> int:
         headers={"Content-Type": "application/json"},
     )
     try:
-        with urllib.request.urlopen(request, timeout=10) as resp:
+        # `label` ataylab umumiy: URL ichida bot tokeni bor, u log'ga
+        # tushmasligi kerak.
+        with open_with_retry(request, timeout=10, label="telegram") as resp:
             return int(resp.status)
     except urllib.error.HTTPError as exc:
         return exc.code
