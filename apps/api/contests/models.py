@@ -37,6 +37,23 @@ class Contest(models.Model):
     #: Hakamlar — profilda «Hakam» nishoni (ADR-0018); admin paneldan.
     jury = models.ManyToManyField("core.User", blank=True, related_name="jury_contests")
 
+    # ── Hacking (ADR-0020) ───────────────────────────────────────────
+    #: `contest_room` siyosati: raund davomida xona ichida hack.
+    #: Faqat IOI (ballli) musobaqada ma'noga ega — ACM tartibi yechilgan
+    #: masala va jarimadan iborat, hack bali unga sig'maydi.
+    hack_room = models.BooleanField(default=False)
+    #: `open_phase` oynasi `end_at` dan keyin shuncha daqiqa ochiq turadi.
+    #: 0 — ochiq faza yo'q. Reyting shu oyna yopilgunicha KUTADI
+    #: (ADR-0020, 7-tamoyil).
+    hack_open_minutes = models.PositiveIntegerField(default=0)
+    #: `uphack` oynasi: reyting qo'llangach shuncha kun. 0 — o'chiq.
+    uphack_days = models.PositiveSmallIntegerField(default=7)
+    #: Oyna yopilgach: muvaffaqiyatli hack testlari to'plamga qo'shildi va
+    #: `AC` lar qayta navbatga qo'yildi.
+    hack_tests_added_at = models.DateTimeField(null=True, blank=True)
+    #: Qayta tekshiruv ham tugadi — endi reyting qo'llansa bo'ladi.
+    hack_phase_closed_at = models.DateTimeField(null=True, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -65,6 +82,26 @@ class Contest(models.Model):
         """Oxirgi `freeze_minutes` — standings yangilanishi to'xtaydi."""
         frozen_from = self.freeze_at
         return bool(frozen_from and self.is_running and timezone.now() >= frozen_from)
+
+    @property
+    def hack_open_until(self) -> datetime | None:
+        """Ochiq faza qachon yopiladi — o'chiq bo'lsa `None`."""
+        if not self.hack_open_minutes:
+            return None
+        return self.end_at + timedelta(minutes=self.hack_open_minutes)
+
+    @property
+    def is_hack_open(self) -> bool:
+        """Ochiq faza hozir ketyaptimi (musobaqa tugagan, oyna yopilmagan)."""
+        until = self.hack_open_until
+        return bool(until and self.is_finished and timezone.now() < until)
+
+    @property
+    def uphack_until(self) -> datetime | None:
+        """Uphack oynasi qachon yopiladi. Reyting qo'llanmaguncha `None`."""
+        if not self.uphack_days or self.ratings_applied_at is None:
+            return None
+        return self.ratings_applied_at + timedelta(days=self.uphack_days)
 
 
 class ContestProblem(models.Model):
@@ -114,6 +151,12 @@ class Standing(models.Model):
     penalty = models.PositiveIntegerField(default=0)
     total_score = models.PositiveIntegerField(default=0)
     last_ac_at = models.DateTimeField(null=True, blank=True)
+    #: Hack bali (ADR-0020): `contest_room` da +100 / −50. Manfiy bo'lishi
+    #: mumkin, shuning uchun `IntegerField`. Alohida ustun — jadvalda
+    #: ko'rsatiladi va `total_score` ga qo'shiladi.
+    hack_score = models.IntegerField(default=0)
+    hacks_successful = models.PositiveSmallIntegerField(default=0)
+    hacks_unsuccessful = models.PositiveSmallIntegerField(default=0)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:

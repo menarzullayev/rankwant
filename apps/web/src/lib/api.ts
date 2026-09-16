@@ -131,6 +131,13 @@ export type Contest = {
   is_running: boolean;
   is_finished: boolean;
   is_frozen: boolean;
+  /** Xona hackingi yoqilganmi (ADR-0020) — raund davomida. */
+  hack_room: boolean;
+  /** Ochiq faza HOZIR ketyaptimi (musobaqa tugagan, oyna yopilmagan). */
+  is_hack_open: boolean;
+  /** Ochiq faza qachon yopiladi; `null` — bunday faza yo'q. Oyna vaqt
+   *  bo'yicha ochilib yopiladi, ya'ni mijoz buni o'zi hisoblay olmaydi. */
+  hack_open_until: string | null;
 };
 
 export type ContestProblem = {
@@ -151,6 +158,13 @@ export type Standing = {
   user_title: UserTitle | null;
   solved_count: number;
   penalty: number;
+  /** IOI da tartibni AYNAN shu belgilaydi; ACM da yechilganlar soni. */
+  total_score: number;
+  /** Hack bali (ADR-0020) — `contest_room` da +100 / −50, ya'ni MANFIY
+   *  bo'lishi mumkin. ACM jadvalida tartibga kirmaydi, alohida ustun. */
+  hack_score: number;
+  hacks_successful: number;
+  hacks_unsuccessful: number;
   last_ac_at: string | null;
 };
 
@@ -502,6 +516,7 @@ export const VERDICT_FILTERS = [
   ["AC", "verdict.AC"],
   ["WA", "verdict.WA"],
   ["PE", "verdict.PE"],
+  ["HACKED", "verdict.HACKED"],
   ["TLE", "verdict.TLE"],
   ["MLE", "verdict.MLE"],
   ["RE,RE_SIGNAL,RE_EXIT", "verdict.RE"],
@@ -513,6 +528,9 @@ export type Attempt = {
   username: string;
   user_title: UserTitle | null;
   problem: string;
+  /** Musobaqa slug'i — musobaqadan tashqarida `null`. Hack yuzasi
+   *  masalani qaysi musobaqada lock qilishni shundan biladi. */
+  contest: string | null;
   language: string;
   verdict: string;
   score: number;
@@ -548,6 +566,56 @@ export type AttemptDetail = Attempt & {
   source_code?: string;
   compile_output?: string;
   test_results: TestResult[];
+};
+
+/** Hack holati — `hacks.models.Hack.Status`.
+ *
+ * Union sifatida yozilgan, `string` emas: shunda `hack.status.${status}`
+ * kaliti TypeScript darajasida tekshiriladi va tarjimasi yo'q holat
+ * kompilyatsiyada tutiladi. */
+export type HackStatus =
+  | "TESTING"
+  | "SUCCESSFUL"
+  | "UNSUCCESSFUL"
+  | "INVALID_INPUT"
+  | "GENERATOR_CRASHED"
+  | "IGNORED"
+  | "RATE_LIMITED";
+
+/** Siyosat kodi — `hacks.policies`. Server yorlig'i (`policy_label`)
+ *  faqat o'zbekcha, shuning uchun UI o'z kalitidan tarjima qiladi. */
+export type HackPolicy = "contest_room" | "open_phase" | "practice" | "uphack";
+
+export type Hack = {
+  id: number;
+  hacker: string;
+  hacker_title: UserTitle | null;
+  defender: string;
+  defender_attempt: number;
+  problem: string;
+  contest: string | null;
+  policy: HackPolicy;
+  status: HackStatus;
+  stage: string;
+  /** Himoyachining kodi hack testida olgan HAQIQIY verdikt (`WA`, `TLE`). */
+  defender_verdict: string;
+  /** Rad etish sababi — begonaga bo'sh satr keladi (backend yashiradi). */
+  detail: string;
+  points: number;
+  input_size: number;
+  created_at: string;
+  judged_at: string | null;
+};
+
+/** «Hack qila olamanmi va NEGA yo'q» — sabab har doim keladi (ADR-0020,
+ *  2-tamoyil): jimgina yashirilgan tugma odamni savol bilan qoldiradi. */
+export type HackEligibility = {
+  can_hack: boolean;
+  reason: string;
+  policy: HackPolicy | null;
+  policy_label: string;
+  needs_lock: boolean;
+  locked: boolean;
 };
 
 export type CustomRun = {
@@ -1465,6 +1533,30 @@ export function submitAttempt(body: {
 
 export const fetchAttempt = (id: number) =>
   getJson<AttemptDetail>(`/attempts/${id}/`);
+
+/** Hack yuborish: YO tayyor kiritma, YO generator dasturi (ikkalasi
+ *  birga bo'lsa server rad etadi — qaysi biri ishlatilgani noaniq). */
+export const submitHack = (body: {
+  attempt: number;
+  test_input?: string;
+  generator_language?: string;
+  generator_source?: string;
+}) => postJson<Hack>("/hacks/", body);
+
+export const fetchHackEligibility = (attempt: number) =>
+  getJson<HackEligibility>(`/hacks/eligibility/?attempt=${attempt}`);
+
+export const fetchAttemptHacks = (attempt: number) =>
+  getJson<Paginated<Hack>>(`/hacks/?attempt=${attempt}`);
+
+/** Masalani lock qilish — QAYTARIB BO'LMAYDI: shundan keyin o'sha
+ *  masalaga qayta yuborib bo'lmaydi (ADR-0020). Ochish yo'li yo'q. */
+export const lockProblem = (contest: string, problem: string) =>
+  postJson<{ id: number }>("/hack-locks/", { contest, problem });
+
+/** Generator uchun til ro'yxati — mijozda, faqat hack formasi ochilganda. */
+export const fetchLanguages = () =>
+  getJson<Paginated<Language>>("/languages/");
 
 export const fetchProblemAttempts = (slug: string, username?: string) =>
   getJson<Paginated<Attempt>>(

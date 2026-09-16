@@ -173,6 +173,16 @@ class TestValidatorYopiqYiqilish:
         with pytest.raises(AssertionError, match="sandbox ishga tushirildi"):
             judge_module.judge(_job(validate_input=False))
 
+    def test_rad_etilgan_ish_ham_hack_marshrutini_qaytaradi(self) -> None:
+        """Rad etish ham hackka bog'lanishi kerak — aks holda u abadiy kutardi."""
+        job = _job(validate_input=True)
+        job.hack_id, job.hack_stage = 7, "reference"
+
+        result = judge_module.judge(job)
+
+        assert result["hack_id"] == 7
+        assert result["hack_stage"] == "reference"
+
 
 # Haqiqiy job'dagi notanish kalit (`input_ref`) jimgina tashlanadi —
 # `validate_input` esa aynan shunday tashlanmasligi shart.
@@ -196,3 +206,10 @@ class TestJobFromJson:
         job = Job.from_json(RAW_JOB)
         assert job.validate_input is False
         assert job.validator is None
+        assert job.hack_id == 0
+        assert job.hack_stage == ""
+
+    def test_hack_marshruti_oqiladi(self) -> None:
+        job = Job.from_json({**RAW_JOB, "hack_id": 7, "hack_stage": "defend"})
+        assert job.hack_id == 7
+        assert job.hack_stage == "defend"

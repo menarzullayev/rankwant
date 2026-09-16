@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1517 strings.**
+**1548 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -178,6 +178,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `standings.rank` | O'rin | Орун |  |
 | `standings.user` | Foydalanuvchi | Колдонуучу |  |
 | `standings.solved` | Yechildi | Чечилди |  |
+| `standings.hacks` | Hacklar | Бузуулар |  |
 | `standings.penalty` | Jarima | Айып |  |
 | `standings.frozen` | Jadval muzlatilgan | Таблица тоңдурулган |  |
 | `leaderboard.title` | Reyting | Рейтинг |  |
@@ -318,6 +319,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `header.streak` | kun | күн |  |
 | `header.noUnread` | Yangi bildirishnoma yo'q | Жаңы билдирүү жок |  |
 | `leaderboard.challenges` | Challenges | Challenges |  |
+| `attempt.title` | Urinish #{id} | Аракет #{id} |  |
+| `attempt.source` | Manba kod | Баштапкы код |  |
+| `attempt.sourceHidden` | Manba kod faqat egasiga va hack huquqi borlarga ko'rinadi | Баштапкы код автордо жана бузуу укугу барларда гана көрүнөт |  |
+| `attempt.failedAt` | {index}-testda to'xtadi | {index}-тестте токтоду |  |
 | `attempts.title` | Urinishlar oqimi | Аракеттер агымы |  |
 | `attempts.verdict` | Verdikt | Вердикт |  |
 | `attempts.language` | Til | Тил |  |
@@ -457,6 +462,30 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `verdict.RE_EXIT` | Bajarilishda xato (chiqish kodi) | Аткаруу катасы (чыгуу коду) |  |
 | `verdict.CE` | Kompilyatsiya xatosi | Компиляция катасы |  |
 | `verdict.PE` | Format xatosi | Формат катасы |  |
+| `hack.title` | Hack | Бузуу |  |
+| `hack.closed` | Bu yechim uchun hack oynasi yopiq | Бул чечим үчүн бузуу терезеси жабык |  |
+| `hack.mode.input` | Tayyor kiritma | Даяр киргизүү |  |
+| `hack.mode.generator` | Generator | Генератор |  |
+| `hack.input` | Test kiritmasi | Тест киргизүүсү |  |
+| `hack.inputHint` | Kiritma masala cheklovlariga mos bo'lishi kerak — buni validator tekshiradi | Киргизүү маселенин чектөөлөрүнө туура келиши керек — муну валидатор текшерет |  |
+| `hack.generatorSource` | Generator manbasi | Генератордун коду |  |
+| `hack.generatorHint` | Dastur kiritmani chiqarishga yozadi — katta testlar uchun | Программа киргизүүнү стандарттык чыгарууга жазат — чоң тесттер үчүн |  |
+| `hack.send` | Hack yuborish | Бузууну жиберүү |  |
+| `hack.sent` | Hack yuborildi — natija tekshiruvdan keyin ko'rinadi | Бузуу жиберилди — жыйынтык текшерүүдөн кийин көрүнөт |  |
+| `hack.lock` | Masalani lock qilish | Маселени бекитүү |  |
+| `hack.lockHint` | Lock qilsangiz bu masalaga qayta yubora olmaysiz, evaziga xonadagi yechimlar ochiladi | Бекиткенден кийин бул маселеге кайра жибере албайсыз, анын ордуна бөлмөдөгү чечимдер ачылат |  |
+| `hack.status.TESTING` | Tekshirilmoqda | Текшерилүүдө |  |
+| `hack.status.SUCCESSFUL` | Muvaffaqiyatli | Ийгиликтүү |  |
+| `hack.status.UNSUCCESSFUL` | Ishlamadi | Иштеген жок |  |
+| `hack.status.INVALID_INPUT` | Kiritma yaroqsiz | Киргизүү жараксыз |  |
+| `hack.status.GENERATOR_CRASHED` | Generator yiqildi | Генератор кулады |  |
+| `hack.status.IGNORED` | Hisobga olinmadi | Эсепке алынган жок |  |
+| `hack.status.RATE_LIMITED` | Tezlik chegarasi | Ылдамдык чеги |  |
+| `hack.policy.contest_room` | Musobaqa xonasi | Мелдеш бөлмөсү |  |
+| `hack.policy.open_phase` | Ochiq faza | Ачык фаза |  |
+| `hack.policy.practice` | Amaliyot | Практика |  |
+| `hack.policy.uphack` | Uphack | Апхак |  |
+| `verdict.HACKED` | Hack qilindi | Бузулду |  |
 | `verdict.PARTIAL` | Qisman ball | Жарым-жартылай упай |  |
 | `verdict.IE` | Ichki xato | Ички ката |  |
 | `verdict.WRONG_TEST` | Masala testi yaroqsiz | Маселенин тесттери жараксыз |  |
@@ -599,6 +628,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.infoHint` | Hammasi ixtiyoriy. Standart holatda profilda ko'rinadi — istalganini yashirishingiz mumkin. | Баары милдеттүү эмес. Демейки боюнча профилде көрүнөт — каалаганын жашыра аласыз. |  |
 | `settings.kind.contest_result` | Musobaqa natijasi | Мелдештин жыйынтыгы |  |
 | `settings.kind.duel` | Duellar | Дуэлдер |  |
+| `settings.kind.hack` | Hack natijasi | Бузуу жыйынтыгы |  |
 | `settings.kind.problem_rerated` | Masala qayta baholandi | Маселе кайра бааланды |  |
 | `settings.kind.quest_awarded` | Vazifa mukofoti | Тапшырма сыйлыгы |  |
 | `settings.kind.rating_changed` | Reyting o'zgarishi | Рейтингдин өзгөрүшү |  |
@@ -1514,6 +1544,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `verdict.hint.RE` | Dastur ishlash paytida to'xtadi | Program crashed while running |  |
 | `verdict.hint.CE` | Kod kompilyatsiya bo'lmadi | Code did not compile |  |
 | `verdict.hint.PE` | Ortiqcha bo'sh joy yoki qator | Extra spaces or line breaks |  |
+| `verdict.hint.HACKED` | Qabul qilingan yechim boshqa ishtirokchining to'g'ri testida yiqildi | Кабыл алынган чечим башка катышуучунун туура тестинде жыгылды |  |
 | `verdict.hint.OLE` | Juda ko'p ma'lumot chiqardi | Printed too much output |  |
 | `verdict.hint.IE` | Tekshiruvchi xatosi — sizda emas | Judge error, not your fault |  |
 | `verdict.hint.PD` | Navbatda kutilmoqda | Waiting in the queue |  |

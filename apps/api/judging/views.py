@@ -15,6 +15,7 @@ from core.models import User
 from core.pagination import TimeCursorPagination
 from core.permissions import CanSubmit
 from core.throttling import ResilientScopedRateThrottle
+from hacks.services import can_view_source
 from judging.models import Attempt, CustomRun
 from judging.serializers import (
     AttemptCreateSerializer,
@@ -84,7 +85,9 @@ class AttemptViewSet(
 
     def get_queryset(self):  # type: ignore[no-untyped-def]
         params = self.request.query_params
-        qs = Attempt.objects.select_related("user", "problem", "language")
+        # `contest` ham SHU YERDA: serializer uning slug'ini beradi va
+        # usiz har qator uchun alohida so'rov ketardi (N+1).
+        qs = Attempt.objects.select_related("user", "problem", "language", "contest")
 
         problem = params.get("problem")
         if problem:
@@ -130,7 +133,15 @@ class AttemptViewSet(
         # Manba faqat egasiga va adminlarga ko'rinadi (IDOR himoyasi).
         if not (
             request.user.is_authenticated
-            and (request.user.pk == attempt.user_id or request.user.is_staff)
+            and (
+                request.user.pk == attempt.user_id
+                or request.user.is_staff
+                # Hack oynasi ochiq va so'rovchi huquqli bo'lsa — aynan shu
+                # yechim ochiladi (ADR-0020, 2-tamoyil). Bu umumiy
+                # yopiqlikni almashtirmaydi, ustiga nuqtali istisno qo'yadi:
+                # hack qilish uchun kodni ko'rish SHART.
+                or can_view_source(request.user, attempt)
+            )
         ):
             data.pop("source_code", None)
             data.pop("compile_output", None)

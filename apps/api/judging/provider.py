@@ -34,6 +34,11 @@ class JudgeJob:
     #: `False`: masalaning o'z testlarini muallif yozgan, ular ishonchli.
     #: `True` faqat job ishonchsiz kiritma olib kelganda — hack testi kabi.
     validate_input: bool = False
+    #: Hack dvigateli (ADR-0020) uchun marshrut: judge bu ikki qiymatni
+    #: natijada aynan qaytaradi va `drain_results` javobni to'g'ri hack
+    #: va bosqichga bog'laydi.
+    hack_id: int = 0
+    hack_stage: str = ""
 
     def to_json(self) -> str:
         # ⚠️ Yangi maydon shu lug'atga ham QO'SHILISHI shart. Dataclass'ga
@@ -53,6 +58,8 @@ class JudgeJob:
                 "custom_run_id": self.custom_run_id,
                 "validator": self.validator,
                 "validate_input": self.validate_input,
+                "hack_id": self.hack_id,
+                "hack_stage": self.hack_stage,
             }
         )
 

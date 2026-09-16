@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1517 strings.**
+**1548 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -178,6 +178,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `standings.rank` | O'rin | Ҷой |  |
 | `standings.user` | Foydalanuvchi | Корбар |  |
 | `standings.solved` | Yechildi | Ҳал шуд |  |
+| `standings.hacks` | Hacklar | Шикастҳо |  |
 | `standings.penalty` | Jarima | Ҷарима |  |
 | `standings.frozen` | Jadval muzlatilgan | Ҷадвал яхбаста |  |
 | `leaderboard.title` | Reyting | Рейтинг |  |
@@ -318,6 +319,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `header.streak` | kun | рӯз |  |
 | `header.noUnread` | Yangi bildirishnoma yo'q | Огоҳиномаи нав нест |  |
 | `leaderboard.challenges` | Challenges | Challenges |  |
+| `attempt.title` | Urinish #{id} | Кӯшиш #{id} |  |
+| `attempt.source` | Manba kod | Рамзи манбаъ |  |
+| `attempt.sourceHidden` | Manba kod faqat egasiga va hack huquqi borlarga ko'rinadi | Рамзи манбаъ танҳо ба муаллиф ва онҳое, ки ҳуқуқи шикастан доранд, намоён аст |  |
+| `attempt.failedAt` | {index}-testda to'xtadi | Дар тести {index} қатъ шуд |  |
 | `attempts.title` | Urinishlar oqimi | Ҷараёни кӯшишҳо |  |
 | `attempts.verdict` | Verdikt | Вердикт |  |
 | `attempts.language` | Til | Забон |  |
@@ -457,6 +462,30 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `verdict.RE_EXIT` | Bajarilishda xato (chiqish kodi) | Хатои иҷро (рамзи баромад) |  |
 | `verdict.CE` | Kompilyatsiya xatosi | Хатои компилятсия |  |
 | `verdict.PE` | Format xatosi | Хатои формат |  |
+| `hack.title` | Hack | Шикастан |  |
+| `hack.closed` | Bu yechim uchun hack oynasi yopiq | Равзанаи шикастан барои ин ҳал баста аст |  |
+| `hack.mode.input` | Tayyor kiritma | Вуруди тайёр |  |
+| `hack.mode.generator` | Generator | Генератор |  |
+| `hack.input` | Test kiritmasi | Вуруди тест |  |
+| `hack.inputHint` | Kiritma masala cheklovlariga mos bo'lishi kerak — buni validator tekshiradi | Вуруд бояд ба маҳдудиятҳои масъала мувофиқ бошад — инро валидатор месанҷад |  |
+| `hack.generatorSource` | Generator manbasi | Рамзи генератор |  |
+| `hack.generatorHint` | Dastur kiritmani chiqarishga yozadi — katta testlar uchun | Барнома вурудро ба баромади стандартӣ менависад — барои тестҳои калон |  |
+| `hack.send` | Hack yuborish | Фиристодани шикаст |  |
+| `hack.sent` | Hack yuborildi — natija tekshiruvdan keyin ko'rinadi | Шикаст фиристода шуд — натиҷа пас аз санҷиш пайдо мешавад |  |
+| `hack.lock` | Masalani lock qilish | Қулф кардани масъала |  |
+| `hack.lockHint` | Lock qilsangiz bu masalaga qayta yubora olmaysiz, evaziga xonadagi yechimlar ochiladi | Пас аз қулф ба ин масъала аз нав фиристода наметавонед, ба ҷояш ҳалҳои утоқ кушода мешаванд |  |
+| `hack.status.TESTING` | Tekshirilmoqda | Дар санҷиш |  |
+| `hack.status.SUCCESSFUL` | Muvaffaqiyatli | Муваффақ |  |
+| `hack.status.UNSUCCESSFUL` | Ishlamadi | Кор накард |  |
+| `hack.status.INVALID_INPUT` | Kiritma yaroqsiz | Вуруд нодуруст |  |
+| `hack.status.GENERATOR_CRASHED` | Generator yiqildi | Генератор афтод |  |
+| `hack.status.IGNORED` | Hisobga olinmadi | Ҳисоб нашуд |  |
+| `hack.status.RATE_LIMITED` | Tezlik chegarasi | Ҳадди суръат |  |
+| `hack.policy.contest_room` | Musobaqa xonasi | Утоқи мусобиқа |  |
+| `hack.policy.open_phase` | Ochiq faza | Фазаи кушода |  |
+| `hack.policy.practice` | Amaliyot | Амалия |  |
+| `hack.policy.uphack` | Uphack | Апҳак |  |
+| `verdict.HACKED` | Hack qilindi | Шикаст хӯрд |  |
 | `verdict.PARTIAL` | Qisman ball | Холи қисман |  |
 | `verdict.IE` | Ichki xato | Хатои дохилӣ |  |
 | `verdict.WRONG_TEST` | Masala testi yaroqsiz | Тестҳои масъала нодурустанд |  |
@@ -599,6 +628,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.infoHint` | Hammasi ixtiyoriy. Standart holatda profilda ko'rinadi — istalganini yashirishingiz mumkin. | Ҳама ихтиёрӣ аст. Бо нобаёнӣ дар профил намоён аст — ҳар кадомашро пинҳон карда метавонед. |  |
 | `settings.kind.contest_result` | Musobaqa natijasi | Натиҷаи мусобиқа |  |
 | `settings.kind.duel` | Duellar | Дуэлҳо |  |
+| `settings.kind.hack` | Hack natijasi | Натиҷаи шикастан |  |
 | `settings.kind.problem_rerated` | Masala qayta baholandi | Масъала аз нав баҳогузорӣ шуд |  |
 | `settings.kind.quest_awarded` | Vazifa mukofoti | Мукофоти супориш |  |
 | `settings.kind.rating_changed` | Reyting o'zgarishi | Тағйири рейтинг |  |
@@ -1514,6 +1544,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `verdict.hint.RE` | Dastur ishlash paytida to'xtadi | Program crashed while running |  |
 | `verdict.hint.CE` | Kod kompilyatsiya bo'lmadi | Code did not compile |  |
 | `verdict.hint.PE` | Ortiqcha bo'sh joy yoki qator | Extra spaces or line breaks |  |
+| `verdict.hint.HACKED` | Qabul qilingan yechim boshqa ishtirokchining to'g'ri testida yiqildi | Ҳалли қабулшуда дар тести дурусти иштирокчии дигар ноком шуд |  |
 | `verdict.hint.OLE` | Juda ko'p ma'lumot chiqardi | Printed too much output |  |
 | `verdict.hint.IE` | Tekshiruvchi xatosi — sizda emas | Judge error, not your fault |  |
 | `verdict.hint.PD` | Navbatda kutilmoqda | Waiting in the queue |  |

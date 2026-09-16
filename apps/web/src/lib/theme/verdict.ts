@@ -48,6 +48,7 @@ export type VerdictKey =
   | "RE_EXIT"
   | "CE"
   | "PE"
+  | "HACKED"
   | "PARTIAL"
   | "IE"
   | "WRONG_TEST"
@@ -105,6 +106,8 @@ export const VERDICTS: Record<VerdictKey, VerdictDef> = {
   RE_EXIT: D("RE_EXIT", "bad"),
   CE: D("CE", "bad", "verdict.hint.CE"),
   PE: D("PE", "bad", "verdict.hint.PE"),
+  // `bad`, `neutral` emas: test to'g'ri, yiqilgan esa yechim.
+  HACKED: D("HACKED", "bad", "verdict.hint.HACKED"),
   PARTIAL: D("PARTIAL", "warn"),
   IE: D("IE", "neutral", "verdict.hint.IE"),
   WRONG_TEST: D("WRONG_TEST", "neutral"),

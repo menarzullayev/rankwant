@@ -137,7 +137,10 @@ export default async function ProblemStatusPage({
                   </Link>
                 </TD>
                 <TD>
-                  <Verdict verdict={attempt.verdict} />
+                  {/* Urinish sahifasiga — hack shu yerdan boshlanadi. */}
+                  <Link href={`/attempts/${attempt.id}`}>
+                    <Verdict verdict={attempt.verdict} />
+                  </Link>
                 </TD>
                 <TD className="rw-dim">{attempt.language}</TD>
                 <TD align="right" className="rw-faint tabular-nums">

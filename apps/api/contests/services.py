@@ -40,6 +40,49 @@ class _Row:
     last_ac: datetime | None
     #: IOI bali. ACM da ishlatilmaydi — u yerda tartibni `solved` belgilaydi.
     total: int = 0
+    #: Hack bali va sonlari (ADR-0020). Jadvalda alohida ustun; tartibga
+    #: FAQAT IOI da ta'sir qiladi — pastdagi `_hack_totals` ga qarang.
+    hack_score: int = 0
+    hacks_successful: int = 0
+    hacks_unsuccessful: int = 0
+
+
+def _hack_totals(contest: Contest) -> dict[int, tuple[int, int, int]]:
+    """Ishtirokchi bo'yicha hack bali va sonlari.
+
+    Faqat `affects_standings` siyosatlari sanaladi: uphack natijasi
+    jadvalni O'ZGARTIRMAYDI (ADR-0020) — u allaqachon yakunlangan va
+    reyting tarqalgan.
+
+    Ball hackning O'ZIDAN olinadi, siyosatdan qayta hisoblanmaydi:
+    siyosat keyin o'zgarsa, allaqachon o'ynalgan musobaqaning natijasi
+    orqaga qarab siljib ketardi.
+    """
+    from hacks.models import Hack
+    from hacks.policies import POLICIES
+
+    codes = [p.code for p in POLICIES.values() if p.affects_standings]
+    totals: dict[int, tuple[int, int, int]] = {}
+    rows = Hack.objects.filter(
+        contest=contest,
+        policy__in=codes,
+        status__in=(Hack.Status.SUCCESSFUL, Hack.Status.UNSUCCESSFUL),
+    ).values_list("hacker_id", "status", "points")
+    for hacker_id, status, points in rows:
+        score, ok, bad = totals.get(hacker_id, (0, 0, 0))
+        if status == Hack.Status.SUCCESSFUL:
+            ok += 1
+        else:
+            bad += 1
+        totals[hacker_id] = (score + points, ok, bad)
+    return totals
+
+
+def _attach_hacks(rows: list[_Row], totals: dict[int, tuple[int, int, int]]) -> None:
+    for row in rows:
+        row.hack_score, row.hacks_successful, row.hacks_unsuccessful = totals.get(
+            row.user_id, (0, 0, 0)
+        )
 
 
 @transaction.atomic
@@ -87,10 +130,16 @@ def rebuild_standings(contest: Contest) -> int:
     if contest.is_frozen:
         attempts = attempts.filter(created_at__lt=contest.freeze_at)
 
+    totals = _hack_totals(contest)
+
     if contest.scoring_type == Contest.Scoring.IOI:
-        return _rebuild_ioi(contest, attempts)
+        return _rebuild_ioi(contest, attempts, totals)
 
     per_user: dict[int, dict[int, _ProblemState]] = {}
+    # Hack qilgan, lekin bu musobaqada urinishi yo'q ishtirokchi ham
+    # jadvalga tushadi — aks holda uning hacklari jimgina yo'qolardi.
+    for hacker_id in totals:
+        per_user.setdefault(hacker_id, {})
     for a in attempts:
         state = per_user.setdefault(a["user_id"], {}).setdefault(a["problem_id"], _ProblemState())
         if state.solved_at is not None:
@@ -122,6 +171,12 @@ def rebuild_standings(contest: Contest) -> int:
                 last_ac = state.solved_at
         rows.append(_Row(user_id, solved, penalty, last_ac))
 
+    # ACM tartibi TEGILMAYDI: u yechilgan masala va jarimadan iborat va
+    # ±100 ball unga sig'maydi (`Contest.hack_room` izohi). Hack bali
+    # ustun sifatida ko'rinadi, muvaffaqiyatli hackning jadvaldagi
+    # ta'siri esa boshqa yo'l bilan keladi — himoyachining `AC` si
+    # `HACKED` ga aylanib, yechilgan masalalari orasidan chiqib ketadi.
+    _attach_hacks(rows, totals)
     rows.sort(key=lambda r: (-r.solved, r.penalty))
     return _write(contest, rows, score=lambda r: r.solved)
 
@@ -137,8 +192,15 @@ def _write(contest: Contest, rows: list[_Row], score: Callable[[_Row], int]) -> 
                 rank=i + 1,
                 solved_count=row.solved,
                 penalty=row.penalty,
-                total_score=score(row),
+                # `total_score` — musbat maydon, hack bali esa manfiy
+                # bo'lishi mumkin. Nolga qisiladi, lekin tartib qisilmagan
+                # qiymat bo'yicha allaqachon aniqlangan va haqiqiy ball
+                # `hack_score` ustunida ko'rinib turadi.
+                total_score=max(0, score(row)),
                 last_ac_at=row.last_ac,
+                hack_score=row.hack_score,
+                hacks_successful=row.hacks_successful,
+                hacks_unsuccessful=row.hacks_unsuccessful,
             )
             for i, row in enumerate(rows)
         ]
@@ -146,7 +208,7 @@ def _write(contest: Contest, rows: list[_Row], score: Callable[[_Row], int]) -> 
     return len(rows)
 
 
-def _rebuild_ioi(contest: Contest, attempts: Any) -> int:
+def _rebuild_ioi(contest: Contest, attempts: Any, totals: dict[int, tuple[int, int, int]]) -> int:
     """IOI jadvali — ball bo'yicha.
 
     O'lchandi: `scoring_type` tanlanardi, judge qisman ballarni to'g'ri
@@ -157,6 +219,10 @@ def _rebuild_ioi(contest: Contest, attempts: Any) -> int:
     Tenglikda oxirgi ball olingan vaqt erta bo'lgani yuqori turadi.
     """
     best: dict[int, dict[int, tuple[int, datetime]]] = {}
+    # Hack qilgan, lekin bu musobaqada urinishi yo'q ishtirokchi ham
+    # jadvalga tushadi: aks holda uning +100 bali jimgina yo'qolardi.
+    for hacker_id in totals:
+        best.setdefault(hacker_id, {})
     for a in attempts:
         got = int(a["score"] or 0)
         rows = best.setdefault(a["user_id"], {})
@@ -179,6 +245,12 @@ def _rebuild_ioi(contest: Contest, attempts: Any) -> int:
             )
         )
         rows_out[-1].total = total
+
+    # IOI ballli, ya'ni hack bali bu yerda TARTIBGA ta'sir qiladi —
+    # Codeforces modeli aynan shu (ADR-0020).
+    _attach_hacks(rows_out, totals)
+    for row in rows_out:
+        row.total += row.hack_score
 
     rows_out.sort(key=lambda r: (-r.total, r.last_ac or contest.end_at))
     return _write(contest, rows_out, score=lambda r: r.total)
@@ -266,6 +338,16 @@ def finalize_contest(contest: Contest) -> int:
     if contest.ratings_applied_at is not None:
         return 0
     if not contest.is_finished:
+        return 0
+
+    # Hack fazasi tugamaguncha reyting KUTADI (ADR-0020, 7-tamoyil):
+    # hack qilinadigan `AC` reytingga to'g'ri deb kirib ketsa, keyin uni
+    # qaytarish reyting tarixini buzardi — holbuki tarix principle #2
+    # ning tushuntirish yuzasi.
+    from hacks.services import hack_phase_pending
+
+    if hack_phase_pending(contest):
+        log.info("contest %s: reyting hack fazasini kutmoqda", contest.slug)
         return 0
 
     rebuild_standings(contest)

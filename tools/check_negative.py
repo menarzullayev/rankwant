@@ -1610,25 +1610,39 @@ def neg_checker_survives_narrow_stdout() -> tuple[bool, str]:
     tarzda test Windows'da ham, Linux'da ham bir xil ma'noga ega bo'ladi
     (aks holda UTF-8 lokalda u bo'sh o'tardi). Tuzatish skriptning
     O'ZIDA bo'lishi kerak — chaqiruvchining muhitida emas.
+
+    ⚠️ HAR BIR tekshiruv sinaladi, bitta vakil emas. Ilgari bu yerda faqat
+    `check_ordering.py` turardi va 2026-09-16 da ikkita YANGI tekshiruv
+    (`check_icons.py`, `check_markup_cookie.py`) himoyasiz qo'shildi:
+    test ularni ko'rmadi, ikkalasi ham quvur ostida quladi va Windows'da
+    push'ni to'sdi. Vakilga qarash yangi fayl uchun kafolat bermaydi.
     """
     env = dict(os.environ)
     env.pop("PYTHONUTF8", None)
     env["PYTHONIOENCODING"] = "cp1252"
-    proc = subprocess.run(
-        [PY, "tools/check_ordering.py"],
-        cwd=ROOT,
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
-        env=env,
+    # `check_negative.py` ning o'zi chiqarilgan: u bu to'plamni qayta
+    # ishga tushirib, cheksiz rekursiyaga tushardi.
+    scripts = sorted(
+        p.name for p in (ROOT / "tools").glob("check_*.py") if p.name != "check_negative.py"
     )
-    out = (proc.stdout or "") + (proc.stderr or "")
-    if "UnicodeEncodeError" in out:
-        return False, "tor oqim: tekshiruv O'Z chiqishida quladi (UnicodeEncodeError)"
-    if proc.returncode != 0:
-        return False, f"tor oqim: tekshiruv exit {proc.returncode} berdi (0 kerak)"
-    return True, "tor oqim: chiqish UTF-8 ga majburlandi, tekshiruv o'tdi"
+    if len(scripts) < 5:
+        return False, f"tor oqim: tekshiruvlar topilmadi ({len(scripts)} ta)"
+    for name in scripts:
+        proc = subprocess.run(
+            [PY, f"tools/{name}"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            env=env,
+        )
+        out = (proc.stdout or "") + (proc.stderr or "")
+        if "UnicodeEncodeError" in out:
+            return False, f"tor oqim: {name} O'Z chiqishida quladi (UnicodeEncodeError)"
+        if proc.returncode != 0:
+            return False, f"tor oqim: {name} exit {proc.returncode} berdi (0 kerak)"
+    return True, f"tor oqim: {len(scripts)} ta tekshiruv UTF-8 ga majburladi va o'tdi"
 
 
 def neg_hook_gates_new_branch() -> tuple[bool, str]:
@@ -1660,6 +1674,17 @@ def neg_hook_gates_new_branch() -> tuple[bool, str]:
         (repo / "tools/pick-python.sh").write_bytes(picker.read_bytes())
         (repo / "muhim.py").write_bytes(b"print('x')\n")
 
+        # ⚠️ `GIT_*` MEROSINI UZAMIZ. Git hook'ni chaqirganda bolalarga
+        # `GIT_DIR`, `GIT_INDEX_FILE` va boshqalarni beradi. Ular qolsa
+        # quyidagi `git init` / `add` / `commit` vaqtinchalik katalogda
+        # EMAS, haqiqiy repoda bajariladi — `cwd` ahamiyatsiz bo'lib
+        # qoladi. 2026-09-16 da aynan shu yuz berdi: push paytida hook shu
+        # testni chaqirdi, branchda «birinchi» nomli commit paydo bo'lib
+        # repodagi hamma faylni o'chirdi va u PR'ga ketdi. Ustiga test
+        # YOLG'ON YASHIL edi — `--print-files` haqiqiy repodagi 990 faylni
+        # sanab, `muhim.py` ni o'sha ro'yxatdan topdi.
+        env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
+
         for cmd in (
             ["git", "init", "-q", "-b", "yangi-branch"],
             ["git", "config", "user.email", "test@example.com"],
@@ -1667,7 +1692,7 @@ def neg_hook_gates_new_branch() -> tuple[bool, str]:
             ["git", "add", "-A"],
             ["git", "commit", "-q", "-m", "birinchi"],
         ):
-            made = subprocess.run(cmd, cwd=repo, capture_output=True, text=True)
+            made = subprocess.run(cmd, cwd=repo, capture_output=True, text=True, env=env)
             if made.returncode != 0:
                 return False, f"hook: sinov repo'si yasalmadi — {' '.join(cmd)}"
 
@@ -1678,6 +1703,7 @@ def neg_hook_gates_new_branch() -> tuple[bool, str]:
             text=True,
             encoding="utf-8",
             errors="replace",
+            env=env,
         )
 
     listed = [line for line in (proc.stdout or "").splitlines() if line.strip()]
@@ -1688,6 +1714,15 @@ def neg_hook_gates_new_branch() -> tuple[bool, str]:
         )
     if "muhim.py" not in listed:
         return False, f"hook/yangi branch: `muhim.py` ro'yxatda yo'q — {listed[:3]}"
+    # Ro'yxat SINOV repo'siniki bo'lishi shart. U yerda atigi uchta fayl
+    # bor; yuzlab bo'lsa, haqiqiy repo aralashgan (yuqoridagi `GIT_*`
+    # merosi) va test o'z maqsadini emas, boshqa narsani o'lchayotgan
+    # bo'ladi — aynan shu holat yolg'on yashil bergan edi.
+    if len(listed) > 5:
+        return False, (
+            f"hook/yangi branch: {len(listed)} fayl sanaldi, sinov repo'sida esa "
+            "uchta — haqiqiy repo aralashdi (GIT_* merosi uzilmagan)"
+        )
     return True, f"hook/yangi branch: {len(listed)} fayl tekshiruvga olindi"
 
 

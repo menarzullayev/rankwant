@@ -129,7 +129,12 @@ def main() -> int:
             "",
         ])
         path = out_dir / f"{code}.md"
-        path.write_text(body, encoding="utf-8")
+        # `newline="\n"` SHART: Windows'da `write_text` standart holatda
+        # `\n` ni `\r\n` ga o'giradi va varaq butunlay CRLF bo'lib qoladi.
+        # Repo LF'da, ya'ni bu jimgina nuqson emas — `check_negative` dagi
+        # langarlar faylni `read_bytes()` bilan o'qiydi va CRLF ularni
+        # topilmas qiladi (o'lchandi: 1/64 salbiy test yiqildi).
+        path.write_text(body, encoding="utf-8", newline="\n")
         # `--out` repo TASHQARISIDA bo'lishi mumkin (masalan `.tmp/` yoki
         # boshqa papka) — u holda `relative_to(ROOT)` ValueError beradi va
         # buyruq yozishni tugatib bo'lgach yiqiladi. Ko'rsatish uchun

@@ -12,7 +12,7 @@ from django.utils import timezone
 
 from judging.models import Attempt, AttemptTestResult, CustomRun
 from judging.provider import JudgeJob, get_provider, new_job_id
-from judging.verdicts import ALERTING, Verdict
+from judging.verdicts import ALERTING, API_ONLY, Verdict
 from problems.models import Language, Problem, ProblemLanguage, TestCase, Validator
 
 log = logging.getLogger(__name__)
@@ -174,9 +174,13 @@ def _verdict_of(result: dict[str, Any]) -> str:
     `"HACKED"` bazaga tushdi va u yerdan statistika, jadval va UI ga
     oqib ketardi. Tanilmagan verdict IE bo'ladi: bu aynan shu holat —
     ichki xato.
+
+    `API_ONLY` kodlari ham rad etiladi. `HACKED` endi katalogda bor, lekin
+    uni faqat hack dvigateli qo'yadi: judge natijasi orqali kelgan bo'lsa,
+    u istalgan `AC` ni bekor qilish yo'li bo'lardi.
     """
     given = result.get("verdict")
-    if given in Verdict.values:
+    if given in Verdict.values and given not in API_ONLY:
         return str(given)
     log.error("judge tanilmagan verdict yubordi: %r (job %s)", given, result.get("job_id"))
     return Verdict.IE
