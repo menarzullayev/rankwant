@@ -1,0 +1,815 @@
+[
+  {
+    "released_at": "2026-09-06",
+    "kind": "new",
+    "module": "judge",
+    "title": "Judge engine tanlandi — Go + nsjail",
+    "body": "Ikki nomzod o'lchov bilan sinovdan o'tdi: Go worker (nsjail) va Python worker (isolate). Izolyatsiya sinovlari, TLE/MLE aniqligi, fork bomb va tarmoq urinishlari tekshirildi. Go + nsjail yutdi — 14/14 sinov. Qaror ADR-0004 da qayd etilgan.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "33a1101",
+      "946aa83",
+      "7bac566",
+      "f56f2da",
+      "31fc599",
+      "3b7747b",
+      "6ca0040",
+      "58a6cac",
+      "b602c05",
+      "2a57b20"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-06",
+    "kind": "new",
+    "module": "core",
+    "title": "Platforma poydevori — backend va frontend",
+    "body": "Django + DRF backend (auth, masalalar, tekshiruv, musobaqalar) va Next.js frontend (SSR, i18n) ishga tushdi. Reyting formulalari ochiq — har kim hisob-kitobni tekshira oladi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "1e51f91",
+      "c74e5a8",
+      "8731fdc"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-06",
+    "kind": "new",
+    "module": "qvant",
+    "title": "Qvant iqtisodiyoti ishga tushdi",
+    "body": "Yopiq loop: Qvant faqat platforma ichida ishlaydi, tashqariga chiqmaydi. Kunlik streak va Activity reytingi qo'shildi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "023186e",
+      "5d1ee4c"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-06",
+    "kind": "new",
+    "module": "core",
+    "title": "Bildirishnomalar, virtual musobaqalar va tavsiyalar",
+    "body": "Reyting o'zgarganda yoki masala qayta baholanganda xabar keladi. Tugagan musobaqani virtual rejimda qayta yechish mumkin. Masala tavsiyasi va haftalik marafon qo'shildi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "e182d96"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-06",
+    "kind": "new",
+    "module": "content",
+    "title": "O'quv kontenti va sinflar",
+    "body": "Maqola ↔ masala bog'lanishi, o'quv rejalari va sinf (classroom) bo'limi. Mirror musobaqalar — tashqi olimpiadani platformada qayta o'tkazish.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "df2be0a"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-07",
+    "kind": "new",
+    "module": "profile",
+    "title": "Profil sahifasi — reyting tarixi va yechilgan masalalar",
+    "body": "Profilda reyting o'zgarishlari grafigi va yechilgan masalalar ro'yxati.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "d3ba9c9"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-07",
+    "kind": "new",
+    "module": "design",
+    "title": "Yangi interfeys qobig'i va mehmon sahifasi",
+    "body": "Masala shartlari endi Markdown va LaTeX bilan to'liq chiziladi — formulalar ham. Mehmon uchun alohida landing sahifasi qo'shildi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "71186c1",
+      "a269ae8",
+      "c2b5213"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-07",
+    "kind": "new",
+    "module": "arena",
+    "title": "Duel va Arena — 1v1 bellashuvlar",
+    "body": "Duel: ikki foydalanuvchi bir xil masalani yechadi, tez yechgan yutadi. Challenges reytingi qo'shildi. Arena — bir vaqtda ko'p o'yinchi bellashadigan jonli raund.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "15119e2",
+      "f5ef926"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-07",
+    "kind": "new",
+    "module": "contests",
+    "title": "Turnirlar, hakatonlar, kalendar va qidiruv",
+    "body": "Turnir (nokaut setkasi), hakaton, umumiy kalendar, sayt bo'ylab qidiruv va algoritm maqolalari qo'shildi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "ec4057f"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-07",
+    "kind": "new",
+    "module": "core",
+    "title": "Boshqaruv paneli — barcha bo'limlar uchun",
+    "body": "Xodimlar uchun yagona boshqaruv paneli: masalalar (test yuklash bilan), musobaqalar, savol banki, testlar, arena, duel, turnir, hakaton, maqola, reja, topshiriq, do'kon, foydalanuvchi va postlar.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "6a2cf22",
+      "3f61b0f",
+      "9287990",
+      "6fd1802",
+      "cf6ec34",
+      "3f80b08",
+      "437cb7f",
+      "e30acb2",
+      "c9a6f74",
+      "72e67d2",
+      "d06407d",
+      "2e59655",
+      "a3a9e67",
+      "73da79c",
+      "76b3b7b",
+      "6992ca8"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-08",
+    "kind": "new",
+    "module": "design",
+    "title": "Vizual uslublar — o'zingizga mosini tanlang",
+    "body": "Platforma bir xil ko'rinishda emas: bir nechta uslub va palitra bor, har foydalanuvchi o'zi tanlaydi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "2622807",
+      "3ec907e"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-08",
+    "kind": "new",
+    "module": "contests",
+    "title": "Musobaqada yechish — masalalar va kod yuborish",
+    "body": "Musobaqa ichida masalalar ro'yxati va kod yuborish oynasi. Namuna testlarda darhol sinab ko'rish mumkin.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "48bd363",
+      "e25649d"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-08",
+    "kind": "new",
+    "module": "problems",
+    "title": "Masala sahifasi yangilandi",
+    "body": "Namuna testlar sahifada ko'rinadi va shu yerda ishga tushiriladi. Muharrir qurollari va yechish statistikasi qo'shildi. Yechilgan masalalar belgilanadi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "94ad0fa",
+      "e1f8b4e",
+      "b02b0f3",
+      "e8fd773"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-08",
+    "kind": "new",
+    "module": "problems",
+    "title": "Arxiv — filtr, masala kodi va yetti daraja",
+    "body": "Masalalar arxivi daraja, mavzu, holat va tartib bo'yicha filtrlanadi. Har masala kod oldi (masalan `A-100`). Qiyinlik shkalasi yetti darajaga bo'lindi va arxivga yon panel qo'shildi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "6c62957",
+      "d7709bd",
+      "d65f4d2",
+      "c7b76e7",
+      "dad098d",
+      "f038de9",
+      "16b55a7",
+      "5957acf"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-09",
+    "kind": "content",
+    "module": "problems",
+    "title": "KEP.uz arxivi import qilindi",
+    "body": "KEP.uz ning ochiq API si orqali masalalar arxivi ko'chirildi — shartlar, testlar, rasmlar va fayllar bilan. Import qilingan rasm va fayllar endi bizning saqlashimizda.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "c1f20ba",
+      "fa19f2b",
+      "2fb6ca4"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-09",
+    "kind": "new",
+    "module": "problems",
+    "title": "Import modeli, IOI subtask va tashqi checkerlar",
+    "body": "Masala modeli tashqi arxivdan import qilishga tayyorlandi. IOI uslubidagi subtask baholash va tashqi checker dasturlari qo'llab-quvvatlanadi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "15bc364"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-09",
+    "kind": "new",
+    "module": "problems",
+    "title": "Masala sahifasi: tillar, ovoz, o'xshash masalalar, spoyler",
+    "body": "Har masala uchun ruxsat etilgan tillar, ovoz berish va o'xshash masalalar tavsiyasi. Yechim tahlili (editorial) spoyler darvozasi ortida — Qvant bilan ochiladi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "6275a7c",
+      "cc236ce",
+      "55861af",
+      "76b3b7b"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-09",
+    "kind": "new",
+    "module": "problems",
+    "title": "Arxiv statistikasi — mavzu bo'yicha kuch",
+    "body": "Qaysi mavzuda kuchli, qayerda qotib qolganingiz ko'rinadi. Har masala uchun eng tez qabul qilingan yechim, til bo'yicha.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "412090a",
+      "a6cadab"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-09",
+    "kind": "improved",
+    "module": "problems",
+    "title": "Namuna testlar va shaxsiy testlar qulaylashdi",
+    "body": "Namuna testlar takrorlanuvchi bloklar o'rniga bitta jadvalda. Bir nechta shaxsiy test saqlanadi — bittasini ustiga yozish shart emas. Masala haqida xato xabar berish mumkin.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "8501c99",
+      "b66ed71",
+      "6a72035",
+      "6992ca8"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-09",
+    "kind": "new",
+    "module": "problems",
+    "title": "Apostrofsiz qidiruv va yechuvchilar bo'limi",
+    "body": "«To'rttalik» ni «torttalik» deb yozsangiz ham topiladi — apostrof qidiruvga xalaqit bermaydi. Har masala ostida uni yechganlar ro'yxati.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "36117ad"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-09",
+    "kind": "new",
+    "module": "profile",
+    "title": "Profil — o'rin, eng yuqori reyting, daraja kesimi",
+    "body": "Profilda joriy o'rin, eng yuqori reyting va har darajada nima yechganingiz.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "a64166b"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-09",
+    "kind": "new",
+    "module": "problems",
+    "title": "Urinishlar oqimi va to'liq attempt sahifasi",
+    "body": "Urinishlar oqimini filtrash va kod uzunligini ko'rish. To'liq attempt sahifasi, o'quv reja jarayoni va hamjamiyat bloki.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "ded2de9",
+      "3893e24",
+      "5b7be33"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-09",
+    "kind": "security",
+    "module": "qvant",
+    "title": "Qvant auditi va judge qutqaruvi",
+    "body": "Har bir hamyon ledger bilan solishtiriladi — bittalab emas, ommaviy tekshiruv. Judge javob bermay qolgan urinishlar avtomatik qutqariladi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "168058b",
+      "938666f"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-10",
+    "kind": "new",
+    "module": "design",
+    "title": "O'nta til — to'liq",
+    "body": "Interfeys o'nta tilga to'liq o'girildi: o'zbek, rus, ingliz, qozoq, qirg'iz, tojik, turk, ispan, xitoy va qoraqalpoq. To'liqlikni CI darvozasi ushlab turadi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "3ebcabd",
+      "1fce3c4"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-10",
+    "kind": "new",
+    "module": "core",
+    "title": "Google, GitHub va Telegram bilan kirish",
+    "body": "Uch provayder orqali bir bosishda kirish. Provayderlarni sozlamalardan ulash va uzish mumkin.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "2b13da7",
+      "901c98d",
+      "1ca741d"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-10",
+    "kind": "new",
+    "module": "core",
+    "title": "Parol tiklash va huquqiy sahifalar",
+    "body": "Parolni tiklash tokeni yaratiladi va ishlatiladi. Shartlar va maxfiylik sahifalari nashr etildi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "4a12914",
+      "6696c16",
+      "e86af87"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-10",
+    "kind": "new",
+    "module": "profile",
+    "title": "Hisobni o'chirish va ma'lumotni eksport qilish",
+    "body": "Hisobni o'chirish va o'z ma'lumotlaringizni yuklab olish. O'chirilganda taxallus anonimlashtiriladi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "9076b7a"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-10",
+    "kind": "new",
+    "module": "infrastructure",
+    "title": "Email — bitta provayder emas, zanjir",
+    "body": "Bepul planlar kunlik kvota qo'yadi, shuning uchun to'rt provayder zanjir bo'lib ishlaydi: biri yiqilsa keyingisiga o'tadi. Har yuborish qaysi provayder ishlaganini yozib boradi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "ae6b1f5",
+      "49434c5"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-10",
+    "kind": "new",
+    "module": "design",
+    "title": "Yangi brend belgisi",
+    "body": "Bitta manba fayldan barcha formatdagi ikonkalar generatsiya qilinadi. BIMI logo ham tayyor — DMARC qat'iy bo'lganda ishlaydi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "6c109e0",
+      "bbcfacb",
+      "defe0b9"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-10",
+    "kind": "improved",
+    "module": "judge",
+    "title": "Verdiktlar tarjima qilindi, checker va rejudge",
+    "body": "Har bir verdikt o'nta tilga tarjima qilindi, ishlamay qolgan verdiktlar ulandi, Runtime Error ikkiga bo'lindi. Special va scorer masalalar uchun checker dasturi. Ommaviy rejudge buyrug'i.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "ecf5de3",
+      "a04345b",
+      "27450da",
+      "91a39b8"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-10",
+    "kind": "improved",
+    "module": "problems",
+    "title": "Testi yo'q 870 masala olib tashlandi",
+    "body": "Arxivda testi bo'lmagan masalalar bor edi — ular yechilmaydi. Endi masalada test yo'qligi aytiladi va yuborish rad etiladi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "b19d1ad",
+      "65e0c82"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-10",
+    "kind": "improved",
+    "module": "contests",
+    "title": "Reyting jadvalida o'z qatoringizni ko'rasiz",
+    "body": "Top 500 tashqarisida qolsangiz ham o'z natijangiz ko'rinadi — musobaqada ham, arenada ham. IOI musobaqalari endi masala soni bo'yicha emas, ball bo'yicha reytinglanadi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "2404345",
+      "b713ed8",
+      "9361428"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-11",
+    "kind": "improved",
+    "module": "design",
+    "title": "Profil va sozlamalar qayta qurildi",
+    "body": "Profil ikki ustunli tuzilishga o'tdi, har tab alohida sahifa. Sozlamalar bo'limlarga bo'lindi. Kirish sahifalari soddalashtirildi va ro'yxatdan o'tishda maydon jonli tekshiriladi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "0e492a9",
+      "18264d3",
+      "45736a9",
+      "2e5fe6c",
+      "261c1d7",
+      "61d7826"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-11",
+    "kind": "new",
+    "module": "profile",
+    "title": "Unvonlar, rollar, onlayn holat va yutuqlar",
+    "body": "Reytingga qarab unvon beriladi va ism unvon rangida ko'rinadi. Profil rollari, onlayn holat va darajali yutuqlar qo'shildi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "7fe1d87",
+      "a518a8a"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-11",
+    "kind": "new",
+    "module": "profile",
+    "title": "Sertifikatlar, maktab katalogi va tumanlar",
+    "body": "Musobaqa sertifikatlari (xitoy ismlari ham to'g'ri chiziladi). Maktab katalogi, tumanlar, murabbiy va ijtimoiy havolalar. Kuzatuvchilar jadvali va maktab tanlagichi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "b99424f",
+      "5ac764f",
+      "b9bb077",
+      "a5a0025"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-11",
+    "kind": "new",
+    "module": "profile",
+    "title": "Ommaviy profil, faollik kalendari va jamoalar",
+    "body": "Ommaviy profil statistikasi, faollik kalendari va musobaqa tarixi. Jamoalar endpointlari ham qo'shildi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "b34e0d3",
+      "17d8daf"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-11",
+    "kind": "infrastructure",
+    "module": "infrastructure",
+    "title": "rankwant.uz ga ko'chdik",
+    "body": "Platforma yangi domenga ko'chdi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "ac44d1a"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-12",
+    "kind": "infrastructure",
+    "module": "infrastructure",
+    "title": "Tunnel uzilsa — texnik ishlar sahifasi",
+    "body": "Cloudflare Tunnel uzilganda foydalanuvchi xom xato o'rniga tushunarli «texnik ishlar» sahifasini ko'radi. Preview'ni tizimlar orasida topshirish va yuklashda avtomatik ko'tarish.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "339a3bc",
+      "050fa37",
+      "ba865ab",
+      "a58495e"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-13",
+    "kind": "new",
+    "module": "profile",
+    "title": "Davlat va maktab — bosqichma-bosqich so'rash",
+    "body": "Davlat va maktab darhol talab qilinmaydi — foydalanuvchi tayyor bo'lganda so'raladi, rozilik bilan. Qidiriladigan davlat tanlagichi va bayroqlar.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "d6698b7",
+      "bd92dab",
+      "3ce8ac7",
+      "d8838fd",
+      "f914ed9"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-13",
+    "kind": "new",
+    "module": "core",
+    "title": "Maktab katalogi API va telefon raqami",
+    "body": "Maktab katalogini to'ldirish uchun boshqaruv API si. Profilga ixtiyoriy telefon raqami — hech qachon ommaviy ko'rinmaydi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "03d88fe",
+      "259d9b6"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-13",
+    "kind": "new",
+    "module": "core",
+    "title": "Ro'yxatdan o'tish emailga qurildi",
+    "body": "Kirish va ro'yxatdan o'tish endi email asosida. Telegram kirishi eski widgetdan OIDC ga ko'chdi. Taxalluslar ASCII bilan cheklangan, o'xshashlari rad etiladi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "4eeda3b",
+      "3d24c58",
+      "533a2a9",
+      "1c8ef31",
+      "13c1d6d"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-13",
+    "kind": "new",
+    "module": "design",
+    "title": "SEO va ulashish — ikonkalar, og:image, canonical",
+    "body": "Brend ikonkalari, ijtimoiy tarmoq uchun og:image, canonical havolalar va sitemap. Kirishdan keyin foydalanuvchi qaytgan sahifaga tushadi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "f0edcb0",
+      "b683835",
+      "710d850"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-13",
+    "kind": "new",
+    "module": "core",
+    "title": "Voronka tahlili va A/B mexanizmi",
+    "body": "Ro'yxatdan o'tish voronkasi dashboard'i va A/B sinov mexanizmi — qaysi o'zgarish ishlayotganini o'lchash uchun.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "239a321"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-13",
+    "kind": "new",
+    "module": "core",
+    "title": "Yangiliklar bo'limi ishga tushdi",
+    "body": "Platformadagi har o'zgarish endi shu yerda yozib boriladi — nima o'zgargani, qaysi turda va qaysi bo'limda. Har yozuv o'nta tilda.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "682f1cd"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-13",
+    "kind": "fixed",
+    "module": "design",
+    "title": "Interfeys tuzatishlari",
+    "body": "Bir hafta davomida interfeysda topilgan nuqsonlar tuzatildi: telefonda sarlavha toshib ketardi, ajratgich chizig'i ba'zi joyda ko'rinmasdi, kirish sahifalarida faqat mobil qurilmada chiqadigan xatolar bor edi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "df807f3",
+      "864bc5a",
+      "ba70f2e",
+      "047f7d4",
+      "02ae910",
+      "4cc77f0",
+      "c112c1d",
+      "082c6fd",
+      "0ff0b55",
+      "347e247",
+      "8fed300",
+      "04cb2a5",
+      "f8a18a9",
+      "5517c6e",
+      "ca59de1",
+      "ee42622",
+      "fc0896e",
+      "d5f62ca",
+      "2616d33",
+      "0d2c427",
+      "a0ad749",
+      "22b0169",
+      "fcb9e4a",
+      "5005a35",
+      "d4b2599",
+      "babcae5",
+      "04c8d1f",
+      "6acbf8b",
+      "9451591",
+      "6f0cd86"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-13",
+    "kind": "fixed",
+    "module": "core",
+    "title": "API va deploy tuzatishlari",
+    "body": "API tomonidagi nuqsonlar tuzatildi: Activity ommaviy profilda ko'rinmasdi, mavzu ota-onasi slug bo'lishi kerak edi, demo akkauntlarda parol tasodifiy qilindi, anonim limit soatlik oynaga o'tdi. Deploy tomonida esa konteyner eskirmasligi tekshiriladi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "7e1152b",
+      "2ba96d3",
+      "3e2b205",
+      "d77851e",
+      "e0485d0",
+      "8fd85c8",
+      "638d049",
+      "0c58eaa",
+      "4fa5f12",
+      "a8f99d2",
+      "cc395e6",
+      "db6fe5c",
+      "d12fa5c",
+      "ffb81f3",
+      "9deb82f",
+      "62786c8",
+      "ee1e0a4",
+      "0276335",
+      "b58be68"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-13",
+    "kind": "performance",
+    "module": "core",
+    "title": "Tezlik va barqarorlik yaxshilandi",
+    "body": "Masalalar arxivi va reyting sahifalari tezlashtirildi: so'rovlar kamaydi, ortiqcha hisob-kitoblar olib tashlandi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "04ddd07",
+      "976d542",
+      "885ddbe",
+      "f9ddc49",
+      "6c3987e",
+      "ae1b662",
+      "019aa72",
+      "3bf1e20",
+      "e74af03",
+      "53a8f0d",
+      "31f6b22",
+      "a3ad23d"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-13",
+    "kind": "fixed",
+    "module": "contests",
+    "title": "Musobaqa, tekshiruv va Qvant tuzatishlari",
+    "body": "Musobaqada yuborilgan yechimlar natijaga qo'shilmasdi va jadval bo'sh qolardi. Tekshiruv tomonida e'lon qilingan til versiyalari judge obrazi bilan mos kelmasdi, yuborishlar umuman tekshirilmasdi. Qvant hisob-kitobida ham nuqsonlar topildi va tuzatildi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "dce6236",
+      "efbffa8",
+      "6d8f76f",
+      "604da09",
+      "354da1b",
+      "3995b1f",
+      "50f1f5e",
+      "a28fa26",
+      "8c90293",
+      "c6af5d9",
+      "e01044b",
+      "c90c4dd",
+      "0936a82",
+      "6975d4e",
+      "439f64f",
+      "ef270ce"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-09",
+    "kind": "fixed",
+    "module": "problems",
+    "title": "Arxiv va import tuzatishlari",
+    "body": "Import qilingan masalalarda bir nechta nuqson topildi va tuzatildi: Markdown ba'zi belgilarni chizmasdi, formulalarda ko'rinmas bo'shliq qolardi, namuna testlar CRLF bilan saqlanardi, bo'sh teglar filtr panelini to'sib qo'yardi. Arxivda esa ikki mavzu tanlansa «yoki» emas «va» bo'yicha filtrlanadi, «qotib qolgan» havolasi esa haqiqatan filtrlaydi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "eeadf3a",
+      "d3f9d0e",
+      "56fb9c1",
+      "f1df869",
+      "e86898a",
+      "83a2b17",
+      "8a69582",
+      "0a9ed3b",
+      "8d3f719",
+      "a432dd1"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-13",
+    "kind": "fixed",
+    "module": "core",
+    "title": "Barqarorlik — keshlar va bir vaqtli so'rovlar",
+    "body": "Bir nechta nozik nuqson tuzatildi: kesh yoki saqlash xizmati yiqilganda butun sayt to'xtab qolardi; yechim tahlili olti so'rov bir vaqtda kelganda olti marta haq olardi; test mukofoti bir vaqtli yuborishda ikki marta berilardi; arenada reyting jadvali cheklanmagan edi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "0af74ff",
+      "d526596",
+      "8070caf",
+      "6bf11cd",
+      "d359ad7",
+      "77b79fc",
+      "eb3d6eb",
+      "30cf4fe",
+      "f078d81",
+      "b821353"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-10",
+    "kind": "security",
+    "module": "core",
+    "title": "Xavfsizlik tuzatishlari",
+    "body": "Bir nechta jiddiy kamchilik yopildi: Next.js kritik CVE li versiyalarda edi; sinfni o'quvchi o'zi o'chira olar va qo'shilish kodini ko'ra olardi; boshqaruv yuzasi PAT ni qabul qilardi; ijtimoiy callback `state`siz qabul qilinardi; email shablon izohlari xat matniga tushib qolardi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "df807f3",
+      "3e6f55a",
+      "0af74ff",
+      "0db6fff",
+      "dda1608",
+      "e878935"
+    ],
+    "locale": "uz"
+  },
+  {
+    "released_at": "2026-09-13",
+    "kind": "performance",
+    "module": "core",
+    "title": "Tezlik — sessiya serverda o'qiladi",
+    "body": "Sessiya endi serverda o'qiladi, mehmon uchun ortiqcha 401 so'rovi olib tashlandi. Har sahifa ochilishida bitta ortiqcha so'rov kamaydi.",
+    "source_repo": "menarzullayev/rankwant",
+    "source_refs": [
+      "d77851e",
+      "31f6b22"
+    ],
+    "locale": "uz"
+  }
+]

@@ -1,6 +1,7 @@
 // RankWant — ikonka kalitlari katalogi (V3).
 //
-// Manba: `appearance-comparison/ICON-INVENTORY.md` (20 kategoriya, ~220 nuqta).
+// Manba: `docs/research/2026-09-15-appearance-comparison/ICON-INVENTORY.md`
+// (20 kategoriya, ~220 nuqta).
 //
 // ── Format ─────────────────────────────────────────────────────────────
 //

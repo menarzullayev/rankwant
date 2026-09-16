@@ -1,6 +1,7 @@
 """Platforma o'zgarishlari — Updates moduli.
 
-Qaror sessiyasi: `rankwant-updates-design/DECISION-SESSION.md` (20 savol).
+Qaror sessiyasi: `docs/research/2026-09-13-rankwant-updates-design/DECISION-SESSION.md`
+(20 savol).
 
 Bu modul `blog.Post` dan **ataylab ajratilgan**:
 

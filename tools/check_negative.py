@@ -320,6 +320,42 @@ def neg_docs_broken_link() -> tuple[bool, str]:
         path.write_bytes(original)
 
 
+def neg_docs_research_link_still_checked() -> tuple[bool, str]:
+    """The `docs/research/` exemption must not switch off link checking."""
+    path = ROOT / "docs/research/README.md"
+    if not path.exists():
+        return False, "docs/research: README.md topilmadi"
+    text = path.read_bytes().decode("utf-8")
+    broken = text.rstrip() + "\n\n[negative test](./this-record-does-not-exist-42.md)\n"
+    with Mutation(path, text, broken):
+        code, out = run_check("docs")
+    if code == 0:
+        return False, "docs/research: buzuq havola O'TKAZILDI (exit 0) — istisno havolani ham o'chirgan"
+    if not re.search(r"docs[\\/]research[\\/]README\.md: buzilgan havola", out):
+        return False, f"docs/research: exit {code}, lekin sabab tadqiqot havolasi emas — {out.strip()[-160:]}"
+    return True, "docs/research: yozuvdagi buzuq havola tutildi (exit 1)"
+
+
+def neg_docs_research_exemption_is_scoped() -> tuple[bool, str]:
+    """Script mixing is allowed in research records only, not in living docs."""
+    record = ROOT / "docs/research/README.md"
+    living = ROOT / "docs/README.md"
+    if not record.exists() or not living.exists():
+        return False, "docs/istisno: README fayllari topilmadi"
+    line = "\n\nAralash yozuv namunasi: салом dunyo\n"
+    record_text = record.read_bytes().decode("utf-8")
+    with Mutation(record, record_text, record_text.rstrip() + line):
+        code, out = run_check("docs")
+    if code != 0:
+        return False, f"docs/istisno: tadqiqot yozuvidagi kirill matn qizil qildi — {out.strip()[-160:]}"
+    living_text = living.read_bytes().decode("utf-8")
+    with Mutation(living, living_text, living_text.rstrip() + line):
+        code, out = run_check("docs")
+    if code == 0 or "kirill/lotin aralashuvi" not in out:
+        return False, "docs/istisno: tirik hujjatdagi aralash yozuv O'TKAZILDI — istisno keng ketgan"
+    return True, "docs/istisno: faqat docs/research ozod, tirik hujjat tutildi"
+
+
 def neg_email_missing_locale() -> tuple[bool, str]:
     """Bitta satrdan bitta til olib tashlansa — tutilsinmi?
 
@@ -2265,6 +2301,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         [
             ("buzilgan havola", neg_docs_broken_link),
             ("mavjud bo'lmagan ADR havolasi", neg_docs_missing_adr),
+            ("tadqiqotda havola baribir tekshirilsin", neg_docs_research_link_still_checked),
+            ("istisno faqat docs/research ga", neg_docs_research_exemption_is_scoped),
         ],
     ),
     (
