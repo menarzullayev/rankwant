@@ -423,6 +423,18 @@ CELERY_BEAT_SCHEDULE = {
         "task": "contests.finalize_due",
         "schedule": 60.0,
     },
+    # Hack oynasi yopilgach testlar qo'shiladi va `AC` lar qayta
+    # tekshiriladi. `finalize_due` shu tugamaguncha reytingni qo'llamaydi,
+    # ya'ni bu vazifa ishlamasa musobaqa yakunlanmay qoladi (ADR-0020).
+    "close-due-hack-phases": {
+        "task": "hacks.close_due",
+        "schedule": 60.0,
+    },
+    # Javobi kelmagan hack fazani ham, musobaqani ham ushlab turadi.
+    "reap-stuck-hacks": {
+        "task": "hacks.reap_stuck",
+        "schedule": 300.0,
+    },
     "finalize-due-arena": {
         "task": "arena.finalize_due",
         "schedule": 60.0,

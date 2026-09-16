@@ -400,6 +400,117 @@ def _enqueue_defender(hack: Hack) -> None:
     )
 
 
+# ── Oyna yopilishi ───────────────────────────────────────────────────
+
+
+def hack_phase_pending(contest: Contest) -> bool:
+    """Reyting hack fazasi tufayli KUTISHI kerakmi (ADR-0020, 7-tamoyil).
+
+    Ikki sabab bilan kutiladi: oyna hali yopilmagan, yoki yopilgan-u
+    qayta tekshiruv natijalari hali kelmagan. Ikkinchisi ham muhim —
+    bekor qilinadigan `AC` reytingga kirib ketsa, uni keyin qaytarish
+    reyting tarixini buzardi (principle #2 ning tushuntirish yuzasi).
+
+    Qayta tekshiruv abadiy kutmaydi: `judging.reap_stuck` javobsiz
+    urinishni besh daqiqadan keyin `DENIAL_OF_JUDGEMENT` ga o'giradi.
+    """
+    if not (contest.hack_room or contest.hack_open_minutes):
+        return False
+    if contest.hack_phase_closed_at is None:
+        return True
+    return Attempt.objects.filter(
+        contest=contest,
+        verdict__in=(Verdict.PENDING, Verdict.RUNNING, Verdict.TESTING_ABORTED),
+    ).exists()
+
+
+@transaction.atomic
+def close_hack_phase(contest: Contest) -> int:
+    """Oyna yopildi: testlar to'plamga qo'shiladi, `AC` lar qayta navbatga.
+
+    Tartib SHART: avval testlar, keyin qayta tekshiruv, keyin reyting.
+    Aks holda hack qilingan yechim reytingga to'g'ri deb kirib ketardi.
+
+    Qulf `finalize_contest` dagi kabi: beat har daqiqada chaqiradi va
+    ikki chaqiruv ustma-ust tushsa testlar ikki marta qo'shilardi.
+    """
+    locked = Contest.objects.select_for_update().get(pk=contest.pk)
+    if locked.hack_phase_closed_at is not None:
+        return 0
+
+    added = 0
+    problem_ids: set[int] = set()
+    for hack in Hack.objects.filter(
+        contest=locked, status=Hack.Status.SUCCESSFUL, added_test__isnull=True
+    ).select_related("problem"):
+        policy = policies.get(hack.policy)
+        if policy is None or policy.adds_test != AddsTest.ON_CLOSE:
+            continue
+        _add_test(hack)
+        if hack.added_test_id is None:
+            continue
+        hack.save(update_fields=["added_test", "updated_at"])
+        added += 1
+        if policy.rejudge_on_close:
+            problem_ids.add(hack.problem_id)
+
+    requeued = _rejudge_accepted(locked, problem_ids) if problem_ids else 0
+    now = timezone.now()
+    locked.hack_tests_added_at = now
+    locked.hack_phase_closed_at = now
+    locked.save(update_fields=["hack_tests_added_at", "hack_phase_closed_at"])
+    log.info(
+        "contest %s: hack fazasi yopildi — %s test, %s qayta tekshiruv",
+        locked.slug,
+        added,
+        requeued,
+    )
+    return added
+
+
+def _rejudge_accepted(contest: Contest, problem_ids: set[int]) -> int:
+    """Yangi testlar bilan o'sha masalalardagi `AC` larni qayta tekshiradi.
+
+    `judging.enqueue` ATAYIN ishlatilmaydi — u masalaning urinishlar
+    sonini oshirardi, qayta tekshirish esa yangi urinish emas. Verdikt
+    `TESTING_ABORTED`: foydalanuvchi eski natija bekor qilinganini
+    ko'radi, `PENDING` esa yangi yuborishdan farq qilmasdi. Ikkalasi ham
+    `rejudge` buyrug'idagi bilan bir xil.
+
+    Chegara yo'q: yarim qoldirilgan qayta tekshiruv reytingni noto'g'ri
+    ma'lumot ustida hisoblagan bo'lardi.
+    """
+    from judging.services import build_job
+
+    provider = get_provider()
+    sent = 0
+    rows = Attempt.objects.filter(
+        contest=contest, problem_id__in=problem_ids, verdict=Verdict.AC
+    ).select_related("problem", "language")
+    for attempt in rows.order_by("pk").iterator(chunk_size=200):
+        try:
+            provider.submit(build_job(attempt))
+        except Exception:
+            log.exception("hack qayta tekshiruvi yiqildi: urinish %s", attempt.pk)
+            continue
+        Attempt.objects.filter(pk=attempt.pk).update(
+            verdict=Verdict.TESTING_ABORTED, judged_at=None, requeued_at=None
+        )
+        sent += 1
+    return sent
+
+
+@transaction.atomic
+def abandon(hack: Hack, reason: str) -> Hack:
+    """Javobi kelmagan hackni yopadi — ball ham, jarima ham yo'q.
+
+    Judge ishni olib yiqilsa hack abadiy `TESTING` bo'lib qolardi:
+    hacker natija ko'rmas, musobaqa esa yakunlanmasdi — `close_due`
+    aynan shunday hackni kutadi.
+    """
+    return _finish(hack, Hack.Status.IGNORED, detail=reason)
+
+
 # ── Judge javobi ─────────────────────────────────────────────────────
 
 
