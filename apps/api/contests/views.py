@@ -169,6 +169,7 @@ def _certificate(pk: UUID) -> Certificate:
     )
 
 
+@extend_schema(summary="Sertifikat ma'lumotlari")
 class CertificateView(APIView):
     """Sertifikatni tekshirish — QR shu ma'lumotga olib keladi."""
 
@@ -200,6 +201,7 @@ class CertificatePdfView(APIView):
         return response
 
 
+@extend_schema(summary="Foydalanuvchi sertifikatlari")
 class UserCertificatesView(generics.ListAPIView[Certificate]):
     """Profildagi «Sertifikatlar» tabi."""
 

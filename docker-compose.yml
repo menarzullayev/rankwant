@@ -123,6 +123,9 @@ services:
       args:
         # Brauzer bundle'i uchun — deploy manzili bilan mos bo'lishi shart.
         NEXT_PUBLIC_API_BASE: ${NEXT_PUBLIC_API_BASE:-http://localhost:8000/api/v1}
+        # Manba commit — `check_deploy.sh` eskilikni shu orqali aniqlaydi.
+        # Qiymat `tools/deploy.sh` dan keladi; qo'lda build'da `unknown`.
+        GIT_SHA: ${GIT_SHA:-unknown}
     environment:
       # Brauzer host portiga, SSR compose tarmog'iga murojaat qiladi.
       API_BASE_INTERNAL: http://api:8000/api/v1
@@ -131,7 +134,10 @@ services:
     depends_on: [api]
 
   judge:
-    build: ./services/judge-go
+    build:
+      context: ./services/judge-go
+      args:
+        GIT_SHA: ${GIT_SHA:-unknown}
     privileged: true          # nsjail namespace va cgroup uchun
     cgroup: host
     environment:

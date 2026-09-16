@@ -36,7 +36,13 @@ from updates.serializers import (
     one="yangilik",
     many="yangiliklar",
     only=("list", "retrieve"),
-    extra={"unread_count": "O'qilmaganlar soni"},
+    extra={
+        "unread_count": "O'qilmaganlar soni",
+        "unread": "O'qilmagan yangiliklar",
+        "unread_by_module": "Modul bo'yicha o'qilmaganlar",
+        "actionable": "Amal talab qiladiganlar",
+        "mark_read": "O'qilgan deb belgilash",
+    },
 )
 class SystemUpdateViewSet(
     mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet[SystemUpdate]

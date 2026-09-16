@@ -45,6 +45,11 @@ from qvant.models import QvantTransaction
         "broadcast": "Hammaga bildirishnoma yuborish",
     },
 )
+@crud_summaries(
+    one="foydalanuvchi",
+    many="foydalanuvchilar",
+    extra={"qvant": "Qvant boshqaruvi", "notify": "Xabar yuborish"},
+)
 class StaffUserViewSet(StaffViewSet):
     serializer_class = StaffUserSerializer
     lookup_field = "username"
@@ -139,6 +144,7 @@ class StaffSchoolViewSet(StaffViewSet):
         )
 
 
+@extend_schema(summary="Ro'yxatdan o'tish voronkasi")
 class StaffAnalyticsView(APIView):
     """Ro'yxatdan o'tish voronkasi — `AnalyticsEvent` dan jamlanadi.
 

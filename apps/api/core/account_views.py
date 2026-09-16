@@ -13,7 +13,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.http import HttpRequest, HttpResponse
 from django.views.decorators.http import require_safe
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import exceptions, status
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
@@ -42,6 +42,7 @@ def _me(request: Request) -> User:
     return request.user
 
 
+@extend_schema(summary="Parolni o'zgartirish")
 class PasswordChangeView(APIView):
     """Parolni almashtirish — yoki ijtimoiy hisobda birinchi marta o'rnatish.
 
@@ -79,6 +80,7 @@ class PasswordChangeView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@extend_schema(summary="Email o'zgartirish (kod tasdiqlash bilan)")
 class EmailChangeView(APIView):
     """Yangi manzilga kod yuboradi. `User.email` tasdiqlangunga qadar o'zgarmaydi.
 
@@ -143,6 +145,10 @@ class UsernameChangeView(APIView):
         return Response(MeSerializer(changed, context={"request": request}).data)
 
 
+@extend_schema_view(
+    get=extend_schema(summary="Kirilgan qurilmalar"),
+    delete=extend_schema(summary="Boshqa sessiyalarni yopish"),
+)
 class SessionListView(APIView):
     """Kirilgan qurilmalar. `DELETE` — joriydan boshqa hammasini yopadi."""
 
@@ -195,6 +201,10 @@ def _store_avatar(user: User, data: bytes) -> Response:
     return Response({"avatar_url": user.avatar_url})
 
 
+@extend_schema_view(
+    post=extend_schema(summary="Avatar yuklash"),
+    delete=extend_schema(summary="Avatarni o'chirish"),
+)
 class AvatarView(APIView):
     """Rasm yuklash. Brauzer uni oldindan 256 pikselga kichraytiradi."""
 
@@ -231,6 +241,7 @@ class AvatarView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@extend_schema(summary="OAuth rasmini avatar qilish")
 class AvatarImportView(APIView):
     """Ulangan Google/GitHub/Telegram hisobining rasmini avatar qiladi."""
 

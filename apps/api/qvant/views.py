@@ -30,6 +30,7 @@ from qvant.serializers import (
 from qvant.services import PurchaseError, purchase
 
 
+@extend_schema(summary="Qvant hamyoni")
 class WalletView(APIView):
     """Balans va bugungi emissiya holati."""
 
@@ -45,6 +46,7 @@ class WalletView(APIView):
         return Response(data)
 
 
+@crud_summaries(one="tranzaksiya", many="tranzaksiyalar", only=("list", "retrieve"))
 class TransactionViewSet(viewsets.ReadOnlyModelViewSet[QvantTransaction]):
     """Ledger — balansning har bir o'zgarishi sababi bilan."""
 
@@ -57,6 +59,7 @@ class TransactionViewSet(viewsets.ReadOnlyModelViewSet[QvantTransaction]):
         return QvantTransaction.objects.filter(user=self.request.user)
 
 
+@extend_schema(summary="Kunlik topshiriqlar")
 class QuestListView(APIView):
     """Bugungi questlar va ularning holati."""
 
@@ -87,6 +90,7 @@ class QuestListView(APIView):
         return Response(payload)
 
 
+@extend_schema(summary="Marafon holati")
 class MarathonView(APIView):
     """Haftalik marafon — PRD P1-9.
 

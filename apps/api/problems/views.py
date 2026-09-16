@@ -285,6 +285,7 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
         return Response({"editorial": problem.editorial, "price": problem.editorial_price})
 
 
+@extend_schema(summary="Tavsiya etilgan masalalar")
 class RecommendationView(APIView):
     """PRD P1-2 — darajangizga mos, yechmagan masalalaringiz."""
 
@@ -309,6 +310,7 @@ class RecommendationView(APIView):
 PUBLIC_STATS_CACHE_S = 60
 
 
+@extend_schema(summary="Masala statistikasi")
 class ProblemStatsView(APIView):
     """Masala statistikasi — verdikt va til TAQSIMOTI.
 
@@ -386,6 +388,7 @@ class ProblemStatsView(APIView):
         return edge_cacheable(Response(body), PUBLIC_STATS_CACHE_S)
 
 
+@extend_schema(summary="Masalani yechganlar")
 class ProblemSolversView(APIView):
     """Masalani yechganlar — alohida bo'lim (KEP dagi «Solvers»).
 
@@ -462,6 +465,7 @@ class ProblemSolversView(APIView):
         )
 
 
+@extend_schema(summary="Yechish progressi")
 class ProgressView(APIView):
     """Daraja bo'yicha yechilganlar — arxiv yon panelidagi progress bloki.
 
@@ -555,6 +559,7 @@ def topic_skills(solved_ids: set[int], attempted_ids: set[int]) -> list[dict[str
     return topics
 
 
+@extend_schema(summary="Mavzu bo'yicha ko'nikmalar")
 class TopicSkillsView(APIView):
     """Mavzu kesimidagi kuch — Codeforces API tahlilidan kelgan g'oya.
 
@@ -577,6 +582,7 @@ class TopicSkillsView(APIView):
         return Response({"topics": topic_skills(solved, attempted)})
 
 
+@crud_summaries(one="mavzu", many="mavzular", only=("list", "retrieve"))
 class TopicViewSet(viewsets.ReadOnlyModelViewSet[Topic]):
     """Filtr paneli uchun mavzular.
 

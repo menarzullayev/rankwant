@@ -46,6 +46,20 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
 
 # ── 3. runtime ───────────────────────────────────────────────────────
 FROM debian:trixie-slim
+
+# Manba commit yorlig'i — `tools/check_deploy.sh` shu orqali ishlab turgan
+# binary manbadan eskimi yoki yo'qmi aniqlaydi.
+#
+# Nega kerak: Go binari uchun fayl hash'i solishtirib bo'lmaydi (web'dagi
+# `.next` kabi), shuning uchun judge uzoq vaqt KO'R NUQTA edi — 2026-09-16
+# da tuzatilgan wall-kill kodi commit qilinib CI'da tasdiqlangan, ishlab
+# turgan konteyner esa eski binarda qolgan va buni hech narsa ko'rsatmagan.
+#
+# ⚠️ `unknown` — ataylab: qiymat compose'dan (`GIT_SHA`) keladi, ya'ni
+# yorliqsiz build «noma'lum» deb O'QILADI va `check_deploy.sh` uni
+# «tekshirilmadi» deb hisoblaydi, «mos» deb emas.
+ARG GIT_SHA=unknown
+LABEL org.rankwant.git-sha=$GIT_SHA
 RUN apt-get update && apt-get install -y --no-install-recommends \
         # nsjail runtime bog'liqliklari (trixie t64 o'tishi: libprotobuf32t64)
         libprotobuf32t64 libnl-3-200 libnl-route-3-200 \

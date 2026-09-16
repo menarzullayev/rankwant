@@ -311,6 +311,9 @@ class FollowView(APIView):
         return self._state(target, viewer)
 
 
+@extend_schema_view(
+    get=extend_schema(summary="Obunachilar va obunalar ro'yxati"),
+)
 class FollowListView(generics.ListAPIView[User]):
     """Obunachilar yoki kuzatilayotganlar — `direction` bilan, qidiruv va saralash."""
 
@@ -355,6 +358,7 @@ class FollowListView(generics.ListAPIView[User]):
         )
 
 
+@extend_schema(summary="Ulangan ijtimoiy hisoblar")
 class MyConnectedView(APIView):
     """Ulangan hisobdagi taxallus — Telegram va GitHub havolasini bir bosishda to'ldirish."""
 
@@ -471,6 +475,7 @@ class TeamMemberView(APIView):
 # ── Profil statistikasi ──────────────────────────────────────────────
 
 
+@extend_schema(summary="Profil statistikasi")
 class UserStatsView(APIView):
     """Yechilgan/jami, daraja kesimi, tillar va verdiktlar ulushi."""
 
@@ -482,6 +487,7 @@ class UserStatsView(APIView):
         return Response(stats.cached(user.pk, "overview", lambda: stats.overview(user)))
 
 
+@extend_schema(summary="Foydalanuvchi kalendari")
 class UserCalendarView(APIView):
     """Faollik xaritasi — kunlik urinishlar va yechimlar, streak bilan."""
 
@@ -500,6 +506,7 @@ class UserCalendarView(APIView):
         )
 
 
+@extend_schema(summary="Masalalar xaritasi")
 class UserProblemMapView(APIView):
     """Arxivdagi har masala: yechilgan, urinilgan yoki tegilmagan."""
 
@@ -510,6 +517,7 @@ class UserProblemMapView(APIView):
         return Response(stats.problem_map(_profile_owner(username)))
 
 
+@extend_schema(summary="Reyting grafigi")
 class UserRatingSeriesView(APIView):
     """To'rt reyting tarixi grafik uchun, unvon chegaralari bilan."""
 
@@ -520,6 +528,7 @@ class UserRatingSeriesView(APIView):
         return Response(stats.rating_series(_profile_owner(username)))
 
 
+@extend_schema(summary="Foydalanuvchi mavzulari")
 class UserTopicsView(APIView):
     """Mavzu kesimidagi kuch — `problems/skills/` bilan bitta hisob, lekin ommaviy."""
 
@@ -539,6 +548,7 @@ class UserTopicsView(APIView):
         )
 
 
+@extend_schema(summary="Foydalanuvchi musobaqalari")
 class UserContestsView(APIView):
     """Qatnashgan musobaqalar — faqat ommaviylari."""
 

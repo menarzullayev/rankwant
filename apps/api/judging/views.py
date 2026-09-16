@@ -170,7 +170,9 @@ class AttemptViewSet(
         return Response(AttemptSerializer(attempt).data, status=status.HTTP_201_CREATED)
 
 
-@crud_summaries(one="namunaviy yugurish", many="namunaviy yugurishlar", only=("list", "retrieve"))
+@crud_summaries(
+    one="namunaviy yugurish", many="namunaviy yugurishlar", only=("list", "retrieve", "create")
+)
 class CustomRunViewSet(
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,

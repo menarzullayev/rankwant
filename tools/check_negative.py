@@ -985,6 +985,41 @@ def neg_ci_offline_runner_is_red() -> tuple[bool, str]:
     return True, "ci/offline: runner yo'qligi tutildi (exit 1)"
 
 
+def neg_ci_stuck_run_is_red() -> tuple[bool, str]:
+    """Runner TIRIK bo`lganda ham qotib qolgan run qizil bo`lsin.
+
+    2026-09-16: runner `online, busy=False`, run esa 22 daqiqa
+    `queued`/`in progress` bo`lib turdi — GitHub job`ni boshlangan deb
+    hisoblaydi, uni bajaradigan `Runner.Worker` esa yo`q (assignment
+    eskirgan). Faqat runner holatiga qaraydigan tekshiruv buni «yashil»
+    deb o`qirdi va kodda bo`lmagan xatoni qidirishga olib keldi.
+
+    Uch holat ketma-ket o`lchanadi va uchtasi ham shart:
+      1) YANGI `in_progress` run → 0 — aks holda oddiy ishlab turgan CI
+         ham «qotgan» bo`lib ko`rinardi va signal ma`nosiz bo`lardi;
+      2) 40 daqiqalik `in_progress` run → 1;
+      3) matnda sabab va `cancel`+`rerun` retsepti ko`rinishi shart.
+    """
+    from datetime import datetime, timedelta, timezone
+
+    fresh = (datetime.now(timezone.utc) - timedelta(minutes=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    stale = (datetime.now(timezone.utc) - timedelta(minutes=40)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    runners = "nsn-pc-rankwant|Linux|online"
+
+    code, out = _run_ci(runners, f"CI|in_progress|—|abc1234|{fresh}")
+    if code != 0:
+        return False, f"ci/stuck: yangi run qizil bo`ldi (exit {code}) — signal ma`nosiz"
+
+    code, out = _run_ci(runners, f"CI|in_progress|—|abc1234|{stale}")
+    if code == 0:
+        return False, "ci/stuck: qotgan run O`TKAZDI (exit 0) — tekshiruv o`lik"
+    if "QOTISH" not in out:
+        return False, "ci/stuck: qotish sababi matnda ko`rinmadi"
+    if "gh run cancel" not in out:
+        return False, "ci/stuck: yechim (cancel + rerun) ko`rsatilmadi"
+    return True, "ci/stuck: qotish tutildi, retsept ko`rsatildi (exit 1)"
+
+
 def neg_ci_startup_failure_is_red() -> tuple[bool, str]:
     """`startup_failure` runner holatidan MUSTAQIL ravishda qizil bo'lsin.
 
@@ -2309,6 +2344,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         [
             ("runner oflayn bo'lsa qizil", neg_ci_offline_runner_is_red),
             ("startup_failure runner'dan mustaqil", neg_ci_startup_failure_is_red),
+            ("qotib qolgan run tutilsin", neg_ci_stuck_run_is_red),
             ("o'qib bo'lmasa exit 2, «yashil» emas", neg_ci_unreadable_is_not_green),
             ("sog'lom holat yashil", neg_ci_healthy_gate),
         ],

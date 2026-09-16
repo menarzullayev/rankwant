@@ -24,7 +24,11 @@ from core.staff import StaffViewSet
 @crud_summaries(
     one="arena raundi",
     many="arena raundlari",
-    extra={"finalize": "Raundni yakunlash"},
+    extra={
+        "finalize": "Raundni yakunlash",
+        "reschedule": "Raundni qayta rejalash",
+        "reset": "Raundni tozalash (demo)",
+    },
 )
 class StaffArenaViewSet(StaffViewSet):
     """`questions` — tartiblangan savol id'lari; yozishda to'liq almashtiriladi."""
