@@ -64,3 +64,46 @@ func TestNsjailArgsSilencesWarnings(t *testing.T) {
 			"foydalanuvchiga ko'rinadi")
 	}
 }
+
+// ── Wall chegarasi: SABABNI o'lchash, TAXMIN qilish emas ────────────────
+//
+// 2026-09-16 da CI'da `04-idleness` bir marta IDLENESS o'rniga RE_SIGNAL
+// berdi va deploy job'ini o'tkazib yubordi. Sabab: verdict `wall >=
+// wallSec*1000` bilan TAXMIN qilinardi, ikki soat esa har xil nuqtadan
+// boshlanadi (bizning `start` nsjail tayyorlanishidan oldin, nsjail
+// taymeri esa bola exec bo'lgandan keyin). Bo'sh mashinada farq ~3 ms,
+// yuk ostida ~1 s — ya'ni o'tish tasodifga bog'liq edi.
+
+func TestWallTimedOutTrustsWatchdog(t *testing.T) {
+	// CI'dagi haqiqiy raqamlar: o'lchangan wall 2003 ms, yaxlitlangan
+	// chegara 3000 ms. Kuzatuvchi o'ldirgan bo'lsa — bu TIMEOUT.
+	if !wallTimedOut(false, true, 2003, 3) {
+		t.Fatal("kuzatuvchi o'ldirgan bo'lsa TIMEOUT bo'lishi kerak — " +
+			"aks holda IDLENESS o'rniga RE_SIGNAL chiqadi")
+	}
+}
+
+func TestWallTimedOutBackstop(t *testing.T) {
+	// Kuzatuvchi kechikkan bo'lsa ham, nsjail chegaradan keyin o'ldirgan
+	// bo'lsa — TIMEOUT.
+	if !wallTimedOut(false, false, 3003, 3) {
+		t.Fatal("chegaradan keyin o'lgan jarayon TIMEOUT bo'lishi kerak")
+	}
+}
+
+// Salbiy test: CPU kuzatuvchisi ishlagan bo'lsa bu TIMEOUT EMAS.
+// Aks holda CPU limitida o'lgan yechim IDLENESS bo'lib ko'rinardi va
+// TLE o'rniga noto'g'ri verdict chiqardi.
+func TestWallTimedOutIgnoresCpuKill(t *testing.T) {
+	if wallTimedOut(true, true, 5000, 3) {
+		t.Fatal("CPU kuzatuvchisi o'ldirgan bo'lsa TIMEOUT bo'lmasligi kerak")
+	}
+}
+
+// Salbiy test: chegaraga YETMAGAN o'lim — RE_SIGNAL bo'lib qolishi kerak
+// (masalan segfault). Bu 06-re case'i uchun muhim.
+func TestWallTimedOutShortRunIsNotTimeout(t *testing.T) {
+	if wallTimedOut(false, false, 2999, 3) {
+		t.Fatal("chegaraga yetmagan o'lim TIMEOUT emas — RE_SIGNAL qolishi kerak")
+	}
+}

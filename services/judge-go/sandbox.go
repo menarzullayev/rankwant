@@ -409,16 +409,17 @@ func runSandboxed(ctx context.Context, work string, cmd []string, stdin string,
 
 	start := time.Now()
 
+	if err := proc.Start(); err != nil {
+		return nil, err
+	}
+	done := make(chan struct{})
+
 	// CPU KUZATUVCHISI.
 	// --rlimit_cpu faqat BUTUN soniya qabul qiladi, ya'ni 500 ms limitli
 	// masala kamida 1-2 soniya ishlaydi. cgroup cpu.stat ni pollab,
 	// chegaraga yetganda darhol to'xtatamiz — aniqlik ~20 ms.
-	var watchdogFired atomic.Bool
+	var cpuFired atomic.Bool
 	if lim.TimeMS > 0 {
-		if err := proc.Start(); err != nil {
-			return nil, err
-		}
-		done := make(chan struct{})
 		go func() {
 			ticker := time.NewTicker(20 * time.Millisecond)
 			defer ticker.Stop()
@@ -429,27 +430,56 @@ func runSandboxed(ctx context.Context, work string, cmd []string, stdin string,
 					return
 				case <-ticker.C:
 					if cg.readInt("cpu.stat", "usage_usec") > budget {
-						watchdogFired.Store(true)
+						cpuFired.Store(true)
 						cancel()
 						return
 					}
 				}
 			}
 		}()
-		runErr := proc.Wait()
-		close(done)
-		wall := time.Since(start).Milliseconds()
-		return finishRun(cg, &out, &errb, runErr, wall, wallSec, watchdogFired.Load())
 	}
 
-	runErr := proc.Run()
+	// WALL KUZATUVCHISI.
+	//
+	// Ilgari wall chegarasini faqat nsjail'ning `--time_limit` i ushlardi
+	// va verdict SABABI o'lchangan vaqtga qarab TAXMIN qilinardi:
+	// `wall >= wallSec*1000`. Bu poyga edi, chunki ikki soat har xil
+	// nuqtadan boshlanadi: bizning `start` — nsjail ishga tushishidan
+	// OLDIN, nsjail'ning taymeri esa bola exec bo'lgandan KEYIN.
+	//
+	// O'lchandi (2026-09-16): bo'sh mashinada farq ~3 ms
+	// (`total_ms = 3003`, chegara 3000) — ya'ni o'tish tasodifga bog'liq.
+	// CI'da (ikki job bitta runner'da, to'liq stack) nsjail'ning
+	// tayyorlanishi ~1 s cho'zilgan va o'lchangan wall **2003** chiqqan:
+	// `2003 >= 3000` → false → verdict IDLENESS o'rniga **RE_SIGNAL**.
+	// Aynan shu `04-idleness` ni bir marta yiqitgan.
+	//
+	// Endi to'xtatish SABABI o'lchanadi: taymer `start` dan emas, balki
+	// `proc.Start()` dan keyin darhol qo'yiladi va chegaraga yetganda
+	// o'zimiz o'ldiramiz. `--time_limit` (yuqoriga yaxlitlangan soniya)
+	// zaxira bo'lib qoladi.
+	var wallFired atomic.Bool
+	go func() {
+		timer := time.NewTimer(time.Duration(wallLimitMs) * time.Millisecond)
+		defer timer.Stop()
+		select {
+		case <-done:
+			return
+		case <-timer.C:
+			wallFired.Store(true)
+			cancel()
+		}
+	}()
+
+	runErr := proc.Wait()
+	close(done)
 	wall := time.Since(start).Milliseconds()
 
-	return finishRun(cg, &out, &errb, runErr, wall, wallSec, false)
+	return finishRun(cg, &out, &errb, runErr, wall, wallSec, cpuFired.Load(), wallFired.Load())
 }
 
 func finishRun(cg *cgroup, out, errb *capBuffer, runErr error,
-	wall int64, wallSec int, cpuKilled bool) (*runOutcome, error) {
+	wall int64, wallSec int, cpuKilled, wallKilled bool) (*runOutcome, error) {
 
 	exit := 0
 	if runErr != nil {
@@ -482,6 +512,26 @@ func finishRun(cg *cgroup, out, errb *capBuffer, runErr error,
 		OutputEx: out.Exceeded || errb.Exceeded,
 		// CPU kuzatuvchisi to'xtatgan bo'lsa, bu TIMEOUT emas — CPU limiti.
 		// classify() cpu_ms ni limitga solishtirib TLE beradi.
-		Timeout: !cpuKilled && wall >= int64(wallSec*1000),
+		Timeout: wallTimedOut(cpuKilled, wallKilled, wall, wallSec),
 	}, nil
+}
+
+// wallTimedOut — jarayonni WALL chegarasi to'xtatganini aytadi.
+//
+// Ikki manba: bizning wall kuzatuvchimiz (`wallKilled`) va nsjail'ning
+// `--time_limit` i (zaxira — o'lchangan vaqt bo'yicha taxmin).
+//
+// ⚠️ CPU kuzatuvchisi ishlagan bo'lsa bu TIMEOUT EMAS: u TLE yoki
+// IDLENESS, va `classify` buni `cpu_ms` bo'yicha o'zi ajratadi. Aks holda
+// CPU limitida o'lgan yechim «IDLENESS» bo'lib ko'rinardi.
+//
+// ⚠️ Taxminiy shox (`wall >= wallSec*1000`) ATAYLAB qoldirilgan: u
+// nsjail o'zi o'ldirgan holat uchun zaxira, lekin unga TAYANIB
+// BO'LMAYDI — `wallSec` yuqoriga yaxlitlanadi, o'lchov esa nsjail
+// tayyorlanishini qamramaydi (o'lchandi: farq 3 ms dan ~1 s gacha).
+func wallTimedOut(cpuKilled, wallKilled bool, wall int64, wallSec int) bool {
+	if cpuKilled {
+		return false
+	}
+	return wallKilled || wall >= int64(wallSec*1000)
 }
