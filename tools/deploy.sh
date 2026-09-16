@@ -35,10 +35,17 @@ PROJECT=rankwant
 ENV_FILE=.env.public
 COMPOSE=(docker compose -p "$PROJECT" --env-file "$ENV_FILE"
          -f docker-compose.yml -f docker-compose.public.yml)
-# Deploy'da yangilanadigan servislar. `web` bu yerda YO'Q: u Next.js va
-# `NEXT_PUBLIC_*` qiymatlari build vaqtida singadi, ya'ni uni alohida
-# qaror bilan qayta qurish kerak (runbook § NEXT_PUBLIC).
-SERVICES=(api worker beat)
+# Deploy'da yangilanadigan servislar.
+#
+# `judge` ham shu yerda: u Go binari va o'z obrazidan quriladi, ya'ni kod
+# o'zgarganda uni ham qayta qurish kerak — aks holda «api yangi, judge
+# eski» holati paydo bo'ladi va buni `check_deploy.sh` KO'RMAYDI
+# (binary'ning manbadagi hash'i yo'q).
+#
+# `web` bu yerda YO'Q: u Next.js va `NEXT_PUBLIC_*` qiymatlari build
+# vaqtida singadi, ya'ni uni alohida qaror bilan qayta qurish kerak
+# (runbook § NEXT_PUBLIC).
+SERVICES=(api worker beat judge)
 
 ASSUME_YES=0
 CHECK_ONLY=0
