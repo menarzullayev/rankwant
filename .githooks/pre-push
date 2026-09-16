@@ -157,6 +157,13 @@ if has '^(apps/web/src/(lib/(prefs|api)\.ts|app/layout\.tsx)|tools/check_markup)
   step "Markup cookie — 4 joy mosligi" "$PY" tools/check_markup_cookie.py
 fi
 
+# CI har yurishda yangi Docker obrazi quradi. Tozalash qadami olib
+# tashlansa birorta test qizil bo'lmaydi — obrazlar haftalar ichida
+# yig'ilib disk to'ldiradi (2026-09-16: 420 ta rw-smoke-*, 58 GB).
+if has '^(\.github/workflows/|tools/check_ci_disk)'; then
+  step "CI disk tozalashi" "$PY" tools/check_ci_disk.py
+fi
+
 if has '^(docs/|README)'; then
   step "Hujjat yaxlitligi" "$PY" tools/check_docs.py
 fi
