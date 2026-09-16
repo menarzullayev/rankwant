@@ -59,6 +59,16 @@ if [ "${1:-}" = "--print-files" ]; then
   exit 0
 fi
 
+# Which refs are pushed and under whose name (main only via PR, no placeholder
+# authors) — rules and incidents in tools/push_guard.py. It runs before the
+# gates so a rejected push does not wait for pytest, and before the empty-diff
+# exit so a docs-only push to main is still caught.
+if [ -t 0 ]; then refs=""; else refs="$(cat)"; fi
+if ! printf '%s\n' "$refs" | "$PY" "$root/tools/push_guard.py" "${1:-origin}"; then
+  printf '\n\033[31mPush to'\''xtatildi.\033[0m\n\n' >&2
+  exit 1
+fi
+
 [ -z "$files" ] && exit 0
 
 has() { grep -qE "$1" <<<"$files"; }

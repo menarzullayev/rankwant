@@ -47,6 +47,7 @@ import subprocess
 import sys
 import tempfile
 import threading
+from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -1689,12 +1690,13 @@ def neg_hook_gates_new_branch() -> tuple[bool, str]:
         # sanab, `muhim.py` ni o'sha ro'yxatdan topdi.
         env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
 
+        # Identity goes in with `-c`, never `git config`: a per-command setting is
+        # not written to any file, so even a sandbox that leaks into the real
+        # repository cannot leave `test@example.com` behind (2026-09-16).
         for cmd in (
             ["git", "init", "-q", "-b", "yangi-branch"],
-            ["git", "config", "user.email", "test@example.com"],
-            ["git", "config", "user.name", "test"],
             ["git", "add", "-A"],
-            ["git", "commit", "-q", "-m", "birinchi"],
+            [*_SANDBOX_IDENTITY, "commit", "-q", "-m", "birinchi"],
         ):
             made = subprocess.run(cmd, cwd=repo, capture_output=True, text=True, env=env)
             if made.returncode != 0:
@@ -1728,6 +1730,242 @@ def neg_hook_gates_new_branch() -> tuple[bool, str]:
             "uchta — haqiqiy repo aralashdi (GIT_* merosi uzilmagan)"
         )
     return True, f"hook/yangi branch: {len(listed)} fayl tekshiruvga olindi"
+
+
+# ── push guard ───────────────────────────────────────────────────────────
+
+_SANDBOX_IDENTITY = ("git", "-c", "user.name=test", "-c", "user.email=test@example.com")
+_REAL_IDENTITY = ("git", "-c", "user.name=Probe", "-c", "user.email=probe@rankwant.uz")
+_ZERO = "0" * 40
+_OVERRIDE_ENV = "RANKWANT_ALLOW_MAIN_PUSH"
+
+
+@contextlib.contextmanager
+def _push_sandbox() -> Iterator[tuple[Path, dict[str, str]]]:
+    """A throwaway repository that git cannot escape.
+
+    Inherited `GIT_*` (a hook exports GIT_DIR/GIT_INDEX_FILE) would send
+    commands to the real repository; the ceiling stops discovery above the
+    sandbox; an empty global config and no system config keep the machine's own
+    identity (CI runner included) out of the result.
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+        repo = Path(tmp) / "repo"
+        repo.mkdir()
+        empty = Path(tmp) / "empty.gitconfig"
+        empty.touch()
+        env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
+        env.pop(_OVERRIDE_ENV, None)
+        env["GIT_CEILING_DIRECTORIES"] = tmp
+        env["GIT_CONFIG_GLOBAL"] = str(empty)
+        env["GIT_CONFIG_NOSYSTEM"] = "1"
+        _sandbox_run(repo, env, "git", "init", "-q", "-b", "work")
+        yield repo, env
+
+
+def _sandbox_run(repo: Path, env: dict[str, str], *cmd: str) -> str:
+    proc = subprocess.run(
+        list(cmd),
+        cwd=repo,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        env=env,
+    )
+    if proc.returncode != 0:
+        raise AssertionError(f"sinov repo'si: {' '.join(cmd)} — {proc.stderr.strip()}")
+    return proc.stdout.strip()
+
+
+def _sandbox_commit(
+    repo: Path, env: dict[str, str], identity: tuple[str, ...], name: str
+) -> str:
+    (repo / f"{name}.txt").write_text(f"{name}\n", encoding="utf-8")
+    _sandbox_run(repo, env, "git", "add", "-A")
+    _sandbox_run(repo, env, *identity, "commit", "-q", "-m", name)
+    return _sandbox_run(repo, env, "git", "rev-parse", "HEAD")
+
+
+def _published(repo: Path, env: dict[str, str], sha: str) -> None:
+    """Pretend the remote already has `sha`."""
+    _sandbox_run(repo, env, "git", "update-ref", "refs/remotes/origin/main", sha)
+
+
+def _run_push_guard(
+    repo: Path, env: dict[str, str], stdin: str, extra: dict[str, str] | None = None
+) -> tuple[int, str]:
+    proc = subprocess.run(
+        [PY, str(ROOT / "tools/push_guard.py"), "origin"],
+        cwd=repo,
+        input=stdin,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        env={**env, **(extra or {})},
+    )
+    return proc.returncode, (proc.stdout or "") + (proc.stderr or "")
+
+
+def neg_push_guard_placeholder_author() -> tuple[bool, str]:
+    """A new commit authored as test@example.com must be rejected."""
+    with _push_sandbox() as (repo, env):
+        _published(repo, env, _sandbox_commit(repo, env, _REAL_IDENTITY, "base"))
+        bad = _sandbox_commit(repo, env, _SANDBOX_IDENTITY, "bad")
+        code, out = _run_push_guard(repo, env, f"refs/heads/work {bad} refs/heads/work {_ZERO}\n")
+    if code != 1:
+        return False, f"push_guard/muallif: soxta muallif exit {code} berdi (1 kerak)"
+    if bad[:7] not in out:
+        return False, "push_guard/muallif: rad etildi, lekin commit nomlanmadi"
+    return True, "push_guard/muallif: test@example.com bilan commit rad etildi"
+
+
+def neg_push_guard_real_author_passes() -> tuple[bool, str]:
+    """Positive control: a real author pushing a feature branch is allowed."""
+    with _push_sandbox() as (repo, env):
+        _published(repo, env, _sandbox_commit(repo, env, _REAL_IDENTITY, "base"))
+        good = _sandbox_commit(repo, env, _REAL_IDENTITY, "good")
+        code, out = _run_push_guard(repo, env, f"refs/heads/work {good} refs/heads/work {_ZERO}\n")
+    if code != 0:
+        tail = out.strip()[-160:]
+        return False, f"push_guard/yashil: haqiqiy muallif exit {code} berdi (0 kerak) — {tail}"
+    return True, "push_guard/yashil: haqiqiy muallif o'tkazildi (exit 0)"
+
+
+def neg_push_guard_published_history_ignored() -> tuple[bool, str]:
+    """Placeholder commits the remote already has must not block later pushes."""
+    with _push_sandbox() as (repo, env):
+        _published(repo, env, _sandbox_commit(repo, env, _SANDBOX_IDENTITY, "published"))
+        good = _sandbox_commit(repo, env, _REAL_IDENTITY, "good")
+        code, _ = _run_push_guard(repo, env, f"refs/heads/work {good} refs/heads/work {_ZERO}\n")
+    if code != 0:
+        return False, f"push_guard/tarix: remote'dagi eski commit push'ni to'sdi (exit {code})"
+    return True, "push_guard/tarix: e'lon qilingan eski commit hisobga olinmadi"
+
+
+def neg_push_guard_main_rejected() -> tuple[bool, str]:
+    """A direct update of refs/heads/main must be rejected."""
+    with _push_sandbox() as (repo, env):
+        base = _sandbox_commit(repo, env, _REAL_IDENTITY, "base")
+        _published(repo, env, base)
+        good = _sandbox_commit(repo, env, _REAL_IDENTITY, "good")
+        code, out = _run_push_guard(repo, env, f"refs/heads/work {good} refs/heads/main {base}\n")
+    if code != 1:
+        return False, f"push_guard/main: to'g'ridan push exit {code} berdi (1 kerak)"
+    if "PR" not in out:
+        return False, "push_guard/main: rad etildi, lekin PR yo'li aytilmadi"
+    return True, "push_guard/main: `main` ga to'g'ridan push rad etildi"
+
+
+def neg_push_guard_override_allows_main() -> tuple[bool, str]:
+    """Positive control: the documented emergency override really lets main through."""
+    with _push_sandbox() as (repo, env):
+        base = _sandbox_commit(repo, env, _REAL_IDENTITY, "base")
+        _published(repo, env, base)
+        good = _sandbox_commit(repo, env, _REAL_IDENTITY, "good")
+        code, out = _run_push_guard(
+            repo, env, f"refs/heads/work {good} refs/heads/main {base}\n", {_OVERRIDE_ENV: "1"}
+        )
+    if code != 0:
+        tail = out.strip()[-160:]
+        return False, f"push_guard/kalit: {_OVERRIDE_ENV}=1 bilan exit {code} (0 kerak) — {tail}"
+    return True, f"push_guard/kalit: {_OVERRIDE_ENV}=1 favqulodda yo'lni ochdi"
+
+
+def neg_push_guard_polluted_config() -> tuple[bool, str]:
+    """A placeholder identity left in the repository config must stop the push."""
+    with _push_sandbox() as (repo, env):
+        _published(repo, env, _sandbox_commit(repo, env, _REAL_IDENTITY, "base"))
+        good = _sandbox_commit(repo, env, _REAL_IDENTITY, "good")
+        # Appended as text, not via `git config`: the test must not be able to
+        # reproduce the leak it guards against.
+        with (repo / ".git" / "config").open("a", encoding="utf-8") as fh:
+            fh.write("[user]\n\temail = test@example.com\n")
+        code, out = _run_push_guard(repo, env, f"refs/heads/work {good} refs/heads/work {_ZERO}\n")
+    if code != 1:
+        return False, f"push_guard/config: ifloslangan config exit {code} berdi (1 kerak)"
+    if "--unset" not in out:
+        return False, "push_guard/config: rad etildi, lekin tuzatish yo'li aytilmadi"
+    return True, "push_guard/config: .git/config dagi test@example.com tutildi"
+
+
+def neg_hook_wires_push_guard() -> tuple[bool, str]:
+    """The real pre-push hook must call the guard — a guard nobody runs is dead."""
+    needed = (
+        ".githooks/pre-push",
+        "tools/pick-python.sh",
+        "tools/push_guard.py",
+        "tools/_console.py",
+    )
+    if not all((ROOT / rel).exists() for rel in needed):
+        return False, "hook/guard: kerakli fayllar topilmadi"
+    with _push_sandbox() as (repo, env):
+        for rel in needed:
+            (repo / rel).parent.mkdir(parents=True, exist_ok=True)
+            (repo / rel).write_bytes((ROOT / rel).read_bytes())
+        head = _sandbox_commit(repo, env, _REAL_IDENTITY, "base")
+        # Nothing differs from origin/main, so no gate runs: a non-zero exit can
+        # only come from the guard, and a missing call ends in exit 0.
+        _published(repo, env, head)
+        proc = subprocess.run(
+            [_bash(), ".githooks/pre-push", "origin", "https://example.invalid/rankwant.git"],
+            cwd=repo,
+            input=f"refs/heads/main {head} refs/heads/main {_ZERO}\n",
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            env=env,
+        )
+    out = (proc.stdout or "") + (proc.stderr or "")
+    if proc.returncode == 0:
+        return False, "hook/guard: `main` ga push hook'dan o'tib ketdi — guard chaqirilmagan"
+    if "to'g'ridan-to'g'ri push yopiq" not in out:
+        return False, f"hook/guard: hook yiqildi, lekin guard sababi emas — {out.strip()[-160:]}"
+    return True, "hook/guard: pre-push `main` ga push'ni guard orqali rad etdi"
+
+
+def _repo_fingerprint(repo: Path, env: dict[str, str] | None = None) -> str | None:
+    """Local config (minus upstream bookkeeping) and the checked-out branch.
+
+    `branch.*` is left out: `git push -u` in another checkout rewrites it and
+    would raise a false alarm. None means git could not read the repository.
+    """
+    parts: list[str] = []
+    for cmd in (["git", "config", "--local", "--list"], ["git", "symbolic-ref", "-q", "HEAD"]):
+        proc = subprocess.run(
+            cmd,
+            cwd=repo,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            env=env,
+        )
+        if proc.returncode not in (0, 1):
+            return None
+        parts.append(
+            "\n".join(line for line in proc.stdout.splitlines() if not line.startswith("branch."))
+        )
+    return "\x00".join(parts)
+
+
+def neg_fingerprint_catches_config_write() -> tuple[bool, str]:
+    """The suite tripwire must notice a config write and stay quiet without one."""
+    with _push_sandbox() as (repo, env):
+        first = _repo_fingerprint(repo, env)
+        again = _repo_fingerprint(repo, env)
+        with (repo / ".git" / "config").open("a", encoding="utf-8") as fh:
+            fh.write("[user]\n\temail = test@example.com\n")
+        after = _repo_fingerprint(repo, env)
+    if first is None:
+        return False, "barmoq izi: sinov repo'sini o'qib bo'lmadi"
+    if first != again:
+        return False, "barmoq izi: o'zgarishsiz holatda ham farq ko'rdi (doim qizil)"
+    if after == first:
+        return False, "barmoq izi: .git/config ga yozuvni ko'rmadi (tripwire o'lik)"
+    return True, "barmoq izi: config yozuvi tutildi, o'zgarishsiz holat tinch"
 
 
 def neg_icons_pack_missing_key() -> tuple[bool, str]:
@@ -2124,6 +2362,19 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         ],
     ),
     (
+        "push_guard",
+        [
+            ("soxta muallif rad etilsin", neg_push_guard_placeholder_author),
+            ("haqiqiy muallif o'tsin", neg_push_guard_real_author_passes),
+            ("e'lon qilingan tarix to'smasin", neg_push_guard_published_history_ignored),
+            ("main ga to'g'ridan push rad etilsin", neg_push_guard_main_rejected),
+            ("favqulodda kalit ishlasin", neg_push_guard_override_allows_main),
+            ("ifloslangan config tutilsin", neg_push_guard_polluted_config),
+            ("hook guard'ni chaqirsin", neg_hook_wires_push_guard),
+            ("tripwire config yozuvini tutsin", neg_fingerprint_catches_config_write),
+        ],
+    ),
+    (
         "monitor",
         [
             ("API yolg'iz yiqilsa tutilsin", neg_monitor_api_only_outage),
@@ -2193,6 +2444,10 @@ def main(argv: list[str]) -> int:
                 return 1
             skipped.append(f"monitor guruhi — {reason}")
 
+    # Tripwire for the 2026-09-16 class of bug: a sandbox that leaks into this
+    # repository and rewrites its config or switches its branch.
+    before = _repo_fingerprint(ROOT)
+
     for checker, cases in CASES:
         if only and only != checker:
             continue
@@ -2209,6 +2464,17 @@ def main(argv: list[str]) -> int:
             print(f"  {'✓' if ok else '✕'} {message}")
             if not ok:
                 failures.append(message)
+
+    after = _repo_fingerprint(ROOT)
+    if before is None or after is None:
+        skipped.append("haqiqiy repo tripwire'i — git holatini o'qib bo'lmadi")
+    elif before != after:
+        message = (
+            "to'plam HAQIQIY repoga tegdi: .git/config yoki joriy branch o'zgardi "
+            "(2026-09-16 dagi `test@example.com` hodisasi turi)"
+        )
+        print(f"  ✕ {message}")
+        failures.append(message)
 
     print()
     if skipped:

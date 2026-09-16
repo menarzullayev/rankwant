@@ -1,0 +1,4 @@
+Saidakbar Narzullayev <s.narzullayev@tassvision.ai>
+# 2026-09-16: a negative test left test@example.com in .git/config; these
+# commits were made on this machine under that placeholder (see tools/push_guard.py).
+Saidakbar Narzullayev <s.narzullayev@tassvision.ai> <test@example.com>

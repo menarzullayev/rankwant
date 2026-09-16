@@ -12,7 +12,12 @@ Qaerdan boshlash: [INDEX.md](INDEX.md) → [docs/README.md](docs/README.md)
 
 - Branch: `feat/…`, `fix/…`, `chore/…`, `docs/…`
 - Commit: conventional commits (`feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, `test:`)
-- `main` ga to'g'ridan-to'g'ri push **yopiq** — faqat PR orqali
+- `main` ga to'g'ridan-to'g'ri push **yopiq** — faqat PR orqali. Buni `.githooks/pre-push`
+  (`tools/push_guard.py`) ushlab turadi: GitHub bu repoda branch protection bermaydi
+  (bepul private tarif, 403). PR GitHub'da, CI yashil bo'lgach birlashtiriladi.
+  Favqulodda holat uchun `RANKWANT_ALLOW_MAIN_PUSH=1` — faqat odam qarori bilan.
+- Commit muallifi haqiqiy bo'lishi shart: `@example.com`, `.test`, `localhost` kabi soxta
+  manzilli commit'lar push qilinmaydi. Eski tarix `.mailmap` orqali to'g'rilangan.
 
 ## Definition of Done
 
