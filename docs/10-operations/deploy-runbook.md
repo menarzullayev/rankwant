@@ -328,10 +328,14 @@ Natija: `C:\Users\nsn\backups\rankwant\` da `pg-*.sql.gz` va
 keyingi yurish 2026-10-16) → **RPO ≤ 30 kun**. 2026-09-17 gacha bu yerda
 «kunlik» deb yozilgan edi — haqiqat boshqa edi, o'lchandi va tuzatildi.
 
-✅ **Tiklash sinovi o'tdi: 2026-09-17** — `bash tools/backup.sh --restore-test`
-17 MB dumpni **9 soniyada** tiklandi: jadvallar to'la, havolalar butun, jonli
-bazaga tegilmadi (`restore_test` tashlandi). Ya'ni zaxira **haqiqiy** —
-taxmin emas. Doktrina: *«tiklash sinovi o'tkazilmasa, backup yo'q»*.
+✅ **Tiklash sinovi o'tdi: 2026-09-17** — 17 MB dump **9 soniyada** tiklandi:
+jadvallar to'la, havolalar butun, jonli bazaga tegilmadi (`restore_test`
+tashlandi). Ya'ni zaxira **haqiqiy** — taxmin emas.
+
+✅ **Endi sinov HAR yurishda avtomatik** (2026-09-17 dan). Log qatorida
+`restore=ok|skip|YIQILDI`; `YIQILDI` bo'lsa skript ham yiqiladi.
+O'chirish: `RANKWANT_BACKUP_RESTORE_TEST=off`. Doktrina: *«tiklash sinovi
+o'tkazilmasa, backup yo'q»* — shuning uchun u endi eslab qolishga tayanmaydi.
 
 ⚠️ **Saqlash va chastota mos emas:** retention 30 kun (`RANKWANT_BACKUP_KEEP`),
 jadval ham 30 kun → amalda **bitta nusxa** saqlanadi. Bitta yurish yiqilsa

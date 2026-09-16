@@ -26,8 +26,10 @@
 #   tools/backup.sh --offsite    # R2 majburiy — kalitlar bo'lmasa yiqiladi
 #   tools/backup.sh --no-offsite # faqat lokal
 #
-# Tiklash sinovi (hujjat talabi — usiz backup «yo'q» deb hisoblanadi):
+# Tiklash sinovi — HAR yurishda AVTOMATIK o'tkaziladi (hujjat talabi:
+# usiz backup «yo'q» deb hisoblanadi). Alohida chaqirish ham mumkin:
 #   tools/backup.sh --restore-test
+# O'chirish: RANKWANT_BACKUP_RESTORE_TEST=off
 #
 # Bitta arxiv butunligini docker'siz tekshirish (salbiy test shuni
 # ishlatadi):
@@ -223,9 +225,22 @@ umask 077
 # uchun) yoki `-d restore_test` ga boradi, va `DROP DATABASE` hech qachon
 # `rankwant` ni nomlamaydi. Dumpning o'z `--clean` qatorlari ham
 # `restore_test` ichida bajariladi.
-if [ "${1:-}" = "--restore-test" ]; then
+# ── Tiklash sinovi ───────────────────────────────────────────────────
+# Hujjat: «Tiklash sinovi o'tkazilmasa, backup YO'Q deb hisoblanadi».
+# Eng so'nggi dump ALOHIDA `restore_test` bazasiga tiklanadi, jadvallar
+# bo'sh emasligi va havolalar butunligi tekshiriladi, keyin o'sha baza
+# tashlanadi.
+#
+# ⚠️ Jonli `rankwant` bazasiga TEGILMAYDI: har bir `psql` chaqiruvi
+# `-d postgres` (faqat `restore_test` ni yaratish/tashlash uchun) yoki
+# `-d restore_test` ga boradi, va `DROP DATABASE` hech qachon `rankwant`
+# ni nomlamaydi. Dumpning o'z `--clean` qatorlari ham `restore_test`
+# ichida bajariladi.
+
+restore_test() {
+  local latest="${1:-}"
   latest="$(ls -t "$dest"/pg-*.sql.gz 2>/dev/null | head -1)"
-  [ -n "$latest" ] || { echo "zaxira topilmadi: $dest" >&2; exit 1; }
+  [ -n "$latest" ] || { echo "zaxira topilmadi: $dest" >&2; return 1; }
   echo "tiklanmoqda: $latest"
 
   # Tekshiruv jonli baza bilan SOLISHTIRMAYDI. Ilgari shunday edi va u
@@ -247,7 +262,7 @@ if [ "${1:-}" = "--restore-test" ]; then
       -v ON_ERROR_STOP=1 >/dev/null; then
     "${compose[@]}" exec -T postgres psql -U rankwant -d postgres -q -c "DROP DATABASE restore_test;"
     echo "XATO: dump tiklanmadi — zaxira yaroqsiz" >&2
-    exit 1
+    return 1
   fi
 
   fail=0
@@ -277,8 +292,16 @@ if [ "${1:-}" = "--restore-test" ]; then
   fi
 
   "${compose[@]}" exec -T postgres psql -U rankwant -d postgres -q -c "DROP DATABASE restore_test;"
-  [ "$fail" -eq 0 ] || { echo "tiklash sinovi YIQILDI" >&2; exit 1; }
+  [ "$fail" -eq 0 ] || { echo "tiklash sinovi YIQILDI" >&2; return 1; }
   echo "tiklash sinovi o'tdi: $latest"
+  return 0
+}
+
+# CLI: eng so'nggi dumpni sinaydi va shu bilan tugaydi.
+if [ "${1:-}" = "--restore-test" ]; then
+  newest="$(ls -t "$dest"/pg-*.sql.gz 2>/dev/null | head -1)"
+  [ -n "$newest" ] || { echo "zaxira topilmadi: $dest" >&2; exit 1; }
+  restore_test "$newest" || exit 1
   exit 0
 fi
 
@@ -323,6 +346,23 @@ tar tzf "$objects" >/dev/null
 offsite_status=ok
 offsite_run || true
 
+# ── Tiklash sinovi (HAR yurishda) ────────────────────────────────────
+# Doktrina sinovni choraklik MAJBURIY qiladi, lekin u qo'lda edi va
+# 2026-09-17 gacha bir marta ham o'tkazilmagan. Sinov 9 soniya oladi
+# (o'lchandi), ya'ni har yurishda o'tkazish arzon: zaxira YARATILGAN
+# paytda tiklanishingiz tasdiqlanadi, «bir kun sinab ko'ramiz» emas.
+#
+# ⚠️ Sinov YIQILSA skript ham yiqiladi: tiklanmaydigan zaxira — zaxira
+# emas. Bu ataylab, chunki jimgina o'tkazib yuborilgan tekshiruv eng
+# yomon holat: qog'ozda bor, amalda yo'q.
+if [ "${RANKWANT_BACKUP_RESTORE_TEST:-auto}" = "off" ]; then
+  restore_status=skip
+elif restore_test "$sql"; then
+  restore_status=ok
+else
+  restore_status=YIQILDI
+fi
+
 # ── Eskilarini tozalash ──────────────────────────────────────────────
 # ⚠️ Tozalash JIMGINA ishlamay qolmasligi kerak, shuning uchun o'chirilgan
 # fayllar sanaladi va hisobotga chiqadi. `find` — GNU findutils; Git Bash
@@ -345,15 +385,15 @@ after="$(find "$dest" -name 'pg-*.sql.gz' -o -name 'minio-*.tar.gz' | wc -l)"
 # uchun skript bo'sh joyga emas, o'z NARXiga qaraydi: katalogning JAMI
 # hajmi har yurishda yoziladi — oylik jadvalda ~3 ta nusxa ~75 MB turadi
 # (kunlik jadvalda ~700 MB edi) va bu raqam jimgina o'sib ketmasligi kerak.
-printf '%s  pg=%s  minio=%s  jami=%s  fayl=%s (-%s)  r2=%s\n' "$stamp" \
+printf '%s  pg=%s  minio=%s  jami=%s  fayl=%s (-%s)  r2=%s  restore=%s\n' "$stamp" \
   "$(du -h "$sql" | cut -f1)" "$(du -h "$objects" | cut -f1)" \
   "$(du -sh "$dest" | cut -f1)" "$after" "$((before - after))" \
-  "$offsite_status"
+  "$offsite_status" "$restore_status"
 
 # ⚠️ `skip` va `YOQ` — xato EMAS (lokal dump yaroqli), lekin ular ham
 # «ok» bo'lib ko'rinmasligi kerak: aks holda log yashil o'qiladi-yu,
 # offsite nusxa yo'q bo'ladi.
-if [ "$offsite_status" = "fail" ]; then
-  echo "offsite nusxa YIQILDI — zaxira faqat shu diskda" >&2
+if [ "$offsite_status" = "fail" ] || [ "$restore_status" = "YIQILDI" ]; then
+  echo "ZAXIRA ISHONCHSIZ: offsite=$offsite_status restore=$restore_status" >&2
   exit 1
 fi
