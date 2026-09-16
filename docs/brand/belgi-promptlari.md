@@ -48,7 +48,7 @@ A single thick stroke drawn as a three-step staircase ascending from lower left 
 Two nested upward chevrons forming a double peak: a large wide chevron above and a smaller narrower chevron directly below it, rounded stroke ends, the smaller inner one bright blue, the outer one dark ink, <umumiy qism>
 ```
 
-### 10 · Cho'qqi
+### 10 · Crest
 
 ```
 A solid angular mountain silhouette with two peaks, the left peak higher, straight facets and no texture, with one small solid bright blue circle floating in the empty space above the higher peak, <umumiy qism>

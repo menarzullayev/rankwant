@@ -487,11 +487,19 @@ qolardi.
 
 | Nima                | Chastota           | Saqlash | Tiklash sinovi |
 | ------------------- | ------------------ | ------- | -------------- |
-| Postgres            | kunlik `pg_dump`   | 30 kun  | **choraklik**  |
+| Postgres            | **oylik** `pg_dump` | 30 kun ⚠️ | **choraklik** |
+| Offsite (R2)        | har yurishda       | 180 kun | — (nusxa)      |
+
 | S3/R2 test data     | versiyalash yoqilgan | doimiy | choraklik      |
 | Qvant ledger        | Postgres ichida    | —       | audit so'rovi bilan |
 
 Tiklash sinovi o'tkazilmasa, backup **yo'q deb hisoblanadi**.
+
+✅ **O'tkazildi: 2026-09-17** (`bash tools/backup.sh --restore-test`) —
+17 MB dump **9 soniyada** alohida `restore_test` bazasiga tiklandi:
+`core_user` 10 033 · `judging_attempt` 384 530 · `problems_problem` 2 096 ·
+`qvant_qvanttransaction` 13 314 · `problems_testcase` 2 486 qator,
+havolalar butun. Jonli bazaga tegilmadi (`restore_test` tashlandi).
 
 **Mexanizm — oddiy `pg_dump`, WAL arxivlash YO'Q.** Repoda `archive_mode`,
 `wal_level`, `archive_command`, `pgbackrest`, `wal-g`, `barman`, `PITR`
@@ -502,19 +510,37 @@ narsa — **30 kunda bir marta** olinadigan **mantiqiy dump** (`tools/backup.sh`
 **Qaror (2026-09-17, Saidakbar aka):** kunlik zaxira kerak emas — 30 kunda bir
 marta, faqat lokal; mashinadan tashqariga (R2, USB) nusxa olinmaydi.
 
+⚠️ **SAQLASH VA CHASTOTA MOS EMAS (o'lchandi 2026-09-17).**
+`tools/backup.sh` `RANKWANT_BACKUP_KEEP` bo'yicha **30 kundan eski**
+fayllarni o'chiradi (`-mtime +30`), jadval esa **30 kunda bir marta**
+yuradi. Ya'ni amalda **bitta nusxa** saqlanadi: yangisi yaratilishidan
+oldin eskisi o'chirilish chegarasiga yetadi. Bitta yurish yiqilsa —
+**nol nusxa** qolishi mumkin.
+
+**Tavsiya:** `RANKWANT_BACKUP_KEEP=180` qo'yilsin (3-6 avlod qoladi,
+narxi ~150 MB) yoki jadval kunlikka qaytarilsin. Qaror foydalanuvchida;
+hozircha oylik + 30 kun.
+
 **Narxi:** nuqtadan tiklash (point-in-time recovery) **yo'q**. Avariya
 oxirgi dumpdan keyin yuz bersa, o'sha oradagi yozuvlar butunlay yo'qoladi —
 eng yomon holatda **~30 kunlik** ma'lumot. Disk ham bitta (NVMe, Linux ham
-shu diskda), ya'ni disk o'lsa lokal zaxira ham ketadi; tashqaridagi yagona
-nusxa — R2'dagi handoff eksporti, u faqat `handoff out` paytidagicha yangi.
-Buni kamaytirish uchun WAL arxivlash yoki off-site nusxa kerak bo'lardi;
-ular qo'yilmagan va bu **qabul qilingan** cheklov, yashirilgan emas.
+shu diskda), ya'ni disk o'lsa lokal zaxira ham ketadi.
+
+✅ **2026-09-17 dan offsite nusxa BOR:** `tools/backup.sh` har yurishdan
+keyin dump va MinIO arxivistni **Cloudflare R2** ga yuklaydi va hajmini
+solishtiradi (pastda). Qolgan cheklov — WAL arxivlash va PITR yo'qligi; u
+**qabul qilingan**, yashirilgan emas.
 
 Preview (bitta mashina) uchun: `tools/backup.sh` — Postgres dump va MinIO
 nusxasi. Saqlash `RANKWANT_BACKUP_KEEP` kun (skriptda standart 30; Windows
 vazifasi 95 beradi — oylik jadvalda 30 kunlik saqlash kechikkan yurishda
 yagona nusxani qoldirardi). Bitta yurish ~24.5 MB (o'lchandi 2026-09-17:
 pg 17 MB + MinIO 7.4 MB), ya'ni ~3 ta oylik nusxa ~75 MB.
+
+Har yurishdan keyin ikkalasi **Cloudflare R2** ga ham yuklanadi
+(`backups/` prediksi, 180 kun) — ya'ni zaxira endi faqat shu diskda emas
+(2026-09-17 dan, `tools/backup.sh`). Yuklash hajmi solishtiriladi:
+«rclone exit 0» dalil emas, yarim yozilgan obyekt ham 0 qaytaradi.
 
 Volume, WAL yoki VHDX'ga tegadigan amal oldidan rejali nusxaga suyanmang —
 u 30 kungacha eski bo'lishi mumkin. Avval qo'lda oling:
@@ -536,7 +562,13 @@ Linux, cron:
 0 4 1 * * RANKWANT_BACKUP_KEEP=95 "$HOME"/rankwant/tools/backup.sh >> "$HOME"/backups/rankwant/backup.log 2>&1
 ```
 
-Windows — `RankWant Monthly Backup` vazifasi, **30 kunda bir marta 13:00** da.
+Windows — `RankWant Monthly Backup` vazifasi, **har 30 kunda bir marta
+13:00** da (`DaysInterval = 30`; keyingi yurish 2026-10-16).
+
+⚠️ **2026-09-17 da o'lchandi:** hujjat ilgari «kunlik» deb yozardi, haqiqiy
+vazifa esa **oylik** edi. Qaror: jadval oylik qoladi (foydalanuvchi
+qarori), hujjat haqiqatga moslashtirildi. Ya'ni **RPO 30 kun**, 24 soat
+emas — bu ataylab qabul qilingan cheklov, yashirilgan emas.
 Soat ataylab tunda EMAS: butun stack Docker Desktop ustida turadi, u esa
 faqat foydalanuvchi tizimga kirganda ishlaydi, ya'ni 04:00 dagi trigger
 «rejalashtirilgan» bo'lib ko'rinib, amalda hech qachon zaxira bermasdi.
@@ -551,6 +583,8 @@ $dest = '/c/Users/nsn/backups/rankwant'
 $inner = "RANKWANT_BACKUP_DIR=$dest RANKWANT_BACKUP_KEEP=95 '/c/Users/nsn/project/cp/rankwant/tools/backup.sh' >> $dest/backup.log 2>&1"
 $action = New-ScheduledTaskAction -Execute 'C:\WINDOWS\System32\conhost.exe' `
   -Argument ('--headless "' + $bash + '" -lc "' + $inner + '"') -WorkingDirectory $repo
+# Har 30 kunda: `-Daily -DaysInterval 30` — «-Monthly» EMAS, u kun
+# raqamini talab qiladi va oy uzunligiga bog'lanib qoladi.
 $trigger = New-ScheduledTaskTrigger -Daily -DaysInterval 30 -At '13:00'
 $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries `
   -DontStopIfGoingOnBatteries -StartWhenAvailable `
@@ -697,11 +731,12 @@ chaqiruvchining muhitiga emas, skriptning o'ziga bog'langan.
 2. **Self-hosted runner xavfi qabul qilinadi.** *"Yolg'iz ishlashda qabul
    qilsa bo'ladigan xavf, jamoada emas"* — va qayta ko'rib chiqish sharti
    yozilgan (ikkinchi odam qo'shilishidan oldin).
-3. **30 kunlik lokal backup + choraklik tiklash sinovi yetarli.** Bu
-   **tanlangan** chegara (2026-09-17, Saidakbar aka): kunlik zaxira kerak
-   emas, off-site nusxa olinmaydi. RPO va RTO raqamlari `Disaster recovery`
-   bo'limida (RPO ≤ 30 kun, RTO ~1 soat). Ustidan *"tiklash sinovi
-   o'tkazilmasa, backup yo'q deb hisoblanadi"* tamoyili qo'llanadi.
+3. **Oylik lokal backup + R2 offsite + choraklik tiklash sinovi
+   yetarli.** Bu **tanlangan** chegara (2026-09-17, Saidakbar aka): kunlik
+   zaxira kerak emas. Offsite nusxa o'sha kundan boshlab R2 ga olinadi.
+   RPO va RTO raqamlari `Disaster recovery` bo'limida (RPO ≤ 30 kun,
+   RTO ~9 s). Ustidan *"tiklash sinovi o'tkazilmasa, backup yo'q deb
+   hisoblanadi"* tamoyili qo'llanadi.
 4. **Branch protection va secret scanning siz ishlash mumkin.** GitHub bu
    tarifda branch protection bermaydi (403). 2026-09-17 dan `main` ga
    to'g'ridan-to'g'ri push'ni `.githooks/pre-push` (`tools/push_guard.py`)
@@ -852,10 +887,10 @@ bash tools/backup.sh --restore-test  # alohida bazaga tiklaydi (jonliga tegmaydi
 
 | Narsa | Qiymat | Izoh |
 |---|---|---|
-| **RPO** | ≤ 30 kun | 30 kunda bir marta `pg_dump`, faqat lokal (2026-09-17 qarori); WAL arxivlash va PITR yo'q |
-| **RTO (baza)** | ~1 soat | `--restore-test` bilan mashq qilingan |
+| **RPO** | ≤ 30 kun | oylik `pg_dump` + har yurishda R2 offsite (2026-09-17); WAL arxivlash va PITR yo'q |
+| **RTO (baza)** | **~9 soniya** | o'lchandi 2026-09-17: `--restore-test` 17 MB dumpni 9 s da tiklandi |
 | **RTO (xizmat)** | 1–12 soat | on-call bir kishi; tungi avariya ertalabgacha |
-| Failover | **yo'q** | bitta mashina — zaxira nusxa yo'q |
+| Failover | **yo'q** | bitta mashina; zaxira R2 da bor, lekin xizmat qayta qurilmaguncha to'xtaydi |
 
 ⚠️ **Bitta mashina — eng katta DR riski.** Mashina butunlay yiqilsa baza
 backupdan tiklanadi, lekin **xizmat qayta qurilmaguncha to'xtaydi**.

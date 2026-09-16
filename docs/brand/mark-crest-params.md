@@ -1,7 +1,7 @@
-# RankWant belgi — Cho‘qqi (10) dizayn parametrlari
+# RankWant belgi — Crest (10) dizayn parametrlari
 
-**Manba:** `belgi-generated/10-choqqi.png` (1024×1024)  
-**SVG:** [`mark-choqqi.svg`](./mark-choqqi.svg)  
+**Manba:** `belgi-generated/10-crest.png` (1024×1024)  
+**SVG:** [`mark-crest.svg`](./mark-crest.svg)  
 **STATUS:** locked candidate (2026-09-10)
 
 ## Konsept
@@ -114,7 +114,7 @@ Yuqoridagi 9 nuqtali poligon, `fill=#102038`.
 
 ## Tekshiruv
 
-PNG vs SVG raster: o‘rtacha abs farq **~5** (0–255), farq>40 bo‘lgan piksellar **~2%**. Solishtirish: `mark-choqqi-compare.png`.
+PNG vs SVG raster: o‘rtacha abs farq **~5** (0–255), farq>40 bo‘lgan piksellar **~2%**. Solishtirish: `mark-crest-compare.png`.
 
 ## 16px / favicon
 
@@ -126,7 +126,7 @@ PNG vs SVG raster: o‘rtacha abs farq **~5** (0–255), farq>40 bo‘lgan pikse
 
 | Fayl              | O‘lcham               |
 | ----------------- | --------------------- |
-| `mark-choqqi.svg` | vektor, viewBox 1024  |
+| `mark-crest.svg` | vektor, viewBox 1024  |
 | favicon           | 32 / 48 / 180 (apple) |
 | app icon          | 512 / 1024            |
 

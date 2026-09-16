@@ -324,6 +324,38 @@ Baza va media **Docker volume ichida**: `rankwant_pgdata`,
 Natija: `C:\Users\nsn\backups\rankwant\` da `pg-*.sql.gz` va  
 `minio-*.tar.gz`.
 
+⚠️ **Chastota — oylik** (`RankWant Monthly Backup`, `DaysInterval = 30`,
+keyingi yurish 2026-10-16) → **RPO ≤ 30 kun**. 2026-09-17 gacha bu yerda
+«kunlik» deb yozilgan edi — haqiqat boshqa edi, o'lchandi va tuzatildi.
+
+✅ **Tiklash sinovi o'tdi: 2026-09-17** — `bash tools/backup.sh --restore-test`
+17 MB dumpni **9 soniyada** tiklandi: jadvallar to'la, havolalar butun, jonli
+bazaga tegilmadi (`restore_test` tashlandi). Ya'ni zaxira **haqiqiy** —
+taxmin emas. Doktrina: *«tiklash sinovi o'tkazilmasa, backup yo'q»*.
+
+⚠️ **Saqlash va chastota mos emas:** retention 30 kun (`RANKWANT_BACKUP_KEEP`),
+jadval ham 30 kun → amalda **bitta nusxa** saqlanadi. Bitta yurish yiqilsa
+**nol nusxa** qolishi mumkin. Yechim: `RANKWANT_BACKUP_KEEP=180`.
+
+✅ **Tashqi nusxa ENDI BOR: Cloudflare R2** (2026-09-17 da qo'shildi va
+o'lchandi). Har yurishdan keyin dump va MinIO arxivi `r2:<bucket>/backups`
+ga yuklanadi va **hajm solishtiriladi** — «rclone exit 0» yetarli emas,
+yarim yuklangan obyekt ham 0 qaytaradi.
+
+```bash
+bash tools/backup.sh              # lokal + R2 (kalitlar bo'lsa)
+bash tools/backup.sh --offsite    # R2 majburiy: kalitlar bo'lmasa YIQILADI
+bash tools/backup.sh --no-offsite # faqat lokal
+```
+
+Kalitlar `.env.handoff` da (`R2_*`), rclone esa **konteynerda** ishlaydi
+(`rclone/rclone:1.75`) — host'ga hech narsa o'rnatilmaydi.
+
+⚠️ Log qatorida `r2=` **holatni** ko'rsatadi va u to'rt xil bo'ladi:
+`ok` (yuklandi) · `skip` (`--no-offsite`) · `YOQ` (kalit yo'q) · `fail`.
+Faqat `fail` nolga teng bo'lmagan kod beradi — lekin `skip`/`YOQ` ni ham
+«ok» deb o'qib bo'lmaydi, aks holda offsite yo'qligi ko'rinmay qolardi.
+
 ⚠️ **Quyidagi amallardan OLDIN zaxira majburiy:**
 
 - VHDX siqish (`diskpart compact`) — Docker VHDX ichida tirik baza
@@ -335,8 +367,6 @@ Natija: `C:\Users\nsn\backups\rankwant\` da `pg-*.sql.gz` va
 ## 7. Endpointlar xaritasi
 
 228 yo'l / 335 operatsiya jadvali (domen bo'yicha, generatsiya qilinadi):
-
-🔴 D1 — VHDX siqish (~60 GB, sizning elevated oynangiz)    keyinro
 
 ⚠️ `staff` domeni — 150 operatsiya (API ning **45%**). O'zgartirish  
 kiritishda birinchi shu yerga qaraladi.

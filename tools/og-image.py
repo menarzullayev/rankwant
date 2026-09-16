@@ -32,7 +32,7 @@ MARK = ROOT / "apps" / "web" / "public" / "brand" / "mark-512.png"
 
 W, H = 1200, 630
 
-#: Brend ranglari `mark-choqqi.svg` dan o'lchangan — uslub tokenlari
+#: Brend ranglari `mark-crest.svg` dan o'lchangan — uslub tokenlari
 #: (`--rw-accent`, binafsha) ATAYLAB ishlatilmaydi: ulashish kartasi
 #: brend belgisi bilan bir xil oilada ko'rinishi kerak, tanlangan
 #: uslubga qarab o'zgarmaydi.
