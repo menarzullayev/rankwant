@@ -95,9 +95,13 @@ def main() -> int:
                 continue
             # `summary` birinchi: u amalga tegishli qisqa matn, `description`
             # esa ko'pincha butun ViewSet'ga tegishli (docstring).
-            desc = first_line(str(op.get("summary") or op.get("description") or ""))
+            summary = first_line(str(op.get("summary") or ""))
+            docstring = first_line(str(op.get("description") or ""))
+            desc = summary or docstring
             op_id = str(op.get("operationId", ""))
-            rows.append((domain_of(path), method.upper(), path, op_id, action_of(op_id), desc))
+            rows.append(
+                (domain_of(path), method.upper(), path, op_id, action_of(op_id), desc, docstring)
+            )
 
     by_domain: dict[str, list] = collections.defaultdict(list)
     for row in rows:
@@ -106,10 +110,18 @@ def main() -> int:
     method_count = collections.Counter(r[1] for r in rows)
     no_desc = [r for r in rows if not r[5]]
 
-    # A description reused by 3+ operations is the ViewSet docstring, not a
-    # per-action explanation — showing it 150 times adds nothing.
-    desc_count = collections.Counter(r[5] for r in rows if r[5])
+    # «Umumiy» faqat DOCSTRING uchun: u ViewSet'ga tegishli va 150 marta
+    # takrorlansa o'qishga hech narsa qo'shmaydi.
+    #
+    # ⚠️ `summary` bu qoidaga KIRMAYDI. U amal uchun ataylab yoziladi va
+    # bir amalning bir necha metodi (GET/PUT/DELETE) bir xil matn olishi
+    # NORMAL — masalan `validator` amali. Ilgari ikkalasi birga
+    # sanalgani uchun shunday tavsiflar «umumiy» bo'lib yig'ilardi va
+    # jadvalda sababsiz «—» chiqardi (o'lchandi: 56 qator).
+    desc_count = collections.Counter(r[6] for r in rows if r[6])
     generic = {text for text, n in desc_count.items() if n >= 3}
+    #: `summary` bilan qoplangan operatsiyalar — «tavsifsiz» hisoblanmaydi.
+    explained = sum(1 for r in rows if r[5])
 
     lines: list[str] = []
     add = lines.append
@@ -125,6 +137,7 @@ def main() -> int:
     add(f"| Operatsiyalar | **{len(rows)}** |")
     add(f"| Domenlar | **{len(by_domain)}** |")
     add(f"| Tavsifsiz operatsiya | **{len(no_desc)}** |")
+    add(f"| Amal tavsifi bor (summary) | **{explained}** |")
     add(f"| Umumiy (ViewSet) tavsif | **{sum(desc_count[t] for t in generic)}** |")
     add("")
     add("| Method | Soni |")
@@ -149,7 +162,7 @@ def main() -> int:
         add("")
         add("| Method | Yo'l | Amal | Vazifasi |")
         add("|---|---|---|---|")
-        for _dom, method, path, _op_id, action, desc in dom_rows:
+        for _dom, method, path, _op_id, action, desc, _doc in dom_rows:
             shown = "" if desc in generic else desc
             add(f"| {method} | `{path}` | {action or '—'} | {shown or '—'} |")
         add("")
@@ -161,7 +174,7 @@ def main() -> int:
         add("")
         add("| Method | Yo'l |")
         add("|---|---|")
-        for _dom, method, path, _op_id, _action, _desc in sorted(no_desc, key=lambda r: r[2]):
+        for _dom, method, path, _op_id, _action, _desc, _doc in sorted(no_desc, key=lambda r: r[2]):
             add(f"| {method} | `{path}` |")
         add("")
 

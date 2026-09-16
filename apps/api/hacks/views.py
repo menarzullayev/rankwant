@@ -63,7 +63,7 @@ def _attempt_from(value: Any) -> Attempt | None:
     )
 
 
-@crud_summaries(one="hack urinishi", many="hack urinishlari", only=("list", "retrieve"))
+@crud_summaries(one="hack urinishi", many="hack urinishlari", only=("list", "retrieve", "create"))
 class HackViewSet(
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,

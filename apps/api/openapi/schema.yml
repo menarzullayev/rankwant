@@ -119,6 +119,7 @@ paths:
     post:
       operationId: arena_answer_create
       description: Jonli savol-javob raundi.
+      summary: Javob yuborish
       parameters:
       - in: path
         name: slug
@@ -173,6 +174,7 @@ paths:
     post:
       operationId: arena_join_create
       description: Jonli savol-javob raundi.
+      summary: Raundga qo'shilish
       parameters:
       - in: path
         name: slug
@@ -194,6 +196,7 @@ paths:
     get:
       operationId: arena_standings_list
       description: Jonli savol-javob raundi.
+      summary: Jonli jadval
       parameters:
       - name: ordering
         required: false
@@ -375,6 +378,7 @@ paths:
     post:
       operationId: attempts_create
       description: Submit va urinishlar tarixi — PRD P0-3.
+      summary: Yangi urinish yaratish
       tags:
       - attempts
       requestBody:
@@ -895,6 +899,7 @@ paths:
     get:
       operationId: classrooms_assignments_list
       description: PRD P2-2 — o'qituvchi sinfi.
+      summary: Topshiriqlar
       parameters:
       - name: ordering
         required: false
@@ -923,6 +928,7 @@ paths:
     post:
       operationId: classrooms_assignments_create
       description: PRD P2-2 — o'qituvchi sinfi.
+      summary: Topshiriqlar
       parameters:
       - name: ordering
         required: false
@@ -964,6 +970,7 @@ paths:
     get:
       operationId: classrooms_assignments_progress_retrieve
       description: PRD P2-2 — o'qituvchi sinfi.
+      summary: O'quvchi progressi
       parameters:
       - in: path
         name: id
@@ -987,6 +994,7 @@ paths:
     post:
       operationId: classrooms_join_create
       description: PRD P2-2 — o'qituvchi sinfi.
+      summary: Kod bilan sinfga qo'shilish
       tags:
       - classrooms
       requestBody:
@@ -1290,6 +1298,7 @@ paths:
         1v1 — PRD Phase 3.
 
         `list` — kutish xonasi: hozir ochiq chaqiriqlar. O'z duellari `mine` da.
+      summary: Yangi duel yaratish
       tags:
       - duels
       requestBody:
@@ -1346,6 +1355,7 @@ paths:
         1v1 — PRD Phase 3.
 
         `list` — kutish xonasi: hozir ochiq chaqiriqlar. O'z duellari `mine` da.
+      summary: Duelni qabul qilish
       parameters:
       - in: path
         name: slug
@@ -1370,6 +1380,7 @@ paths:
         1v1 — PRD Phase 3.
 
         `list` — kutish xonasi: hozir ochiq chaqiriqlar. O'z duellari `mine` da.
+      summary: Duelni bekor qilish
       parameters:
       - in: path
         name: slug
@@ -1394,6 +1405,7 @@ paths:
         1v1 — PRD Phase 3.
 
         `list` — kutish xonasi: hozir ochiq chaqiriqlar. O'z duellari `mine` da.
+      summary: Mening duellarim
       parameters:
       - name: ordering
         required: false
@@ -1431,6 +1443,7 @@ paths:
         1v1 — PRD Phase 3.
 
         `list` — kutish xonasi: hozir ochiq chaqiriqlar. O'z duellari `mine` da.
+      summary: O'zaro hisob
       parameters:
       - in: path
         name: username
@@ -1728,6 +1741,7 @@ paths:
     post:
       operationId: hacks_create
       description: Hack yuborish va natijalar — ADR-0020.
+      summary: Yangi hack urinishi yaratish
       tags:
       - hacks
       requestBody:
@@ -2032,6 +2046,7 @@ paths:
       operationId: me_educations_list
       description: Ta'lim va ish tajribasi — bir xil «butun ro'yxatni almashtirish»
         qoidasi.
+      summary: Ta'lim tarixi
       tags:
       - me
       security:
@@ -2049,6 +2064,7 @@ paths:
       operationId: me_educations_update
       description: Ta'lim va ish tajribasi — bir xil «butun ro'yxatni almashtirish»
         qoidasi.
+      summary: Ta'lim tarixini almashtirish
       tags:
       - me
       requestBody:
@@ -2387,6 +2403,7 @@ paths:
     get:
       operationId: me_tokens_list
       description: PAT boshqaruvi. Ochiq token FAQAT yaratilganda qaytariladi.
+      summary: API tokenlar ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -2420,6 +2437,7 @@ paths:
     post:
       operationId: me_tokens_create
       description: PAT boshqaruvi. Ochiq token FAQAT yaratilganda qaytariladi.
+      summary: Yangi API token yaratish
       tags:
       - me
       requestBody:
@@ -2447,6 +2465,7 @@ paths:
     get:
       operationId: me_tokens_retrieve
       description: PAT boshqaruvi. Ochiq token FAQAT yaratilganda qaytariladi.
+      summary: Bitta API token
       parameters:
       - in: path
         name: id
@@ -2467,6 +2486,7 @@ paths:
     delete:
       operationId: me_tokens_destroy
       description: PAT boshqaruvi. Ochiq token FAQAT yaratilganda qaytariladi.
+      summary: API tokenni o'chirish
       parameters:
       - in: path
         name: id
@@ -2512,6 +2532,7 @@ paths:
       operationId: me_work_list
       description: Ta'lim va ish tajribasi — bir xil «butun ro'yxatni almashtirish»
         qoidasi.
+      summary: Ish tajribasi
       tags:
       - me
       security:
@@ -2529,6 +2550,7 @@ paths:
       operationId: me_work_update
       description: Ta'lim va ish tajribasi — bir xil «butun ro'yxatni almashtirish»
         qoidasi.
+      summary: Ish tajribasini almashtirish
       tags:
       - me
       requestBody:
@@ -3082,6 +3104,7 @@ paths:
         Ommaviy masala arxivi.
 
         Yozish Django admin orqali (PRD P0-2) — API faqat o'qish uchun.
+      summary: masalalar ro'yxati
       parameters:
       - in: query
         name: attempted
@@ -3194,6 +3217,7 @@ paths:
         Ommaviy masala arxivi.
 
         Yozish Django admin orqali (PRD P0-2) — API faqat o'qish uchun.
+      summary: Bitta masala
       parameters:
       - in: path
         name: slug
@@ -3221,6 +3245,7 @@ paths:
         Yechgan odam bu yerga umuman kelmaydi: unga tahlil allaqachon
         ochiq. Shu sababli bu yo'l faqat «yechmadim, lekin ko'raman»
         holati uchun.
+      summary: Tahririyat yechimi
       parameters:
       - in: path
         name: slug
@@ -3245,6 +3270,7 @@ paths:
         Ommaviy masala arxivi.
 
         Yozish Django admin orqali (PRD P0-2) — API faqat o'qish uchun.
+      summary: Sevimlilarga qo'shish / olib tashlash
       parameters:
       - in: path
         name: slug
@@ -3268,6 +3294,7 @@ paths:
         Ommaviy masala arxivi.
 
         Yozish Django admin orqali (PRD P0-2) — API faqat o'qish uchun.
+      summary: Sevimlilarga qo'shish / olib tashlash
       parameters:
       - in: path
         name: slug
@@ -3292,6 +3319,7 @@ paths:
         Ommaviy masala arxivi.
 
         Yozish Django admin orqali (PRD P0-2) — API faqat o'qish uchun.
+      summary: Masalani baholash
       parameters:
       - in: path
         name: slug
@@ -3330,6 +3358,7 @@ paths:
         Takroriy bosish yangi yozuv YARATMAYDI — ochiq xabar bittadan
         ortiq bo'lmasligi indeks bilan kafolatlangan, bu yerda esa u
         shunchaki yangilanadi.
+      summary: Shikoyat qilish
       parameters:
       - in: path
         name: slug
@@ -3412,6 +3441,7 @@ paths:
     post:
       operationId: problems_vote_create
       description: Yoqdi / yoqmadi. `value=0` — ovozni olib tashlaydi.
+      summary: Ovoz berish
       parameters:
       - in: path
         name: slug
@@ -3559,6 +3589,7 @@ paths:
     post:
       operationId: quizzes_submit_create
       description: PRD P2-6 — nazariy testlar.
+      summary: Testni topshirish
       parameters:
       - in: path
         name: slug
@@ -3712,6 +3743,7 @@ paths:
     get:
       operationId: qvant_shop_list
       description: 'Do''kon — ADR-0002: v1 da faqat kosmetika va qulaylik.'
+      summary: do'kon buyumlari ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -3737,6 +3769,7 @@ paths:
     get:
       operationId: qvant_shop_retrieve
       description: 'Do''kon — ADR-0002: v1 da faqat kosmetika va qulaylik.'
+      summary: Bitta do'kon buyumi
       parameters:
       - in: path
         name: code
@@ -3759,6 +3792,7 @@ paths:
     post:
       operationId: qvant_shop_purchase_create
       description: 'Do''kon — ADR-0002: v1 da faqat kosmetika va qulaylik.'
+      summary: Xarid qilish
       tags:
       - qvant
       requestBody:
@@ -4205,6 +4239,7 @@ paths:
     post:
       operationId: staff_arena_finalize_create
       description: '`questions` — tartiblangan savol id''lari; yozishda to''liq almashtiriladi.'
+      summary: Raundni yakunlash
       parameters:
       - in: path
         name: slug
@@ -4641,6 +4676,7 @@ paths:
         GET — joriy ro'yxat. PUT/POST — `[{problem, index_letter, points?}]`
         yoki `{"problems": [...]}` ko'rinishida; mavjud ContestProblem
         qatorlari TO'LIQ almashtiriladi (qisman yangilash yo'q).
+      summary: Musobaqa masalalari
       parameters:
       - name: ordering
         required: false
@@ -4690,6 +4726,7 @@ paths:
         GET — joriy ro'yxat. PUT/POST — `[{problem, index_letter, points?}]`
         yoki `{"problems": [...]}` ko'rinishida; mavjud ContestProblem
         qatorlari TO'LIQ almashtiriladi (qisman yangilash yo'q).
+      summary: Musobaqa masalalari
       parameters:
       - name: ordering
         required: false
@@ -4751,6 +4788,7 @@ paths:
         GET — joriy ro'yxat. PUT/POST — `[{problem, index_letter, points?}]`
         yoki `{"problems": [...]}` ko'rinishida; mavjud ContestProblem
         qatorlari TO'LIQ almashtiriladi (qisman yangilash yo'q).
+      summary: Musobaqa masalalari
       parameters:
       - name: ordering
         required: false
@@ -4934,6 +4972,7 @@ paths:
 
         Yaratish/tahrirlash/o'chirish yo'q: duel foydalanuvchilar o'rtasidagi
         kelishuv, xodim faqat kuzatadi va zarurat bo'lsa to'xtatadi.
+      summary: Duelni bekor qilish
       parameters:
       - in: path
         name: slug
@@ -4959,6 +4998,7 @@ paths:
 
         Yaratish/tahrirlash/o'chirish yo'q: duel foydalanuvchilar o'rtasidagi
         kelishuv, xodim faqat kuzatadi va zarurat bo'lsa to'xtatadi.
+      summary: Duelni yakunlash
       parameters:
       - in: path
         name: slug
@@ -5332,6 +5372,7 @@ paths:
         Izoh o'chirilmaydi, `is_hidden` qilinadi: qaror keyin ko'rib
         chiqilishi va muallifga nima uchun yashirilganini aytish mumkin
         bo'lishi kerak.
+      summary: yo'l xaritasi izohlari ro'yxati
       parameters:
       - in: query
         name: is_hidden
@@ -5384,6 +5425,7 @@ paths:
         Izoh o'chirilmaydi, `is_hidden` qilinadi: qaror keyin ko'rib
         chiqilishi va muallifga nima uchun yashirilganini aytish mumkin
         bo'lishi kerak.
+      summary: Yangi yo'l xaritasi izohi yaratish
       tags:
       - staff
       requestBody:
@@ -5415,6 +5457,7 @@ paths:
         Izoh o'chirilmaydi, `is_hidden` qilinadi: qaror keyin ko'rib
         chiqilishi va muallifga nima uchun yashirilganini aytish mumkin
         bo'lishi kerak.
+      summary: Bitta yo'l xaritasi izohi
       parameters:
       - in: path
         name: id
@@ -5441,6 +5484,7 @@ paths:
         Izoh o'chirilmaydi, `is_hidden` qilinadi: qaror keyin ko'rib
         chiqilishi va muallifga nima uchun yashirilganini aytish mumkin
         bo'lishi kerak.
+      summary: yo'l xaritasi izohini yangilash
       parameters:
       - in: path
         name: id
@@ -5478,6 +5522,7 @@ paths:
         Izoh o'chirilmaydi, `is_hidden` qilinadi: qaror keyin ko'rib
         chiqilishi va muallifga nima uchun yashirilganini aytish mumkin
         bo'lishi kerak.
+      summary: yo'l xaritasi izohini qisman yangilash
       parameters:
       - in: path
         name: id
@@ -5515,6 +5560,7 @@ paths:
         Izoh o'chirilmaydi, `is_hidden` qilinadi: qaror keyin ko'rib
         chiqilishi va muallifga nima uchun yashirilganini aytish mumkin
         bo'lishi kerak.
+      summary: yo'l xaritasi izohini o'chirish
       parameters:
       - in: path
         name: id
@@ -5538,6 +5584,7 @@ paths:
         Izoh o'chirilmaydi, `is_hidden` qilinadi: qaror keyin ko'rib
         chiqilishi va muallifga nima uchun yashirilganini aytish mumkin
         bo'lishi kerak.
+      summary: Izohni yashirish
       parameters:
       - in: path
         name: id
@@ -5576,6 +5623,7 @@ paths:
         Izoh o'chirilmaydi, `is_hidden` qilinadi: qaror keyin ko'rib
         chiqilishi va muallifga nima uchun yashirilganini aytish mumkin
         bo'lishi kerak.
+      summary: Izohni ko'rsatish
       parameters:
       - in: path
         name: id
@@ -5982,6 +6030,7 @@ paths:
         Foydalanuvchilar yuborgan nuqson xabarlari.
 
         Standart tartib — ochiqlari birinchi: navbat shu yerdan ko'riladi.
+      summary: shikoyatlar ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -6024,6 +6073,7 @@ paths:
         Foydalanuvchilar yuborgan nuqson xabarlari.
 
         Standart tartib — ochiqlari birinchi: navbat shu yerdan ko'riladi.
+      summary: Yangi shikoyat yaratish
       tags:
       - staff
       requestBody:
@@ -6053,6 +6103,7 @@ paths:
         Foydalanuvchilar yuborgan nuqson xabarlari.
 
         Standart tartib — ochiqlari birinchi: navbat shu yerdan ko'riladi.
+      summary: Bitta shikoyat
       parameters:
       - in: path
         name: id
@@ -6077,6 +6128,7 @@ paths:
         Foydalanuvchilar yuborgan nuqson xabarlari.
 
         Standart tartib — ochiqlari birinchi: navbat shu yerdan ko'riladi.
+      summary: shikoyatni yangilash
       parameters:
       - in: path
         name: id
@@ -6112,6 +6164,7 @@ paths:
         Foydalanuvchilar yuborgan nuqson xabarlari.
 
         Standart tartib — ochiqlari birinchi: navbat shu yerdan ko'riladi.
+      summary: shikoyatni qisman yangilash
       parameters:
       - in: path
         name: id
@@ -6147,6 +6200,7 @@ paths:
         Foydalanuvchilar yuborgan nuqson xabarlari.
 
         Standart tartib — ochiqlari birinchi: navbat shu yerdan ko'riladi.
+      summary: shikoyatni o'chirish
       parameters:
       - in: path
         name: id
@@ -7427,6 +7481,7 @@ paths:
 
         Qolgan staff yuzalari bilan bir xil qoida: faqat `is_staff` va faqat
         sessiya (PAT emas — `StaffViewSet` dagi `SessionOnly`).
+      summary: maktablar ro'yxati
       parameters:
       - name: ordering
         required: false
@@ -7476,6 +7531,7 @@ paths:
 
         Qolgan staff yuzalari bilan bir xil qoida: faqat `is_staff` va faqat
         sessiya (PAT emas — `StaffViewSet` dagi `SessionOnly`).
+      summary: Yangi maktab yaratish
       tags:
       - staff
       requestBody:
@@ -7513,6 +7569,7 @@ paths:
 
         Qolgan staff yuzalari bilan bir xil qoida: faqat `is_staff` va faqat
         sessiya (PAT emas — `StaffViewSet` dagi `SessionOnly`).
+      summary: Bitta maktab
       parameters:
       - in: path
         name: id
@@ -7544,6 +7601,7 @@ paths:
 
         Qolgan staff yuzalari bilan bir xil qoida: faqat `is_staff` va faqat
         sessiya (PAT emas — `StaffViewSet` dagi `SessionOnly`).
+      summary: maktabni qisman yangilash
       parameters:
       - in: path
         name: id
@@ -7586,6 +7644,7 @@ paths:
 
         Qolgan staff yuzalari bilan bir xil qoida: faqat `is_staff` va faqat
         sessiya (PAT emas — `StaffViewSet` dagi `SessionOnly`).
+      summary: maktabni o'chirish
       parameters:
       - in: path
         name: id
@@ -9473,6 +9532,7 @@ paths:
       operationId: updates_unread_count_retrieve
       description: '`/updates/` — arxiv. Har yozuv doimiy havola oladi (SEO, tashqi
         havola).'
+      summary: O'qilmaganlar soni
       tags:
       - updates
       security:

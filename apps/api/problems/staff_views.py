@@ -50,6 +50,7 @@ class StaffTopicViewSet(StaffViewSet):
     ordering = ["slug", "pk"]
 
 
+@crud_summaries(one="shikoyat", many="shikoyatlar")
 class StaffProblemReportViewSet(StaffViewSet):
     """Foydalanuvchilar yuborgan nuqson xabarlari.
 

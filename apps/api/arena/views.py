@@ -34,7 +34,16 @@ def _error(exc: ArenaError, http_status: int = status.HTTP_400_BAD_REQUEST) -> R
     )
 
 
-@crud_summaries(one="arena raundi", many="arena raundlari", only=("list", "retrieve"))
+@crud_summaries(
+    one="arena raundi",
+    many="arena raundlari",
+    only=("list", "retrieve"),
+    extra={
+        "join": "Raundga qo'shilish",
+        "answer": "Javob yuborish",
+        "standings": "Jonli jadval",
+    },
+)
 class ArenaViewSet(viewsets.ReadOnlyModelViewSet[ArenaRound]):
     """Jonli savol-javob raundi."""
 

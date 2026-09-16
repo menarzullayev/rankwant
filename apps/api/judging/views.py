@@ -34,7 +34,7 @@ from problems.models import Language, Problem
 MAX_SOURCE_CHARS = 4096
 
 
-@crud_summaries(one="urinish", many="urinishlar", only=("list", "retrieve"))
+@crud_summaries(one="urinish", many="urinishlar", only=("list", "retrieve", "create"))
 class AttemptViewSet(
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,

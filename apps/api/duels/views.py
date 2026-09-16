@@ -22,7 +22,17 @@ def _error(exc: DuelError) -> Response:
     )
 
 
-@crud_summaries(one="duel", many="duellar", only=("list", "retrieve"))
+@crud_summaries(
+    one="duel",
+    many="duellar",
+    only=("list", "retrieve", "create"),
+    extra={
+        "mine": "Mening duellarim",
+        "user_record": "O'zaro hisob",
+        "accept": "Duelni qabul qilish",
+        "cancel": "Duelni bekor qilish",
+    },
+)
 class DuelViewSet(
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,

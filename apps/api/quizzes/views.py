@@ -22,7 +22,12 @@ from quizzes.serializers import (
 from quizzes.services import submit
 
 
-@crud_summaries(one="test", many="testlar", only=("list", "retrieve"))
+@crud_summaries(
+    one="test",
+    many="testlar",
+    only=("list", "retrieve"),
+    extra={"submit": "Testni topshirish"},
+)
 class QuizViewSet(viewsets.ReadOnlyModelViewSet[Quiz]):
     """PRD P2-6 — nazariy testlar."""
 

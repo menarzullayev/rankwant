@@ -110,6 +110,7 @@ class StaffUserViewSet(StaffViewSet):
         return Response({"count": count}, status=status.HTTP_201_CREATED)
 
 
+@crud_summaries(one="maktab", many="maktablar")
 class StaffSchoolViewSet(StaffViewSet):
     """Maktab katalogi — to'liq CRUD (ADR-0017).
 

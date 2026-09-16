@@ -45,6 +45,7 @@ from core.models import (
     User,
     UsernameHistory,
 )
+from core.openapi_docs import crud_summaries
 from core.pagination import StandardPagination, TimeCursorPagination
 from core.serializers import (
     AccountDeleteSerializer,
@@ -758,6 +759,11 @@ class SolvedProblemsView(generics.ListAPIView[Any]):
         return self.get_paginated_response(data) if page is not None else Response(data)
 
 
+@crud_summaries(
+    one="API token",
+    many="API tokenlar",
+    only=("list", "retrieve", "create", "destroy"),
+)
 class ApiTokenViewSet(viewsets.ModelViewSet[ApiToken]):
     """PAT boshqaruvi. Ochiq token FAQAT yaratilganda qaytariladi."""
 

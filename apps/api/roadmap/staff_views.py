@@ -61,6 +61,11 @@ class StaffRoadmapViewSet(StaffViewSet):
         return Response(self.get_serializer(item).data)
 
 
+@crud_summaries(
+    one="yo'l xaritasi izohi",
+    many="yo'l xaritasi izohlari",
+    extra={"hide": "Izohni yashirish", "unhide": "Izohni ko'rsatish"},
+)
 class StaffRoadmapCommentViewSet(StaffViewSet):
     """Izohlar moderatsiyasi — post-modelleratsiya.
 

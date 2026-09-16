@@ -25,7 +25,10 @@ from core.staff import StaffViewSet
 @crud_summaries(
     one="musobaqa",
     many="musobaqalar",
-    extra={"rebuild_standings": "Turnik jadvalini qayta hisoblash"},
+    extra={
+        "rebuild_standings": "Turnik jadvalini qayta hisoblash",
+        "problems": "Musobaqa masalalari",
+    },
 )
 class StaffContestViewSet(StaffViewSet):
     queryset = Contest.objects.prefetch_related("problems__problem").select_related("mirror_of")

@@ -32,7 +32,12 @@ from updates.serializers import (
 )
 
 
-@crud_summaries(one="yangilik", many="yangiliklar", only=("list", "retrieve"))
+@crud_summaries(
+    one="yangilik",
+    many="yangiliklar",
+    only=("list", "retrieve"),
+    extra={"unread_count": "O'qilmaganlar soni"},
+)
 class SystemUpdateViewSet(
     mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet[SystemUpdate]
 ):

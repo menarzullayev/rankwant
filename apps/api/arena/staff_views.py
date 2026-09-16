@@ -21,7 +21,11 @@ from core.openapi_docs import crud_summaries
 from core.staff import StaffViewSet
 
 
-@crud_summaries(one="arena raundi", many="arena raundlari")
+@crud_summaries(
+    one="arena raundi",
+    many="arena raundlari",
+    extra={"finalize": "Raundni yakunlash"},
+)
 class StaffArenaViewSet(StaffViewSet):
     """`questions` — tartiblangan savol id'lari; yozishda to'liq almashtiriladi."""
 

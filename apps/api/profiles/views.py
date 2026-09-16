@@ -10,7 +10,7 @@ from django.db.models import OuterRef, Q, QuerySet, Subquery
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
-from drf_spectacular.utils import OpenApiParameter, extend_schema
+from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import exceptions, generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
@@ -182,12 +182,20 @@ class _CareerView(APIView):
 @extend_schema(
     request=EducationSerializer(many=True), responses={200: EducationSerializer(many=True)}
 )
+@extend_schema_view(
+    get=extend_schema(summary="Ta'lim tarixi"),
+    put=extend_schema(summary="Ta'lim tarixini almashtirish"),
+)
 class MyEducationsView(_CareerView):
     model = Education
     serializer_class = EducationSerializer
 
 
 @extend_schema(request=WorkSerializer(many=True), responses={200: WorkSerializer(many=True)})
+@extend_schema_view(
+    get=extend_schema(summary="Ish tajribasi"),
+    put=extend_schema(summary="Ish tajribasini almashtirish"),
+)
 class MyWorkView(_CareerView):
     model = WorkExperience
     serializer_class = WorkSerializer

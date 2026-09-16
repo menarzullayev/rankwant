@@ -25,7 +25,15 @@ from core.openapi_docs import crud_summaries
 from problems.models import Problem
 
 
-@crud_summaries(one="sinf", many="sinflar")
+@crud_summaries(
+    one="sinf",
+    many="sinflar",
+    extra={
+        "join": "Kod bilan sinfga qo'shilish",
+        "assignments": "Topshiriqlar",
+        "progress": "O'quvchi progressi",
+    },
+)
 class ClassroomViewSet(viewsets.ModelViewSet[Classroom]):
     """PRD P2-2 — o'qituvchi sinfi."""
 

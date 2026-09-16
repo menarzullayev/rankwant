@@ -18,7 +18,11 @@ from duels.staff_serializers import StaffDuelFinalizeSerializer, StaffDuelSerial
 from duels.views import _error
 
 
-@crud_summaries(one="duel", many="duellar")
+@crud_summaries(
+    one="duel",
+    many="duellar",
+    extra={"finalize": "Duelni yakunlash", "cancel": "Duelni bekor qilish"},
+)
 class StaffDuelViewSet(StaffViewSet):
     """`staff/duels/` — barcha holatdagi duellar.
 

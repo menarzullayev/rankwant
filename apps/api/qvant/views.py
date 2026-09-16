@@ -128,6 +128,12 @@ class MarathonView(APIView):
         )
 
 
+@crud_summaries(
+    one="do'kon buyumi",
+    many="do'kon buyumlari",
+    only=("list", "retrieve"),
+    extra={"purchase": "Xarid qilish"},
+)
 class ShopViewSet(viewsets.ReadOnlyModelViewSet[ShopItem]):
     """Do'kon — ADR-0002: v1 da faqat kosmetika va qulaylik."""
 

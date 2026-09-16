@@ -76,6 +76,18 @@ def _unlock_editorial(user: User, problem: Problem) -> None:
         )
 
 
+@crud_summaries(
+    one="masala",
+    many="masalalar",
+    only=("list", "retrieve"),
+    extra={
+        "favourite": "Sevimlilarga qo'shish / olib tashlash",
+        "rate": "Masalani baholash",
+        "vote": "Ovoz berish",
+        "report": "Shikoyat qilish",
+        "editorial": "Tahririyat yechimi",
+    },
+)
 class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
     """Ommaviy masala arxivi.
 
