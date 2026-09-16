@@ -7,7 +7,7 @@
 import fs from "node:fs";
 import { KEYS, CATEGORIES, PACK_SOURCES } from "./icon-keys.mjs";
 
-const RESOLVED = "C:/Users/nsn/project/cp/.tmp-verdict/pack-resolved.json";
+import { RESOLVED } from "./icon-paths.mjs";
 const OUT = new URL(
   "../docs/research/2026-09-15-icon-comparison/ICON-CATALOGUE.md",
   import.meta.url,

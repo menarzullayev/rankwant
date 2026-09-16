@@ -8,8 +8,7 @@
 import fs from "node:fs";
 import { KEYS } from "./icon-keys.mjs";
 
-const CACHE = "C:/Users/nsn/project/cp/.tmp-verdict/pack-lists";
-const MISSES = "C:/Users/nsn/project/cp/.tmp-verdict/pack-misses.txt";
+import { MISSES, PACK_LISTS as CACHE, RESOLVED } from "./icon-paths.mjs";
 
 const lists = {};
 const leafOf = (n) => n.slice(n.lastIndexOf("/") + 1);
@@ -19,7 +18,7 @@ for (const f of fs.readdirSync(CACHE)) {
 }
 
 const resolved = JSON.parse(
-  fs.readFileSync("C:/Users/nsn/project/cp/.tmp-verdict/pack-resolved.json", "utf8")
+  fs.readFileSync(RESOLVED, "utf8")
 );
 
 // Build a probe vocabulary per key: the key's own words + every name the key
