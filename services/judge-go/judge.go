@@ -213,6 +213,21 @@ func judge(ctx context.Context, job *Job, tests *store) *Result {
 			break
 		}
 		v := classify(out, test, job.Limits)
+
+		// ⚠️ `RE_SIGNAL` — kam uchraydigan va tushunarsiz holat: dastur
+		// kutilmaganda signal bilan o'ladi. 2026-09-17 da `04-idleness`
+		// shu yo'l bilan yiqildi va jurnalda faqat verdict bor edi,
+		// sabab esa yo'q — tashxis taxminga aylanib, bir marta noto'g'ri
+		// chiqdi. Endi o'lchangan qiymatlar yoziladi.
+		if v == VRESignal {
+			slog.Warn("signal bilan o'ldi",
+				"job", job.JobID, "test", test.Index,
+				"exit", out.ExitCode,
+				"cpu_ms", out.CPUMs, "limit_ms", job.Limits.TimeMS,
+				"wall_ms", out.WallMs, "peak_kb", out.PeakKB,
+				"cpu_killed", out.CPUKilled, "wall_killed", out.WallKilled,
+				"timeout", out.Timeout)
+		}
 		// Chiqish to'g'ri kelgan bo'lsa (dastur normal tugadi), yakuniy
 		// so'z checkerniki: tenglik solishtiruvi maxsus masalada noto'g'ri.
 		if useChecker && (v == VAC || v == VWA) {

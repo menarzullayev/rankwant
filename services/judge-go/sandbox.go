@@ -26,6 +26,13 @@ type runOutcome struct {
 	OOMKill  bool
 	Timeout  bool // wall clock chegarasi
 	OutputEx bool // chiqish chegarasidan oshdi → OLE
+
+	// O'ldirilish SABABI. Verdict shu ikkisiga tayanadi, lekin ilgari ular
+	// jurnalga chiqmasdi: 2026-09-17 da `04-idleness` CI'da `IDLENESS`
+	// o'rniga `RE_SIGNAL` berdi (total 2003 ms, CPU ~0) va sabab
+	// ko'rinmadi. Taxmin qilish o'rniga o'lchangan qiymat yoziladi.
+	CPUKilled  bool
+	WallKilled bool
 }
 
 // cgroup v2 subtree — CPU va xotira o'lchovining yagona ishonchli manbai.
@@ -512,7 +519,9 @@ func finishRun(cg *cgroup, out, errb *capBuffer, runErr error,
 		OutputEx: out.Exceeded || errb.Exceeded,
 		// CPU kuzatuvchisi to'xtatgan bo'lsa, bu TIMEOUT emas — CPU limiti.
 		// classify() cpu_ms ni limitga solishtirib TLE beradi.
-		Timeout: wallTimedOut(cpuKilled, wallKilled, wall, wallSec),
+		Timeout:    wallTimedOut(cpuKilled, wallKilled, wall, wallSec),
+		CPUKilled:  cpuKilled,
+		WallKilled: wallKilled,
 	}, nil
 }
 
