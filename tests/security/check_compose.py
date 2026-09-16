@@ -12,13 +12,32 @@ from pathlib import Path
 
 import yaml
 
+# Kodlash muammosining IKKINCHI yarmi: yuqoridagi `read_text` o'qishni
+# tuzatadi, bu esa YOZISHNI. Hisobotdagi `✓`/`✗` Windows'da quvurga
+# yo'naltirilganda `cp1252` ga sig'maydi va skript o'z natijasini chop
+# etayotib quladi. Sabab va to'liq izoh — `tools/_console.py`; guard shu
+# yerda takrorlanadi, chunki bu fayl `tests/` ichida va `tools/` ni
+# import qilmaydi (bake-off harness'ida ham xuddi shunday qilingan).
+for _stream in (sys.stdout, sys.stderr):
+    if (getattr(_stream, "encoding", "") or "").lower().replace("-", "") != "utf8":
+        try:
+            _stream.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, ValueError, OSError):
+            pass
+
 ROOT = Path(__file__).resolve().parent.parent.parent
 #: Judge host'da BO'LMASLIGI kerak bo'lgan sozlamalar
 FORBIDDEN = ("DATABASE_URL", "DJANGO_SECRET_KEY", "POSTGRES_PASSWORD")
 
 
 def main() -> int:
-    compose = yaml.safe_load((ROOT / "docker-compose.yml").read_text())
+    # `encoding="utf-8"` SHART: `read_text()` kodlashni LOKALdan oladi va
+    # Windows'da (cp1252) `docker-compose.yml` dagi izohlarning `⚠️`/`—`
+    # belgilarida `UnicodeDecodeError` bilan quladi. Ya'ni judge
+    # izolyatsiyasini tekshiradigan skript ishlab chiquvchi mashinasida
+    # UMUMAN ishlamasdi; CI Linux'da UTF-8 bo'lgani uchun buni hech kim
+    # sezmagan (o'lchandi 2026-09-16).
+    compose = yaml.safe_load((ROOT / "docker-compose.yml").read_text(encoding="utf-8"))
     services = compose.get("services", {})
 
     problems: list[str] = []
