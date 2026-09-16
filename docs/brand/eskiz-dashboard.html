@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RankWant · Brand Studio · Eskiz 01–10</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&family=Syne:wght@500;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #102038;
+      --ink-soft: #3a4a63;
+      --blue: #4470e6;
+      --blue-bright: #5b8cff;
+      --mid: #1074dc;
+      --paper: #f3efe6;
+      --paper-2: #e7e1d4;
+      --line: #cfc6b4;
+      --white: #f7f4ee;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "IBM Plex Sans", sans-serif;
+      min-height: 100vh;
+    }
+    .wrap {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 100vh;
+    }
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      padding: 22px 28px 18px;
+      border-bottom: 1px solid var(--line);
+    }
+    .brand-kicker {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+    h1 {
+      font-family: Syne, sans-serif;
+      font-weight: 800;
+      font-size: clamp(28px, 3.4vw, 42px);
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+      margin-top: 6px;
+    }
+    .meta {
+      text-align: right;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--ink-soft);
+    }
+    .meta strong { color: var(--ink); font-weight: 500; }
+    main {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 0;
+    }
+    nav {
+      border-right: 1px solid var(--line);
+      overflow: auto;
+      padding: 12px 0;
+    }
+    .nav-btn {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 11px 20px;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      text-align: left;
+      cursor: pointer;
+      font: inherit;
+    }
+    .nav-btn:hover { background: color-mix(in srgb, var(--blue) 7%, transparent); }
+    .nav-btn[aria-current="true"] {
+      background: var(--ink);
+      color: var(--paper);
+    }
+    .nav-btn[aria-current="true"] .n { color: var(--blue-bright); }
+    .n {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      color: var(--blue);
+    }
+    .nav-btn small {
+      display: block;
+      font-size: 12px;
+      opacity: 0.72;
+      margin-top: 2px;
+    }
+    .stage {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-width: 0;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+      align-items: center;
+      padding: 14px 24px;
+      border-bottom: 1px solid var(--line);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12px;
+    }
+    .seg {
+      display: flex;
+      border: 1px solid var(--line);
+      background: var(--white);
+    }
+    .seg button {
+      border: 0;
+      background: transparent;
+      padding: 6px 10px;
+      font: inherit;
+      color: var(--ink-soft);
+      cursor: pointer;
+    }
+    .seg button[aria-pressed="true"] {
+      background: var(--ink);
+      color: var(--paper);
+    }
+    .canvas-row {
+      display: grid;
+      grid-template-columns: minmax(280px, 1.1fr) minmax(240px, 0.9fr);
+      min-height: 0;
+    }
+    .board {
+      display: grid;
+      place-items: center;
+      padding: 36px;
+      min-height: 420px;
+      transition: background 180ms ease;
+    }
+    .board[data-ground="light"] { background: var(--white); }
+    .board[data-ground="paper"] { background: var(--paper-2); }
+    .board[data-ground="navy"] { background: var(--ink); }
+    .mark { width: min(46vw, 420px); height: auto; }
+    .mark img, .mini img, .size-box img, .strip img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .board[data-ground="navy"] img { background: #fff; }
+    img.mono { filter: grayscale(1) contrast(1.15); }
+    .copy {
+      padding: 28px 32px 24px;
+      border-left: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .copy h2 {
+      font-family: Syne, sans-serif;
+      font-size: 28px;
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+    .copy p { color: var(--ink-soft); line-height: 1.5; max-width: 36ch; }
+    .lockup {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding-top: 8px;
+    }
+    .lockup .mini { width: 36px; height: 36px; }
+    .word {
+      font-family: Syne, sans-serif;
+      font-weight: 700;
+      font-size: 28px;
+      letter-spacing: -0.04em;
+    }
+    .sizes {
+      display: flex;
+      gap: 22px;
+      align-items: end;
+      padding-top: 8px;
+      border-top: 1px solid var(--line);
+    }
+    .size-box { text-align: center; }
+    .size-box span {
+      display: block;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 10px;
+      color: var(--ink-soft);
+      margin-top: 6px;
+    }
+    .swatch {
+      display: flex;
+      gap: 8px;
+    }
+    .swatch i {
+      width: 18px;
+      height: 18px;
+      display: block;
+    }
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 28px;
+      border-top: 1px solid var(--line);
+      background: var(--paper-2);
+    }
+    .strip {
+      display: flex;
+      gap: 6px;
+      overflow: auto;
+    }
+    .strip button {
+      width: 64px;
+      height: 64px;
+      border: 1px solid var(--line);
+      background: var(--white);
+      padding: 8px;
+      cursor: pointer;
+    }
+    .strip button[aria-current="true"] { outline: 2px solid var(--blue); outline-offset: 1px; }
+    .strip svg { width: 100%; height: 100%; }
+    .note {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      color: var(--ink-soft);
+      max-width: 42ch;
+    }
+    @media (max-width: 900px) {
+      main, .canvas-row { grid-template-columns: 1fr; }
+      nav { border-right: 0; border-bottom: 1px solid var(--line); display: flex; overflow: auto; }
+      .nav-btn { min-width: 180px; }
+      .copy { border-left: 0; border-top: 1px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div class="brand-kicker">RankWant · Brand Studio</div>
+        <h1>Eskiz 01–10</h1>
+      </div>
+      <div class="meta">
+        Hozirgi mark <strong>64 / 100</strong><br />
+        Maqsad: yorliqda tanilish<br />
+        Holat: AI rasm — qulflanmagan
+      </div>
+    </header>
+
+    <main>
+      <nav id="nav" aria-label="Yo‘nalishlar"></nav>
+      <section class="stage">
+        <div class="toolbar">
+          <span>Fon</span>
+          <div class="seg" id="grounds">
+            <button data-ground="light" aria-pressed="true">oq</button>
+            <button data-ground="paper">qog‘oz</button>
+            <button data-ground="navy">navy</button>
+          </div>
+          <span>Invert</span>
+          <div class="seg" id="ink">
+            <button data-ink="brand" aria-pressed="true">brend</button>
+            <button data-ink="mono">1 rang</button>
+          </div>
+        </div>
+        <div class="canvas-row">
+          <div class="board" id="board" data-ground="light">
+            <div class="mark" id="hero"></div>
+          </div>
+          <aside class="copy">
+            <div class="brand-kicker" id="kicker">01</div>
+            <h2 id="title">Monogram</h2>
+            <p id="blurb"></p>
+            <div class="lockup">
+              <div class="mini" id="lockup-mark"></div>
+              <div class="word" id="word">RankWant</div>
+            </div>
+            <div class="sizes">
+              <div class="size-box"><div id="s64" style="width:64px;height:64px"></div><span>64</span></div>
+              <div class="size-box"><div id="s32" style="width:32px;height:32px"></div><span>32</span></div>
+              <div class="size-box"><div id="s16" style="width:16px;height:16px"></div><span>16</span></div>
+            </div>
+            <div class="swatch">
+              <i style="background:#102038"></i>
+              <i style="background:#4470e6"></i>
+              <i style="background:#1074dc"></i>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="strip" id="strip"></div>
+      <p class="note">AI generatsiya — konsepsiya, yakuniy SVG emas. Chapdan tanlang. Tanlanganini keyin toza vektorga o‘giramiz.</p>
+    </footer>
+  </div>
+
+  <script>
+    const items = [
+      { id: "now", num: "00", name: "Hozirgi Crest", src: "eskiz-ai/00-crest-now.png", blurb: "Nazorat. 512 da chiroyli, 16px da uchburchak + quyosh." },
+      { id: "v1", num: "01", name: "Monogram RW", src: "eskiz-ai/01-monogram.png", blurb: "Brend = harf. Qulflangan RW, ko‘k chiziq." },
+      { id: "v2", num: "02", name: "W-crest", src: "eskiz-ai/02-w-crest.png", blurb: "W harfi + ikki cho‘qqi. Quyosh yo‘q." },
+      { id: "v3", num: "03", name: "Crest 2.0", src: "eskiz-ai/03-crest-2.png", blurb: "Eski belgi, nuqta cho‘qqi uchida." },
+      { id: "v4", num: "04", name: "Reyting Δ", src: "eskiz-ai/04-delta.png", blurb: "Delta = o‘sish. CF ustunlari yo‘q." },
+      { id: "v5", num: "05", name: "Want energiya", src: "eskiz-ai/05-want-spark.png", blurb: "Uchqun + nuqta. Tog‘ emas." },
+      { id: "v6", num: "06", name: "Wordmark", src: "eskiz-ai/06-wordmark.png", blurb: "Nomning o‘zi logotip." },
+      { id: "v7", num: "07", name: "Juft belgi", src: "eskiz-ai/07-dual.png", blurb: "W-crest + Qvant seed." },
+      { id: "v8", num: "08", name: "HUD", src: "eskiz-ai/08-hud.png", blurb: "Terminal ramka, ko‘tarilish chizig‘i." },
+      { id: "v9", num: "09", name: "Ufq + cho‘qqi", src: "eskiz-ai/09-horizon.png", blurb: "Bitta cho‘qqi — rasm ikonkasi emas." },
+      { id: "v10", num: "10", name: "Muhr RW", src: "eskiz-ai/10-stamp.png", blurb: "Olimpiada muhr. Dumaloq RW." }
+    ];
+
+    let current = "v2";
+    let mono = false;
+
+    function imgTag(src, cls) {
+      return `<img src="${src}" alt="" class="${cls || ""}${mono ? " mono" : ""}">`;
+    }
+    function render(id) {
+      current = id;
+      const item = items.find((x) => x.id === id);
+      document.getElementById("kicker").textContent = item.num;
+      document.getElementById("title").textContent = item.name;
+      document.getElementById("blurb").textContent = item.blurb;
+      document.getElementById("hero").innerHTML = imgTag(item.src);
+      document.getElementById("lockup-mark").innerHTML = imgTag(item.src);
+      document.getElementById("s64").innerHTML = imgTag(item.src);
+      document.getElementById("s32").innerHTML = imgTag(item.src);
+      document.getElementById("s16").innerHTML = imgTag(item.src);
+      document.querySelectorAll("#nav .nav-btn, #strip button").forEach((b) => {
+        b.setAttribute("aria-current", b.dataset.id === id ? "true" : "false");
+      });
+    }
+
+    const nav = document.getElementById("nav");
+    const strip = document.getElementById("strip");
+    items.forEach((item) => {
+      const btn = document.createElement("button");
+      btn.className = "nav-btn";
+      btn.dataset.id = item.id;
+      btn.innerHTML = `<span class="n">${item.num}</span><span>${item.name}<small>${item.blurb}</small></span>`;
+      btn.addEventListener("click", () => render(item.id));
+      nav.appendChild(btn);
+      const t = document.createElement("button");
+      t.dataset.id = item.id;
+      t.title = item.name;
+      t.innerHTML = imgTag(item.src);
+      t.addEventListener("click", () => render(item.id));
+      strip.appendChild(t);
+    });
+
+    document.getElementById("grounds").addEventListener("click", (e) => {
+      const b = e.target.closest("button");
+      if (!b) return;
+      document.querySelectorAll("#grounds button").forEach((x) => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
+      document.getElementById("board").dataset.ground = b.dataset.ground;
+    });
+    document.getElementById("ink").addEventListener("click", (e) => {
+      const b = e.target.closest("button");
+      if (!b) return;
+      document.querySelectorAll("#ink button").forEach((x) => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
+      mono = b.dataset.ink === "mono";
+      render(current);
+    });
+
+    render("v2");
+  </script>
+</body>
+</html>

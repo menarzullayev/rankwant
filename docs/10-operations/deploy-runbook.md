@@ -324,6 +324,22 @@ Baza va media **Docker volume ichida**: `rankwant_pgdata`,
 Natija: `C:\Users\nsn\backups\rankwant\` da `pg-*.sql.gz` va  
 `minio-*.tar.gz`.
 
+⚠️ **Chastota — oylik** (`RankWant Monthly Backup`, `DaysInterval = 30`,
+keyingi yurish 2026-10-16) → **RPO ≤ 30 kun**. 2026-09-17 gacha bu yerda
+«kunlik» deb yozilgan edi — haqiqat boshqa edi, o'lchandi va tuzatildi.
+
+✅ **Tiklash sinovi o'tdi: 2026-09-17** — `bash tools/backup.sh --restore-test`
+17 MB dumpni **9 soniyada** tiklandi: jadvallar to'la, havolalar butun, jonli
+bazaga tegilmadi (`restore_test` tashlandi). Ya'ni zaxira **haqiqiy** —
+taxmin emas. Doktrina: *«tiklash sinovi o'tkazilmasa, backup yo'q»*.
+
+⚠️ **Saqlash va chastota mos emas:** retention 30 kun (`RANKWANT_BACKUP_KEEP`),
+jadval ham 30 kun → amalda **bitta nusxa** saqlanadi. Bitta yurish yiqilsa
+**nol nusxa** qolishi mumkin. Yechim: `RANKWANT_BACKUP_KEEP=180`.
+
+⚠️ **Tashqi nusxa hali yo'q:** zaxira o'sha C: diskda yotadi — disk o'lsa
+zaxira ham ketadi. Keyingi qadam: R2 (`R2_*` kalitlari `.env.handoff` da bor).
+
 ⚠️ **Quyidagi amallardan OLDIN zaxira majburiy:**
 
 - VHDX siqish (`diskpart compact`) — Docker VHDX ichida tirik baza
@@ -335,8 +351,6 @@ Natija: `C:\Users\nsn\backups\rankwant\` da `pg-*.sql.gz` va
 ## 7. Endpointlar xaritasi
 
 228 yo'l / 335 operatsiya jadvali (domen bo'yicha, generatsiya qilinadi):
-
-🔴 D1 — VHDX siqish (~60 GB, sizning elevated oynangiz)    keyinro
 
 ⚠️ `staff` domeni — 150 operatsiya (API ning **45%**). O'zgartirish  
 kiritishda birinchi shu yerga qaraladi.
