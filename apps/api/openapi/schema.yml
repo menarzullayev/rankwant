@@ -10535,10 +10535,21 @@ components:
         is_frozen:
           type: boolean
           readOnly: true
+        hack_room:
+          type: boolean
+        is_hack_open:
+          type: boolean
+          readOnly: true
+        hack_open_until:
+          type: string
+          format: date-time
+          readOnly: true
       required:
       - end_at
+      - hack_open_until
       - is_finished
       - is_frozen
+      - is_hack_open
       - is_running
       - slug
       - start_at
@@ -10580,6 +10591,15 @@ components:
         is_frozen:
           type: boolean
           readOnly: true
+        hack_room:
+          type: boolean
+        is_hack_open:
+          type: boolean
+          readOnly: true
+        hack_open_until:
+          type: string
+          format: date-time
+          readOnly: true
         description:
           type: string
         problems:
@@ -10589,8 +10609,10 @@ components:
           readOnly: true
       required:
       - end_at
+      - hack_open_until
       - is_finished
       - is_frozen
+      - is_hack_open
       - is_running
       - problems
       - slug
@@ -16594,6 +16616,26 @@ components:
           minimum: 0
           format: int64
         penalty:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        total_score:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        hack_score:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        hacks_successful:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        hacks_unsuccessful:
           type: integer
           maximum: 9223372036854775807
           minimum: 0

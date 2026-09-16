@@ -11,7 +11,9 @@ from __future__ import annotations
 from datetime import timedelta
 
 import pytest
+from django.urls import reverse
 from django.utils import timezone
+from rest_framework.test import APIClient
 
 from contests.models import Contest, Standing
 from contests.services import finalize_contest, rebuild_standings
@@ -228,6 +230,27 @@ class TestStandings:
         assert hacker.hacks_unsuccessful == 1
         # Musbat maydon nolga qisiladi, haqiqiy ball ustunda ko'rinadi
         assert hacker.total_score == 0
+
+    def test_javobda_hack_ustunlari_boradi(self, contest, defender_attempt, user) -> None:
+        """Ustun API'da bo'lmasa, uni hech qanday UI ko'rsata olmaydi.
+
+        `total_score` ham shu yerda: u IOI tartibini belgilaydi, lekin
+        jadval javobida umuman yo'q edi.
+        """
+        contest.scoring_type = Contest.Scoring.IOI
+        contest.hack_room = True
+        contest.save(update_fields=["scoring_type", "hack_room"])
+        _in_contest(defender_attempt, contest)
+        _hack(contest, defender_attempt, user)
+        rebuild_standings(contest)
+
+        body = APIClient().get(reverse("contest-standings", args=[contest.slug])).json()
+
+        row = next(r for r in body["results"] if r["username"] == user.username)
+        assert row["hack_score"] == 100
+        assert row["hacks_successful"] == 1
+        assert row["hacks_unsuccessful"] == 0
+        assert row["total_score"] == 100
 
     def test_uphack_jadvalni_ozgartirmaydi(self, contest, defender_attempt, user) -> None:
         """Reyting allaqachon tarqalgan — jadval qayta yozilmaydi (ADR-0020)."""
