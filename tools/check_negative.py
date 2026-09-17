@@ -2171,6 +2171,60 @@ def neg_decisions_deploy_lock_removed() -> tuple[bool, str]:
     )
 
 
+_TRIAL_WORKFLOW = (
+    "name: Runner self-test\n"
+    "on:\n  workflow_dispatch:\n"
+    "jobs:\n  selftest:\n    runs-on: [self-hosted, rankwant-container]\n"
+    "    steps:\n      - run: echo ok\n"
+)
+
+
+def _decisions_sandbox(extra_workflows: dict[str, str]) -> tuple[int, str]:
+    """`check_decisions.py` on a copy of the files it reads, plus extra workflows.
+
+    Writing a workflow into the real `.github/workflows` could overwrite a real
+    one or be left behind if the run is killed; a copy cannot.
+    """
+    files = (
+        "tools/check_decisions.py",
+        "tools/_console.py",
+        "tools/backup.sh",
+        "tools/push_guard.py",
+        "tools/deploy.sh",
+        ".githooks/pre-push",
+        "CONTRIBUTING.md",
+        "CLAUDE.md",
+    )
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        for rel in files:
+            (root / rel).parent.mkdir(parents=True, exist_ok=True)
+            (root / rel).write_bytes((ROOT / rel).read_bytes())
+        workflows = root / ".github/workflows"
+        workflows.mkdir(parents=True)
+        for path in (ROOT / ".github/workflows").glob("*.yml"):
+            (workflows / path.name).write_bytes(path.read_bytes())
+        for name, text in extra_workflows.items():
+            (workflows / name).write_text(text, encoding="utf-8")
+        return run([PY, str(root / "tools/check_decisions.py")])
+
+
+def neg_decisions_trial_label_selftest_allowed() -> tuple[bool, str]:
+    # Positive control: the exception must really let the trial self-test pass,
+    # or the trial runner is pushed back onto the production label.
+    code, out = _decisions_sandbox({"runner-selftest.yml": _TRIAL_WORKFLOW})
+    if code != 0:
+        return False, f"decisions/sinov label'i: self-test rad etildi (exit {code}) — {out[-160:]}"
+    return True, "decisions/sinov label'i: runner-selftest.yml o'tdi (exit 0)"
+
+
+def neg_decisions_trial_label_scoped() -> tuple[bool, str]:
+    code, out = _decisions_sandbox({"ci-trial.yml": _TRIAL_WORKFLOW})
+    if code != 1 or "CI faqat self-hosted" not in out:
+        return False, f"decisions/sinov label'i boshqa workflow'da: exit {code} — {out[-160:]}"
+    return True, "decisions/sinov label'i boshqa workflow'da: tutildi (exit 1)"
+
+
 # ── Deploy gate: agents deploy only a green `main` (owner decision 2026-09-17) ──
 
 _GATE_SHA = "a" * 40
@@ -2875,6 +2929,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("qarorlar jadvali o'chsa tutilsin", neg_decisions_table_removed),
             ("deploy darvozasi uzilsa tutilsin", neg_decisions_deploy_gate_unwired),
             ("deploy qulfi olib tashlansa tutilsin", neg_decisions_deploy_lock_removed),
+            ("sinov label'i self-test'da o'tadi", neg_decisions_trial_label_selftest_allowed),
+            ("sinov label'i boshqa workflow'da tutilsin", neg_decisions_trial_label_scoped),
         ],
     ),
     (

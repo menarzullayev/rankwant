@@ -25,6 +25,10 @@ _console.force_utf8()
 
 ROOT = Path(__file__).resolve().parent.parent
 SELF_HOSTED = "[self-hosted, rankwant]"
+# A runner under trial gets its own label, and only its self-test may target it.
+# On 2026-09-17 a trial runner registered with the production label took real CI
+# jobs and failed them, because this rule left the self-test no other label.
+TRIAL_RUNNER = {"runner-selftest.yml": "[self-hosted, rankwant-container]"}
 
 
 class Unreadable(Exception):
@@ -73,9 +77,10 @@ def ci_self_hosted_only() -> str | None:
     bad: list[str] = []
     for path in workflows:
         text = read(path.relative_to(ROOT).as_posix())
+        allowed = {SELF_HOSTED, TRIAL_RUNNER.get(path.name, SELF_HOSTED)}
         for lineno, line in enumerate(text.splitlines(), 1):
             match = re.match(r"\s*runs-on:\s*(.*?)\s*$", line)
-            if match and match.group(1) != SELF_HOSTED:
+            if match and match.group(1) not in allowed:
                 bad.append(f"{path.name}:{lineno} `{match.group(1) or '(blok)'}`")
     if bad:
         return "faqat self-hosted runner (bepul daqiqalar tugagan): " + ", ".join(bad)
