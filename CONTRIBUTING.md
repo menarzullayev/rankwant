@@ -19,6 +19,34 @@ Qaerdan boshlash: [INDEX.md](INDEX.md) → [docs/README.md](docs/README.md)
 - Commit muallifi haqiqiy bo'lishi shart: `@example.com`, `.test`, `localhost` kabi soxta
   manzilli commit'lar push qilinmaydi. Eski tarix `.mailmap` orqali to'g'rilangan.
 
+## Parallel agentlar
+
+Bu mashinada bir nechta agent (Claude, WorkBuddy) bitta repo va bitta jonli stack bilan
+ishlaydi. Qoidalar 2026-09-17 kechqurunidan keyin yozildi: o'sha kuni ish asosiy
+checkout'da branch'siz olib borildi va jonli `api` `tools/deploy.sh` siz qayta yaratildi —
+natijada 21 ta fayl bitta savatda qoldi va production'da qaysi commit ishlayotganini kod
+aytmay qo'ydi (`org.rankwant.git-sha` yorlig'i `unknown`).
+
+- **Har ish o'z worktree'sida va branch'ida:**
+  `git worktree add -b feat/<mavzu> C:/Users/nsn/project/wt/<mavzu> origin/main`.
+  Worktree `cp/` ichida ochilmaydi. Bitta PR — bitta mavzu.
+- **Asosiy checkout (`cp/rankwant`) `main` da va toza qoladi.** Rejali Windows vazifalari
+  skriptlarni aynan shu papkadan o'qiydi (`RankWant Monthly Backup` → `tools/backup.sh`,
+  `RankWant Tunnel Monitor` → `tools/monitor.ps1`), shuning uchun u yerda yarim tahrirlangan
+  fayl yoki begona branch turmasligi kerak.
+- **Deploy faqat `tools/deploy.sh` orqali.** U darvoza (`tools/check_deploy_gate.py`) va
+  qulfni o'zi bajaradi, obrazga commit yorlig'ini yozadi. Qo'lda `docker compose up` bilan
+  production yangilanmaydi: darvoza ham, qulf ham chetlab o'tiladi.
+- **Compose va `.env` o'zgarishi kod bilan birga PR'ga tushadi.** Commit qilinmagan
+  `docker-compose*.yml` bo'lsa darvoza deploy'ni to'xtatadi — jonli stack o'sha fayl bilan
+  ko'tarilgan bo'lishi va deploy uni jimgina yo'qotishi mumkin.
+- **PR'lar ketma-ket.** CI bitta self-hosted runner'da; bir vaqtda ikki PR ochilsa job'lar
+  «not acquired» bilan bekor bo'ladi.
+- **Boshqa agentning ish daraxtiga tegilmaydi:** uning commit qilinmagan fayllarini
+  o'zgartirmang, `git pull`/`checkout` qilmang, faqat o'qing.
+- `tools/check_negative.py` ishlayotgan worktree'da fayllarni mutatsiya qiladi — o'sha
+  vaqtda o'sha worktree'da commit qilinmaydi.
+
 ## Til
 
 Qaror (2026-09-17): repo **aralash tilda qoladi**, migratsiya rejalashtirilmagan —
