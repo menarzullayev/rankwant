@@ -23,13 +23,12 @@ services:
     environment:
       RUNNER_REPO: https://github.com/menarzullayev/rankwant
       RUNNER_NAME: ${RUNNER_NAME:-nsn-pc-rankwant-container}
-      # ⚠️ `tools/check_decisions.py` enforces the owner's "self-hosted only"
-      # decision by matching `runs-on:` EXACTLY, so a migration-specific test
-      # label would have meant loosening that guard. The runner therefore
-      # carries the standard label, and running it alongside the old WSL
-      # runner would mean two online runners racing for the same jobs —
-      # stop the old one first. See README.md.
-      RUNNER_LABELS: ${RUNNER_LABELS:-self-hosted,Linux,X64,rankwant}
+      # ⚠️ TRIAL label, never the production one. `tools/check_decisions.py`
+      # permits only `runner-selftest.yml` to target it. On 2026-09-17 a trial
+      # runner registered under the production label took real CI jobs and
+      # failed them, because that rule left the self-test no other option.
+      # Production CI stays on the WSL runner until this trial is proven.
+      RUNNER_LABELS: ${RUNNER_LABELS:-self-hosted,Linux,X64,rankwant-container}
       RUNNER_TOKEN: ${RUNNER_TOKEN:-}
       RUNNER_WORKDIR: /work
       # The Windows path that /work maps to. The entrypoint derives
@@ -45,6 +44,15 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       # Workspace, on a Windows path so the daemon can bind-mount out of it.
       - ${CI_WORK_DIR:-C:/Users/nsn/ci-work}:/work
+      # Diagnostics survive the container. The trial's first failure left no
+      # trace once the container was removed, which cost a diagnosis cycle.
+      - ${CI_DIAG_DIR:-C:/Users/nsn/ci-runner-diag}:/home/runner/_diag
+    # Network mode. `host` puts the runner on the Docker VM's own stack
+    # instead of the NAT'd bridge. The runner holds one long-lived TLS
+    # connection to the job broker, and on the bridge that connection kept
+    # dying (SocketException 125) leaving the runner `online` but unable to
+    # accept jobs. Override with RUNNER_NETWORK_MODE=bridge to compare.
+    network_mode: ${RUNNER_NETWORK_MODE:-host}
     # ⚠️ These limit the RUNNER only. Sibling containers it starts (the CI
     # stack, builds) are not covered — they need their own limits, or the
     # daemon's. Do not read this as a bound on CI's total footprint.

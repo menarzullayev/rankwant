@@ -12,11 +12,11 @@ name: Runner self-test
 #     $PWD mounts an empty directory (measured: Windows path resolves,
 #     Linux-style path does not).
 #
-# The label is the standard `rankwant` one, not a migration-specific test
-# label, because `tools/check_decisions.py` enforces the owner's "self-hosted
-# only" decision by matching `runs-on:` exactly. Running this against the new
-# runner therefore means stopping the old one for the duration — see
-# tools/runner/README.md.
+# The label is the TRIAL one, and `tools/check_decisions.py` names this file
+# as its only permitted user (TRIAL_RUNNER). A runner under trial must not
+# carry the production label: on 2026-09-17 one did, took real CI jobs, and
+# failed them — the production CI has to stay on the WSL runner until the
+# trial is proven.
 on:
   workflow_dispatch:
   push:
@@ -28,7 +28,7 @@ permissions:
 jobs:
   selftest:
     name: Runner self-test
-    runs-on: [self-hosted, rankwant]
+    runs-on: [self-hosted, rankwant-container]
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v7
