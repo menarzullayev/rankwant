@@ -196,8 +196,16 @@ if has '^(\.env\.example|docker-compose[^/]*\.yml|apps/api/|apps/web/src/|servic
 fi
 
 # Owner decisions (CLAUDE.md § Saidakbar aka qarorlari) must stay true in code.
-if has '^(tools/(backup\.sh|push_guard\.py|check_decisions\.py)|\.githooks/|\.github/workflows/|CONTRIBUTING\.md|CLAUDE\.md)'; then
+if has '^(tools/(backup\.sh|push_guard\.py|check_decisions\.py|deploy\.sh|check_deploy_gate\.py)|\.githooks/|\.github/workflows/|CONTRIBUTING\.md|CLAUDE\.md)'; then
   step "Egasining qarorlari" "$PY" tools/check_decisions.py
+fi
+
+# Agents deploy on their own once main CI is green, so the gate, the lock and the
+# image freshness check must keep catching what they are meant to catch.
+if has '^tools/(deploy\.sh|check_deploy\.sh|check_deploy_gate\.py|check_negative\.py)'; then
+  step "Deploy darvozasi — salbiy testlar" "$PY" tools/check_negative.py deploy_gate
+  step "Deploy qulfi — salbiy testlar" "$PY" tools/check_negative.py deploy_lock
+  step "Image yorlig'i — salbiy testlar" "$PY" tools/check_negative.py deploy_check
 fi
 
 if [ "$fail" -ne 0 ]; then
