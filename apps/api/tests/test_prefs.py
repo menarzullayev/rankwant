@@ -104,8 +104,91 @@ class TestValidate:
         assert out["appearance"]["font"] is None
 
     def test_size_faqat_qadamlar(self) -> None:
+        """Qadam 5 (D45): 117 — slayder bera olmaydigan qiymat."""
         with pytest.raises(prefs.PrefsError):
-            prefs.validate({"appearance": {"size": 115}})
+            prefs.validate({"appearance": {"size": 117}})
+
+    @pytest.mark.parametrize("size", [70, 155, 100.5, True, "110"])
+    def test_size_chegara_va_turi(self, size: object) -> None:
+        with pytest.raises(prefs.PrefsError):
+            prefs.validate({"appearance": {"size": size}})
+
+    def test_customizer_yozuvi_toliq_qabul_qilinadi(self) -> None:
+        """Customizer aynan shuni yuboradi (2026-09-18 auditi).
+
+        Ilgari `card` da to'xtardi va PATCH 400 berardi: karta, naqsh,
+        navigatsiya, ikonka to'plami va tipografika hisobga umuman
+        yozilmasdi — odam boshqa qurilmada eski ko'rinishni ko'rardi.
+        """
+        appearance = {
+            "style": "glass",
+            "accent": {"hue": 140, "sat": 70},
+            "font": "jakarta",
+            "fontHeading": "lexend",
+            "size": 110,
+            "scale": 1.05,
+            "lineHeight": 1.2,
+            "tracking": 0.01,
+            "width": 1400,
+            "density": "comfortable",
+            "navMode": "sidenav",
+            "navShape": "slim",
+            "card": "outline",
+            "pattern": "grid",
+            "verdictStyle": "iconText",
+            "statusStyle": "text",
+            "loadingStyle": "skeleton",
+            "iconPack": "lucide",
+        }
+        out = prefs.validate({"appearance": appearance, "a11y": {"motion": "off"}})
+        assert out["appearance"] == appearance
+        assert out["a11y"]["motion"] == "off"
+
+    @pytest.mark.parametrize(
+        ("key", "value"),
+        [
+            ("scale", 0.8),
+            ("scale", 1.2),
+            ("lineHeight", 1.5),
+            ("tracking", -0.05),
+            ("tracking", 0.1),
+            ("scale", "1"),
+            ("lineHeight", True),
+        ],
+    )
+    def test_kasr_chegaralari(self, key: str, value: object) -> None:
+        with pytest.raises(prefs.PrefsError):
+            prefs.validate({"appearance": {key: value}})
+
+    def test_kasr_yaxlitlanadi(self) -> None:
+        """Klient yuzdan birga yaxlitlaydi; suzuvchi nuqta qoldig'i saqlanmasin."""
+        out = prefs.validate({"appearance": {"scale": 1.0500000000000003}})
+        assert out["appearance"]["scale"] == 1.05
+
+    def test_width_qadami(self) -> None:
+        with pytest.raises(prefs.PrefsError):
+            prefs.validate({"appearance": {"width": 1450}})
+
+    @pytest.mark.parametrize("value", ["", "ic on", "i" * 25, "-lucide", 5, None])
+    def test_katalog_qiymati_slug_bolsin(self, value: object) -> None:
+        """Katalog ro'yxati klientda; server faqat shaklni tekshiradi."""
+        with pytest.raises(prefs.PrefsError):
+            prefs.validate({"appearance": {"iconPack": value}})
+
+    def test_katalog_yangi_qiymatga_ochiq(self) -> None:
+        """Yangi ikonka to'plami server relizisiz saqlanadi — asosiy maqsad."""
+        out = prefs.validate({"appearance": {"iconPack": "hali-yoq-paket"}})
+        assert out["appearance"]["iconPack"] == "hali-yoq-paket"
+
+    def test_fontHeading_null_va_lexend(self) -> None:
+        out = prefs.validate({"appearance": {"fontHeading": None}})
+        assert out["appearance"]["fontHeading"] is None
+        out = prefs.validate({"appearance": {"fontHeading": "lexend"}})
+        assert out["appearance"]["fontHeading"] == "lexend"
+
+    def test_nomalum_motion_rad_etiladi(self) -> None:
+        with pytest.raises(prefs.PrefsError):
+            prefs.validate({"a11y": {"motion": "tez"}})
 
     def test_shablon_soni_cheklangan(self) -> None:
         rows = [

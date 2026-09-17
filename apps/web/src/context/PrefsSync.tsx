@@ -6,7 +6,8 @@ import { useEffect, useRef } from "react";
 import { useSession } from "@/context/SessionContext";
 import { DEFAULT_LOCALE, isLocale } from "@/i18n/messages";
 import { STYLE_IDS, type StyleId } from "@/layout/styles";
-import { patchJson, type A11yPrefs, type AppearancePrefs } from "@/lib/api";
+import { ApiError, patchJson, type A11yPrefs, type AppearancePrefs } from "@/lib/api";
+import { track } from "@/lib/analytics";
 import {
   PREFS_EVENT,
   rememberAppearance,
@@ -27,6 +28,22 @@ const resolveMode = (mode: "light" | "dark" | "system"): boolean =>
   mode === "system"
     ? window.matchMedia("(prefers-color-scheme: dark)").matches
     : mode === "dark";
+
+/** Sinxronizatsiya xatosi — jim qolmaydi.
+ *
+ * ⚠️ 2026-09-18 gacha bu `catch(() => {})` edi. Server `appearance` da
+ * beshta kalitni bilardi, klient esa o'n sakkiztasini yuborardi: har
+ * saqlash `400` bilan tugardi, interfeys esa hech narsa demasdi va odam
+ * boshqa qurilmada eski ko'rinishni ko'rardi. Sxema tuzatildi
+ * (`apps/api/core/prefs.py`), lekin jim yutish o'shanday holatni yana
+ * yashirib qo'yardi — shuning uchun xato endi konsolga ham, analitikaga
+ * ham chiqadi.
+ */
+function reportSyncFailure(error: unknown): void {
+  const status = error instanceof ApiError ? String(error.status) : "network";
+  console.warn(`[prefs] hisobga yozilmadi (${status})`, error);
+  track("prefs.sync_failed", { status });
+}
 
 function readLocal(key: string): string | null {
   try {
@@ -131,7 +148,7 @@ export function PrefsSync() {
     }
 
     rememberPrefs({ sound: prefs.sound, effect: prefs.effect });
-    if (Object.keys(patch).length) void patchJson("/me/", patch).catch(() => {});
+    if (Object.keys(patch).length) void patchJson("/me/", patch).catch(reportSyncFailure);
   }, [user, router]);
 
   useEffect(() => {
@@ -167,7 +184,7 @@ export function PrefsSync() {
         };
       }
       if (Object.keys(body).length)
-        void patchJson("/me/", body).catch(() => {});
+        void patchJson("/me/", body).catch(reportSyncFailure);
     };
     window.addEventListener(PREFS_EVENT, onChange);
     return () => window.removeEventListener(PREFS_EVENT, onChange);
