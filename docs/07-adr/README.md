@@ -40,6 +40,7 @@ Har bir ADR:
 | [0020](0020-hacking.md)                          | Hacking — bitta dvigatel, to'rtta siyosat | **accepted**       |
 | [0021](0021-hack-reference-solution.md)          | Hack testining javobi — etalon yechimdan  | **accepted**       |
 | [0022](0022-judge-languages.md)                  | Judge tillari — 35 til, tilga xos sandbox sozlamalari | **accepted** |
+| [0023](0023-indexing-and-ai-crawlers.md)         | Indekslash — qidiruvga ochiq, AI kraulerlarga yopiq   | **accepted** |
 
 ## Qoidalar
 
