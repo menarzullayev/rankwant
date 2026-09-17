@@ -27,6 +27,7 @@ FOUNDING = {"cpp23", "java21", "py313"}
 GROUPS = [
     importlib.import_module("problems.migrations.0017_judge_languages_group1"),
     importlib.import_module("problems.migrations.0018_judge_languages_group2"),
+    importlib.import_module("problems.migrations.0020_judge_languages_group3"),
 ]
 KOTLIN_COLOURS = importlib.import_module("problems.migrations.0019_kotlin_colors_off")
 
