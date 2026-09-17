@@ -28,6 +28,13 @@ export RUNNER_ALLOW_RUNASROOT=1
 # Measured 2026-09-17: the first attempt assumed <workdir>/_work/<repo>/<repo>
 # and the self-test caught it — the mount came up empty while everything else
 # looked healthy. `_work` is only the runner's own default work folder name.
+#
+# The workspace is a named volume (see docker-compose.runner.yml), so its
+# daemon-side path comes from the daemon. CI_HOST_WORK_DIR still overrides it
+# for a workspace on a host path.
+if [ -z "${CI_HOST_WORK_DIR:-}" ] && [ -n "${CI_WORK_VOLUME:-}" ]; then
+  CI_HOST_WORK_DIR=$(docker volume inspect --format '{{.Mountpoint}}' "$CI_WORK_VOLUME")
+fi
 if [ -n "${CI_HOST_WORK_DIR:-}" ]; then
   repo_name="${RUNNER_REPO##*/}"
   export HOST_REPO_ROOT="${CI_HOST_WORK_DIR%/}/${repo_name}/${repo_name}"

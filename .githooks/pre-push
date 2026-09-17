@@ -208,6 +208,12 @@ if has '^tools/(deploy\.sh|check_deploy\.sh|check_deploy_gate\.py|check_negative
   step "Image yorlig'i — salbiy testlar" "$PY" tools/check_negative.py deploy_check
 fi
 
+# The watchdog restarts CI runners on its own, so its decisions are retested
+# whenever it or its tests change.
+if has '^tools/(runner_watchdog\.py|check_negative\.py)'; then
+  step "Runner watchdog — salbiy testlar" "$PY" tools/check_negative.py runner_watchdog
+fi
+
 if [ "$fail" -ne 0 ]; then
   printf '\n\033[31mPush to'\''xtatildi.\033[0m Tuzating yoki: git push --no-verify\n\n'
   exit 1
