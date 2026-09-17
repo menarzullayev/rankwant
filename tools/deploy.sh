@@ -15,6 +15,9 @@
 #     `rankwant/api:<sha>` teglari bilan.
 # Ya'ni job o'z stack'ini B da ko'tarardi: 8300/8301 band → `up` yiqiladi,
 # yoki parallel stack paydo bo'ladi va unga hech kim yo'naltirmagan.
+# Since 2026-09-17 the CI runner is a container on engine A and the WSL engine
+# is gone, but deploying stays manual by owner decision (CLAUDE.md): deploy.yml
+# is `workflow_dispatch` only and asks for `confirm: deploy`.
 # Batafsil: `docs/10-operations/deploy-runbook.md` § «Deploy — qo'lda».
 #
 # Ishlatish (repo ildizidan, Git Bash):
@@ -43,10 +46,13 @@ COMPOSE=(docker compose -p "$PROJECT" --env-file "$ENV_FILE"
 # eski» holati paydo bo'ladi va buni `check_deploy.sh` KO'RMAYDI
 # (binary'ning manbadagi hash'i yo'q).
 #
-# `web` bu yerda YO'Q: u Next.js va `NEXT_PUBLIC_*` qiymatlari build
-# vaqtida singadi, ya'ni uni alohida qaror bilan qayta qurish kerak
-# (runbook § NEXT_PUBLIC).
-SERVICES=(api worker beat judge)
+# `web` is built and restarted here too (owner decision, 2026-09-17). It used
+# to be left out because `NEXT_PUBLIC_*` values are baked into the bundle at
+# build time, but COMPOSE passes `--env-file .env.public` to the build as well,
+# so this script bakes the right values in. Leaving it out cost a manual step
+# after every web change and ended each such deploy red on the web row
+# (measured on the #49 and #50 deploys).
+SERVICES=(api worker beat judge web)
 
 # Manba commit — image yorlig'iga (`org.rankwant.git-sha`) uzatiladi.
 # `check_deploy.sh` judge va web'ning eskiligini AYNAN shu yorliq orqali

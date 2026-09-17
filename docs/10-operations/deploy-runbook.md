@@ -113,7 +113,7 @@ bash tools/deploy.sh --check  # hech narsani o'zgartirmaydi
 ```
 
 `tools/deploy.sh` — §1 tartibining bajariladigan ko'rinishi: old shartlar →
-**live oyna tekshiruvi** → build (migrate bilan) → migrate →
+**live oyna tekshiruvi** → build (api, worker, beat, judge, web va migrate) → migrate →
 `showmigrations` tasdiqi → `up -d --no-deps` → `check_deploy.sh`.
 Qadamlar tartibi kodda, yodda emas.
 
@@ -206,28 +206,23 @@ $PY tools/check_icons.py        # 9 to'plam × 226 kalit
 | `:8300` → **000**, konteyner `Up`/`healthy` | port ko'prigi (§4)  | Docker Desktop to'liq restart               |
 | sayt 200, lekin eski kod                    | image yangilanmagan | `bash tools/check_deploy.sh` → qayta qurish |
 
-### `web` qachon qayta quriladi
+### `web` ham `deploy.sh` da (2026-09-17 dan)
 
-`tools/deploy.sh` `web` ni **ataylab** qurmaydi — u faqat `apps/web/`
-o'zgarganda kerak, sabab ikki xil:
+Qaror (Saidakbar aka, 2026-09-17): `tools/deploy.sh` `web` ni ham boshqa
+servislar bilan birga quradi va ko'taradi. Ilgari u ataylab tashqarida edi,
+va har web o'zgarishidan keyin qo'shimcha qo'lda qadam kerak bo'lardi; deploy
+esa oxirida web qatori «ESKIRGAN» bilan qizil tugardi (#49 va #50
+deploy'larida o'lchandi).
 
-1. `NEXT_PUBLIC_*` qiymatlari **build vaqtida** bundle'ga singadi, ya'ni
-   `.env.public` o'zgarsa `up` yetarli emas — **qayta qurish** shart.
-2. Next.js chiqishi siqilgan, shuning uchun `check_deploy.sh` uni fayl
-   hash'i bilan emas, **build yorlig'i** (`org.rankwant.git-sha`) bilan
-   solishtiradi.
-
-⚠️ `apps/web/` da faqat **izoh** o'zgargan bo'lsa qayta qurish shart emas:
-xatti-harakat bir xil, saytni bekorga uzish keraksiz. Bunday holda
-`check_deploy.sh` «yorliqsiz image» deb ogohlantiradi — bu **xato emas**,
-holat bayoni.
-
-Qaror: `apps/web/` da kod o'zgarsa yoki `NEXT_PUBLIC_*` o'zgarsa —
-`bash tools/deploy.sh` dan keyin qo'shimcha:
-
-```bash
-docker compose -p rankwant --env-file .env.public   -f docker-compose.yml -f docker-compose.public.yml   build web && docker compose -p rankwant --env-file .env.public   -f docker-compose.yml -f docker-compose.public.yml   up -d --no-deps web
-```
+- `NEXT_PUBLIC_*` qiymatlari **build vaqtida** bundle'ga singadi. Skript
+  compose'ga `--env-file .env.public` beradi, ya'ni ular deploy'ning o'zida
+  to'g'ri singadi. `.env.public` dagi `NEXT_PUBLIC_*` o'zgarsa ham oddiy
+  `bash tools/deploy.sh` yetarli: bunda `up` emas, qayta qurish kerak, skript
+  esa baribir quradi.
+- Next.js chiqishi siqilgan, shuning uchun `check_deploy.sh` web'ni fayl
+  hash'i bilan emas, **build yorlig'i** (`org.rankwant.git-sha`) bilan
+  solishtiradi. Deploy tasdig'idan keyin bundle manzilini ham tekshiradi
+  (`bundle API: https://rankwant.uz/api/v1`).
 
 ### Nega `check_deploy.sh` ga salbiy test yo'q
 

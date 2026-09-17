@@ -32,6 +32,8 @@ TRIAL_RUNNER = {"runner-selftest.yml": "[self-hosted, rankwant-container]"}
 # Where the container runner, the production CI runner since 2026-09-17, gets its
 # labels whenever the container is recreated and registers again.
 RUNNER_DEFAULTS = ("tools/runner/docker-compose.runner.yml", "tools/runner/entrypoint.sh")
+# Everything tools/deploy.sh must rebuild: services built from this repo's sources.
+DEPLOYED_SERVICES = {"api", "worker", "beat", "judge", "web"}
 
 
 class Unreadable(Exception):
@@ -106,6 +108,19 @@ def container_runner_takes_ci() -> str | None:
     return None
 
 
+def deploy_builds_every_service() -> str | None:
+    # A service missing from this list keeps running old code after a deploy
+    # that reports success for the rest. `web` was left out until 2026-09-17,
+    # when the owner decided one deploy updates everything.
+    match = re.search(r"^SERVICES=\(([^)]*)\)", read("tools/deploy.sh"), re.M)
+    if match is None:
+        return "tools/deploy.sh: SERVICES ro'yxati topilmadi"
+    missing = sorted(DEPLOYED_SERVICES - set(match.group(1).split()))
+    if missing:
+        return "tools/deploy.sh deploy'da qurmaydi: " + ", ".join(missing)
+    return None
+
+
 def deploy_manual_only() -> str | None:
     lines = read(".github/workflows/deploy.yml").splitlines()
     try:
@@ -163,6 +178,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("CI faqat self-hosted", ci_self_hosted_only),
     ("CI runner konteynerda", container_runner_takes_ci),
     ("deploy faqat qo'lda", deploy_manual_only),
+    ("deploy hamma servisni quradi", deploy_builds_every_service),
     ("deploy faqat yashil main'dan", deploy_gated_on_green_main),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
