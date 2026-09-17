@@ -3,27 +3,42 @@
 Runs GitHub Actions on a container attached to Docker Desktop's daemon, so the
 second WSL engine can eventually go away.
 
-## Status: trial, not adopted
+## Status: trial, stable for light jobs
 
 The runner carries the **`rankwant-container` label**, and
 `tools/check_decisions.py` permits only `runner-selftest.yml` to target it.
 Production CI stays on the WSL runner. Two runners sharing the `rankwant`
 label would race for the same jobs, and on 2026-09-17 one did exactly that.
 
-## Known blocker
+Measured 2026-09-17: **14/14 self-test jobs succeeded** — 9 on `host`
+networking including after a 6-minute idle, 5 on `bridge`. Both network
+modes behave the same, so the default is left at Docker's own.
 
-The runner accepts individual jobs (self-test and Security pass), then stops
-taking new ones: its long-lived connection to the job broker dies and never
-recovers, so the runner reads `online` while queued runs sit untouched.
+## A false alarm worth recording
+
+An earlier round concluded the runner "went deaf" — it read `online` while
+queued runs sat untouched — and blamed the broker connection:
 
 ```
 [BrokerServer] System.Net.Sockets.SocketException (125): Operation canceled
 [BrokerMessageListener] Get messages has been cancelled using local token source.
 ```
 
-The container currently runs with `network_mode: host` as the candidate fix —
-the theory is that Docker Desktop's NAT drops the long-lived connection. Set
-`RUNNER_NETWORK_MODE=bridge` to compare. **Not yet proven.**
+That diagnosis was wrong, and the log line is why. Those errors appear
+**exactly when a job completes**, one per job, and every one of those jobs
+succeeded. Cancelling the long-poll on completion is how the runner works;
+`SocketException (125)` is that cancellation surfacing, not a fault.
+
+What actually broke the earlier attempt was churn in the registration, not
+the container model: the container was recreated and re-registered several
+times, which left a stale broker session ("A session for this runner already
+exists") and, at one point, a runner carrying a stale label — jobs requiring
+`rankwant` could not match `rankwant-container`. Registering once and
+leaving it alone is stable.
+
+**Lesson:** before blaming a component, check whether the symptom's timing
+lines up with its supposed cause. One error per completed job pointed at the
+job lifecycle, not at the network.
 
 ## Running it
 
@@ -36,6 +51,13 @@ RUNNER_TOKEN="$TOKEN" docker compose -f tools/runner/docker-compose.runner.yml u
 
 Then trigger `Runner self-test` — it is the only workflow allowed on this
 label.
+
+**Do not recreate the container casually.** Each recreation re-registers and
+can leave a stale session; delete the runner registration first if you must:
+
+```bash
+gh api -X DELETE repos/menarzullayev/rankwant/actions/runners/<id>
+```
 
 ## What the base image does not provide
 

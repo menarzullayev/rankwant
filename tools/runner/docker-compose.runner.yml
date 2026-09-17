@@ -47,12 +47,11 @@ services:
       # Diagnostics survive the container. The trial's first failure left no
       # trace once the container was removed, which cost a diagnosis cycle.
       - ${CI_DIAG_DIR:-C:/Users/nsn/ci-runner-diag}:/home/runner/_diag
-    # Network mode. `host` puts the runner on the Docker VM's own stack
-    # instead of the NAT'd bridge. The runner holds one long-lived TLS
-    # connection to the job broker, and on the bridge that connection kept
-    # dying (SocketException 125) leaving the runner `online` but unable to
-    # accept jobs. Override with RUNNER_NETWORK_MODE=bridge to compare.
-    network_mode: ${RUNNER_NETWORK_MODE:-host}
+    # Network mode. Left at Docker's default: `host` was tried as a candidate
+    # fix for the runner going deaf, and made no difference — both modes
+    # accepted 5/5 jobs in a row, and 9/9 on host including after a 6-minute
+    # idle. The deafness was not a network problem (see README).
+    network_mode: ${RUNNER_NETWORK_MODE:-bridge}
     # ⚠️ These limit the RUNNER only. Sibling containers it starts (the CI
     # stack, builds) are not covered — they need their own limits, or the
     # daemon's. Do not read this as a bound on CI's total footprint.
