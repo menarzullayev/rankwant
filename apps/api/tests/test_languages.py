@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import importlib
 import re
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 from django.apps import apps
@@ -17,10 +17,18 @@ from judging.services import build_job, enqueue_custom
 from problems.languages import LANGUAGES, row_values
 from problems.models import SOURCE_FILE_PATTERN, Language, Problem, ProblemLanguage
 
+if TYPE_CHECKING:
+    from types import ModuleType
+
 SLUG = re.compile(r"^[a-z][a-z0-9]*$")
 #: Created by seed_demo and fixtures, not by migrations.
 FOUNDING = {"cpp23", "java21", "py313"}
-GROUP1 = importlib.import_module("problems.migrations.0017_judge_languages_group1")
+#: One data migration per language group (ADR-0022).
+GROUPS = [
+    importlib.import_module("problems.migrations.0017_judge_languages_group1"),
+    importlib.import_module("problems.migrations.0018_judge_languages_group2"),
+]
+KOTLIN_COLOURS = importlib.import_module("problems.migrations.0019_kotlin_colors_off")
 
 
 class TestCatalog:
@@ -88,8 +96,9 @@ def test_migrations_match_the_catalog() -> None:
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("group", GROUPS, ids=lambda module: module.__name__.rsplit("_", 1)[-1])
 class TestOpenProblemsGetNewLanguages:
-    """Group 1 migration: problems open to all founding languages gain the new ones."""
+    """Every group migration: problems open to all founding languages gain the new ones."""
 
     def _problem(self, slug: str, codes: list[str]) -> Problem:
         problem = Problem.objects.create(slug=slug, title=slug, statement="…", difficulty=800)
@@ -102,25 +111,51 @@ class TestOpenProblemsGetNewLanguages:
     def _codes(self, problem: Problem) -> set[str]:
         return set(problem.languages.values_list("language__code", flat=True))
 
-    def test_open_restricted_and_unlisted(self) -> None:
+    def test_open_restricted_and_unlisted(self, group: ModuleType) -> None:
         for code in sorted(FOUNDING):
             Language.objects.create(code=code, name=code, run_cmd=["{src}"])
         open_problem = self._problem("open", sorted(FOUNDING))
         python_only = self._problem("python-only", ["py313"])
         unlisted = self._problem("unlisted", [])
 
-        GROUP1.add_languages(apps, None)
+        group.add_languages(apps, None)
 
-        group1 = {row["code"] for row in GROUP1.LANGUAGES}
-        assert self._codes(open_problem) == FOUNDING | group1
+        added = {row["code"] for row in group.LANGUAGES}
+        assert self._codes(open_problem) == FOUNDING | added
         assert self._codes(python_only) == {"py313"}
         # No list at all already means every language.
         assert self._codes(unlisted) == set()
 
-    def test_without_founding_rows_nothing_is_granted(self) -> None:
+    def test_without_founding_rows_nothing_is_granted(self, group: ModuleType) -> None:
         problem = self._problem("fresh", [])
-        GROUP1.add_languages(apps, None)
+        group.add_languages(apps, None)
         assert self._codes(problem) == set()
+
+
+@pytest.mark.django_db
+class TestKotlinColoursOff:
+    """0019 changes a live row, so an admin's own command must survive it."""
+
+    def _kotlin(self, compile_cmd: list[str]) -> Language:
+        row = Language.objects.get(code="kotlin24")
+        row.compile_cmd = compile_cmd
+        row.save(update_fields=["compile_cmd"])
+        return row
+
+    def test_default_command_is_replaced_and_restored(self) -> None:
+        row = self._kotlin(KOTLIN_COLOURS.BEFORE)
+        KOTLIN_COLOURS.forwards(apps, None)
+        row.refresh_from_db()
+        assert row.compile_cmd == KOTLIN_COLOURS.AFTER
+        KOTLIN_COLOURS.backwards(apps, None)
+        row.refresh_from_db()
+        assert row.compile_cmd == KOTLIN_COLOURS.BEFORE
+
+    def test_edited_command_is_left_alone(self) -> None:
+        row = self._kotlin(["/opt/kotlinc/bin/kotlinc", "-Werror", "{src}"])
+        KOTLIN_COLOURS.forwards(apps, None)
+        row.refresh_from_db()
+        assert row.compile_cmd == ["/opt/kotlinc/bin/kotlinc", "-Werror", "{src}"]
 
 
 class TestSourceFileValidation:

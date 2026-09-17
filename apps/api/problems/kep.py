@@ -47,9 +47,8 @@ BACKOFF = 5.0
 SOURCE_MIN, SOURCE_MAX = 100, 2800
 TARGET_MIN, TARGET_MAX = 800, 3500
 
-#: KEP language code → our `Language.code`. Codes missing here (`bash`, and
-#: `hs`/`r` until their toolchains land) are dropped; the problem stays
-#: solvable in the languages that map.
+#: KEP language code → our `Language.code`. Codes missing here (`bash`) are
+#: dropped; the problem stays solvable in the languages that map.
 LANGUAGES = {
     "py": "py313",
     "cpp": "cpp23",
@@ -61,6 +60,8 @@ LANGUAGES = {
     "kt": "kotlin24",
     "js": "js24",
     "php": "php84",
+    "hs": "haskell96",
+    "r": "r45",
 }
 
 #: KEP's twelve general-purpose languages. A problem that allows all of them is

@@ -89,6 +89,67 @@ PROBES: dict[str, tuple[Any, ...]] = {
         'fun main() { println("${KotlinVersion.CURRENT.major}.${KotlinVersion.CURRENT.minor}") }\n',
         lambda out: out.strip(),
     ),
+    "pascal322": (
+        "begin\n  writeln({$I %FPCVERSION%});\nend.\n",
+        lambda out: "(Free Pascal " + ".".join(out.strip().split(".")[:2]) + ")",
+    ),
+    "ruby33": (
+        'puts RUBY_VERSION.split(".")[0, 2].join(".")\n',
+        lambda out: out.strip(),
+    ),
+    "haskell96": (
+        "import Data.Version (showVersion)\nimport System.Info (compilerVersion)\n\n"
+        "main :: IO ()\nmain = putStrLn (showVersion compilerVersion)\n",
+        lambda out: f"(GHC {out.strip()})",
+    ),
+    "r45": (
+        'cat(R.version$major, ".", strsplit(R.version$minor, ".", fixed = TRUE)[[1]][1], "\\n", sep = "")\n',
+        lambda out: out.strip(),
+    ),
+    "swift60": (
+        # compiler(), not swift(): Swift 6 compiles in Swift 5 language mode by default.
+        '#if compiler(>=6.1)\nprint("6.1 or newer")\n#elseif compiler(>=6.0)\nprint("6.0")\n'
+        '#else\nprint("older than 6.0")\n#endif\n',
+        lambda out: out.strip(),
+    ),
+    "perl540": (
+        'printf("%vd\\n", $^V);\n',
+        lambda out: ".".join(out.strip().split(".")[:2]),
+    ),
+    "d140": (
+        'import std.stdio;\n\nvoid main() { writeln("ok"); }\n',
+        # "LDC - the LLVM D compiler (1.40.0):"
+        lambda out: "(LDC "
+        + ".".join(out.strip().splitlines()[-1].split("(")[1].split(")")[0].split(".")[:2])
+        + ")",
+        "ldc2 --version | head -n 1",
+    ),
+    "ocaml53": (
+        "let () =\n  match String.split_on_char '.' Sys.ocaml_version with\n"
+        '  | major :: minor :: _ -> Printf.printf "%s.%s\\n" major minor\n'
+        "  | _ -> print_endline Sys.ocaml_version\n",
+        lambda out: out.strip(),
+    ),
+    "ts24": (
+        # An enum and a parameter property: plain type stripping refuses both.
+        'enum Runtime { Node = "Node.js" }\n'
+        "class Probe {\n  constructor(private readonly version: string) {}\n"
+        '  label(): string { return `(${Runtime.Node} ${this.version.split(".")[0]})`; }\n}\n'
+        "console.log(new Probe(process.versions.node).label());\n",
+        lambda out: out.strip(),
+    ),
+    "dart313": (
+        "import 'dart:io';\n\nvoid main() {\n"
+        "  print(Platform.version.split(' ').first.split('.').take(2).join('.'));\n}\n",
+        lambda out: out.strip(),
+    ),
+    "scala39": (
+        "object Main {\n  def main(args: Array[String]): Unit =\n"
+        "    println(classOf[scala.deriving.Mirror].getPackage.getImplementationVersion"
+        '.split(\'.\').take(2).mkString("."))\n'
+        "}\n",
+        lambda out: out.strip(),
+    ),
 }
 
 #: Keys every catalog entry must have. A missing one would otherwise surface
@@ -142,11 +203,13 @@ def main() -> int:
         src = f"/box/{row['source_file']}"
         # `set -e`: a failed compile must fail the check, not fall through to a stale run.
         steps = ["set -e", f"mkdir -p /box && cd /box && cat > {src} <<'EOF'\n{source}EOF"]
-        for cmd in (row["compile"], row["run"]):
+        for cmd, redirect in ((row["compile"], " >&2"), (row["run"], "")):
             if cmd:
                 rendered = [a.replace("{src}", src).replace("{bin}", "/box/prog") for a in cmd]
                 # Quoted per argument: Go's compile is one `sh -c` string with spaces.
-                steps.append(shlex.join(rendered))
+                # Compile output goes to stderr: ghc, fpc and dart report progress on
+                # stdout, and only the program's own output is parsed.
+                steps.append(shlex.join(rendered) + redirect)
         steps.extend(extra)
         proc = run_in_image(image, "\n".join(steps))
 
@@ -161,7 +224,7 @@ def main() -> int:
                 f"foydalanuvchiga noto'g'ri versiya ko'rsatiladi"
             )
         else:
-            print(f"  {code:<8} {name} {version} ✓")
+            print(f"  {code:<12} {name} {version} ✓")
 
     if failures:
         print("\nMos kelmadi:", file=sys.stderr)

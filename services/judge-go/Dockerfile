@@ -75,6 +75,18 @@ RUN curl -fsSL --retry 3 -o kotlin.zip https://github.com/JetBrains/kotlin/relea
     && echo "59e9ca74c7904ef2c122b12114937673ccce68de820a663f0ed66ccf8799e0b7  kotlin.zip" | sha256sum -c - \
     && unzip -q kotlin.zip -d /opt && rm kotlin.zip
 
+# Dart 3.13.4 — not in Debian. Checksum: the .sha256sum file published next to the zip.
+RUN curl -fsSL --retry 3 -o dart.zip https://storage.googleapis.com/dart-archive/channels/stable/release/3.13.4/sdk/dartsdk-linux-x64-release.zip \
+    && echo "6487a10df5eab890d746d14a55f4c70bec3c1c0633f51804eb504cbc0fc395bb  dart.zip" | sha256sum -c - \
+    && unzip -q dart.zip -d /opt && rm dart.zip
+
+# Scala 3.9.0 — Debian has 2.11. Checksum: the release's .sha256 asset. The bundled
+# scala-cli (146 MB) only serves the `scala` runner; scalac never calls it.
+RUN curl -fsSL --retry 3 -o scala.tgz https://github.com/scala/scala3/releases/download/3.9.0/scala3-3.9.0-x86_64-pc-linux.tar.gz \
+    && echo "0815d7aa2838fc5c806d3f228ad6e1f6a4421f57fa5407dad3698b91b94b3ec0  scala.tgz" | sha256sum -c - \
+    && mkdir -p /opt/scala && tar -xzf scala.tgz -C /opt/scala --strip-components=1 && rm scala.tgz \
+    && rm /opt/scala/libexec/scala-cli
+
 # ── 4. runtime ───────────────────────────────────────────────────────
 FROM debian:trixie-slim
 
@@ -128,6 +140,21 @@ RUN mkdir -p /opt/rankwant/dotnet && cd /opt/rankwant/dotnet \
     && printf '{"runtimeOptions":{"tfm":"net10.0","framework":{"name":"Microsoft.NETCore.App","version":"%s"}}}\n' "$runtime" > app.runtimeconfig.json \
     && { echo "-nologo"; echo "-optimize+"; ls "$ref"/*.dll | sed 's/^/-r:/'; } > csc.rsp \
     && ln -s "$(ls -d /opt/dotnet/sdk/*/Roslyn/bincore)" roslyn
+
+# Group 2 (ADR-0022): Pascal, Ruby, Haskell, R, Swift, Perl, D, OCaml. TypeScript runs on
+# the Node.js above; Dart and Scala come from the archive stage. Every group sits below
+# the previous one, so adding a group leaves the earlier layers cached.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        fp-compiler fp-units-rtl ruby ghc r-base-core swiftlang perl ldc ocaml-nox ocaml-findlib \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=toolchains /opt/dart-sdk /opt/dart-sdk
+COPY --from=toolchains /opt/scala /opt/scala
+
+# GHC's libraries go into the loader cache, like the JDK's: ghc looks for them through
+# $ORIGIN, which cannot resolve under the /proc mask. The directory holds only libHS*
+# libraries (measured: 39), so no system library is shadowed.
+RUN ls -d /usr/lib/ghc/lib/x86_64-linux-ghc-* > /etc/ld.so.conf.d/ghc.conf && ldconfig
 
 # The toolchain layers above stay cached across deploys: an ARG in scope makes
 # every later RUN miss the cache when its value changes, and GIT_SHA changes

@@ -40,8 +40,21 @@ export const LANGUAGE_FAMILIES: ReadonlyMap<string, Family> = new Map([
       starter: `using System;\n\nclass Program\n{\n    static void Main()\n    {\n        \n    }\n}\n`,
     },
   ],
+  // Monaco has no grammar for D, Haskell or OCaml.
+  [
+    "d",
+    {
+      monaco: PLAIN_TEXT,
+      starter: `import std.stdio;\n\nvoid main()\n{\n    \n}\n`,
+    },
+  ],
+  ["dart", { monaco: "dart", starter: `void main() {\n  \n}\n` }],
   // No imports: Go refuses to compile an unused one.
   ["go", { monaco: "go", starter: `package main\n\nfunc main() {\n\t\n}\n` }],
+  [
+    "haskell",
+    { monaco: PLAIN_TEXT, starter: `main :: IO ()\nmain = do\n  return ()\n` },
+  ],
   // The judge runs `java -cp /box Main`, so the class must be `Main`.
   [
     "java",
@@ -52,11 +65,26 @@ export const LANGUAGE_FAMILIES: ReadonlyMap<string, Family> = new Map([
   ],
   ["js", { monaco: "javascript", starter: "" }],
   ["kotlin", { monaco: "kotlin", starter: `fun main() {\n    \n}\n` }],
+  ["ocaml", { monaco: PLAIN_TEXT, starter: "" }],
+  ["pascal", { monaco: "pascal", starter: `begin\n  \nend.\n` }],
+  ["perl", { monaco: "perl", starter: "" }],
   // PHP prints everything outside `<?php` verbatim: a solution without the
   // tag outputs its own source and gets WA.
   ["php", { monaco: "php", starter: `<?php\n\n` }],
   ["py", { monaco: "python", starter: "" }],
+  ["r", { monaco: "r", starter: "" }],
+  ["ruby", { monaco: "ruby", starter: "" }],
   ["rust", { monaco: "rust", starter: `fn main() {\n    \n}\n` }],
+  // The judge runs `java ... Main`, so the object must be `Main`.
+  [
+    "scala",
+    {
+      monaco: "scala",
+      starter: `object Main {\n  def main(args: Array[String]): Unit = {\n    \n  }\n}\n`,
+    },
+  ],
+  ["swift", { monaco: "swift", starter: "" }],
+  ["ts", { monaco: "typescript", starter: "" }],
 ]);
 
 export function languageFamily(code: string): string {
