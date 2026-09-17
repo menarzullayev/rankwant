@@ -252,3 +252,80 @@ class TestKunChegarasi:
         # Mahalliy 17-sentabr 00:30 = UTC 16-sentabr 19:30, ya'ni UTC
         # kun chegarasi 16-sentabr bo'lishi kerak — 17-sentabr emas.
         assert start == dt.datetime(2026, 9, 16, 0, 0, tzinfo=dt.UTC)
+
+
+class TestWarningRows:
+    """`warning_rows()` — ogohlantirish sharti yagona joyda.
+
+    Nega alohida: vazifa ham, panel ham shu shartga tayanadi. Ikki joyda
+    yozilsa ular vaqt o'tib ajralib ketadi va «panel qizil, xabar jim»
+    holati paydo bo'ladi.
+    """
+
+    def test_bosh_jadvalda_ogohlantirish_yoq(self) -> None:
+        assert mail_quota.warning_rows() == []
+
+    def test_kvota_tugasa_qator_qaytadi(self) -> None:
+        for i in range(300):
+            _row("brevo", EmailDelivery.Status.SENT, to=f"u{i}@example.com")
+
+        nomlar = [r.name for r in mail_quota.warning_rows()]
+
+        assert nomlar == ["brevo"]
+
+    def test_80_foizdan_kamida_jim(self) -> None:
+        """Chegara ostida ogohlantirish YO'Q — aks holda xabar ma'nosiz bo'ladi."""
+        for i in range(239):  # 239/300 = 79.7%
+            _row("brevo", EmailDelivery.Status.SENT, to=f"u{i}@example.com")
+
+        assert mail_quota.warning_rows() == []
+
+    def test_80_foizda_ogohlantiradi(self) -> None:
+        for i in range(240):  # 240/300 = 80%
+            _row("brevo", EmailDelivery.Status.SENT, to=f"u{i}@example.com")
+
+        assert [r.name for r in mail_quota.warning_rows()] == ["brevo"]
+
+    def test_kvotasiz_provayder_ogohlantirmaydi(self) -> None:
+        """`console` kvotasiz — u hech qachon «tugamaydi»."""
+        _row("console", EmailDelivery.Status.SENT)
+
+        assert mail_quota.warning_rows() == []
+
+
+class TestSummary:
+    """`summary()` — odam o'qiy oladigan matn.
+
+    Matn bildirishnomaga tushadi, ya'ni u BO'SH bo'lmasligi va eng muhim
+    raqamni ko'rsatishi kerak. Bo'sh matn chaqiruvchida «hammasi joyida»
+    degan ma'no beradi.
+    """
+
+    def test_bosh_jadvalda_bosh_matn(self) -> None:
+        assert mail_quota.summary() == ""
+
+    def test_tugagan_kvota_matnda_korinadi(self) -> None:
+        for i in range(305):  # 300 dan oshdi — navbatda
+            _row("brevo", EmailDelivery.Status.SENT, to=f"u{i}@example.com")
+
+        matn = mail_quota.summary()
+
+        assert "brevo" in matn
+        assert "tugadi" in matn
+
+    def test_yetkazilmagan_xat_matnda_bold_korinadi(self) -> None:
+        """`lost` — eng og'ir holat: navbat ham to'ldi, xat YO'QOLADI."""
+        for i in range(1301):
+            _row("brevo", EmailDelivery.Status.SENT, to=f"u{i}@example.com")
+
+        matn = mail_quota.summary()
+
+        assert "YETKAZILMAYDI" in matn
+
+    def test_kunlik_qoldiq_matnda_bor(self) -> None:
+        """Matn «yana qancha mumkin» raqamini ham beradi — qaror shunga tayanadi."""
+        for i in range(300):
+            _row("brevo", EmailDelivery.Status.SENT, to=f"u{i}@example.com")
+
+        # 400 qoldi (mailjet 200 + resend 100 + mailersend 100).
+        assert "400" in mail_quota.summary()

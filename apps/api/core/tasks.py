@@ -94,3 +94,62 @@ def send_password_reset(user_id: int, token: str, code: str, ip: str = "", ua: s
     return emails.send_password_reset(
         user, token=token, code=code, request_ip=ip, request_ua=ua
     ).status
+
+
+@shared_task(name="core.warn_email_quota")
+def warn_email_quota() -> str:
+    """Kunlik email kvotasi tugayotganini xodimlarga bildiradi.
+
+    NEGA KERAK: zanjir bepul planlar ustiga qurilgan, ya'ni kunlik shift
+    tugashi ODATIY holat — lekin buni hech kim ko'rmaydi. 2026-09-17 da
+    o'lchandi: `brevo` 311 ta yuborgan, shifti esa 300 — ya'ni u allaqachon
+    navbatdan ishlayotgan edi va buni faqat qo'lda hisoblab bilish mumkin
+    edi. Panel `?when=` bilan ko'rsatadi, lekin panelni ochish kerak; bu
+    vazifa esa o'zi aytadi.
+
+    NEGA FON REJIMIDA: ogohlantirish hech narsani TO'XTATMAYDI va hech
+    qanday hisob-kitobga ta'sir qilmaydi. Xato bo'lsa ham yutiladi —
+    bildirishnoma tizimi yiqilsa ro'yxatdan o'tish ishlashda davom etishi
+    kerak (`notifications.services.notify` xatoni o'zi yutadi).
+
+    Faqat sayt kanali (`is_staff` larga) — Telegram ataylab qo'shilmagan:
+    foydalanuvchi tanlovi shu, va botga so'ramasdan yuborish uni spamga
+    aylantirardi (`DEFAULT_CHANNELS`).
+    """
+    from core import mail_quota
+    from core.models import User
+    from notifications.models import Notification
+
+    matn = mail_quota.summary()
+    if not matn:
+        return "ok"  # hech narsa tugamagan — jim
+
+    xodimlar = list(User.objects.filter(is_staff=True, is_active=True))
+    if not xodimlar:
+        log.warning("kvota ogohlantirilmadi — xodim yo'q")
+        return "skipped"
+
+    # ⚠️ `notifications.notify()` ATAYLAB ishlatilmaydi: u foydalanuvchi
+    # sozlamasini hurmat qiladi (`channels()`), xodim esa bu xabarni
+    # o'chirib qo'yishi mumkin — va aynan o'shanda kvota jimgina tugaydi.
+    # Bu TIZIM xabari, ya'ni kanal tanlovi emas, burch.
+    kun = mail_quota.day_start().date().isoformat()
+    yaratildi = 0
+    for xodim in xodimlar:
+        try:
+            # Bir kunda bir marta: vazifa kuniga bir marta yursa ham,
+            # qo'lda qayta chaqirilsa takror yozilmasin.
+            _, created = Notification.objects.get_or_create(
+                user=xodim,
+                kind=Notification.Kind.SYSTEM,
+                ref_type="mail_quota",
+                ref_id=kun,
+                defaults={"title": "Email kvotasi tugayapti", "body": matn},
+            )
+            yaratildi += int(created)
+        except Exception:
+            # Ogohlantirish hech narsani to'xtatmaydi — xato yutiladi.
+            log.exception("kvota bildirishnomasi yozilmadi: %s", xodim.pk)
+
+    log.info("kvota ogohlantirildi: %s yangi / %s xodim — %s", yaratildi, len(xodimlar), matn)
+    return "ok"

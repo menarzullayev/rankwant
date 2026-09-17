@@ -187,3 +187,37 @@ def failures(when: datetime | None = None) -> int:
         created_at__gte=day_start(when),
         created_at__lt=day_end(when),
     ).count()
+
+
+def warning_rows(when: datetime | None = None) -> list[ProviderUsage]:
+    """E'tibor talab qiladigan qatorlar: tugagan, tugayotgan yoki yo'qolgan.
+
+    Nega alohida funksiya: ogohlantirish shartini ikki joyda yozish
+    (vazifa va panel) ularning vaqt o'tib ajralib ketishiga olib keladi.
+    Shart bir joyda — shu yerda.
+    """
+    return [
+        row for row in usage(when) if row.configured and (row.exhausted or row.warning or row.lost)
+    ]
+
+
+def summary(when: datetime | None = None) -> str:
+    """Ogohlantirish matni — odam o'qiy oladigan bir qator.
+
+    Ataylab qisqa: bildirishnoma qo'ng'irog'i faqat sarlavhani ko'rsatadi,
+    shuning uchun eng muhim raqamlar shu matnga sig'ishi kerak.
+    """
+    rows = warning_rows(when)
+    if not rows:
+        return ""
+    parts = []
+    for row in rows:
+        if row.lost:
+            parts.append(f"{row.name}: {row.lost} xat YETKAZILMAYDI")
+        elif row.exhausted:
+            parts.append(f"{row.name}: kunlik shift tugadi, navbatda")
+        elif row.warning:
+            parts.append(f"{row.name}: {round(row.used_ratio * 100)}% sarflandi")
+    left = total_remaining(when)
+    parts.append(f"bugun yana {left} xat")
+    return "; ".join(parts)
