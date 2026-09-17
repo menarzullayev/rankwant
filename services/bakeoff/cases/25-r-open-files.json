@@ -1,0 +1,48 @@
+{
+  "id": "25-r-open-files",
+  "title": "R — dasturga ko'proq ochiq fayl",
+  "measures": "open_files: 256 tilida R ishga tushadimi",
+  "language": {
+    "code": "r45",
+    "source_file": "main.R",
+    "compile": [],
+    "run": [
+      "/usr/bin/env",
+      "TMPDIR=/box",
+      "Rscript",
+      "{src}"
+    ],
+    "open_files": 256
+  },
+  "source": "nums <- scan(file(\"stdin\"), what = numeric(), quiet = TRUE)\ncat(format(sum(nums), scientific = FALSE), \"\\n\", sep = \"\")\n",
+  "limits": {
+    "compile_time_ms": 10000,
+    "time_ms": 2000,
+    "memory_kb": 262144,
+    "output_kb": 65536,
+    "processes": 8
+  },
+  "tests": [
+    {
+      "index": 1,
+      "input": "3 4\n",
+      "expected": "7\n"
+    },
+    {
+      "index": 2,
+      "input": "1000000000 1000000000\n",
+      "expected": "2000000000\n"
+    }
+  ],
+  "expect_verdict": "AC",
+  "expect_by_worker": {
+    "judge-py": "RE"
+  },
+  "must_hold": [
+    "R 128 ta ochiq faylda «limit on the number of open files is too low» bilan to'xtaydi, 192 dan boshlab ishlaydi,",
+    "shuning uchun open_files: 256 dastur bosqichiga yetib borishi SHART — standart 64 bilan RE bo'ladi,",
+    "R vaqtinchalik katalogini TMPDIR=/box ga yozadi: /tmp sandbox'da faqat o'qish uchun.",
+    "R toolchain'i yo'q nomzod RE qaytaradi."
+  ],
+  "mode": "acm"
+}

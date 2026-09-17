@@ -124,3 +124,8 @@ Measured on 2026-09-17 in the judge image built from this decision:
   0.16 both changed I/O).
 - Objective-C uses GCC's runtime: `@autoreleasepool` and ARC are not available, the
   classic `NSAutoreleasePool` is.
+- TypeScript runs on Node.js with `--experimental-transform-types`. Plain type stripping
+  rejects enums and constructor parameter properties. Types are never checked, and the
+  flag is experimental, so a Node.js upgrade has to pass the TypeScript probe again.
+- GHC's own libraries are in the loader cache, like the JDK's, so the Haskell command
+  needs no `LD_LIBRARY_PATH` pinned to a GHC patch version.

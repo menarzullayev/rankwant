@@ -21,6 +21,15 @@ describe("editorLanguage", () => {
       "python",
       "rust",
     ]);
+    const group2 = ["dart313", "pascal322", "r45", "ts24", "haskell96", "d140"];
+    expect(group2.map(editorLanguage)).toEqual([
+      "dart",
+      "pascal",
+      "r",
+      "typescript",
+      "plaintext",
+      "plaintext",
+    ]);
   });
 
   // The prefix match this replaced gave `kotlin24` and `php84` plain text and
@@ -53,8 +62,9 @@ describe("editorLanguage", () => {
 });
 
 describe("starterSource", () => {
-  it("names the class the judge runs for Java", () => {
+  it("names the class the judge runs for Java and Scala", () => {
     expect(starterSource("java21")).toContain("public class Main");
+    expect(starterSource("scala39")).toContain("object Main");
   });
 
   it("opens PHP in code mode", () => {

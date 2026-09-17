@@ -66,7 +66,8 @@ judge bake-off 14/14.
 
 MVP **dasturlash tillari** (judge): C++, Python, Java. UI tillari alohida — 04-prd P0-7: uz/ru/en.
 Keyin 36 tilga kengayadi, uch guruhda ([ADR-0022](../07-adr/0022-judge-languages.md)):
-1-guruh — C, C#, JavaScript, Rust, Go, PHP, Kotlin.
+1-guruh — C, C#, JavaScript, Rust, Go, PHP, Kotlin;
+2-guruh — Pascal, Ruby, Haskell, R, Swift, Perl, D, OCaml, TypeScript, Dart, Scala.
 
 ## Launch gate — public chiqishdan oldin
 
