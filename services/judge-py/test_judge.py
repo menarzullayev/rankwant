@@ -8,7 +8,7 @@ satri TRUTHY — natijada segfault AC deb baholanardi.
 
 from __future__ import annotations
 
-from typing import NoReturn
+from typing import NoReturn, Self
 
 import pytest
 
@@ -182,6 +182,88 @@ class TestValidatorYopiqYiqilish:
 
         assert result["hack_id"] == 7
         assert result["hack_stage"] == "reference"
+
+
+class TestSourceName:
+    """The language names its own source file; compilers read the extension."""
+
+    def test_til_ozi_nomlaydi(self) -> None:
+        assert judge_module.source_name({"code": "kotlin24", "source_file": "main.kt"}) == "main.kt"
+
+    def test_nomsiz_eski_xarita(self) -> None:
+        assert judge_module.source_name({"code": "cpp23"}) == "main.cpp"
+        assert judge_module.source_name({"code": "java21", "source_file": ""}) == "Main.java"
+
+    @pytest.mark.parametrize("name", ["../main.kt", "a/main.kt", ".bashrc", "main", "main..kt"])
+    def test_yol_rad_etiladi(self, name: str) -> None:
+        with pytest.raises(ValueError):
+            judge_module.source_name({"code": "kotlin24", "source_file": name})
+
+
+class TestLanguageYopiqYiqilish:
+    """A language judge-py cannot run is refused with IE before any sandbox work."""
+
+    @pytest.fixture(autouse=True)
+    def sandbox_taqiqlangan(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        def ishga_tushdi(*args: object, **kwargs: object) -> NoReturn:
+            raise AssertionError("sandbox ishga tushirildi")
+
+        monkeypatch.setattr(judge_module, "Box", ishga_tushdi)
+        monkeypatch.setattr(judge_module, "run_sandboxed", ishga_tushdi)
+
+    def test_proc_self_rad_etiladi(self) -> None:
+        job = _job(validate_input=False)
+        job.language["proc_self"] = True
+        result = judge_module.judge(job)
+        assert result["verdict"] == P.IE
+        assert "proc_self" in result["compile_output"]
+
+    def test_notogri_manba_nomi_rad_etiladi(self) -> None:
+        job = _job(validate_input=False)
+        job.language["source_file"] = "../x.py"
+        result = judge_module.judge(job)
+        assert result["verdict"] == P.IE
+        assert "../x.py" in result["compile_output"]
+
+
+class _FakeBox:
+    def __init__(self, box_id: int) -> None:
+        self.files: dict[str, str] = {}
+
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(self, *exc: object) -> None:
+        return None
+
+    def put(self, name: str, content: str) -> None:
+        self.files[name] = content
+
+
+def test_open_files_kompilyator_va_yechimga(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[dict[str, object]] = []
+
+    def fake_run(
+        box: object, cmd: list[str], stdin: str, lim: Limits, wall: int, **kw: object
+    ) -> RunOutcome:
+        calls.append(kw)
+        return RunOutcome(stdout="3\n", exit_code=0)
+
+    monkeypatch.setattr(judge_module, "Box", _FakeBox)
+    monkeypatch.setattr(judge_module, "run_sandboxed", fake_run)
+    job = _job(validate_input=False)
+    job.language = {
+        "code": "r45",
+        "source_file": "main.R",
+        "compile": ["true"],
+        "run": ["Rscript", "{src}"],
+        "open_files": 512,
+    }
+
+    judge_module.judge(job)
+
+    assert calls[0]["open_files"] == 512  # compile: the larger of 256 and the language's
+    assert calls[1]["open_files"] == 512  # the solution: the language's own
 
 
 # Haqiqiy job'dagi notanish kalit (`input_ref`) jimgina tashlanadi —

@@ -91,7 +91,7 @@ API                    Redis navbat              Judge worker
 ```json
 {
   "attempt_id": 12345,
-  "language": {"code": "cpp23", "compile_cmd": "...", "run_cmd": "..."},
+  "language": {"code": "cpp23", "source_file": "main.cpp", "compile": ["…"], "run": ["…"], "proc_self": false, "open_files": 0},
   "source_ref": "s3://…/12345.cpp",
   "limits": {"time_ms": 1000, "memory_kb": 262144, "output_kb": 65536},
   "tests": [{"index": 1, "input_ref": "s3://…/1.in", "output_ref": "s3://…/1.out"}],

@@ -5,8 +5,12 @@ from __future__ import annotations
 import re
 from typing import Any, ClassVar
 
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import IntegrityError, models, transaction
+
+#: Same rule the judge enforces (services/judge-go/judge.go `sourceFileName`):
+#: a bare name with an extension, so it can never point outside the work dir.
+SOURCE_FILE_PATTERN = r"^[A-Za-z0-9_]+(\.[A-Za-z0-9_]+)+\Z"
 
 DIFFICULTY_MIN = 800
 DIFFICULTY_MAX = 3500
@@ -77,6 +81,15 @@ class Language(models.Model):
     code = models.SlugField(unique=True)  # cpp23, py313, java21
     name = models.CharField(max_length=50)
     version = models.CharField(max_length=50, blank=True)
+    #: The name the judge saves the source under (main.cpp, Main.java, main.kt).
+    #: Compilers pick the language from the extension and JVM languages want the
+    #: class name in it. Blank keeps the judge's old code-prefix mapping.
+    source_file = models.CharField(
+        max_length=64,
+        blank=True,
+        default="",
+        validators=[RegexValidator(SOURCE_FILE_PATTERN, "Faqat fayl nomi: main.cpp, Main.java")],
+    )
     compile_cmd = models.JSONField(default=list, blank=True)  # bo'sh = kompilyatsiya yo'q
     run_cmd = models.JSONField(default=list)
     #: Sandboxdagi jarayon/OQIM chegarasi — cgroup `pids.max` ikkalasini
@@ -84,10 +97,35 @@ class Language(models.Model):
     #: dasturda ham 18 ta oqim ochadi (o'lchandi) va 1 bilan umuman
     #: ishga tushmasdi.
     process_limit = models.PositiveSmallIntegerField(default=1)
+    #: CPU budget for compiling one submission. Kotlin needs ~5 s and Zig ~9 s
+    #: for A+B alone (measured in the judge image), so one number cannot fit all.
+    compile_time_ms = models.PositiveIntegerField(default=10_000)
+    #: The sandbox mounts a procfs showing only its own processes instead of
+    #: masking /proc. CoreCLR, Dart, Julia and the Swift and Zig compilers do not
+    #: start without /proc/self (ADR-0022).
+    proc_self = models.BooleanField(default=False)
+    #: RLIMIT_NOFILE for this language's programs; 0 keeps the judge's 64.
+    #: R and PowerShell refuse to start below ~192 (measured).
+    open_files = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
 
     def __str__(self) -> str:
         return f"{self.name} {self.version}".strip()
+
+    def judge_spec(self) -> dict[str, Any]:
+        """The `language` object of a judge job (services/bakeoff/protocol.md).
+
+        Every job builder goes through here, so a field added to the contract
+        cannot be forgotten in one of them.
+        """
+        return {
+            "code": self.code,
+            "source_file": self.source_file,
+            "compile": self.compile_cmd,
+            "run": self.run_cmd,
+            "proc_self": self.proc_self,
+            "open_files": self.open_files,
+        }
 
 
 class ProblemCodeSequence(models.Model):

@@ -28,67 +28,59 @@ for _stream in (sys.stdout, sys.stderr):
             pass
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
-SEED = REPO / "apps/api/core/management/commands/seed_demo.py"
+CATALOG = REPO / "apps/api/problems/languages.py"
 
 #: Har til o'z runtime versiyasini chop etadi — e'londan mustaqil manba.
+#:
+#: Keyed by the exact language code: with dozens of languages a prefix match
+#: picks the wrong probe (`c` would catch `cpp23` and `csharp14`). The file name
+#: comes from the catalog, so a probe runs under the same name as a submission.
 PROBES = {
-    "cpp": (
-        "main.cpp",
+    "cpp23": (
         '#include <cstdio>\nint main(){printf("%ld\\n", __cplusplus);return 0;}\n',
         lambda out: {"202302": "23", "202100": "2b", "201703": "17", "201402": "14"}.get(
             out.strip().rstrip("L")[:6], out.strip()
         ),
     ),
-    "py": (
-        "main.py",
+    "py313": (
         "import sys\nprint('%d.%d' % sys.version_info[:2])\n",
         lambda out: out.strip(),
     ),
-    "java": (
-        "Main.java",
+    "java21": (
         'public class Main{public static void main(String[] a){'
         'System.out.println(System.getProperty("java.version").split("\\\\.")[0]);}}\n',
         lambda out: out.strip(),
     ),
 }
 
-
-#: `seed_demo.LANGUAGES` qatoridagi bizga kerak bo'ladigan ustunlar —
-#: AYNAN shu tartibda. Qator kengayishi mumkin (`process_limit` shunday
-#: qo'shilgan), lekin prefiks o'zgarmasligi kerak.
-COLUMNS = ("code", "name", "version", "compile_cmd", "run_cmd")
+#: Keys every catalog entry must have. A missing one would otherwise surface
+#: as a KeyError halfway through, after some languages were already reported.
+FIELDS = ("code", "name", "version", "source_file", "compile", "run", "processes")
 
 
-def declared_languages() -> list[tuple[Any, ...]]:
-    """seed_demo dagi LANGUAGES — Django import qilmasdan o'qiydi.
-
-    ⚠️ Qatorni BESHTAGA ochib yubormaydi. Ilgari shunday edi va seed'ga
-    oltinchi ustun (`process_limit`) qo'shilgan kuni tekshiruv
-    `ValueError: too many values to unpack` bilan hech narsani
-    tekshirmasdan yiqila boshlagan — uni hech kim yurgizmagani uchun
-    buni ham hech kim sezmagan (o'lchandi 2026-09-16).
-    """
-    tree = ast.parse(SEED.read_text(encoding="utf-8"))
+def declared_languages() -> list[dict[str, Any]]:
+    """The catalog's LANGUAGES, read without importing Django."""
+    tree = ast.parse(CATALOG.read_text(encoding="utf-8"))
     for node in tree.body:
-        if isinstance(node, ast.Assign) and node.targets[0].id == "LANGUAGES":  # type: ignore[attr-defined]
-            rows: list[tuple[Any, ...]] = ast.literal_eval(node.value)
+        if isinstance(node, ast.AnnAssign):
+            target, value = node.target, node.value
+        elif isinstance(node, ast.Assign):
+            target, value = node.targets[0], node.value
+        else:
+            continue
+        if isinstance(target, ast.Name) and target.id == "LANGUAGES" and value is not None:
+            rows: list[dict[str, Any]] = ast.literal_eval(value)
             for row in rows:
-                # Qisqa qator — ustunlar tartibi o'zgargan demakdir.
-                # Jimgina davom etsak, `version` o'rniga boshqa narsani
-                # solishtirib, yolg'on yashil berardik.
-                if len(row) < len(COLUMNS):
-                    raise SystemExit(
-                        f"LANGUAGES qatori kutilganidan qisqa: {row!r}\n"
-                        f"kutilgan ustunlar: {', '.join(COLUMNS)}"
-                    )
+                missing = [f for f in FIELDS if f not in row]
+                if missing:
+                    raise SystemExit(f"LANGUAGES yozuvida maydon yo'q ({', '.join(missing)}): {row!r}")
             return rows
-    raise SystemExit(f"LANGUAGES topilmadi: {SEED}")
+    raise SystemExit(f"LANGUAGES topilmadi: {CATALOG}")
 
 
-def probe_for(code: str) -> tuple[str, str, object]:
-    for prefix, probe in PROBES.items():
-        if code.startswith(prefix):
-            return probe
+def probe_for(code: str) -> tuple[str, object]:
+    if code in PROBES:
+        return PROBES[code]
     raise SystemExit(f"'{code}' uchun probe yozilmagan — PROBES ga qo'shing")
 
 
@@ -107,12 +99,11 @@ def main() -> int:
 
     rows = declared_languages()
     for row in rows:
-        # Faqat kerakli prefiks olinadi — seed qatori kengaysa ham
-        # tekshiruv ishlayveradi (`COLUMNS` ga qarang).
-        code, name, version, compile_cmd, run_cmd = row[: len(COLUMNS)]
-        src, source, parse = probe_for(code)
+        code, name, version = row["code"], row["name"], row["version"]
+        source, parse = probe_for(code)
+        src = row["source_file"]
         steps = [f"mkdir -p /box && cd /box && cat > {src} <<'EOF'\n{source}EOF"]
-        for cmd in (compile_cmd, run_cmd):
+        for cmd in (row["compile"], row["run"]):
             if cmd:
                 rendered = [a.replace("{src}", src).replace("{bin}", "/box/prog") for a in cmd]
                 steps.append(" ".join(rendered))
