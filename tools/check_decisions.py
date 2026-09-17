@@ -160,6 +160,33 @@ def deploy_gated_on_green_main() -> str | None:
     return None
 
 
+AI_CRAWLERS_REQUIRED = (
+    "GPTBot",
+    "ClaudeBot",
+    "CCBot",
+    "Google-Extended",
+    "PerplexityBot",
+    "Bytespider",
+)
+
+
+def search_open_ai_crawlers_blocked() -> str | None:
+    """Search engines may crawl, AI crawlers may not (ADR-0023)."""
+    if not re.search(r"^export const SITE_INDEXABLE = true;", read("apps/web/src/lib/site.ts"), re.M):
+        return "apps/web/src/lib/site.ts: `SITE_INDEXABLE` `true` emas — sayt qidiruvga yopiq"
+    robots = read("apps/web/src/app/robots.ts")
+    listed = re.search(r"const AI_CRAWLERS = \[(.*?)\];", robots, re.S)
+    if listed is None:
+        return "apps/web/src/app/robots.ts: `AI_CRAWLERS` ro'yxati topilmadi"
+    names = set(re.findall(r'"([^"]+)"', listed.group(1)))
+    missing = [name for name in AI_CRAWLERS_REQUIRED if name not in names]
+    if missing:
+        return "apps/web/src/app/robots.ts: AI kraulerlar ro'yxatida yo'q — " + ", ".join(missing)
+    if not re.search(r'userAgent: AI_CRAWLERS,\s*disallow: "/"', robots):
+        return 'apps/web/src/app/robots.ts: AI kraulerlarga `disallow: "/"` qoidasi yo\'q'
+    return None
+
+
 def language_rule_written() -> str | None:
     if not re.search(r"^## Til\s*$", read("CONTRIBUTING.md"), re.M):
         return "CONTRIBUTING.md: `## Til` qoidasi yo'q"
@@ -180,6 +207,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("deploy faqat qo'lda", deploy_manual_only),
     ("deploy hamma servisni quradi", deploy_builds_every_service),
     ("deploy faqat yashil main'dan", deploy_gated_on_green_main),
+    ("qidiruv ochiq, AI kraulerlar yopiq", search_open_ai_crawlers_blocked),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
 ]

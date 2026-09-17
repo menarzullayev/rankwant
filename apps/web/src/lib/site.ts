@@ -26,15 +26,18 @@ export function absolute(path: string): string {
   return new URL(path, SITE_URL).toString();
 }
 
-/** Whether search engines and AI crawlers may index the site.
+/** Whether search engines may index the site.
  *
- * `false` until launch. On 2026-09-15 crawlers sent ~246k requests a day
+ * `false` from 2026-09-15 to 2026-09-18: crawlers sent ~246k requests a day
  * (82% GPTBot, 16% Google), mostly to the profiles of 10,001 seeded
  * `neytron_*` users, and used up the daily Cloudflare Workers quota.
- * Flip to `true` at launch: `robots.ts` reopens with the sitemap and the
- * root layout drops `noindex`.
+ *
+ * `true` since 2026-09-18 (ADR-0023). What changed is not the load but who
+ * carries it: AI crawlers are refused in `robots.ts` and blocked at the edge
+ * by a Cloudflare WAF rule, and `/users/` stays out of the crawl until the
+ * seeded profiles are gone — so what is open is the part that should be found.
  */
-export const SITE_INDEXABLE = false;
+export const SITE_INDEXABLE = true;
 
 /** `?next=` qiymatini xavfsiz ICHKI yo'lga aylantiradi.
  *

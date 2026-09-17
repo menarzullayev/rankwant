@@ -2202,6 +2202,24 @@ def neg_decisions_deploy_skips_web() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_site_closed_to_search() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/web/src/lib/site.ts",
+        "export const SITE_INDEXABLE = true;",
+        "export const SITE_INDEXABLE = false;",
+        "qidiruv ochiq, AI kraulerlar yopiq",
+    )
+
+
+def neg_decisions_ai_crawler_dropped() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/web/src/app/robots.ts",
+        '  "GPTBot",\n',
+        "",
+        "qidiruv ochiq, AI kraulerlar yopiq",
+    )
+
+
 def neg_decisions_deploy_lock_removed() -> tuple[bool, str]:
     return _decision_broken(
         "tools/deploy.sh",
@@ -2236,6 +2254,9 @@ def _decisions_sandbox(extra_workflows: dict[str, str]) -> tuple[int, str]:
         ".githooks/pre-push",
         "CONTRIBUTING.md",
         "CLAUDE.md",
+        # ADR-0023: the indexing decision lives in these two files.
+        "apps/web/src/lib/site.ts",
+        "apps/web/src/app/robots.ts",
     )
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
@@ -3297,6 +3318,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("deploy darvozasi uzilsa tutilsin", neg_decisions_deploy_gate_unwired),
             ("deploy qulfi olib tashlansa tutilsin", neg_decisions_deploy_lock_removed),
             ("deploy web'ni qurmasa tutilsin", neg_decisions_deploy_skips_web),
+            ("sayt qidiruvga yopilsa tutilsin", neg_decisions_site_closed_to_search),
+            ("AI krauler ro'yxatdan tushsa tutilsin", neg_decisions_ai_crawler_dropped),
             ("sinov label'i self-test'da o'tadi", neg_decisions_trial_label_selftest_allowed),
             ("sinov label'i boshqa workflow'da tutilsin", neg_decisions_trial_label_scoped),
         ],

@@ -37,6 +37,7 @@ foydalanuvchi ma'lumoti bor dump'lar tashqariga chiqdi.
 | 2026-09-17 | Agentlar production'ni **`main` CI yashil bo'lsa** so'ramasdan deploy qiladi; bir vaqtda faqat bitta deploy | `tools/deploy.sh` → `tools/check_deploy_gate.py` + qulf (`--skip-ci-gate` faqat Saidakbar aka ruxsati bilan) |
 | 2026-09-17 | Repo aralash tilda, migratsiya yo'q | `CONTRIBUTING.md` § Til |
 | 2026-09-17 | `cp/` faqat RankWant uchun; tadqiqot hujjatlari `docs/research/` da | `cp/README.md` (repo'dan tashqarida) |
+| 2026-09-18 | Sayt qidiruv tizimlariga **ochiq**, AI kraulerlarga **yopiq**; `/users/` sinov profillari tozalanmaguncha yopiq ([ADR-0023](docs/07-adr/0023-indexing-and-ai-crawlers.md)) | `apps/web/src/lib/site.ts` → `SITE_INDEXABLE`; `apps/web/src/app/robots.ts` → `AI_CRAWLERS` |
 
 ## Darvozalar
 
