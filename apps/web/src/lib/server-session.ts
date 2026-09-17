@@ -5,7 +5,7 @@ import { API_BASE } from "@/lib/api";
 /** Server komponentida joriy sessiya bor-yo'qligi.
  *
  * `fetch` serverda brauzerning cookie'larini O'ZI uzatmaydi — ular
- * qo'lda qo'shiladi. Shu sababli bu `lib/api.ts` da emas: u yerda
+ * qo'lda qo'shiladi. Shu sababli bu `lib/api/` da emas: u yerda
  * `next/headers` bo'lsa mijoz bundle'i yig'ilmay qolardi.
  *
  * Faqat «kirganmi» degan savolga javob beradi: kirish sahifalari uchun
