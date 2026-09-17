@@ -6,12 +6,13 @@ bloklaydi (`is_active`) — o'chirmaydi (ledger va reyting tarixi saqlanadi).
 
 from __future__ import annotations
 
-from datetime import timedelta
-from typing import Any
+from datetime import UTC, datetime, timedelta
+from typing import Any, Literal
 
 from django.db.models import Count, F, Q, QuerySet
 from django.db.models.functions import TruncDate
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework import status
 from rest_framework.decorators import action
@@ -21,6 +22,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from core import mail_quota
 from core.models import AnalyticsEvent, School, User
 from core.openapi_docs import crud_summaries
 from core.staff import SessionOnly, StaffViewSet
@@ -352,3 +354,97 @@ class StaffAnalyticsView(APIView):
             }
             for day, counts in sorted(by_day.items())
         ]
+
+
+class StaffEmailQuotaView(APIView):
+    """Kunlik email kvota paneli — `core.mail_quota` ni ochib beradi.
+
+    Nega staff API, Django admin emas: `ADMIN_ENABLED` productionda
+    `False` (o'lchandi 2026-09-17: `/admin/core/emaildelivery/` → 404),
+    ya'ni Django admin paneli ishlab turgan tizimda KO'RINMAYDI. Staff
+    panel esa `/admin/*` da haqiqatan ishlaydi (`ADMIN_SECTIONS`, 19 ta
+    sahifa). Ya'ni hisoblagichni u yerga qo'yish yagona ko'rinadigan
+    yo'l.
+
+    Faqat o'qish (`GET`). `StaffViewSet` dan meros olmaydi — bu
+    agregatsiya, CRUD emas.
+
+    Nega `EmailDelivery` dan to'g'ridan-to'g'ri o'qiladi: u yagona
+    haqiqat manbai (har yuborish — bitta qator). Alohida hisoblagich
+    jadvali ikkinchi haqiqat yaratardi va ular vaqt o'tib ajralib
+    ketardi.
+
+    `?when=` (ISO 8601) — ixtiyoriy. «Kecha nechta ketdi» savoliga javob
+    beradi va deploy oldidan `EmailDelivery` jadvalini qo'lda ochmasdan
+    sarfni tekshirish imkonini beradi. O'qib bo'lmaydigan qiymat
+    jimgina e'tiborsiz qoldirilmaydi — `400` qaytadi, aks holda «noto'g'ri
+    sana» «bugun» bo'lib ko'rinardi va raqam chalkashtirardi.
+    """
+
+    permission_classes = [IsAdminUser, SessionOnly]
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="when",
+                description="ISO 8601 sana/vaqt; bo'sh bo'lsa — hozir (UTC kun)",
+                required=False,
+                type=str,
+            )
+        ],
+        responses={200: OpenApiResponse(description="Provayder bo'yicha kunlik sarf")},
+    )
+    def get(self, request: Request) -> Response:
+        when = self._when(request)
+        if when is False:
+            return Response(
+                {"detail": "when — ISO 8601 sana bo'lishi kerak"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        rows = mail_quota.usage(when)
+        return Response(
+            {
+                # Kun chegarasi UTC — Resend hujjati shunday belgilaydi
+                # («UTC calendar day, not a rolling window»), Brevo va
+                # Mailjet ham kunlik reset qiladi.
+                "window": "utc_day",
+                "day_start": mail_quota.day_start(when).isoformat(),
+                "providers": [
+                    {
+                        "name": row.name,
+                        "sent": row.sent,
+                        "quota": row.quota,
+                        "remaining": row.remaining,
+                        "queue": row.queue,
+                        "configured": row.configured,
+                        "exhausted": row.exhausted,
+                        "warning": row.warning,
+                        "in_queue": row.in_queue,
+                        "lost": row.lost,
+                        "used_ratio": round(row.used_ratio, 4),
+                    }
+                    for row in rows
+                ],
+                "total_remaining": mail_quota.total_remaining(when),
+                "total_with_queue": mail_quota.total_remaining_with_queue(when),
+                "failures": mail_quota.failures(when),
+            }
+        )
+
+    @staticmethod
+    def _when(request: Request) -> datetime | Literal[False] | None:
+        """`?when=` ni o'qiydi: `None` — bugun, `False` — o'qib bo'lmadi (400)."""
+        raw = request.query_params.get("when")
+        if not raw:
+            return None
+        parsed = parse_datetime(raw)
+        if parsed is None:
+            return False
+        if timezone.is_aware(parsed):
+            return parsed
+        # Mintaqasiz qiymat `USE_TZ=True` da ogohlantirish beradi va
+        # `settings.TIME_ZONE` (Asia/Tashkent) bilan talqin qilinardi —
+        # ya'ni `?when=2026-09-16T12:00` UTC 07:00 bo'lardi, lekin buni
+        # hech kim ko'rmaydi. UTC deb o'qish yagona tushunarli variant:
+        # panelning kun chegarasi ham UTC (`mail_quota.day_start`).
+        return timezone.make_aware(parsed, UTC)

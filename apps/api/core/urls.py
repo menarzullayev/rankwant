@@ -3,7 +3,12 @@ from rest_framework.routers import DefaultRouter
 
 from core import account_views, views
 from core.school_views import SchoolViewSet
-from core.staff_views import StaffAnalyticsView, StaffSchoolViewSet, StaffUserViewSet
+from core.staff_views import (
+    StaffAnalyticsView,
+    StaffEmailQuotaView,
+    StaffSchoolViewSet,
+    StaffUserViewSet,
+)
 
 router = DefaultRouter()
 router.register("users", views.UserViewSet, basename="user")
@@ -33,6 +38,14 @@ urlpatterns = [
         "staff/analytics/",
         StaffAnalyticsView.as_view(),
         name="staff-analytics",
+    ),
+    # Email kvota paneli — «qaysi provayder qancha sarfladi» savoli.
+    # Staff panel `/admin/*` da ishlaydi, Django admin esa productionda
+    # o'chirilgan (`ADMIN_ENABLED=False`) — shuning uchun alohida yo'l.
+    path(
+        "staff/email-quota/",
+        StaffEmailQuotaView.as_view(),
+        name="staff-email-quota",
     ),
     path("auth/logout/", views.LogoutView.as_view(), name="logout"),
     path("auth/providers/", views.AuthProvidersView.as_view(), name="auth-providers"),

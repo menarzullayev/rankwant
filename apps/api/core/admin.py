@@ -2,8 +2,10 @@ from typing import Any
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.http import HttpRequest, HttpResponse
 
-from core.models import ApiToken, School, SiteAppearance, User
+from core import mail_quota
+from core.models import ApiToken, EmailDelivery, School, SiteAppearance, User
 
 
 @admin.register(User)
@@ -43,6 +45,46 @@ class ApiTokenAdmin(admin.ModelAdmin):
     list_filter = ("revoked_at",)
     search_fields = ("name", "user__username", "prefix")
     readonly_fields = ("token_hash", "prefix", "created_at", "last_used_at")
+
+
+@admin.register(EmailDelivery)
+class EmailDeliveryAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
+    """Diagnostika jurnali + kunlik kvota paneli.
+
+    Ro'yxat faqat O'QISH uchun: yozuvlar kod tomonidan yaratiladi, admin
+    orqali qo'shilsa haqiqiy yuborish tarixi buzilardi.
+
+    `changelist_view` ustiga kvota bloki qo'shiladi — chunki «bugun
+    qancha qoldi» savoli eng ko'p so'raladi va u shu sahifaning o'zida
+    turishi kerak (`core.mail_quota`).
+    """
+
+    list_display = ("created_at", "to_email", "purpose", "provider", "status")
+    list_filter = ("status", "purpose", "provider")
+    search_fields = ("to_email", "subject")
+    readonly_fields = (
+        "to_email",
+        "purpose",
+        "subject",
+        "provider",
+        "status",
+        "attempts",
+        "created_at",
+    )
+    date_hierarchy = "created_at"
+
+    def has_add_permission(self, request: HttpRequest) -> bool:
+        return False
+
+    def changelist_view(
+        self, request: HttpRequest, extra_context: dict[str, Any] | None = None
+    ) -> HttpResponse:
+        context = dict(extra_context or {})
+        context["quota"] = mail_quota.usage()
+        context["quota_total"] = mail_quota.total_remaining()
+        context["quota_with_queue"] = mail_quota.total_remaining_with_queue()
+        context["quota_failures"] = mail_quota.failures()
+        return super().changelist_view(request, extra_context=context)
 
 
 @admin.register(School)
