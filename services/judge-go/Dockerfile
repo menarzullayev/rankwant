@@ -41,7 +41,13 @@ COPY *.go ./
 # GOCACHE allaqachon `/root/.cache/go-build`, ya'ni `go build` uni
 # ishlatadi. Uni ham konteyner qatlami sifatida saqlash `go mod download`
 # qatlamini har build'da takrorlanishdan qutqaradi.
-RUN --mount=type=cache,target=/root/.cache/go-build \
+#
+# The module cache is mounted here as well. `go mod download` fills the cache
+# mount, not the layer, so without it `go build` fetched all 21 modules again on
+# every Go change (measured), and a dropped connection to proxy.golang.org
+# failed the build on the CI engine.
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
     CGO_ENABLED=0 go build -trimpath -o /out/judge-go .
 
 # ── 3. toolchain archives ────────────────────────────────────────────
