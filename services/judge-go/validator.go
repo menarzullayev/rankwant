@@ -162,7 +162,7 @@ func prepareValidator(ctx context.Context, dir string, prog *TrustedProgram) ([]
 		}
 		if out.ExitCode != 0 {
 			return nil, fmt.Errorf("validator kompilyatsiyasi (chiqish kodi %d): %s",
-				out.ExitCode, strings.TrimSpace(out.Stderr))
+				out.ExitCode, compilerOutput(out))
 		}
 	}
 	return subst(prog.Run, "/box/"+src, "/box/prog"), nil
