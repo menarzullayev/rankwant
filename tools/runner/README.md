@@ -214,6 +214,16 @@ Register-ScheduledTask -TaskName 'RankWant CI Daily Report' -Action $action -Tri
 Its HTTP checks send their own User-Agent: Cloudflare answers Python's default
 one with 403, which would report a healthy site as down (measured 2026-09-17).
 
+A file waits for someone to open it, so when the report lists anything under
+attention it also shows a Windows notification with the count, the first two
+items and the path of the report (owner decision 2026-09-17; Telegram and e-mail
+were declined, so nothing leaves the machine). Each notification replaces the
+previous one instead of stacking, and it can only appear while the owner is
+logged in — which is also the only time the task runs. `--notify off` skips it,
+`--notify print` prints the toast XML instead, and the report is written either
+way. If the notification cannot be shown, the script says so in `report.log` and
+exits 3. Tests: `python tools/check_negative.py runner_report`.
+
 ## After a reboot
 
 Owner decision: the recovery chain is measured at the next natural reboot.

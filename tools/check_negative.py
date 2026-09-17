@@ -50,6 +50,7 @@ import threading
 from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
+from xml.dom import minidom
 
 # Chiqish quvurga yo'naltirilganda Windows uni `cp1252` deb yozadi va
 # birinchi `✓` belgisida qulaydi — sabab va o'lchov `tools/_console.py` da.
@@ -3023,6 +3024,64 @@ def neg_after_reboot_unreadable_facts() -> tuple[bool, str]:
     return _after_reboot_expect("o'qib bo'lmagan faktlar", "{not json", 2, "o'lchab bo'lmadi")
 
 
+def _report_notify(attention: object, mode: str = "print") -> tuple[int, str]:
+    """`runner_report.py` notification path on fixture attention items: exit code and output."""
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "attention.json"
+        path.write_text(
+            attention if isinstance(attention, str) else json.dumps(attention), encoding="utf-8"
+        )
+        return run(
+            [PY, "tools/runner_report.py", "--attention", str(path), "--notify", mode,
+             "--out", str(Path(tmp) / "daily-report.md")]
+        )
+
+
+def neg_report_attention_notifies() -> tuple[bool, str]:
+    # Positive control: without it, a notification that never fires passes every case below.
+    code, out = _report_notify(["CI (main, 09-17 18:30): failure", "runner nsn-pc offline"])
+    if code != 0 or "<toast" not in out or "2 ta e'tibor bandi" not in out or "failure" not in out:
+        return False, f"runner_report/nazorat: exit {code} — {out.strip()[-160:]}"
+    return True, "runner_report/nazorat: e'tibor bandi bildirishnoma yasadi (exit 0)"
+
+
+def neg_report_quiet_without_attention() -> tuple[bool, str]:
+    code, out = _report_notify([])
+    if code != 0 or "<toast" in out:
+        return False, f"runner_report/tinch kun: exit {code}, bildirishnoma chiqdi — {out.strip()[-160:]}"
+    return True, "runner_report/tinch kun: bildirishnoma chiqmadi (exit 0)"
+
+
+def neg_report_notify_off_is_silent() -> tuple[bool, str]:
+    code, out = _report_notify(["runner offline"], mode="off")
+    if code != 0 or "<toast" in out:
+        return False, f"runner_report/--notify off: exit {code} — {out.strip()[-160:]}"
+    return True, "runner_report/--notify off: jim qoldi (exit 0)"
+
+
+def neg_report_escapes_markup() -> tuple[bool, str]:
+    # An unescaped `&` or `<` from a run name would make the toast XML unparseable,
+    # and Windows would then silently show nothing.
+    code, out = _report_notify(["CI <web> & judge yiqildi"])
+    payload = next((line for line in out.splitlines() if line.startswith("<toast")), "")
+    if code != 0 or not payload:
+        return False, f"runner_report/belgi: exit {code} — {out.strip()[-160:]}"
+    if "&amp;" not in payload or "&lt;web&gt;" not in payload:
+        return False, f"runner_report/belgi: XML'da qochirilmagan belgi — {payload[:160]}"
+    try:
+        minidom.parseString(payload)
+    except Exception as exc:  # noqa: BLE001 - any parse failure is the bug we look for
+        return False, f"runner_report/belgi: XML o'qilmadi — {exc}"
+    return True, "runner_report/belgi: `<` va `&` qochirildi, XML o'qildi"
+
+
+def neg_report_unreadable_attention() -> tuple[bool, str]:
+    code, out = _report_notify("{not json", mode="print")
+    if code != 2 or "o'qilmadi" not in out:
+        return False, f"runner_report/o'qib bo'lmagan bandlar: exit {code} (2 kerak) — {out.strip()[-160:]}"
+    return True, "runner_report/o'qib bo'lmagan bandlar: exit 2"
+
+
 CASES: list[tuple[str, list[tuple[str, object]]]] = [
     (
         "i18n",
@@ -3292,6 +3351,16 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("runner production label'siz — tutilsin", neg_after_reboot_runner_without_label),
             ("watchdog reboot'dan keyin yurmagan — tutilsin", neg_after_reboot_watchdog_idle_since_boot),
             ("o'qib bo'lmagan faktlar — exit 2", neg_after_reboot_unreadable_facts),
+        ],
+    ),
+    (
+        "runner_report",
+        [
+            ("e'tibor bandi bildirishnoma yasaydi (nazorat)", neg_report_attention_notifies),
+            ("tinch kunda bildirishnoma yo'q", neg_report_quiet_without_attention),
+            ("--notify off jim qoladi", neg_report_notify_off_is_silent),
+            ("`<` va `&` qochiriladi", neg_report_escapes_markup),
+            ("o'qib bo'lmagan bandlar — exit 2", neg_report_unreadable_attention),
         ],
     ),
 ]
