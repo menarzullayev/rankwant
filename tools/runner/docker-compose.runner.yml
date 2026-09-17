@@ -6,9 +6,11 @@
 # separation, NOT a security boundary. See docs: docker engine security.
 #
 #   docker compose -f tools/runner/docker-compose.runner.yml up -d
+#   docker compose -f tools/runner/docker-compose.runner.yml --profile second up -d runner-2
 #
-# Recreating the container (image update, `down` + `up`) requires a fresh
-# registration token — a plain restart does not. See README.md.
+# Recreating ONE container requires a fresh registration token — a plain
+# restart does not. Never `compose down` the project: that stops the other
+# runner. See recreate.sh and README.md.
 name: rankwant-runner
 
 services:
@@ -66,6 +68,34 @@ services:
     mem_limit: 4g
     cpus: 4
 
+  # Second production runner (2026-09-18). Same labels so GitHub splits
+  # jobs. Own work volume — sharing /work corrupts checkouts and _tool.
+  # Profile `second`: a plain `up -d` must not start it. First start still
+  # needs RUNNER_TOKEN; after that, restart keeps the registration.
+  runner-2:
+    profiles: ["second"]
+    build:
+      context: .
+    image: rankwant/ci-runner:latest
+    container_name: rankwant-ci-runner-2
+    restart: unless-stopped
+    environment:
+      RUNNER_REPO: https://github.com/menarzullayev/rankwant
+      RUNNER_NAME: ${RUNNER_NAME_2:-nsn-pc-rankwant-container-2}
+      RUNNER_LABELS: ${RUNNER_LABELS:-self-hosted,Linux,X64,rankwant,rankwant-container}
+      RUNNER_TOKEN: ${RUNNER_TOKEN:-}
+      RUNNER_WORKDIR: /work
+      CI_WORK_VOLUME: rankwant-ci-work-2
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ci-work-2:/work
+      - ${CI_DIAG_DIR_2:-C:/Users/nsn/ci-runner-diag-2}:/home/runner/_diag
+    network_mode: ${RUNNER_NETWORK_MODE:-bridge}
+    mem_limit: 4g
+    cpus: 4
+
 volumes:
   ci-work:
     name: rankwant-ci-work
+  ci-work-2:
+    name: rankwant-ci-work-2

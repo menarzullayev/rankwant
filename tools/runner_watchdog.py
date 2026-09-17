@@ -49,6 +49,7 @@ COOLDOWN = 600
 # registration: the listener opens a fresh broker session when it starts.
 RESTART = {
     "nsn-pc-rankwant-container": ["docker", "restart", "rankwant-ci-runner"],
+    "nsn-pc-rankwant-container-2": ["docker", "restart", "rankwant-ci-runner-2"],
 }
 DEFAULT_STATE = Path.home() / "AppData" / "Local" / "RankWant" / "runner-watchdog.json"
 

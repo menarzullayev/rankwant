@@ -2233,6 +2233,33 @@ def neg_decisions_deploy_gate_unwired() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_security_on_pr() -> tuple[bool, str]:
+    return _decision_broken(
+        ".github/workflows/security.yml",
+        "on:\n",
+        "on:\n  pull_request:\n",
+        "PR'da og'ir CI yo'q",
+    )
+
+
+def neg_decisions_smoke_on_pr() -> tuple[bool, str]:
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "&& github.event_name != 'pull_request' }}",
+        "}}",
+        "PR'da og'ir CI yo'q",
+    )
+
+
+def neg_decisions_runner2_profile_dropped() -> tuple[bool, str]:
+    return _decision_broken(
+        "tools/runner/docker-compose.runner.yml",
+        '    profiles: ["second"]\n',
+        "",
+        "PR'da og'ir CI yo'q",
+    )
+
+
 def neg_decisions_runner_compose_label_dropped() -> tuple[bool, str]:
     return _decision_broken(
         "tools/runner/docker-compose.runner.yml",
@@ -2310,6 +2337,8 @@ def _decisions_sandbox(extra_workflows: dict[str, str]) -> tuple[int, str]:
         "tools/deploy.sh",
         "tools/runner/docker-compose.runner.yml",
         "tools/runner/entrypoint.sh",
+        "tools/runner/recreate.sh",
+        "tools/runner_watchdog.py",
         ".githooks/pre-push",
         "CONTRIBUTING.md",
         "CLAUDE.md",
@@ -3001,6 +3030,21 @@ def neg_watchdog_cooldown_holds() -> tuple[bool, str]:
     return True, "watchdog/tanaffus: 10 daqiqa ichida qayta restart qilinmadi"
 
 
+def neg_watchdog_second_runner_restarts() -> tuple[bool, str]:
+    name = "nsn-pc-rankwant-container-2"
+    runner = {
+        "name": name,
+        "status": "online",
+        "busy": False,
+        "labels": [{"name": label} for label in ("self-hosted", "Linux", "X64", "rankwant")],
+    }
+    state = {name: {"suspect_since": "2026-09-17T13:36:00+00:00"}}
+    code, out, _ = _watchdog([runner], [_wd_job()], state)
+    if "restart qilinardi" not in out or "restart buyrug'i yo'q" in out:
+        return False, f"watchdog/ikkinchi runner: restart yo'q (exit {code}) — {out.strip()[-160:]}"
+    return True, "watchdog/ikkinchi runner: restart qilinardi"
+
+
 def neg_watchdog_unreadable_time() -> tuple[bool, str]:
     code, out, _ = _watchdog([_wd_runner()], [_wd_job(created_at="kecha")], _WD_SUSPECT)
     if code != 2:
@@ -3098,6 +3142,24 @@ def neg_after_reboot_watchdog_idle_since_boot() -> tuple[bool, str]:
     facts = _ar_facts()
     facts["tasks"]["RankWant CI Runner Watchdog"]["last_run"] = "2026-09-17T23:00:00.0000000Z"
     return _after_reboot_expect("watchdog reboot'dan keyin yurmagan", facts, 1, "Watchdog")
+
+
+def neg_after_reboot_second_runner_half_commissioned() -> tuple[bool, str]:
+    facts = _ar_facts()
+    facts["runners"] = [
+        *facts["runners"],
+        {
+            "name": "nsn-pc-rankwant-container-2",
+            "status": "online",
+            "labels": [{"name": "self-hosted"}, {"name": "rankwant"}],
+        },
+    ]
+    return _after_reboot_expect(
+        "ikkinchi runner GitHub'da, konteyner yo'q",
+        facts,
+        1,
+        "rankwant-ci-runner-2",
+    )
 
 
 def neg_after_reboot_unreadable_facts() -> tuple[bool, str]:
@@ -3389,6 +3451,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("AI krauler ro'yxatdan tushsa tutilsin", neg_decisions_ai_crawler_dropped),
             ("sinov label'i self-test'da o'tadi", neg_decisions_trial_label_selftest_allowed),
             ("sinov label'i boshqa workflow'da tutilsin", neg_decisions_trial_label_scoped),
+            ("Security PR'da qaytsa tutilsin", neg_decisions_security_on_pr),
+            ("smoke PR'da qaytsa tutilsin", neg_decisions_smoke_on_pr),
+            ("runner-2 profile tushsa tutilsin", neg_decisions_runner2_profile_dropped),
         ],
     ),
     (
@@ -3429,6 +3494,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("boshqa label'dagi job'ga tegilmaydi", neg_watchdog_foreign_labels_left_alone),
             ("tanaffus ichida qayta restart yo'q", neg_watchdog_cooldown_holds),
             ("o'qilmagan vaqt — exit 2", neg_watchdog_unreadable_time),
+            ("ikkinchi runner restart qilinadi", neg_watchdog_second_runner_restarts),
         ],
     ),
     (
@@ -3441,6 +3507,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("runner production label'siz — tutilsin", neg_after_reboot_runner_without_label),
             ("watchdog reboot'dan keyin yurmagan — tutilsin", neg_after_reboot_watchdog_idle_since_boot),
             ("o'qib bo'lmagan faktlar — exit 2", neg_after_reboot_unreadable_facts),
+            ("ikkinchi runner yarim ochilsa tutilsin", neg_after_reboot_second_runner_half_commissioned),
         ],
     ),
     (
