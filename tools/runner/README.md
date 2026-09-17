@@ -1,17 +1,17 @@
 # Containerized CI runner
 
-Runs GitHub Actions on a container attached to Docker Desktop's daemon, so the
-second WSL engine can eventually go away.
+Runs GitHub Actions on a container attached to Docker Desktop's daemon. It is
+the only CI runner: the WSL runner it replaced was deregistered and its
+`Ubuntu-24.04` distro removed on 2026-09-17, by owner decision.
 
 ## Status: production CI runner since 2026-09-17
 
 The runner carries **`rankwant`**, the label every CI job asks for, and
 `rankwant-container`, which `tools/check_decisions.py` lets only
-`runner-selftest.yml` target. The WSL runner is still registered and online,
-with no custom label, as the fallback; see
-[Rolling back](#rolling-back-to-the-wsl-runner). Two runners sharing `rankwant`
-would race for the same jobs, and on 2026-09-17 a runner under trial did
-exactly that.
+`runner-selftest.yml` target. There is no fallback runner: when this one
+breaks, see [Recovering the runner](#recovering-the-runner). Two runners
+sharing `rankwant` would race for the same jobs, and on 2026-09-17 a runner
+under trial did exactly that.
 
 It became production after a second full CI run, following the fixes below:
 the workspace moved to a volume and the watchdog was installed. On `main`
@@ -145,25 +145,24 @@ Then trigger `Runner self-test` — it is the only workflow allowed on this
 label.
 
 **Do not recreate the container casually.** Each recreation re-registers and
-can leave a stale session. If you must, for example to pick up a change to
-this directory, stop it cleanly first so the listener closes its session,
-then delete the registration and start with a fresh token:
+can leave a stale session. When it has to be done, for example to pick up a
+change to this directory, use the script. It stops the listener cleanly so it
+closes its session, deletes the old registration, registers with a fresh
+token, and refuses to run while a job is in progress or to finish without the
+`rankwant` label:
 
 ```bash
-docker compose -f tools/runner/docker-compose.runner.yml down
-gh api -X DELETE repos/menarzullayev/rankwant/actions/runners/<id>
-TOKEN=$(gh api -X POST repos/menarzullayev/rankwant/actions/runners/registration-token --jq .token)
-RUNNER_TOKEN="$TOKEN" docker compose -f tools/runner/docker-compose.runner.yml up -d --build
+bash tools/runner/recreate.sh --selftest
 ```
 
 `down` keeps the `rankwant-ci-work` volume, so the tool cache survives.
 
 ## Watchdog
 
-`tools/runner_watchdog.py` covers both runners on this machine: the container
-(`docker restart rankwant-ci-runner`) and the WSL one (`systemctl restart` of
-its service). It reads the runners and the queued jobs through `gh`, which is
-already signed in here, so it needs no token of its own.
+`tools/runner_watchdog.py` restarts the runner (`docker restart
+rankwant-ci-runner`) when it stops taking jobs. It reads the runners and the
+queued jobs through `gh`, which is already signed in here, so it needs no token
+of its own.
 
 - A runner counts as stuck when it is `online`, not busy, and a job whose
   labels it carries has been queued for at least 180 s.
@@ -178,7 +177,7 @@ checkout, which can be on any branch:
 
 ```bash
 mkdir -p /c/Users/nsn/ci-runner
-for f in runner_watchdog.py _console.py; do
+for f in runner_watchdog.py runner_report.py _console.py; do
   git show origin/main:tools/$f > /c/Users/nsn/ci-runner/$f
 done
 ```
@@ -195,6 +194,55 @@ The log gets a line only when a runner is suspected, restarted, or cannot be
 read. A dry run against GitHub restarts nothing and records nothing:
 `python tools/runner_watchdog.py --dry-run`. Tests: `python
 tools/check_negative.py runner_watchdog`.
+
+## Daily report
+
+Neither the runner nor the watchdog tells anyone when something goes wrong.
+`tools/runner_report.py` writes `C:\Users\nsn\ci-runner\daily-report.md` every
+morning: the runs of the last 24 hours (failed ones with the runner they failed
+on), the runners, watchdog events, the site and free disk. Anything that needs
+attention is listed at the top. Nothing leaves the machine.
+
+```powershell
+$action = New-ScheduledTaskAction -Execute 'C:\WINDOWS\System32\conhost.exe' `
+  -Argument '--headless "C:\Program Files\Git\bin\bash.exe" -lc "python /c/Users/nsn/ci-runner/runner_report.py >> /c/Users/nsn/ci-runner/report.log 2>&1"'
+$trigger = New-ScheduledTaskTrigger -Daily -At 08:00
+$settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -ExecutionTimeLimit (New-TimeSpan -Minutes 10)
+Register-ScheduledTask -TaskName 'RankWant CI Daily Report' -Action $action -Trigger $trigger -Settings $settings
+```
+
+Its HTTP checks send their own User-Agent: Cloudflare answers Python's default
+one with 403, which would report a healthy site as down (measured 2026-09-17).
+
+## After a reboot
+
+Owner decision: the recovery chain is measured at the next natural reboot.
+Once the machine is back, one command checks each link that must return on
+its own. These are Docker Desktop, the eight stack containers (api, postgres
+and redis healthy), the runner container, origin and the public site through
+the tunnel, the runner online with `rankwant`, and the watchdog, daily report,
+backup and tunnel monitor tasks, with the watchdog run since boot:
+
+```bash
+python tools/check_after_reboot.py
+```
+
+Exit 0 means every link is back, 1 lists what is not, 2 means the facts could
+not be collected. Tests: `python tools/check_negative.py after_reboot`.
+
+## When an image pull keeps failing
+
+`docker pull` from mcr.microsoft.com breaks mid-layer on this network and never
+resumes (five attempts on 2026-09-17 for the Playwright image E2E needs).
+`tools/fetch_image.py` downloads the same blobs with Range resume, checks each
+against its digest and loads the result:
+
+```bash
+python tools/fetch_image.py mcr.microsoft.com/playwright:v1.63.0-noble --load
+```
+
+It also handles registries that issue anonymous tokens (Docker Hub). Tested on
+`alpine:3.20` and `mcr.microsoft.com/dotnet/runtime-deps:8.0-alpine`.
 
 ## What the base image does not provide
 
@@ -225,33 +273,28 @@ self-test asserts them directly:
   workflows; the layout is `<workdir>/<repo>/<repo>` — there is no `_work`
   segment, which is what the first attempt got wrong.
 
-## Rolling back to the WSL runner
+## Recovering the runner
 
-If this runner was given the production label, give it back:
+There is no second runner to fall back to, so recovery means bringing this one
+back, in order of cost:
 
-```bash
-gh api -X PUT repos/menarzullayev/rankwant/actions/runners/<container-id>/labels -f 'labels[]=rankwant-container'
-gh api -X POST repos/menarzullayev/rankwant/actions/runners/<wsl-id>/labels -f 'labels[]=rankwant'
-```
+1. **Deaf but running.** The watchdog restarts it within about five minutes.
+   By hand: `docker restart rankwant-ci-runner`. A restart keeps the
+   registration.
+2. **Jobs stuck on it.** Jobs already handed to a deaf runner stay queued even
+   after it recovers; on 2026-09-17 they only moved once the run was cancelled
+   and its failed jobs rerun:
 
-Jobs already handed to a deaf runner do not move after the labels change;
-they sat queued until the run was cancelled. Cancel it and rerun what did not
-pass, which puts those jobs on the WSL runner within seconds:
+   ```bash
+   gh run cancel <run-id>
+   gh run rerun <run-id> --failed
+   ```
 
-```bash
-gh run cancel <run-id>
-gh run rerun <run-id> --failed
-```
-
-Leave `main` green: the deploy gate reads the latest `CI` run of the commit,
-and a dispatched run counts.
-
-To remove this runner entirely:
-
-```bash
-docker rm -f rankwant-ci-runner
-gh api -X DELETE repos/menarzullayev/rankwant/actions/runners/<id>
-```
-
-The WSL runner and `RankWant-Runner-Keepalive` are deliberately left running
-during the trial, so there is nothing else to restore.
+   Leave `main` green: the deploy gate reads the latest `CI` run of a commit,
+   and a dispatched run counts.
+3. **Broken beyond a restart**, or registered wrongly:
+   `bash tools/runner/recreate.sh --selftest`.
+4. **Docker Desktop itself is down.** The live site is down too, since both
+   share the engine. Recover Docker Desktop first
+   (docs/10-operations/deploy-runbook.md §4.2); the runner container comes
+   back with it (`restart: unless-stopped`).

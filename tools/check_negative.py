@@ -1714,10 +1714,16 @@ def neg_checker_survives_narrow_stdout() -> tuple[bool, str]:
         env["RANKWANT_API_BASE"] = base
         runs = Path(tmp) / "runs.json"
         runs.write_text(json.dumps(_GATE_GREEN), encoding="utf-8")
+        # `check_after_reboot.py` measures this machine (docker, gh, scheduled
+        # tasks); on the Linux CI runner it rightly exits 2. Healthy facts keep
+        # this case about the encoding of its `✓` lines.
+        facts = Path(tmp) / "facts.json"
+        facts.write_text(json.dumps(_ar_facts()), encoding="utf-8")
         extra = {
             "check_deploy_gate.py": [
                 "--head", _GATE_SHA, "--main", _GATE_SHA, "--runs", str(runs)
             ],
+            "check_after_reboot.py": ["--facts", str(facts)],
         }
         for name in scripts:
             proc = subprocess.run(
@@ -2872,6 +2878,102 @@ def neg_watchdog_unreadable_time() -> tuple[bool, str]:
     return True, "watchdog/o'qilmagan vaqt: exit 2, sog' deb o'qilmadi"
 
 
+# ── After a reboot: every link that must come back on its own is measured ──
+
+_AR_BOOT = "2026-09-18T05:00:00.0000000Z"
+
+
+def _ar_facts(**overrides: object) -> dict:
+    facts: dict = {
+        "docker_engine": True,
+        "containers": {
+            "rankwant-api-1": "Up 3 minutes (healthy)",
+            "rankwant-worker-1": "Up 3 minutes",
+            "rankwant-beat-1": "Up 3 minutes",
+            "rankwant-judge-1": "Up 3 minutes",
+            "rankwant-web-1": "Up 3 minutes",
+            "rankwant-postgres-1": "Up 3 minutes (healthy)",
+            "rankwant-redis-1": "Up 3 minutes (healthy)",
+            "rankwant-minio-1": "Up 3 minutes",
+            "rankwant-ci-runner": "Up 3 minutes",
+        },
+        "origin_api": 200,
+        "origin_web": 200,
+        "public_api": 200,
+        "runners": [
+            {
+                "name": "nsn-pc-rankwant-container",
+                "status": "online",
+                "labels": [{"name": "self-hosted"}, {"name": "rankwant"}, {"name": "rankwant-container"}],
+            }
+        ],
+        "tasks": {
+            "RankWant CI Runner Watchdog": {"state": "Ready", "last_run": "2026-09-18T05:04:00.0000000Z"},
+            "RankWant CI Daily Report": {"state": "Ready", "last_run": "2026-09-18T03:00:00.0000000Z"},
+            "RankWant Monthly Backup": {"state": "Ready", "last_run": "2026-09-17T15:32:47.0000000Z"},
+            "RankWant Tunnel Monitor": {"state": "Ready", "last_run": "2026-09-18T05:05:00.0000000Z"},
+        },
+        "boot": _AR_BOOT,
+    }
+    facts.update(overrides)
+    return facts
+
+
+def _after_reboot(facts: object) -> tuple[int, str]:
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "facts.json"
+        path.write_text(facts if isinstance(facts, str) else json.dumps(facts), encoding="utf-8")
+        return run([PY, "tools/check_after_reboot.py", "--facts", str(path)])
+
+
+def _after_reboot_expect(label: str, facts: object, wanted: int, needle: str) -> tuple[bool, str]:
+    code, out = _after_reboot(facts)
+    if code != wanted or needle not in out:
+        return False, f"after_reboot/{label}: exit {code} ({wanted} kerak), «{needle}» — {out.strip()[-160:]}"
+    return True, f"after_reboot/{label}: tutildi (exit {code})"
+
+
+def neg_after_reboot_all_back_passes() -> tuple[bool, str]:
+    # Positive control: without it every case below passes on a check that always fails.
+    code, out = _after_reboot(_ar_facts())
+    if code != 0:
+        return False, f"after_reboot/nazorat: sog' holat exit {code} berdi — {out.strip()[-160:]}"
+    return True, "after_reboot/nazorat: hamma halqa qaytgan holat o'tdi (exit 0)"
+
+
+def neg_after_reboot_container_missing() -> tuple[bool, str]:
+    facts = _ar_facts()
+    del facts["containers"]["rankwant-judge-1"]
+    return _after_reboot_expect("judge konteyneri yo'q", facts, 1, "rankwant-judge-1")
+
+
+def neg_after_reboot_database_not_healthy() -> tuple[bool, str]:
+    facts = _ar_facts()
+    facts["containers"]["rankwant-postgres-1"] = "Up 3 minutes (health: starting)"
+    return _after_reboot_expect("postgres healthy emas", facts, 1, "rankwant-postgres-1")
+
+
+def neg_after_reboot_tunnel_down() -> tuple[bool, str]:
+    return _after_reboot_expect("tunnel o'lik", _ar_facts(public_api=503), 1, "tunnel")
+
+
+def neg_after_reboot_runner_without_label() -> tuple[bool, str]:
+    runners = [
+        {"name": "nsn-pc-rankwant-container", "status": "online", "labels": [{"name": "rankwant-container"}]}
+    ]
+    return _after_reboot_expect("runner rankwant label'siz", _ar_facts(runners=runners), 1, "GitHub runner")
+
+
+def neg_after_reboot_watchdog_idle_since_boot() -> tuple[bool, str]:
+    facts = _ar_facts()
+    facts["tasks"]["RankWant CI Runner Watchdog"]["last_run"] = "2026-09-17T23:00:00.0000000Z"
+    return _after_reboot_expect("watchdog reboot'dan keyin yurmagan", facts, 1, "Watchdog")
+
+
+def neg_after_reboot_unreadable_facts() -> tuple[bool, str]:
+    return _after_reboot_expect("o'qib bo'lmagan faktlar", "{not json", 2, "o'lchab bo'lmadi")
+
+
 CASES: list[tuple[str, list[tuple[str, object]]]] = [
     (
         "i18n",
@@ -3126,6 +3228,18 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("boshqa label'dagi job'ga tegilmaydi", neg_watchdog_foreign_labels_left_alone),
             ("tanaffus ichida qayta restart yo'q", neg_watchdog_cooldown_holds),
             ("o'qilmagan vaqt — exit 2", neg_watchdog_unreadable_time),
+        ],
+    ),
+    (
+        "after_reboot",
+        [
+            ("hamma halqa qaytgan — o'tadi (nazorat)", neg_after_reboot_all_back_passes),
+            ("konteyner yo'q — tutilsin", neg_after_reboot_container_missing),
+            ("baza healthy emas — tutilsin", neg_after_reboot_database_not_healthy),
+            ("tunnel o'lik — tutilsin", neg_after_reboot_tunnel_down),
+            ("runner production label'siz — tutilsin", neg_after_reboot_runner_without_label),
+            ("watchdog reboot'dan keyin yurmagan — tutilsin", neg_after_reboot_watchdog_idle_since_boot),
+            ("o'qib bo'lmagan faktlar — exit 2", neg_after_reboot_unreadable_facts),
         ],
     ),
 ]
