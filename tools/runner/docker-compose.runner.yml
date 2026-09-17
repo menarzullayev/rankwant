@@ -1,0 +1,46 @@
+# Containerized CI runner — single-engine topology (2026-09-17 decision).
+#
+# The runner shares Docker Desktop's daemon with the live RankWant stack, so
+# it can reach the live containers and volumes. That is the accepted cost of
+# collapsing two engines into one; project names and labels are operational
+# separation, NOT a security boundary. See docs: docker engine security.
+#
+#   docker compose -f tools/runner/docker-compose.runner.yml up -d
+#
+# Recreating the container (image update, `down` + `up`) requires a fresh
+# registration token — a plain restart does not. See README.md.
+name: rankwant-runner
+
+services:
+  runner:
+    build:
+      context: .
+    image: rankwant/ci-runner:latest
+    container_name: rankwant-ci-runner
+    # Survives a reboot, which is what keeps the runner online without the
+    # keepalive chain the WSL setup needed.
+    restart: unless-stopped
+    environment:
+      RUNNER_REPO: https://github.com/menarzullayev/rankwant
+      RUNNER_NAME: ${RUNNER_NAME:-nsn-pc-rankwant-container}
+      # Default is a TEST label on purpose: two online runners sharing the
+      # `rankwant` label would race for the same jobs. Switch it only when
+      # the old WSL runner is stopped.
+      RUNNER_LABELS: ${RUNNER_LABELS:-self-hosted,Linux,X64,rankwant-test}
+      RUNNER_TOKEN: ${RUNNER_TOKEN:-}
+      RUNNER_WORKDIR: /work
+      # Bind mount sources are resolved by the DAEMON on the Windows side, so
+      # a workflow needs the Windows path of its own checkout. The runner
+      # lays its workspace out as <workdir>/_work/<repo>/<repo>.
+      HOST_REPO_ROOT: ${HOST_REPO_ROOT:-}
+    volumes:
+      # Gives the runner the live daemon. Required: every CI job drives
+      # `docker compose`, and the jobs run inside this container.
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Workspace, on a Windows path so the daemon can bind-mount out of it.
+      - ${CI_WORK_DIR:-C:/Users/nsn/ci-work}:/work
+    # ⚠️ These limit the RUNNER only. Sibling containers it starts (the CI
+    # stack, builds) are not covered — they need their own limits, or the
+    # daemon's. Do not read this as a bound on CI's total footprint.
+    mem_limit: 4g
+    cpus: 4

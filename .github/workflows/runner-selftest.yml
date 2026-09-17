@@ -1,0 +1,61 @@
+name: Runner self-test
+
+# Proves the runner it lands on can actually do the work CI needs: reach the
+# Docker daemon, drive `docker compose`, and bind-mount out of the workspace.
+#
+# Why this exists: the containerized runner replaced a WSL runner that had its
+# own daemon and a native filesystem. Two assumptions broke in the move and
+# neither is visible from a green test run on the old setup:
+#   * service containers publish on the Docker host, not on the runner's own
+#     loopback (measured: localhost FAILS, host.docker.internal works);
+#   * bind mount sources are resolved by the daemon, so a container-local
+#     $PWD mounts an empty directory (measured: Windows path resolves,
+#     Linux-style path does not).
+#
+# The label is the standard `rankwant` one, not a migration-specific test
+# label, because `tools/check_decisions.py` enforces the owner's "self-hosted
+# only" decision by matching `runs-on:` exactly. Running this against the new
+# runner therefore means stopping the old one for the duration — see
+# tools/runner/README.md.
+on:
+  workflow_dispatch:
+  push:
+    branches: [feat/single-engine-runner]
+
+permissions:
+  contents: read
+
+jobs:
+  selftest:
+    name: Runner self-test
+    runs-on: [self-hosted, rankwant]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Environment
+        run: |
+          echo "runner       = ${RUNNER_NAME:-<unset>}"
+          echo "workspace    = $GITHUB_WORKSPACE"
+          echo "pwd          = $PWD"
+          echo "in container = $([ -f /.dockerenv ] && echo yes || echo no)"
+          echo "HOST_REPO_ROOT = ${HOST_REPO_ROOT:-<unset>}"
+
+      - name: Docker socket
+        run: |
+          docker version --format 'client={{.Client.Version}} server={{.Server.Version}}'
+          docker compose version
+
+      - name: Bind mount resolves
+        # This is the check that would have caught the empty-mount failure:
+        # it asserts the daemon can see the files, not merely that docker ran.
+        run: |
+          root="${HOST_REPO_ROOT:-$PWD}"
+          echo "mount source = $root"
+          test -f "$root/tests/e2e/package.json" \
+            || { echo "::error::tests/e2e/package.json ko'rinmadi — mount BO'SH"; exit 1; }
+          docker run --rm -v "$root/tests/e2e:/e2e:ro" alpine:3.20 \
+            sh -c 'test -f /e2e/package.json && echo "konteyner ichida ham ko'rindi ✓"'
+
+      - name: Python
+        run: python3 -V
