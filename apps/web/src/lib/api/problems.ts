@@ -228,9 +228,14 @@ export function submitAttempt(body: {
 export const fetchAttempt = (id: number) =>
   getJson<AttemptDetail>(`/attempts/${id}/`);
 
+/** The whole judge catalog in one page. Language pickers read only the first
+ * page, and the API pages at 25 (`core/pagination.py`): once the catalog grew
+ * past that, ten languages silently dropped out of them, Python 3.13 among them. */
+export const LANGUAGES_PATH = "/languages/?page_size=100";
+
 /** Generator uchun til ro'yxati — mijozda, faqat hack formasi ochilganda. */
 export const fetchLanguages = () =>
-  getJson<Paginated<Language>>("/languages/");
+  getJson<Paginated<Language>>(LANGUAGES_PATH);
 
 export const fetchProblemAttempts = (slug: string, username?: string) =>
   getJson<Paginated<Attempt>>(
