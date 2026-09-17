@@ -55,6 +55,18 @@ jobs:
       - name: Tozalash
         if: always()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+      # `down -v` leaves the images this run built. Since 2026-09-17 CI runs on
+      # the Docker Desktop engine next to the live stack, and one nightly run
+      # left 18 of them behind (`rw-load-*`, `rw-e2e-*`, `rw-chaos-*`) until an
+      # unrelated CI run's cleanup removed them hours later. On a day without
+      # other CI they would pile up, the way 420 `rw-smoke-*` images filled the
+      # WSL disk to 58 GB on 2026-09-16.
+      - name: Obrazlarni tozalash
+        if: always()
+        run: |
+          docker images --format '{{.Repository}}:{{.Tag}}' \
+            | grep -E "^${COMPOSE_PROJECT_NAME}-" \
+            | xargs -r docker rmi -f || true
 
   e2e:
     name: E2E — to'liq brauzer matritsasi
@@ -92,6 +104,18 @@ jobs:
       - name: Tozalash
         if: always()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+      # `down -v` leaves the images this run built. Since 2026-09-17 CI runs on
+      # the Docker Desktop engine next to the live stack, and one nightly run
+      # left 18 of them behind (`rw-load-*`, `rw-e2e-*`, `rw-chaos-*`) until an
+      # unrelated CI run's cleanup removed them hours later. On a day without
+      # other CI they would pile up, the way 420 `rw-smoke-*` images filled the
+      # WSL disk to 58 GB on 2026-09-16.
+      - name: Obrazlarni tozalash
+        if: always()
+        run: |
+          docker images --format '{{.Repository}}:{{.Tag}}' \
+            | grep -E "^${COMPOSE_PROJECT_NAME}-" \
+            | xargs -r docker rmi -f || true
 
   chaos:
     name: Chaos — bog'liqlik uzilishi
@@ -125,6 +149,18 @@ jobs:
       - name: Tozalash
         if: always()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+      # `down -v` leaves the images this run built. Since 2026-09-17 CI runs on
+      # the Docker Desktop engine next to the live stack, and one nightly run
+      # left 18 of them behind (`rw-load-*`, `rw-e2e-*`, `rw-chaos-*`) until an
+      # unrelated CI run's cleanup removed them hours later. On a day without
+      # other CI they would pile up, the way 420 `rw-smoke-*` images filled the
+      # WSL disk to 58 GB on 2026-09-16.
+      - name: Obrazlarni tozalash
+        if: always()
+        run: |
+          docker images --format '{{.Repository}}:{{.Tag}}' \
+            | grep -E "^${COMPOSE_PROJECT_NAME}-" \
+            | xargs -r docker rmi -f || true
 
   compatibility:
     name: Til matritsasi
