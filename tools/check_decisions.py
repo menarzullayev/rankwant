@@ -187,6 +187,46 @@ def search_open_ai_crawlers_blocked() -> str | None:
     return None
 
 
+def _workflow_triggers(rel: str) -> set[str]:
+    lines = read(rel).splitlines()
+    try:
+        start = lines.index("on:")
+    except ValueError:
+        raise Unreadable(f"{rel}: `on:` bo'limi topilmadi")
+    block: list[str] = []
+    for line in lines[start + 1 :]:
+        if line and not line[0].isspace() and not line.startswith("#"):
+            break
+        block.append(line)
+    return {m.group(1) for line in block if (m := re.match(r"^  ([a-z_]+):", line))}
+
+
+def pr_skips_heavy_ci() -> str | None:
+    # 2026-09-18: CI+Security on every PR doubled the single-runner queue.
+    # Smoke on a PR held the runner for a full compose build.
+    triggers = _workflow_triggers(".github/workflows/security.yml")
+    if "pull_request" in triggers:
+        return "security.yml PR'da ham yuguradi — qaror: Security faqat main + cron"
+    if "github.event_name != 'pull_request'" not in read(".github/workflows/ci.yml"):
+        return "ci.yml smoke PR'da ham yuguradi"
+    compose = read("tools/runner/docker-compose.runner.yml")
+    if "rankwant-ci-runner-2" not in compose or "rankwant-ci-work-2" not in compose:
+        return "ikkinchi runner alohida volume'siz — /work ni bo'lishish checkout'ni buzadi"
+    if 'profiles: ["second"]' not in compose:
+        return "runner-2 profile'siz — oddiy `up -d` uni token'siz ko'taradi"
+    recreate = read("tools/runner/recreate.sh")
+    recreate_code = "\n".join(
+        line for line in recreate.splitlines() if not line.lstrip().startswith("#")
+    )
+    if re.search(r"\bdown\b", recreate_code):
+        return "recreate.sh `down` qiladi — ikkala runner birga o'ladi"
+    if "--second" not in recreate:
+        return "recreate.sh `--second` ni qabul qilmaydi"
+    if "nsn-pc-rankwant-container-2" not in read("tools/runner_watchdog.py"):
+        return "watchdog ikkinchi runner uchun restart buyrug'isiz"
+    return None
+
+
 def language_rule_written() -> str | None:
     if not re.search(r"^## Til\s*$", read("CONTRIBUTING.md"), re.M):
         return "CONTRIBUTING.md: `## Til` qoidasi yo'q"
@@ -210,6 +250,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("qidiruv ochiq, AI kraulerlar yopiq", search_open_ai_crawlers_blocked),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
+    ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),
 ]
 
 

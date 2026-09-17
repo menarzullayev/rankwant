@@ -40,8 +40,9 @@ aytmay qo'ydi (`org.rankwant.git-sha` yorlig'i `unknown`).
 - **Compose va `.env` o'zgarishi kod bilan birga PR'ga tushadi.** Commit qilinmagan
   `docker-compose*.yml` bo'lsa darvoza deploy'ni to'xtatadi — jonli stack o'sha fayl bilan
   ko'tarilgan bo'lishi va deploy uni jimgina yo'qotishi mumkin.
-- **PR'lar ketma-ket.** CI bitta self-hosted runner'da; bir vaqtda ikki PR ochilsa job'lar
-  «not acquired» bilan bekor bo'ladi.
+- **PR'lar parallel bo'lishi mumkin**, lekin og'ir smoke asosan `main`da.
+  Ikkinchi runner (`rankwant-ci-runner-2`) bir xil `rankwant` label'ida;
+  u register qilinmaguncha navbat yana ketma-ket. Hosted runner yo'q.
 - **Boshqa agentning ish daraxtiga tegilmaydi:** uning commit qilinmagan fayllarini
   o'zgartirmang, `git pull`/`checkout` qilmang, faqat o'qing.
 - `tools/check_negative.py` ishlayotgan worktree'da fayllarni mutatsiya qiladi — o'sha

@@ -368,11 +368,16 @@ jobs:
     # chegara ham qo'yilgan: qaysi bosqich sekinligi ko'rinib turadi.
     timeout-minutes: 20
     needs: changes
-    if: ${{ needs.changes.outputs.code == 'true' || github.event_name == 'workflow_dispatch' }}
-    # Compose loyihasi HAR JOB uchun alohida. Bitta runner'da joblar
-    # ketma-ket ketgani uchun bu ilgari sezilmasdi; ikkinchi runner
-    # qo'shilishi bilan ikkita job bir xil nomdagi stack'ni ko'tarib,
-    # birining `down -v` si ikkinchisining konteynerlarini o'chirardi.
+    # PR'da yo'q (2026-09-18): smoke ~2 daqiqa stack quradi va navbatni
+    # ushlab turadi. Main push, `workflow_dispatch` va deploy `workflow_call`
+    # to'liq yo'lni saqlaydi. `!= pull_request` qatori qaror — olib tashlash
+    # `tools/check_decisions.py` ni qiziltiradi.
+    if: >-
+      ${{ (needs.changes.outputs.code == 'true' || github.event_name == 'workflow_dispatch')
+          && github.event_name != 'pull_request' }}
+    # Compose loyihasi HAR JOB uchun alohida. Ikkinchi runner qo'shilishi
+    # bilan ikkita job bir xil nomdagi stack'ni ko'tarib, birining
+    # `down -v` si ikkinchisining konteynerlarini o'chirardi.
     env:
       COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
     steps:
