@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1566 strings.**
+**1571 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -1086,6 +1086,11 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.quotaLost` | {n} xat yetkazilmaydi (navbat ham to'ldi) | {n} нома расонида намешавад (навбат низ пур шуд) |  |
 | `admin.quotaUnset` | kvota belgilanmagan | квота муқаррар нашуд |  |
 | `admin.quotaTodayLeft` | Bugun yana: | Имрӯз монд: |  |
+| `admin.quotaWindowLabel` | Qaysi kun | Кадом рӯз |  |
+| `admin.quotaWindowToday` | Bugun | Имрӯз |  |
+| `admin.quotaWindowYesterday` | Kecha | Дирӯз |  |
+| `admin.quotaWindowWeek` | 7 kun | 7 рӯз |  |
+| `admin.quotaSpent` | Shu kun sarfi: | Дар он рӯз сарф шуд: |  |
 | `admin.quotaWithQueue` | (navbat bilan birga {n} gacha) | (бо навбат то {n}) |  |
 | `admin.quotaFailures` | {n} xat yuborilmadi | {n} нома фиристода нашуд |  |
 | `admin.quotaUtcNote` | Kun chegarasi — UTC kalendar kuni (Resend va Brevo shunday belgilaydi). Navbatdagi xat yo'qolmaydi, lekin kechikadi. | Сарҳад — рӯзи тақвимии UTC (Resend ва Brevo ин тавр муайян мекунанд). Номаҳои дар навбат таъхир меёбанд, на гум мешаванд. |  |

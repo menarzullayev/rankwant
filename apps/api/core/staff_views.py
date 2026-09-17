@@ -379,6 +379,15 @@ class StaffEmailQuotaView(APIView):
     sarfni tekshirish imkonini beradi. O'qib bo'lmaydigan qiymat
     jimgina e'tiborsiz qoldirilmaydi — `400` qaytadi, aks holda «noto'g'ri
     sana» «bugun» bo'lib ko'rinardi va raqam chalkashtirardi.
+
+    ⚠️ Mijoz uchun maslahat: `Z` qo'shimchasini yuboring
+    (`2026-09-11T20:31:19Z`), `+00:00` emas. Sabab `parse_datetime` da
+    emas — u ikkisini ham o'qiydi — balki query qatorida: `+` belgisi
+    `application/x-www-form-urlencoded` bo'yicha **probel** deb
+    ochiladi, ya'ni qo'lda yasalgan `?when=...+00:00` API ga
+    `... 00:00` bo'lib yetib keladi va `400` bo'ladi. JS da
+    `new Date(...).toISOString()` aynan `Z` beradi — qochirish kerak
+    emas. O'lchandi 2026-09-18.
     """
 
     permission_classes = [IsAdminUser, SessionOnly]
