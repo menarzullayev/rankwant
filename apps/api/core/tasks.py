@@ -144,7 +144,7 @@ def warn_email_quota() -> str:
                 kind=Notification.Kind.SYSTEM,
                 ref_type="mail_quota",
                 ref_id=kun,
-                defaults={"title": "Email kvotasi tugayapti", "body": matn},
+                defaults={"title": mail_quota.ALERT_TITLE, "body": matn},
             )
             yaratildi += int(created)
         except Exception:

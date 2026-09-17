@@ -80,6 +80,8 @@ jobs:
           python-version: '3.12'
       - name: Havola, jadval, yozuv va STATUS tekshiruvi
         run: python3 tools/check_docs.py
+      - name: Identifikatorlarda chalkash harf (kirill/grek ↔ lotin)
+        run: python3 tools/check_confusables.py
       - name: Judge shartnomasi (protocol.md ↔ Go ↔ Python)
         run: python3 tools/check_contract.py
       - name: DRF `ordering` tiebreaker (sahifalash beqarorligi)
