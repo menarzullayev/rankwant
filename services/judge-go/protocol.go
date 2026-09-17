@@ -16,7 +16,7 @@ type Language struct {
 	// (a new PID namespace, `subset=pid`) instead of masking /proc with an
 	// empty tmpfs. Runtimes that locate themselves through /proc/self/exe or
 	// read their stack bounds from /proc/self/maps — CoreCLR, Dart, Julia,
-	// the Zig and Swift compilers — cannot start under the mask. Host
+	// the Swift compiler — cannot start under the mask. Host
 	// processes stay invisible either way (bake-off `22-proc-self`).
 	ProcSelf bool `json:"proc_self,omitempty"`
 	// OpenFiles is RLIMIT_NOFILE for this language's programs; 0 keeps the

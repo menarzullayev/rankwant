@@ -1,4 +1,4 @@
-# ADR-0022: Judge languages — 36 languages, per-language sandbox settings
+# ADR-0022: Judge languages — 35 languages, per-language sandbox settings
 
 **STATUS:** accepted (2026-09-17)
 **Affects:** [ADR-0004](0004-judge-engine.md) (language images layer);
@@ -8,26 +8,29 @@
 
 RankWant judged three languages (C++23, Python 3.13, Java 21). The rival judges offer
 12 (KEP.uz), 19 (Robocontest) and 34 (Codeforces). On 2026-09-17 the owner decided to
-add 36 languages — every language offered by at least one rival plus the TIOBE top 50 —
+add 35 languages — every language offered by at least one rival plus the TIOBE top 50 —
 as long as the judge image stays under about **20 GB**:
 
 - on all three rivals: Python, C, C++, Java, C#, JavaScript, Rust, Go, PHP, Kotlin
 - on two: Pascal, Ruby, Haskell
 - on one: R, Swift, Perl, D, OCaml, TypeScript, Dart, Scala
 - on none (TIOBE top 50): Visual Basic .NET, Fortran, Assembly, Ada, Objective-C, COBOL,
-  Julia, Caml, Prolog, Lua, PowerShell, Zig, Common Lisp
+  Julia, Caml, Prolog, Lua, PowerShell, Common Lisp
 - outside the top 50, on a rival: PyPy, F#
 
+Zig was measured as well and then left out by the owner's decision: the platform does
+not need it.
+
 Every language was compiled and run in the real judge (nsjail, the production flags) on
-A+B. On the first pass 21 of 36 were accepted. The other 15 failed on assumptions that
+A+B. On the first pass 21 of 35 were accepted. The other 14 failed on assumptions that
 held for three languages only:
 
 | Assumption | Broke | Measured |
 | ---------- | ----- | -------- |
 | The source file name follows from the code prefix | everything outside cpp/py/java was saved as `main.txt` | code reading (`srcName`) |
-| `/proc` can be an empty tmpfs | CoreCLR (C#, VB.NET, F#, PowerShell), Dart, Julia, the Swift and Zig compilers | `Failed to create CoreCLR, HRESULT: 0x8007000E`; Dart `Failed to retrieve stack bounds`; Julia `unexpected error while retrieving exepath` |
+| `/proc` can be an empty tmpfs | CoreCLR (C#, VB.NET, F#, PowerShell), Dart, Julia, the Swift compiler | `Failed to create CoreCLR, HRESULT: 0x8007000E`; Dart `Failed to retrieve stack bounds`; Julia `unexpected error while retrieving exepath` |
 | 64 open files is enough | Roslyn and fsc (compile), R and PowerShell (run) | Roslyn fails at 64, works at 128; R and PowerShell fail at 128, work at 192 |
-| One 10 s compile budget | Zig 9.2 s CPU for A+B with a warm cache, Kotlin 5.0 s | CPU time over all compiler threads |
+| One 10 s compile budget | leaves little room for the JVM compilers: kotlinc takes 5.0 s CPU for A+B | CPU time over all compiler threads |
 | `/tmp` is writable | rustc, cobc, ocamlopt, R | `Read-only file system` |
 
 Allow-lists add a product-level break: 1,866 of 2,096 problems list the languages they
@@ -71,9 +74,9 @@ writes it, data migrations add rows to deployed databases, and
 Rust 1.85, Go 1.24, PHP 8.4, GHC 9.6, R 4.5, Swift 6.0, LDC 1.40, OCaml 5.3, SWI-Prolog 9.2,
 SBCL 2.5, PyPy 7.3, GnuCOBOL 3.2, …). Official archives, pinned by their published
 checksums, where Debian has nothing or something too old: .NET SDK 10, Node.js 24 LTS,
-PowerShell 7.6, Kotlin 2.4, Scala 3.9, Dart 3.13, Zig 0.16, Julia 1.13. Build-time assets
-replace per-submission work: Go standard-library export data (`go tool compile/link`,
-89 ms instead of 5.6 s CPU), a Zig global cache, .NET reference lists.
+PowerShell 7.6, Kotlin 2.4, Scala 3.9, Dart 3.13, Julia 1.13. Build-time assets replace
+per-submission work: Go standard-library export data (`go tool compile/link`, 89 ms
+instead of 5.6 s CPU), .NET reference lists.
 
 **Sandbox safety of `proc_self`.** The procfs is mounted inside the sandbox's own PID
 namespace with `subset=pid,hidepid=invisible`: it lists only the sandbox's processes and
@@ -92,14 +95,14 @@ every active language.
 
 Measured on 2026-09-17 in the judge image built from this decision:
 
-- **Size.** Current image 1.05 GB. Debian packages add 4.97 GB (277 packages, shared
-  libraries counted once); the archives add 3.25 GB. The resulting layers total about
-  **9.2 GB** — under half the budget. Swift (2.3 GB), Julia (1.1 GB), GHC (0.7 GB) and
-  Dart (0.7 GB) are 58 % of the growth.
-- **All 36 accepted** A+B in nsjail after the changes; the whole bake-off suite, with
+- **Size.** Uncompressed layers per group, from `docker history` of the images each
+  group's PR built: group 1 +1.94 GB, group 2 +4.36 GB, group 3 +1.79 GB, on a 0.74 GB
+  base — about **8.8 GB**, under half the budget. Swift (in group 2's 3.62 GB of
+  packages) and Julia (1.1 GB) are the largest single toolchains.
+- **All 35 accepted** A+B in nsjail after the changes; the whole bake-off suite, with
   `22-proc-self`, passed on the same judge.
 - **Compile cost (CPU, A+B):** g++ 161 ms, javac 634 ms, csc 344 ms, fsc 937 ms,
-  swiftc 771 ms, Dart AOT 801 ms, Go 89 ms, kotlinc 5.0 s, Zig 9.2 s.
+  swiftc 771 ms, Dart AOT 801 ms, Go 89 ms, kotlinc 5.0 s.
 
 ## Consequences
 
@@ -107,21 +110,19 @@ Measured on 2026-09-17 in the judge image built from this decision:
   on all three rivals (C, C#, JavaScript, Rust, Go, PHP and Kotlin join the founding
   three), then the next eleven, then the rest. Each group's image growth and CI build
   time is measured on its own.
-- The judge image grows from 1.05 GB to about 9.2 GB; a clean build downloads about
-  2.1 GB. CI builds the image on every PR that touches the judge.
+- The judge image grows to about 8.8 GB of layers; a clean build downloads about 2 GB.
+  CI builds the image on every PR that touches the judge.
 - .NET needs `libicu76` and aborts with `Couldn't find a valid ICU package` without it.
   In the all-language measurement it arrived as a dependency of R and GNUstep, so the
   group that brings .NET installs it explicitly.
-- Kotlin and Scala get 20 s, Zig 30 s of compile CPU. A Zig submission occupies a worker
-  for ~10 s; heavy use would call for option 4.
+- Kotlin and Scala get 20 s of compile CPU.
 - Julia holds ~200 MB right after start; problems limited to 256 MB leave it little room.
   Per-language memory allowances are a separate decision.
 - Thread counts were measured on an 8-core host. The JVM, Node.js and the Go runtime
   size thread pools from the core count, so `processes` must be re-measured when judge
   hosts change.
 - Archive-installed toolchains are not updated by apt; each bump is a checksum change
-  in the Dockerfile. Zig breaks its standard library between minor versions (0.15 and
-  0.16 both changed I/O).
+  in the Dockerfile.
 - Objective-C uses GCC's runtime: `@autoreleasepool` and ARC are not available, the
   classic `NSAutoreleasePool` is.
 - TypeScript runs on Node.js with `--experimental-transform-types`. Plain type stripping

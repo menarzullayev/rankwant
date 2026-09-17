@@ -150,6 +150,92 @@ PROBES: dict[str, tuple[Any, ...]] = {
         "}\n",
         lambda out: out.strip(),
     ),
+    "vbnet17": (
+        "Module Program\n    Sub Main()\n"
+        "        System.Console.WriteLine(System.Environment.Version.Major)\n"
+        "    End Sub\nEnd Module\n",
+        # The program prints the runtime; vbc marks the language version it compiles
+        # with "(default)" ("17.13 (default)"; "latest" is a separate keyword line).
+        lambda out: "{} (.NET {})".format(
+            out.strip().splitlines()[-1].split()[0], out.strip().splitlines()[-2]
+        ),
+        "/usr/bin/env DOTNET_EnableWriteXorExecute=0 /opt/dotnet/dotnet"
+        " /opt/rankwant/dotnet/roslyn/vbc.dll -langversion:? | grep -F '(default)'",
+    ),
+    "fortran14": (
+        "program p\n  use iso_fortran_env\n  print '(a)', compiler_version()\nend program p\n",
+        # "GCC version 14.2.0"
+        lambda out: "(GFortran " + out.strip().split()[-1].split(".")[0] + ")",
+    ),
+    "nasm216": (
+        "section .data\nmsg db 'ok', 10\nsection .text\nglobal _start\n_start:\n"
+        "    mov eax, 1\n    mov edi, 1\n    lea rsi, [rel msg]\n    mov edx, 3\n    syscall\n"
+        "    mov eax, 60\n    xor edi, edi\n    syscall\n",
+        # "NASM version 2.16.03 compiled on ..."
+        lambda out: "(NASM "
+        + ".".join(out.strip().splitlines()[-1].split()[2].split(".")[:2])
+        + ", x86-64)",
+        "nasm -v",
+    ),
+    "ada14": (
+        "with Ada.Text_IO;\nwith GNAT.Compiler_Version;\n\nprocedure Main is\n"
+        "   package CV is new GNAT.Compiler_Version;\nbegin\n"
+        "   Ada.Text_IO.Put_Line (CV.Version);\nend Main;\n",
+        lambda out: "(GNAT " + out.strip().split(".")[0] + ")",
+    ),
+    "objc14": (
+        "#import <Foundation/Foundation.h>\n#include <stdio.h>\n\nint main(void) {\n"
+        "    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];\n"
+        '    printf("%d\\n", __GNUC__);\n    [pool drain];\n    return 0;\n}\n',
+        lambda out: f"(GCC {out.strip()}, GNUstep)",
+    ),
+    "cobol32": (
+        "       IDENTIFICATION DIVISION.\n       PROGRAM-ID. MAIN.\n"
+        '       PROCEDURE DIVISION.\n           DISPLAY "ok".\n           STOP RUN.\n',
+        # "cobc (GnuCOBOL) 3.2.0"
+        lambda out: "(GnuCOBOL "
+        + ".".join(out.strip().splitlines()[-1].split()[-1].split(".")[:2])
+        + ")",
+        "cobc --version | head -n 1",
+    ),
+    "julia113": (
+        'println(VERSION.major, ".", VERSION.minor)\n',
+        lambda out: out.strip(),
+    ),
+    "caml53": (
+        "let () =\n  match String.split_on_char '.' Sys.ocaml_version with\n"
+        '  | major :: minor :: _ -> Printf.printf "%s.%s\\n" major minor\n'
+        "  | _ -> print_endline Sys.ocaml_version\n",
+        lambda out: f"(OCaml {out.strip()} toplevel)",
+    ),
+    "prolog92": (
+        ":- initialization(main, main).\n\nmain :-\n"
+        "    current_prolog_flag(version_data, swi(Major, Minor, _, _)),\n"
+        '    format("~w.~w~n", [Major, Minor]).\n',
+        lambda out: f"(SWI-Prolog {out.strip()})",
+    ),
+    "lua54": (
+        'print(_VERSION:match("%d+%.%d+"))\n',
+        lambda out: out.strip(),
+    ),
+    "powershell76": (
+        'Write-Output ("{0}.{1}" -f $PSVersionTable.PSVersion.Major, $PSVersionTable.PSVersion.Minor)\n',
+        lambda out: out.strip(),
+    ),
+    "lisp25": (
+        '(format t "~a~%" (lisp-implementation-version))\n',
+        # "2.5.2.debian"
+        lambda out: "(SBCL " + ".".join(out.strip().split(".")[:2]) + ")",
+    ),
+    "pypy73": (
+        'import sys\nprint("%d.%d" % sys.pypy_version_info[:2])\n',
+        lambda out: out.strip(),
+    ),
+    "fsharp10": (
+        'printfn "%d (.NET %d)" (typeof<option<int>>.Assembly.GetName().Version.Major)'
+        " System.Environment.Version.Major\n",
+        lambda out: out.strip(),
+    ),
 }
 
 #: Keys every catalog entry must have. A missing one would otherwise surface

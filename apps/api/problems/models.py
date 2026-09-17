@@ -97,12 +97,12 @@ class Language(models.Model):
     #: dasturda ham 18 ta oqim ochadi (o'lchandi) va 1 bilan umuman
     #: ishga tushmasdi.
     process_limit = models.PositiveSmallIntegerField(default=1)
-    #: CPU budget for compiling one submission. Kotlin needs ~5 s and Zig ~9 s
-    #: for A+B alone (measured in the judge image), so one number cannot fit all.
+    #: CPU budget for compiling one submission. kotlinc needs ~5 s for A+B alone
+    #: (measured in the judge image), so one number cannot fit all.
     compile_time_ms = models.PositiveIntegerField(default=10_000)
     #: The sandbox mounts a procfs showing only its own processes instead of
-    #: masking /proc. CoreCLR, Dart, Julia and the Swift and Zig compilers do not
-    #: start without /proc/self (ADR-0022).
+    #: masking /proc. CoreCLR, Dart, Julia and the Swift compiler do not start
+    #: without /proc/self (ADR-0022).
     proc_self = models.BooleanField(default=False)
     #: RLIMIT_NOFILE for this language's programs; 0 keeps the judge's 64.
     #: R and PowerShell refuse to start below ~192 (measured).
