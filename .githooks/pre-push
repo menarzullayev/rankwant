@@ -196,7 +196,7 @@ if has '^(\.env\.example|docker-compose[^/]*\.yml|apps/api/|apps/web/src/|servic
 fi
 
 # Owner decisions (CLAUDE.md § Saidakbar aka qarorlari) must stay true in code.
-if has '^(tools/(backup\.sh|push_guard\.py|check_decisions\.py|deploy\.sh|check_deploy_gate\.py)|\.githooks/|\.github/workflows/|CONTRIBUTING\.md|CLAUDE\.md)'; then
+if has '^(tools/(backup\.sh|push_guard\.py|check_decisions\.py|deploy\.sh|check_deploy_gate\.py|runner/)|\.githooks/|\.github/workflows/|CONTRIBUTING\.md|CLAUDE\.md)'; then
   step "Egasining qarorlari" "$PY" tools/check_decisions.py
 fi
 

@@ -23,12 +23,13 @@ services:
     environment:
       RUNNER_REPO: https://github.com/menarzullayev/rankwant
       RUNNER_NAME: ${RUNNER_NAME:-nsn-pc-rankwant-container}
-      # ⚠️ TRIAL label, never the production one. `tools/check_decisions.py`
-      # permits only `runner-selftest.yml` to target it. On 2026-09-17 a trial
-      # runner registered under the production label took real CI jobs and
-      # failed them, because that rule left the self-test no other option.
-      # Production CI stays on the WSL runner until this trial is proven.
-      RUNNER_LABELS: ${RUNNER_LABELS:-self-hosted,Linux,X64,rankwant-container}
+      # `rankwant` makes this the production CI runner. That happened on
+      # 2026-09-17, after a full CI run passed here (tools/runner/README.md).
+      # `rankwant-container` stays for `runner-selftest.yml`, the only workflow
+      # allowed on it. `tools/check_decisions.py` fails if `rankwant` drops out
+      # of this default: a recreated container would register without it, and
+      # CI would sit in `queued` with no runner.
+      RUNNER_LABELS: ${RUNNER_LABELS:-self-hosted,Linux,X64,rankwant,rankwant-container}
       RUNNER_TOKEN: ${RUNNER_TOKEN:-}
       RUNNER_WORKDIR: /work
       # The volume /work lives on. The entrypoint asks the daemon where that

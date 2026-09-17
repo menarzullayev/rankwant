@@ -2162,6 +2162,25 @@ def neg_decisions_deploy_gate_unwired() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_runner_compose_label_dropped() -> tuple[bool, str]:
+    return _decision_broken(
+        "tools/runner/docker-compose.runner.yml",
+        "${RUNNER_LABELS:-self-hosted,Linux,X64,rankwant,rankwant-container}",
+        "${RUNNER_LABELS:-self-hosted,Linux,X64,rankwant-container}",
+        "CI runner konteynerda",
+    )
+
+
+def neg_decisions_runner_entrypoint_label_dropped() -> tuple[bool, str]:
+    # `rankwant-container` contains `rankwant` as text; the rule must not count it.
+    return _decision_broken(
+        "tools/runner/entrypoint.sh",
+        '"${RUNNER_LABELS:=self-hosted,Linux,X64,rankwant,rankwant-container}"',
+        '"${RUNNER_LABELS:=self-hosted,Linux,X64,rankwant-container}"',
+        "CI runner konteynerda",
+    )
+
+
 def neg_decisions_deploy_lock_removed() -> tuple[bool, str]:
     return _decision_broken(
         "tools/deploy.sh",
@@ -2191,6 +2210,8 @@ def _decisions_sandbox(extra_workflows: dict[str, str]) -> tuple[int, str]:
         "tools/backup.sh",
         "tools/push_guard.py",
         "tools/deploy.sh",
+        "tools/runner/docker-compose.runner.yml",
+        "tools/runner/entrypoint.sh",
         ".githooks/pre-push",
         "CONTRIBUTING.md",
         "CLAUDE.md",
@@ -3042,6 +3063,14 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("offsite standarti qaytsa tutilsin", neg_decisions_backup_offsite),
             ("push guard uzilsa tutilsin", neg_decisions_push_guard_unwired),
             ("hosted runner qo'shilsa tutilsin", neg_decisions_hosted_runner),
+            (
+                "runner compose'da rankwant label'i tushsa tutilsin",
+                neg_decisions_runner_compose_label_dropped,
+            ),
+            (
+                "runner entrypoint'da rankwant label'i tushsa tutilsin",
+                neg_decisions_runner_entrypoint_label_dropped,
+            ),
             ("deploy push'ga qaytsa tutilsin", neg_decisions_deploy_on_push),
             ("til qoidasi o'chsa tutilsin", neg_decisions_language_rule),
             ("qarorlar jadvali o'chsa tutilsin", neg_decisions_table_removed),

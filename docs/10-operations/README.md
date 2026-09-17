@@ -701,9 +701,14 @@ Prod deploy **qo'lda tasdiqlash** bilan (contest oynasi tekshiruvi tufayli).
 
 ### Runner
 
-Joblar **self-hosted runner** da ishlaydi (`runs-on: [self-hosted, rankwant]`):
-`nsn-pc` dagi `actions.runner.menarzullayev-rankwant.nsn-pc-rankwant`
-systemd xizmati. Sababi — repo private, GitHub'ning bulut runnerlari esa
+Joblar **self-hosted runner** da ishlaydi (`runs-on: [self-hosted, rankwant]`).
+2026-09-17 dan `rankwant` label'i Docker Desktop'dagi `rankwant-ci-runner`
+konteynerida turadi: ish papkasi `rankwant-ci-work` volume'ida, runner'ni
+`RankWant CI Runner Watchdog` vazifasi qo'riqlaydi (actions/runner#4444 —
+job'dan keyin runner ish so'rashni to'xtatib qo'yishi mumkin). O'rnatish, sinov
+natijalari va WSL runner'ga qaytarish — [tools/runner/README.md](../../tools/runner/README.md).
+`nsn-pc` dagi WSL runner (`actions.runner.menarzullayev-rankwant.nsn-pc-rankwant`
+systemd xizmati) label'siz zaxirada turadi. Self-hosted sababi — repo private, GitHub'ning bulut runnerlari esa
 oyiga 2000 daqiqa bilan cheklangan va u kvota hisobdagi boshqa
 repolar bilan bo'lishiladi. O'z mashinasida Actions bepul va cheksiz.
 

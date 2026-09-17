@@ -29,6 +29,9 @@ SELF_HOSTED = "[self-hosted, rankwant]"
 # On 2026-09-17 a trial runner registered with the production label took real CI
 # jobs and failed them, because this rule left the self-test no other label.
 TRIAL_RUNNER = {"runner-selftest.yml": "[self-hosted, rankwant-container]"}
+# Where the container runner, the production CI runner since 2026-09-17, gets its
+# labels whenever the container is recreated and registers again.
+RUNNER_DEFAULTS = ("tools/runner/docker-compose.runner.yml", "tools/runner/entrypoint.sh")
 
 
 class Unreadable(Exception):
@@ -87,6 +90,22 @@ def ci_self_hosted_only() -> str | None:
     return None
 
 
+def container_runner_takes_ci() -> str | None:
+    # A recreated container registers with these defaults. Without `rankwant`
+    # it comes back unable to take a single CI job, and nothing fails loudly:
+    # the runs just sit in `queued`.
+    bad: list[str] = []
+    for rel in RUNNER_DEFAULTS:
+        match = re.search(r"\$\{RUNNER_LABELS:[-=]([^}]*)\}", read(rel))
+        if match is None:
+            return f"{rel}: RUNNER_LABELS standart qiymati topilmadi"
+        if "rankwant" not in [label.strip() for label in match.group(1).split(",")]:
+            bad.append(f"{rel} `{match.group(1)}`")
+    if bad:
+        return "konteyner runner qayta ro'yxatdan o'tsa production label'siz qoladi: " + ", ".join(bad)
+    return None
+
+
 def deploy_manual_only() -> str | None:
     lines = read(".github/workflows/deploy.yml").splitlines()
     try:
@@ -142,6 +161,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
     ("CI faqat self-hosted", ci_self_hosted_only),
+    ("CI runner konteynerda", container_runner_takes_ci),
     ("deploy faqat qo'lda", deploy_manual_only),
     ("deploy faqat yashil main'dan", deploy_gated_on_green_main),
     ("til qoidasi", language_rule_written),

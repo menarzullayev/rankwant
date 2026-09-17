@@ -1,14 +1,38 @@
-# Containerized CI runner (trial)
+# Containerized CI runner
 
 Runs GitHub Actions on a container attached to Docker Desktop's daemon, so the
 second WSL engine can eventually go away.
 
-## Status: trial — failed a full CI run, production CI stays on WSL
+## Status: production CI runner since 2026-09-17
 
-The runner carries the **`rankwant-container` label**, and
-`tools/check_decisions.py` permits only `runner-selftest.yml` to target it.
-Production CI stays on the WSL runner. Two runners sharing the `rankwant`
-label would race for the same jobs, and on 2026-09-17 one did exactly that.
+The runner carries **`rankwant`**, the label every CI job asks for, and
+`rankwant-container`, which `tools/check_decisions.py` lets only
+`runner-selftest.yml` target. The WSL runner is still registered and online,
+with no custom label, as the fallback; see
+[Rolling back](#rolling-back-to-the-wsl-runner). Two runners sharing `rankwant`
+would race for the same jobs, and on 2026-09-17 a runner under trial did
+exactly that.
+
+It became production after a second full CI run, following the fixes below:
+the workspace moved to a volume and the watchdog was installed. On `main`
+`81b7d2d`, dispatched with `run_all`, every job ran here, one after another,
+with no stall:
+
+| Job | Container runner | WSL runner, earlier `main` runs |
+| --- | --- | --- |
+| Docs and integrity | 32 s | 17–20 s |
+| Judge | 59 s (`setup-go` 21 s) | 22 s |
+| OpenAPI | 89 s | 16 s |
+| Web | 99 s | 74 s |
+| API | 156 s | ~125 s |
+| Smoke and E2E | 295 s | 123–149 s |
+| Whole run | 12.5 min, success | ~8.5 min |
+
+That first run on the volume filled cold caches (Python, pip, npm), which is
+most of the gap. The live site answered all 44 probes during the run, all 200,
+average 0.45 s.
+
+### First trial (failed)
 
 Measured 2026-09-17: **14/14 self-test jobs succeeded** — 9 on `host`
 networking including after a 6-minute idle, 5 on `bridge`. Both network
