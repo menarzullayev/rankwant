@@ -26,6 +26,17 @@ on:
         type: choice
         options: [staging, production]
         default: staging
+      # ⚠️ Qo'shildi 2026-09-17: ilgari deploy'ni faqat `vars.PUBLIC_ORIGIN`
+      # bo'shligi to'xtatib turardi — ya'ni sozlamani bir marta to'ldirish
+      # yetarli edi. Bitta engine'ga o'tilgach (runner va jonli stack bir
+      # Docker'da) bu job jonli stack'ka BEVOSITA yeta oladi, ya'ni
+      # tasodifiy ishga tushirish haqiqiy deploy bo'ladi. Endi ochiq
+      # tasdiq so'raladi.
+      confirm:
+        description: "Jonli stack'ka tegadi — tasdiqlash uchun `deploy` yozing"
+        type: string
+        required: false
+        default: ''
 
 # Deploy job'i runner mashinasidagi shared resursga (docker compose,
 # tunnel) tegadi: bir vaqtda ikkita deploy ketmasin.
@@ -155,10 +166,17 @@ jobs:
     #
     # Qo'lda yo'l: `bash tools/deploy.sh` (live oynani o'zi tekshiradi).
     # To'liq dalillar: docs/10-operations/deploy-runbook.md § 1.
+    #
+    # ⚠️ YANGI SHART (2026-09-17): `confirm == 'deploy'`. Sabab — bitta
+    # engine'ga o'tilgach bu job jonli stack'ka yeta oladi (ilgari uni
+    # engine ajratmasi to'xtatardi). Qolgan ikki to'siq hamon yo'q:
+    # migration qadami va `environments` himoyasi (required reviewer).
+    # Ular qo'shilmaguncha avtomatik deploy YOQ.
     if: >-
       ${{
         (github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch')
         && vars.PUBLIC_ORIGIN != ''
+        && github.event.inputs.confirm == 'deploy'
       }}
     runs-on: [self-hosted, rankwant]
     # ⚠️ 3 daqiqadan ko'p — ONGLI istisno: to'liq stack `up --build`
@@ -285,7 +303,18 @@ jobs:
         # Tashqi kirish Cloudflare Tunnel orqali, ochiq port yo'q.
         # Tunnel yuklanish jarayonida o'zi yoqilmaydi (10-operations),
         # ya'ni uni bu yerda ko'tarish shart.
+        #
+        # ⚠️ 2026-09-17: bu qadam LINUX uchun yozilgan (`systemctl`).
+        # Runner konteyner ichida bo'lsa systemd YO'Q, Windows tomonida esa
+        # tunnelni `tools/handoff.ps1` PID fayli bilan boshqaradi. Shu sabab
+        # qadam endi muhitni ANIQLAB, tushunarli xabar beradi — jim
+        # "topilmadi" ogohlantirishi bilan qolmaydi.
         run: |
+          if ! command -v systemctl >/dev/null 2>&1; then
+            echo "systemd yo'q (konteyner runner) — tunnel Windows tomonida"
+            echo "boshqariladi: tools/handoff.ps1 / RankWant Tunnel Monitor."
+            exit 0
+          fi
           if systemctl list-unit-files cloudflared.service >/dev/null 2>&1; then
             sudo systemctl start cloudflared
             echo "Tunnel yoqildi"
@@ -326,8 +355,12 @@ jobs:
           docker images --format '{{.ID}}|{{.CreatedSince}}|{{.Repository}}' \
             | awk -F'|' '$3 ~ /^rw-/ && $2 ~ /hours|days|weeks|months/ {print $1}' \
             | sort -u | xargs -r docker rmi -f || true
-          echo "--> build cache (24 soatdan eskisi)"
-          docker builder prune -f --filter 'until=24h' || true
+          echo "--> build cache (7 kundan eskisi)"
+          # ⚠️ `docker builder prune` loyiha bo'yicha ajratilmaydi — butun
+          # engine'ga tegadi. Bitta engine'da bu jonli keshni ham nomzod
+          # qiladi; shuning uchun oyna 24 soatdan 7 kunga uzaytirildi.
+          # To'liq yechim — daemon darajasida kesh hajmini cheklash (ochiq).
+          docker builder prune -f --filter 'until=168h' || true
 
       # `down` ATAYLAB yo'q: bu jonli stack — uni tozalash saytni
       # o'chirib qo'yardi. Rollback kerak bo'lsa quyidagi job ishlatiladi.

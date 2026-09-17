@@ -23,10 +23,16 @@ services:
     ports: !reset []
 
   # Smoke tarmoq ICHIDA ishlaydi: host portlari kerak emas.
+  #
+  # ⚠️ `HOST_REPO_ROOT` — bind mount manbai DAEMON tomonida yechiladi.
+  # Runner konteyner ichida bo'lsa compose fayli turgan nisbiy yo'l daemon
+  # uchun mavjud emas va mount BO'SH chiqadi. O'zgaruvchi faqat konteyner
+  # runner'da o'rnatiladi; bo'sh bo'lsa `${VAR:-.}` hozirgi xatti-harakatni
+  # beradi (compose `.` ni fayl katalogiga nisbatan yechadi).
   smoke:
     image: python:3.13-slim
     profiles: ['smoke']
-    volumes: ['./tests/smoke:/smoke:ro']
+    volumes: ["${HOST_REPO_ROOT:-.}/tests/smoke:/smoke:ro"]
     command: ['python', '/smoke/check.py']
     depends_on:
       api: { condition: service_healthy }
@@ -51,7 +57,7 @@ services:
   bakeoff:
     build: ./apps/api
     profiles: ['bakeoff']
-    volumes: ['./services/bakeoff:/bakeoff:ro']
+    volumes: ["${HOST_REPO_ROOT:-.}/services/bakeoff:/bakeoff:ro"]
     environment:
       REDIS_URL: redis://redis:6379/0
     command: ['python', '/bakeoff/harness/runner.py', '--worker', 'judge-go']

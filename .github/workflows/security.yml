@@ -47,7 +47,9 @@ jobs:
         # site key'larini istisno qiladi (batafsil: `.gitleaks.toml`).
         timeout-minutes: 3
         run: |
-          docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:latest \
+          # `HOST_REPO_ROOT` — bind manbai daemon tomonida yechiladi (qarang:
+          # ci.yml § Service host / mount). Konteyner runner'da o'rnatiladi.
+          docker run --rm -v "${HOST_REPO_ROOT:-$PWD}:/repo" zricethezav/gitleaks:latest \
             detect --source /repo --config /repo/.gitleaks.toml \
             --redact --no-banner --verbose
 
