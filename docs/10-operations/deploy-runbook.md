@@ -246,6 +246,12 @@ o'zgartirilgan 17 faylni aynan topdi (`arena/views.py` hash'i
 Qo'lda takrorlash: bitta faylni o'zgartirib (qayta qurmasdan)
 `bash tools/check_deploy.sh` → «ESKIRGAN» chiqishi kerak.
 
+**Istisno (2026-09-17):** web va judge **yorlig'i** bo'yicha qaror Docker'siz
+hisoblanadi (`label_state`: yorliqdan beri build konteksti — `apps/web`,
+`services/judge-go` — o'zgarganmi). U `--label-state` kirish nuqtasi orqali
+`check_negative.py deploy_check` da sandbox repo'da sinaladi. Konteyner ichidagi
+fayl hash'lari esa baribir jonli stack'ni talab qiladi.
+
 ---
 
 ## 4. Ma'lum xatolar — hammasi o'lchangan (2026-09-16)
