@@ -220,6 +220,13 @@ if has '^tools/(check_after_reboot\.py|check_negative\.py)'; then
   step "Reboot tekshiruvi — salbiy testlar" "$PY" tools/check_negative.py after_reboot
 fi
 
+# The daily report's notification is the only thing that tells the owner about CI
+# trouble without opening a file, so a notification that never fires is retested
+# whenever the report or its tests change.
+if has '^tools/(runner_report\.py|check_negative\.py)'; then
+  step "Kundalik hisobot — salbiy testlar" "$PY" tools/check_negative.py runner_report
+fi
+
 if [ "$fail" -ne 0 ]; then
   printf '\n\033[31mPush to'\''xtatildi.\033[0m Tuzating yoki: git push --no-verify\n\n'
   exit 1
