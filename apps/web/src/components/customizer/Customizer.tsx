@@ -1084,9 +1084,16 @@ function AccentSection() {
           ratio={trial.button}
         />
         <Indicator label={t(locale, "customizer.contrastText")} ratio={trial.ink} />
+        {/* Fon o'qilmagani AA dan o'tmaganlik EMAS. Ilgari ikkalasi bitta
+            xabar bilan ko'rsatilardi va `glass` da odam «rang o'qilmaydi»
+            deb o'ylardi, aslida kontrast umuman o'lchanmagan edi (APP-1,
+            APP-9). Apply ikkala holatda ham o'chiq qoladi: o'lchanmagan
+            narsani «o'tdi» deb bo'lmaydi. */}
         {!ok && (
-          <p className="rw-radius-sm rw-bad-soft px-2 py-1 text-theme-xs">
-            {t(locale, "customizer.contrastBlocked")}
+          <p role="alert" className="rw-radius-sm rw-bad-soft px-2 py-1 text-theme-xs">
+            {trial.error === "ground_unreadable"
+              ? errorText(locale, "ground_unreadable", "")
+              : t(locale, "customizer.contrastBlocked")}
           </p>
         )}
         {ok && failure && (
