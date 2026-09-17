@@ -1719,9 +1719,14 @@ def neg_checker_survives_narrow_stdout() -> tuple[bool, str]:
         # this case about the encoding of its `✓` lines.
         facts = Path(tmp) / "facts.json"
         facts.write_text(json.dumps(_ar_facts()), encoding="utf-8")
+        # The gate also refuses to deploy while a compose file is uncommitted, which
+        # this suite's own mutations can be. A clean fixture keeps the case about encoding.
+        compose = Path(tmp) / "compose.json"
+        compose.write_text("[]", encoding="utf-8")
         extra = {
             "check_deploy_gate.py": [
-                "--head", _GATE_SHA, "--main", _GATE_SHA, "--runs", str(runs)
+                "--head", _GATE_SHA, "--main", _GATE_SHA, "--runs", str(runs),
+                "--compose-status", str(compose),
             ],
             "check_after_reboot.py": ["--facts", str(facts)],
         }
@@ -2281,15 +2286,24 @@ _GATE_GREEN = [
 
 
 def _gate_expect(
-    label: str, main: str, runs: object, code: int, needle: str
+    label: str, main: str, runs: object, code: int, needle: str, dirty: object = None
 ) -> tuple[bool, str]:
-    """Run the gate on fixtures (no git, no GitHub) and require exit `code`."""
+    """Run the gate on fixtures (no git, no GitHub) and require exit `code`.
+
+    The compose fixture is always passed: without it the gate would read this
+    working tree, where the negative suite's own mutations come and go.
+    """
     with tempfile.TemporaryDirectory() as tmp:
         path = Path(tmp) / "runs.json"
         text = runs if isinstance(runs, str) else json.dumps(runs)
         path.write_text(text, encoding="utf-8")
+        compose = Path(tmp) / "compose.json"
+        compose.write_text(
+            dirty if isinstance(dirty, str) else json.dumps(dirty or []), encoding="utf-8"
+        )
         got, out = run_check(
-            "deploy_gate", "--head", _GATE_SHA, "--main", main, "--runs", str(path)
+            "deploy_gate", "--head", _GATE_SHA, "--main", main, "--runs", str(path),
+            "--compose-status", str(compose),
         )
     if got != code:
         return False, f"deploy_gate/{label}: exit {got} ({code} kerak) — {out.strip()[-160:]}"
@@ -2305,6 +2319,21 @@ def neg_deploy_gate_green_passes() -> tuple[bool, str]:
 
 def neg_deploy_gate_not_main() -> tuple[bool, str]:
     return _gate_expect("main emas", "b" * 40, _GATE_GREEN, 1, "`main` emas")
+
+
+def neg_deploy_gate_dirty_compose_blocks() -> tuple[bool, str]:
+    # 2026-09-17: the live stack was recreated from an uncommitted compose that carried
+    # the Turnstile keys; a deploy from a worktree would have dropped them silently.
+    dirty = ["C:/Users/nsn/project/cp/rankwant:  M docker-compose.public.yml"]
+    return _gate_expect(
+        "commit qilinmagan compose", _GATE_SHA, _GATE_GREEN, 1, "commit qilinmagan compose", dirty
+    )
+
+
+def neg_deploy_gate_unreadable_compose_status() -> tuple[bool, str]:
+    return _gate_expect(
+        "compose holati o'qilmadi", _GATE_SHA, _GATE_GREEN, 2, "o'lchab bo'lmadi", "{not json"
+    )
 
 
 def neg_deploy_gate_ci_failed() -> tuple[bool, str]:
@@ -3222,7 +3251,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("CI tugamagan — to'xtaydi", neg_deploy_gate_ci_running),
             ("Security run'i yo'q — to'xtaydi", neg_deploy_gate_security_missing),
             ("oxirgi qizil run yashilni bosadi", neg_deploy_gate_latest_run_wins),
+            ("commit qilinmagan compose — to'xtaydi", neg_deploy_gate_dirty_compose_blocks),
             ("o'qib bo'lmagan ro'yxat — exit 2", neg_deploy_gate_unreadable),
+            ("o'qib bo'lmagan compose holati — exit 2", neg_deploy_gate_unreadable_compose_status),
         ],
     ),
     (
