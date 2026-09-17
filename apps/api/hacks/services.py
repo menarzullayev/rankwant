@@ -223,18 +223,13 @@ def can_view_source(user: User, attempt: Attempt) -> bool:
 
 
 def _program(language: Language, source: str) -> dict[str, Any]:
-    return {
-        "code": language.code,
-        "compile": language.compile_cmd,
-        "run": language.run_cmd,
-        "source": source,
-    }
+    return {**language.judge_spec(), "source": source}
 
 
 def _problem_limits(problem: Problem, language: Language) -> dict[str, int]:
     override = ProblemLanguage.objects.filter(problem=problem, language=language).first()
     return {
-        "compile_time_ms": 10_000,
+        "compile_time_ms": language.compile_time_ms,
         "time_ms": (override.time_limit_ms if override else None) or problem.time_limit_ms,
         "memory_kb": (override.memory_limit_kb if override else None) or problem.memory_limit_kb,
         "output_kb": settings.HACK_GENERATOR_OUTPUT_KB,
@@ -320,13 +315,16 @@ def _enqueue_generator(hack: Hack) -> None:
             attempt_id=0,
             hack_id=hack.pk,
             hack_stage=Hack.Stage.GENERATE,
-            language={
-                "code": hack.generator_language.code,
-                "compile": hack.generator_language.compile_cmd,
-                "run": hack.generator_language.run_cmd,
-            },
+            language=hack.generator_language.judge_spec(),
             source=hack.generator_source,
-            limits={**GENERATOR_LIMITS, "output_kb": settings.HACK_GENERATOR_OUTPUT_KB},
+            # The compile budget and thread limit belong to the language: a JVM
+            # or .NET generator cannot even start with one process.
+            limits={
+                **GENERATOR_LIMITS,
+                "compile_time_ms": hack.generator_language.compile_time_ms,
+                "processes": hack.generator_language.process_limit,
+                "output_kb": settings.HACK_GENERATOR_OUTPUT_KB,
+            },
             tests=[{"index": 1, "input": "", "expected": None}],
             checker={"type": "standard"},
             mode="custom",
@@ -364,11 +362,7 @@ def _enqueue_reference(hack: Hack, test_input: str) -> None:
             attempt_id=0,
             hack_id=hack.pk,
             hack_stage=Hack.Stage.REFERENCE,
-            language={
-                "code": reference.language.code,
-                "compile": reference.language.compile_cmd,
-                "run": reference.language.run_cmd,
-            },
+            language=reference.language.judge_spec(),
             source=reference.source,
             limits=limits,
             tests=[{"index": 1, "input": test_input, "expected": None}],
@@ -399,11 +393,7 @@ def _enqueue_defender(hack: Hack) -> None:
             attempt_id=0,
             hack_id=hack.pk,
             hack_stage=Hack.Stage.DEFEND,
-            language={
-                "code": attempt.language.code,
-                "compile": attempt.language.compile_cmd,
-                "run": attempt.language.run_cmd,
-            },
+            language=attempt.language.judge_spec(),
             source=attempt.source_code,
             limits=_problem_limits(problem, attempt.language),
             tests=[{"index": 1, "input_ref": hack.input_ref, "output_ref": hack.output_ref}],

@@ -2,10 +2,12 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 )
@@ -52,6 +54,31 @@ func srcName(langCode string) string {
 	}
 }
 
+// compileOpenFiles is RLIMIT_NOFILE for compilers. The command is ours, and
+// Roslyn fails with FileNotFoundException below ~128 (measured: 64 fails, 128
+// works); solutions keep the default 64.
+const compileOpenFiles = 256
+
+// sourceFileName allows a bare name with an extension: no separators, no
+// leading dot, no `..`.
+var sourceFileName = regexp.MustCompile(`^[A-Za-z0-9_]+(\.[A-Za-z0-9_]+)+$`)
+
+// sourceName is the name a program's source is written under.
+//
+// The name from the language definition wins. It is joined onto the work
+// directory, so anything but a bare file name could write outside it; such a
+// name is refused rather than replaced, because falling back to `main.txt`
+// would turn one wrong row into a CE on every submission in that language.
+func sourceName(code, file string) (string, error) {
+	if file == "" {
+		return srcName(code), nil
+	}
+	if !sourceFileName.MatchString(file) {
+		return "", fmt.Errorf("til ta'rifida noto'g'ri manba fayl nomi: %q", file)
+	}
+	return file, nil
+}
+
 func subst(args []string, src, bin string) []string {
 	out := make([]string, len(args))
 	for i, a := range args {
@@ -76,6 +103,11 @@ func judge(ctx context.Context, job *Job, tests *store) *Result {
 		HackID: job.HackID, HackStage: job.HackStage,
 		Verdict: VIE, PerTest: []TestResult{},
 		Meta: JudgeMeta{Worker: "judge-go", Sandbox: "nsjail"}}
+
+	// The submission's language decides /proc and the open-file limit for
+	// every sandbox run of this job: compile, tests and the interactive run.
+	job.Limits.ProcSelf = job.Language.ProcSelf
+	job.Limits.OpenFiles = job.Language.OpenFiles
 
 	// Testsiz job — sozlama xatosi. Bunday holatda "hammasi o'tdi" deb
 	// AC qaytarish masalani yechilgan deb ko'rsatib qo'yardi.
@@ -108,7 +140,12 @@ func judge(ctx context.Context, job *Job, tests *store) *Result {
 	}
 
 	setupStart := time.Now()
-	src := srcName(job.Language.Code)
+	src, err := sourceName(job.Language.Code, job.Language.SourceFile)
+	if err != nil {
+		res.CompileOutput = err.Error()
+		res.Meta.TotalMS = time.Since(t0).Milliseconds()
+		return res
+	}
 	if err := os.WriteFile(filepath.Join(work, src), []byte(job.Source), 0o644); err != nil {
 		return res
 	}
@@ -124,6 +161,7 @@ func judge(ctx context.Context, job *Job, tests *store) *Result {
 		// bizniki va qat'iy, ya'ni bu yerda kenglik xavf tug'dirmaydi —
 		// fork bomba himoyasi ishga tushirish bosqichida (09-fork-bomb).
 		cl.Processes = 64
+		cl.OpenFiles = max(compileOpenFiles, job.Language.OpenFiles)
 		// Kompilyatsiya O'Z CPU byudjetidan foydalanadi. Aks holda
 		// masalaning ish vaqti limiti (masalan 500 ms) g++ ga qo'llanib,
 		// har bir C++ submission CE bo'lib qoladi.

@@ -34,7 +34,11 @@ type checkerVerdict struct {
 // qiladi. Job boshida BIR MARTA chaqiriladi: har testda qayta qurish
 // kompilyatsiya vaqtini test soniga ko'paytirardi.
 func prepareChecker(ctx context.Context, work string, prog *TrustedProgram) ([]string, error) {
-	src := filepath.Join(work, "checker_"+srcName(prog.Code))
+	name, err := sourceName(prog.Code, prog.SourceFile)
+	if err != nil {
+		return nil, err
+	}
+	src := filepath.Join(work, "checker_"+name)
 	if err := os.WriteFile(src, []byte(prog.Source), 0o644); err != nil {
 		return nil, err
 	}

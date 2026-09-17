@@ -96,8 +96,12 @@ def run_sandboxed(
     wall_limit_ms: int,
     *,
     allow_many_processes: bool = False,
+    open_files: int = 0,
 ) -> RunOutcome:
-    """Buyruqni isolate ostida ishga tushiradi va resurslarni o'lchaydi."""
+    """Buyruqni isolate ostida ishga tushiradi va resurslarni o'lchaydi.
+
+    `open_files` — RLIMIT_NOFILE; 0 keeps isolate's default of 64.
+    """
     assert box.path is not None
     meta = box.path.parent / "meta.txt"
     box.put("__stdin", stdin)
@@ -112,6 +116,7 @@ def run_sandboxed(
         f"--wall-time={wall_limit_ms / 1000:.3f}",  # wall — IDLENESS uchun
         f"--cg-mem={lim.memory_kb}",
         f"--fsize={lim.output_kb}",
+        f"--open-files={open_files or 64}",
         f"--processes={procs}",  # 09-fork-bomb
         # Jail ichida muhit bo'sh: PATH bo'lmasa g++ ishga tushadi, lekin
         # collect2 'ld' ni topa olmay "cannot find 'ld'" beradi.

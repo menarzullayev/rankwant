@@ -4,9 +4,25 @@ package main
 // Bu tuzilmalar judge-py bilan BIR XIL bo'lishi shart — nomzodlar almashtiriladigan.
 
 type Language struct {
-	Code    string   `json:"code"`
-	Compile []string `json:"compile"`
-	Run     []string `json:"run"`
+	Code string `json:"code"`
+	// SourceFile is the name the source is saved under (main.kt, Main.java).
+	// Compilers pick the language from the extension and JVM languages want
+	// the class name in it. Empty keeps the old code-prefix mapping, which the
+	// bake-off cases still rely on.
+	SourceFile string   `json:"source_file,omitempty"`
+	Compile    []string `json:"compile"`
+	Run        []string `json:"run"`
+	// ProcSelf mounts a procfs that shows only the sandbox's own processes
+	// (a new PID namespace, `subset=pid`) instead of masking /proc with an
+	// empty tmpfs. Runtimes that locate themselves through /proc/self/exe or
+	// read their stack bounds from /proc/self/maps — CoreCLR, Dart, Julia,
+	// the Zig and Swift compilers — cannot start under the mask. Host
+	// processes stay invisible either way (bake-off `22-proc-self`).
+	ProcSelf bool `json:"proc_self,omitempty"`
+	// OpenFiles is RLIMIT_NOFILE for this language's programs; 0 keeps the
+	// default 64. R refuses to start below ~192 and PowerShell cannot load
+	// its assemblies (measured: 128 fails, 192 works).
+	OpenFiles int `json:"open_files,omitempty"`
 }
 
 type Limits struct {
@@ -15,6 +31,11 @@ type Limits struct {
 	MemoryKB      int `json:"memory_kb"`
 	OutputKB      int `json:"output_kb"`
 	Processes     int `json:"processes"`
+
+	// Set by the judge for one sandbox run from the language; never part of
+	// a job's limits. See Language.OpenFiles and Language.ProcSelf.
+	OpenFiles int  `json:"-"`
+	ProcSelf  bool `json:"-"`
 }
 
 type Test struct {
@@ -51,10 +72,16 @@ type Subtask struct {
 // aks holda buzuq kiritma validatorning o'zini cheksiz aylantirib,
 // butun navbatni to'xtatib qo'yardi.
 type TrustedProgram struct {
-	Code    string   `json:"code"`
-	Compile []string `json:"compile"`
-	Run     []string `json:"run"`
-	Source  string   `json:"source"`
+	Code string `json:"code"`
+	// SourceFile — see Language.SourceFile.
+	SourceFile string   `json:"source_file,omitempty"`
+	Compile    []string `json:"compile"`
+	Run        []string `json:"run"`
+	Source     string   `json:"source"`
+	// ProcSelf and OpenFiles — see Language. Only the validator runs in the
+	// sandbox; checkers and interactors ignore both.
+	ProcSelf  bool `json:"proc_self,omitempty"`
+	OpenFiles int  `json:"open_files,omitempty"`
 }
 
 type Checker struct {

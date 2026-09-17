@@ -1,0 +1,42 @@
+{
+  "id": "22-proc-self",
+  "title": "proc_self — faqat sandbox'ning o'z jarayonlari",
+  "measures": "proc_self: true tilida /proc host jarayonlarini ko'rsatmaydi",
+  "language": {
+    "code": "py313",
+    "source_file": "main.py",
+    "compile": [],
+    "run": [
+      "python3",
+      "{src}"
+    ],
+    "proc_self": true
+  },
+  "source": "import os\nprint(sorted(os.listdir('/proc')))\nprint(open('/proc/1/cmdline', 'rb').read().split(b'\\0')[0].decode())\nprint(os.path.exists('/proc/meminfo'), os.path.exists('/proc/sys'))\n",
+  "limits": {
+    "compile_time_ms": 10000,
+    "time_ms": 1000,
+    "memory_kb": 262144,
+    "output_kb": 65536,
+    "processes": 1
+  },
+  "tests": [
+    {
+      "index": 1,
+      "input": "",
+      "expected": "['1', 'self', 'thread-self']\n/usr/bin/python3\nFalse False\n"
+    }
+  ],
+  "expect_verdict": "AC",
+  "expect_by_worker": {
+    "judge-py": "IE"
+  },
+  "must_hold": [
+    "/proc da faqat sandbox'ning o'z jarayoni (1) va self/thread-self bo'lishi SHART,",
+    "/proc/1 — submission'ning o'zi, host'ning PID 1 i emas;",
+    "meminfo va sys kabi global fayllar ko'rinmasligi SHART (subset=pid).",
+    "Chiqish kutilganidan farq qilsa — WA — izolyatsiya teshigi, AC emas.",
+    "proc_self'ni qo'llab-quvvatlamaydigan nomzod ishni IE bilan RAD ETADI."
+  ],
+  "mode": "acm"
+}

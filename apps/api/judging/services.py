@@ -49,12 +49,7 @@ def build_job(attempt: Attempt, *, validate_input: bool = False) -> JudgeJob:
     def _program(lang: Language | None, source: str) -> dict[str, Any] | None:
         if lang is None or not source:
             return None
-        return {
-            "code": lang.code,
-            "compile": lang.compile_cmd,
-            "run": lang.run_cmd,
-            "source": source,
-        }
+        return {**lang.judge_spec(), "source": source}
 
     checker: dict[str, Any] = {"type": problem.checker_type}
     if problem.checker_type == Problem.Checker.INTERACTIVE:
@@ -93,14 +88,10 @@ def build_job(attempt: Attempt, *, validate_input: bool = False) -> JudgeJob:
     return JudgeJob(
         job_id=new_job_id(),
         attempt_id=attempt.pk,
-        language={
-            "code": language.code,
-            "compile": language.compile_cmd,
-            "run": language.run_cmd,
-        },
+        language=language.judge_spec(),
         source=attempt.source_code,
         limits={
-            "compile_time_ms": 10_000,
+            "compile_time_ms": language.compile_time_ms,
             "time_ms": time_ms,
             "memory_kb": memory_kb,
             "output_kb": 65_536,
@@ -151,13 +142,13 @@ def enqueue_custom(run: CustomRun) -> str:
         job_id=new_job_id(),
         attempt_id=0,
         custom_run_id=run.pk,
-        language={
-            "code": run.language.code,
-            "compile": run.language.compile_cmd,
-            "run": run.language.run_cmd,
-        },
+        language=run.language.judge_spec(),
         source=run.source_code,
-        limits={**CUSTOM_LIMITS, "processes": run.language.process_limit},
+        limits={
+            **CUSTOM_LIMITS,
+            "compile_time_ms": run.language.compile_time_ms,
+            "processes": run.language.process_limit,
+        },
         tests=[{"index": 1, "input": run.stdin, "expected": None}],
         checker={"type": "standard"},
         mode="custom",
