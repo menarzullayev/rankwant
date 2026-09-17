@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1566 strings.**
+**1568 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -221,6 +221,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `nav.skipToContent` | Asosiy mazmunga o'tish | Tiykarǵı mazmunǵa ótiw |  |
 | `nav.close` | Yopish | Jabıw |  |
 | `nav.menu` | Menyu | Menyu |  |
+| `nav.collapseSidebar` | Yon panelni yig'ish | Qaptal panelli jıynaw |  |
+| `nav.expandSidebar` | Yon panelni ochish | Qaptal panelli ashıw |  |
 | `nav.main` | Asosiy navigatsiya | Tiykarǵı navigatsiya |  |
 | `theme.light` | Yorug' rejim | Jaqtı rejim |  |
 | `theme.dark` | Qorong'u rejim | Qarańǵı rejim |  |
