@@ -32,11 +32,17 @@ _console.force_utf8()
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CI = ROOT / ".github/workflows/ci.yml"
 DEPLOY = ROOT / ".github/workflows/deploy.yml"
+NIGHTLY = ROOT / ".github/workflows/nightly.yml"
 
 #: Har bir fayl: (yo'l, job nomi, izlanadigan naqshlar).
 EXPECTED = [
     (CI, "smoke", [r"docker\s+rmi", r"builder\s+prune"]),
     (DEPLOY, "deploy", [r"docker\s+rmi", r"builder\s+prune"]),
+    # Nightly builds the whole stack in three jobs. Build cache is pruned by
+    # ci.yml's smoke job, so these only have to remove their own images.
+    (NIGHTLY, "load", [r"docker\s+rmi"]),
+    (NIGHTLY, "e2e", [r"docker\s+rmi"]),
+    (NIGHTLY, "chaos", [r"docker\s+rmi"]),
 ]
 
 

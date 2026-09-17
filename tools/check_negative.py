@@ -2549,6 +2549,26 @@ def neg_ci_disk_cleanup_removed() -> tuple[bool, str]:
         return expect_fail("ci_disk", "CI obrazlarni tozalamaydi")
 
 
+def neg_ci_disk_nightly_cleanup_removed() -> tuple[bool, str]:
+    """Nightly E2E job without its image cleanup must be caught.
+
+    2026-09-17: one nightly run left 18 images on the shared engine, because
+    its jobs only ran `down -v`. Only the second of the three cleanup steps is
+    removed, so the check has to look at each job, not at the file as a whole.
+    """
+    path = ROOT / ".github/workflows/nightly.yml"
+    src = path.read_bytes().decode("utf-8")
+    marker = "      - name: Obrazlarni tozalash"
+    first = src.index(marker)
+    start = src.index(marker, first + len(marker))
+    end = src.index("|| true\n", start) + len("|| true\n")  # end of that step's run block
+    old = src[start:end]
+    if "docker rmi" not in old:
+        return False, "ci_disk/nightly: langar topilmadi"
+    with Mutation(path, old, ""):
+        return expect_fail("ci_disk", "nightly e2e obrazlarni tozalamaydi")
+
+
 def neg_ci_disk_deploy_cleanup_removed() -> tuple[bool, str]:
     """Deploy tozalash qadami olib tashlansa — tutilsinmi?
 
@@ -3087,6 +3107,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         [
             ("CI tozalash qadami yo'q", neg_ci_disk_cleanup_removed),
             ("deploy tozalash qadami yo'q", neg_ci_disk_deploy_cleanup_removed),
+            ("nightly e2e tozalash qadami yo'q", neg_ci_disk_nightly_cleanup_removed),
         ],
     ),
     (
