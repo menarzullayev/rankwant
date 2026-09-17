@@ -197,6 +197,24 @@ func cpuLimitSec(ms int) int {
 	return sec + 1
 }
 
+// nsjailBackstopSec keeps nsjail's own --time_limit far behind the wall limit.
+//
+// nsjail checks that limit against time(NULL): whole seconds of the REALTIME
+// clock. On this host the realtime clock of the WSL2 VM, shared by the CI
+// engine and Docker Desktop, is stepped every ~30 s (systemd-timesyncd in the
+// Ubuntu distro against Hyper-V time sync; measured 2026-09-17: 226 clock
+// changes in an hour, offset +1.34 s, steps of +2 s inside a container). With
+// --time_limit equal to the wall limit, nsjail killed `time.sleep(10)` after
+// 1002 ms and 2003 ms of real time, before the watcher below, so 04-idleness
+// came back as RE_SIGNAL instead of IDLENESS (judge log: exit=137,
+// wall_killed=false; clock changes at 23:46:33.8 and 23:46:35.3 UTC around the
+// kill at 23:46:35).
+//
+// The wall limit is enforced on the monotonic clock instead: by the watcher and
+// runCtx in runSandboxed, and by the caller's context in the interactive path.
+// nsjail's limit only reaps a sandbox whose judge has died.
+const nsjailBackstopSec = 30
+
 // nsjailArgs — izolyatsiya konfiguratsiyasi.
 // Har bir bayroq bake-off case'iga javob beradi (services/bakeoff/cases/).
 func nsjailArgs(work string, lim Limits, wallSec int) []string {
@@ -250,7 +268,7 @@ func nsjailArgs(work string, lim Limits, wallSec int) []string {
 		// Runtime Environment» bilan yiqilardi — o'lchandi: 4096 da javac
 		// yiqiladi, 8192 dan boshlab o'tadi.
 		"--rlimit_as", "16384",
-		"--time_limit", strconv.Itoa(wallSec), // wall chegarasi (IDLENESS uchun)
+		"--time_limit", strconv.Itoa(wallSec + nsjailBackstopSec), // backstop only, see nsjailBackstopSec
 		// RLIMIT_CPU — kernel jarayonni CPU limitida O'ZI to'xtatadi.
 		// Busiz TLE submission wall chegarasigacha (3×) ishlaydi: 500ms limitli
 		// masala 3s judge vaqtini yeydi. Contest yuklamasida bu o'tkazuvchanlikni

@@ -2,6 +2,7 @@ package main
 
 import (
 	"slices"
+	"strconv"
 	"strings"
 	"testing"
 )
@@ -73,6 +74,30 @@ func TestNsjailArgsSilencesWarnings(t *testing.T) {
 // boshlanadi (bizning `start` nsjail tayyorlanishidan oldin, nsjail
 // taymeri esa bola exec bo'lgandan keyin). Bo'sh mashinada farq ~3 ms,
 // yuk ostida ~1 s — ya'ni o'tish tasodifga bog'liq edi.
+
+// nsjail compares --time_limit with time(NULL), and the host's realtime clock
+// jumps by up to ~2 s every ~30 s. A limit within reach of those jumps lets
+// nsjail kill a sleeping program before the monotonic watcher does, and the
+// verdict turns into RE_SIGNAL (CI, 2026-09-17: wall_ms=1002 and 2003 with
+// --time_limit 3). The margin below is well past any step measured on the host.
+func TestNsjailTimeLimitIsFarBackstop(t *testing.T) {
+	const wallSec = 3
+	args := nsjailArgs("/tmp/work", Limits{TimeMS: 500}, wallSec)
+
+	i := slices.Index(args, "--time_limit")
+	if i < 0 || i+1 >= len(args) {
+		t.Fatalf("--time_limit yo'q: %s", strings.Join(args, " "))
+	}
+	got, err := strconv.Atoi(args[i+1])
+	if err != nil {
+		t.Fatalf("--time_limit son emas: %q", args[i+1])
+	}
+	if got < wallSec+10 {
+		t.Fatalf("--time_limit %d s wall chegarasiga (%d s) juda yaqin — soat "+
+			"sakrashi nsjail'ga jarayonni kuzatuvchidan oldin o'ldirtiradi "+
+			"(IDLENESS o'rniga RE_SIGNAL)", got, wallSec)
+	}
+}
 
 func TestWallTimedOutTrustsWatchdog(t *testing.T) {
 	// CI'dagi haqiqiy raqamlar: o'lchangan wall 2003 ms, yaxlitlangan
