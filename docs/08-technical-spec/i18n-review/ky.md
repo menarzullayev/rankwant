@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1548 strings.**
+**1566 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -253,6 +253,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.verifyTitle` | Emailni tasdiqlash | Почтаны ырастоо |  |
 | `auth.verifyPending` | Pochtangiz tasdiqlanmagan. Yuborilgan xatdagi havolani bosing. | Почтаңыз ырасталган эмес. Жиберилген каттагы шилтемени ачыңыз. |  |
 | `auth.verifyResend` | Xatni qayta yuborish | Катты кайра жиберүү |  |
+| `auth.verifySending` | Yuborilmoqda… | Жиберілүүдө… |  |
+| `auth.verifyResendFail` | Xat yuborilmadi. | Кат жиберилген жок. |  |
 | `auth.verifySent` | Xat yuborildi | Кат жиберилди |  |
 | `auth.verifyOk` | Pochta tasdiqlandi | Почта ырасталды |  |
 | `auth.verifyFail` | Havola yaroqsiz yoki muddati tugagan | Шилтеме жараксыз же мөөнөтү өтүп кеткен |  |
@@ -1072,6 +1074,22 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.section.shop` | Do'kon | Дүкөн |  |
 | `admin.section.users` | Foydalanuvchilar | Колдонуучулар |  |
 | `admin.section.analytics` | Analitika | Аналитика |  |
+| `admin.section.emailQuota` | Email kvota | Email квотасы |  |
+| `admin.quotaProvider` | Provayder | Кызмат |  |
+| `admin.quotaSent` | Yuborildi | Жиберілди |  |
+| `admin.quotaLimit` | Shift | Чектөө |  |
+| `admin.quotaLeft` | Qoldi | Калды |  |
+| `admin.quotaState` | Holat | Абалы |  |
+| `admin.quotaExhausted` | Kvota tugadi | Квота түгөндү |  |
+| `admin.quotaWarning` | Tugayapti ({percent}%) | Түгөнүп баратат ({percent}%) |  |
+| `admin.quotaInQueue` | Kvota tugadi — qolgani navbatda ({n} gacha, kechikish bilan) | Квота түгөндү — калганы кезекте ({n} чейин, кечигүү менен) |  |
+| `admin.quotaLost` | {n} xat yetkazilmaydi (navbat ham to'ldi) | {n} кат жеткирилбейт (кезек да толду) |  |
+| `admin.quotaUnset` | kvota belgilanmagan | квота белгиленген эмес |  |
+| `admin.quotaTodayLeft` | Bugun yana: | Бүгүн калды: |  |
+| `admin.quotaWithQueue` | (navbat bilan birga {n} gacha) | (кезек менен {n} чейин) |  |
+| `admin.quotaFailures` | {n} xat yuborilmadi | {n} кат жиберилген жок |  |
+| `admin.quotaUtcNote` | Kun chegarasi — UTC kalendar kuni (Resend va Brevo shunday belgilaydi). Navbatdagi xat yo'qolmaydi, lekin kechikadi. | Чек — UTC күнү. Кезектеги кат жоголбойт, бирок кечигет. |  |
+| `admin.quotaLoadFail` | Kvota ma'lumotini yuklab bo'lmadi. | Квота маалыматын жүктөө мүмкүн болбоду. |  |
 | `pager.label` | Sahifalar | Барактоо |  |
 | `pager.entries` | yozuv | жазуу |  |
 | `pager.previous` | Oldingi | Мурунку |  |
