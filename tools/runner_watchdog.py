@@ -9,7 +9,8 @@ the runner's own log cannot tell the two apart. The queue can.
 
 Measured 2026-09-17: the container runner went quiet at 13:34:24 UTC after a job
 hit its timeout, and four queued jobs waited until a broker reconnect at 13:41
-woke it. Both runners on this machine run 2.337.0, the WSL one included.
+woke it. The runner is 2.337.0; the WSL runner, on the same version, was removed
+the same day.
 
 A runner is restarted only when two checks at least CONFIRM seconds apart both
 find it online and idle while a job it could run has been queued for at least
@@ -48,17 +49,6 @@ COOLDOWN = 600
 # registration: the listener opens a fresh broker session when it starts.
 RESTART = {
     "nsn-pc-rankwant-container": ["docker", "restart", "rankwant-ci-runner"],
-    "nsn-pc-rankwant": [
-        "wsl.exe",
-        "-d",
-        "Ubuntu-24.04",
-        "-u",
-        "root",
-        "--",
-        "systemctl",
-        "restart",
-        "actions.runner.menarzullayev-rankwant.nsn-pc-rankwant.service",
-    ],
 }
 DEFAULT_STATE = Path.home() / "AppData" / "Local" / "RankWant" / "runner-watchdog.json"
 

@@ -220,7 +220,7 @@ if [ "$stuck" -gt 0 ]; then
     "$R" "$stuck" "$((STUCK_SECONDS / 60))" "$N"
   printf '  Runner tirik bo`lsa ham bu QOTISH bo`lishi mumkin: GitHub job`ni\n'
   printf '  boshlangan deb hisoblaydi, uni bajaradigan `Runner.Worker` esa yo`q.\n'
-  printf '  Tekshirish:  wsl -d Ubuntu-24.04 -- bash -lc "pgrep -af Runner.Worker"\n'
+  printf '  Tekshirish:  docker exec rankwant-ci-runner ps -eo pid,etimes,args\n'
   printf '  Yechim:      gh run cancel <id> && sleep 20 && gh run rerun <id>\n'
   problems=1
 fi

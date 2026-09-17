@@ -214,6 +214,12 @@ if has '^tools/(runner_watchdog\.py|check_negative\.py)'; then
   step "Runner watchdog — salbiy testlar" "$PY" tools/check_negative.py runner_watchdog
 fi
 
+# The after-reboot check decides whether recovery worked, so a check that
+# always passes would hide a broken chain. Retest it whenever it changes.
+if has '^tools/(check_after_reboot\.py|check_negative\.py)'; then
+  step "Reboot tekshiruvi — salbiy testlar" "$PY" tools/check_negative.py after_reboot
+fi
+
 if [ "$fail" -ne 0 ]; then
   printf '\n\033[31mPush to'\''xtatildi.\033[0m Tuzating yoki: git push --no-verify\n\n'
   exit 1
