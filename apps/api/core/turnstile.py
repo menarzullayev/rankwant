@@ -1,8 +1,11 @@
 """Cloudflare Turnstile tekshiruvi — 9-qaror.
 
-Turnstile KO'RINMAS rejimda ishlatiladi: foydalanuvchi odatda hech narsa
-ko'rmaydi, Cloudflare shubhali deb hisoblasa o'zi chaqirib tekshiradi.
-Ya'ni bu yerdagi kodning vazifasi — token bo'lsa uni tekshirish.
+Turnstile KO'RINADIGAN (managed) vidjet: ro'yxat formasida «Verify you are
+human» katagi ko'rinadi va ko'pchilik odam uchun o'zi o'tadi. Izohda ilgari
+«ko'rinmas rejim» deb yozilgan edi — 2026-09-18 da jonli sahifada vidjet
+ko'rinib turgani o'lchandi va egasi shu holatni tasdiqladi.
+
+Bu yerdagi kodning vazifasi — token bo'lsa uni tekshirish.
 
 MUHIM: kalitlar sozlanmagan bo'lsa tekshiruv BUTUNLAY o'chadi. Bu
 ataylab: `test` va lokal muhit tarmoqqa chiqmasligi kerak, ya'ni har

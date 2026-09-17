@@ -906,7 +906,7 @@ export const kk: Record<MessageKey, string> = {
   "auth.contestInviteCta": "Нәтижені қосу",
   "auth.country": "Ел",
   "auth.remember": "Мені есте сақта",
-  "auth.termsAccept": "Шарттармен және құпиялылық саясатымен келісемін",
+  "auth.termsAccept": "{terms} және {privacy} саясатымен келісемін",
   "auth.marketingOptIn": "Жаңалықтар мен пайдалы хаттарды алғым келеді (міндетті емес)",
   "auth.termsRequired": "Шарттармен келісу міндетті",
   "auth.step2Title": "Орын және мектеп",

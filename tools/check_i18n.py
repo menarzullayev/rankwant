@@ -275,12 +275,14 @@ def main() -> int:
         sys.exit(f"{SOURCE}.ts bo'sh yoki o'qib bo'lmadi")
 
     problems: list[str] = []
+    values_by_locale: dict[str, dict[str, str]] = {}
     for code in codes:
         path = LOCALES_DIR / f"{code}.ts"
         if not path.exists():
             problems.append(f"{code}: fayl yo'q ({path.name})")
             continue
         values = load(path)
+        values_by_locale[code] = values
         missing = [k for k in source if k not in values]
         extra = [k for k in values if k not in source]
         blank = [k for k, v in values.items() if not v.strip()]
@@ -300,6 +302,7 @@ def main() -> int:
     # qoidalar umuman ishlamasdi. Natijada bitta uzilish ikki bosqichda
     # ochilardi — avval paritet tuzatiladi, keyin navbatdagi qoida
     # qizaradi. Endi hammasi BIR o'tishda yig'iladi.
+    problems += check_consent_links(values_by_locale)
     problems += check_usage(source)
     problems += check_templates(source)
     problems += check_server_registry()
@@ -620,6 +623,30 @@ def check_country_table_coverage() -> list[str]:
             f"country-names.ts: {blank[:8]} qatorida bo'sh qiymat — "
             f"UI da nom ko'rinmaydi"
         )
+    return problems
+
+
+#: Rozilik matnlari — ikkalasi ham hujjatga HAVOLA bo'lishi kerak.
+#: `{terms}` va `{privacy}` o'rinlarini `AuthForm` havolaga aylantiradi;
+#: tarjimada o'rin tushib qolsa matn qoladi, havola esa jimgina yo'qoladi
+#: va odam nimaga rozilik berayotganini o'qiy olmaydi.
+CONSENT_KEYS = ("auth.termsAccept", "auth.socialConsent")
+CONSENT_SLOTS = ("{terms}", "{privacy}")
+
+
+def check_consent_links(values_by_locale: dict[str, dict[str, str]]) -> list[str]:
+    problems: list[str] = []
+    for code, values in values_by_locale.items():
+        for key in CONSENT_KEYS:
+            value = values.get(key)
+            if value is None:
+                continue  # yo'q kalitni paritet tekshiruvi aytadi
+            missing = [slot for slot in CONSENT_SLOTS if slot not in value]
+            if missing:
+                problems.append(
+                    f"{code}: `{key}` da {', '.join(missing)} yo'q — "
+                    "rozilik matnida hujjat havolasi qolmaydi"
+                )
     return problems
 
 

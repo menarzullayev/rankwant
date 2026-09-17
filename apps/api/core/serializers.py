@@ -382,9 +382,10 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
     #: Marketing xatlari — IXTIYORIY va ALOHIDA (GDPR 7-modda: shartlar
     #: roziligi bilan birlashtirib bo'lmaydi). Standart — `False`.
     marketing_opt_in = serializers.BooleanField(write_only=True, required=False, default=False)
-    #: Turnstile tokeni (9-qaror). KO'RINMAS rejim: foydalanuvchi odatda
-    #: ko'rmaydi, ya'ni token bo'lmasligi ham mumkin — kalitlar
-    #: sozlanmagan bo'lsa tekshiruv o'chiq (`turnstile.enabled()`).
+    #: Turnstile tokeni (9-qaror). Vidjet KO'RINADI, lekin token baribir
+    #: ixtiyoriy maydon: skript yuklanmasa u bo'sh keladi va qarorni server
+    #: qabul qiladi — kalitlar sozlanmagan bo'lsa tekshiruv umuman o'chiq
+    #: (`turnstile.enabled()`), sozlangan bo'lsa bo'sh token rad etiladi.
     turnstile_token = serializers.CharField(
         write_only=True, required=False, allow_blank=True, default=""
     )
