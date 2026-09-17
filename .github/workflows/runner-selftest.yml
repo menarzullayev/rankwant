@@ -47,15 +47,20 @@ jobs:
           docker compose version
 
       - name: Bind mount resolves
-        # This is the check that would have caught the empty-mount failure:
-        # it asserts the daemon can see the files, not merely that docker ran.
+        # HOST_REPO_ROOT is a DAEMON-side path, not a path inside this
+        # container — the container sees the workspace as $PWD. Checking the
+        # Windows path locally would fail even when mounts work perfectly,
+        # which is what the first version of this step did. What actually
+        # matters is that the daemon can bind-mount out of it, so the check
+        # runs a container and looks for a file through the mount.
         run: |
-          root="${HOST_REPO_ROOT:-$PWD}"
-          echo "mount source = $root"
-          test -f "$root/tests/e2e/package.json" \
-            || { echo "::error::tests/e2e/package.json ko'rinmadi — mount BO'SH"; exit 1; }
-          docker run --rm -v "$root/tests/e2e:/e2e:ro" alpine:3.20 \
-            sh -c 'test -f /e2e/package.json && echo "konteyner ichida ham ko'rindi ✓"'
+          echo "container workspace = $PWD"
+          echo "daemon-side path    = ${HOST_REPO_ROOT:-<unset>}"
+          test -f "$PWD/tests/e2e/package.json" \
+            || { echo "::error::checkout bo'sh — $PWD/tests/e2e/package.json yo'q"; exit 1; }
+          docker run --rm -v "${HOST_REPO_ROOT:-$PWD}/tests/e2e:/e2e:ro" alpine:3.20 \
+            sh -c 'test -f /e2e/package.json && echo "daemon mount orqali ko'rindi ✓"' \
+            || { echo "::error::daemon mount BO'SH — yo'l yechilmadi"; exit 1; }
 
       - name: Python
         run: python3 -V
