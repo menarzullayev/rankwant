@@ -211,6 +211,8 @@ export const uz = {
   "nav.skipToContent": "Asosiy mazmunga o'tish",
   "nav.close": "Yopish",
   "nav.menu": "Menyu",
+  "nav.collapseSidebar": "Yon panelni yig'ish",
+  "nav.expandSidebar": "Yon panelni ochish",
   "nav.main": "Asosiy navigatsiya",
   "theme.light": "Yorug' rejim",
   "theme.dark": "Qorong'u rejim",

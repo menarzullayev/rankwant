@@ -207,6 +207,8 @@ export const tg: Record<MessageKey, string> = {
   "nav.skipToContent": "Гузаштан ба мӯҳтавои асосӣ",
   "nav.close": "Пӯшидан",
   "nav.menu": "Меню",
+  "nav.collapseSidebar": "Печонидани панели паҳлӯ",
+  "nav.expandSidebar": "Кушодани панели паҳлӯ",
   "nav.main": "Навигатсияи асосӣ",
   "theme.light": "Ҳолати равшан",
   "theme.dark": "Ҳолати торик",

@@ -207,6 +207,8 @@ export const ky: Record<MessageKey, string> = {
   "nav.skipToContent": "Негизги мазмунга өтүү",
   "nav.close": "Жабуу",
   "nav.menu": "Меню",
+  "nav.collapseSidebar": "Каптал панелди жыйноо",
+  "nav.expandSidebar": "Каптал панелди ачуу",
   "nav.main": "Негизги навигация",
   "theme.light": "Жарык режим",
   "theme.dark": "Караңгы режим",

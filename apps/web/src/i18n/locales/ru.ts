@@ -207,6 +207,8 @@ export const ru: Record<MessageKey, string> = {
   "nav.skipToContent": "Перейти к содержимому",
   "nav.close": "Закрыть",
   "nav.menu": "Меню",
+  "nav.collapseSidebar": "Свернуть боковую панель",
+  "nav.expandSidebar": "Развернуть боковую панель",
   "nav.main": "Основная навигация",
   "theme.light": "Светлая тема",
   "theme.dark": "Тёмная тема",

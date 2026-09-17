@@ -207,6 +207,8 @@ export const kk: Record<MessageKey, string> = {
   "nav.skipToContent": "Негізгі мазмұнға өту",
   "nav.close": "Жабу",
   "nav.menu": "Мәзір",
+  "nav.collapseSidebar": "Бүйірлік панельді жию",
+  "nav.expandSidebar": "Бүйірлік панельді ашу",
   "nav.main": "Негізгі навигация",
   "theme.light": "Жарық режим",
   "theme.dark": "Қараңғы режим",

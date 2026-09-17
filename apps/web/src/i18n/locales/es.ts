@@ -207,6 +207,8 @@ export const es: Record<MessageKey, string> = {
   "nav.skipToContent": "Ir al contenido principal",
   "nav.close": "Cerrar",
   "nav.menu": "Menú",
+  "nav.collapseSidebar": "Contraer la barra lateral",
+  "nav.expandSidebar": "Expandir la barra lateral",
   "nav.main": "Navegación principal",
   "theme.light": "Modo claro",
   "theme.dark": "Modo oscuro",
