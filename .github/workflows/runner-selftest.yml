@@ -57,10 +57,10 @@ jobs:
           echo "container workspace = $PWD"
           echo "daemon-side path    = ${HOST_REPO_ROOT:-<unset>}"
           test -f "$PWD/tests/e2e/package.json" \
-            || { echo "::error::checkout bo'sh — $PWD/tests/e2e/package.json yo'q"; exit 1; }
+            || { echo "::error::checkout is empty - tests/e2e/package.json missing in $PWD"; exit 1; }
           docker run --rm -v "${HOST_REPO_ROOT:-$PWD}/tests/e2e:/e2e:ro" alpine:3.20 \
-            sh -c 'test -f /e2e/package.json && echo "daemon mount orqali ko'rindi ✓"' \
-            || { echo "::error::daemon mount BO'SH — yo'l yechilmadi"; exit 1; }
+            sh -c "test -f /e2e/package.json && echo 'daemon mount OK'" \
+            || { echo "::error::daemon mount is empty - the path did not resolve"; exit 1; }
 
       - name: Python
         run: python3 -V
