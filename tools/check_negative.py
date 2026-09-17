@@ -2724,6 +2724,124 @@ def neg_deploy_window_live_contest() -> tuple[bool, str]:
     return True, "faol contest'da to'xtadi, sabab ko'rsatildi (exit 1)"
 
 
+# ── Runner watchdog: idle runner + waiting jobs = restart (actions/runner#4444) ──
+
+_WD_RUNNER = "nsn-pc-rankwant-container"
+_WD_NOW = "2026-09-17T13:38:00Z"
+_WD_SUSPECT = {_WD_RUNNER: {"suspect_since": "2026-09-17T13:36:00+00:00"}}
+
+
+def _wd_runner(busy: bool = False) -> dict:
+    labels = ("self-hosted", "Linux", "X64", "rankwant")
+    return {
+        "name": _WD_RUNNER,
+        "status": "online",
+        "busy": busy,
+        "labels": [{"name": label} for label in labels],
+    }
+
+
+def _wd_job(
+    created_at: str = "2026-09-17T13:31:03Z", labels: tuple[str, ...] = ("self-hosted", "rankwant")
+) -> dict:
+    return {
+        "name": "API — lint, types, tests",
+        "status": "queued",
+        "labels": list(labels),
+        "created_at": created_at,
+    }
+
+
+def _watchdog(runners: list[dict], jobs: list[dict], state: dict | None) -> tuple[int, str, dict]:
+    """`runner_watchdog.py --dry-run` on fixtures: exit code, output and the saved state."""
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        (root / "runners.json").write_text(json.dumps(runners), encoding="utf-8")
+        (root / "jobs.json").write_text(json.dumps(jobs), encoding="utf-8")
+        state_path = root / "state.json"
+        if state is not None:
+            state_path.write_text(json.dumps(state), encoding="utf-8")
+        code, out = run(
+            [
+                PY,
+                "tools/runner_watchdog.py",
+                "--dry-run",
+                "--runners",
+                str(root / "runners.json"),
+                "--jobs",
+                str(root / "jobs.json"),
+                "--state",
+                str(state_path),
+                "--now",
+                _WD_NOW,
+            ]
+        )
+        saved = json.loads(state_path.read_text(encoding="utf-8")) if state_path.exists() else {}
+    return code, out, saved
+
+
+def neg_watchdog_restarts_confirmed_stall() -> tuple[bool, str]:
+    # Positive control: without it every "left alone" case passes on a dead watchdog.
+    code, out, _ = _watchdog([_wd_runner()], [_wd_job()], _WD_SUSPECT)
+    if code != 0 or "restart qilinardi" not in out:
+        return False, f"watchdog/tasdiqlangan tiqilish: restart yo'q (exit {code}) — {out.strip()[-160:]}"
+    return True, "watchdog/tasdiqlangan tiqilish: restart qilinardi"
+
+
+def neg_watchdog_first_sighting_waits() -> tuple[bool, str]:
+    # Between two jobs a healthy runner is idle for seconds with a long-queued
+    # job. One check must only record the suspicion.
+    code, out, saved = _watchdog([_wd_runner()], [_wd_job()], None)
+    if "restart qilinardi" in out:
+        return False, "watchdog/birinchi ko'rish: bitta tekshiruvdayoq restart qilindi"
+    if code != 0 or "suspect_since" not in saved.get(_WD_RUNNER, {}):
+        return False, f"watchdog/birinchi ko'rish: shubha yozilmadi (exit {code}) — {out.strip()[-160:]}"
+    return True, "watchdog/birinchi ko'rish: faqat shubha yozildi"
+
+
+def neg_watchdog_busy_runner_left_alone() -> tuple[bool, str]:
+    code, out, saved = _watchdog([_wd_runner(busy=True)], [_wd_job()], _WD_SUSPECT)
+    if code != 0 or "restart" in out or saved.get(_WD_RUNNER):
+        return False, f"watchdog/band runner: tegildi (exit {code}) — {out.strip()[-160:]} {saved}"
+    return True, "watchdog/band runner: tegilmadi, shubha tozalandi"
+
+
+def neg_watchdog_fresh_job_left_alone() -> tuple[bool, str]:
+    job = _wd_job(created_at="2026-09-17T13:37:00Z")
+    code, out, _ = _watchdog([_wd_runner()], [job], _WD_SUSPECT)
+    if code != 0 or "restart" in out:
+        return False, f"watchdog/yangi job: 60 s navbat tiqilish deb o'qildi (exit {code}) — {out.strip()[-160:]}"
+    return True, "watchdog/yangi job: 60 s navbat tiqilish deb o'qilmadi"
+
+
+def neg_watchdog_foreign_labels_left_alone() -> tuple[bool, str]:
+    job = _wd_job(labels=("self-hosted", "rankwant-container"))
+    code, out, _ = _watchdog([_wd_runner()], [job], _WD_SUSPECT)
+    if code != 0 or "restart" in out:
+        return False, f"watchdog/boshqa label: olmaydigan job uchun restart (exit {code}) — {out.strip()[-160:]}"
+    return True, "watchdog/boshqa label: bu runner olmaydigan job'ga tegilmadi"
+
+
+def neg_watchdog_cooldown_holds() -> tuple[bool, str]:
+    state = {
+        _WD_RUNNER: {
+            "suspect_since": "2026-09-17T13:36:00+00:00",
+            "restarted_at": "2026-09-17T13:33:00+00:00",
+        }
+    }
+    code, out, _ = _watchdog([_wd_runner()], [_wd_job()], state)
+    if code != 0 or "restart qilinardi" in out:
+        return False, f"watchdog/tanaffus: 5 daqiqada ikkinchi restart (exit {code}) — {out.strip()[-160:]}"
+    return True, "watchdog/tanaffus: 10 daqiqa ichida qayta restart qilinmadi"
+
+
+def neg_watchdog_unreadable_time() -> tuple[bool, str]:
+    code, out, _ = _watchdog([_wd_runner()], [_wd_job(created_at="kecha")], _WD_SUSPECT)
+    if code != 2:
+        return False, f"watchdog/o'qilmagan vaqt: exit {code} (2 kerak) — {out.strip()[-160:]}"
+    return True, "watchdog/o'qilmagan vaqt: exit 2, sog' deb o'qilmadi"
+
+
 CASES: list[tuple[str, list[tuple[str, object]]]] = [
     (
         "i18n",
@@ -2957,6 +3075,18 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         [
             ("web o'zgarishi eskirgan deb topiladi", neg_deploy_label_web_change_is_stale),
             ("docs commit'i web'ni eskirtirmaydi", neg_deploy_label_docs_commit_not_stale),
+        ],
+    ),
+    (
+        "runner_watchdog",
+        [
+            ("tasdiqlangan tiqilish restart qilinadi (nazorat)", neg_watchdog_restarts_confirmed_stall),
+            ("bitta tekshiruv restart qilmaydi", neg_watchdog_first_sighting_waits),
+            ("band runner'ga tegilmaydi", neg_watchdog_busy_runner_left_alone),
+            ("yangi job tiqilish emas", neg_watchdog_fresh_job_left_alone),
+            ("boshqa label'dagi job'ga tegilmaydi", neg_watchdog_foreign_labels_left_alone),
+            ("tanaffus ichida qayta restart yo'q", neg_watchdog_cooldown_holds),
+            ("o'qilmagan vaqt — exit 2", neg_watchdog_unreadable_time),
         ],
     ),
 ]

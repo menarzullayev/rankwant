@@ -31,19 +31,26 @@ services:
       RUNNER_LABELS: ${RUNNER_LABELS:-self-hosted,Linux,X64,rankwant-container}
       RUNNER_TOKEN: ${RUNNER_TOKEN:-}
       RUNNER_WORKDIR: /work
-      # The Windows path that /work maps to. The entrypoint derives
-      # HOST_REPO_ROOT from it (see entrypoint.sh) — do not set
-      # HOST_REPO_ROOT directly here: the workspace layout is
+      # The volume /work lives on. The entrypoint asks the daemon where that
+      # volume sits and derives HOST_REPO_ROOT from it (see entrypoint.sh) —
+      # do not set HOST_REPO_ROOT directly here: the workspace layout is
       # <workdir>/<repo>/<repo>, and hardcoding it silently breaks on a
       # rename. Measured 2026-09-17: assuming an extra `_work` segment
       # mounted an empty directory while every other check passed.
-      CI_HOST_WORK_DIR: ${CI_HOST_WORK_DIR:-C:/Users/nsn/ci-work}
+      CI_WORK_VOLUME: rankwant-ci-work
     volumes:
       # Gives the runner the live daemon. Required: every CI job drives
       # `docker compose`, and the jobs run inside this container.
       - /var/run/docker.sock:/var/run/docker.sock
-      # Workspace, on a Windows path so the daemon can bind-mount out of it.
-      - ${CI_WORK_DIR:-C:/Users/nsn/ci-work}:/work
+      # Workspace on a named volume, not a Windows path. A C:\ bind mount
+      # reaches the container over 9p, and CI writes thousands of small
+      # files. Measured 2026-09-17 on the Go archive setup-go unpacks (14,542
+      # files): extract + copy took 168 s + 70 s on the C:\ mount and
+      # 2 s + under 1 s on a volume; setup-go alone ran a job past its
+      # 3-minute limit. The daemon still bind-mounts out of the volume by its
+      # own path, /var/lib/docker/volumes/<name>/_data/..., which is what
+      # HOST_REPO_ROOT carries.
+      - ci-work:/work
       # Diagnostics survive the container. The trial's first failure left no
       # trace once the container was removed, which cost a diagnosis cycle.
       - ${CI_DIAG_DIR:-C:/Users/nsn/ci-runner-diag}:/home/runner/_diag
@@ -57,3 +64,7 @@ services:
     # daemon's. Do not read this as a bound on CI's total footprint.
     mem_limit: 4g
     cpus: 4
+
+volumes:
+  ci-work:
+    name: rankwant-ci-work

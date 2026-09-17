@@ -24,7 +24,7 @@ label was moved here (the WSL runner lost it) and the full CI was dispatched on
 | Judge | timed out at 3 min; `actions/setup-go` alone took 166 s | 22 s |
 | API, Web, OpenAPI, Smoke and E2E | never started, queued for 7+ minutes | 125 s, 74 s, 16 s, 123 s |
 
-Two separate problems, both still open:
+Two separate problems:
 
 - **The runner stopped taking jobs after the timed-out job.** It stayed
   `online` with `busy=false`, its log went quiet once that job ended, and it
@@ -37,6 +37,44 @@ Two separate problems, both still open:
 
 The live site answered every probe during the trial (65 samples over 18
 minutes, all 200, slowest 1.35 s), so sharing the engine was not the problem.
+
+### Causes and fixes
+
+**Slow workspace: 9p.** `/work` was `C:/Users/nsn/ci-work`, and inside the
+container that is a 9p mount (`/proc/mounts`: `C:\134 /work 9p ...
+aname=drvfs;path=C:\`). In the trial, setup-go downloaded Go in 8 s,
+unpacked it in 32 s, and was still copying it into the tool cache when it
+was cancelled 124 s later. The same archive (14,542 files), measured in one
+container on each filesystem:
+
+| Filesystem | Extract | Copy | Delete |
+| --- | --- | --- | --- |
+| Container overlay | 1 s | 2 s | 0 s |
+| Docker named volume | 2 s | under 1 s | 0 s |
+| `C:\` bind mount (9p) | 168 s | 70 s | 23 s |
+
+Fix: `/work` is now the named volume `rankwant-ci-work`. Bind mounts in the
+workflows still work, because the daemon mounts a volume's subdirectory by
+its own path. This was measured: a file written into a volume was read back
+through `-v /var/lib/docker/volumes/<volume>/_data/<dir>:/e2e`. The entrypoint
+asks the daemon for that path and exports `HOST_REPO_ROOT` from it.
+
+**Deaf runner: actions/runner#4444.** When a job ends, the listener cancels
+its own long poll so it can poll again with the new status (that is the
+`SocketException (125)` line, actions/runner#4644), and sometimes it never
+polls again. Our log shows the same signature as the issue: the last line is
+`Get messages has been cancelled using local token source. Continue to get
+messages with new status.`, then nothing. The issue was closed without a fix,
+and both runners here run 2.337.0, the WSL one included. A broker reconnect
+wakes the runner: at 13:41:24 a label change sent `ForceTokenRefreshMessage`,
+the listener recreated its broker connection, and later self-tests were picked
+up on time. A restart does the same.
+
+The runner's log cannot detect this, because a healthy idle listener is just
+as quiet (two lines in 69 minutes). The queue can. Fix:
+`tools/runner_watchdog.py` restarts a runner that two checks in a row find
+online and idle while a job it could run has been queued for 3+ minutes. See
+[Watchdog](#watchdog).
 
 ## A false alarm worth recording
 
@@ -67,7 +105,8 @@ job lifecycle, not at the network.
 **Update (2026-09-17, full CI trial):** the runner did go deaf again, after a
 job that hit its timeout, with no re-registration or container recreation in
 between. `SocketException (125)` once per job is still normal. It does not
-explain the deafness away: that is a real failure, and its cause is unknown.
+explain the deafness away: that is a real failure, actions/runner#4444 (see
+[Causes and fixes](#causes-and-fixes)).
 
 ## Running it
 
@@ -82,11 +121,56 @@ Then trigger `Runner self-test` — it is the only workflow allowed on this
 label.
 
 **Do not recreate the container casually.** Each recreation re-registers and
-can leave a stale session; delete the runner registration first if you must:
+can leave a stale session. If you must, for example to pick up a change to
+this directory, stop it cleanly first so the listener closes its session,
+then delete the registration and start with a fresh token:
 
 ```bash
+docker compose -f tools/runner/docker-compose.runner.yml down
 gh api -X DELETE repos/menarzullayev/rankwant/actions/runners/<id>
+TOKEN=$(gh api -X POST repos/menarzullayev/rankwant/actions/runners/registration-token --jq .token)
+RUNNER_TOKEN="$TOKEN" docker compose -f tools/runner/docker-compose.runner.yml up -d --build
 ```
+
+`down` keeps the `rankwant-ci-work` volume, so the tool cache survives.
+
+## Watchdog
+
+`tools/runner_watchdog.py` covers both runners on this machine: the container
+(`docker restart rankwant-ci-runner`) and the WSL one (`systemctl restart` of
+its service). It reads the runners and the queued jobs through `gh`, which is
+already signed in here, so it needs no token of its own.
+
+- A runner counts as stuck when it is `online`, not busy, and a job whose
+  labels it carries has been queued for at least 180 s.
+- The first check that sees this only records it. A restart needs a second
+  check at least 90 s later: between two jobs a healthy runner is briefly idle
+  with a long-queued job, and a restart then would break the pickup.
+- After a restart, that runner is left alone for 10 minutes.
+- Exit 2 means GitHub could not be read. That is never taken as healthy.
+
+The scheduled task runs an installed copy from `origin/main`, not the main
+checkout, which can be on any branch:
+
+```bash
+mkdir -p /c/Users/nsn/ci-runner
+for f in runner_watchdog.py _console.py; do
+  git show origin/main:tools/$f > /c/Users/nsn/ci-runner/$f
+done
+```
+
+```powershell
+$action = New-ScheduledTaskAction -Execute 'C:\WINDOWS\System32\conhost.exe' `
+  -Argument '--headless "C:\Program Files\Git\bin\bash.exe" -lc "python /c/Users/nsn/ci-runner/runner_watchdog.py >> /c/Users/nsn/ci-runner/watchdog.log 2>&1"'
+$trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Minutes 2)
+$settings = New-ScheduledTaskSettingsSet -MultipleInstances IgnoreNew -ExecutionTimeLimit (New-TimeSpan -Minutes 1)
+Register-ScheduledTask -TaskName 'RankWant CI Runner Watchdog' -Action $action -Trigger $trigger -Settings $settings
+```
+
+The log gets a line only when a runner is suspected, restarted, or cannot be
+read. A dry run against GitHub restarts nothing and records nothing:
+`python tools/runner_watchdog.py --dry-run`. Tests: `python
+tools/check_negative.py runner_watchdog`.
 
 ## What the base image does not provide
 
