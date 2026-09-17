@@ -81,8 +81,15 @@ def parse_time(value: object) -> datetime:
 
 def gh_api(path: str) -> dict:
     try:
+        # stdin=DEVNULL: the scheduled task starts this under `conhost --headless`,
+        # where the inherited stdin handle is invalid and CreateProcess fails
+        # with "[WinError 6] The handle is invalid" (measured on its first run).
         proc = subprocess.run(
-            ["gh", "api", path], capture_output=True, text=True, encoding="utf-8"
+            ["gh", "api", path],
+            stdin=subprocess.DEVNULL,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
         )
     except OSError as exc:
         raise Unmeasured(f"gh ishga tushmadi: {exc}") from exc
@@ -228,7 +235,12 @@ def main() -> int:
             print(f"{stamp} → {name}: restart qilinardi ({reason})")
         else:
             proc = subprocess.run(
-                command, capture_output=True, text=True, encoding="utf-8", errors="replace"
+                command,
+                stdin=subprocess.DEVNULL,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
             )
             if proc.returncode == 0:
                 print(f"{stamp} ✓ {name}: restart qilindi ({reason})")
