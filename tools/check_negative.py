@@ -1714,10 +1714,16 @@ def neg_checker_survives_narrow_stdout() -> tuple[bool, str]:
         env["RANKWANT_API_BASE"] = base
         runs = Path(tmp) / "runs.json"
         runs.write_text(json.dumps(_GATE_GREEN), encoding="utf-8")
+        # `check_after_reboot.py` measures this machine (docker, gh, scheduled
+        # tasks); on the Linux CI runner it rightly exits 2. Healthy facts keep
+        # this case about the encoding of its `✓` lines.
+        facts = Path(tmp) / "facts.json"
+        facts.write_text(json.dumps(_ar_facts()), encoding="utf-8")
         extra = {
             "check_deploy_gate.py": [
                 "--head", _GATE_SHA, "--main", _GATE_SHA, "--runs", str(runs)
             ],
+            "check_after_reboot.py": ["--facts", str(facts)],
         }
         for name in scripts:
             proc = subprocess.run(
