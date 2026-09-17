@@ -47,6 +47,21 @@ x-oauth: &oauth
   TELEGRAM_CLIENT_ID: ${TELEGRAM_CLIENT_ID:-}
   TELEGRAM_CLIENT_SECRET: ${TELEGRAM_CLIENT_SECRET:-}
 
+# Bot himoyasi (9-qaror) — `core.turnstile`. Kalitlar `.env.public` da.
+# Sayt kaliti `/auth/providers/` orqali brauzerga yetkaziladi, ya'ni
+# `web` konteyneriga env KERAK EMAS — bitta manba qoladi.
+# ⚠️ Kalitlar compose'da e'lon qilinmasa konteynerga UMUMAN yetib
+# bormaydi (`.env.public` da bo'lishi yetarli emas) — o'lchandi.
+x-turnstile: &turnstile
+  TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:-}
+  TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
+  TURNSTILE_FAIL_OPEN: ${TURNSTILE_FAIL_OPEN:-1}
+
+# `register` throttle (9-qaror bilan bog'liq). Turnstile yoqilgach
+# yumshatish xavfsiz: himoya throttle'dan OLDIN turadi.
+x-throttle: &throttle
+  THROTTLE_REGISTER: ${THROTTLE_REGISTER:-40/hour}
+
 services:
   postgres:
     <<: *restart
@@ -68,7 +83,7 @@ services:
     # Faqat localhost: tashqariga Cloudflare Tunnel chiqaradi, port emas.
     ports: !override ['127.0.0.1:8301:8000']
     environment:
-      <<: [*email, *oauth]
+      <<: [*email, *oauth, *turnstile, *throttle]
       DJANGO_DEBUG: "0"
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
       DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS}

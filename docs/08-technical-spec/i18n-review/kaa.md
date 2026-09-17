@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1548 strings.**
+**1566 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -253,6 +253,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.verifyTitle` | Emailni tasdiqlash | Emaildi tastıyıqlaw |  |
 | `auth.verifyPending` | Pochtangiz tasdiqlanmagan. Yuborilgan xatdagi havolani bosing. | Pochtańız tastıyıqlanbaǵan. Jiberilgen xattaǵı siltemeni basıń. |  |
 | `auth.verifyResend` | Xatni qayta yuborish | Xattı qayta jiberiw |  |
+| `auth.verifySending` | Yuborilmoqda… | Jiberilmekte… |  |
+| `auth.verifyResendFail` | Xat yuborilmadi. | Xat jiberilmadi. |  |
 | `auth.verifySent` | Xat yuborildi | Xat jiberildi |  |
 | `auth.verifyOk` | Pochta tasdiqlandi | Pochta tastıyıqlandı |  |
 | `auth.verifyFail` | Havola yaroqsiz yoki muddati tugagan | Silteme jaramsız yamasa múddeti pitken |  |
@@ -1072,6 +1074,22 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.section.shop` | Do'kon | Dúkan |  |
 | `admin.section.users` | Foydalanuvchilar | Paydalanıwshılar |  |
 | `admin.section.analytics` | Analitika | Analitika |  |
+| `admin.section.emailQuota` | Email kvota | Email kvotası |  |
+| `admin.quotaProvider` | Provayder | Xızmet |  |
+| `admin.quotaSent` | Yuborildi | Jiberildi |  |
+| `admin.quotaLimit` | Shift | Sheklew |  |
+| `admin.quotaLeft` | Qoldi | Qaldı |  |
+| `admin.quotaState` | Holat | Halatı |  |
+| `admin.quotaExhausted` | Kvota tugadi | Kvota tawsıldı |  |
+| `admin.quotaWarning` | Tugayapti ({percent}%) | Tawsılıp baradı ({percent}%) |  |
+| `admin.quotaInQueue` | Kvota tugadi — qolgani navbatda ({n} gacha, kechikish bilan) | Kvota tawsıldı — qalǵanı nawbatta ({n} ǵa shekem, keshigiw menen) |  |
+| `admin.quotaLost` | {n} xat yetkazilmaydi (navbat ham to'ldi) | {n} xat jetkerilmeydi (nawbat ta tolı) |  |
+| `admin.quotaUnset` | kvota belgilanmagan | kvota belgilenbegen |  |
+| `admin.quotaTodayLeft` | Bugun yana: | Búgin qaldı: |  |
+| `admin.quotaWithQueue` | (navbat bilan birga {n} gacha) | (nawbat penen {n} ǵa shekem) |  |
+| `admin.quotaFailures` | {n} xat yuborilmadi | {n} xat jiberilmadi |  |
+| `admin.quotaUtcNote` | Kun chegarasi — UTC kalendar kuni (Resend va Brevo shunday belgilaydi). Navbatdagi xat yo'qolmaydi, lekin kechikadi. | Shegara — UTC kún. Nawbattaǵı xat joǵalmaydı, biraq keshigedi. |  |
+| `admin.quotaLoadFail` | Kvota ma'lumotini yuklab bo'lmadi. | Kvota maǵlıwmatın júklew múmkin bolmadı. |  |
 | `pager.label` | Sahifalar | Betlew |  |
 | `pager.entries` | yozuv | jazba |  |
 | `pager.previous` | Oldingi | Aldıńǵı |  |

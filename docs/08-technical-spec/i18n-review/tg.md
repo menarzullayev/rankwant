@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1548 strings.**
+**1566 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -253,6 +253,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.verifyTitle` | Emailni tasdiqlash | Тасдиқи почта |  |
 | `auth.verifyPending` | Pochtangiz tasdiqlanmagan. Yuborilgan xatdagi havolani bosing. | Почтаи шумо тасдиқ нашудааст. Пайвандро аз номаи фиристодашуда кушоед. |  |
 | `auth.verifyResend` | Xatni qayta yuborish | Номаро дубора фиристодан |  |
+| `auth.verifySending` | Yuborilmoqda… | Фиристода мешавад… |  |
+| `auth.verifyResendFail` | Xat yuborilmadi. | Нома фиристода нашуд. |  |
 | `auth.verifySent` | Xat yuborildi | Нома фиристода шуд |  |
 | `auth.verifyOk` | Pochta tasdiqlandi | Почта тасдиқ шуд |  |
 | `auth.verifyFail` | Havola yaroqsiz yoki muddati tugagan | Пайванд нодуруст ё мӯҳлаташ гузаштааст |  |
@@ -1072,6 +1074,22 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.section.shop` | Do'kon | Дӯкон |  |
 | `admin.section.users` | Foydalanuvchilar | Корбарандагон |  |
 | `admin.section.analytics` | Analitika | Таҳлил |  |
+| `admin.section.emailQuota` | Email kvota | Квотаи почта |  |
+| `admin.quotaProvider` | Provayder | Хизматрасон |  |
+| `admin.quotaSent` | Yuborildi | Фиристода шуд |  |
+| `admin.quotaLimit` | Shift | Ҳудуд |  |
+| `admin.quotaLeft` | Qoldi | Боқӣ монд |  |
+| `admin.quotaState` | Holat | Ҳолат |  |
+| `admin.quotaExhausted` | Kvota tugadi | Квота тамом шуд |  |
+| `admin.quotaWarning` | Tugayapti ({percent}%) | Қариб тамом ({percent}%) |  |
+| `admin.quotaInQueue` | Kvota tugadi — qolgani navbatda ({n} gacha, kechikish bilan) | Квота тамом шуд — боқимонда дар навбат (то {n}, бо таъхир) |  |
+| `admin.quotaLost` | {n} xat yetkazilmaydi (navbat ham to'ldi) | {n} нома расонида намешавад (навбат низ пур шуд) |  |
+| `admin.quotaUnset` | kvota belgilanmagan | квота муқаррар нашуд |  |
+| `admin.quotaTodayLeft` | Bugun yana: | Имрӯз монд: |  |
+| `admin.quotaWithQueue` | (navbat bilan birga {n} gacha) | (бо навбат то {n}) |  |
+| `admin.quotaFailures` | {n} xat yuborilmadi | {n} нома фиристода нашуд |  |
+| `admin.quotaUtcNote` | Kun chegarasi — UTC kalendar kuni (Resend va Brevo shunday belgilaydi). Navbatdagi xat yo'qolmaydi, lekin kechikadi. | Сарҳад — рӯзи тақвимии UTC (Resend ва Brevo ин тавр муайян мекунанд). Номаҳои дар навбат таъхир меёбанд, на гум мешаванд. |  |
+| `admin.quotaLoadFail` | Kvota ma'lumotini yuklab bo'lmadi. | Маълумоти квотаро боргирӣ карда нашуд. |  |
 | `pager.label` | Sahifalar | Саҳифабандӣ |  |
 | `pager.entries` | yozuv | сабт |  |
 | `pager.previous` | Oldingi | Пешина |  |

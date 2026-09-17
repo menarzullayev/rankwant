@@ -5080,6 +5080,45 @@ paths:
               schema:
                 $ref: '#/components/schemas/StaffDuel'
           description: ''
+  /api/v1/staff/email-quota/:
+    get:
+      operationId: staff_email_quota_retrieve
+      description: |-
+        Kunlik email kvota paneli — `core.mail_quota` ni ochib beradi.
+
+        Nega staff API, Django admin emas: `ADMIN_ENABLED` productionda
+        `False` (o'lchandi 2026-09-17: `/admin/core/emaildelivery/` → 404),
+        ya'ni Django admin paneli ishlab turgan tizimda KO'RINMAYDI. Staff
+        panel esa `/admin/*` da haqiqatan ishlaydi (`ADMIN_SECTIONS`, 19 ta
+        sahifa). Ya'ni hisoblagichni u yerga qo'yish yagona ko'rinadigan
+        yo'l.
+
+        Faqat o'qish (`GET`). `StaffViewSet` dan meros olmaydi — bu
+        agregatsiya, CRUD emas.
+
+        Nega `EmailDelivery` dan to'g'ridan-to'g'ri o'qiladi: u yagona
+        haqiqat manbai (har yuborish — bitta qator). Alohida hisoblagich
+        jadvali ikkinchi haqiqat yaratardi va ular vaqt o'tib ajralib
+        ketardi.
+
+        `?when=` (ISO 8601) — ixtiyoriy. «Kecha nechta ketdi» savoliga javob
+        beradi va deploy oldidan `EmailDelivery` jadvalini qo'lda ochmasdan
+        sarfni tekshirish imkonini beradi. O'qib bo'lmaydigan qiymat
+        jimgina e'tiborsiz qoldirilmaydi — `400` qaytadi, aks holda «noto'g'ri
+        sana» «bugun» bo'lib ko'rinardi va raqam chalkashtirardi.
+      parameters:
+      - in: query
+        name: when
+        schema:
+          type: string
+        description: ISO 8601 sana/vaqt; bo'sh bo'lsa — hozir (UTC kun)
+      tags:
+      - staff
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: Provayder bo'yicha kunlik sarf
   /api/v1/staff/hackathons/:
     get:
       operationId: staff_hackathons_list

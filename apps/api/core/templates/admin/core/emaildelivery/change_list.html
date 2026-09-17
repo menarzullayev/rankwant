@@ -1,0 +1,83 @@
+{% extends "admin/change_list.html" %}
+{% load i18n %}
+
+{# Kunlik email kvota paneli.
+   `core.mail_quota.DAILY_QUOTA` — bepul reja shiftlari, rasmiy hujjatlardan.
+   Panel `EmailDelivery` ro'yxatining tepasida turadi, chunki «bugun
+   qancha qoldi» savoli shu sahifada eng ko'p so'raladi. #}
+
+{% block content_title %}
+  {{ block.super }}
+{% endblock %}
+
+{% block result_list %}
+  <div class="module" style="margin-bottom:16px">
+    <h2>Email kvota — bugun (UTC)</h2>
+    <table style="width:100%;border-collapse:collapse">
+      <thead>
+        <tr>
+          <th style="text-align:left;padding:6px 8px">Provayder</th>
+          <th style="text-align:right;padding:6px 8px">Yuborildi</th>
+          <th style="text-align:right;padding:6px 8px">Shift</th>
+          <th style="text-align:right;padding:6px 8px">Qoldi</th>
+          <th style="text-align:left;padding:6px 8px;width:34%">Holat</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in quota %}
+          <tr>
+            <td style="padding:6px 8px"><code>{{ row.name }}</code></td>
+            <td style="text-align:right;padding:6px 8px">{{ row.sent }}</td>
+            <td style="text-align:right;padding:6px 8px">
+              {% if row.configured %}{{ row.quota }}{% else %}&mdash;{% endif %}
+            </td>
+            <td style="text-align:right;padding:6px 8px">
+              {% if row.configured %}{{ row.remaining }}{% else %}&mdash;{% endif %}
+            </td>
+            <td style="padding:6px 8px">
+              {% if row.lost %}
+                <strong style="color:#ba2121">
+                  &#10007; {{ row.lost }} xat yetkazilmaydi (navbat ham to&#39;ldi)
+                </strong>
+              {% elif row.in_queue %}
+                <span style="color:#b45309">
+                  &#9888; kvota tugadi &mdash; qolgani navbatda
+                  ({{ row.queue }} gacha, kechikish bilan)
+                </span>
+              {% elif row.exhausted %}
+                <span style="color:#b45309">&#9888; kvota tugadi</span>
+              {% elif row.warning %}
+                <span style="color:#b45309">
+                  &#9888; tugayapti ({{ row.used_ratio|floatformat:0 }}%)
+                </span>
+              {% elif row.configured %}
+                <span style="color:#0a7d32">&#10003; ishlayapti</span>
+              {% else %}
+                <span style="color:#888">kvota belgilanmagan</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <p style="padding:8px;margin:0;border-top:1px solid #eee">
+      <strong>Bugun yana:</strong> {{ quota_total }} xat
+      <span style="color:#888">
+        (navbat bilan birga {{ quota_with_queue }} gacha)
+      </span>
+      {% if quota_failures %}
+        &nbsp;&middot;&nbsp;
+        <strong style="color:#ba2121">
+          {{ quota_failures }} xat yuborilmadi
+        </strong>
+      {% endif %}
+    </p>
+    <p style="padding:0 8px 8px;margin:0;color:#888;font-size:12px">
+      Kun chegarasi &mdash; UTC kalendar kuni (Resend va Brevo shunday
+      belgilaydi). Navbatdagi xat yo&#39;qolmaydi, lekin kechikadi.
+    </p>
+  </div>
+
+  {{ block.super }}
+{% endblock %}
