@@ -267,10 +267,15 @@ export function AuthForm({
       )}
       <form
         onSubmit={onSubmit}
-        // Fokus — «forma boshlandi» belgisi. `onSubmit` buni ushlamaydi:
-        // odam formani ochib, maydonni bosib, keyin tashlab ketishi
-        // mumkin — aynan shu holat eng qimmatli ma'lumot.
-        onFocus={() => {
+        // Birinchi kiritilgan belgi — «forma boshlandi». `onSubmit` buni
+        // ushlamaydi: odam yoza boshlab, keyin tashlab ketishi mumkin —
+        // aynan shu holat eng qimmatli ma'lumot.
+        //
+        // ⚠️ Ilgari bu `onFocus` da edi, ro'yxat bo'limi esa email
+        // maydonini `autoFocus` bilan ochadi — ya'ni sahifaning OCHILISHI
+        // «boshlandi» deb yozilardi va funnel niyatni emas, ko'rishlarni
+        // sanardi (2026-09-18 da o'lchandi).
+        onInput={() => {
           if (started.current) return;
           started.current = true;
           track("auth.form_started", { mode });
@@ -386,7 +391,9 @@ export function AuthForm({
               onChange={(e) => setTerms(e.target.checked)}
               required
             >
-              {t(locale, "auth.termsAccept")}
+              {/* Havolalar ROZILIK BERILAYOTGAN joyda: odam katakchani
+                  belgilayotganda hujjatni shu yerdan ocha olishi kerak. */}
+              <LegalLinks messageKey="auth.termsAccept" />
             </Checkbox>
             <Checkbox
               name="marketing_opt_in"
@@ -607,38 +614,61 @@ function Strength({ value }: { value: string }) {
   );
 }
 
-/** Shartlar va maxfiylik — matn tarjimada `{terms}` va `{privacy}`
- *  o'rinlari bilan keladi, ya'ni har bir til so'z tartibini O'ZI
- *  belgilaydi. Jumlani bo'laklab yig'ish shu sababdan.
+/** Shartlar va maxfiylik havolalari — matn tarjimada `{terms}` va
+ *  `{privacy}` o'rinlari bilan keladi, ya'ni har bir til so'z tartibini
+ *  O'ZI belgilaydi. Jumlani bo'laklab yig'ish shu sababdan.
  *
- *  Faqat ijtimoiy tugmalar ostida chiziladi (`auth.socialConsent`).
- *  Forma tomonida bunday passiv matn YO'Q: u yerda majburiy checkbox
- *  bor va u aniqroq — passiv takror bir sahifada rozilikni ikki marta
- *  ko'rsatardi.
+ *  Ikki joyda ishlatiladi, chunki sahifada ikki xil rozilik nuqtasi bor:
+ *  majburiy checkbox (`auth.termsAccept`) — email bilan ro'yxat uchun,
+ *  ijtimoiy tugmalar ostidagi matn (`auth.socialConsent`) — OAuth uchun.
+ *  Har biri o'z nuqtasida hujjatga ishora qiladi; footer'dagi havolalar
+ *  esa umumiy navigatsiya.
  *
  *  Havolalar DOIMIY tagchiziq bilan chiziladi. Sabab WCAG 1.4.1: ular
  *  matn ICHIDA turadi va atrofdagi so'zdan faqat rang bilan ajralsa,
  *  farq 1.24:1 bo'ladi (talab 3:1) — ya'ni rang ko'rmaydigan odam uchun
  *  havola umuman bilinmaydi. Lighthouse buni `link-in-text-block` deb
  *  belgilaydi. `.rw-md a` ham xuddi shu sababdan tagchiziqli. */
-function Legal() {
+function LegalLinks({ messageKey }: { messageKey: "auth.socialConsent" | "auth.termsAccept" }) {
   const locale = useLocale();
-  const parts = t(locale, "auth.socialConsent").split(/(\{terms\}|\{privacy\})/);
+  const parts = t(locale, messageKey).split(/(\{terms\}|\{privacy\})/);
   return (
-    <p className="text-center text-theme-xs rw-dim">
+    <>
+      {/* YANGI OYNADA: hujjat o'sha oynada ochilsa, yarim to'ldirilgan
+          forma yo'qoladi va odam email bilan parolni qaytadan yozadi. */}
       {parts.map((part, i) =>
         part === "{terms}" ? (
-          <Link key={i} href="/terms" className="rw-accent-ink underline">
+          <Link
+            key={i}
+            href="/terms"
+            target="_blank"
+            rel="noreferrer"
+            className="rw-accent-ink underline"
+          >
             {t(locale, "footer.terms")}
           </Link>
         ) : part === "{privacy}" ? (
-          <Link key={i} href="/privacy" className="rw-accent-ink underline">
+          <Link
+            key={i}
+            href="/privacy"
+            target="_blank"
+            rel="noreferrer"
+            className="rw-accent-ink underline"
+          >
             {t(locale, "footer.privacy")}
           </Link>
         ) : (
           <span key={i}>{part}</span>
         ),
       )}
+    </>
+  );
+}
+
+function Legal() {
+  return (
+    <p className="text-center text-theme-xs rw-dim">
+      <LegalLinks messageKey="auth.socialConsent" />
     </p>
   );
 }

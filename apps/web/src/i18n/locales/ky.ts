@@ -905,7 +905,7 @@ export const ky: Record<MessageKey, string> = {
   "auth.contestInviteCta": "Жыйынтыкты кошуу",
   "auth.country": "Өлкө",
   "auth.remember": "Мени эстеп кал",
-  "auth.termsAccept": "Шарттар жана купуялык саясаты менен макулмун",
+  "auth.termsAccept": "{terms} жана {privacy} саясаты менен макулмун",
   "auth.marketingOptIn": "Жаңылыктар жана пайдалуу каттарды алгым келет (милдеттүү эмес)",
   "auth.termsRequired": "Шарттарга макулдук милдеттүү",
   "auth.step2Title": "Жайгашуу жана мектеп",

@@ -909,7 +909,7 @@ export const uz = {
   "auth.contestInviteCta": "Natijani qo'shish",
   "auth.country": "Mamlakat",
   "auth.remember": "Meni eslab qol",
-  "auth.termsAccept": "Shartlar va maxfiylik siyosatiga roziman",
+  "auth.termsAccept": "{terms} va {privacy} siyosatiga roziman",
   "auth.marketingOptIn": "Yangiliklar va foydali xatlarni olishni xohlayman (ixtiyoriy)",
   "auth.termsRequired": "Shartlarga rozilik majburiy",
   "auth.step2Title": "Joy va maktab",

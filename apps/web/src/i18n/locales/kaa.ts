@@ -905,7 +905,7 @@ export const kaa: Record<MessageKey, string> = {
   "auth.contestInviteCta": "Nátiyjeni qosıw",
   "auth.country": "Mámleket",
   "auth.remember": "Meni eslep qal",
-  "auth.termsAccept": "Shártlar hám jeke ómirlik siyasatına razıman",
+  "auth.termsAccept": "{terms} hám {privacy} siyasatına razıman",
   "auth.marketingOptIn": "Jańalıqlar hám paydalı xatlar alıwdı qáleymen (erkin)",
   "auth.termsRequired": "Shártlarǵa razılıq májbúriy",
   "auth.step2Title": "Orın hám mektep",

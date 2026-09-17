@@ -22,18 +22,24 @@ export function Field({
   /** Maydon ichidagi o'ng tugma — parolni ko'rsatish uchun. */
   trailing?: React.ReactNode;
 }) {
+  // Label maydonni O'RAB turadi, ya'ni bog'lanish o'rashdan ham kelib
+  // chiqadi. `htmlFor` qo'shimcha: parol menejerlari va avtomatik
+  // to'ldirish `id` ni qidiradi, va maydon kelajakda label ichidan
+  // chiqarilsa bog'lanish jimgina yo'qolmaydi.
+  const fieldId = props.id ?? props.name;
   const noteId = hint || status ? `${props.name}-note` : undefined;
   // Rang YOLG'IZ tashuvchi bo'lmasligi kerak (WCAG 1.4.1): belgisi ham bor.
   const mark = status && { ok: "✓", bad: "✕", busy: "…" }[status.kind];
   const tone =
     status && { ok: "rw-ok-ink", bad: "rw-bad-ink", busy: "rw-dim" }[status.kind];
   return (
-    <label className="block">
+    <label className="block" htmlFor={fieldId}>
       <span className="mb-1.5 block text-theme-sm font-medium rw-strong">
         {label}
       </span>
       <span className="relative block">
         <input
+          id={fieldId}
           aria-describedby={noteId}
           aria-invalid={status?.kind === "bad" || undefined}
           className={`h-11 w-full rw-radius-sm border rw-line ${

@@ -902,7 +902,7 @@ export const zh: Record<MessageKey, string> = {
   "auth.contestInviteCta": "添加成绩",
   "auth.country": "国家",
   "auth.remember": "记住我",
-  "auth.termsAccept": "我同意服务条款和隐私政策",
+  "auth.termsAccept": "我同意{terms}和{privacy}政策",
   "auth.marketingOptIn": "我想接收新闻和有用的邮件（可选）",
   "auth.termsRequired": "必须同意条款",
   "auth.step2Title": "位置和学校",

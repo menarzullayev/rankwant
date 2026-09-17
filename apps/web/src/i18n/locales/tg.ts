@@ -906,7 +906,7 @@ export const tg: Record<MessageKey, string> = {
   "auth.contestInviteCta": "Илова кардани натиҷа",
   "auth.country": "Кишвар",
   "auth.remember": "Маро дар ёд нигоҳ дор",
-  "auth.termsAccept": "Ман бо шартҳо ва сиёсати махфият розӣ ҳастам",
+  "auth.termsAccept": "Ман бо {terms} ва сиёсати {privacy} розӣ ҳастам",
   "auth.marketingOptIn": "Мехоҳам хабарҳо ва номаҳои муфид гирам (ихтиёрӣ)",
   "auth.termsRequired": "Розигӣ бо шартҳо ҳатмист",
   "auth.step2Title": "Ҷой ва мактаб",

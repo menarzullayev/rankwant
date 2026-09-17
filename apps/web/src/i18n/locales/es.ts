@@ -905,7 +905,7 @@ export const es: Record<MessageKey, string> = {
   "auth.contestInviteCta": "Añadir resultado",
   "auth.country": "País",
   "auth.remember": "Recuérdame",
-  "auth.termsAccept": "Acepto los Términos y la Política de Privacidad",
+  "auth.termsAccept": "Acepto los {terms} y la política de {privacy}",
   "auth.marketingOptIn": "Quiero recibir noticias y correos útiles (opcional)",
   "auth.termsRequired": "Es obligatorio aceptar los términos",
   "auth.step2Title": "Ubicación y escuela",

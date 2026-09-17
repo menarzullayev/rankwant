@@ -2,11 +2,16 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-/** Cloudflare Turnstile — KO'RINMAS rejim (9-qaror).
+/** Cloudflare Turnstile — KO'RINADIGAN vidjet (9-qaror).
  *
- * Foydalanuvchi odatda hech narsa ko'rmaydi: Cloudflare fonida token
- * beradi va u formaga qo'shilib ketadi. Faqat shubhali holatda Cloudflare
- * o'zi kichik tekshiruv oynasini chiqaradi.
+ * `size: "flexible"` — bu boshqariladigan (managed) vidjet: forma ostida
+ * «Verify you are human» katagi ko'rinadi va ko'pchilik odam uchun o'zi
+ * o'tadi. Izohda ilgari «ko'rinmas rejim» deb yozilgan edi, jonli sahifada
+ * esa vidjet ko'rinib turardi (2026-09-18 da o'lchandi) — egasining
+ * qarori bilan ko'rinadigan vidjet qoldirildi, izoh haqiqatga moslandi.
+ *
+ * Tema saytdan olinadi: `theme` berilmaganda Cloudflare o'z standartini
+ * ishlatadi va qorong'i vidjet ochiq fonda (yoki aksincha) turib qoladi.
  *
  * NEGA token bo'lmasa ham forma yuboriladi: skript yuklanmasa yoki
  * Cloudflare javob bermasa widget JIM qoladi. Token to'ldirilmasdan
@@ -94,6 +99,11 @@ export function Turnstile({
     const id = api.render(box.current, {
       sitekey: siteKey,
       size: "flexible",
+      // Tema `<html>` dagi `dark` klassidan o'qiladi — `ThemeContext` ham
+      // shuni yagona haqiqat manbai deb biladi. Vidjet faqat shu yerda,
+      // yasalayotganda o'qiydi: keyin tema almashsa qayta yasalmaydi va
+      // yechilgan token yo'qolmaydi.
+      theme: document.documentElement.classList.contains("dark") ? "dark" : "light",
       // Token muddati o'tgani yoki xato bo'lganda eski qiymat
       // tozalanadi: aks holda server allaqachon sarflangan tokenni
       // qayta tekshirib rad etardi.

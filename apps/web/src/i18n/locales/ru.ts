@@ -905,7 +905,7 @@ export const ru: Record<MessageKey, string> = {
   "auth.contestInviteCta": "Добавить результат",
   "auth.country": "Страна",
   "auth.remember": "Запомнить меня",
-  "auth.termsAccept": "Я согласен с условиями и политикой конфиденциальности",
+  "auth.termsAccept": "Я согласен с {terms} и {privacy}",
   "auth.marketingOptIn": "Хочу получать новости и полезные письма (необязательно)",
   "auth.termsRequired": "Согласие с условиями обязательно",
   "auth.step2Title": "Место и школа",

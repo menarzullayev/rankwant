@@ -212,6 +212,23 @@ def neg_i18n_blank_value() -> tuple[bool, str]:
         return expect_fail("i18n", "i18n/bo'sh qiymat")
 
 
+def neg_i18n_consent_link_dropped() -> tuple[bool, str]:
+    """Rozilik matnidan `{terms}` tushib qolsa — tutilsinmi?
+
+    Tarjimon o'rin egallovchini olib tashlasa jumla o'qiladi, lekin havola
+    yo'qoladi va odam nimaga rozilik berayotganini ocholmaydi.
+    """
+    path = ROOT / "apps/web/src/i18n/locales/zh.ts"
+    text = path.read_bytes().decode("utf-8")
+    m = re.search(r'^\s*"auth\.termsAccept": "(.*)",\s*$', text, re.M)
+    if m is None or "{terms}" not in m.group(1):
+        return False, "i18n/rozilik havolasi: `auth.termsAccept` da `{terms}` topilmadi"
+    old = m.group(0)
+    new = old.replace("{terms}", "服务条款")
+    with Mutation(path, old, new):
+        return expect_fail("i18n", "i18n/rozilik havolasi")
+
+
 def neg_i18n_missing_key() -> tuple[bool, str]:
     """Bitta kalit butunlay o'chirilsa — tutilsinmi?"""
     path = ROOT / "apps/web/src/i18n/locales/kk.ts"
@@ -3108,6 +3125,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         "i18n",
         [
             ("bo'sh qiymat", neg_i18n_blank_value),
+            ("rozilik matnida havola o'rni yo'q", neg_i18n_consent_link_dropped),
             ("yetishmayotgan kalit", neg_i18n_missing_key),
             ("kodda bor, manbada yo'q", neg_i18n_used_but_absent),
             ("prefikssiz kalit", neg_i18n_bare_key),

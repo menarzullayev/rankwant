@@ -905,7 +905,7 @@ export const tr: Record<MessageKey, string> = {
   "auth.contestInviteCta": "Sonuç ekle",
   "auth.country": "Ülke",
   "auth.remember": "Beni hatırla",
-  "auth.termsAccept": "Şartları ve Gizlilik Politikasını kabul ediyorum",
+  "auth.termsAccept": "{terms} ve {privacy} politikasını kabul ediyorum",
   "auth.marketingOptIn": "Haberleri ve faydalı e-postaları almak istiyorum (isteğe bağlı)",
   "auth.termsRequired": "Şartları kabul etmek zorunludur",
   "auth.step2Title": "Konum ve okul",

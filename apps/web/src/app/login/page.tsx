@@ -23,7 +23,10 @@ import { t, type MessageKey } from "@/i18n/messages";
  *  takrorlardi. Ro'yxatda sarlavha «Hisob yaratish» — u QILINAYOTGAN
  *  ishni aytadi, tugma esa amalni, ya'ni takror yo'q. */
 const TITLE: Record<TabId, MessageKey | null> = {
-  login: null,
+  // Ilgari `null` edi: kirish bo'limida ko'rinadigan sarlavha yo'q edi va
+  // sahifani faqat `document.title` nomlardi — ekran o'quvchi kartaning
+  // nima ekanini aytolmasdi, ro'yxat bo'limida esa sarlavha bor edi.
+  login: "auth.login",
   register: "auth.createAccount",
   "reset-password": "reset.title",
 };
