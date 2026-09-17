@@ -103,8 +103,15 @@ Measured on 2026-09-17 in the judge image built from this decision:
 
 ## Consequences
 
+- Languages land in three groups, one PR each, in the order of the list above: the ten
+  on all three rivals (C, C#, JavaScript, Rust, Go, PHP and Kotlin join the founding
+  three), then the next eleven, then the rest. Each group's image growth and CI build
+  time is measured on its own.
 - The judge image grows from 1.05 GB to about 9.2 GB; a clean build downloads about
   2.1 GB. CI builds the image on every PR that touches the judge.
+- .NET needs `libicu76` and aborts with `Couldn't find a valid ICU package` without it.
+  In the all-language measurement it arrived as a dependency of R and GNUstep, so the
+  group that brings .NET installs it explicitly.
 - Kotlin and Scala get 20 s, Zig 30 s of compile CPU. A Zig submission occupies a worker
   for ~10 s; heavy use would call for option 4.
 - Julia holds ~200 MB right after start; problems limited to 256 MB leave it little room.
@@ -117,3 +124,8 @@ Measured on 2026-09-17 in the judge image built from this decision:
   0.16 both changed I/O).
 - Objective-C uses GCC's runtime: `@autoreleasepool` and ARC are not available, the
   classic `NSAutoreleasePool` is.
+- TypeScript runs on Node.js with `--experimental-transform-types`. Plain type stripping
+  rejects enums and constructor parameter properties. Types are never checked, and the
+  flag is experimental, so a Node.js upgrade has to pass the TypeScript probe again.
+- GHC's own libraries are in the loader cache, like the JDK's, so the Haskell command
+  needs no `LD_LIBRARY_PATH` pinned to a GHC patch version.

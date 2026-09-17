@@ -144,10 +144,19 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Judge image
-        run: docker build -t rankwant/judge-go:ci services/judge-go
+        # Compose, not `docker build`: the runner's Docker has no buildx, so
+        # `docker build` falls back to the legacy builder, which rejects the
+        # Dockerfile's `RUN --mount=type=cache` ("the --mount option requires
+        # BuildKit"; nightly red 2026-09-15 to 17). Compose builds with BuildKit
+        # itself, as the smoke job does with the same image.
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml build judge
       - name: E'lon qilingan versiyalar image bilan mos
         # Har til o'z runtime versiyasini chop etadi. Bu tekshiruv
         # "Python 3.12" deb ko'rsatib 3.11 ishlatish holatini ushlaydi —
         # bunday nomuvofiqlik foydalanuvchiga tushunarsiz SyntaxError
         # bo'lib ko'rinadi.
-        run: python3 tests/compatibility/check_languages.py rankwant/judge-go:ci
+        run: python3 tests/compatibility/check_languages.py "${COMPOSE_PROJECT_NAME}-judge"
+      - name: Tozalash
+        # The tag is per run now, so it has to go, like the smoke job's images.
+        if: always()
+        run: docker image rm "${COMPOSE_PROJECT_NAME}-judge" || true

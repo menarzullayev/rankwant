@@ -5,9 +5,9 @@
 image. Entries must stay plain literals: that check reads this file with
 `ast.literal_eval`, without importing Django.
 
-Commands are argv lists, never shell strings. `{src}` is the saved source
-(`/box/<source_file>`) and `{bin}` is `/box/prog`; `/box` is the only writable
-directory inside the sandbox.
+Commands are argv lists; `/bin/sh -c` appears only where one compile is two steps
+(Go, and later Assembly). `{src}` is the saved source (`/box/<source_file>`) and `{bin}`
+is `/box/prog`; `/box` is the only writable directory inside the sandbox.
 
 Optional keys, with the defaults `row_values` fills in:
   compile_time_ms  CPU budget for one compile (10_000)
@@ -47,6 +47,270 @@ LANGUAGES: list[dict[str, Any]] = [
         "run": ["java", "-cp", "/box", "Main"],
         # The JVM opens 18 threads even for an empty program (measured).
         "processes": 32,
+    },
+    # ── Group 1: on KEP.uz, Robocontest and Codeforces (ADR-0022) ──
+    {
+        "code": "c17",
+        "name": "C",
+        "version": "17",
+        "source_file": "main.c",
+        # gnu17, not c17: glibc hides POSIX functions (strdup, getline) in strict
+        # mode, and GCC 14 turns their implicit declarations into errors.
+        "compile": ["gcc", "-std=gnu17", "-O2", "-o", "{bin}", "{src}", "-lm"],
+        "run": ["{bin}"],
+        "processes": 1,
+    },
+    {
+        "code": "csharp14",
+        "name": "C#",
+        "version": "14 (.NET 10)",
+        "source_file": "main.cs",
+        # Roslyn straight from the SDK: a project build would need NuGet restore,
+        # and the sandbox has no network. References come from csc.rsp.
+        "compile": [
+            "/usr/bin/env",
+            "DOTNET_EnableWriteXorExecute=0",
+            "/opt/dotnet/dotnet",
+            "/opt/rankwant/dotnet/roslyn/csc.dll",
+            "@/opt/rankwant/dotnet/csc.rsp",
+            "-out:{bin}.dll",
+            "{src}",
+        ],
+        "run": [
+            "/usr/bin/env",
+            "DOTNET_EnableWriteXorExecute=0",
+            "/opt/dotnet/dotnet",
+            "exec",
+            "--runtimeconfig",
+            "/opt/rankwant/dotnet/app.runtimeconfig.json",
+            "{bin}.dll",
+        ],
+        "processes": 32,
+        # CoreCLR reads /proc/self; under the mask it fails with 0x8007000E.
+        "proc_self": True,
+    },
+    {
+        "code": "js24",
+        "name": "JavaScript",
+        "version": "(Node.js 24)",
+        "source_file": "main.js",
+        "compile": [],
+        "run": ["/opt/node/bin/node", "{src}"],
+        "processes": 16,
+    },
+    {
+        "code": "rust185",
+        "name": "Rust",
+        "version": "1.85",
+        "source_file": "main.rs",
+        # rustc writes its temporary files to TMPDIR; /tmp is read-only in the sandbox.
+        "compile": [
+            "/usr/bin/env",
+            "TMPDIR=/box",
+            "rustc",
+            "--edition=2021",
+            "-O",
+            "-o",
+            "{bin}",
+            "{src}",
+        ],
+        "run": ["{bin}"],
+        "processes": 1,
+    },
+    {
+        "code": "go124",
+        "name": "Go",
+        "version": "1.24",
+        "source_file": "main.go",
+        # Compile and link against the standard library built into the image:
+        # `go build` needs a writable cache and spends ~5.6 s filling it.
+        "compile": [
+            "/bin/sh",
+            "-c",
+            "GOROOT=/usr/lib/go-1.24"
+            " /usr/lib/go-1.24/pkg/tool/linux_amd64/compile -p main -complete"
+            " -importcfg /opt/go-std/importcfg -o /box/main.a {src}"
+            " && GOROOT=/usr/lib/go-1.24"
+            " /usr/lib/go-1.24/pkg/tool/linux_amd64/link"
+            " -importcfg /opt/go-std/importcfg -o {bin} /box/main.a",
+        ],
+        "run": ["{bin}"],
+        "processes": 16,
+    },
+    {
+        "code": "php84",
+        "name": "PHP",
+        "version": "8.4",
+        "source_file": "main.php",
+        "compile": [],
+        "run": ["php", "{src}"],
+        "processes": 1,
+    },
+    {
+        "code": "kotlin24",
+        "name": "Kotlin",
+        "version": "2.4",
+        "source_file": "main.kt",
+        # With colours on, kotlinc loads jansi, which unpacks a native library into the
+        # read-only /tmp and prefixes every compile error with that failure.
+        "compile": [
+            "/opt/kotlinc/bin/kotlinc",
+            "-J-Dkotlin.colors.enabled=false",
+            "{src}",
+            "-include-runtime",
+            "-d",
+            "{bin}.jar",
+        ],
+        "run": ["java", "-jar", "{bin}.jar"],
+        "processes": 32,
+        # kotlinc spends ~5 s of CPU on A+B alone.
+        "compile_time_ms": 20_000,
+    },
+    # ── Group 2: on two rival judges or one (ADR-0022) ──
+    {
+        "code": "pascal322",
+        "name": "Pascal",
+        "version": "(Free Pascal 3.2)",
+        "source_file": "main.pas",
+        "compile": ["fpc", "-O2", "-XS", "-o{bin}", "{src}"],
+        "run": ["{bin}"],
+        "processes": 1,
+    },
+    {
+        "code": "ruby33",
+        "name": "Ruby",
+        "version": "3.3",
+        "source_file": "main.rb",
+        "compile": [],
+        "run": ["ruby", "{src}"],
+        "processes": 8,
+    },
+    {
+        "code": "haskell96",
+        "name": "Haskell",
+        "version": "(GHC 9.6)",
+        "source_file": "main.hs",
+        # ghc finds its own libraries through the loader cache (see the Dockerfile).
+        "compile": ["/usr/bin/env", "TMPDIR=/box", "ghc", "-O2", "-o", "{bin}", "{src}"],
+        "run": ["{bin}"],
+        "processes": 1,
+    },
+    {
+        "code": "r45",
+        "name": "R",
+        "version": "4.5",
+        "source_file": "main.R",
+        "compile": [],
+        "run": ["/usr/bin/env", "TMPDIR=/box", "Rscript", "{src}"],
+        "processes": 8,
+        # R refuses to start with fewer open files ("limit on the number of open
+        # files is too low"): it failed at 128 and started at 192.
+        "open_files": 256,
+    },
+    {
+        "code": "swift60",
+        "name": "Swift",
+        "version": "6.0",
+        "source_file": "main.swift",
+        "compile": [
+            "/usr/bin/env",
+            "TMPDIR=/box",
+            "swiftc",
+            "-O",
+            "-static-stdlib",
+            "-module-cache-path",
+            "/box/.swiftcache",
+            "-o",
+            "{bin}",
+            "{src}",
+        ],
+        "run": ["{bin}"],
+        "processes": 8,
+        # swiftc dies with signal 4 under the /proc mask.
+        "proc_self": True,
+    },
+    {
+        "code": "perl540",
+        "name": "Perl",
+        "version": "5.40",
+        "source_file": "main.pl",
+        "compile": [],
+        "run": ["perl", "{src}"],
+        "processes": 1,
+    },
+    {
+        "code": "d140",
+        "name": "D",
+        "version": "(LDC 1.40)",
+        "source_file": "main.d",
+        "compile": ["ldc2", "-O", "-of={bin}", "{src}"],
+        # Without this the GC starts a marking thread for every core but one.
+        "run": ["{bin}", "--DRT-gcopt=parallel:0"],
+        "processes": 4,
+    },
+    {
+        "code": "ocaml53",
+        "name": "OCaml",
+        "version": "5.3",
+        "source_file": "main.ml",
+        "compile": [
+            "/usr/bin/env",
+            "TMPDIR=/box",
+            "ocamlfind",
+            "ocamlopt",
+            "-package",
+            "str,unix",
+            "-linkpkg",
+            "-o",
+            "{bin}",
+            "{src}",
+        ],
+        "run": ["{bin}"],
+        "processes": 1,
+    },
+    {
+        "code": "ts24",
+        "name": "TypeScript",
+        "version": "(Node.js 24)",
+        "source_file": "main.ts",
+        "compile": [],
+        # Node.js strips the types and does not check them. Without the transform
+        # flag it rejects enums and constructor parameter properties.
+        "run": ["/opt/node/bin/node", "--experimental-transform-types", "{src}"],
+        "processes": 16,
+    },
+    {
+        "code": "dart313",
+        "name": "Dart",
+        "version": "3.13",
+        "source_file": "main.dart",
+        "compile": [
+            "/usr/bin/env",
+            "TMPDIR=/box",
+            "/opt/dart-sdk/bin/dart",
+            "compile",
+            "exe",
+            "{src}",
+            "-o",
+            "{bin}",
+        ],
+        "run": ["{bin}"],
+        "processes": 16,
+        # The Dart VM reads its stack bounds from /proc/self, in the compiler and in
+        # the compiled program alike.
+        "proc_self": True,
+    },
+    {
+        "code": "scala39",
+        "name": "Scala",
+        "version": "3.9",
+        "source_file": "Main.scala",
+        # scalac colours its errors even when stdout is not a terminal.
+        "compile": ["/opt/scala/bin/scalac", "-color:never", "-d", "/box", "{src}"],
+        # scala.jar lists only the runtime libraries: the compiler stays off the classpath.
+        "run": ["java", "-cp", "/opt/scala/lib/scala.jar:/box", "Main"],
+        "processes": 32,
+        "compile_time_ms": 20_000,
     },
 ]
 

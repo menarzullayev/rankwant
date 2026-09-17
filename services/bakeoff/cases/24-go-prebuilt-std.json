@@ -1,0 +1,48 @@
+{
+  "id": "24-go-prebuilt-std",
+  "title": "Go — yozib bo'lmaydigan keshsiz kompilyatsiya",
+  "measures": "Go image'dagi tayyor standart kutubxona bilan 3 s CPU ichida kompilyatsiya bo'ladimi",
+  "language": {
+    "code": "go124",
+    "source_file": "main.go",
+    "compile": [
+      "/bin/sh",
+      "-c",
+      "GOROOT=/usr/lib/go-1.24 /usr/lib/go-1.24/pkg/tool/linux_amd64/compile -p main -complete -importcfg /opt/go-std/importcfg -o /box/main.a {src} && GOROOT=/usr/lib/go-1.24 /usr/lib/go-1.24/pkg/tool/linux_amd64/link -importcfg /opt/go-std/importcfg -o {bin} /box/main.a"
+    ],
+    "run": [
+      "{bin}"
+    ]
+  },
+  "source": "package main\n\nimport (\n\t\"bufio\"\n\t\"fmt\"\n\t\"os\"\n)\n\nfunc main() {\n\tin := bufio.NewReader(os.Stdin)\n\tvar a, b int64\n\tfmt.Fscan(in, &a, &b)\n\tfmt.Println(a + b)\n}\n",
+  "limits": {
+    "compile_time_ms": 3000,
+    "time_ms": 1000,
+    "memory_kb": 262144,
+    "output_kb": 65536,
+    "processes": 16
+  },
+  "tests": [
+    {
+      "index": 1,
+      "input": "3 4\n",
+      "expected": "7\n"
+    },
+    {
+      "index": 2,
+      "input": "1000000000 1000000000\n",
+      "expected": "2000000000\n"
+    }
+  ],
+  "expect_verdict": "AC",
+  "expect_by_worker": {
+    "judge-py": "CE"
+  },
+  "must_hold": [
+    "`go build` bo'sh keshda standart kutubxonani qayta quradi (~5,6 s CPU) va yozuvchi kesh talab qiladi,",
+    "sandbox'da /box dan boshqa joy yozilmaydi — kompilyatsiya /opt/go-std dagi importcfg bilan ishlashi SHART,",
+    "3 s CPU byudjeti shu yo'lni ushlaydi: kesh qayta qurilsa COMPILE_TIMEOUT yoki CE bo'ladi, AC emas.",
+    "Go toolchain'i yo'q nomzod CE qaytaradi."
+  ],
+  "mode": "acm"
+}

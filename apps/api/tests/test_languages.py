@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import importlib
 import re
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
+from django.apps import apps
 from django.core.exceptions import ValidationError
 
 from hacks.services import _program
@@ -13,9 +15,20 @@ from judging.models import Attempt, CustomRun
 from judging.provider import InMemoryJudgeProvider
 from judging.services import build_job, enqueue_custom
 from problems.languages import LANGUAGES, row_values
-from problems.models import SOURCE_FILE_PATTERN, Language
+from problems.models import SOURCE_FILE_PATTERN, Language, Problem, ProblemLanguage
+
+if TYPE_CHECKING:
+    from types import ModuleType
 
 SLUG = re.compile(r"^[a-z][a-z0-9]*$")
+#: Created by seed_demo and fixtures, not by migrations.
+FOUNDING = {"cpp23", "java21", "py313"}
+#: One data migration per language group (ADR-0022).
+GROUPS = [
+    importlib.import_module("problems.migrations.0017_judge_languages_group1"),
+    importlib.import_module("problems.migrations.0018_judge_languages_group2"),
+]
+KOTLIN_COLOURS = importlib.import_module("problems.migrations.0019_kotlin_colors_off")
 
 
 class TestCatalog:
@@ -70,6 +83,81 @@ def test_seed_writes_the_catalog() -> None:
         assert row.compile_time_ms == spec.get("compile_time_ms", 10_000)
 
 
+@pytest.mark.django_db
+def test_migrations_match_the_catalog() -> None:
+    """Migrations freeze their rows; the catalog is what seed_demo and the image check read.
+    A command changed in one place only would be judged differently in production."""
+    for spec in LANGUAGES:
+        if spec["code"] in FOUNDING:
+            continue
+        row = Language.objects.get(code=spec["code"])
+        for field, value in row_values(spec).items():
+            assert getattr(row, field) == value, (spec["code"], field)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("group", GROUPS, ids=lambda module: module.__name__.rsplit("_", 1)[-1])
+class TestOpenProblemsGetNewLanguages:
+    """Every group migration: problems open to all founding languages gain the new ones."""
+
+    def _problem(self, slug: str, codes: list[str]) -> Problem:
+        problem = Problem.objects.create(slug=slug, title=slug, statement="…", difficulty=800)
+        for code in codes:
+            ProblemLanguage.objects.create(
+                problem=problem, language=Language.objects.get(code=code)
+            )
+        return problem
+
+    def _codes(self, problem: Problem) -> set[str]:
+        return set(problem.languages.values_list("language__code", flat=True))
+
+    def test_open_restricted_and_unlisted(self, group: ModuleType) -> None:
+        for code in sorted(FOUNDING):
+            Language.objects.create(code=code, name=code, run_cmd=["{src}"])
+        open_problem = self._problem("open", sorted(FOUNDING))
+        python_only = self._problem("python-only", ["py313"])
+        unlisted = self._problem("unlisted", [])
+
+        group.add_languages(apps, None)
+
+        added = {row["code"] for row in group.LANGUAGES}
+        assert self._codes(open_problem) == FOUNDING | added
+        assert self._codes(python_only) == {"py313"}
+        # No list at all already means every language.
+        assert self._codes(unlisted) == set()
+
+    def test_without_founding_rows_nothing_is_granted(self, group: ModuleType) -> None:
+        problem = self._problem("fresh", [])
+        group.add_languages(apps, None)
+        assert self._codes(problem) == set()
+
+
+@pytest.mark.django_db
+class TestKotlinColoursOff:
+    """0019 changes a live row, so an admin's own command must survive it."""
+
+    def _kotlin(self, compile_cmd: list[str]) -> Language:
+        row = Language.objects.get(code="kotlin24")
+        row.compile_cmd = compile_cmd
+        row.save(update_fields=["compile_cmd"])
+        return row
+
+    def test_default_command_is_replaced_and_restored(self) -> None:
+        row = self._kotlin(KOTLIN_COLOURS.BEFORE)
+        KOTLIN_COLOURS.forwards(apps, None)
+        row.refresh_from_db()
+        assert row.compile_cmd == KOTLIN_COLOURS.AFTER
+        KOTLIN_COLOURS.backwards(apps, None)
+        row.refresh_from_db()
+        assert row.compile_cmd == KOTLIN_COLOURS.BEFORE
+
+    def test_edited_command_is_left_alone(self) -> None:
+        row = self._kotlin(["/opt/kotlinc/bin/kotlinc", "-Werror", "{src}"])
+        KOTLIN_COLOURS.forwards(apps, None)
+        row.refresh_from_db()
+        assert row.compile_cmd == ["/opt/kotlinc/bin/kotlinc", "-Werror", "{src}"]
+
+
 class TestSourceFileValidation:
     @pytest.mark.parametrize("name", ["main.cpp", "Main.java", "main.fsx", "prog.test.ml"])
     def test_bare_names_pass(self, name: str, language: Language) -> None:
@@ -93,7 +181,7 @@ class TestJobsCarryLanguageSettings:
     @pytest.fixture
     def csharp(self, db) -> Language:
         return Language.objects.create(
-            code="csharp14",
+            code="cstest",
             name="C#",
             version="14",
             source_file="main.cs",
