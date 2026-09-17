@@ -2181,6 +2181,15 @@ def neg_decisions_runner_entrypoint_label_dropped() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_deploy_skips_web() -> tuple[bool, str]:
+    return _decision_broken(
+        "tools/deploy.sh",
+        "SERVICES=(api worker beat judge web)",
+        "SERVICES=(api worker beat judge)",
+        "deploy hamma servisni quradi",
+    )
+
+
 def neg_decisions_deploy_lock_removed() -> tuple[bool, str]:
     return _decision_broken(
         "tools/deploy.sh",
@@ -3076,6 +3085,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("qarorlar jadvali o'chsa tutilsin", neg_decisions_table_removed),
             ("deploy darvozasi uzilsa tutilsin", neg_decisions_deploy_gate_unwired),
             ("deploy qulfi olib tashlansa tutilsin", neg_decisions_deploy_lock_removed),
+            ("deploy web'ni qurmasa tutilsin", neg_decisions_deploy_skips_web),
             ("sinov label'i self-test'da o'tadi", neg_decisions_trial_label_selftest_allowed),
             ("sinov label'i boshqa workflow'da tutilsin", neg_decisions_trial_label_scoped),
         ],

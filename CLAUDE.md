@@ -33,7 +33,7 @@ foydalanuvchi ma'lumoti bor dump'lar tashqariga chiqdi.
 | 2026-09-17 | `main` ga faqat PR orqali; soxta muallif push qilinmaydi | `.githooks/pre-push` → `tools/push_guard.py` |
 | 2026-09-17 | CI faqat bitta self-hosted runner — GitHub bepul daqiqalari tugagan, hosted runner taklif qilinmaydi | har `runs-on: [self-hosted, rankwant]` |
 | 2026-09-17 | CI runner — Docker Desktop'dagi `rankwant-ci-runner` konteyneri (`rankwant` label; ish papkasi volume'da; `RankWant CI Runner Watchdog` qo'riqlaydi). WSL runner label'siz zaxirada turadi. `rankwant-container` label'ini faqat `runner-selftest.yml` ishlatadi | `tools/runner/` → `RUNNER_LABELS`; `tools/check_decisions.py` → `TRIAL_RUNNER` |
-| 2026-09-16 | Deploy qo'lda (`tools/deploy.sh`) | `deploy.yml` faqat `workflow_dispatch` |
+| 2026-09-16 | Deploy qo'lda (`tools/deploy.sh`); 2026-09-17 dan skript `web` ni ham quradi — bitta deploy hamma servisni yangilaydi | `deploy.yml` faqat `workflow_dispatch`; `tools/deploy.sh` → `SERVICES` |
 | 2026-09-17 | Agentlar production'ni **`main` CI yashil bo'lsa** so'ramasdan deploy qiladi; bir vaqtda faqat bitta deploy | `tools/deploy.sh` → `tools/check_deploy_gate.py` + qulf (`--skip-ci-gate` faqat Saidakbar aka ruxsati bilan) |
 | 2026-09-17 | Repo aralash tilda, migratsiya yo'q | `CONTRIBUTING.md` § Til |
 | 2026-09-17 | `cp/` faqat RankWant uchun; tadqiqot hujjatlari `docs/research/` da | `cp/README.md` (repo'dan tashqarida) |
