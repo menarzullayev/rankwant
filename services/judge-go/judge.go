@@ -79,6 +79,28 @@ func sourceName(code, file string) (string, error) {
 	return file, nil
 }
 
+// compileOutputLimit bounds what a failed compile reports. The sandbox caps
+// stderr at 64 KB but stdout only at the job's output limit, and the API
+// stores the text as it arrives.
+const compileOutputLimit = 64 * 1024
+
+// compilerOutput is everything a compiler printed. csc, `go tool compile` and
+// fpc write their errors to stdout, so stderr alone gave C#, Go and Pascal a
+// compilation error with no reason at all (measured).
+func compilerOutput(out *runOutcome) string {
+	parts := make([]string, 0, 2)
+	for _, stream := range []string{out.Stdout, out.Stderr} {
+		if text := strings.TrimSpace(stream); text != "" {
+			parts = append(parts, text)
+		}
+	}
+	text := strings.Join(parts, "\n")
+	if len(text) > compileOutputLimit {
+		text = strings.ToValidUTF8(text[:compileOutputLimit], "") + "\n…"
+	}
+	return text
+}
+
 func subst(args []string, src, bin string) []string {
 	out := make([]string, len(args))
 	for i, a := range args {
@@ -173,12 +195,12 @@ func judge(ctx context.Context, job *Job, tests *store) *Result {
 			return res
 		}
 		if out.Timeout {
-			res.Verdict, res.CompileOutput = VCTimeout, out.Stderr
+			res.Verdict, res.CompileOutput = VCTimeout, compilerOutput(out)
 			res.Meta.TotalMS = time.Since(t0).Milliseconds()
 			return res
 		}
 		if out.ExitCode != 0 {
-			res.Verdict, res.CompileOutput = VCE, out.Stderr
+			res.Verdict, res.CompileOutput = VCE, compilerOutput(out)
 			res.Meta.TotalMS = time.Since(t0).Milliseconds()
 			return res
 		}

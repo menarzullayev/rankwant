@@ -86,6 +86,10 @@ Kompilyatsiya bosqichi `open_files` va 256 ning kattasini oladi: Roslyn 64 ta fa
 bilan assembly'larni ocha olmaydi. Kompilyatsiya CPU byudjeti `limits.compile_time_ms`
 da keladi va tilga xos (API uni til qatoridan oladi).
 
+`compile_output` — kompilyator stdout'ga va stderr'ga yozgan hamma narsa (shu tartibda),
+64 KB gacha. csc, `go tool compile` va fpc xatoni stdout'ga yozadi: faqat stderr
+olinganda C#, Go va Pascal'ning CE'si sababsiz qaytardi (o'lchandi).
+
 `proc_self` ni qo'llab-quvvatlamaydigan nomzod ishni `IE` bilan **rad etadi** —
 «Kirish validatori» bo'limidagi yopiq yiqilish qoidasi bilan bir xil (bake-off `22`).
 Validator dasturi ham shu maydonlarni oladi; checker va interactor sandboxsiz
