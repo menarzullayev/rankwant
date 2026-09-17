@@ -27,8 +27,10 @@ services:
   # ⚠️ `HOST_REPO_ROOT` — bind mount manbai DAEMON tomonida yechiladi.
   # Runner konteyner ichida bo'lsa compose fayli turgan nisbiy yo'l daemon
   # uchun mavjud emas va mount BO'SH chiqadi. O'zgaruvchi faqat konteyner
-  # runner'da o'rnatiladi; bo'sh bo'lsa `${VAR:-.}` hozirgi xatti-harakatni
-  # beradi (compose `.` ni fayl katalogiga nisbatan yechadi).
+  # runner'da o'rnatiladi; bo'sh bo'lsa standart qiymat (`.`) hozirgi
+  # xatti-harakatni beradi — compose `.` ni fayl katalogiga nisbatan yechadi.
+  # (Bu izohda ataylab dollar-qavs yozilmagan: tools/check_env_example.py
+  # butun faylni skanerlaydi, izohdagi naqsh ham o'zgaruvchi bo'lib ko'rinadi.)
   smoke:
     image: python:3.13-slim
     profiles: ['smoke']
