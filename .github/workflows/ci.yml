@@ -150,17 +150,37 @@ jobs:
         # uni ko'rsatadi. Sabab topilgach bu qator olib tashlanishi mumkin.
         run: mypy --show-traceback .
         working-directory: apps/api
+      - name: Service host aniqlash
+        id: svc
+        # Service container portlari Docker HOST'da e'lon qilinadi, runner
+        # jarayoni turgan joyda emas. Runner konteyner ichida bo'lsa uning
+        # `localhost`i o'zini ko'rsatadi va ulanish YIQILADI.
+        #
+        # O'lchandi (2026-09-17, bir martalik sinov konteynerlari):
+        #   qardosh konteynerdan localhost:<port>          -> FAIL
+        #   qardosh konteynerdan host.docker.internal:<port> -> OK
+        #   default gateway 172.17.0.1                     -> FAIL
+        #
+        # WSL runner'da (konteyner emas) `localhost` to'g'ri ishlaydi, ya'ni
+        # bu qadam orqaga mos: muhit o'zgarmasa qiymat o'zgarmaydi.
+        run: |
+          if [ -f /.dockerenv ]; then
+            echo "host=host.docker.internal" >> "$GITHUB_OUTPUT"
+          else
+            echo "host=localhost" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Migratsiyalar to'liq yozilganmi
         if: steps.check.outputs.ready == 'true'
         env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:${{ job.services.postgres.ports['5432'] }}/rankwant_test
+          DATABASE_URL: postgres://postgres:postgres@${{ steps.svc.outputs.host }}:${{ job.services.postgres.ports['5432'] }}/rankwant_test
         run: python manage.py makemigrations --check --dry-run
         working-directory: apps/api
       - name: pytest
         if: steps.check.outputs.ready == 'true'
         env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:${{ job.services.postgres.ports['5432'] }}/rankwant_test
-          REDIS_URL: redis://localhost:${{ job.services.redis.ports['6379'] }}/0
+          DATABASE_URL: postgres://postgres:postgres@${{ steps.svc.outputs.host }}:${{ job.services.postgres.ports['5432'] }}/rankwant_test
+          REDIS_URL: redis://${{ steps.svc.outputs.host }}:${{ job.services.redis.ports['6379'] }}/0
           # `CELERY_EAGER=1` — task'lar sinxron, broker aylanib o'tiladi.
           # Bu Redis SERVICE'i kerak emasligi degani EMAS: `CACHES` va
           # throttle hamon Redisdan foydalanadi. Sabab — DETERMINIZM:
@@ -415,9 +435,19 @@ jobs:
         run: python3 tests/compatibility/check_languages.py "${COMPOSE_PROJECT_NAME}-judge"
       - name: E2E (faqat chromium — to'liq matritsa nightly da)
         timeout-minutes: 10
+        # `HOST_REPO_ROOT` — bind mount manbai DAEMON tomonida yechiladi,
+        # runner jarayoni tomonida EMAS. Runner konteyner ichida bo'lsa
+        # `$PWD` (masalan /home/runner/_work/...) daemon uchun mavjud
+        # bo'lmagan yo'l, ya'ni mount BO'SH chiqadi.
+        #
+        # O'lchandi (2026-09-17): Windows yo'li (`C:/Users/...`) -> OK,
+        # Linux uslubidagi yo'l -> VM ichida bo'sh katalog.
+        #
+        # O'zgaruvchi FAQAT konteyner runner'da o'rnatiladi. WSL runner'da
+        # bo'sh bo'ladi va `${VAR:-$PWD}` hozirgi xatti-harakatni beradi.
         run: |
           docker run --rm --user "$(id -u):$(id -g)" --network "${COMPOSE_PROJECT_NAME}_default" \
-            -v "$PWD/tests/e2e:/e2e" -w /e2e \
+            -v "${HOST_REPO_ROOT:-$PWD}/tests/e2e:/e2e" -w /e2e \
             -e E2E_BASE_URL=http://web:3000 -e E2E_API_BASE=http://api:8000/api/v1 -e CI=1 \
             mcr.microsoft.com/playwright:v1.63.0-noble \
             sh -c 'npm ci --silent && npx playwright test --project=chromium --reporter=list'
@@ -452,5 +482,13 @@ jobs:
           docker images --format '{{.ID}}|{{.CreatedSince}}|{{.Repository}}' \
             | awk -F'|' '$3 ~ /^rw-/ && $2 ~ /hours|days|weeks|months/ {print $1}' \
             | sort -u | xargs -r docker rmi -f || true
-          echo "--> build cache (24 soatdan eskisi)"
-          docker builder prune -f --filter 'until=24h' || true
+          echo "--> build cache (7 kundan eskisi)"
+          # ⚠️ MUROSA: build cache Docker'da LOYIHA bo'yicha ajratilmaydi —
+          # `docker builder prune` butun engine'ga tegadi. Bitta engine'da
+          # (2026-09-17 qarori) bu jonli stack'ning keshi ham nomzod degani.
+          #
+          # 24 soat -> 7 kun: jonli deploy keshi odatda bir hafta ichida
+          # qayta ishlatiladi, ya'ni amalda tegilmaydi; CI chiqindisi esa
+          # chegaralangan qoladi. Bu TO'LIQ yechim emas — to'g'ri yechim
+          # daemon darajasida kesh hajmini cheklash. Ochiq band.
+          docker builder prune -f --filter 'until=168h' || true

@@ -1,0 +1,59 @@
+# Containerized CI runner — single-engine topology (2026-09-17 decision).
+#
+# The runner shares Docker Desktop's daemon with the live RankWant stack, so
+# it can reach the live containers and volumes. That is the accepted cost of
+# collapsing two engines into one; project names and labels are operational
+# separation, NOT a security boundary. See docs: docker engine security.
+#
+#   docker compose -f tools/runner/docker-compose.runner.yml up -d
+#
+# Recreating the container (image update, `down` + `up`) requires a fresh
+# registration token — a plain restart does not. See README.md.
+name: rankwant-runner
+
+services:
+  runner:
+    build:
+      context: .
+    image: rankwant/ci-runner:latest
+    container_name: rankwant-ci-runner
+    # Survives a reboot, which is what keeps the runner online without the
+    # keepalive chain the WSL setup needed.
+    restart: unless-stopped
+    environment:
+      RUNNER_REPO: https://github.com/menarzullayev/rankwant
+      RUNNER_NAME: ${RUNNER_NAME:-nsn-pc-rankwant-container}
+      # ⚠️ TRIAL label, never the production one. `tools/check_decisions.py`
+      # permits only `runner-selftest.yml` to target it. On 2026-09-17 a trial
+      # runner registered under the production label took real CI jobs and
+      # failed them, because that rule left the self-test no other option.
+      # Production CI stays on the WSL runner until this trial is proven.
+      RUNNER_LABELS: ${RUNNER_LABELS:-self-hosted,Linux,X64,rankwant-container}
+      RUNNER_TOKEN: ${RUNNER_TOKEN:-}
+      RUNNER_WORKDIR: /work
+      # The Windows path that /work maps to. The entrypoint derives
+      # HOST_REPO_ROOT from it (see entrypoint.sh) — do not set
+      # HOST_REPO_ROOT directly here: the workspace layout is
+      # <workdir>/<repo>/<repo>, and hardcoding it silently breaks on a
+      # rename. Measured 2026-09-17: assuming an extra `_work` segment
+      # mounted an empty directory while every other check passed.
+      CI_HOST_WORK_DIR: ${CI_HOST_WORK_DIR:-C:/Users/nsn/ci-work}
+    volumes:
+      # Gives the runner the live daemon. Required: every CI job drives
+      # `docker compose`, and the jobs run inside this container.
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Workspace, on a Windows path so the daemon can bind-mount out of it.
+      - ${CI_WORK_DIR:-C:/Users/nsn/ci-work}:/work
+      # Diagnostics survive the container. The trial's first failure left no
+      # trace once the container was removed, which cost a diagnosis cycle.
+      - ${CI_DIAG_DIR:-C:/Users/nsn/ci-runner-diag}:/home/runner/_diag
+    # Network mode. Left at Docker's default: `host` was tried as a candidate
+    # fix for the runner going deaf, and made no difference — both modes
+    # accepted 5/5 jobs in a row, and 9/9 on host including after a 6-minute
+    # idle. The deafness was not a network problem (see README).
+    network_mode: ${RUNNER_NETWORK_MODE:-bridge}
+    # ⚠️ These limit the RUNNER only. Sibling containers it starts (the CI
+    # stack, builds) are not covered — they need their own limits, or the
+    # daemon's. Do not read this as a bound on CI's total footprint.
+    mem_limit: 4g
+    cpus: 4
