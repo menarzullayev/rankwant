@@ -135,8 +135,15 @@ buni o'zi ta'minlaydi — hamma narsadan oldin:
   Deploy yiqilgan joyda (elektr) qulf qolsa, jarayon yo'qligini tekshirib
   `rm -rf` bilan olib tashlanadi.
 - **Darvoza** — `tools/check_deploy_gate.py`: HEAD GitHub'dagi `main` bilan
-  bir xil va shu commit'ning oxirgi `CI` va `Security` run'lari `success`
+  bir xil, shu commit'ning oxirgi `CI` va `Security` run'lari `success`, va
+  hech bir checkout'da commit qilinmagan `docker-compose*.yml` yo'q
   (chiqish 0 — mumkin, 1 — yo'q, **2 — o'lchanmadi**, deploy baribir to'xtaydi).
+  Uchinchi shart 2026-09-17 dagi holatdan keyin qo'shildi: jonli stack asosiy
+  checkout'dagi commit qilinmagan compose bilan qayta yaratilgan edi (Turnstile
+  kalitlari va yumshatilgan `register` throttle'i o'sha faylda), worktree'dan
+  qilinadigan deploy esa commit qilingan compose bilan quradi va ularni jimgina
+  olib tashlagan bo'lardi. Darvoza to'xtatsa: o'zgarishni commit qiling (PR) yoki
+  qaytaring.
 - `--skip-ci-gate` darvozani o'tkazib yuboradi — faqat Saidakbar akaning
   aniq ruxsati bilan.
 
