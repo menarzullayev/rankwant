@@ -221,8 +221,9 @@ class Command(BaseCommand):
 
     def apply_languages(self, problem: Problem, payload: dict[str, Any]) -> None:
         memory_mb = payload.get("memoryLimit") or 256
+        entries = payload.get("availableLanguages") or []
         allowed = []
-        for entry in payload.get("availableLanguages") or []:
+        for entry in entries:
             language = self.languages.get(kep.LANGUAGES.get(entry.get("lang", ""), ""))
             if language is None:
                 continue
@@ -232,6 +233,13 @@ class Command(BaseCommand):
                 language=language,
                 defaults=kep.language_limits(entry, memory_mb),
             )
+        # Open on KEP means open here: every active language, with KEP's limits
+        # where KEP gave them and the problem's own limits otherwise.
+        if kep.GENERAL_LANGUAGES <= {entry.get("lang") for entry in entries}:
+            for language in self.languages.values():
+                if language.is_active and language.pk not in allowed:
+                    ProblemLanguage.objects.get_or_create(problem=problem, language=language)
+                    allowed.append(language.pk)
         problem.languages.exclude(language_id__in=allowed).delete()
 
     def apply_samples(self, problem: Problem, payload: dict[str, Any]) -> None:
