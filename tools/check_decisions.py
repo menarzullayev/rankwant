@@ -102,6 +102,25 @@ def deploy_manual_only() -> str | None:
     return None
 
 
+def deploy_gated_on_green_main() -> str | None:
+    # Agents may deploy without asking only because deploy.sh refuses a commit
+    # whose main CI is not green and runs one deploy at a time. Comment lines
+    # mention both, so only code lines count.
+    code = [
+        line for line in read("tools/deploy.sh").splitlines() if not line.lstrip().startswith("#")
+    ]
+    if not any("tools/check_deploy_gate.py" in line for line in code):
+        return (
+            "tools/deploy.sh main CI darvozasini chaqirmaydi — "
+            "agent qizil main'ni deploy qilishi mumkin"
+        )
+    if not any(re.search(r'\bmkdir "\$LOCK"', line) for line in code):
+        return (
+            "tools/deploy.sh deploy qulfini olmaydi — ikki agent bir vaqtda deploy qilishi mumkin"
+        )
+    return None
+
+
 def language_rule_written() -> str | None:
     if not re.search(r"^## Til\s*$", read("CONTRIBUTING.md"), re.M):
         return "CONTRIBUTING.md: `## Til` qoidasi yo'q"
@@ -119,6 +138,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("main faqat PR orqali", main_only_via_pr),
     ("CI faqat self-hosted", ci_self_hosted_only),
     ("deploy faqat qo'lda", deploy_manual_only),
+    ("deploy faqat yashil main'dan", deploy_gated_on_green_main),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
 ]

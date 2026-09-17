@@ -33,6 +33,7 @@ foydalanuvchi ma'lumoti bor dump'lar tashqariga chiqdi.
 | 2026-09-17 | `main` ga faqat PR orqali; soxta muallif push qilinmaydi | `.githooks/pre-push` → `tools/push_guard.py` |
 | 2026-09-17 | CI faqat bitta self-hosted runner — GitHub bepul daqiqalari tugagan, hosted runner taklif qilinmaydi | har `runs-on: [self-hosted, rankwant]` |
 | 2026-09-16 | Deploy qo'lda (`tools/deploy.sh`) | `deploy.yml` faqat `workflow_dispatch` |
+| 2026-09-17 | Agentlar production'ni **`main` CI yashil bo'lsa** so'ramasdan deploy qiladi; bir vaqtda faqat bitta deploy | `tools/deploy.sh` → `tools/check_deploy_gate.py` + qulf (`--skip-ci-gate` faqat Saidakbar aka ruxsati bilan) |
 | 2026-09-17 | Repo aralash tilda, migratsiya yo'q | `CONTRIBUTING.md` § Til |
 | 2026-09-17 | `cp/` faqat RankWant uchun; tadqiqot hujjatlari `docs/research/` da | `cp/README.md` (repo'dan tashqarida) |
 
@@ -59,6 +60,10 @@ aks holda CI yiqiladi:
 ```bash
 cd apps/api && uv run python manage.py spectacular --file openapi/schema.yml
 ```
+
+Kod yoki compose yangi muhit o'zgaruvchisini o'qisa, u `.env.example` ga
+yoziladi (sir bo'lsa qiymatsiz) — aks holda `tools/check_env_example.py`
+hook'da ham, CI'da ham yiqiladi.
 
 `pytest -n 4` — `auto` EMAS: runner shu mashinada, jonli preview bilan
 yonma-yon ishlaydi.

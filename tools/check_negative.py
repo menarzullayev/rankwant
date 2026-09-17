@@ -1707,11 +1707,21 @@ def neg_checker_survives_narrow_stdout() -> tuple[bool, str]:
     # down after a power cut, the script correctly answered exit 2 and this
     # case turned CI red on `main`; a live contest would do the same with
     # exit 1. The stub keeps the verdict about the encoding, not production.
-    with stub_api(live=False) as base:
+    # `check_deploy_gate.py` asks GitHub whether `main` CI is green; red CI would
+    # fail this case for a reason that has nothing to do with encoding. A green
+    # fixture keeps its `✓` line in the test.
+    with stub_api(live=False) as base, tempfile.TemporaryDirectory() as tmp:
         env["RANKWANT_API_BASE"] = base
+        runs = Path(tmp) / "runs.json"
+        runs.write_text(json.dumps(_GATE_GREEN), encoding="utf-8")
+        extra = {
+            "check_deploy_gate.py": [
+                "--head", _GATE_SHA, "--main", _GATE_SHA, "--runs", str(runs)
+            ],
+        }
         for name in scripts:
             proc = subprocess.run(
-                [PY, f"tools/{name}"],
+                [PY, f"tools/{name}", *extra.get(name, [])],
                 cwd=ROOT,
                 capture_output=True,
                 text=True,
@@ -2141,6 +2151,210 @@ def neg_decisions_table_removed() -> tuple[bool, str]:
     return _decision_broken(
         "CLAUDE.md", "## Saidakbar aka qarorlari", "## Qarorlar", "qarorlar jadvali"
     )
+
+
+def neg_decisions_deploy_gate_unwired() -> tuple[bool, str]:
+    return _decision_broken(
+        "tools/deploy.sh",
+        "tools/check_deploy_gate.py ||",
+        "tools/check_deploy_gate_off.py ||",
+        "deploy faqat yashil main'dan",
+    )
+
+
+def neg_decisions_deploy_lock_removed() -> tuple[bool, str]:
+    return _decision_broken(
+        "tools/deploy.sh",
+        'if ! mkdir "$LOCK" 2>/dev/null; then',
+        'if ! true "$LOCK" 2>/dev/null; then',
+        "deploy faqat yashil main'dan",
+    )
+
+
+# ── Deploy gate: agents deploy only a green `main` (owner decision 2026-09-17) ──
+
+_GATE_SHA = "a" * 40
+_GATE_GREEN = [
+    {
+        "workflowName": "CI",
+        "status": "completed",
+        "conclusion": "success",
+        "createdAt": "2026-09-17T00:00:00Z",
+    },
+    {
+        "workflowName": "Security",
+        "status": "completed",
+        "conclusion": "success",
+        "createdAt": "2026-09-17T00:00:00Z",
+    },
+]
+
+
+def _gate_expect(
+    label: str, main: str, runs: object, code: int, needle: str
+) -> tuple[bool, str]:
+    """Run the gate on fixtures (no git, no GitHub) and require exit `code`."""
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "runs.json"
+        text = runs if isinstance(runs, str) else json.dumps(runs)
+        path.write_text(text, encoding="utf-8")
+        got, out = run_check(
+            "deploy_gate", "--head", _GATE_SHA, "--main", main, "--runs", str(path)
+        )
+    if got != code:
+        return False, f"deploy_gate/{label}: exit {got} ({code} kerak) — {out.strip()[-160:]}"
+    if needle not in out:
+        return False, f"deploy_gate/{label}: sabab ko'rinmadi ({needle!r}) — {out.strip()[-160:]}"
+    return True, f"deploy_gate/{label}: exit {code}"
+
+
+def neg_deploy_gate_green_passes() -> tuple[bool, str]:
+    # Positive control: a gate that is always shut would pass every case below.
+    return _gate_expect("yashil main o'tadi", _GATE_SHA, _GATE_GREEN, 0, "yashil")
+
+
+def neg_deploy_gate_not_main() -> tuple[bool, str]:
+    return _gate_expect("main emas", "b" * 40, _GATE_GREEN, 1, "`main` emas")
+
+
+def neg_deploy_gate_ci_failed() -> tuple[bool, str]:
+    runs = [dict(_GATE_GREEN[0], conclusion="failure"), _GATE_GREEN[1]]
+    return _gate_expect("CI qizil", _GATE_SHA, runs, 1, "`CI` natijasi `failure`")
+
+
+def neg_deploy_gate_ci_running() -> tuple[bool, str]:
+    runs = [dict(_GATE_GREEN[0], status="in_progress", conclusion=""), _GATE_GREEN[1]]
+    return _gate_expect("CI tugamagan", _GATE_SHA, runs, 1, "hali tugamagan")
+
+
+def neg_deploy_gate_security_missing() -> tuple[bool, str]:
+    return _gate_expect("Security yo'q", _GATE_SHA, [_GATE_GREEN[0]], 1, "`Security` run'i")
+
+
+def neg_deploy_gate_latest_run_wins() -> tuple[bool, str]:
+    # A later failed rerun must not hide behind an earlier success.
+    runs = [
+        _GATE_GREEN[0],
+        dict(_GATE_GREEN[0], conclusion="failure", createdAt="2026-09-17T01:00:00Z"),
+        _GATE_GREEN[1],
+    ]
+    return _gate_expect("oxirgi run hal qiladi", _GATE_SHA, runs, 1, "`CI` natijasi `failure`")
+
+
+def neg_deploy_gate_unreadable() -> tuple[bool, str]:
+    return _gate_expect("o'lchanmadi", _GATE_SHA, "not json", 2, "o'lchab bo'lmadi")
+
+
+def _run_deploy(lock: Path, *args: str) -> tuple[int, str]:
+    """`tools/deploy.sh` with a private lock and a `docker` that always fails.
+
+    It must never deploy, even if the code under test is broken: no `--yes` and
+    a closed stdin stop it at the confirmation prompt, and the stub makes every
+    Docker step fail before that.
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+        stub = Path(tmp) / "docker"
+        stub.write_text("#!/bin/sh\necho 'stub docker (negative test)' >&2\nexit 99\n")
+        stub.chmod(0o755)
+        env = dict(os.environ, RANKWANT_DEPLOY_LOCK=str(lock))
+        env["PATH"] = tmp + os.pathsep + env.get("PATH", "")
+        proc = subprocess.run(
+            [_bash(), "tools/deploy.sh", *args],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            env=env,
+            stdin=subprocess.DEVNULL,
+        )
+    return proc.returncode, (proc.stdout or "") + (proc.stderr or "")
+
+
+def neg_deploy_lock_held() -> tuple[bool, str]:
+    with tempfile.TemporaryDirectory() as tmp:
+        lock = Path(tmp) / "lock"
+        lock.mkdir()
+        (lock / "owner").write_text("pid 1, probe, commit x\n", encoding="utf-8")
+        code, out = _run_deploy(lock)
+        if code != 1 or "boshqa deploy ishlayapti" not in out:
+            return False, f"deploy_lock/band: exit {code}, sabab ko'rinmadi — {out.strip()[-160:]}"
+        if "Deploy darvozasi" in out or "Old shartlar" in out:
+            return False, "deploy_lock/band: qulf band bo'lsa ham skript davom etdi"
+        if not (lock / "owner").exists():
+            return False, "deploy_lock/band: boshqa deploy'ning qulfi o'chirib yuborildi"
+    return True, "deploy_lock/band: ikkinchi deploy to'xtadi, begona qulfga tegilmadi (exit 1)"
+
+
+def neg_deploy_lock_released() -> tuple[bool, str]:
+    with tempfile.TemporaryDirectory() as tmp:
+        lock = Path(tmp) / "lock"
+        code, out = _run_deploy(lock, "--skip-ci-gate")
+        if code == 0:
+            return False, f"deploy_lock/bo'shatish: stub docker bilan exit 0 — {out.strip()[-160:]}"
+        if "--skip-ci-gate" not in out:
+            return False, f"deploy_lock/bo'shatish: qulf bosqichidan o'tmadi — {out.strip()[-160:]}"
+        if lock.exists():
+            return False, "deploy_lock/bo'shatish: yiqilgan deploy qulfni qoldirdi"
+    return True, "deploy_lock/bo'shatish: yiqilgan deploy qulfni bo'shatdi"
+
+
+def _label_states() -> dict[str, str]:
+    """`check_deploy.sh --label-state` in a sandbox: A (web), B (web change), C (docs).
+
+    CI checks out one commit only, so the real history cannot be used here.
+    """
+    states: dict[str, str] = {}
+    with _push_sandbox() as (repo, env):
+        (repo / "tools").mkdir()
+        (repo / "tools/check_deploy.sh").write_bytes((ROOT / "tools/check_deploy.sh").read_bytes())
+        (repo / "apps/web").mkdir(parents=True)
+
+        def commit(message: str) -> str:
+            _sandbox_run(repo, env, "git", "add", "-A")
+            _sandbox_run(repo, env, *_REAL_IDENTITY, "commit", "-q", "-m", message)
+            return _sandbox_run(repo, env, "git", "rev-parse", "HEAD")
+
+        (repo / "apps/web/page.tsx").write_text("v1\n", encoding="utf-8")
+        (repo / "README.md").write_text("a\n", encoding="utf-8")
+        shas = {"A": commit("web v1")}
+        (repo / "apps/web/page.tsx").write_text("v2\n", encoding="utf-8")
+        shas["B"] = commit("web v2")
+        (repo / "README.md").write_text("b\n", encoding="utf-8")
+        shas["C"] = commit("docs only")
+        shas["missing"] = "0" * 40
+        for name, sha in shas.items():
+            proc = subprocess.run(
+                [_bash(), "tools/check_deploy.sh", "--label-state", sha, "apps/web"],
+                cwd=repo,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                env=env,
+            )
+            failed = f"(exit {proc.returncode}) {proc.stderr.strip()[-80:]}"
+            states[name] = proc.stdout.strip() or failed
+    return states
+
+
+def neg_deploy_label_web_change_is_stale() -> tuple[bool, str]:
+    states = _label_states()
+    if states["A"] != "stale":
+        return False, f"deploy_check/web o'zgardi: `{states['A']}` — stale kerak"
+    if states["missing"] != "unknown":
+        return False, f"deploy_check/yo'q commit: `{states['missing']}` — unknown kerak"
+    return True, "deploy_check/web o'zgardi: eski yorliq stale, yo'q commit unknown"
+
+
+def neg_deploy_label_docs_commit_not_stale() -> tuple[bool, str]:
+    # The false red this fixes: after #39 (no web file) check_deploy.sh called
+    # the web image stale because its label was not HEAD.
+    states = _label_states()
+    if states["B"] != "current" or states["C"] != "same":
+        got = f"B=`{states['B']}` C=`{states['C']}`"
+        return False, f"deploy_check/docs commit: {got} — current/same kerak"
+    return True, "deploy_check/docs commit: web yorlig'i eskirgan deb ko'rsatilmadi"
 
 
 def _env_example_broken(rel: str, old: str, new: str, name: str) -> tuple[bool, str]:
@@ -2659,6 +2873,34 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("deploy push'ga qaytsa tutilsin", neg_decisions_deploy_on_push),
             ("til qoidasi o'chsa tutilsin", neg_decisions_language_rule),
             ("qarorlar jadvali o'chsa tutilsin", neg_decisions_table_removed),
+            ("deploy darvozasi uzilsa tutilsin", neg_decisions_deploy_gate_unwired),
+            ("deploy qulfi olib tashlansa tutilsin", neg_decisions_deploy_lock_removed),
+        ],
+    ),
+    (
+        "deploy_gate",
+        [
+            ("yashil main o'tadi (nazorat)", neg_deploy_gate_green_passes),
+            ("main emas — to'xtaydi", neg_deploy_gate_not_main),
+            ("CI qizil — to'xtaydi", neg_deploy_gate_ci_failed),
+            ("CI tugamagan — to'xtaydi", neg_deploy_gate_ci_running),
+            ("Security run'i yo'q — to'xtaydi", neg_deploy_gate_security_missing),
+            ("oxirgi qizil run yashilni bosadi", neg_deploy_gate_latest_run_wins),
+            ("o'qib bo'lmagan ro'yxat — exit 2", neg_deploy_gate_unreadable),
+        ],
+    ),
+    (
+        "deploy_lock",
+        [
+            ("band qulf ikkinchi deploy'ni to'xtatadi", neg_deploy_lock_held),
+            ("yiqilgan deploy qulfni bo'shatadi", neg_deploy_lock_released),
+        ],
+    ),
+    (
+        "deploy_check",
+        [
+            ("web o'zgarishi eskirgan deb topiladi", neg_deploy_label_web_change_is_stale),
+            ("docs commit'i web'ni eskirtirmaydi", neg_deploy_label_docs_commit_not_stale),
         ],
     ),
 ]
