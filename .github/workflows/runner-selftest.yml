@@ -12,11 +12,12 @@ name: Runner self-test
 #     $PWD mounts an empty directory (measured: Windows path resolves,
 #     Linux-style path does not).
 #
-# The label is the TRIAL one, and `tools/check_decisions.py` names this file
-# as its only permitted user (TRIAL_RUNNER). A runner under trial must not
-# carry the production label: on 2026-09-17 one did, took real CI jobs, and
-# failed them — the production CI has to stay on the WSL runner until the
-# trial is proven.
+# The label is the trial one, and `tools/check_decisions.py` names this file
+# as its only permitted user (TRIAL_RUNNER). The container runner carries it
+# next to `rankwant`, so this test still reaches it now that it runs
+# production CI. A runner must not carry the production label before a full
+# CI run has passed on it: on 2026-09-17 one did, took real CI jobs, and
+# failed them.
 on:
   workflow_dispatch:
   push:

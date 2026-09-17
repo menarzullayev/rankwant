@@ -16,7 +16,7 @@ export RUNNER_ALLOW_RUNASROOT=1
 
 : "${RUNNER_REPO:?RUNNER_REPO is required}"
 : "${RUNNER_NAME:=nsn-pc-rankwant-container}"
-: "${RUNNER_LABELS:=self-hosted,Linux,X64,rankwant-container}"
+: "${RUNNER_LABELS:=self-hosted,Linux,X64,rankwant,rankwant-container}"
 : "${RUNNER_WORKDIR:=/work}"
 
 # Bind mount sources are resolved by the daemon on the Windows side, so a
