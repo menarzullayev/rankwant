@@ -647,6 +647,14 @@ odam uni e'tiborsiz qoldirishni o'rganadi.
 | `IE` / `DENIAL_OF_JUDGEMENT` | ko'tarilish          | infra nosozligi                   |
 | 5xx darajasi               | > 1%                   | API muammosi                      |
 | Qvant emissiyasi           | kunlik limitdan oshish | anti-farm buzilishi ([ADR-0002](../07-adr/0002-qvant-economy.md)) |
+| Email provayder kvotasi    | 80% yoki shift tugashi | xat yetkazilmay qoladi            |
+
+Email kvotasi — `core.warn_email_quota`, soatiga bir marta. Panel
+`/admin/email-quota` da ham ko'rinadi, lekin panelni ochish kerak, ya'ni
+ogohlantirish o'zi kelishi shart. Xabar **faqat sayt ichida** (qo'ng'iroq
++ `/notifications`) va ataylab `notify()` ni chetlab o'tadi: xodim
+«system» turini o'chirib qo'ysa ham keladi, aks holda kvota jimgina
+tugardi. Shart — `core.mail_quota.summary()`, ya'ni chegara bitta joyda.
 
 ## Incident turlari
 

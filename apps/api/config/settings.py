@@ -453,6 +453,20 @@ CELERY_BEAT_SCHEDULE = {
         "task": "ratings.refresh_activity",
         "schedule": 3600.0,
     },
+    # Email zanjiri bepul planlar ustiga qurilgan, ya'ni kunlik shift
+    # tugashi ODATIY holat — lekin buni hech kim ko'rmaydi. O'lchandi
+    # (2026-09-17): `brevo` 311 ta yuborgan, shifti 300 — ya'ni allaqachon
+    # navbatdan ishlayotgan edi. Xodim buni bilmasa 1000 talik kampaniya
+    # jimgina ikkinchi kunga cho'zilib ketadi.
+    #
+    # Soatiga bir marta, kuniga 24 marta EMAS: shart `mail_quota.summary()`
+    # ichida (80% chegarasi) va `get_or_create` bir kunda bitta yozuv
+    # qoldiradi. Sekin vazifa — har soatda o'qish bir GROUP BY, ya'ni
+    # arzon (`EmailDelivery` da `created_at` indeksi bor).
+    "warn-email-quota": {
+        "task": "core.warn_email_quota",
+        "schedule": 3600.0,
+    },
 }
 
 LOGGING = {
