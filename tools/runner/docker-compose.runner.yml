@@ -23,16 +23,22 @@ services:
     environment:
       RUNNER_REPO: https://github.com/menarzullayev/rankwant
       RUNNER_NAME: ${RUNNER_NAME:-nsn-pc-rankwant-container}
-      # Default is a TEST label on purpose: two online runners sharing the
-      # `rankwant` label would race for the same jobs. Switch it only when
-      # the old WSL runner is stopped.
-      RUNNER_LABELS: ${RUNNER_LABELS:-self-hosted,Linux,X64,rankwant-test}
+      # ⚠️ `tools/check_decisions.py` enforces the owner's "self-hosted only"
+      # decision by matching `runs-on:` EXACTLY, so a migration-specific test
+      # label would have meant loosening that guard. The runner therefore
+      # carries the standard label, and running it alongside the old WSL
+      # runner would mean two online runners racing for the same jobs —
+      # stop the old one first. See README.md.
+      RUNNER_LABELS: ${RUNNER_LABELS:-self-hosted,Linux,X64,rankwant}
       RUNNER_TOKEN: ${RUNNER_TOKEN:-}
       RUNNER_WORKDIR: /work
-      # Bind mount sources are resolved by the DAEMON on the Windows side, so
-      # a workflow needs the Windows path of its own checkout. The runner
-      # lays its workspace out as <workdir>/_work/<repo>/<repo>.
-      HOST_REPO_ROOT: ${HOST_REPO_ROOT:-}
+      # The Windows path that /work maps to. The entrypoint derives
+      # HOST_REPO_ROOT from it (see entrypoint.sh) — do not set
+      # HOST_REPO_ROOT directly here: the workspace layout is
+      # <workdir>/<repo>/<repo>, and hardcoding it silently breaks on a
+      # rename. Measured 2026-09-17: assuming an extra `_work` segment
+      # mounted an empty directory while every other check passed.
+      CI_HOST_WORK_DIR: ${CI_HOST_WORK_DIR:-C:/Users/nsn/ci-work}
     volumes:
       # Gives the runner the live daemon. Required: every CI job drives
       # `docker compose`, and the jobs run inside this container.
