@@ -1,7 +1,7 @@
 // Where the icon pipeline reads and writes, relative to this repository.
 //
-// Until 2026-09-17 every icon tool hard-coded one machine's absolute paths
-// (C:/Users/nsn/project/cp/.tmp-verdict/...), so the generated packs that say
+// Until 2026-09-17 every icon tool hard-coded absolute paths into one machine's
+// WorkBuddy scratch folder (.tmp-verdict), so the generated packs that say
 // "can be regenerated with tools/gen-icon-packs.mjs" could only be regenerated
 // there. The cache now defaults to the git-ignored `.tmp/icon-cache`; point
 // RANKWANT_ICON_CACHE at an existing cache (for example the old .tmp-verdict

@@ -83,8 +83,10 @@ Indeks: uniq `(token_hash)`, `(user_id, revoked_at)`.
 ### Topic · Language
 
 - **Topic** — `slug`, `name_uz/ru/en`, `parent_id` (ierarxiya: DP → knapsack)
-- **Language** — `code`, `name`, `version`, `compile_cmd`, `run_cmd`, `is_active`
-  Judge til obrazlari bilan bir manbadan boshqariladi ([ADR-0004](../07-adr/0004-judge-engine.md))
+- **Language** — `code`, `name`, `version`, `source_file`, `compile_cmd`, `run_cmd`, `process_limit`,
+  `compile_time_ms`, `proc_self`, `open_files`, `is_active`
+  Judge til obrazlari bilan bir manbadan boshqariladi ([ADR-0004](../07-adr/0004-judge-engine.md));
+  katalog — `apps/api/problems/languages.py` ([ADR-0022](../07-adr/0022-judge-languages.md))
 
 ### TestCase · Subtask
 
@@ -280,6 +282,7 @@ O'zgartirish = yangi ADR (`docs/07-adr/`).
 - 2026-09-06 — [ADR-0008](../07-adr/0008-auth-session-plus-pat.md): `ApiToken` entity qo'shildi (session + PAT auth modeli).
 - 2026-09-16 — [ADR-0020](../07-adr/0020-hacking.md): `Hack`, `HackRoom`, `HackRoomMember`, `HackLock` entitylari; `TestCase.origin`; `Contest` ga hack oynasi maydonlari; `Standing` ga hack ballari; 24-verdict `HACKED`.
 - 2026-09-16 — [ADR-0021](../07-adr/0021-hack-reference-solution.md): `ReferenceSolution` — hack testining javobini beradigan etalon yechim.
+- 2026-09-17 — [ADR-0022](../07-adr/0022-judge-languages.md): `Language` ga `source_file`, `compile_time_ms`, `proc_self`, `open_files` (36 til uchun tilga xos sandbox sozlamalari).
 
 ## Keyingi qadam
 

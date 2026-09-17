@@ -277,3 +277,17 @@ class TestGenerator:
     def test_bosh_generator_rad_etiladi(self, defender_attempt, user, language) -> None:
         with pytest.raises(HackError, match="Generator manbasi"):
             submit(user, defender_attempt, generator_language=language, generator_source="  ")
+
+    def test_generator_oz_tilining_chegaralarini_oladi(
+        self, defender_attempt, user, language, memory_judge
+    ) -> None:
+        """A JVM or .NET generator does not start with one process (ADR-0022)."""
+        language.process_limit = 32
+        language.compile_time_ms = 20_000
+        language.save(update_fields=["process_limit", "compile_time_ms"])
+
+        submit(user, defender_attempt, generator_language=language, generator_source="print(1)")
+
+        limits = memory_judge.jobs[0].limits
+        assert limits["processes"] == 32
+        assert limits["compile_time_ms"] == 20_000

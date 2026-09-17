@@ -131,8 +131,11 @@ class TestJobValidator:
         assert payload["validate_input"] is True
         assert payload["validator"] == {
             "code": language.code,
+            "source_file": language.source_file,
             "compile": language.compile_cmd,
             "run": language.run_cmd,
+            "proc_self": language.proc_self,
+            "open_files": language.open_files,
             "source": self.SOURCE,
         }
 

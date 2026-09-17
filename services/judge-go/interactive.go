@@ -30,7 +30,11 @@ func runInteractive(ctx context.Context, work string, job *Job,
 		return VIE, nil, fmt.Errorf("interactive masala, lekin interactor berilmagan")
 	}
 
-	itSrc := filepath.Join(work, "interactor_"+srcName(it.Code))
+	itName, err := sourceName(it.Code, it.SourceFile)
+	if err != nil {
+		return VIE, nil, err
+	}
+	itSrc := filepath.Join(work, "interactor_"+itName)
 	if err := os.WriteFile(itSrc, []byte(it.Source), 0o644); err != nil {
 		return VIE, nil, err
 	}

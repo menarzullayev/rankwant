@@ -254,10 +254,24 @@ func nsjailArgs(work string, lim Limits, wallSec int) []string {
 		// --chroot / bo'lgani uchun HOST /proc jail ichiga kirib keladi va
 		// /proc/1/cmdline o'qiladi. Ustiga bo'sh tmpfs qo'yib niqoblaymiz.
 		"--disable_proc",
-		"--tmpfsmount", "/proc",
+	}
+	if lim.ProcSelf {
+		// 22-proc-self: a fresh procfs in the sandbox's own PID namespace.
+		// `subset=pid` drops everything that is not a process directory
+		// (meminfo, sys, kallsyms …) and `hidepid=invisible` hides processes
+		// of other users, so only the sandbox's own processes are listed.
+		args = append(args, "--mount", "none:/proc:proc:subset=pid,hidepid=invisible")
+	} else {
+		args = append(args, "--tmpfsmount", "/proc")
+	}
+	openFiles := lim.OpenFiles
+	if openFiles <= 0 {
+		openFiles = 64
+	}
+	args = append(args,
 		"--iface_no_lo",        // 11-network: tarmoq interfeysi yo'q
 		"--rlimit_fsize", "16", // MB — sandbox ichida ham fayl cheklovi
-		"--rlimit_nofile", "64",
+		"--rlimit_nofile", strconv.Itoa(openFiles),
 		// RLIMIT_AS — VIRTUAL manzil fazosi, haqiqiy xotira emas. Haqiqiy
 		// chegara cgroup `memory.max` da va MLE ham o'shandan o'lchanadi,
 		// ya'ni bu bayroq himoyaning asosi emas.
@@ -268,7 +282,7 @@ func nsjailArgs(work string, lim Limits, wallSec int) []string {
 		// Runtime Environment» bilan yiqilardi — o'lchandi: 4096 da javac
 		// yiqiladi, 8192 dan boshlab o'tadi.
 		"--rlimit_as", "16384",
-		"--time_limit", strconv.Itoa(wallSec + nsjailBackstopSec), // backstop only, see nsjailBackstopSec
+		"--time_limit", strconv.Itoa(wallSec+nsjailBackstopSec), // backstop only, see nsjailBackstopSec
 		// RLIMIT_CPU — kernel jarayonni CPU limitida O'ZI to'xtatadi.
 		// Busiz TLE submission wall chegarasigacha (3×) ishlaydi: 500ms limitli
 		// masala 3s judge vaqtini yeydi. Contest yuklamasida bu o'tkazuvchanlikni
@@ -285,7 +299,7 @@ func nsjailArgs(work string, lim Limits, wallSec int) []string {
 		// Shuning uchun cheklash HAM, o'lchash HAM bizning cgroup'imizda:
 		// nsjail bolani UseCgroupFD orqali to'g'ridan-to'g'ri unga tug'diradi,
 		// memory.max va pids.max esa runSandboxed ichida yoziladi.
-	}
+	)
 	if lim.Processes > 0 {
 		// 09-fork-bomb: cgroup pids.max dan tashqari har jarayon uchun rlimit.
 		args = append(args, "--rlimit_nproc", strconv.Itoa(lim.Processes+4))

@@ -43,6 +43,36 @@ export MSYS_NO_PATHCONV=1
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT" || exit 2
 
+# `label_state SHA PATH...` — is an image built at commit SHA still current for
+# the sources under PATH? Prints `same`, `current`, `stale` or `unknown`.
+#
+# web and judge images are built from one folder each (compose build context:
+# apps/web, services/judge-go), so a label older than HEAD is still current when
+# that folder has not changed since. Comparing with HEAD alone reported every
+# docs-only commit as a stale image: the judge on 2026-09-17 (label 787eaa3), and
+# the web right after #39, which touched no web file.
+label_state() {
+  local sha="$1" head
+  shift
+  head="$(git rev-parse HEAD 2>/dev/null)"
+  if [ "$sha" = "$head" ]; then
+    echo same
+  elif ! git cat-file -e "${sha}^{commit}" 2>/dev/null; then
+    echo unknown
+  elif git diff --quiet "$sha" "$head" -- "$@"; then
+    echo current
+  else
+    echo stale
+  fi
+}
+
+# Entry point for tools/check_negative.py: one label decision, no docker.
+if [ "${1:-}" = "--label-state" ]; then
+  shift
+  label_state "$@"
+  exit 0
+fi
+
 if [ -t 1 ]; then
   R=$'\033[31m'; G=$'\033[32m'; Y=$'\033[33m'; B=$'\033[1m'; N=$'\033[0m'
 else
@@ -255,9 +285,10 @@ done
 # --- web (Next.js) ------------------------------------------------------
 # `.next` chiqishi siqilgan va xeshlangan, shuning uchun fayl hash'i
 # solishtirib bo'lmaydi. Buning o'rniga build vaqtida yozilgan yorliq
-# (`org.rankwant.git-sha`, apps/web/Dockerfile) o'qiladi: u manba
-# commit'i bilan bir xil bo'lishi shart. Yorliq yo'q bo'lsa (eski image)
-# ehtiyot chorasi sifatida route mavjudligi tekshiriladi.
+# (`org.rankwant.git-sha`, apps/web/Dockerfile) o'qiladi. Yorliq yo'q
+# bo'lsa (eski image) ehtiyot chorasi sifatida route mavjudligi tekshiriladi.
+# The label need not equal HEAD: it is current while apps/web is unchanged
+# since that commit (label_state).
 if docker inspect rankwant-web-1 >/dev/null 2>&1; then
   cshow="$(img_time rankwant-web:latest)"
 
@@ -265,12 +296,21 @@ if docker inspect rankwant-web-1 >/dev/null 2>&1; then
   src_sha="$(git rev-parse HEAD 2>/dev/null)"
 
   if [ -n "$img_sha" ] && [ "$img_sha" != "<no value>" ] && [ "$img_sha" != "unknown" ]; then
-    if [ "$img_sha" = "$src_sha" ]; then
-      printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-web-1' "$G" 'joyida' "$N" "$cshow" "git-sha ${img_sha:0:7}"
-    else
-      printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-web-1' "$R" 'ESKIRGAN' "$N" "$cshow" "git-sha ${img_sha:0:7} != ${src_sha:0:7}"
-      stale=$((stale + 1))
-    fi
+    case "$(label_state "$img_sha" apps/web)" in
+      same)
+        printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-web-1' "$G" 'joyida' "$N" "$cshow" "git-sha ${img_sha:0:7}" ;;
+      current)
+        printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-web-1' "$G" 'joyida' "$N" "$cshow" \
+          "git-sha ${img_sha:0:7}: undan beri apps/web o'zgarmagan" ;;
+      unknown)
+        printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-web-1' "$Y" 'TEKSHIRILMADI' "$N" "$cshow" \
+          "git-sha ${img_sha:0:7} bu klonda yo'q — git fetch, keyin qayta tekshiring"
+        stale=$((stale + 1)) ;;
+      *)
+        printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-web-1' "$R" 'ESKIRGAN' "$N" "$cshow" \
+          "git-sha ${img_sha:0:7} dan beri apps/web o'zgargan (HEAD ${src_sha:0:7})"
+        stale=$((stale + 1)) ;;
+    esac
   elif docker exec rankwant-web-1 test -d /app/.next/server/app/login 2>/dev/null; then
     printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-web-1' "$G" 'joyida' "$N" "$cshow" '/login route bor (yorliqsiz image)'
   else
@@ -395,24 +435,24 @@ if docker inspect rankwant-judge-1 >/dev/null 2>&1; then
     printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-judge-1' "$Y" 'TEKSHIRILMADI' "$N" "$jshow" \
       "yorliq yo'q — binary hash'i solishtirilmaydi, qayta quring"
     stale=$((stale + 1))
-  elif [ "$jsha" = "$src_sha" ]; then
-    printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-judge-1' "$G" 'joyida' "$N" "$jshow" \
-      "yorliq HEAD bilan bir xil (${jsha:0:12})"
-  # The binary is built from services/judge-go only (compose build context), so
-  # a label older than HEAD is still current when that folder has not changed
-  # since. Comparing with HEAD alone reported every docs-only commit as a stale
-  # judge (2026-09-17: label 787eaa3, no judge change after it).
-  elif ! git cat-file -e "${jsha}^{commit}" 2>/dev/null; then
-    printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-judge-1' "$Y" 'TEKSHIRILMADI' "$N" "$jshow" \
-      "yorliq ${jsha:0:12} bu klonda yo'q — git fetch, keyin qayta tekshiring"
-    stale=$((stale + 1))
-  elif git diff --quiet "$jsha" "$src_sha" -- services/judge-go; then
-    printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-judge-1' "$G" 'joyida' "$N" "$jshow" \
-      "yorliq ${jsha:0:12}: undan beri services/judge-go o'zgarmagan"
   else
-    printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-judge-1' "$R" 'ESKIRGAN' "$N" "$jshow" \
-      "yorliq ${jsha:0:12} dan beri services/judge-go o'zgargan (HEAD ${src_sha:0:12})"
-    stale=$((stale + 1))
+    # Same rule as web, see label_state at the top.
+    case "$(label_state "$jsha" services/judge-go)" in
+      same)
+        printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-judge-1' "$G" 'joyida' "$N" "$jshow" \
+          "yorliq HEAD bilan bir xil (${jsha:0:12})" ;;
+      current)
+        printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-judge-1' "$G" 'joyida' "$N" "$jshow" \
+          "yorliq ${jsha:0:12}: undan beri services/judge-go o'zgarmagan" ;;
+      unknown)
+        printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-judge-1' "$Y" 'TEKSHIRILMADI' "$N" "$jshow" \
+          "yorliq ${jsha:0:12} bu klonda yo'q — git fetch, keyin qayta tekshiring"
+        stale=$((stale + 1)) ;;
+      *)
+        printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-judge-1' "$R" 'ESKIRGAN' "$N" "$jshow" \
+          "yorliq ${jsha:0:12} dan beri services/judge-go o'zgargan (HEAD ${src_sha:0:12})"
+        stale=$((stale + 1)) ;;
+    esac
   fi
 else
   printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-judge-1' "$Y" "YO'Q" "$N" '-' '-'

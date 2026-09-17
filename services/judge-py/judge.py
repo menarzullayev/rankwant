@@ -2,14 +2,18 @@
 
 from __future__ import annotations
 
+import re
 import shutil
 import time
+from typing import Any
 
 import protocol as P
 from protocol import Job, JudgeMetaDict, Limits, ResultDict, RunOutcome, Test
 from sandbox import Box, IsolateError, run_sandboxed
 
 BOX_ID = 0
+#: RLIMIT_NOFILE for compilers — judge-go `compileOpenFiles`.
+COMPILE_OPEN_FILES = 256
 
 
 def normalise(s: str) -> str:
@@ -28,6 +32,25 @@ def src_name(lang_code: str) -> str:
     if lang_code.startswith("java"):
         return "Main.java"
     return "main.txt"
+
+
+#: Same rule as judge-go `sourceFileName`: a bare name with an extension.
+SOURCE_FILE = re.compile(r"[A-Za-z0-9_]+(\.[A-Za-z0-9_]+)+")
+
+
+def source_name(language: dict[str, Any]) -> str:
+    """The name the source is saved under — the language's own, else the old mapping.
+
+    A name that is not a bare file name raises: it is joined onto the box
+    directory, and replacing it with `main.txt` would turn one wrong row into a
+    CE for every submission in that language.
+    """
+    name = language.get("source_file") or ""
+    if not name:
+        return src_name(language["code"])
+    if not SOURCE_FILE.fullmatch(name):
+        raise ValueError(f"til ta'rifida noto'g'ri manba fayl nomi: {name!r}")
+    return name
 
 
 def subst(args: list[str], src: str, binary: str) -> list[str]:
@@ -107,10 +130,25 @@ def judge(job: Job) -> ResultDict:
         meta["total_ms"] = int((time.monotonic() - t0) * 1000)
         return result
 
+    # The same fail-closed rule for `proc_self`: isolate has no procfs limited to
+    # the box's own processes, and running such a language under the mask would
+    # only hand every submission a misleading CE or RE.
+    if job.language.get("proc_self"):
+        result["compile_output"] = "judge-py proc_self'ni qo'llab-quvvatlamaydi — ish rad etildi"
+        meta["total_ms"] = int((time.monotonic() - t0) * 1000)
+        return result
+
+    try:
+        src = source_name(job.language)
+    except ValueError as err:
+        result["compile_output"] = str(err)
+        meta["total_ms"] = int((time.monotonic() - t0) * 1000)
+        return result
+    open_files = int(job.language.get("open_files") or 0)
+
     try:
         with Box(BOX_ID) as box:
             setup = time.monotonic()
-            src = src_name(job.language["code"])
             box.put(src, job.source)
             meta["sandbox_setup_ms"] = int((time.monotonic() - setup) * 1000)
 
@@ -127,6 +165,7 @@ def judge(job: Job) -> ResultDict:
                     clim,
                     job.limits.compile_time_ms,
                     allow_many_processes=True,
+                    open_files=max(COMPILE_OPEN_FILES, open_files),
                 )
                 if out.timeout:
                     result["verdict"] = P.COMPILE_TIMEOUT
@@ -148,7 +187,9 @@ def judge(job: Job) -> ResultDict:
             by_group: dict[int, list[int]] = {}
             failed_group: set[int] = set()
             for test in job.tests:
-                out = run_sandboxed(box, run_cmd, test.input, job.limits, wall_limit)
+                out = run_sandboxed(
+                    box, run_cmd, test.input, job.limits, wall_limit, open_files=open_files
+                )
                 verdict = classify(out, test, job.limits)
                 max_cpu = max(max_cpu, out.cpu_ms)
                 max_mem = max(max_mem, out.peak_kb)

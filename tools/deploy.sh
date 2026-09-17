@@ -21,6 +21,7 @@
 #   bash tools/deploy.sh            # interaktiv tasdiq so'raydi
 #   bash tools/deploy.sh --yes      # tasdiqsiz (avtomatlashtirish uchun)
 #   bash tools/deploy.sh --check    # hech narsani o'zgartirmaydi, faqat holat
+#   bash tools/deploy.sh --skip-ci-gate  # owner-approved only: skip the main CI gate
 #
 # ⚠️ Live contest paytida deploy QILINMAYDI (10-operations, qoida №1).
 # Skript buni API orqali tekshiradi va faol contest bo'lsa TO'XTAYDI.
@@ -56,10 +57,12 @@ export GIT_SHA
 
 ASSUME_YES=0
 CHECK_ONLY=0
+SKIP_CI_GATE=0
 for arg in "$@"; do
   case "$arg" in
     --yes|-y) ASSUME_YES=1 ;;
     --check)  CHECK_ONLY=1 ;;
+    --skip-ci-gate) SKIP_CI_GATE=1 ;;
     -h|--help) sed -n '2,30p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) printf '%sNoma'"'"'lum argument: %s%s\n' "$R" "$arg" "$N"; exit 2 ;;
   esac
@@ -68,6 +71,32 @@ done
 step() { printf '\n%s── %s%s\n' "$Y" "$1" "$N"; }
 ok()   { printf '%s✓%s %s\n' "$G" "$N" "$1"; }
 die()  { printf '%s✗ %s%s\n' "$R" "$1" "$N"; exit 1; }
+
+# ── Lock and main CI gate ────────────────────────────────────────────
+# Owner decision (2026-09-17, CLAUDE.md § Saidakbar aka qarorlari): agents deploy
+# without asking once `main` CI is green. Two agents work on this machine, so
+# only one deploy may run: the lock sits in the git common dir, which every
+# worktree of this clone shares. It is taken before anything else, so a blocked
+# run touches neither GitHub nor Docker. `--check` changes nothing and skips both.
+if [ "$CHECK_ONLY" -ne 1 ]; then
+  common="$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)"
+  LOCK="${RANKWANT_DEPLOY_LOCK:-${common:+$common/rankwant-deploy.lock}}"
+  [ -n "$LOCK" ] || die "git katalogi topilmadi — deploy qulfini qo'yib bo'lmadi"
+  if ! mkdir "$LOCK" 2>/dev/null; then
+    owner="$(cat "$LOCK/owner" 2>/dev/null || echo "egasi yozilmagan")"
+    die "boshqa deploy ishlayapti ($owner). U tugaganini tekshiring; qulf eskirgan bo'lsa: rm -rf \"$LOCK\""
+  fi
+  trap 'rm -rf "$LOCK"' EXIT
+  printf 'pid %s, %s, commit %s\n' "$$" "$(date -u '+%Y-%m-%d %H:%M UTC')" "$GIT_SHA" > "$LOCK/owner"
+
+  step "Deploy darvozasi (main CI)"
+  if [ "$SKIP_CI_GATE" -eq 1 ]; then
+    printf '%s⚠ --skip-ci-gate: main CI tekshirilmadi — faqat Saidakbar akaning aniq ruxsati bilan%s\n' "$Y" "$N"
+  else
+    GATE_PY="$(bash tools/pick-python.sh 2>/dev/null)" || die "Python topilmadi — deploy darvozasi o'lchanmadi"
+    "$GATE_PY" tools/check_deploy_gate.py || die "deploy darvozasi yopiq — main CI yashil emas yoki o'lchanmadi"
+  fi
+fi
 
 # ── 0. Old shartlar ──────────────────────────────────────────────────
 step "0/6 Old shartlar"

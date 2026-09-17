@@ -41,7 +41,6 @@ PY_SERVICES = REPO / "apps/api/judging/services.py"
 # bo'lsa ham. Ikkala tomon alohida sinovdan o'tgani uchun bu
 # nomuvofiqlik hech qayerda ko'rinmadi.
 WEB_AUTH_FORM = REPO / "apps/web/src/components/AuthForm.tsx"
-WEB_API = REPO / "apps/web/src/lib/api.ts"
 API_SERIALIZERS = REPO / "apps/api/core/serializers.py"
 # Smoke — HAQIQIY API'ni sinaydigan yagona joy, ya'ni shartnomadan birinchi
 # bo'lib uziladi. Uning yuki ham shu yerda tekshiriladi (quyida).

@@ -96,6 +96,9 @@ func validateTests(ctx context.Context, job *Job, tests *store) (string, *int, s
 		slog.Error("validator tayyorlanmadi", "job", job.JobID, "err", err)
 		return VIE, nil, err.Error()
 	}
+	lim := validatorLimits()
+	lim.ProcSelf = job.Validator.ProcSelf
+	lim.OpenFiles = job.Validator.OpenFiles
 
 	for i := range job.Tests {
 		// Ko'rsatkich orqali: yuklangan ma'lumot job'da qoladi va asosiy
@@ -105,7 +108,7 @@ func validateTests(ctx context.Context, job *Job, tests *store) (string, *int, s
 			slog.Error("test ma'lumotini olish", "job", job.JobID, "test", test.Index, "err", err)
 			return VIE, nil, fmt.Sprintf("test %d ma'lumoti olinmadi: %v", test.Index, err)
 		}
-		out, err := sandboxed(ctx, dir, cmd, test.Input, validatorLimits(), validatorWallMS)
+		out, err := sandboxed(ctx, dir, cmd, test.Input, lim, validatorWallMS)
 		if err != nil {
 			slog.Error("validator ishga tushmadi", "job", job.JobID, "test", test.Index, "err", err)
 			return VIE, nil, fmt.Sprintf("validator ishga tushmadi: %v", err)
@@ -133,7 +136,10 @@ func prepareValidator(ctx context.Context, dir string, prog *TrustedProgram) ([]
 	if len(prog.Run) == 0 {
 		return nil, fmt.Errorf("validator ishga tushirish buyrug'i bo'sh")
 	}
-	src := srcName(prog.Code)
+	src, err := sourceName(prog.Code, prog.SourceFile)
+	if err != nil {
+		return nil, err
+	}
 	if err := os.WriteFile(filepath.Join(dir, src), []byte(prog.Source), 0o644); err != nil {
 		return nil, fmt.Errorf("validator manbasi yozilmadi: %w", err)
 	}
@@ -143,6 +149,8 @@ func prepareValidator(ctx context.Context, dir string, prog *TrustedProgram) ([]
 		// kabi): testlib bilan -O2 bir necha soniya olishi mumkin.
 		lim := validatorLimits()
 		lim.TimeMS = validatorCompileMS
+		lim.OpenFiles = max(compileOpenFiles, prog.OpenFiles)
+		lim.ProcSelf = prog.ProcSelf
 		out, err := sandboxed(ctx, dir, subst(prog.Compile, "/box/"+src, "/box/prog"), "",
 			lim, validatorCompileMS)
 		if err != nil {

@@ -23,6 +23,7 @@ Worker `DATABASE_URL` **olmaydi**. Faqat `REDIS_URL` va S3 (bake-off'da local ka
   "hack_stage": "",
   "language": {
     "code": "cpp23",
+    "source_file": "main.cpp",
     "compile": [
       "g++",
       "-std=c++23",
@@ -33,7 +34,9 @@ Worker `DATABASE_URL` **olmaydi**. Faqat `REDIS_URL` va S3 (bake-off'da local ka
     ],
     "run": [
       "{bin}"
-    ]
+    ],
+    "proc_self": false,
+    "open_files": 0
   },
   "source": "…manba kod…",
   "limits": {
@@ -68,6 +71,26 @@ Worker `DATABASE_URL` **olmaydi**. Faqat `REDIS_URL` va S3 (bake-off'da local ka
 
 `mode: acm` — birinchi muvaffaqiyatsiz testda to'xtaydi. `mode: ioi` — hamma test bajariladi.
 
+## Til
+
+`language` — til katalogining bir qatori ([ADR-0022](../../docs/07-adr/0022-judge-languages.md)).
+Buyruqlar argv ro'yxati: `{src}` — `/box/<source_file>`, `{bin}` — `/box/prog`.
+
+| Maydon | Ma'nosi | Bo'sh qiymat |
+| ------ | ------- | ------------ |
+| `source_file` | Manba shu nom bilan yoziladi. Kompilyatorlar tilni kengaytmadan aniqlaydi, JVM tillari klass nomini fayl nomidan kutadi. Faqat fayl nomi: ajratgich, boshidagi nuqta va `..` rad etiladi (`IE`) | eski kod-prefiks xaritasi (`cpp`→`main.cpp`, `py`→`main.py`, `java`→`Main.java`) |
+| `proc_self` | `true` — `/proc` bo'sh tmpfs bilan niqoblanmaydi, o'rniga sandbox'ning **o'z** PID namespace'idagi procfs ulanadi (`subset=pid,hidepid=invisible`): faqat sandbox jarayonlari, `meminfo`/`sys` yo'q. CoreCLR, Dart, Julia, Swift va Zig kompilyatorlari `/proc/self` siz ishga tushmaydi | `false` — niqob |
+| `open_files` | Dastur uchun `RLIMIT_NOFILE`. R va PowerShell ~192 dan past qiymatda ishga tushmaydi | `0` — 64 |
+
+Kompilyatsiya bosqichi `open_files` va 256 ning kattasini oladi: Roslyn 64 ta fayl
+bilan assembly'larni ocha olmaydi. Kompilyatsiya CPU byudjeti `limits.compile_time_ms`
+da keladi va tilga xos (API uni til qatoridan oladi).
+
+`proc_self` ni qo'llab-quvvatlamaydigan nomzod ishni `IE` bilan **rad etadi** —
+«Kirish validatori» bo'limidagi yopiq yiqilish qoidasi bilan bir xil (bake-off `22`).
+Validator dasturi ham shu maydonlarni oladi; checker va interactor sandboxsiz
+ishlaydi, ular uchun `proc_self` va `open_files` ahamiyatsiz.
+
 ## Hack marshruti
 
 `hack_id` va `hack_stage` — hack dvigateli ([ADR-0020](../../docs/07-adr/0020-hacking.md)) uchun marshrut belgilari. Worker ularni **talqin qilmaydi**: ishdan natijaga aynan ko'chiradi, xolos. Hack mantig'i judge ichida yo'q — bu shartnomaning qarori, chunki aks holda «bitta dvigatel» qoidasi judge ichiga ham ko'chib ketardi.
@@ -84,7 +107,7 @@ Bo'sh qiymatni tushirib qoldirish mumkin (`judge-go` `omitempty` bilan yuboradi)
 
 ## Kirish validatori
 
-`validator` — masala bilan keladigan, test cheklovlarga mosligini tekshiruvchi dastur ([ADR-0020](../../docs/07-adr/0020-hacking.md)). Shakli `checker.program` bilan bir xil: `{code, compile, run, source}`.
+`validator` — masala bilan keladigan, test cheklovlarga mosligini tekshiruvchi dastur ([ADR-0020](../../docs/07-adr/0020-hacking.md)). Shakli `checker.program` bilan bir xil: `language` maydonlari (§ «Til») va `source`.
 
 Chaqirilishi: kiritma **stdin** orqali beriladi. Chiqish kodi `0` — kiritma to'g'ri; nolga teng bo'lmasa — cheklov buzilgan, sababi **stderr**'da (testlib shunday yozadi).
 

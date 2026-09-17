@@ -123,6 +123,23 @@ Live oyna tekshiruvi alohida tekshiruv: `tools/check_deploy_window.py`
 o'qish yolg'on yashil berardi va aynan sayt yiqilganda — ya'ni tuzatish
 deploy'i eng kerak bo'lgan paytda — darvoza eng ishonchsiz bo'lardi.
 
+### Qaror (2026-09-17): agentlar yashil `main` ni deploy qiladi
+
+Agentlar production'ni so'ramasdan deploy qiladi, lekin faqat `main` CI
+yashil bo'lsa (`CLAUDE.md` § Saidakbar aka qarorlari). `tools/deploy.sh`
+buni o'zi ta'minlaydi — hamma narsadan oldin:
+
+- **Qulf** — `<git common dir>/rankwant-deploy.lock`; barcha worktree'lar
+  uni bo'lishadi, ya'ni ikki agent bir vaqtda deploy qila olmaydi. Qulf
+  band bo'lsa skript egasini (pid, vaqt, commit) ko'rsatib to'xtaydi.
+  Deploy yiqilgan joyda (elektr) qulf qolsa, jarayon yo'qligini tekshirib
+  `rm -rf` bilan olib tashlanadi.
+- **Darvoza** — `tools/check_deploy_gate.py`: HEAD GitHub'dagi `main` bilan
+  bir xil va shu commit'ning oxirgi `CI` va `Security` run'lari `success`
+  (chiqish 0 — mumkin, 1 — yo'q, **2 — o'lchanmadi**, deploy baribir to'xtaydi).
+- `--skip-ci-gate` darvozani o'tkazib yuboradi — faqat Saidakbar akaning
+  aniq ruxsati bilan.
+
 ---
 
 ## 2. Env o'zgaruvchilari
@@ -228,6 +245,12 @@ o'zgartirilgan 17 faylni aynan topdi (`arena/views.py` hash'i
 `c385aecd…` ↔ `1548467d…`), holbuki eski mantiq «joriy kodda» derdi.
 Qo'lda takrorlash: bitta faylni o'zgartirib (qayta qurmasdan)
 `bash tools/check_deploy.sh` → «ESKIRGAN» chiqishi kerak.
+
+**Istisno (2026-09-17):** web va judge **yorlig'i** bo'yicha qaror Docker'siz
+hisoblanadi (`label_state`: yorliqdan beri build konteksti — `apps/web`,
+`services/judge-go` — o'zgarganmi). U `--label-state` kirish nuqtasi orqali
+`check_negative.py deploy_check` da sandbox repo'da sinaladi. Konteyner ichidagi
+fayl hash'lari esa baribir jonli stack'ni talab qiladi.
 
 ---
 
