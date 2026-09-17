@@ -304,6 +304,48 @@ def neg_docs_missing_adr() -> tuple[bool, str]:
         return expect_fail("docs", "docs/mavjud bo'lmagan ADR havolasi")
 
 
+def neg_confusable_cyrillic_identifier() -> tuple[bool, str]:
+    """Identifikatordagi kirill harf — tutilsinmi?
+
+    2026-09-18 da topilgan haqiqiy holat: test nomida `са` kirill edi,
+    ko'rinishi lotin `sa` bilan bir xil. `git grep` ham, IDE ham topa
+    olmaydi, pytest chiqishida esa lotinchaga o'xshab ko'rinadi.
+    """
+    path = ROOT / "apps/api/tests/test_warn_email_quota.py"
+    if not path.exists():
+        return False, "confusables: namunali fayl topilmadi"
+    with Mutation(
+        path,
+        "def test_bir_kunda_ikki_marta_yursa_ham_bitta_yozuv",
+        # lotin `sa` o'rniga kirill `са` (U+0441 U+0430)
+        "def test_bir_kunda_ikki_marta_yur\u0441\u0430_ham_bitta_yozuv",
+    ):
+        return expect_fail("confusables", "confusables/identifikatorda kirill")
+
+
+def neg_confusable_formula_allowed() -> tuple[bool, str]:
+    """Matn ichidagi grek harf XATO BERMASLIGI kerak.
+
+    Tekshiruv butun qatorni olsa, qiymat ichidagi matematik belgi yolg'on
+    xato beradi — o'lchandi: `const FORMULA_SKILLS = "Skills = Σ pᵢ × …"`.
+    Ya'ni bu salbiy test tekshiruvning QAMROVINI qulflaydi: u faqat
+    e'lon qilinayotgan nomga qaraydi, matnga emas.
+    """
+    path = ROOT / "apps/web/src/app/rating/page.tsx"
+    if not path.exists():
+        return False, "confusables: rating/page.tsx topilmadi"
+    original = path.read_bytes()
+    text = original.decode("utf-8")
+    if 'const FORMULA_SKILLS = "Skills = \u03a3' not in text:
+        return False, "confusables: grek harfli namuna topilmadi"
+    # Fayl allaqachon grek harfli matn tutadi — ya'ni hozirgi holat
+    # «yashil» bo'lishi shart. Bu oldini tekshiradi.
+    code, _ = run_check("confusables")
+    if code != 0:
+        return False, "confusables: matematik matn yolg'on xato berdi (exit != 0)"
+    return True, "confusables/matndagi grek harf xato bermadi"
+
+
 def neg_docs_broken_link() -> tuple[bool, str]:
     """Hujjatda mavjud bo'lmagan havola — tutilsinmi?"""
     candidates = sorted((ROOT / "docs").glob("*.md"))
@@ -3139,6 +3181,13 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("mavjud bo'lmagan ADR havolasi", neg_docs_missing_adr),
             ("tadqiqotda havola baribir tekshirilsin", neg_docs_research_link_still_checked),
             ("istisno faqat docs/research ga", neg_docs_research_exemption_is_scoped),
+        ],
+    ),
+    (
+        "confusables",
+        [
+            ("identifikatorda kirill", neg_confusable_cyrillic_identifier),
+            ("matndagi grek harf xato bermasin", neg_confusable_formula_allowed),
         ],
     ),
     (

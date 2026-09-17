@@ -61,6 +61,13 @@ SERVICES=(api worker beat judge web)
 GIT_SHA="$(git rev-parse HEAD 2>/dev/null || echo unknown)"
 export GIT_SHA
 
+# Qurilish vaqti — `org.rankwant.built-at` yorlig'i uchun. `GIT_SHA` bilan
+# birga ishlatiladi: commit bir xil bo'lib, obraz eski bo'lishi mumkin
+# (masalan `docker compose build` xatosiz o'tib, `up` yangilanmasa), va
+# o'shanda qaysi biri yangiroq ekanini faqat vaqt ko'rsatadi.
+BUILT_AT="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+export BUILT_AT
+
 ASSUME_YES=0
 CHECK_ONLY=0
 SKIP_CI_GATE=0

@@ -135,6 +135,10 @@ ensure_dev_image() {
 run_docs() {
   cd "$ROOT"
   "$PY" tools/check_docs.py &&
+    # Identifikatorlardagi kirill/grek harf: ko'rinishi lotinchaga bir xil,
+    # lekin boshqa belgi — `git grep` va IDE topa olmaydi. 2026-09-18 da
+    # test nomida `са` topilgan edi va ikki marta ko'rilgan, tuzatilmagan.
+    "$PY" tools/check_confusables.py &&
     "$PY" tools/check_contract.py &&
     # DRF `ordering` da tiebreaker: `["-created_at"]` yakka o'zi SQL
     # tartibini beqaror qoldiradi — bitta odam ikki sahifada chiqadi,
