@@ -19,11 +19,28 @@ type Family = {
 };
 
 export const LANGUAGE_FAMILIES: ReadonlyMap<string, Family> = new Map([
+  // gnatmake names the unit after the file: main.adb must hold procedure Main.
+  [
+    "ada",
+    {
+      monaco: PLAIN_TEXT,
+      starter: `with Ada.Text_IO; use Ada.Text_IO;\n\nprocedure Main is\nbegin\n   null;\nend Main;\n`,
+    },
+  ],
   [
     "c",
     {
       monaco: "c",
       starter: `#include <stdio.h>\n\nint main(void) {\n    \n    return 0;\n}\n`,
+    },
+  ],
+  ["caml", { monaco: PLAIN_TEXT, starter: "" }],
+  // Fixed format: code starts in column 8.
+  [
+    "cobol",
+    {
+      monaco: PLAIN_TEXT,
+      starter: `       IDENTIFICATION DIVISION.\n       PROGRAM-ID. MAIN.\n       PROCEDURE DIVISION.\n           STOP RUN.\n`,
     },
   ],
   [
@@ -40,7 +57,6 @@ export const LANGUAGE_FAMILIES: ReadonlyMap<string, Family> = new Map([
       starter: `using System;\n\nclass Program\n{\n    static void Main()\n    {\n        \n    }\n}\n`,
     },
   ],
-  // Monaco has no grammar for D, Haskell or OCaml.
   [
     "d",
     {
@@ -49,6 +65,14 @@ export const LANGUAGE_FAMILIES: ReadonlyMap<string, Family> = new Map([
     },
   ],
   ["dart", { monaco: "dart", starter: `void main() {\n  \n}\n` }],
+  [
+    "fortran",
+    {
+      monaco: PLAIN_TEXT,
+      starter: `program main\n  implicit none\n  \nend program main\n`,
+    },
+  ],
+  ["fsharp", { monaco: "fsharp", starter: "" }],
   // No imports: Go refuses to compile an unused one.
   ["go", { monaco: "go", starter: `package main\n\nfunc main() {\n\t\n}\n` }],
   [
@@ -64,14 +88,43 @@ export const LANGUAGE_FAMILIES: ReadonlyMap<string, Family> = new Map([
     },
   ],
   ["js", { monaco: "javascript", starter: "" }],
+  ["julia", { monaco: "julia", starter: "" }],
   ["kotlin", { monaco: "kotlin", starter: `fun main() {\n    \n}\n` }],
+  ["lisp", { monaco: PLAIN_TEXT, starter: "" }],
+  ["lua", { monaco: "lua", starter: "" }],
+  // No libc: the program starts at _start and leaves through the exit syscall.
+  [
+    "nasm",
+    {
+      monaco: PLAIN_TEXT,
+      starter: `section .text\n    global _start\n\n_start:\n    mov eax, 60\n    xor edi, edi\n    syscall\n`,
+    },
+  ],
+  // GCC's Objective-C runtime has no @autoreleasepool.
+  [
+    "objc",
+    {
+      monaco: "objective-c",
+      starter: `#import <Foundation/Foundation.h>\n\nint main(void) {\n    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];\n    \n    [pool drain];\n    return 0;\n}\n`,
+    },
+  ],
   ["ocaml", { monaco: PLAIN_TEXT, starter: "" }],
   ["pascal", { monaco: "pascal", starter: `begin\n  \nend.\n` }],
   ["perl", { monaco: "perl", starter: "" }],
   // PHP prints everything outside `<?php` verbatim: a solution without the
   // tag outputs its own source and gets WA.
   ["php", { monaco: "php", starter: `<?php\n\n` }],
+  ["powershell", { monaco: "powershell", starter: "" }],
+  // Without the directive swipl opens its toplevel and reads the input as queries.
+  [
+    "prolog",
+    {
+      monaco: PLAIN_TEXT,
+      starter: `:- initialization(main, main).\n\nmain :-\n    true.\n`,
+    },
+  ],
   ["py", { monaco: "python", starter: "" }],
+  ["pypy", { monaco: "python", starter: "" }],
   ["r", { monaco: "r", starter: "" }],
   ["ruby", { monaco: "ruby", starter: "" }],
   ["rust", { monaco: "rust", starter: `fn main() {\n    \n}\n` }],
@@ -85,6 +138,13 @@ export const LANGUAGE_FAMILIES: ReadonlyMap<string, Family> = new Map([
   ],
   ["swift", { monaco: "swift", starter: "" }],
   ["ts", { monaco: "typescript", starter: "" }],
+  [
+    "vbnet",
+    {
+      monaco: "vb",
+      starter: `Module Program\n    Sub Main()\n        \n    End Sub\nEnd Module\n`,
+    },
+  ],
 ]);
 
 export function languageFamily(code: string): string {

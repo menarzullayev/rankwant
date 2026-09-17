@@ -30,6 +30,15 @@ describe("editorLanguage", () => {
       "plaintext",
       "plaintext",
     ]);
+    const group3 = ["vbnet17", "objc14", "fsharp10", "pypy73", "lua54", "cobol32"];
+    expect(group3.map(editorLanguage)).toEqual([
+      "vb",
+      "objective-c",
+      "fsharp",
+      "python",
+      "lua",
+      "plaintext",
+    ]);
   });
 
   // The prefix match this replaced gave `kotlin24` and `php84` plain text and
@@ -65,6 +74,14 @@ describe("starterSource", () => {
   it("names the class the judge runs for Java and Scala", () => {
     expect(starterSource("java21")).toContain("public class Main");
     expect(starterSource("scala39")).toContain("object Main");
+  });
+
+  // Each of these fails in the judge without the line: gnatmake wants the unit
+  // named after main.adb, swipl waits for queries, ld wants _start.
+  it("carries what the toolchain needs before any code is written", () => {
+    expect(starterSource("ada14")).toContain("procedure Main is");
+    expect(starterSource("prolog92")).toContain(":- initialization(main, main).");
+    expect(starterSource("nasm216")).toContain("global _start");
   });
 
   it("opens PHP in code mode", () => {

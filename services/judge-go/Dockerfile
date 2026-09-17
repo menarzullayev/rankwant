@@ -87,6 +87,16 @@ RUN curl -fsSL --retry 3 -o scala.tgz https://github.com/scala/scala3/releases/d
     && mkdir -p /opt/scala && tar -xzf scala.tgz -C /opt/scala --strip-components=1 && rm scala.tgz \
     && rm /opt/scala/libexec/scala-cli
 
+# PowerShell 7.6.6 — not in Debian. Checksum: the release notes.
+RUN curl -fsSL --retry 3 -o pwsh.tgz https://github.com/PowerShell/PowerShell/releases/download/v7.6.6/powershell-7.6.6-linux-x64.tar.gz \
+    && echo "ddbc4a2d113bbd46d283cfedcbcd117a70caefd7673f41f2b4e0000badf103bc  pwsh.tgz" | sha256sum -c - \
+    && mkdir -p /opt/powershell && tar -xzf pwsh.tgz -C /opt/powershell && chmod +x /opt/powershell/pwsh && rm pwsh.tgz
+
+# Julia 1.13.0 — not in Debian. Checksum: julialang-s3.julialang.org/bin/checksums.
+RUN curl -fsSL --retry 3 -o julia.tgz https://julialang-s3.julialang.org/bin/linux/x64/1.13/julia-1.13.0-linux-x86_64.tar.gz \
+    && echo "8975da61c128a5e5ded3e719e868da8c8781deb7ad7913d37fb99be02a81904b  julia.tgz" | sha256sum -c - \
+    && mkdir -p /opt/julia && tar -xzf julia.tgz -C /opt/julia --strip-components=1 && rm julia.tgz
+
 # ── 4. runtime ───────────────────────────────────────────────────────
 FROM debian:trixie-slim
 
@@ -155,6 +165,30 @@ COPY --from=toolchains /opt/scala /opt/scala
 # $ORIGIN, which cannot resolve under the /proc mask. The directory holds only libHS*
 # libraries (measured: 39), so no system library is shadowed.
 RUN ls -d /usr/lib/ghc/lib/x86_64-linux-ghc-* > /etc/ld.so.conf.d/ghc.conf && ldconfig
+
+# Group 3 (ADR-0022): Fortran, Assembly, Ada, Objective-C, COBOL, Prolog, Lua, Common
+# Lisp, PyPy. Caml is the OCaml toplevel from group 2; VB.NET, F# and PowerShell run on
+# .NET; Julia comes from the archive stage. Julia's own libraries stay out of the loader
+# cache: it bundles libstdc++, libz and libcurl, which would shadow the system's.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        gfortran nasm gnat gobjc libgnustep-base-dev gnucobol3 swi-prolog-nox lua5.4 sbcl pypy3 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=toolchains /opt/powershell /opt/powershell
+COPY --from=toolchains /opt/julia /opt/julia
+
+# .NET for VB.NET and F#. vbc gets the VB runtime and `_MYTYPE="Empty"`: otherwise it
+# generates My.Computer, whose type the reference assemblies do not have. fsc takes
+# FSharp.Core from the SDK and copies it next to the program it writes.
+RUN cd /opt/rankwant/dotnet \
+    && ref="$(ls -d /opt/dotnet/packs/Microsoft.NETCore.App.Ref/*/ref/net10.0)" \
+    && fsharp="$(ls -d /opt/dotnet/sdk/*/FSharp)" \
+    && { echo "-nologo"; echo "-optimize+"; echo "-nostdlib"; echo "-sdkpath:$ref"; \
+         echo "-vbruntime:$ref/Microsoft.VisualBasic.dll"; echo '-define:_MYTYPE="Empty"'; \
+         ls "$ref"/*.dll | sed 's/^/-r:/'; } > vbc.rsp \
+    && { echo "--nologo"; echo "-O"; echo "--targetprofile:netcore"; \
+         ls "$ref"/*.dll | sed 's/^/-r:/'; echo "-r:$fsharp/FSharp.Core.dll"; } > fsc.rsp \
+    && ln -s "$fsharp" fsharp
 
 # The toolchain layers above stay cached across deploys: an ARG in scope makes
 # every later RUN miss the cache when its value changes, and GIT_SHA changes

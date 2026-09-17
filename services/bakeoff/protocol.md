@@ -79,7 +79,7 @@ Buyruqlar argv ro'yxati: `{src}` — `/box/<source_file>`, `{bin}` — `/box/pro
 | Maydon | Ma'nosi | Bo'sh qiymat |
 | ------ | ------- | ------------ |
 | `source_file` | Manba shu nom bilan yoziladi. Kompilyatorlar tilni kengaytmadan aniqlaydi, JVM tillari klass nomini fayl nomidan kutadi. Faqat fayl nomi: ajratgich, boshidagi nuqta va `..` rad etiladi (`IE`) | eski kod-prefiks xaritasi (`cpp`→`main.cpp`, `py`→`main.py`, `java`→`Main.java`) |
-| `proc_self` | `true` — `/proc` bo'sh tmpfs bilan niqoblanmaydi, o'rniga sandbox'ning **o'z** PID namespace'idagi procfs ulanadi (`subset=pid,hidepid=invisible`): faqat sandbox jarayonlari, `meminfo`/`sys` yo'q. CoreCLR, Dart, Julia, Swift va Zig kompilyatorlari `/proc/self` siz ishga tushmaydi | `false` — niqob |
+| `proc_self` | `true` — `/proc` bo'sh tmpfs bilan niqoblanmaydi, o'rniga sandbox'ning **o'z** PID namespace'idagi procfs ulanadi (`subset=pid,hidepid=invisible`): faqat sandbox jarayonlari, `meminfo`/`sys` yo'q. CoreCLR, Dart, Julia va Swift kompilyatori `/proc/self` siz ishga tushmaydi | `false` — niqob |
 | `open_files` | Dastur uchun `RLIMIT_NOFILE`. R va PowerShell ~192 dan past qiymatda ishga tushmaydi | `0` — 64 |
 
 Kompilyatsiya bosqichi `open_files` va 256 ning kattasini oladi: Roslyn 64 ta fayl
