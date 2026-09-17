@@ -27,6 +27,7 @@ import type {
   Topic,
   TopicSkill,
 } from "./problems";
+import { LANGUAGES_PATH } from "./problems";
 import type {
   Arena,
   ArenaDetail,
@@ -176,7 +177,7 @@ export const api = {
     ),
   attempts: () => get<Paginated<Attempt>>("/attempts/", 0),
   // Tillar deyarli o'zgarmaydi — judge obrazi bilan bir manbadan (ADR-0004).
-  languages: () => get<Paginated<Language>>("/languages/", 300),
+  languages: () => get<Paginated<Language>>(LANGUAGES_PATH, 300),
   // Filtr paneli mavzularni TO'LIQ ko'rsatishi kerak — birinchi 25 tasi
   // emas, aks holda tanlab bo'lmaydigan yorliqlar paydo bo'lardi.
   topics: () => get<Paginated<Topic>>("/topics/?page_size=100", 300),
