@@ -1,0 +1,60 @@
+{
+  "id": "23-csharp-proc-self",
+  "title": "C# — CoreCLR o'z procfs'i bilan",
+  "measures": "proc_self: true tilida CoreCLR ishga tushadimi va /proc baribir faqat sandbox'nikimi",
+  "language": {
+    "code": "csharp14",
+    "source_file": "main.cs",
+    "compile": [
+      "/usr/bin/env",
+      "DOTNET_EnableWriteXorExecute=0",
+      "/opt/dotnet/dotnet",
+      "/opt/rankwant/dotnet/roslyn/csc.dll",
+      "@/opt/rankwant/dotnet/csc.rsp",
+      "-out:{bin}.dll",
+      "{src}"
+    ],
+    "run": [
+      "/usr/bin/env",
+      "DOTNET_EnableWriteXorExecute=0",
+      "/opt/dotnet/dotnet",
+      "exec",
+      "--runtimeconfig",
+      "/opt/rankwant/dotnet/app.runtimeconfig.json",
+      "{bin}.dll"
+    ],
+    "proc_self": true
+  },
+  "source": "using System;\nusing System.IO;\nusing System.Linq;\n\nclass Program\n{\n    static void Main()\n    {\n        var entries = Directory.GetFileSystemEntries(\"/proc\")\n            .Select(p => Path.GetFileName(p))\n            .OrderBy(n => n, StringComparer.Ordinal);\n        Console.WriteLine(string.Join(\" \", entries));\n        var parts = Console.ReadLine().Split(' ', StringSplitOptions.RemoveEmptyEntries);\n        Console.WriteLine(long.Parse(parts[0]) + long.Parse(parts[1]));\n    }\n}\n",
+  "limits": {
+    "compile_time_ms": 10000,
+    "time_ms": 2000,
+    "memory_kb": 262144,
+    "output_kb": 65536,
+    "processes": 32
+  },
+  "tests": [
+    {
+      "index": 1,
+      "input": "3 4\n",
+      "expected": "1 self thread-self\n7\n"
+    },
+    {
+      "index": 2,
+      "input": "1000000000 1000000000\n",
+      "expected": "1 self thread-self\n2000000000\n"
+    }
+  ],
+  "expect_verdict": "AC",
+  "expect_by_worker": {
+    "judge-py": "IE"
+  },
+  "must_hold": [
+    "CoreCLR /proc/self ni o'qiydi: niqob ostida 0x8007000E bilan yiqiladi, proc_self bilan ishga tushishi SHART,",
+    "Roslyn 64 ta ochiq fayl chegarasida assembly'larni ocha olmaydi — kompilyatsiya 256 oladi,",
+    "shunda ham /proc da faqat sandbox jarayoni (1) va self/thread-self bo'lishi SHART.",
+    "Chiqish farq qilsa — WA — izolyatsiya teshigi, AC emas.",
+    "proc_self'ni qo'llab-quvvatlamaydigan nomzod ishni IE bilan RAD ETADI."
+  ],
+  "mode": "acm"
+}

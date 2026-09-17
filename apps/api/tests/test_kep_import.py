@@ -166,6 +166,7 @@ def kep_api(monkeypatch) -> None:
             "availableLanguages": [
                 {"lang": "py", "timeLimit": 3000, "memoryLimit": None, "codeTemplate": "x = 1"},
                 {"lang": "rs", "timeLimit": None, "memoryLimit": None, "codeTemplate": None},
+                {"lang": "bash", "timeLimit": None, "memoryLimit": None, "codeTemplate": None},
             ],
             "sampleTests": [],
             "similarProblems": [{"id": 2, "score": 0.9}],
@@ -190,6 +191,51 @@ def kep_api(monkeypatch) -> None:
             "tags": [{"id": 1, "name": "Oddiy"}],
             "topics": [],
             "availableLanguages": [],
+            "sampleTests": [],
+            "similarProblems": [],
+            "attachments": [],
+            "checkInputSource": None,
+            "likesCount": 0,
+            "dislikesCount": 0,
+            "partialSolvable": False,
+            "image": None,
+        },
+        # Open on KEP: all twelve general languages, one with its own limit.
+        3: {
+            "id": 3,
+            "title": "Besh son",
+            "body": "<p>a, b, c, d, e</p>",
+            "inputData": "",
+            "outputData": "",
+            "comment": None,
+            "problemRating": 500,
+            "timeLimit": 1000,
+            "memoryLimit": 256,
+            "authorUsername": "admin",
+            "tags": [],
+            "topics": [],
+            "availableLanguages": [
+                {
+                    "lang": code,
+                    "timeLimit": 2500 if code == "py" else None,
+                    "memoryLimit": None,
+                    "codeTemplate": None,
+                }
+                for code in (
+                    "py",
+                    "cpp",
+                    "c",
+                    "java",
+                    "cs",
+                    "rs",
+                    "go",
+                    "kt",
+                    "js",
+                    "php",
+                    "hs",
+                    "r",
+                )
+            ],
             "sampleTests": [],
             "similarProblems": [],
             "attachments": [],
@@ -238,8 +284,26 @@ class TestImportCommand:
         Language.objects.create(code="py313", name="Python", version="3.13", run_cmd=["{src}"])
         self.run()
         rows = ProblemLanguage.objects.filter(problem__slug="ikki-son")
-        # `rs` bizda yo'q — tushirib qoldiriladi, `py` esa limiti bilan keladi.
-        assert [(r.language.code, r.time_limit_ms) for r in rows] == [("py313", 3000)]
+        # `bash` has no judge language here and is dropped; `py` keeps its limit.
+        # The problem is restricted on KEP, so nothing beyond KEP's list is added.
+        assert [(r.language.code, r.time_limit_ms) for r in rows] == [
+            ("py313", 3000),
+            ("rust185", None),
+        ]
+
+    def test_kepda_ochiq_masala_hamma_tilga_ochiq(self, kep_api, language):
+        """Twelve general KEP languages allowed → every active language here (ADR-0022)."""
+        from django.core.management import call_command
+
+        Language.objects.create(code="py313", name="Python", version="3.13", run_cmd=["{src}"])
+        Language.objects.create(code="zz1", name="Off", run_cmd=["{src}"], is_active=False)
+        call_command("import_kep", ids="3", no_samples=True, sleep=0)
+
+        rows = ProblemLanguage.objects.filter(problem__slug="besh-son")
+        codes = set(rows.values_list("language__code", flat=True))
+        assert codes == set(Language.objects.filter(is_active=True).values_list("code", flat=True))
+        assert "zz1" not in codes
+        assert rows.get(language__code="py313").time_limit_ms == 2500
 
     def test_muallif_nofaol_soya_hisob(self, kep_api, language):
         User.objects.create_user("admin", password="Parol!12345")

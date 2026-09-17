@@ -487,10 +487,16 @@ def test_ovoz_detalda_korinadi(problem, user) -> None:
 
 # ── Masalaga xos tillar va o'xshash masalalar ────────────────────────
 def test_til_royxati_bosh_bolsa_hamma_faol_til_ochiq(problem, language) -> None:
+    from problems.models import Language
+
+    Language.objects.create(code="old1", name="Old", run_cmd=["{src}"], is_active=False)
     data = APIClient().get(reverse("problem-detail", args=[problem.slug])).data
 
-    assert [row["code"] for row in data["languages"]] == ["cpp23"]
-    assert data["languages"][0]["time_limit_ms"] == problem.time_limit_ms
+    # Data migrations add the judge catalog, so the fixture's cpp23 is not alone.
+    active = set(Language.objects.filter(is_active=True).values_list("code", flat=True))
+    assert "cpp23" in active and len(active) > 1
+    assert {row["code"] for row in data["languages"]} == active
+    assert {row["time_limit_ms"] for row in data["languages"]} == {problem.time_limit_ms}
 
 
 def test_til_royxati_bolsa_faqat_osha_tillar_va_ustma_ust_limit(problem, language) -> None:

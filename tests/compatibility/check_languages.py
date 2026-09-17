@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import ast
 import pathlib
+import shlex
 import subprocess
 import sys
 from typing import Any
@@ -35,7 +36,11 @@ CATALOG = REPO / "apps/api/problems/languages.py"
 #: Keyed by the exact language code: with dozens of languages a prefix match
 #: picks the wrong probe (`c` would catch `cpp23` and `csharp14`). The file name
 #: comes from the catalog, so a probe runs under the same name as a submission.
-PROBES = {
+#:
+#: An entry is `(source, parse, *extra)`. `extra` are shell lines run after the
+#: program, for compilers whose version a program cannot print (rustc); `parse`
+#: then reads the last line.
+PROBES: dict[str, tuple[Any, ...]] = {
     "cpp23": (
         '#include <cstdio>\nint main(){printf("%ld\\n", __cplusplus);return 0;}\n',
         lambda out: {"202302": "23", "202100": "2b", "201703": "17", "201402": "14"}.get(
@@ -49,6 +54,39 @@ PROBES = {
     "java21": (
         'public class Main{public static void main(String[] a){'
         'System.out.println(System.getProperty("java.version").split("\\\\.")[0]);}}\n',
+        lambda out: out.strip(),
+    ),
+    "c17": (
+        '#include <stdio.h>\nint main(void){printf("%ld\\n", __STDC_VERSION__);return 0;}\n',
+        lambda out: {"201710": "17", "202311": "23", "201112": "11"}.get(
+            out.strip().rstrip("L")[:6], out.strip()
+        ),
+    ),
+    "csharp14": (
+        # `p?.X = 1` is C# 14 syntax: an older compiler refuses the probe outright.
+        "class P{int X; static void Main(){P p = new P(); p?.X = 1;"
+        "System.Console.WriteLine(System.Environment.Version.Major + p.X - 1);}}\n",
+        lambda out: {"10": "14 (.NET 10)"}.get(out.strip(), out.strip()),
+    ),
+    "js24": (
+        'console.log(process.versions.node.split(".")[0]);\n',
+        lambda out: f"(Node.js {out.strip()})",
+    ),
+    "rust185": (
+        'fn main() { println!("ok"); }\n',
+        lambda out: ".".join(out.strip().splitlines()[-1].split()[1].split(".")[:2]),
+        "rustc --version",
+    ),
+    "go124": (
+        'package main\n\nimport (\n\t"fmt"\n\t"runtime"\n)\n\nfunc main() { fmt.Println(runtime.Version()) }\n',
+        lambda out: ".".join(out.strip().removeprefix("go").split(".")[:2]),
+    ),
+    "php84": (
+        '<?php echo PHP_MAJOR_VERSION, ".", PHP_MINOR_VERSION, "\\n";\n',
+        lambda out: out.strip(),
+    ),
+    "kotlin24": (
+        'fun main() { println("${KotlinVersion.CURRENT.major}.${KotlinVersion.CURRENT.minor}") }\n',
         lambda out: out.strip(),
     ),
 }
@@ -78,7 +116,7 @@ def declared_languages() -> list[dict[str, Any]]:
     raise SystemExit(f"LANGUAGES topilmadi: {CATALOG}")
 
 
-def probe_for(code: str) -> tuple[str, object]:
+def probe_for(code: str) -> tuple[Any, ...]:
     if code in PROBES:
         return PROBES[code]
     raise SystemExit(f"'{code}' uchun probe yozilmagan — PROBES ga qo'shing")
@@ -100,13 +138,16 @@ def main() -> int:
     rows = declared_languages()
     for row in rows:
         code, name, version = row["code"], row["name"], row["version"]
-        source, parse = probe_for(code)
-        src = row["source_file"]
-        steps = [f"mkdir -p /box && cd /box && cat > {src} <<'EOF'\n{source}EOF"]
+        source, parse, *extra = probe_for(code)
+        src = f"/box/{row['source_file']}"
+        # `set -e`: a failed compile must fail the check, not fall through to a stale run.
+        steps = ["set -e", f"mkdir -p /box && cd /box && cat > {src} <<'EOF'\n{source}EOF"]
         for cmd in (row["compile"], row["run"]):
             if cmd:
                 rendered = [a.replace("{src}", src).replace("{bin}", "/box/prog") for a in cmd]
-                steps.append(" ".join(rendered))
+                # Quoted per argument: Go's compile is one `sh -c` string with spaces.
+                steps.append(shlex.join(rendered))
+        steps.extend(extra)
         proc = run_in_image(image, "\n".join(steps))
 
         if proc.returncode != 0:

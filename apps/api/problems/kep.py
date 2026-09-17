@@ -47,10 +47,28 @@ BACKOFF = 5.0
 SOURCE_MIN, SOURCE_MAX = 100, 2800
 TARGET_MIN, TARGET_MAX = 800, 3500
 
-#: KEP til kodi → bizning `Language.code`. Qolganlari (rs, go, php, hs…)
-#: judge obrazimizda yo'q; ular tashlab ketiladi, masala esa bor
-#: tillarda yechiladi.
-LANGUAGES = {"py": "py313", "cpp": "cpp23", "java": "java21"}
+#: KEP language code → our `Language.code`. Codes missing here (`bash`, and
+#: `hs`/`r` until their toolchains land) are dropped; the problem stays
+#: solvable in the languages that map.
+LANGUAGES = {
+    "py": "py313",
+    "cpp": "cpp23",
+    "java": "java21",
+    "c": "c17",
+    "cs": "csharp14",
+    "rs": "rust185",
+    "go": "go124",
+    "kt": "kotlin24",
+    "js": "js24",
+    "php": "php84",
+}
+
+#: KEP's twelve general-purpose languages. A problem that allows all of them is
+#: not an exercise in a particular language, so it is open to every language we
+#: judge, including ones KEP does not have (ADR-0022).
+GENERAL_LANGUAGES = frozenset(
+    {"py", "cpp", "c", "java", "cs", "rs", "go", "kt", "js", "php", "hs", "r"}
+)
 
 
 def fetch(path: str, **params: Any) -> Any:

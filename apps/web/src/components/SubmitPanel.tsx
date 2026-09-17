@@ -18,6 +18,7 @@ import { Card } from "@/components/ui/Card";
 import { Loading } from "@/components/ui/Loading";
 import { Status } from "@/components/ui/Status";
 import { Verdict } from "@/components/ui/Verdict";
+import { editorLanguage, starterSource } from "@/lib/editor-language";
 import { isPendingVerdict } from "@/lib/theme/verdict";
 import { useSession } from "@/context/SessionContext";
 import { ApiError } from "@/lib/api";
@@ -61,25 +62,6 @@ const POLL_FAST_MS = 800;
 const POLL_SLOW_MS = 2500;
 const POLL_FAST_COUNT = 12;
 const POLL_LIMIT = 90;
-
-const DEFAULT_SOURCE: Record<string, string> = {
-  cpp: `#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    \n    return 0;\n}\n`,
-  python: ``,
-  java: `import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        \n    }\n}\n`,
-};
-
-/** Judge til kodidan (`cpp23`, `py313`, `java21`) Monaco til nomiga. */
-function editorLanguage(code: string): string {
-  if (code.startsWith("cpp") || code.startsWith("c++")) return "cpp";
-  if (code.startsWith("py")) return "python";
-  if (code.startsWith("java")) return "java";
-  if (code.startsWith("js") || code.startsWith("node")) return "javascript";
-  if (code.startsWith("go")) return "go";
-  if (code.startsWith("rs") || code.startsWith("rust")) return "rust";
-  if (code.startsWith("kt")) return "kotlin";
-  if (code.startsWith("cs")) return "csharp";
-  return "plaintext";
-}
 
 const draftKey = (problem: string, language: string) =>
   `rw:draft:${problem}:${language}`;
@@ -216,8 +198,7 @@ export default function SubmitPanel({
     edits[key] ??
     storedDraft ??
     picked?.code_template ??
-    DEFAULT_SOURCE[editorLanguage(language)] ??
-    "";
+    starterSource(language);
 
   const setSource = useCallback(
     (next: string) => setEdits((current) => ({ ...current, [key]: next })),

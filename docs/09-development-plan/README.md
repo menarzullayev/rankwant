@@ -65,6 +65,8 @@ OpenAPI 23 endpoint, 0 xato · Next.js build, lint va typecheck toza · 0 zaifli
 judge bake-off 14/14.
 
 MVP **dasturlash tillari** (judge): C++, Python, Java. UI tillari alohida — 04-prd P0-7: uz/ru/en.
+Keyin 36 tilga kengayadi, uch guruhda ([ADR-0022](../07-adr/0022-judge-languages.md)):
+1-guruh — C, C#, JavaScript, Rust, Go, PHP, Kotlin.
 
 ## Launch gate — public chiqishdan oldin
 
