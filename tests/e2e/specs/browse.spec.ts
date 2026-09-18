@@ -75,7 +75,7 @@ test("arxiv filtri ro'yxatni toraytiradi va URL da qoladi", async ({
   const rows = await page.getByRole("row").count();
   expect(await hardRows.count()).toBe(rows - 1); // sarlavha qatori
 
-  // Faol filtr soni tugmada ko'rinadi va holat URL da qoladi.
+  // #99: diapazon ikki kalit yozadi, lekin rozetka bitta filtr.
   await expect(
     page.getByRole("button", { name: /^Filtrlar( \d+)?$/ }),
   ).toContainText("1");

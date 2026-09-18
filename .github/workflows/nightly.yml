@@ -11,6 +11,7 @@ env:
 
 permissions:
   contents: read
+  packages: write
 
 jobs:
   load:
@@ -27,12 +28,14 @@ jobs:
     # name would take each other's containers down with `down -v`.
     env:
       COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      CI_PUSH_IMAGE_CACHE: ${{ github.event.repository.fork && '0' || '1' }}
     steps:
       - uses: actions/checkout@v7
       - name: Stack
         if: ${{ vars.STAGING_URL == '' }}
         run: |
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build --wait
+          bash tools/ci_stack.sh
           docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
             python manage.py seed_demo
       - name: k6 — bounded load
@@ -55,6 +58,9 @@ jobs:
       - name: Tear down
         if: always()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+      - name: Push image cache
+        if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
+        run: bash tools/ci_stack.sh --push-only
       # `down -v` leaves the images this run built. Since 2026-09-17 CI
       # runs on the Docker Desktop engine next to the live stack, and one
       # nightly run left 18 of them behind (`rw-load-*`, `rw-e2e-*`,
@@ -83,15 +89,25 @@ jobs:
     # name would take each other's containers down with `down -v`.
     env:
       COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      CI_PUSH_IMAGE_CACHE: ${{ github.event.repository.fork && '0' || '1' }}
     steps:
       - uses: actions/checkout@v7
       - name: Stack
         # Against STAGING_URL when set, otherwise against its own stack.
         if: ${{ vars.STAGING_URL == '' }}
         run: |
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build --wait
+          bash tools/ci_stack.sh
           docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
             python manage.py seed_demo
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: tests/e2e/package-lock.json
+      - name: E2E deps
+        run: npm ci
+        working-directory: tests/e2e
       - name: Chromium, Firefox, WebKit, and mobile
         run: |
           docker run --rm --user "$(id -u):$(id -g)" --network "${COMPOSE_PROJECT_NAME}_default" \
@@ -100,10 +116,13 @@ jobs:
             -e E2E_API_BASE="${{ vars.STAGING_URL && format('{0}/api/v1', vars.STAGING_URL) || 'http://api:8000/api/v1' }}" \
             -e CI=1 \
             mcr.microsoft.com/playwright:v1.63.0-noble \
-            sh -c 'npm ci --silent && npx playwright test --reporter=list'
+            npx playwright test --reporter=list
       - name: Tear down
         if: always()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+      - name: Push image cache
+        if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
+        run: bash tools/ci_stack.sh --push-only
       # `down -v` leaves the images this run built. Since 2026-09-17 CI
       # runs on the Docker Desktop engine next to the live stack, and one
       # nightly run left 18 of them behind (`rw-load-*`, `rw-e2e-*`,
@@ -132,11 +151,13 @@ jobs:
     # name would take each other's containers down with `down -v`.
     env:
       COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      CI_PUSH_IMAGE_CACHE: ${{ github.event.repository.fork && '0' || '1' }}
     steps:
       - uses: actions/checkout@v7
       - name: Stack
         run: |
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build --wait
+          bash tools/ci_stack.sh
           docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
             python manage.py seed_demo
       - name: Chaos
@@ -149,6 +170,9 @@ jobs:
       - name: Tear down
         if: always()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+      - name: Push image cache
+        if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
+        run: bash tools/ci_stack.sh --push-only
       # `down -v` leaves the images this run built. Since 2026-09-17 CI
       # runs on the Docker Desktop engine next to the live stack, and one
       # nightly run left 18 of them behind (`rw-load-*`, `rw-e2e-*`,
@@ -177,20 +201,22 @@ jobs:
     # name would take each other's containers down with `down -v`.
     env:
       COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      CI_PUSH_IMAGE_CACHE: ${{ github.event.repository.fork && '0' || '1' }}
+      CI_STACK_SERVICES: judge
+      CI_STACK_UP: '0'
     steps:
       - uses: actions/checkout@v7
       - name: Judge image
-        # Compose, not `docker build`: the runner's Docker has no buildx, so
-        # `docker build` falls back to the legacy builder, which rejects the
-        # Dockerfile's `RUN --mount=type=cache` ("the --mount option requires
-        # BuildKit"; nightly red 2026-09-15 to 17). Compose builds with BuildKit
-        # itself, as the smoke job does with the same image.
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml build judge
+        run: bash tools/ci_stack.sh
       - name: Declared versions match the image
         # Each language prints its own runtime version. This check
         # catches "shown as Python 3.12, actually 3.11" — that mismatch
         # looks like a confusing SyntaxError to the user.
         run: python3 tests/compatibility/check_languages.py "${COMPOSE_PROJECT_NAME}-judge"
+      - name: Push image cache
+        if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
+        run: bash tools/ci_stack.sh --push-only
       - name: Tear down
         # The tag is per run now, so it has to go, like the smoke job's images.
         if: always()

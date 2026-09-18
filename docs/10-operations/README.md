@@ -722,6 +722,13 @@ kamayadi. Smoke/nightly ham hosted; `docker-compose.ci.yml` dagi
 `name: rankwant-ci` saqlanadi (hosted VM da jonli preview yo'q).
 Deploy self-hosted da qoladi va jonli stack'ga tegadi.
 
+Hosted VM qatlam keshi yo'qoladi, shuning uchun smoke/nightly
+`tools/ci_stack.sh` orqali `ghcr.io/<repo>/ci-{api,web,judge}:main`
+dan `--cache-from` qiladi va faqat `main` ga yozadi. pip/npm/mypy/
+Next kesh — Actions cache (10 GB). API pytest ikki shard. PR da
+`--cov` yo'q. Docker `type=gha` kesh ishlatilmaydi — judge obrazi
+pip/npm ni siqib chiqaradi.
+
 ### Push'dan oldingi darvoza
 
 `.githooks/pre-push` (repo bilan versiyalanadi, `core.hooksPath` orqali

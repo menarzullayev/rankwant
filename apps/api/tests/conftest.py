@@ -20,6 +20,30 @@ from problems.models import Language, Problem, ReferenceSolution, TestCase, Vali
 from ratings.models import UserSolvedProblem
 
 
+def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
+    """CI splits the suite across two VMs (`PYTEST_SHARDS` / `PYTEST_SHARD`).
+
+    Each shard collects the full list, then keeps items whose index matches
+    `i % n == shard`. Order is stable, so xdist `-n 4` then splits that half.
+    Unset locally — a missing variable is a no-op.
+    """
+    raw = os.environ.get("PYTEST_SHARDS", "")
+    if raw == "":
+        return
+    try:
+        total = int(raw)
+        shard = int(os.environ.get("PYTEST_SHARD", "0"))
+    except ValueError:
+        return
+    if total <= 1:
+        return
+    if not 0 <= shard < total:
+        raise pytest.UsageError(
+            f"PYTEST_SHARD={shard} must be in 0..{total - 1} (PYTEST_SHARDS={total})"
+        )
+    items[:] = [item for i, item in enumerate(items) if i % total == shard]
+
+
 @pytest.fixture(autouse=True, scope="session")
 def isolated_cache():
     """Har xdist worker'iga alohida Redis DB.

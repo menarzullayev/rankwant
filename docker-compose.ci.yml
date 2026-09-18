@@ -57,6 +57,9 @@ services:
   #
   # `smoke` kabi bir martalik: `profiles` tufayli `up -d` uni ko'tarmaydi.
   bakeoff:
+    # Same image the stack script tagged as project-api.
+    # Without this, `compose run bakeoff` rebuilds apps/api from scratch.
+    image: ${COMPOSE_PROJECT_NAME:-rankwant-ci}-api
     build: ./apps/api
     profiles: ['bakeoff']
     volumes: ["${HOST_REPO_ROOT:-.}/services/bakeoff:/bakeoff:ro"]

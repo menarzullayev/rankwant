@@ -44,6 +44,9 @@ permissions:
   # this it fails with "Resource not accessible by integration" and the
   # whole CI stops here.
   pull-requests: read
+  # Smoke/nightly push `ci-*` images to GHCR so the next hosted VM can
+  # `--cache-from` them. PRs do not run smoke; fork tokens cannot write.
+  packages: write
 
 jobs:
   # Filter is ONLY path outputs. Docs/contract checks used to sit in this
@@ -84,11 +87,14 @@ jobs:
     needs: filter
     if: ${{ needs.filter.outputs.api == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
-    # 5, not 3: on 2026-09-18 pytest took 148 s for 1466 tests and the whole
-    # job 3 min 7 s, so the 3-minute bound cancelled a green run (#87). Five
-    # still stops a hang long before the 14 min 54 s one measured without
-    # `CELERY_EAGER`.
-    timeout-minutes: 5
+    # Hosted 4 vCPU: one job timed out at 5 min (pytest still running at
+    # 242 s). Two shards cut the wall; 8 min still stops a CELERY hang
+    # (14 min 54 s without `CELERY_EAGER`) without cancelling a green run.
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1]
     services:
       postgres:
         image: postgres:16
@@ -128,14 +134,14 @@ jobs:
         run: pip install -r requirements-dev.lock
         working-directory: apps/api
       - name: Ruff
-        if: steps.check.outputs.ready == 'true'
+        if: ${{ steps.check.outputs.ready == 'true' && matrix.shard == 0 }}
         run: ruff check . && ruff format --check .
         working-directory: apps/api
       # Was a sibling job: on two runners it stole a slot for pip+diff
       # (~15 s) while another PR's Web waited (2026-09-18). pip is
       # already installed here.
       - name: OpenAPI schema diff
-        if: steps.check.outputs.ready == 'true'
+        if: ${{ steps.check.outputs.ready == 'true' && matrix.shard == 0 }}
         run: |
           python manage.py spectacular --file /tmp/schema.yml
           diff -u openapi/schema.yml /tmp/schema.yml || {
@@ -144,8 +150,15 @@ jobs:
             exit 1
           }
         working-directory: apps/api
+      - uses: actions/cache@v4
+        if: ${{ steps.check.outputs.ready == 'true' && matrix.shard == 0 }}
+        with:
+          path: apps/api/.mypy_cache
+          key: mypy-${{ runner.os }}-py3.12-${{ hashFiles('apps/api/requirements-dev.lock') }}-${{ hashFiles('apps/api/**/*.py') }}
+          restore-keys: |
+            mypy-${{ runner.os }}-py3.12-${{ hashFiles('apps/api/requirements-dev.lock') }}-
       - name: mypy (strict)
-        if: steps.check.outputs.ready == 'true'
+        if: ${{ steps.check.outputs.ready == 'true' && matrix.shard == 0 }}
         # `--show-traceback`: on 2026-09-12 this step failed with
         # `INTERNAL ERROR — Error constructing plugin instance of
         # NewSemanalDjangoPlugin`, but the one-line message hid the
@@ -177,7 +190,7 @@ jobs:
           fi
 
       - name: Migrations fully written
-        if: steps.check.outputs.ready == 'true'
+        if: ${{ steps.check.outputs.ready == 'true' && matrix.shard == 0 }}
         env:
           DATABASE_URL: postgres://postgres:postgres@${{ steps.svc.outputs.host }}:${{ job.services.postgres.ports['5432'] }}/rankwant_test
         run: python manage.py makemigrations --check --dry-run
@@ -194,9 +207,18 @@ jobs:
           # the result depends on scheduling order. Local measurement:
           # 14m54s → 1m57s.
           CELERY_EAGER: '1'
+          PYTEST_SHARDS: '2'
+          PYTEST_SHARD: ${{ matrix.shard }}
         # Public `ubuntu-latest` is 4 vCPU. `-n 6` was fastest on the
         # 8-CPU laptop runner; on 4 cores it oversubscribes.
-        run: pytest -n 4 --cov --cov-report=term-missing
+        # `--cov` stays on `main` (one shard) — on a PR it added 20–40 s
+        # and helped the 5 min timeout fire on hosted.
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ] || [ "${{ matrix.shard }}" != "0" ]; then
+            pytest -n 4
+          else
+            pytest -n 4 --cov --cov-report=term-missing
+          fi
         working-directory: apps/api
 
   # ⚠️ Besides building web, this job also runs the CHECK SUITE
@@ -245,14 +267,27 @@ jobs:
       - if: steps.check.outputs.ready == 'true'
         run: npm ci
         working-directory: apps/web
+      - uses: actions/cache@v4
+        if: ${{ steps.check.outputs.ready == 'true' && needs.filter.outputs.web == 'true' }}
+        with:
+          path: apps/web/.next/cache
+          key: next-${{ runner.os }}-${{ hashFiles('apps/web/package-lock.json') }}-${{ hashFiles('apps/web/src/**/*.ts', 'apps/web/src/**/*.tsx') }}
+          restore-keys: |
+            next-${{ runner.os }}-${{ hashFiles('apps/web/package-lock.json') }}-
       # Lint / typecheck / build ONLY when web changed. On a tools-only
       # run they would check nothing new — the job is still needed
       # because the check suite is below.
-      - if: ${{ steps.check.outputs.ready == 'true' && needs.filter.outputs.web == 'true' }}
-        run: npm run lint
-        working-directory: apps/web
-      - if: ${{ steps.check.outputs.ready == 'true' && needs.filter.outputs.web == 'true' }}
-        run: npm run typecheck
+      - name: Lint and typecheck
+        if: ${{ steps.check.outputs.ready == 'true' && needs.filter.outputs.web == 'true' }}
+        run: |
+          npm run lint &
+          p1=$!
+          npm run typecheck &
+          p2=$!
+          e=0
+          wait "$p1" || e=1
+          wait "$p2" || e=1
+          exit "$e"
         working-directory: apps/web
       - name: Unit tests (Vitest)
         if: ${{ steps.check.outputs.ready == 'true' && needs.filter.outputs.web == 'true' }}
@@ -311,6 +346,8 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
+          cache: pip
+          cache-dependency-path: services/judge-py/pyproject.toml
       - name: Python judge — lint, types, test
         run: |
           if [ ! -f services/judge-py/pyproject.toml ]; then
@@ -324,13 +361,13 @@ jobs:
           mypy .
           pytest
 
-  # After API/Web so a docs check does not occupy the second runner
-  # while pytest is queued. `always()` is required: a skipped `needs`
-  # job otherwise skips this one, and a docs-only PR would never run
-  # check_docs.
+  # Hosted VMs have spare parallelism (20 jobs). Integrity no longer
+  # waits for API/Web/Judge: those used to serialize a 7–11 s job behind
+  # pytest so a docs check would not steal the laptop's second runner.
+  # `always()` is still required if a future `needs` is skipped.
   integrity:
     name: Docs and contract integrity
-    needs: [filter, api, web, judge]
+    needs: [filter]
     if: ${{ always() && needs.filter.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 2
@@ -373,11 +410,16 @@ jobs:
     # a stack name would take each other's containers down with `down -v`.
     env:
       COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Push after a green run (not during Stack): first hosted smoke
+      # never had a `:main` tag, so every dispatch rebuilt nsjail.
+      # Forks cannot write GHCR; smoke already skips `pull_request`.
+      CI_PUSH_IMAGE_CACHE: ${{ github.event.repository.fork && '0' || '1' }}
     steps:
       - uses: actions/checkout@v7
       - name: Stack
         timeout-minutes: 10
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build --wait
+        run: bash tools/ci_stack.sh
       - name: Demo data
         timeout-minutes: 3
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api python manage.py seed_demo
@@ -435,6 +477,14 @@ jobs:
         # without checking anything, and no gate called it
         # (2026-09-16).
         run: python3 tests/compatibility/check_languages.py "${COMPOSE_PROJECT_NAME}-judge"
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: tests/e2e/package-lock.json
+      - name: E2E deps
+        run: npm ci
+        working-directory: tests/e2e
       - name: E2E (chromium only — full matrix is nightly)
         timeout-minutes: 10
         # `HOST_REPO_ROOT` — the bind-mount source is resolved on the
@@ -447,18 +497,24 @@ jobs:
         #
         # The variable is set ONLY on the container runner. On a WSL
         # runner it is empty and `${VAR:-$PWD}` keeps current behavior.
+        #
+        # `npm ci` runs on the VM (cached) and the tree is bind-mounted
+        # into the Playwright image — browsers stay in the image.
         run: |
           docker run --rm --user "$(id -u):$(id -g)" --network "${COMPOSE_PROJECT_NAME}_default" \
             -v "${HOST_REPO_ROOT:-$PWD}/tests/e2e:/e2e" -w /e2e \
             -e E2E_BASE_URL=http://web:3000 -e E2E_API_BASE=http://api:8000/api/v1 -e CI=1 \
             mcr.microsoft.com/playwright:v1.63.0-noble \
-            sh -c 'npm ci --silent && npx playwright test --project=chromium --reporter=list'
+            npx playwright test --project=chromium --reporter=list
       - name: Logs (on failure)
         if: failure()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs --tail 60
       - name: Tear down
         if: always()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+      - name: Push image cache
+        if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
+        run: bash tools/ci_stack.sh --push-only
       # ⚠️ `down -v` removes containers and volumes, but LEAVES THE
       # BUILT IMAGES — that was the hole.
       #
