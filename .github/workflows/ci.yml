@@ -562,7 +562,7 @@ jobs:
         # Full suite (21 cases), measured 2026-09-16 — all in 11.2 s.
         run: |
           C="docker compose -f docker-compose.yml -f docker-compose.ci.yml"
-          $C --profile bakeoff run --rm --no-build bakeoff
+          $C --profile bakeoff run --rm bakeoff
       - name: Tear down
         if: always()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
