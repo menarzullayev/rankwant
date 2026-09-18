@@ -24,6 +24,86 @@ from core.models import ApiToken, User
 #: `neytron_` (stress sinovi) bilan to'qnashmaydi: `startswith` boshqa.
 PREFIX = "neytrino"
 
+#: Personal data that `anonymize` clears and `export` returns. Every `User`
+#: field is listed here or in `KEPT_FIELDS`, and `tests/test_account_fields.py`
+#: fails on a field in neither. A new personal column therefore cannot slip past
+#: account deletion, as `phone` did until 2026-09-18.
+CLEARED_FIELDS: tuple[str, ...] = (
+    "password",
+    "is_active",
+    "username",
+    "username_skeleton",
+    "display_name",
+    "first_name",
+    "last_name",
+    "email",
+    "email_verified_at",
+    "avatar_url",
+    "bio",
+    "telegram_id",
+    "country",
+    "region",
+    "district",
+    "city",
+    "school",
+    "school_ref",
+    "grade",
+    "website",
+    "birth_date",
+    "phone",
+    "hidden_fields",
+    "pinned_achievements",
+    "ui_prefs",
+    "notify_prefs",
+    "marketing_opt_in",
+    "shirt_size",
+    "postal_recipient",
+    "postal_country",
+    "postal_region",
+    "postal_city",
+    "postal_address",
+    "postal_code",
+    "coach_can_view_attempts",
+    "message_min_rating",
+    "device_fingerprint",
+    "duel_ready_until",
+    "last_seen_at",
+)
+
+#: Kept on purpose. Results and counters stay, as the module docstring explains;
+#: `terms_accepted_at` records what the person agreed to, and the plan fields
+#: are a billing record.
+KEPT_FIELDS: tuple[str, ...] = (
+    "id",
+    "last_login",
+    "is_superuser",
+    "is_staff",
+    "date_joined",
+    "groups",
+    "user_permissions",
+    "username_changed_at",
+    "locale",
+    "theme",
+    "rating_skills",
+    "rating_contest",
+    "rating_activity",
+    "rating_challenges",
+    "rated_contest_count",
+    "max_rating_skills",
+    "max_rating_contest",
+    "max_rating_activity",
+    "max_rating_challenges",
+    "solved_count",
+    "streak_count",
+    "streak_max",
+    "streak_freeze_until",
+    "last_active_date",
+    "terms_accepted_at",
+    "plan",
+    "plan_expires_at",
+    "contribution",
+)
+
 
 def anonymous_name(user: User) -> str:
     return f"{PREFIX}_{user.pk:05d}"
@@ -94,9 +174,25 @@ def anonymize(user: User) -> None:
     user.grade = ""
     user.website = ""
     user.birth_date = None
+    user.phone = ""
+    user.email_verified_at = None
     user.hidden_fields = []
+    user.pinned_achievements = []
     user.ui_prefs = {}
     user.notify_prefs = {}
+    user.marketing_opt_in = False
+    user.shirt_size = ""
+    user.postal_recipient = ""
+    user.postal_country = ""
+    user.postal_region = ""
+    user.postal_city = ""
+    user.postal_address = ""
+    user.postal_code = ""
+    user.coach_can_view_attempts = False
+    user.message_min_rating = None
+    user.device_fingerprint = ""
+    user.duel_ready_until = None
+    user.last_seen_at = None
     user.is_active = False
     # Sessiya paroldan olingan hashga bog'langan — parolni yaroqsiz
     # qilish ochiq qolgan barcha sessiyalarni ham uzadi.
@@ -123,9 +219,13 @@ def export(user: User) -> dict[str, Any]:
         "profile": {
             "username": user.username,
             "email": user.email,
+            "email_verified_at": user.email_verified_at,
             "display_name": user.display_name,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
             "bio": user.bio,
             "avatar_url": user.avatar_url,
+            "telegram_id": user.telegram_id,
             "locale": user.locale,
             "theme": user.theme,
             "country": user.country,
@@ -133,18 +233,44 @@ def export(user: User) -> dict[str, Any]:
             "district": user.district,
             "city": user.city,
             "school": user.school,
+            "school_ref": user.school_ref.name if user.school_ref is not None else None,
             "grade": user.grade,
             "website": user.website,
             "birth_date": user.birth_date,
+            "phone": user.phone,
+            "shirt_size": user.shirt_size,
+            "postal_recipient": user.postal_recipient,
+            "postal_country": user.postal_country,
+            "postal_region": user.postal_region,
+            "postal_city": user.postal_city,
+            "postal_address": user.postal_address,
+            "postal_code": user.postal_code,
+            "coach_can_view_attempts": user.coach_can_view_attempts,
+            "message_min_rating": user.message_min_rating,
+            "device_fingerprint": user.device_fingerprint,
+            "duel_ready_until": user.duel_ready_until,
             "hidden_fields": user.hidden_fields,
+            "pinned_achievements": user.pinned_achievements,
             "ui_prefs": user.ui_prefs,
             "notify_prefs": user.notify_prefs,
+            "marketing_opt_in": user.marketing_opt_in,
+            "terms_accepted_at": user.terms_accepted_at,
             "date_joined": user.date_joined,
+            "last_seen_at": user.last_seen_at,
+            "plan": user.plan,
+            "plan_expires_at": user.plan_expires_at,
             "rating_skills": user.rating_skills,
             "rating_contest": user.rating_contest,
             "rating_activity": user.rating_activity,
             "rating_challenges": user.rating_challenges,
+            "max_rating_skills": user.max_rating_skills,
+            "max_rating_contest": user.max_rating_contest,
+            "max_rating_activity": user.max_rating_activity,
+            "max_rating_challenges": user.max_rating_challenges,
+            "solved_count": user.solved_count,
             "streak_count": user.streak_count,
+            "streak_max": user.streak_max,
+            "contribution": user.contribution,
         },
         "attempts": list(
             Attempt.objects.filter(user=user)

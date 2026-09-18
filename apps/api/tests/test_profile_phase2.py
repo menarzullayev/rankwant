@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import importlib
 import io
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Any
 
 import pytest
@@ -142,22 +142,36 @@ class TestRollar:
 
 @pytest.mark.django_db
 class TestOnlayn:
-    def test_onlayn_va_oxirgi_faollik(self, user: User) -> None:
-        session = UserSession.objects.create(
-            user=user, session_key="a" * 40, last_seen=timezone.now() - timedelta(minutes=2)
+    @staticmethod
+    def seen(user: User, when: datetime) -> None:
+        # What `core.sessions.record` writes: the session row and the user column (ADR-0024).
+        UserSession.objects.update_or_create(
+            user=user, session_key="a" * 40, defaults={"last_seen": when}
         )
+        User.objects.filter(pk=user.pk).update(last_seen_at=when)
+
+    def test_onlayn_va_oxirgi_faollik(self, user: User) -> None:
+        self.seen(user, timezone.now() - timedelta(minutes=2))
         body = profil(user)
         assert body["online"] is True
         assert body["last_seen"] is not None
 
-        session.last_seen = timezone.now() - timedelta(hours=3)
-        session.save(update_fields=["last_seen"])
+        self.seen(user, timezone.now() - timedelta(hours=3))
         body = profil(user)
         assert body["online"] is False
         assert body["last_seen"] is not None
 
+    def test_chiqib_ketsa_ham_oxirgi_faollik_qoladi(self, user: User) -> None:
+        # Signing out deletes the session; the visit it recorded stays (ADR-0024).
+        self.seen(user, timezone.now() - timedelta(hours=3))
+        UserSession.objects.filter(user=user).delete()
+
+        body = profil(user)
+
+        assert (body["online"], body["last_seen"] is not None) == (False, True)
+
     def test_yashirilsa_faqat_egasi_koradi(self, user: User, other_user: User) -> None:
-        UserSession.objects.create(user=user, session_key="b" * 40, last_seen=timezone.now())
+        self.seen(user, timezone.now())
         saved = kirgan(user).patch(reverse("me"), {"hidden_fields": ["online"]}, format="json")
 
         begona = profil(user, other_user)

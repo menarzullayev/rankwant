@@ -2358,6 +2358,16 @@ def neg_decisions_intent_link_eager() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_dormant_user_field_removed() -> tuple[bool, str]:
+    # A dormant column tidied away as "unused" undoes the owner's ADR-0024 choice.
+    return _decision_broken(
+        "apps/api/core/models.py",
+        "    duel_ready_until = models.DateTimeField(null=True, blank=True)\n",
+        "",
+        "User modeli tenglik maydonlari",
+    )
+
+
 def neg_decisions_dictionary_prop() -> tuple[bool, str]:
     # The dictionary back as a prop: 72 kB of every page again.
     return _decision_broken(
@@ -2439,6 +2449,8 @@ def _decisions_sandbox(extra_workflows: dict[str, str]) -> tuple[int, str]:
         "apps/web/src/app/layout.tsx",
         "apps/web/src/app/i18n/[file]/route.ts",
         "apps/web/src/proxy.ts",
+        # ADR-0024: the User columns added for competitor parity.
+        "apps/api/core/models.py",
     )
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
@@ -3684,6 +3696,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("lug'at prop'ga qaytsa tutilsin", neg_decisions_dictionary_prop),
             ("lug'at fayli keshlanmasa tutilsin", neg_decisions_dictionary_not_cached),
             ("lug'at middleware'dan o'tsa tutilsin", neg_decisions_dictionary_through_proxy),
+            ("User'dan tenglik ustuni o'chsa tutilsin", neg_decisions_dormant_user_field_removed),
             ("sinov label'i self-test'da o'tadi", neg_decisions_trial_label_selftest_allowed),
             ("sinov label'i boshqa workflow'da tutilsin", neg_decisions_trial_label_scoped),
             ("Security PR'da qaytsa tutilsin", neg_decisions_security_on_pr),

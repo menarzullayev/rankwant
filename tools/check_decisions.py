@@ -256,6 +256,50 @@ def dictionary_as_cached_file() -> str | None:
     return None
 
 
+USER_MODEL = "apps/api/core/models.py"
+#: ADR-0024: the 21 columns added for parity with Codeforces, Robocontest and KEP.
+#: Thirteen of them stay unused until their features exist, on the owner's choice.
+PARITY_USER_FIELDS = (
+    "last_seen_at",
+    "max_rating_skills",
+    "max_rating_contest",
+    "max_rating_activity",
+    "max_rating_challenges",
+    "streak_max",
+    "solved_count",
+    "shirt_size",
+    "plan",
+    "plan_expires_at",
+    "postal_recipient",
+    "postal_country",
+    "postal_region",
+    "postal_city",
+    "postal_address",
+    "postal_code",
+    "coach_can_view_attempts",
+    "message_min_rating",
+    "contribution",
+    "device_fingerprint",
+    "duel_ready_until",
+)
+
+
+def user_parity_fields_kept() -> str | None:
+    """The `User` columns added for competitor parity stay (ADR-0024).
+
+    The owner chose to add the dormant columns before the features that use
+    them. They look like dead fields, and an agent tidying them would undo
+    that choice without asking.
+    """
+    src = read(USER_MODEL)
+    missing = [
+        name for name in PARITY_USER_FIELDS if not re.search(rf"^    {name} = models\.", src, re.M)
+    ]
+    if missing:
+        return f"{USER_MODEL}: ADR-0024 ustunlari yo'q — {', '.join(missing)}"
+    return None
+
+
 def _workflow_triggers(rel: str) -> set[str]:
     lines = read(rel).splitlines()
     try:
@@ -320,6 +364,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("navigatsiya prefetch'i niyatda", nav_prefetch_on_intent),
     ("bosh sahifa <main> prefetch'i niyatda", home_main_prefetch_on_intent),
     ("lug'at alohida faylda", dictionary_as_cached_file),
+    ("User modeli tenglik maydonlari", user_parity_fields_kept),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),

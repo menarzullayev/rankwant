@@ -430,6 +430,11 @@ def test_profilda_orin_va_daraja_taqsimoti(db, problem, hard_problem) -> None:
         delta=-500,
         reason="recalculation",
     )
+    # Every writer of a history row also raises the stored maximum (ADR-0024).
+    from ratings.services import bump_max_rating
+
+    bump_max_rating(ikkinchi, "skills", 1500)
+    bump_max_rating(ikkinchi, "skills", 1000)
 
     data = APIClient().get(reverse("user-detail", args=[ikkinchi.username])).data
 

@@ -48,8 +48,13 @@ Language ── Attempt, TestCase (compile/run konfiguratsiyasi)
 | `streak_count`, `streak_freeze_until`, `last_active_date` | Phase 1                               |
 | `rated_contest_count`                               | Elo volatillik uchun (birinchi 6)           |
 | `is_active`, `is_staff`, `date_joined`              |                                             |
+| `last_seen_at`, `max_rating_*` (4), `streak_max`, `solved_count` | Saqlangan kesh — manbasi sessiya, `RatingHistory`, streak, `UserSolvedProblem`; `recount_user_stats` qayta quradi ([ADR-0024](../07-adr/0024-user-competitor-parity-fields.md)) |
+| `first_name`, `last_name`, `shirt_size`             | Sertifikat va olimpiada uchun; faqat egasiga ko'rinadi (ADR-0024) |
+| `plan`, `plan_expires_at`, `postal_*` (6), `coach_can_view_attempts`, `message_min_rating`, `contribution`, `device_fingerprint`, `duel_ready_until` | Funksiyasidan oldin qo'shilgan, API'da yo'q; olib tashlanmaydi (ADR-0024, CLAUDE.md qarorlar jadvali) |
 
 4 reyting boshidan modellashtiriladi, UI da fazali ochiladi.
+Yangilangan 2026-09-18: raqobatchilar bilan tenglik uchun 21 maydon (46 → 67),
+Saidakbar aka tasdig'i bilan — [ADR-0024](../07-adr/0024-user-competitor-parity-fields.md).
 Formulalar: [04-prd § Reyting formulalari](../04-prd/README.md#reyting-formulalari).
 
 ### Problem

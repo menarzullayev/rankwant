@@ -147,6 +147,65 @@ class User(AbstractUser):
     #: Bepul almashtirish yiliga bir marta — shu sana bo'yicha sanaladi.
     username_changed_at = models.DateTimeField(null=True, blank=True)
 
+    # ── Competitor parity: stored caches (ADR-0024) ──────────────────
+    # Values that used to be computed on every read. Their sources stay
+    # authoritative, and `recount_user_stats` rebuilds these columns.
+    #: Latest activity on any device; written together with `UserSession.last_seen`.
+    last_seen_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    #: Highest `RatingHistory.value_after` per rating; `None` until the first row.
+    max_rating_skills = models.IntegerField(null=True, blank=True)
+    max_rating_contest = models.IntegerField(null=True, blank=True)
+    max_rating_activity = models.IntegerField(null=True, blank=True)
+    max_rating_challenges = models.IntegerField(null=True, blank=True)
+    #: Longest streak reached; `streak_count` is the current one.
+    streak_max = models.PositiveIntegerField(default=0)
+    #: Rows in `UserSolvedProblem`.
+    solved_count = models.PositiveIntegerField(default=0, db_index=True)
+
+    class ShirtSize(models.TextChoices):
+        XS = "XS", "XS"
+        S = "S", "S"
+        M = "M", "M"
+        L = "L", "L"
+        XL = "XL", "XL"
+        XXL = "XXL", "XXL"
+        XXXL = "3XL", "3XL"
+
+    #: For olympiad prizes. Owner-only and never public, like `phone`.
+    shirt_size = models.CharField(max_length=4, choices=ShirtSize.choices, blank=True)
+
+    # ── Dormant until their features exist (ADR-0024) ────────────────
+    # The owner chose on 2026-09-18 to add these columns before the features
+    # that use them. The API does not expose them yet. Do not remove them as
+    # unused: `tools/check_decisions.py` guards the list.
+
+    class Plan(models.TextChoices):
+        # PRD P2-3; prices and limits come with the monetization ADR.
+        FREE = "free", "Free"
+        PLUS = "plus", "Plus"
+        PRO = "pro", "Pro"
+
+    #: Subscription plan. Set only by the future payment flow, never by the user.
+    plan = models.CharField(max_length=16, choices=Plan.choices, default=Plan.FREE)
+    plan_expires_at = models.DateTimeField(null=True, blank=True)
+    #: Delivery address for physical prizes. Owner-only, never public.
+    postal_recipient = models.CharField(max_length=150, blank=True)
+    postal_country = models.CharField(max_length=2, blank=True)
+    postal_region = models.CharField(max_length=80, blank=True)
+    postal_city = models.CharField(max_length=100, blank=True)
+    postal_address = models.CharField(max_length=255, blank=True)
+    postal_code = models.CharField(max_length=16, blank=True)
+    #: Consent for coaches to open this user's attempts.
+    coach_can_view_attempts = models.BooleanField(default=False)
+    #: Minimum rating a sender needs to start private messages; `None` means anyone.
+    message_min_rating = models.IntegerField(null=True, blank=True)
+    #: Sum of votes on the user's posts and comments; may be negative.
+    contribution = models.IntegerField(default=0)
+    #: Hash of the last device fingerprint, for olympiad integrity. Internal only.
+    device_fingerprint = models.CharField(max_length=64, blank=True)
+    #: Open for random duel matchmaking until this moment.
+    duel_ready_until = models.DateTimeField(null=True, blank=True)
+
     class Meta(AbstractUser.Meta):  # type: ignore[name-defined,misc]
         indexes: ClassVar = [
             models.Index(fields=["-rating_skills"], name="user_skills_desc"),
