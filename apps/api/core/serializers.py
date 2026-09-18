@@ -13,7 +13,7 @@ from rest_framework import serializers
 from core import handles, prefs, turnstile, usernames
 from core.models import PRIVACY_FIELDS, ApiToken, School, User, UserSession
 from core.throttling import TrustedClientIdent
-from profiles.catalog import UZ_DISTRICTS, UZ_REGIONS
+from profiles.catalog import GRADES, UZ_DISTRICTS, UZ_REGIONS
 from profiles.titles import TitleField
 
 
@@ -252,6 +252,19 @@ class MeSerializer(serializers.ModelSerializer[User]):
         if re.search(r"[\x00-\x1f\x7f]", cleaned):
             raise serializers.ValidationError("Ismda boshqaruv belgisi bo'lmasin")
         return cleaned
+
+    def validate_grade(self, value: str) -> str:
+        """A code from `profiles.catalog.GRADES` (ADR-0024).
+
+        A value saved before the catalogue existed passes while it is unchanged:
+        the settings form sends every field, and rejecting one the person did not
+        touch would block saving the rest.
+        """
+        if not value or value in GRADES:
+            return value
+        if self.instance is not None and value == self.instance.grade:
+            return value
+        raise serializers.ValidationError("Sinf ro'yxatdan tanlanadi")
 
     def validate_first_name(self, value: str) -> str:
         return self._clean_name(value)

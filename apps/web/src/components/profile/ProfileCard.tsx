@@ -12,6 +12,7 @@ import { badgeLabel, coverClass, frameClass } from "@/lib/cosmetics";
 import { countryName } from "@/lib/countries";
 import { EXTERNAL_LABEL, externalShown, externalUrl } from "@/lib/external-links";
 import { formatDate, formatRelative } from "@/lib/format";
+import { gradeLabel } from "@/lib/grades";
 import { districtName, regionName } from "@/lib/regions";
 import { BrandIcon, EXTERNAL_ICONS } from "@/lib/tech-icons";
 import { FollowButton } from "./FollowButton";
@@ -86,7 +87,7 @@ export function ProfileCard({
         ))}
       </span>,
     ]);
-  if (info.grade) rows.push([t(locale, "settings.grade"), info.grade]);
+  if (info.grade) rows.push([t(locale, "settings.grade"), gradeLabel(info.grade, locale)]);
   if (info.website)
     rows.push([
       t(locale, "settings.website"),

@@ -33,6 +33,8 @@ export type PrefsChange = {
   a11y?: Partial<A11yPrefs>;
   /** Shaxsiy shablonlar (D21) — butun ro'yxat, bo'lak emas. */
   templates?: ThemeTemplate[];
+  /** Problemset toggles (ADR-0024); merged into `ui_prefs.problemset`. */
+  problemset?: { hideTags?: boolean; hideSolved?: boolean };
 };
 
 /** Sozlagichning qurilmadagi nusxasi — hidratsiyadan OLDIN qo'llanadi.

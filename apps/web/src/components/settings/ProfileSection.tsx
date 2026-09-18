@@ -161,6 +161,8 @@ function AboutCard() {
     await action.run(async () => {
       await patchJson("/me/", {
         display_name: String(form.get("display_name") ?? "").trim(),
+        first_name: String(form.get("first_name") ?? "").trim(),
+        last_name: String(form.get("last_name") ?? "").trim(),
         bio: String(form.get("bio") ?? "").trim(),
       });
       await reload();
@@ -177,6 +179,26 @@ function AboutCard() {
           maxLength={100}
           autoComplete="name"
         />
+        {/* The real name: certificates and olympiad lists, never public (ADR-0024). */}
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field
+            label={t(locale, "settings.firstName")}
+            name="first_name"
+            defaultValue={user.first_name}
+            maxLength={150}
+            autoComplete="given-name"
+          />
+          <Field
+            label={t(locale, "settings.lastName")}
+            name="last_name"
+            defaultValue={user.last_name}
+            maxLength={150}
+            autoComplete="family-name"
+          />
+          <div className="sm:col-span-2">
+            <Hint>{t(locale, "settings.realNameHint")}</Hint>
+          </div>
+        </div>
         <TextArea
           label={t(locale, "settings.bio")}
           hint={t(locale, "settings.bioHint")}
