@@ -27,22 +27,78 @@ export function srgbLinear(v: number): number {
   return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
 }
 
-/** `#rrggbb` yoki `rgb()/rgba()`. O'qib bo'lmasa `null` — CHAQIRUVCHI
- *  xato deb hisoblashi kerak, "o'tdi" deb emas. */
-export function parseColor(value: string): RGB | null {
+/** Rang va uning shaffofligi. `alpha` — 0…1. */
+export type RGBA = [number, number, number, number];
+
+/** Uslub tokenidagi HAR QANDAY rang yozuvi → `[r, g, b, a]`.
+ *
+ *  Qo'llab-quvvatlanadigan shakllar va nega ularning har biri kerak
+ *  (hammasi `globals.css` dan olingan, 2026-09-18 da o'lchangan):
+ *
+ *   - `#rgb` / `#rgba` — `flat` da `--rw-surface: #fff`;
+ *   - `#rrggbb` / `#rrggbbaa` — `--rw-hover: #ffffff14` kabi qatlamlar;
+ *   - `rgb()` / `rgba()` — `glass` da `rgba(0, 0, 0, .62)`;
+ *   - `linear-gradient(...)` — `glass` da `--rw-ground` gradient, BIRINCHI
+ *     rang olinadi: fon o'lchovi uchun bitta vakil rang yetarli, gradientning
+ *     o'rtasi esa yorqinlik bo'yicha chetlaridan uzoqqa ketmaydi.
+ *
+ *  ⚠️ Bu ro'yxat 2026-09-18 gacha faqat `#rrggbb` va `rgb()` edi. Natijada
+ *  `glass` va `swiss` uslublarida `readBackgrounds()` bo'sh qaytardi, panel
+ *  esa buni «rang AA dan o'tmadi» deb ko'rsatardi — aslida kontrast
+ *  UMUMAN o'lchanmagan edi va accent tanlash o'lik edi
+ *  (`docs/research/2026-09-18-appearance-audit/BOARD.md`, APP-1).
+ */
+export function parseRgba(value: string): RGBA | null {
   const text = value.trim();
-  const hex = text.match(/^#([0-9a-fA-F]{6})$/);
+  const gradient = text.match(/(?:linear|radial|conic)-gradient\((.*)\)/s);
+  if (gradient) {
+    // Birinchi rang: `135deg, #341d65 0%, …` — burchakdan keyingi bo'lak.
+    const first = gradient[1].match(
+      /(#[0-9a-fA-F]{3,8}|rgba?\([^)]*\)|hsla?\([^)]*\))/,
+    );
+    return first ? parseRgba(first[1]) : null;
+  }
+  const hex = text.match(/^#([0-9a-fA-F]{3,8})$/);
   if (hex) {
     const h = hex[1];
-    return [
-      parseInt(h.slice(0, 2), 16),
-      parseInt(h.slice(2, 4), 16),
-      parseInt(h.slice(4, 6), 16),
-    ];
+    const wide = h.length > 4;
+    const size = wide ? 2 : 1;
+    if (h.length !== (wide ? 6 : 3) && h.length !== (wide ? 8 : 4)) return null;
+    const at = (i: number) => {
+      const part = h.slice(i * size, i * size + size);
+      return parseInt(wide ? part : part + part, 16);
+    };
+    const alpha = h.length === (wide ? 8 : 4) ? at(3) / 255 : 1;
+    return [at(0), at(1), at(2), alpha];
   }
-  const rgb = text.match(/^rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/);
-  if (rgb) return [Number(rgb[1]), Number(rgb[2]), Number(rgb[3])];
+  const rgb = text.match(/^rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)(?:[,\s/]+([\d.]+%?))?/);
+  if (rgb) {
+    const raw = rgb[4];
+    const alpha = raw === undefined ? 1 : raw.endsWith("%") ? Number(raw.slice(0, -1)) / 100 : Number(raw);
+    return [Number(rgb[1]), Number(rgb[2]), Number(rgb[3]), Number.isFinite(alpha) ? alpha : 1];
+  }
   return null;
+}
+
+/** Rangni fon ustiga qo'yadi — shaffof qatlam yolg'on yorqinlik bermasin. */
+export function blend([r, g, b, a]: RGBA, over: RGB): RGB {
+  return [
+    r * a + over[0] * (1 - a),
+    g * a + over[1] * (1 - a),
+    b * a + over[2] * (1 - a),
+  ];
+}
+
+/** Rang yozuvi → `RGB`. O'qib bo'lmasa `null` — CHAQIRUVCHI xato deb
+ *  hisoblashi kerak, "o'tdi" deb emas.
+ *
+ *  `over` berilsa shaffof rang o'sha fon ustida hisoblanadi; berilmasa
+ *  shaffoflik TASHLANADI (rang o'zicha olinadi). */
+export function parseColor(value: string, over?: RGB): RGB | null {
+  const rgba = parseRgba(value);
+  if (!rgba) return null;
+  if (over && rgba[3] < 1) return blend(rgba, over);
+  return [rgba[0], rgba[1], rgba[2]];
 }
 
 export function toHex(color: RGB): string {
@@ -229,9 +285,15 @@ const BACKGROUND_TOKENS = [
 
 /** Joriy uslubning o'lchanadigan fonlari. */
 export function readBackgrounds(): RGB[] {
-  const out: RGB[] = [];
+  // Ildiz fon BIRINCHI o'qiladi: qolgan sirtlar ko'pincha shaffof
+  // (`rgba(0, 0, 0, .62)`) va ular aynan shu fon ustida turadi. Ularni
+  // shaffofligicha o'lchash yorqinlikni yolg'on ko'rsatardi — qora
+  // 62% qora emas.
+  const ground = parseColor(readToken("--rw-ground"));
+  const out: RGB[] = ground ? [ground] : [];
   for (const token of BACKGROUND_TOKENS) {
-    const parsed = parseColor(readToken(token));
+    if (token === "--rw-ground") continue;
+    const parsed = parseColor(readToken(token), ground ?? undefined);
     if (parsed) out.push(parsed);
   }
   return out;
