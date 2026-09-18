@@ -59,7 +59,11 @@ test("arxiv filtri ro'yxatni toraytiradi va URL da qoladi", async ({
 
   await page.getByRole("button", { name: /^Filtrlar( \d+)?$/ }).click();
   await page.getByRole("button", { name: "Qiyin", exact: true }).click();
-  await page.waitForURL(/level=hard/);
+  // The level chips write the Codeforces-style range, not `level=` (#90).
+  // `?level=hard` is still READ for backward compatibility, but the UI never
+  // writes it — asserting it here is what kept `main` red from #90 onwards.
+  await page.waitForURL(/difficulty__gte=1800/);
+  expect(new URL(page.url()).searchParams.get("difficulty__lte")).toBe("2199");
 
   // Qatorlar SONI emas, MAZMUNI tekshiriladi: to'liq arxivda birinchi
   // sahifa filtrsiz ham, filtr bilan ham to'ladi va sanoq o'zgarmaydi —
@@ -75,6 +79,22 @@ test("arxiv filtri ro'yxatni toraytiradi va URL da qoladi", async ({
   await expect(
     page.getByRole("button", { name: /^Filtrlar( \d+)?$/ }),
   ).toContainText("1");
+});
+
+test("eski `level=` havolasi hamon filtrlaydi", async ({ page }) => {
+  // Backward compatibility: links minted before #90 carry `?level=hard`.
+  // `app/problems/page.tsx` forwards `level` through ALLOWED and
+  // `problems/filters.py` maps it to a range via `filter_level`, so the old
+  // URL must keep narrowing the list even though nothing writes it any more.
+  // Nothing covered this branch, so it could have rotted silently.
+  await page.goto("/problems?level=hard");
+
+  const hardRows = page
+    .getByRole("row")
+    .filter({ has: page.locator(".level-hard") });
+  await expect(hardRows.first()).toBeVisible();
+  const rows = await page.getByRole("row").count();
+  expect(await hardRows.count()).toBe(rows - 1); // header row
 });
 
 test("saralash tabi tartibni almashtiradi", async ({ page }) => {
