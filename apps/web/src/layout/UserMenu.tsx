@@ -23,10 +23,17 @@ export default function UserMenu() {
   if (!ready) return <div className="h-10 w-24" />;
 
   if (!user) {
+    // `whitespace-nowrap` SHART — usiz yorliq ikki qatorga bo'linardi.
+    // O'lchandi (375px, `en`): 88x40px va **2 qator**; `nowrap` bilan
+    // 100x40px va 1 qator. Sabab: header tor ekranda siqiladi va flex
+    // element kontentidan pastga tushadi, matn esa o'raladi. Eng uzun
+    // tarjima `tg` — «Ворид шудан» (11 belgi), ya'ni bir qatorli
+    // yorliq uzunligi tilga bog'liq, shuning uchun o'rashni taqiqlash
+    // yagona barqaror yechim.
     return (
       <IntentLink
         href={"/login?tab=login" as Route}
-        className="flex h-10 items-center gap-2 rw-radius-sm rw-accent-bg px-4 text-theme-sm font-medium text-white transition"
+        className="flex h-10 items-center gap-2 whitespace-nowrap rw-radius-sm rw-accent-bg px-4 text-theme-sm font-medium text-white transition"
       >
         <Icon name="user.profile" className="size-4" />
         {t(locale, "auth.login")}

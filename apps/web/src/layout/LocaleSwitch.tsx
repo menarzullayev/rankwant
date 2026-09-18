@@ -105,6 +105,19 @@ export function LocaleSwitch() {
       ? `${t(locale, "locale.auto")} · ${LOCALE_NAMES[locale]}`
       : label(current as Locale);
 
+  // `sm` dan pastda ko'rinadigan matn — til KODI, to'liq nom emas.
+  //
+  // O'lchandi (2026-09-18, jonli DOM, 320px — eng tor qo'llab-quvvatlanadigan
+  // ekran): to'liq nom bilan til tugmasi 165px, header esa 15px (chiqqan) va
+  // 59px (kirgan) toshardi. Kod bilan tugma 82px — toshish 0, ikkala holatda.
+  //
+  // Kod KICHIK harfda qoladi: `text-transform: uppercase` glifni kengaytiradi
+  // va `KAA` 320px da 3px toshadi (o'lchandi).
+  //
+  // Nega butunlay yashirmaymiz: «qaysi tildaman» — eng ko'p so'raladigan
+  // savol (qaror 9), kod uni saqlaydi, globus-only yo'qotardi.
+  const currentCode = current === AUTO ? locale : current;
+
   // `active` ni ochilishda o'rnatadigan effekt YO'Q: uni `openList()`
   // o'zi qiladi. Effektda `setState` bu loyihada taqiqlangan
   // (`react-hooks/set-state-in-effect`) va bu yerda u ortiqcha ham edi —
@@ -250,7 +263,11 @@ export function LocaleSwitch() {
         // foydalanuvchi tugmani ekranda ko'rgan so'zi bilan
         // chaqira olmasdi. Lighthouse tutdi:
         // `label-content-name-mismatch` — accessibility 100 dan tushdi.
-        aria-label={`${currentLabel} — ${t(locale, "locale.switchLabel")}`}
+        //
+        // Ko'rinadigan matn endi IKKI XIL (`sm` dan yuqorida nom, pastda
+        // kod), ya'ni IKKISI HAM shu yerda bo'lishi shart: usiz tor ekranda
+        // o'sha xato qaytadi.
+        aria-label={`${currentLabel} (${currentCode}) — ${t(locale, "locale.switchLabel")}`}
         onClick={() => (open ? setOpen(false) : openList())}
         onKeyDown={onButtonKeyDown}
         className="flex h-10 items-center gap-1.5 rw-radius-sm border rw-line rw-field-bg px-2.5
@@ -258,8 +275,14 @@ export function LocaleSwitch() {
       >
         <Icon name="locale.globe" className="size-4 shrink-0" />
         {/* `min-w-0` + `truncate` SHART: tarjima uzunligi olti barobargacha
-            farq qiladi, ya'ni eng uzun nom header'ni buzdmasin. */}
-        <span className="min-w-0 max-w-[7.5rem] truncate text-theme-xs">{currentLabel}</span>
+            farq qiladi, ya'ni eng uzun nom header'ni buzdmasin.
+            `sm` dan pastda butunlay yashiriladi — o'sha joyda kod turadi. */}
+        <span className="hidden min-w-0 max-w-[7.5rem] truncate text-theme-xs sm:block">
+          {currentLabel}
+        </span>
+        {/* Tor ekran (320–639px): til kodi. Flex elementi `display` ni
+            blokka aylantiradi, shuning uchun `block` bu yerda tabiiy. */}
+        <span className="text-theme-xs sm:hidden">{currentCode}</span>
         {pending ? (
           <Icon name="action.loading" className="size-3.5 shrink-0 animate-spin motion-reduce:animate-none" />
         ) : (
