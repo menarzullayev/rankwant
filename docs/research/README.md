@@ -38,4 +38,7 @@ kirill matn, yozilganicha qolgan jadvallar.
 | 2026-09-15 | [kep-customize-audit](2026-09-15-kep-customize-audit/REPORT.md) | kep.uz CUSTOMIZE paneli auditi | — |
 | 2026-09-15 | [nav-typography-implementation](2026-09-15-nav-typography-implementation/REPORT.md) | Navigatsiya va erkin tipografiya — bajarilgan ish | — |
 | 2026-09-15 | [self-hosted-runner-guide](2026-09-15-self-hosted-runner-guide/self-hosted-runner-guide.md) | GitHub Actions self-hosted runner qo'llanmasi | — |
+| 2026-09-17 | [cloudflare-free](2026-09-17-cloudflare-free/REPORT.md) | Cloudflare Free rejasi: RankWant uchun foydali imkoniyatlar va cheklovlar, faktlar tekshirilgan | ADR-0023 (WAF qoidasi) |
+| 2026-09-17 | [github-free](2026-09-17-github-free/REPORT.md) | GitHub Free + private repo: imkoniyatlar, cheklovlar, Actions daqiqalari | `docs/10-operations` |
+| 2026-09-17 | [homepage-load](2026-09-17-homepage-load/REPORT.md) | Bosh sahifa SSR: 20/50/100 VU local k6, prefetch, 1000 tashrif hukmi | `tests/load/README.md` |
 | 2026-09-18 | [appearance-audit](2026-09-18-appearance-audit/BOARD.md) | Appearance (customizer + `/settings/korinish`) auditi: 9 chipta, ikkita ildiz — `parseColor` va `prefs` sxemasi | `apps/api/core/prefs.py`, `apps/web/src/lib/theme/color.ts` |
