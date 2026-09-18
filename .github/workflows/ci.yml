@@ -97,7 +97,11 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.api == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: [self-hosted, rankwant]
-    timeout-minutes: 3
+    # 5, not 3: on 2026-09-18 pytest took 148 s for 1466 tests and the whole
+    # job 3 min 7 s, so the 3-minute bound cancelled a green run (#87). Five
+    # still stops a hang long before the 14 min 54 s one measured without
+    # `CELERY_EAGER`.
+    timeout-minutes: 5
     services:
       postgres:
         image: postgres:16
