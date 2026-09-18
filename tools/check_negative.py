@@ -2520,6 +2520,10 @@ def _decisions_sandbox(extra_workflows: dict[str, str]) -> tuple[int, str]:
         "apps/web/src/layout/AppHeader.tsx",
         "apps/web/src/layout/AppShell.tsx",
         "apps/web/src/context/SidebarContext.tsx",
+        # KPI grid 4-up from `lg` (2026-09-18): the card whose value steps down
+        # while the columns are narrow. Without it the sandbox copy cannot be
+        # read and the check exits 2 instead of testing anything.
+        "apps/web/src/components/ui/Card.tsx",
     )
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
@@ -2610,6 +2614,56 @@ def neg_decisions_drawer_scroll_lock_lost() -> tuple[bool, str]:
         'document.body.style.overflow = "hidden";',
         'document.body.style.overflow = "auto";',
         "mobil panel foydalanishga yaroqli",
+    )
+
+
+# ── KPI grid: 4-up from `lg`, value steps down (owner decision 2026-09-18) ──
+
+_KPI_RULE = "KPI to'ri lg da 4 ustun"
+_VALUE_STEP = 'valueClassName="lg:text-2xl xl:text-title-sm"'
+
+
+def neg_decisions_kpi_grid_stuck_at_2up() -> tuple[bool, str]:
+    # Back to `xl` only: the measured 38 px above the fold, four cards on two
+    # rows across the whole 1024-1279 px laptop range.
+    return _decision_broken(
+        "apps/web/src/app/page.tsx",
+        "sm:grid-cols-2 lg:grid-cols-4",
+        "sm:grid-cols-2 xl:grid-cols-4",
+        _KPI_RULE,
+    )
+
+
+def neg_decisions_kpi_grid_3up_creeps_back() -> tuple[bool, str]:
+    # The measured-to-be-useless variant: four cards still take two rows, so
+    # it buys 0 px of vertical space and orphans the fourth card.
+    return _decision_broken(
+        "apps/web/src/app/page.tsx",
+        "sm:grid-cols-2 lg:grid-cols-4",
+        "sm:grid-cols-2 lg:grid-cols-3",
+        _KPI_RULE,
+    )
+
+
+def neg_decisions_kpi_card_value_step_lost() -> tuple[bool, str]:
+    # One card keeps a 30 px value in a 121 px column: an 8-digit counter
+    # overflows it. `replace(..., 1)` hits the first card only, leaving 3 of 4.
+    return _decision_broken(
+        "apps/web/src/app/page.tsx",
+        _VALUE_STEP,
+        "",
+        _KPI_RULE,
+    )
+
+
+def neg_decisions_kpi_value_prop_ignored() -> tuple[bool, str]:
+    # The prop is passed but never rendered — the kind of green that means
+    # nothing. Keep the template literal so the anchor still matches.
+    return _decision_broken(
+        "apps/web/src/components/ui/Card.tsx",
+        "`mt-1 text-title-sm font-bold rw-strong ${valueClassName}`",
+        "`mt-1 text-title-sm font-bold rw-strong`",
+        _KPI_RULE,
     )
 
 
@@ -3846,6 +3900,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("fokus tugmaga qaytmasa tutilsin", neg_decisions_drawer_focus_not_returned),
             ("Esc panelni yopmasa tutilsin", neg_decisions_drawer_escape_lost),
             ("fon scroll'i qulflanmasa tutilsin", neg_decisions_drawer_scroll_lock_lost),
+            ("KPI to'ri 2 ustunda qolsa tutilsin", neg_decisions_kpi_grid_stuck_at_2up),
+            ("KPI to'ri 3 ustunga qaytsa tutilsin", neg_decisions_kpi_grid_3up_creeps_back),
+            ("KPI raqami pog'onasi yo'qolsa tutilsin", neg_decisions_kpi_card_value_step_lost),
+            ("KPI raqam prop'i e'tiborsiz qolsa tutilsin", neg_decisions_kpi_value_prop_ignored),
         ],
     ),
     (
