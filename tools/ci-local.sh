@@ -228,7 +228,14 @@ api_run() {
 
 run_api_fast() {
   ensure_dev_image || return 1
-  api_run 'ruff check --cache-dir /cache/ruff . && ruff format --check .'
+  # ⚠️ `--cache-dir` IKKISIDA ham shart — `ruff check` da bor edi, `format`
+  # da yo'q edi va shu sabab nishon yiqilardi. Sabab: `ruff format` keshni
+  # sukut bo'yicha loyiha ichiga (`.ruff_cache`) yozadi, loyiha esa Windows
+  # bind mount — o'sha fayl tizimida ruff `wrong package cache for file`
+  # bilan PANIC qiladi (Ruff 0.16.6 ichki xatosi). O'lchandi 2026-09-18:
+  # keshsiz → `207 files already formatted` + panic; `/cache/ruff` bilan →
+  # `335 files already formatted` ✓. `/cache` — Linux volume, muammo yo'q.
+  api_run 'ruff check --cache-dir /cache/ruff . && ruff format --check --cache-dir /cache/ruff .'
 }
 
 run_api() {
@@ -238,7 +245,7 @@ run_api() {
   api_run '
 set -e
 echo "--- ruff ---"
-ruff check --cache-dir /cache/ruff . && ruff format --check .
+ruff check --cache-dir /cache/ruff . && ruff format --check --cache-dir /cache/ruff .
 echo "--- mypy (strict) ---"
 mypy --cache-dir "$MYPY_CACHE" .
 echo "--- migratsiyalar to'"'"'liq yozilganmi ---"
