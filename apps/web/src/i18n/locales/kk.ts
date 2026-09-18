@@ -949,6 +949,7 @@ export const kk: Record<MessageKey, string> = {
   "locale.group.broad": "Кең қамту",
   "locale.loading": "Жүктелуде",
   "locale.listLabel": "Тілдер тізімі",
+  "locale.contentUz": "атаулар uz",
   "content.uzOnly": "Бұл атау өзбек тілінде — аударма дайындалуда",
 
   // ---- Problem page: sections, actions, samples ----

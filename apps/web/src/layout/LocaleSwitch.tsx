@@ -5,7 +5,7 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState, useTransition
 
 import { Icon } from "@/components/ui/Icon";
 import { useLocale, useLocaleAuto } from "@/i18n/LocaleProvider";
-import { LOCALES, LOCALE_NAMES, t, type Locale } from "@/i18n/messages";
+import { LOCALES, LOCALE_NAMES, hasContentNames, t, type Locale } from "@/i18n/messages";
 import { announcePrefs } from "@/lib/prefs";
 
 import { LocaleFlag } from "./LocaleFlag";
@@ -354,6 +354,18 @@ export function LocaleSwitch() {
                           <span className="block truncate rw-dim-2">{ENGLISH_NAMES[code]}</span>
                         ) : null}
                       </span>
+                      {/* Qamrov OLDINDAN ko'rinadi (qaror 10, T3-c):
+                          mavzu/ko'nikma nomlari faqat uz/ru/en da bor,
+                          ya'ni qolgan yetti tilda o'zbekcha chiqadi.
+                          Buni tanlashdan KEYIN aytish kech bo'lardi. */}
+                      {!hasContentNames(code) && (
+                        <span
+                          title={t(locale, "content.uzOnly")}
+                          className="shrink-0 rounded rw-chip px-1 text-theme-xs rw-dim-2"
+                        >
+                          {t(locale, "locale.contentUz")}
+                        </span>
+                      )}
                       {current === code && <Icon name="action.confirm" className="size-3.5 shrink-0" />}
                     </div>
                   ))}

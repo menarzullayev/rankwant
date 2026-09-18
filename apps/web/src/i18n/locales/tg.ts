@@ -949,6 +949,7 @@ export const tg: Record<MessageKey, string> = {
   "locale.group.broad": "Фароҳи васеъ",
   "locale.loading": "Боргирӣ",
   "locale.listLabel": "Рӯйхати забонҳо",
+  "locale.contentUz": "номҳо uz",
   "content.uzOnly": "Ин ном ба забони ӯзбекӣ аст — тарҷума омода мешавад",
 
   // ---- Problem page: sections, actions, samples ----

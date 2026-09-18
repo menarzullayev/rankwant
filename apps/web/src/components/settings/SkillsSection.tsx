@@ -5,7 +5,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { fill, localName, t } from "@/i18n/messages";
+import { ContentName, contentNameText } from "@/components/ui/UzFallbackBadge";
+import { fill, localName, t, type Locale } from "@/i18n/messages";
 import { Icon } from "@/components/ui/Icon";
 import {
   putJson,
@@ -20,6 +21,24 @@ import { Hint, Loading, Status, useAction, useLoad } from "./kit";
 const MAX_ROWS = 20;
 
 type Level = { skill: string; level: number };
+
+/** Ko'nikma nomi + qaytish belgisi; katalogda topilmasa — slug.
+ *
+ *  Katalog nomlari faqat uz/ru/en ustunlarida saqlanadi, ya'ni qolgan
+ *  yetti tilda o'zbekcha ko'rinadi va `uz` belgisini oladi (qaror 10).
+ */
+function SkillLabel({
+  slug,
+  names,
+  locale,
+}: {
+  slug: string;
+  names: Map<string, SkillName>;
+  locale: Locale;
+}) {
+  const found = names.get(slug);
+  return found ? <ContentName row={found} locale={locale} /> : <>{slug}</>;
+}
 
 function SkillsCard() {
   const locale = useLocale();
@@ -63,7 +82,7 @@ function SkillsCard() {
                   htmlFor={`skill-${row.skill}`}
                   className="w-36 shrink-0 truncate text-theme-sm rw-strong sm:w-48"
                 >
-                  {label(row.skill)}
+                  <SkillLabel slug={row.skill} names={names} locale={locale} />
                 </label>
                 <input
                   id={`skill-${row.skill}`}
@@ -109,7 +128,9 @@ function SkillsCard() {
                 <option value="">{t(locale, "settings.skillAdd")}</option>
                 {free.map((s) => (
                   <option key={s.slug} value={s.slug}>
-                    {localName(s, locale)}
+                    {/* Native `<option>` ichida JSX yo'q — belgi matn
+                        qo'shimchasi sifatida qo'shiladi. */}
+                    {contentNameText(s, locale)}
                   </option>
                 ))}
               </select>

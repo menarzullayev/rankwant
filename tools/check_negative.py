@@ -2468,6 +2468,91 @@ def neg_decisions_dictionary_cache_unsynced() -> tuple[bool, str]:
     )
 
 
+# ── Content coverage is visible (owner decision 10, 2026-09-19) ──
+#
+# One test per clause of `content_coverage_visible`. Measured before the fix:
+# the fallback worked in 8 places but the marker appeared in 2, and the `uz`
+# dictionary was marked as a fallback on its own pages (unit test caught that:
+# `localNameInfo(skill, "uz").locale` was `null`).
+
+
+def neg_decisions_uz_marked_as_fallback() -> tuple[bool, str]:
+    # `uz` is the source language: reading Uzbek is the correct answer, not a
+    # fallback. Without the guard an `uz` chip lands on the Uzbek pages.
+    return _decision_broken(
+        "apps/web/src/i18n/messages.ts",
+        "if (locale === DEFAULT_LOCALE) {",
+        "if (false) {",
+        "kontent qamrovi ko'rinadi",
+    )
+
+
+def neg_decisions_content_source_locales_widened() -> tuple[bool, str]:
+    # Adding a locale to the source list claims its content names are
+    # translated. Only uz/ru/en have columns, so the list must not grow.
+    return _decision_broken(
+        "apps/web/src/i18n/messages.ts",
+        'export const CONTENT_NAME_LOCALES = ["uz", "ru", "en"] as const;',
+        'export const CONTENT_NAME_LOCALES = ["uz", "ru", "en", "kk"] as const;',
+        "kontent qamrovi ko'rinadi",
+    )
+
+
+def neg_decisions_content_marker_dropped() -> tuple[bool, str]:
+    # The tag cloud: the name is rendered without the marker, so a `zh`
+    # reader takes Uzbek for Chinese.
+    return _decision_broken(
+        "apps/web/src/components/ArchiveSidebar.tsx",
+        "<ContentName",
+        "{localName",
+        "kontent qamrovi ko'rinadi",
+    )
+
+
+def neg_decisions_content_marker_dropped_in_activity() -> tuple[bool, str]:
+    # Two call sites in one file: dropping either one must be caught, which is
+    # why the rule counts render sites instead of just looking for the symbol.
+    return _decision_broken(
+        "apps/web/src/components/profile/ActivityTabs.tsx",
+        "<ContentName",
+        "{localName",
+        "kontent qamrovi ko'rinadi",
+    )
+
+
+def neg_decisions_filter_chip_unmarked() -> tuple[bool, str]:
+    # The topic filter chip: the flag is what carries "this name is Uzbek"
+    # from the page into the shared `Option` component.
+    return _decision_broken(
+        "apps/web/src/components/ProblemFilters.tsx",
+        "fallback={root.fallback}",
+        "fallback={false}",
+        "kontent qamrovi ko'rinadi",
+    )
+
+
+def neg_decisions_content_text_untranslated() -> tuple[bool, str]:
+    # Native `<option>`: falling back to the untranslated form puts a bare
+    # `uz` token in front of a reader who does not know what it means.
+    return _decision_broken(
+        "apps/web/src/components/settings/SkillsSection.tsx",
+        "contentNameText(s, locale)",
+        "localName(s, locale)",
+        "kontent qamrovi ko'rinadi",
+    )
+
+
+def neg_decisions_selector_coverage_hidden() -> tuple[bool, str]:
+    # The language list is the only place that warns BEFORE the choice is
+    # made; hiding the marker sends the reader in blind.
+    return _decision_broken(
+        "apps/web/src/layout/LocaleSwitch.tsx",
+        "hasContentNames(code)",
+        "true",
+        "kontent qamrovi ko'rinadi",
+    )
+
+
 def neg_decisions_deploy_lock_removed() -> tuple[bool, str]:
     return _decision_broken(
         "tools/deploy.sh",
@@ -2552,6 +2637,17 @@ _DECISIONS_SANDBOX_FILES = (
     # `keepOnly` and the promise cache inside the provider. Missing here,
     # `check_decisions.py` exits 2 instead of testing the rule.
     "apps/web/src/i18n/LocaleProvider.tsx",
+    # Content coverage visible (2026-09-19): the source of truth for which
+    # languages have content names, the shared marker, and every call site
+    # that draws it. Missing here, `check_decisions.py` exits 2.
+    "apps/web/src/i18n/messages.ts",
+    "apps/web/src/components/ui/UzFallbackBadge.tsx",
+    "apps/web/src/components/ArchiveSidebar.tsx",
+    "apps/web/src/components/profile/AboutTab.tsx",
+    "apps/web/src/components/profile/TopicStrength.tsx",
+    "apps/web/src/components/profile/ActivityTabs.tsx",
+    "apps/web/src/components/settings/SkillsSection.tsx",
+    "apps/web/src/app/problems/page.tsx",
 )
 
 
@@ -4134,6 +4230,25 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "qaytib o'sha tilga o'tilsa lug'at yo'qolsa tutilsin",
                 neg_decisions_dictionary_cache_unsynced,
+            ),
+            ("`uz` o'z qaytishi deb belgilansa tutilsin", neg_decisions_uz_marked_as_fallback),
+            (
+                "qamrov ro'yxatiga begona til qo'shilsa tutilsin",
+                neg_decisions_content_source_locales_widened,
+            ),
+            ("teg bulutida belgi tushsa tutilsin", neg_decisions_content_marker_dropped),
+            (
+                "faoliyatda ikkinchi belgi tushsa tutilsin",
+                neg_decisions_content_marker_dropped_in_activity,
+            ),
+            ("filtr chipida belgi o'chsa tutilsin", neg_decisions_filter_chip_unmarked),
+            (
+                "native option belgisi tarjimasiz qolsa tutilsin",
+                neg_decisions_content_text_untranslated,
+            ),
+            (
+                "tanlash ro'yxati qamrovni yashirsa tutilsin",
+                neg_decisions_selector_coverage_hidden,
             ),
             ("User'dan tenglik ustuni o'chsa tutilsin", neg_decisions_dormant_user_field_removed),
             ("sinov label'i self-test'da o'tadi", neg_decisions_trial_label_selftest_allowed),

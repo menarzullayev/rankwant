@@ -948,6 +948,7 @@ export const ky: Record<MessageKey, string> = {
   "locale.group.broad": "Кеңири камтуу",
   "locale.loading": "Жүктөлүүдө",
   "locale.listLabel": "Тилдер тизмеси",
+  "locale.contentUz": "аталыштар uz",
   "content.uzOnly": "Бул аталыш өзбек тилинде — которуу даярдалууда",
 
   // ---- Problem page: sections, actions, samples ----

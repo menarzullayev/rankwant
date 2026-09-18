@@ -952,6 +952,7 @@ export const uz = {
   "locale.group.broad": "Keng qamrov",
   "locale.loading": "Yuklanmoqda",
   "locale.listLabel": "Tillar ro'yxati",
+  "locale.contentUz": "nomlar uz",
   "content.uzOnly": "Bu nom o'zbekcha — tarjimasi tayyorlanmoqda",
 
   // ---- Masala sahifasi: bo'limlar, harakatlar, namunalar ----------------

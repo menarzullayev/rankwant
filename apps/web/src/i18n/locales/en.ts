@@ -947,6 +947,7 @@ export const en: Record<MessageKey, string> = {
   "locale.group.broad": "Wider reach",
   "locale.loading": "Loading",
   "locale.listLabel": "Language list",
+  "locale.contentUz": "names uz",
   "content.uzOnly": "This name is in Uzbek — translation pending",
 
   // ---- Problem page: sections, actions, samples ----

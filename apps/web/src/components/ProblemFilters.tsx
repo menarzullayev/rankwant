@@ -8,11 +8,20 @@ import { LOCALE_NAMES, type Locale } from "@/i18n/messages";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { fill, t } from "@/i18n/messages";
 import { Icon } from "@/components/ui/Icon";
+import { UzFallbackBadge } from "@/components/ui/UzFallbackBadge";
 import { useSession } from "@/context/SessionContext";
 import { useHideTags } from "@/lib/hideTags";
 import { announcePrefs } from "@/lib/prefs";
 
-export type FilterTopic = { slug: string; label: string; parent: string | null };
+/** `fallback` — `label` o'zbekchadan olingan (kontent nomlari faqat
+ *  uz/ru/en ustunlarida). Ro'yxatda `uz` belgisi shu bayroqdan chiziladi,
+ *  ya'ni qaysi til qaytish berayotganini filtr o'zi taxmin qilmaydi. */
+export type FilterTopic = {
+  slug: string;
+  label: string;
+  parent: string | null;
+  fallback: boolean;
+};
 
 /** Matches `problems.models.DIFFICULTY_LEVELS` — chips set the CF range. */
 const LEVEL_RANGES = [
@@ -509,6 +518,7 @@ function TopicOptions({
                   active={selected.includes(root.slug)}
                   onClick={() => onToggle(root.slug)}
                   label={root.label}
+                  fallback={root.fallback}
                 />
               </div>
               {open && children.length > 0 && (
@@ -519,6 +529,7 @@ function TopicOptions({
                       active={selected.includes(child.slug)}
                       onClick={() => onToggle(child.slug)}
                       label={child.label}
+                      fallback={child.fallback}
                     />
                   ))}
                 </div>
@@ -557,11 +568,17 @@ function Option({
   active,
   onClick,
   label,
+  fallback = false,
 }: {
   active: boolean;
   onClick: () => void;
   label: string;
+  /** Kontent nomi o'zbekchadan olingan bo'lsa `true` (mavzu chiplari).
+   *  Daraja/holat/til chiplari interfeys satri — ular hech qachon
+   *  qaytish emas, ya'ni standart `false`. */
+  fallback?: boolean;
 }) {
+  const locale = useLocale();
   return (
     <button
       type="button"
@@ -574,6 +591,7 @@ function Option({
       }`}
     >
       {label}
+      {fallback && <UzFallbackBadge locale={locale} />}
     </button>
   );
 }

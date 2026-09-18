@@ -86,6 +86,44 @@ APP_HEADER = "apps/web/src/layout/AppHeader.tsx"
 APP_SIDEBAR = "apps/web/src/layout/AppSidebar.tsx"
 APP_TOPNAV = "apps/web/src/layout/AppTopNav.tsx"
 APP_FOOTER = "apps/web/src/layout/AppFooter.tsx"
+# Content-name coverage is visible (2026-09-19). Topic/skill/quest names exist
+# only in the uz/ru/en columns, so every other language shows Uzbek text and
+# the UI has to say so (owner decision 10). Measured before the fix: the
+# fallback worked in 8 places but the marker appeared in 2, and the `uz`
+# dictionary itself was marked as a fallback on its own pages.
+MESSAGES = "apps/web/src/i18n/messages.ts"
+CONTENT_BADGE = "apps/web/src/components/ui/UzFallbackBadge.tsx"
+ARCHIVE_SIDEBAR = "apps/web/src/components/ArchiveSidebar.tsx"
+ABOUT_TAB = "apps/web/src/components/profile/AboutTab.tsx"
+TOPIC_STRENGTH = "apps/web/src/components/profile/TopicStrength.tsx"
+ACTIVITY_TABS = "apps/web/src/components/profile/ActivityTabs.tsx"
+SKILLS_SECTION = "apps/web/src/components/settings/SkillsSection.tsx"
+PROBLEMS_PAGE = "apps/web/src/app/problems/page.tsx"
+
+#: Every place a content name can fall back: the file, the marker it must
+#: carry, and how many times it must appear.
+#:
+#: The needle is the RENDER SITE, not the bare symbol — the negative tests
+#: mutate the first occurrence only (`Mutation` uses `replace(..., 1)`), so a
+#: needle that also matches the import line would survive the mutation and the
+#: test would report a live guard as dead. Counting also catches a file with
+#: two call sites losing one of them.
+CONTENT_MARKER_SITES: tuple[tuple[str, str, int], ...] = (
+    (ARCHIVE_SIDEBAR, "<ContentName", 1),
+    (ABOUT_TAB, "<ContentName", 1),
+    (TOPIC_STRENGTH, "<ContentName", 1),
+    (ACTIVITY_TABS, "<ContentName", 2),
+    (SKILLS_SECTION, "<ContentName", 1),
+    # Native `<option>` cannot hold JSX, so the same marker travels as text.
+    (SKILLS_SECTION, "contentNameText(s, locale)", 1),
+    (FILTERS, "UzFallbackBadge", 2),
+    (FILTERS, "fallback={root.fallback}", 1),
+    (FILTERS, "fallback={child.fallback}", 1),
+    (PROBLEMS_PAGE, "fallback: info.locale === null", 1),
+    # The language list says which languages lack content names, so the
+    # choice is informed BEFORE it is made.
+    (LOCALE_SWITCH, "hasContentNames(code)", 1),
+)
 
 
 class Unreadable(Exception):
@@ -783,6 +821,41 @@ def difficulty_range_counts_as_one_filter() -> str | None:
     return None
 
 
+def content_coverage_visible() -> str | None:
+    """Kontent nomi qaytgan joy belgisiz qolmasin (qaror 10).
+
+    Uch shart: qamrov manbai bitta (`CONTENT_NAME_LOCALES`), so'ralgan til
+    manba til bo'lsa qaytish HISOBLANMAYDI, va har bir chaqiruv joyi belgi
+    chizadi. Uchtasi birga kerak: bittasi tushsa, foydalanuvchi o'zbekcha
+    matnni o'z tilidagi tarjima deb o'qiydi yoki o'zbekcha sahifada
+    ma'nosiz `uz` chipini ko'radi.
+    """
+    messages = read(MESSAGES)
+    if 'export const CONTENT_NAME_LOCALES = ["uz", "ru", "en"] as const;' not in messages:
+        return f"{MESSAGES}: CONTENT_NAME_LOCALES yo'q — qamrov manbai yo'qolgan"
+    if "export function hasContentNames(" not in messages:
+        return f"{MESSAGES}: hasContentNames() yo'q — tanlash ro'yxati qamrovni bilmaydi"
+    if "if (locale === DEFAULT_LOCALE) {" not in messages:
+        return (
+            f"{MESSAGES}: nameInfo() `uz` ni qaytish deb hisoblaydi — "
+            "o'zbekcha sahifada ham belgi chiqadi"
+        )
+    badge = read(CONTENT_BADGE)
+    for symbol in ("export function ContentName(", "export function contentNameText("):
+        if symbol not in badge:
+            return f"{CONTENT_BADGE}: `{symbol}` yo'q"
+    if "info.locale === null" not in badge:
+        return f"{CONTENT_BADGE}: ContentName qaytishni tekshirmaydi"
+    for rel, needle, want in CONTENT_MARKER_SITES:
+        got = read(rel).count(needle)
+        if got < want:
+            return (
+                f"{rel}: `{needle}` {got} marta, {want} kerak — "
+                "qaytish belgisiz qolgan"
+            )
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -803,6 +876,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("profil paneli xl gacha stekda", profile_sidebar_stacks_below_xl),
     ("diapazon bitta filtr", difficulty_range_counts_as_one_filter),
     ("brend headerda, footer uch ustun", brand_in_header_and_footer_columns),
+    ("kontent qamrovi ko'rinadi", content_coverage_visible),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),

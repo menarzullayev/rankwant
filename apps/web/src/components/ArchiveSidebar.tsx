@@ -1,8 +1,9 @@
 import Link from "next/link";
 
 import { Card } from "@/components/ui/Card";
+import { ContentName } from "@/components/ui/UzFallbackBadge";
 import { Verdict } from "@/components/ui/Verdict";
-import { dateTime, t, topicName, type Locale } from "@/i18n/messages";
+import { dateTime, t, type Locale } from "@/i18n/messages";
 import { Badge } from "@/components/ui/Badge";
 import type {
   ArchiveProgress,
@@ -374,7 +375,7 @@ function TagCloud({ topics, locale }: { topics: Topic[]; locale: Locale }) {
           href={`/problems?topics=${topic.slug}`}
           className="rw-radius-sm border rw-line px-2 py-1 text-theme-xs rw-dim-2 rw-hover-bg"
         >
-          {topicName(topic, locale)}
+          <ContentName row={topic} locale={locale} />
           <span className="ml-1 tabular-nums rw-faint">{topic.problem_count}</span>
         </Link>
       ))}

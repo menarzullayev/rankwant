@@ -948,6 +948,7 @@ export const es: Record<MessageKey, string> = {
   "locale.group.broad": "Mayor alcance",
   "locale.loading": "Cargando",
   "locale.listLabel": "Lista de idiomas",
+  "locale.contentUz": "nombres uz",
   "content.uzOnly": "Este nombre está en uzbeko — traducción pendiente",
 
   // ---- Problem page: sections, actions, samples ----

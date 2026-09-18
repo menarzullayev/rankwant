@@ -3,7 +3,8 @@ import Link from "next/link";
 
 import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
-import { fill, localName, t, type Locale } from "@/i18n/messages";
+import { ContentName } from "@/components/ui/UzFallbackBadge";
+import { fill, t, type Locale } from "@/i18n/messages";
 import { Icon } from "@/components/ui/Icon";
 import type {
   Achievement,
@@ -70,10 +71,14 @@ export async function ActivityTab({
                 <>
                   <span className="rw-dim">{t(locale, "profile.activityQuest")}: </span>
                   <span className="rw-strong">
-                    {localName(
-                      { name_uz: event.title_uz, name_ru: event.title_ru, name_en: event.title_en },
-                      locale,
-                    )}
+                    <ContentName
+                      row={{
+                        name_uz: event.title_uz,
+                        name_ru: event.title_ru,
+                        name_en: event.title_en,
+                      }}
+                      locale={locale}
+                    />
                   </span>
                 </>
               )}
@@ -206,10 +211,14 @@ export async function PurchasesTab({
             <li key={`${row.code}-${i}`} className="flex flex-wrap items-center gap-3 px-5 py-3">
               <span className="min-w-0 flex-1">
                 <span className="block text-theme-sm font-medium rw-strong">
-                  {localName(
-                    { name_uz: row.title_uz, name_ru: row.title_ru, name_en: row.title_en },
-                    locale,
-                  )}
+                  <ContentName
+                    row={{
+                      name_uz: row.title_uz,
+                      name_ru: row.title_ru,
+                      name_en: row.title_en,
+                    }}
+                    locale={locale}
+                  />
                 </span>
                 <span className="text-theme-xs rw-faint">
                   {slot ? t(locale, `settings.slot.${slot}`) : t(locale, "profile.freeze")}
