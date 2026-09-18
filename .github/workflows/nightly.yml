@@ -28,13 +28,12 @@ jobs:
     # name would take each other's containers down with `down -v`.
     env:
       COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      CI_PUSH_IMAGE_CACHE: ${{ github.event.repository.fork && '0' || '1' }}
     steps:
       - uses: actions/checkout@v7
       - name: Stack
         if: ${{ vars.STAGING_URL == '' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CI_PUSH_IMAGE_CACHE: ${{ github.ref == 'refs/heads/main' && '1' || '0' }}
         run: |
           bash tools/ci_stack.sh
           docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
@@ -59,6 +58,9 @@ jobs:
       - name: Tear down
         if: always()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+      - name: Push image cache
+        if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
+        run: bash tools/ci_stack.sh --push-only
       # `down -v` leaves the images this run built. Since 2026-09-17 CI
       # runs on the Docker Desktop engine next to the live stack, and one
       # nightly run left 18 of them behind (`rw-load-*`, `rw-e2e-*`,
@@ -87,14 +89,13 @@ jobs:
     # name would take each other's containers down with `down -v`.
     env:
       COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      CI_PUSH_IMAGE_CACHE: ${{ github.event.repository.fork && '0' || '1' }}
     steps:
       - uses: actions/checkout@v7
       - name: Stack
         # Against STAGING_URL when set, otherwise against its own stack.
         if: ${{ vars.STAGING_URL == '' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CI_PUSH_IMAGE_CACHE: ${{ github.ref == 'refs/heads/main' && '1' || '0' }}
         run: |
           bash tools/ci_stack.sh
           docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
@@ -119,6 +120,9 @@ jobs:
       - name: Tear down
         if: always()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+      - name: Push image cache
+        if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
+        run: bash tools/ci_stack.sh --push-only
       # `down -v` leaves the images this run built. Since 2026-09-17 CI
       # runs on the Docker Desktop engine next to the live stack, and one
       # nightly run left 18 of them behind (`rw-load-*`, `rw-e2e-*`,
@@ -147,12 +151,11 @@ jobs:
     # name would take each other's containers down with `down -v`.
     env:
       COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      CI_PUSH_IMAGE_CACHE: ${{ github.event.repository.fork && '0' || '1' }}
     steps:
       - uses: actions/checkout@v7
       - name: Stack
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CI_PUSH_IMAGE_CACHE: ${{ github.ref == 'refs/heads/main' && '1' || '0' }}
         run: |
           bash tools/ci_stack.sh
           docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
@@ -167,6 +170,9 @@ jobs:
       - name: Tear down
         if: always()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+      - name: Push image cache
+        if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
+        run: bash tools/ci_stack.sh --push-only
       # `down -v` leaves the images this run built. Since 2026-09-17 CI
       # runs on the Docker Desktop engine next to the live stack, and one
       # nightly run left 18 of them behind (`rw-load-*`, `rw-e2e-*`,
@@ -195,20 +201,22 @@ jobs:
     # name would take each other's containers down with `down -v`.
     env:
       COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      CI_PUSH_IMAGE_CACHE: ${{ github.event.repository.fork && '0' || '1' }}
+      CI_STACK_SERVICES: judge
+      CI_STACK_UP: '0'
     steps:
       - uses: actions/checkout@v7
       - name: Judge image
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CI_PUSH_IMAGE_CACHE: ${{ github.ref == 'refs/heads/main' && '1' || '0' }}
-          CI_STACK_SERVICES: judge
-          CI_STACK_UP: '0'
         run: bash tools/ci_stack.sh
       - name: Declared versions match the image
         # Each language prints its own runtime version. This check
         # catches "shown as Python 3.12, actually 3.11" — that mismatch
         # looks like a confusing SyntaxError to the user.
         run: python3 tests/compatibility/check_languages.py "${COMPOSE_PROJECT_NAME}-judge"
+      - name: Push image cache
+        if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
+        run: bash tools/ci_stack.sh --push-only
       - name: Tear down
         # The tag is per run now, so it has to go, like the smoke job's images.
         if: always()

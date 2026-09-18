@@ -411,7 +411,10 @@ jobs:
     env:
       COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      CI_PUSH_IMAGE_CACHE: ${{ github.ref == 'refs/heads/main' && '1' || '0' }}
+      # Push after a green run (not during Stack): first hosted smoke
+      # never had a `:main` tag, so every dispatch rebuilt nsjail.
+      # Forks cannot write GHCR; smoke already skips `pull_request`.
+      CI_PUSH_IMAGE_CACHE: ${{ github.event.repository.fork && '0' || '1' }}
     steps:
       - uses: actions/checkout@v7
       - name: Stack
@@ -509,6 +512,9 @@ jobs:
       - name: Tear down
         if: always()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+      - name: Push image cache
+        if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
+        run: bash tools/ci_stack.sh --push-only
       # ⚠️ `down -v` removes containers and volumes, but LEAVES THE
       # BUILT IMAGES — that was the hole.
       #
