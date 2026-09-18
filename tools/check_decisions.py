@@ -58,6 +58,14 @@ LOCALE_SWITCH = "apps/web/src/layout/LocaleSwitch.tsx"
 # The dictionary registry and the load-promise cache are two caches over one
 # thing; they must be dropped together. Owner decision 2026-09-19.
 LOCALE_PROVIDER = "apps/web/src/i18n/LocaleProvider.tsx"
+# The locale travels in the URL as well (`?lang=<code>`), so a shared link
+# carries its own language. Owner decisions S5 + S5b, 2026-09-19. The three
+# names live in ONE module because the edge proxy cannot import `next/headers`
+# and would otherwise have to duplicate the list.
+LOCALE_PARAMS = "apps/web/src/i18n/locale-params.ts"
+LOCALE_RESOLVE = "apps/web/src/i18n/resolve.ts"
+LOCALE_SERVER = "apps/web/src/i18n/server.ts"
+PROXY = "apps/web/src/proxy.ts"
 SIGN_IN_LINK = "apps/web/src/layout/UserMenu.tsx"
 # Mobile navigation drawer: the trigger announces its state, the panel is a
 # named dialog while it is open, focus moves in and comes back, Esc closes it
@@ -340,7 +348,7 @@ def dictionary_as_cached_file() -> str | None:
     route = read(DICTIONARY_ROUTE)
     if 'dynamic = "force-static"' not in route or "immutable" not in route:
         return f"{DICTIONARY_ROUTE}: lug'at fayli statik va `immutable` keshlanadigan emas"
-    if not re.search(r"matcher:.*\|i18n/", read("apps/web/src/proxy.ts")):
+    if not re.search(r"matcher:.*\|i18n/", read(PROXY)):
         return "apps/web/src/proxy.ts: `/i18n/` middleware'dan chiqarilmagan — `Vary` keshni bo'ladi"
     return None
 
@@ -889,6 +897,82 @@ def content_coverage_visible() -> str | None:
     return None
 
 
+def locale_travels_in_the_url() -> str | None:
+    """Til havolada ham keladi — `?lang=<kod>` (S5), va qurilma eslab qoladi
+    (S5b). Saidakbar aka qarori, 2026-09-19.
+
+    Tuzatishdan oldin o'lchandi: `/about?lang=ru` o'zbekcha berilardi —
+    query satri sahifaga yetib borardi, lekin uni hech kim o'qimasdi, ya'ni
+    yagona manba cookie edi. Havolani olgan odamda esa u yo'q.
+
+    Uch joyi JIM buzilishi mumkin, shuning uchun uchtasi ham tekshiriladi:
+
+    1. USTUNLIK — havola cookie'dan kuchli. `resolveLocale()` sof funksiya,
+       ya'ni tartib manba satridan o'qiladi: `param` shoxobchasi OLDIN
+       turishi shart. Aks holda ulashilgan havola o'z tilini olib kelmaydi.
+    2. PROXY ICHIDAGI TARTIB — sarlavha `NextResponse.next()` dan OLDIN
+       yozilishi shart. `next()` `request.headers` ni CHAQIRUV paytida
+       `x-middleware-request-*` qatorlariga ko'chiradi (o'lchandi:
+       `next@16.3.4`, `dist/server/web/spec-extension/response.js:128`),
+       ya'ni keyin yozilgan qiymat joriy render'ga yetib bormaydi. Oqibati
+       ayyor: sahifa cookie tilida chiziladi va xususiyat «bir so'rov
+       kechikib ishlaydi» — yashil ko'rinadi, aslida buzuq.
+    3. COOKIE — usiz havola faqat BIRINCHI sahifani tuzatadi, har bir
+       ichki bosish qurilma tiliga qaytadi. U bilan hech bir ichki havolani
+       o'zgartirish shart emas.
+    """
+    params = read(LOCALE_PARAMS)
+    for needle in (
+        'export const LOCALE_COOKIE = "rw_locale";',
+        'export const LOCALE_PARAM = "lang";',
+        'export const LOCALE_HEADER = "x-rw-locale";',
+    ):
+        if needle not in params:
+            return f"{LOCALE_PARAMS}: `{needle}` yo'q — nomlar yagona manbada bo'lishi shart"
+    if "export const LOCALE_COOKIE" in read(LOCALE_SERVER):
+        return f"{LOCALE_SERVER}: `LOCALE_COOKIE` ikkinchi marta e'lon qilingan — drift manbai"
+
+    resolve = read(LOCALE_RESOLVE)
+    param_branch = resolve.find("if (param !== null && isLocale(param))")
+    cookie_branch = resolve.find("if (cookie !== null && isLocale(cookie))")
+    if param_branch < 0 or cookie_branch < 0:
+        return f"{LOCALE_RESOLVE}: `?lang=` yoki cookie shoxobchasi topilmadi"
+    if param_branch > cookie_branch:
+        return (
+            f"{LOCALE_RESOLVE}: cookie havoladan USTUN — ulashilgan havola "
+            "o'z tilini olib kelmaydi (qaror S5)"
+        )
+
+    proxy = read(PROXY)
+    if "request.nextUrl.searchParams.get(LOCALE_PARAM)" not in proxy:
+        return f"{PROXY}: `?lang=` o'qilmaydi — havoladagi til e'tiborsiz qoladi"
+    header_set = proxy.find("requestHeaders.set(LOCALE_HEADER, fromParam)")
+    next_call = proxy.find("NextResponse.next({ request: { headers: requestHeaders } })")
+    if header_set < 0 or next_call < 0:
+        return f"{PROXY}: til sarlavhasi yoki `next()` chaqiruvi topilmadi"
+    if header_set > next_call:
+        return (
+            f"{PROXY}: sarlavha `next()` dan KEYIN yozilgan — `next()` "
+            "`request.headers` ni chaqiruv paytida ko'chiradi "
+            "(`response.js:128`), ya'ni joriy javob eski tilda chiziladi"
+        )
+    if "response.cookies.set(LOCALE_COOKIE, locale" not in proxy:
+        return f"{PROXY}: cookie yozilmaydi — qurilma tilni eslab qolmaydi"
+    if "rememberLocale(response, fromParam)" not in proxy:
+        return (
+            f"{PROXY}: havoladagi til cookie'ga yozilmaydi — birinchi "
+            "sahifadan keyin til qaytib ketadi (qaror S5b)"
+        )
+
+    switch = read(LOCALE_SWITCH)
+    if "url.searchParams.delete(LOCALE_PARAM)" not in switch:
+        return (
+            f"{LOCALE_SWITCH}: qo'lda tanlov `?lang=` ni tozalamaydi — "
+            "havola parametri yangi tanlovni bosib ketadi"
+        )
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -910,6 +994,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("diapazon bitta filtr", difficulty_range_counts_as_one_filter),
     ("brend headerda, footer uch ustun", brand_in_header_and_footer_columns),
     ("kontent qamrovi ko'rinadi", content_coverage_visible),
+    ("til havolada ham keladi", locale_travels_in_the_url),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),

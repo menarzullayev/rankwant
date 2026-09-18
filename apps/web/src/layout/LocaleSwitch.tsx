@@ -1,10 +1,12 @@
 "use client";
 
+import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useId, useMemo, useRef, useState, useTransition } from "react";
 
 import { Icon } from "@/components/ui/Icon";
 import { useLocale, useLocaleAuto } from "@/i18n/LocaleProvider";
+import { LOCALE_PARAM } from "@/i18n/locale-params";
 import { LOCALES, LOCALE_NAMES, hasContentNames, t, type Locale } from "@/i18n/messages";
 import { announcePrefs } from "@/lib/prefs";
 
@@ -144,6 +146,31 @@ export function LocaleSwitch() {
         document.cookie = `rw_locale=${next}; path=/; max-age=31536000; samesite=lax`;
         // Hisobga ham — xatlar shu tilda yuboriladi.
         announcePrefs({ locale: next });
+      }
+      // URL'dagi `?lang=` cookie'ni bosib ketadi (proxy parametrni ustun
+      // qo'yadi), ya'ni u qoldirilsa yangi tanlov keyingi yangilanishda
+      // QAYTIB ketardi. Shuning uchun tanlov URL'ni ham tozalaydi va manba
+      // yana cookie bo'lib qoladi.
+      const url = new URL(window.location.href);
+      if (url.searchParams.has(LOCALE_PARAM)) {
+        url.searchParams.delete(LOCALE_PARAM);
+        const next_ = `${url.pathname}${url.search}${url.hash}`;
+        // ⚠️ `replace` YOLG'IZ yetarli emas — o'lchandi (2026-09-19, jonli
+        // brauzer): `/about?lang=ru` da inglizchani tanlaganda URL va
+        // kontent (`<title>`, `<h1>`) almashdi, lekin
+        // `document.documentElement.lang` `ru` bo'lib QOLDI. Sabab: soft
+        // navigatsiya faqat sahifa segmentini yangilaydi, ildiz layout
+        // keshlangan qoladi — `<html lang>` esa ildizda chiziladi.
+        // `refresh()` butun daraxtni serverdan qayta oladi, ya'ni
+        // atribut ham yangilanadi (nazorat o'lchovi: parametrsiz yo'lda
+        // aynan `refresh()` ishlaydi va atribut to'g'ri bo'ladi).
+        // WCAG 3.1.1 — noto'g'ri `lang` ekran o'quvchini xato ovozga
+        // o'tkazadi.
+        startTransition(() => {
+          router.replace(next_ as Route);
+          router.refresh();
+        });
+        return;
       }
       startTransition(() => router.refresh());
     },

@@ -2307,6 +2307,79 @@ def neg_decisions_locale_label_in_name_lost() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_locale_cookie_beats_link() -> tuple[bool, str]:
+    """Cookie havoladan ustun bo'lsa tutilsin (qaror S5).
+
+    Shoxobchalar almashtirilsa `?lang=ru` bilan kelgan odam qurilmasidagi
+    tilni ko'radi — ya'ni ulashilgan havola o'z tilini olib kelmaydi.
+    """
+    return _decision_broken(
+        "apps/web/src/i18n/resolve.ts",
+        "  if (param !== null && isLocale(param)) return { locale: param, auto: false };\n"
+        "  if (cookie !== null && isLocale(cookie)) return { locale: cookie, auto: false };",
+        "  if (cookie !== null && isLocale(cookie)) return { locale: cookie, auto: false };\n"
+        "  if (param !== null && isLocale(param)) return { locale: param, auto: false };",
+        "til havolada ham keladi",
+    )
+
+
+def neg_decisions_locale_header_after_next() -> tuple[bool, str]:
+    """Sarlavha `next()` dan keyin yozilsa tutilsin.
+
+    Bu AYNAN o'sha jimgina buziladigan holat: `next()` `request.headers` ni
+    chaqiruv paytida ko'chiradi (o'lchandi: `next@16.3.4`,
+    `response.js:128`), ya'ni keyin yozilgan qiymat joriy render'ga
+    yetib bormaydi va sahifa cookie tilida chiziladi.
+    """
+    return _decision_broken(
+        "apps/web/src/proxy.ts",
+        "  if (fromParam !== null) requestHeaders.set(LOCALE_HEADER, fromParam);\n"
+        "\n"
+        "  const response = boshqa_domen\n"
+        "    ? NextResponse.redirect(\n"
+        "        new URL(`${request.nextUrl.pathname}${request.nextUrl.search}`, canonical),\n"
+        "        301,\n"
+        "      )\n"
+        "    : NextResponse.next({ request: { headers: requestHeaders } });",
+        "  const response = boshqa_domen\n"
+        "    ? NextResponse.redirect(\n"
+        "        new URL(`${request.nextUrl.pathname}${request.nextUrl.search}`, canonical),\n"
+        "        301,\n"
+        "      )\n"
+        "    : NextResponse.next({ request: { headers: requestHeaders } });\n"
+        "  if (fromParam !== null) requestHeaders.set(LOCALE_HEADER, fromParam);",
+        "til havolada ham keladi",
+    )
+
+
+def neg_decisions_locale_link_not_remembered() -> tuple[bool, str]:
+    """Havoladagi til cookie'ga yozilmasa tutilsin (qaror S5b).
+
+    Usiz havola faqat BIRINCHI sahifani tuzatadi: har bir ichki bosish
+    qurilma tiliga qaytadi va ichki havolalarni o'zgartirish kerak bo'lardi.
+    """
+    return _decision_broken(
+        "apps/web/src/proxy.ts",
+        "    if (fromParam !== null) rememberLocale(response, fromParam);\n",
+        "",
+        "til havolada ham keladi",
+    )
+
+
+def neg_decisions_locale_choice_keeps_param() -> tuple[bool, str]:
+    """Qo'lda tanlov `?lang=` ni tozalamasa tutilsin.
+
+    Parametr qoldirilsa proxy uni har render'da cookie'dan ustun qo'yadi,
+    ya'ni odam ro'yxatdan boshqa tilni tanlaydi-yu sahifa eskisida qolaveradi.
+    """
+    return _decision_broken(
+        "apps/web/src/layout/LocaleSwitch.tsx",
+        "        url.searchParams.delete(LOCALE_PARAM);\n",
+        "",
+        "til havolada ham keladi",
+    )
+
+
 def neg_decisions_signin_label_wraps() -> tuple[bool, str]:
     """Kirish yorlig'i o'raladigan bo'lsa tutilsin.
 
@@ -2665,6 +2738,12 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/components/profile/ActivityTabs.tsx",
     "apps/web/src/components/settings/SkillsSection.tsx",
     "apps/web/src/app/problems/page.tsx",
+    # Locale in the URL (2026-09-19): the rule reads the single name source,
+    # the pure precedence function and the server reader. Missing here,
+    # `check_decisions.py` exits 2 instead of testing the rule.
+    "apps/web/src/i18n/locale-params.ts",
+    "apps/web/src/i18n/resolve.ts",
+    "apps/web/src/i18n/server.ts",
 )
 
 
@@ -4234,6 +4313,22 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
                 neg_decisions_locale_label_in_name_lost,
             ),
             ("kirish yorlig'i o'ralsa tutilsin", neg_decisions_signin_label_wraps),
+            (
+                "cookie havoladan ustun bo'lsa tutilsin",
+                neg_decisions_locale_cookie_beats_link,
+            ),
+            (
+                "til sarlavhasi `next()` dan keyin yozilsa tutilsin",
+                neg_decisions_locale_header_after_next,
+            ),
+            (
+                "havoladagi til cookie'ga yozilmasa tutilsin",
+                neg_decisions_locale_link_not_remembered,
+            ),
+            (
+                "tanlov `?lang=` ni tozalamasa tutilsin",
+                neg_decisions_locale_choice_keeps_param,
+            ),
             ("deploy darvozasi uzilsa tutilsin", neg_decisions_deploy_gate_unwired),
             ("deploy qulfi olib tashlansa tutilsin", neg_decisions_deploy_lock_removed),
             ("deploy web'ni qurmasa tutilsin", neg_decisions_deploy_skips_web),

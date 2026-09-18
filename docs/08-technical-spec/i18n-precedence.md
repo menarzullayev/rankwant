@@ -1,17 +1,30 @@
-# Locale precedence: the device wins
+# Locale precedence: the link, then the device, then the account
 
-**Status:** accepted (2026-09-14) · **deliberate divergence from [ADR-0017](../07-adr/0017-profile-and-settings.md)**
+**Status:** accepted (2026-09-14; URL parameter added 2026-09-19) · **deliberate divergence from [ADR-0017](../07-adr/0017-profile-and-settings.md)**
 
 ## The rule
 
 | State | Wins | Effect |
 |---|---|---|
+| `?lang=<code>` in the URL | the link | the cookie is rewritten to the same code, so later pages follow |
 | `rw_locale` cookie holds a locale code | the device | account locale is *not* consulted |
 | `rw_locale=auto` | the device (explicitly automatic) | detected from `Accept-Language` |
 | no cookie at all | the account (as a seed only) | account locale is copied to the cookie |
 
-In one sentence: **the device chooses the language; the account only seeds a
-device that has not chosen yet, and it is the language used for email.**
+Resolution order as implemented: `?lang=` → cookie → `Accept-Language` →
+`uz` (owner decision S5, 2026-09-19).
+
+In one sentence: **a shared link carries its own language; otherwise the device
+chooses, and the account only seeds a device that has not chosen yet — it is
+also the language used for email.**
+
+The link is the only source that outranks the device, and it does so for one
+reason: the person opening it has not chosen anything, so there is no device
+preference to respect — only the sender's intent. It is also the narrowest
+possible override: it applies once and then *becomes* the cookie, so no
+internal link has to be rewritten (S5b). An explicit pick in the switcher
+strips `?lang=` for the same reason in reverse — leaving it would let the stale
+parameter beat the new choice on the next render.
 
 ## Why this diverges from ADR-0017
 
@@ -44,13 +57,32 @@ encodes a third state:
 - `rw_locale=<code>` → chosen a specific language
 
 `getLocaleState()` in `apps/web/src/i18n/server.ts` is the single reader of
-these three states and returns `{ locale, auto }`.
+these three states and returns `{ locale, auto }`. The decision itself lives in
+the pure function `resolveLocale()` (`apps/web/src/i18n/resolve.ts`), so the
+order can be unit-tested without a request, a cookie jar or `next/headers`.
 
 ## Where this is enforced
 
-- `apps/web/src/i18n/server.ts` — `getLocaleState()` resolves cookie → header → default
+- `apps/web/src/i18n/locale-params.ts` — the three names (`rw_locale`, `lang`,
+  `x-rw-locale`) in one place, because the edge proxy cannot import
+  `next/headers`
+- `apps/web/src/i18n/resolve.ts` — `resolveLocale()`: `?lang=` → cookie →
+  header → default
+- `apps/web/src/i18n/server.ts` — `getLocaleState()` reads the three sources
+  and hands them to `resolveLocale()`
+- `apps/web/src/proxy.ts` — turns `?lang=` into the request header (this
+  response) and into the cookie (later ones)
 - `apps/web/src/context/PrefsSync.tsx` — seeds the cookie from the account only when no cookie exists
-- `apps/web/src/layout/LocaleSwitch.tsx` — writes `auto` or a locale code
+- `apps/web/src/layout/LocaleSwitch.tsx` — writes `auto` or a locale code, and
+  strips `?lang=`
+
+⚠️ Ordering inside the proxy is load-bearing. `NextResponse.next()` copies
+`request.headers` into `x-middleware-request-*` **at call time** (measured:
+`next@16.3.4`, `dist/server/web/spec-extension/response.js:128`), so a header
+written *after* the response is built never reaches the current render. The
+page then answers in the cookie's language and the feature looks like it
+"works one request late". `tools/check_decisions.py` asserts the order, not
+just the presence of the call.
 
 ⚠️ If you are here because you noticed language does not follow ADR-0017's
 "account wins" rule: that is the point of this document. Changing it back
@@ -140,14 +172,24 @@ in-process header manipulation will work — the fix has to sit outside Next.js.
 shared cache may store them. The defect becomes a cache-poisoning bug the day
 caching is enabled.
 
+⚠️ Since 2026-09-19 the locale also travels in the URL (`?lang=<code>`). That
+sharpens the same defect rather than adding a second one: one path now has
+several URLs whose bodies differ, so a cache keyed on the URL alone can hand a
+`?lang=ru` body to a `?lang=uz` request. The cookie write softens it — later
+requests carry the cookie — but it does not remove it, because the *first*
+response still has to be keyed correctly.
+
 **What must happen before caching is enabled** (options, none yet applied):
 
 - put a small reverse proxy in front of Next.js that appends `Accept-Language`
   to `Vary`;
 - or set a CDN Transformation Rule at the edge;
-- or add the locale to the URL (`/uz/...`), which removes the dependence on
-  `Accept-Language` entirely — the option already recorded as a later step in
-  the decision log.
+- or add the locale to the URL — a partial version is already in place
+  (`?lang=<code>`); a full `/uz/...` prefix would remove the dependence on
+  `Accept-Language` entirely and with it the need for `Vary`. Deferred until
+  the cache story is settled: today `canonical: "./"` declares every `?lang=`
+  variant to be the same URL, so the SEO benefit of a URL-carried locale is
+  currently nil.
 
 `cloudflared` cannot do it: version `2026.9.1` has no header-rewrite directive
 in tunnel ingress rules.
