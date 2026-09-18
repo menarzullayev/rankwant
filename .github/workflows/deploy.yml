@@ -52,6 +52,8 @@ permissions:
   # does not grant it, GitHub does not start the run at all —
   # `startup_failure`, 0 jobs. It MUST be granted here.
   pull-requests: read
+  # `ci.yml` smoke pushes GHCR cache images; the caller must grant write.
+  packages: write
 
 env:
   # The self-hosted runner runs as user `nsn` and also sees
