@@ -3,14 +3,14 @@
 **Sana:** 2026-09-17 (UTC) / 2026-09-18 ~01:20–01:35 (Toshkent)  
 **Maqsad:** RankWant Appearance (customizer + Settings `/settings/korinish`) ni kod + live MCP da tekshirish.  
 **Muhit:** `https://rankwant.uz` · Chrome DevTools MCP · admin sessiya (`username=admin`)  
-**Holat:** tuzatish **yozilmagan**. In Progress bo‘sh.  
+**Holat:** APP-1 … APP-7 tuzatildi (#72, #69, #77) — «Yangilanish» bo‘limida. Ochiq: APP-8, APP-9, APP-13, APP-14.  
 **Hisob tiklandi:** `style=glass`, `theme=dark`, `font=jakarta`, `density=comfortable`, `accent=null`.
 
-Bu hujjat boshqa agentga topshirish uchun. Avval P0. Live admin da **Reset** bosma (`clay` + `system` qo‘llanadi). `card` / `navMode` / `motion=off` bilan `PATCH /me/` 400 beradi — test qilgach hisobni pastdagi baseline ga qaytar.
+Bu hujjat boshqa agentga topshirish uchun. Live admin da **Reset** hisob ko‘rinishini jamoa standarti va `system` ga qaytaradi (#77) — test qilgach hisobni pastdagi baseline ga qaytar. `PATCH /me/` dagi 400 (`card` / `navMode` / `motion=off`) #69 da yopilgan.
 
 ---
 
-## Qisqa holat
+## Qisqa holat (audit paytida)
 
 | Metrika | Qiymat |
 |---|---|
@@ -27,9 +27,31 @@ Bu hujjat boshqa agentga topshirish uchun. Avval P0. Live admin da **Reset** bos
 
 ---
 
+## Yangilanish — 2026-09-18
+
+| Chipta | Holat | PR |
+|---|---|---|
+| APP-1 | Tuzatildi — `parseColor` 3/4/8 xonali hex, `rgba()` alfasi, gradientning birinchi rangi | #72 |
+| APP-2 | Tuzatildi — server sxemasi 18 kalitni biladi, `PrefsSync` xatoni yashirmaydi | #69 |
+| APP-3 | Tuzatildi — panel sarlavhasida «Suzuvchi tugmani yashirish», fokus qaytarish tugmasiga o‘tadi | #77 |
+| APP-4 | Tuzatildi — shablon mavzu rejimini saqlaydi va qaytaradi; server `theme` ni qabul qiladi; JSON fayl ham (versiya 1) | #77 |
+| APP-5 | Tuzatildi — `⌘.` ham ochadi, tooltip klaviaturaga mos (`Ctrl+.` / `⌘.`) | #77 |
+| APP-6 | Tuzatildi — havola aniq `light`/`dark` ni olib yuradi, `system` tushib qoladi. «React holati» qismi takrorlanmadi: boshlang‘ich holat havolani allaqachon o‘qiydi | #77 |
+| APP-7 | Tuzatildi — Reset jamoa standarti (D37) va `system` ga qaytaradi, saqlangan shablonlar qoladi | #77 |
+
+Tuzatish paytida topildi va o‘lchandi (#77 da tuzatilgan):
+
+- **Saqlangan shablonlar har o‘zgarishda o‘chardi.** `commit` ro‘yxatni standart `[]` bilan yozardi, `PrefsSync` uni hisobga ham yuborardi. rankwant.uz da: shablon saqlash → shrift Lexend → qayta yuklash → `rw:templates = []`.
+- **Fayldan import qaytib ketardi.** `setAppearance` dan keyingi `setA11y` eski ko‘rinishni qayta yozardi: panel Inter 120% Compact ko‘rsatardi, sahifa Lexend 100% Comfortable da qolardi.
+- **Fonda ochilgan havola** mavzu o‘tishida ushlanmagan `InvalidStateError` yozardi (`fade` effekti, `ready` kuzatilmasdi).
+
+---
+
 ## Board
 
 ### To Do
+
+*APP-1 … APP-7 tuzatilgan — tafsilot tarix uchun qoldirildi, holat «Yangilanish» jadvalida.*
 
 #### APP-1 · P0 · Accent AA gate Glass/Swiss da o‘lmaydi
 
@@ -168,11 +190,23 @@ Javob:
 - **Tuzatish:** `error === "ground_unreadable"` uchun alohida i18n (APP-1 bilan).
 - **Tekshir:** o‘lchov yo‘q vs haqiqiy AA fail — ikki xil xabar.
 
+#### APP-13 · P1 · Hisobdagi shablonlar yangi qurilmaga yuklanmaydi
+
+- **Ta’sir:** `CustomizerProvider` shablonlarni faqat `localStorage` dan o‘qiydi; `PrefsSync` kirishda hisobdagi ro‘yxatni qurilmaga olmaydi. Ro‘yxati bo‘sh qurilmada birinchi o‘zgarish `templates: []` ni hisobga yuboradi va u yerdagi shablonlarni o‘chiradi. #77 gacha bu har qurilmada har o‘zgarishda bo‘lardi; endi faqat ro‘yxati bo‘sh qurilmada.
+- **Fayllar:** `CustomizerContext.tsx` (boshlang‘ich `templates`), `PrefsSync.tsx` (kirish sinxroni).
+- **Tuzatish:** kirishda hisob ro‘yxatini provayder holatiga olish; qurilma va hisob ro‘yxatini birlashtirish qoidasi — qaror kerak.
+- **Tekshir:** A qurilmada shablon saqla → B da kir → ro‘yxat ko‘rinadi; B da shrift o‘zgartir → hisobda shablon qoladi.
+
+#### APP-14 · P2 · Birinchi chizish jamoa standartini (D37) bilmaydi
+
+- **Ta’sir:** `layout.tsx` dagi `STYLE_INIT` `localStorage.style || "clay"` ni qo‘yadi. Jamoa standarti (`/api/v1/appearance/`) faqat panel holatiga tushadi: yangi mehmon sahifani `clay` da ko‘radi, panel esa `glass` ni tanlangan deb ko‘rsatadi (lokal proksi bilan o‘lchandi). Production’da standart bo‘sh (`{"appearance":{}}`), ya’ni bugun ko‘rinmaydi.
+- **Tekshir:** standart `glass` bo‘lsa, yangi mehmon birinchi chizishdayoq `data-style=glass` oladi.
+
 ---
 
 ### In Progress
 
-*(bo‘sh — implementatsiya boshlanmagan)*
+*(bo‘sh)*
 
 ---
 
@@ -211,15 +245,15 @@ Manba: live MCP + kod. **Kod** = UI bor, brauzerda to‘liq bosilmadi.
 |---|---|---|
 | Panel ochish / yopish | OK | Trigger, Esc, Ctrl+. |
 | Ctrl+. | OK | Escape dan keyin panel qayta ochildi |
-| Cmd+. | Xato | Faqat `event.ctrlKey`; Meta yo‘q |
+| Cmd+. | OK (#77) | `metaKey` ham qabul qilinadi; tooltip `⌘.` |
 | Escape | OK | `aria-expanded=false`, heading yo‘qoldi |
 | 12 ta uslub | OK | `data-style` dashboard…skeu |
 | Light / Dark | OK | `html.dark` + `localStorage.theme`; View Transition ~1 s kechikishi |
 | System | Kod | Dual uslubda chiqadi; MCP da bosilmadi |
 | Accent · Flat | OK | Hue 140 → `--rw-accent #22763e`, Apply yoqilgan |
-| Accent · Glass/Swiss | Xato | Gradient / `#rrggbbaa`; Apply o‘chiq |
+| Accent · Glass/Swiss | OK (#72) | Gradient / `#rrggbbaa` o‘qiladi |
 | Shrift / heading | OK | Inter, Jakarta; `data-font-heading=inter` |
-| Lexend | Xato | Klientda bor; API `FONTS` da yo‘q (`plex` bor) |
+| Lexend | OK (#69) | API `FONTS` da bor |
 | Density | OK | compact / comfortable / spacious |
 | Sidebar / Top bar | OK | `topnav` da complementary yo‘qoldi |
 | Slim (topnav) | OK | `data-nav-shape=slim`; sidenav da yashirin |
@@ -229,16 +263,16 @@ Manba: live MCP + kod. **Kod** = UI bor, brauzerda to‘liq bosilmadi.
 | Day flat shablon | OK | flat + light + inter + comfortable |
 | Copy link | OK | Tugma «Link copied» |
 | Save form | OK | Nom `audit-tmp` — Save enabled; hisobga yozilmadi |
-| Export / Import fayl | Kod | `download()` / `importAppearance`; fayl tanlanmadi |
-| applySaved | Xato | `setMode` chaqirilmaydi |
+| Export / Import fayl | OK (#77) | Import bir qadamda; `theme` ham |
+| applySaved | OK (#77) | `setMode(template.theme)` |
 | Undo | Qisman | Tugma yoqildi; alohida qadam o‘lchanmadi |
-| Reset | Kod | clay + system; live admin da bosilmadi |
-| Hide float | Xato | `writeHidden(true)` mavjud emas |
+| Reset | OK (#77) | Jamoa standarti + `system`; shablonlar qoladi |
+| Hide float | OK (#77) | Panel sarlavhasida; `rw:customizer-hidden=1` |
 | A11y (lokal) | OK | protan, motion=off, targets=big, focus=strong |
-| A11y → hisob | Xato | `motion=off` API da yo‘q; PATCH butun `ui_prefs` ni yiqitadi |
-| PrefsSync PATCH | Xato | 400 `card`; `.catch()` jim |
+| A11y → hisob | OK (#69) | `MOTIONS` da `off`/`full`/`mild` bor |
+| PrefsSync PATCH | OK (#69) | Sxema to‘liq; xato `prefs.sync_failed` ga yoziladi |
 | Settings `/settings/korinish` | OK | Til, theme, 12 uslub, sound, fade/circle — to‘liq customizer emas |
-| Share URL theme | Xato | `KEYS` da theme yo‘q; React state yangilanmaydi |
+| Share URL theme | OK (#77) | `theme` havolada; React holati allaqachon to‘g‘ri edi |
 
 ---
 
