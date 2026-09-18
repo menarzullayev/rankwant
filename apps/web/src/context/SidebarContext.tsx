@@ -80,6 +80,23 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  // Esc — ochiq mobil panelni yopadi. Ikkala rejim ham shu holatdan
+  // boshqariladi (sidenav overlay'i ham, topnav ro'yxati ham), shuning
+  // uchun qoida bitta joyda turadi.
+  //
+  // O'lchandi (2026-09-18, jonli brauzer, 390x844x2): Esc ilgari hech
+  // narsa qilmasdi — panel ochiq qolardi (`asideLeft: 0`,
+  // `stillOpen: true`). Klaviatura foydalanuvchisi uchun yopishning
+  // yagona yo'li ichkaridagi tugmani topish edi.
+  useEffect(() => {
+    if (!isMobileOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsMobileOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [isMobileOpen]);
+
   return (
     <SidebarContext.Provider
       value={{

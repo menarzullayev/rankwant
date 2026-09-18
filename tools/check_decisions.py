@@ -52,6 +52,14 @@ DICTIONARY_ROUTE = "apps/web/src/app/i18n/[file]/route.ts"
 # auth tabs were measured against. Owner decision 2026-09-18.
 LOCALE_SWITCH = "apps/web/src/layout/LocaleSwitch.tsx"
 SIGN_IN_LINK = "apps/web/src/layout/UserMenu.tsx"
+# Mobile navigation drawer: the trigger announces its state, the panel is a
+# named dialog while it is open, focus moves in and comes back, Esc closes it
+# and the page behind it does not scroll. Owner decision 2026-09-18.
+MOBILE_DRAWER_ID = "rw-sidenav-drawer"
+APP_HEADER = "apps/web/src/layout/AppHeader.tsx"
+APP_SIDEBAR = "apps/web/src/layout/AppSidebar.tsx"
+APP_SHELL = "apps/web/src/layout/AppShell.tsx"
+SIDEBAR_CONTEXT = "apps/web/src/context/SidebarContext.tsx"
 
 
 class Unreadable(Exception):
@@ -359,6 +367,64 @@ def mobile_header_fits_narrow_screen() -> str | None:
     return None
 
 
+def mobile_drawer_is_accessible() -> str | None:
+    """The mobile navigation drawer is announced, focusable and escapable.
+
+    Measured in a live browser 2026-09-18 (390x844x2, production build): the
+    trigger never announced its state (`aria-expanded` stayed `null` even
+    while the panel was open), the panel had no role, name or `aria-modal`,
+    focus stayed on `body`, the page scrolled behind the panel, and a real
+    Escape key press left it open (`asideLeft: 0`, `stillOpen: true`).
+
+    Each clause below guards one of those measurements. The two attribute
+    checks are scoped to their own element — a file-wide substring test would
+    also match the explanatory comments next to them, which is how an earlier
+    guard of this kind passed while the class was gone.
+    """
+    trigger = re.search(
+        r'<button\s+type="button"\s+onClick=\{toggleMobileSidebar\}([^>]*)>',
+        read(APP_HEADER),
+        re.S,
+    )
+    if trigger is None:
+        return f"{APP_HEADER}: mobil menyu tugmasi (`toggleMobileSidebar`) topilmadi"
+    if "aria-expanded={isMobileOpen}" not in trigger.group(1):
+        return (
+            f"{APP_HEADER}: menyu tugmasi holatni e'lon qilmaydi "
+            "(`aria-expanded` yo'q) — ekran o'quvchi panel ochilganini bilmaydi"
+        )
+    if f'aria-controls="{MOBILE_DRAWER_ID}"' not in trigger.group(1):
+        return f'{APP_HEADER}: menyu tugmasida `aria-controls="{MOBILE_DRAWER_ID}"` yo\'q'
+
+    sidebar = read(APP_SIDEBAR)
+    aside = re.search(r"<aside\b(.*?)>", sidebar, re.S)
+    if aside is None:
+        return f"{APP_SIDEBAR}: `<aside>` topilmadi"
+    opening = aside.group(1)
+    if f'id="{MOBILE_DRAWER_ID}"' not in opening:
+        return (
+            f"{APP_SIDEBAR}: panelda `id=\"{MOBILE_DRAWER_ID}\"` yo'q — "
+            "`aria-controls` nishonsiz qoladi"
+        )
+    if 'role={isMobileOpen ? "dialog" : undefined}' not in opening:
+        return f"{APP_SIDEBAR}: panel ochiq holatda dialog rolini olmaydi"
+    if "aria-modal={isMobileOpen || undefined}" not in opening:
+        return f"{APP_SIDEBAR}: panelda `aria-modal` shartli emas"
+    if 'aria-label={t(locale, "nav.main")}' not in opening:
+        return f"{APP_SIDEBAR}: panel nomlanmagan (`aria-label` yo'q)"
+    if "closeButtonRef.current?.focus()" not in sidebar:
+        return f"{APP_SIDEBAR}: panel ochilganda fokus ichkariga kirmaydi"
+    if "opener?.isConnected" not in sidebar:
+        return f"{APP_SIDEBAR}: panel yopilganda fokus ochgan tugmaga qaytmaydi"
+
+    if 'event.key === "Escape"' not in read(SIDEBAR_CONTEXT):
+        return f"{SIDEBAR_CONTEXT}: `Esc` ochiq mobil panelni yopmaydi"
+
+    if 'document.body.style.overflow = "hidden"' not in read(APP_SHELL):
+        return f"{APP_SHELL}: panel ochiq ekan orqa fon scroll'i qulflanmagan"
+    return None
+
+
 def _workflow_triggers(rel: str) -> set[str]:
     lines = read(rel).splitlines()
     try:
@@ -425,6 +491,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("lug'at alohida faylda", dictionary_as_cached_file),
     ("User modeli tenglik maydonlari", user_parity_fields_kept),
     ("header 320 px ga sig'adi", mobile_header_fits_narrow_screen),
+    ("mobil panel foydalanishga yaroqli", mobile_drawer_is_accessible),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),

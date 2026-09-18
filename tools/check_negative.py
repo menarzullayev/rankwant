@@ -2514,6 +2514,12 @@ def _decisions_sandbox(extra_workflows: dict[str, str]) -> tuple[int, str]:
         # `check_decisions.py` fails with exit 2 — which is how the omission
         # was caught.
         "apps/web/src/layout/LocaleSwitch.tsx",
+        # Mobile drawer (2026-09-18): the trigger, the panel, the Escape
+        # handler and the scroll lock. `AppSidebar.tsx` is already listed
+        # above for the earlier header rule.
+        "apps/web/src/layout/AppHeader.tsx",
+        "apps/web/src/layout/AppShell.tsx",
+        "apps/web/src/context/SidebarContext.tsx",
     )
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
@@ -2543,6 +2549,68 @@ def neg_decisions_trial_label_scoped() -> tuple[bool, str]:
     if code != 1 or "CI faqat self-hosted" not in out:
         return False, f"decisions/sinov label'i boshqa workflow'da: exit {code} — {out[-160:]}"
     return True, "decisions/sinov label'i boshqa workflow'da: tutildi (exit 1)"
+
+
+# ── Mobile drawer: announced, focusable, escapable, non-scrolling (2026-09-18) ──
+#
+# One test per clause of `mobile_drawer_is_accessible`. Measured in a live
+# browser before the fix: `aria-expanded` was `null` even while open, focus
+# stayed on `body`, a real Escape left the panel open, and the page scrolled
+# behind it. Each mutation below removes exactly one of those guarantees.
+
+
+def neg_decisions_drawer_trigger_state_lost() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/web/src/layout/AppHeader.tsx",
+        "aria-expanded={isMobileOpen}",
+        "aria-expanded={undefined}",
+        "mobil panel foydalanishga yaroqli",
+    )
+
+
+def neg_decisions_drawer_role_lost() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/web/src/layout/AppSidebar.tsx",
+        'role={isMobileOpen ? "dialog" : undefined}',
+        "role={undefined}",
+        "mobil panel foydalanishga yaroqli",
+    )
+
+
+def neg_decisions_drawer_focus_not_moved() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/web/src/layout/AppSidebar.tsx",
+        "closeButtonRef.current?.focus();",
+        "void closeButtonRef;",
+        "mobil panel foydalanishga yaroqli",
+    )
+
+
+def neg_decisions_drawer_focus_not_returned() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/web/src/layout/AppSidebar.tsx",
+        "if (opener?.isConnected) opener.focus();",
+        "void opener;",
+        "mobil panel foydalanishga yaroqli",
+    )
+
+
+def neg_decisions_drawer_escape_lost() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/web/src/context/SidebarContext.tsx",
+        'if (event.key === "Escape") setIsMobileOpen(false);',
+        'if (event.key === "Esc") setIsMobileOpen(false);',
+        "mobil panel foydalanishga yaroqli",
+    )
+
+
+def neg_decisions_drawer_scroll_lock_lost() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/web/src/layout/AppShell.tsx",
+        'document.body.style.overflow = "hidden";',
+        'document.body.style.overflow = "auto";',
+        "mobil panel foydalanishga yaroqli",
+    )
 
 
 # ── Deploy gate: agents deploy only a green `main` (owner decision 2026-09-17) ──
@@ -3772,6 +3840,12 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("Security PR'da qaytsa tutilsin", neg_decisions_security_on_pr),
             ("smoke PR'da qaytsa tutilsin", neg_decisions_smoke_on_pr),
             ("runner-2 profile tushsa tutilsin", neg_decisions_runner2_profile_dropped),
+            ("panel holatni e'lon qilmasa tutilsin", neg_decisions_drawer_trigger_state_lost),
+            ("panel dialog rolini yo'qotsa tutilsin", neg_decisions_drawer_role_lost),
+            ("fokus panelga kirmasa tutilsin", neg_decisions_drawer_focus_not_moved),
+            ("fokus tugmaga qaytmasa tutilsin", neg_decisions_drawer_focus_not_returned),
+            ("Esc panelni yopmasa tutilsin", neg_decisions_drawer_escape_lost),
+            ("fon scroll'i qulflanmasa tutilsin", neg_decisions_drawer_scroll_lock_lost),
         ],
     ),
     (

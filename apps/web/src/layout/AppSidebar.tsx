@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+
 import { IntentLink } from "@/components/ui/IntentLink";
 import { usePathname } from "next/navigation";
 
@@ -27,8 +29,45 @@ export default function AppSidebar() {
   // shunda ikonka-rejimda ham band nomini o'qish mumkin.
   const wide = isExpanded || isHovered || isMobileOpen;
 
+  // Fokus boshqaruvi — overlay panel ochilganda fokus ICHKARIGA kiradi,
+  // yopilganda esa uni ochgan tugmaga qaytadi.
+  //
+  // O'lchandi (2026-09-18, jonli brauzer, 390x844x2): panel ochilganda
+  // ham, yopilganda ham `document.activeElement` — `body` edi. Ya'ni
+  // klaviatura foydalanuvchisi uchun panel ochilganini bildiruvchi hech
+  // narsa yo'q edi va Tab bosganda fokus sahifa boshidan boshlanardi.
+  //
+  // Diqqat: ish stolida `isMobileOpen` doim `false` (resize effekti
+  // majburan yopadi), ya'ni bu effekt u yerda hech narsa qilmaydi.
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const openerRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (isMobileOpen) {
+      openerRef.current =
+        document.activeElement instanceof HTMLElement
+          ? document.activeElement
+          : null;
+      closeButtonRef.current?.focus();
+      return;
+    }
+    const opener = openerRef.current;
+    openerRef.current = null;
+    // Sahifa almashgan bo'lsa tugma DOM'dan chiqqan bo'lishi mumkin —
+    // u holda fokusni majburlamaymiz.
+    if (opener?.isConnected) opener.focus();
+  }, [isMobileOpen]);
+
   return (
     <aside
+      id="rw-sidenav-drawer"
+      // Tor ekranda panel — overlay: orqasida qoraytma bor, sahifa
+      // siljimaydi, fokus ichkarida qoladi. Ya'ni u modal dialog.
+      // Keng ekranda esa u oddiy yon panel, dialog emas — shuning uchun
+      // rol SHARTGA bog'langan.
+      role={isMobileOpen ? "dialog" : undefined}
+      aria-modal={isMobileOpen || undefined}
+      aria-label={t(locale, "nav.main")}
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={`fixed top-0 left-0 z-50 flex h-screen flex-col border-r rw-divider rw-chrome
@@ -52,6 +91,7 @@ export default function AppSidebar() {
         </IntentLink>
         <button
           type="button"
+          ref={closeButtonRef}
           onClick={closeMobileSidebar}
           aria-label={t(locale, "nav.close")}
           className="flex size-10 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg lg:hidden"

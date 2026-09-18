@@ -16,7 +16,7 @@ import { CUSTOMIZER_ENABLED } from "@/lib/theme/flag";
 import UserMenu from "./UserMenu";
 
 export default function AppHeader() {
-  const { toggleMobileSidebar } = useSidebar();
+  const { isMobileOpen, toggleMobileSidebar } = useSidebar();
   const pathname = usePathname();
   const locale = useLocale();
   const current = NAV.find(
@@ -39,10 +39,18 @@ export default function AppHeader() {
           Ilgari bosiladigan maydon faqat ikonka kattaligida edi: 20x20,
           ya'ni WCAG 2.5.8 (AA) talab qilgan 24x24 dan ham kichik.
           `-ml-2.5` ikonkani eski joyida qoldiradi — faqat nishon
-          kattalashadi, ko'rinish o'zgarmaydi. */}
+          kattalashadi, ko'rinish o'zgarmaydi.
+
+          `aria-expanded`/`aria-controls` SHART: topnav rejimidagi
+          burger'da (`AppTopNav`) ikkalasi ham bor edi, bu yerda yo'q edi.
+          O'lchandi (2026-09-18, jonli DOM): panel ochiq turganda ham tugma
+          holatni e'lon qilmasdi (`aria-expanded` `null`) — ekran o'quvchi
+          «Menyu, tugma» deb o'qib, panel ochilganini aytmasdi. */}
       <button
         type="button"
         onClick={toggleMobileSidebar}
+        aria-expanded={isMobileOpen}
+        aria-controls="rw-sidenav-drawer"
         aria-label={t(locale, "nav.menu")}
         className="-ml-2.5 flex size-10 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg lg:hidden"
       >
