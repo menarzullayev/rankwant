@@ -233,7 +233,8 @@ document.documentElement.classList.add("dark")}`;
 // With nothing saved on this device, the team default (D37) applies here as
 // well: font, density and the rest. Before, it existed only in the panel's
 // state (APP-14).
-const appearanceInit = (teamDefault: AppearancePrefs) => `try{
+function appearanceInit(teamDefault: AppearancePrefs): string {
+  return `try{
 var r=document.documentElement;
 var a=JSON.parse(localStorage.getItem("rw:appearance")||${teamDefaultLiteral(teamDefault)});
 if(a.font)r.dataset.font=a.font;
@@ -273,6 +274,7 @@ r.style.setProperty("--rw-accent-fg",c.fg);
 r.style.setProperty("--rw-accent-soft",c.soft);
 r.style.setProperty("--rw-accent-ink",c.ink);}
 }catch(e){}`;
+}
 
 export default async function RootLayout({
   children,
