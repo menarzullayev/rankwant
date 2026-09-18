@@ -25,6 +25,10 @@ _console.force_utf8()
 
 ROOT = Path(__file__).resolve().parent.parent
 SELF_HOSTED = "[self-hosted, rankwant]"
+HOSTED = "ubuntu-latest"
+# CI/Security/Nightly run on GitHub-hosted VMs (public repo, $0 minutes).
+# Deploy stays on this machine: it touches the live Docker stack.
+# The trial self-test is the only workflow allowed on the container label.
 # A runner under trial gets its own label, and only its self-test may target it.
 # On 2026-09-17 a trial runner registered with the production label took real CI
 # jobs and failed them, because this rule left the self-test no other label.
@@ -101,20 +105,33 @@ def main_only_via_pr() -> str | None:
     return None
 
 
-def ci_self_hosted_only() -> str | None:
+def ci_test_on_hosted() -> str | None:
+    """CI must not run on the laptop once the repo is public.
+
+    A public `pull_request` on `[self-hosted, rankwant]` would execute
+    fork code on the live machine. Deploy is the exception: it has no
+    `pull_request` trigger and needs the Desktop engine.
+    """
     workflows = sorted((ROOT / ".github/workflows").glob("*.yml"))
     if not workflows:
         raise Unreadable(".github/workflows: workflow topilmadi")
     bad: list[str] = []
     for path in workflows:
         text = read(path.relative_to(ROOT).as_posix())
-        allowed = {SELF_HOSTED, TRIAL_RUNNER.get(path.name, SELF_HOSTED)}
+        if path.name == "deploy.yml":
+            allowed = {SELF_HOSTED}
+        elif path.name == "runner-selftest.yml":
+            allowed = {TRIAL_RUNNER[path.name]}
+        else:
+            allowed = {HOSTED}
         for lineno, line in enumerate(text.splitlines(), 1):
             match = re.match(r"\s*runs-on:\s*(.*?)\s*$", line)
             if match and match.group(1) not in allowed:
                 bad.append(f"{path.name}:{lineno} `{match.group(1) or '(blok)'}`")
     if bad:
-        return "faqat self-hosted runner (bepul daqiqalar tugagan): " + ", ".join(bad)
+        return "CI/nightly/security hosted, deploy self-hosted (jonli stack): " + ", ".join(
+            bad
+        )
     return None
 
 
@@ -480,7 +497,7 @@ def decisions_table_present() -> str | None:
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
-    ("CI faqat self-hosted", ci_self_hosted_only),
+    ("CI testlari hosted", ci_test_on_hosted),
     ("CI runner konteynerda", container_runner_takes_ci),
     ("deploy faqat qo'lda", deploy_manual_only),
     ("deploy hamma servisni quradi", deploy_builds_every_service),

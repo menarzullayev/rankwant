@@ -28,6 +28,6 @@ Opening the repo does not remove the 5.8 min hook. That hook was the human wait.
 
 ## Locked choice
 
-HITL: keep the repo private; slim pre-push to `ruff` / `format` / `check_i18n` / `check_hardcoded` plus `push_guard`. mypy, pytest, tsc, eslint, and the 153 negative tests stay on CI.
+First HITL (same day): keep the repo private; slim pre-push to `ruff` / `format` / `check_i18n` / `check_hardcoded` plus `push_guard`. mypy, pytest, tsc, eslint, and the 153 negative tests stay on CI.
 
-Do not make the repository public only to buy CI minutes. Judge, import scripts, and git history would go public; secret history would need rotation. That path remains a product decision, not a CI one.
+Second HITL (same day, after fold-jobs): three full API+Web PRs were still ~18 min of work on two laptop runners. No VPS, no second PC, no payment. Remaining free levers were PR-thin/main-fat, public `ubuntu-latest`, private hosted 2000 min, or a third runner on this PC. Owner locked **public + `ubuntu-latest`** for CI/Security/Nightly. Deploy and `runner-selftest` stay self-hosted. Flip visibility only after that workflow change is on `main`, so fork PRs never land on the laptop.

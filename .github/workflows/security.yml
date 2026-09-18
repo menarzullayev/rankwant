@@ -32,7 +32,7 @@ jobs:
   # of work became 3 minutes.
   audit:
     name: Security checks
-    runs-on: [self-hosted, rankwant]
+    runs-on: ubuntu-latest
     # ⚠️ The time limit is REQUIRED: nothing on the self-hosted runner
     # may wait forever. 3 minutes is enough (measured: ~43 s + pip/npm
     # audit).

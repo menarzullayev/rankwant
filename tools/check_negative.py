@@ -2220,10 +2220,10 @@ def neg_decisions_push_guard_unwired() -> tuple[bool, str]:
 
 def neg_decisions_hosted_runner() -> tuple[bool, str]:
     return _decision_broken(
-        ".github/workflows/security.yml",
-        "runs-on: [self-hosted, rankwant]",
+        ".github/workflows/ci.yml",
         "runs-on: ubuntu-latest",
-        "CI faqat self-hosted",
+        "runs-on: [self-hosted, rankwant]",
+        "CI testlari hosted",
     )
 
 
@@ -2546,7 +2546,7 @@ def neg_decisions_trial_label_selftest_allowed() -> tuple[bool, str]:
 
 def neg_decisions_trial_label_scoped() -> tuple[bool, str]:
     code, out = _decisions_sandbox({"ci-trial.yml": _TRIAL_WORKFLOW})
-    if code != 1 or "CI faqat self-hosted" not in out:
+    if code != 1 or "CI testlari hosted" not in out:
         return False, f"decisions/sinov label'i boshqa workflow'da: exit {code} — {out[-160:]}"
     return True, "decisions/sinov label'i boshqa workflow'da: tutildi (exit 1)"
 

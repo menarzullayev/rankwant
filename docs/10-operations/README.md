@@ -710,28 +710,17 @@ Prod deploy **qo'lda tasdiqlash** bilan (contest oynasi tekshiruvi tufayli).
 
 ### Runner
 
-Joblar **self-hosted runner** da ishlaydi (`runs-on: [self-hosted, rankwant]`).
-2026-09-17 dan `rankwant` label'i Docker Desktop'dagi `rankwant-ci-runner`
-konteynerida turadi; 2026-09-18 dan ikkinchisi `rankwant-ci-runner-2`
-(alohida `rankwant-ci-work-2` volume, compose profile `second`). Watchdog
-ikkala nomni ham qayta ishga tushiradi (actions/runner#4444). PR'da Security
-va smoke yo'q — ular `main` push, cron yoki qo'lda. O'rnatish, tiklash
-(`tools/runner/recreate.sh`, `--second` ikkinchisi uchun), hisobot va reboot
-tekshiruvi — [tools/runner/README.md](../../tools/runner/README.md).
-Avvalgi WSL runner 2026-09-17 da olib tashlangan. Self-hosted sababi — repo private, GitHub'ning bulut runnerlari esa
-oyiga 2000 daqiqa bilan cheklangan va u kvota hisobdagi boshqa
-repolar bilan bo'lishiladi. O'z mashinasida Actions bepul va cheksiz.
+CI, Security va Nightly **GitHub-hosted** da ishlaydi (`runs-on: ubuntu-latest`).
+Public repo da standard runner daqiqasi $0; 3 agent PR i bir-birini shu
+noutbukda siqmaydi. `deploy.yml` va `runner-selftest.yml` self-hosted
+qoladi — deploy jonli Docker stack'iga tegadi, public `pull_request` esa
+noutbukda yugurmasligi kerak. PR'da Security va smoke yo'q. Runner
+o'rnatish — [tools/runner/README.md](../../tools/runner/README.md).
 
-Buning evaziga muhit mustaqilligi yo'qoladi: CI ishlab chiqish mashinasida
-ishlaydi, ya'ni «menda ishlayapti» sinfidagi muammolarni toza bulut
-runneri kabi tutmaydi.
-
-**Muhim:** CI stack'i `docker-compose.ci.yml` dagi `name: rankwant-ci`
-bilan alohida compose loyihasida turadi. Loyiha nomi katalogdan olinsa
-runner'ning ish katalogi (`_work/rankwant/rankwant`) jonli preview
-stack'i bilan bir loyihaga tushar va CI tozalashdagi `down -v` uning
-bazasini o'chirib yuborardi. Shu sababli test tarmog'i ham
-`rankwant-ci_default`.
+CI testlari toza `ubuntu-latest` VM da — «menda ishlayapti» sinfi
+kamayadi. Smoke/nightly ham hosted; `docker-compose.ci.yml` dagi
+`name: rankwant-ci` saqlanadi (hosted VM da jonli preview yo'q).
+Deploy self-hosted da qoladi va jonli stack'ga tegadi.
 
 ### Push'dan oldingi darvoza
 

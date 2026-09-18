@@ -53,7 +53,7 @@ jobs:
   # full minute — one extra job is acceptable: hosted minutes are unused.
   filter:
     name: Path filter
-    runs-on: [self-hosted, rankwant]
+    runs-on: ubuntu-latest
     timeout-minutes: 2
     outputs:
       api: ${{ steps.filter.outputs.api }}
@@ -83,7 +83,7 @@ jobs:
     name: API — lint, types, tests
     needs: filter
     if: ${{ needs.filter.outputs.api == 'true' || github.event_name == 'workflow_dispatch' }}
-    runs-on: [self-hosted, rankwant]
+    runs-on: ubuntu-latest
     # 5, not 3: on 2026-09-18 pytest took 148 s for 1466 tests and the whole
     # job 3 min 7 s, so the 3-minute bound cancelled a green run (#87). Five
     # still stops a hang long before the 14 min 54 s one measured without
@@ -120,13 +120,10 @@ jobs:
           fi
       - uses: actions/setup-python@v7
         if: steps.check.outputs.ready == 'true'
-        # `cache:` is OMITTED ON PURPOSE. The runner is self-hosted:
-        # `~/.npm` (1.5 GB) and the pip cache live on the machine between
-        # jobs. `cache:` re-downloads them from GitHub storage — measured:
-        # a 440 MB npm-cache archive at ~2 MB/s took 127 seconds while
-        # the local copy was already sitting there.
         with:
           python-version: '3.12'
+          cache: pip
+          cache-dependency-path: apps/api/requirements-dev.lock
       - if: steps.check.outputs.ready == 'true'
         run: pip install -r requirements-dev.lock
         working-directory: apps/api
@@ -197,11 +194,9 @@ jobs:
           # the result depends on scheduling order. Local measurement:
           # 14m54s → 1m57s.
           CELERY_EAGER: '1'
-        # `-n 6`: measured (8 CPUs) — -n 4: 102 s, -n 6: 88 s,
-        # -n 8: 92 s. 6 is the fastest point; at 8 the workers crowd
-        # each other. Not `auto`: the runner shares this machine with
-        # the live preview.
-        run: pytest -n 6 --cov --cov-report=term-missing
+        # Public `ubuntu-latest` is 4 vCPU. `-n 6` was fastest on the
+        # 8-CPU laptop runner; on 4 cores it oversubscribes.
+        run: pytest -n 4 --cov --cov-report=term-missing
         working-directory: apps/api
 
   # ⚠️ Besides building web, this job also runs the CHECK SUITE
@@ -222,7 +217,7 @@ jobs:
       ${{ needs.filter.outputs.web == 'true'
           || needs.filter.outputs.tools == 'true'
           || github.event_name == 'workflow_dispatch' }}
-    runs-on: [self-hosted, rankwant]
+    runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
       - uses: actions/checkout@v7
@@ -237,13 +232,10 @@ jobs:
           fi
       - uses: actions/setup-node@v7
         if: steps.check.outputs.ready == 'true'
-        # `cache:` is OMITTED ON PURPOSE. The runner is self-hosted:
-        # `~/.npm` (1.5 GB) and the pip cache live on the machine between
-        # jobs. `cache:` re-downloads them from GitHub storage — measured:
-        # a 440 MB npm-cache archive at ~2 MB/s took 127 seconds while
-        # the local copy was already sitting there.
         with:
           node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
       # `npm ci` also runs when only `tools/` changed, ON PURPOSE:
       # `check_i18n_runtime.mjs` loads `typescript` from
       # `apps/web/node_modules` (`createRequire`). Without it,
@@ -298,7 +290,7 @@ jobs:
     name: Judge — bake-off candidates
     needs: filter
     if: ${{ needs.filter.outputs.judge == 'true' || github.event_name == 'workflow_dispatch' }}
-    runs-on: [self-hosted, rankwant]
+    runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
       - uses: actions/checkout@v7
@@ -340,7 +332,7 @@ jobs:
     name: Docs and contract integrity
     needs: [filter, api, web, judge]
     if: ${{ always() && needs.filter.result == 'success' }}
-    runs-on: [self-hosted, rankwant]
+    runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
       - uses: actions/checkout@v7
@@ -362,7 +354,7 @@ jobs:
 
   smoke:
     name: Smoke and E2E — full stack
-    runs-on: [self-hosted, rankwant]
+    runs-on: ubuntu-latest
     # ⚠️ 20 minutes — a DELIBERATE exception. This job BUILDS the full
     # compose stack (api+web+judge images), loads demo data, runs smoke,
     # and runs Playwright E2E. At 3 minutes it was simply `cancelled`
