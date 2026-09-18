@@ -8,6 +8,8 @@ import { useLocale, useLocaleAuto } from "@/i18n/LocaleProvider";
 import { LOCALES, LOCALE_NAMES, t, type Locale } from "@/i18n/messages";
 import { announcePrefs } from "@/lib/prefs";
 
+import { LocaleFlag } from "./LocaleFlag";
+
 /** «Avtomatik» — cookie o'chiriladi va til yana sarlavhadan aniqlanadi.
  *
  *  Busiz tanlov bir tomonlama qulf bo'lardi: bir marta qo'lda tanlagach
@@ -42,13 +44,6 @@ const ENGLISH_NAMES: Record<Locale, string> = {
   zh: "Chinese",
   es: "Spanish",
 };
-
-/** Ko'rinadigan nom: `O'zbekcha — Uzbek`. */
-function label(code: Locale): string {
-  const native = LOCALE_NAMES[code];
-  const english = ENGLISH_NAMES[code];
-  return native === english ? native : `${native} — ${english}`;
-}
 
 /** Til tanlagich — custom listbox.
  *
@@ -97,13 +92,11 @@ export function LocaleSwitch() {
     [],
   );
 
-  // Yopiq holatda ko'rinadigan nom. «Avtomatik» tanlanganda aniqlangan
-  // til ham qavsda ko'rsatiladi (qaror 9) — aks holda odam qaysi tilda
-  // ko'rayotganini bilmaydi, holbuki bu eng ko'p so'raladigan savol.
-  const currentLabel =
-    current === AUTO
-      ? `${t(locale, "locale.auto")} · ${LOCALE_NAMES[locale]}`
-      : label(current as Locale);
+  // Native-first: triggerda faqat endonim. «Avtomatik» bo'lsa ham
+  // aniqlangan tilning o'z nomi — bayroq qaysi til ekanini ko'rsatadi.
+  // Inglizcha kalit menyuda, ikkinchi qatorda (qaror 9 / tahlil B9).
+  const shown: Locale = current === AUTO ? locale : (current as Locale);
+  const currentLabel = LOCALE_NAMES[shown];
 
   // `sm` dan pastda ko'rinadigan matn — til KODI, to'liq nom emas.
   //
@@ -273,7 +266,7 @@ export function LocaleSwitch() {
         className="flex h-10 items-center gap-1.5 rw-radius-sm border rw-line rw-field-bg px-2.5
           rw-dim transition rw-hover-strong"
       >
-        <Icon name="locale.globe" className="size-4 shrink-0" />
+        <LocaleFlag code={shown} />
         {/* `min-w-0` + `truncate` SHART: tarjima uzunligi olti barobargacha
             farq qiladi, ya'ni eng uzun nom header'ni buzdmasin.
             `sm` dan pastda butunlay yashiriladi — o'sha joyda kod turadi. */}
@@ -315,8 +308,10 @@ export function LocaleSwitch() {
                 active === AUTO ? "rw-hover-bg" : ""
               } ${current === AUTO ? "font-medium" : ""}`}
             >
-              <span className="min-w-0 flex-1 truncate">
-                {`${t(locale, "locale.auto")} — ${LOCALE_NAMES[locale]}`}
+              <LocaleFlag code={locale} />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate">{t(locale, "locale.auto")}</span>
+                <span className="block truncate rw-dim-2">{LOCALE_NAMES[locale]}</span>
               </span>
               {current === AUTO && <Icon name="action.confirm" className="size-3.5 shrink-0" />}
             </div>
@@ -352,7 +347,13 @@ export function LocaleSwitch() {
                         active === code ? "rw-hover-bg" : ""
                       } ${current === code ? "font-medium" : ""}`}
                     >
-                      <span className="min-w-0 flex-1 truncate">{label(code)}</span>
+                      <LocaleFlag code={code} />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate">{LOCALE_NAMES[code]}</span>
+                        {LOCALE_NAMES[code] !== ENGLISH_NAMES[code] ? (
+                          <span className="block truncate rw-dim-2">{ENGLISH_NAMES[code]}</span>
+                        ) : null}
+                      </span>
                       {current === code && <Icon name="action.confirm" className="size-3.5 shrink-0" />}
                     </div>
                   ))}
