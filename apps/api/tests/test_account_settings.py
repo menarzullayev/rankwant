@@ -463,7 +463,8 @@ class TestProfilMaydonlari:
 
         # Noma'lum qiymatlar rad etiladi.
         assert self.yoz(user, {"ui_prefs": {"effect": "portlash"}}).status_code == 400
-        assert self.yoz(user, {"ui_prefs": {"appearance": {"size": 115}}}).status_code == 400
+        # `size` qadami 5 (D45): 117 slayderda yo'q qiymat.
+        assert self.yoz(user, {"ui_prefs": {"appearance": {"size": 117}}}).status_code == 400
         assert self.yoz(user, {"ui_prefs": {"appearance": {"theme": "system"}}}).status_code == 400
         # Eski yassi shakl ham rad etiladi.
         assert self.yoz(user, {"ui_prefs": {"style": "ocean"}}).status_code == 400

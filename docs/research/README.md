@@ -38,3 +38,4 @@ kirill matn, yozilganicha qolgan jadvallar.
 | 2026-09-15 | [kep-customize-audit](2026-09-15-kep-customize-audit/REPORT.md) | kep.uz CUSTOMIZE paneli auditi | — |
 | 2026-09-15 | [nav-typography-implementation](2026-09-15-nav-typography-implementation/REPORT.md) | Navigatsiya va erkin tipografiya — bajarilgan ish | — |
 | 2026-09-15 | [self-hosted-runner-guide](2026-09-15-self-hosted-runner-guide/self-hosted-runner-guide.md) | GitHub Actions self-hosted runner qo'llanmasi | — |
+| 2026-09-18 | [appearance-audit](2026-09-18-appearance-audit/BOARD.md) | Appearance (customizer + `/settings/korinish`) auditi: 9 chipta, ikkita ildiz — `parseColor` va `prefs` sxemasi | `apps/api/core/prefs.py`, `apps/web/src/lib/theme/color.ts` |
