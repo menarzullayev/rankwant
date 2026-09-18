@@ -217,6 +217,11 @@ ALLOWED_LITERALS = {
     # these through unchanged; only the separator between them is ours.
     "Edge", "Opera", "Yandex", "Firefox", "Chrome", "Safari",
     "iOS", "Android", "Windows", "macOS", "Linux",
+    # ARIA role token — `role={isMobileOpen ? "dialog" : undefined}` on the
+    # mobile navigation panel. It is not prose and must not be translated:
+    # the string IS the accessibility semantics. Keyed, it would stop
+    # matching the role the browser expects.
+    "dialog",
     # A share title: the display name plus the product. The name is data,
     # the suffix is the brand, and only the separator is ours.
     "${name} · RankWant",

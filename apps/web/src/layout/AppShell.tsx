@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+
 import { usePathname } from "next/navigation";
 
 import {
@@ -65,6 +67,22 @@ function Shell({ children }: { children: React.ReactNode }) {
   const bare = BARE.includes(pathname);
   const wide = isExpanded || isHovered;
   const sidenav = navMode === "sidenav" && !bare;
+
+  // Overlay panel ochiq ekan orqa fon siljimasin. Qulf FAQAT overlay'ga
+  // tegishli: topnav rejimidagi ro'yxat sahifa oqimida turadi va u bilan
+  // birga siljishi kerak.
+  //
+  // O'lchandi (2026-09-18, jonli brauzer, 390x844x2): panel ochiq
+  // turganda `body` ning `overflow` i `visible` edi — sahifa panel
+  // ostida siljib ketardi.
+  useEffect(() => {
+    if (!(sidenav && isMobileOpen)) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [sidenav, isMobileOpen]);
 
   return (
     <div className="min-h-screen">
