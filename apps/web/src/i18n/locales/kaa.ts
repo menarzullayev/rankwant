@@ -207,6 +207,8 @@ export const kaa: Record<MessageKey, string> = {
   "nav.skipToContent": "Tiykarǵı mazmunǵa ótiw",
   "nav.close": "Jabıw",
   "nav.menu": "Menyu",
+  "nav.collapseSidebar": "Qaptal panelli jıynaw",
+  "nav.expandSidebar": "Qaptal panelli ashıw",
   "nav.main": "Tiykarǵı navigatsiya",
   "theme.light": "Jaqtı rejim",
   "theme.dark": "Qarańǵı rejim",

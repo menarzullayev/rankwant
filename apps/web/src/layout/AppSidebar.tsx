@@ -17,6 +17,7 @@ export default function AppSidebar() {
     isHovered,
     setIsHovered,
     closeMobileSidebar,
+    toggleSidebar,
   } = useSidebar();
   const { count } = useUpdates();
   const pathname = usePathname();
@@ -31,11 +32,11 @@ export default function AppSidebar() {
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={`fixed top-0 left-0 z-50 flex h-screen flex-col border-r rw-divider rw-chrome
- px-4 transition-all duration-300
- ${wide ? "w-[260px]" : "w-[86px]"}
+ transition-all duration-300
+ ${wide ? "w-[260px] px-4" : "w-[86px] px-2"}
  ${isMobileOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
     >
-      <div className="flex h-16 items-center justify-between">
+      <div className="flex h-16 items-center justify-between gap-1">
         <Link
           href="/"
           className="text-lg font-bold"
@@ -53,13 +54,35 @@ export default function AppSidebar() {
           type="button"
           onClick={closeMobileSidebar}
           aria-label={t(locale, "nav.close")}
-          className="rw-dim lg:hidden"
+          className="flex size-10 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg lg:hidden"
         >
           <Icon name="nav.close" />
         </button>
+        <button
+          type="button"
+          onClick={() => {
+            if (isExpanded) setIsHovered(false);
+            toggleSidebar();
+          }}
+          aria-expanded={isExpanded}
+          aria-controls="rw-sidenav"
+          aria-label={t(
+            locale,
+            isExpanded ? "nav.collapseSidebar" : "nav.expandSidebar",
+          )}
+          className="hidden size-10 shrink-0 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg lg:flex"
+        >
+          <Icon
+            name="nav.collapse"
+            className={`size-5 transition-transform ${isExpanded ? "" : "rotate-180"}`}
+          />
+        </button>
       </div>
 
-      <nav className="no-scrollbar flex-1 overflow-y-auto pb-6">
+      <nav
+        id="rw-sidenav"
+        className="no-scrollbar flex-1 overflow-y-auto pb-6"
+      >
         {NAV_GROUPS.map((group) => (
           <div key={group.key} className="mb-5">
             {/* Yorliq rangi `rw-dim-2`, `rw-faint` EMAS: bular navigatsiya

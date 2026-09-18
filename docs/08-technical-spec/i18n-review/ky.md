@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1571 strings.**
+**1573 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -221,6 +221,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `nav.skipToContent` | Asosiy mazmunga o'tish | Негизги мазмунга өтүү |  |
 | `nav.close` | Yopish | Жабуу |  |
 | `nav.menu` | Menyu | Меню |  |
+| `nav.collapseSidebar` | Yon panelni yig'ish | Каптал панелди жыйноо |  |
+| `nav.expandSidebar` | Yon panelni ochish | Каптал панелди ачуу |  |
 | `nav.main` | Asosiy navigatsiya | Негизги навигация |  |
 | `theme.light` | Yorug' rejim | Жарык режим |  |
 | `theme.dark` | Qorong'u rejim | Караңгы режим |  |

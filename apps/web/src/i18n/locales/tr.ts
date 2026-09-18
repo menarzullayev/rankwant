@@ -207,6 +207,8 @@ export const tr: Record<MessageKey, string> = {
   "nav.skipToContent": "Ana içeriğe geç",
   "nav.close": "Kapat",
   "nav.menu": "Menü",
+  "nav.collapseSidebar": "Kenar çubuğunu daralt",
+  "nav.expandSidebar": "Kenar çubuğunu genişlet",
   "nav.main": "Ana gezinti",
   "theme.light": "Açık tema",
   "theme.dark": "Koyu tema",

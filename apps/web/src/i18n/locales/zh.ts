@@ -207,6 +207,8 @@ export const zh: Record<MessageKey, string> = {
   "nav.skipToContent": "跳到主要内容",
   "nav.close": "关闭",
   "nav.menu": "菜单",
+  "nav.collapseSidebar": "收起侧边栏",
+  "nav.expandSidebar": "展开侧边栏",
   "nav.main": "主导航",
   "theme.light": "浅色模式",
   "theme.dark": "深色模式",
