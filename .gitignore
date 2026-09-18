@@ -53,6 +53,10 @@ services/bakeoff/result-*-scratch.md
 # Django
 apps/api/db.sqlite3
 apps/api/staticfiles/
+# uv writes this lock on every `uv run`. Nothing installs from it (the image
+# uses requirements.lock), and while it was tracked every run showed up as a
+# change. The interpreter is pinned by apps/api/.python-version instead.
+apps/api/uv.lock
 apps/web/.next/
 apps/web/node_modules/
 
