@@ -212,7 +212,7 @@ export function PrefsSync() {
       // 400 beradi (o'lchandi). «Avtomatik» faqat cookie'ni o'chiradi —
       // hisobdagi til urug' bo'lib qoladi va qurilma tanlovi bo'lmaganda
       // ishlatiladi. Bu D4 dan ataylab chetlanish: qurilma ustun
-      // (`docs/i18n-precedence.md`).
+      // (`docs/08-technical-spec/i18n-precedence.md`).
       if (typeof change.locale === "string") body.locale = change.locale;
       if (
         change.style ||

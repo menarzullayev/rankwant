@@ -132,7 +132,7 @@ export function registrySize(): number {
   return registry.size;
 }
 
-export function isLocale(value: string | undefined): value is Locale {
+export function isLocale(value: string | null | undefined): value is Locale {
   return !!value && (LOCALES as readonly string[]).includes(value);
 }
 

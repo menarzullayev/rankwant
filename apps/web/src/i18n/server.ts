@@ -1,9 +1,13 @@
 import { cookies, headers } from "next/headers";
 
-import { DEFAULT_LOCALE, isLocale, type Locale } from "./messages";
+import { LOCALE_COOKIE, LOCALE_HEADER } from "./locale-params";
+import type { Locale } from "./messages";
+import { resolveLocale } from "./resolve";
 
-/** Til tanlovi saqlanadigan cookie. */
-export const LOCALE_COOKIE = "rw_locale";
+// Nomlar `i18n/locale-params.ts` da (proxy ham shuni import qiladi) —
+// bu yerdan qayta eksport qilinadi, ya'ni chaqiruvchilar uchun manzil
+// o'zgarmaydi.
+export { LOCALE_COOKIE, LOCALE_HEADER, LOCALE_PARAM } from "./locale-params";
 
 /** «Avtomatik» markeri — odam tanlagan, til esa sarlavhadan aniqlanadi.
  *
@@ -17,70 +21,33 @@ export const LOCALE_COOKIE = "rw_locale";
  */
 export const LOCALE_AUTO = "auto";
 
-/** `Accept-Language` sarlavhasidan mos tilni tanlaydi.
- *
- * Faqat COOKIE bo'lmaganda ishlatiladi: cookie — odamning O'ZI tanlagan
- * tili, ya'ni u har doim ustun. Sarlavha esa birinchi taassurot uchun:
- * chet ellik foydalanuvchi qo'lda almashtirmasdan o'z tilida boshlaydi
- * (qaror 14). Aks holda u o'zbekcha ko'rib, ro'yxatdan o'tmasdan
- * ketishi mumkin edi.
- *
- * Sifat koeffitsienti (`q=`) hisobga olinadi — brauzerlar tartibni shu
- * bilan bildiradi, satr tartibi bilan emas. `uz-Latn-UZ` kabi variant
- * asosiy tilga (`uz`) tushadi, `*` esa tashlab ketiladi.
- */
-function fromAcceptLanguage(header: string | null): Locale | null {
-  if (!header) return null;
-
-  const ranked = header
-    .split(",")
-    .map((part) => {
-      const [tag = "", ...params] = part.trim().split(";");
-      const q = params.find((p) => p.trim().startsWith("q="));
-      const quality = q ? Number(q.split("=")[1]) : 1;
-      return { tag: tag.trim().toLowerCase(), quality };
-    })
-    .filter((entry) => entry.tag && entry.tag !== "*" && entry.quality > 0)
-    .sort((a, b) => b.quality - a.quality);
-
-  for (const { tag } of ranked) {
-    const base = tag.split("-")[0];
-    if (isLocale(base)) return base;
-  }
-  return null;
-}
-
-/** Server komponentlari uchun joriy til.
- *
- * Ustunlik tartibi: cookie (odam tanlagan) → `Accept-Language` (brauzer
- * taklif qilgan) → standart. Ya'ni avtomatik aniqlash odamning tanlovini
- * HECH QACHON bekor qilmaydi — u faqat tanlov bo'lmaganda ishlaydi.
- *
- * `rw_locale=auto` — odam «Avtomatik» ni ATAYLAB tanlagan holat: cookie
- * bor, lekin u til emas, shuning uchun sarlavhadan aniqlashga o'tamiz.
- *
- * ⚠️ `Vary: Accept-Language` shu funksiya uchun SHART: javob sarlavhaga
- * bog'liq, ya'ni kesh uni alohida saqlashi kerak. Bugun `no-store`
- * turganda zarari yo'q, lekin keshlash yoqilsa bir zumda kesh-zaharlash
- * xatosiga aylanadi — bir xil URL rus foydalanuvchisiga inglizcha
- * beriladi (o'lchandi: bitta URL, to'rt til).
- */
 /** Joriy til VA u avtomatik aniqlanganmi.
  *
  *  `locale` — ko'rsatiladigan til; `auto` — odam «Avtomatik» ni
  *  tanlaganmi. Ikkalasi kerak: tanlagich qaysi variant belgilanganini
  *  shu bilan biladi, holbuki `locale` doim aniq til bo'ladi.
+ *
+ *  Ustunlik tartibi `./resolve` da (sof funksiya, unit-testda
+ *  tekshiriladi). Bu yerda faqat uchta MANBA o'qiladi:
+ *
+ *    `?lang=` → proxy uni so'rov sarlavhasiga ko'chirgan (LOCALE_HEADER)
+ *    cookie   → odam tanlagan (yoki proxy havoladan yozgan) qiymat
+ *    sarlavha → brauzer taklifi, birinchi taassurot uchun
+ *
+ *  ⚠️ `Vary: Accept-Language` shu funksiya uchun SHART: javob sarlavhaga
+ *  bog'liq, ya'ni kesh uni alohida saqlashi kerak. Bugun `no-store`
+ *  turganda zarari yo'q, lekin keshlash yoqilsa bir zumda kesh-zaharlash
+ *  xatosiga aylanadi — bir xil URL rus foydalanuvchisiga inglizcha
+ *  beriladi (o'lchandi: bitta URL, to'rt til). Endi URL'da `?lang=` bor,
+ *  ya'ni savol yana bir pog'ona o'tkirroq.
  */
 export async function getLocaleState(): Promise<{ locale: Locale; auto: boolean }> {
-  const chosen = (await cookies()).get(LOCALE_COOKIE)?.value;
-  if (isLocale(chosen)) return { locale: chosen, auto: false };
-
-  const detected = fromAcceptLanguage((await headers()).get("accept-language"));
-  return {
-    locale: detected ?? DEFAULT_LOCALE,
-    // `auto` markeri ham, umuman cookie yo'qligi ham avtomatik holat.
-    auto: true,
-  };
+  const requestHeaders = await headers();
+  return resolveLocale(
+    requestHeaders.get(LOCALE_HEADER),
+    (await cookies()).get(LOCALE_COOKIE)?.value ?? null,
+    requestHeaders.get("accept-language"),
+  );
 }
 
 /** Server komponentlari uchun joriy til — faqat `locale` (qarang:
