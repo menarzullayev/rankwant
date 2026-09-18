@@ -2306,6 +2306,26 @@ def neg_decisions_ai_crawler_dropped() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_nav_eager_link() -> tuple[bool, str]:
+    # A plain `next/link` back in the sidebar prefetches every item on sight.
+    return _decision_broken(
+        "apps/web/src/layout/AppSidebar.tsx",
+        'import { IntentLink } from "@/components/ui/IntentLink";\n',
+        'import { IntentLink } from "@/components/ui/IntentLink";\nimport Link from "next/link";\n',
+        "navigatsiya prefetch'i niyatda",
+    )
+
+
+def neg_decisions_intent_link_eager() -> tuple[bool, str]:
+    # `IntentLink` itself going back to the default prefetch undoes it for all.
+    return _decision_broken(
+        "apps/web/src/components/ui/IntentLink.tsx",
+        "prefetch={intent ? null : false}",
+        "prefetch={null}",
+        "navigatsiya prefetch'i niyatda",
+    )
+
+
 def neg_decisions_deploy_lock_removed() -> tuple[bool, str]:
     return _decision_broken(
         "tools/deploy.sh",
@@ -2345,6 +2365,13 @@ def _decisions_sandbox(extra_workflows: dict[str, str]) -> tuple[int, str]:
         # ADR-0023: the indexing decision lives in these two files.
         "apps/web/src/lib/site.ts",
         "apps/web/src/app/robots.ts",
+        # Intent prefetch (2026-09-18): the layout chrome and the link itself.
+        "apps/web/src/layout/AppSidebar.tsx",
+        "apps/web/src/layout/AppTopNav.tsx",
+        "apps/web/src/layout/AppFooter.tsx",
+        "apps/web/src/layout/HeaderStatus.tsx",
+        "apps/web/src/layout/UserMenu.tsx",
+        "apps/web/src/components/ui/IntentLink.tsx",
     )
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
@@ -3501,6 +3528,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("deploy web'ni qurmasa tutilsin", neg_decisions_deploy_skips_web),
             ("sayt qidiruvga yopilsa tutilsin", neg_decisions_site_closed_to_search),
             ("AI krauler ro'yxatdan tushsa tutilsin", neg_decisions_ai_crawler_dropped),
+            ("sidebar'ga oddiy Link qaytsa tutilsin", neg_decisions_nav_eager_link),
+            ("IntentLink darhol prefetch qilsa tutilsin", neg_decisions_intent_link_eager),
             ("sinov label'i self-test'da o'tadi", neg_decisions_trial_label_selftest_allowed),
             ("sinov label'i boshqa workflow'da tutilsin", neg_decisions_trial_label_scoped),
             ("Security PR'da qaytsa tutilsin", neg_decisions_security_on_pr),

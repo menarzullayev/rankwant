@@ -6,7 +6,7 @@ import { OnboardingForm } from "@/components/OnboardingForm";
 import { Card } from "@/components/ui/Card";
 import { getLocale } from "@/i18n/server";
 import { t } from "@/i18n/messages";
-import { getWithSession } from "@/lib/api.server";
+import { getSessionUser } from "@/lib/api.server";
 import { isSignedIn } from "@/lib/server-session";
 import type { Me } from "@/lib/api";
 
@@ -30,7 +30,7 @@ export default async function OnboardingPage() {
     redirect(`/login?tab=login&next=${encodeURIComponent("/onboarding")}` as Route);
 
   const locale = await getLocale();
-  const me = await getWithSession<Me>("/me/").catch(() => null);
+  const me = await getSessionUser<Me>();
   // Sessiya cookie'i bor, lekin hisob o'chirilgan/o'chirilgan holat.
   if (!me) redirect(`/login?tab=login&next=${encodeURIComponent("/onboarding")}` as Route);
 

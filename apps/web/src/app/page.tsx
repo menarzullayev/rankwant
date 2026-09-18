@@ -21,7 +21,7 @@ import {
   type SystemUpdate,
   type UserPublic,
 } from "@/lib/api";
-import { getWithSession } from "@/lib/api.server";
+import { getSessionUser, getWithSession } from "@/lib/api.server";
 
 /** Kirgan foydalanuvchi uchun «qayerdan davom etaman» savoliga javob:
  * avval tugallanmagan urinish, bo'lmasa tavsiya. Mehmonga `null`. */
@@ -95,7 +95,7 @@ export default async function Home() {
       .catch(softFail<SystemUpdate>),
   ]);
 
-  const me = await getWithSession<UserPublic>("/me/").catch(() => null);
+  const me = await getSessionUser<UserPublic>();
   const resume = await resumeTarget(me);
 
   const soon = upcoming(contests.results);

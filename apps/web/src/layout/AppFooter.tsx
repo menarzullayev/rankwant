@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { IntentLink } from "@/components/ui/IntentLink";
 
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
@@ -18,12 +18,12 @@ export default function AppFooter() {
     <footer className="rw-content mx-auto px-4 pb-8 pt-2 md:px-6">
       <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t rw-divider pt-5 text-theme-xs rw-dim">
         <span>RankWant</span>
-        <Link href="/terms" className="rw-focus-ring hover:underline">
+        <IntentLink href="/terms" className="rw-focus-ring hover:underline">
           {t(locale, "footer.terms")}
-        </Link>
-        <Link href="/privacy" className="rw-focus-ring hover:underline">
+        </IntentLink>
+        <IntentLink href="/privacy" className="rw-focus-ring hover:underline">
           {t(locale, "footer.privacy")}
-        </Link>
+        </IntentLink>
       </div>
     </footer>
   );

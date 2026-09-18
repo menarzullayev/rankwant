@@ -31,7 +31,7 @@ import {
   type Recommendation,
   type UserPublic,
 } from "@/lib/api";
-import { getWithSession } from "@/lib/api.server";
+import { getSessionUser, getWithSession } from "@/lib/api.server";
 
 // Jonli ma'lumot: har so'rovda serverda render qilinadi.
 // Build vaqtida prerender qilinmaydi — CI da API ishlamaydi, va reyting
@@ -101,7 +101,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
     ),
     api.topics(),
     api.stats(),
-    getWithSession<UserPublic>("/me/").catch(() => null),
+    getSessionUser<UserPublic>(),
     getWithSession<ArchiveProgress>("/problems/progress/"),
     getWithSession<{ topics: TopicSkill[] }>("/problems/skills/").catch(() => ({
       topics: [],
