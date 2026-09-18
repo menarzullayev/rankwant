@@ -2485,72 +2485,85 @@ _TRIAL_WORKFLOW = (
 )
 
 
+# Every file `check_decisions.py` reads, staged for the sandbox below.
+#
+# This list is a hand-kept duplicate of the paths that live inside that script,
+# so it drifts. Measured 2026-09-19: a new rule made the check read
+# `LocaleProvider.tsx`, the sandbox did not copy it, and two UNRELATED
+# trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
+# `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
+_DECISIONS_SANDBOX_FILES = (
+    "tools/check_decisions.py",
+    "tools/_console.py",
+    "tools/backup.sh",
+    "tools/push_guard.py",
+    "tools/deploy.sh",
+    "tools/runner/docker-compose.runner.yml",
+    "tools/runner/entrypoint.sh",
+    "tools/runner/recreate.sh",
+    "tools/runner_watchdog.py",
+    ".githooks/pre-push",
+    "CONTRIBUTING.md",
+    "CLAUDE.md",
+    # ADR-0023: the indexing decision lives in these two files.
+    "apps/web/src/lib/site.ts",
+    "apps/web/src/app/robots.ts",
+    # Intent prefetch (2026-09-18): the layout chrome and the link itself.
+    "apps/web/src/layout/AppSidebar.tsx",
+    "apps/web/src/layout/AppTopNav.tsx",
+    "apps/web/src/layout/AppFooter.tsx",
+    "apps/web/src/layout/HeaderStatus.tsx",
+    "apps/web/src/layout/UserMenu.tsx",
+    "apps/web/src/components/ui/IntentLink.tsx",
+    "apps/web/src/app/page.tsx",
+    # Dictionary as a cached file (2026-09-18).
+    "apps/web/src/app/layout.tsx",
+    "apps/web/src/app/i18n/[file]/route.ts",
+    "apps/web/src/proxy.ts",
+    # ADR-0024: the User columns added for competitor parity.
+    "apps/api/core/models.py",
+    # Header fits 320 px (2026-09-18): the locale control and the sign-in
+    # link. Missing from this list, the sandbox copy cannot be read and
+    # `check_decisions.py` fails with exit 2 — which is how the omission
+    # was caught.
+    "apps/web/src/layout/LocaleSwitch.tsx",
+    # Mobile drawer (2026-09-18): the trigger, the panel, the Escape
+    # handler and the scroll lock. `AppSidebar.tsx` is already listed
+    # above for the earlier header rule.
+    "apps/web/src/layout/AppHeader.tsx",
+    "apps/web/src/layout/AppShell.tsx",
+    "apps/web/src/context/SidebarContext.tsx",
+    # KPI grid 4-up from `lg` (2026-09-18): the card whose value steps down
+    # while the columns are narrow. Without it the sandbox copy cannot be
+    # read and the check exits 2 instead of testing anything.
+    "apps/web/src/components/ui/Card.tsx",
+    # Profile KPI grid steps at `xl` (2026-09-18): its content column is
+    # narrow because of the 300 px sidebar, so it cannot copy the home
+    # page's `lg`. Missing here, `check_decisions.py` exits 2.
+    "apps/web/src/app/users/[username]/layout.tsx",
+    # Difficulty range counts as one filter (2026-09-18): the badge reads
+    # this file. Missing here, `check_decisions.py` exits 2 rather than
+    # testing the rule.
+    "apps/web/src/components/ProblemFilters.tsx",
+    # Brand in the header, 3-column footer (2026-09-19): the rule reads the
+    # single-source `BrandMark`. Missing here, `check_decisions.py` exits 2.
+    "apps/web/src/layout/BrandMark.tsx",
+    # Dictionary cache in step with eviction (2026-09-19): the rule reads
+    # `keepOnly` and the promise cache inside the provider. Missing here,
+    # `check_decisions.py` exits 2 instead of testing the rule.
+    "apps/web/src/i18n/LocaleProvider.tsx",
+)
+
+
 def _decisions_sandbox(extra_workflows: dict[str, str]) -> tuple[int, str]:
     """`check_decisions.py` on a copy of the files it reads, plus extra workflows.
 
     Writing a workflow into the real `.github/workflows` could overwrite a real
     one or be left behind if the run is killed; a copy cannot.
     """
-    files = (
-        "tools/check_decisions.py",
-        "tools/_console.py",
-        "tools/backup.sh",
-        "tools/push_guard.py",
-        "tools/deploy.sh",
-        "tools/runner/docker-compose.runner.yml",
-        "tools/runner/entrypoint.sh",
-        "tools/runner/recreate.sh",
-        "tools/runner_watchdog.py",
-        ".githooks/pre-push",
-        "CONTRIBUTING.md",
-        "CLAUDE.md",
-        # ADR-0023: the indexing decision lives in these two files.
-        "apps/web/src/lib/site.ts",
-        "apps/web/src/app/robots.ts",
-        # Intent prefetch (2026-09-18): the layout chrome and the link itself.
-        "apps/web/src/layout/AppSidebar.tsx",
-        "apps/web/src/layout/AppTopNav.tsx",
-        "apps/web/src/layout/AppFooter.tsx",
-        "apps/web/src/layout/HeaderStatus.tsx",
-        "apps/web/src/layout/UserMenu.tsx",
-        "apps/web/src/components/ui/IntentLink.tsx",
-        "apps/web/src/app/page.tsx",
-        # Dictionary as a cached file (2026-09-18).
-        "apps/web/src/app/layout.tsx",
-        "apps/web/src/app/i18n/[file]/route.ts",
-        "apps/web/src/proxy.ts",
-        # ADR-0024: the User columns added for competitor parity.
-        "apps/api/core/models.py",
-        # Header fits 320 px (2026-09-18): the locale control and the sign-in
-        # link. Missing from this list, the sandbox copy cannot be read and
-        # `check_decisions.py` fails with exit 2 — which is how the omission
-        # was caught.
-        "apps/web/src/layout/LocaleSwitch.tsx",
-        # Mobile drawer (2026-09-18): the trigger, the panel, the Escape
-        # handler and the scroll lock. `AppSidebar.tsx` is already listed
-        # above for the earlier header rule.
-        "apps/web/src/layout/AppHeader.tsx",
-        "apps/web/src/layout/AppShell.tsx",
-        "apps/web/src/context/SidebarContext.tsx",
-        # KPI grid 4-up from `lg` (2026-09-18): the card whose value steps down
-        # while the columns are narrow. Without it the sandbox copy cannot be
-        # read and the check exits 2 instead of testing anything.
-        "apps/web/src/components/ui/Card.tsx",
-        # Profile KPI grid steps at `xl` (2026-09-18): its content column is
-        # narrow because of the 300 px sidebar, so it cannot copy the home
-        # page's `lg`. Missing here, `check_decisions.py` exits 2.
-        "apps/web/src/app/users/[username]/layout.tsx",
-        # Difficulty range counts as one filter (2026-09-18): the badge reads
-        # this file. Missing here, `check_decisions.py` exits 2 rather than
-        # testing the rule.
-        "apps/web/src/components/ProblemFilters.tsx",
-        # Brand in the header, 3-column footer (2026-09-19): the rule reads the
-        # single-source `BrandMark`. Missing here, `check_decisions.py` exits 2.
-        "apps/web/src/layout/BrandMark.tsx",
-    )
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
-        for rel in files:
+        for rel in _DECISIONS_SANDBOX_FILES:
             (root / rel).parent.mkdir(parents=True, exist_ok=True)
             (root / rel).write_bytes((ROOT / rel).read_bytes())
         workflows = root / ".github/workflows"
@@ -2576,6 +2589,51 @@ def neg_decisions_trial_label_scoped() -> tuple[bool, str]:
     if code != 1 or "CI testlari hosted" not in out:
         return False, f"decisions/sinov label'i boshqa workflow'da: exit {code} — {out[-160:]}"
     return True, "decisions/sinov label'i boshqa workflow'da: tutildi (exit 1)"
+
+
+def _decisions_read_paths() -> set[str]:
+    """The repo files `check_decisions.py` reads, parsed from its own source.
+
+    Two shapes occur: a literal (`read("tools/deploy.sh")`) and a module
+    constant (`read(LOCALE_PROVIDER)`), so both are resolved. Anything else —
+    the helper's own `read(rel: str)`, a computed path — is skipped.
+    """
+    src = (ROOT / "tools/check_decisions.py").read_text(encoding="utf-8")
+    consts = dict(re.findall(r'^([A-Z][A-Z0-9_]*) = "([^"]+)"', src, re.M))
+    paths: set[str] = set()
+    for arg in re.findall(r"\bread\(\s*([^)]+?)\s*\)", src):
+        if arg.startswith('"') and arg.endswith('"'):
+            paths.add(arg[1:-1])
+        elif arg in consts:
+            paths.add(consts[arg])
+    return paths
+
+
+def neg_decisions_sandbox_covers_reads() -> tuple[bool, str]:
+    """The sandbox must stage every file `check_decisions.py` reads.
+
+    The staged list is a hand-kept duplicate of the paths inside that script,
+    so it drifts. Measured 2026-09-19: a new rule made the check read
+    `LocaleProvider.tsx`; the sandbox did not copy it and two UNRELATED
+    trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
+    Drift must fail locally and name the file, not wait for CI to notice.
+    """
+    paths = _decisions_read_paths()
+    # A regex that stopped matching would make this test pass while measuring
+    # nothing — the same "0/0 ✓" silent green that `main()` guards against.
+    if len(paths) < 20:
+        return False, f"decisions/sandbox: faqat {len(paths)} yo'l topildi — tahlil ishlamadi"
+    staged = set(_DECISIONS_SANDBOX_FILES)
+    # The sandbox copies the whole workflows directory with a glob, so
+    # `ci.yml`/`deploy.yml` are staged even though no line names them. Read the
+    # directory rather than assume it: that is what the sandbox itself does.
+    staged |= {
+        f".github/workflows/{p.name}" for p in (ROOT / ".github/workflows").glob("*.yml")
+    }
+    missing = sorted(paths - staged)
+    if missing:
+        return False, f"decisions/sandbox: nusxalanmagan fayl(lar) — {', '.join(missing)}"
+    return True, f"decisions/sandbox: o'qilgan {len(paths)} fayl qamrab olingan"
 
 
 # ── Mobile drawer: announced, focusable, escapable, non-scrolling (2026-09-18) ──
@@ -4080,6 +4138,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("User'dan tenglik ustuni o'chsa tutilsin", neg_decisions_dormant_user_field_removed),
             ("sinov label'i self-test'da o'tadi", neg_decisions_trial_label_selftest_allowed),
             ("sinov label'i boshqa workflow'da tutilsin", neg_decisions_trial_label_scoped),
+            ("sandbox o'qilgan hamma faylni nusxalaydi", neg_decisions_sandbox_covers_reads),
             ("Security PR'da qaytsa tutilsin", neg_decisions_security_on_pr),
             ("smoke PR'da qaytsa tutilsin", neg_decisions_smoke_on_pr),
             ("runner-2 profile tushsa tutilsin", neg_decisions_runner2_profile_dropped),
