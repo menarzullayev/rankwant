@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-# Push'dan oldingi darvoza.
+# Push'dan oldingi TOR darvoza.
 #
-# CI o'z mashinamizda (self-hosted runner) ishlaydi, ya'ni buzuq commit
-# faqat GitHub'da emas, shu kompyuterda ham vaqt yeydi. Shuning uchun
-# tekshiruvlar push'dan OLDIN, mahalliy muhitda o'tadi.
+# 2026-09-18 o'lchov: to'liq nusxa (mypy, pytest, tsc, 153 salbiy test)
+# Windows'da ~5.8 daqiqa edi, keyin shu mashinadagi 2 ta CI runner yana
+# ~4 daqiqa yugurardi. HITL: hook faqat ruff / format / i18n / hardcoded;
+# qolgani CI da. push_guard qoladi — `main` ga to'g'ridan push yopiq.
 #
 # Faqat o'zgargan qismlar ishlaydi: hujjat commit'i uchun hech narsa.
 # Chetlab o'tish: git push --no-verify
@@ -61,8 +62,8 @@ fi
 
 # Which refs are pushed and under whose name (main only via PR, no placeholder
 # authors) — rules and incidents in tools/push_guard.py. It runs before the
-# gates so a rejected push does not wait for pytest, and before the empty-diff
-# exit so a docs-only push to main is still caught.
+# gates so a rejected push does not wait for the lint steps, and before the
+# empty-diff exit so a docs-only push to main is still caught.
 if [ -t 0 ]; then refs=""; else refs="$(cat)"; fi
 if ! printf '%s\n' "$refs" | "$PY" "$root/tools/push_guard.py" "${1:-origin}"; then
   printf '\n\033[31mPush to'\''xtatildi.\033[0m\n\n' >&2
@@ -74,34 +75,6 @@ fi
 has() { grep -qE "$1" <<<"$files"; }
 fail=0
 
-schema_matches() {
-  # ⚠️ `/tmp` ISHLATILMAYDI. Windows'da bu ikki xil joy: Git Bash `/tmp`
-  # ni MSYS ildizi deb biladi, nativ Python esa `C:\tmp\` deb ochadi.
-  # `spectacular` `exit 0` bilan `C:\tmp\` ga yozadi, biz Git Bash
-  # tomonidagi BO'SH faylni taqqoslaymiz va `diff -q` «differ» deydi —
-  # ya'ni har push'da yolg'on «sxema eskirgan» xatosi. O'lchandi
-  # (2026-09-14): fayl 0 bayt, `spectacular_rc=0`.
-  # Shuning uchun yo'l loyiha ichida va ANIQ bo'ladi — ikkala tomon ham
-  # uni bir xil ochadi.
-  local tmp=".tmp/schema_hook_check.yml" rc=1
-  mkdir -p .tmp || return 1
-  if uv run python manage.py spectacular --file "$tmp" >/dev/null 2>&1 &&
-     [ -s "$tmp" ] &&
-     diff -q openapi/schema.yml "$tmp" >/dev/null; then
-    rc=0
-  else
-    # Bo'sh fayl «eskirgan sxema» degani EMAS — buni ajratib aytamiz,
-    # aks holda keyingi odam sxemani behuda qayta yaratadi.
-    if [ ! -s "$tmp" ]; then
-      printf '  ✗ Sxema yaratilmadi (fayl bo`sh) — `spectacular` chiqishini ko`ring.\n'
-    else
-      printf '  Yangilang: cd apps/api && uv run python manage.py spectacular --file openapi/schema.yml\n'
-    fi
-  fi
-  rm -f "$tmp"
-  return "$rc"
-}
-
 step() {
   printf '\n\033[1m→ %s\033[0m\n' "$1"; shift
   if ! "$@"; then printf '\033[31m✗ yiqildi\033[0m\n'; fail=1; fi
@@ -111,120 +84,15 @@ if has '^apps/api/'; then
   cd apps/api
   step "API — ruff" uv run ruff check .
   step "API — format" uv run ruff format --check .
-  step "API — mypy" uv run mypy .
-  # `CELERY_EAGER=1` SHART. Usiz `core.tasks.queue()` har chaqiruvda
-  # o'chiq Redis brokeriga uradi va Celery result backend ~109 s retry
-  # qiladi — xato `except Exception` bilan yutiladi, ya'ni test YASHIL
-  # qoladi va faqat vaqt ketadi. O'lchandi: 1191 test 14m54s → 1m57s.
-  # Mahalliy ishga tushirishda Redis kerak emas (docs/10-operations/
-  # test-strategy.md).
-  step "API — pytest" env CELERY_EAGER=1 uv run pytest -q -n 4
-  # CI dagi «OpenAPI schema diff» darvozasining nusxasi. Endpoint
-  # qo'shilganda sxemani yangilash oson unutiladi va xato faqat CI da
-  # chiqadi — ya'ni bir necha daqiqa keyin, boshqa commit ustiga.
-  step "API — OpenAPI schema" schema_matches
   cd "$root"
 fi
 
-if has '^apps/web/'; then
-  cd apps/web
-  step "Web — eslint" npm run lint
-  step "Web — typecheck" npm run typecheck
-  step "Web — unit testlar" npm run test
-  cd "$root"
-  # Tiplar kalit yetishmasligini ushlaydi, lekin bo'sh satrni yoki
-  # tarjimasiz qoldirilgan nusxani ko'rmaydi.
+if has '^(apps/web/|tools/check_i18n)'; then
   step "Web — i18n to'liqligi" "$PY" tools/check_i18n.py
-  # `t()` ning zaxira yo'li HAQIQIY modulda: dev'da otiladi, prod'da
-  # bir marta jurnalga yoziladi. Statik tekshiruv buni ko'rmaydi.
-  step "Web — i18n runtime" node tools/check_i18n_runtime.mjs
-  # Tekshiruvlarning o'zi buzuq holatni tutishini talab qiladi.
-  step "Tekshiruvlar — salbiy testlar" "$PY" tools/check_negative.py
-  # 18 palitra × 4 pog'ona — ko'z bilan tekshirib bo'lmaydi.
-  step "Web — matn kontrasti" "$PY" tools/check_contrast.py
 fi
 
-# Verdikt kodlari ikki joyda yashaydi (`apps/api/judging/verdicts.py` va
-# `apps/web/src/lib/theme/verdict.ts`) va jimgina ajralib ketadi: bir marta
-# 23 koddan 14 tasi web'da yo'q edi va «Navbatda» bo'lib ko'ringan. `tsc`
-# ham, eslint ham buni tutmaydi — kalit oddiy `string`.
-if has '^(apps/web/|apps/api/judging/)'; then
-  step "Verdikt kodlari — API bilan moslik" "$PY" tools/check_verdict_codes.py
-fi
-
-# Ikonka registri (D12). Uch narsani ushlaydi: to'plamlardan birida kalit
-# yetishmasligi (jimgina zaxira yo'q), qat'iy zonaning registrga tushishi
-# (D20 ①), va `icon-keys.mjs` bilan generatsiya qilingan xaritalarning
-# ajralib ketishi. Uchtasi ham `tsc` ga ko'rinmaydi — kalit oddiy `string`.
-if has '^(apps/web/src/(icons|lib/theme)/|tools/(icon-keys|gen-icon-packs))'; then
-  step "Ikonka registri — to'plamlar mosligi" "$PY" tools/check_icons.py
-fi
-
-# Markup'ni o'zgartiruvchi sozlama TO'RT joyda takrorlanadi: tip, parse,
-# serialize va boot skript. Biri yangilanmasa — hidratsiya buziladi, va bu
-# faqat brauzerda ko'rinadi (`tsc` ham, eslint ham jim). 2026-09-15 da
-# aynan shu ikki marta bo'lgan.
-if has '^(apps/web/src/(lib/(prefs\.ts|api/)|app/layout\.tsx)|tools/check_markup)'; then
-  step "Markup cookie — 4 joy mosligi" "$PY" tools/check_markup_cookie.py
-fi
-
-# CI har yurishda yangi Docker obrazi quradi. Tozalash qadami olib
-# tashlansa birorta test qizil bo'lmaydi — obrazlar haftalar ichida
-# yig'ilib disk to'ldiradi (2026-09-16: 420 ta rw-smoke-*, 58 GB).
-if has '^(\.github/workflows/|tools/check_ci_disk)'; then
-  step "CI disk tozalashi" "$PY" tools/check_ci_disk.py
-fi
-
-if has '^(docs/|README)'; then
-  step "Hujjat yaxlitligi" "$PY" tools/check_docs.py
-fi
-
-if has '^(apps/api/|tools/)'; then
-  # DRF `ordering` da tiebreaker: `["-created_at"]` yakka o'zi SQL
-  # tartibini beqaror qoldiradi. O'lchandi: `test_qidiruv_va_tartib`
-  # 5 ishga tushirishning 1 tasida shu sabab bilan yiqilardi.
-  step "DRF ordering tiebreaker" "$PY" tools/check_ordering.py
-fi
-
-if has '^(services/|apps/api/judging/)'; then
-  step "Judge shartnomasi" "$PY" tools/check_contract.py
-fi
-
-# .env.example must document every variable compose and the code read.
-if has '^(\.env\.example|docker-compose[^/]*\.yml|apps/api/|apps/web/src/|services/|tools/check_env_example\.py)'; then
-  step ".env.example to'liqligi" "$PY" tools/check_env_example.py
-fi
-
-# Owner decisions (CLAUDE.md § Saidakbar aka qarorlari) must stay true in code.
-if has '^(tools/(backup\.sh|push_guard\.py|check_decisions\.py|deploy\.sh|check_deploy_gate\.py|runner/)|\.githooks/|\.github/workflows/|CONTRIBUTING\.md|CLAUDE\.md)'; then
-  step "Egasining qarorlari" "$PY" tools/check_decisions.py
-fi
-
-# Agents deploy on their own once main CI is green, so the gate, the lock and the
-# image freshness check must keep catching what they are meant to catch.
-if has '^tools/(deploy\.sh|check_deploy\.sh|check_deploy_gate\.py|check_negative\.py)'; then
-  step "Deploy darvozasi — salbiy testlar" "$PY" tools/check_negative.py deploy_gate
-  step "Deploy qulfi — salbiy testlar" "$PY" tools/check_negative.py deploy_lock
-  step "Image yorlig'i — salbiy testlar" "$PY" tools/check_negative.py deploy_check
-fi
-
-# The watchdog restarts CI runners on its own, so its decisions are retested
-# whenever it or its tests change.
-if has '^tools/(runner_watchdog\.py|check_negative\.py)'; then
-  step "Runner watchdog — salbiy testlar" "$PY" tools/check_negative.py runner_watchdog
-fi
-
-# The after-reboot check decides whether recovery worked, so a check that
-# always passes would hide a broken chain. Retest it whenever it changes.
-if has '^tools/(check_after_reboot\.py|check_negative\.py)'; then
-  step "Reboot tekshiruvi — salbiy testlar" "$PY" tools/check_negative.py after_reboot
-fi
-
-# The daily report's notification is the only thing that tells the owner about CI
-# trouble without opening a file, so a notification that never fires is retested
-# whenever the report or its tests change.
-if has '^tools/(runner_report\.py|check_negative\.py)'; then
-  step "Kundalik hisobot — salbiy testlar" "$PY" tools/check_negative.py runner_report
+if has '^(apps/web/|tools/check_hardcoded)'; then
+  step "Web — qattiq yozilgan matn" "$PY" tools/check_hardcoded.py
 fi
 
 if [ "$fail" -ne 0 ]; then

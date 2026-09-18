@@ -47,8 +47,11 @@ foydalanuvchi ma'lumoti bor dump'lar tashqariga chiqdi.
 
 ## Darvozalar
 
-Pre-push hook shularni o'zi ishga tushiradi, lekin ish davomida qo'lda
-chaqirish tezroq:
+Pre-push hook **tor**: `push_guard`, API `ruff`/`format`, web `check_i18n`
+va `check_hardcoded`. mypy, pytest, tsc, eslint, salbiy testlar — faqat
+CI. 2026-09-18 o'lchov: to'liq hook Windows'da 5.8 daqiqa edi.
+
+Qo'lda to'liq to'plam:
 
 ```bash
 cd apps/api && uv run ruff check . && uv run ruff format --check . && uv run mypy . && env CELERY_EAGER=1 uv run pytest -q -n 4
@@ -71,16 +74,14 @@ cd apps/api && uv run python manage.py spectacular --file openapi/schema.yml
 
 Kod yoki compose yangi muhit o'zgaruvchisini o'qisa, u `.env.example` ga
 yoziladi (sir bo'lsa qiymatsiz) — aks holda `tools/check_env_example.py`
-hook'da ham, CI'da ham yiqiladi.
+CI da yiqiladi.
 
 `pytest -n 4` — `auto` EMAS: runner shu mashinada, jonli preview bilan
 yonma-yon ishlaydi.
 
-`CELERY_EAGER=1` ham **shart**. Busiz task navbatga yoziladi va test
-javobni kutib qotadi; `settings.py` uni `CELERY_TASK_ALWAYS_EAGER` ga
-o'giradi, ya'ni task chaqirilgan joyda bajariladi. Haqiqiy darvozalar
-ikkalasi ham shuni beradi (`.githooks/pre-push`, `.github/workflows/ci.yml`)
-va hook uni «SHART» deb belgilagan — o'lchangan farq: 14m54s → 1m57s.
+`CELERY_EAGER=1` CI pytest uchun **shart**. Busiz task navbatga yoziladi
+va test javobni kutib qotadi; `settings.py` uni `CELERY_TASK_ALWAYS_EAGER`
+ga o'giradi. O'lchangan farq: 14m54s → 1m57s.
 
 ## Preview
 
