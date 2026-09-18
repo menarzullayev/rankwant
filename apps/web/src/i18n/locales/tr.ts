@@ -153,6 +153,8 @@ export const tr: Record<MessageKey, string> = {
   "problems.title": "Problem arşivi",
   "problems.difficulty": "Zorluk",
   "problems.solved": "Çözülen",
+  "problems.likes": "Beğeni",
+  "problems.author": "Yazar",
   "problems.solvedByYou": "Siz çözdünüz",
   "problems.topics": "Konular",
   "problems.limits": "Sınırlar",
@@ -1043,6 +1045,10 @@ export const tr: Record<MessageKey, string> = {
   "filter.topicSearchPlaceholder": "{count} konu içinde ara…",
   "filter.topicSearchLabel": "Konu ara",
   "filter.noTopicMatch": "Böyle bir konu yok",
+  "filter.difficultyMin": "En az",
+  "filter.difficultyMax": "En çok",
+  "filter.topicsInclude": "İçermeli",
+  "filter.topicsExclude": "Hariç",
 
   // ---- Accent hisoblash xatolari ----
   "error.ground_unreadable": "Arka plan rengi okunamadı — vurgu uygulanmadı. Sayfayı yenilemeyi deneyin.",
@@ -1474,6 +1480,8 @@ export const tr: Record<MessageKey, string> = {
   "admin.text.noTestsYet": "Henüz test yok — çözümler değerlendirilmiyor.",
   "admin.text.addTest": "Test ekle",
   "archive.mostViewed": "En çok görüntülenen",
+  "archive.mostLiked": "En beğenilen",
+  "archive.tagCloud": "Konular",
   "rating.intro": "Tüm formüller açıktır. Gizli ağırlık veya duyurulmamış bonus yoktur. Her değişiklik gerekçesiyle birlikte profilinize kaydedilir.",
   "rating.skills.summary": "İlk kez çözdüğünüz problemler puana göre azalan sırada dizilir ve azalan bir katsayıyla toplanır. Puan, problemin güncel zorluğudur.",
   "rating.skills.noDecrease": "Yeni bir problem çözmek reytinginizi asla düşürmez.",

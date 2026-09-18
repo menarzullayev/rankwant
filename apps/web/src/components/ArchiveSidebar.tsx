@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { Card } from "@/components/ui/Card";
 import { Verdict } from "@/components/ui/Verdict";
-import { dateTime, t, type Locale } from "@/i18n/messages";
+import { dateTime, t, topicName, type Locale } from "@/i18n/messages";
 import { Badge } from "@/components/ui/Badge";
 import type {
   ArchiveProgress,
@@ -11,6 +11,7 @@ import type {
   Problem,
   Recommendation,
   Roadmap,
+  Topic,
   TopicSkill,
 } from "@/lib/api";
 
@@ -165,12 +166,15 @@ function Digest({
   locale,
   attempts,
   popular,
+  liked,
 }: {
   locale: Locale;
   attempts: Attempt[];
   popular: Problem[];
+  liked: Problem[];
 }) {
-  if (attempts.length === 0 && popular.length === 0) return null;
+  if (attempts.length === 0 && popular.length === 0 && liked.length === 0)
+    return null;
 
   return (
     <Card title={t(locale, "archive.community")} bodyClassName="space-y-4">
@@ -198,6 +202,32 @@ function Digest({
                   {attempt.problem}
                 </Link>
                 <span className="shrink-0 rw-faint">{attempt.username}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {liked.length > 0 && (
+        <div>
+          <p className="mb-1.5 text-theme-xs font-medium tracking-wider rw-faint uppercase">
+            {t(locale, "archive.mostLiked")}
+          </p>
+          <ul className="space-y-1">
+            {liked.slice(0, 5).map((problem) => (
+              <li
+                key={problem.slug}
+                className="flex items-center gap-2 text-theme-xs"
+              >
+                <Link
+                  href={`/problems/${problem.slug}`}
+                  className="flex min-h-6 min-w-0 flex-1 items-center truncate rw-dim-2 rw-link-hover"
+                >
+                  {problem.title}
+                </Link>
+                <span className="shrink-0 rw-faint tabular-nums">
+                  +{problem.likes_count}
+                </span>
               </li>
             ))}
           </ul>
@@ -329,6 +359,29 @@ function Recommended({ data, locale }: { data: Recommendation; locale: Locale })
   );
 }
 
+function TagCloud({ topics, locale }: { topics: Topic[]; locale: Locale }) {
+  const ranked = [...topics]
+    .filter((topic) => topic.problem_count > 0)
+    .sort((a, b) => b.problem_count - a.problem_count)
+    .slice(0, 24);
+  if (ranked.length === 0) return null;
+
+  return (
+    <Card title={t(locale, "archive.tagCloud")} bodyClassName="flex flex-wrap gap-1.5">
+      {ranked.map((topic) => (
+        <Link
+          key={topic.slug}
+          href={`/problems?topics=${topic.slug}`}
+          className="rw-radius-sm border rw-line px-2 py-1 text-theme-xs rw-dim-2 rw-hover-bg"
+        >
+          {topicName(topic, locale)}
+          <span className="ml-1 tabular-nums rw-faint">{topic.problem_count}</span>
+        </Link>
+      ))}
+    </Card>
+  );
+}
+
 export function ArchiveSidebar({
   locale,
   progress,
@@ -339,6 +392,8 @@ export function ArchiveSidebar({
   roadmaps,
   attempts,
   popular,
+  liked,
+  tagCloud,
 }: {
   locale: Locale;
   progress: ArchiveProgress;
@@ -349,6 +404,8 @@ export function ArchiveSidebar({
   roadmaps: Roadmap[];
   attempts: Attempt[];
   popular: Problem[];
+  liked: Problem[];
+  tagCloud: Topic[];
 }) {
   return (
     <aside className="min-w-0 space-y-4">
@@ -358,9 +415,15 @@ export function ArchiveSidebar({
       )}
       <Progress data={progress} locale={locale} />
       <TopicStrength topics={skills} locale={locale} />
+      <TagCloud topics={tagCloud} locale={locale} />
       {upcoming && <Upcoming event={upcoming} locale={locale} />}
       {roadmaps.length > 0 && <Roadmaps items={roadmaps} locale={locale} />}
-      <Digest locale={locale} attempts={attempts} popular={popular} />
+      <Digest
+        locale={locale}
+        attempts={attempts}
+        popular={popular}
+        liked={liked}
+      />
     </aside>
   );
 }

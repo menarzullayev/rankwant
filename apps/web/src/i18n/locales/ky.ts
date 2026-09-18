@@ -153,6 +153,8 @@ export const ky: Record<MessageKey, string> = {
   "problems.title": "Маселелер архиви",
   "problems.difficulty": "Татаалдык",
   "problems.solved": "Чечилген",
+  "problems.likes": "Жакты",
+  "problems.author": "Автор",
   "problems.solvedByYou": "Сиз чечкенсиз",
   "problems.topics": "Темалар",
   "problems.limits": "Чектөөлөр",
@@ -1043,6 +1045,10 @@ export const ky: Record<MessageKey, string> = {
   "filter.topicSearchPlaceholder": "{count} теманын ичинен издөө…",
   "filter.topicSearchLabel": "Тема издөө",
   "filter.noTopicMatch": "Мындай тема жок",
+  "filter.difficultyMin": "Баштап",
+  "filter.difficultyMax": "Чейин",
+  "filter.topicsInclude": "Кириши керек",
+  "filter.topicsExclude": "Чыгаруу",
 
   // ---- Accent hisoblash xatolari ----
   "error.ground_unreadable": "Фон түсүн окуу мүмкүн болбоду — акцент колдонулган жок. Баракты жаңыртып көрүңүз.",
@@ -1474,6 +1480,8 @@ export const ky: Record<MessageKey, string> = {
   "admin.text.noTestsYet": "Азырынча тест жок — чечимдер текшерилбейт.",
   "admin.text.addTest": "Тест кошуу",
   "archive.mostViewed": "Көп көрүлгөн",
+  "archive.mostLiked": "Көп жактырылган",
+  "archive.tagCloud": "Темалар",
   "rating.intro": "Бардык формулалар ачык. Жашыруун салмак жана жарыяланбаган бонус жок. Ар бир өзгөрүү себеби менен профилиңизде жазылат.",
   "rating.skills.summary": "Биринчи жолу чыгарган маселелериңиз балл боюнча кемүү тартибинде иреттелип, кемүүчү коэффициент менен кошулат. Балл — маселенин учурдагы татаалдыгы.",
   "rating.skills.noDecrease": "Жаңы маселе чыгару рейтингиңизди эч качан төмөндөтпөйт.",

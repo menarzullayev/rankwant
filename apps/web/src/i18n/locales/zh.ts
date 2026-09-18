@@ -153,6 +153,8 @@ export const zh: Record<MessageKey, string> = {
   "problems.title": "题库",
   "problems.difficulty": "难度",
   "problems.solved": "已解决",
+  "problems.likes": "喜欢",
+  "problems.author": "作者",
   "problems.solvedByYou": "你已解决",
   "problems.topics": "标签",
   "problems.limits": "限制",
@@ -1040,6 +1042,10 @@ export const zh: Record<MessageKey, string> = {
   "filter.topicSearchPlaceholder": "在 {count} 个专题中搜索…",
   "filter.topicSearchLabel": "搜索专题",
   "filter.noTopicMatch": "没有该专题",
+  "filter.difficultyMin": "从",
+  "filter.difficultyMax": "到",
+  "filter.topicsInclude": "必须包含",
+  "filter.topicsExclude": "排除",
 
   // ---- Accent hisoblash xatolari ----
   "error.ground_unreadable": "无法读取背景颜色 — 强调色未应用。请尝试刷新页面。",
@@ -1471,6 +1477,8 @@ export const zh: Record<MessageKey, string> = {
   "admin.text.noTestsYet": "尚无测试数据——不会评测提交。",
   "admin.text.addTest": "添加测试",
   "archive.mostViewed": "浏览最多",
+  "archive.mostLiked": "最多喜欢",
+  "archive.tagCloud": "专题",
   "rating.intro": "所有公式都是公开的。没有隐藏权重，也没有未公布的奖励。每次变动都会连同原因记录在您的个人资料中。",
   "rating.skills.summary": "您首次解出的题目会按得分降序排列，并以递减系数累加。得分即题目当前的难度。",
   "rating.skills.noDecrease": "解出新题目永远不会降低您的评分。",

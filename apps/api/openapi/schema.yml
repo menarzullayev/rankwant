@@ -3175,6 +3175,10 @@ paths:
         schema:
           type: integer
       - in: query
+        name: exclude_topics
+        schema:
+          type: string
+      - in: query
         name: favourite
         schema:
           type: boolean
@@ -14527,6 +14531,25 @@ components:
         has_tests:
           type: boolean
           readOnly: true
+        likes_count:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        dislikes_count:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        author:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          description: |-
+            Author name, plus whether a profile page exists.
+
+            Imported KEP authors are inactive shadow accounts: a link would 404.
+          readOnly: true
         samples:
           type: array
           items:
@@ -14599,17 +14622,6 @@ components:
 
             Frontendda yashirish spoylerni himoya qilmaydi — matn baribir
             sahifa manbasida ko'rinib turardi.
-          readOnly: true
-        author:
-          type: object
-          additionalProperties: {}
-          nullable: true
-          description: |-
-            Muallif — ismi bilan, va profili bormi degan javob bilan.
-
-            Import qilingan mualliflar NOFAOL soya hisoblar: ular
-            leaderboard va sanoqlarga kirmaydi, demak profil sahifasi ham
-            yo'q. Havola qo'yilsa u 404 ga olib borardi.
           readOnly: true
         statement_locale:
           type: string
@@ -14768,7 +14780,27 @@ components:
         has_tests:
           type: boolean
           readOnly: true
+        likes_count:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        dislikes_count:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        author:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          description: |-
+            Author name, plus whether a profile page exists.
+
+            Imported KEP authors are inactive shadow accounts: a link would 404.
+          readOnly: true
       required:
+      - author
       - difficulty
       - has_editorial
       - has_tests
@@ -17432,9 +17464,13 @@ components:
         parent:
           type: string
           readOnly: true
+        problem_count:
+          type: integer
+          readOnly: true
       required:
       - name_uz
       - parent
+      - problem_count
       - slug
     Tournament:
       type: object

@@ -627,6 +627,36 @@ def test_mavzu_filtri_hammasini_talab_qiladi(problem, hard_problem, db) -> None:
     assert [row["slug"] for row in both] == [hard_problem.slug]
 
 
+def test_mavzu_exclude_borlarini_yashiradi(problem, hard_problem, db) -> None:
+    """`?exclude_topics=trees` — o'sha tegi bor masala tushadi (CF)."""
+    from problems.models import Topic
+
+    dp = Topic.objects.create(slug="dp", name_uz="Dinamik dasturlash")
+    trees = Topic.objects.create(slug="trees", name_uz="Daraxtlar", parent=dp)
+    problem.topics.add(dp)
+    hard_problem.topics.add(dp, trees)
+
+    rows = APIClient().get(reverse("problem-list"), {"exclude_topics": "trees"}).data["results"]
+    assert {row["slug"] for row in rows} == {problem.slug}
+
+
+def test_royxat_like_va_muallifni_beradi(problem, db) -> None:
+    author = User.objects.create_user("kep-ali", display_name="Ali", is_active=False)
+    problem.author = author
+    problem.likes_count = 12
+    problem.dislikes_count = 3
+    problem.save(update_fields=["author", "likes_count", "dislikes_count"])
+
+    row = APIClient().get(reverse("problem-list")).data["results"][0]
+    assert row["likes_count"] == 12
+    assert row["dislikes_count"] == 3
+    assert row["author"] == {
+        "username": "kep-ali",
+        "display_name": "Ali",
+        "has_profile": False,
+    }
+
+
 def test_taqalib_qolganlar_filtri(problem, hard_problem, user, language, db) -> None:
     """`attempted=true&solved=false` — urinib, yecha olmaganlar."""
     from judging.models import Attempt

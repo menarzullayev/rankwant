@@ -153,6 +153,8 @@ export const tg: Record<MessageKey, string> = {
   "problems.title": "Бойгонии масъалаҳо",
   "problems.difficulty": "Мураккабӣ",
   "problems.solved": "Ҳалшуда",
+  "problems.likes": "Маъқул",
+  "problems.author": "Муаллиф",
   "problems.solvedByYou": "Шумо ҳал кардед",
   "problems.topics": "Мавзӯъҳо",
   "problems.limits": "Маҳдудиятҳо",
@@ -1044,6 +1046,10 @@ export const tg: Record<MessageKey, string> = {
   "filter.topicSearchPlaceholder": "Ҷустуҷӯ дар байни {count} мавзӯъ…",
   "filter.topicSearchLabel": "Ҷустуҷӯи мавзӯъ",
   "filter.noTopicMatch": "Чунин мавзӯъ нест",
+  "filter.difficultyMin": "Аз",
+  "filter.difficultyMax": "То",
+  "filter.topicsInclude": "Бояд дошта бошад",
+  "filter.topicsExclude": "Хориҷ",
 
   // ---- Accent hisoblash xatolari ----
   "error.ground_unreadable": "Ранги замина хонда нашуд — акцент татбиқ нашуд. Саҳифаро аз нав бор кунед.",
@@ -1475,6 +1481,8 @@ export const tg: Record<MessageKey, string> = {
   "admin.text.noTestsYet": "Ҳанӯз тест нест — ҳалҳо санҷида намешаванд.",
   "admin.text.addTest": "Илова кардани тест",
   "archive.mostViewed": "Пурбинанда",
+  "archive.mostLiked": "Бештар маъқул",
+  "archive.tagCloud": "Мавзӯъҳо",
   "rating.intro": "Ҳамаи формулаҳо кушодаанд. Вазни пинҳонӣ ва бонуси эълоннашуда вуҷуд надорад. Ҳар як тағйирот бо сабабаш дар профили шумо сабт мешавад.",
   "rating.skills.summary": "Масъалаҳое, ки бори аввал ҳал кардаед, аз рӯи хол ба тартиби камшаванда ҷобаҷо шуда, бо коэффициенти камшаванда ҷамъ мешаванд. Хол — мураккабии ҷории масъала.",
   "rating.skills.noDecrease": "Ҳалли масъалаи нав рейтинги шуморо ҳеҷ гоҳ паст намекунад.",

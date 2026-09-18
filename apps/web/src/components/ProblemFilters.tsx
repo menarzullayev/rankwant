@@ -12,7 +12,18 @@ import { useSession } from "@/context/SessionContext";
 import { useHideTags } from "@/lib/hideTags";
 import { announcePrefs } from "@/lib/prefs";
 
-export type FilterTopic = { slug: string; label: string };
+export type FilterTopic = { slug: string; label: string; parent: string | null };
+
+/** Matches `problems.models.DIFFICULTY_LEVELS` — chips set the CF range. */
+const LEVEL_RANGES = [
+  ["beginner", 800, 999],
+  ["basic", 1000, 1199],
+  ["intermediate", 1200, 1499],
+  ["upper", 1500, 1799],
+  ["hard", 1800, 2199],
+  ["expert", 2200, 2699],
+  ["master", 2700, 3500],
+] as const;
 
 // ⚠️ Ikkala element: qiymat (URL'ga ketadi) va tarjima KALITI.
 // Ilgari ikkinchisi tayyor o'zbekcha matn edi — filtr panelining
@@ -52,13 +63,21 @@ const STATUS_KEYS = ["solved", "attempted", "favourite", "recommended"] as const
  * shuning uchun rozetkada ular hisoblanmaydi. */
 const PANEL_KEYS = [
   "level",
+  "difficulty__gte",
+  "difficulty__lte",
   "topics",
+  "exclude_topics",
   "solved",
   "attempted",
   "favourite",
   "recommended",
   "statement_locale",
 ] as const;
+
+/** Mavzu query kalitlari — URL'ga ketadi, tarjima qilinmaydi.
+ *  Konstantada saqlanadi: `check_hardcoded.py` ternary ichidagi
+ *  literalni qattiq yozilgan matn deb o'qiydi. */
+const TOPIC_LIST = { include: "topics", exclude: "exclude_topics" } as const;
 
 // Til nomlari `LOCALE_NAMES` dan olinadi (messages.ts): ular ENDONIM —
 // har bir til o'z nomi bilan yoziladi va tarjima qilinmaydi. Ilgari bu
@@ -130,11 +149,45 @@ export function ProblemFilters({
     .split(",")
     .filter(Boolean);
 
-  const toggleTopic = (slug: string) => {
-    const next = selectedTopics.includes(slug)
-      ? selectedTopics.filter((s) => s !== slug)
-      : [...selectedTopics, slug];
-    set("topics", next.join(","));
+  const excludedTopics = (params.get("exclude_topics") ?? "")
+    .split(",")
+    .filter(Boolean);
+
+  const range = (() => {
+    const gte = params.get("difficulty__gte");
+    const lte = params.get("difficulty__lte");
+    if (gte || lte) return { gte: gte ?? "", lte: lte ?? "" };
+    const preset = LEVEL_RANGES.find(([code]) => code === params.get("level"));
+    return preset
+      ? { gte: String(preset[1]), lte: String(preset[2]) }
+      : { gte: "", lte: "" };
+  })();
+
+  const applyRange = (gte: string, lte: string) => {
+    const next = new URLSearchParams(params);
+    next.delete("level");
+    if (gte) next.set("difficulty__gte", gte);
+    else next.delete("difficulty__gte");
+    if (lte) next.set("difficulty__lte", lte);
+    else next.delete("difficulty__lte");
+    push(next);
+  };
+
+  const toggleList = (name: (typeof TOPIC_LIST)[keyof typeof TOPIC_LIST], slug: string) => {
+    const current = (params.get(name) ?? "").split(",").filter(Boolean);
+    const nextSlugs = current.includes(slug)
+      ? current.filter((s) => s !== slug)
+      : [...current, slug];
+    const next = new URLSearchParams(params);
+    const other = name === TOPIC_LIST.include ? TOPIC_LIST.exclude : TOPIC_LIST.include;
+    const otherSlugs = (params.get(other) ?? "")
+      .split(",")
+      .filter((s) => s && s !== slug);
+    if (otherSlugs.length) next.set(other, otherSlugs.join(","));
+    else next.delete(other);
+    if (nextSlugs.length) next.set(name, nextSlugs.join(","));
+    else next.delete(name);
+    push(next);
   };
 
   // Qidiruv har harfda so'rov yubormaydi — yozib bo'lgach. Manzil
@@ -233,18 +286,48 @@ export function ProblemFilters({
         <div className="rw-panel space-y-4 p-4">
           <Group label={t(locale, "filter.levelLabel")}>
             <Option
-              active={!params.get("level")}
-              onClick={() => set("level", "")}
+              active={!range.gte && !range.lte}
+              onClick={() => applyRange("", "")}
               label={t(locale, "filter.all")}
             />
-            {LEVELS.map(([value, labelKey]) => (
-              <Option
-                key={value}
-                active={params.get("level") === value}
-                onClick={() => set("level", value)}
-                label={t(locale, labelKey)}
-              />
-            ))}
+            {LEVELS.map(([value, labelKey], index) => {
+              const [, lo, hi] = LEVEL_RANGES[index];
+              const active = range.gte === String(lo) && range.lte === String(hi);
+              return (
+                <Option
+                  key={value}
+                  active={active}
+                  onClick={() => applyRange(String(lo), String(hi))}
+                  label={t(locale, labelKey)}
+                />
+              );
+            })}
+            <div className="flex w-full flex-wrap items-center gap-2 pt-1">
+              <label className="flex items-center gap-1.5 text-theme-sm rw-dim">
+                {t(locale, "filter.difficultyMin")}
+                <input
+                  type="number"
+                  min={800}
+                  max={3500}
+                  step={100}
+                  value={range.gte}
+                  onChange={(event) => applyRange(event.target.value, range.lte)}
+                  className="h-8 w-20 rw-radius-sm border rw-line rw-field-bg px-2 text-theme-sm rw-strong rw-focus-line"
+                />
+              </label>
+              <label className="flex items-center gap-1.5 text-theme-sm rw-dim">
+                {t(locale, "filter.difficultyMax")}
+                <input
+                  type="number"
+                  min={800}
+                  max={3500}
+                  step={100}
+                  value={range.lte}
+                  onChange={(event) => applyRange(range.gte, event.target.value)}
+                  className="h-8 w-20 rw-radius-sm border rw-line rw-field-bg px-2 text-theme-sm rw-strong rw-focus-line"
+                />
+              </label>
+            </div>
           </Group>
 
           {signedIn && (
@@ -266,20 +349,26 @@ export function ProblemFilters({
           )}
 
           <Group
-            // Ikkitadan ko'p tanlanganda semantikani aytib qo'yish kerak:
-            // filtr HAMMASI bo'lgan masalalarni beradi, yig'indini emas.
-            label={`${t(locale, "filter.topicsLabel")}${
-              selectedTopics.length > 1
-                ? ` (${selectedTopics.length} — ${t(locale, "filter.all").toLowerCase()})`
-                : selectedTopics.length
-                  ? ` (${selectedTopics.length})`
-                  : ""
+            label={`${t(locale, "filter.topicsInclude")}${
+              selectedTopics.length ? ` (${selectedTopics.length})` : ""
             }`}
           >
             <TopicOptions
               topics={topics}
               selected={selectedTopics}
-              onToggle={toggleTopic}
+              onToggle={(slug) => toggleList(TOPIC_LIST.include, slug)}
+            />
+          </Group>
+
+          <Group
+            label={`${t(locale, "filter.topicsExclude")}${
+              excludedTopics.length ? ` (${excludedTopics.length})` : ""
+            }`}
+          >
+            <TopicOptions
+              topics={topics}
+              selected={excludedTopics}
+              onToggle={(slug) => toggleList(TOPIC_LIST.exclude, slug)}
             />
           </Group>
 
@@ -358,10 +447,23 @@ function TopicOptions({
   const [query, setQuery] = useState("");
   const locale = useLocale();
   const needle = query.trim().toLocaleLowerCase("uz");
-  const shown = topics.filter(
-    (topic) =>
-      selected.includes(topic.slug) ||
-      topic.label.toLocaleLowerCase("uz").includes(needle),
+  const known = new Set(topics.map((topic) => topic.slug));
+  const match = (topic: FilterTopic) =>
+    selected.includes(topic.slug) ||
+    !needle ||
+    topic.label.toLocaleLowerCase("uz").includes(needle);
+
+  const roots = topics.filter(
+    (topic) => !topic.parent || !known.has(topic.parent),
+  );
+  const childrenOf = (slug: string) =>
+    topics.filter((topic) => topic.parent === slug);
+
+  const visibleRoots = roots.filter(
+    (root) =>
+      match(root) ||
+      childrenOf(root.slug).some(match) ||
+      selected.includes(root.slug),
   );
 
   return (
@@ -378,16 +480,37 @@ function TopicOptions({
           className="mb-1.5 h-8 w-full rw-radius-sm border rw-line rw-field-bg px-2.5 text-theme-sm rw-strong rw-focus-line"
         />
       )}
-      <div className="flex max-h-64 flex-wrap gap-1.5 overflow-y-auto">
-        {shown.map((topic) => (
-          <Option
-            key={topic.slug}
-            active={selected.includes(topic.slug)}
-            onClick={() => onToggle(topic.slug)}
-            label={topic.label}
-          />
-        ))}
-        {shown.length === 0 && (
+      <div className="max-h-64 space-y-2 overflow-y-auto">
+        {visibleRoots.map((root) => {
+          const children = childrenOf(root.slug).filter(
+            (child) => match(child) || selected.includes(child.slug),
+          );
+          const open = selected.includes(root.slug) || children.some((c) => selected.includes(c.slug)) || Boolean(needle);
+          return (
+            <div key={root.slug}>
+              <div className="flex flex-wrap gap-1.5">
+                <Option
+                  active={selected.includes(root.slug)}
+                  onClick={() => onToggle(root.slug)}
+                  label={root.label}
+                />
+              </div>
+              {open && children.length > 0 && (
+                <div className="mt-1 ml-3 flex flex-wrap gap-1.5">
+                  {children.map((child) => (
+                    <Option
+                      key={child.slug}
+                      active={selected.includes(child.slug)}
+                      onClick={() => onToggle(child.slug)}
+                      label={child.label}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+        {visibleRoots.length === 0 && (
           <p className="text-theme-sm rw-faint">
             {t(locale, "filter.noTopicMatch")}
           </p>

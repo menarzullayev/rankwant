@@ -27,6 +27,13 @@ export type Problem = {
   topics: string[];
   solved_count: number;
   attempt_count: number;
+  likes_count: number;
+  dislikes_count: number;
+  author: {
+    username: string;
+    display_name: string;
+    has_profile: boolean;
+  } | null;
 };
 
 export type Sample = { order: number; input: string; expected: string };
@@ -184,6 +191,7 @@ export type Topic = {
   name_ru: string;
   name_en: string;
   parent: string | null;
+  problem_count: number;
 };
 
 export type Language = { code: string; name: string; version: string };

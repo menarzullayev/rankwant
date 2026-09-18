@@ -58,6 +58,9 @@ const ALLOWED = [
   "page_size",
   "recommended",
   "statement_locale",
+  "difficulty__gte",
+  "difficulty__lte",
+  "exclude_topics",
 ] as const;
 
 const DEFAULT_PAGE_SIZE = 25; // core.pagination.StandardPagination bilan bir xil
@@ -106,6 +109,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
     calendar,
     attempts,
     popular,
+    liked,
   ] = await Promise.all([
     getWithSession<Paginated<Problem>>(
       `/problems/${query.size ? `?${query}` : ""}`,
@@ -122,6 +126,9 @@ export default async function ProblemsPage({ searchParams }: Props) {
     // «Ko'p ko'rilgan» — arxiv filtridan mustaqil, alohida so'rov.
     api
       .problems("?ordering=-view_count&page_size=5")
+      .catch(() => ({ results: [] })),
+    api
+      .problems("?ordering=-likes_count&page_size=5")
       .catch(() => ({ results: [] })),
   ]);
 
@@ -197,6 +204,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
         topics={topics.results.map((topic) => ({
           slug: topic.slug,
           label: topicName(topic, locale),
+          parent: topic.parent,
         }))}
       />
 
@@ -215,6 +223,12 @@ export default async function ProblemsPage({ searchParams }: Props) {
                 qiyinlik telefonda ham ko'rinib turishi kerak. */}
               <TH align="center" className="hidden md:table-cell">
                 ★
+              </TH>
+              <TH align="center" className="hidden lg:table-cell">
+                {t(locale, "problems.likes")}
+              </TH>
+              <TH className="hidden xl:table-cell">
+                {t(locale, "problems.author")}
               </TH>
               <TH align="right" className="hidden sm:table-cell">
                 {t(locale, "problems.solved")}
@@ -310,6 +324,30 @@ export default async function ProblemsPage({ searchParams }: Props) {
                     )}
                   </TD>
                   <TD
+                    align="center"
+                    className="hidden tabular-nums text-theme-xs rw-dim-2 lg:table-cell"
+                  >
+                    <span title={`${p.likes_count} / ${p.dislikes_count}`}>
+                      +{p.likes_count}
+                    </span>
+                  </TD>
+                  <TD className="hidden max-w-28 truncate text-theme-xs rw-faint xl:table-cell">
+                    {p.author ? (
+                      p.author.has_profile ? (
+                        <Link
+                          href={`/users/${p.author.username}`}
+                          className="rw-link-hover"
+                        >
+                          {p.author.display_name}
+                        </Link>
+                      ) : (
+                        p.author.display_name
+                      )
+                    ) : (
+                      "—"
+                    )}
+                  </TD>
+                  <TD
                     align="right"
                     className="hidden rw-faint tabular-nums sm:table-cell"
                   >
@@ -333,7 +371,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
                 </TR>
               ))}
               {data.count === 0 && (
-                <EmptyRow colSpan={me ? 7 : 6}>{t(locale, "common.empty")}</EmptyRow>
+                <EmptyRow colSpan={me ? 9 : 8}>{t(locale, "common.empty")}</EmptyRow>
               )}
             </TBody>
           </Table>
@@ -359,6 +397,8 @@ export default async function ProblemsPage({ searchParams }: Props) {
           roadmaps={roadmaps}
           attempts={attempts.results}
           popular={popular.results}
+          liked={liked.results}
+          tagCloud={topics.results}
         />
       </div>
     </div>
