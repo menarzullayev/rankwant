@@ -453,7 +453,7 @@ jobs:
           C="docker compose -f docker-compose.yml -f docker-compose.ci.yml"
           $C stop worker beat
           set +e
-          $C --profile bakeoff run --rm --no-build bakeoff
+          $C --profile bakeoff run --rm bakeoff
           status=$?
           set -e
           $C start worker beat
