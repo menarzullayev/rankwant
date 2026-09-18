@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { IntentLink } from "@/components/ui/IntentLink";
+
 type Variant = "primary" | "outline";
 
 const STYLES: Record<Variant, string> = {
@@ -76,14 +78,25 @@ export function ButtonLink({
   variant = "primary",
   className = "",
   children,
+  intent = false,
 }: {
   href: React.ComponentProps<typeof Link>["href"];
   variant?: Variant;
   className?: string;
   children: React.ReactNode;
+  /** Homepage hero: prefetch on hover/focus/touch only (2026-09-18). */
+  intent?: boolean;
 }) {
+  const classNames = `${BASE} ${STYLES[variant]} ${className}`;
+  if (intent) {
+    return (
+      <IntentLink href={href} className={classNames}>
+        {children}
+      </IntentLink>
+    );
+  }
   return (
-    <Link href={href} className={`${BASE} ${STYLES[variant]} ${className}`}>
+    <Link href={href} className={classNames}>
       {children}
     </Link>
   );
