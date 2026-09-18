@@ -2677,29 +2677,42 @@ def neg_decisions_kpi_value_prop_ignored() -> tuple[bool, str]:
 
 # ── Profile KPI grid steps at `xl`, not `lg` (owner decision 2026-09-18) ──
 
-_PROFILE_RULE = "profil KPI to'ri xl da 4 ustun"
-_PROFILE_STEP = 'valueClassName="xl:text-2xl 2xl:text-title-sm"'
+_PROFILE_RULE = "profil paneli xl gacha stekda"
+_PROFILE_GRID = "xl:grid-cols-[300px_minmax(0,1fr)]"
+_PROFILE_STEP = 'valueClassName="lg:text-2xl 2xl:text-title-sm"'
 _PROFILE_LAYOUT = "apps/web/src/app/users/[username]/layout.tsx"
 
 
-def neg_decisions_profile_kpi_copies_home_lg() -> tuple[bool, str]:
-    # The tempting "consistency" edit: copy the home page's `lg`. Measured at
-    # 1024 px the content column is 377 px, so 4-up gives 82 px cards and
-    # clips the values by 27 px.
+def neg_decisions_profile_two_columns_at_lg() -> tuple[bool, str]:
+    # The pre-decision state: the 300 px sidebar at `lg` leaves a 377 px
+    # content column, where 4-up KPI cards clipped the values by 27 px —
+    # that is exactly what decision 21 (2026-09-19) removed.
     return _decision_broken(
         _PROFILE_LAYOUT,
-        "sm:grid-cols-2 xl:grid-cols-4",
-        "sm:grid-cols-2 lg:grid-cols-4",
+        "grid gap-6 " + _PROFILE_GRID,
+        "grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)]",
         _PROFILE_RULE,
     )
 
 
 def neg_decisions_profile_kpi_stuck_at_2xl() -> tuple[bool, str]:
-    # Back to `2xl`: cards stretch to 436 px just below 1536.
+    # Without the `lg` step the KPI cards stretch full width until 1536 —
+    # the sidebar no longer justifies a 2-up band at 1024–1279.
     return _decision_broken(
         _PROFILE_LAYOUT,
-        "sm:grid-cols-2 xl:grid-cols-4",
+        "sm:grid-cols-2 lg:grid-cols-4",
         "sm:grid-cols-2 2xl:grid-cols-4",
+        _PROFILE_RULE,
+    )
+
+
+def neg_decisions_profile_kpi_step_redundant() -> tuple[bool, str]:
+    # A leftover `xl:grid-cols-4` next to `lg:grid-cols-4` is dead weight —
+    # it means the old (sidebar-at-lg) step was not fully removed.
+    return _decision_broken(
+        _PROFILE_LAYOUT,
+        "sm:grid-cols-2 lg:grid-cols-4",
+        "sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4",
         _PROFILE_RULE,
     )
 
@@ -4010,8 +4023,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("KPI to'ri 3 ustunga qaytsa tutilsin", neg_decisions_kpi_grid_3up_creeps_back),
             ("KPI raqami pog'onasi yo'qolsa tutilsin", neg_decisions_kpi_card_value_step_lost),
             ("KPI raqam prop'i e'tiborsiz qolsa tutilsin", neg_decisions_kpi_value_prop_ignored),
-            ("profil to'ri bosh sahifa `lg` ini ko'chirsa tutilsin", neg_decisions_profile_kpi_copies_home_lg),
+            ("profil `lg` da ikki ustunga qaytsa tutilsin", neg_decisions_profile_two_columns_at_lg),
             ("profil to'ri `2xl` da qolsa tutilsin", neg_decisions_profile_kpi_stuck_at_2xl),
+            ("profil to'rida eskirgan `xl` pog'onasi qolsa tutilsin", neg_decisions_profile_kpi_step_redundant),
             ("profil raqami pog'onasi yo'qolsa tutilsin", neg_decisions_profile_kpi_value_step_lost),
             ("diapazon kalitlari doimiysi o'chirilsa tutilsin", neg_decisions_difficulty_keys_declaration_removed),
             ("diapazon doimiysidan `level` tushib qolsa tutilsin", neg_decisions_difficulty_keys_missing_level),
