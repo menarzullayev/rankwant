@@ -42,6 +42,7 @@ foydalanuvchi ma'lumoti bor dump'lar tashqariga chiqdi.
 | 2026-09-18 | Sidebar, top bar, header va footer linklari faqat **niyatda** prefetch qiladi (hover, fokus, teginish) — ko'rinishi bilan emas: tashrif boshiga ~130–150 ms server CPU edi ([profil](docs/research/2026-09-18-homepage-profile/REPORT.md)) | `apps/web/src/components/ui/IntentLink.tsx`; `tools/check_decisions.py` → `NAV_CHROME` |
 | 2026-09-18 | Bosh sahifa `<main>` havolalari ham faqat **niyatda** prefetch qiladi. 1000 tashrif/s da ko'rinish-prefetch (7 RSC) origin'ni `EOF` qildi; chrome allaqachon niyatda edi | `apps/web/src/app/page.tsx`; `ButtonLink intent`; `tools/check_decisions.py` → `HOME_MAIN` |
 | 2026-09-18 | Brauzerga lug'at **alohida keshlanadigan faylda** (`/i18n/<til>.js?v=<hash>`, `immutable`) boradi, sahifa ichida emas: u har HTML'ning 72 KB'i va render CPU'sining 32% i edi ([profil](docs/research/2026-09-18-homepage-profile/REPORT.md)) | `apps/web/src/app/i18n/[file]/route.ts`; `apps/web/src/app/layout.tsx` → `dictionaryUrl`; `apps/web/src/proxy.ts` matcher |
+| 2026-09-18 | `User` ga Codeforces/Robocontest/KEP bilan tenglik uchun **21 maydon** (46 → 67). 13 tasi (`plan`, `postal_*`, `device_fingerprint`…) funksiyasidan **oldin** qo'shilgan — «ishlatilmaydi» deb olib tashlanmaydi ([ADR-0024](docs/07-adr/0024-user-competitor-parity-fields.md)) | `apps/api/core/models.py` → `User`; `tools/check_decisions.py` → `PARITY_USER_FIELDS` |
 
 ## Darvozalar
 

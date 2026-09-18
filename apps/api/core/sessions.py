@@ -14,7 +14,6 @@ from typing import Any
 from django.conf import settings
 from django.contrib.sessions.models import Session
 from django.core.cache import cache
-from django.db.models import Max
 from django.utils import timezone
 
 from core.models import User, UserSession
@@ -42,15 +41,19 @@ def record(request: Any, *, force: bool = False) -> None:
         return
     forwarded = request.META.get("HTTP_X_FORWARDED_FOR", "")
     ip = (forwarded.split(",")[0].strip() if forwarded else "") or request.META.get("REMOTE_ADDR")
+    now = timezone.now()
     UserSession.objects.update_or_create(
         session_key=key,
         defaults={
             "user": user,
             "user_agent": request.META.get("HTTP_USER_AGENT", "")[:200],
             "ip": ip or None,
-            "last_seen": timezone.now(),
+            "last_seen": now,
         },
     )
+    # The same moment on the user row (ADR-0024), so lists can read one column
+    # instead of aggregating sessions per row.
+    User.objects.filter(pk=user.pk).update(last_seen_at=now)
     cache.set(mark, 1, TOUCH_EVERY)
 
 
@@ -80,8 +83,10 @@ def terminate_others(user: User, *, keep: str | None) -> int:
 
 
 def last_seen(user: User) -> datetime | None:
-    """Oxirgi faollik — hamma qurilmalar bo'yicha."""
-    value: datetime | None = UserSession.objects.filter(user=user).aggregate(last=Max("last_seen"))[
-        "last"
-    ]
-    return value
+    """Oxirgi faollik — hamma qurilmalar bo'yicha.
+
+    Reads `User.last_seen_at`, which `record` writes together with the session
+    (ADR-0024). Unlike a `MAX` over sessions, it survives signing out, so a
+    profile and the followers list show the same moment.
+    """
+    return user.last_seen_at

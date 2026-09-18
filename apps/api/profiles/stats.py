@@ -104,7 +104,8 @@ def streaks(user: User) -> dict[str, int]:
     today = timezone.localdate()
     alive = user.last_active_date is not None and user.last_active_date >= today - timedelta(days=1)
     current = user.streak_count if alive else 0
-    return {"current": current, "longest": max(longest, current)}
+    # `streak_max` also remembers runs that a freeze kept alive (ADR-0024).
+    return {"current": current, "longest": max(longest, current, user.streak_max)}
 
 
 def calendar(user: User, year: int) -> dict[str, Any]:

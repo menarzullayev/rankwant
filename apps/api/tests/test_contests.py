@@ -105,6 +105,9 @@ class TestContestRating:
         # Birinchi o'rin yutadi, oxirgisi yo'qotadi
         assert users[0].rating_contest > 1400
         assert users[-1].rating_contest < 1400
+        # The batch write keeps the stored maximum too (ADR-0024).
+        assert users[0].max_rating_contest == users[0].rating_contest
+        assert users[-1].max_rating_contest == users[-1].rating_contest
         # Har birida audit yozuvi
         assert RatingHistory.objects.filter(rating_type="contest").count() == 10
         entry = RatingHistory.objects.filter(user=users[0], rating_type="contest").first()

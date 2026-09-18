@@ -17,6 +17,26 @@ from ratings.models import RatingHistory, UserSolvedProblem
 log = logging.getLogger(__name__)
 
 
+def bump_max_rating(user: User, rating_type: str, value: int) -> None:
+    """Raise the stored maximum for `rating_type` to `value` if it is higher.
+
+    Call it wherever a `RatingHistory` row is written: the column mirrors
+    `MAX(value_after)`. The update is a single SQL expression, so concurrent
+    writers cannot lower it.
+    """
+    from django.db.models import F, Value
+    from django.db.models.functions import Coalesce, Greatest
+
+    from core.user_stats import MAX_RATING_FIELDS
+
+    field = MAX_RATING_FIELDS[rating_type]
+    User.objects.filter(pk=user.pk).update(
+        **{field: Greatest(Coalesce(F(field), Value(value)), Value(value))}
+    )
+    current = getattr(user, field)
+    setattr(user, field, value if current is None else max(current, value))
+
+
 def _record(
     user: User,
     rating_type: str,
@@ -43,6 +63,7 @@ def _record(
         seed=seed,
         rank=rank,
     )
+    bump_max_rating(user, rating_type, after)
 
 
 @transaction.atomic
@@ -125,6 +146,7 @@ def on_attempt_judged(attempt: Attempt) -> None:
     type(attempt.problem).objects.filter(pk=attempt.problem_id).update(
         solved_count=F("solved_count") + 1
     )
+    User.objects.filter(pk=attempt.user_id).update(solved_count=F("solved_count") + 1)
     recalc_skills(attempt.user, ref_id=attempt.problem.slug)
 
     # Phase 1 — Qvant va Activity. Qvant hodisasi Skills dan KEYIN:
@@ -189,6 +211,10 @@ def on_accept_revoked(attempt: Attempt) -> None:
     # yoki qo'lda tuzatish. Haqiqatga tenglashtirish uchun alohida vosita
     # bor: `python manage.py recount_problems`.
     type(attempt.problem).objects.filter(pk=attempt.problem_id).update(
+        solved_count=Greatest(F("solved_count") - 1, Value(0))
+    )
+    # Same floor as above: the counter may already be behind the rows.
+    User.objects.filter(pk=attempt.user_id).update(
         solved_count=Greatest(F("solved_count") - 1, Value(0))
     )
     recalc_skills(
@@ -271,6 +297,9 @@ def apply_contest_ratings(contest) -> int:  # type: ignore[no-untyped-def]
         user.rated_contest_count += 1
 
         if before != after:
+            # Mirrors `bump_max_rating`, which this batch path cannot call per row.
+            if user.max_rating_contest is None or after > user.max_rating_contest:
+                user.max_rating_contest = after
             histories.append(
                 RatingHistory(
                     user=user,
@@ -300,7 +329,9 @@ def apply_contest_ratings(contest) -> int:  # type: ignore[no-untyped-def]
             )
         )
 
-    User.objects.bulk_update(users, ["rating_contest", "rated_contest_count"], batch_size=500)
+    User.objects.bulk_update(
+        users, ["rating_contest", "rated_contest_count", "max_rating_contest"], batch_size=500
+    )
     RatingHistory.objects.bulk_create(histories, batch_size=500)
     try:
         Notification.objects.bulk_create(notes, batch_size=500)

@@ -142,6 +142,9 @@ def recalc_activity(user: User) -> int:
         ref_type="activity",
         ref_id="",
     )
+    from ratings.services import bump_max_rating
+
+    bump_max_rating(user, RatingHistory.Type.ACTIVITY, value)
     return value
 
 

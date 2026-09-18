@@ -36,6 +36,53 @@ class RankWantUserAdmin(UserAdmin):  # type: ignore[type-arg]
                 )
             },
         ),
+        (
+            # ADR-0024. The counters mirror their source tables; edit those, or
+            # run `manage.py recount_user_stats`, instead of the counters.
+            "Competitor parity",
+            {
+                "fields": (
+                    "solved_count",
+                    "streak_max",
+                    "max_rating_skills",
+                    "max_rating_contest",
+                    "max_rating_activity",
+                    "max_rating_challenges",
+                    "last_seen_at",
+                    "shirt_size",
+                )
+            },
+        ),
+        (
+            "Dormant until their features exist",
+            {
+                "classes": ("collapse",),
+                "fields": (
+                    "plan",
+                    "plan_expires_at",
+                    "postal_recipient",
+                    "postal_country",
+                    "postal_region",
+                    "postal_city",
+                    "postal_address",
+                    "postal_code",
+                    "coach_can_view_attempts",
+                    "message_min_rating",
+                    "contribution",
+                    "device_fingerprint",
+                    "duel_ready_until",
+                ),
+            },
+        ),
+    )
+    readonly_fields = (
+        "solved_count",
+        "streak_max",
+        "max_rating_skills",
+        "max_rating_contest",
+        "max_rating_activity",
+        "max_rating_challenges",
+        "last_seen_at",
     )
 
 
