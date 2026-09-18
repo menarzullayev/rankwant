@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1566 strings.**
+**1571 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -1086,6 +1086,11 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.quotaLost` | {n} xat yetkazilmaydi (navbat ham to'ldi) | {n} кат жеткирилбейт (кезек да толду) |  |
 | `admin.quotaUnset` | kvota belgilanmagan | квота белгиленген эмес |  |
 | `admin.quotaTodayLeft` | Bugun yana: | Бүгүн калды: |  |
+| `admin.quotaWindowLabel` | Qaysi kun | Кайсы күн |  |
+| `admin.quotaWindowToday` | Bugun | Бүгүн |  |
+| `admin.quotaWindowYesterday` | Kecha | Кечээ |  |
+| `admin.quotaWindowWeek` | 7 kun | 7 күн |  |
+| `admin.quotaSpent` | Shu kun sarfi: | Ошол күнкү сарпталганы: |  |
 | `admin.quotaWithQueue` | (navbat bilan birga {n} gacha) | (кезек менен {n} чейин) |  |
 | `admin.quotaFailures` | {n} xat yuborilmadi | {n} кат жиберилген жок |  |
 | `admin.quotaUtcNote` | Kun chegarasi — UTC kalendar kuni (Resend va Brevo shunday belgilaydi). Navbatdagi xat yo'qolmaydi, lekin kechikadi. | Чек — UTC күнү. Кезектеги кат жоголбойт, бирок кечигет. |  |

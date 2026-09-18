@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1566 strings.**
+**1571 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -1086,6 +1086,11 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.quotaLost` | {n} xat yetkazilmaydi (navbat ham to'ldi) | {n} xat jetkerilmeydi (nawbat ta tolı) |  |
 | `admin.quotaUnset` | kvota belgilanmagan | kvota belgilenbegen |  |
 | `admin.quotaTodayLeft` | Bugun yana: | Búgin qaldı: |  |
+| `admin.quotaWindowLabel` | Qaysi kun | Qaysı kún |  |
+| `admin.quotaWindowToday` | Bugun | Búgin |  |
+| `admin.quotaWindowYesterday` | Kecha | Keshe |  |
+| `admin.quotaWindowWeek` | 7 kun | 7 kún |  |
+| `admin.quotaSpent` | Shu kun sarfi: | Sol kún sarplanǵanı: |  |
 | `admin.quotaWithQueue` | (navbat bilan birga {n} gacha) | (nawbat penen {n} ǵa shekem) |  |
 | `admin.quotaFailures` | {n} xat yuborilmadi | {n} xat jiberilmadi |  |
 | `admin.quotaUtcNote` | Kun chegarasi — UTC kalendar kuni (Resend va Brevo shunday belgilaydi). Navbatdagi xat yo'qolmaydi, lekin kechikadi. | Shegara — UTC kún. Nawbattaǵı xat joǵalmaydı, biraq keshigedi. |  |

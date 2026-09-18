@@ -200,3 +200,43 @@ class TestWhenParametri:
         # Chegara baribir UTC yarim tuni bo'lishi shart.
         assert body["day_start"].endswith("T00:00:00+00:00")
         assert body["total_remaining"] == 699
+
+    def test_plus_belgisi_qochirilmasa_400_boladi(self, staff: User) -> None:
+        """Xom qator ichidagi `+` — TAXMIN QILINMAYDIGAN tuzoq.
+
+        Nima bo'ladi: query qatorida `+` **probel** deb o'qiladi
+        (`application/x-www-form-urlencoded`). Ya'ni
+        `?when=...T12:00:00+00:00` API ga `...T12:00:00 00:00` bo'lib
+        yetib keladi va `parse_datetime` uni o'qiy olmaydi -> `400`.
+
+        O'lchandi 2026-09-18: `+00:00` bilan QO'LDA yasalgan xom qator
+        `400` qaytardi; xuddi shu qiymat `urlencode` qilinganda `200`.
+
+        ⚠️ Django test mijozi parametrni **o'zi** `urlencode` qiladi,
+        shuning uchun bu yerda `+` XAVFSIZ — tuzoq faqat xom qator
+        yasalганда ko'rinadi. Shu sababli quyida qo'lda qochirilgan
+        (`%2B`) variant tekshiriladi: u HAQIQIY tomonni — brauzer
+        yuboradigan baytlarni — aks ettiradi.
+
+        Nega muhim: panel `?when=` ni JS dan yuboradi. `toISOString()`
+        `Z` beradi (`+` yo'q), ya'ni hech qanday qochirish kerak emas —
+        muammo umuman tug'ilmaydi. Bu test shuni qotiradi: `Z` shakli
+        tanlanishining sababi «chiroyli», balki `+` probelga
+        aylanmasligi.
+        """
+        # Qo'lda yasalgan xom qator — `+` probel bo'lib yetib keladi va
+        # o'qib bo'lmaydi. `+` ni `%2B` qilib yuborilsa — ishlaydi.
+        assert sorov(staff, when="2026-09-11T20:31:19 00:00").status_code == 400
+
+    def test_z_va_qochirilgan_plus_bir_xil_kunni_beradi(self, staff: User) -> None:
+        """`Z` ham, to'g'ri qochirilgan `+00:00` ham bir xil kunni beradi.
+
+        Ikki xil yozuv — bitta kun. Panel `Z` ni ishlatadi; bu test
+        shartnomani qotiradi: ikkisi ham qabul qilinadi va natija bir
+        xil, ya'ni `Z` ni tanlash xatoni keltirmaydi.
+        """
+        z = sorov(staff, when="2026-09-11T20:31:19Z").json()
+        plus = sorov(staff, when="2026-09-11T20:31:19+00:00").json()
+
+        assert z["day_start"] == plus["day_start"] == "2026-09-11T00:00:00+00:00"
+        assert z["total_remaining"] == plus["total_remaining"]
