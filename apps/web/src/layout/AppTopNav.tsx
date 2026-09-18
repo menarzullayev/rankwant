@@ -17,6 +17,7 @@ import { CustomizerTrigger } from "@/components/customizer/CustomizerTrigger";
 import { CUSTOMIZER_ENABLED } from "@/lib/theme/flag";
 import UserMenu from "./UserMenu";
 import { NAV_GROUPS } from "./nav";
+import BrandMark from "./BrandMark";
 import { topnavShapeClass, type NavShape } from "./nav-config";
 
 /** Yuqori navigatsiya — `navMode: "topnav"` tanlanganda ishlaydi (D46).
@@ -218,9 +219,9 @@ export default function AppTopNav({
           {isMobileOpen ? <Icon name="nav.close" /> : <Icon name="nav.menu" />}
         </button>
 
-        <IntentLink href="/" className="shrink-0 text-lg font-bold">
-          Rank<span className="rw-accent-ink">Want</span>
-        </IntentLink>
+        {/* Brend — bitta manba (qaror 22): AppSidebar'dagi kabi bu
+            yerda ham `BrandMark`; wordmark nusxasi olib tashlandi. */}
+        <BrandMark variant="full" />
 
         {/* Guruhlar — faqat keng ekranda. */}
         <nav

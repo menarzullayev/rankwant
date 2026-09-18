@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1595 strings.**
+**1599 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -241,6 +241,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.linkBody` | Bu email allaqachon ishlatilgan. Bog'lash uchun parolingizni kiriting. | Ин email аллакай истифода шудааст. Барои пайваст рамзи худро ворид кунед. |  |
 | `auth.linkCta` | Bog'lash | Пайваст кардан |  |
 | `auth.socialError` | Kirish amalga oshmadi. Qayta urinib ko'ring. | Ворид шудан муяссар нашуд. Аз нав кӯшиш кунед. |  |
+| `footer.tagline` | O'zbekistonlik dasturchilar uchun CP/OJ platformasi | Платформаи барномасозии варзишӣ барои Ӯзбекистон |  |
+| `footer.platform` | Platforma | Платформа |  |
+| `footer.contact` | Aloqa va jamiyat | Тамос ва ҷомеа |  |
+| `footer.copyright` | © {year} RankWant. Barcha huquqlar himoyalangan. | © {year} RankWant. Ҳамаи ҳуқуқҳо ҳифз шудаанд. |  |
 | `footer.terms` | Shartlar | Шартҳо |  |
 | `footer.privacy` | Maxfiylik | Махфият |  |
 | `auth.usernameRequired` | Taxallus 3–30 belgi: bo'sh qolmasin | Тахаллус 3–30 аломат: холӣ намонад |  |
