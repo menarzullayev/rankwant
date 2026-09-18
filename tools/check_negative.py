@@ -3407,6 +3407,38 @@ def neg_report_unreadable_attention() -> tuple[bool, str]:
     return True, "runner_report/o'qib bo'lmagan bandlar: exit 2"
 
 
+def neg_negative_rejects_unknown_group() -> tuple[bool, str]:
+    """Notanish guruh nomi «0/0 ✓» bo'lib yashil qolmasinmi?
+
+    ⚠️ 2026-09-18 da o'lchandi: `main()` da `only = argv[1]`, mos guruh
+    topilmasa `total = 0` qolardi va hisobot `Salbiy testlar: 0/0 ✓` bo'lib
+    **exit 0** qaytarardi. Ya'ni guruh nomi xato terilsa yoki o'zgarsa,
+    to'plam hech narsa tekshirmasdan yashil ko'rinardi — CI jimgina ko'r
+    bo'lardi va buni ko'rsatadigan hech qanday belgi qolmasdi.
+
+    Nazorat ham shu yerda: MAVJUD guruh nomi bilan chaqirilganda chiqish nol
+    bo'lishi shart, aks holda tuzatish guruhlarni umuman ishlamaydigan qilib
+    qo'ygan bo'lardi. Nazorat uchun `deploy_lock` olingan — u `tooling`
+    guruhiga kirmaydi, ya'ni o'zini-o'zi chaqirib rekursiyaga tushmaydi
+    (`_run_deploy` stub docker bilan ishlaydi, deploy qilmaydi).
+    """
+    code, out = run([PY, "tools/check_negative.py", "deploy_lock"])
+    if code != 0:
+        return False, (
+            f"mavjud guruh rad etildi (exit {code}) — himoya juda qattiq: "
+            f"{out.strip().splitlines()[:2]}"
+        )
+    code, out = run([PY, "tools/check_negative.py", "nosuchgroup"])
+    if code == 0:
+        return False, (
+            "notanish guruh YASHIL qoldi (exit 0) — "
+            f"o'lchov yo'q, hisobot: {out.strip()[-80:]}"
+        )
+    if "noma'lum guruh" not in out:
+        return False, f"notanish guruh to'xtadi (exit {code}), lekin sabab ko'rinmadi"
+    return True, f"notanish guruh rad etildi (exit {code}), sabab aytildi"
+
+
 CASES: list[tuple[str, list[tuple[str, object]]]] = [
     (
         "i18n",
@@ -3555,6 +3587,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("mutatsiya baytlarni saqlasin", neg_mutation_restores_bytes),
             ("tor oqimda qulamasin", neg_checker_survives_narrow_stdout),
             ("yangi branch darvozasiz qolmasin", neg_hook_gates_new_branch),
+            ("notanish guruh yashil qolmasin", neg_negative_rejects_unknown_group),
         ],
     ),
     (
@@ -3721,6 +3754,20 @@ def main(argv: list[str]) -> int:
     only = argv[1] if len(argv) > 1 else None
     failures: list[str] = []
     total = 0
+
+    # An unknown group name must not look like a pass. With `only` set and no
+    # checker matching it, `total` stays 0 and the report reads
+    # "Salbiy testlar: 0/0 ✓" while exiting 0 — a silent green that measured
+    # nothing. Measured 2026-09-18: both `--help` and a typo'd group name
+    # exited 0. A renamed group would leave CI blind with no signal at all.
+    known = [name for name, _ in CASES]
+    if only is not None and only not in known:
+        print(f"  ✕ noma'lum guruh: {only!r} — hech narsa tekshirilmadi")
+        print()
+        print(f"Mavjud guruhlar ({len(known)}): {', '.join(known)}")
+        print()
+        print("O'lchov yo'q: guruh nomini tuzatib qayta yurgizing.")
+        return 2
 
     # Old shart: Node tekshiruvi umuman ishlay oladimi? Buni BIR MARTA
     # tekshiramiz — mutatsiya ichida qilsak, «ishga tushmadi» ni
