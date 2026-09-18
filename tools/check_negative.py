@@ -2348,6 +2348,36 @@ def neg_decisions_intent_link_eager() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_dictionary_prop() -> tuple[bool, str]:
+    # The dictionary back as a prop: 72 kB of every page again.
+    return _decision_broken(
+        "apps/web/src/app/layout.tsx",
+        "dictionaryUrl={dictionary}",
+        "dictionaryUrl={dictionary} dict={{}}",
+        "lug'at alohida faylda",
+    )
+
+
+def neg_decisions_dictionary_not_cached() -> tuple[bool, str]:
+    # Without `immutable` every page view asks for the file again.
+    return _decision_broken(
+        "apps/web/src/app/i18n/[file]/route.ts",
+        '"public, max-age=31536000, immutable"',
+        '"no-store"',
+        "lug'at alohida faylda",
+    )
+
+
+def neg_decisions_dictionary_through_proxy() -> tuple[bool, str]:
+    # Through the middleware the file gets `Vary: Accept-Language`.
+    return _decision_broken(
+        "apps/web/src/proxy.ts",
+        "favicon.ico|i18n/).*)",
+        "favicon.ico).*)",
+        "lug'at alohida faylda",
+    )
+
+
 def neg_decisions_deploy_lock_removed() -> tuple[bool, str]:
     return _decision_broken(
         "tools/deploy.sh",
@@ -2394,6 +2424,10 @@ def _decisions_sandbox(extra_workflows: dict[str, str]) -> tuple[int, str]:
         "apps/web/src/layout/HeaderStatus.tsx",
         "apps/web/src/layout/UserMenu.tsx",
         "apps/web/src/components/ui/IntentLink.tsx",
+        # Dictionary as a cached file (2026-09-18).
+        "apps/web/src/app/layout.tsx",
+        "apps/web/src/app/i18n/[file]/route.ts",
+        "apps/web/src/proxy.ts",
     )
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
@@ -3554,6 +3588,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("AI krauler ro'yxatdan tushsa tutilsin", neg_decisions_ai_crawler_dropped),
             ("sidebar'ga oddiy Link qaytsa tutilsin", neg_decisions_nav_eager_link),
             ("IntentLink darhol prefetch qilsa tutilsin", neg_decisions_intent_link_eager),
+            ("lug'at prop'ga qaytsa tutilsin", neg_decisions_dictionary_prop),
+            ("lug'at fayli keshlanmasa tutilsin", neg_decisions_dictionary_not_cached),
+            ("lug'at middleware'dan o'tsa tutilsin", neg_decisions_dictionary_through_proxy),
             ("sinov label'i self-test'da o'tadi", neg_decisions_trial_label_selftest_allowed),
             ("sinov label'i boshqa workflow'da tutilsin", neg_decisions_trial_label_scoped),
             ("Security PR'da qaytsa tutilsin", neg_decisions_security_on_pr),
