@@ -7,6 +7,7 @@ import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
 import { Icon } from "@/components/ui/Icon";
 import { NAV } from "./nav";
+import BrandMark from "./BrandMark";
 import HeaderStatus from "./HeaderStatus";
 import SearchBox from "./SearchBox";
 import { LocaleSwitch } from "./LocaleSwitch";
@@ -57,14 +58,19 @@ export default function AppHeader() {
         <Icon name="nav.menu" />
       </button>
 
-      <span className="hidden text-theme-sm font-medium rw-strong sm:inline">
-        {current ? t(locale, current.key) : "RankWant"}
-      </span>
+      {/* Brend — endi header'da (qaror 22): ilgari u sidebar tepasida
+          edi, telefonlda esa faqat drawer ochilganda ko'rinardi.
+          Bo'lim nomi undan keyin ikkinchi daraja (rw-dim) sifatida
+          qoladi — logotip asosiy, nom esa faqat orientatsiya. */}
+      <BrandMark className="shrink-0" />
 
       {/* `min-w-0` SHART: usiz flex bolalari o'z eng kichik kengligidan
           pastga tushmaydi va guruh sarlavhadan chiqib ketadi. O'lchandi —
           1280px da hujjat 1339px bo'lib, butun saytda gorizontal siljish
           paydo bo'lardi. */}
+      <span className="hidden min-w-0 truncate text-theme-sm font-medium rw-dim sm:inline">
+        {current ? t(locale, current.key) : null}
+      </span>
       <div className="ml-auto flex min-w-0 items-center gap-2">
         {!auth && <SearchBox />}
         <HeaderStatus />

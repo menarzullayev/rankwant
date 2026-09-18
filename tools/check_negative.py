@@ -2532,6 +2532,9 @@ def _decisions_sandbox(extra_workflows: dict[str, str]) -> tuple[int, str]:
         # this file. Missing here, `check_decisions.py` exits 2 rather than
         # testing the rule.
         "apps/web/src/components/ProblemFilters.tsx",
+        # Brand in the header, 3-column footer (2026-09-19): the rule reads the
+        # single-source `BrandMark`. Missing here, `check_decisions.py` exits 2.
+        "apps/web/src/layout/BrandMark.tsx",
     )
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
@@ -2783,6 +2786,57 @@ def neg_decisions_difficulty_predicate_reverted() -> tuple[bool, str]:
         "      (key) => !DIFFICULTY_KEYS.includes(key) && params.get(key),\n",
         "      (key) => params.get(key),\n",
         _DIFFICULTY_RULE,
+    )
+
+
+# ── Brand in the header, 3-column footer (owner decision 2026-09-19) ──
+
+_BRAND_RULE = "brend headerda, footer uch ustun"
+_HEADER = "apps/web/src/layout/AppHeader.tsx"
+_SIDEBAR = "apps/web/src/layout/AppSidebar.tsx"
+_FOOTER = "apps/web/src/layout/AppFooter.tsx"
+
+
+def neg_decisions_header_brand_removed() -> tuple[bool, str]:
+    # The regression the decision fixes: no brand in the header, so on a
+    # phone the logo is only visible after opening the drawer.
+    return _decision_broken(_HEADER, "<BrandMark", "<div", _BRAND_RULE)
+
+
+def neg_decisions_sidebar_brand_back() -> tuple[bool, str]:
+    # Re-duplicating the wordmark in the sidebar breaks the single-source
+    # rule: three places would render the brand again.
+    return _decision_broken(
+        _SIDEBAR,
+        '<div className="flex h-16 items-center justify-end gap-1">',
+        '<div className="flex h-16 items-center justify-end gap-1">'
+        '<IntentLink href="/" className="text-lg font-bold">'
+        'Rank<span className="rw-accent-ink">Want</span></IntentLink>',
+        _BRAND_RULE,
+    )
+
+
+def neg_decisions_footer_single_column() -> tuple[bool, str]:
+    # Collapsing the footer to one column merges the contacts into the
+    # brand block — the 3-column structure the owner chose is gone.
+    return _decision_broken(
+        _FOOTER,
+        "lg:grid-cols-[1fr_auto_auto]",
+        "lg:grid-cols-1",
+        _BRAND_RULE,
+    )
+
+
+def neg_decisions_footer_privacy_link_lost() -> tuple[bool, str]:
+    # Privacy must be on EVERY page — Google OAuth verification expects it
+    # reachable from the footer (ADR-0016), so the legal row is load-bearing.
+    return _decision_broken(
+        _FOOTER,
+        '        <IntentLink href="/privacy" className="rw-focus-ring hover:underline">\n'
+        "          {t(locale, \"footer.privacy\")}\n"
+        "        </IntentLink>\n",
+        "",
+        _BRAND_RULE,
     )
 
 
@@ -4031,6 +4085,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("diapazon doimiysidan `level` tushib qolsa tutilsin", neg_decisions_difficulty_keys_missing_level),
             ("diapazon yana kalit bo'yicha sanalsa tutilsin", neg_decisions_difficulty_count_ignores_keys),
             ("diapazon predikati doimiyni tashlasa tutilsin", neg_decisions_difficulty_predicate_reverted),
+            ("header brendi o'chirilsa tutilsin", neg_decisions_header_brand_removed),
+            ("sidebar brendi qaytsa tutilsin", neg_decisions_sidebar_brand_back),
+            ("footer bitta ustunga tushsa tutilsin", neg_decisions_footer_single_column),
+            ("footer privacy havolasi yo'qolsa tutilsin", neg_decisions_footer_privacy_link_lost),
         ],
     ),
     (

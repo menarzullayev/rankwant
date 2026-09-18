@@ -74,6 +74,15 @@ PROFILE_LAYOUT = "apps/web/src/app/users/[username]/layout.tsx"
 # Filter badge: the difficulty range is one filter even though it rides in two
 # params, so the badge counts it once. Owner decision 2026-09-18.
 FILTERS = "apps/web/src/components/ProblemFilters.tsx"
+# Brand and footer: the brand lives in the header via a single `BrandMark`
+# (it used to be duplicated in the sidebar/topnav and missing from the header
+# entirely — on phones the brand was only visible inside the drawer), and the
+# footer is a 3-column grid with a legal row. Owner decision 2026-09-19.
+BRAND_MARK = "apps/web/src/layout/BrandMark.tsx"
+APP_HEADER = "apps/web/src/layout/AppHeader.tsx"
+APP_SIDEBAR = "apps/web/src/layout/AppSidebar.tsx"
+APP_TOPNAV = "apps/web/src/layout/AppTopNav.tsx"
+APP_FOOTER = "apps/web/src/layout/AppFooter.tsx"
 
 
 class Unreadable(Exception):
@@ -633,6 +642,60 @@ def profile_sidebar_stacks_below_xl() -> str | None:
     return None
 
 
+def brand_in_header_and_footer_columns() -> str | None:
+    """The brand lives in the header, the footer is a 3-column grid.
+
+    Owner decision (HITL, 2026-09-19): the sidenav stays the default nav
+    (topnav remains an optional mode), the mobile drawer stays, and the
+    brand moves into the header — it used to be duplicated in the
+    sidebar/topnav and missing from the header entirely, so on phones the
+    brand was only visible inside the drawer. The footer becomes three
+    columns (brand + tagline, platform links, contacts) over a legal row.
+
+    The legal row is not decoration: Terms and Privacy must be on EVERY
+    page because Google OAuth verification expects the privacy policy
+    reachable from there (ADR-0016), and the footer links are crawled
+    since the site became indexable (ADR-0023).
+    """
+    header = read(APP_HEADER)
+    if "<BrandMark" not in header:
+        return (
+            f"{APP_HEADER}: header'da `<BrandMark` yo'q — brend telefonda "
+            "faqat drawer ichida ko'rinardi (qaror 22)"
+        )
+    sidebar = read(APP_SIDEBAR)
+    if "Rank<span" in sidebar:
+        return (
+            f"{APP_SIDEBAR}: yon panel brendni qayta chizyapti — brend bitta "
+            "manbadan (`BrandMark`, header) beriladi (qaror 22)"
+        )
+    topnav = read(APP_TOPNAV)
+    if "<BrandMark" not in topnav:
+        return (
+            f"{APP_TOPNAV}: topnav `BrandMark` dan foydalanmaydi — wordmark "
+            "nusxasi qaytgan bo'ladi (qaror 22)"
+        )
+    brand = read(BRAND_MARK)
+    if 'href="/"' not in brand or "rw-accent-ink" not in brand:
+        return (
+            f"{BRAND_MARK}: brend havolasi yoki urg'u rangi yo'qolgan "
+            "(qaror 22)"
+        )
+    footer = read(APP_FOOTER)
+    if "lg:grid-cols-[1fr_auto_auto]" not in footer:
+        return (
+            f"{APP_FOOTER}: footer uch ustunga bo'linmagan — brend, "
+            "platforma havolalari va aloqa alohida ustunlarda (qaror 22)"
+        )
+    for key in ("footer.copyright", "footer.terms", "footer.privacy"):
+        if key not in footer:
+            return (
+                f"{APP_FOOTER}: huquqiy qator to'liq emas (`{key}` yo'q) — "
+                "Terms/Privacy HAR sahifada turishi shart (ADR-0016)"
+            )
+    return None
+
+
 def difficulty_range_counts_as_one_filter() -> str | None:
     """The filter badge counts the difficulty range as ONE filter.
 
@@ -698,6 +761,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("KPI to'ri lg da 4 ustun", kpi_grid_steps_at_lg),
     ("profil paneli xl gacha stekda", profile_sidebar_stacks_below_xl),
     ("diapazon bitta filtr", difficulty_range_counts_as_one_filter),
+    ("brend headerda, footer uch ustun", brand_in_header_and_footer_columns),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),

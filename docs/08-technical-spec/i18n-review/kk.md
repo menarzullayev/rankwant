@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1595 strings.**
+**1599 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -241,6 +241,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.linkBody` | Bu email allaqachon ishlatilgan. Bog'lash uchun parolingizni kiriting. | Бұл email әлдеқашан қолданылған. Байланыстыру үшін құпия сөзді енгізіңіз. |  |
 | `auth.linkCta` | Bog'lash | Байланыстыру |  |
 | `auth.socialError` | Kirish amalga oshmadi. Qayta urinib ko'ring. | Кіру сәтсіз аяқталды. Қайта көріңіз. |  |
+| `footer.tagline` | O'zbekistonlik dasturchilar uchun CP/OJ platformasi | Өзбекстандық бағдарламашыларға арналған спорттық бағдарламалау платформасы |  |
+| `footer.platform` | Platforma | Платформа |  |
+| `footer.contact` | Aloqa va jamiyat | Байланыс және қауымдастық |  |
+| `footer.copyright` | © {year} RankWant. Barcha huquqlar himoyalangan. | © {year} RankWant. Барлық құқықтар қорғалған. |  |
 | `footer.terms` | Shartlar | Шарттар |  |
 | `footer.privacy` | Maxfiylik | Құпиялылық |  |
 | `auth.usernameRequired` | Taxallus 3–30 belgi: bo'sh qolmasin | Лақаб 3–30 таңба: бос қалмасын |  |
