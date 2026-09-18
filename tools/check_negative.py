@@ -2246,47 +2246,64 @@ def neg_decisions_table_removed() -> tuple[bool, str]:
     )
 
 
-def neg_decisions_locale_label_restored() -> tuple[bool, str]:
-    """Til nomi tor ekranda qaytsa tutilsin.
+def neg_decisions_locale_label_unbounded() -> tuple[bool, str]:
+    """Endonim tor ekranda chegarasiz qolsa tutilsin.
 
-    To'liq nom `sm` dan pastda qolsa header 320 px da yana toshadi
-    (o'lchandi: 15 px chiqqan, 59 px kirgan holatda).
+    O'lchandi (320 px, `main` = 6486cd6): `max-w-[3rem]` olib tashlansa
+    `Qaraqalpaqsha` til tugmasini 149 px qiladi va header 29 px toshadi
+    (`O'zbekcha` +7 px, `Кыргызча` +6 px).
     """
     return _decision_broken(
         "apps/web/src/layout/LocaleSwitch.tsx",
-        'className="hidden min-w-0 max-w-[7.5rem] truncate text-theme-xs sm:block"',
-        'className="min-w-0 max-w-[7.5rem] truncate text-theme-xs"',
-        "header 320 px ga sig'adi",
+        'className="min-w-0 max-w-[3rem] truncate text-theme-xs sm:max-w-[7.5rem]"',
+        'className="min-w-0 truncate text-theme-xs sm:max-w-[7.5rem]"',
+        "tor ekran 320 px ga sig'adi",
     )
 
 
-def neg_decisions_locale_code_hidden() -> tuple[bool, str]:
-    """Tor ekranda til kodi ko'rinmasa tutilsin.
+def neg_decisions_locale_code_restored() -> tuple[bool, str]:
+    """Tor ekranda til KODI qaytsa tutilsin.
 
-    Kod span'i o'chsa `sm` dan pastda til tugmasi butunlay bo'sh qoladi —
-    «qaysi tildaman» signali yo'qoladi (qaror 9), holbuki u saqlanishi
-    kerak edi.
+    Kod endi triggerda ko'rinmaydi — endonim ko'rinadi. Kod qaytarilsa
+    tor ekranda odam o'z tilini ko'rmaydi (tahlil B9), holbuki endonim
+    `max-w` bilan chegaralanganda ham header 0 px toshadi.
     """
     return _decision_broken(
         "apps/web/src/layout/LocaleSwitch.tsx",
-        '<span className="text-theme-xs sm:hidden">{currentCode}</span>',
-        '<span className="hidden text-theme-xs">{currentCode}</span>',
-        "header 320 px ga sig'adi",
+        "{currentLabel}\n        </span>",
+        '{currentLabel}\n        </span>\n        <span className="text-theme-xs sm:hidden">'
+        "{currentCode}</span>",
+        "tor ekran 320 px ga sig'adi",
+    )
+
+
+def neg_decisions_locale_panel_not_anchored() -> tuple[bool, str]:
+    """Panel tor ekranda viewport'ga bog'lanmasa tutilsin.
+
+    O'lchandi (320 px): `fixed` bo'lmasa panel `absolute right-0 w-64`
+    bo'lib chapga 44 px toshadi va BARCHA 11 bayroq `left = -32…-11` —
+    ya'ni ko'rinmaydi.
+    """
+    return _decision_broken(
+        "apps/web/src/layout/LocaleSwitch.tsx",
+        ': "fixed mt-1"',
+        ': "absolute mt-1"',
+        "tor ekran 320 px ga sig'adi",
     )
 
 
 def neg_decisions_locale_label_in_name_lost() -> tuple[bool, str]:
     """`aria-label` ko'rinadigan matnni yo'qotsa tutilsin.
 
-    Tor ekranda ko'rinadigan matn — KOD (`kaa`), ya'ni `aria-label` uni
+    Ko'rinadigan matn — ENDONIM (`Qaraqalpaqsha`), ya'ni `aria-label` uni
     o'z ichiga olmasa WCAG 2.5.3 («Label in Name») buziladi va Lighthouse
     `label-content-name-mismatch` beradi.
     """
     return _decision_broken(
         "apps/web/src/layout/LocaleSwitch.tsx",
         "aria-label={`${currentLabel} (${currentCode}) — ${t(locale, \"locale.switchLabel\")}`}",
-        "aria-label={`${currentLabel} — ${t(locale, \"locale.switchLabel\")}`}",
-        "header 320 px ga sig'adi",
+        "aria-label={`${currentCode} — ${t(locale, \"locale.switchLabel\")}`}",
+        "tor ekran 320 px ga sig'adi",
     )
 
 
@@ -2300,7 +2317,7 @@ def neg_decisions_signin_label_wraps() -> tuple[bool, str]:
         "apps/web/src/layout/UserMenu.tsx",
         'className="flex h-10 items-center gap-2 whitespace-nowrap rw-radius-sm rw-accent-bg px-4 text-theme-sm font-medium text-white transition"',
         'className="flex h-10 items-center gap-2 rw-radius-sm rw-accent-bg px-4 text-theme-sm font-medium text-white transition"',
-        "header 320 px ga sig'adi",
+        "tor ekran 320 px ga sig'adi",
     )
 
 
@@ -4209,10 +4226,11 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("deploy push'ga qaytsa tutilsin", neg_decisions_deploy_on_push),
             ("til qoidasi o'chsa tutilsin", neg_decisions_language_rule),
             ("qarorlar jadvali o'chsa tutilsin", neg_decisions_table_removed),
-            ("til nomi tor ekranga qaytsa tutilsin", neg_decisions_locale_label_restored),
-            ("tor ekranda til kodi yo'qolsa tutilsin", neg_decisions_locale_code_hidden),
+            ("endonim tor ekranda chegarasiz qolsa tutilsin", neg_decisions_locale_label_unbounded),
+            ("tor ekranda til kodi qaytsa tutilsin", neg_decisions_locale_code_restored),
+            ("panel tor ekranda viewport'ga bog'lanmasa tutilsin", neg_decisions_locale_panel_not_anchored),
             (
-                "`aria-label` ko'rinadigan kodni yo'qotsa tutilsin",
+                "`aria-label` ko'rinadigan endonimni yo'qotsa tutilsin",
                 neg_decisions_locale_label_in_name_lost,
             ),
             ("kirish yorlig'i o'ralsa tutilsin", neg_decisions_signin_label_wraps),

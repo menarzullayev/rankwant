@@ -427,14 +427,29 @@ def user_parity_fields_kept() -> str | None:
 
 
 def mobile_header_fits_narrow_screen() -> str | None:
-    """The header fits 320 px — the narrowest screen the project supports.
+    """The header AND the language panel fit 320 px — the narrowest screen.
 
     Measured in a live browser 2026-09-18: with the full language name in the
     control the header overflowed 15 px logged out and 59 px logged in at
     320 px, and 10 px at 375 px logged in. Showing the language CODE below
     `sm` and forbidding the sign-in label to wrap brought every one of those
-    cases to 0 px. Restoring the full name at narrow widths, or dropping
-    `whitespace-nowrap`, silently brings the horizontal scroll back.
+    cases to 0 px.
+
+    Re-measured 2026-09-19 (`main` = 6486cd6) before the owner's decision
+    (S4), because "the code was chosen" is not the same as "the endonym does
+    not fit": an UNBOUNDED endonym overflows again — `Qaraqalpaqsha` makes
+    the control 149 px (+29 px), `O'zbekcha` 124 px (+7), `Кыргызча`
+    123 px (+6), and the header has no slack left (the right-hand group is
+    already shrunk by `min-w-0`). Bounding the label at 48 px
+    (`max-w-[3rem]`) keeps all ten endonyms at ≤ 117 px with 0 px overflow,
+    while 7 of 10 still render in full. So the code is no longer needed.
+
+    The same measurement found the dropdown overflowing 44 px to the LEFT at
+    320 px — `w-64` (256 px) hanging from a trigger whose right edge is only
+    212 px — which pushed ALL 11 flags to `left = -32…-11`, i.e. off-screen.
+    At 360 px it is `left = -4` with the flag visible, so the boundary is
+    ~352 px. The panel is therefore anchored to the VIEWPORT whenever the
+    trigger sits closer than `PANEL_W + PANEL_GAP` to the right edge.
     """
     switch = read(LOCALE_SWITCH)
     classes = re.findall(r'className="([^"]*)"', switch)
@@ -442,24 +457,42 @@ def mobile_header_fits_narrow_screen() -> str | None:
     def has_class(*tokens: str) -> bool:
         return any(all(token in value for token in tokens) for value in classes)
 
-    if not has_class("hidden", "sm:block"):
+    if "sm:hidden" in switch:
         return (
-            f"{LOCALE_SWITCH}: to'liq til nomi `sm` dan pastda yashirilmagan — "
-            "320 px da header toshadi"
+            f"{LOCALE_SWITCH}: tor ekranda til KODI qaytgan — endonim o'rniga "
+            "kod ko'rsatiladi (qaror: endonim har kenglikda ko'rinadi)"
         )
-    if not has_class("sm:hidden"):
-        return f"{LOCALE_SWITCH}: tor ekranda til kodi ko'rinmaydi (`sm:hidden` span yo'q)"
-    if "currentCode" not in switch:
-        return f"{LOCALE_SWITCH}: til kodi (`currentCode`) hisoblanmayapti"
+    if not has_class("max-w-[3rem]", "truncate"):
+        return (
+            f"{LOCALE_SWITCH}: endonim tor ekranda chegaralanmagan — "
+            "320 px da header toshadi (`Qaraqalpaqsha` +29 px, o'lchandi)"
+        )
+    if not has_class("sm:max-w-[7.5rem]"):
+        return f"{LOCALE_SWITCH}: keng ekran chegarasi (`sm:max-w-[7.5rem]`) yo'q"
 
-    # WCAG 2.5.3 «Label in Name»: the visible text differs per width, so the
-    # accessible name has to carry BOTH forms — the full name and the code.
+    # Panel: tor ekranda viewport'ga bog'lanmasa bayroqlar ekrandan chiqadi.
+    for needle in (
+        "const PANEL_W = 256;",
+        "const PANEL_GAP = 8;",
+        "rect.right < PANEL_W + PANEL_GAP",
+        '"fixed mt-1"',
+        "left: PANEL_GAP, right: PANEL_GAP",
+    ):
+        if needle not in switch:
+            return (
+                f"{LOCALE_SWITCH}: `{needle}` yo'q — panel tor ekranda "
+                "viewport'ga bog'lanmagan, bayroqlar ko'rinmaydi"
+            )
+
+    # WCAG 2.5.3 «Label in Name»: the visible text is the endonym — visually
+    # truncated below `sm`, but the DOM text stays whole — so the accessible
+    # name has to carry it. The code rides along for voice control.
     label = re.search(r"aria-label=\{`([^`]*)`\}", switch)
     if label is None:
         return f"{LOCALE_SWITCH}: `aria-label` topilmadi"
-    if "currentLabel" not in label.group(1) or "currentCode" not in label.group(1):
+    if "currentLabel" not in label.group(1):
         return (
-            f"{LOCALE_SWITCH}: `aria-label` ikkala ko'rinadigan matnni olmagan "
+            f"{LOCALE_SWITCH}: `aria-label` ko'rinadigan endonimni olmagan "
             "(WCAG 2.5.3, `label-content-name-mismatch`)"
         )
 
@@ -870,7 +903,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("lug'at alohida faylda", dictionary_as_cached_file),
     ("lug'at qaytishda saqlanadi", dictionary_survives_return),
     ("User modeli tenglik maydonlari", user_parity_fields_kept),
-    ("header 320 px ga sig'adi", mobile_header_fits_narrow_screen),
+    ("tor ekran 320 px ga sig'adi", mobile_header_fits_narrow_screen),
     ("mobil panel foydalanishga yaroqli", mobile_drawer_is_accessible),
     ("KPI to'ri lg da 4 ustun", kpi_grid_steps_at_lg),
     ("profil paneli xl gacha stekda", profile_sidebar_stacks_below_xl),
