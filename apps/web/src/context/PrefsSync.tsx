@@ -6,16 +6,28 @@ import { useEffect, useRef } from "react";
 import { useSession } from "@/context/SessionContext";
 import { DEFAULT_LOCALE, isLocale } from "@/i18n/messages";
 import { STYLE_IDS, type StyleId } from "@/layout/styles";
-import { ApiError, patchJson, type A11yPrefs, type AppearancePrefs } from "@/lib/api";
+import {
+  ApiError,
+  patchJson,
+  type A11yPrefs,
+  type AppearancePrefs,
+  type ThemeTemplate,
+} from "@/lib/api";
 import { track } from "@/lib/analytics";
 import {
   PREFS_EVENT,
+  TEMPLATES_KEY,
   rememberAppearance,
   rememberPrefs,
   writeLocal,
   type PrefsChange,
 } from "@/lib/prefs";
 import { applyA11y, applyAll } from "@/lib/theme/apply";
+import {
+  SIGNED_IN_TEMPLATE_LIMIT,
+  accountTemplates,
+  mergeSavedTemplates,
+} from "@/lib/theme/saved-templates";
 
 const isStyle = (value: unknown): value is StyleId =>
   typeof value === "string" && STYLE_IDS.includes(value as StyleId);
@@ -50,6 +62,16 @@ function readLocal(key: string): string | null {
     return localStorage.getItem(key);
   } catch {
     return null;
+  }
+}
+
+/** This device's saved templates; anything unreadable counts as none. */
+function readTemplates(): ThemeTemplate[] {
+  try {
+    const parsed: unknown = JSON.parse(readLocal(TEMPLATES_KEY) ?? "[]");
+    return Array.isArray(parsed) ? (parsed as ThemeTemplate[]) : [];
+  } catch {
+    return [];
   }
 }
 
@@ -104,6 +126,20 @@ export function PrefsSync() {
           appearance: { ...appearance, style: local },
         };
       }
+    }
+
+    // Saved templates (APP-13): the account's list joins this device's.
+    // `CustomizerProvider` renders the same merge from the same two lists.
+    // It rides in this one PATCH: a second request would carry the stale
+    // `prefs` snapshot and undo the style migration above.
+    const fromAccount = accountTemplates(prefs);
+    const templates = mergeSavedTemplates(fromAccount, readTemplates(), SIGNED_IN_TEMPLATE_LIMIT);
+    writeLocal(TEMPLATES_KEY, JSON.stringify(templates));
+    if (JSON.stringify(templates) !== JSON.stringify(fromAccount)) {
+      patch.ui_prefs = {
+        ...((patch.ui_prefs as Record<string, unknown> | undefined) ?? { ...prefs, version: 2 }),
+        templates,
+      };
     }
 
     // Sozlagich guruhlari: hisob ustun (D4). Qurilmadagi nusxa faqat

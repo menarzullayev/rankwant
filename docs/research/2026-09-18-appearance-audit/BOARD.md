@@ -3,7 +3,7 @@
 **Sana:** 2026-09-17 (UTC) / 2026-09-18 ~01:20–01:35 (Toshkent)  
 **Maqsad:** RankWant Appearance (customizer + Settings `/settings/korinish`) ni kod + live MCP da tekshirish.  
 **Muhit:** `https://rankwant.uz` · Chrome DevTools MCP · admin sessiya (`username=admin`)  
-**Holat:** APP-1 … APP-7 tuzatildi (#72, #69, #77) — «Yangilanish» bo‘limida. Ochiq: APP-8, APP-9, APP-13, APP-14.  
+**Holat:** APP-1 … APP-7, APP-13, APP-14 tuzatildi (#72, #69, #77, #81) — «Yangilanish» bo‘limida. Ochiq: APP-8, APP-9.  
 **Hisob tiklandi:** `style=glass`, `theme=dark`, `font=jakarta`, `density=comfortable`, `accent=null`.
 
 Bu hujjat boshqa agentga topshirish uchun. Live admin da **Reset** hisob ko‘rinishini jamoa standarti va `system` ga qaytaradi (#77) — test qilgach hisobni pastdagi baseline ga qaytar. `PATCH /me/` dagi 400 (`card` / `navMode` / `motion=off`) #69 da yopilgan.
@@ -38,6 +38,8 @@ Bu hujjat boshqa agentga topshirish uchun. Live admin da **Reset** hisob ko‘ri
 | APP-5 | Tuzatildi — `⌘.` ham ochadi, tooltip klaviaturaga mos (`Ctrl+.` / `⌘.`) | #77 |
 | APP-6 | Tuzatildi — havola aniq `light`/`dark` ni olib yuradi, `system` tushib qoladi. «React holati» qismi takrorlanmadi: boshlang‘ich holat havolani allaqachon o‘qiydi | #77 |
 | APP-7 | Tuzatildi — Reset jamoa standarti (D37) va `system` ga qaytaradi, saqlangan shablonlar qoladi | #77 |
+| APP-13 | Tuzatildi — kirishda hisob va qurilma shablonlari nom bo‘yicha birlashadi (hisob ustun, 5 ta), bitta PATCH bilan | #81 |
+| APP-14 | Tuzatildi — birinchi chizish jamoa standartini oladi: uslub ham, `rw:appearance` bo‘sh bo‘lsa shrift va boshqalar ham | #81 |
 
 Tuzatish paytida topildi va o‘lchandi (#77 da tuzatilgan):
 
@@ -51,7 +53,7 @@ Tuzatish paytida topildi va o‘lchandi (#77 da tuzatilgan):
 
 ### To Do
 
-*APP-1 … APP-7 tuzatilgan — tafsilot tarix uchun qoldirildi, holat «Yangilanish» jadvalida.*
+*APP-1 … APP-7, APP-13, APP-14 tuzatilgan — tafsilot tarix uchun qoldirildi, holat «Yangilanish» jadvalida.*
 
 #### APP-1 · P0 · Accent AA gate Glass/Swiss da o‘lmaydi
 

@@ -46,6 +46,11 @@ import {
   templateAppearance,
   type Template,
 } from "@/lib/theme/templates";
+import {
+  SIGNED_IN_TEMPLATE_LIMIT,
+  accountTemplates,
+  mergeSavedTemplates,
+} from "@/lib/theme/saved-templates";
 
 export const DEFAULT_APPEARANCE: AppearancePrefs = {
   style: "clay",
@@ -194,6 +199,18 @@ export function CustomizerProvider({
   const { mode, setMode } = useTheme();
   const { user } = useSession();
 
+  // APP-13: at sign-in the account's saved templates join this device's.
+  // The state is adjusted during render (React's pattern for state that
+  // follows a prop), so the first signed-in render already lists them.
+  // `PrefsSync` stores the same merge on the device and in the account.
+  const [templatesFor, setTemplatesFor] = useState<number | null>(null);
+  if (user && templatesFor !== user.id) {
+    setTemplatesFor(user.id);
+    setTemplates((current) =>
+      mergeSavedTemplates(accountTemplates(user.ui_prefs), current, SIGNED_IN_TEMPLATE_LIMIT),
+    );
+  }
+
   /** Accent ni qo'llaydi va hisoblangan qiymatni qurilmaga keshlaydi. */
   const applyAndCacheAccent = useCallback(
     (next: AppearancePrefs): AccentResult => {
@@ -327,7 +344,7 @@ export function CustomizerProvider({
   }, [appearance, commit, fallback, setMode, setStyle]);
 
   /** Mehmon 2 ta, kirgan 5 ta (D21) — `ui_prefs` cheksiz o'smasin. */
-  const templateLimit = user ? 5 : 2;
+  const templateLimit = user ? SIGNED_IN_TEMPLATE_LIMIT : 2;
 
   const saveTemplate = useCallback(
     (name: string) => {

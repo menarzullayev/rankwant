@@ -17,6 +17,8 @@ import { dictionaryUrl } from "@/i18n/messages.server";
 import type { Me } from "@/lib/api";
 import { api, type AppearancePrefs } from "@/lib/api";
 import { getSessionUser } from "@/lib/api.server";
+import { STYLE_IDS, type StyleId } from "@/layout/styles";
+import { styleInit, teamDefaultLiteral } from "@/lib/theme/first-paint";
 import { MARKUP_COOKIE, parseMarkupCookie } from "@/lib/prefs";
 import { SITE_INDEXABLE, SITE_URL } from "@/lib/site";
 
@@ -212,11 +214,6 @@ var d=m==="dark"||(m==="system"&&window.matchMedia("(prefers-color-scheme: dark)
 if(d)document.documentElement.classList.add("dark")}catch(e){
 document.documentElement.classList.add("dark")}`;
 
-/** Uslub ham hidratsiyadan oldin qo'yiladi — `data-style` butun token
- * qatlamini almashtiradi, kechikkanda sahifa ko'z oldida sakrardi. */
-const STYLE_INIT = `try{var s=localStorage.getItem("style");document.documentElement.dataset.style=s||"clay"}catch(e){
-document.documentElement.dataset.style="clay"}`;
-
 /** Sozlagich tanlovi — hidratsiyadan OLDIN, chaqnashsiz.
  *
  *  Accent HISOBLANGAN holda saqlanadi (`rw:accent`), chunki uni hosil
@@ -233,9 +230,13 @@ document.documentElement.dataset.style="clay"}`;
  *  Qiymatlar `lib/theme/typography.ts` dagi `SIZE_MIN/SIZE_MAX/SIZE_STEP`
  *  bilan MOS bo'lishi shart: bu satr SSR paytida, modul importidan oldin
  *  bajariladi, shuning uchun funksiyani chaqirib bo'lmaydi. */
-const APPEARANCE_INIT = `try{
+// With nothing saved on this device, the team default (D37) applies here as
+// well: font, density and the rest. Before, it existed only in the panel's
+// state (APP-14).
+function appearanceInit(teamDefault: AppearancePrefs): string {
+  return `try{
 var r=document.documentElement;
-var a=JSON.parse(localStorage.getItem("rw:appearance")||"{}");
+var a=JSON.parse(localStorage.getItem("rw:appearance")||${teamDefaultLiteral(teamDefault)});
 if(a.font)r.dataset.font=a.font;
 if(a.density)r.dataset.density=a.density;
 var sz=(typeof a.size==="number"&&isFinite(a.size))?Math.min(150,Math.max(75,Math.round(a.size/5)*5)):100;
@@ -273,6 +274,7 @@ r.style.setProperty("--rw-accent-fg",c.fg);
 r.style.setProperty("--rw-accent-soft",c.soft);
 r.style.setProperty("--rw-accent-ink",c.ink);}
 }catch(e){}`;
+}
 
 export default async function RootLayout({
   children,
@@ -300,6 +302,12 @@ export default async function RootLayout({
   ]);
   const markupAppearance = parseMarkupCookie(cookieStore.get(MARKUP_COOKIE)?.value);
 
+  // A style the codebase does not know falls back to `clay`: a stale team
+  // default must not leave `data-style` pointing at no stylesheet.
+  const teamStyle = STYLE_IDS.includes(siteAppearance.style as StyleId)
+    ? (siteAppearance.style as StyleId)
+    : "clay";
+
   // Faqat AKTIV tilning lug'ati mijozga ketadi. Ilgari o'ntasi ham JS
   // to'plamida bo'lardi — o'lchandi: 91 kB tarmoqda, holbuki bitta til
   // uchun 34 kB yetadi. Since 2026-09-18 it is a separate cached file, not
@@ -316,8 +324,8 @@ export default async function RootLayout({
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
-        <script dangerouslySetInnerHTML={{ __html: STYLE_INIT }} />
-        <script dangerouslySetInnerHTML={{ __html: APPEARANCE_INIT }} />
+        <script dangerouslySetInnerHTML={{ __html: styleInit(teamStyle) }} />
+        <script dangerouslySetInnerHTML={{ __html: appearanceInit(siteAppearance) }} />
         {/* Async: it must not block the first paint. If it has not run by
             hydration, `LocaleProvider` waits for it. */}
         <script src={dictionary} async />
