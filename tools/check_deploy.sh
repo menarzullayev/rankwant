@@ -73,6 +73,34 @@ if [ "${1:-}" = "--label-state" ]; then
   exit 0
 fi
 
+# `build_label_state VALUE` — the `org.rankwant.built-at` label was passed
+# through the build or not? Prints `ok` or `unlabeled`.
+#
+# Nega alohida tekshiruv: `img_time` (quyida) allaqachon image qurilgan
+# vaqtni Docker metadatasidan (`.Created`) ko'rsatadi, ya'ni vaqtni
+# yorliqdan takror chiqarish ortiqcha bo'lardi. Yorliqning YAGONA
+# qo'shimcha ma'nosi shu: `.Created` HAR QANDAY build'da mavjud, yorliq esa
+# faqat build argumentlari haqiqatan uzatilganda to'ladi. Demak
+# `unknown` — argumentlar oqimi uzilganining isboti.
+#
+# O'lchandi 2026-09-18: `api`/`worker`/`beat`/`migrate` compose'ning QISQA
+# shakli (`build: ./apps/api`) bilan qurilardi — u yerda `args` berishning
+# iloji yo'q — va `org.rankwant.git-sha` ham, `built-at` ham `unknown`
+# bo'lib qolgan edi. Ya'ni bu tekshiruv o'sha xatoni ushlaydi.
+build_label_state() {
+  case "${1:-}" in
+    "" | "<no value>" | unknown) echo unlabeled ;;
+    *) echo ok ;;
+  esac
+}
+
+# Entry point for tools/check_negative.py: one decision, no docker.
+if [ "${1:-}" = "--build-label-state" ]; then
+  shift
+  build_label_state "$@"
+  exit 0
+fi
+
 if [ -t 1 ]; then
   R=$'\033[31m'; G=$'\033[32m'; Y=$'\033[33m'; B=$'\033[1m'; N=$'\033[0m'
 else
@@ -84,6 +112,13 @@ stale=0
 missing=0
 #: Kod joyida bo'lib, muhit bo'sh qolgan holatlar soni (pastga qarang).
 envbad=0
+#: `built-at` yorlig'i yo'q konteynerlar — DIAGNOSTIKA, exit'ga ta'sir
+#: qilmaydi. Nega `stale` emas: yorliq hech qanday qarorga
+#: ishlatilmaydi (`img_time` vaqtni Docker metadatasidan oladi), ya'ni
+#: uning yo'qligi «kod eskirgan» degani EMAS. Lekin u build argumentlari
+#: oqimi uzilganini ko'rsatadi — o'sha sozlama keyingi safar `git-sha` ni
+#: ham bo'sh qoldirishi mumkin, shuning uchun ko'rinib turishi kerak.
+unlabeled=0
 
 printf '%sDeploy holati%s (project: %s)\n\n' "$B" "$N" "$PROJECT"
 printf '%-22s %-15s %-22s %s\n' 'KONTEYNER' 'HOLAT' 'IMAGE SANASI' 'IZOH'
@@ -99,6 +134,21 @@ img_time() {
     return
   fi
   date -u -d "$iso" '+%Y-%m-%d %H:%M UTC' 2>/dev/null || printf '%s' "${iso%%T*}"
+}
+
+# `check_build_label NAME IMAGE_REF` — `built-at` yorlig'i joyidami?
+#
+# Yorliq joyida bo'lsa JIM qoladi: vaqtni `img_time` allaqachon
+# ko'rsatadi, ikkinchi marta chop etish shovqin bo'lardi. Faqat uzilganda
+# qator chiqaradi — o'shanda gap «build argumentlari yetib kelmadi»,
+# ya'ni keyingi safar `git-sha` ham bo'sh qolishi mumkin.
+check_build_label() {
+  local name="$1" image="$2" lab
+  lab="$(docker inspect "$name" --format '{{index .Config.Labels "org.rankwant.built-at"}}' 2>/dev/null)"
+  [ "$(build_label_state "$lab")" = "ok" ] && return
+  printf '%-22s %s%-15s%s %-22s %s\n' "$name" "$Y" 'TEKSHIRILMADI' "$N" \
+    "$(img_time "$image")" "built-at yorlig'i yo'q — build argumentlari uzatilmagan"
+  unlabeled=$((unlabeled + 1))
 }
 
 # `check_hash NAME SERVICE SRC_FILE CTR_FILE` — Python konteynerlari uchun.
@@ -280,6 +330,7 @@ do
   fi
   check_hash "$name" "$service" "apps/api/core/serializers.py" "/app/core/serializers.py"
   check_inventory "$name" "$service"
+  check_build_label "$name" "rankwant-${service}:latest"
 done
 
 # --- web (Next.js) ------------------------------------------------------
@@ -317,6 +368,7 @@ if docker inspect rankwant-web-1 >/dev/null 2>&1; then
     printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-web-1' "$R" 'ESKIRGAN' "$N" "$cshow" '/login route yo`q'
     stale=$((stale + 1))
   fi
+  check_build_label rankwant-web-1 rankwant-web:latest
 else
   printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-web-1' "$Y" "YO'Q" "$N" '-' '-'
   missing=$((missing + 1))
@@ -454,6 +506,7 @@ if docker inspect rankwant-judge-1 >/dev/null 2>&1; then
         stale=$((stale + 1)) ;;
     esac
   fi
+  check_build_label rankwant-judge-1 rankwant-judge:latest
 else
   printf '%-22s %s%-15s%s %-22s %s\n' 'rankwant-judge-1' "$Y" "YO'Q" "$N" '-' '-'
   missing=$((missing + 1))
@@ -479,6 +532,14 @@ if [ "$stale" -gt 0 ]; then
   printf '    -f docker-compose.yml -f docker-compose.public.yml build <servis> && \\\n'
   printf '  docker compose -p %s --env-file .env.public \\\n' "$PROJECT"
   printf '    -f docker-compose.yml -f docker-compose.public.yml up -d --no-deps <servis>\n'
+fi
+if [ "$unlabeled" -gt 0 ]; then
+  printf '%s%s konteynerda built-at yorlig'"'"'i yo'"'"'q — build argumentlari uzatilmagan.%s\n' \
+    "$Y" "$unlabeled" "$N"
+  printf 'Bu «eskirgan» degani emas (kod joyida), lekin o'"'"'sha sozlama `git-sha` ni ham\n'
+  printf 'bo'"'"'sh qoldirishi mumkin. Sabab odatda bitta: servis compose'"'"'ning QISQA shakli\n'
+  printf '(`build: ./apps/api`) bilan qurilgan — u yerda `args` berib bo'"'"'lmaydi.\n'
+  printf 'Qayta qurish: tools/deploy.sh (u `BUILT_AT` ni o'"'"'zi uzatadi).\n'
 fi
 
 if [ "$stale" -gt 0 ] || [ "$envbad" -gt 0 ]; then

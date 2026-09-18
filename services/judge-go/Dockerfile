@@ -208,6 +208,15 @@ RUN cd /opt/rankwant/dotnet \
 ARG GIT_SHA=unknown
 LABEL org.rankwant.git-sha=$GIT_SHA
 
+# Qurilish vaqti. `git-sha` «mos keladimi» savoliga javob beradi; bu esa
+# «build argumentlari umuman uzatildimi» savoliga. Ikkisi bir xil narsa
+# emas: `BUILT_AT` `unknown` bo'lib qolsa, build compose'ning qisqa
+# shakli bilan ketgan (u yerda `args` berib bo'lmaydi) — 2026-09-18 da
+# aynan shu sabab `api` oilasida `git-sha` ni ham `unknown` qilib
+# qo'ygan edi. `check_deploy.sh` shu yorliqni o'qiydi.
+ARG BUILT_AT=unknown
+LABEL org.rankwant.built-at=$BUILT_AT
+
 COPY --from=nsjail-build /src/nsjail /usr/local/bin/nsjail
 COPY --from=go-build     /out/judge-go /usr/local/bin/judge-go
 

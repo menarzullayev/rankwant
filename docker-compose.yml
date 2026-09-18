@@ -144,6 +144,9 @@ services:
         # Manba commit — `check_deploy.sh` eskilikni shu orqali aniqlaydi.
         # Qiymat `tools/deploy.sh` dan keladi; qo'lda build'da `unknown`.
         GIT_SHA: ${GIT_SHA:-unknown}
+        # Qurilish vaqti — `check_deploy.sh` yorliqni o'qiydi va
+        # `unknown` bo'lsa build argumentlari uzatilmagan deb biladi.
+        BUILT_AT: ${BUILT_AT:-unknown}
     environment:
       # Brauzer host portiga, SSR compose tarmog'iga murojaat qiladi.
       API_BASE_INTERNAL: http://api:8000/api/v1
@@ -156,6 +159,8 @@ services:
       context: ./services/judge-go
       args:
         GIT_SHA: ${GIT_SHA:-unknown}
+        # `check_deploy.sh` shu yorliqni o'qiydi (web bilan bir xil naqsh).
+        BUILT_AT: ${BUILT_AT:-unknown}
     privileged: true          # nsjail namespace va cgroup uchun
     cgroup: host
     environment:
