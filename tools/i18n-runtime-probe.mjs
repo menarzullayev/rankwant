@@ -12,7 +12,7 @@ const t0 = Date.now();
 void t0;
 
 const messages = await import("../apps/web/src/i18n/messages.ts");
-const { t, registerMessages, registrySize } = messages;
+const { t, registerMessages, registrySize, evictOtherLocales } = messages;
 
 // `messages.server.ts` — SSR kirish nuqtasi. Uni import qilish
 // o'nta tilning hammasini ro'yxatga oladi. `server-only` markeri
@@ -35,10 +35,19 @@ out.realKey = t("ru", "nav.contests");
 out.registrySize = registrySize();
 out.missingThrew = threw(() => t("ru", "definitely.not.a.key"));
 out.unregisteredThrew = threw(() => t("fr", "nav.contests"));
+// The registry is the one on `globalThis`: Next evaluates `messages.ts` once
+// per layer on the server, and only a shared map reaches both.
+out.sharedRegistrySize = globalThis.__rwMessages?.size ?? 0;
 
-// ── B) `evict` bilan bir til qolgani (klient yo'li) ─────────────────────
-const { kaa } = await import("../apps/web/src/i18n/locales/kaa.ts");
-registerMessages("kaa", kaa, true);
+// ── B) Eviction: a no-op on the server, one language left in the browser ─
+evictOtherLocales("kaa");
+out.serverEvictKept = registrySize();
+globalThis.window = globalThis;
+try {
+  evictOtherLocales("kaa");
+} finally {
+  delete globalThis.window;
+}
 out.evictRegistrySize = registrySize();
 out.evictOtherThrew = threw(() => t("ru", "nav.contests"));
 
@@ -46,7 +55,7 @@ out.evictOtherThrew = threw(() => t("ru", "nav.contests"));
  *  o'lchaydi, lekin ikkala jarayon bir xil faylni ishga tushiradi —
  *  ya'ni o'lchov bir xil sharoitda olinadi. */
 if (process.env.NODE_ENV === "production") {
-  registerMessages("uz", uzDict(await import("../apps/web/src/i18n/locales/uz.ts")), false);
+  registerMessages("uz", uzDict(await import("../apps/web/src/i18n/locales/uz.ts")));
 
   const logs = [];
   const original = console.error;

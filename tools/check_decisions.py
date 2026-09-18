@@ -44,6 +44,8 @@ NAV_CHROME = (
     "apps/web/src/layout/UserMenu.tsx",
 )
 INTENT_LINK = "apps/web/src/components/ui/IntentLink.tsx"
+# The dictionary travels as a cached file, not inside the page (2026-09-18).
+DICTIONARY_ROUTE = "apps/web/src/app/i18n/[file]/route.ts"
 
 
 class Unreadable(Exception):
@@ -212,6 +214,25 @@ def nav_prefetch_on_intent() -> str | None:
     return None
 
 
+def dictionary_as_cached_file() -> str | None:
+    """The browser gets the dictionary as a separate cached file.
+
+    As a prop of `LocaleProvider` it was serialized into every page: 72 kB of
+    a 142 kB homepage and a third of the render CPU (profiled 2026-09-18).
+    """
+    layout = read("apps/web/src/app/layout.tsx")
+    if re.search(r"<LocaleProvider[^>]*\bdict=", layout):
+        return "apps/web/src/app/layout.tsx: lug'at yana `LocaleProvider` ga prop bo'lib uzatilmoqda"
+    if "dictionaryUrl=" not in layout:
+        return "apps/web/src/app/layout.tsx: `LocaleProvider` lug'at fayli manzilini olmayapti"
+    route = read(DICTIONARY_ROUTE)
+    if 'dynamic = "force-static"' not in route or "immutable" not in route:
+        return f"{DICTIONARY_ROUTE}: lug'at fayli statik va `immutable` keshlanadigan emas"
+    if not re.search(r"matcher:.*\|i18n/", read("apps/web/src/proxy.ts")):
+        return "apps/web/src/proxy.ts: `/i18n/` middleware'dan chiqarilmagan — `Vary` keshni bo'ladi"
+    return None
+
+
 def _workflow_triggers(rel: str) -> set[str]:
     lines = read(rel).splitlines()
     try:
@@ -274,6 +295,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("deploy faqat yashil main'dan", deploy_gated_on_green_main),
     ("qidiruv ochiq, AI kraulerlar yopiq", search_open_ai_crawlers_blocked),
     ("navigatsiya prefetch'i niyatda", nav_prefetch_on_intent),
+    ("lug'at alohida faylda", dictionary_as_cached_file),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),

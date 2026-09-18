@@ -1,8 +1,8 @@
 "use client";
 
-import { createContext, useContext } from "react";
+import { createContext, use, useContext, useEffect } from "react";
 
-import { DEFAULT_LOCALE, registerMessages, type Locale, type MessageKey } from "./messages";
+import { DEFAULT_LOCALE, evictOtherLocales, hasMessages, type Locale } from "./messages";
 
 const LocaleContext = createContext<Locale>(DEFAULT_LOCALE);
 /** Til avtomatik aniqlanganmi — «Avtomatik» variantining belgisi shu.
@@ -11,34 +11,56 @@ const LocaleContext = createContext<Locale>(DEFAULT_LOCALE);
  *  ya'ni qaysi holatdaligini faqat shu bayroq bildiradi. */
 const AutoContext = createContext<boolean>(true);
 
+/** Dictionary files being loaded, by URL: each loads once. */
+const loading = new Map<string, Promise<void>>();
+
+/** Loads a dictionary file. The promise settles even when the file fails:
+ *  the page then shows keys, which beats an error screen. */
+function loadDictionary(locale: Locale, url: string): Promise<void> {
+  let promise = loading.get(url);
+  if (!promise) {
+    promise = new Promise<void>((resolve) => {
+      const script = document.createElement("script");
+      script.src = url;
+      script.async = true;
+      script.onload = () => resolve();
+      script.onerror = () => {
+        console.error(`i18n: the "${locale}" dictionary failed to load from ${url}`);
+        resolve();
+      };
+      document.head.appendChild(script);
+    });
+    loading.set(url, promise);
+  }
+  return promise;
+}
+
 /** Mijoz komponentlari `cookies()` ni o'qiy olmaydi — til yuqoridan beriladi.
  *
- *  Lug'at ham shu yerda keladi va SHU YERDA ro'yxatga olinadi: ilgari
- *  `layout.tsx` uni inline skript bilan uzatardi, lekin React o'sha
- *  elementni RSC uzatmasiga ham qo'shib, lug'at HTML'da IKKI NUSXADA
- *  ketardi (o'lchandi). Prop orqali esa faqat bir marta ketadi.
- *
- *  Ro'yxatga olish render paytida, bolalar chizilishidan OLDIN bo'ladi —
- *  shuning uchun pastdagi har qanday komponent `t()` ni xavfsiz
- *  chaqiradi. Amal idempotent (bir xil kalitga bir xil qiymat), ya'ni
- *  StrictMode'ning ikki marta chizishi ham zarar qilmaydi. */
+ *  The dictionary is not a prop any more: it comes as a separate cached file
+ *  (`dictionaryUrl`). The server has every language registered already. In
+ *  the browser the file, requested from `<head>`, usually runs before
+ *  hydration. When it has not run yet (a slow network, or a language switch
+ *  through `router.refresh()`), rendering suspends until it has, so no
+ *  component ever draws a raw key. Inside the switch's transition, React
+ *  keeps the old page on screen while it waits. */
 export function LocaleProvider({
   locale,
-  dict,
+  dictionaryUrl,
   auto = true,
   children,
 }: {
   locale: Locale;
-  dict: Record<MessageKey, string>;
+  /** From `dictionaryUrl()` in `messages.server.ts`. */
+  dictionaryUrl: string;
   /** Til `Accept-Language` dan aniqlanganmi (ya'ni odam tanlamaganmi). */
   auto?: boolean;
   children: React.ReactNode;
 }) {
-  // `evict = true`: KLIENTDA faqat aktiv til kerak, ya'ni oldingi
-  // lug'atni o'chirish xotirani tejaydi. Serverda esa bu bayroq
-  // qo'yilmaydi — `messages.server.ts` o'nta tilni ham ro'yxatga oladi
-  // va ularning barchasi birinchi SSR chizishida kerak bo'ladi.
-  registerMessages(locale, dict, true);
+  if (typeof window !== "undefined" && !hasMessages(locale)) {
+    use(loadDictionary(locale, dictionaryUrl));
+  }
+  useEffect(() => evictOtherLocales(locale), [locale]);
   return (
     <AutoContext.Provider value={auto}>
       <LocaleContext.Provider value={locale}>{children}</LocaleContext.Provider>

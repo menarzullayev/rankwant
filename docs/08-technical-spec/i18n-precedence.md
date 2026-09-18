@@ -70,9 +70,18 @@ covers the others' blind spots.
 The runtime check exists because the first two read *text*, so they cannot
 detect the difference between `throw new Error(...)` and `return key`. It
 runs the real `messages.ts` under Node in four combinations
-(server/client × dev/prod) and asserts 11 measured values — including that
-a missing key **throws** in dev, that the same key is logged **once** in
-prod, and that `registerMessages(..., evict: true)` leaves one dictionary.
+(server/client × dev/prod) and asserts 13 measured values. Among them: a
+missing key **throws** in dev, the same key is logged **once** in prod, the
+registry is shared through `globalThis`, and `evictOtherLocales` leaves one
+dictionary in the browser but none of the ten on the server.
+
+Since 2026-09-18 the browser gets its dictionary as a separate cached file
+(`/i18n/<locale>.js?v=<content hash>`, `app/i18n/[file]/route.ts`), not as a
+prop serialized into every page. The server registers all ten languages in
+the shared registry, where both server components and SSR-rendered client
+components read them. If the file has not run by hydration, `LocaleProvider`
+suspends until it has. Measured: HTML 142 → 64 kB, render CPU −45%
+(`docs/research/2026-09-18-homepage-profile`).
 `tools/check_negative.py` mutates the source to prove each of those
 assertions can fail; a check that cannot fail is not a check.
 
