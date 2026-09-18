@@ -22,6 +22,7 @@ export const es: Record<MessageKey, string> = {
   "customizer.templateLimit": "Has alcanzado el límite de plantillas",
 
   "customizer.show": "Mostrar personalizador",
+  "customizer.hide": "Ocultar el botón flotante",
   "customizer.title": "Personalizador de apariencia",
   "customizer.short": "Apariencia",
   "customizer.close": "Cerrar",

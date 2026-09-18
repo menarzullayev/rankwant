@@ -119,6 +119,11 @@ function applyWithEffect(mode: ThemeMode, origin?: Origin) {
   const root = document.documentElement;
   root.dataset.vt = effect;
   const transition = start.call(document, () => apply(mode));
+  // `ready` rejects when the transition is skipped: a hidden tab (a shared
+  // link opened in the background) or a newer change arriving first. The
+  // mode is applied either way, but an unobserved rejection is logged as an
+  // uncaught error (measured: `InvalidStateError` with the `fade` effect).
+  transition.ready.catch(() => {});
   transition.finished.finally(() => delete root.dataset.vt);
   if (effect !== "circle") return;
   const { x, y } = origin ?? { x: window.innerWidth, y: 0 };

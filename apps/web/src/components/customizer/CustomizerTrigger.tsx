@@ -1,6 +1,6 @@
 "use client";
 
-import { useCustomizer } from "@/context/CustomizerContext";
+import { useCustomizer, useCustomizerShortcut } from "@/context/CustomizerContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
 import { Icon } from "@/components/ui/Icon";
@@ -23,6 +23,7 @@ import { Icon } from "@/components/ui/Icon";
 export function CustomizerTrigger() {
   const locale = useLocale();
   const { open, toggle } = useCustomizer();
+  const shortcut = useCustomizerShortcut();
 
   return (
     <button
@@ -30,7 +31,7 @@ export function CustomizerTrigger() {
       onClick={toggle}
       aria-expanded={open}
       aria-label={t(locale, "customizer.title")}
-      title={`${t(locale, "customizer.title")} (Ctrl+.)`}
+      title={`${t(locale, "customizer.title")} (${shortcut})`}
       className="flex size-10 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg"
     >
       <Icon name="system.palette" />

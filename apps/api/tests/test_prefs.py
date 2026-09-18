@@ -205,6 +205,23 @@ class TestValidate:
         with pytest.raises(prefs.PrefsError):
             prefs.validate({"templates": rows})
 
+    @pytest.mark.parametrize("theme", prefs.THEMES)
+    def test_shablon_mavzusi_saqlanadi(self, theme: str) -> None:
+        """A template keeps its theme mode, so applying it brings the mode back."""
+        row = {"name": "Tun", "appearance": {}, "a11y": {}, "theme": theme}
+        out = prefs.validate({"templates": [row]})
+        assert out["templates"][0]["theme"] == theme
+
+    def test_mavzusiz_shablon_qabul_qilinadi(self) -> None:
+        """Templates saved before the mode was captured stay valid and gain none."""
+        out = prefs.validate({"templates": [{"name": "Eski", "appearance": {}, "a11y": {}}]})
+        assert "theme" not in out["templates"][0]
+
+    def test_shablon_mavzusi_tekshiriladi(self) -> None:
+        row = {"name": "Tun", "appearance": {}, "a11y": {}, "theme": "pink"}
+        with pytest.raises(prefs.PrefsError):
+            prefs.validate({"templates": [row]})
+
     def test_token_qiymati_satr_bolmaydi(self) -> None:
         """Kuchli rejim tokeni faqat rang yoki son — matn emas."""
         with pytest.raises(prefs.PrefsError):
@@ -253,6 +270,22 @@ class TestApi:
         user.refresh_from_db()
         assert user.ui_prefs["appearance"]["style"] == "swiss"
         assert user.ui_prefs["version"] == 2
+
+    def test_api_shablon_mavzusini_saqlaydi(self, client) -> None:
+        """The account keeps a template's mode; it used to be dropped silently."""
+        from core.models import User
+
+        user = User.objects.create_user("prefs-api3", password="Parol!12345")
+        client.force_login(user)
+        template = {"name": "Tun", "appearance": {"style": "terminal"}, "a11y": {}, "theme": "dark"}
+        res = client.patch(
+            "/api/v1/me/",
+            {"ui_prefs": {"templates": [template]}},
+            content_type="application/json",
+        )
+        assert res.status_code == 200
+        user.refresh_from_db()
+        assert user.ui_prefs["templates"][0]["theme"] == "dark"
 
 
 @pytest.mark.django_db

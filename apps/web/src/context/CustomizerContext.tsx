@@ -7,6 +7,7 @@ import {
   useEffect,
   useMemo,
   useState,
+  useSyncExternalStore,
 } from "react";
 
 import { useSession } from "@/context/SessionContext";
@@ -33,7 +34,12 @@ import {
   previewAccent,
   type AccentResult,
 } from "@/lib/theme/apply";
-import { decodeAppearance, shareUrl, stripAppearance } from "@/lib/theme/share";
+import {
+  decodeAppearance,
+  decodeTheme,
+  shareUrl,
+  stripAppearance,
+} from "@/lib/theme/share";
 import {
   TEMPLATES,
   matchTemplate,
@@ -68,6 +74,22 @@ function readJson<T>(key: string, fallback: T): T {
   }
 }
 
+const noSubscribe = () => () => {};
+
+/** Apple keyboards press ⌘ where others press Ctrl. */
+function readShortcut(): string {
+  const nav = navigator as Navigator & { userAgentData?: { platform?: string } };
+  const platform = nav.userAgentData?.platform || nav.platform || "";
+  return /mac|iphone|ipad|ipod/i.test(platform) ? "⌘." : "Ctrl+.";
+}
+
+/** The panel shortcut as the visitor's keyboard labels it. The server
+ *  cannot know the platform, so SSR and hydration both render `Ctrl+.`
+ *  and the client label follows right after. */
+export function useCustomizerShortcut(): string {
+  return useSyncExternalStore(noSubscribe, readShortcut, () => "Ctrl+.");
+}
+
 /** Sozlagich holati.
  *
  *  Bu provayder HECH NARSANI saqlamaydi — u `localStorage` ga yozadi va
@@ -95,7 +117,8 @@ const CustomizerContext = createContext<
       templates: ThemeTemplate[];
       saveTemplate: (name: string) => void;
       removeTemplate: (name: string) => void;
-      applySaved: (template: ThemeTemplate) => void;
+      /** Applies a saved template or an imported file in one step. */
+      applySaved: (template: Omit<ThemeTemplate, "name">) => void;
       /** Chegara: mehmon 2 ta, kirgan 5 ta (D21). */
       templateLimit: number;
       /** Panel ko'rsatkichi uchun — qo'llamasdan o'lchaydi. */
@@ -141,7 +164,10 @@ export function CustomizerProvider({
   // ⚠️ Bu FAQAT boshlang'ich qiymat — qurilmada yoki hisobda saqlangan
   // tanlov har doim ustun turadi (D37: mavjud foydalanuvchilarga
   // tegilmaydi).
-  const fallback: AppearancePrefs = { ...DEFAULT_APPEARANCE, ...siteAppearance };
+  const fallback = useMemo<AppearancePrefs>(
+    () => ({ ...DEFAULT_APPEARANCE, ...siteAppearance }),
+    [siteAppearance],
+  );
   // ⚠️ Markup o'zgaruvchi uchtasi (verdikt/holat/yuklanish) cookie'dan
   // USTUN qo'yiladi. Sabab: ular HTML tuzilishini o'zgartiradi, ya'ni
   // server ham ularni bilishi kerak. Cookie `localStorage` bilan birga
@@ -210,7 +236,10 @@ export function CustomizerProvider({
     (
       next: AppearancePrefs,
       nextA11y: A11yPrefs,
-      nextTemplates: ThemeTemplate[] = [],
+      // The current list, not `[]`: the templates travel with every change
+      // (`PrefsSync` replaces the whole list), and an empty default wiped
+      // them from the device and the account on each appearance change.
+      nextTemplates: ThemeTemplate[] = templates,
     ): AccentResult => {
       applyAppearance(next);
       applyA11y(nextA11y);
@@ -226,7 +255,7 @@ export function CustomizerProvider({
       });
       return accent;
     },
-    [applyAndCacheAccent],
+    [applyAndCacheAccent, templates],
   );
 
   const setAppearance = useCallback(
@@ -281,16 +310,21 @@ export function CustomizerProvider({
     });
   }, [a11y, commit, setStyle]);
 
+  // Reset goes back to what a new visitor gets: the team default (D37) on
+  // top of the code default — `fallback` — and the `system` mode that
+  // `THEME_INIT` in `layout.tsx` falls back to. Saved templates stay: they
+  // are the user's own work, and Reset promises to undo appearance only.
   const resetAll = useCallback(() => {
     setPrevious(appearance);
-    const next = { ...DEFAULT_APPEARANCE, accent: null };
+    const next = { ...fallback };
+    const style = next.style ?? "clay";
     setAppearanceState(next);
     setA11yState(DEFAULT_A11Y);
-    applyStyle(DEFAULT_APPEARANCE.style ?? "clay");
-    setStyle(DEFAULT_APPEARANCE.style as Parameters<typeof setStyle>[0]);
+    applyStyle(style);
+    setStyle(style as Parameters<typeof setStyle>[0]);
     setMode("system");
     commit(next, DEFAULT_A11Y);
-  }, [appearance, commit, setMode, setStyle]);
+  }, [appearance, commit, fallback, setMode, setStyle]);
 
   /** Mehmon 2 ta, kirgan 5 ta (D21) — `ui_prefs` cheksiz o'smasin. */
   const templateLimit = user ? 5 : 2;
@@ -303,12 +337,12 @@ export function CustomizerProvider({
       // aks holda validator `unique` tekshiruvi 400 qaytarardi.
       const next = [
         ...templates.filter((row) => row.name.toLowerCase() !== clean.toLowerCase()),
-        { name: clean, appearance, a11y },
+        { name: clean, appearance, a11y, theme: mode },
       ].slice(-templateLimit);
       setTemplates(next);
       commit(appearance, a11y, next);
     },
-    [a11y, appearance, commit, templateLimit, templates],
+    [a11y, appearance, commit, mode, templateLimit, templates],
   );
 
   const removeTemplate = useCallback(
@@ -321,7 +355,7 @@ export function CustomizerProvider({
   );
 
   const applySaved = useCallback(
-    (template: ThemeTemplate) => {
+    (template: Omit<ThemeTemplate, "name">) => {
       const next: AppearancePrefs = {
         ...DEFAULT_APPEARANCE,
         ...template.appearance,
@@ -330,11 +364,12 @@ export function CustomizerProvider({
       setPrevious(appearance);
       applyStyle(next.style ?? "clay");
       setStyle((next.style ?? "clay") as Parameters<typeof setStyle>[0]);
+      if (template.theme) setMode(template.theme);
       setAppearanceState(next);
       setA11yState(nextA11y);
-      commit(next, nextA11y, templates);
+      commit(next, nextA11y);
     },
-    [appearance, commit, setStyle, templates],
+    [appearance, commit, setMode, setStyle],
   );
 
   // Havoladan kelgan sozlamalar qo'llanadi va manzil TOZALANADI: aks
@@ -343,9 +378,15 @@ export function CustomizerProvider({
   // tizim (DOM va manzil) yangilanadi.
   useEffect(() => {
     const fromUrl = decodeAppearance(window.location.search);
-    if (!fromUrl) return;
-    applyAll(fromUrl, a11y);
-    rememberAppearance(fromUrl, a11y);
+    const theme = decodeTheme(window.location.search);
+    if (!fromUrl && !theme) return;
+    if (fromUrl) {
+      applyAll(fromUrl, a11y);
+      rememberAppearance(fromUrl, a11y);
+    }
+    // The mode is not part of the appearance group, so it goes through
+    // `setMode`, the same way a template applies it.
+    if (theme) setMode(theme);
     window.history.replaceState(null, "", stripAppearance());
     // Faqat mountda: keyingi o'zgarishlar `commit` orqali o'tadi.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -355,9 +396,10 @@ export function CustomizerProvider({
 
   // `Ctrl+.` — barcha sahifalarda (D30). `Esc` panel ichida ishlanadi:
   // u fokus panelda bo'lganda yopilishi kerak, global emas.
+  // `metaKey` is ⌘ on Apple keyboards, where Ctrl is not the habit.
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (event.ctrlKey && event.key === ".") {
+      if ((event.ctrlKey || event.metaKey) && event.key === ".") {
         event.preventDefault();
         setOpen((value) => !value);
       }
@@ -373,7 +415,7 @@ export function CustomizerProvider({
 
   const preview = useCallback((hue: number, sat: number) => previewAccent(hue, sat), []);
 
-  const shareLink = useCallback(() => shareUrl(appearance), [appearance]);
+  const shareLink = useCallback(() => shareUrl(appearance, mode), [appearance, mode]);
 
   return (
     <CustomizerContext.Provider

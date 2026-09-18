@@ -22,6 +22,7 @@ export const zh: Record<MessageKey, string> = {
   "customizer.templateLimit": "已达模板上限",
 
   "customizer.show": "显示定制器",
+  "customizer.hide": "隐藏悬浮按钮",
   "customizer.title": "外观定制器",
   "customizer.short": "外观",
   "customizer.close": "关闭",

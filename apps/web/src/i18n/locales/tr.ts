@@ -22,6 +22,7 @@ export const tr: Record<MessageKey, string> = {
   "customizer.templateLimit": "Şablon sınırına ulaştınız",
 
   "customizer.show": "Özelleştiriciyi göster",
+  "customizer.hide": "Kayan düğmeyi gizle",
   "customizer.title": "Görünüm özelleştirici",
   "customizer.short": "Görünüm",
   "customizer.close": "Kapat",
