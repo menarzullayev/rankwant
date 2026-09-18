@@ -15,7 +15,7 @@ permissions:
 jobs:
   load:
     name: Load — read capacity
-    runs-on: [self-hosted, rankwant]
+    runs-on: ubuntu-latest
     # ⚠️ More than 3 minutes — a DELIBERATE exception: this job brings
     # up the full compose stack with `up -d --build --wait`, so image
     # builds are inside it. A 3-minute cap makes the job a guaranteed
@@ -71,7 +71,7 @@ jobs:
 
   e2e:
     name: E2E — full browser matrix
-    runs-on: [self-hosted, rankwant]
+    runs-on: ubuntu-latest
     # ⚠️ More than 3 minutes — a DELIBERATE exception: this job brings
     # up the full compose stack with `up -d --build --wait`, so image
     # builds are inside it. A 3-minute cap makes the job a guaranteed
@@ -120,7 +120,7 @@ jobs:
 
   chaos:
     name: Chaos — dependency cut
-    runs-on: [self-hosted, rankwant]
+    runs-on: ubuntu-latest
     # ⚠️ More than 3 minutes — a DELIBERATE exception: this job brings
     # up the full compose stack with `up -d --build --wait`, so image
     # builds are inside it. A 3-minute cap makes the job a guaranteed
@@ -165,7 +165,7 @@ jobs:
 
   compatibility:
     name: Language matrix
-    runs-on: [self-hosted, rankwant]
+    runs-on: ubuntu-latest
     # ⚠️ More than 3 minutes — a DELIBERATE exception: this job brings
     # up the full compose stack with `up -d --build --wait`, so image
     # builds are inside it. A 3-minute cap makes the job a guaranteed

@@ -31,7 +31,7 @@ foydalanuvchi ma'lumoti bor dump'lar tashqariga chiqdi.
 |---|---|---|
 | 2026-09-17 | Zaxira 30 kunda 1 marta, **faqat lokal**; offsite (R2, USB) yo'q | `tools/backup.sh` standarti `off`; vazifa `RankWant Monthly Backup` (`KEEP=95`, `OFFSITE=off`) |
 | 2026-09-17 | `main` ga faqat PR orqali; soxta muallif push qilinmaydi | `.githooks/pre-push` → `tools/push_guard.py` |
-| 2026-09-17 | CI faqat self-hosted runner — GitHub bepul daqiqalari tugagan, hosted runner taklif qilinmaydi | har `runs-on: [self-hosted, rankwant]` |
+| 2026-09-18 | CI, Security, Nightly — `ubuntu-latest` (public repo, $0 daqiqa, 20 parallel). Deploy va `runner-selftest` self-hosted: deploy jonli Docker stack'iga tegadi; public `pull_request` noutbukda yugurmasin | `ci.yml` / `security.yml` / `nightly.yml` → `ubuntu-latest`; `deploy.yml` self-hosted; `tools/check_decisions.py` → `ci_test_on_hosted` |
 | 2026-09-17 | CI runner — Docker Desktop'dagi `rankwant-ci-runner` konteyneri (`rankwant` label; ish papkasi volume'da; `RankWant CI Runner Watchdog` qo'riqlaydi). WSL runner 2026-09-17 da butunlay olib tashlangan. `rankwant-container` label'ini faqat `runner-selftest.yml` ishlatadi | `tools/runner/` → `RUNNER_LABELS`; `tools/check_decisions.py` → `TRIAL_RUNNER` |
 | 2026-09-18 | Ikkinchi runner (`rankwant-ci-runner-2`, alohida volume, compose profile `second`, 4 CPU / 4 GB). PR'da Security va smoke yo'q — main push + cron / `workflow_dispatch` / deploy chaqiruvi to'liq. Recreate bitta servisni `down` qilmaydi | `security.yml` `on:`; `ci.yml` smoke `if:`; `docker-compose.runner.yml`; `recreate.sh --second`; `runner_watchdog.py` |
 | 2026-09-16 | Deploy qo'lda (`tools/deploy.sh`); 2026-09-17 dan skript `web` ni ham quradi — bitta deploy hamma servisni yangilaydi | `deploy.yml` faqat `workflow_dispatch`; `tools/deploy.sh` → `SERVICES` |
@@ -147,10 +147,9 @@ kerak bo'lsa branch va PR ochiladi, tracker'ga ticket yozilmaydi.
 Til: izoh va docstring inglizcha, mavjud hujjat o'z tilida — to'liq qoida
 [CONTRIBUTING § Til](CONTRIBUTING.md#til). Mavjud izohlarni tarjima qilmang.
 
-CI self-hosted runner'da (GitHub'ning bepul daqiqalari tugagan — hosted
-taklif qilinmaydi). 2026-09-18 dan ikkita konteyner bir xil `rankwant`
-label'ida; PR'da Security va smoke yo'q. Ikkinchi runner hali register
-qilinmagan bo'lsa, navbat yana ketma-ket.
+CI, Security va Nightly `ubuntu-latest` da (public repo — standard
+runner daqiqasi $0). Deploy `tools/deploy.sh` / `deploy.yml` shu
+mashinada qoladi. PR'da Security va smoke yo'q.
 
 **`main` ga to'g'ridan-to'g'ri push'ni hook rad etadi** (`tools/push_guard.py`).
 GitHub bu tarifda branch protection bermaydi (403), ya'ni server hech narsani
