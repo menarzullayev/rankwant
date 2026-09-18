@@ -59,7 +59,10 @@ test("arxiv filtri ro'yxatni toraytiradi va URL da qoladi", async ({
 
   await page.getByRole("button", { name: /^Filtrlar( \d+)?$/ }).click();
   await page.getByRole("button", { name: "Qiyin", exact: true }).click();
-  await page.waitForURL(/level=hard/);
+  // Chips write the CF range (`ProblemFilters.LEVEL_RANGES`), not `level=`.
+  // Waiting for `level=hard` hung 60 s × 2 on hosted (2026-09-18).
+  await page.waitForURL(/difficulty__gte=1800/);
+  await expect(page).toHaveURL(/difficulty__lte=2199/);
 
   // Qatorlar SONI emas, MAZMUNI tekshiriladi: to'liq arxivda birinchi
   // sahifa filtrsiz ham, filtr bilan ham to'ladi va sanoq o'zgarmaydi —
