@@ -736,10 +736,10 @@ bazasini o'chirib yuborardi. Shu sababli test tarmog'i ham
 ### Push'dan oldingi darvoza
 
 `.githooks/pre-push` (repo bilan versiyalanadi, `core.hooksPath` orqali
-yoqiladi) o'zgargan qismlarga qarab lint, tip va testlarni push'dan
-oldin ishlatadi. Runner o'sha mashinada bo'lgani uchun buzuq commit
-GitHub vaqtini emas, kompyuter vaqtini yeydi — darvoza uni oldinroq
-to'xtatadi. Chetlab o'tish: `git push --no-verify`.
+yoqiladi) push'dan oldin faqat tez darvozalarni yuritadi: `push_guard`,
+API `ruff`/`format`, web i18n va hardcoded. mypy, pytest, tsc va 153
+salbiy test CI da qoladi — hook ularni takrorlasa Windows'da ~5.8 daqiqa
+ketardi (2026-09-18). Chetlab o'tish: `git push --no-verify`.
 
 Yangi klonda yoqish:
 
