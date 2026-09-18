@@ -21,9 +21,16 @@ worktree builds from the committed compose, so it would have dropped both withou
 Exit codes: 0 deploy allowed, 1 not allowed, 2 could not be measured (git, gh or
 the network failed). Unknown is never green: deploy.sh stops on 2 as well.
 
+A checkout that disappears while the gate runs is skipped, not an error. Agents
+remove their merged worktrees as a matter of course; on 2026-09-18 one did so
+between the gate's `git worktree list` and its `git status`, and the gate stopped
+a deploy with "not a git repository" (exit 2). A directory that is gone holds
+nothing a deploy could drop. Any other failure still stops the deploy.
+
 Tests pass fixtures instead of asking git and GitHub:
   --head SHA --main SHA --runs FILE   (FILE: JSON as `gh run list --json` prints)
   --compose-status FILE               (FILE: JSON list of dirty compose entries)
+  --checkouts FILE                    (FILE: JSON list of checkout paths to scan)
 """
 
 from __future__ import annotations
@@ -113,10 +120,13 @@ def checkouts() -> list[str]:
     ]
 
 
-def dirty_compose() -> list[str]:
+def dirty_compose(paths: list[str]) -> list[str]:
     """Uncommitted compose changes in any checkout, as `<checkout>: <status> <file>`."""
     found = []
-    for path in checkouts():
+    for path in paths:
+        # Removed by its owner (see the module docstring): nothing to scan.
+        if not Path(path).is_dir():
+            continue
         proc = subprocess.run(
             ["git", "-C", path, "status", "--porcelain", "--", COMPOSE_PATHSPEC],
             capture_output=True,
@@ -124,9 +134,23 @@ def dirty_compose() -> list[str]:
             encoding="utf-8",
         )
         if proc.returncode != 0:
+            # Removed between the check above and `git status`.
+            if not Path(path).is_dir():
+                continue
             raise Unmeasured(f"git status ({path}): {proc.stderr.strip()[:120]}")
         found += [f"{path}: {line.strip()}" for line in proc.stdout.splitlines() if line.strip()]
     return found
+
+
+def read_checkouts(file: str) -> list[str]:
+    """The `--checkouts` fixture: a JSON list of paths."""
+    try:
+        paths = json.loads(Path(file).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise Unmeasured(f"{file}: {exc}") from exc
+    if not isinstance(paths, list):
+        raise Unmeasured(f"{file}: checkout ro'yxati massiv emas")
+    return [str(path) for path in paths]
 
 
 def parse_dirty(text: str) -> list[str]:
@@ -169,6 +193,7 @@ def main() -> int:
     ap.add_argument("--main", help="test fixture: GitHub main commit")
     ap.add_argument("--runs", help="test fixture: JSON file of runs")
     ap.add_argument("--compose-status", help="test fixture: JSON file of dirty compose entries")
+    ap.add_argument("--checkouts", help="test fixture: JSON file listing checkout paths to scan")
     args = ap.parse_args()
     try:
         head = args.head or git("rev-parse", "HEAD")
@@ -186,7 +211,7 @@ def main() -> int:
             except OSError as exc:
                 raise Unmeasured(f"{args.compose_status}: {exc}") from exc
         else:
-            dirty = dirty_compose()
+            dirty = dirty_compose(read_checkouts(args.checkouts) if args.checkouts else checkouts())
     except Unmeasured as exc:
         print(f"✗ Deploy darvozasi: o'lchab bo'lmadi — {exc}")
         return 2

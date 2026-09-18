@@ -2510,6 +2510,46 @@ def neg_deploy_gate_green_passes() -> tuple[bool, str]:
     return _gate_expect("yashil main o'tadi", _GATE_SHA, _GATE_GREEN, 0, "yashil")
 
 
+def _gate_scan(label: str, layout: str, code: int, needle: str) -> tuple[bool, str]:
+    """Run the gate with a real compose scan over temporary checkouts.
+
+    `layout` picks the checkouts: `vanished` lists a clean repository and a
+    path that no longer exists, `broken` lists a directory that is not a
+    repository. CI runs still come from the green fixture.
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        if layout == "vanished":
+            subprocess.run(["git", "init", "-q", str(root / "repo")], check=True)
+            paths = [root / "repo", root / "removed-worktree"]
+        else:
+            (root / "not-a-repo").mkdir()
+            paths = [root / "not-a-repo"]
+        runs = root / "runs.json"
+        runs.write_text(json.dumps(_GATE_GREEN), encoding="utf-8")
+        listed = root / "checkouts.json"
+        listed.write_text(json.dumps([str(p) for p in paths]), encoding="utf-8")
+        got, out = run_check(
+            "deploy_gate", "--head", _GATE_SHA, "--main", _GATE_SHA, "--runs", str(runs),
+            "--checkouts", str(listed),
+        )
+    if got != code:
+        return False, f"deploy_gate/{label}: exit {got} ({code} kerak) — {out.strip()[-160:]}"
+    if needle not in out:
+        return False, f"deploy_gate/{label}: sabab ko'rinmadi ({needle!r}) — {out.strip()[-160:]}"
+    return True, f"deploy_gate/{label}: exit {code}"
+
+
+def neg_deploy_gate_vanished_checkout() -> tuple[bool, str]:
+    # 2026-09-18: a worktree removed mid-run stopped a deploy with exit 2.
+    return _gate_scan("o'chirilgan worktree o'tkaziladi", "vanished", 0, "yashil")
+
+
+def neg_deploy_gate_broken_checkout() -> tuple[bool, str]:
+    # The skip must stay narrow: a checkout git cannot read still stops the deploy.
+    return _gate_scan("o'qib bo'lmaydigan checkout to'xtatadi", "broken", 2, "o'lchab bo'lmadi")
+
+
 def neg_deploy_gate_not_main() -> tuple[bool, str]:
     return _gate_expect("main emas", "b" * 40, _GATE_GREEN, 1, "`main` emas")
 
@@ -3602,6 +3642,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         "deploy_gate",
         [
             ("yashil main o'tadi (nazorat)", neg_deploy_gate_green_passes),
+            ("o'chirilgan worktree deploy'ni to'xtatmaydi", neg_deploy_gate_vanished_checkout),
+            ("o'qib bo'lmaydigan checkout to'xtatadi", neg_deploy_gate_broken_checkout),
             ("main emas — to'xtaydi", neg_deploy_gate_not_main),
             ("CI qizil — to'xtaydi", neg_deploy_gate_ci_failed),
             ("CI tugamagan — to'xtaydi", neg_deploy_gate_ci_running),

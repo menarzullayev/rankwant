@@ -144,6 +144,10 @@ buni o'zi ta'minlaydi — hamma narsadan oldin:
   qilinadigan deploy esa commit qilingan compose bilan quradi va ularni jimgina
   olib tashlagan bo'lardi. Darvoza to'xtatsa: o'zgarishni commit qiling (PR) yoki
   qaytaring.
+  Darvoza ishlayotgan paytda o'chirilgan worktree o'tkazib yuboriladi: yo'q
+  papkada deploy olib tashlaydigan narsa yo'q. 2026-09-18 da boshqa agent
+  o'z worktree'sini aynan shu oraliqda o'chirgan va darvoza `exit 2` bergan edi.
+  Papka bor-u, git uni o'qiy olmasa, darvoza avvalgidek to'xtaydi.
 - `--skip-ci-gate` darvozani o'tkazib yuboradi — faqat Saidakbar akaning
   aniq ruxsati bilan.
 
