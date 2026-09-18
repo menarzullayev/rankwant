@@ -12,7 +12,7 @@ Sxema **guruhlangan va versiyalangan**:
                      "statusStyle", "loadingStyle", "iconPack"},
       "tokens": {},        # kuchli rejim (D9) — flag bilan O'CHIQ (D43)
       "a11y": {"vision", "motion", "bigTargets", "strongFocus"},
-      "templates": [{"name", "appearance", "a11y"}],
+      "templates": [{"name", "appearance", "a11y", "theme"?}],
       "sound": bool,       # v1 dan qoldi
       "effect": str        # v1 dan qoldi
     }
@@ -276,13 +276,20 @@ def _clean_templates(value: Any) -> list[dict[str, Any]]:
         if key in names:
             raise PrefsError(f"Shablon nomi takrorlandi: {name.strip()}")
         names.add(key)
-        out.append(
-            {
-                "name": name.strip(),
-                "appearance": _clean_appearance(row.get("appearance", {})),
-                "a11y": _clean_a11y(row.get("a11y", {})),
-            }
-        )
+        template: dict[str, Any] = {
+            "name": name.strip(),
+            "appearance": _clean_appearance(row.get("appearance", {})),
+            "a11y": _clean_a11y(row.get("a11y", {})),
+        }
+        # Optional: templates saved before the theme was captured have none,
+        # and the client then keeps the current mode. Other unknown keys are
+        # still dropped, so this one is picked out on purpose.
+        theme = row.get("theme")
+        if theme is not None:
+            if theme not in THEMES:
+                raise PrefsError(f"theme {THEMES} dan biri bo'lsin")
+            template["theme"] = theme
+        out.append(template)
     return out
 
 

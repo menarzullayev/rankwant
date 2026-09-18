@@ -22,6 +22,7 @@ export const en: Record<MessageKey, string> = {
   "customizer.templateLimit": "You have reached the template limit",
 
   "customizer.show": "Show customizer",
+  "customizer.hide": "Hide the floating button",
   "customizer.title": "Appearance customizer",
   "customizer.short": "Appearance",
   "customizer.close": "Close",

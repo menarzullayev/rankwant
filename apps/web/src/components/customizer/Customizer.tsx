@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { flushSync } from "react-dom";
 
-import { useCustomizer } from "@/context/CustomizerContext";
+import { useCustomizer, useCustomizerShortcut } from "@/context/CustomizerContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { errorText, fill, t } from "@/i18n/messages";
@@ -127,6 +128,20 @@ export function Customizer() {
   // Suzuvchi tugma yopilgani eslab qolinadi (D28) — doimiy element
   // sahifaning o'ng chetini to'sib qo'yardi.
   const hidden = useSyncExternalStore(subscribeHidden, readHidden, () => false);
+  const shortcut = useCustomizerShortcut();
+
+  /** D28: the floating button can be put away, and the choice is kept.
+   *  The panel closes with it, and focus lands on the small button that
+   *  brings the floating one back, so keyboard users are not dropped.
+   *  `flushSync` renders that button before focusing it; a frame callback
+   *  never fires while the tab is not being drawn. */
+  function hideFloating() {
+    flushSync(() => {
+      writeHidden(true);
+      setOpen(false);
+    });
+    document.getElementById("rw-customizer-open")?.focus();
+  }
 
   useEffect(() => {
     if (!open) return;
@@ -166,7 +181,7 @@ export function Customizer() {
           type="button"
           onClick={toggle}
           aria-expanded={false}
-          title={`${t(locale, "customizer.title")} (Ctrl+.)`}
+          title={`${t(locale, "customizer.title")} (${shortcut})`}
           className="fixed end-0 top-1/3 z-40 hidden flex-col items-center gap-1 rw-radius-sm border rw-line rw-surface px-1.5 py-3 text-theme-xs rw-dim-2 shadow-lg transition rw-hover-bg lg:flex"
         >
           <Icon name="system.palette" className="size-4" />
@@ -189,14 +204,28 @@ export function Customizer() {
               <h2 className="text-theme-lg font-semibold rw-strong">
                 {t(locale, "customizer.title")}
               </h2>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                aria-label={t(locale, "customizer.close")}
-                className="flex size-9 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg"
-              >
-                <Icon name="nav.close" className="size-4" />
-              </button>
+              <div className="flex items-center gap-1">
+                {/* Desktop only, like the floating button itself (D32). */}
+                {!hidden && (
+                  <button
+                    type="button"
+                    onClick={hideFloating}
+                    aria-label={t(locale, "customizer.hide")}
+                    title={t(locale, "customizer.hide")}
+                    className="hidden size-9 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg lg:flex"
+                  >
+                    <Icon name="action.eyeOff" className="size-4" />
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  aria-label={t(locale, "customizer.close")}
+                  className="flex size-9 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg"
+                >
+                  <Icon name="nav.close" className="size-4" />
+                </button>
+              </div>
             </header>
 
             <nav className="flex gap-2 border-b rw-divide px-4 py-2">
@@ -1299,9 +1328,8 @@ function SavedTemplates() {
     shareLink,
     appearance,
     a11y,
-    setAppearance,
-    setA11y,
   } = useCustomizer();
+  const { mode } = useTheme();
   const [name, setName] = useState("");
   const [copied, setCopied] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
@@ -1310,7 +1338,7 @@ function SavedTemplates() {
 
   /** Joriy ko'rinishni JSON fayl qilib yuklab oladi. */
   function download() {
-    const blob = new Blob([exportAppearance(appearance, a11y)], {
+    const blob = new Blob([exportAppearance(appearance, a11y, mode)], {
       type: "application/json",
     });
     const url = URL.createObjectURL(blob);
@@ -1330,8 +1358,10 @@ function SavedTemplates() {
       return;
     }
     setImportError(null);
-    setAppearance(result.appearance);
-    setA11y(result.a11y);
+    // One step, like a saved template. Calling `setAppearance` and then
+    // `setA11y` let the second call commit the appearance captured before
+    // the first one, so the imported look was undone on the page.
+    applySaved(result);
   }
 
   return (

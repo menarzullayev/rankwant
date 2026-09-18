@@ -89,6 +89,9 @@ export type ThemeTemplate = {
   name: string;
   appearance: AppearancePrefs;
   a11y: A11yPrefs;
+  /** Theme mode captured with the template. Templates saved before it
+   *  existed have none, and applying them keeps the current mode. */
+  theme?: "light" | "dark" | "system";
 };
 
 /** `User.ui_prefs` — v2, guruhlangan va versiyalangan (D33).

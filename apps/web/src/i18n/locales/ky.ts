@@ -22,6 +22,7 @@ export const ky: Record<MessageKey, string> = {
   "customizer.templateLimit": "Шаблон чегине жеттиңиз",
 
   "customizer.show": "Ырастоочуну көрсөтүү",
+  "customizer.hide": "Калкыма баскычты жашыруу",
   "customizer.title": "Көрүнүш ырастоочусу",
   "customizer.short": "Көрүнүш",
   "customizer.close": "Жабуу",

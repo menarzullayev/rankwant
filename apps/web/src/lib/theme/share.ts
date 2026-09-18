@@ -15,7 +15,7 @@
  *  odam o'z sozlamasini o'zgartira olmay qolardi.
  */
 
-import type { A11yPrefs, AppearancePrefs } from "@/lib/api";
+import type { A11yPrefs, AppearancePrefs, ThemeTemplate } from "@/lib/api";
 import {
   clampLineHeight,
   clampScale,
@@ -33,6 +33,9 @@ import { DEFAULT_CARD, DEFAULT_PATTERN } from "@/lib/theme/apply";
 /** URL da saqlanadigan maydonlar. `KEYS` — tozalash uchun ham ishlatiladi. */
 const KEYS = [
   "style",
+  // Not an appearance field: the theme mode lives in `User.theme`. It is
+  // listed here so that a shared link carries it and gets cleaned up too.
+  "theme",
   "accent",
   "font",
   "fontHeading",
@@ -57,11 +60,24 @@ const FONTS = ["inter", "jakarta", "roboto", "dm-sans", "lexend"] as const;
 const CARDS = ["default", "outline", "flat", "soft", "square"] as const;
 const PATTERNS = ["none", "grid", "dots", "diagonal", "mesh"] as const;
 
+type ThemeMode = NonNullable<ThemeTemplate["theme"]>;
+
+const isThemeMode = (value: unknown): value is ThemeMode =>
+  value === "light" || value === "dark" || value === "system";
+
 /** Ko'rinishni URL ga yozadi. Standart qiymatlar tushib qoladi — havola
- *  qisqa bo'lsin va faqat o'zgartirilgan narsa ko'rinsin. */
-export function encodeAppearance(appearance: AppearancePrefs): string {
+ *  qisqa bo'lsin va faqat o'zgartirilgan narsa ko'rinsin.
+ *
+ *  `theme` is written only when the sharer picked light or dark. `system`
+ *  is the default, so it drops out like the other defaults and the
+ *  recipient keeps their own mode. */
+export function encodeAppearance(
+  appearance: AppearancePrefs,
+  theme?: ThemeMode,
+): string {
   const params = new URLSearchParams();
   if (appearance.style) params.set("style", appearance.style);
+  if (theme === "light" || theme === "dark") params.set("theme", theme);
   if (appearance.accent) {
     params.set("accent", `${appearance.accent.hue}-${appearance.accent.sat}`);
   }
@@ -191,11 +207,19 @@ export function decodeAppearance(search: string): AppearancePrefs | null {
   return Object.keys(out).length ? out : null;
 }
 
+/** Reads the theme mode from a shared link; `null` when it is absent or
+ *  not a known mode. Kept apart from `decodeAppearance` because the mode
+ *  is stored in `User.theme`, not in the appearance group. */
+export function decodeTheme(search: string): ThemeMode | null {
+  const theme = new URLSearchParams(search).get("theme");
+  return isThemeMode(theme) ? theme : null;
+}
+
 /** Joriy manzilga ko'rinish parametrlarini qo'shib qaytaradi. */
-export function shareUrl(appearance: AppearancePrefs): string {
+export function shareUrl(appearance: AppearancePrefs, theme?: ThemeMode): string {
   const url = new URL(window.location.href);
   for (const key of KEYS) url.searchParams.delete(key);
-  const encoded = encodeAppearance(appearance);
+  const encoded = encodeAppearance(appearance, theme);
   if (encoded) {
     for (const [key, value] of new URLSearchParams(encoded)) {
       url.searchParams.set(key, value);
@@ -223,24 +247,29 @@ export type ExportedAppearance = {
   exportedAt: string;
   appearance: AppearancePrefs;
   a11y: A11yPrefs;
+  /** Optional, so the version stays 1: older files simply lack it and
+   *  older clients drop it as an unknown key. */
+  theme?: ThemeMode;
 };
 
 /** Ko'rinishni yuklab olinadigan JSON satriga aylantiradi. */
 export function exportAppearance(
   appearance: AppearancePrefs,
   a11y: A11yPrefs,
+  theme?: ThemeMode,
 ): string {
   const payload: ExportedAppearance = {
     version: EXPORT_VERSION,
     exportedAt: new Date().toISOString(),
     appearance,
     a11y,
+    ...(theme ? { theme } : {}),
   };
   return JSON.stringify(payload, null, 2);
 }
 
 export type ImportResult =
-  | { ok: true; appearance: AppearancePrefs; a11y: A11yPrefs }
+  | { ok: true; appearance: AppearancePrefs; a11y: A11yPrefs; theme?: ThemeMode }
   | { ok: false; error: "parse" | "shape" | "version" };
 
 /** JSON satridan ko'rinishni tiklaydi.
@@ -329,5 +358,9 @@ export function importAppearance(raw: string): ImportResult {
     strongFocus: Boolean(k.strongFocus),
   };
 
-  return { ok: true, appearance, a11y };
+  // An unknown mode is dropped, not rejected: the rest of the file is
+  // still usable, and applying it simply keeps the current mode.
+  return isThemeMode(row.theme)
+    ? { ok: true, appearance, a11y, theme: row.theme }
+    : { ok: true, appearance, a11y };
 }

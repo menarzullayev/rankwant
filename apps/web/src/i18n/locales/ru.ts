@@ -22,6 +22,7 @@ export const ru: Record<MessageKey, string> = {
   "customizer.templateLimit": "Достигнут предел шаблонов",
 
   "customizer.show": "Показать настройщик",
+  "customizer.hide": "Скрыть плавающую кнопку",
   "customizer.title": "Настройка вида",
   "customizer.short": "Вид",
   "customizer.close": "Закрыть",

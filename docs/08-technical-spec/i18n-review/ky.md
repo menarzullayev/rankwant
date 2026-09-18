@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1573 strings.**
+**1574 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -38,6 +38,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.delete` | O'chirish | Жок кылуу |  |
 | `customizer.templateLimit` | Shablon chegarasiga yetdingiz | Шаблон чегине жеттиңиз |  |
 | `customizer.show` | Sozlagichni ko'rsatish | Ырастоочуну көрсөтүү |  |
+| `customizer.hide` | Suzuvchi tugmani yashirish | Калкыма баскычты жашыруу |  |
 | `customizer.title` | Ko'rinish sozlagichi | Көрүнүш ырастоочусу |  |
 | `customizer.short` | Ko'rinish | Көрүнүш |  |
 | `customizer.close` | Yopish | Жабуу |  |
@@ -915,7 +916,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.contestInviteCta` | Natijani qo'shish | Жыйынтыкты кошуу |  |
 | `auth.country` | Mamlakat | Өлкө |  |
 | `auth.remember` | Meni eslab qol | Мени эстеп кал |  |
-| `auth.termsAccept` | Shartlar va maxfiylik siyosatiga roziman | Шарттар жана купуялык саясаты менен макулмун |  |
+| `auth.termsAccept` | {terms} va {privacy} siyosatiga roziman | {terms} жана {privacy} саясаты менен макулмун |  |
 | `auth.marketingOptIn` | Yangiliklar va foydali xatlarni olishni xohlayman (ixtiyoriy) | Жаңылыктар жана пайдалуу каттарды алгым келет (милдеттүү эмес) |  |
 | `auth.termsRequired` | Shartlarga rozilik majburiy | Шарттарга макулдук милдеттүү |  |
 | `auth.step2Title` | Joy va maktab | Жайгашуу жана мектеп |  |

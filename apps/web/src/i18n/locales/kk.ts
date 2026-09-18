@@ -22,6 +22,7 @@ export const kk: Record<MessageKey, string> = {
   "customizer.templateLimit": "Үлгі шегіне жеттіңіз",
 
   "customizer.show": "Реттеушіні көрсету",
+  "customizer.hide": "Қалқымалы түймені жасыру",
   "customizer.title": "Көрініс реттеушісі",
   "customizer.short": "Көрініс",
   "customizer.close": "Жабу",

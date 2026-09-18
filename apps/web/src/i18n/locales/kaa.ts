@@ -22,6 +22,7 @@ export const kaa: Record<MessageKey, string> = {
   "customizer.templateLimit": "Shablon shegarasına jettińiz",
 
   "customizer.show": "Sazlaǵıshdı kórsetiw",
+  "customizer.hide": "Júziwshi túymeni jasırıw",
   "customizer.title": "Kórinis sazlaǵıshı",
   "customizer.short": "Kórinis",
   "customizer.close": "Jabıw",

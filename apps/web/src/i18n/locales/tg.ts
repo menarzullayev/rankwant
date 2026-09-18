@@ -22,6 +22,7 @@ export const tg: Record<MessageKey, string> = {
   "customizer.templateLimit": "Ба ҳадди қолибҳо расидед",
 
   "customizer.show": "Нишон додани танзимгар",
+  "customizer.hide": "Пинҳон кардани тугмаи шинокунанда",
   "customizer.title": "Танзими намуд",
   "customizer.short": "Намуд",
   "customizer.close": "Пӯшидан",

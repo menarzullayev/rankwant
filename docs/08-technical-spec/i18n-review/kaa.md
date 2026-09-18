@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1573 strings.**
+**1574 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -38,6 +38,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.delete` | O'chirish | Óshiriw |  |
 | `customizer.templateLimit` | Shablon chegarasiga yetdingiz | Shablon shegarasına jettińiz |  |
 | `customizer.show` | Sozlagichni ko'rsatish | Sazlaǵıshdı kórsetiw |  |
+| `customizer.hide` | Suzuvchi tugmani yashirish | Júziwshi túymeni jasırıw |  |
 | `customizer.title` | Ko'rinish sozlagichi | Kórinis sazlaǵıshı |  |
 | `customizer.short` | Ko'rinish | Kórinis |  |
 | `customizer.close` | Yopish | Jabıw |  |
@@ -915,7 +916,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.contestInviteCta` | Natijani qo'shish | Nátiyjeni qosıw |  |
 | `auth.country` | Mamlakat | Mámleket |  |
 | `auth.remember` | Meni eslab qol | Meni eslep qal |  |
-| `auth.termsAccept` | Shartlar va maxfiylik siyosatiga roziman | Shártlar hám jeke ómirlik siyasatına razıman |  |
+| `auth.termsAccept` | {terms} va {privacy} siyosatiga roziman | {terms} hám {privacy} siyasatına razıman |  |
 | `auth.marketingOptIn` | Yangiliklar va foydali xatlarni olishni xohlayman (ixtiyoriy) | Jańalıqlar hám paydalı xatlar alıwdı qáleymen (erkin) |  |
 | `auth.termsRequired` | Shartlarga rozilik majburiy | Shártlarǵa razılıq májbúriy |  |
 | `auth.step2Title` | Joy va maktab | Orın hám mektep |  |

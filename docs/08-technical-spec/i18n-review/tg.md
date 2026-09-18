@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1573 strings.**
+**1574 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -38,6 +38,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.delete` | O'chirish | Нест кардан |  |
 | `customizer.templateLimit` | Shablon chegarasiga yetdingiz | Ба ҳадди қолибҳо расидед |  |
 | `customizer.show` | Sozlagichni ko'rsatish | Нишон додани танзимгар |  |
+| `customizer.hide` | Suzuvchi tugmani yashirish | Пинҳон кардани тугмаи шинокунанда |  |
 | `customizer.title` | Ko'rinish sozlagichi | Танзими намуд |  |
 | `customizer.short` | Ko'rinish | Намуд |  |
 | `customizer.close` | Yopish | Пӯшидан |  |
@@ -915,7 +916,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.contestInviteCta` | Natijani qo'shish | Илова кардани натиҷа |  |
 | `auth.country` | Mamlakat | Кишвар |  |
 | `auth.remember` | Meni eslab qol | Маро дар ёд нигоҳ дор |  |
-| `auth.termsAccept` | Shartlar va maxfiylik siyosatiga roziman | Ман бо шартҳо ва сиёсати махфият розӣ ҳастам |  |
+| `auth.termsAccept` | {terms} va {privacy} siyosatiga roziman | Ман бо {terms} ва сиёсати {privacy} розӣ ҳастам |  |
 | `auth.marketingOptIn` | Yangiliklar va foydali xatlarni olishni xohlayman (ixtiyoriy) | Мехоҳам хабарҳо ва номаҳои муфид гирам (ихтиёрӣ) |  |
 | `auth.termsRequired` | Shartlarga rozilik majburiy | Розигӣ бо шартҳо ҳатмист |  |
 | `auth.step2Title` | Joy va maktab | Ҷой ва мактаб |  |

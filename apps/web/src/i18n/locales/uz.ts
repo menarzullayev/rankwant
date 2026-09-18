@@ -26,6 +26,7 @@ export const uz = {
   "customizer.templateLimit": "Shablon chegarasiga yetdingiz",
 
   "customizer.show": "Sozlagichni ko'rsatish",
+  "customizer.hide": "Suzuvchi tugmani yashirish",
   "customizer.title": "Ko'rinish sozlagichi",
   "customizer.short": "Ko'rinish",
   "customizer.close": "Yopish",

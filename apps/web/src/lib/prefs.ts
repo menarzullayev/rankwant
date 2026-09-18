@@ -155,11 +155,14 @@ export function removeLocal(key: string) {
 export function rememberAppearance(
   appearance: AppearancePrefs,
   a11y: A11yPrefs,
-  templates: ThemeTemplate[] = [],
+  templates?: ThemeTemplate[],
 ) {
   writeLocal(APPEARANCE_KEY, JSON.stringify(appearance));
   writeLocal(A11Y_KEY, JSON.stringify(a11y));
-  writeLocal(TEMPLATES_KEY, JSON.stringify(templates));
+  // Templates are written only when the caller passes the list. This used
+  // to default to `[]`, so every caller that did not pass them (a shared
+  // link, the sign-in sync) wiped the saved templates from the device.
+  if (templates) writeLocal(TEMPLATES_KEY, JSON.stringify(templates));
   // Markup o'zgaruvchi uchtasi cookie'ga ham — sabab `MARKUP_COOKIE` da.
   writeMarkupCookie(appearance);
 }
