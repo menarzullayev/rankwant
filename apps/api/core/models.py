@@ -275,6 +275,16 @@ class EmailDelivery(models.Model):
     class Status(models.TextChoices):
         SENT = "sent", "Yuborildi"
         FAILED = "failed", "Yuborilmadi"
+        #: Zaxira domen (RFC 2606/6761) — provayderga UMUMAN murojaat
+        #: qilinmadi. `usage()` faqat `SENT` ni sanaydi, ya'ni bu qatorlar
+        #: kunlik kvotaga tushmaydi, lekin iz qoladi.
+        #:
+        #: Nega alohida holat kerak: 2026-09-17 da load test 301 ta
+        #: `@example.invalid` manzilga xat yubordi va ular `sent` bo'lib
+        #: yozildi — ya'ni Brevo'ning 300/kun bepul shiftini 85 soniyada
+        #: yoqib yubordi. Panel «311 yuborildi» derdi, aslida 10 tasi
+        #: haqiqiy edi.
+        SKIPPED = "skipped", "Yuborilmadi (zaxira domen)"
 
     to_email = models.EmailField()
     purpose = models.CharField(max_length=24, choices=Purpose.choices, default=Purpose.OTHER)

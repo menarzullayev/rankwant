@@ -51,6 +51,12 @@ class Command(BaseCommand):
             text="Zanjir ishlayapti. Bu xat send_test_email buyrug'idan.",
             purpose=EmailDelivery.Purpose.OTHER,
             chain=chain,
+            # ⚠️ SHART: bu buyruq ataylab zaxira domenga yuboradi
+            # (`siz@example.com` — hujjatda shunday yozilgan), chunki
+            # maqsad — provayderning javobini ko'rish, xatni yetkazish
+            # emas. `False` bo'lsa `send_email` bunday manzilni o'tkazib
+            # yuborardi va buyruq hech narsani sinamay qo'yardi.
+            allow_placeholder=True,
         )
 
         for attempt in delivery.attempts:

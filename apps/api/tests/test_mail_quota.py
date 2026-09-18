@@ -84,6 +84,36 @@ class TestUsage:
 
         assert row.sent == 1
 
+    def test_skipped_qatorlar_kvotani_yemasligi_kerak(self) -> None:
+        """Zaxira domenga «yuborilgan» xat kvota SARFLAMAYDI.
+
+        Bu — 2026-09-17 hodisasining to'g'ridan-to'g'ri tekshiruvi: load
+        test 301 ta `@example.invalid` manzilga xat yubordi, ular
+        `status=sent` bo'lib yozildi va Brevo'ning 300/kun shiftini
+        to'ldirdi. Panel «311 yuborildi» derdi, aslida 10 tasi haqiqiy.
+
+        Endi bunday qatorlar `skipped` bo'ladi; `usage()` esa faqat
+        `sent` ni sanaydi, ya'ni ular hisobga TUSHMASLIGI shart.
+        """
+        _row("brevo", EmailDelivery.Status.SKIPPED)
+        _row("brevo", EmailDelivery.Status.SKIPPED)
+        _row("brevo", EmailDelivery.Status.SENT)
+
+        row = next(r for r in mail_quota.usage() if r.name == "brevo")
+
+        assert row.sent == 1
+
+    def test_skipped_qatorlar_yiqilish_deb_sanalmaydi(self) -> None:
+        """`failures()` ham ularni ko'rmasligi kerak.
+
+        O'tkazib yuborilgan xat — YIQILMAGAN xat. Aks holda panel
+        «N xat yuborilmadi» deb qizil ko'rsatardi, holbuki hech qanday
+        urinish bo'lmagan.
+        """
+        _row("brevo", EmailDelivery.Status.SKIPPED)
+
+        assert mail_quota.failures() == 0
+
     def test_royxatda_yoq_provayder_ham_korinadi(self) -> None:
         """Yangi provayder qo'shilsa, sarfi jimgina yashirinmasin.
 
