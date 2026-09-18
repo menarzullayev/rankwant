@@ -37,6 +37,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -122,6 +123,9 @@ def checkouts() -> list[str]:
 
 def dirty_compose(paths: list[str]) -> list[str]:
     """Uncommitted compose changes in any checkout, as `<checkout>: <status> <file>`."""
+    # Each checkout answers for itself. An inherited `GIT_DIR` (git exports it
+    # to hooks) would make every `git -C <path>` report on that one repository.
+    env = {k: v for k, v in os.environ.items() if k not in ("GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE")}
     found = []
     for path in paths:
         # Removed by its owner (see the module docstring): nothing to scan.
@@ -132,6 +136,7 @@ def dirty_compose(paths: list[str]) -> list[str]:
             capture_output=True,
             text=True,
             encoding="utf-8",
+            env=env,
         )
         if proc.returncode != 0:
             # Removed between the check above and `git status`.

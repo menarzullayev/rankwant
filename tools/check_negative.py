@@ -2519,8 +2519,14 @@ def _gate_scan(label: str, layout: str, code: int, needle: str) -> tuple[bool, s
     """
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
+        # ⚠️ No inherited `GIT_*`, and a ceiling at the sandbox: under the
+        # pre-push hook `GIT_DIR` points at the real repository, and a plain
+        # `git init` here re-initialised it as bare (measured 2026-09-18;
+        # the suite's fingerprint caught it). Same trap as 2026-09-16.
+        env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
+        env["GIT_CEILING_DIRECTORIES"] = str(root)
         if layout == "vanished":
-            subprocess.run(["git", "init", "-q", str(root / "repo")], check=True)
+            subprocess.run(["git", "init", "-q", str(root / "repo")], check=True, env=env)
             paths = [root / "repo", root / "removed-worktree"]
         else:
             (root / "not-a-repo").mkdir()
@@ -2529,10 +2535,12 @@ def _gate_scan(label: str, layout: str, code: int, needle: str) -> tuple[bool, s
         runs.write_text(json.dumps(_GATE_GREEN), encoding="utf-8")
         listed = root / "checkouts.json"
         listed.write_text(json.dumps([str(p) for p in paths]), encoding="utf-8")
-        got, out = run_check(
-            "deploy_gate", "--head", _GATE_SHA, "--main", _GATE_SHA, "--runs", str(runs),
-            "--checkouts", str(listed),
+        proc = subprocess.run(
+            [PY, "tools/check_deploy_gate.py", "--head", _GATE_SHA, "--main", _GATE_SHA,
+             "--runs", str(runs), "--checkouts", str(listed)],
+            cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace", env=env,
         )
+        got, out = proc.returncode, (proc.stdout or "") + (proc.stderr or "")
     if got != code:
         return False, f"deploy_gate/{label}: exit {got} ({code} kerak) — {out.strip()[-160:]}"
     if needle not in out:
