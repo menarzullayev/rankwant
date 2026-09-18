@@ -1,6 +1,6 @@
 # User model benchmark: Codeforces, Robocontest and KEP
 
-**Date:** 2026-09-18 · **Status:** research record. The proposal below waits for the owner's decision.
+**Date:** 2026-09-18 · **Status:** research record; the owner decided on the same day (see [Decision](#decision)).
 
 ## Question
 
@@ -268,6 +268,21 @@ The migration backfills the cache fields from existing rows.
 | Crypto wallet, tax id | Codeforces | Out of scope; sensitive data with no use here |
 | Sidebar content blocks | Codeforces | Our sidebar is navigation and has no content blocks |
 | Time zone, two-factor sign-in | none of the three | Not a parity gap; each would be its own decision |
+
+## Decision
+
+The owner was offered four options on 2026-09-18:
+
+| Option | Scope | Recommended |
+|---|---|---|
+| P1 + P2 | 8 columns and 3 changes | yes, by the CTO |
+| P1 only | 8 columns | |
+| P1 + P2 + P3 columns | also the P3 fields as columns, before their features exist | |
+| No code yet | this report only | |
+
+The owner chose **P1 + P2 + P3 columns**. The P3 fields are therefore added as columns now
+and stay empty until their features exist. The implementation and its ADR follow in a
+separate pull request.
 
 ## What not to copy
 
