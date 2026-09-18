@@ -174,3 +174,35 @@ python me_calls.py http://127.0.0.1:3107/ 3
 
 The RSC request counts come from a headless Chromium (Playwright) window: load the page, wait
 5 s, then read `performance.getEntriesByType("resource")` for URLs carrying `_rsc=`.
+
+---
+
+## 10. Follow-up, same day: the dictionary as a file
+
+Owner decision 3 was implemented: the browser gets the dictionary as `/i18n/<locale>.js?v=<content hash>`
+(static, `Cache-Control: public, max-age=31536000, immutable`, outside the middleware), and the page
+only carries its address. Measured on local production builds, as above.
+
+| | Before (main with intent prefetch) | After |
+|---|---|---|
+| Homepage HTML | 141.8 KB, 36.1 KB gzip | **63.8 KB, 11.7 KB gzip** |
+| RSC flight payload | 105.9 KB | 27.8 KB |
+| Server CPU per render (6 alternating rounds, median) | 10.2 ms | **5.6 ms** (−45%) |
+| Throughput at concurrency 10 | 132 renders/s | **235 renders/s** |
+| p95 at concurrency 10 | 98 ms | 55 ms |
+
+Against the build from before both changes (no intent prefetch, `/me/` for guests): 12.6 → 7.1 ms
+per render, 100 → 200 renders/s.
+
+Correctness, checked on the new build:
+
+- The visible text of the homepage is identical in all ten languages, with no raw keys. The
+  comparison was first checked against two different pages, which it reports as different.
+- 400 concurrent renders in four languages: 400/400 correct.
+- In a real browser, a guest load shows no raw keys and fetches one dictionary file. The panel
+  opens once the page has hydrated.
+- A language switch (en → ru) takes 129 ms without a reload. It fetches `ru.js`, and the old
+  dictionary is dropped from memory.
+- With the dictionary file delayed by 2.5 s and the cache cleared, the page kept its server-rendered
+  Russian text and showed no keys while hydration waited. After the file arrived the page became
+  interactive, with no console errors.
