@@ -36,6 +36,7 @@ export function StatCard({
   hint,
   icon,
   about,
+  valueClassName = "",
 }: {
   label: string;
   value: React.ReactNode;
@@ -43,6 +44,14 @@ export function StatCard({
   icon?: React.ReactNode;
   /** Ko'rsatkich nimani o'lchaydi — izohsiz raqam hech narsa aytmaydi. */
   about?: string;
+  /**
+   * Raqam uchun qo'shimcha klass. To'r tor ustunlarga siqqanda sanoq chetga
+   * chiqmasligi uchun kerak: 30 px bold raqamda har bir xona ~17.2 px, ya'ni
+   * 4 ustunli to'rda (ichki kenglik 121 px, 1024 px ekranda) 8 xonali sanoq
+   * toshib ketadi. Chaqiruvchi tomonda beriladi, chunki bir xil `StatCard`
+   * uch xil to'rda ishlatiladi va faqat tor to'rda kichraytirish kerak.
+   */
+  valueClassName?: string;
 }) {
   return (
     <div className="rw-panel p-5">
@@ -52,7 +61,7 @@ export function StatCard({
         </div>
       )}
       <p className="text-theme-sm rw-dim">{label}</p>
-      <p className="mt-1 text-title-sm font-bold rw-strong">{value}</p>
+      <p className={`mt-1 text-title-sm font-bold rw-strong ${valueClassName}`}>{value}</p>
       {hint && <p className="mt-1 text-theme-xs rw-faint">{hint}</p>}
       {about && <p className="mt-2 text-theme-xs rw-dim">{about}</p>}
     </div>

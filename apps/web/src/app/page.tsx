@@ -144,26 +144,35 @@ export default async function Home() {
         )}
       </section>
 
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      {/* lg da 4 ustun: 1024–1279 px da 2+2 qolsa, 4 karta ikki qatorni
+          egallab, keyingi bo'limni pastga suradi (o'lchandi: 1024x768 da
+          faqat 38 px ko'rinardi, 4 ustunda 216 px). 3 ustunli pog'ona
+          qo'shilmadi — u vertikal yutuq bermaydi (4 karta baribir 2 qator)
+          va 4-kartani yolg'iz qoldiradi. */}
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           label={t(locale, "nav.problems")}
           value={stats.problems}
           icon={<Icon name="nav.problems" />}
+          valueClassName="lg:text-2xl xl:text-title-sm"
         />
         <StatCard
           label={t(locale, "nav.contests")}
           value={stats.contests}
           icon={<Icon name="ranking.trophy" />}
+          valueClassName="lg:text-2xl xl:text-title-sm"
         />
         <StatCard
           label={t(locale, "nav.leaderboard")}
           value={stats.users}
           icon={<Icon name="nav.leaderboard" />}
+          valueClassName="lg:text-2xl xl:text-title-sm"
         />
         <StatCard
           label={t(locale, "home.attempts")}
           value={stats.attempts}
           icon={<Icon name="shop.coin" />}
+          valueClassName="lg:text-2xl xl:text-title-sm"
         />
       </section>
 

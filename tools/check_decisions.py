@@ -60,6 +60,9 @@ APP_HEADER = "apps/web/src/layout/AppHeader.tsx"
 APP_SIDEBAR = "apps/web/src/layout/AppSidebar.tsx"
 APP_SHELL = "apps/web/src/layout/AppShell.tsx"
 SIDEBAR_CONTEXT = "apps/web/src/context/SidebarContext.tsx"
+# KPI grid: 4-up from `lg`, and the value steps down while the cards are
+# narrow. Owner decision 2026-09-18.
+STAT_CARD = "apps/web/src/components/ui/Card.tsx"
 
 
 class Unreadable(Exception):
@@ -477,6 +480,69 @@ def decisions_table_present() -> str | None:
     return None
 
 
+def kpi_grid_steps_at_lg() -> str | None:
+    """The home KPI grid goes 4-up at `lg`, and its numbers shrink to match.
+
+    Measured in a live browser 2026-09-18 (1024x768, live origin): with
+    `sm:grid-cols-2 xl:grid-cols-4` the four cards stayed 2-up across
+    1024-1279 px, so the next section showed only 38 px above the fold. At
+    4-up it shows 216 px and the page is 178 px shorter.
+
+    A 3-up step was rejected BY MEASUREMENT, not by taste: four cards still
+    occupy two rows at 3 columns, so it buys exactly 0 px of vertical space
+    and leaves the fourth card alone on row two. Hence the explicit check that
+    no `lg:grid-cols-3` creeps back in as an "improvement".
+
+    The narrower card has a price. The value is `text-title-sm` (30 px bold,
+    ~17.2 px per digit) and a 4-up card is 121 px wide inside at 1024 px, so a
+    7-digit counter sits exactly on the edge (121/121) and 8 digits overflow.
+    The value therefore steps down to 24 px until `xl`. The last clause checks
+    that the component actually APPLIES the prop — a prop that is passed but
+    never rendered looks green while doing nothing.
+    """
+    grid = re.search(r'<section className="([^"]*sm:grid-cols-2[^"]*)"', read(HOME_MAIN))
+    if grid is None:
+        return f"{HOME_MAIN}: bosh sahifa KPI to'ri (`sm:grid-cols-2`) topilmadi"
+    classes = grid.group(1)
+
+    if "lg:grid-cols-4" not in classes:
+        return (
+            f"{HOME_MAIN}: KPI to'rida `lg:grid-cols-4` yo'q — 1024-1279 px da "
+            "kartalar 2 ustunda qolib, keyingi bo'limni pastga suradi"
+        )
+    if "lg:grid-cols-3" in classes:
+        return (
+            f"{HOME_MAIN}: KPI to'rida `lg:grid-cols-3` bor — 4 karta baribir 2 "
+            "qatorni egallaydi (vertikal yutuq 0) va 4-karta yolg'iz qoladi"
+        )
+
+    # Every card in this section must opt in, otherwise the grid got denser
+    # while one number stayed 30 px and can now overflow.
+    section = read(HOME_MAIN).split('<section className="' + classes + '"', 1)[1]
+    section = section.split("</section>", 1)[0]
+    cards = section.count("<StatCard")
+    opted_in = section.count('valueClassName="lg:text-2xl xl:text-title-sm"')
+    if cards == 0:
+        return f"{HOME_MAIN}: KPI to'rida `StatCard` topilmadi"
+    if opted_in != cards:
+        return (
+            f"{HOME_MAIN}: KPI to'rining {cards} kartasidan {opted_in} tasida "
+            "`valueClassName` raqam pog'onasi bor — tor ustunda sanoq toshadi"
+        )
+
+    rendered = re.search(
+        r"<p className=\{`([^`]*)`\}>\{value\}</p>", read(STAT_CARD)
+    )
+    if rendered is None:
+        return f"{STAT_CARD}: `StatCard` raqami topilmadi"
+    if "valueClassName" not in rendered.group(1):
+        return (
+            f"{STAT_CARD}: `StatCard` `valueClassName` ni qo'llamaydi — prop "
+            "uzatiladi, lekin hech narsa qilmaydi"
+        )
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -492,6 +558,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("User modeli tenglik maydonlari", user_parity_fields_kept),
     ("header 320 px ga sig'adi", mobile_header_fits_narrow_screen),
     ("mobil panel foydalanishga yaroqli", mobile_drawer_is_accessible),
+    ("KPI to'ri lg da 4 ustun", kpi_grid_steps_at_lg),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),
