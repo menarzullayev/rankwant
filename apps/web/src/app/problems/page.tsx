@@ -316,9 +316,10 @@ export default async function ProblemsPage({ searchParams }: Props) {
                   <TD
                     align="center"
                     className="hidden tabular-nums text-theme-xs rw-dim-2 lg:table-cell"
-                    title={`${p.likes_count} / ${p.dislikes_count}`}
                   >
-                    +{p.likes_count}
+                    <span title={`${p.likes_count} / ${p.dislikes_count}`}>
+                      +{p.likes_count}
+                    </span>
                   </TD>
                   <TD className="hidden max-w-28 truncate text-theme-xs rw-faint xl:table-cell">
                     {p.author ? (

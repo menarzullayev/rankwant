@@ -605,9 +605,7 @@ class TopicViewSet(viewsets.ReadOnlyModelViewSet[Topic]):
         Topic.objects.filter(problems__is_public=True)
         .select_related("parent")
         .annotate(
-            problem_count=Count(
-                "problems", filter=Q(problems__is_public=True), distinct=True
-            )
+            problem_count=Count("problems", filter=Q(problems__is_public=True), distinct=True)
         )
         .distinct()
         .order_by("slug")
