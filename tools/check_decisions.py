@@ -34,6 +34,16 @@ TRIAL_RUNNER = {"runner-selftest.yml": "[self-hosted, rankwant-container]"}
 RUNNER_DEFAULTS = ("tools/runner/docker-compose.runner.yml", "tools/runner/entrypoint.sh")
 # Everything tools/deploy.sh must rebuild: services built from this repo's sources.
 DEPLOYED_SERVICES = {"api", "worker", "beat", "judge", "web"}
+# Layout chrome drawn on every page: sidebar, top bar, header and footer. Its
+# links prefetch on intent only (owner decision 2026-09-18).
+NAV_CHROME = (
+    "apps/web/src/layout/AppSidebar.tsx",
+    "apps/web/src/layout/AppTopNav.tsx",
+    "apps/web/src/layout/AppFooter.tsx",
+    "apps/web/src/layout/HeaderStatus.tsx",
+    "apps/web/src/layout/UserMenu.tsx",
+)
+INTENT_LINK = "apps/web/src/components/ui/IntentLink.tsx"
 
 
 class Unreadable(Exception):
@@ -187,6 +197,21 @@ def search_open_ai_crawlers_blocked() -> str | None:
     return None
 
 
+def nav_prefetch_on_intent() -> str | None:
+    """Links in the layout chrome prefetch on hover, focus or touch only.
+
+    Prefetched on sight, the ~23 chrome links cost the server ~130-150 ms of
+    CPU per visit, nine times the page render (profiled 2026-09-18). A plain
+    `next/link` import in one of these files would quietly bring that back.
+    """
+    for rel in NAV_CHROME:
+        if re.search(r'from\s+"next/link"', read(rel)):
+            return f"{rel}: `next/link` to'g'ridan-to'g'ri ishlatilgan — navigatsiya linklari `IntentLink` orqali bo'lsin"
+    if "prefetch={intent ? null : false}" not in read(INTENT_LINK):
+        return f"{INTENT_LINK}: prefetch endi niyatga (hover/fokus) bog'liq emas"
+    return None
+
+
 def _workflow_triggers(rel: str) -> set[str]:
     lines = read(rel).splitlines()
     try:
@@ -248,6 +273,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("deploy hamma servisni quradi", deploy_builds_every_service),
     ("deploy faqat yashil main'dan", deploy_gated_on_green_main),
     ("qidiruv ochiq, AI kraulerlar yopiq", search_open_ai_crawlers_blocked),
+    ("navigatsiya prefetch'i niyatda", nav_prefetch_on_intent),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),

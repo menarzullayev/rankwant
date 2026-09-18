@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { IntentLink } from "@/components/ui/IntentLink";
 import { usePathname } from "next/navigation";
 
 import { useSidebar } from "@/context/SidebarContext";
@@ -37,7 +37,7 @@ export default function AppSidebar() {
  ${isMobileOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
     >
       <div className="flex h-16 items-center justify-between gap-1">
-        <Link
+        <IntentLink
           href="/"
           className="text-lg font-bold"
           onClick={closeMobileSidebar}
@@ -49,7 +49,7 @@ export default function AppSidebar() {
           ) : (
             <span className="rw-accent-ink">R</span>
           )}
-        </Link>
+        </IntentLink>
         <button
           type="button"
           onClick={closeMobileSidebar}
@@ -108,7 +108,7 @@ export default function AppSidebar() {
                 const unread = href === "/updates" ? count : 0;
                 return (
                   <li key={href}>
-                    <Link
+                    <IntentLink
                       href={href}
                       onClick={closeMobileSidebar}
                       aria-current={active ? "page" : undefined}
@@ -137,7 +137,7 @@ export default function AppSidebar() {
                           // Yig'ilgan panelda matn yo'q — nuqta yetarli.
                           <span className="absolute top-1.5 right-1.5 size-2 rounded-full rw-accent-bg" />
                         ))}
-                    </Link>
+                    </IntentLink>
                   </li>
                 );
               })}
