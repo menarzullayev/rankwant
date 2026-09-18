@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { IntentLink } from "@/components/ui/IntentLink";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -218,9 +218,9 @@ export default function AppTopNav({
           {isMobileOpen ? <Icon name="nav.close" /> : <Icon name="nav.menu" />}
         </button>
 
-        <Link href="/" className="shrink-0 text-lg font-bold">
+        <IntentLink href="/" className="shrink-0 text-lg font-bold">
           Rank<span className="rw-accent-ink">Want</span>
-        </Link>
+        </IntentLink>
 
         {/* Guruhlar — faqat keng ekranda. */}
         <nav
@@ -267,7 +267,7 @@ export default function AppTopNav({
                       const unread = href === "/updates" ? count : 0;
                       return (
                         <li key={href} role="none">
-                          <Link
+                          <IntentLink
                             href={href}
                             role="menuitem"
                             aria-current={active ? "page" : undefined}
@@ -284,7 +284,7 @@ export default function AppTopNav({
                                 {unread > 99 ? "99+" : unread}
                               </span>
                             )}
-                          </Link>
+                          </IntentLink>
                         </li>
                       );
                     })}
@@ -327,7 +327,7 @@ export default function AppTopNav({
                     pathname === href || pathname.startsWith(`${href}/`);
                   return (
                     <li key={href}>
-                      <Link
+                      <IntentLink
                         href={href}
                         aria-current={active ? "page" : undefined}
                         onClick={closeMobileSidebar}
@@ -338,7 +338,7 @@ export default function AppTopNav({
                           className={`size-5 shrink-0 ${active ? "menu-item-icon-active" : "menu-item-icon-inactive"}`}
                         />
                         <span className="truncate">{t(locale, key)}</span>
-                      </Link>
+                      </IntentLink>
                     </li>
                   );
                 })}

@@ -42,3 +42,4 @@ kirill matn, yozilganicha qolgan jadvallar.
 | 2026-09-17 | [github-free](2026-09-17-github-free/REPORT.md) | GitHub Free + private repo: imkoniyatlar, cheklovlar, Actions daqiqalari | `docs/10-operations` |
 | 2026-09-17 | [homepage-load](2026-09-17-homepage-load/REPORT.md) | Bosh sahifa SSR: 20/50/100 VU local k6, prefetch, 1000 tashrif hukmi | `tests/load/README.md` |
 | 2026-09-18 | [appearance-audit](2026-09-18-appearance-audit/BOARD.md) | Appearance (customizer + `/settings/korinish`) auditi: 9 chipta, ikkita ildiz — `parseColor` va `prefs` sxemasi | `apps/api/core/prefs.py`, `apps/web/src/lib/theme/color.ts` |
+| 2026-09-18 | [homepage-profile](2026-09-18-homepage-profile/REPORT.md) | Bosh sahifa profili: render CPU 12–17 ms, lug'at HTML'ning yarmi (A/B: CPU −32%), chrome prefetch'i tashrifga ~130–150 ms | `apps/web/src/components/ui/IntentLink.tsx`, CLAUDE.md qarorlar jadvali |

@@ -1,7 +1,7 @@
 "use client";
 
 import type { Route } from "next";
-import Link from "next/link";
+import { IntentLink } from "@/components/ui/IntentLink";
 
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
@@ -24,27 +24,27 @@ export default function UserMenu() {
 
   if (!user) {
     return (
-      <Link
+      <IntentLink
         href={"/login?tab=login" as Route}
         className="flex h-10 items-center gap-2 rw-radius-sm rw-accent-bg px-4 text-theme-sm font-medium text-white transition"
       >
         <Icon name="user.profile" className="size-4" />
         {t(locale, "auth.login")}
-      </Link>
+      </IntentLink>
     );
   }
 
   return (
     <div className="flex items-center gap-2">
       {user.is_staff && (
-        <Link
+        <IntentLink
           href="/admin"
           className="hidden h-10 items-center rw-radius-sm border rw-line px-3 text-theme-sm font-medium rw-accent-ink transition rw-hover-accent sm:flex"
         >
           {t(locale, "admin.title.page")}
-        </Link>
+        </IntentLink>
       )}
-      <Link
+      <IntentLink
         href={`/users/${user.username}`}
         className="flex h-10 items-center gap-2 rw-radius-sm border rw-line px-3 text-theme-sm font-medium rw-strong transition rw-hover-bg"
       >
@@ -52,15 +52,15 @@ export default function UserMenu() {
         <span className="hidden sm:inline">
           {user.display_name || user.username}
         </span>
-      </Link>
-      <Link
+      </IntentLink>
+      <IntentLink
         href="/settings/profil"
         aria-label={t(locale, "settings.title")}
         title={t(locale, "settings.title")}
         className="flex size-10 items-center justify-center rw-radius-sm border rw-line rw-dim transition rw-hover-strong"
       >
         <Icon name="system.settings" className="size-4" />
-      </Link>
+      </IntentLink>
       {/* Tor ekranda faqat ikonka: matnli tugma ~70px olardi va
           sarlavha 390px da sig'masdan siljib ketardi. Nomi `aria-label`
           da qoladi, ya'ni ekran o'quvchi uchun hech narsa yo'qolmaydi. */}

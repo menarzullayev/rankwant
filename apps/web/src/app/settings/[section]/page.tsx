@@ -7,7 +7,7 @@ import { SECTIONS, isSection } from "@/components/settings/sections";
 import { t } from "@/i18n/messages";
 import { getLocale } from "@/i18n/server";
 import type { Me } from "@/lib/api";
-import { getWithSession } from "@/lib/api.server";
+import { getSessionUser } from "@/lib/api.server";
 
 type Props = { params: Promise<{ section: string }> };
 
@@ -31,7 +31,7 @@ export default async function SettingsSectionPage({ params }: Props) {
   // ko'rsatiladigan hech narsasi yo'q. `?next=` bilan qaytariladi:
   // sozlamaga kirish uchun kirgan odam o'sha bo'limga qaytishi kerak,
   // bosh sahifaga emas (qaror 1).
-  const me = await getWithSession<Me>("/me/").catch(() => null);
+  const me = await getSessionUser<Me>();
   if (!me) redirect(`/login?next=${encodeURIComponent(`/settings/${section}`)}`);
 
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { IntentLink } from "@/components/ui/IntentLink";
 import { useEffect, useState } from "react";
 
 import { useSession } from "@/context/SessionContext";
@@ -42,10 +42,10 @@ export default function HeaderStatus() {
 
   return (
     <div className="flex items-center gap-2">
-      <Link href="/qvant" className={`${pill} hidden sm:flex`} title="Qvant">
+      <IntentLink href="/qvant" className={`${pill} hidden sm:flex`} title="Qvant">
         <Icon name="shop.coin" className="size-4 rw-accent-ink" />
         {balance ?? "…"}
-      </Link>
+      </IntentLink>
       <span
         className={`${pill} hidden sm:flex`}
         title={`${user.streak_count} ${t(locale, "header.streak")}`}
@@ -53,7 +53,7 @@ export default function HeaderStatus() {
         <Icon name="ranking.streak" className="size-4 rw-warn-ink" />
         {user.streak_count}
       </span>
-      <Link
+      <IntentLink
         href="/notifications"
         className="relative flex size-10 items-center justify-center rw-radius-sm border rw-line rw-dim-2 transition rw-hover-bg"
         title={unread ? `${unread}` : t(locale, "header.noUnread")}
@@ -64,7 +64,7 @@ export default function HeaderStatus() {
             {unread > 99 ? "99+" : unread}
           </span>
         )}
-      </Link>
+      </IntentLink>
     </div>
   );
 }
