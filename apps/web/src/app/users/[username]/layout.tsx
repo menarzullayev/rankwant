@@ -58,29 +58,39 @@ export default async function ProfileLayout({ children, params }: Props) {
         <ProfileCard profile={profile} locale={locale} />
       </aside>
       <div className="min-w-0 space-y-6">
-        <section className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-4">
+        {/* lg da EMAS, xl da: yon panel 300 px ni oladi, shuning uchun bu
+            yerda kontent ustuni 1024 px da atigi 377 px (bosh sahifada 749).
+            O'lchandi: 1024 da majburan 4 ustun qo'yilsa karta 82 px bo'lib
+            raqamlar 27 px ga qirqiladi — `lg:grid-cols-4` mumkin emas.
+            1280 da esa 4 ustun sig'adi (ichki 104 px), shuning uchun raqam
+            shu oraliqda 24 px ga tushadi va `2xl` da 30 px ga qaytadi. */}
+        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard
             label="Skills"
             value={user.rating_skills}
             hint={ratingHint(user, "skills", locale)}
             about={t(locale, "profile.hintSkills")}
+            valueClassName="xl:text-2xl 2xl:text-title-sm"
           />
           <StatCard
             label="Contests"
             value={user.rating_contest}
             hint={ratingHint(user, "contest", locale)}
             about={t(locale, "profile.hintContests")}
+            valueClassName="xl:text-2xl 2xl:text-title-sm"
           />
           <StatCard
             label={t(locale, "leaderboard.activity")}
             value={user.rating_activity}
             hint={ratingHint(user, "activity", locale)}
             about={t(locale, "profile.hintActivity")}
+            valueClassName="xl:text-2xl 2xl:text-title-sm"
           />
           <StatCard
             label={t(locale, "leaderboard.streak")}
             value={user.streak_count}
             about={t(locale, "profile.hintStreak")}
+            valueClassName="xl:text-2xl 2xl:text-title-sm"
           />
         </section>
         <ProfileNav username={user.username} />

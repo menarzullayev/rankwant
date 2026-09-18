@@ -2524,6 +2524,10 @@ def _decisions_sandbox(extra_workflows: dict[str, str]) -> tuple[int, str]:
         # while the columns are narrow. Without it the sandbox copy cannot be
         # read and the check exits 2 instead of testing anything.
         "apps/web/src/components/ui/Card.tsx",
+        # Profile KPI grid steps at `xl` (2026-09-18): its content column is
+        # narrow because of the 300 px sidebar, so it cannot copy the home
+        # page's `lg`. Missing here, `check_decisions.py` exits 2.
+        "apps/web/src/app/users/[username]/layout.tsx",
     )
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
@@ -2664,6 +2668,46 @@ def neg_decisions_kpi_value_prop_ignored() -> tuple[bool, str]:
         "`mt-1 text-title-sm font-bold rw-strong ${valueClassName}`",
         "`mt-1 text-title-sm font-bold rw-strong`",
         _KPI_RULE,
+    )
+
+
+# ── Profile KPI grid steps at `xl`, not `lg` (owner decision 2026-09-18) ──
+
+_PROFILE_RULE = "profil KPI to'ri xl da 4 ustun"
+_PROFILE_STEP = 'valueClassName="xl:text-2xl 2xl:text-title-sm"'
+_PROFILE_LAYOUT = "apps/web/src/app/users/[username]/layout.tsx"
+
+
+def neg_decisions_profile_kpi_copies_home_lg() -> tuple[bool, str]:
+    # The tempting "consistency" edit: copy the home page's `lg`. Measured at
+    # 1024 px the content column is 377 px, so 4-up gives 82 px cards and
+    # clips the values by 27 px.
+    return _decision_broken(
+        _PROFILE_LAYOUT,
+        "sm:grid-cols-2 xl:grid-cols-4",
+        "sm:grid-cols-2 lg:grid-cols-4",
+        _PROFILE_RULE,
+    )
+
+
+def neg_decisions_profile_kpi_stuck_at_2xl() -> tuple[bool, str]:
+    # Back to `2xl`: cards stretch to 436 px just below 1536.
+    return _decision_broken(
+        _PROFILE_LAYOUT,
+        "sm:grid-cols-2 xl:grid-cols-4",
+        "sm:grid-cols-2 2xl:grid-cols-4",
+        _PROFILE_RULE,
+    )
+
+
+def neg_decisions_profile_kpi_value_step_lost() -> tuple[bool, str]:
+    # One card keeps a 30 px value in a 104 px column, where a 6-digit counter
+    # measures exactly 104 px. `replace(..., 1)` hits the first card only.
+    return _decision_broken(
+        _PROFILE_LAYOUT,
+        _PROFILE_STEP,
+        "",
+        _PROFILE_RULE,
     )
 
 
@@ -3904,6 +3948,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("KPI to'ri 3 ustunga qaytsa tutilsin", neg_decisions_kpi_grid_3up_creeps_back),
             ("KPI raqami pog'onasi yo'qolsa tutilsin", neg_decisions_kpi_card_value_step_lost),
             ("KPI raqam prop'i e'tiborsiz qolsa tutilsin", neg_decisions_kpi_value_prop_ignored),
+            ("profil to'ri bosh sahifa `lg` ini ko'chirsa tutilsin", neg_decisions_profile_kpi_copies_home_lg),
+            ("profil to'ri `2xl` da qolsa tutilsin", neg_decisions_profile_kpi_stuck_at_2xl),
+            ("profil raqami pog'onasi yo'qolsa tutilsin", neg_decisions_profile_kpi_value_step_lost),
         ],
     ),
     (
