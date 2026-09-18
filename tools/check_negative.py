@@ -677,6 +677,28 @@ def neg_i18n_server_drops_locales() -> tuple[bool, str]:
         return expect_fail("i18n", "i18n/server evict bilan chegaralangan")
 
 
+def neg_i18n_registry_module_local() -> tuple[bool, str]:
+    """A module-local registry again: SSR client components lose the text."""
+    path = ROOT / "apps/web/src/i18n/messages.ts"
+    old = "const registry: Registry = (realm.__rwMessages ??= new Map());"
+    new = "const registry: Registry = new Map();"
+    if old not in path.read_bytes().decode("utf-8"):
+        return False, "i18n/reyestr globalThis: langar topilmadi"
+    with Mutation(path, old, new):
+        return expect_fail("i18n", "i18n/reyestr modul ichida")
+
+
+def neg_i18n_registry_cleared() -> tuple[bool, str]:
+    """`registerMessages` clearing the shared registry again."""
+    path = ROOT / "apps/web/src/i18n/messages.ts"
+    old = "  registry.set(locale, dict);\n"
+    new = "  registry.clear();\n  registry.set(locale, dict);\n"
+    if old not in path.read_bytes().decode("utf-8"):
+        return False, "i18n/reyestr tozalash: langar topilmadi"
+    with Mutation(path, old, new):
+        return expect_fail("i18n", "i18n/reyestr to'liq tozalanadi")
+
+
 def neg_i18n_server_missing_locale() -> tuple[bool, str]:
     """`ALL` dan bitta til olib tashlansa — tutilsinmi?"""
     path = ROOT / "apps/web/src/i18n/messages.server.ts"
@@ -3295,6 +3317,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("shablon oila kalitisiz", neg_i18n_template_family),
             ("server evict bilan chegaralangan", neg_i18n_server_drops_locales),
             ("server lug'atda til yetishmaydi", neg_i18n_server_missing_locale),
+            ("reyestr modul ichiga qaytsa tutilsin", neg_i18n_registry_module_local),
+            ("reyestr to'liq tozalansa tutilsin", neg_i18n_registry_cleared),
             ("runtime dev throw yo'q", neg_i18n_runtime_dev_throw),
             ("runtime takroriy jurnal", neg_i18n_runtime_dedup),
         ],

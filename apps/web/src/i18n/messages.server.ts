@@ -1,5 +1,7 @@
 import "server-only";
 
+import { createHash } from "node:crypto";
+
 import { registerMessages, type Locale, type MessageKey } from "./messages";
 import { en } from "./locales/en";
 import { es } from "./locales/es";
@@ -16,14 +18,13 @@ import { zh } from "./locales/zh";
  *
  *  Nega hammasi bu yerda, `messages.ts` da emas: Node'da hajm muhim emas,
  *  mijozga esa bu to'plam UMUMAN bormaydi — fayl `server-only` bilan
- *  belgilangan, uni faqat `layout.tsx` import qiladi. Klientga faqat aktiv
- *  til uzatiladi (inline skript, `layout.tsx` ga qarang).
+ *  belgilangan. The browser receives only the active language, as the file
+ *  that `dictionaryScript` produces (served by `app/i18n/[file]/route.ts`).
  *
  *  Ro'yxatga olish MODUL ishga tushishida bo'ladi, ya'ni `t()` ni
  *  chaqiruvchi har qanday server komponentidan OLDIN bajariladi.
  *
- *  ⚠️ `evict` ATAYLAB berilmaydi: bu tsikl o'nta tilni ham ro'yxatga
- *  oladi va serverda ularning barchasi kerak. Bir marta bu joyda
+ *  Serverda ularning barchasi kerak. Bir marta bu joyda
  *  chegaralash (`registry.clear()`) bor edi va tsikl faqat oxirgi
  *  tilni qoldirardi — natijada SSR'da o'nlab xom kalit chiqqan
  *  (`home.start`, `nav.contests`, …, o'lchandi).
@@ -45,7 +46,23 @@ for (const [locale, dict] of Object.entries(ALL)) {
   registerMessages(locale as Locale, dict);
 }
 
-/** Aktiv tilning lug'ati — `layout.tsx` shuni mijozga uzatadi. */
-export function messagesFor(locale: Locale): Record<MessageKey, string> {
-  return ALL[locale] ?? ALL.uz;
+/** Short content hash per dictionary. The file is cached for a year, so a
+ *  changed dictionary must get a new address. */
+const VERSION = Object.fromEntries(
+  Object.entries(ALL).map(([locale, dict]) => [
+    locale,
+    createHash("sha256").update(JSON.stringify(dict)).digest("hex").slice(0, 12),
+  ]),
+) as Record<Locale, string>;
+
+/** Address of the dictionary file for `locale`. */
+export function dictionaryUrl(locale: Locale): string {
+  return `/i18n/${locale}.js?v=${VERSION[locale]}`;
+}
+
+/** The dictionary file: it registers `locale` in the browser's registry,
+ *  and creates that registry when the app code has not loaded yet (see
+ *  `registry` in `messages.ts`). */
+export function dictionaryScript(locale: Locale): string {
+  return `(self.__rwMessages=self.__rwMessages||new Map()).set(${JSON.stringify(locale)},${JSON.stringify(ALL[locale])});\n`;
 }

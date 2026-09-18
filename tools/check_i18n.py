@@ -485,6 +485,27 @@ def check_server_registry() -> list[str]:
             problems.append(
                 f"messages.server.ts: `ALL` da {len(codes)} til bor, 10 kutilgan"
             )
+    # 3. The registry is shared through `globalThis`. On the server Next.js
+    #    evaluates `messages.ts` once for server components and once for
+    #    client components rendered to HTML. With a module-local map the
+    #    second copy stays empty, because the dictionary is no longer a
+    #    prop, and client components render raw keys (measured 2026-09-18).
+    shared_path = ROOT / "apps/web/src/i18n/messages.ts"
+    if not shared_path.exists():
+        return problems + [f"messages.ts topilmadi ({shared_path})"]
+    shared = shared_path.read_text(encoding="utf-8")
+    if not re.search(r"registry(?::\s*\w+)?\s*=\s*\(\s*realm\.__rwMessages\s*\?\?=", shared):
+        problems.append(
+            "messages.ts: reyestr `globalThis.__rwMessages` orqali ulashilmagan — "
+            "SSR'da klient komponentlar xom kalit chizadi"
+        )
+    # 4. Nothing clears the whole registry: on the server it serves every
+    #    request at once, in every language.
+    if re.search(r"registry\.clear\(\)", shared):
+        problems.append(
+            "messages.ts: `registry.clear()` — umumiy reyestrni tozalash "
+            "barcha so'rovlarning lug'atini o'chiradi"
+        )
     return problems
 
 

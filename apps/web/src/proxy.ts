@@ -98,5 +98,9 @@ export function proxy(request: NextRequest): NextResponse {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  // `i18n/` holds the static dictionary files (`app/i18n/[file]/route.ts`).
+  // Through here they would get `Vary: Accept-Language` and possibly an
+  // experiment cookie, and a CDN keeps neither kind of response. Their
+  // content never depends on the request.
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|i18n/).*)"],
 };
