@@ -146,7 +146,10 @@ def on_attempt_judged(attempt: Attempt) -> None:
     type(attempt.problem).objects.filter(pk=attempt.problem_id).update(
         solved_count=F("solved_count") + 1
     )
-    User.objects.filter(pk=attempt.user_id).update(solved_count=F("solved_count") + 1)
+    # Public problems only, the same rule as the profile's solved figures:
+    # a hidden contest problem must not show up in a public count.
+    if attempt.problem.is_public:
+        User.objects.filter(pk=attempt.user_id).update(solved_count=F("solved_count") + 1)
     recalc_skills(attempt.user, ref_id=attempt.problem.slug)
 
     # Phase 1 — Qvant va Activity. Qvant hodisasi Skills dan KEYIN:
@@ -214,9 +217,10 @@ def on_accept_revoked(attempt: Attempt) -> None:
         solved_count=Greatest(F("solved_count") - 1, Value(0))
     )
     # Same floor as above: the counter may already be behind the rows.
-    User.objects.filter(pk=attempt.user_id).update(
-        solved_count=Greatest(F("solved_count") - 1, Value(0))
-    )
+    if attempt.problem.is_public:
+        User.objects.filter(pk=attempt.user_id).update(
+            solved_count=Greatest(F("solved_count") - 1, Value(0))
+        )
     recalc_skills(
         attempt.user,
         reason=RatingHistory.Reason.RECALCULATION,
@@ -235,6 +239,22 @@ def on_accept_revoked(attempt: Attempt) -> None:
             on_unsolved(attempt.user)
     except Exception:
         log.exception("yutuq qaytarilmadi: attempt %s", attempt.pk)
+
+
+def on_problem_visibility_changed(problem_id: int, is_public: bool) -> None:
+    """Move every solver of the problem by one when it is published or hidden.
+
+    `User.solved_count` counts public problems only (ADR-0024). A queryset
+    `update(is_public=...)` bypasses this; `recount_user_stats` repairs that.
+    """
+    from django.db.models import F, Value
+    from django.db.models.functions import Greatest
+
+    solvers = User.objects.filter(solved__problem_id=problem_id)
+    if is_public:
+        solvers.update(solved_count=F("solved_count") + 1)
+    else:
+        solvers.update(solved_count=Greatest(F("solved_count") - 1, Value(0)))
 
 
 @transaction.atomic

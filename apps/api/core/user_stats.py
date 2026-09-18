@@ -83,7 +83,12 @@ def expected(registry: Any = None) -> dict[int, dict[str, Any]]:
         # A user created after the first query simply waits for the next run.
         return out.get(user_id)
 
-    for user_id, solved in UserSolvedProblem.objects.values_list("user_id").annotate(n=Count("pk")):
+    # Public problems only, like the profile's solved figures.
+    for user_id, solved in (
+        UserSolvedProblem.objects.filter(problem__is_public=True)
+        .values_list("user_id")
+        .annotate(n=Count("pk"))
+    ):
         if (row := row_for(user_id)) is not None:
             row["solved_count"] = solved
 
