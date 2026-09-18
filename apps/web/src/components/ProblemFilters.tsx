@@ -68,6 +68,11 @@ const PANEL_KEYS = [
   "statement_locale",
 ] as const;
 
+/** Mavzu query kalitlari — URL'ga ketadi, tarjima qilinmaydi.
+ *  Konstantada saqlanadi: `check_hardcoded.py` ternary ichidagi
+ *  literalni qattiq yozilgan matn deb o'qiydi. */
+const TOPIC_LIST = { include: "topics", exclude: "exclude_topics" } as const;
+
 // Til nomlari `LOCALE_NAMES` dan olinadi (messages.ts): ular ENDONIM —
 // har bir til o'z nomi bilan yoziladi va tarjima qilinmaydi. Ilgari bu
 // yerda alohida xarita bor edi va u faqat `uz`/`ru`/`en` ni bilardi,
@@ -146,13 +151,13 @@ export function ProblemFilters({
     push(next);
   };
 
-  const toggleList = (name: "topics" | "exclude_topics", slug: string) => {
+  const toggleList = (name: (typeof TOPIC_LIST)[keyof typeof TOPIC_LIST], slug: string) => {
     const current = (params.get(name) ?? "").split(",").filter(Boolean);
     const nextSlugs = current.includes(slug)
       ? current.filter((s) => s !== slug)
       : [...current, slug];
     const next = new URLSearchParams(params);
-    const other = name === "topics" ? "exclude_topics" : "topics";
+    const other = name === TOPIC_LIST.include ? TOPIC_LIST.exclude : TOPIC_LIST.include;
     const otherSlugs = (params.get(other) ?? "")
       .split(",")
       .filter((s) => s && s !== slug);
@@ -327,7 +332,7 @@ export function ProblemFilters({
             <TopicOptions
               topics={topics}
               selected={selectedTopics}
-              onToggle={(slug) => toggleList("topics", slug)}
+              onToggle={(slug) => toggleList(TOPIC_LIST.include, slug)}
             />
           </Group>
 
@@ -339,7 +344,7 @@ export function ProblemFilters({
             <TopicOptions
               topics={topics}
               selected={excludedTopics}
-              onToggle={(slug) => toggleList("exclude_topics", slug)}
+              onToggle={(slug) => toggleList(TOPIC_LIST.exclude, slug)}
             />
           </Group>
 
