@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Daily CI report: what ran on the runner in the last day, and what needs attention.
 
-Since 2026-09-17 CI has one runner, the `rankwant-ci-runner` container, and a watchdog
-that restarts it when it stops taking jobs (tools/runner_watchdog.py). Neither tells
+Since 2026-09-17 CI runs in `rankwant-ci-runner`; a second container
+(`rankwant-ci-runner-2`) is optional until commissioned. A watchdog
+restarts a runner that stops taking jobs (tools/runner_watchdog.py). Neither tells
 anyone. A scheduled task runs this every morning and writes one markdown page, so a red
 nightly, a stuck run or a watchdog restart is seen the next day rather than whenever
 someone happens to look. Nothing leaves the machine.

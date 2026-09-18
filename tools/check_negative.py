@@ -321,6 +321,48 @@ def neg_docs_missing_adr() -> tuple[bool, str]:
         return expect_fail("docs", "docs/mavjud bo'lmagan ADR havolasi")
 
 
+def neg_confusable_cyrillic_identifier() -> tuple[bool, str]:
+    """Identifikatordagi kirill harf — tutilsinmi?
+
+    2026-09-18 da topilgan haqiqiy holat: test nomida `са` kirill edi,
+    ko'rinishi lotin `sa` bilan bir xil. `git grep` ham, IDE ham topa
+    olmaydi, pytest chiqishida esa lotinchaga o'xshab ko'rinadi.
+    """
+    path = ROOT / "apps/api/tests/test_warn_email_quota.py"
+    if not path.exists():
+        return False, "confusables: namunali fayl topilmadi"
+    with Mutation(
+        path,
+        "def test_bir_kunda_ikki_marta_yursa_ham_bitta_yozuv",
+        # lotin `sa` o'rniga kirill `са` (U+0441 U+0430)
+        "def test_bir_kunda_ikki_marta_yur\u0441\u0430_ham_bitta_yozuv",
+    ):
+        return expect_fail("confusables", "confusables/identifikatorda kirill")
+
+
+def neg_confusable_formula_allowed() -> tuple[bool, str]:
+    """Matn ichidagi grek harf XATO BERMASLIGI kerak.
+
+    Tekshiruv butun qatorni olsa, qiymat ichidagi matematik belgi yolg'on
+    xato beradi — o'lchandi: `const FORMULA_SKILLS = "Skills = Σ pᵢ × …"`.
+    Ya'ni bu salbiy test tekshiruvning QAMROVINI qulflaydi: u faqat
+    e'lon qilinayotgan nomga qaraydi, matnga emas.
+    """
+    path = ROOT / "apps/web/src/app/rating/page.tsx"
+    if not path.exists():
+        return False, "confusables: rating/page.tsx topilmadi"
+    original = path.read_bytes()
+    text = original.decode("utf-8")
+    if 'const FORMULA_SKILLS = "Skills = \u03a3' not in text:
+        return False, "confusables: grek harfli namuna topilmadi"
+    # Fayl allaqachon grek harfli matn tutadi — ya'ni hozirgi holat
+    # «yashil» bo'lishi shart. Bu oldini tekshiradi.
+    code, _ = run_check("confusables")
+    if code != 0:
+        return False, "confusables: matematik matn yolg'on xato berdi (exit != 0)"
+    return True, "confusables/matndagi grek harf xato bermadi"
+
+
 def neg_docs_broken_link() -> tuple[bool, str]:
     """Hujjatda mavjud bo'lmagan havola — tutilsinmi?"""
     candidates = sorted((ROOT / "docs").glob("*.md"))
@@ -2191,6 +2233,33 @@ def neg_decisions_deploy_gate_unwired() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_security_on_pr() -> tuple[bool, str]:
+    return _decision_broken(
+        ".github/workflows/security.yml",
+        "on:\n",
+        "on:\n  pull_request:\n",
+        "PR'da og'ir CI yo'q",
+    )
+
+
+def neg_decisions_smoke_on_pr() -> tuple[bool, str]:
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "&& github.event_name != 'pull_request' }}",
+        "}}",
+        "PR'da og'ir CI yo'q",
+    )
+
+
+def neg_decisions_runner2_profile_dropped() -> tuple[bool, str]:
+    return _decision_broken(
+        "tools/runner/docker-compose.runner.yml",
+        '    profiles: ["second"]\n',
+        "",
+        "PR'da og'ir CI yo'q",
+    )
+
+
 def neg_decisions_runner_compose_label_dropped() -> tuple[bool, str]:
     return _decision_broken(
         "tools/runner/docker-compose.runner.yml",
@@ -2268,6 +2337,8 @@ def _decisions_sandbox(extra_workflows: dict[str, str]) -> tuple[int, str]:
         "tools/deploy.sh",
         "tools/runner/docker-compose.runner.yml",
         "tools/runner/entrypoint.sh",
+        "tools/runner/recreate.sh",
+        "tools/runner_watchdog.py",
         ".githooks/pre-push",
         "CONTRIBUTING.md",
         "CLAUDE.md",
@@ -2959,6 +3030,21 @@ def neg_watchdog_cooldown_holds() -> tuple[bool, str]:
     return True, "watchdog/tanaffus: 10 daqiqa ichida qayta restart qilinmadi"
 
 
+def neg_watchdog_second_runner_restarts() -> tuple[bool, str]:
+    name = "nsn-pc-rankwant-container-2"
+    runner = {
+        "name": name,
+        "status": "online",
+        "busy": False,
+        "labels": [{"name": label} for label in ("self-hosted", "Linux", "X64", "rankwant")],
+    }
+    state = {name: {"suspect_since": "2026-09-17T13:36:00+00:00"}}
+    code, out, _ = _watchdog([runner], [_wd_job()], state)
+    if "restart qilinardi" not in out or "restart buyrug'i yo'q" in out:
+        return False, f"watchdog/ikkinchi runner: restart yo'q (exit {code}) — {out.strip()[-160:]}"
+    return True, "watchdog/ikkinchi runner: restart qilinardi"
+
+
 def neg_watchdog_unreadable_time() -> tuple[bool, str]:
     code, out, _ = _watchdog([_wd_runner()], [_wd_job(created_at="kecha")], _WD_SUSPECT)
     if code != 2:
@@ -3056,6 +3142,24 @@ def neg_after_reboot_watchdog_idle_since_boot() -> tuple[bool, str]:
     facts = _ar_facts()
     facts["tasks"]["RankWant CI Runner Watchdog"]["last_run"] = "2026-09-17T23:00:00.0000000Z"
     return _after_reboot_expect("watchdog reboot'dan keyin yurmagan", facts, 1, "Watchdog")
+
+
+def neg_after_reboot_second_runner_half_commissioned() -> tuple[bool, str]:
+    facts = _ar_facts()
+    facts["runners"] = [
+        *facts["runners"],
+        {
+            "name": "nsn-pc-rankwant-container-2",
+            "status": "online",
+            "labels": [{"name": "self-hosted"}, {"name": "rankwant"}],
+        },
+    ]
+    return _after_reboot_expect(
+        "ikkinchi runner GitHub'da, konteyner yo'q",
+        facts,
+        1,
+        "rankwant-ci-runner-2",
+    )
 
 
 def neg_after_reboot_unreadable_facts() -> tuple[bool, str]:
@@ -3157,6 +3261,13 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("mavjud bo'lmagan ADR havolasi", neg_docs_missing_adr),
             ("tadqiqotda havola baribir tekshirilsin", neg_docs_research_link_still_checked),
             ("istisno faqat docs/research ga", neg_docs_research_exemption_is_scoped),
+        ],
+    ),
+    (
+        "confusables",
+        [
+            ("identifikatorda kirill", neg_confusable_cyrillic_identifier),
+            ("matndagi grek harf xato bermasin", neg_confusable_formula_allowed),
         ],
     ),
     (
@@ -3340,6 +3451,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("AI krauler ro'yxatdan tushsa tutilsin", neg_decisions_ai_crawler_dropped),
             ("sinov label'i self-test'da o'tadi", neg_decisions_trial_label_selftest_allowed),
             ("sinov label'i boshqa workflow'da tutilsin", neg_decisions_trial_label_scoped),
+            ("Security PR'da qaytsa tutilsin", neg_decisions_security_on_pr),
+            ("smoke PR'da qaytsa tutilsin", neg_decisions_smoke_on_pr),
+            ("runner-2 profile tushsa tutilsin", neg_decisions_runner2_profile_dropped),
         ],
     ),
     (
@@ -3380,6 +3494,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("boshqa label'dagi job'ga tegilmaydi", neg_watchdog_foreign_labels_left_alone),
             ("tanaffus ichida qayta restart yo'q", neg_watchdog_cooldown_holds),
             ("o'qilmagan vaqt — exit 2", neg_watchdog_unreadable_time),
+            ("ikkinchi runner restart qilinadi", neg_watchdog_second_runner_restarts),
         ],
     ),
     (
@@ -3392,6 +3507,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("runner production label'siz — tutilsin", neg_after_reboot_runner_without_label),
             ("watchdog reboot'dan keyin yurmagan — tutilsin", neg_after_reboot_watchdog_idle_since_boot),
             ("o'qib bo'lmagan faktlar — exit 2", neg_after_reboot_unreadable_facts),
+            ("ikkinchi runner yarim ochilsa tutilsin", neg_after_reboot_second_runner_half_commissioned),
         ],
     ),
     (

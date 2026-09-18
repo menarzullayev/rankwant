@@ -6,7 +6,10 @@ Sxema **guruhlangan va versiyalangan**:
 
     {
       "version": 2,
-      "appearance": {"style", "theme", "accent", "font", "size", "density"},
+      "appearance": {"style", "accent", "font", "fontHeading", "size", "scale",
+                     "lineHeight", "tracking", "width", "density", "navMode",
+                     "navShape", "card", "pattern", "verdictStyle",
+                     "statusStyle", "loadingStyle", "iconPack"},
       "tokens": {},        # kuchli rejim (D9) — flag bilan O'CHIQ (D43)
       "a11y": {"vision", "motion", "bigTargets", "strongFocus"},
       "templates": [{"name", "appearance", "a11y"}],
@@ -38,20 +41,65 @@ SCHEMA_VERSION = 2
 
 THEMES = ("light", "dark", "system")
 #: `null` — uslubning o'z shrifti (D14: Editorial/Terminal uni saqlaydi).
-FONTS = ("plex", "inter", "jakarta", "roboto", "dm-sans")
-SIZES = (90, 100, 110, 120)
+#: `plex` — v1 dan qolgan qiymat: eski hisoblarda saqlanib qolgan, shuning
+#: uchun ro'yxatdan chiqarilmaydi.
+FONTS = ("plex", "inter", "jakarta", "roboto", "dm-sans", "lexend")
+#: Ildiz shrift o'lchami, foiz (D45) — klientdagi `SIZE_MIN/MAX/STEP`.
+SIZE_MIN, SIZE_MAX, SIZE_STEP = 75, 150, 5
+#: Tipografik shkala (D45), qator balandligi va harf oralig'i (D47),
+#: kontent kengligi (D48) — hammasi klientdagi `clamp*` chegaralari.
+SCALE_MIN, SCALE_MAX = 0.9, 1.15
+LINE_HEIGHT_MIN, LINE_HEIGHT_MAX = 0.9, 1.4
+TRACKING_MIN, TRACKING_MAX = -0.02, 0.06
+WIDTH_MIN, WIDTH_MAX, WIDTH_STEP = 1000, 1800, 100
 DENSITIES = ("compact", "comfortable", "spacious")
 #: `normal` — oddiy; `protan` protanopiya VA deuteranopiya uchun (bir xil
 #: o'q yo'qoladi); `tritan` — ko'k-sariq o'qi uchun (D44).
 VISIONS = ("normal", "protan", "tritan")
-MOTIONS = ("system", "reduce")
+#: Harakat darajasi (D49). `reduce` — v1 dan qolgan qiymat, eski
+#: hisoblarda uchraydi; klient endi `system|full|mild|off` yuboradi.
+MOTIONS = ("system", "full", "mild", "off", "reduce")
 EFFECTS = ("none", "fade", "circle")
 
 TEMPLATE_MAX = 5
 TEMPLATE_NAME_MAX = 24
 TOKEN_MAX = 64
 
+#: Katalog maydonlari: navigatsiya, karta, naqsh, verdikt/holat/yuklanish
+#: ko'rinishi va ikonka to'plami. Ularning RO'YXATI klientda (`nav-config.ts`,
+#: `theme/*.ts`) va u tez-tez o'sadi — D54, D55, D57, D60, D62 shu haqda.
+#:
+#: Server ro'yxatni TAKRORLAMAYDI, faqat shaklini tekshiradi. Sabab: ikkinchi
+#: nusxa jimgina eskiradi va yangi ikonka to'plami qo'shilgan kuni saqlash
+#: 400 bera boshlardi — aynan shu holat 2026-09-18 da o'lchangan
+#: (`docs/research/2026-09-18-appearance-audit/BOARD.md`). Sxemaning vazifasi
+#: axlat va cheksiz satrni to'sish, mahsulot katalogini boshqarish emas.
+CATALOG_KEYS = (
+    "navMode",
+    "navShape",
+    "card",
+    "pattern",
+    "verdictStyle",
+    "statusStyle",
+    "loadingStyle",
+    "iconPack",
+)
+APPEARANCE_KEYS = {
+    "style",
+    "accent",
+    "font",
+    "fontHeading",
+    "size",
+    "scale",
+    "lineHeight",
+    "tracking",
+    "width",
+    "density",
+    *CATALOG_KEYS,
+}
+
 STYLE_RE = re.compile(r"[a-z-]{1,20}")
+SLUG_RE = re.compile(r"[a-zA-Z][a-zA-Z0-9-]{0,23}")
 TOKEN_NAME_RE = re.compile(r"--rw-[a-z0-9-]{1,32}")
 #: Token qiymati faqat rang yoki son — ixtiyoriy satr emas. `--rw-font`
 #: kabi tipografiya tokenlarini shrift tanlagichi boshqaradi, matn emas.
@@ -93,6 +141,35 @@ def _clean_accent(value: Any) -> dict[str, int] | None:
     return {"hue": hue, "sat": sat}
 
 
+def _clean_step(key: str, value: Any, low: int, high: int, step: int) -> int:
+    """Butun son, chegara ichida va qadamga tushgan (`size`, `width`)."""
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise PrefsError(f"{key} butun son bo'lsin")
+    if not low <= value <= high or value % step:
+        raise PrefsError(f"{key} {low}…{high} oralig'ida va {step} qadamda bo'lsin")
+    return value
+
+
+def _clean_ratio(key: str, value: Any, low: float, high: float) -> float:
+    """Kasr koeffitsiyent chegara ichida (`scale`, `lineHeight`, `tracking`).
+
+    Klient qiymatni yuzdan biriga yaxlitlaydi; server ham shuni qiladi, aks
+    holda `0.30000000000000004` kabi qiymat saqlanib qolardi.
+    """
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise PrefsError(f"{key} son bo'lsin")
+    if not low <= value <= high:
+        raise PrefsError(f"{key} {low}…{high} oralig'ida bo'lsin")
+    return round(float(value), 3)
+
+
+def _clean_slug(key: str, value: Any) -> str:
+    """Katalog qiymati — qisqa slug. Ro'yxat klientda (`CATALOG_KEYS`)."""
+    if not isinstance(value, str) or not SLUG_RE.fullmatch(value):
+        raise PrefsError(f"{key} qisqa slug bo'lsin (`[a-zA-Z][a-zA-Z0-9-]*`, 24 belgigacha)")
+    return value
+
+
 def _clean_appearance(value: Any) -> dict[str, Any]:
     """Ko'rinish guruhi.
 
@@ -104,7 +181,7 @@ def _clean_appearance(value: Any) -> dict[str, Any]:
     """
     if not isinstance(value, dict):
         raise PrefsError("appearance obyekt kutilgan")
-    unknown = set(value) - {"style", "accent", "font", "size", "density"}
+    unknown = set(value) - APPEARANCE_KEYS
     if unknown:
         raise PrefsError(f"Noma'lum appearance kaliti: {sorted(unknown)[0]}")
     out: dict[str, Any] = {}
@@ -112,19 +189,30 @@ def _clean_appearance(value: Any) -> dict[str, Any]:
         out["style"] = _clean_style(value["style"])
     if "accent" in value:
         out["accent"] = _clean_accent(value["accent"])
-    if "font" in value:
-        font = value["font"]
-        if font is not None and font not in FONTS:
-            raise PrefsError(f"font {FONTS} dan biri yoki null bo'lsin")
-        out["font"] = font
+    for key in ("font", "fontHeading"):
+        if key in value:
+            font = value[key]
+            if font is not None and font not in FONTS:
+                raise PrefsError(f"{key} {FONTS} dan biri yoki null bo'lsin")
+            out[key] = font
     if "size" in value:
-        if value["size"] not in SIZES:
-            raise PrefsError(f"size {SIZES} dan biri bo'lsin")
-        out["size"] = value["size"]
+        out["size"] = _clean_step("size", value["size"], SIZE_MIN, SIZE_MAX, SIZE_STEP)
+    if "width" in value:
+        out["width"] = _clean_step("width", value["width"], WIDTH_MIN, WIDTH_MAX, WIDTH_STEP)
+    for key, low, high in (
+        ("scale", SCALE_MIN, SCALE_MAX),
+        ("lineHeight", LINE_HEIGHT_MIN, LINE_HEIGHT_MAX),
+        ("tracking", TRACKING_MIN, TRACKING_MAX),
+    ):
+        if key in value:
+            out[key] = _clean_ratio(key, value[key], low, high)
     if "density" in value:
         if value["density"] not in DENSITIES:
             raise PrefsError(f"density {DENSITIES} dan biri bo'lsin")
         out["density"] = value["density"]
+    for key in CATALOG_KEYS:
+        if key in value:
+            out[key] = _clean_slug(key, value[key])
     return out
 
 

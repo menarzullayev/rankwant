@@ -1,7 +1,8 @@
 name: Security
 
 on:
-  pull_request:
+  # PR'da yo'q (2026-09-18): har PR CI+Security juftligi bitta runner
+  # navbatini 2× qilardi. gitleaks/pip/npm audit main push va kechasi qoladi.
   push:
     branches: [main]      # branch protection yo'q (private + free plan) — main ham skanerlanadi
   schedule:

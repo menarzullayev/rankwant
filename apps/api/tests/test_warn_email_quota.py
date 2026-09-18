@@ -114,6 +114,24 @@ class TestOgohlantirish:
 
         assert not _ogohlantirishlar(xodim).exists()
 
+    def test_sarlavha_va_matn_bitta_manbadan(self) -> None:
+        """Sarlavha ham, matn ham `mail_quota` dan — `tasks.py` da qattiq
+        yozilgan matn qolmasligi kerak.
+
+        Aks holda xabar ikki faylga bo'linadi: matnni o'zgartirgan odam
+        sarlavhani topa olmaydi (va teskarisi).
+        """
+        from core import mail_quota
+
+        xodim = _xodim()
+        _sent("brevo", DAILY_QUOTA["brevo"])
+
+        warn_email_quota()
+
+        xabar = _ogohlantirishlar(xodim).get()
+        assert xabar.title == mail_quota.ALERT_TITLE
+        assert xabar.body == mail_quota.summary()
+
 
 class TestKimOladi:
     def test_xodim_bolmasa_otkazib_yuboriladi(self) -> None:
@@ -170,7 +188,7 @@ class TestKimOladi:
 
 
 class TestTakrorlanmaslik:
-    def test_bir_kunda_ikki_marta_yurса_ham_bitta_yozuv(self) -> None:
+    def test_bir_kunda_ikki_marta_yursa_ham_bitta_yozuv(self) -> None:
         """Beat soatiga bir marta yuradi — kuniga 24 ta xabar BO'LMASLIGI.
 
         `get_or_create` `ref_id` sifatida UTC kunni yozadi, ya'ni takror

@@ -1,59 +1,76 @@
 #!/usr/bin/env bash
-# Recreate the containerized CI runner, the only CI runner since the WSL one was
-# removed on 2026-09-17. Use it when the container must pick up a change to
-# tools/runner/ or is broken beyond a restart. A plain `docker restart
-# rankwant-ci-runner` keeps the registration and is what the watchdog does.
+# Recreate ONE containerized CI runner. Never `compose down` the project:
+# that would stop the other runner and dump any job it is running.
 #
-#   bash tools/runner/recreate.sh              # recreate, then wait until it listens
+#   bash tools/runner/recreate.sh              # runner (rankwant-ci-runner)
+#   bash tools/runner/recreate.sh --second     # runner-2 (compose profile `second`)
 #   bash tools/runner/recreate.sh --selftest   # ...and prove it takes a job
 #
+# Use this when the container must pick up a change to tools/runner/ or is
+# broken beyond a restart. A plain `docker restart <container>` keeps the
+# registration and is what the watchdog does.
+#
 # The order matters, and each step fixes something that broke once:
-#   1. `down` stops the listener cleanly so it closes its broker session. A
-#      killed listener leaves "A session for this runner already exists".
+#   1. `stop` + `rm` this service only, so the listener closes its broker
+#      session. A killed listener leaves "A session for this runner already
+#      exists".
 #   2. The old registration is deleted before registering again.
 #   3. A fresh registration token (valid about an hour) is minted for `up`.
-# The rankwant-ci-work volume survives `down`, so the tool cache is kept.
+# The matching work volume survives, so the tool cache is kept.
 set -euo pipefail
 
 cd "$(dirname "${BASH_SOURCE[0]}")/../.."
 REPO=menarzullayev/rankwant
-NAME=nsn-pc-rankwant-container
-COMPOSE=(docker compose -f tools/runner/docker-compose.runner.yml)
 
+service=runner
+name=nsn-pc-rankwant-container
+container=rankwant-ci-runner
+profile=()
 selftest=0
 for arg in "$@"; do
   case "$arg" in
+    --second)
+      service=runner-2
+      name=nsn-pc-rankwant-container-2
+      container=rankwant-ci-runner-2
+      profile=(--profile second)
+      ;;
     --selftest) selftest=1 ;;
     *) echo "unknown argument: $arg" >&2; exit 2 ;;
   esac
 done
 
-runner() { gh api "repos/$REPO/actions/runners" --jq ".runners[] | select(.name==\"$NAME\") | $1"; }
+COMPOSE=(docker compose -f tools/runner/docker-compose.runner.yml "${profile[@]}")
+
+runner() { gh api "repos/$REPO/actions/runners" --jq ".runners[] | select(.name==\"$name\") | $1"; }
 
 old_id=$(runner .id)
 if [ -n "$old_id" ] && [ "$(runner .busy)" = "true" ]; then
-  echo "✗ $NAME (id $old_id) is running a job; recreate it once the job ends" >&2
+  echo "✗ $name (id $old_id) is running a job; recreate it once the job ends" >&2
   exit 1
 fi
 
-"${COMPOSE[@]}" down -t 60
+# Service-only teardown. `down` is forbidden here: it stops every runner
+# in this compose project, including the one we did not name.
+"${COMPOSE[@]}" stop -t 60 "$service" || true
+"${COMPOSE[@]}" rm -f "$service" || true
 if [ -n "$old_id" ]; then
   gh api -X DELETE "repos/$REPO/actions/runners/$old_id"
   echo "→ deleted registration $old_id"
 fi
 
 RUNNER_TOKEN=$(gh api -X POST "repos/$REPO/actions/runners/registration-token" --jq .token) \
-  "${COMPOSE[@]}" up -d --build
+  "${COMPOSE[@]}" up -d --no-deps --build "$service"
 
 for _ in $(seq 1 60); do
-  if docker logs rankwant-ci-runner 2>&1 | grep -q "Listening for Jobs"; then
+  if docker logs "$container" 2>&1 | grep -q "Listening for Jobs"; then
     break
   fi
   sleep 2
 done
-docker logs rankwant-ci-runner 2>&1 | grep -E "HOST_REPO_ROOT|registering|Listening for Jobs" | tail -3
+docker logs "$container" 2>&1 | grep -E "HOST_REPO_ROOT|registering|Listening for Jobs" | tail -3
 labels=$(runner '[.labels[].name] | join(",")')
-echo "→ $NAME id=$(runner .id) status=$(runner .status) labels=$labels"
+echo "→ $name id=$(runner .id) status=$(runner .status) labels=$labels"
 case ",$labels," in
   *,rankwant,*) ;;
   *) echo "✗ registered without the production label rankwant: CI jobs will wait forever" >&2; exit 1 ;;
@@ -71,4 +88,4 @@ if [ "$selftest" -eq 1 ]; then
   echo "→ self-test run $run: $conclusion"
   [ "$conclusion" = "success" ] || exit 1
 fi
-echo "✓ runner recreated"
+echo "✓ $name recreated"

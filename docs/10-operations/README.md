@@ -712,14 +712,13 @@ Prod deploy **qo'lda tasdiqlash** bilan (contest oynasi tekshiruvi tufayli).
 
 Joblar **self-hosted runner** da ishlaydi (`runs-on: [self-hosted, rankwant]`).
 2026-09-17 dan `rankwant` label'i Docker Desktop'dagi `rankwant-ci-runner`
-konteynerida turadi: ish papkasi `rankwant-ci-work` volume'ida, runner'ni
-`RankWant CI Runner Watchdog` vazifasi qo'riqlaydi (actions/runner#4444 —
-job'dan keyin runner ish so'rashni to'xtatib qo'yishi mumkin). O'rnatish, sinov
-natijalari, tiklash (`tools/runner/recreate.sh`), kundalik hisobot
-(`tools/runner_report.py`) va reboot'dan keyingi tekshiruv
-(`tools/check_after_reboot.py`) — [tools/runner/README.md](../../tools/runner/README.md).
-Avvalgi WSL runner va uning `Ubuntu-24.04` distro'si 2026-09-17 da olib
-tashlangan, zaxira runner yo'q. Self-hosted sababi — repo private, GitHub'ning bulut runnerlari esa
+konteynerida turadi; 2026-09-18 dan ikkinchisi `rankwant-ci-runner-2`
+(alohida `rankwant-ci-work-2` volume, compose profile `second`). Watchdog
+ikkala nomni ham qayta ishga tushiradi (actions/runner#4444). PR'da Security
+va smoke yo'q — ular `main` push, cron yoki qo'lda. O'rnatish, tiklash
+(`tools/runner/recreate.sh`, `--second` ikkinchisi uchun), hisobot va reboot
+tekshiruvi — [tools/runner/README.md](../../tools/runner/README.md).
+Avvalgi WSL runner 2026-09-17 da olib tashlangan. Self-hosted sababi — repo private, GitHub'ning bulut runnerlari esa
 oyiga 2000 daqiqa bilan cheklangan va u kvota hisobdagi boshqa
 repolar bilan bo'lishiladi. O'z mashinasida Actions bepul va cheksiz.
 

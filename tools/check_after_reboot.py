@@ -3,8 +3,10 @@
 
 Owner decision (2026-09-17): the recovery chain is measured at the next natural reboot,
 not by rebooting on purpose. Until that day nothing exercises it, and the chain changed
-the same day: the WSL runner and its keepalive tasks are gone, CI runs in the
-`rankwant-ci-runner` container (`restart: unless-stopped`), and a watchdog task was added.
+the same day: the WSL runner and its keepalive tasks are gone, CI runs in
+`rankwant-ci-runner` (`restart: unless-stopped`). A second container
+(`rankwant-ci-runner-2`) is optional until it is commissioned: if GitHub
+lists it or the container is up, both sides must be healthy.
 Run this once after the machine is back; it measures each link and exits 0 only if all hold.
 
 Exit codes: 0 every link is back, 1 at least one is not, 2 facts could not be collected
@@ -29,7 +31,12 @@ import _console
 _console.force_utf8()
 
 REPO = "menarzullayev/rankwant"
-RUNNER = "nsn-pc-rankwant-container"
+# (container name, GitHub runner name). The first is always required. Later
+# pairs are required only once commissioned (container up or GitHub registration).
+RUNNERS = (
+    ("rankwant-ci-runner", "nsn-pc-rankwant-container"),
+    ("rankwant-ci-runner-2", "nsn-pc-rankwant-container-2"),
+)
 SERVICES = ("api", "worker", "beat", "judge", "web", "postgres", "redis", "minio")
 HEALTHCHECKED = ("api", "postgres", "redis")
 TASKS = (
@@ -108,18 +115,23 @@ def evaluate(facts: dict) -> list[tuple[str, bool, str]]:
         status = containers.get(name, "")
         ok = status.startswith("Up") and (service not in HEALTHCHECKED or "(healthy)" in status)
         rows.append((f"konteyner {name}", ok, status or "yo'q"))
-    runner_status = containers.get("rankwant-ci-runner", "")
-    rows.append(("konteyner rankwant-ci-runner", runner_status.startswith("Up"), runner_status or "yo'q"))
+    github_runners = {r.get("name"): r for r in facts.get("runners", [])}
+    for index, (container, gh_name) in enumerate(RUNNERS):
+        commissioned = index == 0 or container in containers or gh_name in github_runners
+        if not commissioned:
+            continue
+        runner_status = containers.get(container, "")
+        rows.append((f"konteyner {container}", runner_status.startswith("Up"), runner_status or "yo'q"))
+        runner = github_runners.get(gh_name)
+        labels = {label.get("name") for label in (runner or {}).get("labels", [])}
+        rows.append((
+            f"GitHub runner {gh_name}",
+            runner is not None and runner.get("status") == "online" and "rankwant" in labels,
+            "yo'q" if runner is None else f"{runner.get('status')}, labels={','.join(sorted(labels))}",
+        ))
     for key, label in (("origin_api", "origin API :8301"), ("origin_web", "origin web :8300"), ("public_api", "rankwant.uz API (tunnel)")):
         code = facts.get(key)
         rows.append((label, code == 200, str(code)))
-    runner = next((r for r in facts.get("runners", []) if r.get("name") == RUNNER), None)
-    labels = {label.get("name") for label in (runner or {}).get("labels", [])}
-    rows.append((
-        f"GitHub runner {RUNNER}",
-        runner is not None and runner.get("status") == "online" and "rankwant" in labels,
-        "yo'q" if runner is None else f"{runner.get('status')}, labels={','.join(sorted(labels))}",
-    ))
     tasks = facts.get("tasks", {})
     boot = str(facts.get("boot") or "")
     for name in TASKS:

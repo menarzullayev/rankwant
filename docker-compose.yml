@@ -1,6 +1,24 @@
 # Local dev — production topologiyasini kichraytirilgan holda takrorlaydi.
 # Muhim: judge ALOHIDA konteynerda, API bilan bir joyda emas ([06-architecture] xavfsizlik chegarasi).
 
+# api/worker/beat/migrate — bitta manba, bitta obraz ta'rifi.
+#
+# ⚠️ Ilgari to'rtalasi ham `build: ./apps/api` (QISQA shakl) ishlatardi,
+# ya'ni build argumentlari umuman uzatilmasdi. Natijada
+# `org.rankwant.git-sha` label'i har doim `unknown` bo'lib qolardi —
+# o'lchandi 2026-09-18: `web` va `judge` da commit bor edi, `api` da yo'q.
+# Bu `tools/check_deploy.sh` ning eskilik tekshiruvini KO'R qiladi: u
+# label'ni o'qiydi, label esa manbani bilmaydi — ya'ni eski `api` obrazi
+# «joyida» bo'lib ko'rinadi.
+#
+# Uzun shakl SHART: qisqa shaklda `args` berishning iloji yo'q.
+x-api-build: &api-build
+  context: ./apps/api
+  args:
+    # Qiymat `tools/deploy.sh` dan keladi; qo'lda build'da `unknown`.
+    GIT_SHA: ${GIT_SHA:-unknown}
+    BUILT_AT: ${BUILT_AT:-unknown}
+
 services:
   postgres:
     image: postgres:16
@@ -49,7 +67,7 @@ services:
   # Har qanday qayta qurishda bu servisni ham qurish kerak:
   #   docker compose ... build migrate && docker compose ... run --rm migrate
   migrate:
-    build: ./apps/api
+    build: *api-build
     command: ['python', 'manage.py', 'migrate', '--no-input']
     environment:
       DATABASE_URL: postgres://rankwant:dev@postgres:5432/rankwant
@@ -63,7 +81,7 @@ services:
       postgres: { condition: service_healthy }
 
   api:
-    build: ./apps/api
+    build: *api-build
     environment:
       DATABASE_URL: postgres://rankwant:dev@postgres:5432/rankwant
       REDIS_URL: redis://redis:6379/0
@@ -90,7 +108,7 @@ services:
   # (CELERY_BEAT_SCHEDULE: judging.drain_results har 2s). Bularsiz
   # submit qabul qilinadi, judge ishlaydi, lekin natija navbatda qoladi.
   worker:
-    build: ./apps/api
+    build: *api-build
     command: ['celery', '-A', 'config', 'worker', '-l', 'info', '--concurrency', '2']
     environment:
       DATABASE_URL: postgres://rankwant:dev@postgres:5432/rankwant
@@ -104,7 +122,7 @@ services:
       migrate: { condition: service_completed_successfully }
 
   beat:
-    build: ./apps/api
+    build: *api-build
     command: ['celery', '-A', 'config', 'beat', '-l', 'info']
     environment:
       DATABASE_URL: postgres://rankwant:dev@postgres:5432/rankwant

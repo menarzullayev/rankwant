@@ -1,17 +1,19 @@
 # Containerized CI runner
 
-Runs GitHub Actions on a container attached to Docker Desktop's daemon. It is
-the only CI runner: the WSL runner it replaced was deregistered and its
-`Ubuntu-24.04` distro removed on 2026-09-17, by owner decision.
+Runs GitHub Actions on containers attached to Docker Desktop's daemon. The
+WSL runner they replaced was deregistered and its `Ubuntu-24.04` distro
+removed on 2026-09-17, by owner decision. A second container
+(`rankwant-ci-runner-2`, compose profile `second`) is in this file and is
+not started by a plain `up -d`. Register it with
+`bash tools/runner/recreate.sh --second --selftest` when asked.
 
 ## Status: production CI runner since 2026-09-17
 
-The runner carries **`rankwant`**, the label every CI job asks for, and
-`rankwant-container`, which `tools/check_decisions.py` lets only
-`runner-selftest.yml` target. There is no fallback runner: when this one
-breaks, see [Recovering the runner](#recovering-the-runner). Two runners
-sharing `rankwant` would race for the same jobs, and on 2026-09-17 a runner
-under trial did exactly that.
+Both production runners carry **`rankwant`**, the label every CI job asks
+for, and `rankwant-container`, which `tools/check_decisions.py` lets only
+`runner-selftest.yml` target. Sharing `rankwant` is how GitHub splits the
+queue (2026-09-18). A trial runner that stole the label on 2026-09-17 was
+the failure mode; an unregistered second container is not.
 
 It became production after a second full CI run, following the fixes below:
 the workspace moved to a volume and the watchdog was installed. On `main`
@@ -155,12 +157,13 @@ token, and refuses to run while a job is in progress or to finish without the
 bash tools/runner/recreate.sh --selftest
 ```
 
-`down` keeps the `rankwant-ci-work` volume, so the tool cache survives.
+The matching work volume survives `stop`/`rm`, so the tool cache is kept.
+`--second` recreates only `runner-2` (compose profile `second`).
 
 ## Watchdog
 
-`tools/runner_watchdog.py` restarts the runner (`docker restart
-rankwant-ci-runner`) when it stops taking jobs. It reads the runners and the
+`tools/runner_watchdog.py` restarts the idle runner (`docker restart`
+`rankwant-ci-runner` or `rankwant-ci-runner-2`) when it stops taking jobs. It reads the runners and the
 queued jobs through `gh`, which is already signed in here, so it needs no token
 of its own.
 
@@ -285,12 +288,12 @@ self-test asserts them directly:
 
 ## Recovering the runner
 
-There is no second runner to fall back to, so recovery means bringing this one
-back, in order of cost:
+Recover the runner that is stuck, not the whole compose project (`down`
+would kill the other one):
 
-1. **Deaf but running.** The watchdog restarts it within about five minutes.
-   By hand: `docker restart rankwant-ci-runner`. A restart keeps the
-   registration.
+1. **Deaf but running.** The watchdog restarts the idle runner within about
+   five minutes. By hand: `docker restart rankwant-ci-runner` or
+   `rankwant-ci-runner-2`. A restart keeps the registration.
 2. **Jobs stuck on it.** Jobs already handed to a deaf runner stay queued even
    after it recovers; on 2026-09-17 they only moved once the run was cancelled
    and its failed jobs rerun:

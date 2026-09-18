@@ -189,6 +189,19 @@ def failures(when: datetime | None = None) -> int:
     ).count()
 
 
+#: Bildirishnoma sarlavhasi. `tasks.py` da qattiq yozilgan edi, matn esa
+#: `summary()` dan kelardi — ya'ni bitta xabar ikki joyda. Endi ikkisi ham
+#: shu yerda, chunki `summary()` ham, sarlavha ham AYNAN shu modulning
+#: tushunchasi (kvota holati), `core.tasks` esa faqat yetkazuvchi.
+#:
+#: ⚠️ Tarjima qilinmaydi — `Notification` modeli shuni talab qiladi
+#: ("matn hodisa yuz berganda yoziladi"): xabar yozilgan paytdagi holatni
+#: qotib qoladi, foydalanuvchi keyin tilini almashtirsa ham o'zgarmaydi.
+#: Boshqa 5 ta ishlab chiqaruvchi (duels, ratings, hacks, qvant,
+#: hackathons) ham xuddi shunday qiladi.
+ALERT_TITLE = "Email kvotasi tugayapti"
+
+
 def warning_rows(when: datetime | None = None) -> list[ProviderUsage]:
     """E'tibor talab qiladigan qatorlar: tugagan, tugayotgan yoki yo'qolgan.
 
