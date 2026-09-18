@@ -22,5 +22,11 @@ k6 run -e SCENARIO=soak -e SOAK_DURATION=12h tests/load/main.js
 
 [ADR-0004](../../docs/07-adr/0004-judge-engine.md) o'lchovi: bitta host'da
 8 worker ≈ **8 submit/s**. Spike NFR (50 submit/s) uchun 6–8 judge host
-yoki kompilyatsiya keshi kerak — sahifa yuklamasi bu chegaraga tegmaydi,
-faqat submit oqimi tegadi.
+yoki kompilyatsiya keshi kerak.
+
+**Sahifa ochilishi alohida chegara** (2026-09-17, local origin, CF yo'q):
+50 VU `GET /` p95 657 ms ✅; 100 VU p95 1.65 s ❌; xato 0%. 1000 bir
+vaqtdagi tashrif shu `web` da NFR ni yiqitadi. Yozuv:
+[docs/research/2026-09-17-homepage-load/REPORT.md](../../docs/research/2026-09-17-homepage-load/REPORT.md).
+`main.js` hozir API o'qish + standings; bosh sahifa skripti repo tashqarida
+(`cp/research/2026-09-17-homepage-load/rw-home-load.js`).
