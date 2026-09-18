@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1582 strings.**
+**1595 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -896,6 +896,18 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.schoolFreeText` | Katalogdan tanlang yoki o'zingiz yozing | Каталогдон тандаңыз же өзүңүз жазыңыз |  |
 | `settings.phone` | Telefon raqami | Телефон номери |  |
 | `settings.phoneHint` | Ixtiyoriy. Hisobni tiklash va musobaqa bildirishnomalari uchun. Profilingizda ko'rinmaydi. | Милдеттүү эмес. Аккаунтту калыбына келтирүү жана мелдеш билдирүүлөрү үчүн. Профилиңизде көрүнбөйт. |  |
+| `settings.firstName` | Ism | Аты |  |
+| `settings.lastName` | Familiya | Фамилиясы |  |
+| `settings.realNameHint` | Ixtiyoriy. Sertifikat va olimpiada ro'yxatlari uchun. Profilingizda ko'rinmaydi. | Милдеттүү эмес. Сертификаттар жана олимпиада тизмелери үчүн. Профилиңизде көрүнбөйт. |  |
+| `settings.shirtSize` | Futbolka o'lchami | Футболканын өлчөмү |  |
+| `settings.shirtSizeHint` | Ixtiyoriy. Olimpiada sovg'alari uchun. Profilingizda ko'rinmaydi. | Милдеттүү эмес. Олимпиада сыйлыктары үчүн. Профилиңизде көрүнбөйт. |  |
+| `settings.gradeSchool` | Maktab | Мектеп |  |
+| `settings.gradeUniversity` | Oliy ta'lim | Жогорку билим |  |
+| `grade.school` | {n}-sinf | {n}-класс |  |
+| `grade.bachelor` | Bakalavriat, {n}-kurs | Бакалавриат, {n}-курс |  |
+| `grade.master` | Magistratura, {n}-kurs | Магистратура, {n}-курс |  |
+| `grade.teacher` | O'qituvchi | Мугалим |  |
+| `grade.other` | Boshqa | Башка |  |
 | `settings.fromConnected` | Ulangan hisobdan: @{handle} | Байланган аккаунттан: @{handle} |  |
 | `settings.blogHint` | https:// bilan boshlanadigan manzil | https:// менен башталган дарек |  |
 | `leaderboard.school` | «{school}» reytingi | «{school}» рейтинги |  |
@@ -999,6 +1011,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `filter.statementLocaleLabel` | Matn tili | Шарт тили |  |
 | `filter.viewLabel` | Ko'rinish | Көрүнүш |  |
 | `filter.hideTagsUnsolved` | Yechilmaganlarda mavzuni yashirish | Чечилбеген маселелердин темасын жашыру |  |
+| `filter.hideSolved` | Yechilganlarni yashirish | Чечилгендерди жашыруу |  |
 | `filter.topicSearchPlaceholder` | {count} ta mavzudan qidirish… | {count} теманын ичинен издөө… |  |
 | `filter.topicSearchLabel` | Mavzu qidirish | Тема издөө |  |
 | `filter.noTopicMatch` | Bunday mavzu yo'q | Мындай тема жок |  |

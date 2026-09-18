@@ -13,6 +13,7 @@ Sxema **guruhlangan va versiyalangan**:
       "tokens": {},        # kuchli rejim (D9) — flag bilan O'CHIQ (D43)
       "a11y": {"vision", "motion", "bigTargets", "strongFocus"},
       "templates": [{"name", "appearance", "a11y", "theme"?}],
+      "problemset": {"hideTags", "hideSolved"},   # ADR-0024
       "sound": bool,       # v1 dan qoldi
       "effect": str        # v1 dan qoldi
     }
@@ -293,6 +294,25 @@ def _clean_templates(value: Any) -> list[dict[str, Any]]:
     return out
 
 
+#: Problemset toggles (ADR-0024). Codeforces keeps them as account settings;
+#: here they lived only in one browser's `localStorage`.
+PROBLEMSET_KEYS = ("hideTags", "hideSolved")
+
+
+def _clean_problemset(value: Any) -> dict[str, bool]:
+    if not isinstance(value, dict):
+        raise PrefsError("problemset obyekt bo'lsin")
+    unknown = set(value) - set(PROBLEMSET_KEYS)
+    if unknown:
+        raise PrefsError(f"Noma'lum problemset sozlamasi: {sorted(unknown)[0]}")
+    out: dict[str, bool] = {}
+    for key, flag in value.items():
+        if not isinstance(flag, bool):
+            raise PrefsError(f"problemset.{key} mantiqiy qiymat bo'lsin")
+        out[key] = flag
+    return out
+
+
 def migrate(raw: Any) -> dict[str, Any]:
     """v1 → v2. Noma'lum versiya O'ZGARTIRILMAYDI (D36)."""
     if not isinstance(raw, dict):
@@ -332,6 +352,8 @@ def validate(raw: Any) -> dict[str, Any]:
         out["a11y"] = _clean_a11y(raw["a11y"])
     if "templates" in raw:
         out["templates"] = _clean_templates(raw["templates"])
+    if "problemset" in raw:
+        out["problemset"] = _clean_problemset(raw["problemset"])
     if "sound" in raw:
         if not isinstance(raw["sound"], bool):
             raise PrefsError("sound mantiqiy qiymat bo'lsin")
@@ -340,7 +362,16 @@ def validate(raw: Any) -> dict[str, Any]:
         if raw["effect"] not in EFFECTS:
             raise PrefsError(f"effect {EFFECTS} dan biri bo'lsin")
         out["effect"] = raw["effect"]
-    unknown = set(raw) - {"version", "appearance", "tokens", "a11y", "templates", "sound", "effect"}
+    unknown = set(raw) - {
+        "version",
+        "appearance",
+        "tokens",
+        "a11y",
+        "templates",
+        "problemset",
+        "sound",
+        "effect",
+    }
     if unknown:
         raise PrefsError(f"Noma'lum sozlama: {sorted(unknown)[0]}")
     return out

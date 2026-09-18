@@ -6,7 +6,7 @@ from functools import partial
 from typing import Any
 
 from django.db import transaction
-from django.db.models import OuterRef, Q, QuerySet, Subquery
+from django.db.models import F, Q, QuerySet
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
@@ -18,7 +18,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from contests.models import Standing
-from core.models import User, UserSession
+from core.models import User
 from core.pagination import StandardPagination
 from core.tasks import queue
 from profiles import achievements, external, public, stats, teams
@@ -344,14 +344,8 @@ class FollowListView(generics.ListAPIView[User]):
         q = self.request.query_params.get("q", "").strip()
         if q:
             queryset = queryset.filter(Q(username__icontains=q) | Q(display_name__icontains=q))
-        # Subquery, `Max` emas: agregat GROUP BY ni obuna sanasi bo'yicha
-        # saralash bilan aralashtirib yuborardi.
-        last = (
-            UserSession.objects.filter(user=OuterRef("pk"))
-            .order_by("-last_seen")
-            .values("last_seen")[:1]
-        )
-        queryset = queryset.select_related("school_ref").annotate(last_seen=Subquery(last))
+        # One stored column instead of a subquery over sessions per row (ADR-0024).
+        queryset = queryset.select_related("school_ref").annotate(last_seen=F("last_seen_at"))
         ordering = {"rating": ("-rating_contest", "username"), "name": ("username",)}
         return queryset.order_by(
             *ordering.get(self.request.query_params.get("ordering", ""), (recent,))

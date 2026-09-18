@@ -415,7 +415,8 @@ class TestProfilMaydonlari:
                 "country": "uz",
                 "region": "samarqand",
                 "school": "1-maktab",
-                "grade": "9-sinf",
+                # A code from `profiles.catalog.GRADES` (ADR-0024).
+                "grade": "9",
                 "website": "https://ali.dev",
                 "birth_date": "2010-05-01",
             },

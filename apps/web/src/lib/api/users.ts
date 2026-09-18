@@ -30,6 +30,10 @@ export type UserPublic = {
   /** Faqat /me/ da keladi — ulangan provayderlar. */
   social?: string[];
   streak_count: number;
+  /** Longest streak reached (ADR-0024). */
+  streak_max: number;
+  /** Problems solved; the leaderboard can sort by it (ADR-0024). */
+  solved_count: number;
   date_joined: string;
   /** Reyting bo'yicha o'rin. Ro'yxat javobida bo'sh — faqat profilda. */
   ranks: Partial<Record<RatingKind, number>>;

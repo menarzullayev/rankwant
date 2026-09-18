@@ -105,9 +105,14 @@ export type UiPrefs = {
   tokens?: Record<string, string>;
   a11y?: A11yPrefs;
   templates?: ThemeTemplate[];
+  /** Problemset toggles that follow the account (ADR-0024). */
+  problemset?: { hideTags?: boolean; hideSolved?: boolean };
   sound?: boolean;
   effect?: ThemeEffect;
 };
+
+/** `User.ShirtSize` — olympiad prizes (ADR-0024). */
+export type ShirtSize = "XS" | "S" | "M" | "L" | "XL" | "XXL" | "3XL";
 
 /** Tur bo'yicha kanal tanlovi — `{"duel": {"site": true, "telegram": false}}`. */
 export type NotifyPrefs = Record<string, { site?: boolean; telegram?: boolean }>;
@@ -119,6 +124,9 @@ export type Me = {
   username: string;
   email: string;
   display_name: string;
+  /** Real name for certificates and olympiad lists; never public (ADR-0024). */
+  first_name: string;
+  last_name: string;
   email_verified: boolean;
   social: string[];
   has_password: boolean;
@@ -140,6 +148,8 @@ export type Me = {
   /** Aloqa uchun telefon. IXTIYORIY va ommaviy profilga chiqmaydi —
    *  faqat hisobni tiklash va bildirishnomalar uchun. */
   phone: string;
+  /** Owner-only, like `phone`. */
+  shirt_size: ShirtSize | "";
   hidden_fields: PrivacyField[];
   ui_prefs: UiPrefs;
   notify_prefs: NotifyPrefs;

@@ -10764,6 +10764,9 @@ components:
           $ref: '#/components/schemas/ProviderEnum'
       required:
       - provider
+    BlankEnum:
+      enum:
+      - ''
     CategoryEnum:
       enum:
       - streak_freeze
@@ -11908,6 +11911,12 @@ components:
         display_name:
           type: string
           maxLength: 100
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
         email_verified:
           type: boolean
           readOnly: true
@@ -11968,6 +11977,10 @@ components:
         phone:
           type: string
           maxLength: 20
+        shirt_size:
+          oneOf:
+          - $ref: '#/components/schemas/ShirtSizeEnum'
+          - $ref: '#/components/schemas/BlankEnum'
         hidden_fields: {}
         pinned_achievements: {}
         ui_prefs: {}
@@ -13404,6 +13417,12 @@ components:
         display_name:
           type: string
           maxLength: 100
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
         email_verified:
           type: boolean
           readOnly: true
@@ -13464,6 +13483,10 @@ components:
         phone:
           type: string
           maxLength: 20
+        shirt_size:
+          oneOf:
+          - $ref: '#/components/schemas/ShirtSizeEnum'
+          - $ref: '#/components/schemas/BlankEnum'
         hidden_fields: {}
         pinned_achievements: {}
         ui_prefs: {}
@@ -15476,6 +15499,24 @@ components:
       description: |-
         * `acm` - ACM/ICPC
         * `ioi` - IOI
+    ShirtSizeEnum:
+      enum:
+      - XS
+      - S
+      - M
+      - L
+      - XL
+      - XXL
+      - 3XL
+      type: string
+      description: |-
+        * `XS` - XS
+        * `S` - S
+        * `M` - M
+        * `L` - L
+        * `XL` - XL
+        * `XXL` - XXL
+        * `3XL` - 3XL
     ShopItem:
       type: object
       properties:
@@ -17689,6 +17730,16 @@ components:
           minimum: -9223372036854775808
           format: int64
         streak_count:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        streak_max:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        solved_count:
           type: integer
           maximum: 9223372036854775807
           minimum: 0

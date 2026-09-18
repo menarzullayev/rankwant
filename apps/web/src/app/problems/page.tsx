@@ -29,6 +29,7 @@ import {
   type Paginated,
   type Problem,
   type Recommendation,
+  type UiPrefs,
   type UserPublic,
 } from "@/lib/api";
 import { getSessionUser, getWithSession } from "@/lib/api.server";
@@ -64,6 +65,9 @@ const ALLOWED = [
 
 const DEFAULT_PAGE_SIZE = 25; // core.pagination.StandardPagination bilan bir xil
 
+/** Status filters; any of them in the URL overrides the "hide solved" default. */
+const STATUS_KEYS = ["solved", "attempted", "favourite", "recommended"] as const;
+
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
@@ -87,11 +91,18 @@ export default async function ProblemsPage({ searchParams }: Props) {
     ? Number(raw.page_size)
     : DEFAULT_PAGE_SIZE;
 
+  // The session user comes first: "hide solved" (ADR-0024) is the account's
+  // default status filter, so the list query depends on it. `solved=any` in
+  // the URL is the explicit "all" that turns the default off.
+  const me = await getSessionUser<UserPublic & { ui_prefs?: UiPrefs }>();
+  if (me?.ui_prefs?.problemset?.hideSolved && !STATUS_KEYS.some((key) => query.has(key))) {
+    query.set("solved", "false");
+  }
+
   const [
     data,
     topics,
     stats,
-    me,
     progress,
     skills,
     roadmaps,
@@ -105,7 +116,6 @@ export default async function ProblemsPage({ searchParams }: Props) {
     ),
     api.topics(),
     api.stats(),
-    getSessionUser<UserPublic>(),
     getWithSession<ArchiveProgress>("/problems/progress/"),
     getWithSession<{ topics: TopicSkill[] }>("/problems/skills/").catch(() => ({
       topics: [],

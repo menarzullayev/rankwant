@@ -48,7 +48,11 @@ def touch(user: User, when: date | None = None) -> tuple[int, list[str]]:
         user.streak_count = 1
 
     user.last_active_date = today
-    user.save(update_fields=["streak_count", "last_active_date", "streak_freeze_until"])
+    # The row is locked above, so a plain comparison cannot lose a concurrent update.
+    user.streak_max = max(user.streak_max, user.streak_count)
+    user.save(
+        update_fields=["streak_count", "streak_max", "last_active_date", "streak_freeze_until"]
+    )
 
     granted = quests.on_streak_reached(user, user.streak_count)
     return user.streak_count, granted

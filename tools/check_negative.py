@@ -2246,6 +2246,64 @@ def neg_decisions_table_removed() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_locale_label_restored() -> tuple[bool, str]:
+    """Til nomi tor ekranda qaytsa tutilsin.
+
+    To'liq nom `sm` dan pastda qolsa header 320 px da yana toshadi
+    (o'lchandi: 15 px chiqqan, 59 px kirgan holatda).
+    """
+    return _decision_broken(
+        "apps/web/src/layout/LocaleSwitch.tsx",
+        'className="hidden min-w-0 max-w-[7.5rem] truncate text-theme-xs sm:block"',
+        'className="min-w-0 max-w-[7.5rem] truncate text-theme-xs"',
+        "header 320 px ga sig'adi",
+    )
+
+
+def neg_decisions_locale_code_hidden() -> tuple[bool, str]:
+    """Tor ekranda til kodi ko'rinmasa tutilsin.
+
+    Kod span'i o'chsa `sm` dan pastda til tugmasi butunlay bo'sh qoladi —
+    «qaysi tildaman» signali yo'qoladi (qaror 9), holbuki u saqlanishi
+    kerak edi.
+    """
+    return _decision_broken(
+        "apps/web/src/layout/LocaleSwitch.tsx",
+        '<span className="text-theme-xs sm:hidden">{currentCode}</span>',
+        '<span className="hidden text-theme-xs">{currentCode}</span>',
+        "header 320 px ga sig'adi",
+    )
+
+
+def neg_decisions_locale_label_in_name_lost() -> tuple[bool, str]:
+    """`aria-label` ko'rinadigan matnni yo'qotsa tutilsin.
+
+    Tor ekranda ko'rinadigan matn — KOD (`kaa`), ya'ni `aria-label` uni
+    o'z ichiga olmasa WCAG 2.5.3 («Label in Name») buziladi va Lighthouse
+    `label-content-name-mismatch` beradi.
+    """
+    return _decision_broken(
+        "apps/web/src/layout/LocaleSwitch.tsx",
+        "aria-label={`${currentLabel} (${currentCode}) — ${t(locale, \"locale.switchLabel\")}`}",
+        "aria-label={`${currentLabel} — ${t(locale, \"locale.switchLabel\")}`}",
+        "header 320 px ga sig'adi",
+    )
+
+
+def neg_decisions_signin_label_wraps() -> tuple[bool, str]:
+    """Kirish yorlig'i o'raladigan bo'lsa tutilsin.
+
+    `whitespace-nowrap` olib tashlansa yorliq tor ekranda ikki qatorga
+    bo'linadi (o'lchandi: 375 px da 88x40 px, 2 qator).
+    """
+    return _decision_broken(
+        "apps/web/src/layout/UserMenu.tsx",
+        'className="flex h-10 items-center gap-2 whitespace-nowrap rw-radius-sm rw-accent-bg px-4 text-theme-sm font-medium text-white transition"',
+        'className="flex h-10 items-center gap-2 rw-radius-sm rw-accent-bg px-4 text-theme-sm font-medium text-white transition"',
+        "header 320 px ga sig'adi",
+    )
+
+
 def neg_decisions_deploy_gate_unwired() -> tuple[bool, str]:
     return _decision_broken(
         "tools/deploy.sh",
@@ -2358,6 +2416,16 @@ def neg_decisions_intent_link_eager() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_dormant_user_field_removed() -> tuple[bool, str]:
+    # A dormant column tidied away as "unused" undoes the owner's ADR-0024 choice.
+    return _decision_broken(
+        "apps/api/core/models.py",
+        "    duel_ready_until = models.DateTimeField(null=True, blank=True)\n",
+        "",
+        "User modeli tenglik maydonlari",
+    )
+
+
 def neg_decisions_dictionary_prop() -> tuple[bool, str]:
     # The dictionary back as a prop: 72 kB of every page again.
     return _decision_broken(
@@ -2439,6 +2507,13 @@ def _decisions_sandbox(extra_workflows: dict[str, str]) -> tuple[int, str]:
         "apps/web/src/app/layout.tsx",
         "apps/web/src/app/i18n/[file]/route.ts",
         "apps/web/src/proxy.ts",
+        # ADR-0024: the User columns added for competitor parity.
+        "apps/api/core/models.py",
+        # Header fits 320 px (2026-09-18): the locale control and the sign-in
+        # link. Missing from this list, the sandbox copy cannot be read and
+        # `check_decisions.py` fails with exit 2 — which is how the omission
+        # was caught.
+        "apps/web/src/layout/LocaleSwitch.tsx",
     )
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
@@ -3673,6 +3748,13 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("deploy push'ga qaytsa tutilsin", neg_decisions_deploy_on_push),
             ("til qoidasi o'chsa tutilsin", neg_decisions_language_rule),
             ("qarorlar jadvali o'chsa tutilsin", neg_decisions_table_removed),
+            ("til nomi tor ekranga qaytsa tutilsin", neg_decisions_locale_label_restored),
+            ("tor ekranda til kodi yo'qolsa tutilsin", neg_decisions_locale_code_hidden),
+            (
+                "`aria-label` ko'rinadigan kodni yo'qotsa tutilsin",
+                neg_decisions_locale_label_in_name_lost,
+            ),
+            ("kirish yorlig'i o'ralsa tutilsin", neg_decisions_signin_label_wraps),
             ("deploy darvozasi uzilsa tutilsin", neg_decisions_deploy_gate_unwired),
             ("deploy qulfi olib tashlansa tutilsin", neg_decisions_deploy_lock_removed),
             ("deploy web'ni qurmasa tutilsin", neg_decisions_deploy_skips_web),
@@ -3684,6 +3766,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("lug'at prop'ga qaytsa tutilsin", neg_decisions_dictionary_prop),
             ("lug'at fayli keshlanmasa tutilsin", neg_decisions_dictionary_not_cached),
             ("lug'at middleware'dan o'tsa tutilsin", neg_decisions_dictionary_through_proxy),
+            ("User'dan tenglik ustuni o'chsa tutilsin", neg_decisions_dormant_user_field_removed),
             ("sinov label'i self-test'da o'tadi", neg_decisions_trial_label_selftest_allowed),
             ("sinov label'i boshqa workflow'da tutilsin", neg_decisions_trial_label_scoped),
             ("Security PR'da qaytsa tutilsin", neg_decisions_security_on_pr),

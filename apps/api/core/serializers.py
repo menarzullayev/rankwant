@@ -13,7 +13,7 @@ from rest_framework import serializers
 from core import handles, prefs, turnstile, usernames
 from core.models import PRIVACY_FIELDS, ApiToken, School, User, UserSession
 from core.throttling import TrustedClientIdent
-from profiles.catalog import UZ_DISTRICTS, UZ_REGIONS
+from profiles.catalog import GRADES, UZ_DISTRICTS, UZ_REGIONS
 from profiles.titles import TitleField
 
 
@@ -66,16 +66,15 @@ class UserPublicSerializer(serializers.ModelSerializer[User]):
         """Erishilgan eng yuqori qiymat — hozirgisi tushib ketgan bo'lsa ham."""
         if self.context.get("view") and getattr(self.context["view"], "action", "") != "retrieve":
             return {}
-        from django.db.models import Max
+        from core.user_stats import MAX_RATING_FIELDS
 
-        from ratings.models import RatingHistory
-
-        rows = (
-            RatingHistory.objects.filter(user=user)
-            .values("rating_type")
-            .annotate(top=Max("value_after"))
-        )
-        return {row["rating_type"]: row["top"] for row in rows}
+        # Stored columns (ADR-0024) instead of a `MAX` over `RatingHistory` per
+        # view. A rating without history is left out, as before.
+        return {
+            rating_type: value
+            for rating_type, field in MAX_RATING_FIELDS.items()
+            if (value := getattr(user, field)) is not None
+        }
 
     def get_solved_by_level(self, user: User) -> list[dict[str, Any]]:
         """Daraja kesimida yechilganlar — KEP profilidagi taqsimot.
@@ -113,6 +112,8 @@ class UserPublicSerializer(serializers.ModelSerializer[User]):
             "rating_activity",
             "rating_challenges",
             "streak_count",
+            "streak_max",
+            "solved_count",
             "date_joined",
             "country",
             "ranks",
@@ -185,6 +186,8 @@ class MeSerializer(serializers.ModelSerializer[User]):
             "username",
             "email",
             "display_name",
+            "first_name",
+            "last_name",
             "email_verified",
             "social",
             "has_password",
@@ -203,6 +206,7 @@ class MeSerializer(serializers.ModelSerializer[User]):
             "website",
             "birth_date",
             "phone",
+            "shirt_size",
             "hidden_fields",
             "pinned_achievements",
             "ui_prefs",
@@ -236,6 +240,54 @@ class MeSerializer(serializers.ModelSerializer[User]):
         if value and not re.fullmatch(r"[A-Z]{2}", value):
             raise serializers.ValidationError("Mamlakat kodi noto'g'ri")
         return value
+
+    @staticmethod
+    def _clean_name(value: str) -> str:
+        """A real name in any script: trimmed, one space between words, no control characters.
+
+        These fields go on certificates and olympiad lists (ADR-0024), so a
+        stray newline or tab would break the printed layout.
+        """
+        cleaned = " ".join(value.split())
+        if re.search(r"[\x00-\x1f\x7f]", cleaned):
+            raise serializers.ValidationError("Ismda boshqaruv belgisi bo'lmasin")
+        return cleaned
+
+    def validate_grade(self, value: str) -> str:
+        """A code from `profiles.catalog.GRADES` (ADR-0024).
+
+        A value saved before the catalogue existed passes while it is unchanged:
+        the settings form sends every field, and rejecting one the person did not
+        touch would block saving the rest.
+        """
+        if not value or value in GRADES:
+            return value
+        if self.instance is not None and value == self.instance.grade:
+            return value
+        raise serializers.ValidationError("Sinf ro'yxatdan tanlanadi")
+
+    def validate_first_name(self, value: str) -> str:
+        return self._clean_name(value)
+
+    def validate_last_name(self, value: str) -> str:
+        return self._clean_name(value)
+
+    def update(self, instance: User, validated_data: dict[str, Any]) -> User:
+        """Save only the fields the client sent.
+
+        `ModelSerializer.update` saves the whole row. The row was read when the
+        request began, so a full save would write back ratings, `solved_count`
+        and `last_seen_at` over any update the judge worker made in between.
+        """
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+        fields = set(validated_data)
+        if "username" in fields:
+            # `User.save` derives the skeleton from the name.
+            fields.add("username_skeleton")
+        if fields:
+            instance.save(update_fields=sorted(fields))
+        return instance
 
     def validate_username(self, value: str) -> str:
         """Foydalanuvchi nomini AYNAN registrdagi qoidalar bilan tekshiradi.

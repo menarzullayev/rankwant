@@ -48,6 +48,10 @@ INTENT_LINK = "apps/web/src/components/ui/IntentLink.tsx"
 HOME_MAIN = "apps/web/src/app/page.tsx"
 # The dictionary travels as a cached file, not inside the page (2026-09-18).
 DICTIONARY_ROUTE = "apps/web/src/app/i18n/[file]/route.ts"
+# The header must fit the narrowest supported screen — 320 px, the width the
+# auth tabs were measured against. Owner decision 2026-09-18.
+LOCALE_SWITCH = "apps/web/src/layout/LocaleSwitch.tsx"
+SIGN_IN_LINK = "apps/web/src/layout/UserMenu.tsx"
 
 
 class Unreadable(Exception):
@@ -256,6 +260,105 @@ def dictionary_as_cached_file() -> str | None:
     return None
 
 
+USER_MODEL = "apps/api/core/models.py"
+#: ADR-0024: the 21 columns added for parity with Codeforces, Robocontest and KEP.
+#: Thirteen of them stay unused until their features exist, on the owner's choice.
+PARITY_USER_FIELDS = (
+    "last_seen_at",
+    "max_rating_skills",
+    "max_rating_contest",
+    "max_rating_activity",
+    "max_rating_challenges",
+    "streak_max",
+    "solved_count",
+    "shirt_size",
+    "plan",
+    "plan_expires_at",
+    "postal_recipient",
+    "postal_country",
+    "postal_region",
+    "postal_city",
+    "postal_address",
+    "postal_code",
+    "coach_can_view_attempts",
+    "message_min_rating",
+    "contribution",
+    "device_fingerprint",
+    "duel_ready_until",
+)
+
+
+def user_parity_fields_kept() -> str | None:
+    """The `User` columns added for competitor parity stay (ADR-0024).
+
+    The owner chose to add the dormant columns before the features that use
+    them. They look like dead fields, and an agent tidying them would undo
+    that choice without asking.
+    """
+    src = read(USER_MODEL)
+    missing = [
+        name for name in PARITY_USER_FIELDS if not re.search(rf"^    {name} = models\.", src, re.M)
+    ]
+    if missing:
+        return f"{USER_MODEL}: ADR-0024 ustunlari yo'q — {', '.join(missing)}"
+    return None
+
+
+def mobile_header_fits_narrow_screen() -> str | None:
+    """The header fits 320 px — the narrowest screen the project supports.
+
+    Measured in a live browser 2026-09-18: with the full language name in the
+    control the header overflowed 15 px logged out and 59 px logged in at
+    320 px, and 10 px at 375 px logged in. Showing the language CODE below
+    `sm` and forbidding the sign-in label to wrap brought every one of those
+    cases to 0 px. Restoring the full name at narrow widths, or dropping
+    `whitespace-nowrap`, silently brings the horizontal scroll back.
+    """
+    switch = read(LOCALE_SWITCH)
+    classes = re.findall(r'className="([^"]*)"', switch)
+
+    def has_class(*tokens: str) -> bool:
+        return any(all(token in value for token in tokens) for value in classes)
+
+    if not has_class("hidden", "sm:block"):
+        return (
+            f"{LOCALE_SWITCH}: to'liq til nomi `sm` dan pastda yashirilmagan — "
+            "320 px da header toshadi"
+        )
+    if not has_class("sm:hidden"):
+        return f"{LOCALE_SWITCH}: tor ekranda til kodi ko'rinmaydi (`sm:hidden` span yo'q)"
+    if "currentCode" not in switch:
+        return f"{LOCALE_SWITCH}: til kodi (`currentCode`) hisoblanmayapti"
+
+    # WCAG 2.5.3 «Label in Name»: the visible text differs per width, so the
+    # accessible name has to carry BOTH forms — the full name and the code.
+    label = re.search(r"aria-label=\{`([^`]*)`\}", switch)
+    if label is None:
+        return f"{LOCALE_SWITCH}: `aria-label` topilmadi"
+    if "currentLabel" not in label.group(1) or "currentCode" not in label.group(1):
+        return (
+            f"{LOCALE_SWITCH}: `aria-label` ikkala ko'rinadigan matnni olmagan "
+            "(WCAG 2.5.3, `label-content-name-mismatch`)"
+        )
+
+    # The check is scoped to the sign-in link's OWN class attribute, not to the
+    # file. Measured while writing this rule: a file-wide substring test passed
+    # even with the class removed, because the explanatory comment above the
+    # link also contains the words `whitespace-nowrap` — the guard was reading
+    # its own documentation. Anchor on the href instead.
+    link = re.search(
+        r'href=\{?"/login\?tab=login"[^>]*?className="([^"]*)"', read(SIGN_IN_LINK), re.S
+    )
+    if link is None:
+        return f"{SIGN_IN_LINK}: kirish havolasi (`/login?tab=login`) topilmadi"
+    if "whitespace-nowrap" not in link.group(1):
+        return (
+            f"{SIGN_IN_LINK}: kirish yorlig'ida `whitespace-nowrap` yo'q — "
+            "tor ekranda ikki qatorga bo'linadi"
+        )
+    return None
+
+
 def _workflow_triggers(rel: str) -> set[str]:
     lines = read(rel).splitlines()
     try:
@@ -320,6 +423,8 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("navigatsiya prefetch'i niyatda", nav_prefetch_on_intent),
     ("bosh sahifa <main> prefetch'i niyatda", home_main_prefetch_on_intent),
     ("lug'at alohida faylda", dictionary_as_cached_file),
+    ("User modeli tenglik maydonlari", user_parity_fields_kept),
+    ("header 320 px ga sig'adi", mobile_header_fits_narrow_screen),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),

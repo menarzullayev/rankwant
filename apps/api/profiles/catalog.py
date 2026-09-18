@@ -58,6 +58,22 @@ TECHNOLOGIES: dict[str, str] = {
     "pytorch": "PyTorch",
 }
 
+#: Grade or year of study (ADR-0024): school grades 1-11, bachelor years 1-4,
+#: master years 1-2, teacher and other. Free text could not be filtered or
+#: grouped. `apps/web/src/lib/grades.ts` mirrors this list, and
+#: `tests/test_grades.py` keeps the two equal.
+GRADES: tuple[str, ...] = (
+    *(str(n) for n in range(1, 12)),
+    "b1",
+    "b2",
+    "b3",
+    "b4",
+    "m1",
+    "m2",
+    "teacher",
+    "other",
+)
+
 #: O'zbekistonning 14 hududi. Mamlakat `UZ` bo'lsa viloyat SHU ro'yxatdan
 #: tanlanadi — erkin matn bo'lsa bitta hudud o'n xil yozilardi va viloyat
 #: bo'yicha reyting qurib bo'lmasdi. Boshqa mamlakatda — erkin matn.

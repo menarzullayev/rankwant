@@ -450,6 +450,9 @@ class TestPhasedReveal:
             "rating_activity",
             "rating_challenges",
             "streak_count",
+            # Stored counters (ADR-0024); `apps/web` has them in `User` too.
+            "streak_max",
+            "solved_count",
             "date_joined",
             "ranks",
             "max_ratings",

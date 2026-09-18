@@ -8,6 +8,7 @@ import { districtName, regionName } from "@/lib/regions";
 import { BrandIcon, EXTERNAL_ICONS, TECH_ICONS } from "@/lib/tech-icons";
 import { EXTERNAL_LABEL, externalUrl, hostOf } from "@/lib/external-links";
 import { formatDate } from "@/lib/format";
+import { gradeLabel } from "@/lib/grades";
 
 const years = (start: number | null, end: number | null, locale: Locale) =>
   start || end
@@ -59,7 +60,11 @@ export function AboutTab({
   if (info.school)
     rows.push({ label: t(locale, "settings.school"), value: info.school, field: "school" });
   if (info.grade)
-    rows.push({ label: t(locale, "settings.grade"), value: info.grade, field: "grade" });
+    rows.push({
+      label: t(locale, "settings.grade"),
+      value: gradeLabel(info.grade, locale),
+      field: "grade",
+    });
   if (info.birth_date)
     rows.push({
       label: t(locale, "settings.birthDate"),

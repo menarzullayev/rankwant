@@ -41,6 +41,7 @@ Har bir ADR:
 | [0021](0021-hack-reference-solution.md)          | Hack testining javobi — etalon yechimdan  | **accepted**       |
 | [0022](0022-judge-languages.md)                  | Judge tillari — 35 til, tilga xos sandbox sozlamalari | **accepted** |
 | [0023](0023-indexing-and-ai-crawlers.md)         | Indekslash — qidiruvga ochiq, AI kraulerlarga yopiq   | **accepted** |
+| [0024](0024-user-competitor-parity-fields.md)    | User modeli — raqobatchilar bilan tenglik uchun 21 maydon (46 → 67) | **accepted** |
 
 ## Qoidalar
 
@@ -77,5 +78,6 @@ Har bir ADR:
 **Bosqich:** living — qulflanmaydi, qarorlar to'planib boradi.
 
 Yuqori ta'sirli va qaytarilmas qarorlar uchun inson tasdig'i alohida
-yozilishi kerak (yuqoridagi 2-band). Hozircha hech bir ADR da bunday yozuv
-yo'q — eng ustuvor nomzod `0004` (qaytarilmas, xavfsizlik uchun kritik).
+yozilishi kerak (yuqoridagi 2-band). Birinchi bunday yozuv — ADR-0024
+(`**Approved by:**` qatori, 2026-09-18). Eskilaridan eng ustuvor nomzod `0004`
+(qaytarilmas, xavfsizlik uchun kritik).

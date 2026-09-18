@@ -14,6 +14,7 @@ import {
   type ThemeTemplate,
 } from "@/lib/api";
 import { track } from "@/lib/analytics";
+import { rememberHideTags, storedHideTags } from "@/lib/hideTags";
 import {
   PREFS_EVENT,
   TEMPLATES_KEY,
@@ -87,7 +88,7 @@ function readTemplates(): ThemeTemplate[] {
  * (cookie) bo'lsa, u ustun va hisobga yoziladi — xatlar ham shu tilda.
  */
 export function PrefsSync() {
-  const { user } = useSession();
+  const { user, reload } = useSession();
   const router = useRouter();
   const synced = useRef<number | null>(null);
 
@@ -139,6 +140,19 @@ export function PrefsSync() {
       patch.ui_prefs = {
         ...((patch.ui_prefs as Record<string, unknown> | undefined) ?? { ...prefs, version: 2 }),
         templates,
+      };
+    }
+
+    // Problemset toggles (ADR-0024): the account wins, as in D4. A choice made
+    // on this device before signing in seeds an account that has none. It
+    // rides in the same PATCH for the reason given above.
+    const problemset = prefs.problemset ?? {};
+    if (typeof problemset.hideTags === "boolean") {
+      rememberHideTags(problemset.hideTags);
+    } else if (storedHideTags() === true) {
+      patch.ui_prefs = {
+        ...((patch.ui_prefs as Record<string, unknown> | undefined) ?? { ...prefs, version: 2 }),
+        problemset: { ...problemset, hideTags: true },
       };
     }
 
@@ -200,7 +214,13 @@ export function PrefsSync() {
       // ishlatiladi. Bu D4 dan ataylab chetlanish: qurilma ustun
       // (`docs/i18n-precedence.md`).
       if (typeof change.locale === "string") body.locale = change.locale;
-      if (change.style || change.appearance || change.a11y || change.templates) {
+      if (
+        change.style ||
+        change.appearance ||
+        change.a11y ||
+        change.templates ||
+        change.problemset
+      ) {
         const current = user.ui_prefs ?? {};
         const appearance = (current.appearance ?? {}) as Record<string, unknown>;
         body.ui_prefs = {
@@ -217,14 +237,22 @@ export function PrefsSync() {
           // Shablonlar BUTUN ro'yxat bo'lib keladi: ularni birlashtirish
           // o'chirishni imkonsiz qilardi.
           ...(change.templates ? { templates: change.templates } : {}),
+          ...(change.problemset
+            ? { problemset: { ...(current.problemset ?? {}), ...change.problemset } }
+            : {}),
         };
       }
       if (Object.keys(body).length)
-        void patchJson("/me/", body).catch(reportSyncFailure);
+        void patchJson("/me/", body)
+          // The customizer resends appearance, a11y and templates whole, but
+          // not `problemset`. Its next change starts from `user.ui_prefs`, so
+          // that snapshot must include this one or the toggle is undone.
+          .then(() => (change.problemset ? reload() : undefined))
+          .catch(reportSyncFailure);
     };
     window.addEventListener(PREFS_EVENT, onChange);
     return () => window.removeEventListener(PREFS_EVENT, onChange);
-  }, [user]);
+  }, [user, reload]);
 
   return null;
 }

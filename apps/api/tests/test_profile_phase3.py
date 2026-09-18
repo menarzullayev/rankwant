@@ -136,6 +136,8 @@ class TestObunachilar:
         for person in (other_user, zafar):
             Follow.objects.create(follower=person, following=user)
             UserSession.objects.create(user=person, session_key=person.username.ljust(40, "x"))
+            # `core.sessions.record` writes the user column with the session (ADR-0024).
+            User.objects.filter(pk=person.pk).update(last_seen_at=timezone.now())
         url = reverse("user-followers", args=[user.username])
 
         found = APIClient().get(url, {"q": "bek"}).data["results"]
