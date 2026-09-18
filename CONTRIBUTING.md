@@ -21,15 +21,23 @@ Qaerdan boshlash: [INDEX.md](INDEX.md) → [docs/README.md](docs/README.md)
 
 ## Parallel agentlar
 
-Bu mashinada bir nechta agent (Claude, WorkBuddy) bitta repo va bitta jonli stack bilan
-ishlaydi. Qoidalar 2026-09-17 kechqurunidan keyin yozildi: o'sha kuni ish asosiy
+Bu mashinada bir nechta agent (Claude, Cursor, WorkBuddy) bitta repo va bitta jonli stack
+bilan ishlaydi. Qoidalar 2026-09-17 kechqurunidan keyin yozildi: o'sha kuni ish asosiy
 checkout'da branch'siz olib borildi va jonli `api` `tools/deploy.sh` siz qayta yaratildi —
 natijada 21 ta fayl bitta savatda qoldi va production'da qaysi commit ishlayotganini kod
 aytmay qo'ydi (`org.rankwant.git-sha` yorlig'i `unknown`).
 
-- **Har ish o'z worktree'sida va branch'ida:**
-  `git worktree add -b feat/<mavzu> C:/Users/nsn/project/wt/<mavzu> origin/main`.
-  Worktree `cp/` ichida ochilmaydi. Bitta PR — bitta mavzu.
+- **Har ish o'z worktree'sida va branch'ida, agentning O'Z papkasida:**
+  `git worktree add -b feat/<mavzu> C:/Users/nsn/project/wt/<agent>/<mavzu> origin/main`,
+  bu yerda `<agent>` — `claude`, `cursor` yoki `workbuddy`. Worktree `cp/` ichida
+  ochilmaydi. Bitta PR — bitta mavzu.
+- **Agent faqat o'z papkasida yaratadi va o'chiradi.** Sabab (2026-09-18): «barcha
+  worktree'larni o'chir» topshirig'i boshqa agentning ishini ham o'chirdi va uning push
+  qilinmagan commit'i uchinchi qo'lda PR bo'lib chiqdi. Bu safar zarar bo'lmadi, lekin
+  kimning ishi ekani hech qayerda ko'rinmasdi: git muallifi hamma agentda bir xil, egalikni
+  faqat yo'l ko'rsatadi.
+- **Sessiya tugashidan oldin commit'lar push qilinadi** — tugallanmagan bo'lsa ham, `wip/`
+  branch'ida. Faqat diskda turgan commit papka bilan birga yo'qolishi mumkin.
 - **Asosiy checkout (`cp/rankwant`) `main` da va toza qoladi.** Rejali Windows vazifalari
   skriptlarni aynan shu papkadan o'qiydi (`RankWant Monthly Backup` → `tools/backup.sh`,
   `RankWant Tunnel Monitor` → `tools/monitor.ps1`), shuning uchun u yerda yarim tahrirlangan
