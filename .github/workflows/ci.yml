@@ -4,53 +4,53 @@ on:
   pull_request:
   push:
     branches: [main]
-  # `deploy.yml` shu to'plamni `uses: ./.github/workflows/ci.yml` bilan
-  # chaqiradi. Ya'ni "test o'tdi" sharti deploy uchun majburiy bo'ladi,
-  # tekshiruvlar esa ikki nusxada saqlanmaydi: qoida bir joyda o'zgaradi.
-  # `pull_request` va `push` BU YERDA QOLADI — chaqiriladigan workflow
-  # o'z triggerlarini saqlaydi, `workflow_call` ularga qo'shimcha.
+  # `deploy.yml` calls this suite with `uses: ./.github/workflows/ci.yml`.
+  # That makes a passing test run a hard requirement for deploy, without
+  # keeping a second copy of the checks: the rules change in one place.
+  # `pull_request` and `push` STAY HERE — a reusable workflow keeps its
+  # own triggers; `workflow_call` is extra.
   workflow_call:
-  # Qo'lda to'liq yugurtirish. Path filter tufayli oddiy push'da ko'p
-  # job'lar `skipped` bo'ladi — bu TO'G'RI, lekin "hamma narsa birga
-  # ishlaydimi" degan savolga javob bermaydi. `run_all` shu savol uchun.
+  # Manual full run. Path filters correctly skip most jobs on a normal
+  # push, but that does not answer "does everything work together?".
+  # `run_all` is for that question.
   workflow_dispatch:
     inputs:
       run_all:
-        description: "Barcha job'larni yugurtirish (path filter'dan qat'i nazar)"
+        description: "Run every job (ignore path filters)"
         type: boolean
         default: true
 
-# Self-hosted runner ishlab chiqish mashinasida, `nsn` foydalanuvchisi
-# sifatida ishlaydi — Python `~/.local/lib/.../site-packages` ni ham
-# ko'radi. U yerdagi begona paketlar (masalan `dash`) pytest plaginini
-# ro'yxatdan o'tkazadi va pytest ularni avtomatik yuklaydi. Ish faqat
-# o'z muhitidan foydalanishi kerak.
+# The self-hosted runner runs as user `nsn` on the development machine
+# and can see Python packages in `~/.local/lib/.../site-packages`.
+# Stray packages there (for example `dash`) register pytest plugins
+# and pytest loads them automatically. The job must use only its own
+# environment.
 env:
   PYTHONNOUSERSITE: '1'
 
 concurrency:
-  # `cancel-in-progress` FAQAT `pull_request` va `push` da. Deploy uni
-  # chaqirganda (`workflow_call`) bekor qilish XAVFLI: deploy `test` job'i
-  # tugashini kutadi, bekor qilingan job esa `failure`/`cancelled` bo'lib
-  # qaytadi va shartsiz deploy job'i hech qachon ishga tushmaydi —
-  # ya'ni tez ketma-ket push'larda deploy jimgina o'tkazib yuborilardi.
-  # Qayta chaqirilganda guruh ham boshqacha, to'qnashuv yo'q.
+  # `cancel-in-progress` ONLY on `pull_request` and `push`. Cancelling
+  # when deploy calls this (`workflow_call`) is DANGEROUS: deploy waits
+  # for the `test` job, a cancelled job returns `failure`/`cancelled`,
+  # and the gated deploy job never starts — rapid successive pushes
+  # would silently skip deploy. A called run also uses a different
+  # group, so there is no collision.
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name != 'workflow_call' }}
 
 permissions:
   contents: read
-  # `dorny/paths-filter` PR'dagi o'zgargan fayllarni GitHub API'dan
-  # oladi; bu ruxsatsiz u «Resource not accessible by integration» deb
-  # yiqiladi va butun CI shu yerda to'xtaydi.
+  # `dorny/paths-filter` reads changed files from the GitHub API; without
+  # this it fails with "Resource not accessible by integration" and the
+  # whole CI stops here.
   pull-requests: read
 
 jobs:
-  # Yo'l filtri va hujjat tekshiruvi bitta job'da: ikkalasi ham bir necha
-  # soniya ishlaydi, GitHub esa har jobni daqiqagacha yaxlitlab hisoblaydi
-  # — alohida turganda ular oyiga ~86 daqiqa yeb turardi.
+  # Path filter and docs checks share one job: both finish in a few
+  # seconds, and GitHub bills each job rounded up to a minute — as
+  # separate jobs they burned ~86 minutes a month.
   changes:
-    name: O'zgarishlar va hujjat yaxlitligi
+    name: Changes and docs integrity
     runs-on: [self-hosted, rankwant]
     timeout-minutes: 2
     outputs:
@@ -69,26 +69,27 @@ jobs:
             web:   ['apps/web/**']
             judge: ['services/**']
             code:  ['apps/**', 'services/**', 'tools/**', 'tests/**', 'docker-compose*.yml']
-            # Tekshiruvlarning O'ZI o'zgarganda ular sinaladigan job ishga
-            # tushsin. `code` bu ish uchun juda keng: u `apps/api/**` ni ham
-            # qamraydi, ya'ni API o'zgarishi web job'ini behuda ko'tarardi.
-            # `.githooks/**` ham shu yerda — `check_negative.py` dagi
-            # `neg_hook_gates_new_branch` aynan pre-push hook'ni sinaydi.
+            # When the checks themselves change, the job that runs them
+            # must start. `code` is too wide for that: it also matches
+            # `apps/api/**`, so an API change would wake the web job
+            # for nothing. `.githooks/**` is here too —
+            # `neg_hook_gates_new_branch` in `check_negative.py` tests
+            # the pre-push hook.
             tools: ['tools/**', '.githooks/**']
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
-      - name: Havola, jadval, yozuv va STATUS tekshiruvi
+      - name: Links, tables, writing, and STATUS
         run: python3 tools/check_docs.py
-      - name: Identifikatorlarda chalkash harf (kirill/grek ↔ lotin)
+      - name: Confusable letters in identifiers (Cyrillic/Greek ↔ Latin)
         run: python3 tools/check_confusables.py
-      - name: Judge shartnomasi (protocol.md ↔ Go ↔ Python)
+      - name: Judge contract (protocol.md ↔ Go ↔ Python)
         run: python3 tools/check_contract.py
-      - name: DRF `ordering` tiebreaker (sahifalash beqarorligi)
+      - name: DRF `ordering` tiebreaker (unstable pagination)
         run: python3 tools/check_ordering.py
-      - name: Egasining qarorlari kodda (CLAUDE.md § Saidakbar aka qarorlari)
+      - name: Owner decisions in code (CLAUDE.md § Saidakbar aka qarorlari)
         run: python3 tools/check_decisions.py
-      - name: .env.example to'liqligi (kod va compose o'qiydigan o'zgaruvchilar)
+      - name: .env.example completeness (variables read by code and compose)
         run: python3 tools/check_env_example.py
 
   api:
@@ -106,8 +107,8 @@ jobs:
         options: >-
           --health-cmd pg_isready --health-interval 10s
           --health-timeout 5s --health-retries 5
-        # Host portini GitHub tanlaydi: self-hosted runner'da 5432 jonli
-        # preview stack tomonidan band.
+        # GitHub picks the host port: on the self-hosted runner 5432 is
+        # already taken by the live preview stack.
         ports: ['5432']
       redis:
         image: redis:7
@@ -117,22 +118,22 @@ jobs:
         ports: ['6379']
     steps:
       - uses: actions/checkout@v7
-      - name: Scaffold qilinganmi?
+      - name: Scaffolded?
         id: check
         run: |
           if [ -f apps/api/requirements-dev.txt ]; then
             echo "ready=true" >> "$GITHUB_OUTPUT"
           else
             echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::apps/api hali scaffold qilinmagan (Sprint 1) — o'tkazib yuborildi"
+            echo "::notice::apps/api is not scaffolded yet (Sprint 1) — skipped"
           fi
       - uses: actions/setup-python@v7
         if: steps.check.outputs.ready == 'true'
-        # `cache:` ATAYIN yo'q. Runner self-hosted: `~/.npm` (1.5 GB) va
-        # pip keshi mashinada, joblar orasida saqlanadi. `cache:` ularni
-        # GitHub saqlagichidan qayta yuklaydi — o'lchandi: npm keshining
-        # 440 MB lik arxivi ~2 MB/s da 127 soniya olgan, mahalliy nusxa
-        # yonida tura turib.
+        # `cache:` is OMITTED ON PURPOSE. The runner is self-hosted:
+        # `~/.npm` (1.5 GB) and the pip cache live on the machine between
+        # jobs. `cache:` re-downloads them from GitHub storage — measured:
+        # a 440 MB npm-cache archive at ~2 MB/s took 127 seconds while
+        # the local copy was already sitting there.
         with:
           python-version: '3.12'
       - if: steps.check.outputs.ready == 'true'
@@ -144,27 +145,29 @@ jobs:
         working-directory: apps/api
       - name: mypy (strict)
         if: steps.check.outputs.ready == 'true'
-        # `--show-traceback`: 2026-09-12 da bu qadam `INTERNAL ERROR —
-        # Error constructing plugin instance of NewSemanalDjangoPlugin`
-        # bilan yiqildi, lekin bir qatorlik xabar SABABNI ko'rsatmaydi.
-        # O'sha kod `rankwant-api` image'ida (bir xil requirements) 280
-        # faylda xatosiz o'tadi, ya'ni muammo runner muhitida — traceback
-        # uni ko'rsatadi. Sabab topilgach bu qator olib tashlanishi mumkin.
+        # `--show-traceback`: on 2026-09-12 this step failed with
+        # `INTERNAL ERROR — Error constructing plugin instance of
+        # NewSemanalDjangoPlugin`, but the one-line message hid the
+        # cause. The same code passes on 280 files in the `rankwant-api`
+        # image (same requirements), so the problem is the runner
+        # environment — the traceback shows it. This flag can go once
+        # the cause is known.
         run: mypy --show-traceback .
         working-directory: apps/api
-      - name: Service host aniqlash
+      - name: Detect service host
         id: svc
-        # Service container portlari Docker HOST'da e'lon qilinadi, runner
-        # jarayoni turgan joyda emas. Runner konteyner ichida bo'lsa uning
-        # `localhost`i o'zini ko'rsatadi va ulanish YIQILADI.
+        # Service-container ports are published on the Docker HOST, not
+        # where the runner process lives. If the runner is inside a
+        # container, its `localhost` is itself and the connection FAILS.
         #
-        # O'lchandi (2026-09-17, bir martalik sinov konteynerlari):
-        #   qardosh konteynerdan localhost:<port>          -> FAIL
-        #   qardosh konteynerdan host.docker.internal:<port> -> OK
-        #   default gateway 172.17.0.1                     -> FAIL
+        # Measured (2026-09-17, one-off test containers):
+        #   sibling container → localhost:<port>              -> FAIL
+        #   sibling container → host.docker.internal:<port>   -> OK
+        #   default gateway 172.17.0.1                        -> FAIL
         #
-        # WSL runner'da (konteyner emas) `localhost` to'g'ri ishlaydi, ya'ni
-        # bu qadam orqaga mos: muhit o'zgarmasa qiymat o'zgarmaydi.
+        # On a WSL runner (not a container) `localhost` is correct, so
+        # this step is backward-compatible: the value does not change
+        # if the environment does not.
         run: |
           if [ -f /.dockerenv ]; then
             echo "host=host.docker.internal" >> "$GITHUB_OUTPUT"
@@ -172,7 +175,7 @@ jobs:
             echo "host=localhost" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Migratsiyalar to'liq yozilganmi
+      - name: Migrations fully written
         if: steps.check.outputs.ready == 'true'
         env:
           DATABASE_URL: postgres://postgres:postgres@${{ steps.svc.outputs.host }}:${{ job.services.postgres.ports['5432'] }}/rankwant_test
@@ -183,35 +186,33 @@ jobs:
         env:
           DATABASE_URL: postgres://postgres:postgres@${{ steps.svc.outputs.host }}:${{ job.services.postgres.ports['5432'] }}/rankwant_test
           REDIS_URL: redis://${{ steps.svc.outputs.host }}:${{ job.services.redis.ports['6379'] }}/0
-          # `CELERY_EAGER=1` — task'lar sinxron, broker aylanib o'tiladi.
-          # Bu Redis SERVICE'i kerak emasligi degani EMAS: `CACHES` va
-          # throttle hamon Redisdan foydalanadi. Sabab — DETERMINIZM:
-          # broker orqali o'tsa task navbatga tushadi va test uni
-          # kutmaydi, ya'ni natija ishga tushish tartibiga bog'liq
-          # bo'lib qoladi. Mahalliy o'lchov: 14m54s → 1m57s.
+          # `CELERY_EAGER=1` — tasks run synchronously, broker skipped.
+          # That does NOT mean the Redis SERVICE is unused: `CACHES` and
+          # throttle still use Redis. The reason is DETERMINISM: through
+          # the broker a task is queued and the test does not wait, so
+          # the result depends on scheduling order. Local measurement:
+          # 14m54s → 1m57s.
           CELERY_EAGER: '1'
-        # `-n 6`: o'lchandi (8 CPU) — -n 4: 102 s, -n 6: 88 s,
-        # -n 8: 92 s. 6 — eng tez nuqta; 8 da worker'lar bir-birini
-        # siqadi. `auto` EMAS: runner shu mashinada, jonli preview
-        # bilan yonma-yon ishlaydi.
+        # `-n 6`: measured (8 CPUs) — -n 4: 102 s, -n 6: 88 s,
+        # -n 8: 92 s. 6 is the fastest point; at 8 the workers crowd
+        # each other. Not `auto`: the runner shares this machine with
+        # the live preview.
         run: pytest -n 6 --cov --cov-report=term-missing
         working-directory: apps/api
 
-  # ⚠️ Bu job web'ni qurishdan tashqari TEKSHIRUV TO'PLAMINI ham ishlatadi
+  # ⚠️ Besides building web, this job also runs the CHECK SUITE
   # (`check_i18n`, `check_i18n_runtime`, `check_negative`, `check_contrast`).
-  # Ular shu yerda turadi, chunki `check_i18n_runtime.mjs` `typescript` ni
-  # `apps/web/node_modules` dan oladi — ya'ni to'plamga quyidagi `npm ci`
-  # kerak. Boshqa job'ga ko'chirish o'sha o'rnatishni takrorlashni talab
-  # qilardi.
+  # They live here because `check_i18n_runtime.mjs` loads `typescript`
+  # from `apps/web/node_modules` — so the suite needs the `npm ci`
+  # below. Moving them to another job would repeat that install.
   #
-  # ⚠️ Shu sababli darvoza `web` filtriga YOLG'IZ bog'lanmaydi. Ilgari
-  # shunday edi va oqibati o'lchandi (2026-09-15): faqat `tools/` ni
-  # o'zgartirgan PR'lar — jumladan `check_negative.py` ning o'zini qayta
-  # yozgan #13 va unga yangi guruh qo'shgan #14 — bu job'ni `skipped`
-  # qoldirdi. Ya'ni tekshiruvlarni sinaydigan to'plam aynan o'sha
-  # tekshiruvlar o'zgarganda ISHLAMAGAN.
+  # ⚠️ So the gate is NOT tied to the `web` filter alone. It used to
+  # be, and the result was measured (2026-09-15): PRs that only
+  # changed `tools/` — including #13 rewriting `check_negative.py`
+  # and #14 adding a new group — left this job `skipped`. The suite
+  # that tests the checks did not run when those checks changed.
   web:
-    name: Web — lint, types, build va tekshiruv to'plami
+    name: Web — lint, types, build, and check suite
     needs: changes
     if: >-
       ${{ needs.changes.outputs.web == 'true'
@@ -221,68 +222,68 @@ jobs:
     timeout-minutes: 3
     steps:
       - uses: actions/checkout@v7
-      - name: Scaffold qilinganmi?
+      - name: Scaffolded?
         id: check
         run: |
           if [ -f apps/web/package.json ]; then
             echo "ready=true" >> "$GITHUB_OUTPUT"
           else
             echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::apps/web hali scaffold qilinmagan (Sprint 1) — o'tkazib yuborildi"
+            echo "::notice::apps/web is not scaffolded yet (Sprint 1) — skipped"
           fi
       - uses: actions/setup-node@v7
         if: steps.check.outputs.ready == 'true'
-        # `cache:` ATAYIN yo'q. Runner self-hosted: `~/.npm` (1.5 GB) va
-        # pip keshi mashinada, joblar orasida saqlanadi. `cache:` ularni
-        # GitHub saqlagichidan qayta yuklaydi — o'lchandi: npm keshining
-        # 440 MB lik arxivi ~2 MB/s da 127 soniya olgan, mahalliy nusxa
-        # yonida tura turib.
+        # `cache:` is OMITTED ON PURPOSE. The runner is self-hosted:
+        # `~/.npm` (1.5 GB) and the pip cache live on the machine between
+        # jobs. `cache:` re-downloads them from GitHub storage — measured:
+        # a 440 MB npm-cache archive at ~2 MB/s took 127 seconds while
+        # the local copy was already sitting there.
         with:
           node-version: '22'
-      # `npm ci` faqat `tools/` o'zgarganda ham ishlaydi va bu ATAYIN:
-      # `check_i18n_runtime.mjs` `typescript` ni `apps/web/node_modules`
-      # dan oladi (`createRequire`). Usiz `check_negative.py` ning
-      # `node_precondition()` si «Cannot find module 'typescript'» deb
-      # BUTUN to'plamni bitta test ishlatmasdan to'xtatadi.
+      # `npm ci` also runs when only `tools/` changed, ON PURPOSE:
+      # `check_i18n_runtime.mjs` loads `typescript` from
+      # `apps/web/node_modules` (`createRequire`). Without it,
+      # `node_precondition()` in `check_negative.py` stops the WHOLE
+      # suite with "Cannot find module 'typescript'" before any test
+      # runs.
       - if: steps.check.outputs.ready == 'true'
         run: npm ci
         working-directory: apps/web
-      # Lint/typecheck/build FAQAT web o'zgarganda. Faqat `tools/`
-      # o'zgargan yurishda ular hech narsa yangi tekshirmaydi — job esa
-      # baribir kerak, chunki tekshiruv to'plami pastda.
+      # Lint / typecheck / build ONLY when web changed. On a tools-only
+      # run they would check nothing new — the job is still needed
+      # because the check suite is below.
       - if: ${{ steps.check.outputs.ready == 'true' && needs.changes.outputs.web == 'true' }}
         run: npm run lint
         working-directory: apps/web
       - if: ${{ steps.check.outputs.ready == 'true' && needs.changes.outputs.web == 'true' }}
         run: npm run typecheck
         working-directory: apps/web
-      - name: Unit testlar (Vitest)
+      - name: Unit tests (Vitest)
         if: ${{ steps.check.outputs.ready == 'true' && needs.changes.outputs.web == 'true' }}
         run: npm run test
         working-directory: apps/web
-      # Tiplar kalit yetishmasligini ushlaydi, lekin bo'sh satrni yoki
-      # tarjimasiz qoldirilgan nusxani ko'rmaydi.
-      - name: i18n to'liqligi
+      # Types catch a missing key, but not an empty string or a copy
+      # left untranslated.
+      - name: i18n completeness
         if: steps.check.outputs.ready == 'true'
         run: python3 tools/check_i18n.py
-      # `t()` ning ZAXIRA yo'li: dev'da otiladi, prod'da bir marta
-      # jurnalga yoziladi. `check_i18n.py` buni ko'ra olmaydi — u
-      # faqat matnni o'qiydi, shuning uchun modul Node'da ishga
-      # tushiriladi (shu qadamda `actions/setup-node` bor).
+      # Fallback path of `t()`: throws in dev, logs once in prod.
+      # `check_i18n.py` cannot see that — it only reads the strings —
+      # so the module is run in Node (this step has `actions/setup-node`).
       - name: i18n runtime (dev throw / prod log)
         if: steps.check.outputs.ready == 'true'
         run: node tools/check_i18n_runtime.mjs
-      # Tekshiruvlarning o'zini sinaydi — har biriga ataylab buzilgan
-      # holat beriladi va `exit 1` talab qilinadi.
+      # Tests the checks themselves — each is given a deliberately
+      # broken state and must `exit 1`.
       #
-      # `NODE` shart: `check_negative.py` Node tekshiruvini ham
-      # ishga tushiradi, `node` esa PATH'da har xil nomlanishi mumkin.
-      - name: Salbiy testlar
+      # `NODE` precondition: `check_negative.py` also runs Node checks,
+      # and `node` can appear under different names on PATH.
+      - name: Negative tests
         if: steps.check.outputs.ready == 'true'
         env:
           NODE: node
         run: python3 tools/check_negative.py
-      - name: Matn kontrasti (WCAG AA)
+      - name: Text contrast (WCAG AA)
         if: steps.check.outputs.ready == 'true'
         run: python3 tools/check_contrast.py
       - if: ${{ steps.check.outputs.ready == 'true' && needs.changes.outputs.web == 'true' }}
@@ -290,7 +291,7 @@ jobs:
         working-directory: apps/web
 
   judge:
-    name: Judge — bake-off nomzodlari
+    name: Judge — bake-off candidates
     needs: changes
     if: ${{ needs.changes.outputs.judge == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: [self-hosted, rankwant]
@@ -303,7 +304,7 @@ jobs:
       - name: Go — vet, format, build, test
         run: |
           if [ ! -f services/judge-go/go.mod ]; then
-            echo "judge-go hali scaffold qilinmagan — o'tkazib yuborildi"
+            echo "judge-go is not scaffolded yet — skipped"
             exit 0
           fi
           cd services/judge-go
@@ -317,7 +318,7 @@ jobs:
       - name: Python judge — lint, types, test
         run: |
           if [ ! -f services/judge-py/pyproject.toml ]; then
-            echo "judge-py hali scaffold qilinmagan — o'tkazib yuborildi"
+            echo "judge-py is not scaffolded yet — skipped"
             exit 0
           fi
           cd services/judge-py
@@ -329,11 +330,11 @@ jobs:
 
   openapi:
     name: OpenAPI schema diff
-    # `api` ATAYIN olib tashlandi: bu job faqat `changes` filter'iga
-    # qaraydi, API testlarining NATIJASIGA emas. `needs: [changes, api]`
-    # bo'lganda u API tugashini kutardi (o'lchandi: 2.7 min) va bitta
-    # runner'da umumiy vaqtni shuncha uzaytirardi. Endi u API bilan
-    # bir qatorda turadi.
+    # `api` was dropped ON PURPOSE: this job only looks at the `changes`
+    # filter, not at the RESULT of the API tests. With
+    # `needs: [changes, api]` it waited for API to finish (measured:
+    # 2.7 min) and stretched wall time on a single runner by that much.
+    # It now sits alongside API.
     needs: changes
     if: ${{ needs.changes.outputs.api == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: [self-hosted, rankwant]
@@ -343,41 +344,40 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
-      - name: Schema generatsiya va diff
+      - name: Generate schema and diff
         run: |
           if [ ! -f apps/api/manage.py ]; then
-            echo "::notice::apps/api hali scaffold qilinmagan — schema diff o'tkazib yuborildi"
+            echo "::notice::apps/api is not scaffolded yet — schema diff skipped"
             exit 0
           fi
           cd apps/api
           pip install -r requirements-dev.lock
           python manage.py spectacular --file /tmp/schema.yml
           diff -u openapi/schema.yml /tmp/schema.yml || {
-            echo "::error::OpenAPI schema o'zgardi. Yangilang:"
+            echo "::error::OpenAPI schema changed. Update it:"
             echo "::error::  cd apps/api && python manage.py spectacular --file openapi/schema.yml"
             exit 1
           }
 
   smoke:
-    name: Smoke va E2E — to'liq stack
+    name: Smoke and E2E — full stack
     runs-on: [self-hosted, rankwant]
-    # ⚠️ 20 daqiqa — ONGLI istisno. Bu job to'liq compose stack'ni QURADI
-    # (api+web+judge image'lari), demo ma'lumot yuklaydi, smoke yugurtiradi
-    # va Playwright E2E qiladi. 3 daqiqa bilan u shunchaki 'cancelled'
-    # bo'ldi (run 34902927949) — ya'ni kafolatli qizil. Har qadamga alohida
-    # chegara ham qo'yilgan: qaysi bosqich sekinligi ko'rinib turadi.
+    # ⚠️ 20 minutes — a DELIBERATE exception. This job BUILDS the full
+    # compose stack (api+web+judge images), loads demo data, runs smoke,
+    # and runs Playwright E2E. At 3 minutes it was simply `cancelled`
+    # (run 34902927949) — a guaranteed red. Each step also has its own
+    # limit so a slow stage is visible.
     timeout-minutes: 20
     needs: changes
-    # PR'da yo'q (2026-09-18): smoke ~2 daqiqa stack quradi va navbatni
-    # ushlab turadi. Main push, `workflow_dispatch` va deploy `workflow_call`
-    # to'liq yo'lni saqlaydi. `!= pull_request` qatori qaror — olib tashlash
-    # `tools/check_decisions.py` ni qiziltiradi.
+    # Not on PR (2026-09-18): smoke spends ~2 minutes building the stack
+    # and holds the queue. Main push, `workflow_dispatch`, and deploy
+    # `workflow_call` keep the full path. The `!= pull_request` line is
+    # a decision — removing it fails `tools/check_decisions.py`.
     if: >-
       ${{ (needs.changes.outputs.code == 'true' || github.event_name == 'workflow_dispatch')
           && github.event_name != 'pull_request' }}
-    # Compose loyihasi HAR JOB uchun alohida. Ikkinchi runner qo'shilishi
-    # bilan ikkita job bir xil nomdagi stack'ni ko'tarib, birining
-    # `down -v` si ikkinchisining konteynerlarini o'chirardi.
+    # Compose project is PER JOB. With a second runner, two jobs sharing
+    # a stack name would take each other's containers down with `down -v`.
     env:
       COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
     steps:
@@ -385,37 +385,38 @@ jobs:
       - name: Stack
         timeout-minutes: 10
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build --wait
-      - name: Demo ma'lumot
+      - name: Demo data
         timeout-minutes: 3
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api python manage.py seed_demo
       - name: Smoke
         timeout-minutes: 5
-        # Kritik yo'l: submit → Redis → judge → verdict. Bu qadam API va
-        # judge'ni BIRGA ishlatadigan yagona joy — ular alohida sinalganda
-        # ikkita shartnoma nomuvofiqligi ko'rinmay qolgan edi.
+        # Critical path: submit → Redis → judge → verdict. This is the
+        # only step that runs API and judge TOGETHER — when they are
+        # tested separately, a contract mismatch stays hidden.
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm smoke
-      - name: Bake-off — validator case'lari (haqiqiy nsjail)
+      - name: Bake-off — validator cases (real nsjail)
         timeout-minutes: 3
-        # ADR-0020 ning eng muhim himoyasi: buzuq kiritma submission ishga
-        # tushishidan OLDIN rad etiladi. Uni faqat haqiqiy sandbox tasdiqlay
-        # oladi — birlik testlari `sandboxed` ni soxta ijrochi bilan
-        # almashtiradi, ya'ni nsjail, kompilyatsiya va chiqish kodi ular
-        # uchun ko'rinmas. O'lchandi: himoya olib tashlanganda 19-case
-        # `WRONG_TEST` o'rniga `AC` beradi.
+        # ADR-0020's most important protection: a bad input is rejected
+        # BEFORE a submission runs. Only a real sandbox can confirm that
+        # — unit tests replace `sandboxed` with a fake executor, so
+        # nsjail, compilation, and the exit code are invisible to them.
+        # Measured: with the protection removed, case 19 returns `AC`
+        # instead of `WRONG_TEST`.
         #
-        # Shu job'da, chunki stack (judge image'i bilan) allaqachon
-        # qurilgan: qadam bir necha soniya qo'shadi. Alohida job nsjail'ni
-        # manbadan qayta qurishga majbur qilardi.
+        # In this job because the stack (with the judge image) is
+        # already built: the step adds a few seconds. A separate job
+        # would have to rebuild nsjail from source.
         #
-        # To'liq to'plam (21 case), faqat validator uchtasi emas: o'lchandi
-        # 2026-09-16 — hammasi 11.2 s (p50 33 ms, p95 1742 ms). «Qolganlari
-        # ancha sekin» degan taxmin NOTO'G'RI chiqdi, shuning uchun fork
-        # bomb, tarmoq, `/proc`, symlink va fayl yozish izolyatsiyasi ham
-        # shu darvozadan o'tadi.
+        # Full suite (21 cases), not only the three validator ones:
+        # measured 2026-09-16 — all in 11.2 s (p50 33 ms, p95 1742 ms).
+        # The guess that "the rest are much slower" was WRONG, so fork
+        # bomb, network, `/proc`, symlink, and file-write isolation
+        # also go through this gate.
         #
-        # ⚠️ `worker` va `beat` to'xtatiladi: `drain_results` natijalarni
-        # navbatdan harness'dan OLDIN olib ketadi va hisobot «XAVFSIZLIKDAN
-        # O'TMADI» bo'lib chiqadi — aslida sandbox soz (CLAUDE.md § Bake-off).
+        # ⚠️ `worker` and `beat` are stopped: `drain_results` would
+        # consume results from the queue BEFORE the harness and the
+        # report would say it failed security — even though the
+        # sandbox is fine (CLAUDE.md § Bake-off).
         run: |
           C="docker compose -f docker-compose.yml -f docker-compose.ci.yml"
           $C stop worker beat
@@ -428,74 +429,77 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
-      - name: Til matritsasi — e'lon qilingan versiya image'dagi bilan mos
+      - name: Language matrix — declared version matches the image
         timeout-minutes: 2
-        # Platforma «Python 3.13» deb ko'rsatsa, judge esa 3.11 ishlatsa,
-        # foydalanuvchi tushunarsiz `SyntaxError` oladi va buni O'Z kodidan
-        # deb o'ylaydi. Buni faqat har tilda versiyasini chop etadigan
-        # dastur ishga tushirib bilib bo'ladi, ya'ni judge IMAGE'i kerak —
-        # shuning uchun qadam shu job'da, stack qurilganidan keyin.
+        # If the platform says "Python 3.13" but the judge runs 3.11,
+        # the user gets a confusing `SyntaxError` and blames THEIR
+        # code. The only way to know is to run a program that prints
+        # each language's version, which needs the judge IMAGE — so
+        # this step is in this job, after the stack is up.
         #
-        # Tekshiruvning o'zi uzoq vaqt O'LIK turgan: seed qatoriga oltinchi
-        # ustun qo'shilgach u `ValueError` bilan hech narsa tekshirmasdan
-        # yiqilar, hech bir darvoza esa uni chaqirmasdi (2026-09-16).
+        # The check itself sat DEAD for a long time: after a sixth
+        # column was added to the seed row it raised `ValueError`
+        # without checking anything, and no gate called it
+        # (2026-09-16).
         run: python3 tests/compatibility/check_languages.py "${COMPOSE_PROJECT_NAME}-judge"
-      - name: E2E (faqat chromium — to'liq matritsa nightly da)
+      - name: E2E (chromium only — full matrix is nightly)
         timeout-minutes: 10
-        # `HOST_REPO_ROOT` — bind mount manbai DAEMON tomonida yechiladi,
-        # runner jarayoni tomonida EMAS. Runner konteyner ichida bo'lsa
-        # `$PWD` (masalan /home/runner/_work/...) daemon uchun mavjud
-        # bo'lmagan yo'l, ya'ni mount BO'SH chiqadi.
+        # `HOST_REPO_ROOT` — the bind-mount source is resolved on the
+        # DAEMON side, NOT by the runner process. If the runner is
+        # inside a container, `$PWD` (e.g. /home/runner/_work/...) is
+        # a path the daemon does not have, so the mount comes up EMPTY.
         #
-        # O'lchandi (2026-09-17): Windows yo'li (`C:/Users/...`) -> OK,
-        # Linux uslubidagi yo'l -> VM ichida bo'sh katalog.
+        # Measured (2026-09-17): Windows path (`C:/Users/...`) -> OK,
+        # Linux-style path -> empty directory inside the VM.
         #
-        # O'zgaruvchi FAQAT konteyner runner'da o'rnatiladi. WSL runner'da
-        # bo'sh bo'ladi va `${VAR:-$PWD}` hozirgi xatti-harakatni beradi.
+        # The variable is set ONLY on the container runner. On a WSL
+        # runner it is empty and `${VAR:-$PWD}` keeps current behavior.
         run: |
           docker run --rm --user "$(id -u):$(id -g)" --network "${COMPOSE_PROJECT_NAME}_default" \
             -v "${HOST_REPO_ROOT:-$PWD}/tests/e2e:/e2e" -w /e2e \
             -e E2E_BASE_URL=http://web:3000 -e E2E_API_BASE=http://api:8000/api/v1 -e CI=1 \
             mcr.microsoft.com/playwright:v1.63.0-noble \
             sh -c 'npm ci --silent && npx playwright test --project=chromium --reporter=list'
-      - name: Loglar (yiqilganda)
+      - name: Logs (on failure)
         if: failure()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs --tail 60
-      - name: Tozalash
+      - name: Tear down
         if: always()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
-      # ⚠️ `down -v` konteyner va volume'larni olib tashlaydi, lekin
-      # QURILGAN OBRAZLARNI QOLDIRADI — teshik shu yerda edi.
+      # ⚠️ `down -v` removes containers and volumes, but LEAVES THE
+      # BUILT IMAGES — that was the hole.
       #
-      # 2026-09-16 da o'lchandi: 420 ta `rw-smoke-*` + 122 ta
-      # `rankwant-build-*` yig'ilib, runner'ning WSL diskini to'ldirgan
-      # (58 GB) — C: da 9.59 GB qolgandi va mashina sekinlashgan.
+      # Measured 2026-09-16: 420 `rw-smoke-*` + 122 `rankwant-build-*`
+      # piled up and filled the runner's WSL disk (58 GB) — C: had
+      # 9.59 GB left and the machine slowed down.
       #
-      # Ikkita narsa o'chiriladi:
-      #   1. shu yurish yasagan obrazlar (`${COMPOSE_PROJECT_NAME}-*`)
-      #   2. buzilgan/yarim qolgan yurishlardan qolgan, 6 soatdan eski `rw-*`
+      # Two things are removed:
+      #   1. images this run built (`${COMPOSE_PROJECT_NAME}-*`)
+      #   2. leftovers from broken/half-finished runs, `rw-*` older
+      #      than 6 hours
       #
-      # Bazaviy obrazlar (postgres, redis, minio, playwright) TEgilMAYDI:
-      # ular har yurishda qayta ishlatiladi, o'chirilsa qayta yuklanadi.
-      - name: Obrazlarni tozalash
+      # Base images (postgres, redis, minio, playwright) are NOT
+      # touched: they are reused every run; deleting them re-pulls.
+      - name: Clean images
         if: always()
         run: |
           set -u
-          echo "--> shu yurish obrazlari (${COMPOSE_PROJECT_NAME}-*)"
+          echo "--> images from this run (${COMPOSE_PROJECT_NAME}-*)"
           docker images --format '{{.Repository}}:{{.Tag}}' \
             | grep -E "^${COMPOSE_PROJECT_NAME}-" \
             | xargs -r docker rmi -f || true
-          echo "--> 6 soatdan eski qoldiqlar (rw-*, rankwant-build-*)"
+          echo "--> leftovers older than 6 hours (rw-*, rankwant-build-*)"
           docker images --format '{{.ID}}|{{.CreatedSince}}|{{.Repository}}' \
             | awk -F'|' '$3 ~ /^rw-/ && $2 ~ /hours|days|weeks|months/ {print $1}' \
             | sort -u | xargs -r docker rmi -f || true
-          echo "--> build cache (7 kundan eskisi)"
-          # ⚠️ MUROSA: build cache Docker'da LOYIHA bo'yicha ajratilmaydi —
-          # `docker builder prune` butun engine'ga tegadi. Bitta engine'da
-          # (2026-09-17 qarori) bu jonli stack'ning keshi ham nomzod degani.
+          echo "--> build cache (older than 7 days)"
+          # ⚠️ COMPROMISE: Docker does not split the build cache BY
+          # PROJECT — `docker builder prune` hits the whole engine.
+          # On one engine (2026-09-17 decision) that means the live
+          # stack's cache is a candidate too.
           #
-          # 24 soat -> 7 kun: jonli deploy keshi odatda bir hafta ichida
-          # qayta ishlatiladi, ya'ni amalda tegilmaydi; CI chiqindisi esa
-          # chegaralangan qoladi. Bu TO'LIQ yechim emas — to'g'ri yechim
-          # daemon darajasida kesh hajmini cheklash. Ochiq band.
+          # 24 hours -> 7 days: the live deploy cache is usually
+          # reused within a week, so in practice it is left alone;
+          # CI leftovers stay bounded. This is NOT a complete fix —
+          # the right fix is a daemon-level cache-size cap. Open.
           docker builder prune -f --filter 'until=168h' || true

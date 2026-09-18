@@ -1,14 +1,14 @@
 name: Deploy
 
-# Build, test va deploy — faqat qo'lda ishga tushiriladi (`on:` ga qarang).
+# Build, test, and deploy — started only by hand (see `on:`).
 #
-# Zanjir: build → test → deploy. Har bosqich oldingisiga `needs` bilan
-# bog'langan, ya'ni test yiqilsa deploy UMUMAN boshlanmaydi.
+# Chain: build → test → deploy. Each stage `needs` the previous one,
+# so a failed test means deploy NEVER starts.
 #
-# `ci.yml` allaqachon PR va main push'ida lint/mypy/pytest/smoke ishlatadi.
-# Bu workflow o'sha tekshiruvlarni QAYTA yozmaydi — u `workflow_call` bilan
-# chaqiradi va shu bilan "test o'tdi" degan shart deploy uchun majburiy
-# bo'ladi. Ikkinchi nusxa saqlanmaydi: qoidalar bir joyda o'zgaradi.
+# `ci.yml` already runs lint/mypy/pytest/smoke on PR and main push.
+# This workflow does NOT rewrite those checks — it calls them with
+# `workflow_call`, which makes a passing test run a hard requirement
+# for deploy. There is no second copy: the rules change in one place.
 
 # Manual dispatch only (2026-09-17). Deploy itself has been manual since
 # 2026-09-16 (see the `deploy` job), yet every push to main still ran this
@@ -22,24 +22,23 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: Maqsad muhit
+        description: Target environment
         type: choice
         options: [staging, production]
         default: staging
-      # ⚠️ Qo'shildi 2026-09-17: ilgari deploy'ni faqat `vars.PUBLIC_ORIGIN`
-      # bo'shligi to'xtatib turardi — ya'ni sozlamani bir marta to'ldirish
-      # yetarli edi. Bitta engine'ga o'tilgach (runner va jonli stack bir
-      # Docker'da) bu job jonli stack'ka BEVOSITA yeta oladi, ya'ni
-      # tasodifiy ishga tushirish haqiqiy deploy bo'ladi. Endi ochiq
-      # tasdiq so'raladi.
+      # ⚠️ Added 2026-09-17: previously only an empty `vars.PUBLIC_ORIGIN`
+      # held deploy back — filling that setting once was enough. After
+      # the move to one engine (runner and live stack on the same Docker)
+      # this job can reach the live stack DIRECTLY, so an accidental
+      # start is a real deploy. An explicit confirmation is now required.
       confirm:
-        description: "Jonli stack'ka tegadi — tasdiqlash uchun `deploy` yozing"
+        description: "Touches the live stack — type `deploy` to confirm"
         type: string
         required: false
         default: ''
 
-# Deploy job'i runner mashinasidagi shared resursga (docker compose,
-# tunnel) tegadi: bir vaqtda ikkita deploy ketmasin.
+# The deploy job touches a shared resource on the runner machine
+# (docker compose, tunnel): two deploys must not run at once.
 concurrency:
   group: deploy-${{ github.ref }}
   cancel-in-progress: false
@@ -47,70 +46,70 @@ concurrency:
 permissions:
   contents: read
   actions: read
-  # `test` job'i `ci.yml` ni `uses:` bilan chaqiradi. Chaqiriladigan
-  # workflow faqat ruxsatni KAMAYTIRA oladi, ko'paytira olmaydi: `ci.yml`
-  # o'zida `pull-requests: read` so'raydi (`dorny/paths-filter` uchun),
-  # caller bermasa GitHub run'ni umuman boshlamaydi — `startup_failure`,
-  # 0 job. Bu yerda BERILISHI shart.
+  # The `test` job calls `ci.yml` with `uses:`. A called workflow can
+  # only REDUCE permissions, not raise them: `ci.yml` asks for
+  # `pull-requests: read` (for `dorny/paths-filter`). If the caller
+  # does not grant it, GitHub does not start the run at all —
+  # `startup_failure`, 0 jobs. It MUST be granted here.
   pull-requests: read
 
 env:
-  # Self-hosted runner `nsn` foydalanuvchisi sifatida ishlaydi va
-  # `~/.local/lib/.../site-packages` ni ham ko'radi. U yerdagi begona
-  # paketlar pytest plaginini ro'yxatdan o'tkazadi (ci.yml dagi izoh).
+  # The self-hosted runner runs as user `nsn` and also sees
+  # `~/.local/lib/.../site-packages`. Stray packages there register
+  # pytest plugins (same note as in ci.yml).
   PYTHONNOUSERSITE: '1'
-  # Deploy qilinadigan image tegi — rollback uchun commit SHA ishlatiladi.
+  # Image tag being deployed — commit SHA for rollback.
   IMAGE_TAG: ${{ github.sha }}
 
 jobs:
   # ── 1. BUILD ─────────────────────────────────────────────────────────
-  # Image'lar ALOHIDA job'da quriladi, testdan keyin emas: build xatosi
-  # (buzuq Dockerfile, yetishmayotgan bog'liqlik) testlardan tezroq va
-  # aniqroq xabar beradi.
+  # Images are built in a SEPARATE job, not after tests: a build error
+  # (broken Dockerfile, missing dependency) reports faster and more
+  # clearly than a test failure.
   build:
-    name: Build — API, web va judge image'lari
+    name: Build — API, web, and judge images
     runs-on: [self-hosted, rankwant]
-    # ⚠️ 10 daqiqa — ONGLI istisno (qolgan hamma joyda 1-3).
-    # O'lchandi: issiq kesh bilan 166 s, lekin `apps/web` o'zgargan
-    # commit'larda qayta qurish 3 daqiqaga SIGMAYDI — 3 daqiqa bilan
-    # qadam "cancelled" bo'ldi (run 34898117925). Uchta image'ni
-    # qurishni 3 daqiqaga tiqish chegarani emas, keshni yaxshilashni
-    # talab qiladi; hozircha chegara haqiqatga mos qo'yildi.
+    # ⚠️ 10 minutes — a DELIBERATE exception (everywhere else is 1–3).
+    # Measured: 166 s with a warm cache, but rebuilds after `apps/web`
+    # changes DO NOT FIT in 3 minutes — the step was "cancelled"
+    # (run 34898117925). Stuffing three image builds into 3 minutes
+    # would require a better cache, not a tighter limit; for now the
+    # limit matches reality.
     timeout-minutes: 10
     outputs:
       version: ${{ steps.meta.outputs.version }}
     env:
-      # Deploy stack'i jonli preview bilan bir loyihaga tushmasin:
-      # `down -v` uning bazasini o'chirib yuborardi (10-operations).
+      # The deploy stack must not land in the same project as the live
+      # preview: `down -v` would wipe its database (10-operations).
       COMPOSE_PROJECT_NAME: rankwant-build-${{ github.run_id }}
     steps:
       - uses: actions/checkout@v7
 
-      - name: Docker mavjudmi
+      - name: Docker present
         timeout-minutes: 1
         run: |
           docker version --format '{{.Server.Version}}' || {
-            echo "::error::Docker topilmadi — deploy job'i self-hosted runner talab qiladi"
+            echo "::error::Docker not found — the deploy job needs the self-hosted runner"
             exit 1
           }
 
-      - name: Image'larni qurish
+      - name: Build images
         timeout-minutes: 10
-        # `docker compose build` — build-context va build args compose
-        # faylidan olinadi, ya'ni qo'lda yozilgan `docker build` buyrug'i
-        # fayldan ajralib qolmaydi.
+        # `docker compose build` — build context and build args come
+        # from the compose file, so a hand-written `docker build`
+        # command cannot drift from the file.
         run: |
           docker compose -f docker-compose.yml build \
             --parallel \
             api web judge
 
-      - name: Image'larni commit SHA bilan teglash
+      - name: Tag images with the commit SHA
         id: meta
-        # ⚠️ Manba nomi shu job'ning `COMPOSE_PROJECT_NAME` idan keladi:
-        # compose qurilgan image'ni `<project>-<servis>` deb ataydi, ya'ni
-        # `rankwant-build-<run_id>-api`. Ilgari bu qadam `rankwant_web`
-        # qidirardi va "No such image" bilan yiqilardi — project nomi
-        # o'zgaruvchan bo'lgani uchun qidiruv emas, HISOBLASH kerak.
+        # ⚠️ The source name comes from this job's `COMPOSE_PROJECT_NAME`:
+        # compose names a built image `<project>-<service>`, i.e.
+        # `rankwant-build-<run_id>-api`. This step used to look for
+        # `rankwant_web` and failed with "No such image" — because the
+        # project name is variable, COMPUTE it, do not search.
         timeout-minutes: 3
         run: |
           version="${GITHUB_SHA:0:12}"
@@ -118,7 +117,7 @@ jobs:
           for svc in api web judge; do
             src="${COMPOSE_PROJECT_NAME}-${svc}:latest"
             if ! docker image inspect "$src" >/dev/null 2>&1; then
-              echo "::error::$src topilmadi — build qadami image yaratmagan"
+              echo "::error::$src not found — the build step did not create the image"
               missing=1
               continue
             fi
@@ -126,21 +125,21 @@ jobs:
           done
           [ "$missing" -eq 0 ] || exit 1
           echo "version=${version}" >> "$GITHUB_OUTPUT"
-          echo "::notice::Image teglari: rankwant/{api,web,judge}:${version}"
+          echo "::notice::Image tags: rankwant/{api,web,judge}:${version}"
 
-      - name: Image hajmi
+      - name: Image size
         timeout-minutes: 1
-        # Kutilmagan o'sish (masalan `.venv` yoki `node_modules` kontekstga
-        # tushib qolgan) build'ni sekinlashtiradi va registrni to'ldiradi.
+        # Unexpected growth (e.g. `.venv` or `node_modules` falling
+        # into the context) slows the build and fills the registry.
         run: docker images --format '{{.Repository}}:{{.Tag}}\t{{.Size}}' | grep '^rankwant' || true
 
   # ── 2. TEST ──────────────────────────────────────────────────────────
-  # `ci.yml` ni QAYTA ishlatamiz. Ichida: ruff, mypy (strict), migration
-  # tekshiruvi, pytest (+ qamrov), OpenAPI diff, smoke va E2E — compose
-  # stack'iga qarshi. `fail-fast` yo'q: barcha job tugasin, aks holda
-  # faqat birinchi yiqilish ko'rinadi va qolgani yashirin qoladi.
+  # REUSE `ci.yml`. Inside: ruff, mypy (strict), migration check,
+  # pytest (+ coverage), OpenAPI diff, smoke and E2E — against the
+  # compose stack. No `fail-fast`: every job finishes, otherwise only
+  # the first failure is visible and the rest stay hidden.
   test:
-    name: Test — CI to'plami
+    name: Test — CI suite
     needs: build
     uses: ./.github/workflows/ci.yml
 
@@ -148,30 +147,32 @@ jobs:
   deploy:
     name: Deploy — ${{ github.event.inputs.environment || 'staging' }}
     needs: [build, test]
-    # `vars.PUBLIC_ORIGIN` sharti: deploy sirli o'zgaruvchilar hali
-    # sozlanmagan bo'lsa (hozir shunday — repo'da 0 secrets/variables),
-    # job har push'da qizil X bilan yiqilardi. O'tkazib yuborish —
-    # yashirish emas: `build` va `test` baribir to'liq ishlaydi, deploy
-    # esa kulrang (skipped) bo'ladi, ya'ni "sozlanmagan" aniq ko'rinadi.
+    # `vars.PUBLIC_ORIGIN` gate: if deploy secrets are not set yet
+    # (they are not — 0 secrets/variables in the repo), the job would
+    # fail with a red X on every push. Skipping is not hiding: `build`
+    # and `test` still run in full, deploy is grey (skipped), so
+    # "not configured" is visible.
     #
-    # ⚠️ QAROR (2026-09-16): deploy QO'LDA qoladi — bu ataylab tanlangan
-    # yo'l. Sabab o'lchandi: bu job produksiyani deploy QILA OLMAYDI,
-    # chunki jonli stack Docker Desktop engine'ida (image
-    # `rankwant-api:latest`), runner esa WSL Ubuntu ichidagi ALOHIDA
-    # engine'da (`rankwant/api:<sha>`). Ya'ni `up` o'z stack'ini ikkinchi
-    # engine'da ko'tarardi — 8300/8301 band, yoki hech kim yo'naltirmagan
-    # parallel stack. Ustiga: bu yerda migration qadami yo'q, environment
-    # himoyasi yo'q (`environments` = 0), ya'ni avtomatik deploy live
-    # contest paytida ham ketardi (qoida №1).
+    # ⚠️ DECISION (2026-09-16): deploy STAYS MANUAL — a deliberate
+    # choice. The reason was measured: this job CANNOT deploy
+    # production, because the live stack is on the Docker Desktop
+    # engine (image `rankwant-api:latest`) and the runner was on a
+    # SEPARATE engine inside WSL Ubuntu (`rankwant/api:<sha>`). So
+    # `up` raised its own stack on the second engine — 8300/8301
+    # taken, or a parallel stack nobody routed. On top of that: no
+    # migration step here, no environment protection
+    # (`environments` = 0), so an automatic deploy would have gone
+    # out during a live contest too (rule №1).
     #
-    # Qo'lda yo'l: `bash tools/deploy.sh` (live oynani o'zi tekshiradi).
-    # To'liq dalillar: docs/10-operations/deploy-runbook.md § 1.
+    # Manual path: `bash tools/deploy.sh` (checks the live window
+    # itself). Full evidence: docs/10-operations/deploy-runbook.md § 1.
     #
-    # ⚠️ YANGI SHART (2026-09-17): `confirm == 'deploy'`. Sabab — bitta
-    # engine'ga o'tilgach bu job jonli stack'ka yeta oladi (ilgari uni
-    # engine ajratmasi to'xtatardi). Qolgan ikki to'siq hamon yo'q:
-    # migration qadami va `environments` himoyasi (required reviewer).
-    # Ular qo'shilmaguncha avtomatik deploy YOQ.
+    # ⚠️ NEW GATE (2026-09-17): `confirm == 'deploy'`. Reason — after
+    # the move to one engine this job can reach the live stack
+    # (previously the engine split stopped it). The other two gaps
+    # are still there: no migration step and no `environments`
+    # protection (required reviewer). Automatic deploy stays OFF
+    # until those are added.
     if: >-
       ${{
         (github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch')
@@ -179,20 +180,20 @@ jobs:
         && github.event.inputs.confirm == 'deploy'
       }}
     runs-on: [self-hosted, rankwant]
-    # ⚠️ 3 daqiqadan ko'p — ONGLI istisno: to'liq stack `up --build`
-    # (--wait-timeout 300) va 30 marta health urinishi (150 s) sig'maydi.
-    # Qolgan barcha job/qadam 1-3 daqiqa ichida.
+    # ⚠️ More than 3 minutes — a DELIBERATE exception: a full stack
+    # `up --build` (--wait-timeout 300) plus 30 health attempts
+    # (150 s) do not fit. Every other job/step is 1–3 minutes.
     timeout-minutes: 10
     environment:
-      # `production` uchun GitHub'da required reviewer qo'yilsa, deploy
-      # qo'lda tasdiqlanmaguncha kutadi. Bu 10-operations talabi:
-      # «live contest paytida deploy YO'Q» — qoidani faqat odam tekshira
-      # oladi, shuning uchun tasdiq majburiy bo'lishi kerak.
+      # If production has a required reviewer in GitHub, deploy waits
+      # until a human confirms. This is a 10-operations requirement:
+      # "NO deploy during a live contest" — only a person can check
+      # that rule, so confirmation must be mandatory.
       name: ${{ github.event.inputs.environment || 'staging' }}
     steps:
       - uses: actions/checkout@v7
 
-      - name: Konfiguratsiya
+      - name: Configuration
         env:
           DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
           DJANGO_ALLOWED_HOSTS: ${{ vars.DJANGO_ALLOWED_HOSTS }}
@@ -202,97 +203,99 @@ jobs:
           missing=0
           for name in DJANGO_SECRET_KEY DJANGO_ALLOWED_HOSTS PUBLIC_ORIGIN; do
             if [ -z "${!name}" ]; then
-              echo "::error::${name} sozlanmagan — Environment secrets/variables bo'limiga qo'shing"
+              echo "::error::${name} is not set — add it under Environment secrets/variables"
               missing=1
             fi
           done
           [ "$missing" -eq 0 ] || exit 1
 
-          # `.env.public` gitignore'da: u hech qachon repo'da bo'lmaydi,
-          # shuning uchun deploy paytida qiymatlardan yasaladi.
+          # `.env.public` is gitignored: it is never in the repo, so
+          # it is built from the values at deploy time.
           umask 077
           cat > .env.public <<EOF
           DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
           DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
           PUBLIC_ORIGIN=${PUBLIC_ORIGIN}
           EOF
-          echo "::notice::.env.public yozildi ($(wc -l < .env.public) qator)"
+          echo "::notice::.env.public written ($(wc -l < .env.public) lines)"
 
-      - name: Live contest oynasi
-        # 10-operations § Deploy qoidalari, 1-qoida: contest davomida
-        # verdict yoki standings o'zgarishi natijani buzadi.
+      - name: Live contest window
+        # 10-operations § Deploy rules, rule 1: during a contest a
+        # change to verdicts or standings corrupts the result.
         #
-        # Endi HAQIQIY tekshiruv: `tools/check_deploy_window.py` jonli
-        # API'dan `is_running` ni o'qiydi. Chiqish kodlari ataylab uchta:
-        # 0 — bo'sh, 1 — faol contest bor, 2 — aniqlanmadi.
-        # Faqat 1 to'xtatadi: 2 («API javob bermadi») ni to'xtatish
-        # yiqilgan saytni tuzatish deploy'ini bloklab qo'yardi, uni
-        # «bo'sh» deb o'qish esa yolg'on yashil bo'lardi.
+        # This is now a REAL check: `tools/check_deploy_window.py`
+        # reads `is_running` from the live API. Three exit codes on
+        # purpose: 0 — clear, 1 — an active contest, 2 — unknown.
+        # Only 1 stops: treating 2 ("API did not answer") as a stop
+        # would block the deploy that fixes a down site; treating it
+        # as "clear" would be a false green.
         run: |
           set +e
           python3 tools/check_deploy_window.py
           code=$?
           set -e
           if [ "$code" -eq 1 ]; then
-            echo "::error::Faol contest/arena bor — deploy to'xtatildi (qoida №1)"
+            echo "::error::An active contest/arena is running — deploy stopped (rule №1)"
             exit 1
           fi
           if [ "$code" -ne 0 ]; then
-            echo "::warning::Oyna aniqlanmadi — qo'lda tasdiqlansin"
+            echo "::warning::Window could not be determined — confirm by hand"
           fi
 
-      - name: Sirlarni oldindan ko'chirish
+      - name: Copy secrets first
         if: ${{ vars.DEPLOY_HOST != '' }}
-        # Bu qadam .env.public ni YARATMAYDI — u handoff protokolida
-        # ko'chiriladigan sirli fayllar (OAuth, email, tunnel kaliti)
-        # uchun joy. Qiymatlar `.env.handoff.example` (R2) va 10-operations
-        # § «Bir martalik sozlash» da.
+        # This step does NOT CREATE .env.public — it is a slot for
+        # secret files copied by the handoff protocol (OAuth, email,
+        # tunnel key). Values are in `.env.handoff.example` (R2) and
+        # 10-operations § "One-time setup".
         env:
           DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
         run: |
-          echo "Qo'llanma: sirlar R2 orqali ko'chirilmaydi — 10-operations ga qarang"
-          echo "DEPLOY_HOST=${DEPLOY_HOST} (ssh orqali ko'chirish hali avtomatlashtirilmagan)"
+          echo "Guide: secrets are not copied via R2 — see 10-operations"
+          echo "DEPLOY_HOST=${DEPLOY_HOST} (ssh copy is not automated yet)"
 
-      - name: Stack'ni ko'tarish
-        # Compose loyiha nomi ATAYLAB `rankwant`: handoff.sh ham, jonli
-        # preview ham shu nomni ishlatadi, ya'ni `up` mavjud hajmlarni
-        # (baza, MinIO) qayta ishlatadi. Boshqa nom ularni ko'rmaydi va
-        # bo'sh baza bilan yangi stack ko'tarardi.
+      - name: Bring the stack up
+        # Compose project name is `rankwant` ON PURPOSE: handoff.sh and
+        # the live preview use that name, so `up` reuses existing
+        # volumes (database, MinIO). Another name would not see them
+        # and would raise a new stack with an empty database.
         run: |
           docker compose -p rankwant --env-file .env.public \
             -f docker-compose.yml -f docker-compose.public.yml \
             up -d --build --wait --wait-timeout 300
 
-      - name: Health tekshiruvi
-        # `--wait` konteyner healthy bo'lishini kutadi, lekin Django
-        # tayyorligini bildirmaydi: migratsiya tugamagan bo'lsa 500 keladi.
+      - name: Health check
+        # `--wait` waits for the container to be healthy, but does not
+        # say Django is ready: if migrations have not finished, 500.
         run: |
           for i in $(seq 1 30); do
             if curl -fsS -o /dev/null \
               -H 'Host: rankwant.uz' \
               http://127.0.0.1:8301/api/v1/health/; then
-              echo "API sog'lom (urinish ${i})"
+              echo "API healthy (attempt ${i})"
               exit 0
             fi
             sleep 5
           done
-          echo "::error::API 150 soniyada sog'lom bo'lmadi"
+          echo "::error::API was not healthy after 150 seconds"
           docker compose -p rankwant --env-file .env.public \
             -f docker-compose.yml -f docker-compose.public.yml logs --tail 80 api worker
           exit 1
 
       - name: Smoke
-        # Health — faqat API jarayoni tirikligi. Smoke esa kritik yo'lni
-        # tekshiradi: submit → Redis → judge → verdict (api.yml dagi izoh).
+        # Health is only "the API process is alive". Smoke checks the
+        # critical path: submit → Redis → judge → verdict (same note
+        # as in ci.yml).
         run: |
           docker compose -p rankwant --env-file .env.public \
             -f docker-compose.yml -f docker-compose.public.yml \
             run --rm smoke
 
-      - name: Demo ma'lumot
-        # Faqat staging'da. Production'da demo hisoblar zaif parolli va
-        # ommaviy e'lon oldidan o'chirilishi kerak (10-operations § Ochiq
-        # risklar), ya'ni ularni prodda QAYTA yaratish xatoni tiklaydi.
+      - name: Demo data
+        # Staging only. On production the demo accounts have weak
+        # passwords and must be deleted before a public launch
+        # (10-operations § Open risks), so recreating them in prod
+        # restores the mistake.
         if: ${{ (github.event.inputs.environment || 'staging') == 'staging' }}
         run: |
           docker compose -p rankwant --env-file .env.public \
@@ -300,67 +303,68 @@ jobs:
             exec -T api python manage.py seed_demo
 
       - name: Tunnel
-        # Tashqi kirish Cloudflare Tunnel orqali, ochiq port yo'q.
-        # Tunnel yuklanish jarayonida o'zi yoqilmaydi (10-operations),
-        # ya'ni uni bu yerda ko'tarish shart.
+        # External access is through Cloudflare Tunnel; no open port.
+        # The tunnel does not start itself during boot (10-operations),
+        # so it must be brought up here.
         #
-        # ⚠️ 2026-09-17: bu qadam LINUX uchun yozilgan (`systemctl`).
-        # Runner konteyner ichida bo'lsa systemd YO'Q, Windows tomonida esa
-        # tunnelni `tools/handoff.ps1` PID fayli bilan boshqaradi. Shu sabab
-        # qadam endi muhitni ANIQLAB, tushunarli xabar beradi — jim
-        # "topilmadi" ogohlantirishi bilan qolmaydi.
+        # ⚠️ 2026-09-17: this step was written for LINUX (`systemctl`).
+        # A container runner has NO systemd, and on the Windows side
+        # the tunnel is managed by `tools/handoff.ps1` with a PID file.
+        # So the step now DETECTS the environment and prints a clear
+        # message — it does not stop at a silent "not found" warning.
         run: |
           if ! command -v systemctl >/dev/null 2>&1; then
-            echo "systemd yo'q (konteyner runner) — tunnel Windows tomonida"
-            echo "boshqariladi: tools/handoff.ps1 / RankWant Tunnel Monitor."
+            echo "no systemd (container runner) — the tunnel is managed"
+            echo "on the Windows side: tools/handoff.ps1 / RankWant Tunnel Monitor."
             exit 0
           fi
           if systemctl list-unit-files cloudflared.service >/dev/null 2>&1; then
             sudo systemctl start cloudflared
-            echo "Tunnel yoqildi"
+            echo "Tunnel started"
           else
-            echo "::warning::cloudflared xizmati topilmadi — sayt tashqaridan ochilmaydi"
+            echo "::warning::cloudflared service not found — the site will not open from outside"
           fi
 
-      - name: Deploy tugadi
+      - name: Deploy finished
         run: |
           echo "### Deploy: ${IMAGE_TAG}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Muhit: ${{ github.event.inputs.environment || 'staging' }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Compose loyihasi: rankwant" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Environment: ${{ github.event.inputs.environment || 'staging' }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Compose project: rankwant" >> "$GITHUB_STEP_SUMMARY"
           echo "- Health: /api/v1/health/ ✅" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Loglar (yiqilganda)
+      - name: Logs (on failure)
         if: failure()
         run: |
           docker compose -p rankwant --env-file .env.public \
             -f docker-compose.yml -f docker-compose.public.yml logs --tail 100
 
-      # ⚠️ Eski obrazlar ATAYLAB tozalanadi (2026-09-16).
-      # O'lchandi: 122 ta `rankwant-build-*` yig'ilib, runner'ning WSL
-      # diskini to'ldirgan — C: da 9.59 GB qolgandi. Bu job har safar
-      # yangi obraz quradi, eskisini hech kim o'chirmas edi.
+      # ⚠️ Old images are cleaned ON PURPOSE (2026-09-16).
+      # Measured: 122 `rankwant-build-*` piled up and filled the
+      # runner's WSL disk — C: had 9.59 GB left. This job builds a
+      # new image every run; nothing used to delete the old ones.
       #
-      # JORIY yurish obrazlari SAQLANADI: ular hozir ishlayotgan
-      # konteynerlarga bog'langan. Faqat oldingi yurishlarniki o'chadi.
-      - name: Eski obrazlarni tozalash
+      # THIS run's images are KEPT: they are attached to containers
+      # that are running now. Only previous runs' images go.
+      - name: Clean old images
         if: always()
         run: |
           set -u
-          echo "--> oldingi yurish obrazlari (${COMPOSE_PROJECT_NAME}-* dan boshqa)"
+          echo "--> images from previous runs (other than ${COMPOSE_PROJECT_NAME}-*)"
           docker images --format '{{.Repository}}:{{.Tag}}' \
             | grep -E '^rankwant-build-' \
             | grep -v "^${COMPOSE_PROJECT_NAME}-" \
             | xargs -r docker rmi -f || true
-          echo "--> 6 soatdan eski CI qoldiqlari (rw-*)"
+          echo "--> CI leftovers older than 6 hours (rw-*)"
           docker images --format '{{.ID}}|{{.CreatedSince}}|{{.Repository}}' \
             | awk -F'|' '$3 ~ /^rw-/ && $2 ~ /hours|days|weeks|months/ {print $1}' \
             | sort -u | xargs -r docker rmi -f || true
-          echo "--> build cache (7 kundan eskisi)"
-          # ⚠️ `docker builder prune` loyiha bo'yicha ajratilmaydi — butun
-          # engine'ga tegadi. Bitta engine'da bu jonli keshni ham nomzod
-          # qiladi; shuning uchun oyna 24 soatdan 7 kunga uzaytirildi.
-          # To'liq yechim — daemon darajasida kesh hajmini cheklash (ochiq).
+          echo "--> build cache (older than 7 days)"
+          # ⚠️ `docker builder prune` is not split by project — it hits
+          # the whole engine. On one engine that also makes the live
+          # cache a candidate; that is why the window went from 24
+          # hours to 7 days. The complete fix is a daemon-level
+          # cache-size cap (open).
           docker builder prune -f --filter 'until=168h' || true
 
-      # `down` ATAYLAB yo'q: bu jonli stack — uni tozalash saytni
-      # o'chirib qo'yardi. Rollback kerak bo'lsa quyidagi job ishlatiladi.
+      # `down` is ABSENT ON PURPOSE: this is the live stack — tearing
+      # it down would take the site down. Use the rollback job if needed.
