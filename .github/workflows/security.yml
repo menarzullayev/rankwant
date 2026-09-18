@@ -1,18 +1,19 @@
 name: Security
 
 on:
-  # PR'da yo'q (2026-09-18): har PR CI+Security juftligi bitta runner
-  # navbatini 2× qilardi. gitleaks/pip/npm audit main push va kechasi qoladi.
+  # Not on PR (2026-09-18): every PR ran a CI+Security pair and doubled
+  # the single-runner queue. gitleaks / pip / npm audit stay on main
+  # push and overnight.
   push:
-    branches: [main]      # branch protection yo'q (private + free plan) — main ham skanerlanadi
+    branches: [main]      # no branch protection (private + free plan) — main is scanned too
   schedule:
     - cron: '0 3 * * *'
 
-# Self-hosted runner ishlab chiqish mashinasida, `nsn` foydalanuvchisi
-# sifatida ishlaydi — Python `~/.local/lib/.../site-packages` ni ham
-# ko'radi. U yerdagi begona paketlar (masalan `dash`) pytest plaginini
-# ro'yxatdan o'tkazadi va pytest ularni avtomatik yuklaydi. Ish faqat
-# o'z muhitidan foydalanishi kerak.
+# The self-hosted runner runs as user `nsn` on the development machine
+# and can see Python packages in `~/.local/lib/.../site-packages`.
+# Stray packages there (for example `dash`) register pytest plugins
+# and pytest loads them automatically. The job must use only its own
+# environment.
 env:
   PYTHONNOUSERSITE: '1'
 
@@ -26,30 +27,32 @@ permissions:
   pull-requests: read
 
 jobs:
-  # Uchala tekshiruv bitta job'da: birgalikda 43 soniya ishlaydi, lekin
-  # alohida turganda GitHub har birini daqiqagacha yaxlitlab hisoblardi —
-  # 43 soniyalik ish 3 daqiqa bo'lib ketardi.
+  # All three checks in one job: together they take 43 seconds, but as
+  # separate jobs GitHub billed each rounded up to a minute — 43 seconds
+  # of work became 3 minutes.
   audit:
-    name: Xavfsizlik tekshiruvlari
+    name: Security checks
     runs-on: [self-hosted, rankwant]
-    # ⚠️ Vaqt chegarasi SHART: self-hosted runner'da hech narsa abadiy
-    # kutmasligi kerak. 3 daqiqa yetadi (o'lchandi: ~43 s + pip/npm audit).
+    # ⚠️ The time limit is REQUIRED: nothing on the self-hosted runner
+    # may wait forever. 3 minutes is enough (measured: ~43 s + pip/npm
+    # audit).
     timeout-minutes: 3
     steps:
-      # gitleaks butun tarixni ko'radi, shuning uchun to'liq klon.
+      # gitleaks sees the full history, so a full clone.
       - uses: actions/checkout@v7
         with: { fetch-depth: 0 }
 
       - name: gitleaks
-        # Action emas, to'g'ridan-to'g'ri skaner: GitHub API ruxsatiga bog'liq emas,
-        # shuning uchun Dependabot PR'larida ham (read-only token) ishlaydi.
+        # Direct scanner, not an Action: no GitHub API permission
+        # needed, so it also works on Dependabot PRs (read-only token).
         #
-        # `--config` SHART: raqobatchi audit tasvirlaridagi ochiq captcha
-        # site key'larini istisno qiladi (batafsil: `.gitleaks.toml`).
+        # `--config` is REQUIRED: it excludes public captcha site keys
+        # in competitor-audit screenshots (details: `.gitleaks.toml`).
         timeout-minutes: 3
         run: |
-          # `HOST_REPO_ROOT` — bind manbai daemon tomonida yechiladi (qarang:
-          # ci.yml § Service host / mount). Konteyner runner'da o'rnatiladi.
+          # `HOST_REPO_ROOT` — bind source is resolved on the daemon
+          # side (see ci.yml § Detect service host / mount). Set on the
+          # container runner.
           docker run --rm -v "${HOST_REPO_ROOT:-$PWD}:/repo" zricethezav/gitleaks:latest \
             detect --source /repo --config /repo/.gitleaks.toml \
             --redact --no-banner --verbose
@@ -78,12 +81,12 @@ jobs:
             cd apps/web && npm audit --audit-level=high
           fi
 
-      - name: Judge sandbox — escape sinovlari
+      - name: Judge sandbox — escape tests
         timeout-minutes: 3
         run: |
           if [ -x tests/security/run.sh ]; then
             tests/security/run.sh
           else
-            echo "Sandbox harness hali yo'q — bake-off (Sprint 0.5) dan keyin yoqiladi"
-            echo "Sinovlar: fork bomb, fayl yozish, tarmoq, /proc, symlink, setuid"
+            echo "Sandbox harness is not here yet — enable after bake-off (Sprint 0.5)"
+            echo "Tests: fork bomb, file write, network, /proc, symlink, setuid"
           fi

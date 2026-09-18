@@ -5,7 +5,7 @@ on:
     - cron: '0 2 * * *'
   workflow_dispatch:
 
-# Begona `~/.local` paketlari job'ga sizib kirmasin (self-hosted runner).
+# Keep stray `~/.local` packages out of the job (self-hosted runner).
 env:
   PYTHONNOUSERSITE: '1'
 
@@ -14,18 +14,17 @@ permissions:
 
 jobs:
   load:
-    name: Load — o'qish sig'imi
+    name: Load — read capacity
     runs-on: [self-hosted, rankwant]
-    # ⚠️ 3 daqiqadan ko'p — ONGLI istisno: bu job to'liq compose
-    # stack'ni `up -d --build --wait` bilan ko'taradi, ya'ni image
-    # qurilishi ham shu ichida. 3 daqiqa qo'yish job'ni kafolatli
-    # qizil qiladi (deploy/build da o'lchandi). Chegara BOR,
-    # chegarasizlik yo'q — asl maqsad shu.
+    # ⚠️ More than 3 minutes — a DELIBERATE exception: this job brings
+    # up the full compose stack with `up -d --build --wait`, so image
+    # builds are inside it. A 3-minute cap makes the job a guaranteed
+    # red (measured on deploy/build). There IS a limit; unlimited is
+    # not the goal.
     timeout-minutes: 15
-    # Compose loyihasi HAR JOB uchun alohida. Bitta runner'da joblar
-    # ketma-ket ketgani uchun bu ilgari sezilmasdi; ikkinchi runner
-    # qo'shilishi bilan ikkita job bir xil nomdagi stack'ni ko'tarib,
-    # birining `down -v` si ikkinchisining konteynerlarini o'chirardi.
+    # Compose project is PER JOB. On one runner jobs ran in series so
+    # this did not show; with a second runner two jobs sharing a stack
+    # name would take each other's containers down with `down -v`.
     env:
       COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
     steps:
@@ -36,32 +35,34 @@ jobs:
           docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build --wait
           docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
             python manage.py seed_demo
-      - name: k6 — chegaralangan yuklama
+      - name: k6 — bounded load
         if: ${{ vars.STAGING_URL == '' }}
-        # `--vus 1 --duration 1s` sintaksis tekshiruvi edi. `ci` ssenariysi
-        # runner'ni yiqitmaydigan, lekin haqiqiy raqam beradigan o'lchov.
-        # CI stack'ida anon throttle ko'tarilgan — aks holda o'lchov
-        # sig'imni emas, rate limitni ko'rsatadi (94% 429 bo'lgan edi).
+        # `--vus 1 --duration 1s` was a syntax check. The `ci` scenario
+        # is a measurement that does not knock the runner over but still
+        # gives a real number. Anon throttle is raised on the CI stack —
+        # otherwise the measurement shows the rate limit, not capacity
+        # (it was 94% 429).
         run: |
           docker run --rm --user "$(id -u):$(id -g)" --network "${COMPOSE_PROJECT_NAME}_default" -v "${HOST_REPO_ROOT:-$PWD}:/w" -w /w \
             -e SCENARIO=ci -e API_BASE=http://api:8000/api/v1 \
             grafana/k6:latest run tests/load/main.js
-      - name: Staging yuklamasi
+      - name: Staging load
         if: ${{ vars.STAGING_URL != '' }}
         run: |
           docker run --rm --user "$(id -u):$(id -g)" -v "${HOST_REPO_ROOT:-$PWD}:/w" -w /w grafana/k6:latest \
             run -e SCENARIO=spike -e API_BASE="${{ vars.STAGING_URL }}/api/v1" \
             tests/load/main.js
-      - name: Tozalash
+      - name: Tear down
         if: always()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
-      # `down -v` leaves the images this run built. Since 2026-09-17 CI runs on
-      # the Docker Desktop engine next to the live stack, and one nightly run
-      # left 18 of them behind (`rw-load-*`, `rw-e2e-*`, `rw-chaos-*`) until an
-      # unrelated CI run's cleanup removed them hours later. On a day without
-      # other CI they would pile up, the way 420 `rw-smoke-*` images filled the
-      # WSL disk to 58 GB on 2026-09-16.
-      - name: Obrazlarni tozalash
+      # `down -v` leaves the images this run built. Since 2026-09-17 CI
+      # runs on the Docker Desktop engine next to the live stack, and one
+      # nightly run left 18 of them behind (`rw-load-*`, `rw-e2e-*`,
+      # `rw-chaos-*`) until an unrelated CI run's cleanup removed them
+      # hours later. On a day without other CI they would pile up, the
+      # way 420 `rw-smoke-*` images filled the WSL disk to 58 GB on
+      # 2026-09-16.
+      - name: Clean images
         if: always()
         run: |
           docker images --format '{{.Repository}}:{{.Tag}}' \
@@ -69,30 +70,29 @@ jobs:
             | xargs -r docker rmi -f || true
 
   e2e:
-    name: E2E — to'liq brauzer matritsasi
+    name: E2E — full browser matrix
     runs-on: [self-hosted, rankwant]
-    # ⚠️ 3 daqiqadan ko'p — ONGLI istisno: bu job to'liq compose
-    # stack'ni `up -d --build --wait` bilan ko'taradi, ya'ni image
-    # qurilishi ham shu ichida. 3 daqiqa qo'yish job'ni kafolatli
-    # qizil qiladi (deploy/build da o'lchandi). Chegara BOR,
-    # chegarasizlik yo'q — asl maqsad shu.
+    # ⚠️ More than 3 minutes — a DELIBERATE exception: this job brings
+    # up the full compose stack with `up -d --build --wait`, so image
+    # builds are inside it. A 3-minute cap makes the job a guaranteed
+    # red (measured on deploy/build). There IS a limit; unlimited is
+    # not the goal.
     timeout-minutes: 15
-    # Compose loyihasi HAR JOB uchun alohida. Bitta runner'da joblar
-    # ketma-ket ketgani uchun bu ilgari sezilmasdi; ikkinchi runner
-    # qo'shilishi bilan ikkita job bir xil nomdagi stack'ni ko'tarib,
-    # birining `down -v` si ikkinchisining konteynerlarini o'chirardi.
+    # Compose project is PER JOB. On one runner jobs ran in series so
+    # this did not show; with a second runner two jobs sharing a stack
+    # name would take each other's containers down with `down -v`.
     env:
       COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
     steps:
       - uses: actions/checkout@v7
       - name: Stack
-        # STAGING_URL sozlangan bo'lsa unga qarshi, aks holda o'z stack'iga.
+        # Against STAGING_URL when set, otherwise against its own stack.
         if: ${{ vars.STAGING_URL == '' }}
         run: |
           docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build --wait
           docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
             python manage.py seed_demo
-      - name: Chromium, Firefox, WebKit va mobil
+      - name: Chromium, Firefox, WebKit, and mobile
         run: |
           docker run --rm --user "$(id -u):$(id -g)" --network "${COMPOSE_PROJECT_NAME}_default" \
             -v "${HOST_REPO_ROOT:-$PWD}/tests/e2e:/e2e" -w /e2e \
@@ -101,16 +101,17 @@ jobs:
             -e CI=1 \
             mcr.microsoft.com/playwright:v1.63.0-noble \
             sh -c 'npm ci --silent && npx playwright test --reporter=list'
-      - name: Tozalash
+      - name: Tear down
         if: always()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
-      # `down -v` leaves the images this run built. Since 2026-09-17 CI runs on
-      # the Docker Desktop engine next to the live stack, and one nightly run
-      # left 18 of them behind (`rw-load-*`, `rw-e2e-*`, `rw-chaos-*`) until an
-      # unrelated CI run's cleanup removed them hours later. On a day without
-      # other CI they would pile up, the way 420 `rw-smoke-*` images filled the
-      # WSL disk to 58 GB on 2026-09-16.
-      - name: Obrazlarni tozalash
+      # `down -v` leaves the images this run built. Since 2026-09-17 CI
+      # runs on the Docker Desktop engine next to the live stack, and one
+      # nightly run left 18 of them behind (`rw-load-*`, `rw-e2e-*`,
+      # `rw-chaos-*`) until an unrelated CI run's cleanup removed them
+      # hours later. On a day without other CI they would pile up, the
+      # way 420 `rw-smoke-*` images filled the WSL disk to 58 GB on
+      # 2026-09-16.
+      - name: Clean images
         if: always()
         run: |
           docker images --format '{{.Repository}}:{{.Tag}}' \
@@ -118,18 +119,17 @@ jobs:
             | xargs -r docker rmi -f || true
 
   chaos:
-    name: Chaos — bog'liqlik uzilishi
+    name: Chaos — dependency cut
     runs-on: [self-hosted, rankwant]
-    # ⚠️ 3 daqiqadan ko'p — ONGLI istisno: bu job to'liq compose
-    # stack'ni `up -d --build --wait` bilan ko'taradi, ya'ni image
-    # qurilishi ham shu ichida. 3 daqiqa qo'yish job'ni kafolatli
-    # qizil qiladi (deploy/build da o'lchandi). Chegara BOR,
-    # chegarasizlik yo'q — asl maqsad shu.
+    # ⚠️ More than 3 minutes — a DELIBERATE exception: this job brings
+    # up the full compose stack with `up -d --build --wait`, so image
+    # builds are inside it. A 3-minute cap makes the job a guaranteed
+    # red (measured on deploy/build). There IS a limit; unlimited is
+    # not the goal.
     timeout-minutes: 15
-    # Compose loyihasi HAR JOB uchun alohida. Bitta runner'da joblar
-    # ketma-ket ketgani uchun bu ilgari sezilmasdi; ikkinchi runner
-    # qo'shilishi bilan ikkita job bir xil nomdagi stack'ni ko'tarib,
-    # birining `down -v` si ikkinchisining konteynerlarini o'chirardi.
+    # Compose project is PER JOB. On one runner jobs ran in series so
+    # this did not show; with a second runner two jobs sharing a stack
+    # name would take each other's containers down with `down -v`.
     env:
       COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
     steps:
@@ -140,22 +140,23 @@ jobs:
           docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
             python manage.py seed_demo
       - name: Chaos
-        # Chaos servislarni ATAYLAB buzadi. Runner'ning o'z stack'i —
-        # buziladigan boshqa narsa yo'q, shuning uchun staging shart emas.
+        # Chaos BREAKS services ON PURPOSE. The runner's own stack —
+        # there is nothing else to break, so staging is not required.
         env:
           COMPOSE: docker compose -f docker-compose.yml -f docker-compose.ci.yml
           I_UNDERSTAND_THIS_IS_STAGING: 'yes'
         run: tests/chaos/run.sh
-      - name: Tozalash
+      - name: Tear down
         if: always()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
-      # `down -v` leaves the images this run built. Since 2026-09-17 CI runs on
-      # the Docker Desktop engine next to the live stack, and one nightly run
-      # left 18 of them behind (`rw-load-*`, `rw-e2e-*`, `rw-chaos-*`) until an
-      # unrelated CI run's cleanup removed them hours later. On a day without
-      # other CI they would pile up, the way 420 `rw-smoke-*` images filled the
-      # WSL disk to 58 GB on 2026-09-16.
-      - name: Obrazlarni tozalash
+      # `down -v` leaves the images this run built. Since 2026-09-17 CI
+      # runs on the Docker Desktop engine next to the live stack, and one
+      # nightly run left 18 of them behind (`rw-load-*`, `rw-e2e-*`,
+      # `rw-chaos-*`) until an unrelated CI run's cleanup removed them
+      # hours later. On a day without other CI they would pile up, the
+      # way 420 `rw-smoke-*` images filled the WSL disk to 58 GB on
+      # 2026-09-16.
+      - name: Clean images
         if: always()
         run: |
           docker images --format '{{.Repository}}:{{.Tag}}' \
@@ -163,18 +164,17 @@ jobs:
             | xargs -r docker rmi -f || true
 
   compatibility:
-    name: Til matritsasi
+    name: Language matrix
     runs-on: [self-hosted, rankwant]
-    # ⚠️ 3 daqiqadan ko'p — ONGLI istisno: bu job to'liq compose
-    # stack'ni `up -d --build --wait` bilan ko'taradi, ya'ni image
-    # qurilishi ham shu ichida. 3 daqiqa qo'yish job'ni kafolatli
-    # qizil qiladi (deploy/build da o'lchandi). Chegara BOR,
-    # chegarasizlik yo'q — asl maqsad shu.
+    # ⚠️ More than 3 minutes — a DELIBERATE exception: this job brings
+    # up the full compose stack with `up -d --build --wait`, so image
+    # builds are inside it. A 3-minute cap makes the job a guaranteed
+    # red (measured on deploy/build). There IS a limit; unlimited is
+    # not the goal.
     timeout-minutes: 10
-    # Compose loyihasi HAR JOB uchun alohida. Bitta runner'da joblar
-    # ketma-ket ketgani uchun bu ilgari sezilmasdi; ikkinchi runner
-    # qo'shilishi bilan ikkita job bir xil nomdagi stack'ni ko'tarib,
-    # birining `down -v` si ikkinchisining konteynerlarini o'chirardi.
+    # Compose project is PER JOB. On one runner jobs ran in series so
+    # this did not show; with a second runner two jobs sharing a stack
+    # name would take each other's containers down with `down -v`.
     env:
       COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
     steps:
@@ -186,13 +186,12 @@ jobs:
         # BuildKit"; nightly red 2026-09-15 to 17). Compose builds with BuildKit
         # itself, as the smoke job does with the same image.
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml build judge
-      - name: E'lon qilingan versiyalar image bilan mos
-        # Har til o'z runtime versiyasini chop etadi. Bu tekshiruv
-        # "Python 3.12" deb ko'rsatib 3.11 ishlatish holatini ushlaydi —
-        # bunday nomuvofiqlik foydalanuvchiga tushunarsiz SyntaxError
-        # bo'lib ko'rinadi.
+      - name: Declared versions match the image
+        # Each language prints its own runtime version. This check
+        # catches "shown as Python 3.12, actually 3.11" — that mismatch
+        # looks like a confusing SyntaxError to the user.
         run: python3 tests/compatibility/check_languages.py "${COMPOSE_PROJECT_NAME}-judge"
-      - name: Tozalash
+      - name: Tear down
         # The tag is per run now, so it has to go, like the smoke job's images.
         if: always()
         run: docker image rm "${COMPOSE_PROJECT_NAME}-judge" || true

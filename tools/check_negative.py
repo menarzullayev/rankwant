@@ -2679,7 +2679,7 @@ def neg_ci_disk_cleanup_removed() -> tuple[bool, str]:
     # qismi qolsa `docker rmi` matni ham qoladi va tekshiruv uni hali ham
     # «bor» deb o'qiydi. Birinchi urinish aynan shunday yolg'on yashil
     # bergan edi.
-    start = src.index("      - name: Obrazlarni tozalash")
+    start = src.index("      - name: Clean images")
     end = src.index("      - name:", start + 10) if "      - name:" in src[start + 10 :] else len(src)
     old = src[start:end]
     if not old.strip():
@@ -2697,7 +2697,7 @@ def neg_ci_disk_nightly_cleanup_removed() -> tuple[bool, str]:
     """
     path = ROOT / ".github/workflows/nightly.yml"
     src = path.read_bytes().decode("utf-8")
-    marker = "      - name: Obrazlarni tozalash"
+    marker = "      - name: Clean images"
     first = src.index(marker)
     start = src.index(marker, first + len(marker))
     end = src.index("|| true\n", start) + len("|| true\n")  # end of that step's run block
@@ -2716,7 +2716,7 @@ def neg_ci_disk_deploy_cleanup_removed() -> tuple[bool, str]:
     """
     path = ROOT / ".github/workflows/deploy.yml"
     src = path.read_bytes().decode("utf-8")
-    start = src.index("      - name: Eski obrazlarni tozalash")
+    start = src.index("      - name: Clean old images")
     end = src.index("      - name:", start + 10) if "      - name:" in src[start + 10 :] else len(src)
     old = src[start:end]
     if not old.strip():
