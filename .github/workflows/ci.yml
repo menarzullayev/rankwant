@@ -46,11 +46,13 @@ permissions:
   pull-requests: read
 
 jobs:
-  # Path filter and docs checks share one job: both finish in a few
-  # seconds, and GitHub bills each job rounded up to a minute — as
-  # separate jobs they burned ~86 minutes a month.
-  changes:
-    name: Changes and docs integrity
+  # Filter is ONLY path outputs. Docs/contract checks used to sit in this
+  # job, so three PRs each held a runner for ~20 s before API/Web could
+  # start (2026-09-18, three agents). Integrity runs after those jobs so
+  # it does not steal a slot from pytest. GitHub still bills a job to a
+  # full minute — one extra job is acceptable: hosted minutes are unused.
+  filter:
+    name: Path filter
     runs-on: [self-hosted, rankwant]
     timeout-minutes: 2
     outputs:
@@ -76,26 +78,11 @@ jobs:
             # `neg_hook_gates_new_branch` in `check_negative.py` tests
             # the pre-push hook.
             tools: ['tools/**', '.githooks/**']
-      - uses: actions/setup-python@v7
-        with:
-          python-version: '3.12'
-      - name: Links, tables, writing, and STATUS
-        run: python3 tools/check_docs.py
-      - name: Confusable letters in identifiers (Cyrillic/Greek ↔ Latin)
-        run: python3 tools/check_confusables.py
-      - name: Judge contract (protocol.md ↔ Go ↔ Python)
-        run: python3 tools/check_contract.py
-      - name: DRF `ordering` tiebreaker (unstable pagination)
-        run: python3 tools/check_ordering.py
-      - name: Owner decisions in code (CLAUDE.md § Saidakbar aka qarorlari)
-        run: python3 tools/check_decisions.py
-      - name: .env.example completeness (variables read by code and compose)
-        run: python3 tools/check_env_example.py
 
   api:
     name: API — lint, types, tests
-    needs: changes
-    if: ${{ needs.changes.outputs.api == 'true' || github.event_name == 'workflow_dispatch' }}
+    needs: filter
+    if: ${{ needs.filter.outputs.api == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: [self-hosted, rankwant]
     # 5, not 3: on 2026-09-18 pytest took 148 s for 1466 tests and the whole
     # job 3 min 7 s, so the 3-minute bound cancelled a green run (#87). Five
@@ -146,6 +133,19 @@ jobs:
       - name: Ruff
         if: steps.check.outputs.ready == 'true'
         run: ruff check . && ruff format --check .
+        working-directory: apps/api
+      # Was a sibling job: on two runners it stole a slot for pip+diff
+      # (~15 s) while another PR's Web waited (2026-09-18). pip is
+      # already installed here.
+      - name: OpenAPI schema diff
+        if: steps.check.outputs.ready == 'true'
+        run: |
+          python manage.py spectacular --file /tmp/schema.yml
+          diff -u openapi/schema.yml /tmp/schema.yml || {
+            echo "::error::OpenAPI schema changed. Update it:"
+            echo "::error::  cd apps/api && python manage.py spectacular --file openapi/schema.yml"
+            exit 1
+          }
         working-directory: apps/api
       - name: mypy (strict)
         if: steps.check.outputs.ready == 'true'
@@ -217,10 +217,10 @@ jobs:
   # that tests the checks did not run when those checks changed.
   web:
     name: Web — lint, types, build, and check suite
-    needs: changes
+    needs: filter
     if: >-
-      ${{ needs.changes.outputs.web == 'true'
-          || needs.changes.outputs.tools == 'true'
+      ${{ needs.filter.outputs.web == 'true'
+          || needs.filter.outputs.tools == 'true'
           || github.event_name == 'workflow_dispatch' }}
     runs-on: [self-hosted, rankwant]
     timeout-minutes: 3
@@ -256,14 +256,14 @@ jobs:
       # Lint / typecheck / build ONLY when web changed. On a tools-only
       # run they would check nothing new — the job is still needed
       # because the check suite is below.
-      - if: ${{ steps.check.outputs.ready == 'true' && needs.changes.outputs.web == 'true' }}
+      - if: ${{ steps.check.outputs.ready == 'true' && needs.filter.outputs.web == 'true' }}
         run: npm run lint
         working-directory: apps/web
-      - if: ${{ steps.check.outputs.ready == 'true' && needs.changes.outputs.web == 'true' }}
+      - if: ${{ steps.check.outputs.ready == 'true' && needs.filter.outputs.web == 'true' }}
         run: npm run typecheck
         working-directory: apps/web
       - name: Unit tests (Vitest)
-        if: ${{ steps.check.outputs.ready == 'true' && needs.changes.outputs.web == 'true' }}
+        if: ${{ steps.check.outputs.ready == 'true' && needs.filter.outputs.web == 'true' }}
         run: npm run test
         working-directory: apps/web
       # Types catch a missing key, but not an empty string or a copy
@@ -290,14 +290,14 @@ jobs:
       - name: Text contrast (WCAG AA)
         if: steps.check.outputs.ready == 'true'
         run: python3 tools/check_contrast.py
-      - if: ${{ steps.check.outputs.ready == 'true' && needs.changes.outputs.web == 'true' }}
+      - if: ${{ steps.check.outputs.ready == 'true' && needs.filter.outputs.web == 'true' }}
         run: npm run build
         working-directory: apps/web
 
   judge:
     name: Judge — bake-off candidates
-    needs: changes
-    if: ${{ needs.changes.outputs.judge == 'true' || github.event_name == 'workflow_dispatch' }}
+    needs: filter
+    if: ${{ needs.filter.outputs.judge == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: [self-hosted, rankwant]
     timeout-minutes: 3
     steps:
@@ -332,36 +332,33 @@ jobs:
           mypy .
           pytest
 
-  openapi:
-    name: OpenAPI schema diff
-    # `api` was dropped ON PURPOSE: this job only looks at the `changes`
-    # filter, not at the RESULT of the API tests. With
-    # `needs: [changes, api]` it waited for API to finish (measured:
-    # 2.7 min) and stretched wall time on a single runner by that much.
-    # It now sits alongside API.
-    needs: changes
-    if: ${{ needs.changes.outputs.api == 'true' || github.event_name == 'workflow_dispatch' }}
+  # After API/Web so a docs check does not occupy the second runner
+  # while pytest is queued. `always()` is required: a skipped `needs`
+  # job otherwise skips this one, and a docs-only PR would never run
+  # check_docs.
+  integrity:
+    name: Docs and contract integrity
+    needs: [filter, api, web, judge]
+    if: ${{ always() && needs.filter.result == 'success' }}
     runs-on: [self-hosted, rankwant]
-    timeout-minutes: 3
+    timeout-minutes: 2
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
-      - name: Generate schema and diff
-        run: |
-          if [ ! -f apps/api/manage.py ]; then
-            echo "::notice::apps/api is not scaffolded yet — schema diff skipped"
-            exit 0
-          fi
-          cd apps/api
-          pip install -r requirements-dev.lock
-          python manage.py spectacular --file /tmp/schema.yml
-          diff -u openapi/schema.yml /tmp/schema.yml || {
-            echo "::error::OpenAPI schema changed. Update it:"
-            echo "::error::  cd apps/api && python manage.py spectacular --file openapi/schema.yml"
-            exit 1
-          }
+      - name: Links, tables, writing, and STATUS
+        run: python3 tools/check_docs.py
+      - name: Confusable letters in identifiers (Cyrillic/Greek ↔ Latin)
+        run: python3 tools/check_confusables.py
+      - name: Judge contract (protocol.md ↔ Go ↔ Python)
+        run: python3 tools/check_contract.py
+      - name: DRF `ordering` tiebreaker (unstable pagination)
+        run: python3 tools/check_ordering.py
+      - name: Owner decisions in code (CLAUDE.md § Saidakbar aka qarorlari)
+        run: python3 tools/check_decisions.py
+      - name: .env.example completeness (variables read by code and compose)
+        run: python3 tools/check_env_example.py
 
   smoke:
     name: Smoke and E2E — full stack
@@ -372,13 +369,13 @@ jobs:
     # (run 34902927949) — a guaranteed red. Each step also has its own
     # limit so a slow stage is visible.
     timeout-minutes: 20
-    needs: changes
+    needs: filter
     # Not on PR (2026-09-18): smoke spends ~2 minutes building the stack
     # and holds the queue. Main push, `workflow_dispatch`, and deploy
     # `workflow_call` keep the full path. The `!= pull_request` line is
     # a decision — removing it fails `tools/check_decisions.py`.
     if: >-
-      ${{ (needs.changes.outputs.code == 'true' || github.event_name == 'workflow_dispatch')
+      ${{ (needs.filter.outputs.code == 'true' || github.event_name == 'workflow_dispatch')
           && github.event_name != 'pull_request' }}
     # Compose project is PER JOB. With a second runner, two jobs sharing
     # a stack name would take each other's containers down with `down -v`.
