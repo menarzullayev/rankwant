@@ -39,8 +39,14 @@ def zanjir(monkeypatch: pytest.MonkeyPatch, settings: Any) -> Yozib:
 
 
 def odam(locale: str = "uz") -> User:
+    # ⚠️ Manzil ATAYLAB zaxira domen emas (`example.com` emas): `send_email`
+    # RFC 2606 zaxira domenlariga umuman yubormaydi (`Status.SKIPPED`),
+    # chunki bunday manzilga xat yetib bormaydi-yu, provayder kvotasini
+    # yoqadi. Testlar esa haqiqiy yuborish yo'lini sinaydi — shuning uchun
+    # manzil «haqiqiy ko'rinadigan» bo'lishi shart. Sabab va o'lchov:
+    # `core/mailer.is_placeholder`.
     return User.objects.create_user(
-        username=f"u_{locale}", email=f"{locale}@example.com", password="Parol!12345", locale=locale
+        username=f"u_{locale}", email=f"{locale}@rankwant.uz", password="Parol!12345", locale=locale
     )
 
 
