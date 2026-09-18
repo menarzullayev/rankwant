@@ -18,6 +18,7 @@ npm test
 | `browse.spec.ts` | Ochiq sahifalar, SSR mazmuni, reyting formulalari ochiqligi |
 | `submit-flow.spec.ts` | Ro'yxat → login → submit; PAT scope; IDOR |
 | `contest.spec.ts` | Contest sahifasi va standings |
+| `settings-info.spec.ts` | Sozlamalar: telefon, sinf, futbolka o'lchami, ism-familiya saqlanadi (ADR-0024); sayt va API bitta originda bo'lsagina |
 
 ## Nega PR da ishlamaydi
 

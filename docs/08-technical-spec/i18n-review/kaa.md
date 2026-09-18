@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1574 strings.**
+**1587 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -894,6 +894,18 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.schoolFreeText` | Katalogdan tanlang yoki o'zingiz yozing | Katalogtan saylań yamasa ózińiz jazıń |  |
 | `settings.phone` | Telefon raqami | Telefon nomeri |  |
 | `settings.phoneHint` | Ixtiyoriy. Hisobni tiklash va musobaqa bildirishnomalari uchun. Profilingizda ko'rinmaydi. | Ixtiyarıy. Esaptı tiklew hám jarıs bildiriwleri ushın. Profilińizde kórinbeydi. |  |
+| `settings.firstName` | Ism | Atı |  |
+| `settings.lastName` | Familiya | Familiyası |  |
+| `settings.realNameHint` | Ixtiyoriy. Sertifikat va olimpiada ro'yxatlari uchun. Profilingizda ko'rinmaydi. | Ixtiyarıy. Sertifikat hám olimpiada dizimleri ushın. Profilińizde kórinbeydi. |  |
+| `settings.shirtSize` | Futbolka o'lchami | Futbolka ólshemi |  |
+| `settings.shirtSizeHint` | Ixtiyoriy. Olimpiada sovg'alari uchun. Profilingizda ko'rinmaydi. | Ixtiyarıy. Olimpiada sıylıqları ushın. Profilińizde kórinbeydi. |  |
+| `settings.gradeSchool` | Maktab | Mektep |  |
+| `settings.gradeUniversity` | Oliy ta'lim | Joqarı bilim |  |
+| `grade.school` | {n}-sinf | {n}-klass |  |
+| `grade.bachelor` | Bakalavriat, {n}-kurs | Bakalavr, {n}-kurs |  |
+| `grade.master` | Magistratura, {n}-kurs | Magistr, {n}-kurs |  |
+| `grade.teacher` | O'qituvchi | Oqıtıwshı |  |
+| `grade.other` | Boshqa | Basqa |  |
 | `settings.fromConnected` | Ulangan hisobdan: @{handle} | Baylanǵan akkaunttan: @{handle} |  |
 | `settings.blogHint` | https:// bilan boshlanadigan manzil | https:// menen baslanatuǵın mánzil |  |
 | `leaderboard.school` | «{school}» reytingi | «{school}» reytingi |  |
@@ -997,6 +1009,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `filter.statementLocaleLabel` | Matn tili | Sha'rt tili |  |
 | `filter.viewLabel` | Ko'rinish | Kórinis |  |
 | `filter.hideTagsUnsolved` | Yechilmaganlarda mavzuni yashirish | Sheshilmegen máselelerdiń temasın jasırıw |  |
+| `filter.hideSolved` | Yechilganlarni yashirish | Sheshilgenlerdi jasırıw |  |
 | `filter.topicSearchPlaceholder` | {count} ta mavzudan qidirish… | {count} temanıń ishinden izlew… |  |
 | `filter.topicSearchLabel` | Mavzu qidirish | Tema izlew |  |
 | `filter.noTopicMatch` | Bunday mavzu yo'q | Bunday tema joq |  |

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1574 strings.**
+**1587 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -894,6 +894,18 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.schoolFreeText` | Katalogdan tanlang yoki o'zingiz yozing | Аз каталог интихоб кунед ё худатон нависед |  |
 | `settings.phone` | Telefon raqami | Рақами телефон |  |
 | `settings.phoneHint` | Ixtiyoriy. Hisobni tiklash va musobaqa bildirishnomalari uchun. Profilingizda ko'rinmaydi. | Ҳатмӣ нест. Барои барқарорсозии ҳисоб ва огоҳиномаҳои мусобиқа. Дар профил нишон дода намешавад. |  |
+| `settings.firstName` | Ism | Ном |  |
+| `settings.lastName` | Familiya | Насаб |  |
+| `settings.realNameHint` | Ixtiyoriy. Sertifikat va olimpiada ro'yxatlari uchun. Profilingizda ko'rinmaydi. | Ҳатмӣ нест. Барои сертификатҳо ва рӯйхатҳои олимпиада. Дар профил нишон дода намешавад. |  |
+| `settings.shirtSize` | Futbolka o'lchami | Андозаи футболка |  |
+| `settings.shirtSizeHint` | Ixtiyoriy. Olimpiada sovg'alari uchun. Profilingizda ko'rinmaydi. | Ҳатмӣ нест. Барои ҷоизаҳои олимпиада. Дар профил нишон дода намешавад. |  |
+| `settings.gradeSchool` | Maktab | Мактаб |  |
+| `settings.gradeUniversity` | Oliy ta'lim | Таҳсилоти олӣ |  |
+| `grade.school` | {n}-sinf | Синфи {n} |  |
+| `grade.bachelor` | Bakalavriat, {n}-kurs | Бакалавриат, курси {n} |  |
+| `grade.master` | Magistratura, {n}-kurs | Магистратура, курси {n} |  |
+| `grade.teacher` | O'qituvchi | Муаллим |  |
+| `grade.other` | Boshqa | Дигар |  |
 | `settings.fromConnected` | Ulangan hisobdan: @{handle} | Аз ҳисоби пайвастшуда: @{handle} |  |
 | `settings.blogHint` | https:// bilan boshlanadigan manzil | Суроғае, ки бо https:// оғоз мешавад |  |
 | `leaderboard.school` | «{school}» reytingi | Рейтинги «{school}» |  |
@@ -997,6 +1009,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `filter.statementLocaleLabel` | Matn tili | Забони шарт |  |
 | `filter.viewLabel` | Ko'rinish | Намуд |  |
 | `filter.hideTagsUnsolved` | Yechilmaganlarda mavzuni yashirish | Пинҳон кардани мавзӯъҳо барои масъалаҳои ҳалнашуда |  |
+| `filter.hideSolved` | Yechilganlarni yashirish | Пинҳон кардани ҳалшудаҳо |  |
 | `filter.topicSearchPlaceholder` | {count} ta mavzudan qidirish… | Ҷустуҷӯ дар байни {count} мавзӯъ… |  |
 | `filter.topicSearchLabel` | Mavzu qidirish | Ҷустуҷӯи мавзӯъ |  |
 | `filter.noTopicMatch` | Bunday mavzu yo'q | Чунин мавзӯъ нест |  |

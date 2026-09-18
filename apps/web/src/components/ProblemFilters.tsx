@@ -8,7 +8,9 @@ import { LOCALE_NAMES, type Locale } from "@/i18n/messages";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { fill, t } from "@/i18n/messages";
 import { Icon } from "@/components/ui/Icon";
+import { useSession } from "@/context/SessionContext";
 import { useHideTags } from "@/lib/hideTags";
+import { announcePrefs } from "@/lib/prefs";
 
 export type FilterTopic = { slug: string; label: string };
 
@@ -42,6 +44,10 @@ const STATUSES = [
   ["recommended=true", "filter.status.recommended"],
 ] as const;
 
+/** Status filters; any of them in the URL overrides the "hide solved"
+ * default that `app/problems/page.tsx` applies (ADR-0024). */
+const STATUS_KEYS = ["solved", "attempted", "favourite", "recommended"] as const;
+
 /** Panelda boshqariladigan kalitlar — saralash va qidiruv panelda emas,
  * shuning uchun rozetkada ular hisoblanmaydi. */
 const PANEL_KEYS = [
@@ -69,6 +75,10 @@ export function ProblemFilters({
   signedIn: boolean;
 }) {
   const [hideTags, setHideTags] = useHideTags();
+  const accountHideSolved = Boolean(useSession().user?.ui_prefs?.problemset?.hideSolved);
+  // Optimistic until the session reloads with the saved value.
+  const [hideSolvedChoice, setHideSolvedChoice] = useState<boolean | null>(null);
+  const hideSolved = hideSolvedChoice ?? accountHideSolved;
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
@@ -97,11 +107,23 @@ export function ProblemFilters({
     next.delete("attempted");
     next.delete("favourite");
     next.delete("recommended");
-    if (value) {
-      const [key, raw] = value.split("=");
+    // With "hide solved" on the server hides them by default, so "all" has
+    // to be explicit.
+    const target = value || (hideSolved ? "solved=any" : "");
+    if (target) {
+      const [key, raw] = target.split("=");
       next.set(key, raw);
     }
     push(next);
+  };
+
+  const toggleHideSolved = () => {
+    const next = !hideSolved;
+    setHideSolvedChoice(next);
+    announcePrefs({ problemset: { hideSolved: next } });
+    // The server uses the new default only once the PATCH lands; until then
+    // an explicit status keeps the list in step. A status the person chose stays.
+    if (!STATUS_KEYS.some((key) => params.get(key))) setStatus(next ? "solved=false" : "solved=any");
   };
 
   const selectedTopics = (params.get("topics") ?? "")
@@ -139,9 +161,11 @@ export function ProblemFilters({
       ? "favourite=true"
       : params.get("attempted")
         ? "attempted=true"
-        : params.get("solved")
+        : params.get("solved") && params.get("solved") !== "any"
           ? `solved=${params.get("solved")}`
-          : "";
+          : !STATUS_KEYS.some((key) => params.get(key)) && hideSolved
+            ? "solved=false"
+            : "";
 
   const activeCount = PANEL_KEYS.filter((key) => params.get(key)).length;
   const sort = params.get("ordering") ?? "difficulty";
@@ -283,6 +307,13 @@ export function ProblemFilters({
               onClick={() => setHideTags(!hideTags)}
               label={t(locale, "filter.hideTagsUnsolved")}
             />
+            {signedIn && (
+              <Option
+                active={hideSolved}
+                onClick={toggleHideSolved}
+                label={t(locale, "filter.hideSolved")}
+              />
+            )}
           </Group>
 
           {activeCount > 0 && (

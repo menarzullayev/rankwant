@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -9,10 +9,14 @@ import { Field } from "@/components/ui/Field";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
-import { patchJson, type PrivacyField } from "@/lib/api";
+import { patchJson, type PrivacyField, type ShirtSize } from "@/lib/api";
+import { GRADE_GROUPS, gradeLabel, isGradeCode } from "@/lib/grades";
 import { REGION_CODES, districtOptions, regionName } from "@/lib/regions";
 import { Check, Hint, Select, Status, useAction } from "./kit";
 import { SchoolField } from "./SchoolField";
+
+/** `User.ShirtSize` (ADR-0024). */
+const SHIRT_SIZES: ShirtSize[] = ["XS", "S", "M", "L", "XL", "XXL", "3XL"];
 
 /** Shaxsiy ma'lumot. Hammasi ixtiyoriy va standart holatda profilda
  *  ko'rinadi — yashirish har maydon yonida, odam nimani ochiq qoldirganini
@@ -58,6 +62,9 @@ export function InfoSection() {
         grade: text("grade"),
         website: text("website"),
         birth_date: text("birth_date") || null,
+        // The phone field was shown here but never sent, so edits were lost.
+        phone: text("phone"),
+        shirt_size: text("shirt_size"),
         hidden_fields: currentHidden,
       });
       await reload();
@@ -165,12 +172,27 @@ export function InfoSection() {
             {visibility("school")}
           </div>
           <div className="space-y-2">
-            <Field
-              label={t(locale, "settings.grade")}
-              name="grade"
-              defaultValue={user.grade}
-              maxLength={40}
-            />
+            <Select label={t(locale, "settings.grade")} name="grade" defaultValue={user.grade}>
+              <option value="">{t(locale, "settings.notChosen")}</option>
+              {/* A value saved before the catalogue (ADR-0024) stays until it is changed. */}
+              {user.grade && !isGradeCode(user.grade) && (
+                <option value={user.grade}>{user.grade}</option>
+              )}
+              {GRADE_GROUPS.map((group) => {
+                const options = group.codes.map((code) => (
+                  <option key={code} value={code}>
+                    {gradeLabel(code, locale)}
+                  </option>
+                ));
+                return group.key ? (
+                  <optgroup key={group.key} label={t(locale, group.key)}>
+                    {options}
+                  </optgroup>
+                ) : (
+                  <Fragment key="rest">{options}</Fragment>
+                );
+              })}
+            </Select>
             {visibility("grade")}
           </div>
           <div className="space-y-2">
@@ -210,6 +232,20 @@ export function InfoSection() {
               autoComplete="tel"
             />
           </div>
+          {/* Owner-only like the phone, so it has no visibility toggle either. */}
+          <Select
+            label={t(locale, "settings.shirtSize")}
+            name="shirt_size"
+            defaultValue={user.shirt_size}
+            hint={t(locale, "settings.shirtSizeHint")}
+          >
+            <option value="">{t(locale, "settings.notChosen")}</option>
+            {SHIRT_SIZES.map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
+          </Select>
         </div>
 
         {user.email && visibility("email", t(locale, "settings.showEmail"))}
