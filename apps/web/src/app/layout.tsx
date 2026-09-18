@@ -13,7 +13,7 @@ import "./globals.css";
 import AppShell from "@/layout/AppShell";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
 import { getLocaleState } from "@/i18n/server";
-import { messagesFor } from "@/i18n/messages.server";
+import { dictionaryUrl } from "@/i18n/messages.server";
 import type { Me } from "@/lib/api";
 import { api, type AppearancePrefs } from "@/lib/api";
 import { getSessionUser } from "@/lib/api.server";
@@ -308,9 +308,12 @@ export default async function RootLayout({
 
   // Faqat AKTIV tilning lug'ati mijozga ketadi. Ilgari o'ntasi ham JS
   // to'plamida bo'lardi — o'lchandi: 91 kB tarmoqda, holbuki bitta til
-  // uchun 34 kB yetadi. U `LocaleProvider` ga PROP bo'lib uzatiladi,
-  // inline skript bilan emas: React inline `<script>` elementini RSC
-  // uzatmasiga ham qo'shib, lug'at HTML'da ikki nusxada ketardi.
+  // uchun 34 kB yetadi. Since 2026-09-18 it is a separate cached file, not
+  // part of the page. As a `LocaleProvider` prop it was serialized into
+  // every HTML response: 72 kB of 142 kB, and a third of the render CPU. An
+  // inline script would be worse, because React copies inline scripts into
+  // the RSC payload as well. Only the address travels now.
+  const dictionary = dictionaryUrl(locale);
   return (
     <html
       lang={locale}
@@ -321,6 +324,9 @@ export default async function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
         <script dangerouslySetInnerHTML={{ __html: styleInit(teamStyle) }} />
         <script dangerouslySetInnerHTML={{ __html: appearanceInit(siteAppearance) }} />
+        {/* Async: it must not block the first paint. If it has not run by
+            hydration, `LocaleProvider` waits for it. */}
+        <script src={dictionary} async />
         <script
           type="application/ld+json"
           // Tuzilmaviy ma'lumot — Next'ning `metadata` qatlami buni
@@ -331,7 +337,7 @@ export default async function RootLayout({
         />
       </head>
       <body>
-        <LocaleProvider locale={locale} dict={messagesFor(locale)} auto={auto}>
+        <LocaleProvider locale={locale} dictionaryUrl={dictionary} auto={auto}>
           <AppShell
             initialUser={me}
             siteAppearance={siteAppearance}

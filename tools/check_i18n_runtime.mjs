@@ -6,10 +6,11 @@
  *  kod `throw` o'rniga `return key` qilib qo'yilsa ham yashil qoladi.
  *
  *  Bu skript modulni Node'da ishga tushirib, to'rt katakni o'lchaydi:
- *    A) server (o'nta lug'at, `evict` yo'q) — real kalit ishlaydi;
+ *    A) server (o'nta lug'at, reyestr `globalThis` da) — real kalit ishlaydi;
  *    B) dev — yetishmayotgan kalit OTILADI;
  *    C) prod — o'sha kalit QAYTADI va `console.error` FAQAT BIR MARTA;
- *    D) `evict` bilan bir til qolgani — boshqa til OTILADI.
+ *    D) `evictOtherLocales`: serverda hech narsa o'chmaydi, brauzerda
+ *       bir til qoladi — boshqa til OTILADI.
  *
  *  Har katak uchun qiymat AYNAN tekshiriladi. Biror biri o'zgarsa —
  *  `exit 1`.
@@ -81,8 +82,10 @@ if (dev) {
     ["dev: ro'yxatda 10 til", dev.registrySize, 10],
     ["dev: yetishmayotgan kalit otildi", dev.missingThrew, true],
     ["dev: ro'yxatga olinmagan til otildi", dev.unregisteredThrew, true],
-    ["dev: `evict` bilan bir til qoldi", dev.evictRegistrySize, 1],
-    ["dev: `evict`dan keyin boshqa til otildi", dev.evictOtherThrew, true],
+    ["dev: reyestr globalThis orqali ulashilgan", dev.sharedRegistrySize, 10],
+    ["dev: serverda evictOtherLocales hech narsani o'chirmadi", dev.serverEvictKept, 10],
+    ["dev: brauzerda evictOtherLocales bir til qoldirdi", dev.evictRegistrySize, 1],
+    ["dev: evictOtherLocales'dan keyin boshqa til otildi", dev.evictOtherThrew, true],
   );
 }
 

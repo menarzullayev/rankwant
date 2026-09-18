@@ -14,9 +14,10 @@
  * tushardi. O'lchandi: 312 kB, holbuki bitta til uchun 34 kB yetadi —
  * Slow 4G da o'sha fayl 2.4 s yuklanardi.
  *
- * Endi faqat AKTIV tilning lug'ati yuboriladi: SSR da uni
- * `messages.server.ts` ro'yxatga oladi, brauzerda esa `layout.tsx`
- * chiqargan inline skript (xuddi `THEME_INIT`/`STYLE_INIT` kabi).
+ * The server registers every language (`messages.server.ts`). The browser
+ * gets only the active one, as a separate cached file
+ * (`app/i18n/[file]/route.ts`), not inside the page: it used to be 72 kB of
+ * every page's HTML and a third of the render CPU (2026-09-18 profile).
  *
  * Masala MATNLARI tarjima qilinmaydi — muallif tilida qoladi
  * (Codeforces modeli).
@@ -55,12 +56,17 @@ export const LOCALE_NAMES: Record<Locale, string> = {
   es: "Español",
 };
 
-/** Aktiv tilning lug'ati.
+/** Every dictionary this JS realm knows, by locale.
  *
- *  Faqat BITTA yozuv bo'ladi: SSR da uni `messages.server.ts` to'ldiradi,
- *  brauzerda esa quyidagi inline-skript o'quvchi qism. Ilgari bu yerda
- *  o'nta tilning hammasi turardi. */
-const registry = new Map<Locale, Record<string, string>>();
+ *  It lives on `globalThis`, not in the module. On the server Next.js
+ *  evaluates this module twice: once for server components and once for
+ *  client components rendered to HTML. Both must see what
+ *  `messages.server.ts` registers, or client components render raw keys
+ *  (measured on 2026-09-18). In the browser the dictionary file creates the
+ *  same map, whether it runs before or after the app code. */
+type Registry = Map<Locale, Record<string, string>>;
+const realm = globalThis as typeof globalThis & { __rwMessages?: Registry };
+const registry: Registry = (realm.__rwMessages ??= new Map());
 
 /** `t()` allaqachon shikoyat qilgan kalitlar.
  *
@@ -69,34 +75,31 @@ const registry = new Map<Locale, Record<string, string>>();
  *  xatoni ko'mib tashlaydi. Shuning uchun har kalit BIR MARTA yoziladi. */
 const reported = new Set<string>();
 
-/** Lug'atni ro'yxatga oladi.
+/** Registers one dictionary. It never clears the others.
  *
- *  ⚠️ CHEGARA ikki xil, va bu ATAYLAB:
- *
- *  * **Serverda** o'nta lug'atning HAMMASI kerak: `layout.tsx` aktiv
- *    tilni aniqlaydi, lekin sahifalar `messages.server.ts` modul
- *    yuklanishida ro'yxatga olinadi — ya'ni har bir til uchun `t()`
- *    ishlashi shart. Ilgari bu yerda `registry.clear()` bor edi va
- *    modul yuklanishidagi tsikl faqat OXIRGI tilni (`es`) qoldirardi;
- *    natijada birinchi SSR chizishida o'nlab xom kalit chiqardi
- *    (`home.start`, `nav.contests`, …) — o'lchandi, brauzerda.
- *  * **Klientda** faqat aktiv til kerak: `LocaleProvider` bitta lug'at
- *    uzatadi, ya'ni chegaralash xotirani tejaydi (~450 kB → bitta).
- *
- *  Shuning uchun `evict` bayrog'i: serverda `false`, klientda `true`.
- *  Ilgari chegara SHARTSIZ edi — bu jimgina nuqson tug'dirdi.
+ *  The server needs all ten at once, and the registry is shared by every
+ *  request in the process. A `clear()` here once left only the last language
+ *  registered, and the first SSR paint showed dozens of raw keys
+ *  (`home.start`, `nav.contests`, …). In the browser, `evictOtherLocales`
+ *  drops the languages that are no longer shown.
  */
-export function registerMessages(
-  locale: Locale,
-  dict: Record<MessageKey, string>,
-  evict = false,
-): void {
-  if (evict) {
-    // Klientda boshqa tillar kerak emas — bir zarbada tozalaymiz.
-    registry.clear();
-    reported.clear();
-  }
+export function registerMessages(locale: Locale, dict: Record<MessageKey, string>): void {
   registry.set(locale, dict);
+}
+
+/** Whether the dictionary of `locale` is loaded in this realm. */
+export function hasMessages(locale: Locale): boolean {
+  return registry.has(locale);
+}
+
+/** Keeps only `keep` in memory: the browser shows one language at a time,
+ *  and each dictionary is ~70 kB. Never on the server, where the registry
+ *  holds every language for every request. */
+export function evictOtherLocales(keep: Locale): void {
+  if (typeof window === "undefined") return;
+  for (const locale of registry.keys()) {
+    if (locale !== keep) registry.delete(locale);
+  }
 }
 
 /** Ro'yxatdagi lug'atlar soni — takroriy ro'yxatga olishni o'lchash uchun.
