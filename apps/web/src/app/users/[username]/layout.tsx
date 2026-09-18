@@ -35,7 +35,8 @@ function ratingHint(user: UserPublic, kind: RatingKind, locale: Locale): string 
   return parts.length ? parts.join(" · ") : undefined;
 }
 
-/** Ikki ustun: chapda profil kartasi, o'ngda raqamlar va tablar. */
+/** `xl` gacha bir ustun (karta tepada), 1280 dan ikki ustun: chapda profil
+ * kartasi, o'ngda raqamlar va tablar. */
 export default async function ProfileLayout({ children, params }: Props) {
   const username = decodeURIComponent((await params).username);
   const locale = await getLocale();
@@ -53,44 +54,46 @@ export default async function ProfileLayout({ children, params }: Props) {
   const profile = await loadProfile(user.username);
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
-      <aside className="lg:sticky lg:top-20 lg:self-start">
+    <div className="grid gap-6 xl:grid-cols-[300px_minmax(0,1fr)]">
+      <aside className="xl:sticky xl:top-20 xl:self-start">
         <ProfileCard profile={profile} locale={locale} />
       </aside>
       <div className="min-w-0 space-y-6">
-        {/* lg da EMAS, xl da: yon panel 300 px ni oladi, shuning uchun bu
-            yerda kontent ustuni 1024 px da atigi 377 px (bosh sahifada 749).
-            O'lchandi: 1024 da majburan 4 ustun qo'yilsa karta 82 px bo'lib
-            raqamlar 27 px ga qirqiladi — `lg:grid-cols-4` mumkin emas.
-            1280 da esa 4 ustun sig'adi (ichki 104 px), shuning uchun raqam
-            shu oraliqda 24 px ga tushadi va `2xl` da 30 px ga qaytadi. */}
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {/* 2026-09-19 HITL qarori: panel endi faqat `xl` dan qaytadi, shuning
+            uchun KPI to'ri `lg` dan 4 ustun — bu bosh sahifa (#96) geometriyasi
+            bilan bir xil: 1024 px da kontent 701 px, karta ~163 px, ichki
+            ~121 px, 8 xonali raqam 24 px da sig'adi. 1280 da ikki ustun
+            qaytgach kontent 633 px, ichki 104 px — 6 xonali sanoq aynan
+            sig'adi, shuning uchun raqam `2xl` gacha 24 px qoladi. Panelni
+            `lg` da saqlash (kontent 377 px) majburan 4 ustun raqamlarni
+            27 px ga qirqardi — o'lchangan (2026-09-18). */}
+        <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
             label="Skills"
             value={user.rating_skills}
             hint={ratingHint(user, "skills", locale)}
             about={t(locale, "profile.hintSkills")}
-            valueClassName="xl:text-2xl 2xl:text-title-sm"
+            valueClassName="lg:text-2xl 2xl:text-title-sm"
           />
           <StatCard
             label="Contests"
             value={user.rating_contest}
             hint={ratingHint(user, "contest", locale)}
             about={t(locale, "profile.hintContests")}
-            valueClassName="xl:text-2xl 2xl:text-title-sm"
+            valueClassName="lg:text-2xl 2xl:text-title-sm"
           />
           <StatCard
             label={t(locale, "leaderboard.activity")}
             value={user.rating_activity}
             hint={ratingHint(user, "activity", locale)}
             about={t(locale, "profile.hintActivity")}
-            valueClassName="xl:text-2xl 2xl:text-title-sm"
+            valueClassName="lg:text-2xl 2xl:text-title-sm"
           />
           <StatCard
             label={t(locale, "leaderboard.streak")}
             value={user.streak_count}
             about={t(locale, "profile.hintStreak")}
-            valueClassName="xl:text-2xl 2xl:text-title-sm"
+            valueClassName="lg:text-2xl 2xl:text-title-sm"
           />
         </section>
         <ProfileNav username={user.username} />

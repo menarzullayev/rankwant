@@ -569,58 +569,66 @@ def kpi_grid_steps_at_lg() -> str | None:
     return None
 
 
-def profile_kpi_grid_steps_at_xl() -> str | None:
-    """The profile KPI grid steps to 4-up at `xl`, and not one step earlier.
+def profile_sidebar_stacks_below_xl() -> str | None:
+    """The profile stacks below `xl`; the 300 px sidebar returns at 1280.
 
-    Measured in a live browser 2026-09-18 against the live origin
-    (/users/<name>): the profile layout is `lg:grid-cols-[300px_minmax(0,1fr)]`,
-    so the 300 px sidebar leaves a much narrower content column than the home
-    page — **377 px at 1024**, where the home page has 749 px.
+    Owner decision (HITL, 2026-09-19): the profile card sits ABOVE the content
+    in 1024–1279 px, so the content column gets the home page's measured
+    geometry (#96) — 701 px at 1024, cards ~163 px with ~121 px inside, where
+    an 8-digit counter fits at the 24 px value step. The two-column
+    `300px_minmax(0,1fr)` grid and the sticky sidebar return at `xl`.
 
-    That is why this grid cannot copy the home page's `lg`. Forcing 4 columns
-    at 1024 was measured, not assumed: cards fell to 82 px wide with 40 px
-    inside, the values **clipped by 27 px**, and the cards grew from 162 to
-    366 px tall. At 1280 the same 4-up gives 104 px inside and fits, so `xl` is
-    the earliest safe step — and the value needs the 24 px step there, because
-    a 6-digit counter measures exactly 104 px.
-
-    Cards here also carry a paragraph (`about`), so a narrower card is a
-    TALLER card: 168 px at 2 columns became 222 px at 4. The block still
-    shrinks (one tall row beats two short ones, 130 px saved), but that is why
-    this rule checks the value step as well — it is not a free win.
+    Why the sidebar decision had to come first (measured 2026-09-18): with the
+    300 px sidebar at `lg` the content column is only 377 px; forcing 4-up
+    there gave 82 px cards with 40 px inside and clipped the values by 27 px.
+    At 1280 two columns return (content 633 px, 104 px inside a card) — a
+    6-digit counter measures exactly 104 px, so the value stays at 24 px
+    until `2xl` restores 30 px.
     """
     layout = read(PROFILE_LAYOUT)
+    outer = re.search(r'<div className="(grid gap-6[^"]*)"', layout)
+    if outer is None:
+        return f"{PROFILE_LAYOUT}: profil tashqi to'ri (`grid gap-6`) topilmadi"
+    # ⚠️ Token bo'yicha tekshiriladi (sabab: `kpi_grid_steps_at_lg` ga qarang —
+    # substring tekshiruvi `2xl` ichidagi `xl` ni «bor» deb olib yuboradi).
+    outer_tokens = outer.group(1).split()
+    if "lg:grid-cols-[300px_minmax(0,1fr)]" in outer_tokens:
+        return (
+            f"{PROFILE_LAYOUT}: yon panel `lg` da qaytgan — 1024 px da kontent "
+            "ustuni 377 px qoladi va KPI to'ri 2 ustunda qolib ketadi (qaror 21)"
+        )
+    if "xl:grid-cols-[300px_minmax(0,1fr)]" not in outer_tokens:
+        return (
+            f"{PROFILE_LAYOUT}: yon panel `xl` dan qaytmaydi — ikki ustunli "
+            "profil 1280 dan boshlanishi kerak (qaror 21)"
+        )
+
     grid = re.search(r'<section className="([^"]*sm:grid-cols-2[^"]*)"', layout)
     if grid is None:
         return f"{PROFILE_LAYOUT}: profil KPI to'ri (`sm:grid-cols-2`) topilmadi"
-    classes = grid.group(1)
-    # ⚠️ Token bo'yicha, `in` bilan EMAS: `"xl:grid-cols-4"` satri
-    # `"2xl:grid-cols-4"` ICHIDA ham uchraydi, ya'ni substring tekshiruvi
-    # `2xl` da turgan to'rni «xl bor» deb o'tkazib yuborardi. Salbiy test
-    # aynan shuni tutdi (2026-09-18).
-    tokens = classes.split()
-
-    if "lg:grid-cols-4" in tokens:
+    tokens = grid.group(1).split()
+    if "xl:grid-cols-4" in tokens:
         return (
-            f"{PROFILE_LAYOUT}: profil KPI to'rida `lg:grid-cols-4` bor — 1024 px da "
-            "kontent ustuni 377 px, karta 82 px bo'lib raqamlar qirqiladi"
+            f"{PROFILE_LAYOUT}: KPI to'rida ortiqcha `xl:grid-cols-4` bor — "
+            "4 ustun endi `lg` dan, qo'shimcha pog'ona eskirgan holat (qaror 21)"
         )
-    if "xl:grid-cols-4" not in tokens:
+    if "lg:grid-cols-4" not in tokens:
         return (
-            f"{PROFILE_LAYOUT}: profil KPI to'rida `xl:grid-cols-4` yo'q — 1280-1535 px "
-            "da kartalar 309-436 px gacha cho'zilib qoladi"
+            f"{PROFILE_LAYOUT}: KPI to'rida `lg:grid-cols-4` yo'q — panel `xl` "
+            "gacha stekda, 1024 px da kontent 701 px va 4 ustun sig'adi (qaror 21)"
         )
 
-    section = layout.split('<section className="' + classes + '"', 1)[1]
+    section = layout.split('<section className="' + grid.group(1) + '"', 1)[1]
     section = section.split("</section>", 1)[0]
     cards = section.count("<StatCard")
-    opted_in = section.count('valueClassName="xl:text-2xl 2xl:text-title-sm"')
+    opted_in = section.count('valueClassName="lg:text-2xl 2xl:text-title-sm"')
     if cards == 0:
         return f"{PROFILE_LAYOUT}: profil KPI to'rida `StatCard` topilmadi"
     if opted_in != cards:
         return (
             f"{PROFILE_LAYOUT}: profil to'rining {cards} kartasidan {opted_in} tasida "
-            "`valueClassName` raqam pog'onasi bor — 1280 px da sanoq chegarada qoladi"
+            "`valueClassName` raqam pog'onasi bor — 1280 px da ichki 104 px va "
+            "6 xonali sanoq chegarada qoladi"
         )
     return None
 
@@ -688,7 +696,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("header 320 px ga sig'adi", mobile_header_fits_narrow_screen),
     ("mobil panel foydalanishga yaroqli", mobile_drawer_is_accessible),
     ("KPI to'ri lg da 4 ustun", kpi_grid_steps_at_lg),
-    ("profil KPI to'ri xl da 4 ustun", profile_kpi_grid_steps_at_xl),
+    ("profil paneli xl gacha stekda", profile_sidebar_stacks_below_xl),
     ("diapazon bitta filtr", difficulty_range_counts_as_one_filter),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
