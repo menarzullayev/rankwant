@@ -19,6 +19,8 @@ class ProblemFilter(filters.FilterSet):  # type: ignore[misc]
     # masalalar (Codeforces `?tags=` bilan bir xil). Bitta qiymat ham shu
     # yo'l bilan ishlaydi.
     topics = filters.CharFilter(method="filter_topics")
+    #: Codeforces exclude-tags: a problem with ANY of these slugs is hidden.
+    exclude_topics = filters.CharFilter(method="filter_exclude_topics")
     level = filters.ChoiceFilter(
         choices=[(code, label) for _, code, label in DIFFICULTY_LEVELS],
         method="filter_level",
@@ -93,6 +95,12 @@ class ProblemFilter(filters.FilterSet):  # type: ignore[misc]
         """
         for slug in (part.strip() for part in value.split(",") if part.strip()):
             queryset = queryset.filter(topics__slug=slug)
+        return queryset.distinct()
+
+    def filter_exclude_topics(self, queryset, name: str, value: str):  # type: ignore[no-untyped-def]
+        """Hide problems that carry any of the given topic slugs."""
+        for slug in (part.strip() for part in value.split(",") if part.strip()):
+            queryset = queryset.exclude(topics__slug=slug)
         return queryset.distinct()
 
     def filter_favourite(self, queryset, name: str, value: bool):  # type: ignore[no-untyped-def]

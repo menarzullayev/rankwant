@@ -180,7 +180,7 @@ export const api = {
   languages: () => get<Paginated<Language>>(LANGUAGES_PATH, 300),
   // Filtr paneli mavzularni TO'LIQ ko'rsatishi kerak — birinchi 25 tasi
   // emas, aks holda tanlab bo'lmaydigan yorliqlar paydo bo'lardi.
-  topics: () => get<Paginated<Topic>>("/topics/?page_size=100", 300),
+  topics: () => get<Paginated<Topic>>("/topics/?page_size=200", 300),
   topicSkills: () => get<{ topics: TopicSkill[] }>("/problems/skills/"),
   quizzes: () => get<Paginated<Quiz>>("/quizzes/", 60),
   quiz: (slug: string) => get<QuizDetail>(`/quizzes/${slug}/`, 60),

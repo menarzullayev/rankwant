@@ -157,6 +157,8 @@ export const uz = {
   "problems.title": "Masalalar arxivi",
   "problems.difficulty": "Qiyinlik",
   "problems.solved": "Yechilgan",
+  "problems.likes": "Yoqdi",
+  "problems.author": "Muallif",
   "problems.solvedByYou": "Siz yechgansiz",
   "problems.topics": "Mavzular",
   "problems.limits": "Cheklovlar",
@@ -1009,6 +1011,10 @@ export const uz = {
   "filter.topicSearchPlaceholder": "{count} ta mavzudan qidirish…",
   "filter.topicSearchLabel": "Mavzu qidirish",
   "filter.noTopicMatch": "Bunday mavzu yo'q",
+  "filter.difficultyMin": "Dan",
+  "filter.difficultyMax": "Gacha",
+  "filter.topicsInclude": "Kiradi",
+  "filter.topicsExclude": "Chiqariladi",
 
   // ---- Yechim tahlili (Editorial) ---------------------------------------
   "editorial.title": "Yechim tahlili",
@@ -1505,6 +1511,8 @@ export const uz = {
   "admin.text.noTestsYet": "Hali test yo'q — yechimlar tekshirilmaydi.",
   "admin.text.addTest": "Test qo'shish",
   "archive.mostViewed": "Ko'p ko'rilgan",
+  "archive.mostLiked": "Ko'p yoqtirilgan",
+  "archive.tagCloud": "Mavzular",
   "rating.intro": "Barcha formulalar ochiq. Yashirin og'irlik yoki e'lon qilinmagan bonus yo'q. Har bir o'zgarish sababi bilan profilingizda yozib boriladi.",
   "rating.skills.summary": "Birinchi marta yechgan masalalaringiz ball bo'yicha kamayish tartibida saralanadi va kamayuvchi koeffitsient bilan qo'shiladi. Ball — masalaning joriy qiyinligi.",
   "rating.skills.noDecrease": "Yangi masala yechish reytingni hech qachon kamaytirmaydi.",

@@ -153,6 +153,8 @@ export const kaa: Record<MessageKey, string> = {
   "problems.title": "Máseleler arxivi",
   "problems.difficulty": "Qıyınlıq",
   "problems.solved": "Sheshilgen",
+  "problems.likes": "Unadı",
+  "problems.author": "Avtor",
   "problems.solvedByYou": "Siz sheshkensiz",
   "problems.topics": "Temalar",
   "problems.limits": "Sheklewler",
@@ -1030,6 +1032,10 @@ export const kaa: Record<MessageKey, string> = {
   "filter.topicSearchPlaceholder": "{count} temanıń ishinden izlew…",
   "filter.topicSearchLabel": "Tema izlew",
   "filter.noTopicMatch": "Bunday tema joq",
+  "filter.difficultyMin": "Baslap",
+  "filter.difficultyMax": "Shekem",
+  "filter.topicsInclude": "Kiriwi kerek",
+  "filter.topicsExclude": "Shıǵarıw",
 
   // ---- Accent hisoblash xatolari ----
   "error.ground_unreadable": "Fon reńin oqıw múmkin bolmadı — akcent qollanılmadı. Beti jańalawdı kórip kóriń.",
@@ -1461,6 +1467,8 @@ export const kaa: Record<MessageKey, string> = {
   "admin.text.noTestsYet": "Ele test joq — sheshimler tekserilmeydi.",
   "admin.text.addTest": "Test qosıw",
   "archive.mostViewed": "Kóp kórilgen",
+  "archive.mostLiked": "Kóp unatılǵan",
+  "archive.tagCloud": "Temalar",
   "rating.intro": "Barlıq formulalar ashıq. Jasırın salmaq hám járiyalanbaǵan bonus joq. Hár bir ózgeris sebebi menen profilińizde jazıladı.",
   "rating.skills.summary": "Birinshi márte sheshken máselelerińiz ball boyınsha kemeyiw tártibinde jıynaladı hám kemeyiwshi koeffitsient penen qosıladı. Ball — máseleniń házirgi qıyınlıǵı.",
   "rating.skills.noDecrease": "Jańa másele sheshiw reytingińizdi hesh qashan tómenletpeydi.",

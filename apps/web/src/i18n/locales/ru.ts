@@ -153,6 +153,8 @@ export const ru: Record<MessageKey, string> = {
   "problems.title": "Архив задач",
   "problems.difficulty": "Сложность",
   "problems.solved": "Решено",
+  "problems.likes": "Нравится",
+  "problems.author": "Автор",
   "problems.solvedByYou": "Вы решили",
   "problems.topics": "Темы",
   "problems.limits": "Ограничения",
@@ -1030,6 +1032,10 @@ export const ru: Record<MessageKey, string> = {
   "filter.topicSearchPlaceholder": "Поиск среди {count} тем…",
   "filter.topicSearchLabel": "Поиск тем",
   "filter.noTopicMatch": "Такой темы нет",
+  "filter.difficultyMin": "От",
+  "filter.difficultyMax": "До",
+  "filter.topicsInclude": "Должны быть",
+  "filter.topicsExclude": "Исключить",
 
   // ---- Accent hisoblash xatolari ----
   "error.ground_unreadable": "Не удалось прочитать цвет фона — акцент не применён. Попробуйте обновить страницу.",
@@ -1461,6 +1467,8 @@ export const ru: Record<MessageKey, string> = {
   "admin.text.noTestsYet": "Тестов пока нет — решения не проверяются.",
   "admin.text.addTest": "Добавить тест",
   "archive.mostViewed": "Популярные",
+  "archive.mostLiked": "Больше лайков",
+  "archive.tagCloud": "Темы",
   "rating.intro": "Все формулы открыты. Скрытых весов и необъявленных бонусов нет. Каждое изменение записывается в вашем профиле вместе с причиной.",
   "rating.skills.summary": "Впервые решённые вами задачи сортируются по баллам по убыванию и складываются с убывающим коэффициентом. Балл — текущая сложность задачи.",
   "rating.skills.noDecrease": "Решение новой задачи никогда не понижает ваш рейтинг.",

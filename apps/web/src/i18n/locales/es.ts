@@ -153,6 +153,8 @@ export const es: Record<MessageKey, string> = {
   "problems.title": "Archivo de problemas",
   "problems.difficulty": "Dificultad",
   "problems.solved": "Resueltos",
+  "problems.likes": "Gustos",
+  "problems.author": "Autor",
   "problems.solvedByYou": "Lo resolviste",
   "problems.topics": "Temas",
   "problems.limits": "Límites",
@@ -1030,6 +1032,10 @@ export const es: Record<MessageKey, string> = {
   "filter.topicSearchPlaceholder": "Buscar entre {count} temas…",
   "filter.topicSearchLabel": "Buscar temas",
   "filter.noTopicMatch": "No existe ese tema",
+  "filter.difficultyMin": "Desde",
+  "filter.difficultyMax": "Hasta",
+  "filter.topicsInclude": "Deben incluirse",
+  "filter.topicsExclude": "Excluir",
 
   // ---- Accent hisoblash xatolari ----
   "error.ground_unreadable": "No se pudo leer el color de fondo — el acento no se aplicó. Intente recargar la página.",
@@ -1461,6 +1467,8 @@ export const es: Record<MessageKey, string> = {
   "admin.text.noTestsYet": "Todavía no hay pruebas: los envíos no se evalúan.",
   "admin.text.addTest": "Añadir una prueba",
   "archive.mostViewed": "Más vistos",
+  "archive.mostLiked": "Más gustados",
+  "archive.tagCloud": "Temas",
   "rating.intro": "Todas las fórmulas son públicas. No hay pesos ocultos ni bonificaciones no anunciadas. Cada cambio se registra en tu perfil junto con su motivo.",
   "rating.skills.summary": "Los problemas que resuelves por primera vez se ordenan por puntuación de forma descendente y se suman con un coeficiente decreciente. La puntuación es la dificultad actual del problema.",
   "rating.skills.noDecrease": "Resolver un problema nuevo nunca baja tu rating.",

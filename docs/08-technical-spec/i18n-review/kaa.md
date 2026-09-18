@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1574 strings.**
+**1582 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -167,6 +167,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problems.title` | Masalalar arxivi | Máseleler arxivi |  |
 | `problems.difficulty` | Qiyinlik | Qıyınlıq |  |
 | `problems.solved` | Yechilgan | Sheshilgen |  |
+| `problems.likes` | Yoqdi | Unadı |  |
+| `problems.author` | Muallif | Avtor |  |
 | `problems.solvedByYou` | Siz yechgansiz | Siz sheshkensiz |  |
 | `problems.topics` | Mavzular | Temalar |  |
 | `problems.limits` | Cheklovlar | Sheklewler |  |
@@ -1000,6 +1002,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `filter.topicSearchPlaceholder` | {count} ta mavzudan qidirish… | {count} temanıń ishinden izlew… |  |
 | `filter.topicSearchLabel` | Mavzu qidirish | Tema izlew |  |
 | `filter.noTopicMatch` | Bunday mavzu yo'q | Bunday tema joq |  |
+| `filter.difficultyMin` | Dan | Baslap |  |
+| `filter.difficultyMax` | Gacha | Shekem |  |
+| `filter.topicsInclude` | Kiradi | Kiriwi kerek |  |
+| `filter.topicsExclude` | Chiqariladi | Shıǵarıw |  |
 | `editorial.title` | Yechim tahlili | Sheshim talqılawı |  |
 | `editorial.lockedTitle` | Tahlil hisobga kirgan foydalanuvchilar uchun. | Talqılaw sistema kirgen paydalanıwshılarǵa ashıq. |  |
 | `editorial.login` | Kirish | Kiriw |  |
@@ -1450,6 +1456,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.text.noTestsYet` | Hali test yo'q — yechimlar tekshirilmaydi. | Ele test joq — sheshimler tekserilmeydi. |  |
 | `admin.text.addTest` | Test qo'shish | Test qosıw |  |
 | `archive.mostViewed` | Ko'p ko'rilgan | Kóp kórilgen |  |
+| `archive.mostLiked` | Ko'p yoqtirilgan | Kóp unatılǵan |  |
+| `archive.tagCloud` | Mavzular | Temalar |  |
 | `rating.intro` | Barcha formulalar ochiq. Yashirin og'irlik yoki e'lon qilinmagan bonus yo'q. Har bir o'zgarish sababi bilan profilingizda yozib boriladi. | Barlıq formulalar ashıq. Jasırın salmaq hám járiyalanbaǵan bonus joq. Hár bir ózgeris sebebi menen profilińizde jazıladı. |  |
 | `rating.skills.summary` | Birinchi marta yechgan masalalaringiz ball bo'yicha kamayish tartibida saralanadi va kamayuvchi koeffitsient bilan qo'shiladi. Ball — masalaning joriy qiyinligi. | Birinshi márte sheshken máselelerińiz ball boyınsha kemeyiw tártibinde jıynaladı hám kemeyiwshi koeffitsient penen qosıladı. Ball — máseleniń házirgi qıyınlıǵı. |  |
 | `rating.skills.noDecrease` | Yangi masala yechish reytingni hech qachon kamaytirmaydi. | Jańa másele sheshiw reytingińizdi hesh qashan tómenletpeydi. |  |

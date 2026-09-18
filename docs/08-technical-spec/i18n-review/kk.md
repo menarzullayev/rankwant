@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1574 strings.**
+**1582 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -167,6 +167,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problems.title` | Masalalar arxivi | Есептер мұрағаты |  |
 | `problems.difficulty` | Qiyinlik | Қиындық |  |
 | `problems.solved` | Yechilgan | Шешілген |  |
+| `problems.likes` | Yoqdi | Ұнайды |  |
+| `problems.author` | Muallif | Автор |  |
 | `problems.solvedByYou` | Siz yechgansiz | Сіз шештіңіз |  |
 | `problems.topics` | Mavzular | Тақырыптар |  |
 | `problems.limits` | Cheklovlar | Шектеулер |  |
@@ -1000,6 +1002,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `filter.topicSearchPlaceholder` | {count} ta mavzudan qidirish… | {count} тақырыптың ішінен іздеу… |  |
 | `filter.topicSearchLabel` | Mavzu qidirish | Тақырып іздеу |  |
 | `filter.noTopicMatch` | Bunday mavzu yo'q | Ондай тақырып жоқ |  |
+| `filter.difficultyMin` | Dan | Бастап |  |
+| `filter.difficultyMax` | Gacha | Дейін |  |
+| `filter.topicsInclude` | Kiradi | Кіруі тиіс |  |
+| `filter.topicsExclude` | Chiqariladi | Шығару |  |
 | `editorial.title` | Yechim tahlili | Шешім талдауы |  |
 | `editorial.lockedTitle` | Tahlil hisobga kirgan foydalanuvchilar uchun. | Талдау жүйеге кірген қолданушыларға қолжетімді. |  |
 | `editorial.login` | Kirish | Кіру |  |
@@ -1450,6 +1456,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.text.noTestsYet` | Hali test yo'q — yechimlar tekshirilmaydi. | Әзірге тест жоқ — шешімдер тексерілмейді. |  |
 | `admin.text.addTest` | Test qo'shish | Тест қосу |  |
 | `archive.mostViewed` | Ko'p ko'rilgan | Көп қаралған |  |
+| `archive.mostLiked` | Ko'p yoqtirilgan | Көп ұнайтын |  |
+| `archive.tagCloud` | Mavzular | Тақырыптар |  |
 | `rating.intro` | Barcha formulalar ochiq. Yashirin og'irlik yoki e'lon qilinmagan bonus yo'q. Har bir o'zgarish sababi bilan profilingizda yozib boriladi. | Барлық формулалар ашық. Жасырын салмақ пен жарияланбаған бонус жоқ. Әр өзгеріс себебімен бірге профиліңізде жазылады. |  |
 | `rating.skills.summary` | Birinchi marta yechgan masalalaringiz ball bo'yicha kamayish tartibida saralanadi va kamayuvchi koeffitsient bilan qo'shiladi. Ball — masalaning joriy qiyinligi. | Бірінші рет шешкен есептеріңіз балл бойынша кему тәртібімен сұрыпталып, кемімелі коэффициентпен қосылады. Балл — есептің ағымдағы қиындығы. |  |
 | `rating.skills.noDecrease` | Yangi masala yechish reytingni hech qachon kamaytirmaydi. | Жаңа есепті шешу рейтингіңізді ешқашан төмендетпейді. |  |

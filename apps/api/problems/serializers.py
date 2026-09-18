@@ -23,10 +23,14 @@ class TopicSerializer(serializers.ModelSerializer[Topic]):
     parent = serializers.SlugRelatedField[Topic](  # type: ignore[assignment]
         slug_field="slug", read_only=True
     )
+    problem_count = serializers.SerializerMethodField()
+
+    def get_problem_count(self, topic: Topic) -> int:
+        return int(getattr(topic, "problem_count", 0) or 0)
 
     class Meta:
         model = Topic
-        fields = ["slug", "name_uz", "name_ru", "name_en", "parent"]
+        fields = ["slug", "name_uz", "name_ru", "name_en", "parent", "problem_count"]
 
 
 class LanguageSerializer(serializers.ModelSerializer[Language]):
@@ -112,6 +116,21 @@ class ProblemListSerializer(serializers.ModelSerializer[Problem]):
     #: yo'q va u yerda har qanday yuborish IE bilan tugaydi.
     has_tests = serializers.BooleanField(read_only=True)
     topics = serializers.SlugRelatedField[Topic](many=True, read_only=True, slug_field="slug")
+    author = serializers.SerializerMethodField()
+
+    def get_author(self, problem: Problem) -> dict[str, Any] | None:
+        """Author name, plus whether a profile page exists.
+
+        Imported KEP authors are inactive shadow accounts: a link would 404.
+        """
+        author = problem.author
+        if author is None:
+            return None
+        return {
+            "username": author.username,
+            "display_name": author.display_name or author.username,
+            "has_profile": author.is_active,
+        }
 
     def get_is_favourite(self, problem: Problem) -> bool:
         return problem.pk in (self.context.get("favourite_ids") or ())
@@ -167,13 +186,15 @@ class ProblemListSerializer(serializers.ModelSerializer[Problem]):
             "my_verdict",
             "code",
             "has_tests",
+            "likes_count",
+            "dislikes_count",
+            "author",
         ]
 
 
 class ProblemDetailSerializer(ProblemListSerializer):
     samples = serializers.SerializerMethodField()
 
-    author = serializers.SerializerMethodField()
     my_rating = serializers.SerializerMethodField()
     languages = serializers.SerializerMethodField()
     similar = serializers.SerializerMethodField()
@@ -186,22 +207,6 @@ class ProblemDetailSerializer(ProblemListSerializer):
         request = self.context.get("request")
         user = getattr(request, "user", None)
         return user if user is not None and user.is_authenticated else None
-
-    def get_author(self, problem: Problem) -> dict[str, Any] | None:
-        """Muallif — ismi bilan, va profili bormi degan javob bilan.
-
-        Import qilingan mualliflar NOFAOL soya hisoblar: ular
-        leaderboard va sanoqlarga kirmaydi, demak profil sahifasi ham
-        yo'q. Havola qo'yilsa u 404 ga olib borardi.
-        """
-        author = problem.author
-        if author is None:
-            return None
-        return {
-            "username": author.username,
-            "display_name": author.display_name or author.username,
-            "has_profile": author.is_active,
-        }
 
     def get_my_rating(self, problem: Problem) -> int | None:
         user = self._user()

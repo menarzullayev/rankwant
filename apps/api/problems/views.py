@@ -106,6 +106,7 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
         "solved_count",
         "attempt_count",
         "view_count",
+        "likes_count",
         "created_at",
     ]
     # `pk` — tiebreaker: bir xil qiyinlikdagi masalalar tartibi aks holda SQL
@@ -117,6 +118,7 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
         # bo'lmasligi uchun annotatsiya.
         return (
             Problem.objects.filter(is_public=True)
+            .select_related("author")
             .prefetch_related("topics")
             .annotate(
                 rating_avg=Avg("ratings__score"),
@@ -602,6 +604,11 @@ class TopicViewSet(viewsets.ReadOnlyModelViewSet[Topic]):
     queryset = (
         Topic.objects.filter(problems__is_public=True)
         .select_related("parent")
+        .annotate(
+            problem_count=Count(
+                "problems", filter=Q(problems__is_public=True), distinct=True
+            )
+        )
         .distinct()
         .order_by("slug")
     )

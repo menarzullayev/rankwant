@@ -153,6 +153,8 @@ export const kk: Record<MessageKey, string> = {
   "problems.title": "Есептер мұрағаты",
   "problems.difficulty": "Қиындық",
   "problems.solved": "Шешілген",
+  "problems.likes": "Ұнайды",
+  "problems.author": "Автор",
   "problems.solvedByYou": "Сіз шештіңіз",
   "problems.topics": "Тақырыптар",
   "problems.limits": "Шектеулер",
@@ -1031,6 +1033,10 @@ export const kk: Record<MessageKey, string> = {
   "filter.topicSearchPlaceholder": "{count} тақырыптың ішінен іздеу…",
   "filter.topicSearchLabel": "Тақырып іздеу",
   "filter.noTopicMatch": "Ондай тақырып жоқ",
+  "filter.difficultyMin": "Бастап",
+  "filter.difficultyMax": "Дейін",
+  "filter.topicsInclude": "Кіруі тиіс",
+  "filter.topicsExclude": "Шығару",
 
   // ---- Accent hisoblash xatolari ----
   "error.ground_unreadable": "Фон түсін оқу мүмкін болмады — акцент қолданылмады. Бетті жаңартып көріңіз.",
@@ -1462,6 +1468,8 @@ export const kk: Record<MessageKey, string> = {
   "admin.text.noTestsYet": "Әзірге тест жоқ — шешімдер тексерілмейді.",
   "admin.text.addTest": "Тест қосу",
   "archive.mostViewed": "Көп қаралған",
+  "archive.mostLiked": "Көп ұнайтын",
+  "archive.tagCloud": "Тақырыптар",
   "rating.intro": "Барлық формулалар ашық. Жасырын салмақ пен жарияланбаған бонус жоқ. Әр өзгеріс себебімен бірге профиліңізде жазылады.",
   "rating.skills.summary": "Бірінші рет шешкен есептеріңіз балл бойынша кему тәртібімен сұрыпталып, кемімелі коэффициентпен қосылады. Балл — есептің ағымдағы қиындығы.",
   "rating.skills.noDecrease": "Жаңа есепті шешу рейтингіңізді ешқашан төмендетпейді.",

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1574 strings.**
+**1582 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -167,6 +167,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problems.title` | Masalalar arxivi | Бойгонии масъалаҳо |  |
 | `problems.difficulty` | Qiyinlik | Мураккабӣ |  |
 | `problems.solved` | Yechilgan | Ҳалшуда |  |
+| `problems.likes` | Yoqdi | Маъқул |  |
+| `problems.author` | Muallif | Муаллиф |  |
 | `problems.solvedByYou` | Siz yechgansiz | Шумо ҳал кардед |  |
 | `problems.topics` | Mavzular | Мавзӯъҳо |  |
 | `problems.limits` | Cheklovlar | Маҳдудиятҳо |  |
@@ -1000,6 +1002,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `filter.topicSearchPlaceholder` | {count} ta mavzudan qidirish… | Ҷустуҷӯ дар байни {count} мавзӯъ… |  |
 | `filter.topicSearchLabel` | Mavzu qidirish | Ҷустуҷӯи мавзӯъ |  |
 | `filter.noTopicMatch` | Bunday mavzu yo'q | Чунин мавзӯъ нест |  |
+| `filter.difficultyMin` | Dan | Аз |  |
+| `filter.difficultyMax` | Gacha | То |  |
+| `filter.topicsInclude` | Kiradi | Бояд дошта бошад |  |
+| `filter.topicsExclude` | Chiqariladi | Хориҷ |  |
 | `editorial.title` | Yechim tahlili | Таҳлили ҳал |  |
 | `editorial.lockedTitle` | Tahlil hisobga kirgan foydalanuvchilar uchun. | Таҳлил барои корбарони воридшуда дастрас аст. |  |
 | `editorial.login` | Kirish | Даромадан |  |
@@ -1450,6 +1456,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.text.noTestsYet` | Hali test yo'q — yechimlar tekshirilmaydi. | Ҳанӯз тест нест — ҳалҳо санҷида намешаванд. |  |
 | `admin.text.addTest` | Test qo'shish | Илова кардани тест |  |
 | `archive.mostViewed` | Ko'p ko'rilgan | Пурбинанда |  |
+| `archive.mostLiked` | Ko'p yoqtirilgan | Бештар маъқул |  |
+| `archive.tagCloud` | Mavzular | Мавзӯъҳо |  |
 | `rating.intro` | Barcha formulalar ochiq. Yashirin og'irlik yoki e'lon qilinmagan bonus yo'q. Har bir o'zgarish sababi bilan profilingizda yozib boriladi. | Ҳамаи формулаҳо кушодаанд. Вазни пинҳонӣ ва бонуси эълоннашуда вуҷуд надорад. Ҳар як тағйирот бо сабабаш дар профили шумо сабт мешавад. |  |
 | `rating.skills.summary` | Birinchi marta yechgan masalalaringiz ball bo'yicha kamayish tartibida saralanadi va kamayuvchi koeffitsient bilan qo'shiladi. Ball — masalaning joriy qiyinligi. | Масъалаҳое, ки бори аввал ҳал кардаед, аз рӯи хол ба тартиби камшаванда ҷобаҷо шуда, бо коэффициенти камшаванда ҷамъ мешаванд. Хол — мураккабии ҷории масъала. |  |
 | `rating.skills.noDecrease` | Yangi masala yechish reytingni hech qachon kamaytirmaydi. | Ҳалли масъалаи нав рейтинги шуморо ҳеҷ гоҳ паст намекунад. |  |

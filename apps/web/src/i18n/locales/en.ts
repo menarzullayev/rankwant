@@ -153,6 +153,8 @@ export const en: Record<MessageKey, string> = {
   "problems.title": "Problem archive",
   "problems.difficulty": "Difficulty",
   "problems.solved": "Solved",
+  "problems.likes": "Likes",
+  "problems.author": "Author",
   "problems.solvedByYou": "You solved this",
   "problems.topics": "Topics",
   "problems.limits": "Limits",
@@ -1029,6 +1031,10 @@ export const en: Record<MessageKey, string> = {
   "filter.topicSearchPlaceholder": "Search among {count} topics…",
   "filter.topicSearchLabel": "Search topics",
   "filter.noTopicMatch": "No such topic",
+  "filter.difficultyMin": "From",
+  "filter.difficultyMax": "To",
+  "filter.topicsInclude": "Must include",
+  "filter.topicsExclude": "Exclude",
 
   // ---- Accent hisoblash xatolari ----
   "error.ground_unreadable": "Could not read the background colour — the accent was not applied. Try reloading the page.",
@@ -1460,6 +1466,8 @@ export const en: Record<MessageKey, string> = {
   "admin.text.noTestsYet": "No tests yet — submissions are not judged.",
   "admin.text.addTest": "Add a test",
   "archive.mostViewed": "Most viewed",
+  "archive.mostLiked": "Most liked",
+  "archive.tagCloud": "Topics",
   "rating.intro": "Every formula is public. There is no hidden weighting and no unannounced bonus. Every change is logged in your profile together with its reason.",
   "rating.skills.summary": "The problems you solve first are sorted by score in descending order and added with a decreasing coefficient. The score is the problem's current difficulty.",
   "rating.skills.noDecrease": "Solving a new problem never lowers your rating.",
