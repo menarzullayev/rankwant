@@ -2586,6 +2586,58 @@ def neg_deploy_label_docs_commit_not_stale() -> tuple[bool, str]:
     return True, "deploy_check/docs commit: web yorlig'i eskirgan deb ko'rsatilmadi"
 
 
+def _build_label_states() -> dict[str, str]:
+    """`--build-label-state` natijalari — docker'siz, faqat qaror."""
+    values = {
+        "missing": "",
+        "unknown": "unknown",
+        "novalue": "<no value>",
+        "set": "2026-09-18T08:52:06Z",
+    }
+    env = {**os.environ, "MSYS_NO_PATHCONV": "1"}
+    out: dict[str, str] = {}
+    for name, value in values.items():
+        proc = subprocess.run(
+            [_bash(), "tools/check_deploy.sh", "--build-label-state", value],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            env=env,
+        )
+        out[name] = proc.stdout.strip() or f"(exit {proc.returncode})"
+    return out
+
+
+def neg_deploy_build_label_absent_is_flagged() -> tuple[bool, str]:
+    """`built-at` yo'q bo'lsa — uch xil ko'rinishda ham `unlabeled`.
+
+    Nega kerak: yorliqning yagona ma'nosi shu. `img_time` vaqtni Docker
+    metadatasidan (`.Created`) oladi, ya'ni yorliq yo'qligi HECH QANDAY
+    farq qilmasdi — 2026-09-18 gacha u faqat yozilardi. Bu tekshiruv
+    o'sha bo'shliqni yopadi va build argumentlari uzilganini ko'rsatadi
+    (aynan shu holat `api` oilasida `git-sha` ni ham `unknown` qilgan edi).
+    """
+    states = _build_label_states()
+    for name in ("missing", "unknown", "novalue"):
+        if states[name] != "unlabeled":
+            return False, f"deploy_check/built-at {name}: `{states[name]}` — unlabeled kerak"
+    return True, "deploy_check/built-at yo'q/unknown/<no value>: uchtasi ham unlabeled"
+
+
+def neg_deploy_build_label_set_is_ok() -> tuple[bool, str]:
+    """Yorliq o'rnatilgan bo'lsa — `ok`, ya'ni yolg'on ogohlantirish YO'Q.
+
+    Salbiy juftlik: yuqoridagi test «har doim unlabeled» qaytaradigan
+    soxta tekshiruvni ham o'tkazib yuborardi. Bu test uni ushlaydi.
+    """
+    states = _build_label_states()
+    if states["set"] != "ok":
+        return False, f"deploy_check/built-at o'rnatilgan: `{states['set']}` — ok kerak"
+    return True, "deploy_check/built-at o'rnatilgan: ok (yolg'on ogohlantirish yo'q)"
+
+
 def _env_example_broken(rel: str, old: str, new: str, name: str) -> tuple[bool, str]:
     """Break `.env.example` or a source it mirrors; the checker must name `name`."""
     path = ROOT / rel
@@ -3482,6 +3534,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         [
             ("web o'zgarishi eskirgan deb topiladi", neg_deploy_label_web_change_is_stale),
             ("docs commit'i web'ni eskirtirmaydi", neg_deploy_label_docs_commit_not_stale),
+            ("built-at yo'qligi ko'rinadi", neg_deploy_build_label_absent_is_flagged),
+            ("built-at bor bo'lsa ogohlantirilmaydi", neg_deploy_build_label_set_is_ok),
         ],
     ),
     (
