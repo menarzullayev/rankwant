@@ -75,9 +75,11 @@ test("arxiv filtri ro'yxatni toraytiradi va URL da qoladi", async ({
   expect(await hardRows.count()).toBe(rows - 1); // sarlavha qatori
 
   // Faol filtr soni tugmada ko'rinadi va holat URL da qoladi.
+  // `applyRange` ikkita kalit yozadi (`difficulty__gte` + `lte`),
+  // shuning uchun rozetka 2 — `level=hard` dagi 1 emas.
   await expect(
     page.getByRole("button", { name: /^Filtrlar( \d+)?$/ }),
-  ).toContainText("1");
+  ).toContainText("2");
 });
 
 test("saralash tabi tartibni almashtiradi", async ({ page }) => {
