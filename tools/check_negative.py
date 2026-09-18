@@ -2338,6 +2338,16 @@ def neg_decisions_nav_eager_link() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_home_main_eager_link() -> tuple[bool, str]:
+    # A plain `next/link` back on the homepage <main> prefetches in-view CTAs.
+    return _decision_broken(
+        "apps/web/src/app/page.tsx",
+        'import { IntentLink } from "@/components/ui/IntentLink";\n',
+        'import { IntentLink } from "@/components/ui/IntentLink";\nimport Link from "next/link";\n',
+        "bosh sahifa <main> prefetch'i niyatda",
+    )
+
+
 def neg_decisions_intent_link_eager() -> tuple[bool, str]:
     # `IntentLink` itself going back to the default prefetch undoes it for all.
     return _decision_broken(
@@ -2424,6 +2434,7 @@ def _decisions_sandbox(extra_workflows: dict[str, str]) -> tuple[int, str]:
         "apps/web/src/layout/HeaderStatus.tsx",
         "apps/web/src/layout/UserMenu.tsx",
         "apps/web/src/components/ui/IntentLink.tsx",
+        "apps/web/src/app/page.tsx",
         # Dictionary as a cached file (2026-09-18).
         "apps/web/src/app/layout.tsx",
         "apps/web/src/app/i18n/[file]/route.ts",
@@ -3668,6 +3679,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("sayt qidiruvga yopilsa tutilsin", neg_decisions_site_closed_to_search),
             ("AI krauler ro'yxatdan tushsa tutilsin", neg_decisions_ai_crawler_dropped),
             ("sidebar'ga oddiy Link qaytsa tutilsin", neg_decisions_nav_eager_link),
+            ("bosh sahifaga oddiy Link qaytsa tutilsin", neg_decisions_home_main_eager_link),
             ("IntentLink darhol prefetch qilsa tutilsin", neg_decisions_intent_link_eager),
             ("lug'at prop'ga qaytsa tutilsin", neg_decisions_dictionary_prop),
             ("lug'at fayli keshlanmasa tutilsin", neg_decisions_dictionary_not_cached),

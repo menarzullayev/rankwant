@@ -1,8 +1,8 @@
 import type { Route } from "next";
-import Link from "next/link";
 
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/Button";
+import { IntentLink } from "@/components/ui/IntentLink";
 import { Card, StatCard } from "@/components/ui/Card";
 import { TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
 import { UpdateKindBadge } from "@/components/UpdateKindBadge";
@@ -118,15 +118,19 @@ export default async function Home() {
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           {resume ? (
-            <ButtonLink href={{ pathname: `/problems/${resume.slug}` }}>
+            <ButtonLink intent href={{ pathname: `/problems/${resume.slug}` }}>
               Davom etish · {resume.title}
             </ButtonLink>
           ) : (
-            <ButtonLink href={me ? "/problems" : ("/login?tab=register" as Route)}>
+            <ButtonLink
+              intent
+              href={me ? "/problems" : ("/login?tab=register" as Route)}
+            >
               {me ? t(locale, "nav.problems") : t(locale, "home.start")}
             </ButtonLink>
           )}
           <ButtonLink
+            intent
             href={resume ? "/problems" : "/contests"}
             variant="outline"
           >
@@ -167,19 +171,19 @@ export default async function Home() {
         <Card
           title={t(locale, "home.upcoming")}
           action={
-            <Link
+            <IntentLink
               href="/contests"
               className="text-theme-sm rw-accent-ink hover:underline"
             >
               {t(locale, "home.all")}
-            </Link>
+            </IntentLink>
           }
           bodyClassName="p-0"
         >
           <ul className="divide-y rw-divide">
             {soon.map((c) => (
               <li key={c.slug}>
-                <Link
+                <IntentLink
                   href={`/contests/${c.slug}`}
                   className="flex items-center gap-3 px-5 py-4 transition rw-hover-bg"
                 >
@@ -200,7 +204,7 @@ export default async function Home() {
                   {c.is_rated && (
                     <Badge color="brand">{t(locale, "contests.rated")}</Badge>
                   )}
-                </Link>
+                </IntentLink>
               </li>
             ))}
             {soon.length === 0 && (
@@ -214,12 +218,12 @@ export default async function Home() {
         <Card
           title={t(locale, "home.topUsers")}
           action={
-            <Link
+            <IntentLink
               href="/leaderboard"
               className="text-theme-sm rw-accent-ink hover:underline"
             >
               {t(locale, "home.all")}
-            </Link>
+            </IntentLink>
           }
           bodyClassName="p-0"
         >
@@ -234,12 +238,12 @@ export default async function Home() {
                 <TR key={u.username}>
                   <TD className="rw-faint">{i + 1}</TD>
                   <TD>
-                    <Link
+                    <IntentLink
                       href={`/users/${u.username}`}
                       className="font-medium rw-strong rw-link-hover"
                     >
                       {u.display_name || u.username}
-                    </Link>
+                    </IntentLink>
                   </TD>
                   <TD align="right" className="font-semibold rw-strong">
                     {u.rating_skills}
@@ -254,12 +258,12 @@ export default async function Home() {
       <Card
         title={t(locale, "home.whereToStart")}
         action={
-          <Link
+          <IntentLink
             href="/learn"
             className="text-theme-sm rw-accent-ink hover:underline"
           >
             {t(locale, "home.all")}
-          </Link>
+          </IntentLink>
         }
       >
         <div className="grid gap-4 md:grid-cols-3">
@@ -275,7 +279,7 @@ export default async function Home() {
             </div>
           ))}
           {articles.results.slice(0, 1).map((a) => (
-            <Link
+            <IntentLink
               key={a.slug}
               href={`/learn/${a.slug}`}
               className="rw-radius border rw-line p-4 transition rw-hover-line"
@@ -289,7 +293,7 @@ export default async function Home() {
                   {a.reading_minutes} {t(locale, "learn.minutes")}
                 </Badge>
               </div>
-            </Link>
+            </IntentLink>
           ))}
         </div>
       </Card>
@@ -299,12 +303,12 @@ export default async function Home() {
         <p className="text-theme-sm rw-dim">
           Har bir reytingning formulasi ochiq va har o&apos;zgarishning sababi
           yozib boriladi.{" "}
-          <Link
+          <IntentLink
             href="/rating"
             className="font-medium rw-accent-ink hover:underline"
           >
             {t(locale, "nav.ratingInfo")}
-          </Link>
+          </IntentLink>
         </p>
       </Card>
 
@@ -316,19 +320,19 @@ export default async function Home() {
             <Card
               title={t(locale, "update.home")}
               action={
-                <Link
+                <IntentLink
                   href={"/updates" as Route}
                   className="text-theme-sm rw-accent-ink hover:underline"
                 >
                   {t(locale, "home.all")}
-                </Link>
+                </IntentLink>
               }
               bodyClassName="p-0"
             >
               <ul className="divide-y rw-divide">
                 {updates.map((u) => (
                   <li key={u.id}>
-                    <Link
+                    <IntentLink
                       href={`/updates/${u.id}`}
                       className="block px-5 py-4 transition rw-hover-bg"
                     >
@@ -341,7 +345,7 @@ export default async function Home() {
                       <span className="mt-2 block font-medium rw-strong">
                         {u.title}
                       </span>
-                    </Link>
+                    </IntentLink>
                   </li>
                 ))}
               </ul>
@@ -352,19 +356,19 @@ export default async function Home() {
             <Card
               title={t(locale, "home.announcements")}
               action={
-                <Link
+                <IntentLink
                   href="/blog"
                   className="text-theme-sm rw-accent-ink hover:underline"
                 >
                   {t(locale, "home.all")}
-                </Link>
+                </IntentLink>
               }
               bodyClassName="p-0"
             >
               <ul className="divide-y rw-divide">
                 {posts.map((post) => (
                   <li key={post.slug}>
-                    <Link
+                    <IntentLink
                       href={`/blog/${post.slug}`}
                       className="block px-5 py-4 transition rw-hover-bg"
                     >
@@ -374,7 +378,7 @@ export default async function Home() {
                       <span className="mt-0.5 block text-theme-xs rw-faint">
                         {date(post.published_at, locale)}
                       </span>
-                    </Link>
+                    </IntentLink>
                   </li>
                 ))}
               </ul>

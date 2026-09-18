@@ -44,6 +44,8 @@ NAV_CHROME = (
     "apps/web/src/layout/UserMenu.tsx",
 )
 INTENT_LINK = "apps/web/src/components/ui/IntentLink.tsx"
+# Homepage <main> content links: same intent rule, this page only (2026-09-18).
+HOME_MAIN = "apps/web/src/app/page.tsx"
 # The dictionary travels as a cached file, not inside the page (2026-09-18).
 DICTIONARY_ROUTE = "apps/web/src/app/i18n/[file]/route.ts"
 
@@ -214,6 +216,27 @@ def nav_prefetch_on_intent() -> str | None:
     return None
 
 
+def home_main_prefetch_on_intent() -> str | None:
+    """Homepage <main> links prefetch on hover, focus or touch only.
+
+    At 1000 visits/s, on-sight prefetch of the in-view content links (7 RSC)
+    closed connections (EOF). Chrome is already on intent; this page's
+    `<main>` was not. A plain `next/link` import would bring the storm back.
+    """
+    src = read(HOME_MAIN)
+    if re.search(r'from\s+"next/link"', src):
+        return (
+            f"{HOME_MAIN}: `next/link` to'g'ridan-to'g'ri — "
+            "bosh sahifa `<main>` `IntentLink` orqali bo'lsin"
+        )
+    if "IntentLink" not in src:
+        return f"{HOME_MAIN}: `IntentLink` import yo'q"
+    for block in re.finditer(r"<ButtonLink\b([^>]*)>", src):
+        if not re.search(r"\bintent\b", block.group(1)):
+            return f"{HOME_MAIN}: `ButtonLink` `intent` siz — hero ham niyatda prefetch qilsin"
+    return None
+
+
 def dictionary_as_cached_file() -> str | None:
     """The browser gets the dictionary as a separate cached file.
 
@@ -295,6 +318,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("deploy faqat yashil main'dan", deploy_gated_on_green_main),
     ("qidiruv ochiq, AI kraulerlar yopiq", search_open_ai_crawlers_blocked),
     ("navigatsiya prefetch'i niyatda", nav_prefetch_on_intent),
+    ("bosh sahifa <main> prefetch'i niyatda", home_main_prefetch_on_intent),
     ("lug'at alohida faylda", dictionary_as_cached_file),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
