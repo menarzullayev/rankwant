@@ -71,6 +71,9 @@ STAT_CARD = "apps/web/src/components/ui/Card.tsx"
 # (the 300 px sidebar eats the width), so it steps at `xl`, not `lg`. Owner
 # decision 2026-09-18.
 PROFILE_LAYOUT = "apps/web/src/app/users/[username]/layout.tsx"
+# Filter badge: the difficulty range is one filter even though it rides in two
+# params, so the badge counts it once. Owner decision 2026-09-18.
+FILTERS = "apps/web/src/components/ProblemFilters.tsx"
 
 
 class Unreadable(Exception):
@@ -622,6 +625,53 @@ def profile_kpi_grid_steps_at_xl() -> str | None:
     return None
 
 
+def difficulty_range_counts_as_one_filter() -> str | None:
+    """The filter badge counts the difficulty range as ONE filter.
+
+    Measured 2026-09-18 in the CI smoke run: a single "Qiyin" chip writes
+    `difficulty__gte=1800` AND `difficulty__lte=2199` (#90 moved the chips to
+    the Codeforces-style range), while `activeCount` counted `PANEL_KEYS`
+    entries — so the badge read "Filtrlar2" for one choice. The E2E spec pinned
+    "1" and had been red on `main` since #90, which in turn kept the deploy
+    gate shut, so #93/#96/#98 never reached the live site.
+
+    `level` is the pre-#90 spelling and is still honoured on read, so all three
+    keys must collapse into the same single filter.
+    """
+    source = read(FILTERS)
+    declared = re.search(r"const DIFFICULTY_KEYS[^=]*=\s*\[([^\]]*)\]", source)
+    if declared is None:
+        return (
+            f"{FILTERS}: `DIFFICULTY_KEYS` topilmadi — diapazon yana kalit bo'yicha "
+            "sanaladi va bitta chip «2 filtr» bo'lib ko'rinadi"
+        )
+    keys = re.findall(r'"([^"]+)"', declared.group(1))
+    missing = [k for k in ("level", "difficulty__gte", "difficulty__lte") if k not in keys]
+    if missing:
+        return (
+            f"{FILTERS}: `DIFFICULTY_KEYS` da {', '.join(missing)} yo'q — "
+            "diapazonning uchala shakli bitta filtr bo'lishi kerak"
+        )
+
+    counted = re.search(r"const activeCount =([^;]*);", source, re.S)
+    if counted is None:
+        return f"{FILTERS}: `activeCount` topilmadi"
+    body = counted.group(1)
+    if "DIFFICULTY_KEYS" not in body:
+        return (
+            f"{FILTERS}: `activeCount` `DIFFICULTY_KEYS` ni ishlatmaydi — "
+            "bitta chip yana «2 filtr» bo'lib ko'rinadi"
+        )
+    if re.search(
+        r"PANEL_KEYS\.filter\(\s*\(key\) => params\.get\(key\),?\s*\)\.length", body
+    ):
+        return (
+            f"{FILTERS}: `activeCount` yana xom kalitlarni sanaydi — diapazonning "
+            "ikki yarmi ikkita filtr bo'lib chiqadi"
+        )
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -639,6 +689,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("mobil panel foydalanishga yaroqli", mobile_drawer_is_accessible),
     ("KPI to'ri lg da 4 ustun", kpi_grid_steps_at_lg),
     ("profil KPI to'ri xl da 4 ustun", profile_kpi_grid_steps_at_xl),
+    ("diapazon bitta filtr", difficulty_range_counts_as_one_filter),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),

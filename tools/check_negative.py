@@ -2528,6 +2528,10 @@ def _decisions_sandbox(extra_workflows: dict[str, str]) -> tuple[int, str]:
         # narrow because of the 300 px sidebar, so it cannot copy the home
         # page's `lg`. Missing here, `check_decisions.py` exits 2.
         "apps/web/src/app/users/[username]/layout.tsx",
+        # Difficulty range counts as one filter (2026-09-18): the badge reads
+        # this file. Missing here, `check_decisions.py` exits 2 rather than
+        # testing the rule.
+        "apps/web/src/components/ProblemFilters.tsx",
     )
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
@@ -2708,6 +2712,64 @@ def neg_decisions_profile_kpi_value_step_lost() -> tuple[bool, str]:
         _PROFILE_STEP,
         "",
         _PROFILE_RULE,
+    )
+
+
+# ── The difficulty range counts as ONE filter (owner decision 2026-09-18) ──
+
+_DIFFICULTY_RULE = "diapazon bitta filtr"
+_FILTERS = "apps/web/src/components/ProblemFilters.tsx"
+_DIFFICULTY_DECL = (
+    "const DIFFICULTY_KEYS: readonly string[] = [\n"
+    '  "level",\n'
+    '  "difficulty__gte",\n'
+    '  "difficulty__lte",\n'
+    "];"
+)
+_DIFFICULTY_COUNT = (
+    "  const activeCount =\n"
+    "    PANEL_KEYS.filter(\n"
+    "      (key) => !DIFFICULTY_KEYS.includes(key) && params.get(key),\n"
+    "    ).length + (DIFFICULTY_KEYS.some((key) => params.get(key)) ? 1 : 0);"
+)
+_NAIVE_COUNT = (
+    "  const activeCount = PANEL_KEYS.filter((key) => params.get(key)).length;"
+)
+
+
+def neg_decisions_difficulty_keys_declaration_removed() -> tuple[bool, str]:
+    # Without the constant there is nothing left to collapse the two range
+    # params with, so the rule has to stop rather than pass by default.
+    return _decision_broken(_FILTERS, _DIFFICULTY_DECL, "", _DIFFICULTY_RULE)
+
+
+def neg_decisions_difficulty_keys_missing_level() -> tuple[bool, str]:
+    # Drop the pre-#90 spelling: an old `?level=hard` link would narrow the
+    # list while the badge claimed zero filters.
+    return _decision_broken(
+        _FILTERS,
+        _DIFFICULTY_DECL,
+        _DIFFICULTY_DECL.replace('  "level",\n', ""),
+        _DIFFICULTY_RULE,
+    )
+
+
+def neg_decisions_difficulty_count_ignores_keys() -> tuple[bool, str]:
+    # The regression that actually shipped: count `PANEL_KEYS` entries again,
+    # so one "Qiyin" chip reads "Filtrlar2" and the E2E spec goes red.
+    return _decision_broken(
+        _FILTERS, _DIFFICULTY_COUNT, _NAIVE_COUNT, _DIFFICULTY_RULE
+    )
+
+
+def neg_decisions_difficulty_predicate_reverted() -> tuple[bool, str]:
+    # The constant stays but the predicate stops using it — the range is
+    # counted twice again while the rule's first two clauses still pass.
+    return _decision_broken(
+        _FILTERS,
+        "      (key) => !DIFFICULTY_KEYS.includes(key) && params.get(key),\n",
+        "      (key) => params.get(key),\n",
+        _DIFFICULTY_RULE,
     )
 
 
@@ -3951,6 +4013,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("profil to'ri bosh sahifa `lg` ini ko'chirsa tutilsin", neg_decisions_profile_kpi_copies_home_lg),
             ("profil to'ri `2xl` da qolsa tutilsin", neg_decisions_profile_kpi_stuck_at_2xl),
             ("profil raqami pog'onasi yo'qolsa tutilsin", neg_decisions_profile_kpi_value_step_lost),
+            ("diapazon kalitlari doimiysi o'chirilsa tutilsin", neg_decisions_difficulty_keys_declaration_removed),
+            ("diapazon doimiysidan `level` tushib qolsa tutilsin", neg_decisions_difficulty_keys_missing_level),
+            ("diapazon yana kalit bo'yicha sanalsa tutilsin", neg_decisions_difficulty_count_ignores_keys),
+            ("diapazon predikati doimiyni tashlasa tutilsin", neg_decisions_difficulty_predicate_reverted),
         ],
     ),
     (

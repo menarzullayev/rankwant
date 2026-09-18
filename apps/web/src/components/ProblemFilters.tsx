@@ -74,6 +74,16 @@ const PANEL_KEYS = [
   "statement_locale",
 ] as const;
 
+/** The three URL shapes that all mean the same thing: "which difficulty".
+ *  `PANEL_KEYS` counts one filter per param, but a preset chip writes BOTH
+ *  range bounds, so the badge read "Filtrlar2" for a single "Qiyin" chip.
+ *  `level` is the pre-#90 spelling, still honoured on read. */
+const DIFFICULTY_KEYS: readonly string[] = [
+  "level",
+  "difficulty__gte",
+  "difficulty__lte",
+];
+
 /** Mavzu query kalitlari — URL'ga ketadi, tarjima qilinmaydi.
  *  Konstantada saqlanadi: `check_hardcoded.py` ternary ichidagi
  *  literalni qattiq yozilgan matn deb o'qiydi. */
@@ -220,7 +230,13 @@ export function ProblemFilters({
             ? "solved=false"
             : "";
 
-  const activeCount = PANEL_KEYS.filter((key) => params.get(key)).length;
+  // Difficulty is ONE filter, not one per param: a preset chip writes both
+  // bounds, manual entry may write only one, and an old `?level=` link carries
+  // the same choice in a third shape. The rest still count one per key.
+  const activeCount =
+    PANEL_KEYS.filter(
+      (key) => !DIFFICULTY_KEYS.includes(key) && params.get(key),
+    ).length + (DIFFICULTY_KEYS.some((key) => params.get(key)) ? 1 : 0);
   const sort = params.get("ordering") ?? "difficulty";
 
   const chip =
