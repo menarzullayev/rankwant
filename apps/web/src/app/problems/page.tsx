@@ -14,7 +14,7 @@ import {
   Table,
 } from "@/components/ui/Table";
 import { getLocale } from "@/i18n/server";
-import { fill, t, topicName } from "@/i18n/messages";
+import { fill, t, topicNameInfo } from "@/i18n/messages";
 import { Icon } from "@/components/ui/Icon";
 import { ArchiveSidebar } from "@/components/ArchiveSidebar";
 import { ProblemFilters } from "@/components/ProblemFilters";
@@ -201,11 +201,17 @@ export default async function ProblemsPage({ searchParams }: Props) {
       <ProblemFilters
         signedIn={me !== null}
         locales={stats.statement_locales}
-        topics={topics.results.map((topic) => ({
-          slug: topic.slug,
-          label: topicName(topic, locale),
-          parent: topic.parent,
-        }))}
+        topics={topics.results.map((topic) => {
+          // `topicNameInfo` qaytishni OSHKOR qiladi: filtr chipi `uz`
+          // belgisini shundan chizadi (qaror 10).
+          const info = topicNameInfo(topic, locale);
+          return {
+            slug: topic.slug,
+            label: info.text,
+            parent: topic.parent,
+            fallback: info.locale === null,
+          };
+        })}
       />
 
       {/* Ustun shabloni MOBILDA HAM ko'rsatiladi: `grid-cols` siz element

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1599 strings.**
+**1600 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -956,6 +956,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `locale.group.broad` | Keng qamrov | Keń qamtıw |  |
 | `locale.loading` | Yuklanmoqda | Júklenbekte |  |
 | `locale.listLabel` | Tillar ro'yxati | Tiller dizimi |  |
+| `locale.contentUz` | nomlar uz | atamalar uz |  |
 | `content.uzOnly` | Bu nom o'zbekcha — tarjimasi tayyorlanmoqda | Bul atama ózbek tilinde — awdarması tayarlanbaqta |  |
 | `problem.tab.statement` | Tavsif | Táriyip |  |
 | `problem.tab.status` | Urinishlar | Jiberiwler |  |

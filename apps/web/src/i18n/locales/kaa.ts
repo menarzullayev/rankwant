@@ -948,6 +948,7 @@ export const kaa: Record<MessageKey, string> = {
   "locale.group.broad": "Keń qamtıw",
   "locale.loading": "Júklenbekte",
   "locale.listLabel": "Tiller dizimi",
+  "locale.contentUz": "atamalar uz",
   "content.uzOnly": "Bul atama ózbek tilinde — awdarması tayarlanbaqta",
 
   // ---- Problem page: sections, actions, samples ----

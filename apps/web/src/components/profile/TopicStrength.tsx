@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/Card";
-import { UzFallbackBadge } from "@/components/ui/UzFallbackBadge";
-import { fill, localName, localNameInfo, t, type Locale } from "@/i18n/messages";
+import { ContentName } from "@/components/ui/UzFallbackBadge";
+import { fill, t, type Locale } from "@/i18n/messages";
 import type { TopicStrength as Topic } from "@/lib/api";
 import { SectionHint } from "./SectionHint";
 
@@ -19,10 +19,7 @@ export function TopicStrength({ topics, locale }: { topics: Topic[]; locale: Loc
             <li key={topic.slug}>
               <div className="flex items-baseline justify-between gap-2 text-theme-sm">
                 <span className="min-w-0 truncate rw-strong">
-                  {localName(topic, locale)}
-                  {localNameInfo(topic, locale).locale === null && (
-                    <UzFallbackBadge locale={locale} />
-                  )}
+                  <ContentName row={topic} locale={locale} />
                 </span>
                 <span className="shrink-0 tabular-nums rw-faint">
                   {topic.rating} · {topic.solved}/{topic.total}

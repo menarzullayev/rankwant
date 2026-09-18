@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1599 strings.**
+**1600 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -956,6 +956,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `locale.group.broad` | Keng qamrov | Фароҳи васеъ |  |
 | `locale.loading` | Yuklanmoqda | Боргирӣ |  |
 | `locale.listLabel` | Tillar ro'yxati | Рӯйхати забонҳо |  |
+| `locale.contentUz` | nomlar uz | номҳо uz |  |
 | `content.uzOnly` | Bu nom o'zbekcha — tarjimasi tayyorlanmoqda | Ин ном ба забони ӯзбекӣ аст — тарҷума омода мешавад |  |
 | `problem.tab.statement` | Tavsif | Шарт |  |
 | `problem.tab.status` | Urinishlar | Фиристодаҳо |  |

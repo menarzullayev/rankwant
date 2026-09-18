@@ -948,6 +948,7 @@ export const ru: Record<MessageKey, string> = {
   "locale.group.broad": "Широкий охват",
   "locale.loading": "Загрузка",
   "locale.listLabel": "Список языков",
+  "locale.contentUz": "названия uz",
   "content.uzOnly": "Это название на узбекском — перевод готовится",
 
   // ---- Problem page: sections, actions, samples ----
