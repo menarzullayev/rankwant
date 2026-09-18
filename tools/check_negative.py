@@ -2456,6 +2456,18 @@ def neg_decisions_dictionary_through_proxy() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_dictionary_cache_unsynced() -> tuple[bool, str]:
+    # The promise cache outliving the eviction: returning to a language that was
+    # already visited then injects no <script>, the registry stays empty and the
+    # page renders raw keys (measured 2026-09-19 — 38 of them).
+    return _decision_broken(
+        "apps/web/src/i18n/LocaleProvider.tsx",
+        "useEffect(() => keepOnly(locale), [locale]);",
+        "useEffect(() => evictOtherLocales(locale), [locale]);",
+        "lug'at qaytishda saqlanadi",
+    )
+
+
 def neg_decisions_deploy_lock_removed() -> tuple[bool, str]:
     return _decision_broken(
         "tools/deploy.sh",
@@ -4061,6 +4073,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("lug'at prop'ga qaytsa tutilsin", neg_decisions_dictionary_prop),
             ("lug'at fayli keshlanmasa tutilsin", neg_decisions_dictionary_not_cached),
             ("lug'at middleware'dan o'tsa tutilsin", neg_decisions_dictionary_through_proxy),
+            (
+                "qaytib o'sha tilga o'tilsa lug'at yo'qolsa tutilsin",
+                neg_decisions_dictionary_cache_unsynced,
+            ),
             ("User'dan tenglik ustuni o'chsa tutilsin", neg_decisions_dormant_user_field_removed),
             ("sinov label'i self-test'da o'tadi", neg_decisions_trial_label_selftest_allowed),
             ("sinov label'i boshqa workflow'da tutilsin", neg_decisions_trial_label_scoped),

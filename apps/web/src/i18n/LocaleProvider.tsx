@@ -11,28 +11,65 @@ const LocaleContext = createContext<Locale>(DEFAULT_LOCALE);
  *  ya'ni qaysi holatdaligini faqat shu bayroq bildiradi. */
 const AutoContext = createContext<boolean>(true);
 
-/** Dictionary files being loaded, by URL: each loads once. */
-const loading = new Map<string, Promise<void>>();
-
-/** Loads a dictionary file. The promise settles even when the file fails:
+/** Injects one dictionary file. The promise settles even when the file fails:
  *  the page then shows keys, which beats an error screen. */
+function inject(locale: Locale, url: string): Promise<void> {
+  return new Promise<void>((resolve) => {
+    const script = document.createElement("script");
+    script.src = url;
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => {
+      console.error(`i18n: the "${locale}" dictionary failed to load from ${url}`);
+      resolve();
+    };
+    document.head.appendChild(script);
+  });
+}
+
+/** Dictionary files being loaded, by LOCALE — not by URL.
+ *
+ *  ⚠️ The key is the locale, and an entry is dropped the moment its dictionary
+ *  is evicted (`keepOnly`). Keyed by URL and never cleared, this cache
+ *  contradicted `evictOtherLocales`: the registry lost the dictionary while the
+ *  promise stayed resolved, so returning to a language already visited injected
+ *  no `<script>`, the registry stayed empty and the page rendered raw keys.
+ *  Measured 2026-09-19 on the live stack, with a real mouse and keyboard:
+ *  `ru` → `zh` → `es` → back to `zh` left 38 raw keys on screen
+ *  (`nav.problems`, `locale.switchLabel`, …) and stayed broken until a reload.
+ *
+ *  Re-injecting is cheap: the file is served `immutable` for a year, so the
+ *  second request is a cache hit. */
+const loading = new Map<Locale, { url: string; promise: Promise<void> }>();
+
+/** Loads a dictionary, once per locale and URL. */
 function loadDictionary(locale: Locale, url: string): Promise<void> {
-  let promise = loading.get(url);
-  if (!promise) {
-    promise = new Promise<void>((resolve) => {
-      const script = document.createElement("script");
-      script.src = url;
-      script.async = true;
-      script.onload = () => resolve();
-      script.onerror = () => {
-        console.error(`i18n: the "${locale}" dictionary failed to load from ${url}`);
-        resolve();
-      };
-      document.head.appendChild(script);
-    });
-    loading.set(url, promise);
-  }
+  const cached = loading.get(locale);
+  if (cached && cached.url === url) return cached.promise;
+
+  const promise = inject(locale, url).then(async () => {
+    // A stale `immutable` file can load and register nothing. Refetching once
+    // under a new address is the cheap guard; it cannot loop.
+    if (typeof window !== "undefined" && !hasMessages(locale)) {
+      console.error(`i18n: the "${locale}" dictionary loaded but registered nothing — refetching`);
+      await inject(locale, `${url}&retry=1`);
+    }
+  });
+
+  loading.set(locale, { url, promise });
   return promise;
+}
+
+/** Keeps only `keep` in memory — the registry AND the promise cache together.
+ *
+ *  They must move in step: `evictOtherLocales` drops a dictionary from the
+ *  registry, so the promise cache has to drop it too, or the next visit to that
+ *  language has nothing left to inject. */
+function keepOnly(keep: Locale): void {
+  for (const locale of [...loading.keys()]) {
+    if (locale !== keep) loading.delete(locale);
+  }
+  evictOtherLocales(keep);
 }
 
 /** Mijoz komponentlari `cookies()` ni o'qiy olmaydi — til yuqoridan beriladi.
@@ -60,7 +97,7 @@ export function LocaleProvider({
   if (typeof window !== "undefined" && !hasMessages(locale)) {
     use(loadDictionary(locale, dictionaryUrl));
   }
-  useEffect(() => evictOtherLocales(locale), [locale]);
+  useEffect(() => keepOnly(locale), [locale]);
   return (
     <AutoContext.Provider value={auto}>
       <LocaleContext.Provider value={locale}>{children}</LocaleContext.Provider>

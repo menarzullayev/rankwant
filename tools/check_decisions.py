@@ -55,6 +55,9 @@ DICTIONARY_ROUTE = "apps/web/src/app/i18n/[file]/route.ts"
 # The header must fit the narrowest supported screen — 320 px, the width the
 # auth tabs were measured against. Owner decision 2026-09-18.
 LOCALE_SWITCH = "apps/web/src/layout/LocaleSwitch.tsx"
+# The dictionary registry and the load-promise cache are two caches over one
+# thing; they must be dropped together. Owner decision 2026-09-19.
+LOCALE_PROVIDER = "apps/web/src/i18n/LocaleProvider.tsx"
 SIGN_IN_LINK = "apps/web/src/layout/UserMenu.tsx"
 # Mobile navigation drawer: the trigger announces its state, the panel is a
 # named dialog while it is open, focus moves in and comes back, Esc closes it
@@ -301,6 +304,43 @@ def dictionary_as_cached_file() -> str | None:
         return f"{DICTIONARY_ROUTE}: lug'at fayli statik va `immutable` keshlanadigan emas"
     if not re.search(r"matcher:.*\|i18n/", read("apps/web/src/proxy.ts")):
         return "apps/web/src/proxy.ts: `/i18n/` middleware'dan chiqarilmagan — `Vary` keshni bo'ladi"
+    return None
+
+
+def dictionary_survives_return() -> str | None:
+    """Returning to a language must re-inject its dictionary.
+
+    The registry and the load-promise cache are two caches over one thing.
+    Keyed by URL and never cleared, the promise cache outlived the eviction, so
+    a second visit to a language injected no `<script>` and the page rendered
+    raw keys — measured 2026-09-19 on the live stack with a real mouse and
+    keyboard: `ru` -> `zh` -> `es` -> back to `zh` left 38 raw keys on screen
+    (`nav.problems`, `locale.switchLabel`, ...) until a full reload. They have
+    to be dropped together, which is what `keepOnly` exists for.
+    """
+    provider = read(LOCALE_PROVIDER)
+    if "useEffect(() => keepOnly(locale), [locale])" not in provider:
+        return (
+            f"{LOCALE_PROVIDER}: til almashinuvi `keepOnly` ni chaqirmaydi — "
+            "registr va yuklash va'dasi keshining tozalanishi ajralib qolgan, "
+            "ya'ni qaytib o'sha tilga o'tilganda sahifa xom kalit ko'rsatadi"
+        )
+    keep = re.search(r"function keepOnly\(keep: Locale\): void \{(.*?)\n\}", provider, re.S)
+    if keep is None:
+        return f"{LOCALE_PROVIDER}: `keepOnly` topilmadi"
+    body = keep.group(1)
+    if "loading.delete(" not in body:
+        return (
+            f"{LOCALE_PROVIDER}: `keepOnly` yuklash va'dasi keshini tozalamaydi — "
+            "evict qilingan tilning va'dasi qolib ketadi va lug'at qayta kiritilmaydi"
+        )
+    if "evictOtherLocales(keep)" not in body:
+        return f"{LOCALE_PROVIDER}: `keepOnly` registrni tozalamaydi"
+    if not re.search(r"new Map<Locale, \{ url: string; promise: Promise<void> \}>", provider):
+        return (
+            f"{LOCALE_PROVIDER}: yuklash keshining kaliti til emas — URL bo'yicha "
+            "kalitlangan kesh eviction bilan mos kelmaydi"
+        )
     return None
 
 
@@ -755,6 +795,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("navigatsiya prefetch'i niyatda", nav_prefetch_on_intent),
     ("bosh sahifa <main> prefetch'i niyatda", home_main_prefetch_on_intent),
     ("lug'at alohida faylda", dictionary_as_cached_file),
+    ("lug'at qaytishda saqlanadi", dictionary_survives_return),
     ("User modeli tenglik maydonlari", user_parity_fields_kept),
     ("header 320 px ga sig'adi", mobile_header_fits_narrow_screen),
     ("mobil panel foydalanishga yaroqli", mobile_drawer_is_accessible),
