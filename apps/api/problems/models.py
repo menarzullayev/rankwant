@@ -254,6 +254,21 @@ class Problem(models.Model):
         return f"{self.slug} ({self.difficulty})"
 
     def save(self, *args: Any, **kwargs: Any) -> None:
+        # `User.solved_count` counts public problems only (ADR-0024), so a
+        # change of visibility moves this problem's solvers up or down by one.
+        update_fields = kwargs.get("update_fields")
+        was_public = None
+        if self.pk is not None and (update_fields is None or "is_public" in update_fields):
+            was_public = (
+                type(self).objects.filter(pk=self.pk).values_list("is_public", flat=True).first()
+            )
+        self._save_with_code(*args, **kwargs)
+        if was_public is not None and was_public != self.is_public:
+            from ratings.services import on_problem_visibility_changed
+
+            on_problem_visibility_changed(self.pk, self.is_public)
+
+    def _save_with_code(self, *args: Any, **kwargs: Any) -> None:
         self.title_search = normalize_search(self.title)
         # Raqam e'lon qilinganda beriladi — barcha yo'llarda (admin, staff
         # API, seed) bir xil ishlashi uchun `save()` da. Yagona indeks

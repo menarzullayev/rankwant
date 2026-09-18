@@ -79,6 +79,27 @@ class TestStoredCounters:
         on_accept_revoked(second)
         assert fresh(user).solved_count == 0
 
+    def test_solved_count_counts_public_problems_only(
+        self, user: User, problem: Problem, language: Language
+    ) -> None:
+        # The profile's solved figures count public problems; so does the column.
+        Problem.objects.filter(pk=problem.pk).update(is_public=False)
+        problem.refresh_from_db()
+        accepted(user, problem, language)
+        assert fresh(user).solved_count == 0, "a hidden problem does not count yet"
+
+        problem.is_public = True
+        problem.save(update_fields=["title"])  # visibility not saved
+        assert fresh(user).solved_count == 0
+
+        problem.save()
+        assert fresh(user).solved_count == 1, "publishing counts it"
+
+        problem.is_public = False
+        problem.save()
+        assert fresh(user).solved_count == 0, "hiding it takes it back"
+        assert user_stats.reconcile(fix=False) == []
+
     def test_solved_count_never_goes_below_zero(
         self, user: User, problem: Problem, language: Language
     ) -> None:

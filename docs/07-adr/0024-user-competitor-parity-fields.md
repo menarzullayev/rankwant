@@ -32,7 +32,10 @@ attributes the three sites have, 17 were open:
    - `last_seen_at` in `core.sessions.record`, with the session row;
    - `max_rating_*` in every writer of `RatingHistory`, including the batch contest path;
    - `streak_max` in `qvant.streak.touch`;
-   - `solved_count` when `UserSolvedProblem` is created or removed by a rejudge.
+   - `solved_count` when `UserSolvedProblem` is created or removed by a rejudge,
+     and when a problem is published or hidden. It counts public problems only, the
+     same rule as the profile's solved figures: a contest problem that is not public
+     yet must not show up in a public count.
 
    `core.user_stats` derives the same values from the source tables. `max_rating_*` and
    `solved_count` must equal their source. `streak_max` and `last_seen_at` may only run

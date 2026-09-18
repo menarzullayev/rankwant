@@ -159,7 +159,8 @@ class User(AbstractUser):
     max_rating_challenges = models.IntegerField(null=True, blank=True)
     #: Longest streak reached; `streak_count` is the current one.
     streak_max = models.PositiveIntegerField(default=0)
-    #: Rows in `UserSolvedProblem`.
+    #: Solved public problems: the figure the profile shows. A solved problem
+    #: that is not public yet (a contest's, say) counts once it is published.
     solved_count = models.PositiveIntegerField(default=0, db_index=True)
 
     class ShirtSize(models.TextChoices):
