@@ -39,6 +39,7 @@ from __future__ import annotations
 import contextlib
 import gzip
 import http.server
+import io
 import json
 import os
 import re
@@ -4104,8 +4105,93 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
 ]
 
 
+def _parse_argv(argv: list[str]) -> tuple[int, str | None]:
+    jobs = int(os.environ.get("NEGATIVE_JOBS") or "1")
+    only: str | None = None
+    rest = argv[1:]
+    i = 0
+    while i < len(rest):
+        arg = rest[i]
+        if arg == "--jobs" and i + 1 < len(rest):
+            jobs = int(rest[i + 1])
+            i += 2
+            continue
+        if arg == "--serial":
+            jobs = 1
+            i += 1
+            continue
+        if not arg.startswith("-"):
+            only = arg
+            i += 1
+            continue
+        i += 1
+    return max(1, jobs), only
+
+
+def _extract_copy(dest: Path, raw: bytes) -> None:
+    import tarfile
+
+    with tarfile.open(fileobj=io.BytesIO(raw), mode="r:") as archive:
+        archive.extractall(dest, filter="data")
+    node_modules = ROOT / "apps/web/node_modules"
+    link = dest / "apps/web/node_modules"
+    if node_modules.is_dir() and not link.exists():
+        link.symlink_to(node_modules, target_is_directory=True)
+
+
+def _run_groups_in_copy(groups: list[str], raw: bytes) -> tuple[int, str]:
+    tmp = Path(tempfile.mkdtemp(prefix="neg-"))
+    try:
+        _extract_copy(tmp, raw)
+        script = tmp / "tools/check_negative.py"
+        chunks: list[str] = []
+        code = 0
+        for group in groups:
+            proc = subprocess.run(
+                [PY, str(script), "--serial", group],
+                cwd=tmp,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+            )
+            chunks.append(proc.stdout or "")
+            if proc.stderr:
+                chunks.append(proc.stderr)
+            if proc.returncode != 0:
+                code = proc.returncode
+        return code, "".join(chunks)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def _main_parallel(jobs: int) -> int:
+    names = [name for name, _ in CASES]
+    workers = min(jobs, len(names))
+    buckets: list[list[str]] = [[] for _ in range(workers)]
+    for i, name in enumerate(names):
+        buckets[i % workers].append(name)
+    raw = subprocess.check_output(["git", "archive", "--format=tar", "HEAD"], cwd=ROOT)
+    from concurrent.futures import ThreadPoolExecutor
+
+    print(f"Salbiy testlar: {workers} parallel nusxa")
+    failures = 0
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        futures = [pool.submit(_run_groups_in_copy, groups, raw) for groups in buckets]
+        for fut in futures:
+            code, out = fut.result()
+            sys.stdout.write(out)
+            if not out.endswith("\n"):
+                sys.stdout.write("\n")
+            if code != 0:
+                failures = code
+    return failures
+
+
 def main(argv: list[str]) -> int:
-    only = argv[1] if len(argv) > 1 else None
+    jobs, only = _parse_argv(argv)
+    if jobs > 1 and only is None:
+        return _main_parallel(jobs)
     failures: list[str] = []
     total = 0
 

@@ -466,14 +466,33 @@ def _workflow_triggers(rel: str) -> set[str]:
     return {m.group(1) for line in block if (m := re.match(r"^  ([a-z_]+):", line))}
 
 
+def _workflow_job(src: str, job: str) -> str:
+    lines = src.splitlines()
+    out: list[str] = []
+    in_job = False
+    for ln in lines:
+        if re.match(r"^  \w[\w-]*:\s*$", ln):
+            if in_job:
+                break
+            in_job = ln.strip().rstrip(":") == job
+            continue
+        if in_job:
+            out.append(ln)
+    return "\n".join(out)
+
+
 def pr_skips_heavy_ci() -> str | None:
     # 2026-09-18: CI+Security on every PR doubled the single-runner queue.
     # Smoke on a PR held the runner for a full compose build.
+    # Language matrix and bake-off used to sit inside smoke; they are
+    # sibling jobs now and must stay off PRs too.
     triggers = _workflow_triggers(".github/workflows/security.yml")
     if "pull_request" in triggers:
         return "security.yml PR'da ham yuguradi — qaror: Security faqat main + cron"
-    if "github.event_name != 'pull_request'" not in read(".github/workflows/ci.yml"):
-        return "ci.yml smoke PR'da ham yuguradi"
+    ci = read(".github/workflows/ci.yml")
+    for job in ("smoke", "language_matrix", "bakeoff"):
+        if "github.event_name != 'pull_request'" not in _workflow_job(ci, job):
+            return f"ci.yml {job} PR'da ham yuguradi"
     compose = read("tools/runner/docker-compose.runner.yml")
     if "rankwant-ci-runner-2" not in compose or "rankwant-ci-work-2" not in compose:
         return "ikkinchi runner alohida volume'siz — /work ni bo'lishish checkout'ni buzadi"
