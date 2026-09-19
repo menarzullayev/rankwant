@@ -56,6 +56,7 @@ class UserPublicSerializer(serializers.ModelSerializer[User]):
         if "title_photo" in (user.hidden_fields or []):
             return ""
         return user.title_photo_url or ""
+
     #: Mamlakat — bayroq uchun (ISO 3166-1 alpha-2). `SerializerMethodField`
     #: ATAYIN: reyting jadvali ommaviy, ya'ni `hidden_fields` ni hisobga
     #: olish shart — `profiles/public.py` dagi bilan bir xil qoida.

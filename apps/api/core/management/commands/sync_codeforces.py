@@ -203,9 +203,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--batch", type=int, default=5000, help="Yozish batch hajmi (default 5000)"
         )
-        parser.add_argument(
-            "--limit", type=int, default=0, help="Faqat N ta yozuv (sinov uchun)"
-        )
+        parser.add_argument("--limit", type=int, default=0, help="Faqat N ta yozuv (sinov uchun)")
         parser.add_argument(
             "--skip-long",
             action="store_true",
@@ -229,9 +227,7 @@ class Command(BaseCommand):
             raise CommandError("Amalni tanlang: --check | --fetch | --dry-run | --apply")
 
         if not COUNTRY_MAP:
-            self.stderr.write(
-                "  ⚠️  `core.country_map` topilmadi — davlat kodlari `''` bo'ladi"
-            )
+            self.stderr.write("  ⚠️  `core.country_map` topilmadi — davlat kodlari `''` bo'ladi")
 
         rep = Report()
 
@@ -411,9 +407,9 @@ class Command(BaseCommand):
 
         existing = {
             u.username.casefold(): u
-            for u in User.objects.filter(
-                username__in=[r["username"] for r in records]
-            ).only("id", "username", *self.UPDATE_FIELDS)
+            for u in User.objects.filter(username__in=[r["username"] for r in records]).only(
+                "id", "username", *self.UPDATE_FIELDS
+            )
         }
         self.stdout.write(f"  Bazada mavjud: {len(existing):,}")
 
