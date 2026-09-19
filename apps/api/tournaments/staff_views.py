@@ -10,6 +10,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from core.openapi_docs import crud_summaries
+from core.permissions import StaffOps
 from core.staff import StaffViewSet
 from tournaments import services
 from tournaments.models import Tournament
@@ -22,6 +23,9 @@ from tournaments.staff_serializers import StaffTournamentSerializer
     extra={"rebuild": "Yakuniy jadvalni qayta hisoblash"},
 )
 class StaffTournamentViewSet(StaffViewSet):
+    # StaffOps — ADR-0025 guruh bo'linishi.
+    permission_classes = [StaffOps]
+
     queryset = Tournament.objects.prefetch_related("stages__contest")
     serializer_class = StaffTournamentSerializer
     lookup_field = "slug"

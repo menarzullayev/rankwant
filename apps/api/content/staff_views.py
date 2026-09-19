@@ -14,11 +14,15 @@ from rest_framework.serializers import BaseSerializer
 from content.models import Article, Roadmap
 from content.staff_serializers import StaffArticleSerializer, StaffRoadmapSerializer
 from core.openapi_docs import crud_summaries
+from core.permissions import StaffContent
 from core.staff import StaffViewSet
 
 
 @crud_summaries(one="maqola", many="maqolalar")
 class StaffArticleViewSet(StaffViewSet):
+    # StaffContent — ADR-0025 guruh bo'linishi.
+    permission_classes = [StaffContent]
+
     serializer_class = StaffArticleSerializer
     lookup_field = "slug"
     search_fields = ["slug", "title", "summary"]
@@ -37,6 +41,9 @@ class StaffArticleViewSet(StaffViewSet):
 
 @crud_summaries(one="o'quv yo'l xaritasi", many="o'quv yo'l xaritalari")
 class StaffRoadmapViewSet(StaffViewSet):
+    # StaffContent — ADR-0025 guruh bo'linishi.
+    permission_classes = [StaffContent]
+
     serializer_class = StaffRoadmapSerializer
     lookup_field = "slug"
     search_fields = ["slug", "title"]
