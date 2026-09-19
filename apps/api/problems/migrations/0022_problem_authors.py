@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("problems", "0020_judge_languages_group3"),
+        ("problems", "0021_problem_public_diff"),
         ("core", "0020_user_competitor_parity"),
     ]
 

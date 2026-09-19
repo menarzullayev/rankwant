@@ -41,7 +41,12 @@ class Contest(TimeWindowMixin, models.Model):
     #: Organizatorlar (ADR-0025): o'z kontestini draft qilib yaratadi va
     #: tahrirlaydi (`is_public=False`); nashr — staff-ops. Bir foydalanuvchi
     #: bir vaqtda bir necha kontestga ega bo'lishi mumkin — shuning uchun M2M.
-    organizers = models.ManyToManyField("core.User", blank=True, related_name="organized_contests")
+    organizers = models.ManyToManyField(
+        "core.User",
+        blank=True,
+        related_name="organized_contests",
+        help_text="O'z kontestini draft qilib yaratadi/tahrirlaydi; nashr — staff-ops (ADR-0025)",
+    )
 
     # ── Hacking (ADR-0020) ───────────────────────────────────────────
     #: `contest_room` siyosati: raund davomida xona ichida hack.
