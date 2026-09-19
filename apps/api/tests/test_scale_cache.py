@@ -8,7 +8,8 @@ from rest_framework.test import APIClient
 
 
 def test_providers_bir_marta_hisoblanadi(monkeypatch, db) -> None:
-    from core.views import AuthProvidersView, oauth
+    from core import oauth
+    from core.views import AuthProvidersView
 
     cache.delete(AuthProvidersView.CACHE_KEY)
     calls = {"n": 0}
@@ -60,14 +61,14 @@ def test_cache_delete_yengil() -> None:
 
 
 def test_kesh_yengil_fail_open(monkeypatch) -> None:
-    from core import cache as mod
+    from core.cache import cache_delete, cache_get, cache_set
 
     def boom(*_a: object, **_k: object) -> None:
         raise RuntimeError("down")
 
-    monkeypatch.setattr(mod.cache, "get", boom)
-    monkeypatch.setattr(mod.cache, "set", boom)
-    monkeypatch.setattr(mod.cache, "delete", boom)
-    assert mod.cache_get("x", default="yoq") == "yoq"
-    mod.cache_set("x", 1)
-    mod.cache_delete("x")
+    monkeypatch.setattr(cache, "get", boom)
+    monkeypatch.setattr(cache, "set", boom)
+    monkeypatch.setattr(cache, "delete", boom)
+    assert cache_get("x", default="yoq") == "yoq"
+    cache_set("x", 1)
+    cache_delete("x")

@@ -2994,6 +2994,13 @@ _DECISIONS_SANDBOX_FILES = (
     # copy cannot be read and `check_decisions.py` fails with exit 2.
     "apps/web/src/lib/home-cache.ts",
     "services/maintenance-worker/wrangler.toml",
+    # 50k locked decisions (2026-09-19): SloView, cache_delete, compose.
+    "apps/api/core/views.py",
+    "apps/api/core/cache.py",
+    "apps/api/requirements.lock",
+    "docker-compose.yml",
+    "docker-compose.replicas.yml",
+    "compose/four-host/README.md",
     # Automatic deploy (2026-09-19): the rule reads the watcher and the
     # rollback path, and `tools/deploy.sh` is already listed above. Missing
     # here, `check_decisions.py` exits 2 instead of testing the rule.

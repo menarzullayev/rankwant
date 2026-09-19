@@ -13,6 +13,10 @@ import sys
 import urllib.error
 import urllib.request
 
+import _console
+
+_console.force_utf8()
+
 BASE = os.environ.get("SLO_BASE", "http://127.0.0.1:8301")
 HOST = os.environ.get("SLO_HOST", "rankwant.uz")
 
