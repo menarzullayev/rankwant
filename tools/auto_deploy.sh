@@ -39,6 +39,12 @@
 # ⚠️ Skript deploy WORKTREE'sidan yurgiziladi, asosiy checkout'dan EMAS:
 # asosiy checkout'da agentlarning commit qilinmagan tahriri bo'ladi va deploy
 # uni jimgina build qilib jonli chiqarardi.
+#
+# ⚠️ `.env.public` worktree'da YO'Q — u `.gitignore` da (`.env.*`). Shuning
+# uchun env-fayl alohida ko'rsatiladi (`RANKWANT_AUTO_DEPLOY_ENV`), standart
+# qiymat esa `$LIVE_DIR/.env.public`. Nusxa ko'chirilmaydi: maxfiy fayl
+# BITTA joyda qoladi (asosiy checkout), aks holda ikki nusxa vaqt o'tib
+# ajralib ketardi.
 
 set -uo pipefail
 
@@ -49,6 +55,9 @@ G=$'\033[32m'; R=$'\033[31m'; Y=$'\033[33m'; N=$'\033[0m'
 PROJECT=rankwant
 # Jonli stack turgan asosiy checkout — env-fayl o'sha yerda qoladi.
 LIVE_DIR="${RANKWANT_LIVE_DIR:-C:/Users/nsn/project/cp/rankwant}"
+# Env-fayl: deploy worktree'da `.env.public` bo'lmagani uchun alohida
+# ko'rsatiladi. Standart — `$LIVE_DIR/.env.public` (asosiy checkout).
+ENV_FILE="${RANKWANT_AUTO_DEPLOY_ENV:-$LIVE_DIR/.env.public}"
 # Holat fayli: oxirgi urinish (qayta urinish to'sig'i shundan hisoblanadi).
 STATE="${RANKWANT_AUTO_DEPLOY_STATE:-$HOME/.rankwant-auto-deploy-state}"
 BACKOFF="${RANKWANT_AUTO_DEPLOY_BACKOFF:-1800}"
@@ -59,7 +68,7 @@ for arg in "$@"; do
   case "$arg" in
     --dry-run) DRY_RUN=1 ;;
     --status) STATUS_ONLY=1 ;;
-    -h|--help) sed -n '2,42p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) sed -n '2,48p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) printf '%sNoma'"'"'lum argument: %s%s\n' "$R" "$arg" "$N"; exit 2 ;;
   esac
 done
@@ -112,7 +121,9 @@ if [ "$STATUS_ONLY" -eq 1 ]; then
   printf 'origin/main   : %s\n' "$(git rev-parse origin/main 2>/dev/null || echo '?')"
   if live="$(live_sha)"; then printf 'jonli (web)   : %s\n' "$live"; else printf 'jonli (web)   : O‘QILMADI\n'; fi
   printf 'holat fayli   : %s\n' "$(last_attempt || echo "yo'q")"
-  printf 'env-fayl      : %s\n' "$LIVE_DIR/.env.public"
+  printf 'env-fayl      : %s\n' "$ENV_FILE"
+  if [ -f "$ENV_FILE" ]; then env_state=ha; else env_state="yo'q"; fi
+  printf 'env mavjudmi  : %s\n' "$env_state"
   exit 0
 fi
 
@@ -181,8 +192,7 @@ if ! git merge --ff-only --quiet origin/main 2>/dev/null; then
 fi
 
 # ── 7. Env-fayl ──────────────────────────────────────────────────────
-ENV_FILE="$LIVE_DIR/.env.public"
-[ -f "$ENV_FILE" ] || die "env-fayl topilmadi: $ENV_FILE (RANKWANT_LIVE_DIR ni tekshiring)"
+[ -f "$ENV_FILE" ] || die "env-fayl topilmadi: $ENV_FILE (RANKWANT_AUTO_DEPLOY_ENV / RANKWANT_LIVE_DIR ni tekshiring)"
 
 if [ "$DRY_RUN" -eq 1 ]; then
   log "dry-run: deploy qilinardi (target ${TARGET:0:7}, env $ENV_FILE)"

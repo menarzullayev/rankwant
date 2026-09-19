@@ -186,8 +186,18 @@ qulf → DEPLOY_FREEZE → git fetch origin main → worktree'ni --ff-only
 ⚠️ **Deploy alohida worktree'dan** yuriladi (`C:/Users/nsn/project/wt/deploy`),
 asosiy checkout'dan **emas**: u yerda agentlarning commit qilinmagan tahriri
 bo'ladi va deploy uni jimgina build qilib jonli chiqarardi. Env-fayl asosiy
-checkout'da qoladi va `RANKWANT_ENV_FILE` orqali uzatiladi — **nusxa
-ko'chirilmaydi** (ikkinchi nusxa jimgina ajralib ketadi).
+checkout'da qoladi — **nusxa ko'chirilmaydi** (ikkinchi nusxa jimgina ajralib
+ketadi), ikki bosqichda uzatiladi:
+
+| Bosqich | O'zgaruvchi | Nima beriladi |
+|---|---|---|
+| Watcher → `deploy.sh` | `RANKWANT_AUTO_DEPLOY_ENV` | env-faylning **absolyut** yo'li (standart `$LIVE_DIR/.env.public`) |
+| `deploy.sh` → `backup.sh` | `RANKWANT_ENV_FILE` | `deploy.sh` o'zi `$ENV_ABS` ga aylantirib uzatadi |
+
+⚠️ `.env.public` worktree'da **bo'lmaydi** — u `.gitignore` da (`.env.*`).
+Shu sabab `RANKWANT_AUTO_DEPLOY_ENV` shart: usiz watcher `die` qiladi
+(«env-fayl topilmadi»). Tekshirish: `bash tools/auto_deploy.sh --status`
+`env-fayl` va `env mavjudmi` qatorlarini chiqaradi.
 
 ⚠️ **Drift JONLI holatdan aniqlanadi**, worktree `HEAD` dan emas: merge bo'lib
 deploy yiqilgan bo'lsa worktree allaqachon `origin/main` da bo'ladi, ya'ni
