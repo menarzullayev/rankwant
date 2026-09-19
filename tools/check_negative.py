@@ -2667,6 +2667,20 @@ def neg_decisions_check_deploy_stdin_dependent() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_check_deploy_locale_sort() -> tuple[bool, str]:
+    """Inventory `sort` locale'siz qolsa tutilsin.
+
+    Git Bash va Alpine collate farq qiladi; `comm` yolg'on missing
+    chiqaradi (o'lchandi 2026-09-20: `__init__.py` bor, 3 servis qizil).
+    """
+    return _decision_broken(
+        "tools/check_deploy.sh",
+        "| LC_ALL=C sort )",
+        "| sort )",
+        "avtomatik deploy xavfsiz",
+    )
+
+
 def neg_decisions_signin_label_wraps() -> tuple[bool, str]:
     """Kirish yorlig'i o'raladigan bo'lsa tutilsin.
 
@@ -4732,6 +4746,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "check_deploy xeshi stdin'ga tayansa tutilsin",
                 neg_decisions_check_deploy_stdin_dependent,
+            ),
+            (
+                "inventory sort locale'siz qolsa tutilsin",
+                neg_decisions_check_deploy_locale_sort,
             ),
             ("deploy darvozasi uzilsa tutilsin", neg_decisions_deploy_gate_unwired),
             ("deploy qulfi olib tashlansa tutilsin", neg_decisions_deploy_lock_removed),
