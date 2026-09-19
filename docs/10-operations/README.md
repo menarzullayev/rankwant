@@ -719,27 +719,27 @@ CI, Security va Nightly **GitHub-hosted** da ishlaydi (`runs-on: ubuntu-latest`)
 Public repo da standard runner daqiqasi $0; 3 agent PR i bir-birini shu
 noutbukda siqmaydi. `deploy.yml` va `runner-selftest.yml` self-hosted
 qoladi — deploy jonli Docker stack'iga tegadi, public `pull_request` esa
-noutbukda yugurmasligi kerak. PR'da Security va smoke yo'q. Runner
+noutbukda yugurmasligi kerak. PR'da Security yo'q. Runner
 o'rnatish — [tools/runner/README.md](../../tools/runner/README.md).
 
 CI testlari toza `ubuntu-latest` VM da — «menda ishlayapti» sinfi
-kamayadi. Smoke/nightly ham hosted; `docker-compose.ci.yml` dagi
+kamayadi. Nightly (smoke/E2E/pytest) ham hosted; `docker-compose.ci.yml` dagi
 `name: rankwant-ci` saqlanadi (hosted VM da jonli preview yo'q).
 Deploy self-hosted da qoladi va jonli stack'ga tegadi.
 
-Hosted VM qatlam keshi yo'qoladi, shuning uchun smoke/nightly
+Hosted VM qatlam keshi yo'qoladi, shuning uchun Nightly
 `tools/ci_stack.sh` orqali `ghcr.io/<repo>/ci-{api,web,judge}:main`
 dan `--cache-from` qiladi va faqat `main` ga yozadi. pip/npm/mypy/
-Next kesh — Actions cache (10 GB). API pytest ikki shard. PR da
-`--cov` yo'q. Docker `type=gha` kesh ishlatilmaydi — judge obrazi
+Next kesh — Actions cache (10 GB). API pytest Nightly `coverage` da.
+Docker `type=gha` kesh ishlatilmaydi — judge obrazi
 pip/npm ni siqib chiqaradi.
 
 ### Push'dan oldingi darvoza
 
 `.githooks/pre-push` (repo bilan versiyalanadi, `core.hooksPath` orqali
 yoqiladi) push'dan oldin faqat tez darvozalarni yuritadi: `push_guard`,
-API `ruff`/`format`, web i18n va hardcoded. mypy, pytest, tsc va 153
-salbiy test CI da qoladi — hook ularni takrorlasa Windows'da ~5.8 daqiqa
+API `ruff`/`format`, web i18n va hardcoded. mypy, tsc va salbiy testlar
+CI da; pytest — Nightly. Hook ularni takrorlasa Windows'da ~5.8 daqiqa
 ketardi (2026-09-18). Chetlab o'tish: `git push --no-verify`.
 
 Yangi klonda yoqish:

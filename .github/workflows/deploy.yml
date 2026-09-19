@@ -5,7 +5,8 @@ name: Deploy
 # Chain: build → test → deploy. Each stage `needs` the previous one,
 # so a failed test means deploy NEVER starts.
 #
-# `ci.yml` already runs lint/mypy/pytest/smoke on PR and main push.
+# `ci.yml` already runs lint/mypy/OpenAPI on PR and main push.
+# Heavy stack tests (pytest, smoke, E2E) live on Nightly.
 # This workflow does NOT rewrite those checks — it calls them with
 # `workflow_call`, which makes a passing test run a hard requirement
 # for deploy. There is no second copy: the rules change in one place.
@@ -16,8 +17,8 @@ name: Deploy
 # job always skipped. On the single self-hosted runner (GitHub's free minutes
 # are used up) that doubled the queue behind each merge, and queued PR jobs
 # were cancelled with "The job was not acquired by Runner of type self-hosted
-# even after multiple attempts". `ci.yml` already tests every push to main,
-# and its smoke job builds the same images.
+# even after multiple attempts". `ci.yml` already tests every push to main
+# (lint/types; stack tests are Nightly).
 on:
   workflow_dispatch:
     inputs:
@@ -52,8 +53,6 @@ permissions:
   # does not grant it, GitHub does not start the run at all —
   # `startup_failure`, 0 jobs. It MUST be granted here.
   pull-requests: read
-  # `ci.yml` smoke pushes GHCR cache images; the caller must grant write.
-  packages: write
 
 env:
   # The self-hosted runner runs as user `nsn` and also sees
@@ -137,9 +136,9 @@ jobs:
 
   # ── 2. TEST ──────────────────────────────────────────────────────────
   # REUSE `ci.yml`. Inside: ruff, mypy (strict), migration check,
-  # pytest (+ coverage), OpenAPI diff, smoke and E2E — against the
-  # compose stack. No `fail-fast`: every job finishes, otherwise only
-  # the first failure is visible and the rest stay hidden.
+  # OpenAPI diff. Smoke, E2E, and pytest live on Nightly. No `fail-fast`:
+  # every job finishes, otherwise only the first failure is visible and
+  # the rest stay hidden.
   test:
     name: Test — CI suite
     needs: build

@@ -2702,8 +2702,8 @@ def neg_decisions_security_on_pr() -> tuple[bool, str]:
 def neg_decisions_smoke_on_pr() -> tuple[bool, str]:
     return _decision_broken(
         ".github/workflows/ci.yml",
-        "&& github.event_name != 'pull_request' }}",
-        "}}",
+        "  integrity:\n",
+        "  smoke:\n    runs-on: ubuntu-latest\n    steps:\n      - run: 'true'\n  integrity:\n",
         "PR'da og'ir CI yo'q",
     )
 
@@ -3805,24 +3805,26 @@ def neg_icons_pack_missing_key() -> tuple[bool, str]:
 
 
 def neg_ci_disk_cleanup_removed() -> tuple[bool, str]:
-    """CI tozalash qadami olib tashlansa — tutilsinmi?
+    """Nightly load cleanup olib tashlansa — tutilsinmi?
 
     ⚠️ Bu 2026-09-16 dagi 58 GB muammoning o'zi: `docker compose down -v`
     konteynerni olib tashlaydi, lekin qurilgan obrazlarni QOLDIRADI. Natija
     420 ta `rw-smoke-*` yig'ilib, C: da 9.59 GB qolgandi. Tozalash qadami
     olib tashlansa, birorta test qizil bo'lmaydi — muammo haftalar ichida
     asta qaytadi. Faqat shu tekshiruv uni darhol ushlaydi.
+
+    2026-09-20: CI smoke job yo'q; Nightly load birinchi `Clean images`.
     """
-    path = ROOT / ".github/workflows/ci.yml"
+    path = ROOT / ".github/workflows/nightly.yml"
     src = path.read_bytes().decode("utf-8")
     # Butun qadamni olib tashlash kerak, faqat sarlavhani emas: `run:`
     # qismi qolsa `docker rmi` matni ham qoladi va tekshiruv uni hali ham
     # «bor» deb o'qiydi. Birinchi urinish aynan shunday yolg'on yashil
     # bergan edi.
     start = src.index("      - name: Clean images")
-    end = src.index("      - name:", start + 10) if "      - name:" in src[start + 10 :] else len(src)
+    end = src.index("|| true\n", start) + len("|| true\n")
     old = src[start:end]
-    if not old.strip():
+    if "docker rmi" not in old:
         return False, "ci_disk/tozalash: langar topilmadi"
     with Mutation(path, old, ""):
         return expect_fail("ci_disk", "CI obrazlarni tozalamaydi")

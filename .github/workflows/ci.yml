@@ -19,10 +19,6 @@ on:
         description: "Run every job (ignore path filters)"
         type: boolean
         default: true
-      coverage:
-        description: "API pytest --cov (also on Nightly; not on push/PR)"
-        type: boolean
-        default: false
 
 # The self-hosted runner runs as user `nsn` on the development machine
 # and can see Python packages in `~/.local/lib/.../site-packages`.
@@ -48,9 +44,6 @@ permissions:
   # this it fails with "Resource not accessible by integration" and the
   # whole CI stops here.
   pull-requests: read
-  # Smoke/nightly push `ci-*` images to GHCR so the next hosted VM can
-  # `--cache-from` them. PRs do not run smoke; fork tokens cannot write.
-  packages: write
 
 jobs:
   # Filter is ONLY path outputs. Docs/contract checks used to sit in this
@@ -87,18 +80,13 @@ jobs:
             tools: ['tools/**', '.githooks/**']
 
   api:
-    name: API — lint, types, tests
+    name: API — lint, types, migrations
     needs: filter
     if: ${{ needs.filter.outputs.api == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
-    # Hosted 4 vCPU: one job timed out at 5 min (pytest still running at
-    # 242 s). Two shards cut the wall; 8 min still stops a CELERY hang
-    # (14 min 54 s without `CELERY_EAGER`) without cancelling a green run.
-    timeout-minutes: 8
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: [0, 1]
+    # pytest (~2 min, two shards) moved to Nightly `coverage`. This job
+    # is ruff / mypy / OpenAPI / makemigrations only.
+    timeout-minutes: 3
     services:
       postgres:
         image: postgres:16
@@ -111,12 +99,6 @@ jobs:
         # GitHub picks the host port: on the self-hosted runner 5432 is
         # already taken by the live preview stack.
         ports: ['5432']
-      redis:
-        image: redis:7
-        options: >-
-          --health-cmd "redis-cli ping" --health-interval 10s
-          --health-timeout 5s --health-retries 5
-        ports: ['6379']
     steps:
       - uses: actions/checkout@v7
       - name: Scaffolded?
@@ -138,14 +120,14 @@ jobs:
         run: pip install -r requirements-dev.lock
         working-directory: apps/api
       - name: Ruff
-        if: ${{ steps.check.outputs.ready == 'true' && matrix.shard == 0 }}
+        if: steps.check.outputs.ready == 'true'
         run: ruff check . && ruff format --check .
         working-directory: apps/api
       # Was a sibling job: on two runners it stole a slot for pip+diff
       # (~15 s) while another PR's Web waited (2026-09-18). pip is
       # already installed here.
       - name: OpenAPI schema diff
-        if: ${{ steps.check.outputs.ready == 'true' && matrix.shard == 0 }}
+        if: steps.check.outputs.ready == 'true'
         run: |
           python manage.py spectacular --file /tmp/schema.yml
           diff -u openapi/schema.yml /tmp/schema.yml || {
@@ -155,14 +137,14 @@ jobs:
           }
         working-directory: apps/api
       - uses: actions/cache@v4
-        if: ${{ steps.check.outputs.ready == 'true' && matrix.shard == 0 }}
+        if: steps.check.outputs.ready == 'true'
         with:
           path: apps/api/.mypy_cache
           key: mypy-${{ runner.os }}-py3.12-${{ hashFiles('apps/api/requirements-dev.lock') }}-${{ hashFiles('apps/api/**/*.py') }}
           restore-keys: |
             mypy-${{ runner.os }}-py3.12-${{ hashFiles('apps/api/requirements-dev.lock') }}-
       - name: mypy (strict)
-        if: ${{ steps.check.outputs.ready == 'true' && matrix.shard == 0 }}
+        if: steps.check.outputs.ready == 'true'
         # `--show-traceback`: on 2026-09-12 this step failed with
         # `INTERNAL ERROR — Error constructing plugin instance of
         # NewSemanalDjangoPlugin`, but the one-line message hid the
@@ -194,38 +176,10 @@ jobs:
           fi
 
       - name: Migrations fully written
-        if: ${{ steps.check.outputs.ready == 'true' && matrix.shard == 0 }}
-        env:
-          DATABASE_URL: postgres://postgres:postgres@${{ steps.svc.outputs.host }}:${{ job.services.postgres.ports['5432'] }}/rankwant_test
-        run: python manage.py makemigrations --check --dry-run
-        working-directory: apps/api
-      - name: pytest
         if: steps.check.outputs.ready == 'true'
         env:
           DATABASE_URL: postgres://postgres:postgres@${{ steps.svc.outputs.host }}:${{ job.services.postgres.ports['5432'] }}/rankwant_test
-          REDIS_URL: redis://${{ steps.svc.outputs.host }}:${{ job.services.redis.ports['6379'] }}/0
-          # `CELERY_EAGER=1` — tasks run synchronously, broker skipped.
-          # That does NOT mean the Redis SERVICE is unused: `CACHES` and
-          # throttle still use Redis. The reason is DETERMINISM: through
-          # the broker a task is queued and the test does not wait, so
-          # the result depends on scheduling order. Local measurement:
-          # 14m54s → 1m57s.
-          CELERY_EAGER: '1'
-          PYTEST_SHARDS: '2'
-          PYTEST_SHARD: ${{ matrix.shard }}
-        # Public `ubuntu-latest` is 4 vCPU. `-n 6` was fastest on the
-        # 8-CPU laptop runner; on 4 cores it oversubscribes.
-        # `--cov` is Nightly + optional dispatch only. On `main` push it
-        # added ~40 s to shard 0 (741 tests, 407 warnings) without
-        # changing the smoke wall.
-        run: |
-          if [ "${{ matrix.shard }}" != "0" ]; then
-            pytest -n 4
-          elif [ "${{ github.event_name }}" = "schedule" ] || [ "${{ github.event.inputs.coverage }}" = "true" ]; then
-            pytest -n 4 --cov --cov-report=term-missing
-          else
-            pytest -n 4
-          fi
+        run: python manage.py makemigrations --check --dry-run
         working-directory: apps/api
 
   # ⚠️ Besides building web, this job also runs the CHECK SUITE
@@ -399,182 +353,3 @@ jobs:
       - name: .env.example completeness (variables read by code and compose)
         run: python3 tools/check_env_example.py
 
-  smoke:
-    name: Smoke and E2E — full stack
-    runs-on: ubuntu-latest
-    # ⚠️ 20 minutes — a DELIBERATE exception. This job BUILDS the full
-    # compose stack (api+web+judge images), loads demo data, runs smoke,
-    # and runs Playwright E2E. At 3 minutes it was simply `cancelled`
-    # (run 34902927949) — a guaranteed red. Each step also has its own
-    # limit so a slow stage is visible.
-    timeout-minutes: 20
-    needs: filter
-    # Not on PR (2026-09-18): smoke spends ~2 minutes building the stack
-    # and holds the queue. Main push, `workflow_dispatch`, and deploy
-    # `workflow_call` keep the full path. The `!= pull_request` line is
-    # a decision — removing it fails `tools/check_decisions.py`.
-    if: >-
-      ${{ (needs.filter.outputs.code == 'true' || github.event_name == 'workflow_dispatch')
-          && github.event_name != 'pull_request' }}
-    # Compose project is PER JOB. With a second runner, two jobs sharing
-    # a stack name would take each other's containers down with `down -v`.
-    env:
-      COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      # Push after a green run (not during Stack): first hosted smoke
-      # never had a `:main` tag, so every dispatch rebuilt nsjail.
-      # Forks cannot write GHCR; smoke already skips `pull_request`.
-      CI_PUSH_IMAGE_CACHE: ${{ github.event.repository.fork && '0' || '1' }}
-    steps:
-      - uses: actions/checkout@v7
-      - name: Stack
-        timeout-minutes: 12
-        run: bash tools/ci_stack.sh
-      - name: Demo data
-        timeout-minutes: 3
-        # Web healthcheck hits `/` before seed. Next Data Cache then keeps
-        # empty `/roadmaps/` for 300s, so the archive sidebar heading never
-        # appears (`browse.spec.ts` «O'quv rejalari»). Restart drops that cache.
-        run: |
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api python manage.py seed_demo
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml restart web
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait web
-      - name: Smoke
-        timeout-minutes: 5
-        # Critical path: submit → Redis → judge → verdict. This is the
-        # only step that runs API and judge TOGETHER — when they are
-        # tested separately, a contract mismatch stays hidden.
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm smoke
-      - uses: actions/setup-node@v7
-        with:
-          node-version: '22'
-          cache: npm
-          cache-dependency-path: tests/e2e/package-lock.json
-      - name: E2E deps
-        run: npm ci
-        working-directory: tests/e2e
-      - name: E2E (chromium only — full matrix is nightly)
-        timeout-minutes: 10
-        # `HOST_REPO_ROOT` — the bind-mount source is resolved on the
-        # DAEMON side, NOT by the runner process. If the runner is
-        # inside a container, `$PWD` (e.g. /home/runner/_work/...) is
-        # a path the daemon does not have, so the mount comes up EMPTY.
-        #
-        # Measured (2026-09-17): Windows path (`C:/Users/...`) -> OK,
-        # Linux-style path -> empty directory inside the VM.
-        #
-        # The variable is set ONLY on the container runner. On a WSL
-        # runner it is empty and `${VAR:-$PWD}` keeps current behavior.
-        #
-        # `npm ci` runs on the VM (cached) and the tree is bind-mounted
-        # into the Playwright image — browsers stay in the image.
-        # Image comes from GHCR after the first mirror push (MCR on miss).
-        run: bash tools/ci_playwright.sh -- npx playwright test --project=chromium --reporter=list
-      - name: Logs (on failure)
-        if: failure()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs --tail 60
-      - name: Tear down
-        if: always()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
-      - name: Push image cache
-        if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
-        run: bash tools/ci_stack.sh --push-only
-      # ⚠️ `down -v` removes containers and volumes, but LEAVES THE
-      # BUILT IMAGES — that was the hole.
-      #
-      # Measured 2026-09-16: 420 `rw-smoke-*` + 122 `rankwant-build-*`
-      # piled up and filled the runner's WSL disk (58 GB) — C: had
-      # 9.59 GB left and the machine slowed down.
-      #
-      # Two things are removed:
-      #   1. images this run built (`${COMPOSE_PROJECT_NAME}-*`)
-      #   2. leftovers from broken/half-finished runs, `rw-*` older
-      #      than 6 hours
-      #
-      # Base images (postgres, redis, minio, playwright) are NOT
-      # touched: they are reused every run; deleting them re-pulls.
-      - name: Clean images
-        if: always()
-        run: |
-          set -u
-          echo "--> images from this run (${COMPOSE_PROJECT_NAME}-*)"
-          docker images --format '{{.Repository}}:{{.Tag}}' \
-            | grep -E "^${COMPOSE_PROJECT_NAME}-" \
-            | xargs -r docker rmi -f || true
-          echo "--> leftovers older than 6 hours (rw-*, rankwant-build-*)"
-          docker images --format '{{.ID}}|{{.CreatedSince}}|{{.Repository}}' \
-            | awk -F'|' '$3 ~ /^rw-/ && $2 ~ /hours|days|weeks|months/ {print $1}' \
-            | sort -u | xargs -r docker rmi -f || true
-          echo "--> build cache (older than 7 days)"
-          # ⚠️ COMPROMISE: Docker does not split the build cache BY
-          # PROJECT — `docker builder prune` hits the whole engine.
-          # On one engine (2026-09-17 decision) that means the live
-          # stack's cache is a candidate too.
-          #
-          # 24 hours -> 7 days: the live deploy cache is usually
-          # reused within a week, so in practice it is left alone;
-          # CI leftovers stay bounded. This is NOT a complete fix —
-          # the right fix is a daemon-level cache-size cap. Open.
-          docker builder prune -f --filter 'until=168h' || true
-
-  # Parallel to smoke: GHCR judge (pull+tag when context matches).
-  # Was +50 s sequential inside smoke after the stack was already up.
-  language_matrix:
-    name: Language matrix
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    needs: filter
-    if: >-
-      ${{ (needs.filter.outputs.code == 'true' || github.event_name == 'workflow_dispatch')
-          && github.event_name != 'pull_request' }}
-    env:
-      COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      CI_PUSH_IMAGE_CACHE: '0'
-      CI_STACK_SERVICES: judge
-      CI_STACK_UP: '0'
-    steps:
-      - uses: actions/checkout@v7
-      - name: Judge image
-        run: bash tools/ci_stack.sh
-      - name: Declared versions match the image
-        run: python3 tests/compatibility/check_languages.py "${COMPOSE_PROJECT_NAME}-judge"
-      - name: Clean images
-        if: always()
-        run: docker image rm "${COMPOSE_PROJECT_NAME}-judge" || true
-
-  bakeoff:
-    name: Bake-off — validator cases
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    needs: filter
-    if: >-
-      ${{ (needs.filter.outputs.code == 'true' || github.event_name == 'workflow_dispatch')
-          && github.event_name != 'pull_request' }}
-    env:
-      COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      CI_PUSH_IMAGE_CACHE: '0'
-      CI_STACK_SERVICES: api,judge
-      CI_STACK_UP_SERVICES: redis judge
-    steps:
-      - uses: actions/checkout@v7
-      - name: Judge and API images
-        timeout-minutes: 10
-        run: bash tools/ci_stack.sh
-      - name: Bake-off — validator cases (real nsjail)
-        timeout-minutes: 3
-        # ADR-0020: a bad input is rejected BEFORE a submission runs.
-        # Full suite (21 cases), measured 2026-09-16 — all in 11.2 s.
-        run: |
-          C="docker compose -f docker-compose.yml -f docker-compose.ci.yml"
-          $C --profile bakeoff run --rm bakeoff
-      - name: Tear down
-        if: always()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
-      - name: Clean images
-        if: always()
-        run: |
-          docker images --format '{{.Repository}}:{{.Tag}}' \
-            | grep -E "^${COMPOSE_PROJECT_NAME}-" \
-            | xargs -r docker rmi -f || true
