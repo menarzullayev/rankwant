@@ -145,7 +145,7 @@ class SchoolAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
 
 @admin.register(SiteAppearance)
 class SiteAppearanceAdmin(admin.ModelAdmin):
-    """Standart ko'rinish — bitta qator (D37).
+    """Default appearance — bitta qator (D37).
 
     `appearance` — `ui_prefs.appearance` bilan AYNI shakl:
     `{"style": "clay", "accent": {"hue": 215, "sat": 75}, "font": null,

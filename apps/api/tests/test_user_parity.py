@@ -247,10 +247,12 @@ class TestApi:
         me = kirgan(user).get(reverse("me")).data
         public = APIClient().get(reverse("user-detail", args=[user.username])).data
 
-        dormant = {"plan", "postal_address", "device_fingerprint", "coach_can_view_attempts"}
+        dormant = {"plan", "device_fingerprint", "coach_can_view_attempts"}
         assert not dormant & set(me)
         assert not dormant & set(public)
         assert "shirt_size" not in public, "owner-only, like phone"
+        assert "postal_address" in me
+        assert "postal_address" not in public
 
 
 class TestProblemsetPrefs:

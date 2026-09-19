@@ -122,7 +122,7 @@ class ContestViewSet(viewsets.ReadOnlyModelViewSet[Contest]):
                 {
                     "error": {
                         "code": "contest_finished",
-                        "message": "Musobaqa tugagan",
+                        "message": "The contest has finished",
                         "details": {},
                     }
                 },

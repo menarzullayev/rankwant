@@ -76,7 +76,7 @@ def credit(
     Qaytaradi: yozilgan tranzaksiya, yoki hech narsa berilmagan bo'lsa None.
     """
     if amount <= 0:
-        raise ValueError("credit musbat miqdor talab qiladi")
+        raise ValueError("credit requires a positive amount")
 
     # Qulf AVVAL olinadi. Ilgari shift qulfdan oldin hisoblanardi va bir
     # vaqtda kelgan mukofotlar bir-birini ko'rmasdi: o'lchandi — 100
@@ -113,7 +113,7 @@ def debit(
     ikki marta yechib, manfiyga tushirishi mumkin edi.
     """
     if amount <= 0:
-        raise ValueError("debit musbat miqdor talab qiladi")
+        raise ValueError("debit requires a positive amount")
 
     wallet = QvantWallet.objects.select_for_update().get_or_create(user=user)[0]
     if wallet.balance < amount:

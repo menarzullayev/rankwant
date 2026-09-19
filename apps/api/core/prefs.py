@@ -118,7 +118,7 @@ class PrefsError(ValueError):
 
 def _clean_style(value: Any) -> str:
     if not isinstance(value, str) or not STYLE_RE.fullmatch(value):
-        raise PrefsError("Uslub nomi noto'g'ri")
+        raise PrefsError("Style name is invalid")
     return value
 
 
@@ -133,21 +133,21 @@ def _clean_accent(value: Any) -> dict[str, int] | None:
     if value is None:
         return None
     if not isinstance(value, dict):
-        raise PrefsError("accent obyekt kutilgan")
+        raise PrefsError("accent must be an object")
     hue, sat = value.get("hue"), value.get("sat")
     if not isinstance(hue, int) or isinstance(hue, bool) or not 0 <= hue <= 359:
-        raise PrefsError("accent.hue 0–359 oralig'ida butun son bo'lsin")
+        raise PrefsError("accent.hue must be an integer from 0 to 359")
     if not isinstance(sat, int) or isinstance(sat, bool) or not 0 <= sat <= 100:
-        raise PrefsError("accent.sat 0–100 oralig'ida butun son bo'lsin")
+        raise PrefsError("accent.sat must be an integer from 0 to 100")
     return {"hue": hue, "sat": sat}
 
 
 def _clean_step(key: str, value: Any, low: int, high: int, step: int) -> int:
     """Butun son, chegara ichida va qadamga tushgan (`size`, `width`)."""
     if isinstance(value, bool) or not isinstance(value, int):
-        raise PrefsError(f"{key} butun son bo'lsin")
+        raise PrefsError(f"{key} must be an integer")
     if not low <= value <= high or value % step:
-        raise PrefsError(f"{key} {low}…{high} oralig'ida va {step} qadamda bo'lsin")
+        raise PrefsError(f"{key} must be between {low} and {high} in steps of {step}")
     return value
 
 
@@ -158,16 +158,18 @@ def _clean_ratio(key: str, value: Any, low: float, high: float) -> float:
     holda `0.30000000000000004` kabi qiymat saqlanib qolardi.
     """
     if isinstance(value, bool) or not isinstance(value, (int, float)):
-        raise PrefsError(f"{key} son bo'lsin")
+        raise PrefsError(f"{key} must be a number")
     if not low <= value <= high:
-        raise PrefsError(f"{key} {low}…{high} oralig'ida bo'lsin")
+        raise PrefsError(f"{key} must be between {low} and {high}")
     return round(float(value), 3)
 
 
 def _clean_slug(key: str, value: Any) -> str:
     """Katalog qiymati — qisqa slug. Ro'yxat klientda (`CATALOG_KEYS`)."""
     if not isinstance(value, str) or not SLUG_RE.fullmatch(value):
-        raise PrefsError(f"{key} qisqa slug bo'lsin (`[a-zA-Z][a-zA-Z0-9-]*`, 24 belgigacha)")
+        raise PrefsError(
+            f"{key} must be a short slug (`[a-zA-Z][a-zA-Z0-9-]*`, up to 24 characters)"
+        )
     return value
 
 
@@ -181,10 +183,10 @@ def _clean_appearance(value: Any) -> dict[str, Any]:
     o'z tamoyili shu: "bir xil ma'no ikki joyda — ziddiyat manbai".
     """
     if not isinstance(value, dict):
-        raise PrefsError("appearance obyekt kutilgan")
+        raise PrefsError("appearance must be an object")
     unknown = set(value) - APPEARANCE_KEYS
     if unknown:
-        raise PrefsError(f"Noma'lum appearance kaliti: {sorted(unknown)[0]}")
+        raise PrefsError(f"Unknown appearance key: {sorted(unknown)[0]}")
     out: dict[str, Any] = {}
     if "style" in value:
         out["style"] = _clean_style(value["style"])
@@ -194,7 +196,7 @@ def _clean_appearance(value: Any) -> dict[str, Any]:
         if key in value:
             font = value[key]
             if font is not None and font not in FONTS:
-                raise PrefsError(f"{key} {FONTS} dan biri yoki null bo'lsin")
+                raise PrefsError(f"{key} must be one of {FONTS} or null")
             out[key] = font
     if "size" in value:
         out["size"] = _clean_step("size", value["size"], SIZE_MIN, SIZE_MAX, SIZE_STEP)
@@ -209,7 +211,7 @@ def _clean_appearance(value: Any) -> dict[str, Any]:
             out[key] = _clean_ratio(key, value[key], low, high)
     if "density" in value:
         if value["density"] not in DENSITIES:
-            raise PrefsError(f"density {DENSITIES} dan biri bo'lsin")
+            raise PrefsError(f"density must be one of {DENSITIES}")
         out["density"] = value["density"]
     for key in CATALOG_KEYS:
         if key in value:
@@ -219,23 +221,23 @@ def _clean_appearance(value: Any) -> dict[str, Any]:
 
 def _clean_a11y(value: Any) -> dict[str, Any]:
     if not isinstance(value, dict):
-        raise PrefsError("a11y obyekt kutilgan")
+        raise PrefsError("a11y must be an object")
     unknown = set(value) - {"vision", "motion", "bigTargets", "strongFocus"}
     if unknown:
-        raise PrefsError(f"Noma'lum a11y kaliti: {sorted(unknown)[0]}")
+        raise PrefsError(f"Unknown a11y key: {sorted(unknown)[0]}")
     out: dict[str, Any] = {}
     if "vision" in value:
         if value["vision"] not in VISIONS:
-            raise PrefsError(f"vision {VISIONS} dan biri bo'lsin")
+            raise PrefsError(f"vision must be one of {VISIONS}")
         out["vision"] = value["vision"]
     if "motion" in value:
         if value["motion"] not in MOTIONS:
-            raise PrefsError(f"motion {MOTIONS} dan biri bo'lsin")
+            raise PrefsError(f"motion must be one of {MOTIONS}")
         out["motion"] = value["motion"]
     for key in ("bigTargets", "strongFocus"):
         if key in value:
             if not isinstance(value[key], bool):
-                raise PrefsError(f"{key} mantiqiy qiymat bo'lsin")
+                raise PrefsError(f"{key} must be a boolean")
             out[key] = value[key]
     return out
 
@@ -247,35 +249,35 @@ def _clean_tokens(value: Any) -> dict[str, str]:
     aks holda flag yonadigan kunda yana migratsiya kerak bo'lardi.
     """
     if not isinstance(value, dict):
-        raise PrefsError("tokens obyekt kutilgan")
+        raise PrefsError("tokens must be an object")
     if len(value) > TOKEN_MAX:
-        raise PrefsError(f"Ko'pi bilan {TOKEN_MAX} ta token")
+        raise PrefsError(f"At most {TOKEN_MAX} tokens")
     out: dict[str, str] = {}
     for name, raw in value.items():
         if not isinstance(name, str) or not TOKEN_NAME_RE.fullmatch(name):
-            raise PrefsError(f"Token nomi noto'g'ri: {name}")
+            raise PrefsError(f"Invalid token name: {name}")
         if not isinstance(raw, str) or not TOKEN_VALUE_RE.fullmatch(raw.strip()):
-            raise PrefsError(f"Token qiymati noto'g'ri: {name}")
+            raise PrefsError(f"Invalid token value: {name}")
         out[name] = raw.strip()
     return out
 
 
 def _clean_templates(value: Any) -> list[dict[str, Any]]:
     if not isinstance(value, list):
-        raise PrefsError("templates ro'yxat kutilgan")
+        raise PrefsError("templates must be a list")
     if len(value) > TEMPLATE_MAX:
-        raise PrefsError(f"Ko'pi bilan {TEMPLATE_MAX} ta shablon")
+        raise PrefsError(f"At most {TEMPLATE_MAX} templates")
     out: list[dict[str, Any]] = []
     names: set[str] = set()
     for row in value:
         if not isinstance(row, dict):
-            raise PrefsError("Shablon obyekt bo'lsin")
+            raise PrefsError("A template must be an object")
         name = row.get("name")
         if not isinstance(name, str) or not name.strip() or len(name) > TEMPLATE_NAME_MAX:
-            raise PrefsError(f"Shablon nomi 1–{TEMPLATE_NAME_MAX} belgi bo'lsin")
+            raise PrefsError(f"Template name must be 1–{TEMPLATE_NAME_MAX} characters")
         key = name.strip().casefold()
         if key in names:
-            raise PrefsError(f"Shablon nomi takrorlandi: {name.strip()}")
+            raise PrefsError(f"Duplicate template name: {name.strip()}")
         names.add(key)
         template: dict[str, Any] = {
             "name": name.strip(),
@@ -288,7 +290,7 @@ def _clean_templates(value: Any) -> list[dict[str, Any]]:
         theme = row.get("theme")
         if theme is not None:
             if theme not in THEMES:
-                raise PrefsError(f"theme {THEMES} dan biri bo'lsin")
+                raise PrefsError(f"theme must be one of {THEMES}")
             template["theme"] = theme
         out.append(template)
     return out
@@ -301,14 +303,14 @@ PROBLEMSET_KEYS = ("hideTags", "hideSolved")
 
 def _clean_problemset(value: Any) -> dict[str, bool]:
     if not isinstance(value, dict):
-        raise PrefsError("problemset obyekt bo'lsin")
+        raise PrefsError("problemset must be an object")
     unknown = set(value) - set(PROBLEMSET_KEYS)
     if unknown:
-        raise PrefsError(f"Noma'lum problemset sozlamasi: {sorted(unknown)[0]}")
+        raise PrefsError(f"Unknown problemset setting: {sorted(unknown)[0]}")
     out: dict[str, bool] = {}
     for key, flag in value.items():
         if not isinstance(flag, bool):
-            raise PrefsError(f"problemset.{key} mantiqiy qiymat bo'lsin")
+            raise PrefsError(f"problemset.{key} must be a boolean")
         out[key] = flag
     return out
 
@@ -342,7 +344,7 @@ def applies(raw: Any) -> bool:
 def validate(raw: Any) -> dict[str, Any]:
     """To'liq tekshiruv. Xato bo'lsa `PrefsError` ko'tariladi."""
     if not isinstance(raw, dict):
-        raise PrefsError("Obyekt kutilgan")
+        raise PrefsError("An object was expected")
     out: dict[str, Any] = {"version": SCHEMA_VERSION}
     if "appearance" in raw:
         out["appearance"] = _clean_appearance(raw["appearance"])
@@ -356,11 +358,11 @@ def validate(raw: Any) -> dict[str, Any]:
         out["problemset"] = _clean_problemset(raw["problemset"])
     if "sound" in raw:
         if not isinstance(raw["sound"], bool):
-            raise PrefsError("sound mantiqiy qiymat bo'lsin")
+            raise PrefsError("sound must be a boolean")
         out["sound"] = raw["sound"]
     if "effect" in raw:
         if raw["effect"] not in EFFECTS:
-            raise PrefsError(f"effect {EFFECTS} dan biri bo'lsin")
+            raise PrefsError(f"effect must be one of {EFFECTS}")
         out["effect"] = raw["effect"]
     unknown = set(raw) - {
         "version",
@@ -373,5 +375,5 @@ def validate(raw: Any) -> dict[str, Any]:
         "effect",
     }
     if unknown:
-        raise PrefsError(f"Noma'lum sozlama: {sorted(unknown)[0]}")
+        raise PrefsError(f"Unknown setting: {sorted(unknown)[0]}")
     return out

@@ -150,4 +150,4 @@ class RoadmapStep(models.Model):
         from django.core.exceptions import ValidationError
 
         if self.article_id is None and self.problem_id is None:
-            raise ValidationError("Qadamda maqola yoki masala bo'lishi kerak")
+            raise ValidationError("A step must have an article or a problem")

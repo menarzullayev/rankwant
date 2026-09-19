@@ -52,11 +52,11 @@ class StaffArenaSerializer(serializers.ModelSerializer[ArenaRound]):
 
     def validate_questions(self, ids: list[int]) -> list[int]:
         if len(set(ids)) != len(ids):
-            raise serializers.ValidationError("Savol id'lari takrorlanmasin")
+            raise serializers.ValidationError("Question ids must be unique")
         found = set(Question.objects.filter(pk__in=ids).values_list("pk", flat=True))
         missing = [i for i in ids if i not in found]
         if missing:
-            raise serializers.ValidationError(f"Savol topilmadi: {missing}")
+            raise serializers.ValidationError(f"Question not found: {missing}")
         return ids
 
     def to_representation(self, instance: ArenaRound) -> dict[str, Any]:

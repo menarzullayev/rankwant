@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1614 strings.**
+**1661 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -577,6 +577,9 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `profile.joined` | Ro'yxatdan o'tgan: {date} | Тіркелген: {date} |  |
 | `profile.next` | Keyingi | Келесі |  |
 | `profile.prev` | Oldingi | Алдыңғы |  |
+| `profile.activityHidden` | Faoliyat yashirilgan | Белсенділік жасырылған |  |
+| `profile.heatmapHidden` | Faollik xaritasi yashirilgan | Белсенділік картасы жасырылған |  |
+| `profile.mapHidden` | Yechilgan masalalar xaritasi yashirilgan | Шешілген есептер картасы жасырылған |  |
 | `profile.present` | hozirgacha | қазірге дейін |  |
 | `profile.purchasesEmpty` | Hali xarid yo'q. | Әзірге сатып алу жоқ. |  |
 | `profile.ratingColumn` | Reyting | Рейтинг |  |
@@ -735,6 +738,50 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.usernameNextFree` | Keyingi bepul almashtirish: {date}. Undan oldin — {price} Qvant. | Келесі тегін өзгерту: {date}. Оған дейін — {price} Qvant. |  |
 | `settings.usernamePay` | {price} Qvant evaziga almashtirish | {price} Qvant үшін өзгерту |  |
 | `settings.wear` | Kiyish | Кию |  |
+| `settings.addBadge` | Nishon qo'shish | Белгі қосу |  |
+| `settings.addWebsite` | Havola qo'shish | Сілтеме қосу |  |
+| `settings.badgeColor` | Rang | Түс |  |
+| `settings.badgeIcon` | Ikonka | Белгі |  |
+| `settings.badgeText` | Yozuv | Жазу |  |
+| `settings.badges` | Ko'nikma nishonlari | Дағды белгілері |  |
+| `settings.badgesHint` | Matn, ikonka va rang. Profilda ochiq ko'rinadi — ko'pi bilan 10 ta. | Мәтін, белгі және түс. Профильде ашық — ең көбі 10. |  |
+| `settings.coverBuy` | Muqova sotib olish | Мұқаба сатып алу |  |
+| `settings.coverOwned` | Sizda bor | Сізде бар |  |
+| `settings.delivery` | Yetkazib berish manzili | Жеткізу мекенжайы |  |
+| `settings.deliveryErase` | Manzilni o'chirish | Мекенжайды өшіру |  |
+| `settings.deliveryErased` | Manzil o'chirildi | Мекенжай өшірілді |  |
+| `settings.deliveryHint` | Sovg'alar uchun. Inglizcha va milliy yozuv to'liq to'ldiriladi yoki bo'sh qoladi. Profilda ko'rinmaydi. | Сыйлықтар үшін. Ағылшын және төл жазуды толық толтырыңыз немесе бос қалдырыңыз. Профильде көрінбейді. |  |
+| `settings.endMonth` | Tugagan oyi | Аяқталған айы |  |
+| `settings.firstNameEn` | Ism (inglizcha) | Аты (ағылшынша) |  |
+| `settings.gender` | Jins | Жыныс |  |
+| `settings.gender.female` | Ayol | Әйел |  |
+| `settings.gender.male` | Erkak | Ер |  |
+| `settings.gender.non_binary` | No-binar | Екілік емес |  |
+| `settings.gender.prefer_not` | Aytmaslikni afzal ko'raman | Айтпағанды жөн көремін |  |
+| `settings.genderHint` | Ixtiyoriy. Profilda ko'rsatishni o'zingiz tanlaysiz. | Міндетті емес. Профильде көрсетуді өзіңіз таңдайсыз. |  |
+| `settings.langEn` | Inglizcha | Ағылшынша |  |
+| `settings.langNative` | Milliy yozuv | Төл жазу |  |
+| `settings.lastNameEn` | Familiya (inglizcha) | Тегі (ағылшынша) |  |
+| `settings.namesHint` | Inglizcha ism sertifikat va yetkazib berish uchun. Milliy ism hech qachon ommaviy emas. | Ағылшынша есім сертификат пен жеткізу үшін. Төл есім ешқашан ашық емес. |  |
+| `settings.postalAddress` | Ko'cha manzili | Көше мекенжайы |  |
+| `settings.postalAddressNative` | Ko'cha manzili (milliy) | Көше мекенжайы (төл) |  |
+| `settings.postalCity` | Shahar (yetkazish) | Қала (жеткізу) |  |
+| `settings.postalCityNative` | Shahar (milliy) | Қала (төл) |  |
+| `settings.postalCode` | Pochta indeksi | Пошта индексі |  |
+| `settings.postalConsent` | Manzilimni sovg'a yuborish uchun ishlatishga roziman | Мекенжайды сыйлық жіберу үшін пайдалануға келісемін |  |
+| `settings.postalRecipient` | Qabul qiluvchi | Алушы |  |
+| `settings.postalRecipientNative` | Qabul qiluvchi (milliy) | Алушы (төл) |  |
+| `settings.postalRegion` | Viloyat (yetkazish) | Облыс (жеткізу) |  |
+| `settings.postalRegionNative` | Viloyat (milliy) | Облыс (төл) |  |
+| `settings.shirtSizeEu` | Futbolka o'lchami (EU) | Футболка өлшемі (EU) |  |
+| `settings.showActivity` | Faoliyat lentasini ko'rsatish | Белсенділік лентасын көрсету |  |
+| `settings.showGender` | Jinsni profilda ko'rsatish | Жынысты профильде көрсету |  |
+| `settings.showHeatmap` | Faollik xaritasini ko'rsatish | Белсенділік картасын көрсету |  |
+| `settings.showRecentAc` | Yechilgan masalalar xaritasini ko'rsatish | Шешілген есептер картасын көрсету |  |
+| `settings.startMonth` | Boshlangan oyi | Басталған айы |  |
+| `settings.toPresent` | Hozirgacha | Қазірге дейін |  |
+| `settings.websites` | Veb-saytlar | Веб-сайттар |  |
+| `settings.websitesHint` | 2–5 ta havola. Birinchisi asosiy. https:// bilan yozing. | 2–5 сілтеме. Біріншісі негізгі. https:// деп жазыңыз. |  |
 | `settings.website` | Veb-sayt | Веб-сайт |  |
 | `settings.work` | Ish tajribasi | Жұмыс тәжірибесі |  |
 | `level.beginner` | Boshlang'ich | Бастапқы |  |

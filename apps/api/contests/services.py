@@ -307,7 +307,7 @@ def start_virtual(contest: Contest, user) -> ContestRegistration:  # type: ignor
     filtrlaydi). Aks holda kimdir javoblarni bilib turib reyting yig'ardi.
     """
     if not contest.is_finished:
-        raise ValueError("Virtual ishtirok faqat tugagan musobaqada mumkin")
+        raise ValueError("A virtual attempt is only allowed on a finished contest")
 
     reg, _ = ContestRegistration.objects.get_or_create(contest=contest, user=user)
     if reg.virtual_start_at is None:

@@ -118,7 +118,7 @@ class ClassroomViewSet(viewsets.ModelViewSet[Classroom]):
                 {
                     "error": {
                         "code": "not_owner",
-                        "message": "Faqat sinf egasi vazifa bera oladi",
+                        "message": "Only the classroom owner can assign work",
                         "details": {},
                     }
                 },
@@ -147,7 +147,7 @@ class ClassroomViewSet(viewsets.ModelViewSet[Classroom]):
                 {
                     "error": {
                         "code": "not_owner",
-                        "message": "Faqat sinf egasi progressni ko'radi",
+                        "message": "Only the classroom owner can see progress",
                         "details": {},
                     }
                 },

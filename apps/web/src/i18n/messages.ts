@@ -56,24 +56,15 @@ export const LOCALE_NAMES: Record<Locale, string> = {
   es: "Español",
 };
 
-/** Kontent nomlari BOR tillar — bazadagi uch ustun.
+/** Content names that have a dedicated column.
  *
- *  Interfeys o'nta tilga tarjima qilingan, mavzu/ko'nikma nomlari esa
- *  bazada uch ustunda: `name_uz`, `name_ru`, `name_en`. Ya'ni qolgan
- *  yetti tilda o'zbekcha matn ko'rinadi — va buni YASHIRISH jimgina
- *  yolg'on bo'lardi (qaror 10).
- *
- *  Shu ro'yxat ikki joyning yagona manbai: `nameInfo` qaysi holatni
- *  qaytish deb hisoblashini va tanlash ro'yxati qaysi til yonida
- *  «kontent uz» belgisini ko'rsatishini shu yerdan oladi.
+ *  UI chrome is in all ten locales. Topic/skill *content* still lives
+ *  in `name_uz` / `name_ru` / `name_en`. Other locales must not inherit
+ *  Uzbek — they show the English property (the slug) instead.
  */
 export const CONTENT_NAME_LOCALES = ["uz", "ru", "en"] as const;
 
-/** So'ralgan tilda kontent nomlari bormi.
- *
- *  `uz` — manba til: o'zbekcha o'qigan odam uchun qaytish YO'Q, bu
- *  to'g'ri javob. Shuning uchun u belgi olmaydi.
- */
+/** Whether `locale` has a content-name column. */
 export function hasContentNames(locale: Locale): boolean {
   return (CONTENT_NAME_LOCALES as readonly string[]).includes(locale);
 }
@@ -90,11 +81,11 @@ type Registry = Map<Locale, Record<string, string>>;
 const realm = globalThis as typeof globalThis & { __rwMessages?: Registry };
 const registry: Registry = (realm.__rwMessages ??= new Map());
 
-/** `t()` allaqachon shikoyat qilgan kalitlar.
+/** Properties `translate()` has already logged as missing.
  *
- *  Jurnal TO'LDIRILMAYDI: bitta yetishmagan kalit yuzlab marta chaqiriladi
- *  (har ro'yxat qatori, har chizish) — takroriy `console.error` haqiqiy
- *  xatoni ko'mib tashlaydi. Shuning uchun har kalit BIR MARTA yoziladi. */
+ *  The log must not fill up: one missing property is looked up on every
+ *  row and every render. Repeating `console.error` buries the real fault.
+ *  Each property is written once. */
 const reported = new Set<string>();
 
 /** Registers one dictionary. It never clears the others.
@@ -136,66 +127,65 @@ export function isLocale(value: string | null | undefined): value is Locale {
   return !!value && (LOCALES as readonly string[]).includes(value);
 }
 
-/** Lug'at topilmaganda qanday yo'l tutish — dev'da yiqilish, prod'da
- *  ko'rinadigan kalit.
+/** Missing-dictionary behaviour: throw in development, show the property
+ *  name in production.
  *
- *  Ikkala holat ham ATAYLAB: dev'da jim o'tish bugni ishlab chiqish
- *  paytida yashiradi (aynan shu bugun ikki marta bo'ldi — panel ekranda
- *  xom kalitlarni ko'rsatdi, holbuki hamma tekshiruv yashil edi), prod'da
- *  esa sahifani yiqitish foydalanuvchini butunlay to'sadi.
+ *  Both sides are deliberate. Silent fallback in development hid bugs
+ *  twice (the panel showed raw properties while every check stayed
+ *  green). Crashing the page in production blocks the user entirely.
  *
- *  O'LCHANDI (Node, to'rt katak — server/klient × dev/prod):
- *  * server, dev: `t("ru","nav.contests")` → `Соревнования`,
- *    ro'yxatda 10 lug'at; yo'q kalit →
- *    `i18n: key "…" missing from the "ru" dictionary` (otildi);
- *  * klient, dev: `evict` bilan 1 lug'at qoladi, shuning uchun
- *    ro'yxatga olinmagan til ham xuddi shunday otiladi;
- *  * prod: o'sha yo'q kalit KALIT bo'lib qaytadi (`definitely.not.a.key`)
- *    va `console.error` FAQAT BIR MARTA yoziladi (takroriy chaqiruv
- *    jim) — `reported` to'plami shuni ta'minlaydi;
- *  * eski shartsiz `clear()` qaytarilsa: 10 tildan 9 tasi xom kalit
- *    beradi (faqat oxirgisi ishlaydi) — regressiya takrorlandi.
+ *  There is no fallback locale. A missing string in `ru` is not replaced
+ *  by Uzbek or English — the English property name itself is what the
+ *  user sees (`user.name`, `error.invalid`).
  */
 const DEV = process.env.NODE_ENV !== "production";
 
-/** `t()` uchun bitta kirish nuqtasi — shu sabab `errorText()` ham
- *  aynan bir xil yo'ldan o'tadi va ikki xil xatti-harakat bo'lib
- *  qolmaydi. */
-function lookup(locale: Locale, key: string, fallback?: string): string {
-  const hit = registry.get(locale)?.[key];
+/** One property in one locale. Never reads another locale's dictionary. */
+function lookupProperty(locale: Locale, property: string): string {
+  const hit = registry.get(locale)?.[property];
   if (hit !== undefined && hit !== "") {
-    reported.delete(`${locale}:${key}`);
+    reported.delete(`${locale}:${property}`);
     return hit;
   }
 
-  // Zaxira `uz` EMAS: u ham yuborilmaydi (34 kB) va nuqsonni yashiradi.
-  // To'liqlikni tip (`Record<MessageKey, string>`) va
-  // `tools/check_i18n.py` kafolatlaydi — bu yerga tushish faqat lug'at
-  // ro'yxatga olinmagan yoki kalit umuman mavjud bo'lmaganda bo'ladi.
   const hasDict = registry.has(locale);
   const detail = hasDict
-    ? `key "${key}" missing from the "${locale}" dictionary`
+    ? `property "${property}" missing from the "${locale}" dictionary`
     : `dictionary for locale "${locale}" is not registered`;
 
   if (DEV) {
     throw new Error(`i18n: ${detail}`);
   }
 
-  const tag = `${locale}:${key}`;
+  const tag = `${locale}:${property}`;
   if (!reported.has(tag)) {
     reported.add(tag);
-    // `console.error` — `warn` emas: bu ekranga noto'g'ri matn chiqishi,
-    // ya'ni ishlab turgan mahsulotdagi ko'rinadigan nuqson.
-    console.error(`i18n: ${detail} — rendering the key instead`);
+    console.error(`i18n: ${detail} — rendering the property name instead`);
   }
 
-  // Fallback bor bo'lsa (server matni, masalan API xatosi) — kalitdan
-  // ko'ra o'sha matn foydaliroq.
-  return fallback !== undefined && fallback !== "" ? fallback : key;
+  return property;
 }
 
-export function t(locale: Locale, key: string): string {
-  return lookup(locale, key);
+/** Translate English property names (`user.name`, `error.invalid`).
+ *
+ *  One property → that string. Several properties → an array, same
+ *  order. A missing translation is the property name itself; no other
+ *  language is consulted.
+ */
+export function translate(locale: Locale, property: string): string;
+export function translate(locale: Locale, ...properties: string[]): string[];
+export function translate(
+  locale: Locale,
+  ...properties: string[]
+): string | string[] {
+  const texts = properties.map((property) => lookupProperty(locale, property));
+  return properties.length === 1 ? texts[0]! : texts;
+}
+
+/** Single-property shortcut used throughout the UI. Same contract as
+ *  `translate(locale, property)`. */
+export function t(locale: Locale, property: string): string {
+  return translate(locale, property);
 }
 
 /** `{nom}` o'rinlarini qiymat bilan to'ldiradi: `fill("{n} ta", { n: 3 })`. */
@@ -208,26 +198,13 @@ export function fill(
   );
 }
 
-/** Brauzer ICU'sida bor til kodi; bo'lmasa `uz`.
+/** Tag to pass to `Intl`. Never substitutes another language.
  *
- *  Ba'zi kodlar ICU jadvalida YO'Q: `kaa`, `ky`, `tg` — o'lchandi,
- *  ularning uchalasi ham jimgina `en-US` ga tushib, sanani
- *  `9/20/2026, 7:30:00 PM` ko'rinishida beradi. Ya'ni qoraqalpoq
- *  foydalanuvchisi o'zbekchadan ham, ruschadan ham boshqa formatni
- *  ko'rardi. `supportedLocalesOf` ga tayanmaymiz: u ba'zi muhitda
- *  qismiy ma'lumotli tilni ham «bor» deb qaytaradi. Buning o'rniga
- *  natijaning o'zini tekshiramiz — ICU topa olmasa standart tilga
- *  tushadi va bu nomdan ko'rinib turadi.
+ *  ICU silently maps some tags (`kaa`, `ky`, `tg`) to `en-US`. We still
+ *  return the requested tag so date formatting does not jump to Uzbek.
  */
 export function intlLocale(locale: Locale): string {
-  try {
-    const resolved = new Intl.DateTimeFormat(locale).resolvedOptions().locale;
-    return resolved.toLowerCase().startsWith(locale.slice(0, 2))
-      ? locale
-      : DEFAULT_LOCALE;
-  } catch {
-    return DEFAULT_LOCALE;
-  }
+  return locale;
 }
 
 /** Sana-vaqtni tilga mos ko'rinishda. Qarang: `intlLocale`. */
@@ -257,101 +234,82 @@ export function time(
   return new Date(value).toLocaleTimeString(intlLocale(locale), options);
 }
 
-/** Uch ustunli nom (ko'nikma, mavzu, vazifa) — tilga mosi, bo'lmasa o'zbekchasi. */
-export function localName(
-  row: { name_uz: string; name_ru: string; name_en: string },
-  locale: Locale,
-): string {
-  const translated =
-    locale === "ru" ? row.name_ru : locale === "en" ? row.name_en : "";
-  return translated || row.name_uz;
+/** Content-name row stored as three language columns.
+ *
+ *  UI chrome is translated in all ten locales. Topic/skill *content*
+ *  still has `name_uz` / `name_ru` / `name_en` only. A locale without a
+ *  column must not inherit another language — the English property
+ *  (the slug, or `name`) is shown instead.
+ */
+type Named = {
+  name_uz: string;
+  name_ru: string;
+  name_en: string;
+  slug?: string;
+};
+
+function columnFor(row: Named, locale: Locale): string {
+  if (locale === "uz") return row.name_uz;
+  if (locale === "ru") return row.name_ru;
+  if (locale === "en") return row.name_en;
+  return "";
 }
 
-/** Mavzu nomi — bazada faqat uz/ru/en ustunlari bor.
- *
- * UI satrlari o'nta tilda, mavzu nomlari esa uchta ustunda: ular
- * KONTENT, ya'ni ularni tarjima qilish alohida ish (145 ta mavzu).
- * Ustuni yo'q yoki bo'sh til uchun o'zbekchasiga qaytamiz — bo'sh
- * yorliq ko'rsatishdan ko'ra tushunarli.
- *
- * ⚠️ Ko'rinmas qaytish — aldamchi. `zh` foydalanuvchisi o'zbekcha
- * matnni o'z tilidagi tarjima deb o'ylashi mumkin. Shuning uchun
- * `localNameInfo`/`topicNameInfo` qaytishni OSHKOR qiladi va UI
- * yonida kichik `uz` belgisini qo'yadi (qaror 10).
- */
+/** Property shown when the requested language has no name. */
+function nameProperty(row: Named): string {
+  return row.slug || "name";
+}
+
+/** Name in `locale`, or the property if that language has no text. */
+export function localName(row: Named, locale: Locale): string {
+  return localNameInfo(row, locale).text;
+}
+
 export function topicName(
-  topic: { slug: string; name_uz: string; name_ru: string; name_en: string },
+  topic: Named & { slug: string },
   locale: Locale,
 ): string {
   return topicNameInfo(topic, locale).text;
 }
 
-/** Nom + u qaytish (fallback) natijasimi.
+/** Name plus whether it is a real translation in `locale`.
  *
- * `fallback` — matn o'zbekchadan olingan, ya'ni so'ralgan tilda
- * tarjima YO'Q. So'ralgan til o'zi `uz` bo'lsa qaytish hisoblanmaydi:
- * o'shanda bu shunchaki to'g'ri javob.
+ *  `locale === null` means the requested language has no text — `text`
+ *  is the English property, not a silent copy of another language.
  */
 export type NameInfo = {
   text: string;
   locale: Locale | null;
-  /** Matn aslida qaysi tildan olingan. */
-  source: Locale;
+  source: Locale | null;
 };
 
-function nameInfo(
-  row: { name_uz: string; name_ru: string; name_en: string },
-  locale: Locale,
-): NameInfo {
-  // So'ralgan tilning o'zi manba til: o'zbekcha matn — qaytish emas,
-  // to'g'ri javob. Belgisiz qoldirilsa `uz` sahifasida ham `uz` chipi
-  // chiqardi (o'lchandi: 2026-09-19 da `.locale` `null` edi).
-  if (locale === DEFAULT_LOCALE) {
-    return { text: row.name_uz, locale, source: locale };
-  }
-  const translated = locale === "ru" ? row.name_ru : locale === "en" ? row.name_en : "";
-  if (translated) return { text: translated, locale, source: locale };
-  // Ustun umuman yo'q (`kk`, `zh`, …) yoki bo'sh — ikkalasi ham qaytish.
-  return { text: row.name_uz, locale: null, source: DEFAULT_LOCALE };
+function nameInfo(row: Named, locale: Locale): NameInfo {
+  const text = columnFor(row, locale).trim();
+  if (text) return { text, locale, source: locale };
+  return { text: nameProperty(row), locale: null, source: null };
 }
 
-/** `localName` + qaytish belgisi. */
-export function localNameInfo(
-  row: { name_uz: string; name_ru: string; name_en: string },
-  locale: Locale,
-): NameInfo {
+export function localNameInfo(row: Named, locale: Locale): NameInfo {
   return nameInfo(row, locale);
 }
 
-/** `topicName` + qaytish belgisi. */
 export function topicNameInfo(
-  topic: { slug: string; name_uz: string; name_ru: string; name_en: string },
+  topic: Named & { slug: string },
   locale: Locale,
 ): NameInfo {
-  const info = nameInfo(topic, locale);
-  if (info.text) return info;
-  // Nom umuman bo'sh — slug ham matnday o'qiladi, lekin tarjima emas.
-  return { text: topic.slug, locale: null, source: DEFAULT_LOCALE };
+  return nameInfo(topic, locale);
 }
 
-/** API xatosining matni — kod bo'yicha, server matni zaxira sifatida.
+/** API error `code` → `error.<code>` property.
  *
- * API barqaror `code` beradi (`08-technical-spec` xato formati), matn
- * esa o'zbekcha keladi: `LocaleMiddleware` va `USE_I18N` yoqilgan, lekin
- * `locale/` katalogi yo'q va birorta ham `gettext` chaqiruvi yo'q —
- * o'lchandi. Kodni shu yerda tarjima qilish gettext'dan yaxshiroq:
- * bitta tarjima tizimi, `.po` fayllarsiz va qurish quroli talab
- * qilmasdan.
- *
- * Tanilmagan kod uchun server matni ko'rsatiladi — bo'sh joydan yaxshi.
+ *  The server message is ignored: it must not stand in for a missing
+ *  translation. A code without a dictionary entry renders as `error.<code>`.
  */
 export function errorText(
   locale: Locale,
   code: string,
-  fallback: string,
+  _serverMessage?: string,
 ): string {
-  // `t()` bilan BIR XIL yo'l: dev'da yetishmagan kod yiqiladi, prod'da
-  // server matniga tushadi va jurnalga yoziladi. Ilgari bu yerda alohida
-  // `?? fallback ?? t(...)` zanjiri bor edi — ya'ni dev'da jim o'tardi.
-  return lookup(locale, `error.${code}`, fallback || t(locale, "error.error"));
+  const property = code ? `error.${code}` : "error.error";
+  return translate(locale, property);
 }

@@ -50,7 +50,7 @@ def verify(token: str, *, remote_ip: str = "") -> None:
     if not enabled():
         return
     if not token:
-        raise TurnstileError("Tekshiruv tokeni yo'q")
+        raise TurnstileError("Verification token is missing")
 
     payload = {"secret": settings.TURNSTILE_SECRET_KEY, "response": token}
     if remote_ip:
@@ -67,7 +67,7 @@ def verify(token: str, *, remote_ip: str = "") -> None:
     except Exception as exc:  # tarmoq, JSON, HTTP — hammasi bir xil
         if settings.TURNSTILE_FAIL_OPEN:
             return
-        raise TurnstileError("Tekshiruv xizmatiga ulanib bo'lmadi") from exc
+        raise TurnstileError("Could not reach the verification service") from exc
 
     if not data.get("success"):
-        raise TurnstileError("Tekshiruvdan o'tilmadi")
+        raise TurnstileError("Verification failed")

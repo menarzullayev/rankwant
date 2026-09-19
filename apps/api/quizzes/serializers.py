@@ -62,7 +62,7 @@ class SubmitSerializer(serializers.Serializer[dict[str, Any]]):
         try:
             return {int(k): int(v) for k, v in value.items()}
         except (TypeError, ValueError) as exc:
-            raise serializers.ValidationError("Kalitlar savol ID bo'lishi kerak") from exc
+            raise serializers.ValidationError("Keys must be question IDs") from exc
 
 
 class ReviewItemSerializer(serializers.Serializer[dict[str, Any]]):

@@ -155,7 +155,7 @@ def purchase(user: User, item_code: str) -> UserInventory:
     try:
         item = ShopItem.objects.get(code=item_code, is_active=True)
     except ShopItem.DoesNotExist:
-        raise PurchaseError("Narsa topilmadi") from None
+        raise PurchaseError("Item not found") from None
 
     # `UserInventory` da uniq cheklov YO'Q (streak freeze takroriy
     # sotib olinadi), shuning uchun takrorlanishni faqat shu qulf
@@ -164,12 +164,12 @@ def purchase(user: User, item_code: str) -> UserInventory:
     ledger.lock_wallet(user)
 
     if not item.is_consumable and UserInventory.objects.filter(user=user, item=item).exists():
-        raise PurchaseError("Bu narsa sizda allaqachon bor")
+        raise PurchaseError("You already own this item")
 
     try:
         ledger.debit(user, item.price, Tx.Reason.PURCHASE, ref_type="shop_item", ref_id=item.code)
     except ledger.InsufficientBalance as exc:
-        raise PurchaseError(f"Balans yetarli emas ({exc})") from exc
+        raise PurchaseError(f"Insufficient balance ({exc})") from exc
 
     entry = UserInventory.objects.create(user=user, item=item)
 
@@ -215,7 +215,7 @@ def equip(user: User, entry_id: int, *, on: bool) -> UserInventory:
         UserInventory.objects.select_for_update().select_related("item").get(pk=entry_id, user=user)
     )
     if entry.item.category not in EQUIPPABLE:
-        raise PurchaseError("Bu narsani kiyib bo'lmaydi")
+        raise PurchaseError("This item cannot be worn")
     if on:
         UserInventory.objects.filter(
             user=user, item__category=entry.item.category, is_equipped=True

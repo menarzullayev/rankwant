@@ -57,12 +57,12 @@ class StaffContestSerializer(serializers.ModelSerializer[Contest]):
         end_at = attrs.get("end_at", getattr(self.instance, "end_at", None))
         if start_at and end_at and end_at <= start_at:
             raise serializers.ValidationError(
-                {"end_at": "Tugash vaqti boshlanishdan keyin bo'lsin"}
+                {"end_at": "The end time must be after the start"}
             )
         mirror = attrs.get("mirror_of")
         if mirror is not None and self.instance is not None and mirror.pk == self.instance.pk:
             raise serializers.ValidationError(
-                {"mirror_of": "Musobaqa o'zining ko'zgusi bo'lolmaydi"}
+                {"mirror_of": "A contest cannot be its own mirror"}
             )
         return attrs
 
@@ -75,8 +75,8 @@ class StaffContestProblemListSerializer(serializers.Serializer[Any]):
     def validate_problems(self, value: list[dict[str, Any]]) -> list[dict[str, Any]]:
         letters = [row["index_letter"] for row in value]
         if len(letters) != len(set(letters)):
-            raise serializers.ValidationError("Indeks harflari takrorlanmasin")
+            raise serializers.ValidationError("Index letters must be unique")
         slugs = [row["problem"].pk for row in value]
         if len(slugs) != len(set(slugs)):
-            raise serializers.ValidationError("Bitta masala ikki marta qo'shilmasin")
+            raise serializers.ValidationError("A problem cannot be added twice")
         return value

@@ -56,11 +56,11 @@ class StaffHackathonSerializer(serializers.ModelSerializer[Hackathon]):
         start, deadline, end = merged["start_at"], merged["submission_deadline"], merged["end_at"]
         if start and deadline and deadline < start:
             raise serializers.ValidationError(
-                {"submission_deadline": "Topshirish muddati boshlanishdan oldin bo'la olmaydi"}
+                {"submission_deadline": "The submission deadline cannot be before the start"}
             )
         if deadline and end and end < deadline:
             raise serializers.ValidationError(
-                {"end_at": "Yakun topshirish muddatidan oldin bo'la olmaydi"}
+                {"end_at": "The end cannot be before the submission deadline"}
             )
         return attrs
 

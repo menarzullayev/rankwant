@@ -42,10 +42,10 @@ def create(
     start_at: datetime,
 ) -> Duel:
     if start_at < timezone.now() + timedelta(minutes=MIN_LEAD_MINUTES):
-        raise DuelError("too_soon", f"Boshlanish kamida {MIN_LEAD_MINUTES} daqiqadan keyin")
+        raise DuelError("too_soon", f"Start must be at least {MIN_LEAD_MINUTES} minutes away")
     open_count = Duel.objects.filter(challenger=challenger, status=Duel.Status.OPEN).count()
     if open_count >= MAX_OPEN_PER_USER:
-        raise DuelError("too_many", f"Bir vaqtda ko'pi bilan {MAX_OPEN_PER_USER} ta ochiq chaqiriq")
+        raise DuelError("too_many", f"At most {MAX_OPEN_PER_USER} open challenges at once")
     return Duel.objects.create(
         challenger=challenger,
         title=title,
@@ -81,7 +81,7 @@ def pick_problems(duel: Duel) -> list[Problem]:
             break
         window += DIFFICULTY_WINDOW
     if not pool:
-        raise DuelError("no_problems", "Mos masala topilmadi")
+        raise DuelError("no_problems", "No suitable problems found")
     rng = random.Random(duel.pk)
     return rng.sample(pool, min(duel.problem_count, len(pool)))
 
@@ -90,11 +90,11 @@ def pick_problems(duel: Duel) -> list[Problem]:
 def accept(opponent: User, duel: Duel) -> Duel:
     duel = Duel.objects.select_for_update().get(pk=duel.pk)
     if duel.status != Duel.Status.OPEN:
-        raise DuelError("not_open", "Chaqiriq endi ochiq emas")
+        raise DuelError("not_open", "The challenge is no longer open")
     if duel.challenger_id == opponent.pk:
-        raise DuelError("self", "O'z chaqirig'ingizni qabul qila olmaysiz")
+        raise DuelError("self", "You cannot accept your own challenge")
     if duel.start_at <= timezone.now():
-        raise DuelError("expired", "Boshlanish vaqti o'tib ketgan")
+        raise DuelError("expired", "The start time has already passed")
 
     duel.opponent = opponent
     duel.status = Duel.Status.ACCEPTED
@@ -118,9 +118,9 @@ def accept(opponent: User, duel: Duel) -> Duel:
 
 def cancel(user: User, duel: Duel) -> Duel:
     if duel.challenger_id != user.pk:
-        raise DuelError("forbidden", "Faqat chaqiruvchi bekor qila oladi")
+        raise DuelError("forbidden", "Only the challenger can cancel")
     if duel.status != Duel.Status.OPEN:
-        raise DuelError("not_open", "Faqat ochiq chaqiriqni bekor qilish mumkin")
+        raise DuelError("not_open", "Only an open challenge can be cancelled")
     duel.status = Duel.Status.CANCELLED
     duel.save(update_fields=["status"])
     return duel
@@ -134,7 +134,7 @@ def staff_cancel(duel: Duel) -> Duel:
     """
     if duel.status not in (Duel.Status.OPEN, Duel.Status.ACCEPTED):
         raise DuelError(
-            "not_cancellable", "Faqat ochiq yoki qabul qilingan duelni bekor qilish mumkin"
+            "not_cancellable", "Only an open or accepted duel can be cancelled"
         )
     was_accepted = duel.status == Duel.Status.ACCEPTED
     duel.status = Duel.Status.CANCELLED
@@ -165,16 +165,16 @@ def staff_finalize(duel: Duel, *, force: bool = False) -> Duel:
     """
     duel = Duel.objects.select_for_update().get(pk=duel.pk)
     if duel.status != Duel.Status.ACCEPTED or duel.opponent is None:
-        raise DuelError("not_accepted", "Faqat qabul qilingan duelni yakunlash mumkin")
+        raise DuelError("not_accepted", "Only an accepted duel can be finalised")
     if not duel.is_due:
         if not force:
             raise DuelError(
-                "not_due", "Duel hali tugamagan — majburiy yakunlash uchun force=true yuboring"
+                "not_due", "The duel has not finished yet — send force=true to finalise it"
             )
         duel.start_at = timezone.now() - timedelta(minutes=duel.duration_minutes, seconds=1)
         duel.save(update_fields=["start_at"])
     if not finalize(duel):
-        raise DuelError("not_due", "Duelni yakunlab bo'lmadi")
+        raise DuelError("not_due", "The duel could not be finalised")
     duel.refresh_from_db()
     return duel
 

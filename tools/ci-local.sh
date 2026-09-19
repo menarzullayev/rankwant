@@ -154,6 +154,7 @@ run_docs() {
     # regions, opengraph-image) dan tashqari.
     "$PY" tools/check_hardcoded.py &&
     "$PY" tools/check_email_locales.py &&
+    "$PY" tools/check_api_english.py &&
     "$PY" tools/check_locales_parity.py &&
     "$PY" tools/check_contrast.py &&
     "$PY" tools/check_gradient_styles.py &&

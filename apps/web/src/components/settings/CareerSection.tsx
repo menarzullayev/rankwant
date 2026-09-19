@@ -6,17 +6,21 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t } from "@/i18n/messages";
+import { t, type Locale } from "@/i18n/messages";
 import { Icon } from "@/components/ui/Icon";
 import { putJson, type Education, type WorkRow } from "@/lib/api";
-import { Loading, Status, useAction, useLoad } from "./kit";
+import { Check, Loading, Select, Status, useAction, useLoad } from "./kit";
 
-type Value = string | number | null;
-type Column = { key: string; label: string; year?: boolean; hint?: string };
+type CareerRow = Education | WorkRow;
+type Column = { key: "organization" | "degree" | "company" | "title"; label: string };
 
-/** Ta'lim va ish joyi — bir xil «qatorlar ro'yxati»: qo'shish, o'chirish
- *  va hammasini birga saqlash (API ham butun ro'yxatni almashtiradi). */
-function RowsCard<T extends Record<string, Value>>({
+function monthLabel(n: number, locale: Locale) {
+  return new Intl.DateTimeFormat([locale, "uz"], { month: "long" }).format(
+    new Date(Date.UTC(2020, n - 1, 1)),
+  );
+}
+
+function RowsCard<T extends CareerRow>({
   title,
   path,
   columns,
@@ -36,15 +40,15 @@ function RowsCard<T extends Record<string, Value>>({
   const rows = edited ?? loaded.data ?? [];
   const first = columns[0].key;
   const latest = new Date().getFullYear() + 10;
+  const cell = (row: T, key: string) =>
+    String((row as unknown as Record<string, unknown>)[key] ?? "");
 
-  function change(i: number, column: Column, raw: string) {
-    const value: Value = column.year ? (raw ? Number(raw) : null) : raw;
-    setEdited(rows.map((row, j) => (j === i ? { ...row, [column.key]: value } : row)));
+  function patch(i: number, part: Partial<T>) {
+    setEdited(rows.map((row, j) => (j === i ? { ...row, ...part } : row)));
   }
 
   async function save() {
-    // Nomi bo'sh qator — qo'shilib to'ldirilmay qolgani, uni yubormaymiz.
-    const filled = rows.filter((row) => String(row[first] ?? "").trim());
+    const filled = rows.filter((row) => cell(row, first).trim());
     await action.run(async () => {
       loaded.setData(await putJson<T[]>(path, filled));
       setEdited(null);
@@ -63,7 +67,7 @@ function RowsCard<T extends Record<string, Value>>({
                 <button
                   type="button"
                   onClick={() => setEdited(rows.filter((_, j) => j !== i))}
-                  aria-label={`${t(locale, "settings.remove")}: ${String(row[first] ?? "")}`}
+                  aria-label={`${t(locale, "settings.remove")}: ${cell(row, first)}`}
                   className="absolute right-2 top-2 flex size-8 items-center justify-center rw-radius-sm rw-dim transition rw-hover-bg rw-focus-ring"
                 >
                   <Icon name="nav.close" className="size-4" />
@@ -74,15 +78,92 @@ function RowsCard<T extends Record<string, Value>>({
                       key={column.key}
                       label={column.label}
                       name={`${path}-${i}-${column.key}`}
-                      value={row[column.key] === null ? "" : String(row[column.key])}
-                      onChange={(event) => change(i, column, event.target.value)}
-                      hint={column.hint}
+                      value={cell(row, column.key)}
+                      onChange={(event) =>
+                        patch(i, { [column.key]: event.target.value } as Partial<T>)
+                      }
                       required={column.key === first}
-                      {...(column.year
-                        ? { type: "number", min: 1950, max: latest, inputMode: "numeric" as const }
-                        : { maxLength: 150 })}
+                      maxLength={150}
                     />
                   ))}
+                  <Field
+                    label={t(locale, "settings.startYear")}
+                    name={`${path}-${i}-start_year`}
+                    type="number"
+                    min={1950}
+                    max={latest}
+                    inputMode="numeric"
+                    value={row.start_year ?? ""}
+                    onChange={(event) =>
+                      patch(i, {
+                        start_year: event.target.value ? Number(event.target.value) : null,
+                      } as Partial<T>)
+                    }
+                  />
+                  <Select
+                    label={t(locale, "settings.startMonth")}
+                    name={`${path}-${i}-start_month`}
+                    value={row.start_month ?? ""}
+                    onChange={(event) =>
+                      patch(i, {
+                        start_month: event.target.value ? Number(event.target.value) : null,
+                      } as Partial<T>)
+                    }
+                  >
+                    <option value="">{t(locale, "settings.notChosen")}</option>
+                    {Array.from({ length: 12 }, (_, month) => (
+                      <option key={month + 1} value={month + 1}>
+                        {monthLabel(month + 1, locale)}
+                      </option>
+                    ))}
+                  </Select>
+                  <Field
+                    label={t(locale, "settings.endYear")}
+                    name={`${path}-${i}-end_year`}
+                    type="number"
+                    min={1950}
+                    max={latest}
+                    inputMode="numeric"
+                    value={row.current ? "" : (row.end_year ?? "")}
+                    disabled={row.current}
+                    onChange={(event) =>
+                      patch(i, {
+                        end_year: event.target.value ? Number(event.target.value) : null,
+                      } as Partial<T>)
+                    }
+                  />
+                  <Select
+                    label={t(locale, "settings.endMonth")}
+                    name={`${path}-${i}-end_month`}
+                    value={row.current ? "" : (row.end_month ?? "")}
+                    disabled={row.current}
+                    onChange={(event) =>
+                      patch(i, {
+                        end_month: event.target.value ? Number(event.target.value) : null,
+                      } as Partial<T>)
+                    }
+                  >
+                    <option value="">{t(locale, "settings.notChosen")}</option>
+                    {Array.from({ length: 12 }, (_, month) => (
+                      <option key={month + 1} value={month + 1}>
+                        {monthLabel(month + 1, locale)}
+                      </option>
+                    ))}
+                  </Select>
+                  <div className="sm:col-span-2">
+                    <Check
+                      label={t(locale, "settings.toPresent")}
+                      checked={row.current}
+                      onChange={(event) =>
+                        patch(i, {
+                          current: event.target.checked,
+                          ...(event.target.checked
+                            ? { end_year: null, end_month: null }
+                            : {}),
+                        } as Partial<T>)
+                      }
+                    />
+                  </div>
                 </div>
               </li>
             ))}
@@ -106,37 +187,42 @@ function RowsCard<T extends Record<string, Value>>({
 
 export function CareerSection() {
   const locale = useLocale();
-  const years: Column[] = [
-    { key: "start_year", label: t(locale, "settings.startYear"), year: true },
-    {
-      key: "end_year",
-      label: t(locale, "settings.endYear"),
-      year: true,
-      hint: t(locale, "settings.endYearHint"),
-    },
-  ];
   return (
     <>
       <RowsCard<Education>
         title={t(locale, "settings.education")}
         path="/me/educations/"
         addLabel={t(locale, "settings.addEducation")}
-        empty={{ organization: "", degree: "", start_year: null, end_year: null }}
+        empty={{
+          organization: "",
+          degree: "",
+          start_year: null,
+          start_month: null,
+          end_year: null,
+          end_month: null,
+          current: false,
+        }}
         columns={[
           { key: "organization", label: t(locale, "settings.organization") },
           { key: "degree", label: t(locale, "settings.degree") },
-          ...years,
         ]}
       />
       <RowsCard<WorkRow>
         title={t(locale, "settings.work")}
         path="/me/work/"
         addLabel={t(locale, "settings.addWork")}
-        empty={{ company: "", title: "", start_year: null, end_year: null }}
+        empty={{
+          company: "",
+          title: "",
+          start_year: null,
+          start_month: null,
+          end_year: null,
+          end_month: null,
+          current: false,
+        }}
         columns={[
           { key: "company", label: t(locale, "settings.company") },
           { key: "title", label: t(locale, "settings.position") },
-          ...years,
         ]}
       />
     </>

@@ -905,23 +905,24 @@ def difficulty_range_counts_as_one_filter() -> str | None:
 
 
 def content_coverage_visible() -> str | None:
-    """Kontent nomi qaytgan joy belgisiz qolmasin (qaror 10).
+    """Missing content names show the English property, never another locale.
 
-    Uch shart: qamrov manbai bitta (`CONTENT_NAME_LOCALES`), so'ralgan til
-    manba til bo'lsa qaytish HISOBLANMAYDI, va har bir chaqiruv joyi belgi
-    chizadi. Uchtasi birga kerak: bittasi tushsa, foydalanuvchi o'zbekcha
-    matnni o'z tilidagi tarjima deb o'qiydi yoki o'zbekcha sahifada
-    ma'nosiz `uz` chipini ko'radi.
+    Three checks: coverage source is one list (`CONTENT_NAME_LOCALES`), a
+    missing translation does not copy `name_uz`, and every render site
+    still marks the identifier so a `zh` reader does not take a slug for
+    a Chinese name.
     """
     messages = read(MESSAGES)
     if 'export const CONTENT_NAME_LOCALES = ["uz", "ru", "en"] as const;' not in messages:
         return f"{MESSAGES}: CONTENT_NAME_LOCALES yo'q — qamrov manbai yo'qolgan"
     if "export function hasContentNames(" not in messages:
         return f"{MESSAGES}: hasContentNames() yo'q — tanlash ro'yxati qamrovni bilmaydi"
-    if "if (locale === DEFAULT_LOCALE) {" not in messages:
+    if "function nameProperty(" not in messages:
+        return f"{MESSAGES}: nameProperty() yo'q — yetishmagan tarjima property ko'rsatilmaydi"
+    if "source: DEFAULT_LOCALE" in messages:
         return (
-            f"{MESSAGES}: nameInfo() `uz` ni qaytish deb hisoblaydi — "
-            "o'zbekcha sahifada ham belgi chiqadi"
+            f"{MESSAGES}: yetishmagan tarjima `DEFAULT_LOCALE` ga tushadi — "
+            "zaxira til taqiqlangan"
         )
     badge = read(CONTENT_BADGE)
     for symbol in ("export function ContentName(", "export function contentNameText("):

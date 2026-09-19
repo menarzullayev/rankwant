@@ -96,14 +96,26 @@ export type Education = {
   organization: string;
   degree: string;
   start_year: number | null;
+  start_month: number | null;
   end_year: number | null;
+  end_month: number | null;
+  current: boolean;
 };
 
 export type WorkRow = {
   company: string;
   title: string;
   start_year: number | null;
+  start_month: number | null;
   end_year: number | null;
+  end_month: number | null;
+  current: boolean;
+};
+
+export type SkillBadge = {
+  text: string;
+  icon: string;
+  color: string;
 };
 
 export type ExternalKind =
@@ -158,11 +170,14 @@ export type PublicProfile = {
   avatar_url: string;
   bio: string;
   date_joined: string;
-  info: Partial<Record<PrivacyField | "region" | "district" | "city" | "school_id", string>>;
+  info: Partial<
+    Record<PrivacyField | "region" | "district" | "city" | "school_id", string>
+  > & { websites?: string[] };
   hidden_fields: PrivacyField[];
   is_owner: boolean;
   skills: (SkillName & { level: number })[];
   technologies: Technology[];
+  badges: SkillBadge[];
   educations: Education[];
   work: WorkRow[];
   external: ExternalProfile[];
@@ -304,6 +319,7 @@ export type Calendar = {
   attempts: number;
   solved: number;
   streak: { current: number; longest: number };
+  hidden?: boolean;
 };
 
 export type ProblemTile = {

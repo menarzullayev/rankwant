@@ -22,7 +22,11 @@ export type PrivacyField =
   | "coach"
   | "social"
   /** Profil banneri — yuklangan rasm, shuning uchun yashirilishi mumkin (ADR-0026). */
-  | "title_photo";
+  | "title_photo"
+  | "gender"
+  | "activity"
+  | "heatmap"
+  | "recent_ac";
 
 export type ThemeEffect = "none" | "fade" | "circle";
 
@@ -116,6 +120,21 @@ export type UiPrefs = {
 /** `User.ShirtSize` — olympiad prizes (ADR-0024). */
 export type ShirtSize = "XS" | "S" | "M" | "L" | "XL" | "XXL" | "3XL";
 
+export type ShirtSizeEu =
+  | "40"
+  | "42"
+  | "44"
+  | "46"
+  | "48"
+  | "50"
+  | "52"
+  | "54"
+  | "56"
+  | "58"
+  | "60";
+
+export type Gender = "male" | "female" | "non_binary" | "prefer_not";
+
 /** Tur bo'yicha kanal tanlovi — `{"duel": {"site": true, "telegram": false}}`. */
 export type NotifyPrefs = Record<string, { site?: boolean; telegram?: boolean }>;
 
@@ -129,6 +148,8 @@ export type Me = {
   /** Real name for certificates and olympiad lists; never public (ADR-0024). */
   first_name: string;
   last_name: string;
+  first_name_en: string;
+  last_name_en: string;
   email_verified: boolean;
   social: string[];
   has_password: boolean;
@@ -146,12 +167,26 @@ export type Me = {
   school: string;
   grade: string;
   website: string;
+  websites: string[];
+  gender: Gender | "";
   birth_date: string | null;
   /** Aloqa uchun telefon. IXTIYORIY va ommaviy profilga chiqmaydi —
    *  faqat hisobni tiklash va bildirishnomalar uchun. */
   phone: string;
   /** Owner-only, like `phone`. */
   shirt_size: ShirtSize | "";
+  shirt_size_eu: ShirtSizeEu | "";
+  postal_recipient: string;
+  postal_country: string;
+  postal_region: string;
+  postal_city: string;
+  postal_address: string;
+  postal_code: string;
+  postal_recipient_native: string;
+  postal_region_native: string;
+  postal_city_native: string;
+  postal_address_native: string;
+  postal_consent: boolean;
   hidden_fields: PrivacyField[];
   ui_prefs: UiPrefs;
   notify_prefs: NotifyPrefs;

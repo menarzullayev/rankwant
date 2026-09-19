@@ -101,7 +101,7 @@ class StaffUserViewSet(StaffViewSet):
             else:
                 tx = ledger.debit(user, -amount, QvantTransaction.Reason.ADMIN, **ref)
         except ledger.InsufficientBalance as exc:
-            raise ValidationError({"amount": f"Balans yetarli emas: {exc}"}) from exc
+            raise ValidationError({"amount": f"Insufficient balance: {exc}"}) from exc
         assert tx is not None  # respect_cap=False — kredit har doim yoziladi
         return Response({"amount": tx.amount, "balance": tx.balance_after})
 
@@ -231,7 +231,7 @@ class StaffAnalyticsView(APIView):
         try:
             days = int(raw)
         except (TypeError, ValueError):
-            raise ValidationError({"days": "Butun son bo'lishi kerak"}) from None
+            raise ValidationError({"days": "Must be an integer"}) from None
         return min(max(days, 1), self.MAX_DAYS)
 
     def _counts(self, events: QuerySet[AnalyticsEvent], names: tuple[str, ...]) -> dict[str, int]:
@@ -430,7 +430,7 @@ class StaffEmailQuotaView(APIView):
         when = self._when(request)
         if when is False:
             return Response(
-                {"detail": "when — ISO 8601 sana bo'lishi kerak"},
+                {"detail": "when must be an ISO 8601 date"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         rows = mail_quota.usage(when)

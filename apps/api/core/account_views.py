@@ -66,7 +66,7 @@ class PasswordChangeView(APIView):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         if user.has_usable_password() and not user.check_password(data.get("old_password", "")):
-            raise exceptions.ValidationError({"old_password": "Joriy parol noto'g'ri"})
+            raise exceptions.ValidationError({"old_password": "Current password is wrong"})
         try:
             validate_password(data["new_password"], user)
         except DjangoValidationError as exc:
@@ -98,18 +98,18 @@ class EmailChangeView(APIView):
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data["email"]
         if email.lower() == user.email.lower():
-            raise exceptions.ValidationError({"email": "Bu allaqachon sizning manzilingiz"})
+            raise exceptions.ValidationError({"email": "This is already your address"})
         if _email_taken(email, exclude=user):
-            raise exceptions.ValidationError({"email": "Bu email band"})
+            raise exceptions.ValidationError({"email": "This email is taken"})
         if user.has_usable_password() and not user.check_password(
             serializer.validated_data.get("password", "")
         ):
-            raise exceptions.ValidationError({"password": "Parol noto'g'ri"})
+            raise exceptions.ValidationError({"password": "Password is wrong"})
         try:
             issued = verification.issue(user, email=email, purpose=EmailVerifyToken.Purpose.CHANGE)
         except verification.TooManyRequests as exc:
             raise exceptions.Throttled(
-                detail="Juda ko'p so'rov — birozdan keyin urinib ko'ring"
+                detail="Too many requests — try again shortly"
             ) from exc
         queue(send_email_verify, user.pk, issued.raw, issued.code, email)
         return Response({"email": email}, status=status.HTTP_202_ACCEPTED)
@@ -225,9 +225,9 @@ class AvatarView(APIView):
     def post(self, request: Request) -> Response:
         upload = request.FILES.get("file")
         if upload is None:
-            raise exceptions.ValidationError({"file": "Fayl yuborilmadi"})
+            raise exceptions.ValidationError({"file": "No file was sent"})
         if (upload.size or 0) > avatars.MAX_BYTES:
-            raise exceptions.ValidationError({"file": "Rasm 1 MB dan oshmasligi kerak"})
+            raise exceptions.ValidationError({"file": "The image must not exceed 1 MB"})
         return _store_avatar(_me(request), upload.read(avatars.MAX_BYTES + 1))
 
     @extend_schema(responses={204: None})
@@ -258,11 +258,11 @@ class AvatarImportView(APIView):
             user=user, provider=serializer.validated_data["provider"]
         ).first()
         if account is None:
-            raise exceptions.ValidationError({"provider": "Bu hisob ulanmagan"})
+            raise exceptions.ValidationError({"provider": "This account is not linked"})
         url = avatars.provider_picture(account)
         if not url:
             raise exceptions.ValidationError(
-                {"provider": "Provayder rasm bermadi — hisobni qayta ulang"}
+                {"provider": "The provider did not return a photo — reconnect the account"}
             )
         try:
             data = avatars.fetch_remote(url)

@@ -31,14 +31,14 @@ class ApiTokenAuthentication(authentication.BaseAuthentication):
         try:
             token = ApiToken.objects.select_related("user").get(token_hash=ApiToken.hash_token(raw))
         except ApiToken.DoesNotExist:
-            raise exceptions.AuthenticationFailed("Token topilmadi") from None
+            raise exceptions.AuthenticationFailed("Token not found") from None
 
         if token.revoked_at is not None:
-            raise exceptions.AuthenticationFailed("Token bekor qilingan")
+            raise exceptions.AuthenticationFailed("Token has been revoked")
         if token.expires_at <= timezone.now():
-            raise exceptions.AuthenticationFailed("Token muddati tugagan")
+            raise exceptions.AuthenticationFailed("Token has expired")
         if not token.user.is_active:
-            raise exceptions.AuthenticationFailed("Foydalanuvchi faol emas")
+            raise exceptions.AuthenticationFailed("User is inactive")
 
         # last_used_at ni yangilaymiz, lekin har so'rovda yozmaymiz —
         # bir daqiqada bir marta yetarli.

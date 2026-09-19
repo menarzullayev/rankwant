@@ -123,6 +123,9 @@ jobs:
         if: steps.check.outputs.ready == 'true'
         run: ruff check . && ruff format --check .
         working-directory: apps/api
+      - name: API messages English
+        if: steps.check.outputs.ready == 'true'
+        run: python3 tools/check_api_english.py
       # Was a sibling job: on two runners it stole a slot for pip+diff
       # (~15 s) while another PR's Web waited (2026-09-18). pip is
       # already installed here.
@@ -259,6 +262,12 @@ jobs:
       - name: i18n completeness
         if: steps.check.outputs.ready == 'true'
         run: python3 tools/check_i18n.py
+      - name: Email locales (all 10)
+        if: steps.check.outputs.ready == 'true'
+        run: python3 tools/check_email_locales.py
+      - name: API messages English
+        if: steps.check.outputs.ready == 'true'
+        run: python3 tools/check_api_english.py
       # Fallback path of `t()`: throws in dev, logs once in prod.
       # `check_i18n.py` cannot see that — it only reads the strings —
       # so the module is run in Node (this step has `actions/setup-node`).

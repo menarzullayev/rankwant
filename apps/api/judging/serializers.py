@@ -74,26 +74,26 @@ class AttemptCreateSerializer(serializers.Serializer[dict[str, Any]]):
     def validate_source_code(self, value: str) -> str:
         if len(value.encode()) > MAX_SOURCE_BYTES:
             raise serializers.ValidationError(
-                f"Manba {MAX_SOURCE_BYTES // 1024} KB dan oshmasligi kerak"
+                f"Source exceeds {MAX_SOURCE_BYTES // 1024} KB"
             )
         if not value.strip():
-            raise serializers.ValidationError("Manba bo'sh")
+            raise serializers.ValidationError("Source is empty")
         return value
 
     def validate_problem(self, value: str) -> str:
         problem = Problem.objects.filter(slug=value, is_public=True).first()
         if problem is None:
-            raise serializers.ValidationError("Masala topilmadi")
+            raise serializers.ValidationError("Problem not found")
         # Testsiz masalada judge IE qaytaradi. Tugmani frontendda
         # yashirish yetarli emas: API mijozi baribir yuborardi va
         # foydalanuvchi tushunarsiz ichki xato ko'rardi.
         if not problem.tests.exists():
-            raise serializers.ValidationError("Bu masalaning testlari hali tayyorlanmagan")
+            raise serializers.ValidationError("This problem's tests are not ready yet")
         return value
 
     def validate_language(self, value: str) -> str:
         if not Language.objects.filter(code=value, is_active=True).exists():
-            raise serializers.ValidationError("Til qo'llab-quvvatlanmaydi")
+            raise serializers.ValidationError("This language is not supported")
         return value
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
@@ -113,7 +113,7 @@ class AttemptCreateSerializer(serializers.Serializer[dict[str, Any]]):
         )
         if allowed and attrs["language"] not in allowed:
             raise serializers.ValidationError(
-                {"language": f"Bu masala {', '.join(sorted(allowed))} tillarida yechiladi"}
+                {"language": f"This problem is solved in {', '.join(sorted(allowed))}"}
             )
 
         slug = attrs.get("contest")
@@ -122,12 +122,12 @@ class AttemptCreateSerializer(serializers.Serializer[dict[str, Any]]):
 
         contest = Contest.objects.filter(slug=slug, is_public=True).first()
         if contest is None:
-            raise serializers.ValidationError({"contest": "Musobaqa topilmadi"})
+            raise serializers.ValidationError({"contest": "Contest not found"})
 
         user = self.context["request"].user
         registration = ContestRegistration.objects.filter(contest=contest, user=user).first()
         if registration is None:
-            raise serializers.ValidationError({"contest": "Musobaqaga ro'yxatdan o'ting"})
+            raise serializers.ValidationError({"contest": "Register for the contest first"})
 
         # Virtual ishtirok TUGAGAN musobaqada bo'ladi, ya'ni `is_running`
         # unda hech qachon rost emas. Ilgari tekshiruv faqat shunga
@@ -136,11 +136,11 @@ class AttemptCreateSerializer(serializers.Serializer[dict[str, Any]]):
         # Rasmiy jadval xavfsiz — u `end_at` gacha kelgan urinishlarni
         # oladi (contests.services.rebuild_standings).
         if not contest.is_running and not _virtual_window_open(registration):
-            raise serializers.ValidationError({"contest": "Musobaqa faol emas"})
+            raise serializers.ValidationError({"contest": "The contest is not active"})
         if not ContestProblem.objects.filter(
             contest=contest, problem__slug=attrs["problem"]
         ).exists():
-            raise serializers.ValidationError({"problem": "Masala bu musobaqada yo'q"})
+            raise serializers.ValidationError({"problem": "This problem is not in the contest"})
 
         # Lock qilingan masalaga QAYTA yuborib bo'lmaydi (ADR-0020): hack
         # huquqi aynan shu narxda olinadi. Frontendda tugmani o'chirish
@@ -150,7 +150,7 @@ class AttemptCreateSerializer(serializers.Serializer[dict[str, Any]]):
             contest=contest, problem__slug=attrs["problem"], user=user
         ).exists():
             raise serializers.ValidationError(
-                {"problem": "Masala lock qilingan — unga qayta yuborib bo'lmaydi"}
+                {"problem": "This problem is locked — you cannot submit again"}
             )
 
         attrs["contest_obj"] = contest
@@ -185,18 +185,18 @@ class CustomRunCreateSerializer(serializers.Serializer[dict[str, Any]]):
     def validate_source_code(self, value: str) -> str:
         if len(value.encode()) > MAX_SOURCE_BYTES:
             raise serializers.ValidationError(
-                f"Manba {MAX_SOURCE_BYTES // 1024} KB dan oshmasligi kerak"
+                f"Source exceeds {MAX_SOURCE_BYTES // 1024} KB"
             )
         if not value.strip():
-            raise serializers.ValidationError("Manba bo'sh")
+            raise serializers.ValidationError("Source is empty")
         return value
 
     def validate_stdin(self, value: str) -> str:
         if len(value.encode()) > 64 * 1024:
-            raise serializers.ValidationError("Kirish 64 KB dan oshmasligi kerak")
+            raise serializers.ValidationError("Input must not exceed 64 KB")
         return value
 
     def validate_language(self, value: str) -> str:
         if not Language.objects.filter(code=value, is_active=True).exists():
-            raise serializers.ValidationError("Til qo'llab-quvvatlanmaydi")
+            raise serializers.ValidationError("This language is not supported")
         return value

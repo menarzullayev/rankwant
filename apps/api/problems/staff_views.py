@@ -147,7 +147,7 @@ class StaffProblemViewSet(StaffViewSet):
             )
             if not (is_author and not problem.is_public):
                 raise PermissionDenied(
-                    "Masala testlari faqat staff-ops yoki draft muallifiga tegishli"
+                    "Problem tests belong to staff-ops or the draft author"
                 )
         if request.method == "GET":
             return Response(StaffTestCaseSerializer(problem.tests.all(), many=True).data)

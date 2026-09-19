@@ -6,33 +6,64 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { CountrySelect } from "@/components/ui/CountrySelect";
 import { Field } from "@/components/ui/Field";
+import { Icon } from "@/components/ui/Icon";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
-import { patchJson, type PrivacyField, type ShirtSize } from "@/lib/api";
+import {
+  patchJson,
+  type Gender,
+  type PrivacyField,
+  type ShirtSize,
+  type ShirtSizeEu,
+} from "@/lib/api";
 import { GRADE_GROUPS, gradeLabel, isGradeCode } from "@/lib/grades";
 import { REGION_CODES, districtOptions, regionName } from "@/lib/regions";
 import { Check, Hint, Select, Status, useAction } from "./kit";
 import { SchoolField } from "./SchoolField";
 
-/** `User.ShirtSize` (ADR-0024). */
 const SHIRT_SIZES: ShirtSize[] = ["XS", "S", "M", "L", "XL", "XXL", "3XL"];
+const SHIRT_EU: ShirtSizeEu[] = [
+  "40",
+  "42",
+  "44",
+  "46",
+  "48",
+  "50",
+  "52",
+  "54",
+  "56",
+  "58",
+  "60",
+];
+const GENDERS: Gender[] = ["male", "female", "non_binary", "prefer_not"];
+const MAX_SITES = 5;
 
-/** Shaxsiy ma'lumot. Hammasi ixtiyoriy va standart holatda profilda
- *  ko'rinadi — yashirish har maydon yonida, odam nimani ochiq qoldirganini
- *  ko'rib turadi. */
 export function InfoSection() {
+  return (
+    <>
+      <DetailsCard />
+      <DeliveryCard />
+    </>
+  );
+}
+
+function DetailsCard() {
   const locale = useLocale();
   const { user, reload } = useSession();
   const action = useAction();
   const [country, setCountry] = useState<string | null>(null);
   const [hidden, setHidden] = useState<PrivacyField[] | null>(null);
   const [region, setRegion] = useState<string | null>(null);
+  const [sites, setSites] = useState<string[] | null>(null);
   if (!user) return null;
 
   const currentCountry = country ?? user.country;
   const currentHidden = hidden ?? user.hidden_fields;
   const today = new Date().toISOString().slice(0, 10);
+  const urls =
+    sites ??
+    (user.websites?.length ? user.websites : user.website ? [user.website] : [""]);
 
   function visibility(field: PrivacyField, label?: string) {
     return (
@@ -40,8 +71,10 @@ export function InfoSection() {
         label={label ?? t(locale, "settings.showOnProfile")}
         checked={!currentHidden.includes(field)}
         onChange={(event) => {
-          const rest = currentHidden.filter((f) => f !== field);
-          setHidden(event.target.checked ? rest : [...rest, field]);
+          const next = event.target.checked
+            ? currentHidden.filter((item) => item !== field)
+            : [...currentHidden, field];
+          setHidden(next);
         }}
       />
     );
@@ -60,11 +93,12 @@ export function InfoSection() {
         school_ref: text("school_ref") ? Number(text("school_ref")) : null,
         school: text("school"),
         grade: text("grade"),
-        website: text("website"),
+        gender: text("gender"),
+        websites: urls.map((url) => url.trim()).filter(Boolean),
         birth_date: text("birth_date") || null,
-        // The phone field was shown here but never sent, so edits were lost.
         phone: text("phone"),
         shirt_size: text("shirt_size"),
+        shirt_size_eu: text("shirt_size_eu"),
         hidden_fields: currentHidden,
       });
       await reload();
@@ -73,13 +107,15 @@ export function InfoSection() {
       setCountry(null);
       setHidden(null);
       setRegion(null);
+      setSites(null);
     }
   }
 
   const regionDefault = currentCountry === user.country ? user.region : "";
   const currentRegion = region ?? regionDefault;
   const districtDefault = currentRegion === user.region ? user.district : "";
-  const districts = currentCountry === "UZ" && currentRegion ? districtOptions(currentRegion, locale) : [];
+  const districts =
+    currentCountry === "UZ" && currentRegion ? districtOptions(currentRegion, locale) : [];
 
   return (
     <Card title={t(locale, "settings.info")}>
@@ -133,7 +169,6 @@ export function InfoSection() {
                   defaultValue={districtDefault}
                 >
                   <option value="">{t(locale, "settings.notChosen")}</option>
-                  {/* Toshkent shahrida viloyat shaharlari yo'q — bo'sh guruh chizilmaydi. */}
                   {[
                     { key: "settings.districts", rows: districts.filter((row) => !row.city) },
                     { key: "settings.cities", rows: districts.filter((row) => row.city) },
@@ -174,7 +209,6 @@ export function InfoSection() {
           <div className="space-y-2">
             <Select label={t(locale, "settings.grade")} name="grade" defaultValue={user.grade}>
               <option value="">{t(locale, "settings.notChosen")}</option>
-              {/* A value saved before the catalogue (ADR-0024) stays until it is changed. */}
               {user.grade && !isGradeCode(user.grade) && (
                 <option value={user.grade}>{user.grade}</option>
               )}
@@ -196,14 +230,58 @@ export function InfoSection() {
             {visibility("grade")}
           </div>
           <div className="space-y-2">
-            <Field
-              label={t(locale, "settings.website")}
-              name="website"
-              type="url"
-              defaultValue={user.website}
-              hint="https://…"
-              autoComplete="url"
-            />
+            <Select
+              label={t(locale, "settings.gender")}
+              name="gender"
+              defaultValue={user.gender}
+              hint={t(locale, "settings.genderHint")}
+            >
+              <option value="">{t(locale, "settings.notChosen")}</option>
+              {GENDERS.map((value) => (
+                <option key={value} value={value}>
+                  {t(locale, `settings.gender.${value}`)}
+                </option>
+              ))}
+            </Select>
+            {visibility("gender", t(locale, "settings.showGender"))}
+          </div>
+          <div className="space-y-2 sm:col-span-2">
+            <p className="text-theme-sm font-medium rw-strong">{t(locale, "settings.websites")}</p>
+            <Hint>{t(locale, "settings.websitesHint")}</Hint>
+            <ul className="space-y-2">
+              {urls.map((url, i) => (
+                <li key={i} className="flex items-end gap-2">
+                  <div className="min-w-0 flex-1">
+                    <Field
+                      label={i === 0 ? t(locale, "settings.website") : `${i + 1}`}
+                      name={`website_${i}`}
+                      type="url"
+                      value={url}
+                      onChange={(event) =>
+                        setSites(urls.map((item, j) => (j === i ? event.target.value : item)))
+                      }
+                      hint={i === 0 ? "https://…" : undefined}
+                      autoComplete="url"
+                    />
+                  </div>
+                  {urls.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => setSites(urls.filter((_, j) => j !== i))}
+                      aria-label={t(locale, "settings.remove")}
+                      className="mb-0.5 flex size-11 shrink-0 items-center justify-center rw-radius-sm rw-dim transition rw-hover-bg rw-focus-ring"
+                    >
+                      <Icon name="nav.close" className="size-4" />
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ul>
+            {urls.length < MAX_SITES && (
+              <Button variant="outline" type="button" onClick={() => setSites([...urls, ""])}>
+                {t(locale, "settings.addWebsite")}
+              </Button>
+            )}
             {visibility("website")}
           </div>
           <div className="space-y-2">
@@ -218,10 +296,6 @@ export function InfoSection() {
             />
             {visibility("birth_date")}
           </div>
-          {/* Telefon — IXTIYORIY va ommaviy profilga chiqmaydi, shuning
-              uchun yonida ko'rinish tugmasi YO'Q: qolgan maydonlardagi
-              `visibility(...)` «reytingda ko'rsatilsinmi» degan savolga
-              javob beradi, bu yerda esa ko'rsatish umuman mumkin emas. */}
           <div className="space-y-2">
             <Field
               label={t(locale, "settings.phone")}
@@ -232,7 +306,6 @@ export function InfoSection() {
               autoComplete="tel"
             />
           </div>
-          {/* Owner-only like the phone, so it has no visibility toggle either. */}
           <Select
             label={t(locale, "settings.shirtSize")}
             name="shirt_size"
@@ -246,17 +319,197 @@ export function InfoSection() {
               </option>
             ))}
           </Select>
+          <Select
+            label={t(locale, "settings.shirtSizeEu")}
+            name="shirt_size_eu"
+            defaultValue={user.shirt_size_eu}
+          >
+            <option value="">{t(locale, "settings.notChosen")}</option>
+            {SHIRT_EU.map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
+          </Select>
         </div>
 
         {user.email && visibility("email", t(locale, "settings.showEmail"))}
         {visibility("online", t(locale, "settings.showOnline"))}
         {visibility("coach", t(locale, "settings.showCoach"))}
         {visibility("social", t(locale, "settings.showSocial"))}
+        {visibility("activity", t(locale, "settings.showActivity"))}
+        {visibility("heatmap", t(locale, "settings.showHeatmap"))}
+        {visibility("recent_ac", t(locale, "settings.showRecentAc"))}
 
         <Status error={action.error} done={action.done} />
         <Button type="submit" busy={action.busy} className="self-start">
           {t(locale, "settings.save")}
         </Button>
+      </form>
+    </Card>
+  );
+}
+
+function DeliveryCard() {
+  const locale = useLocale();
+  const { user, reload } = useSession();
+  const action = useAction();
+  const erase = useAction();
+  const [country, setCountry] = useState<string | null>(null);
+  const [formKey, setFormKey] = useState(0);
+  if (!user) return null;
+  const currentCountry = country ?? user.postal_country;
+
+  async function save(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const text = (name: string) => String(form.get(name) ?? "").trim();
+    await action.run(async () => {
+      await patchJson("/me/", {
+        postal_recipient: text("postal_recipient"),
+        postal_country: currentCountry,
+        postal_region: text("postal_region"),
+        postal_city: text("postal_city"),
+        postal_address: text("postal_address"),
+        postal_code: text("postal_code"),
+        postal_recipient_native: text("postal_recipient_native"),
+        postal_region_native: text("postal_region_native"),
+        postal_city_native: text("postal_city_native"),
+        postal_address_native: text("postal_address_native"),
+        postal_consent: form.get("postal_consent") === "on",
+      });
+      await reload();
+      setCountry(null);
+      setFormKey((n) => n + 1);
+    });
+  }
+
+  async function clear() {
+    const empty = {
+      postal_recipient: "",
+      postal_country: "",
+      postal_region: "",
+      postal_city: "",
+      postal_address: "",
+      postal_code: "",
+      postal_recipient_native: "",
+      postal_region_native: "",
+      postal_city_native: "",
+      postal_address_native: "",
+      postal_consent: false,
+    };
+    const ok = await erase.run(async () => {
+      await patchJson("/me/", empty);
+      await reload();
+    });
+    if (ok) {
+      setCountry("");
+      setFormKey((n) => n + 1);
+    }
+  }
+
+  return (
+    <Card title={t(locale, "settings.delivery")}>
+      <Hint>{t(locale, "settings.deliveryHint")}</Hint>
+      <form key={formKey} onSubmit={save} className="mt-5 flex flex-col gap-6">
+        <div className="grid gap-4 lg:grid-cols-2">
+          <fieldset className="space-y-3">
+            <legend className="text-theme-sm font-medium rw-strong">
+              {t(locale, "settings.langEn")}
+            </legend>
+            <Field
+              label={t(locale, "settings.postalRecipient")}
+              name="postal_recipient"
+              defaultValue={user.postal_recipient}
+              maxLength={150}
+              autoComplete="name"
+            />
+            <CountrySelect
+              label={t(locale, "settings.country")}
+              name="postal_country"
+              value={currentCountry}
+              allowEmpty
+              onChange={setCountry}
+            />
+            <Field
+              label={t(locale, "settings.postalRegion")}
+              name="postal_region"
+              defaultValue={user.postal_region}
+              maxLength={80}
+            />
+            <Field
+              label={t(locale, "settings.postalCity")}
+              name="postal_city"
+              defaultValue={user.postal_city}
+              maxLength={100}
+            />
+            <Field
+              label={t(locale, "settings.postalAddress")}
+              name="postal_address"
+              defaultValue={user.postal_address}
+              maxLength={255}
+            />
+            <Field
+              label={t(locale, "settings.postalCode")}
+              name="postal_code"
+              defaultValue={user.postal_code}
+              maxLength={16}
+              autoComplete="postal-code"
+            />
+          </fieldset>
+          <fieldset className="space-y-3">
+            <legend className="text-theme-sm font-medium rw-strong">
+              {t(locale, "settings.langNative")}
+            </legend>
+            <Field
+              label={t(locale, "settings.postalRecipientNative")}
+              name="postal_recipient_native"
+              defaultValue={user.postal_recipient_native}
+              maxLength={150}
+            />
+            <Field
+              label={t(locale, "settings.postalRegionNative")}
+              name="postal_region_native"
+              defaultValue={user.postal_region_native}
+              maxLength={80}
+            />
+            <Field
+              label={t(locale, "settings.postalCityNative")}
+              name="postal_city_native"
+              defaultValue={user.postal_city_native}
+              maxLength={100}
+            />
+            <Field
+              label={t(locale, "settings.postalAddressNative")}
+              name="postal_address_native"
+              defaultValue={user.postal_address_native}
+              maxLength={255}
+            />
+          </fieldset>
+        </div>
+        <Check
+          label={t(locale, "settings.postalConsent")}
+          name="postal_consent"
+          defaultChecked={user.postal_consent}
+        />
+        <Status
+          error={action.error || erase.error}
+          done={action.done || erase.done}
+          text={erase.done ? t(locale, "settings.deliveryErased") : undefined}
+        />
+        <div className="flex flex-wrap gap-3">
+          <Button type="submit" busy={action.busy} className="self-start">
+            {t(locale, "settings.save")}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            busy={erase.busy}
+            onClick={clear}
+          >
+            {t(locale, "settings.deliveryErase")}
+          </Button>
+        </div>
       </form>
     </Card>
   );

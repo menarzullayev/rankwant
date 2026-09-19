@@ -312,7 +312,7 @@ class Problem(models.Model):
 
         if self.difficulty % DIFFICULTY_STEP:
             raise ValidationError(
-                {"difficulty": f"Qiymat {DIFFICULTY_STEP} ga karrali bo'lishi kerak"}
+                {"difficulty": f"Value must be a multiple of {DIFFICULTY_STEP}"}
             )
 
 

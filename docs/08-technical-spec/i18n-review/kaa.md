@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1614 strings.**
+**1661 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -577,6 +577,9 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `profile.joined` | Ro'yxatdan o'tgan: {date} | Dizimnen ótken: {date} |  |
 | `profile.next` | Keyingi | Kelesi |  |
 | `profile.prev` | Oldingi | Aldıńǵı |  |
+| `profile.activityHidden` | Faoliyat yashirilgan | Is-háreket jasırılǵan |  |
+| `profile.heatmapHidden` | Faollik xaritasi yashirilgan | Aktivlik kartası jasırılǵan |  |
+| `profile.mapHidden` | Yechilgan masalalar xaritasi yashirilgan | Sheshilgen máseleler kartası jasırılǵan |  |
 | `profile.present` | hozirgacha | házirge shekem |  |
 | `profile.purchasesEmpty` | Hali xarid yo'q. | Ele satıp alıw joq. |  |
 | `profile.ratingColumn` | Reyting | Reyting |  |
@@ -735,6 +738,50 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.usernameNextFree` | Keyingi bepul almashtirish: {date}. Undan oldin — {price} Qvant. | Keyingi biypul almastırıw: {date}. Onnan aldın — {price} Qvant. |  |
 | `settings.usernamePay` | {price} Qvant evaziga almashtirish | {price} Qvant esabına almastırıw |  |
 | `settings.wear` | Kiyish | Kiyiw |  |
+| `settings.addBadge` | Nishon qo'shish | Nishan qosıw |  |
+| `settings.addWebsite` | Havola qo'shish | Silteme qosıw |  |
+| `settings.badgeColor` | Rang | Reń |  |
+| `settings.badgeIcon` | Ikonka | Belgi |  |
+| `settings.badgeText` | Yozuv | Jazıw |  |
+| `settings.badges` | Ko'nikma nishonlari | Kónlikme nishanları |  |
+| `settings.badgesHint` | Matn, ikonka va rang. Profilda ochiq ko'rinadi — ko'pi bilan 10 ta. | Tekst, belgi hám reń. Profilde ashıq — eń kóbi 10. |  |
+| `settings.coverBuy` | Muqova sotib olish | Muqaba satıp alıw |  |
+| `settings.coverOwned` | Sizda bor | Sizde bar |  |
+| `settings.delivery` | Yetkazib berish manzili | Jetkeriw mánzili |  |
+| `settings.deliveryErase` | Manzilni o'chirish | Mánzildi óshiriw |  |
+| `settings.deliveryErased` | Manzil o'chirildi | Mánzil óshirildi |  |
+| `settings.deliveryHint` | Sovg'alar uchun. Inglizcha va milliy yozuv to'liq to'ldiriladi yoki bo'sh qoladi. Profilda ko'rinmaydi. | Sıylıqlar ushın. Inglis hám milliy jazıwdı tolıq toltırıń yamasa bos qaldırıń. Profilde kórinbeydi. |  |
+| `settings.endMonth` | Tugagan oyi | Tawsılǵan ayı |  |
+| `settings.firstNameEn` | Ism (inglizcha) | Atı (inglishe) |  |
+| `settings.gender` | Jins | Jınıs |  |
+| `settings.gender.female` | Ayol | Hayal |  |
+| `settings.gender.male` | Erkak | Erkek |  |
+| `settings.gender.non_binary` | No-binar | Binar emes |  |
+| `settings.gender.prefer_not` | Aytmaslikni afzal ko'raman | Aytpawdı qáleymen |  |
+| `settings.genderHint` | Ixtiyoriy. Profilda ko'rsatishni o'zingiz tanlaysiz. | Ápiwayı. Profilde kórsetiwdi ózińiz tańlaysız. |  |
+| `settings.langEn` | Inglizcha | Inglishe |  |
+| `settings.langNative` | Milliy yozuv | Milliy jazıw |  |
+| `settings.lastNameEn` | Familiya (inglizcha) | Familiyası (inglishe) |  |
+| `settings.namesHint` | Inglizcha ism sertifikat va yetkazib berish uchun. Milliy ism hech qachon ommaviy emas. | Inglishe at sertifikat hám jetkeriw ushın. Milliy at hesh qashan ashıq emes. |  |
+| `settings.postalAddress` | Ko'cha manzili | Kóshe mánzili |  |
+| `settings.postalAddressNative` | Ko'cha manzili (milliy) | Kóshe mánzili (milliy) |  |
+| `settings.postalCity` | Shahar (yetkazish) | Qala (jetkeriw) |  |
+| `settings.postalCityNative` | Shahar (milliy) | Qala (milliy) |  |
+| `settings.postalCode` | Pochta indeksi | Pochta kodı |  |
+| `settings.postalConsent` | Manzilimni sovg'a yuborish uchun ishlatishga roziman | Mánzildi sıylıq jiberiw ushın qollanıwǵa kelisemen |  |
+| `settings.postalRecipient` | Qabul qiluvchi | Qabıllawshı |  |
+| `settings.postalRecipientNative` | Qabul qiluvchi (milliy) | Qabıllawshı (milliy) |  |
+| `settings.postalRegion` | Viloyat (yetkazish) | Wálayat (jetkeriw) |  |
+| `settings.postalRegionNative` | Viloyat (milliy) | Wálayat (milliy) |  |
+| `settings.shirtSizeEu` | Futbolka o'lchami (EU) | Futbolka ólshemi (EU) |  |
+| `settings.showActivity` | Faoliyat lentasini ko'rsatish | Is-háreket lentasın kórsetiw |  |
+| `settings.showGender` | Jinsni profilda ko'rsatish | Jınıstı profilde kórsetiw |  |
+| `settings.showHeatmap` | Faollik xaritasini ko'rsatish | Aktivlik kartasın kórsetiw |  |
+| `settings.showRecentAc` | Yechilgan masalalar xaritasini ko'rsatish | Sheshilgen máseleler kartasın kórsetiw |  |
+| `settings.startMonth` | Boshlangan oyi | Baslanǵan ayı |  |
+| `settings.toPresent` | Hozirgacha | Házirge shekem |  |
+| `settings.websites` | Veb-saytlar | Veb saytlar |  |
+| `settings.websitesHint` | 2–5 ta havola. Birinchisi asosiy. https:// bilan yozing. | 2–5 silteme. Birinshisi tiykarǵı. https:// menen jazıń. |  |
 | `settings.website` | Veb-sayt | Veb-sayt |  |
 | `settings.work` | Ish tajribasi | Jumıs tájiriybesi |  |
 | `level.beginner` | Boshlang'ich | Baslanǵısh |  |

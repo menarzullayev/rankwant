@@ -86,10 +86,10 @@ class ArenaViewSet(viewsets.ReadOnlyModelViewSet[ArenaRound]):
         arena = self.get_object()
         index = arena.current_index
         if index is None:
-            return _error(ArenaError("not_running", "Raund hozir yurmayapti"))
+            return _error(ArenaError("not_running", "The round is not running right now"))
         item = arena.items.select_related("question").filter(order=index + 1).first()
         if item is None:
-            return _error(ArenaError("not_running", "Raund tugadi"))
+            return _error(ArenaError("not_running", "The round has finished"))
         assert isinstance(request.user, User)
         answered = ArenaAnswer.objects.filter(
             participation__round=arena,

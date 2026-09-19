@@ -430,10 +430,9 @@ export function LocaleSwitch() {
                           <span className="block truncate rw-dim-2">{ENGLISH_NAMES[code]}</span>
                         ) : null}
                       </span>
-                      {/* Qamrov OLDINDAN ko'rinadi (qaror 10, T3-c):
-                          mavzu/ko'nikma nomlari faqat uz/ru/en da bor,
-                          ya'ni qolgan yetti tilda o'zbekcha chiqadi.
-                          Buni tanlashdan KEYIN aytish kech bo'lardi. */}
+                      {/* Coverage is visible before the choice: topic/skill
+                          names exist only in uz/ru/en. Other locales show
+                          the English identifier, not Uzbek. */}
                       {!hasContentNames(code) && (
                         <span
                           title={t(locale, "content.uzOnly")}

@@ -21,6 +21,7 @@ from profiles.models import (
     ExternalProfile,
     Follow,
     UserSkill,
+    UserSkillBadge,
     UserTechnology,
     WorkExperience,
 )
@@ -29,6 +30,20 @@ from profiles.models import (
 HARD_FROM = 1800
 #: «Chempion» nishoni g'alabadan keyin shuncha kun turadi.
 CHAMPION_DAYS = 365
+
+
+def field_visible(owner: User, viewer: User | None, field: str) -> bool:
+    """Yashirilgan maydon faqat egasiga ko'rinadi."""
+    if viewer is not None and viewer.pk == owner.pk:
+        return True
+    return field not in (owner.hidden_fields or [])
+
+
+def websites_of(user: User) -> list[str]:
+    urls = [str(u) for u in (user.websites or []) if u]
+    if not urls and user.website:
+        urls = [user.website]
+    return urls
 
 
 def build_profile(user: User, viewer: User | None) -> dict[str, Any]:
@@ -56,10 +71,14 @@ def build_profile(user: User, viewer: User | None) -> dict[str, Any]:
         info["school"] = user.school_ref.name if user.school_ref is not None else user.school
         if user.school_ref_id:
             info["school_id"] = str(user.school_ref_id)
-    for field in ("grade", "website"):
-        value = getattr(user, field)
-        if visible(field) and value:
-            info[field] = value
+    if visible("grade") and user.grade:
+        info["grade"] = user.grade
+    if visible("gender") and user.gender:
+        info["gender"] = user.gender
+    urls = websites_of(user)
+    if visible("website") and urls:
+        info["website"] = urls[0]
+        info["websites"] = urls
 
     seen = sessions.last_seen(user) if visible("online") else None
     return {
@@ -87,13 +106,28 @@ def build_profile(user: User, viewer: User | None) -> dict[str, Any]:
         ],
         "educations": list(
             Education.objects.filter(user=user).values(
-                "organization", "degree", "start_year", "end_year"
+                "organization",
+                "degree",
+                "start_year",
+                "start_month",
+                "end_year",
+                "end_month",
+                "current",
             )
         ),
         "work": list(
             WorkExperience.objects.filter(user=user).values(
-                "company", "title", "start_year", "end_year"
+                "company",
+                "title",
+                "start_year",
+                "start_month",
+                "end_year",
+                "end_month",
+                "current",
             )
+        ),
+        "badges": list(
+            UserSkillBadge.objects.filter(user=user).values("text", "icon", "color")
         ),
         "external": list(
             ExternalProfile.objects.filter(user=user).values(

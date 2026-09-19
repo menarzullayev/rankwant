@@ -57,7 +57,7 @@ class TestEmailYagona:
         r = register(email="aziz@example.com")
 
         assert r.status_code == 400
-        assert "band" in str(r.data)
+        assert "taken" in str(r.data)
 
     def test_registr_ahamiyatsiz(self, user) -> None:
         """`Aziz@` va `aziz@` pochta xizmati uchun bitta quti."""
@@ -124,7 +124,7 @@ class TestXatoMatni:
 
         assert r.status_code == 400
         details = r.data["error"]["details"]
-        assert details["username"] == ["Bu username band"]
+        assert details["username"] == ["This username is taken"]
 
     def test_band_email_ozbekcha(self, user) -> None:
         user.email = "aziz@example.com"
@@ -132,4 +132,4 @@ class TestXatoMatni:
 
         r = register(email="aziz@example.com")
 
-        assert r.data["error"]["details"]["email"] == ["Bu email band"]
+        assert r.data["error"]["details"]["email"] == ["This email is taken"]

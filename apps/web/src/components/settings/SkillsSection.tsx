@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { Field } from "@/components/ui/Field";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { ContentName, contentNameText } from "@/components/ui/UzFallbackBadge";
 import { fill, localName, t, type Locale } from "@/i18n/messages";
@@ -11,11 +12,12 @@ import { Icon } from "@/components/ui/Icon";
 import {
   putJson,
   type MySkill,
+  type SkillBadge,
   type SkillName,
   type Technology,
 } from "@/lib/api";
 import { BrandIcon, TECH_ICONS } from "@/lib/tech-icons";
-import { Hint, Loading, Status, useAction, useLoad } from "./kit";
+import { Hint, Loading, Select, Status, useAction, useLoad } from "./kit";
 
 /** `profiles/views.py` dagi `MAX_ROWS` bilan bir xil. */
 const MAX_ROWS = 20;
@@ -230,6 +232,110 @@ export function SkillsSection() {
     <>
       <SkillsCard />
       <TechCard />
+      <BadgesCard />
     </>
+  );
+}
+
+const MAX_BADGES = 10;
+const ICONS = Object.keys(TECH_ICONS);
+
+function BadgesCard() {
+  const locale = useLocale();
+  const loaded = useLoad<SkillBadge[]>("/me/skill-badges/");
+  const action = useAction();
+  const [edited, setEdited] = useState<SkillBadge[] | null>(null);
+  const rows = edited ?? loaded.data ?? [];
+
+  function patch(i: number, part: Partial<SkillBadge>) {
+    setEdited(rows.map((row, j) => (j === i ? { ...row, ...part } : row)));
+  }
+
+  async function save() {
+    const filled = rows.filter((row) => row.text.trim());
+    await action.run(async () => {
+      loaded.setData(await putJson<SkillBadge[]>("/me/skill-badges/", filled));
+      setEdited(null);
+    });
+  }
+
+  return (
+    <Card title={t(locale, "settings.badges")}>
+      <Hint>{t(locale, "settings.badgesHint")}</Hint>
+      {!loaded.data && !loaded.error ? (
+        <div className="mt-3">
+          <Loading />
+        </div>
+      ) : (
+        <>
+          <ul className="mt-4 space-y-4">
+            {rows.map((row, i) => (
+              <li key={i} className="relative rw-radius border rw-line p-4 pr-12">
+                <button
+                  type="button"
+                  onClick={() => setEdited(rows.filter((_, j) => j !== i))}
+                  aria-label={`${t(locale, "settings.remove")}: ${row.text}`}
+                  className="absolute right-2 top-2 flex size-8 items-center justify-center rw-radius-sm rw-dim transition rw-hover-bg rw-focus-ring"
+                >
+                  <Icon name="nav.close" className="size-4" />
+                </button>
+                <div className="flex items-center gap-3">
+                  <span
+                    className="flex size-10 shrink-0 items-center justify-center rounded-full"
+                    style={{ background: row.color, color: "#fff" }}
+                  >
+                    <BrandIcon icon={TECH_ICONS[row.icon]} className="size-5" />
+                  </span>
+                  <div className="grid min-w-0 flex-1 gap-3 sm:grid-cols-3">
+                    <Field
+                      label={t(locale, "settings.badgeText")}
+                      name={`badge-${i}-text`}
+                      value={row.text}
+                      maxLength={24}
+                      onChange={(event) => patch(i, { text: event.target.value })}
+                    />
+                    <Select
+                      label={t(locale, "settings.badgeIcon")}
+                      name={`badge-${i}-icon`}
+                      value={row.icon}
+                      onChange={(event) => patch(i, { icon: event.target.value })}
+                    >
+                      {ICONS.map((slug) => (
+                        <option key={slug} value={slug}>
+                          {slug}
+                        </option>
+                      ))}
+                    </Select>
+                    <Field
+                      label={t(locale, "settings.badgeColor")}
+                      name={`badge-${i}-color`}
+                      type="color"
+                      value={row.color}
+                      onChange={(event) => patch(i, { color: event.target.value })}
+                    />
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            {rows.length < MAX_BADGES && (
+              <Button
+                variant="outline"
+                onClick={() =>
+                  setEdited([...rows, { text: "", icon: "python", color: "#4f46e5" }])
+                }
+              >
+                {t(locale, "settings.addBadge")}
+              </Button>
+            )}
+            <Button busy={action.busy} disabled={edited === null} onClick={save}>
+              {t(locale, "settings.save")}
+            </Button>
+            <Status error={action.error || loaded.error} done={action.done} />
+          </div>
+        </>
+      )}
+    </Card>
   );
 }

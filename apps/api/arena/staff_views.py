@@ -68,8 +68,8 @@ class StaffArenaViewSet(StaffViewSet):
                     "error": {
                         "code": "already_paid",
                         "message": (
-                            "Raund mukofoti berilgan. Qayta rejalash uchun "
-                            "ishtirokchilarni tozalash kerak: reset=true"
+                            "The round prize has been paid. To reschedule, "
+                            "clear participants with reset=true"
                         ),
                         "details": {},
                     }
@@ -100,7 +100,7 @@ class StaffArenaViewSet(StaffViewSet):
     def finalize(self, request: Request, slug: str | None = None) -> Response:
         arena = self.get_object()
         if not arena.is_finished:
-            return _error(ArenaError("not_finished", "Raund hali tugamagan"))
+            return _error(ArenaError("not_finished", "The round has not finished yet"))
         if arena.rewards_applied_at is not None:
             return _error(ArenaError("already_finalized", "Mukofotlar allaqachon berilgan"))
         awarded = finalize(arena)

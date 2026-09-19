@@ -79,18 +79,18 @@ class TestPolicyWindow:
 @pytest.mark.django_db
 class TestEligibility:
     def test_ozini_hack_qila_olmaydi(self, defender_attempt, other_user) -> None:
-        with pytest.raises(HackError, match="O'z yechimingizni"):
+        with pytest.raises(HackError, match="your own solution"):
             submit(other_user, defender_attempt, raw_input="1 2\n")
 
     def test_yechmaganlar_hack_qila_olmaydi(self, defender_attempt, user) -> None:
         UserSolvedProblem.objects.filter(user=user).delete()
-        with pytest.raises(HackError, match="o'zingiz yeching"):
+        with pytest.raises(HackError, match="yourself first"):
             submit(user, defender_attempt, raw_input="1 2\n")
 
     def test_ac_bolmagan_yechim_nishon_emas(self, defender_attempt, user) -> None:
         defender_attempt.verdict = Verdict.WA
         defender_attempt.save(update_fields=["verdict"])
-        with pytest.raises(HackError, match="qabul qilingan"):
+        with pytest.raises(HackError, match="accepted solution"):
             submit(user, defender_attempt, raw_input="1 2\n")
 
     def test_validatorsiz_masala_yopiq(self, defender_attempt, user) -> None:
@@ -102,12 +102,12 @@ class TestEligibility:
     def test_etalonsiz_masala_yopiq(self, defender_attempt, user) -> None:
         """ADR-0021: javobni beradigan etalon yechimsiz hack ochilmaydi."""
         ReferenceSolution.objects.all().delete()
-        with pytest.raises(HackError, match="etalon yechim"):
+        with pytest.raises(HackError, match="reference solution"):
             submit(user, defender_attempt, raw_input="1 2\n")
 
     def test_takroriy_hack_rad_etiladi(self, defender_attempt, user) -> None:
         submit(user, defender_attempt, raw_input="1 2\n")
-        with pytest.raises(HackError, match="allaqachon"):
+        with pytest.raises(HackError, match="already running"):
             submit(user, defender_attempt, raw_input="1 3\n")
 
     def test_manba_faqat_huquqli_hackerga_korinadi(
@@ -275,7 +275,7 @@ class TestGenerator:
         assert hack.points == 0
 
     def test_bosh_generator_rad_etiladi(self, defender_attempt, user, language) -> None:
-        with pytest.raises(HackError, match="Generator manbasi"):
+        with pytest.raises(HackError, match="Generator source"):
             submit(user, defender_attempt, generator_language=language, generator_source="  ")
 
     def test_generator_oz_tilining_chegaralarini_oladi(

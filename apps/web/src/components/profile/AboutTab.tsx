@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/Card";
 import { CountryFlag } from "@/components/ui/CountryFlag";
 import { ContentName } from "@/components/ui/UzFallbackBadge";
-import { t, type Locale } from "@/i18n/messages";
+import { t, type Locale, type MessageKey } from "@/i18n/messages";
 import type { PrivacyField, PublicProfile } from "@/lib/api";
 import { countryName } from "@/lib/countries";
 import { districtName, regionName } from "@/lib/regions";
@@ -10,10 +10,21 @@ import { EXTERNAL_LABEL, externalUrl, hostOf } from "@/lib/external-links";
 import { formatDate } from "@/lib/format";
 import { gradeLabel } from "@/lib/grades";
 
-const years = (start: number | null, end: number | null, locale: Locale) =>
-  start || end
-    ? `${start ?? "…"} – ${end ?? t(locale, "profile.present")}`
-    : "";
+const years = (
+  start: number | null,
+  startMonth: number | null,
+  end: number | null,
+  endMonth: number | null,
+  current: boolean,
+  locale: Locale,
+) => {
+  const fmt = (year: number | null, month: number | null) =>
+    year ? (month ? `${String(month).padStart(2, "0")}.${year}` : String(year)) : "";
+  const from = fmt(start, startMonth);
+  const to =
+    current || (!end && !endMonth) ? t(locale, "profile.present") : fmt(end, endMonth);
+  return from || to ? `${from || "…"} – ${to || "…"}` : "";
+};
 
 export function AboutTab({
   profile,
@@ -82,26 +93,40 @@ export function AboutTab({
       ),
       field: "email",
     });
-  if (info.website)
+  if (info.website) {
+    const urls = info.websites?.length ? info.websites : [info.website];
     rows.push({
       label: t(locale, "settings.website"),
       value: (
-        <a
-          href={info.website}
-          target="_blank"
-          rel="nofollow ugc noopener noreferrer"
-          className="break-all rw-accent-ink hover:underline"
-        >
-          {info.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}
-        </a>
+        <span className="flex flex-col gap-1">
+          {urls.map((url) => (
+            <a
+              key={url}
+              href={url}
+              target="_blank"
+              rel="nofollow ugc noopener noreferrer"
+              className="break-all rw-accent-ink hover:underline"
+            >
+              {url.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+            </a>
+          ))}
+        </span>
       ),
       field: "website",
+    });
+  }
+  if (info.gender)
+    rows.push({
+      label: t(locale, "settings.gender"),
+      value: t(locale, `settings.gender.${info.gender}` as MessageKey),
+      field: "gender",
     });
 
   const empty =
     rows.length === 0 &&
     profile.skills.length === 0 &&
     profile.technologies.length === 0 &&
+    profile.badges?.length === 0 &&
     profile.educations.length === 0 &&
     profile.work.length === 0 &&
     profile.external.length === 0;
@@ -212,6 +237,23 @@ export function AboutTab({
         </Card>
       )}
 
+      {profile.badges?.length > 0 && (
+        <Card title={t(locale, "settings.badges")}>
+          <ul className="flex flex-wrap gap-2">
+            {profile.badges.map((badge) => (
+              <li
+                key={`${badge.icon}-${badge.text}`}
+                className="flex h-8 items-center gap-2 rounded-full px-3 text-theme-sm text-white"
+                style={{ background: badge.color }}
+              >
+                <BrandIcon icon={TECH_ICONS[badge.icon]} />
+                {badge.text}
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
+
       {(profile.educations.length > 0 || profile.work.length > 0) && (
         <Card title={t(locale, "settings.nav.career")} className="lg:col-span-2">
           <div className="grid gap-6 md:grid-cols-2">
@@ -225,7 +267,17 @@ export function AboutTab({
                     <li key={i} className="border-l-2 rw-accent-line pl-3">
                       <p className="text-theme-sm font-medium rw-strong">{row.organization}</p>
                       <p className="text-theme-xs rw-dim">
-                        {[row.degree, years(row.start_year, row.end_year, locale)]
+                        {[
+                          row.degree,
+                          years(
+                            row.start_year,
+                            row.start_month,
+                            row.end_year,
+                            row.end_month,
+                            row.current,
+                            locale,
+                          ),
+                        ]
                           .filter(Boolean)
                           .join(" · ")}
                       </p>
@@ -244,7 +296,17 @@ export function AboutTab({
                     <li key={i} className="border-l-2 rw-accent-line pl-3">
                       <p className="text-theme-sm font-medium rw-strong">{row.company}</p>
                       <p className="text-theme-xs rw-dim">
-                        {[row.title, years(row.start_year, row.end_year, locale)]
+                        {[
+                          row.title,
+                          years(
+                            row.start_year,
+                            row.start_month,
+                            row.end_year,
+                            row.end_month,
+                            row.current,
+                            locale,
+                          ),
+                        ]
                           .filter(Boolean)
                           .join(" · ")}
                       </p>

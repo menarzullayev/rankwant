@@ -88,20 +88,20 @@ class StaffUserSerializer(serializers.ModelSerializer[User]):
             for field in ("is_active", "is_staff"):
                 if field in attrs and attrs[field] != getattr(instance, field):
                     raise serializers.ValidationError(
-                        {field: "O'z hisobingizning bu maydonini o'zgartira olmaysiz"}
+                        {field: "You cannot change this field on your own account"}
                     )
 
         if not actor.is_superuser:
             if "is_staff" in attrs and attrs["is_staff"] != instance.is_staff:
                 raise serializers.ValidationError(
-                    {"is_staff": "Xodim huquqini faqat superuser o'zgartira oladi"}
+                    {"is_staff": "Only a superuser can change staff status"}
                 )
             # Oddiy xodim boshqa xodimni yoki superuser'ni bloklay olmaydi —
             # aks holda bitta xodim butun boshqaruvni qulflab qo'yardi.
             privileged = instance.is_staff or instance.is_superuser
             if privileged and "is_active" in attrs and attrs["is_active"] != instance.is_active:
                 raise serializers.ValidationError(
-                    {"is_active": "Xodim yoki superuser hisobini faqat superuser bloklashi mumkin"}
+                    {"is_active": "Only a superuser can block a staff or superuser account"}
                 )
         return attrs
 
@@ -116,7 +116,7 @@ class QvantAdjustSerializer(serializers.Serializer[dict[str, Any]]):
 
     def validate_amount(self, value: int) -> int:
         if value == 0:
-            raise serializers.ValidationError("Miqdor nolga teng bo'lmasligi kerak")
+            raise serializers.ValidationError("The amount cannot be zero")
         return value
 
 

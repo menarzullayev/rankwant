@@ -46,7 +46,9 @@ export async function ActivityTab({
   const data = await getWithSession<{
     results: ActivityEvent[];
     next_before: string | null;
+    hidden?: boolean;
   }>(`/users/${username}/activity/${query}`);
+  if (data.hidden) return <Empty text={t(locale, "profile.activityHidden")} />;
   if (data.results.length === 0) return <Empty text={t(locale, "profile.activityEmpty")} />;
 
   return (
