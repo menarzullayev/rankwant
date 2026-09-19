@@ -91,3 +91,9 @@ tools/naming/
 
 # CI/CD sessiya jurnali (real vaqtda kuzatuv uchun)
 ci-cd.log
+
+# Codeforces sinxronlash keshi (ADR-0026). `sync_codeforces --fetch`
+# yozadi: xom API javobi (o'lchandi — 346 MB), ya'ni repo'ga tushmasin.
+# Fayl qayta yuklab olinadi, yo'qolsa hech narsa buzilmaydi.
+.sync-cache/
+apps/api/.sync-cache/

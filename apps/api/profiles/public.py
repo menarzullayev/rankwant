@@ -111,6 +111,14 @@ def build_profile(user: User, viewer: User | None) -> dict[str, Any]:
         ),
         "cosmetics": equipped(user),
         "title": titles.user_title(user),
+        # RankWant unvonidan (yuqorida) alohida — manbadagi daraja
+        # (ADR-0026). `title` hisoblanadi, bu ikkisi saqlanadi.
+        "cf_title": user.rank_title or "",
+        "cf_max_title": user.max_rank_title or "",
+        "friend_count": user.friend_count,
+        # Banner — foydalanuvchi yuklagan rasm, shuning uchun
+        # `visible(...)` tekshiruvi shart (`country` bilan bir qoida).
+        "title_photo_url": user.title_photo_url if visible("title_photo") else "",
         "roles": roles(user),
         "last_seen": seen,
         "online": seen is not None

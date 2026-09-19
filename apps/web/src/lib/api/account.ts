@@ -20,7 +20,9 @@ export type PrivacyField =
   | "website"
   | "online"
   | "coach"
-  | "social";
+  | "social"
+  /** Profil banneri — yuklangan rasm, shuning uchun yashirilishi mumkin (ADR-0026). */
+  | "title_photo";
 
 export type ThemeEffect = "none" | "fade" | "circle";
 

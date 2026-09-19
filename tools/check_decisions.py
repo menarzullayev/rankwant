@@ -418,6 +418,12 @@ PARITY_USER_FIELDS = (
     "contribution",
     "device_fingerprint",
     "duel_ready_until",
+    # ADR-0026: rating tier and social fields, written by `sync_codeforces`.
+    # They look dead today because nothing else writes them.
+    "rank_title",
+    "max_rank_title",
+    "friend_count",
+    "title_photo_url",
 )
 
 

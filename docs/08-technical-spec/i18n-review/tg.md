@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1600 strings.**
+**1614 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -774,6 +774,16 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `title.kristal` | Kristal | Кристалл |  |
 | `title.yulduz` | Yulduz | Ситора |  |
 | `title.galaktika` | Galaktika | Галактика |  |
+| `cfTier.newbie` | Yangi boshlovchi | Навкор |  |
+| `cfTier.pupil` | O'quvchi | Донишҷӯ |  |
+| `cfTier.specialist` | Mutaxassis | Мутахассис |  |
+| `cfTier.expert` | Ekspert | Коршинос |  |
+| `cfTier.candidatemaster` | Nomzod usta | Номзади усто |  |
+| `cfTier.master` | Usta | Усто |  |
+| `cfTier.internationalmaster` | Xalqaro usta | Устои байналмилалӣ |  |
+| `cfTier.grandmaster` | Grandmaster | Гроссмейстер |  |
+| `cfTier.internationalgrandmaster` | Xalqaro grandmaster | Гроссмейстери байналмилалӣ |  |
+| `cfTier.legendarygrandmaster` | Afsonaviy grandmaster | Гроссмейстери афсонавӣ |  |
 | `profile.acceptance` | Qabul qilingan urinishlar: {rate}% | Кӯшишҳои қабулшуда: {rate}% |  |
 | `profile.accepted` | qabul | қабул |  |
 | `profile.errors` | xato | хато |  |
@@ -857,6 +867,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `profile.online` | Onlayn | Онлайн |  |
 | `profile.lastSeen` | Oxirgi faollik: {time} | Охирин фаъолият: {time} |  |
 | `profile.titleHint` | Unvon Contests reytingidan | Унвон аз рейтинги Contests |  |
+| `profile.cfTitle` | Manbadagi daraja | Сатҳ дар манбаъ |  |
+| `profile.cfMaxTitle` | Eng yuqori daraja | Сатҳи баландтарин |  |
+| `profile.friendCount` | Do'stlar | Дӯстон |  |
+| `profile.cfBanner` | Profil banneri | Баннери профил |  |
 | `settings.showOnline` | Onlayn holat va oxirgi faollikni ko'rsatish | Намоиши ҳолати онлайн ва охирин фаъолият |  |
 | `tier.bronze` | Bronza | Биринҷӣ |  |
 | `tier.silver` | Kumush | Нуқра |  |

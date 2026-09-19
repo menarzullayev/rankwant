@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1600 strings.**
+**1614 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -774,6 +774,16 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `title.kristal` | Kristal | Кристалл |  |
 | `title.yulduz` | Yulduz | Жылдыз |  |
 | `title.galaktika` | Galaktika | Галактика |  |
+| `cfTier.newbie` | Yangi boshlovchi | Жаңы баштаган |  |
+| `cfTier.pupil` | O'quvchi | Окуучу |  |
+| `cfTier.specialist` | Mutaxassis | Адис |  |
+| `cfTier.expert` | Ekspert | Эксперт |  |
+| `cfTier.candidatemaster` | Nomzod usta | Шеберликке талапкер |  |
+| `cfTier.master` | Usta | Шебер |  |
+| `cfTier.internationalmaster` | Xalqaro usta | Эл аралык шебер |  |
+| `cfTier.grandmaster` | Grandmaster | Гроссмейстер |  |
+| `cfTier.internationalgrandmaster` | Xalqaro grandmaster | Эл аралык гроссмейстер |  |
+| `cfTier.legendarygrandmaster` | Afsonaviy grandmaster | Легендарлуу гроссмейстер |  |
 | `profile.acceptance` | Qabul qilingan urinishlar: {rate}% | Кабыл алынган аракеттер: {rate}% |  |
 | `profile.accepted` | qabul | кабыл |  |
 | `profile.errors` | xato | ката |  |
@@ -857,6 +867,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `profile.online` | Onlayn | Онлайн |  |
 | `profile.lastSeen` | Oxirgi faollik: {time} | Акыркы активдүүлүк: {time} |  |
 | `profile.titleHint` | Unvon Contests reytingidan | Наам Contests рейтингинен |  |
+| `profile.cfTitle` | Manbadagi daraja | Булактагы деңгээл |  |
+| `profile.cfMaxTitle` | Eng yuqori daraja | Эң жогорку деңгээл |  |
+| `profile.friendCount` | Do'stlar | Достор |  |
+| `profile.cfBanner` | Profil banneri | Профиль баннери |  |
 | `settings.showOnline` | Onlayn holat va oxirgi faollikni ko'rsatish | Онлайн абалды жана акыркы активдүүлүктү көрсөтүү |  |
 | `tier.bronze` | Bronza | Коло |  |
 | `tier.silver` | Kumush | Күмүш |  |

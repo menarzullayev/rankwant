@@ -68,6 +68,8 @@ CLEARED_FIELDS: tuple[str, ...] = (
     "device_fingerprint",
     "duel_ready_until",
     "last_seen_at",
+    # ADR-0026: a profile banner is uploaded content, like `avatar_url`.
+    "title_photo_url",
 )
 
 #: Kept on purpose. Results and counters stay, as the module docstring explains;
@@ -102,6 +104,10 @@ KEPT_FIELDS: tuple[str, ...] = (
     "plan",
     "plan_expires_at",
     "contribution",
+    # ADR-0026: rating metadata, kept for the same reason as `rating_contest`.
+    "rank_title",
+    "max_rank_title",
+    "friend_count",
 )
 
 
@@ -193,6 +199,10 @@ def anonymize(user: User) -> None:
     user.device_fingerprint = ""
     user.duel_ready_until = None
     user.last_seen_at = None
+    # ADR-0026: the banner is uploaded content, so it is cleared and its
+    # stored file removed, exactly like the avatar above.
+    old_title_photo = avatars.name_from_url(user.title_photo_url)
+    user.title_photo_url = ""
     user.is_active = False
     # Sessiya paroldan olingan hashga bog'langan — parolni yaroqsiz
     # qilish ochiq qolgan barcha sessiyalarni ham uzadi.
@@ -200,6 +210,8 @@ def anonymize(user: User) -> None:
     user.save()
     if old_avatar:
         avatars.delete(old_avatar)
+    if old_title_photo:
+        avatars.delete(old_title_photo)
 
 
 def is_anonymized(user: User) -> bool:

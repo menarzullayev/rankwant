@@ -12,6 +12,17 @@ export type UserPublic = {
   country: string;
   /** Unvon — Contests reytingidan; reytingli musobaqasiz `null` (ADR-0018). */
   title: UserTitle | null;
+  /** Manbadagi daraja nomi (`newbie`…`legendary grandmaster`, ADR-0026).
+   *  `title` dan ALOHIDA tizim: `title` RankWant'da HISOBLANADI, bu esa
+   *  tashqi profildan KELADI. Ikkalasi ham ko'rsatilishi mumkin. */
+  cf_title: string;
+  /** Manbadagi eng yuqori daraja. Bo'sh satr — ma'lumot yo'q. */
+  cf_max_title: string;
+  /** Tashqi profildagi do'stlar soni (ADR-0026). */
+  friend_count: number;
+  /** Profil banneri. `avatar_url` dan farqli — katta fon rasmi.
+   *  Yashirilgan bo'lsa bo'sh satr (maxfiylik maydoni). */
+  title_photo_url: string;
   rating_skills: number;
   rating_contest: number;
   /** Phase 1 da yoqildi — ADR-0006 fazali ochilish */
@@ -161,6 +172,12 @@ export type PublicProfile = {
   is_following: boolean | null;
   cosmetics: Cosmetics;
   title: UserTitle | null;
+  /** Manbadagi daraja (ADR-0026) — `title` dan alohida, hisoblanmaydi. */
+  cf_title: string;
+  cf_max_title: string;
+  friend_count: number;
+  /** Banner — `title_photo` maxfiylik maydoni bilan yashiriladi. */
+  title_photo_url: string;
   roles: ProfileRole[];
   /** Yashirilgan yoki hech qachon kirmagan — `null`. */
   last_seen: string | null;

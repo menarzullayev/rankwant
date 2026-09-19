@@ -18365,12 +18365,33 @@ components:
             Bitta Skills raqami «qayerda turibman» degan savolga javob
             beradi, bu esa «nimani mashq qilishim kerak» degan savolga.
           readOnly: true
+        cf_title:
+          type: string
+          description: Manbada unvon yo'q bo'lsa bo'sh satr — frontend uni chizmaydi.
+          readOnly: true
+        cf_max_title:
+          type: string
+          readOnly: true
+        friend_count:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        title_photo_url:
+          type: string
+          description: |-
+            Profil banneri. `country` kabi `hidden_fields` ga bo'ysunadi:
+            foydalanuvchi yuklagan rasm, ya'ni yashirish huquqi bo'lishi kerak.
+          readOnly: true
       required:
+      - cf_max_title
+      - cf_title
       - country
       - max_ratings
       - ranks
       - solved_by_level
       - title
+      - title_photo_url
       - username
     UserSession:
       type: object
