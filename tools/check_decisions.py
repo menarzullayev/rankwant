@@ -66,6 +66,9 @@ LOCALE_PARAMS = "apps/web/src/i18n/locale-params.ts"
 LOCALE_RESOLVE = "apps/web/src/i18n/resolve.ts"
 LOCALE_SERVER = "apps/web/src/i18n/server.ts"
 PROXY = "apps/web/src/proxy.ts"
+# Guest GET `/` CDN cache (2026-09-19): origin headers + Worker skip.
+HOME_CACHE = "apps/web/src/lib/home-cache.ts"
+WORKER_TOML = "services/maintenance-worker/wrangler.toml"
 SIGN_IN_LINK = "apps/web/src/layout/UserMenu.tsx"
 # Mobile navigation drawer: the trigger announces its state, the panel is a
 # named dialog while it is open, focus moves in and comes back, Esc closes it
@@ -973,6 +976,52 @@ def locale_travels_in_the_url() -> str | None:
     return None
 
 
+def homepage_guest_cdn_cache() -> str | None:
+    """100k ochilishda bosh sahifa qotmasin (2026-09-19).
+
+    Mehmon GET `/`: `public, s-maxage=30, stale-while-revalidate`.
+    Kirgan: `private, no-store`. Cloudflare `/` ni Worker'siz, origin
+    header bo'yicha keshlaydi. Catch-all `rankwant.uz/*` qaytsa GET `/`
+    yana har so'rovda Worker kvotasini yeydi.
+    """
+    src = read(HOME_CACHE)
+    if "public, s-maxage=30, stale-while-revalidate=86400" not in src:
+        return (
+            f"{HOME_CACHE}: mehmon Cache-Control `public, s-maxage=30, "
+            "stale-while-revalidate` emas"
+        )
+    if 'HOME_CACHE_PRIVATE = "private, no-store"' not in src:
+        return f"{HOME_CACHE}: kirgan Cache-Control `private, no-store` emas"
+    if 'SESSION_COOKIE = "sessionid"' not in src:
+        return f"{HOME_CACHE}: sessiya cookie `sessionid` emas"
+    if "export function homeCacheDecision" not in src:
+        return f"{HOME_CACHE}: `homeCacheDecision` yo'q"
+
+    proxy = read(PROXY)
+    if "homeCacheDecision" not in proxy:
+        return f"{PROXY}: bosh sahifa kesh qarori qo'llanmaydi"
+    if "homeCache.assignExperiments" not in proxy:
+        return (
+            f"{PROXY}: keshlangan GET `/` ga eksperiment cookie yozilishi "
+            "mumkin — Cloudflare Set-Cookie'li javobni saqlamaydi"
+        )
+
+    toml = read(WORKER_TOML)
+    if '{ pattern = "rankwant.uz/*"' in toml:
+        return (
+            f"{WORKER_TOML}: catch-all `rankwant.uz/*` GET `/` ni Worker'ga "
+            "qaytaradi (kvota)"
+        )
+    if '{ pattern = "www.rankwant.uz/*"' in toml:
+        return (
+            f"{WORKER_TOML}: catch-all `www.rankwant.uz/*` GET `/` ni "
+            "Worker'ga qaytaradi"
+        )
+    if "rankwant.uz/a*" not in toml:
+        return f"{WORKER_TOML}: `/` dan boshqa yo'llar Worker'siz qolmasin"
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -995,6 +1044,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("brend headerda, footer uch ustun", brand_in_header_and_footer_columns),
     ("kontent qamrovi ko'rinadi", content_coverage_visible),
     ("til havolada ham keladi", locale_travels_in_the_url),
+    ("bosh sahifa mehmon CDN keshi", homepage_guest_cdn_cache),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),

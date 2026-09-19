@@ -2,8 +2,9 @@
 # Cloudflare Workers route sozlamalari joyidami?
 #
 # Nega kerak: `rankwant.uz` oldida `rankwant-maintenance` Worker turadi
-# (services/maintenance-worker). U HAR so'rovda ishlaydi, ya'ni bepul
-# tarifning kuniga 100 000 so'rovi oddiy trafik bilan ham tugaydi.
+# (services/maintenance-worker). GET `/` dan tashqari HAR so'rovda
+# ishlaydi, ya'ni bepul tarifning kuniga 100 000 so'rovi oddiy trafik
+# bilan ham tugaydi. Bosh sahifa 2026-09-19 dan Worker'siz.
 # 2026-09-13 da aynan shunday bo'ldi: 18:31 da 76%, 20:56 da 94%,
 # 22:35 da esa limit tugadi.
 #

@@ -59,6 +59,9 @@ function softFail<T>(error: unknown): T[] {
   return [];
 }
 
+// Layout cookie o'qiydi, shuning uchun Next sahifani dinamik chizadi.
+// Mehmon GET `/` Cache-Control ni `home-cache.ts` + proxy/instrumentation
+// origin'da qo'yadi; Cloudflare origin header'ga rioya qiladi.
 export const dynamic = "force-dynamic";
 
 /** Yaqin musobaqa = hozir ketayotgan yoki hali boshlanmagan, eng yaqini birinchi. */

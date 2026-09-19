@@ -2366,6 +2366,46 @@ def neg_decisions_locale_link_not_remembered() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_home_cache_ttl_dropped() -> tuple[bool, str]:
+    """Mehmon `s-maxage=30` olib tashlansa tutilsin."""
+    return _decision_broken(
+        "apps/web/src/lib/home-cache.ts",
+        '  "public, s-maxage=30, stale-while-revalidate=86400";',
+        '  "public, s-maxage=0, stale-while-revalidate=86400";',
+        "bosh sahifa mehmon CDN keshi",
+    )
+
+
+def neg_decisions_home_cache_logged_in_public() -> tuple[bool, str]:
+    """Kirgan javob `public` bo'lsa tutilsin — shaxsiy HTML CDN'ga tushadi."""
+    return _decision_broken(
+        "apps/web/src/lib/home-cache.ts",
+        'export const HOME_CACHE_PRIVATE = "private, no-store";',
+        'export const HOME_CACHE_PRIVATE = "public, s-maxage=30";',
+        "bosh sahifa mehmon CDN keshi",
+    )
+
+
+def neg_decisions_home_cache_proxy_unwired() -> tuple[bool, str]:
+    """Keshlangan GET `/` yana eksperiment cookie yozsa tutilsin."""
+    return _decision_broken(
+        "apps/web/src/proxy.ts",
+        "if (homeCache.assignExperiments) assignExperiments(request, response);",
+        "assignExperiments(request, response);",
+        "bosh sahifa mehmon CDN keshi",
+    )
+
+
+def neg_decisions_home_worker_catchall_restored() -> tuple[bool, str]:
+    """Worker yana `rankwant.uz/*` ni tutsa tutilsin — GET `/` kvotani yeydi."""
+    return _decision_broken(
+        "services/maintenance-worker/wrangler.toml",
+        '  { pattern = "rankwant.uz/a*", zone_name = "rankwant.uz" },',
+        '  { pattern = "rankwant.uz/*", zone_name = "rankwant.uz" },',
+        "bosh sahifa mehmon CDN keshi",
+    )
+
+
 def neg_decisions_locale_choice_keeps_param() -> tuple[bool, str]:
     """Qo'lda tanlov `?lang=` ni tozalamasa tutilsin.
 
@@ -2744,6 +2784,10 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/i18n/locale-params.ts",
     "apps/web/src/i18n/resolve.ts",
     "apps/web/src/i18n/server.ts",
+    # Guest homepage CDN cache (2026-09-19). Missing here, the sandbox
+    # copy cannot be read and `check_decisions.py` fails with exit 2.
+    "apps/web/src/lib/home-cache.ts",
+    "services/maintenance-worker/wrangler.toml",
 )
 
 
@@ -4328,6 +4372,22 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "tanlov `?lang=` ni tozalamasa tutilsin",
                 neg_decisions_locale_choice_keeps_param,
+            ),
+            (
+                "mehmon s-maxage olib tashlansa tutilsin",
+                neg_decisions_home_cache_ttl_dropped,
+            ),
+            (
+                "kirgan javob public bo'lsa tutilsin",
+                neg_decisions_home_cache_logged_in_public,
+            ),
+            (
+                "proxy kesh qarorini qo'llamasa tutilsin",
+                neg_decisions_home_cache_proxy_unwired,
+            ),
+            (
+                "worker catch-all qaytsa tutilsin",
+                neg_decisions_home_worker_catchall_restored,
             ),
             ("deploy darvozasi uzilsa tutilsin", neg_decisions_deploy_gate_unwired),
             ("deploy qulfi olib tashlansa tutilsin", neg_decisions_deploy_lock_removed),
