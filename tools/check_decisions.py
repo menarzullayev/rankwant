@@ -1027,7 +1027,7 @@ ROLLBACK = "tools/rollback.sh"
 
 
 def deploy_automation_is_safe() -> str | None:
-    """Avtomatik deploy zanjiri — tartib buzilsa JIM buziladigan to'rt joy.
+    """Avtomatik deploy zanjiri — tartib buzilsa JIM buziladigan besh joy.
 
     Saidakbar aka qarori (2026-09-19): deploy to'liq avtomatik bo'ladi —
     host watcher orqali (`tools/auto_deploy.sh` + `RankWant Auto Deploy`
@@ -1037,7 +1037,7 @@ def deploy_automation_is_safe() -> str | None:
     ya'ni u `check_deploy_gate.py` ni yurgiza olmaydi. Shuning uchun
     avtomatlashtirish Actions'ni yoqish bilan emas, watcher bilan qurildi.
 
-    To'rtta shart tartibga bog'liq: buzilganda kod ISHLAYDI, natija esa
+    Beshta shart tartibga bog'liq: buzilganda kod ISHLAYDI, natija esa
     noto'g'ri bo'ladi — ya'ni xato faqat hodisa paytida bilinadi.
 
     1. ZAXIRA MIGRATSIYADAN OLDIN. `backup.sh --dump-only` `run --rm
@@ -1053,6 +1053,12 @@ def deploy_automation_is_safe() -> str | None:
        xabar uchun, `exit 1` esa faqat `stale`/`envbad` da), ya'ni stack
        yiqilgan bo'lsa «joriy kodda» deb YOLG'ON YASHIL beradi. `all_up`
        shu teshikni yopadi.
+    5. ENV-FAYL IKKALA JOYDA BIR XIL. Deploy worktree'da `.env.public`
+       YO'Q (`.gitignore`: `.env.*`), ya'ni watcher uni
+       `RANKWANT_AUTO_DEPLOY_ENV` bilan ko'rsatadi. Tekshiruv ham,
+       `deploy.sh` ga uzatish ham `$ENV_FILE` dan o'qilmasa, watcher bir
+       faylni tekshirib boshqasini uzatadi: deploy bo'sh env bilan ketadi,
+       API har so'rovga 400 qaytaradi — xato faqat jonli saytda bilinadi.
     """
     deploy = read("tools/deploy.sh")
     auto = read(AUTO_DEPLOY)
@@ -1106,6 +1112,22 @@ def deploy_automation_is_safe() -> str | None:
         return f"{AUTO_DEPLOY}: `deploy.sh --yes` chaqirilmaydi"
     if attempt_at > deploy_at:
         return f"{AUTO_DEPLOY}: urinish deploy'dan KEYIN yoziladi — yiqilgan yurish takrorlanadi"
+
+    # Env-fayl worktree'dan TASHQARIDA: `.env.public` `.gitignore` da
+    # (`.env.*`), ya'ni yangi worktree'da u yo'q. Ikkala joy BIR XIL
+    # o'zgaruvchidan o'qilishi shart — tekshiruv ham, `deploy.sh` ga
+    # uzatish ham `$ENV_FILE` dan. Ajralib ketsa watcher bir faylni
+    # tekshirib, boshqasini uzatardi: deploy bo'sh env bilan ketadi va API
+    # har so'rovga 400 qaytaradi — jimgina, faqat jonli saytda bilinadi.
+    if "RANKWANT_AUTO_DEPLOY_ENV:-$LIVE_DIR/.env.public" not in auto:
+        return (
+            f"{AUTO_DEPLOY}: env-fayl worktree'dan tashqarida "
+            "ko'rsatilmaydi (`RANKWANT_AUTO_DEPLOY_ENV`)"
+        )
+    if '[ -f "$ENV_FILE" ] || die' not in auto:
+        return f"{AUTO_DEPLOY}: env-fayl mavjudligi tekshirilmaydi"
+    if 'RANKWANT_ENV_FILE="$ENV_FILE"' not in auto:
+        return f"{AUTO_DEPLOY}: `deploy.sh` ga boshqa env-fayl uzatiladi"
     return None
 
 

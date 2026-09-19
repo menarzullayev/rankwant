@@ -2499,6 +2499,53 @@ def neg_decisions_auto_deploy_attempt_after_deploy() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_auto_deploy_env_hardcoded() -> tuple[bool, str]:
+    """Watcher `deploy.sh` ga BOSHQA env-faylni uzatsa tutilsin.
+
+    Deploy worktree'da `.env.public` yo'q (`.gitignore`: `.env.*`), ya'ni
+    watcher uni `RANKWANT_AUTO_DEPLOY_ENV` bilan tashqaridan ko'rsatadi.
+    Uzatish `$ENV_FILE` dan o'qilmay, qattiq yozilgan yo'l qolsa, watcher
+    bir faylni tekshirib boshqasini uzatadi: deploy bo'sh env bilan ketadi
+    va API har so'rovga 400 qaytaradi — xato faqat jonli saytda bilinadi.
+    """
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        'RANKWANT_ENV_FILE="$ENV_FILE"',
+        'RANKWANT_ENV_FILE="$LIVE_DIR/.env.public"',
+        "avtomatik deploy xavfsiz",
+    )
+
+
+def neg_decisions_auto_deploy_env_not_configurable() -> tuple[bool, str]:
+    """Watcher env-faylni worktree ichidan qidirsa tutilsin.
+
+    Standart qiymat `$LIVE_DIR/.env.public` bo'lib qolsa va override
+    bo'lmasa, deploy worktree'da (`.env.public` `.gitignore` da) watcher
+    har 5 daqiqada `die` qiladi — deploy umuman bo'lmaydi, log ko'miladi.
+    """
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        "RANKWANT_AUTO_DEPLOY_ENV:-$LIVE_DIR/.env.public",
+        "RANKWANT_AUTO_DEPLOY_ENV_UNUSED:-$LIVE_DIR/.env.public",
+        "avtomatik deploy xavfsiz",
+    )
+
+
+def neg_decisions_auto_deploy_env_unchecked() -> tuple[bool, str]:
+    """Watcher env-fayl borligini tekshirmasa tutilsin.
+
+    Tekshiruvsiz `deploy.sh` bo'sh `--env-file` bilan ketadi va `\\${VAR}`
+    o'rniga bo'sh satr qoladi: API har so'rovga 400 qaytaradi, lekin
+    konteynerlar «Up» turadi — sabab ko'rinmaydi.
+    """
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        '[ -f "$ENV_FILE" ] || die',
+        '[ -f "$ENV_FILE" ] || true #',
+        "avtomatik deploy xavfsiz",
+    )
+
+
 def neg_decisions_signin_label_wraps() -> tuple[bool, str]:
     """Kirish yorlig'i o'raladigan bo'lsa tutilsin.
 
@@ -4492,6 +4539,18 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "qayta urinish yozuvi deploy'dan keyin bo'lsa tutilsin",
                 neg_decisions_auto_deploy_attempt_after_deploy,
+            ),
+            (
+                "deploy'ga boshqa env-fayl uzatilsa tutilsin",
+                neg_decisions_auto_deploy_env_hardcoded,
+            ),
+            (
+                "env-fayl worktree'dan tashqarida ko'rsatilmasa tutilsin",
+                neg_decisions_auto_deploy_env_not_configurable,
+            ),
+            (
+                "env-fayl borligi tekshirilmasa tutilsin",
+                neg_decisions_auto_deploy_env_unchecked,
             ),
             ("deploy darvozasi uzilsa tutilsin", neg_decisions_deploy_gate_unwired),
             ("deploy qulfi olib tashlansa tutilsin", neg_decisions_deploy_lock_removed),
