@@ -19,6 +19,10 @@ on:
         description: "Run every job (ignore path filters)"
         type: boolean
         default: true
+      coverage:
+        description: "API pytest --cov (also on Nightly; not on push/PR)"
+        type: boolean
+        default: false
 
 # The self-hosted runner runs as user `nsn` on the development machine
 # and can see Python packages in `~/.local/lib/.../site-packages`.
@@ -211,13 +215,16 @@ jobs:
           PYTEST_SHARD: ${{ matrix.shard }}
         # Public `ubuntu-latest` is 4 vCPU. `-n 6` was fastest on the
         # 8-CPU laptop runner; on 4 cores it oversubscribes.
-        # `--cov` stays on `main` (one shard) — on a PR it added 20–40 s
-        # and helped the 5 min timeout fire on hosted.
+        # `--cov` is Nightly + optional dispatch only. On `main` push it
+        # added ~40 s to shard 0 (741 tests, 407 warnings) without
+        # changing the smoke wall.
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ] || [ "${{ matrix.shard }}" != "0" ]; then
+          if [ "${{ matrix.shard }}" != "0" ]; then
             pytest -n 4
-          else
+          elif [ "${{ github.event_name }}" = "schedule" ] || [ "${{ github.event.inputs.coverage }}" = "true" ]; then
             pytest -n 4 --cov --cov-report=term-missing
+          else
+            pytest -n 4
           fi
         working-directory: apps/api
 
@@ -313,6 +320,9 @@ jobs:
         if: steps.check.outputs.ready == 'true'
         env:
           NODE: node
+          # Four isolated git-archive copies. One tree cannot mutate in
+          # parallel; 176 cases on one process were 42–48 s of the web job.
+          NEGATIVE_JOBS: '4'
         run: python3 tools/check_negative.py
       - name: Text contrast (WCAG AA)
         if: steps.check.outputs.ready == 'true'
@@ -418,7 +428,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Stack
-        timeout-minutes: 10
+        timeout-minutes: 12
         run: bash tools/ci_stack.sh
       - name: Demo data
         timeout-minutes: 3
@@ -435,54 +445,6 @@ jobs:
         # only step that runs API and judge TOGETHER — when they are
         # tested separately, a contract mismatch stays hidden.
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm smoke
-      - name: Bake-off — validator cases (real nsjail)
-        timeout-minutes: 3
-        # ADR-0020's most important protection: a bad input is rejected
-        # BEFORE a submission runs. Only a real sandbox can confirm that
-        # — unit tests replace `sandboxed` with a fake executor, so
-        # nsjail, compilation, and the exit code are invisible to them.
-        # Measured: with the protection removed, case 19 returns `AC`
-        # instead of `WRONG_TEST`.
-        #
-        # In this job because the stack (with the judge image) is
-        # already built: the step adds a few seconds. A separate job
-        # would have to rebuild nsjail from source.
-        #
-        # Full suite (21 cases), not only the three validator ones:
-        # measured 2026-09-16 — all in 11.2 s (p50 33 ms, p95 1742 ms).
-        # The guess that "the rest are much slower" was WRONG, so fork
-        # bomb, network, `/proc`, symlink, and file-write isolation
-        # also go through this gate.
-        #
-        # ⚠️ `worker` and `beat` are stopped: `drain_results` would
-        # consume results from the queue BEFORE the harness and the
-        # report would say it failed security — even though the
-        # sandbox is fine (CLAUDE.md § Bake-off).
-        run: |
-          C="docker compose -f docker-compose.yml -f docker-compose.ci.yml"
-          $C stop worker beat
-          set +e
-          $C --profile bakeoff run --rm bakeoff
-          status=$?
-          set -e
-          $C start worker beat
-          exit $status
-      - uses: actions/setup-python@v7
-        with:
-          python-version: '3.12'
-      - name: Language matrix — declared version matches the image
-        timeout-minutes: 2
-        # If the platform says "Python 3.13" but the judge runs 3.11,
-        # the user gets a confusing `SyntaxError` and blames THEIR
-        # code. The only way to know is to run a program that prints
-        # each language's version, which needs the judge IMAGE — so
-        # this step is in this job, after the stack is up.
-        #
-        # The check itself sat DEAD for a long time: after a sixth
-        # column was added to the seed row it raised `ValueError`
-        # without checking anything, and no gate called it
-        # (2026-09-16).
-        run: python3 tests/compatibility/check_languages.py "${COMPOSE_PROJECT_NAME}-judge"
       - uses: actions/setup-node@v7
         with:
           node-version: '22'
@@ -506,12 +468,8 @@ jobs:
         #
         # `npm ci` runs on the VM (cached) and the tree is bind-mounted
         # into the Playwright image — browsers stay in the image.
-        run: |
-          docker run --rm --user "$(id -u):$(id -g)" --network "${COMPOSE_PROJECT_NAME}_default" \
-            -v "${HOST_REPO_ROOT:-$PWD}/tests/e2e:/e2e" -w /e2e \
-            -e E2E_BASE_URL=http://web:3000 -e E2E_API_BASE=http://api:8000/api/v1 -e CI=1 \
-            mcr.microsoft.com/playwright:v1.63.0-noble \
-            npx playwright test --project=chromium --reporter=list
+        # Image comes from GHCR after the first mirror push (MCR on miss).
+        run: bash tools/ci_playwright.sh -- npx playwright test --project=chromium --reporter=list
       - name: Logs (on failure)
         if: failure()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs --tail 60
@@ -558,3 +516,65 @@ jobs:
           # CI leftovers stay bounded. This is NOT a complete fix —
           # the right fix is a daemon-level cache-size cap. Open.
           docker builder prune -f --filter 'until=168h' || true
+
+  # Parallel to smoke: GHCR judge (pull+tag when context matches).
+  # Was +50 s sequential inside smoke after the stack was already up.
+  language_matrix:
+    name: Language matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: filter
+    if: >-
+      ${{ (needs.filter.outputs.code == 'true' || github.event_name == 'workflow_dispatch')
+          && github.event_name != 'pull_request' }}
+    env:
+      COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      CI_PUSH_IMAGE_CACHE: '0'
+      CI_STACK_SERVICES: judge
+      CI_STACK_UP: '0'
+    steps:
+      - uses: actions/checkout@v7
+      - name: Judge image
+        run: bash tools/ci_stack.sh
+      - name: Declared versions match the image
+        run: python3 tests/compatibility/check_languages.py "${COMPOSE_PROJECT_NAME}-judge"
+      - name: Clean images
+        if: always()
+        run: docker image rm "${COMPOSE_PROJECT_NAME}-judge" || true
+
+  bakeoff:
+    name: Bake-off — validator cases
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: filter
+    if: >-
+      ${{ (needs.filter.outputs.code == 'true' || github.event_name == 'workflow_dispatch')
+          && github.event_name != 'pull_request' }}
+    env:
+      COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      CI_PUSH_IMAGE_CACHE: '0'
+      CI_STACK_SERVICES: api,judge
+      CI_STACK_UP_SERVICES: redis judge
+    steps:
+      - uses: actions/checkout@v7
+      - name: Judge and API images
+        timeout-minutes: 10
+        run: bash tools/ci_stack.sh
+      - name: Bake-off — validator cases (real nsjail)
+        timeout-minutes: 3
+        # ADR-0020: a bad input is rejected BEFORE a submission runs.
+        # Full suite (21 cases), measured 2026-09-16 — all in 11.2 s.
+        run: |
+          C="docker compose -f docker-compose.yml -f docker-compose.ci.yml"
+          $C --profile bakeoff run --rm bakeoff
+      - name: Tear down
+        if: always()
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+      - name: Clean images
+        if: always()
+        run: |
+          docker images --format '{{.Repository}}:{{.Tag}}' \
+            | grep -E "^${COMPOSE_PROJECT_NAME}-" \
+            | xargs -r docker rmi -f || true

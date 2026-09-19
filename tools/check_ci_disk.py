@@ -37,6 +37,8 @@ NIGHTLY = ROOT / ".github/workflows/nightly.yml"
 #: Har bir fayl: (yo'l, job nomi, izlanadigan naqshlar).
 EXPECTED = [
     (CI, "smoke", [r"docker\s+rmi", r"builder\s+prune"]),
+    (CI, "bakeoff", [r"docker\s+rmi"]),
+    (CI, "language_matrix", [r"docker\s+image\s+rm"]),
     (DEPLOY, "deploy", [r"docker\s+rmi", r"builder\s+prune"]),
     # Nightly builds the whole stack in three jobs. Build cache is pruned by
     # ci.yml's smoke job, so these only have to remove their own images.

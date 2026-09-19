@@ -63,12 +63,15 @@ WORKDIR /dl
 # .NET SDK 10.0.401 — C# 14. Checksum: release-metadata/10.0/releases.json (sha512).
 RUN curl -fsSL --retry 3 -o dotnet.tgz https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.401/dotnet-sdk-10.0.401-linux-x64.tar.gz \
     && echo "51c8b999af9e8dd9998c9edc5944e19a90788862068acd38694e098889054ce8c23d4f0c5cccfa16bf187d044562359e5ee69a9f8ad0bbe913ba90311fbce25b  dotnet.tgz" | sha512sum -c - \
-    && mkdir -p /opt/dotnet && tar -xzf dotnet.tgz -C /opt/dotnet && rm dotnet.tgz
+    && mkdir -p /opt/dotnet && tar -xzf dotnet.tgz -C /opt/dotnet && rm dotnet.tgz \
+    && find /opt/dotnet -name '*.pdb' -delete \
+    && rm -rf /opt/dotnet/packs/*/analytics /opt/dotnet/sdk/*/nuGetPackagesArchive
 
 # Node.js 24.21.0 LTS — JavaScript. Debian's Node 20 reached end of life in April 2026.
 RUN curl -fsSL --retry 3 -o node.txz https://nodejs.org/dist/v24.21.0/node-v24.21.0-linux-x64.tar.xz \
     && echo "fd8e59d5a511510f6a298afb548f18c7d2b1be404d8b4a27d94fbe49f56cb2d6  node.txz" | sha256sum -c - \
-    && mkdir -p /opt/node && tar -xJf node.txz -C /opt/node --strip-components=1 && rm node.txz
+    && mkdir -p /opt/node && tar -xJf node.txz -C /opt/node --strip-components=1 && rm node.txz \
+    && rm -rf /opt/node/share/doc /opt/node/share/man
 
 # Kotlin 2.4.20 — Debian has 1.3.31 (2019).
 RUN curl -fsSL --retry 3 -o kotlin.zip https://github.com/JetBrains/kotlin/releases/download/v2.4.20/kotlin-compiler-2.4.20.zip \
@@ -95,10 +98,11 @@ RUN curl -fsSL --retry 3 -o pwsh.tgz https://github.com/PowerShell/PowerShell/re
 # Julia 1.13.0 — not in Debian. Checksum: julialang-s3.julialang.org/bin/checksums.
 RUN curl -fsSL --retry 3 -o julia.tgz https://julialang-s3.julialang.org/bin/linux/x64/1.13/julia-1.13.0-linux-x86_64.tar.gz \
     && echo "8975da61c128a5e5ded3e719e868da8c8781deb7ad7913d37fb99be02a81904b  julia.tgz" | sha256sum -c - \
-    && mkdir -p /opt/julia && tar -xzf julia.tgz -C /opt/julia --strip-components=1 && rm julia.tgz
+    && mkdir -p /opt/julia && tar -xzf julia.tgz -C /opt/julia --strip-components=1 && rm julia.tgz \
+    && rm -rf /opt/julia/share/doc /opt/julia/share/man
 
 # ── 4. runtime ───────────────────────────────────────────────────────
-FROM debian:trixie-slim
+FROM debian:trixie-slim AS runtime
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         # nsjail runtime bog'liqliklari (trixie t64 o'tishi: libprotobuf32t64)
@@ -107,7 +111,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         # trixie: GCC 14 (to'liq C++23), Python 3.13, JDK 21
         g++ python3 openjdk-21-jdk-headless \
         ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man /usr/share/info /usr/share/locale*
 
 # JDK kutubxonalari loader KESHIGA qo'shiladi.
 #
@@ -127,7 +131,7 @@ RUN echo /usr/lib/jvm/java-21-openjdk-amd64/lib > /etc/ld.so.conf.d/jdk.conf && 
 # libicu76 is for .NET: without ICU the runtime aborts before Main runs.
 RUN apt-get update && apt-get install -y --no-install-recommends \
         rustc golang-go php-cli libicu76 \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man /usr/share/info /usr/share/locale*
 
 COPY --from=toolchains /opt/dotnet /opt/dotnet
 COPY --from=toolchains /opt/node /opt/node
@@ -156,7 +160,7 @@ RUN mkdir -p /opt/rankwant/dotnet && cd /opt/rankwant/dotnet \
 # the previous one, so adding a group leaves the earlier layers cached.
 RUN apt-get update && apt-get install -y --no-install-recommends \
         fp-compiler fp-units-rtl ruby ghc r-base-core swiftlang perl ldc ocaml-nox ocaml-findlib \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man /usr/share/info /usr/share/locale*
 
 COPY --from=toolchains /opt/dart-sdk /opt/dart-sdk
 COPY --from=toolchains /opt/scala /opt/scala
@@ -172,7 +176,7 @@ RUN ls -d /usr/lib/ghc/lib/x86_64-linux-ghc-* > /etc/ld.so.conf.d/ghc.conf && ld
 # cache: it bundles libstdc++, libz and libcurl, which would shadow the system's.
 RUN apt-get update && apt-get install -y --no-install-recommends \
         gfortran nasm gnat gobjc libgnustep-base-dev gnucobol3 swi-prolog-nox lua5.4 sbcl pypy3 \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man /usr/share/info /usr/share/locale*
 
 COPY --from=toolchains /opt/powershell /opt/powershell
 COPY --from=toolchains /opt/julia /opt/julia
@@ -190,38 +194,36 @@ RUN cd /opt/rankwant/dotnet \
          ls "$ref"/*.dll | sed 's/^/-r:/'; echo "-r:$fsharp/FSharp.Core.dll"; } > fsc.rsp \
     && ln -s "$fsharp" fsharp
 
-# The toolchain layers above stay cached across deploys: an ARG in scope makes
-# every later RUN miss the cache when its value changes, and GIT_SHA changes
-# on every commit.
-#
-# Manba commit yorlig'i — `tools/check_deploy.sh` shu orqali ishlab turgan
-# binary manbadan eskimi yoki yo'qmi aniqlaydi.
-#
-# Nega kerak: Go binari uchun fayl hash'i solishtirib bo'lmaydi (web'dagi
-# `.next` kabi), shuning uchun judge uzoq vaqt KO'R NUQTA edi — 2026-09-16
-# da tuzatilgan wall-kill kodi commit qilinib CI'da tasdiqlangan, ishlab
-# turgan konteyner esa eski binarda qolgan va buni hech narsa ko'rsatmagan.
-#
-# ⚠️ `unknown` — ataylab: qiymat compose'dan (`GIT_SHA`) keladi, ya'ni
-# yorliqsiz build «noma'lum» deb O'QILADI va `check_deploy.sh` uni
-# «tekshirilmadi» deb hisoblaydi, «mos» deb emas.
-ARG GIT_SHA=unknown
-LABEL org.rankwant.git-sha=$GIT_SHA
-
-# Qurilish vaqti. `git-sha` «mos keladimi» savoliga javob beradi; bu esa
-# «build argumentlari umuman uzatildimi» savoliga. Ikkisi bir xil narsa
-# emas: `BUILT_AT` `unknown` bo'lib qolsa, build compose'ning qisqa
-# shakli bilan ketgan (u yerda `args` berib bo'lmaydi) — 2026-09-18 da
-# aynan shu sabab `api` oilasida `git-sha` ni ham `unknown` qilib
-# qo'ygan edi. `check_deploy.sh` shu yorliqni o'qiydi.
-ARG BUILT_AT=unknown
-LABEL org.rankwant.built-at=$BUILT_AT
-
 COPY --from=nsjail-build /src/nsjail /usr/local/bin/nsjail
 COPY --from=go-build     /out/judge-go /usr/local/bin/judge-go
 
-# cgroup subtree'ni worker RUNTIME da yaratadi (/sys/fs/cgroup build vaqtida read-only).
-# Konteyner --privileged yoki --cap-add=SYS_ADMIN --cgroupns=host bilan ishlashi kerak.
+# Hosted GHCR pull of this image is 40–80 s. A later `rm` does not shrink
+# earlier apt/COPY blobs; flatten so the published image is one slim layer.
+# Docs/man/locales and SDK extras are never read in the sandbox.
+# Language matrix still probes every runtime — do not drop compilers.
+RUN rm -rf \
+        /usr/share/doc \
+        /usr/share/man \
+        /usr/share/info \
+        /usr/share/locale \
+        /usr/share/gtk-doc \
+        /opt/julia/share/doc \
+        /opt/julia/share/man \
+        /opt/node/share/doc \
+        /opt/node/share/man \
+        /opt/dotnet/packs/*/analytics \
+    && find /usr /opt -type d -name '__pycache__' -prune -exec rm -rf {} + \
+    && find /opt/dotnet -name '*.pdb' -delete \
+    && find /usr/share -type f -name '*.gz' -path '*/man/*' -delete || true
 
+# Flatten. GIT_SHA/BUILT_AT stay off the runtime stage so a new commit
+# does not bust the toolchain cache (same reason they used to sit after
+# the apt layers). `check_deploy.sh` reads these labels on the final image.
+FROM scratch
+COPY --from=runtime / /
+ARG GIT_SHA=unknown
+LABEL org.rankwant.git-sha=$GIT_SHA
+ARG BUILT_AT=unknown
+LABEL org.rankwant.built-at=$BUILT_AT
 ENV REDIS_URL=redis://redis:6379/0
 ENTRYPOINT ["/usr/local/bin/judge-go"]
