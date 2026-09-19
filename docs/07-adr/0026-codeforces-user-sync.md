@@ -4,10 +4,12 @@
 **Approved by:** Saidakbar aka on 2026-09-19, who chose the option "Avval ADR, keyin nom"
 and, on the fields themselves, "RankWant platformamizda ham ana shunday maydonlarni
 implement qilishimiz kerak. kelajakda kerak bo'ladi!"
-**Research:**
-- [1MLN-USERNAME-OLISH.md](../../../research/cf-rating/1MLN-USERNAME-OLISH.md);
-- [API-USER-MAYDONLAR.md](../../../research/cf-rating/API-USER-MAYDONLAR.md);
-- [SINXRONLASH-TIZIMI.md](../../../research/cf-rating/SINXRONLASH-TIZIMI.md)
+**Research:** (repo tashqarisida — `../research/cf-rating/`, shu sabab matn
+sifatida keltirilgan, havola emas: repo ichida bunday fayl yo'q va
+`tools/check_docs.py` nisbiy havolani buzuq deb hisoblaydi)
+- `research/cf-rating/1MLN-USERNAME-OLISH.md` — 974,498 handle'ni olish;
+- `research/cf-rating/API-USER-MAYDONLAR.md` — 16 maydon xaritasi;
+- `research/cf-rating/SINXRONLASH-TIZIMI.md` — yakuniy hisobot.
 **Ta'siri:**
 - `apps/api/core/models.py` (`User`);
 - `apps/api/core/migrations/0022_user_rating_tier_fields.py` (yangi);
