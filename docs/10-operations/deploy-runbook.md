@@ -20,6 +20,9 @@ Tunnel orqali). To'rt hostli production topologiyasi README'da.
 | API             | **8301**                                                        |
 | Tunnel          | `tools/monitor.ps1`, PID `.handoff/cloudflared.pid`             |
 | Zaxira          | `"C:\Program Files\Git\bin\bash.exe" -lc ".../tools/backup.sh"` |
+| Avtomatik deploy | `tools/auto_deploy.sh`, vazifa `RankWant Auto Deploy` (5 daqiqa) |
+| Muzlatish kaliti | `DEPLOY_FREEZE=1` — deploy'ni to'xtatadi (qulfni ham olmaydi)   |
+| Rollback        | `bash tools/rollback.sh <sha12>` (kod; migratsiya qaytmaydi)    |
 
 To'liq `COMPOSE` o'zgaruvchisi (har bo'limda shu ishlatiladi):
 
@@ -150,6 +153,72 @@ buni o'zi ta'minlaydi — hamma narsadan oldin:
   Papka bor-u, git uni o'qiy olmasa, darvoza avvalgidek to'xtaydi.
 - `--skip-ci-gate` darvozani o'tkazib yuboradi — faqat Saidakbar akaning
   aniq ruxsati bilan.
+
+### Qaror (2026-09-19): deploy **to'liq avtomatik** — host watcher
+
+Ega qarori (HITL: 1 savol, 4 variant → «to'g'ridan-to'g'ri to'liq avtomatik»,
+`required reviewer` **yo'q**). Mexanizm — **host watcher**, GitHub Actions
+**emas**, va sabab o'lchandi:
+
+| To'siq | Dalil (2026-09-19) |
+| ------ | ------------------ |
+| Runner jonli `.env.public` ni ko'rmaydi | runner mount'lari: faqat `/work` volume + `docker.sock` + `_diag`; `/run/desktop/mnt/host/c/` → `No such file or directory` |
+| `.env.public` da **29** kalit, workflow **4** tasini yozadi | workflow `up` i jonli konteynerlarni 4 kalitli env-fayl bilan qayta yaratadi ⇒ email zanjiri, Turnstile, Cloudflare token, OAuth, `THROTTLE_REGISTER` **jimgina yo'qoladi** |
+| Runner'da `gh` **yo'q** | `command -v gh` → `gh YOQ` (ikkala runner'da) ⇒ `check_deploy_gate.py` har doim `exit 2` |
+
+Shuning uchun `deploy.yml` **qo'lda qoladi** (`workflow_dispatch` +
+`confirm: deploy`; `tools/check_decisions.py` → `deploy_manual_only`
+o'zgarmaydi). Avtomatlashtirish — host'da, chunki `deploy.sh`, `gh`,
+`.env.public`, `docker` va Task Scheduler o'sha yerda va hammasi o'lchangan.
+
+**Zanjir** (har 5 daqiqada, `tools/auto_deploy.sh`):
+
+```
+qulf → DEPLOY_FREEZE → git fetch origin main → worktree'ni --ff-only
+     → drift bormi?  (konteynerlar tirikmi + check_deploy.sh)
+        yo'q  → JIM chiqadi
+        bor   → qayta urinish to'sig'i (30 daqiqa)
+              → tools/deploy.sh --yes
+                 qulf → darvoza(main CI) → oyna → build → SHA teg
+                 → pg_dump → migrate → showmigrations → up → tasdiq
+```
+
+⚠️ **Deploy alohida worktree'dan** yuriladi (`C:/Users/nsn/project/wt/deploy`),
+asosiy checkout'dan **emas**: u yerda agentlarning commit qilinmagan tahriri
+bo'ladi va deploy uni jimgina build qilib jonli chiqarardi. Env-fayl asosiy
+checkout'da qoladi va `RANKWANT_ENV_FILE` orqali uzatiladi — **nusxa
+ko'chirilmaydi** (ikkinchi nusxa jimgina ajralib ketadi).
+
+⚠️ **Drift JONLI holatdan aniqlanadi**, worktree `HEAD` dan emas: merge bo'lib
+deploy yiqilgan bo'lsa worktree allaqachon `origin/main` da bo'ladi, ya'ni
+`HEAD` bilan solishtirish driftni **abadiy** qoldirardi. 2026-09-19 da sayt
+`main` dan **4 commit orqada** edi va buni faqat `check_deploy.sh` ko'rsatdi.
+
+⚠️ **`check_deploy.sh` yakka o'zi yetarli emas:** konteyner YO'Q bo'lganda ham
+u `0` qaytaradi (`missing` hisoblagichi faqat xabar uchun, `exit 1` esa
+`stale`/`envbad` da). Shuning uchun watcher tiriklikni **o'zi** tekshiradi
+(`all_up`). `tools/check_decisions.py` → `deploy_automation_is_safe` shuni
+qo'riqlaydi.
+
+**Boshqarish:**
+
+```bash
+bash tools/auto_deploy.sh --status     # holat: HEAD, main, jonli SHA, env-fayl
+bash tools/auto_deploy.sh --dry-run    # qarorni ko'rsatadi, hech narsa qilmaydi
+DEPLOY_FREEZE=1 bash tools/deploy.sh   # muzlatish (skript 1 bilan chiqadi)
+bash tools/rollback.sh --list          # mavjud SHA teglari
+bash tools/rollback.sh <sha12>         # kodni qaytarish
+```
+
+⚠️ **Rollback migratsiyani qaytarmaydi.** Django'da «orqaga» migratsiya yo'q
+va uni avtomatik yurgizish sxemani buzardi. Kod — `tools/rollback.sh`, sxema —
+faqat deploy oldidagi dump (`<backup dir>/pg-deploy-*.sql.gz`), **qo'lda**.
+Bu cheklov ataylab: jimgina yarim rollback — eng yomon holat.
+
+⚠️ **Tunnel avtomatik deploy'ning qo'lida emas.** Konteyner runner'da
+`systemd` yo'q; tunnel — Windows fayl jarayoni (`tools/handoff.ps1` +
+`RankWant Tunnel Monitor`). Deploy faqat `https://rankwant.uz/` ni tekshira
+oladi, tiklay olmaydi.
 
 ---
 

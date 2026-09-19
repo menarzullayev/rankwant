@@ -28,6 +28,21 @@
 #
 # ⚠️ Live contest paytida deploy QILINMAYDI (10-operations, qoida №1).
 # Skript buni API orqali tekshiradi va faol contest bo'lsa TO'XTAYDI.
+#
+# ⚠️ DEPLOY_FREEZE=1 — muzlatish kaliti. Berilgan bo'lsa skript HECH NARSA
+# qilmaydi (hatto qulfni ham olmaydi) va 1 bilan chiqadi. Avtomatik deploy
+# ishlayotganda egaga «to'xta» deyish imkonini beradi — workflow faylini
+# yoki rejalashtirilgan vazifani tahrirlash shart emas.
+#
+# ⚠️ RANKWANT_ENV_FILE — env-faylning yo'li (standart: repo ildizidagi
+# `.env.public`). Deploy WORKTREE'dan yurgizilganda kod worktree'dan quriladi,
+# env-fayl esa ASOSIY checkout'da qoladi (o'sha yerda 29 kalit bor) — shuning
+# uchun yo'lni almashtirish kerak bo'ladi. Nusxa ko'chirilmaydi: ikkinchi
+# nusxa jimgina ajralib ketadi.
+#
+# ⚠️ Migratsiyadan OLDIN `tools/backup.sh --dump-only` chaqiriladi: sxemaga
+# tegadigan deploy zaxirasiz ketmasin (oylik to'liq zaxira bunga yetarli emas
+# — u 30 kun orqada bo'lishi mumkin).
 
 set -uo pipefail
 
@@ -36,7 +51,9 @@ cd "$ROOT"
 
 G=$'\033[32m'; R=$'\033[31m'; Y=$'\033[33m'; N=$'\033[0m'
 PROJECT=rankwant
-ENV_FILE=.env.public
+# Env-fayl: standart — repo ildizidagi `.env.public` (o'zgarishsiz). Deploy
+# worktree'dan yurgizilsa `RANKWANT_ENV_FILE` bilan absolyut yo'l beriladi.
+ENV_FILE="${RANKWANT_ENV_FILE:-.env.public}"
 COMPOSE=(docker compose -p "$PROJECT" --env-file "$ENV_FILE"
          -f docker-compose.yml -f docker-compose.public.yml)
 # Deploy'da yangilanadigan servislar.
@@ -85,6 +102,16 @@ step() { printf '\n%s── %s%s\n' "$Y" "$1" "$N"; }
 ok()   { printf '%s✓%s %s\n' "$G" "$N" "$1"; }
 die()  { printf '%s✗ %s%s\n' "$R" "$1" "$N"; exit 1; }
 
+# ── Muzlatish kaliti ─────────────────────────────────────────────────
+# Qulfdan OLDIN turadi: muzlatilgan tizim qulfni ham olmasligi kerak, aks
+# holda boshqa agentning yugurishi «band» deb xato o'qilardi.
+# `0` va bo'sh qiymat — muzlatilmagan (kalitni o'chirish uchun `0` yetarli).
+if [ "$CHECK_ONLY" -ne 1 ] && [ -n "${DEPLOY_FREEZE:-}" ] && [ "${DEPLOY_FREEZE}" != "0" ]; then
+  printf '%s⚠ DEPLOY_FREEZE=%s — deploy muzlatilgan, hech narsa qilinmadi%s\n' \
+    "$Y" "$DEPLOY_FREEZE" "$N"
+  exit 1
+fi
+
 # ── Lock and main CI gate ────────────────────────────────────────────
 # Owner decision (2026-09-17, CLAUDE.md § Saidakbar aka qarorlari): agents deploy
 # without asking once `main` CI is green. Two agents work on this machine, so
@@ -112,16 +139,24 @@ if [ "$CHECK_ONLY" -ne 1 ]; then
 fi
 
 # ── 0. Old shartlar ──────────────────────────────────────────────────
-step "0/6 Old shartlar"
+step "0/8 Old shartlar"
 [ -f docker-compose.yml ] || die "repo ildizida emas (docker-compose.yml yo'q)"
 command -v docker >/dev/null 2>&1 || die "docker topilmadi"
 docker info >/dev/null 2>&1 || die "Docker engine javob bermayapti"
 ok "docker ishlayapti"
 [ -f "$ENV_FILE" ] || die "$ENV_FILE yo'q — usiz \${VAR} bo'sh qoladi va API har so'rovga 400 beradi"
 ok "$ENV_FILE joyida"
+[ -f tools/backup.sh ] || die "tools/backup.sh yo'q — migratsiyadan oldingi zaxira olinmaydi"
+
+# `backup.sh` o'z ildizidan `.env.public` ni qidiradi. Deploy worktree'dan
+# yurgizilsa u yerda env-fayl YO'Q, shuning uchun absolyut yo'lni uzatamiz —
+# nusxa ko'chirmaymiz (ikkinchi nusxa jimgina ajralib ketadi).
+ENV_ABS="$(cd "$(dirname "$ENV_FILE")" && pwd)/$(basename "$ENV_FILE")" \
+  || die "env-fayl yo'lini aniqlab bo'lmadi: $ENV_FILE"
+ok "env-fayl: $ENV_ABS"
 
 # ── 1. Live contest oynasi (qoida №1) ────────────────────────────────
-step "1/6 Live oyna tekshiruvi"
+step "1/8 Live oyna tekshiruvi"
 PY="$(bash tools/pick-python.sh 2>/dev/null)" || PY=""
 if [ -z "$PY" ]; then
   printf '%s⚠ Python topilmadi — live oynani QO'"'"'LDA tekshiring%s\n' "$Y" "$N"
@@ -156,30 +191,60 @@ fi
 # ── 3. Qurish ────────────────────────────────────────────────────────
 # `migrate` ham ALOHIDA obraz: usiz u eski obraz bilan yuradi va yangi
 # migration fayllarini ko'rmaydi.
-step "2/6 Obrazlar qurilmoqda (${SERVICES[*]} migrate)"
+step "2/8 Obrazlar qurilmoqda (${SERVICES[*]} migrate)"
 "${COMPOSE[@]}" build "${SERVICES[@]}" migrate || die "build yiqildi"
 ok "obrazlar tayyor"
 
-# ── 4. Migratsiya — DEPLOY'DAN OLDIN ─────────────────────────────────
-step "3/6 Migratsiya"
+# ── 4. Rollback nuqtasi — SHA teg ────────────────────────────────────
+# ⚠️ Nega KERAK: `up` konteynerlarni yangi obrazga o'tkazadi va ESKI obraz
+# «dangling» bo'lib qoladi — uni keyingi `docker image prune` o'chirib
+# yuborishi mumkin. Teg qo'yilmasa orqaga qaytish yo'li YO'Q, ya'ni
+# `tools/rollback.sh` qaytaradigan narsa topmaydi.
+#
+# ⚠️ Teg AYNAN build'dan KEYIN olinadi: undan oldin `rankwant-<svc>:latest`
+# hali ESKI kodda bo'ladi va unga «yangi» deb teg qo'yilardi.
+step "3/8 Rollback nuqtasi (SHA teg)"
+SHA_TAG="${GIT_SHA:0:12}"
+for svc in "${SERVICES[@]}" migrate; do
+  if ! docker image inspect "rankwant-${svc}:latest" >/dev/null 2>&1; then
+    die "rankwant-${svc}:latest topilmadi — build natijasi kutilgan nomda emas"
+  fi
+  docker tag "rankwant-${svc}:latest" "rankwant/${svc}:${SHA_TAG}" \
+    || die "rankwant/${svc}:${SHA_TAG} tegini qo'yib bo'lmadi"
+done
+ok "teglar qo'yildi: rankwant/{api,worker,beat,judge,web,migrate}:${SHA_TAG}"
+
+# ── 5. Migratsiyadan OLDIN zaxira ────────────────────────────────────
+# ⚠️ Sxemaga tegadigan deploy zaxirasiz ketmasin. Oylik to'liq zaxira
+# (MinIO + offsite + tiklash sinovi) bunga YETARLI EMAS: u oyiga bir marta
+# olinadi, ya'ni migratsiya buzsa 30 kungacha orqaga qaytish kerak bo'lardi.
+# `--dump-only` — faqat Postgres: MinIO ham, tiklash sinovi ham o'tkazib
+# yuboriladi (migratsiya ularga tegmaydi), shuning uchun tez.
+step "4/8 Migratsiyadan oldin zaxira (pg_dump)"
+RANKWANT_ENV_FILE="$ENV_ABS" bash tools/backup.sh --dump-only \
+  || die "zaxira olinmadi — migratsiya TO'XTATILDI (zaxirasiz sxema o'zgarishi xavfli)"
+ok "zaxira olindi"
+
+# ── 6. Migratsiya — DEPLOY'DAN OLDIN ─────────────────────────────────
+step "5/8 Migratsiya"
 "${COMPOSE[@]}" run --rm migrate || die "migrate yiqildi"
 
-# ── 5. Tasdiq: `migrate` chiqishiga ISHONMAYMIZ ──────────────────────
+# ── 7. Tasdiq: `migrate` chiqishiga ISHONMAYMIZ ──────────────────────
 # «No migrations to apply» eski obrazda ham aynan shunday deydi.
-step "4/6 Qo'llanmagan migration tekshiruvi"
+step "6/8 Qo'llanmagan migration tekshiruvi"
 pending="$("${COMPOSE[@]}" run --rm api python manage.py showmigrations 2>/dev/null | grep -c '\[ \]')"
 if [ "$pending" != "0" ]; then
   die "$pending ta migration qo'llanmagan — deploy TO'XTATILDI (runbook §1)"
 fi
 ok "qo'llanmagan migration: 0"
 
-# ── 6. Ko'tarish ─────────────────────────────────────────────────────
-step "5/6 Konteynerlar qayta ko'tarilmoqda"
+# ── 8. Ko'tarish ─────────────────────────────────────────────────────
+step "7/8 Konteynerlar qayta ko'tarilmoqda"
 "${COMPOSE[@]}" up -d --no-deps "${SERVICES[@]}" || die "up yiqildi"
 ok "ko'tarildi"
 
-# ── 7. Tasdiq: konteyner HAQIQATAN yangi kodda ───────────────────────
-step "6/6 Deploy tasdiqi"
+# ── 9. Tasdiq: konteyner HAQIQATAN yangi kodda ───────────────────────
+step "8/8 Deploy tasdiqi"
 sleep 10
 if bash tools/check_deploy.sh; then
   printf '\n%sDeploy tugadi.%s\n' "$G" "$N"
