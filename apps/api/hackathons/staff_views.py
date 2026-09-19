@@ -17,6 +17,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from core.openapi_docs import crud_summaries
+from core.permissions import StaffOps
 from core.staff import StaffViewSet
 from hackathons.models import Hackathon, HackathonSubmission
 from hackathons.serializers import ScoreSerializer
@@ -35,6 +36,9 @@ from hackathons.views import score_submission
     extra={"submissions": "Topshirilgan loyihalar"},
 )
 class StaffHackathonViewSet(StaffViewSet):
+    # StaffOps — ADR-0025 guruh bo'linishi.
+    permission_classes = [StaffOps]
+
     serializer_class = StaffHackathonSerializer
     lookup_field = "slug"
     search_fields = ["slug", "title"]

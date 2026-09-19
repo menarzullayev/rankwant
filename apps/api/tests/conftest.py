@@ -8,6 +8,7 @@ from urllib.parse import urlsplit, urlunsplit
 
 import pytest
 from django.conf import settings
+from django.db.models.signals import post_save
 from django.test import override_settings
 from django.utils import timezone
 
@@ -18,6 +19,31 @@ from judging.provider import InMemoryJudgeProvider, set_provider
 from judging.verdicts import Verdict
 from problems.models import Language, Problem, ReferenceSolution, TestCase, Validator
 from ratings.models import UserSolvedProblem
+
+# ── Rol guruhlari (ADR-0025) ────────────────────────────────────────────
+#
+# Production'da yangi xodimga guruhlarni superuser biriktiradi (bare
+# `is_staff` — faqat o'qish). Testlarda esa staff foydalanuvchilarning
+# deyarli barchasi TO'LIQ huquqli xodimni bildiradi — aks holda ~15 ta
+# staff test fayli har biri guruh biriktirishni takrorlardi. Shuning
+# uchun `is_staff` yaratilganda uchala guruh ham avtomatik biriktiriladi.
+# Istisno: test_staff_roles.py — u guruh bo'linishining O'ZINI tekshiradi
+# va signalni vaqtincha uzoqlashtiradi.
+
+_STAFF_GROUP_NAMES = ("staff-support", "staff-content", "staff-ops")
+
+
+def _auto_grant_staff_groups(sender, instance, created, **kwargs) -> None:
+    if not created or not instance.is_staff:
+        return
+    from django.contrib.auth.models import Group
+
+    for name in _STAFF_GROUP_NAMES:
+        group, _ = Group.objects.get_or_create(name=name)
+        instance.groups.add(group)
+
+
+post_save.connect(_auto_grant_staff_groups, sender=User)
 
 
 def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:

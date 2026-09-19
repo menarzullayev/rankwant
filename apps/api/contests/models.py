@@ -38,6 +38,10 @@ class Contest(TimeWindowMixin, models.Model):
     ratings_applied_at = models.DateTimeField(null=True, blank=True)
     #: Hakamlar — profilda «Hakam» nishoni (ADR-0018); admin paneldan.
     jury = models.ManyToManyField("core.User", blank=True, related_name="jury_contests")
+    #: Organizatorlar (ADR-0025): o'z kontestini draft qilib yaratadi va
+    #: tahrirlaydi (`is_public=False`); nashr — staff-ops. Bir foydalanuvchi
+    #: bir vaqtda bir necha kontestga ega bo'lishi mumkin — shuning uchun M2M.
+    organizers = models.ManyToManyField("core.User", blank=True, related_name="organized_contests")
 
     # ── Hacking (ADR-0020) ───────────────────────────────────────────
     #: `contest_room` siyosati: raund davomida xona ichida hack.
