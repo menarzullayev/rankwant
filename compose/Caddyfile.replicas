@@ -1,0 +1,8 @@
+# web×2 / api×2 — Docker DNS bir nomga bir nechta IP qaytaradi.
+:8300 {
+	reverse_proxy web:3000
+}
+
+:8301 {
+	reverse_proxy api:8000
+}

@@ -176,11 +176,12 @@ fails the build with *"Both middleware file and proxy file are detected"*.
 discards the *value* or the *key*. Here it is the key, so no amount of
 in-process header manipulation will work — the fix has to sit outside Next.js.
 
-**Homepage cache (2026-09-19):** guest GET `/` is cached. The cached body is
+**Homepage cache (2026-09-19):** guest GET `/`, `/login` (faqat `?tab=`),
+`/register`, `/terms`, `/privacy` is cached. The cached body is
 forced to `uz` via `x-rw-locale` (`home-cache.ts`); `?lang=` and locale/session
 cookies are excluded from the cacheable set, so `Accept-Language` cannot
 poison that one URL. Other routes stay `no-store`. The `Vary` gap below still
-applies the day any other path is cached.
+applies.
 
 ⚠️ Since 2026-09-19 the locale also travels in the URL (`?lang=<code>`). That
 sharpens the same defect rather than adding a second one: one path now has

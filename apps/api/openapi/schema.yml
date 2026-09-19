@@ -642,7 +642,6 @@ paths:
       tags:
       - auth
       security:
-      - cookieAuth: []
       - {}
       responses:
         '200':
@@ -4086,6 +4085,23 @@ paths:
                 items:
                   $ref: '#/components/schemas/Skill'
           description: ''
+  /api/v1/slo/:
+    get:
+      operationId: slo_retrieve
+      description: |-
+        Kuzatuv. Load balancer bunisi bilan instansiyani chiqarmaydi.
+
+        `HealthView` DB/Redis o'lganda 503. Bu yerda navbat uzunligi
+        axborot: 50k / contest oldidan judge host qo'shish uchun.
+        Sentry yo'q (2026-09-19 qaror).
+      summary: Sig'im signallari
+      tags:
+      - slo
+      security:
+      - {}
+      responses:
+        '200':
+          description: Judge navbati va bog'liqliklar
   /api/v1/staff/analytics/:
     get:
       operationId: staff_analytics_retrieve

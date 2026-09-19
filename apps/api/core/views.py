@@ -125,6 +125,41 @@ def _check_redis() -> str:
     return "ok"
 
 
+def _judge_queue_len() -> int | None:
+    """Judge Redis navbati — readiness emas, SLO signal."""
+    try:
+        return int(
+            redis.Redis.from_url(settings.REDIS_URL, socket_connect_timeout=2).llen(
+                settings.JUDGE_JOBS_KEY
+            )
+        )
+    except Exception:
+        return None
+
+
+@extend_schema(summary="Sig'im signallari")
+class SloView(APIView):
+    """Kuzatuv. Load balancer bunisi bilan instansiyani chiqarmaydi.
+
+    `HealthView` DB/Redis o'lganda 503. Bu yerda navbat uzunligi
+    axborot: 50k / contest oldidan judge host qo'shish uchun.
+    Sentry yo'q (2026-09-19 qaror).
+    """
+
+    permission_classes = [AllowAny]
+    authentication_classes: list[Any] = []
+    throttle_classes: list[Any] = []
+
+    @extend_schema(responses={200: OpenApiResponse(description="Judge navbati va bog'liqliklar")})
+    def get(self, request: Request) -> Response:
+        return Response(
+            {
+                "judge_queue": _judge_queue_len(),
+                "checks": {"database": _check_database(), "redis": _check_redis()},
+            }
+        )
+
+
 @extend_schema(summary="Platforma statistikasi")
 class PlatformStatsView(APIView):
     """Mehmon bosh sahifasi uchun umumiy raqamlar.
@@ -973,11 +1008,15 @@ class AuthProvidersView(APIView):
     """
 
     permission_classes = [AllowAny]
+    authentication_classes: list[Any] = []
+    CACHE_KEY = "auth-providers"
+    CACHE_S = 60
 
     @extend_schema(responses={200: None})
     def get(self, request: Request) -> Response:
-        return Response(
-            {
+        payload = cache_get(self.CACHE_KEY)
+        if payload is None:
+            payload = {
                 "providers": oauth.configured(),
                 # Telegram widgetiga bot nomi kerak — u sir emas.
                 "telegram_bot": settings.TELEGRAM_BOT_USERNAME,
@@ -988,7 +1027,8 @@ class AuthProvidersView(APIView):
                 # yuklamaydi va tekshiruv o'chiq qoladi.
                 "turnstile_site_key": settings.TURNSTILE_SITE_KEY,
             }
-        )
+            cache_set(self.CACHE_KEY, payload, self.CACHE_S)
+        return Response(payload)
 
 
 #: Bog'lash tokeni sessiyada shuncha turadi. Foydalanuvchi parolini

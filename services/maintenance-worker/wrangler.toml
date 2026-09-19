@@ -6,9 +6,9 @@ compatibility_date = "2026-09-01"
 workers_dev = false
 
 # GET `/` ATAYLAB yo'q (2026-09-19): 100k ochilish Worker kvotasini
-# yemasin, Cloudflare HTML ni Worker'siz bersin. `host/x*` birinchi
-# yo'l harfidan keyin mos keladi — `rankwant.uz/` tushmaydi.
-# Yangi birinchi-daraja yo'l (`/foo`) avtomatik qamraladi.
+# yemasin. 2026-09-19 scale-50k: `/login`, `/register`, `/terms`,
+# `/privacy` ham Worker'siz — mehmon CDN. `l*`/`p*`/`r*`/`t*` o'rniga
+# aniq yo'llar: `lo*` (`/login`) va `te*`/`pri*`/`reg*` tushmaydi.
 # Har route'da fail-open SHART (`tools/check_workers.sh`).
 routes = [
   { pattern = "rankwant.uz/a*", zone_name = "rankwant.uz" },
@@ -22,15 +22,20 @@ routes = [
   { pattern = "rankwant.uz/i*", zone_name = "rankwant.uz" },
   { pattern = "rankwant.uz/j*", zone_name = "rankwant.uz" },
   { pattern = "rankwant.uz/k*", zone_name = "rankwant.uz" },
-  { pattern = "rankwant.uz/l*", zone_name = "rankwant.uz" },
+  { pattern = "rankwant.uz/leaderboard*", zone_name = "rankwant.uz" },
+  { pattern = "rankwant.uz/learn*", zone_name = "rankwant.uz" },
   { pattern = "rankwant.uz/m*", zone_name = "rankwant.uz" },
   { pattern = "rankwant.uz/n*", zone_name = "rankwant.uz" },
   { pattern = "rankwant.uz/o*", zone_name = "rankwant.uz" },
-  { pattern = "rankwant.uz/p*", zone_name = "rankwant.uz" },
+  { pattern = "rankwant.uz/problems*", zone_name = "rankwant.uz" },
+  { pattern = "rankwant.uz/platform-roadmap*", zone_name = "rankwant.uz" },
   { pattern = "rankwant.uz/q*", zone_name = "rankwant.uz" },
-  { pattern = "rankwant.uz/r*", zone_name = "rankwant.uz" },
+  { pattern = "rankwant.uz/rating*", zone_name = "rankwant.uz" },
+  { pattern = "rankwant.uz/roadmaps*", zone_name = "rankwant.uz" },
+  { pattern = "rankwant.uz/reset-password*", zone_name = "rankwant.uz" },
   { pattern = "rankwant.uz/s*", zone_name = "rankwant.uz" },
-  { pattern = "rankwant.uz/t*", zone_name = "rankwant.uz" },
+  { pattern = "rankwant.uz/team*", zone_name = "rankwant.uz" },
+  { pattern = "rankwant.uz/tournaments*", zone_name = "rankwant.uz" },
   { pattern = "rankwant.uz/u*", zone_name = "rankwant.uz" },
   { pattern = "rankwant.uz/v*", zone_name = "rankwant.uz" },
   { pattern = "rankwant.uz/w*", zone_name = "rankwant.uz" },
@@ -49,15 +54,20 @@ routes = [
   { pattern = "www.rankwant.uz/i*", zone_name = "rankwant.uz" },
   { pattern = "www.rankwant.uz/j*", zone_name = "rankwant.uz" },
   { pattern = "www.rankwant.uz/k*", zone_name = "rankwant.uz" },
-  { pattern = "www.rankwant.uz/l*", zone_name = "rankwant.uz" },
+  { pattern = "www.rankwant.uz/leaderboard*", zone_name = "rankwant.uz" },
+  { pattern = "www.rankwant.uz/learn*", zone_name = "rankwant.uz" },
   { pattern = "www.rankwant.uz/m*", zone_name = "rankwant.uz" },
   { pattern = "www.rankwant.uz/n*", zone_name = "rankwant.uz" },
   { pattern = "www.rankwant.uz/o*", zone_name = "rankwant.uz" },
-  { pattern = "www.rankwant.uz/p*", zone_name = "rankwant.uz" },
+  { pattern = "www.rankwant.uz/problems*", zone_name = "rankwant.uz" },
+  { pattern = "www.rankwant.uz/platform-roadmap*", zone_name = "rankwant.uz" },
   { pattern = "www.rankwant.uz/q*", zone_name = "rankwant.uz" },
-  { pattern = "www.rankwant.uz/r*", zone_name = "rankwant.uz" },
+  { pattern = "www.rankwant.uz/rating*", zone_name = "rankwant.uz" },
+  { pattern = "www.rankwant.uz/roadmaps*", zone_name = "rankwant.uz" },
+  { pattern = "www.rankwant.uz/reset-password*", zone_name = "rankwant.uz" },
   { pattern = "www.rankwant.uz/s*", zone_name = "rankwant.uz" },
-  { pattern = "www.rankwant.uz/t*", zone_name = "rankwant.uz" },
+  { pattern = "www.rankwant.uz/team*", zone_name = "rankwant.uz" },
+  { pattern = "www.rankwant.uz/tournaments*", zone_name = "rankwant.uz" },
   { pattern = "www.rankwant.uz/u*", zone_name = "rankwant.uz" },
   { pattern = "www.rankwant.uz/v*", zone_name = "rankwant.uz" },
   { pattern = "www.rankwant.uz/w*", zone_name = "rankwant.uz" },
