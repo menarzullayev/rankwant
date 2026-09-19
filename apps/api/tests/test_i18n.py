@@ -14,8 +14,8 @@ def test_one_property() -> None:
 
 
 def test_many_properties() -> None:
-    name, bio = translate("en", "user.name", "user.bio", catalog=CATALOG)
-    assert (name, bio) == ("Name", "Bio")
+    texts = translate("en", "user.name", "user.bio", catalog=CATALOG)
+    assert texts == ("Name", "Bio")
 
 
 def test_missing_locale_is_the_property() -> None:
