@@ -2479,8 +2479,8 @@ def neg_decisions_auto_deploy_no_liveness() -> tuple[bool, str]:
     """
     return _decision_broken(
         "tools/auto_deploy.sh",
-        "if all_up && bash tools/check_deploy.sh >/dev/null 2>&1; then",
-        "if bash tools/check_deploy.sh >/dev/null 2>&1; then",
+        "if all_up; then",
+        "if true; then",
         "avtomatik deploy xavfsiz",
     )
 
@@ -2542,6 +2542,66 @@ def neg_decisions_auto_deploy_env_unchecked() -> tuple[bool, str]:
         "tools/auto_deploy.sh",
         '[ -f "$ENV_FILE" ] || die',
         '[ -f "$ENV_FILE" ] || true #',
+        "avtomatik deploy xavfsiz",
+    )
+
+
+def neg_decisions_auto_deploy_lock_not_handed_off() -> tuple[bool, str]:
+    """Watcher qulfni `deploy.sh` ga topshirmasa tutilsin.
+
+    Watcher qulfni o'zi oladi; `deploy.sh` esa AYNAN o'sha qulfni so'raydi.
+    Topshirilmasa `mkdir` yiqiladi va watcher O'ZINI bloklaydi — avtomatik
+    deploy hech qachon ishlamaydi. O'lchandi 2026-09-19 (birinchi haqiqiy
+    yurish): «✗ boshqa deploy ishlayapti (auto-deploy pid 1303)».
+    """
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        "RANKWANT_LOCK_HELD=1 RANKWANT_ENV_FILE",
+        "RANKWANT_ENV_FILE",
+        "avtomatik deploy xavfsiz",
+    )
+
+
+def neg_decisions_deploy_ignores_lock_held() -> tuple[bool, str]:
+    """`deploy.sh` qulf topshirilishini tan olmasa tutilsin.
+
+    Chaqiruvchi «qulf menda» deb aytsa-yu, `deploy.sh` buni e'tiborsiz
+    qoldirsa — watcher yana o'zini bloklaydi.
+    """
+    return _decision_broken(
+        "tools/deploy.sh",
+        "${RANKWANT_LOCK_HELD:-0}",
+        "${RANKWANT_LOCK_HELD_UNUSED:-0}",
+        "avtomatik deploy xavfsiz",
+    )
+
+
+def neg_decisions_auto_deploy_stdin_not_opened() -> tuple[bool, str]:
+    """Watcher stdin'ni ochmasa tutilsin.
+
+    Vazifa (`conhost --headless`) farzandga stdin bermaydi; MSYS
+    `sha256sum` yopiq fd bilan yiqiladi va `check_deploy.sh` YOLG'ON
+    «ESKIRGAN» deydi — ya'ni watcher behuda deploy qo'zg'atadi.
+    """
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        "exec 0</dev/null",
+        "true # stdin ochilmadi",
+        "avtomatik deploy xavfsiz",
+    )
+
+
+def neg_decisions_check_deploy_stdin_dependent() -> tuple[bool, str]:
+    """`check_deploy.sh` xeshi atrofdagi stdin'ga tayansa tutilsin.
+
+    `sha256sum "$src"` yopiq stdin'da yiqilib bo'sh xesh beradi, natija
+    esa yolg'on «ESKIRGAN» (o'lchandi 2026-09-19: qo'lda «joriy»,
+    vazifada «3 konteyner eskirgan»).
+    """
+    return _decision_broken(
+        "tools/check_deploy.sh",
+        'sha256sum "$src" < /dev/null',
+        'sha256sum "$src"',
         "avtomatik deploy xavfsiz",
     )
 
@@ -2919,6 +2979,9 @@ _DECISIONS_SANDBOX_FILES = (
     # here, `check_decisions.py` exits 2 instead of testing the rule.
     "tools/auto_deploy.sh",
     "tools/rollback.sh",
+    # The stdin fix (2026-09-19): the rule reads the hash line that must not
+    # depend on the ambient stdin. Missing here, `check_decisions.py` exits 2.
+    "tools/check_deploy.sh",
 )
 
 
@@ -4551,6 +4614,22 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "env-fayl borligi tekshirilmasa tutilsin",
                 neg_decisions_auto_deploy_env_unchecked,
+            ),
+            (
+                "qulf deploy'ga topshirilmasa tutilsin",
+                neg_decisions_auto_deploy_lock_not_handed_off,
+            ),
+            (
+                "deploy.sh qulf topshirilishini tan olmasa tutilsin",
+                neg_decisions_deploy_ignores_lock_held,
+            ),
+            (
+                "watcher stdin'ni ochmasa tutilsin",
+                neg_decisions_auto_deploy_stdin_not_opened,
+            ),
+            (
+                "check_deploy xeshi stdin'ga tayansa tutilsin",
+                neg_decisions_check_deploy_stdin_dependent,
             ),
             ("deploy darvozasi uzilsa tutilsin", neg_decisions_deploy_gate_unwired),
             ("deploy qulfi olib tashlansa tutilsin", neg_decisions_deploy_lock_removed),

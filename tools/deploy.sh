@@ -122,12 +122,21 @@ if [ "$CHECK_ONLY" -ne 1 ]; then
   common="$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)"
   LOCK="${RANKWANT_DEPLOY_LOCK:-${common:+$common/rankwant-deploy.lock}}"
   [ -n "$LOCK" ] || die "git katalogi topilmadi — deploy qulfini qo'yib bo'lmadi"
-  if ! mkdir "$LOCK" 2>/dev/null; then
-    owner="$(cat "$LOCK/owner" 2>/dev/null || echo "egasi yozilmagan")"
-    die "boshqa deploy ishlayapti ($owner). U tugaganini tekshiring; qulf eskirgan bo'lsa: rm -rf \"$LOCK\""
+  # ⚠️ `RANKWANT_LOCK_HELD=1` — chaqiruvchi (`tools/auto_deploy.sh`)
+  # allaqachon AYNAN SHU qulfni ushlab turadi. Usiz watcher o'zini
+  # bloklaydi: u qulfni oladi, keyin bu yerga keladi va `mkdir` yiqiladi
+  # (o'lchandi 2026-09-19 — «boshqa deploy ishlayapti (auto-deploy pid …)»),
+  # ya'ni avtomatik deploy HECH QACHON ishlamasdi. Bayroqni faqat qulfni
+  # haqiqatan ushlab turgan chaqiruvchi beradi; qulfning o'zi, `owner`
+  # fayli va qulfni bo'shatish chaqiruvchining `trap` ida qoladi.
+  if [ "${RANKWANT_LOCK_HELD:-0}" != "1" ]; then
+    if ! mkdir "$LOCK" 2>/dev/null; then
+      owner="$(cat "$LOCK/owner" 2>/dev/null || echo "egasi yozilmagan")"
+      die "boshqa deploy ishlayapti ($owner). U tugaganini tekshiring; qulf eskirgan bo'lsa: rm -rf \"$LOCK\""
+    fi
+    trap 'rm -rf "$LOCK"' EXIT
+    printf 'pid %s, %s, commit %s\n' "$$" "$(date -u '+%Y-%m-%d %H:%M UTC')" "$GIT_SHA" > "$LOCK/owner"
   fi
-  trap 'rm -rf "$LOCK"' EXIT
-  printf 'pid %s, %s, commit %s\n' "$$" "$(date -u '+%Y-%m-%d %H:%M UTC')" "$GIT_SHA" > "$LOCK/owner"
 
   step "Deploy darvozasi (main CI)"
   if [ "$SKIP_CI_GATE" -eq 1 ]; then
