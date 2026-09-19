@@ -17,7 +17,17 @@ import _console
 
 _console.force_utf8()
 
-BASE = os.environ.get("SLO_BASE", "http://127.0.0.1:8301")
+def _origin() -> str:
+    if explicit := os.environ.get("SLO_BASE"):
+        return explicit
+    # `check_negative` stub `RANKWANT_API_BASE=http://127.0.0.1:<port>/api/v1`
+    api = os.environ.get("RANKWANT_API_BASE", "")
+    if api:
+        return api.removesuffix("/api/v1").rstrip("/")
+    return "http://127.0.0.1:8301"
+
+
+BASE = _origin()
 HOST = os.environ.get("SLO_HOST", "rankwant.uz")
 
 
