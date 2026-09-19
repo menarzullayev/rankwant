@@ -192,6 +192,16 @@ class Problem(models.Model):
         help_text=f"{DIFFICULTY_MIN}–{DIFFICULTY_MAX}, qadam {DIFFICULTY_STEP}",
     )
     topics = models.ManyToManyField(Topic, blank=True, related_name="problems")
+    #: Mualliflar (ADR-0025): o'z draft masalasini yaratadi, bayonot va
+    #: editorialni tahrirlaydi, o'z draftining testlarini yuklaydi; nashr
+    #: (`is_public=True`) — staff-ops. Bir muallifda ko'p masala bo'lishi
+    #: mumkin, bir masalada ko'p muallif — shuning uchun M2M.
+    authors = models.ManyToManyField(
+        "core.User",
+        blank=True,
+        related_name="authored_problems",
+        help_text="O'z draft masalasini boshqaradi; nashr — staff-ops (ADR-0025)",
+    )
 
     time_limit_ms = models.PositiveIntegerField(default=1000)
     memory_limit_kb = models.PositiveIntegerField(default=262144)

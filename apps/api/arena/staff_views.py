@@ -18,6 +18,7 @@ from arena.staff_serializers import (
 )
 from arena.views import _error
 from core.openapi_docs import crud_summaries
+from core.permissions import StaffOps
 from core.staff import StaffViewSet
 
 
@@ -32,6 +33,9 @@ from core.staff import StaffViewSet
 )
 class StaffArenaViewSet(StaffViewSet):
     """`questions` — tartiblangan savol id'lari; yozishda to'liq almashtiriladi."""
+
+    # StaffOps — ADR-0025 guruh bo'linishi.
+    permission_classes = [StaffOps]
 
     queryset = ArenaRound.objects.annotate(
         question_count=Count("items", distinct=True),

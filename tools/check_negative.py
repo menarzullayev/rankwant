@@ -2426,6 +2426,46 @@ def neg_decisions_login_path_dropped() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_staff_ops_dropped() -> tuple[bool, str]:
+    """`staff-ops` guruhdan tushsa tutilsin."""
+    return _decision_broken(
+        "apps/api/core/groups.py",
+        'GROUPS: tuple[str, ...] = ("staff-support", "staff-content", "staff-ops")',
+        'GROUPS: tuple[str, ...] = ("staff-support", "staff-content")',
+        "staff guruhlari va obyekt mualliflari",
+    )
+
+
+def neg_decisions_organizers_related_name_dropped() -> tuple[bool, str]:
+    """Kontest organizatorlari M2M related_name o'zgarsa tutilsin."""
+    return _decision_broken(
+        "apps/api/contests/models.py",
+        'related_name="organized_contests"',
+        'related_name="organized"',
+        "staff guruhlari va obyekt mualliflari",
+    )
+
+
+def neg_decisions_authors_related_name_dropped() -> tuple[bool, str]:
+    """Masala mualliflari M2M related_name o'zgarsa tutilsin."""
+    return _decision_broken(
+        "apps/api/problems/models.py",
+        'related_name="authored_problems"',
+        'related_name="authored"',
+        "staff guruhlari va obyekt mualliflari",
+    )
+
+
+def neg_decisions_contests_mine_dropped() -> tuple[bool, str]:
+    """`contests/mine` marshrut tushsa tutilsin."""
+    return _decision_broken(
+        "apps/api/contests/urls.py",
+        'router.register("contests/mine", OrganizerContestViewSet, basename="mine-contest")',
+        'router.register("contests/owned", OrganizerContestViewSet, basename="mine-contest")',
+        "staff guruhlari va obyekt mualliflari",
+    )
+
+
 def neg_decisions_locale_choice_keeps_param() -> tuple[bool, str]:
     """Qo'lda tanlov `?lang=` ni tozalamasa tutilsin.
 
@@ -3009,6 +3049,14 @@ _DECISIONS_SANDBOX_FILES = (
     # The stdin fix (2026-09-19): the rule reads the hash line that must not
     # depend on the ambient stdin. Missing here, `check_decisions.py` exits 2.
     "tools/check_deploy.sh",
+    # ADR-0025: staff Groups + object authors. Missing here,
+    # `check_decisions.py` exits 2 instead of testing the rule.
+    "apps/api/core/groups.py",
+    "apps/api/contests/models.py",
+    "apps/api/problems/models.py",
+    "apps/api/contests/urls.py",
+    "apps/api/problems/urls.py",
+    "apps/api/core/migrations/0021_seed_staff_groups.py",
 )
 
 
@@ -4617,6 +4665,22 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "login yo'li tushsa tutilsin",
                 neg_decisions_login_path_dropped,
+            ),
+            (
+                "staff-ops tushsa tutilsin",
+                neg_decisions_staff_ops_dropped,
+            ),
+            (
+                "organizator related_name tushsa tutilsin",
+                neg_decisions_organizers_related_name_dropped,
+            ),
+            (
+                "muallif related_name tushsa tutilsin",
+                neg_decisions_authors_related_name_dropped,
+            ),
+            (
+                "contests/mine tushsa tutilsin",
+                neg_decisions_contests_mine_dropped,
             ),
             (
                 "zaxira migratsiyadan keyin qolsa tutilsin",

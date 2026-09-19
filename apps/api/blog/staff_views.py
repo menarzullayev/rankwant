@@ -16,6 +16,7 @@ from rest_framework.response import Response
 from blog.models import Post
 from blog.staff_serializers import StaffPostSerializer
 from core.openapi_docs import crud_summaries
+from core.permissions import StaffContent
 from core.staff import StaffViewSet
 
 
@@ -25,6 +26,9 @@ from core.staff import StaffViewSet
     extra={"publish": "Postni nashr qilish", "unpublish": "Postni nashrdan olish"},
 )
 class StaffPostViewSet(StaffViewSet):
+    # StaffContent — ADR-0025 guruh bo'linishi.
+    permission_classes = [StaffContent]
+
     queryset = Post.objects.select_related("author")
     serializer_class = StaffPostSerializer
     lookup_field = "slug"

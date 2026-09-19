@@ -15,11 +15,14 @@ from django.db.models import Count
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 from core.openapi_docs import crud_summaries
-from core.staff import StaffViewSet
+from core.permissions import STAFF_GROUP_OPS, StaffOps, has_staff_group
+from core.staff import SessionOnly, StaffViewSet
 from problems import storage
 from problems.models import (
     Problem,
@@ -42,6 +45,9 @@ from problems.staff_serializers import (
 
 @crud_summaries(one="mavzu", many="mavzular")
 class StaffTopicViewSet(StaffViewSet):
+    # StaffOps — ADR-0025 guruh bo'linishi.
+    permission_classes = [StaffOps]
+
     serializer_class = StaffTopicSerializer
     lookup_field = "slug"
     queryset = Topic.objects.select_related("parent").all()
@@ -56,6 +62,9 @@ class StaffProblemReportViewSet(StaffViewSet):
 
     Standart tartib — ochiqlari birinchi: navbat shu yerdan ko'riladi.
     """
+
+    # StaffOps — ADR-0025 guruh bo'linishi.
+    permission_classes = [StaffOps]
 
     serializer_class = StaffProblemReportSerializer
     queryset = ProblemReport.objects.select_related("problem", "user")
@@ -76,6 +85,19 @@ class StaffProblemReportViewSet(StaffViewSet):
     },
 )
 class StaffProblemViewSet(StaffViewSet):
+    # StaffOps — ADR-0025 guruh bo'linishi.
+    permission_classes = [StaffOps]
+
+    def get_permissions(self):  # type: ignore[no-untyped-def]
+        # `tests` amali muallifga ham ochiq (obyekt tekshiruvi `tests` ichida,
+        # ADR-0025): muallif is_staff bo'lmasligi mumkin, shuning uchun bu
+        # amalga guruh o'rniga IsAdminUser + SessionOnly — qolgan CRUD ops.
+        if self.action == "tests":
+            # Muallif is_staff bo'lmasligi mumkin — kirish uchun oddiy
+            # autentifikatsiya; obyekt va guruh tekshiruvi `tests` ichida.
+            return [IsAuthenticated(), SessionOnly()]
+        return super().get_permissions()
+
     serializer_class = StaffProblemSerializer
     lookup_field = "slug"
     queryset = (
@@ -113,6 +135,20 @@ class StaffProblemViewSet(StaffViewSet):
     @action(detail=True, methods=["get", "post"], url_path="tests")
     def tests(self, request: Request, slug: str | None = None) -> Response:
         problem = self.get_object()
+        # staff-ops — to'liq huquq; muallif esa faqat O'Z draft masalasini
+        # boshqaradi (ADR-0025): nashr qilingan masalada testlar baribir
+        # xodim nazoratida, chunki judge to'plamining butunligi shunga
+        # tayanadi. `permission_classes` (StaffOps) bu yerda emas —
+        # get_permissions() da: amal darajasidagi istisno.
+        if not has_staff_group(request.user, STAFF_GROUP_OPS):
+            is_author = (
+                request.user.is_authenticated
+                and problem.authors.filter(pk=request.user.pk).exists()
+            )
+            if not (is_author and not problem.is_public):
+                raise PermissionDenied(
+                    "Masala testlari faqat staff-ops yoki draft muallifiga tegishli"
+                )
         if request.method == "GET":
             return Response(StaffTestCaseSerializer(problem.tests.all(), many=True).data)
 

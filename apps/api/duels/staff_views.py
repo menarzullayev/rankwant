@@ -11,6 +11,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from core.openapi_docs import crud_summaries
+from core.permissions import StaffOps
 from core.staff import StaffViewSet
 from duels.models import Duel
 from duels.services import DuelError, staff_cancel, staff_finalize
@@ -29,6 +30,9 @@ class StaffDuelViewSet(StaffViewSet):
     Yaratish/tahrirlash/o'chirish yo'q: duel foydalanuvchilar o'rtasidagi
     kelishuv, xodim faqat kuzatadi va zarurat bo'lsa to'xtatadi.
     """
+
+    # StaffOps — ADR-0025 guruh bo'linishi.
+    permission_classes = [StaffOps]
 
     serializer_class = StaffDuelSerializer
     lookup_field = "slug"

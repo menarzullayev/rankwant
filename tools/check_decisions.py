@@ -1075,6 +1075,36 @@ def scale_50k_locked() -> str | None:
     return None
 
 
+def roles_groups_and_object_authors() -> str | None:
+    """ADR-0025: staff Groups + obyekt M2M, User.role CharField yo'q."""
+    groups = read("apps/api/core/groups.py")
+    if 'GROUPS: tuple[str, ...] = ("staff-support", "staff-content", "staff-ops")' not in groups:
+        return "apps/api/core/groups.py: GROUPS staff-support/content/ops emas"
+    if "def sync_staff_groups" not in groups:
+        return "apps/api/core/groups.py: sync_staff_groups yo'q"
+
+    contests = read("apps/api/contests/models.py")
+    if "organizers" not in contests or 'related_name="organized_contests"' not in contests:
+        return "apps/api/contests/models.py: organizers M2M yo'q"
+
+    problems = read("apps/api/problems/models.py")
+    if "authors" not in problems or 'related_name="authored_problems"' not in problems:
+        return "apps/api/problems/models.py: authors M2M yo'q"
+
+    if 'router.register("contests/mine"' not in read("apps/api/contests/urls.py"):
+        return "apps/api/contests/urls.py: contests/mine yo'q"
+    if 'router.register("problems/mine"' not in read("apps/api/problems/urls.py"):
+        return "apps/api/problems/urls.py: problems/mine yo'q"
+
+    seed = read("apps/api/core/migrations/0021_seed_staff_groups.py")
+    if "staff-support" not in seed or "is_staff=True" not in seed:
+        return "0021_seed_staff_groups: mavjud staff guruhlarga qo'shilmaydi"
+
+    if "role = models.CharField" in read("apps/api/core/models.py"):
+        return "apps/api/core/models.py: User.role CharField qaytdi (ADR-0025 Groups)"
+    return None
+
+
 AUTO_DEPLOY = "tools/auto_deploy.sh"
 ROLLBACK = "tools/rollback.sh"
 CHECK_DEPLOY = "tools/check_deploy.sh"
@@ -1260,6 +1290,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("bosh sahifa mehmon CDN keshi", homepage_guest_cdn_cache),
     ("login mehmon CDN keshi", guest_auth_cdn_cache),
     ("50k masshtab qarorlari", scale_50k_locked),
+    ("staff guruhlari va obyekt mualliflari", roles_groups_and_object_authors),
     ("avtomatik deploy xavfsiz", deploy_automation_is_safe),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
