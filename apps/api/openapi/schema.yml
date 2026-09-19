@@ -57,7 +57,7 @@ paths:
       - {}
       responses:
         '200':
-          description: Standart ko'rinish
+          description: Default appearance
   /api/v1/arena/:
     get:
       operationId: arena_list

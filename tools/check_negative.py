@@ -2891,13 +2891,12 @@ def neg_decisions_dictionary_cache_unsynced() -> tuple[bool, str]:
 
 
 def neg_decisions_uz_marked_as_fallback() -> tuple[bool, str]:
-    # A real `name_uz` on the Uzbek site is the correct answer, not a
-    # missing translation. Breaking the "has text" branch marks every
-    # name as the property and lights the badge on Uzbek pages too.
+    # Missing content names must not copy another locale. Pointing
+    # `source` at DEFAULT_LOCALE is the old fallback path.
     return _decision_broken(
         "apps/web/src/i18n/messages.ts",
-        "if (text) return { text, locale, source: locale };",
-        "if (false) return { text, locale, source: locale };",
+        "return { text: nameProperty(row), locale: null, source: null };",
+        "return { text: nameProperty(row), locale: null, source: DEFAULT_LOCALE };",
         "kontent qamrovi ko'rinadi",
     )
 
