@@ -18,12 +18,18 @@
 #   3. JONLI kod joriymi — konteynerlar tirikmi (o'zimiz) va
 #      `tools/check_deploy.sh` «joriy» deydimi; joriy bo'lsa JIM chiqadi;
 #   4. `tools/check_deploy_gate.py` (main CI yashil) va `DEPLOY_FREEZE`;
-#   5. `tools/deploy.sh --yes`.
+#   5. `tools/deploy.sh --yes` — qulf QAYTA olinmaydi
+#      (`RANKWANT_LOCK_HELD=1`), chunki u allaqachon 1-qadamda olingan.
 #
 # ⚠️ Nega WORKTREE HEAD bilan solishtirilmaydi: merge bo'lib, deploy yiqilgan
 # bo'lsa worktree allaqachon `origin/main` da bo'ladi — HEAD bilan solishtirish
 # «ish yo'q» deb o'ylab, driftni ABADIY qoldirardi. Haqiqatni faqat JONLI
 # holat ko'rsatadi (2026-09-19 da sayt `main` dan 4 commit orqada edi).
+#
+# ⚠️ Ikkala qadam ham O'LCHANGAN xatodan tug'ilgan (2026-09-19, birinchi
+# haqiqiy yurish): qulf qayta olinsa watcher o'zini bloklaydi; stdin
+# berilmasa `sha256sum` yiqilib `check_deploy.sh` yolg'on «ESKIRGAN»
+# deydi. Batafsil: `docs/10-operations/deploy-runbook.md`.
 #
 # ⚠️ Qayta urinish to'sig'i (`RANKWANT_AUTO_DEPLOY_BACKOFF`, standart 1800 s):
 # deploy yiqilsa (yoki main CI qizil bo'lsa), keyingi 30 daqiqada shu SHA
@@ -68,13 +74,25 @@ for arg in "$@"; do
   case "$arg" in
     --dry-run) DRY_RUN=1 ;;
     --status) STATUS_ONLY=1 ;;
-    -h|--help) sed -n '2,48p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) sed -n '2,53p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) printf '%sNoma'"'"'lum argument: %s%s\n' "$R" "$arg" "$N"; exit 2 ;;
   esac
 done
 
 log()  { printf '[%s] %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$1"; }
 die()  { printf '%s✗ %s%s\n' "$R" "$1" "$N"; exit 1; }
+
+# ⚠️ STDIN'ni majburan ochamiz. Task Scheduler → `conhost.exe --headless`
+# farzandga stdin BERMAYDI (fd yopiq). MSYS `sha256sum` ishga tushishda
+# stdin fd ni sozlaydi va yopiq fd bilan yiqiladi:
+#   sha256sum: failed to set file descriptor text/binary mode: Bad file descriptor
+# U `2>/dev/null` ortida qoladi, natija BO'SH bo'ladi, `check_deploy.sh`
+# esa yolg'on «ESKIRGAN» deydi (o'lchandi 2026-09-19: qo'lda — «joriy»,
+# vazifada — «3 konteyner eskirgan»). `/dev/null` — yaroqli fd, ya'ni
+# xato yo'qoladi. Skript ham, uning farzandlari (`deploy.sh`,
+# `backup.sh`, `docker`) ham stdin o'qimaydi — `deploy.sh` tasdiqni
+# faqat `--yes`siz so'raydi, watcher esa doim `--yes` beradi.
+exec 0</dev/null
 
 # ── Yordamchilar ─────────────────────────────────────────────────────
 
@@ -158,15 +176,32 @@ TARGET="$(git rev-parse origin/main 2>/dev/null)" || die "origin/main o'qilmadi"
 # ── 4. Drift bormi? ──────────────────────────────────────────────────
 # Qaror ikki manbadan: konteynerlar tirikmi (o'zimiz) va kod joriymi
 # (`check_deploy.sh`). Ikkisi ham kerak — sabab yuqoridagi izohda.
-if all_up && bash tools/check_deploy.sh >/dev/null 2>&1; then
-  # Eng ko'p uchraydigan holat: ish yo'q. JIM chiqamiz — log shishmasin.
-  exit 0
+if all_up; then
+  if cdo="$(bash tools/check_deploy.sh 2>&1)"; then
+    # Eng ko'p uchraydigan holat: ish yo'q. JIM chiqamiz — log shishmasin.
+    exit 0
+  fi
+  # ⚠️ DALIL SHART. Qaror «deploy kerak» bo'lganda sabab yozilmasa,
+  # nosozlikni faqat qo'lda qayta o'lchab tushunish mumkin — 2026-09-19
+  # da aynan shunday bo'ldi: watcher «drift» derdi, qo'lda esa «joriy»,
+  # va sabab (stdin) izsiz qoldi. Faqat muammoli qatorlar yoziladi,
+  # ya'ni normal holatda log o'smaydi.
+  log "drift: check_deploy.sh joriy emas deb topdi"
+  printf '%s\n' "$cdo" | grep -E "ESKIRGAN|MUHIT|TEKSHIRILMADI|YO.Q" | while IFS= read -r line; do
+    log "  $line"
+  done
+else
+  log "drift: konteynerlar to'liq tirik emas — check_deploy.sh ishga tushirilmadi"
 fi
 
 if live="$(live_sha)"; then
-  log "drift: jonli ${live:0:7} ≠ main ${TARGET:0:7}"
+  if [ "$live" = "$TARGET" ]; then
+    log "jonli SHA = main (${live:0:7}) — farq KONTENTDA, SHA'da emas"
+  else
+    log "jonli ${live:0:7} ≠ main ${TARGET:0:7}"
+  fi
 else
-  log "drift: jonli SHA yorlig'i o'qilmadi (deploy.sh dan o'tmagan?) — deploy qilinadi"
+  log "jonli SHA yorlig'i o'qilmadi (deploy.sh dan o'tmagan?) — deploy qilinadi"
 fi
 
 # ── 5. Qayta urinish to'sig'i ────────────────────────────────────────
@@ -204,7 +239,15 @@ fi
 # hisobga oladi. Keyin yozilsa, yiqilgan yurish har 5 daqiqada takrorlanardi.
 record_attempt "$TARGET"
 log "deploy boshlandi (target ${TARGET:0:7})"
-if RANKWANT_ENV_FILE="$ENV_FILE" bash tools/deploy.sh --yes; then
+# ⚠️ `RANKWANT_LOCK_HELD=1` SHART. Watcher allaqachon AYNI qulfni ushlab
+# turadi (qulf fayli `deploy.sh` bilan bir xil — ataylab, qo'lda deploy
+# bilan to'qnashmasin). `deploy.sh` esa uni qayta olmoqchi bo'lib `mkdir`
+# da yiqilardi, ya'ni watcher O'ZINI bloklardi va deploy HECH QACHON
+# ishlamasdi (o'lchandi 2026-09-19, birinchi haqiqiy yurish:
+# «✗ boshqa deploy ishlayapti (auto-deploy pid 1303)»). `1` — «qulf
+# chaqiruvchida», `deploy.sh` `mkdir`/`trap` ni o'tkazib yuboradi,
+# qulfni esa watcher'ning `trap` i bo'shatadi.
+if RANKWANT_LOCK_HELD=1 RANKWANT_ENV_FILE="$ENV_FILE" bash tools/deploy.sh --yes; then
   log "deploy tugadi: ${TARGET:0:12}"
   rm -f "$STATE"
   exit 0

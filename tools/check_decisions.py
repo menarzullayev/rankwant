@@ -1024,10 +1024,11 @@ def homepage_guest_cdn_cache() -> str | None:
 
 AUTO_DEPLOY = "tools/auto_deploy.sh"
 ROLLBACK = "tools/rollback.sh"
+CHECK_DEPLOY = "tools/check_deploy.sh"
 
 
 def deploy_automation_is_safe() -> str | None:
-    """Avtomatik deploy zanjiri — tartib buzilsa JIM buziladigan besh joy.
+    """Avtomatik deploy zanjiri — tartib buzilsa JIM buziladigan yetti joy.
 
     Saidakbar aka qarori (2026-09-19): deploy to'liq avtomatik bo'ladi —
     host watcher orqali (`tools/auto_deploy.sh` + `RankWant Auto Deploy`
@@ -1039,6 +1040,10 @@ def deploy_automation_is_safe() -> str | None:
 
     Beshta shart tartibga bog'liq: buzilganda kod ISHLAYDI, natija esa
     noto'g'ri bo'ladi — ya'ni xato faqat hodisa paytida bilinadi.
+    Qolgan ikkitasi (6, 7) 2026-09-19 da birinchi haqiqiy yurishda
+    o'lchandi va BIR XIL sababga ega: ular faqat zanjir BUTUN yurganda
+    ko'rinadi, ya'ni unit darajasidagi tekshiruvlar ularni o'tkazib
+    yuboradi.
 
     1. ZAXIRA MIGRATSIYADAN OLDIN. `backup.sh --dump-only` `run --rm
        migrate` dan keyin tursa sxema zaxirasiz o'zgaradi va qaytish yo'li
@@ -1059,6 +1064,15 @@ def deploy_automation_is_safe() -> str | None:
        `deploy.sh` ga uzatish ham `$ENV_FILE` dan o'qilmasa, watcher bir
        faylni tekshirib boshqasini uzatadi: deploy bo'sh env bilan ketadi,
        API har so'rovga 400 qaytaradi — xato faqat jonli saytda bilinadi.
+    6. QULF QAYTA OLINMAYDI. Watcher qulfni o'zi oladi, `deploy.sh` esa
+       AYNAN o'sha qulfni so'rab `mkdir` da yiqiladi — watcher o'zini
+       bloklaydi va avtomatik deploy hech qachon ishlamaydi. Chaqiruvchi
+       `RANKWANT_LOCK_HELD=1` bilan qulfni topshiradi.
+    7. STDIN YOPIQ EMAS. Vazifa (`conhost --headless`) stdin bermaydi;
+       MSYS `sha256sum` yopiq fd bilan yiqiladi, xato `2>/dev/null` ortida
+       qoladi va `check_deploy.sh` YOLG'ON «ESKIRGAN» deydi. Watcher
+       `exec 0</dev/null` bilan ochadi, `check_deploy.sh` esa o'zi ham
+       `sha256sum` ga `< /dev/null` beradi.
     """
     deploy = read("tools/deploy.sh")
     auto = read(AUTO_DEPLOY)
@@ -1097,7 +1111,7 @@ def deploy_automation_is_safe() -> str | None:
     if tag_at > up_at:
         return "tools/deploy.sh: SHA teg `up` dan KEYIN — teg eski obrazga tushadi"
 
-    if "all_up &&" not in auto:
+    if "if all_up; then" not in auto:
         return (
             f"{AUTO_DEPLOY}: konteynerlar tirikligi tekshirilmaydi — "
             "`check_deploy.sh` stack yiqilganda ham 0 qaytaradi"
@@ -1128,6 +1142,43 @@ def deploy_automation_is_safe() -> str | None:
         return f"{AUTO_DEPLOY}: env-fayl mavjudligi tekshirilmaydi"
     if 'RANKWANT_ENV_FILE="$ENV_FILE"' not in auto:
         return f"{AUTO_DEPLOY}: `deploy.sh` ga boshqa env-fayl uzatiladi"
+
+    # ⚠️ Ikki nosozlik 2026-09-19 da BIRINCHI HAQIQIY yurishda o'lchandi —
+    # ikkalasi ham «yashil» unit tekshiruvlardan o'tib ketgan edi, chunki
+    # faqat zanjir BUTUN yurganda ko'rinadi. Ikkalasi ham jim: biri deploy
+    # qilishni butunlay to'xtatadi, ikkinchisi esa uni behuda qo'zg'atadi.
+    #
+    # 6. QULF QAYTA OLINMAYDI. Watcher qulfni o'zi oladi (qo'lda deploy
+    #    bilan to'qnashmasin), keyin `deploy.sh` AYNAN o'sha qulfni
+    #    so'raydi va `mkdir` da yiqiladi — ya'ni watcher O'ZINI bloklaydi
+    #    va avtomatik deploy HECH QACHON ishlamaydi. O'lchandi: log'da
+    #    «✗ boshqa deploy ishlayapti (auto-deploy pid 1303)».
+    # 7. STDIN YOPIQ BO'LMASIN. Task Scheduler → `conhost --headless`
+    #    farzandga stdin bermaydi; MSYS `sha256sum` yopiq fd bilan
+    #    yiqiladi («failed to set file descriptor text/binary mode»),
+    #    xato `2>/dev/null` ortida qoladi va `check_deploy.sh` YOLG'ON
+    #    «ESKIRGAN» deydi. O'lchandi: qo'lda «joriy», vazifada «3
+    #    konteyner eskirgan» — ya'ni watcher behuda deploy qo'zg'atadi.
+    if "RANKWANT_LOCK_HELD=1 RANKWANT_ENV_FILE" not in auto:
+        return (
+            f"{AUTO_DEPLOY}: qulfni `deploy.sh` ga topshirmaydi — watcher "
+            "o'zini bloklaydi, deploy hech qachon ishlamaydi"
+        )
+    if '${RANKWANT_LOCK_HELD:-0}' not in deploy:
+        return (
+            "tools/deploy.sh: `RANKWANT_LOCK_HELD` ni tan olmaydi — "
+            "watcher'ning qulf topshirishi ishlamaydi"
+        )
+    if "exec 0</dev/null" not in auto:
+        return (
+            f"{AUTO_DEPLOY}: stdin'ni ochmaydi — vazifada `sha256sum` "
+            "yiqilib yolg'on drift chiqaradi"
+        )
+    if 'sha256sum "$src" < /dev/null' not in read(CHECK_DEPLOY):
+        return (
+            f"{CHECK_DEPLOY}: `sha256sum` atrofdagi stdin'ga tayanadi — "
+            "yopiq stdin'da yolg'on «ESKIRGAN»"
+        )
     return None
 
 

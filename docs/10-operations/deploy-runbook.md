@@ -210,6 +210,42 @@ u `0` qaytaradi (`missing` hisoblagichi faqat xabar uchun, `exit 1` esa
 (`all_up`). `tools/check_decisions.py` → `deploy_automation_is_safe` shuni
 qo'riqlaydi.
 
+### Birinchi haqiqiy yurish topgan ikki nosozlik (2026-09-19)
+
+Zanjir `main` ga qo'shildi, unit tekshiruvlari yashil edi (`check_decisions`
+26/26, salbiy testlar 70/70) — **va shunga qaramay avtomatik deploy hech qachon
+ishlamasdi**. Ikkalasi ham faqat zanjir BUTUN yurganda ko'rinadi, ya'ni unit
+darajasida ushlanmaydi. Ikkalasi ham tuzatildi va endi qo'riqlanadi.
+
+| # | Nosozlik | O'lchangan dalil | Tuzatish |
+|---|---|---|---|
+| 1 | **Watcher o'zini bloklaydi** — qulfni o'zi oladi, `deploy.sh` esa AYNAN o'sha qulfni so'raydi | `✗ boshqa deploy ishlayapti (auto-deploy pid 1303, 2026-09-19 01:38 UTC)` | watcher qulfni **topshiradi**: `RANKWANT_LOCK_HELD=1`; `deploy.sh` `mkdir`/`trap` ni o'tkazib yuboradi |
+| 2 | **Yolg'on drift** — vazifa muhitida `check_deploy.sh` «eskirgan» deydi | qo'lda: `Hamma konteyner joriy kodda` (exit 0); vazifada: `3 konteyner eskirgan` (exit 1) | watcher `exec 0</dev/null`; `check_deploy.sh` → `sha256sum "$src" < /dev/null` |
+
+**2-nosozlikning sababi** (Git Bash'ga xos, uch soat qidirildi):
+
+```
+sha256sum: failed to set file descriptor text/binary mode: Bad file descriptor
+```
+
+`sha256sum` ishga tushishda stdin fd ni sozlaydi (`_setmode`). `Task Scheduler`
+→ `conhost.exe --headless` farzandga stdin **bermaydi** (fd yopiq), `sha256sum`
+yiqiladi va **hech narsa chiqarmaydi**. `check_deploy.sh:161` da `2>/dev/null`
+bor, ya'ni xato yashirinadi va `shash` bo'sh qoladi → «farq qiladi» →
+`stale++` → `exit 1`. `</dev/null` — yaroqli fd, xato yo'qoladi. Tekshirish:
+
+```bash
+cd <repo> && bash tools/check_deploy.sh 0<&-   # yopiq stdin — AVVAL exit 1, ENDI exit 0
+```
+
+⚠️ **Umumiy saboq:** stdin yopiq muhitda MSYS coreutils jim yiqilishi mumkin.
+Watcher endi `exec 0</dev/null` bilan boshlanadi, ya'ni butun zanjir
+(`deploy.sh`, `backup.sh`, `docker`) yaroqli stdin oladi.
+
+⚠️ **Qaror dalilsiz qabul qilinmasin.** Birinchi versiya shunchaki `drift` deb
+yozardi — nima uchun ekani ko'rinmasdi. Endi watcher `check_deploy.sh` ning
+muammoli qatorlarini (`ESKIRGAN|MUHIT|TEKSHIRILMADI|YO'Q`) logga chiqaradi.
+
 **Boshqarish:**
 
 ```bash
@@ -218,7 +254,16 @@ bash tools/auto_deploy.sh --dry-run    # qarorni ko'rsatadi, hech narsa qilmaydi
 DEPLOY_FREEZE=1 bash tools/deploy.sh   # muzlatish (skript 1 bilan chiqadi)
 bash tools/rollback.sh --list          # mavjud SHA teglari
 bash tools/rollback.sh <sha12>         # kodni qaytarish
+
+schtasks /run /tn "RankWant Auto Deploy"          # vazifani darhol yurgizish
+tail -f .handoff/auto-deploy.log                  # watcher logi
+rm -f ~/.rankwant-auto-deploy-state               # 30 daqiqalik to'siqni olib tashlash
+rm -rf .git/rankwant-deploy.lock                  # ESKIRGAN qulf (egasi yo'q bo'lsa)
 ```
+
+⚠️ To'siq (`~/.rankwant-auto-deploy-state`) yozuvi `SHA epoch` ko'rinishida.
+Yolg'on nosozlikdan keyin uni o'chirish xavfsiz — u faqat qayta urinish
+chastotasini cheklaydi, deploy qaroriga ta'sir qilmaydi.
 
 ⚠️ **Rollback migratsiyani qaytarmaydi.** Django'da «orqaga» migratsiya yo'q
 va uni avtomatik yurgizish sxemani buzardi. Kod — `tools/rollback.sh`, sxema —
