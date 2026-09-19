@@ -1,13 +1,14 @@
 import { LOCALE_COOKIE } from "@/i18n/locale-params";
 
 /**
- * Bosh sahifa HTML keshi — 100 000 bir vaqtdagi ochilish qarorlari
- * (2026-09-19): faqat GET `/`, faqat mehmon, origin Cache-Control,
- * s-maxage=30 + stale-while-revalidate.
+ * Mehmon HTML keshi — 50k qarorlari (2026-09-19): GET `/`, `/login`,
+ * `/register`, `/terms`, `/privacy`. Faqat mehmon, origin Cache-Control,
+ * s-maxage=30 + stale-while-revalidate. `rw_exp` bu yo'llarda
+ * yozilmaydi — Set-Cookie CDN ni o'ldiradi.
  *
  * Next.js layout `cookies()` o'qiydi va o'zi `private, no-store` yozadi.
  * Shu modul qarorni aytadi; `proxy.ts` va `instrumentation.ts` uni
- * javobga qo'yadi. Cloudflare esa origin header'ga rioya qiladi.
+ * javobga qo'yadi. Cloudflare origin header'ga rioya qiladi.
  */
 
 /** Django standart sessiya cookie — `SESSION_COOKIE_NAME` o'zgarmagan. */
@@ -20,6 +21,14 @@ export const HOME_MARKUP_COOKIE = "rw:markup";
 export const HOME_CACHE_LOCALE = "uz";
 
 export const HOME_CACHE_PATH = "/";
+
+/** Login tab — `page.tsx` `tabOf` bilan bir xil. */
+export const GUEST_LOGIN_TABS = new Set([
+  "",
+  "login",
+  "register",
+  "reset-password",
+]);
 
 /** Proxy → Node instrumentation. Next `Cookie` ni `res.req` da yo'qotishi mumkin. */
 export const HOME_CACHE_REQUEST_HEADER = "x-rw-home-cache";
@@ -53,9 +62,11 @@ export type HomeCacheInput = {
 export type HomeCacheDecision = {
   /** GET/HEAD `/` query va RSC'siz. */
   isHomeDocument: boolean;
+  /** GET/HEAD mehmon HTML (home/login/huquqiy). */
+  isGuestDocument: boolean;
   /** CDN saqlashi mumkin. */
   cacheable: boolean;
-  /** `null` — bu so'rov bosh sahifa hujjati emas, tegilmasin. */
+  /** `null` — bu so'rov boshqariladigan hujjat emas, tegilmasin. */
   cacheControl: string | null;
   assignExperiments: boolean;
   forceDefaultLocale: boolean;
@@ -65,6 +76,25 @@ function cookieHas(header: string | null, name: string): boolean {
   if (!header) return false;
   const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   return new RegExp(`(?:^|;\\s*)${escaped}=`).test(header);
+}
+
+function isLoginTabSearch(search: string): boolean {
+  if (search === "") return true;
+  const params = new URLSearchParams(
+    search.startsWith("?") ? search.slice(1) : search,
+  );
+  const keys = [...params.keys()];
+  if (keys.length !== 1 || keys[0] !== "tab") return false;
+  return GUEST_LOGIN_TABS.has(params.get("tab") ?? "");
+}
+
+export function isGuestCachePath(pathname: string, search: string): boolean {
+  if (pathname === "/" || pathname === "/terms" || pathname === "/privacy") {
+    return search === "";
+  }
+  if (pathname === "/register") return search === "";
+  if (pathname === "/login") return isLoginTabSearch(search);
+  return false;
 }
 
 export function homeCacheMark(
@@ -93,10 +123,13 @@ export function homeCacheDecision(input: HomeCacheInput): HomeCacheDecision {
     input.pathname === HOME_CACHE_PATH &&
     search === "" &&
     !input.hasRscHint;
+  const isGuestDocument =
+    isGet && !input.hasRscHint && isGuestCachePath(input.pathname, search);
 
-  if (!isHomeDocument) {
+  if (!isGuestDocument) {
     return {
       isHomeDocument: false,
+      isGuestDocument: false,
       cacheable: false,
       cacheControl: null,
       assignExperiments: true,
@@ -111,7 +144,8 @@ export function homeCacheDecision(input: HomeCacheInput): HomeCacheDecision {
 
   if (personalized) {
     return {
-      isHomeDocument: true,
+      isHomeDocument,
+      isGuestDocument: true,
       cacheable: false,
       cacheControl: HOME_CACHE_PRIVATE,
       assignExperiments: true,
@@ -120,7 +154,8 @@ export function homeCacheDecision(input: HomeCacheInput): HomeCacheDecision {
   }
 
   return {
-    isHomeDocument: true,
+    isHomeDocument,
+    isGuestDocument: true,
     cacheable: true,
     cacheControl: HOME_CACHE_GUEST,
     assignExperiments: false,

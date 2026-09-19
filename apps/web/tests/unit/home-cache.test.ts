@@ -25,6 +25,7 @@ describe("homeCacheDecision", () => {
     const d = homeCacheDecision(guestHome);
     expect(d).toEqual({
       isHomeDocument: true,
+      isGuestDocument: true,
       cacheable: true,
       cacheControl: HOME_CACHE_GUEST,
       assignExperiments: false,
@@ -91,6 +92,46 @@ describe("homeCacheDecision", () => {
     expect(
       homeCacheDecision({ ...guestHome, method: "POST" }).cacheControl,
     ).toBeNull();
+  });
+
+  it("caches cookieless login and register tabs", () => {
+    for (const search of ["", "?tab=login", "?tab=register", "?tab=reset-password"]) {
+      const d = homeCacheDecision({
+        ...guestHome,
+        pathname: "/login",
+        search,
+      });
+      expect(d.cacheable).toBe(true);
+      expect(d.assignExperiments).toBe(false);
+      expect(d.isHomeDocument).toBe(false);
+    }
+    expect(
+      homeCacheDecision({ ...guestHome, pathname: "/register" }).cacheable,
+    ).toBe(true);
+    expect(
+      homeCacheDecision({ ...guestHome, pathname: "/terms" }).cacheable,
+    ).toBe(true);
+    expect(
+      homeCacheDecision({ ...guestHome, pathname: "/privacy" }).cacheable,
+    ).toBe(true);
+  });
+
+  it("does not cache login with extra query or a session", () => {
+    expect(
+      homeCacheDecision({
+        ...guestHome,
+        pathname: "/login",
+        search: "?tab=login&next=/",
+      }).cacheControl,
+    ).toBeNull();
+    expect(
+      homeCacheDecision({
+        ...guestHome,
+        pathname: "/login",
+        search: "?tab=login",
+        cookieHeader: `${SESSION_COOKIE}=abc`,
+      }).cacheControl,
+    ).toBe(HOME_CACHE_PRIVATE);
   });
 
   it("does not treat an RSC/prefetch navigation as the document", () => {

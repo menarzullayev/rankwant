@@ -36,6 +36,14 @@ def cache_set(key: str, value: Any, timeout: int | None = None) -> None:
         log.warning("kesh yozilmadi: %s", key)
 
 
+def cache_delete(key: str) -> None:
+    """Kesh yiqilsa — jim. Eski qiymat qolishi 500 emas, kechikish."""
+    try:
+        cache.delete(key)
+    except Exception:
+        log.warning("kesh o'chirilmadi: %s", key)
+
+
 def edge_cacheable[R: HttpResponseBase](response: R, seconds: int) -> R:
     """Javobni CDN keshlay oladigan qilib belgilaydi.
 

@@ -20,6 +20,7 @@ router.register("staff/schools", StaffSchoolViewSet, basename="staff-school")
 
 urlpatterns = [
     path("health/", views.HealthView.as_view(), name="health"),
+    path("slo/", views.SloView.as_view(), name="slo"),
     path("appearance/", views.SiteAppearanceView.as_view(), name="site-appearance"),
     path("stats/", views.PlatformStatsView.as_view(), name="platform-stats"),
     path("calendar/", views.CalendarView.as_view(), name="calendar"),

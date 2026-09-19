@@ -249,6 +249,9 @@ class Problem(models.Model):
 
     class Meta:
         ordering: ClassVar = ["difficulty", "slug"]
+        indexes: ClassVar = [
+            models.Index(fields=["is_public", "difficulty"], name="problem_public_diff"),
+        ]
 
     def __str__(self) -> str:
         return f"{self.slug} ({self.difficulty})"

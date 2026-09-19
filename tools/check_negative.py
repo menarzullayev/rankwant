@@ -2406,6 +2406,26 @@ def neg_decisions_home_worker_catchall_restored() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_login_worker_letter_restored() -> tuple[bool, str]:
+    """`l*` qaytsa `/login` yana Worker kvotasini yeydi."""
+    return _decision_broken(
+        "services/maintenance-worker/wrangler.toml",
+        '  { pattern = "rankwant.uz/leaderboard*", zone_name = "rankwant.uz" },',
+        '  { pattern = "rankwant.uz/l*", zone_name = "rankwant.uz" },',
+        "login mehmon CDN keshi",
+    )
+
+
+def neg_decisions_login_path_dropped() -> tuple[bool, str]:
+    """`/login` mehmon yo'lidan tushsa tutilsin."""
+    return _decision_broken(
+        "apps/web/src/lib/home-cache.ts",
+        '  if (pathname === "/login") return isLoginTabSearch(search);',
+        "",
+        "login mehmon CDN keshi",
+    )
+
+
 def neg_decisions_locale_choice_keeps_param() -> tuple[bool, str]:
     """Qo'lda tanlov `?lang=` ni tozalamasa tutilsin.
 
@@ -4582,6 +4602,14 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "worker catch-all qaytsa tutilsin",
                 neg_decisions_home_worker_catchall_restored,
+            ),
+            (
+                "login worker harfi qaytsa tutilsin",
+                neg_decisions_login_worker_letter_restored,
+            ),
+            (
+                "login yo'li tushsa tutilsin",
+                neg_decisions_login_path_dropped,
             ),
             (
                 "zaxira migratsiyadan keyin qolsa tutilsin",

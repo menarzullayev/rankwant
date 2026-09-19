@@ -23,7 +23,7 @@ from contests.serializers import (
     RegistrationSerializer,
     StandingSerializer,
 )
-from contests.services import start_virtual, virtual_deadline
+from contests.services import STANDINGS_CACHE_KEY, start_virtual, virtual_deadline
 from core.cache import cache_get, cache_set, edge_cacheable
 from core.models import User
 from core.openapi_docs import crud_summaries
@@ -67,21 +67,21 @@ class ContestViewSet(viewsets.ReadOnlyModelViewSet[Contest]):
     @action(detail=True, methods=["get"], permission_classes=[AllowAny])
     def standings(self, request: Request, slug: str | None = None) -> Response:
         contest = self.get_object()
-        rows = (
-            Standing.objects.filter(contest=contest)
-            .select_related("user")
-            .order_by("rank")[:STANDINGS_TOP]
-        )
-        # Jadval hamma uchun bir xil — chekkada keshlanadi (core.cache).
-        return edge_cacheable(
-            Response(
-                {
-                    "frozen": contest.is_frozen,
-                    "results": StandingSerializer(rows, many=True).data,
-                }
-            ),
-            STANDINGS_CACHE_S,
-        )
+        key = STANDINGS_CACHE_KEY.format(contest_id=contest.pk)
+        payload = cache_get(key)
+        if payload is None:
+            rows = (
+                Standing.objects.filter(contest=contest)
+                .select_related("user")
+                .order_by("rank")[:STANDINGS_TOP]
+            )
+            payload = {
+                "frozen": contest.is_frozen,
+                "results": StandingSerializer(rows, many=True).data,
+            }
+            cache_set(key, payload, STANDINGS_CACHE_S)
+        # Jadval hamma uchun bir xil — Redis + chekka (core.cache).
+        return edge_cacheable(Response(payload), STANDINGS_CACHE_S)
 
     @extend_schema(responses={200: StandingSerializer, 404: None})
     @action(

@@ -26,8 +26,9 @@ npx wrangler deploy
 ```
 
 `wrangler login` brauzerda Cloudflare hisobiga ruxsat so'raydi (bir marta).
-Route'lar `wrangler.toml` da: `rankwant.uz/a*`…`z*`/`_*` va `www` uchun
-xuddi shu (GET `/` ATAYLAB yo'q — CDN HTML keshi Worker kvotasini yemasin).
+Route'lar `wrangler.toml` da: harf prefikslari + aniq yo'llar
+(`leaderboard*`, `problems*`, …). GET `/`, `/login`, `/register`,
+`/terms`, `/privacy` ATAYLAB yo'q — mehmon CDN Worker kvotasini yemasin.
 
 Dashboard orqali ham bo'ladi: Workers & Pages → Create → Worker →
 `src/index.js` ni joylash → Settings → Domains & Routes → ikkala route.

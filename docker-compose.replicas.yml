@@ -1,0 +1,30 @@
+# Ixtiyoriy: web×2 + api×2, Caddy 127.0.0.1:8300/8301.
+# Sukutda preview (public.yml) BUNISIZ ishlaydi — bitta mashina RAM.
+#
+#   docker compose --env-file .env.public \
+#     -f docker-compose.yml -f docker-compose.public.yml \
+#     -f docker-compose.replicas.yml \
+#     up -d --scale web=2 --scale api=2
+#
+# Sticky session yo'q — sessiya Redis/DB da (50k qaror).
+
+services:
+  api:
+    ports: []
+    expose: ["8000"]
+    environment:
+      GUNICORN_WORKERS: ${GUNICORN_WORKERS:-4}
+
+  web:
+    ports: []
+    expose: ["3000"]
+
+  origin-lb:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8300:8300"
+      - "127.0.0.1:8301:8301"
+    volumes:
+      - ./compose/Caddyfile.replicas:/etc/caddy/Caddyfile:ro
+    depends_on: [web, api]

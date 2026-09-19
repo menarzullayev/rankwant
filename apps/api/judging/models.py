@@ -57,6 +57,8 @@ class Attempt(models.Model):
             models.Index(fields=["user", "problem", "verdict"], name="attempt_solved_lookup"),
             models.Index(fields=["contest", "created_at"], name="attempt_contest_feed"),
             models.Index(fields=["problem", "-created_at"], name="attempt_problem_feed"),
+            models.Index(fields=["verdict", "created_at"], name="attempt_pending_feed"),
+            models.Index(fields=["user", "-created_at"], name="attempt_user_feed"),
         ]
 
     def __str__(self) -> str:

@@ -147,7 +147,8 @@ export function proxy(request: NextRequest): NextResponse {
   // (`/docs/app/api-reference/file-conventions/proxy` da `Vary` umuman
   // tilga olinmaydi; `headers()` konfiguratsiya sahifasida ham yo'q).
   //
-  // GET `/` mehmon uchun endi keshlanadi (`home-cache.ts`). Zaharsiz,
+  // GET `/`, `/login`, huquqiy sahifalar mehmon uchun keshlanadi
+  // (`home-cache.ts`). Zaharsiz,
   // chunki keshlangan javob `x-rw-locale=uz` bilan chiziladi, `?lang=`
   // va shaxsiy cookie'lar keshdan chiqariladi, kirgan esa `private,
   // no-store`. Boshqa yo'llar hali `no-store`.

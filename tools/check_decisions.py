@@ -1022,6 +1022,59 @@ def homepage_guest_cdn_cache() -> str | None:
     return None
 
 
+def guest_auth_cdn_cache() -> str | None:
+    """50k: login/register/terms/privacy mehmon HTML + Worker tashqarida.
+
+    `rw_exp` keshlangan yo'lda yozilmasin (`assignExperiments: false`).
+    `l*` `/login` ni Worker'ga qaytarardi (~200 ms, 100k/kun).
+    """
+    src = read(HOME_CACHE)
+    if "export function isGuestCachePath" not in src:
+        return f"{HOME_CACHE}: `isGuestCachePath` yo'q"
+    if '"/login"' not in src or '"/terms"' not in src or '"/privacy"' not in src:
+        return f"{HOME_CACHE}: mehmon yo'llari `/login` `/terms` `/privacy` emas"
+    if "assignExperiments: false" not in src:
+        return f"{HOME_CACHE}: keshlangan mehmonga eksperiment cookie yoziladi"
+
+    toml = read(WORKER_TOML)
+    if '{ pattern = "rankwant.uz/l*"' in toml:
+        return f"{WORKER_TOML}: `l*` `/login` ni Worker'ga qaytaradi (kvota)"
+    if '{ pattern = "www.rankwant.uz/l*"' in toml:
+        return f"{WORKER_TOML}: www `l*` `/login` ni Worker'ga qaytaradi"
+    if "rankwant.uz/leaderboard*" not in toml:
+        return f"{WORKER_TOML}: `/leaderboard` Worker'siz qolmasin"
+    return None
+
+
+def scale_50k_locked() -> str | None:
+    """2026-09-19: 7 ta 50k qaror kodda qolsin (Sentry/Kafka/K8s yo'q)."""
+    views = read("apps/api/core/views.py")
+    if "class SloView" not in views:
+        return "apps/api/core/views.py: SloView yo'q (SLO, Sentry emas)"
+    if "sentry_sdk" in views or "import sentry" in views:
+        return "apps/api/core/views.py: Sentry qo'shilgan"
+    cache_src = read("apps/api/core/cache.py")
+    if "def cache_delete" not in cache_src:
+        return "apps/api/core/cache.py: cache_delete yo'q"
+    compose = read("docker-compose.yml")
+    if "shared_preload_libraries=pg_stat_statements" not in compose:
+        return "docker-compose.yml: pg_stat_statements preload yo'q"
+    if "GUNICORN_WORKERS" not in compose:
+        return "docker-compose.yml: GUNICORN_WORKERS yo'q"
+    replicas = read("docker-compose.replicas.yml")
+    if "origin-lb" not in replicas or "--scale web=2" not in replicas:
+        return "docker-compose.replicas.yml: web×2/api×2 overlay emas"
+    four = read("compose/four-host/README.md")
+    if "K8s yo" not in four and "K8s yo‘q" not in four:
+        return "compose/four-host/README.md: to'rt-host qaror yo'q"
+    req = read("apps/api/requirements.lock")
+    if "sentry-sdk" in req:
+        return "apps/api/requirements.lock: sentry-sdk (Sentry kerakmas)"
+    if "confluent-kafka" in req or "kafka-python" in req:
+        return "apps/api/requirements.lock: Kafka qo'shilgan"
+    return None
+
+
 AUTO_DEPLOY = "tools/auto_deploy.sh"
 ROLLBACK = "tools/rollback.sh"
 CHECK_DEPLOY = "tools/check_deploy.sh"
@@ -1205,6 +1258,8 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("kontent qamrovi ko'rinadi", content_coverage_visible),
     ("til havolada ham keladi", locale_travels_in_the_url),
     ("bosh sahifa mehmon CDN keshi", homepage_guest_cdn_cache),
+    ("login mehmon CDN keshi", guest_auth_cdn_cache),
+    ("50k masshtab qarorlari", scale_50k_locked),
     ("avtomatik deploy xavfsiz", deploy_automation_is_safe),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
