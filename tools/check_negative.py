@@ -2420,6 +2420,85 @@ def neg_decisions_locale_choice_keeps_param() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_deploy_backup_after_migrate() -> tuple[bool, str]:
+    """Zaxira migratsiyadan KEYIN qolsa tutilsin.
+
+    Tartib buzilganda skript ishlaydi, natija esa noto'g'ri bo'ladi: sxema
+    zaxirasiz o'zgaradi va Django'da «orqaga» migratsiya yo'qligi uchun
+    qaytish yo'li qolmaydi. Mutatsiya `migrate` chaqiruvini zaxira
+    qadamidan OLDIN qo'yadi — ya'ni birinchi uchragan `run --rm migrate`
+    endi zaxiradan oldin turadi.
+    """
+    return _decision_broken(
+        "tools/deploy.sh",
+        'step "4/8 Migratsiyadan oldin zaxira (pg_dump)"',
+        '"${COMPOSE[@]}" run --rm migrate || true\n'
+        'step "4/8 Migratsiyadan oldin zaxira (pg_dump)"',
+        "avtomatik deploy xavfsiz",
+    )
+
+
+def neg_decisions_deploy_freeze_after_lock() -> tuple[bool, str]:
+    """Muzlatish qulfdan KEYIN tekshirilsa tutilsin.
+
+    Aks holda muzlatilgan tizim qulfni band qiladi va boshqa agentning
+    deploy'i «band» deb xato o'qiladi — ya'ni muzlatish o'z ishini
+    qilmaydi, faqat boshqalarni to'xtatadi.
+    """
+    return _decision_broken(
+        "tools/deploy.sh",
+        "# ── Muzlatish kaliti ──",
+        'mkdir "$LOCK" 2>/dev/null || true\n# ── Muzlatish kaliti ──',
+        "avtomatik deploy xavfsiz",
+    )
+
+
+def neg_decisions_deploy_tag_after_up() -> tuple[bool, str]:
+    """SHA teg `up` dan KEYIN qo'yilsa tutilsin.
+
+    `up` konteynerlarni yangi obrazga o'tkazadi va eski obraz «dangling»
+    bo'lib qoladi; keyin qo'yilgan teg o'shanga tushadi, ya'ni rollback
+    NOTO'G'RI kodni qaytaradi. Buni faqat rollback paytida bilib olishardi.
+    """
+    return _decision_broken(
+        "tools/deploy.sh",
+        "# ── 4. Rollback nuqtasi — SHA teg ──",
+        '"${COMPOSE[@]}" up -d --no-deps "${SERVICES[@]}" || true\n'
+        "# ── 4. Rollback nuqtasi — SHA teg ──",
+        "avtomatik deploy xavfsiz",
+    )
+
+
+def neg_decisions_auto_deploy_no_liveness() -> tuple[bool, str]:
+    """Watcher konteynerlar tirikligini tekshirmasa tutilsin.
+
+    `check_deploy.sh` konteyner YO'Q bo'lganda ham 0 qaytaradi (o'lchandi:
+    `missing` faqat xabar uchun, `exit 1` esa `stale`/`envbad` da). Ya'ni
+    stack yiqilgan bo'lsa watcher «ish yo'q» deb jim qolardi va sayt
+    ko'tarilmagan holda qolaverardi.
+    """
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        "if all_up && bash tools/check_deploy.sh >/dev/null 2>&1; then",
+        "if bash tools/check_deploy.sh >/dev/null 2>&1; then",
+        "avtomatik deploy xavfsiz",
+    )
+
+
+def neg_decisions_auto_deploy_attempt_after_deploy() -> tuple[bool, str]:
+    """Qayta urinish yozuvi deploy'dan KEYIN bo'lsa tutilsin.
+
+    Urinish yiqilgandan keyin yozilsa, yiqilgan yurish har 5 daqiqada
+    takrorlanadi: obraz qayta quriladi, disk to'ladi, log ko'miladi.
+    """
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        'record_attempt "$TARGET"',
+        'bash tools/deploy.sh --yes || true\nrecord_attempt "$TARGET"',
+        "avtomatik deploy xavfsiz",
+    )
+
+
 def neg_decisions_signin_label_wraps() -> tuple[bool, str]:
     """Kirish yorlig'i o'raladigan bo'lsa tutilsin.
 
@@ -2788,6 +2867,11 @@ _DECISIONS_SANDBOX_FILES = (
     # copy cannot be read and `check_decisions.py` fails with exit 2.
     "apps/web/src/lib/home-cache.ts",
     "services/maintenance-worker/wrangler.toml",
+    # Automatic deploy (2026-09-19): the rule reads the watcher and the
+    # rollback path, and `tools/deploy.sh` is already listed above. Missing
+    # here, `check_decisions.py` exits 2 instead of testing the rule.
+    "tools/auto_deploy.sh",
+    "tools/rollback.sh",
 )
 
 
@@ -4388,6 +4472,26 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "worker catch-all qaytsa tutilsin",
                 neg_decisions_home_worker_catchall_restored,
+            ),
+            (
+                "zaxira migratsiyadan keyin qolsa tutilsin",
+                neg_decisions_deploy_backup_after_migrate,
+            ),
+            (
+                "muzlatish qulfdan keyin tekshirilsa tutilsin",
+                neg_decisions_deploy_freeze_after_lock,
+            ),
+            (
+                "SHA teg `up` dan keyin qo'yilsa tutilsin",
+                neg_decisions_deploy_tag_after_up,
+            ),
+            (
+                "watcher tiriklikni tekshirmasa tutilsin",
+                neg_decisions_auto_deploy_no_liveness,
+            ),
+            (
+                "qayta urinish yozuvi deploy'dan keyin bo'lsa tutilsin",
+                neg_decisions_auto_deploy_attempt_after_deploy,
             ),
             ("deploy darvozasi uzilsa tutilsin", neg_decisions_deploy_gate_unwired),
             ("deploy qulfi olib tashlansa tutilsin", neg_decisions_deploy_lock_removed),

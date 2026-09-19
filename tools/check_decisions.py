@@ -1022,6 +1022,93 @@ def homepage_guest_cdn_cache() -> str | None:
     return None
 
 
+AUTO_DEPLOY = "tools/auto_deploy.sh"
+ROLLBACK = "tools/rollback.sh"
+
+
+def deploy_automation_is_safe() -> str | None:
+    """Avtomatik deploy zanjiri — tartib buzilsa JIM buziladigan to'rt joy.
+
+    Saidakbar aka qarori (2026-09-19): deploy to'liq avtomatik bo'ladi —
+    host watcher orqali (`tools/auto_deploy.sh` + `RankWant Auto Deploy`
+    vazifasi). ⚠️ GitHub Actions'dagi `deploy` job ATAYLAB qo'lda qoladi
+    (`deploy_manual_only`): o'lchandi — runner konteyneri jonli
+    `.env.public` ni ko'rmaydi (u `/work` volume'ida) va unda `gh` yo'q,
+    ya'ni u `check_deploy_gate.py` ni yurgiza olmaydi. Shuning uchun
+    avtomatlashtirish Actions'ni yoqish bilan emas, watcher bilan qurildi.
+
+    To'rtta shart tartibga bog'liq: buzilganda kod ISHLAYDI, natija esa
+    noto'g'ri bo'ladi — ya'ni xato faqat hodisa paytida bilinadi.
+
+    1. ZAXIRA MIGRATSIYADAN OLDIN. `backup.sh --dump-only` `run --rm
+       migrate` dan keyin tursa sxema zaxirasiz o'zgaradi va qaytish yo'li
+       qolmaydi — Django'da «orqaga» migratsiya yo'q, oylik to'liq zaxira
+       esa 30 kungacha orqada bo'lishi mumkin.
+    2. MUZLATISH QULFDAN OLDIN. Aks holda muzlatilgan tizim qulfni band
+       qiladi va boshqa agentning deploy'i «band» deb xato o'qiladi.
+    3. SHA TEG `up` DAN OLDIN. `up` dan keyin qo'yilgan teg eski
+       «dangling» obrazga tushadi — rollback noto'g'ri kodni qaytaradi.
+    4. WATCHER'DA TIRIKLIK TEKSHIRUVI. `check_deploy.sh` konteyner YO'Q
+       bo'lganda ham 0 qaytaradi (o'lchandi 2026-09-19: `missing` faqat
+       xabar uchun, `exit 1` esa faqat `stale`/`envbad` da), ya'ni stack
+       yiqilgan bo'lsa «joriy kodda» deb YOLG'ON YASHIL beradi. `all_up`
+       shu teshikni yopadi.
+    """
+    deploy = read("tools/deploy.sh")
+    auto = read(AUTO_DEPLOY)
+    try:
+        read(ROLLBACK)
+    except Unreadable:
+        return f"{ROLLBACK} yo'q — avtomatik deploy yiqilganda qaytish yo'li yo'q"
+
+    def position(text: str, needle: str) -> int:
+        return text.find(needle)
+
+    backup_at = position(deploy, "bash tools/backup.sh --dump-only")
+    migrate_at = position(deploy, "run --rm migrate")
+    if backup_at < 0:
+        return "tools/deploy.sh migratsiyadan oldin zaxira olmaydi (`backup.sh --dump-only` yo'q)"
+    if migrate_at < 0:
+        return "tools/deploy.sh da `run --rm migrate` topilmadi"
+    if backup_at > migrate_at:
+        return "tools/deploy.sh: zaxira migratsiyadan KEYIN — sxema zaxirasiz o'zgaradi"
+
+    freeze_at = position(deploy, '[ -n "${DEPLOY_FREEZE:-}" ]')
+    lock_at = position(deploy, 'mkdir "$LOCK"')
+    if freeze_at < 0:
+        return "tools/deploy.sh da muzlatish kaliti (`DEPLOY_FREEZE`) yo'q"
+    if lock_at < 0:
+        return "tools/deploy.sh deploy qulfini olmaydi"
+    if freeze_at > lock_at:
+        return "tools/deploy.sh: muzlatish qulfdan KEYIN — qulf behuda band bo'ladi"
+
+    tag_at = position(deploy, "rankwant/${svc}:${SHA_TAG}")
+    up_at = position(deploy, 'up -d --no-deps "${SERVICES[@]}"')
+    if tag_at < 0:
+        return "tools/deploy.sh SHA tegini qo'ymaydi — rollback qaytaradigan obraz yo'q"
+    if up_at < 0:
+        return "tools/deploy.sh da `up -d --no-deps` topilmadi"
+    if tag_at > up_at:
+        return "tools/deploy.sh: SHA teg `up` dan KEYIN — teg eski obrazga tushadi"
+
+    if "all_up &&" not in auto:
+        return (
+            f"{AUTO_DEPLOY}: konteynerlar tirikligi tekshirilmaydi — "
+            "`check_deploy.sh` stack yiqilganda ham 0 qaytaradi"
+        )
+    if 'mkdir "$LOCK"' not in auto:
+        return f"{AUTO_DEPLOY}: qulfni olmaydi — qo'lda deploy bilan to'qnashadi"
+    attempt_at = position(auto, 'record_attempt "$TARGET"')
+    deploy_at = position(auto, "bash tools/deploy.sh --yes")
+    if attempt_at < 0:
+        return f"{AUTO_DEPLOY}: urinish yozilmaydi — yiqilgan deploy har 5 daqiqada takrorlanadi"
+    if deploy_at < 0:
+        return f"{AUTO_DEPLOY}: `deploy.sh --yes` chaqirilmaydi"
+    if attempt_at > deploy_at:
+        return f"{AUTO_DEPLOY}: urinish deploy'dan KEYIN yoziladi — yiqilgan yurish takrorlanadi"
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -1045,6 +1132,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("kontent qamrovi ko'rinadi", content_coverage_visible),
     ("til havolada ham keladi", locale_travels_in_the_url),
     ("bosh sahifa mehmon CDN keshi", homepage_guest_cdn_cache),
+    ("avtomatik deploy xavfsiz", deploy_automation_is_safe),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),
