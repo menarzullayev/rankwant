@@ -37,6 +37,7 @@ import time
 import urllib.error
 import urllib.request
 from argparse import ArgumentParser
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
@@ -105,7 +106,7 @@ class Report:
     write_sec: float = 0.0
     errors: list[str] = field(default_factory=list)
 
-    def show(self, out) -> None:
+    def show(self, out: Callable[[str], None]) -> None:
         out("")
         out("=" * 66)
         out("CODEFORCES SINXRONLASH HISOBOTI")
@@ -306,7 +307,7 @@ class Command(BaseCommand):
         self.stdout.write(f"  Saqlandi: {len(body):,} bayt, {el:.1f} s")
         return body, el
 
-    def parse(self, body: bytes, rep: Report, skip_long: bool) -> list[dict]:
+    def parse(self, body: bytes, rep: Report, skip_long: bool) -> list[dict[str, Any]]:
         t0 = time.time()
         data = json.loads(body)
         if data.get("status") != "OK":
@@ -314,7 +315,7 @@ class Command(BaseCommand):
 
         raw = data["result"]
         rep.fetched = len(raw)
-        out: list[dict] = []
+        out: list[dict[str, Any]] = []
         seen: set[str] = set()
 
         for rec in raw:
@@ -396,7 +397,7 @@ class Command(BaseCommand):
         "title_photo_url",
     )
 
-    def sync(self, records: list[dict], rep: Report, write: bool, batch: int) -> None:
+    def sync(self, records: list[dict[str, Any]], rep: Report, write: bool, batch: int) -> None:
         """Idempotent yozish: mavjudni yangilaydi, yo'qni yaratadi.
 
         Mavjud qatorlar BITTA so'rovda olinadi — 974,498 ta
