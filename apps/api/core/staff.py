@@ -25,7 +25,7 @@ class SessionOnly(permissions.BasePermission):
     viewset'da yo'q edi va IsAdminUser buni farqlamaydi.
     """
 
-    message = "Boshqaruv API'si faqat sessiya bilan ishlaydi, token bilan emas"
+    message = "The staff API accepts a session, not an API token"
 
     def has_permission(self, request: Any, view: Any) -> bool:
         return not isinstance(getattr(request, "auth", None), ApiToken)

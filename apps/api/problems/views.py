@@ -275,13 +275,13 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet[Problem]):
         problem = self.get_object()
         assert isinstance(request.user, User)
         if not problem.editorial:
-            return Response({"detail": "Bu masalada tahlil yo'q"}, status=404)
+            return Response({"detail": "This problem has no editorial"}, status=404)
 
         try:
             _unlock_editorial(request.user, problem)
         except ledger.InsufficientBalance:
             return Response(
-                {"detail": f"Balans yetarli emas — {problem.editorial_price} Qvant kerak"},
+                {"detail": f"Insufficient balance — {problem.editorial_price} Qvant required"},
                 status=402,
             )
         return Response({"editorial": problem.editorial, "price": problem.editorial_price})

@@ -16,7 +16,7 @@ class HackathonError(Exception):
 def submit(user: User, hackathon: Hackathon, **fields: object) -> HackathonSubmission:
     """Muddatgacha qayta topshirish mumkin — oxirgisi hisobga olinadi."""
     if not hackathon.accepts_submissions:
-        raise HackathonError("closed", "Topshirish muddati ochiq emas")
+        raise HackathonError("closed", "Submissions are not open")
     entry, _ = HackathonSubmission.objects.update_or_create(
         hackathon=hackathon, user=user, defaults=fields
     )
@@ -25,9 +25,9 @@ def submit(user: User, hackathon: Hackathon, **fields: object) -> HackathonSubmi
 
 def score(judge: User, entry: HackathonSubmission, value: int, feedback: str = "") -> None:
     if not judge.is_staff:
-        raise HackathonError("forbidden", "Faqat hakam baholaydi")
+        raise HackathonError("forbidden", "Only a judge can score")
     if not 0 <= value <= 100:
-        raise HackathonError("range", "Ball 0–100 oralig'ida")
+        raise HackathonError("range", "Score must be from 0 to 100")
     entry.score = value
     entry.feedback = feedback
     entry.scored_by = judge
@@ -40,7 +40,7 @@ def score(judge: User, entry: HackathonSubmission, value: int, feedback: str = "
     notify(
         entry.user,
         Notification.Kind.SYSTEM,
-        f"Hakaton bahosi: {value}/100",
+        f"Hackathon score: {value}/100",
         body=feedback[:200],
         ref_type="hackathon",
         ref_id=entry.hackathon.slug,

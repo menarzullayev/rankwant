@@ -11,7 +11,15 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from core import handles, prefs, turnstile, usernames
-from core.models import PRIVACY_FIELDS, ApiToken, School, User, UserSession
+from core.models import (
+    MAX_WEBSITES,
+    PRIVACY_FIELDS,
+    SHIRT_EU_SIZES,
+    ApiToken,
+    School,
+    User,
+    UserSession,
+)
 from core.throttling import TrustedClientIdent
 from profiles.catalog import GRADES, UZ_DISTRICTS, UZ_REGIONS
 from profiles.titles import TitleField
@@ -172,6 +180,11 @@ class MeSerializer(serializers.ModelSerializer[User]):
     )
     #: Katalog maktabining nomi — sozlamalardagi maydonda ko'rsatish uchun.
     school_name = serializers.SerializerMethodField()
+    websites = serializers.ListField(
+        child=serializers.URLField(max_length=200),
+        required=False,
+        max_length=MAX_WEBSITES,
+    )
 
     def get_school_name(self, user: User) -> str:
         return user.school_ref.name if user.school_ref is not None else ""
@@ -211,8 +224,8 @@ class MeSerializer(serializers.ModelSerializer[User]):
             return ""
         if not re.fullmatch(r"\+?\d{7,15}", cleaned):
             raise serializers.ValidationError(
-                "Telefon raqami noto'g'ri: raqamlar, bo'shliq, qavs, "
-                "chiziqcha va boshida `+` bo'lishi mumkin."
+                "Invalid phone number: digits, spaces, parentheses, hyphens, "
+                "and a leading `+` are allowed."
             )
         return cleaned
 
@@ -226,6 +239,8 @@ class MeSerializer(serializers.ModelSerializer[User]):
             "display_name",
             "first_name",
             "last_name",
+            "first_name_en",
+            "last_name_en",
             "email_verified",
             "social",
             "has_password",
@@ -242,9 +257,23 @@ class MeSerializer(serializers.ModelSerializer[User]):
             "school_name",
             "grade",
             "website",
+            "websites",
+            "gender",
             "birth_date",
             "phone",
             "shirt_size",
+            "shirt_size_eu",
+            "postal_recipient",
+            "postal_country",
+            "postal_region",
+            "postal_city",
+            "postal_address",
+            "postal_code",
+            "postal_recipient_native",
+            "postal_region_native",
+            "postal_city_native",
+            "postal_address_native",
+            "postal_consent",
             "hidden_fields",
             "pinned_achievements",
             "ui_prefs",
@@ -276,7 +305,7 @@ class MeSerializer(serializers.ModelSerializer[User]):
     def validate_country(self, value: str) -> str:
         value = value.upper()
         if value and not re.fullmatch(r"[A-Z]{2}", value):
-            raise serializers.ValidationError("Mamlakat kodi noto'g'ri")
+            raise serializers.ValidationError("Country code is invalid")
         return value
 
     @staticmethod
@@ -288,7 +317,7 @@ class MeSerializer(serializers.ModelSerializer[User]):
         """
         cleaned = " ".join(value.split())
         if re.search(r"[\x00-\x1f\x7f]", cleaned):
-            raise serializers.ValidationError("Ismda boshqaruv belgisi bo'lmasin")
+            raise serializers.ValidationError("The name must not contain control characters")
         return cleaned
 
     def validate_grade(self, value: str) -> str:
@@ -302,13 +331,57 @@ class MeSerializer(serializers.ModelSerializer[User]):
             return value
         if self.instance is not None and value == self.instance.grade:
             return value
-        raise serializers.ValidationError("Sinf ro'yxatdan tanlanadi")
+        raise serializers.ValidationError("The grade must be chosen from the list")
 
     def validate_first_name(self, value: str) -> str:
         return self._clean_name(value)
 
     def validate_last_name(self, value: str) -> str:
         return self._clean_name(value)
+
+    def validate_first_name_en(self, value: str) -> str:
+        return self._clean_name(value)
+
+    def validate_last_name_en(self, value: str) -> str:
+        return self._clean_name(value)
+
+    def validate_postal_recipient(self, value: str) -> str:
+        return self._clean_name(value)
+
+    def validate_postal_recipient_native(self, value: str) -> str:
+        return self._clean_name(value)
+
+    def validate_shirt_size_eu(self, value: str) -> str:
+        if value and value not in SHIRT_EU_SIZES:
+            raise serializers.ValidationError("EU size must be an even number from 40 to 60")
+        return value
+
+    def validate_postal_country(self, value: str) -> str:
+        return self.validate_country(value)
+
+    def validate_websites(self, value: list[str]) -> list[str]:
+        urls = []
+        seen: set[str] = set()
+        for raw in value:
+            url = raw.strip()
+            if not url:
+                continue
+            key = url.rstrip("/").lower()
+            if key in seen:
+                continue
+            seen.add(key)
+            urls.append(url)
+        if len(urls) > MAX_WEBSITES:
+            raise serializers.ValidationError(f"At most {MAX_WEBSITES} links")
+        return urls
+
+    def to_representation(self, instance: User) -> dict[str, Any]:
+        data = super().to_representation(instance)
+        urls = list(instance.websites or [])
+        if not urls and instance.website:
+            urls = [instance.website]
+        data["websites"] = urls
+        return data
 
     def update(self, instance: User, validated_data: dict[str, Any]) -> User:
         """Save only the fields the client sent.
@@ -317,6 +390,20 @@ class MeSerializer(serializers.ModelSerializer[User]):
         request began, so a full save would write back ratings, `solved_count`
         and `last_seen_at` over any update the judge worker made in between.
         """
+        if "websites" in validated_data:
+            urls = list(validated_data["websites"])
+            validated_data["website"] = urls[0] if urls else ""
+        elif "website" in validated_data:
+            site = validated_data["website"] or ""
+            urls = list(instance.websites or [])
+            if site:
+                if urls:
+                    urls[0] = site
+                else:
+                    urls = [site]
+            else:
+                urls = urls[1:]
+            validated_data["websites"] = urls
         for field, value in validated_data.items():
             setattr(instance, field, value)
         fields = set(validated_data)
@@ -349,32 +436,32 @@ class MeSerializer(serializers.ModelSerializer[User]):
             return value
         handles.validate(value)
         if User.objects.filter(username__iexact=value).exists():
-            raise serializers.ValidationError("Bu username band")
+            raise serializers.ValidationError("This username is taken")
         if User.objects.filter(username_skeleton=handles.skeleton(value)).exists():
-            raise serializers.ValidationError("Bu username mavjud nomga juda o'xshash")
+            raise serializers.ValidationError("This username is too similar to an existing one")
         if usernames.reserved(value):
-            raise serializers.ValidationError("Bu username ajratilgan")
+            raise serializers.ValidationError("This username is reserved")
         return value
 
     def validate_birth_date(self, value: date | None) -> date | None:
         if value is not None and (value > timezone.localdate() or value.year < 1900):
-            raise serializers.ValidationError("Tug'ilgan sana noto'g'ri")
+            raise serializers.ValidationError("Date of birth is invalid")
         return value
 
     def validate_hidden_fields(self, value: Any) -> list[str]:
         if not isinstance(value, list) or any(v not in PRIVACY_FIELDS for v in value):
-            raise serializers.ValidationError("Noma'lum maydon")
+            raise serializers.ValidationError("Unknown field")
         return sorted(set(value))
 
     def validate_pinned_achievements(self, value: Any) -> list[str]:
         from profiles.achievements import PINNED_MAX, achieved
 
         if not isinstance(value, list) or len(value) > PINNED_MAX or len(set(value)) != len(value):
-            raise serializers.ValidationError(f"Ko'pi bilan {PINNED_MAX} ta turli yutuq")
+            raise serializers.ValidationError(f"At most {PINNED_MAX} distinct achievements")
         assert isinstance(self.instance, User)
         have = achieved(self.instance)
         if any(code not in have for code in value):
-            raise serializers.ValidationError("Bu yutuq hali qo'lga kiritilmagan")
+            raise serializers.ValidationError("This achievement has not been earned yet")
         return value
 
     def validate_theme(self, value: str) -> str:
@@ -386,7 +473,7 @@ class MeSerializer(serializers.ModelSerializer[User]):
         uchun bu yetarli emas.
         """
         if value not in prefs.THEMES:
-            raise serializers.ValidationError(f"Mavzu {', '.join(prefs.THEMES)} dan biri bo'lsin")
+            raise serializers.ValidationError(f"Theme must be one of {', '.join(prefs.THEMES)}")
         return value
 
     def validate_ui_prefs(self, value: Any) -> dict[str, Any]:
@@ -406,16 +493,16 @@ class MeSerializer(serializers.ModelSerializer[User]):
         from notifications.models import Notification
 
         if not isinstance(value, dict):
-            raise serializers.ValidationError("Obyekt kutilgan")
+            raise serializers.ValidationError("An object was expected")
         kinds = set(Notification.Kind.values)
         clean: dict[str, dict[str, bool]] = {}
         for kind, channels in value.items():
             if kind not in kinds or not isinstance(channels, dict):
-                raise serializers.ValidationError(f"Noma'lum tur: {kind}")
+                raise serializers.ValidationError(f"Unknown type: {kind}")
             if set(channels) - {"site", "telegram"} or not all(
                 isinstance(v, bool) for v in channels.values()
             ):
-                raise serializers.ValidationError(f"Noto'g'ri kanal: {kind}")
+                raise serializers.ValidationError(f"Invalid channel: {kind}")
             clean[kind] = dict(channels)
         return clean
 
@@ -425,19 +512,60 @@ class MeSerializer(serializers.ModelSerializer[User]):
         district = attrs.get("district", self.instance.district if self.instance else "")
         # O'zbekistonda viloyat ro'yxatdan — viloyat bo'yicha reyting shunga tayanadi.
         if country == "UZ" and region and region not in UZ_REGIONS:
-            raise serializers.ValidationError({"region": "Viloyat ro'yxatdan tanlanadi"})
+            raise serializers.ValidationError({"region": "The region must be chosen from the list"})
         # Tuman — faqat O'zbekistonda va tanlangan viloyat ichidan; shahar — aksincha.
         if country == "UZ":
             if district and district not in UZ_DISTRICTS.get(region, ()):
                 if "district" in attrs:
                     raise serializers.ValidationError(
-                        {"district": "Tuman viloyat ro'yxatidan tanlanadi"}
+                        {"district": "The district must be chosen from the region's list"}
                     )
                 attrs["district"] = ""  # viloyat almashdi — eski tuman endi to'g'ri emas
             attrs["city"] = ""
         else:
             attrs["district"] = ""
+        self._validate_delivery(attrs)
         return attrs
+
+    #: English + native blocks must both be complete, or the address is empty.
+    _POSTAL_EN = (
+        "postal_recipient",
+        "postal_country",
+        "postal_region",
+        "postal_city",
+        "postal_address",
+        "postal_code",
+    )
+    _POSTAL_NATIVE = (
+        "postal_recipient_native",
+        "postal_region_native",
+        "postal_city_native",
+        "postal_address_native",
+    )
+
+    def _validate_delivery(self, attrs: dict[str, Any]) -> None:
+        keys = (*self._POSTAL_EN, *self._POSTAL_NATIVE, "postal_consent")
+        if self.instance is None or not any(key in attrs for key in keys):
+            return
+        merged = {key: attrs[key] if key in attrs else getattr(self.instance, key) for key in keys}
+
+        def filled(key: str) -> bool:
+            value = merged[key]
+            return bool(value) if isinstance(value, bool) else bool(str(value or "").strip())
+
+        empty = not any(filled(key) for key in (*self._POSTAL_EN, *self._POSTAL_NATIVE))
+        if empty:
+            attrs["postal_consent"] = False
+            return
+        missing = {
+            key: "Yetkazib berish uchun to'ldiring"
+            for key in (*self._POSTAL_EN, *self._POSTAL_NATIVE)
+            if not filled(key)
+        }
+        if not merged["postal_consent"]:
+            missing["postal_consent"] = "Yetkazib berish uchun rozilik kerak"
+        if missing:
+            raise serializers.ValidationError(missing)
 
 
 def _email_taken(value: str, *, exclude: User | None = None) -> bool:
@@ -539,17 +667,17 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
     def validate_country(self, value: str) -> str:
         value = value.upper()
         if value and not re.fullmatch(r"[A-Z]{2}", value):
-            raise serializers.ValidationError("Mamlakat kodi noto'g'ri")
+            raise serializers.ValidationError("Country code is invalid")
         return value
 
     def validate_terms_accepted(self, value: bool) -> bool:
         if not value:
-            raise serializers.ValidationError("Shartlarga rozilik majburiy")
+            raise serializers.ValidationError("Accepting the terms is required")
         return value
 
     def validate_email(self, value: str) -> str:
         if _email_taken(value):
-            raise serializers.ValidationError("Bu email band")
+            raise serializers.ValidationError("This email is taken")
         return value
 
     def validate_username(self, value: str) -> str:
@@ -570,18 +698,16 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
         # bog'langan platformada bu xavfsizlik masalasi — o'lchandi,
         # mavjud nomning katta harfli nusxasini olish mumkin edi.
         if User.objects.filter(username__iexact=value).exists():
-            raise serializers.ValidationError("Bu username band")
+            raise serializers.ValidationError("This username is taken")
 
         # Ko'zga o'xshash harflar bilan taqlid: kirill va lotinda bir xil
         # ko'rinadigan harflar bor, ya'ni registrsiz tekshiruv yetmaydi.
         if User.objects.filter(username_skeleton=handles.skeleton(value)).exists():
-            raise serializers.ValidationError("Bu username mavjud nomga juda o'xshash")
+            raise serializers.ValidationError("This username is too similar to an existing one")
         # Nomini almashtirgan odamning eski nomi 90 kun band — aks holda
         # yangi egasi eski egasining obro'si bilan standings'da tura olardi.
         if usernames.reserved(value):
-            raise serializers.ValidationError(
-                "Bu nom yaqinda boshqa foydalanuvchiga tegishli bo'lgan"
-            )
+            raise serializers.ValidationError("This name recently belonged to another user")
         return value
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
@@ -636,7 +762,7 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
             # 500 berardi.
             field = "email" if _email_taken(validated_data.get("email", "")) else "username"
             raise serializers.ValidationError(
-                {field: "Bu email band" if field == "email" else "Bu username band"}
+                {field: "This email is taken" if field == "email" else "This username is taken"}
             ) from None
         return user
 
@@ -701,7 +827,7 @@ class AnalyticsEventInSerializer(serializers.Serializer[dict[str, Any]]):
         if value is None:
             return {}
         if not isinstance(value, dict) or len(value) > 12:
-            raise serializers.ValidationError("props — ko'pi bilan 12 kalitli obyekt")
+            raise serializers.ValidationError("props must be an object with at most 12 keys")
         return value
 
 
@@ -717,7 +843,7 @@ class AnalyticsBatchSerializer(serializers.Serializer[dict[str, Any]]):
 
     def validate_events(self, value: list[dict[str, Any]]) -> list[dict[str, Any]]:
         if len(value) > 25:
-            raise serializers.ValidationError("Ko'pi bilan 25 hodisa")
+            raise serializers.ValidationError("At most 25 events")
         return value
 
 
@@ -776,7 +902,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer[dict[str, Any]]):
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
         if not attrs.get("token") and not (attrs.get("username") and attrs.get("code")):
             raise serializers.ValidationError(
-                {"token": "Havola tokeni yoki foydalanuvchi nomi bilan kod kerak"}
+                {"token": "A link token, or a username with a code, is required"}
             )
         return attrs
 

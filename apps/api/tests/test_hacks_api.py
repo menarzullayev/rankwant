@@ -95,7 +95,7 @@ class TestSubmitEndpoint:
         assert r.status_code == 400
         body = r.json()["error"]
         assert body["code"] == "hack_rejected"
-        assert "O'z yechimingizni" in body["message"]
+        assert "your own solution" in body["message"]
 
     def test_kiritma_ham_generator_ham_bolmasa(self, defender_attempt, user) -> None:
         r = _client(user).post(
@@ -210,7 +210,7 @@ class TestEligibilityEndpoint:
             .json()
         )
         assert body["can_hack"] is False
-        assert "O'z yechimingizni" in body["reason"]
+        assert "your own solution" in body["reason"]
 
     def test_yopiq_oyna(self, defender_attempt, contest, user) -> None:
         contest.uphack_days = 0
@@ -237,7 +237,7 @@ class TestLock:
             format="json",
         )
         assert r.status_code == 400
-        assert "yeching" in r.json()["error"]["message"]
+        assert "Solve this problem" in r.json()["error"]["message"]
         assert not HackLock.objects.exists()
 
     def test_lock_qilingach_qayta_yuborib_bolmaydi(

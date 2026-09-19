@@ -140,14 +140,14 @@ def eligibility(user: User, attempt: Attempt, policy: Policy) -> str:
     foydalanuvchini «nega ishlamadi?» degan savol bilan qoldiradi.
     """
     if attempt.user_id == user.pk:
-        return "O'z yechimingizni hack qilib bo'lmaydi"
+        return "You cannot hack your own solution"
     if attempt.verdict != Verdict.AC:
-        return "Faqat qabul qilingan yechim hack qilinadi"
+        return "Only an accepted solution can be hacked"
 
     # ADR-0020, 2-tamoyil: manba ko'rinishi uchun IKKI shart birga —
     # hacker masalani o'zi yechgan bo'lishi va oyna ochiq bo'lishi.
     if not UserSolvedProblem.objects.filter(user=user, problem_id=attempt.problem_id).exists():
-        return "Avval shu masalani o'zingiz yeching"
+        return "Solve this problem yourself first"
 
     if policy.trusted_only and not is_trusted(user):
         return f"Uphack uchun {settings.HACK_UPHACK_MIN_RATING}+ musobaqa reytingi kerak"
@@ -155,20 +155,20 @@ def eligibility(user: User, attempt: Attempt, policy: Policy) -> str:
     if policy.room_only:
         contest = attempt.contest
         if contest is None:
-            return "Musobaqa topilmadi"
+            return "Contest not found"
         mine = room_of(contest, user)
         theirs = room_of(contest, attempt.user)
         if mine is None:
-            return "Musobaqaga ro'yxatdan o'ting"
+            return "Register for the contest first"
         if theirs is None or mine.pk != theirs.pk:
-            return "Faqat o'z xonangizdagi yechimlar"
+            return "Only solutions from your own room"
         if (
             policy.needs_lock
             and not HackLock.objects.filter(
                 contest=contest, problem_id=attempt.problem_id, user=user
             ).exists()
         ):
-            return "Avval masalani lock qiling"
+            return "Lock the problem first"
     return ""
 
 
@@ -185,17 +185,17 @@ def lock(user: User, contest: Contest, problem: Problem) -> HackLock:
     qo'yiladigan ball yo'q va lock faqat tekin ruxsatnomaga aylanardi.
     """
     if not contest.hack_room:
-        raise HackError("Bu musobaqada xona hackingi yoqilmagan")
+        raise HackError("Room hacking is not enabled for this contest")
     if not contest.is_running:
-        raise HackError("Musobaqa faol emas")
+        raise HackError("The contest is not active")
     if not ContestRegistration.objects.filter(contest=contest, user=user).exists():
-        raise HackError("Musobaqaga ro'yxatdan o'ting")
+        raise HackError("Register for the contest first")
     if not ContestProblem.objects.filter(contest=contest, problem=problem).exists():
-        raise HackError("Masala bu musobaqada yo'q")
+        raise HackError("This problem is not in the contest")
     if not Attempt.objects.filter(
         contest=contest, user=user, problem=problem, verdict=Verdict.AC
     ).exists():
-        raise HackError("Avval shu masalani musobaqada yeching")
+        raise HackError("Solve this problem in the contest first")
 
     row, _ = HackLock.objects.get_or_create(contest=contest, problem=problem, user=user)
     # Xona aynan shu yerda taqsimlansin: hack oynasi ochilganda ro'yxat
@@ -249,7 +249,7 @@ def submit(
     """Hack urinishini qabul qiladi va birinchi bosqichni navbatga qo'yadi."""
     policy = open_policy(attempt)
     if policy is None:
-        raise HackError("Bu yechim uchun hack oynasi yopiq")
+        raise HackError("The hack window for this solution is closed")
     reason = eligibility(hacker, attempt, policy)
     if reason:
         raise HackError(reason)
@@ -259,21 +259,21 @@ def submit(
     # Ularsiz hack ochilsa, buzuq kiritma yoki noto'g'ri javob bilan
     # istalgan to'g'ri yechimni «sindirish» mumkin bo'lardi.
     if not Validator.objects.filter(problem=problem).exists():
-        raise HackError("Bu masalada kirish validatori yo'q — hack yopiq")
+        raise HackError("This problem has no input validator — hacking is closed")
     if not ReferenceSolution.objects.filter(problem=problem).exists():
-        raise HackError("Bu masalada etalon yechim yo'q — hack yopiq")
+        raise HackError("This problem has no reference solution — hacking is closed")
 
     if generator_language is not None:
         if not generator_source.strip():
-            raise HackError("Generator manbasi bo'sh")
+            raise HackError("Generator source is empty")
         stage = Hack.Stage.GENERATE
     else:
         if not raw_input.strip():
-            raise HackError("Test kiritmasi bo'sh")
+            raise HackError("Test input is empty")
         if len(raw_input.encode()) > settings.HACK_INPUT_MAX_BYTES:
             raise HackError(
-                f"Kiritma {settings.HACK_INPUT_MAX_BYTES // 1024} KB dan oshmasligi kerak — "
-                "kattasini generator bilan yuboring"
+                f"Input exceeds {settings.HACK_INPUT_MAX_BYTES // 1024} KB — "
+                "send a larger case with a generator"
             )
         stage = Hack.Stage.REFERENCE
 
@@ -290,7 +290,7 @@ def submit(
             input_size=len(raw_input.encode()),
         )
     except IntegrityError as exc:  # uniq_hack_in_flight
-        raise HackError("Bu yechim uchun hack allaqachon tekshirilmoqda") from exc
+        raise HackError("A hack for this solution is already running") from exc
 
     if stage == Hack.Stage.REFERENCE:
         storage.ensure_bucket()
@@ -558,10 +558,10 @@ def _after_generator(hack: Hack, verdict: str, stdout: str, detail: str) -> Hack
         return _finish(
             hack,
             Hack.Status.GENERATOR_CRASHED,
-            detail=detail or f"generator {verdict} berdi",
+            detail=detail or f"generator returned {verdict}",
         )
     if len(stdout.encode()) > settings.HACK_GENERATOR_OUTPUT_KB * 1024:
-        return _finish(hack, Hack.Status.GENERATOR_CRASHED, detail="generator chiqishi juda katta")
+        return _finish(hack, Hack.Status.GENERATOR_CRASHED, detail="generator output is too large")
 
     storage.ensure_bucket()
     hack.input_ref = storage.put_test_data(f"hacks/{hack.pk}.in", stdout)
@@ -582,7 +582,7 @@ def _after_reference(hack: Hack, verdict: str, stdout: str, detail: str) -> Hack
         # Etalon yechimning o'zi yiqildi: masala sozlamasi nuqsoni,
         # hackerning aybi emas (ADR-0021).
         log.error("hack %s: etalon yechim %s berdi (masala %s)", hack.pk, verdict, hack.problem_id)
-        return _finish(hack, Hack.Status.IGNORED, detail=f"etalon yechim {verdict} berdi")
+        return _finish(hack, Hack.Status.IGNORED, detail=f"reference solution returned {verdict}")
 
     storage.ensure_bucket()
     hack.output_ref = storage.put_test_data(f"hacks/{hack.pk}.out", stdout)
@@ -694,11 +694,11 @@ def _notify(hack: Hack) -> None:
 
     slug = hack.problem.slug
     labels: dict[str, str] = {
-        Hack.Status.SUCCESSFUL: f"Hack muvaffaqiyatli — {slug}",
-        Hack.Status.UNSUCCESSFUL: f"Hack ishlamadi — {slug}",
-        Hack.Status.INVALID_INPUT: f"Hack testi yaroqsiz — {slug}",
-        Hack.Status.GENERATOR_CRASHED: f"Generator yiqildi — {slug}",
-        Hack.Status.IGNORED: f"Hack hisobga olinmadi — {slug}",
+        Hack.Status.SUCCESSFUL: f"Hack succeeded — {slug}",
+        Hack.Status.UNSUCCESSFUL: f"Hack failed — {slug}",
+        Hack.Status.INVALID_INPUT: f"Hack test is invalid — {slug}",
+        Hack.Status.GENERATOR_CRASHED: f"Generator crashed — {slug}",
+        Hack.Status.IGNORED: f"Hack was ignored — {slug}",
     }
     title = labels.get(hack.status)
     if title:

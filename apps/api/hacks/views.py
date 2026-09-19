@@ -180,7 +180,7 @@ class HackViewSet(
         """
         attempt = _attempt_from(request.query_params.get("attempt"))
         if attempt is None:
-            raise serializers.ValidationError({"attempt": "Urinish topilmadi"})
+            raise serializers.ValidationError({"attempt": "Attempt not found"})
 
         assert isinstance(request.user, User)
         policy = services.open_policy(attempt)
@@ -188,7 +188,7 @@ class HackViewSet(
             return Response(
                 {
                     "can_hack": False,
-                    "reason": "Bu yechim uchun hack oynasi yopiq",
+                    "reason": "The hack window for this solution is closed",
                     "policy": None,
                     "policy_label": "",
                     "needs_lock": False,
@@ -224,11 +224,11 @@ class HackViewSet(
         """O'z xonangiz va undagi ishtirokchilar (`contest_room`)."""
         contest = Contest.objects.filter(slug=request.query_params.get("contest") or "").first()
         if contest is None:
-            raise serializers.ValidationError({"contest": "Musobaqa topilmadi"})
+            raise serializers.ValidationError({"contest": "Contest not found"})
         assert isinstance(request.user, User)
         room = services.room_of(contest, request.user)
         if room is None:
-            raise serializers.ValidationError({"contest": "Musobaqaga ro'yxatdan o'ting"})
+            raise serializers.ValidationError({"contest": "Register for the contest first"})
         members = list(
             User.objects.filter(hack_rooms__room=room)
             .order_by("username")
@@ -268,10 +268,10 @@ class HackLockViewSet(
 
         contest = Contest.objects.filter(slug=data["contest"]).first()
         if contest is None:
-            raise serializers.ValidationError({"contest": "Musobaqa topilmadi"})
+            raise serializers.ValidationError({"contest": "Contest not found"})
         problem = Problem.objects.filter(slug=data["problem"]).first()
         if problem is None:
-            raise serializers.ValidationError({"problem": "Masala topilmadi"})
+            raise serializers.ValidationError({"problem": "Problem not found"})
 
         assert isinstance(request.user, User)
         try:

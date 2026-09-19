@@ -24,12 +24,14 @@ from core.tasks import queue
 from profiles import achievements, external, public, stats, teams
 from profiles.catalog import TECHNOLOGIES
 from profiles.models import (
+    MAX_SKILL_BADGES,
     Education,
     ExternalProfile,
     Follow,
     Skill,
     Team,
     UserSkill,
+    UserSkillBadge,
     UserTechnology,
     WorkExperience,
 )
@@ -38,6 +40,7 @@ from profiles.serializers import (
     ExternalInSerializer,
     ExternalOutSerializer,
     FollowerSerializer,
+    SkillBadgeSerializer,
     SkillSerializer,
     TeamCreateSerializer,
     TeamJoinSerializer,
@@ -57,13 +60,17 @@ def _me(request: Request) -> User:
     return request.user
 
 
+def _viewer(request: Request) -> User | None:
+    return request.user if isinstance(request.user, User) else None
+
+
 def _list_body(request: Request) -> list[Any]:
     """PUT butun ro'yxatni almashtiradi — KEP'dagi «Saqlash» kabi."""
     data = request.data
     if not isinstance(data, list):
-        raise exceptions.ValidationError({"detail": "Ro'yxat kutilgan"})
+        raise exceptions.ValidationError({"detail": "A list was expected"})
     if len(data) > MAX_ROWS:
-        raise exceptions.ValidationError({"detail": f"Ko'pi bilan {MAX_ROWS} ta"})
+        raise exceptions.ValidationError({"detail": f"At most {MAX_ROWS} rows"})
     return data
 
 
@@ -115,11 +122,11 @@ class MySkillsView(APIView):
         rows: list[dict[str, Any]] = serializer.validated_data
         slugs = [row["skill"] for row in rows]
         if len(set(slugs)) != len(slugs):
-            raise exceptions.ValidationError({"detail": "Ko'nikma takrorlangan"})
+            raise exceptions.ValidationError({"detail": "Skill already added"})
         catalog = {skill.slug: skill for skill in Skill.objects.filter(slug__in=slugs)}
         unknown = [slug for slug in slugs if slug not in catalog]
         if unknown:
-            raise exceptions.ValidationError({"detail": f"Noma'lum ko'nikma: {unknown[0]}"})
+            raise exceptions.ValidationError({"detail": f"Unknown skill: {unknown[0]}"})
         with transaction.atomic():
             UserSkill.objects.filter(user=user).delete()
             UserSkill.objects.bulk_create(
@@ -146,13 +153,42 @@ class MyTechnologiesView(APIView):
         user = _me(request)
         slugs = _list_body(request)
         if not all(isinstance(s, str) and s in TECHNOLOGIES for s in slugs):
-            raise exceptions.ValidationError({"detail": "Noma'lum texnologiya"})
+            raise exceptions.ValidationError({"detail": "Unknown technology"})
         if len(set(slugs)) != len(slugs):
-            raise exceptions.ValidationError({"detail": "Texnologiya takrorlangan"})
+            raise exceptions.ValidationError({"detail": "Technology already added"})
         with transaction.atomic():
             UserTechnology.objects.filter(user=user).delete()
             UserTechnology.objects.bulk_create(
                 UserTechnology(user=user, slug=slug, order=i) for i, slug in enumerate(slugs)
+            )
+        return self.get(request)
+
+
+@extend_schema(
+    request=SkillBadgeSerializer(many=True), responses={200: SkillBadgeSerializer(many=True)}
+)
+@extend_schema_view(
+    get=extend_schema(summary="Ko'nikma nishonlari"),
+    put=extend_schema(summary="Ko'nikma nishonlarini almashtirish"),
+)
+class MySkillBadgesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request: Request) -> Response:
+        rows = UserSkillBadge.objects.filter(user=_me(request))
+        return Response(SkillBadgeSerializer(rows, many=True).data)
+
+    def put(self, request: Request) -> Response:
+        user = _me(request)
+        serializer = SkillBadgeSerializer(data=_list_body(request), many=True)
+        serializer.is_valid(raise_exception=True)
+        rows = serializer.validated_data
+        if len(rows) > MAX_SKILL_BADGES:
+            raise exceptions.ValidationError({"detail": f"At most {MAX_SKILL_BADGES} badges"})
+        with transaction.atomic():
+            UserSkillBadge.objects.filter(user=user).delete()
+            UserSkillBadge.objects.bulk_create(
+                UserSkillBadge(user=user, order=i, **row) for i, row in enumerate(rows)
             )
         return self.get(request)
 
@@ -221,7 +257,7 @@ class MyExternalView(APIView):
         rows: list[dict[str, Any]] = serializer.validated_data
         kinds = [row["kind"] for row in rows]
         if len(set(kinds)) != len(kinds):
-            raise exceptions.ValidationError({"detail": "Har platformadan bittadan"})
+            raise exceptions.ValidationError({"detail": "One handle per platform"})
         with transaction.atomic():
             existing = {p.kind: p for p in ExternalProfile.objects.filter(user=user)}
             for row in rows:
@@ -266,7 +302,10 @@ class ActivityView(APIView):
     )
     def get(self, request: Request, username: str) -> Response:
         before = parse_datetime(request.query_params.get("before", "") or "")
-        return Response(public.activity(_profile_owner(username), before=before))
+        user = _profile_owner(username)
+        if not public.field_visible(user, _viewer(request), "activity"):
+            return Response({"results": [], "next_before": None, "hidden": True})
+        return Response(public.activity(user, before=before))
 
 
 class AchievementsView(APIView):
@@ -300,7 +339,7 @@ class FollowView(APIView):
     def post(self, request: Request, username: str) -> Response:
         viewer, target = _me(request), _profile_owner(username)
         if target.pk == viewer.pk:
-            raise exceptions.ValidationError({"detail": "O'zingizni kuzatib bo'lmaydi"})
+            raise exceptions.ValidationError({"detail": "You cannot follow yourself"})
         Follow.objects.get_or_create(follower=viewer, following=target)
         return self._state(target, viewer)
 
@@ -493,8 +532,20 @@ class UserCalendarView(APIView):
         this_year = timezone.localdate().year
         raw = request.query_params.get("year") or str(this_year)
         if not raw.isdigit() or not 2000 <= int(raw) <= this_year:
-            raise exceptions.ValidationError({"year": "Yil noto'g'ri"})
+            raise exceptions.ValidationError({"year": "Year is invalid"})
         year = int(raw)
+        if not public.field_visible(user, _viewer(request), "heatmap"):
+            return Response(
+                {
+                    "year": year,
+                    "years": [year],
+                    "days": [],
+                    "attempts": 0,
+                    "solved": 0,
+                    "streak": {"current": 0, "longest": 0},
+                    "hidden": True,
+                }
+            )
         return Response(
             stats.cached(user.pk, f"calendar:{year}", lambda: stats.calendar(user, year))
         )
@@ -508,7 +559,10 @@ class UserProblemMapView(APIView):
 
     @extend_schema(responses={200: None})
     def get(self, request: Request, username: str) -> Response:
-        return Response(stats.problem_map(_profile_owner(username)))
+        user = _profile_owner(username)
+        if not public.field_visible(user, _viewer(request), "recent_ac"):
+            return Response({"problems": [], "hidden": True})
+        return Response(stats.problem_map(user))
 
 
 @extend_schema(summary="Reyting grafigi")

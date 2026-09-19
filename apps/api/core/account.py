@@ -36,6 +36,8 @@ CLEARED_FIELDS: tuple[str, ...] = (
     "display_name",
     "first_name",
     "last_name",
+    "first_name_en",
+    "last_name_en",
     "email",
     "email_verified_at",
     "avatar_url",
@@ -49,6 +51,8 @@ CLEARED_FIELDS: tuple[str, ...] = (
     "school_ref",
     "grade",
     "website",
+    "websites",
+    "gender",
     "birth_date",
     "phone",
     "hidden_fields",
@@ -57,12 +61,18 @@ CLEARED_FIELDS: tuple[str, ...] = (
     "notify_prefs",
     "marketing_opt_in",
     "shirt_size",
+    "shirt_size_eu",
     "postal_recipient",
     "postal_country",
     "postal_region",
     "postal_city",
     "postal_address",
     "postal_code",
+    "postal_recipient_native",
+    "postal_region_native",
+    "postal_city_native",
+    "postal_address_native",
+    "postal_consent",
     "coach_can_view_attempts",
     "message_min_rating",
     "device_fingerprint",
@@ -138,12 +148,20 @@ def anonymize(user: User) -> None:
         ExternalProfile,
         Follow,
         UserSkill,
+        UserSkillBadge,
         UserTechnology,
         WorkExperience,
     )
 
     # Profilning ro'yxat qismlari — hammasi shaxsiy ma'lumot.
-    for model in (UserSkill, UserTechnology, Education, WorkExperience, ExternalProfile):
+    for model in (
+        UserSkill,
+        UserSkillBadge,
+        UserTechnology,
+        Education,
+        WorkExperience,
+        ExternalProfile,
+    ):
         model.objects.filter(user=user).delete()
     Follow.objects.filter(Q(follower=user) | Q(following=user)).delete()
     # Jamoa yo'qolmaydi: egalik qolgan a'zolarga o'tadi.
@@ -168,6 +186,8 @@ def anonymize(user: User) -> None:
     user.email = ""
     user.first_name = ""
     user.last_name = ""
+    user.first_name_en = ""
+    user.last_name_en = ""
     user.bio = ""
     user.avatar_url = ""
     user.telegram_id = None
@@ -179,6 +199,8 @@ def anonymize(user: User) -> None:
     user.school = ""
     user.grade = ""
     user.website = ""
+    user.websites = []
+    user.gender = ""
     user.birth_date = None
     user.phone = ""
     user.email_verified_at = None
@@ -188,12 +210,18 @@ def anonymize(user: User) -> None:
     user.notify_prefs = {}
     user.marketing_opt_in = False
     user.shirt_size = ""
+    user.shirt_size_eu = ""
     user.postal_recipient = ""
     user.postal_country = ""
     user.postal_region = ""
     user.postal_city = ""
     user.postal_address = ""
     user.postal_code = ""
+    user.postal_recipient_native = ""
+    user.postal_region_native = ""
+    user.postal_city_native = ""
+    user.postal_address_native = ""
+    user.postal_consent = False
     user.coach_can_view_attempts = False
     user.message_min_rating = None
     user.device_fingerprint = ""
@@ -235,8 +263,11 @@ def export(user: User) -> dict[str, Any]:
             "display_name": user.display_name,
             "first_name": user.first_name,
             "last_name": user.last_name,
+            "first_name_en": user.first_name_en,
+            "last_name_en": user.last_name_en,
             "bio": user.bio,
             "avatar_url": user.avatar_url,
+            "title_photo_url": user.title_photo_url,
             "telegram_id": user.telegram_id,
             "locale": user.locale,
             "theme": user.theme,
@@ -248,15 +279,23 @@ def export(user: User) -> dict[str, Any]:
             "school_ref": user.school_ref.name if user.school_ref is not None else None,
             "grade": user.grade,
             "website": user.website,
+            "websites": user.websites,
+            "gender": user.gender,
             "birth_date": user.birth_date,
             "phone": user.phone,
             "shirt_size": user.shirt_size,
+            "shirt_size_eu": user.shirt_size_eu,
             "postal_recipient": user.postal_recipient,
             "postal_country": user.postal_country,
             "postal_region": user.postal_region,
             "postal_city": user.postal_city,
             "postal_address": user.postal_address,
             "postal_code": user.postal_code,
+            "postal_recipient_native": user.postal_recipient_native,
+            "postal_region_native": user.postal_region_native,
+            "postal_city_native": user.postal_city_native,
+            "postal_address_native": user.postal_address_native,
+            "postal_consent": user.postal_consent,
             "coach_can_view_attempts": user.coach_can_view_attempts,
             "message_min_rating": user.message_min_rating,
             "device_fingerprint": user.device_fingerprint,

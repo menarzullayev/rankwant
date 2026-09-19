@@ -11,7 +11,7 @@ from __future__ import annotations
 import secrets
 from typing import ClassVar
 
-from django.core.validators import MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import F, Q
 from django.utils import timezone
@@ -70,13 +70,43 @@ class UserTechnology(models.Model):
         return f"{self.user_id}:{self.slug}"
 
 
+#: KEP-uslubidagi ko'nikma nishonlari — matn, ikonka, rang. Max 10.
+MAX_SKILL_BADGES = 10
+BADGE_TEXT_MAX = 24
+BADGE_COLOR = r"^#[0-9A-Fa-f]{6}$"
+
+
+class UserSkillBadge(models.Model):
+    """Profil nishoni: erkin matn + katalog ikonkasi + rang."""
+
+    user = models.ForeignKey("core.User", on_delete=models.CASCADE, related_name="skill_badges")
+    text = models.CharField(max_length=BADGE_TEXT_MAX)
+    #: `profiles.catalog.TECHNOLOGIES` kaliti — frontend `TECH_ICONS` shu slug.
+    icon = models.CharField(max_length=40)
+    color = models.CharField(max_length=7, default="#4f46e5")
+    order = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        ordering: ClassVar = ["order", "id"]
+
+    def __str__(self) -> str:
+        return f"{self.user_id}:{self.text}"
+
+
 class Education(models.Model):
     user = models.ForeignKey("core.User", on_delete=models.CASCADE, related_name="educations")
     organization = models.CharField(max_length=150)
     degree = models.CharField(max_length=100, blank=True)
     start_year = models.PositiveSmallIntegerField(null=True, blank=True)
-    #: Bo'sh — hozir ham shu yerda.
+    start_month = models.PositiveSmallIntegerField(
+        null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(12)]
+    )
+    #: Bo'sh — hozir ham shu yerda (`current=True` yoki `end_year` yo'q).
     end_year = models.PositiveSmallIntegerField(null=True, blank=True)
+    end_month = models.PositiveSmallIntegerField(
+        null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(12)]
+    )
+    current = models.BooleanField(default=False)
     order = models.PositiveSmallIntegerField(default=0)
 
     class Meta:
@@ -91,8 +121,15 @@ class WorkExperience(models.Model):
     company = models.CharField(max_length=150)
     title = models.CharField(max_length=100, blank=True)
     start_year = models.PositiveSmallIntegerField(null=True, blank=True)
-    #: Bo'sh — hozir ham shu yerda.
+    start_month = models.PositiveSmallIntegerField(
+        null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(12)]
+    )
+    #: Bo'sh — hozir ham shu yerda (`current=True` yoki `end_year` yo'q).
     end_year = models.PositiveSmallIntegerField(null=True, blank=True)
+    end_month = models.PositiveSmallIntegerField(
+        null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(12)]
+    )
+    current = models.BooleanField(default=False)
     order = models.PositiveSmallIntegerField(default=0)
 
     class Meta:

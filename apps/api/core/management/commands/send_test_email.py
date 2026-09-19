@@ -32,7 +32,7 @@ class Command(BaseCommand):
     def handle(self, *args: Any, **options: Any) -> None:
         chain = [options["only"]] if options["only"] else settings.EMAIL_CHAIN
         if options["only"] and options["only"] not in PROVIDERS:
-            raise CommandError(f"noma'lum provayder: {options['only']}")
+            raise CommandError(f"unknown provider: {options['only']}")
 
         sozlangan = 0
         for name in chain:

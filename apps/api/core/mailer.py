@@ -109,7 +109,7 @@ def send_email(
     for name in chain if chain is not None else settings.EMAIL_CHAIN:
         provider = PROVIDERS.get(name)
         if provider is None:
-            log.warning("EMAIL_CHAIN da noma'lum provayder: %s", name)
+            log.warning("EMAIL_CHAIN da unknown provider: %s", name)
             continue
         if not provider.configured:
             continue

@@ -158,13 +158,12 @@ class TestParolniTiklash:
         assert zanjir.last is not None
         assert "paroldi tiklew" in zanjir.last.subject.lower()
 
-    def test_notanish_til_ozbekchaga_tushadi(
+    def test_notanish_til_property_nomini_qaytaradi(
         self, zanjir: Yozib, caplog: pytest.LogCaptureFixture
     ) -> None:
-        """Noma'lum til — o'zbekcha, LEKIN jimgina emas.
+        """Unknown locale is the English property, never another language.
 
-        Zaxira `warning` yozishi SHART: aks holda qamrov bo'shlig'i ishlab
-        turgan tizimda ko'rinmaydi (aynan shu holat ilgari bo'lgan).
+        A warning is still required so the coverage gap is visible.
         """
         user = odam()
         User.objects.filter(pk=user.pk).update(locale="de")
@@ -174,11 +173,9 @@ class TestParolniTiklash:
             emails.send_password_reset(user, token="TOK", code="482913")
 
         assert zanjir.last is not None
-        assert "parolni tiklash" in zanjir.last.subject.lower()
-        # `caplog.text` — shakllantirilgan matn, ya'ni `%s` o'rniga
-        # qo'yilgan qiymat ham ko'rinadi (`record.getMessage()` ishlatadi).
+        assert zanjir.last.subject == "subject"
         assert "de" in caplog.text and "no dictionary" in caplog.text, (
-            f"zaxira jurnalga yozilmadi — qamrov bo'shlig'i ko'rinmay qoladi: {caplog.text!r}"
+            f"gap was not logged: {caplog.text!r}"
         )
 
 
@@ -249,7 +246,7 @@ class TestShablon:
 def test_notanish_til_lugatni_yiqitmaydi() -> None:
     from core import email_text
 
-    assert email_text.strings(email_text.RESET, "de")["subject"].startswith("RankWant")
+    assert email_text.strings(email_text.RESET, "de")["subject"] == "subject"
 
 
 def test_barcha_satrlar_hamma_tilda(*_: Any) -> None:

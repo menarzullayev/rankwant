@@ -62,7 +62,7 @@ class StaffArticleSerializer(serializers.ModelSerializer[Article]):
             key = (link["problem"].pk, link.get("role", ArticleProblemLink.Role.PRACTICE))
             if key in seen:
                 raise serializers.ValidationError(
-                    f"«{link['problem'].slug}» bir rolda ikki marta bog'langan"
+                    f"«{link['problem'].slug}» is already linked in this role"
                 )
             seen.add(key)
         return value
@@ -110,7 +110,7 @@ class StaffRoadmapStepSerializer(serializers.ModelSerializer[RoadmapStep]):
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
         # Model.clean bilan bir xil qoida — bo'sh qadam foydalanuvchiga hech narsa ko'rsatmaydi
         if attrs.get("article") is None and attrs.get("problem") is None:
-            raise serializers.ValidationError("Qadamda maqola yoki masala bo'lishi kerak")
+            raise serializers.ValidationError("A step must have an article or a problem")
         return attrs
 
 
@@ -136,10 +136,10 @@ class StaffRoadmapSerializer(serializers.ModelSerializer[Roadmap]):
         # majburiy deb e'lon qilish yetmaydi — indekslashdan oldin
         # tekshirmasak KeyError → 500 bo'lardi.
         if any("order" not in step for step in value):
-            raise serializers.ValidationError("Har qadamda `order` bo'lishi kerak")
+            raise serializers.ValidationError("Each step must have `order`")
         orders = [step["order"] for step in value]
         if len(orders) != len(set(orders)):
-            raise serializers.ValidationError("Qadam tartib raqamlari takrorlanmasligi kerak")
+            raise serializers.ValidationError("Step order numbers must be unique")
         return value
 
     @staticmethod

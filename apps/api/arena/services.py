@@ -43,7 +43,7 @@ def points_for(elapsed_ms: int, limit_s: int) -> int:
 
 def join(user: User, arena: ArenaRound) -> ArenaParticipation:
     if arena.is_finished:
-        raise ArenaError("finished", "Raund tugagan")
+        raise ArenaError("finished", "The round has finished")
     participation, _ = ArenaParticipation.objects.get_or_create(round=arena, user=user)
     return participation
 
@@ -57,17 +57,17 @@ def answer(user: User, arena: ArenaRound, question_id: int, choice_id: int) -> A
     """
     index = arena.current_index
     if index is None:
-        raise ArenaError("not_running", "Raund hozir yurmayapti")
+        raise ArenaError("not_running", "The round is not running right now")
     item = arena.items.select_related("question").filter(order=index + 1).first()
     if item is None or item.question_id != question_id:
-        raise ArenaError("wrong_question", "Bu savol hozir ochiq emas")
+        raise ArenaError("wrong_question", "That question is not open right now")
 
     try:
         participation = ArenaParticipation.objects.select_for_update().get(round=arena, user=user)
     except ArenaParticipation.DoesNotExist as exc:
-        raise ArenaError("not_joined", "Avval raundga qo'shiling") from exc
+        raise ArenaError("not_joined", "Join the round first") from exc
     if ArenaAnswer.objects.filter(participation=participation, question_id=question_id).exists():
-        raise ArenaError("already_answered", "Bu savolga javob berilgan")
+        raise ArenaError("already_answered", "This question has already been answered")
 
     choice = Choice.objects.filter(pk=choice_id, question_id=question_id).first()
     if choice is None:

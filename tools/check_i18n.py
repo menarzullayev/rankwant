@@ -318,6 +318,7 @@ def main() -> int:
     problems += check_templates(source)
     problems += check_server_registry()
     problems += check_key_shape(source)
+    problems += check_english_properties(source)
     problems += check_country_locales()
     problems += check_country_table_coverage()
     problems += check_review_sheets()
@@ -343,7 +344,9 @@ def main() -> int:
 #: chaqiruvi bilan boshlangan satr **jimgina o'tkazib yuborilardi** —
 #: salbiy test shuni tutdi (`python tools/check_negative.py`). Endi qavs
 #: va nuqtadan iborat har qanday ifoda qabul qilinadi.
-CALL_RE = re.compile(r'\bt\(\s*[A-Za-z_$][\w$]*(?:\(\s*\))?(?:\s*\.\s*[\w$]+)*\s*,\s*"([a-zA-Z0-9_.]+)"')
+CALL_RE = re.compile(
+    r'\b(?:t|translate)\(\s*[A-Za-z_$][\w$]*(?:\(\s*\))?(?:\s*\.\s*[\w$]+)*\s*,\s*"([a-zA-Z0-9_.]+)"'
+)
 #: Kalitlar qaysi fayllarda qidiriladi. ⚠️ `pathlib.glob` qavs
 #: kengaytmasini (`*.{ts,tsx}`) QO'LLAB-QUVVATLAMAYDI — u bash xususiyati.
 #: Bir marta shu xato qilingan edi: glob hech narsa topmagan, tekshiruv
@@ -405,7 +408,7 @@ def check_usage(source: dict[str, str]) -> list[str]:
 #: ro'yxatga olinadi va har bir `` `prefiks.${x}` `` uchun shablondan
 #: oldin va keyin keladigan matn bo'yicha mos kalit borligi talab
 #: qilinadi.
-TEMPLATE_CALL = re.compile(r"\bt\([^()]*,\s*(`[^`]+`)\s*\)")
+TEMPLATE_CALL = re.compile(r"\b(?:t|translate)\([^()]*,\s*(`[^`]+`)\s*\)")
 TEMPLATE_RE = re.compile(
     r"`([a-zA-Z0-9_.]*)\$\{[^}]+\}([a-zA-Z0-9_.]*)`",
 )
@@ -539,9 +542,31 @@ def check_key_shape(source: dict[str, str]) -> list[str]:
         if "." in key:
             continue
         problems.append(
-            f"uz.ts: `{key}` prefikssiz — kalit `namespace.name` shaklida "
-            f"bo'lsin (masalan `common.{key}`)"
+            f"uz.ts: `{key}` has no namespace — a property must be "
+            f"`namespace.name` (for example `common.{key}`)"
         )
+    return problems
+
+
+PROPERTY_NAME = re.compile(r"^[a-z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)+$")
+
+
+def check_english_properties(source: dict[str, str]) -> list[str]:
+    """Every property name is English (ASCII dotted identifiers).
+
+    The UI shows the property itself when a translation is missing, so a
+    non-English key would leak onto the screen.
+    """
+    problems: list[str] = []
+    for key in sorted(source):
+        if any(ord(ch) > 127 for ch in key):
+            problems.append(f"uz.ts: `{key}` is not English — property names must be ASCII")
+            continue
+        if not PROPERTY_NAME.match(key):
+            problems.append(
+                f"uz.ts: `{key}` is not a dotted English property "
+                "(example: `user.name`, `error.not_found`)"
+            )
     return problems
 
 

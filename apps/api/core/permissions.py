@@ -40,7 +40,7 @@ def require_staff_group(user: Any, *names: str) -> None:
     """Guruh bo'lmasa 403 — xato matni kerakli guruhni atayin aytadi."""
     if has_staff_group(user, *names):
         return
-    raise PermissionDenied(f"Bu amal uchun huquq yo'q — kerakli guruh: {' yoki '.join(names)}")
+    raise PermissionDenied(f"You do not have permission — required group: {' or '.join(names)}")
 
 
 class HasScope(permissions.BasePermission):
@@ -51,7 +51,7 @@ class HasScope(permissions.BasePermission):
     """
 
     required_scope = ""
-    message = "Token bu amal uchun ruxsatga ega emas"
+    message = "This token is not allowed to do that"
 
     def has_permission(self, request: Any, view: Any) -> bool:
         if not request.user or not request.user.is_authenticated:

@@ -17,12 +17,12 @@ def join(user: User, join_code: str) -> ClassroomMember:
     try:
         classroom = Classroom.objects.select_for_update().get(join_code=join_code, is_active=True)
     except Classroom.DoesNotExist:
-        raise ClassroomError("Sinf topilmadi yoki faol emas") from None
+        raise ClassroomError("Classroom not found or inactive") from None
 
     if classroom.owner_id == user.pk:
-        raise ClassroomError("Siz bu sinfning egasisiz")
+        raise ClassroomError("You already own this classroom")
     if classroom.members.count() >= Classroom.MAX_MEMBERS:
-        raise ClassroomError(f"Sinf to'lgan (maksimal {Classroom.MAX_MEMBERS})")
+        raise ClassroomError(f"Classroom is full (max {Classroom.MAX_MEMBERS})")
 
     member, _ = ClassroomMember.objects.get_or_create(classroom=classroom, user=user)
     return member

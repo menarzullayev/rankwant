@@ -105,11 +105,11 @@ def claim_temp(user: User, new: str) -> User:
         raise ChangeError(exc.messages[0]) from None
     others = User.objects.exclude(pk=user.pk)
     if others.filter(username__iexact=new).exists():
-        raise ChangeError("Bu username band")
+        raise ChangeError("This username is taken")
     if others.filter(username_skeleton=handles.skeleton(new)).exists():
-        raise ChangeError("Bu username mavjud nomga juda o'xshash")
+        raise ChangeError("This username is too similar to an existing one")
     if reserved(new, exclude=user):
-        raise ChangeError("Bu nom yaqinda boshqa foydalanuvchiga tegishli bo'lgan", code="reserved")
+        raise ChangeError("This name recently belonged to another user", code="reserved")
 
     # Qulf: parallel so'rovlar bitta nomni ikki marta olishga urinmasin.
     locked = User.objects.select_for_update().get(pk=user.pk)
@@ -118,7 +118,7 @@ def claim_temp(user: User, new: str) -> User:
         with transaction.atomic():
             locked.save(update_fields=["username", "username_skeleton"])
     except IntegrityError as exc:
-        raise ChangeError("Bu username band") from exc
+        raise ChangeError("This username is taken") from exc
     return locked
 
 
@@ -129,18 +129,18 @@ def change(user: User, new: str, *, pay: bool = False) -> User:
 
     new = new.strip()
     if new == user.username:
-        raise ChangeError("Bu sizning hozirgi taxallusingiz")
+        raise ChangeError("This is already your username")
     try:
         handles.validate(new)
     except DjangoValidationError as exc:
         raise ChangeError(exc.messages[0]) from None
     others = User.objects.exclude(pk=user.pk)
     if others.filter(username__iexact=new).exists():
-        raise ChangeError("Bu username band")
+        raise ChangeError("This username is taken")
     if others.filter(username_skeleton=handles.skeleton(new)).exists():
-        raise ChangeError("Bu username mavjud nomga juda o'xshash")
+        raise ChangeError("This username is too similar to an existing one")
     if reserved(new, exclude=user):
-        raise ChangeError("Bu nom yaqinda boshqa foydalanuvchiga tegishli bo'lgan", code="reserved")
+        raise ChangeError("This name recently belonged to another user", code="reserved")
 
     # Qulf: ikki parallel so'rov bitta bepul imkoniyatni ikki marta ishlata olmasin.
     locked = User.objects.select_for_update().get(pk=user.pk)
@@ -148,7 +148,7 @@ def change(user: User, new: str, *, pay: bool = False) -> User:
     if not free:
         if not pay:
             raise ChangeError(
-                "Bepul almashtirish yiliga bir marta", code="payment_required", price=PRICE
+                "A free change is allowed once a year", code="payment_required", price=PRICE
             )
         try:
             ledger.debit(
@@ -160,7 +160,7 @@ def change(user: User, new: str, *, pay: bool = False) -> User:
             )
         except ledger.InsufficientBalance as exc:
             raise ChangeError(
-                f"Balans yetarli emas ({exc})", code="insufficient_balance", price=PRICE
+                f"Insufficient balance ({exc})", code="insufficient_balance", price=PRICE
             ) from exc
 
     UsernameHistory.objects.create(user=locked, old_username=locked.username)
@@ -173,5 +173,5 @@ def change(user: User, new: str, *, pay: bool = False) -> User:
         with transaction.atomic():
             locked.save(update_fields=fields)
     except IntegrityError as exc:
-        raise ChangeError("Bu username band") from exc
+        raise ChangeError("This username is taken") from exc
     return locked

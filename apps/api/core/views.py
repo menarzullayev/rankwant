@@ -360,7 +360,7 @@ class SocialUnlinkView(APIView):
         others = SocialAccount.objects.filter(user=user).exclude(pk=row.pk).exists()
         if not user.has_usable_password() and not others:
             raise exceptions.ValidationError(
-                {"provider": "Bu yagona kirish yo'lingiz — avval parol o'rnating"}
+                {"provider": "This is your only sign-in method — set a password first"}
             )
         row.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -388,7 +388,7 @@ class EmailVerifyView(APIView):
             username=serializer.validated_data.get("username", ""),
         )
         if user is None:
-            raise exceptions.ValidationError({"token": "Havola yaroqsiz yoki muddati tugagan"})
+            raise exceptions.ValidationError({"token": "This link is invalid or has expired"})
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -409,9 +409,7 @@ class EmailVerifyResendView(APIView):
         try:
             issued = verification.issue(user)
         except verification.TooManyRequests as exc:
-            raise exceptions.Throttled(
-                detail="Juda ko'p so'rov — birozdan keyin urinib ko'ring"
-            ) from exc
+            raise exceptions.Throttled(detail="Too many requests — try again shortly") from exc
         queue(send_email_verify, user.pk, issued.raw, issued.code)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -444,10 +442,10 @@ class UsernameCheckView(APIView):
         taken = User.objects.filter(username__iexact=value).exists()
         similar = User.objects.filter(username_skeleton=handles.skeleton(value)).exists()
         if taken:
-            return Response({"available": False, "reason": "Bu username band"})
+            return Response({"available": False, "reason": "This username is taken"})
         if similar:
             return Response(
-                {"available": False, "reason": "Bu username mavjud nomga juda o'xshash"}
+                {"available": False, "reason": "This username is too similar to an existing one"}
             )
         from core.usernames import reserved
 
@@ -455,7 +453,7 @@ class UsernameCheckView(APIView):
             return Response(
                 {
                     "available": False,
-                    "reason": "Bu nom yaqinda boshqa foydalanuvchiga tegishli bo'lgan",
+                    "reason": "This name recently belonged to another user",
                 }
             )
         return Response({"available": True, "reason": ""})
@@ -486,7 +484,7 @@ class LoginView(APIView):
                 {
                     "error": {
                         "code": "invalid_credentials",
-                        "message": "Login yoki parol noto'g'ri",
+                        "message": "Wrong username or password",
                         "details": {},
                     }
                 },
@@ -621,7 +619,7 @@ class MeView(generics.RetrieveUpdateDestroyAPIView[User]):
         # Parol o'g'irlangan sessiya bilan hisobni yo'q qilishning oldini
         # oladi: qaytarib bo'lmaydigan amal uchun bir marta tasdiq shart.
         if not user.check_password(serializer.validated_data["password"]):
-            raise exceptions.ValidationError({"password": "Parol noto'g'ri"})
+            raise exceptions.ValidationError({"password": "Password is wrong"})
         account.anonymize(user)
         logout(request)
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -846,7 +844,7 @@ class ApiTokenViewSet(viewsets.ModelViewSet[ApiToken]):
                 {
                     "error": {
                         "code": "token_limit",
-                        "message": f"Maksimal {ApiToken.MAX_ACTIVE_PER_USER} ta faol token",
+                        "message": f"At most {ApiToken.MAX_ACTIVE_PER_USER} active tokens",
                         "details": {},
                     }
                 },
@@ -859,7 +857,7 @@ class ApiTokenViewSet(viewsets.ModelViewSet[ApiToken]):
                 {
                     "error": {
                         "code": "invalid_expiry",
-                        "message": "Muddat kelajakda bo'lishi kerak",
+                        "message": "Expiry must be in the future",
                         "details": {},
                     }
                 },
@@ -870,7 +868,7 @@ class ApiTokenViewSet(viewsets.ModelViewSet[ApiToken]):
                 {
                     "error": {
                         "code": "invalid_expiry",
-                        "message": "Maksimal muddat — 1 yil",
+                        "message": "Maximum lifetime is 1 year",
                         "details": {},
                     }
                 },
@@ -958,7 +956,7 @@ class PasswordResetConfirmView(APIView):
                 {
                     "error": {
                         "code": "invalid_token",
-                        "message": "Havola yaroqsiz yoki muddati tugagan",
+                        "message": "This link is invalid or has expired",
                         "details": {},
                     }
                 },
@@ -983,7 +981,7 @@ class PasswordResetConfirmView(APIView):
                 {
                     "error": {
                         "code": "invalid_token",
-                        "message": "Havola yaroqsiz yoki muddati tugagan",
+                        "message": "This link is invalid or has expired",
                         "details": {},
                     }
                 },
@@ -1295,7 +1293,7 @@ class SocialLinkView(APIView):
                 {
                     "error": {
                         "code": "invalid_link",
-                        "message": "Bog'lash so'rovi topilmadi yoki muddati tugagan",
+                        "message": "Link request not found or expired",
                         "details": {},
                     }
                 },
@@ -1352,7 +1350,7 @@ class SiteAppearanceView(APIView):
     authentication_classes: list[Any] = []
     CACHE_S = 300
 
-    @extend_schema(responses={200: OpenApiResponse(description="Standart ko'rinish")})
+    @extend_schema(responses={200: OpenApiResponse(description="Default appearance")})
     def get(self, request: Request) -> Response:
         payload = cache_get("site-appearance")
         if payload is None:

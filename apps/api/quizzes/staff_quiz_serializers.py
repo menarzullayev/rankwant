@@ -42,11 +42,11 @@ class StaffQuizSerializer(serializers.ModelSerializer[Quiz]):
 
     def validate_questions(self, value: list[int]) -> list[int]:
         if len(set(value)) != len(value):
-            raise serializers.ValidationError("Savol takrorlanmasin")
+            raise serializers.ValidationError("A question cannot be added twice")
         found = set(Question.objects.filter(pk__in=value).values_list("pk", flat=True))
         missing = [qid for qid in value if qid not in found]
         if missing:
-            raise serializers.ValidationError(f"Savol topilmadi: {missing}")
+            raise serializers.ValidationError(f"Question not found: {missing}")
         return value
 
     @staticmethod

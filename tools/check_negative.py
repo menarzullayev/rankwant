@@ -453,6 +453,17 @@ def neg_email_undeclared_locale() -> tuple[bool, str]:
         return expect_fail("email_locales", "email/ro'yxatda yo'q til")
 
 
+def neg_api_english_uzbek_message() -> tuple[bool, str]:
+    """An Uzbek API error message must fail the English-messages check."""
+    path = ROOT / "apps/api/core/errors.py"
+    old = 'message = "The submitted data is not valid"'
+    new = 'message = "Kiritilgan ma\'lumot noto\'g\'ri"'
+    if old not in path.read_bytes().decode("utf-8"):
+        return False, "api_english: langar topilmadi"
+    with Mutation(path, old, new):
+        return expect_fail("api_english", "api_english/o'zbekcha xabar")
+
+
 # ── locales parity ───────────────────────────────────────────────────────
 
 
@@ -638,6 +649,18 @@ def neg_i18n_bare_key() -> tuple[bool, str]:
     injected = '  empty2: "Sinov",\n' + anchor
     with Mutation(path, anchor, injected):
         return expect_fail("i18n", "i18n/prefikssiz kalit")
+
+
+def neg_i18n_non_english_property() -> tuple[bool, str]:
+    """A non-English property name must fail — the UI shows the name itself."""
+    path = ROOT / "apps/web/src/i18n/locales/uz.ts"
+    text = path.read_bytes().decode("utf-8")
+    anchor = '  "team.intro":'
+    if anchor not in text:
+        return False, 'i18n/inglizcha: langar `"team.intro":` topilmadi'
+    injected = '  "foydalanuvchi.ism": "Sinov",\n' + anchor
+    with Mutation(path, anchor, injected):
+        return expect_fail("i18n", "i18n/inglizcha bo'lmagan property")
 
 
 def neg_i18n_template_family() -> tuple[bool, str]:
@@ -2868,12 +2891,12 @@ def neg_decisions_dictionary_cache_unsynced() -> tuple[bool, str]:
 
 
 def neg_decisions_uz_marked_as_fallback() -> tuple[bool, str]:
-    # `uz` is the source language: reading Uzbek is the correct answer, not a
-    # fallback. Without the guard an `uz` chip lands on the Uzbek pages.
+    # Missing content names must not copy another locale. Pointing
+    # `source` at DEFAULT_LOCALE is the old fallback path.
     return _decision_broken(
         "apps/web/src/i18n/messages.ts",
-        "if (locale === DEFAULT_LOCALE) {",
-        "if (false) {",
+        "return { text: nameProperty(row), locale: null, source: null };",
+        "return { text: nameProperty(row), locale: null, source: DEFAULT_LOCALE };",
         "kontent qamrovi ko'rinadi",
     )
 
@@ -4435,6 +4458,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("reyestr to'liq tozalansa tutilsin", neg_i18n_registry_cleared),
             ("runtime dev throw yo'q", neg_i18n_runtime_dev_throw),
             ("runtime takroriy jurnal", neg_i18n_runtime_dedup),
+            ("inglizcha bo'lmagan property", neg_i18n_non_english_property),
         ],
     ),
     (
@@ -4466,6 +4490,12 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("yetishmayotgan til", neg_email_missing_locale),
             ("bo'sh matn", neg_email_blank_value),
             ("ro'yxatda yo'q til", neg_email_undeclared_locale),
+        ],
+    ),
+    (
+        "api_english",
+        [
+            ("o'zbekcha API xabari", neg_api_english_uzbek_message),
         ],
     ),
     (

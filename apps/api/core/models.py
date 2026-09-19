@@ -30,7 +30,20 @@ PRIVACY_FIELDS: tuple[str, ...] = (
     #: `avatar_url` dan farqli: avatar brend belgisi kabi turadi, banner
     #: esa shaxsiy tanlov, ya'ni yashirish mumkin bo'lishi kerak.
     "title_photo",
+    "gender",
+    #: Faoliyat lentasi (`/users/<u>/activity/`).
+    "activity",
+    #: Faollik xaritasi (`/users/<u>/calendar/`).
+    "heatmap",
+    #: Yechilgan masalalar xaritasi (`/users/<u>/problem-map/`).
+    "recent_ac",
 )
+
+#: Bepul veb-sayt havolalari — birinchisi `User.website` da ham yotadi.
+MAX_WEBSITES = 5
+
+#: Codeforces yetkazib berish anketasidagi EU o'lchamlar (juft 40–60).
+SHIRT_EU_SIZES: tuple[str, ...] = tuple(str(n) for n in range(40, 62, 2))
 
 
 def default_hidden_fields() -> list[str]:
@@ -115,6 +128,9 @@ class User(AbstractUser):
     )
     grade = models.CharField(max_length=40, blank=True)
     website = models.URLField(blank=True)
+    #: Qo'shimcha havolalar (0–5). `website` — birinchisi, maxfiylik kaliti
+    #: ham shu; JSON manba, `website` esa moslashuv uchun nusxa.
+    websites = models.JSONField(default=list, blank=True)
     birth_date = models.DateField(null=True, blank=True)
     #: Aloqa uchun telefon — IXTIYORIY va ommaviy profilga HECH QACHON
     #: chiqmaydi (pochtadan ham maxfiyroq: u shaxsni to'g'ridan-to'g'ri
@@ -199,13 +215,31 @@ class User(AbstractUser):
         XXL = "XXL", "XXL"
         XXXL = "3XL", "3XL"
 
+    class Gender(models.TextChoices):
+        MALE = "male", "Male"
+        FEMALE = "female", "Female"
+        NON_BINARY = "non_binary", "Non-binary"
+        PREFER_NOT = "prefer_not", "Prefer not to say"
+
     #: For olympiad prizes. Owner-only and never public, like `phone`.
     shirt_size = models.CharField(max_length=4, choices=ShirtSize.choices, blank=True)
+    #: EU numeric twin of `shirt_size` (Codeforces delivery form). Owner-only.
+    shirt_size_eu = models.CharField(
+        max_length=4, blank=True, choices=[(n, n) for n in SHIRT_EU_SIZES]
+    )
+    #: Optional; public only when `gender` is not in `hidden_fields`.
+    gender = models.CharField(max_length=16, choices=Gender.choices, blank=True)
+    #: English names for certificates and delivery. Native names stay in
+    #: `first_name` / `last_name` (AbstractUser) and are never public.
+    first_name_en = models.CharField(max_length=150, blank=True)
+    last_name_en = models.CharField(max_length=150, blank=True)
 
-    # ── Dormant until their features exist (ADR-0024) ────────────────
+    # ── Competitor-parity columns (ADR-0024) ─────────────────────────
     # The owner chose on 2026-09-18 to add these columns before the features
-    # that use them. The API does not expose them yet. Do not remove them as
-    # unused: `tools/check_decisions.py` guards the list.
+    # that use them. `postal_*` are now owner-only on `/me/` (delivery
+    # settings). `plan`, `device_fingerprint` and `coach_can_view_attempts`
+    # stay internal. Do not remove them as unused: `tools/check_decisions.py`
+    # guards the list.
 
     class Plan(models.TextChoices):
         # PRD P2-3; prices and limits come with the monetization ADR.
@@ -217,12 +251,19 @@ class User(AbstractUser):
     plan = models.CharField(max_length=16, choices=Plan.choices, default=Plan.FREE)
     plan_expires_at = models.DateTimeField(null=True, blank=True)
     #: Delivery address for physical prizes. Owner-only, never public.
+    #: English block (`postal_*`) plus native-script twin (`*_native`).
     postal_recipient = models.CharField(max_length=150, blank=True)
     postal_country = models.CharField(max_length=2, blank=True)
     postal_region = models.CharField(max_length=80, blank=True)
     postal_city = models.CharField(max_length=100, blank=True)
     postal_address = models.CharField(max_length=255, blank=True)
     postal_code = models.CharField(max_length=16, blank=True)
+    postal_recipient_native = models.CharField(max_length=150, blank=True)
+    postal_region_native = models.CharField(max_length=80, blank=True)
+    postal_city_native = models.CharField(max_length=100, blank=True)
+    postal_address_native = models.CharField(max_length=255, blank=True)
+    #: Required when any postal field is filled; cleared when the address is erased.
+    postal_consent = models.BooleanField(default=False)
     #: Consent for coaches to open this user's attempts.
     coach_can_view_attempts = models.BooleanField(default=False)
     #: Minimum rating a sender needs to start private messages; `None` means anyone.
@@ -661,11 +702,11 @@ class SiteAppearance(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = "Standart ko'rinish"
-        verbose_name_plural = "Standart ko'rinish"
+        verbose_name = "Default appearance"
+        verbose_name_plural = "Default appearance"
 
     def __str__(self) -> str:
-        return "Standart ko'rinish"
+        return "Default appearance"
 
     @classmethod
     def load(cls) -> SiteAppearance:

@@ -61,10 +61,10 @@ def _client() -> Any:
 
 def put(data: bytes) -> str:
     if len(data) > MAX_BYTES:
-        raise AvatarError("Rasm 1 MB dan oshmasligi kerak")
+        raise AvatarError("The image must not exceed 1 MB")
     ext = sniff(data)
     if ext is None:
-        raise AvatarError("Faqat PNG, JPEG yoki WebP rasm")
+        raise AvatarError("Only PNG, JPEG, or WebP images")
     name = f"{secrets.token_urlsafe(18)}.{ext}"
     _client().put_object(
         Bucket=settings.S3_BUCKET, Key=PREFIX + name, Body=data, ContentType=CONTENT_TYPES[ext]
@@ -144,7 +144,7 @@ def fetch_remote(url: str) -> bytes:
     """Provayder rasmini yuklab oladi — faqat ruxsat etilgan domenlardan."""
     for _ in range(4):
         if not _allowed(url):
-            raise AvatarError("Bu manzildan rasm olinmaydi")
+            raise AvatarError("An image cannot be fetched from this address")
         request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
         try:
             with _OPENER.open(request, timeout=10) as resp:
@@ -153,13 +153,13 @@ def fetch_remote(url: str) -> bytes:
             if exc.code in REDIRECTS:
                 url = urljoin(url, exc.headers.get("Location", ""))
                 continue
-            raise AvatarError(f"Provayder rasmni bermadi (HTTP {exc.code})") from exc
+            raise AvatarError(f"The provider did not return an image (HTTP {exc.code})") from exc
         except OSError as exc:
-            raise AvatarError("Provayder javob bermadi") from exc
+            raise AvatarError("The provider did not respond") from exc
         if len(data) > MAX_BYTES:
-            raise AvatarError("Rasm 1 MB dan oshmasligi kerak")
+            raise AvatarError("The image must not exceed 1 MB")
         return data
-    raise AvatarError("Juda ko'p yo'naltirish")
+    raise AvatarError("Too many redirects")
 
 
 def provider_picture(account: Any) -> str:

@@ -65,5 +65,5 @@ class StaffShopItemViewSet(StaffViewSet):
             instance.delete()
         except ProtectedError as exc:
             raise serializers.ValidationError(
-                {"code": ["Sotib olingan itemni o'chirib bo'lmaydi — is_active ni o'chiring"]}
+                {"code": ["A purchased item cannot be deleted — set is_active instead"]}
             ) from exc

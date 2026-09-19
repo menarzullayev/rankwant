@@ -28,7 +28,7 @@ def exception_handler(exc: Exception, context: dict[str, Any]) -> Response | Non
             {
                 "error": {
                     "code": "protected",
-                    "message": "Bu yozuv boshqa joyda ishlatilmoqda, avval bog'lanishni uzing",
+                    "message": "This record is used elsewhere — remove the link first",
                     "details": {"used_by": blockers},
                 }
             },
@@ -40,7 +40,7 @@ def exception_handler(exc: Exception, context: dict[str, Any]) -> Response | Non
             {
                 "error": {
                     "code": "dependency_unavailable",
-                    "message": "Xizmat vaqtincha mavjud emas, birozdan keyin urinib ko'ring",
+                    "message": "The service is temporarily unavailable, try again shortly",
                     "details": {},
                 }
             },
@@ -64,10 +64,10 @@ def exception_handler(exc: Exception, context: dict[str, Any]) -> Response | Non
             message = str(raw)
         else:
             details = detail
-            message = "Kiritilgan ma'lumot noto'g'ri"
+            message = "The submitted data is not valid"
     elif isinstance(detail, list):
         details = {"errors": detail}
-        message = "Kiritilgan ma'lumot noto'g'ri"
+        message = "The submitted data is not valid"
     else:
         message = str(detail)
 

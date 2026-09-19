@@ -59,19 +59,19 @@ def normalize(kind: str, handle: str) -> str:
     value = handle.strip()
     if kind == ExternalProfile.Kind.LINKEDIN:
         if not LINKEDIN_RE.match(value):
-            raise ValueError("LinkedIn manzili https://linkedin.com/in/… ko'rinishida bo'lsin")
+            raise ValueError("LinkedIn URL must look like https://linkedin.com/in/…")
         return value.rstrip("/")
     if kind == ExternalProfile.Kind.BLOG:
         try:
             URLValidator(schemes=["https"])(value)
         except ValidationError:
-            raise ValueError("Blog manzili https:// bilan boshlansin") from None
+            raise ValueError("Blog URL must start with https://") from None
         return value
     # Havola (`https://t.me/nom?x=1`) yoki `@nom` yuborilsa ham taxallus ajratiladi.
     value = value.split("?", 1)[0].rstrip("/").rsplit("/", 1)[-1].lstrip("@")
     pattern = HANDLE_RE.get(kind)
     if pattern is None or not pattern.match(value):
-        raise ValueError("Handle noto'g'ri")
+        raise ValueError("Handle is invalid")
     return value
 
 

@@ -15,7 +15,7 @@ from rest_framework import serializers
 from problems.models import Topic
 from quizzes.models import Choice, Question
 
-ANSWERED_MSG = "Bu savolga arenada javob berilgan — variantlarni o'zgartirib bo'lmaydi"
+ANSWERED_MSG = "This question already has arena answers — choices cannot be changed"
 
 
 class StaffChoiceSerializer(serializers.ModelSerializer[Choice]):
@@ -51,17 +51,17 @@ class StaffQuestionSerializer(serializers.ModelSerializer[Question]):
 
     def validate_choices(self, value: list[dict[str, Any]]) -> list[dict[str, Any]]:
         if len(value) < 2:
-            raise serializers.ValidationError("Kamida 2 ta variant bo'lishi kerak")
+            raise serializers.ValidationError("At least two choices are required")
         if sum(1 for c in value if c.get("is_correct")) != 1:
-            raise serializers.ValidationError("Aynan bitta to'g'ri variant bo'lishi kerak")
+            raise serializers.ValidationError("Exactly one choice must be correct")
         # PATCH da DRF bolalar maydonlarini ham ixtiyoriy qiladi, ya'ni
         # majburiy deb e'lon qilish yetmaydi — indekslashdan oldin
         # tekshirmasak KeyError → 500 bo'lardi.
         if any("order" not in c for c in value):
-            raise serializers.ValidationError("Har variantda `order` bo'lishi kerak")
+            raise serializers.ValidationError("Each choice must have `order`")
         orders = [c["order"] for c in value]
         if len(set(orders)) != len(orders):
-            raise serializers.ValidationError("Variant tartib raqamlari takrorlanmasligi kerak")
+            raise serializers.ValidationError("Choice order numbers must be unique")
         return value
 
     @staticmethod

@@ -282,7 +282,7 @@ class TestTelegram:
     def test_muddati_tugagan_rad_etiladi(self, sozlangan: Any, monkeypatch: Any) -> None:
         almashuv(monkeypatch, id_token(exp=int(time.time()) - 1))
 
-        with pytest.raises(oauth.OAuthError, match="muddati"):
+        with pytest.raises(oauth.OAuthError, match="expired"):
             oauth.identity("telegram", "kod", "verifier")
 
     def test_sub_siz_rad_etiladi(self, sozlangan: Any, monkeypatch: Any) -> None:

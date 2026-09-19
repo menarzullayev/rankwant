@@ -96,7 +96,7 @@ class TestRegistrationLogin:
 
         Bu test SHARTNOMANI qotiradi. Sabab: DRF maydon xatolarida
         `code` HAR DOIM `"invalid"` bo'ladi (`{"error":{"code":"invalid",
-        "details":{"email":["Bu email band"]}}}`), ya'ni «band email» ni
+        "details":{"email":["This email is taken"]}}}`), ya'ni «band email» ni
         kod bo'yicha ajratib bo'lmaydi — frontend yagona ishonchli belgi
         sifatida `details` kalitidan foydalanadi (`ApiError.field`).
 
@@ -112,7 +112,7 @@ class TestRegistrationLogin:
         serializer = RegisterSerializer(data={"email": band.email, "password": "Parol!12345"})
 
         assert not serializer.is_valid()
-        assert serializer.errors["email"] == ["Bu email band"], serializer.errors
+        assert serializer.errors["email"] == ["This email is taken"], serializer.errors
 
     def test_band_email_username_bilan_ham_aniqlanadi(self) -> None:
         """`username` ham yuborilganda xato baribir `email` da qoladi.
@@ -132,7 +132,7 @@ class TestRegistrationLogin:
         )
 
         assert not serializer.is_valid()
-        assert serializer.errors["email"] == ["Bu email band"], serializer.errors
+        assert serializer.errors["email"] == ["This email is taken"], serializer.errors
 
     def test_username_siz_royxatdan_otish_ishlaydi(self, client: APIClient) -> None:
         """1-qadam yuki (`username`siz) QABUL QILINISHI shart.

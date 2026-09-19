@@ -31,10 +31,10 @@ def code_from(value: str) -> str:
 def create(user: User, name: str) -> Team:
     name = name.strip()
     if len(name) < 2:
-        raise TeamError("Jamoa nomi kamida 2 belgi bo'lsin")
+        raise TeamError("The team name must be at least 2 characters")
     owned = TeamMember.objects.filter(user=user, role=TeamMember.Role.OWNER).count()
     if owned >= MAX_OWNED:
-        raise TeamError(f"Ko'pi bilan {MAX_OWNED} ta jamoa yaratish mumkin")
+        raise TeamError(f"At most {MAX_OWNED} teams can be created")
     team = Team.objects.create(name=name, created_by=user, join_code=Team.new_code())
     TeamMember.objects.create(team=team, user=user, role=TeamMember.Role.OWNER)
     return team
@@ -45,22 +45,22 @@ def join(user: User, code: str) -> Team:
     # Qulf: to'lib qolgan jamoaga parallel so'rovlar bilan ortiqcha a'zo qo'shilmasin.
     team = Team.objects.select_for_update().filter(join_code=code_from(code)).first()
     if team is None:
-        raise TeamError("Kod noto'g'ri yoki eskirgan")
+        raise TeamError("The code is invalid or expired")
     if TeamMember.objects.filter(team=team, user=user).exists():
-        raise TeamError("Siz allaqachon shu jamoadasiz")
+        raise TeamError("You are already on this team")
     if team.members.count() >= Team.MAX_MEMBERS:
-        raise TeamError(f"Jamoa to'lgan ({Team.MAX_MEMBERS} kishi)")
+        raise TeamError(f"Team is full ({Team.MAX_MEMBERS} people)")
     try:
         with transaction.atomic():
             TeamMember.objects.create(team=team, user=user)
     except IntegrityError as exc:
-        raise TeamError("Siz allaqachon shu jamoadasiz") from exc
+        raise TeamError("You are already on this team") from exc
     return team
 
 
 def _require_owner(team: Team, user: User) -> None:
     if not TeamMember.objects.filter(team=team, user=user, role=TeamMember.Role.OWNER).exists():
-        raise TeamForbidden("Bu amal faqat jamoa egasiga ruxsat etilgan")
+        raise TeamForbidden("Only the team owner can do that")
 
 
 def refresh_code(team: Team, user: User) -> Team:
@@ -82,7 +82,7 @@ def leave(team: Team, user: User) -> None:
     locked = Team.objects.select_for_update().get(pk=team.pk)
     member = TeamMember.objects.filter(team=locked, user=user).first()
     if member is None:
-        raise TeamError("Siz bu jamoada emassiz")
+        raise TeamError("You are not on this team")
     member.delete()
     if member.role != TeamMember.Role.OWNER:
         return
@@ -98,9 +98,9 @@ def remove(team: Team, owner: User, username: str) -> None:
     _require_owner(team, owner)
     member = TeamMember.objects.filter(team=team, user__username=username).first()
     if member is None:
-        raise TeamError("A'zo topilmadi")
+        raise TeamError("Member not found")
     if member.user_id == owner.pk:
-        raise TeamError("O'zingiz uchun «Jamoadan chiqish» tugmasini ishlating")
+        raise TeamError("Use Leave team for yourself")
     member.delete()
 
 

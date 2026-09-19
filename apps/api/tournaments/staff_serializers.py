@@ -52,9 +52,7 @@ class StaffTournamentSerializer(serializers.ModelSerializer[Tournament]):
         start_at = attrs.get("start_at", getattr(self.instance, "start_at", None))
         end_at = attrs.get("end_at", getattr(self.instance, "end_at", None))
         if start_at and end_at and end_at <= start_at:
-            raise serializers.ValidationError(
-                {"end_at": "Tugash vaqti boshlanishdan keyin bo'lishi kerak"}
-            )
+            raise serializers.ValidationError({"end_at": "The end time must be after the start"})
         if "stages" in attrs:
             self._validate_stages(attrs["stages"])
         return attrs
@@ -66,16 +64,14 @@ class StaffTournamentSerializer(serializers.ModelSerializer[Tournament]):
         missing = [k for k in ("order", "contest") if any(k not in s for s in stages)]
         if missing:
             fields = ", ".join(f"`{m}`" for m in missing)
-            raise serializers.ValidationError({"stages": f"Har bosqichda {fields} bo'lishi kerak"})
+            raise serializers.ValidationError({"stages": f"Each stage needs {fields}"})
         orders = [s["order"] for s in stages]
         if len(orders) != len(set(orders)):
-            raise serializers.ValidationError({"stages": "Bosqich tartib raqamlari takrorlanmasin"})
+            raise serializers.ValidationError({"stages": "Stage order numbers must be unique"})
 
         contests: list[Contest] = [s["contest"] for s in stages]
         if len({c.pk for c in contests}) != len(contests):
-            raise serializers.ValidationError(
-                {"stages": "Bitta musobaqa ikki bosqichda bo'la olmaydi"}
-            )
+            raise serializers.ValidationError({"stages": "A contest cannot appear in two stages"})
 
         # Contest ↔ bosqich OneToOne: boshqa chempionatda band bo'lsa — aniq xato
         taken = TournamentStage.objects.filter(contest__in=contests).select_related(
@@ -86,7 +82,7 @@ class StaffTournamentSerializer(serializers.ModelSerializer[Tournament]):
         busy = [f"{s.contest.slug} → {s.tournament.slug}" for s in taken]
         if busy:
             raise serializers.ValidationError(
-                {"stages": "Musobaqa allaqachon boshqa chempionat bosqichi: " + ", ".join(busy)}
+                {"stages": "Contest is already a stage of another championship: " + ", ".join(busy)}
             )
 
     @staticmethod

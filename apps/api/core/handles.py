@@ -78,9 +78,8 @@ def validate(username: str) -> None:
     """Qoidaga mos kelmasa `ValidationError`. Xabar — foydalanuvchi tilida emas,
     chaqiruvchi uni tarjima qiladi."""
     if not MIN_LENGTH <= len(username) <= MAX_LENGTH:
-        raise ValidationError(f"Taxallus {MIN_LENGTH}–{MAX_LENGTH} belgi bo'lishi kerak")
+        raise ValidationError(f"Handle must be {MIN_LENGTH}–{MAX_LENGTH} characters")
     if not ALLOWED.match(username):
         raise ValidationError(
-            "Taxallusda faqat lotin harflari, raqam, nuqta, pastki chiziq "
-            "va chiziqcha bo'lishi mumkin"
+            "A handle may only contain Latin letters, digits, dots, underscores, and hyphens"
         )

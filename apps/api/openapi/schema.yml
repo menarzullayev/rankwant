@@ -57,7 +57,7 @@ paths:
       - {}
       responses:
         '200':
-          description: Standart ko'rinish
+          description: Default appearance
   /api/v1/arena/:
     get:
       operationId: arena_list
@@ -2541,6 +2541,57 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/me/skill-badges/:
+    get:
+      operationId: me_skill_badges_list
+      summary: Ko'nikma nishonlari
+      tags:
+      - me
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SkillBadge'
+          description: ''
+    put:
+      operationId: me_skill_badges_update
+      summary: Ko'nikma nishonlarini almashtirish
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SkillBadge'
+          application/x-www-form-urlencoded:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SkillBadge'
+          multipart/form-data:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SkillBadge'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SkillBadge'
+          description: ''
   /api/v1/me/skills/:
     get:
       operationId: me_skills_list
@@ -11595,6 +11646,7 @@ components:
       - wins
     Education:
       type: object
+      description: Yil + oy. `current=True` yoki tugash yili yo'q — hozirgacha.
       properties:
         organization:
           type: string
@@ -11608,12 +11660,24 @@ components:
           minimum: 0
           format: int64
           nullable: true
+        start_month:
+          type: integer
+          maximum: 12
+          minimum: 1
+          nullable: true
         end_year:
           type: integer
           maximum: 9223372036854775807
           minimum: 0
           format: int64
           nullable: true
+        end_month:
+          type: integer
+          maximum: 12
+          minimum: 1
+          nullable: true
+        current:
+          type: boolean
       required:
       - organization
     EmailChange:
@@ -11760,6 +11824,18 @@ components:
       - school
       - title
       - username
+    GenderEnum:
+      enum:
+      - male
+      - female
+      - non_binary
+      - prefer_not
+      type: string
+      description: |-
+        * `male` - Male
+        * `female` - Female
+        * `non_binary` - Non-binary
+        * `prefer_not` - Prefer not to say
     Hack:
       type: object
       properties:
@@ -12271,6 +12347,12 @@ components:
         last_name:
           type: string
           maxLength: 150
+        first_name_en:
+          type: string
+          maxLength: 150
+        last_name_en:
+          type: string
+          maxLength: 150
         email_verified:
           type: boolean
           readOnly: true
@@ -12324,6 +12406,17 @@ components:
             maxLength: 200
           - type: string
             maxLength: 0
+        websites:
+          type: array
+          items:
+            type: string
+            format: uri
+            maxLength: 200
+          maxItems: 5
+        gender:
+          oneOf:
+          - $ref: '#/components/schemas/GenderEnum'
+          - $ref: '#/components/schemas/BlankEnum'
         birth_date:
           type: string
           format: date
@@ -12335,6 +12428,42 @@ components:
           oneOf:
           - $ref: '#/components/schemas/ShirtSizeEnum'
           - $ref: '#/components/schemas/BlankEnum'
+        shirt_size_eu:
+          oneOf:
+          - $ref: '#/components/schemas/ShirtSizeEuEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        postal_recipient:
+          type: string
+          maxLength: 150
+        postal_country:
+          type: string
+          maxLength: 2
+        postal_region:
+          type: string
+          maxLength: 80
+        postal_city:
+          type: string
+          maxLength: 100
+        postal_address:
+          type: string
+          maxLength: 255
+        postal_code:
+          type: string
+          maxLength: 16
+        postal_recipient_native:
+          type: string
+          maxLength: 150
+        postal_region_native:
+          type: string
+          maxLength: 80
+        postal_city_native:
+          type: string
+          maxLength: 100
+        postal_address_native:
+          type: string
+          maxLength: 255
+        postal_consent:
+          type: boolean
         hidden_fields: {}
         pinned_achievements: {}
         ui_prefs: {}
@@ -13939,6 +14068,12 @@ components:
         last_name:
           type: string
           maxLength: 150
+        first_name_en:
+          type: string
+          maxLength: 150
+        last_name_en:
+          type: string
+          maxLength: 150
         email_verified:
           type: boolean
           readOnly: true
@@ -13992,6 +14127,17 @@ components:
             maxLength: 200
           - type: string
             maxLength: 0
+        websites:
+          type: array
+          items:
+            type: string
+            format: uri
+            maxLength: 200
+          maxItems: 5
+        gender:
+          oneOf:
+          - $ref: '#/components/schemas/GenderEnum'
+          - $ref: '#/components/schemas/BlankEnum'
         birth_date:
           type: string
           format: date
@@ -14003,6 +14149,42 @@ components:
           oneOf:
           - $ref: '#/components/schemas/ShirtSizeEnum'
           - $ref: '#/components/schemas/BlankEnum'
+        shirt_size_eu:
+          oneOf:
+          - $ref: '#/components/schemas/ShirtSizeEuEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        postal_recipient:
+          type: string
+          maxLength: 150
+        postal_country:
+          type: string
+          maxLength: 2
+        postal_region:
+          type: string
+          maxLength: 80
+        postal_city:
+          type: string
+          maxLength: 100
+        postal_address:
+          type: string
+          maxLength: 255
+        postal_code:
+          type: string
+          maxLength: 16
+        postal_recipient_native:
+          type: string
+          maxLength: 150
+        postal_region_native:
+          type: string
+          maxLength: 80
+        postal_city_native:
+          type: string
+          maxLength: 100
+        postal_address_native:
+          type: string
+          maxLength: 255
+        postal_consent:
+          type: boolean
         hidden_fields: {}
         pinned_achievements: {}
         ui_prefs: {}
@@ -16099,6 +16281,32 @@ components:
         * `XL` - XL
         * `XXL` - XXL
         * `3XL` - 3XL
+    ShirtSizeEuEnum:
+      enum:
+      - '40'
+      - '42'
+      - '44'
+      - '46'
+      - '48'
+      - '50'
+      - '52'
+      - '54'
+      - '56'
+      - '58'
+      - '60'
+      type: string
+      description: |-
+        * `40` - 40
+        * `42` - 42
+        * `44` - 44
+        * `46` - 46
+        * `48` - 48
+        * `50` - 50
+        * `52` - 52
+        * `54` - 54
+        * `56` - 56
+        * `58` - 58
+        * `60` - 60
     ShopItem:
       type: object
       properties:
@@ -16176,6 +16384,21 @@ components:
       required:
       - name_uz
       - slug
+    SkillBadge:
+      type: object
+      properties:
+        text:
+          type: string
+          maxLength: 24
+        icon:
+          type: string
+          maxLength: 40
+        color:
+          type: string
+          maxLength: 7
+      required:
+      - icon
+      - text
     SocialLink:
       type: object
       description: Ijtimoiy hisobni mavjud hisobga bog'lash — parol bilan tasdiqlanadi.
@@ -18577,6 +18800,7 @@ components:
       - updated_at
     Work:
       type: object
+      description: Yil + oy. `current=True` yoki tugash yili yo'q — hozirgacha.
       properties:
         company:
           type: string
@@ -18590,12 +18814,24 @@ components:
           minimum: 0
           format: int64
           nullable: true
+        start_month:
+          type: integer
+          maximum: 12
+          minimum: 1
+          nullable: true
         end_year:
           type: integer
           maximum: 9223372036854775807
           minimum: 0
           format: int64
           nullable: true
+        end_month:
+          type: integer
+          maximum: 12
+          minimum: 1
+          nullable: true
+        current:
+          type: boolean
       required:
       - company
   securitySchemes:

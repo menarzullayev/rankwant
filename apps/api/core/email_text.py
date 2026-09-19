@@ -10,11 +10,10 @@ yashaydi.
 Satrlar ko'payib ketsa `gettext` ga o'tish oson — tuzilma allaqachon
 «kalit → til → matn».
 
-⚠️ **Zaxira O'LCHANADI.** Ilgari yetishmagan til jimgina o'zbekchaga
-tushardi: tili `zh` bo'lgan odam o'zbekcha xat olardi va buni hech
-qayerda ko'rmasdi (o'lchandi — 10 tildan 3 tasi bor edi). Endi zaxira
-`warning` jurnaliga yoziladi, ya'ni qamrov bo'shlig'i ishlab turgan
-tizimda ko'rinadi.
+⚠️ **There is no fallback locale.** A missing language is the English
+property name (`subject`, `cta`), not a silent copy of Uzbek. Coverage
+gaps stay visible. `tools/check_email_locales.py` still requires every
+string in all ten locales.
 
 Ohang ADR-0015 da tanlangan: xolis va qisqa, salomlashuvsiz. Fishing
 xatlari aynan ismi bilan iliq boshlanadi, ya'ni salomlashuv
@@ -25,8 +24,13 @@ from __future__ import annotations
 
 import logging
 
+from core.i18n import translate
+
 logger = logging.getLogger(__name__)
 
+#: Locale used when a user record has none. This picks *which dictionary
+#: to load*, not a string fallback — `strings()` never copies another
+#: language's text.
 DEFAULT_LOCALE = "uz"
 
 #: Lug'atlar qaysi tillarda TO'LIQ yozilgan. Ro'yxat ATAYLAB shu yerda —
@@ -396,22 +400,19 @@ CHANGED: dict[str, dict[str, str]] = {
 
 
 def strings(table: dict[str, dict[str, str]], locale: str) -> dict[str, str]:
-    """Bitta til uchun satrlarni tekislaydi.
+    """Flatten one locale. Missing text is the English property name.
 
-    ⚠️ Zaxira JIMGINA emas: til lug'atda bo'lmasa `warning` yoziladi.
-    Ilgari bu yerda `values.get(locale, values[DEFAULT_LOCALE])` bor edi
-    va natija ko'rinmasdi — tili `zh` bo'lgan odam o'zbekcha xat olib,
-    sababini bilmasdi (o'lchandi).
-
-    Bir marta jurnal yoziladi, har satr uchun emas: bitta xat o'ttizga
-    yaqin satr chaqiradi, ya'ni har birida ogohlantirish jurnalni
-    to'ldirib tashlardi.
+    There is no fallback language. An unknown locale, or a row without
+    that locale, returns the property (`subject`, `cta`) so the gap is
+    visible instead of an Uzbek letter.
     """
     if locale not in LOCALES:
         logger.warning(
-            "email_text: locale %r has no dictionary, falling back to %r",
+            "email_text: locale %r has no dictionary — property names will be used",
             locale,
-            DEFAULT_LOCALE,
         )
-        locale = DEFAULT_LOCALE
-    return {key: values.get(locale, values[DEFAULT_LOCALE]) for key, values in table.items()}
+    properties = tuple(table)
+    texts = translate(locale, *properties, catalog=table)
+    if isinstance(texts, str):
+        texts = (texts,)
+    return dict(zip(properties, texts, strict=True))

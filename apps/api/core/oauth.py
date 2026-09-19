@@ -244,14 +244,14 @@ def _jwt_claims(token: str) -> dict[str, Any]:
     """JWT payload'ini ochadi. Imzo tekshirilmaydi — sababi pastda."""
     parts = token.split(".")
     if len(parts) != 3:
-        raise OAuthError("id_token uch qismdan iborat emas")
+        raise OAuthError("id_token must have three parts")
     body = parts[1]
     try:
         claims = json.loads(base64.urlsafe_b64decode(body + "=" * (-len(body) % 4)))
     except (binascii.Error, ValueError, UnicodeDecodeError) as exc:
-        raise OAuthError(f"id_token o'qilmadi: {exc}") from exc
+        raise OAuthError(f"id_token could not be read: {exc}") from exc
     if not isinstance(claims, dict):
-        raise OAuthError("id_token obyekt emas")
+        raise OAuthError("id_token is not an object")
     return claims
 
 
@@ -283,21 +283,21 @@ def _telegram_identity(code: str, code_verifier: str = "") -> Identity:
     claims = _jwt_claims(str(token.get("id_token", "")))
 
     if claims.get("iss") != TELEGRAM_ISSUER:
-        raise OAuthError(f"iss kutilganidan boshqa: {claims.get('iss')!r}")
+        raise OAuthError(f"iss does not match: {claims.get('iss')!r}")
     audience = claims.get("aud")
     audiences = audience if isinstance(audience, list) else [audience]
     if str(settings.TELEGRAM_CLIENT_ID) not in {str(a) for a in audiences}:
-        raise OAuthError("aud bizning client_id emas")
+        raise OAuthError("aud is not our client_id")
     try:
         expires = int(claims.get("exp", 0))
     except (TypeError, ValueError) as exc:
-        raise OAuthError("exp o'qilmadi") from exc
+        raise OAuthError("exp could not be read") from exc
     if expires <= int(time.time()):
-        raise OAuthError("id_token muddati tugagan")
+        raise OAuthError("id_token has expired")
 
     uid = str(claims.get("sub", ""))
     if not uid:
-        raise OAuthError("id_token da sub yo'q")
+        raise OAuthError("id_token has no sub")
     username = str(claims.get("preferred_username", ""))
     # Telegram POCHTA BERMAYDI — bu bo'shlik ataylab, foydalanuvchi uni
     # keyin sozlamalarda to'ldiradi.
@@ -333,13 +333,13 @@ def authorize_url(provider: str, state: str, code_challenge: str = "") -> str:
     chaqiruvchi provayderga qarab shoxlanishi kerak bo'lardi.
     """
     if provider not in AUTHORIZE:
-        raise OAuthError(f"noma'lum provayder: {provider}")
+        raise OAuthError(f"unknown provider: {provider}")
     return AUTHORIZE[provider](state, code_challenge)
 
 
 def identity(provider: str, code: str, code_verifier: str = "") -> Identity:
     if provider not in IDENTITY:
-        raise OAuthError(f"noma'lum provayder: {provider}")
+        raise OAuthError(f"unknown provider: {provider}")
     return IDENTITY[provider](code, code_verifier)
 
 

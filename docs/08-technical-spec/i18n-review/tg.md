@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1614 strings.**
+**1661 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -577,6 +577,9 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `profile.joined` | Ro'yxatdan o'tgan: {date} | Сабти ном: {date} |  |
 | `profile.next` | Keyingi | Навбатӣ |  |
 | `profile.prev` | Oldingi | Қаблӣ |  |
+| `profile.activityHidden` | Faoliyat yashirilgan | Фаъолият пинҳон аст |  |
+| `profile.heatmapHidden` | Faollik xaritasi yashirilgan | Харитаи фаъолият пинҳон аст |  |
+| `profile.mapHidden` | Yechilgan masalalar xaritasi yashirilgan | Харитаи масъалаҳои ҳалшуда пинҳон аст |  |
 | `profile.present` | hozirgacha | то ҳол |  |
 | `profile.purchasesEmpty` | Hali xarid yo'q. | Ҳоло харид нест. |  |
 | `profile.ratingColumn` | Reyting | Рейтинг |  |
@@ -735,6 +738,50 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.usernameNextFree` | Keyingi bepul almashtirish: {date}. Undan oldin — {price} Qvant. | Ивази ройгони навбатӣ: {date}. То он вақт — {price} Qvant. |  |
 | `settings.usernamePay` | {price} Qvant evaziga almashtirish | Иваз кардан бо {price} Qvant |  |
 | `settings.wear` | Kiyish | Пӯшидан |  |
+| `settings.addBadge` | Nishon qo'shish | Нишон илова кунед |  |
+| `settings.addWebsite` | Havola qo'shish | Пайванд илова кунед |  |
+| `settings.badgeColor` | Rang | Ранг |  |
+| `settings.badgeIcon` | Ikonka | Нишон |  |
+| `settings.badgeText` | Yozuv | Матн |  |
+| `settings.badges` | Ko'nikma nishonlari | Нишонҳои маҳорат |  |
+| `settings.badgesHint` | Matn, ikonka va rang. Profilda ochiq ko'rinadi — ko'pi bilan 10 ta. | Матн, нишон ва ранг. Дар профил кушода — то 10. |  |
+| `settings.coverBuy` | Muqova sotib olish | Муқова харидан |  |
+| `settings.coverOwned` | Sizda bor | Шумо доред |  |
+| `settings.delivery` | Yetkazib berish manzili | Суроғаи расондан |  |
+| `settings.deliveryErase` | Manzilni o'chirish | Суроғаро пок кунед |  |
+| `settings.deliveryErased` | Manzil o'chirildi | Суроға пок шуд |  |
+| `settings.deliveryHint` | Sovg'alar uchun. Inglizcha va milliy yozuv to'liq to'ldiriladi yoki bo'sh qoladi. Profilda ko'rinmaydi. | Барои ҷоизаҳо. Блокҳои англисӣ ва миллӣ пурра пур шаванд ё холӣ монанд. Дар профил дида намешавад. |  |
+| `settings.endMonth` | Tugagan oyi | Моҳи анҷом |  |
+| `settings.firstNameEn` | Ism (inglizcha) | Ном (ба англисӣ) |  |
+| `settings.gender` | Jins | Ҷинс |  |
+| `settings.gender.female` | Ayol | Зан |  |
+| `settings.gender.male` | Erkak | Мард |  |
+| `settings.gender.non_binary` | No-binar | Ғайридуӣ |  |
+| `settings.gender.prefer_not` | Aytmaslikni afzal ko'raman | Нагуфтанро афзал медонам |  |
+| `settings.genderHint` | Ixtiyoriy. Profilda ko'rsatishni o'zingiz tanlaysiz. | Ихтиёрӣ. Нишон додан дар профилро худ интихоб мекунед. |  |
+| `settings.langEn` | Inglizcha | Ба англисӣ |  |
+| `settings.langNative` | Milliy yozuv | Хатти миллӣ |  |
+| `settings.lastNameEn` | Familiya (inglizcha) | Насаб (ба англисӣ) |  |
+| `settings.namesHint` | Inglizcha ism sertifikat va yetkazib berish uchun. Milliy ism hech qachon ommaviy emas. | Номи англисӣ барои сертификат ва расондан. Номи миллӣ ҳеҷ гоҳ оммавӣ нест. |  |
+| `settings.postalAddress` | Ko'cha manzili | Суроғаи кӯча |  |
+| `settings.postalAddressNative` | Ko'cha manzili (milliy) | Суроғаи кӯча (миллӣ) |  |
+| `settings.postalCity` | Shahar (yetkazish) | Шаҳр (расондан) |  |
+| `settings.postalCityNative` | Shahar (milliy) | Шаҳр (миллӣ) |  |
+| `settings.postalCode` | Pochta indeksi | Индекси почта |  |
+| `settings.postalConsent` | Manzilimni sovg'a yuborish uchun ishlatishga roziman | Розӣ ҳастам, ки суроға барои фиристодани ҷоиза истифода шавад |  |
+| `settings.postalRecipient` | Qabul qiluvchi | Гиранда |  |
+| `settings.postalRecipientNative` | Qabul qiluvchi (milliy) | Гиранда (миллӣ) |  |
+| `settings.postalRegion` | Viloyat (yetkazish) | Вилоят (расондан) |  |
+| `settings.postalRegionNative` | Viloyat (milliy) | Вилоят (миллӣ) |  |
+| `settings.shirtSizeEu` | Futbolka o'lchami (EU) | Андозаи футболка (EU) |  |
+| `settings.showActivity` | Faoliyat lentasini ko'rsatish | Лентаи фаъолиятро нишон диҳед |  |
+| `settings.showGender` | Jinsni profilda ko'rsatish | Ҷинсро дар профил нишон диҳед |  |
+| `settings.showHeatmap` | Faollik xaritasini ko'rsatish | Харитаи фаъолиятро нишон диҳед |  |
+| `settings.showRecentAc` | Yechilgan masalalar xaritasini ko'rsatish | Харитаи масъалаҳои ҳалшударо нишон диҳед |  |
+| `settings.startMonth` | Boshlangan oyi | Моҳи оғоз |  |
+| `settings.toPresent` | Hozirgacha | То ҳол |  |
+| `settings.websites` | Veb-saytlar | Сомонаҳо |  |
+| `settings.websitesHint` | 2–5 ta havola. Birinchisi asosiy. https:// bilan yozing. | 2–5 пайванд. Аввалинаш асосӣ. Бо https:// нависед. |  |
 | `settings.website` | Veb-sayt | Вебсайт |  |
 | `settings.work` | Ish tajribasi | Таҷрибаи корӣ |  |
 | `level.beginner` | Boshlang'ich | Ибтидоӣ |  |

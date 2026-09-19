@@ -120,43 +120,38 @@ class HackCreateSerializer(serializers.Serializer[dict[str, Any]]):
 
     def validate_attempt(self, value: int) -> int:
         if not Attempt.objects.filter(pk=value).exists():
-            raise serializers.ValidationError("Urinish topilmadi")
+            raise serializers.ValidationError("Attempt not found")
         return value
 
     def validate_test_input(self, value: str) -> str:
         if len(value.encode()) > settings.HACK_INPUT_MAX_BYTES:
             raise serializers.ValidationError(
-                f"Kiritma {settings.HACK_INPUT_MAX_BYTES // 1024} KB dan oshmasligi kerak — "
-                "kattasini generator bilan yuboring"
+                f"Input exceeds {settings.HACK_INPUT_MAX_BYTES // 1024} KB — "
+                "send a larger case with a generator"
             )
         return value
 
     def validate_generator_source(self, value: str) -> str:
         if len(value.encode()) > MAX_SOURCE_BYTES:
-            raise serializers.ValidationError(
-                f"Manba {MAX_SOURCE_BYTES // 1024} KB dan oshmasligi kerak"
-            )
+            raise serializers.ValidationError(f"Source exceeds {MAX_SOURCE_BYTES // 1024} KB")
         return value
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
         code = attrs.get("generator_language")
         has_input = bool(attrs.get("test_input", "").strip())
         if code and has_input:
-            raise serializers.ValidationError(
-                "Kiritma yoki generator — bittasi. Ikkalasi berilsa qaysi biri "
-                "ishlatilgani noaniq bo'lardi"
-            )
+            raise serializers.ValidationError("Provide either input or a generator, not both")
         if not code and not has_input:
-            raise serializers.ValidationError("Test kiritmasi yoki generator kerak")
+            raise serializers.ValidationError("Test input or a generator is required")
 
         if code:
             language = Language.objects.filter(code=code, is_active=True).first()
             if language is None:
                 raise serializers.ValidationError(
-                    {"generator_language": "Til qo'llab-quvvatlanmaydi"}
+                    {"generator_language": "This language is not supported"}
                 )
             if not attrs.get("generator_source", "").strip():
-                raise serializers.ValidationError({"generator_source": "Generator manbasi bo'sh"})
+                raise serializers.ValidationError({"generator_source": "Generator source is empty"})
             attrs["generator_language_obj"] = language
 
         attrs["attempt_obj"] = Attempt.objects.select_related(

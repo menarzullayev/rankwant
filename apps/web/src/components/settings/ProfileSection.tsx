@@ -17,6 +17,7 @@ import {
   postForm,
   postJson,
   type Paginated,
+  type ShopItem,
 } from "@/lib/api";
 import { SLOT_OF } from "@/lib/cosmetics";
 import { Hint, Status, TextArea, useAction, useLoad } from "./kit";
@@ -163,6 +164,8 @@ function AboutCard() {
         display_name: String(form.get("display_name") ?? "").trim(),
         first_name: String(form.get("first_name") ?? "").trim(),
         last_name: String(form.get("last_name") ?? "").trim(),
+        first_name_en: String(form.get("first_name_en") ?? "").trim(),
+        last_name_en: String(form.get("last_name_en") ?? "").trim(),
         bio: String(form.get("bio") ?? "").trim(),
       });
       await reload();
@@ -195,8 +198,20 @@ function AboutCard() {
             maxLength={150}
             autoComplete="family-name"
           />
+          <Field
+            label={t(locale, "settings.firstNameEn")}
+            name="first_name_en"
+            defaultValue={user.first_name_en}
+            maxLength={150}
+          />
+          <Field
+            label={t(locale, "settings.lastNameEn")}
+            name="last_name_en"
+            defaultValue={user.last_name_en}
+            maxLength={150}
+          />
           <div className="sm:col-span-2">
-            <Hint>{t(locale, "settings.realNameHint")}</Hint>
+            <Hint>{t(locale, "settings.namesHint")}</Hint>
           </div>
         </div>
         <TextArea
@@ -326,18 +341,61 @@ function CosmeticsCard() {
   const inventory = useLoad<InventoryEntry[] | Paginated<InventoryEntry>>(
     "/qvant/inventory/",
   );
+  const shop = useLoad<ShopItem[]>("/qvant/shop/");
   const action = useAction();
+  const buy = useAction();
   const rows = inventory.data
     ? Array.isArray(inventory.data)
       ? inventory.data
       : inventory.data.results
     : [];
   const wearable = rows.filter((row) => row.item.category in SLOT_OF);
+  const covers = (shop.data ?? []).filter((item) => item.category === "profile_cover");
 
   return (
     <Card title={t(locale, "settings.cosmetics")}>
       <Hint>{t(locale, "settings.cosmeticsHint")}</Hint>
-      {inventory.data && wearable.length === 0 && (
+      {covers.length > 0 && (
+        <div className="mt-4">
+          <p className="text-theme-sm font-medium rw-strong">{t(locale, "settings.coverBuy")}</p>
+          <ul className="mt-2 grid gap-3 sm:grid-cols-2">
+            {covers.map((item) => (
+              <li
+                key={item.code}
+                className="flex items-center justify-between gap-3 rw-radius border rw-line px-4 py-3"
+              >
+                <span className="min-w-0">
+                  <span className="block truncate text-theme-sm font-medium rw-strong">
+                    {item.title_uz}
+                  </span>
+                  <span className="text-theme-xs rw-faint">
+                    {item.owned
+                      ? t(locale, "settings.coverOwned")
+                      : `${item.price} Qvant`}
+                  </span>
+                </span>
+                <Button
+                  className="h-9 px-3"
+                  disabled={item.owned || buy.busy}
+                  onClick={() =>
+                    buy.run(async () => {
+                      const entry = await postJson<InventoryEntry>("/qvant/shop/purchase/", {
+                        item: item.code,
+                      });
+                      await postJson(`/qvant/inventory/${entry.id}/equip/`, {});
+                      inventory.reload();
+                      shop.reload();
+                    })
+                  }
+                >
+                  {item.owned ? t(locale, "settings.coverOwned") : `${item.price} Qvant`}
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {inventory.data && wearable.length === 0 && covers.length === 0 && (
         <p className="mt-3 text-theme-sm rw-dim">
           {t(locale, "settings.cosmeticsEmpty")}{" "}
           <Link href="/qvant" className="rw-accent-ink hover:underline">
@@ -382,7 +440,7 @@ function CosmeticsCard() {
         ))}
       </ul>
       <div className="mt-3">
-        <Status error={action.error || inventory.error} />
+        <Status error={action.error || buy.error || inventory.error || shop.error} />
       </div>
     </Card>
   );

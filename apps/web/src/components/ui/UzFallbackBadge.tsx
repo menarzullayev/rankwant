@@ -1,27 +1,15 @@
 import { localNameInfo, t, type Locale } from "@/i18n/messages";
 
-/** O'zbekcha nom yonidagi kichik `uz` belgisi.
+/** Marker shown when a content name has no text in the active language.
  *
- *  Nega kerak (qaror 10): kontent nomlari (mavzu, ko'nikma) faqat
- *  uz/ru/en ustunlarida saqlanadi. `kk`, `zh`, `kaa` va boshqa olti
- *  tilda sayt interfeysi tarjima qilingan, nomlar esa o'zbekcha
- *  qoladi. Belgisiz foydalanuvchi o'zbekcha matnni o'z tilidagi
- *  tarjima deb o'ylaydi — bu jimgina yolg'on.
- *
- *  Belgining O'ZI tarjima qilinmaydi (`uz` — til kodi, hamma joyda
- *  bir xil), lekin uning izohi tarjima qilinadi va `title` bilan
- *  ko'rsatiladi. Ekran o'quvchi uchun matn `sr-only` — nomning
- *  davomi bo'lib o'qiladi.
+ *  Topic/skill names live in `name_uz` / `name_ru` / `name_en` only.
+ *  Other locales must not inherit Uzbek — they show the English
+ *  property (the slug). The marker tells the reader that this is an
+ *  identifier, not a translated title.
  */
 export type NameRow = { name_uz: string; name_ru: string; name_en: string };
 
-/** Nom + qaytish belgisi — sahifa matni uchun.
- *
- *  Chaqiruv joylari `localNameInfo(...).locale === null &&` shartini
- *  takrorlamasin: shart shu yerda, ya'ni uni o'zgartirish kerak bo'lsa
- *  bitta joyda o'zgaradi. 2026-09-19 gacha bu shart yetti joyda
- *  takrorlanardi va oltitasida umuman yo'q edi.
- */
+/** Name plus marker — for page copy. */
 export function ContentName({ row, locale }: { row: NameRow; locale: Locale }) {
   const info = localNameInfo(row, locale);
   return (
@@ -32,13 +20,7 @@ export function ContentName({ row, locale }: { row: NameRow; locale: Locale }) {
   );
 }
 
-/** Nom + belgi — MATN konteksti uchun.
- *
- *  Native `<option>` ichiga JSX sig'maydi, ya'ni chip o'rniga matn
- *  qo'shimchasi ishlatiladi. Belgining o'zi tarjima qilinadi
- *  (`locale.contentUz`) — qattiq yozilgan `(uz)` bo'lardi, u esa
- *  xitoylik foydalanuvchiga hech narsa aytmaydi.
- */
+/** Name plus marker — for plain-text contexts such as `<option>`. */
 export function contentNameText(row: NameRow, locale: Locale): string {
   const info = localNameInfo(row, locale);
   return info.locale === null
@@ -48,15 +30,16 @@ export function contentNameText(row: NameRow, locale: Locale): string {
 
 export function UzFallbackBadge({ locale }: { locale: Locale }) {
   const label = t(locale, "content.uzOnly");
+  const chip = t(locale, "locale.contentUz");
   return (
     <>
       <span
         title={label}
         aria-hidden="true"
         className="ml-1.5 shrink-0 rounded rw-chip px-1 align-middle
- text-theme-xs font-semibold uppercase rw-dim-2"
+ text-theme-xs font-semibold rw-dim-2"
       >
-        uz
+        {chip}
       </span>
       <span className="sr-only"> ({label})</span>
     </>

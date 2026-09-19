@@ -12,7 +12,8 @@ import { TopicStrength } from "@/components/profile/TopicStrength";
 import { Card } from "@/components/ui/Card";
 import { t } from "@/i18n/messages";
 import { getLocale } from "@/i18n/server";
-import { api } from "@/lib/api";
+import { api, type Calendar, type ProblemTile } from "@/lib/api";
+import { getWithSession } from "@/lib/api.server";
 import { dateKit } from "@/lib/format";
 
 type Props = {
@@ -42,8 +43,10 @@ export default async function ProfileOverviewPage({ params, searchParams }: Prop
   const [stats, series, calendar, map, topics, history] = await Promise.all([
     api.userStats(username),
     api.ratingSeries(username),
-    api.userCalendar(username),
-    api.problemMap(username),
+    getWithSession<Calendar>(`/users/${username}/calendar/`),
+    getWithSession<{ problems: ProblemTile[]; hidden?: boolean }>(
+      `/users/${username}/problem-map/`,
+    ),
     api.userTopics(username),
     api.ratingHistory(username),
   ]);
@@ -59,13 +62,25 @@ export default async function ProfileOverviewPage({ params, searchParams }: Prop
       </Card>
 
       <Card title={t(locale, "profile.heatmapTitle")} bodyClassName="space-y-4">
-        <SectionHint>{t(locale, "profile.heatmapHint")}</SectionHint>
-        <ActivityHeatmap username={username} initial={calendar} kit={kit} />
+        {calendar.hidden ? (
+          <p className="text-theme-sm rw-dim">{t(locale, "profile.heatmapHidden")}</p>
+        ) : (
+          <>
+            <SectionHint>{t(locale, "profile.heatmapHint")}</SectionHint>
+            <ActivityHeatmap username={username} initial={calendar} kit={kit} />
+          </>
+        )}
       </Card>
 
       <Card title={t(locale, "profile.mapTitle")} bodyClassName="space-y-4">
-        <SectionHint>{t(locale, "profile.mapHint")}</SectionHint>
-        <ProblemMap username={username} problems={map.problems} />
+        {map.hidden ? (
+          <p className="text-theme-sm rw-dim">{t(locale, "profile.mapHidden")}</p>
+        ) : (
+          <>
+            <SectionHint>{t(locale, "profile.mapHint")}</SectionHint>
+            <ProblemMap username={username} problems={map.problems} />
+          </>
+        )}
       </Card>
 
       <div className="grid gap-6 xl:grid-cols-2">

@@ -115,7 +115,7 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
             return attrs
         if not self.instance.tests.exists():
             raise serializers.ValidationError(
-                {"is_public": "Testsiz masalani ommaga chiqarib bo'lmaydi"}
+                {"is_public": "A problem cannot go public without tests"}
             )
         # Yashirin test faqat E'LON QILISH paytida talab qilinadi: arxivdagi
         # 1 222 masalada u yo'q va ular hali tahrirlanishi kerak — har
@@ -124,8 +124,8 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
         if elon_qilinyapti and not self.instance.tests.filter(is_sample=False).exists():
             raise serializers.ValidationError(
                 {
-                    "is_public": "Yashirin testsiz masalani ommaga chiqarib bo'lmaydi — "
-                    "namuna javobini bosib chiqargan dastur AC oladi"
+                    "is_public": "A hidden problem cannot go public without tests — "
+                    "a program that prints the sample would be accepted"
                 }
             )
         return attrs
@@ -133,7 +133,7 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
     def validate_difficulty(self, value: int) -> int:
         # Model.clean() bilan bir xil qoida — API orqali ham 100 ga karrali bo'lsin.
         if value % DIFFICULTY_STEP:
-            raise serializers.ValidationError(f"Qiymat {DIFFICULTY_STEP} ga karrali bo'lishi kerak")
+            raise serializers.ValidationError(f"Value must be a multiple of {DIFFICULTY_STEP}")
         return value
 
 
@@ -168,7 +168,7 @@ class _ProblemProgramSerializer(serializers.ModelSerializer):  # type: ignore[ty
         # Bo'sh manba judge'da kompilyatsiya xatosiga aylanadi va hack
         # yuborgan foydalanuvchi sababini masala sozlamasidan izlamaydi.
         if not value.strip():
-            raise serializers.ValidationError("Manba bo'sh")
+            raise serializers.ValidationError("Source is empty")
         return value
 
 
