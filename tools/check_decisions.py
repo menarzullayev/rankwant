@@ -1295,6 +1295,15 @@ def deploy_automation_is_safe() -> str | None:
             f"{CHECK_DEPLOY}: `sha256sum` atrofdagi stdin'ga tayanadi — "
             "yopiq stdin'da yolg'on «ESKIRGAN»"
         )
+    # 8. SORT LOCALE. Git Bash va Alpine `sort` har xil collate; `comm`
+    #    tartiblanmagan input da yolg'on missing chiqaradi. O'lchandi
+    #    2026-09-20: `./arena/migrations/__init__.py` konteynerda BOR,
+    #    yorliq HEAD, 3 Python servis «ESKIRGAN», auto-deploy 1800s to'siq.
+    check = read(CHECK_DEPLOY)
+    if "| LC_ALL=C sort )" not in check or '| LC_ALL=C sort"' not in check:
+        return (
+            f"{CHECK_DEPLOY}: inventory locale'siz sort — comm yolg'on «ESKIRGAN»"
+        )
     return None
 
 

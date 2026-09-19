@@ -191,15 +191,20 @@ check_hash() {
 # foydasiz qilardi. Shuning uchun `__pycache__`, nuqta bilan boshlanadigan
 # har qanday katalog (`.venv`, `.mypy_cache`, …) va `node_modules` tashlanadi.
 py_inventory() {
+  # ⚠️ `LC_ALL=C` SHART (o'lchandi 2026-09-20, auto-deploy `4485397`):
+  # Git Bash `sort` va Alpine `sort` boshqa collate ishlatadi; `comm`
+  # «file 2 is not in sorted order» deb yolg'on missing chiqaradi
+  # (`./arena/migrations/__init__.py` konteynerda BOR, 3 servis «ESKIRGAN»,
+  # yorliq esa HEAD). Byte tartib ikkala tomonda bir xil bo'lishi kerak.
   if [ "$1" = "host" ]; then
     ( cd apps/api && find . -name '*.py' \
         -not -path '*/__pycache__/*' -not -path '*/.*/*' \
-        -not -path '*/node_modules/*' | sort )
+        -not -path '*/node_modules/*' | LC_ALL=C sort )
   else
     docker exec "${1#container:}" sh -c \
       "cd /app && find . -name '*.py' \
          -not -path '*/__pycache__/*' -not -path '*/.*/*' \
-         -not -path '*/node_modules/*' | sort" 2>/dev/null
+         -not -path '*/node_modules/*' | LC_ALL=C sort" 2>/dev/null
   fi
 }
 
@@ -229,14 +234,14 @@ py_tree_hash() {
       cd /app || exit 1
       find . -name "*.py" -not -path "*/__pycache__/*" -not -path "*/.*/*" \
         -not -path "*/node_modules/*" -print0 |
-        sort -z | xargs -0 -r cat | tr -d "\r" | sha256sum | cut -d" " -f1' 2>/dev/null
+        LC_ALL=C sort -z | xargs -0 -r cat | tr -d "\r" | sha256sum | cut -d" " -f1' 2>/dev/null
   fi
 }
 
 # `py_file_list` — host tomonidagi NUL ajratilgan ro'yxat (tartiblangan).
 py_file_list() {
   find . -name '*.py' -not -path '*/__pycache__/*' -not -path '*/.*/*' \
-    -not -path '*/node_modules/*' -print0 | sort -z
+    -not -path '*/node_modules/*' -print0 | LC_ALL=C sort -z
 }
 
 # `py_hashes TARGET` — `hash  yo'l` juftliklari (faqat farqni aniqlash uchun).
@@ -245,10 +250,10 @@ py_file_list() {
 # qochirishdan qutulamiz, ya'ni ikkala tomon AYNAN bir xil kod yuradi.
 PY_HASH_SCRIPT='
 cd "$1" || exit 1
-find . -name "*.py" \
+  find . -name "*.py" \
   -not -path "*/__pycache__/*" -not -path "*/.*/*" \
   -not -path "*/node_modules/*" -print0 |
-  sort -z |
+  LC_ALL=C sort -z |
   xargs -0 -r sh -c '"'"'
     for f in "$@"; do
       printf "%s  %s\n" "$(tr -d "\r" < "$f" | sha256sum | cut -d" " -f1)" "$f"
@@ -257,9 +262,9 @@ find . -name "*.py" \
 
 py_hashes() {
   if [ "$1" = "host" ]; then
-    printf '%s' "$PY_HASH_SCRIPT" | sh -s apps/api | sort
+    printf '%s' "$PY_HASH_SCRIPT" | sh -s apps/api | LC_ALL=C sort
   else
-    printf '%s' "$PY_HASH_SCRIPT" | docker exec -i "${1#container:}" sh -s /app 2>/dev/null | sort
+    printf '%s' "$PY_HASH_SCRIPT" | docker exec -i "${1#container:}" sh -s /app 2>/dev/null | LC_ALL=C sort
   fi
 }
 
@@ -292,8 +297,8 @@ check_inventory() {
     return
   fi
 
-  missing="$(comm -23 <(printf '%s\n' "$host_list") <(printf '%s\n' "$ctr_list"))"
-  extra="$(comm -13 <(printf '%s\n' "$host_list") <(printf '%s\n' "$ctr_list"))"
+  missing="$(comm -23 <(printf '%s\n' "$host_list" | LC_ALL=C sort) <(printf '%s\n' "$ctr_list" | LC_ALL=C sort))"
+  extra="$(comm -13 <(printf '%s\n' "$host_list" | LC_ALL=C sort) <(printf '%s\n' "$ctr_list" | LC_ALL=C sort))"
 
   if [ -n "$missing" ]; then
     note="$(printf '%s\n' "$missing" | grep -c .) fayl konteynerda yo'q — $(printf '%s\n' "$missing" | head -1)"
@@ -306,7 +311,7 @@ check_inventory() {
       # Farq BOR — endi qaysi fayl ekani aniqlanadi (sekin yo'l, faqat shu
       # holatda ishlaydi; `HOST_HASHES` bir marta hisoblanadi).
       [ -n "${HOST_HASHES:-}" ] || HOST_HASHES="$(py_hashes host)"
-      diff_list="$(comm -23 <(printf '%s\n' "$HOST_HASHES") \
+      diff_list="$(comm -23 <(printf '%s\n' "$HOST_HASHES" | LC_ALL=C sort) \
         <(py_hashes "container:$name") | awk '{print $NF}')"
       n_diff="$(printf '%s\n' "$diff_list" | grep -c .)"
       note="$n_diff fayl MAZMUNI farq qiladi — $(printf '%s\n' "$diff_list" | head -1)"
