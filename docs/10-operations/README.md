@@ -19,6 +19,10 @@ Bu taqsimot **xavfsizlik chegarasidan** kelib chiqadi ([06](../06-architecture/R
 | **judge** ×N      | judge worker + sandbox           | → Redis, S3 **faqat**; kiruvchi port **yo'q** |
 | **data**          | Postgres, Redis                  | faqat ichki tarmoq                           |
 
+To‘rt host: [compose/four-host](../../compose/four-host/README.md).
+Bir mashinada web×2/api×2: `docker-compose.replicas.yml` (sukutda o‘chiq).
+SLO (Sentry yo‘q): `GET /api/v1/slo/` — `tools/check_slo.py`.
+
 Judge hostlar **gorizontal** miqyoslanadi — navbat uzunligi oshsa worker qo'shiladi.
 
 ## Judge sig'imi (o'lchangan, 2026-09-06)
@@ -145,6 +149,7 @@ docker compose --env-file .env.public \
 | `DJANGO_DEBUG` | `0` — aks holda xato sahifasi sozlamalarni oshkor qiladi |
 | Django admin | tunnel'dan **chiqarilmagan**; faqat `127.0.0.1:8301/admin/`. Kundalik boshqaruv esa saytning o'z admin UI'sida: `/admin` (faqat `is_staff`) |
 | Standings keshi | **Ochiq**: origin `Cache-Control: public, s-maxage=10` beradi, Cloudflare esa `cf-cache-status: DYNAMIC` qaytaradi — ya'ni keshlamaydi (standart qoidalar fayl kengaytmasiga qaraydi, `/api/v1/...` unga tushmaydi). Cache Rule kerak: `/api/v1/contests/*/standings/` va `/api/v1/arena/*/standings/` → *Eligible for cache*, *Respect origin TTL*. Nega muhimligi pastda |
+| Bosh sahifa keshi | **2026-09-19**: mehmon GET `/`, `/login`, `/register`, `/terms`, `/privacy` (sessiya/`rw_locale`/`rw:markup` yo'q, `rw_exp` yozilmaydi). Origin `public, s-maxage=30, stale-while-revalidate=86400`; kirgan `private, no-store`. CF Cache Rule hozir `/` da — login uchun path kengaytirish qoladi. Worker `l*` olib tashlangan (`leaderboard*`/`learn*` qoladi). Kod `apps/web/src/lib/home-cache.ts` |
 | `robots.txt` | Bizniki beriladi — `rankwant.uz` zonasida Cloudflare'ning managed robots.txt'i o'chiq. **2026-09-18 dan qidiruvga ochiq, AI kraulerlarga yopiq** ([ADR-0023](../07-adr/0023-indexing-and-ai-crawlers.md)): `apps/web/src/lib/site.ts` da `SITE_INDEXABLE = true`, `robots.txt` `*` ga ruxsat beradi va `Sitemap: https://rankwant.uz/sitemap.xml` qatorini qaytaradi; `AI_CRAWLERS` ro'yxatidagilar (`apps/web/src/app/robots.ts`) `Disallow: /` oladi; `/users/` 10 001 ta `neytron_*` sinov profili tozalanmaguncha yopiq. 2026-09-15 dagi yopiqlik sababi: kraulerlar 14 soatda 246 ming so'rov yubordi (82% GPTBot, 16% Google) va Workers'ning kunlik 100 ming limiti tugardi. Search Console (domen resursi) va Yandex Webmaster'da DNS TXT orqali tasdiqlangan (2026-09-11) — apex'dagi `google-site-verification` va `yandex-verification` TXT'larini o'chirmang; deploy'dan keyin sitemap ikkalasiga qayta yuboriladi |
 | Cloudflare WAF qoidasi | AI kraulerlarni chekkada to'sadi (ADR-0023). Dashboard: **Security → WAF → Custom rules → Create rule**, nom `Block AI crawlers`, amal **Block**. Ifoda: `lower(http.user_agent) contains "gptbot"` va shu uslubda `chatgpt-user`, `oai-searchbot`, `claudebot`, `claude-user`, `claude-searchbot`, `anthropic-ai`, `ccbot`, `google-extended`, `perplexitybot`, `perplexity-user`, `bytespider`, `amazonbot`, `applebot-extended`, `meta-externalagent`, `facebookbot`, `diffbot`, `imagesiftbot`, `timpibot`, `youbot`, `cohere-ai` — hammasi `or` bilan. ⚠️ `google-extended` va `applebot-extended` — o'quv agentlari, Googlebot va Applebot'ning o'zi bunga tushmaydi. AI Crawl Control'ning o'z Block amali pullik tarifda; bepulda shu custom rule o'sha ishni bajaradi (5 tagacha qoida bepul). Qoida zonada, repo'da emas — zona qayta tuzilsa qayta yaratiladi |
 

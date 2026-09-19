@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1595 strings.**
+**1600 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -241,6 +241,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.linkBody` | Bu email allaqachon ishlatilgan. Bog'lash uchun parolingizni kiriting. | Bul email áldeqashan qollanılǵan. Baylanıstırıw ushın paroliŋizdi kiritiŋ. |  |
 | `auth.linkCta` | Bog'lash | Baylanıstırıw |  |
 | `auth.socialError` | Kirish amalga oshmadi. Qayta urinib ko'ring. | Kiriw ámelge aspadı. Qayta urınıp kóriŋ. |  |
+| `footer.tagline` | O'zbekistonlik dasturchilar uchun CP/OJ platformasi | Ózbekstanlıq programmalastırıwshılar ushın platforma |  |
+| `footer.platform` | Platforma | Bólimler |  |
+| `footer.contact` | Aloqa va jamiyat | Baylanıs hám jámiyet |  |
+| `footer.copyright` | © {year} RankWant. Barcha huquqlar himoyalangan. | © {year} RankWant. Barlıq huquqlar qorǵalǵan. |  |
 | `footer.terms` | Shartlar | Shártlar |  |
 | `footer.privacy` | Maxfiylik | Qupıyalıq |  |
 | `auth.usernameRequired` | Taxallus 3–30 belgi: bo'sh qolmasin | Laqab 3–30 belgi: bos qalmasın |  |
@@ -952,6 +956,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `locale.group.broad` | Keng qamrov | Keń qamtıw |  |
 | `locale.loading` | Yuklanmoqda | Júklenbekte |  |
 | `locale.listLabel` | Tillar ro'yxati | Tiller dizimi |  |
+| `locale.contentUz` | nomlar uz | atamalar uz |  |
 | `content.uzOnly` | Bu nom o'zbekcha — tarjimasi tayyorlanmoqda | Bul atama ózbek tilinde — awdarması tayarlanbaqta |  |
 | `problem.tab.statement` | Tavsif | Táriyip |  |
 | `problem.tab.status` | Urinishlar | Jiberiwler |  |

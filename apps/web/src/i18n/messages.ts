@@ -56,6 +56,28 @@ export const LOCALE_NAMES: Record<Locale, string> = {
   es: "Español",
 };
 
+/** Kontent nomlari BOR tillar — bazadagi uch ustun.
+ *
+ *  Interfeys o'nta tilga tarjima qilingan, mavzu/ko'nikma nomlari esa
+ *  bazada uch ustunda: `name_uz`, `name_ru`, `name_en`. Ya'ni qolgan
+ *  yetti tilda o'zbekcha matn ko'rinadi — va buni YASHIRISH jimgina
+ *  yolg'on bo'lardi (qaror 10).
+ *
+ *  Shu ro'yxat ikki joyning yagona manbai: `nameInfo` qaysi holatni
+ *  qaytish deb hisoblashini va tanlash ro'yxati qaysi til yonida
+ *  «kontent uz» belgisini ko'rsatishini shu yerdan oladi.
+ */
+export const CONTENT_NAME_LOCALES = ["uz", "ru", "en"] as const;
+
+/** So'ralgan tilda kontent nomlari bormi.
+ *
+ *  `uz` — manba til: o'zbekcha o'qigan odam uchun qaytish YO'Q, bu
+ *  to'g'ri javob. Shuning uchun u belgi olmaydi.
+ */
+export function hasContentNames(locale: Locale): boolean {
+  return (CONTENT_NAME_LOCALES as readonly string[]).includes(locale);
+}
+
 /** Every dictionary this JS realm knows, by locale.
  *
  *  It lives on `globalThis`, not in the module. On the server Next.js
@@ -110,7 +132,7 @@ export function registrySize(): number {
   return registry.size;
 }
 
-export function isLocale(value: string | undefined): value is Locale {
+export function isLocale(value: string | null | undefined): value is Locale {
   return !!value && (LOCALES as readonly string[]).includes(value);
 }
 
@@ -281,10 +303,15 @@ function nameInfo(
   row: { name_uz: string; name_ru: string; name_en: string },
   locale: Locale,
 ): NameInfo {
-  const translated =
-    locale === "ru" ? row.name_ru : locale === "en" ? row.name_en : "";
+  // So'ralgan tilning o'zi manba til: o'zbekcha matn — qaytish emas,
+  // to'g'ri javob. Belgisiz qoldirilsa `uz` sahifasida ham `uz` chipi
+  // chiqardi (o'lchandi: 2026-09-19 da `.locale` `null` edi).
+  if (locale === DEFAULT_LOCALE) {
+    return { text: row.name_uz, locale, source: locale };
+  }
+  const translated = locale === "ru" ? row.name_ru : locale === "en" ? row.name_en : "";
   if (translated) return { text: translated, locale, source: locale };
-  // So'ralgan til uchun ustun umuman yo'q (`kk`, `zh`, …) yoki bo'sh.
+  // Ustun umuman yo'q (`kk`, `zh`, …) yoki bo'sh — ikkalasi ham qaytish.
   return { text: row.name_uz, locale: null, source: DEFAULT_LOCALE };
 }
 

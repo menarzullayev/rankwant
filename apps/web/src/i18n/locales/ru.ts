@@ -227,6 +227,10 @@ export const ru: Record<MessageKey, string> = {
   "auth.linkBody": "Этот email уже используется. Введите пароль, чтобы привязать.",
   "auth.linkCta": "Привязать",
   "auth.socialError": "Не удалось войти. Попробуйте ещё раз.",
+  "footer.tagline": "Платформа спортивного программирования для Узбекистана",
+  "footer.platform": "Платформа",
+  "footer.contact": "Контакты и сообщество",
+  "footer.copyright": "© {year} RankWant. Все права защищены.",
   "footer.terms": "Условия",
   "footer.privacy": "Конфиденциальность",
   "auth.usernameRequired": "Ник 3–30 символов: не оставляйте пустым",
@@ -944,6 +948,7 @@ export const ru: Record<MessageKey, string> = {
   "locale.group.broad": "Широкий охват",
   "locale.loading": "Загрузка",
   "locale.listLabel": "Список языков",
+  "locale.contentUz": "названия uz",
   "content.uzOnly": "Это название на узбекском — перевод готовится",
 
   // ---- Problem page: sections, actions, samples ----

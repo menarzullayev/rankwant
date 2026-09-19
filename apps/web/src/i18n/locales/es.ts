@@ -227,6 +227,10 @@ export const es: Record<MessageKey, string> = {
   "auth.linkBody": "Este correo ya está en uso. Introduce tu contraseña para vincularlo.",
   "auth.linkCta": "Vincular",
   "auth.socialError": "No se pudo iniciar sesión. Inténtalo de nuevo.",
+  "footer.tagline": "Plataforma de programación competitiva para Uzbekistán",
+  "footer.platform": "Plataforma",
+  "footer.contact": "Contacto y comunidad",
+  "footer.copyright": "© {year} RankWant. Todos los derechos reservados.",
   "footer.terms": "Términos",
   "footer.privacy": "Privacidad",
   "auth.usernameRequired": "Usuario de 3 a 30 caracteres: no puede quedar vacío",
@@ -944,6 +948,7 @@ export const es: Record<MessageKey, string> = {
   "locale.group.broad": "Mayor alcance",
   "locale.loading": "Cargando",
   "locale.listLabel": "Lista de idiomas",
+  "locale.contentUz": "nombres uz",
   "content.uzOnly": "Este nombre está en uzbeko — traducción pendiente",
 
   // ---- Problem page: sections, actions, samples ----

@@ -55,6 +55,20 @@ DICTIONARY_ROUTE = "apps/web/src/app/i18n/[file]/route.ts"
 # The header must fit the narrowest supported screen — 320 px, the width the
 # auth tabs were measured against. Owner decision 2026-09-18.
 LOCALE_SWITCH = "apps/web/src/layout/LocaleSwitch.tsx"
+# The dictionary registry and the load-promise cache are two caches over one
+# thing; they must be dropped together. Owner decision 2026-09-19.
+LOCALE_PROVIDER = "apps/web/src/i18n/LocaleProvider.tsx"
+# The locale travels in the URL as well (`?lang=<code>`), so a shared link
+# carries its own language. Owner decisions S5 + S5b, 2026-09-19. The three
+# names live in ONE module because the edge proxy cannot import `next/headers`
+# and would otherwise have to duplicate the list.
+LOCALE_PARAMS = "apps/web/src/i18n/locale-params.ts"
+LOCALE_RESOLVE = "apps/web/src/i18n/resolve.ts"
+LOCALE_SERVER = "apps/web/src/i18n/server.ts"
+PROXY = "apps/web/src/proxy.ts"
+# Guest GET `/` CDN cache (2026-09-19): origin headers + Worker skip.
+HOME_CACHE = "apps/web/src/lib/home-cache.ts"
+WORKER_TOML = "services/maintenance-worker/wrangler.toml"
 SIGN_IN_LINK = "apps/web/src/layout/UserMenu.tsx"
 # Mobile navigation drawer: the trigger announces its state, the panel is a
 # named dialog while it is open, focus moves in and comes back, Esc closes it
@@ -74,6 +88,53 @@ PROFILE_LAYOUT = "apps/web/src/app/users/[username]/layout.tsx"
 # Filter badge: the difficulty range is one filter even though it rides in two
 # params, so the badge counts it once. Owner decision 2026-09-18.
 FILTERS = "apps/web/src/components/ProblemFilters.tsx"
+# Brand and footer: the brand lives in the header via a single `BrandMark`
+# (it used to be duplicated in the sidebar/topnav and missing from the header
+# entirely — on phones the brand was only visible inside the drawer), and the
+# footer is a 3-column grid with a legal row. Owner decision 2026-09-19.
+BRAND_MARK = "apps/web/src/layout/BrandMark.tsx"
+APP_HEADER = "apps/web/src/layout/AppHeader.tsx"
+APP_SIDEBAR = "apps/web/src/layout/AppSidebar.tsx"
+APP_TOPNAV = "apps/web/src/layout/AppTopNav.tsx"
+APP_FOOTER = "apps/web/src/layout/AppFooter.tsx"
+# Content-name coverage is visible (2026-09-19). Topic/skill/quest names exist
+# only in the uz/ru/en columns, so every other language shows Uzbek text and
+# the UI has to say so (owner decision 10). Measured before the fix: the
+# fallback worked in 8 places but the marker appeared in 2, and the `uz`
+# dictionary itself was marked as a fallback on its own pages.
+MESSAGES = "apps/web/src/i18n/messages.ts"
+CONTENT_BADGE = "apps/web/src/components/ui/UzFallbackBadge.tsx"
+ARCHIVE_SIDEBAR = "apps/web/src/components/ArchiveSidebar.tsx"
+ABOUT_TAB = "apps/web/src/components/profile/AboutTab.tsx"
+TOPIC_STRENGTH = "apps/web/src/components/profile/TopicStrength.tsx"
+ACTIVITY_TABS = "apps/web/src/components/profile/ActivityTabs.tsx"
+SKILLS_SECTION = "apps/web/src/components/settings/SkillsSection.tsx"
+PROBLEMS_PAGE = "apps/web/src/app/problems/page.tsx"
+
+#: Every place a content name can fall back: the file, the marker it must
+#: carry, and how many times it must appear.
+#:
+#: The needle is the RENDER SITE, not the bare symbol — the negative tests
+#: mutate the first occurrence only (`Mutation` uses `replace(..., 1)`), so a
+#: needle that also matches the import line would survive the mutation and the
+#: test would report a live guard as dead. Counting also catches a file with
+#: two call sites losing one of them.
+CONTENT_MARKER_SITES: tuple[tuple[str, str, int], ...] = (
+    (ARCHIVE_SIDEBAR, "<ContentName", 1),
+    (ABOUT_TAB, "<ContentName", 1),
+    (TOPIC_STRENGTH, "<ContentName", 1),
+    (ACTIVITY_TABS, "<ContentName", 2),
+    (SKILLS_SECTION, "<ContentName", 1),
+    # Native `<option>` cannot hold JSX, so the same marker travels as text.
+    (SKILLS_SECTION, "contentNameText(s, locale)", 1),
+    (FILTERS, "UzFallbackBadge", 2),
+    (FILTERS, "fallback={root.fallback}", 1),
+    (FILTERS, "fallback={child.fallback}", 1),
+    (PROBLEMS_PAGE, "fallback: info.locale === null", 1),
+    # The language list says which languages lack content names, so the
+    # choice is informed BEFORE it is made.
+    (LOCALE_SWITCH, "hasContentNames(code)", 1),
+)
 
 
 class Unreadable(Exception):
@@ -290,8 +351,45 @@ def dictionary_as_cached_file() -> str | None:
     route = read(DICTIONARY_ROUTE)
     if 'dynamic = "force-static"' not in route or "immutable" not in route:
         return f"{DICTIONARY_ROUTE}: lug'at fayli statik va `immutable` keshlanadigan emas"
-    if not re.search(r"matcher:.*\|i18n/", read("apps/web/src/proxy.ts")):
+    if not re.search(r"matcher:.*\|i18n/", read(PROXY)):
         return "apps/web/src/proxy.ts: `/i18n/` middleware'dan chiqarilmagan — `Vary` keshni bo'ladi"
+    return None
+
+
+def dictionary_survives_return() -> str | None:
+    """Returning to a language must re-inject its dictionary.
+
+    The registry and the load-promise cache are two caches over one thing.
+    Keyed by URL and never cleared, the promise cache outlived the eviction, so
+    a second visit to a language injected no `<script>` and the page rendered
+    raw keys — measured 2026-09-19 on the live stack with a real mouse and
+    keyboard: `ru` -> `zh` -> `es` -> back to `zh` left 38 raw keys on screen
+    (`nav.problems`, `locale.switchLabel`, ...) until a full reload. They have
+    to be dropped together, which is what `keepOnly` exists for.
+    """
+    provider = read(LOCALE_PROVIDER)
+    if "useEffect(() => keepOnly(locale), [locale])" not in provider:
+        return (
+            f"{LOCALE_PROVIDER}: til almashinuvi `keepOnly` ni chaqirmaydi — "
+            "registr va yuklash va'dasi keshining tozalanishi ajralib qolgan, "
+            "ya'ni qaytib o'sha tilga o'tilganda sahifa xom kalit ko'rsatadi"
+        )
+    keep = re.search(r"function keepOnly\(keep: Locale\): void \{(.*?)\n\}", provider, re.S)
+    if keep is None:
+        return f"{LOCALE_PROVIDER}: `keepOnly` topilmadi"
+    body = keep.group(1)
+    if "loading.delete(" not in body:
+        return (
+            f"{LOCALE_PROVIDER}: `keepOnly` yuklash va'dasi keshini tozalamaydi — "
+            "evict qilingan tilning va'dasi qolib ketadi va lug'at qayta kiritilmaydi"
+        )
+    if "evictOtherLocales(keep)" not in body:
+        return f"{LOCALE_PROVIDER}: `keepOnly` registrni tozalamaydi"
+    if not re.search(r"new Map<Locale, \{ url: string; promise: Promise<void> \}>", provider):
+        return (
+            f"{LOCALE_PROVIDER}: yuklash keshining kaliti til emas — URL bo'yicha "
+            "kalitlangan kesh eviction bilan mos kelmaydi"
+        )
     return None
 
 
@@ -340,14 +438,29 @@ def user_parity_fields_kept() -> str | None:
 
 
 def mobile_header_fits_narrow_screen() -> str | None:
-    """The header fits 320 px — the narrowest screen the project supports.
+    """The header AND the language panel fit 320 px — the narrowest screen.
 
     Measured in a live browser 2026-09-18: with the full language name in the
     control the header overflowed 15 px logged out and 59 px logged in at
     320 px, and 10 px at 375 px logged in. Showing the language CODE below
     `sm` and forbidding the sign-in label to wrap brought every one of those
-    cases to 0 px. Restoring the full name at narrow widths, or dropping
-    `whitespace-nowrap`, silently brings the horizontal scroll back.
+    cases to 0 px.
+
+    Re-measured 2026-09-19 (`main` = 6486cd6) before the owner's decision
+    (S4), because "the code was chosen" is not the same as "the endonym does
+    not fit": an UNBOUNDED endonym overflows again — `Qaraqalpaqsha` makes
+    the control 149 px (+29 px), `O'zbekcha` 124 px (+7), `Кыргызча`
+    123 px (+6), and the header has no slack left (the right-hand group is
+    already shrunk by `min-w-0`). Bounding the label at 48 px
+    (`max-w-[3rem]`) keeps all ten endonyms at ≤ 117 px with 0 px overflow,
+    while 7 of 10 still render in full. So the code is no longer needed.
+
+    The same measurement found the dropdown overflowing 44 px to the LEFT at
+    320 px — `w-64` (256 px) hanging from a trigger whose right edge is only
+    212 px — which pushed ALL 11 flags to `left = -32…-11`, i.e. off-screen.
+    At 360 px it is `left = -4` with the flag visible, so the boundary is
+    ~352 px. The panel is therefore anchored to the VIEWPORT whenever the
+    trigger sits closer than `PANEL_W + PANEL_GAP` to the right edge.
     """
     switch = read(LOCALE_SWITCH)
     classes = re.findall(r'className="([^"]*)"', switch)
@@ -355,24 +468,42 @@ def mobile_header_fits_narrow_screen() -> str | None:
     def has_class(*tokens: str) -> bool:
         return any(all(token in value for token in tokens) for value in classes)
 
-    if not has_class("hidden", "sm:block"):
+    if "sm:hidden" in switch:
         return (
-            f"{LOCALE_SWITCH}: to'liq til nomi `sm` dan pastda yashirilmagan — "
-            "320 px da header toshadi"
+            f"{LOCALE_SWITCH}: tor ekranda til KODI qaytgan — endonim o'rniga "
+            "kod ko'rsatiladi (qaror: endonim har kenglikda ko'rinadi)"
         )
-    if not has_class("sm:hidden"):
-        return f"{LOCALE_SWITCH}: tor ekranda til kodi ko'rinmaydi (`sm:hidden` span yo'q)"
-    if "currentCode" not in switch:
-        return f"{LOCALE_SWITCH}: til kodi (`currentCode`) hisoblanmayapti"
+    if not has_class("max-w-[3rem]", "truncate"):
+        return (
+            f"{LOCALE_SWITCH}: endonim tor ekranda chegaralanmagan — "
+            "320 px da header toshadi (`Qaraqalpaqsha` +29 px, o'lchandi)"
+        )
+    if not has_class("sm:max-w-[7.5rem]"):
+        return f"{LOCALE_SWITCH}: keng ekran chegarasi (`sm:max-w-[7.5rem]`) yo'q"
 
-    # WCAG 2.5.3 «Label in Name»: the visible text differs per width, so the
-    # accessible name has to carry BOTH forms — the full name and the code.
+    # Panel: tor ekranda viewport'ga bog'lanmasa bayroqlar ekrandan chiqadi.
+    for needle in (
+        "const PANEL_W = 256;",
+        "const PANEL_GAP = 8;",
+        "rect.right < PANEL_W + PANEL_GAP",
+        '"fixed mt-1"',
+        "left: PANEL_GAP, right: PANEL_GAP",
+    ):
+        if needle not in switch:
+            return (
+                f"{LOCALE_SWITCH}: `{needle}` yo'q — panel tor ekranda "
+                "viewport'ga bog'lanmagan, bayroqlar ko'rinmaydi"
+            )
+
+    # WCAG 2.5.3 «Label in Name»: the visible text is the endonym — visually
+    # truncated below `sm`, but the DOM text stays whole — so the accessible
+    # name has to carry it. The code rides along for voice control.
     label = re.search(r"aria-label=\{`([^`]*)`\}", switch)
     if label is None:
         return f"{LOCALE_SWITCH}: `aria-label` topilmadi"
-    if "currentLabel" not in label.group(1) or "currentCode" not in label.group(1):
+    if "currentLabel" not in label.group(1):
         return (
-            f"{LOCALE_SWITCH}: `aria-label` ikkala ko'rinadigan matnni olmagan "
+            f"{LOCALE_SWITCH}: `aria-label` ko'rinadigan endonimni olmagan "
             "(WCAG 2.5.3, `label-content-name-mismatch`)"
         )
 
@@ -652,6 +783,60 @@ def profile_sidebar_stacks_below_xl() -> str | None:
     return None
 
 
+def brand_in_header_and_footer_columns() -> str | None:
+    """The brand lives in the header, the footer is a 3-column grid.
+
+    Owner decision (HITL, 2026-09-19): the sidenav stays the default nav
+    (topnav remains an optional mode), the mobile drawer stays, and the
+    brand moves into the header — it used to be duplicated in the
+    sidebar/topnav and missing from the header entirely, so on phones the
+    brand was only visible inside the drawer. The footer becomes three
+    columns (brand + tagline, platform links, contacts) over a legal row.
+
+    The legal row is not decoration: Terms and Privacy must be on EVERY
+    page because Google OAuth verification expects the privacy policy
+    reachable from there (ADR-0016), and the footer links are crawled
+    since the site became indexable (ADR-0023).
+    """
+    header = read(APP_HEADER)
+    if "<BrandMark" not in header:
+        return (
+            f"{APP_HEADER}: header'da `<BrandMark` yo'q — brend telefonda "
+            "faqat drawer ichida ko'rinardi (qaror 22)"
+        )
+    sidebar = read(APP_SIDEBAR)
+    if "Rank<span" in sidebar:
+        return (
+            f"{APP_SIDEBAR}: yon panel brendni qayta chizyapti — brend bitta "
+            "manbadan (`BrandMark`, header) beriladi (qaror 22)"
+        )
+    topnav = read(APP_TOPNAV)
+    if "<BrandMark" not in topnav:
+        return (
+            f"{APP_TOPNAV}: topnav `BrandMark` dan foydalanmaydi — wordmark "
+            "nusxasi qaytgan bo'ladi (qaror 22)"
+        )
+    brand = read(BRAND_MARK)
+    if 'href="/"' not in brand or "rw-accent-ink" not in brand:
+        return (
+            f"{BRAND_MARK}: brend havolasi yoki urg'u rangi yo'qolgan "
+            "(qaror 22)"
+        )
+    footer = read(APP_FOOTER)
+    if "lg:grid-cols-[1fr_auto_auto]" not in footer:
+        return (
+            f"{APP_FOOTER}: footer uch ustunga bo'linmagan — brend, "
+            "platforma havolalari va aloqa alohida ustunlarda (qaror 22)"
+        )
+    for key in ("footer.copyright", "footer.terms", "footer.privacy"):
+        if key not in footer:
+            return (
+                f"{APP_FOOTER}: huquqiy qator to'liq emas (`{key}` yo'q) — "
+                "Terms/Privacy HAR sahifada turishi shart (ADR-0016)"
+            )
+    return None
+
+
 def difficulty_range_counts_as_one_filter() -> str | None:
     """The filter badge counts the difficulty range as ONE filter.
 
@@ -699,6 +884,406 @@ def difficulty_range_counts_as_one_filter() -> str | None:
     return None
 
 
+def content_coverage_visible() -> str | None:
+    """Kontent nomi qaytgan joy belgisiz qolmasin (qaror 10).
+
+    Uch shart: qamrov manbai bitta (`CONTENT_NAME_LOCALES`), so'ralgan til
+    manba til bo'lsa qaytish HISOBLANMAYDI, va har bir chaqiruv joyi belgi
+    chizadi. Uchtasi birga kerak: bittasi tushsa, foydalanuvchi o'zbekcha
+    matnni o'z tilidagi tarjima deb o'qiydi yoki o'zbekcha sahifada
+    ma'nosiz `uz` chipini ko'radi.
+    """
+    messages = read(MESSAGES)
+    if 'export const CONTENT_NAME_LOCALES = ["uz", "ru", "en"] as const;' not in messages:
+        return f"{MESSAGES}: CONTENT_NAME_LOCALES yo'q — qamrov manbai yo'qolgan"
+    if "export function hasContentNames(" not in messages:
+        return f"{MESSAGES}: hasContentNames() yo'q — tanlash ro'yxati qamrovni bilmaydi"
+    if "if (locale === DEFAULT_LOCALE) {" not in messages:
+        return (
+            f"{MESSAGES}: nameInfo() `uz` ni qaytish deb hisoblaydi — "
+            "o'zbekcha sahifada ham belgi chiqadi"
+        )
+    badge = read(CONTENT_BADGE)
+    for symbol in ("export function ContentName(", "export function contentNameText("):
+        if symbol not in badge:
+            return f"{CONTENT_BADGE}: `{symbol}` yo'q"
+    if "info.locale === null" not in badge:
+        return f"{CONTENT_BADGE}: ContentName qaytishni tekshirmaydi"
+    for rel, needle, want in CONTENT_MARKER_SITES:
+        got = read(rel).count(needle)
+        if got < want:
+            return (
+                f"{rel}: `{needle}` {got} marta, {want} kerak — "
+                "qaytish belgisiz qolgan"
+            )
+    return None
+
+
+def locale_travels_in_the_url() -> str | None:
+    """Til havolada ham keladi — `?lang=<kod>` (S5), va qurilma eslab qoladi
+    (S5b). Saidakbar aka qarori, 2026-09-19.
+
+    Tuzatishdan oldin o'lchandi: `/about?lang=ru` o'zbekcha berilardi —
+    query satri sahifaga yetib borardi, lekin uni hech kim o'qimasdi, ya'ni
+    yagona manba cookie edi. Havolani olgan odamda esa u yo'q.
+
+    Uch joyi JIM buzilishi mumkin, shuning uchun uchtasi ham tekshiriladi:
+
+    1. USTUNLIK — havola cookie'dan kuchli. `resolveLocale()` sof funksiya,
+       ya'ni tartib manba satridan o'qiladi: `param` shoxobchasi OLDIN
+       turishi shart. Aks holda ulashilgan havola o'z tilini olib kelmaydi.
+    2. PROXY ICHIDAGI TARTIB — sarlavha `NextResponse.next()` dan OLDIN
+       yozilishi shart. `next()` `request.headers` ni CHAQIRUV paytida
+       `x-middleware-request-*` qatorlariga ko'chiradi (o'lchandi:
+       `next@16.3.4`, `dist/server/web/spec-extension/response.js:128`),
+       ya'ni keyin yozilgan qiymat joriy render'ga yetib bormaydi. Oqibati
+       ayyor: sahifa cookie tilida chiziladi va xususiyat «bir so'rov
+       kechikib ishlaydi» — yashil ko'rinadi, aslida buzuq.
+    3. COOKIE — usiz havola faqat BIRINCHI sahifani tuzatadi, har bir
+       ichki bosish qurilma tiliga qaytadi. U bilan hech bir ichki havolani
+       o'zgartirish shart emas.
+    """
+    params = read(LOCALE_PARAMS)
+    for needle in (
+        'export const LOCALE_COOKIE = "rw_locale";',
+        'export const LOCALE_PARAM = "lang";',
+        'export const LOCALE_HEADER = "x-rw-locale";',
+    ):
+        if needle not in params:
+            return f"{LOCALE_PARAMS}: `{needle}` yo'q — nomlar yagona manbada bo'lishi shart"
+    if "export const LOCALE_COOKIE" in read(LOCALE_SERVER):
+        return f"{LOCALE_SERVER}: `LOCALE_COOKIE` ikkinchi marta e'lon qilingan — drift manbai"
+
+    resolve = read(LOCALE_RESOLVE)
+    param_branch = resolve.find("if (param !== null && isLocale(param))")
+    cookie_branch = resolve.find("if (cookie !== null && isLocale(cookie))")
+    if param_branch < 0 or cookie_branch < 0:
+        return f"{LOCALE_RESOLVE}: `?lang=` yoki cookie shoxobchasi topilmadi"
+    if param_branch > cookie_branch:
+        return (
+            f"{LOCALE_RESOLVE}: cookie havoladan USTUN — ulashilgan havola "
+            "o'z tilini olib kelmaydi (qaror S5)"
+        )
+
+    proxy = read(PROXY)
+    if "request.nextUrl.searchParams.get(LOCALE_PARAM)" not in proxy:
+        return f"{PROXY}: `?lang=` o'qilmaydi — havoladagi til e'tiborsiz qoladi"
+    header_set = proxy.find("requestHeaders.set(LOCALE_HEADER, fromParam)")
+    next_call = proxy.find("NextResponse.next({ request: { headers: requestHeaders } })")
+    if header_set < 0 or next_call < 0:
+        return f"{PROXY}: til sarlavhasi yoki `next()` chaqiruvi topilmadi"
+    if header_set > next_call:
+        return (
+            f"{PROXY}: sarlavha `next()` dan KEYIN yozilgan — `next()` "
+            "`request.headers` ni chaqiruv paytida ko'chiradi "
+            "(`response.js:128`), ya'ni joriy javob eski tilda chiziladi"
+        )
+    if "response.cookies.set(LOCALE_COOKIE, locale" not in proxy:
+        return f"{PROXY}: cookie yozilmaydi — qurilma tilni eslab qolmaydi"
+    if "rememberLocale(response, fromParam)" not in proxy:
+        return (
+            f"{PROXY}: havoladagi til cookie'ga yozilmaydi — birinchi "
+            "sahifadan keyin til qaytib ketadi (qaror S5b)"
+        )
+
+    switch = read(LOCALE_SWITCH)
+    if "url.searchParams.delete(LOCALE_PARAM)" not in switch:
+        return (
+            f"{LOCALE_SWITCH}: qo'lda tanlov `?lang=` ni tozalamaydi — "
+            "havola parametri yangi tanlovni bosib ketadi"
+        )
+    return None
+
+
+def homepage_guest_cdn_cache() -> str | None:
+    """100k ochilishda bosh sahifa qotmasin (2026-09-19).
+
+    Mehmon GET `/`: `public, s-maxage=30, stale-while-revalidate`.
+    Kirgan: `private, no-store`. Cloudflare `/` ni Worker'siz, origin
+    header bo'yicha keshlaydi. Catch-all `rankwant.uz/*` qaytsa GET `/`
+    yana har so'rovda Worker kvotasini yeydi.
+    """
+    src = read(HOME_CACHE)
+    if "public, s-maxage=30, stale-while-revalidate=86400" not in src:
+        return (
+            f"{HOME_CACHE}: mehmon Cache-Control `public, s-maxage=30, "
+            "stale-while-revalidate` emas"
+        )
+    if 'HOME_CACHE_PRIVATE = "private, no-store"' not in src:
+        return f"{HOME_CACHE}: kirgan Cache-Control `private, no-store` emas"
+    if 'SESSION_COOKIE = "sessionid"' not in src:
+        return f"{HOME_CACHE}: sessiya cookie `sessionid` emas"
+    if "export function homeCacheDecision" not in src:
+        return f"{HOME_CACHE}: `homeCacheDecision` yo'q"
+
+    proxy = read(PROXY)
+    if "homeCacheDecision" not in proxy:
+        return f"{PROXY}: bosh sahifa kesh qarori qo'llanmaydi"
+    if "homeCache.assignExperiments" not in proxy:
+        return (
+            f"{PROXY}: keshlangan GET `/` ga eksperiment cookie yozilishi "
+            "mumkin — Cloudflare Set-Cookie'li javobni saqlamaydi"
+        )
+
+    toml = read(WORKER_TOML)
+    if '{ pattern = "rankwant.uz/*"' in toml:
+        return (
+            f"{WORKER_TOML}: catch-all `rankwant.uz/*` GET `/` ni Worker'ga "
+            "qaytaradi (kvota)"
+        )
+    if '{ pattern = "www.rankwant.uz/*"' in toml:
+        return (
+            f"{WORKER_TOML}: catch-all `www.rankwant.uz/*` GET `/` ni "
+            "Worker'ga qaytaradi"
+        )
+    if "rankwant.uz/a*" not in toml:
+        return f"{WORKER_TOML}: `/` dan boshqa yo'llar Worker'siz qolmasin"
+    return None
+
+
+def guest_auth_cdn_cache() -> str | None:
+    """50k: login/register/terms/privacy mehmon HTML + Worker tashqarida.
+
+    `rw_exp` keshlangan yo'lda yozilmasin (`assignExperiments: false`).
+    `l*` `/login` ni Worker'ga qaytarardi (~200 ms, 100k/kun).
+    """
+    src = read(HOME_CACHE)
+    if "export function isGuestCachePath" not in src:
+        return f"{HOME_CACHE}: `isGuestCachePath` yo'q"
+    if '"/login"' not in src or '"/terms"' not in src or '"/privacy"' not in src:
+        return f"{HOME_CACHE}: mehmon yo'llari `/login` `/terms` `/privacy` emas"
+    if "assignExperiments: false" not in src:
+        return f"{HOME_CACHE}: keshlangan mehmonga eksperiment cookie yoziladi"
+
+    toml = read(WORKER_TOML)
+    if '{ pattern = "rankwant.uz/l*"' in toml:
+        return f"{WORKER_TOML}: `l*` `/login` ni Worker'ga qaytaradi (kvota)"
+    if '{ pattern = "www.rankwant.uz/l*"' in toml:
+        return f"{WORKER_TOML}: www `l*` `/login` ni Worker'ga qaytaradi"
+    if "rankwant.uz/leaderboard*" not in toml:
+        return f"{WORKER_TOML}: `/leaderboard` Worker'siz qolmasin"
+    return None
+
+
+def scale_50k_locked() -> str | None:
+    """2026-09-19: 7 ta 50k qaror kodda qolsin (Sentry/Kafka/K8s yo'q)."""
+    views = read("apps/api/core/views.py")
+    if "class SloView" not in views:
+        return "apps/api/core/views.py: SloView yo'q (SLO, Sentry emas)"
+    if "sentry_sdk" in views or "import sentry" in views:
+        return "apps/api/core/views.py: Sentry qo'shilgan"
+    cache_src = read("apps/api/core/cache.py")
+    if "def cache_delete" not in cache_src:
+        return "apps/api/core/cache.py: cache_delete yo'q"
+    compose = read("docker-compose.yml")
+    if "shared_preload_libraries=pg_stat_statements" not in compose:
+        return "docker-compose.yml: pg_stat_statements preload yo'q"
+    if "GUNICORN_WORKERS" not in compose:
+        return "docker-compose.yml: GUNICORN_WORKERS yo'q"
+    replicas = read("docker-compose.replicas.yml")
+    if "origin-lb" not in replicas or "--scale web=2" not in replicas:
+        return "docker-compose.replicas.yml: web×2/api×2 overlay emas"
+    four = read("compose/four-host/README.md")
+    if "K8s yo" not in four and "K8s yo‘q" not in four:
+        return "compose/four-host/README.md: to'rt-host qaror yo'q"
+    req = read("apps/api/requirements.lock")
+    if "sentry-sdk" in req:
+        return "apps/api/requirements.lock: sentry-sdk (Sentry kerakmas)"
+    if "confluent-kafka" in req or "kafka-python" in req:
+        return "apps/api/requirements.lock: Kafka qo'shilgan"
+    return None
+
+
+def roles_groups_and_object_authors() -> str | None:
+    """ADR-0025: staff Groups + obyekt M2M, User.role CharField yo'q."""
+    groups = read("apps/api/core/groups.py")
+    if 'GROUPS: tuple[str, ...] = ("staff-support", "staff-content", "staff-ops")' not in groups:
+        return "apps/api/core/groups.py: GROUPS staff-support/content/ops emas"
+    if "def sync_staff_groups" not in groups:
+        return "apps/api/core/groups.py: sync_staff_groups yo'q"
+
+    contests = read("apps/api/contests/models.py")
+    if "organizers" not in contests or 'related_name="organized_contests"' not in contests:
+        return "apps/api/contests/models.py: organizers M2M yo'q"
+
+    problems = read("apps/api/problems/models.py")
+    if "authors" not in problems or 'related_name="authored_problems"' not in problems:
+        return "apps/api/problems/models.py: authors M2M yo'q"
+
+    if 'router.register("contests/mine"' not in read("apps/api/contests/urls.py"):
+        return "apps/api/contests/urls.py: contests/mine yo'q"
+    if 'router.register("problems/mine"' not in read("apps/api/problems/urls.py"):
+        return "apps/api/problems/urls.py: problems/mine yo'q"
+
+    seed = read("apps/api/core/migrations/0021_seed_staff_groups.py")
+    if "staff-support" not in seed or "is_staff=True" not in seed:
+        return "0021_seed_staff_groups: mavjud staff guruhlarga qo'shilmaydi"
+
+    if "role = models.CharField" in read("apps/api/core/models.py"):
+        return "apps/api/core/models.py: User.role CharField qaytdi (ADR-0025 Groups)"
+    return None
+
+
+AUTO_DEPLOY = "tools/auto_deploy.sh"
+ROLLBACK = "tools/rollback.sh"
+CHECK_DEPLOY = "tools/check_deploy.sh"
+
+
+def deploy_automation_is_safe() -> str | None:
+    """Avtomatik deploy zanjiri — tartib buzilsa JIM buziladigan yetti joy.
+
+    Saidakbar aka qarori (2026-09-19): deploy to'liq avtomatik bo'ladi —
+    host watcher orqali (`tools/auto_deploy.sh` + `RankWant Auto Deploy`
+    vazifasi). ⚠️ GitHub Actions'dagi `deploy` job ATAYLAB qo'lda qoladi
+    (`deploy_manual_only`): o'lchandi — runner konteyneri jonli
+    `.env.public` ni ko'rmaydi (u `/work` volume'ida) va unda `gh` yo'q,
+    ya'ni u `check_deploy_gate.py` ni yurgiza olmaydi. Shuning uchun
+    avtomatlashtirish Actions'ni yoqish bilan emas, watcher bilan qurildi.
+
+    Beshta shart tartibga bog'liq: buzilganda kod ISHLAYDI, natija esa
+    noto'g'ri bo'ladi — ya'ni xato faqat hodisa paytida bilinadi.
+    Qolgan ikkitasi (6, 7) 2026-09-19 da birinchi haqiqiy yurishda
+    o'lchandi va BIR XIL sababga ega: ular faqat zanjir BUTUN yurganda
+    ko'rinadi, ya'ni unit darajasidagi tekshiruvlar ularni o'tkazib
+    yuboradi.
+
+    1. ZAXIRA MIGRATSIYADAN OLDIN. `backup.sh --dump-only` `run --rm
+       migrate` dan keyin tursa sxema zaxirasiz o'zgaradi va qaytish yo'li
+       qolmaydi — Django'da «orqaga» migratsiya yo'q, oylik to'liq zaxira
+       esa 30 kungacha orqada bo'lishi mumkin.
+    2. MUZLATISH QULFDAN OLDIN. Aks holda muzlatilgan tizim qulfni band
+       qiladi va boshqa agentning deploy'i «band» deb xato o'qiladi.
+    3. SHA TEG `up` DAN OLDIN. `up` dan keyin qo'yilgan teg eski
+       «dangling» obrazga tushadi — rollback noto'g'ri kodni qaytaradi.
+    4. WATCHER'DA TIRIKLIK TEKSHIRUVI. `check_deploy.sh` konteyner YO'Q
+       bo'lganda ham 0 qaytaradi (o'lchandi 2026-09-19: `missing` faqat
+       xabar uchun, `exit 1` esa faqat `stale`/`envbad` da), ya'ni stack
+       yiqilgan bo'lsa «joriy kodda» deb YOLG'ON YASHIL beradi. `all_up`
+       shu teshikni yopadi.
+    5. ENV-FAYL IKKALA JOYDA BIR XIL. Deploy worktree'da `.env.public`
+       YO'Q (`.gitignore`: `.env.*`), ya'ni watcher uni
+       `RANKWANT_AUTO_DEPLOY_ENV` bilan ko'rsatadi. Tekshiruv ham,
+       `deploy.sh` ga uzatish ham `$ENV_FILE` dan o'qilmasa, watcher bir
+       faylni tekshirib boshqasini uzatadi: deploy bo'sh env bilan ketadi,
+       API har so'rovga 400 qaytaradi — xato faqat jonli saytda bilinadi.
+    6. QULF QAYTA OLINMAYDI. Watcher qulfni o'zi oladi, `deploy.sh` esa
+       AYNAN o'sha qulfni so'rab `mkdir` da yiqiladi — watcher o'zini
+       bloklaydi va avtomatik deploy hech qachon ishlamaydi. Chaqiruvchi
+       `RANKWANT_LOCK_HELD=1` bilan qulfni topshiradi.
+    7. STDIN YOPIQ EMAS. Vazifa (`conhost --headless`) stdin bermaydi;
+       MSYS `sha256sum` yopiq fd bilan yiqiladi, xato `2>/dev/null` ortida
+       qoladi va `check_deploy.sh` YOLG'ON «ESKIRGAN» deydi. Watcher
+       `exec 0</dev/null` bilan ochadi, `check_deploy.sh` esa o'zi ham
+       `sha256sum` ga `< /dev/null` beradi.
+    """
+    deploy = read("tools/deploy.sh")
+    auto = read(AUTO_DEPLOY)
+    try:
+        read(ROLLBACK)
+    except Unreadable:
+        return f"{ROLLBACK} yo'q — avtomatik deploy yiqilganda qaytish yo'li yo'q"
+
+    def position(text: str, needle: str) -> int:
+        return text.find(needle)
+
+    backup_at = position(deploy, "bash tools/backup.sh --dump-only")
+    migrate_at = position(deploy, "run --rm migrate")
+    if backup_at < 0:
+        return "tools/deploy.sh migratsiyadan oldin zaxira olmaydi (`backup.sh --dump-only` yo'q)"
+    if migrate_at < 0:
+        return "tools/deploy.sh da `run --rm migrate` topilmadi"
+    if backup_at > migrate_at:
+        return "tools/deploy.sh: zaxira migratsiyadan KEYIN — sxema zaxirasiz o'zgaradi"
+
+    freeze_at = position(deploy, '[ -n "${DEPLOY_FREEZE:-}" ]')
+    lock_at = position(deploy, 'mkdir "$LOCK"')
+    if freeze_at < 0:
+        return "tools/deploy.sh da muzlatish kaliti (`DEPLOY_FREEZE`) yo'q"
+    if lock_at < 0:
+        return "tools/deploy.sh deploy qulfini olmaydi"
+    if freeze_at > lock_at:
+        return "tools/deploy.sh: muzlatish qulfdan KEYIN — qulf behuda band bo'ladi"
+
+    tag_at = position(deploy, "rankwant/${svc}:${SHA_TAG}")
+    up_at = position(deploy, 'up -d --no-deps "${SERVICES[@]}"')
+    if tag_at < 0:
+        return "tools/deploy.sh SHA tegini qo'ymaydi — rollback qaytaradigan obraz yo'q"
+    if up_at < 0:
+        return "tools/deploy.sh da `up -d --no-deps` topilmadi"
+    if tag_at > up_at:
+        return "tools/deploy.sh: SHA teg `up` dan KEYIN — teg eski obrazga tushadi"
+
+    if "if all_up; then" not in auto:
+        return (
+            f"{AUTO_DEPLOY}: konteynerlar tirikligi tekshirilmaydi — "
+            "`check_deploy.sh` stack yiqilganda ham 0 qaytaradi"
+        )
+    if 'mkdir "$LOCK"' not in auto:
+        return f"{AUTO_DEPLOY}: qulfni olmaydi — qo'lda deploy bilan to'qnashadi"
+    attempt_at = position(auto, 'record_attempt "$TARGET"')
+    deploy_at = position(auto, "bash tools/deploy.sh --yes")
+    if attempt_at < 0:
+        return f"{AUTO_DEPLOY}: urinish yozilmaydi — yiqilgan deploy har 5 daqiqada takrorlanadi"
+    if deploy_at < 0:
+        return f"{AUTO_DEPLOY}: `deploy.sh --yes` chaqirilmaydi"
+    if attempt_at > deploy_at:
+        return f"{AUTO_DEPLOY}: urinish deploy'dan KEYIN yoziladi — yiqilgan yurish takrorlanadi"
+
+    # Env-fayl worktree'dan TASHQARIDA: `.env.public` `.gitignore` da
+    # (`.env.*`), ya'ni yangi worktree'da u yo'q. Ikkala joy BIR XIL
+    # o'zgaruvchidan o'qilishi shart — tekshiruv ham, `deploy.sh` ga
+    # uzatish ham `$ENV_FILE` dan. Ajralib ketsa watcher bir faylni
+    # tekshirib, boshqasini uzatardi: deploy bo'sh env bilan ketadi va API
+    # har so'rovga 400 qaytaradi — jimgina, faqat jonli saytda bilinadi.
+    if "RANKWANT_AUTO_DEPLOY_ENV:-$LIVE_DIR/.env.public" not in auto:
+        return (
+            f"{AUTO_DEPLOY}: env-fayl worktree'dan tashqarida "
+            "ko'rsatilmaydi (`RANKWANT_AUTO_DEPLOY_ENV`)"
+        )
+    if '[ -f "$ENV_FILE" ] || die' not in auto:
+        return f"{AUTO_DEPLOY}: env-fayl mavjudligi tekshirilmaydi"
+    if 'RANKWANT_ENV_FILE="$ENV_FILE"' not in auto:
+        return f"{AUTO_DEPLOY}: `deploy.sh` ga boshqa env-fayl uzatiladi"
+
+    # ⚠️ Ikki nosozlik 2026-09-19 da BIRINCHI HAQIQIY yurishda o'lchandi —
+    # ikkalasi ham «yashil» unit tekshiruvlardan o'tib ketgan edi, chunki
+    # faqat zanjir BUTUN yurganda ko'rinadi. Ikkalasi ham jim: biri deploy
+    # qilishni butunlay to'xtatadi, ikkinchisi esa uni behuda qo'zg'atadi.
+    #
+    # 6. QULF QAYTA OLINMAYDI. Watcher qulfni o'zi oladi (qo'lda deploy
+    #    bilan to'qnashmasin), keyin `deploy.sh` AYNAN o'sha qulfni
+    #    so'raydi va `mkdir` da yiqiladi — ya'ni watcher O'ZINI bloklaydi
+    #    va avtomatik deploy HECH QACHON ishlamaydi. O'lchandi: log'da
+    #    «✗ boshqa deploy ishlayapti (auto-deploy pid 1303)».
+    # 7. STDIN YOPIQ BO'LMASIN. Task Scheduler → `conhost --headless`
+    #    farzandga stdin bermaydi; MSYS `sha256sum` yopiq fd bilan
+    #    yiqiladi («failed to set file descriptor text/binary mode»),
+    #    xato `2>/dev/null` ortida qoladi va `check_deploy.sh` YOLG'ON
+    #    «ESKIRGAN» deydi. O'lchandi: qo'lda «joriy», vazifada «3
+    #    konteyner eskirgan» — ya'ni watcher behuda deploy qo'zg'atadi.
+    if "RANKWANT_LOCK_HELD=1 RANKWANT_ENV_FILE" not in auto:
+        return (
+            f"{AUTO_DEPLOY}: qulfni `deploy.sh` ga topshirmaydi — watcher "
+            "o'zini bloklaydi, deploy hech qachon ishlamaydi"
+        )
+    if '${RANKWANT_LOCK_HELD:-0}' not in deploy:
+        return (
+            "tools/deploy.sh: `RANKWANT_LOCK_HELD` ni tan olmaydi — "
+            "watcher'ning qulf topshirishi ishlamaydi"
+        )
+    if "exec 0</dev/null" not in auto:
+        return (
+            f"{AUTO_DEPLOY}: stdin'ni ochmaydi — vazifada `sha256sum` "
+            "yiqilib yolg'on drift chiqaradi"
+        )
+    if 'sha256sum "$src" < /dev/null' not in read(CHECK_DEPLOY):
+        return (
+            f"{CHECK_DEPLOY}: `sha256sum` atrofdagi stdin'ga tayanadi — "
+            "yopiq stdin'da yolg'on «ESKIRGAN»"
+        )
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -711,12 +1296,21 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("navigatsiya prefetch'i niyatda", nav_prefetch_on_intent),
     ("bosh sahifa <main> prefetch'i niyatda", home_main_prefetch_on_intent),
     ("lug'at alohida faylda", dictionary_as_cached_file),
+    ("lug'at qaytishda saqlanadi", dictionary_survives_return),
     ("User modeli tenglik maydonlari", user_parity_fields_kept),
-    ("header 320 px ga sig'adi", mobile_header_fits_narrow_screen),
+    ("tor ekran 320 px ga sig'adi", mobile_header_fits_narrow_screen),
     ("mobil panel foydalanishga yaroqli", mobile_drawer_is_accessible),
     ("KPI to'ri lg da 4 ustun", kpi_grid_steps_at_lg),
     ("profil paneli xl gacha stekda", profile_sidebar_stacks_below_xl),
     ("diapazon bitta filtr", difficulty_range_counts_as_one_filter),
+    ("brend headerda, footer uch ustun", brand_in_header_and_footer_columns),
+    ("kontent qamrovi ko'rinadi", content_coverage_visible),
+    ("til havolada ham keladi", locale_travels_in_the_url),
+    ("bosh sahifa mehmon CDN keshi", homepage_guest_cdn_cache),
+    ("login mehmon CDN keshi", guest_auth_cdn_cache),
+    ("50k masshtab qarorlari", scale_50k_locked),
+    ("staff guruhlari va obyekt mualliflari", roles_groups_and_object_authors),
+    ("avtomatik deploy xavfsiz", deploy_automation_is_safe),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),

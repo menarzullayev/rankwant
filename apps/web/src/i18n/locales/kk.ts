@@ -227,6 +227,10 @@ export const kk: Record<MessageKey, string> = {
   "auth.linkBody": "Бұл email әлдеқашан қолданылған. Байланыстыру үшін құпия сөзді енгізіңіз.",
   "auth.linkCta": "Байланыстыру",
   "auth.socialError": "Кіру сәтсіз аяқталды. Қайта көріңіз.",
+  "footer.tagline": "Өзбекстандық бағдарламашыларға арналған спорттық бағдарламалау платформасы",
+  "footer.platform": "Платформа",
+  "footer.contact": "Байланыс және қауымдастық",
+  "footer.copyright": "© {year} RankWant. Барлық құқықтар қорғалған.",
   "footer.terms": "Шарттар",
   "footer.privacy": "Құпиялылық",
   "auth.usernameRequired": "Лақаб 3–30 таңба: бос қалмасын",
@@ -945,6 +949,7 @@ export const kk: Record<MessageKey, string> = {
   "locale.group.broad": "Кең қамту",
   "locale.loading": "Жүктелуде",
   "locale.listLabel": "Тілдер тізімі",
+  "locale.contentUz": "атаулар uz",
   "content.uzOnly": "Бұл атау өзбек тілінде — аударма дайындалуда",
 
   // ---- Problem page: sections, actions, samples ----

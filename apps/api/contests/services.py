@@ -12,8 +12,11 @@ from django.db import transaction
 from django.utils import timezone
 
 from contests.models import Contest, ContestProblem, ContestRegistration, Standing
+from core.cache import cache_delete
 from judging.models import Attempt
 from judging.verdicts import Verdict
+
+STANDINGS_CACHE_KEY = "standings:{contest_id}"
 
 log = logging.getLogger(__name__)
 
@@ -205,6 +208,7 @@ def _write(contest: Contest, rows: list[_Row], score: Callable[[_Row], int]) -> 
             for i, row in enumerate(rows)
         ]
     )
+    cache_delete(STANDINGS_CACHE_KEY.format(contest_id=contest.pk))
     return len(rows)
 
 

@@ -158,7 +158,16 @@ check_hash() {
   local cshow shash chash
   cshow="$(img_time "rankwant-${service}:latest")"
 
-  shash="$(sha256sum "$src" 2>/dev/null | cut -d' ' -f1)"
+  # ⚠️ `< /dev/null` SHART: `sha256sum` ishga tushishda stdin fd ni
+  # sozlaydi (`_setmode`) va MSYS'da u YOPIQ bo'lsa yiqiladi:
+  #   sha256sum: failed to set file descriptor text/binary mode: Bad file descriptor
+  # Natija — BO'SH xesh, ya'ni yolg'on «ESKIRGAN» (o'lchandi 2026-09-19:
+  # `0<&-` bilan api/worker/beat «serializers.py farq qiladi» dedi, holbuki
+  # hash bir xil edi; `</dev/null` bilan «bir xil»). `2>/dev/null` xatoni
+  # yashirgani uchun sabab ko'rinmaydi. Rejalashtirilgan vazifa (Task
+  # Scheduler → `conhost --headless`) farzandga stdin bermaydi, ya'ni
+  # skript QO'LDA to'g'ri, VAZIFADA yolg'on ishlaydi.
+  shash="$(sha256sum "$src" < /dev/null 2>/dev/null | cut -d' ' -f1)"
   chash="$(docker exec "$name" sha256sum "$ctr" 2>/dev/null | cut -d' ' -f1)"
 
   if [ -z "$chash" ]; then

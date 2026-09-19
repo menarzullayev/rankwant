@@ -352,6 +352,19 @@ class TestHealth:
 
 
 @pytest.mark.django_db
+class TestSlo:
+    """Kuzatuv readiness emas — navbat 503 qilmaydi."""
+
+    def test_navbat_200(self, monkeypatch) -> None:
+        monkeypatch.setattr(views, "_judge_queue_len", lambda: 7)
+        monkeypatch.setattr(views, "_check_redis", lambda: "ok")
+        r = APIClient().get(reverse("slo"))
+        assert r.status_code == 200
+        assert r.json()["judge_queue"] == 7
+        assert r.json()["checks"]["redis"] == "ok"
+
+
+@pytest.mark.django_db
 class TestDependencyErrors:
     """Bog'liqlik uzilishi 500 emas, toza 503 bo'lishi kerak (10-operations)."""
 

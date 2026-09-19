@@ -227,6 +227,10 @@ export const zh: Record<MessageKey, string> = {
   "auth.linkBody": "该邮箱已被使用。请输入密码以关联。",
   "auth.linkCta": "关联",
   "auth.socialError": "登录失败，请重试。",
+  "footer.tagline": "面向乌兹别克斯坦的竞技编程平台",
+  "footer.platform": "平台",
+  "footer.contact": "联系与社区",
+  "footer.copyright": "© {year} RankWant. 版权所有。",
   "footer.terms": "条款",
   "footer.privacy": "隐私",
   "auth.usernameRequired": "用户名 3–30 个字符：不能留空",
@@ -941,6 +945,7 @@ export const zh: Record<MessageKey, string> = {
   "locale.group.broad": "广泛覆盖",
   "locale.loading": "加载中",
   "locale.listLabel": "语言列表",
+  "locale.contentUz": "名称 uz",
   "content.uzOnly": "此名称为乌兹别克语 — 翻译待完成",
 
   // ---- Problem page: sections, actions, samples ----

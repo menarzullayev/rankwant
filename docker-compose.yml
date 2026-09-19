@@ -22,6 +22,7 @@ x-api-build: &api-build
 services:
   postgres:
     image: postgres:16
+    command: ["postgres", "-c", "shared_preload_libraries=pg_stat_statements"]
     environment:
       POSTGRES_DB: rankwant
       POSTGRES_USER: rankwant
@@ -91,6 +92,7 @@ services:
       S3_SECRET: devdevdev
       DJANGO_DEBUG: "1"
       CORS_ALLOWED_ORIGINS: http://localhost:3000
+      GUNICORN_WORKERS: ${GUNICORN_WORKERS:-4}
     ports: ['8000:8000']
     depends_on:
       postgres: { condition: service_healthy }
@@ -153,6 +155,14 @@ services:
       NEXT_PUBLIC_API_BASE: http://localhost:8000/api/v1
     ports: ['3000:3000']
     depends_on: [api]
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - node -e "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 20s
 
   judge:
     build:

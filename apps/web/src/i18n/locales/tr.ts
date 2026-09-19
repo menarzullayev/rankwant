@@ -227,6 +227,10 @@ export const tr: Record<MessageKey, string> = {
   "auth.linkBody": "Bu e-posta zaten kullanılıyor. Bağlamak için şifrenizi girin.",
   "auth.linkCta": "Bağla",
   "auth.socialError": "Giriş yapılamadı. Tekrar deneyin.",
+  "footer.tagline": "Özbekistan'daki yarışmacı programlama platforması",
+  "footer.platform": "Platform",
+  "footer.contact": "İletişim ve topluluk",
+  "footer.copyright": "© {year} RankWant. Tüm hakları saklıdır.",
   "footer.terms": "Koşullar",
   "footer.privacy": "Gizlilik",
   "auth.usernameRequired": "Kullanıcı adı 3–30 karakter: boş kalamaz",
@@ -944,6 +948,7 @@ export const tr: Record<MessageKey, string> = {
   "locale.group.broad": "Geniş kapsam",
   "locale.loading": "Yükleniyor",
   "locale.listLabel": "Dil listesi",
+  "locale.contentUz": "adlar uz",
   "content.uzOnly": "Bu ad Özbekçe — çevirisi hazırlanıyor",
 
   // ---- Problem page: sections, actions, samples ----

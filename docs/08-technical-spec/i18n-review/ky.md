@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1595 strings.**
+**1600 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -241,6 +241,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.linkBody` | Bu email allaqachon ishlatilgan. Bog'lash uchun parolingizni kiriting. | Бул email мурунтан колдонулган. Байланыштыруу үчүн сырсөзүңүздү киргизиңиз. |  |
 | `auth.linkCta` | Bog'lash | Байланыштыруу |  |
 | `auth.socialError` | Kirish amalga oshmadi. Qayta urinib ko'ring. | Кирүү ишке ашпады. Кайра аракет кылыңыз. |  |
+| `footer.tagline` | O'zbekistonlik dasturchilar uchun CP/OJ platformasi | Өзбекстандык программисттер үчүн спорттук программалоо платформасы |  |
+| `footer.platform` | Platforma | Платформа |  |
+| `footer.contact` | Aloqa va jamiyat | Байланыш жана жамаат |  |
+| `footer.copyright` | © {year} RankWant. Barcha huquqlar himoyalangan. | © {year} RankWant. Бардык укуктар корголгон. |  |
 | `footer.terms` | Shartlar | Шарттар |  |
 | `footer.privacy` | Maxfiylik | Купуялуулук |  |
 | `auth.usernameRequired` | Taxallus 3–30 belgi: bo'sh qolmasin | Лакап 3–30 белги: бош калбасын |  |
@@ -952,6 +956,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `locale.group.broad` | Keng qamrov | Кеңири камтуу |  |
 | `locale.loading` | Yuklanmoqda | Жүктөлүүдө |  |
 | `locale.listLabel` | Tillar ro'yxati | Тилдер тизмеси |  |
+| `locale.contentUz` | nomlar uz | аталыштар uz |  |
 | `content.uzOnly` | Bu nom o'zbekcha — tarjimasi tayyorlanmoqda | Бул аталыш өзбек тилинде — которуу даярдалууда |  |
 | `problem.tab.statement` | Tavsif | Шарт |  |
 | `problem.tab.status` | Urinishlar | Жөнөтүүлөр |  |

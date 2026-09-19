@@ -227,6 +227,10 @@ export const ky: Record<MessageKey, string> = {
   "auth.linkBody": "Бул email мурунтан колдонулган. Байланыштыруу үчүн сырсөзүңүздү киргизиңиз.",
   "auth.linkCta": "Байланыштыруу",
   "auth.socialError": "Кирүү ишке ашпады. Кайра аракет кылыңыз.",
+  "footer.tagline": "Өзбекстандык программисттер үчүн спорттук программалоо платформасы",
+  "footer.platform": "Платформа",
+  "footer.contact": "Байланыш жана жамаат",
+  "footer.copyright": "© {year} RankWant. Бардык укуктар корголгон.",
   "footer.terms": "Шарттар",
   "footer.privacy": "Купуялуулук",
   "auth.usernameRequired": "Лакап 3–30 белги: бош калбасын",
@@ -944,6 +948,7 @@ export const ky: Record<MessageKey, string> = {
   "locale.group.broad": "Кеңири камтуу",
   "locale.loading": "Жүктөлүүдө",
   "locale.listLabel": "Тилдер тизмеси",
+  "locale.contentUz": "аталыштар uz",
   "content.uzOnly": "Бул аталыш өзбек тилинде — которуу даярдалууда",
 
   // ---- Problem page: sections, actions, samples ----

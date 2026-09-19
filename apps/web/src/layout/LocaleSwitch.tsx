@@ -1,12 +1,16 @@
 "use client";
 
+import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useId, useMemo, useRef, useState, useTransition } from "react";
 
 import { Icon } from "@/components/ui/Icon";
 import { useLocale, useLocaleAuto } from "@/i18n/LocaleProvider";
-import { LOCALES, LOCALE_NAMES, t, type Locale } from "@/i18n/messages";
+import { LOCALE_PARAM } from "@/i18n/locale-params";
+import { LOCALES, LOCALE_NAMES, hasContentNames, t, type Locale } from "@/i18n/messages";
 import { announcePrefs } from "@/lib/prefs";
+
+import { LocaleFlag } from "./LocaleFlag";
 
 /** «Avtomatik» — cookie o'chiriladi va til yana sarlavhadan aniqlanadi.
  *
@@ -43,12 +47,13 @@ const ENGLISH_NAMES: Record<Locale, string> = {
   es: "Spanish",
 };
 
-/** Ko'rinadigan nom: `O'zbekcha — Uzbek`. */
-function label(code: Locale): string {
-  const native = LOCALE_NAMES[code];
-  const english = ENGLISH_NAMES[code];
-  return native === english ? native : `${native} — ${english}`;
-}
+/** Panel kengligi (`w-64`) va chekka.
+ *
+ *  Tor ekran sharti shu ikkisidan chiqadi, ekran kengligidan emas: panel
+ *  tugmaning o'ng chetidan 256px chapga osiladi, ya'ni tugma chetidan
+ *  256px sig'masa — panel viewport'dan chiqib ketadi. */
+const PANEL_W = 256;
+const PANEL_GAP = 8;
 
 /** Til tanlagich — custom listbox.
  *
@@ -85,6 +90,10 @@ export function LocaleSwitch() {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState<string>(locale);
 
+  // Tor ekranda panel `fixed` bo'ladi va shu koordinatadan boshlanadi.
+  // `null` — keng ekran: panel odatdagidek tugmaga bog'lanadi.
+  const [narrowBox, setNarrowBox] = useState<{ top: number } | null>(null);
+
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
@@ -97,22 +106,21 @@ export function LocaleSwitch() {
     [],
   );
 
-  // Yopiq holatda ko'rinadigan nom. «Avtomatik» tanlanganda aniqlangan
-  // til ham qavsda ko'rsatiladi (qaror 9) — aks holda odam qaysi tilda
-  // ko'rayotganini bilmaydi, holbuki bu eng ko'p so'raladigan savol.
-  const currentLabel =
-    current === AUTO
-      ? `${t(locale, "locale.auto")} · ${LOCALE_NAMES[locale]}`
-      : label(current as Locale);
+  // Native-first: triggerda faqat endonim. «Avtomatik» bo'lsa ham
+  // aniqlangan tilning o'z nomi — bayroq qaysi til ekanini ko'rsatadi.
+  // Inglizcha kalit menyuda, ikkinchi qatorda (qaror 9 / tahlil B9).
+  const shown: Locale = current === AUTO ? locale : (current as Locale);
+  const currentLabel = LOCALE_NAMES[shown];
 
-  // `sm` dan pastda ko'rinadigan matn — til KODI, to'liq nom emas.
+  // Til KODI endi triggerda ko'rinmaydi — faqat `aria-label` da qoladi
+  // (ovoz bilan boshqaruvchi `zh` deb ham chaqira olsin).
   //
-  // O'lchandi (2026-09-18, jonli DOM, 320px — eng tor qo'llab-quvvatlanadigan
-  // ekran): to'liq nom bilan til tugmasi 165px, header esa 15px (chiqqan) va
-  // 59px (kirgan) toshardi. Kod bilan tugma 82px — toshish 0, ikkala holatda.
-  //
-  // Kod KICHIK harfda qoladi: `text-transform: uppercase` glifni kengaytiradi
-  // va `KAA` 320px da 3px toshadi (o'lchandi).
+  // Tarix: 2026-09-18 da tor ekranda KOD tanlangan edi — sabab, to'liq nom
+  // bilan tugma 165px bo'lib header 15px (chiqqan) / 59px (kirgan) toshgan.
+  // 2026-09-19 da qayta o'lchandi (`main` = 6486cd6, 320px): endonim
+  // `max-w-[3rem]` bilan chegaralansa tugma 116px, toshish 0, va 10
+  // endonimdan 7 tasi TO'LIQ sig'adi (faqat `Кыргызча`, `O'zbekcha`,
+  // `Qaraqalpaqsha` vizual qirqiladi). Ya'ni kod shart emas edi.
   //
   // Nega butunlay yashirmaymiz: «qaysi tildaman» — eng ko'p so'raladigan
   // savol (qaror 9), kod uni saqlaydi, globus-only yo'qotardi.
@@ -139,6 +147,31 @@ export function LocaleSwitch() {
         // Hisobga ham — xatlar shu tilda yuboriladi.
         announcePrefs({ locale: next });
       }
+      // URL'dagi `?lang=` cookie'ni bosib ketadi (proxy parametrni ustun
+      // qo'yadi), ya'ni u qoldirilsa yangi tanlov keyingi yangilanishda
+      // QAYTIB ketardi. Shuning uchun tanlov URL'ni ham tozalaydi va manba
+      // yana cookie bo'lib qoladi.
+      const url = new URL(window.location.href);
+      if (url.searchParams.has(LOCALE_PARAM)) {
+        url.searchParams.delete(LOCALE_PARAM);
+        const next_ = `${url.pathname}${url.search}${url.hash}`;
+        // ⚠️ `replace` YOLG'IZ yetarli emas — o'lchandi (2026-09-19, jonli
+        // brauzer): `/about?lang=ru` da inglizchani tanlaganda URL va
+        // kontent (`<title>`, `<h1>`) almashdi, lekin
+        // `document.documentElement.lang` `ru` bo'lib QOLDI. Sabab: soft
+        // navigatsiya faqat sahifa segmentini yangilaydi, ildiz layout
+        // keshlangan qoladi — `<html lang>` esa ildizda chiziladi.
+        // `refresh()` butun daraxtni serverdan qayta oladi, ya'ni
+        // atribut ham yangilanadi (nazorat o'lchovi: parametrsiz yo'lda
+        // aynan `refresh()` ishlaydi va atribut to'g'ri bo'ladi).
+        // WCAG 3.1.1 — noto'g'ri `lang` ekran o'quvchini xato ovozga
+        // o'tkazadi.
+        startTransition(() => {
+          router.replace(next_ as Route);
+          router.refresh();
+        });
+        return;
+      }
       startTransition(() => router.refresh());
     },
     [router],
@@ -146,6 +179,19 @@ export function LocaleSwitch() {
 
   const openList = useCallback(() => {
     setActive(current);
+    // Tor ekranda `absolute right-0` chapga toshadi va panelning chap
+    // ustuni (bayroq) butunlay ekrandan chiqadi. O'lchandi (320px,
+    // `main` = 6486cd6, `zh`): tugma o'ng cheti atigi 212px → panel
+    // `left = -44`, BARCHA 11 bayroq `left = -32…-11` — ko'rinmaydi.
+    // 360px da `left = -4` (bayroq `left = 8` — ko'rinadi), ya'ni
+    // chegara ~352px. Shuning uchun shart ekran kengligiga emas,
+    // HAQIQIY joylashuvga bog'lanadi.
+    const rect = buttonRef.current?.getBoundingClientRect();
+    let box: { top: number } | null = null;
+    if (rect && rect.right < PANEL_W + PANEL_GAP) {
+      box = { top: rect.bottom + 4 };
+    }
+    setNarrowBox(box);
     setOpen(true);
   }, [current]);
 
@@ -157,8 +203,17 @@ export function LocaleSwitch() {
     function onPointerDown(event: PointerEvent) {
       if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
     }
+    // Oyna o'lchami o'zgarsa panel yopiladi: `fixed` koordinatasi ochilish
+    // paytida o'lchangan, ya'ni o'lcham o'zgarsa u eskirib qoladi.
+    function onResize() {
+      setOpen(false);
+    }
     document.addEventListener("pointerdown", onPointerDown);
-    return () => document.removeEventListener("pointerdown", onPointerDown);
+    window.addEventListener("resize", onResize);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("resize", onResize);
+    };
   }, [open]);
 
   // Aktiv variant ko'rinadigan joyga suriladi (ro'yxat uzun).
@@ -264,25 +319,31 @@ export function LocaleSwitch() {
         // chaqira olmasdi. Lighthouse tutdi:
         // `label-content-name-mismatch` — accessibility 100 dan tushdi.
         //
-        // Ko'rinadigan matn endi IKKI XIL (`sm` dan yuqorida nom, pastda
-        // kod), ya'ni IKKISI HAM shu yerda bo'lishi shart: usiz tor ekranda
-        // o'sha xato qaytadi.
+        // Ko'rinadigan matn endi har qanday kenglikda ENDONIM (tor ekranda
+        // vizual `truncate` bo'ladi, lekin DOM matni to'liq qoladi — ya'ni
+        // Lighthouse uchun moslik saqlanadi). Shuning uchun `currentLabel`
+        // shu yerda MAJBURIY. `currentCode` — qo'shimcha: ovoz bilan
+        // boshqaruvchi `zh` deb ham chaqira olsin.
         aria-label={`${currentLabel} (${currentCode}) — ${t(locale, "locale.switchLabel")}`}
         onClick={() => (open ? setOpen(false) : openList())}
         onKeyDown={onButtonKeyDown}
         className="flex h-10 items-center gap-1.5 rw-radius-sm border rw-line rw-field-bg px-2.5
           rw-dim transition rw-hover-strong"
       >
-        <Icon name="locale.globe" className="size-4 shrink-0" />
-        {/* `min-w-0` + `truncate` SHART: tarjima uzunligi olti barobargacha
-            farq qiladi, ya'ni eng uzun nom header'ni buzdmasin.
-            `sm` dan pastda butunlay yashiriladi — o'sha joyda kod turadi. */}
-        <span className="hidden min-w-0 max-w-[7.5rem] truncate text-theme-xs sm:block">
+        <LocaleFlag code={shown} />
+        {/* Endonim HAR QANDAY kenglikda ko'rinadi. Ilgari `sm` dan pastda
+            til KODI (`zh`) turardi — ya'ni tor ekranda odam o'z tilini
+            ko'rmasdi (tahlil B9). Kod endi faqat `aria-label` da qoladi.
+
+            `max-w` + `truncate` SHART: o'lchandi (320px, cheklovsiz
+            endonim bilan) — `Qaraqalpaqsha` tugmani 149px qiladi va header
+            29px toshadi; `O'zbekcha` 124px/7px, `Кыргызча` 123px/6px.
+            Header'da bo'sh joy yo'q (o'ng guruh `min-w-0` bilan allaqachon
+            siqilgan), shuning uchun chegara 48px: tugma 116px, toshish 0,
+            va 10 endonimdan 7 tasi to'liq sig'adi. */}
+        <span className="min-w-0 max-w-[3rem] truncate text-theme-xs sm:max-w-[7.5rem]">
           {currentLabel}
         </span>
-        {/* Tor ekran (320–639px): til kodi. Flex elementi `display` ni
-            blokka aylantiradi, shuning uchun `block` bu yerda tabiiy. */}
-        <span className="text-theme-xs sm:hidden">{currentCode}</span>
         {pending ? (
           <Icon name="action.loading" className="size-3.5 shrink-0 animate-spin motion-reduce:animate-none" />
         ) : (
@@ -298,8 +359,16 @@ export function LocaleSwitch() {
           aria-label={t(locale, "locale.listLabel")}
           tabIndex={-1}
           onKeyDown={onListKeyDown}
-          className="absolute right-0 z-50 mt-1 max-h-80 w-64 overflow-y-auto rw-panel py-1
-            text-theme-xs"
+          // Tor ekranda `fixed` + o'lchangan koordinata, keng ekranda
+          // hozirgidek tugmaga bog'lanadi (shartni `openList` qo'yadi).
+          style={
+            narrowBox === null
+              ? undefined
+              : { top: narrowBox.top, left: PANEL_GAP, right: PANEL_GAP }
+          }
+          className={`z-50 max-h-80 overflow-y-auto rw-panel py-1 text-theme-xs ${
+            narrowBox === null ? "absolute right-0 mt-1 w-64" : "fixed mt-1"
+          }`}
         >
           {/* «Avtomatik» guruhdan tashqarida — u hech qaysi guruhga
               tegishli emas, ya'ni uni guruh ichiga tiqish noto'g'ri
@@ -315,8 +384,10 @@ export function LocaleSwitch() {
                 active === AUTO ? "rw-hover-bg" : ""
               } ${current === AUTO ? "font-medium" : ""}`}
             >
-              <span className="min-w-0 flex-1 truncate">
-                {`${t(locale, "locale.auto")} — ${LOCALE_NAMES[locale]}`}
+              <LocaleFlag code={locale} />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate">{t(locale, "locale.auto")}</span>
+                <span className="block truncate rw-dim-2">{LOCALE_NAMES[locale]}</span>
               </span>
               {current === AUTO && <Icon name="action.confirm" className="size-3.5 shrink-0" />}
             </div>
@@ -352,7 +423,25 @@ export function LocaleSwitch() {
                         active === code ? "rw-hover-bg" : ""
                       } ${current === code ? "font-medium" : ""}`}
                     >
-                      <span className="min-w-0 flex-1 truncate">{label(code)}</span>
+                      <LocaleFlag code={code} />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate">{LOCALE_NAMES[code]}</span>
+                        {LOCALE_NAMES[code] !== ENGLISH_NAMES[code] ? (
+                          <span className="block truncate rw-dim-2">{ENGLISH_NAMES[code]}</span>
+                        ) : null}
+                      </span>
+                      {/* Qamrov OLDINDAN ko'rinadi (qaror 10, T3-c):
+                          mavzu/ko'nikma nomlari faqat uz/ru/en da bor,
+                          ya'ni qolgan yetti tilda o'zbekcha chiqadi.
+                          Buni tanlashdan KEYIN aytish kech bo'lardi. */}
+                      {!hasContentNames(code) && (
+                        <span
+                          title={t(locale, "content.uzOnly")}
+                          className="shrink-0 rounded rw-chip px-1 text-theme-xs rw-dim-2"
+                        >
+                          {t(locale, "locale.contentUz")}
+                        </span>
+                      )}
                       {current === code && <Icon name="action.confirm" className="size-3.5 shrink-0" />}
                     </div>
                   ))}

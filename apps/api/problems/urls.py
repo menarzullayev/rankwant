@@ -1,9 +1,10 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from problems import media_views, staff_views, views
+from problems import author_views, media_views, staff_views, views
 
 router = DefaultRouter()
+router.register("problems/mine", author_views.MineProblemViewSet, basename="mine-problem")
 router.register("problems", views.ProblemViewSet, basename="problem")
 router.register("topics", views.TopicViewSet, basename="topic")
 router.register("languages", views.LanguageViewSet, basename="language")

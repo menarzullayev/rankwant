@@ -432,7 +432,13 @@ jobs:
         run: bash tools/ci_stack.sh
       - name: Demo data
         timeout-minutes: 3
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api python manage.py seed_demo
+        # Web healthcheck hits `/` before seed. Next Data Cache then keeps
+        # empty `/roadmaps/` for 300s, so the archive sidebar heading never
+        # appears (`browse.spec.ts` «O'quv rejalari»). Restart drops that cache.
+        run: |
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api python manage.py seed_demo
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml restart web
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait web
       - name: Smoke
         timeout-minutes: 5
         # Critical path: submit → Redis → judge → verdict. This is the

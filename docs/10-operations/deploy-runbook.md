@@ -20,6 +20,9 @@ Tunnel orqali). To'rt hostli production topologiyasi README'da.
 | API             | **8301**                                                        |
 | Tunnel          | `tools/monitor.ps1`, PID `.handoff/cloudflared.pid`             |
 | Zaxira          | `"C:\Program Files\Git\bin\bash.exe" -lc ".../tools/backup.sh"` |
+| Avtomatik deploy | `tools/auto_deploy.sh`, vazifa `RankWant Auto Deploy` (5 daqiqa) |
+| Muzlatish kaliti | `DEPLOY_FREEZE=1` — deploy'ni to'xtatadi (qulfni ham olmaydi)   |
+| Rollback        | `bash tools/rollback.sh <sha12>` (kod; migratsiya qaytmaydi)    |
 
 To'liq `COMPOSE` o'zgaruvchisi (har bo'limda shu ishlatiladi):
 
@@ -150,6 +153,127 @@ buni o'zi ta'minlaydi — hamma narsadan oldin:
   Papka bor-u, git uni o'qiy olmasa, darvoza avvalgidek to'xtaydi.
 - `--skip-ci-gate` darvozani o'tkazib yuboradi — faqat Saidakbar akaning
   aniq ruxsati bilan.
+
+### Qaror (2026-09-19): deploy **to'liq avtomatik** — host watcher
+
+Ega qarori (HITL: 1 savol, 4 variant → «to'g'ridan-to'g'ri to'liq avtomatik»,
+`required reviewer` **yo'q**). Mexanizm — **host watcher**, GitHub Actions
+**emas**, va sabab o'lchandi:
+
+| To'siq | Dalil (2026-09-19) |
+| ------ | ------------------ |
+| Runner jonli `.env.public` ni ko'rmaydi | runner mount'lari: faqat `/work` volume + `docker.sock` + `_diag`; `/run/desktop/mnt/host/c/` → `No such file or directory` |
+| `.env.public` da **29** kalit, workflow **4** tasini yozadi | workflow `up` i jonli konteynerlarni 4 kalitli env-fayl bilan qayta yaratadi ⇒ email zanjiri, Turnstile, Cloudflare token, OAuth, `THROTTLE_REGISTER` **jimgina yo'qoladi** |
+| Runner'da `gh` **yo'q** | `command -v gh` → `gh YOQ` (ikkala runner'da) ⇒ `check_deploy_gate.py` har doim `exit 2` |
+
+Shuning uchun `deploy.yml` **qo'lda qoladi** (`workflow_dispatch` +
+`confirm: deploy`; `tools/check_decisions.py` → `deploy_manual_only`
+o'zgarmaydi). Avtomatlashtirish — host'da, chunki `deploy.sh`, `gh`,
+`.env.public`, `docker` va Task Scheduler o'sha yerda va hammasi o'lchangan.
+
+**Zanjir** (har 5 daqiqada, `tools/auto_deploy.sh`):
+
+```
+qulf → DEPLOY_FREEZE → git fetch origin main → worktree'ni --ff-only
+     → drift bormi?  (konteynerlar tirikmi + check_deploy.sh)
+        yo'q  → JIM chiqadi
+        bor   → qayta urinish to'sig'i (30 daqiqa)
+              → tools/deploy.sh --yes
+                 qulf → darvoza(main CI) → oyna → build → SHA teg
+                 → pg_dump → migrate → showmigrations → up → tasdiq
+```
+
+⚠️ **Deploy alohida worktree'dan** yuriladi (`C:/Users/nsn/project/wt/deploy`),
+asosiy checkout'dan **emas**: u yerda agentlarning commit qilinmagan tahriri
+bo'ladi va deploy uni jimgina build qilib jonli chiqarardi. Env-fayl asosiy
+checkout'da qoladi — **nusxa ko'chirilmaydi** (ikkinchi nusxa jimgina ajralib
+ketadi), ikki bosqichda uzatiladi:
+
+| Bosqich | O'zgaruvchi | Nima beriladi |
+|---|---|---|
+| Watcher → `deploy.sh` | `RANKWANT_AUTO_DEPLOY_ENV` | env-faylning **absolyut** yo'li (standart `$LIVE_DIR/.env.public`) |
+| `deploy.sh` → `backup.sh` | `RANKWANT_ENV_FILE` | `deploy.sh` o'zi `$ENV_ABS` ga aylantirib uzatadi |
+
+⚠️ `.env.public` worktree'da **bo'lmaydi** — u `.gitignore` da (`.env.*`).
+Shu sabab `RANKWANT_AUTO_DEPLOY_ENV` shart: usiz watcher `die` qiladi
+(«env-fayl topilmadi»). Tekshirish: `bash tools/auto_deploy.sh --status`
+`env-fayl` va `env mavjudmi` qatorlarini chiqaradi.
+
+⚠️ **Drift JONLI holatdan aniqlanadi**, worktree `HEAD` dan emas: merge bo'lib
+deploy yiqilgan bo'lsa worktree allaqachon `origin/main` da bo'ladi, ya'ni
+`HEAD` bilan solishtirish driftni **abadiy** qoldirardi. 2026-09-19 da sayt
+`main` dan **4 commit orqada** edi va buni faqat `check_deploy.sh` ko'rsatdi.
+
+⚠️ **`check_deploy.sh` yakka o'zi yetarli emas:** konteyner YO'Q bo'lganda ham
+u `0` qaytaradi (`missing` hisoblagichi faqat xabar uchun, `exit 1` esa
+`stale`/`envbad` da). Shuning uchun watcher tiriklikni **o'zi** tekshiradi
+(`all_up`). `tools/check_decisions.py` → `deploy_automation_is_safe` shuni
+qo'riqlaydi.
+
+### Birinchi haqiqiy yurish topgan ikki nosozlik (2026-09-19)
+
+Zanjir `main` ga qo'shildi, unit tekshiruvlari yashil edi (`check_decisions`
+26/26, salbiy testlar 70/70) — **va shunga qaramay avtomatik deploy hech qachon
+ishlamasdi**. Ikkalasi ham faqat zanjir BUTUN yurganda ko'rinadi, ya'ni unit
+darajasida ushlanmaydi. Ikkalasi ham tuzatildi va endi qo'riqlanadi.
+
+| # | Nosozlik | O'lchangan dalil | Tuzatish |
+|---|---|---|---|
+| 1 | **Watcher o'zini bloklaydi** — qulfni o'zi oladi, `deploy.sh` esa AYNAN o'sha qulfni so'raydi | `✗ boshqa deploy ishlayapti (auto-deploy pid 1303, 2026-09-19 01:38 UTC)` | watcher qulfni **topshiradi**: `RANKWANT_LOCK_HELD=1`; `deploy.sh` `mkdir`/`trap` ni o'tkazib yuboradi |
+| 2 | **Yolg'on drift** — vazifa muhitida `check_deploy.sh` «eskirgan» deydi | qo'lda: `Hamma konteyner joriy kodda` (exit 0); vazifada: `3 konteyner eskirgan` (exit 1) | watcher `exec 0</dev/null`; `check_deploy.sh` → `sha256sum "$src" < /dev/null` |
+
+**2-nosozlikning sababi** (Git Bash'ga xos, uch soat qidirildi):
+
+```
+sha256sum: failed to set file descriptor text/binary mode: Bad file descriptor
+```
+
+`sha256sum` ishga tushishda stdin fd ni sozlaydi (`_setmode`). `Task Scheduler`
+→ `conhost.exe --headless` farzandga stdin **bermaydi** (fd yopiq), `sha256sum`
+yiqiladi va **hech narsa chiqarmaydi**. `check_deploy.sh:161` da `2>/dev/null`
+bor, ya'ni xato yashirinadi va `shash` bo'sh qoladi → «farq qiladi» →
+`stale++` → `exit 1`. `</dev/null` — yaroqli fd, xato yo'qoladi. Tekshirish:
+
+```bash
+cd <repo> && bash tools/check_deploy.sh 0<&-   # yopiq stdin — AVVAL exit 1, ENDI exit 0
+```
+
+⚠️ **Umumiy saboq:** stdin yopiq muhitda MSYS coreutils jim yiqilishi mumkin.
+Watcher endi `exec 0</dev/null` bilan boshlanadi, ya'ni butun zanjir
+(`deploy.sh`, `backup.sh`, `docker`) yaroqli stdin oladi.
+
+⚠️ **Qaror dalilsiz qabul qilinmasin.** Birinchi versiya shunchaki `drift` deb
+yozardi — nima uchun ekani ko'rinmasdi. Endi watcher `check_deploy.sh` ning
+muammoli qatorlarini (`ESKIRGAN|MUHIT|TEKSHIRILMADI|YO'Q`) logga chiqaradi.
+
+**Boshqarish:**
+
+```bash
+bash tools/auto_deploy.sh --status     # holat: HEAD, main, jonli SHA, env-fayl
+bash tools/auto_deploy.sh --dry-run    # qarorni ko'rsatadi, hech narsa qilmaydi
+DEPLOY_FREEZE=1 bash tools/deploy.sh   # muzlatish (skript 1 bilan chiqadi)
+bash tools/rollback.sh --list          # mavjud SHA teglari
+bash tools/rollback.sh <sha12>         # kodni qaytarish
+
+schtasks /run /tn "RankWant Auto Deploy"          # vazifani darhol yurgizish
+tail -f .handoff/auto-deploy.log                  # watcher logi
+rm -f ~/.rankwant-auto-deploy-state               # 30 daqiqalik to'siqni olib tashlash
+rm -rf .git/rankwant-deploy.lock                  # ESKIRGAN qulf (egasi yo'q bo'lsa)
+```
+
+⚠️ To'siq (`~/.rankwant-auto-deploy-state`) yozuvi `SHA epoch` ko'rinishida.
+Yolg'on nosozlikdan keyin uni o'chirish xavfsiz — u faqat qayta urinish
+chastotasini cheklaydi, deploy qaroriga ta'sir qilmaydi.
+
+⚠️ **Rollback migratsiyani qaytarmaydi.** Django'da «orqaga» migratsiya yo'q
+va uni avtomatik yurgizish sxemani buzardi. Kod — `tools/rollback.sh`, sxema —
+faqat deploy oldidagi dump (`<backup dir>/pg-deploy-*.sql.gz`), **qo'lda**.
+Bu cheklov ataylab: jimgina yarim rollback — eng yomon holat.
+
+⚠️ **Tunnel avtomatik deploy'ning qo'lida emas.** Konteyner runner'da
+`systemd` yo'q; tunnel — Windows fayl jarayoni (`tools/handoff.ps1` +
+`RankWant Tunnel Monitor`). Deploy faqat `https://rankwant.uz/` ni tekshira
+oladi, tiklay olmaydi.
 
 ---
 

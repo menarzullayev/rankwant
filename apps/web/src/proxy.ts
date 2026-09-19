@@ -1,6 +1,15 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+import { LOCALE_COOKIE, LOCALE_HEADER, LOCALE_PARAM } from "@/i18n/locale-params";
+import { isLocale, type Locale } from "@/i18n/messages";
 import { EXP_COOKIE, GEO_EXPERIMENT } from "@/lib/experiments";
+import {
+  HOME_CACHE_LOCALE,
+  HOME_CACHE_REQUEST_HEADER,
+  homeCacheDecision,
+  homeCacheMark,
+  requestHasRscHint,
+} from "@/lib/home-cache";
 import { SITE_URL } from "@/lib/site";
 
 /** Kanonik manzil — `PUBLIC_ORIGIN` dan (build paytida).
@@ -38,6 +47,45 @@ function assignExperiments(request: NextRequest, response: NextResponse): void {
   });
 }
 
+/** `?lang=<kod>` dan kelgan til. Notanish qiymat (`?lang=xx`) JIM tashlab
+ *  ketiladi — sahifa bo'sh qolmasligi kerak. */
+function localeFromParam(request: NextRequest): Locale | null {
+  const wanted = request.nextUrl.searchParams.get(LOCALE_PARAM);
+  return isLocale(wanted) ? wanted : null;
+}
+
+/** Havoladagi tilni QURILMAGA ham yozadi (qaror S5b, 2026-09-19).
+ *
+ *  Ikki ish qilinadi va ikkalasi ham shart:
+ *
+ *   1. So'rov sarlavhasiga yoziladi — JORIY javob shu tilda chiziladi.
+ *      `searchParams` sahifa ichida qoladi, ya'ni layout uni ko'rmaydi;
+ *      sarlavha — yagona kanal.
+ *   2. Cookie'ga yoziladi — KEYINGI so'rovlar ham shu tilda qoladi.
+ *      Shu sababli ichki havolalarni o'zgartirish SHART EMAS: havolani
+ *      olgan odam bir marta kiradi, keyin sayt o'zi eslab qoladi.
+ *
+ *  ⚠️ TARTIB MUHIM: (1) `NextResponse.next()` dan OLDIN bajarilishi shart
+ *  — `next()` `request.headers` ni o'sha paytda ko'chirib
+ *  `x-middleware-request-*` qatorlarini yozadi (o'lchandi: `next@16.3.4`,
+ *  `dist/server/web/spec-extension/response.js:128`). Keyin qo'shilgan
+ *  qiymat joriy render'ga YETIB BORMAYDI. Shuning uchun sarlavha
+ *  `proxy()` ichida, javob yaratilishidan oldin yoziladi; bu funksiya
+ *  faqat cookie'ni qo'yadi.
+ *
+ *  `httpOnly: false` — `PrefsSync` cookie'ni `document.cookie` orqali
+ *  o'qiydi (hisobdagi til bilan solishtiradi). Til qiymati hech qanday
+ *  huquq bermaydi, ya'ni bu xavfsiz — xuddi eksperiment cookie'si kabi.
+ */
+function rememberLocale(response: NextResponse, locale: Locale): void {
+  response.cookies.set(LOCALE_COOKIE, locale, {
+    path: "/",
+    maxAge: 60 * 60 * 24 * 365,
+    sameSite: "lax",
+    httpOnly: false,
+  });
+}
+
 export function proxy(request: NextRequest): NextResponse {
   const host = request.headers.get("host") ?? "";
   // Faqat haqiqiy ommaviy sayt (https): lokal va CI build'larda yo'naltirish yo'q.
@@ -47,12 +95,34 @@ export function proxy(request: NextRequest): NextResponse {
     host !== canonical.host &&
     !INTERNAL.test(host);
 
+  // Sarlavha nusxasi — `?lang=` shu orqali joriy render'ga uzatiladi.
+  const requestHeaders = new Headers(request.headers);
+  const fromParam = boshqa_domen ? null : localeFromParam(request);
+  const homeCache = homeCacheDecision({
+    method: request.method,
+    pathname: request.nextUrl.pathname,
+    search: request.nextUrl.search,
+    cookieHeader: request.headers.get("cookie"),
+    hasRscHint: requestHasRscHint(request.headers),
+  });
+  // Keshlangan mehmon HTML `Accept-Language` ga qaramasligi kerak — aks holda
+  // bitta URL turli tillarni aralashtiradi. `?lang=` pastda ustun (S5).
+  if (homeCache.forceDefaultLocale) {
+    requestHeaders.set(LOCALE_HEADER, HOME_CACHE_LOCALE);
+  }
+  const homeMark = homeCacheMark(homeCache);
+  if (homeMark !== null) {
+    requestHeaders.set(HOME_CACHE_REQUEST_HEADER, homeMark);
+  }
+  // ⚠️ `next()` dan OLDIN (yuqoridagi izohga qarang).
+  if (fromParam !== null) requestHeaders.set(LOCALE_HEADER, fromParam);
+
   const response = boshqa_domen
     ? NextResponse.redirect(
         new URL(`${request.nextUrl.pathname}${request.nextUrl.search}`, canonical),
         301,
       )
-    : NextResponse.next();
+    : NextResponse.next({ request: { headers: requestHeaders } });
 
   // `Vary: Accept-Language` — javob tilga bog'liq bo'lganda MAJBURIY.
   //
@@ -77,10 +147,18 @@ export function proxy(request: NextRequest): NextResponse {
   // (`/docs/app/api-reference/file-conventions/proxy` da `Vary` umuman
   // tilga olinmaydi; `headers()` konfiguratsiya sahifasida ham yo'q).
   //
-  // NEGA HOZIR ZARARSIZ: javob `Cache-Control: private, no-cache,
-  // no-store, max-age=0, must-revalidate` bilan keladi (o'lchandi) —
-  // ya'ni hech qanday umumiy kesh uni saqlay olmaydi. Xat xavfi
-  // KESHLASH YOQILGAN KUNI paydo bo'ladi.
+  // GET `/`, `/login`, huquqiy sahifalar mehmon uchun keshlanadi
+  // (`home-cache.ts`). Zaharsiz,
+  // chunki keshlangan javob `x-rw-locale=uz` bilan chiziladi, `?lang=`
+  // va shaxsiy cookie'lar keshdan chiqariladi, kirgan esa `private,
+  // no-store`. Boshqa yo'llar hali `no-store`.
+  //
+  // ⚠️ 2026-09-19: `?lang=` qo'shildi (qaror S5) — savol yana bir pog'ona
+  // o'tkirroq. Endi bir xil PATH turli URL bo'lib ko'rinadi, ya'ni kesh
+  // `?lang=ru` javobini `?lang=uz` so'roviga ham berishi mumkin. Cookie
+  // yozilishi buni qisman yumshatadi (keyingi so'rov cookie bilan keladi),
+  // lekin BIRINCHI javob baribir URL bo'yicha ajratilishi kerak. Ya'ni
+  // keshlashdan oldin `Vary` hal qilinishi SHART.
   //
   // TODO(keshlashdan OLDIN): `Vary` ni Next.js'dan TASHQARIDA qo'shish
   // kerak — cloudflared tunnel ingress header rewrite qo'llamaydi
@@ -89,11 +167,17 @@ export function proxy(request: NextRequest): NextResponse {
   // Rule yoziladi. Batafsil: `docs/08-technical-spec/i18n-precedence.md`.
   if (!boshqa_domen) {
     response.headers.set("Vary", "Accept-Language");
+    // Cookie shu javobda qo'yiladi — havolani olgan odamning keyingi
+    // so'rovlari ham shu tilda bo'ladi (qaror S5b).
+    if (fromParam !== null) rememberLocale(response, fromParam);
+    if (homeCache.cacheControl !== null) {
+      response.headers.set("Cache-Control", homeCache.cacheControl);
+    }
   }
 
-  // Guruh yo'naltirishda ham belgilanadi: eski domendan kelgan birinchi
-  // so'rov yangisiga o'tadi, cookie esa shu javobda qo'yiladi.
-  assignExperiments(request, response);
+  // Keshlangan GET `/` ga `Set-Cookie` qo'yilmasin — Cloudflare
+  // Set-Cookie'li javobni saqlamaydi.
+  if (homeCache.assignExperiments) assignExperiments(request, response);
   return response;
 }
 

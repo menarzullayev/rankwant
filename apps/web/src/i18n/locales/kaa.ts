@@ -227,6 +227,10 @@ export const kaa: Record<MessageKey, string> = {
   "auth.linkBody": "Bul email áldeqashan qollanılǵan. Baylanıstırıw ushın paroliŋizdi kiritiŋ.",
   "auth.linkCta": "Baylanıstırıw",
   "auth.socialError": "Kiriw ámelge aspadı. Qayta urınıp kóriŋ.",
+  "footer.tagline": "Ózbekstanlıq programmalastırıwshılar ushın platforma",
+  "footer.platform": "Bólimler",
+  "footer.contact": "Baylanıs hám jámiyet",
+  "footer.copyright": "© {year} RankWant. Barlıq huquqlar qorǵalǵan.",
   "footer.terms": "Shártlar",
   "footer.privacy": "Qupıyalıq",
   "auth.usernameRequired": "Laqab 3–30 belgi: bos qalmasın",
@@ -944,6 +948,7 @@ export const kaa: Record<MessageKey, string> = {
   "locale.group.broad": "Keń qamtıw",
   "locale.loading": "Júklenbekte",
   "locale.listLabel": "Tiller dizimi",
+  "locale.contentUz": "atamalar uz",
   "content.uzOnly": "Bul atama ózbek tilinde — awdarması tayarlanbaqta",
 
   // ---- Problem page: sections, actions, samples ----

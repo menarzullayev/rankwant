@@ -2247,47 +2247,423 @@ def neg_decisions_table_removed() -> tuple[bool, str]:
     )
 
 
-def neg_decisions_locale_label_restored() -> tuple[bool, str]:
-    """Til nomi tor ekranda qaytsa tutilsin.
+def neg_decisions_locale_label_unbounded() -> tuple[bool, str]:
+    """Endonim tor ekranda chegarasiz qolsa tutilsin.
 
-    To'liq nom `sm` dan pastda qolsa header 320 px da yana toshadi
-    (o'lchandi: 15 px chiqqan, 59 px kirgan holatda).
+    O'lchandi (320 px, `main` = 6486cd6): `max-w-[3rem]` olib tashlansa
+    `Qaraqalpaqsha` til tugmasini 149 px qiladi va header 29 px toshadi
+    (`O'zbekcha` +7 px, `Кыргызча` +6 px).
     """
     return _decision_broken(
         "apps/web/src/layout/LocaleSwitch.tsx",
-        'className="hidden min-w-0 max-w-[7.5rem] truncate text-theme-xs sm:block"',
-        'className="min-w-0 max-w-[7.5rem] truncate text-theme-xs"',
-        "header 320 px ga sig'adi",
+        'className="min-w-0 max-w-[3rem] truncate text-theme-xs sm:max-w-[7.5rem]"',
+        'className="min-w-0 truncate text-theme-xs sm:max-w-[7.5rem]"',
+        "tor ekran 320 px ga sig'adi",
     )
 
 
-def neg_decisions_locale_code_hidden() -> tuple[bool, str]:
-    """Tor ekranda til kodi ko'rinmasa tutilsin.
+def neg_decisions_locale_code_restored() -> tuple[bool, str]:
+    """Tor ekranda til KODI qaytsa tutilsin.
 
-    Kod span'i o'chsa `sm` dan pastda til tugmasi butunlay bo'sh qoladi —
-    «qaysi tildaman» signali yo'qoladi (qaror 9), holbuki u saqlanishi
-    kerak edi.
+    Kod endi triggerda ko'rinmaydi — endonim ko'rinadi. Kod qaytarilsa
+    tor ekranda odam o'z tilini ko'rmaydi (tahlil B9), holbuki endonim
+    `max-w` bilan chegaralanganda ham header 0 px toshadi.
     """
     return _decision_broken(
         "apps/web/src/layout/LocaleSwitch.tsx",
-        '<span className="text-theme-xs sm:hidden">{currentCode}</span>',
-        '<span className="hidden text-theme-xs">{currentCode}</span>',
-        "header 320 px ga sig'adi",
+        "{currentLabel}\n        </span>",
+        '{currentLabel}\n        </span>\n        <span className="text-theme-xs sm:hidden">'
+        "{currentCode}</span>",
+        "tor ekran 320 px ga sig'adi",
+    )
+
+
+def neg_decisions_locale_panel_not_anchored() -> tuple[bool, str]:
+    """Panel tor ekranda viewport'ga bog'lanmasa tutilsin.
+
+    O'lchandi (320 px): `fixed` bo'lmasa panel `absolute right-0 w-64`
+    bo'lib chapga 44 px toshadi va BARCHA 11 bayroq `left = -32…-11` —
+    ya'ni ko'rinmaydi.
+    """
+    return _decision_broken(
+        "apps/web/src/layout/LocaleSwitch.tsx",
+        ': "fixed mt-1"',
+        ': "absolute mt-1"',
+        "tor ekran 320 px ga sig'adi",
     )
 
 
 def neg_decisions_locale_label_in_name_lost() -> tuple[bool, str]:
     """`aria-label` ko'rinadigan matnni yo'qotsa tutilsin.
 
-    Tor ekranda ko'rinadigan matn — KOD (`kaa`), ya'ni `aria-label` uni
+    Ko'rinadigan matn — ENDONIM (`Qaraqalpaqsha`), ya'ni `aria-label` uni
     o'z ichiga olmasa WCAG 2.5.3 («Label in Name») buziladi va Lighthouse
     `label-content-name-mismatch` beradi.
     """
     return _decision_broken(
         "apps/web/src/layout/LocaleSwitch.tsx",
         "aria-label={`${currentLabel} (${currentCode}) — ${t(locale, \"locale.switchLabel\")}`}",
-        "aria-label={`${currentLabel} — ${t(locale, \"locale.switchLabel\")}`}",
-        "header 320 px ga sig'adi",
+        "aria-label={`${currentCode} — ${t(locale, \"locale.switchLabel\")}`}",
+        "tor ekran 320 px ga sig'adi",
+    )
+
+
+def neg_decisions_locale_cookie_beats_link() -> tuple[bool, str]:
+    """Cookie havoladan ustun bo'lsa tutilsin (qaror S5).
+
+    Shoxobchalar almashtirilsa `?lang=ru` bilan kelgan odam qurilmasidagi
+    tilni ko'radi — ya'ni ulashilgan havola o'z tilini olib kelmaydi.
+    """
+    return _decision_broken(
+        "apps/web/src/i18n/resolve.ts",
+        "  if (param !== null && isLocale(param)) return { locale: param, auto: false };\n"
+        "  if (cookie !== null && isLocale(cookie)) return { locale: cookie, auto: false };",
+        "  if (cookie !== null && isLocale(cookie)) return { locale: cookie, auto: false };\n"
+        "  if (param !== null && isLocale(param)) return { locale: param, auto: false };",
+        "til havolada ham keladi",
+    )
+
+
+def neg_decisions_locale_header_after_next() -> tuple[bool, str]:
+    """Sarlavha `next()` dan keyin yozilsa tutilsin.
+
+    Bu AYNAN o'sha jimgina buziladigan holat: `next()` `request.headers` ni
+    chaqiruv paytida ko'chiradi (o'lchandi: `next@16.3.4`,
+    `response.js:128`), ya'ni keyin yozilgan qiymat joriy render'ga
+    yetib bormaydi va sahifa cookie tilida chiziladi.
+    """
+    return _decision_broken(
+        "apps/web/src/proxy.ts",
+        "  if (fromParam !== null) requestHeaders.set(LOCALE_HEADER, fromParam);\n"
+        "\n"
+        "  const response = boshqa_domen\n"
+        "    ? NextResponse.redirect(\n"
+        "        new URL(`${request.nextUrl.pathname}${request.nextUrl.search}`, canonical),\n"
+        "        301,\n"
+        "      )\n"
+        "    : NextResponse.next({ request: { headers: requestHeaders } });",
+        "  const response = boshqa_domen\n"
+        "    ? NextResponse.redirect(\n"
+        "        new URL(`${request.nextUrl.pathname}${request.nextUrl.search}`, canonical),\n"
+        "        301,\n"
+        "      )\n"
+        "    : NextResponse.next({ request: { headers: requestHeaders } });\n"
+        "  if (fromParam !== null) requestHeaders.set(LOCALE_HEADER, fromParam);",
+        "til havolada ham keladi",
+    )
+
+
+def neg_decisions_locale_link_not_remembered() -> tuple[bool, str]:
+    """Havoladagi til cookie'ga yozilmasa tutilsin (qaror S5b).
+
+    Usiz havola faqat BIRINCHI sahifani tuzatadi: har bir ichki bosish
+    qurilma tiliga qaytadi va ichki havolalarni o'zgartirish kerak bo'lardi.
+    """
+    return _decision_broken(
+        "apps/web/src/proxy.ts",
+        "    if (fromParam !== null) rememberLocale(response, fromParam);\n",
+        "",
+        "til havolada ham keladi",
+    )
+
+
+def neg_decisions_home_cache_ttl_dropped() -> tuple[bool, str]:
+    """Mehmon `s-maxage=30` olib tashlansa tutilsin."""
+    return _decision_broken(
+        "apps/web/src/lib/home-cache.ts",
+        '  "public, s-maxage=30, stale-while-revalidate=86400";',
+        '  "public, s-maxage=0, stale-while-revalidate=86400";',
+        "bosh sahifa mehmon CDN keshi",
+    )
+
+
+def neg_decisions_home_cache_logged_in_public() -> tuple[bool, str]:
+    """Kirgan javob `public` bo'lsa tutilsin — shaxsiy HTML CDN'ga tushadi."""
+    return _decision_broken(
+        "apps/web/src/lib/home-cache.ts",
+        'export const HOME_CACHE_PRIVATE = "private, no-store";',
+        'export const HOME_CACHE_PRIVATE = "public, s-maxage=30";',
+        "bosh sahifa mehmon CDN keshi",
+    )
+
+
+def neg_decisions_home_cache_proxy_unwired() -> tuple[bool, str]:
+    """Keshlangan GET `/` yana eksperiment cookie yozsa tutilsin."""
+    return _decision_broken(
+        "apps/web/src/proxy.ts",
+        "if (homeCache.assignExperiments) assignExperiments(request, response);",
+        "assignExperiments(request, response);",
+        "bosh sahifa mehmon CDN keshi",
+    )
+
+
+def neg_decisions_home_worker_catchall_restored() -> tuple[bool, str]:
+    """Worker yana `rankwant.uz/*` ni tutsa tutilsin — GET `/` kvotani yeydi."""
+    return _decision_broken(
+        "services/maintenance-worker/wrangler.toml",
+        '  { pattern = "rankwant.uz/a*", zone_name = "rankwant.uz" },',
+        '  { pattern = "rankwant.uz/*", zone_name = "rankwant.uz" },',
+        "bosh sahifa mehmon CDN keshi",
+    )
+
+
+def neg_decisions_login_worker_letter_restored() -> tuple[bool, str]:
+    """`l*` qaytsa `/login` yana Worker kvotasini yeydi."""
+    return _decision_broken(
+        "services/maintenance-worker/wrangler.toml",
+        '  { pattern = "rankwant.uz/leaderboard*", zone_name = "rankwant.uz" },',
+        '  { pattern = "rankwant.uz/l*", zone_name = "rankwant.uz" },',
+        "login mehmon CDN keshi",
+    )
+
+
+def neg_decisions_login_path_dropped() -> tuple[bool, str]:
+    """`/login` mehmon yo'lidan tushsa tutilsin."""
+    return _decision_broken(
+        "apps/web/src/lib/home-cache.ts",
+        '  if (pathname === "/login") return isLoginTabSearch(search);',
+        "",
+        "login mehmon CDN keshi",
+    )
+
+
+def neg_decisions_staff_ops_dropped() -> tuple[bool, str]:
+    """`staff-ops` guruhdan tushsa tutilsin."""
+    return _decision_broken(
+        "apps/api/core/groups.py",
+        'GROUPS: tuple[str, ...] = ("staff-support", "staff-content", "staff-ops")',
+        'GROUPS: tuple[str, ...] = ("staff-support", "staff-content")',
+        "staff guruhlari va obyekt mualliflari",
+    )
+
+
+def neg_decisions_organizers_related_name_dropped() -> tuple[bool, str]:
+    """Kontest organizatorlari M2M related_name o'zgarsa tutilsin."""
+    return _decision_broken(
+        "apps/api/contests/models.py",
+        'related_name="organized_contests"',
+        'related_name="organized"',
+        "staff guruhlari va obyekt mualliflari",
+    )
+
+
+def neg_decisions_authors_related_name_dropped() -> tuple[bool, str]:
+    """Masala mualliflari M2M related_name o'zgarsa tutilsin."""
+    return _decision_broken(
+        "apps/api/problems/models.py",
+        'related_name="authored_problems"',
+        'related_name="authored"',
+        "staff guruhlari va obyekt mualliflari",
+    )
+
+
+def neg_decisions_contests_mine_dropped() -> tuple[bool, str]:
+    """`contests/mine` marshrut tushsa tutilsin."""
+    return _decision_broken(
+        "apps/api/contests/urls.py",
+        'router.register("contests/mine", OrganizerContestViewSet, basename="mine-contest")',
+        'router.register("contests/owned", OrganizerContestViewSet, basename="mine-contest")',
+        "staff guruhlari va obyekt mualliflari",
+    )
+
+
+def neg_decisions_locale_choice_keeps_param() -> tuple[bool, str]:
+    """Qo'lda tanlov `?lang=` ni tozalamasa tutilsin.
+
+    Parametr qoldirilsa proxy uni har render'da cookie'dan ustun qo'yadi,
+    ya'ni odam ro'yxatdan boshqa tilni tanlaydi-yu sahifa eskisida qolaveradi.
+    """
+    return _decision_broken(
+        "apps/web/src/layout/LocaleSwitch.tsx",
+        "        url.searchParams.delete(LOCALE_PARAM);\n",
+        "",
+        "til havolada ham keladi",
+    )
+
+
+def neg_decisions_deploy_backup_after_migrate() -> tuple[bool, str]:
+    """Zaxira migratsiyadan KEYIN qolsa tutilsin.
+
+    Tartib buzilganda skript ishlaydi, natija esa noto'g'ri bo'ladi: sxema
+    zaxirasiz o'zgaradi va Django'da «orqaga» migratsiya yo'qligi uchun
+    qaytish yo'li qolmaydi. Mutatsiya `migrate` chaqiruvini zaxira
+    qadamidan OLDIN qo'yadi — ya'ni birinchi uchragan `run --rm migrate`
+    endi zaxiradan oldin turadi.
+    """
+    return _decision_broken(
+        "tools/deploy.sh",
+        'step "4/8 Migratsiyadan oldin zaxira (pg_dump)"',
+        '"${COMPOSE[@]}" run --rm migrate || true\n'
+        'step "4/8 Migratsiyadan oldin zaxira (pg_dump)"',
+        "avtomatik deploy xavfsiz",
+    )
+
+
+def neg_decisions_deploy_freeze_after_lock() -> tuple[bool, str]:
+    """Muzlatish qulfdan KEYIN tekshirilsa tutilsin.
+
+    Aks holda muzlatilgan tizim qulfni band qiladi va boshqa agentning
+    deploy'i «band» deb xato o'qiladi — ya'ni muzlatish o'z ishini
+    qilmaydi, faqat boshqalarni to'xtatadi.
+    """
+    return _decision_broken(
+        "tools/deploy.sh",
+        "# ── Muzlatish kaliti ──",
+        'mkdir "$LOCK" 2>/dev/null || true\n# ── Muzlatish kaliti ──',
+        "avtomatik deploy xavfsiz",
+    )
+
+
+def neg_decisions_deploy_tag_after_up() -> tuple[bool, str]:
+    """SHA teg `up` dan KEYIN qo'yilsa tutilsin.
+
+    `up` konteynerlarni yangi obrazga o'tkazadi va eski obraz «dangling»
+    bo'lib qoladi; keyin qo'yilgan teg o'shanga tushadi, ya'ni rollback
+    NOTO'G'RI kodni qaytaradi. Buni faqat rollback paytida bilib olishardi.
+    """
+    return _decision_broken(
+        "tools/deploy.sh",
+        "# ── 4. Rollback nuqtasi — SHA teg ──",
+        '"${COMPOSE[@]}" up -d --no-deps "${SERVICES[@]}" || true\n'
+        "# ── 4. Rollback nuqtasi — SHA teg ──",
+        "avtomatik deploy xavfsiz",
+    )
+
+
+def neg_decisions_auto_deploy_no_liveness() -> tuple[bool, str]:
+    """Watcher konteynerlar tirikligini tekshirmasa tutilsin.
+
+    `check_deploy.sh` konteyner YO'Q bo'lganda ham 0 qaytaradi (o'lchandi:
+    `missing` faqat xabar uchun, `exit 1` esa `stale`/`envbad` da). Ya'ni
+    stack yiqilgan bo'lsa watcher «ish yo'q» deb jim qolardi va sayt
+    ko'tarilmagan holda qolaverardi.
+    """
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        "if all_up; then",
+        "if true; then",
+        "avtomatik deploy xavfsiz",
+    )
+
+
+def neg_decisions_auto_deploy_attempt_after_deploy() -> tuple[bool, str]:
+    """Qayta urinish yozuvi deploy'dan KEYIN bo'lsa tutilsin.
+
+    Urinish yiqilgandan keyin yozilsa, yiqilgan yurish har 5 daqiqada
+    takrorlanadi: obraz qayta quriladi, disk to'ladi, log ko'miladi.
+    """
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        'record_attempt "$TARGET"',
+        'bash tools/deploy.sh --yes || true\nrecord_attempt "$TARGET"',
+        "avtomatik deploy xavfsiz",
+    )
+
+
+def neg_decisions_auto_deploy_env_hardcoded() -> tuple[bool, str]:
+    """Watcher `deploy.sh` ga BOSHQA env-faylni uzatsa tutilsin.
+
+    Deploy worktree'da `.env.public` yo'q (`.gitignore`: `.env.*`), ya'ni
+    watcher uni `RANKWANT_AUTO_DEPLOY_ENV` bilan tashqaridan ko'rsatadi.
+    Uzatish `$ENV_FILE` dan o'qilmay, qattiq yozilgan yo'l qolsa, watcher
+    bir faylni tekshirib boshqasini uzatadi: deploy bo'sh env bilan ketadi
+    va API har so'rovga 400 qaytaradi — xato faqat jonli saytda bilinadi.
+    """
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        'RANKWANT_ENV_FILE="$ENV_FILE"',
+        'RANKWANT_ENV_FILE="$LIVE_DIR/.env.public"',
+        "avtomatik deploy xavfsiz",
+    )
+
+
+def neg_decisions_auto_deploy_env_not_configurable() -> tuple[bool, str]:
+    """Watcher env-faylni worktree ichidan qidirsa tutilsin.
+
+    Standart qiymat `$LIVE_DIR/.env.public` bo'lib qolsa va override
+    bo'lmasa, deploy worktree'da (`.env.public` `.gitignore` da) watcher
+    har 5 daqiqada `die` qiladi — deploy umuman bo'lmaydi, log ko'miladi.
+    """
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        "RANKWANT_AUTO_DEPLOY_ENV:-$LIVE_DIR/.env.public",
+        "RANKWANT_AUTO_DEPLOY_ENV_UNUSED:-$LIVE_DIR/.env.public",
+        "avtomatik deploy xavfsiz",
+    )
+
+
+def neg_decisions_auto_deploy_env_unchecked() -> tuple[bool, str]:
+    """Watcher env-fayl borligini tekshirmasa tutilsin.
+
+    Tekshiruvsiz `deploy.sh` bo'sh `--env-file` bilan ketadi va `\\${VAR}`
+    o'rniga bo'sh satr qoladi: API har so'rovga 400 qaytaradi, lekin
+    konteynerlar «Up» turadi — sabab ko'rinmaydi.
+    """
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        '[ -f "$ENV_FILE" ] || die',
+        '[ -f "$ENV_FILE" ] || true #',
+        "avtomatik deploy xavfsiz",
+    )
+
+
+def neg_decisions_auto_deploy_lock_not_handed_off() -> tuple[bool, str]:
+    """Watcher qulfni `deploy.sh` ga topshirmasa tutilsin.
+
+    Watcher qulfni o'zi oladi; `deploy.sh` esa AYNAN o'sha qulfni so'raydi.
+    Topshirilmasa `mkdir` yiqiladi va watcher O'ZINI bloklaydi — avtomatik
+    deploy hech qachon ishlamaydi. O'lchandi 2026-09-19 (birinchi haqiqiy
+    yurish): «✗ boshqa deploy ishlayapti (auto-deploy pid 1303)».
+    """
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        "RANKWANT_LOCK_HELD=1 RANKWANT_ENV_FILE",
+        "RANKWANT_ENV_FILE",
+        "avtomatik deploy xavfsiz",
+    )
+
+
+def neg_decisions_deploy_ignores_lock_held() -> tuple[bool, str]:
+    """`deploy.sh` qulf topshirilishini tan olmasa tutilsin.
+
+    Chaqiruvchi «qulf menda» deb aytsa-yu, `deploy.sh` buni e'tiborsiz
+    qoldirsa — watcher yana o'zini bloklaydi.
+    """
+    return _decision_broken(
+        "tools/deploy.sh",
+        "${RANKWANT_LOCK_HELD:-0}",
+        "${RANKWANT_LOCK_HELD_UNUSED:-0}",
+        "avtomatik deploy xavfsiz",
+    )
+
+
+def neg_decisions_auto_deploy_stdin_not_opened() -> tuple[bool, str]:
+    """Watcher stdin'ni ochmasa tutilsin.
+
+    Vazifa (`conhost --headless`) farzandga stdin bermaydi; MSYS
+    `sha256sum` yopiq fd bilan yiqiladi va `check_deploy.sh` YOLG'ON
+    «ESKIRGAN» deydi — ya'ni watcher behuda deploy qo'zg'atadi.
+    """
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        "exec 0</dev/null",
+        "true # stdin ochilmadi",
+        "avtomatik deploy xavfsiz",
+    )
+
+
+def neg_decisions_check_deploy_stdin_dependent() -> tuple[bool, str]:
+    """`check_deploy.sh` xeshi atrofdagi stdin'ga tayansa tutilsin.
+
+    `sha256sum "$src"` yopiq stdin'da yiqilib bo'sh xesh beradi, natija
+    esa yolg'on «ESKIRGAN» (o'lchandi 2026-09-19: qo'lda «joriy»,
+    vazifada «3 konteyner eskirgan»).
+    """
+    return _decision_broken(
+        "tools/check_deploy.sh",
+        'sha256sum "$src" < /dev/null',
+        'sha256sum "$src"',
+        "avtomatik deploy xavfsiz",
     )
 
 
@@ -2301,7 +2677,7 @@ def neg_decisions_signin_label_wraps() -> tuple[bool, str]:
         "apps/web/src/layout/UserMenu.tsx",
         'className="flex h-10 items-center gap-2 whitespace-nowrap rw-radius-sm rw-accent-bg px-4 text-theme-sm font-medium text-white transition"',
         'className="flex h-10 items-center gap-2 rw-radius-sm rw-accent-bg px-4 text-theme-sm font-medium text-white transition"',
-        "header 320 px ga sig'adi",
+        "tor ekran 320 px ga sig'adi",
     )
 
 
@@ -2457,6 +2833,103 @@ def neg_decisions_dictionary_through_proxy() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_dictionary_cache_unsynced() -> tuple[bool, str]:
+    # The promise cache outliving the eviction: returning to a language that was
+    # already visited then injects no <script>, the registry stays empty and the
+    # page renders raw keys (measured 2026-09-19 — 38 of them).
+    return _decision_broken(
+        "apps/web/src/i18n/LocaleProvider.tsx",
+        "useEffect(() => keepOnly(locale), [locale]);",
+        "useEffect(() => evictOtherLocales(locale), [locale]);",
+        "lug'at qaytishda saqlanadi",
+    )
+
+
+# ── Content coverage is visible (owner decision 10, 2026-09-19) ──
+#
+# One test per clause of `content_coverage_visible`. Measured before the fix:
+# the fallback worked in 8 places but the marker appeared in 2, and the `uz`
+# dictionary was marked as a fallback on its own pages (unit test caught that:
+# `localNameInfo(skill, "uz").locale` was `null`).
+
+
+def neg_decisions_uz_marked_as_fallback() -> tuple[bool, str]:
+    # `uz` is the source language: reading Uzbek is the correct answer, not a
+    # fallback. Without the guard an `uz` chip lands on the Uzbek pages.
+    return _decision_broken(
+        "apps/web/src/i18n/messages.ts",
+        "if (locale === DEFAULT_LOCALE) {",
+        "if (false) {",
+        "kontent qamrovi ko'rinadi",
+    )
+
+
+def neg_decisions_content_source_locales_widened() -> tuple[bool, str]:
+    # Adding a locale to the source list claims its content names are
+    # translated. Only uz/ru/en have columns, so the list must not grow.
+    return _decision_broken(
+        "apps/web/src/i18n/messages.ts",
+        'export const CONTENT_NAME_LOCALES = ["uz", "ru", "en"] as const;',
+        'export const CONTENT_NAME_LOCALES = ["uz", "ru", "en", "kk"] as const;',
+        "kontent qamrovi ko'rinadi",
+    )
+
+
+def neg_decisions_content_marker_dropped() -> tuple[bool, str]:
+    # The tag cloud: the name is rendered without the marker, so a `zh`
+    # reader takes Uzbek for Chinese.
+    return _decision_broken(
+        "apps/web/src/components/ArchiveSidebar.tsx",
+        "<ContentName",
+        "{localName",
+        "kontent qamrovi ko'rinadi",
+    )
+
+
+def neg_decisions_content_marker_dropped_in_activity() -> tuple[bool, str]:
+    # Two call sites in one file: dropping either one must be caught, which is
+    # why the rule counts render sites instead of just looking for the symbol.
+    return _decision_broken(
+        "apps/web/src/components/profile/ActivityTabs.tsx",
+        "<ContentName",
+        "{localName",
+        "kontent qamrovi ko'rinadi",
+    )
+
+
+def neg_decisions_filter_chip_unmarked() -> tuple[bool, str]:
+    # The topic filter chip: the flag is what carries "this name is Uzbek"
+    # from the page into the shared `Option` component.
+    return _decision_broken(
+        "apps/web/src/components/ProblemFilters.tsx",
+        "fallback={root.fallback}",
+        "fallback={false}",
+        "kontent qamrovi ko'rinadi",
+    )
+
+
+def neg_decisions_content_text_untranslated() -> tuple[bool, str]:
+    # Native `<option>`: falling back to the untranslated form puts a bare
+    # `uz` token in front of a reader who does not know what it means.
+    return _decision_broken(
+        "apps/web/src/components/settings/SkillsSection.tsx",
+        "contentNameText(s, locale)",
+        "localName(s, locale)",
+        "kontent qamrovi ko'rinadi",
+    )
+
+
+def neg_decisions_selector_coverage_hidden() -> tuple[bool, str]:
+    # The language list is the only place that warns BEFORE the choice is
+    # made; hiding the marker sends the reader in blind.
+    return _decision_broken(
+        "apps/web/src/layout/LocaleSwitch.tsx",
+        "hasContentNames(code)",
+        "true",
+        "kontent qamrovi ko'rinadi",
+    )
+
+
 def neg_decisions_deploy_lock_removed() -> tuple[bool, str]:
     return _decision_broken(
         "tools/deploy.sh",
@@ -2474,69 +2947,129 @@ _TRIAL_WORKFLOW = (
 )
 
 
+# Every file `check_decisions.py` reads, staged for the sandbox below.
+#
+# This list is a hand-kept duplicate of the paths that live inside that script,
+# so it drifts. Measured 2026-09-19: a new rule made the check read
+# `LocaleProvider.tsx`, the sandbox did not copy it, and two UNRELATED
+# trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
+# `neg_decisions_sandbox_covers_reads` now fails locally and names the file.
+_DECISIONS_SANDBOX_FILES = (
+    "tools/check_decisions.py",
+    "tools/_console.py",
+    "tools/backup.sh",
+    "tools/push_guard.py",
+    "tools/deploy.sh",
+    "tools/runner/docker-compose.runner.yml",
+    "tools/runner/entrypoint.sh",
+    "tools/runner/recreate.sh",
+    "tools/runner_watchdog.py",
+    ".githooks/pre-push",
+    "CONTRIBUTING.md",
+    "CLAUDE.md",
+    # ADR-0023: the indexing decision lives in these two files.
+    "apps/web/src/lib/site.ts",
+    "apps/web/src/app/robots.ts",
+    # Intent prefetch (2026-09-18): the layout chrome and the link itself.
+    "apps/web/src/layout/AppSidebar.tsx",
+    "apps/web/src/layout/AppTopNav.tsx",
+    "apps/web/src/layout/AppFooter.tsx",
+    "apps/web/src/layout/HeaderStatus.tsx",
+    "apps/web/src/layout/UserMenu.tsx",
+    "apps/web/src/components/ui/IntentLink.tsx",
+    "apps/web/src/app/page.tsx",
+    # Dictionary as a cached file (2026-09-18).
+    "apps/web/src/app/layout.tsx",
+    "apps/web/src/app/i18n/[file]/route.ts",
+    "apps/web/src/proxy.ts",
+    # ADR-0024: the User columns added for competitor parity.
+    "apps/api/core/models.py",
+    # Header fits 320 px (2026-09-18): the locale control and the sign-in
+    # link. Missing from this list, the sandbox copy cannot be read and
+    # `check_decisions.py` fails with exit 2 — which is how the omission
+    # was caught.
+    "apps/web/src/layout/LocaleSwitch.tsx",
+    # Mobile drawer (2026-09-18): the trigger, the panel, the Escape
+    # handler and the scroll lock. `AppSidebar.tsx` is already listed
+    # above for the earlier header rule.
+    "apps/web/src/layout/AppHeader.tsx",
+    "apps/web/src/layout/AppShell.tsx",
+    "apps/web/src/context/SidebarContext.tsx",
+    # KPI grid 4-up from `lg` (2026-09-18): the card whose value steps down
+    # while the columns are narrow. Without it the sandbox copy cannot be
+    # read and the check exits 2 instead of testing anything.
+    "apps/web/src/components/ui/Card.tsx",
+    # Profile KPI grid steps at `xl` (2026-09-18): its content column is
+    # narrow because of the 300 px sidebar, so it cannot copy the home
+    # page's `lg`. Missing here, `check_decisions.py` exits 2.
+    "apps/web/src/app/users/[username]/layout.tsx",
+    # Difficulty range counts as one filter (2026-09-18): the badge reads
+    # this file. Missing here, `check_decisions.py` exits 2 rather than
+    # testing the rule.
+    "apps/web/src/components/ProblemFilters.tsx",
+    # Brand in the header, 3-column footer (2026-09-19): the rule reads the
+    # single-source `BrandMark`. Missing here, `check_decisions.py` exits 2.
+    "apps/web/src/layout/BrandMark.tsx",
+    # Dictionary cache in step with eviction (2026-09-19): the rule reads
+    # `keepOnly` and the promise cache inside the provider. Missing here,
+    # `check_decisions.py` exits 2 instead of testing the rule.
+    "apps/web/src/i18n/LocaleProvider.tsx",
+    # Content coverage visible (2026-09-19): the source of truth for which
+    # languages have content names, the shared marker, and every call site
+    # that draws it. Missing here, `check_decisions.py` exits 2.
+    "apps/web/src/i18n/messages.ts",
+    "apps/web/src/components/ui/UzFallbackBadge.tsx",
+    "apps/web/src/components/ArchiveSidebar.tsx",
+    "apps/web/src/components/profile/AboutTab.tsx",
+    "apps/web/src/components/profile/TopicStrength.tsx",
+    "apps/web/src/components/profile/ActivityTabs.tsx",
+    "apps/web/src/components/settings/SkillsSection.tsx",
+    "apps/web/src/app/problems/page.tsx",
+    # Locale in the URL (2026-09-19): the rule reads the single name source,
+    # the pure precedence function and the server reader. Missing here,
+    # `check_decisions.py` exits 2 instead of testing the rule.
+    "apps/web/src/i18n/locale-params.ts",
+    "apps/web/src/i18n/resolve.ts",
+    "apps/web/src/i18n/server.ts",
+    # Guest homepage CDN cache (2026-09-19). Missing here, the sandbox
+    # copy cannot be read and `check_decisions.py` fails with exit 2.
+    "apps/web/src/lib/home-cache.ts",
+    "services/maintenance-worker/wrangler.toml",
+    # 50k locked decisions (2026-09-19): SloView, cache_delete, compose.
+    "apps/api/core/views.py",
+    "apps/api/core/cache.py",
+    "apps/api/requirements.lock",
+    "docker-compose.yml",
+    "docker-compose.replicas.yml",
+    "compose/four-host/README.md",
+    # Automatic deploy (2026-09-19): the rule reads the watcher and the
+    # rollback path, and `tools/deploy.sh` is already listed above. Missing
+    # here, `check_decisions.py` exits 2 instead of testing the rule.
+    "tools/auto_deploy.sh",
+    "tools/rollback.sh",
+    # The stdin fix (2026-09-19): the rule reads the hash line that must not
+    # depend on the ambient stdin. Missing here, `check_decisions.py` exits 2.
+    "tools/check_deploy.sh",
+    # ADR-0025: staff Groups + object authors. Missing here,
+    # `check_decisions.py` exits 2 instead of testing the rule.
+    "apps/api/core/groups.py",
+    "apps/api/contests/models.py",
+    "apps/api/problems/models.py",
+    "apps/api/contests/urls.py",
+    "apps/api/problems/urls.py",
+    "apps/api/core/migrations/0021_seed_staff_groups.py",
+)
+
+
 def _decisions_sandbox(extra_workflows: dict[str, str]) -> tuple[int, str]:
     """`check_decisions.py` on a copy of the files it reads, plus extra workflows.
 
     Writing a workflow into the real `.github/workflows` could overwrite a real
     one or be left behind if the run is killed; a copy cannot.
     """
-    files = (
-        "tools/check_decisions.py",
-        "tools/_console.py",
-        "tools/backup.sh",
-        "tools/push_guard.py",
-        "tools/deploy.sh",
-        "tools/runner/docker-compose.runner.yml",
-        "tools/runner/entrypoint.sh",
-        "tools/runner/recreate.sh",
-        "tools/runner_watchdog.py",
-        ".githooks/pre-push",
-        "CONTRIBUTING.md",
-        "CLAUDE.md",
-        # ADR-0023: the indexing decision lives in these two files.
-        "apps/web/src/lib/site.ts",
-        "apps/web/src/app/robots.ts",
-        # Intent prefetch (2026-09-18): the layout chrome and the link itself.
-        "apps/web/src/layout/AppSidebar.tsx",
-        "apps/web/src/layout/AppTopNav.tsx",
-        "apps/web/src/layout/AppFooter.tsx",
-        "apps/web/src/layout/HeaderStatus.tsx",
-        "apps/web/src/layout/UserMenu.tsx",
-        "apps/web/src/components/ui/IntentLink.tsx",
-        "apps/web/src/app/page.tsx",
-        # Dictionary as a cached file (2026-09-18).
-        "apps/web/src/app/layout.tsx",
-        "apps/web/src/app/i18n/[file]/route.ts",
-        "apps/web/src/proxy.ts",
-        # ADR-0024: the User columns added for competitor parity.
-        "apps/api/core/models.py",
-        # Header fits 320 px (2026-09-18): the locale control and the sign-in
-        # link. Missing from this list, the sandbox copy cannot be read and
-        # `check_decisions.py` fails with exit 2 — which is how the omission
-        # was caught.
-        "apps/web/src/layout/LocaleSwitch.tsx",
-        # Mobile drawer (2026-09-18): the trigger, the panel, the Escape
-        # handler and the scroll lock. `AppSidebar.tsx` is already listed
-        # above for the earlier header rule.
-        "apps/web/src/layout/AppHeader.tsx",
-        "apps/web/src/layout/AppShell.tsx",
-        "apps/web/src/context/SidebarContext.tsx",
-        # KPI grid 4-up from `lg` (2026-09-18): the card whose value steps down
-        # while the columns are narrow. Without it the sandbox copy cannot be
-        # read and the check exits 2 instead of testing anything.
-        "apps/web/src/components/ui/Card.tsx",
-        # Profile KPI grid steps at `xl` (2026-09-18): its content column is
-        # narrow because of the 300 px sidebar, so it cannot copy the home
-        # page's `lg`. Missing here, `check_decisions.py` exits 2.
-        "apps/web/src/app/users/[username]/layout.tsx",
-        # Difficulty range counts as one filter (2026-09-18): the badge reads
-        # this file. Missing here, `check_decisions.py` exits 2 rather than
-        # testing the rule.
-        "apps/web/src/components/ProblemFilters.tsx",
-    )
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
-        for rel in files:
+        for rel in _DECISIONS_SANDBOX_FILES:
             (root / rel).parent.mkdir(parents=True, exist_ok=True)
             (root / rel).write_bytes((ROOT / rel).read_bytes())
         workflows = root / ".github/workflows"
@@ -2562,6 +3095,51 @@ def neg_decisions_trial_label_scoped() -> tuple[bool, str]:
     if code != 1 or "CI testlari hosted" not in out:
         return False, f"decisions/sinov label'i boshqa workflow'da: exit {code} — {out[-160:]}"
     return True, "decisions/sinov label'i boshqa workflow'da: tutildi (exit 1)"
+
+
+def _decisions_read_paths() -> set[str]:
+    """The repo files `check_decisions.py` reads, parsed from its own source.
+
+    Two shapes occur: a literal (`read("tools/deploy.sh")`) and a module
+    constant (`read(LOCALE_PROVIDER)`), so both are resolved. Anything else —
+    the helper's own `read(rel: str)`, a computed path — is skipped.
+    """
+    src = (ROOT / "tools/check_decisions.py").read_text(encoding="utf-8")
+    consts = dict(re.findall(r'^([A-Z][A-Z0-9_]*) = "([^"]+)"', src, re.M))
+    paths: set[str] = set()
+    for arg in re.findall(r"\bread\(\s*([^)]+?)\s*\)", src):
+        if arg.startswith('"') and arg.endswith('"'):
+            paths.add(arg[1:-1])
+        elif arg in consts:
+            paths.add(consts[arg])
+    return paths
+
+
+def neg_decisions_sandbox_covers_reads() -> tuple[bool, str]:
+    """The sandbox must stage every file `check_decisions.py` reads.
+
+    The staged list is a hand-kept duplicate of the paths inside that script,
+    so it drifts. Measured 2026-09-19: a new rule made the check read
+    `LocaleProvider.tsx`; the sandbox did not copy it and two UNRELATED
+    trial-label tests died in CI with exit 2 ("Qarorlarni o'qib bo'lmadi").
+    Drift must fail locally and name the file, not wait for CI to notice.
+    """
+    paths = _decisions_read_paths()
+    # A regex that stopped matching would make this test pass while measuring
+    # nothing — the same "0/0 ✓" silent green that `main()` guards against.
+    if len(paths) < 20:
+        return False, f"decisions/sandbox: faqat {len(paths)} yo'l topildi — tahlil ishlamadi"
+    staged = set(_DECISIONS_SANDBOX_FILES)
+    # The sandbox copies the whole workflows directory with a glob, so
+    # `ci.yml`/`deploy.yml` are staged even though no line names them. Read the
+    # directory rather than assume it: that is what the sandbox itself does.
+    staged |= {
+        f".github/workflows/{p.name}" for p in (ROOT / ".github/workflows").glob("*.yml")
+    }
+    missing = sorted(paths - staged)
+    if missing:
+        return False, f"decisions/sandbox: nusxalanmagan fayl(lar) — {', '.join(missing)}"
+    return True, f"decisions/sandbox: o'qilgan {len(paths)} fayl qamrab olingan"
 
 
 # ── Mobile drawer: announced, focusable, escapable, non-scrolling (2026-09-18) ──
@@ -2784,6 +3362,57 @@ def neg_decisions_difficulty_predicate_reverted() -> tuple[bool, str]:
         "      (key) => !DIFFICULTY_KEYS.includes(key) && params.get(key),\n",
         "      (key) => params.get(key),\n",
         _DIFFICULTY_RULE,
+    )
+
+
+# ── Brand in the header, 3-column footer (owner decision 2026-09-19) ──
+
+_BRAND_RULE = "brend headerda, footer uch ustun"
+_HEADER = "apps/web/src/layout/AppHeader.tsx"
+_SIDEBAR = "apps/web/src/layout/AppSidebar.tsx"
+_FOOTER = "apps/web/src/layout/AppFooter.tsx"
+
+
+def neg_decisions_header_brand_removed() -> tuple[bool, str]:
+    # The regression the decision fixes: no brand in the header, so on a
+    # phone the logo is only visible after opening the drawer.
+    return _decision_broken(_HEADER, "<BrandMark", "<div", _BRAND_RULE)
+
+
+def neg_decisions_sidebar_brand_back() -> tuple[bool, str]:
+    # Re-duplicating the wordmark in the sidebar breaks the single-source
+    # rule: three places would render the brand again.
+    return _decision_broken(
+        _SIDEBAR,
+        '<div className="flex h-16 items-center justify-end gap-1">',
+        '<div className="flex h-16 items-center justify-end gap-1">'
+        '<IntentLink href="/" className="text-lg font-bold">'
+        'Rank<span className="rw-accent-ink">Want</span></IntentLink>',
+        _BRAND_RULE,
+    )
+
+
+def neg_decisions_footer_single_column() -> tuple[bool, str]:
+    # Collapsing the footer to one column merges the contacts into the
+    # brand block — the 3-column structure the owner chose is gone.
+    return _decision_broken(
+        _FOOTER,
+        "lg:grid-cols-[1fr_auto_auto]",
+        "lg:grid-cols-1",
+        _BRAND_RULE,
+    )
+
+
+def neg_decisions_footer_privacy_link_lost() -> tuple[bool, str]:
+    # Privacy must be on EVERY page — Google OAuth verification expects it
+    # reachable from the footer (ADR-0016), so the legal row is load-bearing.
+    return _decision_broken(
+        _FOOTER,
+        '        <IntentLink href="/privacy" className="rw-focus-ring hover:underline">\n'
+        "          {t(locale, \"footer.privacy\")}\n"
+        "        </IntentLink>\n",
+        "",
+        _BRAND_RULE,
     )
 
 
@@ -3990,13 +4619,118 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("deploy push'ga qaytsa tutilsin", neg_decisions_deploy_on_push),
             ("til qoidasi o'chsa tutilsin", neg_decisions_language_rule),
             ("qarorlar jadvali o'chsa tutilsin", neg_decisions_table_removed),
-            ("til nomi tor ekranga qaytsa tutilsin", neg_decisions_locale_label_restored),
-            ("tor ekranda til kodi yo'qolsa tutilsin", neg_decisions_locale_code_hidden),
+            ("endonim tor ekranda chegarasiz qolsa tutilsin", neg_decisions_locale_label_unbounded),
+            ("tor ekranda til kodi qaytsa tutilsin", neg_decisions_locale_code_restored),
+            ("panel tor ekranda viewport'ga bog'lanmasa tutilsin", neg_decisions_locale_panel_not_anchored),
             (
-                "`aria-label` ko'rinadigan kodni yo'qotsa tutilsin",
+                "`aria-label` ko'rinadigan endonimni yo'qotsa tutilsin",
                 neg_decisions_locale_label_in_name_lost,
             ),
             ("kirish yorlig'i o'ralsa tutilsin", neg_decisions_signin_label_wraps),
+            (
+                "cookie havoladan ustun bo'lsa tutilsin",
+                neg_decisions_locale_cookie_beats_link,
+            ),
+            (
+                "til sarlavhasi `next()` dan keyin yozilsa tutilsin",
+                neg_decisions_locale_header_after_next,
+            ),
+            (
+                "havoladagi til cookie'ga yozilmasa tutilsin",
+                neg_decisions_locale_link_not_remembered,
+            ),
+            (
+                "tanlov `?lang=` ni tozalamasa tutilsin",
+                neg_decisions_locale_choice_keeps_param,
+            ),
+            (
+                "mehmon s-maxage olib tashlansa tutilsin",
+                neg_decisions_home_cache_ttl_dropped,
+            ),
+            (
+                "kirgan javob public bo'lsa tutilsin",
+                neg_decisions_home_cache_logged_in_public,
+            ),
+            (
+                "proxy kesh qarorini qo'llamasa tutilsin",
+                neg_decisions_home_cache_proxy_unwired,
+            ),
+            (
+                "worker catch-all qaytsa tutilsin",
+                neg_decisions_home_worker_catchall_restored,
+            ),
+            (
+                "login worker harfi qaytsa tutilsin",
+                neg_decisions_login_worker_letter_restored,
+            ),
+            (
+                "login yo'li tushsa tutilsin",
+                neg_decisions_login_path_dropped,
+            ),
+            (
+                "staff-ops tushsa tutilsin",
+                neg_decisions_staff_ops_dropped,
+            ),
+            (
+                "organizator related_name tushsa tutilsin",
+                neg_decisions_organizers_related_name_dropped,
+            ),
+            (
+                "muallif related_name tushsa tutilsin",
+                neg_decisions_authors_related_name_dropped,
+            ),
+            (
+                "contests/mine tushsa tutilsin",
+                neg_decisions_contests_mine_dropped,
+            ),
+            (
+                "zaxira migratsiyadan keyin qolsa tutilsin",
+                neg_decisions_deploy_backup_after_migrate,
+            ),
+            (
+                "muzlatish qulfdan keyin tekshirilsa tutilsin",
+                neg_decisions_deploy_freeze_after_lock,
+            ),
+            (
+                "SHA teg `up` dan keyin qo'yilsa tutilsin",
+                neg_decisions_deploy_tag_after_up,
+            ),
+            (
+                "watcher tiriklikni tekshirmasa tutilsin",
+                neg_decisions_auto_deploy_no_liveness,
+            ),
+            (
+                "qayta urinish yozuvi deploy'dan keyin bo'lsa tutilsin",
+                neg_decisions_auto_deploy_attempt_after_deploy,
+            ),
+            (
+                "deploy'ga boshqa env-fayl uzatilsa tutilsin",
+                neg_decisions_auto_deploy_env_hardcoded,
+            ),
+            (
+                "env-fayl worktree'dan tashqarida ko'rsatilmasa tutilsin",
+                neg_decisions_auto_deploy_env_not_configurable,
+            ),
+            (
+                "env-fayl borligi tekshirilmasa tutilsin",
+                neg_decisions_auto_deploy_env_unchecked,
+            ),
+            (
+                "qulf deploy'ga topshirilmasa tutilsin",
+                neg_decisions_auto_deploy_lock_not_handed_off,
+            ),
+            (
+                "deploy.sh qulf topshirilishini tan olmasa tutilsin",
+                neg_decisions_deploy_ignores_lock_held,
+            ),
+            (
+                "watcher stdin'ni ochmasa tutilsin",
+                neg_decisions_auto_deploy_stdin_not_opened,
+            ),
+            (
+                "check_deploy xeshi stdin'ga tayansa tutilsin",
+                neg_decisions_check_deploy_stdin_dependent,
+            ),
             ("deploy darvozasi uzilsa tutilsin", neg_decisions_deploy_gate_unwired),
             ("deploy qulfi olib tashlansa tutilsin", neg_decisions_deploy_lock_removed),
             ("deploy web'ni qurmasa tutilsin", neg_decisions_deploy_skips_web),
@@ -4008,9 +4742,33 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("lug'at prop'ga qaytsa tutilsin", neg_decisions_dictionary_prop),
             ("lug'at fayli keshlanmasa tutilsin", neg_decisions_dictionary_not_cached),
             ("lug'at middleware'dan o'tsa tutilsin", neg_decisions_dictionary_through_proxy),
+            (
+                "qaytib o'sha tilga o'tilsa lug'at yo'qolsa tutilsin",
+                neg_decisions_dictionary_cache_unsynced,
+            ),
+            ("`uz` o'z qaytishi deb belgilansa tutilsin", neg_decisions_uz_marked_as_fallback),
+            (
+                "qamrov ro'yxatiga begona til qo'shilsa tutilsin",
+                neg_decisions_content_source_locales_widened,
+            ),
+            ("teg bulutida belgi tushsa tutilsin", neg_decisions_content_marker_dropped),
+            (
+                "faoliyatda ikkinchi belgi tushsa tutilsin",
+                neg_decisions_content_marker_dropped_in_activity,
+            ),
+            ("filtr chipida belgi o'chsa tutilsin", neg_decisions_filter_chip_unmarked),
+            (
+                "native option belgisi tarjimasiz qolsa tutilsin",
+                neg_decisions_content_text_untranslated,
+            ),
+            (
+                "tanlash ro'yxati qamrovni yashirsa tutilsin",
+                neg_decisions_selector_coverage_hidden,
+            ),
             ("User'dan tenglik ustuni o'chsa tutilsin", neg_decisions_dormant_user_field_removed),
             ("sinov label'i self-test'da o'tadi", neg_decisions_trial_label_selftest_allowed),
             ("sinov label'i boshqa workflow'da tutilsin", neg_decisions_trial_label_scoped),
+            ("sandbox o'qilgan hamma faylni nusxalaydi", neg_decisions_sandbox_covers_reads),
             ("Security PR'da qaytsa tutilsin", neg_decisions_security_on_pr),
             ("smoke PR'da qaytsa tutilsin", neg_decisions_smoke_on_pr),
             ("runner-2 profile tushsa tutilsin", neg_decisions_runner2_profile_dropped),
@@ -4032,6 +4790,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("diapazon doimiysidan `level` tushib qolsa tutilsin", neg_decisions_difficulty_keys_missing_level),
             ("diapazon yana kalit bo'yicha sanalsa tutilsin", neg_decisions_difficulty_count_ignores_keys),
             ("diapazon predikati doimiyni tashlasa tutilsin", neg_decisions_difficulty_predicate_reverted),
+            ("header brendi o'chirilsa tutilsin", neg_decisions_header_brand_removed),
+            ("sidebar brendi qaytsa tutilsin", neg_decisions_sidebar_brand_back),
+            ("footer bitta ustunga tushsa tutilsin", neg_decisions_footer_single_column),
+            ("footer privacy havolasi yo'qolsa tutilsin", neg_decisions_footer_privacy_link_lost),
         ],
     ),
     (

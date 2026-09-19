@@ -642,7 +642,6 @@ paths:
       tags:
       - auth
       security:
-      - cookieAuth: []
       - {}
       responses:
         '200':
@@ -1213,6 +1212,239 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Registration'
+          description: ''
+  /api/v1/contests/mine/:
+    get:
+      operationId: contests_mine_list
+      description: |-
+        O'z kontestlari — draft yaratish, tahrirlash, o'chirish.
+
+        Yo'q qilish faqat nashr qilinmagan (draft) kontestga ruxsat: reyting
+        tarixi va sertifikatlar saqlanishi shart.
+      summary: kontestlar ro'yxati
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - contests
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOrganizerContestList'
+          description: ''
+    post:
+      operationId: contests_mine_create
+      description: |-
+        O'z kontestlari — draft yaratish, tahrirlash, o'chirish.
+
+        Yo'q qilish faqat nashr qilinmagan (draft) kontestga ruxsat: reyting
+        tarixi va sertifikatlar saqlanishi shart.
+      summary: Yangi kontest yaratish
+      tags:
+      - contests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizerContest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrganizerContest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrganizerContest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizerContest'
+          description: ''
+  /api/v1/contests/mine/{slug}/:
+    get:
+      operationId: contests_mine_retrieve
+      description: |-
+        O'z kontestlari — draft yaratish, tahrirlash, o'chirish.
+
+        Yo'q qilish faqat nashr qilinmagan (draft) kontestga ruxsat: reyting
+        tarixi va sertifikatlar saqlanishi shart.
+      summary: Bitta kontest
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - contests
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizerContest'
+          description: ''
+    put:
+      operationId: contests_mine_update
+      description: |-
+        O'z kontestlari — draft yaratish, tahrirlash, o'chirish.
+
+        Yo'q qilish faqat nashr qilinmagan (draft) kontestga ruxsat: reyting
+        tarixi va sertifikatlar saqlanishi shart.
+      summary: kontestni yangilash
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - contests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizerContest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrganizerContest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrganizerContest'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizerContest'
+          description: ''
+    patch:
+      operationId: contests_mine_partial_update
+      description: |-
+        O'z kontestlari — draft yaratish, tahrirlash, o'chirish.
+
+        Yo'q qilish faqat nashr qilinmagan (draft) kontestga ruxsat: reyting
+        tarixi va sertifikatlar saqlanishi shart.
+      summary: kontestni qisman yangilash
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - contests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganizerContest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganizerContest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganizerContest'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizerContest'
+          description: ''
+    delete:
+      operationId: contests_mine_destroy
+      description: |-
+        O'z kontestlari — draft yaratish, tahrirlash, o'chirish.
+
+        Yo'q qilish faqat nashr qilinmagan (draft) kontestga ruxsat: reyting
+        tarixi va sertifikatlar saqlanishi shart.
+      summary: kontestni o'chirish
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - contests
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/contests/mine/{slug}/participants/:
+    get:
+      operationId: contests_mine_participants_list
+      description: |-
+        O'z kontestlari — draft yaratish, tahrirlash, o'chirish.
+
+        Yo'q qilish faqat nashr qilinmagan (draft) kontestga ruxsat: reyting
+        tarixi va sertifikatlar saqlanishi shart.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - contests
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOrganizerParticipantList'
           description: ''
   /api/v1/custom-test/:
     post:
@@ -3515,6 +3747,166 @@ paths:
               schema:
                 type: object
           description: ''
+  /api/v1/problems/mine/:
+    get:
+      operationId: problems_mine_list
+      summary: draft masalalar ro'yxati
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - problems
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMineProblemList'
+          description: ''
+    post:
+      operationId: problems_mine_create
+      summary: Yangi draft masala yaratish
+      tags:
+      - problems
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MineProblem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MineProblem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MineProblem'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MineProblem'
+          description: ''
+  /api/v1/problems/mine/{slug}/:
+    get:
+      operationId: problems_mine_retrieve
+      summary: Bitta draft masala
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - problems
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MineProblem'
+          description: ''
+    put:
+      operationId: problems_mine_update
+      summary: draft masalani yangilash
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - problems
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MineProblem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MineProblem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MineProblem'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MineProblem'
+          description: ''
+    patch:
+      operationId: problems_mine_partial_update
+      summary: draft masalani qisman yangilash
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - problems
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMineProblem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMineProblem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMineProblem'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MineProblem'
+          description: ''
+    delete:
+      operationId: problems_mine_destroy
+      summary: draft masalani o'chirish
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - problems
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/problems/progress/:
     get:
       operationId: problems_progress_retrieve
@@ -4086,6 +4478,23 @@ paths:
                 items:
                   $ref: '#/components/schemas/Skill'
           description: ''
+  /api/v1/slo/:
+    get:
+      operationId: slo_retrieve
+      description: |-
+        Kuzatuv. Load balancer bunisi bilan instansiyani chiqarmaydi.
+
+        `HealthView` DB/Redis o'lganda 503. Bu yerda navbat uzunligi
+        axborot: 50k / contest oldidan judge host qo'shish uchun.
+        Sentry yo'q (2026-09-19 qaror).
+      summary: Sig'im signallari
+      tags:
+      - slo
+      security:
+      - {}
+      responses:
+        '200':
+          description: Judge navbati va bog'liqliklar
   /api/v1/staff/analytics/:
     get:
       operationId: staff_analytics_retrieve
@@ -7577,17 +7986,6 @@ paths:
   /api/v1/staff/schools/:
     get:
       operationId: staff_schools_list
-      description: |-
-        Maktab katalogi — to'liq CRUD (ADR-0017).
-
-        Nega bu API kerak bo'ldi: ADR "moderator admin paneldan to'ldiradi"
-        deydi, lekin amalda uni to'ldirishning YO'LI yo'q edi —
-        `ADMIN_ENABLED` production'da ataylab o'chiq, `SchoolViewSet` esa
-        faqat o'qish uchun. Ya'ni maktab reytingi va sinfdoshlar bo'sh
-        qolib ketardi.
-
-        Qolgan staff yuzalari bilan bir xil qoida: faqat `is_staff` va faqat
-        sessiya (PAT emas — `StaffViewSet` dagi `SessionOnly`).
       summary: maktablar ro'yxati
       parameters:
       - name: ordering
@@ -7627,17 +8025,6 @@ paths:
           description: ''
     post:
       operationId: staff_schools_create
-      description: |-
-        Maktab katalogi — to'liq CRUD (ADR-0017).
-
-        Nega bu API kerak bo'ldi: ADR "moderator admin paneldan to'ldiradi"
-        deydi, lekin amalda uni to'ldirishning YO'LI yo'q edi —
-        `ADMIN_ENABLED` production'da ataylab o'chiq, `SchoolViewSet` esa
-        faqat o'qish uchun. Ya'ni maktab reytingi va sinfdoshlar bo'sh
-        qolib ketardi.
-
-        Qolgan staff yuzalari bilan bir xil qoida: faqat `is_staff` va faqat
-        sessiya (PAT emas — `StaffViewSet` dagi `SessionOnly`).
       summary: Yangi maktab yaratish
       tags:
       - staff
@@ -7665,17 +8052,6 @@ paths:
   /api/v1/staff/schools/{id}/:
     get:
       operationId: staff_schools_retrieve
-      description: |-
-        Maktab katalogi — to'liq CRUD (ADR-0017).
-
-        Nega bu API kerak bo'ldi: ADR "moderator admin paneldan to'ldiradi"
-        deydi, lekin amalda uni to'ldirishning YO'LI yo'q edi —
-        `ADMIN_ENABLED` production'da ataylab o'chiq, `SchoolViewSet` esa
-        faqat o'qish uchun. Ya'ni maktab reytingi va sinfdoshlar bo'sh
-        qolib ketardi.
-
-        Qolgan staff yuzalari bilan bir xil qoida: faqat `is_staff` va faqat
-        sessiya (PAT emas — `StaffViewSet` dagi `SessionOnly`).
       summary: Bitta maktab
       parameters:
       - in: path
@@ -7697,17 +8073,6 @@ paths:
           description: ''
     patch:
       operationId: staff_schools_partial_update
-      description: |-
-        Maktab katalogi — to'liq CRUD (ADR-0017).
-
-        Nega bu API kerak bo'ldi: ADR "moderator admin paneldan to'ldiradi"
-        deydi, lekin amalda uni to'ldirishning YO'LI yo'q edi —
-        `ADMIN_ENABLED` production'da ataylab o'chiq, `SchoolViewSet` esa
-        faqat o'qish uchun. Ya'ni maktab reytingi va sinfdoshlar bo'sh
-        qolib ketardi.
-
-        Qolgan staff yuzalari bilan bir xil qoida: faqat `is_staff` va faqat
-        sessiya (PAT emas — `StaffViewSet` dagi `SessionOnly`).
       summary: maktabni qisman yangilash
       parameters:
       - in: path
@@ -7740,17 +8105,6 @@ paths:
           description: ''
     delete:
       operationId: staff_schools_destroy
-      description: |-
-        Maktab katalogi — to'liq CRUD (ADR-0017).
-
-        Nega bu API kerak bo'ldi: ADR "moderator admin paneldan to'ldiradi"
-        deydi, lekin amalda uni to'ldirishning YO'LI yo'q edi —
-        `ADMIN_ENABLED` production'da ataylab o'chiq, `SchoolViewSet` esa
-        faqat o'qish uchun. Ya'ni maktab reytingi va sinfdoshlar bo'sh
-        qolib ketardi.
-
-        Qolgan staff yuzalari bilan bir xil qoida: faqat `is_staff` va faqat
-        sessiya (PAT emas — `StaffViewSet` dagi `SessionOnly`).
       summary: maktabni o'chirish
       parameters:
       - in: path
@@ -12027,6 +12381,41 @@ components:
       - streak_freeze_until
       - username
       - username_change
+    MineProblem:
+      type: object
+      description: |-
+        Muallif yuzasi (ADR-0025): o'z DRAFT masalasini boshqaradi.
+
+        `is_public` faqat O'QISH — nashr staff-ops qarori (masala sifati,
+        testlar to'plami va reyting tozaligi nashrdan oldin ko'rib chiqiladi).
+      properties:
+        slug:
+          type: string
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        statement:
+          type: string
+          description: Markdown + LaTeX
+        editorial:
+          type: string
+          description: Markdown + LaTeX
+        difficulty:
+          type: integer
+          maximum: 3500
+          minimum: 800
+          description: 800–3500, qadam 100
+        is_public:
+          type: boolean
+          readOnly: true
+      required:
+      - difficulty
+      - is_public
+      - slug
+      - statement
+      - title
     ModuleEnum:
       enum:
       - problems
@@ -12107,6 +12496,64 @@ components:
         * `duel` - Duel
         * `hack` - Hack
         * `system` - Tizim
+    OrganizerContest:
+      type: object
+      description: |-
+        Organizator ko'radigan maydonlar.
+
+        `is_public` va `is_rated` — faqat O'QISH: nashr va reyting qo'llash
+        staff-ops qarori (masala sifati va reyting tozaligi — ADR-0006/0013).
+      properties:
+        slug:
+          type: string
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        start_at:
+          type: string
+          format: date-time
+        end_at:
+          type: string
+          format: date-time
+        freeze_minutes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          description: Oxirgi N daqiqada standings muzlatiladi
+        scoring_type:
+          $ref: '#/components/schemas/ScoringTypeEnum'
+        is_public:
+          type: boolean
+          readOnly: true
+        is_rated:
+          type: boolean
+          readOnly: true
+      required:
+      - end_at
+      - is_public
+      - is_rated
+      - slug
+      - start_at
+      - title
+    OrganizerParticipant:
+      type: object
+      properties:
+        username:
+          type: string
+        display_name:
+          type: string
+        registered_at:
+          type: string
+          format: date-time
+      required:
+      - display_name
+      - registered_at
+      - username
     PaginatedApiTokenList:
       type: object
       required:
@@ -12398,6 +12845,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Language'
+    PaginatedMineProblemList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MineProblem'
     PaginatedNotificationList:
       type: object
       required:
@@ -12417,6 +12887,52 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Notification'
+    PaginatedOrganizerContestList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrganizerContest'
+    PaginatedOrganizerParticipantList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrganizerParticipant'
     PaginatedPostListList:
       type: object
       required:
@@ -13515,6 +14031,72 @@ components:
         date_joined:
           type: string
           format: date-time
+          readOnly: true
+    PatchedMineProblem:
+      type: object
+      description: |-
+        Muallif yuzasi (ADR-0025): o'z DRAFT masalasini boshqaradi.
+
+        `is_public` faqat O'QISH — nashr staff-ops qarori (masala sifati,
+        testlar to'plami va reyting tozaligi nashrdan oldin ko'rib chiqiladi).
+      properties:
+        slug:
+          type: string
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        statement:
+          type: string
+          description: Markdown + LaTeX
+        editorial:
+          type: string
+          description: Markdown + LaTeX
+        difficulty:
+          type: integer
+          maximum: 3500
+          minimum: 800
+          description: 800–3500, qadam 100
+        is_public:
+          type: boolean
+          readOnly: true
+    PatchedOrganizerContest:
+      type: object
+      description: |-
+        Organizator ko'radigan maydonlar.
+
+        `is_public` va `is_rated` — faqat O'QISH: nashr va reyting qo'llash
+        staff-ops qarori (masala sifati va reyting tozaligi — ADR-0006/0013).
+      properties:
+        slug:
+          type: string
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        start_at:
+          type: string
+          format: date-time
+        end_at:
+          type: string
+          format: date-time
+        freeze_minutes:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          description: Oxirgi N daqiqada standings muzlatiladi
+        scoring_type:
+          $ref: '#/components/schemas/ScoringTypeEnum'
+        is_public:
+          type: boolean
+          readOnly: true
+        is_rated:
+          type: boolean
           readOnly: true
     PatchedStaffArena:
       type: object

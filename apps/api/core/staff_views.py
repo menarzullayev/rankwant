@@ -17,7 +17,6 @@ from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_sche
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.exceptions import MethodNotAllowed, ValidationError
-from rest_framework.permissions import IsAdminUser
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -25,7 +24,14 @@ from rest_framework.views import APIView
 from core import mail_quota
 from core.models import AnalyticsEvent, School, User
 from core.openapi_docs import crud_summaries
-from core.staff import SessionOnly, StaffViewSet
+from core.permissions import (
+    STAFF_GROUP_OPS,
+    STAFF_GROUP_SUPPORT,
+    StaffContent,
+    StaffOps,
+    require_staff_group,
+)
+from core.staff import StaffViewSet
 from core.staff_serializers import (
     QvantAdjustSerializer,
     StaffNotifySerializer,
@@ -68,9 +74,19 @@ class StaffUserViewSet(StaffViewSet):
     def create(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         raise MethodNotAllowed("POST")
 
+    def update(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        """Foydalanuvchi tahriri — faqat `staff-ops` (ADR-0025).
+
+        Ro'yxat/ko'rish har xodimga ochiq; yozish (bio, `is_active` bloklash)
+        — operatsion guruhda. `partial_update` ham shu metonga keladi.
+        """
+        require_staff_group(request.user, STAFF_GROUP_OPS)
+        return super().update(request, *args, **kwargs)
+
     @action(detail=True, methods=["post"])
     def qvant(self, request: Request, username: str | None = None) -> Response:
         """Qvant tuzatish: musbat — kunlik shiftsiz kredit, manfiy — debit."""
+        require_staff_group(request.user, STAFF_GROUP_OPS)
         user = self.get_object()
         ser = QvantAdjustSerializer(data=request.data)
         ser.is_valid(raise_exception=True)
@@ -91,6 +107,8 @@ class StaffUserViewSet(StaffViewSet):
 
     @action(detail=True, methods=["post"])
     def notify(self, request: Request, username: str | None = None) -> Response:
+        # Xabar yuborish — yordam amali: `staff-support` yoki `staff-ops`.
+        require_staff_group(request.user, STAFF_GROUP_SUPPORT, STAFF_GROUP_OPS)
         user = self.get_object()
         ser = StaffNotifySerializer(data=request.data)
         ser.is_valid(raise_exception=True)
@@ -105,6 +123,7 @@ class StaffUserViewSet(StaffViewSet):
 
     @action(detail=False, methods=["post"])
     def broadcast(self, request: Request) -> Response:
+        require_staff_group(request.user, STAFF_GROUP_SUPPORT, STAFF_GROUP_OPS)
         ser = StaffNotifySerializer(data=request.data)
         ser.is_valid(raise_exception=True)
         count = notifications.notify_many(
@@ -119,6 +138,8 @@ class StaffUserViewSet(StaffViewSet):
 
 @crud_summaries(one="maktab", many="maktablar")
 class StaffSchoolViewSet(StaffViewSet):
+    # Katalog (ADR-0017) — `staff-content` guruhida (ADR-0025).
+    permission_classes = [StaffContent]
     """Maktab katalogi — to'liq CRUD (ADR-0017).
 
     Nega bu API kerak bo'ldi: ADR "moderator admin paneldan to'ldiradi"
@@ -163,7 +184,8 @@ class StaffAnalyticsView(APIView):
     CRUD emas, ya'ni ro'yxat/paginatsiya tushunchalari yo'q.
     """
 
-    permission_classes = [IsAdminUser, SessionOnly]
+    # Voronka va kvota — operatsion ko'rish (ADR-0025).
+    permission_classes = [StaffOps]
 
     #: Voronka ketma-ketligi — ulushlar BIRINCHI qadamga nisbatan.
     #: `auth.step2_*` bu yerda YO'Q: ular ketma-ket qadam emas, tarmoq
@@ -390,7 +412,8 @@ class StaffEmailQuotaView(APIView):
     emas. O'lchandi 2026-09-18.
     """
 
-    permission_classes = [IsAdminUser, SessionOnly]
+    # Voronka va kvota — operatsion ko'rish (ADR-0025).
+    permission_classes = [StaffOps]
 
     @extend_schema(
         parameters=[

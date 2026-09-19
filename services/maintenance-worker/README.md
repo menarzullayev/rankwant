@@ -26,7 +26,9 @@ npx wrangler deploy
 ```
 
 `wrangler login` brauzerda Cloudflare hisobiga ruxsat so'raydi (bir marta).
-Route'lar `wrangler.toml` da: `rankwant.uz/*` va `www.rankwant.uz/*`.
+Route'lar `wrangler.toml` da: harf prefikslari + aniq yo'llar
+(`leaderboard*`, `problems*`, …). GET `/`, `/login`, `/register`,
+`/terms`, `/privacy` ATAYLAB yo'q — mehmon CDN Worker kvotasini yemasin.
 
 Dashboard orqali ham bo'ladi: Workers & Pages → Create → Worker →
 `src/index.js` ni joylash → Settings → Domains & Routes → ikkala route.
@@ -61,8 +63,9 @@ cd services/maintenance-worker && npx wrangler login
 
 ## Cheklov
 
-Worker HAR so'rovda ishlaydi, sayt soz paytida ham. Bepul tarif kuniga
-100 000 so'rov beradi. Standings keshi buzilmaydi — Worker ichidagi `fetch`
+Worker GET `/` dan tashqari HAR so'rovda ishlaydi, sayt soz paytida ham.
+Bepul tarif kuniga 100 000 so'rov beradi. Bosh sahifa ochilishi endi
+kvotaga kirmaydi. Standings keshi buzilmaydi — Worker ichidagi `fetch`
 Cloudflare keshidan o'tadi — lekin chaqiruvlar soni baribir hisoblanadi.
 10-operations dagi katta contest ssenariysi (7 300 so'rov/s) bunga sig'maydi:
 undan oldin Workers Paid tarifiga o'tish yoki route'ni vaqtincha olib tashlash

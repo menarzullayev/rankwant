@@ -75,20 +75,9 @@ export default function AppSidebar() {
  ${wide ? "w-[260px] px-4" : "w-[86px] px-2"}
  ${isMobileOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
     >
-      <div className="flex h-16 items-center justify-between gap-1">
-        <IntentLink
-          href="/"
-          className="text-lg font-bold"
-          onClick={closeMobileSidebar}
-        >
-          {wide ? (
-            <>
-              Rank<span className="rw-accent-ink">Want</span>
-            </>
-          ) : (
-            <span className="rw-accent-ink">R</span>
-          )}
-        </IntentLink>
+      {/* Brend endi header'da (qaror 22) — panel tepasida faqat
+          yopish/yig'ish tugmalari qoladi, nav bir qatorga ko'tariladi. */}
+      <div className="flex h-16 items-center justify-end gap-1">
         <button
           type="button"
           ref={closeButtonRef}

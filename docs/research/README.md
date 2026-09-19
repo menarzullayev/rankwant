@@ -46,3 +46,6 @@ kirill matn, yozilganicha qolgan jadvallar.
 | 2026-09-18 | [user-model-benchmark](2026-09-18-user-model-benchmark/REPORT.md) | User modeli Codeforces, Robocontest va KEP bilan: 77 atribut, raqobatchilardagi 74 tadan 57 tasi bizda bor; taklif — 8 ta yangi ustun (46 → 54), 3 ta o'zgarish, 7 ta funksiyaga bog'liq band | — |
 | 2026-09-18 | [problems-archive-adopt](2026-09-18-problems-archive-adopt/REPORT.md) | `/problems` arxivi: CF range+exclude, KEP ikki qatlam/like/muallif, sidebar mashhur+teg buluti | `apps/web/src/app/problems/page.tsx` |
 | 2026-09-18 | [ci-hosted-public](2026-09-18-ci-hosted-public/REPORT.md) | Public repo standard Actions ni $0 qiladi, 4 vCPU; larger runner pullik; keyin HITL — CI `ubuntu-latest` | `ci.yml` → `ubuntu-latest` |
+| 2026-09-19 | [login-load](2026-09-19-login-load/REPORT.md) | `/login?tab=login` origin: 20/50/100 VU + 100/200/300 spike, 100k ekstrapolatsiya | — |
+| 2026-09-19 | [register-load](2026-09-19-register-load/REPORT.md) | `/login?tab=register` tab HTML: login bilan bir xil shift (~190/s), POST o‘lchanmadi | — |
+| 2026-09-19 | [scale-50k](2026-09-19-scale-50k/RECOMMENDATIONS.md) · [implementatsiya](2026-09-19-scale-50k/IMPLEMENTATION.md) | 50k: 7 qaror + modul kod + o‘lchov (baseline 09-17/19) | `home-cache.ts`, `SloView`, `docker-compose.replicas.yml` |

@@ -227,6 +227,10 @@ export const tg: Record<MessageKey, string> = {
   "auth.linkBody": "Ин email аллакай истифода шудааст. Барои пайваст рамзи худро ворид кунед.",
   "auth.linkCta": "Пайваст кардан",
   "auth.socialError": "Ворид шудан муяссар нашуд. Аз нав кӯшиш кунед.",
+  "footer.tagline": "Платформаи барномасозии варзишӣ барои Ӯзбекистон",
+  "footer.platform": "Платформа",
+  "footer.contact": "Тамос ва ҷомеа",
+  "footer.copyright": "© {year} RankWant. Ҳамаи ҳуқуқҳо ҳифз шудаанд.",
   "footer.terms": "Шартҳо",
   "footer.privacy": "Махфият",
   "auth.usernameRequired": "Тахаллус 3–30 аломат: холӣ намонад",
@@ -945,6 +949,7 @@ export const tg: Record<MessageKey, string> = {
   "locale.group.broad": "Фароҳи васеъ",
   "locale.loading": "Боргирӣ",
   "locale.listLabel": "Рӯйхати забонҳо",
+  "locale.contentUz": "номҳо uz",
   "content.uzOnly": "Ин ном ба забони ӯзбекӣ аст — тарҷума омода мешавад",
 
   // ---- Problem page: sections, actions, samples ----

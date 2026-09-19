@@ -231,6 +231,10 @@ export const uz = {
   "auth.linkBody": "Bu email allaqachon ishlatilgan. Bog'lash uchun parolingizni kiriting.",
   "auth.linkCta": "Bog'lash",
   "auth.socialError": "Kirish amalga oshmadi. Qayta urinib ko'ring.",
+  "footer.tagline": "O'zbekistonlik dasturchilar uchun CP/OJ platformasi",
+  "footer.platform": "Platforma",
+  "footer.contact": "Aloqa va jamiyat",
+  "footer.copyright": "© {year} RankWant. Barcha huquqlar himoyalangan.",
   "footer.terms": "Shartlar",
   "footer.privacy": "Maxfiylik",
   "auth.usernameRequired": "Taxallus 3–30 belgi: bo'sh qolmasin",
@@ -948,6 +952,7 @@ export const uz = {
   "locale.group.broad": "Keng qamrov",
   "locale.loading": "Yuklanmoqda",
   "locale.listLabel": "Tillar ro'yxati",
+  "locale.contentUz": "nomlar uz",
   "content.uzOnly": "Bu nom o'zbekcha — tarjimasi tayyorlanmoqda",
 
   // ---- Masala sahifasi: bo'limlar, harakatlar, namunalar ----------------

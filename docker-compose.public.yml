@@ -93,6 +93,7 @@ services:
       # soxtalashtira olmaydi. Port faqat 127.0.0.1 da, tashqariga
       # tunnel chiqaradi — demak Cloudflare'ni chetlab o'tib bo'lmaydi.
       TRUSTED_CLIENT_IP_HEADER: HTTP_CF_CONNECTING_IP
+      GUNICORN_WORKERS: ${GUNICORN_WORKERS:-4}
 
   worker:
     <<: *restart

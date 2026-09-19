@@ -102,6 +102,9 @@ class TestSozlash:
 
     @pytest.mark.django_db
     def test_endpoint_royxatni_qaytaradi(self, sozlangan: Any) -> None:
+        from django.core.cache import cache
+
+        cache.delete("auth-providers")
         r = APIClient().get(reverse("auth-providers"))
 
         assert r.status_code == 200

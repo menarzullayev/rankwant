@@ -36,6 +36,12 @@
 # Bitta arxiv butunligini docker'siz tekshirish (salbiy test shuni
 # ishlatadi):
 #   tools/backup.sh --verify-dump <fayl.sql.gz>
+#
+# Deploy'DAN OLDIN tez, faqat-Postgres dump. To'liq zaxira (MinIO, offsite,
+# tiklash sinovi) oyiga bir marta olinadi — ya'ni migratsiya buzsa 30 kungacha
+# orqaga qaytish kerak bo'lardi. Bu rejim o'sha teshikni yopadi: sxemaga
+# tegadigan har deploy'dan oldin arzon dump (MinIO'siz, sinovsiz):
+#   tools/backup.sh --dump-only
 set -euo pipefail
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -64,7 +70,10 @@ winpath() {
 # bo'sh loyihani ko'radi (o'lchandi 2026-09-15: worktree'da nom
 # `agent-a51a101abc58a171f`). `tools/handoff.ps1` nomni aynan shu sababdan
 # qotirib qo'ygan.
-compose=(docker compose -p rankwant --env-file "$(winpath "$root/.env.public")"
+# ⚠️ `RANKWANT_ENV_FILE` — env-faylning yo'li (standart: `$root/.env.public`).
+# Deploy worktree'dan yurgizilganda kod worktree'da, env-fayl esa asosiy
+# checkout'da bo'ladi; `tools/deploy.sh` shu o'zgaruvchini uzatadi.
+compose=(docker compose -p rankwant --env-file "$(winpath "${RANKWANT_ENV_FILE:-$root/.env.public}")"
          -f "$(winpath "$root/docker-compose.yml")"
          -f "$(winpath "$root/docker-compose.public.yml")")
 
@@ -205,10 +214,14 @@ offsite_run() {
 }
 
 # Offsite rejimi argumentdan ham olinadi (blok yuqorida `auto` qo'yadi).
+# `--dump-only` — faqat Postgres dump: MinIO, offsite va tiklash sinovi
+# o'tkazib yuboriladi. Deploy oldidagi zaxira shu rejimda olinadi (tez).
+dump_only="${RANKWANT_BACKUP_DUMP_ONLY:-off}"
 for arg in "$@"; do
   case "$arg" in
     --offsite) offsite=on ;;
     --no-offsite) offsite=off ;;
+    --dump-only) dump_only=on ;;
   esac
 done
 
@@ -312,7 +325,13 @@ if [ "${1:-}" = "--restore-test" ]; then
 fi
 
 # ── Postgres ─────────────────────────────────────────────────────────
-sql="$dest/pg-$stamp.sql.gz"
+# Deploy oldidagi dump ALOHIDA nom oladi (`pg-deploy-*`): uni oylik to'liq
+# zaxiradan ajratish kerak — saqlash muddati boshqa (7 kun, pastda).
+if [ "$dump_only" = "on" ]; then
+  sql="$dest/pg-deploy-$stamp.sql.gz"
+else
+  sql="$dest/pg-$stamp.sql.gz"
+fi
 "${compose[@]}" exec -T postgres pg_dump -U rankwant --clean --if-exists rankwant \
   | gzip -9 > "$sql.part"
 mv "$sql.part" "$sql"
@@ -321,6 +340,21 @@ mv "$sql.part" "$sql"
 # yo'q deb hisoblanadi. To'liq tiklash kunlik ish uchun qimmat, lekin
 # arxiv butunligini va oxirigacha yozilganini har safar tekshirish mumkin.
 verify_dump "$sql"
+
+# ── Faqat-dump rejimi shu yerda tugaydi ──────────────────────────────
+# Deploy oldidagi zaxira uchun MinIO kerak emas (migratsiya unga tegmaydi)
+# va tiklash sinovi ham ortiqcha: deploy oldida vaqt qimmat, maqsad esa
+# bitta — sxemani orqaga qaytarish imkoni. Saqlash muddati alohida
+# (`RANKWANT_BACKUP_DEPLOY_KEEP`, standart 7 kun): kuniga bir necha deploy
+# bo'lishi mumkin, 30 kunlik muddat bilan ular diskni to'ldirardi.
+if [ "$dump_only" = "on" ]; then
+  deploy_keep="${RANKWANT_BACKUP_DEPLOY_KEEP:-7}"
+  find "$dest" -name 'pg-deploy-*.sql.gz' -mtime "+$deploy_keep" -delete
+  find "$dest" -name 'pg-deploy-*.sql.gz.part' -mtime +1 -delete
+  echo "  dump-only: $sql"
+  echo "  dump-only: saqlash ${deploy_keep} kun (minio/offsite/sinov o'tkazib yuborildi)"
+  exit 0
+fi
 
 # ── MinIO (masala testlari va ko'chirilgan media) ────────────────────
 #

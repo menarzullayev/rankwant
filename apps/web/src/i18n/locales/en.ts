@@ -227,6 +227,10 @@ export const en: Record<MessageKey, string> = {
   "auth.linkBody": "This email is already in use. Enter your password to link it.",
   "auth.linkCta": "Link",
   "auth.socialError": "Sign-in failed. Please try again.",
+  "footer.tagline": "A competitive programming platform for Uzbekistan",
+  "footer.platform": "Platform",
+  "footer.contact": "Contact and community",
+  "footer.copyright": "© {year} RankWant. All rights reserved.",
   "footer.terms": "Terms",
   "footer.privacy": "Privacy",
   "auth.usernameRequired": "Username 3–30 characters: it can't be empty",
@@ -943,6 +947,7 @@ export const en: Record<MessageKey, string> = {
   "locale.group.broad": "Wider reach",
   "locale.loading": "Loading",
   "locale.listLabel": "Language list",
+  "locale.contentUz": "names uz",
   "content.uzOnly": "This name is in Uzbek — translation pending",
 
   // ---- Problem page: sections, actions, samples ----

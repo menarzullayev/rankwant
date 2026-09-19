@@ -289,6 +289,11 @@ class ProblemDetailSerializer(ProblemListSerializer):
             return "anonymous"
         if user.is_staff:
             return "staff"
+        # Muallif o'z masalasining editorial'ini ko'radi (ADR-0025) —
+        # tier qiymati "staff": client hech narsa bilmasdan to'liq matnni
+        # ochadi, chunki spoyler o'z masalasiga spoyler bo'lmaydi.
+        if problem.authors.filter(pk=user.pk).exists():
+            return "staff"
         if problem.slug in (self.context.get("solved_slugs") or ()):
             return "solved"
         if problem.pk in (self.context.get("unlocked_ids") or ()):
@@ -338,3 +343,23 @@ class ProblemDetailSerializer(ProblemListSerializer):
             "source",
             "source_url",
         ]
+
+
+class MineProblemSerializer(serializers.ModelSerializer[Problem]):
+    """Muallif yuzasi (ADR-0025): o'z DRAFT masalasini boshqaradi.
+
+    `is_public` faqat O'QISH — nashr staff-ops qarori (masala sifati,
+    testlar to'plami va reyting tozaligi nashrdan oldin ko'rib chiqiladi).
+    """
+
+    class Meta:
+        model = Problem
+        fields = [
+            "slug",
+            "title",
+            "statement",
+            "editorial",
+            "difficulty",
+            "is_public",
+        ]
+        read_only_fields = ["is_public"]

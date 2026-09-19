@@ -1,8 +1,9 @@
 import Link from "next/link";
 
 import { Card } from "@/components/ui/Card";
+import { ContentName } from "@/components/ui/UzFallbackBadge";
 import { Verdict } from "@/components/ui/Verdict";
-import { dateTime, t, topicName, type Locale } from "@/i18n/messages";
+import { dateTime, t, type Locale } from "@/i18n/messages";
 import { Badge } from "@/components/ui/Badge";
 import type {
   ArchiveProgress,
@@ -125,6 +126,9 @@ function Roadmaps({ items, locale }: { items: Roadmap[]; locale: Locale }) {
       }
       bodyClassName="space-y-3"
     >
+      {items.length === 0 && (
+        <p className="text-theme-sm rw-dim">{t(locale, "roadmaps.intro")}</p>
+      )}
       {items.slice(0, 3).map((roadmap) => {
         const percent = roadmap.step_count
           ? Math.round((roadmap.solved_steps / roadmap.step_count) * 100)
@@ -374,7 +378,7 @@ function TagCloud({ topics, locale }: { topics: Topic[]; locale: Locale }) {
           href={`/problems?topics=${topic.slug}`}
           className="rw-radius-sm border rw-line px-2 py-1 text-theme-xs rw-dim-2 rw-hover-bg"
         >
-          {topicName(topic, locale)}
+          <ContentName row={topic} locale={locale} />
           <span className="ml-1 tabular-nums rw-faint">{topic.problem_count}</span>
         </Link>
       ))}
@@ -417,7 +421,7 @@ export function ArchiveSidebar({
       <TopicStrength topics={skills} locale={locale} />
       <TagCloud topics={tagCloud} locale={locale} />
       {upcoming && <Upcoming event={upcoming} locale={locale} />}
-      {roadmaps.length > 0 && <Roadmaps items={roadmaps} locale={locale} />}
+      <Roadmaps items={roadmaps} locale={locale} />
       <Digest
         locale={locale}
         attempts={attempts}

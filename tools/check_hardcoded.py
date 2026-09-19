@@ -209,6 +209,10 @@ ALLOWED_LITERALS = {
     # — ikkinchisi urg'u rangini oladi. Ya'ni bo'laklar matn, lekin
     # tarjima qilinmaydigan matn.
     "Rank", "Want",
+    # `BrandMark` variant qiymatlari (`variant="responsive"`) — komponent
+    # API'si, foydalanuvchi ko'rmaydi; o'zgartirilsa prop qayerdan
+    # berilayotgani ham shu nom bilan o'zgaradi.
+    "responsive", "full", "compact",
     # Klaviatura yorlig'i. Tugma nomlari tarjima qilinmaydi — foydalanuvchi
     # klaviaturasida aynan shu harflar turadi, ya'ni `Ctrl` ni o'girish
     # ko'rsatmani noto'g'ri qilardi.
