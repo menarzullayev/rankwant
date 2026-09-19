@@ -409,9 +409,7 @@ class EmailVerifyResendView(APIView):
         try:
             issued = verification.issue(user)
         except verification.TooManyRequests as exc:
-            raise exceptions.Throttled(
-                detail="Too many requests — try again shortly"
-            ) from exc
+            raise exceptions.Throttled(detail="Too many requests — try again shortly") from exc
         queue(send_email_verify, user.pk, issued.raw, issued.code)
         return Response(status=status.HTTP_204_NO_CONTENT)
 

@@ -311,9 +311,7 @@ class Problem(models.Model):
         from django.core.exceptions import ValidationError
 
         if self.difficulty % DIFFICULTY_STEP:
-            raise ValidationError(
-                {"difficulty": f"Value must be a multiple of {DIFFICULTY_STEP}"}
-            )
+            raise ValidationError({"difficulty": f"Value must be a multiple of {DIFFICULTY_STEP}"})
 
 
 class Subtask(models.Model):

@@ -52,9 +52,7 @@ class StaffTournamentSerializer(serializers.ModelSerializer[Tournament]):
         start_at = attrs.get("start_at", getattr(self.instance, "start_at", None))
         end_at = attrs.get("end_at", getattr(self.instance, "end_at", None))
         if start_at and end_at and end_at <= start_at:
-            raise serializers.ValidationError(
-                {"end_at": "The end time must be after the start"}
-            )
+            raise serializers.ValidationError({"end_at": "The end time must be after the start"})
         if "stages" in attrs:
             self._validate_stages(attrs["stages"])
         return attrs
@@ -73,9 +71,7 @@ class StaffTournamentSerializer(serializers.ModelSerializer[Tournament]):
 
         contests: list[Contest] = [s["contest"] for s in stages]
         if len({c.pk for c in contests}) != len(contests):
-            raise serializers.ValidationError(
-                {"stages": "A contest cannot appear in two stages"}
-            )
+            raise serializers.ValidationError({"stages": "A contest cannot appear in two stages"})
 
         # Contest ↔ bosqich OneToOne: boshqa chempionatda band bo'lsa — aniq xato
         taken = TournamentStage.objects.filter(contest__in=contests).select_related(

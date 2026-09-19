@@ -547,9 +547,7 @@ class MeSerializer(serializers.ModelSerializer[User]):
         keys = (*self._POSTAL_EN, *self._POSTAL_NATIVE, "postal_consent")
         if self.instance is None or not any(key in attrs for key in keys):
             return
-        merged = {
-            key: attrs[key] if key in attrs else getattr(self.instance, key) for key in keys
-        }
+        merged = {key: attrs[key] if key in attrs else getattr(self.instance, key) for key in keys}
 
         def filled(key: str) -> bool:
             value = merged[key]
@@ -709,9 +707,7 @@ class RegisterSerializer(serializers.ModelSerializer[User]):
         # Nomini almashtirgan odamning eski nomi 90 kun band — aks holda
         # yangi egasi eski egasining obro'si bilan standings'da tura olardi.
         if usernames.reserved(value):
-            raise serializers.ValidationError(
-                "This name recently belonged to another user"
-            )
+            raise serializers.ValidationError("This name recently belonged to another user")
         return value
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:

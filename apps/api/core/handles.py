@@ -81,6 +81,5 @@ def validate(username: str) -> None:
         raise ValidationError(f"Handle must be {MIN_LENGTH}–{MAX_LENGTH} characters")
     if not ALLOWED.match(username):
         raise ValidationError(
-            "A handle may only contain Latin letters, digits, dots, underscores, "
-            "and hyphens"
+            "A handle may only contain Latin letters, digits, dots, underscores, and hyphens"
         )

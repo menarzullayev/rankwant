@@ -56,14 +56,10 @@ class StaffContestSerializer(serializers.ModelSerializer[Contest]):
         start_at = attrs.get("start_at", getattr(self.instance, "start_at", None))
         end_at = attrs.get("end_at", getattr(self.instance, "end_at", None))
         if start_at and end_at and end_at <= start_at:
-            raise serializers.ValidationError(
-                {"end_at": "The end time must be after the start"}
-            )
+            raise serializers.ValidationError({"end_at": "The end time must be after the start"})
         mirror = attrs.get("mirror_of")
         if mirror is not None and self.instance is not None and mirror.pk == self.instance.pk:
-            raise serializers.ValidationError(
-                {"mirror_of": "A contest cannot be its own mirror"}
-            )
+            raise serializers.ValidationError({"mirror_of": "A contest cannot be its own mirror"})
         return attrs
 
 

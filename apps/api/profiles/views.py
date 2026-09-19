@@ -184,9 +184,7 @@ class MySkillBadgesView(APIView):
         serializer.is_valid(raise_exception=True)
         rows = serializer.validated_data
         if len(rows) > MAX_SKILL_BADGES:
-            raise exceptions.ValidationError(
-                {"detail": f"At most {MAX_SKILL_BADGES} badges"}
-            )
+            raise exceptions.ValidationError({"detail": f"At most {MAX_SKILL_BADGES} badges"})
         with transaction.atomic():
             UserSkillBadge.objects.filter(user=user).delete()
             UserSkillBadge.objects.bulk_create(

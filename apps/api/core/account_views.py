@@ -108,9 +108,7 @@ class EmailChangeView(APIView):
         try:
             issued = verification.issue(user, email=email, purpose=EmailVerifyToken.Purpose.CHANGE)
         except verification.TooManyRequests as exc:
-            raise exceptions.Throttled(
-                detail="Too many requests — try again shortly"
-            ) from exc
+            raise exceptions.Throttled(detail="Too many requests — try again shortly") from exc
         queue(send_email_verify, user.pk, issued.raw, issued.code, email)
         return Response({"email": email}, status=status.HTTP_202_ACCEPTED)
 

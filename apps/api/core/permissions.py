@@ -40,9 +40,7 @@ def require_staff_group(user: Any, *names: str) -> None:
     """Guruh bo'lmasa 403 — xato matni kerakli guruhni atayin aytadi."""
     if has_staff_group(user, *names):
         return
-    raise PermissionDenied(
-        f"You do not have permission — required group: {' or '.join(names)}"
-    )
+    raise PermissionDenied(f"You do not have permission — required group: {' or '.join(names)}")
 
 
 class HasScope(permissions.BasePermission):

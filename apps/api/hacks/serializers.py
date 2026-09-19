@@ -133,18 +133,14 @@ class HackCreateSerializer(serializers.Serializer[dict[str, Any]]):
 
     def validate_generator_source(self, value: str) -> str:
         if len(value.encode()) > MAX_SOURCE_BYTES:
-            raise serializers.ValidationError(
-                f"Source exceeds {MAX_SOURCE_BYTES // 1024} KB"
-            )
+            raise serializers.ValidationError(f"Source exceeds {MAX_SOURCE_BYTES // 1024} KB")
         return value
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
         code = attrs.get("generator_language")
         has_input = bool(attrs.get("test_input", "").strip())
         if code and has_input:
-            raise serializers.ValidationError(
-                "Provide either input or a generator, not both"
-            )
+            raise serializers.ValidationError("Provide either input or a generator, not both")
         if not code and not has_input:
             raise serializers.ValidationError("Test input or a generator is required")
 

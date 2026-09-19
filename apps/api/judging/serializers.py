@@ -73,9 +73,7 @@ class AttemptCreateSerializer(serializers.Serializer[dict[str, Any]]):
 
     def validate_source_code(self, value: str) -> str:
         if len(value.encode()) > MAX_SOURCE_BYTES:
-            raise serializers.ValidationError(
-                f"Source exceeds {MAX_SOURCE_BYTES // 1024} KB"
-            )
+            raise serializers.ValidationError(f"Source exceeds {MAX_SOURCE_BYTES // 1024} KB")
         if not value.strip():
             raise serializers.ValidationError("Source is empty")
         return value
@@ -184,9 +182,7 @@ class CustomRunCreateSerializer(serializers.Serializer[dict[str, Any]]):
 
     def validate_source_code(self, value: str) -> str:
         if len(value.encode()) > MAX_SOURCE_BYTES:
-            raise serializers.ValidationError(
-                f"Source exceeds {MAX_SOURCE_BYTES // 1024} KB"
-            )
+            raise serializers.ValidationError(f"Source exceeds {MAX_SOURCE_BYTES // 1024} KB")
         if not value.strip():
             raise serializers.ValidationError("Source is empty")
         return value

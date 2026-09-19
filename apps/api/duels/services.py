@@ -133,9 +133,7 @@ def staff_cancel(duel: Duel) -> Duel:
     bildirishnoma ketadi. Ochiq chaqiriqda hali hech kim kutmayapti.
     """
     if duel.status not in (Duel.Status.OPEN, Duel.Status.ACCEPTED):
-        raise DuelError(
-            "not_cancellable", "Only an open or accepted duel can be cancelled"
-        )
+        raise DuelError("not_cancellable", "Only an open or accepted duel can be cancelled")
     was_accepted = duel.status == Duel.Status.ACCEPTED
     duel.status = Duel.Status.CANCELLED
     duel.save(update_fields=["status"])

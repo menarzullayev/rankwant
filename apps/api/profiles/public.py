@@ -126,9 +126,7 @@ def build_profile(user: User, viewer: User | None) -> dict[str, Any]:
                 "current",
             )
         ),
-        "badges": list(
-            UserSkillBadge.objects.filter(user=user).values("text", "icon", "color")
-        ),
+        "badges": list(UserSkillBadge.objects.filter(user=user).values("text", "icon", "color")),
         "external": list(
             ExternalProfile.objects.filter(user=user).values(
                 "kind", "handle", "rating", "max_rating", "rank"

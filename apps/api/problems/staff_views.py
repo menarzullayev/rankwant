@@ -146,9 +146,7 @@ class StaffProblemViewSet(StaffViewSet):
                 and problem.authors.filter(pk=request.user.pk).exists()
             )
             if not (is_author and not problem.is_public):
-                raise PermissionDenied(
-                    "Problem tests belong to staff-ops or the draft author"
-                )
+                raise PermissionDenied("Problem tests belong to staff-ops or the draft author")
         if request.method == "GET":
             return Response(StaffTestCaseSerializer(problem.tests.all(), many=True).data)
 
