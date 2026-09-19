@@ -118,6 +118,9 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         # "Navigatsiya" — rus tilidan olingan va qaraqalpoqchada ham shunday
         # yoziladi. Majburan o'girish sun'iy ko'rinardi (xuddi `nav.menu`
         # va `settings.language` kabi qo'shnilari).
+        # «Profil banneri» — ikkala so'z ham o'zlashma, qaraqalpoqchada
+        # ham o'zbekchadagi kabi yoziladi.
+        "profile.cfBanner",
         "customizer.nav",
         # "Tuman" qaraqalpoqchada ham, o'zbekchada ham bir xil yoziladi.
         "customizer.pattern.mesh",
@@ -218,6 +221,9 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
            "admin.text.badgeSuperuser", "admin.text.badgeRepo",
            "admin.text.badgeDemo",
            # "{index}: {verdict} · {time} ms" — birlik va ajratgich bir xil.
+           # «Grandmaster» — xalqaro atama, inglizchada ham o'zbekchada ham
+           # AYNAN shu ko'rinishda yoziladi (shaxmat/CP atamasi).
+           "cfTier.grandmaster",
            "submit.testTooltip"},
     # Turk tilida ham «Profil» — o'zbekcha bilan harfma-harf bir xil.
     # Turk tili: bu so'zlar turkchada ham AYNAN shunday yoziladi
@@ -229,6 +235,11 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
            "admin.label.text.who", "admin.text.badgeDemo",
            # `problems.noTests` = "testsiz" — turkchada ham aynan shunday.
            "problems.noTests",
+           # «Usta» — turkiy ildiz, turkchada ham o'zbekchada ham aynan
+           # shunday yoziladi (master darajasi uchun atama).
+           "cfTier.master",
+           # «Profil banneri» — turkchada ham harfma-harf bir xil.
+           "profile.cfBanner",
            "submit.testTooltip"},
     # Ispan tilida ham «Virtual».
     "es": {"profile.virtual", "admin.label.flag.virtual",

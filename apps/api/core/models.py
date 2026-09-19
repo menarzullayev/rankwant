@@ -26,6 +26,10 @@ PRIVACY_FIELDS: tuple[str, ...] = (
     "coach",
     #: Ijtimoiy va tashqi profil havolalari.
     "social",
+    #: Profil banneri — foydalanuvchi yuklagan rasm (ADR-0026).
+    #: `avatar_url` dan farqli: avatar brend belgisi kabi turadi, banner
+    #: esa shaxsiy tanlov, ya'ni yashirish mumkin bo'lishi kerak.
+    "title_photo",
 )
 
 
@@ -162,6 +166,29 @@ class User(AbstractUser):
     #: Solved public problems: the figure the profile shows. A solved problem
     #: that is not public yet (a contest's, say) counts once it is published.
     solved_count = models.PositiveIntegerField(default=0, db_index=True)
+
+    # ── Rating tier and social fields (ADR-0026) ─────────────────────
+    # Dormant columns, like the P3 group of ADR-0024: they exist before the
+    # features that read them. `sync_codeforces` is their only writer today.
+    #
+    # NAMES ARE DELIBERATELY NEUTRAL. A Codeforces field is a competitor's
+    # name, and ADR-0014 refused to let one reach the schema: every request,
+    # serializer and migration would then depend on it, and removing it
+    # later would be expensive. ADR-0024 opened this path with
+    # `contribution` — a Codeforces field under a neutral name — and these
+    # four continue it. The source is recorded in the writer and in
+    # `core/migrations/0022`, not in the column name.
+    #: Tier name for `rating_contest` ("expert", "legendary grandmaster").
+    #: NOT a number — that live value stays in `rating_contest`.
+    rank_title = models.CharField(max_length=40, blank=True)
+    #: Highest tier ever reached; `max_rating_contest` is its numeric twin.
+    max_rank_title = models.CharField(max_length=40, blank=True)
+    #: Friends on the source profile. Zero until our own follow system
+    #: writes it, so a synced row and a local row mean the same thing.
+    friend_count = models.IntegerField(default=0)
+    #: Profile banner. Distinct from `avatar_url`, which is the small
+    #: circular image shown next to the handle.
+    title_photo_url = models.URLField(max_length=200, blank=True)
 
     class ShirtSize(models.TextChoices):
         XS = "XS", "XS"

@@ -11,6 +11,7 @@ import type { ProfileRole, PublicProfile } from "@/lib/api";
 import { badgeLabel, coverClass, frameClass } from "@/lib/cosmetics";
 import { countryName } from "@/lib/countries";
 import { EXTERNAL_LABEL, externalShown, externalUrl } from "@/lib/external-links";
+import { CF_TIER_COLOR, cfTierLabelKey, isCfTier } from "@/lib/cf-tiers";
 import { formatDate, formatRelative } from "@/lib/format";
 import { gradeLabel } from "@/lib/grades";
 import { districtName, regionName } from "@/lib/regions";
@@ -155,6 +156,72 @@ export function ProfileCard({
           )
         )}
         {profile.bio && <p className="mt-3 text-theme-sm rw-dim-2">{profile.bio}</p>}
+
+        {/* Manbadagi daraja (ADR-0026) — RankWant unvonidan ALOHIDA.
+            Rang Codeforces'niki (kanonik), nomi `cfTier.*` kalitidan.
+            Manba daraja bermagan bo'lsa blok umuman chizilmaydi. */}
+        {isCfTier(profile.cf_title) && (
+          <dl className="mt-4 space-y-1.5 text-theme-sm">
+            <div className="flex flex-wrap items-baseline gap-x-2">
+              <dt className="text-theme-xs rw-faint">{t(locale, "profile.cfTitle")}</dt>
+              <dd>
+                <span
+                  className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-theme-xs font-semibold"
+                  style={{
+                    color: CF_TIER_COLOR[profile.cf_title],
+                    borderColor: CF_TIER_COLOR[profile.cf_title],
+                  }}
+                >
+                  {t(locale, cfTierLabelKey(profile.cf_title))}
+                </span>
+              </dd>
+            </div>
+            {isCfTier(profile.cf_max_title) &&
+              profile.cf_max_title !== profile.cf_title && (
+                <div className="flex flex-wrap items-baseline gap-x-2">
+                  <dt className="text-theme-xs rw-faint">
+                    {t(locale, "profile.cfMaxTitle")}
+                  </dt>
+                  <dd>
+                    <span
+                      className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-theme-xs font-semibold"
+                      style={{
+                        color: CF_TIER_COLOR[profile.cf_max_title],
+                        borderColor: CF_TIER_COLOR[profile.cf_max_title],
+                      }}
+                    >
+                      {t(locale, cfTierLabelKey(profile.cf_max_title))}
+                    </span>
+                  </dd>
+                </div>
+              )}
+            {profile.friend_count > 0 && (
+              <div className="flex flex-wrap items-baseline gap-x-2">
+                <dt className="text-theme-xs rw-faint">{t(locale, "profile.friendCount")}</dt>
+                <dd className="tabular-nums rw-strong">{profile.friend_count}</dd>
+              </div>
+            )}
+          </dl>
+        )}
+
+        {/* Banner — `title_photo` maxfiylik maydoni bilan yashiriladi,
+            yashirilganda server bo'sh satr qaytaradi va blok chizilmaydi.
+            Karta tor (300 px), shuning uchun keng rasm sifatida emas —
+            daraja nishonining yonida kichik ko'rinishda. */}
+        {profile.title_photo_url && (
+          <div className="mt-4 flex items-center gap-2 border-t rw-divider pt-4">
+            {/* eslint-disable-next-line @next/next/no-img-element -- tashqi
+                manzil, `next/image` domenini kengaytirish talab qiladi. */}
+            <img
+              src={profile.title_photo_url}
+              alt=""
+              loading="lazy"
+              referrerPolicy="no-referrer"
+              className="h-9 w-16 shrink-0 rounded rw-line border object-cover"
+            />
+            <p className="text-theme-xs rw-faint">{t(locale, "profile.cfBanner")}</p>
+          </div>
+        )}
 
         <div className="mt-4 flex flex-wrap gap-2">
           {profile.is_owner ? (

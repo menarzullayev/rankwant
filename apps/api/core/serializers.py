@@ -28,6 +28,34 @@ class UserPublicSerializer(serializers.ModelSerializer[User]):
     max_ratings = serializers.SerializerMethodField()
     solved_by_level = serializers.SerializerMethodField()
     title = TitleField()
+    #: Codeforces'dagi daraja nomi (`rank_title`, ADR-0026). `title` dan
+    #: ALOHIDA, chunki ikkisi boshqa tizim: `title` — RankWant unvoni
+    #: (`rating_contest` dan HISOBLANADI, `kvark`…`galaktika`), bu esa
+    #: manbadan KELADI (`newbie`…`legendary grandmaster`). Birlashtirilsa
+    #: frontend qaysi birini chizishini bilmay qolardi va ism rangi
+    #: buzilardi.
+    cf_title = serializers.SerializerMethodField()
+    #: Manbadagi eng yuqori daraja (`max_rank_title`).
+    cf_max_title = serializers.SerializerMethodField()
+    #: Banner — `SerializerMethodField` SHART: busiz DRF model
+    #: maydonini to'g'ridan-to'g'ri o'qiydi va `get_title_photo_url`
+    #: umuman chaqirilmaydi, ya'ni maxfiylik tekshiruvi o'lik kod bo'lib
+    #: qoladi (o'lchandi: yashirilganda ham URL qaytdi).
+    title_photo_url = serializers.SerializerMethodField()
+
+    def get_cf_title(self, user: User) -> str:
+        """Manbada unvon yo'q bo'lsa bo'sh satr — frontend uni chizmaydi."""
+        return user.rank_title or ""
+
+    def get_cf_max_title(self, user: User) -> str:
+        return user.max_rank_title or ""
+
+    def get_title_photo_url(self, user: User) -> str:
+        """Profil banneri. `country` kabi `hidden_fields` ga bo'ysunadi:
+        foydalanuvchi yuklagan rasm, ya'ni yashirish huquqi bo'lishi kerak."""
+        if "title_photo" in (user.hidden_fields or []):
+            return ""
+        return user.title_photo_url or ""
     #: Mamlakat — bayroq uchun (ISO 3166-1 alpha-2). `SerializerMethodField`
     #: ATAYIN: reyting jadvali ommaviy, ya'ni `hidden_fields` ni hisobga
     #: olish shart — `profiles/public.py` dagi bilan bir xil qoida.
@@ -119,6 +147,15 @@ class UserPublicSerializer(serializers.ModelSerializer[User]):
             "ranks",
             "max_ratings",
             "solved_by_level",
+            # ADR-0026 — manbadan kelgan maydonlar. Uchtasi `hidden_fields`
+            # bilan yashirilishi mumkin emas (ular reyting jadvali kabi
+            # ommaviy ma'lumot), lekin `title_photo_url` — foydalanuvchi
+            # yuklagan rasm, shuning uchun u `get_title_photo_url` orqali
+            # o'tadi.
+            "cf_title",
+            "cf_max_title",
+            "friend_count",
+            "title_photo_url",
         ]
 
 

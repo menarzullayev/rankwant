@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1600 strings.**
+**1614 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -774,6 +774,16 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `title.kristal` | Kristal | Kristal |  |
 | `title.yulduz` | Yulduz | Juldız |  |
 | `title.galaktika` | Galaktika | Galaktika |  |
+| `cfTier.newbie` | Yangi boshlovchi | Jańa baslawshı |  |
+| `cfTier.pupil` | O'quvchi | Oqıwshı |  |
+| `cfTier.specialist` | Mutaxassis | Qánige |  |
+| `cfTier.expert` | Ekspert | Sınapshı |  |
+| `cfTier.candidatemaster` | Nomzod usta | Sheberlikke úmitker |  |
+| `cfTier.master` | Usta | Sheber |  |
+| `cfTier.internationalmaster` | Xalqaro usta | Xalıqaralıq sheber |  |
+| `cfTier.grandmaster` | Grandmaster | Grossmeyster |  |
+| `cfTier.internationalgrandmaster` | Xalqaro grandmaster | Xalıqaralıq grossmeyster |  |
+| `cfTier.legendarygrandmaster` | Afsonaviy grandmaster | Ańızǵa aylanǵan grossmeyster |  |
 | `profile.acceptance` | Qabul qilingan urinishlar: {rate}% | Qabıl etilgen urınıwlar: {rate}% |  |
 | `profile.accepted` | qabul | qabıl |  |
 | `profile.errors` | xato | qáte |  |
@@ -857,6 +867,10 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `profile.online` | Onlayn | Onlayn |  |
 | `profile.lastSeen` | Oxirgi faollik: {time} | Sońǵı aktivlik: {time} |  |
 | `profile.titleHint` | Unvon Contests reytingidan | Ataq Contests reytinginen |  |
+| `profile.cfTitle` | Manbadagi daraja | Dárejedegi dáreje |  |
+| `profile.cfMaxTitle` | Eng yuqori daraja | Eń joqarı dáreje |  |
+| `profile.friendCount` | Do'stlar | Doslar |  |
+| `profile.cfBanner` | Profil banneri | Profil banneri |  |
 | `settings.showOnline` | Onlayn holat va oxirgi faollikni ko'rsatish | Onlayn jaǵdaydı hám sońǵı aktivlikti kórsetiw |  |
 | `tier.bronze` | Bronza | Bronza |  |
 | `tier.silver` | Kumush | Gúmis |  |

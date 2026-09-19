@@ -28,6 +28,11 @@ db.sqlite3
 .coverage.*
 htmlcov/
 
+# Codeforces snapshot kesh (ADR-0026). O'lchandi: `ratedList.json` —
+# 346 MB. Image'ga tushsa build konteksti har `sync_codeforces --fetch`
+# dan keyin o'zgaradi va `COPY . .` qatlami behuda yangilanadi.
+.sync-cache/
+
 # Git tarixi — kerak emas.
 .git/
 .gitignore
