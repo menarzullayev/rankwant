@@ -30,21 +30,18 @@ import _console
 _console.force_utf8()
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-CI = ROOT / ".github/workflows/ci.yml"
 DEPLOY = ROOT / ".github/workflows/deploy.yml"
 NIGHTLY = ROOT / ".github/workflows/nightly.yml"
 
 #: Har bir fayl: (yo'l, job nomi, izlanadigan naqshlar).
 EXPECTED = [
-    (CI, "smoke", [r"docker\s+rmi", r"builder\s+prune"]),
-    (CI, "bakeoff", [r"docker\s+rmi"]),
-    (CI, "language_matrix", [r"docker\s+image\s+rm"]),
     (DEPLOY, "deploy", [r"docker\s+rmi", r"builder\s+prune"]),
-    # Nightly builds the whole stack in three jobs. Build cache is pruned by
-    # ci.yml's smoke job, so these only have to remove their own images.
+    # Nightly builds the whole stack. Build cache used to be pruned by
+    # ci.yml's smoke job; that job is gone (2026-09-20), so e2e prunes.
     (NIGHTLY, "load", [r"docker\s+rmi"]),
-    (NIGHTLY, "e2e", [r"docker\s+rmi"]),
+    (NIGHTLY, "e2e", [r"docker\s+rmi", r"builder\s+prune"]),
     (NIGHTLY, "chaos", [r"docker\s+rmi"]),
+    (NIGHTLY, "compatibility", [r"docker\s+image\s+rm"]),
 ]
 
 

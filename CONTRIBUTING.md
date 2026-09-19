@@ -49,7 +49,7 @@ aytmay qo'ydi (`org.rankwant.git-sha` yorlig'i `unknown`).
 - **Compose va `.env` o'zgarishi kod bilan birga PR'ga tushadi.** Commit qilinmagan
   `docker-compose*.yml` bo'lsa darvoza deploy'ni to'xtatadi — jonli stack o'sha fayl bilan
   ko'tarilgan bo'lishi va deploy uni jimgina yo'qotishi mumkin.
-- **PR'lar parallel bo'lishi mumkin**, lekin og'ir smoke asosan `main`da.
+- **PR'lar parallel bo'lishi mumkin.** Og'ir smoke/E2E/pytest — Nightly.
   Ikkinchi runner (`rankwant-ci-runner-2`) bir xil `rankwant` label'ida;
   u register qilinmaguncha deploy navbati ketma-ket. CI `ubuntu-latest`.
 - **Boshqa agentning ish daraxtiga tegilmaydi:** uning commit qilinmagan fayllarini

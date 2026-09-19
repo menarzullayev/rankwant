@@ -614,16 +614,30 @@ def _workflow_job(src: str, job: str) -> str:
 
 def pr_skips_heavy_ci() -> str | None:
     # 2026-09-18: CI+Security on every PR doubled the single-runner queue.
-    # Smoke on a PR held the runner for a full compose build.
-    # Language matrix and bake-off used to sit inside smoke; they are
-    # sibling jobs now and must stay off PRs too.
+    # 2026-09-20: smoke / bake-off / language matrix / API pytest left main
+    # CI entirely (Nightly only). Putting any of those jobs back on ci.yml
+    # restores the 17 min wall measured on 35f1e93.
     triggers = _workflow_triggers(".github/workflows/security.yml")
     if "pull_request" in triggers:
         return "security.yml PR'da ham yuguradi — qaror: Security faqat main + cron"
     ci = read(".github/workflows/ci.yml")
     for job in ("smoke", "language_matrix", "bakeoff"):
-        if "github.event_name != 'pull_request'" not in _workflow_job(ci, job):
-            return f"ci.yml {job} PR'da ham yuguradi"
+        if re.search(rf"^  {job}:\s*$", ci, re.M):
+            return f"ci.yml da {job} job bor — og'ir stack faqat Nightly"
+    if re.search(r"(?m)^\s+- name: pytest\b", _workflow_job(ci, "api")) or re.search(
+        r"(?m)^\s+pytest\b", _workflow_job(ci, "api")
+    ):
+        return "ci.yml api pytest yugurtiradi — pytest faqat Nightly coverage"
+    nightly = read(".github/workflows/nightly.yml")
+    e2e = _workflow_job(nightly, "e2e")
+    if "run --rm smoke" not in e2e:
+        return "nightly.yml e2e smoke yugurtirmaydi"
+    if "--profile bakeoff" not in e2e:
+        return "nightly.yml e2e bake-off yugurtirmaydi"
+    if "check_languages.py" not in _workflow_job(nightly, "compatibility"):
+        return "nightly.yml compatibility language matrix emas"
+    if "pytest" not in _workflow_job(nightly, "coverage"):
+        return "nightly.yml coverage pytest yugurtirmaydi"
     compose = read("tools/runner/docker-compose.runner.yml")
     if "rankwant-ci-runner-2" not in compose or "rankwant-ci-work-2" not in compose:
         return "ikkinchi runner alohida volume'siz — /work ni bo'lishish checkout'ni buzadi"

@@ -33,7 +33,8 @@ foydalanuvchi ma'lumoti bor dump'lar tashqariga chiqdi.
 | 2026-09-17 | `main` ga faqat PR orqali; soxta muallif push qilinmaydi | `.githooks/pre-push` → `tools/push_guard.py` |
 | 2026-09-18 | CI, Security, Nightly — `ubuntu-latest` (public repo, $0 daqiqa, 20 parallel). Deploy va `runner-selftest` self-hosted: deploy jonli Docker stack'iga tegadi; public `pull_request` noutbukda yugurmasin | `ci.yml` / `security.yml` / `nightly.yml` → `ubuntu-latest`; `deploy.yml` self-hosted; `tools/check_decisions.py` → `ci_test_on_hosted` |
 | 2026-09-17 | CI runner — Docker Desktop'dagi `rankwant-ci-runner` konteyneri (`rankwant` label; ish papkasi volume'da; `RankWant CI Runner Watchdog` qo'riqlaydi). WSL runner 2026-09-17 da butunlay olib tashlangan. `rankwant-container` label'ini faqat `runner-selftest.yml` ishlatadi | `tools/runner/` → `RUNNER_LABELS`; `tools/check_decisions.py` → `TRIAL_RUNNER` |
-| 2026-09-18 | Ikkinchi runner (`rankwant-ci-runner-2`, alohida volume, compose profile `second`, 4 CPU / 4 GB). PR'da Security va smoke yo'q — main push + cron / `workflow_dispatch` / deploy chaqiruvi to'liq. Recreate bitta servisni `down` qilmaydi | `security.yml` `on:`; `ci.yml` smoke `if:`; `docker-compose.runner.yml`; `recreate.sh --second`; `runner_watchdog.py` |
+| 2026-09-18 | Ikkinchi runner (`rankwant-ci-runner-2`, alohida volume, compose profile `second`, 4 CPU / 4 GB). PR'da Security yo'q. Recreate bitta servisni `down` qilmaydi | `security.yml` `on:`; `docker-compose.runner.yml`; `recreate.sh --second`; `runner_watchdog.py` |
+| 2026-09-20 | Og'ir stack (smoke, E2E, bake-off, language matrix) va API pytest **faqat Nightly**. CI/PR — ruff, mypy, OpenAPI, migratsiya, web check, judge unit. Deploy darvozasi shu tez CI + Security | `ci.yml`; `nightly.yml` e2e/coverage/compatibility; `tools/check_decisions.py` → `pr_skips_heavy_ci` |
 | 2026-09-16 | Deploy qo'lda (`tools/deploy.sh`); 2026-09-17 dan skript `web` ni ham quradi — bitta deploy hamma servisni yangilaydi | `deploy.yml` faqat `workflow_dispatch`; `tools/deploy.sh` → `SERVICES` |
 | 2026-09-17 | Agentlar production'ni **`main` CI yashil bo'lsa** so'ramasdan deploy qiladi; bir vaqtda faqat bitta deploy | `tools/deploy.sh` → `tools/check_deploy_gate.py` + qulf (`--skip-ci-gate` faqat Saidakbar aka ruxsati bilan) |
 | 2026-09-17 | Repo aralash tilda, migratsiya yo'q | `CONTRIBUTING.md` § Til |
@@ -162,7 +163,8 @@ Til: izoh va docstring inglizcha, mavjud hujjat o'z tilida — to'liq qoida
 
 CI, Security va Nightly `ubuntu-latest` da (public repo — standard
 runner daqiqasi $0). Deploy `tools/deploy.sh` / `deploy.yml` shu
-mashinada qoladi. PR'da Security va smoke yo'q.
+mashinada qoladi. PR'da Security yo'q. Smoke, E2E, bake-off, language
+matrix va API pytest — Nightly.
 
 **`main` ga to'g'ridan-to'g'ri push'ni hook rad etadi** (`tools/push_guard.py`).
 GitHub bu tarifda branch protection bermaydi (403), ya'ni server hech narsani
