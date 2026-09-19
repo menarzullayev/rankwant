@@ -38,7 +38,7 @@ import urllib.error
 import urllib.request
 from argparse import ArgumentParser
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -184,7 +184,7 @@ def to_epoch(value: Any) -> datetime | None:
     if not isinstance(value, int) or value <= 0:
         return None
     try:
-        return datetime.fromtimestamp(value, tz=timezone.utc)
+        return datetime.fromtimestamp(value, tz=UTC)
     except (OSError, OverflowError, ValueError):
         return None
 
@@ -294,7 +294,7 @@ class Command(BaseCommand):
         MANIFEST.write_text(
             json.dumps(
                 {
-                    "fetched_at": datetime.now(timezone.utc).isoformat(),
+                    "fetched_at": datetime.now(UTC).isoformat(),
                     "bytes": len(body),
                     "sha256": hashlib.sha256(body).hexdigest(),
                     "source": url,
@@ -415,7 +415,7 @@ class Command(BaseCommand):
 
         to_create: list[User] = []
         to_update: list[User] = []
-        now = datetime.now(tz=timezone.utc)
+        now = datetime.now(tz=UTC)
 
         for rec in records:
             obj = existing.get(rec["username"].casefold())
