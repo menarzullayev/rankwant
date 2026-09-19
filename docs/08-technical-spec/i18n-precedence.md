@@ -176,19 +176,21 @@ fails the build with *"Both middleware file and proxy file are detected"*.
 discards the *value* or the *key*. Here it is the key, so no amount of
 in-process header manipulation will work — the fix has to sit outside Next.js.
 
-**Why this is latent rather than live:** responses currently carry
-`Cache-Control: private, no-cache, no-store, max-age=0, must-revalidate`, so no
-shared cache may store them. The defect becomes a cache-poisoning bug the day
-caching is enabled.
+**Homepage cache (2026-09-19):** guest GET `/` is cached. The cached body is
+forced to `uz` via `x-rw-locale` (`home-cache.ts`); `?lang=` and locale/session
+cookies are excluded from the cacheable set, so `Accept-Language` cannot
+poison that one URL. Other routes stay `no-store`. The `Vary` gap below still
+applies the day any other path is cached.
 
 ⚠️ Since 2026-09-19 the locale also travels in the URL (`?lang=<code>`). That
 sharpens the same defect rather than adding a second one: one path now has
 several URLs whose bodies differ, so a cache keyed on the URL alone can hand a
 `?lang=ru` body to a `?lang=uz` request. The cookie write softens it — later
 requests carry the cookie — but it does not remove it, because the *first*
-response still has to be keyed correctly.
+response still has to be keyed correctly. Guest GET `/` is not cached when a
+query string is present, so `/?lang=ru` stays a private miss.
 
-**What must happen before caching is enabled** (options, none yet applied):
+**What must happen before caching other routes** (options, none yet applied):
 
 - put a small reverse proxy in front of Next.js that appends `Accept-Language`
   to `Vary`;

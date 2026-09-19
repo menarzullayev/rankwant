@@ -3,6 +3,7 @@ import "server-only";
 import { cookies } from "next/headers";
 
 import { API_BASE, ApiError } from "./api";
+import { SESSION_COOKIE } from "./home-cache";
 
 /**
  * SSR da shaxsiy ma'lumot uchun GET.
@@ -37,9 +38,6 @@ export async function getWithSession<T>(path: string): Promise<T> {
   }
   return (await res.json()) as T;
 }
-
-/** Django standart sessiya cookie'si (`SESSION_COOKIE_NAME` o'zgartirilmagan). */
-const SESSION_COOKIE = "sessionid";
 
 /**
  * SSR da joriy foydalanuvchini o'qiydi; anonim bo'lsa `null`.
