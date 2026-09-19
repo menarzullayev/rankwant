@@ -88,6 +88,15 @@ just the presence of the call.
 "account wins" rule: that is the point of this document. Changing it back
 would silently discard the device choice on every sign-in.
 
+⚠️ **Re-affirmed 2026-09-19 (owner decision S6 = T6-a).** The owner was shown
+three options — keep the current rule, make the account win, or add a visible
+"language: device / account" control in settings — and chose **to keep it as
+it is, with no new control**. So do not "improve" this by adding a
+precedence switch: it was offered and declined. The same decision also
+accepted that the second-device behaviour stays **unmeasured** for now; if
+you do measure it (a signed-in account whose locale differs, opened in a
+clean browser context), report the result rather than acting on it.
+
 ### What CI checks, and what it cannot
 
 Three checkers guard this area. They are complementary — no one of them
