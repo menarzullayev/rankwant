@@ -29,7 +29,7 @@ _console.force_utf8()
 ROOT = Path(__file__).resolve().parent.parent
 EXAMPLE = ROOT / ".env.example"
 SECRET = re.compile(r"(SECRET|TOKEN|PASSWORD|_API_KEY$|^DJANGO_SECRET_KEY$)")
-IGNORED = {"NODE_ENV"}  # set by Node/Next itself
+IGNORED = {"NODE_ENV", "NEXT_RUNTIME"}  # set by Node/Next itself
 
 
 class Unreadable(Exception):
