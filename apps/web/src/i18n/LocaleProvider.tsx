@@ -65,11 +65,24 @@ function loadDictionary(locale: Locale, url: string): Promise<void> {
  *  They must move in step: `evictOtherLocales` drops a dictionary from the
  *  registry, so the promise cache has to drop it too, or the next visit to that
  *  language has nothing left to inject. */
-function keepOnly(keep: Locale): void {
+export function keepOnly(keep: Locale): void {
   for (const locale of [...loading.keys()]) {
     if (locale !== keep) loading.delete(locale);
   }
   evictOtherLocales(keep);
+}
+
+/** Test helpers — the two caches have to move together; unit tests prove it. */
+export function resetDictionaryLoadsForTests(): void {
+  loading.clear();
+}
+
+export function markDictionaryLoadForTests(locale: Locale, url = `/i18n/${locale}.js`): void {
+  loading.set(locale, { url, promise: Promise.resolve() });
+}
+
+export function pendingDictionaryLoads(): Locale[] {
+  return [...loading.keys()];
 }
 
 /** Mijoz komponentlari `cookies()` ni o'qiy olmaydi — til yuqoridan beriladi.

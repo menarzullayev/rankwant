@@ -49,8 +49,8 @@ const PANEL_GAP = 8;
  *
  *  Almashtirish ARXITEKTURASI o'zgarmaydi: cookie + `router.refresh()`.
  *  Ko'rinish endi input trigger: yozilganda ro'yxat filtrlanaveradi.
- *  Triggerdagi endonim tor ekranda `max-w-[3rem]` bilan qirqiladi —
- *  320 px da header toshmasin.
+ *  Triggerdagi endonim tor ekranda `Dropdown` header inputida
+ *  `max-w-[3rem]` bilan qirqiladi — 320 px da header toshmasin.
  */
 export function LocaleSwitch() {
   const locale = useLocale();
@@ -164,9 +164,6 @@ export function LocaleSwitch() {
             : { top: narrowBox.top, left: PANEL_GAP, right: PANEL_GAP }
         }
       />
-      <span hidden className="min-w-0 max-w-[3rem] truncate text-theme-xs sm:max-w-[7.5rem]">
-        {currentLabel}
-        </span>
     </div>
   );
 }

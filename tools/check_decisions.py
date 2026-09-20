@@ -47,6 +47,7 @@ NAV_CHROME = (
     "apps/web/src/layout/AppFooter.tsx",
     "apps/web/src/layout/HeaderStatus.tsx",
     "apps/web/src/layout/UserMenu.tsx",
+    "apps/web/src/layout/BrandMark.tsx",
 )
 INTENT_LINK = "apps/web/src/components/ui/IntentLink.tsx"
 # Homepage <main> content links: same intent rule, this page only (2026-09-18).
@@ -56,6 +57,10 @@ DICTIONARY_ROUTE = "apps/web/src/app/i18n/[file]/route.ts"
 # The header must fit the narrowest supported screen — 320 px, the width the
 # auth tabs were measured against. Owner decision 2026-09-18.
 LOCALE_SWITCH = "apps/web/src/layout/LocaleSwitch.tsx"
+# The visible endonym lives on the header ComboboxInput, not a dummy span
+# in LocaleSwitch (that span used to satisfy this check while the trigger
+# could grow unbounded).
+DROPDOWN = "apps/web/src/components/ui/Dropdown.tsx"
 # The dictionary registry and the load-promise cache are two caches over one
 # thing; they must be dropped together. Owner decision 2026-09-19.
 LOCALE_PROVIDER = "apps/web/src/i18n/LocaleProvider.tsx"
@@ -513,23 +518,23 @@ def mobile_header_fits_narrow_screen() -> str | None:
     trigger sits closer than `PANEL_W + PANEL_GAP` to the right edge.
     """
     switch = read(LOCALE_SWITCH)
-    classes = re.findall(r'className="([^"]*)"', switch)
-
-    def has_class(*tokens: str) -> bool:
-        return any(all(token in value for token in tokens) for value in classes)
+    dropdown = read(DROPDOWN)
 
     if "sm:hidden" in switch:
         return (
             f"{LOCALE_SWITCH}: tor ekranda til KODI qaytgan — endonim o'rniga "
             "kod ko'rsatiladi (qaror: endonim har kenglikda ko'rinadi)"
         )
-    if not has_class("max-w-[3rem]", "truncate"):
+    # The bound must be on the visible header input. A hidden span in
+    # LocaleSwitch used to pass this check while the Combobox showed the
+    # full endonym and overflowed 320 px.
+    if "max-w-[3rem]" not in dropdown or "truncate" not in dropdown:
         return (
-            f"{LOCALE_SWITCH}: endonim tor ekranda chegaralanmagan — "
+            f"{DROPDOWN}: header triggerda `max-w-[3rem] truncate` yo'q — "
             "320 px da header toshadi (`Qaraqalpaqsha` +29 px, o'lchandi)"
         )
-    if not has_class("sm:max-w-[7.5rem]"):
-        return f"{LOCALE_SWITCH}: keng ekran chegarasi (`sm:max-w-[7.5rem]`) yo'q"
+    if "sm:max-w-[7.5rem]" not in dropdown:
+        return f"{DROPDOWN}: keng ekran chegarasi (`sm:max-w-[7.5rem]`) yo'q"
 
     # Panel: tor ekranda viewport'ga bog'lanmasa bayroqlar ekrandan chiqadi.
     for needle in (
@@ -630,6 +635,30 @@ def mobile_drawer_is_accessible() -> str | None:
 
     if 'document.body.style.overflow = "hidden"' not in read(APP_SHELL):
         return f"{APP_SHELL}: panel ochiq ekan orqa fon scroll'i qulflanmagan"
+    if "if (!isMobileOpen) return;" not in read(APP_SHELL):
+        return (
+            f"{APP_SHELL}: scroll qulfi `isMobileOpen` ga bog'lanmagan — "
+            "topnav drawer ochiqda orqa fon siljiydi"
+        )
+
+    topnav = read(APP_TOPNAV)
+    if "aria-expanded={isMobileOpen}" not in topnav:
+        return f"{APP_TOPNAV}: burger holatni e'lon qilmaydi (`aria-expanded` yo'q)"
+    if 'aria-controls="rw-topnav-drawer"' not in topnav:
+        return f'{APP_TOPNAV}: burgerda `aria-controls="rw-topnav-drawer"` yo\'q'
+    if 'id="rw-topnav-drawer"' not in topnav:
+        return f"{APP_TOPNAV}: `rw-topnav-drawer` yo'q"
+    if "hidden={!isMobileOpen}" not in topnav:
+        return (
+            f"{APP_TOPNAV}: drawer yopiqda DOM'dan chiqadi — `aria-controls` "
+            "nishonsiz qoladi"
+        )
+    if 'role={isMobileOpen ? "dialog" : undefined}' not in topnav:
+        return f"{APP_TOPNAV}: ochiq drawer dialog rolini olmaydi"
+    if "drawerRef.current?.querySelector<HTMLElement>(\"a\")?.focus()" not in topnav:
+        return f"{APP_TOPNAV}: ochilganda fokus ichkariga kirmaydi"
+    if "menuButtonRef.current?.isConnected" not in topnav:
+        return f"{APP_TOPNAV}: yopilganda fokus burgerga qaytmaydi"
     return None
 
 

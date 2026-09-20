@@ -54,6 +54,9 @@ export default function AppTopNav({
   // strelkalar fokusni qo'lda ko'chiradi, ya'ni har tugma qaysi
   // yo'nalishda turganini bilish kerak.
   const groupRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const drawerWasOpen = useRef(false);
 
   /** Guruhlar orasida fokusni ko'chiradi (`Home`/`End` bilan chetga). */
   const focusGroup = (index: number) => {
@@ -199,6 +202,20 @@ export default function AppTopNav({
     };
   }, [openGroup]);
 
+  // Fokus — sidenav drawer bilan bir xil: ochilganda ichkariga, yopilganda
+  // burgerga. Birinchi mount da `isMobileOpen` false — tugmani o'g'irlamaymiz.
+  useEffect(() => {
+    if (isMobileOpen) {
+      drawerWasOpen.current = true;
+      drawerRef.current?.querySelector<HTMLElement>("a")?.focus();
+      return;
+    }
+    if (drawerWasOpen.current && menuButtonRef.current?.isConnected) {
+      menuButtonRef.current.focus();
+    }
+    drawerWasOpen.current = false;
+  }, [isMobileOpen]);
+
   return (
     <header
       ref={barRef}
@@ -210,6 +227,7 @@ export default function AppTopNav({
             burgeri ham yo'q — bu tugma yagona kirish nuqtasi. */}
         <button
           type="button"
+          ref={menuButtonRef}
           onClick={isMobileOpen ? closeMobileSidebar : openMobileSidebar}
           aria-expanded={isMobileOpen}
           aria-controls="rw-topnav-drawer"
@@ -314,42 +332,45 @@ export default function AppTopNav({
       {/* Mobil ro'yxat — tor ekranda burger bilan ochiladi.
           Sidenav'ning drawer'i emas: u butunlay alohida, chunki topnav
           rejimida sidenav umuman chizilmaydi. */}
-      {isMobileOpen && (
-        <div
-          id="rw-topnav-drawer"
-          className="max-h-[70vh] overflow-y-auto border-t rw-divider rw-surface px-4 py-3 lg:hidden"
-        >
-          {NAV_GROUPS.map((group) => (
-            <div key={group.key} className="mb-3">
-              <p className="mb-1 px-3 text-theme-xs font-medium tracking-wider rw-dim-2 uppercase">
-                {t(locale, group.key)}
-              </p>
-              <ul className="flex flex-col gap-1">
-                {group.items.map(({ href, key, iconKey }) => {
-                  const active =
-                    pathname === href || pathname.startsWith(`${href}/`);
-                  return (
-                    <li key={href}>
-                      <IntentLink
-                        href={href}
-                        aria-current={active ? "page" : undefined}
-                        onClick={closeMobileSidebar}
-                        className={`menu-item ${active ? "menu-item-active" : "menu-item-inactive"}`}
-                      >
-                        <Icon
-                          name={iconKey}
-                          className={`size-5 shrink-0 ${active ? "menu-item-icon-active" : "menu-item-icon-inactive"}`}
-                        />
-                        <span className="truncate">{t(locale, key)}</span>
-                      </IntentLink>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ))}
-        </div>
-      )}
+      <div
+        id="rw-topnav-drawer"
+        ref={drawerRef}
+        hidden={!isMobileOpen}
+        role={isMobileOpen ? "dialog" : undefined}
+        aria-modal={isMobileOpen || undefined}
+        aria-label={t(locale, "nav.main")}
+        className="max-h-[70vh] overflow-y-auto border-t rw-divider rw-surface px-4 py-3 lg:hidden"
+      >
+        {NAV_GROUPS.map((group) => (
+          <div key={group.key} className="mb-3">
+            <p className="mb-1 px-3 text-theme-xs font-medium tracking-wider rw-dim-2 uppercase">
+              {t(locale, group.key)}
+            </p>
+            <ul className="flex flex-col gap-1">
+              {group.items.map(({ href, key, iconKey }) => {
+                const active =
+                  pathname === href || pathname.startsWith(`${href}/`);
+                return (
+                  <li key={href}>
+                    <IntentLink
+                      href={href}
+                      aria-current={active ? "page" : undefined}
+                      onClick={closeMobileSidebar}
+                      className={`menu-item ${active ? "menu-item-active" : "menu-item-inactive"}`}
+                    >
+                      <Icon
+                        name={iconKey}
+                        className={`size-5 shrink-0 ${active ? "menu-item-icon-active" : "menu-item-icon-inactive"}`}
+                      />
+                      <span className="truncate">{t(locale, key)}</span>
+                    </IntentLink>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
+      </div>
     </header>
   );
 }

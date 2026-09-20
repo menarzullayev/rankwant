@@ -10,6 +10,26 @@ describe("resolveLocale", () => {
     expect(resolveLocale("ru", "uz", null)).toEqual({ locale: "ru", auto: false });
   });
 
+  it("lets every supported ?lang= beat the cookie", () => {
+    for (const locale of [
+      "uz",
+      "kaa",
+      "ru",
+      "en",
+      "kk",
+      "ky",
+      "tg",
+      "tr",
+      "zh",
+      "es",
+    ] as const) {
+      expect(resolveLocale(locale, "en", "ru")).toEqual({
+        locale,
+        auto: false,
+      });
+    }
+  });
+
   it("falls back to the cookie when there is no link", () => {
     expect(resolveLocale(null, "en", "ru,en;q=0.8")).toEqual({
       locale: "en",
