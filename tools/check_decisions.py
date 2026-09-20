@@ -1700,6 +1700,31 @@ def aop_owned_paths_no_star_star() -> str | None:
     return None
 
 
+def aop_stale_worktree_reap() -> str | None:
+    """2026-09-20 HITL stale-reap: leftover trees under your tool folder.
+
+    Flexible slots have no janitor. `wt/deploy` and `cp/rankwant` stay.
+    Another tool's folder is out of bounds.
+    """
+    aop = read("docs/10-operations/parallel-agents.md")
+    if "HITL 2026-09-20 `stale-reap`" not in aop:
+        return "docs/10-operations/parallel-agents.md: stale-reap HITL yo'q"
+    if "wt/deploy" not in aop:
+        return "docs/10-operations/parallel-agents.md: `wt/deploy` himoyasi yo'q"
+    src = read("tools/reap_stale_worktrees.py")
+    if "HITL 2026-09-20 `stale-reap`" not in src:
+        return "tools/reap_stale_worktrees.py: stale-reap HITL yo'q"
+    if 'NEVER_REAP = ("wt/deploy", "cp/rankwant")' not in src:
+        return "tools/reap_stale_worktrees.py: NEVER_REAP `wt/deploy`/`cp/rankwant` emas"
+    if "ALLOWED_TOOLS" not in src:
+        return "tools/reap_stale_worktrees.py: ALLOWED_TOOLS yo'q"
+    if "stale-reap" not in read(".cursor/rules/parallel-agents.mdc"):
+        return ".cursor/rules/parallel-agents.mdc: stale-reap yo'q"
+    if "stale-reap" not in read("CONTRIBUTING.md"):
+        return "CONTRIBUTING.md: stale-reap yo'q"
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -1712,6 +1737,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("/users/ noindex", users_profiles_stay_noindex),
     ("rank colour_group 7 token", rank_colour_groups_not_sixteen_tokens),
     ("owned_paths no-star-star", aop_owned_paths_no_star_star),
+    ("stale worktree reap", aop_stale_worktree_reap),
     ("navigatsiya prefetch'i niyatda", nav_prefetch_on_intent),
     ("bosh sahifa <main> prefetch'i niyatda", home_main_prefetch_on_intent),
     ("lug'at alohida faylda", dictionary_as_cached_file),

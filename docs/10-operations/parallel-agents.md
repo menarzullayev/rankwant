@@ -309,6 +309,22 @@ the whole monorepo “to understand the project”.
    HEAD == `origin/main`, CI + Security green. Hold `rankwant-deploy.lock`.
 5. Remove **your** worktree after merge (stop processes with that cwd first).
 
+### Stale worktrees — HITL 2026-09-20 `stale-reap`
+
+There is no janitor slot. An agent **may** remove a worktree under **its own**
+`wt/<cursor|workbuddy|claude>/` when all of these hold:
+
+- no fresh `.agent` manifest lists that workspace (heartbeat < 4 h)
+- `gh pr list --head <branch>` is empty
+- the tree is clean (`git status --porcelain` empty)
+
+Script: `python tools/reap_stale_worktrees.py --tool cursor` (dry-run),
+`--yes` to apply.
+
+**Never** reap `wt/deploy`, `cp/rankwant`, or another tool's folder. Dirty
+trees stay. `keep-manual` was rejected: Windows often fails `worktree remove`
+at DONE, and leftover trees already numbered ~17.
+
 HITL: one RankWant product question on the machine at a time (`HITL` lock).
 A second agent does not open AskQuestion while that lock is fresh.
 
@@ -320,5 +336,5 @@ A second agent does not open AskQuestion while that lock is fresh.
 | “Delete all worktrees” removed another agent’s unpushed commits | own `wt/<tool>/` only |
 | Two deploys; compose from a feature tree mixed commits | one stack, `deploy.sh` + lock |
 | `next dev` in a worktree locked `node_modules` junctions | prefer live verify after deploy |
-| C: < 11 GB from Docker VHDX + many `node_modules` | cap write trees; prune your leftovers |
+| C: < 11 GB from Docker VHDX + many `node_modules` | cap write trees; stale-reap your tool folder |
 | Three API PRs on two 4 CPU / 4 GB runners sharing Docker | serialize heavy merges |

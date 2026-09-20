@@ -32,6 +32,10 @@ kartasidagi `owned_paths` va `.agent/locks/` (birinchi yozuvchi yutadi).
 va bir segmentli katalog globi (`apps/**`) taqiqlanadi; katalog globida
 kamida ikki segment (`apps/web/**`); bir nechta paketga ruxsat. Predikat:
 `tools/owned_paths.py`.
+Eski worktree: **stale-reap** (HITL 2026-09-20) — agent o‘z `wt/<tool>/`
+papkasidagi qulfsiz, ochiq PR yo‘q, toza daraxtni 4 soatlik heartbeatdan
+keyin o‘chirishi mumkin; `wt/deploy` va `cp/rankwant` taqiqlanadi.
+`python tools/reap_stale_worktrees.py --tool workbuddy`.
 **Bitta task = bitta owner.** Shared state (fayl, port, lockfile, DB, Docker,
 Git) — asosiy xavf; agentlar soni emas.
 
