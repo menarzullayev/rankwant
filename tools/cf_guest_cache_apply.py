@@ -133,7 +133,7 @@ def matches(live: dict, spec: dict) -> bool:
         and params.get("cache") is True
         and (params.get("edge_ttl") or {}).get("mode") == "respect_origin"
         and (params.get("browser_ttl") or {}).get("mode") == "respect_origin"
-        and (vary.get("default") or {}).get("action") == "bypass"
+        and (vary.get("default") or {}).get("action") == "passthrough"
         and accept.get("action") == "normalize"
         and "uz" in languages
         and "ru" in languages

@@ -9,7 +9,7 @@
     "edge_ttl": { "mode": "respect_origin" },
     "browser_ttl": { "mode": "respect_origin" },
     "vary": {
-      "default": { "action": "bypass" },
+      "default": { "action": "passthrough" },
       "headers": {
         "accept-language": {
           "action": "normalize",
