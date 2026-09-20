@@ -54,6 +54,32 @@ services:
       web: { condition: service_started }
       judge: { condition: service_started }
 
+  # Judge latency — launch gate sharti: p50 < 5 s, p95 < 15 s
+  # (`docs/09-development-plan/README.md` § Launch gate; mezon ADR-0004 da).
+  #
+  # Haqiqiy nsjail ostida, haqiqiy navbat bilan o'lchaydi:
+  # submit → Redis → judge → verdict. `smoke` bilan bir xil naqsh — tarmoq
+  # ICHIDA ishlaydi, ya'ni host portlari kerak emas, va `profiles` tufayli
+  # `up -d` uni ko'tarmaydi (bir martalik).
+  #
+  # ⚠️ `worker` TIRIK bo'lishi SHART — navbatni u bo'shatadi. Nightly bu
+  # job'da `worker beat` ni to'xtatmaydi (e2e dagi bake-off qadamidan farqli:
+  # u yerda harness natijalarni o'zi o'qiydi).
+  #
+  # Byudjet — o'lchov emas, DARVOZA: oshsa skript 1 qaytaradi va job qizil
+  # bo'ladi. Muhit (`API`, namuna soni, byudjet) atrof-muhit orqali
+  # boshqariladi — `tests/latency/check_judge_latency.py` docstring'iga qarang.
+  latency:
+    logging: *default-logging
+    image: python:3.13-slim
+    profiles: ['latency']
+    volumes: ["${HOST_REPO_ROOT:-.}/tests/latency:/latency:ro"]
+    command: ['python', '/latency/check_judge_latency.py']
+    depends_on:
+      api: { condition: service_healthy }
+      worker: { condition: service_started }
+      judge: { condition: service_started }
+
   # Bake-off — sandbox xatti-harakatini HAQIQIY nsjail ostida tekshiradi:
   # validator (19–21), fork bomb, tarmoq, `/proc`, symlink, fayl yozish,
   # OLE/TLE/MLE. Birlik testlari `sandboxed` ni soxta ijrochi bilan

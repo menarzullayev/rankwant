@@ -234,6 +234,50 @@ backend'i yiqilib har so'rov 500 berardi — 10-operations va'da qilgan
 
 ---
 
+## 16. Judge latency — launch gate
+
+Launch gate sharti: **p50 < 5 s, p95 < 15 s**
+([09 § Launch gate](../09-development-plan/README.md); mezon
+[ADR-0004](../07-adr/0004-judge-engine.md) § Baholash mezonlari).
+
+O'lchov — `tests/latency/check_judge_latency.py`. U haqiqiy stack'ga qarshi
+yuguradi: ro'yxatdan o'tadi, kiradi, `LATENCY_SAMPLES` ta yechim yuboradi va
+har biri uchun **submit → Redis navbat → judge → nsjail → verdikt** devor
+vaqtini o'lchaydi. Byudjet oshsa skript `1` qaytaradi — ya'ni bu shunchaki
+o'lchov emas, **darvoza**.
+
+| Parametr | Standart | Nega shunday |
+| --- | --- | --- |
+| Namuna | 20 | p95 ma'noli bo'lishi uchun kamida 20 nuqta kerak |
+| Qizdirish | 2 | Birinchi submit har doim sekin (sovuq obraz, bo'sh kesh) |
+| Til | `cpp23` | Kompilyatsiya eng qimmat yo'l — eng yomon holat |
+| Masala | `a-plus-b` | Arzon ishlaydi, ya'ni o'lchov **qat'iy xarajatni** ko'rsatadi |
+| Rejim | ketma-ket | Sof yo'l vaqti; navbat ostidagi guruhlanish — boshqa savol |
+
+Foiz **nearest-rank** bilan hisoblanadi (`ceil(p/100 * n)`-element,
+interpolatsiyasiz) — kichik namuna uchun sodda va takrorlanadigan.
+
+⚠️ **Muhit muhim.** Nightly uni CI stack'iga qaratadi, ya'ni raqam GitHub
+runner'niki — bu **regressiya bazasi**, ishlab chiqarish ko'rsatkichi emas.
+Launch gate'dagi ishlab chiqarish raqamini olish uchun o'sha harness'ni
+ishlab chiqarishga qarating:
+
+```bash
+API=https://rankwant.uz/api/v1 LATENCY_SAMPLES=20 \
+  python tests/latency/check_judge_latency.py
+```
+
+Har ikki holatda ham byudjet bir xil, ya'ni raqamlar taqqoslanadi. Harness
+hisobotida yadro soni va `load1` ham chop etiladi — raqam shu kontekstda
+o'qiladi.
+
+Darvoza mantiqi **salbiy test bilan** tasdiqlangan:
+`python tests/latency/selftest.py` stub API ko'taradi va ikkala yo'nalishni
+tekshiradi — imkonsiz tor byudjet `1` qaytarishi, keng byudjet `0` qaytarishi
+shart. Yashil natija yolg'on bo'lmasin.
+
+---
+
 ## CI/CD pipeline
 
 ```
@@ -266,7 +310,8 @@ backend'i yiqilib har so'rov 500 berardi — 10-operations va'da qilgan
            Production Smoke + Canary
 ```
 
-**Nightly:** Load · Soak (haftalik) · Chaos (staging).
+**Nightly:** Load · E2E · **Latency (judge byudjeti — launch gate)** · Chaos ·
+Language matrix · Coverage · Soak (haftalik).
 **Har release oldidan:** Stress · Spike.
 
 ## Amalga oshirilgan holat (2026-09-06)
