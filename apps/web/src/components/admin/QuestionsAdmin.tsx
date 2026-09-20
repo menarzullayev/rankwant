@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { FormCheck } from "@/components/form/FormKit";
+import { FM_INP, FM_LAB, FM_RADIO } from "@/components/form/chrome";
 import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -61,11 +63,9 @@ const EMPTY: FormState = {
   ],
 };
 
-const INPUT =
-  "h-10 w-full rw-radius-sm border rw-line rw-surface px-3 text-theme-sm outline-none " +
-  "rw-focus-line rw-field-bg ";
+const INPUT = FM_INP;
 
-const LABEL = "mb-1 block text-theme-xs font-medium rw-dim-2 ";
+const LABEL = FM_LAB;
 
 function fromItem(item: Question): FormState {
   return {
@@ -296,17 +296,15 @@ export function QuestionsAdmin() {
                 className={INPUT}
               />
             </label>
-            <label className="flex items-center gap-2 md:col-span-2">
-              <input
-                type="checkbox"
+            <div className="md:col-span-2">
+              <FormCheck
                 checked={form.is_active}
                 onChange={(e) =>
                   setForm({ ...form, is_active: e.target.checked })
                 }
-                className="size-4"
+                label={t(locale, "admin.label.flag.active")}
               />
-              <span className="text-theme-sm rw-strong">{t(locale, "admin.label.flag.active")}</span>
-            </label>
+            </div>
 
             <div className="md:col-span-2">
               <div className="mb-2 flex items-center justify-between">
@@ -349,9 +347,9 @@ export function QuestionsAdmin() {
                         name="correct"
                         checked={c.is_correct}
                         onChange={() => markCorrect(i)}
-                        className="size-4"
+                        className={FM_RADIO}
                       />
-                      To&apos;g&apos;ri
+                      {t(locale, "admin.text.correct")}
                     </label>
                     <button
                       type="button"

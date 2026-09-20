@@ -5,6 +5,7 @@ import { useConfirm } from "@/components/overlay/OverlayHost";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { date, fill, t, errorText as translateError, type Locale } from "@/i18n/messages";
 
+import { FM_INP } from "@/components/form/chrome";
 import {
   type ColumnDef,
   CrudPage,
@@ -37,9 +38,7 @@ type StaffUser = {
 
 const PATH = "/staff/users/";
 
-const INPUT =
-  "h-10 w-full rw-radius-sm border rw-line rw-surface px-3 text-theme-sm outline-none " +
-  "rw-focus-line rw-field-bg ";
+const INPUT = FM_INP;
 
 const COLUMNS: ColumnDef<StaffUser>[] = [
   { key: "username", labelKey: "admin.label.text.username" },

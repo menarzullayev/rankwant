@@ -337,7 +337,7 @@ export function ProblemFilters({
                   step={100}
                   value={range.gte}
                   onChange={(event) => applyRange(event.target.value, range.lte)}
-                  className="h-8 w-20 rw-radius-sm border rw-line rw-field-bg px-2 text-theme-sm rw-strong rw-focus-line"
+                  className="h-8 w-20 rw-radius-sm border rw-line rw-field-bg px-2 text-theme-sm rw-strong rw-focus-line rw-fm-inp"
                 />
               </label>
               <label className="flex items-center gap-1.5 text-theme-sm rw-dim">
@@ -349,7 +349,7 @@ export function ProblemFilters({
                   step={100}
                   value={range.lte}
                   onChange={(event) => applyRange(range.gte, event.target.value)}
-                  className="h-8 w-20 rw-radius-sm border rw-line rw-field-bg px-2 text-theme-sm rw-strong rw-focus-line"
+                  className="h-8 w-20 rw-radius-sm border rw-line rw-field-bg px-2 text-theme-sm rw-strong rw-focus-line rw-fm-inp"
                 />
               </label>
             </div>
@@ -502,7 +502,7 @@ function TopicOptions({
             count: topics.length,
           })}
           aria-label={t(locale, "filter.topicSearchLabel")}
-          className="mb-1.5 h-8 w-full rw-radius-sm border rw-line rw-field-bg px-2.5 text-theme-sm rw-strong rw-focus-line"
+          className="mb-1.5 h-8 w-full rw-radius-sm border rw-line rw-field-bg px-2.5 text-theme-sm rw-strong rw-focus-line rw-fm-inp"
         />
       )}
       <div className="max-h-64 space-y-2 overflow-y-auto">

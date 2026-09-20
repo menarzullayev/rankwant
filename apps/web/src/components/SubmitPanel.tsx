@@ -13,6 +13,7 @@ import {
   useSyncExternalStore,
 } from "react";
 
+import { FormFile } from "@/components/form/FormKit";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Dropdown } from "@/components/ui/Dropdown";
@@ -558,18 +559,10 @@ function EditorTools({
 
   return (
     <div className="flex flex-wrap items-center gap-1">
-      <label className={`${action} cursor-pointer`}>
-        {t(locale, "submit.loadFromFile")}
-        <input
-          type="file"
-          accept=".cpp,.cc,.cxx,.c,.py,.java,.kt,.go,.rs,.cs,.js,.ts,.txt"
-          className="hidden"
-          onChange={(e) => {
-            void upload(e.target.files?.[0]);
-            e.target.value = "";
-          }}
-        />
-      </label>
+      <FormFile
+        accept=".cpp,.cc,.cxx,.c,.py,.java,.kt,.go,.rs,.cs,.js,.ts,.txt"
+        onFile={(file) => void upload(file)}
+      />
       <button type="button" onClick={copy} className={action}>
         {copied ? t(locale, "settings.teamCopied") : t(locale, "settings.teamCopy")}
       </button>
@@ -730,7 +723,7 @@ function CustomView({
           onChange={(e) => edit(e.target.value)}
           rows={4}
           spellCheck={false}
-          className="w-full rw-radius-sm border rw-line rw-field-bg p-3 font-mono text-theme-xs rw-strong outline-none rw-focus-line"
+          className="w-full rw-radius-sm border rw-line rw-field-bg p-3 font-mono text-theme-xs rw-strong outline-none rw-focus-line rw-fm-inp"
         />
       </label>
 

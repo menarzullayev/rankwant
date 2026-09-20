@@ -24,6 +24,15 @@ import { STATUS_VARIANTS, clampStatusVariant } from "@/lib/theme/status";
 import { LOADING_VARIANTS, clampLoadingVariant } from "@/lib/theme/loading";
 import { SELECTABLE_PACKS, clampIconPack } from "@/lib/theme/icon-packs";
 import { OVERLAY_VARIANTS, clampOverlayVariant } from "@/lib/theme/overlay";
+import { FORM_VARIANTS, clampFormVariant } from "@/lib/theme/form";
+import {
+  FormCheck,
+  FormDate,
+  FormFile,
+  FormRadios,
+} from "@/components/form/FormKit";
+import { Field } from "@/components/ui/Field";
+import { TextArea } from "@/components/settings/kit";
 import {
   OverlayDialog,
   useConfirm,
@@ -385,6 +394,7 @@ function AppearanceTab() {
       <StatusSection />
       <LoadingSection />
       <OverlaySection />
+      <FormSection />
       <IconPackSection />
     </>
   );
@@ -920,6 +930,64 @@ function OverlaySection() {
   );
 }
 
+/** Forma oilasi — yozuv, belgi, radio, fayl, sana. Namuna shu yerda
+ *  qayta chiziladi, shuning uchun tanlov darhol ko'rinadi. */
+function FormSection() {
+  const locale = useLocale();
+  const { appearance, setAppearance } = useCustomizer();
+  const current = clampFormVariant(appearance.formStyle);
+  const def = FORM_VARIANTS.find((v) => v.id === current) ?? FORM_VARIANTS[0];
+
+  return (
+    <Section title={t(locale, "customizer.form")}>
+      <div className="flex flex-wrap gap-2">
+        {FORM_VARIANTS.map((v) => (
+          <button
+            key={v.id}
+            type="button"
+            aria-pressed={current === v.id}
+            onClick={() => setAppearance({ formStyle: v.id })}
+            className={chip(current === v.id)}
+          >
+            {t(locale, v.labelKey)}
+          </button>
+        ))}
+      </div>
+      <div className="rw-fm-kit mt-3 rw-radius-sm border rw-divider p-3">
+        <Field
+          label={t(locale, "form.sample.title")}
+          name="fm-title"
+          defaultValue={t(locale, "overlay.sample.modalTitle")}
+        />
+        <TextArea
+          label={t(locale, "form.sample.body")}
+          name="fm-body"
+          defaultValue={t(locale, "overlay.sample.modalBody")}
+          rows={3}
+        />
+        <FormCheck label={t(locale, "form.sample.public")} defaultChecked />
+        <FormRadios
+          name="fm-diff"
+          label={t(locale, "form.sample.difficulty")}
+          defaultValue="1200"
+          options={["800", "1200", "1600"].map((value) => ({
+            value,
+            label: value,
+          }))}
+        />
+        <FormFile label={t(locale, "form.sample.file")} />
+        <FormDate
+          label={t(locale, "form.sample.date")}
+          defaultValue="2026-09-20"
+        />
+      </div>
+      <p className="mt-2 text-theme-xs rw-faint">
+        {t(locale, def.hintKey)} {t(locale, "customizer.formHint")}
+      </p>
+    </Section>
+  );
+}
+
 /** Ikonka to'plami (D10, D11).
  *
  *  ⚠️ Namunada **ikkala qamrov** ko'rsatiladi: yuqoridagi ikonkalar
@@ -1177,7 +1245,7 @@ function AccentSection() {
               }
             }}
             aria-label={t(locale, "customizer.hex")}
-            className="min-w-0 flex-1 rw-radius-sm border rw-line rw-field-bg px-2.5 py-1.5 font-mono text-theme-sm rw-strong uppercase"
+            className="min-w-0 flex-1 rw-radius-sm border rw-line rw-field-bg px-2.5 py-1.5 font-mono text-theme-sm rw-strong uppercase rw-fm-inp"
           />
           <span
             aria-hidden="true"
@@ -1339,15 +1407,11 @@ function A11yTab() {
         <ul className="space-y-2">
           {rows.map((row) => (
             <li key={row.key}>
-              <label className="flex items-center gap-2 text-theme-sm rw-dim-2">
-                <input
-                  type="checkbox"
-                  checked={Boolean(a11y[row.key])}
-                  onChange={(event) => setA11y({ [row.key]: event.target.checked })}
-                  className="size-4"
-                />
-                {row.label}
-              </label>
+              <FormCheck
+                label={row.label}
+                checked={Boolean(a11y[row.key])}
+                onChange={(event) => setA11y({ [row.key]: event.target.checked })}
+              />
             </li>
           ))}
         </ul>
@@ -1444,7 +1508,6 @@ function SavedTemplates() {
   const [name, setName] = useState("");
   const [copied, setCopied] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
   const full = templates.length >= templateLimit;
 
   /** Joriy ko'rinishni JSON fayl qilib yuklab oladi. */
@@ -1499,27 +1562,13 @@ function SavedTemplates() {
         >
           {t(locale, "customizer.exportFile")}
         </button>
-        <button
-          type="button"
-          onClick={() => fileRef.current?.click()}
-          className="min-w-0 flex-1 rw-radius-sm border rw-line px-3 py-1.5 text-theme-sm rw-dim-2 transition rw-hover-bg"
-        >
-          {t(locale, "customizer.importFile")}
-        </button>
+        <div className="min-w-0 flex-1">
+          <FormFile
+            accept="application/json,.json"
+            onFile={(file) => void upload(file)}
+          />
+        </div>
       </div>
-      <input
-        ref={fileRef}
-        type="file"
-        accept="application/json,.json"
-        className="sr-only"
-        aria-label={t(locale, "customizer.importFile")}
-        onChange={(event) => {
-          const file = event.target.files?.[0];
-          if (file) void upload(file);
-          // Bir xil faylni qayta tanlash uchun maydon tozalanadi.
-          event.target.value = "";
-        }}
-      />
       {importError && (
         <p role="alert" className="mb-2 rw-radius-sm rw-bad-soft px-2 py-1 text-theme-xs">
           {t(locale, `customizer.importError.${importError}`)}
@@ -1569,7 +1618,7 @@ function SavedTemplates() {
             maxLength={24}
             placeholder={t(locale, "customizer.templateName")}
             aria-label={t(locale, "customizer.templateName")}
-            className="min-w-0 flex-1 rw-radius-sm border rw-line rw-field-bg px-2.5 py-1.5 text-theme-sm rw-strong"
+            className="min-w-0 flex-1 rw-radius-sm border rw-line rw-field-bg px-2.5 py-1.5 text-theme-sm rw-strong rw-fm-inp"
           />
           <button
             type="submit"

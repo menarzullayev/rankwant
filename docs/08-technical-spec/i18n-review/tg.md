@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1697 strings.**
+**1721 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -1640,6 +1640,30 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `overlay.sample.menuCopy` | Nusxa | Нусха |  |
 | `overlay.sample.menuEdit` | Tahrir | Таҳрир |  |
 | `overlay.sample.menuDelete` | O'chirish | Нест кардан |  |
+| `customizer.form` | Forma | Шакл |  |
+| `customizer.formHint` | Matn, belgi, radio, fayl va sana shu oilaga bo'ysunadi. | Матн, қайд, радио, файл ва сана аз ҳамин оила пайравӣ мекунанд. |  |
+| `form.style.maydon` | Maydon | Майдон |  |
+| `form.style.maydonHint` | Yorliq tepada. 44px maydon, 8px radius, kvadrat belgi. | Барчасп дар боло. 44px майдон, радиуси 8px, қайди мураббаъ. |  |
+| `form.style.qator` | Qator | Сатр |  |
+| `form.style.qatorHint` | Yorliq chapda. Switch va segment. Kapsula maydon. | Барчасп дар чап. Калид ва сегмент. Майдони капсула. |  |
+| `form.style.karta` | Karta | Корт |  |
+| `form.style.kartaHint` | Har tanlov — plitka. Fayl — drop zona. Oy doim ko'rinadi. | Ҳар интихоб — плитка. Файл — минтақаи партофтан. Моҳ ҳамеша намоён. |  |
+| `form.style.jadval` | Jadval | Ҷадвал |  |
+| `form.style.jadvalHint` | 32px, ikki ustun, mono. Sana YYYY-MM-DD. | 32px, ду сутун, моно. Сана YYYY-MM-DD. |  |
+| `form.style.orol` | Orol | Ҷазира |  |
+| `form.style.orolHint` | To'ldirilgan 22px, qattiq chiziq yo'q. Yumaloq switch. Blur kalendar. | Пуршудаи 22px, хати сахт нест. Калиди гирд. Тақвими хира. |  |
+| `form.sample.title` | Sarlavha | Сарлавҳа |  |
+| `form.sample.body` | Matn | Матн |  |
+| `form.sample.public` | Ommaviy | Оммавӣ |  |
+| `form.sample.difficulty` | Qiyinlik | Душворӣ |  |
+| `form.sample.file` | Fayl | Файл |  |
+| `form.sample.date` | Sana | Сана |  |
+| `form.file.choose` | Tanlash | Интихоб |  |
+| `form.file.empty` | Fayl tanlanmagan | Файл интихоб нашудааст |  |
+| `form.cal.prev` | Oldingi oy | Моҳи қаблӣ |  |
+| `form.cal.next` | Keyingi oy | Моҳи баъдӣ |  |
+| `admin.text.correct` | To'g'ri | Дуруст |  |
+| `admin.text.sampleTest` | Namuna test (shartda ko'rsatiladi) | Тести намунавӣ (дар шарт нишон дода мешавад) |  |
 | `customizer.iconPack` | Ikonka to'plami | Маҷмӯи нишонаҳо |  |
 | `customizer.iconPackHint` | Tanlangan to'plam navigatsiya, amallar va holat ikonkalarini o'zgartiradi. Verdikt va brend belgilari qat'iy qoladi. | Маҷмӯи интихобшуда нишонаҳои навигатсия, амалҳо ва ҳолатро иваз мекунад. Нишонаҳои вердикт ва бренд бетағйир мемонанд. |  |
 | `customizer.iconPackFixed` | Qat'iy — to'plamga bo'ysunmaydi | Собит — ба маҷмӯъ вобаста нест |  |

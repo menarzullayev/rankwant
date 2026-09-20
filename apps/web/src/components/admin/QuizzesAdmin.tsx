@@ -217,7 +217,7 @@ function QuestionsPanel({ quiz, reload }: { quiz: Quiz; reload: () => void }) {
           }}
           inputMode="numeric"
           placeholder={t(locale, "admin.placeholder.questionId")}
-          className="h-9 w-32 rw-radius-sm border rw-line rw-surface px-3 text-theme-sm outline-none rw-focus-line rw-field-bg"
+          className="h-9 w-32 rw-radius-sm border rw-line rw-surface px-3 text-theme-sm outline-none rw-focus-line rw-field-bg rw-fm-inp"
         />
         <Button
           type="button"

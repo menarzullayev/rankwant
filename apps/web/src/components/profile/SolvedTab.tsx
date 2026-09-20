@@ -93,7 +93,7 @@ export async function SolvedTab({
               name="q"
               defaultValue={query.q ?? ""}
               placeholder={t(locale, "profile.searchSolved")}
-              className="h-9 w-full rw-radius-sm border rw-line px-3 text-theme-sm rw-strong rw-field-bg rw-focus-ring rw-placeholder"
+              className="h-9 w-full rw-radius-sm border rw-line px-3 text-theme-sm rw-strong rw-field-bg rw-focus-ring rw-placeholder rw-fm-inp"
             />
           </label>
         </form>

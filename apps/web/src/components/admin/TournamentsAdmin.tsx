@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { FM_INP } from "@/components/form/chrome";
 import {
   CrudPage,
   type ColumnDef,
@@ -37,9 +38,7 @@ type Tournament = {
 
 const PATH = "/staff/tournaments/";
 
-const INPUT =
-  "h-9 w-full rw-radius-sm border rw-line rw-surface px-2 text-theme-sm outline-none " +
-  "rw-focus-line rw-field-bg ";
+const INPUT = FM_INP;
 
 function fmt(iso: string): string {
   return new Date(iso).toLocaleString("uz-UZ", {

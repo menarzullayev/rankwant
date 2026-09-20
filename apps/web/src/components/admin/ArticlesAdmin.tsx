@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { FM_INP } from "@/components/form/chrome";
 import { CrudPage, type FieldDef } from "@/components/admin/CrudPage";
 import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -98,9 +99,7 @@ const FIELDS: FieldDef[] = [
   { name: "is_published", labelKey: "admin.label.flag.published", type: "checkbox" },
 ];
 
-const input =
-  "h-9 rw-radius-sm border rw-line rw-surface px-2 text-theme-sm outline-none " +
-  "rw-focus-line rw-field-bg ";
+const input = FM_INP;
 
 /** Maqola ↔ masala bog'lanishlari — PATCH `problems` butun ro'yxatni almashtiradi. */
 function ProblemLinksEditor({

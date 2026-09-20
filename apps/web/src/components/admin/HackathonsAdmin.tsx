@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { FM_INP } from "@/components/form/chrome";
 import {
   CrudPage,
   type ColumnDef,
@@ -134,9 +135,7 @@ const COLUMNS: ColumnDef<Hackathon>[] = [
   { key: "submission_count", labelKey: "admin.label.misc.projects", align: "right" },
 ];
 
-const INPUT =
-  "h-9 rw-radius-sm border rw-line rw-surface px-2 text-theme-sm outline-none " +
-  "rw-focus-line rw-field-bg ";
+const INPUT = FM_INP;
 
 /** Bitta loyiha uchun ball (0–100) + fikr formasi. */
 function ScoreForm({

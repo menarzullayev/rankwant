@@ -53,6 +53,13 @@ describe("share link theme", () => {
     expect(decodeAppearance("?overlayStyle=latta")).toEqual({ overlayStyle: "qogoz" });
   });
 
+  it("round-trips formStyle except the Maydon default", () => {
+    expect(encodeAppearance({ formStyle: "qator" })).toBe("formStyle=qator");
+    expect(encodeAppearance({ formStyle: "maydon" })).toBe("");
+    expect(decodeAppearance("?formStyle=orol")).toEqual({ formStyle: "orol" });
+    expect(decodeAppearance("?formStyle=chiziq")).toEqual({ formStyle: "maydon" });
+  });
+
   it("round-trips style and mode together", () => {
     const search = `?${encodeAppearance({ style: "terminal", density: "compact" }, "dark")}`;
     expect(decodeAppearance(search)).toEqual({ style: "terminal", density: "compact" });
