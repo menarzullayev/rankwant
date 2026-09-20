@@ -84,6 +84,7 @@ export function FormRadios({
       <div
         className={tone === "card" ? "rw-kit-radio-cards" : "rw-fm-hits"}
         role="radiogroup"
+        data-kit-check={tone === "card" ? "radio-card" : undefined}
       >
         {options.map((opt) => (
           <label key={opt.value} className="rw-fm-hit">

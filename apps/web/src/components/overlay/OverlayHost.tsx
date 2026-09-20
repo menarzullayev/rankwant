@@ -311,9 +311,19 @@ export function OverlayProvider({ children }: { children: ReactNode }) {
 
     function onMove(event: PointerEvent) {
       if (!follow || !current) return;
+      const text =
+        current.getAttribute("data-tip") ||
+        current.getAttribute("data-tip-restore") ||
+        "";
       setTip((prev) =>
         prev
-          ? { ...prev, follow: { x: event.clientX, y: event.clientY } }
+          ? {
+              ...prev,
+              text,
+              title: current.getAttribute("data-tip-title") ?? undefined,
+              kbd: current.getAttribute("data-tip-kbd") ?? undefined,
+              follow: { x: event.clientX, y: event.clientY },
+            }
           : prev,
       );
     }

@@ -98,7 +98,7 @@ export function CopyAllBar({
   label?: string;
 }) {
   return (
-    <div className="rw-kit-copy-all">
+    <div className="rw-kit-copy-all" data-kit-copy="all">
       <CopyButton text={text} tone="text" label={label} />
     </div>
   );

@@ -59,7 +59,12 @@ export function AccountSettings() {
 
   async function onDelete(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!(await confirm(t(locale, "settings.deleteConfirm"), { danger: true })))
+    if (
+      !(await confirm(t(locale, "settings.deleteConfirm"), {
+        danger: true,
+        kind: "modal",
+      }))
+    )
       return;
     setError("");
     setBusy("delete");

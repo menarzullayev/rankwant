@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { TabBar } from "@/components/kit/TabBar";
+import { Icon } from "@/components/ui/Icon";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
 import type { ProblemTile } from "@/lib/api";
@@ -84,10 +85,14 @@ export function ProblemMap({ username, problems }: { username: string; problems:
               role="tab"
               aria-selected={mode === option}
               onClick={() => setMode(option)}
-              className={`rw-radius-sm px-3 py-1.5 text-theme-xs font-medium transition rw-focus-ring ${
+              className={`rw-kit-tab rw-radius-sm px-3 py-1.5 text-theme-xs font-medium transition rw-focus-ring ${
                 mode === option ? "rw-accent-soft rw-accent-ink" : "rw-dim rw-hover-bg"
               }`}
             >
+              <Icon
+                name={option === "code" ? "nav.problems" : "action.filter"}
+                className="size-3.5"
+              />
               {t(locale, option === "code" ? "profile.mapByCode" : "profile.mapByLevel")}
             </button>
           ))}

@@ -59,7 +59,6 @@ export function RatingChart({ data, kit }: { data: RatingSeries; kit: DateKit })
     return <p className="text-theme-sm rw-faint">{t(locale, "profile.chartEmpty")}</p>;
   }
   const current = active === null ? null : points[active];
-  const spot = active === null ? null : model.coords[active];
   const date = (value: string) => formatDay(kit, value);
   const describe = (p: RatingPoint) =>
     `${date(p.at)} · ${p.title || t(locale, `profile.reason.${p.reason}`)}${
@@ -118,6 +117,9 @@ export function RatingChart({ data, kit }: { data: RatingSeries; kit: DateKit })
         tabIndex={0}
         onKeyDown={onKey}
         aria-label={t(locale, "profile.chartKeys")}
+        data-tip={current ? describe(current) : t(locale, "profile.chartKeys")}
+        data-tip-kind="follow"
+        data-tip-follow=""
       >
         {/* ⚠️ Ikonka registriga ATAYLAB kirmagan: `viewBox` ma'lumotdan
             hisoblanadi (W×H) — bu almashtiriladigan glif emas, diagramma.
@@ -193,26 +195,6 @@ export function RatingChart({ data, kit }: { data: RatingSeries; kit: DateKit })
             />
           ))}
         </svg>
-        {current && spot && (
-          <div
-            className="pointer-events-none absolute z-10 w-max max-w-64 -translate-x-1/2 -translate-y-full rw-radius-sm border rw-line rw-surface px-3 py-2 text-theme-xs rw-shadow"
-            data-kit-tip="follow"
-            style={{ left: `${(spot.x / W) * 100}%`, top: `calc(${(spot.y / H) * 100}% - 8px)` }}
-          >
-            <p className="font-medium rw-strong">{date(current.at)}</p>
-            <p className="rw-dim">
-              {current.title || t(locale, `profile.reason.${current.reason}`)}
-              {current.rank ? ` · #${current.rank}` : ""}
-            </p>
-            <p className="tabular-nums rw-strong">
-              {current.before} → {current.after}{" "}
-              <span className={current.delta >= 0 ? "rw-ok-ink" : "rw-bad-ink"}>
-                ({current.delta > 0 ? "+" : ""}
-                {current.delta})
-              </span>
-            </p>
-          </div>
-        )}
         <p className="sr-only" aria-live="polite">
           {current ? describe(current) : ""}
         </p>
