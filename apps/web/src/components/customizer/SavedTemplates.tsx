@@ -77,6 +77,7 @@ export function SavedTemplates() {
           accept="application/json,.json"
           className="sr-only"
           tabIndex={-1}
+          aria-hidden="true"
           onChange={(event) => {
             const picked = event.target.files?.[0];
             if (picked) void upload(picked);
