@@ -2621,6 +2621,26 @@ def neg_decisions_types_node_major_unignored() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_eslint_is_nine() -> tuple[bool, str]:
+    """ESLint 9 ga qaytsa tutilsin."""
+    return _decision_broken(
+        "apps/web/package.json",
+        '"eslint": "^10.10.0"',
+        '"eslint": "^9.39.5"',
+        "ESLint 10 typescript parser",
+    )
+
+
+def neg_decisions_eslint_next_parser() -> tuple[bool, str]:
+    """Next babel parser qaytsa tutilsin."""
+    return _decision_broken(
+        "apps/web/eslint.config.mjs",
+        "parser: tseslint.parser",
+        "parser: next.parser",
+        "ESLint 10 typescript parser",
+    )
+
+
 def neg_decisions_copy_fail_toast_dropped() -> tuple[bool, str]:
     """CopyControl fail toast olib tashlansa tutilsin."""
     return _decision_broken(
@@ -3180,6 +3200,7 @@ _DECISIONS_SANDBOX_FILES = (
     # `@typescript/native`, JS API via the `typescript` alias.
     # Missing here, `check_decisions.py` exits 2.
     "apps/web/package.json",
+    "apps/web/eslint.config.mjs",
     "tools/i18n-runtime-hook.mjs",
     "apps/web/Dockerfile",
     ".github/dependabot.yml",
@@ -4891,6 +4912,14 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "types/node major ignore olib tashlansa tutilsin",
                 neg_decisions_types_node_major_unignored,
+            ),
+            (
+                "eslint 9 ga qaytsa tutilsin",
+                neg_decisions_eslint_is_nine,
+            ),
+            (
+                "eslint next parser qaytsa tutilsin",
+                neg_decisions_eslint_next_parser,
             ),
             (
                 "copy fail toast olib tashlansa tutilsin",
