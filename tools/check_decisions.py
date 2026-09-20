@@ -444,6 +444,35 @@ def dictionary_survives_return() -> str | None:
     return None
 
 
+def locale_use_is_unconditional() -> str | None:
+    """`use()` hook tartibi hidratsiyada o'zgarmasin (HITL 2026-09-20).
+
+    `if (typeof window && !hasMessages) use(loadDictionary)` serverda va
+    tez mijozda hookni o'tkazib yubordi; Slow 4G + inline CSS (~551 KiB
+    HTML) da lug'at hidratsiyadan kechikib hook QO'SHILDI. React minified
+    #467 (`Update hook called on initial render`) — Lighthouse Best
+    practices 100 → 96, AFTER-08, 2026-09-20.
+    """
+    src = read(LOCALE_PROVIDER)
+    if "use(dictionaryReady(locale, dictionaryUrl))" not in src:
+        return (
+            f"{LOCALE_PROVIDER}: `use(dictionaryReady)` yo'q — "
+            "sekin tarmoqda xom kalit yoki shartli hook (React #467)"
+        )
+    if re.search(
+        r"if\s*\(\s*typeof window !== \"undefined\" && !hasMessages\(locale\)\)\s*\{\s*use\(",
+        src,
+    ):
+        return (
+            f"{LOCALE_PROVIDER}: shartli `use()` qaytdi — hidratsiyada React #467"
+        )
+    if "function dictionaryReady(" not in src:
+        return f"{LOCALE_PROVIDER}: `dictionaryReady` yo'q — `use()` ga barqaror thenable kerak"
+    if "const READY:" not in src and "const READY =" not in src:
+        return f"{LOCALE_PROVIDER}: `READY` thenable yo'q — har render yangi `Promise.resolve()`"
+    return None
+
+
 USER_MODEL = "apps/api/core/models.py"
 #: ADR-0024: the 21 columns added for parity with Codeforces, Robocontest and KEP.
 #: Thirteen of them stay unused until their features exist, on the owner's choice.
@@ -1936,6 +1965,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("bosh sahifa <main> prefetch'i niyatda", home_main_prefetch_on_intent),
     ("lug'at alohida faylda", dictionary_as_cached_file),
     ("lug'at qaytishda saqlanadi", dictionary_survives_return),
+    ("lug'at hook tartibi barqaror", locale_use_is_unconditional),
     ("User modeli tenglik maydonlari", user_parity_fields_kept),
     ("tor ekran 320 px ga sig'adi", mobile_header_fits_narrow_screen),
     ("mobil panel foydalanishga yaroqli", mobile_drawer_is_accessible),

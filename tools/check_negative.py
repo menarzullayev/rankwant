@@ -3257,6 +3257,20 @@ def neg_decisions_dictionary_cache_unsynced() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_locale_use_conditional() -> tuple[bool, str]:
+    # Conditional `use(loadDictionary)` skipped the hook on the server /
+    # fast client and added it when the dictionary lost the hydration race
+    # (React #467, Best practices 96 — AFTER-08, 2026-09-20).
+    return _decision_broken(
+        "apps/web/src/i18n/LocaleProvider.tsx",
+        "use(dictionaryReady(locale, dictionaryUrl));",
+        'if (typeof window !== "undefined" && !hasMessages(locale)) {\n'
+        "    use(loadDictionary(locale, dictionaryUrl));\n"
+        "  }",
+        "lug'at hook tartibi barqaror",
+    )
+
+
 # ── Content coverage is visible (owner decision 10, 2026-09-19) ──
 #
 # One test per clause of `content_coverage_visible`. Measured before the fix:
@@ -5647,6 +5661,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("sandbox o'qilgan hamma faylni nusxalaydi", neg_decisions_sandbox_covers_reads),
             ("Security PR'da qaytsa tutilsin", neg_decisions_security_on_pr),
             ("bosh sahifa CSS link'ga qaytsa tutilsin", neg_decisions_homepage_css_not_inlined),
+            ("lug'at hook shartli qaytsa tutilsin", neg_decisions_locale_use_conditional),
             ("smoke PR'da qaytsa tutilsin", neg_decisions_smoke_on_pr),
             ("runner-2 profile tushsa tutilsin", neg_decisions_runner2_profile_dropped),
             ("panel holatni e'lon qilmasa tutilsin", neg_decisions_drawer_trigger_state_lost),
