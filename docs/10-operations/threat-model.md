@@ -236,7 +236,7 @@ that in mind.
 |---|---|---|
 | External security audit | ADR-0004 — **on the critical path** | owner |
 | Judge latency p50 < 5 s / p95 < 15 s measured | `docs/09` launch gate — the Nightly gate exists, no number yet | agent |
-| Dependency licence inventory → lawyer | `docs/09` launch gate | owner + lawyer |
+| Dependency licence inventory → lawyer | `docs/09` launch gate — **inventory generated 2026-09-21** ([record](../research/2026-09-21-licence-inventory/README.md)); the lawyer's sign-off is still open | owner + lawyer |
 | A-2 MinIO credentials | cheap, do before launch | agent |
 | A-3 escape suite / scanning back into automation | owner decision | owner |
 

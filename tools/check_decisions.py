@@ -2180,6 +2180,37 @@ def threat_model_covers_the_platform() -> str | None:
     return None
 
 
+LICENCE_RECORD = "docs/research/2026-09-21-licence-inventory"
+
+
+def licence_inventory_is_current() -> str | None:
+    """Litsenziya inventari bor, CI'ga ulangan va muhim bo'laklari joyida.
+
+    `docs/09-development-plan/README.md:81` — launch gate: «Huquqiy: litsenziya
+    tahlili yurist tomonidan tasdiqlangan». Advokatga beriladigan narsa —
+    inventar; u yo'qolsa yoki CI'dan uzilsa, gate **jimgina** bo'sh qoladi.
+
+    ⚠️ Bu — QO'RIGCHI: haqiqiy drift o'lchovi
+    (`tools/licence_inventory.py --check`, paket to'plamini lockfile'lar bilan
+    taqqoslaydi) o'sha CI qadamida yuradi. Bu yerda faqat yo'qolishi mumkin
+    bo'lgan uchta narsa: fayl, CI ulanishi, hujjatning risk bo'limlari.
+
+    Sana: 2026-09-21 — egasi «Litsenziya inventari» ni tanladi (audit yo'lidan
+    keyingi ikkinchi uzoq muddatli launch gate).
+    """
+    if not (ROOT / LICENCE_RECORD / "packages.tsv").exists():
+        return f"{LICENCE_RECORD}/packages.tsv: inventar yo'q — 09:81 launch gate"
+    if "python3 tools/licence_inventory.py --check" not in read(".github/workflows/ci.yml"):
+        return ".github/workflows/ci.yml: inventar drift tekshiruvi CI'ga ulanmagan"
+    readme = read(f"{LICENCE_RECORD}/README.md")
+    for needed in ("## 4. Licences that could not be determined", "## 6. Copyleft register"):
+        if needed not in readme:
+            return f"{LICENCE_RECORD}/README.md: `{needed}` yo'q — hujjat qisqargan"
+    if "go/judge-go" not in readme:
+        return f"{LICENCE_RECORD}/README.md: Go qatori yo'q — Go qamrab olinmagan"
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -2236,6 +2267,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("judge latency Nightly'da", judge_latency_gate_is_nightly),
     ("chegara faqat loopback", security_boundary_is_loopback_only),
     ("threat model platformani qamraydi", threat_model_covers_the_platform),
+    ("litsenziya inventari joriy", licence_inventory_is_current),
 ]
 
 
