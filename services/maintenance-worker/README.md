@@ -27,8 +27,10 @@ npx wrangler deploy
 
 `wrangler login` brauzerda Cloudflare hisobiga ruxsat so'raydi (bir marta).
 Route'lar `wrangler.toml` da: harf prefikslari + aniq yo'llar
-(`leaderboard*`, `problems*`, …). GET `/`, `/login`, `/register`,
+(`leaderboard*`, `problems/*`, …). GET `/`, `/login`, `/register`,
 `/terms`, `/privacy` ATAYLAB yo'q — mehmon CDN Worker kvotasini yemasin.
+`/problems` ro'yxati ham (2026-09-20): Worker faqat `problems/*` (slug);
+ro'yxat `problems*` ostida 100k kvotani yeyardi.
 
 Dashboard orqali ham bo'ladi: Workers & Pages → Create → Worker →
 `src/index.js` ni joylash → Settings → Domains & Routes → ikkala route.

@@ -1,0 +1,12 @@
+{
+  "ref": "rankwant_guest_html_cache",
+  "description": "Guest GET / login register terms privacy problems — eligible, respect origin TTL",
+  "expression": "(http.request.method in {\"GET\" \"HEAD\"} and not http.cookie contains \"sessionid=\" and not http.cookie contains \"rw_locale=\" and not http.cookie contains \"rw:markup=\" and not any(http.request.headers[\"rsc\"][*] eq \"1\") and ((http.request.uri.path eq \"/\" and http.request.uri.query eq \"\") or (http.request.uri.path eq \"/login\" and (http.request.uri.query eq \"\" or http.request.uri.query eq \"tab=login\" or http.request.uri.query eq \"tab=register\" or http.request.uri.query eq \"tab=reset-password\")) or (http.request.uri.path eq \"/register\" and http.request.uri.query eq \"\") or (http.request.uri.path eq \"/terms\" and http.request.uri.query eq \"\") or (http.request.uri.path eq \"/privacy\" and http.request.uri.query eq \"\") or (http.request.uri.path eq \"/problems\" and http.request.uri.query eq \"\")))",
+  "action": "set_cache_settings",
+  "enabled": true,
+  "action_parameters": {
+    "cache": true,
+    "edge_ttl": { "mode": "respect_origin" },
+    "browser_ttl": { "mode": "respect_origin" }
+  }
+}
