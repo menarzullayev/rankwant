@@ -18,7 +18,7 @@ Deploy tree: `C:/Users/nsn/project/wt/deploy`
 1. **One agent = one task.**
 2. **One task = one owner.** Others do not implement it in parallel.
 3. **Each coding agent = its own Git worktree** under `wt/<tool>/`.
-4. **No parallel writes to the same path.** Lock or queue; then merge.
+4. **No parallel writes to the same path.** First writer takes `.agent/locks/`; others yield.
 5. **Ports are pre-allocated.** Never grab `:3000`, `:8000`, `:8300`, `:8301`.
 6. **Do not spawn a second RankWant stack.** Live Docker project is `rankwant`.
 7. **Heavy jobs: max 2. Package-manager write: 1. Live migration: 1.**
@@ -33,20 +33,21 @@ Ownership each agent must have (or namespace):
 Agent → Task → Git branch/worktree → Workspace/files → Ports → Runtime
 ```
 
-## Roles (default)
+## Slots (identity only)
 
-The owner prompt overrides the table. A role is a **default scope**, not a
-second person.
+Slots are **not roles**. Any slot may take backend, frontend, infra, research,
+QA, or docs. The owner assigns whatever is free. Isolation is the **task
+card** (`owned_paths`) plus `.agent/locks/` — HITL 2026-09-20 `task-lock`.
 
-| Slot | Tool | Role | Default scope | HTTP | API | unused DB bind |
-| --- | --- | --- | --- | ---: | ---: | ---: |
-| C1 | Cursor | Backend | `apps/api/**`, API tests | 3101 | 8101 | 5511 |
-| C2 | Cursor | Frontend | `apps/web/**` except infra | 3102 | 8102 | 5512 |
-| C3 | Cursor | Infrastructure | Docker, CI, `tools/deploy*` | 3103 | 8103 | 5513 |
-| W1 | WorkBuddy | Research | read / analysis / docs research | 3201 | 8201 | 5611 |
-| W2 | WorkBuddy | QA | tests, review, live verify | 3202 | 8202 | 5612 |
-| X6 | other | Documentation | `docs/**`, ADR | 3301 | 8302 | 5711 |
-| X7 | other | Specialist | named subsystem only | 3302 | 8303 | 5712 |
+| Slot | Tool | HTTP | API | unused DB bind | CPU | RAM |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| C1 | Cursor | 3101 | 8101 | 5511 | 3 | 4 GB |
+| C2 | Cursor | 3102 | 8102 | 5512 | 3 | 4 GB |
+| C3 | Cursor | 3103 | 8103 | 5513 | 2 | 3 GB |
+| W1 | WorkBuddy | 3201 | 8201 | 5611 | 2 | 2 GB |
+| W2 | WorkBuddy | 3202 | 8202 | 5612 | 2 | 2 GB |
+| X6 | other | 3301 | 8302 | 5711 | 2 | 2 GB |
+| X7 | other | 3302 | 8303 | 5712 | 2 | 2 GB |
 
 **Reserved (live, never bind):** `127.0.0.1:8300` web, `:8301` api, `:5432`
 Postgres, `:6379` Redis, `:9000`/`:9001` MinIO. `:3000`/`:8000` are the
@@ -56,6 +57,12 @@ DB columns above are **allocated so nobody collides if** a sidecar is ever
 needed. RankWant agents **do not** start `cursor1-postgres`. Production data
 lives in the live volume; a second Postgres is a wipe/split-brain risk and
 fills the Docker VHDX (C: has already hit <11 GB free).
+
+Flexible assignment does **not** drop isolation. It drops *role walls*. Two
+agents may both work in `apps/web` only if their globs do not overlap. A
+forgotten lock goes stale after 4 hours. A glob of `**` starves the machine —
+keep `owned_paths` tight. Context stays task-scoped: do not ingest the whole
+repo because this slot “might do backend later”.
 
 ## This machine (measured 2026-09-20)
 
@@ -69,11 +76,11 @@ Soft budget — not cgroups, a **stop line**:
 
 | Consumer | CPU | RAM |
 | --- | ---: | ---: |
-| C1 Backend | 3 | 4 GB |
-| C2 Frontend | 3 | 4 GB |
-| C3 Infra | 2 | 3 GB |
-| W1 Research | 2 | 2 GB |
-| W2 QA | 2 | 2 GB |
+| C1 | 3 | 4 GB |
+| C2 | 3 | 4 GB |
+| C3 | 2 | 3 GB |
+| W1 | 2 | 2 GB |
+| W2 | 2 | 2 GB |
 | OS + IDE + browsers + live Docker + 2 CI runners | rest | **≥16 GB reserve** |
 
 Thresholds: RAM > 85% → do not start another agent; CPU > 90% → no new heavy
@@ -124,7 +131,27 @@ Forbidden on a shared or foreign tree: `git push --force` (of `main`),
 `git reset --hard`, `git clean -fd`. Update a PR with
 `gh api -X PUT repos/menarzullayev/rankwant/pulls/<n>/update-branch`.
 
-## Hot files (one writer)
+## Task-lock
+
+Before the first edit:
+
+1. Put `owned_paths` on the task card (globs this task will write).
+2. For each glob, if `.agent/locks/<name>` exists and is not stale (heartbeat
+   < 4 h and `UNTIL` in the future), **stop**. Do not write that glob; pick
+   another task or wait.
+3. Else write the lock: `OWNER`, `TASK`, `UNTIL`. First writer wins.
+4. Stay inside those globs. Need another path? Take a new lock or a new task.
+   Do not “just this one file” outside the card.
+5. On DONE / BLOCKED: delete **your** lock files.
+
+Filename: path with `/` → `__` (example `apps__web__package.json`). Named
+mutexes use the same folder: `PACKAGE_WRITE`, `DEPLOY` (also `deploy.sh`
+lock), `HITL`.
+
+Two agents on the same layer (both `apps/web/**`) is allowed **if** their
+globs do not overlap. Overlap → second agent yields.
+
+## Hot files (always lock, even as the only writer)
 
 Lock under `.agent/locks/` or yield to the older PR.
 
@@ -188,12 +215,12 @@ memory and Cursor rules are not a bus.
 
 ```yaml
 agent: cursor-1
-role: backend
-task: AOP-001
-workspace: C:/Users/nsn/project/wt/cursor/parallel-agents
-branch: docs/parallel-agents
+task: AOP-002
+workspace: C:/Users/nsn/project/wt/cursor/aop-task-lock
+branch: docs/aop-task-lock
 owned_paths:
   - docs/10-operations/parallel-agents.md
+  - CONTRIBUTING.md
 ports:
   http: 3101
   api: 8101
@@ -202,7 +229,6 @@ resources:
   memory: 4GB
 forbidden:
   - production-db-migrate
-  - apps/web/**
   - docker compose down
 ```
 
@@ -229,9 +255,9 @@ QUEUED → ALLOCATE → ISOLATE → IN_PROGRESS → TEST → REVIEW → MERGE �
                 ↘ BLOCKED → (dependency READY) → IN_PROGRESS
 ```
 
-Dependency graph, not a flat list. Example: DB schema → API → web → QA →
-deploy. Frontend does not re-implement the API because the API PR is not
-merged.
+Dependency graph, not a flat list. Example: DB schema → API → web → tests →
+deploy. An agent on the web task does not re-implement the API because that
+PR is not merged — even if this slot did API last week.
 
 Context: Global rules > subsystem > task > agent preference. Do not ingest
 the whole monorepo “to understand the project”.
@@ -242,7 +268,7 @@ the whole monorepo “to understand the project”.
 2. `git worktree list` · `gh pr list --repo menarzullayev/rankwant`.
 3. If RAM > 85% or C: < 15% free: do not allocate a heavy job.
 4. Write `manifests/<slot>.yml`, `tasks/<id>.md`, `status/<slot>.md`.
-5. Take a worktree under **your** tool folder. Stay in `owned_paths`.
+5. Take a worktree under **your** tool folder. Lock `owned_paths` (task-lock).
 6. Optional local `next dev -p <HTTP from the table>` — never 3000/8300.
 
 ## Session finish
@@ -255,8 +281,8 @@ the whole monorepo “to understand the project”.
    HEAD == `origin/main`, CI + Security green. Hold `rankwant-deploy.lock`.
 5. Remove **your** worktree after merge (stop processes with that cwd first).
 
-HITL: one RankWant product question on the machine at a time. Research/QA
-agents do not open a second AskQuestion for the same product decision.
+HITL: one RankWant product question on the machine at a time (`HITL` lock).
+A second agent does not open AskQuestion while that lock is fresh.
 
 ## Why these constraints exist
 
