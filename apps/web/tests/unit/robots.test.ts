@@ -33,8 +33,7 @@ describe("robots.txt", () => {
     expect(refused?.userAgent).toEqual(AI_CRAWLERS);
   });
 
-  // 10,001 seeded `neytron_*` profiles times filter and cursor parameters is
-  // an endless URL space; it was the crawl target on 2026-09-15.
+  // 2026-09-20 HITL keep-users-closed: 974k profiles stay out of the crawl.
   it("keeps the seeded profiles and the staff pages out of the crawl", () => {
     const open = rules().find((rule) => rule.userAgent === "*");
     expect(open?.disallow).toEqual(["/admin", "/notifications", "/users/"]);

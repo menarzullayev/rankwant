@@ -2988,6 +2988,16 @@ def neg_decisions_ai_crawler_dropped() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_users_indexed() -> tuple[bool, str]:
+    """`/users/` robots'dan ochilsa tutilsin."""
+    return _decision_broken(
+        "apps/web/src/app/robots.ts",
+        'disallow: ["/admin", "/notifications", "/users/"]',
+        'disallow: ["/admin", "/notifications"]',
+        "/users/ noindex",
+    )
+
+
 def neg_decisions_nav_eager_link() -> tuple[bool, str]:
     # A plain `next/link` back in the sidebar prefetches every item on sight.
     return _decision_broken(
@@ -5118,6 +5128,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("deploy web'ni qurmasa tutilsin", neg_decisions_deploy_skips_web),
             ("sayt qidiruvga yopilsa tutilsin", neg_decisions_site_closed_to_search),
             ("AI krauler ro'yxatdan tushsa tutilsin", neg_decisions_ai_crawler_dropped),
+            ("/users/ ochilsa tutilsin", neg_decisions_users_indexed),
             ("sidebar'ga oddiy Link qaytsa tutilsin", neg_decisions_nav_eager_link),
             ("bosh sahifaga oddiy Link qaytsa tutilsin", neg_decisions_home_main_eager_link),
             ("IntentLink darhol prefetch qilsa tutilsin", neg_decisions_intent_link_eager),
