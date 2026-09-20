@@ -36,6 +36,20 @@ export type Template = {
   density: AppearancePrefs["density"];
 };
 
+/** D50: team templates do not apply or match these — they stay personal. */
+export const TEMPLATE_LAYOUT_KEYS = [
+  "navMode",
+  "navShape",
+  "card",
+  "pattern",
+  "fontHeading",
+  "size",
+  "scale",
+  "lineHeight",
+  "tracking",
+  "width",
+] as const;
+
 /** D49: shared kit identity for every built-in team template. */
 export const TEMPLATE_KIT_DEFAULTS = {
   verdictStyle: DEFAULT_VERDICT_VARIANT,
@@ -77,8 +91,9 @@ export function kitMatches(
   );
 }
 
-/** Shablon tanlanganda qo'llanadigan ko'rinish (a11y TEGILMAYDI — u
- *  foydalanuvchining o'qish sozlamasi, shablonning bir qismi emas). */
+/** Shablon tanlanganda qo'llanadigan ko'rinish.
+ *  A11y TEGILMAYDI. Layout chrome (D50 / `TEMPLATE_LAYOUT_KEYS`) ham
+ *  `...current` orqali saqlanadi — apply uni tiklamaydi. */
 export function templateAppearance(
   template: Template,
   current: AppearancePrefs,
@@ -95,7 +110,7 @@ export function templateAppearance(
 }
 
 /** Joriy holat biror shablonga mos keladimi — mos kelsa «o'zgartirilgan»
- *  belgisi ko'rsatilmaydi. */
+ *  belgisi ko'rsatilmaydi. Layout chrome solishtirilmaydi (D50). */
 export function matchTemplate(
   appearance: AppearancePrefs,
   a11y: A11yPrefs,

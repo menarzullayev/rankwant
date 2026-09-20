@@ -3,7 +3,7 @@
 **Sana:** 2026-09-17 (UTC) / 2026-09-18 ~01:20–01:35 (Toshkent)  
 **Maqsad:** RankWant Appearance (customizer + Settings `/settings/korinish`) ni kod + live MCP da tekshirish.  
 **Muhit:** `https://rankwant.uz` · Chrome DevTools MCP · admin sessiya (`username=admin`)  
-**Holat:** APP-1 … APP-7, APP-13, APP-14 tuzatildi (#72, #69, #77, #81) — «Yangilanish» bo‘limida. Ochiq: APP-8, APP-9.  
+**Holat:** APP-1 … APP-7, APP-13, APP-14 tuzatildi (#72, #69, #77, #81). APP-8 D50 da yopildi (rad — layout shaxsiy). Ochiq: APP-9.  
 **Hisob tiklandi:** `style=glass`, `theme=dark`, `font=jakarta`, `density=comfortable`, `accent=null`.
 
 Bu hujjat boshqa agentga topshirish uchun. Live admin da **Reset** hisob ko‘rinishini jamoa standarti va `system` ga qaytaradi (#77) — test qilgach hisobni pastdagi baseline ga qaytar. `PATCH /me/` dagi 400 (`card` / `navMode` / `motion=off`) #69 da yopilgan.
@@ -178,12 +178,12 @@ Javob:
 - **Tuzatish:** Reset `siteAppearance` ga; `commit(..., [])` yoki alohida «shablonlarni o‘chirish».
 - **Tekshir:** Reset → glass (yoki jamoa defaulti), theme system yoki sayt defaulti; shablonlar kutilganidek.
 
-#### APP-8 · P3 · `matchTemplate` to‘liq emas
+#### APP-8 · P3 · `matchTemplate` to‘liq emas — YOPILDI (D50, rad)
 
-- **Ta’sir:** Moslik faqat `style, font, density, accent, theme, vision`. `navMode/card/pattern/fontHeading` o‘zgarsa ham «Template modified» chiqmasligi mumkin.
-- **Fayl:** `apps/web/src/lib/theme/templates.ts` `matchTemplate`.
-- **Tuzatish:** taqqoslashga nav/card/pattern/fontHeading qo‘sh.
-- **Tekshir:** Day flat + Top bar → «Template modified».
+- **Qaror:** layout chrome shablon identitetiga kirmaydi. `navMode` /
+  `card` / `size` o‘zgarsa ham «Klassik» qoladi — bu endi qoida, nuqson emas.
+- **Eski taklif:** taqqoslashga nav/card/pattern/fontHeading qo‘sh.
+- **Nima qilindi:** `TEMPLATE_LAYOUT_KEYS` + test; apply tiklamaydi.
 
 #### APP-9 · P3 · Accent xato matni o‘lchov yo‘qligini AA deb yozadi
 
@@ -312,4 +312,4 @@ Manba: live MCP + kod. **Kod** = UI bor, brauzerda to‘liq bosilmadi.
 1. APP-2 (API sxema + test) — aks holda qolgan UI saqlash 400.
 2. APP-1 + APP-9 (parseColor + xato matni) — Glass default.
 3. APP-4, APP-6 (shablon/share theme).
-4. APP-3, APP-5, APP-7, APP-8.
+4. APP-3, APP-5, APP-7. APP-8 D50 da yopildi.
