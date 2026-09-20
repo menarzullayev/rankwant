@@ -98,6 +98,29 @@ The old magenta slot (rank-6) and the old pink slot (rank-9) are dropped:
 they belonged to the previous 9-colour aesthetic and have no analogue in
 the new 7-anchor system. Future palette-tuned expansion is a follow-up PR.
 
+### Consolidated to seven group tokens
+
+The first pass declared 16 `--rw-rank-N` tokens per palette (18 x 16 = 288
+declarations), but only seven distinct colours exist — nine declarations per
+palette were pure duplicates. That made the level-to-colour mapping
+implicit and easy to get wrong when a palette is edited.
+
+The tokens are now seven **group** variables, named after the CF colour
+they carry:
+
+    --rw-rank-grey / -green / -cyan / -blue / -violet / -orange / -red
+
+288 declarations become 126 (18 x 7). `title.colour_group` — already
+returned by the API — is now what the frontend actually uses:
+
+- `rankClass(title)` -> `rw-rank-${title.colour_group}`
+- `frameClass(code, title)` -> `rw-frame-${title.colour_group}`
+- the Open Graph card indexes its own `RANK_ON_DARK` map by group
+
+So the level-to-colour mapping exists in exactly one place — the API's
+`COLOUR_GROUPS` tuple — instead of being re-derived in CSS and in three
+frontend call sites.
+
 ### L3. Names
 
 Codes are English (snake_case for multi-word): black_hole, supercluster.

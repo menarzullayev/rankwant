@@ -6,9 +6,12 @@ import type { UserTitle } from "@/lib/api";
 
 import { MarkerText } from "@/components/MarkerText";
 
-/** Ism rangi — unvon pog'onasidan (ADR-0018). Unvonsiz odam oddiy matn rangida. */
+/** Ism rangi — unvon pog'onasining RANG GURUHI bo'yicha (ADR-0027 § L2).
+ *  16 pog'ona faqat 7 xil rang ishlatadi: kulrang 1-3, yashil 4-5, zang 6-7,
+ *  ko'k 8, binafsha 9, olov 10-11, qizil 12-16. CSS'da ham xuddi shu 7 ta
+ *  `--rw-rank-{guruh}` o'zgaruvchisi bor — 16 ta takrorlanuvchi e'lon yo'q. */
 export const rankClass = (title: UserTitle | null | undefined) =>
-  title ? `rw-rank-${title.level}` : "rw-strong";
+  title ? `rw-rank-${title.colour_group}` : "rw-strong";
 
 /** Profilga havola, ism unvon rangida: reyting, standings, urinishlar bir xil ko'rinsin.
  *  Birinchi `marker` harf qora (yorug' rejimda) yoki oq (to'q rejimda) - ADR-0027 § L2,
