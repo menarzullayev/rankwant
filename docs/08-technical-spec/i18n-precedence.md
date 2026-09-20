@@ -191,21 +191,17 @@ requests carry the cookie — but it does not remove it, because the *first*
 response still has to be keyed correctly. Guest GET `/` is not cached when a
 query string is present, so `/?lang=ru` stays a private miss.
 
-**What must happen before caching other routes** (options, none yet applied):
+**What must happen before caching other routes** (HITL 2026-09-20 cf-transform:
+applied): a Cloudflare Response Header Transform Rule **adds**
+`Vary: Accept-Language` on HTML that is **not** the guest-cache set
+(`/`, `/login`, `/register`, `/terms`, `/privacy`). `add` keeps Next's RSC
+tokens; `set` would wipe them. Guest-cache paths stay excluded because
+those bodies are forced `uz` — varying them would fragment the 100k
+homepage cache without changing the HTML. `cloudflared` still cannot
+rewrite headers. Expanding the cache to `/problems` can now rely on the
+edge `Vary`; do not expand the guest-cache path list in this change.
 
-- put a small reverse proxy in front of Next.js that appends `Accept-Language`
-  to `Vary`;
-- or set a CDN Transformation Rule at the edge;
-- or add the locale to the URL — a partial version is already in place
-  (`?lang=<code>`); a full `/uz/...` prefix would remove the dependence on
-  `Accept-Language` entirely and with it the need for `Vary`. HTML
-  `hreflang` + self-canonical for `?lang=` (HITL 2026-09-20) is the
-  indexing story; sitemap `xhtml:link` (HITL sitemap-hreflang) lists the
-  same cluster without a 10× `<url>` explosion. Neither replaces `Vary`
-  for future cached routes.
-
-`cloudflared` cannot do it: version `2026.9.1` has no header-rewrite directive
-in tunnel ingress rules.
+Former options (not chosen): in-front reverse proxy; `/uz/` prefix.
 
 ## Known gaps
 
