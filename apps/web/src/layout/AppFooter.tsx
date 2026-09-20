@@ -75,9 +75,15 @@ export default function AppFooter() {
               <a
                 href={`mailto:${CONTACT_EMAIL}`}
                 className="rw-focus-ring hover:underline"
-              >
-                {CONTACT_EMAIL}
-              </a>
+                // Cloudflare Email Address Obfuscation injects High-priority
+                // `/cdn-cgi/scripts/.../email-decode.min.js` when it sees a
+                // raw address. The address is already public (HITL). Wrapping
+                // it in CF's `email_off` comments keeps the mailto and drops
+                // the script (AFTER-09: 1 KiB High + /cdn-cgi/rum).
+                dangerouslySetInnerHTML={{
+                  __html: `<!--email_off-->${CONTACT_EMAIL}<!--email_on-->`,
+                }}
+              />
             </li>
           </ul>
         </div>

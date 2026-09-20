@@ -3028,6 +3028,15 @@ def neg_decisions_homepage_css_not_inlined() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_cf_email_decode_restored() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/web/src/layout/AppFooter.tsx",
+        "<!--email_off-->",
+        "<!--email_on-->",
+        "bosh sahifa CF email-decode yo'q",
+    )
+
+
 def neg_decisions_security_on_pr() -> tuple[bool, str]:
     return _decision_broken(
         ".github/workflows/security.yml",
@@ -5685,6 +5694,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("sandbox o'qilgan hamma faylni nusxalaydi", neg_decisions_sandbox_covers_reads),
             ("Security PR'da qaytsa tutilsin", neg_decisions_security_on_pr),
             ("bosh sahifa CSS link'ga qaytsa tutilsin", neg_decisions_homepage_css_not_inlined),
+            ("CF email-decode qaytsa tutilsin", neg_decisions_cf_email_decode_restored),
             ("lug'at hook shartli qaytsa tutilsin", neg_decisions_locale_use_conditional),
             ("smoke PR'da qaytsa tutilsin", neg_decisions_smoke_on_pr),
             ("runner-2 profile tushsa tutilsin", neg_decisions_runner2_profile_dropped),
