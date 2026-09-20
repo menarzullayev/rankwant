@@ -2515,9 +2515,9 @@ def neg_decisions_deploy_backup_after_migrate() -> tuple[bool, str]:
     """
     return _decision_broken(
         "tools/deploy.sh",
-        'step "4/8 Migratsiyadan oldin zaxira (pg_dump)"',
+        'step "3/8 Migratsiyadan oldin zaxira (pg_dump)"',
         '"${COMPOSE[@]}" run --rm migrate || true\n'
-        'step "4/8 Migratsiyadan oldin zaxira (pg_dump)"',
+        'step "3/8 Migratsiyadan oldin zaxira (pg_dump)"',
         "avtomatik deploy xavfsiz",
     )
 
@@ -2537,19 +2537,47 @@ def neg_decisions_deploy_freeze_after_lock() -> tuple[bool, str]:
     )
 
 
-def neg_decisions_deploy_tag_after_up() -> tuple[bool, str]:
-    """SHA teg `up` dan KEYIN qo'yilsa tutilsin.
+def neg_decisions_deploy_keeps_sha_tags() -> tuple[bool, str]:
+    """SHA obraz tegi qaytsa tutilsin.
 
-    `up` konteynerlarni yangi obrazga o'tkazadi va eski obraz «dangling»
-    bo'lib qoladi; keyin qo'yilgan teg o'shanga tushadi, ya'ni rollback
-    NOTO'G'RI kodni qaytaradi. Buni faqat rollback paytida bilib olishardi.
+    2026-09-20: teglar saqlanmaydi — har deploy VHDX ni o'stiradi
+    (40→132 GB). Qayta qo'yilsa qaror buziladi.
     """
     return _decision_broken(
         "tools/deploy.sh",
-        "# ── 4. Rollback nuqtasi — SHA teg ──",
-        '"${COMPOSE[@]}" up -d --no-deps "${SERVICES[@]}" || true\n'
-        "# ── 4. Rollback nuqtasi — SHA teg ──",
+        "SHA obraz tegi QO'YILMAYDI",
+        'docker tag "x" "rankwant/${svc}:${SHA_TAG}"\n# SHA obraz tegi QO\'YILMAYDI',
         "avtomatik deploy xavfsiz",
+    )
+
+
+def neg_decisions_deploy_skips_prune() -> tuple[bool, str]:
+    """Muvaffaqiyatli deploy'dan keyin prune yo'qolsa tutilsin."""
+    return _decision_broken(
+        "tools/deploy.sh",
+        "bash tools/prune_docker_disk.sh",
+        "true",
+        "avtomatik deploy xavfsiz",
+    )
+
+
+def neg_decisions_compose_unlimited_logs() -> tuple[bool, str]:
+    """Compose log cheklovi olib tashlansa tutilsin."""
+    return _decision_broken(
+        "docker-compose.yml",
+        'max-size: "10m"',
+        'max-size: "10g"',
+        "docker disk chegaralangan",
+    )
+
+
+def neg_decisions_builder_gc_20gb() -> tuple[bool, str]:
+    """Builder GC 20 GB ga qaytsa tutilsin."""
+    return _decision_broken(
+        "tools/docker-daemon.json",
+        '"defaultKeepStorage": "5GB"',
+        '"defaultKeepStorage": "20GB"',
+        "docker disk chegaralangan",
     )
 
 
@@ -3077,6 +3105,8 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/core/cache.py",
     "apps/api/requirements.lock",
     "docker-compose.yml",
+    "docker-compose.public.yml",
+    "docker-compose.ci.yml",
     "docker-compose.replicas.yml",
     "compose/four-host/README.md",
     # Automatic deploy (2026-09-19): the rule reads the watcher and the
@@ -3084,6 +3114,8 @@ _DECISIONS_SANDBOX_FILES = (
     # here, `check_decisions.py` exits 2 instead of testing the rule.
     "tools/auto_deploy.sh",
     "tools/rollback.sh",
+    "tools/prune_docker_disk.sh",
+    "tools/docker-daemon.json",
     # The stdin fix (2026-09-19): the rule reads the hash line that must not
     # depend on the ambient stdin. Missing here, `check_decisions.py` exits 2.
     "tools/check_deploy.sh",
@@ -3887,6 +3919,23 @@ def neg_ci_disk_nightly_cleanup_removed() -> tuple[bool, str]:
         return expect_fail("ci_disk", "nightly e2e obrazlarni tozalamaydi")
 
 
+def neg_ci_disk_build_cleanup_removed() -> tuple[bool, str]:
+    """Deploy workflow build job tozalashsiz qolsa tutilsin.
+
+    Build job `confirm != deploy` bo'lsa ham yuguradi; tozalash faqat
+    deploy job'da bo'lsa obrazlar VHDX da qolaveradi.
+    """
+    path = ROOT / ".github/workflows/deploy.yml"
+    src = path.read_bytes().decode("utf-8")
+    start = src.index("      - name: Drop this run's images")
+    end = src.index("|| true\n", start) + len("|| true\n")
+    old = src[start:end]
+    if "prune_docker_disk.sh" not in old:
+        return False, "ci_disk/build: langar topilmadi"
+    with Mutation(path, old, ""):
+        return expect_fail("ci_disk", "deploy obrazlarni tozalamaydi")
+
+
 def neg_ci_disk_deploy_cleanup_removed() -> tuple[bool, str]:
     """Deploy tozalash qadami olib tashlansa — tutilsinmi?
 
@@ -4565,6 +4614,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         [
             ("CI tozalash qadami yo'q", neg_ci_disk_cleanup_removed),
             ("deploy tozalash qadami yo'q", neg_ci_disk_deploy_cleanup_removed),
+            ("build job tozalash qadami yo'q", neg_ci_disk_build_cleanup_removed),
             ("nightly e2e tozalash qadami yo'q", neg_ci_disk_nightly_cleanup_removed),
         ],
     ),
@@ -4738,8 +4788,20 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
                 neg_decisions_deploy_freeze_after_lock,
             ),
             (
-                "SHA teg `up` dan keyin qo'yilsa tutilsin",
-                neg_decisions_deploy_tag_after_up,
+                "SHA obraz tegi qaytsa tutilsin",
+                neg_decisions_deploy_keeps_sha_tags,
+            ),
+            (
+                "deploy prune yo'qolsa tutilsin",
+                neg_decisions_deploy_skips_prune,
+            ),
+            (
+                "compose log cheklovi olib tashlansa tutilsin",
+                neg_decisions_compose_unlimited_logs,
+            ),
+            (
+                "builder GC 20 GB ga qaytsa tutilsin",
+                neg_decisions_builder_gc_20gb,
             ),
             (
                 "watcher tiriklikni tekshirmasa tutilsin",

@@ -5,6 +5,18 @@ name: rankwant-ci
 # Nega: smoke sinovi compose tarmog'i ICHIDA ishlaydi, ya'ni host portlari
 # kerak emas. Ularni e'lon qilmaslik runner'da (va ishlab chiquvchi
 # mashinasida) band port sababli tushib qolishning oldini oladi.
+# CI/smoke uchun override: host portlari e'lon qilinmaydi.
+#
+# Nega: smoke sinovi compose tarmog'i ICHIDA ishlaydi, ya'ni host portlari
+# kerak emas. Ularni e'lon qilmaslik runner'da (va ishlab chiquvchi
+# mashinasida) band port sababli tushib qolishning oldini oladi.
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   postgres:
     ports: !reset []
@@ -32,6 +44,7 @@ services:
   # (Bu izohda ataylab dollar-qavs yozilmagan: tools/check_env_example.py
   # butun faylni skanerlaydi, izohdagi naqsh ham o'zgaruvchi bo'lib ko'rinadi.)
   smoke:
+    logging: *default-logging
     image: python:3.13-slim
     profiles: ['smoke']
     volumes: ["${HOST_REPO_ROOT:-.}/tests/smoke:/smoke:ro"]
@@ -57,6 +70,7 @@ services:
   #
   # `smoke` kabi bir martalik: `profiles` tufayli `up -d` uni ko'tarmaydi.
   bakeoff:
+    logging: *default-logging
     # Same image the stack script tagged as project-api.
     # Without this, `compose run bakeoff` rebuilds apps/api from scratch.
     image: ${COMPOSE_PROJECT_NAME:-rankwant-ci}-api

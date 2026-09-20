@@ -253,5 +253,5 @@ if RANKWANT_LOCK_HELD=1 RANKWANT_ENV_FILE="$ENV_FILE" bash tools/deploy.sh --yes
   exit 0
 fi
 log "deploy YIQILDI (target ${TARGET:0:7}) — ${BACKOFF}s to'siq qo'yildi"
-printf '%s⚠ Rollback kerakmi? bash tools/rollback.sh --list%s\n' "$Y" "$N"
+printf '%s⚠ Kodni qaytarish: kerakli commit + bash tools/deploy.sh (SHA obraz tegi yo'\''q)%s\n' "$Y" "$N"
 exit 1
