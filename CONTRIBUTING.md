@@ -28,6 +28,10 @@ Jonli taxta (git emas): `C:/Users/nsn/project/wt/.agent/` — manifest, task, lo
 Model: **isolated workers + bitta coordination qatlami**, bitta checkout emas.
 Slot (C1–C3, W1–W2) — identitet, port, RAM; **rol yo‘q**. Izolyatsiya — vazifa
 kartasidagi `owned_paths` va `.agent/locks/` (birinchi yozuvchi yutadi).
+`owned_paths` kengligi **no-star-star** (HITL 2026-09-20): `**`, repo-ildiz
+va bir segmentli katalog globi (`apps/**`) taqiqlanadi; katalog globida
+kamida ikki segment (`apps/web/**`); bir nechta paketga ruxsat. Predikat:
+`tools/owned_paths.py`.
 **Bitta task = bitta owner.** Shared state (fayl, port, lockfile, DB, Docker,
 Git) — asosiy xavf; agentlar soni emas.
 

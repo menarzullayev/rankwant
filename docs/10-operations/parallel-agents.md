@@ -60,9 +60,10 @@ fills the Docker VHDX (C: has already hit <11 GB free).
 
 Flexible assignment does **not** drop isolation. It drops *role walls*. Two
 agents may both work in `apps/web` only if their globs do not overlap. A
-forgotten lock goes stale after 4 hours. A glob of `**` starves the machine —
-keep `owned_paths` tight. Context stays task-scoped: do not ingest the whole
-repo because this slot “might do backend later”.
+forgotten lock goes stale after 4 hours. Width is **no-star-star** (HITL
+2026-09-20): `**` / repo-root / one-segment directory globs are illegal.
+Context stays task-scoped: do not ingest the whole repo because this slot
+“might do backend later”.
 
 ## This machine (measured 2026-09-20)
 
@@ -148,8 +149,35 @@ Filename: path with `/` → `__` (example `apps__web__package.json`). Named
 mutexes use the same folder: `PACKAGE_WRITE`, `DEPLOY` (also `deploy.sh`
 lock), `HITL`.
 
-Two agents on the same layer (both `apps/web/**`) is allowed **if** their
+Two agents on the same layer (both under `apps/web`) is allowed **if** their
 globs do not overlap. Overlap → second agent yields.
+
+### Width — HITL 2026-09-20 `no-star-star`
+
+`owned_paths` is not honor-tight. Predicate: `tools/owned_paths.py`
+(`legal_owned_path`). A task may list **several packages**; each glob still
+gets its own lock file.
+
+**Forbidden**
+
+- Repo-root locks: `**`, `*`, `.`, `/`
+- One-segment directory globs: `apps/**`, `docs/**`, `tools/**`, `apps`
+
+**Required** for a directory glob (`…/**` or `…/*`): **at least two** path
+segments (`apps/web/**`, `docs/10-operations/**`,
+`apps/web/src/layout/**`).
+
+**Allowed**
+
+- Exact files at any depth, including repo-root hot files (`CONTRIBUTING.md`,
+  `CLAUDE.md`)
+- Several packages on one card (`apps/api/profiles/titles.py` **and**
+  `tools/check_decisions.py`)
+
+`apps/web/**` is legal (two segments) but blocks every other web task —
+prefer a tighter glob when the edit is local. `package-one` (one top-level
+package per PR) was rejected: a check+API+docs encode would split for no
+isolation gain.
 
 ## Hot files (always lock, even as the only writer)
 

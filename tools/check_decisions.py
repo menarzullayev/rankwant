@@ -1665,6 +1665,35 @@ def vary_accept_language_at_edge() -> str | None:
     return None
 
 
+def aop_owned_paths_no_star_star() -> str | None:
+    """2026-09-20 HITL no-star-star: owned_paths cannot lock the whole tree.
+
+    Flexible slots mean any agent can take any task. A `**` or `apps/**`
+    claim starves every other slot. Directory globs need ≥2 segments;
+    several packages on one card stay legal. Predicate: tools/owned_paths.py.
+    """
+    import owned_paths
+
+    aop = read("docs/10-operations/parallel-agents.md")
+    if "HITL 2026-09-20 `no-star-star`" not in aop:
+        return "docs/10-operations/parallel-agents.md: no-star-star HITL yo'q"
+    if "apps/**" not in aop:
+        return "docs/10-operations/parallel-agents.md: `apps/**` taqiqi yo'q"
+    if "legal_owned_path" not in aop:
+        return "docs/10-operations/parallel-agents.md: `legal_owned_path` yo'q"
+    if "no-star-star" not in read(".cursor/rules/parallel-agents.mdc"):
+        return ".cursor/rules/parallel-agents.mdc: no-star-star yo'q"
+    if "no-star-star" not in read("CONTRIBUTING.md"):
+        return "CONTRIBUTING.md: no-star-star yo'q"
+    for glob in owned_paths.ILLEGAL_OWNED_PATHS:
+        if owned_paths.legal_owned_path(glob):
+            return f"tools/owned_paths.py: `{glob}` no-star-star da qonuniy"
+    for glob in owned_paths.LEGAL_OWNED_PATHS:
+        if not owned_paths.legal_owned_path(glob):
+            return f"tools/owned_paths.py: `{glob}` no-star-star da noqonuniy"
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -1676,6 +1705,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("qidiruv ochiq, AI kraulerlar yopiq", search_open_ai_crawlers_blocked),
     ("/users/ noindex", users_profiles_stay_noindex),
     ("rank colour_group 7 token", rank_colour_groups_not_sixteen_tokens),
+    ("owned_paths no-star-star", aop_owned_paths_no_star_star),
     ("navigatsiya prefetch'i niyatda", nav_prefetch_on_intent),
     ("bosh sahifa <main> prefetch'i niyatda", home_main_prefetch_on_intent),
     ("lug'at alohida faylda", dictionary_as_cached_file),

@@ -4,7 +4,8 @@
 ✅ **Runbook yozildi (2026-09-16):** [deploy-runbook.md](deploy-runbook.md) —
 migration tartibi, env kalitlari, ma'lum xatolar, reboot va zaxira.
 ✅ **AOP (2026-09-20):** [parallel-agents.md](parallel-agents.md) — slots are
-identity + ports; any agent any task; isolation is **task-lock** (`.agent/locks`).
+identity + ports; any agent any task; isolation is **task-lock** (`.agent/locks`);
+`owned_paths` width is **no-star-star**.
 
 Nima **hozir** bilinadi: deploy topologiyasi, siyosatlar va incident turlari — ular arxitektura va ADR'lardan kelib chiqadi.
 Nima **hali bilinmaydi**: hosting provayderi, real narxlar.

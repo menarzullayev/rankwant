@@ -19,6 +19,11 @@ assign any kind of task to any free slot.
 4. For each glob: if a fresh lock exists, **stop**. Else write `OWNER`/`TASK`/`UNTIL`.
 5. Work only in `C:/Users/nsn/project/wt/<cursor|workbuddy|claude>/<topic>`.
 6. Stay inside `owned_paths`. One task, one branch, one PR.
+7. **no-star-star:** `owned_paths` must pass `tools/owned_paths.py`
+   (`legal_owned_path`). Forbidden: `**`, `*`, `.`, `/`, one-segment
+   directory globs (`apps/**`, `docs/**`). Directory globs need ≥2 segments
+   (`apps/web/**`). Several packages on one task are allowed. Root files
+   (`CLAUDE.md`) are allowed.
 
 ## Never
 
