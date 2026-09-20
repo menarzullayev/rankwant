@@ -20,7 +20,7 @@ Tunnel orqali). To'rt hostli production topologiyasi README'da.
 | API             | **8301**                                                        |
 | Tunnel          | `tools/monitor.ps1`, PID `.handoff/cloudflared.pid`             |
 | Zaxira          | `"C:\Program Files\Git\bin\bash.exe" -lc ".../tools/backup.sh"` |
-| Avtomatik deploy | `tools/auto_deploy.sh`, vazifa `RankWant Auto Deploy` (5 daqiqa) |
+| Avtomatik deploy | `tools/auto_deploy.sh`, vazifa `RankWant Auto Deploy` (1 daqiqa) |
 | Muzlatish kaliti | `DEPLOY_FREEZE=1` — deploy'ni to'xtatadi (qulfni ham olmaydi)   |
 | Rollback        | kerakli commitni `deploy.sh` bilan qayta qurish (SHA teg saqlanmaydi) |
 | O'lchov         | `tools/measure_deploy.sh` (`--warm` / `--cold`); TIMER qatorlari     |
@@ -174,7 +174,7 @@ Shuning uchun `deploy.yml` **qo'lda qoladi** (`workflow_dispatch` +
 o'zgarmaydi). Avtomatlashtirish — host'da, chunki `deploy.sh`, `gh`,
 `.env.public`, `docker` va Task Scheduler o'sha yerda va hammasi o'lchangan.
 
-**Zanjir** (har 5 daqiqada, `tools/auto_deploy.sh`):
+**Zanjir** (har daqiqada, `tools/auto_deploy.sh`):
 
 ```
 qulf → DEPLOY_FREEZE → git fetch origin main → worktree'ni --ff-only
@@ -194,11 +194,11 @@ qulf → DEPLOY_FREEZE → git fetch origin main → worktree'ni --ff-only
 
 ⚠️ **Yopiq darvoza — nosozlik emas, shuning uchun to'siq ham qo'yilmaydi.**
 Darvoza `main` CI hali yugurib turganda ham yopiq bo'ladi. O'sha holat
-nosozlik deb hisoblansa, SHA 30 daqiqaga bloklanadi: deploy 5 daqiqa o'rniga
+nosozlik deb hisoblansa, SHA 30 daqiqaga bloklanadi: deploy 1 daqiqa o'rniga
 30 daqiqada keladi va log yolg'on «deploy YIQILDI» deydi. O'lchandi
 2026-09-20 18:10:06Z — PR #192 18:09:36 da merge bo'ldi, CI hali yugurar edi;
-CI `main` da ~70 s yuradi, yurish esa har 5 daqiqada, ya'ni har to'rtinchi
-merge shu yo'lga tushardi. Endi watcher darvozani **urinishdan oldin**
+CI `main` da ~70 s yuradi, yurish esa har daqiqada, ya'ni deyarli har merge
+shu yo'lga tushadi. Endi watcher darvozani **urinishdan oldin**
 tekshiradi va yopiq bo'lsa sababini logga yozib chiqadi (jim qolmaydi:
 2026-09-18 da 3 ta PR shu sabab soatlab jonli chiqmagan).
 `tools/deploy.sh` o'z darvozasini baribir yurgizadi — u yagona haqiqat
@@ -206,12 +206,63 @@ manbai, watcher'ning tekshiruvi esa tayyorlik savoli: «hozir urinishga
 arziydimi?». `tools/check_decisions.py` → `deploy_automation_is_safe` (8-shart)
 shuni qo'riqlaydi.
 
-Merge oxirida watcher'ni 5 daqiqa kutmang — darvoza baribir yashil main:
+Merge oxirida watcher poll'ini kutmang (1 daqiqa) — darvoza baribir yashil main:
 
 ```bash
 bash tools/kick_auto_deploy.sh
 # yoki: schtasks /run /tn "RankWant Auto Deploy"
 ```
+
+### Poll oralig'i — 1 daqiqa (o'lchandi 2026-09-21)
+
+Vazifa har daqiqada yuradi (`PT1M`), ilgari 5 daqiqa edi: merge'dan keyin
+deploy eng yomon holatda **1 daqiqada** boshlanadi (ilgari 5 daqiqada).
+Umuman kutmaslik kerak bo'lsa — yuqoridagi `kick_auto_deploy.sh`.
+
+⚠️ **30 soniya texnik jihatdan mumkin emas.** Task Scheduler takrorlash
+oralig'ining eng kichigi — **1 daqiqa**; `PT30S` ni XML sxemasi rad etadi.
+O'lchandi (2026-09-21, ikkala scheduling engine'da ham bir xil):
+
+```text
+The task XML contains a value which is incorrectly formatted or out of
+range.(31,27):Interval:PT30S
+```
+
+⚠️ **Ustma-ust tushish yo'q.** Vazifada `MultipleInstancesPolicy=IgnoreNew`
+— oldingi yurish tugamaguncha yangi nusxa ochilmaydi, ya'ni deploy 5
+daqiqaga cho'zilsa ham yurishlar to'planib qolmaydi. Tick narxi ~2.0–2.3 s
+(asosan `git fetch`), ya'ni 1 daqiqalik poll'da ish yuki ~3.5%.
+
+⚠️ **Bu sozlama faqat host'da** — repo'da vazifani yaratuvchi skript yo'q.
+Qayta o'rnatish yoki tekshirish uchun:
+
+```powershell
+# Joriy holat (interval, IgnoreNew, action):
+Get-ScheduledTask -TaskName "RankWant Auto Deploy" |
+  Select-Object -ExpandProperty Triggers |
+  Select-Object @{n='interval';e={$_.Repetition.Interval}},
+                @{n='duration';e={$_.Repetition.Duration}}
+
+# Interval'ni o'zgartirish (vazifa XML'i orqali; PT1M — eng kichigi):
+$xml = Export-ScheduledTask -TaskName "RankWant Auto Deploy"
+$new = $xml -replace '<Interval>PT5M</Interval>', '<Interval>PT1M</Interval>'
+Register-ScheduledTask -TaskName "RankWant Auto Deploy" -Xml $new -Force
+```
+
+⚠️ XML'da `<UseUnifiedSchedulingEngine>false</UseUnifiedSchedulingEngine>`
+yozish hech narsani o'zgartirmaydi — xizmat uni baribir `true` ga
+normallashtiradi (o'lchandi 2026-09-21).
+
+⚠️ **Log o'sishi.** Sog'lom tick aynan **1 qator** yozadi
+(`obrazga tushmaydi — bake yo'q`), ya'ni 5 daqiqalik poll'da ~288 qator/kun,
+1 daqiqalikda ~1 440 qator/kun. O'lchandi (2026-09-21): qator ~**72 bayt** ⇒
+**~100 KB/kun (~37 MB/yil)**. Fayl `.handoff/auto-deploy.log` hozir 2.04 MB
+va **aylantirilmaydi** — rotatsiya alohida qaror.
+
+✅ **Tekshirildi (2026-09-21).** Log'dagi ketma-ket tick'lar (UTC):
+`20:25:05` (eski 5 daqiqalik) → `20:28:03` → `20:29:03` → `20:30:03` — ya'ni
+aniq **1 daqiqa** oraliq, har tick 1 qator. Vazifa: `interval=PT1M`,
+`MultipleInstances=IgnoreNew`, `ExecutionTimeLimit=PT1H`, `LastTaskResult=0`.
 
 ⚠️ **Deploy alohida worktree'dan** yuriladi (`C:/Users/nsn/project/wt/deploy`),
 asosiy checkout'dan **emas**: u yerda agentlarning commit qilinmagan tahriri

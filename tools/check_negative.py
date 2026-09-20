@@ -2831,7 +2831,7 @@ def neg_decisions_auto_deploy_no_liveness() -> tuple[bool, str]:
 def neg_decisions_auto_deploy_attempt_after_deploy() -> tuple[bool, str]:
     """Qayta urinish yozuvi deploy'dan KEYIN bo'lsa tutilsin.
 
-    Urinish yiqilgandan keyin yozilsa, yiqilgan yurish har 5 daqiqada
+    Urinish yiqilgandan keyin yozilsa, yiqilgan yurish har daqiqada
     takrorlanadi: obraz qayta quriladi, disk to'ladi, log ko'miladi.
     """
     return _decision_broken(
@@ -2863,7 +2863,7 @@ def neg_decisions_auto_deploy_gate_closed_records_attempt() -> tuple[bool, str]:
 
     Yopiq darvoza — «hali tayyor emas», nosozlik emas. Tekshiruv
     `record_attempt` dan keyin tursa, CI hali yugurayotganda yurish
-    urinishni yozadi va 1800 s to'siq qo'yadi: deploy 5 daqiqa o'rniga
+    urinishni yozadi va 1800 s to'siq qo'yadi: deploy 1 daqiqa o'rniga
     30 daqiqada keladi, log esa yolg'on «deploy YIQILDI» deydi.
     O'lchandi 2026-09-20 18:10:06Z (PR #192 merge 18:09:36).
     """
@@ -2897,7 +2897,7 @@ def neg_decisions_auto_deploy_env_not_configurable() -> tuple[bool, str]:
 
     Standart qiymat `$LIVE_DIR/.env.public` bo'lib qolsa va override
     bo'lmasa, deploy worktree'da (`.env.public` `.gitignore` da) watcher
-    har 5 daqiqada `die` qiladi — deploy umuman bo'lmaydi, log ko'miladi.
+    har daqiqada `die` qiladi — deploy umuman bo'lmaydi, log ko'miladi.
     """
     return _decision_broken(
         "tools/auto_deploy.sh",
