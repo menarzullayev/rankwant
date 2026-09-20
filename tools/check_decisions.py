@@ -1150,6 +1150,11 @@ def problems_list_guest_cdn() -> str | None:
         return f"{CF_GUEST_CACHE_RULE}: Cache Rule Vary Accept-Language yo'q"
     if '"normalize"' not in spec:
         return f"{CF_GUEST_CACHE_RULE}: Accept-Language normalize emas — Free Vary kalitlamaydi"
+    if '"passthrough"' not in spec:
+        return (
+            f"{CF_GUEST_CACHE_RULE}: Vary default `bypass` Next RSC tokenlarida "
+            "CDN ni o'chiradi — `passthrough` kerak"
+        )
     apply = read(CF_GUEST_CACHE_APPLY)
     if "rankwant_guest_html_cache" not in apply:
         return f"{CF_GUEST_CACHE_APPLY}: qoida ref i yo'q"

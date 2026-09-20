@@ -186,7 +186,9 @@ poison that one URL.
 empty query is also cached, but **not** forced to `uz`. Origin instrumentation
 adds `Vary: Accept-Language` (`guest-al` mark). Cloudflare Free does not key
 on `Vary` by itself; the Cache Rule sets `vary.headers.accept-language`
-to `normalize` over the ten UI locales. `?page=` / `?level=` / `?lang=` stay
+to `normalize` over the ten UI locales. Default is `passthrough` (not
+`bypass`): Next.js always lists RSC tokens on `Vary`, and `bypass` then
+refuses to store the object (`cf-cache-status: BYPASS`). `?page=` / `?level=` / `?lang=` stay
 uncached. Logged-in HTML stays `private, no-store` (favourites / solved).
 Worker route is `problems/*` (slug only) so the list does not burn the 100k
 Worker quota.

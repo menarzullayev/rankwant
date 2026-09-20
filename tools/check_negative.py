@@ -2771,6 +2771,16 @@ def neg_decisions_problems_cache_no_vary() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_problems_vary_default_bypass() -> tuple[bool, str]:
+    """Vary default bypass qaytsa tutilsin — Next RSC CDN ni o'chiradi."""
+    return _decision_broken(
+        "tools/cf-guest-cache-rule.json",
+        '"passthrough"',
+        '"bypass"',
+        "arxiv ro'yxat mehmon CDN keshi",
+    )
+
+
 def neg_decisions_copy_fail_toast_dropped() -> tuple[bool, str]:
     """CopyControl fail toast olib tashlansa tutilsin."""
     return _decision_broken(
@@ -5244,6 +5254,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "Cache Rule Vary yo'qolsa tutilsin",
                 neg_decisions_problems_cache_no_vary,
+            ),
+            (
+                "Vary default bypass qaytsa tutilsin",
+                neg_decisions_problems_vary_default_bypass,
             ),
             (
                 "copy fail toast olib tashlansa tutilsin",
