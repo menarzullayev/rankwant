@@ -25,6 +25,10 @@
 #   bash tools/deploy.sh --yes      # tasdiqsiz (avtomatlashtirish uchun)
 #   bash tools/deploy.sh --check    # hech narsani o'zgartirmaydi, faqat holat
 #   bash tools/deploy.sh --skip-ci-gate  # owner-approved only: skip the main CI gate
+#   bash tools/deploy.sh --no-cache # compose build --no-cache (sovuq qurilish)
+#   RANKWANT_BUILD_NO_CACHE=1       # xuddi --no-cache, env orqali
+#   RANKWANT_DEPLOY_TIMING=path.tsv # TIMER qatorlarini TSV ga yozadi
+#   O'lchov: bash tools/measure_deploy.sh --plan
 #
 # ⚠️ Live contest paytida deploy QILINMAYDI (10-operations, qoida №1).
 # Skript buni API orqali tekshiradi va faol contest bo'lsa TO'XTAYDI.
@@ -88,19 +92,43 @@ export BUILT_AT
 ASSUME_YES=0
 CHECK_ONLY=0
 SKIP_CI_GATE=0
+NO_CACHE=0
 for arg in "$@"; do
   case "$arg" in
     --yes|-y) ASSUME_YES=1 ;;
     --check)  CHECK_ONLY=1 ;;
     --skip-ci-gate) SKIP_CI_GATE=1 ;;
-    -h|--help) sed -n '2,30p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    --no-cache) NO_CACHE=1 ;;
+    -h|--help) sed -n '2,36p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) printf '%sNoma'"'"'lum argument: %s%s\n' "$R" "$arg" "$N"; exit 2 ;;
   esac
 done
+if [ "${RANKWANT_BUILD_NO_CACHE:-0}" != "0" ]; then
+  NO_CACHE=1
+fi
 
 step() { printf '\n%s── %s%s\n' "$Y" "$1" "$N"; }
 ok()   { printf '%s✓%s %s\n' "$G" "$N" "$1"; }
 die()  { printf '%s✗ %s%s\n' "$R" "$1" "$N"; exit 1; }
+
+if [ -f "$ROOT/tools/deploy_timer.sh" ]; then
+  # shellcheck disable=SC1091
+  . "$ROOT/tools/deploy_timer.sh"
+else
+  time_begin() { :; }
+  time_finish() { :; }
+  time_finish_open() { :; }
+  time_summary() { :; }
+fi
+
+RANKWANT_LOCK_OWNED=0
+_on_exit() {
+  time_finish_open
+  time_summary
+  if [ "${RANKWANT_LOCK_OWNED:-0}" = "1" ] && [ -n "${LOCK:-}" ]; then
+    rm -rf "$LOCK"
+  fi
+}
 
 # ── Muzlatish kaliti ─────────────────────────────────────────────────
 # Qulfdan OLDIN turadi: muzlatilgan tizim qulfni ham olmasligi kerak, aks
@@ -134,10 +162,13 @@ if [ "$CHECK_ONLY" -ne 1 ]; then
       owner="$(cat "$LOCK/owner" 2>/dev/null || echo "egasi yozilmagan")"
       die "boshqa deploy ishlayapti ($owner). U tugaganini tekshiring; qulf eskirgan bo'lsa: rm -rf \"$LOCK\""
     fi
-    trap 'rm -rf "$LOCK"' EXIT
+    RANKWANT_LOCK_OWNED=1
     printf 'pid %s, %s, commit %s\n' "$$" "$(date -u '+%Y-%m-%d %H:%M UTC')" "$GIT_SHA" > "$LOCK/owner"
   fi
+  trap _on_exit EXIT
+  time_begin e2e
 
+  time_begin gate
   step "Deploy darvozasi (main CI)"
   if [ "$SKIP_CI_GATE" -eq 1 ]; then
     printf '%s⚠ --skip-ci-gate: main CI tekshirilmadi — faqat Saidakbar akaning aniq ruxsati bilan%s\n' "$Y" "$N"
@@ -145,9 +176,11 @@ if [ "$CHECK_ONLY" -ne 1 ]; then
     GATE_PY="$(bash tools/pick-python.sh 2>/dev/null)" || die "Python topilmadi — deploy darvozasi o'lchanmadi"
     "$GATE_PY" tools/check_deploy_gate.py || die "deploy darvozasi yopiq — main CI yashil emas yoki o'lchanmadi"
   fi
+  time_finish gate
 fi
 
 # ── 0. Old shartlar ──────────────────────────────────────────────────
+time_begin preflight
 step "0/8 Old shartlar"
 [ -f docker-compose.yml ] || die "repo ildizida emas (docker-compose.yml yo'q)"
 command -v docker >/dev/null 2>&1 || die "docker topilmadi"
@@ -163,8 +196,10 @@ ok "$ENV_FILE joyida"
 ENV_ABS="$(cd "$(dirname "$ENV_FILE")" && pwd)/$(basename "$ENV_FILE")" \
   || die "env-fayl yo'lini aniqlab bo'lmadi: $ENV_FILE"
 ok "env-fayl: $ENV_ABS"
+time_finish preflight
 
 # ── 1. Live contest oynasi (qoida №1) ────────────────────────────────
+time_begin contest_window
 step "1/8 Live oyna tekshiruvi"
 PY="$(bash tools/pick-python.sh 2>/dev/null)" || PY=""
 if [ -z "$PY" ]; then
@@ -178,6 +213,7 @@ else
          "$Y" "$N" ;;
   esac
 fi
+time_finish contest_window
 
 if [ "$CHECK_ONLY" -eq 1 ]; then
   step "Holat (--check: hech narsa o'zgartirilmadi)"
@@ -201,7 +237,14 @@ fi
 # `migrate` ham ALOHIDA obraz: usiz u eski obraz bilan yuradi va yangi
 # migration fayllarini ko'rmaydi.
 step "2/8 Obrazlar qurilmoqda (${SERVICES[*]} migrate)"
-"${COMPOSE[@]}" build "${SERVICES[@]}" migrate || die "build yiqildi"
+BUILD_OPTS=()
+if [ "$NO_CACHE" -eq 1 ]; then
+  BUILD_OPTS+=(--no-cache)
+  printf '%s⚠ --no-cache: obraz qatlamlari keshdan o'"'"'qilmaydi (sovuq qurilish)%s\n' "$Y" "$N"
+fi
+time_begin build
+"${COMPOSE[@]}" build "${BUILD_OPTS[@]}" "${SERVICES[@]}" migrate || die "build yiqildi"
+time_finish build
 ok "obrazlar tayyor"
 
 # SHA obraz tegi QO'YILMAYDI (2026-09-20). Har deploy `rankwant/<svc>:<sha>`
@@ -215,41 +258,55 @@ ok "obrazlar tayyor"
 # `--dump-only` — faqat Postgres: MinIO ham, tiklash sinovi ham o'tkazib
 # yuboriladi (migratsiya ularga tegmaydi), shuning uchun tez.
 step "3/8 Migratsiyadan oldin zaxira (pg_dump)"
+time_begin dump
 RANKWANT_ENV_FILE="$ENV_ABS" bash tools/backup.sh --dump-only \
   || die "zaxira olinmadi — migratsiya TO'XTATILDI (zaxirasiz sxema o'zgarishi xavfli)"
+time_finish dump
 ok "zaxira olindi"
 
 # ── 6. Migratsiya — DEPLOY'DAN OLDIN ─────────────────────────────────
 step "4/8 Migratsiya"
+time_begin migrate
 "${COMPOSE[@]}" run --rm migrate || die "migrate yiqildi"
+time_finish migrate
 
 # ── 7. Tasdiq: `migrate` chiqishiga ISHONMAYMIZ ──────────────────────
 # «No migrations to apply» eski obrazda ham aynan shunday deydi.
 step "5/8 Qo'llanmagan migration tekshiruvi"
+time_begin showmigrations
 pending="$("${COMPOSE[@]}" run --rm api python manage.py showmigrations 2>/dev/null | grep -c '\[ \]')"
 if [ "$pending" != "0" ]; then
   die "$pending ta migration qo'llanmagan — deploy TO'XTATILDI (runbook §1)"
 fi
+time_finish showmigrations
 ok "qo'llanmagan migration: 0"
 
 # ── 8. Ko'tarish ─────────────────────────────────────────────────────
 step "6/8 Konteynerlar qayta ko'tarilmoqda"
+time_begin up
 "${COMPOSE[@]}" up -d --no-deps "${SERVICES[@]}" || die "up yiqildi"
+time_finish up
 ok "ko'tarildi"
 
 # ── 8. Tasdiq: konteyner HAQIQATAN yangi kodda ───────────────────────
 step "7/8 Deploy tasdiqi"
+time_begin verify
 sleep 10
 if bash tools/check_deploy.sh; then
   ok "konteynerlar joriy kodda"
 else
   die "check_deploy.sh «ESKIRGAN» dedi — konteyner eski kodda qolgan"
 fi
+time_finish verify
 
 # ── 9. Disk: SHA teglar, dangling, builder cache ─────────────────────
 # Faqat TASDIQ'DAN KEYIN: yiqilgan deploy cache ni ham o'chirmasin,
 # qayta urinish sovuq qurilishga tushmasin. `prune_docker_disk.sh`
 # `rankwant-<svc>:latest` va `rankwant/ci-runner` ni o'chirmaydi.
 step "8/8 Disk tozalash (SHA teglar, dangling, builder)"
+time_begin prune
 bash tools/prune_docker_disk.sh || die "disk tozalash yiqildi"
+time_finish prune
+time_finish e2e
+time_summary
 printf '\n%sDeploy tugadi.%s\n' "$G" "$N"

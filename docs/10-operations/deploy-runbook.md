@@ -23,6 +23,7 @@ Tunnel orqali). To'rt hostli production topologiyasi README'da.
 | Avtomatik deploy | `tools/auto_deploy.sh`, vazifa `RankWant Auto Deploy` (5 daqiqa) |
 | Muzlatish kaliti | `DEPLOY_FREEZE=1` — deploy'ni to'xtatadi (qulfni ham olmaydi)   |
 | Rollback        | kerakli commitni `deploy.sh` bilan qayta qurish (SHA teg saqlanmaydi) |
+| O'lchov         | `tools/measure_deploy.sh` (`--warm` / `--cold`); TIMER qatorlari     |
 
 To'liq `COMPOSE` o'zgaruvchisi (har bo'limda shu ishlatiladi):
 
@@ -273,6 +274,23 @@ qurish (`tools/deploy.sh`); SHA obraz teglari **saqlanmaydi** (2026-09-20,
 disk). Sxema — faqat deploy oldidagi dump (`<backup dir>/pg-deploy-*.sql.gz`),
 **qo'lda**.
 Bu cheklov ataylab: jimgina yarim rollback — eng yomon holat.
+
+### Deploy vaqtini o'lchash
+
+Ha, jarayon boshidan oxirigacha o'lchanadi. `tools/deploy.sh` har
+bosqichda `TIMER finish name=… sec=…` yozadi (`time.perf_counter`).
+Sovuq qurilish — `--no-cache`. Ishlab turgan `:latest` ni `rmi -f`
+qilish yoki `compose down` / `volume prune` — **emas** (preview yoki
+Postgres ketadi).
+
+```bash
+bash tools/measure_deploy.sh --plan
+bash tools/measure_deploy.sh --warm --yes
+bash tools/measure_deploy.sh --cold --yes
+```
+
+Hisobot `.handoff/deploy-timing/` ostida. Bosqichlar va nima qimmat:
+[deploy-timing tadqiqoti](../research/2026-09-20-deploy-timing/README.md).
 
 ⚠️ **Docker daemon (bir martalik).** `tools/docker-daemon.json` ni
 `%USERPROFILE%\.docker\daemon.json` ga qo'ying: builder GC 5 GB, json-file
