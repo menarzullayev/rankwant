@@ -15,4 +15,8 @@ if ! command -v schtasks >/dev/null 2>&1; then
   exit 2
 fi
 
+# Git Bash `/run` ni `C:/Program Files/Git/run` ga yozadi (o'lchandi
+# 2026-09-20: `ERROR: Invalid argument/option - 'C:/Program Files/Git/run'`).
+# PowerShell `schtasks /run` to'g'ri; bash orqali kick shu bayroqsiz yiqiladi.
+export MSYS_NO_PATHCONV=1
 schtasks /run /tn "RankWant Auto Deploy"

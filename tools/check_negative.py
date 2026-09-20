@@ -4239,6 +4239,8 @@ def neg_kick_auto_deploy_runs_task() -> tuple[bool, str]:
     src = (ROOT / "tools/kick_auto_deploy.sh").read_text(encoding="utf-8")
     if 'schtasks /run /tn "RankWant Auto Deploy"' not in src:
         return False, "kick_auto_deploy.sh: schtasks yo'q"
+    if "MSYS_NO_PATHCONV=1" not in src:
+        return False, "kick_auto_deploy.sh: Git Bash /run ni yo'lga aylantiradi"
     return True, "kick: RankWant Auto Deploy"
 
 
