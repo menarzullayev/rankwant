@@ -2998,6 +2998,26 @@ def neg_decisions_users_indexed() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_rank_numbered_token() -> tuple[bool, str]:
+    """`--rw-rank-1` qaytsa tutilsin."""
+    return _decision_broken(
+        "apps/web/src/app/globals.css",
+        "--rw-rank-grey: #656e81;",
+        "--rw-rank-1: #656e81;",
+        "rank colour_group 7 token",
+    )
+
+
+def neg_decisions_rank_class_uses_level() -> tuple[bool, str]:
+    """UserName `title.level` ga qaytsa tutilsin."""
+    return _decision_broken(
+        "apps/web/src/components/UserName.tsx",
+        "rw-rank-${title.colour_group}",
+        "rw-rank-${title.level}",
+        "rank colour_group 7 token",
+    )
+
+
 def neg_decisions_nav_eager_link() -> tuple[bool, str]:
     # A plain `next/link` back in the sidebar prefetches every item on sight.
     return _decision_broken(
@@ -3323,6 +3343,10 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/contests/urls.py",
     "apps/api/problems/urls.py",
     "apps/api/core/migrations/0021_seed_staff_groups.py",
+    # Rank colour groups (2026-09-20 HITL encode-167): 7 tokens, not 16.
+    "apps/api/profiles/titles.py",
+    "apps/web/src/app/globals.css",
+    "apps/web/src/components/UserName.tsx",
 )
 
 
@@ -5129,6 +5153,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("sayt qidiruvga yopilsa tutilsin", neg_decisions_site_closed_to_search),
             ("AI krauler ro'yxatdan tushsa tutilsin", neg_decisions_ai_crawler_dropped),
             ("/users/ ochilsa tutilsin", neg_decisions_users_indexed),
+            ("rank raqamli token qaytsa tutilsin", neg_decisions_rank_numbered_token),
+            ("UserName level class qaytsa tutilsin", neg_decisions_rank_class_uses_level),
             ("sidebar'ga oddiy Link qaytsa tutilsin", neg_decisions_nav_eager_link),
             ("bosh sahifaga oddiy Link qaytsa tutilsin", neg_decisions_home_main_eager_link),
             ("IntentLink darhol prefetch qilsa tutilsin", neg_decisions_intent_link_eager),

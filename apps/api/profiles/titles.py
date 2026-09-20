@@ -56,7 +56,7 @@ TITLES: tuple[tuple[int, str, int], ...] = (
 )
 
 
-#: Codeforces colour group each tier falls into. Drives --rw-rank-N
+#: Codeforces colour group each tier falls into. Drives --rw-rank-{group}
 #: in apps/web/src/app/globals.css and the nutella marker.
 COLOUR_GROUPS: tuple[str, ...] = (
     "grey",  # 1 quark
