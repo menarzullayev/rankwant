@@ -149,6 +149,11 @@
   --rw-uppercase: none;
   --rw-level-1: #667085; --rw-level-2: #027e46; --rw-level-3: #1666ea;
   --rw-level-4: #9644d7; --rw-level-5: #d22c1f;
+  /* Nutella marker ink: the first `marker` characters of a tier name are
+     drawn in this colour, the rest stays in --rw-rank-N. Black on light,
+     white on dark - same value used by every palette since it is the ink,
+     not the surface. ADR-0027 § L2. */
+  --rw-nutella-ink: #000000;
   --rw-rank-1: #656e81;
 
   --rw-rank-2: #656e81;
@@ -191,6 +196,8 @@
   --rw-text-2: #b9c2d0;
   --rw-muted: #9aa1b2;
   --rw-faint: #8c94a1;
+  /* Nutella marker ink on dark backgrounds. */
+  --rw-nutella-ink: #ffffff;
   /* Dark rejimda accent-fg e'lon qilinmagan edi, ya'ni oq meros bo'lib
      qolgan va 3.16:1 berardi. Yorug' fon + quyuq matn — material/editorial/
      swiss dark naqshi. Ikkala qiymat ham shu uslubning o'z tokenlari:
