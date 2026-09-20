@@ -74,6 +74,10 @@ export function Dropdown({
   noResults,
   size = "md",
   className,
+  inputClassName,
+  optionsClassName,
+  optionsStyle,
+  onOpen,
 }: {
   options: readonly DropdownOption[];
   value?: string;
@@ -89,6 +93,10 @@ export function Dropdown({
   noResults?: string;
   size?: DropdownSize;
   className?: string;
+  inputClassName?: string;
+  optionsClassName?: string;
+  optionsStyle?: React.CSSProperties;
+  onOpen?: () => void;
 }) {
   const locale = useLocale();
   const [query, setQuery] = useState("");
@@ -126,9 +134,21 @@ export function Dropdown({
       >
         {label}
       </Label>
-      <div className="relative">
+      <div
+        className={
+          header
+            ? "relative inline-flex h-10 items-center gap-1.5 rw-radius-sm border rw-line px-2.5 pr-8 rw-field-bg rw-focus-line rw-focus-ring"
+            : "relative"
+        }
+      >
         {leading && (
-          <span className="pointer-events-none absolute inset-y-0 left-3 z-[1] flex items-center">
+          <span
+            className={
+              header
+                ? "flex shrink-0 items-center"
+                : "pointer-events-none absolute inset-y-0 left-3 z-[1] flex items-center"
+            }
+          >
             {leading}
           </span>
         )}
@@ -138,11 +158,18 @@ export function Dropdown({
             options.find((option) => option.value === code)?.label ?? ""
           }
           onChange={(event) => setQuery(event.target.value)}
-          onFocus={(event) => event.currentTarget.select()}
+          onFocus={(event) => {
+            event.currentTarget.select();
+            onOpen?.();
+          }}
           placeholder={searchLabel}
-          className={`${HEIGHT[size]} ${WIDTH[size]} rw-radius-sm border rw-line ${
-            leading ? "pl-10" : header ? "pl-2.5" : "pl-4"
-          } pr-9 rw-strong outline-none transition rw-placeholder rw-focus-line rw-focus-ring rw-field-bg`}
+          className={
+            header
+              ? `${HEIGHT[size]} min-w-0 max-w-[3rem] truncate bg-transparent p-0 text-theme-xs rw-strong outline-none rw-placeholder sm:max-w-[7.5rem] ${inputClassName ?? ""}`
+              : `${HEIGHT[size]} ${WIDTH[size]} rw-radius-sm border rw-line ${
+                  leading ? "pl-10" : "pl-4"
+                } pr-9 rw-strong outline-none transition rw-placeholder rw-focus-line rw-focus-ring rw-field-bg`
+          }
         />
         <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 rw-faint">
           {loading ? (
@@ -156,10 +183,11 @@ export function Dropdown({
         </span>
 
         <ComboboxOptions
-          anchor={header ? ANCHOR.header : ANCHOR.field}
+          anchor={optionsClassName ? undefined : header ? ANCHOR.header : ANCHOR.field}
           modal={false}
-          className={`z-[200] mt-1 max-h-72 overflow-y-auto rw-radius border rw-line rw-surface p-1.5 rw-shadow [--anchor-gap:4px] [--anchor-max-height:18rem] ${
-            header ? "w-64" : "w-[var(--input-width)]"
+          style={optionsStyle}
+          className={`z-[200] max-h-72 overflow-y-auto rw-radius border rw-line rw-surface p-1.5 rw-shadow [--anchor-gap:4px] [--anchor-max-height:18rem] ${
+            optionsClassName ?? (header ? "mt-1 w-64" : "mt-1 w-[var(--input-width)]")
           }`}
         >
           {filtered.length === 0 ? (

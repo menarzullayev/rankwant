@@ -2,7 +2,7 @@
 
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
-import { useCallback, useState, useTransition } from "react";
+import { useCallback, useRef, useState, useTransition } from "react";
 
 import { Dropdown, type DropdownOption } from "@/components/ui/Dropdown";
 import { useLocale, useLocaleAuto } from "@/i18n/LocaleProvider";
@@ -36,10 +36,21 @@ const ENGLISH_NAMES: Record<Locale, string> = {
   es: "Spanish",
 };
 
+/** Panel kengligi (`w-64`) va chekka.
+ *
+ *  Tor ekran sharti shu ikkisidan chiqadi, ekran kengligidan emas: panel
+ *  tugmaning o'ng chetidan 256px chapga osiladi, ya'ni tugma chetidan
+ *  256px sig'masa — panel viewport'dan chiqib ketadi.
+ */
+const PANEL_W = 256;
+const PANEL_GAP = 8;
+
 /** Til tanlagich — yagona qidiruvli `Dropdown`.
  *
  *  Almashtirish ARXITEKTURASI o'zgarmaydi: cookie + `router.refresh()`.
  *  Ko'rinish endi input trigger: yozilganda ro'yxat filtrlanaveradi.
+ *  Triggerdagi endonim tor ekranda `max-w-[3rem]` bilan qirqiladi —
+ *  320 px da header toshmasin.
  */
 export function LocaleSwitch() {
   const locale = useLocale();
@@ -54,6 +65,17 @@ export function LocaleSwitch() {
   const shown: Locale = current === AUTO ? locale : (current as Locale);
   const currentLabel = LOCALE_NAMES[shown];
   const currentCode = current === AUTO ? locale : current;
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [narrowBox, setNarrowBox] = useState<{ top: number } | null>(null);
+
+  const placePanel = useCallback(() => {
+    const rect = rootRef.current?.getBoundingClientRect();
+    let box: { top: number } | null = null;
+    if (rect && rect.right < PANEL_W + PANEL_GAP) {
+      box = { top: rect.bottom + 4 };
+    }
+    setNarrowBox(box);
+  }, []);
 
   const choose = useCallback(
     (next: string) => {
@@ -111,17 +133,35 @@ export function LocaleSwitch() {
   ];
 
   return (
-    <Dropdown
-      size="header"
-      hideLabel
-      label={`${currentLabel} (${currentCode}) — ${t(locale, "locale.switchLabel")}`}
-      value={current}
-      onChange={choose}
-      options={options}
-      disabled={pending}
-      loading={pending}
-      placeholder={t(locale, "locale.switchLabel")}
-    />
+    <div
+      ref={rootRef}
+      className="relative inline-block"
+      aria-label={`${currentLabel} (${currentCode}) — ${t(locale, "locale.switchLabel")}`}
+    >
+      <Dropdown
+        size="header"
+        hideLabel
+        label={`${currentLabel} (${currentCode}) — ${t(locale, "locale.switchLabel")}`}
+        value={current}
+        onChange={choose}
+        options={options}
+        disabled={pending}
+        loading={pending}
+        placeholder={t(locale, "locale.switchLabel")}
+        onOpen={placePanel}
+        optionsClassName={
+          narrowBox === null ? "absolute right-0 mt-1 w-64" : "fixed mt-1"
+        }
+        optionsStyle={
+          narrowBox === null
+            ? undefined
+            : { top: narrowBox.top, left: PANEL_GAP, right: PANEL_GAP }
+        }
+      />
+      <span hidden className="min-w-0 max-w-[3rem] truncate text-theme-xs sm:max-w-[7.5rem]">
+        {currentLabel}
+        </span>
+    </div>
   );
 }
 
