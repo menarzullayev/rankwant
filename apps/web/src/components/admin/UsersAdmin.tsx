@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useConfirm } from "@/components/overlay/OverlayHost";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { date, t, errorText as translateError, type Locale } from "@/i18n/messages";
+import { date, fill, t, errorText as translateError, type Locale } from "@/i18n/messages";
 
 import {
   type ColumnDef,
@@ -234,15 +235,19 @@ function NotifyForm({ user }: { user: StaffUser }) {
 
 function BroadcastForm() {
   const locale = useLocale();
+  const confirm = useConfirm();
   const { busy, run, status } = useAction();
 
-  function submit(e: React.FormEvent<HTMLFormElement>) {
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
     const data = new FormData(form);
     const title = String(data.get("title") ?? "");
     if (
-      !window.confirm(`«${title}» BARCHA faol foydalanuvchilarga yuborilsinmi?`)
+      !(await confirm(
+        fill(t(locale, "admin.broadcastConfirm"), { title }),
+        { danger: true },
+      ))
     )
       return;
     void run(async () => {

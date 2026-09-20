@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useConfirm } from "@/components/overlay/OverlayHost";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t, type MessageKey, errorText } from "@/i18n/messages";
 
@@ -110,15 +111,12 @@ const fields: FieldDef[] = [
 /** ADR-0002 earn jadvalini qayta yozish — katalogdagi questlar asl holiga qaytadi. */
 function SyncCatalogue() {
   const locale = useLocale();
+  const confirm = useConfirm();
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
 
   async function sync() {
-    if (
-      !window.confirm(
-        "Katalogdagi questlar (mukofot, nom, faollik) asl holiga qaytariladi. Davom etilsinmi?",
-      )
-    )
+    if (!(await confirm(t(locale, "admin.questSyncConfirm"), { danger: true })))
       return;
     setBusy(true);
     try {

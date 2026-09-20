@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useConfirm } from "@/components/overlay/OverlayHost";
 import { useLocale } from "@/i18n/LocaleProvider";
 
 import { CrudPage, type ColumnDef } from "@/components/admin/CrudPage";
@@ -79,6 +80,7 @@ const COLUMNS: ColumnDef<Duel>[] = [
  * avval `not_due` bilan rad etiladi; keyin majburiy yakunlash alohida tasdiqlanadi. */
 function DuelActions({ duel, reload }: { duel: Duel; reload: () => void }) {
   const locale = useLocale();
+  const confirm = useConfirm();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
@@ -99,21 +101,22 @@ function DuelActions({ duel, reload }: { duel: Duel; reload: () => void }) {
     }
   }
 
-  function cancel() {
+  async function cancel() {
     if (
-      !window.confirm(
-        `«${duel.title}» bekor qilinsinmi? Ishtirokchilarga xabar boradi.`,
-      )
+      !(await confirm(
+        fill(t(locale, "admin.duelCancelConfirm"), { title: duel.title }),
+        { danger: true },
+      ))
     )
       return;
     void run(() => staff.action(`/staff/duels/${duel.slug}/cancel/`));
   }
 
-  function finalize() {
+  async function finalize() {
     if (
-      !window.confirm(
-        `«${duel.title}» yakunlansinmi? Natija va reyting hisoblanadi.`,
-      )
+      !(await confirm(
+        fill(t(locale, "admin.duelFinalizeConfirm"), { title: duel.title }),
+      ))
     )
       return;
     void run(async () => {
@@ -121,8 +124,7 @@ function DuelActions({ duel, reload }: { duel: Duel; reload: () => void }) {
         await staff.action(`/staff/duels/${duel.slug}/finalize/`);
       } catch (e) {
         if (!(e instanceof ApiError && e.code === "not_due")) throw e;
-        if (!window.confirm("Duel hali tugamagan. Majburan yakunlansinmi?"))
-          return;
+        if (!(await confirm(t(locale, "admin.duelForceFinalize")))) return;
         await staff.action(`/staff/duels/${duel.slug}/finalize/`, {
           force: true,
         });

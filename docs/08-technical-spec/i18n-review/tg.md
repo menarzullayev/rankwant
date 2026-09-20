@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1661 strings.**
+**1690 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -383,6 +383,13 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.delete` | O'chirish | Нест кардан |  |
 | `admin.cancel` | Bekor | Бекор |  |
 | `admin.confirmDelete` | Rostdan o'chirilsinmi? | Дар ҳақиқат нест карда шавад? |  |
+| `admin.broadcastConfirm` | «{title}» BARCHA faol foydalanuvchilarga yuborilsinmi? | «{title}» ба ҲАМАИ корбарони фаъол фиристода шавад? |  |
+| `admin.duelCancelConfirm` | «{title}» bekor qilinsinmi? Ishtirokchilarga xabar boradi. | «{title}» бекор карда шавад? Иштирокчиён хабар мегиранд. |  |
+| `admin.duelFinalizeConfirm` | «{title}» yakunlansinmi? Natija va reyting hisoblanadi. | «{title}» анҷом ёбад? Натиҷа ва рейтинг ҳисоб мешаванд. |  |
+| `admin.duelForceFinalize` | Duel hali tugamagan. Majburan yakunlansinmi? | Дуэл ҳанӯз ба охир нарасидааст. Маҷбуран анҷом ёбад? |  |
+| `admin.contestFinalizeConfirm` | Musobaqa yakunlansinmi? Reyting qo'llanadi va qaytarib bo'lmaydi. | Мусобиқа анҷом ёбад? Рейтинг татбиқ мешавад ва бозпас намешавад. |  |
+| `admin.questSyncConfirm` | Katalogdagi questlar (mukofot, nom, faollik) asl holiga qaytariladi. Davom etilsinmi? | Квестҳои каталог (мукофот, ном, фаъолӣ) барқарор мешаванд. Давом? |  |
+| `admin.arenaResetConfirm` | Ishtirokchilar va javoblar o'chiriladi. Davom etilsinmi? | Иштирокчиён ва ҷавобҳо нест карда мешаванд. Давом? |  |
 | `admin.forbidden` | Bu bo'lim faqat xodimlar uchun. | Ин бахш танҳо барои кормандон аст. |  |
 | `admin.search` | Qidirish… | Ҷустуҷӯ… |  |
 | `admin.noRows` | Hech narsa yo'q | Чизе нест |  |
@@ -1018,8 +1025,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `locale.group.broad` | Keng qamrov | Фароҳи васеъ |  |
 | `locale.loading` | Yuklanmoqda | Боргирӣ |  |
 | `locale.listLabel` | Tillar ro'yxati | Рӯйхати забонҳо |  |
-| `locale.contentUz` | nomlar uz | номҳо uz |  |
-| `content.uzOnly` | Bu nom o'zbekcha — tarjimasi tayyorlanmoqda | Ин ном ба забони ӯзбекӣ аст — тарҷума омода мешавад |  |
+| `locale.contentUz` | identifikator | идентификатор |  |
+| `content.uzOnly` | Bu tilda tarjima yo'q — inglizcha property ko'rsatiladi | Тарҷума ба ин забон нест — идентификатори англисӣ нишон дода мешавад |  |
 | `problem.tab.statement` | Tavsif | Шарт |  |
 | `problem.tab.status` | Urinishlar | Фиристодаҳо |  |
 | `problem.tab.stats` | Statistika | Омор |  |
@@ -1605,6 +1612,27 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.hex` | Rang kodi | Рамзи ранг |  |
 | `customizer.lineHeight` | Qator balandligi | Баландии сатр |  |
 | `customizer.loading` | Yuklanish | Боркунӣ |  |
+| `customizer.overlay` | Oyna va tasdiq | Тирезаҳо ва тасдиқ |  |
+| `customizer.overlayHint` | Tasdiq, modal, tooltip va menyu shu oilaga bo'ysunadi. | Тасдиқ, модал, маслиҳат ва меню аз ҳамин оила пайравӣ мекунанд. |  |
+| `overlay.style.qogoz` | Qog'oz | Qog'oz |  |
+| `overlay.style.qogozHint` | Markazdagi kartochka, yumshoq qorayish, 16px radius. | Корти марказӣ, торикии нарм, радиуси 16px. |  |
+| `overlay.style.soyabon` | Soyabon | Soyabon |  |
+| `overlay.style.soyabonHint` | Qorayish yo'q. Oyna tugmaga yopishadi. | Торикӣ нест. Тиреза ба тугма мечаспад. |  |
+| `overlay.style.projektor` | Projektor | Projektor |  |
+| `overlay.style.projektorHint` | Vinyetka: atrof o'chadi, savol o'rtada. | Винетта: атроф хомӯш, савол дар марказ. |  |
+| `overlay.style.orol` | Orol | Orol |  |
+| `overlay.style.orolHint` | Katta radius, blur fon, kapsul tugmalar. | Радиуси калон, заминаи хира, тугмаҳои капсул. |  |
+| `overlay.sample.confirm` | O'chirish | Нест кардан |  |
+| `overlay.sample.problem` | Masala | Масъала |  |
+| `overlay.sample.more` | Menyu | Меню |  |
+| `overlay.sample.confirmTitle` | A + B o'chirilsinmi? | A + B нест карда шавад? |  |
+| `overlay.sample.confirmBody` | Bu amalni qaytarib bo'lmaydi. | Ин амалро бозпас кардан мумкин нест. |  |
+| `overlay.sample.modalTitle` | Ikki yig'indi | A + B |  |
+| `overlay.sample.modalBody` | Berilgan A va B sonlarining yig'indisini chiqaring. | Ҳамъи ду адади додашудаи A ва B-ро чоп кунед. |  |
+| `overlay.sample.tip` | Boshlang'ich · qiyinlik tokeni | Ибтидоӣ · токени душворӣ |  |
+| `overlay.sample.menuCopy` | Nusxa | Нусха |  |
+| `overlay.sample.menuEdit` | Tahrir | Таҳрир |  |
+| `overlay.sample.menuDelete` | O'chirish | Нест кардан |  |
 | `customizer.iconPack` | Ikonka to'plami | Маҷмӯи нишонаҳо |  |
 | `customizer.iconPackHint` | Tanlangan to'plam navigatsiya, amallar va holat ikonkalarini o'zgartiradi. Verdikt va brend belgilari qat'iy qoladi. | Маҷмӯи интихобшуда нишонаҳои навигатсия, амалҳо ва ҳолатро иваз мекунад. Нишонаҳои вердикт ва бренд бетағйир мемонанд. |  |
 | `customizer.iconPackFixed` | Qat'iy — to'plamga bo'ysunmaydi | Собит — ба маҷмӯъ вобаста нест |  |

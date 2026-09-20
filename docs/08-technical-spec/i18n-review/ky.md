@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1661 strings.**
+**1690 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -383,6 +383,13 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.delete` | O'chirish | Өчүрүү |  |
 | `admin.cancel` | Bekor | Жокко чыгаруу |  |
 | `admin.confirmDelete` | Rostdan o'chirilsinmi? | Чын эле өчүрүлсүнбү? |  |
+| `admin.broadcastConfirm` | «{title}» BARCHA faol foydalanuvchilarga yuborilsinmi? | «{title}» БАРДЫК активдүү колдонуучуларга жөнөтүлсүнбү? |  |
+| `admin.duelCancelConfirm` | «{title}» bekor qilinsinmi? Ishtirokchilarga xabar boradi. | «{title}» жокко чыгарылсынбы? Катышуучуларга кабар кетет. |  |
+| `admin.duelFinalizeConfirm` | «{title}» yakunlansinmi? Natija va reyting hisoblanadi. | «{title}» аякталсынбы? Жыйынтык жана рейтинг эсептелет. |  |
+| `admin.duelForceFinalize` | Duel hali tugamagan. Majburan yakunlansinmi? | Дуэль дагы бүтө элек. Мажбурлап аякталсынбы? |  |
+| `admin.contestFinalizeConfirm` | Musobaqa yakunlansinmi? Reyting qo'llanadi va qaytarib bo'lmaydi. | Мелдеш аякталсынбы? Рейтинг колдонулат жана кайтарылбайт. |  |
+| `admin.questSyncConfirm` | Katalogdagi questlar (mukofot, nom, faollik) asl holiga qaytariladi. Davom etilsinmi? | Каталогдогу квесттер (сыйлык, ат, активдүүлүк) калыбына келет. Улантабызбы? |  |
+| `admin.arenaResetConfirm` | Ishtirokchilar va javoblar o'chiriladi. Davom etilsinmi? | Катышуучулар жана жооптор өчүрүлөт. Улантабызбы? |  |
 | `admin.forbidden` | Bu bo'lim faqat xodimlar uchun. | Бул бөлүм кызматкерлер үчүн гана. |  |
 | `admin.search` | Qidirish… | Издөө… |  |
 | `admin.noRows` | Hech narsa yo'q | Эч нерсе жок |  |
@@ -1018,8 +1025,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `locale.group.broad` | Keng qamrov | Кеңири камтуу |  |
 | `locale.loading` | Yuklanmoqda | Жүктөлүүдө |  |
 | `locale.listLabel` | Tillar ro'yxati | Тилдер тизмеси |  |
-| `locale.contentUz` | nomlar uz | аталыштар uz |  |
-| `content.uzOnly` | Bu nom o'zbekcha — tarjimasi tayyorlanmoqda | Бул аталыш өзбек тилинде — которуу даярдалууда |  |
+| `locale.contentUz` | identifikator | идентификатор |  |
+| `content.uzOnly` | Bu tilda tarjima yo'q — inglizcha property ko'rsatiladi | Бул тилде котормо жок — англис идентификатору көрсөтүлөт |  |
 | `problem.tab.statement` | Tavsif | Шарт |  |
 | `problem.tab.status` | Urinishlar | Жөнөтүүлөр |  |
 | `problem.tab.stats` | Statistika | Статистика |  |
@@ -1605,6 +1612,27 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.hex` | Rang kodi | Түс коду |  |
 | `customizer.lineHeight` | Qator balandligi | Сап бийиктиги |  |
 | `customizer.loading` | Yuklanish | Жүктөлүүдө |  |
+| `customizer.overlay` | Oyna va tasdiq | Терезелер жана ырастоо |  |
+| `customizer.overlayHint` | Tasdiq, modal, tooltip va menyu shu oilaga bo'ysunadi. | Ырастоо, модал, кеңеш жана меню ушул үй-бүлөнү ээрчийт. |  |
+| `overlay.style.qogoz` | Qog'oz | Qog'oz |  |
+| `overlay.style.qogozHint` | Markazdagi kartochka, yumshoq qorayish, 16px radius. | Борбордогу карта, жумшак караңгылатуу, 16px радиус. |  |
+| `overlay.style.soyabon` | Soyabon | Soyabon |  |
+| `overlay.style.soyabonHint` | Qorayish yo'q. Oyna tugmaga yopishadi. | Караңгылатуу жок. Терезе баскычка жабышат. |  |
+| `overlay.style.projektor` | Projektor | Projektor |  |
+| `overlay.style.projektorHint` | Vinyetka: atrof o'chadi, savol o'rtada. | Виньетка: айлана өчөт, суроо ортодо. |  |
+| `overlay.style.orol` | Orol | Orol |  |
+| `overlay.style.orolHint` | Katta radius, blur fon, kapsul tugmalar. | Чоң радиус, бүдөмүк фон, капсула баскычтар. |  |
+| `overlay.sample.confirm` | O'chirish | Өчүрүү |  |
+| `overlay.sample.problem` | Masala | Маселе |  |
+| `overlay.sample.more` | Menyu | Меню |  |
+| `overlay.sample.confirmTitle` | A + B o'chirilsinmi? | A + B өчүрүлсүнбү? |  |
+| `overlay.sample.confirmBody` | Bu amalni qaytarib bo'lmaydi. | Бул аракетти кайтарууга болбойт. |  |
+| `overlay.sample.modalTitle` | Ikki yig'indi | A + B |  |
+| `overlay.sample.modalBody` | Berilgan A va B sonlarining yig'indisini chiqaring. | Берилген A жана B сандарынын суммасын чыгарыңыз. |  |
+| `overlay.sample.tip` | Boshlang'ich · qiyinlik tokeni | Башталгыч · кыйынчылык токени |  |
+| `overlay.sample.menuCopy` | Nusxa | Көчүрүү |  |
+| `overlay.sample.menuEdit` | Tahrir | Оңдоо |  |
+| `overlay.sample.menuDelete` | O'chirish | Өчүрүү |  |
 | `customizer.iconPack` | Ikonka to'plami | Иконка топтому |  |
 | `customizer.iconPackHint` | Tanlangan to'plam navigatsiya, amallar va holat ikonkalarini o'zgartiradi. Verdikt va brend belgilari qat'iy qoladi. | Тандалган топтом навигация, аракет жана абал белгилерин өзгөртөт. Вердикт жана бренд белгилери өзгөрбөйт. |  |
 | `customizer.iconPackFixed` | Qat'iy — to'plamga bo'ysunmaydi | Бекитилген — топтомго көз каранды эмес |  |

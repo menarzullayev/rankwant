@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1661 strings.**
+**1690 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -383,6 +383,13 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.delete` | O'chirish | Óshiriw |  |
 | `admin.cancel` | Bekor | Biykar |  |
 | `admin.confirmDelete` | Rostdan o'chirilsinmi? | Rasında óshirilsin be? |  |
+| `admin.broadcastConfirm` | «{title}» BARCHA faol foydalanuvchilarga yuborilsinmi? | «{title}» BARLIQ aktiv paydalanıwshılarǵa jiberilsin be? |  |
+| `admin.duelCancelConfirm` | «{title}» bekor qilinsinmi? Ishtirokchilarga xabar boradi. | «{title}» biykar etilsin be? Qatnasıwshılarǵa xabar baradı. |  |
+| `admin.duelFinalizeConfirm` | «{title}» yakunlansinmi? Natija va reyting hisoblanadi. | «{title}» tamamansın ba? Natiyje hám reyting esaplanadı. |  |
+| `admin.duelForceFinalize` | Duel hali tugamagan. Majburan yakunlansinmi? | Duel ele tamamlanbaǵan. Májbúriy tamamansın ba? |  |
+| `admin.contestFinalizeConfirm` | Musobaqa yakunlansinmi? Reyting qo'llanadi va qaytarib bo'lmaydi. | Musabaqa tamamansın ba? Reyting qollanıladı hám qaytarılmaydı. |  |
+| `admin.questSyncConfirm` | Katalogdagi questlar (mukofot, nom, faollik) asl holiga qaytariladi. Davom etilsinmi? | Katalogdaǵı questlar (sıylıq, at, aktivlik) qayta tiklenedi. Dawam? |  |
+| `admin.arenaResetConfirm` | Ishtirokchilar va javoblar o'chiriladi. Davom etilsinmi? | Qatnasıwshılar hám juwaplar óshiriledi. Dawam? |  |
 | `admin.forbidden` | Bu bo'lim faqat xodimlar uchun. | Bul bólim tek xızmetkerler ushın. |  |
 | `admin.search` | Qidirish… | Izlew… |  |
 | `admin.noRows` | Hech narsa yo'q | Hesh nárse joq |  |
@@ -1018,8 +1025,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `locale.group.broad` | Keng qamrov | Keń qamtıw |  |
 | `locale.loading` | Yuklanmoqda | Júklenbekte |  |
 | `locale.listLabel` | Tillar ro'yxati | Tiller dizimi |  |
-| `locale.contentUz` | nomlar uz | atamalar uz |  |
-| `content.uzOnly` | Bu nom o'zbekcha — tarjimasi tayyorlanmoqda | Bul atama ózbek tilinde — awdarması tayarlanbaqta |  |
+| `locale.contentUz` | identifikator | inglishe atama |  |
+| `content.uzOnly` | Bu tilda tarjima yo'q — inglizcha property ko'rsatiladi | Bul tilde awdarma joq — inglishe identifikator kórsetiledi |  |
 | `problem.tab.statement` | Tavsif | Táriyip |  |
 | `problem.tab.status` | Urinishlar | Jiberiwler |  |
 | `problem.tab.stats` | Statistika | Statistika |  |
@@ -1605,6 +1612,27 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.hex` | Rang kodi | Reń kodi |  |
 | `customizer.lineHeight` | Qator balandligi | Qatar biyikligi |  |
 | `customizer.loading` | Yuklanish | Júkleniw |  |
+| `customizer.overlay` | Oyna va tasdiq | Ayna hám tastıyıqlaw |  |
+| `customizer.overlayHint` | Tasdiq, modal, tooltip va menyu shu oilaga bo'ysunadi. | Tastıyıqlaw, modal, maslahat hám menyu usı shańaraqqa boysınadı. |  |
+| `overlay.style.qogoz` | Qog'oz | Qog'oz |  |
+| `overlay.style.qogozHint` | Markazdagi kartochka, yumshoq qorayish, 16px radius. | Oraydaǵı kartočka, jumsaq qarańǵılıq, 16px radius. |  |
+| `overlay.style.soyabon` | Soyabon | Soyabon |  |
+| `overlay.style.soyabonHint` | Qorayish yo'q. Oyna tugmaga yopishadi. | Qarańǵılıq joq. Ayna túymege jabısadı. |  |
+| `overlay.style.projektor` | Projektor | Projektor |  |
+| `overlay.style.projektorHint` | Vinyetka: atrof o'chadi, savol o'rtada. | Vinyetka: átirap óshedi, soraw ortada. |  |
+| `overlay.style.orol` | Orol | Orol |  |
+| `overlay.style.orolHint` | Katta radius, blur fon, kapsul tugmalar. | Úlken radius, bulan fon, kapsul túymeler. |  |
+| `overlay.sample.confirm` | O'chirish | Óshiriw |  |
+| `overlay.sample.problem` | Masala | Masele |  |
+| `overlay.sample.more` | Menyu | Qosımsha |  |
+| `overlay.sample.confirmTitle` | A + B o'chirilsinmi? | A + B óshirilsin be? |  |
+| `overlay.sample.confirmBody` | Bu amalni qaytarib bo'lmaydi. | Bul ámeldi qaytarıp bolmaydı. |  |
+| `overlay.sample.modalTitle` | Ikki yig'indi | A + B |  |
+| `overlay.sample.modalBody` | Berilgan A va B sonlarining yig'indisini chiqaring. | Berilgen A hám B sanlarınıń qosındısın shıǵarıń. |  |
+| `overlay.sample.tip` | Boshlang'ich · qiyinlik tokeni | Baslanǵısh · qıyınlıq tokeni |  |
+| `overlay.sample.menuCopy` | Nusxa | Nusqa |  |
+| `overlay.sample.menuEdit` | Tahrir | Tahrirlaw |  |
+| `overlay.sample.menuDelete` | O'chirish | Óshiriw |  |
 | `customizer.iconPack` | Ikonka to'plami | Ikonka toplamı |  |
 | `customizer.iconPackHint` | Tanlangan to'plam navigatsiya, amallar va holat ikonkalarini o'zgartiradi. Verdikt va brend belgilari qat'iy qoladi. | Tańlanǵan toplam navigatsiya, háreket hám halat belgilerin ózgertedi. Verdikt hám brend belgileri ózgermeydi. |  |
 | `customizer.iconPackFixed` | Qat'iy — to'plamga bo'ysunmaydi | Bekitilgen — toplamǵa baylanıslı emes |  |

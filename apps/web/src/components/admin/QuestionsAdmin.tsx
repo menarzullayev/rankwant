@@ -15,6 +15,7 @@ import {
   TR,
   Table,
 } from "@/components/ui/Table";
+import { useConfirm } from "@/components/overlay/OverlayHost";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { fill, t, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
@@ -79,6 +80,7 @@ function fromItem(item: Question): FormState {
 
 export function QuestionsAdmin() {
   const locale = useLocale();
+  const confirm = useConfirm();
   const [rows, setRows] = useState<Question[]>([]);
   const [count, setCount] = useState(0);
   const [page, setPage] = useState(1);
@@ -203,7 +205,8 @@ export function QuestionsAdmin() {
   }
 
   async function remove(item: Question) {
-    if (!window.confirm(t(locale, "admin.confirmDelete"))) return;
+    if (!(await confirm(t(locale, "admin.confirmDelete"), { danger: true })))
+      return;
     try {
       await staff.remove(`${PATH}${item.id}/`);
       await load();

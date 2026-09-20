@@ -16,6 +16,7 @@ import { StyleProvider } from "@/context/StyleContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { UpdatesProvider } from "@/context/UpdatesContext";
 import type { AppearancePrefs, Me } from "@/lib/api";
+import { OverlayProvider } from "@/components/overlay/OverlayHost";
 import { startChiziq } from "@/lib/chiziq";
 import AppFooter from "./AppFooter";
 import AppHeader from "./AppHeader";
@@ -161,17 +162,19 @@ export default function AppShell({
             siteAppearance={siteAppearance}
             markupAppearance={markupAppearance}
           >
-            <PrefsSync />
-            <UpdatesProvider>
-              <SidebarProvider>
-                <Shell>{children}</Shell>
-              </SidebarProvider>
-            </UpdatesProvider>
-            {/* Suzuvchi tugma va panel — `Shell` dan tashqarida, chunki
-                ular sahifa tuzilishiga bog'liq emas va `bare` sahifalarda
-                ham kerak bo'lishi mumkin. Bayroq o'chiq bo'lsa umuman
-                chizilmaydi (D38). */}
-            {CUSTOMIZER_ENABLED && <Customizer />}
+            <OverlayProvider>
+              <PrefsSync />
+              <UpdatesProvider>
+                <SidebarProvider>
+                  <Shell>{children}</Shell>
+                </SidebarProvider>
+              </UpdatesProvider>
+              {/* Suzuvchi tugma va panel — `Shell` dan tashqarida, chunki
+                  ular sahifa tuzilishiga bog'liq emas va `bare` sahifalarda
+                  ham kerak bo'lishi mumkin. Bayroq o'chiq bo'lsa umuman
+                  chizilmaydi (D38). */}
+              {CUSTOMIZER_ENABLED && <Customizer />}
+            </OverlayProvider>
           </CustomizerProvider>
         </SessionProvider>
       </ThemeProvider>

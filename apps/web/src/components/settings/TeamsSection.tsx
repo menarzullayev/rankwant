@@ -9,6 +9,7 @@ import { rankClass } from "@/components/UserName";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
+import { useConfirm } from "@/components/overlay/OverlayHost";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
@@ -21,6 +22,7 @@ const inviteLink = (team: Team) =>
 
 function TeamCard({ team, onChange }: { team: Team; onChange: () => void }) {
   const locale = useLocale();
+  const confirm = useConfirm();
   const { user } = useSession();
   const action = useAction();
   const [copied, setCopied] = useState(false);
@@ -121,8 +123,14 @@ function TeamCard({ team, onChange }: { team: Team; onChange: () => void }) {
             className="h-9 px-3 rw-bad-ink"
             disabled={action.busy}
             onClick={() => {
-              if (window.confirm(t(locale, "settings.teamDeleteConfirm")))
-                void act(() => deleteJson(`/teams/${team.id}/`));
+              void (async () => {
+                if (
+                  await confirm(t(locale, "settings.teamDeleteConfirm"), {
+                    danger: true,
+                  })
+                )
+                  void act(() => deleteJson(`/teams/${team.id}/`));
+              })();
             }}
           >
             {t(locale, "settings.teamDelete")}
