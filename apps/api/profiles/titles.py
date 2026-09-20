@@ -147,6 +147,27 @@ def user_title(user: Any) -> Title | None:
     )
 
 
+def user_max_title(user: Any) -> Title | None:
+    """Peak tier - computed from `max_rating_contest` (ADR-0027).
+
+    `max_rating_contest` is maintained in two places: the Codeforces
+    import (ADR-0026) and the contest rating service when a user's
+    rating rises (`ratings/services.py`). So the peak is meaningful in
+    exactly the same cases as the current title, and it uses the same
+    guard - a brand-new user with no contests and no import has neither.
+
+    Returns None when the peak is not recorded yet (nullable column).
+    """
+    peak = getattr(user, "max_rating_contest", None)
+    if peak is None:
+        return None
+    return title_for(
+        peak,
+        user.rated_contest_count,
+        has_imported_rating=bool(getattr(user, "rank_title", "")),
+    )
+
+
 def bands() -> list[dict[str, Any]]:
     """Rating chart boundaries - the last band has no upper bound."""
     result: list[dict[str, Any]] = []

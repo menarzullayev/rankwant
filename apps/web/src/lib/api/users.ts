@@ -12,6 +12,9 @@ export type UserPublic = {
   country: string;
   /** Unvon — Contests reytingidan; reytingli musobaqasiz `null` (ADR-0018). */
   title: UserTitle | null;
+  /** Eng yuqori pog'ona — `max_rating_contest` bo'yicha, `title` bilan bir
+   *  xil guard (ADR-0027). `cf_max_title` dan farqi: bu RankWant zinapoyasi. */
+  max_title: UserTitle | null;
   /** Manbadagi daraja nomi (`newbie`…`legendary grandmaster`, ADR-0026).
    *  `title` dan ALOHIDA tizim: `title` RankWant'da HISOBLANADI, bu esa
    *  tashqi profildan KELADI. Ikkalasi ham ko'rsatilishi mumkin. */
@@ -144,6 +147,8 @@ export type UserMini = {
   display_name: string;
   avatar_url: string;
   title: UserTitle | null;
+  /** Eng yuqori pogona - `max_rating_contest` boyicha (ADR-0027). */
+  max_title: UserTitle | null;
 };
 
 export type TeamRole = "owner" | "member";
@@ -187,6 +192,8 @@ export type PublicProfile = {
   is_following: boolean | null;
   cosmetics: Cosmetics;
   title: UserTitle | null;
+  /** Eng yuqori pogona - `max_rating_contest` boyicha (ADR-0027). */
+  max_title: UserTitle | null;
   /** Manbadagi daraja (ADR-0026) — `title` dan alohida, hisoblanmaydi. */
   cf_title: string;
   cf_max_title: string;

@@ -21,7 +21,7 @@ from judging.verdicts import Verdict
 from problems.models import Language, Problem
 from profiles import achievements, public
 from profiles.models import Follow, UserAchievement
-from profiles.titles import title_for, user_title
+from profiles.titles import title_for, user_max_title, user_title
 from qvant import ledger
 from qvant.models import QvantQuest, QvantTransaction, UserQuestCompletion
 from ratings.models import UserSolvedProblem
@@ -152,6 +152,51 @@ def test_user_title_import_belgisi(user: User) -> None:
     # Importing the rating must NOT touch the achievement counter.
     user.refresh_from_db()
     assert user.rated_contest_count == 0
+
+
+@pytest.mark.django_db
+def test_user_max_title_choqqi(user: User) -> None:
+    """Peak tier comes from `max_rating_contest` with the same guard.
+
+    `max_rating_contest` is written by both the Codeforces import
+    (ADR-0026) and the contest rating service, so the peak uses exactly
+    the same condition as the current title.
+    """
+    user.rating_contest = 3307  # supercluster
+    user.max_rating_contest = 4009  # cosmos
+    user.rated_contest_count = 0
+    user.rank_title = ""
+    user.save(
+        update_fields=[
+            "rating_contest",
+            "max_rating_contest",
+            "rated_contest_count",
+            "rank_title",
+        ]
+    )
+    # No contests, no import -> neither current nor peak.
+    assert user_title(user) is None
+    assert user_max_title(user) is None
+
+    # Imported -> both, and the peak is the higher tier.
+    user.rank_title = "legendary grandmaster"
+    user.save(update_fields=["rank_title"])
+    current = user_title(user)
+    assert current is not None
+    assert current["code"] == "supercluster"
+    peak = user_max_title(user)
+    assert peak is not None
+    assert peak == {
+        "code": "cosmos",
+        "level": 16,
+        "colour_group": "red",
+        "marker": 4,
+    }
+
+    # Peak not recorded -> None (nullable column).
+    user.max_rating_contest = None
+    user.save(update_fields=["max_rating_contest"])
+    assert user_max_title(user) is None
 
 
 @pytest.mark.django_db

@@ -145,6 +145,21 @@ achievements to all imported users at once.
 A brand-new user with no contests and no import keeps no title, so the
 original intent of ADR-0018 still holds.
 
+### Peak tier (`max_title`)
+
+The profile also exposes `max_title` — the tier for `max_rating_contest`.
+That column is maintained in two places: the Codeforces import
+(ADR-0026) and the contest rating service, which bumps it whenever a
+user's rating rises. So the peak uses the same guard as the current
+title, and a user with no contests and no import has neither.
+
+`max_title` is RankWant's own ladder, distinct from `cf_max_title`
+(Codeforces' own peak tier name). When the peak differs from the current
+tier the profile card shows it as a second badge (▲ prefix), so a user
+who has fallen from Cosmos to Supercluster still sees what they reached.
+
+No new column was needed — `max_rating_contest` already existed.
+
 ## Rejected alternatives
 
 - 15 tiers (2026-09-20 morning). Started as 15 with supernova replacing

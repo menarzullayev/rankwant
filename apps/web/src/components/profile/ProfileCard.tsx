@@ -139,6 +139,21 @@ export function ProfileCard({
                 />
               </span>
             )}
+            {profile.max_title && profile.max_title.code !== profile.title?.code && (
+              <span
+                title={fill(t(locale, "profile.highest"), {
+                  max: t(locale, `title.${profile.max_title.code}`),
+                })}
+                className={`inline-flex items-center gap-1 rounded-full border border-current px-2.5 py-0.5 text-theme-xs font-semibold rw-rank-${profile.max_title.level}`}
+              >
+                <span aria-hidden="true">▲</span>
+                <RankTitle
+                  locale={locale}
+                  code={profile.max_title.code}
+                  marker={profile.max_title.marker}
+                />
+              </span>
+            )}
             {profile.roles.map((role) => (
               <span
                 key={role.code}
