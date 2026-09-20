@@ -7,6 +7,15 @@
   "action_parameters": {
     "cache": true,
     "edge_ttl": { "mode": "respect_origin" },
-    "browser_ttl": { "mode": "respect_origin" }
+    "browser_ttl": { "mode": "respect_origin" },
+    "vary": {
+      "default": { "action": "bypass" },
+      "headers": {
+        "accept-language": {
+          "action": "normalize",
+          "languages": ["uz", "kaa", "ru", "en", "kk", "ky", "tg", "tr", "zh", "es"]
+        }
+      }
+    }
   }
 }

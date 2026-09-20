@@ -123,6 +123,9 @@ def rule_payload(spec: dict) -> dict:
 
 def matches(live: dict, spec: dict) -> bool:
     params = live.get("action_parameters") or {}
+    vary = params.get("vary") or {}
+    accept = (vary.get("headers") or {}).get("accept-language") or {}
+    languages = accept.get("languages") or []
     return (
         live.get("action") == "set_cache_settings"
         and live.get("enabled") is not False
@@ -130,6 +133,10 @@ def matches(live: dict, spec: dict) -> bool:
         and params.get("cache") is True
         and (params.get("edge_ttl") or {}).get("mode") == "respect_origin"
         and (params.get("browser_ttl") or {}).get("mode") == "respect_origin"
+        and (vary.get("default") or {}).get("action") == "bypass"
+        and accept.get("action") == "normalize"
+        and "uz" in languages
+        and "ru" in languages
     )
 
 

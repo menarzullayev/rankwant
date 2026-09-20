@@ -1127,6 +1127,13 @@ def problems_list_guest_cdn() -> str | None:
         return f"{HOME_CACHE}: tilga bog'liq kesh yo'li yo'q"
     if "forceDefaultLocale: uzForced" not in src:
         return f"{HOME_CACHE}: `/problems` ham `uz` majburiy — Vary foydasiz"
+    if 'HOME_CACHE_MARK_GUEST_LOCALE = "guest-al"' not in src:
+        return f"{HOME_CACHE}: tilga bog'liq kesh belgisi yo'q"
+    inst = read("apps/web/src/instrumentation.ts")
+    if "HOME_CACHE_MARK_GUEST_LOCALE" not in inst:
+        return "apps/web/src/instrumentation.ts: guest-al Vary yozilmaydi"
+    if "Accept-Language" not in inst:
+        return "apps/web/src/instrumentation.ts: origin Vary da Accept-Language yo'q"
     toml = read(WORKER_TOML)
     if '{ pattern = "rankwant.uz/problems*"' in toml:
         return f"{WORKER_TOML}: `problems*` ro'yxatni Worker kvotasiga qaytaradi"
@@ -1139,6 +1146,10 @@ def problems_list_guest_cdn() -> str | None:
         return f"{CF_GUEST_CACHE_RULE}: `/problems` Eligible emas — CF DYNAMIC"
     if '"cache": true' not in spec:
         return f"{CF_GUEST_CACHE_RULE}: cache true emas"
+    if '"accept-language"' not in spec:
+        return f"{CF_GUEST_CACHE_RULE}: Cache Rule Vary Accept-Language yo'q"
+    if '"normalize"' not in spec:
+        return f"{CF_GUEST_CACHE_RULE}: Accept-Language normalize emas — Free Vary kalitlamaydi"
     apply = read(CF_GUEST_CACHE_APPLY)
     if "rankwant_guest_html_cache" not in apply:
         return f"{CF_GUEST_CACHE_APPLY}: qoida ref i yo'q"
