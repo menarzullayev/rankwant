@@ -32,7 +32,7 @@ export function CustomizerTrigger() {
       aria-expanded={open}
       aria-label={t(locale, "customizer.title")}
       data-tip={open ? undefined : t(locale, "customizer.title")}
-      data-tip-kind={open ? undefined : "kbd"}
+      data-tip-kind="kbd"
       data-tip-kbd={open ? undefined : shortcut}
       className="relative z-20 flex size-10 shrink-0 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg"
     >
