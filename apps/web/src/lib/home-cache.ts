@@ -37,6 +37,8 @@ export const GUEST_LOGIN_TABS = new Set([
 /** Proxy → Node instrumentation. Next `Cookie` ni `res.req` da yo'qotishi mumkin. */
 export const HOME_CACHE_REQUEST_HEADER = "x-rw-home-cache";
 export const HOME_CACHE_MARK_GUEST = "guest";
+/** Tilga bog'liq mehmon (`/problems`) — origin `Vary: Accept-Language`. */
+export const HOME_CACHE_MARK_GUEST_LOCALE = "guest-al";
 export const HOME_CACHE_MARK_PRIVATE = "private";
 
 /** Mehmon: CDN 30 s, keyin stale-while-revalidate. */
@@ -120,8 +122,16 @@ export function isGuestCachePath(pathname: string, search: string): boolean {
 
 export function homeCacheMark(
   decision: HomeCacheDecision,
-): typeof HOME_CACHE_MARK_GUEST | typeof HOME_CACHE_MARK_PRIVATE | null {
-  if (decision.cacheable) return HOME_CACHE_MARK_GUEST;
+):
+  | typeof HOME_CACHE_MARK_GUEST
+  | typeof HOME_CACHE_MARK_GUEST_LOCALE
+  | typeof HOME_CACHE_MARK_PRIVATE
+  | null {
+  if (decision.cacheable) {
+    return decision.forceDefaultLocale
+      ? HOME_CACHE_MARK_GUEST
+      : HOME_CACHE_MARK_GUEST_LOCALE;
+  }
   if (decision.cacheControl === HOME_CACHE_PRIVATE) return HOME_CACHE_MARK_PRIVATE;
   return null;
 }

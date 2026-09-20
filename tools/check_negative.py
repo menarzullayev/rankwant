@@ -2761,6 +2761,16 @@ def neg_decisions_problems_forced_uz() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_problems_cache_no_vary() -> tuple[bool, str]:
+    """Cache Rule Accept-Language normalize yo'qolsa tutilsin."""
+    return _decision_broken(
+        "tools/cf-guest-cache-rule.json",
+        '"accept-language"',
+        '"accept-encoding"',
+        "arxiv ro'yxat mehmon CDN keshi",
+    )
+
+
 def neg_decisions_copy_fail_toast_dropped() -> tuple[bool, str]:
     """CopyControl fail toast olib tashlansa tutilsin."""
     return _decision_broken(
@@ -3369,6 +3379,7 @@ _DECISIONS_SANDBOX_FILES = (
     # Guest homepage CDN cache (2026-09-19). Missing here, the sandbox
     # copy cannot be read and `check_decisions.py` fails with exit 2.
     "apps/web/src/lib/home-cache.ts",
+    "apps/web/src/instrumentation.ts",
     "services/maintenance-worker/wrangler.toml",
     # 50k locked decisions (2026-09-19): SloView, cache_delete, compose.
     "apps/api/core/views.py",
@@ -5207,6 +5218,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "arxiv uz majburiy bo'lsa tutilsin",
                 neg_decisions_problems_forced_uz,
+            ),
+            (
+                "Cache Rule Vary yo'qolsa tutilsin",
+                neg_decisions_problems_cache_no_vary,
             ),
             (
                 "copy fail toast olib tashlansa tutilsin",

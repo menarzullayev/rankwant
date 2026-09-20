@@ -183,11 +183,13 @@ cookies are excluded from the cacheable set, so `Accept-Language` cannot
 poison that one URL.
 
 **Archive list (2026-09-20 HITL problems-al):** guest GET `/problems` with an
-empty query is also cached, but **not** forced to `uz`. The edge
-`Vary: Accept-Language` (below) is the cache key. `?page=` / `?level=` /
-`?lang=` stay uncached. Logged-in HTML stays `private, no-store`
-(favourites / solved). Worker route is `problems/*` (slug only) so the
-list does not burn the 100k Worker quota.
+empty query is also cached, but **not** forced to `uz`. Origin instrumentation
+adds `Vary: Accept-Language` (`guest-al` mark). Cloudflare Free does not key
+on `Vary` by itself; the Cache Rule sets `vary.headers.accept-language`
+to `normalize` over the ten UI locales. `?page=` / `?level=` / `?lang=` stay
+uncached. Logged-in HTML stays `private, no-store` (favourites / solved).
+Worker route is `problems/*` (slug only) so the list does not burn the 100k
+Worker quota.
 
 Other routes stay `no-store`. The `Vary` gap below still applies to
 non-uz-forced HTML.
