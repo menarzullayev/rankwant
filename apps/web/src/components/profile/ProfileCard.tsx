@@ -2,6 +2,7 @@ import type { Route } from "next";
 import Link from "next/link";
 
 import { Avatar } from "@/components/Avatar";
+import { MarkerText } from "@/components/MarkerText";
 import { RankTitle } from "@/components/RankTitle";
 import { UserName } from "@/components/UserName";
 import { Badge, type BadgeColor } from "@/components/ui/Badge";
@@ -114,7 +115,13 @@ export function ProfileCard({
           className={`-mt-12 size-24 border-4 border-[var(--rw-surface)] text-title-sm ${frameClass(profile.cosmetics.frame, profile.title)}`}
         />
         <h1 className="mt-3 flex flex-wrap items-center gap-2 text-theme-xl font-bold rw-strong">
-          <span className={`min-w-0 break-words ${rank}`}>{name}</span>
+          <span className={`min-w-0 break-words ${rank}`}>
+            {profile.title && profile.title.marker > 0 ? (
+              <MarkerText text={name} marker={profile.title.marker} />
+            ) : (
+              name
+            )}
+          </span>
           {badge && <Badge color="brand">{badge}</Badge>}
         </h1>
         <p className="text-theme-sm rw-dim">@{profile.username}</p>
