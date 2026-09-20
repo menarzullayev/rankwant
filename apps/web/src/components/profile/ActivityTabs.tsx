@@ -16,7 +16,8 @@ import type {
 } from "@/lib/api";
 import { getWithSession } from "@/lib/api.server";
 import { SLOT_OF } from "@/lib/cosmetics";
-import { formatDate, formatRelative, formatShare } from "@/lib/format";
+import { TimeStamp } from "@/components/kit/TimeStamp";
+import { formatDate, formatShare } from "@/lib/format";
 import { Avatar } from "@/components/Avatar";
 import { UserName } from "@/components/UserName";
 import { EmptyRow, TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
@@ -106,9 +107,7 @@ export async function ActivityTab({
             )}
             {event.type === "quest" && <Badge color="brand">+{event.awarded} Qvant</Badge>}
             {event.type === "hard_solve" && <DifficultyBadge value={event.difficulty} />}
-            <time dateTime={event.at} className="w-28 text-right text-theme-xs rw-faint">
-              {date(event.at, locale)}
-            </time>
+            <TimeStamp value={event.at} locale={locale} tone="badge" />
           </li>
         ))}
       </ol>
@@ -333,7 +332,11 @@ export async function PeopleTab({
                 {person.rating_contest}
               </TD>
               <TD align="right" className="rw-faint">
-                {person.last_seen ? formatRelative(person.last_seen, locale) : "—"}
+                {person.last_seen ? (
+                  <TimeStamp value={person.last_seen} locale={locale} tone="relative" />
+                ) : (
+                  "—"
+                )}
               </TD>
             </TR>
           ))}

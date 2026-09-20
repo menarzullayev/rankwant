@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1721 strings.**
+**1739 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -1742,3 +1742,21 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `navShape.slim.hint` | Bitta siqiq qator, keskin burchak. | Bir ıqsham qatar, tik múyeshler. |  |
 | `navShape.stacked.label` | Qavatma-qavat | Eki qatarlı |  |
 | `navShape.stacked.hint` | Ikki qator: ustida logo, ostida menyu. | Eki qatar: ústinde logotip, astında menyu. |  |
+| `customizer.kit` | O'zaro ta'sir to'plami | O'z-ara tasir jıyını |  |
+| `customizer.kitHint` | Tasdiq, maslahat, belgi, vaqt, nusxa va tab — sath qoidasi, ko'rinish oilasi emas. | Tastıyıqlaw, kespesh, belgi, waqıt, nusqa ha'm tab — qa'tar qa'idesi, ko'rinis sha'n'arag'ı emes. |  |
+| `kit.holdHint` | Tasdiqlash uchun bosib turing | Tastıyıqlaw ushın basıp turı'n' |  |
+| `kit.cmdkPlaceholder` | Yozing yoki tanlang… | Jazı'n' yamasa tan'lan'… |  |
+| `kit.today` | Bugun | Bu'gin |  |
+| `kit.yesterday` | Kecha | Keshe |  |
+| `kit.left` | Qoldi: {time} | Qaldı: {time} |  |
+| `kit.iso` | ISO yozuv | ISO belgi |  |
+| `kit.sure` | Ishonchingiz komilmi? | Isenimin'iz bar ma? |  |
+| `kit.palette` | Buyruqlar | Bu'yırıqlar |  |
+| `kit.paletteEmpty` | Hech narsa topilmadi | Hesh na'rse tabılmadı |  |
+| `kit.paletteCopyUrl` | Sahifa manzilini nusxalash | Bet manzilin nusqalaw |  |
+| `kit.seg.private` | Shaxsiy | Jeke |  |
+| `kit.seg.team` | Jamoa | Topar |  |
+| `kit.seg.public` | Ommaviy | Halıqqa ashıq |  |
+| `kit.step.account` | Hisob | Akkount |  |
+| `kit.step.profile` | Profil | Profil beti |  |
+| `kit.step.done` | Tayyor | Pitim |  |

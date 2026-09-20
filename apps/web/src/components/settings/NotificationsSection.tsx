@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { FormBox } from "@/components/form/FormKit";
+import { InfoMark } from "@/components/kit/FormExtras";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useSession } from "@/context/SessionContext";
@@ -64,7 +65,14 @@ export function NotificationsSection() {
     t(locale, channel === "site" ? "settings.channelSite" : "settings.channelTelegram");
 
   return (
-    <Card title={t(locale, "settings.notify")}>
+    <Card
+      title={
+        <h2 className="flex items-center gap-2 text-theme-xl font-semibold rw-strong">
+          {t(locale, "settings.notify")}
+          <InfoMark text={t(locale, "settings.notifyHint")} />
+        </h2>
+      }
+    >
       <Hint>{t(locale, "settings.notifyHint")}</Hint>
       <div className="mt-4 overflow-x-auto">
         <table className="w-full text-theme-sm">
@@ -89,6 +97,7 @@ export function NotificationsSection() {
                 {CHANNELS.map((channel) => (
                   <td key={channel} className="px-3 py-3 text-center">
                     <FormBox
+                      shape="switch"
                       checked={value(kind, channel)}
                       disabled={channel === "telegram" && !telegram}
                       onChange={(event) => set(kind, channel, event.target.checked)}

@@ -7,6 +7,7 @@ import { SimilarProblems } from "@/components/SimilarProblems";
 import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { Editorial } from "@/components/Editorial";
+import { CopyButton } from "@/components/kit/CopyControl";
 import { ProblemActions } from "@/components/ProblemActions";
 import { ProblemTabs } from "@/components/ProblemTabs";
 import { SampleTests } from "@/components/SampleTests";
@@ -111,7 +112,7 @@ export default async function ProblemPage({ params, searchParams }: Props) {
         <ProblemTabs slug={slug} current="statement" />
 
         <header>
-          <div className="flex flex-wrap items-baseline gap-3">
+          <div className="rw-kit-hover flex flex-wrap items-baseline gap-3">
             {/* Ommaviy raqam — og'zaki muomala uchun ("431-masala"). */}
             {problem.code !== null && (
               <span className="font-mono text-theme-sm rw-faint tabular-nums">
@@ -121,6 +122,7 @@ export default async function ProblemPage({ params, searchParams }: Props) {
             <h1 className="text-title-sm font-bold rw-strong">
               {problem.title}
             </h1>
+            <CopyButton text={slug} tone="hover" />
           </div>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <DifficultyBadge value={problem.difficulty} />

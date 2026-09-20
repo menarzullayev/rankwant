@@ -288,6 +288,7 @@ function ArenaRowPanel({
                 if (
                   !(await confirm(t(locale, "admin.arenaResetConfirm"), {
                     danger: true,
+                    kind: "hold",
                   }))
                 )
                   return;

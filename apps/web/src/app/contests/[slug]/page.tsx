@@ -3,7 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
 import { getLocale } from "@/i18n/server";
-import { dateTime, t } from "@/i18n/messages";
+import { Countdown, TimeStamp } from "@/components/kit/TimeStamp";
+import { t } from "@/i18n/messages";
 import { StandingsTable } from "@/components/StandingsTable";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
@@ -95,10 +96,14 @@ export default async function ContestPage({ params }: Props) {
           {contest.is_rated && (
             <Badge color="brand">{t(locale, "contests.rated")}</Badge>
           )}
-          <span className="text-theme-xs rw-dim">
-            {dateTime(contest.start_at, locale)} —{" "}
-            {dateTime(contest.end_at, locale)}
-          </span>
+          <TimeStamp value={contest.start_at} locale={locale} tone="dual" />
+          <TimeStamp value={contest.end_at} locale={locale} tone="dual" />
+          {!contest.is_finished && (
+            <Countdown
+              until={contest.is_running ? contest.end_at : contest.start_at}
+              locale={locale}
+            />
+          )}
         </div>
       </div>
 
@@ -127,7 +132,7 @@ export default async function ContestPage({ params }: Props) {
                     {entry.title}
                   </span>
                   <span className="text-theme-xs rw-faint">
-                    {entry.points} ball
+                    {entry.points} {t(locale, "col.points")}
                   </span>
                 </Link>
               </li>

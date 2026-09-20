@@ -4,6 +4,7 @@ import type { Route } from "next";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { TabBar } from "@/components/kit/TabBar";
 import { Button } from "@/components/ui/Button";
 import { Field, type FieldStatus } from "@/components/ui/Field";
 import { SelectField } from "@/components/ui/SelectField";
@@ -223,6 +224,16 @@ export function OnboardingForm({ me }: { me: Me }) {
 
   return (
     <div className="flex flex-col gap-5">
+      <TabBar
+        tone="step"
+        label={t(locale, "auth.step2Body")}
+        value="profile"
+        options={[
+          { id: "account", label: t(locale, "kit.step.account") },
+          { id: "profile", label: t(locale, "kit.step.profile") },
+          { id: "done", label: t(locale, "kit.step.done") },
+        ]}
+      />
       <p className="text-theme-sm rw-dim">{t(locale, "auth.step2Body")}</p>
 
       {/* NOM — bu qadamning yagona MAJBURIY maydoni (3-qaror).

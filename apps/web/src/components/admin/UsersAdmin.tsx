@@ -245,7 +245,7 @@ function BroadcastForm() {
     if (
       !(await confirm(
         fill(t(locale, "admin.broadcastConfirm"), { title }),
-        { danger: true },
+        { danger: true, kind: "cmdk" },
       ))
     )
       return;

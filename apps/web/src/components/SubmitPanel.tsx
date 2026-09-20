@@ -13,6 +13,7 @@ import {
   useSyncExternalStore,
 } from "react";
 
+import { CopyButton } from "@/components/kit/CopyControl";
 import { FormFile } from "@/components/form/FormKit";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -531,7 +532,6 @@ function EditorTools({
   onSource: (next: string) => void;
   onError: (message: string | null) => void;
 }) {
-  const [copied, setCopied] = useState(false);
   const bytes = new TextEncoder().encode(source).length;
 
   async function upload(file: File | undefined) {
@@ -544,16 +544,6 @@ function EditorTools({
     onSource(await file.text());
   }
 
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText(source);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {
-      // Clipboard ruxsati yo'q — kod muharrirda ko'rinib turibdi.
-    }
-  }
-
   const action =
     "rw-radius-sm px-2 py-1 text-theme-xs font-medium rw-dim transition rw-hover-bg";
 
@@ -563,9 +553,14 @@ function EditorTools({
         accept=".cpp,.cc,.cxx,.c,.py,.java,.kt,.go,.rs,.cs,.js,.ts,.txt"
         onFile={(file) => void upload(file)}
       />
-      <button type="button" onClick={copy} className={action}>
-        {copied ? t(locale, "settings.teamCopied") : t(locale, "settings.teamCopy")}
-      </button>
+      <CopyButton
+        text={source}
+        tone="kbd"
+        kbd="Ctrl+C"
+        label={t(locale, "settings.teamCopy")}
+        copiedLabel={t(locale, "settings.teamCopied")}
+        className={action}
+      />
       <button type="button" onClick={() => onSource("")} className={action}>
         {t(locale, "common.clear")}
       </button>

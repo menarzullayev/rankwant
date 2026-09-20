@@ -25,6 +25,9 @@ import { LOADING_VARIANTS, clampLoadingVariant } from "@/lib/theme/loading";
 import { SELECTABLE_PACKS, clampIconPack } from "@/lib/theme/icon-packs";
 import { OVERLAY_VARIANTS, clampOverlayVariant } from "@/lib/theme/overlay";
 import { FORM_VARIANTS, clampFormVariant } from "@/lib/theme/form";
+import { CopyButton } from "@/components/kit/CopyControl";
+import { FormIconSwitch, FormSeg3, FormStepper } from "@/components/kit/FormExtras";
+import { KitSection } from "@/components/kit/KitPlayground";
 import {
   FormCheck,
   FormDate,
@@ -196,7 +199,9 @@ export function Customizer() {
           type="button"
           onClick={toggle}
           aria-expanded={false}
-          title={`${t(locale, "customizer.title")} (${shortcut})`}
+          data-tip={t(locale, "customizer.title")}
+          data-tip-kind="kbd"
+          data-tip-kbd={shortcut}
           className="fixed end-0 top-1/3 z-40 hidden flex-col items-center gap-1 rw-radius-sm border rw-line rw-surface px-1.5 py-3 text-theme-xs rw-dim-2 shadow-lg transition rw-hover-bg lg:flex"
         >
           <Icon name="system.palette" className="size-4" />
@@ -319,18 +324,25 @@ function AppearanceTab() {
 
       <Section title={t(locale, "customizer.theme")}>
         {dual ? (
-          <div className="flex flex-wrap gap-2">
-            {(["light", "dark", "system"] as const).map((value) => (
-              <button
-                key={value}
-                type="button"
-                aria-pressed={mode === value}
-                onClick={() => setMode(value)}
-                className={chip(mode === value)}
-              >
-                {t(locale, `theme.${value}`)}
-              </button>
-            ))}
+          <div className="flex flex-wrap items-center gap-3">
+            <FormSeg3
+              label={t(locale, "customizer.theme")}
+              value={mode}
+              onChange={setMode}
+              options={
+                [
+                  { value: "light", label: t(locale, "theme.light") },
+                  { value: "dark", label: t(locale, "theme.dark") },
+                  { value: "system", label: t(locale, "theme.system") },
+                ] as const
+              }
+            />
+            <FormIconSwitch
+              checked={mode !== "dark"}
+              onChange={(on) => setMode(on ? "light" : "dark")}
+              onLabel={t(locale, "theme.light")}
+              offLabel={t(locale, "theme.dark")}
+            />
           </div>
         ) : (
           // Bir muhitli uslub (D6) — tanlagich o'chadi va SABAB aytiladi.
@@ -371,19 +383,12 @@ function AppearanceTab() {
       <SizeSection />
 
       <Section title={t(locale, "customizer.density")}>
-        <div className="flex flex-wrap gap-2">
-          {DENSITIES.map((value) => (
-            <button
-              key={value}
-              type="button"
-              aria-pressed={(appearance.density ?? "comfortable") === value}
-              onClick={() => setAppearance({ density: value })}
-              className={chip((appearance.density ?? "comfortable") === value)}
-            >
-              {t(locale, `customizer.density.${value}`)}
-            </button>
-          ))}
-        </div>
+        <FormStepper
+          label={t(locale, "customizer.density")}
+          value={Math.max(0, DENSITIES.indexOf(appearance.density ?? "comfortable"))}
+          options={DENSITIES.map((value) => t(locale, `customizer.density.${value}`))}
+          onChange={(next) => setAppearance({ density: DENSITIES[next] })}
+        />
       </Section>
 
       <NavSection />
@@ -395,6 +400,7 @@ function AppearanceTab() {
       <LoadingSection />
       <OverlaySection />
       <FormSection />
+      <KitSection />
       <IconPackSection />
     </>
   );
@@ -869,12 +875,51 @@ function OverlaySection() {
         <button
           type="button"
           className={chip(false)}
+          onClick={(event) => {
+            void confirm(t(locale, "overlay.sample.confirmTitle"), {
+              body: t(locale, "overlay.sample.confirmBody"),
+              danger: true,
+              kind: "popover",
+              origin: event.currentTarget,
+            });
+          }}
+        >
+          {4}
+        </button>
+        <button
+          type="button"
+          className={chip(false)}
+          onClick={() => {
+            void confirm(t(locale, "overlay.sample.confirmTitle"), {
+              danger: true,
+              kind: "hold",
+            });
+          }}
+        >
+          {9}
+        </button>
+        <button
+          type="button"
+          className={chip(false)}
+          onClick={() => {
+            void confirm(t(locale, "overlay.sample.confirmTitle"), {
+              danger: true,
+              kind: "cmdk",
+            });
+          }}
+        >
+          {10}
+        </button>
+        <button
+          type="button"
+          className={chip(false)}
           onClick={() => setModalOpen(true)}
         >
           {t(locale, "overlay.sample.problem")}
         </button>
         <span
           title={t(locale, "overlay.sample.tip")}
+          data-tip-kind="balloon"
           className="inline-flex h-8 min-w-8 items-center justify-center px-2 font-mono text-theme-sm rw-dim"
         >
           800
@@ -965,7 +1010,7 @@ function FormSection() {
           defaultValue={t(locale, "overlay.sample.modalBody")}
           rows={3}
         />
-        <FormCheck label={t(locale, "form.sample.public")} defaultChecked />
+        <FormCheck label={t(locale, "form.sample.public")} shape="card" defaultChecked />
         <FormRadios
           name="fm-diff"
           label={t(locale, "form.sample.difficulty")}
@@ -1506,7 +1551,6 @@ function SavedTemplates() {
   } = useCustomizer();
   const { mode } = useTheme();
   const [name, setName] = useState("");
-  const [copied, setCopied] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
   const full = templates.length >= templateLimit;
 
@@ -1540,16 +1584,13 @@ function SavedTemplates() {
 
   return (
     <Section title={t(locale, "customizer.myTemplates")}>
-      <button
-        type="button"
-        onClick={() => {
-          void navigator.clipboard.writeText(shareLink());
-          setCopied(true);
-        }}
-        className="mb-2 w-full rw-radius-sm border rw-line px-3 py-1.5 text-theme-sm rw-dim-2 transition rw-hover-bg"
-      >
-        {copied ? t(locale, "customizer.linkCopied") : t(locale, "customizer.copyLink")}
-      </button>
+      <CopyButton
+        text={shareLink()}
+        tone="text"
+        label={t(locale, "customizer.copyLink")}
+        copiedLabel={t(locale, "customizer.linkCopied")}
+        className="mb-2 w-full justify-center"
+      />
 
       {/* Fayl bilan ko'chirish (D50). Havola uzun sozlamalarda 200+
           belgiga cho'ziladi va uni chatda saqlash noqulay — fayl esa

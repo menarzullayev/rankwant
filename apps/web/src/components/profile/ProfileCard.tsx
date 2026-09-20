@@ -8,13 +8,13 @@ import { UserName } from "@/components/UserName";
 import { Badge, type BadgeColor } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/Button";
 import { CountryFlag } from "@/components/ui/CountryFlag";
+import { TimeStamp } from "@/components/kit/TimeStamp";
 import { fill, t, type Locale } from "@/i18n/messages";
 import type { ProfileRole, PublicProfile } from "@/lib/api";
 import { badgeLabel, coverClass, frameClass } from "@/lib/cosmetics";
 import { countryName } from "@/lib/countries";
 import { EXTERNAL_LABEL, externalShown, externalUrl } from "@/lib/external-links";
 import { CF_TIER_COLOR, cfTierLabelKey, isCfTier } from "@/lib/cf-tiers";
-import { formatDate, formatRelative } from "@/lib/format";
 import { gradeLabel } from "@/lib/grades";
 import { districtName, regionName } from "@/lib/regions";
 import { BrandIcon, EXTERNAL_ICONS } from "@/lib/tech-icons";
@@ -161,9 +161,8 @@ export function ProfileCard({
         ) : (
           profile.last_seen && (
             <p className="mt-2 text-theme-xs rw-faint">
-              {fill(t(locale, "profile.lastSeen"), {
-                time: formatRelative(profile.last_seen, locale),
-              })}
+              {fill(t(locale, "profile.lastSeen"), { time: "" })}
+              <TimeStamp value={profile.last_seen} locale={locale} tone="relative" />
             </p>
           )
         )}
@@ -309,12 +308,8 @@ export function ProfileCard({
           <div>
             <dt className="sr-only">{t(locale, "profile.memberSince")}</dt>
             <dd className="text-theme-xs rw-dim">
-              {fill(t(locale, "profile.joined"), {
-                date: formatDate(profile.date_joined, locale, {
-                  year: "numeric",
-                  month: "long",
-                }),
-              })}
+              {fill(t(locale, "profile.joined"), { date: "" })}
+              <TimeStamp value={profile.date_joined} locale={locale} tone="locale" />
             </dd>
           </div>
         </dl>

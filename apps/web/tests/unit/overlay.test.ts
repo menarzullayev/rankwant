@@ -7,6 +7,7 @@ import {
   DEFAULT_OVERLAY_VARIANT,
   clampOverlayVariant,
   overlayPlace,
+  pickFlipSide,
   placeNear,
 } from "@/lib/theme/overlay";
 
@@ -67,6 +68,18 @@ describe("placeNear", () => {
     };
     const pos = placeNear(roomy, { width: 80, height: 24 }, view, "above");
     expect(pos.y).toBe(120 - 24 - 6);
+  });
+
+  it("flips a cramped corner toward open space", () => {
+    const corner = {
+      left: 350,
+      top: 250,
+      right: 390,
+      bottom: 280,
+      width: 40,
+      height: 30,
+    };
+    expect(pickFlipSide(corner, { width: 120, height: 40 }, view)).toBe("left");
   });
 });
 

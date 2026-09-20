@@ -12,6 +12,7 @@ import {
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
 import { currentFormVariant } from "@/lib/theme/form";
+import type { CheckShape } from "@/lib/theme/kit";
 import { FM_BOX, FM_CTL, FM_INP, FM_LAB, FM_RADIO } from "./chrome";
 
 /** Sozlamalar qatori (`label`) yoki shartlar matni (`children`). */
@@ -20,11 +21,13 @@ export function FormCheck({
   hint,
   children,
   className,
+  shape = "square",
   ...props
 }: InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
   hint?: string;
   children?: ReactNode;
+  shape?: Extract<CheckShape, "square" | "pill" | "card" | "switch">;
 }) {
   const copy = children ?? (
     <>
@@ -32,8 +35,12 @@ export function FormCheck({
       {hint ? <span className="mt-0.5 block text-theme-xs rw-dim">{hint}</span> : null}
     </>
   );
+  const kit = shape === "square" ? undefined : shape;
   return (
-    <label className={`${FM_CTL} rw-fm-check cursor-pointer ${className ?? ""}`}>
+    <label
+      className={`${FM_CTL} rw-fm-check cursor-pointer ${className ?? ""}`}
+      data-kit-check={kit}
+    >
       <span className={`${FM_LAB} min-w-0`}>{copy}</span>
       <input type="checkbox" className={FM_BOX} {...props} />
     </label>
@@ -41,8 +48,16 @@ export function FormCheck({
 }
 
 /** Jadval katagi — yorliq yo'q, faqat belgi. */
-export function FormBox(props: InputHTMLAttributes<HTMLInputElement>) {
-  return <input type="checkbox" className={FM_BOX} {...props} />;
+export function FormBox({
+  shape,
+  ...props
+}: InputHTMLAttributes<HTMLInputElement> & {
+  shape?: Extract<CheckShape, "square" | "pill" | "switch">;
+}) {
+  const kit = shape && shape !== "square" ? shape : undefined;
+  return (
+    <input type="checkbox" className={FM_BOX} data-kit-check={kit} {...props} />
+  );
 }
 
 export function FormRadios({
@@ -52,6 +67,7 @@ export function FormRadios({
   defaultValue,
   options,
   onChange,
+  tone,
 }: {
   name: string;
   label: string;
@@ -59,12 +75,17 @@ export function FormRadios({
   defaultValue?: string;
   options: readonly { value: string; label: string }[];
   onChange?: (value: string) => void;
+  tone?: "plain" | "card";
 }) {
   const group = useId();
   return (
     <fieldset className={FM_CTL}>
       <legend className={FM_LAB}>{label}</legend>
-      <div className="rw-fm-hits" role="radiogroup">
+      <div
+        className={tone === "card" ? "rw-kit-radio-cards" : "rw-fm-hits"}
+        role="radiogroup"
+        data-kit-check={tone === "card" ? "radio-card" : undefined}
+      >
         {options.map((opt) => (
           <label key={opt.value} className="rw-fm-hit">
             <input

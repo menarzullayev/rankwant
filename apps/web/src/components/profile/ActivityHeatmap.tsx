@@ -4,9 +4,13 @@ import { useState } from "react";
 
 import { Dropdown } from "@/components/ui/Dropdown";
 import { useLocale } from "@/i18n/LocaleProvider";
+import { MiniCal } from "@/components/kit/TimeStamp";
 import { fill, t } from "@/i18n/messages";
 import { getJson, type Calendar } from "@/lib/api";
 import { formatDay, type DateKit } from "@/lib/format";
+import type { TipKind } from "@/lib/theme/kit";
+
+const SKELETON_TIP: TipKind = "skeleton";
 
 const CELL = 11;
 const GAP = 3;
@@ -35,6 +39,11 @@ export function ActivityHeatmap({
   const locale = useLocale();
   const [data, setData] = useState(initial);
   const [busy, setBusy] = useState(false);
+  const [hover, setHover] = useState<{
+    iso: string;
+    attempts: number;
+    solved: number;
+  } | null>(null);
 
   async function choose(year: number) {
     setBusy(true);
@@ -95,7 +104,11 @@ export function ActivityHeatmap({
           </div>
         )}
       </div>
-      <div className="overflow-x-auto">
+      <div
+        className="relative overflow-x-auto"
+        data-tip={busy ? "…" : undefined}
+        data-tip-kind={busy ? SKELETON_TIP : undefined}
+      >
         <svg
           width={LEFT + columns * (CELL + GAP)}
           height={TOP + 7 * (CELL + GAP)}
@@ -132,24 +145,41 @@ export function ActivityHeatmap({
               height={CELL}
               rx={2}
               style={{ fill: colour(level(cell.attempts)) }}
-            >
-              <title>
-                {fill(t(locale, "profile.heatmapTip"), {
-                  date: formatDay(kit, cell.iso),
+              onPointerEnter={() =>
+                setHover({
+                  iso: cell.iso,
                   attempts: cell.attempts,
                   solved: cell.solved,
-                })}
-              </title>
-            </rect>
+                })
+              }
+              onPointerLeave={() => setHover(null)}
+            />
           ))}
         </svg>
+        {hover && !busy ? (
+          <div className="pointer-events-none absolute top-2 right-2 rw-radius-sm border rw-line rw-surface rw-shadow">
+            <MiniCal
+              iso={hover.iso}
+              kit={kit}
+              label={fill(t(locale, "profile.heatmapTip"), {
+                date: formatDay(kit, hover.iso),
+                attempts: hover.attempts,
+                solved: hover.solved,
+              })}
+            />
+          </div>
+        ) : null}
       </div>
       <div className="flex flex-wrap items-center justify-between gap-3 text-theme-xs rw-dim">
         <p>
           {fill(t(locale, "profile.streakCurrent"), { n: data.streak.current })} ·{" "}
           {fill(t(locale, "profile.streakLongest"), { n: data.streak.longest })}
         </p>
-        <p className="flex items-center gap-1" aria-hidden="true">
+        <p
+          className="rw-kit-legend"
+          data-tip={t(locale, "profile.heatmapTitle")}
+          data-tip-kind="legend"
+        >
           {t(locale, "profile.less")}
           {[0, 1, 2, 3, 4].map((lvl) => (
             <span

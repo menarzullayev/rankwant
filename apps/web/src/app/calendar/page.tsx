@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 
 import { Badge, type BadgeColor } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
+import { TimeStamp } from "@/components/kit/TimeStamp";
 import { getLocale } from "@/i18n/server";
 import { DEFAULT_LOCALE, date, dateTime, t, time } from "@/i18n/messages";
 import { api, type CalendarEvent } from "@/lib/api";
@@ -50,6 +51,8 @@ function Row({
           {e.title}
         </Link>
         <p className="text-theme-xs rw-faint">
+          <TimeStamp value={e.start_at} locale={locale} tone="fresh" />
+          {" · "}
           {time(start, locale, {
             hour: "2-digit",
             minute: "2-digit",

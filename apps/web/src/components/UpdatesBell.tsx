@@ -69,7 +69,8 @@ export default function UpdatesBell() {
         type="button"
         onClick={() => void openPanel()}
         aria-label={t(locale, "nav.updates")}
-        title={count > 0 ? `${count}` : t(locale, "update.allRead")}
+        data-tip={t(locale, "nav.updates")}
+        data-tip-kind="flip"
         className={`relative ${iconBtn}`}
       >
         <Icon name="notification.changelog" className="size-5" />
