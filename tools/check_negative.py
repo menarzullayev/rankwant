@@ -4061,6 +4061,116 @@ def neg_deploy_lock_released() -> tuple[bool, str]:
     return True, "deploy_lock/bo'shatish: yiqilgan deploy qulfni bo'shatdi"
 
 
+def _timing_runnable(name: str) -> str:
+    """Comment va heredoc (reja matni) tashqarisidagi buyruqlar.
+
+    `measure_deploy.sh --plan` taqiqlarni yozadi — ular manbada qoladi,
+    lekin yurgizilmaydi. Tekshiruv faqat bajariladigan qatorlarni ko'radi.
+    """
+    src = (ROOT / "tools" / name).read_text(encoding="utf-8")
+    out: list[str] = []
+    end_token: str | None = None
+    for line in src.splitlines():
+        if end_token is not None:
+            if line.strip() == end_token:
+                end_token = None
+            continue
+        marker = re.search(r"<<['\"]?(\w+)['\"]?", line)
+        # Faqat reja/yordam matni (EOF). Python heredoc (`PY`) buyruq — tekshiriladi.
+        if marker and marker.group(1) == "EOF" and not line.lstrip().startswith("#"):
+            end_token = "EOF"
+            continue
+        code = line.split("#", 1)[0].strip()
+        if code:
+            out.append(code)
+    return "\n".join(out)
+
+
+def neg_measure_deploy_no_volume_or_system_prune() -> tuple[bool, str]:
+    src = "\n".join(_timing_runnable(n) for n in ("deploy.sh", "deploy_timer.sh", "measure_deploy.sh"))
+    if re.search(r"\bdocker\s+volume\s+prune\b", src):
+        return False, "deploy_timing: docker volume prune — postgres/minio o'chadi"
+    if re.search(r"\bdocker\s+system\s+prune\b", src):
+        return False, "deploy_timing: docker system prune taqiqlangan"
+    return True, "deploy_timing: volume/system prune buyrug'i yo'q"
+
+
+def neg_measure_deploy_no_compose_down() -> tuple[bool, str]:
+    src = _timing_runnable("measure_deploy.sh")
+    if re.search(r"compose\s+down\b", src) or re.search(r"compose\s+stop\b", src):
+        return False, "measure_deploy.sh jonli stackni to'xtatadi"
+    return True, "measure_deploy.sh compose down/stop buyrug'i yo'q"
+
+
+def neg_measure_deploy_no_rmi_force() -> tuple[bool, str]:
+    src = _timing_runnable("measure_deploy.sh")
+    if re.search(r"rmi\s+(-f|--force)\b", src) or re.search(r'"rmi",\s*"-f"', src):
+        return False, "measure_deploy.sh rmi -f — ishlab turgan :latest ni o'chiradi"
+    return True, "measure_deploy.sh rmi -f buyrug'i yo'q"
+
+
+def neg_deploy_no_cache_and_timers() -> tuple[bool, str]:
+    src = (ROOT / "tools/deploy.sh").read_text(encoding="utf-8")
+    missing = [
+        needle
+        for needle in (
+            "--no-cache",
+            "RANKWANT_BUILD_NO_CACHE",
+            "time_begin e2e",
+            'time_begin build',
+            "time_begin dump",
+            "time_begin migrate",
+            "time_begin up",
+            "time_begin verify",
+            "time_begin prune",
+        )
+        if needle not in src
+    ]
+    if missing:
+        return False, "deploy.sh TIMER/--no-cache yetishmaydi: " + ", ".join(missing)
+    return True, "deploy.sh --no-cache va TIMER hooklari bor"
+
+
+def neg_deploy_timer_python_clock() -> tuple[bool, str]:
+    src = (ROOT / "tools/deploy_timer.sh").read_text(encoding="utf-8")
+    if "perf_counter" not in src:
+        return False, "deploy_timer.sh date %N ga tayanadi — Git Bash da noto'g'ri"
+    return True, "deploy_timer.sh time.perf_counter ishlatadi"
+
+
+def neg_deploy_timer_self_test() -> tuple[bool, str]:
+    proc = subprocess.run(
+        [_bash(), "tools/deploy_timer.sh", "--self-test"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    out = (proc.stdout or "") + (proc.stderr or "")
+    if proc.returncode != 0 or "self-test: ok" not in out:
+        return False, f"timer self-test: exit {proc.returncode} — {out.strip()[-200:]}"
+    return True, "timer self-test o'tdi"
+
+
+def neg_measure_deploy_plan() -> tuple[bool, str]:
+    proc = subprocess.run(
+        [_bash(), "tools/measure_deploy.sh", "--plan"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    out = (proc.stdout or "") + (proc.stderr or "")
+    if proc.returncode != 0:
+        return False, f"measure_deploy --plan: exit {proc.returncode} — {out.strip()[-160:]}"
+    missing = [n for n in ("--no-cache", "volume prune", "rmi -f", "e2e") if n not in out]
+    if missing:
+        return False, "measure_deploy --plan yetishmaydi: " + ", ".join(missing)
+    return True, "measure_deploy --plan taqiqlarni ko'rsatadi"
+
+
 def _label_states() -> dict[str, str]:
     """`check_deploy.sh --label-state` in a sandbox: A (web), B (web change), C (docs).
 
@@ -5422,6 +5532,18 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         [
             ("band qulf ikkinchi deploy'ni to'xtatadi", neg_deploy_lock_held),
             ("yiqilgan deploy qulfni bo'shatadi", neg_deploy_lock_released),
+        ],
+    ),
+    (
+        "deploy_timing",
+        [
+            ("volume/system prune yo'q", neg_measure_deploy_no_volume_or_system_prune),
+            ("compose down yo'q", neg_measure_deploy_no_compose_down),
+            ("rmi -f yo'q", neg_measure_deploy_no_rmi_force),
+            ("--no-cache va TIMER", neg_deploy_no_cache_and_timers),
+            ("Python soat", neg_deploy_timer_python_clock),
+            ("timer self-test", neg_deploy_timer_self_test),
+            ("--plan taqiqlar", neg_measure_deploy_plan),
         ],
     ),
     (
