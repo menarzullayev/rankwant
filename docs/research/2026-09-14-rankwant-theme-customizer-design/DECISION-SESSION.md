@@ -439,6 +439,7 @@ flag — nuqson topilsa modul bir tugma bilan o'chiriladi.
 | D50 | Layout chrome shaxsiy; APP-8 rad — match/apply nav/size ni olmasin |
 | D51 | Kit oilalari Interfeysda 6 ta `SelectField`; chip devori yo'q |
 | D52 | Accent gate: AA matni faqat o'lchangan ratio da; APP-9 yopildi |
+| D53 | Interfeys layout chip qoladi; kit SelectField (D51) |
 
 ### D47 — mavzu ikki joyda saqlanmaydi (amalga oshirishda aniqlangan)
 
@@ -531,6 +532,12 @@ Batafsil: [DECISION-51.md](./DECISION-51.md).
 APP-9 yopildi.
 
 Batafsil: [DECISION-52.md](./DECISION-52.md).
+
+### D53 — layout chip qoladi (2026-09-21)
+
+**Tanlov:** A. 2–5 variantli layout oilalari chip; kit katalogi select.
+
+Batafsil: [DECISION-53.md](./DECISION-53.md).
 
 ---
 

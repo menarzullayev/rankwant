@@ -2,7 +2,7 @@
 
 **STATUS:** shipped (2026-09-14)
 
-Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D52).
+Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D53).
 Entry points: the header icon, a floating tab on desktop, `Ctrl+.`, and
 `/settings/korinish`.
 
@@ -32,7 +32,8 @@ Layout chrome (`navMode`, `navShape`, `card`, `pattern`, `fontHeading`,
 Measured 2026-09-21: kit families were **50 chips**; D51 replaced them with
 **six** `SelectField` controls (one tab stop each). Native `<select>` is
 not used — the OS list paints white in dark mode. Closed accordion groups
-still unmount (CUST-100).
+still unmount (CUST-100). Layout families (`navMode`, `navShape`, `card`,
+`pattern`) stay chips (D53) — two to five options, not a catalogue.
 
 ## The colour model
 

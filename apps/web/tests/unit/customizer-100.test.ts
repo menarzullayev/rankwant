@@ -5,7 +5,7 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { Group } from "@/components/customizer/Group";
-import { KIT_FAMILY_KEYS } from "@/components/customizer/chrome";
+import { KIT_FAMILY_KEYS, LAYOUT_CHIP_KEYS } from "@/components/customizer/chrome";
 import { nextTab } from "@/components/customizer/tabs";
 
 function src(rel: string): string {
@@ -151,5 +151,15 @@ describe("CUST-100 contestant customizer", () => {
     expect(appearance).not.toContain("onClick={() => setAppearance({ overlayStyle");
     expect(appearance).not.toContain("onClick={() => setAppearance({ formStyle");
     expect(appearance).not.toContain("onClick={() => setAppearance({ iconPack");
+  });
+
+  it("keeps layout families as chips, not SelectFields (D53)", () => {
+    expect([...LAYOUT_CHIP_KEYS]).toEqual(["navMode", "navShape", "card", "pattern"]);
+    for (const key of LAYOUT_CHIP_KEYS) {
+      expect(appearance).toContain(`setAppearance({ ${key}:`);
+      expect(appearance).toContain(`onClick={() => setAppearance({ ${key}:`);
+    }
+    expect(appearance).toContain("D53");
+    expect((appearance.match(/<SelectField/g) || []).length).toBe(6);
   });
 });

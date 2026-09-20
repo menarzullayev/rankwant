@@ -224,6 +224,7 @@ function DensitySection() {
 }
 
 function NavSection() {
+  // D53: layout chrome stays chips — not SelectField.
   const locale = useLocale();
   const { appearance, setAppearance } = useCustomizer();
   const current = appearance.navMode ?? DEFAULT_NAV_MODE;
