@@ -24,7 +24,9 @@ import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-ALLOWED_TOOLS = ("cursor", "workbuddy", "claude")
+# "freebuff" (the Freebuff client / Buffy) joined via AOP-003; tools outside
+# this tuple reap their own folder by hand (AOP "X slots").
+ALLOWED_TOOLS = ("cursor", "workbuddy", "claude", "freebuff")
 HEARTBEAT_HOURS = 4
 # Live detach + the canonical checkout. Removing either is an incident.
 NEVER_REAP = ("wt/deploy", "cp/rankwant")

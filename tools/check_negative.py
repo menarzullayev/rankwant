@@ -3609,11 +3609,16 @@ _DECISIONS_SANDBOX_FILES = (
     # workflow files are staged already (`docker-compose.ci.yml` above, the
     # `.github/workflows/*` glob in `_decisions_sandbox`).
     #
-    # This entry is here because the drift check caught its absence: PR #204
-    # added the rule, `neg_decisions_sandbox_covers_reads` named this exact
-    # file, and the two trial-label tests died with exit 2 in the sandbox.
-    # That failure is LOCAL ONLY — `check_negative.py` is not part of CI, so
-    # nothing else would have noticed.
+    # Adding the rule without this line made `neg_decisions_sandbox_covers_reads`
+    # name the file and killed the two trial-label tests with exit 2 in the
+    # sandbox copy — the drift check doing its job. Both landed in one commit.
+    #
+    # Where this suite runs: CI's `web` job runs `check_negative.py` in full
+    # (ci.yml), and that job's `if` includes `needs.filter.outputs.tools ==
+    # 'true'` — so a `tools/` change carries the whole suite into CI. The
+    # comment at ci.yml § web records the 2026-09-15 measurement of the
+    # opposite arrangement, where `tools/`-only PRs left the job `skipped` and
+    # the checks were never tested by the checks.
     "tests/latency/check_judge_latency.py",
 )
 
@@ -4050,6 +4055,85 @@ def neg_decisions_latency_moved_into_pr_ci() -> tuple[bool, str]:
         "        run: python3 tools/check_docs.py  # tests/latency",
         _LATENCY_RULE,
     )
+
+
+# ── Deployed boundary — loopback only (owner decision 2026-09-21) ────────────
+
+_BOUNDARY_RULE = "chegara faqat loopback"
+_BOUNDARY_BASE = "docker-compose.yml"
+_BOUNDARY_OVERLAY = "docker-compose.public.yml"
+#: The overlay deletes MinIO's base ports (`9000:9000`, `9001:9001`). Anchored
+#: on the whole three-line block, not on `ports: !reset []` alone — that string
+#: occurs three times and `Mutation` must change exactly the one we mean.
+_MINIO_RESET = "  minio:\n    <<: *restart\n    logging: *default-logging\n    ports: !reset []"
+_MINIO_NO_RESET = "  minio:\n    <<: *restart\n    logging: *default-logging"
+
+
+def neg_decisions_boundary_check_unwired() -> tuple[bool, str]:
+    """Chegara tekshiruvi CI'dan uzilsa tutilsin — aks holda o'lchov yo'q.
+
+    Bu eng muhim qo'riqchi: tekshiruv fayl sifatida qolib, CI'dan tushib
+    qolsa, chegara haqida hech kim hech narsa bilmaydi va bu jimgina sodir
+    bo'ladi.
+    """
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "        run: python3 tools/check_security_boundary.py",
+        "        run: python3 tools/check_security_boundary_off.py",
+        _BOUNDARY_RULE,
+    )
+
+
+def neg_decisions_boundary_overlay_reset_dropped() -> tuple[bool, str]:
+    """Overlay `!reset []` yo'qolsa tutilsin — bazaviy portlar qaytadi."""
+    return _decision_broken(_BOUNDARY_OVERLAY, _MINIO_RESET, _MINIO_NO_RESET, _BOUNDARY_RULE)
+
+
+def neg_decisions_boundary_judge_gets_port() -> tuple[bool, str]:
+    """Judge port e'lon qilsa tutilsin — 06-architecture: kiruvchi port yo'q."""
+    return _decision_broken(
+        _BOUNDARY_BASE,
+        "    privileged: true          # nsjail namespace va cgroup uchun",
+        "    ports: ['9100:9100']\n    privileged: true          # nsjail namespace va cgroup uchun",
+        _BOUNDARY_RULE,
+    )
+
+
+def _boundary_broken(rel: str, old: str, new: str) -> tuple[bool, str]:
+    """Buz `rel`; `check_security_boundary.py` exit 1 berishi shart.
+
+    `_decision_broken` qoidani sinaydi; bu esa **o'lchovni** sinaydi. Ikkisi
+    alohida: qoida markerlarga qaraydi, asbob esa zanjirni birlashtirib
+    haqiqiy port to'plamini hisoblaydi. Faqat bittasi sinalsa, ikkinchisi
+    jimgina o'lishi mumkin.
+    """
+    path = ROOT / rel
+    text = path.read_bytes().decode("utf-8")
+    if old not in text:
+        return False, f"chegara/{rel}: langar topilmadi"
+    with Mutation(path, old, new):
+        code, out = run_check("security_boundary")
+    if code != 1:
+        return False, f"chegara/{rel}: buzilgan chegara exit {code} berdi (1 kerak) — {out.strip()[-160:]}"
+    return True, f"chegara/{rel}: buzilgan chegara tutildi (exit 1)"
+
+
+def neg_boundary_host_wide_override() -> tuple[bool, str]:
+    """`!override` loopback'ni tashlasa tutilsin — port tashqariga chiqadi.
+
+    Bu — asosiy invariant: Cloudflare Tunnel yagona kirish yo'li, ya'ni
+    `0.0.0.0` bog'lanish tunnelni ham, chekka qoidalarini ham chetlab o'tadi.
+    """
+    return _boundary_broken(
+        _BOUNDARY_OVERLAY,
+        "    ports: !override ['127.0.0.1:8301:8000']",
+        "    ports: !override ['8301:8000']",
+    )
+
+
+def neg_boundary_minio_reset_dropped() -> tuple[bool, str]:
+    """MinIO `!reset` yo'qolsa tutilsin — 9000/9001 tashqariga ochiq qoladi."""
+    return _boundary_broken(_BOUNDARY_OVERLAY, _MINIO_RESET, _MINIO_NO_RESET)
 
 
 # ── Deploy gate: agents deploy only a green `main` (owner decision 2026-09-17) ──
@@ -5833,6 +5917,26 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "latency PR CI'ga qo'shilsa tutilsin",
                 neg_decisions_latency_moved_into_pr_ci,
+            ),
+            (
+                "chegara tekshiruvi CI'dan uzilsa tutilsin",
+                neg_decisions_boundary_check_unwired,
+            ),
+            (
+                "chegara overlay `!reset` tushsa tutilsin",
+                neg_decisions_boundary_overlay_reset_dropped,
+            ),
+            (
+                "chegara judge port e'lon qilsa tutilsin",
+                neg_decisions_boundary_judge_gets_port,
+            ),
+            (
+                "chegara loopback `!override` tushsa tutilsin",
+                neg_boundary_host_wide_override,
+            ),
+            (
+                "chegara minio `!reset` tushsa tutilsin",
+                neg_boundary_minio_reset_dropped,
             ),
         ],
     ),

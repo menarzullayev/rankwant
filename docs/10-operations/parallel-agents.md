@@ -65,6 +65,27 @@ forgotten lock goes stale after 4 hours. Width is **no-star-star** (HITL
 Context stays task-scoped: do not ingest the whole repo because this slot
 “might do backend later”.
 
+## X slots (the “other” tools: Buffy/Freebuff, …)
+
+The X6/X7 rows name no concrete tool — “other” covers every agent outside
+cursor/workbuddy/claude (today: the Freebuff client running Buffy). An X
+slot is first-class but **self-registering**: before its first task it
+
+1. writes `manifests/<slot>.yml` and `status/<slot>.md` on the bus — slot
+   name `<tool>-x<n>` (`buffy-x1`), ports and resources follow the X rows
+   above;
+2. opens worktrees under its **own** tool folder (`wt/freebuff/<topic>`);
+   the foreign-folder rules apply unchanged — never touch `wt/cursor/`,
+   `wt/workbuddy/`, `wt/claude/`, `wt/deploy`, `cp/rankwant`;
+3. obeys the rest of this contract like anyone else: task-lock with
+   `owned_paths` (no-star-star), hot-file locks, one stack, deploy only
+   via `tools/deploy.sh`.
+
+`reap_stale_worktrees.py --tool` accepts registered X tools — `freebuff`
+today. A new X tool reaps its own folder by hand until it lands in
+`ALLOWED_TOOLS`, under the same three conditions (no fresh manifest, no
+open PR, clean tree).
+
 ## This machine (measured 2026-09-20)
 
 | | |
