@@ -3046,6 +3046,24 @@ def neg_decisions_security_on_pr() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_security_run_enabled() -> tuple[bool, str]:
+    return _decision_broken(
+        ".github/workflows/security.yml",
+        "    if: false\n",
+        "",
+        "Security run o'chiq",
+    )
+
+
+def neg_decisions_security_required_again() -> tuple[bool, str]:
+    return _decision_broken(
+        "tools/check_deploy_gate.py",
+        'REQUIRED = ("CI",)',
+        'REQUIRED = ("CI", "Security")',
+        "Security run o'chiq",
+    )
+
+
 def neg_decisions_smoke_on_pr() -> tuple[bool, str]:
     return _decision_broken(
         ".github/workflows/ci.yml",
@@ -3568,6 +3586,9 @@ _DECISIONS_SANDBOX_FILES = (
     "tools/restore_canonical.py",
     # Homepage CSS inline (2026-09-20 HITL lh-inline-css).
     "apps/web/next.config.ts",
+    # Security run disabled (2026-09-21): the rule reads REQUIRED.
+    # Missing here, `check_decisions.py` exits 2.
+    "tools/check_deploy_gate.py",
 )
 
 
@@ -4093,7 +4114,8 @@ def neg_deploy_gate_ci_running() -> tuple[bool, str]:
 
 
 def neg_deploy_gate_security_missing() -> tuple[bool, str]:
-    return _gate_expect("Security yo'q", _GATE_SHA, [_GATE_GREEN[0]], 1, "`Security` run'i")
+    # 2026-09-21: Security run o'chiq — faqat CI yetarli.
+    return _gate_expect("Security yo'q", _GATE_SHA, [_GATE_GREEN[0]], 0, "yashil")
 
 
 def neg_deploy_gate_latest_run_wins() -> tuple[bool, str]:
@@ -5693,6 +5715,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("sinov label'i boshqa workflow'da tutilsin", neg_decisions_trial_label_scoped),
             ("sandbox o'qilgan hamma faylni nusxalaydi", neg_decisions_sandbox_covers_reads),
             ("Security PR'da qaytsa tutilsin", neg_decisions_security_on_pr),
+            ("Security job yoqilsa tutilsin", neg_decisions_security_run_enabled),
+            ("Security darvozaga qaytsa tutilsin", neg_decisions_security_required_again),
             ("bosh sahifa CSS link'ga qaytsa tutilsin", neg_decisions_homepage_css_not_inlined),
             ("CF email-decode qaytsa tutilsin", neg_decisions_cf_email_decode_restored),
             ("lug'at hook shartli qaytsa tutilsin", neg_decisions_locale_use_conditional),
@@ -5741,7 +5765,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("main emas — to'xtaydi", neg_deploy_gate_not_main),
             ("CI qizil — to'xtaydi", neg_deploy_gate_ci_failed),
             ("CI tugamagan — to'xtaydi", neg_deploy_gate_ci_running),
-            ("Security run'i yo'q — to'xtaydi", neg_deploy_gate_security_missing),
+            ("Security run'i yo'q — o'tadi", neg_deploy_gate_security_missing),
             ("oxirgi qizil run yashilni bosadi", neg_deploy_gate_latest_run_wins),
             ("commit qilinmagan compose — to'xtaydi", neg_deploy_gate_dirty_compose_blocks),
             ("o'qib bo'lmagan ro'yxat — exit 2", neg_deploy_gate_unreadable),

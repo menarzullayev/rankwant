@@ -1224,6 +1224,24 @@ def homepage_css_is_inlined() -> str | None:
     return None
 
 
+def security_run_is_disabled() -> str | None:
+    """Security workflow job ishlamasin (owner 2026-09-21).
+
+    `audit` `if: false`; avtomatik `push`/`schedule` yo'q. Deploy
+    darvozasi faqat `CI` kutadi — Security run bo'lmasa ham ochiladi.
+    """
+    src = read(".github/workflows/security.yml")
+    if "if: false" not in _workflow_job(src, "audit"):
+        return "security.yml audit ishlaydi — Security run o'chiq bo'lishi kerak"
+    triggers = _workflow_triggers(".github/workflows/security.yml")
+    if "push" in triggers or "schedule" in triggers:
+        return "security.yml push/cron da yuguradi — avtomatik ishga tushmasin"
+    gate = read("tools/check_deploy_gate.py")
+    if 'REQUIRED = ("CI",)' not in gate:
+        return "check_deploy_gate.py Security ni talab qiladi — darvoza faqat CI"
+    return None
+
+
 def homepage_guest_cdn_cache() -> str | None:
     """100k ochilishda bosh sahifa qotmasin (2026-09-19).
 
@@ -2083,6 +2101,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),
     ("bosh sahifa CSS inline", homepage_css_is_inlined),
     ("bosh sahifa CF email-decode yo'q", homepage_skips_cf_email_decode),
+    ("Security run o'chiq", security_run_is_disabled),
 ]
 
 

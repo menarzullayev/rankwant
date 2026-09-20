@@ -10,7 +10,7 @@ builds anything.
 The gate passes only when all three hold:
 1. HEAD is the commit that `main` points to on GitHub right now, so production
    cannot drift to an unmerged or stale commit;
-2. the latest `CI` and `Security` runs for that commit completed with `success`;
+2. the latest `CI` run for that commit completed with `success`;
 3. no checkout of this repository has uncommitted `docker-compose*.yml` changes.
 
 Rule 3 is about what a deploy silently removes. On 2026-09-17 the live stack was
@@ -47,7 +47,7 @@ import _console
 _console.force_utf8()
 
 ROOT = Path(__file__).resolve().parent.parent
-REQUIRED = ("CI", "Security")
+REQUIRED = ("CI",)
 RUN_FIELDS = "workflowName,status,conclusion,createdAt"
 COMPOSE_PATHSPEC = "docker-compose*.yml"
 
