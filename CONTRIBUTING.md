@@ -22,8 +22,15 @@ Qaerdan boshlash: [INDEX.md](INDEX.md) → [docs/README.md](docs/README.md)
 
 ## Parallel agentlar
 
-Bu mashinada bir nechta agent (Claude, Cursor, WorkBuddy) bitta repo va bitta jonli stack
-bilan ishlaydi. Qoidalar 2026-09-17 kechqurunidan keyin yozildi: o'sha kuni ish asosiy
+To'liq shartnoma (AOP): [docs/10-operations/parallel-agents.md](docs/10-operations/parallel-agents.md).
+Jonli taxta (git emas): `C:/Users/nsn/project/wt/.agent/` — manifest, task, lock, status, handoff.
+
+Model: **5 ta isolated worker + bitta coordination qatlami**, bitta checkout emas.
+Default rollar: Cursor-1 backend, Cursor-2 frontend, Cursor-3 infra, WorkBuddy-1
+research, WorkBuddy-2 QA. **Bitta task = bitta owner.** Shared state (fayl, port,
+lockfile, DB, Docker, Git) — asosiy xavf; agentlar soni emas.
+
+Qoidalar 2026-09-17 kechqurunidan keyin yozildi: o'sha kuni ish asosiy
 checkout'da branch'siz olib borildi va jonli `api` `tools/deploy.sh` siz qayta yaratildi —
 natijada 21 ta fayl bitta savatda qoldi va production'da qaysi commit ishlayotganini kod
 aytmay qo'ydi (`org.rankwant.git-sha` yorlig'i `unknown`).
@@ -31,7 +38,7 @@ aytmay qo'ydi (`org.rankwant.git-sha` yorlig'i `unknown`).
 - **Har ish o'z worktree'sida va branch'ida, agentning O'Z papkasida:**
   `git worktree add -b feat/<mavzu> C:/Users/nsn/project/wt/<agent>/<mavzu> origin/main`,
   bu yerda `<agent>` — `claude`, `cursor` yoki `workbuddy`. Worktree `cp/` ichida
-  ochilmaydi. Bitta PR — bitta mavzu.
+  ochilmaydi. Bitta PR — bitta mavzu. Sessiya oldidan `.agent/status` va `locks` o'qiladi.
 - **Agent faqat o'z papkasida yaratadi va o'chiradi.** Sabab (2026-09-18): «barcha
   worktree'larni o'chir» topshirig'i boshqa agentning ishini ham o'chirdi va uning push
   qilinmagan commit'i uchinchi qo'lda PR bo'lib chiqdi. Bu safar zarar bo'lmadi, lekin

@@ -1,0 +1,42 @@
+---
+description: Agent Operating Procedure — isolated workers, shared .agent bus, no shared checkout
+alwaysApply: true
+---
+
+# AOP (this PC)
+
+You are one isolated worker. Full contract: `docs/10-operations/parallel-agents.md`.
+Bus (not in git): `C:/Users/nsn/project/wt/.agent/`.
+
+## Before the first write
+
+1. Read `.agent/status/*` and `.agent/locks/*`.
+2. `git worktree list` and `gh pr list --repo menarzullayev/rankwant`.
+3. Write `manifests/<slot>.yml`, `tasks/<id>.md`, `status/<slot>.md`.
+4. Work only in `C:/Users/nsn/project/wt/<cursor|workbuddy|claude>/<topic>`.
+5. Stay inside `owned_paths`. One task, one branch, one PR.
+
+Default slots: C1 backend `apps/api/**` · C2 frontend `apps/web/**` · C3 infra
+Docker/CI/deploy · W1 research · W2 QA. Owner prompt overrides.
+
+## Never
+
+- Edit `cp/rankwant` (must stay on `main`, clean) or another tool’s worktree.
+- Bind `:3000`, `:8000`, `:8300`, `:8301`, `:5432`. Use the port table in the AOP.
+- `docker compose up/down`, `docker system prune`, `docker volume prune`.
+- `git reset --hard`, `git clean -fd`, `killall`, `pkill`, force-push `main`.
+- Parallel write to lockfiles, compose, workflows, migrations, `CLAUDE.md`.
+- Second RankWant Postgres / live migrate outside `tools/deploy.sh`.
+- A second RankWant HITL question while another is open.
+- `npm install` / `uv pip compile` while another agent holds `PACKAGE_WRITE`.
+
+## Caps
+
+Light = all slots. Medium = 3–5. Heavy (full build, Docker, large pytest) = **1–2**.
+Package-manager write = **1**. Live migration = **1**. RAM > 85% or C: < 15% free → no heavy job.
+
+## Finish
+
+Handoff in `.agent/handoffs/`. Push even if `wip/`. Merge your PR only. Deploy:
+Git Bash `tools/deploy.sh --yes` + `RANKWANT_ENV_FILE=C:/Users/nsn/project/cp/rankwant/.env.public`.
+Prune **your** worktree only.
