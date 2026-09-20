@@ -2605,7 +2605,7 @@ def neg_decisions_types_node_26() -> tuple[bool, str]:
     """`@types/node` 26 ga chiqsa tutilsin — runtime hali 22."""
     return _decision_broken(
         "apps/web/package.json",
-        '"@types/node": "22.20.2"',
+        '"@types/node": "22.20.3"',
         '"@types/node": "26.6.1"',
         "@types/node runtime bilan",
     )
