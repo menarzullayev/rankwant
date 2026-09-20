@@ -1,6 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { LOCALE_COOKIE, LOCALE_HEADER, LOCALE_PARAM } from "@/i18n/locale-params";
+import {
+  LANG_PARAM_HEADER,
+  LOCALE_COOKIE,
+  LOCALE_HEADER,
+  LOCALE_PARAM,
+} from "@/i18n/locale-params";
 import { isLocale, type Locale } from "@/i18n/messages";
 import { EXP_COOKIE, GEO_EXPERIMENT } from "@/lib/experiments";
 import {
@@ -115,7 +120,10 @@ export function proxy(request: NextRequest): NextResponse {
     requestHeaders.set(HOME_CACHE_REQUEST_HEADER, homeMark);
   }
   // ⚠️ `next()` dan OLDIN (yuqoridagi izohga qarang).
-  if (fromParam !== null) requestHeaders.set(LOCALE_HEADER, fromParam);
+  if (fromParam !== null) {
+    requestHeaders.set(LOCALE_HEADER, fromParam);
+    requestHeaders.set(LANG_PARAM_HEADER, fromParam);
+  }
 
   const response = boshqa_domen
     ? NextResponse.redirect(

@@ -18,6 +18,7 @@ import { api, ApiError, type ProblemDetail } from "@/lib/api";
 import { getWithSession } from "@/lib/api.server";
 import { SITE_URL, jsonLd } from "@/lib/site";
 import { getLocale } from "@/i18n/server";
+import { localeAlternatesFor } from "@/i18n/locale-alternates.server";
 import { fill, t } from "@/i18n/messages";
 
 type Props = {
@@ -47,17 +48,19 @@ export async function generateMetadata({
       difficulty: problem.difficulty,
     });
     // Havolalar asosan Telegramda ulashiladi: OG'siz ular yalang'och
-    // manzil bo'lib chiqadi. `canonical` esa filtrli va til cookie'li
-    // variantlarni bitta manzilga yig'adi.
+    // manzil bo'lib chiqadi. Filtr (`contest`) canonical'da yo'q;
+    // `?lang=` self-canonical (HITL 2026-09-20).
+    const path = `/problems/${slug}`;
+    const alternates = await localeAlternatesFor(path);
     return {
       title,
       description,
-      alternates: { canonical: `/problems/${slug}` },
+      alternates,
       openGraph: {
         type: "article",
         title,
         description,
-        url: `/problems/${slug}`,
+        url: alternates.canonical,
       },
       twitter: { card: "summary", title, description },
     };
