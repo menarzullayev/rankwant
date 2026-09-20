@@ -110,8 +110,9 @@ export function proxy(request: NextRequest): NextResponse {
     cookieHeader: request.headers.get("cookie"),
     hasRscHint: requestHasRscHint(request.headers),
   });
-  // Keshlangan mehmon HTML `Accept-Language` ga qaramasligi kerak — aks holda
-  // bitta URL turli tillarni aralashtiradi. `?lang=` pastda ustun (S5).
+  // `uz` majburiy yo'llar (`/`, login, huquqiy) `Accept-Language` ni
+  // yutadi — 100k fragment yo'q. `/problems` tilga bog'liq (HITL problems-al);
+  // `?lang=` pastda ustun (S5).
   if (homeCache.forceDefaultLocale) {
     requestHeaders.set(LOCALE_HEADER, HOME_CACHE_LOCALE);
   }

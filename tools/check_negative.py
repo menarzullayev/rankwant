@@ -2741,6 +2741,26 @@ def neg_decisions_vary_includes_home() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_problems_worker_on_list() -> tuple[bool, str]:
+    """Worker `problems*` ro'yxatga qaytsa tutilsin — 100k kvota."""
+    return _decision_broken(
+        "services/maintenance-worker/wrangler.toml",
+        '{ pattern = "rankwant.uz/problems/*", zone_name = "rankwant.uz" },',
+        '{ pattern = "rankwant.uz/problems*", zone_name = "rankwant.uz" },',
+        "arxiv ro'yxat mehmon CDN keshi",
+    )
+
+
+def neg_decisions_problems_forced_uz() -> tuple[bool, str]:
+    """`/problems` ham `uz` majburiy bo'lsa tutilsin — Vary foydasiz."""
+    return _decision_broken(
+        "apps/web/src/lib/home-cache.ts",
+        "forceDefaultLocale: uzForced,",
+        "forceDefaultLocale: true,",
+        "arxiv ro'yxat mehmon CDN keshi",
+    )
+
+
 def neg_decisions_copy_fail_toast_dropped() -> tuple[bool, str]:
     """CopyControl fail toast olib tashlansa tutilsin."""
     return _decision_broken(
@@ -3391,6 +3411,9 @@ _DECISIONS_SANDBOX_FILES = (
     # Vary Accept-Language at the edge (2026-09-20 HITL cf-transform).
     "tools/cf-vary-accept-language.json",
     "tools/cf_vary_apply.py",
+    # /problems guest CDN (2026-09-20 HITL problems-al).
+    "tools/cf-guest-cache-rule.json",
+    "tools/cf_guest_cache_apply.py",
     # pytest 9 + pytest-django 4.14 (2026-09-20): floors and lock.
     # Missing here, `check_decisions.py` exits 2.
     "apps/api/requirements-dev.txt",
@@ -5176,6 +5199,14 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "Vary bosh sahifani qamrasa tutilsin",
                 neg_decisions_vary_includes_home,
+            ),
+            (
+                "Worker problems* ro'yxatga qaytsa tutilsin",
+                neg_decisions_problems_worker_on_list,
+            ),
+            (
+                "arxiv uz majburiy bo'lsa tutilsin",
+                neg_decisions_problems_forced_uz,
             ),
             (
                 "copy fail toast olib tashlansa tutilsin",

@@ -1110,6 +1110,43 @@ def homepage_guest_cdn_cache() -> str | None:
     return None
 
 
+CF_GUEST_CACHE_RULE = "tools/cf-guest-cache-rule.json"
+CF_GUEST_CACHE_APPLY = "tools/cf_guest_cache_apply.py"
+
+
+def problems_list_guest_cdn() -> str | None:
+    """2026-09-20 HITL problems-al: `/problems` mehmon CDN, til majburiy emas.
+
+    Query'siz; `uz` force yo'q (`Vary: Accept-Language`). Worker `problems*`
+    kvotani yeydi — faqat `problems/*` (slug). CF Cache Rule `Eligible`.
+    """
+    src = read(HOME_CACHE)
+    if 'PROBLEMS_CACHE_PATH = "/problems"' not in src:
+        return f"{HOME_CACHE}: `/problems` kesh yo'li yo'q"
+    if "isLocaleAwareGuestCachePath" not in src:
+        return f"{HOME_CACHE}: tilga bog'liq kesh yo'li yo'q"
+    if "forceDefaultLocale: uzForced" not in src:
+        return f"{HOME_CACHE}: `/problems` ham `uz` majburiy — Vary foydasiz"
+    toml = read(WORKER_TOML)
+    if '{ pattern = "rankwant.uz/problems*"' in toml:
+        return f"{WORKER_TOML}: `problems*` ro'yxatni Worker kvotasiga qaytaradi"
+    if '{ pattern = "www.rankwant.uz/problems*"' in toml:
+        return f"{WORKER_TOML}: www `problems*` ro'yxatni Worker kvotasiga qaytaradi"
+    if '{ pattern = "rankwant.uz/problems/*"' not in toml:
+        return f"{WORKER_TOML}: slug sahifalari `problems/*` siz 503 yo'q"
+    spec = read(CF_GUEST_CACHE_RULE)
+    if 'path eq \\"/problems\\"' not in spec:
+        return f"{CF_GUEST_CACHE_RULE}: `/problems` Eligible emas — CF DYNAMIC"
+    if '"cache": true' not in spec:
+        return f"{CF_GUEST_CACHE_RULE}: cache true emas"
+    apply = read(CF_GUEST_CACHE_APPLY)
+    if "rankwant_guest_html_cache" not in apply:
+        return f"{CF_GUEST_CACHE_APPLY}: qoida ref i yo'q"
+    if "boshqa cache qoidalari saqlanadi" not in apply:
+        return f"{CF_GUEST_CACHE_APPLY}: butun ruleset o'chirilishi mumkin"
+    return None
+
+
 def guest_auth_cdn_cache() -> str | None:
     """50k: login/register/terms/privacy mehmon HTML + Worker tashqarida.
 
@@ -1766,6 +1803,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("?lang= self-canonical hreflang", lang_query_self_canonical),
     ("sitemap xhtml:link tillari", sitemap_locale_xhtml_alternates),
     ("Vary Accept-Language chekkada", vary_accept_language_at_edge),
+    ("arxiv ro'yxat mehmon CDN keshi", problems_list_guest_cdn),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),

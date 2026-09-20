@@ -87,11 +87,40 @@ describe("homeCacheDecision", () => {
       homeCacheDecision({ ...guestHome, search: "?lang=ru" }).cacheControl,
     ).toBeNull();
     expect(
-      homeCacheDecision({ ...guestHome, pathname: "/problems" }).cacheControl,
+      homeCacheDecision({ ...guestHome, pathname: "/problems", search: "?page=2" })
+        .cacheControl,
     ).toBeNull();
     expect(
       homeCacheDecision({ ...guestHome, method: "POST" }).cacheControl,
     ).toBeNull();
+  });
+
+  it("caches cookieless /problems in the request locale, not forced uz", () => {
+    const d = homeCacheDecision({ ...guestHome, pathname: "/problems" });
+    expect(d.cacheable).toBe(true);
+    expect(d.forceDefaultLocale).toBe(false);
+    expect(d.assignExperiments).toBe(false);
+    expect(d.cacheControl).toBe(HOME_CACHE_GUEST);
+  });
+
+  it("does not cache /problems?lang= — query stays off the CDN key", () => {
+    expect(
+      homeCacheDecision({
+        ...guestHome,
+        pathname: "/problems",
+        search: "?lang=ru",
+      }).cacheControl,
+    ).toBeNull();
+  });
+
+  it("does not cache a logged-in /problems list", () => {
+    const d = homeCacheDecision({
+      ...guestHome,
+      pathname: "/problems",
+      cookieHeader: `${SESSION_COOKIE}=abc123`,
+    });
+    expect(d.cacheable).toBe(false);
+    expect(d.cacheControl).toBe(HOME_CACHE_PRIVATE);
   });
 
   it("caches cookieless login and register tabs", () => {
