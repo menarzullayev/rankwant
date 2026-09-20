@@ -453,6 +453,13 @@ class TestPhasedReveal:
             # Stored counters (ADR-0024); `apps/web` has them in `User` too.
             "streak_max",
             "solved_count",
+            # CF ladder + social counters (ADR-0026 sync, ADR-0027 tiers).
+            # `ProfileCard.tsx` renders all four, so they are part of the
+            # public contract — this set is what keeps the web type honest.
+            "cf_title",
+            "cf_max_title",
+            "friend_count",
+            "title_photo_url",
             "date_joined",
             "ranks",
             "max_ratings",
