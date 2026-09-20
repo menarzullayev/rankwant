@@ -75,14 +75,17 @@ export function HoldButton({
   onConfirm: () => void;
 }) {
   const locale = useLocale();
+  const hint = t(locale, "kit.holdHint");
   const [pct, setPct] = useState(0);
+  const holding = pct > 0;
 
   return (
     <button
       type="button"
       disabled={disabled}
-      className={`rw-kit-hold${danger ? " is-danger" : ""}`}
-      data-tip={t(locale, "kit.holdHint")}
+      className={`rw-kit-hold${danger ? " is-danger" : ""}${holding ? " is-holding" : ""}`}
+      aria-label={`${label}. ${hint}`}
+      data-tip={hint}
       data-tip-kind="soft"
       onPointerDown={(event) => {
         if (disabled || event.button !== 0) return;
@@ -126,8 +129,14 @@ export function HoldButton({
         node.addEventListener("pointerleave", onUp);
       }}
     >
-      <span className="rw-kit-hold-bar" style={{ width: `${pct}%` }} />
+      <span className="rw-kit-hold-track" aria-hidden="true" />
+      <span
+        className="rw-kit-hold-bar"
+        style={{ width: `${pct}%` }}
+        aria-hidden="true"
+      />
       <span className="rw-kit-hold-lab">{label}</span>
+      <span className="rw-kit-hold-hint">{hint}</span>
     </button>
   );
 }

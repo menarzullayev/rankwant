@@ -59,6 +59,8 @@ describe("kit CSS", () => {
     expect(css).toContain('[data-kit-tabs="vertical"]');
     expect(css).toContain('[data-kit-check="switch"]');
     expect(css).toContain(".rw-kit-hold");
+    expect(css).toContain(".rw-kit-hold-hint");
+    expect(css).toContain(".rw-kit-hold-track");
     expect(css).toContain(".rw-kit-toast");
     expect(css).toContain('[data-kit-tip="flip"]');
     expect(css).toContain('[data-kit-tabs="badge"]');
@@ -82,6 +84,12 @@ describe("kit product surfaces", () => {
     );
     expect(src("../../src/components/admin/ArenaAdmin.tsx")).toContain(
       'kind: "hold"',
+    );
+    expect(src("../../src/components/kit/ConfirmExtras.tsx")).toContain(
+      "kit.holdHint",
+    );
+    expect(src("../../src/components/kit/ConfirmExtras.tsx")).toContain(
+      "rw-kit-hold-hint",
     );
     expect(src("../../src/components/admin/UsersAdmin.tsx")).toContain(
       'kind: "cmdk"',
