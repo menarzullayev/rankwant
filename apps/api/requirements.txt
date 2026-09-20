@@ -17,7 +17,7 @@ celery>=5.4
 django-cors-headers>=4.6
 gunicorn>=23
 whitenoise>=6.8
-boto3>=1.35
+boto3>=1.43.96
 # Sertifikat PDF va QR (ADR-0019). Production image faqat shu fayldan
 # (lock orqali) o'rnatiladi — dev'da qolib ketgan paket deployda yiqiladi.
 fpdf2>=2.8
