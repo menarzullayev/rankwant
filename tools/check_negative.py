@@ -3003,6 +3003,15 @@ def neg_decisions_deploy_gate_unwired() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_homepage_css_not_inlined() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/web/next.config.ts",
+        "inlineCss: true",
+        "inlineCss: false",
+        "bosh sahifa CSS inline",
+    )
+
+
 def neg_decisions_security_on_pr() -> tuple[bool, str]:
     return _decision_broken(
         ".github/workflows/security.yml",
@@ -3514,6 +3523,8 @@ _DECISIONS_SANDBOX_FILES = (
     "tools/reap_stale_worktrees.py",
     # restore-when-idle (2026-09-20 HITL). Missing here, `check_decisions.py` exits 2.
     "tools/restore_canonical.py",
+    # Homepage CSS inline (2026-09-20 HITL lh-inline-css).
+    "apps/web/next.config.ts",
 )
 
 
@@ -5635,6 +5646,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("sinov label'i boshqa workflow'da tutilsin", neg_decisions_trial_label_scoped),
             ("sandbox o'qilgan hamma faylni nusxalaydi", neg_decisions_sandbox_covers_reads),
             ("Security PR'da qaytsa tutilsin", neg_decisions_security_on_pr),
+            ("bosh sahifa CSS link'ga qaytsa tutilsin", neg_decisions_homepage_css_not_inlined),
             ("smoke PR'da qaytsa tutilsin", neg_decisions_smoke_on_pr),
             ("runner-2 profile tushsa tutilsin", neg_decisions_runner2_profile_dropped),
             ("panel holatni e'lon qilmasa tutilsin", neg_decisions_drawer_trigger_state_lost),
