@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useCustomizer } from "@/context/CustomizerContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { errorText, t } from "@/i18n/messages";
-import { passes, type AccentError } from "@/lib/theme/apply";
+import { accentGateKind, passes, type AccentError } from "@/lib/theme/apply";
 import { accentToHex, hexToAccent } from "@/lib/theme/color";
 import { Icon } from "@/components/ui/Icon";
 
@@ -22,6 +22,7 @@ export function AccentSection() {
 
   const trial = preview(hue, sat);
   const ok = passes(trial.button) && passes(trial.ink);
+  const gate = ok ? null : accentGateKind(trial);
   const current = appearance.accent
     ? preview(appearance.accent.hue, appearance.accent.sat)
     : trial;
@@ -132,11 +133,11 @@ export function AccentSection() {
       <div className="mt-3 space-y-1">
         <Indicator label={t(locale, "customizer.contrastButton")} ratio={trial.button} />
         <Indicator label={t(locale, "customizer.contrastText")} ratio={trial.ink} />
-        {!ok && (
+        {gate && (
           <p role="alert" className="rw-radius-sm rw-bad-soft px-2 py-1 text-theme-xs">
-            {trial.error === "ground_unreadable"
-              ? errorText(locale, "ground_unreadable", "")
-              : t(locale, "customizer.contrastBlocked")}
+            {gate === "aa"
+              ? t(locale, "customizer.contrastBlocked")
+              : errorText(locale, gate, "")}
           </p>
         )}
         {ok && failure && (

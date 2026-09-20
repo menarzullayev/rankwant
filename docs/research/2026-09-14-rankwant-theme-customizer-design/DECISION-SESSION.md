@@ -438,6 +438,7 @@ flag — nuqson topilsa modul bir tugma bilan o'chiriladi.
 | D49 | Shablon kit oilalarini ham identitetga oladi; apply tiklaydi |
 | D50 | Layout chrome shaxsiy; APP-8 rad — match/apply nav/size ni olmasin |
 | D51 | Kit oilalari Interfeysda 6 ta `SelectField`; chip devori yo'q |
+| D52 | Accent gate: AA matni faqat o'lchangan ratio da; APP-9 yopildi |
 
 ### D47 — mavzu ikki joyda saqlanmaydi (amalga oshirishda aniqlangan)
 
@@ -520,6 +521,16 @@ Yozuvchi D48: Interfeys. Boshqaruv: 50 chip → 6 tab stop (input).
 Variantlar listboxda, ochilmaguncha tab tartibida emas. Demo `inert`.
 
 Batafsil: [DECISION-51.md](./DECISION-51.md).
+
+### D52 — accent gate ikki xabar (2026-09-21)
+
+**Tanlov:** A — ikki xabar, Apply ikkalasida ham blok.
+`accentGateKind`: `ground_unreadable` / `contrast_unreachable` /
+`aa`. «Fails AA (4.5:1)» faqat o‘lchangan ratio da.
+
+APP-9 yopildi.
+
+Batafsil: [DECISION-52.md](./DECISION-52.md).
 
 ---
 

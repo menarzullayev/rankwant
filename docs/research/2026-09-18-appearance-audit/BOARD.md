@@ -3,7 +3,7 @@
 **Sana:** 2026-09-17 (UTC) / 2026-09-18 ~01:20–01:35 (Toshkent)  
 **Maqsad:** RankWant Appearance (customizer + Settings `/settings/korinish`) ni kod + live MCP da tekshirish.  
 **Muhit:** `https://rankwant.uz` · Chrome DevTools MCP · admin sessiya (`username=admin`)  
-**Holat:** APP-1 … APP-7, APP-13, APP-14 tuzatildi (#72, #69, #77, #81). APP-8 D50 da yopildi (rad — layout shaxsiy). Ochiq: APP-9.  
+**Holat:** APP-1 … APP-7, APP-13, APP-14 tuzatildi (#72, #69, #77, #81). APP-8 D50 da yopildi (rad). APP-9 D52 da yopildi. Ochiq yo‘q.  
 **Hisob tiklandi:** `style=glass`, `theme=dark`, `font=jakarta`, `density=comfortable`, `accent=null`.
 
 Bu hujjat boshqa agentga topshirish uchun. Live admin da **Reset** hisob ko‘rinishini jamoa standarti va `system` ga qaytaradi (#77) — test qilgach hisobni pastdagi baseline ga qaytar. `PATCH /me/` dagi 400 (`card` / `navMode` / `motion=off`) #69 da yopilgan.
@@ -185,12 +185,10 @@ Javob:
 - **Eski taklif:** taqqoslashga nav/card/pattern/fontHeading qo‘sh.
 - **Nima qilindi:** `TEMPLATE_LAYOUT_KEYS` + test; apply tiklamaydi.
 
-#### APP-9 · P3 · Accent xato matni o‘lchov yo‘qligini AA deb yozadi
+#### APP-9 · P3 · Accent xato matni o‘lchov yo‘qligini AA deb yozadi — YOPILDI (D52)
 
-- **Ta’sir:** Glass da ratio `—`, lekin matn «fails AA (4.5:1)».
-- **Fayl:** `Customizer.tsx` AccentSection — `!ok` ni bitta satrga yig‘adi; `AccentResult.error` `ground_unreadable` | `contrast_unreachable`.
-- **Tuzatish:** `error === "ground_unreadable"` uchun alohida i18n (APP-1 bilan).
-- **Tekshir:** o‘lchov yo‘q vs haqiqiy AA fail — ikki xil xabar.
+- **Qaror:** `accentGateKind` — `ground_unreadable` / `contrast_unreachable` mavjud `error.*` kalitlari; `customizer.contrastBlocked` faqat o‘lchangan ratio AA dan yiqilganda.
+- **Apply:** `!ok` da blok (o‘lchov yo‘q ham).
 
 #### APP-13 · P1 · Hisobdagi shablonlar yangi qurilmaga yuklanmaydi
 

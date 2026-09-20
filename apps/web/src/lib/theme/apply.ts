@@ -303,4 +303,16 @@ export function previewAccent(hue: number, sat: number): AccentResult {
  *  o'qib bo'lmagan qiymat "yaxshi" emas. */
 export const passes = (ratio: number | null) => ratio !== null && ratio >= AA_TARGET;
 
+/** D52: which gate sentence to show. «fails AA» only when a ratio exists. */
+export type AccentGateKind = AccentError | "aa";
+
+export function accentGateKind(
+  trial: Pick<AccentResult, "error" | "button" | "ink">,
+): AccentGateKind {
+  if (trial.error === "ground_unreadable") return "ground_unreadable";
+  if (trial.error === "contrast_unreachable") return "contrast_unreachable";
+  if (trial.button === null && trial.ink === null) return "ground_unreadable";
+  return "aa";
+}
+
 export { luminance };
