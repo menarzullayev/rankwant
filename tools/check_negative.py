@@ -5832,18 +5832,17 @@ def main(argv: list[str]) -> int:
         for label, _ in cases
     }
     skipped: list[str] = []
-    skip_node_cases = False
-    if selected & NODE_CASES:
-        if os.environ.get("NEGATIVE_SKIP_NODE") == "1":
-            skip_node_cases = True
-            skipped.append("node guruhi — Python-only tools, npm ci yo'q")
-        else:
-            reason = node_precondition()
-            if reason:
-                print(f"  ✕ {reason}")
-                print()
-                print("1/1 salbiy test YIQILDI — muhit tayyor emas, o'lchov yo'q.")
-                return 1
+    skip_node_cases = os.environ.get("NEGATIVE_SKIP_NODE") == "1"
+    if skip_node_cases:
+        skipped.append("node guruhi — Python-only tools, npm ci yo'q")
+        skipped.append("web_unit — Python-only tools, vitest yo'q")
+    elif selected & NODE_CASES:
+        reason = node_precondition()
+        if reason:
+            print(f"  ✕ {reason}")
+            print()
+            print("1/1 salbiy test YIQILDI — muhit tayyor emas, o'lchov yo'q.")
+            return 1
 
     # Monitor — WINDOWS darvozasi. Old shart mantig'i NODE bilan bir xil,
     # LEKIN yakuni boshqa: `powershell` faqat Windows'da bor, CI runner'i
@@ -5869,6 +5868,8 @@ def main(argv: list[str]) -> int:
 
     for checker, cases in CASES:
         if only and only != checker:
+            continue
+        if skip_node_cases and checker == "web_unit":
             continue
         if checker == "monitor" and any(row.startswith("monitor guruhi") for row in skipped):
             continue
@@ -5911,6 +5912,9 @@ def main(argv: list[str]) -> int:
         for row in failures:
             print(f"  - {row}")
         return 1
+    if total == 0:
+        print("Salbiy testlar: o'tkazib yuborildi — bu guruhda o'lchov yo'q")
+        return 0
     print(f"Salbiy testlar: {total}/{total} ✓ — har bir tekshiruv buzuq holatni tutdi")
     return 0
 
