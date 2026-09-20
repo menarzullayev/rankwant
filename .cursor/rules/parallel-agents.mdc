@@ -15,11 +15,14 @@ assign any kind of task to any free slot.
 
 1. Read `.agent/status/*` and `.agent/locks/*`.
 2. `git worktree list` and `gh pr list --repo menarzullayev/rankwant`.
-3. Write `manifests/<slot>.yml`, `tasks/<id>.md` with `owned_paths`, `status/<slot>.md`.
-4. For each glob: if a fresh lock exists, **stop**. Else write `OWNER`/`TASK`/`UNTIL`.
-5. Work only in `C:/Users/nsn/project/wt/<cursor|workbuddy|claude>/<topic>`.
-6. Stay inside `owned_paths`. One task, one branch, one PR.
-7. **no-star-star:** `owned_paths` must pass `tools/owned_paths.py`
+3. `python tools/restore_canonical.py` (HITL **restore-when-idle**): if
+   `cp/rankwant` is clean and unclaimed, fast-forward to `origin/main`. Never
+   `git reset --hard`.
+4. Write `manifests/<slot>.yml`, `tasks/<id>.md` with `owned_paths`, `status/<slot>.md`.
+5. For each glob: if a fresh lock exists, **stop**. Else write `OWNER`/`TASK`/`UNTIL`.
+6. Work only in `C:/Users/nsn/project/wt/<cursor|workbuddy|claude>/<topic>`.
+7. Stay inside `owned_paths`. One task, one branch, one PR.
+8. **no-star-star:** `owned_paths` must pass `tools/owned_paths.py`
    (`legal_owned_path`). Forbidden: `**`, `*`, `.`, `/`, one-segment
    directory globs (`apps/**`, `docs/**`). Directory globs need ≥2 segments
    (`apps/web/**`). Several packages on one task are allowed. Root files
