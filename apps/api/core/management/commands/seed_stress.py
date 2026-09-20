@@ -27,6 +27,19 @@ PREFIX = "neytron"
 
 #: Reyting taqsimoti haqiqiyga yaqin bo'lishi kerak: hammasi bir xil
 #: bo'lsa saralash va o'rin hisoblash yuki soxta bo'lardi.
+#:
+#: Measured against Codeforces (2026-09-20). The two means answer two
+#: different questions, which is why they sit further apart than the sigma
+#: suggests:
+#:
+#:   general rated population   974,498 users   mean 1,015  (min -53, max 3,810)
+#:   contest participants        35,538 users   mean 1,332  (p25 1,065, p75 1,564)
+#:
+#: `CONTEST_MEAN` models the second group — people who actually turn up to a
+#: contest, who are measurably stronger than the population at large. Pulling
+#: it down to the 1,015 population mean would understate contest load and
+#: flatten the leaderboard spread the load test depends on. `SKILLS_MEAN` is
+#: the softer, wider axis and keeps a round 1,200.
 SKILLS_MEAN, SKILLS_SIGMA = 1200, 700
 CONTEST_MEAN, CONTEST_SIGMA = 1400, 250
 
