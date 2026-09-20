@@ -2107,6 +2107,42 @@ def judge_latency_gate_is_nightly() -> str | None:
     return None
 
 
+def security_boundary_is_loopback_only() -> str | None:
+    """Chegara: hamma port loopback'da, judge hech narsa nashr etmaydi.
+
+    `tools/deploy.sh` zanjiri `docker-compose.yml` + `docker-compose.public.yml`.
+    Overlay `ports: !reset []` bilan bazaviy portni **o'chiradi** — shuning
+    uchun bazaviy faylni yolg'iz o'qish MinIO'ni «9000:9000 da ochiq» deb
+    ko'rsatadi, aslida unday emas (o'lchandi 2026-09-21: `curl
+    127.0.0.1:9000/minio/health/live` → `HTTP 000`, `docker ps` → `9000/tcp`
+    nashrsiz). Bu xato bir marta qilingan; qoida uni jimgina qaytarishning
+    oldini oladi.
+
+    ⚠️ Bu — QO'RIGCHI, o'lchov emas. To'liq tahlil (zanjirni birlashtirib
+    haqiqiy port to'plamini hisoblash) `tools/check_security_boundary.py` da
+    va o'sha CI job yurgizadi. Bu yerda uchta narsa tekshiriladi, chunki
+    ularning har biri alohida jimgina yo'qolishi mumkin: darvoza CI'ga
+    ulanganmi, overlay hali ham portlarni o'chiradimi, judge port e'lon
+    qilmaganmi.
+
+    Sana: 2026-09-21 — egasi «chegara bayonoti + dalillar to'plami» ni tanladi
+    (audit oldidan). Yozuv: `docs/research/2026-09-21-security-boundary/`.
+    """
+    if "python3 tools/check_security_boundary.py" not in read(".github/workflows/ci.yml"):
+        return ".github/workflows/ci.yml: chegara tekshiruvi CI'ga ulanmagan"
+    overlay = read("docker-compose.public.yml")
+    if overlay.count("ports: !reset []") < 3:
+        return "docker-compose.public.yml: `!reset []` kamaygan — bazaviy portlar qaytadi"
+    if "ports: !override ['127.0.0.1:" not in overlay:
+        return "docker-compose.public.yml: loopback `!override` yo'q"
+    judge = re.search(r"^  judge:\n(.*?)(?=^\w)", read("docker-compose.yml"), re.S | re.M)
+    if judge is None:
+        return "docker-compose.yml: `judge` servisi topilmadi"
+    if re.search(r"^    ports:", judge.group(1), re.M):
+        return "docker-compose.yml: judge port nashr etadi — 06-architecture: kiruvchi port yo'q"
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -2161,6 +2197,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("login yupqa auth.css", login_uses_narrow_auth_css),
     ("Security run o'chiq", security_run_is_disabled),
     ("judge latency Nightly'da", judge_latency_gate_is_nightly),
+    ("chegara faqat loopback", security_boundary_is_loopback_only),
 ]
 
 
