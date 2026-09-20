@@ -441,6 +441,7 @@ flag — nuqson topilsa modul bir tugma bilan o'chiriladi.
 | D52 | Accent gate: AA matni faqat o'lchangan ratio da; APP-9 yopildi |
 | D53 | Interfeys layout chip qoladi; kit SelectField (D51) |
 | D54 | Import file input `aria-hidden`; tugma ochadi |
+| D55 | Live verify: web hali `f4f9099` (D49); bake compose-dirty gate da |
 
 ### D47 — mavzu ikki joyda saqlanmaydi (amalga oshirishda aniqlangan)
 
@@ -545,6 +546,21 @@ Batafsil: [DECISION-53.md](./DECISION-53.md).
 **Tanlov:** B. `aria-hidden` + labeled Import tugmasi. Native empty-state yo'q.
 
 Batafsil: [DECISION-54.md](./DECISION-54.md).
+
+### D55 — live verify (2026-09-21)
+
+**Tanlov:** B — bake’dan keyin live verify.
+
+**O‘lchandi:** jonli web `f4f9099` (D49, `2026-09-20T23:28:13Z`).
+`origin/main` = `2fd1e3d`. Interfeysda 50 kit chip, 0 SelectField;
+Import native Choose File. D51–D54 obrazda yo‘q.
+
+**Bake to‘siq:** `check_deploy_gate.py` —
+`wt/workbuddy/adminer-declared: ?? docker-compose.tools.yml`.
+Main CI yashil; scope `web`; watcher har daqiqa drift yozadi va
+darvozada chiqadi.
+
+Batafsil: [DECISION-55.md](./DECISION-55.md).
 
 ---
 
