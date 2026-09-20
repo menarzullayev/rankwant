@@ -71,20 +71,16 @@ export default function AppFooter() {
                 t.me/rankwant
               </a>
             </li>
-            <li>
-              <a
-                href={`mailto:${CONTACT_EMAIL}`}
-                className="rw-focus-ring hover:underline"
-                // Cloudflare Email Address Obfuscation injects High-priority
-                // `/cdn-cgi/scripts/.../email-decode.min.js` when it sees a
-                // raw address. The address is already public (HITL). Wrapping
-                // it in CF's `email_off` comments keeps the mailto and drops
-                // the script (AFTER-09: 1 KiB High + /cdn-cgi/rum).
-                dangerouslySetInnerHTML={{
-                  __html: `<!--email_off-->${CONTACT_EMAIL}<!--email_on-->`,
-                }}
-              />
-            </li>
+            <li
+              // CF rewrites mailto on the <a> itself. email_off/on comments
+              // must wrap the whole tag — wrapping only the text left
+              // email-decode in place (measured live 2026-09-20, #198):
+              // href became /cdn-cgi/l/email-protection.
+              dangerouslySetInnerHTML={{
+                __html:
+                  `<!--email_off--><a href="mailto:${CONTACT_EMAIL}" class="rw-focus-ring hover:underline">${CONTACT_EMAIL}</a><!--email_on-->`,
+              }}
+            />
           </ul>
         </div>
       </div>
