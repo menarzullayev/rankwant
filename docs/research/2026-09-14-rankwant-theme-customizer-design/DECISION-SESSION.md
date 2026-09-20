@@ -437,6 +437,7 @@ flag — nuqson topilsa modul bir tugma bilan o'chiriladi.
 | D48 | Kit oilalarini musobaqachi Interfeys yozadi; `/admin/kit` namuna |
 | D49 | Shablon kit oilalarini ham identitetga oladi; apply tiklaydi |
 | D50 | Layout chrome shaxsiy; APP-8 rad — match/apply nav/size ni olmasin |
+| D51 | Kit oilalari Interfeysda 6 ta `SelectField`; chip devori yo'q |
 
 ### D47 — mavzu ikki joyda saqlanmaydi (amalga oshirishda aniqlangan)
 
@@ -509,6 +510,16 @@ APP-8 (nav/card ni matchga qo‘sh) **rad**.
 → layout saqlanadi.
 
 Batafsil: [DECISION-50.md](./DECISION-50.md).
+
+### D51 — kit oilalari select (2026-09-21)
+
+**Tanlov:** B — 6 labeled select. Native `<select>` emas: `SelectField`
+(`Dropdown` / Combobox) — qorong'i mavzuda OS paneli oq chiqadi.
+
+Yozuvchi D48: Interfeys. Boshqaruv: 50 chip → 6 tab stop (input).
+Variantlar listboxda, ochilmaguncha tab tartibida emas. Demo `inert`.
+
+Batafsil: [DECISION-51.md](./DECISION-51.md).
 
 ---
 

@@ -2,7 +2,7 @@
 
 **STATUS:** shipped (2026-09-14)
 
-Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D50).
+Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D51).
 Entry points: the header icon, a floating tab on desktop, `Ctrl+.`, and
 `/settings/korinish`.
 
@@ -29,9 +29,10 @@ Layout chrome (`navMode`, `navShape`, `card`, `pattern`, `fontHeading`,
 `size`, `scale`, `lineHeight`, `tracking`, `width`) stays personal (D50)
 — applying Klassik does not steal the sidenav.
 
-Measured 2026-09-21 on `806bdd7`: Interfeys exposes **50** kit-family chips
-(11 + 11 + 10 + 4 + 5 + 9). Closed accordion groups unmount (CUST-100), so
-those chips leave the tab order until Interfeys is opened.
+Measured 2026-09-21: kit families were **50 chips**; D51 replaced them with
+**six** `SelectField` controls (one tab stop each). Native `<select>` is
+not used — the OS list paints white in dark mode. Closed accordion groups
+still unmount (CUST-100).
 
 ## The colour model
 
