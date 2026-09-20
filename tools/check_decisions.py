@@ -1459,6 +1459,26 @@ def eslint_ten_uses_ts_parser() -> str | None:
     return None
 
 
+def pytest_nine_and_django_plugin() -> str | None:
+    """2026-09-20 HITL: pytest ≥9.1.1 va pytest-django ≥4.14 birga.
+
+    Lock allaqachon 9.1.1 / 4.14.0 edi; floor `>=8` / `>=4.9` qolsa
+    `uv pip compile` pytest 8 ga qaytishi mumkin. pytest-django 4.14
+    pytest 9 uchun; 4.9 yetarli emas.
+    """
+    floors = read("apps/api/requirements-dev.txt")
+    if not re.search(r"(?m)^pytest>=9\.1\.1$", floors):
+        return "apps/api/requirements-dev.txt: pytest floor 9.1.1 emas"
+    if not re.search(r"(?m)^pytest-django>=4\.14\.0$", floors):
+        return "apps/api/requirements-dev.txt: pytest-django floor 4.14.0 emas"
+    lock = read("apps/api/requirements-dev.lock")
+    if not re.search(r"(?m)^pytest==9\.", lock):
+        return "apps/api/requirements-dev.lock: pytest 9.x emas"
+    if not re.search(r"(?m)^pytest-django==4\.14\.", lock):
+        return "apps/api/requirements-dev.lock: pytest-django 4.14 emas"
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -1491,6 +1511,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("@types/node runtime bilan", types_node_tracks_runtime),
     ("tanlangan kit muzlatilgan", selected_kit_frozen),
     ("ESLint 10 typescript parser", eslint_ten_uses_ts_parser),
+    ("pytest 9 va pytest-django 4.14", pytest_nine_and_django_plugin),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),
