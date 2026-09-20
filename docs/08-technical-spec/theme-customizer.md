@@ -2,7 +2,7 @@
 
 **STATUS:** shipped (2026-09-14)
 
-Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D54).
+Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D55).
 Entry points: the header icon, a floating tab on desktop, `Ctrl+.`, and
 `/settings/korinish`.
 
@@ -34,6 +34,13 @@ Measured 2026-09-21: kit families were **50 chips**; D51 replaced them with
 not used — the OS list paints white in dark mode. Closed accordion groups
 still unmount (CUST-100). Layout families (`navMode`, `navShape`, `card`,
 `pattern`) stay chips (D53) — two to five options, not a catalogue.
+
+Live verify (D55, guest `https://rankwant.uz`, 2026-09-21): the running
+web image is still `f4f9099` (D49). Interfeys still shows the 50-chip
+kit wall. Auto Deploy sees the drift (`2fd1e3d`) but
+`check_deploy_gate.py` refuses because another worktree has an untracked
+`docker-compose.tools.yml`. D51–D54 are on `main`, not on the live
+container.
 
 ## The colour model
 
