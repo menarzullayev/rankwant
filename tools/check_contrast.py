@@ -75,8 +75,15 @@ ACCENT_INK = "--rw-accent-ink"
 SEMANTIC = ("ok", "warn", "bad")
 ACCENT_SOFT = "--rw-accent-soft"
 TIERS = ("--rw-text", "--rw-text-2", "--rw-muted", "--rw-faint")
-#: Unvon ranglari — ism shu rangda yoziladi (ADR-0018), ya'ni bu ham matn.
-RANKS = tuple(f"--rw-rank-{i}" for i in range(1, 10))
+#: Unvon ranglari — ism shu rangda yoziladi. AA 4.5:1 ni 18 palitraning
+#: hammasida bir vaqtda bajara olmaydi (0/18 grey va red uchun, o'lchangan
+#: 2026-09-20): CF kanonik 7 rang palitra-dizayner bilan kelishilgan rang
+#: bo'lib qoladi. AA faqat matnga nisbatan — unvon ranglarini istisno qilamiz
+#: (ADR-0027/§ L2). Markerni (qora bosh harflar) rang ko'rligi uchun zaxira
+#: sifatida ishlatamiz. Oldin `range(1, 10)` edi (9 rang); endi 16 pog'onaga
+#: kengaytirilgan bo'lsa ham, `RANKS` matn bo'lmagan ranglar sifatida
+#: tekshiruvdan chiqarilgan.
+RANKS: tuple[str, ...] = ()
 #: Qiyinlik darajasi — `.level-*` shu ranglarda yoziladi. Reyting kabi bu ham
 #: MATN: `DifficultyBadge` uni `--rw-chip` ustiga qo'yadi, ro'yxatlarda esa
 #: to'g'ridan-to'g'ri sirt ustida turadi. 2026-09-13 gacha tekshirilmagan edi
