@@ -3,6 +3,8 @@
 **STATUS:** draft (2026-09-06) — siyosatlar yozilgan.
 ✅ **Runbook yozildi (2026-09-16):** [deploy-runbook.md](deploy-runbook.md) —
 migration tartibi, env kalitlari, ma'lum xatolar, reboot va zaxira.
+✅ **AOP (2026-09-20):** [parallel-agents.md](parallel-agents.md) — 3 Cursor +
+2 WorkBuddy + boshqa agentlar: isolated worktree, port jadvali, `.agent/` bus.
 
 Nima **hozir** bilinadi: deploy topologiyasi, siyosatlar va incident turlari — ular arxitektura va ADR'lardan kelib chiqadi.
 Nima **hali bilinmaydi**: hosting provayderi, real narxlar.
