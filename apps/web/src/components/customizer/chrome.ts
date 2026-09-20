@@ -16,6 +16,9 @@ export const KIT_FAMILY_KEYS = [
 ] as const;
 export type KitFamilyKey = (typeof KIT_FAMILY_KEYS)[number];
 
+/** D53: Interfeys layout families stay chips (2–5 options). Kit is SelectField. */
+export const LAYOUT_CHIP_KEYS = ["navMode", "navShape", "card", "pattern"] as const;
+
 export const DENSITIES = ["compact", "comfortable", "spacious"] as const;
 
 export const SWATCHES: { hue: number; sat: number; nameKey: MessageKey }[] = [
