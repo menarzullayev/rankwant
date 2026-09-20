@@ -1,7 +1,7 @@
 export const TABS = ["appearance", "a11y"] as const;
 export type TabId = (typeof TABS)[number];
 
-/** WAI-ARIA tablist: arrows, Home, and End move the selection. */
+/** WAI-ARIA tablist: arrows, Home, and End move and activate the tab. */
 export function nextTab(current: TabId, key: string): TabId | null {
   const i = TABS.indexOf(current);
   if (i < 0) return null;
