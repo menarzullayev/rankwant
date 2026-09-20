@@ -1,13 +1,10 @@
 name: Security
 
 on:
-  # Not on PR (2026-09-18): every PR ran a CI+Security pair and doubled
-  # the single-runner queue. gitleaks / pip / npm audit stay on main
-  # push and overnight.
-  push:
-    branches: [main]      # no branch protection (private + free plan) — main is scanned too
-  schedule:
-    - cron: '0 3 * * *'
+  # 2026-09-21: Security run ishlamasin (owner). Avtomatik push/cron
+  # o'chirilgan; job `if: false`. Fayl saqlanadi — qayta yoqish qo'lda.
+  # PR trigger 2026-09-18 dan beri yo'q (navbatni ikki barobar qilardi).
+  workflow_dispatch:
 
 # The self-hosted runner runs as user `nsn` on the development machine
 # and can see Python packages in `~/.local/lib/.../site-packages`.
@@ -32,6 +29,7 @@ jobs:
   # of work became 3 minutes.
   audit:
     name: Security checks
+    if: false
     runs-on: ubuntu-latest
     # ⚠️ The time limit is REQUIRED: nothing on the self-hosted runner
     # may wait forever. 3 minutes is enough (measured: ~43 s + pip/npm
