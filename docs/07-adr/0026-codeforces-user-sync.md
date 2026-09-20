@@ -178,8 +178,8 @@ taxallus olishni boshlardi va u URL/`@`eslatma/terminal chiqishida muammo bo'lar
 
 Egasi maydonlarni **API'ga chiqarishni** tanladi («hammasini chiqarish»,
 2026-09-19). Ammo bu yerda **ziddiyat** topildi va u ADR darajasida hal
-qilindi: RankWant'ning **o'z unvon tizimi** bor (ADR-0018) va u
-`rating_contest` dan **hisoblanadi** (`kvark`…`galaktika`, 9 daraja),
+qilindi: RankWant'ning **o'z unvon tizimi** bor (ADR-0027) va u
+`rating_contest` dan **hisoblanadi** (`quark`…`cosmos`, 16 daraja),
 Codeforces'niki esa **saqlanadi** (`newbie`…`legendary grandmaster`,
 10 daraja). Ikkisi bir xil `title` nomi bilan chiqsa frontend qaysi
 birini chizishini bilmay qolardi va ism rangi buzilardi.
@@ -256,7 +256,7 @@ chaqiradi. Ya'ni serializer'ga maydon qo'shish profil sahifasiga
 | `apps/web/src/components/profile/ProfileCard.tsx` | daraja nishoni + banner |
 | `apps/web/src/i18n/locales/*.ts` | 14 yangi kalit × 10 til |
 
-**Ikki tizim bir varaqda:** RankWant unvoni (`title`, 9 daraja,
+**Ikki tizim bir varaqda:** RankWant unvoni (`title`, 16 daraja,
 `rw-rank-N` rang) — yuqorida, mavjud joyida. Manba darajasi (10 daraja,
 Codeforces kanonik rangi) — pastda, alohida blok. Rang va nom **boshqa**,
 shuning uchun chalkashmaydi.
