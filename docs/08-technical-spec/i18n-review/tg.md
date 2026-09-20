@@ -1009,6 +1009,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `geo.nudgeCta` | To'ldirish | Пур кардан |  |
 | `geo.searchPlaceholder` | Mamlakat qidirish | Ҷустуҷӯи кишвар |  |
 | `geo.noResults` | Topilmadi | Ёфт нашуд |  |
+| `dropdown.search` | Qidirish | Ҷустуҷӯ |  |
 | `locale.switchLabel` | Tilni tanlang | Забонро интихоб кунед |  |
 | `locale.auto` | Avtomatik | Худкор |  |
 | `locale.autoDetected` | Avtomatik ({language}) | Худкор ({language}) |  |

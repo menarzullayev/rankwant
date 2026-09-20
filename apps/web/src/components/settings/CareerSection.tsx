@@ -103,20 +103,20 @@ function RowsCard<T extends CareerRow>({
                   <Select
                     label={t(locale, "settings.startMonth")}
                     name={`${path}-${i}-start_month`}
-                    value={row.start_month ?? ""}
-                    onChange={(event) =>
+                    value={row.start_month ? String(row.start_month) : ""}
+                    onChange={(next) =>
                       patch(i, {
-                        start_month: event.target.value ? Number(event.target.value) : null,
+                        start_month: next ? Number(next) : null,
                       } as Partial<T>)
                     }
-                  >
-                    <option value="">{t(locale, "settings.notChosen")}</option>
-                    {Array.from({ length: 12 }, (_, month) => (
-                      <option key={month + 1} value={month + 1}>
-                        {monthLabel(month + 1, locale)}
-                      </option>
-                    ))}
-                  </Select>
+                    options={[
+                      { value: "", label: t(locale, "settings.notChosen") },
+                      ...Array.from({ length: 12 }, (_, month) => ({
+                        value: String(month + 1),
+                        label: monthLabel(month + 1, locale),
+                      })),
+                    ]}
+                  />
                   <Field
                     label={t(locale, "settings.endYear")}
                     name={`${path}-${i}-end_year`}
@@ -135,21 +135,21 @@ function RowsCard<T extends CareerRow>({
                   <Select
                     label={t(locale, "settings.endMonth")}
                     name={`${path}-${i}-end_month`}
-                    value={row.current ? "" : (row.end_month ?? "")}
+                    value={row.current ? "" : row.end_month ? String(row.end_month) : ""}
                     disabled={row.current}
-                    onChange={(event) =>
+                    onChange={(next) =>
                       patch(i, {
-                        end_month: event.target.value ? Number(event.target.value) : null,
+                        end_month: next ? Number(next) : null,
                       } as Partial<T>)
                     }
-                  >
-                    <option value="">{t(locale, "settings.notChosen")}</option>
-                    {Array.from({ length: 12 }, (_, month) => (
-                      <option key={month + 1} value={month + 1}>
-                        {monthLabel(month + 1, locale)}
-                      </option>
-                    ))}
-                  </Select>
+                    options={[
+                      { value: "", label: t(locale, "settings.notChosen") },
+                      ...Array.from({ length: 12 }, (_, month) => ({
+                        value: String(month + 1),
+                        label: monthLabel(month + 1, locale),
+                      })),
+                    ]}
+                  />
                   <div className="sm:col-span-2">
                     <Check
                       label={t(locale, "settings.toPresent")}

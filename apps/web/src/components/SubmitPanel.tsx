@@ -15,6 +15,7 @@ import {
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { Dropdown } from "@/components/ui/Dropdown";
 import { Loading } from "@/components/ui/Loading";
 import { Status } from "@/components/ui/Status";
 import { Verdict } from "@/components/ui/Verdict";
@@ -396,18 +397,18 @@ export default function SubmitPanel({
       <Card
         title={t(locale, "submit.solution")}
         action={
-          <select
+          <Dropdown
+            size="sm"
+            hideLabel
+            label={t(locale, "attempts.language")}
             value={language}
-            onChange={(e) => pickLanguage(e.target.value)}
-            aria-label={t(locale, "attempts.language")}
-            className="h-9 rw-radius-sm border rw-line rw-field-bg px-3 text-theme-sm rw-strong rw-focus-line"
-          >
-            {languages.map((l) => (
-              <option key={l.code} value={l.code}>
-                {l.name} {l.version}
-              </option>
-            ))}
-          </select>
+            onChange={pickLanguage}
+            options={languages.map((l) => ({
+              value: l.code,
+              label: `${l.name} ${l.version}`,
+            }))}
+            className="w-44"
+          />
         }
         bodyClassName="space-y-3"
       >

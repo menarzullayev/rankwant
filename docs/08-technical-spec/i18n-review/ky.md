@@ -1009,6 +1009,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `geo.nudgeCta` | To'ldirish | Толтуруу |  |
 | `geo.searchPlaceholder` | Mamlakat qidirish | Өлкө издөө |  |
 | `geo.noResults` | Topilmadi | Табылган жок |  |
+| `dropdown.search` | Qidirish | Издөө |  |
 | `locale.switchLabel` | Tilni tanlang | Тилди тандаңыз |  |
 | `locale.auto` | Avtomatik | Автоматтык |  |
 | `locale.autoDetected` | Avtomatik ({language}) | Автоматтык ({language}) |  |

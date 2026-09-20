@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -9,7 +9,7 @@ import { Field } from "@/components/ui/Field";
 import { Icon } from "@/components/ui/Icon";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t } from "@/i18n/messages";
+import { t, type MessageKey } from "@/i18n/messages";
 import {
   patchJson,
   type Gender,
@@ -140,15 +140,15 @@ function DetailsCard() {
               label={t(locale, "settings.region")}
               name="region"
               defaultValue={regionDefault}
-              onChange={(event) => setRegion(event.target.value)}
-            >
-              <option value="">{t(locale, "settings.notChosen")}</option>
-              {REGION_CODES.map((code) => (
-                <option key={code} value={code}>
-                  {regionName(code, locale)}
-                </option>
-              ))}
-            </Select>
+              onChange={setRegion}
+              options={[
+                { value: "", label: t(locale, "settings.notChosen") },
+                ...REGION_CODES.map((code) => ({
+                  value: code,
+                  label: regionName(code, locale),
+                })),
+              ]}
+            />
           ) : (
             <Field
               key="other"
@@ -167,23 +167,20 @@ function DetailsCard() {
                   label={t(locale, "settings.district")}
                   name="district"
                   defaultValue={districtDefault}
-                >
-                  <option value="">{t(locale, "settings.notChosen")}</option>
-                  {[
-                    { key: "settings.districts", rows: districts.filter((row) => !row.city) },
-                    { key: "settings.cities", rows: districts.filter((row) => row.city) },
-                  ]
-                    .filter((group) => group.rows.length > 0)
-                    .map((group) => (
-                      <optgroup key={group.key} label={t(locale, group.key)}>
-                        {group.rows.map((row) => (
-                          <option key={row.code} value={row.code}>
-                            {row.name}
-                          </option>
-                        ))}
-                      </optgroup>
-                    ))}
-                </Select>
+                  options={[
+                    { value: "", label: t(locale, "settings.notChosen") },
+                    ...[
+                      { key: "settings.districts" as const, rows: districts.filter((row) => !row.city) },
+                      { key: "settings.cities" as const, rows: districts.filter((row) => row.city) },
+                    ].flatMap((group) =>
+                      group.rows.map((row) => ({
+                        value: row.code,
+                        label: row.name,
+                        group: t(locale, group.key),
+                      })),
+                    ),
+                  ]}
+                />
               )
             : currentCountry && (
                 <Field
@@ -207,26 +204,24 @@ function DetailsCard() {
             {visibility("school")}
           </div>
           <div className="space-y-2">
-            <Select label={t(locale, "settings.grade")} name="grade" defaultValue={user.grade}>
-              <option value="">{t(locale, "settings.notChosen")}</option>
-              {user.grade && !isGradeCode(user.grade) && (
-                <option value={user.grade}>{user.grade}</option>
-              )}
-              {GRADE_GROUPS.map((group) => {
-                const options = group.codes.map((code) => (
-                  <option key={code} value={code}>
-                    {gradeLabel(code, locale)}
-                  </option>
-                ));
-                return group.key ? (
-                  <optgroup key={group.key} label={t(locale, group.key)}>
-                    {options}
-                  </optgroup>
-                ) : (
-                  <Fragment key="rest">{options}</Fragment>
-                );
-              })}
-            </Select>
+            <Select
+              label={t(locale, "settings.grade")}
+              name="grade"
+              defaultValue={user.grade}
+              options={[
+                { value: "", label: t(locale, "settings.notChosen") },
+                ...(user.grade && !isGradeCode(user.grade)
+                  ? [{ value: user.grade, label: user.grade }]
+                  : []),
+                ...GRADE_GROUPS.flatMap((group) =>
+                  group.codes.map((code) => ({
+                    value: code,
+                    label: gradeLabel(code, locale),
+                    group: group.key ? t(locale, group.key) : undefined,
+                  })),
+                ),
+              ]}
+            />
             {visibility("grade")}
           </div>
           <div className="space-y-2">
@@ -235,14 +230,14 @@ function DetailsCard() {
               name="gender"
               defaultValue={user.gender}
               hint={t(locale, "settings.genderHint")}
-            >
-              <option value="">{t(locale, "settings.notChosen")}</option>
-              {GENDERS.map((value) => (
-                <option key={value} value={value}>
-                  {t(locale, `settings.gender.${value}`)}
-                </option>
-              ))}
-            </Select>
+              options={[
+                { value: "", label: t(locale, "settings.notChosen") },
+                ...GENDERS.map((value) => ({
+                  value,
+                  label: t(locale, `settings.gender.${value}` as MessageKey),
+                })),
+              ]}
+            />
             {visibility("gender", t(locale, "settings.showGender"))}
           </div>
           <div className="space-y-2 sm:col-span-2">
@@ -311,26 +306,20 @@ function DetailsCard() {
             name="shirt_size"
             defaultValue={user.shirt_size}
             hint={t(locale, "settings.shirtSizeHint")}
-          >
-            <option value="">{t(locale, "settings.notChosen")}</option>
-            {SHIRT_SIZES.map((size) => (
-              <option key={size} value={size}>
-                {size}
-              </option>
-            ))}
-          </Select>
+            options={[
+              { value: "", label: t(locale, "settings.notChosen") },
+              ...SHIRT_SIZES.map((size) => ({ value: size, label: size })),
+            ]}
+          />
           <Select
             label={t(locale, "settings.shirtSizeEu")}
             name="shirt_size_eu"
             defaultValue={user.shirt_size_eu}
-          >
-            <option value="">{t(locale, "settings.notChosen")}</option>
-            {SHIRT_EU.map((size) => (
-              <option key={size} value={size}>
-                {size}
-              </option>
-            ))}
-          </Select>
+            options={[
+              { value: "", label: t(locale, "settings.notChosen") },
+              ...SHIRT_EU.map((size) => ({ value: size, label: size })),
+            ]}
+          />
         </div>
 
         {user.email && visibility("email", t(locale, "settings.showEmail"))}

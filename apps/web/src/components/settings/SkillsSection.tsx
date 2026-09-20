@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { Dropdown } from "@/components/ui/Dropdown";
 import { Field } from "@/components/ui/Field";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { ContentName, contentNameText } from "@/components/ui/UzFallbackBadge";
@@ -117,26 +118,21 @@ function SkillsCard() {
             ))}
           </ul>
           {free.length > 0 && rows.length < MAX_ROWS && (
-            <label className="mt-4 block max-w-xs">
-              <span className="sr-only">{t(locale, "settings.skillAdd")}</span>
-              <select
+            <div className="mt-4 max-w-xs">
+              <Dropdown
+                hideLabel
+                label={t(locale, "settings.skillAdd")}
                 value=""
-                onChange={(event) =>
-                  event.target.value &&
-                  setEdited([...rows, { skill: event.target.value, level: 50 }])
-                }
-                className="h-11 w-full rw-radius-sm border rw-line px-3 text-theme-sm rw-strong rw-field-bg rw-focus-ring"
-              >
-                <option value="">{t(locale, "settings.skillAdd")}</option>
-                {free.map((s) => (
-                  <option key={s.slug} value={s.slug}>
-                    {/* Native `<option>` ichida JSX yo'q — belgi matn
-                        qo'shimchasi sifatida qo'shiladi. */}
-                    {contentNameText(s, locale)}
-                  </option>
-                ))}
-              </select>
-            </label>
+                onChange={(slug) => {
+                  if (slug) setEdited([...rows, { skill: slug, level: 50 }]);
+                }}
+                options={free.map((s) => ({
+                  value: s.slug,
+                  label: contentNameText(s, locale),
+                }))}
+                placeholder={t(locale, "settings.skillAdd")}
+              />
+            </div>
           )}
           <div className="mt-4 flex flex-wrap items-center gap-3">
             <Button busy={action.busy} disabled={edited === null} onClick={save}>
@@ -298,14 +294,9 @@ function BadgesCard() {
                       label={t(locale, "settings.badgeIcon")}
                       name={`badge-${i}-icon`}
                       value={row.icon}
-                      onChange={(event) => patch(i, { icon: event.target.value })}
-                    >
-                      {ICONS.map((slug) => (
-                        <option key={slug} value={slug}>
-                          {slug}
-                        </option>
-                      ))}
-                    </Select>
+                      onChange={(icon) => patch(i, { icon })}
+                      options={ICONS.map((slug) => ({ value: slug, label: slug }))}
+                    />
                     <Field
                       label={t(locale, "settings.badgeColor")}
                       name={`badge-${i}-color`}

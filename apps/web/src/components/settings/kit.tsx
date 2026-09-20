@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { Dropdown, type DropdownOption } from "@/components/ui/Dropdown";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { errorText, t, type Locale } from "@/i18n/messages";
 import { ApiError, getJson } from "@/lib/api";
@@ -144,29 +145,36 @@ export function TextArea({
 export function Select({
   label,
   hint,
-  leading,
-  children,
-  ...props
-}: React.SelectHTMLAttributes<HTMLSelectElement> & {
+  options,
+  value,
+  defaultValue,
+  onChange,
+  name,
+  disabled,
+  placeholder,
+}: {
   label: string;
   hint?: string;
-  /** Maydon CHAPIDAGI element — mamlakat bayrog'i uchun (native
-   *  `<select>` ichida SVG ko'rinmaydi, shuning uchun yonida turadi). */
-  leading?: React.ReactNode;
+  options: readonly DropdownOption[];
+  value?: string;
+  defaultValue?: string;
+  onChange?: (value: string) => void;
+  name?: string;
+  disabled?: boolean;
+  placeholder?: string;
 }) {
   return (
-    <label className="block">
-      <span className="mb-1.5 block text-theme-sm font-medium rw-strong">
-        {label}
-      </span>
-      <span className="flex items-center gap-2">
-        {leading}
-        <select className={`${CONTROL} h-11 min-w-0 flex-1 px-3`} {...props}>
-          {children}
-        </select>
-      </span>
-      {hint && <span className="mt-1.5 block text-theme-xs rw-dim">{hint}</span>}
-    </label>
+    <Dropdown
+      label={label}
+      hint={hint}
+      options={options}
+      value={value}
+      defaultValue={defaultValue}
+      onChange={onChange}
+      name={name}
+      disabled={disabled}
+      placeholder={placeholder}
+    />
   );
 }
 

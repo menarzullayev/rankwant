@@ -1001,6 +1001,7 @@ export const ru: Record<MessageKey, string> = {
   "geo.nudgeCta": "Заполнить",
   "geo.searchPlaceholder": "Поиск страны",
   "geo.noResults": "Ничего не найдено",
+  "dropdown.search": "Поиск",
   "locale.switchLabel": "Выберите язык",
   "locale.auto": "Автоматически",
   "locale.autoDetected": "Автоматически ({language})",

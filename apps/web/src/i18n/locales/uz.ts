@@ -1005,6 +1005,7 @@ export const uz = {
   "geo.nudgeCta": "To'ldirish",
   "geo.searchPlaceholder": "Mamlakat qidirish",
   "geo.noResults": "Topilmadi",
+  "dropdown.search": "Qidirish",
   "locale.switchLabel": "Tilni tanlang",
   "locale.auto": "Avtomatik",
   "locale.autoDetected": "Avtomatik ({language})",

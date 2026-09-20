@@ -73,14 +73,12 @@ export function AppearanceSection() {
             label={t(locale, "settings.language")}
             value={locale}
             disabled={pending}
-            onChange={(event) => chooseLocale(event.target.value)}
-          >
-            {LOCALES.map((code) => (
-              <option key={code} value={code}>
-                {LOCALE_NAMES[code]}
-              </option>
-            ))}
-          </Select>
+            onChange={chooseLocale}
+            options={LOCALES.map((code) => ({
+              value: code,
+              label: LOCALE_NAMES[code],
+            }))}
+          />
           <fieldset>
             <legend className="mb-1.5 text-theme-sm font-medium rw-strong">
               {t(locale, "settings.theme")}

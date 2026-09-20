@@ -1009,6 +1009,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `geo.nudgeCta` | To'ldirish | Toltırıw |  |
 | `geo.searchPlaceholder` | Mamlakat qidirish | Mámleket izlew |  |
 | `geo.noResults` | Topilmadi | Tabılmadı |  |
+| `dropdown.search` | Qidirish | Izlew |  |
 | `locale.switchLabel` | Tilni tanlang | Tildi saylań |  |
 | `locale.auto` | Avtomatik | Avtomatikalıq |  |
 | `locale.autoDetected` | Avtomatik ({language}) | Avtomatikalıq ({language}) |  |
