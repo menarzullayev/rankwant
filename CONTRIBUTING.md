@@ -25,10 +25,11 @@ Qaerdan boshlash: [INDEX.md](INDEX.md) → [docs/README.md](docs/README.md)
 To'liq shartnoma (AOP): [docs/10-operations/parallel-agents.md](docs/10-operations/parallel-agents.md).
 Jonli taxta (git emas): `C:/Users/nsn/project/wt/.agent/` — manifest, task, lock, status, handoff.
 
-Model: **5 ta isolated worker + bitta coordination qatlami**, bitta checkout emas.
-Default rollar: Cursor-1 backend, Cursor-2 frontend, Cursor-3 infra, WorkBuddy-1
-research, WorkBuddy-2 QA. **Bitta task = bitta owner.** Shared state (fayl, port,
-lockfile, DB, Docker, Git) — asosiy xavf; agentlar soni emas.
+Model: **isolated workers + bitta coordination qatlami**, bitta checkout emas.
+Slot (C1–C3, W1–W2) — identitet, port, RAM; **rol yo‘q**. Izolyatsiya — vazifa
+kartasidagi `owned_paths` va `.agent/locks/` (birinchi yozuvchi yutadi).
+**Bitta task = bitta owner.** Shared state (fayl, port, lockfile, DB, Docker,
+Git) — asosiy xavf; agentlar soni emas.
 
 Qoidalar 2026-09-17 kechqurunidan keyin yozildi: o'sha kuni ish asosiy
 checkout'da branch'siz olib borildi va jonli `api` `tools/deploy.sh` siz qayta yaratildi —
