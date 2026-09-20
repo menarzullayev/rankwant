@@ -2143,6 +2143,43 @@ def security_boundary_is_loopback_only() -> str | None:
     return None
 
 
+THREAT_MODEL = "docs/10-operations/threat-model.md"
+THREAT_MODEL_INDEX = "docs/10-operations/README.md"
+THREAT_MODEL_RISKS = ("A-1", "A-2", "A-3", "A-4", "A-5", "A-6", "A-7", "A-8")
+
+
+def threat_model_covers_the_platform() -> str | None:
+    """Threat model bor, indeksdan topiladi va risk registri bo'sh emas.
+
+    ADR-0004 tashqi auditni public launch oldidan majburiy qiladi; audit esa
+    threat model'siz boshlanmaydi. Hujjatning O'ZI yetarli emas — uchta
+    bo'lak jimgina yo'qolishi mumkin va har biri o'zicha yomon:
+
+    - fayl o'chsa, audit oldidan hech kim sezmaydi;
+    - `docs/10-operations/README.md` dan havola uzilsa, hujjat qoladi-yu
+      keyingi o'quvchi uni topmaydi (10 ta hujjat ichida);
+    - qabul qilingan risklar jadvali (A-1…A-8) bo'shasa, hujjat «hammasi
+      nazoratda» deb o'qiladi — aslida esa egasi ularni ATAYLAB qabul qilgan.
+
+    ⚠️ Bu — QO'RIGCHI, mazmun tekshiruvi emas: hujjat to'g'rimi — o'lchab
+    bo'lmaydi; mavjudmi va muhim bo'laklari joyidami — mumkin.
+
+    Sana: 2026-09-21 — egasi «threat model — butun platforma» variantini
+    tanladi (audit yo'lida chegara bayonotidan keyingi qadam).
+    """
+    if not (ROOT / THREAT_MODEL).exists():
+        return f"{THREAT_MODEL}: threat model yo'q — ADR-0004 auditdan oldin talab qiladi"
+    if "](threat-model.md)" not in read(THREAT_MODEL_INDEX):
+        return f"{THREAT_MODEL_INDEX}: threat model havolasi yo'q — hujjat indeksdan topilmaydi"
+    model = read(THREAT_MODEL)
+    missing = [risk for risk in THREAT_MODEL_RISKS if risk not in model]
+    if missing:
+        return f"{THREAT_MODEL}: qabul qilingan risklar yo'q — {', '.join(missing)}"
+    if "privileged: true" not in model:
+        return f"{THREAT_MODEL}: judge `privileged: true` xavfi yozilmagan (A-1)"
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -2198,6 +2235,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("Security run o'chiq", security_run_is_disabled),
     ("judge latency Nightly'da", judge_latency_gate_is_nightly),
     ("chegara faqat loopback", security_boundary_is_loopback_only),
+    ("threat model platformani qamraydi", threat_model_covers_the_platform),
 ]
 
 
