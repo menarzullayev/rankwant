@@ -11,7 +11,7 @@ const config = [
   ...next,
   {
     languageOptions: { parser: tseslint.parser },
-    settings: { react: { version: "19.0.0" } },
+    settings: { react: { version: "19.3.0" } },
   },
   {
     rules: {

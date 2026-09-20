@@ -2661,6 +2661,26 @@ def neg_decisions_pytest_django_floor_old() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_react_dom_mismatch() -> tuple[bool, str]:
+    """react 19.3, react-dom 19.0 qolsa tutilsin."""
+    return _decision_broken(
+        "apps/web/package.json",
+        '"react-dom": "19.3.0"',
+        '"react-dom": "19.0.0"',
+        "react va react-dom juft",
+    )
+
+
+def neg_decisions_react_stays_19_0() -> tuple[bool, str]:
+    """react 19.0 ga qaytsa tutilsin (juftlik ham buziladi)."""
+    return _decision_broken(
+        "apps/web/package.json",
+        '"react": "19.3.0"',
+        '"react": "19.0.0"',
+        "react va react-dom juft",
+    )
+
+
 def neg_decisions_copy_fail_toast_dropped() -> tuple[bool, str]:
     """CopyControl fail toast olib tashlansa tutilsin."""
     return _decision_broken(
@@ -4952,6 +4972,14 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "pytest-django floor 4.9 ga qaytsa tutilsin",
                 neg_decisions_pytest_django_floor_old,
+            ),
+            (
+                "react-dom 19.0 da qolsa tutilsin",
+                neg_decisions_react_dom_mismatch,
+            ),
+            (
+                "react 19.0 ga qaytsa tutilsin",
+                neg_decisions_react_stays_19_0,
             ),
             (
                 "copy fail toast olib tashlansa tutilsin",
