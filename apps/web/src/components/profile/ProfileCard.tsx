@@ -41,7 +41,7 @@ export function ProfileCard({
   const badge = badgeLabel(profile.cosmetics.badge);
   const base = `/users/${profile.username}`;
   const { info } = profile;
-  const rank = profile.title ? `rw-rank-${profile.title.level}` : "";
+  const rank = profile.title ? `rw-rank-${profile.title.colour_group}` : "";
   const region =
     info.region && (info.country === "UZ" ? regionName(info.region, locale) : info.region);
   const locality = info.district ? districtName(info.district, locale) : info.city;
@@ -144,7 +144,7 @@ export function ProfileCard({
                 title={fill(t(locale, "profile.highest"), {
                   max: t(locale, `title.${profile.max_title.code}`),
                 })}
-                className={`inline-flex items-center gap-1 rounded-full border border-current px-2.5 py-0.5 text-theme-xs font-semibold rw-rank-${profile.max_title.level}`}
+                className={`inline-flex items-center gap-1 rounded-full border border-current px-2.5 py-0.5 text-theme-xs font-semibold rw-rank-${profile.max_title.colour_group}`}
               >
                 <span aria-hidden="true">▲</span>
                 <RankTitle

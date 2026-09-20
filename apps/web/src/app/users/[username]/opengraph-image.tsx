@@ -10,15 +10,15 @@ export const alt = "RankWant";
  *  16 ta pog'onaning palitra-dizayner tomonidan ko'tarilgan hexlari
  *  (ADR-0027 § L2: 1-3 grey, 4-5 green, 6-7 cyan, 8 blue, 9 violet, 10-11 orange,
  *  12-16 red). */
-const RANK_ON_DARK = [
-  "#8b94a4", "#8b94a4", "#8b94a4",                                  // 1 quark, 2 atom, 3 molecule
-  "#28a95e", "#28a95e",                                            // 4 droplet, 5 meteorite
-  "#16a2b1", "#16a2b1",                                            // 6 comet, 7 moon
-  "#6093eb",                                                       // 8 planet
-  "#a681e7",                                                       // 9 star
-  "#e9710f", "#e9710f",                                            // 10 supernova, 11 pulsar
-  "#ea6d69", "#ea6d69", "#ea6d69", "#ea6d69", "#ea6d69",          // 12..16 magnetar/cosmos
-];
+const RANK_ON_DARK: Record<string, string> = {
+  grey: "#8b94a4", // 1-3 quark, atom, molecule
+  green: "#28a95e", // 4-5 droplet, meteorite
+  cyan: "#16a2b1", // 6-7 comet, moon
+  blue: "#6093eb", // 8 planet
+  violet: "#a681e7", // 9 star
+  orange: "#e9710f", // 10-11 supernova, pulsar
+  red: "#ea6d69", // 12-16 magnetar..cosmos
+};
 /** Nutella marker ink on the OG card. Dark surface, white ink. */
 const NUTELLA_INK_DARK = "#ffffff";
 export const size = { width: 1200, height: 630 };
@@ -100,8 +100,8 @@ export default async function OgImage({ params }: { params: Promise<{ username: 
                       fontWeight: 600,
                       padding: "2px 16px",
                       borderRadius: 999,
-                      border: `2px solid ${RANK_ON_DARK[title.level - 1]}`,
-                      color: RANK_ON_DARK[title.level - 1],
+                      border: `2px solid ${RANK_ON_DARK[title.colour_group]}`,
+                      color: RANK_ON_DARK[title.colour_group],
                     }}
                   >
                     {head.length > 0 && (

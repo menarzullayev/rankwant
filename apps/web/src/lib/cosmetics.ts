@@ -25,8 +25,10 @@ export const coverClass = (code: string | null) =>
   (code && COVERS[code]) || "rw-cover";
 
 /** Do'kon ramkasi ustun; kiyilmagan bo'lsa unvon ramkasi (ADR-0018). */
-export const frameClass = (code: string | null, title?: { level: number } | null) =>
-  (code && FRAMES[code]) || (title ? `rw-frame-rank-${title.level}` : "");
+export const frameClass = (
+  code: string | null,
+  title?: { colour_group: string } | null,
+) => (code && FRAMES[code]) || (title ? `rw-frame-${title.colour_group}` : "");
 
 export const badgeLabel = (code: string | null) =>
   code ? (BADGES[code] ?? code) : null;
