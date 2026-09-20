@@ -320,6 +320,30 @@ def users_profiles_stay_noindex() -> str | None:
     return None
 
 
+def rank_colour_groups_not_sixteen_tokens() -> str | None:
+    """2026-09-20 HITL encode-167: 7 colour groups, not 16 `--rw-rank-N`.
+
+    Live #167 collapsed tokens to grey/green/cyan/blue/violet/orange/red.
+    Numbered tokens coming back would duplicate CSS and drift from
+    `title.colour_group`.
+    """
+    titles = read("apps/api/profiles/titles.py")
+    if '"colour_group": COLOUR_GROUPS[tier_index]' not in titles:
+        return "apps/api/profiles/titles.py: `colour_group` COLOUR_GROUPS dan emas"
+    for name in ("grey", "green", "cyan", "blue", "violet", "orange", "red"):
+        if f'"{name}"' not in titles:
+            return f"apps/api/profiles/titles.py: guruh `{name}` yo'q"
+    css = read("apps/web/src/app/globals.css")
+    if re.search(r"--rw-rank-\d", css):
+        return "apps/web/src/app/globals.css: raqamli `--rw-rank-N` qaytdi (#167)"
+    for name in ("grey", "green", "cyan", "blue", "violet", "orange", "red"):
+        if f"--rw-rank-{name}" not in css:
+            return f"apps/web/src/app/globals.css: `--rw-rank-{name}` yo'q"
+    if "rw-rank-${title.colour_group}" not in read("apps/web/src/components/UserName.tsx"):
+        return "apps/web/src/components/UserName.tsx: class `colour_group` emas"
+    return None
+
+
 def nav_prefetch_on_intent() -> str | None:
     """Links in the layout chrome prefetch on hover, focus or touch only.
 
@@ -1616,6 +1640,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("deploy faqat yashil main'dan", deploy_gated_on_green_main),
     ("qidiruv ochiq, AI kraulerlar yopiq", search_open_ai_crawlers_blocked),
     ("/users/ noindex", users_profiles_stay_noindex),
+    ("rank colour_group 7 token", rank_colour_groups_not_sixteen_tokens),
     ("navigatsiya prefetch'i niyatda", nav_prefetch_on_intent),
     ("bosh sahifa <main> prefetch'i niyatda", home_main_prefetch_on_intent),
     ("lug'at alohida faylda", dictionary_as_cached_file),
