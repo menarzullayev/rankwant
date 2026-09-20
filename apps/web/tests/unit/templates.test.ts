@@ -5,6 +5,7 @@ import type { A11yPrefs, AppearancePrefs } from "@/lib/api";
 import {
   TEMPLATES,
   TEMPLATE_KIT_DEFAULTS,
+  TEMPLATE_LAYOUT_KEYS,
   kitMatches,
   matchTemplate,
   templateAppearance,
@@ -93,5 +94,50 @@ describe("D49 team template kit identity", () => {
     expect(
       matchTemplate(classicPage, { vision: "normal", motion: "off" }, "system")?.id,
     ).toBe("classic");
+  });
+});
+
+describe("D50 layout chrome stays personal", () => {
+  const layout: AppearancePrefs = {
+    navMode: "topnav",
+    navShape: "slim",
+    card: "outline",
+    pattern: "dots",
+    fontHeading: "serif",
+    size: 120,
+    scale: 1.1,
+    lineHeight: 1.3,
+    tracking: 0.02,
+    width: 1400,
+  };
+
+  it("lists the layout keys that apply and match must not own", () => {
+    expect([...TEMPLATE_LAYOUT_KEYS]).toEqual([
+      "navMode",
+      "navShape",
+      "card",
+      "pattern",
+      "fontHeading",
+      "size",
+      "scale",
+      "lineHeight",
+      "tracking",
+      "width",
+    ]);
+  });
+
+  it("keeps Klassik when only layout chrome differs (APP-8 rejected)", () => {
+    const dirty: AppearancePrefs = { ...classicPage, ...layout };
+    expect(matchTemplate(dirty, a11y, "system")?.id).toBe("classic");
+  });
+
+  it("preserves layout chrome when a team template is applied", () => {
+    const classic = TEMPLATES.find((row) => row.id === "classic");
+    expect(classic).toBeTruthy();
+    const next = templateAppearance(classic!, { style: "clay", ...layout });
+    for (const key of TEMPLATE_LAYOUT_KEYS) {
+      expect(next[key]).toBe(layout[key]);
+    }
+    expect(matchTemplate({ ...next }, a11y, "system")?.id).toBe("classic");
   });
 });

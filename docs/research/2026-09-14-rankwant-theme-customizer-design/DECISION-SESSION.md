@@ -436,6 +436,7 @@ flag — nuqson topilsa modul bir tugma bilan o'chiriladi.
 | D47 | Mavzu `User.theme` da qoladi; `ui_prefs.appearance.theme` YO'Q |
 | D48 | Kit oilalarini musobaqachi Interfeys yozadi; `/admin/kit` namuna |
 | D49 | Shablon kit oilalarini ham identitetga oladi; apply tiklaydi |
+| D50 | Layout chrome shaxsiy; APP-8 rad — match/apply nav/size ni olmasin |
 
 ### D47 — mavzu ikki joyda saqlanmaydi (amalga oshirishda aniqlangan)
 
@@ -493,9 +494,21 @@ solishtiradi. `undefined` kalit default deb o‘qiladi.
 **O‘lchov:** D19-tor da `dashboard + circle` → `classic`. D49 da → `null`.
 Apply Klassik → match `classic`.
 
-nav / karta / naqsh / o‘lcham / kenglik hali matchda yo‘q (APP-8).
+nav / karta / naqsh / o‘lcham / kenglik matchda yo‘q — D50 buni qoida qildi.
 
 Batafsil: [DECISION-49.md](./DECISION-49.md).
+
+### D50 — layout chrome shaxsiy (2026-09-21)
+
+**Tanlov:** A — layout shaxsiy. Shablon = D19 + kit (D49).
+`TEMPLATE_LAYOUT_KEYS` apply/matchga kirmaydi.
+
+APP-8 (nav/card ni matchga qo‘sh) **rad**.
+
+**O‘lchov:** `dashboard + topnav + size 120` → `classic`. Apply Klassik
+→ layout saqlanadi.
+
+Batafsil: [DECISION-50.md](./DECISION-50.md).
 
 ---
 

@@ -2,7 +2,7 @@
 
 **STATUS:** shipped (2026-09-14)
 
-Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D49).
+Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D50).
 Entry points: the header icon, a floating tab on desktop, `Ctrl+.`, and
 `/settings/korinish`.
 
@@ -25,6 +25,9 @@ prefs: `verdictStyle`, `statusStyle`, `loadingStyle`, `overlayStyle`,
 not call `setAppearance`. Applying a team template **does** write kit
 families: all eight share `TEMPLATE_KIT_DEFAULTS` and `matchTemplate`
 compares them (D49). A leftover circle verdict is no longer «Klassik».
+Layout chrome (`navMode`, `navShape`, `card`, `pattern`, `fontHeading`,
+`size`, `scale`, `lineHeight`, `tracking`, `width`) stays personal (D50)
+— applying Klassik does not steal the sidenav.
 
 Measured 2026-09-21 on `806bdd7`: Interfeys exposes **50** kit-family chips
 (11 + 11 + 10 + 4 + 5 + 9). Closed accordion groups unmount (CUST-100), so
