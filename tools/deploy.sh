@@ -125,7 +125,7 @@ RANKWANT_LOCK_OWNED=0
 _on_exit() {
   time_finish_open
   time_summary
-  if [ "${RANKWANT_LOCK_OWNED:-0}" = "1" ] && [ "${RANKWANT_LOCK_HELD:-0}" != "1" ] && [ -n "${LOCK:-}" ]; then
+  if [ "${RANKWANT_LOCK_OWNED:-0}" = "1" ] && [ -n "${LOCK:-}" ]; then
     rm -rf "$LOCK"
   fi
 }
