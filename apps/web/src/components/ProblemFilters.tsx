@@ -517,6 +517,7 @@ function TopicOptions({
             <div key={root.slug} className="rw-kit-tree">
               <FormTreeItem
                 label={root.label}
+                fallback={root.fallback}
                 checked={selected.includes(root.slug)}
                 indeterminate={
                   children.some((c) => selected.includes(c.slug)) &&
@@ -532,6 +533,7 @@ function TopicOptions({
                       key={child.slug}
                       nested
                       label={child.label}
+                      fallback={child.fallback}
                       checked={selected.includes(child.slug)}
                       extra={
                         child.fallback ? <UzFallbackBadge locale={locale} /> : null

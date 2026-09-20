@@ -110,6 +110,7 @@ export function FormTreeItem({
   nested,
   onChange,
   extra,
+  fallback,
 }: {
   label: string;
   checked: boolean;
@@ -117,13 +118,19 @@ export function FormTreeItem({
   nested?: boolean;
   onChange: () => void;
   extra?: ReactNode;
+  fallback?: boolean;
 }) {
   const ref = useRef<HTMLInputElement>(null);
   useLayoutEffect(() => {
     if (ref.current) ref.current.indeterminate = Boolean(indeterminate);
   }, [indeterminate]);
   return (
-    <label className="rw-kit-tree-item" data-nested={nested || undefined} data-kit-check="tree">
+    <label
+      className="rw-kit-tree-item"
+      data-nested={nested || undefined}
+      data-kit-check="tree"
+      data-fallback={fallback || undefined}
+    >
       <input
         ref={ref}
         type="checkbox"
