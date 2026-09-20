@@ -14,6 +14,7 @@ not be read (never treated as "fine").
 
 from __future__ import annotations
 
+import importlib.util
 import re
 import sys
 from collections.abc import Callable
@@ -1672,7 +1673,12 @@ def aop_owned_paths_no_star_star() -> str | None:
     claim starves every other slot. Directory globs need ≥2 segments;
     several packages on one card stay legal. Predicate: tools/owned_paths.py.
     """
-    import owned_paths
+    src = ROOT / "tools" / "owned_paths.py"
+    spec = importlib.util.spec_from_file_location("owned_paths", src)
+    if spec is None or spec.loader is None:
+        return "tools/owned_paths.py: yuklanmadi"
+    owned_paths = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(owned_paths)
 
     aop = read("docs/10-operations/parallel-agents.md")
     if "HITL 2026-09-20 `no-star-star`" not in aop:

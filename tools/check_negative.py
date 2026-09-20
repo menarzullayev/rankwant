@@ -3390,6 +3390,11 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/profiles/titles.py",
     "apps/web/src/app/globals.css",
     "apps/web/src/components/UserName.tsx",
+    # owned_paths width (2026-09-20 HITL no-star-star). Missing here,
+    # `check_decisions.py` exits 2 / import fails in the trial sandbox.
+    "tools/owned_paths.py",
+    "docs/10-operations/parallel-agents.md",
+    ".cursor/rules/parallel-agents.mdc",
 )
 
 
