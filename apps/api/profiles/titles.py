@@ -85,13 +85,23 @@ class Title(TypedDict):
     marker: int
 
 
-def title_for(rating: int, rated_contests: int) -> Title | None:
-    """Return the title for `rating` or None if the user has never been rated.
+def title_for(
+    rating: int,
+    rated_contests: int,
+    has_imported_rating: bool = False,
+) -> Title | None:
+    """Return the title for `rating`, or None when the rating says nothing yet.
 
-    A user with zero rated contests is title-less - the starting 1200 says
-    nothing about skill yet.
+    A rating is meaningful in two cases:
+    - the user has finished at least one rated contest here, or
+    - the rating is imported from an external source (`has_imported_rating`,
+      ADR-0026) - a real Codeforces rating is a real rating even before the
+      first RankWant contest.
+
+    Otherwise the starting 1200 says nothing about skill, so the user stays
+    title-less (ADR-0018).
     """
-    if rated_contests <= 0:
+    if rated_contests <= 0 and not has_imported_rating:
         return None
     tier_index = 0
     code_final = TITLES[0][1]
@@ -119,7 +129,22 @@ def colour_group(level: int) -> str:
 
 
 def user_title(user: Any) -> Title | None:
-    return title_for(user.rating_contest, user.rated_contest_count)
+    """Title for a user object.
+
+    `rank_title` is the imported Codeforces tier (ADR-0026) - when it is
+    set the rating came from Codeforces and is worth showing even though
+    `rated_contest_count` is still zero.
+
+    `rated_contest_count` itself stays reserved for the participation
+    achievements (1 / 10 / 50 rated contests, ADR-0018) and is never
+    back-filled here: doing so would grant those achievements to all
+    974 498 imported users at once.
+    """
+    return title_for(
+        user.rating_contest,
+        user.rated_contest_count,
+        has_imported_rating=bool(getattr(user, "rank_title", "")),
+    )
 
 
 def bands() -> list[dict[str, Any]]:

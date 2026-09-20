@@ -123,6 +123,28 @@ legend - not for any logic.
   from RankWant own title, so a CF-imported user still sees their CF
   colour alongside our ladder.
 
+### When the ladder becomes visible (refines ADR-0018)
+
+ADR-0018 made the title conditional on `rated_contest_count > 0`: "the
+starting 1200 says nothing about skill yet". That rule kept the whole
+ladder invisible in production, because the 974 498 Codeforces-imported
+users have a rating but have not competed on RankWant.
+
+Refinement: a rating is meaningful when **either**
+
+1. the user has finished at least one rated contest on RankWant
+   (`rated_contest_count > 0`), **or**
+2. the rating is imported from an external source, detected via
+   `rank_title` being set (ADR-0026).
+
+`rated_contest_count` itself is **never** back-filled. It drives the
+participation achievements (1 / 10 / 50 rated contests - bronze / silver /
+gold, ADR-0018), so seeding it from Codeforces would grant those
+achievements to all imported users at once.
+
+A brand-new user with no contests and no import keeps no title, so the
+original intent of ADR-0018 still holds.
+
 ## Rejected alternatives
 
 - 15 tiers (2026-09-20 morning). Started as 15 with supernova replacing
