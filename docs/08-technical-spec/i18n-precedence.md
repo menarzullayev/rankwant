@@ -180,8 +180,17 @@ in-process header manipulation will work — the fix has to sit outside Next.js.
 `/register`, `/terms`, `/privacy` is cached. The cached body is
 forced to `uz` via `x-rw-locale` (`home-cache.ts`); `?lang=` and locale/session
 cookies are excluded from the cacheable set, so `Accept-Language` cannot
-poison that one URL. Other routes stay `no-store`. The `Vary` gap below still
-applies.
+poison that one URL.
+
+**Archive list (2026-09-20 HITL problems-al):** guest GET `/problems` with an
+empty query is also cached, but **not** forced to `uz`. The edge
+`Vary: Accept-Language` (below) is the cache key. `?page=` / `?level=` /
+`?lang=` stay uncached. Logged-in HTML stays `private, no-store`
+(favourites / solved). Worker route is `problems/*` (slug only) so the
+list does not burn the 100k Worker quota.
+
+Other routes stay `no-store`. The `Vary` gap below still applies to
+non-uz-forced HTML.
 
 ⚠️ Since 2026-09-19 the locale also travels in the URL (`?lang=<code>`). That
 sharpens the same defect rather than adding a second one: one path now has
@@ -189,17 +198,17 @@ several URLs whose bodies differ, so a cache keyed on the URL alone can hand a
 `?lang=ru` body to a `?lang=uz` request. The cookie write softens it — later
 requests carry the cookie — but it does not remove it, because the *first*
 response still has to be keyed correctly. Guest GET `/` is not cached when a
-query string is present, so `/?lang=ru` stays a private miss.
+query string is present, so `/?lang=ru` stays a private miss. Same for
+`/problems?lang=`.
 
 **What must happen before caching other routes** (HITL 2026-09-20 cf-transform:
 applied): a Cloudflare Response Header Transform Rule **adds**
-`Vary: Accept-Language` on HTML that is **not** the guest-cache set
+`Vary: Accept-Language` on HTML that is **not** the uz-forced guest-cache set
 (`/`, `/login`, `/register`, `/terms`, `/privacy`). `add` keeps Next's RSC
-tokens; `set` would wipe them. Guest-cache paths stay excluded because
-those bodies are forced `uz` — varying them would fragment the 100k
-homepage cache without changing the HTML. `cloudflared` still cannot
-rewrite headers. Expanding the cache to `/problems` can now rely on the
-edge `Vary`; do not expand the guest-cache path list in this change.
+tokens; `set` would wipe them. Those bodies are forced `uz` — varying them
+would fragment the 100k homepage cache without changing the HTML.
+`/problems` is **not** in that exclusion: it is locale-aware. `cloudflared`
+still cannot rewrite headers.
 
 Former options (not chosen): in-front reverse proxy; `/uz/` prefix.
 

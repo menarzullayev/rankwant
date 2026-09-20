@@ -7,8 +7,9 @@ workers_dev = false
 
 # GET `/` ATAYLAB yo'q (2026-09-19): 100k ochilish Worker kvotasini
 # yemasin. 2026-09-19 scale-50k: `/login`, `/register`, `/terms`,
-# `/privacy` ham Worker'siz — mehmon CDN. `l*`/`p*`/`r*`/`t*` o'rniga
-# aniq yo'llar: `lo*` (`/login`) va `te*`/`pri*`/`reg*` tushmaydi.
+# `/privacy` ham Worker'siz — mehmon CDN. 2026-09-20 HITL problems-al:
+# `/problems` ro'yxati ham — faqat `problems/*` (slug). `l*`/`p*`/`r*`/`t*`
+# o'rniga aniq yo'llar: `lo*` (`/login`) va `te*`/`pri*`/`reg*` tushmaydi.
 # Har route'da fail-open SHART (`tools/check_workers.sh`).
 routes = [
   { pattern = "rankwant.uz/a*", zone_name = "rankwant.uz" },
@@ -27,7 +28,7 @@ routes = [
   { pattern = "rankwant.uz/m*", zone_name = "rankwant.uz" },
   { pattern = "rankwant.uz/n*", zone_name = "rankwant.uz" },
   { pattern = "rankwant.uz/o*", zone_name = "rankwant.uz" },
-  { pattern = "rankwant.uz/problems*", zone_name = "rankwant.uz" },
+  { pattern = "rankwant.uz/problems/*", zone_name = "rankwant.uz" },
   { pattern = "rankwant.uz/platform-roadmap*", zone_name = "rankwant.uz" },
   { pattern = "rankwant.uz/q*", zone_name = "rankwant.uz" },
   { pattern = "rankwant.uz/rating*", zone_name = "rankwant.uz" },
@@ -59,7 +60,7 @@ routes = [
   { pattern = "www.rankwant.uz/m*", zone_name = "rankwant.uz" },
   { pattern = "www.rankwant.uz/n*", zone_name = "rankwant.uz" },
   { pattern = "www.rankwant.uz/o*", zone_name = "rankwant.uz" },
-  { pattern = "www.rankwant.uz/problems*", zone_name = "rankwant.uz" },
+  { pattern = "www.rankwant.uz/problems/*", zone_name = "rankwant.uz" },
   { pattern = "www.rankwant.uz/platform-roadmap*", zone_name = "rankwant.uz" },
   { pattern = "www.rankwant.uz/q*", zone_name = "rankwant.uz" },
   { pattern = "www.rankwant.uz/rating*", zone_name = "rankwant.uz" },

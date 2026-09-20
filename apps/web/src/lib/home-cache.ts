@@ -2,9 +2,10 @@ import { LOCALE_COOKIE } from "@/i18n/locale-params";
 
 /**
  * Mehmon HTML keshi — 50k qarorlari (2026-09-19): GET `/`, `/login`,
- * `/register`, `/terms`, `/privacy`. Faqat mehmon, origin Cache-Control,
- * s-maxage=30 + stale-while-revalidate. `rw_exp` bu yo'llarda
- * yozilmaydi — Set-Cookie CDN ni o'ldiradi.
+ * `/register`, `/terms`, `/privacy` (`uz` majburiy). HITL problems-al
+ * (2026-09-20): GET `/problems` query'siz ham, lekin til
+ * `Accept-Language` bo'yicha (`uz` majburiy emas). `rw_exp` keshlangan
+ * yo'lda yozilmaydi — Set-Cookie CDN ni o'ldiradi.
  *
  * Next.js layout `cookies()` o'qiydi va o'zi `private, no-store` yozadi.
  * Shu modul qarorni aytadi; `proxy.ts` va `instrumentation.ts` uni
@@ -21,6 +22,9 @@ export const HOME_MARKUP_COOKIE = "rw:markup";
 export const HOME_CACHE_LOCALE = "uz";
 
 export const HOME_CACHE_PATH = "/";
+
+/** Arxiv ro'yxat — til `Vary: Accept-Language` (HITL problems-al). */
+export const PROBLEMS_CACHE_PATH = "/problems";
 
 /** Login tab — `page.tsx` `tabOf` bilan bir xil. */
 export const GUEST_LOGIN_TABS = new Set([
@@ -62,7 +66,7 @@ export type HomeCacheInput = {
 export type HomeCacheDecision = {
   /** GET/HEAD `/` query va RSC'siz. */
   isHomeDocument: boolean;
-  /** GET/HEAD mehmon HTML (home/login/huquqiy). */
+  /** GET/HEAD mehmon HTML (home/login/huquqiy / arxiv ro'yxat). */
   isGuestDocument: boolean;
   /** CDN saqlashi mumkin. */
   cacheable: boolean;
@@ -88,13 +92,30 @@ function isLoginTabSearch(search: string): boolean {
   return GUEST_LOGIN_TABS.has(params.get("tab") ?? "");
 }
 
-export function isGuestCachePath(pathname: string, search: string): boolean {
+export function isUzForcedGuestCachePath(
+  pathname: string,
+  search: string,
+): boolean {
   if (pathname === "/" || pathname === "/terms" || pathname === "/privacy") {
     return search === "";
   }
   if (pathname === "/register") return search === "";
   if (pathname === "/login") return isLoginTabSearch(search);
   return false;
+}
+
+export function isLocaleAwareGuestCachePath(
+  pathname: string,
+  search: string,
+): boolean {
+  return pathname === PROBLEMS_CACHE_PATH && search === "";
+}
+
+export function isGuestCachePath(pathname: string, search: string): boolean {
+  return (
+    isUzForcedGuestCachePath(pathname, search) ||
+    isLocaleAwareGuestCachePath(pathname, search)
+  );
 }
 
 export function homeCacheMark(
@@ -123,6 +144,7 @@ export function homeCacheDecision(input: HomeCacheInput): HomeCacheDecision {
     input.pathname === HOME_CACHE_PATH &&
     search === "" &&
     !input.hasRscHint;
+  const uzForced = isUzForcedGuestCachePath(input.pathname, search);
   const isGuestDocument =
     isGet && !input.hasRscHint && isGuestCachePath(input.pathname, search);
 
@@ -159,6 +181,6 @@ export function homeCacheDecision(input: HomeCacheInput): HomeCacheDecision {
     cacheable: true,
     cacheControl: HOME_CACHE_GUEST,
     assignExperiments: false,
-    forceDefaultLocale: true,
+    forceDefaultLocale: uzForced,
   };
 }
