@@ -16,7 +16,7 @@ export function Group({
   title: string;
   open: boolean;
   onOpen: (id: GroupId) => void;
-  children: ReactNode;
+  children?: ReactNode;
 }) {
   const panel = `rw-cz-${id}`;
   return (

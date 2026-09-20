@@ -49,25 +49,21 @@ describe("CUST-100 contestant customizer", () => {
   it("unmounts a closed accordion group so its controls leave the tab order", () => {
     const probe = createElement("button", { type: "button" }, "inside-control");
     const closed = renderToStaticMarkup(
-      createElement(Group, {
-        id: "look",
-        title: "Look",
-        open: false,
-        onOpen() {},
-        children: probe,
-      }),
+      createElement(
+        Group,
+        { id: "look", title: "Look", open: false, onOpen() {} },
+        probe,
+      ),
     );
     expect(closed).not.toContain("inside-control");
     expect(closed).toContain('aria-expanded="false"');
 
     const opened = renderToStaticMarkup(
-      createElement(Group, {
-        id: "look",
-        title: "Look",
-        open: true,
-        onOpen() {},
-        children: probe,
-      }),
+      createElement(
+        Group,
+        { id: "look", title: "Look", open: true, onOpen() {} },
+        probe,
+      ),
     );
     expect(opened).toContain("inside-control");
     expect(opened).toContain('aria-expanded="true"');
