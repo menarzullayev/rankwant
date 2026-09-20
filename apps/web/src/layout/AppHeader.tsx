@@ -75,6 +75,7 @@ export default function AppHeader() {
       </span>
       <div className="ml-auto flex min-w-0 items-center gap-2">
         {!auth && <SearchBox />}
+        <div className="relative z-20 flex shrink-0 items-center gap-2">
         <HeaderStatus />
         {/* O'zgarishlar belgisi — bildirishnomalar qo'ng'irog'idan keyin,
             lekin alohida ikonka bilan: ikkalasi bir xil ko'rinishda
@@ -88,6 +89,7 @@ export default function AppHeader() {
         {!auth && CUSTOMIZER_ENABLED && <CustomizerTrigger />}
         <LocaleSwitch />
         <UserMenu />
+        </div>
       </div>
     </header>
   );

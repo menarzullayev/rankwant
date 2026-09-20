@@ -31,10 +31,10 @@ export function CustomizerTrigger() {
       onClick={toggle}
       aria-expanded={open}
       aria-label={t(locale, "customizer.title")}
-      data-tip={t(locale, "customizer.title")}
+      data-tip={open ? undefined : t(locale, "customizer.title")}
       data-tip-kind="kbd"
-      data-tip-kbd={shortcut}
-      className="flex size-10 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg"
+      data-tip-kbd={open ? undefined : shortcut}
+      className="relative z-20 flex size-10 shrink-0 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg"
     >
       <Icon name="system.palette" />
     </button>

@@ -30,4 +30,5 @@ export const ADMIN_SECTIONS = [
   // Email kvota: «bugun qancha xat yuborish mumkin» — analitika yonida,
   // chunki ikkalasi ham jamlanma ko'rsatkich (CRUD emas).
   { href: "/admin/email-quota", labelKey: "admin.section.emailQuota" },
+  { href: "/admin/kit", labelKey: "admin.section.kit" },
 ] as const;

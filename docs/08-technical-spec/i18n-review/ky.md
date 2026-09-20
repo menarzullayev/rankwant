@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1739 strings.**
+**1770 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -1761,3 +1761,33 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `kit.step.account` | Hisob | Эсеп |  |
 | `kit.step.profile` | Profil | Профиль |  |
 | `kit.step.done` | Tayyor | Даяр |  |
+| `customizer.group.look` | Shablonlar | Шаблондор |  |
+| `customizer.group.color` | Rang va uslub | Түс жана стиль |  |
+| `customizer.group.type` | Matn | Текст |  |
+| `customizer.group.system` | Interfeys | Интерфейс |  |
+| `customizer.swatch.red` | Qizil | Кызыл |  |
+| `customizer.swatch.ember` | Olov | От |  |
+| `customizer.swatch.orange` | Apelsin | Кызгылт |  |
+| `customizer.swatch.yellow` | Sariq | Сары |  |
+| `customizer.swatch.lime` | Ohak | Лайм |  |
+| `customizer.swatch.green` | Yashil | Жашыл |  |
+| `customizer.swatch.teal` | Firuza | Бирюза |  |
+| `customizer.swatch.cyan` | Osmon | Асман |  |
+| `customizer.swatch.blue` | Ko'k | Көк |  |
+| `customizer.swatch.indigo` | Indigo | Индиго |  |
+| `customizer.swatch.violet` | Binafsha | Кызгылт көк |  |
+| `customizer.swatch.magenta` | Magenta | Маджента |  |
+| `customizer.swatch.pink` | Pushti | Кызгылт |  |
+| `customizer.swatch.rose` | Gulrang | Гүл |  |
+| `customizer.a11y.motionHint.system` | Qurilma sozlamasiga bo'ysunadi. | Түзмөк жөндөөсүнө баш иет. |  |
+| `customizer.a11y.motionHint.full` | Barcha o'tish va effektlar. | Бардык өтүүлөр жана эффекттер. |  |
+| `customizer.a11y.motionHint.mild` | O'tishlar qoladi, bezak effektlari o'chadi. | Өтүүлөр калат, кооздук өчөт. |  |
+| `customizer.a11y.motionHint.off` | Harakat yo'q. | Кыймыл жок. |  |
+| `customizer.deleteConfirm` | Ha, o'chirish | Ооба, өчүр |  |
+| `settings.openCustomizer` | Ko'rinish sozlagichini ochish | Көрүнүш жөндөгүчтү ачуу |  |
+| `admin.section.kit` | Namuna to'plami | Үлгү жыйнагы |  |
+| `admin.kit.title` | O'zaro ta'sir namunalari | Өз ара аракет үлгүлөрү |  |
+| `admin.kit.hint` | Bu sahifa dizayn laboratoriya. Musobaqachi sozlagichi emas. | Бул дизайн лабораториясы. Катышуучу жөндөгүч эмес. |  |
+| `overlay.sample.popover` | Yon tasdiq | Жанынан |  |
+| `overlay.sample.hold` | Bosib turish | Басып туруу |  |
+| `overlay.sample.cmdk` | Buyruq | Команда |  |

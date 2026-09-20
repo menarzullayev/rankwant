@@ -76,7 +76,7 @@ export function KitSection() {
             })
           }
         >
-          {1}
+          {t(locale, "overlay.sample.confirm")}
         </button>
         <button
           type="button"
@@ -90,15 +90,15 @@ export function KitSection() {
             })
           }
         >
-          {4}
+          {t(locale, "overlay.sample.popover")}
         </button>
         <InlineConfirm
-          label="5"
+          label={t(locale, "overlay.sample.confirm")}
           danger
           onConfirm={() => overlay.toast(t(locale, "problem.copied"))}
         />
         <HoldButton
-          label="9"
+          label={t(locale, "overlay.sample.hold")}
           danger
           onConfirm={() => overlay.toast(t(locale, "common.yes"))}
         />
@@ -112,7 +112,7 @@ export function KitSection() {
             })
           }
         >
-          {10}
+          {t(locale, "overlay.sample.cmdk")}
         </button>
       </div>
 
