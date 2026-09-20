@@ -47,12 +47,18 @@ def profil(user: User, viewer: User | None = None) -> Any:
 
 
 def test_unvon_chegaralari() -> None:
-    assert title_for(0, 1) == {"code": "kvark", "level": 1}
-    assert title_for(1399, 1) == {"code": "foton", "level": 2}
-    assert title_for(1400, 1) == {"code": "elektron", "level": 3}
-    assert title_for(2699, 3) == {"code": "yulduz", "level": 8}
-    assert title_for(2700, 3) == {"code": "galaktika", "level": 9}
-    # Reytingli musobaqasiz — boshlang'ich 1400 hali hech narsa aytmaydi.
+    # ADR-0027: 16 tiers with English names.
+    assert title_for(0, 1) == {"code": "quark", "level": 1}
+    assert title_for(599, 1) == {"code": "quark", "level": 1}
+    assert title_for(600, 1) == {"code": "atom", "level": 2}
+    assert title_for(1399, 1) == {"code": "meteorite", "level": 5}
+    assert title_for(1400, 1) == {"code": "comet", "level": 6}
+    assert title_for(2699, 3) == {"code": "black_hole", "level": 13}
+    assert title_for(2999, 3) == {"code": "black_hole", "level": 13}
+    assert title_for(3000, 3) == {"code": "galaxy", "level": 14}
+    assert title_for(3200, 5) == {"code": "supercluster", "level": 15}
+    assert title_for(3500, 5) == {"code": "cosmos", "level": 16}
+    # Reytingli musobaqasiz - boshlang'ich 1200 hali hech narsa aytmaydi.
     assert title_for(3000, 0) is None
 
 
@@ -68,14 +74,15 @@ class TestUnvonHammaJoyda:
         }
         followers = APIClient().get(reverse("user-followers", args=[other_user.username])).data
 
-        assert leaders == {"aziz": {"code": "atom", "level": 5}, "bekzod": None}
-        assert followers["results"][0]["title"] == {"code": "atom", "level": 5}
-        assert profil(user)["title"] == {"code": "atom", "level": 5}
+        assert leaders == {"aziz": {"code": "planet", "level": 8}, "bekzod": None}
+        assert followers["results"][0]["title"] == {"code": "planet", "level": 8}
+        assert profil(user)["title"] == {"code": "planet", "level": 8}
         assert profil(other_user)["title"] is None
 
     def test_urinish_standings_jamoa(
         self, user: User, problem: Problem, language: Language, contest: Contest
     ) -> None:
+        # ADR-0027: 2450 -> magnetar / 12.
         reytingli(user, 2450)
         Attempt.objects.create(
             user=user, problem=problem, language=language, source_code="x", verdict=Verdict.AC
@@ -86,12 +93,11 @@ class TestUnvonHammaJoyda:
         attempts = APIClient().get(reverse("attempt-list"), {"username": user.username}).data
         standings = APIClient().get(reverse("contest-standings", args=[contest.slug])).data
 
-        yulduz = {"code": "yulduz", "level": 8}
-        assert attempts["results"][0]["user_title"] == yulduz
-        assert standings["results"][0]["user_title"] == yulduz
+        magnetar = {"code": "magnetar", "level": 12}
+        assert attempts["results"][0]["user_title"] == magnetar
+        assert standings["results"][0]["user_title"] == magnetar
         assert team.status_code == 201
-        assert team.data["members"][0]["title"] == yulduz
-
+        assert team.data["members"][0]["title"] == magnetar
 
 @pytest.mark.django_db
 class TestRollar:

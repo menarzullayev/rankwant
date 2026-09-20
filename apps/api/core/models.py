@@ -98,7 +98,7 @@ class User(AbstractUser):
 
     # ADR-0006 — formulalar: 04-prd § Reyting formulalari
     rating_skills = models.IntegerField(default=0, db_index=True)
-    rating_contest = models.IntegerField(default=1400, db_index=True)
+    rating_contest = models.IntegerField(default=1200, db_index=True)  # ADR-0027
     rating_activity = models.IntegerField(default=0)
     rating_challenges = models.IntegerField(default=1400)
 
