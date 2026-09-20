@@ -8,6 +8,12 @@
 #
 # Sticky session yo'q — sessiya Redis/DB da (50k qaror).
 
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   api:
     ports: []
@@ -20,6 +26,7 @@ services:
     expose: ["3000"]
 
   origin-lb:
+    logging: *default-logging
     image: caddy:2-alpine
     restart: unless-stopped
     ports:

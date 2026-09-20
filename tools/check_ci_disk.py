@@ -35,7 +35,8 @@ NIGHTLY = ROOT / ".github/workflows/nightly.yml"
 
 #: Har bir fayl: (yo'l, job nomi, izlanadigan naqshlar).
 EXPECTED = [
-    (DEPLOY, "deploy", [r"docker\s+rmi", r"builder\s+prune"]),
+    (DEPLOY, "build", [r"prune_docker_disk\.sh"]),
+    (DEPLOY, "deploy", [r"prune_docker_disk\.sh"]),
     # Nightly builds the whole stack. Build cache used to be pruned by
     # ci.yml's smoke job; that job is gone (2026-09-20), so e2e prunes.
     (NIGHTLY, "load", [r"docker\s+rmi"]),
@@ -105,7 +106,7 @@ def main() -> int:
 
     print(
         f"Tekshirildi: {len(EXPECTED)} workflow × "
-        f"({', '.join(p for p in ('docker rmi', 'builder prune'))})\n"
+        f"(prune_docker_disk / docker rmi / builder prune)\n"
         "CI disk tozalashi joyida ✓"
     )
     return 0

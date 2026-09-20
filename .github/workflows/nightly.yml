@@ -156,7 +156,7 @@ jobs:
           # Was on CI smoke (2026-09-20): that job is gone, so Nightly
           # e2e prunes the shared build cache. 7 days: live deploy cache
           # is usually reused within a week.
-          docker builder prune -f --filter 'until=168h' || true
+          docker builder prune -f || true
 
   chaos:
     name: Chaos — dependency cut

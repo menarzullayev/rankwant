@@ -204,43 +204,28 @@ step "2/8 Obrazlar qurilmoqda (${SERVICES[*]} migrate)"
 "${COMPOSE[@]}" build "${SERVICES[@]}" migrate || die "build yiqildi"
 ok "obrazlar tayyor"
 
-# ── 4. Rollback nuqtasi — SHA teg ────────────────────────────────────
-# ⚠️ Nega KERAK: `up` konteynerlarni yangi obrazga o'tkazadi va ESKI obraz
-# «dangling» bo'lib qoladi — uni keyingi `docker image prune` o'chirib
-# yuborishi mumkin. Teg qo'yilmasa orqaga qaytish yo'li YO'Q, ya'ni
-# `tools/rollback.sh` qaytaradigan narsa topmaydi.
-#
-# ⚠️ Teg AYNAN build'dan KEYIN olinadi: undan oldin `rankwant-<svc>:latest`
-# hali ESKI kodda bo'ladi va unga «yangi» deb teg qo'yilardi.
-step "3/8 Rollback nuqtasi (SHA teg)"
-SHA_TAG="${GIT_SHA:0:12}"
-for svc in "${SERVICES[@]}" migrate; do
-  if ! docker image inspect "rankwant-${svc}:latest" >/dev/null 2>&1; then
-    die "rankwant-${svc}:latest topilmadi — build natijasi kutilgan nomda emas"
-  fi
-  docker tag "rankwant-${svc}:latest" "rankwant/${svc}:${SHA_TAG}" \
-    || die "rankwant/${svc}:${SHA_TAG} tegini qo'yib bo'lmadi"
-done
-ok "teglar qo'yildi: rankwant/{api,worker,beat,judge,web,migrate}:${SHA_TAG}"
+# SHA obraz tegi QO'YILMAYDI (2026-09-20). Har deploy `rankwant/<svc>:<sha>`
+# qoldirsa VHDX o'saveradi va prune Windows'ga joy qaytarmaydi. Kodni
+# qaytarish — kerakli commitni qayta qurish; sxema — deploy oldidagi dump.
 
-# ── 5. Migratsiyadan OLDIN zaxira ────────────────────────────────────
+# ── 4. Migratsiyadan OLDIN zaxira ────────────────────────────────────
 # ⚠️ Sxemaga tegadigan deploy zaxirasiz ketmasin. Oylik to'liq zaxira
 # (MinIO + offsite + tiklash sinovi) bunga YETARLI EMAS: u oyiga bir marta
 # olinadi, ya'ni migratsiya buzsa 30 kungacha orqaga qaytish kerak bo'lardi.
 # `--dump-only` — faqat Postgres: MinIO ham, tiklash sinovi ham o'tkazib
 # yuboriladi (migratsiya ularga tegmaydi), shuning uchun tez.
-step "4/8 Migratsiyadan oldin zaxira (pg_dump)"
+step "3/8 Migratsiyadan oldin zaxira (pg_dump)"
 RANKWANT_ENV_FILE="$ENV_ABS" bash tools/backup.sh --dump-only \
   || die "zaxira olinmadi — migratsiya TO'XTATILDI (zaxirasiz sxema o'zgarishi xavfli)"
 ok "zaxira olindi"
 
 # ── 6. Migratsiya — DEPLOY'DAN OLDIN ─────────────────────────────────
-step "5/8 Migratsiya"
+step "4/8 Migratsiya"
 "${COMPOSE[@]}" run --rm migrate || die "migrate yiqildi"
 
 # ── 7. Tasdiq: `migrate` chiqishiga ISHONMAYMIZ ──────────────────────
 # «No migrations to apply» eski obrazda ham aynan shunday deydi.
-step "6/8 Qo'llanmagan migration tekshiruvi"
+step "5/8 Qo'llanmagan migration tekshiruvi"
 pending="$("${COMPOSE[@]}" run --rm api python manage.py showmigrations 2>/dev/null | grep -c '\[ \]')"
 if [ "$pending" != "0" ]; then
   die "$pending ta migration qo'llanmagan — deploy TO'XTATILDI (runbook §1)"
@@ -248,15 +233,23 @@ fi
 ok "qo'llanmagan migration: 0"
 
 # ── 8. Ko'tarish ─────────────────────────────────────────────────────
-step "7/8 Konteynerlar qayta ko'tarilmoqda"
+step "6/8 Konteynerlar qayta ko'tarilmoqda"
 "${COMPOSE[@]}" up -d --no-deps "${SERVICES[@]}" || die "up yiqildi"
 ok "ko'tarildi"
 
-# ── 9. Tasdiq: konteyner HAQIQATAN yangi kodda ───────────────────────
-step "8/8 Deploy tasdiqi"
+# ── 8. Tasdiq: konteyner HAQIQATAN yangi kodda ───────────────────────
+step "7/8 Deploy tasdiqi"
 sleep 10
 if bash tools/check_deploy.sh; then
-  printf '\n%sDeploy tugadi.%s\n' "$G" "$N"
+  ok "konteynerlar joriy kodda"
 else
   die "check_deploy.sh «ESKIRGAN» dedi — konteyner eski kodda qolgan"
 fi
+
+# ── 9. Disk: SHA teglar, dangling, builder cache ─────────────────────
+# Faqat TASDIQ'DAN KEYIN: yiqilgan deploy cache ni ham o'chirmasin,
+# qayta urinish sovuq qurilishga tushmasin. `prune_docker_disk.sh`
+# `rankwant-<svc>:latest` va `rankwant/ci-runner` ni o'chirmaydi.
+step "8/8 Disk tozalash (SHA teglar, dangling, builder)"
+bash tools/prune_docker_disk.sh || die "disk tozalash yiqildi"
+printf '\n%sDeploy tugadi.%s\n' "$G" "$N"

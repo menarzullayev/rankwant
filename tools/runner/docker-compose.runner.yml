@@ -13,8 +13,15 @@
 # runner. See recreate.sh and README.md.
 name: rankwant-runner
 
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   runner:
+    logging: *default-logging
     build:
       context: .
     image: rankwant/ci-runner:latest
@@ -74,6 +81,7 @@ services:
   # needs RUNNER_TOKEN; after that, restart keeps the registration.
   runner-2:
     profiles: ["second"]
+    logging: *default-logging
     build:
       context: .
     image: rankwant/ci-runner:latest

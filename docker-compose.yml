@@ -19,8 +19,18 @@ x-api-build: &api-build
     GIT_SHA: ${GIT_SHA:-unknown}
     BUILT_AT: ${BUILT_AT:-unknown}
 
+# json-file cheklanmagan bo'lsa konteyner loglari diskni to'ldiradi
+# (2026-09-20: docker_data.vhdx 40→132 GB). Daemon default ham 10m/3,
+# lekin compose aniq yozilmasa eski konteynerlar cheksiz qolaveradi.
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   postgres:
+    logging: *default-logging
     image: postgres:16
     command: ["postgres", "-c", "shared_preload_libraries=pg_stat_statements"]
     environment:
@@ -35,6 +45,7 @@ services:
       retries: 5
 
   redis:
+    logging: *default-logging
     image: redis:7
     # Host portini almashtirish mumkin: REDIS_PORT=6380 docker compose up -d redis
     ports: ['${REDIS_PORT:-6379}:6379']
@@ -44,6 +55,7 @@ services:
       retries: 5
 
   minio:                      # S3/R2 o'rniga local
+    logging: *default-logging
     # ⚠️ `minio/minio` DOCKER HUB'DA YO'Q — 2025-yilda olib tashlangan.
     # `latest` bilan yozilsa `docker pull` `pull access denied for
     # minio/minio` beradi va CI'ning `smoke` job'i shu yerda yiqiladi
@@ -68,6 +80,7 @@ services:
   # Har qanday qayta qurishda bu servisni ham qurish kerak:
   #   docker compose ... build migrate && docker compose ... run --rm migrate
   migrate:
+    logging: *default-logging
     build: *api-build
     command: ['python', 'manage.py', 'migrate', '--no-input']
     environment:
@@ -82,6 +95,7 @@ services:
       postgres: { condition: service_healthy }
 
   api:
+    logging: *default-logging
     build: *api-build
     environment:
       DATABASE_URL: postgres://rankwant:dev@postgres:5432/rankwant
@@ -110,6 +124,7 @@ services:
   # (CELERY_BEAT_SCHEDULE: judging.drain_results har 2s). Bularsiz
   # submit qabul qilinadi, judge ishlaydi, lekin natija navbatda qoladi.
   worker:
+    logging: *default-logging
     build: *api-build
     command: ['celery', '-A', 'config', 'worker', '-l', 'info', '--concurrency', '2']
     environment:
@@ -124,6 +139,7 @@ services:
       migrate: { condition: service_completed_successfully }
 
   beat:
+    logging: *default-logging
     build: *api-build
     command: ['celery', '-A', 'config', 'beat', '-l', 'info']
     environment:
@@ -138,6 +154,7 @@ services:
       migrate: { condition: service_completed_successfully }
 
   web:
+    logging: *default-logging
     build:
       context: ./apps/web
       args:
@@ -165,6 +182,7 @@ services:
       start_period: 20s
 
   judge:
+    logging: *default-logging
     build:
       context: ./services/judge-go
       args:
