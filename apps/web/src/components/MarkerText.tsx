@@ -1,8 +1,25 @@
 import type { ReactNode } from "react";
 
-/** Render `text` with the first `marker` characters drawn in
- *  `--rw-nutella-ink` (black on light surfaces, white on dark), the rest
- *  in the parent's inherited colour. ADR-0027 § L2.
+/** Split `text` at the marker boundary: `[head, rest]`.
+ *
+ *  `head` is drawn in `--rw-nutella-ink`, `rest` keeps the parent's
+ *  (tier) colour. ADR-0027 § L2.
+ *
+ *  - `marker <= 0`      -> `["", text]` — nothing is inked.
+ *  - `marker >= length` -> `[text, ""]` — the WHOLE text is inked. A
+ *    short handle in a high-marker tier must still carry the signal:
+ *    "Alex" at Cosmos (marker 4) is entirely inked, so it does not look
+ *    like "Alex" at Magnetar (marker 0, nothing inked).
+ *  - otherwise          -> `["tour", "ist"]` for `("tourist", 4)`.
+ */
+export function splitMarker(text: string, marker: number): [string, string] {
+  if (marker <= 0) {
+    return ["", text];
+  }
+  return [text.slice(0, marker), text.slice(marker)];
+}
+
+/** Render `text` with the first `marker` characters in nutella ink.
  *
  *  Use inside an element that already has the tier-colour class
  *  (`rw-rank-{level}`):
@@ -11,9 +28,8 @@ import type { ReactNode } from "react";
  *      <MarkerText text={username} marker={title.marker} />
  *    </span>
  *
- *  When `marker` is 0 or >= text.length the whole text is returned as a
- *  plain string - no wrapper span - so the caller can use the result
- *  anywhere a string is expected.
+ *  With `marker <= 0` the result is a plain string (no wrapper span), so
+ *  callers that need a string still work.
  */
 export function MarkerText({
   text,
@@ -22,13 +38,14 @@ export function MarkerText({
   text: string;
   marker: number;
 }): ReactNode {
-  if (marker <= 0 || marker >= text.length) {
-    return text;
+  const [head, rest] = splitMarker(text, marker);
+  if (!head) {
+    return rest;
   }
   return (
     <>
-      <span style={{ color: "var(--rw-nutella-ink)" }}>{text.slice(0, marker)}</span>
-      {text.slice(marker)}
+      <span style={{ color: "var(--rw-nutella-ink)" }}>{head}</span>
+      {rest}
     </>
   );
 }
