@@ -3620,20 +3620,35 @@ _DECISIONS_SANDBOX_FILES = (
     # opposite arrangement, where `tools/`-only PRs left the job `skipped` and
     # the checks were never tested by the checks.
     "tests/latency/check_judge_latency.py",
+    # Threat model (2026-09-21): the rule reads the document and the index that
+    # links it. Missing here, `check_decisions.py` exits 2 in the sandbox copy
+    # and the trial-label tests die for an unrelated reason — the drift check
+    # `neg_decisions_sandbox_covers_reads` catches that by naming the file.
+    "docs/10-operations/threat-model.md",
+    "docs/10-operations/README.md",
 )
 
 
-def _decisions_sandbox(extra_workflows: dict[str, str]) -> tuple[int, str]:
+def _decisions_sandbox(
+    extra_workflows: dict[str, str], drop: tuple[str, ...] = ()
+) -> tuple[int, str]:
     """`check_decisions.py` on a copy of the files it reads, plus extra workflows.
 
     Writing a workflow into the real `.github/workflows` could overwrite a real
     one or be left behind if the run is killed; a copy cannot.
+
+    `drop` names staged files to remove from the copy. A rule that guards a
+    document's existence cannot be tested with `Mutation` — there is nothing to
+    mutate — so the file has to disappear from the copy instead. The real tree
+    is untouched either way.
     """
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
         for rel in _DECISIONS_SANDBOX_FILES:
             (root / rel).parent.mkdir(parents=True, exist_ok=True)
             (root / rel).write_bytes((ROOT / rel).read_bytes())
+        for rel in drop:
+            (root / rel).unlink()
         workflows = root / ".github/workflows"
         workflows.mkdir(parents=True)
         for path in (ROOT / ".github/workflows").glob("*.yml"):
@@ -4134,6 +4149,46 @@ def neg_boundary_host_wide_override() -> tuple[bool, str]:
 def neg_boundary_minio_reset_dropped() -> tuple[bool, str]:
     """MinIO `!reset` yo'qolsa tutilsin — 9000/9001 tashqariga ochiq qoladi."""
     return _boundary_broken(_BOUNDARY_OVERLAY, _MINIO_RESET, _MINIO_NO_RESET)
+
+
+# ── Threat model: the audit's entry document (owner decision 2026-09-21) ──
+#
+# Uchta alohida yo'qolish yo'li bor va har biri o'zicha jimgina: fayl o'chadi,
+# havola uziladi, risk registri qisqaradi. Uchtasi ham bitta qoidaga tegishli,
+# shuning uchun yorliq bir xil — `_decision_broken` o'sha yorliqni qidiradi.
+
+_THREAT_MODEL_RULE = "threat model platformani qamraydi"
+_THREAT_MODEL = "docs/10-operations/threat-model.md"
+_THREAT_MODEL_INDEX = "docs/10-operations/README.md"
+
+
+def _threat_model_broken(rel: str, old: str, new: str) -> tuple[bool, str]:
+    return _decision_broken(rel, old, new, _THREAT_MODEL_RULE)
+
+
+def neg_decisions_threat_model_deleted() -> tuple[bool, str]:
+    """Hujjat o'chsa tutilsin.
+
+    `Mutation` bilan sinab bo'lmaydi — o'zgartiradigan matn yo'q. Shuning uchun
+    nusxadan o'chiriladi: qoidaning eng muhim bandi (fayl bormi) shu tarzda
+    sinaladi, asl daraxtga tegmasdan.
+    """
+    code, out = _decisions_sandbox({}, drop=(_THREAT_MODEL,))
+    if code != 1 or _THREAT_MODEL_RULE not in out:
+        return False, f"threat model/o'chirilgan: exit {code} — {out.strip()[-160:]}"
+    return True, "threat model/o'chirilgan: tutildi (exit 1)"
+
+
+def neg_decisions_threat_model_unlinked() -> tuple[bool, str]:
+    """Indeks havolasi uzilsa tutilsin — hujjat bor, lekin topilmaydi."""
+    return _threat_model_broken(
+        _THREAT_MODEL_INDEX, "](threat-model.md)", "](threat-model-old.md)"
+    )
+
+
+def neg_decisions_threat_model_risk_dropped() -> tuple[bool, str]:
+    """Risk registri qisqarsa tutilsin — hujjat «hammasi nazoratda» deb o'qiladi."""
+    return _threat_model_broken(_THREAT_MODEL, "| **A-8** |", "| **B-8** |")
 
 
 # ── Deploy gate: agents deploy only a green `main` (owner decision 2026-09-17) ──
@@ -5937,6 +5992,18 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "chegara minio `!reset` tushsa tutilsin",
                 neg_boundary_minio_reset_dropped,
+            ),
+            (
+                "threat model o'chirilsa tutilsin",
+                neg_decisions_threat_model_deleted,
+            ),
+            (
+                "threat model havolasi uzilsa tutilsin",
+                neg_decisions_threat_model_unlinked,
+            ),
+            (
+                "threat model risk registri qisqarsa tutilsin",
+                neg_decisions_threat_model_risk_dropped,
             ),
         ],
     ),
