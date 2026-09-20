@@ -1036,6 +1036,12 @@ def homepage_skips_cf_email_decode() -> str | None:
             f"{APP_FOOTER}: CF `<!--email_off-->` yo'q — email-decode High "
             "script Lighthouse tarmog'iga qaytadi"
         )
+    if "<!--email_off--><a href=" not in footer:
+        return (
+            f"{APP_FOOTER}: `email_off` faqat matnni o'raydi — CF `mailto` "
+            "href ni `/cdn-cgi/l/email-protection` qiladi va script qoladi "
+            "(o'lchandi 2026-09-20, #198)"
+        )
     if "dangerouslySetInnerHTML" not in footer:
         return (
             f"{APP_FOOTER}: `email_off` React kommentariyasida — HTML ga "

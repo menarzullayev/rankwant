@@ -3031,8 +3031,8 @@ def neg_decisions_homepage_css_not_inlined() -> tuple[bool, str]:
 def neg_decisions_cf_email_decode_restored() -> tuple[bool, str]:
     return _decision_broken(
         "apps/web/src/layout/AppFooter.tsx",
-        "<!--email_off-->",
-        "<!--email_on-->",
+        "<!--email_off--><a href=",
+        "<a href=",
         "bosh sahifa CF email-decode yo'q",
     )
 
