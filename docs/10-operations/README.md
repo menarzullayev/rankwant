@@ -5,7 +5,7 @@
 migration tartibi, env kalitlari, ma'lum xatolar, reboot va zaxira.
 ✅ **AOP (2026-09-20):** [parallel-agents.md](parallel-agents.md) — slots are
 identity + ports; any agent any task; isolation is **task-lock** (`.agent/locks`);
-`owned_paths` width is **no-star-star**.
+`owned_paths` width is **no-star-star**; leftover worktrees use **stale-reap**.
 
 Nima **hozir** bilinadi: deploy topologiyasi, siyosatlar va incident turlari — ular arxitektura va ADR'lardan kelib chiqadi.
 Nima **hali bilinmaydi**: hosting provayderi, real narxlar.

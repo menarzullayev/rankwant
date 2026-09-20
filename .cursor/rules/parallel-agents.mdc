@@ -45,4 +45,7 @@ Package-manager write = **1**. Live migration = **1**. RAM > 85% or C: < 15% fre
 
 Delete **your** locks. Handoff in `.agent/handoffs/`. Push even if `wip/`. Merge your PR only. Deploy:
 Git Bash `tools/deploy.sh --yes` + `RANKWANT_ENV_FILE=C:/Users/nsn/project/cp/rankwant/.env.public`.
-Prune **your** worktree only.
+Prune **your** worktree after merge. **stale-reap:** leftover trees under your
+`wt/<tool>/` with no fresh manifest, no open PR, and a clean status may be
+removed (`python tools/reap_stale_worktrees.py --tool cursor --yes`). Never
+`wt/deploy`, `cp/rankwant`, or another tool’s folder.
