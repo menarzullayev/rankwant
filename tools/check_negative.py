@@ -3626,6 +3626,10 @@ _DECISIONS_SANDBOX_FILES = (
     # `neg_decisions_sandbox_covers_reads` catches that by naming the file.
     "docs/10-operations/threat-model.md",
     "docs/10-operations/README.md",
+    # Licence inventory (2026-09-21): the rule reads the record and its README.
+    # The `--check` drift run is a separate negative test and reads the TSV.
+    "docs/research/2026-09-21-licence-inventory/packages.tsv",
+    "docs/research/2026-09-21-licence-inventory/README.md",
 )
 
 
@@ -4189,6 +4193,67 @@ def neg_decisions_threat_model_unlinked() -> tuple[bool, str]:
 def neg_decisions_threat_model_risk_dropped() -> tuple[bool, str]:
     """Risk registri qisqarsa tutilsin — hujjat «hammasi nazoratda» deb o'qiladi."""
     return _threat_model_broken(_THREAT_MODEL, "| **A-8** |", "| **B-8** |")
+
+
+# ── Licence inventory: the lawyer's input (owner decision 2026-09-21) ──
+#
+# Ikki xil sinov kerak va ular ikki xil narsani o'lchaydi:
+#   * qoida sinovi — inventar bor / CI'ga ulangan / risk bo'limlari joyida;
+#   * asbob sinovi — `--check` haqiqiy driftni tutadimi (paket qo'shilsa).
+# Faqat bittasi sinalsa, ikkinchisi jimgina o'lishi mumkin.
+
+_LICENCE_RULE = "litsenziya inventari joriy"
+_LICENCE_TSV = "docs/research/2026-09-21-licence-inventory/packages.tsv"
+_LICENCE_README = "docs/research/2026-09-21-licence-inventory/README.md"
+_LICENCE_HEADER = "ecosystem\tname\tversion\tscope\tlicence"
+
+
+def neg_decisions_licence_inventory_unwired() -> tuple[bool, str]:
+    """CI qadami uzilsa tutilsin — inventar jimgina yolg'onga aylanadi."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "        run: python3 tools/licence_inventory.py --check",
+        "        run: python3 tools/licence_inventory_off.py --check",
+        _LICENCE_RULE,
+    )
+
+
+def neg_decisions_licence_inventory_readme_shrunk() -> tuple[bool, str]:
+    """Risk bo'limi o'chsa tutilsin — advokat qabul qilingan riskni ko'rmaydi."""
+    return _decision_broken(
+        _LICENCE_README, "## 6. Copyleft register", "## 6. Copyleft", _LICENCE_RULE
+    )
+
+
+def _licence_check() -> tuple[int, str]:
+    return run([PY, "tools/licence_inventory.py", "--check"])
+
+
+def neg_licence_inventory_check_passes() -> tuple[bool, str]:
+    """Ijobiy nazorat: tegilmagan inventar `--check` dan o'tsin.
+
+    Usiz `neg_licence_inventory_drift` «har doim exit 1» bo'lgan asbobni ham
+    yashil deb ko'rsatardi.
+    """
+    code, out = _licence_check()
+    if code != 0:
+        return False, f"litsenziya/nazorat: `--check` exit {code} — {out.strip()[-160:]}"
+    return True, f"litsenziya/nazorat: `--check` o'tdi (exit 0) — {out.strip()[-60:]}"
+
+
+def neg_licence_inventory_drift() -> tuple[bool, str]:
+    """Inventarga yangi paket qo'shilsa (lockfile'da yo'q) `--check` tutsin."""
+    path = ROOT / _LICENCE_TSV
+    if _LICENCE_HEADER not in path.read_bytes().decode("utf-8"):
+        return False, "litsenziya/drift: TSV sarlavhasi topilmadi"
+    bogus = f"{_LICENCE_HEADER}\nnode/web\tzzz-not-a-dependency\t1.0.0\truntime\tMIT"
+    with Mutation(path, _LICENCE_HEADER, bogus):
+        code, out = _licence_check()
+    if code != 1:
+        return False, f"litsenziya/drift: exit {code} (1 kerak) — {out.strip()[-160:]}"
+    if "zzz-not-a-dependency" not in out:
+        return False, f"litsenziya/drift: yiqildi, lekin paketni nomlamadi — {out.strip()[-160:]}"
+    return True, "litsenziya/drift: qo'shilgan paket tutildi (exit 1)"
 
 
 # ── Deploy gate: agents deploy only a green `main` (owner decision 2026-09-17) ──
@@ -6004,6 +6069,22 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "threat model risk registri qisqarsa tutilsin",
                 neg_decisions_threat_model_risk_dropped,
+            ),
+            (
+                "litsenziya inventari CI'dan uzilsa tutilsin",
+                neg_decisions_licence_inventory_unwired,
+            ),
+            (
+                "litsenziya hujjati risk bo'limi o'chsa tutilsin",
+                neg_decisions_licence_inventory_readme_shrunk,
+            ),
+            (
+                "litsenziya `--check` nazorati o'tadi",
+                neg_licence_inventory_check_passes,
+            ),
+            (
+                "litsenziya inventari driftni tutsin",
+                neg_licence_inventory_drift,
             ),
         ],
     ),
