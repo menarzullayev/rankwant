@@ -4,7 +4,7 @@ pytest-django>=4.9
 pytest-cov>=6
 pytest-xdist>=3
 mypy>=1.13
-django-stubs[compatible-mypy]>=5.1
+django-stubs[compatible-mypy]>=6.1.1
 djangorestframework-stubs>=3.15
 ruff==0.16.6
 hypothesis>=6
