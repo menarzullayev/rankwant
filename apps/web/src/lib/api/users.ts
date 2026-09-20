@@ -348,9 +348,16 @@ export type TitleBand = {
   level: number;
   min: number;
   max: number | null;
+  colour_group: string;
+  marker: number;
 };
 
-export type UserTitle = { code: string; level: number };
+export type UserTitle = {
+  code: string;
+  level: number;
+  colour_group: string;
+  marker: number;
+};
 
 export type RatingSeries = {
   series: Record<RatingKind | "contest", RatingPoint[]>;

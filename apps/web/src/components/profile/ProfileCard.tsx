@@ -2,6 +2,7 @@ import type { Route } from "next";
 import Link from "next/link";
 
 import { Avatar } from "@/components/Avatar";
+import { RankTitle } from "@/components/RankTitle";
 import { UserName } from "@/components/UserName";
 import { Badge, type BadgeColor } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/Button";
@@ -124,7 +125,11 @@ export function ProfileCard({
                 title={t(locale, "profile.titleHint")}
                 className={`inline-flex items-center rounded-full border border-current px-2.5 py-0.5 text-theme-xs font-semibold ${rank}`}
               >
-                {t(locale, `title.${profile.title.code}`)}
+                <RankTitle
+                  locale={locale}
+                  code={profile.title.code}
+                  marker={profile.title.marker}
+                />
               </span>
             )}
             {profile.roles.map((role) => (

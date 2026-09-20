@@ -18682,9 +18682,15 @@ components:
           type: string
         level:
           type: integer
+        colour_group:
+          type: string
+        marker:
+          type: integer
       required:
       - code
+      - colour_group
       - level
+      - marker
     UsernameChange:
       type: object
       properties:

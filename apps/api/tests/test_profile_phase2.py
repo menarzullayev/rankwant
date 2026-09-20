@@ -48,16 +48,36 @@ def profil(user: User, viewer: User | None = None) -> Any:
 
 def test_unvon_chegaralari() -> None:
     # ADR-0027: 16 tiers with English names.
-    assert title_for(0, 1) == {"code": "quark", "level": 1}
-    assert title_for(599, 1) == {"code": "quark", "level": 1}
-    assert title_for(600, 1) == {"code": "atom", "level": 2}
-    assert title_for(1399, 1) == {"code": "meteorite", "level": 5}
-    assert title_for(1400, 1) == {"code": "comet", "level": 6}
-    assert title_for(2699, 3) == {"code": "black_hole", "level": 13}
-    assert title_for(2999, 3) == {"code": "black_hole", "level": 13}
-    assert title_for(3000, 3) == {"code": "galaxy", "level": 14}
-    assert title_for(3200, 5) == {"code": "supercluster", "level": 15}
-    assert title_for(3500, 5) == {"code": "cosmos", "level": 16}
+    assert title_for(0, 1) == {"code": "quark", "level": 1, "colour_group": "grey", "marker": 0}
+    assert title_for(599, 1) == {"code": "quark", "level": 1, "colour_group": "grey", "marker": 0}
+    assert title_for(600, 1) == {"code": "atom", "level": 2, "colour_group": "grey", "marker": 1}
+    assert title_for(1399, 1) == {
+        "code": "meteorite",
+        "level": 5,
+        "colour_group": "green",
+        "marker": 1,
+    }
+    assert title_for(1400, 1) == {"code": "comet", "level": 6, "colour_group": "cyan", "marker": 0}
+    assert title_for(2699, 3) == {
+        "code": "black_hole",
+        "level": 13,
+        "colour_group": "red",
+        "marker": 1,
+    }
+    assert title_for(2999, 3) == {
+        "code": "black_hole",
+        "level": 13,
+        "colour_group": "red",
+        "marker": 1,
+    }
+    assert title_for(3000, 3) == {"code": "galaxy", "level": 14, "colour_group": "red", "marker": 2}
+    assert title_for(3200, 5) == {
+        "code": "supercluster",
+        "level": 15,
+        "colour_group": "red",
+        "marker": 3,
+    }
+    assert title_for(3500, 5) == {"code": "cosmos", "level": 16, "colour_group": "red", "marker": 4}
     # Reytingli musobaqasiz - boshlang'ich 1200 hali hech narsa aytmaydi.
     assert title_for(3000, 0) is None
 
@@ -74,9 +94,22 @@ class TestUnvonHammaJoyda:
         }
         followers = APIClient().get(reverse("user-followers", args=[other_user.username])).data
 
-        assert leaders == {"aziz": {"code": "planet", "level": 8}, "bekzod": None}
-        assert followers["results"][0]["title"] == {"code": "planet", "level": 8}
-        assert profil(user)["title"] == {"code": "planet", "level": 8}
+        assert leaders == {
+            "aziz": {"code": "planet", "level": 8, "colour_group": "blue", "marker": 0},
+            "bekzod": None,
+        }
+        assert followers["results"][0]["title"] == {
+            "code": "planet",
+            "level": 8,
+            "colour_group": "blue",
+            "marker": 0,
+        }
+        assert profil(user)["title"] == {
+            "code": "planet",
+            "level": 8,
+            "colour_group": "blue",
+            "marker": 0,
+        }
         assert profil(other_user)["title"] is None
 
     def test_urinish_standings_jamoa(
@@ -93,7 +126,7 @@ class TestUnvonHammaJoyda:
         attempts = APIClient().get(reverse("attempt-list"), {"username": user.username}).data
         standings = APIClient().get(reverse("contest-standings", args=[contest.slug])).data
 
-        magnetar = {"code": "magnetar", "level": 12}
+        magnetar = {"code": "magnetar", "level": 12, "colour_group": "red", "marker": 0}
         assert attempts["results"][0]["user_title"] == magnetar
         assert standings["results"][0]["user_title"] == magnetar
         assert team.status_code == 201

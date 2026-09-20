@@ -6,10 +6,21 @@ import { SITE_URL } from "@/lib/site";
 
 export const alt = "RankWant";
 
-/** Unvon ranglari to'q fonda — `globals.css` dagi dashboard.dark palitrasi. */
+/** Unvon ranglari to'q fonda — `globals.css` dagi dashboard.dark palitrasi.
+ *  16 ta pog'onaning palitra-dizayner tomonidan ko'tarilgan hexlari
+ *  (ADR-0027 § L2: 1-3 grey, 4-5 green, 6-7 cyan, 8 blue, 9 violet, 10-11 orange,
+ *  12-16 red). */
 const RANK_ON_DARK = [
-  "#8b94a4", "#28a95e", "#16a2b1", "#6093eb", "#a681e7", "#d868dc", "#e9710f", "#ea6d69", "#ee6396",
+  "#8b94a4", "#8b94a4", "#8b94a4",                                  // 1 quark, 2 atom, 3 molecule
+  "#28a95e", "#28a95e",                                            // 4 droplet, 5 meteorite
+  "#16a2b1", "#16a2b1",                                            // 6 comet, 7 moon
+  "#6093eb",                                                       // 8 planet
+  "#a681e7",                                                       // 9 star
+  "#e9710f", "#e9710f",                                            // 10 supernova, 11 pulsar
+  "#ea6d69", "#ea6d69", "#ea6d69", "#ea6d69", "#ea6d69",          // 12..16 magnetar/cosmos
 ];
+/** Nutella marker ink on the OG card. Dark surface, white ink. */
+const NUTELLA_INK_DARK = "#ffffff";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -77,21 +88,29 @@ export default async function OgImage({ params }: { params: Promise<{ username: 
             <div style={{ fontSize: 64, fontWeight: 700 }}>{name}</div>
             <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
               <div style={{ fontSize: 32, opacity: 0.8 }}>{`@${username}`}</div>
-              {title && (
-                <div
-                  style={{
-                    display: "flex",
-                    fontSize: 26,
-                    fontWeight: 600,
-                    padding: "2px 16px",
-                    borderRadius: 999,
-                    border: `2px solid ${RANK_ON_DARK[title.level - 1]}`,
-                    color: RANK_ON_DARK[title.level - 1],
-                  }}
-                >
-                  {t(DEFAULT_LOCALE, `title.${title.code}`)}
-                </div>
-              )}
+              {title && (() => {
+                const text = t(DEFAULT_LOCALE, `title.${title.code}`);
+                const head = text.slice(0, title.marker);
+                const rest = text.slice(title.marker);
+                return (
+                  <div
+                    style={{
+                      display: "flex",
+                      fontSize: 26,
+                      fontWeight: 600,
+                      padding: "2px 16px",
+                      borderRadius: 999,
+                      border: `2px solid ${RANK_ON_DARK[title.level - 1]}`,
+                      color: RANK_ON_DARK[title.level - 1],
+                    }}
+                  >
+                    {head.length > 0 && (
+                      <span style={{ color: NUTELLA_INK_DARK }}>{head}</span>
+                    )}
+                    {rest}
+                  </div>
+                );
+              })()}
             </div>
           </div>
         </div>

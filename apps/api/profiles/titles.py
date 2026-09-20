@@ -81,6 +81,8 @@ COLOUR_GROUPS: tuple[str, ...] = (
 class Title(TypedDict):
     code: str
     level: int
+    colour_group: str
+    marker: int
 
 
 def title_for(rating: int, rated_contests: int) -> Title | None:
@@ -93,11 +95,18 @@ def title_for(rating: int, rated_contests: int) -> Title | None:
         return None
     tier_index = 0
     code_final = TITLES[0][1]
-    for i, (floor, code, _marker) in enumerate(TITLES):
+    marker_final = TITLES[0][2]
+    for i, (floor, code, marker) in enumerate(TITLES):
         if rating >= floor:
             tier_index = i
             code_final = code
-    return {"code": code_final, "level": tier_index + 1}
+            marker_final = marker
+    return {
+        "code": code_final,
+        "level": tier_index + 1,
+        "colour_group": COLOUR_GROUPS[tier_index],
+        "marker": marker_final,
+    }
 
 
 def colour_group(level: int) -> str:
@@ -116,7 +125,7 @@ def user_title(user: Any) -> Title | None:
 def bands() -> list[dict[str, Any]]:
     """Rating chart boundaries - the last band has no upper bound."""
     result: list[dict[str, Any]] = []
-    for i, (floor, code, _marker) in enumerate(TITLES):
+    for i, (floor, code, marker) in enumerate(TITLES):
         result.append(
             {
                 "code": code,
@@ -124,6 +133,7 @@ def bands() -> list[dict[str, Any]]:
                 "min": floor,
                 "max": TITLES[i + 1][0] if i + 1 < len(TITLES) else None,
                 "colour_group": COLOUR_GROUPS[i],
+                "marker": marker,
             }
         )
     return result
@@ -132,6 +142,8 @@ def bands() -> list[dict[str, Any]]:
 class UserTitleSerializer(serializers.Serializer[Title]):
     code = serializers.CharField()
     level = serializers.IntegerField()
+    colour_group = serializers.CharField()
+    marker = serializers.IntegerField()
 
 
 @extend_schema_field(UserTitleSerializer(allow_null=True))
