@@ -78,7 +78,7 @@ marker of 1 (or higher for higher tiers within the red group).
 The owner dropped the WCAG-AA-on-rating-colours rule because the chosen
 seven CF anchors cannot satisfy 4.5:1 against every palette worst
 background (measured 0/18 palettes for grey and red). AA still binds
-ordinary text - tools/check_contrast.py:79 keeps RANKS = () (the comment
+ordinary text - tools/check_contrast.py keeps `RANKS = ()` (the comment
 there documents this carve-out). The marker is also a redundancy that
 mitigates the relaxation.
 
