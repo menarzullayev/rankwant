@@ -854,6 +854,10 @@ def brand_in_header_and_footer_columns() -> str | None:
                 f"{APP_FOOTER}: huquqiy qator to'liq emas (`{key}` yo'q) — "
                 "Terms/Privacy HAR sahifada turishi shart (ADR-0016)"
             )
+    if 'TELEGRAM_URL = "https://t.me/rankwant"' not in footer:
+        return f"{APP_FOOTER}: rasmiy Telegram `t.me/rankwant` emas (2026-09-20 HITL)"
+    if 'CONTACT_EMAIL = "support@rankwant.uz"' not in footer:
+        return f"{APP_FOOTER}: rasmiy email `support@rankwant.uz` emas (2026-09-20 HITL)"
     return None
 
 
