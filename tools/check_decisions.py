@@ -74,6 +74,8 @@ LOCALE_SERVER = "apps/web/src/i18n/server.ts"
 PROXY = "apps/web/src/proxy.ts"
 # Guest GET `/` CDN cache (2026-09-19): origin headers + Worker skip.
 HOME_CACHE = "apps/web/src/lib/home-cache.ts"
+# Render-blocking CSS off the homepage critical path (HITL 2026-09-20).
+WEB_NEXT_CONFIG = "apps/web/next.config.ts"
 WORKER_TOML = "services/maintenance-worker/wrangler.toml"
 SIGN_IN_LINK = "apps/web/src/layout/UserMenu.tsx"
 # Mobile navigation drawer: the trigger announces its state, the panel is a
@@ -1093,6 +1095,21 @@ def locale_travels_in_the_url() -> str | None:
     return None
 
 
+def homepage_css_is_inlined() -> str | None:
+    """Bosh sahifa CSS so'rovi FCP ni to'simasin (HITL 2026-09-20).
+
+    App Router + streaming da Critters/`optimizeCss` ishlamaydi. Next 16
+    `experimental.inlineCss` `<link rel="stylesheet">` o'rniga `<style>`
+    qo'yadi — Slow 4G labda ikkita chunk (~150 ms) zanjiri yo'qoladi.
+    """
+    src = read(WEB_NEXT_CONFIG)
+    if "inlineCss: true" not in src:
+        return f"{WEB_NEXT_CONFIG}: `experimental.inlineCss: true` yo'q"
+    if "experimental:" not in src:
+        return f"{WEB_NEXT_CONFIG}: `experimental` bloki yo'q"
+    return None
+
+
 def homepage_guest_cdn_cache() -> str | None:
     """100k ochilishda bosh sahifa qotmasin (2026-09-19).
 
@@ -1948,6 +1965,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),
+    ("bosh sahifa CSS inline", homepage_css_is_inlined),
 ]
 
 
