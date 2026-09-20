@@ -3078,6 +3078,26 @@ def neg_decisions_owned_paths_predicate() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_stale_reap_reverted() -> tuple[bool, str]:
+    """AOP `stale-reap` ni `keep-manual` ga qaytarsa tutilsin."""
+    return _decision_broken(
+        "docs/10-operations/parallel-agents.md",
+        "HITL 2026-09-20 `stale-reap`",
+        "HITL 2026-09-20 `keep-manual`",
+        "stale worktree reap",
+    )
+
+
+def neg_decisions_stale_reap_allows_deploy() -> tuple[bool, str]:
+    """`wt/deploy` NEVER_REAP dan tushsa tutilsin."""
+    return _decision_broken(
+        "tools/reap_stale_worktrees.py",
+        'NEVER_REAP = ("wt/deploy", "cp/rankwant")',
+        'NEVER_REAP = ("cp/rankwant",)',
+        "stale worktree reap",
+    )
+
+
 def neg_decisions_nav_eager_link() -> tuple[bool, str]:
     # A plain `next/link` back in the sidebar prefetches every item on sight.
     return _decision_broken(
@@ -3418,6 +3438,8 @@ _DECISIONS_SANDBOX_FILES = (
     "tools/owned_paths.py",
     "docs/10-operations/parallel-agents.md",
     ".cursor/rules/parallel-agents.mdc",
+    # stale-reap (2026-09-20 HITL). Missing here, `check_decisions.py` exits 2.
+    "tools/reap_stale_worktrees.py",
 )
 
 
@@ -5246,6 +5268,11 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "owned_paths predikat ** ni qabul qilsa tutilsin",
                 neg_decisions_owned_paths_predicate,
+            ),
+            ("stale-reap keep-manual ga qaytsa tutilsin", neg_decisions_stale_reap_reverted),
+            (
+                "stale-reap wt/deploy ni ochsa tutilsin",
+                neg_decisions_stale_reap_allows_deploy,
             ),
             ("sidebar'ga oddiy Link qaytsa tutilsin", neg_decisions_nav_eager_link),
             ("bosh sahifaga oddiy Link qaytsa tutilsin", neg_decisions_home_main_eager_link),
