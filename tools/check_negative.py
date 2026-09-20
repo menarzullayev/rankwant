@@ -3630,6 +3630,13 @@ _DECISIONS_SANDBOX_FILES = (
     # The `--check` drift run is a separate negative test and reads the TSV.
     "docs/research/2026-09-21-licence-inventory/packages.tsv",
     "docs/research/2026-09-21-licence-inventory/README.md",
+    # Judge latency gate (2026-09-21): the rule walks the recording chain —
+    # the record, the research index that links it, the harness that emits the
+    # marker, the tool that reads it, and the Nightly job that wires both.
+    # `tests/latency/check_judge_latency.py` is already staged above.
+    "docs/research/2026-09-21-judge-latency/README.md",
+    "docs/research/README.md",
+    "tools/latency_summary.py",
 )
 
 
@@ -4254,6 +4261,145 @@ def neg_licence_inventory_drift() -> tuple[bool, str]:
     if "zzz-not-a-dependency" not in out:
         return False, f"litsenziya/drift: yiqildi, lekin paketni nomlamadi — {out.strip()[-160:]}"
     return True, "litsenziya/drift: qo'shilgan paket tutildi (exit 1)"
+
+
+# ── Judge latency launch gate: the recording chain (owner decision 2026-09-21) ──
+#
+# Bu bandning butun muammosi shu edi: o'lchov bor, **qayd** yo'q. Shuning
+# uchun sinovlar ham zanjirning har bir uzilish nuqtasini alohida o'lchaydi —
+# yozuv o'chishi, belgi surilishi, jamiga yozish qadami uzilishi, va
+# `pipefail` tushib qolishi (byudjet buzilsa ham job yashil qolardi).
+
+_LATENCY_GATE_RULE = "judge latency gate qayd etiladi"
+_LATENCY_GATE_RECORD = "docs/research/2026-09-21-judge-latency/README.md"
+_LATENCY_GATE_HARNESS = "tests/latency/check_judge_latency.py"
+_LATENCY_GATE_SUMMARY = "tools/latency_summary.py"
+
+
+def neg_decisions_latency_record_deleted() -> tuple[bool, str]:
+    """Yozuv o'chsa tutilsin — gate yana «o'lchanmagan» bo'lib qoladi."""
+    code, out = _decisions_sandbox({}, drop=(_LATENCY_GATE_RECORD,))
+    if code != 1 or _LATENCY_GATE_RULE not in out:
+        return False, f"latency/yozuv o'chirilgan: exit {code} — {out.strip()[-160:]}"
+    return True, "latency/yozuv o'chirilgan: tutildi (exit 1)"
+
+
+def neg_decisions_latency_marker_drifted() -> tuple[bool, str]:
+    """Harness belgisi surilsa tutilsin — summary uni topmaydi, jim uziladi."""
+    return _decision_broken(
+        _LATENCY_GATE_HARNESS,
+        'REPORT_MARKER = "LATENCY_JSON: "',
+        'REPORT_MARKER = "LATENCY_JSON_V2: "',
+        _LATENCY_GATE_RULE,
+    )
+
+
+def neg_decisions_latency_summary_unwired() -> tuple[bool, str]:
+    """Jamiga yozish qadami uzilsa tutilsin — raqam yana logga ko'miladi."""
+    return _decision_broken(
+        ".github/workflows/nightly.yml",
+        '        run: python3 tools/latency_summary.py "${RUNNER_TEMP}/latency.log"',
+        '        run: python3 tools/latency_summary_off.py "${RUNNER_TEMP}/latency.log"',
+        _LATENCY_GATE_RULE,
+    )
+
+
+def neg_decisions_latency_pipefail_dropped() -> tuple[bool, str]:
+    """`pipefail` tushsa tutilsin.
+
+    Usiz `tee` ning exit 0 i g'olib bo'ladi: byudjet buzilgan holda ham job
+    YASHIL ko'rinadi — ya'ni darvoza o'lik bo'ladi, raqam esa «o'tdi» deb
+    qayd etiladi. Langar ikki qatorli, chunki yalang `set -o pipefail` izohda
+    ham bor.
+    """
+    return _decision_broken(
+        ".github/workflows/nightly.yml",
+        "          set -o pipefail\n          docker compose",
+        "          docker compose",
+        _LATENCY_GATE_RULE,
+    )
+
+
+def neg_decisions_latency_metric_undefined() -> tuple[bool, str]:
+    """Metrika ta'rifi o'chsa tutilsin — raqam nima ekani noma'lum qoladi."""
+    return _decision_broken(
+        _LATENCY_GATE_RECORD, "Attempt.created_at", "Attempt.created", _LATENCY_GATE_RULE
+    )
+
+
+def _latency_summary(args: list[str], log_text: str | None = None) -> tuple[int, str]:
+    """`latency_summary.py` ni vaqtinchalik log bilan chaqiradi."""
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "latency.log"
+        path.write_text(log_text or "", encoding="utf-8")
+        return run([PY, "tools/latency_summary.py", *args, str(path)])
+
+
+def neg_latency_summary_self_test() -> tuple[bool, str]:
+    """Ijobiy nazorat: asbobning o'z sinovi o'tsin.
+
+    Usiz quyidagi «belgisiz log exit 2 beradi» sinovi **har doim** exit 2
+    beradigan o'lik asbobni ham yashil ko'rsatardi.
+    """
+    code, out = run([PY, "tools/latency_summary.py", "--self-test"])
+    if code != 0:
+        return False, f"latency/o'z sinovi: exit {code} — {out.strip()[-160:]}"
+    return True, "latency/o'z sinovi: o'tdi (exit 0)"
+
+
+def neg_latency_summary_missing_marker() -> tuple[bool, str]:
+    """Belgisiz log «yaxshi» deb o'qilmasin — yo'q o'lchov = exit 2."""
+    code, out = _latency_summary([], "shunchaki matn, belgi yo'q\n")
+    if code != 2:
+        return False, f"latency/belgisiz log: exit {code} (2 kerak) — {out.strip()[-160:]}"
+    return True, "latency/belgisiz log: exit 2 (o'qilmagan ≠ yaxshi)"
+
+
+def neg_latency_summary_records_the_figure() -> tuple[bool, str]:
+    """Ijobiy nazorat: belgili logdan raqam HAQIQATAN o'qilsin.
+
+    Raqamni tekshiradi, «exit 0» ni emas: asbob JSON ni o'qib, p50/p95 ni
+    chiqarishi shart. Bu — zanjirning oxirgi bo'g'ini ishlayotganining
+    yagona isboti.
+    """
+    payload = (
+        'LATENCY_JSON: {"api": "http://api:8000/api/v1", "cores": 4, "load1": "0.10", '
+        '"samples": 20, "warmup": 2, "language": "cpp23", "problem": "a-plus-b", '
+        '"p50_ms": 173, "p95_ms": 1683, "min_ms": 120, "max_ms": 1900, "mean_ms": 300, '
+        '"budget_p50_ms": 5000, "budget_p95_ms": 15000, "ok": true, "failures": []}'
+    )
+    code, out = _latency_summary([], f"oldin shovqin\n{payload}\n")
+    if code != 0:
+        return False, f"latency/raqam: exit {code} — {out.strip()[-160:]}"
+    if "173" not in out or "1683" not in out:
+        return False, f"latency/raqam: p50/p95 chiqmadi — {out.strip()[-160:]}"
+    return True, "latency/raqam: p50 173 · p95 1683 o'qildi va yozildi (exit 0)"
+
+
+def neg_negative_constants_are_unique() -> tuple[bool, str]:
+    """`check_negative.py` da bir xil nomli modul konstantasi ikki marta bo'lmasin.
+
+    Nega: modul darajasidagi ikkinchi e'lon birinchisini **jimgina** bosib
+    ketadi. Sintaksis to'g'ri, lint to'g'ri, o'zgaruvchi mavjud — lekin unga
+    tayanadigan BOSHQA blok endi boshqa qiymat ko'radi.
+
+    O'lchandi (2026-09-21): yangi latency bloki `_LATENCY_RULE` ni qayta
+    e'lon qildi; natijada oldingi blokning uchta testi «yiqildi, lekin boshqa
+    sabab» bilan qizil bo'ldi. Xabar testning o'zidan chiqqani uchun sabab
+    kodda ko'rinmadi — topish uchun konstantalarni qo'lda solishtirish kerak
+    bo'ldi. Bu test o'sha ishni bajaradi.
+    """
+    src = (ROOT / "tools/check_negative.py").read_text(encoding="utf-8")
+    # Faqat katta harfli konstanta e'lonlari: `_FOO = ` / `FOO = `. Docstring
+    # ichidagi satrlar ham mos kelmasin deb satr boshi va nom shakli qat'iy.
+    names = re.findall(r"^(_?[A-Z][A-Z0-9_]*) = ", src, re.M)
+    counts: dict[str, int] = {}
+    for name in names:
+        counts[name] = counts.get(name, 0) + 1
+    duplicates = sorted(n for n, c in counts.items() if c > 1)
+    if duplicates:
+        return False, f"takroriy modul konstantasi: {', '.join(duplicates)}"
+    return True, f"takroriy konstanta yo'q ({len(names)} ta modul e'loni)"
 
 
 # ── Deploy gate: agents deploy only a green `main` (owner decision 2026-09-17) ──
@@ -6085,6 +6231,42 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "litsenziya inventari driftni tutsin",
                 neg_licence_inventory_drift,
+            ),
+            (
+                "latency yozuvi o'chsa tutilsin",
+                neg_decisions_latency_record_deleted,
+            ),
+            (
+                "latency belgisi surilsa tutilsin",
+                neg_decisions_latency_marker_drifted,
+            ),
+            (
+                "latency raqami run sahifasidan uzilsa tutilsin",
+                neg_decisions_latency_summary_unwired,
+            ),
+            (
+                "latency `pipefail` tushsa tutilsin",
+                neg_decisions_latency_pipefail_dropped,
+            ),
+            (
+                "latency metrika ta'rifi o'chsa tutilsin",
+                neg_decisions_latency_metric_undefined,
+            ),
+            (
+                "latency summary o'z sinovini o'tadi",
+                neg_latency_summary_self_test,
+            ),
+            (
+                "latency belgisiz log exit 2 beradi",
+                neg_latency_summary_missing_marker,
+            ),
+            (
+                "latency raqamni haqiqatan yozadi",
+                neg_latency_summary_records_the_figure,
+            ),
+            (
+                "modul konstantalari takrorlanmasin",
+                neg_negative_constants_are_unique,
             ),
         ],
     ),

@@ -41,6 +41,12 @@ Atrof-muhit o'zgaruvchilari:
 | `LATENCY_LANGUAGE` | `cpp23` | C++ — kompilyatsiya eng qimmat yo'l |
 | `VERDICT_TIMEOUT` | `120` | Bitta verdict uchun chegara, soniya |
 
+Chiqish: odam o'qiydigan hisobot **va** bitta mashina o'qiydigan satr,
+`LATENCY_JSON: {...}` belgisi bilan. Uni `tools/latency_summary.py` o'qiydi va
+run sahifasiga yozadi — log qo'lda o'qilmaydi, ya'ni «o'lchandi» degan gap
+biror joyda **qayd etilishi** kerak. Yiqilganda ham satr chiqadi
+(`"ok": false`), shunda byudjetdan chiqqan raqam ham yozib qolinadi.
+
 `LATENCY_SAMPLES=20` ataylab: p95 ma'noli bo'lishi uchun kamida 20 nuqta
 kerak (nearest-rank bo'yicha p95 — 20 namunada eng yuqori qiymat).
 
@@ -69,6 +75,11 @@ LANGUAGE = os.environ.get("LATENCY_LANGUAGE", "cpp23")
 DEADLINE = int(os.environ.get("VERDICT_TIMEOUT", "120"))
 
 TERMINAL = ("", "PENDING", "RUNNING", "pending", "running")
+
+# Mashina o'qiydigan satr belgisi. `tools/latency_summary.py` aynan shu
+# belgini qidiradi: format o'zgarsa, raqam run sahifasiga yetib bormaydi va
+# gate yana «o'lchanmagan» bo'lib qoladi. Shu sababli belgi bitta joyda.
+REPORT_MARKER = "LATENCY_JSON: "
 
 SOLUTION = (
     "#include <cstdio>\n"
@@ -141,8 +152,8 @@ def one_submission(session: str) -> tuple[float, str]:
     raise TimeoutError(f"{DEADLINE}s ichida verdikt kelmadi (attempt {attempt_id})")
 
 
-def environment() -> None:
-    """Raqamni talqin qilish uchun muhitni chop etadi.
+def environment() -> dict:
+    """Raqamni talqin qilish uchun muhitni chop etadi va qaytaradi.
 
     Runner yadrolari va yuklama boshqacha bo'lsa bir xil byudjet turli
     natija beradi — shuning uchun raqam bilan birga yozib qo'yiladi.
@@ -153,11 +164,38 @@ def environment() -> None:
     except (OSError, AttributeError):
         load1 = "n/a"
     print(f"Muhit: {API} · {cores} yadro · load1 {load1}")
+    return {"api": API, "cores": cores, "load1": load1}
+
+
+def emit_report(env: dict, samples: list[float], p50: float, p95: float) -> None:
+    """Raqamni bitta mashina o'qiydigan satr sifatida chiqaradi.
+
+    Odam o'qiydigan hisobot yetarli emas: log qo'lda o'qiladi, ya'ni
+    «o'lchandi» degan gap hech qayerda qayd etilmaydi. Shu satr
+    `tools/latency_summary.py` uchun manba bo'ladi.
+    """
+    payload = {
+        **env,
+        "samples": len(samples),
+        "warmup": WARMUP,
+        "language": LANGUAGE,
+        "problem": PROBLEM,
+        "p50_ms": round(p50),
+        "p95_ms": round(p95),
+        "min_ms": round(min(samples)),
+        "max_ms": round(max(samples)),
+        "mean_ms": round(sum(samples) / len(samples)),
+        "budget_p50_ms": BUDGET_P50_MS,
+        "budget_p95_ms": BUDGET_P95_MS,
+        "ok": not failures,
+        "failures": list(failures),
+    }
+    print(REPORT_MARKER + json.dumps(payload, ensure_ascii=False))
 
 
 def main() -> int:
     print("Judge latency (launch gate: p50 < 5 s, p95 < 15 s):")
-    environment()
+    env = environment()
 
     body, _ = request("/health/")
     if body.get("status") != "ok":
@@ -196,6 +234,10 @@ def main() -> int:
         failures.append(f"p50 {p50:.0f} ms > byudjet {BUDGET_P50_MS} ms")
     if p95 > BUDGET_P95_MS:
         failures.append(f"p95 {p95:.0f} ms > byudjet {BUDGET_P95_MS} ms")
+
+    # Yiqilganda ham chiqariladi: byudjetdan chiqqan raqam ham yozib qolinsin,
+    # aks holda «gate qizil» degan gap o'lchovsiz qoladi.
+    emit_report(env, samples, p50, p95)
 
     if failures:
         print("\nLatency YIQILDI:", file=sys.stderr)

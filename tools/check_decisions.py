@@ -2211,6 +2211,64 @@ def licence_inventory_is_current() -> str | None:
     return None
 
 
+LATENCY_RECORD = "docs/research/2026-09-21-judge-latency"
+LATENCY_HARNESS = "tests/latency/check_judge_latency.py"
+LATENCY_SUMMARY = "tools/latency_summary.py"
+NIGHTLY = ".github/workflows/nightly.yml"
+
+
+def judge_latency_gate_is_recorded() -> str | None:
+    """Latency o'lchovi bor, indeksdan topiladi va **qayd zanjiri** uzilmagan.
+
+    `docs/09-development-plan/README.md` § "Launch gate":
+    «Judge latency o'lchangan: p50 < 5s, p95 < 15s». Bu — launch gate'idagi
+    agent yopa oladigan **yagona** band (qolgan ikkitasi egasining ishi:
+    tashqi audit va yurist).
+
+    ⚠️ Nega qo'riqchi kerak: job bor edi va **yashil** bo'lishi mumkin edi,
+    lekin raqam faqat CI logiga tushardi — ya'ni gate katakchasi hech qachon
+    o'zgarmasdi. O'lchov bor, **qayd** yo'q. Shuning uchun bu qoida
+    zanjirning uzilishga moyil uch bo'g'inini qo'riqlaydi: yozuv fayli,
+    mashina o'qiydigan belgi, va uni run sahifasiga olib chiqadigan qadam.
+
+    Ataylab **talab qilinmaydi**: jadvalda raqam bo'lishi. 2026-09-21 holatida
+    hech qanday raqam yo'q (job bir marta ham ishlamagan, production o'lchovi
+    esa egasi qaroriga qoldirilgan). Raqam paydo bo'lgach qoida kuchaytiriladi
+    — aks holda jadval jimgina bo'shab qolishi mumkin.
+    """
+    if not (ROOT / LATENCY_RECORD / "README.md").exists():
+        return f"{LATENCY_RECORD}/README.md: latency yozuvi yo'q — 09 launch gate"
+    if "](2026-09-21-judge-latency/README.md)" not in read("docs/research/README.md"):
+        return "docs/research/README.md: latency yozuvi indeksda yo'q — topilmaydi"
+    harness = read(LATENCY_HARNESS)
+    if 'REPORT_MARKER = "LATENCY_JSON: "' not in harness:
+        return f"{LATENCY_HARNESS}: mashina o'qiydigan belgi yo'q — raqam olinmaydi"
+    if "emit_report(env, samples, p50, p95)" not in harness:
+        return f"{LATENCY_HARNESS}: hisobot chiqarilmaydi — zanjir uzilgan"
+    # Belgining IKKI nusxasi mos kelishi shart: harness chiqaradi, summary
+    # o'qiydi. Biri o'zgarsa zanjir JIMGINA uziladi — summary belgini
+    # topmaydi, exit 2 beradi, lekin sabab kodda ko'rinmaydi.
+    if 'MARKER = "LATENCY_JSON: "' not in read(LATENCY_SUMMARY):
+        return f"{LATENCY_SUMMARY}: `MARKER` harness belgisiga mos emas — zanjir uzilgan"
+    nightly = read(NIGHTLY)
+    if "tools/latency_summary.py" not in nightly:
+        return f"{NIGHTLY}: latency raqami run sahifasiga yozilmaydi"
+    # ⚠️ Langar ATAYLAB ikki qatorli: yalang `set -o pipefail` izohda ham
+    # uchraydi (o'lchandi), ya'ni bunday tekshiruv haqiqiy qator o'chirilganda
+    # ham o'tib ketardi — yolg'on yashil. Ikki qator birga esa faqat kodda
+    # bo'ladi va `pipefail` aynan compose buyrug'iga qo'llanganini isbotlaydi.
+    if "          set -o pipefail\n          docker compose" not in nightly:
+        return f"{NIGHTLY}: `pipefail` compose buyrug'iga qo'llanmagan — byudjet buzilishi job'ni qizil qilmaydi"
+    if "--profile latency run --rm latency" not in nightly:
+        return f"{NIGHTLY}: harness umuman chaqirilmaydi"
+    record = read(f"{LATENCY_RECORD}/README.md")
+    if "Attempt.created_at" not in record:
+        return f"{LATENCY_RECORD}/README.md: metrika ta'rifi yo'q — raqam nima ekani noaniq"
+    if "API=https://rankwant.uz/api/v1" not in record:
+        return f"{LATENCY_RECORD}/README.md: production buyrug'i yo'q — gate raqami yo'li yopilgan"
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -2268,6 +2326,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("chegara faqat loopback", security_boundary_is_loopback_only),
     ("threat model platformani qamraydi", threat_model_covers_the_platform),
     ("litsenziya inventari joriy", licence_inventory_is_current),
+    ("judge latency gate qayd etiladi", judge_latency_gate_is_recorded),
 ]
 
 
