@@ -3038,6 +3038,26 @@ def neg_decisions_rank_class_uses_level() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_owned_paths_star_star() -> tuple[bool, str]:
+    """AOP `no-star-star` ni `honor-tight` ga qaytarsa tutilsin."""
+    return _decision_broken(
+        "docs/10-operations/parallel-agents.md",
+        "HITL 2026-09-20 `no-star-star`",
+        "HITL 2026-09-20 `honor-tight`",
+        "owned_paths no-star-star",
+    )
+
+
+def neg_decisions_owned_paths_predicate() -> tuple[bool, str]:
+    """`legal_owned_path('**')` True qaytsa tutilsin."""
+    return _decision_broken(
+        "tools/owned_paths.py",
+        'FORBIDDEN_EXACT = frozenset({"**", "*", ".", "./", "/", "~", ".."})',
+        'FORBIDDEN_EXACT = frozenset({"*", ".", "./", "/", "~", ".."})',
+        "owned_paths no-star-star",
+    )
+
+
 def neg_decisions_nav_eager_link() -> tuple[bool, str]:
     # A plain `next/link` back in the sidebar prefetches every item on sight.
     return _decision_broken(
@@ -3370,6 +3390,11 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/profiles/titles.py",
     "apps/web/src/app/globals.css",
     "apps/web/src/components/UserName.tsx",
+    # owned_paths width (2026-09-20 HITL no-star-star). Missing here,
+    # `check_decisions.py` exits 2 / import fails in the trial sandbox.
+    "tools/owned_paths.py",
+    "docs/10-operations/parallel-agents.md",
+    ".cursor/rules/parallel-agents.mdc",
 )
 
 
@@ -5186,6 +5211,11 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("/users/ ochilsa tutilsin", neg_decisions_users_indexed),
             ("rank raqamli token qaytsa tutilsin", neg_decisions_rank_numbered_token),
             ("UserName level class qaytsa tutilsin", neg_decisions_rank_class_uses_level),
+            ("owned_paths ** qaytsa tutilsin", neg_decisions_owned_paths_star_star),
+            (
+                "owned_paths predikat ** ni qabul qilsa tutilsin",
+                neg_decisions_owned_paths_predicate,
+            ),
             ("sidebar'ga oddiy Link qaytsa tutilsin", neg_decisions_nav_eager_link),
             ("bosh sahifaga oddiy Link qaytsa tutilsin", neg_decisions_home_main_eager_link),
             ("IntentLink darhol prefetch qilsa tutilsin", neg_decisions_intent_link_eager),
