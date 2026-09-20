@@ -46,8 +46,10 @@ from typing import ClassVar
 from django.db import models
 from django.utils import timezone
 
+from core.bases import CreatedModel, TimeStampedModel
 
-class RoadmapItem(models.Model):
+
+class RoadmapItem(TimeStampedModel):
     """Bitta reja bandi — taklif, reja yoki chiqarilgan ish."""
 
     class Status(models.TextChoices):
@@ -107,9 +109,6 @@ class RoadmapItem(models.Model):
     #: ko'rinmaydi, lekin bazada va ovozlari bilan qoladi.
     is_enabled = models.BooleanField(default=True, db_index=True)
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
     class Meta:
         ordering: ClassVar = ["-created_at", "-pk"]
         indexes: ClassVar = [
@@ -150,7 +149,7 @@ class RoadmapItem(models.Model):
         )
 
 
-class RoadmapVote(models.Model):
+class RoadmapVote(CreatedModel):
     """Foydalanuvchining bitta bandga ovozi.
 
     Qatorning MAVJUDLIGI — ovoz. Qiymat ustuni yo'q: "bir odam bir ovoz"
@@ -159,7 +158,6 @@ class RoadmapVote(models.Model):
 
     item = models.ForeignKey(RoadmapItem, on_delete=models.CASCADE, related_name="votes")
     user = models.ForeignKey("core.User", on_delete=models.CASCADE, related_name="roadmap_votes")
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         constraints: ClassVar = [
@@ -173,7 +171,7 @@ class RoadmapVote(models.Model):
         return f"{self.user_id}→{self.item_id}"
 
 
-class RoadmapComment(models.Model):
+class RoadmapComment(TimeStampedModel):
     """Band ostidagi izoh.
 
     Moderatsiya — **keyin** (post-moderation): izoh darhol ko'rinadi,
@@ -195,9 +193,6 @@ class RoadmapComment(models.Model):
     #: Yashirilgan izoh API dan chiqmaydi, lekin o'chirilmaydi — jamoa
     #: qarorini keyin ko'rib chiqishi mumkin.
     is_hidden = models.BooleanField(default=False, db_index=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         # Eski izoh yuqorida — muhokama tartibi.

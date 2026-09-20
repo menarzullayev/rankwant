@@ -31,6 +31,8 @@ from typing import ClassVar
 from django.db import models
 from django.utils import timezone
 
+from core.bases import TimeStampedModel
+
 #: Interfeys tillari — manba: `apps/web/src/i18n/locales/` (10 fayl).
 #: Uchta ro'yxat bir xil bo'lishi shart: `User.Locale`, `settings.LANGUAGES`
 #: va `core.email_text.LOCALES`. Ular `tools/check_locales_parity.py` bilan
@@ -41,7 +43,7 @@ LOCALES: tuple[str, ...] = ("uz", "ru", "en", "kk", "ky", "tg", "tr", "es", "zh"
 SOURCE_LOCALE = "uz"
 
 
-class SystemUpdate(models.Model):
+class SystemUpdate(TimeStampedModel):
     """Bitta o'zgarish. Kanonik matn — o'zbekcha; qolgan tillar tarjimada."""
 
     class Kind(models.TextChoices):
@@ -121,9 +123,6 @@ class SystemUpdate(models.Model):
         "core.User", null=True, blank=True, on_delete=models.SET_NULL, related_name="updates"
     )
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
     class Meta:
         ordering: ClassVar = ["-released_at", "-pk"]
         indexes: ClassVar = [
@@ -147,7 +146,7 @@ class SystemUpdate(models.Model):
         return self.kind in self.ACTIONABLE
 
 
-class SystemUpdateTranslation(models.Model):
+class SystemUpdateTranslation(TimeStampedModel):
     """Bitta o'zgarishning boshqa tildagi matni.
 
     `SystemUpdate` dagi `title`/`body` — o'zbekcha kanonik. Qolgan 9 til
@@ -162,9 +161,6 @@ class SystemUpdateTranslation(models.Model):
 
     #: Mashina tarjimasi bo'lsa — belgilanadi. Foydalanuvchi bilishi kerak.
     is_machine = models.BooleanField(default=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         constraints: ClassVar = [

@@ -16,6 +16,8 @@ from django.db import models
 from django.db.models import F, Q
 from django.utils import timezone
 
+from core.bases import CreatedModel
+
 
 class Skill(models.Model):
     slug = models.SlugField(unique=True)
@@ -200,7 +202,7 @@ class Follow(models.Model):
         return f"{self.follower_id} → {self.following_id}"
 
 
-class Team(models.Model):
+class Team(CreatedModel):
     """Jamoa — a'zolar kod yoki havola bilan qo'shiladi."""
 
     #: ICPC jamoasi 3 kishi, lekin jamoa musobaqadan tashqarida ham
@@ -212,7 +214,6 @@ class Team(models.Model):
         "core.User", on_delete=models.SET_NULL, null=True, related_name="created_teams"
     )
     join_code = models.CharField(max_length=24, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering: ClassVar = ["-created_at"]

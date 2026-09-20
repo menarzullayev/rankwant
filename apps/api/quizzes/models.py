@@ -11,15 +11,16 @@ from typing import ClassVar
 
 from django.db import models
 
+from core.bases import CreatedModel
 
-class Question(models.Model):
+
+class Question(CreatedModel):
     text = models.TextField(help_text="Markdown + LaTeX")
     explanation = models.TextField(blank=True, help_text="Javobdan keyin ko'rsatiladi")
     topics = models.ManyToManyField("problems.Topic", blank=True, related_name="questions")
     #: Masala qiyinligi shkalasida (800–3500) — tavsiya va Arena saralash uchun
     difficulty = models.PositiveIntegerField(default=800)
     is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering: ClassVar = ["-created_at"]
@@ -58,7 +59,7 @@ class Choice(models.Model):
         return self.text[:40]
 
 
-class Quiz(models.Model):
+class Quiz(CreatedModel):
     slug = models.SlugField(unique=True, max_length=120)
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
@@ -66,7 +67,6 @@ class Quiz(models.Model):
     #: Birinchi yakunlashda beriladi; kunlik shiftga bo'ysunadi (ADR-0002)
     reward_qvant = models.PositiveIntegerField(default=10)
     is_published = models.BooleanField(default=False, db_index=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering: ClassVar = ["-created_at"]
@@ -92,7 +92,7 @@ class QuizQuestion(models.Model):
         return f"{self.quiz_id}#{self.order}"
 
 
-class QuizAttempt(models.Model):
+class QuizAttempt(CreatedModel):
     """Bitta topshirish. Qayta topshirish mumkin, lekin Qvant faqat birinchisida."""
 
     user = models.ForeignKey("core.User", on_delete=models.CASCADE, related_name="quiz_attempts")
@@ -102,7 +102,6 @@ class QuizAttempt(models.Model):
     score = models.PositiveIntegerField(default=0)
     total = models.PositiveIntegerField(default=0)
     qvant_awarded = models.PositiveIntegerField(default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering: ClassVar = ["-created_at"]

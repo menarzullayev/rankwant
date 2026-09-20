@@ -10,17 +10,17 @@ from typing import ClassVar
 
 from django.db import models
 
+from core.bases import CreatedModel
 from core.mixins import TimeWindowMixin
 
 
-class Tournament(TimeWindowMixin, models.Model):
+class Tournament(TimeWindowMixin, CreatedModel):
     slug = models.SlugField(unique=True, max_length=120)
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True, help_text="Markdown")
     start_at = models.DateTimeField(db_index=True)
     end_at = models.DateTimeField()
     is_public = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering: ClassVar = ["-start_at"]

@@ -11,15 +11,16 @@ from typing import ClassVar
 
 from django.db import models
 
+from core.bases import UpdatedModel
+
 #: ADR-0002 anti-farm: kunlik maksimal emissiya.
 #: Streak yutuqlari bundan TASHQARI (ular kamdan-kam va rejalashtirilgan).
 DAILY_EARN_CAP = 100
 
 
-class QvantWallet(models.Model):
+class QvantWallet(UpdatedModel):
     user = models.OneToOneField("core.User", on_delete=models.CASCADE, related_name="wallet")
     balance = models.IntegerField(default=0)
-    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
         return f"{self.user_id}: {self.balance} Qvant"

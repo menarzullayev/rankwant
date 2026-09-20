@@ -13,8 +13,10 @@ from typing import ClassVar
 
 from django.db import models
 
+from core.bases import CreatedModel
 
-class Classroom(models.Model):
+
+class Classroom(CreatedModel):
     name = models.CharField(max_length=150)
     slug = models.SlugField(unique=True, max_length=120)
     owner = models.ForeignKey(
@@ -24,7 +26,6 @@ class Classroom(models.Model):
     #: Qo'shilish kodi — havola bilan tarqatiladi
     join_code = models.CharField(max_length=12, unique=True, db_index=True)
     is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     MAX_MEMBERS = 200
 
@@ -62,7 +63,7 @@ class ClassroomMember(models.Model):
         return f"{self.classroom_id} — {self.user_id}"
 
 
-class Assignment(models.Model):
+class Assignment(CreatedModel):
     """Uy vazifasi — sinfga berilgan masalalar to'plami."""
 
     classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, related_name="assignments")
@@ -70,7 +71,6 @@ class Assignment(models.Model):
     description = models.TextField(blank=True)
     problems = models.ManyToManyField("problems.Problem", related_name="assignments")
     due_at = models.DateTimeField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering: ClassVar = ["-created_at"]

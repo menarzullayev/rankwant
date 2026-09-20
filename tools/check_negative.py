@@ -2842,6 +2842,22 @@ def neg_decisions_auto_deploy_attempt_after_deploy() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_timestamps_direct_declaration() -> tuple[bool, str]:
+    """Modelda qo'lda yozilgan `updated_at` tutilsin.
+
+    Qaror (2026-09-20): vaqt tamg'alari `core/bases.py` dan olinadi. Baza
+    kiritilgach modelda qo'lda e'lon qilish qaytsa, nusxalar yana ko'payadi
+    va bir-biridan uzoqlashadi — aynan shu drift o'lchangan edi
+    (`contests.start_at` indeksini yo'qotgan, qolganlari saqlab qolgan).
+    """
+    return _decision_broken(
+        "apps/api/blog/models.py",
+        "class Post(TimeStampedModel):",
+        "class Post(TimeStampedModel):\n    updated_at = models.DateTimeField(auto_now=True)",
+        "vaqt tamg'alari bazadan",
+    )
+
+
 def neg_decisions_auto_deploy_gate_closed_records_attempt() -> tuple[bool, str]:
     """Darvoza tekshiruvi urinishdan KEYIN tursa tutilsin.
 
@@ -3410,6 +3426,10 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/proxy.ts",
     # ADR-0024: the User columns added for competitor parity.
     "apps/api/core/models.py",
+    # Timestamp bases (2026-09-20): the rule reads this file to prove the
+    # three abstract bases exist, and every `*/models.py` to prove no model
+    # declares a timestamp by hand.
+    "apps/api/core/bases.py",
     # Header fits 320 px (2026-09-18): the locale control and the sign-in
     # link. Missing from this list, the sandbox copy cannot be read and
     # `check_decisions.py` fails with exit 2 — which is how the omission
@@ -5563,6 +5583,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "yopiq darvoza urinish yozsa tutilsin",
                 neg_decisions_auto_deploy_gate_closed_records_attempt,
+            ),
+            (
+                "vaqt tamg'asi modelda qo'lda yozilsa tutilsin",
+                neg_decisions_timestamps_direct_declaration,
             ),
             (
                 "deploy'ga boshqa env-fayl uzatilsa tutilsin",

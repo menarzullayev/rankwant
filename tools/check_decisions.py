@@ -523,6 +523,63 @@ def user_parity_fields_kept() -> str | None:
     return None
 
 
+#: Vaqt tamg'alari endi `core/bases.py` dan olinadi (qaror 2026-09-20:
+#: abstrakt bazalar kiritildi, sxema o'zgarmadi). Modelda to'g'ridan-to'g'ri
+#: e'lon faqat INDEKSLI `created_at` uchun qoladi — indeksni birxillashtirish
+#: DDL bo'lgani uchun alohida qaror (`apps/api/core/bases.py` docstringi).
+#:
+#: 9 — o'lchandi 2026-09-20: core.EmailDelivery, core.EmailVerifyToken,
+#: core.PasswordResetToken, judging.Attempt, notifications.Notification,
+#: problems.ProblemReport, profiles.Follow, qvant.QvantTransaction, hacks.Hack.
+TIMESTAMP_BASES = "apps/api/core/bases.py"
+TIMESTAMP_INDEX_EXCEPTIONS = 9
+
+
+def timestamps_come_from_bases() -> str | None:
+    """Timestamp fields are declared once, in `core/bases.py`.
+
+    Before the change every model wrote `created_at`/`updated_at` by hand —
+    54 declarations of two identical expressions across 21 apps, and the
+    copies had already drifted apart. A shared abstract base makes that
+    drift impossible: there is one place to change.
+
+    Nine indexed `created_at` fields stay declared on purpose. Normalising
+    them is DDL, which is a separate decision — see the `core/bases.py`
+    docstring. `updated_at` has no such exception: it never carries an index.
+    """
+    try:
+        bases = read(TIMESTAMP_BASES)
+    except Unreadable as exc:
+        return f"{TIMESTAMP_BASES}: {exc}"
+    for name in ("CreatedModel", "TimeStampedModel", "UpdatedModel"):
+        if f"class {name}(models.Model):" not in bases:
+            return f"{TIMESTAMP_BASES}: `{name}` bazasi yo'q"
+    if bases.count("abstract = True") != 3:
+        return f"{TIMESTAMP_BASES}: uchta abstrakt baza emas"
+    direct = 0
+    for path in sorted((ROOT / "apps/api").glob("*/models.py")):
+        rel = path.relative_to(ROOT).as_posix()
+        for line in read(rel).split("\n"):
+            if line.startswith("    created_at = models.DateTimeField("):
+                direct += 1
+                if "db_index=True" not in line:
+                    return f"{rel}: `created_at` indekssiz e'lon qilingan — bazadan oling"
+            elif line.startswith("    updated_at = models.DateTimeField("):
+                return f"{rel}: `updated_at` to'g'ridan-to'g'ri e'lon qilingan — bazadan oling"
+    # `>` emas `!=`: `check_negative.py`'s decisions sandbox copies only the
+    # files in `_DECISIONS_SANDBOX_FILES`, so a sandbox scan legitimately sees
+    # one `models.py` instead of 21 and an equality check would fail there for
+    # a reason that has nothing to do with the rule. The alarm that matters is
+    # growth: a new model must not slip in with a hand-declared index.
+    # Normalising an exception away is an improvement — lower the constant.
+    if direct > TIMESTAMP_INDEX_EXCEPTIONS:
+        return (
+            f"indeksli `created_at` {direct} ta, ko'pi {TIMESTAMP_INDEX_EXCEPTIONS} — "
+            "yangi istisno qo'shildi, `core/bases.py` dan oling"
+        )
+    return None
+
+
 def mobile_header_fits_narrow_screen() -> str | None:
     """The header AND the language panel fit 320 px — the narrowest screen.
 
@@ -1967,6 +2024,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("lug'at qaytishda saqlanadi", dictionary_survives_return),
     ("lug'at hook tartibi barqaror", locale_use_is_unconditional),
     ("User modeli tenglik maydonlari", user_parity_fields_kept),
+    ("vaqt tamg'alari bazadan", timestamps_come_from_bases),
     ("tor ekran 320 px ga sig'adi", mobile_header_fits_narrow_screen),
     ("mobil panel foydalanishga yaroqli", mobile_drawer_is_accessible),
     ("KPI to'ri lg da 4 ustun", kpi_grid_steps_at_lg),

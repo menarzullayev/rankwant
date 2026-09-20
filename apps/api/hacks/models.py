@@ -12,10 +12,11 @@ from typing import ClassVar
 
 from django.db import models
 
+from core.bases import CreatedModel, TimeStampedModel
 from hacks import policies
 
 
-class Hack(models.Model):
+class Hack(TimeStampedModel):
     """Bitta hack urinishi: kim, kimning yechimini, qaysi test bilan."""
 
     class Status(models.TextChoices):
@@ -101,8 +102,9 @@ class Hack(models.Model):
         related_name="hack_source",
     )
 
+    #: ⚠️ `created_at` INDEKSLI — `TimeStampedModel` dan farq qiladi.
+    #: Indeksni birxillashtirish DDL, ya'ni alohida qaror: `core/bases.py`.
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
-    updated_at = models.DateTimeField(auto_now=True)
     judged_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
@@ -166,7 +168,7 @@ class HackRoomMember(models.Model):
         return f"{self.room_id}/{self.user_id}"
 
 
-class HackLock(models.Model):
+class HackLock(CreatedModel):
     """Masalani «lock» qilish — `contest_room` uchun shart.
 
     Codeforces qoidasi: lock qilgandan keyin o'sha masalaga QAYTA yuborib
@@ -177,7 +179,6 @@ class HackLock(models.Model):
     contest = models.ForeignKey("contests.Contest", on_delete=models.CASCADE, related_name="locks")
     problem = models.ForeignKey("problems.Problem", on_delete=models.CASCADE, related_name="locks")
     user = models.ForeignKey("core.User", on_delete=models.CASCADE, related_name="hack_locks")
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering: ClassVar = ["-created_at"]

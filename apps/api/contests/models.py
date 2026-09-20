@@ -9,10 +9,11 @@ from typing import ClassVar
 from django.db import models
 from django.utils import timezone
 
+from core.bases import CreatedModel, UpdatedModel
 from core.mixins import TimeWindowMixin
 
 
-class Contest(TimeWindowMixin, models.Model):
+class Contest(TimeWindowMixin, CreatedModel):
     class Scoring(models.TextChoices):
         ACM = "acm", "ACM/ICPC"
         IOI = "ioi", "IOI"
@@ -64,8 +65,6 @@ class Contest(TimeWindowMixin, models.Model):
     hack_tests_added_at = models.DateTimeField(null=True, blank=True)
     #: Qayta tekshiruv ham tugadi — endi reyting qo'llansa bo'ladi.
     hack_phase_closed_at = models.DateTimeField(null=True, blank=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering: ClassVar = ["-start_at"]
@@ -143,7 +142,7 @@ class ContestRegistration(models.Model):
         return f"{self.contest_id}/{self.user_id}"
 
 
-class Standing(models.Model):
+class Standing(UpdatedModel):
     """MATERIALLASHTIRILGAN — live hisoblash 500 parallel submit ostida
     standings so'rovini buzadi (04-prd NFR)."""
 
@@ -160,7 +159,6 @@ class Standing(models.Model):
     hack_score = models.IntegerField(default=0)
     hacks_successful = models.PositiveSmallIntegerField(default=0)
     hacks_unsuccessful = models.PositiveSmallIntegerField(default=0)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering: ClassVar = ["rank"]

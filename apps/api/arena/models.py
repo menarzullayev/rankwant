@@ -15,10 +15,11 @@ from typing import ClassVar
 from django.db import models
 from django.utils import timezone
 
+from core.bases import CreatedModel
 from core.mixins import TimeWindowMixin
 
 
-class ArenaRound(TimeWindowMixin, models.Model):
+class ArenaRound(TimeWindowMixin, CreatedModel):
     slug = models.SlugField(unique=True, max_length=120)
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
@@ -31,7 +32,6 @@ class ArenaRound(TimeWindowMixin, models.Model):
     reward_qvant = models.PositiveIntegerField(default=15)
     is_public = models.BooleanField(default=True)
     rewards_applied_at = models.DateTimeField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering: ClassVar = ["-start_at"]
