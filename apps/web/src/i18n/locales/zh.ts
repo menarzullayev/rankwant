@@ -1060,6 +1060,7 @@ export const zh: Record<MessageKey, string> = {
   "problem.sampleOutput": "输出",
   "problem.copy": "复制",
   "problem.copied": "已复制",
+  "problem.copyFailed": "无法复制",
   "problem.copyInput": "复制样例 {order} 的输入",
   "problem.copyOutput": "复制样例 {order} 的输出",
   "problem.attachments": "附件",

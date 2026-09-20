@@ -1064,6 +1064,7 @@ export const kk: Record<MessageKey, string> = {
   "problem.sampleOutput": "Шығыс",
   "problem.copy": "Көшіру",
   "problem.copied": "Көшірілді",
+  "problem.copyFailed": "Көшірілмеді",
   "problem.copyInput": "{order}-мысал кірісін көшіру",
   "problem.copyOutput": "{order}-мысал шығысын көшіру",
   "problem.attachments": "Тіркемелер",

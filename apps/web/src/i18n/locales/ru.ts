@@ -1063,6 +1063,7 @@ export const ru: Record<MessageKey, string> = {
   "problem.sampleOutput": "Вывод",
   "problem.copy": "Копировать",
   "problem.copied": "Скопировано",
+  "problem.copyFailed": "Не скопировалось",
   "problem.copyInput": "Скопировать ввод примера {order}",
   "problem.copyOutput": "Скопировать вывод примера {order}",
   "problem.attachments": "Вложения",

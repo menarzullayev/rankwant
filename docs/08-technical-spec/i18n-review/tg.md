@@ -1066,6 +1066,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.sampleOutput` | Chiqish | Баромад |  |
 | `problem.copy` | Nusxalash | Нусхабардорӣ |  |
 | `problem.copied` | Nusxalandi | Нусхабардорӣ шуд |  |
+| `problem.copyFailed` | Nusxa olinmadi | Нусхабардорӣ нашуд |  |
 | `problem.copyInput` | {order}-namuna kirishini nusxalash | Вуруди намунаи {order}-ро нусхабардорӣ кардан |  |
 | `problem.copyOutput` | {order}-namuna chiqishini nusxalash | Баромади намунаи {order}-ро нусхабардорӣ кардан |  |
 | `problem.attachments` | Biriktirilgan fayllar | Замимаҳо |  |

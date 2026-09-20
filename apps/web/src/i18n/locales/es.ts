@@ -1063,6 +1063,7 @@ export const es: Record<MessageKey, string> = {
   "problem.sampleOutput": "Salida",
   "problem.copy": "Copiar",
   "problem.copied": "Copiado",
+  "problem.copyFailed": "No se pudo copiar",
   "problem.copyInput": "Copiar la entrada del ejemplo {order}",
   "problem.copyOutput": "Copiar la salida del ejemplo {order}",
   "problem.attachments": "Adjuntos",

@@ -1063,6 +1063,7 @@ export const tr: Record<MessageKey, string> = {
   "problem.sampleOutput": "Çıkış",
   "problem.copy": "Kopyala",
   "problem.copied": "Kopyalandı",
+  "problem.copyFailed": "Kopyalanamadı",
   "problem.copyInput": "{order}. örnek girişini kopyala",
   "problem.copyOutput": "{order}. örnek çıkışını kopyala",
   "problem.attachments": "Ekler",

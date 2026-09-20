@@ -2621,6 +2621,26 @@ def neg_decisions_types_node_major_unignored() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_copy_fail_toast_dropped() -> tuple[bool, str]:
+    """CopyControl fail toast olib tashlansa tutilsin."""
+    return _decision_broken(
+        "apps/web/src/components/kit/CopyControl.tsx",
+        "problem.copyFailed",
+        "problem.copied",
+        "tanlangan kit muzlatilgan",
+    )
+
+
+def neg_decisions_copy_burn_returns() -> tuple[bool, str]:
+    """Copy v9 `burn` katalogga qaytsa tutilsin."""
+    return _decision_broken(
+        "apps/web/src/lib/theme/kit.ts",
+        '  "all",\n  "kbd",\n];',
+        '  "all",\n  "kbd",\n  "burn",\n];',
+        "tanlangan kit muzlatilgan",
+    )
+
+
 def neg_decisions_auto_deploy_no_liveness() -> tuple[bool, str]:
     """Watcher konteynerlar tirikligini tekshirmasa tutilsin.
 
@@ -3163,6 +3183,12 @@ _DECISIONS_SANDBOX_FILES = (
     "tools/i18n-runtime-hook.mjs",
     "apps/web/Dockerfile",
     ".github/dependabot.yml",
+    # Selected kit frozen (2026-09-20): catalogs + clipboard fail toast.
+    # Missing here, `check_decisions.py` exits 2.
+    "apps/web/src/lib/theme/kit.ts",
+    "apps/web/src/components/kit/CopyControl.tsx",
+    "apps/web/src/components/kit/CommandPalette.tsx",
+    "apps/web/src/components/profile/ShareButton.tsx",
     # The stdin fix (2026-09-19): the rule reads the hash line that must not
     # depend on the ambient stdin. Missing here, `check_decisions.py` exits 2.
     "tools/check_deploy.sh",
@@ -4865,6 +4891,14 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "types/node major ignore olib tashlansa tutilsin",
                 neg_decisions_types_node_major_unignored,
+            ),
+            (
+                "copy fail toast olib tashlansa tutilsin",
+                neg_decisions_copy_fail_toast_dropped,
+            ),
+            (
+                "copy v9 burn qaytsa tutilsin",
+                neg_decisions_copy_burn_returns,
             ),
             (
                 "watcher tiriklikni tekshirmasa tutilsin",

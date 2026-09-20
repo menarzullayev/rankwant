@@ -1063,6 +1063,7 @@ export const ky: Record<MessageKey, string> = {
   "problem.sampleOutput": "Чыгуу",
   "problem.copy": "Көчүрүү",
   "problem.copied": "Көчүрүлдү",
+  "problem.copyFailed": "Көчүрүлгөн жок",
   "problem.copyInput": "{order}-мисал киришин көчүрүү",
   "problem.copyOutput": "{order}-мисал чыгуусун көчүрүү",
   "problem.attachments": "Тиркемелер",

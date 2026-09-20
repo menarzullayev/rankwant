@@ -1060,6 +1060,7 @@ export const en: Record<MessageKey, string> = {
   "problem.sampleOutput": "Output",
   "problem.copy": "Copy",
   "problem.copied": "Copied",
+  "problem.copyFailed": "Couldn't copy",
   "problem.copyInput": "Copy sample {order} input",
   "problem.copyOutput": "Copy sample {order} output",
   "problem.attachments": "Attachments",

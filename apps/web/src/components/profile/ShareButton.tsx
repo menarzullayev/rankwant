@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { Button } from "@/components/ui/Button";
+import { useOverlay } from "@/components/overlay/OverlayHost";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
 
@@ -10,6 +11,7 @@ import { t } from "@/i18n/messages";
  *  Havola ulashilganda OG karta (`opengraph-image.tsx`) chiqadi. */
 export function ShareButton({ username, name }: { username: string; name: string }) {
   const locale = useLocale();
+  const overlay = useOverlay();
   const [copied, setCopied] = useState(false);
 
   async function share() {
@@ -26,7 +28,7 @@ export function ShareButton({ username, name }: { username: string; name: string
       await navigator.clipboard.writeText(url);
       setCopied(true);
     } catch {
-      // Clipboard ruxsati yo'q — manzil baribir brauzer satrida.
+      overlay.toast(t(locale, "problem.copyFailed"));
     }
   }
 
