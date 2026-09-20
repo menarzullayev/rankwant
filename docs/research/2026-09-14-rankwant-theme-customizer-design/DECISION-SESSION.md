@@ -434,6 +434,7 @@ flag — nuqson topilsa modul bir tugma bilan o'chiriladi.
 | D45 | Uchta accent juftligi hosil qilinadi (tugma, chip, havola) |
 | D46 | `check_contrast.py` accent-matn juftligini ham o'lchashi shart (topilgan nuqson) |
 | D47 | Mavzu `User.theme` da qoladi; `ui_prefs.appearance.theme` YO'Q |
+| D48 | Kit oilalarini musobaqachi Interfeys yozadi; `/admin/kit` namuna |
 
 ### D47 — mavzu ikki joyda saqlanmaydi (amalga oshirishda aniqlangan)
 
@@ -455,6 +456,30 @@ bilan alohida maydon rad etilgan edi). Shuning uchun:
 **Bonus:** maydonning standarti allaqachon `system`, ya'ni D5 (system —
 standart) uchun baza o'zgarishi kerak emas edi; faqat frontend uni
 tanlash imkonini bermasdi.
+
+### D48 — kit-oila yozuvchisi (2026-09-21)
+
+**Tanlov:** A — musobaqachi Interfeys. CTO B ni tavsiya qilgan edi
+(`/admin/kit` yozadi); egasi A ni tanladi.
+
+CUST-100 playground va 226 ikonka galereyasini `/admin/kit` ga olib
+chiqdi, lekin Interfeys hali olti oilani yozadi. A shu yozuvchini
+chegaraga aylantiradi:
+
+| Sirt | Yozadi | O‘qiydi |
+|---|---|---|
+| Appearance → Interfeys | `verdictStyle` `statusStyle` `loadingStyle` `overlayStyle` `formStyle` `iconPack` | ha |
+| `/admin/kit` | yo‘q | namuna (joriy pref bilan) |
+| Shablon (D19) | yo‘q | hali bu kalitlarni solishtirmaydi |
+
+**O‘lchandi (2026-09-21, `origin/main` `806bdd7`):** Interfeysda 50
+kit-oila chip. `KitPlayground.tsx` da `setAppearance` / `useCustomizer`
+yo‘q.
+
+**Qilinmagan (keyingi qaror):** `matchTemplate` D19-tor — verdiktni
+o‘zgartirish «Shablon o‘zgartirilgan»ni ko‘rsatmasligi mumkin.
+
+Batafsil: [DECISION-48.md](./DECISION-48.md).
 
 ---
 

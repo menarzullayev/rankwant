@@ -99,6 +99,7 @@ export function AppearanceTab() {
         <NavShapeSection />
         <WidthSection />
         <LookSection />
+        {/* D48: kit families stay contestant-writable. /admin/kit is sample-only. */}
         <VerdictSection />
         <StatusSection />
         <LoadingSection />

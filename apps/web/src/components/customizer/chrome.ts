@@ -5,6 +5,17 @@ import type { MessageKey } from "@/i18n/messages";
 export const GROUPS = ["look", "color", "type", "system"] as const;
 export type GroupId = (typeof GROUPS)[number];
 
+/** D48: contestant Interfeys writes these. `/admin/kit` is sample-only. */
+export const KIT_FAMILY_KEYS = [
+  "verdictStyle",
+  "statusStyle",
+  "loadingStyle",
+  "overlayStyle",
+  "formStyle",
+  "iconPack",
+] as const;
+export type KitFamilyKey = (typeof KIT_FAMILY_KEYS)[number];
+
 export const DENSITIES = ["compact", "comfortable", "spacious"] as const;
 
 export const SWATCHES: { hue: number; sat: number; nameKey: MessageKey }[] = [

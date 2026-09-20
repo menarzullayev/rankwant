@@ -2,7 +2,7 @@
 
 **STATUS:** shipped (2026-09-14)
 
-Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D47).
+Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D48).
 Entry points: the header icon, a floating tab on desktop, `Ctrl+.`, and
 `/settings/korinish`.
 
@@ -13,6 +13,21 @@ density, and saves the result as a template. Eight team templates apply a
 whole combination in one click. The result is stored on the account, so it
 follows the user to another device, and on the device, so it applies before
 hydration without a flash.
+
+## Kit-family writer (D48)
+
+Contestant **Appearance → Interfeys** is the only UI that writes kit-family
+prefs: `verdictStyle`, `statusStyle`, `loadingStyle`, `overlayStyle`,
+`formStyle`, `iconPack`. The list lives in
+`apps/web/src/components/customizer/chrome.ts` as `KIT_FAMILY_KEYS`.
+
+`/admin/kit` is the design-system lab (playground + icon gallery). It must
+not call `setAppearance`. Applying a team template can still change other
+appearance keys; it does not write kit families today (D19).
+
+Measured 2026-09-21 on `806bdd7`: Interfeys exposes **50** kit-family chips
+(11 + 11 + 10 + 4 + 5 + 9). Closed accordion groups unmount (CUST-100), so
+those chips leave the tab order until Interfeys is opened.
 
 ## The colour model
 
