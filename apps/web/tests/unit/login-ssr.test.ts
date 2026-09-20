@@ -8,7 +8,7 @@ const src = (rel: string) =>
 
 describe("login first paint is the form", () => {
   it("does not wrap AuthTabs or AuthForm in Suspense", () => {
-    const page = src("../../src/app/login/page.tsx");
+    const page = src("../../src/app/(auth)/login/page.tsx");
     expect(page).not.toContain("AuthFormSkeleton");
     const tabs = page.indexOf("<AuthTabs");
     const form = page.indexOf("<AuthForm");
@@ -27,6 +27,15 @@ describe("login first paint is the form", () => {
     expect(tabs).not.toMatch(/from ["']next\/navigation["']/);
     expect(tabs).not.toContain('"use client"');
     expect(tabs).toContain("if (next) query.set(\"next\", next)");
+  });
+
+  it("login does not inline the full site stylesheet", () => {
+    const root = src("../../src/app/layout.tsx");
+    const auth = src("../../src/app/(auth)/layout.tsx");
+    const site = src("../../src/app/(site)/layout.tsx");
+    expect(root).not.toMatch(/import ["']\.\/globals\.css["']/);
+    expect(auth).toContain('import "../auth.css"');
+    expect(site).toContain('import "../globals.css"');
   });
 
   it("AuthForm and ResetForm read query from props", () => {

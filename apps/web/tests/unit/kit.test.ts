@@ -125,7 +125,7 @@ describe("kit product surfaces", () => {
     expect(src("../../src/components/kit/TimeStamp.tsx")).toContain(
       'data-tip-kind="theme"',
     );
-    expect(src("../../src/app/problems/[slug]/page.tsx")).toContain(
+    expect(src("../../src/app/(site)/problems/[slug]/page.tsx")).toContain(
       'tone="hover"',
     );
     expect(src("../../src/components/SampleTests.tsx")).toContain(
@@ -152,10 +152,10 @@ describe("kit product surfaces", () => {
     expect(src("../../src/components/profile/ShareButton.tsx")).toContain(
       "problem.copyFailed",
     );
-    expect(src("../../src/app/contests/[slug]/page.tsx")).toContain(
+    expect(src("../../src/app/(site)/contests/[slug]/page.tsx")).toContain(
       'tone="dual"',
     );
-    expect(src("../../src/app/contests/[slug]/page.tsx")).toContain("Countdown");
+    expect(src("../../src/app/(site)/contests/[slug]/page.tsx")).toContain("Countdown");
     expect(src("../../src/components/profile/ProfileCard.tsx")).toContain(
       'tone="relative"',
     );
@@ -172,7 +172,7 @@ describe("kit product surfaces", () => {
     expect(src("../../src/components/profile/ContestsTab.tsx")).toContain(
       'tone="duration"',
     );
-    expect(src("../../src/app/calendar/page.tsx")).toContain('tone="fresh"');
+    expect(src("../../src/app/(site)/calendar/page.tsx")).toContain('tone="fresh"');
     expect(src("../../src/components/profile/ActivityHeatmap.tsx")).toContain(
       "MiniCal",
     );

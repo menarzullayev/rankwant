@@ -429,11 +429,15 @@ def check_legacy_routes() -> list[str]:
 
     app = REPO / "apps/web/src/app"
     for tab in tabs:
-        page = app / tab / "page.tsx"
+        # `(auth)` route group — URL still `/login`, `/register`, …
+        page = app / "(auth)" / tab / "page.tsx"
+        if not page.exists():
+            page = app / tab / "page.tsx"
         if not page.exists():
             found.append(
                 f"WEB: `TABS` dagi `{tab}` bo'limi uchun "
-                f"{page.relative_to(REPO)} yo'q — havola 404 beradi"
+                f"{(app / '(auth)' / tab / 'page.tsx').relative_to(REPO)} yo'q — "
+                "havola 404 beradi"
             )
     return found
 
