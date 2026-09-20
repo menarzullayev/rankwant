@@ -435,6 +435,7 @@ flag — nuqson topilsa modul bir tugma bilan o'chiriladi.
 | D46 | `check_contrast.py` accent-matn juftligini ham o'lchashi shart (topilgan nuqson) |
 | D47 | Mavzu `User.theme` da qoladi; `ui_prefs.appearance.theme` YO'Q |
 | D48 | Kit oilalarini musobaqachi Interfeys yozadi; `/admin/kit` namuna |
+| D49 | Shablon kit oilalarini ham identitetga oladi; apply tiklaydi |
 
 ### D47 — mavzu ikki joyda saqlanmaydi (amalga oshirishda aniqlangan)
 
@@ -470,16 +471,31 @@ chegaraga aylantiradi:
 |---|---|---|
 | Appearance → Interfeys | `verdictStyle` `statusStyle` `loadingStyle` `overlayStyle` `formStyle` `iconPack` | ha |
 | `/admin/kit` | yo‘q | namuna (joriy pref bilan) |
-| Shablon (D19) | yo‘q | hali bu kalitlarni solishtirmaydi |
+| Shablon (D19, D49 da kengaydi) | apply defaultlarni yozadi | match solishtiradi |
 
 **O‘lchandi (2026-09-21, `origin/main` `806bdd7`):** Interfeysda 50
 kit-oila chip. `KitPlayground.tsx` da `setAppearance` / `useCustomizer`
 yo‘q.
 
-**Qilinmagan (keyingi qaror):** `matchTemplate` D19-tor — verdiktni
-o‘zgartirish «Shablon o‘zgartirilgan»ni ko‘rsatmasligi mumkin.
+**Keyin:** D49 shablon identitetini kengaytirdi.
 
 Batafsil: [DECISION-48.md](./DECISION-48.md).
+
+### D49 — shablon kit identiteti (2026-09-21)
+
+**Tanlov:** B — shablon kengayadi. D19 uslub+mavzu+rang+shrift+zichlik
+qoladi; kit oilalari qo‘shiladi.
+
+Sakkizta jamoa shabloni bitta `TEMPLATE_KIT_DEFAULTS` ni ulashadi.
+`templateAppearance` apply da 6 kalitni tiklaydi; `matchTemplate`
+solishtiradi. `undefined` kalit default deb o‘qiladi.
+
+**O‘lchov:** D19-tor da `dashboard + circle` → `classic`. D49 da → `null`.
+Apply Klassik → match `classic`.
+
+nav / karta / naqsh / o‘lcham / kenglik hali matchda yo‘q (APP-8).
+
+Batafsil: [DECISION-49.md](./DECISION-49.md).
 
 ---
 
