@@ -2601,6 +2601,26 @@ def neg_decisions_typecheck_js_tsc() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_types_node_26() -> tuple[bool, str]:
+    """`@types/node` 26 ga chiqsa tutilsin — runtime hali 22."""
+    return _decision_broken(
+        "apps/web/package.json",
+        '"@types/node": "22.20.2"',
+        '"@types/node": "26.6.1"',
+        "@types/node runtime bilan",
+    )
+
+
+def neg_decisions_types_node_major_unignored() -> tuple[bool, str]:
+    """Dependabot `@types/node` major ignore olib tashlansa tutilsin."""
+    return _decision_broken(
+        ".github/dependabot.yml",
+        'dependency-name: "@types/node"',
+        'dependency-name: "@types/fake-node"',
+        "@types/node runtime bilan",
+    )
+
+
 def neg_decisions_auto_deploy_no_liveness() -> tuple[bool, str]:
     """Watcher konteynerlar tirikligini tekshirmasa tutilsin.
 
@@ -3141,6 +3161,8 @@ _DECISIONS_SANDBOX_FILES = (
     # Missing here, `check_decisions.py` exits 2.
     "apps/web/package.json",
     "tools/i18n-runtime-hook.mjs",
+    "apps/web/Dockerfile",
+    ".github/dependabot.yml",
     # The stdin fix (2026-09-19): the rule reads the hash line that must not
     # depend on the ambient stdin. Missing here, `check_decisions.py` exits 2.
     "tools/check_deploy.sh",
@@ -4835,6 +4857,14 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "typecheck JS tsc qaytsa tutilsin",
                 neg_decisions_typecheck_js_tsc,
+            ),
+            (
+                "types/node 26 ga chiqsa tutilsin",
+                neg_decisions_types_node_26,
+            ),
+            (
+                "types/node major ignore olib tashlansa tutilsin",
+                neg_decisions_types_node_major_unignored,
             ),
             (
                 "watcher tiriklikni tekshirmasa tutilsin",

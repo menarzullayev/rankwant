@@ -11,6 +11,13 @@ updates:
     directory: /apps/web
     schedule: { interval: weekly }
     open-pull-requests-limit: 5
+    ignore:
+      # `@types/node` major === Node major. CI and `apps/web/Dockerfile`
+      # are Node 22 (Maintenance LTS until 2027-04). Dependabot #143
+      # offered 26 while runtime was 22 — that is a false green under
+      # `skipLibCheck`. Minors/patches on 22.x still come through.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: gomod
     directory: /services/judge-go
     schedule: { interval: weekly }
