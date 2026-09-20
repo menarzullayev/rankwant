@@ -2581,6 +2581,26 @@ def neg_decisions_builder_gc_20gb() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_typescript_is_seven() -> tuple[bool, str]:
+    """`typescript` o'zi 7 bo'lsa tutilsin — JS API yo'qoladi."""
+    return _decision_broken(
+        "apps/web/package.json",
+        '"typescript": "npm:@typescript/typescript6@6.0.2"',
+        '"typescript": "npm:typescript@7.0.2"',
+        "TypeScript 7 yonma-yon",
+    )
+
+
+def neg_decisions_typecheck_js_tsc() -> tuple[bool, str]:
+    """typecheck native `tsc` o'rniga JS `tsc6` qaytsa tutilsin."""
+    return _decision_broken(
+        "apps/web/package.json",
+        "tsc --noEmit",
+        "tsc6 --noEmit",
+        "TypeScript 7 yonma-yon",
+    )
+
+
 def neg_decisions_auto_deploy_no_liveness() -> tuple[bool, str]:
     """Watcher konteynerlar tirikligini tekshirmasa tutilsin.
 
@@ -3116,6 +3136,11 @@ _DECISIONS_SANDBOX_FILES = (
     "tools/rollback.sh",
     "tools/prune_docker_disk.sh",
     "tools/docker-daemon.json",
+    # TypeScript 7 side-by-side (2026-09-20): native tsc via
+    # `@typescript/native`, JS API via the `typescript` alias.
+    # Missing here, `check_decisions.py` exits 2.
+    "apps/web/package.json",
+    "tools/i18n-runtime-hook.mjs",
     # The stdin fix (2026-09-19): the rule reads the hash line that must not
     # depend on the ambient stdin. Missing here, `check_decisions.py` exits 2.
     "tools/check_deploy.sh",
@@ -4802,6 +4827,14 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "builder GC 20 GB ga qaytsa tutilsin",
                 neg_decisions_builder_gc_20gb,
+            ),
+            (
+                "typescript o'zi 7 bo'lsa tutilsin",
+                neg_decisions_typescript_is_seven,
+            ),
+            (
+                "typecheck JS tsc qaytsa tutilsin",
+                neg_decisions_typecheck_js_tsc,
             ),
             (
                 "watcher tiriklikni tekshirmasa tutilsin",
