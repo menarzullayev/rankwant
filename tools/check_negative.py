@@ -3609,11 +3609,16 @@ _DECISIONS_SANDBOX_FILES = (
     # workflow files are staged already (`docker-compose.ci.yml` above, the
     # `.github/workflows/*` glob in `_decisions_sandbox`).
     #
-    # This entry is here because the drift check caught its absence: PR #204
-    # added the rule, `neg_decisions_sandbox_covers_reads` named this exact
-    # file, and the two trial-label tests died with exit 2 in the sandbox.
-    # That failure is LOCAL ONLY — `check_negative.py` is not part of CI, so
-    # nothing else would have noticed.
+    # Adding the rule without this line made `neg_decisions_sandbox_covers_reads`
+    # name the file and killed the two trial-label tests with exit 2 in the
+    # sandbox copy — the drift check doing its job. Both landed in one commit.
+    #
+    # Where this suite runs: CI's `web` job runs `check_negative.py` in full
+    # (ci.yml), and that job's `if` includes `needs.filter.outputs.tools ==
+    # 'true'` — so a `tools/` change carries the whole suite into CI. The
+    # comment at ci.yml § web records the 2026-09-15 measurement of the
+    # opposite arrangement, where `tools/`-only PRs left the job `skipped` and
+    # the checks were never tested by the checks.
     "tests/latency/check_judge_latency.py",
 )
 
