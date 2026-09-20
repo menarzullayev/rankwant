@@ -277,9 +277,28 @@ jobs:
         # baseline; point the same harness at production with `API=` for
         # the launch-gate figure (see the harness docstring).
         timeout-minutes: 8
+        # `tee` — the harness's output is needed twice: as the job log, and
+        # as the source of the `LATENCY_JSON:` line the next step reads.
+        # `set -o pipefail` keeps the harness's exit code, so a budget
+        # breach still turns this job red; without it `tee`'s 0 would win
+        # and the gate would go green while the budget was broken.
         run: |
+          set -o pipefail
           docker compose -f docker-compose.yml -f docker-compose.ci.yml \
-            --profile latency run --rm latency
+            --profile latency run --rm latency | tee "${RUNNER_TEMP}/latency.log"
+      - name: Record the latency figure on the run page
+        # Open item of docs/09-development-plan/README.md § "Launch gate" —
+        # the harness prints the number into the log, where nobody reads it,
+        # so the gate stayed open while the job was green. This step moves
+        # the figure onto the run page (`$GITHUB_STEP_SUMMARY`), where it can
+        # actually be seen and cited. See docs/research/2026-09-21-judge-latency/.
+        #
+        # `always()`: a RED latency job is exactly when the number matters
+        # most — the figure that breached the budget is written too.
+        # Exit 2 when the `LATENCY_JSON:` line is missing (harness died
+        # early), so a lost measurement can never look like a pass.
+        if: always()
+        run: python3 tools/latency_summary.py "${RUNNER_TEMP}/latency.log"
       - name: Tear down
         if: always()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
