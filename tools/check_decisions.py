@@ -301,6 +301,25 @@ def search_open_ai_crawlers_blocked() -> str | None:
     return None
 
 
+def users_profiles_stay_noindex() -> str | None:
+    """2026-09-20 HITL keep-users-closed: `/users/` stays out of the crawl.
+
+    974k profiles (Codeforces import + test handles). Wiping users is
+    forbidden, so “open after cleanup” is not a plan. Allowlist is a later
+    HITL. The `*` rule must keep `/users/` in `disallow`.
+    """
+    robots = read("apps/web/src/app/robots.ts")
+    if not re.search(
+        r'disallow: \["/admin", "/notifications", "/users/"\]',
+        robots,
+    ):
+        return (
+            "apps/web/src/app/robots.ts: `*` qoidasida `/users/` yo'q — "
+            "2026-09-20 HITL keep-users-closed"
+        )
+    return None
+
+
 def nav_prefetch_on_intent() -> str | None:
     """Links in the layout chrome prefetch on hover, focus or touch only.
 
@@ -1596,6 +1615,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("deploy hamma servisni quradi", deploy_builds_every_service),
     ("deploy faqat yashil main'dan", deploy_gated_on_green_main),
     ("qidiruv ochiq, AI kraulerlar yopiq", search_open_ai_crawlers_blocked),
+    ("/users/ noindex", users_profiles_stay_noindex),
     ("navigatsiya prefetch'i niyatda", nav_prefetch_on_intent),
     ("bosh sahifa <main> prefetch'i niyatda", home_main_prefetch_on_intent),
     ("lug'at alohida faylda", dictionary_as_cached_file),

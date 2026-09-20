@@ -34,8 +34,9 @@ export function absolute(path: string): string {
  *
  * `true` since 2026-09-18 (ADR-0023). What changed is not the load but who
  * carries it: AI crawlers are refused in `robots.ts` and blocked at the edge
- * by a Cloudflare WAF rule, and `/users/` stays out of the crawl until the
- * seeded profiles are gone — so what is open is the part that should be found.
+ * by a Cloudflare WAF rule, and `/users/` stays out of the crawl (HITL
+ * 2026-09-20 `keep-users-closed`: 974k profiles, wipe forbidden) — so what
+ * is open is the part that should be found.
  */
 export const SITE_INDEXABLE = true;
 

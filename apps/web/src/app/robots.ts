@@ -44,8 +44,10 @@ export const AI_CRAWLERS = [
  *
  * `/users/` ham yopiq: 10 001 ta `neytron_*` sinov profili filtr va cursor
  * parametrlari bilan deyarli cheksiz URL beradi — aynan shu 2026-09-15 da
- * Workers kunlik limitini tugatgan. Sinov profillari tozalangach ochiladi
- * (ADR-0023). Sitemap'da `/users/` havolalari yo'q, ya'ni ziddiyat ham yo'q.
+ * Workers kunlik limitini tugatgan. 2026-09-20 HITL `keep-users-closed`:
+ * 974k profil (CF import + sinov); foydalanuvchilarni o'chirish taqiqlangan,
+ * shuning uchun «tozalangach ochiladi» emas — alohida HITL (allowlist)
+ * bo'lmaguncha yopiq qoladi (ADR-0023). Sitemap'da `/users/` yo'q.
  */
 export default function robots(): MetadataRoute.Robots {
   // Closed until launch (see SITE_INDEXABLE). No sitemap line: listing URLs
