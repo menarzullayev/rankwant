@@ -8,6 +8,7 @@ import { RoadmapCommentForm } from "@/components/RoadmapCommentForm";
 import { RoadmapStatusBadge } from "@/components/RoadmapStatusBadge";
 import { RoadmapVote } from "@/components/RoadmapVote";
 import { getLocale } from "@/i18n/server";
+import { localeAlternatesFor } from "@/i18n/locale-alternates.server";
 import { date, t } from "@/i18n/messages";
 import { ApiError, api } from "@/lib/api";
 
@@ -23,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: item.title,
     description: item.body.slice(0, 160),
-    alternates: { canonical: `/platform-roadmap/${item.id}` },
+    alternates: await localeAlternatesFor(`/platform-roadmap/${item.id}`),
   };
 }
 

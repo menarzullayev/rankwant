@@ -22,3 +22,9 @@ export const LOCALE_PARAM = "lang";
  *  ko'rmaydi. Shuning uchun qiymat so'rov sarlavhasiga ko'chiriladi va
  *  `next/headers` orqali o'qiladi. */
 export const LOCALE_HEADER = "x-rw-locale";
+
+/** Havolada `?lang=` BORLIGI — cookie tilidan farq qiladi.
+ *
+ *  Canonical/hreflang cookie'ga qaramasligi kerak: crawler cookie'siz
+ *  keladi. `LOCALE_HEADER` esa cookie/Accept-Language ni ham ko'rsatadi. */
+export const LANG_PARAM_HEADER = "x-rw-lang-param";

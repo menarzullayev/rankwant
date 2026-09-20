@@ -198,10 +198,9 @@ query string is present, so `/?lang=ru` stays a private miss.
 - or set a CDN Transformation Rule at the edge;
 - or add the locale to the URL — a partial version is already in place
   (`?lang=<code>`); a full `/uz/...` prefix would remove the dependence on
-  `Accept-Language` entirely and with it the need for `Vary`. Deferred until
-  the cache story is settled: today `canonical: "./"` declares every `?lang=`
-  variant to be the same URL, so the SEO benefit of a URL-carried locale is
-  currently nil.
+  `Accept-Language` entirely and with it the need for `Vary`. HTML
+  `hreflang` + self-canonical for `?lang=` (HITL 2026-09-20) is the
+  indexing story; it does not replace `Vary` for future cached routes.
 
 `cloudflared` cannot do it: version `2026.9.1` has no header-rewrite directive
 in tunnel ingress rules.

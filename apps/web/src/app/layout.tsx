@@ -12,6 +12,7 @@ import {
 import "./globals.css";
 import AppShell from "@/layout/AppShell";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
+import { localeAlternatesFor } from "@/i18n/locale-alternates.server";
 import { getLocaleState } from "@/i18n/server";
 import { dictionaryUrl } from "@/i18n/messages.server";
 import type { Me } from "@/lib/api";
@@ -153,51 +154,53 @@ const JSON_LD = {
   ],
 };
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
   // `metadataBase` bo'lmasa Next nisbiy `og:url` yozadi va Telegram
   // kabi mijozlar uni o'qiy olmaydi — ulashilgan havola yalang'och
   // manzil bo'lib chiqadi.
-  metadataBase: new URL(SITE_URL),
-  title: { default: TITLE, template: "%s · RankWant" },
-  description: DESCRIPTION,
-  // Until launch every page is noindex, nofollow (see SITE_INDEXABLE).
-  robots: SITE_INDEXABLE ? undefined : { index: false, follow: false },
-  // O'z-o'ziga havola qiluvchi canonical: `?` bilan kelgan filtrli
-  // variantlar va til cookie'si bilan ochilgan nusxalar bitta manzilga
-  // yig'iladi. `"./"` — «shu sahifaning o'zi»; har sahifa uchun alohida
-  // yozib chiqish shart emas.
-  alternates: { canonical: "./" },
-  // Ikonkalar `public/brand/` da tayyor turadi (`tools/brand.py`), lekin
-  // shu yerda e'lon qilinmasa brauzer ularni UMUMAN so'ramaydi: yorliq
-  // belgisi, iOS bosh ekrani va PWA ishlamay qoladi.
-  icons: {
-    icon: [
-      { url: "/brand/mark-32.png", sizes: "32x32", type: "image/png" },
-      { url: "/brand/mark-96.png", sizes: "96x96", type: "image/png" },
-    ],
-    apple: [
-      { url: "/brand/mark-180.png", sizes: "180x180", type: "image/png" },
-    ],
-  },
-  openGraph: {
-    type: "website",
-    siteName: "RankWant",
-    title: TITLE,
+  //
+  // `?lang=` self-canonical + hreflang (HITL 2026-09-20). Filtr query
+  // (`contest`, `page`) canonical'ga kirmaydi — nisbiy `./` yo'lni
+  // oladi, `LANG_PARAM_HEADER` esa faqat havola tilini qo'shadi.
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: { default: TITLE, template: "%s · RankWant" },
     description: DESCRIPTION,
-    url: "/",
-    images: [
-      { url: OG_IMAGE, width: 1200, height: 630, alt: TITLE },
-    ],
-  },
-  // `summary_large_image` — rasm karta bo'ylab cho'ziladi. `summary`
-  // bilan kichik kvadrat chiqadi va 1200×630 rasm mazmunsiz qolardi.
-  twitter: {
-    card: "summary_large_image",
-    title: TITLE,
-    description: DESCRIPTION,
-    images: [OG_IMAGE],
-  },
-};
+    // Until launch every page is noindex, nofollow (see SITE_INDEXABLE).
+    robots: SITE_INDEXABLE ? undefined : { index: false, follow: false },
+    alternates: await localeAlternatesFor("./"),
+    // Ikonkalar `public/brand/` da tayyor turadi (`tools/brand.py`), lekin
+    // shu yerda e'lon qilinmasa brauzer ularni UMUMAN so'ramaydi: yorliq
+    // belgisi, iOS bosh ekrani va PWA ishlamay qoladi.
+    icons: {
+      icon: [
+        { url: "/brand/mark-32.png", sizes: "32x32", type: "image/png" },
+        { url: "/brand/mark-96.png", sizes: "96x96", type: "image/png" },
+      ],
+      apple: [
+        { url: "/brand/mark-180.png", sizes: "180x180", type: "image/png" },
+      ],
+    },
+    openGraph: {
+      type: "website",
+      siteName: "RankWant",
+      title: TITLE,
+      description: DESCRIPTION,
+      url: "/",
+      images: [
+        { url: OG_IMAGE, width: 1200, height: 630, alt: TITLE },
+      ],
+    },
+    // `summary_large_image` — rasm karta bo'ylab cho'ziladi. `summary`
+    // bilan kichik kvadrat chiqadi va 1200×630 rasm mazmunsiz qolardi.
+    twitter: {
+      card: "summary_large_image",
+      title: TITLE,
+      description: DESCRIPTION,
+      images: [OG_IMAGE],
+    },
+  };
+}
 
 /** Tema klassini hidratsiyadan OLDIN qo'yadi — aks holda qorong'u
  * sozlamadagi foydalanuvchi har yuklanishda oq chaqnash ko'radi. */

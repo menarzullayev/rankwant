@@ -10,6 +10,7 @@ import {
   UpdateModuleBadge,
 } from "@/components/UpdateKindBadge";
 import { getLocale } from "@/i18n/server";
+import { localeAlternatesFor } from "@/i18n/locale-alternates.server";
 import { date, t } from "@/i18n/messages";
 import { ApiError, api } from "@/lib/api";
 
@@ -28,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: row.title,
     description: row.body.slice(0, 160),
-    alternates: { canonical: `/updates/${row.id}` },
+    alternates: await localeAlternatesFor(`/updates/${row.id}`),
   };
 }
 

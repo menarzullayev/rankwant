@@ -2681,6 +2681,26 @@ def neg_decisions_react_stays_19_0() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_canonical_collapses_lang() -> tuple[bool, str]:
+    """Layout yana til'siz `canonical: \"./\"` qilsa tutilsin."""
+    return _decision_broken(
+        "apps/web/src/app/layout.tsx",
+        'alternates: await localeAlternatesFor("./"),',
+        'alternates: { canonical: "./" },',
+        "?lang= self-canonical hreflang",
+    )
+
+
+def neg_decisions_hreflang_drops_x_default() -> tuple[bool, str]:
+    """`x-default` tushsa tutilsin."""
+    return _decision_broken(
+        "apps/web/src/i18n/locale-alternates.ts",
+        '"x-default"',
+        '"x-missing"',
+        "?lang= self-canonical hreflang",
+    )
+
+
 def neg_decisions_copy_fail_toast_dropped() -> tuple[bool, str]:
     """CopyControl fail toast olib tashlansa tutilsin."""
     return _decision_broken(
@@ -3250,6 +3270,13 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/components/kit/CopyControl.tsx",
     "apps/web/src/components/kit/CommandPalette.tsx",
     "apps/web/src/components/profile/ShareButton.tsx",
+    # ?lang= self-canonical + hreflang (2026-09-20). Missing here,
+    # `check_decisions.py` exits 2.
+    "apps/web/src/i18n/locale-alternates.ts",
+    "apps/web/src/i18n/locale-alternates.server.ts",
+    "apps/web/src/app/problems/[slug]/page.tsx",
+    "apps/web/src/app/updates/[id]/page.tsx",
+    "apps/web/src/app/platform-roadmap/[id]/page.tsx",
     # pytest 9 + pytest-django 4.14 (2026-09-20): floors and lock.
     # Missing here, `check_decisions.py` exits 2.
     "apps/api/requirements-dev.txt",
@@ -5000,6 +5027,14 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "react 19.0 ga qaytsa tutilsin",
                 neg_decisions_react_stays_19_0,
+            ),
+            (
+                "canonical lang ni yig'sa tutilsin",
+                neg_decisions_canonical_collapses_lang,
+            ),
+            (
+                "hreflang x-default tushsa tutilsin",
+                neg_decisions_hreflang_drops_x_default,
             ),
             (
                 "copy fail toast olib tashlansa tutilsin",

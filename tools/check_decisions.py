@@ -1515,6 +1515,54 @@ def react_and_dom_stay_paired() -> str | None:
     return None
 
 
+APP_LAYOUT = "apps/web/src/app/layout.tsx"
+LANG_ALTERNATES = "apps/web/src/i18n/locale-alternates.ts"
+LANG_ALTERNATES_SERVER = "apps/web/src/i18n/locale-alternates.server.ts"
+PROBLEM_SLUG_PAGE = "apps/web/src/app/problems/[slug]/page.tsx"
+UPDATE_ID_PAGE = "apps/web/src/app/updates/[id]/page.tsx"
+ROADMAP_ID_PAGE = "apps/web/src/app/platform-roadmap/[id]/page.tsx"
+
+
+def lang_query_self_canonical() -> str | None:
+    """2026-09-20 HITL hreflang-self: `?lang=` o'ziga canonical + hreflang.
+
+    `canonical: "./"` 10 tilni bitta URL qilardi. Cookie tilini
+    canonical'ga yozmaslik — crawler cookie'siz. `uz` toza yo'l.
+    """
+    params = read(LOCALE_PARAMS)
+    if 'export const LANG_PARAM_HEADER = "x-rw-lang-param";' not in params:
+        return f"{LOCALE_PARAMS}: `LANG_PARAM_HEADER` yo'q — layout `?lang=` ni ko'rmaydi"
+    helper = read(LANG_ALTERNATES)
+    if '"x-default"' not in helper:
+        return f"{LANG_ALTERNATES}: `x-default` hreflang yo'q"
+    if "hrefForLocale" not in helper or "localeAlternates" not in helper:
+        return f"{LANG_ALTERNATES}: canonical/hreflang helper yo'q"
+    if "DEFAULT_LOCALE" not in helper:
+        return f"{LANG_ALTERNATES}: `uz` toza yo'l qoidasi yo'q"
+    server = read(LANG_ALTERNATES_SERVER)
+    if "localeAlternatesFor" not in server or "LANG_PARAM_HEADER" not in server:
+        return f"{LANG_ALTERNATES_SERVER}: layout `?lang=` sarlavhasini o'qimaydi"
+    layout = read(APP_LAYOUT)
+    if 'alternates: { canonical: "./" }' in layout:
+        return f"{APP_LAYOUT}: canonical `./` — `?lang=` o'ziga yig'ilmaydi"
+    if "localeAlternatesFor" not in layout:
+        return f"{APP_LAYOUT}: hreflang/canonical helper chaqirilmaydi"
+    proxy = read(PROXY)
+    param_hdr = proxy.find("requestHeaders.set(LANG_PARAM_HEADER, fromParam)")
+    next_call = proxy.find("NextResponse.next({ request: { headers: requestHeaders } })")
+    if param_hdr < 0:
+        return f"{PROXY}: `LANG_PARAM_HEADER` yozilmaydi — canonical cookie tilini oladi"
+    if next_call < 0 or param_hdr > next_call:
+        return f"{PROXY}: `LANG_PARAM_HEADER` `next()` dan keyin — joriy render ko'rmaydi"
+    for rel in (PROBLEM_SLUG_PAGE, UPDATE_ID_PAGE, ROADMAP_ID_PAGE):
+        page = read(rel)
+        if "localeAlternatesFor" not in page:
+            return f"{rel}: sahifa canonical hreflang'ni yutadi"
+        if "alternates: { canonical:" in page:
+            return f"{rel}: til'siz canonical qaytdi"
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -1549,6 +1597,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("ESLint 10 typescript parser", eslint_ten_uses_ts_parser),
     ("pytest 9 va pytest-django 4.14", pytest_nine_and_django_plugin),
     ("react va react-dom juft", react_and_dom_stay_paired),
+    ("?lang= self-canonical hreflang", lang_query_self_canonical),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),
