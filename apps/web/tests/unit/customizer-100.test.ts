@@ -5,6 +5,7 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { Group } from "@/components/customizer/Group";
+import { KIT_FAMILY_KEYS } from "@/components/customizer/chrome";
 import { nextTab } from "@/components/customizer/tabs";
 
 function src(rel: string): string {
@@ -118,5 +119,27 @@ describe("CUST-100 contestant customizer", () => {
     expect(overlay).toContain('pointerdown"');
     expect(src("../../src/app/(site)/admin/kit/page.tsx")).toContain("KitSection");
     expect(src("../../src/components/admin/sections.ts")).toContain("/admin/kit");
+  });
+
+  it("lets the contestant Interfeys write kit families; the lab does not (D48)", () => {
+    expect(KIT_FAMILY_KEYS).toEqual([
+      "verdictStyle",
+      "statusStyle",
+      "loadingStyle",
+      "overlayStyle",
+      "formStyle",
+      "iconPack",
+    ]);
+    expect(chrome).toContain("KIT_FAMILY_KEYS");
+    for (const key of KIT_FAMILY_KEYS) {
+      expect(appearance).toContain(`setAppearance({ ${key}:`);
+    }
+    expect(appearance).toContain("D48");
+    const kitPage = src("../../src/app/(site)/admin/kit/page.tsx");
+    const playground = src("../../src/components/kit/KitPlayground.tsx");
+    expect(kitPage).not.toContain("setAppearance");
+    expect(playground).not.toContain("setAppearance");
+    expect(playground).not.toContain("useCustomizer");
+    expect(customizer).not.toContain("KitFamilyTab");
   });
 });
