@@ -1,0 +1,15 @@
+{
+  "ref": "rankwant_vary_accept_language",
+  "description": "Append Accept-Language to Vary without clobbering Next.js RSC tokens (HITL cf-transform). Guest-cache paths stay excluded so the uz-forced homepage is not fragmented.",
+  "expression": "(http.response.headers[\"content-type\"][0] contains \"text/html\") and (http.request.uri.path ne \"/\") and (http.request.uri.path ne \"/login\") and (http.request.uri.path ne \"/register\") and (http.request.uri.path ne \"/terms\") and (http.request.uri.path ne \"/privacy\")",
+  "action": "rewrite",
+  "enabled": true,
+  "action_parameters": {
+    "headers": {
+      "Vary": {
+        "operation": "add",
+        "value": "Accept-Language"
+      }
+    }
+  }
+}

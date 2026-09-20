@@ -1606,6 +1606,41 @@ def sitemap_locale_xhtml_alternates() -> str | None:
     return None
 
 
+CF_VARY_JSON = "tools/cf-vary-accept-language.json"
+CF_VARY_APPLY = "tools/cf_vary_apply.py"
+
+
+def vary_accept_language_at_edge() -> str | None:
+    """2026-09-20 HITL cf-transform: Vary Accept-Language chekkada `add`.
+
+    Next.js 16 in-process `Vary` ni o'chiradi. `set` Next RSC tokenlarini
+    yutadi. Mehmon kesh yo'llari chiqariladi — `uz` majburiy HTML 100k
+    fragment bo'lmasin. Kesh doirasi kengaytirilmaydi.
+    """
+    spec = read(CF_VARY_JSON)
+    if '"operation": "set"' in spec:
+        return f"{CF_VARY_JSON}: `set` Next.js Vary tokenlarini o'chiradi — `add` kerak"
+    if '"operation": "add"' not in spec:
+        return f"{CF_VARY_JSON}: `add` yo'q"
+    if '"value": "Accept-Language"' not in spec:
+        return f"{CF_VARY_JSON}: `Accept-Language` yo'q"
+    for path in ("/", "/login", "/register", "/terms", "/privacy"):
+        needle = f'ne \\"{path}\\"'
+        if needle not in spec:
+            return (
+                f"{CF_VARY_JSON}: mehmon kesh yo'li `{path}` chiqarilmagan — "
+                "100k fragment"
+            )
+    if "text/html" not in spec:
+        return f"{CF_VARY_JSON}: faqat HTML — static Vary fragment bo'lmasin"
+    apply = read(CF_VARY_APPLY)
+    if "rankwant_vary_accept_language" not in apply:
+        return f"{CF_VARY_APPLY}: qoida ref i yo'q"
+    if "boshqa transform qoidalari saqlanadi" not in apply:
+        return f"{CF_VARY_APPLY}: butun ruleset o'chirilishi mumkin"
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -1643,6 +1678,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("react va react-dom juft", react_and_dom_stay_paired),
     ("?lang= self-canonical hreflang", lang_query_self_canonical),
     ("sitemap xhtml:link tillari", sitemap_locale_xhtml_alternates),
+    ("Vary Accept-Language chekkada", vary_accept_language_at_edge),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),

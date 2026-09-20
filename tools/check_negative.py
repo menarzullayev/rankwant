@@ -2721,6 +2721,26 @@ def neg_decisions_sitemap_helper_dropped() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_vary_uses_set() -> tuple[bool, str]:
+    """Vary `set` qilinsa tutilsin — Next RSC tokenlari yutildi."""
+    return _decision_broken(
+        "tools/cf-vary-accept-language.json",
+        '"operation": "add"',
+        '"operation": "set"',
+        "Vary Accept-Language chekkada",
+    )
+
+
+def neg_decisions_vary_includes_home() -> tuple[bool, str]:
+    """Bosh sahifa Vary dan chiqarilmasa tutilsin — 100k fragment."""
+    return _decision_broken(
+        "tools/cf-vary-accept-language.json",
+        'ne \\"/\\"',
+        'ne \\"/about\\"',
+        "Vary Accept-Language chekkada",
+    )
+
+
 def neg_decisions_copy_fail_toast_dropped() -> tuple[bool, str]:
     """CopyControl fail toast olib tashlansa tutilsin."""
     return _decision_broken(
@@ -3308,6 +3328,9 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/app/updates/[id]/page.tsx",
     "apps/web/src/app/platform-roadmap/[id]/page.tsx",
     "apps/web/src/app/sitemap.ts",
+    # Vary Accept-Language at the edge (2026-09-20 HITL cf-transform).
+    "tools/cf-vary-accept-language.json",
+    "tools/cf_vary_apply.py",
     # pytest 9 + pytest-django 4.14 (2026-09-20): floors and lock.
     # Missing here, `check_decisions.py` exits 2.
     "apps/api/requirements-dev.txt",
@@ -5074,6 +5097,14 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "sitemap helper tushsa tutilsin",
                 neg_decisions_sitemap_helper_dropped,
+            ),
+            (
+                "Vary set qilinsa tutilsin",
+                neg_decisions_vary_uses_set,
+            ),
+            (
+                "Vary bosh sahifani qamrasa tutilsin",
+                neg_decisions_vary_includes_home,
             ),
             (
                 "copy fail toast olib tashlansa tutilsin",
