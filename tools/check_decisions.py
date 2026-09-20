@@ -1483,7 +1483,7 @@ def deploy_automation_is_safe() -> str | None:
        yozilsa, keyingi 30 daqiqa deploy umuman qilinmaydi va log yolg'on
        «deploy YIQILDI» deydi. O'lchandi 2026-09-20 (PR #192: merge
        18:09:36, yurish 18:10:06) — CI `main` da ~70 s yuguradi, yurish esa
-       har 5 daqiqada, ya'ni har to'rtinchi merge shu yo'lga tushadi.
+       har daqiqada, ya'ni deyarli har merge shu yo'lga tushadi.
     """
     deploy = read("tools/deploy.sh")
     auto = read(AUTO_DEPLOY)
@@ -1539,7 +1539,7 @@ def deploy_automation_is_safe() -> str | None:
     attempt_at = position(auto, 'record_attempt "$TARGET"')
     deploy_at = position(auto, "bash tools/deploy.sh --yes")
     if attempt_at < 0:
-        return f"{AUTO_DEPLOY}: urinish yozilmaydi — yiqilgan deploy har 5 daqiqada takrorlanadi"
+        return f"{AUTO_DEPLOY}: urinish yozilmaydi — yiqilgan deploy har daqiqada takrorlanadi"
     if deploy_at < 0:
         return f"{AUTO_DEPLOY}: `deploy.sh --yes` chaqirilmaydi"
     if attempt_at > deploy_at:
