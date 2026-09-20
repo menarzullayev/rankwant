@@ -20,5 +20,5 @@ whitenoise>=6.12.0
 boto3>=1.35
 # Sertifikat PDF va QR (ADR-0019). Production image faqat shu fayldan
 # (lock orqali) o'rnatiladi — dev'da qolib ketgan paket deployda yiqiladi.
-fpdf2>=2.8
+fpdf2>=2.8.8
 segno>=1.6
