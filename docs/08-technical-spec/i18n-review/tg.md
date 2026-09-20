@@ -1614,13 +1614,13 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.loading` | Yuklanish | Боркунӣ |  |
 | `customizer.overlay` | Oyna va tasdiq | Тирезаҳо ва тасдиқ |  |
 | `customizer.overlayHint` | Tasdiq, modal, tooltip va menyu shu oilaga bo'ysunadi. | Тасдиқ, модал, маслиҳат ва меню аз ҳамин оила пайравӣ мекунанд. |  |
-| `overlay.style.qogoz` | Qog'oz | Qog'oz |  |
+| `overlay.style.qogoz` | Qog'oz | Қоғаз |  |
 | `overlay.style.qogozHint` | Markazdagi kartochka, yumshoq qorayish, 16px radius. | Корти марказӣ, торикии нарм, радиуси 16px. |  |
-| `overlay.style.soyabon` | Soyabon | Soyabon |  |
+| `overlay.style.soyabon` | Soyabon | Чатр |  |
 | `overlay.style.soyabonHint` | Qorayish yo'q. Oyna tugmaga yopishadi. | Торикӣ нест. Тиреза ба тугма мечаспад. |  |
-| `overlay.style.projektor` | Projektor | Projektor |  |
+| `overlay.style.projektor` | Projektor | Проектор |  |
 | `overlay.style.projektorHint` | Vinyetka: atrof o'chadi, savol o'rtada. | Винетта: атроф хомӯш, савол дар марказ. |  |
-| `overlay.style.orol` | Orol | Orol |  |
+| `overlay.style.orol` | Orol | Ҷазира |  |
 | `overlay.style.orolHint` | Katta radius, blur fon, kapsul tugmalar. | Радиуси калон, заминаи хира, тугмаҳои капсул. |  |
 | `overlay.sample.confirm` | O'chirish | Нест кардан |  |
 | `overlay.sample.problem` | Masala | Масъала |  |
