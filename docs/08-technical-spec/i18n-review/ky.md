@@ -1621,13 +1621,13 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.loading` | Yuklanish | Жүктөлүүдө |  |
 | `customizer.overlay` | Oyna va tasdiq | Терезелер жана ырастоо |  |
 | `customizer.overlayHint` | Tasdiq, modal, tooltip va menyu shu oilaga bo'ysunadi. | Ырастоо, модал, кеңеш жана меню ушул үй-бүлөнү ээрчийт. |  |
-| `overlay.style.qogoz` | Qog'oz | Qog'oz |  |
+| `overlay.style.qogoz` | Qog'oz | Кагаз |  |
 | `overlay.style.qogozHint` | Markazdagi kartochka, yumshoq qorayish, 16px radius. | Борбордогу карта, жумшак караңгылатуу, 16px радиус. |  |
-| `overlay.style.soyabon` | Soyabon | Soyabon |  |
+| `overlay.style.soyabon` | Soyabon | Кол чатыр |  |
 | `overlay.style.soyabonHint` | Qorayish yo'q. Oyna tugmaga yopishadi. | Караңгылатуу жок. Терезе баскычка жабышат. |  |
-| `overlay.style.projektor` | Projektor | Projektor |  |
+| `overlay.style.projektor` | Projektor | Проектор |  |
 | `overlay.style.projektorHint` | Vinyetka: atrof o'chadi, savol o'rtada. | Виньетка: айлана өчөт, суроо ортодо. |  |
-| `overlay.style.orol` | Orol | Orol |  |
+| `overlay.style.orol` | Orol | Арал |  |
 | `overlay.style.orolHint` | Katta radius, blur fon, kapsul tugmalar. | Чоң радиус, бүдөмүк фон, капсула баскычтар. |  |
 | `overlay.sample.confirm` | O'chirish | Өчүрүү |  |
 | `overlay.sample.problem` | Masala | Маселе |  |

@@ -1621,13 +1621,13 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.loading` | Yuklanish | Júkleniw |  |
 | `customizer.overlay` | Oyna va tasdiq | Ayna hám tastıyıqlaw |  |
 | `customizer.overlayHint` | Tasdiq, modal, tooltip va menyu shu oilaga bo'ysunadi. | Tastıyıqlaw, modal, maslahat hám menyu usı shańaraqqa boysınadı. |  |
-| `overlay.style.qogoz` | Qog'oz | Qog'oz |  |
+| `overlay.style.qogoz` | Qog'oz | Qağaz |  |
 | `overlay.style.qogozHint` | Markazdagi kartochka, yumshoq qorayish, 16px radius. | Oraydaǵı kartočka, jumsaq qarańǵılıq, 16px radius. |  |
-| `overlay.style.soyabon` | Soyabon | Soyabon |  |
+| `overlay.style.soyabon` | Soyabon | Sayaban |  |
 | `overlay.style.soyabonHint` | Qorayish yo'q. Oyna tugmaga yopishadi. | Qarańǵılıq joq. Ayna túymege jabısadı. |  |
-| `overlay.style.projektor` | Projektor | Projektor |  |
+| `overlay.style.projektor` | Projektor | Proyektor |  |
 | `overlay.style.projektorHint` | Vinyetka: atrof o'chadi, savol o'rtada. | Vinyetka: átirap óshedi, soraw ortada. |  |
-| `overlay.style.orol` | Orol | Orol |  |
+| `overlay.style.orol` | Orol | Ataw |  |
 | `overlay.style.orolHint` | Katta radius, blur fon, kapsul tugmalar. | Úlken radius, bulan fon, kapsul túymeler. |  |
 | `overlay.sample.confirm` | O'chirish | Óshiriw |  |
 | `overlay.sample.problem` | Masala | Masele |  |
