@@ -2,7 +2,7 @@
 
 **STATUS:** shipped (2026-09-14)
 
-Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D51).
+Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D52).
 Entry points: the header icon, a floating tab on desktop, `Ctrl+.`, and
 `/settings/korinish`.
 
@@ -66,7 +66,9 @@ so it is derived against the union of the two.
 enumerate user combinations, so the panel runs **the same arithmetic in the
 browser** (`apps/web/src/lib/theme/color.ts`) and blocks saving a
 combination that fails. Warning and allowing would produce unreadable
-interfaces for the team to clean up later.
+interfaces for the team to clean up later. The panel must not say «fails
+AA (4.5:1)» when the ratio is unmeasured (D52 / APP-9): that sentence is
+only for a computed ratio below the target.
 
 Both implementations must be checked against known values before either is
 trusted: `#000000`/`#ffffff` = 21.00, `#767676`/`#ffffff` = 4.54,
