@@ -3623,6 +3623,26 @@ def neg_decisions_footer_privacy_link_lost() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_footer_telegram_changed() -> tuple[bool, str]:
+    """Rasmiy Telegram o'zgarsa tutilsin."""
+    return _decision_broken(
+        _FOOTER,
+        'const TELEGRAM_URL = "https://t.me/rankwant";',
+        'const TELEGRAM_URL = "https://t.me/example";',
+        _BRAND_RULE,
+    )
+
+
+def neg_decisions_footer_email_changed() -> tuple[bool, str]:
+    """Rasmiy email o'zgarsa tutilsin."""
+    return _decision_broken(
+        _FOOTER,
+        'const CONTACT_EMAIL = "support@rankwant.uz";',
+        'const CONTACT_EMAIL = "hello@example.com";',
+        _BRAND_RULE,
+    )
+
+
 # ── Deploy gate: agents deploy only a green `main` (owner decision 2026-09-17) ──
 
 _GATE_SHA = "a" * 40
@@ -5092,6 +5112,14 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("sidebar brendi qaytsa tutilsin", neg_decisions_sidebar_brand_back),
             ("footer bitta ustunga tushsa tutilsin", neg_decisions_footer_single_column),
             ("footer privacy havolasi yo'qolsa tutilsin", neg_decisions_footer_privacy_link_lost),
+            (
+                "footer Telegram o'zgarsa tutilsin",
+                neg_decisions_footer_telegram_changed,
+            ),
+            (
+                "footer email o'zgarsa tutilsin",
+                neg_decisions_footer_email_changed,
+            ),
         ],
     ),
     (

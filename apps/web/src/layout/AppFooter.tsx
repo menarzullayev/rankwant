@@ -5,11 +5,8 @@ import { IntentLink } from "@/components/ui/IntentLink";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { fill, t } from "@/i18n/messages";
 
-/** Aloqa manzillari — bitta joyda, o'zgartirish uchun bitta qator.
- *  ⚠️ 2026-09-19 HITL taklifi bo'yicha qo'yildi: `@rankwant` Telegram
- *  handle'i brend tadqiqotiga ko'ra BO'SH, email esa hali egasining
- *  aniq tasdig'ini kutmoqda — ishga tushishidan oldin Saidakbar aka
- *  tasdiqlashi shart. */
+/** Aloqa manzillari — bitta joyda. 2026-09-20 HITL: `t.me/rankwant`
+ *  va `support@rankwant.uz` rasmiy (confirm-current). */
 const TELEGRAM_URL = "https://t.me/rankwant";
 const CONTACT_EMAIL = "support@rankwant.uz";
 
