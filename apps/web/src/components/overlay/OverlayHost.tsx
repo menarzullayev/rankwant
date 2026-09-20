@@ -349,9 +349,14 @@ export function OverlayProvider({ children }: { children: ReactNode }) {
       hide();
     }
 
+    function onDown() {
+      hide();
+    }
+
     document.addEventListener("pointerover", onOver, true);
     document.addEventListener("pointermove", onMove, true);
     document.addEventListener("pointerout", onOut, true);
+    document.addEventListener("pointerdown", onDown, true);
     document.addEventListener("focusin", onFocus, true);
     document.addEventListener("focusout", onBlur, true);
     return () => {
@@ -360,6 +365,7 @@ export function OverlayProvider({ children }: { children: ReactNode }) {
       document.removeEventListener("pointerover", onOver, true);
       document.removeEventListener("pointermove", onMove, true);
       document.removeEventListener("pointerout", onOut, true);
+      document.removeEventListener("pointerdown", onDown, true);
       document.removeEventListener("focusin", onFocus, true);
       document.removeEventListener("focusout", onBlur, true);
     };

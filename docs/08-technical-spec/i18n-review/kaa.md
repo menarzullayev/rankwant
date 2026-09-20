@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1739 strings.**
+**1770 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -1761,3 +1761,33 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `kit.step.account` | Hisob | Akkount |  |
 | `kit.step.profile` | Profil | Profil beti |  |
 | `kit.step.done` | Tayyor | Pitim |  |
+| `customizer.group.look` | Shablonlar | Úlgiler |  |
+| `customizer.group.color` | Rang va uslub | Reń hám usıl |  |
+| `customizer.group.type` | Matn | Tekst |  |
+| `customizer.group.system` | Interfeys | Bet interfeysi |  |
+| `customizer.swatch.red` | Qizil | Qızıl |  |
+| `customizer.swatch.ember` | Olov | Ot |  |
+| `customizer.swatch.orange` | Apelsin | Sárǵılt |  |
+| `customizer.swatch.yellow` | Sariq | Sarı |  |
+| `customizer.swatch.lime` | Ohak | Laym |  |
+| `customizer.swatch.green` | Yashil | Jasıl |  |
+| `customizer.swatch.teal` | Firuza | Kókjasıl |  |
+| `customizer.swatch.cyan` | Osmon | Asman |  |
+| `customizer.swatch.blue` | Ko'k | Asman kók |  |
+| `customizer.swatch.indigo` | Indigo | Sıya kók |  |
+| `customizer.swatch.violet` | Binafsha | Sıya reń |  |
+| `customizer.swatch.magenta` | Magenta | Qızıl binafsha |  |
+| `customizer.swatch.pink` | Pushti | Qızǵılt |  |
+| `customizer.swatch.rose` | Gulrang | Gúl |  |
+| `customizer.a11y.motionHint.system` | Qurilma sozlamasiga bo'ysunadi. | Qurılma sazlamasına boysınadı. |  |
+| `customizer.a11y.motionHint.full` | Barcha o'tish va effektlar. | Barlıq ótiw hám effektler. |  |
+| `customizer.a11y.motionHint.mild` | O'tishlar qoladi, bezak effektlari o'chadi. | Ótiwler qaladı, bezew effektleri óshedi. |  |
+| `customizer.a11y.motionHint.off` | Harakat yo'q. | Hareket joq. |  |
+| `customizer.deleteConfirm` | Ha, o'chirish | Awa, óshiriw |  |
+| `settings.openCustomizer` | Ko'rinish sozlagichini ochish | Kórinis sazlaǵıshın ashıw |  |
+| `admin.section.kit` | Namuna to'plami | Úlgi jıynaǵı |  |
+| `admin.kit.title` | O'zaro ta'sir namunalari | Óz-ara tásir úlgileri |  |
+| `admin.kit.hint` | Bu sahifa dizayn laboratoriya. Musobaqachi sozlagichi emas. | Bul bet dizayn laboratoriyası. Qatnasıwshı sazlaǵıshı emes. |  |
+| `overlay.sample.popover` | Yon tasdiq | Janında |  |
+| `overlay.sample.hold` | Bosib turish | Basıp turıw |  |
+| `overlay.sample.cmdk` | Buyruq | Buyrıq |  |
