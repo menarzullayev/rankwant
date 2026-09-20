@@ -2275,12 +2275,13 @@ def neg_decisions_locale_label_unbounded() -> tuple[bool, str]:
 
     O'lchandi (320 px, `main` = 6486cd6): `max-w-[3rem]` olib tashlansa
     `Qaraqalpaqsha` til tugmasini 149 px qiladi va header 29 px toshadi
-    (`O'zbekcha` +7 px, `Кыргызча` +6 px).
+    (`O'zbekcha` +7 px, `Кыргызча` +6 px). Chegara haqiqiy triggerda —
+    `Dropdown` header inputida — bo'lishi shart; yashirin span yetarli emas.
     """
     return _decision_broken(
-        "apps/web/src/layout/LocaleSwitch.tsx",
-        'className="min-w-0 max-w-[3rem] truncate text-theme-xs sm:max-w-[7.5rem]"',
-        'className="min-w-0 truncate text-theme-xs sm:max-w-[7.5rem]"',
+        "apps/web/src/components/ui/Dropdown.tsx",
+        "min-w-0 max-w-[3rem] truncate bg-transparent",
+        "min-w-0 truncate bg-transparent",
         "tor ekran 320 px ga sig'adi",
     )
 
@@ -2294,9 +2295,9 @@ def neg_decisions_locale_code_restored() -> tuple[bool, str]:
     """
     return _decision_broken(
         "apps/web/src/layout/LocaleSwitch.tsx",
-        "{currentLabel}\n        </span>",
-        '{currentLabel}\n        </span>\n        <span className="text-theme-xs sm:hidden">'
-        "{currentCode}</span>",
+        "      <Dropdown",
+        '      <span className="text-theme-xs sm:hidden">{currentCode}</span>\n'
+        "      <Dropdown",
         "tor ekran 320 px ga sig'adi",
     )
 
@@ -3372,8 +3373,9 @@ _DECISIONS_SANDBOX_FILES = (
     # Header fits 320 px (2026-09-18): the locale control and the sign-in
     # link. Missing from this list, the sandbox copy cannot be read and
     # `check_decisions.py` fails with exit 2 — which is how the omission
-    # was caught.
+    # was caught. The visible bound is on the header ComboboxInput.
     "apps/web/src/layout/LocaleSwitch.tsx",
+    "apps/web/src/components/ui/Dropdown.tsx",
     # Mobile drawer (2026-09-18): the trigger, the panel, the Escape
     # handler and the scroll lock. `AppSidebar.tsx` is already listed
     # above for the earlier header rule.
@@ -3637,6 +3639,24 @@ def neg_decisions_drawer_scroll_lock_lost() -> tuple[bool, str]:
         "apps/web/src/layout/AppShell.tsx",
         'document.body.style.overflow = "hidden";',
         'document.body.style.overflow = "auto";',
+        "mobil panel foydalanishga yaroqli",
+    )
+
+
+def neg_decisions_drawer_scroll_sidenav_only() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/web/src/layout/AppShell.tsx",
+        "    if (!isMobileOpen) return;",
+        "    if (!(sidenav && isMobileOpen)) return;",
+        "mobil panel foydalanishga yaroqli",
+    )
+
+
+def neg_decisions_topnav_drawer_unmounted() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/web/src/layout/AppTopNav.tsx",
+        "        hidden={!isMobileOpen}",
+        "        hidden={true}",
         "mobil panel foydalanishga yaroqli",
     )
 
@@ -5602,6 +5622,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("fokus tugmaga qaytmasa tutilsin", neg_decisions_drawer_focus_not_returned),
             ("Esc panelni yopmasa tutilsin", neg_decisions_drawer_escape_lost),
             ("fon scroll'i qulflanmasa tutilsin", neg_decisions_drawer_scroll_lock_lost),
+            ("scroll faqat sidenav bo'lsa tutilsin", neg_decisions_drawer_scroll_sidenav_only),
+            ("topnav drawer unmount bo'lsa tutilsin", neg_decisions_topnav_drawer_unmounted),
             ("KPI to'ri 2 ustunda qolsa tutilsin", neg_decisions_kpi_grid_stuck_at_2up),
             ("KPI to'ri 3 ustunga qaytsa tutilsin", neg_decisions_kpi_grid_3up_creeps_back),
             ("KPI raqami pog'onasi yo'qolsa tutilsin", neg_decisions_kpi_card_value_step_lost),

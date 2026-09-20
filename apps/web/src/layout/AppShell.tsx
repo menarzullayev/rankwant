@@ -82,13 +82,13 @@ function Shell({ children }: { children: React.ReactNode }) {
   // turganda `body` ning `overflow` i `visible` edi — sahifa panel
   // ostida siljib ketardi.
   useEffect(() => {
-    if (!(sidenav && isMobileOpen)) return;
+    if (!isMobileOpen) return;
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = previous;
     };
-  }, [sidenav, isMobileOpen]);
+  }, [isMobileOpen]);
 
   return (
     <div className="min-h-screen">
