@@ -9,10 +9,25 @@
 #   · runner'da `gh` YO'Q — `check_deploy_gate.py` har doim `exit 2` berardi.
 # Host'da esa `deploy.sh`, `gh`, `.env.public`, `docker` va Task Scheduler —
 # hammasi bor va o'lchangan. Naqsh `tools/monitor.ps1` (RankWant Tunnel
-# Monitor) dan olingan: u ham har 5 daqiqada xuddi shunday yuguradi.
+# Monitor) dan olingan — o'sha skript 5 daqiqada yuradi, bu esa 1 daqiqada.
+#
+# ── Poll oralig'i: 1 daqiqa (o'lchandi 2026-09-21) ───────────────────
+# Vazifa `RankWant Auto Deploy` har daqiqada yuradi (`PT1M`), 5 daqiqada
+# EMAS: merge'dan keyin deploy eng yomon holatda 1 daqiqada boshlanadi.
+#
+# ⚠️ 30 SONIYA TEXNIK JIHATDAN MUMKIN EMAS. Task Scheduler takrorlash
+# oralig'ining eng kichigi — 1 daqiqa; `PT30S` ni XML sxemasi rad etadi
+# (unified va klassik engine'ning ikkalasida ham o'lchandi):
+#   The task XML contains a value which is incorrectly formatted or out
+#   of range.(31,27):Interval:PT30S
+# Undan tez kerak bo'lsa — umuman kutmasdan qo'lda: `tools/kick_auto_deploy.sh`.
+#
+# ⚠️ Ustma-ust tushish YO'Q: vazifada `MultipleInstancesPolicy=IgnoreNew`,
+# ya'ni oldingi yurish tugamaguncha yangisi ochilmaydi — deploy 5 daqiqaga
+# cho'zilsa ham yurishlar to'planib qolmaydi.
 #
 # ── Bu skript nima qiladi ────────────────────────────────────────────
-# Har 5 daqiqada:
+# Har daqiqada:
 #   1. qulfni oladi (deploy.sh bilan BIR XIL qulf) — band bo'lsa chiqadi;
 #   2. `origin/main` ni oladi va deploy worktree'ni unga keltiradi;
 #   3. JONLI kod joriymi — konteynerlar tirikmi (o'zimiz) va
@@ -274,8 +289,8 @@ fi
 # esa allaqachon yozilgan edi — log «deploy YIQILDI (target 50eec1f) —
 # 1800s to'siq qo'yildi» dedi. Ya'ni oddiy «hali tayyor emas» holati
 # 30 daqiqalik kechikishga va YOLG'ON nosozlik signaliga aylandi.
-# CI `main` da ~70 s yuguradi, yurish esa har 5 daqiqada — ya'ni har
-# to'rtinchi merge shu yo'lga tushadi.
+# CI `main` da ~70 s yuguradi, yurish esa har daqiqada — ya'ni deyarli
+# har merge shu yo'lga tushadi (5 daqiqalik poll'da har to'rtinchisi).
 #
 # ⚠️ Bu darvoza o'rnini BOSMAYDI: `deploy.sh` o'z darvozasini baribir
 # yurgizadi (yagona haqiqat manbai). Bu — tayyorlik savoli: «hozir
@@ -297,7 +312,7 @@ fi
 
 # ── 8. Deploy ────────────────────────────────────────────────────────
 # ⚠️ Urinish deploy'dan OLDIN yoziladi: `deploy.sh` yiqilib ketsa ham to'siq
-# hisobga oladi. Keyin yozilsa, yiqilgan yurish har 5 daqiqada takrorlanardi.
+# hisobga oladi. Keyin yozilsa, yiqilgan yurish har daqiqada takrorlanardi.
 record_attempt "$TARGET"
 log "deploy boshlandi (target ${TARGET:0:7})"
 # ⚠️ `RANKWANT_LOCK_HELD=1` SHART. Watcher allaqachon AYNI qulfni ushlab
