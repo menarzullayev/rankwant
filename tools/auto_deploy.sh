@@ -17,7 +17,8 @@
 #   2. `origin/main` ni oladi va deploy worktree'ni unga keltiradi;
 #   3. JONLI kod joriymi — konteynerlar tirikmi (o'zimiz) va
 #      `tools/check_deploy.sh` «joriy» deydimi; joriy bo'lsa JIM chiqadi;
-#   4. `tools/check_deploy_gate.py` (main CI yashil) va `DEPLOY_FREEZE`;
+#   4. `tools/check_deploy_gate.py` (main CI yashil) va `DEPLOY_FREEZE` —
+#      darvoza YOPIQ bo'lsa urinish yozilmaydi va to'siq qo'yilmaydi;
 #   5. `tools/deploy.sh --yes` — qulf QAYTA olinmaydi
 #      (`RANKWANT_LOCK_HELD=1`), chunki u allaqachon 1-qadamda olingan.
 #
@@ -74,7 +75,7 @@ for arg in "$@"; do
   case "$arg" in
     --dry-run) DRY_RUN=1 ;;
     --status) STATUS_ONLY=1 ;;
-    -h|--help) sed -n '2,53p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) sed -n '2,54p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) printf '%sNoma'"'"'lum argument: %s%s\n' "$R" "$arg" "$N"; exit 2 ;;
   esac
 done
@@ -263,6 +264,34 @@ fi
 
 if [ "$DRY_RUN" -eq 1 ]; then
   log "dry-run: deploy qilinardi (target ${TARGET:0:7}, scope ${SCOPE}, env $ENV_FILE)"
+  exit 0
+fi
+
+# ── 8b. Darvoza OLDINDAN tekshiriladi ────────────────────────────────
+# ⚠️ Darvoza YOPIQ bo'lsa urinish YOZILMAYDI va to'siq qo'yilmaydi.
+# Sabab o'lchandi (2026-09-20): PR #192 18:09:36 da merge bo'ldi, CI esa
+# hali yugurardi; 18:10:06 dagi yurish darvozada to'xtadi, `record_attempt`
+# esa allaqachon yozilgan edi — log «deploy YIQILDI (target 50eec1f) —
+# 1800s to'siq qo'yildi» dedi. Ya'ni oddiy «hali tayyor emas» holati
+# 30 daqiqalik kechikishga va YOLG'ON nosozlik signaliga aylandi.
+# CI `main` da ~70 s yuguradi, yurish esa har 5 daqiqada — ya'ni har
+# to'rtinchi merge shu yo'lga tushadi.
+#
+# ⚠️ Bu darvoza o'rnini BOSMAYDI: `deploy.sh` o'z darvozasini baribir
+# yurgizadi (yagona haqiqat manbai). Bu — tayyorlik savoli: «hozir
+# urinishga arziydimi?». Shu sababli javob `exit 0` — nosozlik emas.
+# Yopiq darvoza SABABI logga yoziladi: jim qolmasin (2026-09-18 da 3 ta
+# PR aynan shu sabab bilan soatlab jonli chiqmagan).
+GATE_PY="$(bash tools/pick-python.sh 2>/dev/null)" || GATE_PY=""
+if [ -z "$GATE_PY" ]; then
+  log "darvoza o'lchanmadi: Python topilmadi — urinish yozilmadi, to'siq YO'Q"
+  exit 0
+fi
+gate_out="$("$GATE_PY" tools/check_deploy_gate.py 2>&1)"
+gate_rc=$?
+if [ "$gate_rc" -ne 0 ]; then
+  log "darvoza yopiq (exit $gate_rc) — tayyor emas, to'siq YO'Q; keyingi yurish qayta tekshiradi"
+  printf '%s\n' "$gate_out" | while IFS= read -r line; do log "  $line"; done
   exit 0
 fi
 

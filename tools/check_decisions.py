@@ -1283,7 +1283,7 @@ KICK_AUTO_DEPLOY = "tools/kick_auto_deploy.sh"
 
 
 def deploy_automation_is_safe() -> str | None:
-    """Avtomatik deploy zanjiri — tartib buzilsa JIM buziladigan yetti joy.
+    """Avtomatik deploy zanjiri — tartib buzilsa JIM buziladigan sakkiz joy.
 
     Saidakbar aka qarori (2026-09-19): deploy to'liq avtomatik bo'ladi —
     host watcher orqali (`tools/auto_deploy.sh` + `RankWant Auto Deploy`
@@ -1295,10 +1295,10 @@ def deploy_automation_is_safe() -> str | None:
 
     Beshta shart tartibga bog'liq: buzilganda kod ISHLAYDI, natija esa
     noto'g'ri bo'ladi — ya'ni xato faqat hodisa paytida bilinadi.
-    Qolgan ikkitasi (6, 7) 2026-09-19 da birinchi haqiqiy yurishda
-    o'lchandi va BIR XIL sababga ega: ular faqat zanjir BUTUN yurganda
-    ko'rinadi, ya'ni unit darajasidagi tekshiruvlar ularni o'tkazib
-    yuboradi.
+    Qolgan uchtasi (6–8) haqiqiy yurishda o'lchandi (6 va 7 — 2026-09-19,
+    8 — 2026-09-20) va umumiy sababga ega: ular faqat zanjir BUTUN
+    yurganda ko'rinadi, ya'ni unit darajasidagi tekshiruvlar ularni
+    o'tkazib yuboradi.
 
     1. ZAXIRA MIGRATSIYADAN OLDIN. `backup.sh --dump-only` `run --rm
        migrate` dan keyin tursa sxema zaxirasiz o'zgaradi va qaytish yo'li
@@ -1329,6 +1329,12 @@ def deploy_automation_is_safe() -> str | None:
        qoladi va `check_deploy.sh` YOLG'ON «ESKIRGAN» deydi. Watcher
        `exec 0</dev/null` bilan ochadi, `check_deploy.sh` esa o'zi ham
        `sha256sum` ga `< /dev/null` beradi.
+    8. DARVOZA YOPIQ BO'LSA URINISH YOZILMAYDI. Darvoza — TAYYORLIK
+       tekshiruvi, nosozlik emas. U yopiq bo'lganda `record_attempt`
+       yozilsa, keyingi 30 daqiqa deploy umuman qilinmaydi va log yolg'on
+       «deploy YIQILDI» deydi. O'lchandi 2026-09-20 (PR #192: merge
+       18:09:36, yurish 18:10:06) — CI `main` da ~70 s yuguradi, yurish esa
+       har 5 daqiqada, ya'ni har to'rtinchi merge shu yo'lga tushadi.
     """
     deploy = read("tools/deploy.sh")
     auto = read(AUTO_DEPLOY)
@@ -1389,6 +1395,23 @@ def deploy_automation_is_safe() -> str | None:
         return f"{AUTO_DEPLOY}: `deploy.sh --yes` chaqirilmaydi"
     if attempt_at > deploy_at:
         return f"{AUTO_DEPLOY}: urinish deploy'dan KEYIN yoziladi — yiqilgan yurish takrorlanadi"
+
+    # ⚠️ 8. Darvoza urinishdan OLDIN tekshiriladi. Yopiq darvoza — «hali
+    # tayyor emas», nosozlik emas; `record_attempt` yozilsa SHA 30 daqiqa
+    # bloklanadi va log yolg'on «deploy YIQILDI» deydi. O'lchandi
+    # 2026-09-20 18:10:06Z: PR #192 18:09:36 da merge bo'ldi, CI hali
+    # yugurar edi — yurish darvozada to'xtadi va «1800s to'siq» chiqdi.
+    gate_at = position(auto, '"$GATE_PY" tools/check_deploy_gate.py')
+    if gate_at < 0:
+        return (
+            f"{AUTO_DEPLOY}: darvoza oldindan tekshirilmaydi — yopiq darvoza "
+            "urinish yozib 30 daqiqalik to'siq qo'yadi"
+        )
+    if gate_at > attempt_at:
+        return (
+            f"{AUTO_DEPLOY}: darvoza urinishdan KEYIN tekshiriladi — "
+            "yopiq darvoza baribir to'siq qo'yadi"
+        )
 
     # Env-fayl worktree'dan TASHQARIDA: `.env.public` `.gitignore` da
     # (`.env.*`), ya'ni yangi worktree'da u yo'q. Ikkala joy BIR XIL
