@@ -117,8 +117,10 @@ bash tools/deploy.sh --check  # hech narsani o'zgartirmaydi
 ```
 
 `tools/deploy.sh` — §1 tartibining bajariladigan ko'rinishi: old shartlar →
-**live oyna tekshiruvi** → build (api, worker, beat, judge, web va migrate) → migrate →
-`showmigrations` tasdiqi → `up -d --no-deps` → `check_deploy.sh`.
+**live oyna tekshiruvi** → `deploy_scope.py` (docs/tools — bake yo'q; judge
+faqat `services/judge-go` o'zgaganda) → kerakli obrazlar → migrate (faqat
+api doirasida) → `showmigrations` → `up -d --no-deps` → **health** (api/web,
+`sleep 10` emas) → `check_deploy.sh`.
 Qadamlar tartibi kodda, yodda emas.
 
 Live oyna tekshiruvi alohida tekshiruv: `tools/check_deploy_window.py`
@@ -176,13 +178,23 @@ o'zgarmaydi). Avtomatlashtirish — host'da, chunki `deploy.sh`, `gh`,
 
 ```
 qulf → DEPLOY_FREEZE → git fetch origin main → worktree'ni --ff-only
+     → deploy_scope.py (jonli yorliq ↔ origin/main)
+        bo'sh + stack tirik → bake yo'q (docs/tools)
      → drift bormi?  (konteynerlar tirikmi + check_deploy.sh)
         yo'q  → JIM chiqadi
         bor   → qayta urinish to'sig'i (30 daqiqa)
-              → tools/deploy.sh --yes
-                 qulf → darvoza(main CI) → oyna → build
-                 → pg_dump → migrate → showmigrations → up → tasdiq
+              → tools/deploy.sh --yes  (RANKWANT_DEPLOY_SCOPE)
+                 qulf → darvoza(main CI) → oyna → tanlangan obraz
+                 → (api bo'lsa) pg_dump → migrate → showmigrations
+                 → up → health → check_deploy.sh
                  → prune (SHA teglar, dangling, builder)
+```
+
+Merge oxirida watcher'ni 5 daqiqa kutmang — darvoza baribir yashil main:
+
+```bash
+bash tools/kick_auto_deploy.sh
+# yoki: schtasks /run /tn "RankWant Auto Deploy"
 ```
 
 ⚠️ **Deploy alohida worktree'dan** yuriladi (`C:/Users/nsn/project/wt/deploy`),
@@ -258,6 +270,7 @@ bash tools/rollback.sh --list          # SHA teglar saqlanmaydi (qolganlari)
 # Kodni qaytarish: deploy worktree'da kerakli commit + bash tools/deploy.sh --yes
 # Sxema: <backup dir>/pg-deploy-*.sql.gz — qo'lda
 
+bash tools/kick_auto_deploy.sh                    # merge oxirida (schtasks)
 schtasks /run /tn "RankWant Auto Deploy"          # vazifani darhol yurgizish
 tail -f .handoff/auto-deploy.log                  # watcher logi
 rm -f ~/.rankwant-auto-deploy-state               # 30 daqiqalik to'siqni olib tashlash

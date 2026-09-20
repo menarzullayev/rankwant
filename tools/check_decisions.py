@@ -1249,6 +1249,8 @@ def roles_groups_and_object_authors() -> str | None:
 AUTO_DEPLOY = "tools/auto_deploy.sh"
 ROLLBACK = "tools/rollback.sh"
 CHECK_DEPLOY = "tools/check_deploy.sh"
+DEPLOY_SCOPE = "tools/deploy_scope.py"
+KICK_AUTO_DEPLOY = "tools/kick_auto_deploy.sh"
 
 
 def deploy_automation_is_safe() -> str | None:
@@ -1329,7 +1331,9 @@ def deploy_automation_is_safe() -> str | None:
 
     if "rankwant/${svc}:${SHA_TAG}" in deploy:
         return "tools/deploy.sh SHA tegini saqlaydi — VHDX o'saveradi (2026-09-20: hammasi tozalanadi)"
-    up_at = position(deploy, 'up -d --no-deps "${SERVICES[@]}"')
+    up_at = position(deploy, 'up -d --no-deps "${BUILD_SERVICES[@]}"')
+    if up_at < 0:
+        up_at = position(deploy, 'up -d --no-deps "${SERVICES[@]}"')
     if up_at < 0:
         return "tools/deploy.sh da `up -d --no-deps` topilmadi"
     check_at = position(deploy, "bash tools/check_deploy.sh")
@@ -1418,6 +1422,49 @@ def deploy_automation_is_safe() -> str | None:
         return (
             f"{CHECK_DEPLOY}: inventory locale'siz sort — comm yolg'on «ESKIRGAN»"
         )
+    return None
+
+
+def deploy_skips_non_image_bake() -> str | None:
+    """2026-09-20: docs/tools bake yo'q; judge faqat manba; health; kick.
+
+    O'lchangan: obrazga tushmaydigan PR dan keyin 2.6 min (judge miss
+    16 min); watcher 5 min teshik; tools-only npm ci 14–20 s; verify
+    sleep 10.
+    """
+    scope = read(DEPLOY_SCOPE)
+    for needle in ("apps/api", "apps/web", "services/judge-go", "tools/deploy.sh"):
+        if needle not in scope:
+            return f"{DEPLOY_SCOPE}: {needle} yo'li yo'q"
+    if "ALL_SERVICES" not in scope:
+        return f"{DEPLOY_SCOPE}: servis ro'yxati yo'q"
+
+    deploy = read("tools/deploy.sh")
+    if "deploy_scope.py" not in deploy:
+        return "tools/deploy.sh: deploy_scope.py chaqirilmaydi — docs/tools ham bake qiladi"
+    if "wait_health" not in deploy or "api/v1/health" not in deploy:
+        return "tools/deploy.sh: health kutish yo'q"
+    verify = deploy.split("time_begin verify", 1)[-1].split("time_finish verify", 1)[0]
+    if re.search(r"^sleep 10\b", verify, re.M):
+        return "tools/deploy.sh verify: sleep 10 — health emas"
+
+    auto = read(AUTO_DEPLOY)
+    if "deploy_scope.py" not in auto:
+        return f"{AUTO_DEPLOY}: obraz doirasi hisoblanmaydi"
+    if 'log "obrazga tushmaydi — bake yo\'q' not in auto:
+        return f"{AUTO_DEPLOY}: bo'sh doirada bake o'tkazilmaydi"
+
+    kick = read(KICK_AUTO_DEPLOY)
+    if 'schtasks /run /tn "RankWant Auto Deploy"' not in kick:
+        return f"{KICK_AUTO_DEPLOY}: schtasks /run yo'q"
+
+    hook = read(".githooks/pre-push")
+    if "check_negative.py" not in hook or "decisions" not in hook:
+        return "pre-push: deploy.sh o'zgarsa decisions ishlamaydi"
+
+    ci = read(".github/workflows/ci.yml")
+    if "tools_node" not in ci or "NEGATIVE_SKIP_NODE" not in ci:
+        return "ci.yml: Python-only tools ham npm ci qiladi"
     return None
 
 
@@ -1832,6 +1879,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("50k masshtab qarorlari", scale_50k_locked),
     ("staff guruhlari va obyekt mualliflari", roles_groups_and_object_authors),
     ("avtomatik deploy xavfsiz", deploy_automation_is_safe),
+    ("docs/tools obraz qurilmasin", deploy_skips_non_image_bake),
     ("docker disk chegaralangan", docker_disk_stays_bounded),
     ("TypeScript 7 yonma-yon", typescript_side_by_side),
     ("@types/node runtime bilan", types_node_tracks_runtime),

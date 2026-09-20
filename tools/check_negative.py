@@ -2801,6 +2801,16 @@ def neg_decisions_copy_burn_returns() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_scope_bake_always() -> tuple[bool, str]:
+    """Watcher docs/tools da ham bake qilsa tutilsin."""
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        "obrazga tushmaydi — bake yo'q",
+        "obrazga tushadi — bake bor",
+        "docs/tools obraz qurilmasin",
+    )
+
+
 def neg_decisions_auto_deploy_no_liveness() -> tuple[bool, str]:
     """Watcher konteynerlar tirikligini tekshirmasa tutilsin.
 
@@ -3424,6 +3434,8 @@ _DECISIONS_SANDBOX_FILES = (
     # rollback path, and `tools/deploy.sh` is already listed above. Missing
     # here, `check_decisions.py` exits 2 instead of testing the rule.
     "tools/auto_deploy.sh",
+    "tools/deploy_scope.py",
+    "tools/kick_auto_deploy.sh",
     "tools/rollback.sh",
     "tools/prune_docker_disk.sh",
     "tools/docker-daemon.json",
@@ -4129,6 +4141,105 @@ def neg_deploy_no_cache_and_timers() -> tuple[bool, str]:
     if missing:
         return False, "deploy.sh TIMER/--no-cache yetishmaydi: " + ", ".join(missing)
     return True, "deploy.sh --no-cache va TIMER hooklari bor"
+
+
+def _load_deploy_scope():
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "deploy_scope", ROOT / "tools/deploy_scope.py"
+    )
+    if spec is None or spec.loader is None:
+        raise RuntimeError("deploy_scope.py yuklanmadi")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def neg_scope_docs_is_empty() -> tuple[bool, str]:
+    scope = _load_deploy_scope().compute_scope(
+        "a", "b", changed=lambda _o, _n, _p: False
+    )
+    if scope:
+        return False, f"deploy_scope: docs/tools bo'sh emas — {scope}"
+    return True, "deploy_scope: docs/tools — bake yo'q"
+
+
+def neg_scope_web_only() -> tuple[bool, str]:
+    def changed(_o: str, _n: str, paths: tuple[str, ...]) -> bool:
+        return any(p == "apps/web" or p.startswith("apps/web/") for p in paths)
+
+    scope = _load_deploy_scope().compute_scope("a", "b", changed=changed)
+    if scope != ["web"]:
+        return False, f"deploy_scope: web-only emas — {scope}"
+    return True, "deploy_scope: faqat web"
+
+
+def neg_scope_judge_only() -> tuple[bool, str]:
+    def changed(_o: str, _n: str, paths: tuple[str, ...]) -> bool:
+        return any(p == "services/judge-go" or p.startswith("services/judge-go/") for p in paths)
+
+    scope = _load_deploy_scope().compute_scope("a", "b", changed=changed)
+    if scope != ["judge"]:
+        return False, f"deploy_scope: judge-only emas — {scope}"
+    return True, "deploy_scope: faqat judge"
+
+
+def neg_scope_api_triplet() -> tuple[bool, str]:
+    def changed(_o: str, _n: str, paths: tuple[str, ...]) -> bool:
+        return any(p == "apps/api" or p.startswith("apps/api/") for p in paths)
+
+    scope = _load_deploy_scope().compute_scope("a", "b", changed=changed)
+    if scope != ["api", "worker", "beat"]:
+        return False, f"deploy_scope: api triplet emas — {scope}"
+    return True, "deploy_scope: api/worker/beat"
+
+
+def neg_scope_compose_rebuilds_all() -> tuple[bool, str]:
+    def changed(_o: str, _n: str, paths: tuple[str, ...]) -> bool:
+        return "docker-compose.yml" in paths
+
+    scope = _load_deploy_scope().compute_scope("a", "b", changed=changed)
+    if scope != ["api", "worker", "beat", "judge", "web"]:
+        return False, f"deploy_scope: compose hamma emas — {scope}"
+    return True, "deploy_scope: compose — hamma servis"
+
+
+def neg_deploy_verify_uses_health() -> tuple[bool, str]:
+    src = (ROOT / "tools/deploy.sh").read_text(encoding="utf-8")
+    if "time_begin verify" not in src:
+        return False, "deploy.sh: time_begin verify yo'q"
+    verify = src.split("time_begin verify", 1)[-1].split("time_finish verify", 1)[0]
+    if re.search(r"^sleep 10\b", verify, re.M):
+        return False, "deploy.sh verify: sleep 10 qolgan"
+    if "wait_health" not in verify:
+        return False, "deploy.sh verify: wait_health yo'q"
+    if "api/v1/health" not in src:
+        return False, "deploy.sh: api/v1/health yo'q"
+    return True, "deploy.sh verify: health, sleep 10 emas"
+
+
+def neg_ci_python_tools_skip_npm() -> tuple[bool, str]:
+    src = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+    if "tools_node" not in src or "NEGATIVE_SKIP_NODE" not in src:
+        return False, "ci.yml: Python-only tools ham npm ci qiladi"
+    return True, "ci.yml: Python-only tools npm ci qilmaydi"
+
+
+def neg_hook_decisions_on_deploy_sh() -> tuple[bool, str]:
+    src = (ROOT / ".githooks/pre-push").read_text(encoding="utf-8")
+    if "check_negative.py" not in src or "decisions" not in src:
+        return False, "pre-push: deploy.sh da decisions yo'q"
+    if r"tools/deploy\.sh" not in src and "tools/deploy.sh" not in src:
+        return False, "pre-push: deploy.sh yo'li yo'q"
+    return True, "pre-push: deploy.sh o'zgarsa decisions"
+
+
+def neg_kick_auto_deploy_runs_task() -> tuple[bool, str]:
+    src = (ROOT / "tools/kick_auto_deploy.sh").read_text(encoding="utf-8")
+    if 'schtasks /run /tn "RankWant Auto Deploy"' not in src:
+        return False, "kick_auto_deploy.sh: schtasks yo'q"
+    return True, "kick: RankWant Auto Deploy"
 
 
 def neg_deploy_timer_python_clock() -> tuple[bool, str]:
@@ -5417,6 +5528,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
                 "inventory sort locale'siz qolsa tutilsin",
                 neg_decisions_check_deploy_locale_sort,
             ),
+            (
+                "docs/tools bake qaytsa tutilsin",
+                neg_decisions_scope_bake_always,
+            ),
             ("deploy darvozasi uzilsa tutilsin", neg_decisions_deploy_gate_unwired),
             ("deploy qulfi olib tashlansa tutilsin", neg_decisions_deploy_lock_removed),
             ("deploy web'ni qurmasa tutilsin", neg_decisions_deploy_skips_web),
@@ -5544,6 +5659,15 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("Python soat", neg_deploy_timer_python_clock),
             ("timer self-test", neg_deploy_timer_self_test),
             ("--plan taqiqlar", neg_measure_deploy_plan),
+            ("docs/tools bake yo'q", neg_scope_docs_is_empty),
+            ("faqat web", neg_scope_web_only),
+            ("faqat judge", neg_scope_judge_only),
+            ("api triplet", neg_scope_api_triplet),
+            ("compose hamma", neg_scope_compose_rebuilds_all),
+            ("verify health", neg_deploy_verify_uses_health),
+            ("tools npm ci ajratilgan", neg_ci_python_tools_skip_npm),
+            ("deploy.sh da decisions", neg_hook_decisions_on_deploy_sh),
+            ("kick schtasks", neg_kick_auto_deploy_runs_task),
         ],
     ),
     (
@@ -5707,7 +5831,12 @@ def main(argv: list[str]) -> int:
         if not only or checker == only
         for label, _ in cases
     }
-    if selected & NODE_CASES:
+    skipped: list[str] = []
+    skip_node_cases = os.environ.get("NEGATIVE_SKIP_NODE") == "1"
+    if skip_node_cases:
+        skipped.append("node guruhi — Python-only tools, npm ci yo'q")
+        skipped.append("web_unit — Python-only tools, vitest yo'q")
+    elif selected & NODE_CASES:
         reason = node_precondition()
         if reason:
             print(f"  ✕ {reason}")
@@ -5723,7 +5852,6 @@ def main(argv: list[str]) -> int:
     # yuboriladi va hisobotning oxirida ko'rinadi. Windows'da — ya'ni
     # monitor haqiqatan ishlaydigan mashinada, pre-push hook'da — guruh
     # har doim ishlaydi.
-    skipped: list[str] = []
     if selected & MONITOR_CASES:
         reason = monitor_precondition()
         if reason:
@@ -5741,9 +5869,13 @@ def main(argv: list[str]) -> int:
     for checker, cases in CASES:
         if only and only != checker:
             continue
-        if checker == "monitor" and skipped:
+        if skip_node_cases and checker == "web_unit":
+            continue
+        if checker == "monitor" and any(row.startswith("monitor guruhi") for row in skipped):
             continue
         for label, fn in cases:
+            if skip_node_cases and label in NODE_CASES:
+                continue
             total += 1
             try:
                 ok, message = fn()  # type: ignore[operator]
@@ -5780,6 +5912,9 @@ def main(argv: list[str]) -> int:
         for row in failures:
             print(f"  - {row}")
         return 1
+    if total == 0:
+        print("Salbiy testlar: o'tkazib yuborildi — bu guruhda o'lchov yo'q")
+        return 0
     print(f"Salbiy testlar: {total}/{total} ✓ — har bir tekshiruv buzuq holatni tutdi")
     return 0
 

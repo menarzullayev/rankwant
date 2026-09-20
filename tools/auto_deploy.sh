@@ -124,6 +124,22 @@ live_sha() {
   printf '%s' "$sha"
 }
 
+# Obraz doirasi: docs/tools → bo'sh (bake yo'q). Judge faqat manbasi
+# o'zgaganda. Python yo'q / yorliq o'qilmasa — hamma servis (xavfsiz).
+image_scope() {
+  local py computed
+  py="$(bash tools/pick-python.sh 2>/dev/null)" || py=""
+  if [ -z "$py" ] || [ ! -f tools/deploy_scope.py ]; then
+    printf '%s' "api worker beat judge web"
+    return
+  fi
+  computed="$("$py" tools/deploy_scope.py --from-live --to "$1")" || {
+    printf '%s' "api worker beat judge web"
+    return
+  }
+  printf '%s' "$computed"
+}
+
 # Holat faylidan oxirgi urinishni o'qish (`<sha> <epoch>`).
 last_attempt() {
   [ -f "$STATE" ] || return 1
@@ -173,7 +189,34 @@ fi
 TARGET="$(git rev-parse origin/main 2>/dev/null)" || die "origin/main o'qilmadi"
 [ -n "$TARGET" ] || die "origin/main bo'sh"
 
-# ── 4. Drift bormi? ──────────────────────────────────────────────────
+# ── 4. Worktree'ni origin/main ga keltirish ──────────────────────────
+# ⚠️ `reset --hard` ATAYLAB yo'q: u tasodifan commit qilingan ishni yo'q
+# qiladi. `--ff-only` ajralib ketgan holatda TO'XTAYDI va bu to'g'ri —
+# jimgina tuzatishdan ko'ra to'xtash afzal.
+#
+# ⚠️ Avval ff, keyin drift: check_deploy ISHLAYOTGAN worktree'ni o'qiydi.
+# ff'siz u eski HEAD bilan solishtiradi va yangi web commit'ni «joriy»
+# deb o'tkazib yuboradi (yoki teskarisi).
+if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
+  die "deploy worktree'da commit qilinmagan o'zgarish bor — avval hal qiling ($ROOT)"
+fi
+if ! git merge --ff-only --quiet origin/main 2>/dev/null; then
+  die "worktree origin/main ga tekshira olmadi (ajralib ketgan?) — qo'lda hal qiling"
+fi
+
+# ── 5. Obraz doirasi (docs/tools = bake yo'q) ────────────────────────
+# `git diff` jonli yorliq ↔ TARGET. Worktree endi TARGET da.
+# Stack yiqilgan bo'lsa bo'sh doira ham to'liq bake (all_up shart).
+SCOPE="$(image_scope "$TARGET")"
+if all_up && [ -z "$SCOPE" ]; then
+  log "obrazga tushmaydi — bake yo'q (target ${TARGET:0:7})"
+  exit 0
+fi
+if [ -z "$SCOPE" ]; then
+  SCOPE="api worker beat judge web"
+fi
+
+# ── 6. Drift bormi? ──────────────────────────────────────────────────
 # Qaror ikki manbadan: konteynerlar tirikmi (o'zimiz) va kod joriymi
 # (`check_deploy.sh`). Ikkisi ham kerak — sabab yuqoridagi izohda.
 if all_up; then
@@ -186,7 +229,7 @@ if all_up; then
   # da aynan shunday bo'ldi: watcher «drift» derdi, qo'lda esa «joriy»,
   # va sabab (stdin) izsiz qoldi. Faqat muammoli qatorlar yoziladi,
   # ya'ni normal holatda log o'smaydi.
-  log "drift: check_deploy.sh joriy emas deb topdi"
+  log "drift: check_deploy.sh joriy emas deb topdi (scope ${SCOPE})"
   printf '%s\n' "$cdo" | grep -E "ESKIRGAN|MUHIT|TEKSHIRILMADI|YO.Q" | while IFS= read -r line; do
     log "  $line"
   done
@@ -204,7 +247,7 @@ else
   log "jonli SHA yorlig'i o'qilmadi (deploy.sh dan o'tmagan?) — deploy qilinadi"
 fi
 
-# ── 5. Qayta urinish to'sig'i ────────────────────────────────────────
+# ── 7. Qayta urinish to'sig'i ────────────────────────────────────────
 if last="$(last_attempt)"; then
   set -- $last
   prev_sha="${1:-}"; prev_epoch="${2:-0}"
@@ -215,22 +258,11 @@ if last="$(last_attempt)"; then
   fi
 fi
 
-# ── 6. Deploy worktree'ni origin/main ga keltirish ───────────────────
-# ⚠️ `reset --hard` ATAYLAB yo'q: u tasodifan commit qilingan ishni yo'q
-# qiladi. `--ff-only` ajralib ketgan holatda TO'XTAYDI va bu to'g'ri —
-# jimgina tuzatishdan ko'ra to'xtash afzal.
-if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
-  die "deploy worktree'da commit qilinmagan o'zgarish bor — avval hal qiling ($ROOT)"
-fi
-if ! git merge --ff-only --quiet origin/main 2>/dev/null; then
-  die "worktree origin/main ga tekshira olmadi (ajralib ketgan?) — qo'lda hal qiling"
-fi
-
-# ── 7. Env-fayl ──────────────────────────────────────────────────────
+# ── 8. Env-fayl ──────────────────────────────────────────────────────
 [ -f "$ENV_FILE" ] || die "env-fayl topilmadi: $ENV_FILE (RANKWANT_AUTO_DEPLOY_ENV / RANKWANT_LIVE_DIR ni tekshiring)"
 
 if [ "$DRY_RUN" -eq 1 ]; then
-  log "dry-run: deploy qilinardi (target ${TARGET:0:7}, env $ENV_FILE)"
+  log "dry-run: deploy qilinardi (target ${TARGET:0:7}, scope ${SCOPE}, env $ENV_FILE)"
   exit 0
 fi
 
@@ -247,7 +279,8 @@ log "deploy boshlandi (target ${TARGET:0:7})"
 # «✗ boshqa deploy ishlayapti (auto-deploy pid 1303)»). `1` — «qulf
 # chaqiruvchida», `deploy.sh` `mkdir`/`trap` ni o'tkazib yuboradi,
 # qulfni esa watcher'ning `trap` i bo'shatadi.
-if RANKWANT_LOCK_HELD=1 RANKWANT_ENV_FILE="$ENV_FILE" bash tools/deploy.sh --yes; then
+if RANKWANT_LOCK_HELD=1 RANKWANT_ENV_FILE="$ENV_FILE" \
+    RANKWANT_DEPLOY_SCOPE="$SCOPE" bash tools/deploy.sh --yes; then
   log "deploy tugadi: ${TARGET:0:12}"
   rm -f "$STATE"
   exit 0
