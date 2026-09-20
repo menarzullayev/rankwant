@@ -998,6 +998,7 @@ export const zh: Record<MessageKey, string> = {
   "geo.nudgeCta": "填写",
   "geo.searchPlaceholder": "搜索国家",
   "geo.noResults": "未找到",
+  "dropdown.search": "搜索",
   "locale.switchLabel": "选择语言",
   "locale.auto": "自动",
   "locale.autoDetected": "自动（{language}）",

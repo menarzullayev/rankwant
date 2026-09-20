@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { Dropdown } from "@/components/ui/Dropdown";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { fill, t } from "@/i18n/messages";
 import { getJson, type Calendar } from "@/lib/api";
@@ -76,21 +77,22 @@ export function ActivityHeatmap({
           })}
         </p>
         {data.years.length > 1 && (
-          <label className="flex items-center gap-2 text-theme-sm rw-dim">
+          <div className="flex items-center gap-2 text-theme-sm rw-dim">
             {t(locale, "profile.year")}
-            <select
-              value={data.year}
+            <Dropdown
+              size="sm"
+              hideLabel
+              label={t(locale, "profile.year")}
+              value={String(data.year)}
               disabled={busy}
-              onChange={(event) => void choose(Number(event.target.value))}
-              className="h-9 rw-radius-sm border rw-line px-2 text-theme-sm rw-strong rw-field-bg rw-focus-ring"
-            >
-              {data.years.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
-          </label>
+              onChange={(next) => void choose(Number(next))}
+              options={data.years.map((year) => ({
+                value: String(year),
+                label: String(year),
+              }))}
+              className="w-28"
+            />
+          </div>
         )}
       </div>
       <div className="overflow-x-auto">

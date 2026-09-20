@@ -1002,6 +1002,7 @@ export const tg: Record<MessageKey, string> = {
   "geo.nudgeCta": "Пур кардан",
   "geo.searchPlaceholder": "Ҷустуҷӯи кишвар",
   "geo.noResults": "Ёфт нашуд",
+  "dropdown.search": "Ҷустуҷӯ",
   "locale.switchLabel": "Забонро интихоб кунед",
   "locale.auto": "Худкор",
   "locale.autoDetected": "Худкор ({language})",

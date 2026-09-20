@@ -2,6 +2,7 @@ import type { Route } from "next";
 import Link from "next/link";
 
 import { Badge, DifficultyBadge } from "@/components/ui/Badge";
+import { Dropdown } from "@/components/ui/Dropdown";
 import { Card } from "@/components/ui/Card";
 import { ContentName } from "@/components/ui/UzFallbackBadge";
 import { fill, t, type Locale } from "@/i18n/messages";
@@ -283,16 +284,19 @@ export async function PeopleTab({
           aria-label={t(locale, "profile.searchPeople")}
           className={`min-w-0 flex-1 ${control}`}
         />
-        <select
+        <Dropdown
+          size="sm"
+          hideLabel
+          label={t(locale, "profile.sortBy")}
           name="ordering"
           defaultValue={ordering || "recent"}
-          aria-label={t(locale, "profile.sortBy")}
-          className={control}
-        >
-          <option value="recent">{t(locale, "profile.sortNewest")}</option>
-          <option value="rating">{t(locale, "profile.sortRating")}</option>
-          <option value="name">{t(locale, "profile.sortName")}</option>
-        </select>
+          options={[
+            { value: "recent", label: t(locale, "profile.sortNewest") },
+            { value: "rating", label: t(locale, "profile.sortRating") },
+            { value: "name", label: t(locale, "profile.sortName") },
+          ]}
+          className="w-44"
+        />
         <button type="submit" className={`font-medium rw-hover-bg ${control}`}>
           {t(locale, "profile.search")}
         </button>

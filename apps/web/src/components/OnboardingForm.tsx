@@ -271,15 +271,15 @@ export function OnboardingForm({ me }: { me: Me }) {
           label={t(locale, "settings.region")}
           name="region"
           value={region}
-          onChange={(e) => setRegion(e.target.value)}
-        >
-          <option value="">—</option>
-          {REGION_CODES.map((code) => (
-            <option key={code} value={code}>
-              {regionName(code, locale)}
-            </option>
-          ))}
-        </SelectField>
+          onChange={setRegion}
+          options={[
+            { value: "", label: t(locale, "settings.notChosen") },
+            ...REGION_CODES.map((code) => ({
+              value: code,
+              label: regionName(code, locale),
+            })),
+          ]}
+        />
       ) : (
         <Field
           label={t(locale, "settings.city")}

@@ -1002,6 +1002,7 @@ export const kk: Record<MessageKey, string> = {
   "geo.nudgeCta": "Толтыру",
   "geo.searchPlaceholder": "Ел іздеу",
   "geo.noResults": "Табылмады",
+  "dropdown.search": "Іздеу",
   "locale.switchLabel": "Тілді таңдаңыз",
   "locale.auto": "Автоматты",
   "locale.autoDetected": "Автоматты ({language})",

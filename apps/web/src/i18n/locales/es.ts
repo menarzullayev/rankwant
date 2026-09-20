@@ -1001,6 +1001,7 @@ export const es: Record<MessageKey, string> = {
   "geo.nudgeCta": "Completar",
   "geo.searchPlaceholder": "Buscar país",
   "geo.noResults": "Sin resultados",
+  "dropdown.search": "Buscar",
   "locale.switchLabel": "Elige idioma",
   "locale.auto": "Automático",
   "locale.autoDetected": "Automático ({language})",

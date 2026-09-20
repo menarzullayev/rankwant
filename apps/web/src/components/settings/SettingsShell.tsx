@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { AccountSettings } from "@/components/AccountSettings";
+import { Dropdown } from "@/components/ui/Dropdown";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
@@ -48,22 +49,18 @@ export function SettingsShell({ section }: { section: SectionId }) {
       </h1>
       <div className="mt-6 grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)]">
         <nav aria-label={t(locale, "settings.title")}>
-          <label className="block lg:hidden">
-            <span className="sr-only">{t(locale, "settings.section")}</span>
-            <select
+          <div className="lg:hidden">
+            <Dropdown
+              hideLabel
+              label={t(locale, "settings.section")}
               value={section}
-              onChange={(event) =>
-                router.push(`/settings/${event.target.value}` as Route)
-              }
-              className="h-11 w-full rw-radius-sm border rw-line px-3 text-theme-sm rw-strong rw-field-bg rw-focus-ring"
-            >
-              {SECTIONS.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {t(locale, s.key)}
-                </option>
-              ))}
-            </select>
-          </label>
+              onChange={(next) => router.push(`/settings/${next}` as Route)}
+              options={SECTIONS.map((s) => ({
+                value: s.id,
+                label: t(locale, s.key),
+              }))}
+            />
+          </div>
           <ul className="sticky top-20 hidden flex-col gap-1 lg:flex">
             {SECTIONS.map((s) => (
               <li key={s.id}>

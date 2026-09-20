@@ -148,14 +148,12 @@ export function HackPanel({ attempt }: { attempt: AttemptDetail }) {
               <Select
                 label={t(locale, "attempts.language")}
                 value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-              >
-                {languages.map((item) => (
-                  <option key={item.code} value={item.code}>
-                    {item.name} {item.version}
-                  </option>
-                ))}
-              </Select>
+                onChange={setLanguage}
+                options={languages.map((item) => ({
+                  value: item.code,
+                  label: `${item.name} ${item.version}`,
+                }))}
+              />
               <TextArea
                 label={t(locale, "hack.generatorSource")}
                 hint={t(locale, "hack.generatorHint")}

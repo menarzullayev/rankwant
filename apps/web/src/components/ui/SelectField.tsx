@@ -1,50 +1,49 @@
-/** Tanlash maydoni — `Field` bilan bir xil ko'rinish.
+"use client";
+
+import { Dropdown, type DropdownOption, type DropdownSize } from "@/components/ui/Dropdown";
+
+/** Tanlash maydoni — yagona qidiruvli `Dropdown`.
  *
- * Nega alohida komponent: `Field` `<input>` ga qurilgan, ya'ni unga
- * `<select>` uzatib bo'lmaydi. Vizual til bir xil bo'lishi shart —
- * aks holda mamlakat tanlash qolgan maydonlardan ajralib qolardi.
+ *  Native `<select>` qoldirilmaydi: OS paneli qorong'i mavzuda oq
+ *  chiqadi, qidiruv yo'q, tanlangan belgi yo'q.
  */
 
 export function SelectField({
   label,
   hint,
-  leading,
-  children,
-  ...props
-}: React.SelectHTMLAttributes<HTMLSelectElement> & {
+  options,
+  value,
+  defaultValue,
+  onChange,
+  name,
+  disabled,
+  placeholder,
+  size = "md",
+}: {
   label: string;
   hint?: string;
-  /** Maydon CHAPIDA turgan element — mamlakat bayrog'i uchun.
-   *
-   * Nega `<option>` ichida emas: native `<select>` faqat MATN qabul
-   * qiladi, SVG esa uning ichida ko'rinmaydi. Shu sababli bayroq
-   * tanlagichning yonida turadi — u ham Windows'da ishlaydi, ham
-   * klaviatura va mobil xatti-harakati o'zgarmaydi. */
-  leading?: React.ReactNode;
-  children: React.ReactNode;
+  options: readonly DropdownOption[];
+  value?: string;
+  defaultValue?: string;
+  onChange?: (value: string) => void;
+  name?: string;
+  disabled?: boolean;
+  placeholder?: string;
+  size?: DropdownSize;
 }) {
-  const noteId = hint ? `${props.name}-note` : undefined;
   return (
-    <label className="block">
-      <span className="mb-1.5 block text-theme-sm font-medium rw-strong">
-        {label}
-      </span>
-      <span className="flex items-center gap-2">
-        {leading}
-        <select
-          aria-describedby={noteId}
-          className="h-11 min-w-0 flex-1 rw-radius-sm border rw-line px-4 text-theme-sm rw-strong outline-none transition rw-focus-line rw-focus-ring rw-field-bg"
-          {...props}
-        >
-          {children}
-        </select>
-      </span>
-      {hint && (
-        <span id={noteId} className="mt-1.5 block text-theme-xs rw-dim">
-          {hint}
-        </span>
-      )}
-    </label>
+    <Dropdown
+      label={label}
+      hint={hint}
+      options={options}
+      value={value}
+      defaultValue={defaultValue}
+      onChange={onChange}
+      name={name}
+      disabled={disabled}
+      placeholder={placeholder}
+      size={size}
+    />
   );
 }
 

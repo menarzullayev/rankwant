@@ -1001,6 +1001,7 @@ export const ky: Record<MessageKey, string> = {
   "geo.nudgeCta": "Толтуруу",
   "geo.searchPlaceholder": "Өлкө издөө",
   "geo.noResults": "Табылган жок",
+  "dropdown.search": "Издөө",
   "locale.switchLabel": "Тилди тандаңыз",
   "locale.auto": "Автоматтык",
   "locale.autoDetected": "Автоматтык ({language})",

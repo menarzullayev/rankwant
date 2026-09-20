@@ -5,6 +5,7 @@ import { useState } from "react";
 import { CrudPage, type FieldDef } from "@/components/admin/CrudPage";
 import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { Dropdown } from "@/components/ui/Dropdown";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t, type MessageKey, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
@@ -164,19 +165,20 @@ function ProblemLinksEditor({
             onChange={(e) => patch(i, { problem: e.target.value })}
             className={`${input} w-48 font-mono`}
           />
-          <select
+          <Dropdown
+            size="sm"
+            hideLabel
+            label={t(locale, "col.role")}
             value={l.role}
-            onChange={(e) =>
-              patch(i, { role: e.target.value as ProblemLink["role"] })
+            onChange={(next) =>
+              patch(i, { role: next as ProblemLink["role"] })
             }
-            className={input}
-          >
-            {ROLES.map((r) => (
-              <option key={r.value} value={r.value}>
-                {t(locale, r.labelKey)}
-              </option>
-            ))}
-          </select>
+            options={ROLES.map((r) => ({
+              value: r.value,
+              label: t(locale, r.labelKey),
+            }))}
+            className="w-44"
+          />
           <button
             type="button"
             onClick={() => {

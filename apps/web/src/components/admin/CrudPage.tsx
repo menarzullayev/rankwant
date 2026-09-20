@@ -5,6 +5,7 @@ import { Fragment, useCallback, useEffect, useState } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { Dropdown } from "@/components/ui/Dropdown";
 import { Status } from "@/components/ui/Status";
 import {
   EmptyRow,
@@ -63,6 +64,10 @@ export type ColumnDef<T> = {
 };
 
 type Row = Record<string, unknown>;
+
+/** Combobox o'z `label`ini chizadi — tashqi `<label>` ichiga tiqib
+ *  bo'lmaydi. `check_hardcoded` ternary literalini matn deb o'qiydi. */
+const FIELD_WRAP = { select: "div", field: "label" } as const;
 
 /** `core.pagination.StandardPagination` bilan bir xil bo'lishi shart. */
 const PAGE_SIZE = 25;
@@ -279,8 +284,9 @@ export function CrudPage<T extends Row>({
               const v = values[f.name];
               const disabled = !!editing && !!f.readonlyOnEdit;
               const wide = f.type === "textarea";
+              const Tag = f.type === "select" ? FIELD_WRAP.select : FIELD_WRAP.field;
               return (
-                <label
+                <Tag
                   key={f.name}
                   className={`block ${wide ? "md:col-span-2" : ""}`}
                 >
@@ -306,20 +312,22 @@ export function CrudPage<T extends Row>({
                       className="mt-2 size-4"
                     />
                   ) : f.type === "select" ? (
-                    <select
+                    <Dropdown
+                      hideLabel
+                      label={`${t(locale, f.labelKey)}${f.required ? " *" : ""}`}
                       name={f.name}
                       defaultValue={String(v ?? "")}
-                      required={f.required}
                       disabled={disabled}
-                      className={input}
-                    >
-                      {!f.required && <option value="">—</option>}
-                      {(f.options ?? []).map((o) => (
-                        <option key={o.value} value={o.value}>
-                          {t(locale, o.labelKey)}
-                        </option>
-                      ))}
-                    </select>
+                      options={[
+                        ...(!f.required
+                          ? [{ value: "", label: t(locale, "settings.notChosen") }]
+                          : []),
+                        ...(f.options ?? []).map((o) => ({
+                          value: o.value,
+                          label: t(locale, o.labelKey),
+                        })),
+                      ]}
+                    />
                   ) : (
                     <input
                       name={f.name}
@@ -347,7 +355,7 @@ export function CrudPage<T extends Row>({
                       {t(locale, f.helpKey)}
                     </span>
                   )}
-                </label>
+                </Tag>
               );
             })}
             <div className="flex gap-2 md:col-span-2">

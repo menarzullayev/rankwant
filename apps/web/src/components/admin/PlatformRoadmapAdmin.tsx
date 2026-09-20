@@ -8,6 +8,7 @@ import {
   type FieldDef,
 } from "@/components/admin/CrudPage";
 import { Badge, type BadgeColor } from "@/components/ui/Badge";
+import { Dropdown } from "@/components/ui/Dropdown";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t, type MessageKey, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
@@ -123,17 +124,18 @@ function StatusSelect({
   }
 
   return (
-    <select
+    <Dropdown
+      size="xs"
+      hideLabel
+      label={t(locale, "admin.label.text.status")}
       value={status}
-      onChange={(event) => void change(event.target.value as RoadmapStatus)}
-      className="rw-radius-sm border rw-line rw-field-bg px-2 py-1 text-theme-xs rw-strong"
-    >
-      {(Object.keys(STATUS) as RoadmapStatus[]).map((value) => (
-        <option key={value} value={value}>
-          {t(locale, STATUS[value].labelKey)}
-        </option>
-      ))}
-    </select>
+      onChange={(next) => void change(next as RoadmapStatus)}
+      options={(Object.keys(STATUS) as RoadmapStatus[]).map((value) => ({
+        value,
+        label: t(locale, STATUS[value].labelKey),
+      }))}
+      className="w-40"
+    />
   );
 }
 

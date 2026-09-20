@@ -1001,6 +1001,7 @@ export const tr: Record<MessageKey, string> = {
   "geo.nudgeCta": "Doldur",
   "geo.searchPlaceholder": "Ülke ara",
   "geo.noResults": "Sonuç yok",
+  "dropdown.search": "Ara",
   "locale.switchLabel": "Dil seçin",
   "locale.auto": "Otomatik",
   "locale.autoDetected": "Otomatik ({language})",

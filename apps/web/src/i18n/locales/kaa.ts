@@ -1001,6 +1001,7 @@ export const kaa: Record<MessageKey, string> = {
   "geo.nudgeCta": "Toltırıw",
   "geo.searchPlaceholder": "Mámleket izlew",
   "geo.noResults": "Tabılmadı",
+  "dropdown.search": "Izlew",
   "locale.switchLabel": "Tildi saylań",
   "locale.auto": "Avtomatikalıq",
   "locale.autoDetected": "Avtomatikalıq ({language})",
