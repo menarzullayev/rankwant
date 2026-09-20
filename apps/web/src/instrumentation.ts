@@ -7,6 +7,10 @@
  *
  * Qaror manbai — proxy qo'ygan `x-rw-home-cache` (Cookie `res.req` da
  * yo'qolishi mumkin). `node:http` faqat Node runtime'da yuklanadi.
+ *
+ * `guest-al` (`/problems`): origin `Vary` ga `Accept-Language` qo'shiladi.
+ * CF Free `Vary` ni o'zi kalitlamaydi — Cache Rule `vary.normalize` ham
+ * origin header'ni ko'rishi shart. Transform Rule brauzerga kech qo'shadi.
  */
 
 export async function register(): Promise<void> {
@@ -16,10 +20,16 @@ export async function register(): Promise<void> {
   const {
     HOME_CACHE_GUEST,
     HOME_CACHE_MARK_GUEST,
+    HOME_CACHE_MARK_GUEST_LOCALE,
     HOME_CACHE_MARK_PRIVATE,
     HOME_CACHE_PRIVATE,
     HOME_CACHE_REQUEST_HEADER,
   } = await import("@/lib/home-cache");
+
+  const guestMarks = new Set<string>([
+    HOME_CACHE_MARK_GUEST,
+    HOME_CACHE_MARK_GUEST_LOCALE,
+  ]);
 
   function headerGet(
     req: import("node:http").IncomingMessage,
@@ -34,6 +44,25 @@ export async function register(): Promise<void> {
     return headerGet(req, HOME_CACHE_REQUEST_HEADER);
   }
 
+  function withAcceptLanguage(
+    value: number | string | readonly string[] | undefined,
+  ): string {
+    const raw =
+      value === undefined
+        ? ""
+        : Array.isArray(value)
+          ? value.join(",")
+          : String(value);
+    const parts = raw
+      .split(",")
+      .map((part) => part.trim())
+      .filter(Boolean);
+    if (!parts.some((part) => part.toLowerCase() === "accept-language")) {
+      parts.push("Accept-Language");
+    }
+    return parts.join(", ");
+  }
+
   const origSetHeader = ServerResponse.prototype.setHeader;
   const origWriteHead = ServerResponse.prototype.writeHead;
 
@@ -41,9 +70,16 @@ export async function register(): Promise<void> {
     const req = res.req;
     if (!req) return;
     const mark = markOf(req);
-    if (mark === HOME_CACHE_MARK_GUEST) {
+    if (mark && guestMarks.has(mark)) {
       origSetHeader.call(res, "Cache-Control", HOME_CACHE_GUEST);
       res.removeHeader("Set-Cookie");
+      if (mark === HOME_CACHE_MARK_GUEST_LOCALE) {
+        origSetHeader.call(
+          res,
+          "Vary",
+          withAcceptLanguage(res.getHeader("Vary")),
+        );
+      }
       return;
     }
     if (mark === HOME_CACHE_MARK_PRIVATE) {
@@ -56,9 +92,9 @@ export async function register(): Promise<void> {
     value: number | string | readonly string[],
   ) {
     const req = this.req;
+    const mark = req ? markOf(req) : null;
     if (req && name.toLowerCase() === "cache-control") {
-      const mark = markOf(req);
-      if (mark === HOME_CACHE_MARK_GUEST) {
+      if (mark && guestMarks.has(mark)) {
         return origSetHeader.call(this, name, HOME_CACHE_GUEST);
       }
       if (mark === HOME_CACHE_MARK_PRIVATE) {
@@ -66,7 +102,12 @@ export async function register(): Promise<void> {
       }
     }
     if (req && name.toLowerCase() === "set-cookie") {
-      if (markOf(req) === HOME_CACHE_MARK_GUEST) return this;
+      if (mark && guestMarks.has(mark)) return this;
+    }
+    if (req && name.toLowerCase() === "vary") {
+      if (mark === HOME_CACHE_MARK_GUEST_LOCALE) {
+        return origSetHeader.call(this, name, withAcceptLanguage(value));
+      }
     }
     return origSetHeader.call(this, name, value);
   };

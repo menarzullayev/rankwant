@@ -4,6 +4,7 @@ import {
   HOME_CACHE_GUEST,
   HOME_CACHE_LOCALE,
   HOME_CACHE_MARK_GUEST,
+  HOME_CACHE_MARK_GUEST_LOCALE,
   HOME_CACHE_MARK_PRIVATE,
   HOME_CACHE_PRIVATE,
   homeCacheDecision,
@@ -101,6 +102,7 @@ describe("homeCacheDecision", () => {
     expect(d.forceDefaultLocale).toBe(false);
     expect(d.assignExperiments).toBe(false);
     expect(d.cacheControl).toBe(HOME_CACHE_GUEST);
+    expect(homeCacheMark(d)).toBe(HOME_CACHE_MARK_GUEST_LOCALE);
   });
 
   it("does not cache /problems?lang= — query stays off the CDN key", () => {
