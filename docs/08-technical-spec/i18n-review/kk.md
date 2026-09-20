@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1697 strings.**
+**1721 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -1640,6 +1640,30 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `overlay.sample.menuCopy` | Nusxa | Көшіру |  |
 | `overlay.sample.menuEdit` | Tahrir | Өңдеу |  |
 | `overlay.sample.menuDelete` | O'chirish | Жою |  |
+| `customizer.form` | Forma | Пішін |  |
+| `customizer.formHint` | Matn, belgi, radio, fayl va sana shu oilaga bo'ysunadi. | Мәтін, құсбелгі, радио, файл мен күн осы отбасын ұстанады. |  |
+| `form.style.maydon` | Maydon | Өріс |  |
+| `form.style.maydonHint` | Yorliq tepada. 44px maydon, 8px radius, kvadrat belgi. | Жарлық үстінде. 44px өріс, 8px радиус, шаршы құсбелгі. |  |
+| `form.style.qator` | Qator | Жол |  |
+| `form.style.qatorHint` | Yorliq chapda. Switch va segment. Kapsula maydon. | Жарлық сол жақта. Ауыстырғыш пен сегмент. Капсула өріс. |  |
+| `form.style.karta` | Karta | Карточка |  |
+| `form.style.kartaHint` | Har tanlov — plitka. Fayl — drop zona. Oy doim ko'rinadi. | Әр таңдау — плитка. Файл — тастау аймағы. Ай әрдайым көрінеді. |  |
+| `form.style.jadval` | Jadval | Кесте |  |
+| `form.style.jadvalHint` | 32px, ikki ustun, mono. Sana YYYY-MM-DD. | 32px, екі баған, моно. Күн YYYY-MM-DD. |  |
+| `form.style.orol` | Orol | Арал |  |
+| `form.style.orolHint` | To'ldirilgan 22px, qattiq chiziq yo'q. Yumaloq switch. Blur kalendar. | Толтырылған 22px, қатты сызық жоқ. Дөңгелек ауыстырғыш. Бұлыңғыр күнтізбе. |  |
+| `form.sample.title` | Sarlavha | Тақырып |  |
+| `form.sample.body` | Matn | Мәтін |  |
+| `form.sample.public` | Ommaviy | Жария |  |
+| `form.sample.difficulty` | Qiyinlik | Қиындық |  |
+| `form.sample.file` | Fayl | Файл |  |
+| `form.sample.date` | Sana | Күн |  |
+| `form.file.choose` | Tanlash | Таңдау |  |
+| `form.file.empty` | Fayl tanlanmagan | Файл таңдалмаған |  |
+| `form.cal.prev` | Oldingi oy | Алдыңғы ай |  |
+| `form.cal.next` | Keyingi oy | Келесі ай |  |
+| `admin.text.correct` | To'g'ri | Дұрыс |  |
+| `admin.text.sampleTest` | Namuna test (shartda ko'rsatiladi) | Үлгі тест (шартта көрсетіледі) |  |
 | `customizer.iconPack` | Ikonka to'plami | Иконка жинағы |  |
 | `customizer.iconPackHint` | Tanlangan to'plam navigatsiya, amallar va holat ikonkalarini o'zgartiradi. Verdikt va brend belgilari qat'iy qoladi. | Таңдалған жинақ навигация, әрекет және күй белгішелерін өзгертеді. Вердикт және бренд белгілері өзгермейді. |  |
 | `customizer.iconPackFixed` | Qat'iy — to'plamga bo'ysunmaydi | Бекітілген — жинаққа тәуелді емес |  |

@@ -68,7 +68,7 @@ export function RoadmapCommentForm({ itemId }: { itemId: number }) {
         onChange={(event) => setBody(event.target.value)}
         rows={3}
         placeholder={t(locale, "roadmap.commentPlaceholder")}
-        className="w-full rw-radius-sm border rw-line rw-field-bg px-3 py-2 text-theme-sm rw-strong rw-focus-line rw-placeholder"
+        className="w-full rw-radius-sm border rw-line rw-field-bg px-3 py-2 text-theme-sm rw-strong rw-focus-line rw-placeholder rw-fm-inp"
       />
       {error && <p className="text-theme-sm rw-bad-ink">{error}</p>}
       <button

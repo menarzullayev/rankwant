@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1697 strings.**
+**1721 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -1640,6 +1640,30 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `overlay.sample.menuCopy` | Nusxa | Nusqa |  |
 | `overlay.sample.menuEdit` | Tahrir | Tahrirlaw |  |
 | `overlay.sample.menuDelete` | O'chirish | Óshiriw |  |
+| `customizer.form` | Forma | Blank |  |
+| `customizer.formHint` | Matn, belgi, radio, fayl va sana shu oilaga bo'ysunadi. | Tekst, belgi, radio, hújjet hám sáne usı shańaraqqa boysınadı. |  |
+| `form.style.maydon` | Maydon | Maydan |  |
+| `form.style.maydonHint` | Yorliq tepada. 44px maydon, 8px radius, kvadrat belgi. | Atama joqarıda. 44px maydan, 8px radius, kvadrat belgi. |  |
+| `form.style.qator` | Qator | Qatar |  |
+| `form.style.qatorHint` | Yorliq chapda. Switch va segment. Kapsula maydon. | Atama shepte. Switch hám segment. Kapsula maydan. |  |
+| `form.style.karta` | Karta | Kartochka |  |
+| `form.style.kartaHint` | Har tanlov — plitka. Fayl — drop zona. Oy doim ko'rinadi. | Hár tańlaw — plitka. Hújjet — taslaw zonası. Ay hámisha kórinedi. |  |
+| `form.style.jadval` | Jadval | Keste |  |
+| `form.style.jadvalHint` | 32px, ikki ustun, mono. Sana YYYY-MM-DD. | 32px, eki baǵana, mono. Sáne YYYY-MM-DD. |  |
+| `form.style.orol` | Orol | Ataw |  |
+| `form.style.orolHint` | To'ldirilgan 22px, qattiq chiziq yo'q. Yumaloq switch. Blur kalendar. | Toldırılǵan 22px, qattı sızıq joq. Juwmaqlanǵan switch. Blur kalendar. |  |
+| `form.sample.title` | Sarlavha | Atama |  |
+| `form.sample.body` | Matn | Tekst |  |
+| `form.sample.public` | Ommaviy | Ashıq |  |
+| `form.sample.difficulty` | Qiyinlik | Qıyınlıq |  |
+| `form.sample.file` | Fayl | Hújjet |  |
+| `form.sample.date` | Sana | Sáne |  |
+| `form.file.choose` | Tanlash | Saylaw |  |
+| `form.file.empty` | Fayl tanlanmagan | Hújjet saylanbaǵan |  |
+| `form.cal.prev` | Oldingi oy | Aldıńǵı ay |  |
+| `form.cal.next` | Keyingi oy | Keyingi ay |  |
+| `admin.text.correct` | To'g'ri | Durıs |  |
+| `admin.text.sampleTest` | Namuna test (shartda ko'rsatiladi) | Úlgi test (shárttiń ishinde kórsetiledi) |  |
 | `customizer.iconPack` | Ikonka to'plami | Ikonka toplamı |  |
 | `customizer.iconPackHint` | Tanlangan to'plam navigatsiya, amallar va holat ikonkalarini o'zgartiradi. Verdikt va brend belgilari qat'iy qoladi. | Tańlanǵan toplam navigatsiya, háreket hám halat belgilerin ózgertedi. Verdikt hám brend belgileri ózgermeydi. |  |
 | `customizer.iconPackFixed` | Qat'iy — to'plamga bo'ysunmaydi | Bekitilgen — toplamǵa baylanıslı emes |  |

@@ -59,7 +59,7 @@ export function WelcomeNotice() {
             required
             aria-label={t(locale, "auth.verifyTitle")}
             aria-invalid={bad || undefined}
-            className="h-9 w-24 rw-radius-sm border px-3 text-center tracking-widest rw-strong outline-none rw-focus-ring rw-field-bg"
+            className="h-9 w-24 rw-radius-sm border px-3 text-center tracking-widest rw-strong outline-none rw-focus-ring rw-field-bg rw-fm-inp"
           />
           <Button type="submit" busy={busy} className="h-9 px-3">
             {t(locale, "auth.verifyTitle")}

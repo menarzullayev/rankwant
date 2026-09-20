@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { FormCheck } from "@/components/form/FormKit";
+import { FM_CTL, FM_INP, FM_LAB } from "@/components/form/chrome";
 import { Dropdown, type DropdownOption } from "@/components/ui/Dropdown";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { errorText, t, type Locale } from "@/i18n/messages";
@@ -120,9 +122,6 @@ export function Loading() {
   );
 }
 
-const CONTROL =
-  "w-full rw-radius-sm border rw-line text-theme-sm rw-strong outline-none transition rw-focus-line rw-focus-ring rw-field-bg";
-
 export function TextArea({
   label,
   hint,
@@ -132,12 +131,12 @@ export function TextArea({
   hint?: string;
 }) {
   return (
-    <label className="block">
-      <span className="mb-1.5 block text-theme-sm font-medium rw-strong">
-        {label}
+    <label className={FM_CTL}>
+      <span className={FM_LAB}>{label}</span>
+      <span>
+        <textarea className={`${FM_INP} min-h-24`} {...props} />
+        {hint && <span className="mt-1.5 block text-theme-xs rw-dim">{hint}</span>}
       </span>
-      <textarea className={`${CONTROL} min-h-24 px-4 py-3`} {...props} />
-      {hint && <span className="mt-1.5 block text-theme-xs rw-dim">{hint}</span>}
     </label>
   );
 }
@@ -186,17 +185,5 @@ export function Check({
   label: string;
   hint?: string;
 }) {
-  return (
-    <label className="flex items-start gap-2.5 text-theme-sm rw-strong">
-      <input
-        type="checkbox"
-        className="rw-accent-control mt-0.5 size-4 shrink-0"
-        {...props}
-      />
-      <span>
-        {label}
-        {hint && <span className="mt-0.5 block text-theme-xs rw-dim">{hint}</span>}
-      </span>
-    </label>
-  );
+  return <FormCheck label={label} hint={hint} {...props} />;
 }

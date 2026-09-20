@@ -9,6 +9,7 @@ import type { StatusVariant } from "@/lib/theme/status";
 import type { LoadingVariant } from "@/lib/theme/loading";
 import type { IconPackId } from "@/lib/theme/icon-packs";
 import type { OverlayVariant } from "@/lib/theme/overlay";
+import type { FormVariant } from "@/lib/theme/form";
 import { API_BASE, getJson } from "./client";
 
 /** Profilda yashirish mumkin bo'lgan maydonlar (`core.models.PRIVACY_FIELDS`). */
@@ -83,6 +84,9 @@ export type AppearancePrefs = {
   /** Oyna oilasi — tasdiq, modal, tooltip, menyu. CSS-only
    *  (`data-overlay`), markup cookie'ga kirmaydi. */
   overlayStyle?: OverlayVariant;
+  /** Forma oilasi — yozuv, belgi, radio, fayl, sana. CSS-only
+   *  (`data-form`), markup cookie'ga kirmaydi. */
+  formStyle?: FormVariant;
 };
 
 export type A11yPrefs = {

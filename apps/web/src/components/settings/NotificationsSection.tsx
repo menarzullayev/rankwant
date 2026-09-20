@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import { FormBox } from "@/components/form/FormKit";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useSession } from "@/context/SessionContext";
@@ -87,9 +88,7 @@ export function NotificationsSection() {
                 </th>
                 {CHANNELS.map((channel) => (
                   <td key={channel} className="px-3 py-3 text-center">
-                    <input
-                      type="checkbox"
-                      className="rw-accent-control size-4"
+                    <FormBox
                       checked={value(kind, channel)}
                       disabled={channel === "telegram" && !telegram}
                       onChange={(event) => set(kind, channel, event.target.checked)}

@@ -96,7 +96,7 @@ export function HackathonEntries({ hackathon }: { hackathon: Hackathon }) {
                 required
                 rows={5}
                 defaultValue={mine?.description}
-                className="w-full rw-radius-sm border rw-line rw-surface px-4 py-2 text-theme-sm outline-none rw-focus-line rw-field-bg"
+                className="w-full rw-radius-sm border rw-line rw-surface px-4 py-2 text-theme-sm outline-none rw-focus-line rw-field-bg rw-fm-inp"
               />
             </label>
             <div className="flex items-center gap-3 md:col-span-2">
