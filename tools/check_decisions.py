@@ -1174,8 +1174,9 @@ def deploy_automation_is_safe() -> str | None:
        esa 30 kungacha orqada bo'lishi mumkin.
     2. MUZLATISH QULFDAN OLDIN. Aks holda muzlatilgan tizim qulfni band
        qiladi va boshqa agentning deploy'i «band» deb xato o'qiladi.
-    3. SHA TEG `up` DAN OLDIN. `up` dan keyin qo'yilgan teg eski
-       «dangling» obrazga tushadi — rollback noto'g'ri kodni qaytaradi.
+    3. SHA TEG SAQLANMAYDI. `rankwant/<svc>:<sha>` har deploy'da
+       qolsa VHDX o'saveradi (40→132 GB, 2026-09-15..20). Tasdiq'dan
+       keyin `prune_docker_disk.sh` chaqiriladi.
     4. WATCHER'DA TIRIKLIK TEKSHIRUVI. `check_deploy.sh` konteyner YO'Q
        bo'lganda ham 0 qaytaradi (o'lchandi 2026-09-19: `missing` faqat
        xabar uchun, `exit 1` esa faqat `stale`/`envbad` da), ya'ni stack
@@ -1225,14 +1226,19 @@ def deploy_automation_is_safe() -> str | None:
     if freeze_at > lock_at:
         return "tools/deploy.sh: muzlatish qulfdan KEYIN — qulf behuda band bo'ladi"
 
-    tag_at = position(deploy, "rankwant/${svc}:${SHA_TAG}")
+    if "rankwant/${svc}:${SHA_TAG}" in deploy:
+        return "tools/deploy.sh SHA tegini saqlaydi — VHDX o'saveradi (2026-09-20: hammasi tozalanadi)"
     up_at = position(deploy, 'up -d --no-deps "${SERVICES[@]}"')
-    if tag_at < 0:
-        return "tools/deploy.sh SHA tegini qo'ymaydi — rollback qaytaradigan obraz yo'q"
     if up_at < 0:
         return "tools/deploy.sh da `up -d --no-deps` topilmadi"
-    if tag_at > up_at:
-        return "tools/deploy.sh: SHA teg `up` dan KEYIN — teg eski obrazga tushadi"
+    check_at = position(deploy, "bash tools/check_deploy.sh")
+    prune_at = position(deploy, "bash tools/prune_docker_disk.sh")
+    if prune_at < 0:
+        return "tools/deploy.sh disk tozalamaydi (`prune_docker_disk.sh` yo'q)"
+    if check_at < 0:
+        return "tools/deploy.sh da `check_deploy.sh` topilmadi"
+    if prune_at < check_at:
+        return "tools/deploy.sh: disk tozalash tasdiqdan OLDIN — yiqilgan deploy ham cache ni o'chiradi"
 
     if "if all_up; then" not in auto:
         return (
@@ -1314,6 +1320,51 @@ def deploy_automation_is_safe() -> str | None:
     return None
 
 
+def docker_disk_stays_bounded() -> str | None:
+    """2026-09-20: log 10m/3, builder GC 5GB, SHA teg yo'q, prune tasdiq'dan keyin.
+
+    O'lchandi: docker_data.vhdx 5 kunda 40 GB → 132 GB. Ildiz — cheksiz
+    json-file log, 20 GB builder cache, har deploy'dagi SHA teglar.
+    """
+    for rel, min_logging in (
+        ("docker-compose.yml", 9),
+        ("docker-compose.public.yml", 9),
+        ("docker-compose.ci.yml", 2),
+        ("docker-compose.replicas.yml", 1),
+        ("tools/runner/docker-compose.runner.yml", 2),
+    ):
+        text = read(rel)
+        if 'max-size: "10m"' not in text or 'max-file: "3"' not in text:
+            return f"{rel}: json-file log cheklovi yo'q (max-size 10m / max-file 3)"
+        n = text.count("logging:")
+        if n < min_logging:
+            return f"{rel}: logging {n} ta (kamida {min_logging} servis kerak)"
+
+    daemon = read("tools/docker-daemon.json")
+    if '"defaultKeepStorage": "5GB"' not in daemon:
+        return "tools/docker-daemon.json: builder GC 5GB emas"
+    if '"max-size": "10m"' not in daemon or '"max-file": "3"' not in daemon:
+        return "tools/docker-daemon.json: json-file 10m/3 emas"
+
+    prune = read("tools/prune_docker_disk.sh")
+    if "docker image prune -f" not in prune:
+        return "tools/prune_docker_disk.sh: `docker image prune -f` yo'q"
+    if "docker builder prune -f" not in prune:
+        return "tools/prune_docker_disk.sh: `docker builder prune -f` yo'q"
+    if "docker volume prune" in prune:
+        return "tools/prune_docker_disk.sh: volume prune — postgres/minio o'chadi"
+    if "docker builder prune -af" in prune or "docker builder prune --all" in prune:
+        return "tools/prune_docker_disk.sh: builder prune --all joriy cache ni ham o'chiradi"
+    if not re.search(
+        r"rankwant/\(api\|worker\|beat\|judge\|web\|migrate\):",
+        prune,
+    ):
+        return "tools/prune_docker_disk.sh: SHA teg naqshi yo'q"
+    if re.search(r"docker rmi\b.*ci-runner", prune):
+        return "tools/prune_docker_disk.sh: ci-runner obrazi o'chiriladi"
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -1341,6 +1392,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("50k masshtab qarorlari", scale_50k_locked),
     ("staff guruhlari va obyekt mualliflari", roles_groups_and_object_authors),
     ("avtomatik deploy xavfsiz", deploy_automation_is_safe),
+    ("docker disk chegaralangan", docker_disk_stays_bounded),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),

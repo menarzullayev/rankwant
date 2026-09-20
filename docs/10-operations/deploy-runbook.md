@@ -22,7 +22,7 @@ Tunnel orqali). To'rt hostli production topologiyasi README'da.
 | Zaxira          | `"C:\Program Files\Git\bin\bash.exe" -lc ".../tools/backup.sh"` |
 | Avtomatik deploy | `tools/auto_deploy.sh`, vazifa `RankWant Auto Deploy` (5 daqiqa) |
 | Muzlatish kaliti | `DEPLOY_FREEZE=1` — deploy'ni to'xtatadi (qulfni ham olmaydi)   |
-| Rollback        | `bash tools/rollback.sh <sha12>` (kod; migratsiya qaytmaydi)    |
+| Rollback        | kerakli commitni `deploy.sh` bilan qayta qurish (SHA teg saqlanmaydi) |
 
 To'liq `COMPOSE` o'zgaruvchisi (har bo'limda shu ishlatiladi):
 
@@ -179,8 +179,9 @@ qulf → DEPLOY_FREEZE → git fetch origin main → worktree'ni --ff-only
         yo'q  → JIM chiqadi
         bor   → qayta urinish to'sig'i (30 daqiqa)
               → tools/deploy.sh --yes
-                 qulf → darvoza(main CI) → oyna → build → SHA teg
+                 qulf → darvoza(main CI) → oyna → build
                  → pg_dump → migrate → showmigrations → up → tasdiq
+                 → prune (SHA teglar, dangling, builder)
 ```
 
 ⚠️ **Deploy alohida worktree'dan** yuriladi (`C:/Users/nsn/project/wt/deploy`),
@@ -252,8 +253,9 @@ muammoli qatorlarini (`ESKIRGAN|MUHIT|TEKSHIRILMADI|YO'Q`) logga chiqaradi.
 bash tools/auto_deploy.sh --status     # holat: HEAD, main, jonli SHA, env-fayl
 bash tools/auto_deploy.sh --dry-run    # qarorni ko'rsatadi, hech narsa qilmaydi
 DEPLOY_FREEZE=1 bash tools/deploy.sh   # muzlatish (skript 1 bilan chiqadi)
-bash tools/rollback.sh --list          # mavjud SHA teglari
-bash tools/rollback.sh <sha12>         # kodni qaytarish
+bash tools/rollback.sh --list          # SHA teglar saqlanmaydi (qolganlari)
+# Kodni qaytarish: deploy worktree'da kerakli commit + bash tools/deploy.sh --yes
+# Sxema: <backup dir>/pg-deploy-*.sql.gz — qo'lda
 
 schtasks /run /tn "RankWant Auto Deploy"          # vazifani darhol yurgizish
 tail -f .handoff/auto-deploy.log                  # watcher logi
@@ -266,9 +268,17 @@ Yolg'on nosozlikdan keyin uni o'chirish xavfsiz — u faqat qayta urinish
 chastotasini cheklaydi, deploy qaroriga ta'sir qilmaydi.
 
 ⚠️ **Rollback migratsiyani qaytarmaydi.** Django'da «orqaga» migratsiya yo'q
-va uni avtomatik yurgizish sxemani buzardi. Kod — `tools/rollback.sh`, sxema —
-faqat deploy oldidagi dump (`<backup dir>/pg-deploy-*.sql.gz`), **qo'lda**.
+va uni avtomatik yurgizish sxemani buzardi. Kod — kerakli commitni qayta
+qurish (`tools/deploy.sh`); SHA obraz teglari **saqlanmaydi** (2026-09-20,
+disk). Sxema — faqat deploy oldidagi dump (`<backup dir>/pg-deploy-*.sql.gz`),
+**qo'lda**.
 Bu cheklov ataylab: jimgina yarim rollback — eng yomon holat.
+
+⚠️ **Docker daemon (bir martalik).** `tools/docker-daemon.json` ni
+`%USERPROFILE%\.docker\daemon.json` ga qo'ying: builder GC 5 GB, json-file
+10m×3. O'zgarish **Docker Desktop qayta ishga tushganda** kuchga kiradi
+(qisqa sayt tanaffusi). Compose'dagi `logging:` qayta yaratilgan
+konteynerlarga darhol tushadi, daemon restart'siz.
 
 ⚠️ **Tunnel avtomatik deploy'ning qo'lida emas.** Konteyner runner'da
 `systemd` yo'q; tunnel — Windows fayl jarayoni (`tools/handoff.ps1` +

@@ -104,35 +104,30 @@ jobs:
             --parallel \
             api web judge
 
-      - name: Tag images with the commit SHA
+      - name: Record image version
         id: meta
-        # ⚠️ The source name comes from this job's `COMPOSE_PROJECT_NAME`:
-        # compose names a built image `<project>-<service>`, i.e.
-        # `rankwant-build-<run_id>-api`. This step used to look for
-        # `rankwant_web` and failed with "No such image" — because the
-        # project name is variable, COMPUTE it, do not search.
-        timeout-minutes: 3
+        # SHA obraz tegi qo'yilmaydi (2026-09-20): `rankwant/<svc>:<sha>`
+        # shu engine'da jonli stack bilan yashaydi va VHDX ni to'ldiradi.
+        # Versiya faqat summary uchun; jonli deploy `up --build` qiladi.
+        timeout-minutes: 1
         run: |
           version="${GITHUB_SHA:0:12}"
-          missing=0
-          for svc in api web judge; do
-            src="${COMPOSE_PROJECT_NAME}-${svc}:latest"
-            if ! docker image inspect "$src" >/dev/null 2>&1; then
-              echo "::error::$src not found — the build step did not create the image"
-              missing=1
-              continue
-            fi
-            docker tag "$src" "rankwant/${svc}:${version}"
-          done
-          [ "$missing" -eq 0 ] || exit 1
           echo "version=${version}" >> "$GITHUB_OUTPUT"
-          echo "::notice::Image tags: rankwant/{api,web,judge}:${version}"
+          echo "::notice::Built ${COMPOSE_PROJECT_NAME}-{api,web,judge} (no SHA tags)"
 
       - name: Image size
         timeout-minutes: 1
         # Unexpected growth (e.g. `.venv` or `node_modules` falling
         # into the context) slows the build and fills the registry.
         run: docker images --format '{{.Repository}}:{{.Tag}}\t{{.Size}}' | grep '^rankwant' || true
+
+      # Build job used to leave `rankwant-build-<run_id>-*` and SHA tags
+      # on the shared engine even when the deploy job was skipped
+      # (`confirm != deploy`). Measured: that is how the VHDX grew.
+      - name: Drop this run's images
+        if: always()
+        timeout-minutes: 3
+        run: bash tools/prune_docker_disk.sh || true
 
   # ── 2. TEST ──────────────────────────────────────────────────────────
   # REUSE `ci.yml`. Inside: ruff, mypy (strict), migration check,
@@ -339,33 +334,11 @@ jobs:
           docker compose -p rankwant --env-file .env.public \
             -f docker-compose.yml -f docker-compose.public.yml logs --tail 100
 
-      # ⚠️ Old images are cleaned ON PURPOSE (2026-09-16).
-      # Measured: 122 `rankwant-build-*` piled up and filled the
-      # runner's WSL disk — C: had 9.59 GB left. This job builds a
-      # new image every run; nothing used to delete the old ones.
-      #
-      # THIS run's images are KEPT: they are attached to containers
-      # that are running now. Only previous runs' images go.
+      # SHA teglar, dangling, builder cache — `tools/prune_docker_disk.sh`.
+      # Jonli `rankwant-<svc>:latest` va `rankwant/ci-runner` o'chmaydi.
       - name: Clean old images
         if: always()
-        run: |
-          set -u
-          echo "--> images from previous runs (other than ${COMPOSE_PROJECT_NAME}-*)"
-          docker images --format '{{.Repository}}:{{.Tag}}' \
-            | grep -E '^rankwant-build-' \
-            | grep -v "^${COMPOSE_PROJECT_NAME}-" \
-            | xargs -r docker rmi -f || true
-          echo "--> CI leftovers older than 6 hours (rw-*)"
-          docker images --format '{{.ID}}|{{.CreatedSince}}|{{.Repository}}' \
-            | awk -F'|' '$3 ~ /^rw-/ && $2 ~ /hours|days|weeks|months/ {print $1}' \
-            | sort -u | xargs -r docker rmi -f || true
-          echo "--> build cache (older than 7 days)"
-          # ⚠️ `docker builder prune` is not split by project — it hits
-          # the whole engine. On one engine that also makes the live
-          # cache a candidate; that is why the window went from 24
-          # hours to 7 days. The complete fix is a daemon-level
-          # cache-size cap (open).
-          docker builder prune -f --filter 'until=168h' || true
+        run: bash tools/prune_docker_disk.sh || true
 
       # `down` is ABSENT ON PURPOSE: this is the live stack — tearing
       # it down would take the site down. Use the rollback job if needed.

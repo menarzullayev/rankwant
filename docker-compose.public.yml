@@ -62,24 +62,35 @@ x-turnstile: &turnstile
 x-throttle: &throttle
   THROTTLE_REGISTER: ${THROTTLE_REGISTER:-40/hour}
 
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   postgres:
     <<: *restart
+    logging: *default-logging
     ports: !reset []
   redis:
     <<: *restart
+    logging: *default-logging
     ports: !reset []
   minio:
     <<: *restart
+    logging: *default-logging
     ports: !reset []
 
   migrate:
+    logging: *default-logging
     environment:
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
       DJANGO_DEBUG: "0"
 
   api:
     <<: *restart
+    logging: *default-logging
     # Faqat localhost: tashqariga Cloudflare Tunnel chiqaradi, port emas.
     ports: !override ['127.0.0.1:8301:8000']
     environment:
@@ -97,6 +108,7 @@ services:
 
   worker:
     <<: *restart
+    logging: *default-logging
     environment:
       <<: *email
       DJANGO_DEBUG: "0"
@@ -104,12 +116,14 @@ services:
 
   beat:
     <<: *restart
+    logging: *default-logging
     environment:
       DJANGO_DEBUG: "0"
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
 
   web:
     <<: *restart
+    logging: *default-logging
     build:
       args:
         # Brauzer bundle'i — o'sha domenning o'zi, ya'ni same-origin.
@@ -118,3 +132,4 @@ services:
 
   judge:
     <<: *restart
+    logging: *default-logging
