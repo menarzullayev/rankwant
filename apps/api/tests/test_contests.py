@@ -18,6 +18,13 @@ from judging.verdicts import Verdict
 from problems.models import Problem
 from ratings.models import RatingHistory
 
+# ADR-0027: a fresh account starts at `droplet` (1200), not 1400 — the model
+# default was lowered there. Read it from the model instead of writing the
+# number again: the assertions below kept saying 1400 long after the change
+# landed, and PR CI does not run pytest (`pr_skips_heavy_ci`), so only Nightly
+# saw them fail.
+CONTEST_BASE = User._meta.get_field("rating_contest").default
+
 
 def submit(user, contest, problem, language, verdict, minutes_in):
     a = Attempt.objects.create(
@@ -94,7 +101,7 @@ class TestContestRating:
         submit(user, contest, problem, language, Verdict.AC, 10)
         assert finalize_contest(contest) == 0
         user.refresh_from_db()
-        assert user.rating_contest == 1400
+        assert user.rating_contest == CONTEST_BASE
 
     def test_reyting_hisoblanadi(self, contest, problem, language) -> None:
         users = self._ten_participants(contest, problem, language)
@@ -102,9 +109,9 @@ class TestContestRating:
 
         for u in users:
             u.refresh_from_db()
-        # Birinchi o'rin yutadi, oxirgisi yo'qotadi
-        assert users[0].rating_contest > 1400
-        assert users[-1].rating_contest < 1400
+        # Birinchi o'rin yutadi, oxirgisi yo'qotadi — bazaga nisbatan
+        assert users[0].rating_contest > CONTEST_BASE
+        assert users[-1].rating_contest < CONTEST_BASE
         # The batch write keeps the stored maximum too (ADR-0024).
         assert users[0].max_rating_contest == users[0].rating_contest
         assert users[-1].max_rating_contest == users[-1].rating_contest
@@ -317,7 +324,9 @@ class TestContestSubmission:
         c.force_authenticate(user=user)
         r = self._submit(c, contest=running.slug)
         assert r.status_code == 400
-        assert "ro'yxatdan" in str(r.json()).lower()
+        # The API answers in English (`tools/check_api_english.py`); the source
+        # of this string is `judging/serializers.py`.
+        assert "register for the contest" in str(r.json()).lower()
 
     def test_contestda_yoq_masala_rad_etiladi(self, user, running, language) -> None:
         ContestRegistration.objects.create(contest=running, user=user)
