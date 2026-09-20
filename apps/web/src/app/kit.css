@@ -197,9 +197,15 @@
 
 .rw-kit-hold {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem;
   overflow: hidden;
   width: 100%;
-  min-height: 2.5rem;
+  min-height: 2.85rem;
+  padding: 0.4rem 0.75rem 0.7rem;
   border: 1px solid var(--rw-text);
   border-radius: 8px;
   background: transparent;
@@ -211,6 +217,17 @@
 .rw-kit-hold.is-danger {
   border-color: var(--rw-bad-ink);
   color: var(--rw-bad-ink);
+}
+
+.rw-kit-hold-track {
+  position: absolute;
+  left: 0.6rem;
+  right: 0.6rem;
+  bottom: 0.35rem;
+  height: 3px;
+  border-radius: 99px;
+  background: color-mix(in srgb, currentColor 16%, transparent);
+  pointer-events: none;
 }
 
 .rw-kit-hold-bar {
@@ -225,8 +242,24 @@
   background: color-mix(in srgb, var(--rw-bad-ink) 22%, transparent);
 }
 
-.rw-kit-hold-lab {
+.rw-kit-hold-lab,
+.rw-kit-hold-hint {
   position: relative;
+}
+
+.rw-kit-hold-lab {
+  font-weight: 600;
+}
+
+.rw-kit-hold-hint {
+  font-size: 0.7rem;
+  line-height: 1.2;
+  font-weight: 500;
+  opacity: 0.72;
+}
+
+.rw-kit-hold.is-holding .rw-kit-hold-track {
+  background: color-mix(in srgb, currentColor 28%, transparent);
 }
 
 .rw-kit-inline {
