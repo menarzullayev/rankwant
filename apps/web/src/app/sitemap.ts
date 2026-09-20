@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 
+import { sitemapLanguageAlternates } from "@/i18n/locale-alternates";
 import { api, type Paginated } from "@/lib/api";
 import { absolute } from "@/lib/site";
 
@@ -8,6 +9,10 @@ import { absolute } from "@/lib/site";
  * Har soatda qayta quriladi: arxiv kuniga bir necha marta o'zgaradi,
  * lekin har so'rovda 21 ta API chaqiruvi (2096 masala, sahifasiga 100 ta)
  * ortiqcha bo'lardi.
+ *
+ * `?lang=` self-canonical HTML da (HITL hreflang-self). Sitemap esa har
+ * yozuvda `xhtml:link` tillarini beradi (HITL sitemap-hreflang): `url`
+ * toza `uz` yo'l, 10 til + `x-default` `alternates.languages` da.
  */
 export const revalidate = 3600;
 
@@ -32,6 +37,21 @@ const STATIC = [
   "/updates",
   "/platform-roadmap",
 ];
+
+function sitemapEntry(
+  path: string,
+  now: Date,
+  changeFrequency: NonNullable<MetadataRoute.Sitemap[number]["changeFrequency"]>,
+  priority: number,
+): MetadataRoute.Sitemap[number] {
+  return {
+    url: absolute(path),
+    lastModified: now,
+    changeFrequency,
+    priority,
+    alternates: { languages: sitemapLanguageAlternates(path, absolute) },
+  };
+}
 
 /** Sahifalab hamma slug'ni yig'adi. Cheklov ATAYIN: buzuq javob yoki
  * kutilmagan hajm sitemap qurilishini cheksiz cho'zib yubormasin. */
@@ -67,13 +87,11 @@ async function allIds(
   return ids;
 }
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {  const now = new Date();
-  const entries: MetadataRoute.Sitemap = STATIC.map((path) => ({
-    url: absolute(path),
-    lastModified: now,
-    changeFrequency: path === "/" ? "daily" : "weekly",
-    priority: path === "/" ? 1 : 0.7,
-  }));
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const now = new Date();
+  const entries: MetadataRoute.Sitemap = STATIC.map((path) =>
+    sitemapEntry(path, now, path === "/" ? "daily" : "weekly", path === "/" ? 1 : 0.7),
+  );
 
   const groups: [string, () => Promise<string[]>][] = [
     ["/problems", () => allSlugs((p) => api.problemSlugs(p))],
@@ -85,12 +103,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {  const
   for (const [prefix, load] of groups) {
     try {
       for (const slug of await load()) {
-        entries.push({
-          url: absolute(`${prefix}/${slug}`),
-          lastModified: now,
-          changeFrequency: "weekly",
-          priority: 0.6,
-        });
+        entries.push(sitemapEntry(`${prefix}/${slug}`, now, "weekly", 0.6));
       }
     } catch {
       // Bitta bo'lim olinmasa xarita BO'SH qolmasin — qolgani beriladi.
@@ -108,12 +121,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {  const
   for (const [prefix, load] of idGroups) {
     try {
       for (const id of await load()) {
-        entries.push({
-          url: absolute(`${prefix}/${id}`),
-          lastModified: now,
-          changeFrequency: "monthly",
-          priority: 0.5,
-        });
+        entries.push(sitemapEntry(`${prefix}/${id}`, now, "monthly", 0.5));
       }
     } catch {
       /* bo'lim olinmasa ham xarita beriladi */

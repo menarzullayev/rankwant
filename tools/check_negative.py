@@ -2701,6 +2701,26 @@ def neg_decisions_hreflang_drops_x_default() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_sitemap_drops_languages() -> tuple[bool, str]:
+    """Sitemap yozuvi til'siz qolsa tutilsin."""
+    return _decision_broken(
+        "apps/web/src/app/sitemap.ts",
+        "alternates: { languages: sitemapLanguageAlternates(path, absolute) },",
+        "images: [],",
+        "sitemap xhtml:link tillari",
+    )
+
+
+def neg_decisions_sitemap_helper_dropped() -> tuple[bool, str]:
+    """Sitemap til helper olib tashlansa tutilsin."""
+    return _decision_broken(
+        "apps/web/src/i18n/locale-alternates.ts",
+        "export function sitemapLanguageAlternates",
+        "export function neverLanguageAlternates",
+        "sitemap xhtml:link tillari",
+    )
+
+
 def neg_decisions_copy_fail_toast_dropped() -> tuple[bool, str]:
     """CopyControl fail toast olib tashlansa tutilsin."""
     return _decision_broken(
@@ -3277,6 +3297,7 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/app/problems/[slug]/page.tsx",
     "apps/web/src/app/updates/[id]/page.tsx",
     "apps/web/src/app/platform-roadmap/[id]/page.tsx",
+    "apps/web/src/app/sitemap.ts",
     # pytest 9 + pytest-django 4.14 (2026-09-20): floors and lock.
     # Missing here, `check_decisions.py` exits 2.
     "apps/api/requirements-dev.txt",
@@ -5035,6 +5056,14 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "hreflang x-default tushsa tutilsin",
                 neg_decisions_hreflang_drops_x_default,
+            ),
+            (
+                "sitemap tillari tushsa tutilsin",
+                neg_decisions_sitemap_drops_languages,
+            ),
+            (
+                "sitemap helper tushsa tutilsin",
+                neg_decisions_sitemap_helper_dropped,
             ),
             (
                 "copy fail toast olib tashlansa tutilsin",

@@ -27,3 +27,19 @@ export function localeAlternates(
   }
   return { canonical, languages };
 }
+
+/** Sitemap `xhtml:link` — har resurs bitta `<url>`, tillar `alternates`.
+ *
+ *  `url` toza `uz` yo'l (HITL sitemap-hreflang). 10× alohida `<url>` yo'q.
+ */
+export function sitemapLanguageAlternates(
+  path: string,
+  toAbsolute: (href: string) => string,
+): Record<string, string> {
+  const { languages } = localeAlternates(path, null);
+  const out: Record<string, string> = {};
+  for (const [code, href] of Object.entries(languages)) {
+    out[code] = toAbsolute(href);
+  }
+  return out;
+}

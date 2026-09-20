@@ -200,7 +200,9 @@ query string is present, so `/?lang=ru` stays a private miss.
   (`?lang=<code>`); a full `/uz/...` prefix would remove the dependence on
   `Accept-Language` entirely and with it the need for `Vary`. HTML
   `hreflang` + self-canonical for `?lang=` (HITL 2026-09-20) is the
-  indexing story; it does not replace `Vary` for future cached routes.
+  indexing story; sitemap `xhtml:link` (HITL sitemap-hreflang) lists the
+  same cluster without a 10× `<url>` explosion. Neither replaces `Vary`
+  for future cached routes.
 
 `cloudflared` cannot do it: version `2026.9.1` has no header-rewrite directive
 in tunnel ingress rules.
