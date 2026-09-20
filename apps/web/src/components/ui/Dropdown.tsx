@@ -7,7 +7,7 @@ import {
   ComboboxOptions,
   Label,
 } from "@headlessui/react";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 import { Icon } from "@/components/ui/Icon";
 import { useLocale } from "@/i18n/LocaleProvider";
@@ -103,13 +103,7 @@ export function Dropdown({
   const [inner, setInner] = useState(value ?? defaultValue ?? "");
   const current = value !== undefined ? value : inner;
   const selected = options.find((option) => option.value === current);
-  const inputRef = useRef<HTMLInputElement>(null);
   const selectedLabel = selected?.label ?? "";
-  useLayoutEffect(() => {
-    const node = inputRef.current;
-    if (!node || query.trim()) return;
-    if (node.value !== selectedLabel) node.value = selectedLabel;
-  }, [query, selectedLabel]);
   const filtered = filterDropdownOptions(options, query);
   const buckets = groupDropdownOptions(filtered);
   const searchLabel = placeholder ?? t(locale, "dropdown.search");
@@ -120,7 +114,9 @@ export function Dropdown({
   return (
     <Combobox
       as="div"
-      className={className ?? (header ? "relative inline-block" : undefined)}
+      className={
+        className ?? (header ? "relative inline-block overflow-visible" : undefined)
+      }
       immediate
       name={name}
       disabled={disabled || loading}
@@ -160,8 +156,8 @@ export function Dropdown({
           </span>
         )}
         <ComboboxInput
-          ref={inputRef}
           autoComplete="off"
+          defaultValue={selectedLabel}
           displayValue={(code: string) =>
             options.find((option) => option.value === code)?.label ?? ""
           }
@@ -192,11 +188,14 @@ export function Dropdown({
       </div>
 
       <ComboboxOptions
-        anchor={optionsStyle ? undefined : header ? ANCHOR.header : ANCHOR.field}
+        {...(optionsStyle || header ? {} : { anchor: ANCHOR.field })}
         modal={false}
         style={optionsStyle}
         className={`z-[200] max-h-72 overflow-y-auto rw-radius border rw-line rw-surface p-1.5 rw-shadow [--anchor-gap:4px] [--anchor-max-height:18rem] ${
-          optionsClassName ?? (header ? "top-full mt-1 w-64" : "mt-1 w-[var(--input-width)]")
+          optionsClassName ??
+          (header
+            ? "absolute top-full right-0 mt-1 w-64"
+            : "mt-1 w-[var(--input-width)]")
         }`}
       >
           {filtered.length === 0 ? (
