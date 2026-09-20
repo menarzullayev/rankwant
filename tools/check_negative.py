@@ -3603,6 +3603,18 @@ _DECISIONS_SANDBOX_FILES = (
     # Security run disabled (2026-09-21): the rule reads REQUIRED.
     # Missing here, `check_decisions.py` exits 2.
     "tools/check_deploy_gate.py",
+    # Judge latency gate (2026-09-21): the rule reads the harness to prove the
+    # budget comparison still exists — a gate whose comparison is gone still
+    # exits 0, i.e. green but measuring nothing. The compose service and the
+    # workflow files are staged already (`docker-compose.ci.yml` above, the
+    # `.github/workflows/*` glob in `_decisions_sandbox`).
+    #
+    # This entry is here because the drift check caught its absence: PR #204
+    # added the rule, `neg_decisions_sandbox_covers_reads` named this exact
+    # file, and the two trial-label tests died with exit 2 in the sandbox.
+    # That failure is LOCAL ONLY — `check_negative.py` is not part of CI, so
+    # nothing else would have noticed.
+    "tests/latency/check_judge_latency.py",
 )
 
 
@@ -3996,6 +4008,47 @@ def neg_decisions_footer_email_changed() -> tuple[bool, str]:
         'const CONTACT_EMAIL = "support@rankwant.uz";',
         'const CONTACT_EMAIL = "hello@example.com";',
         _BRAND_RULE,
+    )
+
+
+# ── Judge latency gate — Nightly only (owner decision 2026-09-21) ────────────
+
+_LATENCY_RULE = "judge latency Nightly'da"
+_LATENCY_NIGHTLY = ".github/workflows/nightly.yml"
+_LATENCY_HARNESS = "tests/latency/check_judge_latency.py"
+
+
+def neg_decisions_latency_job_removed() -> tuple[bool, str]:
+    """`latency` jobi Nightly'dan olib tashlansa tutilsin."""
+    return _decision_broken(
+        _LATENCY_NIGHTLY,
+        "    name: Latency — judge budget",
+        "    name: Latency — removed",
+        _LATENCY_RULE,
+    )
+
+
+def neg_decisions_latency_gate_dead() -> tuple[bool, str]:
+    """Byudjet taqqoslash o'chsa tutilsin — aks holda darvoza «yashil», lekin o'lik.
+
+    Eng muhim salbiy test: taqqoslash yo'q skript baribir `0` qaytaradi,
+    ya'ni o'lchov bor ko'rinadi-yu, hech narsani to'smaydi.
+    """
+    return _decision_broken(
+        _LATENCY_HARNESS,
+        "    if p50 > BUDGET_P50_MS:",
+        "    if False:  # gate disabled",
+        _LATENCY_RULE,
+    )
+
+
+def neg_decisions_latency_moved_into_pr_ci() -> tuple[bool, str]:
+    """Harness PR CI'ga ulansa tutilsin — qaror: faqat Nightly."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "        run: python3 tools/check_docs.py",
+        "        run: python3 tools/check_docs.py  # tests/latency",
+        _LATENCY_RULE,
     )
 
 
@@ -5768,6 +5821,18 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "footer email o'zgarsa tutilsin",
                 neg_decisions_footer_email_changed,
+            ),
+            (
+                "latency jobi Nightly'dan olinsa tutilsin",
+                neg_decisions_latency_job_removed,
+            ),
+            (
+                "latency byudjet taqqoslash o'chsa tutilsin",
+                neg_decisions_latency_gate_dead,
+            ),
+            (
+                "latency PR CI'ga qo'shilsa tutilsin",
+                neg_decisions_latency_moved_into_pr_ci,
             ),
         ],
     ),

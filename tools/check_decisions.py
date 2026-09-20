@@ -2074,6 +2074,39 @@ def aop_restore_when_idle() -> str | None:
     return None
 
 
+def judge_latency_gate_is_nightly() -> str | None:
+    """Judge latency — launch gate (p50 < 5 s, p95 < 15 s) — Nightly'da.
+
+    Ochiq band: `docs/09-development-plan/README.md` § "Launch gate"; mezon
+    ADR-0004 da. Egasi 2026-09-21 da «doimiy Nightly job» ni tanladi — per-PR
+    EMAS, chunki bu `pr_skips_heavy_ci` qarorini ag'darardi. Job ALOHIDA:
+    E2E brauzer matritsasiga bog'langan darvoza aloqasiz sababdan qizarib,
+    ayb noto'g'ri joyga yozilardi.
+
+    ⚠️ Oxirgi ikki tekshiruv «darvoza o'likmi?» degan savolga javob beradi:
+    byudjet taqqoslash o'chirilgan skript baribir `0` qaytaradi — ya'ni
+    yashil, lekin o'lchov yo'q.
+    """
+    nightly = read(".github/workflows/nightly.yml")
+    if "name: Latency — judge budget" not in nightly:
+        return ".github/workflows/nightly.yml: `latency` jobi yo'q"
+    if "--profile latency run --rm latency" not in nightly:
+        return ".github/workflows/nightly.yml: latency jobi harness'ni yurgizmaydi"
+    if "tests/latency" in read(".github/workflows/ci.yml"):
+        return ".github/workflows/ci.yml: latency gate PR CI'ga qo'shilgan — qaror: faqat Nightly"
+    compose = read("docker-compose.ci.yml")
+    if "profiles: ['latency']" not in compose:
+        return "docker-compose.ci.yml: latency `up -d` da ko'tariladi (profiles yo'q)"
+    if "worker: { condition: service_started }" not in compose:
+        return "docker-compose.ci.yml: latency `worker` ga bog'lanmagan — navbat bo'shamaydi"
+    harness = read("tests/latency/check_judge_latency.py")
+    if "if p50 > BUDGET_P50_MS:" not in harness:
+        return "tests/latency/check_judge_latency.py: p50 byudjet taqqoslash yo'q"
+    if "if p95 > BUDGET_P95_MS:" not in harness:
+        return "tests/latency/check_judge_latency.py: p95 byudjet taqqoslash yo'q"
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -2127,6 +2160,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("bosh sahifa CF email-decode yo'q", homepage_skips_cf_email_decode),
     ("login yupqa auth.css", login_uses_narrow_auth_css),
     ("Security run o'chiq", security_run_is_disabled),
+    ("judge latency Nightly'da", judge_latency_gate_is_nightly),
 ]
 
 
