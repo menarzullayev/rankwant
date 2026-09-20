@@ -2,7 +2,7 @@
 
 import type { Route } from "next";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { useSession } from "@/context/SessionContext";
@@ -66,24 +66,31 @@ export function AuthForm({
   mode,
   providers,
   turnstileSiteKey = "",
+  next: nextRaw,
+  link,
+  social,
 }: {
   mode: Mode;
   /** Serverda olinadi — tugmalar HTML da keladi va JS ga bog'liq emas. */
   providers: string[];
   /** Turnstile sayt kaliti (9-qaror). Bo'sh — tekshiruv sozlanmagan. */
   turnstileSiteKey?: string;
+  /** `?next=` — server o'qiydi. Klient search-params hooki butun
+   *  formani Suspense fallback ga tiqib, avval skeleton chizardi. */
+  next?: string | null;
+  /** Provayder bog'lash (`?link=`) — ADR-0016. */
+  link?: string | null;
+  /** Almashuv yiqildi (`?social=`). */
+  social?: string | null;
 }) {
   const locale = useLocale();
   const router = useRouter();
-  const params = useSearchParams();
-  // Provayder bizni shu ikki holatda qaytaradi: bog'lash kerak
-  // (`?link=`) yoki almashuv yiqildi (`?social=`) — ADR-0016.
-  const linking = params.get("link");
-  const socialFailed = params.get("social");
+  const linking = link ?? null;
+  const socialFailed = social ?? null;
   // Himoyalangan sahifadan uchirilgan odam qayerga qaytishi kerak
   // (qaror 1). `safeNext` faqat ichki yo'lni o'tkazadi — aks holda bu
   // ochiq redirect bo'lardi.
-  const next = safeNext(params.get("next"));
+  const next = safeNext(nextRaw ?? null);
   const { reload } = useSession();
   const [error, setError] = useState("");
   //: Bloklanish qolgan soniyalar (`Retry-After`). Nolga tushgach qayta

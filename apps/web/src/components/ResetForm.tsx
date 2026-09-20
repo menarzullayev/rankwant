@@ -2,7 +2,6 @@
 
 import type { Route } from "next";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/Button";
@@ -14,8 +13,7 @@ import { ApiError, postJson } from "@/lib/api";
 /** Bitta sahifa, ikki holat: xatdagi havolada `token` bo'lsa — yangi parol,
  *  bo'lmasa — havola so'rash. Ikkalasi bir manzilda turadi, chunki
  *  foydalanuvchi uchun bu bitta ish: parolni tiklash. */
-export function ResetForm() {
-  const token = useSearchParams().get("token") ?? "";
+export function ResetForm({ token = "" }: { token?: string }) {
   return token ? <SetNew token={token} /> : <Request />;
 }
 

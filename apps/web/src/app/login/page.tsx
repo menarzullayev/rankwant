@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 import { AuthForm } from "@/components/AuthForm";
-import { AuthFormSkeleton } from "@/components/AuthFormSkeleton";
 import { AuthProof } from "@/components/auth/AuthProof";
 import { AuthShell } from "@/components/auth/AuthShell";
 import { AuthTabs } from "@/components/auth/AuthTabs";
@@ -94,28 +93,33 @@ export default async function AuthPage({
   return (
     <AuthShell>
       <Card title={title ? t(locale, title) : undefined}>
-        {/* Skeleton ham bo'lim tugmalari ostida turadi: aks holda karta
-            ikki marta sakrab ko'rinardi (avval tugmalar, keyin forma).
-            `AuthTabs` ichida `useSearchParams` bor, ya'ni `Suspense`
-            SHART — usiz butun marshrut dinamik bo'lib qolardi. */}
-        <Suspense fallback={<AuthFormSkeleton />}>
-          <AuthTabs active={tab} />
-          {tab === "reset-password" ? (
-            <ResetForm />
-          ) : (
-            <AuthForm
-              mode={tab === "register" ? "register" : "login"}
-              providers={auth.providers}
-              turnstileSiteKey={auth.turnstile_site_key}
-            />
-          )}
-        </Suspense>
-        {/* Ijtimoiy dalil + huquqiy havolalar (12-qaror).
-            `Suspense` dan TASHQARIDA: u `api.stats()` ni kutadi va
-            yiqilsa jim yo'qoladi — formani bloklamasligi kerak. */}
-        <Suspense fallback={null}>
-          <AuthProof />
-        </Suspense>
+        {/* Query (`next`, `link`, `social`, `token`) SERVERDA o'qiladi.
+            Klient search-params hooki butun kartani Suspense fallback
+            ga tiqib, avval «Yuklanmoqda», keyin formani chizardi —
+            768 px register Lighthouse LCP 4.2 s / CLS 0.202
+            edi (2026-09-21). */}
+        <AuthTabs active={tab} next={nextOf(params)} />
+        {tab === "reset-password" ? (
+          <ResetForm token={one(params.token) ?? ""} />
+        ) : (
+          <AuthForm
+            mode={tab === "register" ? "register" : "login"}
+            providers={auth.providers}
+            turnstileSiteKey={auth.turnstile_site_key}
+            next={nextOf(params)}
+            link={one(params.link)}
+            social={one(params.social)}
+          />
+        )}
+        {/* Ijtimoiy dalil (12-qaror). `api.stats()` formani
+            bloklamasin — shu sabab `Suspense`. Karta `justify-center`
+            da, shuning uchun joy OLDINDAN band: kelgan satr kartani
+            pastdan ochib CLS yasamasin. */}
+        <div className="min-h-[4.5rem]">
+          <Suspense fallback={null}>
+            <AuthProof />
+          </Suspense>
+        </div>
       </Card>
     </AuthShell>
   );
