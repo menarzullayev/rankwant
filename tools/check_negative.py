@@ -2641,6 +2641,46 @@ def neg_decisions_eslint_next_parser() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_pytest_floor_eight() -> tuple[bool, str]:
+    """pytest floor 8 ga qaytsa tutilsin."""
+    return _decision_broken(
+        "apps/api/requirements-dev.txt",
+        "pytest>=9.1.1",
+        "pytest>=8",
+        "pytest 9 va pytest-django 4.14",
+    )
+
+
+def neg_decisions_pytest_django_floor_old() -> tuple[bool, str]:
+    """pytest-django floor 4.9 ga qaytsa tutilsin."""
+    return _decision_broken(
+        "apps/api/requirements-dev.txt",
+        "pytest-django>=4.14.0",
+        "pytest-django>=4.9",
+        "pytest 9 va pytest-django 4.14",
+    )
+
+
+def neg_decisions_react_dom_mismatch() -> tuple[bool, str]:
+    """react 19.3, react-dom 19.0 qolsa tutilsin."""
+    return _decision_broken(
+        "apps/web/package.json",
+        '"react-dom": "19.3.0"',
+        '"react-dom": "19.0.0"',
+        "react va react-dom juft",
+    )
+
+
+def neg_decisions_react_stays_19_0() -> tuple[bool, str]:
+    """react 19.0 ga qaytsa tutilsin (juftlik ham buziladi)."""
+    return _decision_broken(
+        "apps/web/package.json",
+        '"react": "19.3.0"',
+        '"react": "19.0.0"',
+        "react va react-dom juft",
+    )
+
+
 def neg_decisions_copy_fail_toast_dropped() -> tuple[bool, str]:
     """CopyControl fail toast olib tashlansa tutilsin."""
     return _decision_broken(
@@ -3210,6 +3250,10 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/components/kit/CopyControl.tsx",
     "apps/web/src/components/kit/CommandPalette.tsx",
     "apps/web/src/components/profile/ShareButton.tsx",
+    # pytest 9 + pytest-django 4.14 (2026-09-20): floors and lock.
+    # Missing here, `check_decisions.py` exits 2.
+    "apps/api/requirements-dev.txt",
+    "apps/api/requirements-dev.lock",
     # The stdin fix (2026-09-19): the rule reads the hash line that must not
     # depend on the ambient stdin. Missing here, `check_decisions.py` exits 2.
     "tools/check_deploy.sh",
@@ -4920,6 +4964,22 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "eslint next parser qaytsa tutilsin",
                 neg_decisions_eslint_next_parser,
+            ),
+            (
+                "pytest floor 8 ga qaytsa tutilsin",
+                neg_decisions_pytest_floor_eight,
+            ),
+            (
+                "pytest-django floor 4.9 ga qaytsa tutilsin",
+                neg_decisions_pytest_django_floor_old,
+            ),
+            (
+                "react-dom 19.0 da qolsa tutilsin",
+                neg_decisions_react_dom_mismatch,
+            ),
+            (
+                "react 19.0 ga qaytsa tutilsin",
+                neg_decisions_react_stays_19_0,
             ),
             (
                 "copy fail toast olib tashlansa tutilsin",

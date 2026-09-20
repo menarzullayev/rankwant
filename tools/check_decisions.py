@@ -1459,6 +1459,58 @@ def eslint_ten_uses_ts_parser() -> str | None:
     return None
 
 
+def pytest_nine_and_django_plugin() -> str | None:
+    """2026-09-20 HITL: pytest ≥9.1.1 va pytest-django ≥4.14 birga.
+
+    Lock allaqachon 9.1.1 / 4.14.0 edi; floor `>=8` / `>=4.9` qolsa
+    `uv pip compile` pytest 8 ga qaytishi mumkin. pytest-django 4.14
+    pytest 9 uchun; 4.9 yetarli emas.
+    """
+    floors = read("apps/api/requirements-dev.txt")
+    if not re.search(r"(?m)^pytest>=9\.1\.1$", floors):
+        return "apps/api/requirements-dev.txt: pytest floor 9.1.1 emas"
+    if not re.search(r"(?m)^pytest-django>=4\.14\.0$", floors):
+        return "apps/api/requirements-dev.txt: pytest-django floor 4.14.0 emas"
+    lock = read("apps/api/requirements-dev.lock")
+    if not re.search(r"(?m)^pytest==9\.", lock):
+        return "apps/api/requirements-dev.lock: pytest 9.x emas"
+    if not re.search(r"(?m)^pytest-django==4\.14\.", lock):
+        return "apps/api/requirements-dev.lock: pytest-django 4.14 emas"
+    return None
+
+
+def react_and_dom_stay_paired() -> str | None:
+    """2026-09-20 HITL: react va react-dom 19.3 juftligi, ajratilmaydi.
+
+    ViewTransition/Fragment refs shu PR da ishlatilmaydi. Juftlik buzilsa
+    (react 19.3 + react-dom 19.0) runtime noaniq.
+    """
+    pkg = read("apps/web/package.json")
+
+    def pin(name: str) -> str | None:
+        m = re.search(rf'"{re.escape(name)}": "([^"]+)"', pkg)
+        return m.group(1) if m else None
+
+    react = pin("react")
+    dom = pin("react-dom")
+    if react is None or dom is None:
+        return "apps/web/package.json: react yoki react-dom yo'q"
+    if react != dom:
+        return f"apps/web/package.json: react {react} ≠ react-dom {dom}"
+    if not react.startswith("19.3."):
+        return f"apps/web/package.json: react/react-dom {react} (19.3.x kerak)"
+    types_r = pin("@types/react")
+    types_d = pin("@types/react-dom")
+    if types_r is None or types_d is None:
+        return "apps/web/package.json: @types/react juftligi yo'q"
+    if not types_r.startswith("19.3.") or not types_d.startswith("19.3."):
+        return "apps/web/package.json: @types/react juftligi 19.3.x emas"
+    cfg = read("apps/web/eslint.config.mjs")
+    if 'version: "19.3.0"' not in cfg:
+        return 'apps/web/eslint.config.mjs: react version 19.3.0 emas'
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -1491,6 +1543,8 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("@types/node runtime bilan", types_node_tracks_runtime),
     ("tanlangan kit muzlatilgan", selected_kit_frozen),
     ("ESLint 10 typescript parser", eslint_ten_uses_ts_parser),
+    ("pytest 9 va pytest-django 4.14", pytest_nine_and_django_plugin),
+    ("react va react-dom juft", react_and_dom_stay_paired),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),
