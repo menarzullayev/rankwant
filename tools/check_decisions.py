@@ -1022,6 +1022,28 @@ def brand_in_header_and_footer_columns() -> str | None:
     return None
 
 
+def homepage_skips_cf_email_decode() -> str | None:
+    """CF email-decode High script bosh sahifada bo'lmasin (HITL 2026-09-20).
+
+    AFTER-09: `/cdn-cgi/scripts/.../email-decode.min.js` High (1 KiB) +
+    `/cdn-cgi/rum`. Sabab — footer `support@rankwant.uz`. Manzil allaqachon
+    ochiq (HITL confirm-current). `<!--email_off-->` CF ni script kiritishdan
+    to'xtatadi. Beacon (analytics) alohida.
+    """
+    footer = read(APP_FOOTER)
+    if "<!--email_off-->" not in footer or "<!--email_on-->" not in footer:
+        return (
+            f"{APP_FOOTER}: CF `<!--email_off-->` yo'q — email-decode High "
+            "script Lighthouse tarmog'iga qaytadi"
+        )
+    if "dangerouslySetInnerHTML" not in footer:
+        return (
+            f"{APP_FOOTER}: `email_off` React kommentariyasida — HTML ga "
+            "chiqmaydi, CF baribir script kiritadi"
+        )
+    return None
+
+
 def difficulty_range_counts_as_one_filter() -> str | None:
     """The filter badge counts the difficulty range as ONE filter.
 
@@ -2054,6 +2076,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("qarorlar jadvali", decisions_table_present),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),
     ("bosh sahifa CSS inline", homepage_css_is_inlined),
+    ("bosh sahifa CF email-decode yo'q", homepage_skips_cf_email_decode),
 ]
 
 
