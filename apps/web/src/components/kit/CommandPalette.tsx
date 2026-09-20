@@ -63,7 +63,8 @@ export function CommandPalette() {
           setOpen(false);
           void navigator.clipboard
             .writeText(window.location.href)
-            .then(() => overlay.toast(t(locale, "problem.copied")));
+            .then(() => overlay.toast(t(locale, "problem.copied")))
+            .catch(() => {});
         },
       },
     ];
