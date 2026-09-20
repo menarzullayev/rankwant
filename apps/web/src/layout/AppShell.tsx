@@ -16,6 +16,7 @@ import { StyleProvider } from "@/context/StyleContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { UpdatesProvider } from "@/context/UpdatesContext";
 import type { AppearancePrefs, Me } from "@/lib/api";
+import { startChiziq } from "@/lib/chiziq";
 import AppFooter from "./AppFooter";
 import AppHeader from "./AppHeader";
 import { VerifyBanner } from "@/components/VerifyBanner";
@@ -67,6 +68,9 @@ function Shell({ children }: { children: React.ReactNode }) {
   const bare = BARE.includes(pathname);
   const wide = isExpanded || isHovered;
   const sidenav = navMode === "sidenav" && !bare;
+
+  // Chiziq overlay (eskiz 09) — nativ yo'l CSS da yashirin.
+  useEffect(() => startChiziq(), []);
 
   // Overlay panel ochiq ekan orqa fon siljimasin. Qulf FAQAT overlay'ga
   // tegishli: topnav rejimidagi ro'yxat sahifa oqimida turadi va u bilan

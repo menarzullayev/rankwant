@@ -1050,14 +1050,10 @@
 }
 @utility custom-scrollbar {
   &::-webkit-scrollbar {
-    @apply size-1.5;
+    display: none;
   }
-  &::-webkit-scrollbar-track {
-    @apply rounded-full;
-  }
-  &::-webkit-scrollbar-thumb {
-    @apply bg-gray-200 rounded-full dark:bg-gray-700;
-  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Qiyinlik darajalari — 04-prd § qiyinlik shkalasi ranglari */
@@ -1810,4 +1806,83 @@
 [data-motion="mild"] [class*="animate-"],
 [data-motion="mild"] [class*="rw-pulse"] {
   animation: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   CHIZIQ — nativ scroller o'rniga overlay (plastina 09).
+   Yo'l 2px, belgi qisqa qizil (`--rw-bad-ink`), layout siljimaydi.
+   ═══════════════════════════════════════════════════════════════════ */
+
+html,
+body,
+* {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+#rw-chiziq-layer {
+  pointer-events: none;
+}
+
+.rw-chiziq-y,
+.rw-chiziq-x {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: auto;
+  background: var(--rw-line);
+}
+
+.rw-chiziq-y.is-page,
+.rw-chiziq-x.is-page {
+  z-index: 35;
+}
+
+.rw-chiziq-y {
+  width: 2px;
+}
+
+.rw-chiziq-x {
+  height: 2px;
+}
+
+.rw-chiziq-y-thumb,
+.rw-chiziq-x-thumb {
+  position: absolute;
+  background: var(--rw-bad-ink);
+  border-radius: 2px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.rw-chiziq-y-thumb:active,
+.rw-chiziq-x-thumb:active {
+  cursor: grabbing;
+}
+
+.rw-chiziq-y-thumb {
+  left: -5px;
+  right: -5px;
+  top: 0;
+  height: 22px;
+}
+
+.rw-chiziq-x-thumb {
+  top: -5px;
+  bottom: -5px;
+  left: 0;
+  width: 22px;
+}
+
+@media print {
+  #rw-chiziq-layer {
+    display: none !important;
+  }
 }
