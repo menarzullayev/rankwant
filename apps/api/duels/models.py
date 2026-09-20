@@ -16,8 +16,10 @@ from typing import ClassVar
 from django.db import models
 from django.utils import timezone
 
+from core.bases import CreatedModel
 
-class Duel(models.Model):
+
+class Duel(CreatedModel):
     class Status(models.TextChoices):
         OPEN = "open", "Kutilmoqda"
         ACCEPTED = "accepted", "Qabul qilindi"
@@ -50,7 +52,6 @@ class Duel(models.Model):
     opponent_solved = models.PositiveIntegerField(default=0)
     is_draw = models.BooleanField(default=False)
     ratings_applied_at = models.DateTimeField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering: ClassVar = ["-created_at"]

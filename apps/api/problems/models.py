@@ -8,6 +8,8 @@ from typing import Any, ClassVar
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import IntegrityError, models, transaction
 
+from core.bases import CreatedModel, TimeStampedModel, UpdatedModel
+
 #: Same rule the judge enforces (services/judge-go/judge.go `sourceFileName`):
 #: a bare name with an extension, so it can never point outside the work dir.
 SOURCE_FILE_PATTERN = r"^[A-Za-z0-9_]+(\.[A-Za-z0-9_]+)+\Z"
@@ -153,7 +155,7 @@ class ProblemCodeSequence(models.Model):
         return counter.value
 
 
-class Problem(models.Model):
+class Problem(TimeStampedModel):
     class Checker(models.TextChoices):
         STANDARD = "standard", "Standart"
         SPECIAL = "special", "Maxsus"
@@ -253,9 +255,6 @@ class Problem(models.Model):
     #: Masala sahifasi ochilishi. «Ko'p ko'rilgan» ro'yxati uchun; yechish
     #: statistikasidan farqli — ko'rgan, lekin urinmaganlarni ham sanaydi.
     view_count = models.PositiveIntegerField(default=0, db_index=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering: ClassVar = ["difficulty", "slug"]
@@ -427,7 +426,7 @@ class ProblemAttachment(models.Model):
         return f"{self.problem.slug} · {self.name}"
 
 
-class Validator(models.Model):
+class Validator(UpdatedModel):
     """Kirish validatori — test cheklovlarga mosligini tekshiruvchi dastur.
 
     Muallif uchun emas, HACKING uchun: ishtirokchi boshqaning yechimini
@@ -440,13 +439,12 @@ class Validator(models.Model):
     problem = models.OneToOneField(Problem, on_delete=models.CASCADE, related_name="validator")
     language = models.ForeignKey(Language, on_delete=models.PROTECT, related_name="validators")
     source = models.TextField()
-    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
         return f"validator · {self.problem.slug}"
 
 
-class ReferenceSolution(models.Model):
+class ReferenceSolution(UpdatedModel):
     """Etalon yechim — hack testining javobini beradi ([ADR-0021]).
 
     Hacker kiritma yuboradi, himoyachining kodi shu kiritmada ishlaydi va
@@ -471,13 +469,12 @@ class ReferenceSolution(models.Model):
         Language, on_delete=models.PROTECT, related_name="reference_solutions"
     )
     source = models.TextField()
-    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
         return f"etalon · {self.problem.slug}"
 
 
-class Favourite(models.Model):
+class Favourite(CreatedModel):
     """Keyinroq qaytish uchun belgilangan masala.
 
     RoboContest va Codeforces'dagi «sevimlilar» — uzun arxivda yo'qolib
@@ -486,7 +483,6 @@ class Favourite(models.Model):
 
     user = models.ForeignKey("core.User", on_delete=models.CASCADE, related_name="favourites")
     problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name="favourites")
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         constraints: ClassVar = [
@@ -498,7 +494,7 @@ class Favourite(models.Model):
         return f"{self.user_id} → {self.problem.slug}"
 
 
-class ProblemVote(models.Model):
+class ProblemVote(CreatedModel):
     """Masalaga «yoqdi / yoqmadi» ovozi.
 
     Yulduzli bahodan (`ProblemRating`) ALOHIDA: yulduz masalaning
@@ -514,7 +510,6 @@ class ProblemVote(models.Model):
     user = models.ForeignKey("core.User", on_delete=models.CASCADE, related_name="problem_votes")
     problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name="votes")
     value = models.SmallIntegerField(choices=[(UP, "Yoqdi"), (DOWN, "Yoqmadi")])
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         constraints: ClassVar = [
@@ -525,7 +520,7 @@ class ProblemVote(models.Model):
         return f"{self.problem.slug}: {self.value:+d}"
 
 
-class EditorialUnlock(models.Model):
+class EditorialUnlock(CreatedModel):
     """Yechim tahliliga kirish huquqi — ADR-0013.
 
     Yozuv FAQAT Qvant sarflab ochganda paydo bo'ladi. Masalani yechgan
@@ -538,7 +533,6 @@ class EditorialUnlock(models.Model):
     )
     problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name="unlocks")
     price = models.PositiveIntegerField()
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering: ClassVar = ["-created_at"]
@@ -550,7 +544,7 @@ class EditorialUnlock(models.Model):
         return f"{self.user_id} → {self.problem.slug}"
 
 
-class ProblemRating(models.Model):
+class ProblemRating(TimeStampedModel):
     """Foydalanuvchining masalaga bergan bahosi (1–5).
 
     RoboContest sahifada «3.2 · 10 baholar» ko'rsatadi — muallif uchun
@@ -562,8 +556,6 @@ class ProblemRating(models.Model):
     score = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(5)]
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         constraints: ClassVar = [

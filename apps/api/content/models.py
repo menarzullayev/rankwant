@@ -16,8 +16,10 @@ from typing import ClassVar
 from django.db import models
 from django.utils import timezone
 
+from core.bases import TimeStampedModel
 
-class Article(models.Model):
+
+class Article(TimeStampedModel):
     """O'quv maqolasi. Masalalarga bog'lanadi."""
 
     class Kind(models.TextChoices):
@@ -44,9 +46,6 @@ class Article(models.Model):
     is_published = models.BooleanField(default=False, db_index=True)
     published_at = models.DateTimeField(null=True, blank=True)
     reading_minutes = models.PositiveIntegerField(default=0)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering: ClassVar = ["difficulty", "slug"]

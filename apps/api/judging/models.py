@@ -6,6 +6,7 @@ from typing import ClassVar
 
 from django.db import models
 
+from core.bases import CreatedModel
 from judging.verdicts import Verdict
 
 MAX_SOURCE_BYTES = 64 * 1024  # 08-technical-spec 🔒
@@ -95,7 +96,7 @@ class AttemptTestResult(models.Model):
         return f"attempt {self.attempt_id} test #{self.index}: {self.verdict}"
 
 
-class CustomRun(models.Model):
+class CustomRun(CreatedModel):
     """PRD P0-4 — foydalanuvchi o'z stdin'i bilan kodni sinab ko'radi.
 
     Attempt EMAS: urinishlar tarixiga tushmaydi, reytingga ta'sir qilmaydi,
@@ -115,7 +116,6 @@ class CustomRun(models.Model):
     time_ms = models.PositiveIntegerField(default=0)
     memory_kb = models.PositiveIntegerField(default=0)
 
-    created_at = models.DateTimeField(auto_now_add=True)
     judged_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:

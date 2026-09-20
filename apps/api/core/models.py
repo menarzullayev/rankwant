@@ -12,6 +12,8 @@ from django.db import models
 from django.db.models.functions import Lower
 from django.utils import timezone
 
+from core.bases import CreatedModel, UpdatedModel
+
 #: Ommaviy profilda foydalanuvchi o'zi yashira oladigan maydonlar.
 PRIVACY_FIELDS: tuple[str, ...] = (
     "email",
@@ -317,7 +319,7 @@ class User(AbstractUser):
         return self.username
 
 
-class ApiToken(models.Model):
+class ApiToken(CreatedModel):
     """Personal Access Token — ADR-0008.
 
     Ochiq token FAQAT bir marta, yaratilganda ko'rsatiladi; bazada
@@ -339,7 +341,6 @@ class ApiToken(models.Model):
     expires_at = models.DateTimeField()
     last_used_at = models.DateTimeField(null=True, blank=True)
     revoked_at = models.DateTimeField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     MAX_ACTIVE_PER_USER = 10
 
@@ -528,7 +529,7 @@ class PasswordResetToken(models.Model):
         return self.used_at is None and self.expires_at > timezone.now()
 
 
-class SocialAccount(models.Model):
+class SocialAccount(CreatedModel):
     """Ijtimoiy kirish bog'lanishi — ADR-0016.
 
     Bir foydalanuvchida har provayderdan bittadan bo'lishi mumkin, va
@@ -551,7 +552,6 @@ class SocialAccount(models.Model):
     #: Provayderdagi taxallus (GitHub login, Telegram @username) — profil
     #: havolasini ulangan hisobdan bir bosishda olish uchun.
     username = models.CharField(max_length=64, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         constraints: ClassVar = [
@@ -595,7 +595,7 @@ class UsernameHistory(models.Model):
         return f"{self.old_username} → {self.user_id}"
 
 
-class UserSession(models.Model):
+class UserSession(CreatedModel):
     """Kirilgan qurilma — sozlamalardagi «Sessiyalar» ro'yxati.
 
     Haqiqat manbai Django sessiyasi: bu jadval faqat unga ko'rinish
@@ -607,7 +607,6 @@ class UserSession(models.Model):
     session_key = models.CharField(max_length=40, unique=True)
     user_agent = models.CharField(max_length=200, blank=True)
     ip = models.GenericIPAddressField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
     last_seen = models.DateTimeField(default=timezone.now)
 
     class Meta:
@@ -617,7 +616,7 @@ class UserSession(models.Model):
         return f"{self.user_id}:{self.session_key[:6]}"
 
 
-class AnalyticsEvent(models.Model):
+class AnalyticsEvent(CreatedModel):
     """Funnel hodisasi — auth oqimini o'lchash uchun (qaror 17).
 
     Nega alohida jadval: qaysi qadamda odam ketayotganini bilmasdan
@@ -640,7 +639,6 @@ class AnalyticsEvent(models.Model):
     locale = models.CharField(max_length=8, blank=True)
     #: Erkin qo'shimcha maydonlar (`field`, `step`, `reason`).
     props = models.JSONField(default=dict, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering: ClassVar = ["-created_at"]
@@ -652,7 +650,7 @@ class AnalyticsEvent(models.Model):
         return self.name
 
 
-class School(models.Model):
+class School(CreatedModel):
     """Maktab katalogi (ADR-0017) — moderator admin paneldan to'ldiradi.
 
     Katalogda yo'q maktab `User.school` erkin matnida qoladi. Maktab
@@ -673,7 +671,6 @@ class School(models.Model):
     district = models.CharField(max_length=40, blank=True)
     city = models.CharField(max_length=100, blank=True)
     is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering: ClassVar = ["name"]
@@ -683,7 +680,7 @@ class School(models.Model):
         return self.name
 
 
-class SiteAppearance(models.Model):
+class SiteAppearance(UpdatedModel):
     """Saytning standart ko'rinishi — jamoa belgilaydi (D37).
 
     **Singleton** (`pk=1`): bitta standart bo'ladi, ro'yxat emas.
@@ -699,7 +696,6 @@ class SiteAppearance(models.Model):
     #: `ui_prefs.appearance` bilan AYNI shakl (`core/prefs.py` validatoriga
     #: bo'ysunadi) — ya'ni qo'shimcha o'girish kerak emas.
     appearance = models.JSONField(default=dict, blank=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "Default appearance"

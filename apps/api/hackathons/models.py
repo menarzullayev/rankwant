@@ -10,10 +10,11 @@ from typing import ClassVar
 from django.db import models
 from django.utils import timezone
 
+from core.bases import CreatedModel
 from core.mixins import TimeWindowMixin
 
 
-class Hackathon(TimeWindowMixin, models.Model):
+class Hackathon(TimeWindowMixin, CreatedModel):
     slug = models.SlugField(unique=True, max_length=120)
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True, help_text="Markdown: shartlar, mezonlar, sovrin")
@@ -22,7 +23,6 @@ class Hackathon(TimeWindowMixin, models.Model):
     submission_deadline = models.DateTimeField()
     end_at = models.DateTimeField(help_text="Natijalar e'lon qilinadigan vaqt")
     is_public = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering: ClassVar = ["-start_at"]

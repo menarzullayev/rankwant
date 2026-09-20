@@ -6,6 +6,8 @@ from typing import ClassVar
 
 from django.db import models
 
+from core.bases import CreatedModel
+
 
 class UserSolvedProblem(models.Model):
     """Skills manbai — faqat BIRINCHI AC.
@@ -38,7 +40,7 @@ class UserSolvedProblem(models.Model):
         return f"{self.user_id} solved {self.problem_id}"
 
 
-class RatingHistory(models.Model):
+class RatingHistory(CreatedModel):
     """Har o'zgarishning SABABI — principle #2 ni texnik bajaradi."""
 
     class Type(models.TextChoices):
@@ -65,7 +67,6 @@ class RatingHistory(models.Model):
     # Contest holatida Elo hisobini ko'rsatish uchun
     seed = models.FloatField(null=True, blank=True)
     rank = models.PositiveIntegerField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering: ClassVar = ["-created_at"]
