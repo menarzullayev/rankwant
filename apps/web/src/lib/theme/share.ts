@@ -29,6 +29,7 @@ import { clampStatusVariant } from "@/lib/theme/status";
 import { clampLoadingVariant } from "@/lib/theme/loading";
 import { clampIconPack } from "@/lib/theme/icon-packs";
 import { clampOverlayVariant } from "@/lib/theme/overlay";
+import { clampFormVariant } from "@/lib/theme/form";
 import { DEFAULT_CARD, DEFAULT_PATTERN } from "@/lib/theme/apply";
 
 /** URL da saqlanadigan maydonlar. `KEYS` — tozalash uchun ham ishlatiladi. */
@@ -55,6 +56,7 @@ const KEYS = [
   "loadingStyle",
   "iconPack",
   "overlayStyle",
+  "formStyle",
 ] as const;
 
 const DENSITIES = ["compact", "comfortable", "spacious"] as const;
@@ -129,6 +131,9 @@ export function encodeAppearance(
   }
   if (appearance.overlayStyle && appearance.overlayStyle !== "qogoz") {
     params.set("overlayStyle", appearance.overlayStyle);
+  }
+  if (appearance.formStyle && appearance.formStyle !== "maydon") {
+    params.set("formStyle", appearance.formStyle);
   }
   return params.toString();
 }
@@ -210,6 +215,9 @@ export function decodeAppearance(search: string): AppearancePrefs | null {
   }
   if (params.has("overlayStyle")) {
     out.overlayStyle = clampOverlayVariant(params.get("overlayStyle"));
+  }
+  if (params.has("formStyle")) {
+    out.formStyle = clampFormVariant(params.get("formStyle"));
   }
 
   return Object.keys(out).length ? out : null;
@@ -354,6 +362,7 @@ export function importAppearance(raw: string): ImportResult {
   appearance.loadingStyle = clampLoadingVariant(a.loadingStyle);
   appearance.iconPack = clampIconPack(a.iconPack);
   appearance.overlayStyle = clampOverlayVariant(a.overlayStyle);
+  appearance.formStyle = clampFormVariant(a.formStyle);
 
   const k = (row.a11y ?? {}) as A11yPrefs;
   const a11y: A11yPrefs = {

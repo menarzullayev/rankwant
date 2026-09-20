@@ -13,6 +13,7 @@ import { LOCALES, LOCALE_NAMES, t } from "@/i18n/messages";
 import { STYLES, isDual } from "@/layout/styles";
 import { patchJson, type ThemeEffect, type UiPrefs } from "@/lib/api";
 import { announcePrefs, playSuccess, rememberPrefs } from "@/lib/prefs";
+import { FormRadios } from "@/components/form/FormKit";
 import { Check, Hint, Select, Status, useAction } from "./kit";
 
 const EFFECTS: ThemeEffect[] = ["none", "fade", "circle"];
@@ -155,27 +156,17 @@ export function AppearanceSection() {
               {t(locale, "settings.soundTry")}
             </Button>
           </div>
-          <fieldset>
-            <legend className="mb-2 text-theme-sm font-medium rw-strong">
-              {t(locale, "settings.effect")}
-            </legend>
-            <div className="flex flex-wrap gap-2">
-              {EFFECTS.map((value) => (
-                <label key={value} className={option(effect === value)}>
-                  <input
-                    type="radio"
-                    name="effect"
-                    value={value}
-                    checked={effect === value}
-                    onChange={() => void savePrefs({ effect: value })}
-                    className="sr-only"
-                  />
-                  {t(locale, `settings.effect.${value}`)}
-                </label>
-              ))}
-            </div>
-            <p className="mt-2 text-theme-xs rw-faint">{t(locale, "settings.effectHint")}</p>
-          </fieldset>
+          <FormRadios
+            name="effect"
+            label={t(locale, "settings.effect")}
+            value={effect}
+            onChange={(next) => void savePrefs({ effect: next as ThemeEffect })}
+            options={EFFECTS.map((value) => ({
+              value,
+              label: t(locale, `settings.effect.${value}`),
+            }))}
+          />
+          <p className="mt-2 text-theme-xs rw-faint">{t(locale, "settings.effectHint")}</p>
           <Status error={action.error} done={action.done} />
         </div>
       </Card>

@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { FormCheck } from "@/components/form/FormKit";
+import { FM_INP } from "@/components/form/chrome";
 import { CrudPage, type FieldDef } from "@/components/admin/CrudPage";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -189,9 +191,7 @@ const TOPIC_FIELDS: FieldDef[] = [
   { name: "parent", labelKey: "admin.label.tech.parentTopic", helpKey: "admin.help.parentEmptyRoot" },
 ];
 
-const input =
-  "w-full rw-radius-sm border rw-line rw-surface px-3 text-theme-sm outline-none " +
-  "rw-focus-line rw-field-bg ";
+const input = FM_INP;
 
 /** Masala testlari — S3 ga yuklanadi, DB da faqat havola (05-domain-model). */
 function ProblemTestsPanel({
@@ -380,10 +380,10 @@ function ProblemTestsPanel({
             spellCheck={false}
           />
         </label>
-        <label className="flex items-center gap-2 text-theme-xs rw-dim-2">
-          <input name="is_sample" type="checkbox" className="size-4" />
-          Namuna test (shartda ko&apos;rsatiladi)
-        </label>
+        <FormCheck
+          name="is_sample"
+          label={t(locale, "admin.text.sampleTest")}
+        />
         <div className="flex items-center justify-end gap-2">
           {saved && (
             <span className="text-theme-xs rw-ok-ink">

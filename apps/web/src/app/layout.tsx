@@ -257,6 +257,8 @@ var IP=["lucide","phosphor","phosphorSolid","phosphorDuotone","heroicons","heroi
 if(IP.indexOf(a.iconPack)>0)r.dataset.iconPack=a.iconPack;
 var OV=["qogoz","soyabon","projektor","orol"];
 if(OV.indexOf(a.overlayStyle)>0)r.dataset.overlay=a.overlayStyle;
+var FM=["maydon","qator","karta","jadval","orol"];
+if(FM.indexOf(a.formStyle)>0)r.dataset.form=a.formStyle;
 // Markup o'zgaruvchi uchtasini cookie'ga ham yozamiz (D61). Sabab: SSR
 // ularni cookie'dan o'qiydi, ya'ni cookie yo'q bo'lsa server standart
 // ko'rinishni chizadi va hidratsiya buziladi. Bu qator ESKI

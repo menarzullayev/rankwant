@@ -17,6 +17,7 @@ import { DEFAULT_STATUS_VARIANT } from "@/lib/theme/status";
 import { DEFAULT_LOADING_VARIANT } from "@/lib/theme/loading";
 import { DEFAULT_ICON_PACK } from "@/lib/theme/icon-packs";
 import { DEFAULT_OVERLAY_VARIANT } from "@/lib/theme/overlay";
+import { DEFAULT_FORM_VARIANT } from "@/lib/theme/form";
 import {
   AA_TARGET,
   accentInk,
@@ -192,6 +193,12 @@ export function applyAppearance(appearance: AppearancePrefs) {
   const overlay = appearance.overlayStyle ?? DEFAULT_OVERLAY_VARIANT;
   if (overlay !== DEFAULT_OVERLAY_VARIANT) root.dataset.overlay = overlay;
   else delete root.dataset.overlay;
+
+  // Forma oilasi. Standart Maydon — atribut yozilmaydi, CSS bazasi
+  // shu oilaga teng. Markup cookie'ga kirmaydi.
+  const form = appearance.formStyle ?? DEFAULT_FORM_VARIANT;
+  if (form !== DEFAULT_FORM_VARIANT) root.dataset.form = form;
+  else delete root.dataset.form;
 }
 
 /** Rang ajratolmaslik uchun TUSLAR (D44).

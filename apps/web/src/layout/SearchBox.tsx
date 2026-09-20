@@ -104,7 +104,7 @@ export default function SearchBox() {
           }}
           placeholder={t(locale, "header.search")}
           aria-keyshortcuts="Control+K Meta+K"
-          className="h-10 w-64 rw-radius-sm border rw-line bg-transparent pr-16 pl-10 text-theme-sm outline-none rw-focus-line rw-focus-ring xl:w-80"
+          className="rw-fm-inp is-search h-10 w-64 border rw-line bg-transparent pr-16 pl-10 text-theme-sm outline-none rw-focus-line rw-focus-ring xl:w-80"
         />
         {showKbd && (
           <kbd

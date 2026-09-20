@@ -96,7 +96,7 @@ export function ReportProblem({ slug }: { slug: string }) {
           onChange={(event) => setComment(event.target.value)}
           rows={3}
           maxLength={2000}
-          className="w-full rw-radius-sm border rw-line rw-field-bg p-2.5 text-theme-sm rw-strong outline-none rw-focus-line"
+          className="w-full rw-radius-sm border rw-line rw-field-bg p-2.5 text-theme-sm rw-strong outline-none rw-focus-line rw-fm-inp"
         />
       </label>
 

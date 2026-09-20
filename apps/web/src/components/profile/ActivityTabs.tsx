@@ -270,7 +270,9 @@ export async function PeopleTab({
     next.set("page", String(to));
     return `/users/${username}/${slug}?${next}` as Route;
   };
-  const control =
+  const field =
+    "h-9 rw-radius-sm border rw-line px-3 text-theme-sm rw-strong rw-field-bg rw-focus-ring rw-fm-inp";
+  const btn =
     "h-9 rw-radius-sm border rw-line px-3 text-theme-sm rw-strong rw-field-bg rw-focus-ring";
 
   return (
@@ -282,7 +284,7 @@ export async function PeopleTab({
           defaultValue={q}
           placeholder={t(locale, "profile.searchPeople")}
           aria-label={t(locale, "profile.searchPeople")}
-          className={`min-w-0 flex-1 ${control}`}
+          className={`min-w-0 flex-1 ${field}`}
         />
         <Dropdown
           size="sm"
@@ -297,7 +299,7 @@ export async function PeopleTab({
           ]}
           className="w-44"
         />
-        <button type="submit" className={`font-medium rw-hover-bg ${control}`}>
+        <button type="submit" className={`font-medium rw-hover-bg ${btn}`}>
           {t(locale, "profile.search")}
         </button>
       </form>

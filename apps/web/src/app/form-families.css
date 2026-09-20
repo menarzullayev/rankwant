@@ -1,0 +1,599 @@
+/* Forma oilalari (01 Maydon, 02 Qator, 04 Karta, 05 Jadval, 06 Orol).
+   Standart = Maydon: `data-form` yo'q. Markup cookie'ga kirmaydi. */
+
+.rw-fm-box,
+.rw-fm-radio {
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.rw-fm-inp {
+  height: 44px;
+  border-radius: 8px;
+  padding: 0 14px;
+}
+
+textarea.rw-fm-inp {
+  height: auto;
+  min-height: 4.6rem;
+  padding: 10px 14px;
+  resize: vertical;
+}
+
+.rw-fm-inp.is-search {
+  padding-left: 2.5rem;
+  padding-right: 4rem;
+}
+
+.rw-fm-box,
+.rw-fm-radio {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid color-mix(in srgb, var(--rw-text) 35%, var(--rw-surface));
+  background: var(--rw-field);
+}
+
+.rw-fm-box {
+  border-radius: 4px;
+}
+
+.rw-fm-radio {
+  border-radius: 99px;
+}
+
+.rw-fm-box:checked,
+.rw-fm-radio:checked {
+  background: var(--rw-accent);
+  border-color: var(--rw-accent);
+  box-shadow: inset 0 0 0 3px var(--rw-field);
+}
+
+.rw-fm-box:focus-visible,
+.rw-fm-radio:focus-visible,
+.rw-fm-date-btn:focus-visible,
+.rw-fm-drop-ui:focus-visible {
+  outline: 2px solid var(--rw-accent);
+  outline-offset: 2px;
+}
+
+.rw-fm-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  cursor: pointer;
+}
+
+.rw-fm-check .rw-fm-lab {
+  margin: 0;
+  font-weight: 400;
+  flex: 1;
+  min-width: 0;
+  order: 2;
+}
+
+.rw-fm-check .rw-fm-box {
+  order: 1;
+  margin-top: 0.15rem;
+}
+
+.rw-fm-hits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.rw-fm-hit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  cursor: pointer;
+}
+
+.rw-fm-drop-ui {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 44px;
+  padding: 0 14px;
+  border: 1px dashed color-mix(in srgb, var(--rw-text) 28%, var(--rw-surface));
+  border-radius: 8px;
+  background: var(--rw-field);
+  cursor: pointer;
+  gap: 0.6rem;
+}
+
+.rw-fm-drop-ui b {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.rw-fm-drop-ui i {
+  font-style: normal;
+  font-size: 12px;
+  color: var(--rw-text-2);
+}
+
+.rw-fm-drop.has-file .rw-fm-drop-ui {
+  border-style: solid;
+  border-color: var(--rw-accent);
+}
+
+.rw-fm-date-wrap {
+  position: relative;
+}
+
+.rw-fm-date-btn {
+  text-align: left;
+  cursor: pointer;
+}
+
+.rw-fm-cal {
+  display: none;
+  position: absolute;
+  z-index: 40;
+  width: 248px;
+  margin-top: 6px;
+  padding: 0.55rem;
+  border: 1px solid var(--rw-line);
+  border-radius: 8px;
+  background: var(--rw-surface);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--rw-text) 14%, transparent);
+}
+
+.rw-fm-date-wrap.is-open .rw-fm-cal {
+  display: block;
+}
+
+.rw-fm-cal-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+  font-size: 13px;
+}
+
+.rw-fm-cal-bar button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.rw-fm-cal-bar button:hover {
+  background: var(--rw-surface-2);
+}
+
+.rw-fm-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  text-align: center;
+  font-size: 12px;
+}
+
+.rw-fm-cal-wd {
+  color: var(--rw-text-2);
+  padding: 0.2rem 0;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.rw-fm-cal-grid button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  height: 1.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.rw-fm-cal-grid button:hover:not(:disabled) {
+  background: var(--rw-surface-2);
+}
+
+.rw-fm-cal-grid button.is-on {
+  background: var(--rw-accent);
+  color: var(--rw-accent-fg);
+}
+
+.rw-fm-cal-grid button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* ── 02 Qator ────────────────────────────────────────── */
+
+[data-form="qator"] .rw-fm-ctl {
+  display: grid;
+  grid-template-columns: 11.5rem minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: center;
+  margin: 0;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--rw-line);
+}
+
+[data-form="qator"] .rw-fm-lab,
+[data-form="qator"] .rw-fm-ctl > legend.rw-fm-lab {
+  margin: 0;
+  font-size: 13px;
+  float: none;
+  padding: 0;
+}
+
+[data-form="qator"] textarea.rw-fm-inp {
+  border-radius: 16px;
+}
+
+[data-form="qator"] .rw-fm-inp {
+  height: 36px;
+  border-radius: 999px;
+  padding: 0 14px;
+}
+
+[data-form="qator"] .rw-fm-check {
+  display: grid;
+  grid-template-columns: 11.5rem minmax(0, 1fr);
+  align-items: center;
+}
+
+[data-form="qator"] .rw-fm-check .rw-fm-lab {
+  order: 1;
+}
+
+[data-form="qator"] .rw-fm-check .rw-fm-box {
+  order: 2;
+  justify-self: end;
+  margin: 0;
+  width: 40px;
+  height: 22px;
+  border-radius: 999px;
+  border: 0;
+  background: color-mix(in srgb, var(--rw-text) 18%, var(--rw-surface));
+  position: relative;
+  box-shadow: none;
+}
+
+[data-form="qator"] .rw-fm-check .rw-fm-box::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 99px;
+  background: var(--rw-surface);
+  transition: transform 0.18s ease;
+}
+
+[data-form="qator"] .rw-fm-check .rw-fm-box:checked {
+  background: var(--rw-accent);
+  box-shadow: none;
+}
+
+[data-form="qator"] .rw-fm-check .rw-fm-box:checked::after {
+  transform: translateX(18px);
+}
+
+[data-form="qator"] .rw-fm-hits {
+  justify-content: flex-end;
+  background: color-mix(in srgb, var(--rw-text) 8%, var(--rw-surface));
+  border-radius: 999px;
+  padding: 3px;
+  gap: 0;
+}
+
+[data-form="qator"] .rw-fm-hit {
+  padding: 0.28rem 0.7rem;
+  border-radius: 999px;
+  font-size: 12.5px;
+}
+
+[data-form="qator"] .rw-fm-radio {
+  display: none;
+}
+
+[data-form="qator"] .rw-fm-hit:has(.rw-fm-radio:checked) {
+  background: var(--rw-surface);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--rw-text) 12%, transparent);
+  font-weight: 600;
+}
+
+[data-form="qator"] .rw-fm-drop-ui {
+  height: auto;
+  border: 0;
+  background: transparent;
+  justify-content: flex-end;
+  padding: 0;
+}
+
+[data-form="qator"] .rw-fm-drop-ui b {
+  color: var(--rw-accent);
+}
+
+[data-form="qator"] .rw-fm-date-btn {
+  border-radius: 999px;
+  max-width: 11rem;
+  margin-left: auto;
+  display: block;
+}
+
+@media (max-width: 640px) {
+  [data-form="qator"] .rw-fm-ctl,
+  [data-form="qator"] .rw-fm-check {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── 04 Karta ────────────────────────────────────────── */
+
+[data-form="karta"] .rw-fm-inp {
+  border-radius: 14px;
+  padding: 0.7rem 0.9rem;
+  height: auto;
+  min-height: 44px;
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--rw-text) 10%, var(--rw-surface));
+}
+
+[data-form="karta"] .rw-fm-check {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+  background: var(--rw-surface);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--rw-text) 10%, var(--rw-surface));
+}
+
+[data-form="karta"] .rw-fm-check:has(.rw-fm-box:checked) {
+  outline: 2px solid var(--rw-accent);
+}
+
+[data-form="karta"] .rw-fm-box {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  margin: 0;
+  box-shadow: none;
+}
+
+[data-form="karta"] .rw-fm-box:checked {
+  background: var(--rw-accent);
+  border-color: var(--rw-accent);
+  box-shadow: none;
+}
+
+[data-form="karta"] .rw-fm-box:checked::after {
+  content: "";
+  display: block;
+  width: 5px;
+  height: 9px;
+  border: solid var(--rw-accent-fg);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  margin: 3px 0 0 7px;
+}
+
+[data-form="karta"] .rw-fm-hits {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+[data-form="karta"] .rw-fm-hit {
+  display: grid;
+  place-items: center;
+  min-height: 4.4rem;
+  border-radius: 14px;
+  background: var(--rw-surface);
+  font-size: 1.25rem;
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--rw-text) 10%, var(--rw-surface));
+}
+
+[data-form="karta"] .rw-fm-radio {
+  display: none;
+}
+
+[data-form="karta"] .rw-fm-hit:has(.rw-fm-radio:checked) {
+  outline: 2px solid var(--rw-accent);
+  background: color-mix(in srgb, var(--rw-accent) 12%, var(--rw-surface));
+}
+
+[data-form="karta"] .rw-fm-drop-ui {
+  min-height: 5.2rem;
+  height: auto;
+  justify-content: center;
+  flex-direction: column;
+  border-radius: 14px;
+  border: 1.5px dashed color-mix(in srgb, var(--rw-text) 25%, var(--rw-surface));
+}
+
+[data-form="karta"] .rw-fm-drop.is-over .rw-fm-drop-ui {
+  background: color-mix(in srgb, var(--rw-accent) 8%, var(--rw-surface));
+}
+
+[data-form="karta"] .rw-fm-date {
+  background: var(--rw-surface);
+  border-radius: 14px;
+  padding: 0.7rem 0.8rem 0.9rem;
+}
+
+[data-form="karta"] .rw-fm-date-btn {
+  display: none;
+}
+
+[data-form="karta"] .rw-fm-cal {
+  display: block;
+  position: static;
+  width: 100%;
+  margin: 0;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  background: transparent;
+}
+
+/* ── 05 Jadval ───────────────────────────────────────── */
+
+[data-form="jadval"] .rw-fm-kit {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+[data-form="jadval"] .rw-fm-kit .rw-fm-ctl {
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid var(--rw-line);
+  border-right: 1px solid var(--rw-line);
+}
+
+[data-form="jadval"] .rw-fm-kit .rw-fm-file,
+[data-form="jadval"] .rw-fm-kit textarea.rw-fm-inp {
+  grid-column: 1 / -1;
+}
+
+[data-form="jadval"] .rw-fm-lab {
+  font-family: var(--rw-font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--rw-text-2);
+}
+
+[data-form="jadval"] .rw-fm-inp {
+  height: 32px;
+  border-radius: 4px;
+  padding: 0 8px;
+  font-family: var(--rw-font-mono, ui-monospace, monospace);
+  font-size: 12.5px;
+}
+
+[data-form="jadval"] textarea.rw-fm-inp {
+  height: auto;
+  min-height: 3.4rem;
+}
+
+[data-form="jadval"] .rw-fm-box,
+[data-form="jadval"] .rw-fm-radio {
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--rw-text);
+  background: var(--rw-field);
+  border-radius: 2px;
+}
+
+[data-form="jadval"] .rw-fm-box:checked,
+[data-form="jadval"] .rw-fm-radio:checked {
+  background: var(--rw-text);
+  box-shadow: inset 0 0 0 2px var(--rw-field);
+}
+
+[data-form="jadval"] .rw-fm-drop-ui {
+  height: auto;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font-family: var(--rw-font-mono, ui-monospace, monospace);
+  font-size: 12px;
+  justify-content: flex-start;
+  gap: 0.7rem;
+}
+
+[data-form="jadval"] .rw-fm-drop-ui b {
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+/* ── 06 Orol ─────────────────────────────────────────── */
+
+[data-form="orol"] .rw-fm-inp {
+  height: 46px;
+  border-color: transparent;
+  border-radius: 22px;
+  padding: 0 1rem;
+  background: color-mix(in srgb, var(--rw-surface) 70%, var(--rw-ground));
+  box-shadow: inset 0 1px 2px color-mix(in srgb, var(--rw-text) 8%, transparent);
+}
+
+[data-form="orol"] textarea.rw-fm-inp {
+  height: auto;
+  border-radius: 22px;
+  padding: 0.85rem 1rem;
+}
+
+[data-form="orol"] .rw-fm-check .rw-fm-box {
+  width: 44px;
+  height: 26px;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--rw-text) 14%, var(--rw-surface));
+  position: relative;
+  box-shadow: none;
+}
+
+[data-form="orol"] .rw-fm-check .rw-fm-box::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 99px;
+  background: var(--rw-surface);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--rw-text) 20%, transparent);
+}
+
+[data-form="orol"] .rw-fm-check .rw-fm-box:checked {
+  background: var(--rw-accent);
+  box-shadow: none;
+}
+
+[data-form="orol"] .rw-fm-check .rw-fm-box:checked::after {
+  left: 21px;
+}
+
+[data-form="orol"] .rw-fm-hit {
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--rw-surface) 70%, var(--rw-ground));
+}
+
+[data-form="orol"] .rw-fm-radio {
+  display: none;
+}
+
+[data-form="orol"] .rw-fm-hit:has(.rw-fm-radio:checked) {
+  background: var(--rw-accent);
+  color: var(--rw-accent-fg);
+}
+
+[data-form="orol"] .rw-fm-drop-ui {
+  display: grid;
+  place-items: center;
+  gap: 0.2rem;
+  min-height: 4.8rem;
+  height: auto;
+  border: 0;
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--rw-surface) 70%, var(--rw-ground));
+}
+
+[data-form="orol"] .rw-fm-cal {
+  border: 0;
+  border-radius: 22px;
+  backdrop-filter: blur(10px);
+  background: color-mix(in srgb, var(--rw-surface) 78%, transparent);
+}
+
+[data-motion="reduce"] .rw-fm-check .rw-fm-box::after {
+  transition: none;
+}

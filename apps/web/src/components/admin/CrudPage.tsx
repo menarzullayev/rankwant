@@ -2,6 +2,8 @@
 
 import { Fragment, useCallback, useEffect, useState } from "react";
 
+import { FormCheck } from "@/components/form/FormKit";
+import { FM_CTL, FM_INP, FM_LAB } from "@/components/form/chrome";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -238,9 +240,7 @@ export function CrudPage<T extends Row>({
   }
 
   const values = initialValues(editing);
-  const input =
-    "h-10 w-full rw-radius-sm border rw-line rw-surface px-3 text-theme-sm outline-none " +
-    "rw-focus-line rw-field-bg ";
+  const input = FM_INP;
 
   return (
     <div className="space-y-4">
@@ -287,16 +287,21 @@ export function CrudPage<T extends Row>({
               const v = values[f.name];
               const disabled = !!editing && !!f.readonlyOnEdit;
               const wide = f.type === "textarea";
-              const Tag = f.type === "select" ? FIELD_WRAP.select : FIELD_WRAP.field;
+              const Tag =
+                f.type === "select" || f.type === "checkbox"
+                  ? FIELD_WRAP.select
+                  : FIELD_WRAP.field;
               return (
                 <Tag
                   key={f.name}
-                  className={`block ${wide ? "md:col-span-2" : ""}`}
+                  className={`${f.type === "checkbox" ? "" : FM_CTL} ${wide ? "md:col-span-2" : ""}`}
                 >
-                  <span className="mb-1 block text-theme-xs font-medium rw-dim-2">
-                    {t(locale, f.labelKey)}
-                    {f.required && " *"}
-                  </span>
+                  {f.type !== "checkbox" && (
+                    <span className={FM_LAB}>
+                      {t(locale, f.labelKey)}
+                      {f.required && " *"}
+                    </span>
+                  )}
                   {f.type === "textarea" ? (
                     <textarea
                       name={f.name}
@@ -307,12 +312,11 @@ export function CrudPage<T extends Row>({
                       className={`${input} h-auto py-2 font-mono`}
                     />
                   ) : f.type === "checkbox" ? (
-                    <input
+                    <FormCheck
                       name={f.name}
-                      type="checkbox"
                       defaultChecked={Boolean(v)}
                       disabled={disabled}
-                      className="mt-2 size-4"
+                      label={t(locale, f.labelKey)}
                     />
                   ) : f.type === "select" ? (
                     <Dropdown

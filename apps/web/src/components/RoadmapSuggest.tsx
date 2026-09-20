@@ -57,7 +57,7 @@ export function RoadmapSuggest() {
   }
 
   const field =
-    "w-full rw-radius-sm border rw-line rw-field-bg px-3 py-2 text-theme-sm rw-strong rw-focus-line";
+    "w-full rw-radius-sm border rw-line rw-field-bg px-3 py-2 text-theme-sm rw-strong rw-focus-line rw-fm-inp";
 
   if (!open) {
     return (

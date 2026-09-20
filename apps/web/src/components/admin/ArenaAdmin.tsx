@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { FM_INP } from "@/components/form/chrome";
 import {
   CrudPage,
   type ColumnDef,
@@ -35,9 +36,7 @@ type ArenaRow = {
 
 const PATH = "/staff/arena/";
 
-const INPUT =
-  "h-9 rw-radius-sm border rw-line rw-surface px-3 text-theme-sm outline-none " +
-  "rw-focus-line rw-field-bg ";
+const INPUT = FM_INP;
 
 function toLocalInput(iso: string): string {
   const d = new Date(iso);

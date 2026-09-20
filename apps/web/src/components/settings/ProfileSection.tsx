@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
+import { FormFile } from "@/components/form/FormKit";
 import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -64,7 +65,6 @@ async function squareAvatar(file: File): Promise<Blob> {
 function AvatarCard() {
   const locale = useLocale();
   const { user, reload } = useSession();
-  const input = useRef<HTMLInputElement>(null);
   const action = useAction();
   if (!user) return null;
   const linked = user.social.filter((p) => p in PROVIDERS);
@@ -96,22 +96,10 @@ function AvatarCard() {
         <div className="min-w-0 flex-1 space-y-3">
           <Hint>{t(locale, "settings.avatarHint")}</Hint>
           <div className="flex flex-wrap gap-2">
-            <input
-              ref={input}
-              type="file"
+            <FormFile
               accept="image/png,image/jpeg,image/webp"
-              className="sr-only"
-              tabIndex={-1}
-              aria-hidden="true"
-              onChange={(event) => {
-                const file = event.target.files?.[0];
-                event.target.value = "";
-                if (file) void upload(file);
-              }}
+              onFile={(file) => void upload(file)}
             />
-            <Button busy={action.busy} onClick={() => input.current?.click()}>
-              {t(locale, "settings.avatarUpload")}
-            </Button>
             {linked.map((provider) => (
               <Button
                 key={provider}

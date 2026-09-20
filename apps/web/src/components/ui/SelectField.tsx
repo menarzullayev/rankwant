@@ -1,5 +1,6 @@
 "use client";
 
+import { FormCheck } from "@/components/form/FormKit";
 import { Dropdown, type DropdownOption, type DropdownSize } from "@/components/ui/Dropdown";
 
 /** Tanlash maydoni — yagona qidiruvli `Dropdown`.
@@ -63,14 +64,5 @@ export function Checkbox({
 }: React.InputHTMLAttributes<HTMLInputElement> & {
   children: React.ReactNode;
 }) {
-  return (
-    <label className="flex cursor-pointer items-start gap-2.5 text-theme-sm rw-dim">
-      <input
-        type="checkbox"
-        className="mt-0.5 size-4 shrink-0 rw-accent-control rw-focus-ring"
-        {...props}
-      />
-      <span className="min-w-0">{children}</span>
-    </label>
-  );
+  return <FormCheck {...props}>{children}</FormCheck>;
 }

@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useLocale } from "@/i18n/LocaleProvider";
 
+import { FormCheck } from "@/components/form/FormKit";
+import { FM_INP } from "@/components/form/chrome";
 import { CrudPage, type FieldDef } from "@/components/admin/CrudPage";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -45,9 +47,7 @@ const FIELDS: FieldDef[] = [
   { name: "is_published", labelKey: "admin.label.flag.published", type: "checkbox" },
 ];
 
-const input =
-  "h-9 rw-radius-sm border rw-line rw-surface px-2 text-theme-sm outline-none " +
-  "rw-focus-line rw-field-bg ";
+const input = FM_INP;
 
 /** Roadmap qadamlari — PATCH `steps` butun ro'yxatni almashtiradi.
  * Har qadamda maqola YOKI masala bo'lishi shart (server tekshiradi). */
@@ -128,15 +128,11 @@ function StepsEditor({
             onChange={(e) => patch(i, { problem: e.target.value })}
             className={`${input} w-40 font-mono`}
           />
-          <label className="flex items-center gap-1 text-theme-xs rw-dim">
-            <input
-              type="checkbox"
-              checked={s.is_optional}
-              onChange={(e) => patch(i, { is_optional: e.target.checked })}
-              className="size-4"
-            />
-            {t(locale, "admin.text.badgeOptional")}
-          </label>
+          <FormCheck
+            checked={s.is_optional}
+            onChange={(e) => patch(i, { is_optional: e.target.checked })}
+            label={t(locale, "admin.text.badgeOptional")}
+          />
           <button
             type="button"
             onClick={() => {
