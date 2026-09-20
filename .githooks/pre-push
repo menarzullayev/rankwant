@@ -4,6 +4,7 @@
 # 2026-09-18 o'lchov: to'liq nusxa (mypy, pytest, tsc, 153 salbiy test)
 # Windows'da ~5.8 daqiqa edi, keyin shu mashinadagi 2 ta CI runner yana
 # ~4 daqiqa yugurardi. HITL: hook faqat ruff / format / i18n / hardcoded;
+# `tools/deploy.sh` o'zgarsa — `check_negative.py decisions` (~10 s).
 # qolgani CI da. push_guard qoladi — `main` ga to'g'ridan push yopiq.
 #
 # Faqat o'zgargan qismlar ishlaydi: hujjat commit'i uchun hech narsa.
@@ -97,6 +98,12 @@ fi
 
 if has '^(apps/web/|tools/check_hardcoded)'; then
   step "Web — qattiq yozilgan matn" "$PY" tools/check_hardcoded.py
+fi
+
+# #187: deploy.sh o'zgarishi hosted CI ni 69 s qizil qildi
+# (`RANKWANT_LOCK_HELD` ikkinchi nusxasi). `decisions` ~10 s lokal.
+if has '^tools/deploy\.sh$'; then
+  step "Qarorlar (deploy.sh)" "$PY" tools/check_negative.py --serial decisions
 fi
 
 if [ "$fail" -ne 0 ]; then

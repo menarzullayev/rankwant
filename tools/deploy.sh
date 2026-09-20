@@ -28,7 +28,9 @@
 #   bash tools/deploy.sh --no-cache # compose build --no-cache (sovuq qurilish)
 #   RANKWANT_BUILD_NO_CACHE=1       # xuddi --no-cache, env orqali
 #   RANKWANT_DEPLOY_TIMING=path.tsv # TIMER qatorlarini TSV ga yozadi
+#   RANKWANT_DEPLOY_SCOPE=auto|all|web  # bake doirasi (standart: auto)
 #   O'lchov: bash tools/measure_deploy.sh --plan
+#   Tasdiq: health (api/web), `sleep 10` emas
 #
 # ⚠️ Live contest paytida deploy QILINMAYDI (10-operations, qoida №1).
 # Skript buni API orqali tekshiradi va faol contest bo'lsa TO'XTAYDI.
@@ -99,7 +101,7 @@ for arg in "$@"; do
     --check)  CHECK_ONLY=1 ;;
     --skip-ci-gate) SKIP_CI_GATE=1 ;;
     --no-cache) NO_CACHE=1 ;;
-    -h|--help) sed -n '2,36p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) sed -n '2,40p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) printf '%sNoma'"'"'lum argument: %s%s\n' "$R" "$arg" "$N"; exit 2 ;;
   esac
 done
@@ -110,6 +112,86 @@ fi
 step() { printf '\n%s── %s%s\n' "$Y" "$1" "$N"; }
 ok()   { printf '%s✓%s %s\n' "$G" "$N" "$1"; }
 die()  { printf '%s✗ %s%s\n' "$R" "$1" "$N"; exit 1; }
+
+# Jonli health — `sleep 10` emas. Compose healthcheck interval 10–15 s;
+# o'zimiz 1 s da so'raymiz (0–8 s, o'lchangan taklif).
+health_api() {
+  docker exec rankwant-api-1 python -c \
+    "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health/', timeout=2)" \
+    >/dev/null 2>&1
+}
+
+health_web() {
+  docker exec rankwant-web-1 node -e \
+    "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))" \
+    >/dev/null 2>&1
+}
+
+wait_health() {
+  local started=$SECONDS
+  local limit="${RANKWANT_VERIFY_WAIT:-30}"
+  while [ $((SECONDS - started)) -lt "$limit" ]; do
+    if health_api && health_web; then
+      return 0
+    fi
+    sleep 1
+  done
+  return 1
+}
+
+# Obraz doirasi. `SERVICES=(...)` to'liq qoladi (qaror: deploy hamma
+# servisni QURISHI MUMKIN). Haqiqiy bake `BUILD_SERVICES` da.
+# Docs/tools — bo'sh; judge faqat `services/judge-go` o'zgaganda.
+BUILD_SERVICES=()
+SKIP_BAKE=0
+NEED_MIGRATE=0
+
+resolve_build_services() {
+  BUILD_SERVICES=()
+  SKIP_BAKE=0
+  if [ "$NO_CACHE" -eq 1 ]; then
+    BUILD_SERVICES=("${SERVICES[@]}")
+    return
+  fi
+  case "${RANKWANT_DEPLOY_SCOPE:-auto}" in
+    all)
+      BUILD_SERVICES=("${SERVICES[@]}")
+      ;;
+    auto|"")
+      local computed=""
+      if [ -n "${PY:-}" ] && [ -f tools/deploy_scope.py ]; then
+        computed="$("$PY" tools/deploy_scope.py --from-live --to HEAD)" || computed="__fail__"
+      else
+        computed="__fail__"
+      fi
+      if [ "$computed" = "__fail__" ]; then
+        BUILD_SERVICES=("${SERVICES[@]}")
+      elif [ -z "$computed" ]; then
+        SKIP_BAKE=1
+      else
+        # shellcheck disable=SC2206
+        BUILD_SERVICES=($computed)
+      fi
+      ;;
+    *)
+      # shellcheck disable=SC2206
+      BUILD_SERVICES=(${RANKWANT_DEPLOY_SCOPE})
+      if [ ${#BUILD_SERVICES[@]} -eq 0 ]; then
+        SKIP_BAKE=1
+      fi
+      ;;
+  esac
+}
+
+need_migrate_from_scope() {
+  NEED_MIGRATE=0
+  local s
+  for s in "${BUILD_SERVICES[@]}"; do
+    case "$s" in
+      api|worker|beat) NEED_MIGRATE=1; return ;;
+    esac
+  done
+}
 
 if [ -f "$ROOT/tools/deploy_timer.sh" ]; then
   # shellcheck disable=SC1091
@@ -221,10 +303,17 @@ if [ "$CHECK_ONLY" -eq 1 ]; then
   exit $?
 fi
 
+resolve_build_services
+need_migrate_from_scope
+
 # ── 2. Tasdiq ────────────────────────────────────────────────────────
 if [ "$ASSUME_YES" -ne 1 ]; then
-  printf '\n%sBu PRODUKSIYA deploy'"'"'i: %s qayta quriladi va qayta ko'"'"'tariladi.%s\n' \
-    "$Y" "${SERVICES[*]}" "$N"
+  if [ "$SKIP_BAKE" -eq 1 ]; then
+    printf '\n%sobrazga tushmaydi — qurilish yo'"'"'q (docs/tools).%s\n' "$Y" "$N"
+  else
+    printf '\n%sBu PRODUKSIYA deploy'"'"'i: %s qayta quriladi va qayta ko'"'"'tariladi.%s\n' \
+      "$Y" "${BUILD_SERVICES[*]}" "$N"
+  fi
   printf 'Davom etamizmi? [ha/yo'"'"'q] '
   read -r answer
   case "$answer" in
@@ -235,17 +324,26 @@ fi
 
 # ── 3. Qurish ────────────────────────────────────────────────────────
 # `migrate` ham ALOHIDA obraz: usiz u eski obraz bilan yuradi va yangi
-# migration fayllarini ko'rmaydi.
-step "2/8 Obrazlar qurilmoqda (${SERVICES[*]} migrate)"
+# migration fayllarini ko'rmaydi. Docs/tools doirasi bo'sh bo'lsa bake yo'q.
 BUILD_OPTS=()
 if [ "$NO_CACHE" -eq 1 ]; then
   BUILD_OPTS+=(--no-cache)
   printf '%s⚠ --no-cache: obraz qatlamlari keshdan o'"'"'qilmaydi (sovuq qurilish)%s\n' "$Y" "$N"
 fi
 time_begin build
-"${COMPOSE[@]}" build "${BUILD_OPTS[@]}" "${SERVICES[@]}" migrate || die "build yiqildi"
+if [ "$SKIP_BAKE" -eq 1 ]; then
+  step "2/8 Obrazlar — o'tkazib yuborildi (docs/tools, obrazga tushmaydi)"
+  ok "bake yo'q"
+elif [ "$NEED_MIGRATE" -eq 1 ]; then
+  step "2/8 Obrazlar qurilmoqda (${BUILD_SERVICES[*]} migrate)"
+  "${COMPOSE[@]}" build "${BUILD_OPTS[@]}" "${BUILD_SERVICES[@]}" migrate || die "build yiqildi"
+  ok "obrazlar tayyor"
+else
+  step "2/8 Obrazlar qurilmoqda (${BUILD_SERVICES[*]})"
+  "${COMPOSE[@]}" build "${BUILD_OPTS[@]}" "${BUILD_SERVICES[@]}" || die "build yiqildi"
+  ok "obrazlar tayyor"
+fi
 time_finish build
-ok "obrazlar tayyor"
 
 # SHA obraz tegi QO'YILMAYDI (2026-09-20). Har deploy `rankwant/<svc>:<sha>`
 # qoldirsa VHDX o'saveradi va prune Windows'ga joy qaytarmaydi. Kodni
@@ -257,41 +355,61 @@ ok "obrazlar tayyor"
 # olinadi, ya'ni migratsiya buzsa 30 kungacha orqaga qaytish kerak bo'lardi.
 # `--dump-only` — faqat Postgres: MinIO ham, tiklash sinovi ham o'tkazib
 # yuboriladi (migratsiya ularga tegmaydi), shuning uchun tez.
-step "3/8 Migratsiyadan oldin zaxira (pg_dump)"
+# api/worker/beat doirada bo'lmasa sxema o'zgarmaydi — dump/migrate yo'q.
 time_begin dump
-RANKWANT_ENV_FILE="$ENV_ABS" bash tools/backup.sh --dump-only \
-  || die "zaxira olinmadi — migratsiya TO'XTATILDI (zaxirasiz sxema o'zgarishi xavfli)"
+if [ "$SKIP_BAKE" -eq 1 ] || [ "$NEED_MIGRATE" -eq 0 ]; then
+  step "3/8 Zaxira — o'tkazib yuborildi (api obraziga tushmaydi)"
+else
+  step "3/8 Migratsiyadan oldin zaxira (pg_dump)"
+  RANKWANT_ENV_FILE="$ENV_ABS" bash tools/backup.sh --dump-only \
+    || die "zaxira olinmadi — migratsiya TO'XTATILDI (zaxirasiz sxema o'zgarishi xavfli)"
+  ok "zaxira olindi"
+fi
 time_finish dump
-ok "zaxira olindi"
 
 # ── 6. Migratsiya — DEPLOY'DAN OLDIN ─────────────────────────────────
-step "4/8 Migratsiya"
 time_begin migrate
-"${COMPOSE[@]}" run --rm migrate || die "migrate yiqildi"
+if [ "$SKIP_BAKE" -eq 1 ] || [ "$NEED_MIGRATE" -eq 0 ]; then
+  step "4/8 Migratsiya — o'tkazib yuborildi"
+else
+  step "4/8 Migratsiya"
+  "${COMPOSE[@]}" run --rm migrate || die "migrate yiqildi"
+fi
 time_finish migrate
 
 # ── 7. Tasdiq: `migrate` chiqishiga ISHONMAYMIZ ──────────────────────
 # «No migrations to apply» eski obrazda ham aynan shunday deydi.
-step "5/8 Qo'llanmagan migration tekshiruvi"
 time_begin showmigrations
-pending="$("${COMPOSE[@]}" run --rm api python manage.py showmigrations 2>/dev/null | grep -c '\[ \]')"
-if [ "$pending" != "0" ]; then
-  die "$pending ta migration qo'llanmagan — deploy TO'XTATILDI (runbook §1)"
+if [ "$SKIP_BAKE" -eq 1 ] || [ "$NEED_MIGRATE" -eq 0 ]; then
+  step "5/8 Migration tekshiruvi — o'tkazib yuborildi"
+else
+  step "5/8 Qo'llanmagan migration tekshiruvi"
+  pending="$("${COMPOSE[@]}" run --rm api python manage.py showmigrations 2>/dev/null | grep -c '\[ \]')"
+  if [ "$pending" != "0" ]; then
+    die "$pending ta migration qo'llanmagan — deploy TO'XTATILDI (runbook §1)"
+  fi
+  ok "qo'llanmagan migration: 0"
 fi
 time_finish showmigrations
-ok "qo'llanmagan migration: 0"
 
 # ── 8. Ko'tarish ─────────────────────────────────────────────────────
-step "6/8 Konteynerlar qayta ko'tarilmoqda"
 time_begin up
-"${COMPOSE[@]}" up -d --no-deps "${SERVICES[@]}" || die "up yiqildi"
+if [ "$SKIP_BAKE" -eq 1 ]; then
+  step "6/8 Ko'tarish — o'tkazib yuborildi (bake yo'q)"
+else
+  step "6/8 Konteynerlar qayta ko'tarilmoqda"
+  "${COMPOSE[@]}" up -d --no-deps "${BUILD_SERVICES[@]}" || die "up yiqildi"
+  ok "ko'tarildi"
+fi
 time_finish up
-ok "ko'tarildi"
 
 # ── 8. Tasdiq: konteyner HAQIQATAN yangi kodda ───────────────────────
 step "7/8 Deploy tasdiqi"
 time_begin verify
-sleep 10
+if ! wait_health; then
+  printf '%s⚠ health %ss ichida javob bermadi — check_deploy davom etadi%s\n' \
+    "$Y" "${RANKWANT_VERIFY_WAIT:-30}" "$N"
+fi
 if bash tools/check_deploy.sh; then
   ok "konteynerlar joriy kodda"
 else
@@ -303,9 +421,13 @@ time_finish verify
 # Faqat TASDIQ'DAN KEYIN: yiqilgan deploy cache ni ham o'chirmasin,
 # qayta urinish sovuq qurilishga tushmasin. `prune_docker_disk.sh`
 # `rankwant-<svc>:latest` va `rankwant/ci-runner` ni o'chirmaydi.
-step "8/8 Disk tozalash (SHA teglar, dangling, builder)"
 time_begin prune
-bash tools/prune_docker_disk.sh || die "disk tozalash yiqildi"
+if [ "$SKIP_BAKE" -eq 1 ]; then
+  step "8/8 Disk tozalash — o'tkazib yuborildi (bake yo'q)"
+else
+  step "8/8 Disk tozalash (SHA teglar, dangling, builder)"
+  bash tools/prune_docker_disk.sh || die "disk tozalash yiqildi"
+fi
 time_finish prune
 time_finish e2e
 time_summary

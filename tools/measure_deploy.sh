@@ -242,6 +242,9 @@ if [ "$MODE" = "cold" ]; then
   DEPLOY_ARGS+=(--no-cache)
   export RANKWANT_BUILD_NO_CACHE=1
 fi
+# Issiq o'lchov ham TO'LIQ bake qilisin: auto-scope jonli HEAD da
+# bo'sh qaytaradi va wall-clock 0 ga tushardi.
+export RANKWANT_DEPLOY_SCOPE=all
 
 {
   printf 'measure_deploy mode=%s purge_idle=%s\n' "$MODE" "$PURGE_IDLE"

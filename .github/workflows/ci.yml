@@ -61,6 +61,7 @@ jobs:
       judge: ${{ steps.filter.outputs.judge }}
       code: ${{ steps.filter.outputs.code }}
       tools: ${{ steps.filter.outputs.tools }}
+      tools_node: ${{ steps.filter.outputs.tools_node }}
     steps:
       - uses: actions/checkout@v7
       - uses: dorny/paths-filter@v4
@@ -78,6 +79,14 @@ jobs:
             # `neg_hook_gates_new_branch` in `check_negative.py` tests
             # the pre-push hook.
             tools: ['tools/**', '.githooks/**']
+            # Node modules faqat shu fayllar uchun. Python-only tools/
+            # (`check_decisions.py`, `deploy_timer.sh`) `npm ci` (14–20 s)
+            # qilmasin. `check_i18n_runtime.mjs` TypeScript ni
+            # `apps/web/node_modules` dan o'qiydi.
+            tools_node:
+              - 'tools/**/*.mjs'
+              - 'apps/web/package.json'
+              - 'apps/web/package-lock.json'
 
   api:
     name: API — lint, types, migrations
@@ -216,19 +225,27 @@ jobs:
             echo "ready=false" >> "$GITHUB_OUTPUT"
             echo "::notice::apps/web is not scaffolded yet (Sprint 1) — skipped"
           fi
-      - uses: actions/setup-node@v7
+      - name: Need Node?
+        id: node
         if: steps.check.outputs.ready == 'true'
+        run: |
+          if [ "${{ needs.filter.outputs.web }}" = "true" ] \
+            || [ "${{ needs.filter.outputs.tools_node }}" = "true" ] \
+            || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "need=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "need=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-node@v7
+        if: ${{ steps.check.outputs.ready == 'true' && steps.node.outputs.need == 'true' }}
         with:
           node-version: '22'
           cache: npm
           cache-dependency-path: apps/web/package-lock.json
-      # `npm ci` also runs when only `tools/` changed, ON PURPOSE:
-      # `check_i18n_runtime.mjs` loads `typescript` from
-      # `apps/web/node_modules` (`createRequire`). Without it,
-      # `node_precondition()` in `check_negative.py` stops the WHOLE
-      # suite with "Cannot find module 'typescript'" before any test
-      # runs.
-      - if: steps.check.outputs.ready == 'true'
+      # `npm ci` ONLY when web or Node tools changed. Python-only
+      # `tools/` used to pay 14–20 s × PR+main for `typescript` that
+      # those PRs never load. NODE_CASES then skip via NEGATIVE_SKIP_NODE.
+      - if: ${{ steps.check.outputs.ready == 'true' && steps.node.outputs.need == 'true' }}
         run: npm ci
         working-directory: apps/web
       - uses: actions/cache@v6
@@ -272,13 +289,14 @@ jobs:
       # `check_i18n.py` cannot see that — it only reads the strings —
       # so the module is run in Node (this step has `actions/setup-node`).
       - name: i18n runtime (dev throw / prod log)
-        if: steps.check.outputs.ready == 'true'
+        if: ${{ steps.check.outputs.ready == 'true' && steps.node.outputs.need == 'true' }}
         run: node tools/check_i18n_runtime.mjs
       # Tests the checks themselves — each is given a deliberately
       # broken state and must `exit 1`.
       #
       # `NODE` precondition: `check_negative.py` also runs Node checks,
       # and `node` can appear under different names on PATH.
+      # Python-only tools: skip those two cases, do not fail the suite.
       - name: Negative tests
         if: steps.check.outputs.ready == 'true'
         env:
@@ -286,6 +304,7 @@ jobs:
           # Four isolated git-archive copies. One tree cannot mutate in
           # parallel; 176 cases on one process were 42–48 s of the web job.
           NEGATIVE_JOBS: '4'
+          NEGATIVE_SKIP_NODE: ${{ steps.node.outputs.need == 'true' && '0' || '1' }}
         run: python3 tools/check_negative.py
       - name: Text contrast (WCAG AA)
         if: steps.check.outputs.ready == 'true'
