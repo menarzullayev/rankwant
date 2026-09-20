@@ -74,7 +74,11 @@ export function LocaleSwitch() {
     if (rect && rect.right < PANEL_W + PANEL_GAP) {
       box = { top: rect.bottom + 4 };
     }
-    setNarrowBox(box);
+    setNarrowBox((prev) => {
+      if (box === null && prev === null) return prev;
+      if (box && prev && prev.top === box.top) return prev;
+      return box;
+    });
   }, []);
 
   const choose = useCallback(
@@ -150,7 +154,7 @@ export function LocaleSwitch() {
         placeholder={t(locale, "locale.switchLabel")}
         onOpen={placePanel}
         optionsClassName={
-          narrowBox === null ? "absolute right-0 mt-1 w-64" : "fixed mt-1"
+          narrowBox === null ? "absolute top-full right-0 mt-1 w-64" : "fixed mt-1"
         }
         optionsStyle={
           narrowBox === null

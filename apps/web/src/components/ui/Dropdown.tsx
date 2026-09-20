@@ -103,6 +103,7 @@ export function Dropdown({
   const [inner, setInner] = useState(value ?? defaultValue ?? "");
   const current = value !== undefined ? value : inner;
   const selected = options.find((option) => option.value === current);
+  const selectedLabel = selected?.label ?? "";
   const filtered = filterDropdownOptions(options, query);
   const buckets = groupDropdownOptions(filtered);
   const searchLabel = placeholder ?? t(locale, "dropdown.search");
@@ -113,7 +114,9 @@ export function Dropdown({
   return (
     <Combobox
       as="div"
-      className={className ?? (header ? "relative inline-block" : undefined)}
+      className={
+        className ?? (header ? "relative inline-block overflow-visible" : undefined)
+      }
       immediate
       name={name}
       disabled={disabled || loading}
@@ -154,6 +157,7 @@ export function Dropdown({
         )}
         <ComboboxInput
           autoComplete="off"
+          defaultValue={selectedLabel}
           displayValue={(code: string) =>
             options.find((option) => option.value === code)?.label ?? ""
           }
@@ -181,15 +185,19 @@ export function Dropdown({
             <Icon name="nav.expandDown" className={header ? "size-3.5" : "size-4"} />
           )}
         </span>
+      </div>
 
-        <ComboboxOptions
-          anchor={optionsClassName ? undefined : header ? ANCHOR.header : ANCHOR.field}
-          modal={false}
-          style={optionsStyle}
-          className={`z-[200] max-h-72 overflow-y-auto rw-radius border rw-line rw-surface p-1.5 rw-shadow [--anchor-gap:4px] [--anchor-max-height:18rem] ${
-            optionsClassName ?? (header ? "mt-1 w-64" : "mt-1 w-[var(--input-width)]")
-          }`}
-        >
+      <ComboboxOptions
+        {...(optionsStyle || header ? {} : { anchor: ANCHOR.field })}
+        modal={false}
+        style={optionsStyle}
+        className={`z-[200] max-h-72 overflow-y-auto rw-radius border rw-line rw-surface p-1.5 rw-shadow [--anchor-gap:4px] [--anchor-max-height:18rem] ${
+          optionsClassName ??
+          (header
+            ? "absolute top-full right-0 mt-1 w-64"
+            : "mt-1 w-[var(--input-width)]")
+        }`}
+      >
           {filtered.length === 0 ? (
             <p className="px-3 py-2 text-theme-sm rw-faint">{emptyText}</p>
           ) : (
@@ -229,8 +237,7 @@ export function Dropdown({
               </div>
             ))
           )}
-        </ComboboxOptions>
-      </div>
+      </ComboboxOptions>
       {hint && <span className="mt-1.5 block text-theme-xs rw-dim">{hint}</span>}
     </Combobox>
   );
