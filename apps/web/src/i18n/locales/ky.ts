@@ -811,7 +811,6 @@ export const ky: Record<MessageKey, string> = {
   "loading.style.pulseIconHint": "Түз эфир индикатору үчүн.",
   "loading.style.progress": "Прогресс тилкеси",
   "loading.style.progressHint": "Барактын үстү же узак аракет үчүн.",
-  "title.atom": "Атом",
 
   // TODO i18n: translate 16 new tier names to ky
   "title.quark": "Quark",

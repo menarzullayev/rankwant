@@ -812,7 +812,6 @@ export const kk: Record<MessageKey, string> = {
   "loading.style.pulseIconHint": "Тікелей эфир индикаторы үшін.",
   "loading.style.progress": "Прогресс жолағы",
   "loading.style.progressHint": "Беттің жоғарысы немесе ұзақ әрекет үшін.",
-  "title.atom": "Атом",
 
   // TODO i18n: translate 16 new tier names to kk
   "title.quark": "Quark",

@@ -808,7 +808,6 @@ export const zh: Record<MessageKey, string> = {
   "loading.style.pulseIconHint": "用于实时指示。",
   "loading.style.progress": "进度条",
   "loading.style.progressHint": "用于页面顶部或耗时任务。",
-  "title.atom": "原子",
 
   // TODO i18n: translate 16 new tier names to zh
   "title.quark": "Quark",

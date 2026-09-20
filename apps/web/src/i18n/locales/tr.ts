@@ -811,7 +811,6 @@ export const tr: Record<MessageKey, string> = {
   "loading.style.pulseIconHint": "Canlı gösterge için.",
   "loading.style.progress": "İlerleme çubuğu",
   "loading.style.progressHint": "Sayfa üstü veya uzun işler için.",
-  "title.atom": "Atom",
 
   // TODO i18n: translate 16 new tier names to tr
   "title.quark": "Quark",

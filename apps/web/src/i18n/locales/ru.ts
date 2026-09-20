@@ -811,7 +811,6 @@ export const ru: Record<MessageKey, string> = {
   "loading.style.pulseIconHint": "Для индикатора live.",
   "loading.style.progress": "Полоса прогресса",
   "loading.style.progressHint": "Для верха страницы или долгой задачи.",
-  "title.atom": "Атом",
 
   // TODO i18n: translate 16 new tier names to ru
   "title.quark": "Quark",

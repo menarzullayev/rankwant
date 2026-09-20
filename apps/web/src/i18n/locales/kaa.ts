@@ -811,7 +811,6 @@ export const kaa: Record<MessageKey, string> = {
   "loading.style.pulseIconHint": "Tiri indikator ushın.",
   "loading.style.progress": "Ilgerilew sızıǵı",
   "loading.style.progressHint": "Bettiń joqarısı yamasa uzın jumıs ushın.",
-  "title.atom": "Atom",
 
   // TODO i18n: translate 16 new tier names to kaa
   "title.quark": "Quark",

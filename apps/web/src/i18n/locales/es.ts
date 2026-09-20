@@ -811,7 +811,6 @@ export const es: Record<MessageKey, string> = {
   "loading.style.pulseIconHint": "Para un indicador en vivo.",
   "loading.style.progress": "Barra de progreso",
   "loading.style.progressHint": "Para la parte superior de la página o una tarea larga.",
-  "title.atom": "Átomo",
 
   // TODO i18n: translate 16 new tier names to es
   "title.quark": "Quark",

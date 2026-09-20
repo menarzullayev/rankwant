@@ -812,7 +812,6 @@ export const tg: Record<MessageKey, string> = {
   "loading.style.pulseIconHint": "Барои индикатори зинда.",
   "loading.style.progress": "Хатти пешрафт",
   "loading.style.progressHint": "Барои болои саҳифа ё кори тӯлонӣ.",
-  "title.atom": "Атом",
 
   // TODO i18n: translate 16 new tier names to tg
   "title.quark": "Quark",
