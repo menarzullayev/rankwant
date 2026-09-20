@@ -1,11 +1,8 @@
-"use client";
-
 import type { Route } from "next";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 
 import { TAB_BAR, type TabId } from "@/lib/auth-tabs";
-import { useLocale } from "@/i18n/LocaleProvider";
+import { getLocale } from "@/i18n/server";
 import { t, type MessageKey } from "@/i18n/messages";
 
 /** Qurilish vaqtida `MessageKey` ekani tekshiriladi: kalit xato yozilsa
@@ -37,13 +34,20 @@ const LABEL: Record<TabId, MessageKey> = {
  *
  *  O'rniga oddiy havola: har biri HAQIQIY manzil (`?tab=...`), ya'ni
  *  o'rta tugma, yangi varaq va xatcho'p ishlaydi. Fokus oddiy Tab bilan
- *  yuriladi, `aria-current` esa qaysi biri tanlanganini aytadi. */
-export function AuthTabs({ active }: { active: TabId }) {
-  const locale = useLocale();
-  const params = useSearchParams();
-  //: `?next=` saqlanib o'tadi: himoyalangan sahifadan uchirilgan odam
-  //: bo'limni almashtirsa ham qaytish manzili yo'qolmasin.
-  const next = params.get("next");
+ *  yuriladi, `aria-current` esa qaysi biri tanlanganini aytadi.
+ *
+ *  `?next=` serverdan keladi — klient search-params hooki YO'Q.
+ *  O'sha hook butun kartani Suspense fallback ga tiqib, avval
+ *  «Yuklanmoqda», keyin formani chizardi — 768 px register
+ *  Lighthouse LCP 4.2 s / CLS 0.202 edi (2026-09-21). */
+export async function AuthTabs({
+  active,
+  next,
+}: {
+  active: TabId;
+  next?: string;
+}) {
+  const locale = await getLocale();
 
   return (
     <nav aria-label={t(locale, "auth.tabHint")} className="mb-5">
