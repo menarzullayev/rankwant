@@ -2269,6 +2269,74 @@ def judge_latency_gate_is_recorded() -> str | None:
     return None
 
 
+SECURITY_SUITE = "tests/security/run.sh"
+SECURITY_SUITE_RECORD = "docs/research/2026-09-21-security-suite"
+
+
+def security_suite_runs_automatically() -> str | None:
+    """`tests/security` haqiqatan bir joyda avtomatik yuriydimi.
+
+    O'lchandi 2026-09-21: `tests/security/run.sh` ning **yagona** chaqiruvchisi
+    `.github/workflows/security.yml` (94–95-qatorlar) edi va u **o'chirilgan**
+    (`on: workflow_dispatch` + job `if: false`, egasi qarori 2026-09-21).
+    Ya'ni skript sarlavhasi «CI da har PR da ishlaydi» deb yozib turgan bo'lsa
+    ham, uning statik yarmi — judge host qoidalari, IDOR, PAT hash, rate limit
+    — **hech qayerda** avtomatik yurmasdi. Dinamik yarmining qamrovi bor edi:
+    Nightly `e2e` job'idagi bake-off qadami ayni `runner.py` ni case-filtrisiz
+    yurgizadi (`ISOLATION_CASES` o'sha yerda o'lchanadi).
+
+    Egasi 2026-09-21 da «Nightly'ga ulaymiz» ni tanladi. Yechim — statik rejim:
+    to'plam `SECURITY_STATIC_ONLY=1` bilan chaqiriladi, ya'ni allaqachon
+    qoplangan dinamik yarmi **takrorlanmaydi**. Yozuv:
+    `docs/research/2026-09-21-security-suite/`.
+
+    ⚠️ Bu QO'RIGCHI, o'lchov emas: zanjirning uzilishga moyil bo'g'inlarini
+    ushlaydi (chaqiruv, rejim, `pyyaml`, chegara, yozuv). Skriptning o'zi
+    to'g'ri ishlashini faqat Nightly job'ining o'z yurishi o'lchaydi.
+    """
+    suite = read(SECURITY_SUITE)
+    # Langar ATAYLAB to'liq kod qatori: yalang `SECURITY_STATIC_ONLY` izohlarda
+    # ham uchraydi (o'lchandi), ya'ni shunday tekshiruv haqiqiy shox o'chirilganda
+    # ham o'tib ketardi — yolg'on yashil.
+    if 'if [ -n "${SECURITY_STATIC_ONLY:-}" ]; then' not in suite:
+        return f"{SECURITY_SUITE}: statik rejim shoxi yo'q — dinamik yarmi takrorlanadi"
+    # ⚠️ Eski sarlavha da'vosi qaytmasin. U noto'g'ri, va aynan shu yolg'on
+    # ishonch tufayli bo'shliq sezilmay yotgan edi: fayl «har PR da ishlaydi»
+    # deb yozardi, chaqiruvchi esa o'chirilgan edi.
+    if "izolyatsiyasi — CI da har PR da ishlaydi" in suite:
+        return f"{SECURITY_SUITE}: «har PR da ishlaydi» da'vosi qaytgan — chaqiruvchi o'chirilgan"
+    nightly = read(NIGHTLY)
+    # Ikki langar ham kod qatorlari: fayl nomi va rejim nomi izohlarda ham
+    # uchraydi (o'lchandi), ya'ni yalang matn qidirish yolg'on yashil berardi.
+    if "        run: tests/security/run.sh" not in nightly:
+        return f"{NIGHTLY}: xavfsizlik to'plami hech qayerda yurmaydi — statik yarmi yopilmagan"
+    if "          SECURITY_STATIC_ONLY: '1'" not in nightly:
+        return f"{NIGHTLY}: to'plam statik rejimda chaqirilmaydi — bake-off bilan takrorlanadi"
+    if "        run: pip install pyyaml" not in nightly:
+        return f"{NIGHTLY}: `pyyaml` o'rnatilmaydi — `check_compose.py` yiqiladi"
+    # Chegara MAJBURIY: self-hosted runner'da abadiy kutib qolgan job butun
+    # navbatni ushlab turadi. Repo qoidasi — har job'da `timeout-minutes`.
+    #
+    # Job bloki ATAYLAB chegaralangan (`(?=^  \S)`): chegarasiz `.*?` keyingi
+    # job'ning `timeout-minutes` ini topib qo'yardi, ya'ni bu tekshiruv hech
+    # qachon yiqilmasdi — o'lchandi, aynan shu tuzoq bilan yozilgan edi.
+    job = re.search(r"^  security:\n(.*?)(?=^  \S)", nightly, re.S | re.M)
+    if job is None:
+        return f"{NIGHTLY}: `security` job'i topilmadi"
+    if not re.search(r"^    timeout-minutes: \d+", job.group(1), re.M):
+        return f"{NIGHTLY}: `security` job'ida chegara yo'q — abadiy kutish mumkin"
+    if not (ROOT / SECURITY_SUITE_RECORD / "README.md").exists():
+        return f"{SECURITY_SUITE_RECORD}/README.md: yozuv yo'q — statik rejim sababi yo'qoladi"
+    if "](2026-09-21-security-suite/README.md)" not in read("docs/research/README.md"):
+        return "docs/research/README.md: xavfsizlik to'plami yozuvi indeksda yo'q — topilmaydi"
+    record = read(f"{SECURITY_SUITE_RECORD}/README.md")
+    # Sabab yozilmasa, keyingi o'quvchi `SECURITY_STATIC_ONLY` ni «tejash»
+    # deb o'ylab, dinamik yarmini ikkinchi marta yoqib qo'yishi mumkin.
+    if "ISOLATION_CASES" not in record:
+        return f"{SECURITY_SUITE_RECORD}/README.md: dinamik yarmi qayerda qoplangani yozilmagan"
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -2327,6 +2395,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("threat model platformani qamraydi", threat_model_covers_the_platform),
     ("litsenziya inventari joriy", licence_inventory_is_current),
     ("judge latency gate qayd etiladi", judge_latency_gate_is_recorded),
+    ("xavfsizlik to'plami avtomatik yuriydi", security_suite_runs_automatically),
 ]
 
 
