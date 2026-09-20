@@ -101,6 +101,7 @@ describe("CUST-100 contestant customizer", () => {
     expect(saved).toContain('type="file"');
     expect(saved).toContain("sr-only");
     expect(saved).toContain("tabIndex={-1}");
+    expect(saved).toContain('aria-hidden="true"');
     expect(saved).not.toContain("FormFile");
     expect(saved).toContain("customizer.deleteConfirm");
   });

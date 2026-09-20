@@ -440,6 +440,7 @@ flag — nuqson topilsa modul bir tugma bilan o'chiriladi.
 | D51 | Kit oilalari Interfeysda 6 ta `SelectField`; chip devori yo'q |
 | D52 | Accent gate: AA matni faqat o'lchangan ratio da; APP-9 yopildi |
 | D53 | Interfeys layout chip qoladi; kit SelectField (D51) |
+| D54 | Import file input `aria-hidden`; tugma ochadi |
 
 ### D47 — mavzu ikki joyda saqlanmaydi (amalga oshirishda aniqlangan)
 
@@ -538,6 +539,12 @@ Batafsil: [DECISION-52.md](./DECISION-52.md).
 **Tanlov:** A. 2–5 variantli layout oilalari chip; kit katalogi select.
 
 Batafsil: [DECISION-53.md](./DECISION-53.md).
+
+### D54 — import file a11y (2026-09-21)
+
+**Tanlov:** B. `aria-hidden` + labeled Import tugmasi. Native empty-state yo'q.
+
+Batafsil: [DECISION-54.md](./DECISION-54.md).
 
 ---
 
