@@ -1056,20 +1056,19 @@
 /* Unvon ranglari (ADR-0018) — `--rw-rank-N` har uslub blokida, har
    palitrada eng yomon fonga nisbatan AA (`tools/check_contrast.py`). Ism
    shu rangda: profil, reyting, standings, urinishlar, jamoa, obunachilar. */
-.rw-rank-1 { color: var(--rw-rank-1); } .rw-rank-2 { color: var(--rw-rank-2); }
-.rw-rank-3 { color: var(--rw-rank-3); } .rw-rank-4 { color: var(--rw-rank-4); }
-.rw-rank-5 { color: var(--rw-rank-5); } .rw-rank-6 { color: var(--rw-rank-6); }
-.rw-rank-7 { color: var(--rw-rank-7); } .rw-rank-8 { color: var(--rw-rank-8); }
-.rw-rank-9 { color: var(--rw-rank-9); font-weight: 700; }
+.rw-rank-grey { color: var(--rw-rank-grey); } .rw-rank-green { color: var(--rw-rank-green); } .rw-rank-cyan { color: var(--rw-rank-cyan); } .rw-rank-blue { color: var(--rw-rank-blue); } .rw-rank-violet { color: var(--rw-rank-violet); } .rw-rank-orange { color: var(--rw-rank-orange); } .rw-rank-red { color: var(--rw-rank-red); }
+.rw-rank-grey { color: var(--rw-rank-grey); } .rw-rank-green { color: var(--rw-rank-green); } .rw-rank-cyan { color: var(--rw-rank-cyan); } .rw-rank-blue { color: var(--rw-rank-blue); } .rw-rank-violet { color: var(--rw-rank-violet); } .rw-rank-orange { color: var(--rw-rank-orange); } .rw-rank-red { color: var(--rw-rank-red); }
 /* Unvon ramkasi — do'kon ramkasi kiyilmagan bo'lsa (`lib/cosmetics.ts`). */
 .rw-frame-grey { --rw-frame: var(--rw-rank-grey); } .rw-frame-green { --rw-frame: var(--rw-rank-green); } .rw-frame-cyan { --rw-frame: var(--rw-rank-cyan); } .rw-frame-blue { --rw-frame: var(--rw-rank-blue); } .rw-frame-violet { --rw-frame: var(--rw-rank-violet); } .rw-frame-orange { --rw-frame: var(--rw-rank-orange); } .rw-frame-red { --rw-frame: var(--rw-rank-red); }
+[class*="rw-frame-rank-"] {
+  box-shadow: 0 0 0 3px var(--rw-frame), 0 0 0 6px color-mix(in oklab, var(--rw-frame) 28%, transparent);
+}
+.rw-frame-rank-8, .rw-frame-rank-9 {
   box-shadow: 0 0 0 3px var(--rw-frame), 0 0 14px 3px color-mix(in oklab, var(--rw-frame) 55%, transparent);
 }
 /* Reyting grafigidagi unvon bantlari — bezak, ustiga matn tushmaydi
    (bant nomi `rw-dim` bilan yoziladi), shuning uchun shaffof. */
-.rw-band-1 { fill: var(--rw-rank-1); } .rw-band-2 { fill: var(--rw-rank-2); } .rw-band-3 { fill: var(--rw-rank-3); }
-.rw-band-4 { fill: var(--rw-rank-4); } .rw-band-5 { fill: var(--rw-rank-5); } .rw-band-6 { fill: var(--rw-rank-6); }
-.rw-band-7 { fill: var(--rw-rank-7); } .rw-band-8 { fill: var(--rw-rank-8); } .rw-band-9 { fill: var(--rw-rank-9); }
+.rw-band-1 { fill: var(--rw-rank-grey); } .rw-band-2 { fill: var(--rw-rank-grey); } .rw-band-3 { fill: var(--rw-rank-grey); } .rw-band-4 { fill: var(--rw-rank-green); } .rw-band-5 { fill: var(--rw-rank-green); } .rw-band-6 { fill: var(--rw-rank-cyan); } .rw-band-7 { fill: var(--rw-rank-cyan); } .rw-band-8 { fill: var(--rw-rank-blue); } .rw-band-9 { fill: var(--rw-rank-violet); } .rw-band-10 { fill: var(--rw-rank-orange); } .rw-band-11 { fill: var(--rw-rank-orange); } .rw-band-12 { fill: var(--rw-rank-red); } .rw-band-13 { fill: var(--rw-rank-red); } .rw-band-14 { fill: var(--rw-rank-red); } .rw-band-15 { fill: var(--rw-rank-red); } .rw-band-16 { fill: var(--rw-rank-red); }
 [class^="rw-band-"] { fill-opacity: .14; }
 /* Yutuq medallari — bezak: daraja nomi yonida matn bo'lib ham yoziladi. */
 .rw-medal-bronze { background: radial-gradient(circle at 35% 30%, #f3cda6, #b0763a 72%); }
