@@ -243,6 +243,63 @@ jobs:
         if: always()
         run: docker image rm "${COMPOSE_PROJECT_NAME}-judge" || true
 
+  latency:
+    name: Latency — judge budget
+    runs-on: ubuntu-latest
+    # ⚠️ More than 3 minutes — a DELIBERATE exception: this job brings
+    # up the full compose stack with `up -d --build --wait`, so image
+    # builds are inside it. A 3-minute cap makes the job a guaranteed
+    # red (measured on deploy/build). There IS a limit; unlimited is
+    # not the goal.
+    timeout-minutes: 15
+    # Compose project is PER JOB. On one runner jobs ran in series so
+    # this did not show; with a second runner two jobs sharing a stack
+    # name would take each other's containers down with `down -v`.
+    env:
+      COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      CI_PUSH_IMAGE_CACHE: ${{ github.event.repository.fork && '0' || '1' }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Stack
+        # The full stack — `worker` must be alive to drain the judge queue,
+        # so unlike the compatibility job this does not narrow the services.
+        run: |
+          bash tools/ci_stack.sh
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
+            python manage.py seed_demo
+      - name: Judge latency — launch gate (p50 < 5 s, p95 < 15 s)
+        # Open item of docs/09-development-plan/README.md § "Launch gate".
+        # Own job on purpose: a gate coupled to the E2E browser matrix
+        # would go red for unrelated reasons, and the failure would be
+        # attributed to the wrong thing. Measured on THIS runner, which is
+        # not the production machine — the number here is the regression
+        # baseline; point the same harness at production with `API=` for
+        # the launch-gate figure (see the harness docstring).
+        timeout-minutes: 8
+        run: |
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml \
+            --profile latency run --rm latency
+      - name: Tear down
+        if: always()
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+      - name: Push image cache
+        if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
+        run: bash tools/ci_stack.sh --push-only
+      # `down -v` leaves the images this run built. Since 2026-09-17 CI
+      # runs on the Docker Desktop engine next to the live stack, and one
+      # nightly run left 18 of them behind (`rw-load-*`, `rw-e2e-*`,
+      # `rw-chaos-*`) until an unrelated CI run's cleanup removed them
+      # hours later. On a day without other CI they would pile up, the
+      # way 420 `rw-smoke-*` images filled the WSL disk to 58 GB on
+      # 2026-09-16.
+      - name: Clean images
+        if: always()
+        run: |
+          docker images --format '{{.Repository}}:{{.Tag}}' \
+            | grep -E "^${COMPOSE_PROJECT_NAME}-" \
+            | xargs -r docker rmi -f || true
+
   coverage:
     name: API coverage
     runs-on: ubuntu-latest
