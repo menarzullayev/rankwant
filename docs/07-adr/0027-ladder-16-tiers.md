@@ -61,11 +61,19 @@ Tier colour comes from one of Codeforces seven canonical palette anchors:
     violet #aa00aa orange #ff8c00 red  #ff0000
 
 A tier group index (0..4) is the marker count - the number of
-black-leading characters on the rendered title (--nutella-ink: #000 on
-light, #fff on dark). Within a group, all tiers share the same hue; the
-marker tells them apart and also helps colour-blind viewers. Example:
-atom is grey/1 (the A is ink), molecule is grey/2 (Mo are ink),
-cosmos is red/4 (Cosm is ink).
+black-leading characters on **both** the rendered username and the
+rendered tier badge (--nutella-ink: #000 on light, #fff on dark). Within
+a group, all tiers share the same hue; the marker tells them apart and
+also helps colour-blind viewers. Example: atom is grey/1 (the A is
+ink), molecule is grey/2 (Mo are ink), cosmos is red/4 (Cosm is ink).
+
+The marker count is the same for the username and the badge within one
+tier - the badge has its own length so it always splits visibly, the
+username may be shorter (a short handle then has every character inked
+because `marker >= length`). Codeforces' "LGM qora 1-harf"
+convention is preserved this way: the LGM username starts with a black
+letter, not because of the username text but because its tier has a
+marker of 1 (or higher for higher tiers within the red group).
 
 The owner dropped the WCAG-AA-on-rating-colours rule because the chosen
 seven CF anchors cannot satisfy 4.5:1 against every palette worst
