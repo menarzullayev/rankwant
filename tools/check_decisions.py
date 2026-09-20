@@ -1563,6 +1563,30 @@ def lang_query_self_canonical() -> str | None:
     return None
 
 
+SITEMAP = "apps/web/src/app/sitemap.ts"
+
+
+def sitemap_locale_xhtml_alternates() -> str | None:
+    """2026-09-20 HITL sitemap-hreflang: har yozuvda xhtml:link tillari.
+
+    `url` toza uz yo'l; 10 til + x-default `alternates.languages` da.
+    10× alohida `<url>` yo'q.
+    """
+    helper = read(LANG_ALTERNATES)
+    if "sitemapLanguageAlternates" not in helper:
+        return f"{LANG_ALTERNATES}: sitemap til helper yo'q"
+    sitemap = read(SITEMAP)
+    if "sitemapLanguageAlternates" not in sitemap:
+        return f"{SITEMAP}: xhtml:link tillari chaqirilmaydi"
+    if "alternates: { languages:" not in sitemap:
+        return f"{SITEMAP}: alternates.languages yo'q"
+    if sitemap.count("sitemapEntry(") < 3:
+        return f"{SITEMAP}: statik/slug/id yozuvlari til'siz qolgan"
+    if "url: absolute(`${prefix}" in sitemap:
+        return f"{SITEMAP}: til'siz absolute() yozuvi qaytdi"
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -1598,6 +1622,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("pytest 9 va pytest-django 4.14", pytest_nine_and_django_plugin),
     ("react va react-dom juft", react_and_dom_stay_paired),
     ("?lang= self-canonical hreflang", lang_query_self_canonical),
+    ("sitemap xhtml:link tillari", sitemap_locale_xhtml_alternates),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),

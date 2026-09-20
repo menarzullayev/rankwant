@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { hrefForLocale, localeAlternates } from "@/i18n/locale-alternates";
+import {
+  hrefForLocale,
+  localeAlternates,
+  sitemapLanguageAlternates,
+} from "@/i18n/locale-alternates";
 
 describe("localeAlternates", () => {
   it("keeps the default locale on the clean path", () => {
@@ -25,5 +29,24 @@ describe("localeAlternates", () => {
 
   it("ignores an unknown lang param instead of minting a URL", () => {
     expect(localeAlternates("/", "xx").canonical).toBe("/");
+  });
+});
+
+describe("sitemapLanguageAlternates", () => {
+  const abs = (href: string) => `https://rankwant.uz${href === "/" ? "/" : href}`;
+
+  it("keeps one absolute URL per locale plus x-default", () => {
+    const languages = sitemapLanguageAlternates("/problems/a-plus-b", (href) =>
+      `https://rankwant.uz${href}`,
+    );
+    expect(languages["x-default"]).toBe("https://rankwant.uz/problems/a-plus-b");
+    expect(languages.uz).toBe("https://rankwant.uz/problems/a-plus-b");
+    expect(languages.ru).toBe("https://rankwant.uz/problems/a-plus-b?lang=ru");
+  });
+
+  it("does not mint a second <url> for the default locale", () => {
+    const languages = sitemapLanguageAlternates("/", abs);
+    expect(languages.uz).toBe(languages["x-default"]);
+    expect(languages.ru).toBe("https://rankwant.uz/?lang=ru");
   });
 });
