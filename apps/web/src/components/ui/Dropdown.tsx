@@ -7,7 +7,7 @@ import {
   ComboboxOptions,
   Label,
 } from "@headlessui/react";
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 
 import { Icon } from "@/components/ui/Icon";
 import { useLocale } from "@/i18n/LocaleProvider";
@@ -103,6 +103,13 @@ export function Dropdown({
   const [inner, setInner] = useState(value ?? defaultValue ?? "");
   const current = value !== undefined ? value : inner;
   const selected = options.find((option) => option.value === current);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const selectedLabel = selected?.label ?? "";
+  useLayoutEffect(() => {
+    const node = inputRef.current;
+    if (!node || query.trim()) return;
+    if (node.value !== selectedLabel) node.value = selectedLabel;
+  }, [query, selectedLabel]);
   const filtered = filterDropdownOptions(options, query);
   const buckets = groupDropdownOptions(filtered);
   const searchLabel = placeholder ?? t(locale, "dropdown.search");
@@ -153,6 +160,7 @@ export function Dropdown({
           </span>
         )}
         <ComboboxInput
+          ref={inputRef}
           autoComplete="off"
           displayValue={(code: string) =>
             options.find((option) => option.value === code)?.label ?? ""
