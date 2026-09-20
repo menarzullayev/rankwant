@@ -1,6 +1,6 @@
 /** Manbadagi daraja (ADR-0026) — Codeforces'ning kanonik ranglari.
  *
- * RankWant'ning o'z unvoni (`title`) 9 daraja va u `rw-rank-N` sinflari
+ * RankWant'ning o'z unvoni (`title`) 16 daraja va u `rw-rank-N` sinflari
  * bilan chiziladi. Bu yerdagi daraja **saqlanadi**, hisoblanmaydi, va
  * 10 daraja. Ikkisi bir xil nom bilan chiqsa frontend chalkashardi —
  * shuning uchun alohida fayl va alohida nom (`cf`).

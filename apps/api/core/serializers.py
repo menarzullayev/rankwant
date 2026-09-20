@@ -38,10 +38,10 @@ class UserPublicSerializer(serializers.ModelSerializer[User]):
     title = TitleField()
     #: Codeforces'dagi daraja nomi (`rank_title`, ADR-0026). `title` dan
     #: ALOHIDA, chunki ikkisi boshqa tizim: `title` — RankWant unvoni
-    #: (`rating_contest` dan HISOBLANADI, `kvark`…`galaktika`), bu esa
-    #: manbadan KELADI (`newbie`…`legendary grandmaster`). Birlashtirilsa
-    #: frontend qaysi birini chizishini bilmay qolardi va ism rangi
-    #: buzilardi.
+    #: (`rating_contest` dan HISOBLANADI, `quark`…`cosmos`, 16 daraja —
+    #: ADR-0027), bu esa manbadan KELADI (`newbie`…`legendary
+    #: grandmaster`). Birlashtirilsa frontend qaysi birini chizishini
+    #: bilmay qolardi va ism rangi buzilardi.
     cf_title = serializers.SerializerMethodField()
     #: Manbadagi eng yuqori daraja (`max_rank_title`).
     cf_max_title = serializers.SerializerMethodField()
