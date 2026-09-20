@@ -81,9 +81,10 @@ slot is first-class but **self-registering**: before its first task it
    `owned_paths` (no-star-star), hot-file locks, one stack, deploy only
    via `tools/deploy.sh`.
 
-`reap_stale_worktrees.py --tool` does not know X tools yet; until the
-script learns yours, reap your own folder by hand under the same three
-conditions (no fresh manifest, no open PR, clean tree).
+`reap_stale_worktrees.py --tool` accepts registered X tools — `freebuff`
+today. A new X tool reaps its own folder by hand until it lands in
+`ALLOWED_TOOLS`, under the same three conditions (no fresh manifest, no
+open PR, clean tree).
 
 ## This machine (measured 2026-09-20)
 
