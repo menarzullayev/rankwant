@@ -21,7 +21,7 @@ from judging.verdicts import Verdict
 from problems.models import Language, Problem
 from profiles import achievements, public
 from profiles.models import Follow, UserAchievement
-from profiles.titles import title_for
+from profiles.titles import title_for, user_title
 from qvant import ledger
 from qvant.models import QvantQuest, QvantTransaction, UserQuestCompletion
 from ratings.models import UserSolvedProblem
@@ -80,6 +80,78 @@ def test_unvon_chegaralari() -> None:
     assert title_for(3500, 5) == {"code": "cosmos", "level": 16, "colour_group": "red", "marker": 4}
     # Reytingli musobaqasiz - boshlang'ich 1200 hali hech narsa aytmaydi.
     assert title_for(3000, 0) is None
+
+
+def test_import_qilingan_reyting_unvon_beradi() -> None:
+    """ADR-0026 import: a real CF rating is worth showing before the first
+    RankWant contest.
+
+    `rated_contest_count` itself is never back-filled - it drives the
+    participation achievements (1 / 10 / 50), so touching it would grant
+    them to all 974 498 imported users at once.
+    """
+    # No contests, no import -> title-less (starting 1200 says nothing).
+    assert title_for(3307, 0) is None
+    assert title_for(1200, 0) is None
+
+    # Same rating, but imported from Codeforces -> title is shown.
+    # 3307 is tier 15 (supercluster, 3200-3499); cosmos starts at 3500.
+    assert title_for(3307, 0, has_imported_rating=True) == {
+        "code": "supercluster",
+        "level": 15,
+        "colour_group": "red",
+        "marker": 3,
+    }
+    assert title_for(3600, 0, has_imported_rating=True) == {
+        "code": "cosmos",
+        "level": 16,
+        "colour_group": "red",
+        "marker": 4,
+    }
+    assert title_for(1200, 0, has_imported_rating=True) == {
+        "code": "droplet",
+        "level": 4,
+        "colour_group": "green",
+        "marker": 0,
+    }
+
+    # A real contest still wins on its own.
+    earned = title_for(3307, 1)
+    assert earned is not None
+    assert earned["code"] == "supercluster"
+
+
+@pytest.mark.django_db
+def test_user_title_import_belgisi(user: User) -> None:
+    """`user_title` looks at `rank_title` (the imported CF tier)."""
+    user.rating_contest = 3307
+    user.rated_contest_count = 0
+    user.rank_title = ""
+    user.save(update_fields=["rating_contest", "rated_contest_count", "rank_title"])
+    assert user_title(user) is None
+
+    user.rank_title = "legendary grandmaster"
+    user.save(update_fields=["rank_title"])
+    assert user_title(user) == {
+        "code": "supercluster",
+        "level": 15,
+        "colour_group": "red",
+        "marker": 3,
+    }
+
+    # And a genuinely 3500+ rating reaches the top tier.
+    user.rating_contest = 3600
+    user.save(update_fields=["rating_contest"])
+    assert user_title(user) == {
+        "code": "cosmos",
+        "level": 16,
+        "colour_group": "red",
+        "marker": 4,
+    }
+
+    # Importing the rating must NOT touch the achievement counter.
+    user.refresh_from_db()
+    assert user.rated_contest_count == 0
 
 
 @pytest.mark.django_db
