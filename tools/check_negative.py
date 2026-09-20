@@ -2842,6 +2842,23 @@ def neg_decisions_auto_deploy_attempt_after_deploy() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_auto_deploy_gate_closed_records_attempt() -> tuple[bool, str]:
+    """Darvoza tekshiruvi urinishdan KEYIN tursa tutilsin.
+
+    Yopiq darvoza — «hali tayyor emas», nosozlik emas. Tekshiruv
+    `record_attempt` dan keyin tursa, CI hali yugurayotganda yurish
+    urinishni yozadi va 1800 s to'siq qo'yadi: deploy 5 daqiqa o'rniga
+    30 daqiqada keladi, log esa yolg'on «deploy YIQILDI» deydi.
+    O'lchandi 2026-09-20 18:10:06Z (PR #192 merge 18:09:36).
+    """
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        '"$GATE_PY" tools/check_deploy_gate.py',
+        'record_attempt "$TARGET"\n"$GATE_PY" tools/check_deploy_gate.py',
+        "avtomatik deploy xavfsiz",
+    )
+
+
 def neg_decisions_auto_deploy_env_hardcoded() -> tuple[bool, str]:
     """Watcher `deploy.sh` ga BOSHQA env-faylni uzatsa tutilsin.
 
@@ -5517,6 +5534,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "qayta urinish yozuvi deploy'dan keyin bo'lsa tutilsin",
                 neg_decisions_auto_deploy_attempt_after_deploy,
+            ),
+            (
+                "yopiq darvoza urinish yozsa tutilsin",
+                neg_decisions_auto_deploy_gate_closed_records_attempt,
             ),
             (
                 "deploy'ga boshqa env-fayl uzatilsa tutilsin",

@@ -183,12 +183,28 @@ qulf → DEPLOY_FREEZE → git fetch origin main → worktree'ni --ff-only
      → drift bormi?  (konteynerlar tirikmi + check_deploy.sh)
         yo'q  → JIM chiqadi
         bor   → qayta urinish to'sig'i (30 daqiqa)
-              → tools/deploy.sh --yes  (RANKWANT_DEPLOY_SCOPE)
+              → darvoza OLDINDAN tekshiriladi
+                 yopiq → urinish YOZILMAYDI, to'siq ham qo'yilmaydi
+              → urinish yoziladi → tools/deploy.sh --yes  (RANKWANT_DEPLOY_SCOPE)
                  qulf → darvoza(main CI) → oyna → tanlangan obraz
                  → (api bo'lsa) pg_dump → migrate → showmigrations
                  → up → health → check_deploy.sh
                  → prune (SHA teglar, dangling, builder)
 ```
+
+⚠️ **Yopiq darvoza — nosozlik emas, shuning uchun to'siq ham qo'yilmaydi.**
+Darvoza `main` CI hali yugurib turganda ham yopiq bo'ladi. O'sha holat
+nosozlik deb hisoblansa, SHA 30 daqiqaga bloklanadi: deploy 5 daqiqa o'rniga
+30 daqiqada keladi va log yolg'on «deploy YIQILDI» deydi. O'lchandi
+2026-09-20 18:10:06Z — PR #192 18:09:36 da merge bo'ldi, CI hali yugurar edi;
+CI `main` da ~70 s yuradi, yurish esa har 5 daqiqada, ya'ni har to'rtinchi
+merge shu yo'lga tushardi. Endi watcher darvozani **urinishdan oldin**
+tekshiradi va yopiq bo'lsa sababini logga yozib chiqadi (jim qolmaydi:
+2026-09-18 da 3 ta PR shu sabab soatlab jonli chiqmagan).
+`tools/deploy.sh` o'z darvozasini baribir yurgizadi — u yagona haqiqat
+manbai, watcher'ning tekshiruvi esa tayyorlik savoli: «hozir urinishga
+arziydimi?». `tools/check_decisions.py` → `deploy_automation_is_safe` (8-shart)
+shuni qo'riqlaydi.
 
 Merge oxirida watcher'ni 5 daqiqa kutmang — darvoza baribir yashil main:
 
