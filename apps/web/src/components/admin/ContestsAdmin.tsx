@@ -9,6 +9,7 @@ import {
 } from "@/components/admin/CrudPage";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { useConfirm } from "@/components/overlay/OverlayHost";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { dateTime, fill, t, type Locale, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
@@ -135,6 +136,7 @@ function ContestRowPanel({
   reload: () => void;
 }) {
   const locale = useLocale();
+  const confirm = useConfirm();
   const [rows, setRows] = useState<ContestProblemRow[]>(() =>
     contest.problems.map((p) => ({ ...p })),
   );
@@ -198,22 +200,24 @@ function ContestRowPanel({
     });
 
   const finalize = () => {
-    if (
-      !window.confirm(
-        "Musobaqa yakunlansinmi? Reyting qo'llanadi va qaytarib bo'lmaydi.",
-      )
-    ) {
-      return;
-    }
-    return run("Yakunlandi", async () => {
-      const res = await staff.action<{
-        affected: number;
-        ratings_applied_at: string | null;
-      }>(`${PATH}${contest.slug}/finalize/`);
-      if (!res.ratings_applied_at)
-        return "musobaqa hali tugamagan — hech narsa qilinmadi";
-      return `${res.affected} ta ishtirokchi reytingi yangilandi`;
-    });
+    void (async () => {
+      if (
+        !(await confirm(t(locale, "admin.contestFinalizeConfirm"), {
+          danger: true,
+        }))
+      ) {
+        return;
+      }
+      return run("Yakunlandi", async () => {
+        const res = await staff.action<{
+          affected: number;
+          ratings_applied_at: string | null;
+        }>(`${PATH}${contest.slug}/finalize/`);
+        if (!res.ratings_applied_at)
+          return "musobaqa hali tugamagan — hech narsa qilinmadi";
+        return `${res.affected} ta ishtirokchi reytingi yangilandi`;
+      });
+    })();
   };
 
   return (

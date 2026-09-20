@@ -16,6 +16,7 @@ import { DEFAULT_VERDICT_VARIANT } from "@/lib/theme/verdict";
 import { DEFAULT_STATUS_VARIANT } from "@/lib/theme/status";
 import { DEFAULT_LOADING_VARIANT } from "@/lib/theme/loading";
 import { DEFAULT_ICON_PACK } from "@/lib/theme/icon-packs";
+import { DEFAULT_OVERLAY_VARIANT } from "@/lib/theme/overlay";
 import {
   AA_TARGET,
   accentInk,
@@ -185,6 +186,12 @@ export function applyAppearance(appearance: AppearancePrefs) {
   const pack = appearance.iconPack ?? DEFAULT_ICON_PACK;
   if (pack !== DEFAULT_ICON_PACK) root.dataset.iconPack = pack;
   else delete root.dataset.iconPack;
+
+  // Oyna oilasi. Standart Qog'oz — atribut yozilmaydi, CSS bazasi
+  // shu oilaga teng.
+  const overlay = appearance.overlayStyle ?? DEFAULT_OVERLAY_VARIANT;
+  if (overlay !== DEFAULT_OVERLAY_VARIANT) root.dataset.overlay = overlay;
+  else delete root.dataset.overlay;
 }
 
 /** Rang ajratolmaslik uchun TUSLAR (D44).

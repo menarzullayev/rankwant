@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1669 strings.**
+**1697 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -383,6 +383,13 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.delete` | O'chirish | Жою |  |
 | `admin.cancel` | Bekor | Бас тарту |  |
 | `admin.confirmDelete` | Rostdan o'chirilsinmi? | Шынымен жойылсын ба? |  |
+| `admin.broadcastConfirm` | «{title}» BARCHA faol foydalanuvchilarga yuborilsinmi? | «{title}» БАРЛЫҚ белсенді пайдаланушыларға жіберілсін бе? |  |
+| `admin.duelCancelConfirm` | «{title}» bekor qilinsinmi? Ishtirokchilarga xabar boradi. | «{title}» болдырылмасын ба? Қатысушыларға хабар барады. |  |
+| `admin.duelFinalizeConfirm` | «{title}» yakunlansinmi? Natija va reyting hisoblanadi. | «{title}» аяқталсын ба? Нәтиже мен рейтинг есептеледі. |  |
+| `admin.duelForceFinalize` | Duel hali tugamagan. Majburan yakunlansinmi? | Дуэль әлі біткен жоқ. Мәжбүрлеп аяқталсын ба? |  |
+| `admin.contestFinalizeConfirm` | Musobaqa yakunlansinmi? Reyting qo'llanadi va qaytarib bo'lmaydi. | Жарыс аяқталсын ба? Рейтинг қолданылады және қайтарылмайды. |  |
+| `admin.questSyncConfirm` | Katalogdagi questlar (mukofot, nom, faollik) asl holiga qaytariladi. Davom etilsinmi? | Каталогтағы квесттер (сыйақы, атау, белсенділік) қалпына келеді. Жалғастырамыз ба? |  |
+| `admin.arenaResetConfirm` | Ishtirokchilar va javoblar o'chiriladi. Davom etilsinmi? | Қатысушылар мен жауаптар жойылады. Жалғастырамыз ба? |  |
 | `admin.forbidden` | Bu bo'lim faqat xodimlar uchun. | Бұл бөлім тек қызметкерлерге арналған. |  |
 | `admin.search` | Qidirish… | Іздеу… |  |
 | `admin.noRows` | Hech narsa yo'q | Ештеңе жоқ |  |
@@ -1612,6 +1619,27 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.hex` | Rang kodi | Түс коды |  |
 | `customizer.lineHeight` | Qator balandligi | Жол биіктігі |  |
 | `customizer.loading` | Yuklanish | Жүктелуде |  |
+| `customizer.overlay` | Oyna va tasdiq | Терезелер мен растау |  |
+| `customizer.overlayHint` | Tasdiq, modal, tooltip va menyu shu oilaga bo'ysunadi. | Растау, модал, кеңес және мәзір осы отбасын ұстанады. |  |
+| `overlay.style.qogoz` | Qog'oz | Qog'oz |  |
+| `overlay.style.qogozHint` | Markazdagi kartochka, yumshoq qorayish, 16px radius. | Ортадағы карта, жұмсақ қараңғылау, 16px радиус. |  |
+| `overlay.style.soyabon` | Soyabon | Soyabon |  |
+| `overlay.style.soyabonHint` | Qorayish yo'q. Oyna tugmaga yopishadi. | Қараңғылау жоқ. Терезе түймеге жабысады. |  |
+| `overlay.style.projektor` | Projektor | Projektor |  |
+| `overlay.style.projektorHint` | Vinyetka: atrof o'chadi, savol o'rtada. | Виньетка: айнала сөнеді, сұрақ ортада. |  |
+| `overlay.style.orol` | Orol | Orol |  |
+| `overlay.style.orolHint` | Katta radius, blur fon, kapsul tugmalar. | Үлкен радиус, бұлыңғыр фон, капсула түймелер. |  |
+| `overlay.sample.confirm` | O'chirish | Жою |  |
+| `overlay.sample.problem` | Masala | Есеп |  |
+| `overlay.sample.more` | Menyu | Мәзір |  |
+| `overlay.sample.confirmTitle` | A + B o'chirilsinmi? | A + B жойылсын ба? |  |
+| `overlay.sample.confirmBody` | Bu amalni qaytarib bo'lmaydi. | Бұл әрекетті қайтару мүмкін емес. |  |
+| `overlay.sample.modalTitle` | Ikki yig'indi | A + B |  |
+| `overlay.sample.modalBody` | Berilgan A va B sonlarining yig'indisini chiqaring. | Берілген A және B сандарының қосындысын шығарыңыз. |  |
+| `overlay.sample.tip` | Boshlang'ich · qiyinlik tokeni | Бастапқы · қиындық токені |  |
+| `overlay.sample.menuCopy` | Nusxa | Көшіру |  |
+| `overlay.sample.menuEdit` | Tahrir | Өңдеу |  |
+| `overlay.sample.menuDelete` | O'chirish | Жою |  |
 | `customizer.iconPack` | Ikonka to'plami | Иконка жинағы |  |
 | `customizer.iconPackHint` | Tanlangan to'plam navigatsiya, amallar va holat ikonkalarini o'zgartiradi. Verdikt va brend belgilari qat'iy qoladi. | Таңдалған жинақ навигация, әрекет және күй белгішелерін өзгертеді. Вердикт және бренд белгілері өзгермейді. |  |
 | `customizer.iconPackFixed` | Qat'iy — to'plamga bo'ysunmaydi | Бекітілген — жинаққа тәуелді емес |  |

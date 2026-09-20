@@ -9,6 +9,7 @@ import {
 } from "@/components/admin/CrudPage";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { useConfirm } from "@/components/overlay/OverlayHost";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { dateTime, t, type Locale, type MessageKey, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
@@ -123,6 +124,7 @@ function ArenaRowPanel({
   reload: () => void;
 }) {
   const locale = useLocale();
+  const confirm = useConfirm();
   const [ids, setIds] = useState<number[]>(item.questions);
   const [newId, setNewId] = useState("");
   const [startAt, setStartAt] = useState(toLocalInput(item.start_at));
@@ -283,13 +285,15 @@ function ArenaRowPanel({
             className="h-9"
             disabled={busy}
             onClick={() => {
-              if (
-                !window.confirm(
-                  "Ishtirokchilar va javoblar o'chiriladi. Davom etilsinmi?",
+              void (async () => {
+                if (
+                  !(await confirm(t(locale, "admin.arenaResetConfirm"), {
+                    danger: true,
+                  }))
                 )
-              )
-                return;
-              void run("Raund tozalandi", () => staff.action(`${base}reset/`));
+                  return;
+                void run("Raund tozalandi", () => staff.action(`${base}reset/`));
+              })();
             }}
           >
             {t(locale, "action.reset")}

@@ -111,6 +111,12 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         "admin.label.lang.ru",
         "admin.label.lang.en",
         "admin.help.languageCodes",  # "uz / ru / en" — kodlar ro'yxati
+        # Oyna oilasi NOMLARI — studio'da muhrlangan atoqli otlar
+        # (Qog'oz, Soyabon, Projektor, Orol). Hintlar tarjima qilinadi.
+        "overlay.style.qogoz",
+        "overlay.style.soyabon",
+        "overlay.style.projektor",
+        "overlay.style.orol",
         # Reyting pog'ona nomlari — xalqaro ilmiy atamalar (lotin/yunon
         # ildizli). O'zbek, ingliz, turk, ispan, qoraqalpoq va qitoy
         # tillarida bir xil yoziladi; "Supernova", "Pulsar", "Magnetar"

@@ -46,6 +46,13 @@ describe("share link theme", () => {
     expect(decodeAppearance("?theme=dark&style=terminal")).toEqual({ style: "terminal" });
   });
 
+  it("round-trips overlayStyle except the Qogoz default", () => {
+    expect(encodeAppearance({ overlayStyle: "soyabon" })).toBe("overlayStyle=soyabon");
+    expect(encodeAppearance({ overlayStyle: "qogoz" })).toBe("");
+    expect(decodeAppearance("?overlayStyle=orol")).toEqual({ overlayStyle: "orol" });
+    expect(decodeAppearance("?overlayStyle=latta")).toEqual({ overlayStyle: "qogoz" });
+  });
+
   it("round-trips style and mode together", () => {
     const search = `?${encodeAppearance({ style: "terminal", density: "compact" }, "dark")}`;
     expect(decodeAppearance(search)).toEqual({ style: "terminal", density: "compact" });
