@@ -1365,6 +1365,30 @@ def docker_disk_stays_bounded() -> str | None:
     return None
 
 
+def typescript_side_by_side() -> str | None:
+    """2026-09-20: TS 7 native typecheck, TS 6 JS API `require("typescript")`.
+
+    `typescript@7` Go rewrite — JS `transpileModule` yo'q. eslint-config-next
+    peer <6.1; `i18n-runtime-hook.mjs` JS API ga tayanadi. Alias:
+    `typescript` = @typescript/typescript6, `@typescript/native` = typescript@7.
+    """
+    pkg = read("apps/web/package.json")
+    if '"typescript": "npm:@typescript/typescript6@' not in pkg:
+        return "apps/web/package.json: `typescript` TS 6 JS API alias emas"
+    if '"@typescript/native": "npm:typescript@7.' not in pkg:
+        return "apps/web/package.json: `@typescript/native` TS 7 emas"
+    if "tsc --noEmit" not in pkg:
+        return "apps/web/package.json: typecheck native `tsc` ishlatmaydi"
+    if "tsc6" in pkg:
+        return "apps/web/package.json: typecheck `tsc6` (JS) — native `tsc` emas"
+    if '"typescript": "npm:typescript@7' in pkg:
+        return "apps/web/package.json: `typescript` o'zi 7 — JS API yo'qoladi"
+    hook = read("tools/i18n-runtime-hook.mjs")
+    if 'require("typescript")' not in hook:
+        return "tools/i18n-runtime-hook.mjs: JS `typescript` API chaqirilmaydi"
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -1393,6 +1417,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("staff guruhlari va obyekt mualliflari", roles_groups_and_object_authors),
     ("avtomatik deploy xavfsiz", deploy_automation_is_safe),
     ("docker disk chegaralangan", docker_disk_stays_bounded),
+    ("TypeScript 7 yonma-yon", typescript_side_by_side),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),
