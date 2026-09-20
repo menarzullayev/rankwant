@@ -59,22 +59,22 @@ TITLES: tuple[tuple[int, str, int], ...] = (
 #: Codeforces colour group each tier falls into. Drives --rw-rank-N
 #: in apps/web/src/app/globals.css and the nutella marker.
 COLOUR_GROUPS: tuple[str, ...] = (
-    "grey",    # 1 quark
-    "grey",    # 2 atom
-    "grey",    # 3 molecule
-    "green",   # 4 droplet
-    "green",   # 5 meteorite
-    "cyan",    # 6 comet
-    "cyan",    # 7 moon
-    "blue",    # 8 planet
+    "grey",  # 1 quark
+    "grey",  # 2 atom
+    "grey",  # 3 molecule
+    "green",  # 4 droplet
+    "green",  # 5 meteorite
+    "cyan",  # 6 comet
+    "cyan",  # 7 moon
+    "blue",  # 8 planet
     "violet",  # 9 star
     "orange",  # 10 supernova
     "orange",  # 11 pulsar
-    "red",     # 12 magnetar
-    "red",     # 13 black_hole
-    "red",     # 14 galaxy
-    "red",     # 15 supercluster
-    "red",     # 16 cosmos
+    "red",  # 12 magnetar
+    "red",  # 13 black_hole
+    "red",  # 14 galaxy
+    "red",  # 15 supercluster
+    "red",  # 16 cosmos
 )
 
 

@@ -99,6 +99,7 @@ class TestUnvonHammaJoyda:
         assert team.status_code == 201
         assert team.data["members"][0]["title"] == magnetar
 
+
 @pytest.mark.django_db
 class TestRollar:
     def test_hamma_rollar(

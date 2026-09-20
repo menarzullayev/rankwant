@@ -111,6 +111,11 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         "admin.label.lang.ru",
         "admin.label.lang.en",
         "admin.help.languageCodes",  # "uz / ru / en" — kodlar ro'yxati
+        # Reyting pog'ona nomlari — xalqaro ilmiy atamalar (lotin/yunon
+        # ildizli). O'zbek, ingliz, turk, ispan, qoraqalpoq va qitoy
+        # tillarida bir xil yoziladi; "Supernova", "Pulsar", "Magnetar"
+        # hech qaysi tilda o'girilmaydi (ADR-0027).
+        "title.atom", "title.supernova", "title.pulsar", "title.magnetar",
     },
     # Qoraqalpoq tili o'zbek tiliga eng yaqini — xalqaro o'zlashmalar
     # ikkalasida ham aynan bir xil yoziladi.
