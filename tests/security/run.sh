@@ -1,5 +1,26 @@
 #!/usr/bin/env bash
-# Judge sandbox izolyatsiyasi — CI da har PR da ishlaydi.
+# Judge sandbox izolyatsiyasi + ilova darajasidagi qoidalar.
+#
+# ⚠️ Bu skript HAR PR DA ishlamaydi. Ilgari shunday deb yozilgan edi va o'sha
+# da'vo noto'g'ri bo'lib qolgan: yagona chaqiruvchi
+# `.github/workflows/security.yml` (94–95-qatorlar) va u O'CHIRILGAN —
+# `on: workflow_dispatch` + job `if: false` (egasi qarori 2026-09-21).
+#
+# Amaldagi avtomatik yurish — Nightly'ning `security` job'i: u shu skriptni
+# `SECURITY_STATIC_ONLY=1` bilan chaqiradi, ya'ni 1–2-bo'limlar (statik yarmi).
+# Yozuv: `docs/research/2026-09-21-security-suite/`.
+#
+# Dinamik yarmi (3-bo'lim) shu skript orqali hech qayerda avtomatik yurmaydi,
+# lekin uning QAMROVI bor: Nightly `e2e` job'idagi bake-off qadami ayni
+# `services/bakeoff/harness/runner.py` ni case-filtrisiz yurgizadi, ya'ni
+# `ISOLATION_CASES` (09-fork-bomb … 13-symlink) o'sha yerda o'lchanadi. Uni
+# bu yerda ikkinchi marta yuritish kafolat qo'shmaydi, faqat vaqt yeydi —
+# shuning uchun `SECURITY_STATIC_ONLY` shoxi bor.
+#
+# ⚠️ 1-bo'lim `yaml` talab qiladi (`check_compose.py` `docker-compose.yml` ni
+# YAML sifatida tahlil qiladi). Chaqiruvchi muhit uni ta'minlashi kerak:
+# Nightly job'i `pip install pyyaml` qiladi, aks holda skript
+# `ModuleNotFoundError` bilan yiqiladi.
 #
 # Bu bake-off harness'ining IZOLYATSIYA qismini qayta ishlatadi: o'sha
 # case'lar, o'sha moddiy tekshiruvlar. Alohida to'plam yozish ikkita
@@ -67,7 +88,15 @@ fi
 echo
 echo "═══ 3. Sandbox escape sinovlari ═══"
 
-if [ -z "${REDIS_URL:-}" ]; then
+if [ -n "${SECURITY_STATIC_ONLY:-}" ]; then
+  # Nightly shu rejimda chaqiradi. Sabab: izolyatsiya case'lari o'sha job'da
+  # bake-off qadamida allaqachon yuriydi (ayni harness, ayni case to'plami),
+  # ya'ni bu yerda takrorlash faqat vaqt yeydi. Batafsil:
+  # `docs/research/2026-09-21-security-suite/`.
+  note "SECURITY_STATIC_ONLY — dinamik yarmi ATAYLAB o'tkazib yuborildi"
+  note "Uni Nightly'ning bake-off qadami yurgizadi: ayni runner.py, ayni 25 case,"
+  note "shu jumladan ISOLATION_CASES (09-fork-bomb … 13-symlink)."
+elif [ -z "${REDIS_URL:-}" ]; then
   note "REDIS_URL yo'q — judge ishlamayapti, dinamik sinovlar o'tkazib yuborildi"
   note "Ularni local ishga tushirish:"
   note "  docker compose up -d redis && docker run -d --privileged … rankwant/judge-go"

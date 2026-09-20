@@ -3637,6 +3637,14 @@ _DECISIONS_SANDBOX_FILES = (
     "docs/research/2026-09-21-judge-latency/README.md",
     "docs/research/README.md",
     "tools/latency_summary.py",
+    # Security suite (2026-09-21): the rule reads the suite's shell script to
+    # prove the static-only branch still exists, and the record to prove the
+    # *reason* for that branch was written down. `nightly.yml` is staged by the
+    # workflow glob and `docs/research/README.md` is listed above. A missing
+    # entry here makes `check_decisions.py` exit 2 in the sandbox copy, and
+    # `neg_decisions_sandbox_covers_reads` names the file.
+    "tests/security/run.sh",
+    "docs/research/2026-09-21-security-suite/README.md",
 )
 
 
@@ -4374,6 +4382,132 @@ def neg_latency_summary_records_the_figure() -> tuple[bool, str]:
     if "173" not in out or "1683" not in out:
         return False, f"latency/raqam: p50/p95 chiqmadi — {out.strip()[-160:]}"
     return True, "latency/raqam: p50 173 · p95 1683 o'qildi va yozildi (exit 0)"
+
+
+# ── Security suite: the static half runs in Nightly (2026-09-21) ──
+#
+# Measured: `tests/security/run.sh` had exactly one caller —
+# `.github/workflows/security.yml` — and that workflow is disabled, so the
+# static half (judge host rules, IDOR, PAT hashing, rate limits) ran nowhere
+# automatically. The owner chose "attach to Nightly". The wiring is
+# static-only on purpose: the dynamic half already runs in the same workflow's
+# `e2e` job through `--profile bakeoff`, with the same `runner.py` and the same
+# case set, so running it again would buy no assurance and need a full stack.
+#
+# One test per link that can break quietly.
+
+_SEC_SUITE_RULE = "xavfsizlik to'plami avtomatik yuriydi"
+_SEC_SUITE_SH = "tests/security/run.sh"
+_SEC_SUITE_RECORD = "docs/research/2026-09-21-security-suite/README.md"
+_SEC_SUITE_NIGHTLY = ".github/workflows/nightly.yml"
+
+
+def neg_decisions_security_suite_unwired() -> tuple[bool, str]:
+    """Nightly chaqiruvi o'chsa tutilsin — to'plam yana «hech qayerda» bo'ladi."""
+    return _decision_broken(
+        _SEC_SUITE_NIGHTLY,
+        "        run: tests/security/run.sh",
+        "        run: tests/security/run_off.sh",
+        _SEC_SUITE_RULE,
+    )
+
+
+def neg_decisions_security_suite_static_mode_dropped() -> tuple[bool, str]:
+    """`SECURITY_STATIC_ONLY` tushsa tutilsin — dinamik yarmi takrorlanadi.
+
+    Usiz Nightly bake-off bilan BIR XIL ishni ikkinchi marta yurgizadi:
+    qo'shimcha kafolat yo'q, faqat vaqt va to'liq stack.
+    """
+    return _decision_broken(
+        _SEC_SUITE_NIGHTLY,
+        "          SECURITY_STATIC_ONLY: '1'",
+        "          SECURITY_STATIC_ONLY: '0'",
+        _SEC_SUITE_RULE,
+    )
+
+
+def neg_decisions_security_suite_pyyaml_dropped() -> tuple[bool, str]:
+    """`pyyaml` o'rnatilmasa tutilsin — job 1-bo'limda `ModuleNotFoundError` bilan yiqiladi.
+
+    ⚠️ Butun qadam olib tashlanadi, `pyyaml` → `pyyaml-off` kabi almashtirish
+    EMAS: natijada hosil bo'lgan satr qoida langarini o'z ichida saqlab qoladi
+    (`        run: pip install pyyaml` — `...pyyaml-off` ning prefiksi), ya'ni
+    qoida o'tib ketardi va test o'lik bo'lardi. O'lchandi: birinchi variant
+    aynan shunday «exit 0» berdi.
+    """
+    return _decision_broken(
+        _SEC_SUITE_NIGHTLY,
+        "      - name: PyYAML for the compose check\n        run: pip install pyyaml",
+        "      - name: PyYAML step removed",
+        _SEC_SUITE_RULE,
+    )
+
+
+def neg_decisions_security_suite_timeout_dropped() -> tuple[bool, str]:
+    """`security` job'ining chegarasi o'chsa tutilsin.
+
+    ⚠️ Bu test qoidaning o'zidagi tuzoqni ham qo'riqlaydi: qoida job blokini
+    chegaralamasa, chegarasiz qidiruv KEYINGI job'ning `timeout-minutes` ini
+    topib qo'yardi va hech qachon yiqilmasdi — ya'ni qo'riqchi o'lik bo'lardi.
+    """
+    return _decision_broken(
+        _SEC_SUITE_NIGHTLY,
+        "    timeout-minutes: 3\n    steps:",
+        "    steps:",
+        _SEC_SUITE_RULE,
+    )
+
+
+def neg_decisions_security_suite_record_deleted() -> tuple[bool, str]:
+    """Yozuv o'chsa tutilsin — statik rejimning sababi yo'qoladi."""
+    code, out = _decisions_sandbox({}, drop=(_SEC_SUITE_RECORD,))
+    if code != 1 or _SEC_SUITE_RULE not in out:
+        return False, f"security-suite/yozuv o'chirilgan: exit {code} — {out.strip()[-160:]}"
+    return True, "security-suite/yozuv o'chirilgan: tutildi (exit 1)"
+
+
+def neg_decisions_security_suite_reason_dropped() -> tuple[bool, str]:
+    """Yozuvda `ISOLATION_CASES` bo'lmasa tutilsin — sabab isbotsiz qoladi."""
+    return _decision_broken(
+        _SEC_SUITE_RECORD, "ISOLATION_CASES", "ISOLATION_SET", _SEC_SUITE_RULE
+    )
+
+
+def neg_decisions_security_suite_claim_restored() -> tuple[bool, str]:
+    """Eski yolg'on da'vo qaytsa tutilsin — u aynan shu bo'shliqning sababi edi."""
+    return _decision_broken(
+        _SEC_SUITE_SH,
+        "# Judge sandbox izolyatsiyasi + ilova darajasidagi qoidalar.",
+        "# Judge sandbox izolyatsiyasi — CI da har PR da ishlaydi.",
+        _SEC_SUITE_RULE,
+    )
+
+
+def neg_decisions_security_suite_static_branch_removed() -> tuple[bool, str]:
+    """Skriptdagi statik rejim shoxi o'chsa tutilsin.
+
+    ⚠️ Langar to'liq kod qatori bo'lishi SHART: `SECURITY_STATIC_ONLY` so'zi
+    skriptning izohlarida ham uchraydi, ya'ni yalang matn qidiruvchi qoida
+    haqiqiy shox o'chirilganda ham yashil qolardi.
+    """
+    return _decision_broken(
+        _SEC_SUITE_SH,
+        'if [ -n "${SECURITY_STATIC_ONLY:-}" ]; then',
+        'if [ -n "${SECURITY_RUN_ALL:-}" ]; then',
+        _SEC_SUITE_RULE,
+    )
+
+
+def neg_decisions_security_suite_passes() -> tuple[bool, str]:
+    """Ijobiy nazorat: qoida toza daraxtda o'tsin.
+
+    Usiz yuqoridagi sakkiz testning hammasi «qoida har doim yiqiladi» degan
+    o'lik qo'riqchini ham yashil ko'rsatardi.
+    """
+    code, out = run_check("decisions")
+    if code != 0:
+        return False, f"security-suite/ijobiy nazorat: exit {code} — {out.strip()[-160:]}"
+    return True, "security-suite/ijobiy nazorat: qoida toza daraxtda o'tdi (exit 0)"
 
 
 def neg_negative_constants_are_unique() -> tuple[bool, str]:
@@ -6263,6 +6397,42 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "latency raqamni haqiqatan yozadi",
                 neg_latency_summary_records_the_figure,
+            ),
+            (
+                "security to'plami Nightly'ga ulanmagan",
+                neg_decisions_security_suite_unwired,
+            ),
+            (
+                "security to'plami statik rejimda emas",
+                neg_decisions_security_suite_static_mode_dropped,
+            ),
+            (
+                "security job'ida pyyaml yo'q",
+                neg_decisions_security_suite_pyyaml_dropped,
+            ),
+            (
+                "security job'ida chegara yo'q",
+                neg_decisions_security_suite_timeout_dropped,
+            ),
+            (
+                "security yozuvi o'chirilgan",
+                neg_decisions_security_suite_record_deleted,
+            ),
+            (
+                "security yozuvida sabab yozilmagan",
+                neg_decisions_security_suite_reason_dropped,
+            ),
+            (
+                "security eski da'vosi qaytgan",
+                neg_decisions_security_suite_claim_restored,
+            ),
+            (
+                "security statik shoxi o'chirilgan",
+                neg_decisions_security_suite_static_branch_removed,
+            ),
+            (
+                "security qoidasi toza daraxtda o'tadi",
+                neg_decisions_security_suite_passes,
             ),
             (
                 "modul konstantalari takrorlanmasin",

@@ -109,6 +109,15 @@ from `.github/workflows/security.yml` (lines 94–95), and that workflow is disa
 negative tests). The suite's *dynamic* half is duplicated by the Nightly bake-off
 step, so the marginal loss is the static checks.
 
+> **Update, later on 2026-09-21 — the last row above was closed.** The static half
+> now runs in Nightly, job `security`, invoked with `SECURITY_STATIC_ONLY=1`
+> precisely *because* the dynamic half is already covered by the bake-off step.
+> See [`2026-09-21-security-suite`](../2026-09-21-security-suite/README.md). The
+> table above is left as written: it records what was true when this document was
+> produced, and an auditor should be able to see both the gap and its closure.
+> Note that `gitleaks`, `pip-audit` and `npm audit` live in the same disabled
+> workflow and are **still** not covered — that remains open.
+
 The five `ISOLATION_CASES` are wired by construction: the `bakeoff` service in
 `docker-compose.ci.yml` runs `runner.py --worker judge-go` with **no `--cases`
 filter**, so `runner.py` loads every case in `services/bakeoff/cases/`. No

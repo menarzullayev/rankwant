@@ -243,6 +243,51 @@ jobs:
         if: always()
         run: docker image rm "${COMPOSE_PROJECT_NAME}-judge" || true
 
+  security:
+    name: Security — static suite
+    runs-on: ubuntu-latest
+    # ⚠️ The time limit is REQUIRED: nothing on the self-hosted runner may
+    # wait forever. This job installs one wheel and reads repository files —
+    # measured locally, the checks themselves take under a second. 3 minutes
+    # is the cap, not a budget to spend.
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v7
+      # `check_compose.py` parses `docker-compose.yml` with PyYAML, so the
+      # suite needs one wheel the runner does not ship.
+      #
+      # It is NOT taken from `apps/api/requirements.lock`: that would install
+      # the whole Django stack (~1 min) to parse one file. It is NOT run
+      # inside the `api` image either — that would make `tools/ci_stack.sh`
+      # build an image (measured: 120–180 s warm) for a job that never starts
+      # a service. These checks read repository FILES, not a running stack.
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: PyYAML for the compose check
+        run: pip install pyyaml
+      - name: Static suite — judge host, IDOR, PAT hash, rate limits
+        # Open divergence of docs/research/2026-09-21-security-boundary/ § 5:
+        # `tests/security/run.sh` was invoked only from the DISABLED
+        # `security.yml` (`workflow_dispatch` + `if: false`), so its static
+        # half ran nowhere automatically while the file itself claimed it ran
+        # on every PR.
+        #
+        # `SECURITY_STATIC_ONLY=1` is deliberate, not a shortcut: the dynamic
+        # half (isolation cases 09-fork-bomb … 13-symlink) already runs in
+        # this workflow's `e2e` job via `--profile bakeoff`, with the same
+        # `runner.py` and the same case set (all 25 in
+        # `services/bakeoff/cases/`, no `--cases` filter). Running it a second
+        # time would add a full stack to a job that needs none and buy no
+        # extra assurance. See docs/research/2026-09-21-security-suite/.
+        #
+        # Own job, not a step in `e2e`: same reasoning as the latency job
+        # above — a security failure inside the browser matrix would be
+        # attributed to the wrong thing.
+        env:
+          SECURITY_STATIC_ONLY: '1'
+        run: tests/security/run.sh
+
   latency:
     name: Latency — judge budget
     runs-on: ubuntu-latest
