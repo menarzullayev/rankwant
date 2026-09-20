@@ -181,15 +181,16 @@ export function Dropdown({
             <Icon name="nav.expandDown" className={header ? "size-3.5" : "size-4"} />
           )}
         </span>
+      </div>
 
-        <ComboboxOptions
-          anchor={optionsClassName ? undefined : header ? ANCHOR.header : ANCHOR.field}
-          modal={false}
-          style={optionsStyle}
-          className={`z-[200] max-h-72 overflow-y-auto rw-radius border rw-line rw-surface p-1.5 rw-shadow [--anchor-gap:4px] [--anchor-max-height:18rem] ${
-            optionsClassName ?? (header ? "mt-1 w-64" : "mt-1 w-[var(--input-width)]")
-          }`}
-        >
+      <ComboboxOptions
+        anchor={optionsStyle ? undefined : header ? ANCHOR.header : ANCHOR.field}
+        modal={false}
+        style={optionsStyle}
+        className={`z-[200] max-h-72 overflow-y-auto rw-radius border rw-line rw-surface p-1.5 rw-shadow [--anchor-gap:4px] [--anchor-max-height:18rem] ${
+          optionsClassName ?? (header ? "top-full mt-1 w-64" : "mt-1 w-[var(--input-width)]")
+        }`}
+      >
           {filtered.length === 0 ? (
             <p className="px-3 py-2 text-theme-sm rw-faint">{emptyText}</p>
           ) : (
@@ -229,8 +230,7 @@ export function Dropdown({
               </div>
             ))
           )}
-        </ComboboxOptions>
-      </div>
+      </ComboboxOptions>
       {hint && <span className="mt-1.5 block text-theme-xs rw-dim">{hint}</span>}
     </Combobox>
   );

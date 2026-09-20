@@ -150,7 +150,7 @@ export function LocaleSwitch() {
         placeholder={t(locale, "locale.switchLabel")}
         onOpen={placePanel}
         optionsClassName={
-          narrowBox === null ? "absolute right-0 mt-1 w-64" : "fixed mt-1"
+          narrowBox === null ? "w-64" : "fixed mt-1"
         }
         optionsStyle={
           narrowBox === null
