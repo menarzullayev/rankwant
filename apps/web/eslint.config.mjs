@@ -1,9 +1,18 @@
 import next from "eslint-config-next";
+import tseslint from "typescript-eslint";
 
 // eslint-config-next 16 native flat config beradi — FlatCompat kerak emas.
+//
+// ESLint 10: Next compiled babel parser eski ScopeManager beradi —
+// `addGlobals` yo'q, lint `TypeError` bilan yiqiladi. typescript-eslint
+// parser ESLint 10 ScopeManager'ini beradi (`.mts` ham shu yerda).
 const config = [
   { ignores: [".next/**", "node_modules/**", "next-env.d.ts"] },
   ...next,
+  {
+    languageOptions: { parser: tseslint.parser },
+    settings: { react: { version: "19.0.0" } },
+  },
   {
     rules: {
       // `rehype-raw` masala matnidagi xom HTML ni JONLANTIRADI. Matn tashqi

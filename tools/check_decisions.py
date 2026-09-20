@@ -1442,6 +1442,23 @@ def selected_kit_frozen() -> str | None:
     return None
 
 
+def eslint_ten_uses_ts_parser() -> str | None:
+    """2026-09-20: ESLint 10 + typescript-eslint parser (Next babel parser yo'q).
+
+    eslint-config-next 16.3.5 compiled babel parser ESLint 10 ScopeManager
+    (`addGlobals`) bermaydi — lint TypeError. `.mts` ham shu parserda.
+    """
+    pkg = read("apps/web/package.json")
+    if '"eslint": "^10.' not in pkg and '"eslint": "10.' not in pkg:
+        return "apps/web/package.json: ESLint 10 emas"
+    cfg = read("apps/web/eslint.config.mjs")
+    if "parser: tseslint.parser" not in cfg:
+        return "apps/web/eslint.config.mjs: typescript-eslint parser yo'q (Next babel ESLint 10 da yiqiladi)"
+    if "eslint-config-next/parser" in cfg:
+        return "apps/web/eslint.config.mjs: Next babel parser qaytdi"
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -1473,6 +1490,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("TypeScript 7 yonma-yon", typescript_side_by_side),
     ("@types/node runtime bilan", types_node_tracks_runtime),
     ("tanlangan kit muzlatilgan", selected_kit_frozen),
+    ("ESLint 10 typescript parser", eslint_ten_uses_ts_parser),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),
