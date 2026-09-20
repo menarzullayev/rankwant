@@ -8,6 +8,7 @@ import type { VerdictVariant } from "@/lib/theme/verdict";
 import type { StatusVariant } from "@/lib/theme/status";
 import type { LoadingVariant } from "@/lib/theme/loading";
 import type { IconPackId } from "@/lib/theme/icon-packs";
+import type { OverlayVariant } from "@/lib/theme/overlay";
 import { API_BASE, getJson } from "./client";
 
 /** Profilda yashirish mumkin bo'lgan maydonlar (`core.models.PRIVACY_FIELDS`). */
@@ -79,6 +80,9 @@ export type AppearancePrefs = {
   /** Ikonka to'plami (D10/D11). Qamrov: `nav`/`action`/`status`
    *  o'zgaradi, `verdict`/`brand` qat'iy (D20 ①). */
   iconPack?: IconPackId;
+  /** Oyna oilasi — tasdiq, modal, tooltip, menyu. CSS-only
+   *  (`data-overlay`), markup cookie'ga kirmaydi. */
+  overlayStyle?: OverlayVariant;
 };
 
 export type A11yPrefs = {

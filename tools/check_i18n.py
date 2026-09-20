@@ -111,6 +111,12 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         "admin.label.lang.ru",
         "admin.label.lang.en",
         "admin.help.languageCodes",  # "uz / ru / en" — kodlar ro'yxati
+        # Oyna oilasi NOMLARI — studio'da muhrlangan atoqli otlar
+        # (Qog'oz, Soyabon, Projektor, Orol). Hintlar tarjima qilinadi.
+        "overlay.style.qogoz",
+        "overlay.style.soyabon",
+        "overlay.style.projektor",
+        "overlay.style.orol",
     },
     # Qoraqalpoq tili o'zbek tiliga eng yaqini — xalqaro o'zlashmalar
     # ikkalasida ham aynan bir xil yoziladi.

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
 import { Status } from "@/components/ui/Status";
+import { useConfirm } from "@/components/overlay/OverlayHost";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { errorText, t } from "@/i18n/messages";
@@ -14,6 +15,7 @@ import { API_BASE, ApiError, deleteJson } from "@/lib/api";
 
 export function AccountSettings() {
   const locale = useLocale();
+  const confirm = useConfirm();
   const router = useRouter();
   const { clear } = useSession();
   const [error, setError] = useState("");
@@ -57,7 +59,8 @@ export function AccountSettings() {
 
   async function onDelete(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!window.confirm(t(locale, "settings.deleteConfirm"))) return;
+    if (!(await confirm(t(locale, "settings.deleteConfirm"), { danger: true })))
+      return;
     setError("");
     setBusy("delete");
     const password = String(new FormData(event.currentTarget).get("password"));

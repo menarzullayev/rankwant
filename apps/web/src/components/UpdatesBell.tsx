@@ -1,15 +1,10 @@
 "use client";
 
-import {
-  Dialog,
-  DialogBackdrop,
-  DialogPanel,
-  DialogTitle,
-} from "@headlessui/react";
 import type { Route } from "next";
 import Link from "next/link";
 import { useState } from "react";
 
+import { OverlayDialog } from "@/components/overlay/OverlayHost";
 import { UpdateKindBadge } from "@/components/UpdateKindBadge";
 import { useSession } from "@/context/SessionContext";
 import { useUpdates } from "@/context/UpdatesContext";
@@ -18,7 +13,7 @@ import { date, t } from "@/i18n/messages";
 import { Icon } from "@/components/ui/Icon";
 import { fetchUpdateUnread, type SystemUpdate } from "@/lib/api";
 
-/** O'qilmagan o'zgarishlar — header belgisi va slide-over panel (qaror 6).
+/** O'qilmagan o'zgarishlar — header belgisi va overlay modal (qaror 6).
  *
  *  Mehmon hech narsa ko'rmaydi: o'qilmagan holat `UpdateRead` yozuviga
  *  tayanadi, mehmonda esa u yo'q (qaror 7, 8).
@@ -89,81 +84,60 @@ export default function UpdatesBell() {
         )}
       </button>
 
-      <Dialog
+      <OverlayDialog
         open={open}
         onClose={() => setOpen(false)}
-        className="relative z-50"
-      >
-        <DialogBackdrop className="fixed inset-0 bg-black/40" />
-        <div className="fixed inset-0 flex justify-end">
-          <DialogPanel className="flex h-full w-full max-w-md flex-col border-l rw-divider rw-chrome">
-            <header className="flex items-center justify-between gap-3 border-b rw-divider px-5 py-4">
-              <DialogTitle className="text-theme-xl font-semibold rw-strong">
-                {t(locale, "nav.updates")}
-              </DialogTitle>
+        title={t(locale, "nav.updates")}
+        footer={
+          <>
+            <Link
+              href={"/updates" as Route}
+              onClick={() => setOpen(false)}
+              className="text-theme-sm font-medium rw-accent-ink hover:underline"
+            >
+              {t(locale, "update.back")}
+            </Link>
+            {items !== null && items.length > 0 ? (
               <button
                 type="button"
-                onClick={() => setOpen(false)}
-                aria-label={t(locale, "nav.close")}
-                className="flex size-10 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg"
+                onClick={() => dismiss()}
+                className="rw-ov-btn rw-ov-go"
               >
-                <Icon name="nav.close" />
+                {t(locale, "update.markAllRead")}
               </button>
-            </header>
-
-            <div className="flex-1 overflow-y-auto">
-              {items !== null &&
-                (items.length === 0 ? (
-                  <p className="px-5 py-10 text-center text-theme-sm rw-faint">
-                    {t(locale, "update.allRead")}
-                  </p>
-                ) : (
-                  <ul className="divide-y rw-divide">
-                    {items.map((row) => (
-                      <li key={row.id}>
-                        <Link
-                          href={`/updates/${row.id}`}
-                          onClick={() => dismiss([row.id])}
-                          className="block px-5 py-4 transition rw-hover-bg"
-                        >
-                          <span className="flex flex-wrap items-center gap-2">
-                            <UpdateKindBadge kind={row.kind} locale={locale} />
-                            <span className="text-theme-xs rw-faint">
-                              {date(row.released_at, locale)}
-                            </span>
-                          </span>
-                          <span className="mt-2 block font-medium rw-strong">
-                            {row.title}
-                          </span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                ))}
-            </div>
-
-            <footer className="flex items-center justify-between gap-3 border-t rw-divider px-5 py-4">
-              <Link
-                href={"/updates" as Route}
-                onClick={() => setOpen(false)}
-                className="text-theme-sm font-medium rw-accent-ink hover:underline"
-              >
-                {t(locale, "update.back")}
-              </Link>
-              {items !== null && items.length > 0 && (
-                <button
-                  type="button"
-                  onClick={() => dismiss()}
-                  className="rw-radius-sm rw-accent-bg px-4 py-2 text-theme-sm font-medium"
-                >
-                  {t(locale, "update.markAllRead")}
-                </button>
-              )}
-            </footer>
-          </DialogPanel>
-        </div>
-      </Dialog>
+            ) : null}
+          </>
+        }
+      >
+        {items !== null &&
+          (items.length === 0 ? (
+            <p className="py-6 text-center text-theme-sm rw-faint">
+              {t(locale, "update.allRead")}
+            </p>
+          ) : (
+            <ul className="divide-y rw-divide">
+              {items.map((row) => (
+                <li key={row.id}>
+                  <Link
+                    href={`/updates/${row.id}`}
+                    onClick={() => dismiss([row.id])}
+                    className="block py-3 transition rw-hover-bg"
+                  >
+                    <span className="flex flex-wrap items-center gap-2">
+                      <UpdateKindBadge kind={row.kind} locale={locale} />
+                      <span className="text-theme-xs rw-faint">
+                        {date(row.released_at, locale)}
+                      </span>
+                    </span>
+                    <span className="mt-2 block font-medium rw-strong">
+                      {row.title}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ))}
+      </OverlayDialog>
     </>
   );
 }
-

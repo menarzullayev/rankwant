@@ -6,6 +6,7 @@ import { CrudPage, type FieldDef } from "@/components/admin/CrudPage";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Status } from "@/components/ui/Status";
+import { useConfirm } from "@/components/overlay/OverlayHost";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t, errorText } from "@/i18n/messages";
 import { ApiError } from "@/lib/api";
@@ -201,6 +202,7 @@ function ProblemTestsPanel({
   reload: () => void;
 }) {
   const locale = useLocale();
+  const confirm = useConfirm();
   const path = `/staff/problems/${problem.slug}/tests/`;
   const [tests, setTests] = useState<StaffTestCase[]>([]);
   const [error, setError] = useState("");
@@ -258,7 +260,8 @@ function ProblemTestsPanel({
   }
 
   async function remove(tc: StaffTestCase) {
-    if (!window.confirm(t(locale, "admin.confirmDelete"))) return;
+    if (!(await confirm(t(locale, "admin.confirmDelete"), { danger: true })))
+      return;
     try {
       await staff.remove(`${path}${tc.order}/`);
       await load();

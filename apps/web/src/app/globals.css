@@ -1886,3 +1886,420 @@ body::-webkit-scrollbar,
     display: none !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   OVERLAY — tasdiq / modal / tooltip / menyu (01 Qog'oz, 06 Soyabon,
+   07 Projektor, 08 Orol). Standart = Qog'oz: `data-overlay` yo'q.
+   ═══════════════════════════════════════════════════════════════════ */
+
+#rw-overlay-layer {
+  pointer-events: none;
+}
+
+.rw-ov-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: color-mix(in srgb, var(--rw-text) 28%, transparent);
+}
+
+.rw-ov-panel {
+  position: fixed;
+  z-index: 81;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(28rem, 88vw);
+  max-height: min(36rem, 86vh);
+  display: flex;
+  flex-direction: column;
+  background: var(--rw-ground);
+  color: var(--rw-text);
+  border: 1px solid var(--rw-text);
+  border-radius: 16px;
+  padding: 1.15rem 1.2rem 1.1rem;
+  box-shadow: 0 18px 40px color-mix(in srgb, var(--rw-text) 12%, transparent);
+}
+
+.rw-ov-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.rw-ov-title {
+  margin: 0 0 0.4rem;
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.rw-ov-copy {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  color: color-mix(in srgb, var(--rw-text) 72%, transparent);
+}
+
+.rw-ov-body {
+  min-height: 0;
+  overflow: auto;
+}
+
+.rw-ov-acts {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.rw-ov-btn {
+  border-radius: 8px;
+  padding: 0.5rem 0.85rem;
+  cursor: pointer;
+  border: 1px solid var(--rw-text);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+.rw-ov-go {
+  background: var(--rw-accent);
+  color: var(--rw-accent-fg);
+  border-color: var(--rw-accent);
+}
+
+.rw-ov-go.is-danger {
+  background: var(--rw-bad-ink);
+  color: var(--rw-ground);
+  border-color: var(--rw-bad-ink);
+}
+
+.rw-ov-x {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.rw-ov-x:hover {
+  background: color-mix(in srgb, var(--rw-text) 8%, transparent);
+}
+
+.rw-ov-tip {
+  position: fixed;
+  z-index: 90;
+  pointer-events: none;
+  background: var(--rw-ground);
+  color: var(--rw-text);
+  border: 1px solid var(--rw-text);
+  border-radius: 10px;
+  padding: 0.4rem 0.55rem;
+  font-size: 12px;
+  max-width: 14rem;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--rw-text) 10%, transparent);
+}
+
+.rw-ov-menu {
+  position: fixed;
+  z-index: 81;
+  pointer-events: auto;
+  background: var(--rw-ground);
+  color: var(--rw-text);
+  border: 1px solid var(--rw-text);
+  border-radius: 12px;
+  padding: 0.35rem;
+  min-width: 11rem;
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--rw-text) 12%, transparent);
+}
+
+.rw-ov-menu button {
+  display: block;
+  width: 100%;
+  text-align: start;
+  background: none;
+  border: 0;
+  padding: 0.45rem 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  color: inherit;
+}
+
+.rw-ov-menu button:hover,
+.rw-ov-menu button:focus-visible {
+  background: color-mix(in srgb, var(--rw-accent) 12%, var(--rw-ground));
+}
+
+.rw-ov-menu button.is-danger {
+  color: var(--rw-bad-ink);
+}
+
+/* ── 06 Soyabon ──────────────────────────────────────── */
+
+[data-overlay="soyabon"] .rw-ov-scrim {
+  background: transparent;
+}
+
+[data-overlay="soyabon"] .rw-ov-panel {
+  left: 24px;
+  top: 24px;
+  transform: none;
+  width: min(20rem, 86vw);
+  border: 1px solid color-mix(in srgb, var(--rw-text) 18%, var(--rw-ground));
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  box-shadow: 0 10px 40px color-mix(in srgb, var(--rw-text) 16%, transparent);
+}
+
+[data-overlay="soyabon"] .rw-ov-title {
+  font-size: 1rem;
+  margin: 0 0 0.3rem;
+}
+
+[data-overlay="soyabon"] .rw-ov-copy {
+  margin: 0 0 0.8rem;
+  font-size: 13px;
+}
+
+[data-overlay="soyabon"] .rw-ov-acts {
+  gap: 0.4rem;
+}
+
+[data-overlay="soyabon"] .rw-ov-btn {
+  border: 0;
+  background: transparent;
+  padding: 0.35rem 0.5rem;
+  font-size: 13px;
+}
+
+[data-overlay="soyabon"] .rw-ov-go {
+  background: transparent;
+  color: var(--rw-accent-ink);
+  border: 0;
+  font-weight: 600;
+}
+
+[data-overlay="soyabon"] .rw-ov-go.is-danger {
+  background: transparent;
+  color: var(--rw-bad-ink);
+}
+
+[data-overlay="soyabon"] .rw-ov-tip {
+  background: color-mix(in srgb, var(--rw-text) 92%, transparent);
+  color: var(--rw-ground);
+  border: 0;
+  border-radius: 6px;
+  padding: 0.28rem 0.45rem;
+  font-size: 11.5px;
+  max-width: 12rem;
+  box-shadow: none;
+}
+
+[data-overlay="soyabon"] .rw-ov-menu {
+  left: 24px;
+  top: 24px;
+  transform: none;
+  border: 0;
+  border-radius: 10px;
+  min-width: 10.5rem;
+  padding: 0.3rem;
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--rw-text) 16%, transparent);
+}
+
+[data-overlay="soyabon"] .rw-ov-menu button {
+  border-radius: 7px;
+  padding: 0.4rem 0.55rem;
+}
+
+/* ── 07 Projektor ────────────────────────────────────── */
+
+[data-overlay="projektor"] .rw-ov-scrim {
+  background: radial-gradient(
+    circle at 50% 46%,
+    color-mix(in srgb, var(--rw-text) 15%, transparent),
+    color-mix(in srgb, var(--rw-text) 72%, transparent)
+  );
+}
+
+[data-overlay="projektor"] .rw-ov-panel {
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%);
+  width: min(22rem, 78vw);
+  background: var(--rw-ground);
+  padding: 1.4rem 1.2rem 1.15rem;
+  text-align: center;
+  border: 0;
+  border-radius: 2px;
+  box-shadow: none;
+}
+
+[data-overlay="projektor"] .rw-ov-head {
+  justify-content: center;
+}
+
+[data-overlay="projektor"] .rw-ov-title {
+  margin: 0 0 0.45rem;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+[data-overlay="projektor"] .rw-ov-copy {
+  margin: 0 0 1.1rem;
+}
+
+[data-overlay="projektor"] .rw-ov-acts {
+  justify-content: center;
+  gap: 0.7rem;
+}
+
+[data-overlay="projektor"] .rw-ov-btn {
+  border: 0;
+  background: transparent;
+  padding: 0.4rem 0.2rem;
+  font-size: 13px;
+  border-radius: 0;
+  border-bottom: 1px solid transparent;
+}
+
+[data-overlay="projektor"] .rw-ov-go {
+  background: transparent;
+  color: var(--rw-bad-ink);
+  border: 0;
+  border-bottom: 1px solid var(--rw-bad-ink);
+  font-weight: 600;
+}
+
+[data-overlay="projektor"] .rw-ov-go.is-danger {
+  background: transparent;
+  color: var(--rw-bad-ink);
+}
+
+[data-overlay="projektor"] .rw-ov-tip {
+  background: var(--rw-ground);
+  border: 0;
+  border-radius: 0;
+  padding: 0.45rem 0.6rem;
+  text-align: center;
+  max-width: 12rem;
+  box-shadow: 0 0 0 999px color-mix(in srgb, var(--rw-text) 45%, transparent);
+}
+
+[data-overlay="projektor"] .rw-ov-menu {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--rw-ground);
+  border: 0;
+  border-radius: 0;
+  min-width: 14rem;
+  padding: 0.8rem 0;
+  text-align: center;
+  box-shadow: none;
+}
+
+[data-overlay="projektor"] .rw-ov-menu button {
+  text-align: center;
+  border-radius: 0;
+  padding: 0.55rem 1rem;
+  font-size: 14px;
+}
+
+/* ── 08 Orol ─────────────────────────────────────────── */
+
+[data-overlay="orol"] .rw-ov-scrim {
+  background: color-mix(in srgb, var(--rw-text) 22%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+[data-overlay="orol"] .rw-ov-panel {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(24rem, 80vw);
+  background: color-mix(in srgb, var(--rw-ground) 86%, var(--rw-text));
+  border: 0;
+  border-radius: 28px;
+  padding: 1.4rem 1.3rem 1.2rem;
+  box-shadow: 0 30px 60px color-mix(in srgb, var(--rw-text) 18%, transparent);
+}
+
+[data-overlay="orol"] .rw-ov-head {
+  justify-content: center;
+}
+
+[data-overlay="orol"] .rw-ov-title {
+  margin: 0 0 0.4rem;
+  font-size: 1.4rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+[data-overlay="orol"] .rw-ov-copy {
+  margin: 0 0 1.1rem;
+  text-align: center;
+}
+
+[data-overlay="orol"] .rw-ov-acts {
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+[data-overlay="orol"] .rw-ov-btn {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.55rem 1.05rem;
+  background: color-mix(in srgb, var(--rw-text) 8%, var(--rw-ground));
+}
+
+[data-overlay="orol"] .rw-ov-go {
+  background: var(--rw-accent);
+  color: var(--rw-accent-fg);
+}
+
+[data-overlay="orol"] .rw-ov-go.is-danger {
+  background: var(--rw-bad-ink);
+  color: var(--rw-ground);
+}
+
+[data-overlay="orol"] .rw-ov-tip {
+  background: var(--rw-ground);
+  border: 0;
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--rw-text) 12%, transparent);
+}
+
+[data-overlay="orol"] .rw-ov-menu {
+  background: var(--rw-ground);
+  border: 0;
+  border-radius: 22px;
+  padding: 0.45rem;
+  min-width: 11rem;
+  box-shadow: 0 18px 40px color-mix(in srgb, var(--rw-text) 16%, transparent);
+}
+
+[data-overlay="orol"] .rw-ov-menu button {
+  border-radius: 999px;
+  padding: 0.5rem 0.7rem;
+}
+
+@media print {
+  #rw-overlay-layer,
+  .rw-ov-scrim,
+  .rw-ov-panel,
+  .rw-ov-tip,
+  .rw-ov-menu {
+    display: none !important;
+  }
+}

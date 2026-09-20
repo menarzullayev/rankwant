@@ -9,7 +9,8 @@ Sxema **guruhlangan va versiyalangan**:
       "appearance": {"style", "accent", "font", "fontHeading", "size", "scale",
                      "lineHeight", "tracking", "width", "density", "navMode",
                      "navShape", "card", "pattern", "verdictStyle",
-                     "statusStyle", "loadingStyle", "iconPack"},
+                     "statusStyle", "loadingStyle", "iconPack",
+                     "overlayStyle"},
       "tokens": {},        # kuchli rejim (D9) — flag bilan O'CHIQ (D43)
       "a11y": {"vision", "motion", "bigTargets", "strongFocus"},
       "templates": [{"name", "appearance", "a11y", "theme"?}],
@@ -84,6 +85,7 @@ CATALOG_KEYS = (
     "statusStyle",
     "loadingStyle",
     "iconPack",
+    "overlayStyle",
 )
 APPEARANCE_KEYS = {
     "style",

@@ -16,6 +16,7 @@ import {
   TR,
   Table,
 } from "@/components/ui/Table";
+import { useConfirm } from "@/components/overlay/OverlayHost";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { type Locale, type MessageKey } from "@/i18n/messages";
 import { t, errorText } from "@/i18n/messages";
@@ -119,6 +120,7 @@ export function CrudPage<T extends Row>({
   canCreate = true,
 }: CrudPageProps<T>) {
   const locale = useLocale();
+  const confirm = useConfirm();
   const [rows, setRows] = useState<T[]>([]);
   const [count, setCount] = useState(0);
   const [page, setPage] = useState(1);
@@ -221,7 +223,8 @@ export function CrudPage<T extends Row>({
   }
 
   async function remove(item: T) {
-    if (!window.confirm(t(locale, "admin.confirmDelete"))) return;
+    if (!(await confirm(t(locale, "admin.confirmDelete"), { danger: true })))
+      return;
     try {
       await staff.remove(`${path}${idOf(item)}/`);
       await load();

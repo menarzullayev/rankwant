@@ -7,6 +7,7 @@ import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Field, type FieldStatus } from "@/components/ui/Field";
+import { useConfirm } from "@/components/overlay/OverlayHost";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { date, fill, t } from "@/i18n/messages";
@@ -235,6 +236,7 @@ type Check = { name: string; ok: boolean; reason: string };
 
 function UsernameCard() {
   const locale = useLocale();
+  const confirm = useConfirm();
   const { user, reload } = useSession();
   const action = useAction();
   const [name, setName] = useState("");
@@ -275,7 +277,11 @@ function UsernameCard() {
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!window.confirm(fill(t(locale, "settings.usernameConfirm"), { name: value })))
+    if (
+      !(await confirm(
+        fill(t(locale, "settings.usernameConfirm"), { name: value }),
+      ))
+    )
       return;
     const ok = await action.run(async () => {
       await postJson("/me/username/", { username: value, pay: Boolean(freeAt) });

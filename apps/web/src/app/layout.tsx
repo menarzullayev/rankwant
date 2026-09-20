@@ -255,6 +255,8 @@ if(LD.indexOf(a.loadingStyle)>=0)r.dataset.loading=a.loadingStyle;
 // almashartiradi. Standart (lucide) uchun atribut yozilmaydi.
 var IP=["lucide","phosphor","phosphorSolid","phosphorDuotone","heroicons","heroiconsSolid","tabler","bootstrap","remix","simple"];
 if(IP.indexOf(a.iconPack)>0)r.dataset.iconPack=a.iconPack;
+var OV=["qogoz","soyabon","projektor","orol"];
+if(OV.indexOf(a.overlayStyle)>0)r.dataset.overlay=a.overlayStyle;
 // Markup o'zgaruvchi uchtasini cookie'ga ham yozamiz (D61). Sabab: SSR
 // ularni cookie'dan o'qiydi, ya'ni cookie yo'q bo'lsa server standart
 // ko'rinishni chizadi va hidratsiya buziladi. Bu qator ESKI
