@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 530" width="980" height="530" role="img" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+<title>RankWant — API domain module map</title>
+<desc>The 19 Django domain modules grouped into six domains: identity, problems and content, judging, competition, ratings and economy, learning and community.</desc>
+<rect x="0" y="0" width="980" height="530" fill="#ffffff"/>
+
+<rect x="40" y="20" width="460" height="150" rx="12" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/>
+<text x="56" y="44" fill="#0C447C" font-size="13.5" font-weight="600" dominant-baseline="central">Identity and access</text>
+<rect x="56" y="58" width="124" height="30" rx="7" fill="#ffffff" stroke="#185FA5" stroke-width="1"/>
+<text x="118" y="73" text-anchor="middle" fill="#0C447C" font-size="12" dominant-baseline="central">core</text>
+<rect x="190" y="58" width="124" height="30" rx="7" fill="#ffffff" stroke="#185FA5" stroke-width="1"/>
+<text x="252" y="73" text-anchor="middle" fill="#0C447C" font-size="12" dominant-baseline="central">profiles</text>
+<text x="56" y="100" fill="#185FA5" font-size="11.5" dominant-baseline="central">User, ApiToken, UserSession, SocialAccount,</text>
+<text x="56" y="118" fill="#185FA5" font-size="11.5" dominant-baseline="central">School, SiteAppearance, AnalyticsEvent</text>
+<text x="56" y="140" fill="#0F6E56" font-size="11.5" dominant-baseline="central">10 361 + 3 013 lines</text>
+
+<rect x="520" y="20" width="420" height="150" rx="12" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="536" y="44" fill="#085041" font-size="13.5" font-weight="600" dominant-baseline="central">Problems and content</text>
+<rect x="536" y="58" width="124" height="30" rx="7" fill="#ffffff" stroke="#0F6E56" stroke-width="1"/>
+<text x="598" y="73" text-anchor="middle" fill="#085041" font-size="12" dominant-baseline="central">problems</text>
+<rect x="670" y="58" width="124" height="30" rx="7" fill="#ffffff" stroke="#0F6E56" stroke-width="1"/>
+<text x="732" y="73" text-anchor="middle" fill="#085041" font-size="12" dominant-baseline="central">content</text>
+<rect x="804" y="58" width="124" height="30" rx="7" fill="#ffffff" stroke="#0F6E56" stroke-width="1"/>
+<text x="866" y="73" text-anchor="middle" fill="#085041" font-size="12" dominant-baseline="central">blog</text>
+<rect x="536" y="94" width="124" height="30" rx="7" fill="#ffffff" stroke="#0F6E56" stroke-width="1"/>
+<text x="598" y="109" text-anchor="middle" fill="#085041" font-size="12" dominant-baseline="central">updates</text>
+<rect x="670" y="94" width="124" height="30" rx="7" fill="#ffffff" stroke="#0F6E56" stroke-width="1"/>
+<text x="732" y="109" text-anchor="middle" fill="#085041" font-size="12" dominant-baseline="central">roadmap</text>
+<text x="536" y="140" fill="#0F6E56" font-size="11.5" dominant-baseline="central">4 429 + 589 + 262 + 916 + 822 lines</text>
+
+<rect x="40" y="190" width="460" height="150" rx="12" fill="#FAEEDA" stroke="#BA7517" stroke-width="1"/>
+<text x="56" y="214" fill="#633806" font-size="13.5" font-weight="600" dominant-baseline="central">Judging (core)</text>
+<rect x="56" y="228" width="124" height="30" rx="7" fill="#ffffff" stroke="#BA7517" stroke-width="1"/>
+<text x="118" y="243" text-anchor="middle" fill="#633806" font-size="12" dominant-baseline="central">judging</text>
+<rect x="190" y="228" width="124" height="30" rx="7" fill="#ffffff" stroke="#BA7517" stroke-width="1"/>
+<text x="252" y="243" text-anchor="middle" fill="#633806" font-size="12" dominant-baseline="central">hacks</text>
+<text x="56" y="270" fill="#BA7517" font-size="11.5" dominant-baseline="central">Attempt, AttemptTestResult, CustomRun, Verdict;</text>
+<text x="56" y="288" fill="#BA7517" font-size="11.5" dominant-baseline="central">Hack, HackRoom, HackLock; provider, services, tasks</text>
+<text x="56" y="310" fill="#0F6E56" font-size="11.5" dominant-baseline="central">1 328 + 1 599 lines</text>
+
+<rect x="520" y="190" width="420" height="150" rx="12" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/>
+<text x="536" y="214" fill="#3C3489" font-size="13.5" font-weight="600" dominant-baseline="central">Competition</text>
+<rect x="536" y="228" width="124" height="30" rx="7" fill="#ffffff" stroke="#534AB7" stroke-width="1"/>
+<text x="598" y="243" text-anchor="middle" fill="#3C3489" font-size="12" dominant-baseline="central">contests</text>
+<rect x="670" y="228" width="124" height="30" rx="7" fill="#ffffff" stroke="#534AB7" stroke-width="1"/>
+<text x="732" y="243" text-anchor="middle" fill="#3C3489" font-size="12" dominant-baseline="central">arena</text>
+<rect x="804" y="228" width="124" height="30" rx="7" fill="#ffffff" stroke="#534AB7" stroke-width="1"/>
+<text x="866" y="243" text-anchor="middle" fill="#3C3489" font-size="12" dominant-baseline="central">duels</text>
+<rect x="536" y="264" width="124" height="30" rx="7" fill="#ffffff" stroke="#534AB7" stroke-width="1"/>
+<text x="598" y="279" text-anchor="middle" fill="#3C3489" font-size="12" dominant-baseline="central">tournaments</text>
+<rect x="670" y="264" width="124" height="30" rx="7" fill="#ffffff" stroke="#534AB7" stroke-width="1"/>
+<text x="732" y="279" text-anchor="middle" fill="#3C3489" font-size="12" dominant-baseline="central">hackathons</text>
+<text x="536" y="310" fill="#534AB7" font-size="11.5" dominant-baseline="central">1 533 + 815 + 753 + 440 + 483 lines</text>
+
+<rect x="40" y="360" width="460" height="150" rx="12" fill="#EAF3DE" stroke="#3B6D11" stroke-width="1"/>
+<text x="56" y="384" fill="#27500A" font-size="13.5" font-weight="600" dominant-baseline="central">Ratings and economy</text>
+<rect x="56" y="398" width="124" height="30" rx="7" fill="#ffffff" stroke="#3B6D11" stroke-width="1"/>
+<text x="118" y="413" text-anchor="middle" fill="#27500A" font-size="12" dominant-baseline="central">qvant</text>
+<rect x="190" y="398" width="124" height="30" rx="7" fill="#ffffff" stroke="#3B6D11" stroke-width="1"/>
+<text x="252" y="413" text-anchor="middle" fill="#27500A" font-size="12" dominant-baseline="central">ratings</text>
+<text x="56" y="440" fill="#3B6D11" font-size="11.5" dominant-baseline="central">QvantWallet, QvantTransaction, Quest, ShopItem,</text>
+<text x="56" y="458" fill="#3B6D11" font-size="11.5" dominant-baseline="central">UserSolvedProblem, RatingHistory (4 rating types)</text>
+<text x="56" y="480" fill="#0F6E56" font-size="11.5" dominant-baseline="central">1 553 + 793 lines</text>
+
+<rect x="520" y="360" width="420" height="150" rx="12" fill="#FBEAF0" stroke="#D4537E" stroke-width="1"/>
+<text x="536" y="384" fill="#72243E" font-size="13.5" font-weight="600" dominant-baseline="central">Learning and community</text>
+<rect x="536" y="398" width="124" height="30" rx="7" fill="#ffffff" stroke="#D4537E" stroke-width="1"/>
+<text x="598" y="413" text-anchor="middle" fill="#72243E" font-size="12" dominant-baseline="central">classroom</text>
+<rect x="670" y="398" width="124" height="30" rx="7" fill="#ffffff" stroke="#D4537E" stroke-width="1"/>
+<text x="732" y="413" text-anchor="middle" fill="#72243E" font-size="12" dominant-baseline="central">quizzes</text>
+<rect x="804" y="398" width="124" height="30" rx="7" fill="#ffffff" stroke="#D4537E" stroke-width="1"/>
+<text x="866" y="413" text-anchor="middle" fill="#72243E" font-size="12" dominant-baseline="central">notifications</text>
+<text x="536" y="440" fill="#D4537E" font-size="11.5" dominant-baseline="central">Classroom, Assignment, Quiz, Question,</text>
+<text x="536" y="458" fill="#D4537E" font-size="11.5" dominant-baseline="central">QuizAttempt, Notification</text>
+<text x="536" y="480" fill="#0F6E56" font-size="11.5" dominant-baseline="central">398 + 637 + 339 lines</text>
+</svg>

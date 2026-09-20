@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 572" width="980" height="572" role="img" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+<title>RankWant — data flow from submit to rating</title>
+<desc>Eight steps: submit, attempt persisted, job enqueued, judge pulls, sandbox runs, result returned, verdict written, rating and standings updated.</desc>
+<rect x="0" y="0" width="980" height="572" fill="#ffffff"/>
+
+<circle cx="62" cy="48" r="14" fill="#ffffff" stroke="#5F5E5A" stroke-width="1"/>
+<text x="62" y="48" text-anchor="middle" fill="#2C2C2A" font-size="12" dominant-baseline="central">1</text>
+<rect x="88" y="20" width="852" height="56" rx="10" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="104" y="42" fill="#085041" font-size="14" font-weight="600" dominant-baseline="central">Submit accepted</text>
+<text x="104" y="60" fill="#0F6E56" font-size="11.5" dominant-baseline="central">web &#8594; api · POST /api/v1/attempts · source capped at 64 KB</text>
+<text x="924" y="48" text-anchor="end" fill="#5F5E5A" font-size="11.5" dominant-baseline="central">session cookie</text>
+
+<circle cx="62" cy="116" r="14" fill="#ffffff" stroke="#5F5E5A" stroke-width="1"/>
+<text x="62" y="116" text-anchor="middle" fill="#2C2C2A" font-size="12" dominant-baseline="central">2</text>
+<rect x="88" y="88" width="852" height="56" rx="10" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="104" y="110" fill="#085041" font-size="14" font-weight="600" dominant-baseline="central">Attempt persisted</text>
+<text x="104" y="128" fill="#0F6E56" font-size="11.5" dominant-baseline="central">api &#8594; Postgres · verdict PENDING, written BEFORE the queue</text>
+<text x="924" y="116" text-anchor="end" fill="#5F5E5A" font-size="11.5" dominant-baseline="central">cannot be lost</text>
+
+<circle cx="62" cy="184" r="14" fill="#ffffff" stroke="#5F5E5A" stroke-width="1"/>
+<text x="62" y="184" text-anchor="middle" fill="#2C2C2A" font-size="12" dominant-baseline="central">3</text>
+<rect x="88" y="156" width="852" height="56" rx="10" fill="#FAEEDA" stroke="#BA7517" stroke-width="1"/>
+<text x="104" y="178" fill="#633806" font-size="14" font-weight="600" dominant-baseline="central">Job enqueued</text>
+<text x="104" y="196" fill="#BA7517" font-size="11.5" dominant-baseline="central">api &#8594; Redis · LPUSH rankwant:judge:jobs</text>
+<text x="924" y="184" text-anchor="end" fill="#5F5E5A" font-size="11.5" dominant-baseline="central">JudgeJob</text>
+
+<circle cx="62" cy="252" r="14" fill="#ffffff" stroke="#5F5E5A" stroke-width="1"/>
+<text x="62" y="252" text-anchor="middle" fill="#2C2C2A" font-size="12" dominant-baseline="central">4</text>
+<rect x="88" y="224" width="852" height="56" rx="10" fill="#FAEEDA" stroke="#BA7517" stroke-width="1"/>
+<text x="104" y="246" fill="#633806" font-size="14" font-weight="600" dominant-baseline="central">Judge pulls the job</text>
+<text x="104" y="264" fill="#BA7517" font-size="11.5" dominant-baseline="central">judge &#8592; Redis · BRPOP (pull) · SIGTERM drains the queue before exit</text>
+<text x="924" y="252" text-anchor="end" fill="#5F5E5A" font-size="11.5" dominant-baseline="central">no open port</text>
+
+<circle cx="62" cy="320" r="14" fill="#ffffff" stroke="#5F5E5A" stroke-width="1"/>
+<text x="62" y="320" text-anchor="middle" fill="#2C2C2A" font-size="12" dominant-baseline="central">5</text>
+<rect x="88" y="292" width="852" height="56" rx="10" fill="#FAEEDA" stroke="#BA7517" stroke-width="1"/>
+<text x="104" y="314" fill="#633806" font-size="14" font-weight="600" dominant-baseline="central">Sandbox runs the code</text>
+<text x="104" y="332" fill="#BA7517" font-size="11.5" dominant-baseline="central">nsjail · test data fetched from s3:// references · 256 MB cache</text>
+<text x="924" y="320" text-anchor="end" fill="#5F5E5A" font-size="11.5" dominant-baseline="central">judge-go</text>
+
+<circle cx="62" cy="388" r="14" fill="#ffffff" stroke="#5F5E5A" stroke-width="1"/>
+<text x="62" y="388" text-anchor="middle" fill="#2C2C2A" font-size="12" dominant-baseline="central">6</text>
+<rect x="88" y="360" width="852" height="56" rx="10" fill="#FAEEDA" stroke="#BA7517" stroke-width="1"/>
+<text x="104" y="382" fill="#633806" font-size="14" font-weight="600" dominant-baseline="central">Result returned</text>
+<text x="104" y="400" fill="#BA7517" font-size="11.5" dominant-baseline="central">judge &#8594; Redis · LPUSH rankwant:judge:results</text>
+<text x="924" y="388" text-anchor="end" fill="#5F5E5A" font-size="11.5" dominant-baseline="central">Result</text>
+
+<circle cx="62" cy="456" r="14" fill="#ffffff" stroke="#5F5E5A" stroke-width="1"/>
+<text x="62" y="456" text-anchor="middle" fill="#2C2C2A" font-size="12" dominant-baseline="central">7</text>
+<rect x="88" y="428" width="852" height="56" rx="10" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="104" y="450" fill="#085041" font-size="14" font-weight="600" dominant-baseline="central">Verdict written</text>
+<text x="104" y="468" fill="#0F6E56" font-size="11.5" dominant-baseline="central">beat &#8594; worker · drain_results every 2 s · apply_result in one transaction</text>
+<text x="924" y="456" text-anchor="end" fill="#5F5E5A" font-size="11.5" dominant-baseline="central">catalogue check</text>
+
+<circle cx="62" cy="524" r="14" fill="#ffffff" stroke="#5F5E5A" stroke-width="1"/>
+<text x="62" y="524" text-anchor="middle" fill="#2C2C2A" font-size="12" dominant-baseline="central">8</text>
+<rect x="88" y="496" width="852" height="56" rx="10" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="104" y="518" fill="#085041" font-size="14" font-weight="600" dominant-baseline="central">Rating and standings</text>
+<text x="104" y="536" fill="#0F6E56" font-size="11.5" dominant-baseline="central">ratings + contests · UserSolvedProblem · RatingHistory · Standing</text>
+<text x="924" y="524" text-anchor="end" fill="#5F5E5A" font-size="11.5" dominant-baseline="central">5 s debounce</text>
+</svg>
