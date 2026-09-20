@@ -1064,6 +1064,7 @@ export const tg: Record<MessageKey, string> = {
   "problem.sampleOutput": "Баромад",
   "problem.copy": "Нусхабардорӣ",
   "problem.copied": "Нусхабардорӣ шуд",
+  "problem.copyFailed": "Нусхабардорӣ нашуд",
   "problem.copyInput": "Вуруди намунаи {order}-ро нусхабардорӣ кардан",
   "problem.copyOutput": "Баромади намунаи {order}-ро нусхабардорӣ кардан",
   "problem.attachments": "Замимаҳо",

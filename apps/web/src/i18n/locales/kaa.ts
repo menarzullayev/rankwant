@@ -1063,6 +1063,7 @@ export const kaa: Record<MessageKey, string> = {
   "problem.sampleOutput": "Shıǵıs",
   "problem.copy": "Kóshiriw",
   "problem.copied": "Kóshirildi",
+  "problem.copyFailed": "Kóshirilmedi",
   "problem.copyInput": "{order}-mısal kirisin kóshiriw",
   "problem.copyOutput": "{order}-mısal shıǵısın kóshiriw",
   "problem.attachments": "Tirkemeler",

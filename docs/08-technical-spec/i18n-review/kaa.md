@@ -1066,6 +1066,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.sampleOutput` | Chiqish | Shıǵıs |  |
 | `problem.copy` | Nusxalash | Kóshiriw |  |
 | `problem.copied` | Nusxalandi | Kóshirildi |  |
+| `problem.copyFailed` | Nusxa olinmadi | Kóshirilmedi |  |
 | `problem.copyInput` | {order}-namuna kirishini nusxalash | {order}-mısal kirisin kóshiriw |  |
 | `problem.copyOutput` | {order}-namuna chiqishini nusxalash | {order}-mısal shıǵısın kóshiriw |  |
 | `problem.attachments` | Biriktirilgan fayllar | Tirkemeler |  |

@@ -1071,6 +1071,7 @@ export const uz = {
   "problem.sampleOutput": "Chiqish",
   "problem.copy": "Nusxalash",
   "problem.copied": "Nusxalandi",
+  "problem.copyFailed": "Nusxa olinmadi",
   "problem.copyInput": "{order}-namuna kirishini nusxalash",
   "problem.copyOutput": "{order}-namuna chiqishini nusxalash",
 

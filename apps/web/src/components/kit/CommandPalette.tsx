@@ -64,7 +64,7 @@ export function CommandPalette() {
           void navigator.clipboard
             .writeText(window.location.href)
             .then(() => overlay.toast(t(locale, "problem.copied")))
-            .catch(() => {});
+            .catch(() => overlay.toast(t(locale, "problem.copyFailed")));
         },
       },
     ];

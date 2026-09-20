@@ -48,7 +48,10 @@ export function CopyButton({
   const doneLabel = copiedLabel ?? t(locale, "problem.copied");
 
   async function copy() {
-    if (!(await write(text))) return;
+    if (!(await write(text))) {
+      overlay.toast(t(locale, "problem.copyFailed"));
+      return;
+    }
     setDone(true);
     overlay.toast(doneLabel);
     window.setTimeout(() => setDone(false), 1500);
@@ -139,7 +142,10 @@ export function useCopiedFlash(): {
   const timer = useRef(0);
   const run = useCallback(
     async (text: string) => {
-      if (!(await write(text))) return;
+      if (!(await write(text))) {
+        overlay.toast(t(locale, "problem.copyFailed"));
+        return;
+      }
       setDone(true);
       overlay.toast(t(locale, "problem.copied"));
       window.clearTimeout(timer.current);

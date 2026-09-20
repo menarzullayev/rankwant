@@ -143,6 +143,15 @@ describe("kit product surfaces", () => {
     expect(src("../../src/components/kit/CopyControl.tsx")).toContain(
       "overlay.toast",
     );
+    expect(src("../../src/components/kit/CopyControl.tsx")).toContain(
+      "problem.copyFailed",
+    );
+    expect(src("../../src/components/kit/CommandPalette.tsx")).toContain(
+      "problem.copyFailed",
+    );
+    expect(src("../../src/components/profile/ShareButton.tsx")).toContain(
+      "problem.copyFailed",
+    );
     expect(src("../../src/app/contests/[slug]/page.tsx")).toContain(
       'tone="dual"',
     );

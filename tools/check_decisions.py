@@ -1411,6 +1411,37 @@ def types_node_tracks_runtime() -> str | None:
     return None
 
 
+KIT_TS = "apps/web/src/lib/theme/kit.ts"
+COPY_CONTROL = "apps/web/src/components/kit/CopyControl.tsx"
+CMD_PALETTE = "apps/web/src/components/kit/CommandPalette.tsx"
+SHARE_BUTTON = "apps/web/src/components/profile/ShareButton.tsx"
+
+
+def selected_kit_frozen() -> str | None:
+    """2026-09-20 HITL fail-toast-freeze: tanlangan kit + clipboard xato toast.
+
+    Omitted variants (confirm v2/v3/v6/v7/v8, check v10 `big`, copy v9 `burn`)
+    and MiniCal/Notificationsi/countdown polish stay out unless asked.
+    """
+    kit = read(KIT_TS)
+    if '"burn"' in kit:
+        return f"{KIT_TS}: copy v9 `burn` qaytdi — tanlangan kitda yo'q"
+    if '"big"' in kit:
+        return f"{KIT_TS}: check v10 `big` qaytdi — tanlangan kitda yo'q"
+    copy = read(COPY_CONTROL)
+    if copy.count("problem.copyFailed") < 2:
+        return f"{COPY_CONTROL}: clipboard xatoda `problem.copyFailed` toast to'liq emas"
+    cmdk = read(CMD_PALETTE)
+    if "problem.copyFailed" not in cmdk:
+        return f"{CMD_PALETTE}: clipboard xatoda `problem.copyFailed` toast yo'q"
+    if ".catch(() => {})" in cmdk:
+        return f"{CMD_PALETTE}: clipboard xatoni yutadi"
+    share = read(SHARE_BUTTON)
+    if "problem.copyFailed" not in share:
+        return f"{SHARE_BUTTON}: clipboard xatoda `problem.copyFailed` toast yo'q"
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -1441,6 +1472,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("docker disk chegaralangan", docker_disk_stays_bounded),
     ("TypeScript 7 yonma-yon", typescript_side_by_side),
     ("@types/node runtime bilan", types_node_tracks_runtime),
+    ("tanlangan kit muzlatilgan", selected_kit_frozen),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),
