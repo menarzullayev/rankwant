@@ -143,6 +143,10 @@ def build_profile(user: User, viewer: User | None) -> dict[str, Any]:
         ),
         "cosmetics": equipped(user),
         "title": titles.user_title(user),
+        # Eng yuqori pog'ona — `max_rating_contest` bo'yicha, xuddi
+        # `title` kabi guard bilan (ADR-0027). `cf_max_title` dan farqi:
+        # bu RankWant'ning o'z zinapoyasi bo'yicha cho'qqi.
+        "max_title": titles.user_max_title(user),
         # RankWant unvonidan (yuqorida) alohida — manbadagi daraja
         # (ADR-0026). `title` hisoblanadi, bu ikkisi saqlanadi.
         "cf_title": user.rank_title or "",
