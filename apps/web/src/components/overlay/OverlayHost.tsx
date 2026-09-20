@@ -199,10 +199,6 @@ export function OverlayProvider({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => {
-    if (blocking) setTip(null);
-  }, [blocking]);
-
-  useEffect(() => {
     let timer = 0;
     let current: HTMLElement | null = null;
 
