@@ -120,10 +120,8 @@ export function proxy(request: NextRequest): NextResponse {
     requestHeaders.set(HOME_CACHE_REQUEST_HEADER, homeMark);
   }
   // ⚠️ `next()` dan OLDIN (yuqoridagi izohga qarang).
-  if (fromParam !== null) {
-    requestHeaders.set(LOCALE_HEADER, fromParam);
-    requestHeaders.set(LANG_PARAM_HEADER, fromParam);
-  }
+  if (fromParam !== null) requestHeaders.set(LANG_PARAM_HEADER, fromParam);
+  if (fromParam !== null) requestHeaders.set(LOCALE_HEADER, fromParam);
 
   const response = boshqa_domen
     ? NextResponse.redirect(
