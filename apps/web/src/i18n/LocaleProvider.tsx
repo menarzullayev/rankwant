@@ -85,6 +85,29 @@ export function pendingDictionaryLoads(): Locale[] {
   return [...loading.keys()];
 }
 
+/** Already-settled thenable — same identity every render that must not suspend.
+
+ *  A fresh `Promise.resolve()` per render would be a new thenable and React
+ *  would treat it as a new `use()` input. */
+const READY: Promise<void> = Promise.resolve();
+
+/** Dictionary thenable with a STABLE hook input for every render.
+ *
+ *  Server and a client that already has the locale: `READY`. Client that
+ *  still lacks the file: the in-flight `loadDictionary` promise. The hook
+ *  COUNT must not change between those cases — wrapping `use()` in
+ *  `if (typeof window && !hasMessages)` skipped the hook on the server and
+ *  on a fast client, then added it when the `<head>` script lost the race
+ *  with hydration. Lighthouse Slow 4G after inline CSS (HTML ~551 KiB)
+ *  reproduced React minified #467 (`Update hook called on initial render`)
+ *  and dropped Best practices 100 → 96 (measured 2026-09-20, AFTER-08). */
+export function dictionaryReady(locale: Locale, url: string): Promise<void> {
+  if (typeof window === "undefined" || hasMessages(locale)) {
+    return READY;
+  }
+  return loadDictionary(locale, url);
+}
+
 /** Mijoz komponentlari `cookies()` ni o'qiy olmaydi — til yuqoridan beriladi.
  *
  *  The dictionary is not a prop any more: it comes as a separate cached file
@@ -93,7 +116,10 @@ export function pendingDictionaryLoads(): Locale[] {
  *  hydration. When it has not run yet (a slow network, or a language switch
  *  through `router.refresh()`), rendering suspends until it has, so no
  *  component ever draws a raw key. Inside the switch's transition, React
- *  keeps the old page on screen while it waits. */
+ *  keeps the old page on screen while it waits.
+ *
+ *  `use(dictionaryReady(…))` is unconditional. A window/`hasMessages` guard
+ *  around `use()` is React #467 — see `dictionaryReady`. */
 export function LocaleProvider({
   locale,
   dictionaryUrl,
@@ -107,9 +133,7 @@ export function LocaleProvider({
   auto?: boolean;
   children: React.ReactNode;
 }) {
-  if (typeof window !== "undefined" && !hasMessages(locale)) {
-    use(loadDictionary(locale, dictionaryUrl));
-  }
+  use(dictionaryReady(locale, dictionaryUrl));
   useEffect(() => keepOnly(locale), [locale]);
   return (
     <AutoContext.Provider value={auto}>

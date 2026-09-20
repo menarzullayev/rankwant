@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
+  dictionaryReady,
   keepOnly,
   markDictionaryLoadForTests,
   pendingDictionaryLoads,
@@ -68,5 +69,23 @@ describe("keepOnly — registry and load cache move together", () => {
     keepOnly("zh");
     expect(t("zh", "nav.problems")).toBe(zh["nav.problems"]);
     expect(t("zh", "locale.switchLabel")).toBe(zh["locale.switchLabel"]);
+  });
+});
+
+describe("dictionaryReady — hook input stays settled when messages exist", () => {
+  it("returns the same settled promise for every registered locale", async () => {
+    const uzReady = dictionaryReady("uz", "/i18n/uz.js");
+    const enReady = dictionaryReady("en", "/i18n/en.js");
+    expect(uzReady).toBe(enReady);
+    await expect(uzReady).resolves.toBeUndefined();
+  });
+
+  it("returns that same promise when there is no window (SSR)", async () => {
+    vi.unstubAllGlobals();
+    const server = dictionaryReady("uz", "/i18n/uz.js");
+    vi.stubGlobal("window", {});
+    const clientWithMessages = dictionaryReady("uz", "/i18n/uz.js");
+    expect(server).toBe(clientWithMessages);
+    await expect(server).resolves.toBeUndefined();
   });
 });
