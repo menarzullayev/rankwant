@@ -142,4 +142,14 @@ describe("CUST-100 contestant customizer", () => {
     expect(playground).not.toContain("useCustomizer");
     expect(customizer).not.toContain("KitFamilyTab");
   });
+
+  it("uses six labeled SelectFields for kit families, not a chip wall (D51)", () => {
+    expect((appearance.match(/<SelectField/g) || []).length).toBe(6);
+    expect(appearance).not.toContain("onClick={() => setAppearance({ verdictStyle");
+    expect(appearance).not.toContain("onClick={() => setAppearance({ statusStyle");
+    expect(appearance).not.toContain("onClick={() => setAppearance({ loadingStyle");
+    expect(appearance).not.toContain("onClick={() => setAppearance({ overlayStyle");
+    expect(appearance).not.toContain("onClick={() => setAppearance({ formStyle");
+    expect(appearance).not.toContain("onClick={() => setAppearance({ iconPack");
+  });
 });

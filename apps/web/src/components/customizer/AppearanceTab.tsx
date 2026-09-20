@@ -45,6 +45,7 @@ import { LOADING_VARIANTS, clampLoadingVariant } from "@/lib/theme/loading";
 import { SELECTABLE_PACKS, clampIconPack } from "@/lib/theme/icon-packs";
 import { OVERLAY_VARIANTS, clampOverlayVariant } from "@/lib/theme/overlay";
 import { FORM_VARIANTS, clampFormVariant } from "@/lib/theme/form";
+import { SelectField } from "@/components/ui/SelectField";
 import { Verdict } from "@/components/ui/Verdict";
 import { Status } from "@/components/ui/Status";
 import { Icon } from "@/components/ui/Icon";
@@ -99,7 +100,7 @@ export function AppearanceTab() {
         <NavShapeSection />
         <WidthSection />
         <LookSection />
-        {/* D48: kit families stay contestant-writable. /admin/kit is sample-only. */}
+        {/* D48+D51: contestant writes kit families via SelectField, not chips. */}
         <VerdictSection />
         <StatusSection />
         <LoadingSection />
@@ -512,27 +513,24 @@ function VerdictSection() {
   const def = VERDICT_VARIANTS.find((v) => v.id === current) ?? VERDICT_VARIANTS[0];
   const sample = ["AC", "WA", "TLE", "PARTIAL", "WRONG_TEST"];
   return (
-    <Section title={t(locale, "customizer.verdict")}>
-      <div className="flex flex-wrap gap-2">
-        {VERDICT_VARIANTS.map((v) => (
-          <button
-            key={v.id}
-            type="button"
-            aria-pressed={current === v.id}
-            onClick={() => setAppearance({ verdictStyle: v.id })}
-            className={chip(current === v.id)}
-          >
-            {t(locale, v.labelKey)}
-          </button>
-        ))}
-      </div>
+    <div>
+      <SelectField
+        label={t(locale, "customizer.verdict")}
+        hint={t(locale, def.hintKey)}
+        value={current}
+        options={VERDICT_VARIANTS.map((v) => ({
+          value: v.id,
+          label: t(locale, v.labelKey),
+        }))}
+        onChange={(id) => setAppearance({ verdictStyle: clampVerdictVariant(id) })}
+        size="sm"
+      />
       <div inert className="mt-3 flex flex-wrap items-center gap-3 rw-radius-sm border rw-divider p-3">
         {sample.map((v) => (
           <Verdict key={v} verdict={v} variant={current} percent={v === "AC" ? 100 : undefined} />
         ))}
       </div>
-      <p className="mt-2 text-theme-xs rw-faint">{t(locale, def.hintKey)}</p>
-    </Section>
+    </div>
   );
 }
 
@@ -542,27 +540,24 @@ function StatusSection() {
   const current = clampStatusVariant(appearance.statusStyle);
   const def = STATUS_VARIANTS.find((v) => v.id === current) ?? STATUS_VARIANTS[0];
   return (
-    <Section title={t(locale, "customizer.status")}>
-      <div className="flex flex-wrap gap-2">
-        {STATUS_VARIANTS.map((v) => (
-          <button
-            key={v.id}
-            type="button"
-            aria-pressed={current === v.id}
-            onClick={() => setAppearance({ statusStyle: v.id })}
-            className={chip(current === v.id)}
-          >
-            {t(locale, v.labelKey)}
-          </button>
-        ))}
-      </div>
+    <div>
+      <SelectField
+        label={t(locale, "customizer.status")}
+        hint={t(locale, def.hintKey)}
+        value={current}
+        options={STATUS_VARIANTS.map((v) => ({
+          value: v.id,
+          label: t(locale, v.labelKey),
+        }))}
+        onChange={(id) => setAppearance({ statusStyle: clampStatusVariant(id) })}
+        size="sm"
+      />
       <div inert className="mt-3 flex flex-wrap items-center gap-3 rw-radius-sm border rw-divider p-3">
         {(["ok", "warn", "bad", "info"] as const).map((s) => (
           <Status key={s} status={s} variant={current} />
         ))}
       </div>
-      <p className="mt-2 text-theme-xs rw-faint">{t(locale, def.hintKey)}</p>
-    </Section>
+    </div>
   );
 }
 
@@ -572,27 +567,24 @@ function LoadingSection() {
   const current = clampLoadingVariant(appearance.loadingStyle);
   const def = LOADING_VARIANTS.find((v) => v.id === current) ?? LOADING_VARIANTS[0];
   return (
-    <Section title={t(locale, "customizer.loading")}>
-      <div className="flex flex-wrap gap-2">
-        {LOADING_VARIANTS.map((v) => (
-          <button
-            key={v.id}
-            type="button"
-            aria-pressed={current === v.id}
-            onClick={() => setAppearance({ loadingStyle: v.id })}
-            className={chip(current === v.id)}
-          >
-            {t(locale, v.labelKey)}
-          </button>
-        ))}
-      </div>
+    <div>
+      <SelectField
+        label={t(locale, "customizer.loading")}
+        hint={t(locale, def.hintKey)}
+        value={current}
+        options={LOADING_VARIANTS.map((v) => ({
+          value: v.id,
+          label: t(locale, v.labelKey),
+        }))}
+        onChange={(id) => setAppearance({ loadingStyle: clampLoadingVariant(id) })}
+        size="sm"
+      />
       <div inert className="mt-3 flex items-center justify-center rw-radius-sm border rw-divider p-4">
         <span className="w-full max-w-[14rem]">
           <Loading variant={current} />
         </span>
       </div>
-      <p className="mt-2 text-theme-xs rw-faint">{t(locale, def.hintKey)}</p>
-    </Section>
+    </div>
   );
 }
 
@@ -602,24 +594,17 @@ function OverlaySection() {
   const current = clampOverlayVariant(appearance.overlayStyle);
   const def = OVERLAY_VARIANTS.find((v) => v.id === current) ?? OVERLAY_VARIANTS[0];
   return (
-    <Section title={t(locale, "customizer.overlay")}>
-      <div className="flex flex-wrap gap-2">
-        {OVERLAY_VARIANTS.map((v) => (
-          <button
-            key={v.id}
-            type="button"
-            aria-pressed={current === v.id}
-            onClick={() => setAppearance({ overlayStyle: v.id })}
-            className={chip(current === v.id)}
-          >
-            {t(locale, v.labelKey)}
-          </button>
-        ))}
-      </div>
-      <p className="mt-2 text-theme-xs rw-faint">
-        {t(locale, def.hintKey)} {t(locale, "customizer.overlayHint")}
-      </p>
-    </Section>
+    <SelectField
+      label={t(locale, "customizer.overlay")}
+      hint={`${t(locale, def.hintKey)} ${t(locale, "customizer.overlayHint")}`}
+      value={current}
+      options={OVERLAY_VARIANTS.map((v) => ({
+        value: v.id,
+        label: t(locale, v.labelKey),
+      }))}
+      onChange={(id) => setAppearance({ overlayStyle: clampOverlayVariant(id) })}
+      size="sm"
+    />
   );
 }
 
@@ -629,24 +614,17 @@ function FormSection() {
   const current = clampFormVariant(appearance.formStyle);
   const def = FORM_VARIANTS.find((v) => v.id === current) ?? FORM_VARIANTS[0];
   return (
-    <Section title={t(locale, "customizer.form")}>
-      <div className="flex flex-wrap gap-2">
-        {FORM_VARIANTS.map((v) => (
-          <button
-            key={v.id}
-            type="button"
-            aria-pressed={current === v.id}
-            onClick={() => setAppearance({ formStyle: v.id })}
-            className={chip(current === v.id)}
-          >
-            {t(locale, v.labelKey)}
-          </button>
-        ))}
-      </div>
-      <p className="mt-2 text-theme-xs rw-faint">
-        {t(locale, def.hintKey)} {t(locale, "customizer.formHint")}
-      </p>
-    </Section>
+    <SelectField
+      label={t(locale, "customizer.form")}
+      hint={`${t(locale, def.hintKey)} ${t(locale, "customizer.formHint")}`}
+      value={current}
+      options={FORM_VARIANTS.map((v) => ({
+        value: v.id,
+        label: t(locale, v.labelKey),
+      }))}
+      onChange={(id) => setAppearance({ formStyle: clampFormVariant(id) })}
+      size="sm"
+    />
   );
 }
 
@@ -655,20 +633,15 @@ function IconPackSection() {
   const { appearance, setAppearance } = useCustomizer();
   const current = clampIconPack(appearance.iconPack);
   return (
-    <Section title={t(locale, "customizer.iconPack")}>
-      <div className="flex flex-wrap gap-2">
-        {SELECTABLE_PACKS.map((p) => (
-          <button
-            key={p.id}
-            type="button"
-            aria-pressed={current === p.id}
-            onClick={() => setAppearance({ iconPack: p.id })}
-            className={chip(current === p.id)}
-          >
-            {p.name}
-          </button>
-        ))}
-      </div>
+    <div>
+      <SelectField
+        label={t(locale, "customizer.iconPack")}
+        hint={t(locale, "customizer.iconPackHint")}
+        value={current}
+        options={SELECTABLE_PACKS.map((p) => ({ value: p.id, label: p.name }))}
+        onChange={(id) => setAppearance({ iconPack: clampIconPack(id) })}
+        size="sm"
+      />
       <div inert className="mt-3 space-y-3 rw-radius-sm border rw-divider p-3">
         <div className="flex flex-wrap items-center gap-3">
           <Icon name="nav.problems" />
@@ -686,7 +659,6 @@ function IconPackSection() {
           </span>
         </div>
       </div>
-      <p className="mt-2 text-theme-xs rw-faint">{t(locale, "customizer.iconPackHint")}</p>
-    </Section>
+    </div>
   );
 }
