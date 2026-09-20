@@ -11,6 +11,7 @@ import { Icon } from "@/components/ui/Icon";
 import { A11yTab } from "./A11yTab";
 import { AppearanceTab } from "./AppearanceTab";
 import { ResetRow } from "./ResetRow";
+import { TABS, nextTab, type TabId } from "./tabs";
 
 const HIDDEN_KEY = "rw:customizer-hidden";
 
@@ -49,7 +50,7 @@ function writeHidden(value: boolean) {
 export function Customizer() {
   const { open, setOpen, toggle } = useCustomizer();
   const locale = useLocale();
-  const [tab, setTab] = useState<"appearance" | "a11y">("appearance");
+  const [tab, setTab] = useState<TabId>("appearance");
   const panel = useRef<HTMLDivElement>(null);
   const hidden = useSyncExternalStore(subscribeHidden, readHidden, () => false);
   const shortcut = useCustomizerShortcut();
@@ -147,9 +148,17 @@ export function Customizer() {
           <div
             role="tablist"
             aria-labelledby="rw-cz-title"
+            aria-orientation="horizontal"
             className="flex gap-2 border-b rw-divide px-4 py-2"
+            onKeyDown={(event) => {
+              const next = nextTab(tab, event.key);
+              if (!next) return;
+              event.preventDefault();
+              setTab(next);
+              document.getElementById(`rw-cz-tab-${next}`)?.focus();
+            }}
           >
-            {(["appearance", "a11y"] as const).map((value) => (
+            {TABS.map((value) => (
               <button
                 key={value}
                 type="button"

@@ -215,7 +215,7 @@ describe("kit product surfaces", () => {
     expect(src("../../src/components/kit/KitPlayground.tsx")).toContain(
       "FormIconSwitch",
     );
-    expect(src("../../src/components/customizer/AppearanceTab.tsx")).toContain(
+    expect(src("../../src/components/kit/KitPlayground.tsx")).toContain(
       'shape="card"',
     );
     expect(src("../../src/components/admin/CrudPage.tsx")).toContain(

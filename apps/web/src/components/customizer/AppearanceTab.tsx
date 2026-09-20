@@ -45,14 +45,6 @@ import { LOADING_VARIANTS, clampLoadingVariant } from "@/lib/theme/loading";
 import { SELECTABLE_PACKS, clampIconPack } from "@/lib/theme/icon-packs";
 import { OVERLAY_VARIANTS, clampOverlayVariant } from "@/lib/theme/overlay";
 import { FORM_VARIANTS, clampFormVariant } from "@/lib/theme/form";
-import { FormCheck, FormDate, FormFile, FormRadios } from "@/components/form/FormKit";
-import { Field } from "@/components/ui/Field";
-import { TextArea } from "@/components/settings/kit";
-import {
-  OverlayDialog,
-  useConfirm,
-  useOverlay,
-} from "@/components/overlay/OverlayHost";
 import { Verdict } from "@/components/ui/Verdict";
 import { Status } from "@/components/ui/Status";
 import { Icon } from "@/components/ui/Icon";
@@ -608,9 +600,6 @@ function OverlaySection() {
   const { appearance, setAppearance } = useCustomizer();
   const current = clampOverlayVariant(appearance.overlayStyle);
   const def = OVERLAY_VARIANTS.find((v) => v.id === current) ?? OVERLAY_VARIANTS[0];
-  const confirm = useConfirm();
-  const overlay = useOverlay();
-  const [modalOpen, setModalOpen] = useState(false);
   return (
     <Section title={t(locale, "customizer.overlay")}>
       <div className="flex flex-wrap gap-2">
@@ -626,115 +615,6 @@ function OverlaySection() {
           </button>
         ))}
       </div>
-      <div className="mt-3 flex flex-wrap items-center gap-2 rw-radius-sm border rw-divider p-3">
-        <button
-          type="button"
-          tabIndex={-1}
-          className={chip(false)}
-          onClick={() => {
-            void confirm(t(locale, "overlay.sample.confirmTitle"), {
-              body: t(locale, "overlay.sample.confirmBody"),
-              danger: true,
-              confirmLabel: t(locale, "overlay.sample.confirm"),
-            });
-          }}
-        >
-          {t(locale, "overlay.sample.confirm")}
-        </button>
-        <button
-          type="button"
-          tabIndex={-1}
-          className={chip(false)}
-          onClick={(event) => {
-            void confirm(t(locale, "overlay.sample.confirmTitle"), {
-              body: t(locale, "overlay.sample.confirmBody"),
-              danger: true,
-              kind: "popover",
-              origin: event.currentTarget,
-            });
-          }}
-        >
-          {t(locale, "overlay.sample.popover")}
-        </button>
-        <button
-          type="button"
-          tabIndex={-1}
-          className={chip(false)}
-          onClick={() => {
-            void confirm(t(locale, "overlay.sample.confirmTitle"), {
-              danger: true,
-              kind: "hold",
-            });
-          }}
-        >
-          {t(locale, "overlay.sample.hold")}
-        </button>
-        <button
-          type="button"
-          tabIndex={-1}
-          className={chip(false)}
-          onClick={() => {
-            void confirm(t(locale, "overlay.sample.confirmTitle"), {
-              danger: true,
-              kind: "cmdk",
-            });
-          }}
-        >
-          {t(locale, "overlay.sample.cmdk")}
-        </button>
-        <button
-          type="button"
-          tabIndex={-1}
-          className={chip(false)}
-          onClick={() => setModalOpen(true)}
-        >
-          {t(locale, "overlay.sample.problem")}
-        </button>
-        <button
-          type="button"
-          tabIndex={-1}
-          className={chip(false)}
-          aria-label={t(locale, "overlay.sample.more")}
-          onClick={(event) => {
-            overlay.openMenu(
-              [
-                {
-                  id: "copy",
-                  label: t(locale, "overlay.sample.menuCopy"),
-                  onSelect: () => {},
-                },
-                {
-                  id: "edit",
-                  label: t(locale, "overlay.sample.menuEdit"),
-                  onSelect: () => {},
-                },
-                {
-                  id: "del",
-                  label: t(locale, "overlay.sample.menuDelete"),
-                  danger: true,
-                  onSelect: () => {
-                    void confirm(t(locale, "overlay.sample.confirmTitle"), {
-                      body: t(locale, "overlay.sample.confirmBody"),
-                      danger: true,
-                      confirmLabel: t(locale, "overlay.sample.confirm"),
-                    });
-                  },
-                },
-              ],
-              event.currentTarget,
-            );
-          }}
-        >
-          ···
-        </button>
-      </div>
-      <OverlayDialog
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title={t(locale, "overlay.sample.modalTitle")}
-      >
-        <p className="rw-ov-copy">{t(locale, "overlay.sample.modalBody")}</p>
-      </OverlayDialog>
       <p className="mt-2 text-theme-xs rw-faint">
         {t(locale, def.hintKey)} {t(locale, "customizer.overlayHint")}
       </p>
@@ -761,31 +641,6 @@ function FormSection() {
             {t(locale, v.labelKey)}
           </button>
         ))}
-      </div>
-      <div inert className="rw-fm-kit mt-3 rw-radius-sm border rw-divider p-3">
-        <Field
-          label={t(locale, "form.sample.title")}
-          name="fm-title"
-          defaultValue={t(locale, "overlay.sample.modalTitle")}
-        />
-        <TextArea
-          label={t(locale, "form.sample.body")}
-          name="fm-body"
-          defaultValue={t(locale, "overlay.sample.modalBody")}
-          rows={3}
-        />
-        <FormCheck label={t(locale, "form.sample.public")} shape="card" defaultChecked />
-        <FormRadios
-          name="fm-diff"
-          label={t(locale, "form.sample.difficulty")}
-          defaultValue="1200"
-          options={["800", "1200", "1600"].map((value) => ({
-            value,
-            label: value,
-          }))}
-        />
-        <FormFile label={t(locale, "form.sample.file")} />
-        <FormDate label={t(locale, "form.sample.date")} defaultValue="2026-09-20" />
       </div>
       <p className="mt-2 text-theme-xs rw-faint">
         {t(locale, def.hintKey)} {t(locale, "customizer.formHint")}

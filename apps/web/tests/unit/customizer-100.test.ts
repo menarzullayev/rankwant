@@ -1,6 +1,11 @@
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+
+import { Group } from "@/components/customizer/Group";
+import { nextTab } from "@/components/customizer/tabs";
 
 function src(rel: string): string {
   return readFileSync(resolve(__dirname, rel), "utf8");
@@ -12,11 +17,13 @@ const settings = src("../../src/components/settings/AppearanceSection.tsx");
 const search = src("../../src/layout/SearchBox.tsx");
 const overlay = src("../../src/components/overlay/OverlayHost.tsx");
 const chrome = src("../../src/components/customizer/chrome.ts");
+const saved = src("../../src/components/customizer/SavedTemplates.tsx");
 
 describe("CUST-100 contestant customizer", () => {
-  it("is a tablist with two panels, not a kit playground", () => {
+  it("is a keyboard tablist with two panels, not a kit playground", () => {
     expect(customizer).toContain('role="tablist"');
-    expect(customizer).toContain('role="tab"');
+    expect(customizer).toContain("nextTab");
+    expect(customizer).toContain("aria-orientation");
     expect(customizer).toContain("<AppearanceTab");
     expect(customizer).toContain("<A11yTab");
     expect(customizer).not.toContain("KitSection");
@@ -25,6 +32,42 @@ describe("CUST-100 contestant customizer", () => {
     expect(appearance).not.toContain("FormIconSwitch");
     expect(appearance).not.toContain("KitSection");
     expect(appearance).not.toContain("IconGallery");
+    expect(appearance).not.toContain("FormFile");
+    expect(appearance).not.toContain("overlay.sample.popover");
+  });
+
+  it("moves the tab selection with arrows, Home, and End", () => {
+    expect(nextTab("appearance", "ArrowRight")).toBe("a11y");
+    expect(nextTab("a11y", "ArrowRight")).toBe("appearance");
+    expect(nextTab("a11y", "ArrowLeft")).toBe("appearance");
+    expect(nextTab("appearance", "Home")).toBe("appearance");
+    expect(nextTab("a11y", "Home")).toBe("appearance");
+    expect(nextTab("appearance", "End")).toBe("a11y");
+    expect(nextTab("appearance", "Enter")).toBeNull();
+  });
+
+  it("unmounts a closed accordion group so its controls leave the tab order", () => {
+    const probe = createElement("button", { type: "button" }, "inside-control");
+    const closed = renderToStaticMarkup(
+      createElement(
+        Group,
+        { id: "look", title: "Look", open: false, onOpen() {} },
+        probe,
+      ),
+    );
+    expect(closed).not.toContain("inside-control");
+    expect(closed).toContain('aria-expanded="false"');
+
+    const opened = renderToStaticMarkup(
+      createElement(
+        Group,
+        { id: "look", title: "Look", open: true, onOpen() {} },
+        probe,
+      ),
+    );
+    expect(opened).toContain("inside-control");
+    expect(opened).toContain('aria-expanded="true"');
+    expect(opened).toContain('id="rw-cz-look"');
   });
 
   it("groups appearance into four accordion clusters", () => {
@@ -36,25 +79,27 @@ describe("CUST-100 contestant customizer", () => {
     expect(appearance).toContain('id="color"');
     expect(appearance).toContain('id="type"');
     expect(appearance).toContain('id="system"');
-    expect(src("../../src/components/customizer/Group.tsx")).toContain(
-      "aria-expanded",
+  });
+
+  it("labels swatches; demos that stay in the panel skip the tab order", () => {
+    expect(chrome).toContain("customizer.swatch.blue");
+    expect(appearance).toMatch(/inert/);
+    expect(src("../../src/components/kit/KitPlayground.tsx")).toContain(
+      "overlay.sample.popover",
+    );
+    expect(src("../../src/components/kit/KitPlayground.tsx")).toContain(
+      "overlay.sample.hold",
+    );
+    expect(src("../../src/components/kit/KitPlayground.tsx")).toContain(
+      "overlay.sample.cmdk",
     );
   });
 
-  it("labels swatches and overlay samples; demos skip the tab order", () => {
-    expect(chrome).toContain("customizer.swatch.blue");
-    expect(appearance).toContain("overlay.sample.popover");
-    expect(appearance).toContain("overlay.sample.hold");
-    expect(appearance).toContain("overlay.sample.cmdk");
-    expect(appearance).toMatch(/inert/);
-    expect(appearance).toContain("tabIndex={-1}");
-  });
-
   it("imports a file without a native empty-state label", () => {
-    const saved = src("../../src/components/customizer/SavedTemplates.tsx");
     expect(saved).toContain("customizer.importFile");
     expect(saved).toContain('type="file"');
     expect(saved).toContain("sr-only");
+    expect(saved).toContain("tabIndex={-1}");
     expect(saved).not.toContain("FormFile");
     expect(saved).toContain("customizer.deleteConfirm");
   });
