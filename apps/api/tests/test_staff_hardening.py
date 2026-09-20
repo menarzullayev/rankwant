@@ -90,7 +90,9 @@ class TestQuestionChoicesGuard:
             format="json",
         )
         assert r.status_code == 400
-        assert "arenada" in str(r.json()).lower()
+        # The API answers in English (`tools/check_api_english.py`); the source
+        # of this string is `ANSWERED_MSG` in `quizzes/staff_serializers.py`.
+        assert "arena answers" in str(r.json()).lower()
         # Jadval buzilmadi: javob ham, ball ham joyida
         assert ArenaAnswer.objects.count() == 1
         assert ArenaParticipation.objects.get().score == 800
