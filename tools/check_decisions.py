@@ -1457,6 +1457,8 @@ def deploy_skips_non_image_bake() -> str | None:
     kick = read(KICK_AUTO_DEPLOY)
     if 'schtasks /run /tn "RankWant Auto Deploy"' not in kick:
         return f"{KICK_AUTO_DEPLOY}: schtasks /run yo'q"
+    if "MSYS_NO_PATHCONV=1" not in kick:
+        return f"{KICK_AUTO_DEPLOY}: Git Bash /run ni yo'lga aylantiradi"
 
     hook = read(".githooks/pre-push")
     if "check_negative.py" not in hook or "decisions" not in hook:
