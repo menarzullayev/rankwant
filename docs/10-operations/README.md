@@ -7,6 +7,10 @@ migration tartibi, env kalitlari, ma'lum xatolar, reboot va zaxira.
 identity + ports; any agent any task; isolation is **task-lock** (`.agent/locks`);
 `owned_paths` width is **no-star-star**; leftover worktrees use **stale-reap**;
 canonical checkout is **restore-when-idle**.
+✅ **Threat model (2026-09-21):** [threat-model.md](threat-model.md) — STRIDE
+har chegara uchun, **qabul qilingan risklar** (A-1…A-8) sababi va qayta ko'rish
+sharti bilan, locked dizayndan chetlanishlar, ochiq bandlar launch gate'larga
+bog'langan. Inglizcha — asosiy o'quvchi tashqi auditor.
 
 Nima **hozir** bilinadi: deploy topologiyasi, siyosatlar va incident turlari — ular arxitektura va ADR'lardan kelib chiqadi.
 Nima **hali bilinmaydi**: hosting provayderi, real narxlar.
