@@ -321,11 +321,13 @@ export default function AppTopNav({
             shu sababli qidiruv, qo'ng'iroq, til va hisob shu yerda. */}
         <div className="ml-auto flex min-w-0 items-center gap-2">
           {!auth && <SearchBox />}
+          <div className="relative z-20 flex shrink-0 items-center gap-2">
           <HeaderStatus />
           <UpdatesBell />
           {!auth && CUSTOMIZER_ENABLED && <CustomizerTrigger />}
           <LocaleSwitch />
           <UserMenu />
+          </div>
         </div>
       </div>
 

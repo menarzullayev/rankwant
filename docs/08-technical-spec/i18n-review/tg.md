@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1739 strings.**
+**1770 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -1761,3 +1761,33 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `kit.step.account` | Hisob | Ҳисоб |  |
 | `kit.step.profile` | Profil | Профил |  |
 | `kit.step.done` | Tayyor | Тайёр |  |
+| `customizer.group.look` | Shablonlar | Шаблонҳо |  |
+| `customizer.group.color` | Rang va uslub | Ранг ва услуб |  |
+| `customizer.group.type` | Matn | Матн |  |
+| `customizer.group.system` | Interfeys | Интерфейс |  |
+| `customizer.swatch.red` | Qizil | Сурх |  |
+| `customizer.swatch.ember` | Olov | Оташ |  |
+| `customizer.swatch.orange` | Apelsin | Норанҷ |  |
+| `customizer.swatch.yellow` | Sariq | Зард |  |
+| `customizer.swatch.lime` | Ohak | Лайм |  |
+| `customizer.swatch.green` | Yashil | Сабз |  |
+| `customizer.swatch.teal` | Firuza | Фирӯза |  |
+| `customizer.swatch.cyan` | Osmon | Осмонӣ |  |
+| `customizer.swatch.blue` | Ko'k | Кабуд |  |
+| `customizer.swatch.indigo` | Indigo | Индиго |  |
+| `customizer.swatch.violet` | Binafsha | Бунафш |  |
+| `customizer.swatch.magenta` | Magenta | Магента |  |
+| `customizer.swatch.pink` | Pushti | Гулранг |  |
+| `customizer.swatch.rose` | Gulrang | Гул |  |
+| `customizer.a11y.motionHint.system` | Qurilma sozlamasiga bo'ysunadi. | Ба танзими дастгоҳ итоат мекунад. |  |
+| `customizer.a11y.motionHint.full` | Barcha o'tish va effektlar. | Ҳамаи гузариш ва эффектҳо. |  |
+| `customizer.a11y.motionHint.mild` | O'tishlar qoladi, bezak effektlari o'chadi. | Гузаришҳо мемонанд, ороиш хомӯш мешавад. |  |
+| `customizer.a11y.motionHint.off` | Harakat yo'q. | Ҳаракат нест. |  |
+| `customizer.deleteConfirm` | Ha, o'chirish | Ҳа, нест кардан |  |
+| `settings.openCustomizer` | Ko'rinish sozlagichini ochish | Танзимгари намудро кушоед |  |
+| `admin.section.kit` | Namuna to'plami | Маҷмӯаи намуна |  |
+| `admin.kit.title` | O'zaro ta'sir namunalari | Намунаҳои муносибат |  |
+| `admin.kit.hint` | Bu sahifa dizayn laboratoriya. Musobaqachi sozlagichi emas. | Ин саҳифа лабораторияи тарроҳӣ аст, на танзимгари иштирокчӣ. |  |
+| `overlay.sample.popover` | Yon tasdiq | Дар паҳлӯ |  |
+| `overlay.sample.hold` | Bosib turish | Нигоҳ доштан |  |
+| `overlay.sample.cmdk` | Buyruq | Фармон |  |

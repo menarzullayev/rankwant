@@ -206,16 +206,16 @@ describe("kit product surfaces", () => {
     expect(src("../../src/components/settings/SettingsShell.tsx")).toContain(
       'data-kit-tabs="vertical"',
     );
-    expect(src("../../src/components/customizer/Customizer.tsx")).toContain(
+    expect(src("../../src/components/customizer/AppearanceTab.tsx")).toContain(
       "FormStepper",
     );
-    expect(src("../../src/components/customizer/Customizer.tsx")).toContain(
+    expect(src("../../src/components/customizer/AppearanceTab.tsx")).toContain(
       "FormSeg3",
     );
-    expect(src("../../src/components/customizer/Customizer.tsx")).toContain(
+    expect(src("../../src/components/kit/KitPlayground.tsx")).toContain(
       "FormIconSwitch",
     );
-    expect(src("../../src/components/customizer/Customizer.tsx")).toContain(
+    expect(src("../../src/components/customizer/AppearanceTab.tsx")).toContain(
       'shape="card"',
     );
     expect(src("../../src/components/admin/CrudPage.tsx")).toContain(

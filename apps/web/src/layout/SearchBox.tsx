@@ -78,7 +78,7 @@ export default function SearchBox() {
   const showKbd = !showClear && !focused;
 
   return (
-    <div ref={box} className="relative hidden min-w-0 shrink md:block">
+    <div ref={box} className="relative hidden min-w-0 w-36 shrink md:block lg:w-52 xl:w-80">
       <label className="relative block">
         {/* Yorliqda MATN bo'lishi shart: ikonka va placeholder skrinriderga
             nom bermaydi, placeholder esa yozish boshlangach yo'qoladi. */}
@@ -104,7 +104,7 @@ export default function SearchBox() {
           }}
           placeholder={t(locale, "header.search")}
           aria-keyshortcuts="Control+K Meta+K"
-          className="rw-fm-inp is-search h-10 w-64 border rw-line bg-transparent pr-16 pl-10 text-theme-sm outline-none rw-focus-line rw-focus-ring xl:w-80"
+          className="rw-fm-inp is-search h-10 w-full max-w-full border rw-line bg-transparent pr-16 pl-10 text-theme-sm outline-none rw-focus-line rw-focus-ring"
         />
         {showKbd && (
           <kbd
