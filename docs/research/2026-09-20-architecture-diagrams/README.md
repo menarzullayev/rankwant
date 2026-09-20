@@ -16,10 +16,12 @@ files, so they can be embedded in issues, PRs, slides or an external document, a
 render identically everywhere — no Mermaid runtime, no GitHub-only features.
 
 The written analysis is **not duplicated here**. It lives in the sibling record
-`docs/research/2026-09-20-as-built-architecture/` (`README.md`, `MODULES.md`,
-`FLOWS.md`, `DIAGRAMS.md`), which is the text of record for the same subject.
-That record's `DIAGRAMS.md` uses Mermaid source; this directory ships the same subject
-as standalone image assets. Use whichever the medium needs.
+[as-built-architecture](../2026-09-20-as-built-architecture/README.md)
+([modules](../2026-09-20-as-built-architecture/MODULES.md),
+[flows](../2026-09-20-as-built-architecture/FLOWS.md),
+[diagrams](../2026-09-20-as-built-architecture/DIAGRAMS.md)), which is the text of
+record for the same subject. That record's `DIAGRAMS.md` uses Mermaid source; this
+directory ships the same subject as standalone image assets. Use whichever the medium needs.
 
 ## The set
 
