@@ -1389,6 +1389,28 @@ def typescript_side_by_side() -> str | None:
     return None
 
 
+def types_node_tracks_runtime() -> str | None:
+    """2026-09-20: `@types/node` major = Node major (CI + image 22).
+
+    Dependabot #143 `@types/node@26` ni Node 22 ustiga qo'ymoqchi edi.
+    `skipLibCheck: true` shu yolg'on yashilni o'tkazib yuboradi.
+    """
+    pkg = read("apps/web/package.json")
+    if '"@types/node": "22.' not in pkg:
+        return "apps/web/package.json: `@types/node` Node 22 bilan mos emas"
+    yml = read(".github/dependabot.yml")
+    idx = yml.find('dependency-name: "@types/node"')
+    if idx < 0:
+        return ".github/dependabot.yml: `@types/node` ignore yo'q"
+    if "version-update:semver-major" not in yml[idx : idx + 180]:
+        return ".github/dependabot.yml: `@types/node` major ignore yo'q"
+    if "node-version: '22'" not in read(".github/workflows/ci.yml"):
+        return ".github/workflows/ci.yml: Node 22 emas"
+    if read("apps/web/Dockerfile").count("FROM node:22-slim") < 3:
+        return "apps/web/Dockerfile: image Node 22 emas (3 bosqich kerak)"
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -1418,6 +1440,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("avtomatik deploy xavfsiz", deploy_automation_is_safe),
     ("docker disk chegaralangan", docker_disk_stays_bounded),
     ("TypeScript 7 yonma-yon", typescript_side_by_side),
+    ("@types/node runtime bilan", types_node_tracks_runtime),
     ("til qoidasi", language_rule_written),
     ("qarorlar jadvali", decisions_table_present),
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),
