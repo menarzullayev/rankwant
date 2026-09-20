@@ -179,7 +179,7 @@ class TestReytingGrafigi:
         RatingHistory.objects.create(
             user=user,
             rating_type="contest",
-            value_before=1400,
+            value_before=1200,
             value_after=1480,
             delta=80,
             reason="contest",
@@ -204,11 +204,11 @@ class TestReytingGrafigi:
         assert (point["title"], point["rank"], point["before"], point["after"]) == (
             "Round 1",
             3,
-            1400,
+            1200,
             1480,
         )
         assert len(body["series"]["skills"]) == 1
-        assert body["bands"][0]["code"] == "kvark"
+        assert body["bands"][0]["code"] == "quark"
 
     def test_uzun_qator_siqiladi_cho_qqi_qoladi(self) -> None:
         points = [{"after": i} for i in range(1000)]
@@ -235,7 +235,7 @@ class TestMusobaqalar:
         RatingHistory.objects.create(
             user=user,
             rating_type="contest",
-            value_before=1400,
+            value_before=1200,
             value_after=1450,
             delta=50,
             reason="contest",
@@ -247,7 +247,7 @@ class TestMusobaqalar:
         row = get("user-contests", user.username).data["results"][0]
 
         assert (row["rank_from"], row["rank_to"]) == (2, 3)
-        assert row["rating"] == {"before": 1400, "after": 1450, "delta": 50}
+        assert row["rating"] == {"before": 1200, "after": 1450, "delta": 50}
         assert (row["problems"], row["participants"]) == (1, 3)
         assert row["virtual"] is False
 

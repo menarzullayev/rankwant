@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1690 strings.**
+**1697 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -819,15 +819,22 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `loading.style.pulseIconHint` | Live indikator uchun. | Тікелей эфир индикаторы үшін. |  |
 | `loading.style.progress` | Progress chizig'i | Прогресс жолағы |  |
 | `loading.style.progressHint` | Sahifa yuqorisi yoki uzoq amal uchun. | Беттің жоғарысы немесе ұзақ әрекет үшін. |  |
-| `title.kvark` | Kvark | Кварк |  |
-| `title.foton` | Foton | Фотон |  |
-| `title.elektron` | Elektron | Электрон |  |
-| `title.proton` | Proton | Протон |  |
-| `title.atom` | Atom | Атом |  |
-| `title.molekula` | Molekula | Молекула |  |
-| `title.kristal` | Kristal | Кристалл |  |
-| `title.yulduz` | Yulduz | Жұлдыз |  |
-| `title.galaktika` | Galaktika | Галактика |  |
+| `title.quark` | Kvark | Quark |  |
+| `title.atom` | Atom | Atom |  |
+| `title.molecule` | Molekula | Molecule |  |
+| `title.droplet` | Tomchi | Droplet |  |
+| `title.meteorite` | Meteorit | Meteorite |  |
+| `title.comet` | Kometa | Comet |  |
+| `title.moon` | Oy | Moon |  |
+| `title.planet` | Sayyora | Planet |  |
+| `title.star` | Yulduz | Star |  |
+| `title.supernova` | Supernova | Supernova |  |
+| `title.pulsar` | Pulsar | Pulsar |  |
+| `title.magnetar` | Magnetar | Magnetar |  |
+| `title.black_hole` | Qora tuynuk | Black Hole |  |
+| `title.galaxy` | Galaktika | Galaxy |  |
+| `title.supercluster` | Superklaster | Supercluster |  |
+| `title.cosmos` | Koinot | Cosmos |  |
 | `cfTier.newbie` | Yangi boshlovchi | Жаңадан бастаушы |  |
 | `cfTier.pupil` | O'quvchi | Оқушы |  |
 | `cfTier.specialist` | Mutaxassis | Маман |  |
