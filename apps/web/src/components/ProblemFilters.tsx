@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { LOCALE_NAMES, type Locale } from "@/i18n/messages";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { fill, t } from "@/i18n/messages";
+import { FormTreeItem } from "@/components/kit/FormExtras";
 import { Icon } from "@/components/ui/Icon";
 import { UzFallbackBadge } from "@/components/ui/UzFallbackBadge";
 import { useSession } from "@/context/SessionContext";
@@ -255,7 +256,8 @@ export function ProblemFilters({
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
         <div
-          className="flex flex-wrap items-center gap-1 rw-radius-sm rw-chip p-1"
+          className="rw-kit-tabs flex flex-wrap items-center gap-1 rw-radius-sm rw-chip p-1"
+          data-kit-tabs="chips"
           role="tablist"
           aria-label={t(locale, "filter.sortLabel")}
         >
@@ -512,24 +514,29 @@ function TopicOptions({
           );
           const open = selected.includes(root.slug) || children.some((c) => selected.includes(c.slug)) || Boolean(needle);
           return (
-            <div key={root.slug}>
-              <div className="flex flex-wrap gap-1.5">
-                <Option
-                  active={selected.includes(root.slug)}
-                  onClick={() => onToggle(root.slug)}
-                  label={root.label}
-                  fallback={root.fallback}
-                />
-              </div>
+            <div key={root.slug} className="rw-kit-tree">
+              <FormTreeItem
+                label={root.label}
+                checked={selected.includes(root.slug)}
+                indeterminate={
+                  children.some((c) => selected.includes(c.slug)) &&
+                  !selected.includes(root.slug)
+                }
+                extra={root.fallback ? <UzFallbackBadge locale={locale} /> : null}
+                onChange={() => onToggle(root.slug)}
+              />
               {open && children.length > 0 && (
-                <div className="mt-1 ml-3 flex flex-wrap gap-1.5">
+                <div className="space-y-1">
                   {children.map((child) => (
-                    <Option
+                    <FormTreeItem
                       key={child.slug}
-                      active={selected.includes(child.slug)}
-                      onClick={() => onToggle(child.slug)}
+                      nested
                       label={child.label}
-                      fallback={child.fallback}
+                      checked={selected.includes(child.slug)}
+                      extra={
+                        child.fallback ? <UzFallbackBadge locale={locale} /> : null
+                      }
+                      onChange={() => onToggle(child.slug)}
                     />
                   ))}
                 </div>

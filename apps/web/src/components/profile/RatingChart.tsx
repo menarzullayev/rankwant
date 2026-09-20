@@ -88,7 +88,12 @@ export function RatingChart({ data, kit }: { data: RatingSeries; kit: DateKit })
   return (
     <div className="space-y-3">
       {available.length > 1 && (
-        <div role="tablist" aria-label={t(locale, "profile.history")} className="flex flex-wrap gap-1.5">
+        <div
+          role="tablist"
+          aria-label={t(locale, "profile.history")}
+          className="rw-kit-tabs flex flex-wrap gap-1.5"
+          data-kit-tabs="card"
+        >
           {available.map((option) => (
             <button
               key={option}
@@ -99,7 +104,7 @@ export function RatingChart({ data, kit }: { data: RatingSeries; kit: DateKit })
                 setKind(option);
                 setActive(null);
               }}
-              className={`rw-radius-sm px-3 py-1.5 text-theme-xs font-medium transition rw-focus-ring ${
+              className={`rw-kit-tab rw-radius-sm px-3 py-1.5 text-theme-xs font-medium transition rw-focus-ring ${
                 kind === option ? "rw-accent-soft rw-accent-ink" : "rw-dim rw-hover-bg"
               }`}
             >
@@ -191,6 +196,7 @@ export function RatingChart({ data, kit }: { data: RatingSeries; kit: DateKit })
         {current && spot && (
           <div
             className="pointer-events-none absolute z-10 w-max max-w-64 -translate-x-1/2 -translate-y-full rw-radius-sm border rw-line rw-surface px-3 py-2 text-theme-xs rw-shadow"
+            data-kit-tip="follow"
             style={{ left: `${(spot.x / W) * 100}%`, top: `calc(${(spot.y / H) * 100}% - 8px)` }}
           >
             <p className="font-medium rw-strong">{date(current.at)}</p>

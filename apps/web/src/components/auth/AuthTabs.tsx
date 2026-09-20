@@ -52,7 +52,7 @@ export function AuthTabs({ active }: { active: TabId }) {
           skanerlanadi), ya'ni `grid-cols-${n}` ISHLAMAYDI. Ro'yxat
           o'zgarsa shu sinf ham qo'lda yangilanishi kerak — shuning
           uchun yonida `TAB_BAR` ga havola bor. */}
-      <ul className="grid grid-cols-2 gap-1 border-b rw-divider">
+      <ul className="rw-kit-tabs grid grid-cols-2" data-kit-tabs="segment">
         {TAB_BAR.map((tab) => {
           const current = tab === active;
           const query = new URLSearchParams({ tab });
@@ -66,15 +66,7 @@ export function AuthTabs({ active }: { active: TabId }) {
                 href={`/login?${query}` as Route}
                 scroll={false}
                 aria-current={current ? "page" : undefined}
-                className={`flex min-h-11 items-center justify-center px-1 pb-2 pt-1 text-center text-theme-sm transition rw-focus-ring ${
-                  current
-                    ? // Tanlangan bo'lim: rang YOLG'IZ tashuvchi emas
-                      // (WCAG 1.4.1) — u qalin shrift va 2px chegara
-                      // bilan ham ajraladi; `aria-current` esa ekran
-                      // o'quvchi uchun aytadi.
-                      "border-b-2 border-current font-semibold rw-strong"
-                    : "border-b-2 border-transparent rw-dim hover:rw-strong"
-                }`}
+                className="rw-kit-tab flex min-h-11 w-full items-center justify-center px-1 py-1 text-center text-theme-sm transition rw-focus-ring"
               >
                 {/* Yozuv KESILMAYDI, kerak bo'lsa IKKI QATORGA o'raladi.
                     Sabab (o'lchandi, 320px — eng tor qo'llab-quvvatlanadigan

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1721 strings.**
+**1739 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -1742,3 +1742,21 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `navShape.slim.hint` | Bitta siqiq qator, keskin burchak. | Бир компакт сап, тик бурчтар. |  |
 | `navShape.stacked.label` | Qavatma-qavat | Кош катарлуу |  |
 | `navShape.stacked.hint` | Ikki qator: ustida logo, ostida menyu. | Эки сап: үстүндө логотип, астында меню. |  |
+| `customizer.kit` | O'zaro ta'sir to'plami | Өз ара аракет топтому |  |
+| `customizer.kitHint` | Tasdiq, maslahat, belgi, vaqt, nusxa va tab — sath qoidasi, ko'rinish oilasi emas. | Ырастоо, кеңеш, белги, убакыт, көчүрмө жана өтмөктөр — жер эрежеси, көрүнүш үй-бүлөсү эмес. |  |
+| `kit.holdHint` | Tasdiqlash uchun bosib turing | Ырастоо үчүн басып туруңуз |  |
+| `kit.cmdkPlaceholder` | Yozing yoki tanlang… | Жазыңыз же тандаңыз… |  |
+| `kit.today` | Bugun | Бүгүн |  |
+| `kit.yesterday` | Kecha | Кечээ |  |
+| `kit.left` | Qoldi: {time} | Калды: {time} |  |
+| `kit.iso` | ISO yozuv | ISO жазуу |  |
+| `kit.sure` | Ishonchingiz komilmi? | Ишенесизби? |  |
+| `kit.palette` | Buyruqlar | Буйруктар |  |
+| `kit.paletteEmpty` | Hech narsa topilmadi | Эч нерсе табылган жок |  |
+| `kit.paletteCopyUrl` | Sahifa manzilini nusxalash | Барак дарегин көчүрүү |  |
+| `kit.seg.private` | Shaxsiy | Жеке |  |
+| `kit.seg.team` | Jamoa | Команда |  |
+| `kit.seg.public` | Ommaviy | Ачык |  |
+| `kit.step.account` | Hisob | Эсеп |  |
+| `kit.step.profile` | Profil | Профиль |  |
+| `kit.step.done` | Tayyor | Даяр |  |

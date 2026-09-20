@@ -214,6 +214,8 @@ export default function AppTopNav({
           aria-expanded={isMobileOpen}
           aria-controls="rw-topnav-drawer"
           aria-label={t(locale, "nav.menu")}
+          data-tip={t(locale, "nav.menu")}
+          data-tip-kind="flip"
           className="flex size-9 shrink-0 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg lg:hidden"
         >
           {isMobileOpen ? <Icon name="nav.close" /> : <Icon name="nav.menu" />}

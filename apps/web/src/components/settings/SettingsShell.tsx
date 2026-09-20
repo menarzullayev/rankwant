@@ -49,6 +49,16 @@ export function SettingsShell({ section }: { section: SectionId }) {
       </h1>
       <div className="mt-6 grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)]">
         <nav aria-label={t(locale, "settings.title")}>
+          <div className="mb-3 hidden lg:block">
+            <div className="rw-kit-tabs" data-kit-tabs="crumb">
+              <span className="rw-kit-tab" aria-current={undefined}>
+                {t(locale, "settings.title")}
+              </span>
+              <span className="rw-kit-tab" aria-current="page">
+                {t(locale, SECTIONS.find((s) => s.id === section)?.key ?? "settings.nav.profile")}
+              </span>
+            </div>
+          </div>
           <div className="lg:hidden">
             <Dropdown
               hideLabel
@@ -61,7 +71,7 @@ export function SettingsShell({ section }: { section: SectionId }) {
               }))}
             />
           </div>
-          <ul className="sticky top-20 hidden flex-col gap-1 lg:flex">
+          <ul className="rw-kit-tabs sticky top-20 hidden flex-col gap-1 lg:flex" data-kit-tabs="vertical">
             {SECTIONS.map((s) => (
               <li key={s.id}>
                 <Link

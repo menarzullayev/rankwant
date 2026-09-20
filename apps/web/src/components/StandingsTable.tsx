@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import { CopyAllBar } from "@/components/kit/CopyControl";
 import { UserName } from "@/components/UserName";
 import { API_BASE, getJson, type Standing } from "@/lib/api";
 import { type Locale, t } from "@/i18n/messages";
@@ -95,6 +96,9 @@ export function StandingsTable({
 
   const meShown =
     me !== null && !data.results.some((row) => row.username === me.username);
+  const tsv = data.results
+    .map((row) => `${row.rank}\t${row.username}\t${row.solved_count}\t${row.penalty}`)
+    .join("\n");
 
   return (
     <>
@@ -103,6 +107,7 @@ export function StandingsTable({
           {t(locale, "standings.frozen")}
         </div>
       )}
+      <CopyAllBar text={tsv} label={t(locale, "problem.copy")} />
       {/* `<table>` va `<tbody>` saqlanadi — E2E shu selektorlarga tayanadi. */}
       <Table>
         <THead>

@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from "react";
-
+import { CopyButton } from "@/components/kit/CopyControl";
 import { Card } from "@/components/ui/Card";
-import { Icon } from "@/components/ui/Icon";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { fill, t } from "@/i18n/messages";
 import type { Sample } from "@/lib/api";
@@ -16,37 +14,6 @@ import type { Sample } from "@/lib/api";
  * chiqish bir qatorda turadi, ya'ni ularni taqqoslash osonroq
  * (RoboContest ham shunday qiladi).
  */
-function CopyButton({ text, label }: { text: string; label: string }) {
-  const locale = useLocale();
-  const [done, setDone] = useState(false);
-
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText(text);
-    } catch {
-      // HTTPS bo'lmagan yoki ruxsat berilmagan kontekst — matn baribir
-      // ko'rinib turibdi, qo'lda belgilash mumkin.
-      return;
-    }
-    setDone(true);
-    setTimeout(() => setDone(false), 1500);
-  }
-
-  return (
-    <button
-      type="button"
-      onClick={copy}
-      aria-label={label}
-      title={done ? t(locale, "problem.copied") : t(locale, "problem.copy")}
-      className={`shrink-0 rw-radius-sm p-1 transition rw-hover-bg ${
-        done ? "rw-ok-ink" : "rw-faint"
-      }`}
-    >
-      <Icon name="action.copy" className="size-3.5" />
-    </button>
-  );
-}
-
 function Cell({ text, label }: { text: string; label: string }) {
   return (
     <td className="border-l rw-divider px-2 py-1.5 align-top">
@@ -54,7 +21,7 @@ function Cell({ text, label }: { text: string; label: string }) {
         <pre className="min-w-0 grow overflow-auto rw-radius-sm rw-field-bg p-2 font-mono text-theme-xs rw-strong [max-height:14rem]">
           {text}
         </pre>
-        <CopyButton text={text} label={label} />
+        <CopyButton text={text} tone="ghost" label={label} />
       </div>
     </td>
   );

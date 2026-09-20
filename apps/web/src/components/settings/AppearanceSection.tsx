@@ -159,6 +159,7 @@ export function AppearanceSection() {
           <FormRadios
             name="effect"
             label={t(locale, "settings.effect")}
+            tone="card"
             value={effect}
             onChange={(next) => void savePrefs({ effect: next as ThemeEffect })}
             options={EFFECTS.map((value) => ({

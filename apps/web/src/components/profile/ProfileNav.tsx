@@ -36,7 +36,8 @@ export function ProfileNav({ username }: { username: string }) {
     // scroller joy yemaydi, shuning uchun nativ `thin` yo'l yo'q.
     <nav
       aria-label={t(locale, "profile.sections")}
-      className="flex overflow-x-auto overflow-y-hidden shadow-[inset_0_-1px_0_var(--rw-divider)]"
+      className="rw-kit-tabs shadow-[inset_0_-1px_0_var(--rw-divider)]"
+      data-kit-tabs="scroll"
     >
       {PROFILE_TABS.map((tab) => {
         const active = current === tab.slug;
@@ -45,8 +46,8 @@ export function ProfileNav({ username }: { username: string }) {
             key={tab.slug || "overview"}
             href={(tab.slug ? `${base}/${tab.slug}` : base) as Route}
             aria-current={active ? "page" : undefined}
-            className={`shrink-0 border-b-2 px-2 py-2.5 text-theme-sm font-medium transition ${
-              active ? "rw-accent-line rw-accent-ink" : "border-transparent rw-dim rw-hover-strong"
+            className={`rw-kit-tab ${
+              active ? "rw-accent-ink" : "rw-dim rw-hover-strong"
             }`}
           >
             {t(locale, tab.key)}

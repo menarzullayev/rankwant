@@ -69,23 +69,76 @@ export function overlayPlace(
   return "center";
 }
 
+export type PlaceSide = "below" | "above" | "menu" | "left" | "right";
+export type TipSide = "above" | "below" | "left" | "right";
+
 /** Overlay'ni trigger yoniga qo'yadi, viewportdan chiqarmaydi. */
 export function placeNear(
   anchor: Box,
   size: { width: number; height: number },
   viewport: { width: number; height: number },
-  where: "below" | "above" | "menu",
+  where: PlaceSide,
   pad = 8,
 ): { x: number; y: number } {
   const w = Math.max(0, size.width);
   const h = Math.max(0, size.height);
-  let x = where === "menu" ? anchor.right - w : anchor.left;
-  let y = where === "above" ? anchor.top - h - 6 : anchor.bottom + 6;
+  let x = anchor.left;
+  let y = anchor.bottom + 6;
+  if (where === "menu") {
+    x = anchor.right - w;
+  } else if (where === "above") {
+    y = anchor.top - h - 6;
+  } else if (where === "left") {
+    x = anchor.left - w - 6;
+    y = anchor.top;
+  } else if (where === "right") {
+    x = anchor.right + 6;
+    y = anchor.top;
+  }
   const maxX = Math.max(pad, viewport.width - w - pad);
   const maxY = Math.max(pad, viewport.height - h - pad);
   x = Math.min(Math.max(pad, x), maxX);
   y = Math.min(Math.max(pad, y), maxY);
   return { x, y };
+}
+
+export function pickFlipSide(
+  anchor: Box,
+  size: { width: number; height: number },
+  viewport: { width: number; height: number },
+): TipSide {
+  const scores: Record<TipSide, number> = {
+    above: anchor.top - size.height,
+    below: viewport.height - anchor.bottom - size.height,
+    left: anchor.left - size.width,
+    right: viewport.width - anchor.right - size.width,
+  };
+  let side: TipSide = "above";
+  let best = scores.above;
+  const rest: TipSide[] = ["below", "left", "right"];
+  for (const next of rest) {
+    if (scores[next] > best) {
+      best = scores[next];
+      side = next;
+    }
+  }
+  return side;
+}
+
+export function placeTip(
+  mode: "follow" | "flip" | "anchor",
+  anchor: Box,
+  size: { width: number; height: number },
+  viewport: { width: number; height: number },
+  follow?: { x: number; y: number },
+): { x: number; y: number; side: TipSide } {
+  if (mode === "follow" && follow) {
+    return { x: follow.x + 12, y: follow.y + 16, side: "below" };
+  }
+  const side: TipSide =
+    mode === "flip" ? pickFlipSide(anchor, size, viewport) : "above";
+  const pos = placeNear(anchor, size, viewport, side);
+  return { x: pos.x, y: pos.y, side };
 }
 
 /** Tip tepada, qolgani trigger yonida. */

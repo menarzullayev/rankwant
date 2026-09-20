@@ -53,6 +53,8 @@ export default function AppHeader() {
         aria-expanded={isMobileOpen}
         aria-controls="rw-sidenav-drawer"
         aria-label={t(locale, "nav.menu")}
+        data-tip={t(locale, "nav.menu")}
+        data-tip-kind="flip"
         className="-ml-2.5 flex size-10 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg lg:hidden"
       >
         <Icon name="nav.menu" />

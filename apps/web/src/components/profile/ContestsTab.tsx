@@ -15,7 +15,8 @@ import {
 } from "@/components/ui/Table";
 import { t, type Locale } from "@/i18n/messages";
 import { api, type ContestRow } from "@/lib/api";
-import { formatDate, formatDuration } from "@/lib/format";
+import { TimeStamp } from "@/components/kit/TimeStamp";
+import { formatDate } from "@/lib/format";
 import { SectionHint } from "./SectionHint";
 
 const PAGE_SIZE = 25;
@@ -104,7 +105,12 @@ export async function ContestsTab({
               </TD>
               <TD className="rw-dim">{formatDate(row.start_at, locale)}</TD>
               <TD align="right" className="tabular-nums rw-dim">
-                {formatDuration(row.duration_min)}
+                <TimeStamp
+                  value={row.start_at}
+                  locale={locale}
+                  tone="duration"
+                  durationMin={row.duration_min}
+                />
               </TD>
               <TD>
                 <Badge color={row.virtual ? "neutral" : "brand"}>

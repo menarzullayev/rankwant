@@ -9,6 +9,8 @@ import { rankClass } from "@/components/UserName";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
+import { CopyButton } from "@/components/kit/CopyControl";
+import { InlineConfirm } from "@/components/kit/ConfirmExtras";
 import { useConfirm } from "@/components/overlay/OverlayHost";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
@@ -25,7 +27,6 @@ function TeamCard({ team, onChange }: { team: Team; onChange: () => void }) {
   const confirm = useConfirm();
   const { user } = useSession();
   const action = useAction();
-  const [copied, setCopied] = useState(false);
   const owner = team.role === "owner";
   const act = (fn: () => Promise<unknown>) =>
     action.run(async () => {
@@ -60,16 +61,16 @@ function TeamCard({ team, onChange }: { team: Team; onChange: () => void }) {
             ) : (
               owner &&
               member.username !== user?.username && (
-                <Button
-                  variant="outline"
-                  className="h-8 px-2.5 text-theme-xs"
+                <InlineConfirm
+                  label={t(locale, "settings.teamRemove")}
+                  danger
                   disabled={action.busy}
-                  onClick={() =>
-                    act(() => deleteJson(`/teams/${team.id}/members/${member.username}/`))
+                  onConfirm={() =>
+                    void act(() =>
+                      deleteJson(`/teams/${team.id}/members/${member.username}/`),
+                    )
                   }
-                >
-                  {t(locale, "settings.teamRemove")}
-                </Button>
+                />
               )
             )}
           </li>
@@ -82,18 +83,12 @@ function TeamCard({ team, onChange }: { team: Team; onChange: () => void }) {
           <code className="min-w-0 flex-1 truncate rw-radius-sm rw-chip px-3 py-2 text-theme-xs">
             {inviteLink(team)}
           </code>
-          <Button
-            variant="outline"
-            className="h-9 px-3"
-            onClick={() =>
-              navigator.clipboard
-                ?.writeText(inviteLink(team))
-                .then(() => setCopied(true))
-                .catch(() => {})
-            }
-          >
-            {copied ? t(locale, "settings.teamCopied") : t(locale, "settings.teamCopy")}
-          </Button>
+          <CopyButton
+            text={inviteLink(team)}
+            tone="chip"
+            label={t(locale, "settings.teamCopy")}
+            copiedLabel={t(locale, "settings.teamCopied")}
+          />
           {owner && (
             <Button
               variant="outline"
@@ -109,14 +104,12 @@ function TeamCard({ team, onChange }: { team: Team; onChange: () => void }) {
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2">
-        <Button
-          variant="outline"
-          className="h-9 px-3"
+        <InlineConfirm
+          label={t(locale, "settings.teamLeave")}
+          danger
           disabled={action.busy}
-          onClick={() => act(() => postJson(`/teams/${team.id}/leave/`, {}))}
-        >
-          {t(locale, "settings.teamLeave")}
-        </Button>
+          onConfirm={() => void act(() => postJson(`/teams/${team.id}/leave/`, {}))}
+        />
         {owner && (
           <Button
             variant="outline"

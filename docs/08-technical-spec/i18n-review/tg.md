@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1721 strings.**
+**1739 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -1742,3 +1742,21 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `navShape.slim.hint` | Bitta siqiq qator, keskin burchak. | Як сатри паймон, кунҷҳои рост. |  |
 | `navShape.stacked.label` | Qavatma-qavat | Дуқатора |  |
 | `navShape.stacked.hint` | Ikki qator: ustida logo, ostida menyu. | Ду сатр: боло логотип, поён меню. |  |
+| `customizer.kit` | O'zaro ta'sir to'plami | Маҷмӯи муомила |  |
+| `customizer.kitHint` | Tasdiq, maslahat, belgi, vaqt, nusxa va tab — sath qoidasi, ko'rinish oilasi emas. | Тасдиқ, маслиҳат, аломат, вақт, нусха ва варақаҳо — қоидаи ҷой, на оилаи намуд. |  |
+| `kit.holdHint` | Tasdiqlash uchun bosib turing | Барои тасдиқ пахш карда нигоҳ доред |  |
+| `kit.cmdkPlaceholder` | Yozing yoki tanlang… | Нависед ё интихоб кунед… |  |
+| `kit.today` | Bugun | Имрӯз |  |
+| `kit.yesterday` | Kecha | Дирӯз |  |
+| `kit.left` | Qoldi: {time} | Монд: {time} |  |
+| `kit.iso` | ISO yozuv | Сабти ISO |  |
+| `kit.sure` | Ishonchingiz komilmi? | Муҳаққақед? |  |
+| `kit.palette` | Buyruqlar | Фармонҳо |  |
+| `kit.paletteEmpty` | Hech narsa topilmadi | Ҳеҷ чиз ёфт нашуд |  |
+| `kit.paletteCopyUrl` | Sahifa manzilini nusxalash | Нусхаи нишонии саҳифа |  |
+| `kit.seg.private` | Shaxsiy | Шахсӣ |  |
+| `kit.seg.team` | Jamoa | Даста |  |
+| `kit.seg.public` | Ommaviy | Оммавӣ |  |
+| `kit.step.account` | Hisob | Ҳисоб |  |
+| `kit.step.profile` | Profil | Профил |  |
+| `kit.step.done` | Tayyor | Тайёр |  |

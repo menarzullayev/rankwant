@@ -168,7 +168,12 @@ export function Verdict({
   // (serverda o'lcham noma'lum), CSS esa buni chaqnashsiz bajaradi.
   if (style === "auto") {
     return (
-      <span className={`rw-verdict-auto ${className}`}>
+      <span
+        className={`rw-verdict-auto ${className}`}
+        data-tip={hint}
+        data-tip-kind="soft"
+        data-tip-title={label}
+      >
         <span className="rw-only-mobile">{circle}</span>
         <span className="rw-only-tablet">{icon}</span>
         <span className="rw-only-desktop">{full}</span>
@@ -188,5 +193,14 @@ export function Verdict({
     : style === "card" ? card
     : full;
 
-  return <span className={className}>{body}</span>;
+  return (
+    <span
+      className={className}
+      data-tip={hint}
+      data-tip-kind="rich"
+      data-tip-title={label}
+    >
+      {body}
+    </span>
+  );
 }

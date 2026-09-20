@@ -3,6 +3,7 @@
 import type { Route } from "next";
 import { useState } from "react";
 
+import { CodeCopy } from "@/components/kit/CopyControl";
 import { Markdown } from "@/components/Markdown";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -102,7 +103,9 @@ export function Editorial({
       }
     >
       {open ? (
-        <Markdown>{body}</Markdown>
+        <CodeCopy text={body} filename={t(locale, "editorial.title")}>
+          <Markdown>{body}</Markdown>
+        </CodeCopy>
       ) : (
         <p className="text-theme-sm rw-faint">
           {state.access === "solved"

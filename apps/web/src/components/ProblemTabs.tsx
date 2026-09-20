@@ -33,7 +33,8 @@ export function ProblemTabs({
   return (
     <nav
       aria-label={t(locale, "problem.tabsLabel")}
-      className="flex flex-wrap items-center gap-1 border-b rw-divider"
+      className="rw-kit-tabs flex flex-wrap items-center gap-1 border-b rw-divider"
+      data-kit-tabs="underline"
     >
       {tabs.map(([key, labelKey, href]) => (
         <Link

@@ -141,6 +141,8 @@ export function LocaleSwitch() {
       ref={rootRef}
       className="relative inline-block"
       aria-label={`${currentLabel} (${currentCode}) — ${t(locale, "locale.switchLabel")}`}
+      data-tip={t(locale, "locale.switchLabel")}
+      data-tip-kind="flip"
     >
       <Dropdown
         size="header"

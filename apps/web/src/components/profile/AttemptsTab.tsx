@@ -12,9 +12,9 @@ import {
   Table,
 } from "@/components/ui/Table";
 import { Verdict } from "@/components/ui/Verdict";
+import { TimeStamp } from "@/components/kit/TimeStamp";
 import { t, type Locale } from "@/i18n/messages";
 import { api, VERDICT_FILTERS } from "@/lib/api";
-import { formatDate } from "@/lib/format";
 
 type Filters = { problem?: string; verdict?: string; language?: string; cursor?: string };
 
@@ -122,7 +122,7 @@ export async function AttemptsTab({
               <TD align="right">{attempt.time_ms}</TD>
               <TD align="right">{attempt.memory_kb}</TD>
               <TD align="right" className="rw-faint">
-                {formatDate(attempt.created_at, locale, { dateStyle: "medium", timeStyle: "short" })}
+                <TimeStamp value={attempt.created_at} locale={locale} tone="iso" />
               </TD>
             </TR>
           ))}

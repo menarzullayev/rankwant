@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 
+import { TimeLine } from "@/components/kit/TimeStamp";
+import { CodeCopy } from "@/components/kit/CopyControl";
 import { HackPanel } from "@/components/HackPanel";
 import { Card } from "@/components/ui/Card";
 import { Verdict } from "@/components/ui/Verdict";
 import { Loading, Status, useLoad } from "@/components/settings/kit";
 import { UserName } from "@/components/UserName";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { dateTime, fill, t } from "@/i18n/messages";
+import { fill, t } from "@/i18n/messages";
 import type { AttemptDetail } from "@/lib/api";
 
 /** Bitta urinishning sahifasi.
@@ -50,13 +52,16 @@ export function AttemptView({ id }: { id: number }) {
             {data.language} · {data.time_ms} ms ·{" "}
             {Math.round(data.memory_kb / 1024)} MB
           </span>
-          <time
-            dateTime={data.created_at}
-            className="ml-auto text-theme-xs rw-faint"
-          >
-            {dateTime(data.created_at, locale)}
-          </time>
         </div>
+        <TimeLine
+          locale={locale}
+          events={[
+            {
+              at: data.created_at,
+              label: fill(t(locale, "attempt.title"), { id }),
+            },
+          ]}
+        />
 
         {data.failed_test_index !== null && (
           <p className="mt-3 text-theme-sm rw-bad-ink">
@@ -97,9 +102,11 @@ export function AttemptView({ id }: { id: number }) {
 
       <Card title={t(locale, "attempt.source")}>
         {data.source_code ? (
-          <pre className="max-h-[32rem] overflow-auto rw-radius-sm rw-field-bg p-3 font-mono text-theme-xs rw-strong">
-            {data.source_code}
-          </pre>
+          <CodeCopy text={data.source_code} filename={t(locale, "attempt.source")}>
+            <pre className="max-h-[32rem] overflow-auto rw-radius-sm rw-field-bg p-3 font-mono text-theme-xs rw-strong">
+              {data.source_code}
+            </pre>
+          </CodeCopy>
         ) : (
           <p className="text-theme-sm rw-faint">
             {t(locale, "attempt.sourceHidden")}

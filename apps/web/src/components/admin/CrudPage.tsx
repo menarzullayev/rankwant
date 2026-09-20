@@ -2,6 +2,7 @@
 
 import { Fragment, useCallback, useEffect, useState } from "react";
 
+import { CopyCell } from "@/components/kit/CopyControl";
 import { FormCheck } from "@/components/form/FormKit";
 import { FM_CTL, FM_INP, FM_LAB } from "@/components/form/chrome";
 import { Badge } from "@/components/ui/Badge";
@@ -224,8 +225,14 @@ export function CrudPage<T extends Row>({
     }
   }
 
-  async function remove(item: T) {
-    if (!(await confirm(t(locale, "admin.confirmDelete"), { danger: true })))
+  async function remove(item: T, origin?: HTMLElement) {
+    if (
+      !(await confirm(t(locale, "admin.confirmDelete"), {
+        danger: true,
+        kind: "popover",
+        origin,
+      }))
+    )
       return;
     try {
       await staff.remove(`${path}${idOf(item)}/`);
@@ -316,6 +323,7 @@ export function CrudPage<T extends Row>({
                       name={f.name}
                       defaultChecked={Boolean(v)}
                       disabled={disabled}
+                      shape="pill"
                       label={t(locale, f.labelKey)}
                     />
                   ) : f.type === "select" ? (
@@ -400,7 +408,9 @@ export function CrudPage<T extends Row>({
                     <TD key={c.key} align={c.align}>
                       {c.render
                         ? c.render(item, load, locale)
-                        : String(item[c.key] ?? "")}
+                        : c.key === idField
+                          ? <CopyCell text={String(item[c.key] ?? "")} />
+                          : String(item[c.key] ?? "")}
                     </TD>
                   ))}
                   <TD align="right">
@@ -433,7 +443,7 @@ export function CrudPage<T extends Row>({
                       {canDelete && !readOnly && (
                         <button
                           type="button"
-                          onClick={() => remove(item)}
+                          onClick={(event) => void remove(item, event.currentTarget)}
                           className="text-theme-xs rw-bad-ink hover:underline"
                         >
                           {t(locale, "admin.delete")}
