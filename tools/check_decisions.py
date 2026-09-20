@@ -1778,6 +1778,28 @@ def aop_stale_worktree_reap() -> str | None:
     return None
 
 
+def aop_restore_when_idle() -> str | None:
+    """2026-09-20 HITL restore-when-idle: canonical tree back to origin/main.
+
+    Dirty or claimed `cp/rankwant` is skipped. `git reset --hard` is forbidden.
+    """
+    aop = read("docs/10-operations/parallel-agents.md")
+    if "HITL 2026-09-20 `restore-when-idle`" not in aop:
+        return "docs/10-operations/parallel-agents.md: restore-when-idle HITL yo'q"
+    src = read("tools/restore_canonical.py")
+    if "HITL 2026-09-20 `restore-when-idle`" not in src:
+        return "tools/restore_canonical.py: restore-when-idle HITL yo'q"
+    if 'FORBIDDEN_GIT = ("reset", "clean")' not in src:
+        return "tools/restore_canonical.py: FORBIDDEN_GIT reset/clean emas"
+    if 'git(CANONICAL, "merge", "--ff-only", "origin/main")' not in src:
+        return "tools/restore_canonical.py: ff-only yo'q"
+    if "restore-when-idle" not in read(".cursor/rules/parallel-agents.mdc"):
+        return ".cursor/rules/parallel-agents.mdc: restore-when-idle yo'q"
+    if "restore-when-idle" not in read("CONTRIBUTING.md"):
+        return "CONTRIBUTING.md: restore-when-idle yo'q"
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -1791,6 +1813,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("rank colour_group 7 token", rank_colour_groups_not_sixteen_tokens),
     ("owned_paths no-star-star", aop_owned_paths_no_star_star),
     ("stale worktree reap", aop_stale_worktree_reap),
+    ("canonical restore-when-idle", aop_restore_when_idle),
     ("navigatsiya prefetch'i niyatda", nav_prefetch_on_intent),
     ("bosh sahifa <main> prefetch'i niyatda", home_main_prefetch_on_intent),
     ("lug'at alohida faylda", dictionary_as_cached_file),

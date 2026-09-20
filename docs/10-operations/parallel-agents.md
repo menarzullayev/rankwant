@@ -124,6 +124,19 @@ created from `origin/main` must not track `main`.
 Keep `C:/Users/nsn/project/cp/rankwant` on **`main` and clean**. Scheduled
 tasks read `backup.sh` / `monitor.ps1` from that path.
 
+### Canonical checkout — HITL 2026-09-20 `restore-when-idle`
+
+If porcelain is empty **and** no manifest lists `cp/rankwant` as `workspace`,
+the next agent restores it:
+
+```bash
+python tools/restore_canonical.py
+```
+
+That is `fetch` + `checkout main` + `merge --ff-only origin/main`. Dirty or
+claimed trees are skipped. **Never** `git reset --hard` or `git clean -fd`
+on this path (`never-touch` / `hook-block-off-main` were rejected).
+
 **Own folder only.** Git author is the same person on every agent — **path is
 ownership**. Do not `git pull` / `checkout` / `reset` another agent’s tree.
 Do not `git worktree remove` a path under another tool’s folder.
@@ -294,10 +307,11 @@ the whole monorepo “to understand the project”.
 
 1. Read `.agent/status/*` and `.agent/locks/*` (and `CLAIMS.md` if present).
 2. `git worktree list` · `gh pr list --repo menarzullayev/rankwant`.
-3. If RAM > 85% or C: < 15% free: do not allocate a heavy job.
-4. Write `manifests/<slot>.yml`, `tasks/<id>.md`, `status/<slot>.md`.
-5. Take a worktree under **your** tool folder. Lock `owned_paths` (task-lock).
-6. Optional local `next dev -p <HTTP from the table>` — never 3000/8300.
+3. `python tools/restore_canonical.py` (HITL `restore-when-idle`).
+4. If RAM > 85% or C: < 15% free: do not allocate a heavy job.
+5. Write `manifests/<slot>.yml`, `tasks/<id>.md`, `status/<slot>.md`.
+6. Take a worktree under **your** tool folder. Lock `owned_paths` (task-lock).
+7. Optional local `next dev -p <HTTP from the table>` — never 3000/8300.
 
 ## Session finish
 

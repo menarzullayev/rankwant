@@ -3118,6 +3118,26 @@ def neg_decisions_stale_reap_allows_deploy() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_restore_idle_reverted() -> tuple[bool, str]:
+    """AOP `restore-when-idle` ni `never-touch` ga qaytarsa tutilsin."""
+    return _decision_broken(
+        "docs/10-operations/parallel-agents.md",
+        "HITL 2026-09-20 `restore-when-idle`",
+        "HITL 2026-09-20 `never-touch`",
+        "canonical restore-when-idle",
+    )
+
+
+def neg_decisions_restore_allows_hard_reset() -> tuple[bool, str]:
+    """`reset` FORBIDDEN_GIT dan tushsa tutilsin."""
+    return _decision_broken(
+        "tools/restore_canonical.py",
+        'FORBIDDEN_GIT = ("reset", "clean")',
+        'FORBIDDEN_GIT = ("clean",)',
+        "canonical restore-when-idle",
+    )
+
+
 def neg_decisions_nav_eager_link() -> tuple[bool, str]:
     # A plain `next/link` back in the sidebar prefetches every item on sight.
     return _decision_broken(
@@ -3461,6 +3481,8 @@ _DECISIONS_SANDBOX_FILES = (
     ".cursor/rules/parallel-agents.mdc",
     # stale-reap (2026-09-20 HITL). Missing here, `check_decisions.py` exits 2.
     "tools/reap_stale_worktrees.py",
+    # restore-when-idle (2026-09-20 HITL). Missing here, `check_decisions.py` exits 2.
+    "tools/restore_canonical.py",
 )
 
 
@@ -5302,6 +5324,14 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "stale-reap wt/deploy ni ochsa tutilsin",
                 neg_decisions_stale_reap_allows_deploy,
+            ),
+            (
+                "restore-when-idle never-touch ga qaytsa tutilsin",
+                neg_decisions_restore_idle_reverted,
+            ),
+            (
+                "restore-when-idle reset ga ruxsat bersa tutilsin",
+                neg_decisions_restore_allows_hard_reset,
             ),
             ("sidebar'ga oddiy Link qaytsa tutilsin", neg_decisions_nav_eager_link),
             ("bosh sahifaga oddiy Link qaytsa tutilsin", neg_decisions_home_main_eager_link),

@@ -55,7 +55,11 @@ aytmay qo'ydi (`org.rankwant.git-sha` yorlig'i `unknown`).
   faqat yo'l ko'rsatadi.
 - **Sessiya tugashidan oldin commit'lar push qilinadi** — tugallanmagan bo'lsa ham, `wip/`
   branch'ida. Faqat diskda turgan commit papka bilan birga yo'qolishi mumkin.
-- **Asosiy checkout (`cp/rankwant`) `main` da va toza qoladi.** Rejali Windows vazifalari
+- **Asosiy checkout (`cp/rankwant`) `main` da va toza qoladi** (HITL
+  2026-09-20 `restore-when-idle`): porcelain bo‘sh va hech kimning manifest
+  `workspace` i bo‘lmasa, `python tools/restore_canonical.py` uni
+  `origin/main` ga ff-only qaytaradi. Iflos yoki band daraxtga tegilmaydi;
+  `git reset --hard` yo‘q. Rejali Windows vazifalari
   skriptlarni aynan shu papkadan o'qiydi (`RankWant Monthly Backup` → `tools/backup.sh`,
   `RankWant Tunnel Monitor` → `tools/monitor.ps1`), shuning uchun u yerda yarim tahrirlangan
   fayl yoki begona branch turmasligi kerak.
