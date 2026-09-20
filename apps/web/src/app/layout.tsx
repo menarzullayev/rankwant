@@ -9,7 +9,6 @@ import {
   Plus_Jakarta_Sans,
   Roboto,
 } from "next/font/google";
-import "./globals.css";
 import AppShell from "@/layout/AppShell";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
 import { localeAlternatesFor } from "@/i18n/locale-alternates.server";

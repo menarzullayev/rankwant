@@ -51,7 +51,7 @@ NAV_CHROME = (
 )
 INTENT_LINK = "apps/web/src/components/ui/IntentLink.tsx"
 # Homepage <main> content links: same intent rule, this page only (2026-09-18).
-HOME_MAIN = "apps/web/src/app/page.tsx"
+HOME_MAIN = "apps/web/src/app/(site)/page.tsx"
 # The dictionary travels as a cached file, not inside the page (2026-09-18).
 DICTIONARY_ROUTE = "apps/web/src/app/i18n/[file]/route.ts"
 # The header must fit the narrowest supported screen — 320 px, the width the
@@ -92,7 +92,7 @@ STAT_CARD = "apps/web/src/components/ui/Card.tsx"
 # Profile KPI grid: its content column is far narrower than the home page's
 # (the 300 px sidebar eats the width), so it steps at `xl`, not `lg`. Owner
 # decision 2026-09-18.
-PROFILE_LAYOUT = "apps/web/src/app/users/[username]/layout.tsx"
+PROFILE_LAYOUT = "apps/web/src/app/(site)/users/[username]/layout.tsx"
 # Filter badge: the difficulty range is one filter even though it rides in two
 # params, so the badge counts it once. Owner decision 2026-09-18.
 FILTERS = "apps/web/src/components/ProblemFilters.tsx"
@@ -117,7 +117,7 @@ ABOUT_TAB = "apps/web/src/components/profile/AboutTab.tsx"
 TOPIC_STRENGTH = "apps/web/src/components/profile/TopicStrength.tsx"
 ACTIVITY_TABS = "apps/web/src/components/profile/ActivityTabs.tsx"
 SKILLS_SECTION = "apps/web/src/components/settings/SkillsSection.tsx"
-PROBLEMS_PAGE = "apps/web/src/app/problems/page.tsx"
+PROBLEMS_PAGE = "apps/web/src/app/(site)/problems/page.tsx"
 
 #: Every place a content name can fall back: the file, the marker it must
 #: carry, and how many times it must appear.
@@ -1224,6 +1224,30 @@ def homepage_css_is_inlined() -> str | None:
     return None
 
 
+def login_uses_narrow_auth_css() -> str | None:
+    """`/login` to'liq globals.css ni inline qilmasin (LH-LOGIN-CSS).
+
+    Ildiz layout 534 KiB HTML berardi; desktop Slow 4G FCP 1.1–1.2 s
+    (92–96). Auth guruh `auth.css` — tokenlar + tor Tailwind `@source`.
+    """
+    root = read("apps/web/src/app/layout.tsx")
+    if 'import "./globals.css"' in root:
+        return (
+            "apps/web/src/app/layout.tsx: ildiz yana to'liq globals.css ni "
+            "chizadi — /login 534 KiB HTML oladi"
+        )
+    auth = read("apps/web/src/app/(auth)/layout.tsx")
+    if 'import "../auth.css"' not in auth:
+        return "apps/web/src/app/(auth)/layout.tsx: auth.css ulanmagan"
+    site = read("apps/web/src/app/(site)/layout.tsx")
+    if 'import "../globals.css"' not in site:
+        return "apps/web/src/app/(site)/layout.tsx: globals.css ulanmagan"
+    sheet = read("apps/web/src/app/auth.css")
+    if '@source not "./(site)/' not in sheet:
+        return "apps/web/src/app/auth.css: (site) @source not yo'q"
+    return None
+
+
 def security_run_is_disabled() -> str | None:
     """Security workflow job ishlamasin (owner 2026-09-21).
 
@@ -1865,9 +1889,9 @@ def react_and_dom_stay_paired() -> str | None:
 APP_LAYOUT = "apps/web/src/app/layout.tsx"
 LANG_ALTERNATES = "apps/web/src/i18n/locale-alternates.ts"
 LANG_ALTERNATES_SERVER = "apps/web/src/i18n/locale-alternates.server.ts"
-PROBLEM_SLUG_PAGE = "apps/web/src/app/problems/[slug]/page.tsx"
-UPDATE_ID_PAGE = "apps/web/src/app/updates/[id]/page.tsx"
-ROADMAP_ID_PAGE = "apps/web/src/app/platform-roadmap/[id]/page.tsx"
+PROBLEM_SLUG_PAGE = "apps/web/src/app/(site)/problems/[slug]/page.tsx"
+UPDATE_ID_PAGE = "apps/web/src/app/(site)/updates/[id]/page.tsx"
+ROADMAP_ID_PAGE = "apps/web/src/app/(site)/platform-roadmap/[id]/page.tsx"
 
 
 def lang_query_self_canonical() -> str | None:
@@ -2101,6 +2125,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("PR'da og'ir CI yo'q", pr_skips_heavy_ci),
     ("bosh sahifa CSS inline", homepage_css_is_inlined),
     ("bosh sahifa CF email-decode yo'q", homepage_skips_cf_email_decode),
+    ("login yupqa auth.css", login_uses_narrow_auth_css),
     ("Security run o'chiq", security_run_is_disabled),
 ]
 

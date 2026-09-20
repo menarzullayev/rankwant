@@ -349,7 +349,7 @@ def neg_confusable_formula_allowed() -> tuple[bool, str]:
     Ya'ni bu salbiy test tekshiruvning QAMROVINI qulflaydi: u faqat
     e'lon qilinayotgan nomga qaraydi, matnga emas.
     """
-    path = ROOT / "apps/web/src/app/rating/page.tsx"
+    path = ROOT / "apps/web/src/app/(site)/rating/page.tsx"
     if not path.exists():
         return False, "confusables: rating/page.tsx topilmadi"
     original = path.read_bytes()
@@ -866,7 +866,7 @@ def neg_hardcoded_number_unit_passes() -> tuple[bool, str]:
     Farq birlik ro'yxatida: `MB`/`AC` — o'lchov belgisi, `masala` — so'z.
     Langar — `TD` komponentining `label=` atributi: matn pozitsiyasi.
     """
-    path = ROOT / "apps/web/src/app/problems/page.tsx"
+    path = ROOT / "apps/web/src/app/(site)/problems/page.tsx"
     with Mutation(
         path,
         '<TH>{t(locale, "problems.name")}</TH>',
@@ -888,7 +888,7 @@ def neg_hardcoded_wide_scope() -> tuple[bool, str]:
     jimgina adminda qolib ketsa, 247 fayl haqidagi xabar yolg'on bo'lardi.
     Langar — admin panelda BO'LMAGAN fayldagi JSX matni.
     """
-    path = ROOT / "apps/web/src/app/rating/page.tsx"
+    path = ROOT / "apps/web/src/app/(site)/rating/page.tsx"
     with Mutation(
         path,
         '<Section title="Skills"',
@@ -3028,6 +3028,15 @@ def neg_decisions_homepage_css_not_inlined() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_login_full_globals() -> tuple[bool, str]:
+    return _decision_broken(
+        "apps/web/src/app/(auth)/layout.tsx",
+        'import "../auth.css"',
+        'import "../globals.css"',
+        "login yupqa auth.css",
+    )
+
+
 def neg_decisions_cf_email_decode_restored() -> tuple[bool, str]:
     return _decision_broken(
         "apps/web/src/layout/AppFooter.tsx",
@@ -3231,7 +3240,7 @@ def neg_decisions_nav_eager_link() -> tuple[bool, str]:
 def neg_decisions_home_main_eager_link() -> tuple[bool, str]:
     # A plain `next/link` back on the homepage <main> prefetches in-view CTAs.
     return _decision_broken(
-        "apps/web/src/app/page.tsx",
+        "apps/web/src/app/(site)/page.tsx",
         'import { IntentLink } from "@/components/ui/IntentLink";\n',
         'import { IntentLink } from "@/components/ui/IntentLink";\nimport Link from "next/link";\n',
         "bosh sahifa <main> prefetch'i niyatda",
@@ -3446,7 +3455,7 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/layout/HeaderStatus.tsx",
     "apps/web/src/layout/UserMenu.tsx",
     "apps/web/src/components/ui/IntentLink.tsx",
-    "apps/web/src/app/page.tsx",
+    "apps/web/src/app/(site)/page.tsx",
     # Dictionary as a cached file (2026-09-18).
     "apps/web/src/app/layout.tsx",
     "apps/web/src/app/i18n/[file]/route.ts",
@@ -3476,7 +3485,7 @@ _DECISIONS_SANDBOX_FILES = (
     # Profile KPI grid steps at `xl` (2026-09-18): its content column is
     # narrow because of the 300 px sidebar, so it cannot copy the home
     # page's `lg`. Missing here, `check_decisions.py` exits 2.
-    "apps/web/src/app/users/[username]/layout.tsx",
+    "apps/web/src/app/(site)/users/[username]/layout.tsx",
     # Difficulty range counts as one filter (2026-09-18): the badge reads
     # this file. Missing here, `check_decisions.py` exits 2 rather than
     # testing the rule.
@@ -3498,7 +3507,7 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/components/profile/TopicStrength.tsx",
     "apps/web/src/components/profile/ActivityTabs.tsx",
     "apps/web/src/components/settings/SkillsSection.tsx",
-    "apps/web/src/app/problems/page.tsx",
+    "apps/web/src/app/(site)/problems/page.tsx",
     # Locale in the URL (2026-09-19): the rule reads the single name source,
     # the pure precedence function and the server reader. Missing here,
     # `check_decisions.py` exits 2 instead of testing the rule.
@@ -3546,9 +3555,9 @@ _DECISIONS_SANDBOX_FILES = (
     # `check_decisions.py` exits 2.
     "apps/web/src/i18n/locale-alternates.ts",
     "apps/web/src/i18n/locale-alternates.server.ts",
-    "apps/web/src/app/problems/[slug]/page.tsx",
-    "apps/web/src/app/updates/[id]/page.tsx",
-    "apps/web/src/app/platform-roadmap/[id]/page.tsx",
+    "apps/web/src/app/(site)/problems/[slug]/page.tsx",
+    "apps/web/src/app/(site)/updates/[id]/page.tsx",
+    "apps/web/src/app/(site)/platform-roadmap/[id]/page.tsx",
     "apps/web/src/app/sitemap.ts",
     # Vary Accept-Language at the edge (2026-09-20 HITL cf-transform).
     "tools/cf-vary-accept-language.json",
@@ -3586,6 +3595,11 @@ _DECISIONS_SANDBOX_FILES = (
     "tools/restore_canonical.py",
     # Homepage CSS inline (2026-09-20 HITL lh-inline-css).
     "apps/web/next.config.ts",
+    # Login thin auth.css (2026-09-21). Missing here, the sandbox copy
+    # cannot be read and `check_decisions.py` exits 2.
+    "apps/web/src/app/auth.css",
+    "apps/web/src/app/(auth)/layout.tsx",
+    "apps/web/src/app/(site)/layout.tsx",
     # Security run disabled (2026-09-21): the rule reads REQUIRED.
     # Missing here, `check_decisions.py` exits 2.
     "tools/check_deploy_gate.py",
@@ -3763,7 +3777,7 @@ def neg_decisions_kpi_grid_stuck_at_2up() -> tuple[bool, str]:
     # Back to `xl` only: the measured 38 px above the fold, four cards on two
     # rows across the whole 1024-1279 px laptop range.
     return _decision_broken(
-        "apps/web/src/app/page.tsx",
+        "apps/web/src/app/(site)/page.tsx",
         "sm:grid-cols-2 lg:grid-cols-4",
         "sm:grid-cols-2 xl:grid-cols-4",
         _KPI_RULE,
@@ -3774,7 +3788,7 @@ def neg_decisions_kpi_grid_3up_creeps_back() -> tuple[bool, str]:
     # The measured-to-be-useless variant: four cards still take two rows, so
     # it buys 0 px of vertical space and orphans the fourth card.
     return _decision_broken(
-        "apps/web/src/app/page.tsx",
+        "apps/web/src/app/(site)/page.tsx",
         "sm:grid-cols-2 lg:grid-cols-4",
         "sm:grid-cols-2 lg:grid-cols-3",
         _KPI_RULE,
@@ -3785,7 +3799,7 @@ def neg_decisions_kpi_card_value_step_lost() -> tuple[bool, str]:
     # One card keeps a 30 px value in a 121 px column: an 8-digit counter
     # overflows it. `replace(..., 1)` hits the first card only, leaving 3 of 4.
     return _decision_broken(
-        "apps/web/src/app/page.tsx",
+        "apps/web/src/app/(site)/page.tsx",
         _VALUE_STEP,
         "",
         _KPI_RULE,
@@ -3808,7 +3822,7 @@ def neg_decisions_kpi_value_prop_ignored() -> tuple[bool, str]:
 _PROFILE_RULE = "profil paneli xl gacha stekda"
 _PROFILE_GRID = "xl:grid-cols-[300px_minmax(0,1fr)]"
 _PROFILE_STEP = 'valueClassName="lg:text-2xl 2xl:text-title-sm"'
-_PROFILE_LAYOUT = "apps/web/src/app/users/[username]/layout.tsx"
+_PROFILE_LAYOUT = "apps/web/src/app/(site)/users/[username]/layout.tsx"
 
 
 def neg_decisions_profile_two_columns_at_lg() -> tuple[bool, str]:
@@ -5718,6 +5732,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("Security job yoqilsa tutilsin", neg_decisions_security_run_enabled),
             ("Security darvozaga qaytsa tutilsin", neg_decisions_security_required_again),
             ("bosh sahifa CSS link'ga qaytsa tutilsin", neg_decisions_homepage_css_not_inlined),
+            ("login to'liq globals.css ga qaytsa tutilsin", neg_decisions_login_full_globals),
             ("CF email-decode qaytsa tutilsin", neg_decisions_cf_email_decode_restored),
             ("lug'at hook shartli qaytsa tutilsin", neg_decisions_locale_use_conditional),
             ("smoke PR'da qaytsa tutilsin", neg_decisions_smoke_on_pr),
