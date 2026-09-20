@@ -130,10 +130,13 @@ guard holds and the step is not skipped.
    reachable (§ 3), so this is a defence-in-depth weakness rather than an open
    door: any container on the compose network — including an escaped judge —
    could read or rewrite problem test data with a publicly known password.
-3. **No threat model document exists.** `docs/08 § Xavfsizlik checklist` is five
-   lines; `docs/06 § Xavfsizlik chegarasi` is a design statement. There is no
-   consolidated enumeration of assets, adversaries, trust boundaries and
-   accepted risks. This record is a boundary measurement, not a threat model.
+3. **No threat model document existed when this record was written.** `docs/08 §
+   Xavfsizlik checklist` is five lines; `docs/06 § Xavfsizlik chegarasi` is a
+   design statement. This record is a boundary measurement, not a threat model.
+   *Later the same day the owner chose to write one:*
+   [`docs/10-operations/threat-model.md`](../../10-operations/threat-model.md) —
+   assets, adversaries, STRIDE per trust boundary, and the accepted-risk
+   register (A-1…A-8) that this record could only point at.
 4. **Alerting is local-only.** `tools/monitor.ps1` detects seven failure classes
    and writes `.handoff/monitor-alert.txt`; no code reads that file. There is no
    Sentry. The owner reviewed this on 2026-09-21 and chose to keep alerting
@@ -144,7 +147,8 @@ guard holds and the step is not skipped.
 
 ## 7. What is still missing before an audit can start
 
-- The threat model (§ 6.3).
+- ~~The threat model (§ 6.3)~~ — written later on 2026-09-21:
+  [`docs/10-operations/threat-model.md`](../../10-operations/threat-model.md).
 - A dependency licence inventory for a lawyer's sign-off — the second long-lead
   launch-gate item, and coupled to ADR-0004's nsjail choice.
 - The judge latency gate exists in Nightly but has not yet produced a number, so
