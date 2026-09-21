@@ -137,12 +137,6 @@ export const WIDTH_MAX = 1800;
 export const WIDTH_STEP = 100;
 export const WIDTH_DEFAULT = 1400;
 
-export const WIDTH_STEPS: number[] = (() => {
-  const out: number[] = [];
-  for (let v = WIDTH_MIN; v <= WIDTH_MAX; v += WIDTH_STEP) out.push(v);
-  return out;
-})();
-
 export function clampWidth(value: number | undefined): number {
   if (typeof value !== "number" || !Number.isFinite(value)) {
     return WIDTH_DEFAULT;

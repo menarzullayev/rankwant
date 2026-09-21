@@ -22,7 +22,6 @@ import {
   WIDTH_MAX,
   WIDTH_MIN,
   WIDTH_STEP,
-  WIDTH_STEPS,
   clampLineHeight,
   clampScale,
   clampSize,
@@ -472,6 +471,7 @@ function LookSection() {
 }
 
 function WidthSection() {
+  // D58: width is an interval, not a family — slider only, no 9-chip catalogue.
   const locale = useLocale();
   const { appearance, setAppearance } = useCustomizer();
   const value = clampWidth(appearance.width);
@@ -489,19 +489,6 @@ function WidthSection() {
           className="mt-1 w-full"
         />
       </label>
-      <div className="mt-2 flex flex-wrap gap-2">
-        {WIDTH_STEPS.map((preset) => (
-          <button
-            key={preset}
-            type="button"
-            aria-pressed={value === preset}
-            onClick={() => setAppearance({ width: preset })}
-            className={chip(value === preset)}
-          >
-            {preset}
-          </button>
-        ))}
-      </div>
       <p className="mt-2 text-theme-xs rw-faint">{t(locale, "customizer.widthHint")}</p>
     </Section>
   );

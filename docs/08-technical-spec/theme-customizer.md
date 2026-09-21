@@ -2,7 +2,7 @@
 
 **STATUS:** shipped (2026-09-14)
 
-Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D57).
+Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D58).
 Entry points: the header icon, a floating tab on desktop, `Ctrl+.`, and
 `/settings/korinish`.
 
@@ -43,6 +43,9 @@ input). Classic apply clears «Template modified».
 Factory appearance stays **clay** (D57), not Classic. Soft is
 clay+light+`dm-sans`; factory font is null, so a fresh guest matches
 no team template — the modified banner is correct.
+
+Content width is a slider only (D58): 1000–1800 px, step 100. The
+nine numeric chips are gone — width is an interval, not a family.
 
 ## The colour model
 
