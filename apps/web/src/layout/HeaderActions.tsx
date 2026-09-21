@@ -6,6 +6,8 @@ import { CustomizerTrigger } from "@/components/customizer/CustomizerTrigger";
 import UpdatesBell from "@/components/UpdatesBell";
 import { CUSTOMIZER_ENABLED } from "@/lib/theme/flag";
 
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
+
 import HeaderStatus from "./HeaderStatus";
 import { LocaleSwitch } from "./LocaleSwitch";
 import SearchBox from "./SearchBox";
@@ -20,7 +22,8 @@ import UserMenu from "./UserMenu";
  *  ro'yxat ikki faylda nusxa edi va izoh «bir xil bo'lsin» deb
  *  yozilgan — tartib baribir ajralib ketardi.
  *
- *  Mavzu tugmasi bu yerda YO'Q (D3): palitra — CustomizerTrigger.
+ *  Mavzu tugmasi H6 da qaytdi: uslubni sozlagich tanlaydi (standart
+ *  doira). StylePicker yo'q (D3 qoladi).
  *  Kirish sahifasida qidiruv va sozlagich yo'q: qidiradigan narsa ham,
  *  saqlaydigan sozlama ham yo'q. Til va hisob qoladi.
  */
@@ -35,6 +38,7 @@ export default function HeaderActions() {
         <HeaderStatus />
         <UpdatesBell />
         {!auth && CUSTOMIZER_ENABLED && <CustomizerTrigger />}
+        {!auth && <ThemeToggle />}
         <LocaleSwitch />
         <UserMenu />
       </div>

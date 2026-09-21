@@ -18,6 +18,7 @@ import { DEFAULT_LOADING_VARIANT } from "@/lib/theme/loading";
 import { DEFAULT_ICON_PACK } from "@/lib/theme/icon-packs";
 import { DEFAULT_OVERLAY_VARIANT } from "@/lib/theme/overlay";
 import { DEFAULT_FORM_VARIANT } from "@/lib/theme/form";
+import { DEFAULT_THEME_TOGGLE, clampThemeToggle } from "@/lib/theme/toggle";
 import {
   AA_TARGET,
   accentInk,
@@ -199,6 +200,10 @@ export function applyAppearance(appearance: AppearancePrefs) {
   const form = appearance.formStyle ?? DEFAULT_FORM_VARIANT;
   if (form !== DEFAULT_FORM_VARIANT) root.dataset.form = form;
   else delete root.dataset.form;
+
+  const themeToggle = clampThemeToggle(appearance.themeToggle);
+  if (themeToggle !== DEFAULT_THEME_TOGGLE) root.dataset.themeToggle = themeToggle;
+  else delete root.dataset.themeToggle;
 }
 
 /** Rang ajratolmaslik uchun TUSLAR (D44).

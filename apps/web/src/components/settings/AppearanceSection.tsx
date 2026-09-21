@@ -15,7 +15,7 @@ import { announcePrefs, playSuccess, rememberPrefs } from "@/lib/prefs";
 import { FormRadios } from "@/components/form/FormKit";
 import { Check, Hint, Select, Status, useAction } from "./kit";
 
-const EFFECTS: ThemeEffect[] = ["none", "fade", "circle"];
+const EFFECTS: ThemeEffect[] = ["none", "fade", "circle", "curtain"];
 
 /** Til, ovoz va effekt — ko'rinish esa bitta joyda: customizer. */
 export function AppearanceSection() {

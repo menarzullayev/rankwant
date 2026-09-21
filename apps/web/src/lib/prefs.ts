@@ -12,6 +12,7 @@ import type {
   ThemeEffect,
   ThemeTemplate,
 } from "@/lib/api";
+import { isThemeToggle, themeToggleToEffect } from "@/lib/theme/toggle";
 
 export const PREFS_EVENT = "rw:prefs";
 
@@ -182,8 +183,21 @@ export function rememberAccent(accent: (StoredAccent & { style: string }) | null
 export const soundEnabled = () => read(SOUND_KEY) === "1";
 
 export function themeEffect(): ThemeEffect {
+  try {
+    const raw = read(APPEARANCE_KEY);
+    if (raw) {
+      const appearance = JSON.parse(raw) as AppearancePrefs;
+      if (isThemeToggle(appearance.themeToggle)) {
+        return themeToggleToEffect(appearance.themeToggle);
+      }
+    }
+  } catch {
+    // buzilgan kesh — eski kalitga qaytamiz
+  }
   const value = read(EFFECT_KEY);
-  return value === "none" || value === "circle" ? value : "fade";
+  if (value === "none" || value === "circle" || value === "curtain") return value;
+  if (value === "fade") return "fade";
+  return "circle";
 }
 
 let audio: AudioContext | null = null;
