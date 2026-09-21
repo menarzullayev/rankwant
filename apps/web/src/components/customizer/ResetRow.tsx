@@ -8,6 +8,7 @@ import { t } from "@/i18n/messages";
 
 export function ResetRow() {
   const locale = useLocale();
+  // D67: Reset restores appearance/a11y prefs only — not rw:cz-tab / rw:cz-group.
   const { undo, canUndo, resetAll } = useCustomizer();
   const [confirming, setConfirming] = useState(false);
   return (

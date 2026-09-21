@@ -453,6 +453,7 @@ flag — nuqson topilsa modul bir tugma bilan o'chiriladi.
 | D64 | Tab importlari eager; D63 dan keyin ham `lazy()` yo‘q |
 | D65 | Oxirgi accordion `sessionStorage`; hisob emas |
 | D66 | Oxirgi panel tab `sessionStorage`; hisob emas |
+| D67 | Tiklash faqat pref; chrome session qoladi |
 
 ### D47 — mavzu ikki joyda saqlanmaydi (amalga oshirishda aniqlangan)
 
@@ -646,6 +647,12 @@ Batafsil: [DECISION-65.md](./DECISION-65.md).
 Hisob rad — D65 bilan bir umr.
 
 Batafsil: [DECISION-66.md](./DECISION-66.md).
+
+### D67 — Tiklash chrome kursor (2026-09-21)
+
+**Tanlov:** A. `resetAll` pref token. `rw:cz-tab` / `rw:cz-group` rad.
+
+Batafsil: [DECISION-67.md](./DECISION-67.md).
 
 ---
 
