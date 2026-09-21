@@ -170,4 +170,10 @@ describe("CUST-100 contestant customizer", () => {
     expect(appearance).not.toContain("WIDTH_STEPS");
     expect(appearance).not.toContain("setAppearance({ width: preset })");
   });
+
+  it("keeps four Type size snap chips (D59)", () => {
+    expect(appearance).toContain("D59");
+    expect(appearance).toContain("const quick = [90, 100, 110, 120]");
+    expect(appearance).toContain("setAppearance({ size: preset })");
+  });
 });

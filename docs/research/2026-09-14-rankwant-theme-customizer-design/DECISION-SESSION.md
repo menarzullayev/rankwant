@@ -445,6 +445,7 @@ flag — nuqson topilsa modul bir tugma bilan o'chiriladi.
 | D56 | Compose-dirty gate faqat live + deploy daraxtini skanaydi |
 | D57 | Zavod `clay` qoladi; Classic match emas — banner to‘g‘ri |
 | D58 | Content width faqat slider; 9 chip yo‘q |
+| D59 | Type size slider + 4 chip qoladi (90/100/110/120) |
 
 ### D47 — mavzu ikki joyda saqlanmaydi (amalga oshirishda aniqlangan)
 
@@ -589,6 +590,12 @@ Batafsil: [DECISION-57.md](./DECISION-57.md).
 **Tanlov:** B. 9 raqamli chip olib tashlandi. Width interval, oila emas.
 
 Batafsil: [DECISION-58.md](./DECISION-58.md).
+
+### D59 — type size chip (2026-09-21)
+
+**Tanlov:** A. 4 snap D53 oralig‘ida; width D58 dan farq qiladi.
+
+Batafsil: [DECISION-59.md](./DECISION-59.md).
 
 ---
 

@@ -278,6 +278,8 @@ function NavShapeSection() {
 }
 
 function SizeSection() {
+  // D59: four snap chips stay (D53: 2–5). Width lost its nine chips (D58);
+  // size is not the same catalogue.
   const locale = useLocale();
   const { appearance, setAppearance } = useCustomizer();
   const value = clampSize(appearance.size);
