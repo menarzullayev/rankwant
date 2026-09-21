@@ -48,7 +48,7 @@ export default function SearchBox() {
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
-  // `Ctrl+K` / `Cmd+K` — qidiruvga sakrash (D61 ⑦).
+  // `Ctrl+K` / `Cmd+K` — qidiruvga sakrash (D61 ⑦, H2 yagona egasi).
   //
   // ⚠️ `preventDefault()` SHART: usiz brauzer o'z manzil qatoridagi
   // qidiruvni ochadi va bizning maydon fokus olmay qoladi.

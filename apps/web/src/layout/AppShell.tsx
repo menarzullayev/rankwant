@@ -17,7 +17,6 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import { UpdatesProvider } from "@/context/UpdatesContext";
 import type { AppearancePrefs, Me } from "@/lib/api";
 import { OverlayProvider } from "@/components/overlay/OverlayHost";
-import { CommandPalette } from "@/components/kit/CommandPalette";
 import { startChiziq } from "@/lib/chiziq";
 import AppFooter from "./AppFooter";
 import AppHeader from "./AppHeader";
@@ -164,7 +163,8 @@ export default function AppShell({
             markupAppearance={markupAppearance}
           >
             <OverlayProvider>
-              <CommandPalette />
+              {/* CommandPalette bu yerda YO'Q (H2): Ctrl+K qidiruvniki.
+                  Kit fayli qoladi — clipboard toast shartnomasi uchun. */}
               <PrefsSync />
               <UpdatesProvider>
                 <SidebarProvider>

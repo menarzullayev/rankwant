@@ -94,7 +94,9 @@ describe("kit product surfaces", () => {
     expect(src("../../src/components/admin/UsersAdmin.tsx")).toContain(
       'kind: "cmdk"',
     );
-    expect(src("../../src/layout/AppShell.tsx")).toContain("CommandPalette");
+    expect(src("../../src/layout/AppShell.tsx")).not.toContain(
+      "<CommandPalette",
+    );
   });
 
   it("wires tooltip, copy, time, tab, and check surfaces", () => {
