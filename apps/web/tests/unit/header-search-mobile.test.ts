@@ -18,5 +18,8 @@ describe("H3 mobile search-icon", () => {
     expect(search).toContain('aria-keyshortcuts="Control+K Meta+K"');
     expect(search).toContain("w-full max-w-full");
     expect(search).not.toMatch(/w-64/);
+    expect(search).toContain("fixed inset-x-3");
+    expect(search).not.toContain("} relative md:block");
+    expect(search).toContain('className="pointer-events-none"');
   });
 });
