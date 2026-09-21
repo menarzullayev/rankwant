@@ -31,6 +31,13 @@ To‘rt host: [compose/four-host](../../compose/four-host/README.md).
 Bir mashinada web×2/api×2: `docker-compose.replicas.yml` (sukutda o‘chiq).
 SLO (Sentry yo‘q): `GET /api/v1/slo/` — `tools/check_slo.py`.
 
+Ishlab chiquvchi vositalari (masalan `adminer` — ma'lumotlar bazasi UI si)
+**deploy zanjiridan tashqarida**: `docker-compose.tools.yml`, `profiles: ['tools']`,
+faqat loopback (`127.0.0.1:8081`), obraz **digest** bilan qadalgan.
+`tools/deploy.sh` bu faylni olmaydi, ya'ni u ishlab chiqarish chegarasiga
+kirmaydi; chegara asbobi (`tools/check_security_boundary.py`) uni alohida blok
+sifatida o‘lchaydi va fayl yo‘qolsa qizaradi.
+
 Judge hostlar **gorizontal** miqyoslanadi — navbat uzunligi oshsa worker qo'shiladi.
 
 ## Judge sig'imi (o'lchangan, 2026-09-06)
