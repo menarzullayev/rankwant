@@ -141,15 +141,17 @@ buni o'zi ta'minlaydi — hamma narsadan oldin:
   Deploy yiqilgan joyda (elektr) qulf qolsa, jarayon yo'qligini tekshirib
   `rm -rf` bilan olib tashlanadi.
 - **Darvoza** — `tools/check_deploy_gate.py`: HEAD GitHub'dagi `main` bilan
-  bir xil, shu commit'ning oxirgi `CI` va `Security` run'lari `success`, va
-  hech bir checkout'da commit qilinmagan `docker-compose*.yml` yo'q
+  bir xil, shu commit'ning oxirgi `CI` run'i `success`, va **jonli checkout
+  yoki deploy worktree**da commit qilinmagan `docker-compose*.yml` yo'q
   (chiqish 0 — mumkin, 1 — yo'q, **2 — o'lchanmadi**, deploy baribir to'xtaydi).
   Uchinchi shart 2026-09-17 dagi holatdan keyin qo'shildi: jonli stack asosiy
   checkout'dagi commit qilinmagan compose bilan qayta yaratilgan edi (Turnstile
   kalitlari va yumshatilgan `register` throttle'i o'sha faylda), worktree'dan
   qilinadigan deploy esa commit qilingan compose bilan quradi va ularni jimgina
-  olib tashlagan bo'lardi. Darvoza to'xtatsa: o'zgarishni commit qiling (PR) yoki
-  qaytaring.
+  olib tashlagan bo'lardi. 2026-09-21 (D56) dan beri skan **har** AOP
+  daraxtini emas, faqat shu ikkala daraxtni o'qiydi — izolatsiya qilingan
+  `docker-compose.tools.yml` yashil main bake'ni muzlatmasin. Darvoza
+  to'xtatsa: o'zgarishni commit qiling (PR) yoki qaytaring.
   Darvoza ishlayotgan paytda o'chirilgan worktree o'tkazib yuboriladi: yo'q
   papkada deploy olib tashlaydigan narsa yo'q. 2026-09-18 da boshqa agent
   o'z worktree'sini aynan shu oraliqda o'chirgan va darvoza `exit 2` bergan edi.
