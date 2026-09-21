@@ -1774,6 +1774,7 @@ export const zh: Record<MessageKey, string> = {
   "customizer.group.look": "模板",
   "customizer.group.color": "颜色与风格",
   "customizer.group.type": "文字",
+  "customizer.group.layout": "布局",
   "customizer.group.system": "界面",
   "customizer.swatch.red": "红",
   "customizer.swatch.ember": "橙红",

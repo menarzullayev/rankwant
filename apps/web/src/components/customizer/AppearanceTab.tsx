@@ -90,15 +90,23 @@ export function AppearanceTab() {
         <DensitySection />
       </Group>
       <Group
+        id="layout"
+        title={t(locale, "customizer.group.layout")}
+        open={group === "layout"}
+        onOpen={setGroup}
+      >
+        {/* D61: Tartib = personal chrome only (D50/D53/D58). */}
+        <NavSection />
+        <NavShapeSection />
+        <WidthSection />
+        <LookSection />
+      </Group>
+      <Group
         id="system"
         title={t(locale, "customizer.group.system")}
         open={group === "system"}
         onOpen={setGroup}
       >
-        <NavSection />
-        <NavShapeSection />
-        <WidthSection />
-        <LookSection />
         {/* D48+D51: contestant writes kit families via SelectField, not chips. */}
         <VerdictSection />
         <StatusSection />

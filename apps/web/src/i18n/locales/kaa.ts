@@ -1777,6 +1777,7 @@ export const kaa: Record<MessageKey, string> = {
   "customizer.group.look": "Úlgiler",
   "customizer.group.color": "Reń hám usıl",
   "customizer.group.type": "Tekst",
+  "customizer.group.layout": "Tártip",
   "customizer.group.system": "Bet interfeysi",
   "customizer.swatch.red": "Qızıl",
   "customizer.swatch.ember": "Ot",

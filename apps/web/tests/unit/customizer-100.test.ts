@@ -73,15 +73,28 @@ describe("CUST-100 contestant customizer", () => {
     expect(opened).toContain('id="rw-cz-look"');
   });
 
-  it("groups appearance into four accordion clusters", () => {
+  it("groups appearance into five accordion clusters (D61)", () => {
     expect(chrome).toContain('"look"');
     expect(chrome).toContain('"color"');
     expect(chrome).toContain('"type"');
+    expect(chrome).toContain('"layout"');
     expect(chrome).toContain('"system"');
     expect(appearance).toContain('id="look"');
     expect(appearance).toContain('id="color"');
     expect(appearance).toContain('id="type"');
+    expect(appearance).toContain('id="layout"');
     expect(appearance).toContain('id="system"');
+    const layoutAt = appearance.indexOf('id="layout"');
+    const systemAt = appearance.indexOf('id="system"');
+    expect(layoutAt).toBeGreaterThan(-1);
+    expect(systemAt).toBeGreaterThan(layoutAt);
+    expect(appearance.indexOf("<NavSection")).toBeGreaterThan(layoutAt);
+    expect(appearance.indexOf("<NavSection")).toBeLessThan(systemAt);
+    expect(appearance.indexOf("<LookSection")).toBeGreaterThan(layoutAt);
+    expect(appearance.indexOf("<LookSection")).toBeLessThan(systemAt);
+    expect(appearance.indexOf("<VerdictSection")).toBeGreaterThan(systemAt);
+    expect(appearance.indexOf("<IconPackSection")).toBeGreaterThan(systemAt);
+    expect(appearance).toContain("D61");
   });
 
   it("labels swatches; demos that stay in the panel skip the tab order", () => {

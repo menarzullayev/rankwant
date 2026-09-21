@@ -1777,6 +1777,7 @@ export const tr: Record<MessageKey, string> = {
   "customizer.group.look": "Şablonlar",
   "customizer.group.color": "Renk ve stil",
   "customizer.group.type": "Metin",
+  "customizer.group.layout": "Düzen",
   "customizer.group.system": "Arayüz",
   "customizer.swatch.red": "Kırmızı",
   "customizer.swatch.ember": "Köz",

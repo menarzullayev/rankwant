@@ -1777,6 +1777,7 @@ export const ru: Record<MessageKey, string> = {
   "customizer.group.look": "Шаблоны",
   "customizer.group.color": "Цвет и стиль",
   "customizer.group.type": "Текст",
+  "customizer.group.layout": "Макет",
   "customizer.group.system": "Интерфейс",
   "customizer.swatch.red": "Красный",
   "customizer.swatch.ember": "Охра",
