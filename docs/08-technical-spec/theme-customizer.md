@@ -2,7 +2,7 @@
 
 **STATUS:** shipped (2026-09-14)
 
-Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D59).
+Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D60).
 Entry points: the header icon, a floating tab on desktop, `Ctrl+.`, and
 `/settings/korinish`.
 
@@ -47,6 +47,8 @@ no team template — the modified banner is correct.
 Content width is a slider only (D58): 1000–1800 px, step 100. The
 nine numeric chips are gone — width is an interval, not a family.
 Type size keeps slider + four snaps 90/100/110/120 (D59).
+Accessibility stays a second tab (D60), not a fifth accordion and not
+settings-only.
 
 ## The colour model
 

@@ -183,6 +183,7 @@ export function Customizer() {
             aria-labelledby={`rw-cz-tab-${tab}`}
             className="min-h-0 flex-1 space-y-6 overflow-y-auto px-4 py-4"
           >
+            {/* D60: a11y stays a second tab — not an Appearance accordion, not settings-only. */}
             {tab === "appearance" ? <AppearanceTab /> : <A11yTab />}
           </div>
 
