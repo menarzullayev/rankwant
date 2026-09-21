@@ -451,6 +451,7 @@ flag — nuqson topilsa modul bir tugma bilan o'chiriladi.
 | D62 | Overlay/form CSS-only; `rw:markup` faqat v/s/l/p |
 | D63 | Panel `lazy()` yo‘q; source-graph baseline yozildi |
 | D64 | Tab importlari eager; D63 dan keyin ham `lazy()` yo‘q |
+| D65 | Oxirgi accordion `sessionStorage`; hisob emas |
 
 ### D47 — mavzu ikki joyda saqlanmaydi (amalga oshirishda aniqlangan)
 
@@ -631,6 +632,12 @@ Batafsil: [DECISION-63.md](./DECISION-63.md), [PANEL-GRAPH.json](./PANEL-GRAPH.j
 **Tanlov:** C. `lazy()` rad. Birinchi ochilish sync.
 
 Batafsil: [DECISION-64.md](./DECISION-64.md).
+
+### D65 — oxirgi accordion (2026-09-21)
+
+**Tanlov:** B. `rw:cz-group` sessionStorage. ui_prefs/localStorage rad.
+
+Batafsil: [DECISION-65.md](./DECISION-65.md).
 
 ---
 
