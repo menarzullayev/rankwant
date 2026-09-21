@@ -114,7 +114,7 @@ export default function SearchBox() {
         data-tip-kind="flip"
         className="flex size-10 shrink-0 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg md:hidden"
       >
-        <Icon name="action.search" />
+        <Icon name="action.search" className="pointer-events-none" />
       </button>
       <div
         id="rw-header-search"
@@ -122,7 +122,7 @@ export default function SearchBox() {
           expanded
             ? "fixed inset-x-3 top-16 z-40 rounded-lg border rw-line rw-surface rw-shadow p-2 md:static md:inset-auto md:z-auto md:rounded-none md:border-0 md:bg-transparent md:p-0 md:shadow-none"
             : "hidden"
-        } relative md:block`}
+        } md:block`}
       >
       <label className="relative block">
         {/* Yorliqda MATN bo'lishi shart: ikonka va placeholder skrinriderga
