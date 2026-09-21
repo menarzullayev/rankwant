@@ -1,0 +1,54 @@
+{
+  "measured_at": "2026-09-21T01:42:46Z",
+  "url": "https://rankwant.uz/",
+  "device": "desktop",
+  "throttle": "none",
+  "web_sha": "2ceb76a536200b0d80d16482068df97cd7bdbd7c",
+  "built_at": "2026-09-21T01:35:14Z",
+  "method": "Resource Timing after reload ignoreCache; Performance trace NAVIGATION_0",
+  "encoding": "gzip (Content-Encoding on Next chunks)",
+  "scripts": {
+    "count": 16,
+    "first_party_count": 15,
+    "transfer_bytes": 335907,
+    "encoded_bytes": 331407,
+    "decoded_bytes": 1176185,
+    "first_party_encoded_bytes": 331407,
+    "chunks_encoded_bytes": 303213,
+    "i18n_encoded_bytes": 28194,
+    "third_party_encoded_bytes": 0,
+    "rows": [
+      { "name": "/_next/static/chunks/10fos77coexu8.js", "encoded": 71627, "decoded": 229156 },
+      { "name": "/_next/static/chunks/2h7lim43o18t5.js", "encoded": 53716, "decoded": 251971 },
+      { "name": "/_next/static/chunks/2-rtuqsgzmno4.js", "encoded": 45095, "decoded": 165743 },
+      { "name": "/_next/static/chunks/2qo409k5yx8mx.js", "encoded": 33704, "decoded": 104852 },
+      { "name": "/i18n/uz.js?v=7946adc44628", "encoded": 28194, "decoded": 82662 },
+      { "name": "/_next/static/chunks/0obxabgvuwiki.js", "encoded": 19934, "decoded": 76175 },
+      { "name": "/_next/static/chunks/0xryggq1_0ioy.js", "encoded": 17520, "decoded": 49612 },
+      { "name": "/_next/static/chunks/25urzflx8gk34.js", "encoded": 12308, "decoded": 36790 },
+      { "name": "/_next/static/chunks/3tnvh3r4p7iv1.js", "encoded": 10187, "decoded": 51092 },
+      { "name": "/_next/static/chunks/2_i1slo_1ug3c.js", "encoded": 10040, "decoded": 31546 },
+      { "name": "/_next/static/chunks/15jx6q4hccq2a.js", "encoded": 9960, "decoded": 32039 },
+      { "name": "/_next/static/chunks/1076jho71b48d.js", "encoded": 7611, "decoded": 28907 },
+      { "name": "/_next/static/chunks/1jpqywxv1gmsz.js", "encoded": 7022, "decoded": 24461 },
+      { "name": "/_next/static/chunks/turbopack-0v1p_l3zk6vrt.js", "encoded": 4304, "decoded": 10946 },
+      { "name": "/_next/static/chunks/1s0-_vv-77b_k.js", "encoded": 185, "decoded": 233 }
+    ]
+  },
+  "nav_ms": { "ttfb": 78, "dcl": 208, "load": 390 },
+  "trace": {
+    "lcp_ms": 192,
+    "lcp_ttfb_ms": 75,
+    "lcp_render_delay_ms": 117,
+    "cls": 0,
+    "critical_path_ms": 294,
+    "legacy_js_waste_bytes": 24900,
+    "third_party_main_thread_ms": 6
+  },
+  "d63_source_utf8_kib": {
+    "note": "UTF-8 source graph, not gzip. Not the same unit as encoded_bytes.",
+    "appearance_exclusive": 139.1,
+    "a11y_exclusive": 16.4,
+    "full_customizer_graph": 422.0
+  }
+}

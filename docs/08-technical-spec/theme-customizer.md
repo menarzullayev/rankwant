@@ -2,7 +2,7 @@
 
 **STATUS:** shipped (2026-09-14)
 
-Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D67).
+Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D68).
 Entry points: the header icon, a floating tab on desktop, `Ctrl+.`, and
 `/settings/korinish`.
 
@@ -67,6 +67,11 @@ The last open Appearance accordion is stored in `sessionStorage`
 is `rw:cz-tab` (D66). Neither is account prefs. A new browser tab
 starts on Templates + Appearance. Reset (D67) restores appearance
 tokens only — it does not write those session keys.
+
+Live first-load JS on the guest homepage (D68, web `2ceb76a`,
+desktop, gzip): **323.6 KiB** encoded (15 first-party scripts;
+296.1 KiB Next chunks + 27.5 KiB `i18n/uz.js`). Observed LCP 192 ms,
+CLS 0. That is not the D63 UTF-8 source graph.
 
 ## The colour model
 
