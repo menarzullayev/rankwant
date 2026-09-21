@@ -1,0 +1,61 @@
+# Ishlab chiquvchi vositalari — deploy zanjiridan TASHQARIDA.
+#
+# Nega alohida fayl: `tools/deploy.sh` aynan
+#   docker compose -p rankwant --env-file .env.public \
+#     -f docker-compose.yml -f docker-compose.public.yml ...
+# ni yurgizadi. `docker-compose.yml` ga qo'shilgan har qanday servis o'sha
+# zanjirga qo'shiladi, `tools/check_security_boundary.py` esa zanjirdagi
+# nashr etilgan portlarni **ishlab chiqarish chegarasi** deb hisoblaydi.
+# Ma'lumotlar bazasi UI si ishlab chiqarish zanjirida turmasligi kerak.
+# Pretsedent: `docker-compose.ci.yml`, `docker-compose.replicas.yml`.
+#
+# ⚠️ `name:` ATAYLAB YO'Q. Compose fayllarni birlashtirganda `name:` oxirgi
+# fayldan olinadi; bu yerga yozilsa `-p rankwant` ni bosib ketardi va adminer
+# boshqa loyihaga tushib, `postgres` ni topa olmasdi. `docker-compose.ci.yml`
+# `name: rankwant-ci` yozadi — u ataylab ALOHIDA loyiha.
+#
+# Ishlatish (jonli stack bilan BIR XIL loyihada, shuning uchun `-p rankwant`):
+#   docker compose -p rankwant --env-file .env.public \
+#     -f docker-compose.yml -f docker-compose.public.yml -f docker-compose.tools.yml \
+#     --profile tools up -d adminer
+#
+# Hech bir avtomatik yo'lda yo'q: na CI, na Nightly, na deploy. Sabab va
+# tarix: docs/research/2026-09-21-security-boundary/ § 6, 1-divergensiya.
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  adminer:
+    # DIGEST bilan qadalgan, suzuvchi `adminer:4` tegi bilan EMAS.
+    #
+    # ⚠️ Konteyner 2026-09-20 17:07 dan 2026-09-21 gacha aynan `adminer:4`
+    # bilan ishladi va uni hech narsa yangilamasdi: suzuvchi major teg hech
+    # qachon o'z-o'zidan almashmaydi, ya'ni «qaysi kod ishlayapti» degan savol
+    # javobsiz qoladi. Digest buni faktga aylantiradi. O'lchandi 2026-09-21:
+    #   docker image inspect adminer:4 --format '{{json .RepoDigests}}'
+    image: adminer@sha256:c1c24d89d06fcb8fc0fb5a049240dc292ff4a121ae05d7e74d64b58c421d2921
+    logging: *default-logging
+    # `profiles` — `up -d` uni O'ZI ko'tarmaydi; faqat `--profile tools`.
+    profiles: ['tools']
+    # Faqat loopback. Hech qachon `8081:8080` (host-wide): Cloudflare Tunnel
+    # yagona kirish yo'li, va ma'lumotlar bazasi UI si LAN dan yetib
+    # bo'lmaydigan joyda turishi kerak.
+    ports: ['127.0.0.1:8081:8080']
+    environment:
+      # Login formasidagi serverni oldindan to'ldiradi — `postgres` compose
+      # tarmog'idagi nom.
+      #
+      # ⚠️ Compose o'zgaruvchi interpolatsiyasi (dollar + figurali qavs)
+      # ATAYLAB ishlatilmagan. Sabab: `check_env_example.py` `docker-compose*.yml`
+      # ni glob qiladi va topilgan HAR BIR nomni `.env.example` da talab qiladi.
+      # ⚠️ U **izohlarni ajratmaydi** — o'lchandi 2026-09-21: aynan shu izohning
+      # birinchi varianti misol uchun yozilgan nom bilan tekshiruvni qizartirdi.
+      # Bu yerda o'zgaruvchan narsa yo'q, shuning uchun nom umuman yozilmaydi.
+      ADMINER_DEFAULT_SERVER: postgres
+    depends_on:
+      postgres: { condition: service_healthy }
+    restart: unless-stopped

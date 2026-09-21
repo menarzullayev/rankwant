@@ -134,6 +134,23 @@ guard holds and the step is not skipped.
    stack, invisible to every compose file and every check in this repository.
    It is not reachable from the internet. It is also not reviewed, not pinned,
    and not recreated by any deployment.
+
+   > **Resolution, 2026-09-21 (later the same day).** The owner chose to declare
+   > it rather than delete it. `adminer` now lives in
+   > [`docker-compose.tools.yml`](../../../docker-compose.tools.yml) — pinned by
+   > digest instead of the floating `adminer:4` tag, `profiles: ['tools']`, and
+   > `127.0.0.1:8081:8080`. It is in its **own overlay**, not in
+   > `docker-compose.yml`, so the deploy chain is untouched: measured,
+   > `check_security_boundary.py` still reports **2** published ports for the
+   > chain and now measures the tools overlay as a separate block. The
+   > paragraph above is left as written — an auditor should see both the
+   > divergence and how it was closed.
+   >
+   > The failure mode is worth naming: what made this invisible was **not** the
+   > container. It was that no compose file, no index and no check mentioned it.
+   > So the fix is not only a declaration but a measurement — the same tool now
+   > reads `docker-compose.tools.yml` and fails if the service, the profile, the
+   > digest pin or the loopback binding disappears.
 2. **MinIO root credentials are the literal `devdevdev`**, and the repository is
    public (`gh repo view --json visibility` → `PUBLIC`). Not externally
    reachable (§ 3), so this is a defence-in-depth weakness rather than an open

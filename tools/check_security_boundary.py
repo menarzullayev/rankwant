@@ -52,6 +52,17 @@ LOOPBACK = "127.0.0.1"
 #: Services that must publish nothing at all once the chain is merged.
 INTERNAL_ONLY = ("judge", "postgres", "redis", "minio")
 
+#: Developer tools live in their own overlay so the deploy chain stays exactly
+#: what `docs/06` describes. They must still be declared and loopback-only:
+#: `adminer` ran for a day with `Config.Labels == {}`, outside every compose
+#: file, and nothing in this repository could see it. A file nothing measures
+#: is how that happens — so this file is measured here too.
+TOOLS_FILE = "docker-compose.tools.yml"
+
+#: The tools overlay must declare these. Deleting the file, or the service,
+#: puts them back outside every check — the original bug.
+TOOLS_SERVICES = ("adminer",)
+
 # `minio:` carries a trailing comment (`# S3/R2 o'rniga local`) — a service key
 # regex that only allows trailing whitespace silently merged the `redis` and
 # `minio` blocks, and the run stopped with exit 2 rather than guessing.
@@ -149,6 +160,8 @@ def _mapping(raw: str) -> str | None:
 
 
 def main() -> int:
+    problems: list[str] = []
+    tools: dict[str, list[str]] = {}
     try:
         files = {name: (ROOT / name).read_text(encoding="utf-8") for name in CHAIN}
         merged: dict[str, list[str]] = {}
@@ -156,11 +169,16 @@ def main() -> int:
             for service, block in _services(files[name]).items():
                 if _declares_ports(block) or service not in merged:
                     merged[service] = _published(block)
+        tools_path = ROOT / TOOLS_FILE
+        if tools_path.exists():
+            for service, block in _services(tools_path.read_text(encoding="utf-8")).items():
+                tools[service] = _published(block)
+        else:
+            problems.append(f"{TOOLS_FILE} yo'q — vositalar yana e'lon qilinmagan")
     except (OSError, ValueError) as exc:
         print(f"  ✗ chegara o'qilmadi — o'lchov yo'q: {exc}")
         return 2
 
-    problems: list[str] = []
     for service in INTERNAL_ONLY:
         if service not in merged:
             problems.append(f"{service} servisi zanjirda yo'q")
@@ -170,6 +188,24 @@ def main() -> int:
         for raw in ports:
             if _mapping(raw) is None:
                 problems.append(f"{service} loopback'da emas: {raw}")
+
+    # Ishlab chiquvchi vositalari: deploy zanjirida EMAS, lekin e'lon qilingan
+    # va shu yerda o'lchanadi. Uchta shart — zanjirda takrorlanmasin, porti
+    # loopback bo'lsin, va fayl uni haqiqatan e'lon qilsin.
+    for service, ports in sorted(tools.items()):
+        if service in merged:
+            problems.append(
+                f"{service} ham {TOOLS_FILE}, ham deploy zanjirida — "
+                "ishlab chiquvchi vositasi ishlab chiqarish chegarasida"
+            )
+        if not ports:
+            problems.append(f"{TOOLS_FILE}: {service} port e'lon qilmaydi — ko'rinmas")
+        for raw in ports:
+            if _mapping(raw) is None:
+                problems.append(f"{TOOLS_FILE}: {service} loopback'da emas: {raw}")
+    for service in TOOLS_SERVICES:
+        if service not in tools:
+            problems.append(f"{TOOLS_FILE}: {service} e'lon qilinmagan — nazoratsiz qoladi")
 
     judge = _services(files[CHAIN[0]]).get("judge", "")
     for key in FORBIDDEN_JUDGE_ENV:
@@ -182,6 +218,10 @@ def main() -> int:
         print(f"    {service:10} {', '.join(ports)}")
     if all(not merged.get(s) for s in INTERNAL_ONLY):
         print(f"  ✓ {', '.join(INTERNAL_ONLY)} — nashr etilgan port yo'q")
+    if tools:
+        print(f"  {TOOLS_FILE} — deploy zanjiridan tashqari:")
+        for service, ports in sorted(tools.items()):
+            print(f"    {service:10} {', '.join(ports) or '—'}")
     for problem in problems:
         print(f"  ✗ {problem}")
     if problems:

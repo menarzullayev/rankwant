@@ -3527,6 +3527,11 @@ _DECISIONS_SANDBOX_FILES = (
     "docker-compose.public.yml",
     "docker-compose.ci.yml",
     "docker-compose.replicas.yml",
+    # Developer tools (2026-09-21): `check_security_boundary.py` measures this
+    # overlay, and the `adminer` rule reads it directly. Missing here,
+    # `check_decisions.py` exits 2 in the sandbox copy and unrelated tests die —
+    # the drift check `neg_decisions_sandbox_covers_reads` names the file.
+    "docker-compose.tools.yml",
     "compose/four-host/README.md",
     # Automatic deploy (2026-09-19): the rule reads the watcher and the
     # rollback path, and `tools/deploy.sh` is already listed above. Missing
@@ -3603,6 +3608,9 @@ _DECISIONS_SANDBOX_FILES = (
     # Security run disabled (2026-09-21): the rule reads REQUIRED.
     # Missing here, `check_decisions.py` exits 2.
     "tools/check_deploy_gate.py",
+    # Developer tools (2026-09-21): the `adminer` rule reads the boundary tool
+    # to prove the tools overlay is actually measured, not merely declared.
+    "tools/check_security_boundary.py",
     # Judge latency gate (2026-09-21): the rule reads the harness to prove the
     # budget comparison still exists — a gate whose comparison is gone still
     # exits 0, i.e. green but measuring nothing. The compose service and the
@@ -3645,6 +3653,9 @@ _DECISIONS_SANDBOX_FILES = (
     # `neg_decisions_sandbox_covers_reads` names the file.
     "tests/security/run.sh",
     "docs/research/2026-09-21-security-suite/README.md",
+    # Boundary record (2026-09-21): the `adminer` rule reads § 6 to prove the
+    # divergence got a dated resolution rather than a silent deletion.
+    "docs/research/2026-09-21-security-boundary/README.md",
 )
 
 
@@ -4508,6 +4519,194 @@ def neg_decisions_security_suite_passes() -> tuple[bool, str]:
     if code != 0:
         return False, f"security-suite/ijobiy nazorat: exit {code} — {out.strip()[-160:]}"
     return True, "security-suite/ijobiy nazorat: qoida toza daraxtda o'tdi (exit 0)"
+
+
+# Developer tools (2026-09-21): `adminer` ran for over a day with
+# `Config.Labels == {}` — outside every compose file, invisible to every check.
+# The owner chose to declare it in its own overlay rather than delete it.
+# What made it invisible was not the container but the silence around it, so
+# one test per link that can go quiet again: the declaration, the pin, the
+# profile, the loopback binding, the exclusion from the deploy chain, the
+# measurement, the index, and the dated resolution.
+
+_ADMINER_RULE = "adminer e'lon qilingan, zanjirdan tashqarida"
+_ADMINER_TOOLS = "docker-compose.tools.yml"
+_ADMINER_BOUNDARY = "tools/check_security_boundary.py"
+_ADMINER_OPS = "docs/10-operations/README.md"
+_ADMINER_RECORD = "docs/research/2026-09-21-security-boundary/README.md"
+
+
+def neg_decisions_adminer_service_dropped() -> tuple[bool, str]:
+    """Servis overlay'dan o'chsa tutilsin — vosita yana e'lon qilinmagan bo'ladi."""
+    return _decision_broken(
+        _ADMINER_TOOLS, "  adminer:", "  adminer-off:", _ADMINER_RULE
+    )
+
+
+def neg_decisions_adminer_profile_dropped() -> tuple[bool, str]:
+    """`profiles` tushsa tutilsin — `up -d` uni o'zi ko'tarib qo'yadi."""
+    return _decision_broken(
+        _ADMINER_TOOLS, "profiles: ['tools']", "profiles: []", _ADMINER_RULE
+    )
+
+
+def neg_decisions_adminer_digest_unpinned() -> tuple[bool, str]:
+    """Digest o'rniga suzuvchi teg qaytsa tutilsin.
+
+    Aynan shu holat o'lchangan edi: konteyner `adminer:4` bilan ishladi va uni
+    hech narsa yangilamasdi — «qaysi kod ishlayapti» degan savol javobsiz.
+    """
+    return _decision_broken(
+        _ADMINER_TOOLS,
+        "image: adminer@sha256:",
+        "image: adminer:4@sha256:",
+        _ADMINER_RULE,
+    )
+
+
+def neg_decisions_adminer_port_host_wide() -> tuple[bool, str]:
+    """Port loopback'dan chiqsa tutilsin — DB UI si LAN dan yetib bo'ladi."""
+    return _decision_broken(
+        _ADMINER_TOOLS,
+        "ports: ['127.0.0.1:8081:8080']",
+        "ports: ['8081:8080']",
+        _ADMINER_RULE,
+    )
+
+
+def neg_decisions_adminer_in_deploy_chain() -> tuple[bool, str]:
+    """`adminer` bazaviy compose'ga qo'shilsa tutilsin.
+
+    U holda `tools/deploy.sh` uni ishlab chiqarish chegarasiga olib kirardi.
+    """
+    return _decision_broken(
+        "docker-compose.yml",
+        "\nservices:\n",
+        "\nservices:\n  adminer:\n    image: adminer:4\n",
+        _ADMINER_RULE,
+    )
+
+
+def neg_decisions_adminer_unmeasured() -> tuple[bool, str]:
+    """Chegara asbobi tools faylini o'qimasa tutilsin.
+
+    E'lon qilishning O'ZI yetarli emas: o'lchanmagan fayl yana ko'rinmas
+    bo'ladi va bir kundan keyin kimdir uni qo'lda ishga tushirib qo'yadi.
+    """
+    return _decision_broken(
+        _ADMINER_BOUNDARY,
+        'TOOLS_FILE = "docker-compose.tools.yml"',
+        'TOOLS_FILE = "docker-compose.tools.off.yml"',
+        _ADMINER_RULE,
+    )
+
+
+def neg_decisions_adminer_missing_from_index() -> tuple[bool, str]:
+    """Operatsiyalar indeksida qator yo'qolsa tutilsin — faylni topib bo'lmaydi."""
+    return _decision_broken(
+        _ADMINER_OPS, "docker-compose.tools.yml", "docker-compose.helpers.yml",
+        _ADMINER_RULE,
+    )
+
+
+def neg_decisions_adminer_resolution_dropped() -> tuple[bool, str]:
+    """Chegara yozuvida sanali yechim qolmasa tutilsin.
+
+    Usiz auditor ochiq 1-divergensiyani ko'radi: yechim jimgina o'chirilgan
+    bo'lardi.
+    """
+    return _decision_broken(
+        _ADMINER_RECORD, "Resolution, 2026-09-21", "Note, undated", _ADMINER_RULE
+    )
+
+
+def neg_decisions_adminer_record_deleted() -> tuple[bool, str]:
+    """Chegara yozuvi o'chsa tutilsin — divergensiya tarixi yo'qoladi."""
+    code, out = _decisions_sandbox({}, drop=(_ADMINER_RECORD,))
+    if code != 1 or _ADMINER_RULE not in out:
+        return False, f"adminer/yozuv o'chirilgan: exit {code} — {out.strip()[-160:]}"
+    return True, "adminer/yozuv o'chirilgan: tutildi (exit 1)"
+
+
+def neg_decisions_adminer_tools_file_deleted() -> tuple[bool, str]:
+    """Overlay faylining O'ZI o'chsa tutilsin — servis yana hech qayerda bo'ladi."""
+    code, out = _decisions_sandbox({}, drop=(_ADMINER_TOOLS,))
+    if code != 1 or _ADMINER_RULE not in out:
+        return False, f"adminer/overlay o'chirilgan: exit {code} — {out.strip()[-160:]}"
+    return True, "adminer/overlay o'chirilgan: tutildi (exit 1)"
+
+
+def neg_decisions_adminer_passes() -> tuple[bool, str]:
+    """Ijobiy nazorat: qoida toza daraxtda o'tsin.
+
+    Usiz yuqoridagi o'nta testning hammasi «qoida har doim yiqiladi» degan
+    o'lik qo'riqchini ham yashil ko'rsatardi.
+    """
+    code, out = run_check("decisions")
+    if code != 0:
+        return False, f"adminer/ijobiy nazorat: exit {code} — {out.strip()[-160:]}"
+    return True, "adminer/ijobiy nazorat: qoida toza daraxtda o'tdi (exit 0)"
+
+
+def _boundary_sandbox(drop: tuple[str, ...] = ()) -> tuple[int, str]:
+    """`check_security_boundary.py` on a copy of the files it reads.
+
+    `ROOT` is derived from the script's own location, so a copy in a temp tree
+    reads the copy. `drop` removes a file — a rule that guards a file's
+    existence cannot be tested with `Mutation`, there is nothing to mutate.
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        for rel in (*(f"tools/{n}" for n in ("check_security_boundary.py", "_console.py")),
+                    _BOUNDARY_BASE, _BOUNDARY_OVERLAY, _ADMINER_TOOLS):
+            (root / rel).parent.mkdir(parents=True, exist_ok=True)
+            (root / rel).write_bytes((ROOT / rel).read_bytes())
+        for rel in drop:
+            (root / rel).unlink()
+        return run([PY, str(root / "tools/check_security_boundary.py")])
+
+
+def neg_security_boundary_adminer_unmeasured() -> tuple[bool, str]:
+    """Chegara asbobining O'ZI tools faylisiz qolsa tutilsin.
+
+    Qoida `check_security_boundary.py` ni faqat **matn** sifatida o'qiydi:
+    fayl `docker-compose.tools.yml` deb yozib, uni haqiqatan o'lchamasa,
+    qoida yashil qolardi va o'lchov yo'q bo'lardi. Shu sababli o'lchovning
+    o'zi ham shu yerda tekshiriladi.
+
+    ⚠️ Exit **1**, 2 emas: overlay'ning yo'qligi — buzilgan qoida
+    (`problems` ro'yxatiga tushadi), o'qib bo'lmaydigan fayl emas. Zanjirning
+    o'zi baribir o'lchanadi va u joyida bo'ladi.
+    """
+    code, out = _boundary_sandbox(drop=(_ADMINER_TOOLS,))
+    if code != 1:
+        return False, f"chegara/adminer o'lchanmagan: exit {code} (1 kerak) — {out.strip()[-160:]}"
+    if _ADMINER_TOOLS not in out:
+        return False, f"chegara/adminer o'lchanmagan: sabab boshqa — {out.strip()[-160:]}"
+    return True, "chegara/adminer o'lchanmagan: tutildi (exit 1)"
+
+
+def neg_security_boundary_adminer_host_wide() -> tuple[bool, str]:
+    """Overlay porti host-wide bo'lsa chegara asbobi tutsin."""
+    return _boundary_broken(
+        _ADMINER_TOOLS,
+        "ports: ['127.0.0.1:8081:8080']",
+        "ports: ['8081:8080']",
+    )
+
+
+def neg_security_boundary_adminer_in_chain() -> tuple[bool, str]:
+    """`adminer` deploy zanjiriga ham qo'shilsa chegara asbobi tutsin.
+
+    Bu — chegara asbobining **o'z** invariantining sinovi (qoida ham xuddi shu
+    holatni qo'riqlaydi, lekin boshqa usulda: qoida matn qidiradi, asbob
+    birlashtirilgan port to'plamini hisoblaydi).
+    """
+    return _boundary_broken(
+        _BOUNDARY_BASE,
+        "\nservices:\n",
+        "\nservices:\n  adminer:\n    image: adminer:4\n",
+    )
 
 
 def neg_negative_constants_are_unique() -> tuple[bool, str]:
@@ -6339,6 +6538,18 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
                 neg_boundary_minio_reset_dropped,
             ),
             (
+                "chegara adminer porti host-wide bo'lsa tutilsin",
+                neg_security_boundary_adminer_host_wide,
+            ),
+            (
+                "chegara adminer zanjirga qo'shilsa tutilsin",
+                neg_security_boundary_adminer_in_chain,
+            ),
+            (
+                "chegara adminer overlay'ini o'lchamasa tutilsin",
+                neg_security_boundary_adminer_unmeasured,
+            ),
+            (
                 "threat model o'chirilsa tutilsin",
                 neg_decisions_threat_model_deleted,
             ),
@@ -6433,6 +6644,50 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             (
                 "security qoidasi toza daraxtda o'tadi",
                 neg_decisions_security_suite_passes,
+            ),
+            (
+                "adminer servisi overlay'dan o'chsa tutilsin",
+                neg_decisions_adminer_service_dropped,
+            ),
+            (
+                "adminer profilini yo'qotsa tutilsin",
+                neg_decisions_adminer_profile_dropped,
+            ),
+            (
+                "adminer digesti yechilsa tutilsin",
+                neg_decisions_adminer_digest_unpinned,
+            ),
+            (
+                "adminer porti host-wide bo'lsa tutilsin",
+                neg_decisions_adminer_port_host_wide,
+            ),
+            (
+                "adminer deploy zanjiriga qo'shilsa tutilsin",
+                neg_decisions_adminer_in_deploy_chain,
+            ),
+            (
+                "adminer o'lchanmay qolsa tutilsin",
+                neg_decisions_adminer_unmeasured,
+            ),
+            (
+                "adminer indeksdan tushsa tutilsin",
+                neg_decisions_adminer_missing_from_index,
+            ),
+            (
+                "adminer yechimi sanasiz qolsa tutilsin",
+                neg_decisions_adminer_resolution_dropped,
+            ),
+            (
+                "adminer chegara yozuvi o'chsa tutilsin",
+                neg_decisions_adminer_record_deleted,
+            ),
+            (
+                "adminer overlay fayli o'chsa tutilsin",
+                neg_decisions_adminer_tools_file_deleted,
+            ),
+            (
+                "adminer qoidasi toza daraxtda o'tadi",
+                neg_decisions_adminer_passes,
             ),
             (
                 "modul konstantalari takrorlanmasin",
