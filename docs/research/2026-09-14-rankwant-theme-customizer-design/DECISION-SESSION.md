@@ -454,6 +454,7 @@ flag — nuqson topilsa modul bir tugma bilan o'chiriladi.
 | D65 | Oxirgi accordion `sessionStorage`; hisob emas |
 | D66 | Oxirgi panel tab `sessionStorage`; hisob emas |
 | D67 | Tiklash faqat pref; chrome session qoladi |
+| D68 | Jonli first-load JS yozildi; bundle o‘zgarmadi |
 
 ### D47 — mavzu ikki joyda saqlanmaydi (amalga oshirishda aniqlangan)
 
@@ -653,6 +654,13 @@ Batafsil: [DECISION-66.md](./DECISION-66.md).
 **Tanlov:** A. `resetAll` pref token. `rw:cz-tab` / `rw:cz-group` rad.
 
 Batafsil: [DECISION-67.md](./DECISION-67.md).
+
+### D68 — jonli first-load (2026-09-21)
+
+**Tanlov:** A. Homepage gzip first-party JS **323.6 KiB** (`2ceb76a`).
+`lazy()` yo‘q. D63 manba bilan birlik farq qiladi.
+
+Batafsil: [DECISION-68.md](./DECISION-68.md), [FIRST-LOAD.json](./FIRST-LOAD.json).
 
 ---
 
