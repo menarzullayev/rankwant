@@ -1,6 +1,6 @@
 import { GROUPS, type GroupId } from "./chrome";
 
-/** D65: last open accordion — session only, not ui_prefs / localStorage. */
+/** D65: last open accordion — this tab's session only, not the account. */
 export const GROUP_SESSION_KEY = "rw:cz-group";
 export const DEFAULT_GROUP: GroupId = "look";
 

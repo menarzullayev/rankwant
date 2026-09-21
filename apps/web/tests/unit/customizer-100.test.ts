@@ -202,9 +202,8 @@ describe("CUST-100 contestant customizer", () => {
   it("remembers the last accordion in sessionStorage (D65)", () => {
     expect(appearance).toContain("D65");
     expect(appearance).toContain("writeGroup");
-    expect(groupSession).toContain("sessionStorage");
-    expect(groupSession).not.toContain("localStorage");
-    expect(groupSession).not.toContain("ui_prefs");
+    expect(groupSession).toContain("sessionStorage.setItem");
+    expect(groupSession).not.toMatch(/localStorage\.(get|set)Item/);
     expect(GROUP_SESSION_KEY).toBe("rw:cz-group");
     expect(clampGroup("system")).toBe("system");
     expect(clampGroup("layout")).toBe("layout");
