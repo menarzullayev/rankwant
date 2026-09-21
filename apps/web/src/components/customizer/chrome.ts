@@ -2,7 +2,8 @@ import type { MessageKey } from "@/i18n/messages";
 
 /** Shared chrome for the contestant customizer — not the kit lab. */
 
-export const GROUPS = ["look", "color", "type", "system"] as const;
+/** D61: layout chrome and kit families unmount separately. */
+export const GROUPS = ["look", "color", "type", "layout", "system"] as const;
 export type GroupId = (typeof GROUPS)[number];
 
 /** D48: contestant Interfeys writes these. `/admin/kit` is sample-only. */

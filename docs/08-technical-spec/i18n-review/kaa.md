@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1770 strings.**
+**1771 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -1764,6 +1764,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.group.look` | Shablonlar | Úlgiler |  |
 | `customizer.group.color` | Rang va uslub | Reń hám usıl |  |
 | `customizer.group.type` | Matn | Tekst |  |
+| `customizer.group.layout` | Tartib | Tártip |  |
 | `customizer.group.system` | Interfeys | Bet interfeysi |  |
 | `customizer.swatch.red` | Qizil | Qızıl |  |
 | `customizer.swatch.ember` | Olov | Ot |  |

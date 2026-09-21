@@ -1819,6 +1819,7 @@ export const uz = {
   "customizer.group.look": "Shablonlar",
   "customizer.group.color": "Rang va uslub",
   "customizer.group.type": "Matn",
+  "customizer.group.layout": "Tartib",
   "customizer.group.system": "Interfeys",
   "customizer.swatch.red": "Qizil",
   "customizer.swatch.ember": "Olov",

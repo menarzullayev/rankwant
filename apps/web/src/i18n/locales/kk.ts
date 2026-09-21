@@ -1778,6 +1778,7 @@ export const kk: Record<MessageKey, string> = {
   "customizer.group.look": "Үлгілер",
   "customizer.group.color": "Түс пен стиль",
   "customizer.group.type": "Мәтін",
+  "customizer.group.layout": "Орналасу",
   "customizer.group.system": "Интерфейс",
   "customizer.swatch.red": "Қызыл",
   "customizer.swatch.ember": "Қызғылт сары",

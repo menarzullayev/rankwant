@@ -1777,6 +1777,7 @@ export const es: Record<MessageKey, string> = {
   "customizer.group.look": "Plantillas",
   "customizer.group.color": "Color y estilo",
   "customizer.group.type": "Texto",
+  "customizer.group.layout": "Disposición",
   "customizer.group.system": "Interfaz",
   "customizer.swatch.red": "Rojo",
   "customizer.swatch.ember": "Brasa",

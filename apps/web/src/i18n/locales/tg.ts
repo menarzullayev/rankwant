@@ -1778,6 +1778,7 @@ export const tg: Record<MessageKey, string> = {
   "customizer.group.look": "Шаблонҳо",
   "customizer.group.color": "Ранг ва услуб",
   "customizer.group.type": "Матн",
+  "customizer.group.layout": "Тарҳ",
   "customizer.group.system": "Интерфейс",
   "customizer.swatch.red": "Сурх",
   "customizer.swatch.ember": "Оташ",

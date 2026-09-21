@@ -44,7 +44,7 @@ function writeHidden(value: boolean) {
 /** Panel and floating trigger.
  *
  *  Not a modal (D29): no dim, no focus trap — the point is to SEE the page.
- *  Tabs are a real tablist. Appearance is four accordion groups so only one
+ *  Tabs are a real tablist. Appearance is five accordion groups so only one
  *  cluster sits in the tab order at a time.
  */
 export function Customizer() {

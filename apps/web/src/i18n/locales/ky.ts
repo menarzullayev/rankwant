@@ -1777,6 +1777,7 @@ export const ky: Record<MessageKey, string> = {
   "customizer.group.look": "Шаблондор",
   "customizer.group.color": "Түс жана стиль",
   "customizer.group.type": "Текст",
+  "customizer.group.layout": "Жайгашуу",
   "customizer.group.system": "Интерфейс",
   "customizer.swatch.red": "Кызыл",
   "customizer.swatch.ember": "От",
