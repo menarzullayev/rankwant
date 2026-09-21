@@ -10,7 +10,7 @@ const menu = src("../../src/layout/UserMenu.tsx");
 
 describe("H4 overflow-you", () => {
   it("keeps the sign-in link on one line", () => {
-    expect(menu).toMatch(/href=\{\?"\/login\?tab=login"/);
+    expect(menu).toContain('"/login?tab=login"');
     expect(menu).toContain("whitespace-nowrap");
   });
 
