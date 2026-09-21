@@ -22,6 +22,12 @@ shelldan chiqdi.
 
 Batafsil: [DECISION-H2.md](./DECISION-H2.md).
 
+### H3 — telefonda qidiruv (2026-09-21)
+
+**Tanlov:** search-icon. `md` dan pastida lupa, bosilsa `SearchBox`.
+
+Batafsil: [DECISION-H3.md](./DECISION-H3.md).
+
 ---
 
 ## Yopiq (boshqa sessiya, qayta ochilmaydi)

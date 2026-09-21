@@ -22,6 +22,9 @@ export default function SearchBox() {
   const [result, setResult] = useState<SearchResult>(EMPTY);
   const [open, setOpen] = useState(false);
   const [focused, setFocused] = useState(false);
+  // H3: tor ekranda maydon yashirin — lupa ochadi. `md+` da maydon
+  // doim ko'rinadi, `expanded` faqat panel holatini bildiradi.
+  const [expanded, setExpanded] = useState(false);
   const box = useRef<HTMLDivElement>(null);
   const input = useRef<HTMLInputElement>(null);
 
@@ -41,14 +44,18 @@ export default function SearchBox() {
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
-      if (box.current && !box.current.contains(e.target as Node))
+      if (box.current && !box.current.contains(e.target as Node)) {
         setOpen(false);
+        setExpanded(false);
+      }
     };
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
   // `Ctrl+K` / `Cmd+K` — qidiruvga sakrash (D61 ⑦, H2 yagona egasi).
+  // H3: tor ekranda avval panel ochiladi, keyin fokus — aks holda
+  // `display:none` maydon fokus olmaydi.
   //
   // ⚠️ `preventDefault()` SHART: usiz brauzer o'z manzil qatoridagi
   // qidiruvni ochadi va bizning maydon fokus olmay qoladi.
@@ -58,8 +65,11 @@ export default function SearchBox() {
       if (e.key.toLowerCase() !== "k" || e.shiftKey || e.altKey) return;
       if (!(e.metaKey || e.ctrlKey)) return;
       e.preventDefault();
-      input.current?.focus();
-      input.current?.select();
+      setExpanded(true);
+      requestAnimationFrame(() => {
+        input.current?.focus();
+        input.current?.select();
+      });
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
@@ -77,8 +87,43 @@ export default function SearchBox() {
   const showClear = q.length > 0;
   const showKbd = !showClear && !focused;
 
+  function closeHit() {
+    setOpen(false);
+    setExpanded(false);
+  }
+
+  function toggleExpanded() {
+    setExpanded((was) => {
+      const next = !was;
+      if (next) {
+        requestAnimationFrame(() => input.current?.focus());
+      }
+      return next;
+    });
+  }
+
   return (
-    <div ref={box} className="relative hidden min-w-0 w-36 shrink md:block lg:w-52 xl:w-80">
+    <div ref={box} className="relative min-w-0 md:w-36 md:shrink lg:w-52 xl:w-80">
+      <button
+        type="button"
+        onClick={toggleExpanded}
+        aria-expanded={expanded}
+        aria-controls="rw-header-search"
+        aria-label={t(locale, "header.search")}
+        data-tip={t(locale, "header.search")}
+        data-tip-kind="flip"
+        className="flex size-10 shrink-0 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg md:hidden"
+      >
+        <Icon name="action.search" />
+      </button>
+      <div
+        id="rw-header-search"
+        className={`${
+          expanded
+            ? "fixed inset-x-3 top-16 z-40 rounded-lg border rw-line rw-surface rw-shadow p-2 md:static md:inset-auto md:z-auto md:rounded-none md:border-0 md:bg-transparent md:p-0 md:shadow-none"
+            : "hidden"
+        } relative md:block`}
+      >
       <label className="relative block">
         {/* Yorliqda MATN bo'lishi shart: ikonka va placeholder skrinriderga
             nom bermaydi, placeholder esa yozish boshlangach yo'qoladi. */}
@@ -99,7 +144,10 @@ export default function SearchBox() {
           onKeyDown={(e) => {
             if (e.key === "Escape") {
               if (q) setQ("");
-              else e.currentTarget.blur();
+              else {
+                setExpanded(false);
+                e.currentTarget.blur();
+              }
             }
           }}
           placeholder={t(locale, "header.search")}
@@ -137,7 +185,7 @@ export default function SearchBox() {
             <Link
               key={`p-${p.slug}`}
               href={`/problems/${p.slug}`}
-              onClick={() => setOpen(false)}
+              onClick={closeHit}
               className="flex items-center justify-between px-4 py-2 text-theme-sm rw-hover-bg"
             >
               <span>{p.title}</span>
@@ -148,7 +196,7 @@ export default function SearchBox() {
             <Link
               key={`u-${u.username}`}
               href={`/users/${u.username}`}
-              onClick={() => setOpen(false)}
+              onClick={closeHit}
               className="flex items-center justify-between px-4 py-2 text-theme-sm rw-hover-bg"
             >
               <span>@{u.username}</span>
@@ -159,7 +207,7 @@ export default function SearchBox() {
             <Link
               key={`a-${a.slug}`}
               href={`/learn/${a.slug}`}
-              onClick={() => setOpen(false)}
+              onClick={closeHit}
               className="block px-4 py-2 text-theme-sm rw-hover-bg"
             >
               {a.title}
@@ -169,7 +217,7 @@ export default function SearchBox() {
             <Link
               key={`c-${c.slug}`}
               href={`/contests/${c.slug}`}
-              onClick={() => setOpen(false)}
+              onClick={closeHit}
               className="block px-4 py-2 text-theme-sm rw-hover-bg"
             >
               {c.title}
@@ -177,6 +225,7 @@ export default function SearchBox() {
           ))}
         </div>
       )}
+      </div>
     </div>
   );
 }
