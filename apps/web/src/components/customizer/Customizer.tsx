@@ -8,7 +8,7 @@ import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
 import { Icon } from "@/components/ui/Icon";
 
-// D64: static imports — D63 exclusive bytes overlap the page; do not lazy().
+// D64: static imports — D63 exclusive bytes overlap the page; no code-split.
 import { A11yTab } from "./A11yTab";
 import { AppearanceTab } from "./AppearanceTab";
 import { ResetRow } from "./ResetRow";
