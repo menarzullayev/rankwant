@@ -2,7 +2,7 @@
 
 **STATUS:** shipped (2026-09-14)
 
-Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D66).
+Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D67).
 Entry points: the header icon, a floating tab on desktop, `Ctrl+.`, and
 `/settings/korinish`.
 
@@ -65,7 +65,8 @@ open for overlap that is already on the page.
 The last open Appearance accordion is stored in `sessionStorage`
 (`rw:cz-group`, D65). The last panel tab (Appearance / Accessibility)
 is `rw:cz-tab` (D66). Neither is account prefs. A new browser tab
-starts on Templates + Appearance.
+starts on Templates + Appearance. Reset (D67) restores appearance
+tokens only — it does not write those session keys.
 
 ## The colour model
 

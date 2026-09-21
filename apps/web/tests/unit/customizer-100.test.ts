@@ -23,6 +23,8 @@ const chrome = src("../../src/components/customizer/chrome.ts");
 const saved = src("../../src/components/customizer/SavedTemplates.tsx");
 const groupSession = src("../../src/components/customizer/group-session.ts");
 const tabSession = src("../../src/components/customizer/tab-session.ts");
+const resetRow = src("../../src/components/customizer/ResetRow.tsx");
+const customizerCtx = src("../../src/context/CustomizerContext.tsx");
 
 describe("CUST-100 contestant customizer", () => {
   it("is a keyboard tablist with two panels, not a kit playground", () => {
@@ -222,5 +224,15 @@ describe("CUST-100 contestant customizer", () => {
     expect(clampTab("a11y")).toBe("a11y");
     expect(clampTab("appearance")).toBe("appearance");
     expect(clampTab("nope")).toBe(DEFAULT_TAB);
+  });
+
+  it("Reset leaves chrome session keys (D67)", () => {
+    expect(resetRow).toContain("D67");
+    expect(resetRow).toContain("resetAll");
+    expect(resetRow).not.toContain("writeGroup");
+    expect(resetRow).not.toContain("writeTab");
+    expect(customizerCtx).not.toMatch(/rw:cz-(tab|group)/);
+    expect(customizerCtx).not.toContain("writeGroup");
+    expect(customizerCtx).not.toContain("writeTab");
   });
 });
