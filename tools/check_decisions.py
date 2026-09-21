@@ -2337,6 +2337,66 @@ def security_suite_runs_automatically() -> str | None:
     return None
 
 
+TOOLS_COMPOSE = "docker-compose.tools.yml"
+BOUNDARY_RECORD = "docs/research/2026-09-21-security-boundary/README.md"
+OPS_INDEX = "docs/10-operations/README.md"
+
+
+def adminer_is_declared_outside_the_deploy_chain() -> str | None:
+    """`adminer` e'lon qilingan, qadalgan, loopback'da — va zanjirdan TASHQARIDA.
+
+    O'lchandi 2026-09-21: `rankwant-adminer` bir kundan ortiq **hech qanday
+    compose faylisiz** ishladi — `Config.Labels` `{}`, obraz suzuvchi
+    `adminer:4` tegi, `127.0.0.1:8081`, qo'lda `rankwant_default` tarmog'iga
+    ulangan. Qo'lida DB credential bor, lekin uni hech bir tekshiruv
+    ko'rmasdi: na `docker compose config`, na chegara qoidasi. Chegara yozuvi
+    buni auditor uchun **1-divergensiya** deb qayd etgan.
+
+    Egasi 2026-09-21 da «compose'ga qo'shamiz — profil bilan» ni tanladi.
+    Yechim — ALOHIDA overlay: `docker-compose.tools.yml`. Sabab: u
+    `docker-compose.yml` ga qo'shilsa `tools/deploy.sh` zanjiriga, demak
+    ishlab chiqarish chegarasiga kirardi (`check_security_boundary.py` nashr
+    etilgan portlarni aynan shu zanjirdan sanaydi). Pretsedent:
+    `docker-compose.ci.yml`, `docker-compose.replicas.yml`.
+
+    ⚠️ Bu QO'RIGCHI, o'lchov emas: e'lon qilishning shartlarini va faylning
+    ko'rinadigan qolishini qo'riqlaydi. Fayl haqiqatan to'g'ri ekanini
+    `check_security_boundary.py` o'lchaydi.
+    """
+    # ⚠️ Mavjudlik ALOHIDA tekshiriladi, `read()` dan oldin. `read()` yo'q
+    # faylda `Unreadable` ko'taradi ⇒ exit 2, ya'ni «o'qilmadi». Bu to'g'ri
+    # xatti-harakat, lekin **sababni aytmaydi**: fayl o'chirilganda qaysi qaror
+    # buzilgani ko'rinmay qoladi. Pretsedent — `security_suite_runs_automatically`.
+    if not (ROOT / TOOLS_COMPOSE).exists():
+        return f"{TOOLS_COMPOSE}: fayl yo'q — vositalar yana e'lon qilinmagan"
+    tools = read(TOOLS_COMPOSE)
+    if "  adminer:" not in tools:
+        return f"{TOOLS_COMPOSE}: `adminer` servisi yo'q — vosita yana e'lon qilinmagan"
+    if "profiles: ['tools']" not in tools:
+        return f"{TOOLS_COMPOSE}: `profiles` yo'q — `up -d` uni o'zi ko'tarib qo'yadi"
+    # Digest, suzuvchi teg EMAS: `adminer:4` hech qachon o'z-o'zidan
+    # yangilanmaydi, ya'ni «qaysi kod ishlayapti» degan savol javobsiz qoladi.
+    if "image: adminer@sha256:" not in tools:
+        return f"{TOOLS_COMPOSE}: obraz digest bilan qadalmagan — ishlayotgan kod noma'lum"
+    if "ports: ['127.0.0.1:8081:8080']" not in tools:
+        return f"{TOOLS_COMPOSE}: loopback porti yo'q — DB UI si LAN dan yetib bo'ladi"
+    for chain in ("docker-compose.yml", "docker-compose.public.yml"):
+        if "  adminer:" in read(chain):
+            return f"{chain}: `adminer` deploy zanjiriga qo'shilgan — ishlab chiqarish chegarasida"
+    # E'lon qilishning O'ZI yetarli emas: o'lchanmasa fayl yana ko'rinmas
+    # bo'ladi — va bir kundan keyin kimdir uni qo'lda ishga tushirib qo'yadi.
+    if TOOLS_COMPOSE not in read("tools/check_security_boundary.py"):
+        return "tools/check_security_boundary.py: tools fayli o'lchanmaydi — yana ko'rinmas bo'ladi"
+    if TOOLS_COMPOSE not in read(OPS_INDEX):
+        return f"{OPS_INDEX}: `{TOOLS_COMPOSE}` indeksda yo'q — faylni topib bo'lmaydi"
+    if not (ROOT / BOUNDARY_RECORD).exists():
+        return f"{BOUNDARY_RECORD}: chegara yozuvi yo'q — divergensiya tarixi yo'qoladi"
+    record = read(BOUNDARY_RECORD)
+    if "Resolution, 2026-09-21" not in record:
+        return f"{BOUNDARY_RECORD}: 1-divergensiyaning sanali yechimi yo'q — auditor ochiq bandni ko'radi"
+    return None
+
+
 RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("zaxira faqat lokal", backup_local_only),
     ("main faqat PR orqali", main_only_via_pr),
@@ -2396,6 +2456,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("litsenziya inventari joriy", licence_inventory_is_current),
     ("judge latency gate qayd etiladi", judge_latency_gate_is_recorded),
     ("xavfsizlik to'plami avtomatik yuriydi", security_suite_runs_automatically),
+    ("adminer e'lon qilingan, zanjirdan tashqarida", adminer_is_declared_outside_the_deploy_chain),
 ]
 
 
