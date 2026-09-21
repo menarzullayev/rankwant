@@ -28,6 +28,10 @@ describe("CUST-100 contestant customizer", () => {
     expect(customizer).toContain("<AppearanceTab");
     expect(customizer).toContain("<A11yTab");
     expect(customizer).toContain("D60");
+    expect(customizer).toContain("D64");
+    expect(customizer).not.toMatch(/lazy\(|next\/dynamic/);
+    expect(customizer).toContain('import { AppearanceTab } from "./AppearanceTab"');
+    expect(customizer).toContain('import { A11yTab } from "./A11yTab"');
     expect(appearance).not.toContain("<A11yTab");
     expect(customizer).not.toContain("KitSection");
     expect(customizer).not.toContain("IconGallery");

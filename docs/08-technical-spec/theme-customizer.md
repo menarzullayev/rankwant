@@ -2,7 +2,7 @@
 
 **STATUS:** shipped (2026-09-14)
 
-Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D63).
+Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D64).
 Entry points: the header icon, a floating tab on desktop, `Ctrl+.`, and
 `/settings/korinish`.
 
@@ -59,7 +59,8 @@ Panel tabs stay statically imported (D63). Measured source graph
 2026-09-21: AppearanceTab exclusive 139.1 KiB (19 files), A11yTab
 exclusive 16.4 KiB (5 files). That is UTF-8 source, not gzip. Some
 exclusive files (`OverlayHost`, `Verdict`) are already on the page.
-`lazy()` is a later decision.
+Tabs stay statically imported (D64) — `lazy()` would delay the first
+open for overlap that is already on the page.
 
 ## The colour model
 
