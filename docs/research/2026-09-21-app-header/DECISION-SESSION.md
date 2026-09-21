@@ -34,6 +34,12 @@ Batafsil: [DECISION-H3.md](./DECISION-H3.md).
 
 Batafsil: [DECISION-H4.md](./DECISION-H4.md).
 
+### H5 — tsikl yopildi (2026-09-21)
+
+**Tanlov:** leave-header. Chrome o‘zgarmaydi.
+
+Batafsil: [DECISION-H5.md](./DECISION-H5.md).
+
 ---
 
 ## Yopiq (boshqa sessiya, qayta ochilmaydi)
