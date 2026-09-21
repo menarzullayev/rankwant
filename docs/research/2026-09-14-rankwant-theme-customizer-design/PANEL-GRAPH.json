@@ -1,0 +1,51 @@
+{
+  "unit": "utf-8 source bytes, static import graph, type-only skipped",
+  "shell_without_tabs": {
+    "files": 38,
+    "bytes": 287079
+  },
+  "appearance_tab_exclusive": {
+    "files": 19,
+    "bytes": 142486,
+    "paths": [
+      "apps/web/src/components/customizer/AccentSection.tsx",
+      "apps/web/src/components/customizer/AppearanceTab.tsx",
+      "apps/web/src/components/customizer/Group.tsx",
+      "apps/web/src/components/customizer/SavedTemplates.tsx",
+      "apps/web/src/components/customizer/chrome.ts",
+      "apps/web/src/components/form/FormKit.tsx",
+      "apps/web/src/components/form/chrome.ts",
+      "apps/web/src/components/kit/ConfirmExtras.tsx",
+      "apps/web/src/components/kit/CopyControl.tsx",
+      "apps/web/src/components/kit/FormExtras.tsx",
+      "apps/web/src/components/overlay/OverlayHost.tsx",
+      "apps/web/src/components/ui/Dropdown.tsx",
+      "apps/web/src/components/ui/Loading.tsx",
+      "apps/web/src/components/ui/SelectField.tsx",
+      "apps/web/src/components/ui/Status.tsx",
+      "apps/web/src/components/ui/Verdict.tsx",
+      "apps/web/src/icons/phosphor.tsx",
+      "apps/web/src/lib/dropdown-search.ts",
+      "apps/web/src/lib/theme/kit.ts"
+    ]
+  },
+  "a11y_tab_exclusive": {
+    "files": 5,
+    "bytes": 16837,
+    "paths": [
+      "apps/web/src/components/customizer/A11yTab.tsx",
+      "apps/web/src/components/customizer/Group.tsx",
+      "apps/web/src/components/customizer/chrome.ts",
+      "apps/web/src/components/form/FormKit.tsx",
+      "apps/web/src/components/form/chrome.ts"
+    ]
+  },
+  "tabs_shared_exclusive": {
+    "files": 4,
+    "bytes": 14304
+  },
+  "full_customizer_graph": {
+    "files": 58,
+    "bytes": 432098
+  }
+}
