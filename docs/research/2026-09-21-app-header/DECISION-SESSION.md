@@ -28,6 +28,12 @@ Batafsil: [DECISION-H2.md](./DECISION-H2.md).
 
 Batafsil: [DECISION-H3.md](./DECISION-H3.md).
 
+### H4 — header zichligi (2026-09-21)
+
+**Tanlov:** overflow-you. Hisob bandlari bitta menyuda.
+
+Batafsil: [DECISION-H4.md](./DECISION-H4.md).
+
 ---
 
 ## Yopiq (boshqa sessiya, qayta ochilmaydi)

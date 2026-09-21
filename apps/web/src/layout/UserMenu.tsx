@@ -1,6 +1,8 @@
 "use client";
 
 import type { Route } from "next";
+import { useEffect, useRef, useState } from "react";
+
 import { IntentLink } from "@/components/ui/IntentLink";
 
 import { useSession } from "@/context/SessionContext";
@@ -12,11 +14,34 @@ import { postJson } from "@/lib/api";
 export default function UserMenu() {
   const locale = useLocale();
   const { user, ready, clear } = useSession();
+  const [open, setOpen] = useState(false);
+  const box = useRef<HTMLDivElement>(null);
 
   async function logout() {
+    setOpen(false);
     await postJson("/auth/logout/", {}).catch(() => {});
     clear();
   }
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (event: PointerEvent) => {
+      if (!box.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      // Customizer ham Escape ni tinglaydi — menyu yopilishi panelni
+      // yopmasin (AppTopNav dagi sabab bilan bir xil).
+      event.stopPropagation();
+      setOpen(false);
+    };
+    document.addEventListener("pointerdown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
 
   // Aniqlanmaguncha joy band qilib turamiz — "Kirish" chaqnab keyin
   // foydalanuvchi nomiga almashishi chalg'itadi.
@@ -41,46 +66,80 @@ export default function UserMenu() {
     );
   }
 
+  // H4: profil / sozlama / chiqish (va admin) bitta menyu — uchtasi
+  // yonma-yon turib 390px ni yeb qo'masin.
+  const name = user.display_name || user.username;
+  const item =
+    "flex w-full items-center gap-2 px-3 py-2 text-start text-theme-sm rw-strong transition rw-hover-bg";
+
   return (
-    <div className="flex items-center gap-2">
-      {user.is_staff && (
-        <IntentLink
-          href="/admin"
-          className="hidden h-10 items-center rw-radius-sm border rw-line px-3 text-theme-sm font-medium rw-accent-ink transition rw-hover-accent sm:flex"
-        >
-          {t(locale, "admin.title.page")}
-        </IntentLink>
-      )}
-      <IntentLink
-        href={`/users/${user.username}`}
-        className="flex h-10 items-center gap-2 rw-radius-sm border rw-line px-3 text-theme-sm font-medium rw-strong transition rw-hover-bg"
-      >
-        <Icon name="user.profile" className="size-4" />
-        <span className="hidden sm:inline">
-          {user.display_name || user.username}
-        </span>
-      </IntentLink>
-      <IntentLink
-        href="/settings/profil"
-        aria-label={t(locale, "settings.title")}
-        title={t(locale, "settings.title")}
-        className="flex size-10 items-center justify-center rw-radius-sm border rw-line rw-dim transition rw-hover-strong"
-      >
-        <Icon name="system.settings" className="size-4" />
-      </IntentLink>
-      {/* Tor ekranda faqat ikonka: matnli tugma ~70px olardi va
-          sarlavha 390px da sig'masdan siljib ketardi. Nomi `aria-label`
-          da qoladi, ya'ni ekran o'quvchi uchun hech narsa yo'qolmaydi. */}
+    <div ref={box} className="relative">
       <button
         type="button"
-        onClick={logout}
-        aria-label={t(locale, "auth.logout")}
-        title={t(locale, "auth.logout")}
-        className="flex size-10 items-center justify-center rw-radius-sm text-theme-sm rw-dim transition rw-hover-strong sm:size-auto sm:px-3"
+        onClick={() => setOpen((was) => !was)}
+        aria-expanded={open}
+        aria-controls="rw-account-menu"
+        aria-haspopup="true"
+        aria-label={name}
+        data-tip={open ? undefined : name}
+        data-tip-kind="flip"
+        className="flex h-10 items-center gap-2 rw-radius-sm border rw-line px-3 text-theme-sm font-medium rw-strong transition rw-hover-bg"
       >
-        <Icon name="user.logout" className="size-4 sm:hidden" />
-        <span className="hidden sm:inline">{t(locale, "auth.logout")}</span>
+        <Icon name="user.profile" className="size-4 shrink-0" />
+        <span className="hidden max-w-[8rem] truncate sm:inline">{name}</span>
+        <Icon
+          name="nav.expandDown"
+          className={`size-4 shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
+        />
       </button>
+      {open && (
+        <ul
+          id="rw-account-menu"
+          role="menu"
+          className="absolute end-0 top-full z-50 mt-1 min-w-[12rem] overflow-hidden border p-1 rw-radius rw-surface rw-shadow rw-line"
+        >
+          <li role="none">
+            <IntentLink
+              href={`/users/${user.username}`}
+              role="menuitem"
+              onClick={() => setOpen(false)}
+              className={item}
+            >
+              <Icon name="user.profile" className="size-4 shrink-0" />
+              {t(locale, "settings.nav.profile")}
+            </IntentLink>
+          </li>
+          <li role="none">
+            <IntentLink
+              href={"/settings/profil" as Route}
+              role="menuitem"
+              onClick={() => setOpen(false)}
+              className={item}
+            >
+              <Icon name="system.settings" className="size-4 shrink-0" />
+              {t(locale, "settings.title")}
+            </IntentLink>
+          </li>
+          {user.is_staff && (
+            <li role="none">
+              <IntentLink
+                href="/admin"
+                role="menuitem"
+                onClick={() => setOpen(false)}
+                className={item}
+              >
+                {t(locale, "admin.title.page")}
+              </IntentLink>
+            </li>
+          )}
+          <li role="none">
+            <button type="button" role="menuitem" onClick={logout} className={item}>
+              <Icon name="user.logout" className="size-4 shrink-0" />
+              {t(locale, "auth.logout")}
+            </button>
+          </li>
+        </ul>
+      )}
     </div>
   );
 }
