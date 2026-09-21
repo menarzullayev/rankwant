@@ -11,12 +11,17 @@ The gate passes only when all three hold:
 1. HEAD is the commit that `main` points to on GitHub right now, so production
    cannot drift to an unmerged or stale commit;
 2. the latest `CI` run for that commit completed with `success`;
-3. no checkout of this repository has uncommitted `docker-compose*.yml` changes.
+3. the live checkout and the deploy worktree have no uncommitted
+   `docker-compose*.yml` changes (D56). Isolated AOP trees are not scanned.
 
 Rule 3 is about what a deploy silently removes. On 2026-09-17 the live stack was
 recreated from the main checkout with an edited, uncommitted `docker-compose.public.yml`
 that passed the Turnstile keys and a raised register throttle to `api`. A deploy from a
 worktree builds from the committed compose, so it would have dropped both without a word.
+On 2026-09-21 that same all-worktree scan froze a green-main web bake because an
+isolated ADMINER tree had an untracked `docker-compose.tools.yml` — a file
+`deploy.sh` never reads. D56 keeps the 2026-09-17 check on the two trees a
+deploy can actually apply.
 
 Exit codes: 0 deploy allowed, 1 not allowed, 2 could not be measured (git, gh or
 the network failed). Unknown is never green: deploy.sh stops on 2 as well.
@@ -50,6 +55,9 @@ ROOT = Path(__file__).resolve().parent.parent
 REQUIRED = ("CI",)
 RUN_FIELDS = "workflowName,status,conclusion,createdAt"
 COMPOSE_PATHSPEC = "docker-compose*.yml"
+# Same defaults as `tools/auto_deploy.sh`. Override in tests.
+LIVE_DIR = Path(os.environ.get("RANKWANT_LIVE_DIR", "C:/Users/nsn/project/cp/rankwant"))
+DEPLOY_DIR = Path(os.environ.get("RANKWANT_DEPLOY_DIR", "C:/Users/nsn/project/wt/deploy"))
 
 
 class Unmeasured(Exception):
@@ -112,13 +120,29 @@ def parse_runs(text: str) -> list[dict]:
     return runs
 
 
+def _norm(path: Path) -> str:
+    return str(path).replace("\\", "/").rstrip("/").lower()
+
+
 def checkouts() -> list[str]:
-    """Every checkout of this repository: the main one and each worktree."""
-    return [
-        line.split(" ", 1)[1]
-        for line in git("worktree", "list", "--porcelain").splitlines()
-        if line.startswith("worktree ")
-    ]
+    """Live stack checkout + deploy worktree — not every AOP tree (D56).
+
+    `deploy.sh` builds committed compose from the deploy tree (or the live
+    checkout if someone runs it there). An isolated agent's untracked
+    `docker-compose.tools.yml` cannot be what the bake applies, so it must
+    not close the gate. `--checkouts` still overrides this list in tests.
+    """
+    found: list[str] = []
+    seen: set[str] = set()
+    for path in (LIVE_DIR, DEPLOY_DIR):
+        if not path.is_dir():
+            continue
+        key = _norm(path)
+        if key in seen:
+            continue
+        seen.add(key)
+        found.append(str(path))
+    return found
 
 
 def dirty_compose(paths: list[str]) -> list[str]:

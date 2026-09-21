@@ -66,9 +66,11 @@ aytmay qo'ydi (`org.rankwant.git-sha` yorlig'i `unknown`).
 - **Deploy faqat `tools/deploy.sh` orqali.** U darvoza (`tools/check_deploy_gate.py`) va
   qulfni o'zi bajaradi, obrazga commit yorlig'ini yozadi. Qo'lda `docker compose up` bilan
   production yangilanmaydi: darvoza ham, qulf ham chetlab o'tiladi.
-- **Compose va `.env` o'zgarishi kod bilan birga PR'ga tushadi.** Commit qilinmagan
-  `docker-compose*.yml` bo'lsa darvoza deploy'ni to'xtatadi — jonli stack o'sha fayl bilan
-  ko'tarilgan bo'lishi va deploy uni jimgina yo'qotishi mumkin.
+- **Compose va `.env` o'zgarishi kod bilan birga PR'ga tushadi.** Jonli
+  checkout yoki deploy worktree'da commit qilinmagan `docker-compose*.yml`
+  bo'lsa darvoza deploy'ni to'xtatadi — jonli stack o'sha fayl bilan
+  ko'tarilgan bo'lishi va deploy uni jimgina yo'qotishi mumkin. Boshqa
+  agentning AOP daraxtidagi compose skan qilinmaydi (D56).
 - **PR'lar parallel bo'lishi mumkin.** Og'ir smoke/E2E/pytest — Nightly.
   Ikkinchi runner (`rankwant-ci-runner-2`) bir xil `rankwant` label'ida;
   u register qilinmaguncha deploy navbati ketma-ket. CI `ubuntu-latest`.

@@ -442,6 +442,7 @@ flag — nuqson topilsa modul bir tugma bilan o'chiriladi.
 | D53 | Interfeys layout chip qoladi; kit SelectField (D51) |
 | D54 | Import file input `aria-hidden`; tugma ochadi |
 | D55 | Live verify: web hali `f4f9099` (D49); bake compose-dirty gate da |
+| D56 | Compose-dirty gate faqat live + deploy daraxtini skanaydi |
 
 ### D47 — mavzu ikki joyda saqlanmaydi (amalga oshirishda aniqlangan)
 
@@ -561,6 +562,15 @@ Main CI yashil; scope `web`; watcher har daqiqa drift yozadi va
 darvozada chiqadi.
 
 Batafsil: [DECISION-55.md](./DECISION-55.md).
+
+### D56 — compose-dirty gate doirasi (2026-09-21)
+
+**Tanlov:** B — faqat live checkout + deploy worktree.
+
+2026-09-17 hodisasi jonli daraxt iflos compose edi. Har AOP daraxtini
+skanlash ADMINER tajribasiga yashil main web bake’ni muzlatdi (D55).
+
+Batafsil: [DECISION-56.md](./DECISION-56.md).
 
 ---
 
