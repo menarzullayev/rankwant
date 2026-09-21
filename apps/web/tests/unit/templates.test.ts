@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { KIT_FAMILY_KEYS } from "@/components/customizer/chrome";
@@ -94,6 +96,26 @@ describe("D49 team template kit identity", () => {
     expect(
       matchTemplate(classicPage, { vision: "normal", motion: "off" }, "system")?.id,
     ).toBe("classic");
+  });
+});
+
+describe("D57 factory stays clay", () => {
+  it("keeps DEFAULT_APPEARANCE.style clay and matches no team template", () => {
+    const src = readFileSync(
+      resolve(__dirname, "../../src/context/CustomizerContext.tsx"),
+      "utf8",
+    );
+    expect(src).toContain("style: \"clay\"");
+    expect(src).toContain("D57");
+    const factory: AppearancePrefs = {
+      style: "clay",
+      accent: null,
+      font: null,
+      density: "comfortable",
+    };
+    for (const theme of ["system", "light", "dark"] as const) {
+      expect(matchTemplate(factory, a11y, theme)).toBeNull();
+    }
   });
 });
 

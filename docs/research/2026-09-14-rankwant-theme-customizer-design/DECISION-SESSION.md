@@ -443,6 +443,7 @@ flag — nuqson topilsa modul bir tugma bilan o'chiriladi.
 | D54 | Import file input `aria-hidden`; tugma ochadi |
 | D55 | Live verify: web hali `f4f9099` (D49); bake compose-dirty gate da |
 | D56 | Compose-dirty gate faqat live + deploy daraxtini skanaydi |
+| D57 | Zavod `clay` qoladi; Classic match emas — banner to‘g‘ri |
 
 ### D47 — mavzu ikki joyda saqlanmaydi (amalga oshirishda aniqlangan)
 
@@ -571,6 +572,16 @@ Batafsil: [DECISION-55.md](./DECISION-55.md).
 skanlash ADMINER tajribasiga yashil main web bake’ni muzlatdi (D55).
 
 Batafsil: [DECISION-56.md](./DECISION-56.md).
+
+### D57 — zavod clay (2026-09-21)
+
+**Tanlov:** A. CTO B (factory = Classic) ni tavsiya qilgan edi;
+egasi clay ni saqladi.
+
+Yumshoq = clay+light+dm-sans. Zavod font null — hech qaysi shablon
+emas. «Template modified» bo‘sh holatda yolg‘on emas.
+
+Batafsil: [DECISION-57.md](./DECISION-57.md).
 
 ---
 

@@ -53,6 +53,9 @@ import {
 } from "@/lib/theme/saved-templates";
 
 export const DEFAULT_APPEARANCE: AppearancePrefs = {
+  // D57: factory stays clay — not Classic (dashboard). Soft is clay+light+
+  // dm-sans; this block matches no D19+D49 team template, so the banner
+  // «Template modified» on a fresh guest is correct, not a defect.
   style: "clay",
   accent: null,
   font: null,

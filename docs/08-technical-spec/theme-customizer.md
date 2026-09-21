@@ -2,7 +2,7 @@
 
 **STATUS:** shipped (2026-09-14)
 
-Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D56).
+Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D57).
 Entry points: the header icon, a floating tab on desktop, `Ctrl+.`, and
 `/settings/korinish`.
 
@@ -35,13 +35,14 @@ not used — the OS list paints white in dark mode. Closed accordion groups
 still unmount (CUST-100). Layout families (`navMode`, `navShape`, `card`,
 `pattern`) stay chips (D53) — two to five options, not a catalogue.
 
-Live verify (D55, guest `https://rankwant.uz`, 2026-09-21): the running
-web image is still `f4f9099` (D49). Interfeys still shows the 50-chip
-kit wall. Auto Deploy sees the drift (`2fd1e3d`) but
-`check_deploy_gate.py` refused while it scanned every worktree (D55).
-D56 limits that scan to the live checkout and the deploy worktree, so an
-isolated `docker-compose.tools.yml` no longer blocks a green-main web
-bake. D51–D54 stay on `main` until that bake finishes.
+Live verify after D56 bake (guest `https://rankwant.uz`, 2026-09-21):
+web `org.rankwant.git-sha` = `bdf1d79`. Interfeys shows **six**
+`SelectField`s. Import exposes only «Load from file» (`aria-hidden`
+input). Classic apply clears «Template modified».
+
+Factory appearance stays **clay** (D57), not Classic. Soft is
+clay+light+`dm-sans`; factory font is null, so a fresh guest matches
+no team template — the modified banner is correct.
 
 ## The colour model
 
