@@ -7,6 +7,7 @@ import { describe, expect, it } from "vitest";
 import { Group } from "@/components/customizer/Group";
 import { KIT_FAMILY_KEYS, LAYOUT_CHIP_KEYS } from "@/components/customizer/chrome";
 import { clampGroup, DEFAULT_GROUP, GROUP_SESSION_KEY } from "@/components/customizer/group-session";
+import { clampTab, DEFAULT_TAB, TAB_SESSION_KEY } from "@/components/customizer/tab-session";
 import { nextTab } from "@/components/customizer/tabs";
 
 function src(rel: string): string {
@@ -21,6 +22,7 @@ const overlay = src("../../src/components/overlay/OverlayHost.tsx");
 const chrome = src("../../src/components/customizer/chrome.ts");
 const saved = src("../../src/components/customizer/SavedTemplates.tsx");
 const groupSession = src("../../src/components/customizer/group-session.ts");
+const tabSession = src("../../src/components/customizer/tab-session.ts");
 
 describe("CUST-100 contestant customizer", () => {
   it("is a keyboard tablist with two panels, not a kit playground", () => {
@@ -208,5 +210,17 @@ describe("CUST-100 contestant customizer", () => {
     expect(clampGroup("system")).toBe("system");
     expect(clampGroup("layout")).toBe("layout");
     expect(clampGroup("nope")).toBe(DEFAULT_GROUP);
+  });
+
+  it("remembers the last panel tab in sessionStorage (D66)", () => {
+    expect(customizer).toContain("D66");
+    expect(customizer).toContain("writeTab");
+    expect(customizer).not.toContain("useState");
+    expect(tabSession).toContain("sessionStorage.setItem");
+    expect(tabSession).not.toMatch(/localStorage\.(get|set)Item/);
+    expect(TAB_SESSION_KEY).toBe("rw:cz-tab");
+    expect(clampTab("a11y")).toBe("a11y");
+    expect(clampTab("appearance")).toBe("appearance");
+    expect(clampTab("nope")).toBe(DEFAULT_TAB);
   });
 });
