@@ -35,9 +35,14 @@ The gate looked handled. It was not:
 1. **A dedicated job exists** — `.github/workflows/nightly.yml` job `latency`
    ("Latency — judge budget"), added by PR #204 (`a5f7878`).
 2. **It had never executed.** #204 merged `2026-09-21T02:26+05`; the last
-   Nightly before it was `2026-09-20T07:12+05` (run `35496258448`, head
-   `3cb8003`). The cron is `0 2 * * *` (UTC), so the first execution is
-   **2026-09-21T07:00+05**.
+   Nightly before it was run `35496258448` (head `3cb8003`). ⚠️ This record
+   first dated that run `2026-09-20T07:12+05` and read the `0 2 * * *` (UTC)
+   cron as "first execution `2026-09-21T07:00+05`". **Both were wrong, and
+   the error was measured** on 2026-09-21 (§5.1): `07:12` is that run's
+   **UTC** stamp (`12:12+05`), and GitHub delivers this repo's `02:00Z` cron
+   **4.65–5.30 h late** — twelve consecutive scheduled runs landed between
+   `06:38Z` and `07:18Z`, never at `02:00Z`. The first execution is therefore
+   expected around **`2026-09-21T11:50+05`**.
 3. **The job wrote its number only into the CI log.** Nothing reached a
    document, an artefact, or the gate row — so the gate would have stayed open
    even on a green job. A measured number that nobody records is not a closed
@@ -115,6 +120,16 @@ harness at live data.
 The row is filled in from the run's `LATENCY_JSON:` line. Until it is, the gate
 row in `docs/09` stays unchecked.
 
+**Read attempt, `2026-09-21T07:45+05` (`02:45Z`) — no number yet.** The first
+scheduled execution had **not started**. `gh run list --workflow=nightly.yml
+--branch main --limit 5` returned `35496258448` (`2026-09-20T07:12Z`, head
+`3cb8003`) as the newest run — before the window — so no `LATENCY_JSON:` line
+exists anywhere and the row above stays unfilled. **Nothing here is
+estimated.** What *was* measured is the scheduler's delivery lag for this
+repo's `02:00Z` cron: **4.65–5.30 h** across the twelve preceding scheduled
+runs (min `4.65`, max `5.30`), so the number is expected after
+~`2026-09-21T11:50+05` — not at `07:00+05` as §1.2 first read it.
+
 ### 5.2 Prior data points — **not** the gate harness
 
 | Date | Source | p50 | p95 | Sample size | Note |
@@ -168,9 +183,10 @@ The fix for the actual gap (§1.3). Three pieces:
 
 ## 9. Open items
 
-1. **Read the first CI baseline** from the 2026-09-21T07:00+05 run and fill in
-   §5.1. If the job fails, diagnose before drawing any conclusion about the
-   budget.
+1. **Read the first CI baseline** and fill in §5.1. ⚠️ Not at `07:00+05` — the
+   scheduler runs ~4.8 h late (§5.1), so look after ~`2026-09-21T12:20+05`
+   (`gh run list --workflow=nightly.yml --branch main`). If the job fails,
+   diagnose before drawing any conclusion about the budget.
 2. **Decide on the production measurement** — it is a separate decision because
    it writes to live data (§4). The most likely shape: a dedicated measurement
    account, or a window where 22 attempts on a seeded problem are acceptable.
