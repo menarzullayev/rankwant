@@ -40,11 +40,18 @@ Batafsil: [DECISION-H4.md](./DECISION-H4.md).
 
 Batafsil: [DECISION-H5.md](./DECISION-H5.md).
 
+### H6 — mavzu tugmasi (2026-09-21)
+
+**Tanlov:** sozlagichda 7 uslub, standart `doira`. Headerga `ThemeToggle`
+qaytadi. StylePicker yo‘q.
+
+Batafsil: [DECISION-H6.md](./DECISION-H6.md).
+
 ---
 
 ## Yopiq (boshqa sessiya, qayta ochilmaydi)
 
-- D3 — header mavzu/uslub tugmalari yo‘q
+- D3 — StylePicker yo‘q; ThemeToggle H6 da qaytdi (uslub sozlagichda)
 - Qaror 22 — `BrandMark`
 - D32 — telefonda suzuvchi tugma yo‘q; header palitra asosiy eshik
 - D46 — topnav `AppHeader` o‘rnini oladi

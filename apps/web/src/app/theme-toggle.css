@@ -1,0 +1,360 @@
+/* Header / sozlagich mavzu tugmalari (H6). Faqat transform/opacity/filter. */
+
+.tg {
+  --tg-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  flex-shrink: 0;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+  color: inherit;
+}
+.tg svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tg:focus-visible {
+  outline: 2px solid var(--rw-accent);
+  outline-offset: 2px;
+}
+
+.tg-orb {
+  width: 40px;
+  height: 40px;
+  perspective: 280px;
+}
+.tg-orb-inner {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  transform-style: preserve-3d;
+  transition: transform 0.64s var(--tg-ease);
+}
+html.dark .tg-orb-inner {
+  transform: rotateY(180deg);
+}
+.tg-orb .face {
+  grid-area: 1 / 1;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.tg-orb .sun {
+  background: oklch(0.86 0.1 85);
+  color: oklch(0.38 0.1 55);
+}
+.tg-orb .moon {
+  background: oklch(0.28 0.04 260);
+  color: oklch(0.92 0.03 90);
+  transform: rotateY(180deg);
+}
+.tg-orb .moon svg {
+  fill: currentColor;
+  stroke: none;
+}
+
+.tg-track {
+  width: 64px;
+  height: 32px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.tg-track .sky,
+.tg-track .stars {
+  position: absolute;
+  inset: 0;
+}
+.tg-track .sky {
+  background: linear-gradient(180deg, oklch(0.78 0.08 230), oklch(0.88 0.06 90));
+  transition: opacity 0.5s var(--tg-ease);
+}
+html.dark .tg-track .sky {
+  opacity: 0;
+}
+.tg-track::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, oklch(0.18 0.04 260), oklch(0.28 0.03 280));
+}
+.tg-track .stars {
+  z-index: 1;
+  background-image: radial-gradient(1px 1px at 22% 30%, #fff, transparent),
+    radial-gradient(1.1px 1.1px at 70% 28%, #fff, transparent),
+    radial-gradient(1px 1px at 48% 62%, #fff 50%, transparent);
+  opacity: 0;
+  transition: opacity 0.45s var(--tg-ease);
+}
+html.dark .tg-track .stars {
+  opacity: 0.85;
+}
+.tg-track .thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: oklch(0.98 0.03 95);
+  box-shadow: 0 1px 3px oklch(0.2 0.02 60 / 0.25);
+  transition: transform 0.5s var(--tg-ease);
+}
+html.dark .tg-track .thumb {
+  transform: translateX(32px);
+  background: oklch(0.86 0.03 90);
+}
+.tg-track .ic {
+  grid-area: 1 / 1;
+  display: grid;
+  place-items: center;
+  transition: opacity 0.35s var(--tg-ease);
+}
+.tg-track .ic svg {
+  width: 14px;
+  height: 14px;
+}
+.tg-track .ic.sun {
+  color: oklch(0.5 0.12 55);
+}
+.tg-track .ic.moon {
+  color: oklch(0.3 0.04 260);
+  opacity: 0;
+}
+html.dark .tg-track .ic.sun {
+  opacity: 0;
+}
+html.dark .tg-track .ic.moon {
+  opacity: 1;
+}
+.tg-track .ic.moon svg {
+  fill: currentColor;
+  stroke: none;
+}
+
+.tg-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--rw-line);
+  background: var(--rw-surface);
+}
+.tg-icon .swap,
+.tg-chip .swap {
+  display: grid;
+}
+.tg-icon .swap svg {
+  grid-area: 1 / 1;
+  transition: opacity 0.35s var(--tg-ease), transform 0.45s var(--tg-ease);
+}
+.tg-icon .swap svg:last-child {
+  opacity: 0;
+  transform: rotate(-24deg) scale(0.7);
+  fill: currentColor;
+  stroke: none;
+}
+html.dark .tg-icon .swap svg:first-child {
+  opacity: 0;
+  transform: rotate(24deg) scale(0.7);
+}
+html.dark .tg-icon .swap svg:last-child {
+  opacity: 1;
+  transform: none;
+}
+
+.tg-horizon {
+  width: 72px;
+  height: 36px;
+  overflow: hidden;
+  border: 1px solid var(--rw-line);
+  border-radius: 999px;
+}
+.tg-horizon .wash {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, oklch(0.78 0.1 230), oklch(0.9 0.08 80));
+  transition: opacity 0.55s var(--tg-ease);
+}
+html.dark .tg-horizon .wash {
+  opacity: 0;
+}
+.tg-horizon::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, oklch(0.16 0.04 270), oklch(0.3 0.05 40));
+}
+.tg-horizon .body-orb {
+  position: absolute;
+  top: 7px;
+  left: 8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: oklch(0.9 0.14 85);
+  box-shadow: 0 0 0 4px oklch(0.85 0.1 80 / 0.35);
+  transition: transform 0.7s var(--tg-ease), background 0.45s var(--tg-ease),
+    box-shadow 0.45s;
+}
+html.dark .tg-horizon .body-orb {
+  transform: translate(36px, 8px) scale(0.82);
+  background: oklch(0.9 0.03 95);
+  box-shadow: 0 0 0 3px oklch(0.8 0.02 90 / 0.2);
+}
+
+.tg-morph {
+  width: 40px;
+  height: 40px;
+}
+.tg-morph .core,
+.tg-morph .cut {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 999px;
+}
+.tg-morph .core {
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  background: currentColor;
+  transition: transform 0.45s var(--tg-ease);
+}
+html.dark .tg-morph .core {
+  transform: scale(1.15);
+}
+.tg-morph .cut {
+  width: 12px;
+  height: 12px;
+  margin: -8px 0 0 -1px;
+  background: var(--rw-surface);
+  opacity: 0;
+  transform: translate(10px, -10px);
+  transition: transform 0.5s var(--tg-ease), opacity 0.35s var(--tg-ease);
+}
+html.dark .tg-morph .cut {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+.tg-morph .rays {
+  position: absolute;
+  inset: 0;
+}
+.tg-morph .rays i {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  width: 2px;
+  height: 5px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: currentColor;
+  transform-origin: 50% 14px;
+  transform: rotate(calc(var(--a) * 45deg));
+  transition: opacity 0.35s var(--tg-ease), transform 0.5s var(--tg-ease);
+}
+html.dark .tg-morph .rays i {
+  opacity: 0;
+  transform: rotate(calc(var(--a) * 45deg)) scaleY(0.2);
+}
+
+.tg-sky {
+  width: 44px;
+  height: 44px;
+  overflow: hidden;
+  border: 1px solid var(--rw-line);
+  border-radius: 999px;
+}
+.tg-sky .field {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, oklch(0.8 0.08 230), oklch(0.92 0.06 90));
+  transition: opacity 0.55s var(--tg-ease);
+}
+html.dark .tg-sky .field {
+  opacity: 0;
+}
+.tg-sky::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 120%, oklch(0.3 0.04 40), oklch(0.14 0.03 270));
+}
+.tg-sky .dots {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(1px 1px at 28% 30%, #fff, transparent),
+    radial-gradient(1.2px 1.2px at 72% 24%, #fff, transparent),
+    radial-gradient(1px 1px at 60% 58%, #fff, transparent),
+    radial-gradient(1px 1px at 38% 70%, #fff, transparent);
+  opacity: 0;
+  transition: opacity 0.6s var(--tg-ease);
+}
+html.dark .tg-sky .dots {
+  opacity: 0.9;
+}
+.tg-sky .orb {
+  position: absolute;
+  top: 11px;
+  left: 13px;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: oklch(0.9 0.14 85);
+  transition: transform 0.65s var(--tg-ease), background 0.4s;
+}
+html.dark .tg-sky .orb {
+  transform: translate(4px, 10px) scale(0.7);
+  background: oklch(0.92 0.02 95);
+}
+
+:root[data-vt="curtain"]::view-transition-old(root) {
+  animation: none;
+  z-index: 1;
+}
+:root[data-vt="curtain"]::view-transition-new(root) {
+  z-index: 2;
+  animation: rw-curtain-in 0.56s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes rw-curtain-in {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tg-orb-inner,
+  .tg-track .sky,
+  .tg-track .stars,
+  .tg-track .thumb,
+  .tg-track .ic,
+  .tg-icon .swap svg,
+  .tg-horizon .wash,
+  .tg-horizon .body-orb,
+  .tg-morph .core,
+  .tg-morph .cut,
+  .tg-morph .rays i,
+  .tg-sky .field,
+  .tg-sky .dots,
+  .tg-sky .orb {
+    transition-duration: 0.01ms !important;
+  }
+}

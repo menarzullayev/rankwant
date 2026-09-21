@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1771 strings.**
+**1781 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -47,6 +47,15 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.templateModified` | Shablon o'zgartirilgan | Shablon ózgertilgen |  |
 | `customizer.theme` | Mavzu | Tema |  |
 | `customizer.themeFixed` | Bu uslub faqat bitta muhitga chizilgan — mavzu unga moslashadi. | Bul usıl tek bir ortalıqqa sızılǵan — tema oǵan maslasadı. |  |
+| `customizer.themeToggle` | Mavzu tugmasi | Tema túymesi |  |
+| `customizer.themeToggle.hint` | Headerdagi tugma va mavzu almashishi shu uslubda ishlaydi. | Joqarı lentalı túyme hám tema almasıwı usı usılda isleydi. |  |
+| `customizer.themeToggle.aylanma` | Aylanma tanga | Tanga |  |
+| `customizer.themeToggle.relss` | Osmon relsi | Asman relsi |  |
+| `customizer.themeToggle.doira` | Doira yoyilishi | Sheńber |  |
+| `customizer.themeToggle.ufq` | Ufq yo'li | Ufq |  |
+| `customizer.themeToggle.morph` | Nur yig'ilishi | Nur jıynalıw |  |
+| `customizer.themeToggle.osmon` | Yulduzli qopqoq | Juldızlı qapqaq |  |
+| `customizer.themeToggle.parda` | Parda | Sahna pardasi |  |
 | `customizer.style` | Uslub | Usıl |  |
 | `customizer.accent` | Asosiy rang | Tiykarǵı reń |  |
 | `customizer.accentDefault` | Uslubning o'z rangi | Usıldıń óz reńi |  |
@@ -623,6 +632,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.effect.circle` | Doira | Sheńber |  |
 | `settings.effect.fade` | Silliq o'tish | Tegis ótiw |  |
 | `settings.effect.none` | Effektsiz | Effektsiz |  |
+| `settings.effect.curtain` | Parda | Parda túsiriw |  |
 | `settings.effectHint` | Harakatni kamaytirish yoqilgan qurilmada mavzu effektsiz almashadi. | Háreketti azaytıw qosılǵan qurılmada tema effektsiz almasadı. |  |
 | `settings.effectsTitle` | Ovoz va effektlar | Dawıs hám effektler |  |
 | `settings.email` | Pochta manzili | Pochta mánzili |  |

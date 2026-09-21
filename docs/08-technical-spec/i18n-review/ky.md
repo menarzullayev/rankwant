@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1771 strings.**
+**1781 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -47,6 +47,15 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.templateModified` | Shablon o'zgartirilgan | Шаблон өзгөртүлгөн |  |
 | `customizer.theme` | Mavzu | Тема |  |
 | `customizer.themeFixed` | Bu uslub faqat bitta muhitga chizilgan — mavzu unga moslashadi. | Бул стиль бир чөйрөгө гана тартылган — тема ошого ылайыкташат. |  |
+| `customizer.themeToggle` | Mavzu tugmasi | Тема баскычы |  |
+| `customizer.themeToggle.hint` | Headerdagi tugma va mavzu almashishi shu uslubda ishlaydi. | Үстүнкү тилкедеги баскыч жана тема алмашуу ушул стилде иштейт. |  |
+| `customizer.themeToggle.aylanma` | Aylanma tanga | Тыйын |  |
+| `customizer.themeToggle.relss` | Osmon relsi | Асман которгуч |  |
+| `customizer.themeToggle.doira` | Doira yoyilishi | Тегерек |  |
+| `customizer.themeToggle.ufq` | Ufq yo'li | Горизонт |  |
+| `customizer.themeToggle.morph` | Nur yig'ilishi | Нур жыйналуу |  |
+| `customizer.themeToggle.osmon` | Yulduzli qopqoq | Жылдыздуу капкак |  |
+| `customizer.themeToggle.parda` | Parda | Парда |  |
 | `customizer.style` | Uslub | Стиль |  |
 | `customizer.accent` | Asosiy rang | Негизги түс |  |
 | `customizer.accentDefault` | Uslubning o'z rangi | Стилдин өз түсү |  |
@@ -623,6 +632,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.effect.circle` | Doira | Тегерек |  |
 | `settings.effect.fade` | Silliq o'tish | Жумшак өтүү |  |
 | `settings.effect.none` | Effektsiz | Эффектсиз |  |
+| `settings.effect.curtain` | Parda | Парда |  |
 | `settings.effectHint` | Harakatni kamaytirish yoqilgan qurilmada mavzu effektsiz almashadi. | Кыймылды азайтуу күйгүзүлгөн түзмөктө тема эффектсиз алмашат. |  |
 | `settings.effectsTitle` | Ovoz va effektlar | Үн жана эффекттер |  |
 | `settings.email` | Pochta manzili | Почта дареги |  |

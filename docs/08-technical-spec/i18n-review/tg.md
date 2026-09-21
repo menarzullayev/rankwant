@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1771 strings.**
+**1781 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -47,6 +47,15 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.templateModified` | Shablon o'zgartirilgan | Қолиб тағйир ёфт |  |
 | `customizer.theme` | Mavzu | Мавзӯъ |  |
 | `customizer.themeFixed` | Bu uslub faqat bitta muhitga chizilgan — mavzu unga moslashadi. | Ин услуб танҳо барои як муҳит кашида шудааст — мавзӯъ ба он мутобиқ мешавад. |  |
+| `customizer.themeToggle` | Mavzu tugmasi | Тугмаи мавзӯъ |  |
+| `customizer.themeToggle.hint` | Headerdagi tugma va mavzu almashishi shu uslubda ishlaydi. | Тугма дар сарлавҳа ва ивази мавзӯъ бо ин услуб кор мекунад. |  |
+| `customizer.themeToggle.aylanma` | Aylanma tanga | Танга |  |
+| `customizer.themeToggle.relss` | Osmon relsi | Калиди осмон |  |
+| `customizer.themeToggle.doira` | Doira yoyilishi | Доира |  |
+| `customizer.themeToggle.ufq` | Ufq yo'li | Уфуқ |  |
+| `customizer.themeToggle.morph` | Nur yig'ilishi | Ҷамъоварии нур |  |
+| `customizer.themeToggle.osmon` | Yulduzli qopqoq | Сарпӯши ситора |  |
+| `customizer.themeToggle.parda` | Parda | Парда |  |
 | `customizer.style` | Uslub | Услуб |  |
 | `customizer.accent` | Asosiy rang | Ранги асосӣ |  |
 | `customizer.accentDefault` | Uslubning o'z rangi | Ранги худи услуб |  |
@@ -623,6 +632,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.effect.circle` | Doira | Доира |  |
 | `settings.effect.fade` | Silliq o'tish | Гузариши ҳамвор |  |
 | `settings.effect.none` | Effektsiz | Бе эффект |  |
+| `settings.effect.curtain` | Parda | Парда |  |
 | `settings.effectHint` | Harakatni kamaytirish yoqilgan qurilmada mavzu effektsiz almashadi. | Дар дастгоҳе, ки коҳиши ҳаракат фаъол аст, мавзӯъ бе эффект иваз мешавад. |  |
 | `settings.effectsTitle` | Ovoz va effektlar | Садо ва эффектҳо |  |
 | `settings.email` | Pochta manzili | Суроғаи почта |  |

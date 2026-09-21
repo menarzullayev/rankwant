@@ -15,6 +15,7 @@ const CLUSTER = [
   "HeaderStatus",
   "UpdatesBell",
   "CustomizerTrigger",
+  "ThemeToggle",
   "LocaleSwitch",
   "UserMenu",
 ] as const;
@@ -39,6 +40,6 @@ describe("H1 HeaderActions", () => {
     expect(actions).toContain('pathname === "/login"');
     expect(actions).toContain("{!auth && <SearchBox");
     expect(actions).toContain("CUSTOMIZER_ENABLED && <CustomizerTrigger");
-    expect(actions).not.toContain("ThemeToggle");
+    expect(actions).toContain("{!auth && <ThemeToggle");
   });
 });

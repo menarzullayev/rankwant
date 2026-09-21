@@ -49,6 +49,13 @@ import { Verdict } from "@/components/ui/Verdict";
 import { Status } from "@/components/ui/Status";
 import { Icon } from "@/components/ui/Icon";
 import { Loading } from "@/components/ui/Loading";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { rememberPrefs } from "@/lib/prefs";
+import {
+  THEME_TOGGLES,
+  clampThemeToggle,
+  themeToggleToEffect,
+} from "@/lib/theme/toggle";
 
 import { AccentSection } from "./AccentSection";
 import { DENSITIES, chip } from "./chrome";
@@ -78,6 +85,7 @@ export function AppearanceTab() {
         onOpen={writeGroup}
       >
         <ThemeSection />
+        <ThemeToggleSection />
         <StyleSection />
         <AccentSection />
       </Group>
@@ -183,6 +191,43 @@ function ThemeSection() {
       ) : (
         <p className="text-theme-sm rw-dim">{t(locale, "customizer.themeFixed")}</p>
       )}
+    </Section>
+  );
+}
+
+function ThemeToggleSection() {
+  const locale = useLocale();
+  const { appearance, setAppearance } = useCustomizer();
+  const current = clampThemeToggle(appearance.themeToggle);
+  return (
+    <Section title={t(locale, "customizer.themeToggle")}>
+      <ul className="grid grid-cols-2 gap-2">
+        {THEME_TOGGLES.map((id) => (
+          <li key={id}>
+            <div
+              className={`flex items-center gap-2 rw-radius-sm border px-2.5 py-2 ${
+                current === id ? "rw-accent-line" : "rw-line"
+              }`}
+            >
+              <ThemeToggle variant={id} />
+              <button
+                type="button"
+                aria-pressed={current === id}
+                onClick={() => {
+                  setAppearance({ themeToggle: id });
+                  rememberPrefs({ effect: themeToggleToEffect(id) });
+                }}
+                className="min-w-0 flex-1 text-start text-theme-sm font-medium rw-strong rw-focus-ring"
+              >
+                {t(locale, `customizer.themeToggle.${id}` as MessageKey)}
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-2 text-theme-xs rw-faint">
+        {t(locale, "customizer.themeToggle.hint")}
+      </p>
     </Section>
   );
 }

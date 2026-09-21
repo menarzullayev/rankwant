@@ -13,12 +13,12 @@ faqat chap tomonda farq qiladi.
 Tartib (o‘zgarmaydi):
 
 `SearchBox` → `HeaderStatus` → `UpdatesBell` → `CustomizerTrigger` →
-`LocaleSwitch` → `UserMenu`
+`ThemeToggle` → `LocaleSwitch` → `UserMenu`
 
 ## Yopiq eshiklar
 
-- **D3.** `ThemeToggle` / `StylePicker` qaytmaydi. Palitra —
-  `CustomizerTrigger`.
+- **D3.** `StylePicker` qaytmaydi. Palitra — `CustomizerTrigger`.
+  `ThemeToggle` H6 da qaytdi (uslub sozlagichda).
 - **Qaror 22.** Brend — `BrandMark`.
 - **D46.** `navMode: "topnav"` da `AppTopNav` `AppHeader` o‘rnini oladi
   (ikkita lenta bo‘lmasin).

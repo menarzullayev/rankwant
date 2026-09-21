@@ -30,7 +30,7 @@ export type PrivacyField =
   | "heatmap"
   | "recent_ac";
 
-export type ThemeEffect = "none" | "fade" | "circle";
+export type ThemeEffect = "none" | "fade" | "circle" | "curtain";
 
 /** Ko'rinish guruhi — sxema v2 (D33).
  *
@@ -87,6 +87,15 @@ export type AppearancePrefs = {
   /** Forma oilasi — yozuv, belgi, radio, fayl, sana. CSS-only
    *  (`data-form`), markup cookie'ga kirmaydi. */
   formStyle?: FormVariant;
+  /** Header mavzu tugmasi uslubi (H6). Standart — `doira`. */
+  themeToggle?:
+    | "aylanma"
+    | "relss"
+    | "doira"
+    | "ufq"
+    | "morph"
+    | "osmon"
+    | "parda";
 };
 
 export type A11yPrefs = {

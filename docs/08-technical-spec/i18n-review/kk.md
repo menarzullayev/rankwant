@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1771 strings.**
+**1781 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -47,6 +47,15 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.templateModified` | Shablon o'zgartirilgan | Үлгі өзгертілген |  |
 | `customizer.theme` | Mavzu | Тақырып |  |
 | `customizer.themeFixed` | Bu uslub faqat bitta muhitga chizilgan — mavzu unga moslashadi. | Бұл стиль бір ортаға ғана салынған — тақырып соған бейімделеді. |  |
+| `customizer.themeToggle` | Mavzu tugmasi | Тақырып түймесі |  |
+| `customizer.themeToggle.hint` | Headerdagi tugma va mavzu almashishi shu uslubda ishlaydi. | Жоғарғы жолақтағы түйме мен тақырып ауысуы осы стильде жұмыс істейді. |  |
+| `customizer.themeToggle.aylanma` | Aylanma tanga | Тиын |  |
+| `customizer.themeToggle.relss` | Osmon relsi | Аспан қосқышы |  |
+| `customizer.themeToggle.doira` | Doira yoyilishi | Шеңбер |  |
+| `customizer.themeToggle.ufq` | Ufq yo'li | Көкжиек |  |
+| `customizer.themeToggle.morph` | Nur yig'ilishi | Сәуле жиналу |  |
+| `customizer.themeToggle.osmon` | Yulduzli qopqoq | Жұлдызды қақпақ |  |
+| `customizer.themeToggle.parda` | Parda | Перде |  |
 | `customizer.style` | Uslub | Стиль |  |
 | `customizer.accent` | Asosiy rang | Негізгі түс |  |
 | `customizer.accentDefault` | Uslubning o'z rangi | Стильдің өз түсі |  |
@@ -623,6 +632,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `settings.effect.circle` | Doira | Шеңбер |  |
 | `settings.effect.fade` | Silliq o'tish | Бірқалыпты өту |  |
 | `settings.effect.none` | Effektsiz | Эффектісіз |  |
+| `settings.effect.curtain` | Parda | Перде |  |
 | `settings.effectHint` | Harakatni kamaytirish yoqilgan qurilmada mavzu effektsiz almashadi. | Қозғалысты азайту қосылған құрылғыда тақырып эффектісіз ауысады. |  |
 | `settings.effectsTitle` | Ovoz va effektlar | Дыбыс және эффектілер |  |
 | `settings.email` | Pochta manzili | Пошта мекенжайы |  |
