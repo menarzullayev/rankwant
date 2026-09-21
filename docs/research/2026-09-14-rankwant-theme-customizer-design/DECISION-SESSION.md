@@ -446,6 +446,7 @@ flag — nuqson topilsa modul bir tugma bilan o'chiriladi.
 | D57 | Zavod `clay` qoladi; Classic match emas — banner to‘g‘ri |
 | D58 | Content width faqat slider; 9 chip yo‘q |
 | D59 | Type size slider + 4 chip qoladi (90/100/110/120) |
+| D60 | Accessibility alohida tab; Appearance accordion emas |
 
 ### D47 — mavzu ikki joyda saqlanmaydi (amalga oshirishda aniqlangan)
 
@@ -596,6 +597,12 @@ Batafsil: [DECISION-58.md](./DECISION-58.md).
 **Tanlov:** A. 4 snap D53 oralig‘ida; width D58 dan farq qiladi.
 
 Batafsil: [DECISION-59.md](./DECISION-59.md).
+
+### D60 — a11y tab (2026-09-21)
+
+**Tanlov:** A. Tab ajratilgan. Accordion/settings-only rad.
+
+Batafsil: [DECISION-60.md](./DECISION-60.md).
 
 ---
 
