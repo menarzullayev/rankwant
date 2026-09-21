@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 
 import { Group } from "@/components/customizer/Group";
 import { KIT_FAMILY_KEYS, LAYOUT_CHIP_KEYS } from "@/components/customizer/chrome";
+import { clampGroup, DEFAULT_GROUP, GROUP_SESSION_KEY } from "@/components/customizer/group-session";
 import { nextTab } from "@/components/customizer/tabs";
 
 function src(rel: string): string {
@@ -19,6 +20,7 @@ const search = src("../../src/layout/SearchBox.tsx");
 const overlay = src("../../src/components/overlay/OverlayHost.tsx");
 const chrome = src("../../src/components/customizer/chrome.ts");
 const saved = src("../../src/components/customizer/SavedTemplates.tsx");
+const groupSession = src("../../src/components/customizer/group-session.ts");
 
 describe("CUST-100 contestant customizer", () => {
   it("is a keyboard tablist with two panels, not a kit playground", () => {
@@ -195,5 +197,16 @@ describe("CUST-100 contestant customizer", () => {
     expect(appearance).toContain("D59");
     expect(appearance).toContain("const quick = [90, 100, 110, 120]");
     expect(appearance).toContain("setAppearance({ size: preset })");
+  });
+
+  it("remembers the last accordion in sessionStorage (D65)", () => {
+    expect(appearance).toContain("D65");
+    expect(appearance).toContain("writeGroup");
+    expect(groupSession).toContain("sessionStorage.setItem");
+    expect(groupSession).not.toMatch(/localStorage\.(get|set)Item/);
+    expect(GROUP_SESSION_KEY).toBe("rw:cz-group");
+    expect(clampGroup("system")).toBe("system");
+    expect(clampGroup("layout")).toBe("layout");
+    expect(clampGroup("nope")).toBe(DEFAULT_GROUP);
   });
 });

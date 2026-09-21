@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useSyncExternalStore } from "react";
 
 import { useCustomizer } from "@/context/CustomizerContext";
 import { useTheme } from "@/context/ThemeContext";
@@ -51,20 +51,22 @@ import { Icon } from "@/components/ui/Icon";
 import { Loading } from "@/components/ui/Loading";
 
 import { AccentSection } from "./AccentSection";
-import { DENSITIES, chip, type GroupId } from "./chrome";
+import { DENSITIES, chip } from "./chrome";
 import { Group, Section } from "./Group";
 import { SavedTemplates } from "./SavedTemplates";
+import { DEFAULT_GROUP, readGroup, subscribeGroup, writeGroup } from "./group-session";
 
 export function AppearanceTab() {
   const locale = useLocale();
-  const [group, setGroup] = useState<GroupId>("look");
+  // D65: last accordion lives in sessionStorage, not the account.
+  const group = useSyncExternalStore(subscribeGroup, readGroup, () => DEFAULT_GROUP);
   return (
     <div className="space-y-4">
       <Group
         id="look"
         title={t(locale, "customizer.group.look")}
         open={group === "look"}
-        onOpen={setGroup}
+        onOpen={writeGroup}
       >
         <TemplatesSection />
         <SavedTemplates />
@@ -73,7 +75,7 @@ export function AppearanceTab() {
         id="color"
         title={t(locale, "customizer.group.color")}
         open={group === "color"}
-        onOpen={setGroup}
+        onOpen={writeGroup}
       >
         <ThemeSection />
         <StyleSection />
@@ -83,7 +85,7 @@ export function AppearanceTab() {
         id="type"
         title={t(locale, "customizer.group.type")}
         open={group === "type"}
-        onOpen={setGroup}
+        onOpen={writeGroup}
       >
         <FontSection />
         <SizeSection />
@@ -93,7 +95,7 @@ export function AppearanceTab() {
         id="layout"
         title={t(locale, "customizer.group.layout")}
         open={group === "layout"}
-        onOpen={setGroup}
+        onOpen={writeGroup}
       >
         {/* D61: Tartib = personal chrome only (D50/D53/D58). */}
         <NavSection />
@@ -105,7 +107,7 @@ export function AppearanceTab() {
         id="system"
         title={t(locale, "customizer.group.system")}
         open={group === "system"}
-        onOpen={setGroup}
+        onOpen={writeGroup}
       >
         {/* D48+D51: contestant writes kit families via SelectField, not chips. */}
         <VerdictSection />

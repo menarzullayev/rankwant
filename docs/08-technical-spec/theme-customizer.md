@@ -2,7 +2,7 @@
 
 **STATUS:** shipped (2026-09-14)
 
-Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D64).
+Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D65).
 Entry points: the header icon, a floating tab on desktop, `Ctrl+.`, and
 `/settings/korinish`.
 
@@ -61,6 +61,10 @@ exclusive 16.4 KiB (5 files). That is UTF-8 source, not gzip. Some
 exclusive files (`OverlayHost`, `Verdict`) are already on the page.
 Tabs stay statically imported (D64) — `lazy()` would delay the first
 open for overlap that is already on the page.
+
+The last open Appearance accordion is stored in `sessionStorage`
+(`rw:cz-group`, D65). It is not account prefs and not `localStorage`.
+A new tab starts on Templates.
 
 ## The colour model
 
