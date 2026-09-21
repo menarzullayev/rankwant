@@ -72,6 +72,7 @@ const EFFECT_KEY = "rw:effect";
  */
 export const MARKUP_COOKIE = "rw:markup";
 
+/** D62: overlay/form are CSS `data-*` only — not cookie keys. */
 export type MarkupPrefs = Pick<
   AppearancePrefs,
   "verdictStyle" | "statusStyle" | "loadingStyle" | "iconPack"

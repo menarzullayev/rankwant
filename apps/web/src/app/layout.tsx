@@ -267,6 +267,7 @@ if(FM.indexOf(a.formStyle)>0)r.dataset.form=a.formStyle;
 // foydalanuvchilar uchun bir martalik ko'prik: localStorage da qiymat
 // bor, cookie hali yo'q. Keyin rememberAppearance ikkalasini birga
 // yozadi, ya'ni bu shart bajarilgan holda qoladi.
+// D62: overlay/form dataset only — o= and f= stay out of rw:markup.
 try{var m=[];if(VD.indexOf(a.verdictStyle)>0)m.push("v="+a.verdictStyle);if(ST.indexOf(a.statusStyle)>0)m.push("s="+a.statusStyle);if(LD.indexOf(a.loadingStyle)>=0)m.push("l="+a.loadingStyle);if(IP.indexOf(a.iconPack)>0)m.push("p="+a.iconPack);if(m.length)document.cookie="rw:markup="+m.join("&")+";path=/;max-age=31536000;SameSite=Lax";}catch(e){}
 var k=JSON.parse(localStorage.getItem("rw:a11y")||"{}");
 if(k.vision&&k.vision!=="normal")r.dataset.vision=k.vision;

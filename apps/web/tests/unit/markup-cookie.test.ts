@@ -34,4 +34,17 @@ describe("markup cookie", () => {
   it("ignores unknown keys and pairs without a value", () => {
     expect(parseMarkupCookie("x=1&v=&s=text&garbage")).toEqual({ statusStyle: "text" });
   });
+
+  it("keeps overlay and form out of the cookie (D62)", () => {
+    expect(parseMarkupCookie("v=circle&o=orol&f=karta")).toEqual({
+      verdictStyle: "circle",
+    });
+    const extra = {
+      verdictStyle: "circle",
+      overlayStyle: "orol",
+      formStyle: "karta",
+    } as MarkupPrefs;
+    expect(serializeMarkupCookie(extra)).toBe("v=circle");
+    expect(serializeMarkupCookie(extra)).not.toMatch(/[of]=/);
+  });
 });

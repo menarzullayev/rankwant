@@ -189,13 +189,13 @@ export function applyAppearance(appearance: AppearancePrefs) {
   else delete root.dataset.iconPack;
 
   // Oyna oilasi. Standart Qog'oz — atribut yozilmaydi, CSS bazasi
-  // shu oilaga teng.
+  // shu oilaga teng. D62: cookie'ga kirmaydi (CSS-only).
   const overlay = appearance.overlayStyle ?? DEFAULT_OVERLAY_VARIANT;
   if (overlay !== DEFAULT_OVERLAY_VARIANT) root.dataset.overlay = overlay;
   else delete root.dataset.overlay;
 
   // Forma oilasi. Standart Maydon — atribut yozilmaydi, CSS bazasi
-  // shu oilaga teng. Markup cookie'ga kirmaydi.
+  // shu oilaga teng. D62: markup cookie'ga kirmaydi.
   const form = appearance.formStyle ?? DEFAULT_FORM_VARIANT;
   if (form !== DEFAULT_FORM_VARIANT) root.dataset.form = form;
   else delete root.dataset.form;
