@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import { flushSync } from "react-dom";
 
 import { useCustomizer, useCustomizerShortcut } from "@/context/CustomizerContext";
@@ -12,7 +12,8 @@ import { Icon } from "@/components/ui/Icon";
 import { A11yTab } from "./A11yTab";
 import { AppearanceTab } from "./AppearanceTab";
 import { ResetRow } from "./ResetRow";
-import { TABS, nextTab, type TabId } from "./tabs";
+import { TABS, nextTab } from "./tabs";
+import { DEFAULT_TAB, readTab, subscribeTab, writeTab } from "./tab-session";
 
 const HIDDEN_KEY = "rw:customizer-hidden";
 
@@ -51,7 +52,8 @@ function writeHidden(value: boolean) {
 export function Customizer() {
   const { open, setOpen, toggle } = useCustomizer();
   const locale = useLocale();
-  const [tab, setTab] = useState<TabId>("appearance");
+  // D66: last tab lives in sessionStorage, not the account.
+  const tab = useSyncExternalStore(subscribeTab, readTab, () => DEFAULT_TAB);
   const panel = useRef<HTMLDivElement>(null);
   const hidden = useSyncExternalStore(subscribeHidden, readHidden, () => false);
   const shortcut = useCustomizerShortcut();
@@ -155,7 +157,7 @@ export function Customizer() {
               const next = nextTab(tab, event.key);
               if (!next) return;
               event.preventDefault();
-              setTab(next);
+              writeTab(next);
               document.getElementById(`rw-cz-tab-${next}`)?.focus();
             }}
           >
@@ -168,7 +170,7 @@ export function Customizer() {
                 aria-selected={tab === value}
                 aria-controls={`rw-cz-panel-${value}`}
                 tabIndex={tab === value ? 0 : -1}
-                onClick={() => setTab(value)}
+                onClick={() => writeTab(value)}
                 className={`rw-radius-sm px-3 py-1.5 text-theme-sm font-medium transition ${
                   tab === value ? "rw-accent-soft" : "rw-dim-2 rw-hover-bg"
                 }`}

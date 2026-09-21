@@ -452,6 +452,7 @@ flag — nuqson topilsa modul bir tugma bilan o'chiriladi.
 | D63 | Panel `lazy()` yo‘q; source-graph baseline yozildi |
 | D64 | Tab importlari eager; D63 dan keyin ham `lazy()` yo‘q |
 | D65 | Oxirgi accordion `sessionStorage`; hisob emas |
+| D66 | Oxirgi panel tab `sessionStorage`; hisob emas |
 
 ### D47 — mavzu ikki joyda saqlanmaydi (amalga oshirishda aniqlangan)
 
@@ -638,6 +639,13 @@ Batafsil: [DECISION-64.md](./DECISION-64.md).
 **Tanlov:** B. `rw:cz-group` sessionStorage. ui_prefs/localStorage rad.
 
 Batafsil: [DECISION-65.md](./DECISION-65.md).
+
+### D66 — oxirgi panel tab (2026-09-21)
+
+**Tanlov:** B. `rw:cz-tab` sessionStorage. Appearance/A11y chrome kursori.
+Hisob rad — D65 bilan bir umr.
+
+Batafsil: [DECISION-66.md](./DECISION-66.md).
 
 ---
 
