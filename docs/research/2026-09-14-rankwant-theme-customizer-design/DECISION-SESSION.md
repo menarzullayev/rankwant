@@ -448,6 +448,7 @@ flag — nuqson topilsa modul bir tugma bilan o'chiriladi.
 | D59 | Type size slider + 4 chip qoladi (90/100/110/120) |
 | D60 | Accessibility alohida tab; Appearance accordion emas |
 | D61 | Tartib va Interfeys ikki accordion; CUST-100 unmount saqlanadi |
+| D62 | Overlay/form CSS-only; `rw:markup` faqat v/s/l/p |
 
 ### D47 — mavzu ikki joyda saqlanmaydi (amalga oshirishda aniqlangan)
 
@@ -610,6 +611,12 @@ Batafsil: [DECISION-60.md](./DECISION-60.md).
 **Tanlov:** B. Beshinchi guruh. Tartib = chrome; Interfeys = kit. Ichki disclosure rad.
 
 Batafsil: [DECISION-61.md](./DECISION-61.md).
+
+### D62 — overlay/form cookie (2026-09-21)
+
+**Tanlov:** A. Cookie o‘zgarmaydi. Overlay/form CSS-only. `o=`/`f=` rad.
+
+Batafsil: [DECISION-62.md](./DECISION-62.md).
 
 ---
 

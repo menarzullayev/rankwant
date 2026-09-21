@@ -2,7 +2,7 @@
 
 **STATUS:** shipped (2026-09-14)
 
-Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D61).
+Decisions: [research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md](../research/2026-09-14-rankwant-theme-customizer-design/DECISION-SESSION.md) (D1–D62).
 Entry points: the header icon, a floating tab on desktop, `Ctrl+.`, and
 `/settings/korinish`.
 
@@ -51,6 +51,9 @@ Accessibility stays a second tab (D60), not an Appearance accordion and not
 settings-only. Appearance accordions are five (D61): layout chrome
 (`navMode`, `navShape`, `width`, `card`, `pattern`) unmounts separately
 from the six kit `SelectField`s. Closed groups still unmount (CUST-100).
+`rw:markup` stays verdict/status/loading/iconPack (D62). Overlay and form
+are CSS `data-*` from first paint, not cookie keys — a non-default overlay
+must not force the guest homepage cache private.
 
 ## The colour model
 
