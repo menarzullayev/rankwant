@@ -20,15 +20,11 @@ export function CommandPalette() {
   const [q, setQ] = useState("");
   const [sel, setSel] = useState(0);
 
+  // H2: Ctrl+K qidiruvniki (`SearchBox`). Bu panel mahsulot shellida
+  // mount qilinmaydi; ochilish eshigi yo'q. Escape — agar kit sinovida
+  // ochiq qolsa yopish uchun.
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
-      const meta = event.metaKey || event.ctrlKey;
-      if (meta && event.key.toLowerCase() === "k") {
-        event.preventDefault();
-        setOpen((was) => !was);
-        setQ("");
-        setSel(0);
-      }
       if (event.key === "Escape") setOpen(false);
     }
     document.addEventListener("keydown", onKey);

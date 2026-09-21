@@ -15,6 +15,13 @@ Chap tomon sidenav/topnav da farq qiladi.
 
 Batafsil: [DECISION-H1.md](./DECISION-H1.md).
 
+### H2 — Ctrl+K egasi (2026-09-21)
+
+**Tanlov:** search-owns. `Ctrl+K` — `SearchBox`. `CommandPalette`
+shelldan chiqdi.
+
+Batafsil: [DECISION-H2.md](./DECISION-H2.md).
+
 ---
 
 ## Yopiq (boshqa sessiya, qayta ochilmaydi)
