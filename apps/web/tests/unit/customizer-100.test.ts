@@ -163,4 +163,11 @@ describe("CUST-100 contestant customizer", () => {
     expect(appearance).toContain("D53");
     expect((appearance.match(/<SelectField/g) || []).length).toBe(6);
   });
+
+  it("keeps content width as a slider only (D58)", () => {
+    expect(appearance).toContain("D58");
+    expect(appearance).toContain("type=\"range\"");
+    expect(appearance).not.toContain("WIDTH_STEPS");
+    expect(appearance).not.toContain("setAppearance({ width: preset })");
+  });
 });
