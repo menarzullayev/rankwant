@@ -449,6 +449,7 @@ flag — nuqson topilsa modul bir tugma bilan o'chiriladi.
 | D60 | Accessibility alohida tab; Appearance accordion emas |
 | D61 | Tartib va Interfeys ikki accordion; CUST-100 unmount saqlanadi |
 | D62 | Overlay/form CSS-only; `rw:markup` faqat v/s/l/p |
+| D63 | Panel `lazy()` yo‘q; source-graph baseline yozildi |
 
 ### D47 — mavzu ikki joyda saqlanmaydi (amalga oshirishda aniqlangan)
 
@@ -617,6 +618,12 @@ Batafsil: [DECISION-61.md](./DECISION-61.md).
 **Tanlov:** A. Cookie o‘zgarmaydi. Overlay/form CSS-only. `o=`/`f=` rad.
 
 Batafsil: [DECISION-62.md](./DECISION-62.md).
+
+### D63 — panel o‘lchov (2026-09-21)
+
+**Tanlov:** A. Split yo‘q. Appearance exclusive 139.1 KiB source; A11y 16.4 KiB.
+
+Batafsil: [DECISION-63.md](./DECISION-63.md), [PANEL-GRAPH.json](./PANEL-GRAPH.json).
 
 ---
 
