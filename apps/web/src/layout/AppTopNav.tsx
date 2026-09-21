@@ -9,13 +9,7 @@ import { useUpdates } from "@/context/UpdatesContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
 import { Icon } from "@/components/ui/Icon";
-import HeaderStatus from "./HeaderStatus";
-import SearchBox from "./SearchBox";
-import { LocaleSwitch } from "./LocaleSwitch";
-import UpdatesBell from "@/components/UpdatesBell";
-import { CustomizerTrigger } from "@/components/customizer/CustomizerTrigger";
-import { CUSTOMIZER_ENABLED } from "@/lib/theme/flag";
-import UserMenu from "./UserMenu";
+import HeaderActions from "./HeaderActions";
 import { NAV_GROUPS } from "./nav";
 import BrandMark from "./BrandMark";
 import { topnavShapeClass, type NavShape } from "./nav-config";
@@ -47,9 +41,6 @@ export default function AppTopNav({
   // birinchisi ochiq qolib, ekran band bo'ladi.
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const barRef = useRef<HTMLDivElement>(null);
-  // Kirish sahifasida qidiruv va sozlagich keraksiz — `AppHeader` dagi
-  // sabab bilan bir xil.
-  const auth = pathname === "/login";
   // Klaviatura navigatsiyasi uchun guruh tugmalari. `menubar` naqshida
   // strelkalar fokusni qo'lda ko'chiradi, ya'ni har tugma qaysi
   // yo'nalishda turganini bilish kerak.
@@ -316,19 +307,8 @@ export default function AppTopNav({
           })}
         </nav>
 
-        {/* O'ng guruh — `AppHeader` dagi tartib bilan bir xil.
-            Topnav AppHeader O'RNINI oladi (ikkita header bo'lmasin),
-            shu sababli qidiruv, qo'ng'iroq, til va hisob shu yerda. */}
-        <div className="ml-auto flex min-w-0 items-center gap-2">
-          {!auth && <SearchBox />}
-          <div className="relative z-20 flex shrink-0 items-center gap-2">
-          <HeaderStatus />
-          <UpdatesBell />
-          {!auth && CUSTOMIZER_ENABLED && <CustomizerTrigger />}
-          <LocaleSwitch />
-          <UserMenu />
-          </div>
-        </div>
+        {/* O'ng klaster — H1: `HeaderActions`. Sidenav header ham shu. */}
+        <HeaderActions />
       </div>
 
       {/* Mobil ro'yxat — tor ekranda burger bilan ochiladi.

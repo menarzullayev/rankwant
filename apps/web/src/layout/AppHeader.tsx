@@ -8,13 +8,7 @@ import { t } from "@/i18n/messages";
 import { Icon } from "@/components/ui/Icon";
 import { NAV } from "./nav";
 import BrandMark from "./BrandMark";
-import HeaderStatus from "./HeaderStatus";
-import SearchBox from "./SearchBox";
-import { LocaleSwitch } from "./LocaleSwitch";
-import UpdatesBell from "@/components/UpdatesBell";
-import { CustomizerTrigger } from "@/components/customizer/CustomizerTrigger";
-import { CUSTOMIZER_ENABLED } from "@/lib/theme/flag";
-import UserMenu from "./UserMenu";
+import HeaderActions from "./HeaderActions";
 
 export default function AppHeader() {
   const { isMobileOpen, toggleMobileSidebar } = useSidebar();
@@ -23,17 +17,6 @@ export default function AppHeader() {
   const current = NAV.find(
     (n) => pathname === n.href || pathname.startsWith(`${n.href}/`),
   );
-  // Kirish/ro'yxat sahifalarida header soddalashadi: qidiruv ham, uslub
-  // tanlash ham kirmagan odamga kerak emas — qidiradigan narsasi ham,
-  // saqlaydigan sozlamasi ham yo'q. Til va mavzu qoladi, chunki ular
-  // sahifani o'qish uchun kerak bo'lishi mumkin.
-  //
-  // Uch bo'lim (kirish/ro'yxat/tiklash) bitta manzilda (1-qaror), ya'ni
-  // tekshiruv ham bitta: `usePathname()` `?tab=` ni ko'rsatmaydi va
-  // ko'rsatishi ham shart emas — qidiruv baribir barcha bo'limlarda
-  // keraksiz.
-  const auth = pathname === "/login";
-
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b rw-divider rw-chrome px-4 md:px-6">
       {/* 40x40 — header'dagi boshqa tugmalar bilan bir o'lchamda.
@@ -73,24 +56,8 @@ export default function AppHeader() {
       <span className="hidden min-w-0 truncate text-theme-sm font-medium rw-dim sm:inline">
         {current ? t(locale, current.key) : null}
       </span>
-      <div className="ml-auto flex min-w-0 items-center gap-2">
-        {!auth && <SearchBox />}
-        <div className="relative z-20 flex shrink-0 items-center gap-2">
-        <HeaderStatus />
-        {/* O'zgarishlar belgisi — bildirishnomalar qo'ng'irog'idan keyin,
-            lekin alohida ikonka bilan: ikkalasi bir xil ko'rinishda
-            bo'lsa qaysi biri nima ekanini ajratib bo'lmasdi. */}
-        <UpdatesBell />
-        {/* Ko'rinish sozlagichi — mavzu va uslub tugmalari o'rniga
-            (D3). Ikkitasi ham bitta panelga yig'ildi, chunki bir xil
-            sozlamani ikki joydan boshqarish chalkashlik tug'diradi.
-            Bu ikonka telefonda ham kerak: u yerda suzuvchi tugma yo'q
-            (D32), ya'ni bu — asosiy kirish nuqtasi. */}
-        {!auth && CUSTOMIZER_ENABLED && <CustomizerTrigger />}
-        <LocaleSwitch />
-        <UserMenu />
-        </div>
-      </div>
+      {/* O'ng klaster — H1: `HeaderActions`. Topnav ham shu manba. */}
+      <HeaderActions />
     </header>
   );
 }
