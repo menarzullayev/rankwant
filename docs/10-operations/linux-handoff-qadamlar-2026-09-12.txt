@@ -1,0 +1,32 @@
+﻿RANKWANT: LINUX'DA BAJARILADIGAN QADAMLAR (2026-09-12)
+=======================================================
+Maqsad: sayt ma'lumotini Linux'dan Windows'ga R2 orqali topshirish.
+Bu vaqtda rankwant.uz "texnik ishlar" sahifasini ko'rsatishi normal.
+
+0. Bu fleshkada .env.handoff bo'lishi kerak (Windows'dan nusxalangan).
+   FLESH = fleshka yo'li, masalan: FLESH=/media/$USER/XXXX-XXXX
+
+1. Repo:
+   cd <rankwant papkasi>
+   git fetch origin
+   git switch feat/dual-boot-handoff        # PR #10 merge qilinmagan bo'lsa
+   cp "$FLESH/.env.handoff" .
+
+2. Tunnel yuklanishda o'zi yoqilmasin (endi uni faqat handoff yoqadi):
+   sudo systemctl disable cloudflared
+
+3. Windows uchun sirlarni fleshkaga nusxalash:
+   cp .env.public "$FLESH/"
+   sudo cp /etc/cloudflared/config.yml "$FLESH/"
+   grep credentials-file /etc/cloudflared/config.yml     # kalit fayli yo'li
+   sudo cp <o'sha .json fayl> "$FLESH/"
+
+4. Birinchi marta holatni yaratish va topshirish:
+   tools/handoff.sh init
+   tools/handoff.sh out
+   Oxirida "Topshirildi: ..." chiqishi kerak.
+
+5. Windows'ga qayting va Claude'ga "Linux tayyor" deng.
+
+Xato chiqsa: ekranni rasmga oling va Windows'da Claude'ga ko'rsating.
+Linux yoqilganda CI runnerlar ham ishga tushadi: PR #9 va #10 tekshiriladi.
