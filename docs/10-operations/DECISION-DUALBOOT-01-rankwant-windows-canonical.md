@@ -37,8 +37,15 @@
 - `D:\Windows\archive\rankwant-c-main-20260923` (retired C clone)
 - `C:\Users\nsn\project\wt\*` worktree (gitdir yangilanadi)
 
-## Validation (implementdan keyin)
+## Validation (2026-09-23 implement)
 
-- `git -C C:\Users\nsn\project\cp\rankwant rev-parse HEAD` = `4f1321c`
-- Junction `ReparsePoint` + target `D:\Linux\Web_Projects\rankwant`
-- `git status` C yo‘lida D bilan bir xil
+| Check | Baseline | After |
+|---|---|---|
+| `C:\Users\nsn\project\cp\rankwant` HEAD | `b8ee191` (2 behind) | **`4f1321c`** (= `origin/main` oldin) |
+| Junction | yo‘q (real C clone) | **Junction → `D:\Linux\Web_Projects\rankwant`** |
+| Dirty (content) | 12× filemode (D) | **`core.filemode=false`** → faqat decision doc |
+| Local commit | 0 | **`93fcfcd`** (decision doc; push → PR hook) |
+| Eski C `.git` | `C:\...\rankwant` | **`D:\Windows\archive\rankwant-c-main-20260923`** + stash saqlangan |
+| Worktree `wt/deploy` gitdir | C `.git/worktrees` | **arxiv `.git/worktrees`** (vaqtincha) |
+
+**Eslatma:** `cloudflared` `.handoff` logi uchun vaqtincha to‘xtatildi; tunnel qayta ishga tushirish kerak bo‘lishi mumkin.
