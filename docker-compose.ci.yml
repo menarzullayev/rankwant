@@ -31,6 +31,8 @@ services:
       # ishga tushib, o'lchovni ma'nosiz qilardi (94% 429).
       THROTTLE_ANON: 100000/min
       THROTTLE_USER: 100000/min
+      # Latency harness: 2 warmup + 20 ketma-ket submit (`submit` scope 6/min bo'lsa 429).
+      THROTTLE_SUBMIT: 100000/min
   web:
     ports: !reset []
 
