@@ -69,9 +69,11 @@ jobs:
         with:
           filters: |
             api:   ['apps/api/**']
-            web:   ['apps/web/**']
+            # RW-ARCH-013: `packages/shared` is imported by the web app, so a
+            # change there has to run the web gates (typecheck/build/tests).
+            web:   ['apps/web/**', 'packages/**']
             judge: ['services/**']
-            code:  ['apps/**', 'services/**', 'tools/**', 'tests/**', 'docker-compose*.yml']
+            code:  ['apps/**', 'packages/**', 'services/**', 'tools/**', 'tests/**', 'docker-compose*.yml']
             # When the checks themselves change, the job that runs them
             # must start. `code` is too wide for that: it also matches
             # `apps/api/**`, so an API change would wake the web job
@@ -83,10 +85,16 @@ jobs:
             # (`check_decisions.py`, `deploy_timer.sh`) `npm ci` (14–20 s)
             # qilmasin. `check_i18n_runtime.mjs` TypeScript ni
             # `apps/web/node_modules` dan o'qiydi.
+            #
+            # RW-ARCH-013: the npm workspace lockfile moved to the root and
+            # `packages/shared` became a source of truth, so a change to
+            # either must trigger the Node job.
             tools_node:
               - 'tools/**/*.mjs'
+              - 'package.json'
+              - 'package-lock.json'
+              - 'packages/**'
               - 'apps/web/package.json'
-              - 'apps/web/package-lock.json'
 
   api:
     name: API — lint, types, migrations
@@ -241,20 +249,24 @@ jobs:
         with:
           node-version: '22'
           cache: npm
-          cache-dependency-path: apps/web/package-lock.json
+          # RW-ARCH-013: the repo is an npm workspace, so the single
+          # authoritative lockfile sits at the root and npm hoists the dev
+          # dependencies there. Pointing at `apps/web/package-lock.json`
+          # made the cache key miss on every run and `npm ci` in `apps/web`
+          # re-resolve against a stale per-package tree.
+          cache-dependency-path: package-lock.json
       # `npm ci` ONLY when web or Node tools changed. Python-only
       # `tools/` used to pay 14–20 s × PR+main for `typescript` that
       # those PRs never load. NODE_CASES then skip via NEGATIVE_SKIP_NODE.
       - if: ${{ steps.check.outputs.ready == 'true' && steps.node.outputs.need == 'true' }}
         run: npm ci
-        working-directory: apps/web
       - uses: actions/cache@v6
         if: ${{ steps.check.outputs.ready == 'true' && needs.filter.outputs.web == 'true' }}
         with:
           path: apps/web/.next/cache
-          key: next-${{ runner.os }}-${{ hashFiles('apps/web/package-lock.json') }}-${{ hashFiles('apps/web/src/**/*.ts', 'apps/web/src/**/*.tsx') }}
+          key: next-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('apps/web/src/**/*.ts', 'apps/web/src/**/*.tsx') }}
           restore-keys: |
-            next-${{ runner.os }}-${{ hashFiles('apps/web/package-lock.json') }}-
+            next-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-
       # Lint / typecheck / build ONLY when web changed. On a tools-only
       # run they would check nothing new — the job is still needed
       # because the check suite is below.
@@ -309,9 +321,34 @@ jobs:
       - name: Text contrast (WCAG AA)
         if: steps.check.outputs.ready == 'true'
         run: python3 tools/check_contrast.py
+      - name: Design tokens (no raw colour / px font)
+        if: steps.check.outputs.ready == 'true'
+        run: python3 tools/check_design_tokens.py
+      - name: Feature boundaries (layer rule)
+        if: steps.check.outputs.ready == 'true'
+        run: python3 tools/check_features.py
+      - name: Import integrity (@/ paths resolve)
+        if: steps.check.outputs.ready == 'true'
+        run: python3 tools/check_imports.py
+      - name: Accessibility (static rules)
+        if: steps.check.outputs.ready == 'true'
+        run: python3 tools/check_a11y.py
+      # Sxemadan generatsiya qilingan TS tiplar eskirgan bo'lsa — qizil.
+      # `openapi/schema.yml` o'zgargan-u `schema.ts` yangilanmagan bo'lsa,
+      # mijoz tiplari jimgina noto'g'ri bo'lib qolardi.
+      - name: Generated API types are current
+        if: steps.check.outputs.ready == 'true'
+        run: npm run openapi:check
+        working-directory: apps/web
       - if: ${{ steps.check.outputs.ready == 'true' && needs.filter.outputs.web == 'true' }}
         run: npm run build
         working-directory: apps/web
+      # `next build` never fails on a fat bundle, so this is the only place
+      # the budget is enforced. Reads `apps/web/.next/static` — must come
+      # AFTER the build above. RW-ARCH-016.
+      - name: Bundle budget
+        if: ${{ steps.check.outputs.ready == 'true' && needs.filter.outputs.web == 'true' }}
+        run: python3 tools/check_bundle_budget.py
 
   judge:
     name: Judge — bake-off candidates
