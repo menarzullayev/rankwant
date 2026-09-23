@@ -30,7 +30,7 @@ ALLOWED_TOOLS = ("cursor", "workbuddy", "claude", "freebuff")
 HEARTBEAT_HOURS = 4
 # Live detach + the canonical checkout. Removing either is an incident.
 NEVER_REAP = ("wt/deploy", "cp/rankwant")
-DEFAULT_BUS = Path("C:/Users/nsn/project/wt")
+DEFAULT_BUS = Path("D:/Windows/project/wt")
 REPO = "menarzullayev/rankwant"
 
 

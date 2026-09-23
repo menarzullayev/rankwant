@@ -76,7 +76,7 @@ cd "$ROOT"
 G=$'\033[32m'; R=$'\033[31m'; Y=$'\033[33m'; N=$'\033[0m'
 PROJECT=rankwant
 # Jonli stack turgan asosiy checkout — env-fayl o'sha yerda qoladi.
-LIVE_DIR="${RANKWANT_LIVE_DIR:-C:/Users/nsn/project/cp/rankwant}"
+LIVE_DIR="${RANKWANT_LIVE_DIR:-D:/Linux/Web_Projects/rankwant}"
 # Env-fayl: deploy worktree'da `.env.public` bo'lmagani uchun alohida
 # ko'rsatiladi. Standart — `$LIVE_DIR/.env.public` (asosiy checkout).
 ENV_FILE="${RANKWANT_AUTO_DEPLOY_ENV:-$LIVE_DIR/.env.public}"
