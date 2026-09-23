@@ -35,9 +35,10 @@ test("mehmonga panel ko'rinadi, lekin yuborish kirishni talab qiladi", async ({
   // ANIQ nom bo'yicha, «birinchi combobox» bo'yicha emas: header'da UI
   // tilini tanlash ham select va u sahifada birinchi turadi. Testlar
   // standart tilda (o'zbekcha) ishlaydi, ya'ni nom aniq.
+  // Headless UI combobox — tanlangan til `input` value'da, matn node emas.
   await expect(
     page.getByRole("combobox", { name: "Til", exact: true }),
-  ).toContainText(/C\+\+|Python|Java/);
+  ).toHaveValue(/C\+\+|Python|Java/);
   await expect(
     page.getByRole("link", { name: "Yuborish uchun kiring" }),
   ).toBeVisible();
