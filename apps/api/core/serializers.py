@@ -831,6 +831,38 @@ class AnalyticsEventInSerializer(serializers.Serializer[dict[str, Any]]):
         return value
 
 
+class ClientLogSerializer(serializers.Serializer[dict[str, Any]]):
+    """Brauzerdan kelgan xato yozuvi (qaror 2026-09-24).
+
+    ⚠️ Bu **kirish** serializer'i, model emas: maydonlar cheklanadi,
+    chunki manba — brauzer, ya'ni unga ishonib bo'lmaydi. `message`
+    va `fields` hajmi qat'iy cheklanadi: usiz bitta buzuq mijoz
+    jadvalni megabaytlab to'ldirib qo'yardi.
+    """
+
+    level = serializers.ChoiceField(
+        choices=["debug", "info", "warn", "error"], default="error"
+    )
+    scope = serializers.CharField(max_length=40)
+    message = serializers.CharField(max_length=300)
+    fields = serializers.JSONField(required=False)
+    path = serializers.CharField(max_length=200, required=False, allow_blank=True)
+    release = serializers.CharField(max_length=40, required=False, allow_blank=True)
+
+    def validate_fields(self, value: Any) -> dict[str, Any]:
+        if value is None:
+            return {}
+        if not isinstance(value, dict) or len(value) > 12:
+            raise serializers.ValidationError("fields must be an object with at most 12 keys")
+        # Qiymat uzunligi ham cheklanadi: stack 10-20 KB bo'lishi mumkin,
+        # ya'ni kalitlar soni yetarli emas — qiymat ham qisqartirilishi
+        # kerak.
+        for key, val in value.items():
+            if isinstance(val, str) and len(val) > 2000:
+                value[key] = val[:2000]
+        return value
+
+
 class AnalyticsBatchSerializer(serializers.Serializer[dict[str, Any]]):
     """Hodisalar partiyasi.
 

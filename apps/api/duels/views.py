@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from django.db.models import Q
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -108,7 +108,21 @@ class DuelViewSet(
             }
         )
 
-    @extend_schema(responses={200: DuelRecordSerializer})
+    @extend_schema(
+        responses={200: DuelRecordSerializer},
+        # `url_path` regex'idan drf-spectacular parametr TURINI chiqara
+        # olmaydi va "could not derive type of path parameter" deb
+        # ogohlantiradi (o'lchandi 2026-09-24). Shuning uchun ochiq
+        # e'lon qilinadi.
+        parameters=[
+            OpenApiParameter(
+                name="username",
+                type=str,
+                location=OpenApiParameter.PATH,
+                description="Foydalanuvchi taxallusi",
+            )
+        ],
+    )
     @action(detail=False, methods=["get"], url_path=r"record/(?P<username>[^/.]+)")
     def user_record(self, request: Request, username: str | None = None) -> Response:
         user = User.objects.filter(username=username).first()

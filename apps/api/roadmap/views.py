@@ -41,10 +41,14 @@ from roadmap.serializers import (
     only=("list", "retrieve", "create"),
     extra={
         "mine": "Mening takliflarim",
-        # `unvote` — `@vote.mapping.delete`: bitta amal POST va DELETE ni
-        # beradi, ya'ni tavsif ikkala kalitda ham turishi kerak.
+        # `vote` — `@vote.mapping`: POST va DELETE ni beradi, ya'ni
+        # tavsif bitta amal nomida turadi. `unvote` ALOHIDA amal EMAS —
+        # DRF `.mapping` ni metod ustida saqlaydi, lekin atribut sifatida
+        # ko'chirmaydi; drf-spectacular esa `mapping` bo'yicha qidiradi,
+        # shuning uchun uni topa olmaydi va ogohlantiradi (o'lchandi
+        # 2026-09-24: `RoadmapItemViewSet: unvote`). `unvote` tavsifi
+        # metodning o'zidagi `@extend_schema(summary=...)` da turadi.
         "vote": "Ovoz berish / qaytarib olish",
-        "unvote": "Ovoz berish / qaytarib olish",
         "comments": "Izohlar",
     },
 )
