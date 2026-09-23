@@ -246,12 +246,15 @@ export const uz = {
   "footer.copyright": "© {year} RankWant. Barcha huquqlar himoyalangan.",
   "footer.terms": "Shartlar",
   "footer.privacy": "Maxfiylik",
+  "auth.usernameInvalid": "Taxallus faqat lotin harflari, raqamlar va pastki chiziqdan iborat bo'lsin",
+
   "auth.usernameRequired": "Taxallus 3–30 belgi: bo'sh qolmasin",
   "auth.usernameHint": "3–30 belgi: lotin harflari, raqam, nuqta, pastki chiziq, chiziqcha",
   "auth.passwordHint": "Kamida 8 belgi. Faqat raqamdan iborat bo'lmasin.",
   "auth.usernameFree": "Bu nom bo'sh",
   "auth.checking": "Tekshirilmoqda…",
   "auth.passwordMatch": "Parollar mos",
+  "auth.required": "Bu maydonni to'ldirishingiz kerak",
   "auth.emailInvalid": "Email manzili noto'g'ri",
   "auth.strength1": "Juda zaif",
   "auth.strength2": "Zaif",
@@ -533,6 +536,7 @@ export const uz = {
   "error.contest_finished": "Musobaqa tugagan",
   "error.dependency_unavailable":
     "Xizmat vaqtincha mavjud emas, birozdan keyin urinib ko'ring",
+  "error.retry": "Qayta urinish",
   "error.error": "Nimadir noto'g'ri ketdi",
   "error.expired": "Muddati o'tib ketgan",
   "error.finished": "Allaqachon tugagan",
@@ -1491,6 +1495,8 @@ export const uz = {
   "admin.title.moveUp": "Yuqoriga",
   "admin.title.moveDown": "Pastga",
   "admin.title.remove": "Olib tashlash",
+  "admin.title.prev": "Oldingi sahifa",
+  "admin.title.next": "Keyingi sahifa",
   "admin.title.roadmapComments": "Yo'l xaritasi izohlari",
   "admin.title.tournaments": "Chempionatlar",
   "admin.title.broadcast": "Umumiy e'lon",
@@ -1577,6 +1583,10 @@ export const uz = {
   "problem.editorialAvailable": "Yechim tahlili bor",
   "problem.testsNotReady": "Testlar tayyorlanmagan — yechim qabul qilinmaydi",
   "qvant.marathon": "Haftalik marafon",
+  "submit.sourceRequired": "Yuborishdan oldin yechimingizni yozing yoki yuklang",
+
+  "submit.sourceTooLong": "Manba kodi juda katta",
+
   "submit.solution": "Yechim",
   "contest.ogAlt": "RankWant musobaqasi",
   "problem.ogAlt": "RankWant masalasi",

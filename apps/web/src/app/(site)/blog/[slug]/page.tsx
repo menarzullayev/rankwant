@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Markdown } from "@/components/Markdown";
+import { Markdown } from "@/components/ui/Markdown";
 import { Card } from "@/components/ui/Card";
 import { notFound } from "next/navigation";
 import { api, ApiError } from "@/lib/api";

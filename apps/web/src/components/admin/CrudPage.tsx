@@ -57,7 +57,15 @@ export type FieldDef = {
 
 export type ColumnDef<T> = {
   key: string;
-  /** Kalit, matn emas — yuqoridagi sabab bilan. */
+  /** Kalit, matn emas — yuqoridagi sabab bilan.
+   *
+   *  ⚠️ Ilgari bu yerda `label: string` ham MAJBURIY edi, lekin
+   *  `e886932` (i18n: admin yorliqlarini `t()` orqali chizish) dan
+   *  keyin hech bir chaqiruvchi uni bermaydi — 16 ta admin fayli faqat
+   *  `labelKey` yozadi. Qoldiq maydon `tsc` ni 20+ marta yiqitardi
+   *  (o'lchandi 2026-09-24: `UsersAdmin`, `UpdatesAdmin` va boshqalar).
+   *  Maydon olib tashlandi — yorliq yagona manbadan (`labelKey`)
+   *  o'qiladi. */
   labelKey: MessageKey;
   align?: "left" | "right";
   /** `reload` — amal bajargan ustunlar jadvalni yangilay olishi uchun.
@@ -474,6 +482,7 @@ export function CrudPage<T extends Row>({
               type="button"
               disabled={page <= 1}
               onClick={() => setPage((p) => p - 1)}
+              aria-label={t(locale, "admin.title.prev")}
               className="disabled:opacity-40"
             >
               ←
@@ -485,6 +494,7 @@ export function CrudPage<T extends Row>({
               // API «Invalid page» (404) qaytarardi.
               disabled={page >= Math.ceil(count / PAGE_SIZE)}
               onClick={() => setPage((p) => p + 1)}
+              aria-label={t(locale, "admin.title.next")}
               className="disabled:opacity-40"
             >
               →

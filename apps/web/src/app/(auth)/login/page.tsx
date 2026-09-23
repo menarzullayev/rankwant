@@ -2,11 +2,9 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
-import { AuthForm } from "@/components/AuthForm";
-import { AuthProof } from "@/components/auth/AuthProof";
-import { AuthShell } from "@/components/auth/AuthShell";
-import { AuthTabs } from "@/components/auth/AuthTabs";
-import { ResetForm } from "@/components/ResetForm";
+import { AuthForm } from "@/features/account";
+import { AuthProof, AuthShell, AuthTabs } from "@/features/auth/server";
+import { ResetForm } from "@/features/account";
 import { Card } from "@/components/ui/Card";
 import { fetchProviders } from "@/lib/api";
 import { parseTab, DEFAULT_TAB, type TabId } from "@/lib/auth-tabs";

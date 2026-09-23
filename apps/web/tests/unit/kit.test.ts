@@ -73,13 +73,13 @@ describe("kit product surfaces", () => {
     readFileSync(fileURLToPath(new URL(rel, import.meta.url)), "utf8");
 
   it("wires the selected confirm kinds", () => {
-    expect(src("../../src/components/AccountSettings.tsx")).toContain(
+    expect(src("../../src/features/account/components/AccountSettings.tsx")).toContain(
       'kind: "modal"',
     );
     expect(src("../../src/components/admin/CrudPage.tsx")).toContain(
       'kind: "popover"',
     );
-    expect(src("../../src/components/settings/TeamsSection.tsx")).toContain(
+    expect(src("../../src/features/account/components/TeamsSection.tsx")).toContain(
       "InlineConfirm",
     );
     expect(src("../../src/components/admin/ArenaAdmin.tsx")).toContain(
@@ -106,22 +106,22 @@ describe("kit product surfaces", () => {
     expect(src("../../src/components/ui/Verdict.tsx")).toContain(
       'data-tip-kind="soft"',
     );
-    expect(src("../../src/components/profile/ProblemMap.tsx")).toContain(
+    expect(src("../../src/features/profile/components/ProblemMap.tsx")).toContain(
       'data-tip-kind="rich"',
     );
-    expect(src("../../src/components/settings/NotificationsSection.tsx")).toContain(
+    expect(src("../../src/features/account/components/NotificationsSection.tsx")).toContain(
       "InfoMark",
     );
     expect(src("../../src/components/customizer/CustomizerTrigger.tsx")).toContain(
       'data-tip-kind="kbd"',
     );
-    expect(src("../../src/components/profile/RatingChart.tsx")).toContain(
+    expect(src("../../src/features/profile/components/RatingChart.tsx")).toContain(
       'data-tip-kind="follow"',
     );
-    expect(src("../../src/components/profile/ActivityHeatmap.tsx")).toContain(
+    expect(src("../../src/features/profile/components/ActivityHeatmap.tsx")).toContain(
       'data-tip-kind="legend"',
     );
-    expect(src("../../src/components/profile/ActivityHeatmap.tsx")).toContain(
+    expect(src("../../src/features/profile/components/ActivityHeatmap.tsx")).toContain(
       "SKELETON_TIP",
     );
     expect(src("../../src/components/kit/TimeStamp.tsx")).toContain(
@@ -130,18 +130,18 @@ describe("kit product surfaces", () => {
     expect(src("../../src/app/(site)/problems/[slug]/page.tsx")).toContain(
       'tone="hover"',
     );
-    expect(src("../../src/components/SampleTests.tsx")).toContain(
+    expect(src("../../src/features/problems/components/SampleTests.tsx")).toContain(
       'tone="ghost"',
     );
-    expect(src("../../src/components/Editorial.tsx")).toContain("CodeCopy");
-    expect(src("../../src/components/settings/TeamsSection.tsx")).toContain(
+    expect(src("../../src/features/problems/components/Editorial.tsx")).toContain("CodeCopy");
+    expect(src("../../src/features/account/components/TeamsSection.tsx")).toContain(
       'tone="chip"',
     );
     expect(src("../../src/components/admin/CrudPage.tsx")).toContain("CopyCell");
-    expect(src("../../src/components/StandingsTable.tsx")).toContain(
+    expect(src("../../src/features/contests/components/StandingsTable.tsx")).toContain(
       "CopyAllBar",
     );
-    expect(src("../../src/components/SubmitPanel.tsx")).toContain('tone="kbd"');
+    expect(src("../../src/features/problems/components/SubmitPanel.tsx")).toContain('tone="kbd"');
     expect(src("../../src/components/kit/CopyControl.tsx")).toContain(
       "overlay.toast",
     );
@@ -151,61 +151,61 @@ describe("kit product surfaces", () => {
     expect(src("../../src/components/kit/CommandPalette.tsx")).toContain(
       "problem.copyFailed",
     );
-    expect(src("../../src/components/profile/ShareButton.tsx")).toContain(
+    expect(src("../../src/features/profile/components/ShareButton.tsx")).toContain(
       "problem.copyFailed",
     );
     expect(src("../../src/app/(site)/contests/[slug]/page.tsx")).toContain(
       'tone="dual"',
     );
     expect(src("../../src/app/(site)/contests/[slug]/page.tsx")).toContain("Countdown");
-    expect(src("../../src/components/profile/ProfileCard.tsx")).toContain(
+    expect(src("../../src/features/profile/components/ProfileCard.tsx")).toContain(
       'tone="relative"',
     );
-    expect(src("../../src/components/profile/ProfileCard.tsx")).toContain(
+    expect(src("../../src/features/profile/components/ProfileCard.tsx")).toContain(
       'tone="locale"',
     );
-    expect(src("../../src/components/profile/ActivityTabs.tsx")).toContain(
+    expect(src("../../src/features/profile/components/ActivityTabs.tsx")).toContain(
       'tone="badge"',
     );
-    expect(src("../../src/components/AttemptView.tsx")).toContain("TimeLine");
-    expect(src("../../src/components/profile/AttemptsTab.tsx")).toContain(
+    expect(src("../../src/features/submissions/components/AttemptView.tsx")).toContain("TimeLine");
+    expect(src("../../src/features/profile/components/AttemptsTab.tsx")).toContain(
       'tone="iso"',
     );
-    expect(src("../../src/components/profile/ContestsTab.tsx")).toContain(
+    expect(src("../../src/features/profile/components/ContestsTab.tsx")).toContain(
       'tone="duration"',
     );
     expect(src("../../src/app/(site)/calendar/page.tsx")).toContain('tone="fresh"');
-    expect(src("../../src/components/profile/ActivityHeatmap.tsx")).toContain(
+    expect(src("../../src/features/profile/components/ActivityHeatmap.tsx")).toContain(
       "MiniCal",
     );
-    expect(src("../../src/components/profile/ProfileNav.tsx")).toContain(
+    expect(src("../../src/features/profile/components/ProfileNav.tsx")).toContain(
       'data-kit-tabs="scroll"',
     );
-    expect(src("../../src/components/profile/ProblemMap.tsx")).toContain(
+    expect(src("../../src/features/profile/components/ProblemMap.tsx")).toContain(
       'tone="badge"',
     );
-    expect(src("../../src/components/profile/ProblemMap.tsx")).toContain(
+    expect(src("../../src/features/profile/components/ProblemMap.tsx")).toContain(
       'data-kit-tabs="icon"',
     );
-    expect(src("../../src/components/ProblemTabs.tsx")).toContain(
+    expect(src("../../src/features/problems/components/ProblemTabs.tsx")).toContain(
       'data-kit-tabs="underline"',
     );
-    expect(src("../../src/components/auth/AuthTabs.tsx")).toContain(
+    expect(src("../../src/features/auth/components/AuthTabs.tsx")).toContain(
       'data-kit-tabs="segment"',
     );
-    expect(src("../../src/components/profile/RatingChart.tsx")).toContain(
+    expect(src("../../src/features/profile/components/RatingChart.tsx")).toContain(
       'data-kit-tabs="card"',
     );
-    expect(src("../../src/components/ProblemFilters.tsx")).toContain(
+    expect(src("../../src/features/problems/components/ProblemFilters.tsx")).toContain(
       'data-kit-tabs="chips"',
     );
-    expect(src("../../src/components/OnboardingForm.tsx")).toContain(
+    expect(src("../../src/features/account/components/OnboardingForm.tsx")).toContain(
       'tone="step"',
     );
-    expect(src("../../src/components/settings/SettingsShell.tsx")).toContain(
+    expect(src("../../src/features/account/components/SettingsShell.tsx")).toContain(
       'data-kit-tabs="crumb"',
     );
-    expect(src("../../src/components/settings/SettingsShell.tsx")).toContain(
+    expect(src("../../src/features/account/components/SettingsShell.tsx")).toContain(
       'data-kit-tabs="vertical"',
     );
     expect(src("../../src/components/customizer/AppearanceTab.tsx")).toContain(
@@ -223,13 +223,13 @@ describe("kit product surfaces", () => {
     expect(src("../../src/components/admin/CrudPage.tsx")).toContain(
       'shape="pill"',
     );
-    expect(src("../../src/components/settings/NotificationsSection.tsx")).toContain(
+    expect(src("../../src/features/account/components/NotificationsSection.tsx")).toContain(
       'shape="switch"',
     );
-    expect(src("../../src/components/ProblemFilters.tsx")).toContain(
+    expect(src("../../src/features/problems/components/ProblemFilters.tsx")).toContain(
       "FormTreeItem",
     );
-    expect(src("../../src/components/settings/AppearanceSection.tsx")).toContain(
+    expect(src("../../src/features/account/components/AppearanceSection.tsx")).toContain(
       'tone="card"',
     );
     expect(src("../../src/components/form/FormKit.tsx")).toContain(

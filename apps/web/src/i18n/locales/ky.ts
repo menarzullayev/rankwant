@@ -242,12 +242,15 @@ export const ky: Record<MessageKey, string> = {
   "footer.copyright": "© {year} RankWant. Бардык укуктар корголгон.",
   "footer.terms": "Шарттар",
   "footer.privacy": "Купуялуулук",
+  "auth.usernameInvalid": "Лакап латын тамгалары, сандар жана астыңкы сызыктан гана турушу керек",
+
   "auth.usernameRequired": "Лакап 3–30 белги: бош калбасын",
   "auth.usernameHint": "3–30 белги: латын тамгалары, сан, чекит, астыңкы сызык, дефис",
   "auth.passwordHint": "Эң аз 8 белги. Жалаң сандан турбасын.",
   "auth.usernameFree": "Бул ат бош",
   "auth.checking": "Текшерилүүдө…",
   "auth.passwordMatch": "Сырсөздөр дал келди",
+  "auth.required": "Бул талааны толтуруңуз",
   "auth.emailInvalid": "Почта дареги туура эмес",
   "auth.strength1": "Абдан алсыз",
   "auth.strength2": "Алсыз",
@@ -529,6 +532,7 @@ export const ky: Record<MessageKey, string> = {
   "error.contest_finished": "Мелдеш аяктады",
   "error.dependency_unavailable":
     "Кызмат убактылуу жеткиликсиз, бир аздан кийин аракет кылыңыз",
+  "error.retry": "Кайра аракет кылуу",
   "error.error": "Бир нерсе туура эмес кетти",
   "error.expired": "Мөөнөтү өтүп кеткен",
   "error.finished": "Мурунтан аяктаган",
@@ -1449,6 +1453,8 @@ export const ky: Record<MessageKey, string> = {
   "admin.title.moveUp": "Жогору",
   "admin.title.moveDown": "Төмөн",
   "admin.title.remove": "Алып салуу",
+  "admin.title.prev": "Мурунку бет",
+  "admin.title.next": "Кийинки бет",
   "admin.title.roadmapComments": "Жол картасы комментарийлери",
   "admin.title.tournaments": "Чемпионаттар",
   "admin.title.broadcast": "Жалпы жарыя",
@@ -1535,6 +1541,10 @@ export const ky: Record<MessageKey, string> = {
   "problem.editorialAvailable": "Талдоосу бар",
   "problem.testsNotReady": "Тесттер даяр эмес — чечимдер кабыл алынбайт",
   "qvant.marathon": "Жумалык марафон",
+  "submit.sourceRequired": "Жөнөтүүдөн мурун чечимиңизди жазыңыз же жүктөңүз",
+
+  "submit.sourceTooLong": "Баштапкы код өтө чоң",
+
   "submit.solution": "Чечим",
   "contest.ogAlt": "RankWant мелдеши",
   "problem.ogAlt": "RankWant маселеси",

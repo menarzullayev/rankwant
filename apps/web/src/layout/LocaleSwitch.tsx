@@ -15,12 +15,40 @@ import { LocaleFlag } from "./LocaleFlag";
 /** «Avtomatik» — cookie o'chiriladi va til yana sarlavhadan aniqlanadi. */
 const AUTO = "__auto__";
 
-/** Ro'yxat guruhlari va guruh ichidagi tartib. */
+/** Ro'yxat guruhlari va guruh ichidagi tartib.
+ *
+ * ⚠️ Bu yerda ataylab `LOCALES` ning TO'LIQ nusxasi yo'q (2026-09-24,
+ * RW-ARCH-013). Ilgari guruhlar o'nta tilni qo'lda sanab chiqardi:
+ * o'n birinchi til qo'shilganda u jimgina ro'yxatdan tushib qolardi —
+ * chunki `tsc` bu massivni `LOCALES` bilan bog'lamaydi.
+ *
+ * Endi guruhlar — bu TARTIB bayoni, to'liqlik esa quyida RUNTIME
+ * tekshiruvi bilan kafolatlanadi. Yangi til `LOCALES` ga qo'shilsa,
+ * ilova ishga tushishida xato beriladi — jim yo'qolmaydi. */
 const GROUPS: { key: "locale.group.core" | "locale.group.region" | "locale.group.broad"; locales: Locale[] }[] = [
   { key: "locale.group.core", locales: ["uz", "ru", "en", "kaa"] },
   { key: "locale.group.region", locales: ["kk", "ky", "tg", "tr"] },
   { key: "locale.group.broad", locales: ["zh", "es"] },
 ];
+
+/** Har bir til AYNAN bitta guruhda turishini kafolatlaydi.
+ *
+ * Nega: guruhlar — qo'lda yozilgan tartib, ya'ni ular `LOCALES` dan
+ * orqada qolishi mumkin. Bu tekshiruv shu farqni jim qoldirmaydi:
+ * tushib qolgan til — uni hech qachon ko'rmaydigan foydalanuvchidir. */
+{
+  const grouped = new Set(GROUPS.flatMap((group) => group.locales));
+  const missing = LOCALES.filter((locale) => !grouped.has(locale));
+  const extra = [...grouped].filter(
+    (locale) => !(LOCALES as readonly string[]).includes(locale),
+  );
+  if (missing.length || extra.length) {
+    throw new Error(
+      `i18n: LocaleSwitch guruhlari LOCALES bilan mos emas — ` +
+        `yetishmaydi: [${missing.join(", ")}], ortiqcha: [${extra.join(", ")}]`,
+    );
+  }
+}
 
 /** Endonim yonidagi inglizcha nom — qidiruv kaliti, tarjima emas. */
 const ENGLISH_NAMES: Record<Locale, string> = {

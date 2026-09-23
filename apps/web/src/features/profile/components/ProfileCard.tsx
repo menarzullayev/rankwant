@@ -1,0 +1,334 @@
+import type { Route } from "next";
+import Link from "next/link";
+
+import { Avatar } from "@/components/ui/Identity";
+import { MarkerText } from "@/components/ui/Identity";
+import { RankTitle } from "@/features/profile";
+import { UserName } from "@/components/ui/Identity";
+import { Badge, type BadgeColor } from "@/components/ui/Badge";
+import { ButtonLink } from "@/components/ui/Button";
+import { CountryFlag } from "@/components/ui/CountryFlag";
+import { TimeStamp } from "@/components/kit/TimeStamp";
+import { fill, t, type Locale } from "@/i18n/messages";
+import type { ProfileRole, PublicProfile } from "@/lib/api";
+import { badgeLabel, coverClass, frameClass } from "@/lib/cosmetics";
+import { countryName } from "@rankwant/shared/countries";
+import { EXTERNAL_LABEL, externalShown, externalUrl } from "@/lib/external-links";
+import { CF_TIER_COLOR, cfTierLabelKey, isCfTier } from "@/lib/cf-tiers";
+import { gradeLabel } from "@rankwant/shared/grades";
+import { districtName, regionName } from "@rankwant/shared/regions";
+import { BrandIcon, EXTERNAL_ICONS } from "@/lib/tech-icons";
+import { FollowButton } from "./FollowButton";
+import { Medal, achievementLabel } from "./Medal";
+import { ShareButton } from "./ShareButton";
+
+const ROLE_COLOR: Record<ProfileRole["code"], BadgeColor> = {
+  champion: "warning",
+  staff: "brand",
+  jury: "info",
+  author: "success",
+};
+
+/** Chap ustun: kim bu odam — rasm, unvon, ism, rollar, joy, havolalar. */
+export function ProfileCard({
+  profile,
+  locale,
+}: {
+  profile: PublicProfile;
+  locale: Locale;
+}) {
+  const name = profile.display_name || profile.username;
+  const badge = badgeLabel(profile.cosmetics.badge);
+  const base = `/users/${profile.username}`;
+  const { info } = profile;
+  const rank = profile.title ? `rw-rank-${profile.title.colour_group}` : "";
+  const region =
+    info.region && (info.country === "UZ" ? regionName(info.region, locale) : info.region);
+  const locality = info.district ? districtName(info.district, locale) : info.city;
+  const place = info.country
+    ? [countryName(info.country, locale), region, locality].filter(Boolean).join(", ")
+    : "";
+  const rows: [string, React.ReactNode][] = [];
+  if (place)
+    rows.push([
+      t(locale, "settings.country"),
+      // Bayroq nomning yonida — bezak (`aria-hidden`), chunki davlat nomi
+      // matn bo'lib turibdi.
+      <span key="place" className="inline-flex items-center gap-1.5">
+        <CountryFlag code={info.country ?? ""} />
+        {place}
+      </span>,
+    ]);
+  if (info.school)
+    rows.push([
+      t(locale, "settings.school"),
+      info.school_id ? (
+        <Link
+          key="school"
+          href={`/leaderboard?school=${info.school_id}` as Route}
+          title={t(locale, "profile.schoolRanking")}
+          className="rw-accent-ink hover:underline"
+        >
+          {info.school}
+        </Link>
+      ) : (
+        info.school
+      ),
+    ]);
+  if (profile.coach.length > 0)
+    rows.push([
+      t(locale, "profile.coach"),
+      <span key="coach" className="flex flex-wrap gap-x-2">
+        {profile.coach.map((coach) => (
+          <UserName
+            key={coach.username}
+            username={coach.username}
+            name={coach.display_name}
+            title={coach.title}
+            locale={locale}
+          />
+        ))}
+      </span>,
+    ]);
+  if (info.grade) rows.push([t(locale, "settings.grade"), gradeLabel(info.grade, locale)]);
+  if (info.website)
+    rows.push([
+      t(locale, "settings.website"),
+      <a
+        key="site"
+        href={info.website}
+        target="_blank"
+        rel="nofollow ugc noopener noreferrer"
+        className="break-all rw-accent-ink hover:underline"
+      >
+        {info.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+      </a>,
+    ]);
+
+  return (
+    <section className="overflow-hidden rw-panel">
+      <div aria-hidden="true" className={`h-20 ${coverClass(profile.cosmetics.cover)}`} />
+      <div className="px-5 pb-5">
+        <Avatar
+          url={profile.avatar_url}
+          name={name}
+          className={`-mt-12 size-24 border-4 border-[var(--rw-surface)] text-title-sm ${frameClass(profile.cosmetics.frame, profile.title)}`}
+        />
+        <h1 className="mt-3 flex flex-wrap items-center gap-2 text-theme-xl font-bold rw-strong">
+          <span className={`min-w-0 break-words ${rank}`}>
+            {profile.title && profile.title.marker > 0 ? (
+              <MarkerText text={name} marker={profile.title.marker} />
+            ) : (
+              name
+            )}
+          </span>
+          {badge && <Badge color="brand">{badge}</Badge>}
+        </h1>
+        <p className="text-theme-sm rw-dim">@{profile.username}</p>
+        {(profile.title || profile.roles.length > 0) && (
+          <div className="mt-3 flex flex-wrap items-center gap-1.5">
+            {profile.title && (
+              <span
+                title={t(locale, "profile.titleHint")}
+                className={`inline-flex items-center rounded-full border border-current px-2.5 py-0.5 text-theme-xs font-semibold ${rank}`}
+              >
+                <RankTitle
+                  locale={locale}
+                  code={profile.title.code}
+                  marker={profile.title.marker}
+                />
+              </span>
+            )}
+            {profile.max_title && profile.max_title.code !== profile.title?.code && (
+              <span
+                title={fill(t(locale, "profile.highest"), {
+                  max: t(locale, `title.${profile.max_title.code}`),
+                })}
+                className={`inline-flex items-center gap-1 rounded-full border border-current px-2.5 py-0.5 text-theme-xs font-semibold rw-rank-${profile.max_title.colour_group}`}
+              >
+                <span aria-hidden="true">▲</span>
+                <RankTitle
+                  locale={locale}
+                  code={profile.max_title.code}
+                  marker={profile.max_title.marker}
+                />
+              </span>
+            )}
+            {profile.roles.map((role) => (
+              <span
+                key={role.code}
+                title={
+                  role.code === "champion"
+                    ? fill(t(locale, "role.championOf"), { contest: role.contest_title })
+                    : undefined
+                }
+              >
+                <Badge color={ROLE_COLOR[role.code]}>{t(locale, `role.${role.code}`)}</Badge>
+              </span>
+            ))}
+          </div>
+        )}
+        {profile.online ? (
+          <p className="mt-2 flex items-center gap-1.5 text-theme-xs font-medium rw-ok-ink">
+            <span aria-hidden="true" className="size-2 rounded-full bg-current" />
+            {t(locale, "profile.online")}
+          </p>
+        ) : (
+          profile.last_seen && (
+            <p className="mt-2 text-theme-xs rw-faint">
+              {fill(t(locale, "profile.lastSeen"), { time: "" })}
+              <TimeStamp value={profile.last_seen} locale={locale} tone="relative" />
+            </p>
+          )
+        )}
+        {profile.bio && <p className="mt-3 text-theme-sm rw-dim-2">{profile.bio}</p>}
+
+        {/* Manbadagi daraja (ADR-0026) — RankWant unvonidan ALOHIDA.
+            Rang Codeforces'niki (kanonik), nomi `cfTier.*` kalitidan.
+            Manba daraja bermagan bo'lsa blok umuman chizilmaydi. */}
+        {isCfTier(profile.cf_title) && (
+          <dl className="mt-4 space-y-1.5 text-theme-sm">
+            <div className="flex flex-wrap items-baseline gap-x-2">
+              <dt className="text-theme-xs rw-faint">{t(locale, "profile.cfTitle")}</dt>
+              <dd>
+                <span
+                  className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-theme-xs font-semibold"
+                  style={{
+                    color: CF_TIER_COLOR[profile.cf_title],
+                    borderColor: CF_TIER_COLOR[profile.cf_title],
+                  }}
+                >
+                  {t(locale, cfTierLabelKey(profile.cf_title))}
+                </span>
+              </dd>
+            </div>
+            {isCfTier(profile.cf_max_title) &&
+              profile.cf_max_title !== profile.cf_title && (
+                <div className="flex flex-wrap items-baseline gap-x-2">
+                  <dt className="text-theme-xs rw-faint">
+                    {t(locale, "profile.cfMaxTitle")}
+                  </dt>
+                  <dd>
+                    <span
+                      className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-theme-xs font-semibold"
+                      style={{
+                        color: CF_TIER_COLOR[profile.cf_max_title],
+                        borderColor: CF_TIER_COLOR[profile.cf_max_title],
+                      }}
+                    >
+                      {t(locale, cfTierLabelKey(profile.cf_max_title))}
+                    </span>
+                  </dd>
+                </div>
+              )}
+            {profile.friend_count > 0 && (
+              <div className="flex flex-wrap items-baseline gap-x-2">
+                <dt className="text-theme-xs rw-faint">{t(locale, "profile.friendCount")}</dt>
+                <dd className="tabular-nums rw-strong">{profile.friend_count}</dd>
+              </div>
+            )}
+          </dl>
+        )}
+
+        {/* Banner — `title_photo` maxfiylik maydoni bilan yashiriladi,
+            yashirilganda server bo'sh satr qaytaradi va blok chizilmaydi.
+            Karta tor (300 px), shuning uchun keng rasm sifatida emas —
+            daraja nishonining yonida kichik ko'rinishda. */}
+        {profile.title_photo_url && (
+          <div className="mt-4 flex items-center gap-2 border-t rw-divider pt-4">
+            {/* eslint-disable-next-line @next/next/no-img-element -- tashqi
+                manzil, `next/image` domenini kengaytirish talab qiladi. */}
+            <img
+              src={profile.title_photo_url}
+              alt=""
+              loading="lazy"
+              referrerPolicy="no-referrer"
+              className="h-9 w-16 shrink-0 rounded rw-line border object-cover"
+            />
+            <p className="text-theme-xs rw-faint">{t(locale, "profile.cfBanner")}</p>
+          </div>
+        )}
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          {profile.is_owner ? (
+            <ButtonLink href={"/settings/profil" as Route} variant="outline">
+              {t(locale, "profile.edit")}
+            </ButtonLink>
+          ) : (
+            <FollowButton
+              username={profile.username}
+              following={profile.is_following === true}
+            />
+          )}
+          <ShareButton username={profile.username} name={name} />
+        </div>
+
+        <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-theme-sm">
+          <Link href={`${base}/followers` as Route} className="rw-link-hover">
+            <strong className="tabular-nums rw-strong">{profile.followers}</strong>{" "}
+            <span className="rw-dim">{t(locale, "profile.followers")}</span>
+          </Link>
+          <Link href={`${base}/following` as Route} className="rw-link-hover">
+            <strong className="tabular-nums rw-strong">{profile.following}</strong>{" "}
+            <span className="rw-dim">{t(locale, "profile.followingTab")}</span>
+          </Link>
+        </p>
+
+        {profile.external.length > 0 && (
+          <ul aria-label={t(locale, "settings.external")} className="mt-4 flex flex-wrap gap-2">
+            {profile.external.map((row) => {
+              const icon = EXTERNAL_ICONS[row.kind];
+              const label = `${EXTERNAL_LABEL[row.kind] ?? row.kind}: ${externalShown(row)}`;
+              return (
+                <li key={row.kind}>
+                  <a
+                    href={externalUrl(row)}
+                    target="_blank"
+                    rel="nofollow ugc noopener noreferrer"
+                    title={label}
+                    aria-label={label}
+                    className="flex size-9 items-center justify-center rw-radius-sm border rw-line rw-strong transition rw-hover-bg rw-focus-ring"
+                  >
+                    {icon ? (
+                      <BrandIcon icon={icon} className="size-4" />
+                    ) : (
+                      <span className="text-theme-xs font-bold">
+                        {(EXTERNAL_LABEL[row.kind] ?? row.kind).slice(0, 2)}
+                      </span>
+                    )}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+
+        {profile.pinned.length > 0 && (
+          <ul aria-label={t(locale, "profile.pinnedTitle")} className="mt-4 flex flex-wrap gap-2">
+            {profile.pinned.map((row) => (
+              <li key={row.code}>
+                <Medal tier={row.tier} label={achievementLabel(row, locale)} locale={locale} />
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <dl className="mt-4 space-y-2.5 border-t rw-divider pt-4 text-theme-sm">
+          {rows.map(([label, value]) => (
+            <div key={label}>
+              <dt className="text-theme-xs rw-faint">{label}</dt>
+              <dd className="rw-strong">{value}</dd>
+            </div>
+          ))}
+          <div>
+            <dt className="sr-only">{t(locale, "profile.memberSince")}</dt>
+            <dd className="text-theme-xs rw-dim">
+              {fill(t(locale, "profile.joined"), { date: "" })}
+              <TimeStamp value={profile.date_joined} locale={locale} tone="locale" />
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+  );
+}

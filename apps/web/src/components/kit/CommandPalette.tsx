@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { Route } from "next";
 
 import { useSession } from "@/context/SessionContext";
+import { useCan } from "@/components/kit/Can";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
 import { useOverlay } from "@/components/overlay/OverlayHost";
@@ -16,6 +17,7 @@ export function CommandPalette() {
   const router = useRouter();
   const overlay = useOverlay();
   const { user } = useSession();
+  const canStaff = useCan("staff");
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const [sel, setSel] = useState(0);
@@ -64,7 +66,7 @@ export function CommandPalette() {
         },
       },
     ];
-    if (user?.is_staff) {
+    if (canStaff) {
       items.push({
         id: "admin",
         label: t(locale, "admin.title"),
@@ -72,7 +74,7 @@ export function CommandPalette() {
       });
     }
     return items;
-  }, [locale, overlay, router, user?.is_staff]);
+  }, [locale, overlay, router, canStaff]);
 
   const needle = q.trim().toLocaleLowerCase();
   const shown = cmds.filter((c) =>
@@ -92,7 +94,12 @@ export function CommandPalette() {
         className="rw-ov-panel"
         data-kit-confirm="cmdk"
         role="dialog"
+        aria-modal="true"
         aria-label={t(locale, "kit.palette")}
+        // `onClick` — faqat hodisani to'xtatish (parda yopilmasin).
+        // `role="presentation"` shart emas: `role="dialog"` allaqachon
+        // to'g'ri, `aria-modal` esa fokusni dialog ichida ushlab
+        // turishini e'lon qiladi.
         onClick={(event) => event.stopPropagation()}
       >
         <input

@@ -242,12 +242,15 @@ export const tg: Record<MessageKey, string> = {
   "footer.copyright": "© {year} RankWant. Ҳамаи ҳуқуқҳо ҳифз шудаанд.",
   "footer.terms": "Шартҳо",
   "footer.privacy": "Махфият",
+  "auth.usernameInvalid": "Тахаллус танҳо аз ҳарфҳои лотинӣ, рақамҳо ва зерхат иборат бошад",
+
   "auth.usernameRequired": "Тахаллус 3–30 аломат: холӣ намонад",
   "auth.usernameHint": "3–30 аломат: ҳарфҳои лотинӣ, рақам, нуқта, зерхат, дефис",
   "auth.passwordHint": "Ҳадди ақал 8 аломат. Танҳо рақам набошад.",
   "auth.usernameFree": "Ин ном озод аст",
   "auth.checking": "Санҷида мешавад…",
   "auth.passwordMatch": "Паролҳо мувофиқанд",
+  "auth.required": "Ин майдонро пур кунед",
   "auth.emailInvalid": "Суроғаи почта нодуруст аст",
   "auth.strength1": "Хеле заиф",
   "auth.strength2": "Заиф",
@@ -530,6 +533,7 @@ export const tg: Record<MessageKey, string> = {
   "error.contest_finished": "Мусобиқа анҷом ёфт",
   "error.dependency_unavailable":
     "Хидмат муваққатан дастрас нест, пас аз каме кӯшиш кунед",
+  "error.retry": "Такрор кардан",
   "error.error": "Чизе нодуруст шуд",
   "error.expired": "Мӯҳлаташ гузаштааст",
   "error.finished": "Аллакай анҷом ёфтааст",
@@ -1450,6 +1454,8 @@ export const tg: Record<MessageKey, string> = {
   "admin.title.moveUp": "Боло",
   "admin.title.moveDown": "Поён",
   "admin.title.remove": "Хориҷ кардан",
+  "admin.title.prev": "Саҳифаи пешина",
+  "admin.title.next": "Саҳифаи навбатӣ",
   "admin.title.roadmapComments": "Шарҳҳои нақшаи роҳ",
   "admin.title.tournaments": "Чемпионатҳо",
   "admin.title.broadcast": "Эълони умумӣ",
@@ -1536,6 +1542,10 @@ export const tg: Record<MessageKey, string> = {
   "problem.editorialAvailable": "Таҳлил дорад",
   "problem.testsNotReady": "Тестҳо омода нестанд — ҳалҳо қабул намешаванд",
   "qvant.marathon": "Марафони ҳафтаина",
+  "submit.sourceRequired": "Пеш аз супоридан ҳалли худро нависед ё бор кунед",
+
+  "submit.sourceTooLong": "Рамзи манба хеле калон аст",
+
   "submit.solution": "Ҳал",
   "contest.ogAlt": "Озмуни RankWant",
   "problem.ogAlt": "Масъалаи RankWant",

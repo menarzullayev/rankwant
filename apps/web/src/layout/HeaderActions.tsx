@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 
 import { CustomizerTrigger } from "@/components/customizer/CustomizerTrigger";
-import UpdatesBell from "@/components/UpdatesBell";
+import { UpdatesBell } from "@/features/updates";
 import { CUSTOMIZER_ENABLED } from "@/lib/theme/flag";
 
 import { ThemeToggle } from "@/components/theme/ThemeToggle";

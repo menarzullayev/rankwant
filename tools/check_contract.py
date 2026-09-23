@@ -40,7 +40,12 @@ PY_SERVICES = REPO / "apps/api/judging/services.py"
 # "Ushbu maydon to'ldirilishi shart" bilan rad etildi — parol to'g'ri
 # bo'lsa ham. Ikkala tomon alohida sinovdan o'tgani uchun bu
 # nomuvofiqlik hech qayerda ko'rinmadi.
-WEB_AUTH_FORM = REPO / "apps/web/src/components/AuthForm.tsx"
+# ⚠️ Yo'llar `features/` refaktordan keyin yangilandi (2026-09-24):
+# ilgari `apps/web/src/components/AuthForm.tsx` edi va fayl ko'chgach
+# tekshiruv `FileNotFoundError` bilan yiqildi — ya'ni shartnoma EMAS,
+# skript o'layotgan edi. `check_docs.py` bunga o'xshash holatni
+# page'lardan keyin ham boshdan kechirgan.
+WEB_AUTH_FORM = REPO / "apps/web/src/features/account/components/AuthForm.tsx"
 API_SERIALIZERS = REPO / "apps/api/core/serializers.py"
 # Smoke — HAQIQIY API'ni sinaydigan yagona joy, ya'ni shartnomadan birinchi
 # bo'lib uziladi. Uning yuki ham shu yerda tekshiriladi (quyida).
@@ -139,7 +144,7 @@ def check_login_contract() -> list[str]:
     return found
 
 
-WEB_AUTH_TABS = REPO / "apps/web/src/components/auth/AuthTabs.tsx"
+WEB_AUTH_TABS = REPO / "apps/web/src/features/auth/components/AuthTabs.tsx"
 WEB_TAB_MODEL = REPO / "apps/web/src/lib/auth-tabs.ts"
 
 

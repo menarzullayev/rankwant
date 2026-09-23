@@ -5,7 +5,7 @@ import { api, ApiError } from "@/lib/api";
 import { getLocale } from "@/i18n/server";
 import { Countdown, TimeStamp } from "@/components/kit/TimeStamp";
 import { t } from "@/i18n/messages";
-import { StandingsTable } from "@/components/StandingsTable";
+import { StandingsTable } from "@/features/contests";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { SITE_URL, jsonLd } from "@/lib/site";

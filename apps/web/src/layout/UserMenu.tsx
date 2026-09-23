@@ -4,6 +4,7 @@ import type { Route } from "next";
 import { useEffect, useRef, useState } from "react";
 
 import { IntentLink } from "@/components/ui/IntentLink";
+import { Can } from "@/components/kit/Can";
 
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
@@ -120,7 +121,7 @@ export default function UserMenu() {
               {t(locale, "settings.title")}
             </IntentLink>
           </li>
-          {user.is_staff && (
+          <Can perm="staff">
             <li role="none">
               <IntentLink
                 href="/admin"
@@ -131,7 +132,7 @@ export default function UserMenu() {
                 {t(locale, "admin.title.page")}
               </IntentLink>
             </li>
-          )}
+          </Can>
           <li role="none">
             <button type="button" role="menuitem" onClick={logout} className={item}>
               <Icon name="user.logout" className="size-4 shrink-0" />

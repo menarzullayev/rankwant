@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Markdown } from "@/components/Markdown";
+import { Markdown } from "@/components/ui/Markdown";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import type { Metadata } from "next";

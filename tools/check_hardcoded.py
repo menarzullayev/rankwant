@@ -72,7 +72,7 @@ WEB = ROOT / "apps/web/src"
 #: `ImageResponse` at module level, so it has no request scope and cannot
 #: `await getLocale()`. Its strings are the brand plus a bare counter, and
 #: the file says so in a comment. A key there would be unreachable.
-SKIP_PARTS = {"node_modules", ".next", "__tests__"}
+SKIP_PARTS = {"node_modules", ".next", "__tests__", "generated"}
 DEFERRED = (
     "content/legal.ts",
     "lib/country-names.ts",
@@ -451,6 +451,32 @@ def classify(text: str, start: int) -> str | None:
     if ch == ">":
         return "jsx-text"
     if ch == "?":
+        # `?.` (optional chaining) and `??` (nullish) also end in `?` but
+        # their right-hand side is a VALUE, not a rendered branch. Reading
+        # them as ternary branches flagged `empty.icon ?? "empty"` — an
+        # icon-registry key — as prose (measured 2026-09-24).
+        #
+        # The marker sits right AFTER this `?`, so it is read from the
+        # original text — not from `head` (which stops here).
+        tail = text[k : k + 2]
+        if tail in {"??", "?."}:
+            return None
+        # `?.` / `??` can also be the PREVIOUS token when the literal is
+        # the right-hand side of a nullish expression: `a ?? "b"`. In that
+        # case `k` lands on the LAST `?` of `??`, hence the same check.
+        if text[k - 1 : k + 1] == "??":
+            return None
+        # A TYPE UNION also ends in `?` via the optional marker:
+        # `loadingVariant?: "skeleton" | "ring"` — the `?` belongs to the
+        # property name, and the literals are type members. The type
+        # marker is the `:` immediately after `?` (optionally spaced).
+        if text[k + 1 : start].lstrip().startswith(":"):
+            # …but `cond ? x : "y"` also has `?` then `:`. The difference:
+            # in a TYPE the `:` is adjacent to the `?` with nothing else
+            # between them. In a ternary an expression sits in between.
+            between = text[k + 1 : start].strip()
+            if between == ":":
+                return None
         return "ternary"
     if ch == ":":
         # `:` is ambiguous: it introduces an object property AND the else
@@ -460,9 +486,15 @@ def classify(text: str, start: int) -> str | None:
         # that is what separates `cond ? "a" : "b"` from `key: "value"`.
         head = text[max(0, start - 200) : start]
         mark = head.rfind("?")
-        if mark >= 0 and not any(ch in head[mark:] for ch in ",;{}"):
-            return "ternary-else"
-        return None
+        if mark < 0:
+            return None
+        if any(ch in head[mark:] for ch in ",;{}"):
+            return None
+        if head[mark : mark + 2] in {"??", "?."}:
+            return None
+        if head[mark + 1 :].strip() == ":":
+            return None  # optional property / type union
+        return "ternary-else"
     if ch == "{":
         return "jsx-expr"
     return None

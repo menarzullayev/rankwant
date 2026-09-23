@@ -180,6 +180,7 @@ function QuestionsPanel({ quiz, reload }: { quiz: Quiz; reload: () => void }) {
                 onClick={() => move(i, -1)}
                 disabled={i === 0}
                 className={iconBtn}
+                aria-label={t(locale, "admin.title.moveUp")}
                 title={t(locale, "admin.title.moveUp")}
               >
                 ↑
@@ -189,6 +190,7 @@ function QuestionsPanel({ quiz, reload }: { quiz: Quiz; reload: () => void }) {
                 onClick={() => move(i, 1)}
                 disabled={i === ids.length - 1}
                 className={iconBtn}
+                aria-label={t(locale, "admin.title.moveDown")}
                 title={t(locale, "admin.title.moveDown")}
               >
                 ↓
@@ -197,6 +199,7 @@ function QuestionsPanel({ quiz, reload }: { quiz: Quiz; reload: () => void }) {
                 type="button"
                 onClick={() => setIds(ids.filter((x) => x !== id))}
                 className={`${iconBtn} rw-bad-ink`}
+                aria-label={t(locale, "admin.title.remove")}
                 title={t(locale, "admin.title.remove")}
               >
                 ✕

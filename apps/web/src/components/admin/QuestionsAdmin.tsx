@@ -355,6 +355,8 @@ export function QuestionsAdmin() {
                       type="button"
                       onClick={() => removeChoice(i)}
                       disabled={form.choices.length <= 2}
+                      aria-label={t(locale, "admin.title.remove")}
+                      title={t(locale, "admin.title.remove")}
                       className="text-theme-xs rw-bad-ink hover:underline disabled:opacity-40"
                     >
                       ✕
@@ -455,6 +457,7 @@ export function QuestionsAdmin() {
               type="button"
               disabled={page <= 1}
               onClick={() => setPage((p) => p - 1)}
+              aria-label={t(locale, "admin.title.prev")}
               className="disabled:opacity-40"
             >
               ←
@@ -464,6 +467,7 @@ export function QuestionsAdmin() {
               type="button"
               disabled={page * rows.length >= count}
               onClick={() => setPage((p) => p + 1)}
+              aria-label={t(locale, "admin.title.next")}
               className="disabled:opacity-40"
             >
               →

@@ -242,12 +242,15 @@ export const tr: Record<MessageKey, string> = {
   "footer.copyright": "© {year} RankWant. Tüm hakları saklıdır.",
   "footer.terms": "Koşullar",
   "footer.privacy": "Gizlilik",
+  "auth.usernameInvalid": "Kullanıcı adı yalnızca Latin harfleri, rakamlar ve alt çizgi içerebilir",
+
   "auth.usernameRequired": "Kullanıcı adı 3–30 karakter: boş kalamaz",
   "auth.usernameHint": "3–30 karakter: Latin harfleri, rakam, nokta, alt çizgi, tire",
   "auth.passwordHint": "En az 8 karakter. Yalnızca rakam olmasın.",
   "auth.usernameFree": "Bu ad boşta",
   "auth.checking": "Kontrol ediliyor…",
   "auth.passwordMatch": "Parolalar eşleşiyor",
+  "auth.required": "Bu alanı doldurun",
   "auth.emailInvalid": "Geçersiz e-posta adresi",
   "auth.strength1": "Çok zayıf",
   "auth.strength2": "Zayıf",
@@ -529,6 +532,7 @@ export const tr: Record<MessageKey, string> = {
   "error.contest_finished": "Yarışma sona erdi",
   "error.dependency_unavailable":
     "Hizmet geçici olarak kullanılamıyor, birazdan tekrar deneyin",
+  "error.retry": "Yeniden dene",
   "error.error": "Bir şeyler ters gitti",
   "error.expired": "Süresi dolmuş",
   "error.finished": "Bu zaten bitti",
@@ -1449,6 +1453,8 @@ export const tr: Record<MessageKey, string> = {
   "admin.title.moveUp": "Yukarı",
   "admin.title.moveDown": "Aşağı",
   "admin.title.remove": "Kaldır",
+  "admin.title.prev": "Önceki sayfa",
+  "admin.title.next": "Sonraki sayfa",
   "admin.title.roadmapComments": "Yol haritası yorumları",
   "admin.title.tournaments": "Şampiyonalar",
   "admin.title.broadcast": "Genel duyuru",
@@ -1535,6 +1541,10 @@ export const tr: Record<MessageKey, string> = {
   "problem.editorialAvailable": "Çözüm analizi var",
   "problem.testsNotReady": "Testler hazır değil — çözümler kabul edilmiyor",
   "qvant.marathon": "Haftalık maraton",
+  "submit.sourceRequired": "Göndermeden önce çözümünüzü yazın veya yükleyin",
+
+  "submit.sourceTooLong": "Kaynak kodu çok büyük",
+
   "submit.solution": "Çözüm",
   "contest.ogAlt": "RankWant yarışması",
   "problem.ogAlt": "RankWant sorusu",

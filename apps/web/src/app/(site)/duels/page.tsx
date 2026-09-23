@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { DuelActions } from "@/components/DuelActions";
+import { DuelActions } from "@/features/duels";
 import { getLocale } from "@/i18n/server";
 import { t } from "@/i18n/messages";
 import { api } from "@/lib/api";

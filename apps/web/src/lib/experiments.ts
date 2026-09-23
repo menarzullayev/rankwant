@@ -1,52 +1,47 @@
-/** Eksperiment guruhi — barqaror va sahifa yuklanishlari orasida saqlanadi.
+/** Eksperiment guruhi — `lib/flags.ts` ga ko'chirildi.
  *
- * Guruh SERVERDA (`proxy.ts`) belgilanadi va cookie'ga yoziladi. Mijozda
- * tasodifiy tanlansa, sahifa har yuklanishida guruh o'zgarib ketardi va
- * bir odam ikki guruhda ham hisoblanardi — o'lchov ma'nosini yo'qotardi.
+ *  ⚠️ Bu fayl **moslik qobig'i** (`shim`): eski import yo'llari
+ *  (`./experiments`) ishlashda davom etsin, lekin mantiq endi bitta
+ *  joyda — `lib/flags.ts` da yashaydi.
  *
- * Cookie `HttpOnly` EMAS: mijoz uni o'qib formani shunga qarab chizadi.
- * Bu xavfsiz — guruh qiymati maxfiy emas va hech qanday huquq bermaydi.
+ *  Nega birlashtirildi: eksperiment — bu ham **bayroq**, faqat
+ *  qiymati cookie'dagi tasodifiy guruhdan keladi. Ikki fayl bo'lsa
+ *  ikkita cookie o'qish, ikkita parse qilish va ikkita "o'chirish
+ *  yo'li" bo'lardi. Endi bitta reyestr: `FLAGS` + `EXPERIMENT_FLAGS`.
+ *
+ *  Yangi kod to'g'ridan-to'g'ri `@/lib/flags` dan import qilsin.
  */
 
-export const EXP_COOKIE = "rw_exp";
+import { EXP_COOKIE as COOKIE, parseVariant } from "./flags";
+
+export { EXP_COOKIE, isOn } from "./flags";
+
+/** Eksperiment nomi — `lib/flags.ts` dagi `EXPERIMENT_FLAGS` bilan
+ *  bog'langan (`geoEarlyRegion` -> `geo`). Bu yerda `analytics.ts` uchun
+ *  saqlanadi: hodisaga guruh qo'shilishi kerak. */
+export const GEO_EXPERIMENT = "geo";
 
 export type Variant = "a" | "b";
 
-/** Viloyat qachon so'raladi (8-qaror).
+/** Cookie matnidan guruhni ajratadi — sof funksiya.
  *
- * `a` — NAZORAT: viloyat 2-qadamda (hozirgi holat).
- * `b` — VARIANT: viloyat ro'yxatdan o'tishning o'zida.
- *
- * Taqqoslanadigan ko'rsatkich — ro'yxatdan o'tishni tugatgan sessiyalar,
- * ya'ni viloyatni erta so'rash odamni qaytarib yubormayaptimi.
- */
-export const GEO_EXPERIMENT = "geo";
-
-/** Cookie qiymatini guruhga aylantiradi — SOF funksiya.
- *
- * Guruh yo'q yoki buzuq bo'lsa `a` qaytadi: standart xatti-harakat
- * o'zgarmasligi kerak, ya'ni noma'lum holatda eksperiment qo'llanmaydi.
- *
- * Format: `geo:b,other:a` — bir nechta tajriba bitta cookie'da.
- */
+ *  Qiymat yo'q yoki buzuq bo'lsa `a` qaytadi: standart xatti-harakat
+ *  o'zgarmasligi kerak, ya'ni noma'lum holatda eksperiment qo'llanmaydi. */
 export function parseVariants(raw: string | undefined, name: string): Variant {
-  if (!raw) return "a";
-  for (const part of raw.split(",")) {
-    const [key, value] = part.split(":");
-    if (key === name && (value === "a" || value === "b")) return value;
-  }
-  return "a";
+  return parseVariant(raw, name);
 }
 
 /** Mijozda cookie'dan guruhni o'qiydi.
  *
- * Server komponentida ishlatilmaydi: u yerda `document` yo'q, ya'ni
- * funksiya har doim `a` qaytarardi va server `a`, mijoz `b` chizib
- * hidratsiya mos kelmasligi mumkin edi. Server tomon uchun
- * `parseVariants` ni `cookies()` bilan birga ishlatish kerak.
- */
+ *  ⚠️ Server komponentida ishlatilmaydi: u yerda `document` yo'q, ya'ni
+ *  funksiya har doim `a` qaytarardi va server `a`, mijoz `b` chizib
+ *  hidratsiya mos kelmasligi mumkin edi. Server tomon uchun
+ *  `isOnServer` ni `cookies()` bilan birga ishlatish kerak
+ *  (`lib/flags.ts`). */
 export function variant(name: string): Variant {
   if (typeof document === "undefined") return "a";
-  const raw = document.cookie.match(/(?:^|;\s*)rw_exp=([^;]+)/)?.[1];
-  return parseVariants(raw ? decodeURIComponent(raw) : undefined, name);
+  const raw = document.cookie.match(
+    new RegExp(`(?:^|;\s*)${COOKIE}=([^;]+)`),
+  )?.[1];
+  return parseVariant(raw ? decodeURIComponent(raw) : undefined, name);
 }

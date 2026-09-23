@@ -3,12 +3,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 
-import { CertificateCard } from "@/components/profile/CertificatesTab";
+import { CertificateCard } from "@/features/profile/server";
 import { t } from "@/i18n/messages";
 import { getLocale } from "@/i18n/server";
 import { ApiError, type Certificate } from "@/lib/api";
 import { getWithSession } from "@/lib/api.server";
-import { formatDate } from "@/lib/format";
+import { formatDate } from "@rankwant/shared/format";
 import { Status } from "@/components/ui/Status";
 
 type Props = { params: Promise<{ id: string }> };
