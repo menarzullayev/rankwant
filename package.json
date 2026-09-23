@@ -1,0 +1,17 @@
+{
+  "name": "rankwant",
+  "version": "0.1.0",
+  "private": true,
+  "description": "RankWant — competition platform (monorepo root)",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "typecheck": "npm run typecheck --workspace @rankwant/shared && npm run typecheck --workspace rankwant-web",
+    "test": "npm run test --workspace @rankwant/shared && npm run test --workspace rankwant-web"
+  }
+}
