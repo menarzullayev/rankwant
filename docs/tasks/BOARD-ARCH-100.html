@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RW-ARCH — 25 prinsip board</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2128; --line:#30363d;
+    --tx:#e6edf3; --tx2:#8b949e; --tx3:#6e7681;
+    --todo:#8b949e; --prog:#d29922; --done:#3fb950; --blue:#58a6ff;
+    --red:#f85149; --amber:#d29922; --green:#3fb950;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--tx);
+    font:14px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  header{padding:20px 28px 16px;border-bottom:1px solid var(--line);
+    position:sticky;top:0;background:rgba(13,17,23,.96);backdrop-filter:blur(8px);z-index:10}
+  h1{margin:0 0 4px;font-size:17px;font-weight:600;letter-spacing:-.01em}
+  .sub{color:var(--tx2);font-size:12.5px}
+  .bar{display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:6px 12px;font-size:12px;display:flex;gap:8px;align-items:baseline}
+  .stat b{font-size:15px;font-weight:600}
+  .pct{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--tx2)}
+  .track{width:190px;height:7px;border-radius:4px;background:var(--panel2);overflow:hidden;
+    border:1px solid var(--line)}
+  .fill{height:100%;width:0%;background:var(--green);transition:width .5s ease}
+  main{padding:22px 28px 60px}
+  .cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+  @media(max-width:980px){.cols{grid-template-columns:1fr}}
+  .col{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:12px;min-height:120px}
+  .col h2{margin:0 0 10px;font-size:12px;font-weight:600;text-transform:uppercase;
+    letter-spacing:.06em;color:var(--tx2);display:flex;justify-content:space-between}
+  .col h2 span{background:var(--panel2);border-radius:20px;padding:0 8px;color:var(--tx3)}
+  .card{background:var(--panel2);border:1px solid var(--line);border-radius:8px;
+    padding:10px 11px;margin-bottom:8px;border-left:3px solid var(--todo)}
+  .card.p{border-left-color:var(--prog)}
+  .card.d{border-left-color:var(--done);opacity:.72}
+  .card .id{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:11px;
+    color:var(--blue);font-weight:500}
+  .card .t{font-size:12.5px;margin:3px 0 6px;line-height:1.4}
+  .tags{display:flex;gap:5px;flex-wrap:wrap}
+  .tag{font-size:10.5px;padding:1px 7px;border-radius:20px;border:1px solid var(--line);
+    color:var(--tx2);background:var(--bg)}
+  .tag.hot{border-color:var(--red);color:var(--red)}
+  .tag.med{border-color:var(--amber);color:var(--amber)}
+  .tag.ok{border-color:var(--green);color:var(--green)}
+  .legend{margin-top:22px;color:var(--tx3);font-size:11.5px;line-height:1.8}
+  code{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:11.5px;
+    background:var(--panel2);padding:1px 5px;border-radius:4px;color:#a5d6ff}
+  .note{margin-top:20px;background:var(--panel);border:1px solid var(--line);
+    border-left:3px solid var(--amber);border-radius:8px;padding:12px 14px;
+    font-size:12.5px;color:var(--tx2)}
+  .note b{color:var(--tx)}
+</style>
+</head>
+<body>
+<header>
+  <h1>RW-ARCH — 25 prinsipni 100% ga keltirish</h1>
+  <div class="sub">RankWant · web arxitektura qatlamlari · sessiya 2026-09-24</div>
+  <div class="bar">
+    <div class="stat">Jami <b id="s-total">0</b></div>
+    <div class="stat" style="color:var(--prog)">Bajarilmoqda <b id="s-prog">0</b></div>
+    <div class="stat" style="color:var(--done)">Tayyor <b id="s-done">0</b></div>
+    <div class="stat">Qoldi <b id="s-todo">0</b></div>
+    <div class="pct">
+      <span id="s-pct">0%</span>
+      <div class="track"><div class="fill" id="s-fill"></div></div>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="cols">
+    <section class="col"><h2>TO DO <span id="c-todo">0</span></h2><div id="col-todo"></div></section>
+    <section class="col"><h2>IN PROGRESS <span id="c-prog">0</span></h2><div id="col-prog"></div></section>
+    <section class="col"><h2>DONE <span id="c-done">0</span></h2><div id="col-done"></div></section>
+  </div>
+
+  <div class="note">
+    <b>Qarorlar SKIP qilindi.</b> CLAUDE.md qarorlar jadvalidagi bandlar
+    («Sentry yo'q», «security run o'chiq», «kit muzlatilgan») <b>tegilmaydi</b> —
+    bu vazifalar faqat <b>qo'shimcha</b> qatlamlar. Sentry o'rniga oddiy
+    logging qatlami quriladi.
+  </div>
+
+  <div class="legend">
+    <b>Ustuvorlik:</b> <span class="tag hot">P0</span> kritik ·
+    <span class="tag med">P1</span> muhim · <span class="tag ok">P2</span> jilo ·
+    <br>
+    <b>Yozuv:</b> har bir ish <code>tools/check_decisions.py</code> yoki alohida
+    <code>tools/check_*.py</code> bilan majburlanadi — ya'ni da'vo emas, o'lchov.
+  </div>
+</main>
+<script>
+const TASKS = [
+  {id:"RW-ARCH-001", t:"Token intizomi — qattiq hex ranglarni tokenlarga o'tkazish", s:"done", p:"P2", tags:["design-tokens","100%","check_design_tokens ✓"]},
+  {id:"RW-ARCH-002", t:"Markazlashtirish — ildizdagi 49 komponentni guruhlash", s:"done", p:"P1", tags:["components","100%","23 papka"]},
+  {id:"RW-ARCH-003", t:"Feature-based architecture — features/ qatlamini kiritish", s:"done", p:"P0", tags:["features","100%","13 feature · chegara toza","client/server barrel"]},
+  {id:"RW-ARCH-004", t:"API layer — komponent ichidagi fetch'larni markazlashtirish", s:"done", p:"P1", tags:["api","100%","lib/hooks + @/lib/api barqaror"]},
+  {id:"RW-ARCH-015", t:"Global vs Local — chegara qoidasi va hujjati", s:"done", p:"P2", tags:["docs","100%","check_features 4 qoida"]},
+  {id:"RW-ARCH-005", t:"Type safety — OpenAPI dan TS types generatsiya", s:"done", p:"P0", tags:["openapi","100%","oldin 413 ogoh → hozir 0","ENUM_NAME_OVERRIDES 12 ta","openapi-typescript + CI"]},
+  {id:"RW-ARCH-006", t:"Validation — zod sxemalari qatlami", s:"done", p:"P0", tags:["zod","100%","lib/validation (6 sxema)","4 forma ulandi","34 test + salbiy test"]},
+  {id:"RW-ARCH-007", t:"Observability — oddiy logging qatlami (Sentry o'rniga)", s:"done", p:"P0", tags:["logging","100%","lib/log + ClientLog API","16 test"]},
+  {id:"RW-ARCH-008", t:"Security — CSP va xavfsizlik headerlari", s:"done", p:"P0", tags:["csp","100%","nonce + strict-dynamic","build ✓"]},
+  {id:"RW-ARCH-009", t:"Feature flags — umumiy flag tizimi", s:"done", p:"P1", tags:["flags","100%","lib/flags reyestri","16 test"]},
+  {id:"RW-ARCH-010", t:"Accessibility — axe avtomatik testi", s:"done", p:"P1", tags:["a11y","100%","check_a11y + CI","4 salbiy test","11 xato tuzatildi"]},
+  {id:"RW-ARCH-011", t:"Auth — Can permission komponenti", s:"done", p:"P1", tags:["auth","100%","kit/Can"]},
+  {id:"RW-ARCH-012", t:"Error handling — kod bo'yicha global shoxlash + DataState", s:"done", p:"P1", tags:["errors","100%","kit/DataState"]},
+  {id:"RW-ARCH-013", t:"Monorepo — packages/ karkasi", s:"done", p:"P2", tags:["monorepo","100%","npm workspaces","@rankwant/shared 10 fayl","67 shared test"]},
+  {id:"RW-ARCH-014", t:"State — server state hook'lari", s:"done", p:"P1", tags:["state","100%","kesh+dedup+reload","12 test"]},
+  {id:"RW-ARCH-016", t:"Testing/Performance — visual regression va bundle budget", s:"done", p:"P1", tags:["testing","100%","visual: 7 test + 8 baseline (haqiqiy profil)","bundle: 3 ko'rsatkich","6 salbiy test (2 vizual)"]},
+  {id:"RW-ARCH-017", t:"Yakuniy tekshiruv — barcha ko'rsatkichlar 100%", s:"done", p:"P0", tags:["verify","16/17 done","344 salbiy test (342 + 2 vizual)","vizual darvoza o'lchandi ✓"]},
+];
+
+const P_ORDER = {P0:0, P1:1, P2:2};
+const el = id => document.getElementById(id);
+
+function card(x){
+  const cls = x.s === "prog" ? "p" : x.s === "done" ? "d" : "";
+  const pcls = x.p === "P0" ? "hot" : x.p === "P1" ? "med" : "ok";
+  const tags = x.tags.map((t,i)=>`<span class="tag${i===1?'':''}">${t}</span>`).join("");
+  return `<div class="card ${cls}">
+    <div class="id">${x.id}</div>
+    <div class="t">${x.t}</div>
+    <div class="tags"><span class="tag ${pcls}">${x.p}</span>${tags}</div>
+  </div>`;
+}
+
+function render(){
+  const order = a => a.slice().sort((x,y)=>P_ORDER[x.p]-P_ORDER[y.p]);
+  const todo = order(TASKS.filter(x=>x.s==="todo"));
+  const prog = order(TASKS.filter(x=>x.s==="prog"));
+  const done = order(TASKS.filter(x=>x.s==="done"));
+  el("col-todo").innerHTML = todo.map(card).join("") || '<div class="sub" style="font-size:12px">Bo\'sh</div>';
+  el("col-prog").innerHTML = prog.map(card).join("") || '<div class="sub" style="font-size:12px">Bo\'sh</div>';
+  el("col-done").innerHTML = done.map(card).join("") || '<div class="sub" style="font-size:12px">Bo\'sh</div>';
+  el("s-total").textContent = TASKS.length;
+  el("s-prog").textContent = prog.length;
+  el("s-done").textContent = done.length;
+  el("s-todo").textContent = todo.length;
+  el("c-todo").textContent = todo.length;
+  el("c-prog").textContent = prog.length;
+  el("c-done").textContent = done.length;
+  const pct = Math.round(done.length / TASKS.length * 100);
+  el("s-pct").textContent = pct + "%";
+  el("s-fill").style.width = pct + "%";
+}
+render();
+</script>
+</body>
+</html>
