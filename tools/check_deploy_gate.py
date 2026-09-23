@@ -56,8 +56,8 @@ REQUIRED = ("CI",)
 RUN_FIELDS = "workflowName,status,conclusion,createdAt"
 COMPOSE_PATHSPEC = "docker-compose*.yml"
 # Same defaults as `tools/auto_deploy.sh`. Override in tests.
-LIVE_DIR = Path(os.environ.get("RANKWANT_LIVE_DIR", "C:/Users/nsn/project/cp/rankwant"))
-DEPLOY_DIR = Path(os.environ.get("RANKWANT_DEPLOY_DIR", "C:/Users/nsn/project/wt/deploy"))
+LIVE_DIR = Path(os.environ.get("RANKWANT_LIVE_DIR", "D:/Linux/Web_Projects/rankwant"))
+DEPLOY_DIR = Path(os.environ.get("RANKWANT_DEPLOY_DIR", "D:/Windows/project/wt/deploy"))
 
 
 class Unmeasured(Exception):

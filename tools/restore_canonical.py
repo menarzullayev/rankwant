@@ -19,8 +19,8 @@ import sys
 from pathlib import Path
 
 # HITL 2026-09-20 `restore-when-idle`
-CANONICAL = Path("C:/Users/nsn/project/cp/rankwant")
-DEFAULT_BUS = Path("C:/Users/nsn/project/wt")
+CANONICAL = Path("D:/Linux/Web_Projects/rankwant")
+DEFAULT_BUS = Path("D:/Windows/project/wt")
 # These git verbs are forbidden here even if a future edit looks tempting.
 FORBIDDEN_GIT = ("reset", "clean")
 
