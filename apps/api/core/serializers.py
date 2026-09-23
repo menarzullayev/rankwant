@@ -840,9 +840,7 @@ class ClientLogSerializer(serializers.Serializer[dict[str, Any]]):
     jadvalni megabaytlab to'ldirib qo'yardi.
     """
 
-    level = serializers.ChoiceField(
-        choices=["debug", "info", "warn", "error"], default="error"
-    )
+    level = serializers.ChoiceField(choices=["debug", "info", "warn", "error"], default="error")
     scope = serializers.CharField(max_length=40)
     message = serializers.CharField(max_length=300)
     fields = serializers.JSONField(required=False)

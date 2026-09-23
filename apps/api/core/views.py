@@ -589,7 +589,10 @@ class ClientLogView(APIView):
         # logs` da ko'rinmasa, uni faqat staff panel orqali topish
         # kerak bo'lardi.
         logger.warning(
-            "client error [%s] %s", data["scope"], data["message"], extra={"path": data.get("path", "")}
+            "client error [%s] %s",
+            data["scope"],
+            data["message"],
+            extra={"path": data.get("path", "")},
         )
         return Response(status=status.HTTP_204_NO_CONTENT)
 
