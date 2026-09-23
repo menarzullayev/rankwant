@@ -20,6 +20,14 @@
   --text-theme-sm--line-height: 20px;
   --text-theme-xs: 12px;
   --text-theme-xs--line-height: 18px;
+  /* Hisoblagich va mikro-yorliq (badge, bell raqami, "YANGI" belgisi).
+     `12px` bu joylarda badge'ni kattalashtirib yuborardi — o'lchandi
+     2026-09-24: 6 ta chaqiruv joyi `text-[10px]` bilan yozilgan edi,
+     ya'ni token qatlami chetlab o'tilgan edi. Eng kichik matn
+     `--rw-faint` bilan birga ishlatiladi, shuning uchun kontrast
+     tekshiruvi (`tools/check_contrast.py`) uni allaqachon qamraydi. */
+  --text-theme-2xs: 10px;
+  --text-theme-2xs--line-height: 14px;
 
   /* Brend — TailAdmin ko'ki emas, RankWant accent #5b8cff */
   --color-brand-25: #f4f7ff;
