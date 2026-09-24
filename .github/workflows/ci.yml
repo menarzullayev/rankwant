@@ -459,6 +459,8 @@ jobs:
         run: python3 tools/check_ordering.py
       - name: Owner decisions in code (CLAUDE.md § Saidakbar aka qarorlari)
         run: python3 tools/check_decisions.py
+      - name: Customization contract vs the code (api keys ↔ client writes)
+        run: python3 tools/check_customization_contract.py
       - name: Deployed security boundary (loopback only, judge publishes nothing)
         run: python3 tools/check_security_boundary.py
       - name: Dependency licence inventory (drift against the lockfiles)

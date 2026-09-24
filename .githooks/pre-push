@@ -110,6 +110,15 @@ fi
 
 # #187: deploy.sh o'zgarishi hosted CI ni 69 s qizil qildi
 # (`RANKWANT_LOCK_HELD` ikkinchi nusxasi). `decisions` ~10 s lokal.
+# The customization contract spans both trees: the server's accepted keys
+# (`apps/api/core/prefs.py`) and what the client writes (`apps/web/src/**`).
+# Measured 2026-09-24: `themeToggle` reached the client in #244 but not the
+# server, so picking a theme-toggle style made the whole `appearance` write
+# 400 — and nothing in this hook looked at it.
+if has '^(apps/api/|apps/web/|tools/check_customization_contract|docs/08-technical-spec/customization-contract)'; then
+  step "Customization contract" "$PY" tools/check_customization_contract.py
+fi
+
 if has '^tools/deploy\.sh$'; then
   step "Qarorlar (deploy.sh)" "$PY" tools/check_negative.py --serial decisions
 fi

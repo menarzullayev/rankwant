@@ -119,6 +119,17 @@ class TestValidate:
         Ilgari `card` da to'xtardi va PATCH 400 berardi: karta, naqsh,
         navigatsiya, ikonka to'plami va tipografika hisobga umuman
         yozilmasdi — odam boshqa qurilmada eski ko'rinishni ko'rardi.
+
+        ⚠️ Ro'yxat QO'LDA yozilgan va shunday qolishi kerak: u «klient nima
+        yuboradi» ni ifodalaydi, serverning `APPEARANCE_KEYS` ini emas —
+        aks holda test tavtologiyaga aylanib, aynan o'sha sinfni o'tkazib
+        yuborardi. Ro'yxatning to'liqligini `tools/check_customization_contract.py`
+        qo'riqlaydi (klient yozadigan kalitlar shu yerda bo'lishi shart).
+
+        ⚠️ 2026-09-24: ro'yxat ESKIRGAN edi va nuqson qaytgan — `themeToggle`
+        klientda bor edi (#244), serverda yo'q edi, ya'ni mavzu tugmasi
+        uslubini tanlash butun `appearance` yozuvini 400 ga uchratardi.
+        `overlayStyle` va `formStyle` ham ro'yxatda yo'q edi.
         """
         appearance = {
             "style": "glass",
@@ -139,6 +150,9 @@ class TestValidate:
             "statusStyle": "text",
             "loadingStyle": "skeleton",
             "iconPack": "lucide",
+            "overlayStyle": "soyabon",
+            "formStyle": "material",
+            "themeToggle": "doira",
         }
         out = prefs.validate({"appearance": appearance, "a11y": {"motion": "off"}})
         assert out["appearance"] == appearance
