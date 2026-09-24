@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { dmSans, inter, jakarta, lexend, plexMono, plexSerif, roboto } from "./fonts";
 import AppShell from "@/layout/AppShell";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
@@ -219,16 +219,29 @@ export default async function RootLayout({
   // Markup o'zgaruvchi sozlamalar cookie'dan (D61). Sabab `MARKUP_COOKIE`
   // da: ular HTML tuzilishini o'zgartiradi, ya'ni SSR ham ularni bilishi
   // shart — aks holda React hidratsiya xatosi beradi.
-  const [cookieStore, { locale, auto }, me, siteAppearance] = await Promise.all([
-    cookies(),
-    getLocaleState(),
-    getSessionUser<Me>(),
-    api
-      .siteAppearance()
-      .then((row) => row.appearance)
-      .catch(() => ({}) as AppearancePrefs),
-  ]);
+  const [cookieStore, { locale, auto }, me, siteAppearance, requestHeaders] =
+    await Promise.all([
+      cookies(),
+      getLocaleState(),
+      getSessionUser<Me>(),
+      api
+        .siteAppearance()
+        .then((row) => row.appearance)
+        .catch(() => ({}) as AppearancePrefs),
+      headers(),
+    ]);
   const markupAppearance = parseMarkupCookie(cookieStore.get(MARKUP_COOKIE)?.value);
+
+  // CSP `nonce`. `proxy.ts` already sets `x-nonce` on every request, but that
+  // only covers the scripts Next renders itself — Next writes the nonce into
+  // its own inline tags, not into the ones this file writes by hand. Measured
+  // 2026-09-24: 5 of the 20 `<script>` tags on `/login` carried no nonce and
+  // CSP blocked them, because `script-src` lists `'strict-dynamic'` and that
+  // makes `'self'` irrelevant. The blocked ones were the pre-hydration theme
+  // bootstrap (a white flash for every dark-mode load) and `/i18n/<lang>.js`
+  // (the dictionary's fast path, which `LocaleProvider` exists to rely on).
+  // The `x-` prefix is deliberate: Next only forwards headers with it.
+  const nonce = requestHeaders.get("x-nonce") ?? undefined;
 
   // A style the codebase does not know falls back to `clay`: a stale team
   // default must not leave `data-style` pointing at no stylesheet.
@@ -251,12 +264,15 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
-        <script dangerouslySetInnerHTML={{ __html: styleInit(teamStyle) }} />
-        <script dangerouslySetInnerHTML={{ __html: appearanceInit(siteAppearance) }} />
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: styleInit(teamStyle) }} />
+        <script
+          nonce={nonce}
+          dangerouslySetInnerHTML={{ __html: appearanceInit(siteAppearance) }}
+        />
         {/* Async: it must not block the first paint. If it has not run by
             hydration, `LocaleProvider` waits for it. */}
-        <script src={dictionary} async />
+        <script src={dictionary} nonce={nonce} async />
         <script
           type="application/ld+json"
           // Tuzilmaviy ma'lumot — Next'ning `metadata` qatlami buni

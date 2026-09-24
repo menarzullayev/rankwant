@@ -180,6 +180,17 @@ jobs:
         env:
           E2E_BASE_URL: http://localhost:3400
         run: bash tools/ci_visual_gate.sh
+      # CSP nonce coverage — the same slot as the visual gate, for the same
+      # reason: it reads a rendered page, so it needs the stack. It does not
+      # rebuild, so it costs seconds rather than minutes. Measured 2026-09-24:
+      # four scripts were blocked on the live `/login` (the three pre-hydration
+      # bootstrap tags and the dictionary's fast path) while every gate in the
+      # repo stayed green.
+      - name: CSP nonce coverage is live
+        if: ${{ vars.STAGING_URL == '' }}
+        env:
+          E2E_BASE_URL: http://localhost:3400
+        run: bash tools/ci_csp_gate.sh
       # Screenshots land in the container's `test-results/`, which is bind
       # mounted from the repo, so the artifact upload below picks them up.
       - name: Upload visual diffs

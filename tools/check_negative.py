@@ -161,6 +161,17 @@ VISUAL_CASES = {
 }
 """Vizual guruhning yorliqlari — `--group visual` bilan alohida yuritiladi."""
 
+CSP_CASES = {
+    "haqiqiy sahifa to'liq qamrab olinsin",
+    "noncesiz skript tutilsin",
+}
+"""CSP guruhining yorliqlari — ishlab turgan stack talab qiladi.
+
+`--group csp_nonce` bilan yuritiladi (nightly, `tools/ci_csp_gate.sh`).
+To'liq to'plamda ochiq aytib o'tkazib yuboriladi: CI'ning salbiy qadami
+stack ko'tarmaydi, ya'ni guruh har safar «o'lchanmadi» bo'lardi.
+"""
+
 
 def run_node_check(checker: str) -> tuple[int, str]:
     """`*.mjs` tekshiruvlar uchun runner.
@@ -355,6 +366,19 @@ def visual_precondition() -> str | None:
     pw = _find_playwright()
     if pw is None:
         return "playwright cli topilmadi — `cd tests/e2e && npm ci` kerak"
+    if not _visual_base_url():
+        return "web stack javob bermadi — `E2E_BASE_URL` ni tekshiring"
+    return None
+
+
+def csp_nonce_precondition() -> str | None:
+    """CSP guruhi yurishi uchun ishlab turgan stack joyidami?
+
+    `None` — joyida. Guruh `next build` ni QAYTA QILMAYDI (vizualdan farqli),
+    lekin render qilingan HTML'ni o'qishi kerak — ya'ni stack shart. Sabab
+    qaytarish «muhit tayyor emas» ni «buzuq holatni tutdi» deb o'qib
+    qo'ymaslik uchun (visual_precondition bilan bir mantiq).
+    """
     if not _visual_base_url():
         return "web stack javob bermadi — `E2E_BASE_URL` ni tekshiring"
     return None
@@ -2838,6 +2862,42 @@ def _find_playwright() -> list[str] | None:
     if not node:
         return None
     return [node, str(cli)]
+
+
+def neg_csp_nonce_page_is_covered() -> tuple[bool, str]:
+    """Ijobiy nazorat: haqiqiy sahifada har bir bajariladigan skript nonce bilan.
+
+    O'lchov RENDER QILINGAN HTML'da — manba faylda emas. Sabab: `@source`
+    glob'idagi darsning aynan o'zi (2026-09-24) — matnni tekshiruvchi darvoza
+    o'lik yo'lni ko'rmagan edi. Bu yiqilsa, tuzatish qaytgan.
+    """
+    base = _visual_base_url()
+    if not base:
+        return False, "csp_nonce/ko'rildi: stack javob bermadi"
+    code, out = run_check("csp_nonce", "--base", base)
+    if code != 0:
+        return False, f"csp_nonce/ko'rildi: exit {code} (0 kerak) — {out.strip()[-180:]}"
+    return True, "csp_nonce/ko'rildi: haqiqiy sahifa to'liq qamrab olingan (exit 0)"
+
+
+def neg_csp_nonce_missing_is_caught() -> tuple[bool, str]:
+    """Bitta tegdan nonce tushsa tutilsinmi?
+
+    ⚠️ Mutatsiya HAQIQIY sahifada bajariladi (`--drop-nonce`), fixture'da emas.
+    Qayta qurish (`neg_visual_*` kabi) 2–4 daqiqa va bundan KO'PROQ isbotlamaydi:
+    nonce yo'qligini aniqlash — sof matn tekshiruvi, build esa o'sha matnni
+    qayta ishlab chiqaradi, xolos. Shuning uchun mutatsiya arzon, isbot esa
+    to'liq: darvoza haqiqiy sahifada haqiqatan yiqiladi.
+    """
+    base = _visual_base_url()
+    if not base:
+        return False, "csp_nonce/o'lik: stack javob bermadi"
+    code, out = run_check("csp_nonce", "--base", base, "--drop-nonce", "1")
+    if code != 1:
+        return False, f"csp_nonce/o'lik: buzilgan holat exit {code} berdi (1 kerak)"
+    if "noncesiz" not in out:
+        return False, f"csp_nonce/o'lik: yiqildi, lekin boshqa sabab — {out.strip()[-180:]}"
+    return True, "csp_nonce/o'lik: noncesiz skript tutildi (exit 1)"
 
 
 def neg_visual_regression_catches_color_drift() -> tuple[bool, str]:
@@ -7125,6 +7185,13 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         ],
     ),
     (
+        "csp_nonce",
+        [
+            ("haqiqiy sahifa to'liq qamrab olinsin", neg_csp_nonce_page_is_covered),
+            ("noncesiz skript tutilsin", neg_csp_nonce_missing_is_caught),
+        ],
+    ),
+    (
         "push_guard",
         [
             ("soxta muallif rad etilsin", neg_push_guard_placeholder_author),
@@ -7976,7 +8043,12 @@ def _main_parallel(jobs: int) -> int:
     #
     # Keep it in the serial path as an open skip; it still runs for real via
     # `--group visual` (nightly, `tools/ci_visual_gate.sh`).
-    names = [name for name in names if name != "visual"]
+    #
+    # `csp_nonce` is here for the same reason with a smaller bill: it does not
+    # rebuild, but it must read a rendered page, and CI's negative step runs
+    # no stack — left in the fan-out it would report "o'lchanmadi" every run.
+    # It runs for real via `--group csp_nonce` (nightly, `tools/ci_csp_gate.sh`).
+    names = [name for name in names if name not in {"visual", "csp_nonce"}]
     workers = min(jobs, len(names))
     buckets: list[list[str]] = [[] for _ in range(workers)]
     for i, name in enumerate(names):
@@ -8059,6 +8131,21 @@ def main(argv: list[str]) -> int:
                 return 1
         else:
             skipped.append("visual guruhi — `next build` talab qiladi (--group visual)")
+
+    # CSP nonce qamrovi — ishlab turgan stack'ni o'qiydi (qayta qurmaydi).
+    # `visual` bilan bir sinf: to'liq to'plamda ochiq o'tkazib yuboriladi,
+    # `--group csp_nonce` bilan esa old shart tekshiriladi va bajarilmasa
+    # OCHIQ yiqiladi — jimgina yashil bo'lib qolmaydi.
+    if selected & CSP_CASES:
+        if only == "csp_nonce":
+            reason = csp_nonce_precondition()
+            if reason:
+                print(f"  ✕ {reason}")
+                print()
+                print("1/1 salbiy test YIQILDI — CSP darvozasi o'lchanmadi.")
+                return 1
+        else:
+            skipped.append("csp_nonce guruhi — stack talab qiladi (--group csp_nonce)")
 
     # Monitor — WINDOWS darvozasi. Old shart mantig'i NODE bilan bir xil,
     # LEKIN yakuni boshqa: `powershell` faqat Windows'da bor, CI runner'i
