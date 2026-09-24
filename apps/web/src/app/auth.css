@@ -1,27 +1,36 @@
-@import "tailwindcss";
+@import "tailwindcss" source(none);
 
-/* Auth routes only. Auto-scan of the whole app would emit the same
-   500 KiB sheet as globals.css and desktop FCP would stay 1.1–1.2 s.
-   Exclude the public site tree, then add the chrome + form modules
-   that `/login` actually mounts (AppShell is BARE here). */
-@source not "./(site)/**/*.{ts,tsx}";
-@source not "../components/admin/**/*.{ts,tsx}";
-@source not "../components/settings/**/*.{ts,tsx}";
-@source not "../components/profile/**/*.{ts,tsx}";
-@source not "../components/problems/**/*.{ts,tsx}";
-@source "../layout/**/*.{ts,tsx}";
-@source "../components/auth/**/*.{ts,tsx}";
-@source "../components/AuthForm.tsx";
-@source "../components/ResetForm.tsx";
-@source "../components/OnboardingForm.tsx";
-@source "../components/EmailVerify.tsx";
-@source "../components/ui/**/*.{ts,tsx}";
-@source "../components/kit/**/*.{ts,tsx}";
-@source "../components/overlay/**/*.{ts,tsx}";
-@source "../components/customizer/**/*.{ts,tsx}";
-@source "../components/ProviderMark.tsx";
-@source "../components/UpdatesBell.tsx";
+/* Auth routes only. Automatic source detection is OFF on purpose.
+ *
+ * Why not an exclusion list: with detection on, `@source` includes are
+ * decorative and only `@source not` narrows anything, so a path that rots
+ * (a component folder moves) widens the sheet silently while every gate
+ * stays green. That is exactly what happened — measured 2026-09-24, 8 of
+ * the 11 paths this block used to carry no longer resolved (they pointed at
+ * `components/{auth,AuthForm,...}` after the feature-folder refactor), and
+ * the live `/login` sheet was carrying `features/problems` and
+ * `features/profile` classes.
+ *
+ * With `source(none)` every source is listed below, so a moved path makes
+ * its classes disappear loudly instead of leaking. `tools/check_decisions.py`
+ * -> `css_sources_resolve` resolves every path and fails on a dead one.
+ *
+ * `(site)` is absent on purpose: it ships the full `globals.css`. Keeping
+ * this list short is the measured FCP decision (LH-LOGIN-CSS). */
 @source "./(auth)/**/*.{ts,tsx}";
+@source "../components/**/*.{ts,tsx}";
+@source "../content/**/*.{ts,tsx}";
+@source "../context/**/*.{ts,tsx}";
+@source "../features/account/**/*.{ts,tsx}";
+@source "../features/auth/**/*.{ts,tsx}";
+@source "../features/updates/**/*.{ts,tsx}";
+@source "../i18n/**/*.{ts,tsx}";
+@source "../icons/**/*.{ts,tsx}";
+@source "../layout/**/*.{ts,tsx}";
+@source "../lib/**/*.{ts,tsx}";
+
+/* Admin UI never mounts on a guest auth route. */
+@source not "../components/admin";
 
 /* TailAdmin (MIT) dizayn tokenlari — apps/web/README.md ga qarang.
    Brend ranglari RankWant niki: brand-* palitrasi accent #5b8cff atrofida. */

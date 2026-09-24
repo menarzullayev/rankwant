@@ -157,6 +157,7 @@ run_docs() {
     "$PY" tools/check_api_english.py &&
     "$PY" tools/check_locales_parity.py &&
     "$PY" tools/check_contrast.py &&
+    "$PY" tools/check_css_sources.py &&
     "$PY" tools/check_gradient_styles.py &&
     # Cloudflare route himoyasi (`request_limit_fail_open`). Tarmoqqa
     # chiqadi, shuning uchun `check_workers.sh` ni O'ZI chaqiramiz:

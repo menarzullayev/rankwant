@@ -356,6 +356,9 @@ jobs:
       - name: Design tokens (no raw colour / px font)
         if: steps.check.outputs.ready == 'true'
         run: python3 tools/check_design_tokens.py
+      - name: CSS scan sources (every @source path resolves)
+        if: steps.check.outputs.ready == 'true'
+        run: python3 tools/check_css_sources.py
       - name: Feature boundaries (layer rule)
         if: steps.check.outputs.ready == 'true'
         run: python3 tools/check_features.py

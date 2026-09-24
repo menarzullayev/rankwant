@@ -92,6 +92,14 @@ if has '^(apps/web/|tools/check_i18n)'; then
   step "Web — i18n to'liqligi" "$PY" tools/check_i18n.py
 fi
 
+# The `@source` list is a config glob: it rots when files move, and nothing
+# else in this hook resolves it. Measured 2026-09-24: 8 of the 11 paths in
+# `auth.css` were dead, so `features/{problems,profile}` classes were being
+# scanned into the `/login` sheet while every gate stayed green.
+if has '^(apps/web/src/app/.*\.css$|tools/check_css_sources)'; then
+  step "Web — CSS skan yo'llari" "$PY" tools/check_css_sources.py
+fi
+
 if has '^(apps/api/|tools/check_api_english)'; then
   step "API — English messages" "$PY" tools/check_api_english.py
 fi

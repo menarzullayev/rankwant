@@ -2988,6 +2988,67 @@ def neg_decisions_auto_deploy_contest_override() -> tuple[bool, str]:
     )
 
 
+def _css_sources_broken(rel: str, old: str, new: str, expect: str) -> tuple[bool, str]:
+    """Break one `@source` invariant in `rel`; check_css_sources must catch it."""
+    path = ROOT / rel
+    text = path.read_bytes().decode("utf-8")
+    if old not in text:
+        return False, f"css_sources/{expect}: langar topilmadi ({rel})"
+    with Mutation(path, old, new):
+        code, out = run_check("css_sources")
+    if code != 1:
+        return False, f"css_sources/{expect}: buzilgan holat exit {code} berdi (1 kerak)"
+    if expect not in out:
+        return False, f"css_sources/{expect}: yiqildi, lekin boshqa sabab — {out.strip()[-160:]}"
+    return True, f"css_sources/{expect}: tutildi (exit 1)"
+
+
+def neg_css_source_path_dead() -> tuple[bool, str]:
+    """`@source` yo'li o'lik bo'lsa tutilsin (2026-09-24).
+
+    Aynan shu holat yuz bergan: `auth.css` ning 11 yo'lidan 8 tasi ko'chib
+    ketgan papkalarga ishora qilardi (`components/auth`, `components/profile`,
+    ...). Eski qo'riqchi faqat `@source not "./(site/` MATNINI ko'rardi — ya'ni
+    yo'l yechilishini emas — va `features/{problems,profile}` klasslari
+    `/login` sheet'iga oqib chiqqan.
+    """
+    return _css_sources_broken(
+        "apps/web/src/app/auth.css",
+        '@source "../components/**/*.{ts,tsx}";',
+        '@source "../components-old/**/*.{ts,tsx}";',
+        "yechilmaydi",
+    )
+
+
+def neg_css_source_none_missing() -> tuple[bool, str]:
+    """`source(none)` tushib qolsa tutilsin.
+
+    Busiz avtomatik skan ochiq qoladi: `@source` ro'yxati bezakka aylanadi va
+    toraytirishni faqat `@source not` bajaradi — o'lik istisno esa sheet'ni
+    JIM kengaytiradi. Aynan jim sinf, shuning uchun qo'riqchi kerak.
+    """
+    return _css_sources_broken(
+        "apps/web/src/app/auth.css",
+        '@import "tailwindcss" source(none);',
+        '@import "tailwindcss";',
+        "source(none)",
+    )
+
+
+def neg_css_source_sweeps_site() -> tuple[bool, str]:
+    """Tor sheet `(site)` daraxtini qamrab olsa tutilsin.
+
+    `@source "./**"` butun `app/` ni skanerlaydi — ya'ni `(site)` ham kiradi va
+    LH-LOGIN-CSS o'lchovi (534 KiB / FCP 1.1–1.2 s) qaytadi.
+    """
+    return _css_sources_broken(
+        "apps/web/src/app/auth.css",
+        '@source "./(auth)/**/*.{ts,tsx}";',
+        '@source "./**/*.{ts,tsx}";',
+        "(site) daraxtini qamraydi",
+    )
+
+
 def neg_decisions_push_guard_unwired() -> tuple[bool, str]:
     return _decision_broken(
         ".githooks/pre-push",
@@ -7009,6 +7070,14 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("yangi branch darvozasiz qolmasin", neg_hook_gates_new_branch),
             ("notanish guruh yashil qolmasin", neg_negative_rejects_unknown_group),
             ("NODE_CASES yorliqlari registrda bo'lsin", neg_node_cases_labels_exist),
+        ],
+    ),
+    (
+        "css_sources",
+        [
+            ("o'lik CSS skan yo'li tutilsin", neg_css_source_path_dead),
+            ("`source(none)` tushsa tutilsin", neg_css_source_none_missing),
+            ("tor sheet (site) ni qamrasa tutilsin", neg_css_source_sweeps_site),
         ],
     ),
     (
