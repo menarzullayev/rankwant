@@ -35,6 +35,10 @@ import re
 import sys
 from pathlib import Path
 
+import _console
+
+_console.force_utf8()
+
 ROOT = Path(__file__).resolve().parent.parent
 WEB_SRC = ROOT / "apps" / "web" / "src"
 

@@ -28,6 +28,10 @@ import re
 import sys
 from pathlib import Path
 
+import _console
+
+_console.force_utf8()
+
 ROOT = Path(__file__).resolve().parent.parent
 FONTS_TS = ROOT / "apps" / "web" / "src" / "app" / "fonts.ts"
 FONT_ROOT = ROOT / "apps" / "web" / "src" / "fonts"

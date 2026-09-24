@@ -44,6 +44,10 @@ import sys
 import urllib.request
 from pathlib import Path
 
+import _console
+
+_console.force_utf8()
+
 ROOT = Path(__file__).resolve().parent.parent
 FONT_ROOT = ROOT / "apps" / "web" / "src" / "fonts"
 MANIFEST = FONT_ROOT / "manifest.json"

@@ -7599,6 +7599,32 @@ def _extract_copy(dest: Path, raw: bytes) -> None:
     if packages.is_dir() and not (dest / "packages").exists():
         shutil.copytree(packages, dest / "packages", symlinks=True, dirs_exist_ok=True)
 
+    # ⚠️⚠️ `apps/web/.next` is SYMLINKED, and this one is not optional.
+    #
+    # The copy is made from `git archive HEAD`, so it contains ONLY tracked
+    # files. `.next/` is in `.gitignore` — correctly — which means the copy
+    # has no build output at all. The `bundle_budget` group measures that
+    # directory, so its positive control saw no `static/` and reported
+    # exit 2. The group then went red for a missing artifact, not a broken
+    # check. Measured on the PR #249 CI run (2026-09-24):
+    #
+    #     ✕ tor oqim: check_bundle_budget.py exit 2 berdi (0 kerak)
+    #     ✕ bundle: o'lchab bo'lmadi (exit 2) — build qilinmagan
+    #     ✕ bundle: --json exit 2 — ✗ Bundle: `apps/web/.next/static` yo'q
+    #
+    # That is the same class of environment gap as the `node_modules` case
+    # below: the gate is fine, the tree it was handed is not.
+    #
+    # Linking rather than copying is deliberate. A copy would be stale the
+    # moment the build reran, and it would be read 4 times over. The four
+    # workers only READ this tree, so one shared link is safe. The CI web
+    # job runs `npm run build` before the suite precisely so this exists.
+    web_next = ROOT / "apps" / "web" / ".next"
+    link = dest / "apps" / "web" / ".next"
+    if web_next.is_dir() and not link.exists():
+        link.parent.mkdir(parents=True, exist_ok=True)
+        link.symlink_to(web_next, target_is_directory=True)
+
     for rel in ("apps/web/node_modules", "node_modules"):
         source = ROOT / rel
         link = dest / rel
