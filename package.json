@@ -13,5 +13,31 @@
   "scripts": {
     "typecheck": "npm run typecheck --workspace @rankwant/shared && npm run typecheck --workspace rankwant-web",
     "test": "npm run test --workspace @rankwant/shared && npm run test --workspace rankwant-web"
+  },
+  "#optionalDependencies": [
+    "⚠️ These are the LINUX native binaries of the toolchain packages we use.",
+    "They are listed explicitly because npm has a long-standing bug: a package",
+    "whose own `optionalDependencies` carry `os`/`cpu` constraints gets those",
+    "entries DROPPED from `packages{}` when the lockfile is generated on another",
+    "platform (npm/cli#4828, #8320). This repo's lockfile is generated on Windows",
+    "and consumed on Linux CI, so `npm ci` installed only the win32 binaries and",
+    "every native consumer died at runtime — measured 2026-09-24:",
+    "",
+    "    Error: Unable to resolve @typescript/typescript-linux-x64.       (tsc)",
+    "    Error: Cannot find module '@tailwindcss/oxide-linux-x64-gnu'     (build)",
+    "",
+    "`@tailwindcss/oxide`, `@next/swc`, `@img/sharp` and `@unrs/resolver` all",
+    "ship this way. Declaring the Linux variant as a first-class optional",
+    "dependency makes npm record it in the lockfile, so `npm ci` installs it.",
+    "",
+    "The win32 variants come along automatically through the packages' own",
+    "optionalDependencies; only this side of the divide needs the nudge.",
+    "Tracked upstream: https://github.com/npm/cli/issues/4828"
+  ],
+  "optionalDependencies": {
+    "@img/sharp-linux-x64": "0.35.4",
+    "@next/swc-linux-x64-gnu": "16.3.5",
+    "@tailwindcss/oxide-linux-x64-gnu": "4.3.3",
+    "@unrs/resolver-binding-linux-x64-gnu": "1.12.2"
   }
 }

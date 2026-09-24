@@ -52,6 +52,32 @@
     "typescript-eslint": "^8.69.0",
     "vitest": "5.0.1"
   },
+  "#optionalDependencies": [
+    "`tsc` in this package is the NATIVE TypeScript 7 binary, aliased as",
+    "`@typescript/native`. That shim resolves its platform binary at runtime",
+    "through `import.meta.resolve('@typescript/<platform>')` — so the matching",
+    "platform package has to be on disk, not merely declared.",
+    "",
+    "⚠️ Declaring them only inside npm's auto-generated `optionalDependencies`",
+    "is NOT enough: npm omits `os`-restricted optional deps from `packages{}`",
+    "when the lock is generated on another platform (npm/cli#4828, #8320). CI",
+    "runs on Linux and the lock was generated on Windows, so `typescript-linux-",
+    "x64` never reached the lockfile, `npm ci` installed nothing, and the CI",
+    "typecheck died with:",
+    "",
+    "    Error: Unable to resolve @typescript/typescript-linux-x64.",
+    "",
+    "Listing them here as first-class optional dependencies makes npm record",
+    "them in the lockfile, so `npm ci` installs them on every platform."
+  ],
+  "optionalDependencies": {
+    "@typescript/typescript-darwin-arm64": "7.0.2",
+    "@typescript/typescript-darwin-x64": "7.0.2",
+    "@typescript/typescript-linux-arm64": "7.0.2",
+    "@typescript/typescript-linux-x64": "7.0.2",
+    "@typescript/typescript-win32-arm64": "7.0.2",
+    "@typescript/typescript-win32-x64": "7.0.2"
+  },
   "overrides": {
     "dompurify": "^3.4.15",
     "openapi-typescript": {
