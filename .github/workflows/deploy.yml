@@ -380,20 +380,48 @@ jobs:
         # ⚠️ 2026-09-17: this step was written for LINUX (`systemctl`).
         # A container runner has NO systemd, and on the Windows side
         # the tunnel is managed by `tools/handoff.ps1` with a PID file.
-        # So the step now DETECTS the environment and prints a clear
-        # message — it does not stop at a silent "not found" warning.
+        #
+        # ⚠️⚠️ 2026-09-24: the old `else` branch printed
+        #
+        #     ::warning::cloudflared service not found — the site will
+        #     not open from outside
+        #
+        # and that message was **FALSE**. Measured on run 35966160478:
+        # the warning fired, and the very same minute
+        # `https://rankwant.uz/` answered **200**. The runner DOES have
+        # systemd, it just has no `cloudflared.service` unit — because
+        # the tunnel is not a systemd service on this machine. So the
+        # step was inferring the MECHANISM instead of checking the
+        # OUTCOME, and a false alarm is worse than no alarm: it trains
+        # the reader to ignore the one warning that matters.
+        #
+        # Now the step measures what actually matters — does the public
+        # origin answer? — and only warns when it does not.
+        env:
+          PUBLIC_ORIGIN: ${{ vars.PUBLIC_ORIGIN }}
         run: |
-          if ! command -v systemctl >/dev/null 2>&1; then
-            echo "no systemd (container runner) — the tunnel is managed"
-            echo "on the Windows side: tools/handoff.ps1 / RankWant Tunnel Monitor."
+          # 1) A systemd-managed tunnel, if this machine has one.
+          if command -v systemctl >/dev/null 2>&1 \
+             && systemctl list-unit-files cloudflared.service >/dev/null 2>&1; then
+            sudo systemctl start cloudflared
+            echo "Tunnel started (systemd)"
             exit 0
           fi
-          if systemctl list-unit-files cloudflared.service >/dev/null 2>&1; then
-            sudo systemctl start cloudflared
-            echo "Tunnel started"
-          else
-            echo "::warning::cloudflared service not found — the site will not open from outside"
+
+          # 2) Otherwise the tunnel is managed elsewhere — on this setup,
+          #    on the Windows side by `tools/handoff.ps1` (PID file). We
+          #    cannot start it from here, but we CAN tell whether it is up.
+          if [ -z "$PUBLIC_ORIGIN" ]; then
+            echo "::warning::PUBLIC_ORIGIN is not set — the tunnel could not be checked"
+            exit 0
           fi
+          if curl -fsS -o /dev/null --max-time 15 --retry 2 "${PUBLIC_ORIGIN}/"; then
+            echo "Tunnel is up: ${PUBLIC_ORIGIN} answers from outside"
+            echo "(not a systemd service here — managed by tools/handoff.ps1)"
+            exit 0
+          fi
+          echo "::warning::${PUBLIC_ORIGIN} did not answer — check the tunnel"
+          echo "(Windows side: tools/handoff.ps1 / RankWant Tunnel Monitor)"
 
       - name: Deploy finished
         run: |
