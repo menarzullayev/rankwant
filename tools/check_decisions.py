@@ -345,12 +345,12 @@ def rank_colour_groups_not_sixteen_tokens() -> str | None:
     for name in ("grey", "green", "cyan", "blue", "violet", "orange", "red"):
         if f'"{name}"' not in titles:
             return f"apps/api/profiles/titles.py: guruh `{name}` yo'q"
-    css = read("apps/web/src/app/globals.css")
+    css = read("apps/web/src/app/theme.css")
     if re.search(r"--rw-rank-\d", css):
-        return "apps/web/src/app/globals.css: raqamli `--rw-rank-N` qaytdi (#167)"
+        return "apps/web/src/app/theme.css: raqamli `--rw-rank-N` qaytdi (#167)"
     for name in ("grey", "green", "cyan", "blue", "violet", "orange", "red"):
         if f"--rw-rank-{name}" not in css:
-            return f"apps/web/src/app/globals.css: `--rw-rank-{name}` yo'q"
+            return f"apps/web/src/app/theme.css: `--rw-rank-{name}` yo'q"
     if "rw-rank-${title.colour_group}" not in read("apps/web/src/components/ui/Identity/UserName.tsx"):
         return "apps/web/src/components/ui/Identity/UserName.tsx: class `colour_group` emas"
     return None
@@ -1255,8 +1255,21 @@ def login_uses_narrow_auth_css() -> str | None:
     if 'import "../globals.css"' not in site:
         return "apps/web/src/app/(site)/layout.tsx: globals.css ulanmagan"
     sheet = read("apps/web/src/app/auth.css")
-    if '@source not "./(site)/' not in sheet:
-        return "apps/web/src/app/auth.css: (site) @source not yo'q"
+    # The narrowing is now carried by an explicit include list rather than by
+    # `@source not`, so the invariant to guard changed with it. Matching the
+    # old literal stayed green while 8 of 11 paths were dead (measured
+    # 2026-09-24). The resolution half lives in `tools/check_css_sources.py`,
+    # which runs on the real tree — this sandbox has no directory tree.
+    #
+    # ⚠️ The import directive is matched, not a bare `"source(none)" in sheet`:
+    # the stylesheet's own comment mentions `source(none)`, so a substring test
+    # would stay green after the import lost the argument (measured).
+    entry = re.search(r'@import\s+"tailwindcss"\s*(?:source\(([^)]*)\))?\s*;', sheet)
+    if entry is None or (entry.group(1) or "").strip() != "none":
+        return (
+            "apps/web/src/app/auth.css: import `source(none)` bilan emas — "
+            "avtomatik skan ochiq qolsa ro'yxat bezak bo'ladi va sheet jimgina kengayadi"
+        )
     return None
 
 

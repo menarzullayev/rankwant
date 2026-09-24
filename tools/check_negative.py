@@ -440,7 +440,7 @@ def neg_i18n_used_but_absent() -> tuple[bool, str]:
 
 def neg_contrast_bad_pair() -> tuple[bool, str]:
     """Bitta juftlik yetarli kontrast bermasa — tutilsinmi?"""
-    path = ROOT / "apps/web/src/app/globals.css"
+    path = ROOT / "apps/web/src/app/theme.css"
     text = path.read_bytes().decode("utf-8")
     # `--rw-warn-ink` ni fon bilan bir xil qilib qo'yamiz: 1:1.
     m = re.search(r"(--rw-warn-ink:\s*)([^;]+)(;)", text)
@@ -456,7 +456,7 @@ def neg_contrast_unreadable_token() -> tuple[bool, str]:
     «O'qib bo'lmagan qiymat = XATO» qoidasi shundan. Ilgari bunday
     qiymat jimgina o'tkazib yuborilardi.
     """
-    path = ROOT / "apps/web/src/app/globals.css"
+    path = ROOT / "apps/web/src/app/theme.css"
     text = path.read_bytes().decode("utf-8")
     m = re.search(r"(--rw-ground:\s*)([^;]+)(;)", text)
     if m is None:
@@ -2853,7 +2853,7 @@ def neg_visual_regression_catches_color_drift() -> tuple[bool, str]:
     if not base:
         return False, "visual: web stack javob bermadi (E2E_BASE_URL)"
 
-    css = ROOT / "apps" / "web" / "src" / "app" / "globals.css"
+    css = ROOT / "apps" / "web" / "src" / "app" / "theme.css"
     text = css.read_bytes().decode("utf-8")
     # `--rw-ground` — sahifa foni. `--rw-rank-grey` EMAS: u skrinshot
     # olinadigan sahifalarda ko'rinmaydi (yuqoridagi izohga qarang).
@@ -2897,7 +2897,7 @@ def neg_visual_regression_catches_color_drift() -> tuple[bool, str]:
         )
     # ⚠️ IKKI NARSA TIKLANADI — manba ham, XIZMAT ham.
     #
-    # `Mutation` faqat `globals.css` ni qaytaradi. Build chiqishi esa oxirgi
+    # `Mutation` faqat `theme.css` ni qaytaradi. Build chiqishi esa oxirgi
     # (MUTATSIYALANGAN) holatda qoladi, ishlab turgan server ham o'shani
     # beradi. Natijada testdan KEYIN vizual suite 6/7 qizil bo'ladi va
     # keyingi odam «darvoza buzuq» deb o'ylaydi.
@@ -2985,6 +2985,67 @@ def neg_decisions_auto_deploy_contest_override() -> tuple[bool, str]:
         'RANKWANT_LOCK_HELD=1 RANKWANT_ENV_FILE="$ENV_FILE"',
         'RANKWANT_ALLOW_LIVE_CONTEST=1 RANKWANT_LOCK_HELD=1 RANKWANT_ENV_FILE="$ENV_FILE"',
         "avtomatik yo'lda",
+    )
+
+
+def _css_sources_broken(rel: str, old: str, new: str, expect: str) -> tuple[bool, str]:
+    """Break one `@source` invariant in `rel`; check_css_sources must catch it."""
+    path = ROOT / rel
+    text = path.read_bytes().decode("utf-8")
+    if old not in text:
+        return False, f"css_sources/{expect}: langar topilmadi ({rel})"
+    with Mutation(path, old, new):
+        code, out = run_check("css_sources")
+    if code != 1:
+        return False, f"css_sources/{expect}: buzilgan holat exit {code} berdi (1 kerak)"
+    if expect not in out:
+        return False, f"css_sources/{expect}: yiqildi, lekin boshqa sabab — {out.strip()[-160:]}"
+    return True, f"css_sources/{expect}: tutildi (exit 1)"
+
+
+def neg_css_source_path_dead() -> tuple[bool, str]:
+    """`@source` yo'li o'lik bo'lsa tutilsin (2026-09-24).
+
+    Aynan shu holat yuz bergan: `auth.css` ning 11 yo'lidan 8 tasi ko'chib
+    ketgan papkalarga ishora qilardi (`components/auth`, `components/profile`,
+    ...). Eski qo'riqchi faqat `@source not "./(site/` MATNINI ko'rardi — ya'ni
+    yo'l yechilishini emas — va `features/{problems,profile}` klasslari
+    `/login` sheet'iga oqib chiqqan.
+    """
+    return _css_sources_broken(
+        "apps/web/src/app/auth.css",
+        '@source "../components/**/*.{ts,tsx}";',
+        '@source "../components-old/**/*.{ts,tsx}";',
+        "yechilmaydi",
+    )
+
+
+def neg_css_source_none_missing() -> tuple[bool, str]:
+    """`source(none)` tushib qolsa tutilsin.
+
+    Busiz avtomatik skan ochiq qoladi: `@source` ro'yxati bezakka aylanadi va
+    toraytirishni faqat `@source not` bajaradi — o'lik istisno esa sheet'ni
+    JIM kengaytiradi. Aynan jim sinf, shuning uchun qo'riqchi kerak.
+    """
+    return _css_sources_broken(
+        "apps/web/src/app/auth.css",
+        '@import "tailwindcss" source(none);',
+        '@import "tailwindcss";',
+        "source(none)",
+    )
+
+
+def neg_css_source_sweeps_site() -> tuple[bool, str]:
+    """Tor sheet `(site)` daraxtini qamrab olsa tutilsin.
+
+    `@source "./**"` butun `app/` ni skanerlaydi — ya'ni `(site)` ham kiradi va
+    LH-LOGIN-CSS o'lchovi (534 KiB / FCP 1.1–1.2 s) qaytadi.
+    """
+    return _css_sources_broken(
+        "apps/web/src/app/auth.css",
+        '@source "./(auth)/**/*.{ts,tsx}";',
+        '@source "./**/*.{ts,tsx}";',
+        "(site) daraxtini qamraydi",
     )
 
 
@@ -3905,7 +3966,7 @@ def neg_decisions_users_indexed() -> tuple[bool, str]:
 def neg_decisions_rank_numbered_token() -> tuple[bool, str]:
     """`--rw-rank-1` qaytsa tutilsin."""
     return _decision_broken(
-        "apps/web/src/app/globals.css",
+        "apps/web/src/app/theme.css",
         "--rw-rank-grey: #656e81;",
         "--rw-rank-1: #656e81;",
         "rank colour_group 7 token",
@@ -4350,7 +4411,7 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/core/migrations/0021_seed_staff_groups.py",
     # Rank colour groups (2026-09-20 HITL encode-167): 7 tokens, not 16.
     "apps/api/profiles/titles.py",
-    "apps/web/src/app/globals.css",
+    "apps/web/src/app/theme.css",
     "apps/web/src/components/ui/Identity/UserName.tsx",
     # owned_paths width (2026-09-20 HITL no-star-star). Missing here,
     # `check_decisions.py` exits 2 / import fails in the trial sandbox.
@@ -7009,6 +7070,14 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("yangi branch darvozasiz qolmasin", neg_hook_gates_new_branch),
             ("notanish guruh yashil qolmasin", neg_negative_rejects_unknown_group),
             ("NODE_CASES yorliqlari registrda bo'lsin", neg_node_cases_labels_exist),
+        ],
+    ),
+    (
+        "css_sources",
+        [
+            ("o'lik CSS skan yo'li tutilsin", neg_css_source_path_dead),
+            ("`source(none)` tushsa tutilsin", neg_css_source_none_missing),
+            ("tor sheet (site) ni qamrasa tutilsin", neg_css_source_sweeps_site),
         ],
     ),
     (
