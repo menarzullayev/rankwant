@@ -56,12 +56,27 @@ remote_for() {
 
 # Hash of tracked files in a build context, plus extra strings (build-args).
 # Untracked local dirt is ignored — CI checks out a clean tree.
+#
+# ⚠️ Bir nechta yo'l qabul qiladi (2026-09-24). Sabab: `web` obrazi endi
+# REPO ILDIZIDAN quriladi (`apps/web/Dockerfile` + `COPY packages`), ya'ni
+# uning konteksti `apps/web` bilan cheklanmaydi. Faqat `apps/web` ni
+# xeshlash `packages/shared` o'zgarganda ESKI obrazni qayta ishlatardi —
+# ya'ni jimgina eskirgan frontend. Shuning uchun ikkisi ham xeshga kiradi.
+#
+# Har bir argument: yo'l. `+` bilan boshlanadigani qo'shimcha satr
+# (masalan build-arg), yo'l emas.
 context_hash() {
-  local dir="$1"
-  shift
+  local -a paths=() extras=()
+  local arg
+  for arg in "$@"; do
+    case "$arg" in
+      +*) extras+=("${arg#+}") ;;
+      *)  paths+=("$arg") ;;
+    esac
+  done
   {
-    printf '%s\n' "$@"
-    git -C "$root" ls-files -- "$dir" | sort | git -C "$root" hash-object --stdin-paths
+    printf '%s\n' "${extras[@]}"
+    git -C "$root" ls-files -- "${paths[@]}" | sort | git -C "$root" hash-object --stdin-paths
   } | sha256sum | awk '{print $1}'
 }
 
@@ -143,8 +158,20 @@ build_wanted() {
       docker tag "${project}-api" "${project}-beat"
       ;;
     web)
-      hash="$(context_hash apps/web "NEXT_PUBLIC_API_BASE=${next_api}")"
-      resolve_one web apps/web "$hash" --build-arg "NEXT_PUBLIC_API_BASE=${next_api}"
+      # ⚠️ Kontekst — REPO ILDIZI (2026-09-24). `apps/web/Dockerfile`
+      # `COPY packages ./packages` qiladi, ya'ni kontekst ildiz bo'lishi
+      # SHART. Ilgari bu yerda `apps/web` turardi va Nightly'ning 4 job'i
+      # (E2E, Chaos, Load, Latency) shu sabab yiqilardi:
+      #
+      #     Dockerfile:72 >>> COPY packages ./packages
+      #     ERROR: failed to compute cache key: "/packages": not found
+      #
+      # `docker-compose.yml` bilan bir xil (`context: .` +
+      # `dockerfile: apps/web/Dockerfile`) — ikkisi ajralib ketmasin.
+      hash="$(context_hash apps/web packages/shared "+NEXT_PUBLIC_API_BASE=${next_api}")"
+      resolve_one web . "$hash" \
+        -f apps/web/Dockerfile \
+        --build-arg "NEXT_PUBLIC_API_BASE=${next_api}"
       ;;
     judge)
       hash="$(context_hash services/judge-go)"
