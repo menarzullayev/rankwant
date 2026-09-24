@@ -27,6 +27,11 @@ root="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$root"
 
 project="${COMPOSE_PROJECT_NAME:?COMPOSE_PROJECT_NAME is required}"
+# `docker-compose.ci.yml` host portlarini o'chiradi, ya'ni u JONLI
+# `rankwant` loyihasida ishlatilsa tunnel 8301 ni topmaydi va API 503
+# bo'ladi (o'lchandi 2026-09-24, run 35956178549). Faylning o'zida
+# qo'riqchi bor — bu yerda o'sha sentinel qo'yiladi.
+export CI_ONLY_STACK=1
 repo_lc="$(printf '%s' "${GITHUB_REPOSITORY:-menarzullayev/rankwant}" | tr '[:upper:]' '[:lower:]')"
 registry="ghcr.io/${repo_lc}"
 sha="${GITHUB_SHA:-unknown}"

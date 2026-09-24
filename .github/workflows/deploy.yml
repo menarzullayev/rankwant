@@ -311,48 +311,55 @@ jobs:
         # critical path: submit → Redis → judge → verdict (same note
         # as in ci.yml).
         #
-        # ⚠️ IKKI TUZATISH (2026-09-24), ikkalasi ham o'lchandi
-        # (run 35955256743):
+        # ⚠️ UCH TUZATISH (2026-09-24) — har biri o'lchandi. Bu qadam
+        # ikki marta noto'g'ri bo'lgan, shuning uchun sabablari yozib
+        # qo'yiladi.
         #
-        #     Deploy — staging  Smoke  2026-09-24T04:26:33.2993618Z
-        #     no such service: smoke
-        #     ##[error]Process completed with exit code 1.
-        #
-        # 1) `smoke` SERVIZI umuman compose'da yo'q edi. U faqat
-        #    `docker-compose.ci.yml` da e'lon qilinadi, bu qadam esa
-        #    faqat `docker-compose.yml` + `docker-compose.public.yml`
-        #    berardi. O'lchandi (`config --services`):
+        # 1) `no such service: smoke` (run 35955256743). `smoke` servisi
+        #    faqat `docker-compose.ci.yml` da e'lon qilinadi, qadam esa
+        #    uni bermasdi. O'lchandi (`config --services`):
         #
         #        -f docker-compose.yml -f docker-compose.public.yml
         #            → api beat judge migrate minio postgres redis web worker
         #        + -f docker-compose.ci.yml
         #            → ... smoke web worker
         #
-        #    Ya'ni qadam hech qachon bajarilishi mumkin emas edi:
-        #    `no such service` — konfiguratsiya xatosi, stack nosozligi
-        #    emas. `-f docker-compose.ci.yml` shu qadamga qo'shildi.
+        #    Ya'ni konfiguratsiya xatosi edi, stack nosozligi emas.
         #
-        # 2) `smoke` servisi `profiles: ['smoke']` ostida. Compose
-        #    profilsiz servisni umuman tan olmaydi. O'lchandi:
+        # 2) `smoke` servisi `profiles: ['smoke']` ostida — compose
+        #    profilsiz servisni tan olmaydi, ya'ni `--profile smoke` SHART.
         #
-        #        --profile smoke -f ... -f docker-compose.ci.yml
-        #            → api ... smoke web worker   ✓
+        # 3) ⚠️⚠️ ENG XAVFLISI: `--no-deps` YO'Q edi (run 35956178549).
+        #    `docker-compose.ci.yml` host portlarini `!reset []` qiladi.
+        #    Compose `run` esa BOG'LIQ servislarni ham qayta yaratadi,
+        #    ya'ni jonli `api`/`web`/`postgres` portlarsiz qayta yaratildi:
         #
-        #    Shuning uchun `--profile smoke` ham SHART.
+        #        docker port rankwant-api-1   →  (bo'sh)
+        #        GET https://rankwant.uz/api/v1/health/  →  503
         #
-        # ⚠️ `ci.yml` override host portlarini `!reset []` qiladi —
-        # bu XAVFSIZ: barcha konteynerlar allaqachon ko'tarilgan, port
-        # faqat yangi konteyner yaratishda kerak. `run --rm smoke` esa
-        # o'chirilgandan keyin tashlab yuboriladi (bir martalik), ya'ni
-        # jonli `rankwant-api`/`rankwant-web` konteynerlariga tegmaydi.
-        # Smoke compose tarmog'i ichida ishlaydi (`http://api:8000`),
-        # host portlari unga umuman kerak emas.
+        #    Sayt ishlab turardi, API esa «maintenance» berardi: Cloudflare
+        #    Tunnel `127.0.0.1:8301` ga urardi-yu, hech narsa eshitmasdi.
+        #    Workflow YASHIL bo'ldi — ya'ni bu yolg'on yashil natija edi
+        #    (Smoke o'zi o'tdi, lekin deploy production'ni buzdi).
+        #
+        #    `--no-deps` bilan faqat smoke konteyneri yaratiladi. O'lchandi
+        #    (`run --rm --no-deps --dry-run`):
+        #
+        #        Container rankwant-smoke-run-<id> Created
+        #
+        #    — boshqa hech narsa. Haqiqiy sinovdan keyin konteynerlar
+        #    «Up 2 hours» bo'lib qoldi, portlar joyida, sayt 200.
+        #
+        #    `--no-deps` xavfsiz: oldingi `Health check` qadami api
+        #    tayyorligini allaqachon tasdiqlagan, smoke'ning birinchi
+        #    tekshiruvi esa `/health/` — ya'ni api javob bermasa, smoke
+        #    O'ZI baland ovozda yiqiladi.
         run: |
-          docker compose -p rankwant --env-file .env.public \
+          CI_ONLY_STACK=1 docker compose -p rankwant --env-file .env.public \
             --profile smoke \
             -f docker-compose.yml -f docker-compose.public.yml \
             -f docker-compose.ci.yml \
-            run --rm smoke
+            run --rm --no-deps smoke
 
       - name: Demo data
         # Staging only. On production the demo accounts have weak

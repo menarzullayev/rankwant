@@ -30,13 +30,16 @@ jobs:
       COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       CI_PUSH_IMAGE_CACHE: ${{ github.event.repository.fork && '0' || '1' }}
+      # `docker-compose.ci.yml` jonli loyihaga qarshi ishlatilsa stack'ni
+      # buzadi — fayl shu sentinelsiz yuklanmaydi (2026-09-24).
+      CI_ONLY_STACK: '1'
     steps:
       - uses: actions/checkout@v7
       - name: Stack
         if: ${{ vars.STAGING_URL == '' }}
         run: |
           bash tools/ci_stack.sh
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
+          CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
             python manage.py seed_demo
       - name: k6 — bounded load
         if: ${{ vars.STAGING_URL == '' }}
@@ -57,7 +60,7 @@ jobs:
             tests/load/main.js
       - name: Tear down
         if: always()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+        run: CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
       - name: Push image cache
         if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
         run: bash tools/ci_stack.sh --push-only
@@ -92,6 +95,9 @@ jobs:
       COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       CI_PUSH_IMAGE_CACHE: ${{ github.event.repository.fork && '0' || '1' }}
+      # `docker-compose.ci.yml` jonli loyihaga qarshi ishlatilsa stack'ni
+      # buzadi — fayl shu sentinelsiz yuklanmaydi (2026-09-24).
+      CI_ONLY_STACK: '1'
     steps:
       - uses: actions/checkout@v7
       - name: Stack
@@ -101,16 +107,16 @@ jobs:
           bash tools/ci_stack.sh
           # Web healthcheck hits `/` before seed. Next Data Cache then keeps
           # empty `/roadmaps/` for 300s (`browse.spec.ts` «O'quv rejalari»).
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
+          CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
             python manage.py seed_demo
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml restart web
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait web
+          CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml restart web
+          CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait web
       - name: Smoke
         if: ${{ vars.STAGING_URL == '' }}
         timeout-minutes: 5
         # Critical path: submit → Redis → judge → verdict. Moved off
         # main CI (2026-09-20): the stack is already up here.
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm smoke
+        run: CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm smoke
       - uses: actions/setup-node@v7
         with:
           node-version: '22'
@@ -199,7 +205,7 @@ jobs:
           $C --profile bakeoff run --rm bakeoff
       - name: Tear down
         if: always()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+        run: CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
       - name: Push image cache
         if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
         run: bash tools/ci_stack.sh --push-only
@@ -237,12 +243,15 @@ jobs:
       COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       CI_PUSH_IMAGE_CACHE: ${{ github.event.repository.fork && '0' || '1' }}
+      # `docker-compose.ci.yml` jonli loyihaga qarshi ishlatilsa stack'ni
+      # buzadi — fayl shu sentinelsiz yuklanmaydi (2026-09-24).
+      CI_ONLY_STACK: '1'
     steps:
       - uses: actions/checkout@v7
       - name: Stack
         run: |
           bash tools/ci_stack.sh
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
+          CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
             python manage.py seed_demo
       - name: Chaos
         # Chaos BREAKS services ON PURPOSE. The runner's own stack —
@@ -253,7 +262,7 @@ jobs:
         run: tests/chaos/run.sh
       - name: Tear down
         if: always()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+        run: CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
       - name: Push image cache
         if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
         run: bash tools/ci_stack.sh --push-only
@@ -289,6 +298,9 @@ jobs:
       CI_PUSH_IMAGE_CACHE: ${{ github.event.repository.fork && '0' || '1' }}
       CI_STACK_SERVICES: judge
       CI_STACK_UP: '0'
+      # `docker-compose.ci.yml` jonli loyihaga qarshi ishlatilsa stack'ni
+      # buzadi — fayl shu sentinelsiz yuklanmaydi (2026-09-24).
+      CI_ONLY_STACK: '1'
     steps:
       - uses: actions/checkout@v7
       - name: Judge image
@@ -367,6 +379,9 @@ jobs:
       COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       CI_PUSH_IMAGE_CACHE: ${{ github.event.repository.fork && '0' || '1' }}
+      # `docker-compose.ci.yml` jonli loyihaga qarshi ishlatilsa stack'ni
+      # buzadi — fayl shu sentinelsiz yuklanmaydi (2026-09-24).
+      CI_ONLY_STACK: '1'
     steps:
       - uses: actions/checkout@v7
       - name: Stack
@@ -374,7 +389,7 @@ jobs:
         # so unlike the compatibility job this does not narrow the services.
         run: |
           bash tools/ci_stack.sh
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
+          CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
             python manage.py seed_demo
       - name: Judge latency — launch gate (p50 < 5 s, p95 < 15 s)
         # Open item of docs/09-development-plan/README.md § "Launch gate".
@@ -409,7 +424,7 @@ jobs:
         run: python3 tools/latency_summary.py "${RUNNER_TEMP}/latency.log"
       - name: Tear down
         if: always()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+        run: CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
       - name: Push image cache
         if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
         run: bash tools/ci_stack.sh --push-only
