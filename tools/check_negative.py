@@ -7479,12 +7479,48 @@ def _extract_copy(dest: Path, raw: bytes) -> None:
     # That is an environment gap, not a broken check, so the group reported
     # "muhit tayyor emas, o'lchov yo'q" and the suite went red. Measured on
     # the PR #249 CI run (2026-09-24).
+    #
+    # ⚠️⚠️ A symlinked `node_modules/@rankwant/shared` points BACK at the real
+    # `packages/shared` in the working tree. That is fine for reading, but
+    # several negative tests MUTATE files under `packages/shared` (the i18n
+    # runtime ones rewrite `src/i18n/core.ts`). With `--jobs N` the copies
+    # share that one real directory, so the mutations race: one worker
+    # restores the anchor while another is still asserting on it, the check
+    # sees a clean tree, exits 0, and the result reads as
+    # "tekshiruv buzuq holatni O'TKAZDI (exit 0) — u o'lik". Measured
+    # 2026-09-24: `--jobs 4` reported 2 false "dead check" failures that
+    # `--serial` and the single-group run both passed 20/20.
+    #
+    # So `packages/` is COPIED — it is a few hundred KB of source, and each
+    # worker needs its own writable copy. The symlink is re-pointed to the
+    # copy's own `packages/shared` rather than the working tree.
+    packages = ROOT / "packages"
+    if packages.is_dir() and not (dest / "packages").exists():
+        shutil.copytree(packages, dest / "packages", symlinks=True, dirs_exist_ok=True)
+
     for rel in ("apps/web/node_modules", "node_modules"):
         source = ROOT / rel
         link = dest / rel
         if source.is_dir() and not link.exists():
             link.parent.mkdir(parents=True, exist_ok=True)
-            link.symlink_to(source, target_is_directory=True)
+            if rel == "node_modules":
+                link.mkdir(parents=True, exist_ok=True)
+                # `node_modules/@rankwant/*` must resolve to THIS copy, not to
+                # the worker-shared working tree — see above.
+                for scope in list(source.glob("*")):
+                    target = link / scope.name
+                    if scope.name == "@rankwant":
+                        target.mkdir(parents=True, exist_ok=True)
+                        for workspace in list(scope.glob("*")):
+                            own = dest / "packages" / workspace.name
+                            (target / workspace.name).symlink_to(
+                                own if own.is_dir() else workspace,
+                                target_is_directory=True,
+                            )
+                    else:
+                        target.symlink_to(scope, target_is_directory=scope.is_dir())
+            else:
+                link.symlink_to(source, target_is_directory=True)
 
 
 def _run_groups_in_copy(groups: list[str], raw: bytes) -> tuple[int, str]:
