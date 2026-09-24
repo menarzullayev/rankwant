@@ -843,9 +843,17 @@ class ClientLogSerializer(serializers.Serializer[dict[str, Any]]):
     level = serializers.ChoiceField(choices=["debug", "info", "warn", "error"], default="error")
     scope = serializers.CharField(max_length=40)
     message = serializers.CharField(max_length=300)
-    fields = serializers.JSONField(required=False)
-    path = serializers.CharField(max_length=200, required=False, allow_blank=True)
-    release = serializers.CharField(max_length=40, required=False, allow_blank=True)
+    # ⚠️ `fields` — DRF'ning o'zida ham shu nom bor: `Serializer.fields`
+    # (`BindingDict`) har bir nusxada majburiy maydonlar to'plamini saqlaydi.
+    # Bu yerda esa u MIJOZ PROTOKOLIDAGI maydon nomi — brauzer `fields`
+    # deb yuboradi (`core/views.py` `data["fields"]` ni o'qiydi), ya'ni
+    # nomni o'zgartirish API shartnomasini buzardi.
+    #
+    # DRF ish vaqtida buni to'g'ri hal qiladi: `fields` klassedan emas,
+    # `_declared_fields` dan olinadi va `Serializer.fields` xossasi har
+    # nusxada qayta quriladi. To'qnashuv faqat mypy uchun mavjud, shuning
+    # uchun istisno shu yerda va FAQAT shu bitta satrga qo'yiladi.
+    fields = serializers.JSONField(required=False)  # type: ignore[assignment]
 
     def validate_fields(self, value: Any) -> dict[str, Any]:
         if value is None:
@@ -859,6 +867,9 @@ class ClientLogSerializer(serializers.Serializer[dict[str, Any]]):
             if isinstance(val, str) and len(val) > 2000:
                 value[key] = val[:2000]
         return value
+
+    path = serializers.CharField(max_length=200, required=False, allow_blank=True)
+    release = serializers.CharField(max_length=40, required=False, allow_blank=True)
 
 
 class AnalyticsBatchSerializer(serializers.Serializer[dict[str, Any]]):
