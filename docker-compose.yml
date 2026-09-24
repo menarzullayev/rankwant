@@ -71,6 +71,15 @@ services:
     environment:
       MINIO_ROOT_USER: rankwant
       MINIO_ROOT_PASSWORD: devdevdev
+    # ADR-0028: `minio-init` `service_healthy` bilan kutadi — usiz compose
+    # «container … has no healthcheck configured» deydi va stack ko'tarilmaydi
+    # (izolyatsiya stack'ida o'lchandi 2026-09-24). Health endpoint auth
+    # so'ramaydi.
+    healthcheck:
+      test: ['CMD-SHELL', 'mc ready local || curl -fsS http://127.0.0.1:9000/minio/health/live']
+      interval: 5s
+      timeout: 3s
+      retries: 12
     ports: ['9000:9000', '9001:9001']
     volumes: ['miniodata:/data']
     # ADR-0028: ikkala tarmoqda — judge read-only user bilan o'qiydi.
