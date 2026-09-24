@@ -200,6 +200,16 @@ class Command(BaseCommand):
             action="store_true",
             help="Mavjud demo hisoblarga ham yangi parol beradi",
         )
+        parser.add_argument(
+            "--live",
+            action="store_true",
+            help=(
+                "Demo contest va arena oynasini HOZIR jonli qiladi "
+                "(standart: tugagan). Jonli oyna deploy'ni bloklaydi — "
+                "10-operations qoida №1: faol contest paytida deploy "
+                "qilinmaydi."
+            ),
+        )
 
     @transaction.atomic
     def handle(self, *args: Any, **options: Any) -> None:
@@ -248,13 +258,37 @@ class Command(BaseCommand):
             self.stdout.write("admin / admin12345 yaratildi")
 
         now = timezone.now()
+
+        # ⚠️ Jonli oyna — OPT-IN (2026-09-24). Standart: TUGAGAN demo raund.
+        #
+        # Sabab o'lchandi. `deploy.yml` ning `Demo data` qadami bu buyruqni
+        # HAR deploy'da yurgizadi. Ilgari oyna doim `now-1h → now+2h` edi,
+        # ya'ni har deploy o'zidan keyingi deploy'ni 2 soatga bloklardi:
+        # `tools/check_deploy_window.py` `is_running` ni ko'radi
+        # (`core/mixins.py`: `start_at <= now < end_at`) va qoida №1
+        # bo'yicha deploy'ni to'xtatadi.
+        #
+        #     run 35966889156 — deploy to'xtadi:
+        #     ✗ contest «demo-round-1» — 2026-09-24T13:52:30+05:00 gacha
+        #
+        # Demo ko'rsatish uchun jonli oyna kerak bo'lsa — `--live` bering.
+        live = bool(options.get("live"))
+        #: Contest: jonli bo'lsa 1 soat oldin boshlanib 2 soatdan keyin
+        #: tugaydi; aks holda kecha boshlanib kecha tugagan (tugagan raund
+        #: ham ro'yxatda, sahifalarida va reytingida ko'rinadi).
+        contest_start = now - timedelta(hours=1) if live else now - timedelta(days=1)
+        contest_end = now + timedelta(hours=2) if live else now - timedelta(hours=23)
+        #: Arena: jonli bo'lsa 3 daqiqadan keyin boshlanadi (jonli sinab
+        #: ko'rish uchun), aks holda kecha tugagan.
+        arena_start = now + timedelta(minutes=3) if live else now - timedelta(days=1)
+
         contest, _ = Contest.objects.update_or_create(
             slug="demo-round-1",
             defaults={
                 "title": "Demo Round #1",
                 "description": "Local sinov uchun",
-                "start_at": now - timedelta(hours=1),
-                "end_at": now + timedelta(hours=2),
+                "start_at": contest_start,
+                "end_at": contest_end,
                 "is_rated": True,
                 "freeze_minutes": 30,
             },
@@ -380,13 +414,15 @@ class Command(BaseCommand):
         for i, q in enumerate(questions, start=1):
             QuizQuestion.objects.get_or_create(quiz=quiz, question=q, defaults={"order": i})
 
-        # Arena: seed'dan 3 daqiqa keyin boshlanadi — jonli sinab ko'rish uchun
+        # Arena: jonli bo'lsa seed'dan 3 daqiqa keyin boshlanadi — jonli
+        # sinab ko'rish uchun (`--live`); standart holatda kecha tugagan,
+        # ya'ni deploy'ni bloklamaydi.
         arena, _ = ArenaRound.objects.update_or_create(
             slug="demo-arena",
             defaults={
                 "title": "Demo Arena",
                 "description": "4 savol, har biriga 45 s",
-                "start_at": now + timedelta(minutes=3),
+                "start_at": arena_start,
                 "seconds_per_question": 45,
                 "reward_qvant": 15,
                 "rewards_applied_at": None,
