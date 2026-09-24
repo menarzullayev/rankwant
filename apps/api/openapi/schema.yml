@@ -33,7 +33,6 @@ paths:
               $ref: '#/components/schemas/AnalyticsBatch'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -86,7 +85,6 @@ paths:
       tags:
       - arena
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -110,7 +108,6 @@ paths:
       tags:
       - arena
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -146,7 +143,6 @@ paths:
               $ref: '#/components/schemas/Answer'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -169,7 +165,6 @@ paths:
       tags:
       - arena
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -192,7 +187,6 @@ paths:
       tags:
       - arena
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -233,7 +227,6 @@ paths:
       tags:
       - arena
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -257,7 +250,6 @@ paths:
       tags:
       - arena
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -317,7 +309,6 @@ paths:
       tags:
       - articles
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -345,7 +336,6 @@ paths:
       tags:
       - articles
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -382,7 +372,6 @@ paths:
       tags:
       - attempts
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -411,7 +400,6 @@ paths:
               $ref: '#/components/schemas/AttemptCreate'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -435,7 +423,6 @@ paths:
       tags:
       - attempts
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -459,7 +446,6 @@ paths:
       tags:
       - auth
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -479,7 +465,6 @@ paths:
       tags:
       - auth
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -493,7 +478,6 @@ paths:
       tags:
       - auth
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -521,7 +505,6 @@ paths:
             schema:
               $ref: '#/components/schemas/EmailVerify'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -547,7 +530,6 @@ paths:
               $ref: '#/components/schemas/SocialLink'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -572,7 +554,6 @@ paths:
               $ref: '#/components/schemas/Login'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -589,7 +570,6 @@ paths:
       tags:
       - auth
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -619,7 +599,6 @@ paths:
               $ref: '#/components/schemas/PasswordResetRequest'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -645,7 +624,6 @@ paths:
               $ref: '#/components/schemas/PasswordResetConfirm'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -687,7 +665,6 @@ paths:
               $ref: '#/components/schemas/Register'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -715,7 +692,6 @@ paths:
       tags:
       - auth
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -740,7 +716,6 @@ paths:
       tags:
       - auth
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -761,7 +736,6 @@ paths:
       tags:
       - calendar
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -782,7 +756,6 @@ paths:
       tags:
       - certificates
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -806,7 +779,6 @@ paths:
       tags:
       - certificates
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -832,7 +804,6 @@ paths:
       tags:
       - classrooms
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -862,7 +833,6 @@ paths:
               $ref: '#/components/schemas/ClassroomCreate'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -885,7 +855,6 @@ paths:
       tags:
       - classrooms
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -918,7 +887,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedClassroom'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -940,7 +908,6 @@ paths:
       tags:
       - classrooms
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -965,7 +932,6 @@ paths:
       tags:
       - classrooms
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -1007,7 +973,6 @@ paths:
               $ref: '#/components/schemas/Classroom'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -1038,7 +1003,6 @@ paths:
       tags:
       - classrooms
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -1063,7 +1027,6 @@ paths:
               $ref: '#/components/schemas/Join'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -1072,41 +1035,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Classroom'
           description: ''
-  /api/v1/client-logs/:
-    post:
-      operationId: client_logs_create
-      description: |-
-        Brauzerdagi xatoni qabul qiladi (qaror 2026-09-24: Sentry o'rniga).
-
-        `AllowAny` — ATAYIN: eng qimmatli xato **kirilmagan** foydalanuvchida
-        bo'ladi (login sahifasi yiqilsa, u hech qachon kira olmaydi va xato
-        hech qayerga yetib bormaydi). Throttle bazani to'ldirishga yo'l
-        qo'ymaydi.
-
-        Javob har doim `204` — mijoz kutmasligi kerak va xato jurnali
-        yiqilishi foydalanuvchi oqimini to'xtatmasligi shart.
-      summary: Brauzer xato jurnalini qabul qilish
-      tags:
-      - client-logs
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ClientLog'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/ClientLog'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/ClientLog'
-        required: true
-      security:
-      - bearerAuth: []
-      - cookieAuth: []
-      - {}
-      responses:
-        '204':
-          description: No response body
   /api/v1/contests/:
     get:
       operationId: contests_list
@@ -1133,7 +1061,6 @@ paths:
       tags:
       - contests
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -1156,7 +1083,6 @@ paths:
       tags:
       - contests
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -1179,7 +1105,6 @@ paths:
       tags:
       - contests
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -1219,7 +1144,6 @@ paths:
       tags:
       - contests
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -1253,7 +1177,6 @@ paths:
       tags:
       - contests
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -1282,7 +1205,6 @@ paths:
       tags:
       - contests
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -1322,7 +1244,6 @@ paths:
       tags:
       - contests
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -1354,7 +1275,6 @@ paths:
               $ref: '#/components/schemas/OrganizerContest'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -1381,7 +1301,6 @@ paths:
       tags:
       - contests
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -1419,7 +1338,6 @@ paths:
               $ref: '#/components/schemas/OrganizerContest'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -1456,7 +1374,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedOrganizerContest'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -1482,7 +1399,6 @@ paths:
       tags:
       - contests
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -1522,7 +1438,6 @@ paths:
       tags:
       - contests
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -1555,7 +1470,6 @@ paths:
               $ref: '#/components/schemas/CustomRunCreate'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -1577,13 +1491,11 @@ paths:
       - in: path
         name: id
         schema:
-          type: integer
-        description: A unique integer value identifying this custom run.
+          type: string
         required: true
       tags:
       - custom-test
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -1622,7 +1534,6 @@ paths:
       tags:
       - duels
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -1654,7 +1565,6 @@ paths:
               $ref: '#/components/schemas/DuelCreate'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -1680,7 +1590,6 @@ paths:
       tags:
       - duels
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -1707,7 +1616,6 @@ paths:
       tags:
       - duels
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -1733,7 +1641,6 @@ paths:
       tags:
       - duels
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -1772,7 +1679,6 @@ paths:
       tags:
       - duels
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -1794,12 +1700,10 @@ paths:
         name: username
         schema:
           type: string
-        description: Foydalanuvchi taxallusi
         required: true
       tags:
       - duels
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -1839,7 +1743,6 @@ paths:
       tags:
       - hack-locks
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -1871,7 +1774,6 @@ paths:
               $ref: '#/components/schemas/HackLockCreate'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -1906,7 +1808,6 @@ paths:
       tags:
       - hackathons
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -1929,7 +1830,6 @@ paths:
       tags:
       - hackathons
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -1972,7 +1872,6 @@ paths:
       tags:
       - hackathons
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -2013,7 +1912,6 @@ paths:
               $ref: '#/components/schemas/Score'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -2047,7 +1945,6 @@ paths:
               $ref: '#/components/schemas/Submit'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -2083,7 +1980,6 @@ paths:
       tags:
       - hacks
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -2112,7 +2008,6 @@ paths:
               $ref: '#/components/schemas/HackCreate'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -2136,7 +2031,6 @@ paths:
       tags:
       - hacks
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -2165,7 +2059,6 @@ paths:
       tags:
       - hacks
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -2188,7 +2081,6 @@ paths:
       tags:
       - hacks
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -2243,7 +2135,6 @@ paths:
       tags:
       - languages
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -2266,7 +2157,6 @@ paths:
       tags:
       - languages
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -2283,7 +2173,6 @@ paths:
       tags:
       - me
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -2310,7 +2199,6 @@ paths:
               $ref: '#/components/schemas/Me'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -2336,7 +2224,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedMe'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -2352,7 +2239,6 @@ paths:
       tags:
       - me
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -2374,7 +2260,6 @@ paths:
                   type: string
                   format: binary
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -2386,7 +2271,6 @@ paths:
       tags:
       - me
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -2411,7 +2295,6 @@ paths:
               $ref: '#/components/schemas/AvatarImport'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -2425,7 +2308,6 @@ paths:
       tags:
       - me
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -2462,7 +2344,6 @@ paths:
                 $ref: '#/components/schemas/Education'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -2496,7 +2377,6 @@ paths:
               $ref: '#/components/schemas/EmailChange'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '202':
@@ -2514,7 +2394,6 @@ paths:
       tags:
       - me
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -2526,7 +2405,6 @@ paths:
       tags:
       - me
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -2561,7 +2439,6 @@ paths:
                 $ref: '#/components/schemas/ExternalIn'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -2581,7 +2458,6 @@ paths:
       tags:
       - me
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -2615,7 +2491,6 @@ paths:
               $ref: '#/components/schemas/PasswordChange'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -2628,7 +2503,6 @@ paths:
       tags:
       - me
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -2646,7 +2520,6 @@ paths:
       tags:
       - me
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -2664,7 +2537,6 @@ paths:
       tags:
       - me
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -2676,7 +2548,6 @@ paths:
       tags:
       - me
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -2711,7 +2582,6 @@ paths:
                 $ref: '#/components/schemas/SkillBadge'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -2729,7 +2599,6 @@ paths:
       tags:
       - me
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -2764,7 +2633,6 @@ paths:
                 $ref: '#/components/schemas/UserSkillIn'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -2782,7 +2650,6 @@ paths:
       tags:
       - me
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -2811,7 +2678,6 @@ paths:
               $ref: '#/components/schemas/TeamCreate'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -2827,7 +2693,6 @@ paths:
       tags:
       - me
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -2845,7 +2710,6 @@ paths:
               items:
                 type: string
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -2877,7 +2741,6 @@ paths:
       tags:
       - me
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -2905,7 +2768,6 @@ paths:
               $ref: '#/components/schemas/ApiTokenCreate'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -2923,13 +2785,11 @@ paths:
       - in: path
         name: id
         schema:
-          type: integer
-        description: A unique integer value identifying this api token.
+          type: string
         required: true
       tags:
       - me
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -2946,13 +2806,11 @@ paths:
       - in: path
         name: id
         schema:
-          type: integer
-        description: A unique integer value identifying this api token.
+          type: string
         required: true
       tags:
       - me
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -2976,7 +2834,6 @@ paths:
               $ref: '#/components/schemas/UsernameChange'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -2994,7 +2851,6 @@ paths:
       tags:
       - me
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -3031,7 +2887,6 @@ paths:
                 $ref: '#/components/schemas/Work'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -3068,7 +2923,6 @@ paths:
       tags:
       - notifications
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -3095,7 +2949,6 @@ paths:
             schema:
               $ref: '#/components/schemas/MarkRead'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -3107,7 +2960,6 @@ paths:
       tags:
       - notifications
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -3161,7 +3013,6 @@ paths:
       tags:
       - platform-roadmap
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -3194,7 +3045,6 @@ paths:
               $ref: '#/components/schemas/RoadmapItemWrite'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -3218,7 +3068,6 @@ paths:
       tags:
       - platform-roadmap
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -3288,7 +3137,6 @@ paths:
       tags:
       - platform-roadmap
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -3375,7 +3223,6 @@ paths:
               $ref: '#/components/schemas/RoadmapCommentWrite'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -3405,7 +3252,6 @@ paths:
       tags:
       - platform-roadmap
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -3428,7 +3274,6 @@ paths:
       tags:
       - platform-roadmap
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -3490,7 +3335,6 @@ paths:
       tags:
       - platform-roadmap
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -3542,7 +3386,6 @@ paths:
       tags:
       - posts
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -3566,7 +3409,6 @@ paths:
       tags:
       - posts
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -3684,7 +3526,6 @@ paths:
       tags:
       - problems
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -3711,7 +3552,6 @@ paths:
       tags:
       - problems
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -3740,7 +3580,6 @@ paths:
       tags:
       - problems
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -3766,7 +3605,6 @@ paths:
       tags:
       - problems
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -3791,7 +3629,6 @@ paths:
       tags:
       - problems
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -3829,7 +3666,6 @@ paths:
               $ref: '#/components/schemas/RateProblem'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -3869,7 +3705,6 @@ paths:
               $ref: '#/components/schemas/ReportProblem'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -3897,7 +3732,6 @@ paths:
       tags:
       - problems
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -3925,7 +3759,6 @@ paths:
       tags:
       - problems
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -3957,7 +3790,6 @@ paths:
               $ref: '#/components/schemas/Vote'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -3992,7 +3824,6 @@ paths:
       tags:
       - problems
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -4019,7 +3850,6 @@ paths:
               $ref: '#/components/schemas/MineProblem'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -4041,7 +3871,6 @@ paths:
       tags:
       - problems
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -4074,7 +3903,6 @@ paths:
               $ref: '#/components/schemas/MineProblem'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -4106,7 +3934,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedMineProblem'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -4127,7 +3954,6 @@ paths:
       tags:
       - problems
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -4145,7 +3971,6 @@ paths:
       tags:
       - problems
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -4159,7 +3984,6 @@ paths:
       tags:
       - problems
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -4187,7 +4011,6 @@ paths:
       tags:
       - problems
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -4220,7 +4043,6 @@ paths:
       tags:
       - quizzes
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -4244,7 +4066,6 @@ paths:
       tags:
       - quizzes
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -4271,16 +4092,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/QuizSubmit'
+              $ref: '#/components/schemas/Submit'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/QuizSubmit'
+              $ref: '#/components/schemas/Submit'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/QuizSubmit'
+              $ref: '#/components/schemas/Submit'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -4303,7 +4123,6 @@ paths:
       tags:
       - qvant
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -4322,13 +4141,11 @@ paths:
       - in: path
         name: id
         schema:
-          type: integer
-        description: A unique integer value identifying this user inventory.
+          type: string
         required: true
       tags:
       - qvant
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -4345,13 +4162,11 @@ paths:
       - in: path
         name: id
         schema:
-          type: integer
-        description: A unique integer value identifying this user inventory.
+          type: string
         required: true
       tags:
       - qvant
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -4368,13 +4183,11 @@ paths:
       - in: path
         name: id
         schema:
-          type: integer
-        description: A unique integer value identifying this user inventory.
+          type: string
         required: true
       tags:
       - qvant
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -4396,7 +4209,6 @@ paths:
       tags:
       - qvant
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -4409,7 +4221,6 @@ paths:
       tags:
       - qvant
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -4435,7 +4246,6 @@ paths:
       tags:
       - qvant
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -4461,7 +4271,6 @@ paths:
       tags:
       - qvant
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -4491,7 +4300,6 @@ paths:
               $ref: '#/components/schemas/Purchase'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -4527,7 +4335,6 @@ paths:
       tags:
       - qvant
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -4545,13 +4352,11 @@ paths:
       - in: path
         name: id
         schema:
-          type: integer
-        description: A unique integer value identifying this qvant transaction.
+          type: string
         required: true
       tags:
       - qvant
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -4568,7 +4373,6 @@ paths:
       tags:
       - qvant
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -4591,7 +4395,6 @@ paths:
       tags:
       - roadmaps
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -4616,7 +4419,6 @@ paths:
       tags:
       - roadmaps
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -4664,7 +4466,6 @@ paths:
       tags:
       - schools
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -4688,7 +4489,6 @@ paths:
       tags:
       - schools
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -4706,7 +4506,6 @@ paths:
       tags:
       - search
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -4719,7 +4518,6 @@ paths:
       tags:
       - skills
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -4775,7 +4573,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -4813,7 +4610,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -4841,7 +4637,6 @@ paths:
               $ref: '#/components/schemas/StaffArena'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -4864,7 +4659,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -4898,7 +4692,6 @@ paths:
               $ref: '#/components/schemas/StaffArena'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -4931,7 +4724,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedStaffArena'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -4953,7 +4745,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -4972,7 +4763,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -5008,7 +4798,6 @@ paths:
               $ref: '#/components/schemas/Reschedule'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -5032,7 +4821,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -5073,7 +4861,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -5100,7 +4887,6 @@ paths:
               $ref: '#/components/schemas/StaffArticle'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -5122,7 +4908,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -5155,7 +4940,6 @@ paths:
               $ref: '#/components/schemas/StaffArticle'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -5187,7 +4971,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedStaffArticle'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -5208,7 +4991,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -5245,7 +5027,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -5272,7 +5053,6 @@ paths:
               $ref: '#/components/schemas/StaffContest'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -5294,7 +5074,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -5327,7 +5106,6 @@ paths:
               $ref: '#/components/schemas/StaffContest'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -5359,7 +5137,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedStaffContest'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -5380,7 +5157,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -5400,7 +5176,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -5452,7 +5227,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -5515,7 +5289,6 @@ paths:
               $ref: '#/components/schemas/StaffContestProblemList'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -5578,7 +5351,6 @@ paths:
               $ref: '#/components/schemas/StaffContestProblemList'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -5600,7 +5372,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -5646,7 +5417,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -5677,7 +5447,6 @@ paths:
             schema:
               $ref: '#/components/schemas/StaffDuel'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -5704,7 +5473,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -5731,7 +5499,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -5769,7 +5536,6 @@ paths:
             schema:
               $ref: '#/components/schemas/StaffDuelFinalize'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -5822,7 +5588,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -5859,7 +5624,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -5886,7 +5650,6 @@ paths:
               $ref: '#/components/schemas/StaffHackathon'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -5908,7 +5671,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -5941,7 +5703,6 @@ paths:
               $ref: '#/components/schemas/StaffHackathon'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -5973,7 +5734,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedStaffHackathon'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -5994,7 +5754,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -6037,7 +5796,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -6077,7 +5835,6 @@ paths:
               $ref: '#/components/schemas/Score'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -6138,7 +5895,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -6165,7 +5921,6 @@ paths:
               $ref: '#/components/schemas/StaffRoadmapItem'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -6220,7 +5975,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -6252,7 +6006,6 @@ paths:
             schema:
               $ref: '#/components/schemas/StaffRoadmapComment'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -6281,7 +6034,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -6320,7 +6072,6 @@ paths:
             schema:
               $ref: '#/components/schemas/StaffRoadmapComment'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -6359,7 +6110,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedStaffRoadmapComment'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -6387,7 +6137,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -6423,7 +6172,6 @@ paths:
             schema:
               $ref: '#/components/schemas/StaffRoadmapComment'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -6463,7 +6211,6 @@ paths:
             schema:
               $ref: '#/components/schemas/StaffRoadmapComment'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -6486,7 +6233,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -6520,7 +6266,6 @@ paths:
               $ref: '#/components/schemas/StaffRoadmapItem'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -6553,7 +6298,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedStaffRoadmapItem'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -6575,7 +6319,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -6606,7 +6349,6 @@ paths:
               $ref: '#/components/schemas/StaffRoadmapItem'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -6647,7 +6389,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -6674,7 +6415,6 @@ paths:
               $ref: '#/components/schemas/StaffPost'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -6696,7 +6436,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -6729,7 +6468,6 @@ paths:
               $ref: '#/components/schemas/StaffPost'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -6761,7 +6499,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedStaffPost'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -6782,7 +6519,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -6812,7 +6548,6 @@ paths:
               $ref: '#/components/schemas/StaffPost'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -6846,7 +6581,6 @@ paths:
               $ref: '#/components/schemas/StaffPost'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -6891,7 +6625,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -6921,7 +6654,6 @@ paths:
             schema:
               $ref: '#/components/schemas/StaffProblemReport'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -6948,7 +6680,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -6985,7 +6716,6 @@ paths:
             schema:
               $ref: '#/components/schemas/StaffProblemReport'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -7022,7 +6752,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedStaffProblemReport'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -7048,7 +6777,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -7085,7 +6813,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -7112,7 +6839,6 @@ paths:
               $ref: '#/components/schemas/StaffProblem'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -7134,7 +6860,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -7167,7 +6892,6 @@ paths:
               $ref: '#/components/schemas/StaffProblem'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -7199,7 +6923,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedStaffProblem'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -7220,7 +6943,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -7243,7 +6965,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -7289,7 +7010,6 @@ paths:
               $ref: '#/components/schemas/StaffReferenceSolution'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -7323,7 +7043,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -7377,7 +7096,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -7440,7 +7158,6 @@ paths:
               $ref: '#/components/schemas/TestCaseUpload'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -7474,7 +7191,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -7498,7 +7214,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -7545,7 +7260,6 @@ paths:
               $ref: '#/components/schemas/StaffValidator'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -7580,7 +7294,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -7630,7 +7343,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -7658,7 +7370,6 @@ paths:
               $ref: '#/components/schemas/StaffQuestion'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -7682,7 +7393,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -7717,7 +7427,6 @@ paths:
               $ref: '#/components/schemas/StaffQuestion'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -7751,7 +7460,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedStaffQuestion'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -7774,7 +7482,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -7814,7 +7521,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -7844,7 +7550,6 @@ paths:
               $ref: '#/components/schemas/StaffQuest'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -7869,7 +7574,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -7905,7 +7609,6 @@ paths:
               $ref: '#/components/schemas/StaffQuest'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -7940,7 +7643,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedStaffQuest'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -7964,7 +7666,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -7993,7 +7694,6 @@ paths:
               $ref: '#/components/schemas/StaffQuest'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -8034,7 +7734,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -8061,7 +7760,6 @@ paths:
               $ref: '#/components/schemas/StaffQuiz'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -8083,7 +7781,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -8116,7 +7813,6 @@ paths:
               $ref: '#/components/schemas/StaffQuiz'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -8148,7 +7844,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedStaffQuiz'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -8169,7 +7864,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -8206,7 +7900,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -8233,7 +7926,6 @@ paths:
               $ref: '#/components/schemas/StaffRoadmap'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -8255,7 +7947,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -8288,7 +7979,6 @@ paths:
               $ref: '#/components/schemas/StaffRoadmap'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -8320,7 +8010,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedStaffRoadmap'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -8341,7 +8030,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -8378,7 +8066,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -8405,7 +8092,6 @@ paths:
               $ref: '#/components/schemas/StaffSchool'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -8428,7 +8114,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -8461,7 +8146,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedStaffSchool'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -8483,7 +8167,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -8521,7 +8204,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -8549,7 +8231,6 @@ paths:
               $ref: '#/components/schemas/StaffShopItem'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -8572,7 +8253,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -8606,7 +8286,6 @@ paths:
               $ref: '#/components/schemas/StaffShopItem'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -8639,7 +8318,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedStaffShopItem'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -8661,7 +8339,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -8698,7 +8375,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -8725,7 +8401,6 @@ paths:
               $ref: '#/components/schemas/StaffTopic'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -8747,7 +8422,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -8780,7 +8454,6 @@ paths:
               $ref: '#/components/schemas/StaffTopic'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -8812,7 +8485,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedStaffTopic'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -8833,7 +8505,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -8870,7 +8541,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -8897,7 +8567,6 @@ paths:
               $ref: '#/components/schemas/StaffTournament'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -8919,7 +8588,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -8952,7 +8620,6 @@ paths:
               $ref: '#/components/schemas/StaffTournament'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -8984,7 +8651,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedStaffTournament'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -9005,7 +8671,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -9023,7 +8688,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -9132,7 +8796,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -9159,7 +8822,6 @@ paths:
               $ref: '#/components/schemas/StaffSystemUpdate'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -9182,7 +8844,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -9216,7 +8877,6 @@ paths:
               $ref: '#/components/schemas/StaffSystemUpdate'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -9249,7 +8909,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedStaffSystemUpdate'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -9271,7 +8930,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -9303,7 +8961,6 @@ paths:
               $ref: '#/components/schemas/StaffSystemUpdate'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -9338,7 +8995,6 @@ paths:
               $ref: '#/components/schemas/StaffSystemUpdate'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -9373,7 +9029,6 @@ paths:
               $ref: '#/components/schemas/StaffSystemUpdate'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -9408,7 +9063,6 @@ paths:
               $ref: '#/components/schemas/StaffSystemUpdate'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -9449,7 +9103,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -9475,7 +9128,6 @@ paths:
             schema:
               $ref: '#/components/schemas/StaffUser'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '201':
@@ -9498,7 +9150,6 @@ paths:
       tags:
       - staff
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -9531,7 +9182,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedStaffUser'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -9565,7 +9215,6 @@ paths:
             schema:
               $ref: '#/components/schemas/StaffUser'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -9600,7 +9249,6 @@ paths:
             schema:
               $ref: '#/components/schemas/StaffUser'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -9627,7 +9275,6 @@ paths:
             schema:
               $ref: '#/components/schemas/StaffUser'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -9667,7 +9314,6 @@ paths:
       tags:
       - teams
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -9685,7 +9331,6 @@ paths:
       tags:
       - teams
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -9708,7 +9353,6 @@ paths:
       tags:
       - teams
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '204':
@@ -9726,7 +9370,6 @@ paths:
       tags:
       - teams
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -9754,7 +9397,6 @@ paths:
               $ref: '#/components/schemas/TeamJoin'
         required: true
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -9770,7 +9412,6 @@ paths:
       tags:
       - technologies
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -9809,7 +9450,6 @@ paths:
       tags:
       - topics
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -9839,7 +9479,6 @@ paths:
       tags:
       - topics
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -9875,7 +9514,6 @@ paths:
       tags:
       - tournaments
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -9898,7 +9536,6 @@ paths:
       tags:
       - tournaments
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -9939,7 +9576,6 @@ paths:
       tags:
       - tournaments
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -10043,7 +9679,6 @@ paths:
       tags:
       - updates
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -10069,7 +9704,6 @@ paths:
       tags:
       - updates
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -10179,7 +9813,6 @@ paths:
       tags:
       - updates
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -10208,7 +9841,6 @@ paths:
             schema:
               $ref: '#/components/schemas/UpdateMarkRead'
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -10306,7 +9938,6 @@ paths:
       tags:
       - updates
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -10408,7 +10039,6 @@ paths:
       tags:
       - updates
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -10426,7 +10056,6 @@ paths:
       tags:
       - updates
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -10458,7 +10087,6 @@ paths:
       tags:
       - users
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -10483,7 +10111,6 @@ paths:
       tags:
       - users
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -10506,7 +10133,6 @@ paths:
       tags:
       - users
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -10529,7 +10155,6 @@ paths:
       tags:
       - users
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -10553,7 +10178,6 @@ paths:
       tags:
       - users
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -10591,7 +10215,6 @@ paths:
       tags:
       - users
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -10619,7 +10242,6 @@ paths:
       tags:
       - users
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -10638,7 +10260,6 @@ paths:
       tags:
       - users
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -10655,7 +10276,6 @@ paths:
       tags:
       - users
       security:
-      - bearerAuth: []
       - cookieAuth: []
       responses:
         '200':
@@ -10699,7 +10319,6 @@ paths:
       tags:
       - users
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -10748,7 +10367,6 @@ paths:
       tags:
       - users
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -10772,7 +10390,6 @@ paths:
       tags:
       - users
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -10791,7 +10408,6 @@ paths:
       tags:
       - users
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -10810,7 +10426,6 @@ paths:
       tags:
       - users
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -10850,7 +10465,6 @@ paths:
       tags:
       - users
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -10874,7 +10488,6 @@ paths:
       tags:
       - users
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -10918,7 +10531,6 @@ paths:
       tags:
       - users
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -10942,7 +10554,6 @@ paths:
       tags:
       - users
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -10963,7 +10574,6 @@ paths:
       tags:
       - users
       security:
-      - bearerAuth: []
       - cookieAuth: []
       - {}
       responses:
@@ -11102,8 +10712,9 @@ components:
           readOnly: true
         seconds_per_question:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         question_count:
           type: integer
           readOnly: true
@@ -11112,8 +10723,9 @@ components:
           readOnly: true
         reward_qvant:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         is_running:
           type: boolean
           readOnly: true
@@ -11150,8 +10762,9 @@ components:
           readOnly: true
         seconds_per_question:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         question_count:
           type: integer
           readOnly: true
@@ -11160,8 +10773,9 @@ components:
           readOnly: true
         reward_qvant:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         is_running:
           type: boolean
           readOnly: true
@@ -11216,7 +10830,7 @@ components:
           maxLength: 120
           pattern: ^[-a-zA-Z0-9_]+$
         kind:
-          $ref: '#/components/schemas/ArticleKindEnum'
+          $ref: '#/components/schemas/Kind910Enum'
         title:
           type: string
           maxLength: 200
@@ -11225,8 +10839,9 @@ components:
           maxLength: 300
         difficulty:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         locale:
           type: string
           maxLength: 2
@@ -11237,8 +10852,9 @@ components:
           readOnly: true
         reading_minutes:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         problem_count:
           type: integer
           readOnly: true
@@ -11266,14 +10882,6 @@ components:
       - slug
       - title
       - topics
-    ArticleKindEnum:
-      enum:
-      - article
-      - algorithm
-      type: string
-      description: |-
-        * `article` - Maqola
-        * `algorithm` - Algoritm
     ArticleList:
       type: object
       properties:
@@ -11282,7 +10890,7 @@ components:
           maxLength: 120
           pattern: ^[-a-zA-Z0-9_]+$
         kind:
-          $ref: '#/components/schemas/ArticleKindEnum'
+          $ref: '#/components/schemas/Kind910Enum'
         title:
           type: string
           maxLength: 200
@@ -11291,8 +10899,9 @@ components:
           maxLength: 300
         difficulty:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         locale:
           type: string
           maxLength: 2
@@ -11303,8 +10912,9 @@ components:
           readOnly: true
         reading_minutes:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         problem_count:
           type: integer
           readOnly: true
@@ -11359,8 +10969,9 @@ components:
           maxLength: 200
         size_bytes:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
       required:
       - name
       - url
@@ -11391,20 +11002,24 @@ components:
           $ref: '#/components/schemas/VerdictEnum'
         score:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         time_ms:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         memory_kb:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         failed_test_index:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           nullable: true
         created_at:
           type: string
@@ -11416,8 +11031,9 @@ components:
           nullable: true
         source_size:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
       required:
       - contest
       - created_at
@@ -11472,20 +11088,24 @@ components:
           $ref: '#/components/schemas/VerdictEnum'
         score:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         time_ms:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         memory_kb:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         failed_test_index:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           nullable: true
         created_at:
           type: string
@@ -11497,8 +11117,9 @@ components:
           nullable: true
         source_size:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         source_code:
           type: string
         compile_output:
@@ -11523,18 +11144,21 @@ components:
       properties:
         index:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         verdict:
           $ref: '#/components/schemas/VerdictEnum'
         time_ms:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         memory_kb:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
       required:
       - index
       - verdict
@@ -11579,12 +11203,14 @@ components:
           readOnly: true
         place:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         participants:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         tier:
           $ref: '#/components/schemas/TierEnum'
         issued_at:
@@ -11621,8 +11247,9 @@ components:
           readOnly: true
         order:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         text:
           type: string
           maxLength: 500
@@ -11674,36 +11301,6 @@ components:
       required:
       - name
       - slug
-    ClientLog:
-      type: object
-      description: |-
-        Brauzerdan kelgan xato yozuvi (qaror 2026-09-24).
-
-        ⚠️ Bu **kirish** serializer'i, model emas: maydonlar cheklanadi,
-        chunki manba — brauzer, ya'ni unga ishonib bo'lmaydi. `message`
-        va `fields` hajmi qat'iy cheklanadi: usiz bitta buzuq mijoz
-        jadvalni megabaytlab to'ldirib qo'yardi.
-      properties:
-        level:
-          allOf:
-          - $ref: '#/components/schemas/LevelEnum'
-          default: error
-        scope:
-          type: string
-          maxLength: 40
-        message:
-          type: string
-          maxLength: 300
-        fields: {}
-        path:
-          type: string
-          maxLength: 200
-        release:
-          type: string
-          maxLength: 40
-      required:
-      - message
-      - scope
     Contest:
       type: object
       properties:
@@ -11728,8 +11325,9 @@ components:
           type: boolean
         freeze_minutes:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           description: Oxirgi N daqiqada standings muzlatiladi
         is_running:
           type: boolean
@@ -11783,8 +11381,9 @@ components:
           type: boolean
         freeze_minutes:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           description: Oxirgi N daqiqada standings muzlatiladi
         is_running:
           type: boolean
@@ -11836,8 +11435,9 @@ components:
           readOnly: true
         points:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
       required:
       - index_letter
       - slug
@@ -11879,12 +11479,14 @@ components:
           type: string
         time_ms:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         memory_kb:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         created_at:
           type: string
           format: date-time
@@ -11923,7 +11525,7 @@ components:
           type: string
           maxLength: 120
         status:
-          $ref: '#/components/schemas/DuelStatusEnum'
+          $ref: '#/components/schemas/Status8d9Enum'
         challenger:
           type: string
           description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
@@ -11936,16 +11538,19 @@ components:
           readOnly: true
         problem_count:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         difficulty:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         duration_minutes:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         start_at:
           type: string
           format: date-time
@@ -11963,12 +11568,14 @@ components:
           readOnly: true
         challenger_solved:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         opponent_solved:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         is_draw:
           type: boolean
         problems:
@@ -12037,18 +11644,6 @@ components:
       - draws
       - losses
       - wins
-    DuelStatusEnum:
-      enum:
-      - open
-      - accepted
-      - finished
-      - cancelled
-      type: string
-      description: |-
-        * `open` - Kutilmoqda
-        * `accepted` - Qabul qilindi
-        * `finished` - Tugadi
-        * `cancelled` - Bekor qilindi
     Education:
       type: object
       description: Yil + oy. `current=True` yoki tugash yili yo'q — hozirgacha.
@@ -12061,8 +11656,9 @@ components:
           maxLength: 100
         start_year:
           type: integer
-          maximum: 32767
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           nullable: true
         start_month:
           type: integer
@@ -12071,8 +11667,9 @@ components:
           nullable: true
         end_year:
           type: integer
-          maximum: 32767
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           nullable: true
         end_month:
           type: integer
@@ -12126,13 +11723,15 @@ components:
           maxLength: 200
         rating:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
           nullable: true
         max_rating:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
           nullable: true
         rank:
           type: string
@@ -12212,8 +11811,9 @@ components:
           readOnly: true
         rating_contest:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
         last_seen:
           type: string
           format: date-time
@@ -12265,7 +11865,7 @@ components:
           $ref: '#/components/schemas/PolicyEnum'
         status:
           allOf:
-          - $ref: '#/components/schemas/HackStatusEnum'
+          - $ref: '#/components/schemas/Status713Enum'
           default: TESTING
         stage:
           $ref: '#/components/schemas/StageEnum'
@@ -12282,12 +11882,14 @@ components:
           readOnly: true
         points:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
         input_size:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         created_at:
           type: string
           format: date-time
@@ -12358,7 +11960,7 @@ components:
           $ref: '#/components/schemas/PolicyEnum'
         status:
           allOf:
-          - $ref: '#/components/schemas/HackStatusEnum'
+          - $ref: '#/components/schemas/Status713Enum'
           default: TESTING
         stage:
           $ref: '#/components/schemas/StageEnum'
@@ -12375,12 +11977,14 @@ components:
           readOnly: true
         points:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
         input_size:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         created_at:
           type: string
           format: date-time
@@ -12498,24 +12102,6 @@ components:
       required:
       - members
       - number
-    HackStatusEnum:
-      enum:
-      - TESTING
-      - SUCCESSFUL
-      - UNSUCCESSFUL
-      - INVALID_INPUT
-      - GENERATOR_CRASHED
-      - IGNORED
-      - RATE_LIMITED
-      type: string
-      description: |-
-        * `TESTING` - Tekshirilmoqda
-        * `SUCCESSFUL` - Muvaffaqiyatli
-        * `UNSUCCESSFUL` - Muvaffaqiyatsiz
-        * `INVALID_INPUT` - Kiritma yaroqsiz
-        * `GENERATOR_CRASHED` - Generator yiqildi
-        * `IGNORED` - Hisobga olinmadi
-        * `RATE_LIMITED` - Tezlik chegarasi
     Hackathon:
       type: object
       properties:
@@ -12585,6 +12171,60 @@ components:
           maxLength: 12
       required:
       - join_code
+    Kind598Enum:
+      enum:
+      - school
+      - lyceum
+      - university
+      - other
+      type: string
+      description: |-
+        * `school` - Maktab
+        * `lyceum` - Litsey
+        * `university` - Universitet
+        * `other` - Boshqa
+    Kind59eEnum:
+      enum:
+      - news
+      - announcement
+      - editorial
+      type: string
+      description: |-
+        * `news` - Yangilik
+        * `announcement` - E'lon
+        * `editorial` - Muharrir maqolasi
+    Kind910Enum:
+      enum:
+      - article
+      - algorithm
+      type: string
+      description: |-
+        * `article` - Maqola
+        * `algorithm` - Algoritm
+    KindD6cEnum:
+      enum:
+      - new
+      - improved
+      - fixed
+      - performance
+      - security
+      - design
+      - content
+      - infrastructure
+      - breaking
+      - deprecated
+      type: string
+      description: |-
+        * `new` - Yangi
+        * `improved` - Yaxshilandi
+        * `fixed` - Tuzatildi
+        * `performance` - Tezlik
+        * `security` - Xavfsizlik
+        * `design` - Dizayn
+        * `content` - Kontent
+        * `infrastructure` - Infratuzilma
+        * `breaking` - Buzuvchi
+        * `deprecated` - Olib tashlanadi
     Language:
       type: object
       properties:
@@ -12601,18 +12241,6 @@ components:
       required:
       - code
       - name
-    LevelEnum:
-      enum:
-      - debug
-      - info
-      - warn
-      - error
-      type: string
-      description: |-
-        * `debug` - debug
-        * `info` - info
-        * `warn` - warn
-        * `error` - error
     LinkedProblem:
       type: object
       properties:
@@ -13022,8 +12650,9 @@ components:
           format: date-time
         freeze_minutes:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           description: Oxirgi N daqiqada standings muzlatiladi
         scoring_type:
           $ref: '#/components/schemas/ScoringTypeEnum'
@@ -14639,8 +14268,9 @@ components:
           format: date-time
         freeze_minutes:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           description: Oxirgi N daqiqada standings muzlatiladi
         scoring_type:
           $ref: '#/components/schemas/ScoringTypeEnum'
@@ -14671,12 +14301,14 @@ components:
           readOnly: true
         seconds_per_question:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         reward_qvant:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         is_public:
           type: boolean
         questions:
@@ -14714,7 +14346,7 @@ components:
           maxLength: 120
           pattern: ^[-a-zA-Z0-9_]+$
         kind:
-          $ref: '#/components/schemas/ArticleKindEnum'
+          $ref: '#/components/schemas/Kind910Enum'
         title:
           type: string
           maxLength: 200
@@ -14729,8 +14361,9 @@ components:
           maxLength: 2
         difficulty:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         topics:
           type: array
           items:
@@ -14739,8 +14372,9 @@ components:
           type: boolean
         reading_minutes:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         problems:
           type: array
           items:
@@ -14785,8 +14419,9 @@ components:
           format: date-time
         freeze_minutes:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           description: Oxirgi N daqiqada standings muzlatiladi
         scoring_type:
           $ref: '#/components/schemas/ScoringTypeEnum'
@@ -14865,7 +14500,7 @@ components:
           maxLength: 120
           pattern: ^[-a-zA-Z0-9_]+$
         kind:
-          $ref: '#/components/schemas/PostKindEnum'
+          $ref: '#/components/schemas/Kind59eEnum'
         title:
           type: string
           maxLength: 200
@@ -14937,8 +14572,9 @@ components:
           description: Markdown + LaTeX
         editorial_price:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         statement_locale:
           type: string
           maxLength: 2
@@ -14953,12 +14589,14 @@ components:
             type: string
         time_limit_ms:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         memory_limit_kb:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         checker_type:
           $ref: '#/components/schemas/CheckerTypeEnum'
         interactor_source:
@@ -15019,7 +14657,7 @@ components:
           readOnly: true
         reason:
           allOf:
-          - $ref: '#/components/schemas/ProblemReportReasonEnum'
+          - $ref: '#/components/schemas/Reason432Enum'
           readOnly: true
         comment:
           type: string
@@ -15053,8 +14691,9 @@ components:
           maxLength: 120
         reward:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         is_active:
           type: boolean
         completion_count:
@@ -15075,8 +14714,9 @@ components:
           description: Javobdan keyin ko'rsatiladi
         difficulty:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         topics:
           type: array
           items:
@@ -15108,8 +14748,9 @@ components:
           type: string
         reward_qvant:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         is_published:
           type: boolean
         questions:
@@ -15140,8 +14781,9 @@ components:
           type: boolean
         order:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         steps:
           type: array
           items:
@@ -15194,7 +14836,7 @@ components:
           description: Markdown
         status:
           allOf:
-          - $ref: '#/components/schemas/RoadmapItemStatusEnum'
+          - $ref: '#/components/schemas/StatusA32Enum'
           readOnly: true
         target_quarter:
           type: string
@@ -15252,7 +14894,7 @@ components:
           type: string
           maxLength: 200
         kind:
-          $ref: '#/components/schemas/SchoolKindEnum'
+          $ref: '#/components/schemas/Kind598Enum'
         country:
           type: string
           maxLength: 2
@@ -15297,8 +14939,9 @@ components:
           maxLength: 120
         price:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         asset_ref:
           type: string
           maxLength: 200
@@ -15318,11 +14961,11 @@ components:
           type: integer
           readOnly: true
         kind:
-          $ref: '#/components/schemas/SystemUpdateKindEnum'
+          $ref: '#/components/schemas/KindD6cEnum'
         module:
           $ref: '#/components/schemas/ModuleEnum'
         status:
-          $ref: '#/components/schemas/SystemUpdateStatusEnum'
+          $ref: '#/components/schemas/Status144Enum'
         version:
           type: string
           maxLength: 32
@@ -15518,7 +15161,7 @@ components:
           maxLength: 120
           pattern: ^[-a-zA-Z0-9_]+$
         kind:
-          $ref: '#/components/schemas/PostKindEnum'
+          $ref: '#/components/schemas/Kind59eEnum'
         title:
           type: string
           maxLength: 200
@@ -15543,16 +15186,6 @@ components:
       - body
       - slug
       - title
-    PostKindEnum:
-      enum:
-      - news
-      - announcement
-      - editorial
-      type: string
-      description: |-
-        * `news` - Yangilik
-        * `announcement` - E'lon
-        * `editorial` - Muharrir maqolasi
     PostList:
       type: object
       properties:
@@ -15561,7 +15194,7 @@ components:
           maxLength: 120
           pattern: ^[-a-zA-Z0-9_]+$
         kind:
-          $ref: '#/components/schemas/PostKindEnum'
+          $ref: '#/components/schemas/Kind59eEnum'
         title:
           type: string
           maxLength: 200
@@ -15610,16 +15243,19 @@ components:
           readOnly: true
         solved_count:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         attempt_count:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         view_count:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         success_rate:
           type: integer
           nullable: true
@@ -15652,20 +15288,23 @@ components:
           readOnly: true
         code:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           nullable: true
         has_tests:
           type: boolean
           readOnly: true
         likes_count:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         dislikes_count:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         author:
           type: object
           additionalProperties: {}
@@ -15724,8 +15363,9 @@ components:
           type: boolean
         source_rating:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           nullable: true
         statement:
           type: string
@@ -15752,12 +15392,14 @@ components:
           maxLength: 2
         time_limit_ms:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         memory_limit_kb:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         checker_type:
           $ref: '#/components/schemas/CheckerTypeEnum'
         source:
@@ -15850,16 +15492,19 @@ components:
           readOnly: true
         solved_count:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         attempt_count:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         view_count:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         success_rate:
           type: integer
           nullable: true
@@ -15892,20 +15537,23 @@ components:
           readOnly: true
         code:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           nullable: true
         has_tests:
           type: boolean
           readOnly: true
         likes_count:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         dislikes_count:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         author:
           type: object
           additionalProperties: {}
@@ -15930,20 +15578,6 @@ components:
       - success_rate
       - title
       - topics
-    ProblemReportReasonEnum:
-      enum:
-      - statement
-      - tests
-      - translation
-      - duplicate
-      - other
-      type: string
-      description: |-
-        * `statement` - Matnda xato
-        * `tests` - Testlar noto'g'ri
-        * `translation` - Tarjima xato
-        * `duplicate` - Takroriy masala
-        * `other` - Boshqa
     ProviderEnum:
       enum:
       - google
@@ -15982,8 +15616,9 @@ components:
           maxLength: 120
         reward:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         done:
           type: boolean
           readOnly: true
@@ -16005,8 +15640,9 @@ components:
           description: Markdown + LaTeX
         difficulty:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         topics:
           type: array
           items:
@@ -16036,8 +15672,9 @@ components:
           type: string
         reward_qvant:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         question_count:
           type: integer
           readOnly: true
@@ -16069,8 +15706,9 @@ components:
           type: string
         reward_qvant:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         question_count:
           type: integer
           readOnly: true
@@ -16103,16 +15741,19 @@ components:
           readOnly: true
         score:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         total:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         qvant_awarded:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         review:
           type: array
           items:
@@ -16126,15 +15767,6 @@ components:
       - created_at
       - id
       - review
-    QuizSubmit:
-      type: object
-      properties:
-        answers:
-          type: object
-          additionalProperties:
-            type: integer
-      required:
-      - answers
     RateProblem:
       type: object
       properties:
@@ -16157,16 +15789,19 @@ components:
           $ref: '#/components/schemas/RatingTypeEnum'
         value_before:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
         value_after:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
         delta:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
         reason:
           $ref: '#/components/schemas/RatingHistoryReasonEnum'
         ref_type:
@@ -16181,8 +15816,9 @@ components:
           nullable: true
         rank:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           nullable: true
         created_at:
           type: string
@@ -16221,6 +15857,20 @@ components:
         * `contest` - Contests
         * `activity` - Activity
         * `challenges` - Challenges
+    Reason432Enum:
+      enum:
+      - statement
+      - tests
+      - translation
+      - duplicate
+      - other
+      type: string
+      description: |-
+        * `statement` - Matnda xato
+        * `tests` - Testlar noto'g'ri
+        * `translation` - Tarjima xato
+        * `duplicate` - Takroriy masala
+        * `other` - Boshqa
     Register:
       type: object
       properties:
@@ -16279,7 +15929,7 @@ components:
       type: object
       properties:
         reason:
-          $ref: '#/components/schemas/ProblemReportReasonEnum'
+          $ref: '#/components/schemas/Reason432Enum'
         comment:
           type: string
           maxLength: 2000
@@ -16407,7 +16057,7 @@ components:
           type: string
           description: Markdown
         status:
-          $ref: '#/components/schemas/RoadmapItemStatusEnum'
+          $ref: '#/components/schemas/StatusA32Enum'
         target_quarter:
           type: string
           maxLength: 24
@@ -16462,20 +16112,6 @@ components:
       - update_id
       - update_title
       - vote_count
-    RoadmapItemStatusEnum:
-      enum:
-      - suggested
-      - planned
-      - in_progress
-      - released
-      - declined
-      type: string
-      description: |-
-        * `suggested` - Ko'rib chiqilmoqda
-        * `planned` - Rejalashtirilgan
-        * `in_progress` - Ishlanmoqda
-        * `released` - Chiqarildi
-        * `declined` - Rad etilgan
     RoadmapItemWrite:
       type: object
       description: |-
@@ -16531,8 +16167,9 @@ components:
       properties:
         order:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         title:
           type: string
           maxLength: 200
@@ -16579,7 +16216,7 @@ components:
           type: string
           maxLength: 200
         kind:
-          $ref: '#/components/schemas/SchoolKindEnum'
+          $ref: '#/components/schemas/Kind598Enum'
         region:
           type: string
           maxLength: 40
@@ -16596,18 +16233,6 @@ components:
       - id
       - members
       - name
-    SchoolKindEnum:
-      enum:
-      - school
-      - lyceum
-      - university
-      - other
-      type: string
-      description: |-
-        * `school` - Maktab
-        * `lyceum` - Litsey
-        * `university` - Universitet
-        * `other` - Boshqa
     ScopesEnum:
       enum:
       - read
@@ -16702,8 +16327,9 @@ components:
           maxLength: 120
         price:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         is_consumable:
           type: boolean
         owned:
@@ -16800,8 +16426,9 @@ components:
           readOnly: true
         difficulty_at_solve:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         first_ac_at:
           type: string
           format: date-time
@@ -16850,12 +16477,14 @@ components:
           readOnly: true
         seconds_per_question:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         reward_qvant:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         is_public:
           type: boolean
         questions:
@@ -16904,7 +16533,7 @@ components:
           maxLength: 120
           pattern: ^[-a-zA-Z0-9_]+$
         kind:
-          $ref: '#/components/schemas/ArticleKindEnum'
+          $ref: '#/components/schemas/Kind910Enum'
         title:
           type: string
           maxLength: 200
@@ -16919,8 +16548,9 @@ components:
           maxLength: 2
         difficulty:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         topics:
           type: array
           items:
@@ -16929,8 +16559,9 @@ components:
           type: boolean
         reading_minutes:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         problems:
           type: array
           items:
@@ -16973,8 +16604,9 @@ components:
           $ref: '#/components/schemas/RoleEnum'
         order:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
       required:
       - problem
     StaffChoice:
@@ -17015,8 +16647,9 @@ components:
           format: date-time
         freeze_minutes:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           description: Oxirgi N daqiqada standings muzlatiladi
         scoring_type:
           $ref: '#/components/schemas/ScoringTypeEnum'
@@ -17070,8 +16703,9 @@ components:
           maxLength: 3
         points:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         title:
           type: string
           readOnly: true
@@ -17108,7 +16742,7 @@ components:
           readOnly: true
         status:
           allOf:
-          - $ref: '#/components/schemas/DuelStatusEnum'
+          - $ref: '#/components/schemas/Status8d9Enum'
           readOnly: true
         challenger:
           type: string
@@ -17250,7 +16884,7 @@ components:
           maxLength: 120
           pattern: ^[-a-zA-Z0-9_]+$
         kind:
-          $ref: '#/components/schemas/PostKindEnum'
+          $ref: '#/components/schemas/Kind59eEnum'
         title:
           type: string
           maxLength: 200
@@ -17330,8 +16964,9 @@ components:
           description: Markdown + LaTeX
         editorial_price:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         statement_locale:
           type: string
           maxLength: 2
@@ -17346,12 +16981,14 @@ components:
             type: string
         time_limit_ms:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         memory_limit_kb:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         checker_type:
           $ref: '#/components/schemas/CheckerTypeEnum'
         interactor_source:
@@ -17424,7 +17061,7 @@ components:
           readOnly: true
         reason:
           allOf:
-          - $ref: '#/components/schemas/ProblemReportReasonEnum'
+          - $ref: '#/components/schemas/Reason432Enum'
           readOnly: true
         comment:
           type: string
@@ -17475,8 +17112,9 @@ components:
           maxLength: 120
         reward:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         is_active:
           type: boolean
         completion_count:
@@ -17504,8 +17142,9 @@ components:
           description: Javobdan keyin ko'rsatiladi
         difficulty:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         topics:
           type: array
           items:
@@ -17542,8 +17181,9 @@ components:
           type: string
         reward_qvant:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         is_published:
           type: boolean
         questions:
@@ -17595,8 +17235,9 @@ components:
           type: boolean
         order:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         steps:
           type: array
           items:
@@ -17660,7 +17301,7 @@ components:
           description: Markdown
         status:
           allOf:
-          - $ref: '#/components/schemas/RoadmapItemStatusEnum'
+          - $ref: '#/components/schemas/StatusA32Enum'
           readOnly: true
         target_quarter:
           type: string
@@ -17749,7 +17390,7 @@ components:
           type: string
           maxLength: 200
         kind:
-          $ref: '#/components/schemas/SchoolKindEnum'
+          $ref: '#/components/schemas/Kind598Enum'
         country:
           type: string
           maxLength: 2
@@ -17799,8 +17440,9 @@ components:
           maxLength: 120
         price:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         asset_ref:
           type: string
           maxLength: 200
@@ -17910,11 +17552,11 @@ components:
           type: integer
           readOnly: true
         kind:
-          $ref: '#/components/schemas/SystemUpdateKindEnum'
+          $ref: '#/components/schemas/KindD6cEnum'
         module:
           $ref: '#/components/schemas/ModuleEnum'
         status:
-          $ref: '#/components/schemas/SystemUpdateStatusEnum'
+          $ref: '#/components/schemas/Status144Enum'
         version:
           type: string
           maxLength: 32
@@ -17988,14 +17630,16 @@ components:
           readOnly: true
         order:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         is_sample:
           type: boolean
         points:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         input_ref:
           type: string
           maxLength: 500
@@ -18171,8 +17815,9 @@ components:
       properties:
         order:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         title:
           type: string
           maxLength: 120
@@ -18192,8 +17837,9 @@ components:
           readOnly: true
         weight:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         is_finished:
           type: boolean
           readOnly: true
@@ -18222,8 +17868,9 @@ components:
       properties:
         rank:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         username:
           type: string
           readOnly: true
@@ -18234,28 +17881,34 @@ components:
           readOnly: true
         solved_count:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         penalty:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         total_score:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         hack_score:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
         hacks_successful:
           type: integer
-          maximum: 32767
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         hacks_unsuccessful:
           type: integer
-          maximum: 32767
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         last_ac_at:
           type: string
           format: date-time
@@ -18263,6 +17916,60 @@ components:
       required:
       - user_title
       - username
+    Status144Enum:
+      enum:
+      - draft
+      - published
+      - withdrawn
+      type: string
+      description: |-
+        * `draft` - Qoralama
+        * `published` - Nashr etilgan
+        * `withdrawn` - Nashrdan olingan
+    Status713Enum:
+      enum:
+      - TESTING
+      - SUCCESSFUL
+      - UNSUCCESSFUL
+      - INVALID_INPUT
+      - GENERATOR_CRASHED
+      - IGNORED
+      - RATE_LIMITED
+      type: string
+      description: |-
+        * `TESTING` - Tekshirilmoqda
+        * `SUCCESSFUL` - Muvaffaqiyatli
+        * `UNSUCCESSFUL` - Muvaffaqiyatsiz
+        * `INVALID_INPUT` - Kiritma yaroqsiz
+        * `GENERATOR_CRASHED` - Generator yiqildi
+        * `IGNORED` - Hisobga olinmadi
+        * `RATE_LIMITED` - Tezlik chegarasi
+    Status8d9Enum:
+      enum:
+      - open
+      - accepted
+      - finished
+      - cancelled
+      type: string
+      description: |-
+        * `open` - Kutilmoqda
+        * `accepted` - Qabul qilindi
+        * `finished` - Tugadi
+        * `cancelled` - Bekor qilindi
+    StatusA32Enum:
+      enum:
+      - suggested
+      - planned
+      - in_progress
+      - released
+      - declined
+      type: string
+      description: |-
+        * `suggested` - Ko'rib chiqilmoqda
+        * `planned` - Rejalashtirilgan
+        * `in_progress` - Ishlanmoqda
+        * `released` - Chiqarildi
+        * `declined` - Rad etilgan
     Submission:
       type: object
       properties:
@@ -18298,8 +18005,9 @@ components:
           readOnly: true
         score:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           nullable: true
           description: 0–100
         feedback:
@@ -18345,11 +18053,11 @@ components:
           type: integer
           readOnly: true
         kind:
-          $ref: '#/components/schemas/SystemUpdateKindEnum'
+          $ref: '#/components/schemas/KindD6cEnum'
         module:
           $ref: '#/components/schemas/ModuleEnum'
         status:
-          $ref: '#/components/schemas/SystemUpdateStatusEnum'
+          $ref: '#/components/schemas/Status144Enum'
         version:
           type: string
           maxLength: 32
@@ -18402,40 +18110,6 @@ components:
       - module
       - released_at
       - title
-    SystemUpdateKindEnum:
-      enum:
-      - new
-      - improved
-      - fixed
-      - performance
-      - security
-      - design
-      - content
-      - infrastructure
-      - breaking
-      - deprecated
-      type: string
-      description: |-
-        * `new` - Yangi
-        * `improved` - Yaxshilandi
-        * `fixed` - Tuzatildi
-        * `performance` - Tezlik
-        * `security` - Xavfsizlik
-        * `design` - Dizayn
-        * `content` - Kontent
-        * `infrastructure` - Infratuzilma
-        * `breaking` - Buzuvchi
-        * `deprecated` - Olib tashlanadi
-    SystemUpdateStatusEnum:
-      enum:
-      - draft
-      - published
-      - withdrawn
-      type: string
-      description: |-
-        * `draft` - Qoralama
-        * `published` - Nashr etilgan
-        * `withdrawn` - Nashrdan olingan
     SystemUpdateTranslation:
       type: object
       properties:
@@ -18686,8 +18360,9 @@ components:
       properties:
         rank:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         username:
           type: string
           readOnly: true
@@ -18696,16 +18371,19 @@ components:
           readOnly: true
         points:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         solved_total:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         stages_played:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
       required:
       - display_name
       - rank
@@ -18718,8 +18396,9 @@ components:
           readOnly: true
         amount:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
           description: Musbat = topildi, manfiy = sarflandi
         reason:
           $ref: '#/components/schemas/TransactionReasonEnum'
@@ -18731,8 +18410,9 @@ components:
           maxLength: 64
         balance_after:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
         created_at:
           type: string
           format: date-time
@@ -18836,32 +18516,39 @@ components:
           readOnly: true
         rating_skills:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
         rating_contest:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
         rating_activity:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
         rating_challenges:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
         streak_count:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         streak_max:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         solved_count:
           type: integer
-          maximum: 2147483647
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
         date_joined:
           type: string
           format: date-time
@@ -18910,8 +18597,9 @@ components:
           readOnly: true
         friend_count:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
         title_photo_url:
           type: string
           description: |-
@@ -19099,8 +18787,9 @@ components:
       properties:
         balance:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
         earned_today:
           type: integer
           readOnly: true
@@ -19127,8 +18816,9 @@ components:
           maxLength: 100
         start_year:
           type: integer
-          maximum: 32767
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           nullable: true
         start_month:
           type: integer
@@ -19137,8 +18827,9 @@ components:
           nullable: true
         end_year:
           type: integer
-          maximum: 32767
+          maximum: 9223372036854775807
           minimum: 0
+          format: int64
           nullable: true
         end_month:
           type: integer
@@ -19150,12 +18841,6 @@ components:
       required:
       - company
   securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: rw_<token>
-      description: '`Authorization: Bearer rw_...` — Shaxsiy API token (PAT, ADR-0008).
-        Tokenni profildan yaratasiz; bazada faqat xeshi saqlanadi.'
     cookieAuth:
       type: apiKey
       in: cookie
