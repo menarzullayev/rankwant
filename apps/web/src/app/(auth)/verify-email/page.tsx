@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
-import { EmailVerify } from "@/components/EmailVerify";
+import { EmailVerify } from "@/features/account";
 import { Card } from "@/components/ui/Card";
 import { getLocale } from "@/i18n/server";
 import { t } from "@/i18n/messages";

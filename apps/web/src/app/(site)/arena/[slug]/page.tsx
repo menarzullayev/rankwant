@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { ArenaPlayer } from "@/components/ArenaPlayer";
+import { ArenaPlayer } from "@/features/arena";
 import { Badge } from "@/components/ui/Badge";
 import { getLocale } from "@/i18n/server";
 import { dateTime, t } from "@/i18n/messages";

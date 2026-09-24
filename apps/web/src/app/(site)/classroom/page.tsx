@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { ClassroomHub } from "@/components/ClassroomHub";
+import { ClassroomHub } from "@/features/classroom";
 import { getLocale } from "@/i18n/server";
 import { t } from "@/i18n/messages";
 

@@ -170,9 +170,7 @@ class AttemptViewSet(
         return Response(AttemptSerializer(attempt).data, status=status.HTTP_201_CREATED)
 
 
-@crud_summaries(
-    one="namunaviy yugurish", many="namunaviy yugurishlar", only=("list", "retrieve", "create")
-)
+@crud_summaries(one="namunaviy yugurish", many="namunaviy yugurishlar", only=("create", "retrieve"))
 class CustomRunViewSet(
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,
@@ -191,7 +189,11 @@ class CustomRunViewSet(
         return [ResilientScopedRateThrottle()] if self.action == "create" else []
 
     def get_queryset(self) -> QuerySet[CustomRun]:
-        # Faqat o'z ishga tushirishlaringiz ko'rinadi
+        # Faqat o'z ishga tushirishlaringiz ko'rinadi. Sxema
+        # generatsiyasida `request.user` — AnonymousUser (o'lchandi
+        # 2026-09-24: "could not derive type of path parameter id").
+        if getattr(self, "swagger_fake_view", False):
+            return CustomRun.objects.none()
         assert isinstance(self.request.user, User)
         return CustomRun.objects.filter(user=self.request.user).select_related("language")
 

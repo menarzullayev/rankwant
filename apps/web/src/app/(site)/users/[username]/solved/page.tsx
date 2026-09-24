@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { SolvedTab } from "@/components/profile/SolvedTab";
+import { SolvedTab } from "@/features/profile";
 import { getLocale } from "@/i18n/server";
 import { tabMetadata } from "@/lib/profile.server";
 

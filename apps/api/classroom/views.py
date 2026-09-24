@@ -48,6 +48,11 @@ class ClassroomViewSet(viewsets.ModelViewSet[Classroom]):
     OWNER_ONLY_ACTIONS = frozenset({"update", "partial_update", "destroy"})
 
     def get_queryset(self):  # type: ignore[no-untyped-def]
+        # Sxema generatsiyasida `request.user` — AnonymousUser, ya'ni
+        # quyidagi `assert` yiqilardi va drf-spectacular modelni topa
+        # olmasdan ogohlantirardi (o'lchandi 2026-09-24).
+        if getattr(self, "swagger_fake_view", False):
+            return Classroom.objects.none()
         assert isinstance(self.request.user, User)
         base = Classroom.objects.filter(is_active=True)
         if self.action in self.OWNER_ONLY_ACTIONS:

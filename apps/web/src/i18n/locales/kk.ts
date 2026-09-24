@@ -242,12 +242,15 @@ export const kk: Record<MessageKey, string> = {
   "footer.copyright": "© {year} RankWant. Барлық құқықтар қорғалған.",
   "footer.terms": "Шарттар",
   "footer.privacy": "Құпиялылық",
+  "auth.usernameInvalid": "Лақаб тек латын әріптері, сандар және астыңғы сызықтан тұруы керек",
+
   "auth.usernameRequired": "Лақаб 3–30 таңба: бос қалмасын",
   "auth.usernameHint": "3–30 таңба: латын әріптері, сан, нүкте, астыңғы сызық, дефис",
   "auth.passwordHint": "Кемінде 8 таңба. Тек сан болмасын.",
   "auth.usernameFree": "Есім бос",
   "auth.checking": "Тексерілуде…",
   "auth.passwordMatch": "Құпиясөздер сәйкес",
+  "auth.required": "Бұл өрісті толтырыңыз",
   "auth.emailInvalid": "Пошта мекенжайы қате",
   "auth.strength1": "Өте әлсіз",
   "auth.strength2": "Әлсіз",
@@ -530,6 +533,7 @@ export const kk: Record<MessageKey, string> = {
   "error.contest_finished": "Жарыс аяқталды",
   "error.dependency_unavailable":
     "Қызмет уақытша қолжетімсіз, сәлден соң қайталаңыз",
+  "error.retry": "Қайталау",
   "error.error": "Бірдеңе дұрыс болмады",
   "error.expired": "Мерзімі өтіп кеткен",
   "error.finished": "Әлдеқашан аяқталған",
@@ -1450,6 +1454,8 @@ export const kk: Record<MessageKey, string> = {
   "admin.title.moveUp": "Жоғары",
   "admin.title.moveDown": "Төмен",
   "admin.title.remove": "Алып тастау",
+  "admin.title.prev": "Алдыңғы бет",
+  "admin.title.next": "Келесі бет",
   "admin.title.roadmapComments": "Жол картасы түсініктемелері",
   "admin.title.tournaments": "Чемпионаттар",
   "admin.title.broadcast": "Жалпы хабарлама",
@@ -1536,6 +1542,10 @@ export const kk: Record<MessageKey, string> = {
   "problem.editorialAvailable": "Талдауы бар",
   "problem.testsNotReady": "Тесттер дайын емес — шешімдер қабылданбайды",
   "qvant.marathon": "Апталық марафон",
+  "submit.sourceRequired": "Жібермес бұрын шешіміңізді жазыңыз немесе жүктеңіз",
+
+  "submit.sourceTooLong": "Бастапқы код тым үлкен",
+
   "submit.solution": "Шешім",
   "contest.ogAlt": "RankWant жарысы",
   "problem.ogAlt": "RankWant есебі",

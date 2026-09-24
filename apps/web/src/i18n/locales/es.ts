@@ -242,12 +242,15 @@ export const es: Record<MessageKey, string> = {
   "footer.copyright": "© {year} RankWant. Todos los derechos reservados.",
   "footer.terms": "Términos",
   "footer.privacy": "Privacidad",
+  "auth.usernameInvalid": "El usuario solo puede contener letras latinas, dígitos y guion bajo",
+
   "auth.usernameRequired": "Usuario de 3 a 30 caracteres: no puede quedar vacío",
   "auth.usernameHint": "3–30 caracteres: letras latinas, dígitos, punto, guion bajo, guion",
   "auth.passwordHint": "Al menos 8 caracteres. No solo dígitos.",
   "auth.usernameFree": "El nombre está libre",
   "auth.checking": "Comprobando…",
   "auth.passwordMatch": "Las contraseñas coinciden",
+  "auth.required": "Complete este campo",
   "auth.emailInvalid": "Correo electrónico no válido",
   "auth.strength1": "Muy débil",
   "auth.strength2": "Débil",
@@ -529,6 +532,7 @@ export const es: Record<MessageKey, string> = {
   "error.contest_finished": "La competencia ha terminado",
   "error.dependency_unavailable":
     "El servicio no está disponible temporalmente, inténtalo en un momento",
+  "error.retry": "Reintentar",
   "error.error": "Algo salió mal",
   "error.expired": "Ha caducado",
   "error.finished": "Esto ya ha terminado",
@@ -1449,6 +1453,8 @@ export const es: Record<MessageKey, string> = {
   "admin.title.moveUp": "Subir",
   "admin.title.moveDown": "Bajar",
   "admin.title.remove": "Quitar",
+  "admin.title.prev": "Página anterior",
+  "admin.title.next": "Página siguiente",
   "admin.title.roadmapComments": "Comentarios de la hoja de ruta",
   "admin.title.tournaments": "Campeonatos",
   "admin.title.broadcast": "Anuncio general",
@@ -1535,6 +1541,10 @@ export const es: Record<MessageKey, string> = {
   "problem.editorialAvailable": "Tiene editorial",
   "problem.testsNotReady": "Las pruebas no están listas: no se aceptan envíos",
   "qvant.marathon": "Maratón semanal",
+  "submit.sourceRequired": "Escriba o cargue su solución antes de enviar",
+
+  "submit.sourceTooLong": "El código fuente es demasiado grande",
+
   "submit.solution": "Solución",
   "contest.ogAlt": "Concurso de RankWant",
   "problem.ogAlt": "Problema de RankWant",

@@ -242,12 +242,15 @@ export const ru: Record<MessageKey, string> = {
   "footer.copyright": "© {year} RankWant. Все права защищены.",
   "footer.terms": "Условия",
   "footer.privacy": "Конфиденциальность",
+  "auth.usernameInvalid": "Ник может содержать только латинские буквы, цифры и подчёркивание",
+
   "auth.usernameRequired": "Ник 3–30 символов: не оставляйте пустым",
   "auth.usernameHint": "3–30 символов: латинские буквы, цифры, точка, подчёркивание, дефис",
   "auth.passwordHint": "Не менее 8 символов. Не только цифры.",
   "auth.usernameFree": "Имя свободно",
   "auth.checking": "Проверяем…",
   "auth.passwordMatch": "Пароли совпадают",
+  "auth.required": "Заполните это поле",
   "auth.emailInvalid": "Некорректный адрес почты",
   "auth.strength1": "Очень слабый",
   "auth.strength2": "Слабый",
@@ -529,6 +532,7 @@ export const ru: Record<MessageKey, string> = {
   "error.contest_finished": "Соревнование завершено",
   "error.dependency_unavailable":
     "Сервис временно недоступен, попробуйте позже",
+  "error.retry": "Повторить",
   "error.error": "Что-то пошло не так",
   "error.expired": "Срок истёк",
   "error.finished": "Уже завершено",
@@ -1449,6 +1453,8 @@ export const ru: Record<MessageKey, string> = {
   "admin.title.moveUp": "Вверх",
   "admin.title.moveDown": "Вниз",
   "admin.title.remove": "Убрать",
+  "admin.title.prev": "Предыдущая страница",
+  "admin.title.next": "Следующая страница",
   "admin.title.roadmapComments": "Комментарии роадмапа",
   "admin.title.tournaments": "Чемпионаты",
   "admin.title.broadcast": "Общее объявление",
@@ -1535,6 +1541,10 @@ export const ru: Record<MessageKey, string> = {
   "problem.editorialAvailable": "Есть разбор",
   "problem.testsNotReady": "Тесты не готовы — решения не принимаются",
   "qvant.marathon": "Недельный марафон",
+  "submit.sourceRequired": "Напишите или загрузите решение перед отправкой",
+
+  "submit.sourceTooLong": "Исходный код слишком большой",
+
   "submit.solution": "Решение",
   "contest.ogAlt": "Контест RankWant",
   "problem.ogAlt": "Задача RankWant",

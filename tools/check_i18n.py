@@ -23,7 +23,10 @@ _console.force_utf8()
 
 ROOT = Path(__file__).resolve().parent.parent
 LOCALES_DIR = ROOT / "apps/web/src/i18n/locales"
-INDEX = ROOT / "apps/web/src/i18n/messages.ts"
+#: Til ro'yxati manbai. RW-ARCH-013 dan keyin `LOCALES` shared paketda
+#: turadi — ilova uni qayta eksport qiladi, lekin HAQIQIY e'lon shu yerda.
+#: Ilgari bu `messages.ts` edi va tekshiruv shu faylni o'qirdi.
+INDEX = ROOT / "packages/shared/src/i18n/core.ts"
 SOURCE = "uz"
 #: Manba bilan bir xil qolishi ATAYIN bo'lgan kalitlar.
 #:
@@ -376,6 +379,11 @@ def _source_files() -> list[Path]:
     """
     files = [p for suffix in SOURCE_SUFFIXES for p in SOURCE_DIR.rglob(f"*{suffix}")]
     files = [p for p in files if "i18n" not in p.parts]
+    # Generatsiya qilingan kod (OpenAPI tiplari) qo'lda yozilmagan va
+    # tarjima qilinmaydi. `openapi-typescript` chiqargan matn tavsiflari
+    # tasodifan `t(...)` shakliga tushib qolsa, tekshiruv yolg'on
+    # ishlardi — shuning uchun katalog bo'yicha chiqarib tashlanadi.
+    files = [p for p in files if "generated" not in p.parts]
     if not files:
         # Ko'r bo'lib qolmasin: fayl topilmasa bu XATO.
         raise SystemExit(f"i18n: manba fayllar topilmadi ({SOURCE_DIR})")
@@ -515,7 +523,7 @@ def check_server_registry() -> list[str]:
     #    client components rendered to HTML. With a module-local map the
     #    second copy stays empty, because the dictionary is no longer a
     #    prop, and client components render raw keys (measured 2026-09-18).
-    shared_path = ROOT / "apps/web/src/i18n/messages.ts"
+    shared_path = ROOT / "packages/shared/src/i18n/core.ts"
     if not shared_path.exists():
         return problems + [f"messages.ts topilmadi ({shared_path})"]
     shared = shared_path.read_text(encoding="utf-8")
@@ -524,9 +532,24 @@ def check_server_registry() -> list[str]:
             "messages.ts: reyestr `globalThis.__rwMessages` orqali ulashilmagan — "
             "SSR'da klient komponentlar xom kalit chizadi"
         )
-    # 4. Nothing clears the whole registry: on the server it serves every
-    #    request at once, in every language.
-    if re.search(r"registry\.clear\(\)", shared):
+    # 4. Nothing clears the whole registry in PRODUCTION code: on the
+    #    server it serves every request at once, in every language.
+    #
+    #    ⚠️ Ataylab `resetRegistry()` ni istisno qilamiz (RW-ARCH-013).
+    #    Reyestr `packages/shared` ga ko'chgach test nusxasi tozalanishi
+    #    kerak bo'ldi, va faqat `resetRegistry()` ning o'zi `clear()`
+    #    chaqiradi. Tekshiruv shuning uchun BUTUN fayldagi `clear()` ni
+    #    taqiqlamaydi — u `resetRegistry` tashqarisidagi chaqiruvni
+    #    qidiradi. Aks holda tekshiruv o'lik bo'lardi: uni o'tkazish uchun
+    #    ishlab chiqarish kodidagi xavfli `clear()` ni ham o'chirish
+    #    kerak bo'lardi.
+    production = re.sub(
+        r"export function resetRegistry\(\).*?\n\}",
+        "",
+        shared,
+        flags=re.S,
+    )
+    if re.search(r"registry\.clear\(\)", production):
         problems.append(
             "messages.ts: `registry.clear()` — umumiy reyestrni tozalash "
             "barcha so'rovlarning lug'atini o'chiradi"
@@ -599,7 +622,7 @@ def check_country_locales() -> list[str]:
     jadvalga tushmasligi kerak — aks holda tarjima buziladi (`tr` ni
     qo'shganda "Almanya" o'rniga "Germaniya" chiqqan edi).
     """
-    path = ROOT / "apps/web/src/lib/countries.ts"
+    path = ROOT / "packages/shared/src/countries.ts"
     if not path.exists():
         return [f"countries.ts topilmadi ({path})"]
     text = path.read_text(encoding="utf-8")
@@ -650,8 +673,8 @@ def check_country_table_coverage() -> list[str]:
     O'lchandi: `CODES` 249, jadval 249, farq 0. Bu qoida shu tenglikni
     ushlab turadi.
     """
-    countries = ROOT / "apps/web/src/lib/countries.ts"
-    names = ROOT / "apps/web/src/lib/country-names.ts"
+    countries = ROOT / "packages/shared/src/countries.ts"
+    names = ROOT / "packages/shared/src/country-names.ts"
     for p in (countries, names):
         if not p.exists():
             return [f"{p.name} topilmadi ({p})"]

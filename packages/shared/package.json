@@ -1,0 +1,28 @@
+{
+  "name": "@rankwant/shared",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Platform-independent logic shared by the RankWant apps (no React, no Next, no DOM)",
+  "type": "module",
+  "exports": {
+    "./i18n": "./src/i18n/index.ts",
+    "./validation": "./src/validation/index.ts",
+    "./password": "./src/password.ts",
+    "./countries": "./src/countries.ts",
+    "./country-names": "./src/country-names.ts",
+    "./regions": "./src/regions.ts",
+    "./grades": "./src/grades.ts",
+    "./format": "./src/format.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.1"
+  }
+}

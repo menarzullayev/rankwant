@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { QuizPlayer } from "@/components/QuizPlayer";
+import { QuizPlayer } from "@/features/quizzes";
 import { Badge } from "@/components/ui/Badge";
 import { getLocale } from "@/i18n/server";
 import { t } from "@/i18n/messages";

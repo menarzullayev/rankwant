@@ -3,12 +3,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Card } from "@/components/ui/Card";
-import { Markdown } from "@/components/Markdown";
-import { UpdateReadMarker } from "@/components/UpdateReadMarker";
+import { Markdown } from "@/components/ui/Markdown";
+import { UpdateReadMarker } from "@/features/updates";
 import {
   UpdateKindBadge,
   UpdateModuleBadge,
-} from "@/components/UpdateKindBadge";
+} from "@/features/updates";
 import { getLocale } from "@/i18n/server";
 import { localeAlternatesFor } from "@/i18n/locale-alternates.server";
 import { date, t } from "@/i18n/messages";

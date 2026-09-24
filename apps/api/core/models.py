@@ -650,6 +650,51 @@ class AnalyticsEvent(CreatedModel):
         return self.name
 
 
+class ClientLog(CreatedModel):
+    """Brauzerdagi xato jurnali (qaror 2026-09-24: Sentry o'rniga).
+
+    Nega alohida jadval: brauzerdagi xato (`TypeError`, `ChunkLoadError`)
+    serverda ko'rinmaydi — u faqat foydalanuvchining konsolida qoladi.
+    Server logi "200 OK" deb yozadi, odam esa oq sahifa ko'radi.
+
+    ⚠️ **Maxfiy ma'lumot YO'Q.** Mijoz `lib/log.ts` dagi `sanitize` bilan
+    token/parol/cookie kalitlarini `[redacted]` qilib yuboradi, lekin
+    server bunga ISHONMAYDI: `fields` hajmi cheklanadi va bu jadval
+    staff-only o'qish uchun. Ikki qavat himoya — mijoz tozalaydi,
+    server cheklaydi.
+
+    IP ATAYLAB saqlanmaydi — `AnalyticsEvent` bilan bir xil sabab
+    (joylashuv shaxsiy ma'lumot, disk rashi uchun kerak emas).
+    """
+
+    #: `debug` / `info` / `warn` / `error` — faqat `error` yuboriladi,
+    #: lekin maydon kelajak uchun ochiq qoldirilgan.
+    level = models.CharField(max_length=8, default="error")
+    #: Modul nomi — `submit`, `api`, `auth`.
+    scope = models.CharField(max_length=40, db_index=True)
+    message = models.CharField(max_length=300)
+    #: Xato tafsiloti (`name`, `stack`, qo'shimcha kontekst).
+    fields = models.JSONField(default=dict, blank=True)
+    path = models.CharField(max_length=200, blank=True)
+    user = models.ForeignKey(
+        User, null=True, blank=True, on_delete=models.SET_NULL, related_name="client_logs"
+    )
+    #: Brauzer `navigator.userAgent` — qaysi brauzerda yiqilayotganini
+    #: bilmasdan tuzatib bo'lmaydi.
+    user_agent = models.CharField(max_length=200, blank=True)
+    #: Ilova versiyasi (`BUILD_ID`) — eski chunk yuklanayotganini ajratish.
+    release = models.CharField(max_length=40, blank=True)
+
+    class Meta:
+        ordering: ClassVar = ["-created_at"]
+        indexes: ClassVar = [
+            models.Index(fields=["scope", "-created_at"], name="clientlog_scope_time"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.scope}: {self.message}"
+
+
 class School(CreatedModel):
     """Maktab katalogi (ADR-0017) — moderator admin paneldan to'ldiradi.
 

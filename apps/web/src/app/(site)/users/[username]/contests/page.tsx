@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { ContestsTab } from "@/components/profile/ContestsTab";
+import { ContestsTab } from "@/features/profile";
 import { getLocale } from "@/i18n/server";
 import { tabMetadata } from "@/lib/profile.server";
 

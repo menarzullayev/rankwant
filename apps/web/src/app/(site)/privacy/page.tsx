@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { LegalPage } from "@/components/LegalPage";
+import { LegalPage } from "@/components/legal/LegalPage";
 import { PRIVACY, pickLegal } from "@/content/legal";
 import { getLocale } from "@/i18n/server";
 

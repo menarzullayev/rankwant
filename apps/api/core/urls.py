@@ -35,6 +35,14 @@ urlpatterns = [
     ),
     # Voronka dashboardi (qaror 7) — yozilgan hodisalarni KO'RISH yo'li.
     # `analytics/events/` yozadi (ochiq), bu esa faqat o'qiydi (staff).
+    # Brauzer xatolari (qaror 2026-09-24) — Sentry o'rniga oddiy
+    # jurnal. `analytics/events/` bilan bir xil sabab: kirilmagan
+    # foydalanuvchining xatosi ham kerak.
+    path(
+        "client-logs/",
+        views.ClientLogView.as_view(),
+        name="client-logs",
+    ),
     path(
         "staff/analytics/",
         StaffAnalyticsView.as_view(),

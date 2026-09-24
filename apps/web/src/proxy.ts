@@ -16,6 +16,11 @@ import {
   requestHasRscHint,
 } from "@/lib/home-cache";
 import { SITE_URL } from "@/lib/site";
+import {
+  SECURITY_HEADERS,
+  contentSecurityPolicy,
+  makeNonce,
+} from "@/lib/security-headers";
 
 /** Kanonik manzil — `PUBLIC_ORIGIN` dan (build paytida).
  *
@@ -100,8 +105,16 @@ export function proxy(request: NextRequest): NextResponse {
     host !== canonical.host &&
     !INTERNAL.test(host);
 
-  // Sarlavha nusxasi — `?lang=` shu orqali joriy render'ga uzatiladi.
+  // CSP `nonce` — HAR so'rovda yangi qiymat. Next.js uni `script-src`
+  // ga qo'shadi va o'zining inline bootstrap skriptlariga yozadi;
+  // so'rov sarlavhasi orqali render'ga ham yetib boradi.
+  const nonce = makeNonce();
   const requestHeaders = new Headers(request.headers);
+  // ⚠️ `x-nonce` ataylab `x-` bilan: Next faqat shu prefiksli
+  // sarlavhalarni render'ga uzatadi.
+  requestHeaders.set("x-nonce", nonce);
+
+  // Sarlavha nusxasi — `?lang=` shu orqali joriy render'ga uzatiladi.
   const fromParam = boshqa_domen ? null : localeFromParam(request);
   const homeCache = homeCacheDecision({
     method: request.method,
@@ -185,6 +198,24 @@ export function proxy(request: NextRequest): NextResponse {
   // Keshlangan GET `/` ga `Set-Cookie` qo'yilmasin — Cloudflare
   // Set-Cookie'li javobni saqlamaydi.
   if (homeCache.assignExperiments) assignExperiments(request, response);
+
+  // ── Xavfsizlik sarlavhalari (RW-ARCH-008) ──────────────────────────
+  //
+  // ⚠️ Bu sarlavhalar `next.config.ts` `headers()` da EMAS, shu yerda
+  // qo'yiladi. Sabab: CSP `nonce` talab qiladi, nonce esa HAR so'rovda
+  // yangi bo'lishi kerak — statik konfiguratsiya buni qila olmaydi.
+  // (Jamoa `Vary` bilan ham aynan shuni o'rgandi: `headers()` qoidasi
+  // `routes-manifest.json` ga yoziladi, javobga esa yetib bormaydi.)
+  //
+  // ⚠️ 301 yo'naltirishda ham qo'yiladi: yo'naltirish javobi ham
+  // brauzer tomonidan ko'riladi va u yerda ham `nosniff` kerak.
+  for (const [name, value] of Object.entries(SECURITY_HEADERS)) {
+    response.headers.set(name, value);
+  }
+  response.headers.set(
+    "Content-Security-Policy",
+    contentSecurityPolicy(nonce, process.env.NODE_ENV !== "production"),
+  );
   return response;
 }
 

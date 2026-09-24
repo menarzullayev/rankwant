@@ -2,7 +2,7 @@ import type { Metadata, Route } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { ProblemTabs } from "@/components/ProblemTabs";
+import { ProblemTabs } from "@/features/problems";
 import { Verdict } from "@/components/ui/Verdict";
 import { Card } from "@/components/ui/Card";
 import { dateTime, fill, t } from "@/i18n/messages";
@@ -16,7 +16,7 @@ import {
   TR,
   Table,
 } from "@/components/ui/Table";
-import { AttemptFilters } from "@/components/AttemptFilters";
+import { AttemptFilters } from "@/features/submissions";
 import { api, ApiError } from "@/lib/api";
 
 type Props = {

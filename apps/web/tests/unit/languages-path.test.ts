@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { LANGUAGES_PATH } from "@/lib/api/problems";
+import { LANGUAGES_PATH } from "@/features/problems/api/problems";
 
 const CATALOG = new URL("../../../api/problems/languages.py", import.meta.url);
 const PAGINATION = new URL("../../../api/core/pagination.py", import.meta.url);

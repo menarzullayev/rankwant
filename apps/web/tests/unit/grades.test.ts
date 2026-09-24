@@ -3,7 +3,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { registerMessages } from "@/i18n/messages";
 import { en } from "@/i18n/locales/en";
 import { uz } from "@/i18n/locales/uz";
-import { GRADE_CODES, GRADE_GROUPS, gradeLabel, isGradeCode } from "@/lib/grades";
+import { GRADE_CODES, GRADE_GROUPS, gradeLabel, isGradeCode } from "@rankwant/shared/grades";
 
 beforeAll(() => {
   registerMessages("uz", uz);

@@ -55,6 +55,8 @@ class TransactionViewSet(viewsets.ReadOnlyModelViewSet[QvantTransaction]):
     pagination_class = TimeCursorPagination
 
     def get_queryset(self):  # type: ignore[no-untyped-def]
+        if getattr(self, "swagger_fake_view", False):
+            return QvantTransaction.objects.none()
         assert isinstance(self.request.user, User)
         return QvantTransaction.objects.filter(user=self.request.user)
 
@@ -188,6 +190,8 @@ class InventoryViewSet(viewsets.ReadOnlyModelViewSet[UserInventory]):
     pagination_class = None
 
     def get_queryset(self):  # type: ignore[no-untyped-def]
+        if getattr(self, "swagger_fake_view", False):
+            return UserInventory.objects.none()
         assert isinstance(self.request.user, User)
         return UserInventory.objects.filter(user=self.request.user).select_related("item")
 

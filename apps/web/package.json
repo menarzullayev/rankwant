@@ -15,9 +15,13 @@
     "lint": "eslint .",
     "typegen": "next typegen",
     "typecheck": "next typegen && tsc --noEmit",
+    "openapi": "openapi-typescript ../api/openapi/schema.yml -o src/lib/api/generated/schema.ts",
+    "openapi:check": "openapi-typescript ../api/openapi/schema.yml -o node_modules/.cache/openapi-check.ts && diff -q src/lib/api/generated/schema.ts node_modules/.cache/openapi-check.ts",
+    "budget": "python3 ../../tools/check_bundle_budget.py",
     "test": "vitest run"
   },
   "dependencies": {
+    "@rankwant/shared": "*",
     "@headlessui/react": "^2.2.10",
     "@monaco-editor/react": "^4.7.0",
     "country-flag-icons": "^1.6.20",
@@ -30,7 +34,8 @@
     "remark-gfm": "^4.0.1",
     "remark-math": "^6.0.0",
     "server-only": "^0.0.1",
-    "simple-icons": "16.31.0"
+    "simple-icons": "16.31.0",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
@@ -40,13 +45,43 @@
     "@typescript/native": "npm:typescript@7.0.2",
     "eslint": "^10.10.0",
     "eslint-config-next": "^16.3.5",
+    "openapi-typescript": "^7.13.0",
     "postcss": "^8.5.28",
     "tailwindcss": "^4.3.3",
     "typescript": "npm:@typescript/typescript6@6.0.2",
     "typescript-eslint": "^8.69.0",
     "vitest": "5.0.1"
   },
+  "#optionalDependencies": [
+    "`tsc` in this package is the NATIVE TypeScript 7 binary, aliased as",
+    "`@typescript/native`. That shim resolves its platform binary at runtime",
+    "through `import.meta.resolve('@typescript/<platform>')` — so the matching",
+    "platform package has to be on disk, not merely declared.",
+    "",
+    "⚠️ Declaring them only inside npm's auto-generated `optionalDependencies`",
+    "is NOT enough: npm omits `os`-restricted optional deps from `packages{}`",
+    "when the lock is generated on another platform (npm/cli#4828, #8320). CI",
+    "runs on Linux and the lock was generated on Windows, so `typescript-linux-",
+    "x64` never reached the lockfile, `npm ci` installed nothing, and the CI",
+    "typecheck died with:",
+    "",
+    "    Error: Unable to resolve @typescript/typescript-linux-x64.",
+    "",
+    "Listing them here as first-class optional dependencies makes npm record",
+    "them in the lockfile, so `npm ci` installs them on every platform."
+  ],
+  "optionalDependencies": {
+    "@typescript/typescript-darwin-arm64": "7.0.2",
+    "@typescript/typescript-darwin-x64": "7.0.2",
+    "@typescript/typescript-linux-arm64": "7.0.2",
+    "@typescript/typescript-linux-x64": "7.0.2",
+    "@typescript/typescript-win32-arm64": "7.0.2",
+    "@typescript/typescript-win32-x64": "7.0.2"
+  },
   "overrides": {
-    "dompurify": "^3.4.15"
+    "dompurify": "^3.4.15",
+    "openapi-typescript": {
+      "typescript": "$typescript"
+    }
   }
 }

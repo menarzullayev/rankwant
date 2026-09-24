@@ -17,7 +17,9 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
-    "types": ["node"],
+    "types": [
+      "node"
+    ],
     "plugins": [
       {
         "name": "next"
@@ -26,6 +28,12 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@rankwant/shared": [
+        "../../packages/shared/src/index.ts"
+      ],
+      "@rankwant/shared/*": [
+        "../../packages/shared/src/*"
       ]
     }
   },

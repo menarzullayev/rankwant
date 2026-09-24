@@ -242,12 +242,15 @@ export const en: Record<MessageKey, string> = {
   "footer.copyright": "© {year} RankWant. All rights reserved.",
   "footer.terms": "Terms",
   "footer.privacy": "Privacy",
+  "auth.usernameInvalid": "Username may contain only Latin letters, digits and underscore",
+
   "auth.usernameRequired": "Username 3–30 characters: it can't be empty",
   "auth.usernameHint": "3–30 characters: Latin letters, digits, dot, underscore, hyphen",
   "auth.passwordHint": "At least 8 characters. Not digits only.",
   "auth.usernameFree": "Name is available",
   "auth.checking": "Checking…",
   "auth.passwordMatch": "Passwords match",
+  "auth.required": "This field is required",
   "auth.emailInvalid": "Invalid email address",
   "auth.strength1": "Very weak",
   "auth.strength2": "Weak",
@@ -529,6 +532,7 @@ export const en: Record<MessageKey, string> = {
   "error.contest_finished": "The contest has finished",
   "error.dependency_unavailable":
     "The service is temporarily unavailable, try again shortly",
+  "error.retry": "Retry",
   "error.error": "Something went wrong",
   "error.expired": "This has expired",
   "error.finished": "This has already finished",
@@ -1446,6 +1450,8 @@ export const en: Record<MessageKey, string> = {
   "admin.title.moveUp": "Move up",
   "admin.title.moveDown": "Move down",
   "admin.title.remove": "Remove",
+  "admin.title.prev": "Previous page",
+  "admin.title.next": "Next page",
   "admin.title.roadmapComments": "Roadmap comments",
   "admin.title.tournaments": "Championships",
   "admin.title.broadcast": "Broadcast",
@@ -1532,6 +1538,10 @@ export const en: Record<MessageKey, string> = {
   "problem.editorialAvailable": "Has an editorial",
   "problem.testsNotReady": "Tests are not ready — submissions are not accepted",
   "qvant.marathon": "Weekly marathon",
+  "submit.sourceRequired": "Write or upload your solution before submitting",
+
+  "submit.sourceTooLong": "Source code is too large",
+
   "submit.solution": "Solution",
   "contest.ogAlt": "RankWant contest",
   "problem.ogAlt": "RankWant problem",

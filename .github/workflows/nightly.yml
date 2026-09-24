@@ -124,6 +124,69 @@ jobs:
           E2E_BASE_URL: ${{ vars.STAGING_URL || 'http://web:3000' }}
           E2E_API_BASE: ${{ vars.STAGING_URL && format('{0}/api/v1', vars.STAGING_URL) || 'http://api:8000/api/v1' }}
         run: bash tools/ci_playwright.sh -- npx playwright test --reporter=list
+      # RW-ARCH-016: pixel comparison, chromium only (other engines render
+      # fonts and shadows differently, so one baseline cannot serve all).
+      # Separate step so a screenshot diff is distinguishable from a
+      # functional failure in the run summary.
+      #
+      # ⚠️ Baselines are committed under `tests/e2e/visual/*-snapshots/`.
+      # An intentional design change needs
+      # `--project=visual --update-snapshots` and the new PNGs in the PR.
+      #
+      # ⚠️ `--forbid-only` would be wrong here; instead the step relies on
+      # the default "no baseline = fail" behaviour. On a brand-new page the
+      # first run writes the baseline and fails once — that is on purpose:
+      # a screenshot nobody reviewed must not silently become the truth.
+      - name: Visual regression (pixel diff)
+        env:
+          E2E_BASE_URL: ${{ vars.STAGING_URL || 'http://web:3000' }}
+          E2E_API_BASE: ${{ vars.STAGING_URL && format('{0}/api/v1', vars.STAGING_URL) || 'http://api:8000/api/v1' }}
+        run: bash tools/ci_playwright.sh -- npx playwright test --project=visual --reporter=list
+      # ⚠️ Baseline'lar FAQAT shu image'da olinadi.
+      #
+      # 2026-09-24 o'lchandi: Windows'da olingan baseline Linux
+      # konteynerida 6/6 sahifada **3–4%** farq berdi (chegara 1%).
+      # Diff rasmda butun matn qizil — ya'ni sabab shrink antialiasing,
+      # layout emas. Konteynerda 50 ta shrift bor, `Inter` yo'q.
+      #
+      # Ya'ni baseline'ni boshqa muhitda yangilash CI'ni darhol qizil
+      # qiladi. Ushbu qadam buni JIM qoldirmaydi.
+      - name: Visual baselines match this image
+        env:
+          E2E_BASE_URL: ${{ vars.STAGING_URL || 'http://web:3000' }}
+          E2E_API_BASE: ${{ vars.STAGING_URL && format('{0}/api/v1', vars.STAGING_URL) || 'http://api:8000/api/v1' }}
+        run: bash tools/ci_playwright.sh -- bash /e2e/scripts/check-baseline-drift.sh
+      # ⚠️ Proof the pixel gate is not decorative.
+      #
+      # 2026-09-24: the first "non-vacuous proof" mutated `--rw-rank-grey`
+      # and the suite stayed green — the token simply is not visible on the
+      # pages we screenshot. The conclusion "the gate works" was wrong; the
+      # mutation was dead. This step re-runs the check with a token we KNOW
+      # is visible (`--rw-ground`) and requires a real pixel count in the
+      # output. It is the only thing standing between us and a suite that
+      # diffs nothing.
+      #
+      # ⚠️ Runs on the HOST, not in the container: the check rebuilds the
+      # web app and restarts the server. Gated on the stack being up so a
+      # missing target skips LOUDLY instead of failing for a wrong reason.
+      - name: Visual gate is live (mutation proof)
+        if: ${{ vars.STAGING_URL == '' }}
+        env:
+          E2E_BASE_URL: http://localhost:3400
+        run: bash tools/ci_visual_gate.sh
+      # Screenshots land in the container's `test-results/`, which is bind
+      # mounted from the repo, so the artifact upload below picks them up.
+      - name: Upload visual diffs
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-diffs
+          path: |
+            tests/e2e/test-results/
+            tests/e2e/visual/**/*-diff.png
+            tests/e2e/visual/**/*-actual.png
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Bake-off — validator cases (real nsjail)
         if: ${{ vars.STAGING_URL == '' }}
         timeout-minutes: 3

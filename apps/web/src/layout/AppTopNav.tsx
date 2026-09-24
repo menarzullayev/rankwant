@@ -292,7 +292,7 @@ export default function AppTopNav({
                             />
                             <span className="truncate">{t(locale, key)}</span>
                             {unread > 0 && (
-                              <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-semibold rw-accent-bg">
+                              <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-theme-2xs font-semibold rw-accent-bg">
                                 {unread > 99 ? "99+" : unread}
                               </span>
                             )}

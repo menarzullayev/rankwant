@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1781 strings.**
+**1788 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -256,12 +256,14 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `footer.copyright` | © {year} RankWant. Barcha huquqlar himoyalangan. | © {year} RankWant. Барлық құқықтар қорғалған. |  |
 | `footer.terms` | Shartlar | Шарттар |  |
 | `footer.privacy` | Maxfiylik | Құпиялылық |  |
+| `auth.usernameInvalid` | Taxallus faqat lotin harflari, raqamlar va pastki chiziqdan iborat bo'lsin | Лақаб тек латын әріптері, сандар және астыңғы сызықтан тұруы керек |  |
 | `auth.usernameRequired` | Taxallus 3–30 belgi: bo'sh qolmasin | Лақаб 3–30 таңба: бос қалмасын |  |
 | `auth.usernameHint` | 3–30 belgi: lotin harflari, raqam, nuqta, pastki chiziq, chiziqcha | 3–30 таңба: латын әріптері, сан, нүкте, астыңғы сызық, дефис |  |
 | `auth.passwordHint` | Kamida 8 belgi. Faqat raqamdan iborat bo'lmasin. | Кемінде 8 таңба. Тек сан болмасын. |  |
 | `auth.usernameFree` | Bu nom bo'sh | Есім бос |  |
 | `auth.checking` | Tekshirilmoqda… | Тексерілуде… |  |
 | `auth.passwordMatch` | Parollar mos | Құпиясөздер сәйкес |  |
+| `auth.required` | Bu maydonni to'ldirishingiz kerak | Бұл өрісті толтырыңыз |  |
 | `auth.emailInvalid` | Email manzili noto'g'ri | Пошта мекенжайы қате |  |
 | `auth.strength1` | Juda zaif | Өте әлсіз |  |
 | `auth.strength2` | Zaif | Әлсіз |  |
@@ -538,6 +540,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.closed` | Topshirish muddati ochiq emas | Тапсыру жабық |  |
 | `error.contest_finished` | Musobaqa tugagan | Жарыс аяқталды |  |
 | `error.dependency_unavailable` | Xizmat vaqtincha mavjud emas, birozdan keyin urinib ko'ring | Қызмет уақытша қолжетімсіз, сәлден соң қайталаңыз |  |
+| `error.retry` | Qayta urinish | Қайталау |  |
 | `error.error` | Nimadir noto'g'ri ketdi | Бірдеңе дұрыс болмады |  |
 | `error.expired` | Muddati o'tib ketgan | Мерзімі өтіп кеткен |  |
 | `error.finished` | Allaqachon tugagan | Әлдеқашан аяқталған |  |
@@ -1436,6 +1439,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.title.moveUp` | Yuqoriga | Жоғары |  |
 | `admin.title.moveDown` | Pastga | Төмен |  |
 | `admin.title.remove` | Olib tashlash | Алып тастау |  |
+| `admin.title.prev` | Oldingi sahifa | Алдыңғы бет |  |
+| `admin.title.next` | Keyingi sahifa | Келесі бет |  |
 | `admin.title.roadmapComments` | Yo'l xaritasi izohlari | Жол картасы түсініктемелері |  |
 | `admin.title.tournaments` | Chempionatlar | Чемпионаттар |  |
 | `admin.title.broadcast` | Umumiy e'lon | Жалпы хабарлама |  |
@@ -1522,6 +1527,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.editorialAvailable` | Yechim tahlili bor | Талдауы бар |  |
 | `problem.testsNotReady` | Testlar tayyorlanmagan — yechim qabul qilinmaydi | Тесттер дайын емес — шешімдер қабылданбайды |  |
 | `qvant.marathon` | Haftalik marafon | Апталық марафон |  |
+| `submit.sourceRequired` | Yuborishdan oldin yechimingizni yozing yoki yuklang | Жібермес бұрын шешіміңізді жазыңыз немесе жүктеңіз |  |
+| `submit.sourceTooLong` | Manba kodi juda katta | Бастапқы код тым үлкен |  |
 | `submit.solution` | Yechim | Шешім |  |
 | `contest.ogAlt` | RankWant musobaqasi | RankWant жарысы |  |
 | `problem.ogAlt` | RankWant masalasi | RankWant есебі |  |

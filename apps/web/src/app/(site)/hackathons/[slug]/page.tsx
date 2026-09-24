@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { HackathonEntries } from "@/components/HackathonEntries";
-import { Markdown } from "@/components/Markdown";
+import { HackathonEntries } from "@/features/hackathons";
+import { Markdown } from "@/components/ui/Markdown";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { getLocale } from "@/i18n/server";

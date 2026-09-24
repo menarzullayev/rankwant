@@ -95,7 +95,7 @@ STAT_CARD = "apps/web/src/components/ui/Card.tsx"
 PROFILE_LAYOUT = "apps/web/src/app/(site)/users/[username]/layout.tsx"
 # Filter badge: the difficulty range is one filter even though it rides in two
 # params, so the badge counts it once. Owner decision 2026-09-18.
-FILTERS = "apps/web/src/components/ProblemFilters.tsx"
+FILTERS = "apps/web/src/features/problems/components/ProblemFilters.tsx"
 # Brand and footer: the brand lives in the header via a single `BrandMark`
 # (it used to be duplicated in the sidebar/topnav and missing from the header
 # entirely — on phones the brand was only visible inside the drawer), and the
@@ -111,12 +111,16 @@ APP_FOOTER = "apps/web/src/layout/AppFooter.tsx"
 # fallback worked in 8 places but the marker appeared in 2, and the `uz`
 # dictionary itself was marked as a fallback on its own pages.
 MESSAGES = "apps/web/src/i18n/messages.ts"
+# RW-ARCH-013 moved the i18n mechanism (and with it `CONTENT_NAME_LOCALES` /
+# `hasContentNames`) into the shared package; `messages.ts` is now a thin
+# re-export shim, so the coverage source has to be read from core.ts.
+SHARED_I18N_CORE = "packages/shared/src/i18n/core.ts"
 CONTENT_BADGE = "apps/web/src/components/ui/UzFallbackBadge.tsx"
-ARCHIVE_SIDEBAR = "apps/web/src/components/ArchiveSidebar.tsx"
-ABOUT_TAB = "apps/web/src/components/profile/AboutTab.tsx"
-TOPIC_STRENGTH = "apps/web/src/components/profile/TopicStrength.tsx"
-ACTIVITY_TABS = "apps/web/src/components/profile/ActivityTabs.tsx"
-SKILLS_SECTION = "apps/web/src/components/settings/SkillsSection.tsx"
+ARCHIVE_SIDEBAR = "apps/web/src/components/layout/ArchiveSidebar.tsx"
+ABOUT_TAB = "apps/web/src/features/profile/components/AboutTab.tsx"
+TOPIC_STRENGTH = "apps/web/src/features/profile/components/TopicStrength.tsx"
+ACTIVITY_TABS = "apps/web/src/features/profile/components/ActivityTabs.tsx"
+SKILLS_SECTION = "apps/web/src/features/account/components/SkillsSection.tsx"
 PROBLEMS_PAGE = "apps/web/src/app/(site)/problems/page.tsx"
 
 #: Every place a content name can fall back: the file, the marker it must
@@ -347,8 +351,8 @@ def rank_colour_groups_not_sixteen_tokens() -> str | None:
     for name in ("grey", "green", "cyan", "blue", "violet", "orange", "red"):
         if f"--rw-rank-{name}" not in css:
             return f"apps/web/src/app/globals.css: `--rw-rank-{name}` yo'q"
-    if "rw-rank-${title.colour_group}" not in read("apps/web/src/components/UserName.tsx"):
-        return "apps/web/src/components/UserName.tsx: class `colour_group` emas"
+    if "rw-rank-${title.colour_group}" not in read("apps/web/src/components/ui/Identity/UserName.tsx"):
+        return "apps/web/src/components/ui/Identity/UserName.tsx: class `colour_group` emas"
     return None
 
 
@@ -1104,17 +1108,25 @@ def content_coverage_visible() -> str | None:
     missing translation does not copy `name_uz`, and every render site
     still marks the identifier so a `zh` reader does not take a slug for
     a Chinese name.
+
+    ⚠️ Qamrov qoidalari `packages/shared/src/i18n/core.ts` ga ko'chdi
+    (RW-ARCH-013). Ilova endi ularni QAYTA EKSPORT qiladi — ya'ni
+    chaqiruv joylari o'zgarmagan, lekin HAQIQIY ta'rif shared paketda.
+    Tekshiruv ikkala faylni birga o'qiydi, chunki qoida ikkalasida ham
+    bo'lishi shart: ta'rif shared'da, ilova ulanishi `messages.ts` da.
     """
+    shared = read(SHARED_I18N_CORE)
     messages = read(MESSAGES)
-    if 'export const CONTENT_NAME_LOCALES = ["uz", "ru", "en"] as const;' not in messages:
-        return f"{MESSAGES}: CONTENT_NAME_LOCALES yo'q — qamrov manbai yo'qolgan"
-    if "export function hasContentNames(" not in messages:
-        return f"{MESSAGES}: hasContentNames() yo'q — tanlash ro'yxati qamrovni bilmaydi"
-    if "function nameProperty(" not in messages:
-        return f"{MESSAGES}: nameProperty() yo'q — yetishmagan tarjima property ko'rsatilmaydi"
-    if "source: DEFAULT_LOCALE" in messages:
+    combined = shared + messages
+    if 'export const CONTENT_NAME_LOCALES = ["uz", "ru", "en"] as const;' not in combined:
+        return f"{SHARED_I18N_CORE}: CONTENT_NAME_LOCALES yo'q — qamrov manbai yo'qolgan"
+    if "export function hasContentNames(" not in combined:
+        return f"{SHARED_I18N_CORE}: hasContentNames() yo'q — tanlash ro'yxati qamrovni bilmaydi"
+    if "function nameProperty(" not in combined:
+        return f"{SHARED_I18N_CORE}: nameProperty() yo'q — yetishmagan tarjima property ko'rsatilmaydi"
+    if "source: DEFAULT_LOCALE" in combined:
         return (
-            f"{MESSAGES}: yetishmagan tarjima `DEFAULT_LOCALE` ga tushadi — "
+            f"{SHARED_I18N_CORE}: yetishmagan tarjima `DEFAULT_LOCALE` ga tushadi — "
             "zaxira til taqiqlangan"
         )
     badge = read(CONTENT_BADGE)
@@ -1789,7 +1801,7 @@ def types_node_tracks_runtime() -> str | None:
 KIT_TS = "apps/web/src/lib/theme/kit.ts"
 COPY_CONTROL = "apps/web/src/components/kit/CopyControl.tsx"
 CMD_PALETTE = "apps/web/src/components/kit/CommandPalette.tsx"
-SHARE_BUTTON = "apps/web/src/components/profile/ShareButton.tsx"
+SHARE_BUTTON = "apps/web/src/features/profile/components/ShareButton.tsx"
 
 
 def selected_kit_frozen() -> str | None:

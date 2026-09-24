@@ -75,17 +75,20 @@ jobs:
         with:
           node-version: '22'
           cache: npm
-          cache-dependency-path: apps/web/package-lock.json
+          # RW-ARCH-013: npm workspace — the root lockfile is the only one
+          # npm ci/audit reads, and the per-app lockfile lingers as a stale
+          # copy. Auditing `apps/web` listed a subset of the real tree.
+          cache-dependency-path: package-lock.json
       - name: npm audit
         timeout-minutes: 3
         run: |
-          if [ -f apps/web/package-lock.json ]; then
+          if [ -f package-lock.json ]; then
             # Node 22's bundled npm still falls back to
             # /-/npm/v1/security/audits/quick. npmjs browned that
             # out (400 "Invalid package tree") and is retiring it
             # (410). npm 11 talks to /advisories/bulk only, so the
             # high+ gate keeps working without rewriting the lockfile.
-            cd apps/web && npx --yes npm@11 audit --audit-level=high
+            npx --yes npm@11 audit --audit-level=high
           fi
 
       - name: Judge sandbox — escape tests

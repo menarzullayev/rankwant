@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { splitMarker } from "@/components/MarkerText";
+import { splitMarker } from "@/components/ui/Identity";
 
 /** ADR-0027 § L2 — the marker is what separates the 16 tiers inside a
  *  shared colour group (five of them are "red"). */

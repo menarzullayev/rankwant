@@ -242,12 +242,15 @@ export const kaa: Record<MessageKey, string> = {
   "footer.copyright": "© {year} RankWant. Barlıq huquqlar qorǵalǵan.",
   "footer.terms": "Shártlar",
   "footer.privacy": "Qupıyalıq",
+  "auth.usernameInvalid": "Laqab tek latın háripleri, sanlar hám astı sızıqtan ibarat bolıwı kerek",
+
   "auth.usernameRequired": "Laqab 3–30 belgi: bos qalmasın",
   "auth.usernameHint": "3–30 belgi: latın háripleri, san, noqat, astıńǵı sızıq, sızıqsha",
   "auth.passwordHint": "Keminde 8 belgi. Tek sannan ibarat bolmasın.",
   "auth.usernameFree": "Bul at bos",
   "auth.checking": "Tekserilip atır…",
   "auth.passwordMatch": "Paroller sáykes",
+  "auth.required": "Bul maydandı toltırıń",
   "auth.emailInvalid": "Email mánzili qáte",
   "auth.strength1": "Júdá álsiz",
   "auth.strength2": "Álsiz",
@@ -529,6 +532,7 @@ export const kaa: Record<MessageKey, string> = {
   "error.contest_finished": "Jarıs tamamlanǵan",
   "error.dependency_unavailable":
     "Xızmet waqtınsha qol jetimsiz, azdan keyin urınıp kóriń",
+  "error.retry": "Qayta urınıw",
   "error.error": "Bir nárse qáte ketti",
   "error.expired": "Múddeti ótip ketken",
   "error.finished": "Aldın tamamlanǵan",
@@ -1449,6 +1453,8 @@ export const kaa: Record<MessageKey, string> = {
   "admin.title.moveUp": "Joqarıǵa",
   "admin.title.moveDown": "Tómenge",
   "admin.title.remove": "Alıp taslaw",
+  "admin.title.prev": "Aldıńǵı bet",
+  "admin.title.next": "Keyingi bet",
   "admin.title.roadmapComments": "Jol kartası túsindirmeleri",
   "admin.title.tournaments": "Chempionatlar",
   "admin.title.broadcast": "Ulıwma xabarlama",
@@ -1535,6 +1541,10 @@ export const kaa: Record<MessageKey, string> = {
   "problem.editorialAvailable": "Sheshim analizi bar",
   "problem.testsNotReady": "Testler tayar emes — sheshimler qabıl etilmeydi",
   "qvant.marathon": "Háptelik marafon",
+  "submit.sourceRequired": "Jiberiwden aldın sheshimińizdi jazıń yamasa júkleń",
+
+  "submit.sourceTooLong": "Manba kodı júdá úlken",
+
   "submit.solution": "Sheshim",
   "contest.ogAlt": "RankWant kontesti",
   "problem.ogAlt": "RankWant máselesi",
