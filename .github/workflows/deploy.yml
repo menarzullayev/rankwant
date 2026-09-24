@@ -263,11 +263,39 @@ jobs:
       - name: Health check
         # `--wait` waits for the container to be healthy, but does not
         # say Django is ready: if migrations have not finished, 500.
+        #
+        # ⚠️ Tekshiruv KONTEYNER ICHIDAN (2026-09-24). Ilgari runner'dan
+        # `curl http://127.0.0.1:8301/...` qilinardi va har safar
+        # yiqilardi — ikki marta o'lchandi (run 35953766881, 35954531340):
+        #
+        #     curl: (7) Failed to connect to 127.0.0.1 port 8301
+        #     ##[error]API was not healthy after 150 seconds
+        #
+        # Sabab: `127.0.0.1:8301` — HOST tomonidagi bog'lanish
+        # (`docker-compose.public.yml`: `127.0.0.1:8301:8000`). Runner
+        # esa o'z network namespace'ida, shuning uchun port unga
+        # ko'rinmaydi. Bu tizim sog'liq muammosi EMAS edi: stack
+        # ko'tarilardi, konteyner `healthy` bo'lardi, `api` esa
+        # `docker compose exec` orqali javob berardi. Faqat tekshiruv
+        # noto'g'ri joydan urardi.
+        #
+        # Endi `exec` orqali, compose tarmog'i ichidan: TCP ham, DNS ham
+        # ishlaydi, portni host'ga chiqarish shart emas. `api` imijida
+        # `curl`/`wget` yo'q (o'lchandi) — shuning uchun Python
+        # (`urllib`) ishlatiladi: `python:3.12-slim` da doim bor.
+        #
+        # `Host` sarlavhasi SHART: Django `ALLOWED_HOSTS` bo'yicha
+        # filtrlaydi, aks holda 400 qaytadi. `localhost` ro'yxatda bor.
+        #
+        # Python kod BIR QATORDA: YAML'da ko'p qatorli `-c "..."` bloki
+        # ichki qo'shtirnoq bilan to'qnashadi va fayl umuman
+        # o'qilmaydi (o'lchandi: `could not find expected ':'`).
         run: |
+          HEALTH_PY='import sys, urllib.request as u; req = u.Request("http://localhost:8000/api/v1/health/", headers={"Host": "rankwant.uz"}); r = u.urlopen(req, timeout=5); sys.exit(0 if r.status == 200 else 1)'
           for i in $(seq 1 30); do
-            if curl -fsS -o /dev/null \
-              -H 'Host: rankwant.uz' \
-              http://127.0.0.1:8301/api/v1/health/; then
+            if docker compose -p rankwant --env-file .env.public \
+                 -f docker-compose.yml -f docker-compose.public.yml \
+                 exec -T api python -c "$HEALTH_PY" >/dev/null 2>&1; then
               echo "API healthy (attempt ${i})"
               exit 0
             fi
