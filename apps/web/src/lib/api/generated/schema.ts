@@ -5179,9 +5179,11 @@ export interface components {
             start_at: string;
             /** Format: date-time */
             readonly end_at: string;
+            /** Format: int64 */
             seconds_per_question?: number;
             readonly question_count: number;
             readonly participant_count: number;
+            /** Format: int64 */
             reward_qvant?: number;
             readonly is_running: boolean;
             readonly is_finished: boolean;
@@ -5194,9 +5196,11 @@ export interface components {
             start_at: string;
             /** Format: date-time */
             readonly end_at: string;
+            /** Format: int64 */
             seconds_per_question?: number;
             readonly question_count: number;
             readonly participant_count: number;
+            /** Format: int64 */
             reward_qvant?: number;
             readonly is_running: boolean;
             readonly is_finished: boolean;
@@ -5216,9 +5220,11 @@ export interface components {
             kind?: components["schemas"]["ArticleKindEnum"];
             title: string;
             summary?: string;
+            /** Format: int64 */
             difficulty?: number;
             locale?: string;
             readonly topics: string[];
+            /** Format: int64 */
             reading_minutes?: number;
             /** @default 0 */
             readonly problem_count: number;
@@ -5240,9 +5246,11 @@ export interface components {
             kind?: components["schemas"]["ArticleKindEnum"];
             title: string;
             summary?: string;
+            /** Format: int64 */
             difficulty?: number;
             locale?: string;
             readonly topics: string[];
+            /** Format: int64 */
             reading_minutes?: number;
             /** @default 0 */
             readonly problem_count: number;
@@ -5263,6 +5271,7 @@ export interface components {
             name: string;
             /** Format: uri */
             url: string;
+            /** Format: int64 */
             size_bytes?: number;
         };
         Attempt: {
@@ -5273,14 +5282,19 @@ export interface components {
             readonly contest: string;
             readonly language: string;
             verdict?: components["schemas"]["VerdictEnum"];
+            /** Format: int64 */
             score?: number;
+            /** Format: int64 */
             time_ms?: number;
+            /** Format: int64 */
             memory_kb?: number;
+            /** Format: int64 */
             failed_test_index?: number | null;
             /** Format: date-time */
             readonly created_at: string;
             /** Format: date-time */
             judged_at?: string | null;
+            /** Format: int64 */
             source_size?: number;
         };
         AttemptCreate: {
@@ -5297,23 +5311,31 @@ export interface components {
             readonly contest: string;
             readonly language: string;
             verdict?: components["schemas"]["VerdictEnum"];
+            /** Format: int64 */
             score?: number;
+            /** Format: int64 */
             time_ms?: number;
+            /** Format: int64 */
             memory_kb?: number;
+            /** Format: int64 */
             failed_test_index?: number | null;
             /** Format: date-time */
             readonly created_at: string;
             /** Format: date-time */
             judged_at?: string | null;
+            /** Format: int64 */
             source_size?: number;
             source_code: string;
             compile_output?: string;
             readonly test_results: components["schemas"]["AttemptTestResult"][];
         };
         AttemptTestResult: {
+            /** Format: int64 */
             index: number;
             verdict: components["schemas"]["VerdictEnum"];
+            /** Format: int64 */
             time_ms?: number;
+            /** Format: int64 */
             memory_kb?: number;
         };
         AvatarImport: {
@@ -5337,7 +5359,9 @@ export interface components {
             readonly contest: {
                 [key: string]: unknown;
             };
+            /** Format: int64 */
             place: number;
+            /** Format: int64 */
             participants: number;
             tier: components["schemas"]["TierEnum"];
             /** Format: date-time */
@@ -5354,6 +5378,7 @@ export interface components {
         /** @description `is_correct` ATAYLAB yo'q — baholash serverda. */
         ChoicePublic: {
             readonly id: number;
+            /** Format: int64 */
             order: number;
             text: string;
         };
@@ -5399,7 +5424,10 @@ export interface components {
             scoring_type?: components["schemas"]["ScoringTypeEnum"];
             is_rated?: boolean;
             is_virtual?: boolean;
-            /** @description Oxirgi N daqiqada standings muzlatiladi */
+            /**
+             * Format: int64
+             * @description Oxirgi N daqiqada standings muzlatiladi
+             */
             freeze_minutes?: number;
             readonly is_running: boolean;
             readonly is_finished: boolean;
@@ -5419,7 +5447,10 @@ export interface components {
             scoring_type?: components["schemas"]["ScoringTypeEnum"];
             is_rated?: boolean;
             is_virtual?: boolean;
-            /** @description Oxirgi N daqiqada standings muzlatiladi */
+            /**
+             * Format: int64
+             * @description Oxirgi N daqiqada standings muzlatiladi
+             */
             freeze_minutes?: number;
             readonly is_running: boolean;
             readonly is_finished: boolean;
@@ -5435,6 +5466,7 @@ export interface components {
             index_letter: string;
             readonly slug: string;
             readonly title: string;
+            /** Format: int64 */
             points?: number;
         };
         CurrentQuestion: {
@@ -5451,7 +5483,9 @@ export interface components {
             verdict?: components["schemas"]["VerdictEnum"];
             stdout?: string;
             compile_output?: string;
+            /** Format: int64 */
             time_ms?: number;
+            /** Format: int64 */
             memory_kb?: number;
             /** Format: date-time */
             readonly created_at: string;
@@ -5473,8 +5507,11 @@ export interface components {
             readonly challenger: string;
             /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
             readonly opponent: string;
+            /** Format: int64 */
             problem_count?: number;
+            /** Format: int64 */
             difficulty?: number;
+            /** Format: int64 */
             duration_minutes?: number;
             /** Format: date-time */
             start_at: string;
@@ -5483,7 +5520,9 @@ export interface components {
             readonly is_running: boolean;
             /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
             readonly winner: string;
+            /** Format: int64 */
             challenger_solved?: number;
+            /** Format: int64 */
             opponent_solved?: number;
             is_draw?: boolean;
             /**
@@ -5528,8 +5567,10 @@ export interface components {
         Education: {
             organization: string;
             degree?: string;
+            /** Format: int64 */
             start_year?: number | null;
             start_month?: number | null;
+            /** Format: int64 */
             end_year?: number | null;
             end_month?: number | null;
             current?: boolean;
@@ -5552,7 +5593,9 @@ export interface components {
         ExternalOut: {
             kind: components["schemas"]["ExternalProfileKindEnum"];
             handle: string;
+            /** Format: int64 */
             rating?: number | null;
+            /** Format: int64 */
             max_rating?: number | null;
             rank?: string;
             /** Format: date-time */
@@ -5586,6 +5629,7 @@ export interface components {
             avatar_url?: string;
             readonly title: components["schemas"]["UserTitle"] | null;
             readonly school: string;
+            /** Format: int64 */
             rating_contest?: number;
             /** Format: date-time */
             readonly last_seen: string | null;
@@ -5618,7 +5662,9 @@ export interface components {
              *     turadi, ya'ni hackerning o'z kodi haqidagi ma'lumot.
              */
             readonly detail: string;
+            /** Format: int64 */
             points?: number;
+            /** Format: int64 */
             input_size?: number;
             /** Format: date-time */
             readonly created_at: string;
@@ -5659,7 +5705,9 @@ export interface components {
              *     turadi, ya'ni hackerning o'z kodi haqidagi ma'lumot.
              */
             readonly detail: string;
+            /** Format: int64 */
             points?: number;
+            /** Format: int64 */
             input_size?: number;
             /** Format: date-time */
             readonly created_at: string;
@@ -5938,7 +5986,10 @@ export interface components {
             start_at: string;
             /** Format: date-time */
             end_at: string;
-            /** @description Oxirgi N daqiqada standings muzlatiladi */
+            /**
+             * Format: int64
+             * @description Oxirgi N daqiqada standings muzlatiladi
+             */
             freeze_minutes?: number;
             scoring_type?: components["schemas"]["ScoringTypeEnum"];
             readonly is_public: boolean;
@@ -6926,7 +6977,10 @@ export interface components {
             start_at?: string;
             /** Format: date-time */
             end_at?: string;
-            /** @description Oxirgi N daqiqada standings muzlatiladi */
+            /**
+             * Format: int64
+             * @description Oxirgi N daqiqada standings muzlatiladi
+             */
             freeze_minutes?: number;
             scoring_type?: components["schemas"]["ScoringTypeEnum"];
             readonly is_public?: boolean;
@@ -6940,7 +6994,9 @@ export interface components {
             start_at?: string;
             /** Format: date-time */
             readonly end_at?: string;
+            /** Format: int64 */
             seconds_per_question?: number;
+            /** Format: int64 */
             reward_qvant?: number;
             is_public?: boolean;
             questions?: number[];
@@ -6961,9 +7017,11 @@ export interface components {
             /** @description Markdown + LaTeX */
             body?: string;
             locale?: string;
+            /** Format: int64 */
             difficulty?: number;
             topics?: string[];
             is_published?: boolean;
+            /** Format: int64 */
             reading_minutes?: number;
             problems?: components["schemas"]["StaffArticleProblemLink"][];
             /** @default 0 */
@@ -6984,7 +7042,10 @@ export interface components {
             start_at?: string;
             /** Format: date-time */
             end_at?: string;
-            /** @description Oxirgi N daqiqada standings muzlatiladi */
+            /**
+             * Format: int64
+             * @description Oxirgi N daqiqada standings muzlatiladi
+             */
             freeze_minutes?: number;
             scoring_type?: components["schemas"]["ScoringTypeEnum"];
             is_rated?: boolean;
@@ -7056,12 +7117,15 @@ export interface components {
             note?: string;
             /** @description Markdown + LaTeX */
             editorial?: string;
+            /** Format: int64 */
             editorial_price?: number;
             statement_locale?: string;
             /** @description 800–3500, qadam 100 */
             difficulty?: number;
             topics?: string[];
+            /** Format: int64 */
             time_limit_ms?: number;
+            /** Format: int64 */
             memory_limit_kb?: number;
             checker_type?: components["schemas"]["CheckerTypeEnum"];
             interactor_source?: string;
@@ -7102,6 +7166,7 @@ export interface components {
             title_uz?: string;
             title_ru?: string;
             title_en?: string;
+            /** Format: int64 */
             reward?: number;
             is_active?: boolean;
             /** @default 0 */
@@ -7113,6 +7178,7 @@ export interface components {
             text?: string;
             /** @description Javobdan keyin ko'rsatiladi */
             explanation?: string;
+            /** Format: int64 */
             difficulty?: number;
             topics?: string[];
             is_active?: boolean;
@@ -7125,6 +7191,7 @@ export interface components {
             slug?: string;
             title?: string;
             description?: string;
+            /** Format: int64 */
             reward_qvant?: number;
             is_published?: boolean;
             questions?: number[];
@@ -7137,6 +7204,7 @@ export interface components {
             description?: string;
             locale?: string;
             is_published?: boolean;
+            /** Format: int64 */
             order?: number;
             steps?: components["schemas"]["StaffRoadmapStep"][];
             /** @default 0 */
@@ -7209,6 +7277,7 @@ export interface components {
             title_uz?: string;
             title_ru?: string;
             title_en?: string;
+            /** Format: int64 */
             price?: number;
             asset_ref?: string;
             is_active?: boolean;
@@ -7356,8 +7425,11 @@ export interface components {
             readonly level: string;
             readonly level_label: string;
             readonly topics: string[];
+            /** Format: int64 */
             solved_count?: number;
+            /** Format: int64 */
             attempt_count?: number;
+            /** Format: int64 */
             view_count?: number;
             /** @description Yechilgan / urinilgan, foizda. Urinish bo'lmasa ma'nosiz. */
             readonly success_rate: number | null;
@@ -7377,9 +7449,12 @@ export interface components {
             readonly has_editorial: boolean;
             /** @description Shu masala bo'yicha oxirgi urinishim verdikti. */
             readonly my_verdict: string | null;
+            /** Format: int64 */
             code?: number | null;
             readonly has_tests: boolean;
+            /** Format: int64 */
             likes_count?: number;
+            /** Format: int64 */
             dislikes_count?: number;
             /**
              * @description Author name, plus whether a profile page exists.
@@ -7410,6 +7485,7 @@ export interface components {
             };
             image?: string;
             partial_scoring?: boolean;
+            /** Format: int64 */
             source_rating?: number | null;
             /** @description Markdown + LaTeX */
             statement: string;
@@ -7427,7 +7503,9 @@ export interface components {
              */
             readonly editorial: string;
             statement_locale?: string;
+            /** Format: int64 */
             time_limit_ms?: number;
+            /** Format: int64 */
             memory_limit_kb?: number;
             checker_type?: components["schemas"]["CheckerTypeEnum"];
             source?: string;
@@ -7456,8 +7534,11 @@ export interface components {
             readonly level: string;
             readonly level_label: string;
             readonly topics: string[];
+            /** Format: int64 */
             solved_count?: number;
+            /** Format: int64 */
             attempt_count?: number;
+            /** Format: int64 */
             view_count?: number;
             /** @description Yechilgan / urinilgan, foizda. Urinish bo'lmasa ma'nosiz. */
             readonly success_rate: number | null;
@@ -7477,9 +7558,12 @@ export interface components {
             readonly has_editorial: boolean;
             /** @description Shu masala bo'yicha oxirgi urinishim verdikti. */
             readonly my_verdict: string | null;
+            /** Format: int64 */
             code?: number | null;
             readonly has_tests: boolean;
+            /** Format: int64 */
             likes_count?: number;
+            /** Format: int64 */
             dislikes_count?: number;
             /**
              * @description Author name, plus whether a profile page exists.
@@ -7515,6 +7599,7 @@ export interface components {
             title_uz: string;
             title_ru?: string;
             title_en?: string;
+            /** Format: int64 */
             reward: number;
             /** @default false */
             readonly done: boolean;
@@ -7523,6 +7608,7 @@ export interface components {
             readonly id: number;
             /** @description Markdown + LaTeX */
             text: string;
+            /** Format: int64 */
             difficulty?: number;
             readonly topics: string[];
             readonly choices: components["schemas"]["ChoicePublic"][];
@@ -7531,6 +7617,7 @@ export interface components {
             slug: string;
             title: string;
             description?: string;
+            /** Format: int64 */
             reward_qvant?: number;
             readonly question_count: number;
             readonly best_score: number | null;
@@ -7541,6 +7628,7 @@ export interface components {
             slug: string;
             title: string;
             description?: string;
+            /** Format: int64 */
             reward_qvant?: number;
             readonly question_count: number;
             readonly best_score: number | null;
@@ -7552,8 +7640,11 @@ export interface components {
         };
         QuizResult: {
             readonly id: number;
+            /** Format: int64 */
             score?: number;
+            /** Format: int64 */
             total?: number;
+            /** Format: int64 */
             qvant_awarded?: number;
             readonly review: components["schemas"]["ReviewItem"][];
             /** Format: date-time */
@@ -7576,14 +7667,18 @@ export interface components {
          */
         RatingHistory: {
             rating_type: components["schemas"]["RatingTypeEnum"];
+            /** Format: int64 */
             value_before: number;
+            /** Format: int64 */
             value_after: number;
+            /** Format: int64 */
             delta: number;
             reason: components["schemas"]["RatingHistoryReasonEnum"];
             ref_type?: string;
             ref_id?: string;
             /** Format: double */
             seed?: number | null;
+            /** Format: int64 */
             rank?: number | null;
             /** Format: date-time */
             readonly created_at: string;
@@ -7741,6 +7836,7 @@ export interface components {
             readonly solved_steps: number;
         };
         RoadmapStep: {
+            /** Format: int64 */
             order: number;
             title?: string;
             readonly article: string;
@@ -7826,6 +7922,7 @@ export interface components {
             title_uz: string;
             title_ru?: string;
             title_en?: string;
+            /** Format: int64 */
             price: number;
             is_consumable?: boolean;
             /** @default false */
@@ -7860,6 +7957,7 @@ export interface components {
             readonly code: number | null;
             readonly title: string;
             readonly difficulty: number;
+            /** Format: int64 */
             difficulty_at_solve: number;
             /** Format: date-time */
             readonly first_ac_at: string;
@@ -7875,7 +7973,9 @@ export interface components {
             start_at: string;
             /** Format: date-time */
             readonly end_at: string;
+            /** Format: int64 */
             seconds_per_question?: number;
+            /** Format: int64 */
             reward_qvant?: number;
             is_public?: boolean;
             questions?: number[];
@@ -7896,9 +7996,11 @@ export interface components {
             /** @description Markdown + LaTeX */
             body: string;
             locale?: string;
+            /** Format: int64 */
             difficulty?: number;
             topics?: string[];
             is_published?: boolean;
+            /** Format: int64 */
             reading_minutes?: number;
             problems?: components["schemas"]["StaffArticleProblemLink"][];
             /** @default 0 */
@@ -7914,6 +8016,7 @@ export interface components {
         StaffArticleProblemLink: {
             problem: string;
             role?: components["schemas"]["RoleEnum"];
+            /** Format: int64 */
             order?: number;
         };
         StaffChoice: {
@@ -7930,7 +8033,10 @@ export interface components {
             start_at: string;
             /** Format: date-time */
             end_at: string;
-            /** @description Oxirgi N daqiqada standings muzlatiladi */
+            /**
+             * Format: int64
+             * @description Oxirgi N daqiqada standings muzlatiladi
+             */
             freeze_minutes?: number;
             scoring_type?: components["schemas"]["ScoringTypeEnum"];
             is_rated?: boolean;
@@ -7949,6 +8055,7 @@ export interface components {
         StaffContestProblem: {
             problem: string;
             index_letter: string;
+            /** Format: int64 */
             points?: number;
             readonly title: string;
         };
@@ -8050,12 +8157,15 @@ export interface components {
             note?: string;
             /** @description Markdown + LaTeX */
             editorial?: string;
+            /** Format: int64 */
             editorial_price?: number;
             statement_locale?: string;
             /** @description 800–3500, qadam 100 */
             difficulty: number;
             topics?: string[];
+            /** Format: int64 */
             time_limit_ms?: number;
+            /** Format: int64 */
             memory_limit_kb?: number;
             checker_type?: components["schemas"]["CheckerTypeEnum"];
             interactor_source?: string;
@@ -8103,6 +8213,7 @@ export interface components {
             title_uz: string;
             title_ru?: string;
             title_en?: string;
+            /** Format: int64 */
             reward: number;
             is_active?: boolean;
             /** @default 0 */
@@ -8114,6 +8225,7 @@ export interface components {
             text: string;
             /** @description Javobdan keyin ko'rsatiladi */
             explanation?: string;
+            /** Format: int64 */
             difficulty?: number;
             topics?: string[];
             is_active?: boolean;
@@ -8126,6 +8238,7 @@ export interface components {
             slug: string;
             title: string;
             description?: string;
+            /** Format: int64 */
             reward_qvant?: number;
             is_published?: boolean;
             questions?: number[];
@@ -8145,6 +8258,7 @@ export interface components {
             description?: string;
             locale?: string;
             is_published?: boolean;
+            /** Format: int64 */
             order?: number;
             steps?: components["schemas"]["StaffRoadmapStep"][];
             /** @default 0 */
@@ -8224,6 +8338,7 @@ export interface components {
             title_uz: string;
             title_ru?: string;
             title_en?: string;
+            /** Format: int64 */
             price: number;
             asset_ref?: string;
             is_active?: boolean;
@@ -8288,8 +8403,10 @@ export interface components {
         };
         StaffTestCase: {
             readonly id: number;
+            /** Format: int64 */
             order: number;
             is_sample?: boolean;
+            /** Format: int64 */
             points?: number;
             input_ref: string;
             output_ref: string;
@@ -8370,6 +8487,7 @@ export interface components {
             readonly updated_at: string;
         };
         Stage: {
+            /** Format: int64 */
             order: number;
             title: string;
             readonly contest: string;
@@ -8378,6 +8496,7 @@ export interface components {
             readonly start_at: string;
             /** Format: date-time */
             readonly end_at: string;
+            /** Format: int64 */
             weight?: number;
             readonly is_finished: boolean;
         };
@@ -8390,14 +8509,21 @@ export interface components {
          */
         StageEnum: "generate" | "reference" | "defend" | "done";
         Standing: {
+            /** Format: int64 */
             rank?: number;
             readonly username: string;
             readonly user_title: components["schemas"]["UserTitle"] | null;
+            /** Format: int64 */
             solved_count?: number;
+            /** Format: int64 */
             penalty?: number;
+            /** Format: int64 */
             total_score?: number;
+            /** Format: int64 */
             hack_score?: number;
+            /** Format: int64 */
             hacks_successful?: number;
+            /** Format: int64 */
             hacks_unsuccessful?: number;
             /** Format: date-time */
             last_ac_at?: string | null;
@@ -8414,7 +8540,10 @@ export interface components {
             demo_url?: string;
             /** Format: date-time */
             readonly submitted_at: string;
-            /** @description 0–100 */
+            /**
+             * Format: int64
+             * @description 0–100
+             */
             score?: number | null;
             feedback?: string;
         };
@@ -8562,20 +8691,28 @@ export interface components {
             readonly stages: components["schemas"]["Stage"][];
         };
         TournamentStanding: {
+            /** Format: int64 */
             rank: number;
             readonly username: string;
             readonly display_name: string;
+            /** Format: int64 */
             points?: number;
+            /** Format: int64 */
             solved_total?: number;
+            /** Format: int64 */
             stages_played?: number;
         };
         Transaction: {
             readonly id: number;
-            /** @description Musbat = topildi, manfiy = sarflandi */
+            /**
+             * Format: int64
+             * @description Musbat = topildi, manfiy = sarflandi
+             */
             amount: number;
             reason: components["schemas"]["TransactionReasonEnum"];
             ref_type?: string;
             ref_id?: string;
+            /** Format: int64 */
             balance_after: number;
             /** Format: date-time */
             readonly created_at: string;
@@ -8630,12 +8767,19 @@ export interface components {
             avatar_url?: string;
             bio?: string;
             readonly title: components["schemas"]["UserTitle"] | null;
+            /** Format: int64 */
             rating_skills?: number;
+            /** Format: int64 */
             rating_contest?: number;
+            /** Format: int64 */
             rating_activity?: number;
+            /** Format: int64 */
             rating_challenges?: number;
+            /** Format: int64 */
             streak_count?: number;
+            /** Format: int64 */
             streak_max?: number;
+            /** Format: int64 */
             solved_count?: number;
             /** Format: date-time */
             date_joined?: string;
@@ -8670,6 +8814,7 @@ export interface components {
             /** @description Manbada unvon yo'q bo'lsa bo'sh satr — frontend uni chizmaydi. */
             readonly cf_title: string;
             readonly cf_max_title: string;
+            /** Format: int64 */
             friend_count?: number;
             /**
              * @description Profil banneri. `country` kabi `hidden_fields` ga bo'ysunadi:
@@ -8753,6 +8898,7 @@ export interface components {
             value: components["schemas"]["ValueEnum"];
         };
         Wallet: {
+            /** Format: int64 */
             balance?: number;
             readonly earned_today: number;
             readonly remaining_today: number;
@@ -8763,8 +8909,10 @@ export interface components {
         Work: {
             company: string;
             title?: string;
+            /** Format: int64 */
             start_year?: number | null;
             start_month?: number | null;
+            /** Format: int64 */
             end_year?: number | null;
             end_month?: number | null;
             current?: boolean;

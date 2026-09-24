@@ -297,6 +297,19 @@ jobs:
       - name: API messages English
         if: steps.check.outputs.ready == 'true'
         run: python3 tools/check_api_english.py
+      # Shriftlar repodan beriladi, Google'dan emas. `next/font/google`
+      # har build'da jonli so'rov qilardi va Google javobi ~1/60 holatda
+      # o'qib bo'lmaydigan shaklda qaytardi — CI tasodifiy yiqilardi
+      # (vercel/next.js#99114). Ikki qo'riqchi:
+      #   `check_no_google_fonts.py` — import qaytib kelmasin;
+      #   `check_fonts.py` — `fonts.ts` literal ro'yxati manifest bilan
+      #   mos bo'lsin (yo'l, weight, style, fayl diskda bormi).
+      - name: No Google Fonts import
+        if: steps.check.outputs.ready == 'true'
+        run: python3 tools/check_no_google_fonts.py
+      - name: Font definitions match the vendored files
+        if: steps.check.outputs.ready == 'true'
+        run: python3 tools/check_fonts.py
       # Fallback path of `t()`: throws in dev, logs once in prod.
       # `check_i18n.py` cannot see that — it only reads the strings —
       # so the module is run in Node (this step has `actions/setup-node`).

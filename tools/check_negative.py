@@ -1950,6 +1950,99 @@ def neg_picker_finds_working_python() -> tuple[bool, str]:
     return True, f"picker/ishlaydi: `{Path(chosen).name}` tanlandi va ishladi"
 
 
+def neg_fonts_missing_file_is_caught() -> tuple[bool, str]:
+    """`fonts.ts` mavjud bo'lmagan faylga ishora qilsa — qizil bo'lsinmi?
+
+    ⚠️ 2026-09-24 da o'lchandi: `fonts.ts` fayl yo'lini hisoblab yasardi
+    (`groupIndex * subsets.length + subsetIndex`). Google esa yetti
+    oilaning BESHTASIGA *variable* shrift beradi — har weight ayni
+    faylga ishora qiladi, ya'ni yozuv soni fayl sonidan ko'p (110 yozuv,
+    60 fayl). Hisoblangan indeks `inter-7.woff2` kabi MAVJUD BO'LMAGAN
+    faylni ko'rsatardi. Xato jimgina o'tardi: `next/font/local` yuklab
+    bo'lmay, build butunlay boshqa gliflar bilan o'tib ketardi.
+
+    Endi `fonts.ts` literal ro'yxat — ya'ni qo'lda tahrir ham ayni shu
+    xatoni keltirishi mumkin. Nazorat shuning uchun kerak.
+
+    Nazorat: o'zgartirilmagan daraxtda tekshiruv yashil bo'lishi shart.
+    """
+    code, out = run_check("fonts")
+    if code != 0:
+        return False, f"nazorat: sog'lom daraxtda exit {code} — {out.strip()[-160:]}"
+
+    path = ROOT / "apps/web/src/app/fonts.ts"
+    if not path.is_file():
+        return False, "fonts.ts topilmadi"
+
+    with Mutation(
+        path,
+        'path: "../fonts/inter/inter-0.woff2", weight: "400", style: "normal"',
+        'path: "../fonts/inter/inter-99999.woff2", weight: "400", style: "normal"',
+    ):
+        code, out = run_check("fonts")
+    if code == 0:
+        return False, "yo'q fayl YASHIL qoldi (exit 0) — tekshiruv o'lik"
+    if "inter-99999" not in out:
+        return False, f"to'xtadi (exit {code}), lekin sabab ko'rinmadi"
+    return True, f"yo'q fayl tutildi (exit {code})"
+
+
+def neg_fonts_wrong_weight_is_caught() -> tuple[bool, str]:
+    """Weight manifest bilan mos kelmasa — qizil bo'lsinmi?
+
+    Fayl topilsa ham weight siljigan bo'lishi mumkin: u holda brauzer
+    noto'g'ri qalinlikni tanlaydi va buni faqat piksel taqqoslash
+    ko'rsatadi. Arzon tekshiruv buni oldindan tutadi.
+    """
+    path = ROOT / "apps/web/src/app/fonts.ts"
+    if not path.is_file():
+        return False, "fonts.ts topilmadi"
+
+    with Mutation(
+        path,
+        'path: "../fonts/roboto/roboto-0.woff2", weight: "400", style: "normal"',
+        'path: "../fonts/roboto/roboto-0.woff2", weight: "900", style: "normal"',
+    ):
+        code, out = run_check("fonts")
+    if code == 0:
+        return False, "noto'g'ri weight YASHIL qoldi (exit 0) — tekshiruv o'lik"
+    if "900" not in out:
+        return False, f"to'xtadi (exit {code}), lekin sabab ko'rinmadi"
+    return True, f"noto'g'ri weight tutildi (exit {code})"
+
+
+def neg_google_fonts_import_is_caught() -> tuple[bool, str]:
+    """Kimdir `next/font/google` ni qaytarsa — to'plam buni ko'rsinmi?
+
+    Bu butun tuzatishning SABABI: `next/font/google` har build'da jonli
+    so'rov qiladi va Google javobi barqaror emas (~1/60) — CI tasodifiy
+    yiqilardi (vercel/next.js#99114). Agar import jimgina qaytsa,
+    tuzatish yo'qoladi va muammo bir necha haftadan keyin qaytadi.
+
+    Nazorat: hozirgi daraxtda `next/font/google` importi BO'LMASLIGI
+    shart.
+    """
+    code, out = run_check("no_google_fonts")
+    if code != 0:
+        return False, f"nazorat: daraxtda hali ham `next/font/google` bor — {out.strip()[-200:]}"
+
+    path = ROOT / "apps/web/src/app/fonts.ts"
+    if not path.is_file():
+        return False, "fonts.ts topilmadi"
+
+    with Mutation(
+        path,
+        'import localFont from "next/font/local";',
+        'import localFont from "next/font/local";\nimport { Roboto } from "next/font/google";',
+    ):
+        code, out = run_check("no_google_fonts")
+    if code == 0:
+        return False, "`next/font/google` YASHIL qoldi (exit 0) — qo'riqchi o'lik"
+    if "next/font/google" not in out:
+        return False, f"to'xtadi (exit {code}), lekin sabab ko'rinmadi"
+    return True, f"`next/font/google` tutildi (exit {code})"
+
+
 def neg_mutation_restores_bytes() -> tuple[bool, str]:
     """Mutatsiyadan keyin fayl BAYT-ANIQ qaytarilsinmi?
 
@@ -6713,6 +6806,14 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("tor oqimda qulamasin", neg_checker_survives_narrow_stdout),
             ("yangi branch darvozasiz qolmasin", neg_hook_gates_new_branch),
             ("notanish guruh yashil qolmasin", neg_negative_rejects_unknown_group),
+        ],
+    ),
+    (
+        "fonts",
+        [
+            ("yo'q shrift fayli tutilsin", neg_fonts_missing_file_is_caught),
+            ("noto'g'ri weight tutilsin", neg_fonts_wrong_weight_is_caught),
+            ("`next/font/google` qaytmasin", neg_google_fonts_import_is_caught),
         ],
     ),
     (
