@@ -156,7 +156,20 @@ services:
   web:
     logging: *default-logging
     build:
-      context: ./apps/web
+      # ⚠️ Kontekst — REPO ILDIZI, `./apps/web` emas.
+      #
+      # Monorepo (npm workspaces) shuni talab qiladi: yagona
+      # `package-lock.json` ildizda, `apps/web` esa `@rankwant/shared` ga
+      # bog'liq va `tsconfig.json` uni `../../packages/shared/src/...` ga
+      # yo'naltiradi. `apps/web` kontekstida `COPY package-lock.json`
+      # shunday yiqilardi (o'lchandi, run 35951769214):
+      #
+      #     "/package-lock.json": not found
+      #
+      # `dockerfile:` aniq ko'rsatilgan, chunki kontekst ildiz bo'lganda
+      # Docker standart `./Dockerfile` ni qidiradi va u mavjud emas.
+      context: .
+      dockerfile: apps/web/Dockerfile
       args:
         # Brauzer bundle'i uchun — deploy manzili bilan mos bo'lishi shart.
         NEXT_PUBLIC_API_BASE: ${NEXT_PUBLIC_API_BASE:-http://localhost:8000/api/v1}
