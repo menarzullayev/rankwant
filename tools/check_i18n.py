@@ -217,6 +217,10 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         # o'girilgan («Бұзулар», «Бузуулар»).
         "standings.hacks",
         "submit.testTooltip",    # birlik va ajratgich bir xil
+        # «Siz» — olmosh qaraqalpoqchada ham aynan shunday yoziladi.
+        # «{index}-test» esa faqat son va o'zgarmas atama: tarjima
+        # qilinadigan so'z yo'q, ya'ni bir xillik TO'G'RI.
+        "attempts.you", "attempts.failedAtTest",
     },
     # Ingliz tili: «Duel» kabi so'zlar inglizchadan o'zlashgan, ya'ni
     # tarjima AYNAN o'sha so'z bo'ladi. Quyidagilar ham shunday —
@@ -254,6 +258,8 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
            "cfTier.master",
            # «Profil banneri» — turkchada ham harfma-harf bir xil.
            "profile.cfBanner",
+           # «Siz» — turkchada ham o'zbekchadagi kabi yoziladi.
+           "attempts.you",
            "submit.testTooltip"},
     # Ispan tilida ham «Virtual».
     "es": {"profile.virtual", "admin.label.flag.virtual",

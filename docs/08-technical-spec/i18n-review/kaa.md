@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1788 strings.**
+**1813 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -532,6 +532,31 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `verdict.RATE_LIMITED` | Juda tez yuborildi | Júdá tez jiberildi |  |
 | `verdict.DENIAL_OF_JUDGEMENT` | Tekshirib bo'lmadi | Tekserip bolmadı |  |
 | `attempts.allVerdicts` | Hamma verdikt | Barlıq verdikt |  |
+| `attempts.col.submitted` | Yuborilgan | Jiberilgen |  |
+| `attempts.col.runTime` | Ishlash vaqti | Orınlaw waqtı |  |
+| `attempts.col.codeSize` | Kod hajmi | Kod kólemi |  |
+| `attempts.col.contest` | Musobaqa | Jarıs |  |
+| `attempts.you` | Siz | Siz |  |
+| `attempts.firstSolver` | Birinchi yechim | Birinshi sheshken |  |
+| `attempts.queuedFor` | {seconds} s kutdi | Gezekte {seconds} s |  |
+| `attempts.failedAtTest` | {index}-test | {index}-test |  |
+| `attempts.sortLabel` | Saralash | Iretlew |  |
+| `attempts.searchLabel` | Foydalanuvchi qidirish | Paydalanıwshını izlew |  |
+| `attempts.searchPlaceholder` | Foydalanuvchi nomi… | Paydalanıwshı atı… |  |
+| `attempts.searchClear` | Qidiruvni tozalash | İzlewdı tazalaw |  |
+| `attempts.activeFilters` | {count} filtr faol | {count} filtr belsendi |  |
+| `attempts.clearFilters` | Filtrlarni tozalash | Filtrlardı tazalaw |  |
+| `attempts.onlyMineActive` | Faqat sizning urinishlaringiz | Tek sizdiń urınıslarıńız |  |
+| `attempts.onlyMineCancel` | Bekor qilish | Biykarlaw |  |
+| `attempts.total` | {count} urinish | {count} urınıs |  |
+| `attempts.totalFiltered` | Natija: {count}+ | Tabıldı: {count}+ |  |
+| `attempts.pageSize` | Sahifa o'lchami | Bet ólshemi |  |
+| `attempts.copySource` | Manba kodni nusxalash | Baslanǵısh kodtı kóshiriw |  |
+| `attempts.rowOpen` | Urinishni ochish | Urınıstı ashıw |  |
+| `attempts.loading` | Yuklanmoqda… | Júklenbekte… |  |
+| `attempts.emptyTitle` | Hali urinish yo'q | Ázirshe urınıs joq |  |
+| `attempts.emptyHint` | Birinchi bo'lib yuboring | Birinshi bolıp jiberiń |  |
+| `attempts.emptyFilteredTitle` | Bu filtrlarga mos urinish yo'q | Bul filtrlarǵa urınıs joq |  |
 | `error.already_answered` | Bu savolga allaqachon javob berdingiz | Bul sorawǵa aldın juwap berdińiz |  |
 | `error.already_finalized` | Allaqachon yakunlangan | Aldın tamamlanǵan |  |
 | `error.already_paid` | Bu allaqachon to'langan | Bul aldın tólengen |  |

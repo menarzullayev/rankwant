@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typing import Any, Never
 
-from django.db.models import QuerySet
+from django.db.models import BooleanField, Case, QuerySet, Value, When
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import mixins, status, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
@@ -13,7 +13,7 @@ from rest_framework.response import Response
 
 from core.models import User
 from core.openapi_docs import crud_summaries
-from core.pagination import TimeCursorPagination
+from core.pagination import SortableCursorPagination
 from core.permissions import CanSubmit
 from core.throttling import ResilientScopedRateThrottle
 from hacks.services import can_view_source
@@ -33,8 +33,47 @@ from problems.models import Language, Problem
 #: emas: bu qator natija emas, iz.
 MAX_SOURCE_CHARS = 4096
 
+#: Urinishlar ro'yxatida saralash mumkin bo'lgan maydonlar.
+#:
+#: Faqat sonli ustunlar: `username`, `verdict`, `language` ni saralash
+#: 891 qatorli oqimda ma'noli emas, ustiga ular bo'yicha saralash
+#: indekssiz — ya'ni har so'rov `attempt_problem_feed` ni tashlab,
+#: to'liq saralashga o'tardi. Ro'yxatda yo'q qiymat standart tartibni
+#: qaytaradi (foydalanuvchi satri `order_by()` ga yetib bormaydi).
+ATTEMPT_ORDERINGS = {
+    "created_at": "created_at",
+    "-created_at": "-created_at",
+    "time_ms": "time_ms",
+    "-time_ms": "-time_ms",
+    "memory_kb": "memory_kb",
+    "-memory_kb": "-memory_kb",
+    "source_size": "source_size",
+    "-source_size": "-source_size",
+}
+
+
+class AttemptCursorPagination(SortableCursorPagination):
+    ordering_fields = ATTEMPT_ORDERINGS
+
 
 @crud_summaries(one="urinish", many="urinishlar", only=("list", "retrieve", "create"))
+@extend_schema_view(
+    list=extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="ordering",
+                type=str,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                enum=sorted(ATTEMPT_ORDERINGS),
+                description=(
+                    "Saralash maydoni (`-` teskari tartib). Notanish qiymat "
+                    "jim rad etiladi va standart tartib qaytadi."
+                ),
+            )
+        ]
+    )
+)
 class AttemptViewSet(
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,
@@ -43,7 +82,13 @@ class AttemptViewSet(
 ):
     """Submit va urinishlar tarixi — PRD P0-3."""
 
-    pagination_class = TimeCursorPagination
+    pagination_class = AttemptCursorPagination
+    #: `OrderingFilter` (global sukut) shu ro'yxatni tekshiradi. Usiz u
+    #: SERIALIZER maydonlaridan ruxsat ro'yxatini yasardi va
+    #: `?ordering=user__username` qabul qilinardi — ya'ni har so'rov
+    #: `core_user` ga join qilib, butun ro'yxatni saralardi.
+    #: Sahifalagich ham AYNAN shu to'plamni biladi; ikkisi ajralmasin.
+    ordering_fields = list(ATTEMPT_ORDERINGS)
     throttle_scope = "submit"
 
     def get_permissions(self):  # type: ignore[no-untyped-def]
@@ -99,7 +144,25 @@ class AttemptViewSet(
             # urinishlarini skanerlab, keyin saralab 26 tasini oladi.
             # O'lchandi (50 852 urinishli masala): 86.4 ms → 2.2 ms,
             # 156 881 bufer sahifasi o'rniga bir nechta.
-            qs = qs.filter(problem_id=Problem.objects.filter(slug=problem).values("pk")[:1])
+            problem_ids = Problem.objects.filter(slug=problem).values("pk")[:1]
+            qs = qs.filter(problem_id=problem_ids)
+            #: «Birinchi yechim» nishoni (S06). BITTA subquery butun
+            #: sahifa uchun. `Exists()` bilan yozilsa u har qatorga
+            #: bog'langan bo'lardi — 25 qatorli sahifada 25 marta.
+            #: Faqat masala bo'yicha filtrlashda ma'noli: usiz
+            #: «birinchi» tushunchasi butun platforma bo'ylab bo'lardi.
+            first_ac = (
+                Attempt.objects.filter(problem_id=problem_ids, verdict=Verdict.AC)
+                .order_by("created_at", "pk")
+                .values("pk")[:1]
+            )
+            qs = qs.annotate(
+                is_first_solver=Case(
+                    When(pk__in=first_ac, then=Value(True)),
+                    default=Value(False),
+                    output_field=BooleanField(),
+                )
+            )
         username = params.get("username")
         if username:
             # Bu yerda esa join TEZROQ (o'lchandi: 6.0 ms, ID bilan 17.3) —
@@ -122,6 +185,9 @@ class AttemptViewSet(
         if params.get("mine") in ("true", "1") and self.request.user.is_authenticated:
             qs = qs.filter(user=self.request.user)
 
+        # Tartibni SAHIFALAGICH qo'yadi (`AttemptCursorPagination`), bu
+        # yerdagi `order_by` esa sukut: kursor pozitsiyasi shu maydondan
+        # olinadi, shuning uchun ikkisi ajralib ketmasligi kerak.
         return qs.order_by("-created_at")
 
     def get_serializer_class(self):  # type: ignore[no-untyped-def]
