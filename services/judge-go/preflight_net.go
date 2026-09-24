@@ -41,8 +41,10 @@ func envPort(name string, def int) int {
 }
 
 // unreachable — bitta host:port ga ulanish xatosi kutilgan natijami?
-//   err == nil      → ulanish MUVAFFAQIYATLI bo'ldi (yomon) → false
-//   timeout/refused/unknown → chegara yopiq (yaxshi) → true
+//
+//	err == nil      → ulanish MUVAFFAQIYATLI bo'ldi (yomon) → false
+//	timeout/refused/unknown → chegara yopiq (yaxshi) → true
+//
 // boshqa xato → diagnoz noaniq; fail closed tamoyili bo'yicha «yaxshi»
 // hisoblanmaydi — chaqiruvchi tomonidan muhim xato sifatida qaytariladi
 // (err o'zi qaytadi).
