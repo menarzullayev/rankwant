@@ -36,6 +36,7 @@ tekshiruvlar o'zgarganda ishlamagan.
 
 from __future__ import annotations
 
+import ast
 import contextlib
 import gzip
 import http.server
@@ -112,8 +113,47 @@ def run_check(checker: str, *extra: str) -> tuple[int, str]:
 
 NODE_MISSING = "node topilmadi"
 
-NODE_CASES = {"runtime dev throw yo'q", "runtime takroriy jurnal"}
-"""Node'da ishlaydigan tekshiruvga tegishli salbiy testlarning yorlig'i."""
+NODE_CASES = {
+    "runtime dev throw yo'q",
+    "runtime takroriy jurnal",
+    # ⚠️ Qo'shildi 2026-09-24. Sabab o'lchandi (run 35969122043).
+    #
+    # `ci.yml` da `Need Node?` faqat `web` yoki `tools_node` o'zgarganda
+    # true bo'ladi. Python-only `tools/` esa `tools` filtri bilan job'ni
+    # UYG'OTADI-yu, node O'RNATMAYDI (u ataylab: `npm ci` 14–20 s).
+    # Ya'ni `tools/*.py` o'zgarganda to'plam node'siz va build'siz
+    # yugurardi, shu to'rtta test esa yiqilardi — CI qizil, sabab esa
+    # kodda emas, muhitda.
+    #
+    #   · `validation` — vitest talab qiladi (`npm ci`);
+    #   · `tor oqim`   — `check_bundle_budget.py` ni chaqiradi (`.next`);
+    #   · `bundle` ×2  — haqiqiy daraxtni o'lchaydi (`.next`).
+    #
+    # ⚠️ `bundle_budget` guruhidan AYNAN IKKITASI shu yerda, qolgan
+    # IKKITASI EMAS — farq o'lchandi, taxmin qilinmadi:
+    #
+    #   `catches_overflow` va `floor_is_live` HAQIQIY daraxtni o'lchaydi
+    #   (`check_bundle_budget.py` argument/env'siz) ⇒ `.next` bo'lmasa
+    #   exit 2. Ularni o'tkazib yubormaslik kerak.
+    #
+    #   `unbuilt_is_not_green` va `empty_dir_is_not_green` esa o'z
+    #   fixture'ini yasaydi (`RW_BUNDLE_STATIC` ni yo'q papkaga yoki bo'sh
+    #   temp papkaga qaratadi) ⇒ build'siz ham o'tadi. Ularni ham
+    #   o'tkazib yuborish ikki haqiqiy o'lchovni yo'qotardi.
+    #
+    # Birinchi urinishda aynan TESKARISI qilingan edi va lokal o'lchov
+    # ushladi: `bundle_budget` da `2/2 YIQILDI` — ya'ni o'tadigan
+    # ikkitasi o'tkazilib, yiqiladigan ikkitasi qolgan.
+    "email/parol/taxallus qoidalari tirik bo'lsin",
+    "tor oqimda qulamasin",
+    "byudjetdan oshgan hajm tutilsin",
+    "byudjet o'lik bo'lib qolmasin",
+}
+"""Node'da ishlaydigan tekshiruvga tegishli salbiy testlarning yorlig'i.
+
+Node o'rnatilmaganda (`NEGATIVE_SKIP_NODE=1`) shu yorliqlar o'tkazib
+yuboriladi — jimgina emas: hisobotda alohida qator bo'lib chiqadi.
+"""
 
 VISUAL_CASES = {
     "fon o'zgarishi piksel farqini bersin",
@@ -2925,6 +2965,26 @@ def neg_decisions_backup_offsite() -> tuple[bool, str]:
         'offsite="${RANKWANT_BACKUP_OFFSITE:-off}"',
         'offsite="${RANKWANT_BACKUP_OFFSITE:-auto}"',
         "zaxira faqat lokal",
+    )
+
+
+def neg_decisions_auto_deploy_contest_override() -> tuple[bool, str]:
+    """Avtomatik yo'lga oyna override'i qo'shilsa tutilsin (2026-09-24).
+
+    Qoida №1 endi odam qo'li bilan chetlab o'tiladi (`deploy.yml` →
+    `allow_live_contest=yes`, `deploy.sh` → `RANKWANT_ALLOW_LIVE_CONTEST`).
+    Sabab: sayt contest paytida yiqilsa, tuzatishning yagona yo'li — deploy.
+
+    ⚠️ Watcher'da esa odam YO'Q: u har daqiqada yuguradi, ya'ni override
+    u yerda bo'lsa jonli musobaqa paytida O'ZI deploy qilib verdikt va
+    reytingni buzardi. Bu JIM buziladigan joy — override qo'shilsa boshqa
+    hamma tekshiruv yashil qoladi.
+    """
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        'RANKWANT_LOCK_HELD=1 RANKWANT_ENV_FILE="$ENV_FILE"',
+        'RANKWANT_ALLOW_LIVE_CONTEST=1 RANKWANT_LOCK_HELD=1 RANKWANT_ENV_FILE="$ENV_FILE"',
+        "avtomatik yo'lda",
     )
 
 
@@ -5792,6 +5852,107 @@ def neg_ci_python_tools_skip_npm() -> tuple[bool, str]:
     return True, "ci.yml: Python-only tools npm ci qilmaydi"
 
 
+def _ci_step_key(step: dict[str, str], text: str) -> bool:
+    """`name:`/`if:`/`run:` kalitini qadamga yozadi. Boshqasi — `False`."""
+    for key in ("name", "if", "run"):
+        prefix = f"{key}: "
+        if text.startswith(prefix):
+            step[key] = text[len(prefix):].strip()
+            return True
+    return False
+
+
+def _ci_web_steps() -> list[dict[str, str]] | None:
+    """`ci.yml` ning `web` job'i qadamlari: `{name, run, if}`.
+
+    ⚠️ `yaml` ATAYLAB ishlatilmaydi. Web job'ning Python'ida `pyyaml`
+    YO'Q — na `pip install` qadami bor, na `tools/check_*.py` dan birortasi
+    uni import qiladi (`check_decisions.py` uni faqat IZOHDA tilga oladi,
+    Nightly'ning o'rnatishini tekshirib). Import qilinsa sinov
+    `ModuleNotFoundError` bilan yiqilardi — ya'ni qo'riqchi o'zini-o'zi
+    o'ldirardi. Shuning uchun qadamlar satr satr o'qiladi: `ci.yml` da
+    qadamlar 6 probel bilan boshlanadi, kalitlari 8 probelda.
+
+    ⚠️ Kalit `- ` qatorining O'ZIDA ham bo'lishi mumkin
+    (`      - if: ...` dan keyin `        run: npm ci`). Buni o'tkazib
+    yuborish qo'riqchi bor qadamni «qo'riqchisiz» deb ko'rsatardi va
+    sinov yolg'on qizarardi — o'lchandi.
+    """
+    text = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+    lines = text.replace("\r\n", "\n").split("\n")
+
+    start = None
+    for i, line in enumerate(lines):
+        if line == "  web:":
+            start = i + 1
+            break
+    if start is None:
+        return None
+    end = len(lines)
+    for i in range(start, len(lines)):
+        if re.match(r"^  [a-z_]+:$", lines[i]):
+            end = i
+            break
+
+    steps: list[dict[str, str]] = []
+    current: dict[str, str] | None = None
+    for line in lines[start:end]:
+        dash = re.match(r"^      - (.*)$", line)
+        if dash:
+            current = {"name": "", "run": "", "if": ""}
+            steps.append(current)
+            _ci_step_key(current, dash.group(1))
+            continue
+        if current is None:
+            continue
+        body = re.match(r"^        (.*)$", line)
+        if body:
+            _ci_step_key(current, body.group(1))
+            continue
+        # Ko'p qatorli `run: |` bloki — undan chuqurroq qatorlar.
+        if current["run"] in {"|", ">", "|-", ">-"} and re.match(r"^          \S", line):
+            current["run"] += "\n" + line.strip()
+    return steps
+
+
+def neg_ci_web_job_node_steps_guarded() -> tuple[bool, str]:
+    """Web job'ida node talab qiladigan HAR bir qadam qo'riqlanganmi?
+
+    ⚠️ Nega kerak (2026-09-24). Python-only `tools/` o'zgarganda Web
+    job'i uyg'onadi-yu, `Need Node?` false bo'ladi — `npm ci` qilinmaydi
+    (ataylab: 14–20 s). Ya'ni shu job ichida `npm`/`node` chaqiradigan
+    har bir qadam o'z qo'riqchisiga ega bo'lishi SHART, aks holda
+    `not found` bilan yiqiladi va sabab kodda emas, muhitda bo'ladi.
+
+    Ikki marta shu sinf uchradi:
+      · `Generated API types are current` — `openapi-typescript: not
+        found`, exit 127 (run 35969866974). Qo'riqchi qo'shildi;
+      · to'plamdagi node case'lari — `NODE_CASES` to'liq emas edi.
+
+    Qo'riqchi ikki shakldan biri bo'lishi mumkin: `steps.node.outputs.need`
+    (node bor) yoki `needs.filter.outputs.web` (web o'zgardi — node
+    baribir o'rnatiladi).
+    """
+    steps = _ci_web_steps()
+    if steps is None:
+        return False, "ci.yml: `web` job'i topilmadi"
+
+    unguarded: list[str] = []
+    for step in steps:
+        if not re.search(r"(^|\s)(npm|node|npx)\s", step["run"]):
+            continue
+        if "steps.node.outputs.need" in step["if"] or "needs.filter.outputs.web" in step["if"]:
+            continue
+        unguarded.append(step["name"] or step["run"].splitlines()[0][:40])
+
+    if unguarded:
+        return False, (
+            "ci.yml: Web job'ida node talab qiladigan qadam qo'riqchisiz — "
+            f"node bo'lmasa `not found` bilan yiqiladi: {unguarded}"
+        )
+    return True, "ci.yml: Web job'ining node qadamlari qo'riqlangan"
+
+
 def neg_hook_decisions_on_deploy_sh() -> tuple[bool, str]:
     src = (ROOT / ".githooks/pre-push").read_text(encoding="utf-8")
     if "check_negative.py" not in src or "decisions" not in src:
@@ -6649,6 +6810,47 @@ def neg_negative_rejects_unknown_group() -> tuple[bool, str]:
     return True, f"notanish guruh rad etildi (exit {code}), sabab aytildi"
 
 
+def neg_node_cases_labels_exist() -> tuple[bool, str]:
+    """`NODE_CASES` dagi har bir yorliq registrda haqiqatan bormi?
+
+    ⚠️ Nega kerak (2026-09-24). `NODE_CASES` — SATR yorliqlari to'plami,
+    ya'ni uni kod emas, imlo bog'laydi. Yorliq xato terilsa yoki boshqa
+    joyda o'zgarsa, `skip_node_cases and label in NODE_CASES` shartli
+    HECH QACHON bajarilmaydi: test o'tkazib yuborilmaydi, node'siz
+    yugurib yiqiladi — yoki (teskari holatda) kerakli test jimgina
+    o'tkazib yuboriladi va qamrov ko'rinmasdan torayadi.
+
+    Ikkinchisi xavfliroq: hisobot «hammasi yashil» deydi, o'lchov esa
+    yo'q. Shuning uchun yorliqlar registrga solishtiriladi.
+
+    ⚠️ Bu tekshiruv yorliqni TO'G'RI tanlashni kafolatlamaydi — faqat
+    mavjudligini. Tanlovni CI o'zi o'lchaydi (`NEGATIVE_SKIP_NODE=1`),
+    o'sha paytda bu to'rttasi haqiqatan o'tkazib yuborilishi shart.
+    """
+    tree = ast.parse((ROOT / "tools" / "check_negative.py").read_text(encoding="utf-8"))
+    declared: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign) and any(
+            getattr(t, "id", "") == "NODE_CASES" for t in node.targets
+        ):
+            declared = {e.value for e in node.value.elts if isinstance(e, ast.Constant)}
+    registered: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.AnnAssign) and getattr(node.target, "id", "") == "CASES":
+            for group in node.value.elts:
+                for case in group.elts[1].elts:
+                    label = case.elts[0]
+                    if isinstance(label, ast.Constant):
+                        registered.add(label.value)
+
+    if not declared:
+        return False, "NODE_CASES topilmadi yoki bo'sh — o'tkazib yuborish ishlamaydi"
+    unknown = sorted(declared - registered)
+    if unknown:
+        return False, f"NODE_CASES da registrda yo'q yorliq: {unknown}"
+    return True, f"NODE_CASES: {len(declared)} yorliq, hammasi registrda bor"
+
+
 CASES: list[tuple[str, list[tuple[str, object]]]] = [
     (
         "i18n",
@@ -6806,6 +7008,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("tor oqimda qulamasin", neg_checker_survives_narrow_stdout),
             ("yangi branch darvozasiz qolmasin", neg_hook_gates_new_branch),
             ("notanish guruh yashil qolmasin", neg_negative_rejects_unknown_group),
+            ("NODE_CASES yorliqlari registrda bo'lsin", neg_node_cases_labels_exist),
         ],
     ),
     (
@@ -6905,6 +7108,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         "decisions",
         [
             ("offsite standarti qaytsa tutilsin", neg_decisions_backup_offsite),
+            (
+                "avtomatik yo'lga contest override'i qo'shilsa tutilsin",
+                neg_decisions_auto_deploy_contest_override,
+            ),
             ("push guard uzilsa tutilsin", neg_decisions_push_guard_unwired),
             ("hosted runner qo'shilsa tutilsin", neg_decisions_hosted_runner),
             (
@@ -7476,6 +7683,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("compose hamma", neg_scope_compose_rebuilds_all),
             ("verify health", neg_deploy_verify_uses_health),
             ("tools npm ci ajratilgan", neg_ci_python_tools_skip_npm),
+            (
+                "Web job'ining node qadamlari qo'riqlangan",
+                neg_ci_web_job_node_steps_guarded,
+            ),
             ("deploy.sh da decisions", neg_hook_decisions_on_deploy_sh),
             ("kick schtasks", neg_kick_auto_deploy_runs_task),
         ],

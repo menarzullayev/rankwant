@@ -291,6 +291,48 @@ class TestSeedDemo:
         assert Duel.objects.filter(status=Duel.Status.OPEN).count() == 1  # idempotent
         assert Article.objects.filter(kind=Article.Kind.ALGORITHM).count() == 1
 
+    def test_standart_holatda_jonli_oyna_yoq(self) -> None:
+        """Standart seed jonli contest/arena yaratmaydi.
+
+        ⚠️ Regressiya (2026-09-24). `deploy.yml` ning `Demo data` qadami
+        bu buyruqni HAR deploy'da yurgizadi. Oyna jonli bo'lsa
+        `tools/check_deploy_window.py` uni «faol contest» deb ko'radi
+        (`core/mixins.py`: `start_at <= now < end_at`) va KEYINGI
+        deploy'ni qoida №1 bo'yicha to'xtatadi — ya'ni har deploy o'zidan
+        keyingisini bloklaydi. O'lchandi:
+
+            run 35966889156 — deploy to'xtadi:
+            ✗ contest «demo-round-1» — 2026-09-24T13:52:30+05:00 gacha
+        """
+        from arena.models import ArenaRound
+        from contests.models import Contest
+
+        call_command("seed_demo", verbosity=0)
+
+        contest = Contest.objects.get(slug="demo-round-1")
+        assert not contest.is_running, "demo contest jonli — keyingi deploy bloklanadi"
+        assert contest.is_finished
+
+        arena = ArenaRound.objects.get(slug="demo-arena")
+        assert not arena.is_running, "demo arena jonli — keyingi deploy bloklanadi"
+        assert arena.is_finished
+
+    def test_live_bayrog_i_jonli_oyna_beradi(self) -> None:
+        """`--live` — demo ko'rsatish uchun ataylab yoqiladigan jonli oyna."""
+        from arena.models import ArenaRound
+        from contests.models import Contest
+
+        call_command("seed_demo", verbosity=0, live=True)
+
+        assert Contest.objects.get(slug="demo-round-1").is_running
+
+        # ⚠️ Arena `now + 3 daqiqa` da boshlanadi (izoh: «jonli sinab
+        # ko'rish uchun»), ya'ni hozir YURMAYDI — lekin tugagan ham emas.
+        # `is_running` `start_at <= now < end_at` (`core/mixins.py`).
+        arena = ArenaRound.objects.get(slug="demo-arena")
+        assert not arena.is_running
+        assert not arena.is_finished
+
     def test_testlar_haqiqiy_S3_ga_yuklanadi(self) -> None:
         """Test ma'lumoti mavjud bo'lmasa to'g'ri yechim ham WA oladi."""
         call_command("seed_demo", verbosity=0)

@@ -368,8 +368,20 @@ jobs:
       # Sxemadan generatsiya qilingan TS tiplar eskirgan bo'lsa — qizil.
       # `openapi/schema.yml` o'zgargan-u `schema.ts` yangilanmagan bo'lsa,
       # mijoz tiplari jimgina noto'g'ri bo'lib qolardi.
+      #
+      # ⚠️ NODE qo'riqchisi SHART (2026-09-24, o'lchandi: run 35969866974).
+      # `npm run openapi:check` `openapi-typescript` ni `node_modules` dan
+      # oladi, ya'ni `npm ci` kerak. Faqat `ready` bilan qo'riqlangan edi:
+      # Python-only `tools/` o'zgarganda Web job'i uyg'onadi-yu node
+      # o'rnatilmaydi (`Need Node?` = false) va qadam yiqilardi:
+      #
+      #     sh: 1: openapi-typescript: not found
+      #     ##[error]Process completed with exit code 127
+      #
+      # Sabab kodda emas, muhitda — `i18n runtime` qadami bilan bir xil
+      # shart qo'yiladi.
       - name: Generated API types are current
-        if: steps.check.outputs.ready == 'true'
+        if: ${{ steps.check.outputs.ready == 'true' && steps.node.outputs.need == 'true' }}
         run: npm run openapi:check
         working-directory: apps/web
       # `next build` never fails on a fat bundle, so this is the only place

@@ -37,6 +37,23 @@ on:
         type: string
         required: false
         default: ''
+      # ⚠️ Added 2026-09-24 (Saidakbar aka qarori): qoida №1 — «faol
+      # contest paytida deploy qilinmaydi» — SAQLANADI, lekin endi
+      # ataylab chetlab o'tish mumkin. Sabab: sayt contest paytida
+      # yiqilsa, uni tuzatadigan yagona yo'l deploy, va o'sha paytda
+      # darvoza yopiq bo'lsa tizim qulflangan holda qoladi.
+      #
+      # Bu «o'chirish» emas: standart `no`, ya'ni odatdagi holatda
+      # darvoza avvalgidek to'xtatadi. Override faqat ATAYLAB beriladi va
+      # log'da baland ovozda `::warning::` bo'lib chiqadi.
+      #
+      # ⚠️ Avtomatik yo'l (`tools/auto_deploy.sh`) QAT'IY qoladi: odam
+      # yo'q joyda override bo'lmasligi kerak.
+      allow_live_contest:
+        description: "EMERGENCY ONLY — deploy even if a contest is live"
+        type: choice
+        options: ['no', 'yes']
+        default: 'no'
 
 # The deploy job touches a shared resource on the runner machine
 # (docker compose, tunnel): two deploys must not run at once.
@@ -225,13 +242,34 @@ jobs:
         # Only 1 stops: treating 2 ("API did not answer") as a stop
         # would block the deploy that fixes a down site; treating it
         # as "clear" would be a false green.
+        #
+        # ⚠️ ATAYLAB CHETLAB O'TISH (2026-09-24, Saidakbar aka qarori).
+        # `allow_live_contest=yes` berilganda darvoza 1 qaytarsa ham
+        # deploy davom etadi. Sabab: sayt contest paytida yiqilsa,
+        # tuzatishning yagona yo'li — deploy, va yopiq darvoza tizimni
+        # qulflab qo'yardi.
+        #
+        # Nega bu xavfsizroq:
+        #   · standart `no` — odatdagi holatda xatti-harakat O'ZGARMAYDI;
+        #   · override faqat `workflow_dispatch` da, ya'ni odam qo'li
+        #     bilan beriladi (`confirm=deploy` ham talab qilinadi);
+        #   · log'da `::warning::` bo'lib chiqadi — yashirinmaydi;
+        #   · avtomatik yo'l (`tools/auto_deploy.sh`) QAT'IY qoladi,
+        #     chunki u yerda odam yo'q va override bo'lmasligi kerak.
+        env:
+          ALLOW_LIVE_CONTEST: ${{ github.event.inputs.allow_live_contest || 'no' }}
         run: |
           set +e
           python3 tools/check_deploy_window.py
           code=$?
           set -e
           if [ "$code" -eq 1 ]; then
+            if [ "$ALLOW_LIVE_CONTEST" = "yes" ]; then
+              echo "::warning::ATAYLAB CHETLAB O'TILDI (allow_live_contest=yes) — faol contest bor, deploy davom etmoqda. Qoida №1 ataylab chetga surildi; natija (verdikt/reyting) buzilishi mumkin."
+              exit 0
+            fi
             echo "::error::An active contest/arena is running — deploy stopped (rule №1)"
+            echo "Tuzatish shoshilinch bo'lsa: workflow'ni allow_live_contest=yes bilan qayta yuriting."
             exit 1
           fi
           if [ "$code" -ne 0 ]; then
