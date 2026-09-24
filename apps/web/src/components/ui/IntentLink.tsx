@@ -1,6 +1,7 @@
 "use client";
 
 import Link, { type LinkProps } from "next/link";
+import type React from "react";
 import { useState } from "react";
 
 /** A `<Link>` that prefetches on intent (hover, keyboard focus or touch)
@@ -19,13 +20,27 @@ import { useState } from "react";
  *
  *  Generic like `Link` itself: with `typedRoutes`, a plain
  *  `ComponentProps<typeof Link>` pins the route type to `unknown` and every
- *  literal `href` stops type-checking. */
+ *  literal `href` stops type-checking.
+ *
+ *  ⚠️ Next 16.3.5 changed `LinkProps` into a plain union that carries only
+ *  the navigation props — the anchor attributes it used to inherit are no
+ *  longer in it. `Link` still forwards them to the rendered `<a>`, so the
+ *  type has to say so explicitly, otherwise every `role`, `aria-*`, `title`
+ *  or `onFocus` handed to this component is rejected. Concretely, the old
+ *  form failed with:
+ *
+ *      Property 'onFocus' does not exist on type 'LinkProps<RouteType>'.
+ *
+ *  Intersecting with the anchor props restores that surface and keeps the
+ *  generic `href` inference intact. */
+type AnchorProps = Omit<React.ComponentPropsWithoutRef<"a">, "href">;
+
 export function IntentLink<RouteType>({
   onMouseEnter,
   onFocus,
   onTouchStart,
   ...props
-}: LinkProps<RouteType>) {
+}: LinkProps<RouteType> & AnchorProps) {
   const [intent, setIntent] = useState(false);
   return (
     <Link
