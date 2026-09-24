@@ -345,12 +345,12 @@ def rank_colour_groups_not_sixteen_tokens() -> str | None:
     for name in ("grey", "green", "cyan", "blue", "violet", "orange", "red"):
         if f'"{name}"' not in titles:
             return f"apps/api/profiles/titles.py: guruh `{name}` yo'q"
-    css = read("apps/web/src/app/globals.css")
+    css = read("apps/web/src/app/theme.css")
     if re.search(r"--rw-rank-\d", css):
-        return "apps/web/src/app/globals.css: raqamli `--rw-rank-N` qaytdi (#167)"
+        return "apps/web/src/app/theme.css: raqamli `--rw-rank-N` qaytdi (#167)"
     for name in ("grey", "green", "cyan", "blue", "violet", "orange", "red"):
         if f"--rw-rank-{name}" not in css:
-            return f"apps/web/src/app/globals.css: `--rw-rank-{name}` yo'q"
+            return f"apps/web/src/app/theme.css: `--rw-rank-{name}` yo'q"
     if "rw-rank-${title.colour_group}" not in read("apps/web/src/components/ui/Identity/UserName.tsx"):
         return "apps/web/src/components/ui/Identity/UserName.tsx: class `colour_group` emas"
     return None

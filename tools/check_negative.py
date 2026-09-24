@@ -440,7 +440,7 @@ def neg_i18n_used_but_absent() -> tuple[bool, str]:
 
 def neg_contrast_bad_pair() -> tuple[bool, str]:
     """Bitta juftlik yetarli kontrast bermasa — tutilsinmi?"""
-    path = ROOT / "apps/web/src/app/globals.css"
+    path = ROOT / "apps/web/src/app/theme.css"
     text = path.read_bytes().decode("utf-8")
     # `--rw-warn-ink` ni fon bilan bir xil qilib qo'yamiz: 1:1.
     m = re.search(r"(--rw-warn-ink:\s*)([^;]+)(;)", text)
@@ -456,7 +456,7 @@ def neg_contrast_unreadable_token() -> tuple[bool, str]:
     «O'qib bo'lmagan qiymat = XATO» qoidasi shundan. Ilgari bunday
     qiymat jimgina o'tkazib yuborilardi.
     """
-    path = ROOT / "apps/web/src/app/globals.css"
+    path = ROOT / "apps/web/src/app/theme.css"
     text = path.read_bytes().decode("utf-8")
     m = re.search(r"(--rw-ground:\s*)([^;]+)(;)", text)
     if m is None:
@@ -2853,7 +2853,7 @@ def neg_visual_regression_catches_color_drift() -> tuple[bool, str]:
     if not base:
         return False, "visual: web stack javob bermadi (E2E_BASE_URL)"
 
-    css = ROOT / "apps" / "web" / "src" / "app" / "globals.css"
+    css = ROOT / "apps" / "web" / "src" / "app" / "theme.css"
     text = css.read_bytes().decode("utf-8")
     # `--rw-ground` — sahifa foni. `--rw-rank-grey` EMAS: u skrinshot
     # olinadigan sahifalarda ko'rinmaydi (yuqoridagi izohga qarang).
@@ -3966,7 +3966,7 @@ def neg_decisions_users_indexed() -> tuple[bool, str]:
 def neg_decisions_rank_numbered_token() -> tuple[bool, str]:
     """`--rw-rank-1` qaytsa tutilsin."""
     return _decision_broken(
-        "apps/web/src/app/globals.css",
+        "apps/web/src/app/theme.css",
         "--rw-rank-grey: #656e81;",
         "--rw-rank-1: #656e81;",
         "rank colour_group 7 token",
@@ -4411,7 +4411,7 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/core/migrations/0021_seed_staff_groups.py",
     # Rank colour groups (2026-09-20 HITL encode-167): 7 tokens, not 16.
     "apps/api/profiles/titles.py",
-    "apps/web/src/app/globals.css",
+    "apps/web/src/app/theme.css",
     "apps/web/src/components/ui/Identity/UserName.tsx",
     # owned_paths width (2026-09-20 HITL no-star-star). Missing here,
     # `check_decisions.py` exits 2 / import fails in the trial sandbox.
