@@ -15,8 +15,12 @@
 x-api-build: &api-build
   context: ./apps/api
   args:
-    # Qiymat `tools/deploy.sh` dan keladi; qo'lda build'da `unknown`.
-    GIT_SHA: ${GIT_SHA:-unknown}
+    # Qiymat `tools/deploy.sh` dan yoki `IMAGE_TAG` dan keladi
+    # (`deploy.yml` job env'i = `github.sha`); qo'lda build'da `unknown`.
+    # Fallback 2026-09-24 da qo'shildi: workflow `IMAGE_TAG` berardi, compose
+    # esa `GIT_SHA` kutardi — natijada ishlab turgan konteynerda yorliq
+    # `unknown` bo'lib qoldi va `check_deploy.sh` eskilikni aniqlay olmadi.
+    GIT_SHA: ${GIT_SHA:-${IMAGE_TAG:-unknown}}
     BUILT_AT: ${BUILT_AT:-unknown}
 
 # json-file cheklanmagan bo'lsa konteyner loglari diskni to'ldiradi
@@ -156,13 +160,30 @@ services:
   web:
     logging: *default-logging
     build:
-      context: ./apps/web
+      # ⚠️ Kontekst — REPO ILDIZI, `./apps/web` emas.
+      #
+      # Monorepo (npm workspaces) shuni talab qiladi: yagona
+      # `package-lock.json` ildizda, `apps/web` esa `@rankwant/shared` ga
+      # bog'liq va `tsconfig.json` uni `../../packages/shared/src/...` ga
+      # yo'naltiradi. `apps/web` kontekstida `COPY package-lock.json`
+      # shunday yiqilardi (o'lchandi, run 35951769214):
+      #
+      #     "/package-lock.json": not found
+      #
+      # `dockerfile:` aniq ko'rsatilgan, chunki kontekst ildiz bo'lganda
+      # Docker standart `./Dockerfile` ni qidiradi va u mavjud emas.
+      context: .
+      dockerfile: apps/web/Dockerfile
       args:
         # Brauzer bundle'i uchun — deploy manzili bilan mos bo'lishi shart.
         NEXT_PUBLIC_API_BASE: ${NEXT_PUBLIC_API_BASE:-http://localhost:8000/api/v1}
         # Manba commit — `check_deploy.sh` eskilikni shu orqali aniqlaydi.
-        # Qiymat `tools/deploy.sh` dan keladi; qo'lda build'da `unknown`.
-        GIT_SHA: ${GIT_SHA:-unknown}
+        # Qiymat `tools/deploy.sh` dan yoki `IMAGE_TAG` dan keladi
+    # (`deploy.yml` job env'i = `github.sha`); qo'lda build'da `unknown`.
+    # Fallback 2026-09-24 da qo'shildi: workflow `IMAGE_TAG` berardi, compose
+    # esa `GIT_SHA` kutardi — natijada ishlab turgan konteynerda yorliq
+    # `unknown` bo'lib qoldi va `check_deploy.sh` eskilikni aniqlay olmadi.
+        GIT_SHA: ${GIT_SHA:-${IMAGE_TAG:-unknown}}
         # Qurilish vaqti — `check_deploy.sh` yorliqni o'qiydi va
         # `unknown` bo'lsa build argumentlari uzatilmagan deb biladi.
         BUILT_AT: ${BUILT_AT:-unknown}
@@ -186,7 +207,7 @@ services:
     build:
       context: ./services/judge-go
       args:
-        GIT_SHA: ${GIT_SHA:-unknown}
+        GIT_SHA: ${GIT_SHA:-${IMAGE_TAG:-unknown}}
         # `check_deploy.sh` shu yorliqni o'qiydi (web bilan bir xil naqsh).
         BUILT_AT: ${BUILT_AT:-unknown}
     privileged: true          # nsjail namespace va cgroup uchun

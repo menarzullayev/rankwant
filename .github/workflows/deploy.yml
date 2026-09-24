@@ -263,11 +263,39 @@ jobs:
       - name: Health check
         # `--wait` waits for the container to be healthy, but does not
         # say Django is ready: if migrations have not finished, 500.
+        #
+        # ⚠️ Tekshiruv KONTEYNER ICHIDAN (2026-09-24). Ilgari runner'dan
+        # `curl http://127.0.0.1:8301/...` qilinardi va har safar
+        # yiqilardi — ikki marta o'lchandi (run 35953766881, 35954531340):
+        #
+        #     curl: (7) Failed to connect to 127.0.0.1 port 8301
+        #     ##[error]API was not healthy after 150 seconds
+        #
+        # Sabab: `127.0.0.1:8301` — HOST tomonidagi bog'lanish
+        # (`docker-compose.public.yml`: `127.0.0.1:8301:8000`). Runner
+        # esa o'z network namespace'ida, shuning uchun port unga
+        # ko'rinmaydi. Bu tizim sog'liq muammosi EMAS edi: stack
+        # ko'tarilardi, konteyner `healthy` bo'lardi, `api` esa
+        # `docker compose exec` orqali javob berardi. Faqat tekshiruv
+        # noto'g'ri joydan urardi.
+        #
+        # Endi `exec` orqali, compose tarmog'i ichidan: TCP ham, DNS ham
+        # ishlaydi, portni host'ga chiqarish shart emas. `api` imijida
+        # `curl`/`wget` yo'q (o'lchandi) — shuning uchun Python
+        # (`urllib`) ishlatiladi: `python:3.12-slim` da doim bor.
+        #
+        # `Host` sarlavhasi SHART: Django `ALLOWED_HOSTS` bo'yicha
+        # filtrlaydi, aks holda 400 qaytadi. `localhost` ro'yxatda bor.
+        #
+        # Python kod BIR QATORDA: YAML'da ko'p qatorli `-c "..."` bloki
+        # ichki qo'shtirnoq bilan to'qnashadi va fayl umuman
+        # o'qilmaydi (o'lchandi: `could not find expected ':'`).
         run: |
+          HEALTH_PY='import sys, urllib.request as u; req = u.Request("http://localhost:8000/api/v1/health/", headers={"Host": "rankwant.uz"}); r = u.urlopen(req, timeout=5); sys.exit(0 if r.status == 200 else 1)'
           for i in $(seq 1 30); do
-            if curl -fsS -o /dev/null \
-              -H 'Host: rankwant.uz' \
-              http://127.0.0.1:8301/api/v1/health/; then
+            if docker compose -p rankwant --env-file .env.public \
+                 -f docker-compose.yml -f docker-compose.public.yml \
+                 exec -T api python -c "$HEALTH_PY" >/dev/null 2>&1; then
               echo "API healthy (attempt ${i})"
               exit 0
             fi
@@ -282,10 +310,56 @@ jobs:
         # Health is only "the API process is alive". Smoke checks the
         # critical path: submit → Redis → judge → verdict (same note
         # as in ci.yml).
+        #
+        # ⚠️ UCH TUZATISH (2026-09-24) — har biri o'lchandi. Bu qadam
+        # ikki marta noto'g'ri bo'lgan, shuning uchun sabablari yozib
+        # qo'yiladi.
+        #
+        # 1) `no such service: smoke` (run 35955256743). `smoke` servisi
+        #    faqat `docker-compose.ci.yml` da e'lon qilinadi, qadam esa
+        #    uni bermasdi. O'lchandi (`config --services`):
+        #
+        #        -f docker-compose.yml -f docker-compose.public.yml
+        #            → api beat judge migrate minio postgres redis web worker
+        #        + -f docker-compose.ci.yml
+        #            → ... smoke web worker
+        #
+        #    Ya'ni konfiguratsiya xatosi edi, stack nosozligi emas.
+        #
+        # 2) `smoke` servisi `profiles: ['smoke']` ostida — compose
+        #    profilsiz servisni tan olmaydi, ya'ni `--profile smoke` SHART.
+        #
+        # 3) ⚠️⚠️ ENG XAVFLISI: `--no-deps` YO'Q edi (run 35956178549).
+        #    `docker-compose.ci.yml` host portlarini `!reset []` qiladi.
+        #    Compose `run` esa BOG'LIQ servislarni ham qayta yaratadi,
+        #    ya'ni jonli `api`/`web`/`postgres` portlarsiz qayta yaratildi:
+        #
+        #        docker port rankwant-api-1   →  (bo'sh)
+        #        GET https://rankwant.uz/api/v1/health/  →  503
+        #
+        #    Sayt ishlab turardi, API esa «maintenance» berardi: Cloudflare
+        #    Tunnel `127.0.0.1:8301` ga urardi-yu, hech narsa eshitmasdi.
+        #    Workflow YASHIL bo'ldi — ya'ni bu yolg'on yashil natija edi
+        #    (Smoke o'zi o'tdi, lekin deploy production'ni buzdi).
+        #
+        #    `--no-deps` bilan faqat smoke konteyneri yaratiladi. O'lchandi
+        #    (`run --rm --no-deps --dry-run`):
+        #
+        #        Container rankwant-smoke-run-<id> Created
+        #
+        #    — boshqa hech narsa. Haqiqiy sinovdan keyin konteynerlar
+        #    «Up 2 hours» bo'lib qoldi, portlar joyida, sayt 200.
+        #
+        #    `--no-deps` xavfsiz: oldingi `Health check` qadami api
+        #    tayyorligini allaqachon tasdiqlagan, smoke'ning birinchi
+        #    tekshiruvi esa `/health/` — ya'ni api javob bermasa, smoke
+        #    O'ZI baland ovozda yiqiladi.
         run: |
-          docker compose -p rankwant --env-file .env.public \
+          CI_ONLY_STACK=1 docker compose -p rankwant --env-file .env.public \
+            --profile smoke \
             -f docker-compose.yml -f docker-compose.public.yml \
-            run --rm smoke
+            -f docker-compose.ci.yml \
+            run --rm --no-deps smoke
 
       - name: Demo data
         # Staging only. On production the demo accounts have weak

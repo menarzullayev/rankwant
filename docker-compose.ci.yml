@@ -5,11 +5,38 @@ name: rankwant-ci
 # Nega: smoke sinovi compose tarmog'i ICHIDA ishlaydi, ya'ni host portlari
 # kerak emas. Ularni e'lon qilmaslik runner'da (va ishlab chiquvchi
 # mashinasida) band port sababli tushib qolishning oldini oladi.
-# CI/smoke uchun override: host portlari e'lon qilinmaydi.
 #
-# Nega: smoke sinovi compose tarmog'i ICHIDA ishlaydi, ya'ni host portlari
-# kerak emas. Ularni e'lon qilmaslik runner'da (va ishlab chiquvchi
-# mashinasida) band port sababli tushib qolishning oldini oladi.
+# ⚠️⚠️ XAVF: BU FAYLNI JONLI `rankwant` LOYIHASI BILAN ISHLATMANG
+# (2026-09-24 da o'lchandi, run 35956178549).
+#
+# Pastdagi `ports: !reset []` HOST PORTINI O'CHIRADI. Agar bu fayl jonli
+# loyihaga (`-p rankwant`) qo'shilsa, `up` konteynerlarni portsiz QAYTA
+# YARATADI va Cloudflare Tunnel `127.0.0.1:8301` ga uradi-yu hech narsa
+# eshitmaydi — sayt tirik, API esa 503 «maintenance» bo'lib qoladi:
+#
+#     Deploy — staging  Smoke  ...  --profile smoke \
+#       -f docker-compose.yml -f docker-compose.public.yml \
+#       -f docker-compose.ci.yml                                 ← AYNAN SHU
+#     docker port rankwant-api-1   →  (bo'sh)
+#     GET https://rankwant.uz/api/v1/health/  →  503
+#
+# Ya'ni smoke sinovini o'tkazish uchun jonli stack'ni buzib bo'lmaydi.
+# Yechim: CI fayli faqat O'Z loyihasida ishlatiladi
+# (`COMPOSE_PROJECT_NAME=rw-*`), pastdagi qo'riqchi esa buni majburlaydi.
+#
+# Chaqiruv namunasi (smoke, jonli stack'ka tegmasdan):
+#     COMPOSE_PROJECT_NAME=rw-smoke \
+#       docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm smoke
+
+x-project-guard: &project-guard
+  # `:?` — o'zgaruvchi bo'sh bo'lsa compose xato beradi va konteynerga
+  # tegmaydi. Band qo'yilgan qiymat hech qayerda ishlatilmaydi: bu
+  # ataylab "sentinel" — faqat tekshiruv muhim.
+  #
+  # ⚠️ NEGA `COMPOSE_PROJECT_NAME` EMAS: u compose'ning o'zi o'qiydigan
+  # maxsus o'zgaruvchi, ya'ni uni `environment:` ga qo'yib bo'lmaydi.
+  # Shu sababli alohida nom ishlatiladi.
+  CI_ONLY_STACK: ${CI_ONLY_STACK:?docker-compose.ci.yml jonli rankwant loyihasida ishlatilmaydi — u host portlarini o'chiradi va API 503 bo'ladi. Ishlatish uchun COMPOSE_PROJECT_NAME=rw-smoke va CI_ONLY_STACK=1 bering}
 
 x-logging: &default-logging
   driver: json-file
@@ -18,7 +45,13 @@ x-logging: &default-logging
     max-file: "3"
 
 services:
+  # ⚠️ `*project-guard` — bu fayl jonli `rankwant` loyihasida ishlatilsa
+  # `up` to'xtatiladi (sababi fayl boshida). `postgres` shunchaki
+  # biriktirilgan: qo'riqchi bir marta yetarli, lekin compose
+  # anchor'ni xizmat ichida ko'rishi kerak.
   postgres:
+    environment:
+      <<: *project-guard
     ports: !reset []
   redis:
     ports: !reset []
