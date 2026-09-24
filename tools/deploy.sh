@@ -26,6 +26,12 @@
 #   bash tools/deploy.sh --check    # hech narsani o'zgartirmaydi, faqat holat
 #   bash tools/deploy.sh --skip-ci-gate  # owner-approved only: skip the main CI gate
 #   bash tools/deploy.sh --no-cache # compose build --no-cache (sovuq qurilish)
+#   RANKWANT_ALLOW_LIVE_CONTEST=1 RANKWANT_DEPLOY_SCOPE=all \
+#     bash tools/deploy.sh --yes    # SHOSHILINCH: faol contest paytida redeploy
+#                                   # (qoida №1 chetga suriladi — faqat odam
+#                                   # qo'li bilan; scope=all shart: auto scope
+#                                   # bir xil SHA'da bo'sh chiqadi va hech
+#                                   # narsa qilmaydi)
 #   RANKWANT_BUILD_NO_CACHE=1       # xuddi --no-cache, env orqali
 #   RANKWANT_DEPLOY_TIMING=path.tsv # TIMER qatorlarini TSV ga yozadi
 #   RANKWANT_DEPLOY_SCOPE=auto|all|web  # bake doirasi (standart: auto)
@@ -411,6 +417,49 @@ time_begin up
 if [ "$SKIP_BAKE" -eq 1 ]; then
   step "6/8 Ko'tarish — o'tkazib yuborildi (bake yo'q)"
 else
+  # ── 6a/8 Infra: judge-queue + minio-init (ADR-0028) ────────────────
+  # Ular BUILD doirasiga kirmaydi (obraz qurilmaydi: redis:7 / minio),
+  # lekin api (JUDGE_QUEUE_URL) va judge (REDIS_URL + read-only kalit)
+  # ularga bog'liq. `up --no-deps` depends_on kutishini o'tkazib yuboradi
+  # va BUILD_SERVICES ularni o'z ichiga olmaydi — shu sababli alohida
+  # ko'tariladi va tayyorligi O'ZIMIZ tekshiramiz (bounded).
+  # Rollback (eski commit) bu serviszlari compose'da bo'lmasligi mumkin —
+  # `config --services` bilan mavjudligi tekshiriladi.
+  INFRA=()
+  case " ${BUILD_SERVICES[*]} " in
+    *" api "*|*" judge "*)
+      defined="$(${COMPOSE[*]} config --services 2>/dev/null || true)"
+      printf '%s\n' "$defined" | grep -qx "judge-queue" && INFRA+=("judge-queue")
+      printf '%s\n' "$defined" | grep -qx "minio-init" && INFRA+=("minio-init")
+      ;;
+  esac
+  if [ "${#INFRA[@]}" -gt 0 ]; then
+    step "6a/8 Infra: judge-queue + minio-init"
+    "${COMPOSE[@]}" up -d --no-deps "${INFRA[@]}" || die "infra up yiqildi"
+    # judge-queue: healthcheck → healthy (Docker birinchi tekshiruvni
+    # `interval` dan keyin qiladi — 10 s; 30 s chegara).
+    q_ok=0
+    for _ in $(seq 1 30); do
+      h="$(docker inspect -f '{{.State.Health.Status}}' rankwant-judge-queue-1 2>/dev/null || echo none)"
+      [ "$h" = "healthy" ] && { q_ok=1; break; }
+      sleep 1
+    done
+    [ "$q_ok" = "1" ] || die "judge-queue 30 s ichida healthy bo'lmadi — api/judge ko'tarilmaydi (eski stack joyida qoladi)"
+    # minio-init: chiqishi 0 bo'lishini kutamiz (judge-ro kalit yaratildi).
+    # Eski (exit 0) konteyner konfiguratsiyasi o'zgarmagan bo'lsa compose
+    # uni qayta yurgizmaydi — inspect darhol exited:0 beradi.
+    m_ok=0
+    for _ in $(seq 1 120); do
+      st="$(docker inspect -f '{{.State.Status}}:{{.State.ExitCode}}' rankwant-minio-init-1 2>/dev/null || echo none)"
+      case "$st" in
+        "exited:0") m_ok=1; break ;;
+        "exited:"*|"dead:"*|"removing:"*) die "minio-init yiqildi ($st) — judge-ro kalit yo'q; judge ko'tarilmaydi (eski stack joyida qoladi)" ;;
+      esac
+      sleep 1
+    done
+    [ "$m_ok" = "1" ] || die "minio-init 120 s ichida tugamadi — judge ko'tarilmaydi (eski stack joyida qoladi)"
+    ok "judge-queue healthy, minio-init tugadi (judge-ro tayyor)"
+  fi
   step "6/8 Konteynerlar qayta ko'tarilmoqda"
   "${COMPOSE[@]}" up -d --no-deps "${BUILD_SERVICES[@]}" || die "up yiqildi"
   ok "ko'tarildi"
