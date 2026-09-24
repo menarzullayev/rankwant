@@ -132,8 +132,9 @@ def _check_redis() -> str:
 def _judge_queue_len() -> int | None:
     """Judge Redis navbati — readiness emas, SLO signal."""
     try:
+        # ADR-0028: navbat alohida `judge-queue` Redis'da (JUDGE_QUEUE_URL).
         return int(
-            redis.Redis.from_url(settings.REDIS_URL, socket_connect_timeout=2).llen(
+            redis.Redis.from_url(settings.JUDGE_QUEUE_URL, socket_connect_timeout=2).llen(
                 settings.JUDGE_JOBS_KEY
             )
         )

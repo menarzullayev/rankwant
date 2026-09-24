@@ -44,6 +44,8 @@ Har bir ADR:
 | [0024](0024-user-competitor-parity-fields.md)    | User modeli — raqobatchilar bilan tenglik uchun 21 maydon (46 → 67) | **accepted** |
 | [0025](0025-roles-groups.md)                     | Rollar — staff guruhlari (support/content/ops) va obyekt mualliflari | **accepted** |
 | [0026](0026-codeforces-user-sync.md)             | Codeforces sinxronlash — 4 yangi maydon, neytral nom | **accepted** |
+| [0027](0027-ladder-16-tiers.md)                  | Contest rating ladder — 16 pog'ona, inglizcha nomlar, CF palitra | **accepted** (2026-09-20; index row 2026-09-24 da qo'shildi — fayl bor edi, qator yetishmagan) |
+| [0028](0028-judge-container-isolation.md)        | Judge konteyner izolyatsiyasi — judge-net, judge-queue, PreflightNetwork | **accepted** (2026-09-24) |
 
 ## Qoidalar
 

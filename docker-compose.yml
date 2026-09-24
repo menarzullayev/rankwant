@@ -73,6 +73,48 @@ services:
       MINIO_ROOT_PASSWORD: devdevdev
     ports: ['9000:9000', '9001:9001']
     volumes: ['miniodata:/data']
+    # ADR-0028: ikkala tarmoqda — judge read-only user bilan o'qiydi.
+    networks: ['default', 'judge-net']
+
+  # ADR-0028: judge navbati uchun alohida Redis — sessiya/broker Redis'idan
+  # ajralgan (threat model §④ SPOF ham torayadi). Judge o'z navbatiga faqat
+  # `judge-net`dan ulanadi; api/worker/navbat boshqaruvchilari esa default
+  # tarmoqdan yozadi/o'qiydi.
+  judge-queue:
+    logging: *default-logging
+    image: redis:7
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      retries: 5
+    # ADR-0028: ikkala tarmoqda — api/worker default'dan yozadi, judge
+    # `judge-net`dan o'qiydi. Postgres bu yerga QO'SHILMASIN.
+    networks: ['default', 'judge-net']
+
+  # ADR-0028: judge MinIO kredensiali read-only (A-2 qismli). Root kaliti
+  # bilan `judge-ro` useri yaratiladi va bucket'ga faqat o'qish policy'si
+  # bog'lanadi — idempotent, healthcheck'i bitishini kutadi. Judge
+  # `service_completed_successfully` bilan shu service'ga bog'lanadi.
+  minio-init:
+    logging: *default-logging
+    image: quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z
+    restart: 'no'
+    entrypoint: ['bash', '/init/minio-init.sh']
+    environment:
+      # Xuddi shu qiymat judge env'ida — identitet ikki tomonda sinxron
+      # (lokal qiymat oshkor: repo'dagi boshqa dev kredensiallar kabi;
+      # prod'da `.env.public` yangilaydi — `.env.example`ga yozilgan).
+      JUDGE_S3_SECRET: ${JUDGE_S3_SECRET:-judge-ro-dev}
+      S3_BUCKET: rankwant
+      MINIO_ROOT_USER: rankwant
+      MINIO_ROOT_PASSWORD: devdevdev
+    volumes: ['./compose/minio-init:/init:ro']
+    depends_on:
+      minio: { condition: service_healthy }
+    healthcheck:
+      test: ['CMD', 'test', '-f', '/done/flag']
+      interval: 3s
+      retries: 30
 
   # Migratsiya alohida bir martalik servis: gunicorn 4 worker bilan
   # ishlaydi, ya'ni migratsiyani entrypoint'ga qo'yish ularni bir-biriga
@@ -104,6 +146,9 @@ services:
     environment:
       DATABASE_URL: postgres://rankwant:dev@postgres:5432/rankwant
       REDIS_URL: redis://redis:6379/0
+      # ADR-0028: navbat alohida `judge-queue` Redis'da — api navbatga yozadi,
+      # sessiya/kesh esa `REDIS_URL`da qoladi.
+      JUDGE_QUEUE_URL: redis://judge-queue:6379/0
       S3_ENDPOINT: http://minio:9000
       S3_BUCKET: rankwant
       S3_KEY: rankwant
@@ -134,6 +179,8 @@ services:
     environment:
       DATABASE_URL: postgres://rankwant:dev@postgres:5432/rankwant
       REDIS_URL: redis://redis:6379/0
+      # ADR-0028: `drain_results` natijalarni `judge-queue`dan o'qiydi.
+      JUDGE_QUEUE_URL: redis://judge-queue:6379/0
       S3_ENDPOINT: http://minio:9000
       S3_BUCKET: rankwant
       S3_KEY: rankwant
@@ -149,6 +196,8 @@ services:
     environment:
       DATABASE_URL: postgres://rankwant:dev@postgres:5432/rankwant
       REDIS_URL: redis://redis:6379/0
+      # ADR-0028: navbat signal (SLO `judge_queue`) ham `judge-queue`da.
+      JUDGE_QUEUE_URL: redis://judge-queue:6379/0
       S3_ENDPOINT: http://minio:9000
       S3_BUCKET: rankwant
       S3_KEY: rankwant
@@ -213,16 +262,35 @@ services:
     privileged: true          # nsjail namespace va cgroup uchun
     cgroup: host
     environment:
-      REDIS_URL: redis://redis:6379/0
+      # ADR-0028: navbat endi ALOHIDA `judge-queue` Redis'da (sessiya
+      # Redis'iga tarmoq darajasida yo'q).
+      REDIS_URL: redis://judge-queue:6379/0
+      # ADR-0028: fail-closed tarmoq preflighti — izolyatsiyasiz muhitda
+      # judge ishga tushmaydi (ulanish = chegara buzilgan).
+      JUDGE_NET_PREFLIGHT: '1'
       S3_ENDPOINT: http://minio:9000
       S3_BUCKET: rankwant
-      S3_KEY: rankwant
-      S3_SECRET: devdevdev
+      # A-2 (qismli): root cred olib tashlandi — judge `judge-ro` useri bilan
+      # bucket'ga FAQAT o'qish mumkin. Yozish kredensiali endi judge
+      # imkoniyatidan chiqdi (ADR-0028 §4 qatlam; threat model §11 qayd).
+      S3_KEY: judge-ro
+      S3_SECRET: judge-ro-dev
       # DIQQAT: DATABASE_URL ATAYLAB YO'Q. Judge host'da DB credential
       # bo'lmasligi kerak (06-architecture 🔒). Worker DATABASE_URL
       # berilgan bo'lsa ishga tushmaydi.
     depends_on:
-      redis: { condition: service_healthy }
+      judge-queue: { condition: service_healthy }
+      minio-init: { condition: service_completed_successfully }
+    networks: [judge-net]
+
+# ADR-0028: ikki tarmoqli topologiya. `judge-net` — internal: tashqi
+# yo'nalish YO'Q (judge'dan internetga egress konfiguratsiya darajasida
+# yopiladi — ADR-0004 «tashqi tarmoq yopiq» sharti birinchi marta bajariladi).
+# Ikkala tarmoqda: minio, judge-queue. Faqat default: postgres, api, worker,
+# beat, web, migrate. Faqat judge-net: judge.
+networks:
+  judge-net:
+    internal: true
 
 volumes:
   pgdata:

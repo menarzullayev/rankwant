@@ -165,3 +165,9 @@ services:
   judge:
     <<: *restart
     logging: *default-logging
+    environment:
+      # ADR-0028: judge kaliti `.env.public` dan kelaydi (minio-init ham
+      # shu o'zgaruvchini o'qiydi — identitet ikki tomonda bir xil).
+      # Baza'ning statik dev qiymati boshqa kalit bilan rotatsiya
+      # qilinadigan bo'lsa ham shu yerdan Override qilinadi.
+      S3_SECRET: ${JUDGE_S3_SECRET:-judge-ro-dev}

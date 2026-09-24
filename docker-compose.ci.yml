@@ -140,7 +140,9 @@ services:
     volumes: ["${HOST_REPO_ROOT:-.}/services/bakeoff:/bakeoff:ro"]
     environment:
       REDIS_URL: redis://redis:6379/0
-    command: ['python', '/bakeoff/harness/runner.py', '--worker', 'judge-go']
+      # ADR-0028: bake-off navbatni endi alohida `judge-queue` Redis'da
+      # topadi (`runner.py` JUDGE_QUEUE_URL ni birinchi o'qiydi).
+      JUDGE_QUEUE_URL: redis://judge-queue:6379/0
     depends_on:
       redis: { condition: service_healthy }
       judge: { condition: service_started }

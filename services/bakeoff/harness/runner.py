@@ -236,7 +236,14 @@ def pct(values: list[float], p: float) -> float:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--worker", required=True, help="judge-go | judge-py")
-    ap.add_argument("--redis", default=os.environ.get("REDIS_URL", "redis://localhost:6379/0"))
+    ap.add_argument(
+        "--redis",
+        # ADR-0028: navbat alohida `judge-queue` Redis'da. Compose shu yerga
+        # `JUDGE_QUEUE_URL` beradi; REDIS_URL — bir tarmoqli eskirgan rejim.
+        default=os.environ.get("JUDGE_QUEUE_URL")
+        or os.environ.get("REDIS_URL")
+        or "redis://localhost:6379/0",
+    )
     ap.add_argument("--timeout", type=int, default=180)
     ap.add_argument("--load", type=int, default=0, help="parallel submit soni (0 = o'tkazib yuborish)")
     ap.add_argument("--out", default=None, help="hisobotni faylga yozish (markdown)")
