@@ -290,7 +290,21 @@ else
   "$PY" tools/check_deploy_window.py
   case $? in
     0) : ;;
-    1) die "faol contest/arena bor — qoida №1: live paytida deploy QILINMAYDI" ;;
+    1)
+      # ⚠️ Ataylab chetlab o'tish (2026-09-24, Saidakbar aka qarori).
+      # Sayt contest paytida yiqilsa, tuzatishning yagona yo'li — deploy;
+      # yopiq darvoza tizimni qulflab qo'yardi. Override faqat odam
+      # qo'li bilan beriladi.
+      #
+      # ⚠️ `tools/auto_deploy.sh` bu o'zgaruvchini BERMAYDI — avtomatik
+      # yo'lda odam yo'q, ya'ni qoida №1 u yerda qat'iy qoladi.
+      if [ -n "${RANKWANT_ALLOW_LIVE_CONTEST:-}" ]; then
+        printf '%s⚠ ATAYLAB CHETLAB O'"'"'TILDI (RANKWANT_ALLOW_LIVE_CONTEST) — faol contest bor, davom etilmoqda; qoida №1 chetga surildi%s\n' \
+          "$Y" "$N"
+      else
+        die "faol contest/arena bor — qoida №1: live paytida deploy QILINMAYDI"
+      fi
+      ;;
     2) printf '%s⚠ Oyna aniqlanmadi (API javob bermadi) — davom etishdan oldin qo'"'"'lda tasdiqlang%s\n' \
          "$Y" "$N" ;;
   esac

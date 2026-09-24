@@ -1659,6 +1659,30 @@ def deploy_automation_is_safe() -> str | None:
         return (
             f"{CHECK_DEPLOY}: inventory locale'siz sort — comm yolg'on «ESKIRGAN»"
         )
+
+    # 9. OYNA OVERRIDE'I — QO'LDA BOR, AVTOMATIKDA YO'Q (2026-09-24,
+    #    Saidakbar aka qarori). Qoida №1 («faol contest paytida deploy
+    #    qilinmaydi») SAQLANADI, lekin endi odam qo'li bilan chetlab
+    #    o'tilishi mumkin: `deploy.yml` → `allow_live_contest=yes`,
+    #    `tools/deploy.sh` → `RANKWANT_ALLOW_LIVE_CONTEST`. Sabab: sayt
+    #    contest paytida yiqilsa, tuzatishning YAGONA yo'li — deploy;
+    #    yopiq darvoza tizimni qulflab qo'yardi.
+    #
+    #    ⚠️ AMMO avtomatik yo'lda odam YO'Q. Override u yerda bo'lsa
+    #    watcher har daqiqada yuguradi va jonli musobaqa paytida o'zi
+    #    deploy qilib verdikt va reytingni buzardi. Bu JIM buziladigan
+    #    joy: override qo'shilsa hamma mavjud tekshiruv yashil qoladi,
+    #    xato esa faqat keyingi musobaqada bilinadi.
+    if "RANKWANT_ALLOW_LIVE_CONTEST" in auto:
+        return (
+            f"{AUTO_DEPLOY}: oyna override'i (`RANKWANT_ALLOW_LIVE_CONTEST`) "
+            "avtomatik yo'lda — odam yo'q joyda qoida №1 chetlab o'tilardi"
+        )
+    if "RANKWANT_ALLOW_LIVE_CONTEST" not in deploy:
+        return (
+            "tools/deploy.sh: oyna override'i (`RANKWANT_ALLOW_LIVE_CONTEST`) "
+            "yo'q — contest paytida shoshilinch tuzatish deploy'i qulflanadi"
+        )
     return None
 
 

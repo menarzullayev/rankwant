@@ -2928,6 +2928,26 @@ def neg_decisions_backup_offsite() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_auto_deploy_contest_override() -> tuple[bool, str]:
+    """Avtomatik yo'lga oyna override'i qo'shilsa tutilsin (2026-09-24).
+
+    Qoida №1 endi odam qo'li bilan chetlab o'tiladi (`deploy.yml` →
+    `allow_live_contest=yes`, `deploy.sh` → `RANKWANT_ALLOW_LIVE_CONTEST`).
+    Sabab: sayt contest paytida yiqilsa, tuzatishning yagona yo'li — deploy.
+
+    ⚠️ Watcher'da esa odam YO'Q: u har daqiqada yuguradi, ya'ni override
+    u yerda bo'lsa jonli musobaqa paytida O'ZI deploy qilib verdikt va
+    reytingni buzardi. Bu JIM buziladigan joy — override qo'shilsa boshqa
+    hamma tekshiruv yashil qoladi.
+    """
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        'RANKWANT_LOCK_HELD=1 RANKWANT_ENV_FILE="$ENV_FILE"',
+        'RANKWANT_ALLOW_LIVE_CONTEST=1 RANKWANT_LOCK_HELD=1 RANKWANT_ENV_FILE="$ENV_FILE"',
+        "avtomatik yo'lda",
+    )
+
+
 def neg_decisions_push_guard_unwired() -> tuple[bool, str]:
     return _decision_broken(
         ".githooks/pre-push",
@@ -6905,6 +6925,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         "decisions",
         [
             ("offsite standarti qaytsa tutilsin", neg_decisions_backup_offsite),
+            (
+                "avtomatik yo'lga contest override'i qo'shilsa tutilsin",
+                neg_decisions_auto_deploy_contest_override,
+            ),
             ("push guard uzilsa tutilsin", neg_decisions_push_guard_unwired),
             ("hosted runner qo'shilsa tutilsin", neg_decisions_hosted_runner),
             (
