@@ -2897,7 +2897,7 @@ def neg_visual_regression_catches_color_drift() -> tuple[bool, str]:
         )
     # ⚠️ IKKI NARSA TIKLANADI — manba ham, XIZMAT ham.
     #
-    # `Mutation` faqat `globals.css` ni qaytaradi. Build chiqishi esa oxirgi
+    # `Mutation` faqat `theme.css` ni qaytaradi. Build chiqishi esa oxirgi
     # (MUTATSIYALANGAN) holatda qoladi, ishlab turgan server ham o'shani
     # beradi. Natijada testdan KEYIN vizual suite 6/7 qizil bo'ladi va
     # keyingi odam «darvoza buzuq» deb o'ylaydi.

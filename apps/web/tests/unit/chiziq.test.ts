@@ -136,9 +136,9 @@ describe("shrinkPageClip", () => {
   });
 });
 
-describe("globals.css Chiziq wiring", () => {
+describe("theme.css Chiziq wiring", () => {
   const css = readFileSync(
-    fileURLToPath(new URL("../../src/app/globals.css", import.meta.url)),
+    fileURLToPath(new URL("../../src/app/theme.css", import.meta.url)),
     "utf8",
   );
 
