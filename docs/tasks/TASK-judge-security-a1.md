@@ -6,6 +6,17 @@
 **Holat:** Phase 0–4 bajarildi (2026-09-24; compose topologiyasi resolved config'da
 tekshirildi) — keyingi: Phase 5 Nightly isboti, Phase 6 hujjatlar
 
+> **Deploy + oqim isboti (2026-09-24 09:22 UTC):** jonli stack 9402e69 —
+> `check_deploy.sh` «Hamma konteyner joriy kodda» ✓, judge `judge-net`da
+> preflight zanjiri bilan yashil (tarmoq + cgroup), `judge-queue` healthy,
+> `minio-init` exited:0 (judge-ro self-test), prod health 200, api
+> `judge-queue` ping ✓. Deploy oqimida topilgan ikki haqiqiy teshik va
+> tuzatishlari: ① MinIO healthcheck yo'q edi (bazaviy chain — #254);
+> ② `deploy.sh up --no-deps` infra servislarini ko'tarmasdi, judge
+> crash-loop (`lookup judge-queue`) — 6a/8 qadami (#255). Shoshilinch
+> contest-paytida redeploy yo'li usage header'ga yozildi
+> (`RANKWANT_ALLOW_LIVE_CONTEST=1 RANKWANT_DEPLOY_SCOPE=all`).
+
 > **2026-09-24, Phase 4 + HITL:** egasi «Phase 4 to'liq bajarilsin, merge +
 > deploy hammasi bajarilsin» buyrug'ini berdi — bu ADR-0028 ni `accepted`ga
 > o'tkazdi va Phase 7 darvozasini ochdi. Compose amalga oshirildi: `judge-net`

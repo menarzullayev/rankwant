@@ -185,6 +185,39 @@ Guards: `tests/security/check_compose.py` and
 regression (judge net membership, internal flag, both-networks membership,
 root password value in the judge env).
 
+## 7c. Live deployment proof (2026-09-24 09:22 UTC)
+
+The auto-deploy watcher shipped commit `9402e69` (which contains the whole
+chain) and the result was measured on the live stack:
+
+- `check_deploy.sh`: "Hamma konteyner joriy kodda" — all five deployed
+  containers match HEAD (api/worker/beat content-diff, web/judge by
+  `org.rankwant.git-sha`);
+- judge container networks = `rankwant_judge-net` ONLY, log shows
+  `tarmoq preflighti o'tdi` (network preflight passed — postgres/api
+  unreachable) and `cgroup preflight o'tdi`, then `judge-go ishga tushdi`;
+- `rankwant-judge-queue-1` healthy, `rankwant-minio-init-1` exited 0
+  (judge-ro self-test: read OK, write denied);
+- `https://rankwant.uz/api/v1/health/` → 200; from inside the api
+  container both Redis instances answer PING (`judge-queue` via
+  `JUDGE_QUEUE_URL`, session via `REDIS_URL`); the provider reads the
+  queue length from judge-queue (0).
+
+Two real gaps were found by the deploy itself and fixed the same hour:
+
+1. The base compose never declared a MinIO healthcheck, so any stack
+   started from the base chain (CI, Nightly, dev) died on
+   `minio-init: dependency failed to start: container minio has no
+   healthcheck configured` (#254); measured in an isolated compose
+   project first, then merged.
+2. `deploy.sh` runs `up -d --no-deps $BUILD_SERVICES` — the new infra
+   services are never built and never in the build scope, so the first
+   live deploy left the judge crash-looping on `lookup judge-queue`.
+   Step 6a/8 (#255) now brings judge-queue up (bounded wait for healthy)
+   and runs minio-init (bounded wait for exited:0) before the service
+   recreate; an infra failure dies before anything is recreated, so the
+   previous stack stays in place.
+
 ## 8. Reproducing this record
 
 ```bash
