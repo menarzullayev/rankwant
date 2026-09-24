@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1788 strings.**
+**1813 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -532,6 +532,31 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `verdict.RATE_LIMITED` | Juda tez yuborildi | Хеле зуд фиристода шуд |  |
 | `verdict.DENIAL_OF_JUDGEMENT` | Tekshirib bo'lmadi | Санҷида нашуд |  |
 | `attempts.allVerdicts` | Hamma verdikt | Ҳамаи вердиктҳо |  |
+| `attempts.col.submitted` | Yuborilgan | Фиристода шуд |  |
+| `attempts.col.runTime` | Ishlash vaqti | Вақти иҷро |  |
+| `attempts.col.codeSize` | Kod hajmi | Ҳаҷми код |  |
+| `attempts.col.contest` | Musobaqa | Мусобиқа |  |
+| `attempts.you` | Siz | Шумо |  |
+| `attempts.firstSolver` | Birinchi yechim | Аввалин ҳалкунанда |  |
+| `attempts.queuedFor` | {seconds} s kutdi | Дар навбат {seconds} с |  |
+| `attempts.failedAtTest` | {index}-test | тести {index} |  |
+| `attempts.sortLabel` | Saralash | Тартиб |  |
+| `attempts.searchLabel` | Foydalanuvchi qidirish | Ҷустуҷӯи корбар |  |
+| `attempts.searchPlaceholder` | Foydalanuvchi nomi… | Номи корбар… |  |
+| `attempts.searchClear` | Qidiruvni tozalash | Тоза кардани ҷустуҷӯ |  |
+| `attempts.activeFilters` | {count} filtr faol | {count} филтри фаъол |  |
+| `attempts.clearFilters` | Filtrlarni tozalash | Тоза кардани филтрҳо |  |
+| `attempts.onlyMineActive` | Faqat sizning urinishlaringiz | Танҳо кӯшишҳои шумо |  |
+| `attempts.onlyMineCancel` | Bekor qilish | Бекор кардан |  |
+| `attempts.total` | {count} urinish | {count} кӯшиш |  |
+| `attempts.totalFiltered` | Natija: {count}+ | Ёфт шуд: {count}+ |  |
+| `attempts.pageSize` | Sahifa o'lchami | Андозаи саҳифа |  |
+| `attempts.copySource` | Manba kodni nusxalash | Нусхабардории рамзи манбаъ |  |
+| `attempts.rowOpen` | Urinishni ochish | Кушодани кӯшиш |  |
+| `attempts.loading` | Yuklanmoqda… | Боргирӣ… |  |
+| `attempts.emptyTitle` | Hali urinish yo'q | Ҳанӯз кӯшиш нест |  |
+| `attempts.emptyHint` | Birinchi bo'lib yuboring | Аввалин шуда фиристед |  |
+| `attempts.emptyFilteredTitle` | Bu filtrlarga mos urinish yo'q | Ба ин филтрҳо кӯшиш нест |  |
 | `error.already_answered` | Bu savolga allaqachon javob berdingiz | Шумо аллакай ба ин савол ҷавоб додаед |  |
 | `error.already_finalized` | Allaqachon yakunlangan | Аллакай анҷом ёфтааст |  |
 | `error.already_paid` | Bu allaqachon to'langan | Ин аллакай пардохт шудааст |  |

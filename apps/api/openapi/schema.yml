@@ -11441,10 +11441,14 @@ components:
           maximum: 9223372036854775807
           minimum: 0
           format: int64
+        is_first_solver:
+          type: boolean
+          readOnly: true
       required:
       - contest
       - created_at
       - id
+      - is_first_solver
       - language
       - problem
       - user_title
@@ -11527,6 +11531,9 @@ components:
           maximum: 9223372036854775807
           minimum: 0
           format: int64
+        is_first_solver:
+          type: boolean
+          readOnly: true
         source_code:
           type: string
         compile_output:
@@ -11540,6 +11547,7 @@ components:
       - contest
       - created_at
       - id
+      - is_first_solver
       - language
       - problem
       - source_code

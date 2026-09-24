@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Never
 
-from django.db.models import QuerySet
+from django.db.models import BooleanField, Case, QuerySet, Value, When
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
@@ -144,7 +144,25 @@ class AttemptViewSet(
             # urinishlarini skanerlab, keyin saralab 26 tasini oladi.
             # O'lchandi (50 852 urinishli masala): 86.4 ms → 2.2 ms,
             # 156 881 bufer sahifasi o'rniga bir nechta.
-            qs = qs.filter(problem_id=Problem.objects.filter(slug=problem).values("pk")[:1])
+            problem_ids = Problem.objects.filter(slug=problem).values("pk")[:1]
+            qs = qs.filter(problem_id=problem_ids)
+            #: «Birinchi yechim» nishoni (S06). BITTA subquery butun
+            #: sahifa uchun. `Exists()` bilan yozilsa u har qatorga
+            #: bog'langan bo'lardi — 25 qatorli sahifada 25 marta.
+            #: Faqat masala bo'yicha filtrlashda ma'noli: usiz
+            #: «birinchi» tushunchasi butun platforma bo'ylab bo'lardi.
+            first_ac = (
+                Attempt.objects.filter(problem_id=problem_ids, verdict=Verdict.AC)
+                .order_by("created_at", "pk")
+                .values("pk")[:1]
+            )
+            qs = qs.annotate(
+                is_first_solver=Case(
+                    When(pk__in=first_ac, then=Value(True)),
+                    default=Value(False),
+                    output_field=BooleanField(),
+                )
+            )
         username = params.get("username")
         if username:
             # Bu yerda esa join TEZROQ (o'lchandi: 6.0 ms, ID bilan 17.3) —

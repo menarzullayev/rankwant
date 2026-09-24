@@ -3,20 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ProblemTabs } from "@/features/problems";
-import { Verdict } from "@/components/ui/Verdict";
 import { Card } from "@/components/ui/Card";
-import { dateTime, fill, t } from "@/i18n/messages";
+import { fill, t } from "@/i18n/messages";
 import { getLocale } from "@/i18n/server";
-import {
-  EmptyRow,
-  TBody,
-  TD,
-  TH,
-  THead,
-  TR,
-  Table,
-} from "@/components/ui/Table";
-import { AttemptFilters } from "@/features/submissions";
+import { AttemptFilters, AttemptTable } from "@/features/submissions";
 import { api, ApiError } from "@/lib/api";
 
 type Props = {
@@ -26,6 +16,9 @@ type Props = {
     verdict?: string;
     language?: string;
     mine?: string;
+    username?: string;
+    ordering?: string;
+    size?: string;
   }>;
 };
 
@@ -39,25 +32,40 @@ export async function generateMetadata({
   return { title: fill(t(locale, "problem.status.title"), { slug }) };
 }
 
+/** Sahifa o'lchami — backend `max_page_size` (100) dan oshmasin.
+ *  Notanish qiymat JIM tashlanadi: aks holda `?size=99999` API dan 400
+ *  olib, sahifa butunlay yiqilardi. */
+function pageSize(raw: string | undefined): string | undefined {
+  return raw === "50" || raw === "100" ? raw : undefined;
+}
+
 /** Masalaning barcha urinishlari — Codeforces'ning STATUS sahifasi.
  *
  * Panel tabida oxirgi o'ntasi ko'rinadi; bu yerda to'liq oqim, ulashsa
  * bo'ladigan havola bilan. Manba begonaga ko'rinmaydi — backend uni
- * faqat egasiga qaytaradi. */
+ * faqat egasiga qaytaradi.
+ *
+ * ⚠️ Filtr, saralash, sahifa o'lchami va qidiruv — hammasi SERVERDA
+ * qo'llanadi va URL da saqlanadi. Mijozda filtrlash mumkin emas: ro'yxat
+ * kursorli, ya'ni u faqat joriy 25 qatorni kesib, qolganini yashirardi.
+ */
 export default async function ProblemStatusPage({
   params,
   searchParams,
 }: Props) {
   const locale = await getLocale();
   const { slug } = await params;
-  const { cursor, verdict, language, mine } = await searchParams;
+  const { cursor, verdict, language, mine, username, ordering } =
+    await searchParams;
+  const size = pageSize((await searchParams).size);
 
-  // Filtrlar serverda qo'llanadi — ro'yxat kursorli, ya'ni mijozda
-  // filtrlash faqat joriy sahifani kesib, qolganini yashirardi.
   const filters = new URLSearchParams();
   if (verdict) filters.set("verdict", verdict);
   if (language) filters.set("language", language);
   if (mine === "true") filters.set("mine", "true");
+  if (username) filters.set("username", username);
+  if (ordering) filters.set("ordering", ordering);
+  if (size) filters.set("page_size", size);
   const query = filters.toString();
 
   let problem;
@@ -77,13 +85,35 @@ export default async function ProblemStatusPage({
     throw error;
   }
 
-  // Kursorli sahifalash: `next` to'liq URL, bizga faqat kursor kerak.
+  //: Kursorli sahifalash: `next` to'liq URL, bizga faqat kursor kerak.
   const nextCursor = page.next
     ? new URL(page.next).searchParams.get("cursor")
     : null;
   const previousCursor = page.previous
     ? new URL(page.previous).searchParams.get("cursor")
     : null;
+
+  /** Faol filtrlar soni — yopishqoq qatordagi ko'rsatkich uchun (S11). */
+  const activeCount = [verdict, language, username, mine === "true" ? "1" : ""].filter(
+    Boolean,
+  ).length;
+
+  /** Ro'yxat havolasi — filtrlar saqlanadi, kursor yangilanadi. */
+  const pageHref = (nextCursor: string): Route => {
+    const next = new URLSearchParams(filters);
+    next.set("cursor", nextCursor);
+    return `/problems/${slug}/status?${next}` as Route;
+  };
+
+  /** Boshqa filtrlar — jadval saralashda saqlanadi. */
+  const tableQuery = {
+    verdict,
+    language,
+    mine: mine === "true" ? "true" : undefined,
+    username,
+    ordering,
+    size,
+  };
 
   return (
     <div className="space-y-6">
@@ -96,6 +126,14 @@ export default async function ProblemStatusPage({
           )}
           {problem.title}
         </h1>
+        {/* Jami son (S13). Filtrlangan holatda KO'RSATILMAYDI: kursorli
+            sahifalashda jami son yo'q va «20+» kabi taxmin yolg'on
+            aniqlik bo'lardi — sababni faol filtr qatori aytadi. */}
+        {activeCount === 0 && (
+          <span className="text-theme-sm rw-faint tabular-nums">
+            {fill(t(locale, "attempts.total"), { count: problem.attempt_count })}
+          </span>
+        )}
       </div>
 
       <ProblemTabs slug={slug} current="status" />
@@ -106,107 +144,75 @@ export default async function ProblemStatusPage({
         verdict={verdict}
         language={language}
         mine={mine === "true"}
+        username={username}
+        size={size}
+        ordering={ordering}
+        activeCount={activeCount}
       />
 
-      <Card bodyClassName="p-0">
-        <Table>
-          <THead>
-            <TH>{t(locale, "standings.user")}</TH>
-            <TH>{t(locale, "attempts.verdict")}</TH>
-            <TH>{t(locale, "attempts.language")}</TH>
-            <TH align="right">{t(locale, "col.time")}</TH>
-            <TH align="right" className="hidden sm:table-cell">
-              {t(locale, "col.memory")}
-            </TH>
-            <TH align="right" className="hidden lg:table-cell">
-              {t(locale, "col.size")}
-            </TH>
-            <TH align="right" className="hidden md:table-cell">
-              {t(locale, "profile.date")}
-            </TH>
-          </THead>
-          <TBody>
-            {page.results.map((attempt) => (
-              <TR key={attempt.id}>
-                <TD>
-                  <Link
-                    href={`/users/${attempt.username}`}
-                    className="font-medium rw-strong rw-link-hover"
-                  >
-                    {attempt.username}
-                  </Link>
-                </TD>
-                <TD>
-                  {/* Urinish sahifasiga — hack shu yerdan boshlanadi. */}
-                  <Link href={`/attempts/${attempt.id}`}>
-                    <Verdict verdict={attempt.verdict} />
-                  </Link>
-                </TD>
-                <TD className="rw-dim">{attempt.language}</TD>
-                <TD align="right" className="rw-faint tabular-nums">
-                  {attempt.time_ms} ms
-                </TD>
-                <TD
-                  align="right"
-                  className="hidden rw-faint tabular-nums sm:table-cell"
+      {page.results.length === 0 ? (
+        <Card>
+          {/* Bo'sh holat IKKI XIL (S19): filtrsiz — hali urinish yo'q;
+              filtrli — tupik, va undan chiqish yo'li ko'rsatilishi shart,
+              aks holda foydalanuvchi nima bo'lganini tushunmaydi. */}
+          <div className="px-5 py-12 text-center">
+            <p className="text-theme-sm rw-strong">
+              {activeCount > 0
+                ? t(locale, "attempts.emptyFilteredTitle")
+                : t(locale, "attempts.emptyTitle")}
+            </p>
+            <p className="mt-1 text-theme-xs rw-faint">
+              {activeCount > 0 ? (
+                <Link
+                  href={`/problems/${slug}/status` as Route}
+                  className="rw-accent-ink"
                 >
-                  {Math.round(attempt.memory_kb / 1024)} MB
-                </TD>
-                <TD
-                  align="right"
-                  className="hidden rw-faint tabular-nums lg:table-cell"
-                >
-                  {attempt.source_size} B
-                </TD>
-                <TD align="right" className="hidden rw-faint md:table-cell">
-                  <time dateTime={attempt.created_at}>
-                    {dateTime(attempt.created_at, locale)}
-                  </time>
-                </TD>
-              </TR>
-            ))}
-            {page.results.length === 0 && (
-              <EmptyRow colSpan={7}>
-                {query
-                  ? t(locale, "problem.noAttemptMatch")
-                  : t(locale, "problem.noAttemptsYet")}
-              </EmptyRow>
-            )}
-          </TBody>
-        </Table>
+                  {t(locale, "attempts.clearFilters")}
+                </Link>
+              ) : (
+                t(locale, "attempts.emptyHint")
+              )}
+            </p>
+          </div>
+        </Card>
+      ) : (
+        <Card bodyClassName="p-0">
+          <AttemptTable
+            slug={slug}
+            rows={page.results}
+            ordering={ordering}
+            query={tableQuery}
+          />
 
-        {(previousCursor || nextCursor) && (
-          <nav
-            aria-label={t(locale, "problem.pagination")}
-            className="flex items-center justify-between gap-3 px-5 py-4"
-          >
-            {previousCursor ? (
-              <Link
-                href={
-                  `/problems/${slug}/status?cursor=${encodeURIComponent(previousCursor)}` as Route
-                }
-                rel="prev"
-                className="text-theme-sm rw-dim-2 hover:underline"
-              >
-                {t(locale, "problem.previousPage")}
-              </Link>
-            ) : (
-              <span />
-            )}
-            {nextCursor && (
-              <Link
-                href={
-                  `/problems/${slug}/status?cursor=${encodeURIComponent(nextCursor)}` as Route
-                }
-                rel="next"
-                className="text-theme-sm rw-dim-2 hover:underline"
-              >
-                {t(locale, "problem.nextPage")}
-              </Link>
-            )}
-          </nav>
-        )}
-      </Card>
+          {(previousCursor || nextCursor) && (
+            <nav
+              aria-label={t(locale, "problem.pagination")}
+              className="flex items-center justify-between gap-3 px-5 py-4"
+            >
+              {previousCursor ? (
+                <Link
+                  href={pageHref(previousCursor)}
+                  rel="prev"
+                  className="text-theme-sm rw-dim-2 hover:underline"
+                >
+                  {t(locale, "problem.previousPage")}
+                </Link>
+              ) : (
+                <span />
+              )}
+              {nextCursor && (
+                <Link
+                  href={pageHref(nextCursor)}
+                  rel="next"
+                  className="text-theme-sm rw-dim-2 hover:underline"
+                >
+                  {t(locale, "problem.nextPage")}
+                </Link>
+              )}
+            </nav>
+          )}
+        </Card>
+      )}
     </div>
   );
 }

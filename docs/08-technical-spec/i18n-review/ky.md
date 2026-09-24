@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1788 strings.**
+**1813 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -532,6 +532,31 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `verdict.RATE_LIMITED` | Juda tez yuborildi | Өтө тез жөнөтүлдү |  |
 | `verdict.DENIAL_OF_JUDGEMENT` | Tekshirib bo'lmadi | Текшерүүгө болбоду |  |
 | `attempts.allVerdicts` | Hamma verdikt | Бардык вердикт |  |
+| `attempts.col.submitted` | Yuborilgan | Жөнөтүлдү |  |
+| `attempts.col.runTime` | Ishlash vaqti | Аткаруу убактысы |  |
+| `attempts.col.codeSize` | Kod hajmi | Код өлчөмү |  |
+| `attempts.col.contest` | Musobaqa | Мелдеш |  |
+| `attempts.you` | Siz | Сиз |  |
+| `attempts.firstSolver` | Birinchi yechim | Биринчи чечкен |  |
+| `attempts.queuedFor` | {seconds} s kutdi | Кезекте {seconds} с |  |
+| `attempts.failedAtTest` | {index}-test | {index}-тест |  |
+| `attempts.sortLabel` | Saralash | Иреттөө |  |
+| `attempts.searchLabel` | Foydalanuvchi qidirish | Колдонуучуну издөө |  |
+| `attempts.searchPlaceholder` | Foydalanuvchi nomi… | Колдонуучунун аты… |  |
+| `attempts.searchClear` | Qidiruvni tozalash | Издөөнү тазалоо |  |
+| `attempts.activeFilters` | {count} filtr faol | {count} чыпка активдүү |  |
+| `attempts.clearFilters` | Filtrlarni tozalash | Чыпкаларды тазалоо |  |
+| `attempts.onlyMineActive` | Faqat sizning urinishlaringiz | Бир гана сиздин аракеттериңиз |  |
+| `attempts.onlyMineCancel` | Bekor qilish | Жокко чыгаруу |  |
+| `attempts.total` | {count} urinish | {count} аракет |  |
+| `attempts.totalFiltered` | Natija: {count}+ | Табылды: {count}+ |  |
+| `attempts.pageSize` | Sahifa o'lchami | Барак өлчөмү |  |
+| `attempts.copySource` | Manba kodni nusxalash | Баштапкы кодду көчүрүү |  |
+| `attempts.rowOpen` | Urinishni ochish | Аракетти ачуу |  |
+| `attempts.loading` | Yuklanmoqda… | Жүктөлүүдө… |  |
+| `attempts.emptyTitle` | Hali urinish yo'q | Азырынча аракет жок |  |
+| `attempts.emptyHint` | Birinchi bo'lib yuboring | Биринчи болуп жөнөтүңүз |  |
+| `attempts.emptyFilteredTitle` | Bu filtrlarga mos urinish yo'q | Бул чыпкаларга ылайык аракет жок |  |
 | `error.already_answered` | Bu savolga allaqachon javob berdingiz | Бул суроого жооп бердиңиз |  |
 | `error.already_finalized` | Allaqachon yakunlangan | Мурунтан аяктаган |  |
 | `error.already_paid` | Bu allaqachon to'langan | Бул мурунтан төлөнгөн |  |

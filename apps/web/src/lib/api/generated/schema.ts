@@ -5296,6 +5296,7 @@ export interface components {
             judged_at?: string | null;
             /** Format: int64 */
             source_size?: number;
+            readonly is_first_solver: boolean;
         };
         AttemptCreate: {
             problem: string;
@@ -5325,6 +5326,7 @@ export interface components {
             judged_at?: string | null;
             /** Format: int64 */
             source_size?: number;
+            readonly is_first_solver: boolean;
             source_code: string;
             compile_output?: string;
             readonly test_results: components["schemas"]["AttemptTestResult"][];
@@ -9199,8 +9201,8 @@ export interface operations {
             query?: {
                 /** @description The pagination cursor value. */
                 cursor?: string;
-                /** @description Which field to use when ordering the results. */
-                ordering?: string;
+                /** @description Saralash maydoni (`-` teskari tartib). Notanish qiymat jim rad etiladi va standart tartib qaytadi. */
+                ordering?: "-created_at" | "-memory_kb" | "-source_size" | "-time_ms" | "created_at" | "memory_kb" | "source_size" | "time_ms";
                 /** @description Number of results to return per page. */
                 page_size?: number;
             };

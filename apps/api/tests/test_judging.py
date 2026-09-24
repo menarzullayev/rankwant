@@ -880,4 +880,3 @@ class TestAttemptOrdering:
         Usiz `OrderingFilter` har so'rovga `core_user` join qo'shardi.
         """
         assert self._times(problem, "user__username") == self._times(problem)
-

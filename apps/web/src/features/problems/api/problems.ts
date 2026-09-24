@@ -183,6 +183,9 @@ export type Attempt = {
   judged_at: string | null;
   /** Yuborilgan manba uzunligi, belgi. Kodning o'zi emas. */
   source_size: number;
+  /** Masalani BIRINCHI yechgan urinishmi. Faqat masala bo'yicha
+   *  filtrlashda hisoblanadi — boshqa holatda har doim `false`. */
+  is_first_solver: boolean;
 };
 
 export type Topic = {
