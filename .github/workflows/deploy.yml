@@ -310,9 +310,48 @@ jobs:
         # Health is only "the API process is alive". Smoke checks the
         # critical path: submit → Redis → judge → verdict (same note
         # as in ci.yml).
+        #
+        # ⚠️ IKKI TUZATISH (2026-09-24), ikkalasi ham o'lchandi
+        # (run 35955256743):
+        #
+        #     Deploy — staging  Smoke  2026-09-24T04:26:33.2993618Z
+        #     no such service: smoke
+        #     ##[error]Process completed with exit code 1.
+        #
+        # 1) `smoke` SERVIZI umuman compose'da yo'q edi. U faqat
+        #    `docker-compose.ci.yml` da e'lon qilinadi, bu qadam esa
+        #    faqat `docker-compose.yml` + `docker-compose.public.yml`
+        #    berardi. O'lchandi (`config --services`):
+        #
+        #        -f docker-compose.yml -f docker-compose.public.yml
+        #            → api beat judge migrate minio postgres redis web worker
+        #        + -f docker-compose.ci.yml
+        #            → ... smoke web worker
+        #
+        #    Ya'ni qadam hech qachon bajarilishi mumkin emas edi:
+        #    `no such service` — konfiguratsiya xatosi, stack nosozligi
+        #    emas. `-f docker-compose.ci.yml` shu qadamga qo'shildi.
+        #
+        # 2) `smoke` servisi `profiles: ['smoke']` ostida. Compose
+        #    profilsiz servisni umuman tan olmaydi. O'lchandi:
+        #
+        #        --profile smoke -f ... -f docker-compose.ci.yml
+        #            → api ... smoke web worker   ✓
+        #
+        #    Shuning uchun `--profile smoke` ham SHART.
+        #
+        # ⚠️ `ci.yml` override host portlarini `!reset []` qiladi —
+        # bu XAVFSIZ: barcha konteynerlar allaqachon ko'tarilgan, port
+        # faqat yangi konteyner yaratishda kerak. `run --rm smoke` esa
+        # o'chirilgandan keyin tashlab yuboriladi (bir martalik), ya'ni
+        # jonli `rankwant-api`/`rankwant-web` konteynerlariga tegmaydi.
+        # Smoke compose tarmog'i ichida ishlaydi (`http://api:8000`),
+        # host portlari unga umuman kerak emas.
         run: |
           docker compose -p rankwant --env-file .env.public \
+            --profile smoke \
             -f docker-compose.yml -f docker-compose.public.yml \
+            -f docker-compose.ci.yml \
             run --rm smoke
 
       - name: Demo data

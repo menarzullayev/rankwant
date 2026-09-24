@@ -12,6 +12,35 @@
 # bitta mashinada ishlaydigan ko'rsatuv nusxasi.
 # Mashina qayta yuklansa stack o'zi ko'tarilsin — aks holda sayt
 # jimgina o'chib qoladi.
+#
+# ⚠️⚠️ XAVFSIZLIK TO'SIG'I (2026-09-24) — bu fayl `rankwant` loyihasidagi
+# JONLI stack'ni boshqaradi, shuning uchun `.env.public` MAJBURIY.
+#
+# Nega kerak bo'ldi: komanda env-faylsiz yurgizilsa compose o'zgaruvchilarni
+# BO'SH qilib qo'yadi (`DJANGO_SECRET_KEY=`, `DJANGO_ALLOWED_HOSTS=`) va
+# `api` konteynerini QAYTA YARATADI. Django `ALLOWED_HOSTS` bo'sh bo'lsa
+# HAR so'rovga 400 beradi, healthcheck yiqiladi, api `unhealthy` bo'ladi,
+# sayt esa 503 «maintenance» ko'rsatadi. O'lchandi (2026-09-24):
+#
+#     rankwant-api-1   Up 2 minutes (unhealthy)
+#     django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header ...
+#     GET https://rankwant.uz/api/v1/health/  →  503
+#
+# Ya'ni bitta unutilgan `--env-file` jonli saytni yiqitadi. Compose fayli
+# buni O'ZI to'xtatadi: `:?` xato bilan chiqadi va konteynerga tegmaydi.
+#
+# To'g'ri chaqiruv (env-fayl ASOSIY checkout'da qoladi, worktree'da yo'q —
+# u `.gitignore` da):
+#   docker compose -p rankwant --env-file D:/Linux/Web_Projects/rankwant/.env.public \
+#     -f docker-compose.yml -f docker-compose.public.yml up -d --build --wait
+#
+# ⚠️ FAQAT `up`/`run`/`start`/`restart`/`create` uchun. `down`, `logs`,
+# `ps`, `exec` esa env-faylsiz ham ishlashi kerak (nosozlikni tekshirish
+# shoshilinch bo'ladi) — shuning uchun xato `up` ga bog'langan.
+x-env-guard: &env-guard
+  DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:?--env-file .env.public MAJBURIY — usiz jonli api secret-siz qayta yaratiladi}
+  DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:?--env-file .env.public MAJBURIY — bo'sh bo'lsa Django har so'rovga 400 qaytaradi va sayt 503 beradi}
+
 x-restart: &restart
   restart: unless-stopped
 
@@ -85,7 +114,8 @@ services:
   migrate:
     logging: *default-logging
     environment:
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      # ⚠️ `*env-guard` — env-faylsiz `up` to'xtatiladi (fayl boshiga qarang).
+      <<: *env-guard
       DJANGO_DEBUG: "0"
 
   api:
@@ -94,10 +124,11 @@ services:
     # Faqat localhost: tashqariga Cloudflare Tunnel chiqaradi, port emas.
     ports: !override ['127.0.0.1:8301:8000']
     environment:
-      <<: [*email, *oauth, *turnstile, *throttle]
+      # ⚠️ Bu ikki kalit `x-env-guard` orqali keladi — ya'ni env-faylsiz
+      # `up` UMUMAN ishlamaydi (sababi fayl boshida). `djenv` bilan bu
+      # yerda takror yozilmaydi: bitta manba qoladi.
+      <<: [*env-guard, *email, *oauth, *turnstile, *throttle]
       DJANGO_DEBUG: "0"
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
-      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS}
       CORS_ALLOWED_ORIGINS: ${PUBLIC_ORIGIN}
       CSRF_TRUSTED_ORIGINS: ${PUBLIC_ORIGIN}
       # Cloudflare buni HAR so'rovda qayta yozadi, ya'ni mijoz
@@ -110,16 +141,17 @@ services:
     <<: *restart
     logging: *default-logging
     environment:
-      <<: *email
+      # ⚠️ `*env-guard` — env-faylsiz `up` to'xtatiladi (fayl boshiga qarang).
+      <<: [*env-guard, *email]
       DJANGO_DEBUG: "0"
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
 
   beat:
     <<: *restart
     logging: *default-logging
     environment:
+      # ⚠️ `*env-guard` — env-faylsiz `up` to'xtatiladi (fayl boshiga qarang).
+      <<: *env-guard
       DJANGO_DEBUG: "0"
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
 
   web:
     <<: *restart
