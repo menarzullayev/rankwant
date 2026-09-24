@@ -7551,6 +7551,25 @@ def _run_groups_in_copy(groups: list[str], raw: bytes) -> tuple[int, str]:
 
 def _main_parallel(jobs: int) -> int:
     names = [name for name, _ in CASES]
+    # ⚠️ `visual` is EXCLUDED from the parallel fan-out, not merely skipped.
+    #
+    # Workers run `--serial <group>`, and passing a group name sets `only` to
+    # it — which turns the visual branch's "explicitly requested" condition
+    # TRUE. The precondition then runs, finds no Playwright CLI and no live
+    # stack, and fails the whole suite:
+    #
+    #     ✕ playwright cli topilmadi — `cd tests/e2e && npm ci` kerak
+    #     1/1 salbiy test YIQILDI — vizual darvoza o'lchanmadi.
+    #
+    # That is the opposite of the intent: the serial path deliberately SKIPS
+    # this group in a full run ("OG'IR guruh ... ataylab o'tkazib yuboriladi")
+    # because it needs `next build` plus a running stack. CI sets
+    # `NEGATIVE_JOBS: 4`, so the fan-out always hit it. Measured on the
+    # PR #249 CI run (2026-09-24).
+    #
+    # Keep it in the serial path as an open skip; it still runs for real via
+    # `--group visual` (nightly, `tools/ci_visual_gate.sh`).
+    names = [name for name in names if name != "visual"]
     workers = min(jobs, len(names))
     buckets: list[list[str]] = [[] for _ in range(workers)]
     for i, name in enumerate(names):
@@ -7569,6 +7588,8 @@ def _main_parallel(jobs: int) -> int:
                 sys.stdout.write("\n")
             if code != 0:
                 failures = code
+    print("  - O'TKAZIB YUBORILDI: visual guruhi — `next build` va stack talab qiladi "
+          "(`--group visual`, nightly)")
     return failures
 
 

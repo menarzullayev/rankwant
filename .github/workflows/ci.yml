@@ -309,6 +309,25 @@ jobs:
       # `NODE` precondition: `check_negative.py` also runs Node checks,
       # and `node` can appear under different names on PATH.
       # Python-only tools: skip those two cases, do not fail the suite.
+      #
+      # ⚠️ ORDER: this runs AFTER `npm run build`, not before.
+      #
+      # The suite contains the `bundle_budget` group, whose control cases
+      # invoke `check_bundle_budget.py` and require `apps/web/.next/static`.
+      # While this step sat above the build, that group reported
+      # "o'lchab bo'lmadi (exit 2)" on every run — the job went red for a
+      # missing artifact, not a broken check. Measured 2026-09-24:
+      #
+      #     ✕ tor oqim: check_bundle_budget.py exit 2 berdi (0 kerak)
+      #     ✕ bundle: o'lchab bo'lmadi (exit 2) — build qilinmagan
+      #
+      # The `visual` group is skipped here by design: it needs the
+      # Playwright CLI (`tests/e2e/node_modules`) and a live web stack,
+      # neither of which this job provisions. It is exercised by
+      # `tools/ci_visual_gate.sh` in the dedicated visual job instead.
+      - if: ${{ steps.check.outputs.ready == 'true' && needs.filter.outputs.web == 'true' }}
+        run: npm run build
+        working-directory: apps/web
       - name: Negative tests
         if: steps.check.outputs.ready == 'true'
         env:
@@ -339,9 +358,6 @@ jobs:
       - name: Generated API types are current
         if: steps.check.outputs.ready == 'true'
         run: npm run openapi:check
-        working-directory: apps/web
-      - if: ${{ steps.check.outputs.ready == 'true' && needs.filter.outputs.web == 'true' }}
-        run: npm run build
         working-directory: apps/web
       # `next build` never fails on a fat bundle, so this is the only place
       # the budget is enforced. Reads `apps/web/.next/static` — must come
