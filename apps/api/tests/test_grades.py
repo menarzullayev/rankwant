@@ -12,7 +12,11 @@ from rest_framework.test import APIClient
 from core.models import User
 from profiles.catalog import GRADES
 
-WEB_GRADES = Path(__file__).resolve().parents[3] / "apps/web/src/lib/grades.ts"
+# ⚠️ Yo'l `packages/shared/src/grades.ts` (2026-09-24). Monorepo
+# restrukturizatsiyasidan keyin ro'yxat `apps/web/src/lib/` dan
+# `@rankwant/shared` paketiga ko'chdi; eski yo'l `FileNotFoundError`
+# berardi va Nightly'ning API coverage job'i shu sabab yiqilardi.
+WEB_GRADES = Path(__file__).resolve().parents[3] / "packages/shared/src/grades.ts"
 
 
 def kirgan(user: User) -> APIClient:
