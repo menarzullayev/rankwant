@@ -8,6 +8,7 @@ from typing import Any
 
 import pytest
 from django.urls import reverse
+from django.utils import timezone
 from rest_framework.test import APIClient
 
 from judging.models import Attempt, AttemptTestResult
@@ -824,3 +825,59 @@ class TestMasalaFiltri:
         body = c.get(reverse("attempt-list"), {"problem": "yoq-bunday-masala"}).json()
 
         assert body["results"] == []
+
+
+@pytest.mark.django_db
+class TestAttemptOrdering:
+    """`?ordering=` — hujjatlashtirilgan, lekin ILGARI JIM O'LIK parametr.
+
+    Sabab (o'lchandi, taxmin emas): `OrderingFilter` global sukut bo'lib
+    `order_by("time_ms")` qo'yardi, keyin `CursorPagination` o'z tartibini
+    (`-created_at`, `-pk`) USTIDAN yozardi. Ya'ni OpenAPI sxemasi
+    `ordering` ni e'lon qilardi, javob esa hech qachon o'zgarmasdi —
+    noto'g'ri hujjat jim xatodan yomonroq.
+
+    Uch shart tekshiriladi: (1) saralash haqiqatan ishlaydi, (2) teskari
+    yo'nalish ham, (3) ruxsat etilmagan maydon sukutga qaytaradi va 500
+    bermaydi (`?ordering=user__username` join qo'shardi).
+    """
+
+    @pytest.fixture
+    def seeded(self, user, problem, language) -> None:
+        for index, ms in enumerate((900, 100, 500)):
+            Attempt.objects.create(
+                user=user,
+                problem=problem,
+                language=language,
+                source_code=f"int main(){{/*{index}*/}}",
+                verdict=Verdict.AC,
+                time_ms=ms,
+                memory_kb=1000 + index,
+                judged_at=timezone.now(),
+            )
+
+    def _times(self, problem, ordering: str | None = None) -> list[int]:
+        params: dict[str, str] = {"problem": problem.slug}
+        if ordering is not None:
+            params["ordering"] = ordering
+        r = APIClient().get(reverse("attempt-list"), params)
+        assert r.status_code == 200
+        return [row["time_ms"] for row in r.json()["results"]]
+
+    def test_ordering_oshib(self, seeded, problem) -> None:
+        assert self._times(problem, "time_ms") == [100, 500, 900]
+
+    def test_ordering_kamayib(self, seeded, problem) -> None:
+        assert self._times(problem, "-time_ms") == [900, 500, 100]
+
+    def test_sukut_eng_yangi(self, seeded, problem) -> None:
+        """Parametrsiz tartib — `-created_at` (eng yangi birinchi)."""
+        assert self._times(problem) == [500, 100, 900]
+
+    def test_notanish_maydon_sukutga_qaytadi(self, seeded, problem) -> None:
+        """`user__username` — serializer maydoni, lekin ruxsat ro'yxatida yo'q.
+
+        Usiz `OrderingFilter` har so'rovga `core_user` join qo'shardi.
+        """
+        assert self._times(problem, "user__username") == self._times(problem)
+

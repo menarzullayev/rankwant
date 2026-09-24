@@ -367,12 +367,21 @@ paths:
         description: The pagination cursor value.
         schema:
           type: string
-      - name: ordering
-        required: false
-        in: query
-        description: Which field to use when ordering the results.
+      - in: query
+        name: ordering
         schema:
           type: string
+          enum:
+          - -created_at
+          - -memory_kb
+          - -source_size
+          - -time_ms
+          - created_at
+          - memory_kb
+          - source_size
+          - time_ms
+        description: Saralash maydoni (`-` teskari tartib). Notanish qiymat jim rad
+          etiladi va standart tartib qaytadi.
       - name: page_size
         required: false
         in: query
