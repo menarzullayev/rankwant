@@ -5852,6 +5852,107 @@ def neg_ci_python_tools_skip_npm() -> tuple[bool, str]:
     return True, "ci.yml: Python-only tools npm ci qilmaydi"
 
 
+def _ci_step_key(step: dict[str, str], text: str) -> bool:
+    """`name:`/`if:`/`run:` kalitini qadamga yozadi. Boshqasi — `False`."""
+    for key in ("name", "if", "run"):
+        prefix = f"{key}: "
+        if text.startswith(prefix):
+            step[key] = text[len(prefix):].strip()
+            return True
+    return False
+
+
+def _ci_web_steps() -> list[dict[str, str]] | None:
+    """`ci.yml` ning `web` job'i qadamlari: `{name, run, if}`.
+
+    ⚠️ `yaml` ATAYLAB ishlatilmaydi. Web job'ning Python'ida `pyyaml`
+    YO'Q — na `pip install` qadami bor, na `tools/check_*.py` dan birortasi
+    uni import qiladi (`check_decisions.py` uni faqat IZOHDA tilga oladi,
+    Nightly'ning o'rnatishini tekshirib). Import qilinsa sinov
+    `ModuleNotFoundError` bilan yiqilardi — ya'ni qo'riqchi o'zini-o'zi
+    o'ldirardi. Shuning uchun qadamlar satr satr o'qiladi: `ci.yml` da
+    qadamlar 6 probel bilan boshlanadi, kalitlari 8 probelda.
+
+    ⚠️ Kalit `- ` qatorining O'ZIDA ham bo'lishi mumkin
+    (`      - if: ...` dan keyin `        run: npm ci`). Buni o'tkazib
+    yuborish qo'riqchi bor qadamni «qo'riqchisiz» deb ko'rsatardi va
+    sinov yolg'on qizarardi — o'lchandi.
+    """
+    text = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+    lines = text.replace("\r\n", "\n").split("\n")
+
+    start = None
+    for i, line in enumerate(lines):
+        if line == "  web:":
+            start = i + 1
+            break
+    if start is None:
+        return None
+    end = len(lines)
+    for i in range(start, len(lines)):
+        if re.match(r"^  [a-z_]+:$", lines[i]):
+            end = i
+            break
+
+    steps: list[dict[str, str]] = []
+    current: dict[str, str] | None = None
+    for line in lines[start:end]:
+        dash = re.match(r"^      - (.*)$", line)
+        if dash:
+            current = {"name": "", "run": "", "if": ""}
+            steps.append(current)
+            _ci_step_key(current, dash.group(1))
+            continue
+        if current is None:
+            continue
+        body = re.match(r"^        (.*)$", line)
+        if body:
+            _ci_step_key(current, body.group(1))
+            continue
+        # Ko'p qatorli `run: |` bloki — undan chuqurroq qatorlar.
+        if current["run"] in {"|", ">", "|-", ">-"} and re.match(r"^          \S", line):
+            current["run"] += "\n" + line.strip()
+    return steps
+
+
+def neg_ci_web_job_node_steps_guarded() -> tuple[bool, str]:
+    """Web job'ida node talab qiladigan HAR bir qadam qo'riqlanganmi?
+
+    ⚠️ Nega kerak (2026-09-24). Python-only `tools/` o'zgarganda Web
+    job'i uyg'onadi-yu, `Need Node?` false bo'ladi — `npm ci` qilinmaydi
+    (ataylab: 14–20 s). Ya'ni shu job ichida `npm`/`node` chaqiradigan
+    har bir qadam o'z qo'riqchisiga ega bo'lishi SHART, aks holda
+    `not found` bilan yiqiladi va sabab kodda emas, muhitda bo'ladi.
+
+    Ikki marta shu sinf uchradi:
+      · `Generated API types are current` — `openapi-typescript: not
+        found`, exit 127 (run 35969866974). Qo'riqchi qo'shildi;
+      · to'plamdagi node case'lari — `NODE_CASES` to'liq emas edi.
+
+    Qo'riqchi ikki shakldan biri bo'lishi mumkin: `steps.node.outputs.need`
+    (node bor) yoki `needs.filter.outputs.web` (web o'zgardi — node
+    baribir o'rnatiladi).
+    """
+    steps = _ci_web_steps()
+    if steps is None:
+        return False, "ci.yml: `web` job'i topilmadi"
+
+    unguarded: list[str] = []
+    for step in steps:
+        if not re.search(r"(^|\s)(npm|node|npx)\s", step["run"]):
+            continue
+        if "steps.node.outputs.need" in step["if"] or "needs.filter.outputs.web" in step["if"]:
+            continue
+        unguarded.append(step["name"] or step["run"].splitlines()[0][:40])
+
+    if unguarded:
+        return False, (
+            "ci.yml: Web job'ida node talab qiladigan qadam qo'riqchisiz — "
+            f"node bo'lmasa `not found` bilan yiqiladi: {unguarded}"
+        )
+    return True, "ci.yml: Web job'ining node qadamlari qo'riqlangan"
+
+
 def neg_hook_decisions_on_deploy_sh() -> tuple[bool, str]:
     src = (ROOT / ".githooks/pre-push").read_text(encoding="utf-8")
     if "check_negative.py" not in src or "decisions" not in src:
@@ -7582,6 +7683,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("compose hamma", neg_scope_compose_rebuilds_all),
             ("verify health", neg_deploy_verify_uses_health),
             ("tools npm ci ajratilgan", neg_ci_python_tools_skip_npm),
+            (
+                "Web job'ining node qadamlari qo'riqlangan",
+                neg_ci_web_job_node_steps_guarded,
+            ),
             ("deploy.sh da decisions", neg_hook_decisions_on_deploy_sh),
             ("kick schtasks", neg_kick_auto_deploy_runs_task),
         ],
