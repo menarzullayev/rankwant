@@ -161,6 +161,17 @@ VISUAL_CASES = {
 }
 """Vizual guruhning yorliqlari — `--group visual` bilan alohida yuritiladi."""
 
+CSP_CASES = {
+    "haqiqiy sahifa to'liq qamrab olinsin",
+    "noncesiz skript tutilsin",
+}
+"""CSP guruhining yorliqlari — ishlab turgan stack talab qiladi.
+
+`--group csp_nonce` bilan yuritiladi (nightly, `tools/ci_csp_gate.sh`).
+To'liq to'plamda ochiq aytib o'tkazib yuboriladi: CI'ning salbiy qadami
+stack ko'tarmaydi, ya'ni guruh har safar «o'lchanmadi» bo'lardi.
+"""
+
 
 def run_node_check(checker: str) -> tuple[int, str]:
     """`*.mjs` tekshiruvlar uchun runner.
@@ -355,6 +366,19 @@ def visual_precondition() -> str | None:
     pw = _find_playwright()
     if pw is None:
         return "playwright cli topilmadi — `cd tests/e2e && npm ci` kerak"
+    if not _visual_base_url():
+        return "web stack javob bermadi — `E2E_BASE_URL` ni tekshiring"
+    return None
+
+
+def csp_nonce_precondition() -> str | None:
+    """CSP guruhi yurishi uchun ishlab turgan stack joyidami?
+
+    `None` — joyida. Guruh `next build` ni QAYTA QILMAYDI (vizualdan farqli),
+    lekin render qilingan HTML'ni o'qishi kerak — ya'ni stack shart. Sabab
+    qaytarish «muhit tayyor emas» ni «buzuq holatni tutdi» deb o'qib
+    qo'ymaslik uchun (visual_precondition bilan bir mantiq).
+    """
     if not _visual_base_url():
         return "web stack javob bermadi — `E2E_BASE_URL` ni tekshiring"
     return None
@@ -2152,7 +2176,7 @@ def neg_checker_survives_narrow_stdout() -> tuple[bool, str]:
     # `check_deploy_gate.py` asks GitHub whether `main` CI is green; red CI would
     # fail this case for a reason that has nothing to do with encoding. A green
     # fixture keeps its `✓` line in the test.
-    with stub_api(live=False) as base, tempfile.TemporaryDirectory() as tmp:
+    with stub_api(live=False) as base, stub_web() as csp_base, tempfile.TemporaryDirectory() as tmp:
         env["RANKWANT_API_BASE"] = base
         runs = Path(tmp) / "runs.json"
         runs.write_text(json.dumps(_GATE_GREEN), encoding="utf-8")
@@ -2171,6 +2195,10 @@ def neg_checker_survives_narrow_stdout() -> tuple[bool, str]:
                 "--compose-status", str(compose),
             ],
             "check_after_reboot.py": ["--facts", str(facts)],
+            # `check_csp_nonce.py` reads a rendered page, so it needs a target.
+            # The fixture keeps this case about encoding: pointed at the real
+            # stack it would turn red whenever production changed.
+            "check_csp_nonce.py": ["--base", csp_base, "--route", "/login"],
         }
         for name in scripts:
             proc = subprocess.run(
@@ -2838,6 +2866,42 @@ def _find_playwright() -> list[str] | None:
     if not node:
         return None
     return [node, str(cli)]
+
+
+def neg_csp_nonce_page_is_covered() -> tuple[bool, str]:
+    """Ijobiy nazorat: haqiqiy sahifada har bir bajariladigan skript nonce bilan.
+
+    O'lchov RENDER QILINGAN HTML'da — manba faylda emas. Sabab: `@source`
+    glob'idagi darsning aynan o'zi (2026-09-24) — matnni tekshiruvchi darvoza
+    o'lik yo'lni ko'rmagan edi. Bu yiqilsa, tuzatish qaytgan.
+    """
+    base = _visual_base_url()
+    if not base:
+        return False, "csp_nonce/ko'rildi: stack javob bermadi"
+    code, out = run_check("csp_nonce", "--base", base)
+    if code != 0:
+        return False, f"csp_nonce/ko'rildi: exit {code} (0 kerak) — {out.strip()[-180:]}"
+    return True, "csp_nonce/ko'rildi: haqiqiy sahifa to'liq qamrab olingan (exit 0)"
+
+
+def neg_csp_nonce_missing_is_caught() -> tuple[bool, str]:
+    """Bitta tegdan nonce tushsa tutilsinmi?
+
+    ⚠️ Mutatsiya HAQIQIY sahifada bajariladi (`--drop-nonce`), fixture'da emas.
+    Qayta qurish (`neg_visual_*` kabi) 2–4 daqiqa va bundan KO'PROQ isbotlamaydi:
+    nonce yo'qligini aniqlash — sof matn tekshiruvi, build esa o'sha matnni
+    qayta ishlab chiqaradi, xolos. Shuning uchun mutatsiya arzon, isbot esa
+    to'liq: darvoza haqiqiy sahifada haqiqatan yiqiladi.
+    """
+    base = _visual_base_url()
+    if not base:
+        return False, "csp_nonce/o'lik: stack javob bermadi"
+    code, out = run_check("csp_nonce", "--base", base, "--drop-nonce", "1")
+    if code != 1:
+        return False, f"csp_nonce/o'lik: buzilgan holat exit {code} berdi (1 kerak)"
+    if "noncesiz" not in out:
+        return False, f"csp_nonce/o'lik: yiqildi, lekin boshqa sabab — {out.strip()[-180:]}"
+    return True, "csp_nonce/o'lik: noncesiz skript tutildi (exit 1)"
 
 
 def neg_visual_regression_catches_color_drift() -> tuple[bool, str]:
@@ -6492,6 +6556,54 @@ def stub_api(live: bool):
         server.server_close()
 
 
+class _StubWeb(http.server.BaseHTTPRequestHandler):
+    """Bitta sahifa: CSP sarlavhasidagi nonce teg bilan MOS."""
+
+    NONCE = "tor-oqim-fixture"
+
+    def do_GET(self) -> None:  # noqa: N802 — asosiy sinf shunday nomlaydi
+        body = (
+            "<!doctype html><html><head>"
+            f'<script nonce="{self.NONCE}">var a=1;</script>'
+            f'<script src="/i18n/uz.js" nonce="{self.NONCE}"></script>'
+            '<script type="application/ld+json">{{"@type":"Thing"}}</script>'
+            "</head><body>ok</body></html>"
+        ).encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header(
+            "Content-Security-Policy",
+            f"default-src 'self'; script-src 'self' 'nonce-{self.NONCE}' 'strict-dynamic'",
+        )
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def log_message(self, *args: object) -> None:
+        """Jurnal kerak emas — u hisobotni iflos qiladi."""
+
+
+@contextlib.contextmanager
+def stub_web():
+    """Vaqtinchalik sahifa — `check_csp_nonce.py` uchun fixture.
+
+    `check_csp_nonce.py` RENDER qilingan sahifani o'qiydi. Unga haqiqiy
+    stack berilsa, bu test o'z hukmini ishlab chiqarishga bog'lab qo'yardi;
+    fixture esa hukmni o'sha joyda qoldiradi — tekshiruvning O'Z chiqish
+    kodlashida. `ld+json` ataylab qo'shilgan: u bajarilmaydi, ya'ni
+    tekshiruv uni o'tkazib yuborishi kerak (aks holda fixture yolg'on
+    qizil berardi).
+    """
+    server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), _StubWeb)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        yield f"http://127.0.0.1:{server.server_port}"
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
 def run_deploy_window(base: str) -> tuple[int, str]:
     env = dict(os.environ, RANKWANT_API_BASE=base)
     proc = subprocess.run(
@@ -7122,6 +7234,13 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         [
             ("fon o'zgarishi piksel farqini bersin", neg_visual_regression_catches_color_drift),
             ("har skrinshot uchun baseline bo'lsin", neg_visual_baselines_exist),
+        ],
+    ),
+    (
+        "csp_nonce",
+        [
+            ("haqiqiy sahifa to'liq qamrab olinsin", neg_csp_nonce_page_is_covered),
+            ("noncesiz skript tutilsin", neg_csp_nonce_missing_is_caught),
         ],
     ),
     (
@@ -7976,7 +8095,12 @@ def _main_parallel(jobs: int) -> int:
     #
     # Keep it in the serial path as an open skip; it still runs for real via
     # `--group visual` (nightly, `tools/ci_visual_gate.sh`).
-    names = [name for name in names if name != "visual"]
+    #
+    # `csp_nonce` is here for the same reason with a smaller bill: it does not
+    # rebuild, but it must read a rendered page, and CI's negative step runs
+    # no stack — left in the fan-out it would report "o'lchanmadi" every run.
+    # It runs for real via `--group csp_nonce` (nightly, `tools/ci_csp_gate.sh`).
+    names = [name for name in names if name not in {"visual", "csp_nonce"}]
     workers = min(jobs, len(names))
     buckets: list[list[str]] = [[] for _ in range(workers)]
     for i, name in enumerate(names):
@@ -8059,6 +8183,21 @@ def main(argv: list[str]) -> int:
                 return 1
         else:
             skipped.append("visual guruhi — `next build` talab qiladi (--group visual)")
+
+    # CSP nonce qamrovi — ishlab turgan stack'ni o'qiydi (qayta qurmaydi).
+    # `visual` bilan bir sinf: to'liq to'plamda ochiq o'tkazib yuboriladi,
+    # `--group csp_nonce` bilan esa old shart tekshiriladi va bajarilmasa
+    # OCHIQ yiqiladi — jimgina yashil bo'lib qolmaydi.
+    if selected & CSP_CASES:
+        if only == "csp_nonce":
+            reason = csp_nonce_precondition()
+            if reason:
+                print(f"  ✕ {reason}")
+                print()
+                print("1/1 salbiy test YIQILDI — CSP darvozasi o'lchanmadi.")
+                return 1
+        else:
+            skipped.append("csp_nonce guruhi — stack talab qiladi (--group csp_nonce)")
 
     # Monitor — WINDOWS darvozasi. Old shart mantig'i NODE bilan bir xil,
     # LEKIN yakuni boshqa: `powershell` faqat Windows'da bor, CI runner'i
