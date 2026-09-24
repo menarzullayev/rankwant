@@ -1236,6 +1236,40 @@ def homepage_css_is_inlined() -> str | None:
     return None
 
 
+#: Customization contract invariantlari (2026-09-24). Manba — contract §7;
+#: bu yerdagi nusxa ataylab qisqa, chunki vazifasi boshqa: contract ularni
+#: E'LON qiladi, bu qoida esa ular `CLAUDE.md` da — ya'ni agentlar o'qiydigan
+#: joyda — borligini tekshiradi. To'liq moslikni
+#: `tools/check_customization_contract.py` qo'riqlaydi.
+CUSTOMIZATION_INVARIANTS = (
+    "MUST NOT introduce a new customization setting",
+    "MUST NOT add a key to the client",
+    "MUST NOT change the precedence of an existing setting",
+    "MUST NOT introduce a second persistence mechanism",
+    "MUST NOT bypass customization validation",
+    "Unknown values MUST have an explicit fallback",
+)
+
+
+def customization_invariants_are_written() -> str | None:
+    """Customization invariantlari `CLAUDE.md` da yozilganmi?
+
+    ⚠️ Nega kerak — o'lchandi 2026-09-24. `themeToggle` klientda #244 dan
+    beri bor edi, serverning `APPEARANCE_KEYS` ida yo'q edi ⇒ mavzu tugmasi
+    uslubini tanlash BUTUN `appearance` yozuvini 400 ga uchratardi. Qoida
+    kodda yozilgan bo'lsa ham, uni hech narsa majburlamasdi.
+
+    Endi invariantlar `CLAUDE.md` da (agentlar o'sha yerdan o'qiydi) va
+    `check_customization_contract.py` ularning contract bilan mosligini
+    tekshiradi. Bu qoida — zanjirning `CLAUDE.md` halqasi.
+    """
+    text = read("CLAUDE.md")
+    for invariant in CUSTOMIZATION_INVARIANTS:
+        if invariant not in text:
+            return f"CLAUDE.md: customization invarianti yo'q — {invariant!r}"
+    return None
+
+
 def login_uses_narrow_auth_css() -> str | None:
     """`/login` to'liq globals.css ni inline qilmasin (LH-LOGIN-CSS).
 
@@ -2498,6 +2532,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("bosh sahifa CSS inline", homepage_css_is_inlined),
     ("bosh sahifa CF email-decode yo'q", homepage_skips_cf_email_decode),
     ("login yupqa auth.css", login_uses_narrow_auth_css),
+    ("customization invariantlari", customization_invariants_are_written),
     ("Security run o'chiq", security_run_is_disabled),
     ("judge latency Nightly'da", judge_latency_gate_is_nightly),
     ("chegara faqat loopback", security_boundary_is_loopback_only),

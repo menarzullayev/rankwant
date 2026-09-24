@@ -68,14 +68,24 @@ TEMPLATE_NAME_MAX = 24
 TOKEN_MAX = 64
 
 #: Katalog maydonlari: navigatsiya, karta, naqsh, verdikt/holat/yuklanish
-#: ko'rinishi va ikonka to'plami. Ularning RO'YXATI klientda (`nav-config.ts`,
-#: `theme/*.ts`) va u tez-tez o'sadi — D54, D55, D57, D60, D62 shu haqda.
+#: ko'rinishi, ikonka to'plami va mavzu tugmasi uslubi. Ularning RO'YXATI
+#: klientda (`nav-config.ts`, `theme/*.ts`) va u tez-tez o'sadi — D54, D55,
+#: D57, D60, D62 shu haqda.
 #:
 #: Server ro'yxatni TAKRORLAMAYDI, faqat shaklini tekshiradi. Sabab: ikkinchi
 #: nusxa jimgina eskiradi va yangi ikonka to'plami qo'shilgan kuni saqlash
 #: 400 bera boshlardi — aynan shu holat 2026-09-18 da o'lchangan
 #: (`docs/research/2026-09-18-appearance-audit/BOARD.md`). Sxemaning vazifasi
 #: axlat va cheksiz satrni to'sish, mahsulot katalogini boshqarish emas.
+#:
+#: ⚠️ `themeToggle` shu ro'yxatga 2026-09-24 da QO'SHILDI va bu — yuqoridagi
+#: sababning aynan o'zi: klient uni #244 dan beri yuboradi
+#: (`components/theme/ThemeToggle.tsx`, `customizer/AppearanceTab.tsx`),
+#: server esa kalitni bilmasdi. `_clean_appearance` noma'lum kalitni RAD
+#: etadi, ya'ni mavzu tugmasi uslubini tanlash butun `appearance` yozuvini
+#: 400 ga uchratardi — qurilma ko'rsatardi, hisobga esa hech narsa
+#: yozilmasdi. O'lchandi: `_clean_appearance({"themeToggle": "icon"})` →
+#: `PrefsError: Unknown appearance key: themeToggle`.
 CATALOG_KEYS = (
     "navMode",
     "navShape",
@@ -87,6 +97,7 @@ CATALOG_KEYS = (
     "iconPack",
     "overlayStyle",
     "formStyle",
+    "themeToggle",
 )
 APPEARANCE_KEYS = {
     "style",

@@ -3113,6 +3113,81 @@ def neg_css_source_sweeps_site() -> tuple[bool, str]:
     )
 
 
+def _contract_broken(rel: str, old: str, new: str, expect: str) -> tuple[bool, str]:
+    """Break one customization-contract rule in `rel`; the gate must catch it."""
+    path = ROOT / rel
+    text = path.read_bytes().decode("utf-8")
+    if old not in text:
+        return False, f"customization/{expect}: langar topilmadi ({rel})"
+    with Mutation(path, old, new):
+        code, out = run_check("customization_contract")
+    if code != 1:
+        return False, f"customization/{expect}: buzilgan holat exit {code} berdi (1 kerak)"
+    if expect not in out:
+        return False, f"customization/{expect}: yiqildi, lekin boshqa sabab — {out.strip()[-170:]}"
+    return True, f"customization/{expect}: tutildi (exit 1)"
+
+
+def neg_customization_client_key_not_accepted() -> tuple[bool, str]:
+    """Klient yozadigan kalit serverda bo'lmasa tutilsinmi?
+
+    Aynan shu holat 2026-09-24 da yuz bergan: `themeToggle` klientda bor edi
+    (#244), serverning `CATALOG_KEYS` ida yo'q edi, va mavzu tugmasi uslubini
+    tanlash BUTUN `appearance` yozuvini 400 ga uchratardi. Mutatsiya —
+    kalitni ro'yxatdan olib tashlash, ya'ni nuqsonning o'zi.
+    """
+    return _contract_broken(
+        "apps/api/core/prefs.py",
+        '    "formStyle",\n    "themeToggle",\n)',
+        '    "formStyle",\n)',
+        "serverda yo'q",
+    )
+
+
+def neg_customization_test_list_stale() -> tuple[bool, str]:
+    """`test_customizer_yozuvi_toliq_qabul_qilinadi` ro'yxati eskisa tutilsinmi?
+
+    Ro'yxat QO'LDA yozilgan — serverdan hosil qilinsa test tavtologiyaga
+    aylanib, aynan o'sha sinfni o'tkazib yuborardi. Shuning uchun uning
+    to'liqligini shu darvoza tekshiradi. Aynan shu ro'yxat eskirgani uchun
+    nuqson o'tib ketgan edi.
+    """
+    return _contract_broken(
+        "apps/api/tests/test_prefs.py",
+        '            "themeToggle": "doira",\n',
+        "",
+        "ro'yxati eskirgan",
+    )
+
+
+def neg_customization_contract_constant_drift() -> tuple[bool, str]:
+    """Contract'dagi doimiy koddan farq qilsa tutilsinmi?
+
+    Hujjat eskirsa, u kod haqida yolg'on gapiradi — bugungi naqshning
+    (matn haqiqatdan uzilishi) aynan o'zi.
+    """
+    return _contract_broken(
+        "docs/08-technical-spec/customization-contract.md",
+        "schema_version: 2",
+        "schema_version: 1",
+        "hujjat eskirdi",
+    )
+
+
+def neg_customization_invariant_dropped() -> tuple[bool, str]:
+    """Invariant `CLAUDE.md` dan tushsa tutilsinmi?
+
+    Invariant contract'da qoladi, ya'ni hujjat to'liq ko'rinadi — lekin
+    agentlar o'qiydigan joydan yo'qoladi. Qoida aynan shuni tutadi.
+    """
+    return _contract_broken(
+        "CLAUDE.md",
+        "MUST NOT bypass customization validation",
+        "bypassing customization validation is acceptable",
+        "invariant yo'q",
+    )
+
+
 def neg_decisions_push_guard_unwired() -> tuple[bool, str]:
     return _decision_broken(
         ".githooks/pre-push",
@@ -7190,6 +7265,24 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("o'lik CSS skan yo'li tutilsin", neg_css_source_path_dead),
             ("`source(none)` tushsa tutilsin", neg_css_source_none_missing),
             ("tor sheet (site) ni qamrasa tutilsin", neg_css_source_sweeps_site),
+        ],
+    ),
+    (
+        "customization",
+        [
+            (
+                "klient kaliti serverda bo'lmasa tutilsin",
+                neg_customization_client_key_not_accepted,
+            ),
+            ("test ro'yxati eskisa tutilsin", neg_customization_test_list_stale),
+            (
+                "contract doimiysi eskisa tutilsin",
+                neg_customization_contract_constant_drift,
+            ),
+            (
+                "invariant CLAUDE.md dan tushsa tutilsin",
+                neg_customization_invariant_dropped,
+            ),
         ],
     ),
     (
