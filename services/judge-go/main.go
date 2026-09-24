@@ -30,6 +30,22 @@ func main() {
 		os.Exit(1)
 	}
 
+	// PREFLIGHT (tarmoq): ADR-0028 — tarmoq chegarasi KOD bilan tekshiriladi.
+	// Fail closed: taqiqlangan manzarga (postgres/api) ulanish MUVAFFAQIYATLI
+	// bo'lsa worker ishga tushmaydi. Gate: JUDGE_NET_PREFLIGHT=1 (compose'da
+	// judge-net, internal: true bilan birga yoqiladi; lokal `go run` da majburiy
+	// emas — xuddi shu sabab PreflightCgroup ham konteynerdan tashqarida
+	// ma'noli emas).
+	if os.Getenv("JUDGE_NET_PREFLIGHT") == "1" {
+		if err := PreflightNetwork(); err != nil {
+			log.Error("tarmoq preflighti muvaffaqiyatsiz — worker ishga tushmaydi", "err", err)
+			log.Error("judge faqat judge-net (internal: true) tarmog'ida ishlashi kerak — " +
+				"postgres/api uning tarmog'ida bo'lmasligi shart (ADR-0028)")
+			os.Exit(1)
+		}
+		log.Info("tarmoq preflighti o'tdi — postgres/api bu tarmoqdan ulanmaydi")
+	}
+
 	url := os.Getenv("REDIS_URL")
 	if url == "" {
 		url = "redis://localhost:6379/0"

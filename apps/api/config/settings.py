@@ -345,6 +345,13 @@ SPECTACULAR_SETTINGS = {
 }
 
 # ── Judge — ADR-0004 ─────────────────────────────────────────────────
+# Judge navbati ALOHIDA Redis'da (ADR-0028): judge konteyneri faqat
+# `judge-net` (internal) tarmog'ida, sessiya/broker Redis'iga tarmoq
+# darajasida yo'q. Shu sababli navbat endpoint'i ikki tomonda ham
+# sozlanadigan seam: API/worker bu yerdan navbatga yozadi/o'qiydi,
+# judge esa o'z compose env'ida `REDIS_URL: redis://judge-queue:6379/0`
+# oladi. Bo'sh bo'lsa sessiya Redis'i — bir tarmoqli eskirgan rejim.
+JUDGE_QUEUE_URL = os.environ.get("JUDGE_QUEUE_URL", "") or REDIS_URL
 JUDGE_PROVIDER = env("JUDGE_PROVIDER", "redis")
 JUDGE_JOBS_KEY = "rankwant:judge:jobs"
 JUDGE_RESULTS_KEY = "rankwant:judge:results"

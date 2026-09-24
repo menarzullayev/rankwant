@@ -44,6 +44,15 @@ def main() -> int:
     signal.signal(signal.SIGTERM, _handle_stop)
     signal.signal(signal.SIGINT, _handle_stop)
 
+    # PREFLIGHT (tarmoq): ADR-0028 — fail closed, gate JUDGE_NET_PREFLIGHT=1.
+    # Taqiqlangan manzarga (postgres/api) ulanish muvaffaqiyatli bo'lsa
+    # worker ishga tushmaydi — xuddi DATABASE_URL tekshiruvi kabi.
+    try:
+        preflight.check_network()
+    except preflight.PreflightError as exc:
+        log.error("tarmoq preflighti muvaffaqiyatsiz — worker ishga tushmaydi: %s", exc)
+        return 1
+
     # PREFLIGHT: limitlarni majburlay olmasak — ishlamaymiz.
     # Cheklovsiz judge foydalanuvchi kodini host'ga qo'yib yuboradi.
     try:
