@@ -36,6 +36,7 @@ tekshiruvlar o'zgarganda ishlamagan.
 
 from __future__ import annotations
 
+import ast
 import contextlib
 import gzip
 import http.server
@@ -112,8 +113,47 @@ def run_check(checker: str, *extra: str) -> tuple[int, str]:
 
 NODE_MISSING = "node topilmadi"
 
-NODE_CASES = {"runtime dev throw yo'q", "runtime takroriy jurnal"}
-"""Node'da ishlaydigan tekshiruvga tegishli salbiy testlarning yorlig'i."""
+NODE_CASES = {
+    "runtime dev throw yo'q",
+    "runtime takroriy jurnal",
+    # ⚠️ Qo'shildi 2026-09-24. Sabab o'lchandi (run 35969122043).
+    #
+    # `ci.yml` da `Need Node?` faqat `web` yoki `tools_node` o'zgarganda
+    # true bo'ladi. Python-only `tools/` esa `tools` filtri bilan job'ni
+    # UYG'OTADI-yu, node O'RNATMAYDI (u ataylab: `npm ci` 14–20 s).
+    # Ya'ni `tools/*.py` o'zgarganda to'plam node'siz va build'siz
+    # yugurardi, shu to'rtta test esa yiqilardi — CI qizil, sabab esa
+    # kodda emas, muhitda.
+    #
+    #   · `validation` — vitest talab qiladi (`npm ci`);
+    #   · `tor oqim`   — `check_bundle_budget.py` ni chaqiradi (`.next`);
+    #   · `bundle` ×2  — haqiqiy daraxtni o'lchaydi (`.next`).
+    #
+    # ⚠️ `bundle_budget` guruhidan AYNAN IKKITASI shu yerda, qolgan
+    # IKKITASI EMAS — farq o'lchandi, taxmin qilinmadi:
+    #
+    #   `catches_overflow` va `floor_is_live` HAQIQIY daraxtni o'lchaydi
+    #   (`check_bundle_budget.py` argument/env'siz) ⇒ `.next` bo'lmasa
+    #   exit 2. Ularni o'tkazib yubormaslik kerak.
+    #
+    #   `unbuilt_is_not_green` va `empty_dir_is_not_green` esa o'z
+    #   fixture'ini yasaydi (`RW_BUNDLE_STATIC` ni yo'q papkaga yoki bo'sh
+    #   temp papkaga qaratadi) ⇒ build'siz ham o'tadi. Ularni ham
+    #   o'tkazib yuborish ikki haqiqiy o'lchovni yo'qotardi.
+    #
+    # Birinchi urinishda aynan TESKARISI qilingan edi va lokal o'lchov
+    # ushladi: `bundle_budget` da `2/2 YIQILDI` — ya'ni o'tadigan
+    # ikkitasi o'tkazilib, yiqiladigan ikkitasi qolgan.
+    "email/parol/taxallus qoidalari tirik bo'lsin",
+    "tor oqimda qulamasin",
+    "byudjetdan oshgan hajm tutilsin",
+    "byudjet o'lik bo'lib qolmasin",
+}
+"""Node'da ishlaydigan tekshiruvga tegishli salbiy testlarning yorlig'i.
+
+Node o'rnatilmaganda (`NEGATIVE_SKIP_NODE=1`) shu yorliqlar o'tkazib
+yuboriladi — jimgina emas: hisobotda alohida qator bo'lib chiqadi.
+"""
 
 VISUAL_CASES = {
     "fon o'zgarishi piksel farqini bersin",
@@ -6669,6 +6709,47 @@ def neg_negative_rejects_unknown_group() -> tuple[bool, str]:
     return True, f"notanish guruh rad etildi (exit {code}), sabab aytildi"
 
 
+def neg_node_cases_labels_exist() -> tuple[bool, str]:
+    """`NODE_CASES` dagi har bir yorliq registrda haqiqatan bormi?
+
+    ⚠️ Nega kerak (2026-09-24). `NODE_CASES` — SATR yorliqlari to'plami,
+    ya'ni uni kod emas, imlo bog'laydi. Yorliq xato terilsa yoki boshqa
+    joyda o'zgarsa, `skip_node_cases and label in NODE_CASES` shartli
+    HECH QACHON bajarilmaydi: test o'tkazib yuborilmaydi, node'siz
+    yugurib yiqiladi — yoki (teskari holatda) kerakli test jimgina
+    o'tkazib yuboriladi va qamrov ko'rinmasdan torayadi.
+
+    Ikkinchisi xavfliroq: hisobot «hammasi yashil» deydi, o'lchov esa
+    yo'q. Shuning uchun yorliqlar registrga solishtiriladi.
+
+    ⚠️ Bu tekshiruv yorliqni TO'G'RI tanlashni kafolatlamaydi — faqat
+    mavjudligini. Tanlovni CI o'zi o'lchaydi (`NEGATIVE_SKIP_NODE=1`),
+    o'sha paytda bu to'rttasi haqiqatan o'tkazib yuborilishi shart.
+    """
+    tree = ast.parse((ROOT / "tools" / "check_negative.py").read_text(encoding="utf-8"))
+    declared: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign) and any(
+            getattr(t, "id", "") == "NODE_CASES" for t in node.targets
+        ):
+            declared = {e.value for e in node.value.elts if isinstance(e, ast.Constant)}
+    registered: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.AnnAssign) and getattr(node.target, "id", "") == "CASES":
+            for group in node.value.elts:
+                for case in group.elts[1].elts:
+                    label = case.elts[0]
+                    if isinstance(label, ast.Constant):
+                        registered.add(label.value)
+
+    if not declared:
+        return False, "NODE_CASES topilmadi yoki bo'sh — o'tkazib yuborish ishlamaydi"
+    unknown = sorted(declared - registered)
+    if unknown:
+        return False, f"NODE_CASES da registrda yo'q yorliq: {unknown}"
+    return True, f"NODE_CASES: {len(declared)} yorliq, hammasi registrda bor"
+
+
 CASES: list[tuple[str, list[tuple[str, object]]]] = [
     (
         "i18n",
@@ -6826,6 +6907,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("tor oqimda qulamasin", neg_checker_survives_narrow_stdout),
             ("yangi branch darvozasiz qolmasin", neg_hook_gates_new_branch),
             ("notanish guruh yashil qolmasin", neg_negative_rejects_unknown_group),
+            ("NODE_CASES yorliqlari registrda bo'lsin", neg_node_cases_labels_exist),
         ],
     ),
     (
