@@ -2176,7 +2176,7 @@ def neg_checker_survives_narrow_stdout() -> tuple[bool, str]:
     # `check_deploy_gate.py` asks GitHub whether `main` CI is green; red CI would
     # fail this case for a reason that has nothing to do with encoding. A green
     # fixture keeps its `✓` line in the test.
-    with stub_api(live=False) as base, tempfile.TemporaryDirectory() as tmp:
+    with stub_api(live=False) as base, stub_web() as csp_base, tempfile.TemporaryDirectory() as tmp:
         env["RANKWANT_API_BASE"] = base
         runs = Path(tmp) / "runs.json"
         runs.write_text(json.dumps(_GATE_GREEN), encoding="utf-8")
@@ -2195,6 +2195,10 @@ def neg_checker_survives_narrow_stdout() -> tuple[bool, str]:
                 "--compose-status", str(compose),
             ],
             "check_after_reboot.py": ["--facts", str(facts)],
+            # `check_csp_nonce.py` reads a rendered page, so it needs a target.
+            # The fixture keeps this case about encoding: pointed at the real
+            # stack it would turn red whenever production changed.
+            "check_csp_nonce.py": ["--base", csp_base, "--route", "/login"],
         }
         for name in scripts:
             proc = subprocess.run(
@@ -6547,6 +6551,54 @@ def stub_api(live: bool):
     thread.start()
     try:
         yield f"http://127.0.0.1:{server.server_port}/api/v1"
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
+class _StubWeb(http.server.BaseHTTPRequestHandler):
+    """Bitta sahifa: CSP sarlavhasidagi nonce teg bilan MOS."""
+
+    NONCE = "tor-oqim-fixture"
+
+    def do_GET(self) -> None:  # noqa: N802 — asosiy sinf shunday nomlaydi
+        body = (
+            "<!doctype html><html><head>"
+            f'<script nonce="{self.NONCE}">var a=1;</script>'
+            f'<script src="/i18n/uz.js" nonce="{self.NONCE}"></script>'
+            '<script type="application/ld+json">{{"@type":"Thing"}}</script>'
+            "</head><body>ok</body></html>"
+        ).encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header(
+            "Content-Security-Policy",
+            f"default-src 'self'; script-src 'self' 'nonce-{self.NONCE}' 'strict-dynamic'",
+        )
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def log_message(self, *args: object) -> None:
+        """Jurnal kerak emas — u hisobotni iflos qiladi."""
+
+
+@contextlib.contextmanager
+def stub_web():
+    """Vaqtinchalik sahifa — `check_csp_nonce.py` uchun fixture.
+
+    `check_csp_nonce.py` RENDER qilingan sahifani o'qiydi. Unga haqiqiy
+    stack berilsa, bu test o'z hukmini ishlab chiqarishga bog'lab qo'yardi;
+    fixture esa hukmni o'sha joyda qoldiradi — tekshiruvning O'Z chiqish
+    kodlashida. `ld+json` ataylab qo'shilgan: u bajarilmaydi, ya'ni
+    tekshiruv uni o'tkazib yuborishi kerak (aks holda fixture yolg'on
+    qizil berardi).
+    """
+    server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), _StubWeb)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        yield f"http://127.0.0.1:{server.server_port}"
     finally:
         server.shutdown()
         server.server_close()
