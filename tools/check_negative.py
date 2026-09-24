@@ -7464,10 +7464,27 @@ def _extract_copy(dest: Path, raw: bytes) -> None:
 
     with tarfile.open(fileobj=io.BytesIO(raw), mode="r:") as archive:
         archive.extractall(dest, filter="data")
-    node_modules = ROOT / "apps/web/node_modules"
-    link = dest / "apps/web/node_modules"
-    if node_modules.is_dir() and not link.exists():
-        link.symlink_to(node_modules, target_is_directory=True)
+    # ⚠️ `node_modules` is symlinked, not copied — a copy would take minutes.
+    #
+    # TWO trees matter, and the ROOT one is the easy one to forget. This repo
+    # is an npm workspace, so `npm ci` hoists most packages to
+    # `node_modules/` and links the workspace packages into
+    # `node_modules/@rankwant/*`. `apps/web/node_modules` then holds only
+    # what did not hoist. Linking just the app-level tree left
+    # `@rankwant/shared` unresolvable, and every Node check died with:
+    #
+    #     Error [ERR_MODULE_NOT_FOUND]: Cannot find package
+    #     '@rankwant/shared' imported from .../src/i18n/messages.ts
+    #
+    # That is an environment gap, not a broken check, so the group reported
+    # "muhit tayyor emas, o'lchov yo'q" and the suite went red. Measured on
+    # the PR #249 CI run (2026-09-24).
+    for rel in ("apps/web/node_modules", "node_modules"):
+        source = ROOT / rel
+        link = dest / rel
+        if source.is_dir() and not link.exists():
+            link.parent.mkdir(parents=True, exist_ok=True)
+            link.symlink_to(source, target_is_directory=True)
 
 
 def _run_groups_in_copy(groups: list[str], raw: bytes) -> tuple[int, str]:
