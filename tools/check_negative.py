@@ -6016,9 +6016,12 @@ def neg_scope_api_triplet() -> tuple[bool, str]:
         return any(p == "apps/api" or p.startswith("apps/api/") for p in paths)
 
     scope = _load_deploy_scope().compute_scope("a", "b", changed=changed)
-    if scope != ["api", "worker", "beat"]:
-        return False, f"deploy_scope: api triplet emas — {scope}"
-    return True, "deploy_scope: api/worker/beat"
+    #: `realtime` ham AYNI obrazdan quriladi (`build: *api-build`), shuning
+    #: uchun api kodi o'zgarsa u ham yangilanishi shart — aks holda yangi
+    #: endpoint'lar mavjud bo'lmagan eski konteyner ishlab turaverardi.
+    if scope != ["api", "worker", "beat", "realtime"]:
+        return False, f"deploy_scope: api guruhi noto'g'ri — {scope}"
+    return True, "deploy_scope: api/worker/beat/realtime"
 
 
 def neg_scope_compose_rebuilds_all() -> tuple[bool, str]:
@@ -6026,7 +6029,7 @@ def neg_scope_compose_rebuilds_all() -> tuple[bool, str]:
         return "docker-compose.yml" in paths
 
     scope = _load_deploy_scope().compute_scope("a", "b", changed=changed)
-    if scope != ["api", "worker", "beat", "judge", "web"]:
+    if scope != ["api", "worker", "beat", "judge", "web", "realtime"]:
         return False, f"deploy_scope: compose hamma emas — {scope}"
     return True, "deploy_scope: compose — hamma servis"
 

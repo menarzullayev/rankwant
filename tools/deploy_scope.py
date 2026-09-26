@@ -17,12 +17,17 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-ALL_SERVICES: tuple[str, ...] = ("api", "worker", "beat", "judge", "web")
+ALL_SERVICES: tuple[str, ...] = ("api", "worker", "beat", "judge", "web", "realtime")
 
 SERVICE_PATHS: dict[str, tuple[str, ...]] = {
     "api": ("apps/api",),
     "worker": ("apps/api",),
     "beat": ("apps/api",),
+    #: SSE xizmati (ADR-0029). `apps/api` — chunki u AYNI obrazdan quriladi
+    #: (`build: *api-build`), ya'ni api kodi o'zgarsa u ham yangilanishi
+    #: shart. Ochilgan oqimlar uziladi-yu, `EventSource` qayta ulanadi va
+    #: replay buferi yo'qolganini to'ldiradi.
+    "realtime": ("apps/api",),
     "web": ("apps/web",),
     "judge": ("services/judge-go",),
 }
