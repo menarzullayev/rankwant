@@ -81,7 +81,12 @@ COMPOSE=(docker compose -p "$PROJECT" --env-file "$ENV_FILE"
 # so this script bakes the right values in. Leaving it out cost a manual step
 # after every web change and ended each such deploy red on the web row
 # (measured on the #49 and #50 deploys).
-SERVICES=(api worker beat judge web)
+# `realtime` — SSE xizmati (ADR-0029). Ro'yxatda bo'lmasa konteyner UMUMAN
+# yaratilmaydi: compose uni biladi, lekin bu skript faqat shu to'plamni
+# ko'taradi. O'lchandi (2026-09-27): `realtime` siz deploy yashil o'tdi va
+# `docker ps` da xizmat umuman yo'q edi — ya'ni jim, ko'rinmaydigan
+# yetishmovchilik.
+SERVICES=(api worker beat judge web realtime)
 
 # Manba commit — image yorlig'iga (`org.rankwant.git-sha`) uzatiladi.
 # `check_deploy.sh` judge va web'ning eskiligini AYNAN shu yorliq orqali

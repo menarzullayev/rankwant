@@ -4068,8 +4068,8 @@ def neg_decisions_runner_entrypoint_label_dropped() -> tuple[bool, str]:
 def neg_decisions_deploy_skips_web() -> tuple[bool, str]:
     return _decision_broken(
         "tools/deploy.sh",
+        "SERVICES=(api worker beat judge web realtime)",
         "SERVICES=(api worker beat judge web)",
-        "SERVICES=(api worker beat judge)",
         "deploy hamma servisni quradi",
     )
 

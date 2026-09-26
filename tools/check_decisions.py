@@ -38,7 +38,7 @@ TRIAL_RUNNER = {"runner-selftest.yml": "[self-hosted, rankwant-container]"}
 # labels whenever the container is recreated and registers again.
 RUNNER_DEFAULTS = ("tools/runner/docker-compose.runner.yml", "tools/runner/entrypoint.sh")
 # Everything tools/deploy.sh must rebuild: services built from this repo's sources.
-DEPLOYED_SERVICES = {"api", "worker", "beat", "judge", "web"}
+DEPLOYED_SERVICES = {"api", "worker", "beat", "judge", "web", "realtime"}
 # Layout chrome drawn on every page: sidebar, top bar, header and footer. Its
 # links prefetch on intent only (owner decision 2026-09-18).
 NAV_CHROME = (
