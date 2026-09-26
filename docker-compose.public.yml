@@ -145,6 +145,21 @@ services:
       <<: [*env-guard, *email]
       DJANGO_DEBUG: "0"
 
+  # SSE — ADR-0029. Port faqat localhost: tashqariga Cloudflare Tunnel
+  # chiqaradi va u `/api/v1/events/*` ni shu xizmatga yo'naltiradi.
+  # ⚠️ Tunnel qatori HOST darajasida (`/etc/cloudflared/config.yml`) —
+  # `docs/10-operations/realtime-runbook.md` da yozilgan.
+  realtime:
+    <<: *restart
+    logging: *default-logging
+    ports: !override ['127.0.0.1:8302:8001']
+    environment:
+      #: ⚠️ `*env-guard` SHART: `DJANGO_SECRET_KEY` bo'lmasa Django
+      #: umuman ko'tarilmaydi, ya'ni sessiya ham tekshirilmaydi.
+      <<: *env-guard
+      DJANGO_DEBUG: "0"
+      REALTIME_WORKERS: ${REALTIME_WORKERS:-1}
+
   beat:
     <<: *restart
     logging: *default-logging

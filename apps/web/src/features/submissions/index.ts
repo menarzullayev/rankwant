@@ -9,6 +9,8 @@ export { Attachments } from "./components/Attachments";
 
 export { AttemptFilters } from "./components/AttemptFilters";
 
+export { AttemptLive } from "./components/AttemptLive";
+
 export { AttemptTable } from "./components/AttemptTable";
 
 export { AttemptView } from "./components/AttemptView";

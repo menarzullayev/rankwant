@@ -653,6 +653,7 @@ python/api	drf-spectacular	0.30.0	runtime	BSD-3-Clause
 python/api	fonttools	4.65.0	runtime	MIT
 python/api	fpdf2	2.8.8	runtime	LGPL-3.0-only
 python/api	gunicorn	26.2.0	runtime	MIT
+python/api	h11	0.16.0	runtime	UNKNOWN
 python/api	inflection	0.5.1	runtime	MIT
 python/api	jmespath	1.1.0	runtime	MIT
 python/api	jsonschema	4.26.0	runtime	MIT
@@ -677,6 +678,7 @@ python/api	tzdata	2026.3	runtime	Apache-2.0
 python/api	tzlocal	5.4.4	runtime	MIT
 python/api	uritemplate	4.2.0	runtime	BSD 3-Clause OR Apache-2.0
 python/api	urllib3	2.7.0	runtime	MIT
+python/api	uvicorn	0.54.0	runtime	UNKNOWN
 python/api	vine	5.1.0	runtime	BSD
 python/api	wcwidth	0.8.3	runtime	MIT License
 python/api	whitenoise	6.12.0	runtime	MIT

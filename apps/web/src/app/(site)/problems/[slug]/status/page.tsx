@@ -6,7 +6,7 @@ import { ProblemTabs } from "@/features/problems";
 import { Card } from "@/components/ui/Card";
 import { fill, t } from "@/i18n/messages";
 import { getLocale } from "@/i18n/server";
-import { AttemptFilters, AttemptTable } from "@/features/submissions";
+import { AttemptFilters, AttemptLive, AttemptTable } from "@/features/submissions";
 import { api, ApiError } from "@/lib/api";
 
 type Props = {
@@ -117,6 +117,11 @@ export default async function ProblemStatusPage({
 
   return (
     <div className="space-y-6">
+      {/* Jonli yangilanish (ADR-0029). Ko'rinadigan narsa chizmaydi:
+          hodisa kelganda sahifa server komponentini qayta o'qiydi.
+          Oqim ishlamasa hech narsa buzilmaydi — sahifa qo'lda
+          yangilanadi, xolos. */}
+      <AttemptLive problem={slug} />
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <h1 className="text-title-sm font-bold rw-strong">
           {problem.code !== null && (

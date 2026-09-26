@@ -46,6 +46,7 @@ Har bir ADR:
 | [0026](0026-codeforces-user-sync.md)             | Codeforces sinxronlash — 4 yangi maydon, neytral nom | **accepted** |
 | [0027](0027-ladder-16-tiers.md)                  | Contest rating ladder — 16 pog'ona, inglizcha nomlar, CF palitra | **accepted** (2026-09-20; index row 2026-09-24 da qo'shildi — fayl bor edi, qator yetishmagan) |
 | [0028](0028-judge-container-isolation.md)        | Judge konteyner izolyatsiyasi — judge-net, judge-queue, PreflightNetwork | **accepted** (2026-09-24) |
+| [0029](0029-realtime-transport.md)               | Real vaqtli aloqa — chegara (faqat shaxsiy oqim), transport (SSE hozir, WS keyin), alohida `realtime` xizmati | **proposed** (2026-09-27) — tasdiq kutilmoqda |
 
 ## Qoidalar
 
