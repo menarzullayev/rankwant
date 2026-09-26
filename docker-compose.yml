@@ -178,6 +178,38 @@ services:
       timeout: 5s
       retries: 12
 
+  # SSE — jonli yangilanish (ADR-0029 §5). `api` dan ALOHIDA, va sabab
+  # texnik: gunicorn **sync** worker bir vaqtda bitta so'rovni bajaradi,
+  # SSE ulanishi esa butun umri ochiq turadi ⇒ bitta ulanish bitta
+  # worker'ni egallaydi. To'rt worker bilan beshinchi oqim butun API ni
+  # to'xtatardi. Alohida xizmat bo'lsa to'yingan oqim faqat o'zini yopadi,
+  # API esa ishlashda davom etadi.
+  realtime:
+    logging: *default-logging
+    build: *api-build
+    #: ⚠️ `--workers 1` ataylab: ulanish hisobi JARAYON ichida
+    #: yuritiladi (ADR-0029 §10), ya'ni worker soni oshsa amaldagi
+    #: chegara ham oshadi. Ko'paytirishdan oldin hisobni Redis'ga
+    #: ko'chirish kerak.
+    command: uvicorn config.asgi:application --host 0.0.0.0 --port 8001 --workers ${REALTIME_WORKERS:-1}
+    environment:
+      DATABASE_URL: postgres://rankwant:dev@postgres:5432/rankwant
+      #: Sessiya `cached_db` — Redis'dan o'qiladi, ya'ni auth ishlaydi.
+      REDIS_URL: redis://redis:6379/0
+      DJANGO_DEBUG: "1"
+    ports: ['8001:8001']
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - python -c "import urllib.request; urllib.request.urlopen('http://localhost:8001/api/v1/realtime/health/')"
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
   # Verdict natijalarini navbatdan olib, urinishga yozadi
   # (CELERY_BEAT_SCHEDULE: judging.drain_results har 2s). Bularsiz
   # submit qabul qilinadi, judge ishlaydi, lekin natija navbatda qoladi.

@@ -26,6 +26,7 @@ click==8.5.0
     #   click-didyoumean
     #   click-plugins
     #   click-repl
+    #   uvicorn
 click-didyoumean==0.3.1
     # via celery
 click-plugins==1.1.1.2
@@ -57,6 +58,8 @@ fpdf2==2.8.8
     # via -r requirements.txt
 gunicorn==26.2.0
     # via -r requirements.txt
+h11==0.16.0
+    # via uvicorn
 inflection==0.5.1
     # via drf-spectacular
 jmespath==1.1.0
@@ -119,6 +122,8 @@ uritemplate==4.2.0
     # via drf-spectacular
 urllib3==2.7.0
     # via botocore
+uvicorn==0.54.0
+    # via -r requirements.txt
 vine==5.1.0
     # via
     #   amqp
