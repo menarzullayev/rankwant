@@ -19,7 +19,7 @@ gunicorn>=23
 # ASGI serveri — FAQAT `realtime` xizmati uchun (ADR-0029 §5). `api`
 # gunicorn/WSGI bo'lib qoladi: uni ASGI ga ko'chirish butun runtime'ni
 # almashtirardi va nosozlik izolyatsiyasini yo'qotardi.
-uvicorn>=0.34
+uvicorn>=0.53.0
 whitenoise>=6.12.0
 boto3>=1.43.96
 # Sertifikat PDF va QR (ADR-0019). Production image faqat shu fayldan
