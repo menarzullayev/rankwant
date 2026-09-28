@@ -87,7 +87,16 @@ jobs:
     # red (measured on deploy/build). There IS a limit; unlimited is
     # not the goal. 20 min: smoke + bake-off folded in from main CI
     # (2026-09-20); chromium-only smoke used to need 20 on its own.
-    timeout-minutes: 20
+    #
+    # ⚠️ 45 daqiqa (2026-09-28) — 20 YETMAYDI. Ilgari bu job `Stack`
+    # qadamida erta yiqilardi (MinIO obrazi o'chirilgan edi), ya'ni
+    # brauzer matritsasi hech qachon oxirigacha yurmagan va limit
+    # sinovdan o'tmagan. Stack tuzatilgach o'lchandi: matritsa
+    # (`Chromium, Firefox, WebKit, and mobile`) 23 daqiqada ham
+    # tugamadi va 20 daqiqalik chegara uni bekor qildi. 45 — o'lchangan
+    # pastki chegaradan ancha yuqori zaxira; keyingi yurishda haqiqiy
+    # davomiylik ko'rinadi va shundan keyin toraytiriladi.
+    timeout-minutes: 45
     # Compose project is PER JOB. On one runner jobs ran in series so
     # this did not show; with a second runner two jobs sharing a stack
     # name would take each other's containers down with `down -v`.
@@ -299,7 +308,12 @@ jobs:
     # builds are inside it. A 3-minute cap makes the job a guaranteed
     # red (measured on deploy/build). There IS a limit; unlimited is
     # not the goal.
-    timeout-minutes: 10
+    #
+    # ⚠️ 25 daqiqa (2026-09-28) — 10 YETMAYDI. Xuddi `e2e` kabi: job
+    # `Stack` da erta yiqilardi va haqiqiy davomiyligi o'lchanmagan edi.
+    # Stack tuzatilgach o'lchandi — 10 daqiqada ham tugamadi
+    # (10m16s da chegara bekor qildi). 25 — zaxira bilan.
+    timeout-minutes: 25
     # Compose project is PER JOB. On one runner jobs ran in series so
     # this did not show; with a second runner two jobs sharing a stack
     # name would take each other's containers down with `down -v`.
