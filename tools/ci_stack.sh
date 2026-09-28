@@ -156,6 +156,14 @@ build_wanted() {
       docker tag "${project}-api" "${project}-migrate"
       docker tag "${project}-api" "${project}-worker"
       docker tag "${project}-api" "${project}-beat"
+      #: ⚠️ `realtime` ham AYNI obrazdan (`build: *api-build`). Usiz
+      #: CI stack uni ishga tushira olmaydi:
+      #:   Error response from daemon: No such image: rw-<job>-<run>-realtime:latest
+      #: Bu 2026-09-28 da o'lchandi — MinIO obrazi tuzatilgach Nightly'ning
+      #: 4 job'i AYNAN shu xato bilan yiqildi (ya'ni ikkita mustaqil sabab
+      #: ketma-ket ochildi). `deploy.sh` dagi `SERVICES` da `realtime` bor,
+      #: bu ro'yxat esa unga yetib bormagan edi.
+      docker tag "${project}-api" "${project}-realtime"
       ;;
     web)
       # ⚠️ Kontekst — REPO ILDIZI (2026-09-24). `apps/web/Dockerfile`

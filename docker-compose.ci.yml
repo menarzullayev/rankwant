@@ -69,6 +69,15 @@ services:
   web:
     ports: !reset []
 
+  #: ⚠️ `realtime` bazaviy faylda `8001:8001` ni egallaydi — bu JONLI
+  #: stack'ning porti. CI stack (GitHub-hosted runner yoki bir xil host)
+  #: uni band qilsa, Nightly production'ning realtime xizmatiga uriladi
+  #: yoki o'zi ko'tarilmaydi. Qolgan servislar (`api`, `web`, `minio`) shu
+  #: sababdan portlarini reset qiladi — `realtime` o'sha ro'yxatdan
+  #: tushib qolgan edi (2026-09-28 da o'lchandi).
+  realtime:
+    ports: !reset []
+
   # Smoke tarmoq ICHIDA ishlaydi: host portlari kerak emas.
   #
   # ⚠️ `HOST_REPO_ROOT` — bind mount manbai DAEMON tomonida yechiladi.
