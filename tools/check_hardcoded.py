@@ -96,9 +96,18 @@ KEYLIKE = re.compile(r"^[a-z][A-Za-z0-9]*(\.[a-zA-Z][A-Za-z0-9]*)+$")
 #: Capitalised word is NOT an identifier — it is a one-word label
 #: ("Hammasi", "Faol", "Daraja"), and treating it as code silently drops
 #: the shortest and most common UI strings.
+#:
+#: ⚠️ camelCase shoxobchasidagi sinf `[A-Za-z0-9]` EMAS, `[a-z0-9]`.
+#: Sabab — ReDoS (CodeQL `py/redos`, o'lchandi 2026-09-28): `[A-Z]` dan
+#: keyin `[A-Za-z0-9]*` ham katta harfni yuta olardi, ya'ni `(?:...)+`
+#: ning qayerda bo'linishini bir necha xil yo'l bilan moslashtirish
+#: mumkin edi — `aA` + ko'p `A` da eksponensial qaytish. `[a-z0-9]*` da
+#: esa keyingi katta harf MAJBURAN yangi takror boshlaydi ⇒ noaniqlik
+#: yo'q. Mos keladigan to'plam O'ZGARMAYDI (`fooBAR`, `fooB2A` ikkalasi
+#: ham o'tadi) — faqat yo'l bitta qoladi.
 IDENT = re.compile(
     r"^(?:"
-    r"[a-z]+(?:[A-Z][A-Za-z0-9]*)+"
+    r"[a-z]+(?:[A-Z][a-z0-9]*)+"
     r"|[a-z][a-z0-9]*(?:_[a-z0-9]+)+"
     r"|[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+"
     r"|[a-z]{2,}"
@@ -171,7 +180,19 @@ SORT_KEY = re.compile(r"^-?[a-z][a-z0-9_]*$")
 CSS_VALUE = re.compile(r"^(?:clamp|calc|min|max|var|rgba?|hsla?|color-mix)\(|^\(prefers-")
 CSS_VAR = re.compile(r"^--[\w-]+$")
 SVG_PATH = re.compile(r"^[Mm][\d\s.,-]")
-ONLY_INTERP = re.compile(r"^[\s\W]*(?:\$\{[^}]*\}[\s\W]*)+$")
+#: ⚠️ Ichki sinf `[\s\W]` EMAS, ATAYLAB `[^\w$]` + `\$(?!\{)` (CodeQL
+#: `py/redos`, o'lchandi 2026-09-28). Sabab: `[\s\W]` `$` ni ham yuta oladi,
+#: ya'ni u keyingi `${...}` boshlanishi bilan raqobatlashadi; `+` takrori
+#: bilan birga bu eksponensial qaytish beradi — o'lchandi, `'${{}}'` × 26
+#: da **13 146 ms** (tuzatishdan keyin 0.022 ms). `$` faqat `${` ochmasa
+#: "shovqin" hisoblanadi, ya'ni raqobat yo'qoladi.
+#:
+#: ⚠️ Bitta xatti-harakat farqi bor va u ataylab: oxirida ochiq `${` bilan
+#: tugagan satr (`'${a}${'`) endi mos kelmaydi — eski naqsh uni "shovqin"
+#: deb o'qirdi. Bunday satr haqiqiy JS'da yaroqsiz, `check_hardcoded.py`
+#: natijasi esa repo bo'ylab o'zgarmadi (o'lchandi).
+_JUNK = r"(?:[^\w$]|\$(?!\{))*"
+ONLY_INTERP = re.compile(rf"^{_JUNK}(?:\$\{{[^}}]*\}}{_JUNK})+$")
 ALLCAPS = re.compile(r"^[A-Z][A-Z0-9_]{1,}$")
 
 #: Values that are deliberately literal in every language: symbols,

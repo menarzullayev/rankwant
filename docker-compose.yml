@@ -60,13 +60,40 @@ services:
 
   minio:                      # S3/R2 o'rniga local
     logging: *default-logging
-    # ⚠️ `minio/minio` DOCKER HUB'DA YO'Q — 2025-yilda olib tashlangan.
-    # `latest` bilan yozilsa `docker pull` `pull access denied for
-    # minio/minio` beradi va CI'ning `smoke` job'i shu yerda yiqiladi
-    # (o'lchandi 2026-09-14). Rasmiy joy — quay.io. Qolgan obrazlar
-    # (`postgres`, `redis`, `hello-world`) Docker Hub'dan anonim
-    # yuklanadi, ya'ni bu faqat MinIO'ga tegishli.
-    image: quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z
+    # ⚠️⚠️ MinIO rasmiy ochiq obrazi ENDI YO'Q. 2026-09-11/12 da MinIO
+    # ochiq manbali community nashrini to'xtatdi va obrazlarni o'chirdi:
+    #   * `minio/minio` (Docker Hub) — 404, 2026-09-12 dan beri;
+    #   * `quay.io/minio/minio` — HAR BIR teg uchun 401 (repo yopilgan).
+    # O'lchandi 2026-09-28: `docker pull quay.io/minio/minio:<teg>` →
+    #   `unexpected status from HEAD request ... 401 UNAUTHORIZED`
+    # ⚠️ Quay YO'Q teg uchun 404 emas, **401** qaytaradi — shuning uchun
+    # xato kredensial muammosiga o'xshaydi va uni qidirish chalg'itadi.
+    # Boshqa quay.io repo'lari (`prometheus/node-exporter`) shu daqiqada
+    # anonim yuklanadi, ya'ni bu quay.io ning umumiy cheklovi EMAS.
+    #
+    # Shu sabab nightly'ning TO'RT jobi (`Chaos`, `Load`, `E2E`,
+    # `Latency`) `Stack` qadamida yiqilardi: runner — GitHub-hosted
+    # (`ubuntu-latest`), kesh yo'q, `minio` majburiy pull qilinadi.
+    # Lokal stack esa keshdagi obraz bilan ishlab turaveradi
+    # (`a1ea29fa2835`) — nosozlik shuning uchun ko'rinmasdi.
+    #
+    # Yechim: Bitnami'ning arxiv nashri — o'sha MinIO versiyasi
+    # (2025.4.22), ichida `minio`, `mc`, `bash`, `curl` bor (o'lchandi).
+    # ⚠️ `bitnamilegacy` — ARXIV: yangilanish kelmaydi. Bu ataylab:
+    # muqobil yo'q, `minio-init` esa `mc` va `bash` ga tayanadi.
+    # ⚠️ Obraz HAM `minio-init` da ishlatiladi — ikkalasi birga
+    # ko'chirilishi shart.
+    image: bitnamilegacy/minio:2025.4.22-debian-12-r0
+    # ⚠️ Bitnami obrazi boshqa entrypoint'ga ega
+    # (`/opt/bitnami/scripts/minio/entrypoint.sh`), ya'ni quyidagi
+    # `server /data ...` buyrug'i argument sifatida talqin qilinardi.
+    # `minio` ni entrypoint qilib beramiz — buyruq o'zgarmaydi.
+    entrypoint: ['minio']
+    # ⚠️ `miniodata` volume ROOT egasida: eski obraz root bilan ishlagan
+    # (o'lchandi: `id` → uid=0, `/data` → root:root). Bitnami sukuti esa
+    # 1001 ⇒ mavjud volume'ga YOZOLMAYDI va stack ko'tarilmaydi. `0`
+    # amaldagi xatti-harakatni saqlaydi, ya'ni volume migratsiyasi kerak emas.
+    user: '0'
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: rankwant
@@ -106,9 +133,16 @@ services:
   # `service_completed_successfully` bilan shu service'ga bog'lanadi.
   minio-init:
     logging: *default-logging
-    image: quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z
+    # ⚠️ `minio` bilan BIR XIL obraz — ikkalasi birga ko'chiriladi (yuqoriga
+    # qarang: rasmiy MinIO obrazi 2026-09 dan beri yuklanmaydi).
+    image: bitnamilegacy/minio:2025.4.22-debian-12-r0
     restart: 'no'
+    # ⚠️ `bash` + `mc` kerak — Bitnami arxivida ikkisi ham bor (o'lchandi).
     entrypoint: ['bash', '/init/minio-init.sh']
+    # ⚠️ Skript `/done/flag` ni yaratadi (healthcheck shuni kutadi) va
+    # `/tmp` ga policy faylini yozadi. Bitnami sukuti 1001 bo'lsa
+    # `mkdir -p /done` ildizda RUXSAT BERMAYDI ⇒ `user: '0'` shart.
+    user: '0'
     environment:
       # Xuddi shu qiymat judge env'ida — identitet ikki tomonda sinxron
       # (lokal qiymat oshkor: repo'dagi boshqa dev kredensiallar kabi;

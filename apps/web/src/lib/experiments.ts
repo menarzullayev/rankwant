@@ -40,8 +40,17 @@ export function parseVariants(raw: string | undefined, name: string): Variant {
  *  (`lib/flags.ts`). */
 export function variant(name: string): Variant {
   if (typeof document === "undefined") return "a";
+  //: ⚠️ `\\s` — IKKI backslash. Template literal ichida `\s` shunchaki `s`
+  //: bo'lib qoladi (notanish qochirishda backslash tushib ketadi), ya'ni
+  //: naqsh `(?:^|;s*)` bo'lib qolardi va bo'sh joyni emas, `s` harfini
+  //: qidirardi. Brauzer cookie'larni `"; "` bilan ajratadi ⇒ tajriba
+  //: cookie'i BIRINCHI bo'lmasa topilmasdi va variant jimgina `"a"` ga
+  //: qaytardi. O'lchandi (2026-09-28, Node):
+  //:   "other=1; rw_exp=b" → xato naqsh: topilmadi · `\\s` bilan: "b"
+  //: Xuddi shu naqsh `lib/flags.ts` va `lib/home-cache.ts` da TO'G'RI
+  //: yozilgan (`\\s`) — bu yerdagi yolg'iz nusxa xato edi.
   const raw = document.cookie.match(
-    new RegExp(`(?:^|;\s*)${COOKIE}=([^;]+)`),
+    new RegExp(`(?:^|;\\s*)${COOKIE}=([^;]+)`),
   )?.[1];
   return parseVariant(raw ? decodeURIComponent(raw) : undefined, name);
 }
