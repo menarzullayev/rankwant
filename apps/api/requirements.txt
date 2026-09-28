@@ -21,7 +21,7 @@ gunicorn>=23
 # almashtirardi va nosozlik izolyatsiyasini yo'qotardi.
 uvicorn>=0.53.0
 whitenoise>=6.12.0
-boto3>=1.43.96
+boto3>=1.43.102
 # Sertifikat PDF va QR (ADR-0019). Production image faqat shu fayldan
 # (lock orqali) o'rnatiladi — dev'da qolib ketgan paket deployda yiqiladi.
 fpdf2>=2.8.8
