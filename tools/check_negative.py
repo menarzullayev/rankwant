@@ -3586,7 +3586,7 @@ def neg_decisions_eslint_is_nine() -> tuple[bool, str]:
     """ESLint 9 ga qaytsa tutilsin."""
     return _decision_broken(
         "apps/web/package.json",
-        '"eslint": "^10.10.0"',
+        '"eslint": "^10.11.0"',
         '"eslint": "^9.39.5"',
         "ESLint 10 typescript parser",
     )

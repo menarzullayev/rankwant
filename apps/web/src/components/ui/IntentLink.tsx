@@ -42,19 +42,25 @@ export function IntentLink<RouteType>({
   ...props
 }: LinkProps<RouteType> & AnchorProps) {
   const [intent, setIntent] = useState(false);
+  //: ⚠️ Handler parametrlari ATAYLAB aniq tiplangan. `next` 16.3.6 da
+  //: `LinkProps` yana o'zgardi va `onMouseEnter`/`onTouchStart` ni o'zida
+  //: e'lon qildi; `AnchorProps` bilan kesishmada natija `any` ga cho'kdi
+  //: va TS7006 chiqdi (`Parameter 'event' implicitly has an 'any' type`).
+  //: Inferensiyaga tayanmaymiz — shunda `LinkProps` yana o'zgarsa ham
+  //: bu fayl jim buzilmaydi.
   return (
     <Link
       {...props}
       prefetch={intent ? null : false}
-      onMouseEnter={(event) => {
+      onMouseEnter={(event: React.MouseEvent<HTMLAnchorElement>) => {
         setIntent(true);
         onMouseEnter?.(event);
       }}
-      onFocus={(event) => {
+      onFocus={(event: React.FocusEvent<HTMLAnchorElement>) => {
         setIntent(true);
         onFocus?.(event);
       }}
-      onTouchStart={(event) => {
+      onTouchStart={(event: React.TouchEvent<HTMLAnchorElement>) => {
         setIntent(true);
         onTouchStart?.(event);
       }}

@@ -83,7 +83,9 @@ export default function CodeEditor({
         <Monaco
           language={language}
           value={value}
-          onChange={(next) => onChange(next ?? "")}
+          //: ⚠️ Aniq tip — `next` 16.3.6 dan keyin inferensiya `any` ga
+          //: tushdi (TS7006). Monaco `undefined` ham beradi.
+          onChange={(next: string | undefined) => onChange(next ?? "")}
           theme={dark ? "vs-dark" : "vs"}
           options={{
             automaticLayout: true,
