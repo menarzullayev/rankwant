@@ -300,7 +300,15 @@ jobs:
         run: CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm smoke
       - name: Bake-off — validator cases (real nsjail)
         if: ${{ vars.STAGING_URL == '' }}
-        timeout-minutes: 3
+        # ⚠️ 10 daqiqa (2026-09-28, ilgari 3). Bu qadam avval HECH QACHON
+        # yurmagan: undan oldingi `Visual regression` doim yiqilardi va
+        # `Bake-off` `skipped` bo'lib qolardi. Visual gate tuzatilgach
+        # (run 36431014874) u birinchi marta yurdi va 3 daqiqada TIMEOUT
+        # bo'ldi — 21 ta case uchun 11.2 s o'lchangan edi (2026-09-16),
+        # ya'ni 3 daqiqa yetmagan vaqt obraz qurishga ketadi. 10 — o'lchangan
+        # vaqt emas, xavfsiz zaxira; keyingi yurishda haqiqiy davomiylik
+        # ko'rinadi va toraytiriladi.
+        timeout-minutes: 10
         # ADR-0020: a bad input is rejected BEFORE a submission runs.
         # Full suite (21 cases), measured 2026-09-16 — all in 11.2 s.
         # After E2E: worker/beat would drain harness results if left up.
