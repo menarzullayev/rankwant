@@ -5,7 +5,7 @@ pytest-cov>=6
 pytest-xdist>=3.8.0
 mypy>=2.3.1
 django-stubs[compatible-mypy]>=6.1.1
-djangorestframework-stubs>=3.15
+djangorestframework-stubs>=3.18.1
 ruff==0.16.6
 hypothesis>=6.168.1
 factory-boy>=3.3
