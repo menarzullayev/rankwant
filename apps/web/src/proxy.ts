@@ -109,6 +109,16 @@ export function proxy(request: NextRequest): NextResponse {
   // ga qo'shadi va o'zining inline bootstrap skriptlariga yozadi;
   // so'rov sarlavhasi orqali render'ga ham yetib boradi.
   const nonce = makeNonce();
+
+  //: Sahifa haqiqatan HTTPS orqali kelganmi — `upgrade-insecure-requests`
+  //: shunga bog'liq (pastda). Ichki hostlar (`web`, `localhost`, …) HTTP
+  //: ustida ishlaydi: CI stack production build'ni `http://web:3000` da
+  //: yuritadi, ya'ni `NODE_ENV` "production" bo'ladi-yu, transport HTTP
+  //: qoladi. O'sha holatda direktiva qo'shilsa brauzer skriptlarni
+  //: `https://web:3000/...` ga ko'tarib sindiradi va Next.js
+  //: gidratatsiyasi ishlamay qoladi (o'lchandi 2026-09-28).
+  const secure = !INTERNAL.test(host);
+
   const requestHeaders = new Headers(request.headers);
   // ⚠️ `x-nonce` ataylab `x-` bilan: Next faqat shu prefiksli
   // sarlavhalarni render'ga uzatadi.
@@ -214,7 +224,7 @@ export function proxy(request: NextRequest): NextResponse {
   }
   response.headers.set(
     "Content-Security-Policy",
-    contentSecurityPolicy(nonce, process.env.NODE_ENV !== "production"),
+    contentSecurityPolicy(nonce, process.env.NODE_ENV !== "production", secure),
   );
   return response;
 }

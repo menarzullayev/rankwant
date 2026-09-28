@@ -48,8 +48,14 @@ export function makeNonce(): string {
  *  @param dev    Ishlab chiqish rejimi — `eval` va `ws:` qo'shiladi.
  *                Next dev'da HMR `eval` ishlatadi va `ws://` orqali
  *                ulanadi; ularsiz sahifa umuman ochilmaydi.
+ *  @param secure So'rov HAQIQATAN HTTPS orqali kelganmi. `false` bo'lsa
+ *                `upgrade-insecure-requests` qo'shilmaydi.
  */
-export function contentSecurityPolicy(nonce: string, dev: boolean): string {
+export function contentSecurityPolicy(
+  nonce: string,
+  dev: boolean,
+  secure: boolean,
+): string {
   const scriptSrc = [
     "'self'",
     `'nonce-${nonce}'`,
@@ -87,10 +93,20 @@ export function contentSecurityPolicy(nonce: string, dev: boolean): string {
   };
 
   const parts = Object.entries(directives).map(([k, v]) => `${k} ${v.join(" ")}`);
-  // `upgrade-insecure-requests` — faqat productionda: dev HTTP ustida
-  // ishlaydi (`localhost:3000`), u yerda bu direktiva sahifani
-  // HTTPS'ga majburlab sindiradi.
-  if (!dev) parts.push("upgrade-insecure-requests");
+  // `upgrade-insecure-requests` — faqat sahifa HAQIQATAN HTTPS bo'lsa.
+  //
+  // ⚠️ Ilgari shart `!dev` edi va bu YETARLI EMAS (o'lchandi 2026-09-28).
+  // CI stack — production build, lekin HTTP ustida (`http://web:3000`),
+  // ya'ni `NODE_ENV === "production"` ⇒ direktiva qo'shilardi ⇒ brauzer
+  // HAR BIR skript so'rovini `https://web:3000/_next/...` ga ko'tarardi
+  // va ular `net::ERR_SSL_PROTOCOL_ERROR` bilan yiqilardi ⇒ Next.js
+  // gidratatsiyasi umuman ishlamasdi (`__reactFiber$` paydo bo'lmasdi) ⇒
+  // brauzer testlarining bosishga tayanadigan 9 tasi yiqilardi.
+  //
+  // ⚠️ `localhost` bu ta'sirdan MUSTASNO (brauzer uni ishonchli deb
+  // biladi), shuning uchun nuqson faqat `web` hostida ko'rinardi —
+  // lokal `localhost:3000` da hammasi joyida edi.
+  if (secure) parts.push("upgrade-insecure-requests");
   return parts.join("; ");
 }
 
