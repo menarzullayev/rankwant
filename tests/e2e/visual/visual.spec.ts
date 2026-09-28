@@ -38,7 +38,13 @@ import { expect, test, type Page } from "@playwright/test";
 const SHOT = {
   animations: "disabled",
   caret: "hide",
-  maxDiffPixelRatio: 0.05,
+  // ⚠️ 2% (2026-09-28). 5% noto'g'ri tashxis asosida qo'yilgan edi:
+  // sabab shrift rendering farqi deb o'ylangan, aslida `Smoke` visual'dan
+  // OLDIN yurib stack'ni ifloslantirgan (qarang: nightly.yml, run
+  // 36431014874). Tartib tuzatilgach toza stack'da snapshot'lar BAYT-BAYT
+  // bir xil chiqdi — ya'ni diff ~0%. 2% — kichik siljishlar uchun zaxira,
+  // lekin haqiqiy dizayn regressiyasini hali ham ushlaydi.
+  maxDiffPixelRatio: 0.02,
   threshold: 0.2,
 } as const;
 
