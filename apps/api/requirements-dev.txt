@@ -8,5 +8,5 @@ django-stubs[compatible-mypy]>=6.1.1
 djangorestframework-stubs>=3.15
 ruff==0.16.6
 hypothesis>=6.168.1
-factory-boy>=3.3
+factory-boy>=3.3.3
 pip-audit>=2.10.1
