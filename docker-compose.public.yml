@@ -111,6 +111,21 @@ services:
     logging: *default-logging
     ports: !reset []
 
+  # ⚠️ ADR-0028 `judge-queue` ni qo'shdi, lekin bu overlay uni SANAMAGAN.
+  # Natijada unga `restart: unless-stopped` berilmadi va Docker sukuti
+  # (`no`) qoldi — qolgan HAMMA servisda `unless-stopped` bor.
+  #
+  # Oqibati: har mashina qayta yuklanishida `judge-queue` qaytmasdi,
+  # `judge` esa abadiy crash loop'da qolardi:
+  #   dial tcp: lookup judge-queue on 127.0.0.11:53: server misbehaving
+  #
+  # O'lchandi: 2026-09-25 (30 soat ishlamagan) va 2026-09-28 (yana).
+  # Ya'ni bir martalik emas — HAR qayta yuklashda takrorlanardi va
+  # sabab ko'rinmasdi, chunki qolgan konteynerlar sog'lom ko'rinadi.
+  judge-queue:
+    <<: *restart
+    logging: *default-logging
+
   migrate:
     logging: *default-logging
     environment:
