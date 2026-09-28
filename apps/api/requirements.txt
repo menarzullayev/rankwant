@@ -7,7 +7,7 @@
 # ya'ni hamma bir xil versiyani oladi. Yangilash:
 #   uv pip compile requirements.txt -o requirements.lock
 #   uv pip compile requirements-dev.txt -o requirements-dev.lock
-Django>=5.2.17,<6.0
+Django>=6.1.1,<7.0
 djangorestframework>=3.18.1
 drf-spectacular>=0.30.0
 django-filter>=24
