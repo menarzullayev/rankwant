@@ -195,12 +195,6 @@ jobs:
             python manage.py seed_demo
           CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml restart web
           CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait web
-      - name: Smoke
-        if: ${{ vars.STAGING_URL == '' }}
-        timeout-minutes: 5
-        # Critical path: submit → Redis → judge → verdict. Moved off
-        # main CI (2026-09-20): the stack is already up here.
-        run: CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm smoke
       - uses: actions/setup-node@v7
         with:
           node-version: '22'
@@ -288,6 +282,22 @@ jobs:
             tests/e2e/visual/**/*-actual.png
           if-no-files-found: ignore
           retention-days: 7
+      # ⚠️ Smoke SHU YERDA — visual qadamlardan KEYIN. Sabab: smoke
+      # `submit → Redis → judge → verdict` yuritadi, ya'ni stack'ga
+      # yechim qo'shadi va `/rating`, `/profile`, `/problems`
+      # sahifalarining ko'rinishini o'zgartiradi. Ilgari smoke
+      # visual'dan OLDIN yurardi va pixel diff shu ifloslangan holat
+      # bilan solishtirilardi — natijada 5% threshold ham yetmasdi.
+      # Tasdiq: toza stack'da (`refresh-visual` workflow'i, run
+      # 36428814887) snapshot'lar commit'dagilar bilan BAYT-BAYT
+      # BIR XIL chiqdi — ya'ni baseline'lar to'g'ri, muammo tartibda
+      # edi. Visual endi toza (seed qilingan) stack'da yuradi.
+      - name: Smoke
+        if: ${{ vars.STAGING_URL == '' }}
+        timeout-minutes: 5
+        # Critical path: submit → Redis → judge → verdict. Moved off
+        # main CI (2026-09-20): the stack is already up here.
+        run: CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm smoke
       - name: Bake-off — validator cases (real nsjail)
         if: ${{ vars.STAGING_URL == '' }}
         timeout-minutes: 3
