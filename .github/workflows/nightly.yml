@@ -195,7 +195,7 @@ jobs:
       # mounted from the repo, so the artifact upload below picks them up.
       - name: Upload visual diffs
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: visual-diffs
           path: |
