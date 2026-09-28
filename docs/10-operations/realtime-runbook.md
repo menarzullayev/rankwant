@@ -9,9 +9,34 @@ nima qilinadi.
 
 ## 1. Tunnel (HOST darajasidagi o'zgarish)
 
-⚠️ **Bu qadam repo'dan tashqarida** — `/etc/cloudflared/config.yml` (Windows:
-`%USERPROFILE%\.cloudflared\`). Usiz `realtime` konteyneri ishlaydi, lekin
-tashqaridan ko'rinmaydi.
+✅ **BAJARILGAN — 2026-09-28.** `C:\Users\nsn\.cloudflared\config.yml` ga
+`rankwant.uz` va `www.rankwant.uz` uchun `^/api/v1/(events|realtime)/` →
+`http://127.0.0.1:8302` qatorlari qo'shildi va `cloudflared` qayta ishga
+tushirildi (nusxa: `config.yml.bak-20260928`).
+
+⚠️ **`cloudflared` konfiguratsiyani HOT-RELOAD QILMAYDI** — o'lchandi
+(2026-09-28): fayl tahriridan keyin 30 s kutildi, `/api/v1/events/` hamon
+`404` edi. Qayta ishga tushirish SHART:
+
+```powershell
+$exe = 'C:\Program Files (x86)\cloudflared\cloudflared.exe'
+$cfg = Join-Path $env:USERPROFILE '.cloudflared\config.yml'
+$work = 'D:\Linux\Web_Projects\rankwant\.handoff'
+Get-Process cloudflared -ErrorAction SilentlyContinue | Stop-Process -Force
+Start-Sleep 3
+$p = Start-Process -FilePath $exe `
+  -ArgumentList @('tunnel','--config',$cfg,'--logfile',(Join-Path $work 'cloudflared.log'),'run') `
+  -WindowStyle Hidden -PassThru
+Set-Content -Path (Join-Path $work 'cloudflared.pid') -Value $p.Id
+```
+
+⚠️ **"RankWant Tunnel Monitor"** vazifasi (har 5 daqiqa, `-Loop` siz) tunnelni
+o'zi ko'taradi — lekin 5 daqiqagacha kutish demak. Yuqoridagi qo'lda qayta
+ishga tushirish shu kutishni yo'q qiladi va monitor bilan bir xil yo'l/pid
+faylini ishlatadi.
+
+**Qator tartibi quyida saqlanadi — yangi host qo'shilsa shu ko'rinishda
+takrorlanadi.**
 
 `ingress` ro'yxatiga `web` va `api` dan **oldin** qo'shiladi:
 
