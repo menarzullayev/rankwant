@@ -3558,10 +3558,15 @@ def neg_decisions_typecheck_js_tsc() -> tuple[bool, str]:
 
 
 def neg_decisions_types_node_26() -> tuple[bool, str]:
-    """`@types/node` 26 ga chiqsa tutilsin — runtime hali 22."""
+    """`@types/node` 26 ga chiqsa tutilsin — runtime hali 22.
+
+    ⚠️ Langar `apps/web/package.json` dagi ANIQ versiya satri. Uni bump
+    qilganda bu yer ham yangilanishi shart, aks holda test «langar
+    topilmadi» deb yiqiladi — qo'riqchi o'zini qo'riqlaydi.
+    """
     return _decision_broken(
         "apps/web/package.json",
-        '"@types/node": "22.20.3"',
+        '"@types/node": "22.20.4"',
         '"@types/node": "26.6.1"',
         "@types/node runtime bilan",
     )

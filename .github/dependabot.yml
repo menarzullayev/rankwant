@@ -8,7 +8,15 @@ updates:
     schedule: { interval: weekly }
     open-pull-requests-limit: 5
   - package-ecosystem: npm
-    directory: /apps/web
+    # ⚠️ `/` — WORKSPACE ILDIZI, `/apps/web` emas. 2026-09-24 da
+    # `apps/web/package-lock.json` o'chirildi va root lockfile yagona
+    # haqiqat bo'ldi (CLAUDE.md shu sana). Lekin bu qator yangilanmagan
+    # edi: Dependabot `apps/web/package.json` ni tahrirlar, root
+    # `package-lock.json` esa tegilmasdi — natijada CI'da
+    #   `npm ci` ... Missing: @types/node@22.20.4 from lock file
+    # va PR yiqilardi. Ildizdan o'qilganda Dependabot lockfile'ni ham
+    # o'zi yangilaydi.
+    directory: /
     schedule: { interval: weekly }
     open-pull-requests-limit: 5
     ignore:
