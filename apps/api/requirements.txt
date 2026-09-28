@@ -15,7 +15,7 @@ psycopg[binary]>=3.2
 redis>=5.2
 celery>=5.4
 django-cors-headers>=4.9.0
-gunicorn>=23
+gunicorn>=26.2.0
 # ASGI serveri — FAQAT `realtime` xizmati uchun (ADR-0029 §5). `api`
 # gunicorn/WSGI bo'lib qoladi: uni ASGI ga ko'chirish butun runtime'ni
 # almashtirardi va nosozlik izolyatsiyasini yo'qotardi.
