@@ -117,7 +117,13 @@ def _check_database() -> str:
     try:
         connection.ensure_connection()
     except Exception as exc:
-        return type(exc).__name__
+        # ⚠️ Istisno SINFI nomi tashqariga chiqmasin. `/api/v1/health/`
+        # `AllowAny` — uni har kim ko'radi, `OperationalError` esa DB
+        # drayverini va nosozlik turini oshkor qiladi. Javobda faqat
+        # `"error"` qoladi; sinf nomi logga yoziladi — nosozlikni
+        # aniqlash uchun shu yetarli (tekshiruv nomi `checks` da bor).
+        log.warning("health: database tekshiruvi yiqildi: %s", type(exc).__name__)
+        return "error"
     return "ok"
 
 
@@ -125,7 +131,8 @@ def _check_redis() -> str:
     try:
         redis.Redis.from_url(settings.REDIS_URL, socket_connect_timeout=2).ping()
     except Exception as exc:
-        return type(exc).__name__
+        log.warning("health: redis tekshiruvi yiqildi: %s", type(exc).__name__)
+        return "error"
     return "ok"
 
 
