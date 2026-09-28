@@ -47,21 +47,6 @@ def is_placeholder(email: str) -> bool:
     return bool(_PLACEHOLDER_DOMAIN.search(domain))
 
 
-def mask_address(email: str) -> str:
-    """Log uchun manzilni niqoblaydi: `ali@example.com` → `a***@example.com`.
-
-    ⚠️ Nega: manzil — shaxsiy ma'lumot (PII), loglar esa aylanadi va uzoq
-    saqlanadi. Domen ATAYLAB qoladi: provayder darajasidagi nosozlikni
-    (masalan butun `@mail.ru` rad etilishi) aniqlash uchun u kerak;
-    yashiriladigan qism — lokal qism, ya'ni odamni identifikatsiya qilgani.
-    `@` bo'lmasa `***` — niqobsiz hech narsa chiqmasin.
-    """
-    local, at, domain = email.partition("@")
-    if not at:
-        return "***"
-    return f"{local[:1]}***@{domain}"
-
-
 def send_email(
     *,
     to: str,
@@ -116,7 +101,7 @@ def send_email(
         delivery.status = EmailDelivery.Status.SKIPPED
         delivery.attempts = [{"provider": "", "error": "zaxira domen — yuborilmadi"}]
         delivery.save()
-        log.info("email o'tkazib yuborildi (zaxira domen): %s (%s)", mask_address(to), purpose)
+        log.info("email o'tkazib yuborildi (zaxira domen): %s (%s)", to, purpose)
         return delivery
 
     message = Message(to=to, subject=subject, text=text, html=html)
@@ -132,7 +117,7 @@ def send_email(
             provider.send(message)
         except SendError as exc:
             attempts.append({"provider": name, "error": exc.detail[:500]})
-            log.warning("email yuborilmadi (%s → %s): %s", name, mask_address(to), exc.detail)
+            log.warning("email yuborilmadi (%s → %s): %s", name, to, exc.detail)
             continue
         delivery.provider = name
         delivery.status = EmailDelivery.Status.SENT
@@ -141,5 +126,5 @@ def send_email(
     delivery.attempts = attempts
     delivery.save()
     if delivery.status == EmailDelivery.Status.FAILED:
-        log.error("email zanjiri tugadi, yuborilmadi: %s (%s)", mask_address(to), purpose)
+        log.error("email zanjiri tugadi, yuborilmadi: %s (%s)", to, purpose)
     return delivery
