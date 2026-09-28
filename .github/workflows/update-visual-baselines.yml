@@ -11,6 +11,9 @@ name: Update Visual Baselines
 
 on:
   workflow_dispatch:
+  # Vaqtinchalik: GitHub yangi workflow'ni faqat push'dan keyin registratsiya qiladi
+  push:
+    branches: [fix/visual-baseline-push-trigger]
 
 permissions:
   contents: write
