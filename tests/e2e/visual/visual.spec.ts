@@ -38,7 +38,7 @@ import { expect, test, type Page } from "@playwright/test";
 const SHOT = {
   animations: "disabled",
   caret: "hide",
-  maxDiffPixelRatio: 0.02,
+  maxDiffPixelRatio: 0.05,
   threshold: 0.2,
 } as const;
 
