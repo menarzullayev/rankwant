@@ -1,4 +1,7 @@
-# WP3: User.origin — foydalanuvchi kelib chiqishi (North Star metrikalar)
+# WP3: User.origin — foydalanuvchi kelib chiqishi (North Star metrikalar).
+# ⚠️ 0027 raqami ataylab: origin/main'da 0026 `0026_client_log` bilan band
+# (lokal WP3 commit'i eski tarixdan 0026 ni olgandi — merge'da graf
+# vilqalanardi; QA 2026-09-29 da o'lchandi va raqamlar ko'chirildi).
 
 from django.db import migrations, models
 

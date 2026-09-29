@@ -4,19 +4,17 @@ from __future__ import annotations
 
 from django.db import migrations
 
+from judging.migrations._m10_heuristic import judge_meta_choice as _judge_meta_choice
+
 
 def _relabel_re_legacy(apps, schema_editor) -> None:
-    """18 163 ta tarixiy RE qatorni RE_SIGNAL/RE_EXIT ga ajratish.
+    """Tarixiy RE qatorlarni RE_SIGNAL/RE_EXIT ga ajratish (M10).
 
-    Judge hozir RE_SIGNAL/RE_EXIT chiqaradi, lekin ajratishdan oldingi
-    qatorlar bazada RE sifatida qolgan. Heuristik:
-
-    - `details` JSON'da `signal` kaliti bo'lsa → RE_SIGNAL
-    - `details` JSON'da `exit_code` kaliti bo'lsa → RE_EXIT
-    - Aks holda → RE_SIGNAL (default, signal xatolar ko'proq uchragan)
-
-    ``details`` maydoni barcha model'da yo'q (keyin qo'shilgan);
-    mavjud bo'lmasa default RE_SIGNAL ishlatiladi.
+    Jonli bazada o'lchandi (2026-09-29): `verdict='RE'` qatorlar soni
+    **0** — hujjatlardagi 18 163 raqami joriy bazaga tegishli emas.
+    Ya'ni migratsiya odatda hech narsani o'zgartirmaydi; boshqa muhit
+    (staging/RESTORE qilingan eski dump) da esa quyidagi heuristika
+    ishlaydi.
     """
     Attempt = apps.get_model("judging", "Attempt")
 
@@ -34,20 +32,11 @@ def _relabel_re_legacy(apps, schema_editor) -> None:
     for start in range(0, total, batch_size):
         batch_ids = pending[start : start + batch_size]
         for attempt in Attempt.objects.filter(pk__in=batch_ids).iterator():
-            details = getattr(attempt, "details", None) or {}
-            if not isinstance(details, dict):
-                details = {}
-
-            if "signal" in details:
-                new_verdict = "RE_SIGNAL"
-                re_signal_count += 1
-            elif "exit_code" in details:
-                new_verdict = "RE_EXIT"
+            new_verdict = _judge_meta_choice(getattr(attempt, "judge_meta", None))
+            if new_verdict == "RE_EXIT":
                 re_exit_count += 1
             else:
-                new_verdict = "RE_SIGNAL"
                 re_signal_count += 1
-
             Attempt.objects.filter(pk=attempt.pk).update(verdict=new_verdict)
 
     print(
@@ -64,9 +53,7 @@ def _reverse_relabel(apps, schema_editor) -> None:
     yo'qotishiga olib boradi.
     """
     Attempt = apps.get_model("judging", "Attempt")
-    affected = Attempt.objects.filter(verdict__in=("RE_SIGNAL", "RE_EXIT")).update(
-        verdict="IE"
-    )
+    affected = Attempt.objects.filter(verdict__in=("RE_SIGNAL", "RE_EXIT")).update(verdict="IE")
     print(f"M10 (reverse): {affected} ta qator IE ga o'tkazildi (RE_SIGNAL/RE_EXIT -> IE)")
 
 

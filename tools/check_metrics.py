@@ -49,7 +49,14 @@ def run_query(conn, sql: str) -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="North Star metrikalar tekshiruvi")
-    parser.add_argument("--self-test", action="store_true", help="Sintaksis va chiqishni sinaydi (DB kerak emas)")
+    parser.add_argument(
+        "--self-test", action="store_true", help="Sintaksis va chiqishni sinaydi (DB kerak emas)"
+    )
+    parser.add_argument(
+        "--allow-empty",
+        action="store_true",
+        help="Bo'sh bazani xato sanama (migrate qilingan, seed'siz baza — CI test bazasi)",
+    )
     args = parser.parse_args()
 
     if args.self_test:
@@ -71,14 +78,17 @@ def main() -> int:
         conn_kwargs["password"] = parsed.password
 
     try:
-        import psycopg2
+        # `psycopg` (v3) — requirements'dagi yagona Postgres drayveri.
+        # Ilgari `psycopg2` import qilingandi — u o'rnatilmagan va
+        # CI'da bu qadam ImportError bilan yiqilar edi (QA 2026-09-29).
+        import psycopg
     except ImportError:
-        print("error: psycopg2 o'rnatilmagan")
+        print("error: psycopg o'rnatilmagan")
         return 1
 
     try:
-        conn = psycopg2.connect(**conn_kwargs)
-    except Exception as exc:  # noqa: BLE001
+        conn = psycopg.connect(**conn_kwargs)
+    except Exception as exc:
         print(f"error: bazaga ulanib bo'lmadi — {exc}")
         return 1
 
@@ -99,11 +109,21 @@ def main() -> int:
 
         errors: list[str] = []
 
+        # North Star o'zi nol bo'lsa — darvoza ma'nosiz (mutatsiya:
+        # `WHERE origin = 'not_real'` ham exit 0 berardi). Bo'sh bazada
+        # (--allow-empty) bu mezon kechiriladi.
+        if north_star == 0 and not args.allow_empty:
+            errors.append("North Star (origin='real') = 0 — real foydalanuvchi yo'q")
+
         if null_count > 0:
             errors.append(f"NULL origin lar topildi: {null_count}")
 
-        if total == 0:
-            errors.append("Bazada umuman foydalanuvchi yo'q")
+        if total == 0 and not args.allow_empty:
+            # CI'da `rankwant_test` migrate qilinadi, lekin seed qilinmaydi —
+            # bo'sh baza u yerda NORMA. Bo'sh baza faqat shu bayroq bilan
+            # kechiriladi (CTO qarori 2026-09-29): joriy muhit o'chirib
+            # yuborilgan bo'lsa, "--allow-empty" siz ham exit 1 beradi.
+            errors.append("Bazada umuman foydalanuvchi yo'q (--allow-empty bilan kechiriladi)")
 
         # Seed foydalanuvchilar mavjud bo'lsa demo > 0 bo'lishi kerak
         # Bu faqat ogohlantirish — biznes qoidasi emas

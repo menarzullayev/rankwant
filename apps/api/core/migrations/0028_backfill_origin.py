@@ -17,7 +17,7 @@ def _noop(apps, schema_editor) -> None:
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("core", "0026_user_origin"),
+        ("core", "0027_user_origin"),
     ]
 
     operations = [

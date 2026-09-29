@@ -199,11 +199,27 @@ jobs:
         run: python manage.py makemigrations --check --dry-run
         working-directory: apps/api
 
+      # Applies ALL migrations to `rankwant_test` (schema + data), so the
+      # metrics gate below sees a real `core_user` table. M10 (`verdict
+      # relabel`) is a no-op here (0 RE rows), M3 backfill runs on 0 users
+      # — both print their audit line and exit 0.
+      - name: Migrate the test database
+        if: steps.check.outputs.ready == 'true'
+        env:
+          DATABASE_URL: postgres://postgres:postgres@${{ steps.svc.outputs.host }}:${{ job.services.postgres.ports['5432'] }}/rankwant_test
+          DJANGO_SECRET_KEY: ci-django-secret
+        run: python manage.py migrate --noinput
+        working-directory: apps/api
+
+      # North Star SQL over a migrated (but unseeded) test DB: the table
+      # exists, zero users is the expected state there — hence
+      # `--allow-empty`. A real environment with zero users still fails
+      # the gate (the flag exists only for this CI database).
       - name: North Star metrics (User.origin)
         if: steps.check.outputs.ready == 'true'
         env:
           DATABASE_URL: postgres://postgres:postgres@${{ steps.svc.outputs.host }}:${{ job.services.postgres.ports['5432'] }}/rankwant_test
-        run: python3 tools/check_metrics.py
+        run: python3 tools/check_metrics.py --allow-empty
 
   # ⚠️ Besides building web, this job also runs the CHECK SUITE
   # (`check_i18n`, `check_i18n_runtime`, `check_negative`, `check_contrast`).

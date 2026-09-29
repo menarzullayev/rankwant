@@ -13,14 +13,18 @@ from typing import Any
 from django.contrib.auth.hashers import is_password_usable
 from django.core.management.base import BaseCommand
 from django.db import transaction
-from django.db.models import Q, QuerySet
+from django.db.models import QuerySet
 
 from core.models import User
 
-#: Demo email domenlari
-DEMO_DOMAINS = ("@example.invalid", "@example.com")
-
-#: Demo username prefikslari
+#: Demo username prefikslari — YAGONA haqiqiy marker.
+#: O'lchandi (QA 2026-09-29): `seed_stress.py` neytronlarni EMAIL'SIZ
+#: yaratadi (`bulk_create`, email maydoni yo'q), `prune_test_users.py` ham
+#: prefiks bo'yicha o'chiradi, `seed_contest_scale.py` pool'ni ham
+#: `username__startswith="neytron_"` bilan tanlaydi. Email-domenga tayanadigan
+#: hech qanday yozuv yo'q — domen qoidasi o'ylab topilgan edi va uni olib
+#: tashladik: `@example.com` zaxira domen bo'lsa-da, qoida faqat xayoliy
+#: holatlarni ushlaydi va real user'ni demo'ga aylantirib yuborardi.
 DEMO_PREFIXES = ("neytron_", "stress_")
 
 #: Bir partiyada yangilanadigan qatorlar soni
@@ -28,25 +32,21 @@ BATCH_SIZE = 2000
 
 
 def _is_demo(user: User) -> bool:
-    """Email yoki username bo'yicha demo foydalanuvchini aniqlaydi."""
-    email = (user.email or "").lower()
-    if any(email.endswith(d) for d in DEMO_DOMAINS):
-        return True
+    """Stress/demo foydalanuvchini username prefiksi bo'yicha aniqlaydi."""
     username = user.username.lower()
-    if any(username.startswith(p) for p in DEMO_PREFIXES):
-        return True
-    return False
+    return any(username.startswith(p) for p in DEMO_PREFIXES)
 
 
 def _is_imported(user: User) -> bool:
-    """Tashqi manbadan import qilingan foydalanuvchini aniqlaydi."""
-    # terms_accepted_at IS NULL — ro'yxatdan o'tmagan (import)
-    # Parol yo'q yoki ishlatib bo'lmaydigan
+    """Tashqi manbadan import qilingan foydalanuvchini aniqlaydi.
+
+    O'lchandi: `sync_codeforces.py` import qilinganlarda `email=""` va
+    ishlatib bo'lmaydigan parol bilan yaratadi; ular ro'yxatdan o'tmagan,
+    shuning uchun `terms_accepted_at` NULL bo'ladi.
+    """
     if user.terms_accepted_at is not None:
         return False
-    if not user.password or not is_password_usable(user.password):
-        return True
-    return False
+    return bool(not user.password or not is_password_usable(user.password))
 
 
 def _is_staff(user: User) -> bool:

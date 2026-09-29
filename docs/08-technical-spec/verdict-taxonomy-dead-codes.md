@@ -20,9 +20,17 @@ yaxlitligi uchun enum'da qoladi.
 - **So'nggi marta judge chiqargan:** `RE_SIGNAL`/`RE_EXIT` ajratishdan oldin.
 - **Almashtiruvchi:** `RE_SIGNAL` (signal bilan o'ldirilgan, masalan segfault) va
   `RE_EXIT` (nolga teng bo'lmagan chiqish kodi).
-- **M10 migratsiya:** 18 163 ta tarixiy qator `details` JSON'dagi `signal`/
-  `exit_code` kalitlariga qarab qayta yorliqlanadi. Kalit yo'q bo'lsa
-  `RE_SIGNAL` ga tushadi (signal xatolar ko'proq uchragan).
+- **M10 migratsiya:** tarixiy qatorlar `judge_meta` JSON'dagi `signal`/`exit_code`
+  kalitlariga qarab qayta yorliqlanadi. Kalit yo'q bo'lsa `RE_SIGNAL` ga tushadi
+  (signal xatolar ko'proq uchragan; judge `ExitCode >= 128` ni `RE_SIGNAL` deb
+  sanaydi).
+- ⚠️ **O'lchangan cheklov (2026-09-29, QA + jonli baza):** (1) judge signal/exit
+  kodini natijaga YOZMAYDI — u faqat `classify` bosqichida verdiktga aylanadi,
+  ya'ni `judge_meta`da bu kalitlar hozir bo'lmaydi va M10 amalda barcha qatorni
+  default `RE_SIGNAL` ga o'tkazadi. WP7 tavsiyasi: judge `judge_meta` ga
+  `signal`/`exit_code` yozsin. (2) Jonli bazada `verdict='RE'` qatorlar soni
+  **0** — hujjatlardagi 18 163 raqami joriy bazaga tegishli emas; migratsiya
+  shu sababli no-op bo'ladi va bu NORMATIV holat.
 
 ### RATE_LIMITED — Submit limiti
 
