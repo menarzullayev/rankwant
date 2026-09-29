@@ -100,8 +100,13 @@ CI. 2026-09-18 o'lchov: to'liq hook Windows'da 5.8 daqiqa edi.
 Qo'lda to'liq to'plam:
 
 ```bash
-cd apps/api && uv run ruff check . && uv run ruff format --check . && uv run mypy . && env CELERY_EAGER=1 uv run pytest -q -n 4
+cd apps/api && uv run ruff check . && uv run ruff format --check . && uv run mypy . && env DJANGO_SECRET_KEY=local-only-not-for-production CELERY_EAGER=1 uv run pytest -q -n 4
 ```
+
+> `DJANGO_SECRET_KEY` endi **majburiy** (D5): `config.settings` bo'sh
+> qiymatda `ImproperlyConfigured` ko'taradi. `make` nishonlari va
+> `tools/ci-local.sh` uni o'zi beradi; qo'lda `uv run pytest` da esa
+> yuqoridagi kabi bering (production qiymati `.env.public` dan).
 
 ```bash
 cd apps/web && npm run lint && npm run typecheck && npm run build

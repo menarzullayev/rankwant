@@ -6,13 +6,33 @@ Muhim texnik va mahsulot qarorlari.
 
 ## Format
 
-Har bir ADR:
+0001–0027 (mavjud) ADR lar eski formatda yozilgan va **tahrirlanmaydi**.
 
-- Muammo
-- Variantlar
-- Tanlov
-- Sabab
-- Oqibatlar
+**0028 dan boshlab** har bir ADR quyidagi 8 bo'limli shablon bilan yoziladi — **ingliz sarlavha (H1) + o'zbek nasr** (D1 qarori):
+
+```
+# ADR NNNN — <English title>
+
+**STATUS:** <accepted | proposed | deferred>
+**Sana:** YYYY-MM-DD
+**Tasdiqlagan:** <kim>
+**Manba:** <owner decision / hujjat>
+**Ta'sir doirasi:** <Phase 0 | Phase 1 | Phase 2 | Phase 3 | Phase 4>
+**Dalil:** <repo fayli:satr yoki o'lchov>
+
+## 1. Muammo
+## 2. Variantlar
+## 3. Tanlov
+## 4. Sabab
+## 5. Oqibatlar
+## 6. Qaytarilishi
+## 7. Tasdiq
+## 8. Bog'liq hujjatlar
+```
+
+- `Qaytarilishi` (rollback) va `Tasdiq` (qanday o'lchanadi) — 0028 dan boshlab **majburiy**. Bu `Open questions` dagi 1 va 2-bandlarni yangi ADR lar uchun yopadi.
+- H1 sarlavha **inglizcha**; bo'lim mazmuni **o'zbek (lotin)**.
+- Har fayl oxirida `**STATUS:**` qatori bo'ladi.
 
 ## Ro'yxat
 
@@ -44,6 +64,27 @@ Har bir ADR:
 | [0024](0024-user-competitor-parity-fields.md)    | User modeli — raqobatchilar bilan tenglik uchun 21 maydon (46 → 67) | **accepted** |
 | [0025](0025-roles-groups.md)                     | Rollar — staff guruhlari (support/content/ops) va obyekt mualliflari | **accepted** |
 | [0026](0026-codeforces-user-sync.md)             | Codeforces sinxronlash — 4 yangi maydon, neytral nom | **accepted** |
+| [0027](0027-ladder-16-tiers.md)                  | Contest rating ladder — 9 to 16 tiers, English names, CF palette + nutella marker | **accepted** |
+| [0028](0028-judge-privilege-model.md)            | Judge privilege model | **accepted** |
+| [0029](0029-judge-host-separation.md)            | Judge host separation | **deferred** |
+| [0030](0030-data-origin.md)                      | Data origin (real / demo / imported) | **accepted** |
+| [0031](0031-event-schema.md)                     | Event schema / envelope | **deferred** |
+| [0032](0032-nat-throttle.md)                     | NAT throttle | **proposed** |
+| [0033](0033-ai-gateway.md)                       | AI Gateway | **proposed** |
+| [0034](0034-ai-model-routing.md)                 | AI model routing | **deferred** |
+| [0035](0035-ai-contest-isolation.md)             | AI contest isolation | **deferred** |
+| [0036](0036-ai-data-boundary.md)                 | AI data boundary | **accepted** |
+| [0037](0037-content-integrity-gate.md)           | Content integrity gate | **accepted** |
+| [0038](0038-judge-queue-semantics.md)            | Judge queue semantics | **deferred** |
+| [0039](0039-monitoring-and-alerting.md)          | Monitoring and alerting | **deferred** |
+| [0040](0040-staging-environment.md)              | Staging environment | **deferred** |
+| [0041](0041-billing-boundary.md)                 | Billing boundary | **deferred** |
+| [0042](0042-module-boundary.md)                  | Module boundary (dependency rules) | **accepted** |
+| [0043](0043-backup-pitr-dr.md)                   | Backup / PITR / DR | **deferred** |
+| [0044](0044-secrets-management.md)               | Secrets management | **accepted** |
+| [0045](0045-audit-and-object-level-authorization.md) | Audit and object-level authorization | **deferred** |
+
+> **Izoh (D1):** `Sarlavha` ustuni 0001–0026 qatorlarida **o'zbekcha** (legacy), 0027–0036 qatorlarida **inglizcha** — D1 qarori («ingliz sarlavha + o'zbek nasr») tufayli. Bu **ataylab**; eski qatorlar qayta yozilmaydi.
 
 ## Qoidalar
 

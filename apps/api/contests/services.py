@@ -15,6 +15,7 @@ from contests.models import Contest, ContestProblem, ContestRegistration, Standi
 from core.cache import cache_delete
 from judging.models import Attempt
 from judging.verdicts import Verdict
+from problems.readiness import GRADED_READY
 
 STANDINGS_CACHE_KEY = "standings:{contest_id}"
 
@@ -282,6 +283,15 @@ def create_mirror(source: Contest, slug: str, start_at, title: str = "") -> Cont
         is_public=source.is_public,
         mirror_of=source,
     )
+    # D8-F — the mirror is graded too, so it inherits the same gate. A copy
+    # must not smuggle unvalidated content past the serializer: that is the
+    # only reason a mirror could carry a problem the staff endpoint refused.
+    rows = list(ContestProblem.objects.filter(contest=source).select_related("problem"))
+    not_ready = [cp.problem.slug for cp in rows if cp.problem.readiness != GRADED_READY]
+    if not_ready:
+        raise ValueError(
+            "A graded contest accepts validated problems only: " + ", ".join(not_ready)
+        )
     ContestProblem.objects.bulk_create(
         [
             ContestProblem(
@@ -290,7 +300,7 @@ def create_mirror(source: Contest, slug: str, start_at, title: str = "") -> Cont
                 index_letter=cp.index_letter,
                 points=cp.points,
             )
-            for cp in ContestProblem.objects.filter(contest=source)
+            for cp in rows
         ]
     )
     log.info("mirror yaratildi: %s ← %s", mirror.slug, source.slug)

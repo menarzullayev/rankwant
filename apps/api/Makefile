@@ -3,6 +3,13 @@
 VENV := .venv
 PY   := $(VENV)/bin/python
 
+# `config.settings` endi `DJANGO_SECRET_KEY` bo'lmasa `ImproperlyConfigured`
+# ko'taradi (D5, fail-fast): ma'lum sukut bilan prod ko'tarilmasin. Bu qiymat
+# FAQAT mahalliy `make` uchun — production uni `.env.public` dan, CI esa
+# workflow `env:` orqali oladi. `?=` — muhitda berilgan qiymatni ustidan
+# YOZMAYDI (CI/`tools/ci-local.sh` o'z qiymatini beradi).
+export DJANGO_SECRET_KEY ?= local-only-not-for-production
+
 install:
 	python3 -m venv $(VENV)
 	$(VENV)/bin/pip install -q -r requirements-dev.txt

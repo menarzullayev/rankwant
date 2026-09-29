@@ -17,7 +17,7 @@ Ikkalasi ham [protocol.md](protocol.md) shartnomasini bajaradi — ya'ni **almas
 ```
 bakeoff/
 ├── protocol.md        job/result JSON shartnomasi (08-technical-spec dan)
-├── cases/             21 ta sinov case — manba, limit, kutilgan verdict
+├── cases/             25 ta sinov case — manba, limit, kutilgan verdict
 └── harness/runner.py  o'lchash va hisobot
 ```
 
@@ -70,6 +70,10 @@ Chiqish kodi: `0` — hamma case o'tdi · `1` — kamida bittasi yiqildi.
 | `19-validator-rejects` | WRONG_TEST | yaroqsiz kiritma submission **hech bir testda** ishga tushmasdan rad etiladimi |
 | `20-validator-java` | AC | validator masala limitlarini meros olmaydimi (JVM, `processes: 1`) |
 | `21-validator-missing` | IE | validatorsiz `validate_input` yopiq yiqiladimi |
+| `22-proc-self` | AC | `proc_self` — `/proc` faqat sandbox'ning o'z jarayonlarini ko'rsatadimi |
+| `23-csharp-proc-self` | AC | CoreCLR o'z procfs'i bilan `proc_self` ostida ishga tushadimi |
+| `24-go-prebuilt-std` | AC | Go tayyor standart kutubxona bilan 3 s CPU ichida kompilyatsiya bo'ladimi |
+| `25-r-open-files` | AC | R `open_files: 256` bilan ishga tushadimi |
 
 🔒 = izolyatsiya sinovi. **Hammasi o'tishi shart** — bittasi yiqilsa nomzod rad etiladi.
 

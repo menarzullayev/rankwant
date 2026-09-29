@@ -8,6 +8,7 @@ from rest_framework import serializers
 
 from contests.models import Contest, ContestProblem
 from problems.models import Problem
+from problems.readiness import GRADED_READY
 
 
 class StaffContestProblemSerializer(serializers.ModelSerializer[ContestProblem]):
@@ -75,4 +76,15 @@ class StaffContestProblemListSerializer(serializers.Serializer[Any]):
         slugs = [row["problem"].pk for row in value]
         if len(slugs) != len(set(slugs)):
             raise serializers.ValidationError("A problem cannot be added twice")
+        # D8-F — graded eligibility. Every contest is graded (standings are
+        # computed for it), so the gate sits where the problem is attached.
+        # `is_public` is NOT consulted: the archive (1 222 `legacy_unverified`
+        # problems) stays visible, it just cannot be scored.
+        not_ready = [
+            row["problem"].slug for row in value if row["problem"].readiness != GRADED_READY
+        ]
+        if not_ready:
+            raise serializers.ValidationError(
+                "A graded contest accepts validated problems only: " + ", ".join(not_ready)
+            )
         return value

@@ -16,6 +16,7 @@ from content.models import Article, ArticleProblemLink, Roadmap, RoadmapStep
 from judging.models import Attempt
 from judging.services import apply_result
 from problems import storage
+from problems.models import Problem
 from problems.models import TestCase as ProblemTestCase
 
 
@@ -175,15 +176,21 @@ class TestMirrorContest:
     def test_mirror_masalalarni_kochiradi(self, contest, problem) -> None:
         from contests.services import create_mirror
 
+        # D8-F — a mirror is graded too, so it inherits the readiness gate.
+        problem.readiness = Problem.Readiness.VALIDATED
+        problem.save(update_fields=["readiness"])
         mirror = create_mirror(contest, "mirror-1", timezone.now() + timedelta(days=1))
         assert mirror.mirror_of == contest
         assert mirror.problems.count() == contest.problems.count()
         assert mirror.end_at - mirror.start_at == contest.end_at - contest.start_at
 
-    def test_mirror_reytingsiz(self, contest) -> None:
+    def test_mirror_reytingsiz(self, contest, problem) -> None:
         """Asl ishtirokchilar javoblarni bilishadi — reyting adolatsiz."""
         from contests.services import create_mirror
 
+        # D8-F — see `test_mirror_masalalarni_kochiradi`.
+        problem.readiness = Problem.Readiness.VALIDATED
+        problem.save(update_fields=["readiness"])
         assert contest.is_rated is True
         mirror = create_mirror(contest, "mirror-2", timezone.now() + timedelta(days=1))
         assert mirror.is_rated is False

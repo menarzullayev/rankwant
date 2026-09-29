@@ -1248,21 +1248,28 @@ def login_uses_narrow_auth_css() -> str | None:
     return None
 
 
-def security_run_is_disabled() -> str | None:
-    """Security workflow job ishlamasin (owner 2026-09-21).
+def security_run_is_enabled() -> str | None:
+    """Security workflow MAJBURIY yuriydi (D5, 2026-09-29).
 
-    `audit` `if: false`; avtomatik `push`/`schedule` yo'q. Deploy
-    darvozasi faqat `CI` kutadi — Security run bo'lmasa ham ochiladi.
+    Ilgari (owner 2026-09-21) `audit` `if: false` edi va avtomatik
+    trigger yo'q edi — natijada gitleaks, pip-audit va npm audit CI'da
+    **umuman** ishlamasdi. WP4 (D5) shuni ag'dardi: `if: false` YO'Q,
+    `push` (main) va `schedule` (cron) bor. PR trigger ataylab yo'q —
+    navbatni ikki barobar qilardi; buni `pr_skips_heavy_ci` ham
+    tekshiradi. Deploy darvozasi baribir faqat `CI` kutadi (Security
+    run bo'lmasa ham ochiladi) — `check_deploy_gate.py`.
     """
     src = read(".github/workflows/security.yml")
-    if "if: false" not in _workflow_job(src, "audit"):
-        return "security.yml audit ishlaydi — Security run o'chiq bo'lishi kerak"
+    if "if: false" in _workflow_job(src, "audit"):
+        return "security.yml audit `if: false` — Security run yoqilgan bo'lishi kerak (D5)"
     triggers = _workflow_triggers(".github/workflows/security.yml")
-    if "push" in triggers or "schedule" in triggers:
-        return "security.yml push/cron da yuguradi — avtomatik ishga tushmasin"
+    if "push" not in triggers or "schedule" not in triggers:
+        return "security.yml push/cron trigger yo'q — Security run yoqilgan, avtomatik yurishi kerak"
+    if "pull_request" in triggers:
+        return "security.yml PR'da ham yuguradi — Security run yoqilgan, lekin faqat main + cron"
     gate = read("tools/check_deploy_gate.py")
     if 'REQUIRED = ("CI",)' not in gate:
-        return "check_deploy_gate.py Security ni talab qiladi — darvoza faqat CI"
+        return "check_deploy_gate.py Security ni talab qiladi — Security run yoqilgan, lekin darvoza faqat CI"
     return None
 
 
@@ -2449,7 +2456,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("bosh sahifa CSS inline", homepage_css_is_inlined),
     ("bosh sahifa CF email-decode yo'q", homepage_skips_cf_email_decode),
     ("login yupqa auth.css", login_uses_narrow_auth_css),
-    ("Security run o'chiq", security_run_is_disabled),
+    ("Security run yoqilgan", security_run_is_enabled),
     ("judge latency Nightly'da", judge_latency_gate_is_nightly),
     ("chegara faqat loopback", security_boundary_is_loopback_only),
     ("threat model platformani qamraydi", threat_model_covers_the_platform),

@@ -13,6 +13,7 @@ from contests.models import Contest, ContestProblem, Standing
 from core.models import User
 from judging.models import Attempt
 from judging.verdicts import Verdict
+from problems.models import Problem
 
 
 @pytest.fixture
@@ -157,6 +158,11 @@ class TestStaffContestProblems:
         assert body == [{"problem": "a-plus-b", "index_letter": "A", "points": 100, "title": "A+B"}]
 
     def test_put_toliq_almashtiradi(self, staff, contest, hard_problem) -> None:
+        # D8-F — a graded contest takes `validated` content only. The fixture
+        # writes the field directly (as the M1 backfill does); the gate itself
+        # is `TestGradedGate` in tests/test_problem_readiness.py (R8).
+        hard_problem.readiness = Problem.Readiness.VALIDATED
+        hard_problem.save(update_fields=["readiness"])
         r = staff.put(
             reverse("staff-contest-problems", args=[contest.slug]),
             [{"problem": hard_problem.slug, "index_letter": "B", "points": 200}],
@@ -172,6 +178,10 @@ class TestStaffContestProblems:
         ) == ["B"]
 
     def test_post_va_obyekt_korinishi(self, staff, contest, problem, hard_problem) -> None:
+        # D8-F — see `test_put_toliq_almashtiradi`.
+        for row in (problem, hard_problem):
+            row.readiness = Problem.Readiness.VALIDATED
+            row.save(update_fields=["readiness"])
         r = staff.post(
             reverse("staff-contest-problems", args=[contest.slug]),
             {

@@ -18,6 +18,74 @@ from problems.models import Language, Problem, ProblemLanguage, TestCase, Valida
 log = logging.getLogger(__name__)
 
 
+def _program(lang: Language | None, source: str) -> dict[str, Any] | None:
+    """A checker/interactor program as the judge expects it, or `None`."""
+    if lang is None or not source:
+        return None
+    return {**lang.judge_spec(), "source": source}
+
+
+def tests_of(problem: Problem) -> list[dict[str, Any]]:
+    """The problem's tests in judge order — one source of truth.
+
+    `build_job` and `build_standalone_job` must send the same list: a probe
+    that saw a different set of tests than a submission would prove nothing.
+    """
+    return [
+        {
+            "index": t.order,
+            "input_ref": t.input_ref,
+            "output_ref": t.output_ref,
+            "subtask": t.subtask_id or 0,
+            "points": t.points,
+        }
+        for t in TestCase.objects.filter(problem=problem).order_by("order")
+    ]
+
+
+def checker_of(problem: Problem) -> dict[str, Any]:
+    """The `checker` object of a judge job for this problem."""
+    checker: dict[str, Any] = {"type": problem.checker_type}
+    if problem.checker_type == Problem.Checker.INTERACTIVE:
+        interactor = _program(problem.interactor_language, problem.interactor_source)
+        if interactor:
+            checker["interactor"] = interactor
+    elif problem.checker_type in (Problem.Checker.SPECIAL, Problem.Checker.SCORER):
+        # Judge `special` va `scorer` da checker dasturini KUTADI; berilmasa
+        # har yuborish IE bo'ladi. Model tomonida bu maydonlar yo'q edi.
+        program = _program(problem.checker_language, problem.checker_source)
+        if program:
+            checker["program"] = program
+    return checker
+
+
+def build_standalone_job(
+    problem: Problem, source: str, language: Language, *, mode: str = "acm"
+) -> JudgeJob:
+    """A judge job with no `Attempt` behind it — the readiness harness.
+
+    A readiness probe (ADR-0037) is not a submission: it must not touch
+    attempt counters, standings or ratings, so nothing is written and
+    `attempt_id` stays 0 — the same shape `enqueue_custom` uses.
+    """
+    return JudgeJob(
+        job_id=new_job_id(),
+        attempt_id=0,
+        language=language.judge_spec(),
+        source=source,
+        limits={
+            "compile_time_ms": language.compile_time_ms,
+            "time_ms": problem.time_limit_ms,
+            "memory_kb": problem.memory_limit_kb,
+            "output_kb": 65_536,
+            "processes": language.process_limit,
+        },
+        tests=tests_of(problem),
+        checker=checker_of(problem),
+        mode=mode,
+    )
+
+
 def build_job(attempt: Attempt, *, validate_input: bool = False) -> JudgeJob:
     """Urinish uchun judge ishini quradi.
 
@@ -30,38 +98,12 @@ def build_job(attempt: Attempt, *, validate_input: bool = False) -> JudgeJob:
     problem = attempt.problem
     language = attempt.language
 
-    tests: list[dict[str, Any]] = [
-        {
-            "index": t.order,
-            "input_ref": t.input_ref,
-            "output_ref": t.output_ref,
-            "subtask": t.subtask_id or 0,
-            "points": t.points,
-        }
-        for t in TestCase.objects.filter(problem=problem).order_by("order")
-    ]
-
+    tests = tests_of(problem)
     subtasks = [
         {"id": st.pk, "points": st.points, "scoring": st.scoring}
         for st in problem.subtasks.order_by("order")
     ]
-
-    def _program(lang: Language | None, source: str) -> dict[str, Any] | None:
-        if lang is None or not source:
-            return None
-        return {**lang.judge_spec(), "source": source}
-
-    checker: dict[str, Any] = {"type": problem.checker_type}
-    if problem.checker_type == Problem.Checker.INTERACTIVE:
-        interactor = _program(problem.interactor_language, problem.interactor_source)
-        if interactor:
-            checker["interactor"] = interactor
-    elif problem.checker_type in (Problem.Checker.SPECIAL, Problem.Checker.SCORER):
-        # Judge `special` va `scorer` da checker dasturini KUTADI; berilmasa
-        # har yuborish IE bo'ladi. Model tomonida bu maydonlar yo'q edi.
-        program = _program(problem.checker_language, problem.checker_source)
-        if program:
-            checker["program"] = program
+    checker = checker_of(problem)
 
     # Kirish validatori faqat SO'RALGANDA biriktiriladi.
     #

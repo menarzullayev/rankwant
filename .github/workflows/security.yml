@@ -1,9 +1,15 @@
 name: Security
 
 on:
-  # 2026-09-21: Security run ishlamasin (owner). Avtomatik push/cron
-  # o'chirilgan; job `if: false`. Fayl saqlanadi — qayta yoqish qo'lda.
-  # PR trigger 2026-09-18 dan beri yo'q (navbatni ikki barobar qilardi).
+  # 2026-09-29 (WP4 · D5): qayta YOQILDI. Ilgari (2026-09-21, owner)
+  # avtomatik push/cron o'chirilgan va job `if: false` edi — natijada
+  # gitleaks, pip-audit va npm audit CI'da UMUMAN ishlamasdi (ochiq
+  # xavfsizlik bo'shlig'i). Endi main'ga push va kunlik cron'da yuriydi.
+  # PR trigger ATAYLAB yo'q: navbatni ikki barobar qilardi (2026-09-18).
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 3 * * *'
   workflow_dispatch:
 
 # The self-hosted runner runs as user `nsn` on the development machine
@@ -29,7 +35,6 @@ jobs:
   # of work became 3 minutes.
   audit:
     name: Security checks
-    if: false
     runs-on: ubuntu-latest
     # ⚠️ The time limit is REQUIRED: nothing on the self-hosted runner
     # may wait forever. 3 minutes is enough (measured: ~43 s + pip/npm

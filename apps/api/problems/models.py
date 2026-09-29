@@ -165,6 +165,25 @@ class Problem(TimeStampedModel):
         #: boshqalarning yechimiga bog'liq emas, ya'ni qayta hisoblash yo'q.
         SCORER = "scorer", "Skoring"
 
+    class Readiness(models.TextChoices):
+        """Content readiness — D8 · ADR-0037.
+
+        Separate from `is_public`: this says whether the CONTENT is
+        trustworthy, `is_public` says whether it can be SEEN. D8-F keeps the
+        archive visible while locking it out of graded contests, so neither
+        flag may be derived from the other.
+        """
+
+        DRAFT = "draft", "Qoralama"
+        NEEDS_TESTS = "needs_tests", "Test kerak"
+        HAS_HIDDEN_TESTS = "has_hidden_tests", "Yashirin test bor"
+        CHECKER_VALIDATED = "checker_validated", "Checker tekshirilgan"
+        REF_SOLUTION_VERIFIED = "ref_solution_verified", "Etalon tekshirilgan"
+        VALIDATED = "validated", "Tasdiqlangan"
+        LEGACY_UNVERIFIED = "legacy_unverified", "Arxiv (tekshirilmagan)"
+        BLOCKED = "blocked", "Bloklangan"
+        NEEDS_REVIEW = "needs_review", "Ko'rik kerak"
+
     slug = models.SlugField(unique=True, max_length=100)
     #: Ommaviy qisqa raqam — `#0431`. Slug'dan farqli: og'zaki muomala
     #: uchun ("431-masalani yeching") va hech qachon o'zgarmaydi.
@@ -227,6 +246,12 @@ class Problem(TimeStampedModel):
     )
 
     is_public = models.BooleanField(default=False, db_index=True)
+    #: Content readiness (D8 · ADR-0037) — graded eligibility, NOT visibility.
+    #: `legacy_unverified` lives together with `is_public=True` by design: the
+    #: archive stays readable, it just cannot enter a graded contest.
+    readiness = models.CharField(
+        max_length=24, choices=Readiness.choices, default=Readiness.DRAFT, db_index=True
+    )
     author = models.ForeignKey(
         "core.User", null=True, blank=True, on_delete=models.SET_NULL, related_name="problems"
     )
@@ -260,6 +285,9 @@ class Problem(TimeStampedModel):
         ordering: ClassVar = ["difficulty", "slug"]
         indexes: ClassVar = [
             models.Index(fields=["is_public", "difficulty"], name="problem_public_diff"),
+            # Remediation dashboard groups by readiness and visibility
+            # (`legacy_unverified` + public is the backlog to clear).
+            models.Index(fields=["readiness", "is_public"], name="problem_readiness_pub"),
         ]
 
     def __str__(self) -> str:
@@ -311,6 +339,43 @@ class Problem(TimeStampedModel):
 
         if self.difficulty % DIFFICULTY_STEP:
             raise ValidationError({"difficulty": f"Value must be a multiple of {DIFFICULTY_STEP}"})
+        self._clean_readiness()
+
+    def _clean_readiness(self) -> None:
+        """Readiness moves one step at a time and only when it is earned.
+
+        The gate lives at the model too, not only in the serializer: admin,
+        seeds and shell all go through `full_clean()`, and a jump such as
+        `draft -> validated` must be rejected in every one of them (R10).
+        """
+        from problems.readiness import (
+            Readiness,
+            assert_transition,
+            requirement_error,
+        )
+
+        if self.pk is None:
+            # A new problem starts as a draft — anything else would be a jump
+            # made at birth. M1 backfill writes directly (it is a data
+            # migration and never calls `full_clean`).
+            if self.readiness != Readiness.DRAFT:
+                raise self._readiness_error(
+                    f"a new problem starts in '{Readiness.DRAFT}', not '{self.readiness}'"
+                )
+            return
+        previous = type(self).objects.filter(pk=self.pk).values_list("readiness", flat=True).first()
+        if previous is None or previous == self.readiness:
+            return
+        assert_transition(previous, self.readiness)
+        unmet = requirement_error(self, self.readiness)
+        if unmet:
+            raise self._readiness_error(unmet)
+
+    @staticmethod
+    def _readiness_error(message: str) -> Exception:
+        from django.core.exceptions import ValidationError
+
+        return ValidationError({"readiness": message})
 
 
 class Subtask(models.Model):

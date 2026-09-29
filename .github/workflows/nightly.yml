@@ -8,6 +8,15 @@ on:
 # Keep stray `~/.local` packages out of the job (self-hosted runner).
 env:
   PYTHONNOUSERSITE: '1'
+  # Compose secrets (D5). `docker-compose.yml` reads these with `${VAR:?}` and
+  # the CI stack (base + ci overlay) passes no `--env-file`, so every
+  # `docker compose` call in this workflow — stack up, inline exec/run/down,
+  # chaos, latency — needs them or interpolation stops. `coverage` also needs
+  # DJANGO_SECRET_KEY for pytest (settings fail-fast). Throwaway values only.
+  POSTGRES_PASSWORD: ci-postgres
+  MINIO_ROOT_PASSWORD: ci-minio
+  S3_SECRET: ci-s3-secret
+  DJANGO_SECRET_KEY: ci-django-secret
 
 permissions:
   contents: read
@@ -128,7 +137,7 @@ jobs:
         if: ${{ vars.STAGING_URL == '' }}
         timeout-minutes: 3
         # ADR-0020: a bad input is rejected BEFORE a submission runs.
-        # Full suite (21 cases), measured 2026-09-16 — all in 11.2 s.
+        # Full suite (25 cases; 11.2 s was measured on the 21-case set, 2026-09-16).
         # After E2E: worker/beat would drain harness results if left up.
         run: |
           C="docker compose -f docker-compose.yml -f docker-compose.ci.yml"

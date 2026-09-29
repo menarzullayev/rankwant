@@ -8,6 +8,8 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+from django.core.exceptions import ImproperlyConfigured
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -19,7 +21,19 @@ def env_bool(key: str, default: bool = False) -> bool:
     return env(key, str(default)).lower() in {"1", "true", "yes"}
 
 
-SECRET_KEY = env("DJANGO_SECRET_KEY", "dev-only-not-for-production")
+#: Imzolash kaliti (sessiya · CSRF · PAT). SIR — zaxira qiymat ATAYLAB YO'Q
+#: (D5): ma'lum sukut bilan production ko'tarilib qolsa, har bir token shu
+#: ommaviy kalit bilan imzolanadi va uni istalgan kishi qalbakilashtira
+#: oladi. Bo'sh bo'lsa ishga tushish TO'XTAYDI — jimgina davom etmaydi.
+#:
+#: `env("DJANGO_SECRET_KEY")` to'g'ridan-to'g'ri chaqiriladi: `tools/
+#: check_env_example.py` o'zgaruvchini aynan shu naqsh orqali topadi.
+SECRET_KEY = env("DJANGO_SECRET_KEY")
+if not SECRET_KEY:
+    raise ImproperlyConfigured(
+        "DJANGO_SECRET_KEY majburiy: bo'sh yoki o'rnatilmagan. "
+        "Muhitga eksport qiling yoki .env.public ga yozing (D5)."
+    )
 DEBUG = env_bool("DJANGO_DEBUG", True)
 
 #: Django admin paneli. Loyihaning O'Z admin UI si bor (`/admin` web'da,

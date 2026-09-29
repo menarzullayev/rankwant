@@ -39,6 +39,16 @@ mode="${1:-build}"
 
 export DOCKER_BUILDKIT=1
 
+# Compose secrets (D5). `docker-compose.yml` reads these with `${VAR:?}`, and
+# this stack (base + ci overlay) passes NO `--env-file`, so the interpolation
+# would stop. Throwaway CI values are supplied here; the workflow may override
+# them. Real secrets never live in the repo — production gets them from
+# `.env.public` via `tools/deploy.sh --env-file`.
+export POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-ci-postgres}"
+export MINIO_ROOT_PASSWORD="${MINIO_ROOT_PASSWORD:-ci-minio}"
+export S3_SECRET="${S3_SECRET:-ci-s3-secret}"
+export DJANGO_SECRET_KEY="${DJANGO_SECRET_KEY:-ci-django-secret}"
+
 ghcr_login() {
   if [ -n "${GITHUB_TOKEN:-}" ]; then
     printf '%s' "$GITHUB_TOKEN" | docker login ghcr.io -u "${GITHUB_ACTOR:-github}" --password-stdin

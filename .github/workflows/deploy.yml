@@ -83,6 +83,14 @@ jobs:
       # The deploy stack must not land in the same project as the live
       # preview: `down -v` would wipe its database (10-operations).
       COMPOSE_PROJECT_NAME: rankwant-build-${{ github.run_id }}
+      # Compose secrets (D5). `docker compose -f docker-compose.yml build`
+      # interpolates the whole file, and the secrets are `${VAR:?}`, so they
+      # must be present even for a build-only step. Throwaway values: this job
+      # only builds images, it never runs the stack.
+      POSTGRES_PASSWORD: ci-postgres
+      MINIO_ROOT_PASSWORD: ci-minio
+      S3_SECRET: ci-s3-secret
+      DJANGO_SECRET_KEY: ci-django-secret
     steps:
       - uses: actions/checkout@v7
 
@@ -195,9 +203,15 @@ jobs:
           DJANGO_ALLOWED_HOSTS: ${{ vars.DJANGO_ALLOWED_HOSTS }}
           PUBLIC_ORIGIN: ${{ vars.PUBLIC_ORIGIN }}
           NEXT_PUBLIC_API_BASE: ${{ vars.NEXT_PUBLIC_API_BASE }}
+          # Compose secrets (D5): `docker-compose.yml` reads these with
+          # `${VAR:?}`, so a deploy without them stops at interpolation.
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
+          S3_SECRET: ${{ secrets.S3_SECRET }}
         run: |
           missing=0
-          for name in DJANGO_SECRET_KEY DJANGO_ALLOWED_HOSTS PUBLIC_ORIGIN; do
+          for name in DJANGO_SECRET_KEY DJANGO_ALLOWED_HOSTS PUBLIC_ORIGIN \
+                      POSTGRES_PASSWORD MINIO_ROOT_PASSWORD S3_SECRET; do
             if [ -z "${!name}" ]; then
               echo "::error::${name} is not set — add it under Environment secrets/variables"
               missing=1
@@ -212,6 +226,9 @@ jobs:
           DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
           DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
           PUBLIC_ORIGIN=${PUBLIC_ORIGIN}
+          POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+          MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+          S3_SECRET=${S3_SECRET}
           EOF
           echo "::notice::.env.public written ($(wc -l < .env.public) lines)"
 

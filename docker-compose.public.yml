@@ -85,7 +85,10 @@ services:
   migrate:
     logging: *default-logging
     environment:
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      # Sirlar (D5) — bazaviy faylda `${VAR:?}` bilan majburiy; bu yerda
+      # yana bir marta ATAYLAB: production zanjirida sir bo'lmasa up
+      # to'xtaydi, jimgina dev qiymat bilan ko'tarilmaydi.
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:?D5-majburiy}
       DJANGO_DEBUG: "0"
 
   api:
@@ -96,7 +99,7 @@ services:
     environment:
       <<: [*email, *oauth, *turnstile, *throttle]
       DJANGO_DEBUG: "0"
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:?D5-majburiy}
       DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS}
       CORS_ALLOWED_ORIGINS: ${PUBLIC_ORIGIN}
       CSRF_TRUSTED_ORIGINS: ${PUBLIC_ORIGIN}
@@ -112,14 +115,14 @@ services:
     environment:
       <<: *email
       DJANGO_DEBUG: "0"
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:?D5-majburiy}
 
   beat:
     <<: *restart
     logging: *default-logging
     environment:
       DJANGO_DEBUG: "0"
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:?D5-majburiy}
 
   web:
     <<: *restart

@@ -21,6 +21,7 @@ from contests.staff_serializers import (
 from core.openapi_docs import crud_summaries
 from core.permissions import StaffOps
 from core.staff import StaffViewSet
+from problems.readiness import GRADED_READY
 
 
 @crud_summaries(
@@ -62,6 +63,25 @@ class StaffContestViewSet(StaffViewSet):
             data = request.data if isinstance(request.data, dict) else {"problems": request.data}
             serializer = StaffContestProblemListSerializer(data=data)
             serializer.is_valid(raise_exception=True)
+            # Second layer (D8-F): the serializer is the input path, this one
+            # guards the write itself. A row built somewhere else — a script,
+            # a future endpoint — still cannot land unvalidated content.
+            not_ready = [
+                row["problem"].slug
+                for row in serializer.validated_data["problems"]
+                if row["problem"].readiness != GRADED_READY
+            ]
+            if not_ready:
+                return Response(
+                    {
+                        "error": {
+                            "code": "problem_not_validated",
+                            "message": "A graded contest accepts validated problems only",
+                            "details": {"problems": not_ready},
+                        }
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
             with transaction.atomic():
                 ContestProblem.objects.filter(contest=contest).delete()
                 ContestProblem.objects.bulk_create(
