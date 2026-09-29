@@ -16,9 +16,9 @@ billiard==4.2.4
     # via celery
 boolean-py==5.0
     # via license-expression
-boto3==1.43.98
+boto3==1.43.103
     # via -r requirements.txt
-botocore==1.43.98
+botocore==1.43.103
     # via
     #   boto3
     #   s3transfer
@@ -36,6 +36,7 @@ click==8.5.0
     #   click-didyoumean
     #   click-plugins
     #   click-repl
+    #   uvicorn
 click-didyoumean==0.3.1
     # via celery
 click-plugins==1.1.1.2
@@ -93,7 +94,9 @@ fpdf2==2.8.8
     # via -r requirements.txt
 gunicorn==26.2.0
     # via -r requirements.txt
-hypothesis==6.168.0
+h11==0.16.0
+    # via uvicorn
+hypothesis==6.168.3
     # via -r requirements-dev.txt
 idna==3.19
     # via requests
@@ -201,7 +204,7 @@ rpds-py==2026.6.3
     # via
     #   jsonschema
     #   referencing
-ruff==0.16.6
+ruff==0.16.9
     # via -r requirements-dev.txt
 s3transfer==0.19.2
     # via boto3
@@ -247,6 +250,8 @@ urllib3==2.7.0
     # via
     #   botocore
     #   requests
+uvicorn==0.54.0
+    # via -r requirements.txt
 vine==5.1.0
     # via
     #   amqp

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { getLocale } from "@/i18n/server";
 import { t } from "@/i18n/messages";
 
-import { ClassroomDetail } from "@/components/ClassroomDetail";
+import { ClassroomDetail } from "@/features/classroom";
 
 type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata(): Promise<Metadata> {

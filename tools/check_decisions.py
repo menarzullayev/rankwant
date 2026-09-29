@@ -38,7 +38,7 @@ TRIAL_RUNNER = {"runner-selftest.yml": "[self-hosted, rankwant-container]"}
 # labels whenever the container is recreated and registers again.
 RUNNER_DEFAULTS = ("tools/runner/docker-compose.runner.yml", "tools/runner/entrypoint.sh")
 # Everything tools/deploy.sh must rebuild: services built from this repo's sources.
-DEPLOYED_SERVICES = {"api", "worker", "beat", "judge", "web"}
+DEPLOYED_SERVICES = {"api", "worker", "beat", "judge", "web", "realtime"}
 # Layout chrome drawn on every page: sidebar, top bar, header and footer. Its
 # links prefetch on intent only (owner decision 2026-09-18).
 NAV_CHROME = (
@@ -95,7 +95,7 @@ STAT_CARD = "apps/web/src/components/ui/Card.tsx"
 PROFILE_LAYOUT = "apps/web/src/app/(site)/users/[username]/layout.tsx"
 # Filter badge: the difficulty range is one filter even though it rides in two
 # params, so the badge counts it once. Owner decision 2026-09-18.
-FILTERS = "apps/web/src/components/ProblemFilters.tsx"
+FILTERS = "apps/web/src/features/problems/components/ProblemFilters.tsx"
 # Brand and footer: the brand lives in the header via a single `BrandMark`
 # (it used to be duplicated in the sidebar/topnav and missing from the header
 # entirely — on phones the brand was only visible inside the drawer), and the
@@ -111,12 +111,16 @@ APP_FOOTER = "apps/web/src/layout/AppFooter.tsx"
 # fallback worked in 8 places but the marker appeared in 2, and the `uz`
 # dictionary itself was marked as a fallback on its own pages.
 MESSAGES = "apps/web/src/i18n/messages.ts"
+# RW-ARCH-013 moved the i18n mechanism (and with it `CONTENT_NAME_LOCALES` /
+# `hasContentNames`) into the shared package; `messages.ts` is now a thin
+# re-export shim, so the coverage source has to be read from core.ts.
+SHARED_I18N_CORE = "packages/shared/src/i18n/core.ts"
 CONTENT_BADGE = "apps/web/src/components/ui/UzFallbackBadge.tsx"
-ARCHIVE_SIDEBAR = "apps/web/src/components/ArchiveSidebar.tsx"
-ABOUT_TAB = "apps/web/src/components/profile/AboutTab.tsx"
-TOPIC_STRENGTH = "apps/web/src/components/profile/TopicStrength.tsx"
-ACTIVITY_TABS = "apps/web/src/components/profile/ActivityTabs.tsx"
-SKILLS_SECTION = "apps/web/src/components/settings/SkillsSection.tsx"
+ARCHIVE_SIDEBAR = "apps/web/src/components/layout/ArchiveSidebar.tsx"
+ABOUT_TAB = "apps/web/src/features/profile/components/AboutTab.tsx"
+TOPIC_STRENGTH = "apps/web/src/features/profile/components/TopicStrength.tsx"
+ACTIVITY_TABS = "apps/web/src/features/profile/components/ActivityTabs.tsx"
+SKILLS_SECTION = "apps/web/src/features/account/components/SkillsSection.tsx"
 PROBLEMS_PAGE = "apps/web/src/app/(site)/problems/page.tsx"
 
 #: Every place a content name can fall back: the file, the marker it must
@@ -341,14 +345,14 @@ def rank_colour_groups_not_sixteen_tokens() -> str | None:
     for name in ("grey", "green", "cyan", "blue", "violet", "orange", "red"):
         if f'"{name}"' not in titles:
             return f"apps/api/profiles/titles.py: guruh `{name}` yo'q"
-    css = read("apps/web/src/app/globals.css")
+    css = read("apps/web/src/app/theme.css")
     if re.search(r"--rw-rank-\d", css):
-        return "apps/web/src/app/globals.css: raqamli `--rw-rank-N` qaytdi (#167)"
+        return "apps/web/src/app/theme.css: raqamli `--rw-rank-N` qaytdi (#167)"
     for name in ("grey", "green", "cyan", "blue", "violet", "orange", "red"):
         if f"--rw-rank-{name}" not in css:
-            return f"apps/web/src/app/globals.css: `--rw-rank-{name}` yo'q"
-    if "rw-rank-${title.colour_group}" not in read("apps/web/src/components/UserName.tsx"):
-        return "apps/web/src/components/UserName.tsx: class `colour_group` emas"
+            return f"apps/web/src/app/theme.css: `--rw-rank-{name}` yo'q"
+    if "rw-rank-${title.colour_group}" not in read("apps/web/src/components/ui/Identity/UserName.tsx"):
+        return "apps/web/src/components/ui/Identity/UserName.tsx: class `colour_group` emas"
     return None
 
 
@@ -1104,17 +1108,25 @@ def content_coverage_visible() -> str | None:
     missing translation does not copy `name_uz`, and every render site
     still marks the identifier so a `zh` reader does not take a slug for
     a Chinese name.
+
+    ⚠️ Qamrov qoidalari `packages/shared/src/i18n/core.ts` ga ko'chdi
+    (RW-ARCH-013). Ilova endi ularni QAYTA EKSPORT qiladi — ya'ni
+    chaqiruv joylari o'zgarmagan, lekin HAQIQIY ta'rif shared paketda.
+    Tekshiruv ikkala faylni birga o'qiydi, chunki qoida ikkalasida ham
+    bo'lishi shart: ta'rif shared'da, ilova ulanishi `messages.ts` da.
     """
+    shared = read(SHARED_I18N_CORE)
     messages = read(MESSAGES)
-    if 'export const CONTENT_NAME_LOCALES = ["uz", "ru", "en"] as const;' not in messages:
-        return f"{MESSAGES}: CONTENT_NAME_LOCALES yo'q — qamrov manbai yo'qolgan"
-    if "export function hasContentNames(" not in messages:
-        return f"{MESSAGES}: hasContentNames() yo'q — tanlash ro'yxati qamrovni bilmaydi"
-    if "function nameProperty(" not in messages:
-        return f"{MESSAGES}: nameProperty() yo'q — yetishmagan tarjima property ko'rsatilmaydi"
-    if "source: DEFAULT_LOCALE" in messages:
+    combined = shared + messages
+    if 'export const CONTENT_NAME_LOCALES = ["uz", "ru", "en"] as const;' not in combined:
+        return f"{SHARED_I18N_CORE}: CONTENT_NAME_LOCALES yo'q — qamrov manbai yo'qolgan"
+    if "export function hasContentNames(" not in combined:
+        return f"{SHARED_I18N_CORE}: hasContentNames() yo'q — tanlash ro'yxati qamrovni bilmaydi"
+    if "function nameProperty(" not in combined:
+        return f"{SHARED_I18N_CORE}: nameProperty() yo'q — yetishmagan tarjima property ko'rsatilmaydi"
+    if "source: DEFAULT_LOCALE" in combined:
         return (
-            f"{MESSAGES}: yetishmagan tarjima `DEFAULT_LOCALE` ga tushadi — "
+            f"{SHARED_I18N_CORE}: yetishmagan tarjima `DEFAULT_LOCALE` ga tushadi — "
             "zaxira til taqiqlangan"
         )
     badge = read(CONTENT_BADGE)
@@ -1224,6 +1236,40 @@ def homepage_css_is_inlined() -> str | None:
     return None
 
 
+#: Customization contract invariantlari (2026-09-24). Manba — contract §7;
+#: bu yerdagi nusxa ataylab qisqa, chunki vazifasi boshqa: contract ularni
+#: E'LON qiladi, bu qoida esa ular `CLAUDE.md` da — ya'ni agentlar o'qiydigan
+#: joyda — borligini tekshiradi. To'liq moslikni
+#: `tools/check_customization_contract.py` qo'riqlaydi.
+CUSTOMIZATION_INVARIANTS = (
+    "MUST NOT introduce a new customization setting",
+    "MUST NOT add a key to the client",
+    "MUST NOT change the precedence of an existing setting",
+    "MUST NOT introduce a second persistence mechanism",
+    "MUST NOT bypass customization validation",
+    "Unknown values MUST have an explicit fallback",
+)
+
+
+def customization_invariants_are_written() -> str | None:
+    """Customization invariantlari `CLAUDE.md` da yozilganmi?
+
+    ⚠️ Nega kerak — o'lchandi 2026-09-24. `themeToggle` klientda #244 dan
+    beri bor edi, serverning `APPEARANCE_KEYS` ida yo'q edi ⇒ mavzu tugmasi
+    uslubini tanlash BUTUN `appearance` yozuvini 400 ga uchratardi. Qoida
+    kodda yozilgan bo'lsa ham, uni hech narsa majburlamasdi.
+
+    Endi invariantlar `CLAUDE.md` da (agentlar o'sha yerdan o'qiydi) va
+    `check_customization_contract.py` ularning contract bilan mosligini
+    tekshiradi. Bu qoida — zanjirning `CLAUDE.md` halqasi.
+    """
+    text = read("CLAUDE.md")
+    for invariant in CUSTOMIZATION_INVARIANTS:
+        if invariant not in text:
+            return f"CLAUDE.md: customization invarianti yo'q — {invariant!r}"
+    return None
+
+
 def login_uses_narrow_auth_css() -> str | None:
     """`/login` to'liq globals.css ni inline qilmasin (LH-LOGIN-CSS).
 
@@ -1243,8 +1289,21 @@ def login_uses_narrow_auth_css() -> str | None:
     if 'import "../globals.css"' not in site:
         return "apps/web/src/app/(site)/layout.tsx: globals.css ulanmagan"
     sheet = read("apps/web/src/app/auth.css")
-    if '@source not "./(site)/' not in sheet:
-        return "apps/web/src/app/auth.css: (site) @source not yo'q"
+    # The narrowing is now carried by an explicit include list rather than by
+    # `@source not`, so the invariant to guard changed with it. Matching the
+    # old literal stayed green while 8 of 11 paths were dead (measured
+    # 2026-09-24). The resolution half lives in `tools/check_css_sources.py`,
+    # which runs on the real tree — this sandbox has no directory tree.
+    #
+    # ⚠️ The import directive is matched, not a bare `"source(none)" in sheet`:
+    # the stylesheet's own comment mentions `source(none)`, so a substring test
+    # would stay green after the import lost the argument (measured).
+    entry = re.search(r'@import\s+"tailwindcss"\s*(?:source\(([^)]*)\))?\s*;', sheet)
+    if entry is None or (entry.group(1) or "").strip() != "none":
+        return (
+            "apps/web/src/app/auth.css: import `source(none)` bilan emas — "
+            "avtomatik skan ochiq qolsa ro'yxat bezak bo'ladi va sheet jimgina kengayadi"
+        )
     return None
 
 
@@ -1647,6 +1706,30 @@ def deploy_automation_is_safe() -> str | None:
         return (
             f"{CHECK_DEPLOY}: inventory locale'siz sort — comm yolg'on «ESKIRGAN»"
         )
+
+    # 9. OYNA OVERRIDE'I — QO'LDA BOR, AVTOMATIKDA YO'Q (2026-09-24,
+    #    Saidakbar aka qarori). Qoida №1 («faol contest paytida deploy
+    #    qilinmaydi») SAQLANADI, lekin endi odam qo'li bilan chetlab
+    #    o'tilishi mumkin: `deploy.yml` → `allow_live_contest=yes`,
+    #    `tools/deploy.sh` → `RANKWANT_ALLOW_LIVE_CONTEST`. Sabab: sayt
+    #    contest paytida yiqilsa, tuzatishning YAGONA yo'li — deploy;
+    #    yopiq darvoza tizimni qulflab qo'yardi.
+    #
+    #    ⚠️ AMMO avtomatik yo'lda odam YO'Q. Override u yerda bo'lsa
+    #    watcher har daqiqada yuguradi va jonli musobaqa paytida o'zi
+    #    deploy qilib verdikt va reytingni buzardi. Bu JIM buziladigan
+    #    joy: override qo'shilsa hamma mavjud tekshiruv yashil qoladi,
+    #    xato esa faqat keyingi musobaqada bilinadi.
+    if "RANKWANT_ALLOW_LIVE_CONTEST" in auto:
+        return (
+            f"{AUTO_DEPLOY}: oyna override'i (`RANKWANT_ALLOW_LIVE_CONTEST`) "
+            "avtomatik yo'lda — odam yo'q joyda qoida №1 chetlab o'tilardi"
+        )
+    if "RANKWANT_ALLOW_LIVE_CONTEST" not in deploy:
+        return (
+            "tools/deploy.sh: oyna override'i (`RANKWANT_ALLOW_LIVE_CONTEST`) "
+            "yo'q — contest paytida shoshilinch tuzatish deploy'i qulflanadi"
+        )
     return None
 
 
@@ -1789,7 +1872,7 @@ def types_node_tracks_runtime() -> str | None:
 KIT_TS = "apps/web/src/lib/theme/kit.ts"
 COPY_CONTROL = "apps/web/src/components/kit/CopyControl.tsx"
 CMD_PALETTE = "apps/web/src/components/kit/CommandPalette.tsx"
-SHARE_BUTTON = "apps/web/src/components/profile/ShareButton.tsx"
+SHARE_BUTTON = "apps/web/src/features/profile/components/ShareButton.tsx"
 
 
 def selected_kit_frozen() -> str | None:
@@ -2449,6 +2532,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("bosh sahifa CSS inline", homepage_css_is_inlined),
     ("bosh sahifa CF email-decode yo'q", homepage_skips_cf_email_decode),
     ("login yupqa auth.css", login_uses_narrow_auth_css),
+    ("customization invariantlari", customization_invariants_are_written),
     ("Security run o'chiq", security_run_is_disabled),
     ("judge latency Nightly'da", judge_latency_gate_is_nightly),
     ("chegara faqat loopback", security_boundary_is_loopback_only),

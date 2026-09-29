@@ -40,6 +40,7 @@ from core.cache import cache_get, cache_set
 from core.models import (
     AnalyticsEvent,
     ApiToken,
+    ClientLog,
     SiteAppearance,
     SocialAccount,
     User,
@@ -52,6 +53,7 @@ from core.serializers import (
     AnalyticsBatchSerializer,
     ApiTokenCreateSerializer,
     ApiTokenSerializer,
+    ClientLogSerializer,
     EmailVerifySerializer,
     LoginSerializer,
     MeSerializer,
@@ -68,6 +70,8 @@ from judging.models import Attempt
 from problems.models import Problem
 
 MAX_TOKEN_LIFETIME = timedelta(days=365)
+
+logger = logging.getLogger(__name__)
 
 log = logging.getLogger(__name__)
 
@@ -113,7 +117,13 @@ def _check_database() -> str:
     try:
         connection.ensure_connection()
     except Exception as exc:
-        return type(exc).__name__
+        # ⚠️ Istisno SINFI nomi tashqariga chiqmasin. `/api/v1/health/`
+        # `AllowAny` — uni har kim ko'radi, `OperationalError` esa DB
+        # drayverini va nosozlik turini oshkor qiladi. Javobda faqat
+        # `"error"` qoladi; sinf nomi logga yoziladi — nosozlikni
+        # aniqlash uchun shu yetarli (tekshiruv nomi `checks` da bor).
+        log.warning("health: database tekshiruvi yiqildi: %s", type(exc).__name__)
+        return "error"
     return "ok"
 
 
@@ -121,15 +131,17 @@ def _check_redis() -> str:
     try:
         redis.Redis.from_url(settings.REDIS_URL, socket_connect_timeout=2).ping()
     except Exception as exc:
-        return type(exc).__name__
+        log.warning("health: redis tekshiruvi yiqildi: %s", type(exc).__name__)
+        return "error"
     return "ok"
 
 
 def _judge_queue_len() -> int | None:
     """Judge Redis navbati — readiness emas, SLO signal."""
     try:
+        # ADR-0028: navbat alohida `judge-queue` Redis'da (JUDGE_QUEUE_URL).
         return int(
-            redis.Redis.from_url(settings.REDIS_URL, socket_connect_timeout=2).llen(
+            redis.Redis.from_url(settings.JUDGE_QUEUE_URL, socket_connect_timeout=2).llen(
                 settings.JUDGE_JOBS_KEY
             )
         )
@@ -546,6 +558,53 @@ class AnalyticsEventView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@extend_schema(summary="Brauzer xato jurnalini qabul qilish")
+class ClientLogView(APIView):
+    """Brauzerdagi xatoni qabul qiladi (qaror 2026-09-24: Sentry o'rniga).
+
+    `AllowAny` — ATAYIN: eng qimmatli xato **kirilmagan** foydalanuvchida
+    bo'ladi (login sahifasi yiqilsa, u hech qachon kira olmaydi va xato
+    hech qayerga yetib bormaydi). Throttle bazani to'ldirishga yo'l
+    qo'ymaydi.
+
+    Javob har doim `204` — mijoz kutmasligi kerak va xato jurnali
+    yiqilishi foydalanuvchi oqimini to'xtatmasligi shart.
+    """
+
+    permission_classes = [AllowAny]
+    throttle_classes = [ResilientScopedRateThrottle]
+    throttle_scope = "analytics"
+
+    @extend_schema(request=ClientLogSerializer, responses={204: None})
+    def post(self, request: Request) -> Response:
+        serializer = ClientLogSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        ClientLog.objects.create(
+            level=data["level"],
+            scope=data["scope"],
+            message=data["message"],
+            fields=data.get("fields") or {},
+            path=data.get("path", ""),
+            release=data.get("release", ""),
+            user=request.user if request.user.is_authenticated else None,
+            # `userAgent` — brauzer qaysi ekanini bilmasdan tuzatib
+            # bo'lmaydi; 200 belgidan qisqartiriladi.
+            user_agent=request.META.get("HTTP_USER_AGENT", "")[:200],
+        )
+        # Serverning O'Z jurnaliga ham yoziladi: xato `docker compose
+        # logs` da ko'rinmasa, uni faqat staff panel orqali topish
+        # kerak bo'lardi.
+        logger.warning(
+            "client error [%s] %s",
+            data["scope"],
+            data["message"],
+            extra={"path": data.get("path", "")},
+        )
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -717,6 +776,10 @@ class RatingHistoryView(generics.ListAPIView[Any]):
         return RatingHistorySerializer
 
     def get_queryset(self):  # type: ignore[no-untyped-def]
+        if getattr(self, "swagger_fake_view", False):
+            from ratings.models import RatingHistory
+
+            return RatingHistory.objects.none()
         from ratings.models import RatingHistory
 
         user = get_object_or_404(User, username=self.kwargs["username"], is_active=True)
@@ -783,6 +846,10 @@ class SolvedProblemsView(generics.ListAPIView[Any]):
         return SolvedProblemSerializer
 
     def get_queryset(self) -> QuerySet[Any]:
+        if getattr(self, "swagger_fake_view", False):
+            from ratings.models import UserSolvedProblem
+
+            return UserSolvedProblem.objects.none()
         from ratings.models import UserSolvedProblem
 
         user = get_object_or_404(User, username=self.kwargs["username"], is_active=True)
@@ -826,6 +893,8 @@ class ApiTokenViewSet(viewsets.ModelViewSet[ApiToken]):
     http_method_names = ["get", "post", "delete"]
 
     def get_queryset(self) -> QuerySet[ApiToken]:
+        if getattr(self, "swagger_fake_view", False):
+            return ApiToken.objects.none()
         assert isinstance(self.request.user, User)
         return ApiToken.objects.filter(user=self.request.user).order_by("-created_at")
 

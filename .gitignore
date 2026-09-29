@@ -6,6 +6,14 @@
 *.pem
 *.key
 
+# O'lchov uchun vaqtinchalik daraxtlar va dalillar. Skriptlar ularni
+# ishchi katalog yonida yasaydi (`_t8`, `_t9` = git-archive nusxalari,
+# `_fontcap` = shrift capture). Ular hech qachon repoga tushmasligi kerak:
+# tarkibi takrorlanadi va git obyektlari allaqachon haqiqat manbai.
+_t[0-9]*/
+_fontcap/
+_oa.diff
+
 # Python
 __pycache__/
 *.py[cod]

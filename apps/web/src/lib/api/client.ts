@@ -11,6 +11,8 @@ export const API_BASE =
     ? process.env.API_BASE_INTERNAL || process.env.NEXT_PUBLIC_API_BASE
     : process.env.NEXT_PUBLIC_API_BASE) ?? "http://localhost:8000/api/v1";
 
+import { log } from "@/lib/log";
+
 export type Paginated<T> = {
   count: number;
   next: string | null;
@@ -129,8 +131,28 @@ async function send<T>(method: string, path: string, body?: unknown): Promise<T>
     headers,
     body: body === undefined ? undefined : form ? body : JSON.stringify(body),
   });
+  // ⚠️ `JSON.parse` XOM chaqirilmaydi. O'lchandi: Cloudflare Tunnel
+  // 502 qaytganda tana HTML bo'ladi (`<html>502 Bad Gateway`), ya'ni
+  // `JSON.parse` `SyntaxError` tashlardi. Natijada foydalanuvchi
+  // «kutilmagan xato» ko'rardi va jurnalda haqiqiy sabab (502) yo'q
+  // edi — endpoint umuman ishlamayotgani bilinmasdi.
+  //
+  // 204 (No Content) va 304 da tana bo'sh — `text()` `""` qaytaradi,
+  // ya'ni `raw` bo'sh satr bo'lib qoladi va parse o'tkazib yuboriladi.
   const raw = await res.text();
-  const parsed = raw ? JSON.parse(raw) : null;
+  let parsed: { error?: { code?: string; message?: string; details?: Record<string, unknown> } } | null =
+    null;
+  if (raw) {
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      log.warn("api", "javob JSON emas", {
+        path,
+        status: res.status,
+        body: raw.slice(0, 200),
+      });
+    }
+  }
   if (!res.ok) {
     throw new ApiError(
       res.status,

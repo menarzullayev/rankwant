@@ -40,6 +40,12 @@ EXPECTED = [
     # Nightly builds the whole stack. Build cache used to be pruned by
     # ci.yml's smoke job; that job is gone (2026-09-20), so e2e prunes.
     (NIGHTLY, "load", [r"docker\s+rmi"]),
+    #: ⚠️ `e2e-browsers` (2026-09-28): brauzer matritsasi alohida jobga
+    #: ko'chgach u ham to'liq stack qurади, ya'ni tozalash SHART. Ro'yxatga
+    #: qo'shilmasa `check_negative` dagi «ikkinchi `Clean images` ni olib
+    #: tashla» testi uni ko'rmay qolardi va yolg'on yashil berardi
+    #: (o'lchandi: 1/4 salbiy test yiqildi).
+    (NIGHTLY, "e2e-browsers", [r"docker\s+rmi"]),
     (NIGHTLY, "e2e", [r"docker\s+rmi", r"builder\s+prune"]),
     (NIGHTLY, "chaos", [r"docker\s+rmi"]),
     (NIGHTLY, "compatibility", [r"docker\s+image\s+rm"]),

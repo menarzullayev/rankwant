@@ -16,10 +16,10 @@ import {
 import { getLocale } from "@/i18n/server";
 import { fill, t, topicNameInfo } from "@/i18n/messages";
 import { Icon } from "@/components/ui/Icon";
-import { ArchiveSidebar } from "@/components/ArchiveSidebar";
-import { ProblemFilters } from "@/components/ProblemFilters";
-import { FavouriteToggle } from "@/components/FavouriteToggle";
-import { TopicBadges } from "@/components/TopicBadges";
+import { ArchiveSidebar } from "@/components/layout/ArchiveSidebar";
+import { ProblemFilters } from "@/features/problems";
+import { FavouriteToggle } from "@/features/problems";
+import { TopicBadges } from "@/features/problems";
 import { Verdict } from "@/components/ui/Verdict";
 import {
   api,

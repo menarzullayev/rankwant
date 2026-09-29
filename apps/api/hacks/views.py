@@ -237,7 +237,7 @@ class HackViewSet(
         return Response({"number": room.number, "members": members})
 
 
-@crud_summaries(one="hack qulfi", many="hack qulflari")
+@crud_summaries(one="hack qulfi", many="hack qulflari", only=("create", "list"))
 class HackLockViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
@@ -253,6 +253,8 @@ class HackLockViewSet(
     serializer_class = HackLockSerializer
 
     def get_queryset(self):  # type: ignore[no-untyped-def]
+        if getattr(self, "swagger_fake_view", False):
+            return HackLock.objects.none()
         # Faqat O'Z locklaringiz: raqibning qaysi masalani lock qilgani
         # musobaqa davomida taktik ma'lumot.
         assert isinstance(self.request.user, User)

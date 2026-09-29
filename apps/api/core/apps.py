@@ -6,6 +6,12 @@ class CoreConfig(AppConfig):
     name = "core"
 
     def ready(self) -> None:
+        # drf-spectacular kengaytmasini RO'YXATDAN O'TKAZISH: import
+        # qilinishi bilanoq `OpenApiAuthenticationExtension` o'zini
+        # topadi. Busiz har view uchun "could not resolve authenticator"
+        # ogohlantirishi chiqadi (o'lchandi 2026-09-24: 138 tadan 114).
+        from core import schema_extensions  # noqa: F401
+
         # Guruh permission'lari migrate TUGAGACH paydo bo'ladi
         # (`auth_permission` post_migrate'da yaratiladi), shuning uchun
         # sinxronizatsiya shu signal orqali — idempotent (core/groups.py).

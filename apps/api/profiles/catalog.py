@@ -60,7 +60,7 @@ TECHNOLOGIES: dict[str, str] = {
 
 #: Grade or year of study (ADR-0024): school grades 1-11, bachelor years 1-4,
 #: master years 1-2, teacher and other. Free text could not be filtered or
-#: grouped. `apps/web/src/lib/grades.ts` mirrors this list, and
+#: grouped. `packages/shared/src/grades.ts` mirrors this list, and
 #: `tests/test_grades.py` keeps the two equal.
 GRADES: tuple[str, ...] = (
     *(str(n) for n in range(1, 12)),
@@ -95,7 +95,7 @@ UZ_REGIONS: tuple[str, ...] = (
 )
 
 #: Viloyat → tuman va viloyatga bo'ysunuvchi shahar kodlari (shahar `-sh` bilan
-#: tugaydi). Nomlar frontendda (`apps/web/src/lib/regions.ts`) — kodlar AYNAN
+#: tugaydi). Nomlar frontendda (`packages/shared/src/regions.ts`) — kodlar AYNAN
 #: bir xil bo'lishi `tests/test_profile_phase3.py` da tekshiriladi.
 UZ_DISTRICTS: dict[str, tuple[str, ...]] = {
     "toshkent-shahri": (

@@ -20,12 +20,14 @@ import { OverlayProvider } from "@/components/overlay/OverlayHost";
 import { startChiziq } from "@/lib/chiziq";
 import AppFooter from "./AppFooter";
 import AppHeader from "./AppHeader";
-import { VerifyBanner } from "@/components/VerifyBanner";
+import {
+  ContestInvite,
+  GeoNudge,
+  VerifyBanner,
+  WelcomeNotice,
+} from "./banners";
 import { Customizer } from "@/components/customizer/Customizer";
 import { CUSTOMIZER_ENABLED } from "@/lib/theme/flag";
-import { GeoNudge } from "@/components/GeoNudge";
-import { ContestInvite } from "@/components/ContestInvite";
-import { WelcomeNotice } from "@/components/WelcomeNotice";
 import AppSidebar from "./AppSidebar";
 import AppTopNav from "./AppTopNav";
 import { SkipLink } from "./SkipLink";
@@ -96,7 +98,13 @@ function Shell({ children }: { children: React.ReactNode }) {
       <SkipLink />
       {sidenav && <AppSidebar />}
       {sidenav && isMobileOpen && (
+        // Parda — fon bosilganda yopiladi. `role="presentation"`:
+        // ekran o'quvchi uni element sifatida e'lon qilmaydi (u faqat
+        // vizual qatlam), lekin `onClick` bor. Yopishning asosiy yo'li
+        // — menyu ichidagi «yopish» tugmasi va `Escape`, ya'ni bu
+        // sichqoncha **yordamchisi**, yagona yo'l emas.
         <div
+          role="presentation"
           className="fixed inset-0 z-40 bg-gray-900/50 lg:hidden"
           onClick={closeMobileSidebar}
         />

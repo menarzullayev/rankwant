@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 
-import { SettingsShell } from "@/components/settings/SettingsShell";
-import { SECTIONS, isSection } from "@/components/settings/sections";
+import { SettingsShell } from "@/features/account";
+import { SECTIONS, isSection } from "@/features/account";
 import { t } from "@/i18n/messages";
 import { getLocale } from "@/i18n/server";
 import type { Me } from "@/lib/api";

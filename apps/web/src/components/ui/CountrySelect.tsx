@@ -4,7 +4,7 @@ import { CountryFlag } from "@/components/ui/CountryFlag";
 import { Dropdown } from "@/components/ui/Dropdown";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
-import { countryName, countryOptions } from "@/lib/countries";
+import { countryName, countryOptions } from "@rankwant/shared/countries";
 
 /** Mamlakat tanlagichi — yagona `Dropdown` qolipi, bayroqlar bilan.
  *

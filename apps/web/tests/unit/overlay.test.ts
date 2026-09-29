@@ -85,7 +85,7 @@ describe("placeNear", () => {
 
 describe("overlay CSS", () => {
   const css = readFileSync(
-    fileURLToPath(new URL("../../src/app/globals.css", import.meta.url)),
+    fileURLToPath(new URL("../../src/app/theme.css", import.meta.url)),
     "utf8",
   );
 

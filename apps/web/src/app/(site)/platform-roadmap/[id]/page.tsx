@@ -3,10 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Card } from "@/components/ui/Card";
-import { Markdown } from "@/components/Markdown";
-import { RoadmapCommentForm } from "@/components/RoadmapCommentForm";
-import { RoadmapStatusBadge } from "@/components/RoadmapStatusBadge";
-import { RoadmapVote } from "@/components/RoadmapVote";
+import { Markdown } from "@/components/ui/Markdown";
+import { RoadmapCommentForm } from "@/features/roadmap";
+import { RoadmapStatusBadge } from "@/features/roadmap";
+import { RoadmapVote } from "@/features/roadmap";
 import { getLocale } from "@/i18n/server";
 import { localeAlternatesFor } from "@/i18n/locale-alternates.server";
 import { date, t } from "@/i18n/messages";

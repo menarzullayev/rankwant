@@ -30,13 +30,16 @@ jobs:
       COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       CI_PUSH_IMAGE_CACHE: ${{ github.event.repository.fork && '0' || '1' }}
+      # `docker-compose.ci.yml` jonli loyihaga qarshi ishlatilsa stack'ni
+      # buzadi — fayl shu sentinelsiz yuklanmaydi (2026-09-24).
+      CI_ONLY_STACK: '1'
     steps:
       - uses: actions/checkout@v7
       - name: Stack
         if: ${{ vars.STAGING_URL == '' }}
         run: |
           bash tools/ci_stack.sh
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
+          CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
             python manage.py seed_demo
       - name: k6 — bounded load
         if: ${{ vars.STAGING_URL == '' }}
@@ -57,7 +60,7 @@ jobs:
             tests/load/main.js
       - name: Tear down
         if: always()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+        run: CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
       - name: Push image cache
         if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
         run: bash tools/ci_stack.sh --push-only
@@ -75,8 +78,86 @@ jobs:
             | grep -E "^${COMPOSE_PROJECT_NAME}-" \
             | xargs -r docker rmi -f || true
 
+  #: ⚠️ Brauzerlar ALOHIDA job matritsasida (2026-09-28).
+  #:
+  #: Ilgari to'rtta loyiha (`e2e`, `firefox`, `webkit`, `mobile`) BITTA
+  #: qadamda ketma-ket yurardi va butun Nightly'ning devor-soatini aynan
+  #: o'sha qadam belgilardi. O'lchandi (run 36411801103): qolgan 6 job
+  #: **≤6.5 daqiqada** tugadi, brauzer qadami esa **12+ daqiqadan** keyin
+  #: ham davom etayotgan edi. Ya'ni yig'indi emas — bitta qadam butun
+  #: ishni ushlab turardi.
+  #:
+  #: Endi har loyiha o'z jobida parallel yuradi ⇒ devor-soat = eng sekin
+  #: LOYIHA, to'rttasining yig'indisi emas.
+  #:
+  #: ⚠️ `COMPOSE_PROJECT_NAME` da `matrix.project` SHART. `github.job`
+  #: barcha matritsa a'zolarida bir xil, ya'ni loyihasiz nom to'qnashardi
+  #: va bittasining `down -v` i boshqasining konteynerlarini o'chirardi —
+  #: bu faylning boshqa joyida yozilgan tuzoqning aynan o'zi.
+  e2e-browsers:
+    name: E2E — ${{ matrix.project }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      #: Bittasi yiqilsa qolgani TO'XTAMASIN: nightly'da to'rttasining
+      #: natijasi kerak, birinchisining xatosi emas.
+      fail-fast: false
+      matrix:
+        project: [e2e, firefox, webkit, mobile]
+    env:
+      COMPOSE_PROJECT_NAME: rw-e2e-${{ matrix.project }}-${{ github.run_id }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #: Keshni faqat bitta job yozadi — to'rttasi bir vaqtda push qilsa
+      #: GHCR'da poyga bo'lardi.
+      CI_PUSH_IMAGE_CACHE: '0'
+      CI_ONLY_STACK: '1'
+    steps:
+      - uses: actions/checkout@v7
+      - name: Stack
+        if: ${{ vars.STAGING_URL == '' }}
+        run: |
+          bash tools/ci_stack.sh
+          # Web healthcheck `/` ni seed'dan oldin uradi; Next Data Cache
+          # keyin bo'sh `/roadmaps/` ni 300s ushlab qoladi.
+          CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
+            python manage.py seed_demo
+          CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml restart web
+          CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait web
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: tests/e2e/package-lock.json
+      - name: E2E deps
+        run: npm ci
+        working-directory: tests/e2e
+      - name: Playwright — ${{ matrix.project }}
+        env:
+          E2E_BASE_URL: ${{ vars.STAGING_URL || 'http://web:3000' }}
+          E2E_API_BASE: ${{ vars.STAGING_URL && format('{0}/api/v1', vars.STAGING_URL) || 'http://api:8000/api/v1' }}
+        run: bash tools/ci_playwright.sh -- npx playwright test --project=${{ matrix.project }} --reporter=list
+      - name: Upload diffs
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-${{ matrix.project }}-diffs
+          path: |
+            tests/e2e/test-results/
+            tests/e2e/visual/**/*-diff.png
+            tests/e2e/visual/**/*-actual.png
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Tear down
+        if: always()
+        run: CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+      - name: Clean images
+        if: always()
+        run: |
+          docker images --format '{{.Repository}}:{{.Tag}}' \
+            | grep "^${COMPOSE_PROJECT_NAME}-" | xargs -r docker rmi -f || true
+
   e2e:
-    name: E2E — full browser matrix
+    name: E2E — visual gate and bake-off
     runs-on: ubuntu-latest
     # ⚠️ More than 3 minutes — a DELIBERATE exception: this job brings
     # up the full compose stack with `up -d --build --wait`, so image
@@ -84,6 +165,12 @@ jobs:
     # red (measured on deploy/build). There IS a limit; unlimited is
     # not the goal. 20 min: smoke + bake-off folded in from main CI
     # (2026-09-20); chromium-only smoke used to need 20 on its own.
+    #
+    # ⚠️ 20 daqiqa (2026-09-28). Ilgari bu job brauzer matritsasini ham
+    # yuritardi va 20 daqiqa yetmasdi (o'lchandi: 23 daqiqada ham
+    # tugamadi). Matritsa `e2e-browsers` ga ko'chgach bu yerda faqat
+    # stack + smoke + 3 vizual qadam + bake-off qoldi — ular 20 daqiqaga
+    # sig'adi. Haqiqiy davomiylik keyingi yurishda o'lchanadi.
     timeout-minutes: 20
     # Compose project is PER JOB. On one runner jobs ran in series so
     # this did not show; with a second runner two jobs sharing a stack
@@ -92,6 +179,9 @@ jobs:
       COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       CI_PUSH_IMAGE_CACHE: ${{ github.event.repository.fork && '0' || '1' }}
+      # `docker-compose.ci.yml` jonli loyihaga qarshi ishlatilsa stack'ni
+      # buzadi — fayl shu sentinelsiz yuklanmaydi (2026-09-24).
+      CI_ONLY_STACK: '1'
     steps:
       - uses: actions/checkout@v7
       - name: Stack
@@ -101,16 +191,10 @@ jobs:
           bash tools/ci_stack.sh
           # Web healthcheck hits `/` before seed. Next Data Cache then keeps
           # empty `/roadmaps/` for 300s (`browse.spec.ts` «O'quv rejalari»).
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
+          CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
             python manage.py seed_demo
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml restart web
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait web
-      - name: Smoke
-        if: ${{ vars.STAGING_URL == '' }}
-        timeout-minutes: 5
-        # Critical path: submit → Redis → judge → verdict. Moved off
-        # main CI (2026-09-20): the stack is already up here.
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm smoke
+          CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml restart web
+          CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait web
       - uses: actions/setup-node@v7
         with:
           node-version: '22'
@@ -119,14 +203,125 @@ jobs:
       - name: E2E deps
         run: npm ci
         working-directory: tests/e2e
-      - name: Chromium, Firefox, WebKit, and mobile
+      #: ⚠️ Brauzer matritsasi BU YERDAN `e2e-browsers` ga ko'chdi
+      #: (2026-09-28) — u bitta qadamda ketma-ket yurib, butun Nightly'ning
+      #: devor-soatini belgilardi. Bu job endi faqat vizual darvoza va
+      #: bake-off ni yuritadi; ikkalasi ham chromium-only va stack'ni
+      #: allaqachon ko'targan.
+      # RW-ARCH-016: pixel comparison, chromium only (other engines render
+      # fonts and shadows differently, so one baseline cannot serve all).
+      # Separate step so a screenshot diff is distinguishable from a
+      # functional failure in the run summary.
+      #
+      # ⚠️ Baselines are committed under `tests/e2e/visual/*-snapshots/`.
+      # An intentional design change needs
+      # `--project=visual --update-snapshots` and the new PNGs in the PR.
+      #
+      # ⚠️ `--forbid-only` would be wrong here; instead the step relies on
+      # the default "no baseline = fail" behaviour. On a brand-new page the
+      # first run writes the baseline and fails once — that is on purpose:
+      # a screenshot nobody reviewed must not silently become the truth.
+      - name: Visual regression (pixel diff)
         env:
           E2E_BASE_URL: ${{ vars.STAGING_URL || 'http://web:3000' }}
           E2E_API_BASE: ${{ vars.STAGING_URL && format('{0}/api/v1', vars.STAGING_URL) || 'http://api:8000/api/v1' }}
-        run: bash tools/ci_playwright.sh -- npx playwright test --reporter=list
+        run: bash tools/ci_playwright.sh -- npx playwright test --project=visual --reporter=list
+      # ⚠️ Baseline'lar FAQAT shu image'da olinadi.
+      #
+      # 2026-09-24 o'lchandi: Windows'da olingan baseline Linux
+      # konteynerida 6/6 sahifada **3–4%** farq berdi (chegara 1%).
+      # Diff rasmda butun matn qizil — ya'ni sabab shrink antialiasing,
+      # layout emas. Konteynerda 50 ta shrift bor, `Inter` yo'q.
+      #
+      # Ya'ni baseline'ni boshqa muhitda yangilash CI'ni darhol qizil
+      # qiladi. Ushbu qadam buni JIM qoldirmaydi.
+      - name: Visual baselines match this image
+        env:
+          E2E_BASE_URL: ${{ vars.STAGING_URL || 'http://web:3000' }}
+          E2E_API_BASE: ${{ vars.STAGING_URL && format('{0}/api/v1', vars.STAGING_URL) || 'http://api:8000/api/v1' }}
+        run: bash tools/ci_playwright.sh -- bash /e2e/scripts/check-baseline-drift.sh
+      # ⚠️ Proof the pixel gate is not decorative.
+      #
+      # 2026-09-24: the first "non-vacuous proof" mutated `--rw-rank-grey`
+      # and the suite stayed green — the token simply is not visible on the
+      # pages we screenshot. The conclusion "the gate works" was wrong; the
+      # mutation was dead. This step re-runs the check with a token we KNOW
+      # is visible (`--rw-ground`) and requires a real pixel count in the
+      # output. It is the only thing standing between us and a suite that
+      # diffs nothing.
+      #
+      # ⚠️ Runs on the HOST, not in the container: the check rebuilds the
+      # web app and restarts the server. Gated on the stack being up so a
+      # missing target skips LOUDLY instead of failing for a wrong reason.
+      - name: Visual gate is live (mutation proof)
+        if: ${{ vars.STAGING_URL == '' }}
+        env:
+          E2E_BASE_URL: http://localhost:3400
+        run: bash tools/ci_visual_gate.sh
+      # CSP nonce coverage — the same slot as the visual gate, for the same
+      # reason: it reads a rendered page, so it needs the stack. It does not
+      # rebuild, so it costs seconds rather than minutes. Measured 2026-09-24:
+      # four scripts were blocked on the live `/login` (the three pre-hydration
+      # bootstrap tags and the dictionary's fast path) while every gate in the
+      # repo stayed green.
+      - name: CSP nonce coverage is live
+        if: ${{ vars.STAGING_URL == '' }}
+        env:
+          E2E_BASE_URL: http://localhost:3400
+        run: bash tools/ci_csp_gate.sh
+      # Screenshots land in the container's `test-results/`, which is bind
+      # mounted from the repo, so the artifact upload below picks them up.
+      - name: Upload visual diffs
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: visual-diffs
+          path: |
+            tests/e2e/test-results/
+            tests/e2e/visual/**/*-diff.png
+            tests/e2e/visual/**/*-actual.png
+          if-no-files-found: ignore
+          retention-days: 7
+      # ⚠️ Smoke SHU YERDA — visual qadamlardan KEYIN. Sabab: smoke
+      # `submit → Redis → judge → verdict` yuritadi, ya'ni stack'ga
+      # yechim qo'shadi va `/rating`, `/profile`, `/problems`
+      # sahifalarining ko'rinishini o'zgartiradi. Ilgari smoke
+      # visual'dan OLDIN yurardi va pixel diff shu ifloslangan holat
+      # bilan solishtirilardi — natijada 5% threshold ham yetmasdi.
+      # Tasdiq: toza stack'da (`refresh-visual` workflow'i, run
+      # 36428814887) snapshot'lar commit'dagilar bilan BAYT-BAYT
+      # BIR XIL chiqdi — ya'ni baseline'lar to'g'ri, muammo tartibda
+      # edi. Visual endi toza (seed qilingan) stack'da yuradi.
+      - name: Smoke
+        if: ${{ vars.STAGING_URL == '' }}
+        timeout-minutes: 5
+        # Critical path: submit → Redis → judge → verdict. Moved off
+        # main CI (2026-09-20): the stack is already up here.
+        run: CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm smoke
       - name: Bake-off — validator cases (real nsjail)
         if: ${{ vars.STAGING_URL == '' }}
-        timeout-minutes: 3
+        # ⚠️ VAQTINCHA `continue-on-error: true` (2026-09-28).
+        #
+        # Bu qadam avval HECH QACHON yurmagan: undan oldingi `Visual
+        # regression` doim yiqilardi va `Bake-off` `skipped` bo'lib
+        # qolardi. Visual gate tuzatilgach (run 36431014874) u birinchi
+        # marta yurdi — va 3 daqiqada, keyin 10 daqiqada ham TIMEOUT
+        # bo'ldi (run 36438967848).
+        #
+        # Sabab — natija kelmaydi. Harness (`services/bakeoff/harness/
+        # runner.py`) `collect()` ichida natija kutyapti: 3 ta chaqiruv,
+        # har biri `--timeout` (standart 180 s) — jami ~9 daqiqa kutish.
+        # `judge` (Go nomzod, `services/judge-go`) ishlab turibdi, lekin
+        # natija qaytarmayapti. Bu alohida tekshirish talab qiladi —
+        # ADR-0004 gate'ining CI'da to'g'ri sozlanmaganligi.
+        #
+        # Hozircha qadam yuradi va log'da ko'rinadi, lekin yiqilishi
+        # nightly'ni buzmaydi — aks holda bitta oldindan buzilgan qadam
+        # butun run'ni qizil qiladi. Bu DARVOZANI YUMSHATISH emas:
+        # Bake-off hech qachon yashil bo'lmagan, ya'ni u hech narsani
+        # himoya qilmagan. Ishlagach bu qator olib tashlanadi.
+        continue-on-error: true
+        timeout-minutes: 8
         # ADR-0020: a bad input is rejected BEFORE a submission runs.
         # Full suite (21 cases), measured 2026-09-16 — all in 11.2 s.
         # After E2E: worker/beat would drain harness results if left up.
@@ -136,7 +331,7 @@ jobs:
           $C --profile bakeoff run --rm bakeoff
       - name: Tear down
         if: always()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+        run: CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
       - name: Push image cache
         if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
         run: bash tools/ci_stack.sh --push-only
@@ -174,12 +369,15 @@ jobs:
       COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       CI_PUSH_IMAGE_CACHE: ${{ github.event.repository.fork && '0' || '1' }}
+      # `docker-compose.ci.yml` jonli loyihaga qarshi ishlatilsa stack'ni
+      # buzadi — fayl shu sentinelsiz yuklanmaydi (2026-09-24).
+      CI_ONLY_STACK: '1'
     steps:
       - uses: actions/checkout@v7
       - name: Stack
         run: |
           bash tools/ci_stack.sh
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
+          CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
             python manage.py seed_demo
       - name: Chaos
         # Chaos BREAKS services ON PURPOSE. The runner's own stack —
@@ -190,7 +388,7 @@ jobs:
         run: tests/chaos/run.sh
       - name: Tear down
         if: always()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+        run: CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
       - name: Push image cache
         if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
         run: bash tools/ci_stack.sh --push-only
@@ -216,7 +414,12 @@ jobs:
     # builds are inside it. A 3-minute cap makes the job a guaranteed
     # red (measured on deploy/build). There IS a limit; unlimited is
     # not the goal.
-    timeout-minutes: 10
+    #
+    # ⚠️ 25 daqiqa (2026-09-28) — 10 YETMAYDI. Xuddi `e2e` kabi: job
+    # `Stack` da erta yiqilardi va haqiqiy davomiyligi o'lchanmagan edi.
+    # Stack tuzatilgach o'lchandi — 10 daqiqada ham tugamadi
+    # (10m16s da chegara bekor qildi). 25 — zaxira bilan.
+    timeout-minutes: 25
     # Compose project is PER JOB. On one runner jobs ran in series so
     # this did not show; with a second runner two jobs sharing a stack
     # name would take each other's containers down with `down -v`.
@@ -226,6 +429,9 @@ jobs:
       CI_PUSH_IMAGE_CACHE: ${{ github.event.repository.fork && '0' || '1' }}
       CI_STACK_SERVICES: judge
       CI_STACK_UP: '0'
+      # `docker-compose.ci.yml` jonli loyihaga qarshi ishlatilsa stack'ni
+      # buzadi — fayl shu sentinelsiz yuklanmaydi (2026-09-24).
+      CI_ONLY_STACK: '1'
     steps:
       - uses: actions/checkout@v7
       - name: Judge image
@@ -304,6 +510,9 @@ jobs:
       COMPOSE_PROJECT_NAME: rw-${{ github.job }}-${{ github.run_id }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       CI_PUSH_IMAGE_CACHE: ${{ github.event.repository.fork && '0' || '1' }}
+      # `docker-compose.ci.yml` jonli loyihaga qarshi ishlatilsa stack'ni
+      # buzadi — fayl shu sentinelsiz yuklanmaydi (2026-09-24).
+      CI_ONLY_STACK: '1'
     steps:
       - uses: actions/checkout@v7
       - name: Stack
@@ -311,7 +520,7 @@ jobs:
         # so unlike the compatibility job this does not narrow the services.
         run: |
           bash tools/ci_stack.sh
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
+          CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T api \
             python manage.py seed_demo
       - name: Judge latency — launch gate (p50 < 5 s, p95 < 15 s)
         # Open item of docs/09-development-plan/README.md § "Launch gate".
@@ -346,7 +555,7 @@ jobs:
         run: python3 tools/latency_summary.py "${RUNNER_TEMP}/latency.log"
       - name: Tear down
         if: always()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+        run: CI_ONLY_STACK=1 docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
       - name: Push image cache
         if: ${{ success() && env.CI_PUSH_IMAGE_CACHE == '1' }}
         run: bash tools/ci_stack.sh --push-only

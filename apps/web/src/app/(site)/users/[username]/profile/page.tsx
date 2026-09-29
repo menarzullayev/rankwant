@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { AboutTab } from "@/components/profile/AboutTab";
+import { AboutTab } from "@/features/profile";
 import { loadProfile, tabMetadata } from "@/lib/profile.server";
 import { getLocale } from "@/i18n/server";
 

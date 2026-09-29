@@ -322,6 +322,20 @@ SPECTACULAR_SETTINGS = {
         "RoleEnum": "content.models.ArticleProblemLink.Role",
         "ExternalProfileKindEnum": "profiles.models.ExternalProfile.Kind",
         "TeamRoleEnum": "profiles.models.TeamMember.Role",
+        # `kind` — to'rtta modelda uchraydi. Nom barqaror bo'lmasa
+        # drf-spectacular xesh qo'shib (`Kind598Enum`), generatsiya qilingan
+        # TS tipi har safar o'zgarib ketardi.
+        "SchoolKindEnum": "core.models.School.Kind",
+        "PostKindEnum": "blog.models.Post.Kind",
+        "ArticleKindEnum": "content.models.Article.Kind",
+        "SystemUpdateKindEnum": "updates.models.SystemUpdate.Kind",
+        # `status` — to'rtta modelda.
+        "SystemUpdateStatusEnum": "updates.models.SystemUpdate.Status",
+        "HackStatusEnum": "hacks.models.Hack.Status",
+        "DuelStatusEnum": "duels.models.Duel.Status",
+        "RoadmapItemStatusEnum": "roadmap.models.RoadmapItem.Status",
+        # `reason` — bitta model, lekin xesh bilan kelgan edi.
+        "ProblemReportReasonEnum": "problems.models.ProblemReport.Reason",
     },
     "TITLE": "RankWant API",
     "DESCRIPTION": "Sport dasturlash va olimpiada platformasi — ochiq REST API",
@@ -331,6 +345,13 @@ SPECTACULAR_SETTINGS = {
 }
 
 # ── Judge — ADR-0004 ─────────────────────────────────────────────────
+# Judge navbati ALOHIDA Redis'da (ADR-0028): judge konteyneri faqat
+# `judge-net` (internal) tarmog'ida, sessiya/broker Redis'iga tarmoq
+# darajasida yo'q. Shu sababli navbat endpoint'i ikki tomonda ham
+# sozlanadigan seam: API/worker bu yerdan navbatga yozadi/o'qiydi,
+# judge esa o'z compose env'ida `REDIS_URL: redis://judge-queue:6379/0`
+# oladi. Bo'sh bo'lsa sessiya Redis'i — bir tarmoqli eskirgan rejim.
+JUDGE_QUEUE_URL = os.environ.get("JUDGE_QUEUE_URL", "") or REDIS_URL
 JUDGE_PROVIDER = env("JUDGE_PROVIDER", "redis")
 JUDGE_JOBS_KEY = "rankwant:judge:jobs"
 JUDGE_RESULTS_KEY = "rankwant:judge:results"

@@ -77,6 +77,12 @@ class OrganizerContestViewSet(
     lookup_field = "slug"
 
     def get_queryset(self) -> Any:
+        # Sxema generatsiyasida `request.user` — AnonymousUser, ya'ni
+        # `organized_contests` yo'q va drf-spectacular modelni topa
+        # olmaydi (o'lchandi 2026-09-24). Modelning o'zidan bo'sh
+        # queryset qaytaramiz — u tur ma'lumotini beradi.
+        if getattr(self, "swagger_fake_view", False):
+            return Contest.objects.none()
         assert self.request.user.is_authenticated
         return (
             self.request.user.organized_contests.all()

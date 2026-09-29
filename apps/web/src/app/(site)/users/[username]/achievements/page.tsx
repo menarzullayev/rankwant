@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { AchievementsTab } from "@/components/profile/ActivityTabs";
+import { AchievementsTab } from "@/features/profile/server";
 import { getLocale } from "@/i18n/server";
 import { loadProfile, tabMetadata } from "@/lib/profile.server";
 

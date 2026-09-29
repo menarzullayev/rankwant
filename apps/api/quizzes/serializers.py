@@ -55,7 +55,7 @@ class QuizDetailSerializer(QuizSerializer):
         return [QuestionPublicSerializer(i.question).data for i in items]
 
 
-class SubmitSerializer(serializers.Serializer[dict[str, Any]]):
+class QuizSubmitSerializer(serializers.Serializer[dict[str, Any]]):
     answers = serializers.DictField(child=serializers.IntegerField(), allow_empty=True)
 
     def validate_answers(self, value: dict[str, int]) -> dict[int, int]:

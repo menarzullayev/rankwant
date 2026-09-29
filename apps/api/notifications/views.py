@@ -27,6 +27,8 @@ class NotificationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet[Notific
     pagination_class = TimeCursorPagination
 
     def get_queryset(self):  # type: ignore[no-untyped-def]
+        if getattr(self, "swagger_fake_view", False):
+            return Notification.objects.none()
         assert isinstance(self.request.user, User)
         qs = Notification.objects.filter(user=self.request.user)
         if self.request.query_params.get("unread") == "true":

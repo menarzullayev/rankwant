@@ -16,7 +16,7 @@ function src(rel: string): string {
 
 const customizer = src("../../src/components/customizer/Customizer.tsx");
 const appearance = src("../../src/components/customizer/AppearanceTab.tsx");
-const settings = src("../../src/components/settings/AppearanceSection.tsx");
+const settings = src("../../src/features/account/components/AppearanceSection.tsx");
 const search = src("../../src/layout/SearchBox.tsx");
 const overlay = src("../../src/components/overlay/OverlayHost.tsx");
 const chrome = src("../../src/components/customizer/chrome.ts");

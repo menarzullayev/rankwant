@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { AttemptView } from "@/components/AttemptView";
+import { AttemptView } from "@/features/submissions";
 import { fill, t } from "@/i18n/messages";
 import { getLocale } from "@/i18n/server";
 

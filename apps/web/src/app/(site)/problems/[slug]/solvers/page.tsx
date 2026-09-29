@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { ProblemTabs } from "@/components/ProblemTabs";
+import { ProblemTabs } from "@/features/problems";
 import { Card } from "@/components/ui/Card";
 import { date, fill, t, type Locale } from "@/i18n/messages";
 import { getLocale } from "@/i18n/server";

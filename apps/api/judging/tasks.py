@@ -7,8 +7,10 @@ from datetime import timedelta
 
 from celery import shared_task
 
+from judging.models import Attempt
 from judging.provider import get_provider
 from judging.services import apply_custom_result, apply_result
+from realtime.events import publish_verdict
 
 log = logging.getLogger(__name__)
 
@@ -55,6 +57,15 @@ def drain_results(max_items: int = 500) -> int:
                 handled = apply_result(result)
             if handled is not None:
                 applied += 1
+                #: Jonli yangilanish (ADR-0029 §6). ⚠️ Nashr AYNAN shu
+                #: yerda — `apply_result` `@transaction.atomic` bo'lgani
+                #: uchun shu paytda verdikt haqiqatan commit qilingan.
+                #: Ichkarida chaqirilsa obunachi hali ko'rinmaydigan
+                #: qator haqida xabar olardi.
+                #: `isinstance` shart: `handled` hack va custom-run
+                #: natijalari uchun ham boshqa tur qaytaradi.
+                if isinstance(handled, Attempt):
+                    publish_verdict(handled)
         except Exception:
             log.exception("natijani yozib bo'lmadi: %s", result.get("job_id"))
     return applied

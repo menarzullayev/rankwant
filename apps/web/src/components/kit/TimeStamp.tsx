@@ -9,7 +9,7 @@ import {
   formatRelative,
   isoDay,
   type DateKit,
-} from "@/lib/format";
+} from "@rankwant/shared/format";
 import type { TimeTone } from "@/lib/theme/kit";
 
 const HOUR = 3600_000;

@@ -1,8 +1,8 @@
 import type { Metadata, Route } from "next";
 import { notFound, redirect } from "next/navigation";
 
-import { ProfileCard } from "@/components/profile/ProfileCard";
-import { ProfileNav } from "@/components/profile/ProfileNav";
+import { ProfileCard } from "@/features/profile";
+import { ProfileNav } from "@/features/profile";
 import { StatCard } from "@/components/ui/Card";
 import { fill, t, type Locale } from "@/i18n/messages";
 import { getLocale } from "@/i18n/server";

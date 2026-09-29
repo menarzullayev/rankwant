@@ -60,7 +60,7 @@ export default function HeaderStatus() {
       >
         <Icon name="notification.bell" />
         {unread > 0 && (
-          <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full rw-accent-bg px-1 text-[10px] font-semibold text-white">
+          <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full rw-accent-bg px-1 text-theme-2xs font-semibold text-white">
             {unread > 99 ? "99+" : unread}
           </span>
         )}

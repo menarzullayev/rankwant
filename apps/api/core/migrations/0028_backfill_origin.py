@@ -18,6 +18,10 @@ def _noop(apps, schema_editor) -> None:
 class Migration(migrations.Migration):
     dependencies = [
         ("core", "0027_user_origin"),
+        # Upstream zanjiriga ulash — aks holda 0026_client_log alohida barg
+        # bo'lib qoladi ("multiple leaf nodes" xatosi, merge'dan keyin
+        # o'lchandi).
+        ("core", "0026_client_log"),
     ]
 
     operations = [

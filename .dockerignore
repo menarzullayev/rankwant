@@ -1,0 +1,62 @@
+# Build konteksti — REPO ILDIZI (`docker-compose.yml`, `web.build.context: .`).
+#
+# Nega kerak: kesh qatlamining kaliti kontekst fayllari mazmuniga bog'lanadi.
+# Keraksiz narsa kontekstda turishi `COPY . .` qatlamini behuda bekor qiladi
+# va kontekstni Docker daemon'ga yuborishni sekinlashtiradi.
+#
+# O'lchandi: `node_modules` 663 MB, `apps/web/.next` 634 MB — ikkalasi ham
+# deps/build bosqichlarida QAYTA yaratiladi, ya'ni ularni yuborish faqat
+# zarar beradi. `.git` tarixi ham (100+ MB) kerak emas: commit `GIT_SHA`
+# build-arg orqali keladi.
+#
+# ⚠️ `packages/shared/src` va `apps/web/src` CHIQARILMAYDI — ular build
+# uchun kerak. Faqat hosil bo'ladigan artefaktlar tashlanadi.
+
+# Bog'liqliklar `npm ci` bilan o'rnatiladi (deps bosqichi).
+node_modules/
+**/node_modules/
+
+# Build chiqishi `npm run build` bilan yaratiladi (build bosqichi).
+.next/
+**/.next/
+**/out/
+**/tsconfig.tsbuildinfo
+
+# Git tarixi va muhit fayllari.
+.git/
+.gitignore
+.env
+.env.*
+!.env.example
+
+# O'lchov uchun vaqtinchalik daraxtlar (`_t8`, `_t9`, `_fontcap`).
+_t[0-9]*/
+_fontcap/
+_oa.diff
+
+# Hujjatlar va testlar — runtime'ga ta'siri yo'q.
+docs/
+tests/
+.github/
+.handoff/
+
+# Python tomoni: web imiji uchun kerak emas.
+apps/api/
+services/
+
+# Python kesh qoldiqlari.
+**/__pycache__/
+**/*.py[cod]
+**/.venv/
+**/.mypy_cache/
+**/.ruff_cache/
+**/.pytest_cache/
+
+# Docker va git metadatasi.
+**/.dockerignore
+**/Dockerfile
+docker-compose*.yml
+compose/
+
+# CI/CD jurnali.
+ci-cd.log

@@ -46,7 +46,10 @@ def profil(user: User, viewer: User | None = None) -> Any:
 
 
 def test_tuman_kodlari_web_katalogi_bilan_bir_xil() -> None:
-    source = (ROOT / "apps/web/src/lib/regions.ts").read_text(encoding="utf-8")
+    # ⚠️ Yo'l `packages/shared/src/regions.ts` (2026-09-24). Monorepo
+    # restrukturizatsiyasidan keyin katalog `apps/web/src/lib/` dan
+    # `@rankwant/shared` paketiga ko'chdi.
+    source = (ROOT / "packages/shared/src/regions.ts").read_text(encoding="utf-8")
     web: dict[str, list[str]] = {}
     for code, region in re.findall(r'\["([a-z0-9-]+)", "([a-z-]+)", "(?:t|sh)"', source):
         web.setdefault(region, []).append(code)

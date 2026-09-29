@@ -1,14 +1,6 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
-import {
-  DM_Sans,
-  Lexend,
-  IBM_Plex_Mono,
-  IBM_Plex_Serif,
-  Inter,
-  Plus_Jakarta_Sans,
-  Roboto,
-} from "next/font/google";
+import { cookies, headers } from "next/headers";
+import { dmSans, inter, jakarta, lexend, plexMono, plexSerif, roboto } from "./fonts";
 import AppShell from "@/layout/AppShell";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
 import { localeAlternatesFor } from "@/i18n/locale-alternates.server";
@@ -24,94 +16,23 @@ import { SITE_INDEXABLE, SITE_URL } from "@/lib/site";
 
 const TITLE = "RankWant — reyting xohlaganlar uchun";
 
-/** Uslub shriftlari — endi o'z domenimizdan beriladi: `next/font`
- *  ularni BUILD vaqtida yuklab oladi va `/_next/static/media/` dan
- *  xizmat qiladi, ya'ni ishlash paytida Google'ga hech qanday so'rov
- *  ketmaydi (ilgari `fonts.googleapis.com` dan render-bloklovchi CSS
- *  olinardi).
+/** Uslub shriftlari (`terminal`, `editorial`) va foydalanuvchi
+ *  tanlaydigan shriftlar (`D13`) — ta'riflar `./fonts.ts` da.
  *
- * `preload: false` ATAYLAB. Bu ikki oilani 12 uslubdan faqat ikkitasi
- * ishlatadi (`terminal` va `editorial`), standart uslub esa `clay` —
- * ya'ni ko'pchilik foydalanuvchi ularni umuman ko'rmaydi. Preload
- * bo'lsa brauzer fayllarni DARHOL tortardi; usiz esa `@font-face`
- * faqat haqiqatan ishlatilganda yuklanadi.
+ *  Endi ular repodan beriladi (`src/fonts/`), Google'dan emas: har
+ *  `next build` jonli HTTPS so'rov qilardi va Google javobining
+ *  barqaror emasligi sababli CI tasodifiy yiqilardi
+ *  (vercel/next.js#99114). Batafsil sabab `fonts.ts` boshida.
  *
- * `cyrillic` — ru/kk/ky/tg uchun, `latin-ext` — tr va qoraqalpoq
- * harflari uchun. Usiz o'sha tillarda matn zaxira shriftga tushardi.
- */
-const plexMono = IBM_Plex_Mono({
-  subsets: ["latin", "latin-ext", "cyrillic"],
-  weight: ["400", "500", "600"],
-  variable: "--rw-plex-mono",
-  display: "swap",
-  preload: false,
-});
-
-const plexSerif = IBM_Plex_Serif({
-  subsets: ["latin", "latin-ext", "cyrillic"],
-  weight: ["400", "600"],
-  style: ["normal", "italic"],
-  variable: "--rw-plex-serif",
-  display: "swap",
-  preload: false,
-});
-
-/** Foydalanuvchi tanlaydigan shriftlar (D13).
- *
- *  ⚠️ `preload: false` — SHART: `next/font` fayllarni o'zimizda saqlaydi
- *  (tashqi so'rov yo'q, maxfiylik saqlanadi), lekin preload qilinsa
- *  brauzer TO'RTALASINI ham yuklab olardi. Usiz faqat tanlangani
- *  yuklanadi — `@font-face` e'lon qilinadi, lekin ishlatilmaguncha
- *  so'ralmaydi.
+ *  `preload: false` ATAYLAB: uslub shriftlarini 12 uslubdan faqat
+ *  ikkitasi ishlatadi, foydalanuvchi shriftlari esa faqat tanlanganda.
+ *  Preload bo'lsa brauzer hammasini DARHOL tortardi; usiz `@font-face`
+ *  e'lon qilinadi, lekin ishlatilmaguncha so'ralmaydi.
  *
  *  Uslublar o'z shriftini saqlaydi (D14): `[data-font]` faqat neytral
  *  uslublarga ta'sir qiladi, chunki `globals.css` da `[data-style]`
  *  bloklari `--rw-font` ni o'ziga yozadi va u ustun turadi.
  */
-const inter = Inter({
-  subsets: ["latin", "latin-ext", "cyrillic"],
-  weight: ["400", "500", "600"],
-  variable: "--rw-inter",
-  display: "swap",
-  preload: false,
-});
-
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin", "latin-ext"],
-  weight: ["400", "500", "600"],
-  variable: "--rw-jakarta",
-  display: "swap",
-  preload: false,
-});
-
-const roboto = Roboto({
-  subsets: ["latin", "latin-ext", "cyrillic"],
-  weight: ["400", "500", "700"],
-  variable: "--rw-roboto",
-  display: "swap",
-  preload: false,
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin", "latin-ext"],
-  weight: ["400", "500", "600"],
-  variable: "--rw-dm-sans",
-  display: "swap",
-  preload: false,
-});
-
-/** O'qish qiyinchiligi uchun (D52). Lexend — harf shakllari ataylab
- *  bir-biridan uzoq qilib chizilgan, so'zlar "yopishib" ko'rinmaydi.
- *  Bu shunchaki "boshqa shrift" emas: tadqiqotlar o'qish tezligini
- *  sezilarli oshirishini ko'rsatgan, shuning uchun u alohida turadi —
- *  umumiy shrift ro'yxatiga aralashmaydi. */
-const lexend = Lexend({
-  subsets: ["latin", "latin-ext"],
-  weight: ["400", "500", "600"],
-  variable: "--rw-lexend",
-  display: "swap",
-  preload: false,
-});
 const DESCRIPTION =
   "Sport dasturlash va informatika olimpiadasi platformasi: masala arxivi, " +
   "musobaqa va ochiq reyting.";
@@ -298,16 +219,29 @@ export default async function RootLayout({
   // Markup o'zgaruvchi sozlamalar cookie'dan (D61). Sabab `MARKUP_COOKIE`
   // da: ular HTML tuzilishini o'zgartiradi, ya'ni SSR ham ularni bilishi
   // shart — aks holda React hidratsiya xatosi beradi.
-  const [cookieStore, { locale, auto }, me, siteAppearance] = await Promise.all([
-    cookies(),
-    getLocaleState(),
-    getSessionUser<Me>(),
-    api
-      .siteAppearance()
-      .then((row) => row.appearance)
-      .catch(() => ({}) as AppearancePrefs),
-  ]);
+  const [cookieStore, { locale, auto }, me, siteAppearance, requestHeaders] =
+    await Promise.all([
+      cookies(),
+      getLocaleState(),
+      getSessionUser<Me>(),
+      api
+        .siteAppearance()
+        .then((row) => row.appearance)
+        .catch(() => ({}) as AppearancePrefs),
+      headers(),
+    ]);
   const markupAppearance = parseMarkupCookie(cookieStore.get(MARKUP_COOKIE)?.value);
+
+  // CSP `nonce`. `proxy.ts` already sets `x-nonce` on every request, but that
+  // only covers the scripts Next renders itself — Next writes the nonce into
+  // its own inline tags, not into the ones this file writes by hand. Measured
+  // 2026-09-24: 5 of the 20 `<script>` tags on `/login` carried no nonce and
+  // CSP blocked them, because `script-src` lists `'strict-dynamic'` and that
+  // makes `'self'` irrelevant. The blocked ones were the pre-hydration theme
+  // bootstrap (a white flash for every dark-mode load) and `/i18n/<lang>.js`
+  // (the dictionary's fast path, which `LocaleProvider` exists to rely on).
+  // The `x-` prefix is deliberate: Next only forwards headers with it.
+  const nonce = requestHeaders.get("x-nonce") ?? undefined;
 
   // A style the codebase does not know falls back to `clay`: a stale team
   // default must not leave `data-style` pointing at no stylesheet.
@@ -330,12 +264,15 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
-        <script dangerouslySetInnerHTML={{ __html: styleInit(teamStyle) }} />
-        <script dangerouslySetInnerHTML={{ __html: appearanceInit(siteAppearance) }} />
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: styleInit(teamStyle) }} />
+        <script
+          nonce={nonce}
+          dangerouslySetInnerHTML={{ __html: appearanceInit(siteAppearance) }}
+        />
         {/* Async: it must not block the first paint. If it has not run by
             hydration, `LocaleProvider` waits for it. */}
-        <script src={dictionary} async />
+        <script src={dictionary} nonce={nonce} async />
         <script
           type="application/ld+json"
           // Tuzilmaviy ma'lumot — Next'ning `metadata` qatlami buni

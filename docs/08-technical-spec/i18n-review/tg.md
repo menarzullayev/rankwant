@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1781 strings.**
+**1813 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -256,12 +256,14 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `footer.copyright` | © {year} RankWant. Barcha huquqlar himoyalangan. | © {year} RankWant. Ҳамаи ҳуқуқҳо ҳифз шудаанд. |  |
 | `footer.terms` | Shartlar | Шартҳо |  |
 | `footer.privacy` | Maxfiylik | Махфият |  |
+| `auth.usernameInvalid` | Taxallus faqat lotin harflari, raqamlar va pastki chiziqdan iborat bo'lsin | Тахаллус танҳо аз ҳарфҳои лотинӣ, рақамҳо ва зерхат иборат бошад |  |
 | `auth.usernameRequired` | Taxallus 3–30 belgi: bo'sh qolmasin | Тахаллус 3–30 аломат: холӣ намонад |  |
 | `auth.usernameHint` | 3–30 belgi: lotin harflari, raqam, nuqta, pastki chiziq, chiziqcha | 3–30 аломат: ҳарфҳои лотинӣ, рақам, нуқта, зерхат, дефис |  |
 | `auth.passwordHint` | Kamida 8 belgi. Faqat raqamdan iborat bo'lmasin. | Ҳадди ақал 8 аломат. Танҳо рақам набошад. |  |
 | `auth.usernameFree` | Bu nom bo'sh | Ин ном озод аст |  |
 | `auth.checking` | Tekshirilmoqda… | Санҷида мешавад… |  |
 | `auth.passwordMatch` | Parollar mos | Паролҳо мувофиқанд |  |
+| `auth.required` | Bu maydonni to'ldirishingiz kerak | Ин майдонро пур кунед |  |
 | `auth.emailInvalid` | Email manzili noto'g'ri | Суроғаи почта нодуруст аст |  |
 | `auth.strength1` | Juda zaif | Хеле заиф |  |
 | `auth.strength2` | Zaif | Заиф |  |
@@ -530,6 +532,31 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `verdict.RATE_LIMITED` | Juda tez yuborildi | Хеле зуд фиристода шуд |  |
 | `verdict.DENIAL_OF_JUDGEMENT` | Tekshirib bo'lmadi | Санҷида нашуд |  |
 | `attempts.allVerdicts` | Hamma verdikt | Ҳамаи вердиктҳо |  |
+| `attempts.col.submitted` | Yuborilgan | Фиристода шуд |  |
+| `attempts.col.runTime` | Ishlash vaqti | Вақти иҷро |  |
+| `attempts.col.codeSize` | Kod hajmi | Ҳаҷми код |  |
+| `attempts.col.contest` | Musobaqa | Мусобиқа |  |
+| `attempts.you` | Siz | Шумо |  |
+| `attempts.firstSolver` | Birinchi yechim | Аввалин ҳалкунанда |  |
+| `attempts.queuedFor` | {seconds} s kutdi | Дар навбат {seconds} с |  |
+| `attempts.failedAtTest` | {index}-test | тести {index} |  |
+| `attempts.sortLabel` | Saralash | Тартиб |  |
+| `attempts.searchLabel` | Foydalanuvchi qidirish | Ҷустуҷӯи корбар |  |
+| `attempts.searchPlaceholder` | Foydalanuvchi nomi… | Номи корбар… |  |
+| `attempts.searchClear` | Qidiruvni tozalash | Тоза кардани ҷустуҷӯ |  |
+| `attempts.activeFilters` | {count} filtr faol | {count} филтри фаъол |  |
+| `attempts.clearFilters` | Filtrlarni tozalash | Тоза кардани филтрҳо |  |
+| `attempts.onlyMineActive` | Faqat sizning urinishlaringiz | Танҳо кӯшишҳои шумо |  |
+| `attempts.onlyMineCancel` | Bekor qilish | Бекор кардан |  |
+| `attempts.total` | {count} urinish | {count} кӯшиш |  |
+| `attempts.totalFiltered` | Natija: {count}+ | Ёфт шуд: {count}+ |  |
+| `attempts.pageSize` | Sahifa o'lchami | Андозаи саҳифа |  |
+| `attempts.copySource` | Manba kodni nusxalash | Нусхабардории рамзи манбаъ |  |
+| `attempts.rowOpen` | Urinishni ochish | Кушодани кӯшиш |  |
+| `attempts.loading` | Yuklanmoqda… | Боргирӣ… |  |
+| `attempts.emptyTitle` | Hali urinish yo'q | Ҳанӯз кӯшиш нест |  |
+| `attempts.emptyHint` | Birinchi bo'lib yuboring | Аввалин шуда фиристед |  |
+| `attempts.emptyFilteredTitle` | Bu filtrlarga mos urinish yo'q | Ба ин филтрҳо кӯшиш нест |  |
 | `error.already_answered` | Bu savolga allaqachon javob berdingiz | Шумо аллакай ба ин савол ҷавоб додаед |  |
 | `error.already_finalized` | Allaqachon yakunlangan | Аллакай анҷом ёфтааст |  |
 | `error.already_paid` | Bu allaqachon to'langan | Ин аллакай пардохт шудааст |  |
@@ -538,6 +565,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.closed` | Topshirish muddati ochiq emas | Мӯҳлати супоридан баста аст |  |
 | `error.contest_finished` | Musobaqa tugagan | Мусобиқа анҷом ёфт |  |
 | `error.dependency_unavailable` | Xizmat vaqtincha mavjud emas, birozdan keyin urinib ko'ring | Хидмат муваққатан дастрас нест, пас аз каме кӯшиш кунед |  |
+| `error.retry` | Qayta urinish | Такрор кардан |  |
 | `error.error` | Nimadir noto'g'ri ketdi | Чизе нодуруст шуд |  |
 | `error.expired` | Muddati o'tib ketgan | Мӯҳлаташ гузаштааст |  |
 | `error.finished` | Allaqachon tugagan | Аллакай анҷом ёфтааст |  |
@@ -1436,6 +1464,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.title.moveUp` | Yuqoriga | Боло |  |
 | `admin.title.moveDown` | Pastga | Поён |  |
 | `admin.title.remove` | Olib tashlash | Хориҷ кардан |  |
+| `admin.title.prev` | Oldingi sahifa | Саҳифаи пешина |  |
+| `admin.title.next` | Keyingi sahifa | Саҳифаи навбатӣ |  |
 | `admin.title.roadmapComments` | Yo'l xaritasi izohlari | Шарҳҳои нақшаи роҳ |  |
 | `admin.title.tournaments` | Chempionatlar | Чемпионатҳо |  |
 | `admin.title.broadcast` | Umumiy e'lon | Эълони умумӣ |  |
@@ -1522,6 +1552,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.editorialAvailable` | Yechim tahlili bor | Таҳлил дорад |  |
 | `problem.testsNotReady` | Testlar tayyorlanmagan — yechim qabul qilinmaydi | Тестҳо омода нестанд — ҳалҳо қабул намешаванд |  |
 | `qvant.marathon` | Haftalik marafon | Марафони ҳафтаина |  |
+| `submit.sourceRequired` | Yuborishdan oldin yechimingizni yozing yoki yuklang | Пеш аз супоридан ҳалли худро нависед ё бор кунед |  |
+| `submit.sourceTooLong` | Manba kodi juda katta | Рамзи манба хеле калон аст |  |
 | `submit.solution` | Yechim | Ҳал |  |
 | `contest.ogAlt` | RankWant musobaqasi | Озмуни RankWant |  |
 | `problem.ogAlt` | RankWant masalasi | Масъалаи RankWant |  |

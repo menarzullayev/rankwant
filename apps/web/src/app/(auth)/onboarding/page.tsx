@@ -2,7 +2,7 @@ import type { Metadata, Route } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
-import { OnboardingForm } from "@/components/OnboardingForm";
+import { OnboardingForm } from "@/features/account";
 import { Card } from "@/components/ui/Card";
 import { getLocale } from "@/i18n/server";
 import { t } from "@/i18n/messages";

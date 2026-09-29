@@ -5,7 +5,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { IntentLink } from "@/components/ui/IntentLink";
 import { Card, StatCard } from "@/components/ui/Card";
 import { TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
-import { UpdateKindBadge } from "@/components/UpdateKindBadge";
+import { UpdateKindBadge } from "@/features/updates";
 import { getLocale } from "@/i18n/server";
 import { date, dateTime, fill, t } from "@/i18n/messages";
 import { Icon } from "@/components/ui/Icon";

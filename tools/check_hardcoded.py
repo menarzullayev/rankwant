@@ -72,7 +72,7 @@ WEB = ROOT / "apps/web/src"
 #: `ImageResponse` at module level, so it has no request scope and cannot
 #: `await getLocale()`. Its strings are the brand plus a bare counter, and
 #: the file says so in a comment. A key there would be unreachable.
-SKIP_PARTS = {"node_modules", ".next", "__tests__"}
+SKIP_PARTS = {"node_modules", ".next", "__tests__", "generated"}
 DEFERRED = (
     "content/legal.ts",
     "lib/country-names.ts",
@@ -96,9 +96,18 @@ KEYLIKE = re.compile(r"^[a-z][A-Za-z0-9]*(\.[a-zA-Z][A-Za-z0-9]*)+$")
 #: Capitalised word is NOT an identifier — it is a one-word label
 #: ("Hammasi", "Faol", "Daraja"), and treating it as code silently drops
 #: the shortest and most common UI strings.
+#:
+#: ⚠️ camelCase shoxobchasidagi sinf `[A-Za-z0-9]` EMAS, `[a-z0-9]`.
+#: Sabab — ReDoS (CodeQL `py/redos`, o'lchandi 2026-09-28): `[A-Z]` dan
+#: keyin `[A-Za-z0-9]*` ham katta harfni yuta olardi, ya'ni `(?:...)+`
+#: ning qayerda bo'linishini bir necha xil yo'l bilan moslashtirish
+#: mumkin edi — `aA` + ko'p `A` da eksponensial qaytish. `[a-z0-9]*` da
+#: esa keyingi katta harf MAJBURAN yangi takror boshlaydi ⇒ noaniqlik
+#: yo'q. Mos keladigan to'plam O'ZGARMAYDI (`fooBAR`, `fooB2A` ikkalasi
+#: ham o'tadi) — faqat yo'l bitta qoladi.
 IDENT = re.compile(
     r"^(?:"
-    r"[a-z]+(?:[A-Z][A-Za-z0-9]*)+"
+    r"[a-z]+(?:[A-Z][a-z0-9]*)+"
     r"|[a-z][a-z0-9]*(?:_[a-z0-9]+)+"
     r"|[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+"
     r"|[a-z]{2,}"
@@ -171,7 +180,19 @@ SORT_KEY = re.compile(r"^-?[a-z][a-z0-9_]*$")
 CSS_VALUE = re.compile(r"^(?:clamp|calc|min|max|var|rgba?|hsla?|color-mix)\(|^\(prefers-")
 CSS_VAR = re.compile(r"^--[\w-]+$")
 SVG_PATH = re.compile(r"^[Mm][\d\s.,-]")
-ONLY_INTERP = re.compile(r"^[\s\W]*(?:\$\{[^}]*\}[\s\W]*)+$")
+#: ⚠️ Ichki sinf `[\s\W]` EMAS, ATAYLAB `[^\w$]` + `\$(?!\{)` (CodeQL
+#: `py/redos`, o'lchandi 2026-09-28). Sabab: `[\s\W]` `$` ni ham yuta oladi,
+#: ya'ni u keyingi `${...}` boshlanishi bilan raqobatlashadi; `+` takrori
+#: bilan birga bu eksponensial qaytish beradi — o'lchandi, `'${{}}'` × 26
+#: da **13 146 ms** (tuzatishdan keyin 0.022 ms). `$` faqat `${` ochmasa
+#: "shovqin" hisoblanadi, ya'ni raqobat yo'qoladi.
+#:
+#: ⚠️ Bitta xatti-harakat farqi bor va u ataylab: oxirida ochiq `${` bilan
+#: tugagan satr (`'${a}${'`) endi mos kelmaydi — eski naqsh uni "shovqin"
+#: deb o'qirdi. Bunday satr haqiqiy JS'da yaroqsiz, `check_hardcoded.py`
+#: natijasi esa repo bo'ylab o'zgarmadi (o'lchandi).
+_JUNK = r"(?:[^\w$]|\$(?!\{))*"
+ONLY_INTERP = re.compile(rf"^{_JUNK}(?:\$\{{[^}}]*\}}{_JUNK})+$")
 ALLCAPS = re.compile(r"^[A-Z][A-Z0-9_]{1,}$")
 
 #: Values that are deliberately literal in every language: symbols,
@@ -451,6 +472,32 @@ def classify(text: str, start: int) -> str | None:
     if ch == ">":
         return "jsx-text"
     if ch == "?":
+        # `?.` (optional chaining) and `??` (nullish) also end in `?` but
+        # their right-hand side is a VALUE, not a rendered branch. Reading
+        # them as ternary branches flagged `empty.icon ?? "empty"` — an
+        # icon-registry key — as prose (measured 2026-09-24).
+        #
+        # The marker sits right AFTER this `?`, so it is read from the
+        # original text — not from `head` (which stops here).
+        tail = text[k : k + 2]
+        if tail in {"??", "?."}:
+            return None
+        # `?.` / `??` can also be the PREVIOUS token when the literal is
+        # the right-hand side of a nullish expression: `a ?? "b"`. In that
+        # case `k` lands on the LAST `?` of `??`, hence the same check.
+        if text[k - 1 : k + 1] == "??":
+            return None
+        # A TYPE UNION also ends in `?` via the optional marker:
+        # `loadingVariant?: "skeleton" | "ring"` — the `?` belongs to the
+        # property name, and the literals are type members. The type
+        # marker is the `:` immediately after `?` (optionally spaced).
+        if text[k + 1 : start].lstrip().startswith(":"):
+            # …but `cond ? x : "y"` also has `?` then `:`. The difference:
+            # in a TYPE the `:` is adjacent to the `?` with nothing else
+            # between them. In a ternary an expression sits in between.
+            between = text[k + 1 : start].strip()
+            if between == ":":
+                return None
         return "ternary"
     if ch == ":":
         # `:` is ambiguous: it introduces an object property AND the else
@@ -460,9 +507,15 @@ def classify(text: str, start: int) -> str | None:
         # that is what separates `cond ? "a" : "b"` from `key: "value"`.
         head = text[max(0, start - 200) : start]
         mark = head.rfind("?")
-        if mark >= 0 and not any(ch in head[mark:] for ch in ",;{}"):
-            return "ternary-else"
-        return None
+        if mark < 0:
+            return None
+        if any(ch in head[mark:] for ch in ",;{}"):
+            return None
+        if head[mark : mark + 2] in {"??", "?."}:
+            return None
+        if head[mark + 1 :].strip() == ":":
+            return None  # optional property / type union
+        return "ternary-else"
     if ch == "{":
         return "jsx-expr"
     return None

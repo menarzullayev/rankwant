@@ -6,7 +6,12 @@
 #
 # Ishlatish (o'z compose stack'iga qarshi):
 #   COMPOSE="docker compose -f docker-compose.yml -f docker-compose.ci.yml" \
+#   CI_ONLY_STACK=1 \
 #   I_UNDERSTAND_THIS_IS_STAGING=yes tests/chaos/run.sh
+#
+# ⚠️ `CI_ONLY_STACK=1` SHART (2026-09-24): `docker-compose.ci.yml` host
+# portlarini o'chiradi, ya'ni uni jonli `rankwant` loyihasiga qarshi
+# ishlatish API ni 503 qilib qo'yadi. Fayl shu sentinelsiz yuklanmaydi.
 
 set -euo pipefail
 

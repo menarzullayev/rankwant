@@ -79,7 +79,10 @@ class RedisJudgeProvider:
     def __init__(self, url: str | None = None) -> None:
         import redis
 
-        self._redis = redis.Redis.from_url(url or settings.REDIS_URL)
+        # Judge navbati alohida Redis'da (ADR-0028: `judge-queue`): judge
+        # `judge-net` (internal) tarmog'ida, sessiya/broker Redis'iga yo'q.
+        # Bo'sh qiymat sessiya Redis'iga tushadi — bir tarmoqli eskirgan rejim.
+        self._redis = redis.Redis.from_url(url or settings.JUDGE_QUEUE_URL)
 
     def submit(self, job: JudgeJob) -> str:
         self._redis.lpush(settings.JUDGE_JOBS_KEY, job.to_json())

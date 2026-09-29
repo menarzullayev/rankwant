@@ -11,15 +11,17 @@ Sources read (all in-repo, all pinned):
   * `apps/api/requirements.lock` + `requirements-dev.lock` — uv-compiled pins.
     (`apps/api/uv.lock` is a three-line stub and is deliberately NOT used.)
   * `services/judge-py/uv.lock` — the inactive Python judge, kept by ADR-0004.
-  * `apps/web/package-lock.json`, `tests/e2e/package-lock.json` — npm v3.
+  * `package-lock.json` (npm workspace root: web + `packages/shared`),
+    `tests/e2e/package-lock.json` — npm v3.
   * `services/judge-go/go.mod` — the shipped Go judge.
   * the five Dockerfiles — base images, which carry their own licences.
 
 Where the licences come from, and where they do not:
 
   * **Node** — the lockfile's own `license` field. Measured 2026-09-21: 669 of
-    670 entries in `apps/web/package-lock.json` carry it (the 670th is the root
-    project entry, which is ours).
+    670 entries in the web lockfile carry it (the 670th is the root project
+    entry, which is ours). RW-ARCH-013 re-pointed this at the workspace-root
+    lockfile, which also covers `packages/shared`.
   * **Python** — the installed `.venv` distribution metadata, read in the order
     `License-Expression` (PEP 639) → `License:` → `Classifier: License ::`. All
     three shapes occur in this environment (measured on `ast_serialize`,
@@ -71,7 +73,14 @@ PY_PINS = {
 }
 PY_UV = {"judge-py": "services/judge-py/uv.lock"}
 NODE_LOCKS = {
-    "web": "apps/web/package-lock.json",
+    # RW-ARCH-013: npm workspace. The root lockfile resolves the web app AND
+    # `packages/shared` (its zod dependency lives here too), so a report built
+    # only from a per-package lockfile would miss the shared tree.
+    # `apps/web/package-lock.json` was therefore removed on 2026-09-24: it was
+    # the pre-workspace artifact (committed before the root `package.json`
+    # existed) and knew nothing about `@rankwant/shared`. Archived at
+    # `.handoff/lockfile-archive/` in case the provenance is ever questioned.
+    "web": "package-lock.json",
     "e2e": "tests/e2e/package-lock.json",
 }
 GO_MOD = "services/judge-go/go.mod"
@@ -384,7 +393,7 @@ def render_readme(rows: list[dict[str, str]], images: list[tuple[str, str]]) -> 
         "|---|---|",
         "| `apps/api/requirements.lock`, `requirements-dev.lock` | Python, API |",
         "| `services/judge-py/uv.lock` | Python, inactive judge (ADR-0004 keeps it) |",
-        "| `apps/web/package-lock.json`, `tests/e2e/package-lock.json` | Node |",
+        "| `package-lock.json` (workspace root), `tests/e2e/package-lock.json` | Node |",
         "| `services/judge-go/go.mod` | Go, shipped judge |",
         "| five `Dockerfile`s | base images |",
         "",

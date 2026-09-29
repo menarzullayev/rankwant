@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Matn ranglari WCAG AA (4.5:1) dan o'tishini tekshiradi.
 
-`globals.css` da 12 uslub bor, ularning oltitasida qorong'u varianti ham —
+`theme.css` da 12 uslub bor, ularning oltitasida qorong'u varianti ham —
 jami 18 palitra. Har birida to'rt pog'onali matn zinapoyasi (`--rw-text`,
 `--rw-text-2`, `--rw-muted`, `--rw-faint`) va bir nechta sirt bor. Ko'z
 bilan tekshirib bo'lmaydi: o'lchanganda 18 palitradan 17 tasi yiqilgan,
@@ -37,7 +37,7 @@ import _console
 _console.force_utf8()
 
 ROOT = Path(__file__).resolve().parent.parent
-CSS = ROOT / "apps/web/src/app/globals.css"
+CSS = ROOT / "apps/web/src/app/theme.css"
 
 AA = 4.5
 #: WCAG 2.4.11 — fokus ko'rsatkichi yon rangga nisbatan shuncha bo'lishi
@@ -48,7 +48,7 @@ FOCUS_MIN = 3.0
 #: oqibat: `material`, `neu` va `clay` da fon karta bilan bir xil va
 #: chegara kengligi 0 edi — maydon umuman ko'rinmasdi.
 FIELD_MIN = 3.0
-#: Chegara rangi shu ulushda matn rangidan hosil qilinadi (`globals.css`).
+#: Chegara rangi shu ulushda matn rangidan hosil qilinadi (`theme.css`).
 FIELD_MIX = 0.65
 
 #: Ajratgich — karta chegarasidan ALOHIDA token. `--rw-line` `clay` va `neu`
@@ -57,7 +57,7 @@ FIELD_MIX = 0.65
 DIVIDER_TOKEN = "--rw-divider"
 DIVIDER_MIN = 3.0
 
-#: `globals.css` da klaviatura halqasi shu token bilan chiziladi.
+#: `theme.css` da klaviatura halqasi shu token bilan chiziladi.
 FOCUS_TOKEN = "--rw-accent-ink"
 #: Tugma juftligi: (matn, fon). `.rw-accent-bg` shu ikkalasidan quriladi va
 #: accent `--rw-accent-ink` dan farq qiladi — u tugma FONI, bu matn/fokus.
@@ -89,7 +89,7 @@ RANKS: tuple[str, ...] = ()
 #: to'g'ridan-to'g'ri sirt ustida turadi. 2026-09-13 gacha tekshirilmagan edi
 #: va o'lchanganda 85 juftlikdan 50 tasi yiqilardi.
 LEVELS = tuple(f"--rw-level-{i}" for i in range(1, 6))
-#: Oraliq pog'onalar `globals.css` da ikki qo'shni rangning oklab aralashmasi
+#: Oraliq pog'onalar `theme.css` da ikki qo'shni rangning oklab aralashmasi
 #: sifatida yasaladi. Aralashmaning yorqinligi chetlari ORASIDA bo'ladi, ya'ni
 #: ikkala uchi o'tsa ham o'zi yiqilishi mumkin (biri fondan yorug', ikkinchisi
 #: quyuq bo'lsa) — shuning uchun alohida o'lchanadi.

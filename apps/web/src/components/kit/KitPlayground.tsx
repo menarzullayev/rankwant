@@ -20,7 +20,7 @@ import {
   TimeStamp,
 } from "@/components/kit/TimeStamp";
 import { OverlayDialog, useConfirm, useOverlay } from "@/components/overlay/OverlayHost";
-import { dateKit, isoDay } from "@/lib/format";
+import { dateKit, isoDay } from "@rankwant/shared/format";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
 

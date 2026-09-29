@@ -8,8 +8,8 @@ import {
   UpdateKindBadge,
   UpdateModuleBadge,
   kindClass,
-} from "@/components/UpdateKindBadge";
-import { excerpt } from "@/components/Markdown";
+} from "@/features/updates";
+import { excerpt } from "@/components/ui/Markdown";
 import { getLocale } from "@/i18n/server";
 import { date, t, type Locale } from "@/i18n/messages";
 import { Icon } from "@/components/ui/Icon";

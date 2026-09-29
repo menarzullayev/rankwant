@@ -1,0 +1,2387 @@
+/* TailAdmin (MIT) dizayn tokenlari — apps/web/README.md ga qarang.
+   Brend ranglari RankWant niki: brand-* palitrasi accent #5b8cff atrofida.
+
+   ⚠️ Bu fayl — tokenlarning YAGONA manbasi. `globals.css` ((site))
+   va `auth.css` ((auth)) ikkalasi ham shuni `@import` qiladi; ular
+   faqat o'z `@source` bloki bilan farq qiladi. Ilgari blok ikki
+   nusxada edi (98.7% bir xil) va darvozalar faqat bittasini
+   o'qirdi — ajralish JIM o'tib ketardi. */
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --breakpoint-2xsm: 375px;
+  --breakpoint-xsm: 425px;
+  --breakpoint-3xl: 2000px;
+
+  --text-title-md: 36px;
+  --text-title-md--line-height: 44px;
+  --text-title-sm: 30px;
+  --text-title-sm--line-height: 38px;
+  --text-theme-xl: 20px;
+  --text-theme-xl--line-height: 30px;
+  --text-theme-sm: 14px;
+  --text-theme-sm--line-height: 20px;
+  --text-theme-xs: 12px;
+  --text-theme-xs--line-height: 18px;
+  /* Hisoblagich va mikro-yorliq (badge, bell raqami, "YANGI" belgisi).
+     `12px` bu joylarda badge'ni kattalashtirib yuborardi — o'lchandi
+     2026-09-24: 6 ta chaqiruv joyi `text-[10px]` bilan yozilgan edi,
+     ya'ni token qatlami chetlab o'tilgan edi. Eng kichik matn
+     `--rw-faint` bilan birga ishlatiladi, shuning uchun kontrast
+     tekshiruvi (`tools/check_contrast.py`) uni allaqachon qamraydi. */
+  --text-theme-2xs: 10px;
+  --text-theme-2xs--line-height: 14px;
+
+  /* Brend — TailAdmin ko'ki emas, RankWant accent #5b8cff */
+  --color-brand-25: #f4f7ff;
+  --color-brand-50: #eef3ff;
+  --color-brand-100: #dde7ff;
+  --color-brand-200: #c3d4ff;
+  --color-brand-300: #9dbaff;
+  --color-brand-400: #7ba3ff;
+  --color-brand-500: #5b8cff;
+  --color-brand-600: #4470e6;
+  --color-brand-700: #3357c4;
+  --color-brand-800: #2a459c;
+  --color-brand-900: #24397c;
+  --color-brand-950: #16224d;
+
+  --color-gray-25: #fcfcfd;
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f2f4f7;
+  --color-gray-200: #e4e7ec;
+  --color-gray-300: #d0d5dd;
+  --color-gray-400: #98a2b3;
+  --color-gray-500: #667085;
+  --color-gray-600: #475467;
+  --color-gray-700: #344054;
+  --color-gray-800: #1d2939;
+  --color-gray-900: #101828;
+  --color-gray-950: #0c111d;
+  /* Qorong'u rejim sirtlari — mavjud RankWant palitrasi */
+  --color-gray-dark: #141821;
+  --color-gray-darker: #0b0d12;
+
+  --color-success-50: #ecfdf3;
+  --color-success-400: #32d583;
+  --color-success-500: #12b76a;
+  --color-success-600: #039855;
+
+  --color-error-50: #fef3f2;
+  --color-error-400: #f97066;
+  --color-error-500: #f04438;
+  --color-error-600: #d92d20;
+
+  --color-warning-50: #fffaeb;
+  --color-warning-400: #fdb022;
+  --color-warning-500: #f79009;
+  --color-warning-600: #dc6803;
+
+  --color-blue-light-50: #f0f9ff;
+  --color-blue-light-400: #36bffa;
+  --color-blue-light-500: #0ba5ec;
+
+  --shadow-theme-xs: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+  --shadow-theme-sm: 0px 1px 3px 0px rgba(16, 24, 40, 0.1), 0px 1px 2px 0px rgba(16, 24, 40, 0.06);
+  --shadow-theme-md: 0px 4px 8px -2px rgba(16, 24, 40, 0.1), 0px 2px 4px -2px rgba(16, 24, 40, 0.06);
+  --shadow-theme-lg: 0px 12px 16px -4px rgba(16, 24, 40, 0.08), 0px 4px 6px -2px rgba(16, 24, 40, 0.03);
+  --shadow-focus-ring: 0px 0px 0px 4px rgba(91, 140, 255, 0.12);
+
+  --z-index-1: 1;
+  --z-index-9: 9;
+  --z-index-99: 99;
+  --z-index-999: 999;
+  --z-index-9999: 9999;
+  --z-index-99999: 99999;
+}
+
+/* Mavjud CSS o'zgaruvchilari — inline style bilan yozilgan sahifalar
+   hali ularga tayanadi, shuning uchun saqlanadi va tema bilan almashadi. */
+
+/* ═══════════════════════════════════════════════════════════════════
+   USLUB TIZIMI
+   Har sirt shu tokenlardan oladi, `dark:bg-[#141821]` kabi qotib
+   qolgan ranglardan emas — shuning uchun `<html data-style>` ni
+   almashtirish butun saytni qayta bo'yaydi.
+
+   Uslub tanlovi: src/context/StyleContext.tsx · picker header'da.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Native boshqaruvlar (ro'yxat, scrollbar, sana tanlagich) shu
+     qiymatga ergashadi. Uslub bloklarida EMAS — bu bir marta, ildizda
+     e'lon qilinadi va `.dark` uni almashtiradi.
+
+     ⚠️ `light` shart: aks holda OS qorong'i rejimda bo'lgan iOS/Windows
+     foydalanuvchisi YORUG' mavzuda ham qorong'i ro'yxat ko'radi
+     (`color-scheme: normal` — ilgari shunday edi, o'lchandi). */
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+:root,
+[data-style="dashboard"] {
+  --rw-ground: #f9fafb;
+  --rw-surface: #ffffff;
+  --rw-surface-2: #f2f4f7;
+  --rw-line: #e4e7ec;
+  --rw-divider: #6c747e;
+  --rw-line-w: 1px;
+  --rw-radius: 16px;
+  --rw-radius-sm: 8px;
+  --rw-shadow: 0 1px 2px rgba(16, 24, 40, .05);
+  --rw-text: #1d2939;
+  --rw-text-2: #475467;
+  --rw-muted: #5b6376;
+  --rw-faint: #636f85;
+  /* #5b8cff oq matn bilan 3.16:1 berardi — AA (4.5) dan uzoq. Tugma foni
+     ohangni saqlab quyuqlashtirildi: 4.91:1. `--rw-accent-ink` (#4470e6)
+     yechim bo'la olmadi, u ham 4.46:1. */
+  --rw-accent: #476dc7;
+  --rw-accent-fg: #ffffff;
+  --rw-accent-ink: #3c66dc;
+  --rw-accent-soft: #eef3ff;
+  --rw-ok-ink: #038249;   --rw-ok-soft: #ecfdf3;
+  --rw-warn-ink: #b54708; --rw-warn-soft: #fffaeb;
+  --rw-bad-ink: #d42c1f;  --rw-bad-soft: #fef3f2;
+  --rw-chip: #f2f4f7;
+  --rw-hover: #f9fafb;
+  --rw-field: #ffffff;
+  --rw-font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --rw-font-display: var(--rw-font);
+  --rw-btn-radius: var(--rw-radius-sm);
+  --rw-btn-shadow: none;
+  --rw-btn-weight: 500;
+  --rw-heading-weight: 600;
+  --rw-tracking: -.01em;
+  --rw-uppercase: none;
+  --rw-level-1: #667085; --rw-level-2: #027e46; --rw-level-3: #1666ea;
+  --rw-level-4: #9644d7; --rw-level-5: #d22c1f;
+  /* Nutella marker ink: the first `marker` characters of a tier name are
+     drawn in this colour, the rest stays in --rw-rank-N. Black on light,
+     white on dark - same value used by every palette since it is the ink,
+     not the surface. ADR-0027 § L2. */
+  --rw-nutella-ink: #000000;
+  --rw-rank-grey: #656e81;
+  --rw-rank-green: #1e7e46;
+  --rw-rank-cyan: #107884;
+  --rw-rank-blue: #1e67e3;
+  --rw-rank-violet: #834fde;
+  --rw-rank-orange: #af550b;
+  --rw-rank-red: #d5231d;
+}
+[data-style="dashboard"].dark {
+  --rw-ground: #0b0d12;
+  --rw-surface: #141821;
+  --rw-surface-2: #1b202b;
+  --rw-line: #232936;
+  --rw-divider: #9ca0a7;
+  --rw-text: #e6e9ef;
+  --rw-text-2: #b9c2d0;
+  --rw-muted: #9aa1b2;
+  --rw-faint: #8c94a1;
+  /* Nutella marker ink on dark backgrounds. */
+  --rw-nutella-ink: #ffffff;
+  /* Dark rejimda accent-fg e'lon qilinmagan edi, ya'ni oq meros bo'lib
+     qolgan va 3.16:1 berardi. Yorug' fon + quyuq matn — material/editorial/
+     swiss dark naqshi. Ikkala qiymat ham shu uslubning o'z tokenlari:
+     ink = matn rangi, ground = tugma matni uchun quyuq fon. */
+  --rw-accent: #7ea4ff;
+  --rw-accent-fg: #0b0d12;
+  --rw-accent-ink: #7ea4ff;
+  --rw-accent-soft: rgba(91, 140, 255, .12);
+  --rw-ok-ink: #4ade80;   --rw-ok-soft: rgba(74, 222, 128, .12);
+  --rw-warn-ink: #fdb022; --rw-warn-soft: rgba(253, 176, 34, .12);
+  --rw-bad-ink: #f87171;  --rw-bad-soft: rgba(248, 113, 113, .12);
+  --rw-chip: rgba(255, 255, 255, .05);
+  --rw-hover: rgba(255, 255, 255, .03);
+  --rw-field: #0b0d12;
+  --rw-level-1: #9aa4b8; --rw-level-2: #4ade80; --rw-level-3: #60a5fa;
+  --rw-level-4: #c084fc; --rw-level-5: #f87171;
+  --rw-rank-grey: #8b94a4;
+  --rw-rank-green: #28a95e;
+  --rw-rank-cyan: #16a2b1;
+  --rw-rank-blue: #6093eb;
+  --rw-rank-violet: #a681e7;
+  --rw-rank-orange: #e9710f;
+  --rw-rank-red: #ea6d69;
+}
+
+/* ── Shveycha: to'r, chiziq, bo'shliq. Karta yo'q. ── */
+[data-style="swiss"] {
+  --rw-field-line: var(--rw-line);
+  --rw-ground: #fbfbfa;
+  --rw-surface: #ffffff;
+  --rw-surface-2: #f2f2f0;
+  --rw-line: #111111;
+  --rw-divider: #646464;
+  --rw-line-w: 1px;
+  --rw-radius: 0px;
+  --rw-radius-sm: 0px;
+  --rw-shadow: none;
+  --rw-text: #111111;
+  --rw-text-2: #3d3d3d;
+  --rw-muted: #616161;
+  --rw-faint: #6d6d6d;
+  --rw-accent: #1b3a6b;
+  --rw-accent-fg: #ffffff;
+  --rw-accent-ink: #1b3a6b;
+  --rw-accent-soft: #eaeff7;
+  --rw-ok-ink: #1f6b45;   --rw-ok-soft: #eef6f1;
+  --rw-warn-ink: #8a5a00; --rw-warn-soft: #fbf5e8;
+  --rw-bad-ink: #a3241d;  --rw-bad-soft: #faeeed;
+  --rw-chip: #f2f2f0;
+  --rw-hover: #f2f2f0;
+  --rw-field: #ffffff;
+  --rw-btn-radius: 0px;
+  --rw-btn-weight: 500;
+  --rw-heading-weight: 500;
+  --rw-tracking: -.02em;
+  --rw-uppercase: uppercase;
+  --rw-level-1: #6a6a6a; --rw-level-2: #1f6b45; --rw-level-3: #1b3a6b;
+  --rw-level-4: #5c3a86; --rw-level-5: #a3241d;
+  --rw-rank-grey: #646d7f;
+  --rw-rank-green: #1d7c45;
+  --rw-rank-cyan: #107884;
+  --rw-rank-blue: #1c65e3;
+  --rw-rank-violet: #824ddd;
+  --rw-rank-orange: #ad540b;
+  --rw-rank-red: #d3231d;
+}
+[data-style="swiss"].dark {
+  --rw-ground: #0e0e0d;
+  --rw-surface: #141413;
+  --rw-surface-2: #1c1c1a;
+  --rw-line: #e8e8e5;
+  --rw-divider: #a4a4a2;
+  --rw-text: #f2f2ef;
+  --rw-text-2: #c9c9c4;
+  --rw-muted: #97978f;
+  --rw-faint: #86867e;
+  --rw-accent: #9db8e8;
+  --rw-accent-fg: #0e0e0d;
+  --rw-accent-ink: #9db8e8;
+  --rw-accent-soft: #1a2130;
+  --rw-chip: #1c1c1a;
+  --rw-hover: #1c1c1a;
+  --rw-field: #0e0e0d;
+  /* Level ranglari shu blokda e'lon qilinmagan edi, ya'ni light
+     blokdan meros bo'lib qolgan va quyuq sirtda o'qilmasdi — eng
+     yomoni 1.04:1 (`brutal.dark`). Aniq yozildi: ohang saqlangan,
+     faqat yorqinlik AA (4.5:1) ga yetadigan darajaga ko'tarilgan. */
+  --rw-level-1: #858585; --rw-level-2: #2c9762; --rw-level-3: #5385d4;
+  --rw-level-4: #9875c3; --rw-level-5: #e05850;
+  --rw-rank-grey: #7c8598;
+  --rw-rank-green: #249955;
+  --rw-rank-cyan: #1493a1;
+  --rw-rank-blue: #4984e9;
+  --rw-rank-violet: #9a6fe4;
+  --rw-rank-orange: #d3660d;
+  --rw-rank-red: #e7514b;
+}
+
+/* ── Terminal: monospace, ustunlar, ikki-uch rang. ── */
+[data-style="terminal"] {
+  --rw-field-line: var(--rw-line);
+  --rw-ground: #05070a;
+  --rw-surface: #080b10;
+  --rw-surface-2: #0c1016;
+  --rw-line: #1f6f43;
+  --rw-divider: #54a673;
+  --rw-line-w: 1px;
+  --rw-radius: 0px;
+  --rw-radius-sm: 0px;
+  --rw-shadow: none;
+  --rw-text: #7dfaa8;
+  --rw-text-2: #46d67f;
+  --rw-muted: #37a765;
+  --rw-faint: #34985f;
+  --rw-accent: #46d67f;
+  --rw-accent-fg: #05070a;
+  --rw-accent-ink: #7dfaa8;
+  --rw-accent-soft: rgba(70, 214, 127, .12);
+  --rw-ok-ink: #7dfaa8;   --rw-ok-soft: rgba(125, 250, 168, .12);
+  --rw-warn-ink: #e5c76b; --rw-warn-soft: rgba(229, 199, 107, .12);
+  --rw-bad-ink: #ff6b6b;  --rw-bad-soft: rgba(255, 107, 107, .12);
+  --rw-chip: rgba(70, 214, 127, .08);
+  --rw-hover: rgba(70, 214, 127, .07);
+  --rw-field: #05070a;
+  --rw-font: var(--rw-plex-mono), ui-monospace, Menlo, monospace;
+  --rw-font-display: var(--rw-font);
+  --rw-btn-radius: 0px;
+  --rw-btn-weight: 500;
+  --rw-heading-weight: 500;
+  --rw-tracking: 0;
+  --rw-level-1: #32985d; --rw-level-2: #46d67f; --rw-level-3: #6bd5e5;
+  --rw-level-4: #c99bff; --rw-level-5: #ff6b6b;
+  --rw-rank-grey: #7e889a;
+  --rw-rank-green: #249955;
+  --rw-rank-cyan: #1495a3;
+  --rw-rank-blue: #4984e9;
+  --rw-rank-violet: #9a6fe4;
+  --rw-rank-orange: #d5670e;
+  --rw-rank-red: #e75550;
+}
+
+/* ── Editorial: serif, bo'shliq, chiziq. ── */
+[data-style="editorial"] {
+  --rw-field-line: var(--rw-line);
+  --rw-ground: #ffffff;
+  --rw-surface: #ffffff;
+  --rw-surface-2: #f6f5f2;
+  --rw-line: #14181f;
+  --rw-divider: #66696d;
+  --rw-line-w: 1px;
+  --rw-radius: 0px;
+  --rw-radius-sm: 0px;
+  --rw-shadow: none;
+  --rw-text: #14181f;
+  --rw-text-2: #3c4350;
+  --rw-muted: #5a6172;
+  --rw-faint: #696f80;
+  --rw-accent: #1b3a6b;
+  --rw-accent-fg: #ffffff;
+  --rw-accent-ink: #1b3a6b;
+  --rw-accent-soft: #eef1f7;
+  --rw-ok-ink: #1f6b45;   --rw-ok-soft: #eef6f1;
+  --rw-warn-ink: #8a5a00; --rw-warn-soft: #fbf5e8;
+  --rw-bad-ink: #9c2c24;  --rw-bad-soft: #f9eeed;
+  --rw-chip: #f6f5f2;
+  --rw-hover: #f6f5f2;
+  --rw-field: #ffffff;
+  --rw-font: var(--rw-plex-serif), Georgia, "Times New Roman", serif;
+  --rw-font-display: var(--rw-font);
+  --rw-btn-radius: 0px;
+  --rw-btn-weight: 400;
+  --rw-heading-weight: 400;
+  --rw-tracking: -.015em;
+  --rw-level-1: #5a6172; --rw-level-2: #1f6b45; --rw-level-3: #1b3a6b;
+  --rw-level-4: #5c3a86; --rw-level-5: #9c2c24;
+  --rw-rank-grey: #666f82;
+  --rw-rank-green: #1e7e46;
+  --rw-rank-cyan: #117a86;
+  --rw-rank-blue: #2168e4;
+  --rw-rank-violet: #834fde;
+  --rw-rank-orange: #af550b;
+  --rw-rank-red: #d7241d;
+}
+[data-style="editorial"].dark {
+  --rw-ground: #12100e;
+  --rw-surface: #171512;
+  --rw-surface-2: #201d19;
+  --rw-line: #e8e3da;
+  --rw-divider: #a5a29c;
+  --rw-text: #f2eee7;
+  --rw-text-2: #cec8bd;
+  --rw-muted: #9c968a;
+  --rw-faint: #8c8679;
+  --rw-accent: #b9cdf0;
+  --rw-accent-fg: #12100e;
+  --rw-accent-ink: #b9cdf0;
+  --rw-accent-soft: #1b2331;
+  --rw-chip: #201d19;
+  --rw-hover: #201d19;
+  --rw-field: #12100e;
+  /* Level ranglari shu blokda e'lon qilinmagan edi, ya'ni light
+     blokdan meros bo'lib qolgan va quyuq sirtda o'qilmasdi — eng
+     yomoni 1.04:1 (`brutal.dark`). Aniq yozildi: ohang saqlangan,
+     faqat yorqinlik AA (4.5:1) ga yetadigan darajaga ko'tarilgan. */
+  --rw-level-1: #7e8699; --rw-level-2: #2c9963; --rw-level-3: #5787d5;
+  --rw-level-4: #9a78c5; --rw-level-5: #d96259;
+  --rw-rank-grey: #7e889a;
+  --rw-rank-green: #249955;
+  --rw-rank-cyan: #1495a3;
+  --rw-rank-blue: #4984e9;
+  --rw-rank-violet: #9a6fe4;
+  --rw-rank-orange: #d5670e;
+  --rw-rank-red: #e75550;
+}
+
+/* ── Neo-brutalizm: qalin chegara, siljigan qattiq soya. ── */
+[data-style="brutal"] {
+  --rw-field-line: var(--rw-line);
+  --rw-ground: #f5e900;
+  --rw-surface: #ffffff;
+  --rw-surface-2: #f0f0f0;
+  --rw-line: #000000;
+  --rw-divider: #595959;
+  --rw-line-w: 3px;
+  --rw-radius: 0px;
+  --rw-radius-sm: 0px;
+  --rw-shadow: 6px 6px 0 #000000;
+  --rw-text: #000000;
+  --rw-text-2: #1a1a1a;
+  --rw-muted: #333333;
+  --rw-faint: #4f4f4f;
+  --rw-accent: #ff5c00;
+  --rw-accent-fg: #000000;
+  --rw-accent-ink: #0048b3;
+  --rw-accent-soft: #00d4ff;
+  --rw-ok-ink: #056d3a;   --rw-ok-soft: #7bf7a8;
+  --rw-warn-ink: #6b4400; --rw-warn-soft: #ffd166;
+  --rw-bad-ink: #950000;  --rw-bad-soft: #ff9d9d;
+  --rw-chip: #00d4ff;
+  --rw-hover: #f0f0f0;
+  --rw-field: #ffffff;
+  --rw-btn-radius: 0px;
+  --rw-btn-shadow: 4px 4px 0 #000000;
+  --rw-btn-weight: 700;
+  --rw-heading-weight: 700;
+  --rw-tracking: -.03em;
+  --rw-uppercase: uppercase;
+  --rw-level-1: #333333; --rw-level-2: #045b31; --rw-level-3: #094ba7;
+  --rw-level-4: #7b1fa2; --rw-level-5: #9c0000;
+  --rw-rank-grey: #484e5b;
+  --rw-rank-green: #155b32;
+  --rw-rank-cyan: #0c575f;
+  --rw-rank-blue: #144aa6;
+  --rw-rank-violet: #5f25c3;
+  --rw-rank-orange: #7d3c08;
+  --rw-rank-red: #9b1a15;
+}
+[data-style="brutal"].dark {
+  --rw-ground: #12121a;
+  --rw-surface: #1c1c26;
+  --rw-surface-2: #24242f;
+  --rw-line: #f5e900;
+  --rw-divider: #a9a9ad;
+  --rw-shadow: 6px 6px 0 #f5e900;
+  --rw-text: #f5f5f5;
+  --rw-text-2: #dcdcdc;
+  --rw-muted: #b0b0b0;
+  --rw-faint: #a0a0a0;
+  --rw-accent: #ff5c00;
+  --rw-accent-fg: #12121a;
+  --rw-accent-ink: #00d4ff;
+  --rw-accent-soft: #003b4d;
+  --rw-chip: #003b4d;
+  --rw-hover: #24242f;
+  --rw-field: #12121a;
+  --rw-btn-shadow: 4px 4px 0 #f5e900;
+  /* Level ranglari shu blokda e'lon qilinmagan edi, ya'ni light
+     blokdan meros bo'lib qolgan va quyuq sirtda o'qilmasdi — eng
+     yomoni 1.04:1 (`brutal.dark`). Aniq yozildi: ohang saqlangan,
+     faqat yorqinlik AA (4.5:1) ga yetadigan darajaga ko'tarilgan. */
+  --rw-level-1: #a0a0a0; --rw-level-2: #08b964; --rw-level-3: #65a2f7;
+  --rw-level-4: #ca85e8; --rw-level-5: #ff7575;
+  --rw-rank-grey: #98a0ae;
+  --rw-rank-green: #2bb665;
+  --rw-rank-cyan: #18b0c1;
+  --rw-rank-blue: #72a0ee;
+  --rw-rank-violet: #b190ea;
+  --rw-rank-orange: #f1842a;
+  --rw-rank-red: #ed817d;
+}
+
+/* ── Flat: soya ham, gradient ham yo'q. ── */
+[data-style="flat"] {
+  --rw-ground: #ecf0f1;
+  --rw-surface: #ffffff;
+  --rw-surface-2: #e4e9ea;
+  --rw-line: #d3dadb;
+  --rw-divider: #76828d;
+  --rw-line-w: 1px;
+  --rw-radius: 0px;
+  --rw-radius-sm: 0px;
+  --rw-shadow: none;
+  --rw-text: #2c3e50;
+  --rw-text-2: #425364;
+  --rw-muted: #545e5e;
+  --rw-faint: #5e696b;
+  /* #e74c3c oq matn bilan 3.82:1 edi. `--rw-accent-ink` (#c0392b) allaqachon
+     to'g'ri quyuq variant — 5.44:1. Yangi rang o'ylab topilmadi. */
+  --rw-accent: #c0392b;
+  --rw-accent-fg: #ffffff;
+  --rw-accent-ink: #bd3629;
+  --rw-accent-soft: #fdecea;
+  --rw-ok-ink: #117b67;   --rw-ok-soft: #e6f6f3;
+  --rw-warn-ink: #9a620c; --rw-warn-soft: #fdf3e3;
+  --rw-bad-ink: #c0392b;  --rw-bad-soft: #fdecea;
+  --rw-chip: #e4e9ea;
+  --rw-hover: #e4e9ea;
+  --rw-field: #ffffff;
+  --rw-btn-radius: 0px;
+  --rw-btn-weight: 600;
+  --rw-heading-weight: 600;
+  --rw-tracking: 0;
+  --rw-level-1: #5f696a; --rw-level-2: #107360; --rw-level-3: #236c9d;
+  --rw-level-4: #8e44ad; --rw-level-5: #bb382a;
+  --rw-rank-grey: #5e6778;
+  --rw-rank-green: #1c7641;
+  --rw-rank-cyan: #0f727d;
+  --rw-rank-blue: #1b60d8;
+  --rw-rank-violet: #7a43db;
+  --rw-rank-orange: #a34f0a;
+  --rw-rank-red: #c8211b;
+}
+[data-style="flat"].dark {
+  --rw-ground: #22313f;
+  --rw-surface: #2c3e50;
+  --rw-surface-2: #34495e;
+  --rw-line: #3d5266;
+  --rw-divider: #a9b2b9;
+  --rw-text: #ecf0f1;
+  --rw-text-2: #d1d9db;
+  --rw-muted: #bfc9c9;
+  --rw-faint: #afb9b9;
+  /* Bu blok `--rw-accent` va `--rw-accent-fg` ni e'lon qilmasdi: light
+     blokdan #e74c3c + oq meros bo'lib, 3.82:1 berardi. Yorug' fon + quyuq
+     matn naqshiga o'tkazildi (material/editorial/swiss dark). Ikkala qiymat
+     ham shu uslubning o'z tokenlari — 5.39:1. */
+  --rw-accent: #ff7f6e;
+  --rw-accent-fg: #22313f;
+  --rw-accent-ink: #ff9d8a;
+  --rw-accent-soft: #4a2b26;
+  --rw-chip: #34495e;
+  --rw-hover: #34495e;
+  --rw-field: #22313f;
+  /* Level ranglari shu blokda e'lon qilinmagan edi, ya'ni light
+     blokdan meros bo'lib qolgan va quyuq sirtda o'qilmasdi — eng
+     yomoni 1.04:1 (`brutal.dark`). Aniq yozildi: ohang saqlangan,
+     faqat yorqinlik AA (4.5:1) ga yetadigan darajaga ko'tarilgan. */
+  --rw-level-1: #b1b8b9; --rw-level-2: #1dceac; --rw-level-3: #85bee4;
+  --rw-level-4: #cfaade; --rw-level-5: #e9a69f;
+  --rw-rank-grey: #b2b7c2;
+  --rw-rank-green: #35d075;
+  --rw-rank-cyan: #1bc9dc;
+  --rw-rank-blue: #97b8f2;
+  --rw-rank-violet: #c4abef;
+  --rw-rank-orange: #f5a563;
+  --rw-rank-red: #f2a3a1;
+}
+
+/* ── Material: balandlik va siyoh. ── */
+[data-style="material"] {
+  --rw-ground: #eceff1;
+  --rw-surface: #ffffff;
+  --rw-surface-2: #f5f5f5;
+  --rw-line: #e0e0e0;
+  --rw-divider: #6f6f6f;
+  --rw-line-w: 0px;
+  --rw-radius: 4px;
+  --rw-radius-sm: 4px;
+  --rw-shadow: 0 1px 3px rgba(0, 0, 0, .16), 0 3px 8px rgba(0, 0, 0, .10);
+  --rw-text: #212121;
+  --rw-text-2: #424242;
+  --rw-muted: #606060;
+  --rw-faint: #6b6b6b;
+  --rw-accent: #6200ee;
+  --rw-accent-fg: #ffffff;
+  --rw-accent-ink: #6200ee;
+  --rw-accent-soft: #ede7fb;
+  --rw-ok-ink: #2e7d32;   --rw-ok-soft: #e8f5e9;
+  --rw-warn-ink: #b45200; --rw-warn-soft: #fff3e0;
+  --rw-bad-ink: #c62828;  --rw-bad-soft: #ffebee;
+  --rw-chip: #f5f5f5;
+  --rw-hover: #f5f5f5;
+  --rw-field: #ffffff;
+  --rw-btn-radius: 4px;
+  --rw-btn-shadow: 0 1px 3px rgba(98, 0, 238, .4);
+  --rw-btn-weight: 500;
+  --rw-heading-weight: 500;
+  --rw-tracking: 0;
+  --rw-uppercase: uppercase;
+  --rw-level-1: #6b6b6b; --rw-level-2: #2d7a31; --rw-level-3: #1565c0;
+  --rw-level-4: #6a1b9a; --rw-level-5: #c62828;
+  --rw-rank-grey: #626a7c;
+  --rw-rank-green: #1d7a43;
+  --rw-rank-cyan: #107681;
+  --rw-rank-blue: #1b63de;
+  --rw-rank-violet: #7f49dc;
+  --rw-rank-orange: #aa530b;
+  --rw-rank-red: #ce221c;
+}
+[data-style="material"].dark {
+  --rw-ground: #121212;
+  --rw-surface: #1e1e1e;
+  --rw-surface-2: #2a2a2a;
+  --rw-line: #2f2f2f;
+  --rw-divider: #a1a1a1;
+  --rw-shadow: 0 1px 3px rgba(0, 0, 0, .5), 0 3px 8px rgba(0, 0, 0, .4);
+  --rw-text: #e8e8e8;
+  --rw-text-2: #c7c7c7;
+  --rw-muted: #a0a0a0;
+  --rw-faint: #929292;
+  --rw-accent: #bb86fc;
+  --rw-accent-fg: #1e1e1e;
+  --rw-accent-ink: #bb86fc;
+  --rw-accent-soft: #2b1f3d;
+  --rw-chip: #2a2a2a;
+  --rw-hover: #2a2a2a;
+  --rw-field: #121212;
+  --rw-btn-shadow: 0 1px 3px rgba(187, 134, 252, .4);
+  /* Level ranglari shu blokda e'lon qilinmagan edi, ya'ni light
+     blokdan meros bo'lib qolgan va quyuq sirtda o'qilmasdi — eng
+     yomoni 1.04:1 (`brutal.dark`). Aniq yozildi: ohang saqlangan,
+     faqat yorqinlik AA (4.5:1) ga yetadigan darajaga ko'tarilgan. */
+  --rw-level-1: #929292; --rw-level-2: #3da743; --rw-level-3: #4a95eb;
+  --rw-level-4: #bb74e7; --rw-level-5: #e27070;
+  --rw-rank-grey: #8b94a4;
+  --rw-rank-green: #27a75d;
+  --rw-rank-cyan: #16a2b1;
+  --rw-rank-blue: #5e92eb;
+  --rw-rank-violet: #a57ee7;
+  --rw-rank-orange: #e9710f;
+  --rw-rank-red: #ea6b66;
+}
+
+/* ── Glassmorphism: muzlatilgan oyna, rangli fon shart. ── */
+[data-style="glass"] {
+  --rw-ground: linear-gradient(135deg, #341d65 0%, #15376c 55%, #0c5151 100%) fixed;
+  --rw-surface: rgba(0, 0, 0, .62);
+  --rw-surface-2: rgba(0, 0, 0, .56);
+  --rw-line: rgba(255, 255, 255, .3);
+  --rw-divider: #adaab3;
+  --rw-line-w: 1px;
+  --rw-radius: 16px;
+  --rw-radius-sm: 10px;
+  --rw-shadow: 0 8px 32px rgba(0, 0, 0, .2);
+  --rw-text: #ffffff;
+  --rw-text-2: rgba(255, 255, 255, .86);
+  --rw-muted: rgba(255, 255, 255, .75);
+  --rw-faint: rgba(255, 255, 255, .66);
+  --rw-accent: rgba(255, 255, 255, .92);
+  --rw-accent-fg: #24306b;
+  --rw-accent-ink: #ffffff;
+  --rw-accent-soft: rgba(255, 255, 255, .2);
+  --rw-ok-ink: #9dffc7;   --rw-ok-soft: rgba(157, 255, 199, .18);
+  --rw-warn-ink: #ffe08a; --rw-warn-soft: rgba(255, 224, 138, .18);
+  --rw-bad-ink: #ffb3ad;  --rw-bad-soft: rgba(255, 179, 173, .18);
+  --rw-chip: rgba(0, 0, 0, .59);
+  --rw-hover: rgba(255, 255, 255, .08);
+  --rw-field: rgba(0, 0, 0, .62);
+  --rw-btn-radius: 10px;
+  --rw-btn-weight: 600;
+  --rw-heading-weight: 600;
+  --rw-tracking: -.01em;
+  --rw-blur: blur(14px) saturate(150%);
+  --rw-chrome: rgba(10, 6, 26, .72);
+  --rw-level-1: rgba(255,255,255,.7); --rw-level-2: #9dffc7; --rw-level-3: #a8d8ff;
+  --rw-level-4: #e0b3ff; --rw-level-5: #ffb3ad;
+  --rw-rank-grey: #b3b9c4;
+  --rw-rank-green: #3fd27c;
+  --rw-rank-cyan: #1bcbde;
+  --rw-rank-blue: #99baf2;
+  --rw-rank-violet: #c6aeef;
+  --rw-rank-orange: #f5a868;
+  --rw-rank-red: #f2a6a3;
+}
+
+/* ── Neumorphism: fondan bo'rtib chiqqan. ── */
+[data-style="neu"] {
+  --rw-ground: #e2e6ee;
+  --rw-surface: #e2e6ee;
+  --rw-surface-2: #e2e6ee;
+  --rw-line: transparent;
+  --rw-divider: #757b86;
+  --rw-line-w: 0px;
+  --rw-radius: 20px;
+  --rw-radius-sm: 12px;
+  --rw-shadow: 7px 7px 15px #c3c7cf, -7px -7px 15px #ffffff;
+  --rw-text: #3b414e;
+  --rw-text-2: #464c5a;
+  --rw-muted: #505768;
+  --rw-faint: #596276;
+  /* #5b7cc9 oq matn bilan 4.06:1 edi — AA dan sal past. `--rw-accent-ink`
+     (#4a68b0) to'g'ri quyuq variant: 5.39:1. */
+  --rw-accent: #4a68b0;
+  --rw-accent-fg: #ffffff;
+  --rw-accent-ink: #425fa7;
+  --rw-accent-soft: #d8dfee;
+  --rw-ok-ink: #267356;   --rw-ok-soft: #d8ece5;
+  --rw-warn-ink: #845f1a; --rw-warn-soft: #eee5d0;
+  --rw-bad-ink: #9f4742;  --rw-bad-soft: #eedcdb;
+  --rw-chip: #e2e6ee;
+  --rw-hover: #dce0e8;
+  --rw-field: #e2e6ee;
+  --rw-btn-radius: 12px;
+  --rw-btn-shadow: 5px 5px 10px #c3c7cf, -5px -5px 10px #ffffff;
+  --rw-btn-weight: 600;
+  --rw-heading-weight: 600;
+  --rw-tracking: -.01em;
+  --rw-level-1: #5a6274; --rw-level-2: #246d51; --rw-level-3: #4460a2;
+  --rw-level-4: #72539d; --rw-level-5: #9d4642;
+  --rw-rank-grey: #5a6272;
+  --rw-rank-green: #1a703e;
+  --rw-rank-cyan: #0f6c76;
+  --rw-rank-blue: #195bcc;
+  --rw-rank-violet: #763cda;
+  --rw-rank-orange: #994a0a;
+  --rw-rank-red: #bf201a;
+}
+
+/* ── Claymorphism: yumshoq plastilin. ── */
+[data-style="clay"] {
+  --rw-ground: #ede4ff;
+  --rw-surface: #fbf7ff;
+  --rw-surface-2: #f2ebff;
+  --rw-line: transparent;
+  --rw-divider: #8874a5;
+  --rw-line-w: 0px;
+  --rw-radius: 26px;
+  --rw-radius-sm: 16px;
+  --rw-shadow: 0 14px 28px rgba(120, 80, 200, .22),
+               inset 0 -6px 12px rgba(160, 120, 235, .18),
+               inset 0 6px 10px rgba(255, 255, 255, .9);
+  --rw-text: #4a2d75;
+  --rw-text-2: #5d3d89;
+  --rw-muted: #624f82;
+  --rw-faint: #6f5897;
+  /* Lighthouse shu yerda yiqilgan edi: #8b5cf6 + oq matn = 4.23:1, AA 4.5.
+     `--rw-accent-ink` (#7c3aed) allaqachon to'g'ri quyuq variant — 5.70:1.
+     Yangi rang kiritilmadi, mavjud token tugma foniga ko'chirildi. */
+  --rw-accent: #7c3aed;
+  --rw-accent-fg: #ffffff;
+  --rw-accent-ink: #7936ea;
+  --rw-accent-soft: #ede4ff;
+  --rw-ok-ink: #247a55;   --rw-ok-soft: #d9f7ea;
+  --rw-warn-ink: #8e6616; --rw-warn-soft: #fdf1d6;
+  --rw-bad-ink: #b4305e;  --rw-bad-soft: #ffd8ea;
+  --rw-chip: #ffd8ea;
+  --rw-hover: #f2ebff;
+  --rw-field: #fbf7ff;
+  --rw-btn-radius: 16px;
+  --rw-btn-shadow: 0 8px 16px rgba(139, 92, 246, .4),
+                   inset 0 -4px 8px rgba(90, 40, 180, .3),
+                   inset 0 3px 6px rgba(255, 255, 255, .35);
+  --rw-btn-weight: 700;
+  --rw-heading-weight: 700;
+  --rw-tracking: -.01em;
+  --rw-level-1: #6e5991; --rw-level-2: #21704e; --rw-level-3: #245cce;
+  --rw-level-4: #6f35f4; --rw-level-5: #b3305d;
+  --rw-rank-grey: #5c6475;
+  --rw-rank-green: #1b723f;
+  --rw-rank-cyan: #0f6e78;
+  --rw-rank-blue: #1a5dd1;
+  --rw-rank-violet: #773eda;
+  --rw-rank-orange: #9e4d0a;
+  --rw-rank-red: #c1201a;
+}
+
+/* ── Aurora: qorong'u fonda xiralashgan rangli dog'lar. ── */
+[data-style="aurora"] {
+  --rw-ground: #07070f;
+  --rw-surface: rgba(18, 18, 32, .74);
+  --rw-surface-2: rgba(28, 28, 48, .8);
+  --rw-line: rgba(160, 130, 255, .22);
+  --rw-divider: #a3a1af;
+  --rw-line-w: 1px;
+  --rw-radius: 16px;
+  --rw-radius-sm: 10px;
+  --rw-shadow: 0 8px 30px rgba(0, 0, 0, .45);
+  --rw-text: #f2f0ff;
+  --rw-text-2: #d2cdeb;
+  --rw-muted: #c1bed4;
+  --rw-faint: #b2afc2;
+  --rw-accent: #7b2ff7;
+  --rw-accent-fg: #ffffff;
+  --rw-accent-ink: #c9a8ff;
+  --rw-accent-soft: rgba(123, 47, 247, .22);
+  --rw-ok-ink: #4fe0bd;   --rw-ok-soft: rgba(0, 194, 168, .16);
+  --rw-warn-ink: #ffcf72; --rw-warn-soft: rgba(255, 207, 114, .14);
+  --rw-bad-ink: #ff8095;  --rw-bad-soft: rgba(255, 128, 149, .14);
+  --rw-chip: rgba(123, 47, 247, .18);
+  --rw-hover: rgba(255, 255, 255, .05);
+  --rw-field: rgba(10, 10, 22, .7);
+  --rw-btn-radius: 10px;
+  --rw-btn-weight: 600;
+  --rw-heading-weight: 600;
+  --rw-tracking: -.015em;
+  --rw-blur: blur(10px);
+  --rw-level-1: #b2aec9; --rw-level-2: #4fe0bd; --rw-level-3: #83b3ff;
+  --rw-level-4: #c9a8ff; --rw-level-5: #ff92a4;
+  --rw-rank-grey: #acb2be;
+  --rw-rank-green: #2fca70;
+  --rw-rank-cyan: #1ac3d5;
+  --rw-rank-blue: #8eb2f1;
+  --rw-rank-violet: #c0a5ee;
+  --rw-rank-orange: #f49d55;
+  --rw-rank-red: #f19b98;
+}
+
+/* ── Skeuomorfizm: materialga taqlid. ── */
+[data-style="skeu"] {
+  --rw-ground: #b7bfc9;
+  --rw-surface: linear-gradient(#fdfdfd, #dfe3e8);
+  --rw-surface-2: linear-gradient(#f0f2f5, #d5dae0);
+  --rw-line: #9aa3ae;
+  --rw-divider: #5f6469;
+  --rw-line-w: 1px;
+  --rw-radius: 9px;
+  --rw-radius-sm: 6px;
+  --rw-shadow: inset 0 1px 0 #ffffff, 0 3px 6px rgba(0, 0, 0, .34);
+  --rw-text: #252b32;
+  --rw-text-2: #31373e;
+  --rw-muted: #3d4249;
+  --rw-faint: #464d55;
+  /* Gradient OQ matn bilan yiqilardi: yorug' pog'ona #6fa84f = 2.84:1.
+     Bitta matn rangi ikkala pog'onaga ham yetishi kerak, shuning uchun
+     oraliq toraytirildi — 4.83:1 va 6.30:1. #3d6b28 shu uslubning o'z
+     `--rw-ok-ink` qiymati, ya'ni palitradan tashqariga chiqilmadi. */
+  --rw-accent: linear-gradient(#527d38, #3d6b28);
+  --rw-accent-fg: #ffffff;
+  --rw-accent-ink: #204d84;
+  --rw-accent-soft: linear-gradient(#dfe8f5, #c7d5e8);
+  --rw-ok-ink: #3d6b28;   --rw-ok-soft: linear-gradient(#e2f0d9, #cfe4c2);
+  --rw-warn-ink: #7d5a12; --rw-warn-soft: linear-gradient(#f7ecd2, #ecdcb5);
+  --rw-bad-ink: #93342c;  --rw-bad-soft: linear-gradient(#f7dedb, #ecc6c2);
+  --rw-chip: linear-gradient(#f0f2f5, #d5dae0);
+  --rw-hover: linear-gradient(#ffffff, #e8ebef);
+  --rw-field: linear-gradient(#e8ebef, #fdfdfd);
+  --rw-btn-radius: 6px;
+  --rw-btn-shadow: inset 0 1px 0 rgba(255, 255, 255, .4), 0 2px 3px rgba(0, 0, 0, .3);
+  --rw-btn-weight: 700;
+  --rw-heading-weight: 700;
+  --rw-tracking: 0;
+  --rw-text-emboss: 0 1px 0 rgba(255, 255, 255, .85);
+  --rw-level-1: #474d54; --rw-level-2: #305520; --rw-level-3: #2a4d79;
+  --rw-level-4: #5b3f7b; --rw-level-5: #852f28;
+  --rw-rank-grey: #464c59;
+  --rw-rank-green: #145730;
+  --rw-rank-cyan: #0b535b;
+  --rw-rank-blue: #14479f;
+  --rw-rank-violet: #5c24bc;
+  --rw-rank-orange: #7a3b08;
+  --rw-rank-red: #961915;
+}
+
+/* ── Updates: 10 tur rangi (qaror 11) ──
+
+   Har bir tur o'z rangini oladi. Bu tokenlar ATAYLAB bitta joyda
+   e'lon qilinadi, har palitrada emas: nishon (badge) o'z fonini O'ZI
+   bilan olib yuradi, ya'ni `ink` ↔ `soft` juftligi palitradan
+   mustaqil — kontrast ham bir marta o'lchanadi. Faqat ikki holat bor:
+   yorug' va qorong'i. Har palitrada takrorlansa 18 × 20 = 360 qiymat
+   bo'lardi va ularning aksari bir xil narsani yozardi.
+
+   Blok `[data-style]` dan KEYIN turadi: teng xoslikda oxirgisi
+   yutadi, ya'ni hech bir palitra bu qiymatlarni bexosdan bosib
+   ketmaydi. Qorong'i variantda xoslik yuqoriroq (`.dark`), shuning
+   uchun tartib muhim emas.
+
+   O'lchandi (WCAG AA, 4.5:1) — eng past qiymatlar: `security` 4.73,
+   `infrastructure` 4.82, `breaking` 4.83 (yorug'), `new` 8.75
+   (qorong'i). `breaking` dastlab `#d92d20` edi va 4.44:1 bergan —
+   shu sababli `#cf2a1d` ga tushirildi. */
+:root,
+[data-style] {
+  --rw-kind-new-ink: #3b5bdb;            --rw-kind-new-soft: #eef1ff;
+  --rw-kind-improved-ink: #0e7490;       --rw-kind-improved-soft: #ecfeff;
+  --rw-kind-fixed-ink: #037a44;          --rw-kind-fixed-soft: #ecfdf3;
+  --rw-kind-performance-ink: #6d28d9;    --rw-kind-performance-soft: #f6f1ff;
+  --rw-kind-security-ink: #b45309;       --rw-kind-security-soft: #fff7ed;
+  --rw-kind-design-ink: #be185d;         --rw-kind-design-soft: #fdf2f8;
+  --rw-kind-content-ink: #4b5563;        --rw-kind-content-soft: #f3f4f6;
+  --rw-kind-infrastructure-ink: #4d7c0f; --rw-kind-infrastructure-soft: #f7fee7;
+  --rw-kind-breaking-ink: #cf2a1d;       --rw-kind-breaking-soft: #fef3f2;
+  --rw-kind-deprecated-ink: #7c2d12;     --rw-kind-deprecated-soft: #fdf1e7;
+}
+:root.dark,
+[data-style].dark {
+  --rw-kind-new-ink: #a5b8ff;            --rw-kind-new-soft: #151c33;
+  --rw-kind-improved-ink: #67e8f9;       --rw-kind-improved-soft: #0b2429;
+  --rw-kind-fixed-ink: #6ee7a8;          --rw-kind-fixed-soft: #0a2418;
+  --rw-kind-performance-ink: #c4b5fd;    --rw-kind-performance-soft: #1d1633;
+  --rw-kind-security-ink: #fcd34d;       --rw-kind-security-soft: #2a1f0a;
+  --rw-kind-design-ink: #f9a8d4;         --rw-kind-design-soft: #2b1220;
+  --rw-kind-content-ink: #cbd5e1;        --rw-kind-content-soft: #1c1f26;
+  --rw-kind-infrastructure-ink: #bef264; --rw-kind-infrastructure-soft: #1b2408;
+  --rw-kind-breaking-ink: #fca5a5;       --rw-kind-breaking-soft: #2c1211;
+  --rw-kind-deprecated-ink: #fdba74;     --rw-kind-deprecated-soft: #2a1a0d;
+}
+
+/* ═══ Semantik klasslar — komponentlar shulardan foydalanadi ═══ */
+.rw-panel {
+  background: var(--rw-surface);
+  border: var(--rw-line-w) solid var(--rw-line);
+  border-radius: var(--rw-radius);
+  box-shadow: var(--rw-shadow);
+  backdrop-filter: var(--rw-blur, none);
+  -webkit-backdrop-filter: var(--rw-blur, none);
+}
+.rw-chrome {
+  background: var(--rw-chrome, var(--rw-surface));
+  backdrop-filter: var(--rw-blur, none);
+  -webkit-backdrop-filter: var(--rw-blur, none);
+}
+.rw-surface { background: var(--rw-surface); backdrop-filter: var(--rw-blur, none); -webkit-backdrop-filter: var(--rw-blur, none); }
+.rw-ground-bg { background: var(--rw-ground); }
+.rw-line { border-color: var(--rw-line); }
+/* Ajratgich — karta chegarasidan ALOHIDA token. `--rw-line` `clay` va `neu`
+   da ataylab shaffof (u ikki uslubda chegara o'rniga soya ishlatadi), ya'ni
+   u bilan chizilgan har qanday ajratgich ko'rinmay qolardi. `--rw-divider`
+   esa matn rangidan hosil qilinadi va barcha uslublarda 3:1 dan o'tadi. */
+.rw-divider { border-color: var(--rw-divider); }
+.rw-divide > * + * { border-color: var(--rw-divider); }
+.rw-shadow { box-shadow: var(--rw-shadow); }
+.rw-strong { color: var(--rw-text); text-shadow: var(--rw-text-emboss, none); }
+.rw-dim-2 { color: var(--rw-text-2); }
+.rw-dim { color: var(--rw-muted); }
+.rw-faint { color: var(--rw-faint); }
+.rw-accent-ink { color: var(--rw-accent-ink); }
+.rw-accent-bg { background: var(--rw-accent); color: var(--rw-accent-fg); box-shadow: var(--rw-btn-shadow); }
+.rw-accent-bg:hover { filter: brightness(1.08); }
+.rw-accent-soft { background: var(--rw-accent-soft); color: var(--rw-accent-ink); }
+.rw-ok-ink { color: var(--rw-ok-ink); }      .rw-ok-soft { background: var(--rw-ok-soft); color: var(--rw-ok-ink); }
+.rw-warn-ink { color: var(--rw-warn-ink); }  .rw-warn-soft { background: var(--rw-warn-soft); color: var(--rw-warn-ink); }
+.rw-bad-ink { color: var(--rw-bad-ink); }    .rw-bad-soft { background: var(--rw-bad-soft); color: var(--rw-bad-ink); }
+.rw-chip { background: var(--rw-chip); color: var(--rw-text-2); }
+
+/* Updates turlari — `.rw-kind-<tur>`. `ink` matn, `soft` fon.
+   Qo'lda yozilgan: Tailwind dinamik sinfni skanerlamaydi, ya'ni
+   `rw-kind-${kind}` yig'indisi ishlamaydi. */
+.rw-kind-new { background: var(--rw-kind-new-soft); color: var(--rw-kind-new-ink); }
+.rw-kind-improved { background: var(--rw-kind-improved-soft); color: var(--rw-kind-improved-ink); }
+.rw-kind-fixed { background: var(--rw-kind-fixed-soft); color: var(--rw-kind-fixed-ink); }
+.rw-kind-performance { background: var(--rw-kind-performance-soft); color: var(--rw-kind-performance-ink); }
+.rw-kind-security { background: var(--rw-kind-security-soft); color: var(--rw-kind-security-ink); }
+.rw-kind-design { background: var(--rw-kind-design-soft); color: var(--rw-kind-design-ink); }
+.rw-kind-content { background: var(--rw-kind-content-soft); color: var(--rw-kind-content-ink); }
+.rw-kind-infrastructure { background: var(--rw-kind-infrastructure-soft); color: var(--rw-kind-infrastructure-ink); }
+.rw-kind-breaking { background: var(--rw-kind-breaking-soft); color: var(--rw-kind-breaking-ink); }
+.rw-kind-deprecated { background: var(--rw-kind-deprecated-soft); color: var(--rw-kind-deprecated-ink); }
+.rw-accent-line { border-color: var(--rw-accent); }
+.rw-placeholder::placeholder { color: var(--rw-faint); }
+.rw-hover-accent:hover { background: var(--rw-accent-soft); }
+.rw-hover-strong:hover { color: var(--rw-text); }
+.rw-hover-bg:hover { background: var(--rw-hover); }
+.rw-link-hover:hover { color: var(--rw-accent-ink); }
+.rw-hover-line:hover { border-color: var(--rw-accent); }
+.rw-focus-line:focus { border-color: var(--rw-accent); outline: none; }
+.rw-focus-ring:focus { box-shadow: 0 0 0 4px var(--rw-accent-soft); }
+
+/* KLAVIATURA fokusi — WCAG 2.4.11 sirtga nisbatan kamida 3:1 talab qiladi.
+   Yuqoridagi ikkala qoida ham buni bermasdi: halqa `--rw-accent-soft`
+   bilan chizilardi va u 18 palitrada 1.07–1.81:1 berib, amalda ko'rinmasdi;
+   `rw-focus-line` esa `outline: none` qo'yib o'rniga faqat chegara rangini
+   o'zgartirardi. Natijada klaviatura bilan yurgan odam fokus qayerdaligini
+   yo'qotardi — o'lchandi: 20 ta ishlatilishdan 16 tasi halqasiz edi.
+   `--rw-accent-ink` o'lchandi: eng yomon palitrada ham 4.31:1.
+   `:focus-visible` — sichqoncha bilan bosilganda halqa chiqmaydi. */
+.rw-focus-line:focus-visible,
+.rw-focus-ring:focus-visible {
+  outline: 2px solid var(--rw-accent-ink);
+  outline-offset: 2px;
+}
+/* Forma maydoni: foni ham, CHEGARASI ham shu yerda.
+   WCAG 1.4.11 interfeys elementini ajratib turadigan chiziqdan 3:1
+   talab qiladi. `--rw-line` buni bermaydi — u panel va jadval
+   chiziqlari uchun ataylab yumshoq: o'lchanganda 18 palitradan 11 tasi
+   1.09–2.51:1 berardi, `material`, `neu` va `clay` da esa fon karta
+   bilan bir xil va chegara kengligi 0 bo'lgani uchun maydon UMUMAN
+   ko'rinmasdi.
+   Qiymat matn rangidan hosil qilinadi, shuning uchun yangi palitra
+   qo'shilganda ham o'zi moslashadi; 65% — o'lchangan eng past nuqta
+   3.26:1. Chegarasi uslubning kimligi bo'lgan to'rt palitra
+   `--rw-field-line` ni o'zi belgilaydi.
+   Bu qoida `.rw-line` dan KEYIN turishi shart: ikkalasi ham bitta
+   klass, ya'ni g'olibni faqat tartib hal qiladi. */
+.rw-field-bg {
+  background: var(--rw-field);
+  border-color: var(--rw-field-line, color-mix(in srgb, var(--rw-text) 65%, var(--rw-field)));
+}
+.rw-radius { border-radius: var(--rw-radius); }
+.rw-radius-sm { border-radius: var(--rw-radius-sm); }
+.rw-btn-radius { border-radius: var(--rw-btn-radius); }
+.rw-btn-label { font-weight: var(--rw-btn-weight); text-transform: var(--rw-uppercase, none); }
+
+/* Uslubga xos tuzilma — token bilan ifodalab bo'lmaydigan qism */
+[data-style="brutal"] .rw-accent-bg:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--rw-line); }
+[data-style="neu"] .rw-accent-bg:active,
+[data-style="skeu"] .rw-accent-bg:active { box-shadow: inset 4px 4px 8px rgba(0, 0, 0, .22); }
+[data-style="material"] .rw-accent-bg:hover { box-shadow: 0 4px 10px rgba(98, 0, 238, .5); }
+[data-style="terminal"] .rw-accent-bg:hover { filter: none; background: var(--rw-accent-ink); }
+
+/* Aurora va glass fonidagi rangli dog'lar */
+[data-style="aurora"] body::before,
+[data-style="glass"] body::before {
+  content: "";
+  position: fixed;
+  inset: -20vh -20vw;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(38vw 38vw at 12% 8%, rgba(86, 8, 212, .55), transparent 65%),
+    radial-gradient(34vw 34vw at 88% 82%, rgba(0, 146, 126, .5), transparent 65%);
+  filter: blur(46px);
+}
+[data-style="glass"] body::before {
+  background:
+    radial-gradient(34vw 34vw at 10% 6%, rgba(105, 0, 44, .6), transparent 62%),
+    radial-gradient(30vw 30vw at 90% 88%, rgba(107, 75, 0, .5), transparent 62%);
+}
+
+/* Eski o'zgaruvchilar — inline `style` qolgan joylar uchun ko'prik */
+:root {
+  --bg: var(--rw-ground);
+  --surface: var(--rw-surface);
+  --border: var(--rw-line);
+  --text: var(--rw-text);
+  --muted: var(--rw-muted);
+  --accent: var(--rw-accent-ink);
+}
+
+@layer base {
+  * , ::after, ::before, ::backdrop, ::file-selector-button { border-color: var(--rw-line); }
+  button:not(:disabled), [role="button"]:not(:disabled) { cursor: pointer; }
+  body {
+    background: var(--rw-ground);
+    background-attachment: fixed;
+    color: var(--rw-text);
+    font-family: var(--rw-font);
+    position: relative;
+    z-index: 0;
+  }
+  h1, h2, h3 { font-family: var(--rw-font-display); font-weight: var(--rw-heading-weight); letter-spacing: var(--rw-tracking); }
+}
+
+/* Yetti daraja, beshta tokendan: oraliq ikkitasi `color-mix` bilan
+   hosil qilinadi, shunda har bir uslub bloki tegilmasdan qoladi. */
+.level-beginner { color: var(--rw-level-1); }
+.level-basic { color: color-mix(in oklab, var(--rw-level-1), var(--rw-level-2)); }
+.level-intermediate { color: var(--rw-level-2); }
+.level-upper { color: color-mix(in oklab, var(--rw-level-2), var(--rw-level-3)); }
+.level-hard { color: var(--rw-level-3); }
+.level-expert { color: var(--rw-level-4); }
+.level-master { color: var(--rw-level-5); }
+
+/* ═══ Profil kosmetikasi — do'kondagi muqova va ramkalar (`lib/cosmetics.ts`) ═══
+   Muqova ustiga matn tushmaydi — ism uning TAGIDA, panel sirtida turadi —
+   shuning uchun bu ranglar matn kontrasti zinapoyasiga kirmaydi. */
+.rw-cover { background: linear-gradient(120deg, var(--rw-accent-soft), var(--rw-chip)); }
+.rw-cover-night {
+  background:
+    radial-gradient(1.5px 1.5px at 18% 32%, #ffffff, transparent),
+    radial-gradient(1px 1px at 64% 22%, #ffffff, transparent),
+    radial-gradient(1.5px 1.5px at 86% 58%, #ffffff, transparent),
+    radial-gradient(1px 1px at 38% 72%, #ffffff, transparent),
+    linear-gradient(160deg, #0b1026 0%, #1c2350 55%, #3a2d6b 100%);
+}
+.rw-cover-steppe { background: linear-gradient(180deg, #f3d48e 0%, #e7a95c 42%, #b5b86b 68%, #6f8c46 100%); }
+.rw-frame-bronze { box-shadow: 0 0 0 3px #b0763a, 0 0 0 6px rgba(176, 118, 58, .3); }
+.rw-frame-silver { box-shadow: 0 0 0 3px #aeb6c2, 0 0 0 6px rgba(174, 182, 194, .3); }
+.rw-frame-neytron { box-shadow: 0 0 0 3px var(--rw-accent), 0 0 16px 2px var(--rw-accent); }
+/* Unvon ranglari (ADR-0018) — `--rw-rank-N` har uslub blokida, har
+   palitrada eng yomon fonga nisbatan AA (`tools/check_contrast.py`). Ism
+   shu rangda: profil, reyting, standings, urinishlar, jamoa, obunachilar. */
+.rw-rank-grey { color: var(--rw-rank-grey); } .rw-rank-green { color: var(--rw-rank-green); } .rw-rank-cyan { color: var(--rw-rank-cyan); } .rw-rank-blue { color: var(--rw-rank-blue); } .rw-rank-violet { color: var(--rw-rank-violet); } .rw-rank-orange { color: var(--rw-rank-orange); } .rw-rank-red { color: var(--rw-rank-red); }
+.rw-rank-grey { color: var(--rw-rank-grey); } .rw-rank-green { color: var(--rw-rank-green); } .rw-rank-cyan { color: var(--rw-rank-cyan); } .rw-rank-blue { color: var(--rw-rank-blue); } .rw-rank-violet { color: var(--rw-rank-violet); } .rw-rank-orange { color: var(--rw-rank-orange); } .rw-rank-red { color: var(--rw-rank-red); }
+/* Unvon ramkasi — do'kon ramkasi kiyilmagan bo'lsa (`lib/cosmetics.ts`). */
+.rw-frame-grey { --rw-frame: var(--rw-rank-grey); } .rw-frame-green { --rw-frame: var(--rw-rank-green); } .rw-frame-cyan { --rw-frame: var(--rw-rank-cyan); } .rw-frame-blue { --rw-frame: var(--rw-rank-blue); } .rw-frame-violet { --rw-frame: var(--rw-rank-violet); } .rw-frame-orange { --rw-frame: var(--rw-rank-orange); } .rw-frame-red { --rw-frame: var(--rw-rank-red); }
+[class*="rw-frame-rank-"] {
+  box-shadow: 0 0 0 3px var(--rw-frame), 0 0 0 6px color-mix(in oklab, var(--rw-frame) 28%, transparent);
+}
+.rw-frame-rank-8, .rw-frame-rank-9 {
+  box-shadow: 0 0 0 3px var(--rw-frame), 0 0 14px 3px color-mix(in oklab, var(--rw-frame) 55%, transparent);
+}
+/* Reyting grafigidagi unvon bantlari — bezak, ustiga matn tushmaydi
+   (bant nomi `rw-dim` bilan yoziladi), shuning uchun shaffof. */
+.rw-band-1 { fill: var(--rw-rank-grey); } .rw-band-2 { fill: var(--rw-rank-grey); } .rw-band-3 { fill: var(--rw-rank-grey); } .rw-band-4 { fill: var(--rw-rank-green); } .rw-band-5 { fill: var(--rw-rank-green); } .rw-band-6 { fill: var(--rw-rank-cyan); } .rw-band-7 { fill: var(--rw-rank-cyan); } .rw-band-8 { fill: var(--rw-rank-blue); } .rw-band-9 { fill: var(--rw-rank-violet); } .rw-band-10 { fill: var(--rw-rank-orange); } .rw-band-11 { fill: var(--rw-rank-orange); } .rw-band-12 { fill: var(--rw-rank-red); } .rw-band-13 { fill: var(--rw-rank-red); } .rw-band-14 { fill: var(--rw-rank-red); } .rw-band-15 { fill: var(--rw-rank-red); } .rw-band-16 { fill: var(--rw-rank-red); }
+[class^="rw-band-"] { fill-opacity: .14; }
+/* Yutuq medallari — bezak: daraja nomi yonida matn bo'lib ham yoziladi. */
+.rw-medal-bronze { background: radial-gradient(circle at 35% 30%, #f3cda6, #b0763a 72%); }
+.rw-medal-silver { background: radial-gradient(circle at 35% 30%, #ffffff, #9aa3b0 72%); }
+.rw-medal-gold { background: radial-gradient(circle at 35% 30%, #fff1b8, #d4a017 72%); }
+.rw-medal-none { background: var(--rw-chip); box-shadow: inset 0 0 0 1px var(--rw-divider); }
+/* Sertifikat kartasi — daraja rangi faqat chegarada (bezak), matn standart tokenlarda. */
+.rw-cert-gold { border-color: #d4a017; }
+.rw-cert-silver { border-color: #9aa3b0; }
+.rw-cert-bronze { border-color: #b0763a; }
+.rw-cert-top10 { border-color: var(--rw-accent); }
+/* Qolgan darajalar `--rw-line` da edi, ya'ni `clay` va `neu` da bu karta
+   chegarasiz qolib, oltin/kumush/bronzadan farq qilmasdi. */
+.rw-cert-participant { border-color: var(--rw-divider); }
+
+/* Belgilash katagi, radio va slayder uslub rangida. */
+.rw-accent-control { accent-color: var(--rw-accent); }
+
+/* Mavzu almashishidagi doira effekti (`ThemeContext`): standart
+   cross-fade o'chiriladi, aks holda doira ustida yana bitta animatsiya yurardi. */
+:root[data-vt="circle"]::view-transition-old(root),
+:root[data-vt="circle"]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+@utility menu-item {
+  @apply relative flex items-center w-full gap-3 px-3 py-2 font-medium rounded-lg text-theme-sm;
+}
+@utility menu-item-active {
+  background: var(--rw-accent-soft);
+  color: var(--rw-accent-ink);
+}
+@utility menu-item-inactive {
+  color: var(--rw-text-2);
+}
+@utility menu-item-icon-active {
+  color: var(--rw-accent-ink);
+}
+@utility menu-item-icon-inactive {
+  color: var(--rw-faint);
+}
+@utility no-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+@utility custom-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Qiyinlik darajalari — 04-prd § qiyinlik shkalasi ranglari */
+
+.menu-item-inactive:hover { background: var(--rw-hover); color: var(--rw-text); }
+
+/* Markdown matni — masala, maqola, blog.
+   Tailwind preflight sarlavha va ro'yxat uslublarini nolga tushiradi,
+   shuning uchun ular bu yerda tiklanadi. */
+.rw-md > *:first-child { margin-top: 0; }
+.rw-md h1, .rw-md h2, .rw-md h3, .rw-md h4 {
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 1.5em 0 0.5em;
+}
+.rw-md h1 { font-size: 1.5rem; }
+.rw-md h2 { font-size: 1.25rem; }
+.rw-md h3 { font-size: 1.1rem; }
+.rw-md p { margin: 0.75em 0; }
+.rw-md ul, .rw-md ol { margin: 0.75em 0; padding-left: 1.5rem; }
+.rw-md ul { list-style: disc; }
+.rw-md ol { list-style: decimal; }
+.rw-md li { margin: 0.25em 0; }
+.rw-md a { color: var(--rw-accent-ink); text-decoration: underline; }
+.rw-md code {
+  background: var(--rw-surface-2);
+  border: 1px solid var(--rw-line);
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+  font-size: 0.9em;
+}
+.rw-md pre {
+  background: var(--rw-surface-2);
+  border: 1px solid var(--rw-line);
+  border-radius: 8px;
+  padding: 0.9rem;
+  overflow-x: auto;   /* uzun kod satrlari sahifani cho'zmasin */
+  margin: 1em 0;
+}
+.rw-md pre code { background: none; border: 0; padding: 0; }
+.rw-md blockquote {
+  border-left: 3px solid var(--rw-divider);
+  padding-left: 1rem;
+  color: var(--rw-muted);
+  margin: 1em 0;
+}
+.rw-md table { border-collapse: collapse; margin: 1em 0; display: block; overflow-x: auto; }
+/* Jadval va `hr` — MAZMUN ajratgichlari, ya'ni `--rw-divider`. `--rw-line`
+   `clay` va `neu` da shaffof (u ikki uslubda kartani soya bilan chizadi),
+   ya'ni u bilan jadval chegarasi ham, chiziq ham ko'rinmasdi. Kod bloklari
+   (`code`, `pre`) esa `--rw-line` da qoladi: ularning chegarasi emas, FONI
+   ularni ajratib turadi — `clay` da karta ham xuddi shunday. */
+.rw-md th, .rw-md td { border: 1px solid var(--rw-divider); padding: 0.4rem 0.7rem; }
+.rw-md th { background: var(--rw-surface-2); text-align: left; }
+.rw-md hr { border: 0; border-top: 1px solid var(--rw-divider); margin: 1.5em 0; }
+.rw-md img { max-width: 100%; height: auto; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   TEMA SOZLAGICHI — foydalanuvchi tanlovi
+
+   Barcha qoidalar `data-*` atributiga tayanadi, JS bilan stil
+   yozilmaydi: shunda shu fayl yagona haqiqat manbai bo'lib qoladi va
+   sozlamani qayta qo'llash uchun render kerak bo'lmaydi.
+
+   Accent (`--rw-accent*`) bu yerda YO'Q: u `lib/theme/apply.ts` da
+   o'lchov asosida hosil qilinadi va inline yoziladi — CSS da statik
+   qiymat bo'lishi mumkin emas, chunki yorqinlik har uslubda boshqacha
+   (D42).
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Shrift — faqat NEYTRAAL uslublarga ta'sir qiladi (D14).
+   `[data-style]` bloklari `--rw-font` ni o'ziga yozadi va o'sha qoida
+   xoslikda ustun turadi, ya'ni Editorial (serif) va Terminal (mono)
+   o'z tipografiyasini saqlaydi. */
+[data-font="inter"] { --rw-font: var(--rw-inter), ui-sans-serif, system-ui, sans-serif; }
+[data-font="jakarta"] { --rw-font: var(--rw-jakarta), ui-sans-serif, system-ui, sans-serif; }
+[data-font="roboto"] { --rw-font: var(--rw-roboto), ui-sans-serif, system-ui, sans-serif; }
+[data-font="dm-sans"] { --rw-font: var(--rw-dm-sans), ui-sans-serif, system-ui, sans-serif; }
+/* O'qish qiyinchiligi uchun (D52). Harf orasi kengroq — Lexend ning
+   shakllari bir-biriga yopishmaydi, lekin standart holatda u zich
+   ko'rinadi, shuning uchun tracking ham qo'shiladi. */
+[data-font="lexend"] {
+  --rw-font: var(--rw-lexend), ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0.01em;
+}
+
+/* Sarlavha va matn uchun ALOHIDA shrift (D53). Standart holatda
+   `--rw-font-display` matn shriftiga teng (`globals.css:143`), ya'ni
+   `[data-font-heading]` faqat tanlanganda ishga tushadi. */
+[data-font-heading="inter"] { --rw-font-display: var(--rw-inter), ui-sans-serif, system-ui, sans-serif; }
+[data-font-heading="jakarta"] { --rw-font-display: var(--rw-jakarta), ui-sans-serif, system-ui, sans-serif; }
+[data-font-heading="roboto"] { --rw-font-display: var(--rw-roboto), ui-sans-serif, system-ui, sans-serif; }
+[data-font-heading="dm-sans"] { --rw-font-display: var(--rw-dm-sans), ui-sans-serif, system-ui, sans-serif; }
+[data-font-heading="lexend"] { --rw-font-display: var(--rw-lexend), ui-sans-serif, system-ui, sans-serif; }
+
+/* Zichlik — faqat idish va qator bo'shliqlari. Shrift o'lchamiga
+   TEGILMAYDI: u alohida boshqaruv (D15) va brauzer zoom i bilan
+   takrorlanmasligi kerak. */
+[data-density="compact"] .rw-panel { padding: 0.875rem 1rem; }
+[data-density="compact"] .rw-md th,
+[data-density="compact"] .rw-md td { padding: 0.25rem 0.5rem; }
+[data-density="spacious"] .rw-panel { padding: 1.75rem 2rem; }
+[data-density="spacious"] .rw-md th,
+[data-density="spacious"] .rw-md td { padding: 0.7rem 1rem; }
+
+/* Harakatni kamaytirish — foydalanuvchi so'ragan (D18). Tizim darajasidagi
+   `prefers-reduced-motion` bilan bir xil natija, lekin qo'lda. */
+[data-motion="reduce"] *,
+[data-motion="reduce"] *::before,
+[data-motion="reduce"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Katta bosish maydonlari — WCAG 2.5.8 (24×24) emas, 44×44 (D18). */
+[data-targets="big"] button,
+[data-targets="big"] a[role="button"],
+[data-targets="big"] [role="button"] { min-height: 44px; min-width: 44px; }
+
+/* Kuchli fokus halqasi — mavjud halqa ustiga qalinroq va aniqroq. */
+[data-focus="strong"] :focus-visible {
+  outline: 3px solid var(--rw-accent-ink);
+  outline-offset: 3px;
+}
+
+/* ═══ Judge natijasi — beshta ko'rinish (D56/D57) ═══════════════════════
+   Bitta ma'lumot manbasi (`lib/theme/verdict.ts`), beshta ko'rinish.
+   Farq faqat batafsil darajasida — ma'no bir xil. Ranglar inline keladi
+   (har verdikt o'z rangiga ega), shuning uchun bu yerda faqat tuzilma. */
+.rw-verdict {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* ① Faqat rangli nishon — zich jadval uchun */
+.rw-verdict-badge {
+  padding: 0.2em 0.7em;
+  border-radius: 999px;
+}
+
+/* ② Faqat ikonka — rangsiz. Eng izchil ko'rinish, lekin holat darhol
+   sezilmaydi; shuning uchun `title`/`aria-label` bilan keladi. */
+.rw-verdict-plain {
+  color: var(--rw-text-2);
+}
+
+/* ③④⑨ Ikonka + kod / to'liq nom / foiz */
+.rw-verdict-icon svg,
+.rw-verdict-full svg,
+.rw-verdict-percent svg {
+  flex: none;
+}
+.rw-verdict-pct {
+  font-style: normal;
+  font-size: 0.85em;
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ⑤ Rangli doira + oq ikonka — mobil va ixcham jadval */
+.rw-verdict-circle {
+  width: 1.6em;
+  height: 1.6em;
+  border-radius: 50%;
+  justify-content: center;
+  color: #fff;
+}
+
+/* ⑥ Rangli nuqta + kod — log ro'yxati uchun yengil variant */
+.rw-verdict-dot i {
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+  flex: none;
+}
+
+/* ⑦ Chegara + ikonka — ramkali kvadrat, faqat signal.
+   ⚠️ `--rw-line` emas, `--rw-divider`: `clay`/`neu` uslublarida
+   `--rw-line` ataylab `transparent` (chegara o'rniga soya ishlatiladi),
+   ya'ni ramka ko'rinmay qolardi. 60% aralashma — ko'rinadi, lekin
+   qichqirmaydi. */
+.rw-verdict-box {
+  width: 1.85em;
+  height: 1.85em;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--rw-divider) 60%, transparent);
+  border-radius: 0.55em;
+}
+
+/* ⑧ Chap chiziq + ikonka + nom — ogohlantirish bloki */
+.rw-verdict-bar {
+  padding: 0.15em 0.7em 0.15em 0.55em;
+  border-left: 3px solid;
+  border-radius: 0 0.45em 0.45em 0;
+  background: var(--rw-surface);
+}
+
+/* ⑩ Katta ikonka — natija kartasi.
+   Chegara ham `--rw-divider` dan (sabab ⑦ da) — `--rw-line` clay/neu da
+   shaffof bo'lgani uchun karta chegarasiz "havoda" turardi. */
+.rw-verdict-card {
+  flex-direction: column;
+  gap: 0.35em;
+  padding: 0.75em 1em;
+  border: 1px solid color-mix(in srgb, var(--rw-divider) 60%, transparent);
+  border-radius: 0.75em;
+  text-align: center;
+  min-width: 7em;
+}
+.rw-verdict-card-icon {
+  width: 2em;
+  height: 2em;
+}
+.rw-verdict-card b {
+  font-size: 0.8125rem;
+}
+.rw-verdict-card-hint {
+  font-size: 0.6875rem;
+  color: var(--rw-text-2);
+  font-weight: 400;
+  white-space: normal;
+}
+
+/* `auto` — ekranga qarab ko'rinish tanlanadi. Uch nusxa chiziladi, CSS
+   faqat bittasini ko'rsatadi: `matchMedia` SSR'da chaqnash berardi
+   (serverda o'lcham noma'lum), CSS esa buni chaqnashsiz bajaradi. */
+.rw-only-mobile { display: inline-flex; }
+.rw-only-tablet,
+.rw-only-desktop { display: none; }
+@media (min-width: 640px) {
+  .rw-only-mobile { display: none; }
+  .rw-only-tablet { display: inline-flex; }
+}
+@media (min-width: 1024px) {
+  .rw-only-tablet { display: none; }
+  .rw-only-desktop { display: inline-flex; }
+}
+
+/* ═══ Interfeys holati — o'nta ko'rinish (D60) ══════════════════════════
+   Verdikt bilan bir xil tuzilma, lekin boshqa ma'no: bu yerda gap judge
+   natijasi haqida emas, amal bajarilgani haqida. Ranglar inline keladi
+   (`lib/theme/status.ts`), shuning uchun bu yerda faqat shakl. */
+.rw-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* ① Faqat rangli matn */
+.rw-status-text {
+  font-weight: 600;
+}
+
+/* ② Ikonka + matn */
+.rw-status-icon svg {
+  flex: none;
+}
+
+/* ③ To'ldirilgan nishon */
+.rw-status-badge {
+  padding: 0.2em 0.7em;
+  border-radius: 999px;
+}
+
+/* ④ Rangli doira + oq ikonka */
+.rw-status-circle {
+  width: 1.6em;
+  height: 1.6em;
+  border-radius: 50%;
+  justify-content: center;
+  color: #fff;
+}
+
+/* ⑤ Rangli nuqta + matn */
+.rw-status-dot i {
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+  flex: none;
+}
+
+/* ⑥ Ramkali kvadrat. Chegara `--rw-divider` dan — `--rw-line` clay/neu
+   uslublarida ataylab shaffof, ya'ni ramka ko'rinmay qolardi. */
+.rw-status-box {
+  width: 1.85em;
+  height: 1.85em;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--rw-divider) 60%, transparent);
+  border-radius: 0.55em;
+}
+
+/* ⑦ Chap chiziq — sahifa darajasidagi xabar, ya'ni TO'LIQ kenglikda.
+   Sabab: u ro'yxat/qator ichida emas, kontent ustida turadi; matn uzun
+   bo'ladi va `inline-flex` bo'lsa o'rtasidan kesilib qolardi. */
+.rw-status-alert {
+  display: flex;
+  width: 100%;
+  padding: 0.15em 0.7em 0.15em 0.55em;
+  border-left: 3px solid;
+  border-radius: 0 0.45em 0.45em 0;
+  background: var(--rw-surface);
+}
+/* Chiziqcha ichidagi matn uzun bo'lsa o'ralsin (`nowrap` ni bekor qilamiz). */
+.rw-status-alert > span {
+  white-space: normal;
+}
+
+/* ⑧⑨ Karta: ikonka chapda, sarlavha va izoh o'ngda */
+.rw-status-soft,
+.rw-status-outline {
+  align-items: flex-start;
+  gap: 0.55em;
+  padding: 0.5em 0.8em;
+  border-radius: 0.6em;
+  max-width: 22em;
+  white-space: normal;
+}
+.rw-status-outline {
+  border: 1px solid;
+  background: var(--rw-surface);
+}
+.rw-status-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1em;
+  min-width: 0;
+}
+.rw-status-col b {
+  font-size: 0.8125rem;
+}
+.rw-status-col em {
+  font-style: normal;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  opacity: 0.85;
+}
+
+/* ⑩ Katta karta — ikonka ustida, matn ostida */
+.rw-status-stack {
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0.85em 1.1em;
+  border-radius: 0.75em;
+  text-align: center;
+  max-width: 18em;
+  white-space: normal;
+}
+.rw-status-stack b {
+  font-size: 0.8125rem;
+}
+.rw-status-stack em {
+  font-style: normal;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  opacity: 0.85;
+}
+
+/* ═══ Bo'sh holat va xato ekrani — uch shakl (D61) ══════════════════════
+   Uch shakl, uch vaziyat: asosiy ro'yxat (`full`), sahifa markazi
+   (`card`), landing/onboarding (`illustration`). Foydalanuvchi sozlamasi
+   emas — shakl kontekstdan keladi, shuning uchun bu yerda variant tanlash
+   yo'q, faqat tuzilma. */
+.rw-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45em;
+  text-align: center;
+  color: var(--rw-text-2);
+}
+.rw-empty b {
+  font-size: 0.9375rem;
+  color: var(--rw-text);
+}
+.rw-empty em {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 0.8125rem;
+  max-width: 32em;
+}
+.rw-empty-btn {
+  display: inline-block;
+  margin-top: 0.35em;
+  padding: 0.45em 1.1em;
+  border-radius: 0.5em;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  background: var(--rw-accent);
+  color: var(--rw-accent-fg);
+  border: 0;
+}
+.rw-empty-btn:hover {
+  filter: brightness(1.08);
+}
+
+/* ① Asosiy ro'yxat — chiziqli ramka, ikonka tepada */
+.rw-empty-full {
+  padding: 1.5em 1.25em;
+  border: 1px dashed color-mix(in srgb, var(--rw-divider) 55%, transparent);
+  border-radius: 0.75em;
+}
+
+/* ② Sahifa markazi — to'ldirilgan karta, ikonka yumshoq doirada */
+.rw-empty-card {
+  padding: 1.75em 1.5em;
+  border: 1px solid color-mix(in srgb, var(--rw-divider) 60%, transparent);
+  border-radius: 0.85em;
+  background: var(--rw-surface);
+}
+.rw-empty-soft {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75em;
+  height: 2.75em;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--rw-divider) 18%, transparent);
+  color: var(--rw-text-2);
+}
+
+/* ③ Landing / onboarding — katta och doira, ramka yo'q */
+.rw-empty-illu {
+  padding: 0.5em 0;
+}
+.rw-empty-illu-bg {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 7em;
+  height: 7em;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--rw-divider) 14%, transparent);
+  color: var(--rw-text-2);
+}
+
+/* ═══ Yuklanish ko'rsatkichlari — o'nta shakl (D62) ═════════════════════
+   Hammasi sof CSS/SVG. Klasslar ataylab `rw-pulse`/`animate-` prefiksisiz:
+   `[data-motion="mild"]` o'sha prefikslarni butunlay o'chiradi, ya'ni
+   yuklanish indikatori yo'q bo'lib qolardi. Sabab `lib/theme/loading.ts` da.
+
+   ⚠️ Harakat o'chirilganda ham shakl KO'RINIB turishi kerak. Shuning uchun
+   har bir animatsiyaning asosiy holati ko'rinadigan qilib yozilgan:
+   yoy chizig'i, ustunlar, gradient — barchasi animatsiyasiz ham qoladi. */
+.rw-load {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35em;
+  color: var(--rw-accent);
+}
+/* Joy egallovchi ko'rinishlar — kenglik 100%, o'rtada emas. */
+.rw-load-block {
+  display: flex;
+  width: 100%;
+}
+
+/* ① Aylanuvchi yoy — chegara bilan (masshtabda qalinlik o'zgarmaydi). */
+.rw-load-arc {
+  display: block;
+  width: 1.25em;
+  height: 1.25em;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, currentColor 22%, transparent);
+  border-top-color: currentColor;
+  animation: rwLoadSpin 0.8s linear infinite;
+}
+@keyframes rwLoadSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ② SVG uzuk — `stroke-dasharray` bilan aniqroq. */
+.rw-load-ring {
+  width: 2.25em;
+  height: 2.25em;
+}
+.rw-load-ring-arc {
+  transform-origin: 20px 20px;
+  animation: rwLoadSpin 1s linear infinite;
+}
+
+/* ③ Skeleton — pulsatsiya. Ustunlar animatsiyasiz ham ko'rinadi. */
+.rw-load-skel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  width: 100%;
+}
+.rw-load-skel i {
+  display: block;
+  height: 0.7em;
+  border-radius: 0.35em;
+  background: color-mix(in srgb, var(--rw-text) 14%, transparent);
+  animation: rwLoadSkel 1.4s ease-in-out infinite;
+}
+@keyframes rwLoadSkel {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+/* ④ Shimmer — yorug'lik chapdan o'ngga. */
+.rw-load-shimmer {
+  display: block;
+  width: 100%;
+  height: 3.5em;
+  border-radius: 0.5em;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--rw-text) 12%, transparent) 25%,
+    color-mix(in srgb, var(--rw-text) 4%, transparent) 50%,
+    color-mix(in srgb, var(--rw-text) 12%, transparent) 75%
+  );
+  background-size: 220% 100%;
+  animation: rwLoadShimmer 1.5s linear infinite;
+}
+@keyframes rwLoadShimmer {
+  0% { background-position: -60% 0; }
+  100% { background-position: 160% 0; }
+}
+
+/* ⑤⑥ Nuqtalar. Sakrash va so'nish — bir xil tuzilma, boshqa animatsiya. */
+.rw-load-dots {
+  display: inline-flex;
+  gap: 0.3em;
+}
+.rw-load-dots i {
+  display: block;
+  width: 0.45em;
+  height: 0.45em;
+  border-radius: 50%;
+  background: currentColor;
+}
+.rw-load-dotsBounce .rw-load-dots i:nth-child(1) { animation: rwLoadBounce 1.1s ease-in-out infinite; }
+.rw-load-dotsBounce .rw-load-dots i:nth-child(2) { animation: rwLoadBounce 1.1s ease-in-out 0.16s infinite; }
+.rw-load-dotsBounce .rw-load-dots i:nth-child(3) { animation: rwLoadBounce 1.1s ease-in-out 0.32s infinite; }
+.rw-load-dotsFade .rw-load-dots i:nth-child(1) { animation: rwLoadFade 1.3s ease-in-out infinite; }
+.rw-load-dotsFade .rw-load-dots i:nth-child(2) { animation: rwLoadFade 1.3s ease-in-out 0.22s infinite; }
+.rw-load-dotsFade .rw-load-dots i:nth-child(3) { animation: rwLoadFade 1.3s ease-in-out 0.44s infinite; }
+@keyframes rwLoadBounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
+  40% { transform: translateY(-0.3em); opacity: 1; }
+}
+@keyframes rwLoadFade {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
+}
+
+/* ⑦ Ekvalayzer ustunlari. */
+.rw-load-bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 0.2em;
+  height: 1.4em;
+}
+.rw-load-bars i {
+  display: block;
+  width: 0.25em;
+  height: 100%;
+  border-radius: 0.15em;
+  background: currentColor;
+  transform-origin: bottom;
+  animation: rwLoadBar 1s ease-in-out infinite;
+}
+.rw-load-bars i:nth-child(2) { animation-delay: 0.12s; }
+.rw-load-bars i:nth-child(3) { animation-delay: 0.24s; }
+.rw-load-bars i:nth-child(4) { animation-delay: 0.36s; }
+@keyframes rwLoadBar {
+  0%, 100% { transform: scaleY(0.35); }
+  50% { transform: scaleY(1); }
+}
+
+/* ⑧ Aylanuvchi ikonka — «yangilash» ma'nosi. */
+.rw-load-iconspin {
+  animation: rwLoadSpin 1.2s linear infinite;
+}
+
+/* ⑨ Pulsatsiyalanuvchi ikonka + halqa. `box-shadow` bilan, ya'ni
+   qo'shimcha element kerak emas. */
+.rw-load-pulse {
+  border-radius: 50%;
+  animation: rwLoadPulse 1.6s ease-out infinite;
+}
+@keyframes rwLoadPulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 45%, transparent); }
+  70% { box-shadow: 0 0 0 0.7em transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* ⑩ Aniqlanmagan progress chizig'i. */
+.rw-load-progress {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 0.25em;
+  border-radius: 999px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--rw-text) 12%, transparent);
+}
+.rw-load-progress::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 40%;
+  border-radius: 999px;
+  background: currentColor;
+  animation: rwLoadProgress 1.3s ease-in-out infinite;
+}
+@keyframes rwLoadProgress {
+  0% { inset-inline-start: -40%; }
+  100% { inset-inline-start: 100%; }
+}
+
+/* Tizim sozlamasi: harakat kerak emas. Animatsiya to'xtaydi, lekin
+   shakl qoladi — yuklanish holat, dekoratsiya emas.
+   ⚠️ `[data-motion]` bloklari ham shu ishni qiladi, lekin ular faqat
+   foydalanuvchi sozlagichda tanlaganda ishlaydi; OS sozlamasi esa
+   atributsiz holatda ham hurmat qilinishi shart. */
+@media (prefers-reduced-motion: reduce) {
+  .rw-load-arc,
+  .rw-load-ring-arc,
+  .rw-load-skel i,
+  .rw-load-shimmer,
+  .rw-load-dots i,
+  .rw-load-bars i,
+  .rw-load-iconspin,
+  .rw-load-pulse,
+  .rw-load-progress::after {
+    animation: none !important;
+  }
+  /* Animatsiyasiz ham ko'rinib tursin. */
+  .rw-load-dots i { opacity: 0.8; }
+  .rw-load-bars i { transform: scaleY(0.7); }
+  .rw-load-progress::after { inset-inline-start: 30%; }
+}
+
+/* Kontent kengligi (D48). Qiymat `--rw-content-width` dan keladi
+   (`lib/theme/apply.ts`), sozlagichda 1000–1800 px oralig'ida erkin
+   tanlanadi. Ilgari Tailwind sinfi (`max-w-[1400px]`) olti joyda qotib
+   qolgan edi — katta monitorda odam o'qish uchun torroq qilib
+   o'zgartira olmasdi. */
+.rw-content {
+  max-width: var(--rw-content-width, 1400px);
+}
+
+/* ── Karta uslubi (D54) ────────────────────────────────────────────────
+   kep.uz da shu sozlama bor, lekin ISHLAMAYDI: u faqat `data-*` yozadi va
+   kartalar o'zgarmaydi (o'lchandi). Bizda tokenlar allaqachon markazlashgan
+   (`.rw-surface`, `.rw-shadow`, `.rw-radius`), shuning uchun yetarlicha.
+
+   `data-card` `<html>` da, ya'ni butun sahifa qamrab olinadi. */
+[data-card="outline"] .rw-surface {
+  box-shadow: none;
+  border: 1px solid var(--rw-line);
+}
+[data-card="outline"] .rw-shadow { box-shadow: none; }
+
+/* "flat" — hech qanday soya yo'q, faqat fon farqi. */
+[data-card="flat"] .rw-shadow { box-shadow: none; }
+
+/* "soft" — soya kuchliroq va kengroq; karta fondan "ko'tarilib" turadi. */
+[data-card="soft"] .rw-shadow {
+  box-shadow: 0 10px 30px -8px rgb(0 0 0 / 0.18);
+}
+
+/* "square" — burchaklar keskin. `--rw-radius` tokeni orqali, ya'ni
+   uslubning o'z radiusi ham almashadi. */
+[data-card="square"] {
+  --rw-radius: 0px;
+  --rw-radius-sm: 0px;
+}
+
+/* ── Fon naqshi (D55) ──────────────────────────────────────────────────
+   kep.uz da 5 ta variant bor va hech biri ishlamaydi (o'lchandi).
+   Bu yerda naqsh `body::before` ga tushadi: `z-index: -1`, ya'ni kontent
+   USTIDA turmaydi, va `pointer-events: none` — bosishga xalaqit bermaydi.
+   Kontrast: naqsh `--rw-line` (ajratgich) dan olinadi, u barcha
+   uslublarda 3:1 dan o'tadi; `opacity` past, shuning uchun matn
+   o'qilishiga ta'sir qilmaydi. */
+[data-pattern] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.6;
+}
+/* ⚠️ `--rw-divider`, `--rw-line` EMAS. O'lchandi: `--rw-line` `clay` va
+   `neu` uslublarida ataylab SHAFFOF (u ikki uslubda chegara o'rniga soya
+   ishlatadi), ya'ni u bilan chizilgan naqsh ko'rinmasdan qolardi —
+   `rgba(0, 0, 0, 0)` chiqardi. `--rw-divider` esa matn rangidan hosil
+   qilinadi va barcha uslublarda 3:1 dan o'tadi. */
+[data-pattern="grid"] body::before {
+  background-image:
+    linear-gradient(var(--rw-divider) 1px, transparent 1px),
+    linear-gradient(90deg, var(--rw-divider) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+[data-pattern="dots"] body::before {
+  background-image: radial-gradient(
+    var(--rw-divider) 1.2px,
+    transparent 1.2px
+  );
+  background-size: 20px 20px;
+}
+[data-pattern="diagonal"] body::before {
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--rw-divider) 0 1px,
+    transparent 1px 16px
+  );
+}
+[data-pattern="mesh"] body::before {
+  background-image:
+    radial-gradient(circle at 18% 22%, var(--rw-accent-soft), transparent 42%),
+    radial-gradient(circle at 82% 68%, var(--rw-accent-soft), transparent 38%);
+  opacity: 0.9;
+}
+
+/* Harakat darajasi (D49). To'rt pog'ona — ilgari faqat "hammasi" yoki
+   "hech narsa" bor edi, ko'pchilik uchun eng qulay nuqta esa o'rtada.
+   `system` da atribut umuman yozilmaydi va qarorni OS beradi (pastdagi
+   `prefers-reduced-motion` bloki). */
+[data-motion="off"],
+[data-motion="reduce"] {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* `mild` — o'tishlar qoladi (holat o'zgarishi sezilsin), lekin dekorativ
+   animatsiyalar o'chadi. */
+[data-motion="mild"] * {
+  transition-duration: 120ms !important;
+}
+[data-motion="mild"] [class*="animate-"],
+[data-motion="mild"] [class*="rw-pulse"] {
+  animation: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   CHIZIQ — nativ scroller o'rniga overlay (plastina 09).
+   Yo'l 2px, belgi qisqa qizil (`--rw-bad-ink`), layout siljimaydi.
+   ═══════════════════════════════════════════════════════════════════ */
+
+html,
+body,
+* {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+#rw-chiziq-layer {
+  pointer-events: none;
+}
+
+.rw-chiziq-y,
+.rw-chiziq-x {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: auto;
+  background: var(--rw-line);
+}
+
+.rw-chiziq-y.is-page,
+.rw-chiziq-x.is-page {
+  z-index: 35;
+}
+
+.rw-chiziq-y {
+  width: 2px;
+}
+
+.rw-chiziq-x {
+  height: 2px;
+}
+
+.rw-chiziq-y-thumb,
+.rw-chiziq-x-thumb {
+  position: absolute;
+  background: var(--rw-bad-ink);
+  border-radius: 2px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.rw-chiziq-y-thumb:active,
+.rw-chiziq-x-thumb:active {
+  cursor: grabbing;
+}
+
+.rw-chiziq-y-thumb {
+  left: -5px;
+  right: -5px;
+  top: 0;
+  height: 22px;
+}
+
+.rw-chiziq-x-thumb {
+  top: -5px;
+  bottom: -5px;
+  left: 0;
+  width: 22px;
+}
+
+@media print {
+  #rw-chiziq-layer {
+    display: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   OVERLAY — tasdiq / modal / tooltip / menyu (01 Qog'oz, 06 Soyabon,
+   07 Projektor, 08 Orol). Standart = Qog'oz: `data-overlay` yo'q.
+   ═══════════════════════════════════════════════════════════════════ */
+
+#rw-overlay-layer {
+  pointer-events: none;
+}
+
+.rw-ov-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: color-mix(in srgb, var(--rw-text) 28%, transparent);
+}
+
+.rw-ov-panel {
+  position: fixed;
+  z-index: 81;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(28rem, 88vw);
+  max-height: min(36rem, 86vh);
+  display: flex;
+  flex-direction: column;
+  background: var(--rw-ground);
+  color: var(--rw-text);
+  border: 1px solid var(--rw-text);
+  border-radius: 16px;
+  padding: 1.15rem 1.2rem 1.1rem;
+  box-shadow: 0 18px 40px color-mix(in srgb, var(--rw-text) 12%, transparent);
+}
+
+.rw-ov-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.rw-ov-title {
+  margin: 0 0 0.4rem;
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.rw-ov-copy {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  color: color-mix(in srgb, var(--rw-text) 72%, transparent);
+}
+
+.rw-ov-body {
+  min-height: 0;
+  overflow: auto;
+}
+
+.rw-ov-acts {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.rw-ov-btn {
+  border-radius: 8px;
+  padding: 0.5rem 0.85rem;
+  cursor: pointer;
+  border: 1px solid var(--rw-text);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+.rw-ov-go {
+  background: var(--rw-accent);
+  color: var(--rw-accent-fg);
+  border-color: var(--rw-accent);
+}
+
+.rw-ov-go.is-danger {
+  background: var(--rw-bad-ink);
+  color: var(--rw-ground);
+  border-color: var(--rw-bad-ink);
+}
+
+.rw-ov-x {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.rw-ov-x:hover {
+  background: color-mix(in srgb, var(--rw-text) 8%, transparent);
+}
+
+.rw-ov-tip {
+  position: fixed;
+  z-index: 90;
+  pointer-events: none;
+  background: var(--rw-ground);
+  color: var(--rw-text);
+  border: 1px solid var(--rw-text);
+  border-radius: 10px;
+  padding: 0.4rem 0.55rem;
+  font-size: 12px;
+  max-width: 14rem;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--rw-text) 10%, transparent);
+}
+
+.rw-ov-menu {
+  position: fixed;
+  z-index: 81;
+  pointer-events: auto;
+  background: var(--rw-ground);
+  color: var(--rw-text);
+  border: 1px solid var(--rw-text);
+  border-radius: 12px;
+  padding: 0.35rem;
+  min-width: 11rem;
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--rw-text) 12%, transparent);
+}
+
+.rw-ov-menu button {
+  display: block;
+  width: 100%;
+  text-align: start;
+  background: none;
+  border: 0;
+  padding: 0.45rem 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  color: inherit;
+}
+
+.rw-ov-menu button:hover,
+.rw-ov-menu button:focus-visible {
+  background: color-mix(in srgb, var(--rw-accent) 12%, var(--rw-ground));
+}
+
+.rw-ov-menu button.is-danger {
+  color: var(--rw-bad-ink);
+}
+
+/* ── 06 Soyabon ──────────────────────────────────────── */
+
+[data-overlay="soyabon"] .rw-ov-scrim {
+  background: transparent;
+}
+
+[data-overlay="soyabon"] .rw-ov-panel {
+  left: 24px;
+  top: 24px;
+  transform: none;
+  width: min(20rem, 86vw);
+  border: 1px solid color-mix(in srgb, var(--rw-text) 18%, var(--rw-ground));
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  box-shadow: 0 10px 40px color-mix(in srgb, var(--rw-text) 16%, transparent);
+}
+
+[data-overlay="soyabon"] .rw-ov-title {
+  font-size: 1rem;
+  margin: 0 0 0.3rem;
+}
+
+[data-overlay="soyabon"] .rw-ov-copy {
+  margin: 0 0 0.8rem;
+  font-size: 13px;
+}
+
+[data-overlay="soyabon"] .rw-ov-acts {
+  gap: 0.4rem;
+}
+
+[data-overlay="soyabon"] .rw-ov-btn {
+  border: 0;
+  background: transparent;
+  padding: 0.35rem 0.5rem;
+  font-size: 13px;
+}
+
+[data-overlay="soyabon"] .rw-ov-go {
+  background: transparent;
+  color: var(--rw-accent-ink);
+  border: 0;
+  font-weight: 600;
+}
+
+[data-overlay="soyabon"] .rw-ov-go.is-danger {
+  background: transparent;
+  color: var(--rw-bad-ink);
+}
+
+[data-overlay="soyabon"] .rw-ov-tip {
+  background: color-mix(in srgb, var(--rw-text) 92%, transparent);
+  color: var(--rw-ground);
+  border: 0;
+  border-radius: 6px;
+  padding: 0.28rem 0.45rem;
+  font-size: 11.5px;
+  max-width: 12rem;
+  box-shadow: none;
+}
+
+[data-overlay="soyabon"] .rw-ov-menu {
+  left: 24px;
+  top: 24px;
+  transform: none;
+  border: 0;
+  border-radius: 10px;
+  min-width: 10.5rem;
+  padding: 0.3rem;
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--rw-text) 16%, transparent);
+}
+
+[data-overlay="soyabon"] .rw-ov-menu button {
+  border-radius: 7px;
+  padding: 0.4rem 0.55rem;
+}
+
+/* ── 07 Projektor ────────────────────────────────────── */
+
+[data-overlay="projektor"] .rw-ov-scrim {
+  background: radial-gradient(
+    circle at 50% 46%,
+    color-mix(in srgb, var(--rw-text) 15%, transparent),
+    color-mix(in srgb, var(--rw-text) 72%, transparent)
+  );
+}
+
+[data-overlay="projektor"] .rw-ov-panel {
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%);
+  width: min(22rem, 78vw);
+  background: var(--rw-ground);
+  padding: 1.4rem 1.2rem 1.15rem;
+  text-align: center;
+  border: 0;
+  border-radius: 2px;
+  box-shadow: none;
+}
+
+[data-overlay="projektor"] .rw-ov-head {
+  justify-content: center;
+}
+
+[data-overlay="projektor"] .rw-ov-title {
+  margin: 0 0 0.45rem;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+[data-overlay="projektor"] .rw-ov-copy {
+  margin: 0 0 1.1rem;
+}
+
+[data-overlay="projektor"] .rw-ov-acts {
+  justify-content: center;
+  gap: 0.7rem;
+}
+
+[data-overlay="projektor"] .rw-ov-btn {
+  border: 0;
+  background: transparent;
+  padding: 0.4rem 0.2rem;
+  font-size: 13px;
+  border-radius: 0;
+  border-bottom: 1px solid transparent;
+}
+
+[data-overlay="projektor"] .rw-ov-go {
+  background: transparent;
+  color: var(--rw-bad-ink);
+  border: 0;
+  border-bottom: 1px solid var(--rw-bad-ink);
+  font-weight: 600;
+}
+
+[data-overlay="projektor"] .rw-ov-go.is-danger {
+  background: transparent;
+  color: var(--rw-bad-ink);
+}
+
+[data-overlay="projektor"] .rw-ov-tip {
+  background: var(--rw-ground);
+  border: 0;
+  border-radius: 0;
+  padding: 0.45rem 0.6rem;
+  text-align: center;
+  max-width: 12rem;
+  box-shadow: 0 0 0 999px color-mix(in srgb, var(--rw-text) 45%, transparent);
+}
+
+[data-overlay="projektor"] .rw-ov-menu {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--rw-ground);
+  border: 0;
+  border-radius: 0;
+  min-width: 14rem;
+  padding: 0.8rem 0;
+  text-align: center;
+  box-shadow: none;
+}
+
+[data-overlay="projektor"] .rw-ov-menu button {
+  text-align: center;
+  border-radius: 0;
+  padding: 0.55rem 1rem;
+  font-size: 14px;
+}
+
+/* ── 08 Orol ─────────────────────────────────────────── */
+
+[data-overlay="orol"] .rw-ov-scrim {
+  background: color-mix(in srgb, var(--rw-text) 22%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+[data-overlay="orol"] .rw-ov-panel {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(24rem, 80vw);
+  background: color-mix(in srgb, var(--rw-ground) 86%, var(--rw-text));
+  border: 0;
+  border-radius: 28px;
+  padding: 1.4rem 1.3rem 1.2rem;
+  box-shadow: 0 30px 60px color-mix(in srgb, var(--rw-text) 18%, transparent);
+}
+
+[data-overlay="orol"] .rw-ov-head {
+  justify-content: center;
+}
+
+[data-overlay="orol"] .rw-ov-title {
+  margin: 0 0 0.4rem;
+  font-size: 1.4rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+[data-overlay="orol"] .rw-ov-copy {
+  margin: 0 0 1.1rem;
+  text-align: center;
+}
+
+[data-overlay="orol"] .rw-ov-acts {
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+[data-overlay="orol"] .rw-ov-btn {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.55rem 1.05rem;
+  background: color-mix(in srgb, var(--rw-text) 8%, var(--rw-ground));
+}
+
+[data-overlay="orol"] .rw-ov-go {
+  background: var(--rw-accent);
+  color: var(--rw-accent-fg);
+}
+
+[data-overlay="orol"] .rw-ov-go.is-danger {
+  background: var(--rw-bad-ink);
+  color: var(--rw-ground);
+}
+
+[data-overlay="orol"] .rw-ov-tip {
+  background: var(--rw-ground);
+  border: 0;
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--rw-text) 12%, transparent);
+}
+
+[data-overlay="orol"] .rw-ov-menu {
+  background: var(--rw-ground);
+  border: 0;
+  border-radius: 22px;
+  padding: 0.45rem;
+  min-width: 11rem;
+  box-shadow: 0 18px 40px color-mix(in srgb, var(--rw-text) 16%, transparent);
+}
+
+[data-overlay="orol"] .rw-ov-menu button {
+  border-radius: 999px;
+  padding: 0.5rem 0.7rem;
+}
+
+@media print {
+  #rw-overlay-layer,
+  .rw-ov-scrim,
+  .rw-ov-panel,
+  .rw-ov-tip,
+  .rw-ov-menu {
+    display: none !important;
+  }
+}

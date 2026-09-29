@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { DuelDetail } from "@/components/DuelDetail";
+import { DuelDetail } from "@/features/duels";
 import { api, ApiError } from "@/lib/api";
 
 type Props = { params: Promise<{ slug: string }> };

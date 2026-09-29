@@ -45,12 +45,37 @@ CHAIN = ("docker-compose.yml", "docker-compose.public.yml")
 #: search would report the opposite of the truth.
 FORBIDDEN_JUDGE_ENV = ("DATABASE_URL", "DJANGO_SECRET_KEY", "POSTGRES_PASSWORD")
 
+#: ADR-0028 (A-2): the MinIO ROOT password must never be a judge env VALUE.
+#: The judge still carries an `S3_SECRET` key — the scoped `judge-ro` user —
+#: so the guard is on the value, not the key.
+ROOT_SECRET_VALUE = "devdevdev"
+
 #: Every published port must be bound here. The Cloudflare Tunnel is the only
 #: way in; a host-wide binding would bypass the tunnel and the edge rules.
 LOOPBACK = "127.0.0.1"
 
 #: Services that must publish nothing at all once the chain is merged.
-INTERNAL_ONLY = ("judge", "postgres", "redis", "minio")
+#: `judge-queue` (ADR-0028) — a Redis; `minio-init` is one-shot and dies.
+INTERNAL_ONLY = ("judge", "postgres", "redis", "minio", "judge-queue", "minio-init")
+
+# ── ADR-0028: the network layer ──────────────────────────────────────
+#: The judge sits alone on an `internal: true` network — no route out, no
+#: route to the database network. Parsed from the BASE compose file: the
+#: public overlay deletes ports, it does not touch networks.
+NETWORK_FILE = "docker-compose.yml"
+
+#: The judge must be on EXACTLY this network, nothing else. A missing
+#: `networks:` key means the implicit `default` — the very topology A-1
+#: measured on 2026-09-24 (judge → postgres:5432 OPEN).
+JUDGE_NET = "judge-net"
+
+#: Both networks: the judge reaches them, so does everyone else. Postgres
+#: must NEVER appear here — that would reopen the A-1 path this guards.
+BOTH_NETWORKS = ("minio", "judge-queue")
+
+#: Default-network-only services: if one of them joins `judge-net`, the
+#: judge can reach it (postgres included). Checked in the merged chain.
+DEFAULT_ONLY = ("postgres", "api", "worker", "beat", "web", "migrate")
 
 #: Developer tools live in their own overlay so the deploy chain stays exactly
 #: what `docs/06` describes. They must still be declared and loopback-only:
@@ -68,8 +93,9 @@ TOOLS_SERVICES = ("adminer",)
 # `minio` blocks, and the run stopped with exit 2 rather than guessing.
 _SERVICE = re.compile(r"^  ([A-Za-z0-9_-]+):\s*(?:#.*)?$")
 _PORTS = re.compile(r"^    ports:\s*(.+?)\s*$")
+_NETWORKS = re.compile(r"^    networks:\s*(.+?)\s*$")
 _ENV = re.compile(r"^    environment:\s*$")
-_ENV_KEY = re.compile(r"^      ([A-Za-z_][A-Za-z0-9_]*):")
+_ENV_KEY = re.compile(r"^      ([A-Za-z_][A-Za-z0-9_]*):\s*(.*)$")
 _ENV_PAIR = re.compile(r"^\s*-?\s*([A-Za-z_][A-Za-z0-9_]*)=")
 _QUOTED = re.compile(r"'([^']*)'|\"([^\"]*)\"")
 
@@ -132,22 +158,66 @@ def _declares_ports(block: str) -> bool:
     return any(_PORTS.match(line) for line in block.splitlines())
 
 
+def _networks(block: str) -> list[str] | None:
+    """The `networks:` inline list of one service, or None when undeclared.
+
+    None is meaningful: compose attaches the service to `default`, which is
+    exactly what the judge must NOT fall back to silently. An indented
+    mapping form (`judge-net:` with sub-keys) or a block list is an unknown
+    shape for this parser — it raises, like `_published`, because a network
+    boundary this checker cannot read must stop the run, not pass it.
+    """
+    found = [m.group(1) for line in block.splitlines() if (m := _NETWORKS.match(line))]
+    if not found:
+        return None
+    if len(found) > 1:
+        raise ValueError(f"`networks:` declared twice in one service: {found!r}")
+    raw = found[0]
+    if not (raw.startswith("[") and raw.endswith("]")):
+        raise ValueError(f"`networks:` is not an inline list: {raw!r}")
+    body = raw[1:-1]
+    if not body.strip():
+        raise ValueError(f"`networks:` empty list: {raw!r}")
+    # Quoted and bare items both occur (`[default, judge-net]`):
+    # `_QUOTED` sees only the quoted ones and would report an empty
+    # boundary — split on commas and strip quotes instead.
+    names = [item.strip().strip("'") for item in body.split(",") if item.strip()]
+    if not names:
+        raise ValueError(f"`networks:` unparsable items: {raw!r}")
+    return names
+
+
 def _env_keys(block: str) -> set[str]:
     """Environment keys of one service — mapping and `- KEY=value` list forms."""
+    return {k for k, _ in _env_pairs(block)}
+
+
+def _env_values(block: str) -> set[str]:
+    """Environment VALUES of one service's mapping form (`KEY: value`)."""
+    return {v for _, v in _env_pairs(block) if v}
+
+
+def _env_pairs(block: str) -> set[tuple[str, str]]:
+    """(key, value) pairs of one service — mapping and `- KEY=value` forms.
+
+    Value is the empty string for list-form entries whose value carries no
+    `=`, and for mapping entries that only declare a key — that is enough
+    for both callers: keys ignore it, values skip it.
+    """
     lines = block.splitlines()
     start = next((i for i, line in enumerate(lines) if _ENV.match(line)), None)
     if start is None:
         return set()
-    keys: set[str] = set()
+    pairs: set[tuple[str, str]] = set()
     for line in lines[start + 1 :]:
         if not line.startswith("      ") and line.strip():
             break
         if (m := _ENV_KEY.match(line)) and not line.lstrip().startswith("-"):
-            keys.add(m.group(1))
+            pairs.add((m.group(1), m.group(2).strip().strip("'\"")))
             continue
         if (m := _ENV_PAIR.match(line)) and line.lstrip().startswith("-"):
-            keys.add(m.group(1))
-    return keys
+            pairs.add((m.group(1), line.split("=", 1)[1].strip().strip("'\"")))
+    return pairs
 
 
 def _mapping(raw: str) -> str | None:
@@ -211,6 +281,48 @@ def main() -> int:
     for key in FORBIDDEN_JUDGE_ENV:
         if key in _env_keys(judge):
             problems.append(f"judge servisiga {key} berilgan")
+
+    # ── ADR-0028: tarmoq qatlami ─────────────────────────────────────
+    # Portlar deploy zanjiridan, tarmoqlar esa baza fayldan o'qiladi:
+    # overlay tarmoqni o'zgartirmaydi. Asosiy invariya — judge FAQAT
+    # `judge-net`da (default = A-1 o'lchangan topologiya, 2026-09-24).
+    try:
+        net_services = _services(files[NETWORK_FILE])
+        judge_nets = _networks(net_services.get("judge", ""))
+        if judge_nets != [JUDGE_NET]:
+            problems.append(
+                f"judge faqat `{JUDGE_NET}` tarmog'ida bo'lishi kerak, "
+                f"hozir: {judge_nets or 'default (implicit)'}"
+            )
+        for name in BOTH_NETWORKS:
+            nets = _networks(net_services.get(name, ""))
+            if nets is None or set(nets) != {"default", JUDGE_NET}:
+                problems.append(
+                    f"{name} ikkala tarmoqda bo'lishi kerak "
+                    f"(default + {JUDGE_NET}), hozir: {nets or 'default (implicit)'}"
+                )
+        for name in DEFAULT_ONLY:
+            nets = _networks(net_services.get(name, ""))
+            if nets is not None and JUDGE_NET in nets:
+                problems.append(
+                    f"{name} `{JUDGE_NET}` tarmog'ida — postgres yo'li ochiladi!"
+                )
+        # `internal: true` — judge'dan internetga egress yopilishi sharti.
+        raw = files[NETWORK_FILE]
+        m = re.search(r"^  judge-net:\s*$\n\s+internal:\s*true\s*$", raw, re.M)
+        if not m:
+            problems.append("`judge-net` tarmog'i `internal: true` emas")
+        # Judge KALITI bo'lishi shart (`judge-ro` useri) — taqiqlangan
+        # narsa ROOT QIYMATI (A-2, ADR-0028; `check_compose.py` bilan bir
+        # qoida, ikki haqiqat manbasi emas — bitta qiymat, ikki qatlam).
+        if ROOT_SECRET_VALUE in _env_values(judge):
+            problems.append(
+                "judge env'da root MinIO paroli bor (A-2, ADR-0028) — "
+                "faqat `judge-ro` useri bo'lishi kerak"
+            )
+    except ValueError as exc:
+        print(f"  ✗ tarmoq qatlami o'qilmadi: {exc}")
+        return 2
 
     published = {s: p for s, p in sorted(merged.items()) if p}
     print(f"  chegara: {len(published)} nashr etilgan port")

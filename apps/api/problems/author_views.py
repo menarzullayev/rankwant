@@ -37,6 +37,8 @@ class MineProblemViewSet(
     lookup_field = "slug"
 
     def get_queryset(self) -> Any:
+        if getattr(self, "swagger_fake_view", False):
+            return Problem.objects.none()
         assert self.request.user.is_authenticated
         return self.request.user.authored_problems.order_by("-pk")
 

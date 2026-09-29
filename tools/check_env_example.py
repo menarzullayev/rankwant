@@ -67,6 +67,27 @@ def compose_vars() -> dict[str, bool]:
     return found
 
 
+def strip_js_comments(source: str) -> str:
+    """Remove `//` and `/* … */` comments from TypeScript source.
+
+    WHY: the scan below matches `process.env.X` anywhere in the file — including
+    documentation. `apps/web/src/lib/flags.ts` explains its own mechanism with
+    the sentence "Next substitutes it only when written as
+    `process.env.NEXT_PUBLIC_X`", which the naive scan read as a real variable
+    and reported as undocumented. A comment is not a read.
+
+    Measured 2026-09-24: the checker demanded `.env.example` entries for
+    `NEXT_PUBLIC_X` — a placeholder that does not exist anywhere in the app.
+
+    Deliberately conservative: strings are NOT stripped, so a variable named
+    inside a string literal still counts (that is how several call sites are
+    written). Only the two comment forms are removed, and the block form is
+    matched non-greedily so it cannot swallow the rest of the file.
+    """
+    without_block = re.sub(r"/\*.*?\*/", "", source, flags=re.S)
+    return re.sub(r"//[^\n]*", "", without_block)
+
+
 def code_vars() -> set[str]:
     names: set[str] = set()
     settings = read(ROOT / "apps/api/config/settings.py")
@@ -76,7 +97,9 @@ def code_vars() -> set[str]:
             continue
         names |= set(re.findall(r'os\.(?:environ\.get|getenv)\(\s*"([A-Z][A-Z0-9_]*)"', read(path)))
     for path in sorted((ROOT / "apps/web/src").rglob("*.ts*")):
-        names |= set(re.findall(r"process\.env\.([A-Z][A-Z0-9_]*)", read(path)))
+        names |= set(
+            re.findall(r"process\.env\.([A-Z][A-Z0-9_]*)", strip_js_comments(read(path)))
+        )
     for path in sorted((ROOT / "services").rglob("*.go")):
         names |= set(re.findall(r'os\.Getenv\("([A-Z][A-Z0-9_]*)"\)', read(path)))
     return names - IGNORED

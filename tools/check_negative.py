@@ -36,6 +36,7 @@ tekshiruvlar o'zgarganda ishlamagan.
 
 from __future__ import annotations
 
+import ast
 import contextlib
 import gzip
 import http.server
@@ -48,6 +49,7 @@ import subprocess
 import sys
 import tempfile
 import threading
+import time
 from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
@@ -60,7 +62,25 @@ import _console
 _console.force_utf8()
 
 ROOT = Path(__file__).resolve().parent.parent
+SHARED = ROOT / "packages" / "shared"
 PY = sys.executable
+
+
+def _find_vitest() -> Path | None:
+    """Locate the Vitest entry point under an npm-workspace layout.
+
+    RW-ARCH-013 turned the repo into an npm workspace, so npm hoists the dev
+    dependencies to the root: `apps/web/node_modules/vitest/vitest.mjs` no
+    longer exists and a hard-coded path makes both the `web_unit` and the
+    `validation` negative tests report "vitest topilmadi" — a false alarm
+    that reads like a broken install. Search the package first, then the
+    root, so either layout works.
+    """
+    for base in (ROOT / "apps" / "web", ROOT):
+        candidate = base / "node_modules" / "vitest" / "vitest.mjs"
+        if candidate.exists():
+            return candidate
+    return None
 
 
 @dataclass
@@ -93,8 +113,64 @@ def run_check(checker: str, *extra: str) -> tuple[int, str]:
 
 NODE_MISSING = "node topilmadi"
 
-NODE_CASES = {"runtime dev throw yo'q", "runtime takroriy jurnal"}
-"""Node'da ishlaydigan tekshiruvga tegishli salbiy testlarning yorlig'i."""
+NODE_CASES = {
+    "runtime dev throw yo'q",
+    "runtime takroriy jurnal",
+    # ⚠️ Qo'shildi 2026-09-24. Sabab o'lchandi (run 35969122043).
+    #
+    # `ci.yml` da `Need Node?` faqat `web` yoki `tools_node` o'zgarganda
+    # true bo'ladi. Python-only `tools/` esa `tools` filtri bilan job'ni
+    # UYG'OTADI-yu, node O'RNATMAYDI (u ataylab: `npm ci` 14–20 s).
+    # Ya'ni `tools/*.py` o'zgarganda to'plam node'siz va build'siz
+    # yugurardi, shu to'rtta test esa yiqilardi — CI qizil, sabab esa
+    # kodda emas, muhitda.
+    #
+    #   · `validation` — vitest talab qiladi (`npm ci`);
+    #   · `tor oqim`   — `check_bundle_budget.py` ni chaqiradi (`.next`);
+    #   · `bundle` ×2  — haqiqiy daraxtni o'lchaydi (`.next`).
+    #
+    # ⚠️ `bundle_budget` guruhidan AYNAN IKKITASI shu yerda, qolgan
+    # IKKITASI EMAS — farq o'lchandi, taxmin qilinmadi:
+    #
+    #   `catches_overflow` va `floor_is_live` HAQIQIY daraxtni o'lchaydi
+    #   (`check_bundle_budget.py` argument/env'siz) ⇒ `.next` bo'lmasa
+    #   exit 2. Ularni o'tkazib yubormaslik kerak.
+    #
+    #   `unbuilt_is_not_green` va `empty_dir_is_not_green` esa o'z
+    #   fixture'ini yasaydi (`RW_BUNDLE_STATIC` ni yo'q papkaga yoki bo'sh
+    #   temp papkaga qaratadi) ⇒ build'siz ham o'tadi. Ularni ham
+    #   o'tkazib yuborish ikki haqiqiy o'lchovni yo'qotardi.
+    #
+    # Birinchi urinishda aynan TESKARISI qilingan edi va lokal o'lchov
+    # ushladi: `bundle_budget` da `2/2 YIQILDI` — ya'ni o'tadigan
+    # ikkitasi o'tkazilib, yiqiladigan ikkitasi qolgan.
+    "email/parol/taxallus qoidalari tirik bo'lsin",
+    "tor oqimda qulamasin",
+    "byudjetdan oshgan hajm tutilsin",
+    "byudjet o'lik bo'lib qolmasin",
+}
+"""Node'da ishlaydigan tekshiruvga tegishli salbiy testlarning yorlig'i.
+
+Node o'rnatilmaganda (`NEGATIVE_SKIP_NODE=1`) shu yorliqlar o'tkazib
+yuboriladi — jimgina emas: hisobotda alohida qator bo'lib chiqadi.
+"""
+
+VISUAL_CASES = {
+    "fon o'zgarishi piksel farqini bersin",
+    "har skrinshot uchun baseline bo'lsin",
+}
+"""Vizual guruhning yorliqlari — `--group visual` bilan alohida yuritiladi."""
+
+CSP_CASES = {
+    "haqiqiy sahifa to'liq qamrab olinsin",
+    "noncesiz skript tutilsin",
+}
+"""CSP guruhining yorliqlari — ishlab turgan stack talab qiladi.
+
+`--group csp_nonce` bilan yuritiladi (nightly, `tools/ci_csp_gate.sh`).
+To'liq to'plamda ochiq aytib o'tkazib yuboriladi: CI'ning salbiy qadami
+stack ko'tarmaydi, ya'ni guruh har safar «o'lchanmadi» bo'lardi.
+"""
 
 
 def run_node_check(checker: str) -> tuple[int, str]:
@@ -187,6 +263,122 @@ def node_precondition() -> str | None:
     return None
 
 
+def _npm_argv() -> list[str]:
+    """`npm` — Windows'da `npm.cmd`, ya'ni yalang `npm` FileNotFoundError beradi.
+
+    `subprocess` `shell=False` bilan `npm` ni PATH'dan `.exe` sifatida
+    qidiradi va topmaydi. `npm.cmd` ni to'liq yo'l bilan olamiz.
+    """
+    for name in ("npm.cmd", "npm") if sys.platform == "win32" else ("npm",):
+        found = shutil.which(name)
+        if found:
+            return [found]
+    return ["npm"]
+
+
+def _rebuild_clean(env: dict[str, str]) -> None:
+    """Rebuild `.next` from the restored source after a visual mutation.
+
+    Best-effort by design: the mutation proof has already been measured, and
+    failing the check because the *cleanup* build hit a flake would report a
+    broken gate that is actually fine. A failed cleanup surfaces as the next
+    visual run being red, which is loud enough.
+    """
+    subprocess.run(
+        [*_npm_argv(), "run", "build"],
+        cwd=ROOT / "apps" / "web",
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        env={**env, "NEXT_PUBLIC_API_BASE": "http://localhost:8301/api/v1"},
+    )
+
+
+def _restart_web(base: str) -> None:
+    """Restart the running `next start` so it serves the freshly built `.next`.
+
+    `next start` caches the built output in memory; writing a new `.next` on
+    disk does not affect the running process. Without this the mutation is
+    invisible to the browser and the check reports a false red (see the
+    comment at the call site).
+
+    Port is taken from `base`; the server is started detached with the same
+    `NEXT_PUBLIC_API_BASE` the stack was built with. Best-effort: if the
+    platform cannot signal the process, the caller's timeout surfaces it.
+    """
+    from urllib.parse import urlparse
+
+    port = urlparse(base).port or 3400
+    _kill_port(port)
+    subprocess.Popen(
+        [*_npm_argv(), "exec", "--", "next", "start", "-p", str(port)],
+        cwd=ROOT / "apps" / "web",
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        env={
+            **os.environ,
+            "NEXT_PUBLIC_API_BASE": "http://localhost:8301/api/v1",
+            "PORT": str(port),
+        },
+    )
+    deadline = time.time() + 30
+    while time.time() < deadline:
+        if _visual_base_url():
+            return
+        time.sleep(0.5)
+
+
+def _kill_port(port: int) -> None:
+    """Stop whatever listens on `port` — Windows and POSIX alike."""
+    if os.name == "nt":
+        out = subprocess.run(
+            ["netstat", "-ano"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        ).stdout
+        pids = {
+            line.split()[-1]
+            for line in out.splitlines()
+            if f":{port}" in line and "LISTENING" in line
+        }
+        for pid in pids:
+            subprocess.run(["taskkill", "/F", "/PID", pid], capture_output=True)
+    else:
+        subprocess.run(["pkill", "-f", f"next start.*-p {port}"], capture_output=True)
+    time.sleep(1)
+
+
+def visual_precondition() -> str | None:
+    """Vizual guruh yurishi uchun stack va playwright joyidami?
+
+    `None` — hammasi joyida. Aks holda sabab qaytariladi. Bu yerda
+    tekshiriladigan narsa — «muhit tayyor emas» ni «buzuq holatni tutdi»
+    deb o'qib qo'ymaslik uchun (node_precondition bilan bir mantiq).
+    """
+    pw = _find_playwright()
+    if pw is None:
+        return "playwright cli topilmadi — `cd tests/e2e && npm ci` kerak"
+    if not _visual_base_url():
+        return "web stack javob bermadi — `E2E_BASE_URL` ni tekshiring"
+    return None
+
+
+def csp_nonce_precondition() -> str | None:
+    """CSP guruhi yurishi uchun ishlab turgan stack joyidami?
+
+    `None` — joyida. Guruh `next build` ni QAYTA QILMAYDI (vizualdan farqli),
+    lekin render qilingan HTML'ni o'qishi kerak — ya'ni stack shart. Sabab
+    qaytarish «muhit tayyor emas» ni «buzuq holatni tutdi» deb o'qib
+    qo'ymaslik uchun (visual_precondition bilan bir mantiq).
+    """
+    if not _visual_base_url():
+        return "web stack javob bermadi — `E2E_BASE_URL` ni tekshiring"
+    return None
+
+
 # ── i18n ─────────────────────────────────────────────────────────────────
 
 
@@ -267,7 +459,7 @@ def neg_i18n_used_but_absent() -> tuple[bool, str]:
 
 def neg_contrast_bad_pair() -> tuple[bool, str]:
     """Bitta juftlik yetarli kontrast bermasa — tutilsinmi?"""
-    path = ROOT / "apps/web/src/app/globals.css"
+    path = ROOT / "apps/web/src/app/theme.css"
     text = path.read_bytes().decode("utf-8")
     # `--rw-warn-ink` ni fon bilan bir xil qilib qo'yamiz: 1:1.
     m = re.search(r"(--rw-warn-ink:\s*)([^;]+)(;)", text)
@@ -283,7 +475,7 @@ def neg_contrast_unreadable_token() -> tuple[bool, str]:
     «O'qib bo'lmagan qiymat = XATO» qoidasi shundan. Ilgari bunday
     qiymat jimgina o'tkazib yuborilardi.
     """
-    path = ROOT / "apps/web/src/app/globals.css"
+    path = ROOT / "apps/web/src/app/theme.css"
     text = path.read_bytes().decode("utf-8")
     m = re.search(r"(--rw-ground:\s*)([^;]+)(;)", text)
     if m is None:
@@ -507,7 +699,7 @@ def neg_i18n_country_locale_dropped() -> tuple[bool, str]:
     (Chrome'da o'lchandi). Node o'lchovi buni KO'RSATMAGAN — shuning
     uchun tekshiruv manba kodni o'qiydi.
     """
-    path = ROOT / "apps/web/src/lib/countries.ts"
+    path = ROOT / "packages/shared/src/countries.ts"
     text = path.read_bytes().decode("utf-8")
     old = 'const CYRILLIC: Locale[] = ["ru", "kk", "ky", "tg"];'
     new = 'const CYRILLIC: Locale[] = ["ru"];'
@@ -524,7 +716,7 @@ def neg_i18n_country_icu_locale_added() -> tuple[bool, str]:
     jadval esa "Germaniya" qilib buzdi (o'lchandi). Bu test o'sha
     regressiyani qaytaradi.
     """
-    path = ROOT / "apps/web/src/lib/countries.ts"
+    path = ROOT / "packages/shared/src/countries.ts"
     text = path.read_bytes().decode("utf-8")
     old = 'const LATIN_UZ: Locale[] = ["uz", "kaa"];'
     new = 'const LATIN_UZ: Locale[] = ["uz", "kaa", "tr"];'
@@ -541,7 +733,7 @@ def neg_i18n_country_row_missing() -> tuple[bool, str]:
     o'zi to'liqmi — qo'riqlanmagan edi. Bir kod tushib qolsa `countryName()`
     jimgina ICU ga tushadi va o'sha tillarda **inglizcha** nom chiqadi.
     """
-    path = ROOT / "apps/web/src/lib/country-names.ts"
+    path = ROOT / "packages/shared/src/country-names.ts"
     text = path.read_bytes().decode("utf-8")
     # ⚠️ `^` ISHLATILMAYDI: jadval qatorlari ichkariga surilgan (`  "DE": …`),
     # shuning uchun satr boshiga bog'langan langar hech qachon topilmaydi —
@@ -559,7 +751,7 @@ def neg_i18n_country_row_blank() -> tuple[bool, str]:
     Bo'sh satr inglizchaga tushish bilan barobar: jadval topiladi, lekin
     UI da mamlakat nomi umuman ko'rinmaydi.
     """
-    path = ROOT / "apps/web/src/lib/country-names.ts"
+    path = ROOT / "packages/shared/src/country-names.ts"
     text = path.read_bytes().decode("utf-8")
     m = re.search(r'"DE":\s*\["([^"]*)",\s*"([^"]*)"\],', text)
     if m is None:
@@ -707,7 +899,7 @@ def neg_i18n_server_drops_locales() -> tuple[bool, str]:
 
 def neg_i18n_registry_module_local() -> tuple[bool, str]:
     """A module-local registry again: SSR client components lose the text."""
-    path = ROOT / "apps/web/src/i18n/messages.ts"
+    path = ROOT / "packages/shared/src/i18n/core.ts"
     old = "const registry: Registry = (realm.__rwMessages ??= new Map());"
     new = "const registry: Registry = new Map();"
     if old not in path.read_bytes().decode("utf-8"):
@@ -718,7 +910,7 @@ def neg_i18n_registry_module_local() -> tuple[bool, str]:
 
 def neg_i18n_registry_cleared() -> tuple[bool, str]:
     """`registerMessages` clearing the shared registry again."""
-    path = ROOT / "apps/web/src/i18n/messages.ts"
+    path = ROOT / "packages/shared/src/i18n/core.ts"
     old = "  registry.set(locale, dict);\n"
     new = "  registry.clear();\n  registry.set(locale, dict);\n"
     if old not in path.read_bytes().decode("utf-8"):
@@ -744,7 +936,7 @@ def neg_i18n_runtime_dev_throw() -> tuple[bool, str]:
     `throw` o'rniga `console.error` qo'yilsa u baribir yashil qoladi.
     Bu salbiy test aynan shu bo'shliqni yopadi.
     """
-    path = ROOT / "apps/web/src/i18n/messages.ts"
+    path = ROOT / "packages/shared/src/i18n/core.ts"
     old = "    throw new Error(`i18n: ${detail}`);"
     if old not in path.read_bytes().decode("utf-8"):
         return False, "i18n/runtime dev throw: langar topilmadi"
@@ -760,7 +952,7 @@ def neg_i18n_runtime_dedup() -> tuple[bool, str]:
     chaqiriladi, `console.error` esa haqiqiy xatoni ko'mib tashlamasligi
     uchun BIR MARTA yozilishi kerak.
     """
-    path = ROOT / "apps/web/src/i18n/messages.ts"
+    path = ROOT / "packages/shared/src/i18n/core.ts"
     old = """  if (!reported.has(tag)) {
     reported.add(tag);"""
     if old not in path.read_bytes().decode("utf-8"):
@@ -918,11 +1110,11 @@ def neg_hardcoded_single_word_label() -> tuple[bool, str]:
     `neg_hardcoded_viewbox_passes` bilan bir juft: u yolg'on musbatni
     to'sadi, bu esa yolg'on manfiyni.
     """
-    path = ROOT / "apps/web/src/components/profile/RatingChart.tsx"
+    path = ROOT / "apps/web/src/features/profile/components/RatingChart.tsx"
     with Mutation(
         path,
-        '<p className="text-theme-sm rw-faint">{t(locale, "profile.chartEmpty")}</p>;',
-        '<p className="text-theme-sm rw-faint">{t(locale, "profile.chartEmpty")}<span>Vaqt</span></p>;',
+        '<p className="text-theme-sm rw-faint">{t(locale, "profile.chartEmpty")}</p>',
+        '<p className="text-theme-sm rw-faint">{t(locale, "profile.chartEmpty")}<span>Vaqt</span></p>',
     ):
         return expect_fail("hardcoded", "hardcoded/bir so'zli JSX yorlig'i")
 
@@ -933,7 +1125,7 @@ def neg_hardcoded_viewbox_passes() -> tuple[bool, str]:
     `0 0 ${W} ${H}` JSX matni emas — SVG geometriyasi. Usiz tekshiruv
     har bir grafik komponentda yiqilardi.
     """
-    path = ROOT / "apps/web/src/components/profile/RatingChart.tsx"
+    path = ROOT / "apps/web/src/features/profile/components/RatingChart.tsx"
     with Mutation(
         path,
         "viewBox={`0 0 ${W} ${H}`}",
@@ -943,6 +1135,81 @@ def neg_hardcoded_viewbox_passes() -> tuple[bool, str]:
         if code == 0:
             return True, "hardcoded/viewBox: SVG koordinatalari matn deb topilmadi"
         return False, "viewBox koordinatalari matn deb topildi"
+
+
+def neg_a11y_img_alt_missing() -> tuple[bool, str]:
+    """`<img>` dan `alt` olib tashlansa tekshiruv tutadimi?
+
+    ⚠️ Nega bu ayniqsa muhim: `alt=""` va `alt` YO'QLIGI tashqi
+    ko'rinishda bir xil (ikkisi ham yorliqsiz rasm), lekin ekran
+    o'quvchi uchun butunlay boshqa: `alt=""` — «dekorativ, o'tkazib
+    yubor», `alt` yo'q — «fayl nomini o'qi». Ya'ni faqat mavjudlik
+    tekshiriladi va uni olib tashlash yagona ko'rinadigan sinov.
+
+    Langar — `Avatar.tsx` dagi haqiqiy `<img alt="">` satri.
+    """
+    path = ROOT / "apps/web/src/components/ui/Identity/Avatar.tsx"
+    with Mutation(path, '        alt=""\n', ""):
+        return expect_fail("a11y", "a11y/img alt yo'q")
+
+
+def neg_a11y_icon_button_unlabelled() -> tuple[bool, str]:
+    """`aria-label` siz ikonka-tugma tutilsinmi?
+
+    ⚠️ Langar ATAYLAB ikki satrni qamraydi: `aria-label` va `title`.
+    Faqat `aria-label` ni olib tashlash yetmaydi — `title` brauzerda
+    ko'rinadi va ekran o'quvchi uni ba'zan o'qiydi, lekin bu A11Y
+    qoidasi emas. Shuning uchun ikkisini ham olib tashlab, tugma
+    ichida **faqat ikonka** qoldiramiz: aynan o'sha holat qoidani
+    buzadi.
+    """
+    path = ROOT / "apps/web/src/components/customizer/Customizer.tsx"
+    with Mutation(
+        path,
+        '        aria-label={t(locale, "customizer.show")}\n'
+        '        title={t(locale, "customizer.show")}\n',
+        "",
+    ):
+        return expect_fail("a11y", "a11y/ikonka-tugma yorliqsiz")
+
+
+def neg_a11y_div_click_no_keyboard() -> tuple[bool, str]:
+    """`<div onClick>` da `role`/`onKeyDown` yo'qligi tutilsinmi?
+
+    ⚠️ Eng qimmatli qoida: sichqonchasi yo'q odam uchun funksiya
+    butunlay yopiq, lekin sahifa **to'g'ri ko'rinadi** — shuning uchun
+    PR'da ko'rinmaydi. Langar — `Segmented.tsx` ning `radiogroup`
+    o'rami; unga `onClick` qo'shamiz (roli yo'q `div`).
+    """
+    path = ROOT / "apps/web/src/components/ui/Segmented.tsx"
+    with Mutation(
+        path,
+        '<div role="radiogroup" aria-label={label} className={box}>',
+        '<div onClick={() => onChange?.(undefined)} className={box}>',
+    ):
+        return expect_fail("a11y", "a11y/`div onClick` klaviatura yo'q")
+
+
+def neg_a11y_interactive_tag_passes() -> tuple[bool, str]:
+    """Haqiqiy `<button onClick>` matn bilan O'TISHI shart (nazorat).
+
+    ⚠️ Bu salbiy test EMAS, **yolg'on musbat to'sig'i**: `onClick`
+    tutuvchi skaner `<button>` ni ham tekshirsa, har bir normal tugma
+    muammo bo'lib chiqardi va tekshiruv shovqin ichida o'lardi.
+
+    Langar — `EmptyState.tsx` dagi `<button onClick={action.onClick}>`
+    — interaktiv teg, ya'ni `role`/`onKeyDown` talab qilinmaydi.
+    """
+    path = ROOT / "apps/web/src/components/ui/EmptyState.tsx"
+    with Mutation(
+        path,
+        "            {action.label}\n          </button>",
+        "            <span>Retry</span>\n          </button>",
+    ):
+        code, out = run_check("a11y")
+        if code == 0:
+            return True, "a11y/ha `button onClick`: to'g'ri holat o'tdi"
+        return False, f"a11y to'g'ri `button onClick` ni tutdi:\n{out[:300]}"
 
 
 def neg_workers_fail_open_false() -> tuple[bool, str]:
@@ -1725,6 +1992,99 @@ def neg_picker_finds_working_python() -> tuple[bool, str]:
     return True, f"picker/ishlaydi: `{Path(chosen).name}` tanlandi va ishladi"
 
 
+def neg_fonts_missing_file_is_caught() -> tuple[bool, str]:
+    """`fonts.ts` mavjud bo'lmagan faylga ishora qilsa — qizil bo'lsinmi?
+
+    ⚠️ 2026-09-24 da o'lchandi: `fonts.ts` fayl yo'lini hisoblab yasardi
+    (`groupIndex * subsets.length + subsetIndex`). Google esa yetti
+    oilaning BESHTASIGA *variable* shrift beradi — har weight ayni
+    faylga ishora qiladi, ya'ni yozuv soni fayl sonidan ko'p (110 yozuv,
+    60 fayl). Hisoblangan indeks `inter-7.woff2` kabi MAVJUD BO'LMAGAN
+    faylni ko'rsatardi. Xato jimgina o'tardi: `next/font/local` yuklab
+    bo'lmay, build butunlay boshqa gliflar bilan o'tib ketardi.
+
+    Endi `fonts.ts` literal ro'yxat — ya'ni qo'lda tahrir ham ayni shu
+    xatoni keltirishi mumkin. Nazorat shuning uchun kerak.
+
+    Nazorat: o'zgartirilmagan daraxtda tekshiruv yashil bo'lishi shart.
+    """
+    code, out = run_check("fonts")
+    if code != 0:
+        return False, f"nazorat: sog'lom daraxtda exit {code} — {out.strip()[-160:]}"
+
+    path = ROOT / "apps/web/src/app/fonts.ts"
+    if not path.is_file():
+        return False, "fonts.ts topilmadi"
+
+    with Mutation(
+        path,
+        'path: "../fonts/inter/inter-0.woff2", weight: "400", style: "normal"',
+        'path: "../fonts/inter/inter-99999.woff2", weight: "400", style: "normal"',
+    ):
+        code, out = run_check("fonts")
+    if code == 0:
+        return False, "yo'q fayl YASHIL qoldi (exit 0) — tekshiruv o'lik"
+    if "inter-99999" not in out:
+        return False, f"to'xtadi (exit {code}), lekin sabab ko'rinmadi"
+    return True, f"yo'q fayl tutildi (exit {code})"
+
+
+def neg_fonts_wrong_weight_is_caught() -> tuple[bool, str]:
+    """Weight manifest bilan mos kelmasa — qizil bo'lsinmi?
+
+    Fayl topilsa ham weight siljigan bo'lishi mumkin: u holda brauzer
+    noto'g'ri qalinlikni tanlaydi va buni faqat piksel taqqoslash
+    ko'rsatadi. Arzon tekshiruv buni oldindan tutadi.
+    """
+    path = ROOT / "apps/web/src/app/fonts.ts"
+    if not path.is_file():
+        return False, "fonts.ts topilmadi"
+
+    with Mutation(
+        path,
+        'path: "../fonts/roboto/roboto-0.woff2", weight: "400", style: "normal"',
+        'path: "../fonts/roboto/roboto-0.woff2", weight: "900", style: "normal"',
+    ):
+        code, out = run_check("fonts")
+    if code == 0:
+        return False, "noto'g'ri weight YASHIL qoldi (exit 0) — tekshiruv o'lik"
+    if "900" not in out:
+        return False, f"to'xtadi (exit {code}), lekin sabab ko'rinmadi"
+    return True, f"noto'g'ri weight tutildi (exit {code})"
+
+
+def neg_google_fonts_import_is_caught() -> tuple[bool, str]:
+    """Kimdir `next/font/google` ni qaytarsa — to'plam buni ko'rsinmi?
+
+    Bu butun tuzatishning SABABI: `next/font/google` har build'da jonli
+    so'rov qiladi va Google javobi barqaror emas (~1/60) — CI tasodifiy
+    yiqilardi (vercel/next.js#99114). Agar import jimgina qaytsa,
+    tuzatish yo'qoladi va muammo bir necha haftadan keyin qaytadi.
+
+    Nazorat: hozirgi daraxtda `next/font/google` importi BO'LMASLIGI
+    shart.
+    """
+    code, out = run_check("no_google_fonts")
+    if code != 0:
+        return False, f"nazorat: daraxtda hali ham `next/font/google` bor — {out.strip()[-200:]}"
+
+    path = ROOT / "apps/web/src/app/fonts.ts"
+    if not path.is_file():
+        return False, "fonts.ts topilmadi"
+
+    with Mutation(
+        path,
+        'import localFont from "next/font/local";',
+        'import localFont from "next/font/local";\nimport { Roboto } from "next/font/google";',
+    ):
+        code, out = run_check("no_google_fonts")
+    if code == 0:
+        return False, "`next/font/google` YASHIL qoldi (exit 0) — qo'riqchi o'lik"
+    if "next/font/google" not in out:
+        return False, f"to'xtadi (exit {code}), lekin sabab ko'rinmadi"
+    return True, f"`next/font/google` tutildi (exit {code})"
+
+
 def neg_mutation_restores_bytes() -> tuple[bool, str]:
     """Mutatsiyadan keyin fayl BAYT-ANIQ qaytarilsinmi?
 
@@ -1794,7 +2154,7 @@ def neg_checker_survives_narrow_stdout() -> tuple[bool, str]:
     # `check_deploy_gate.py` asks GitHub whether `main` CI is green; red CI would
     # fail this case for a reason that has nothing to do with encoding. A green
     # fixture keeps its `✓` line in the test.
-    with stub_api(live=False) as base, tempfile.TemporaryDirectory() as tmp:
+    with stub_api(live=False) as base, stub_web() as csp_base, tempfile.TemporaryDirectory() as tmp:
         env["RANKWANT_API_BASE"] = base
         runs = Path(tmp) / "runs.json"
         runs.write_text(json.dumps(_GATE_GREEN), encoding="utf-8")
@@ -1820,6 +2180,10 @@ def neg_checker_survives_narrow_stdout() -> tuple[bool, str]:
             ],
             "check_after_reboot.py": ["--facts", str(facts)],
             "check_metrics.py": ["--self-test"],
+            # `check_csp_nonce.py` reads a rendered page, so it needs a target.
+            # The fixture keeps this case about encoding: pointed at the real
+            # stack it would turn red whenever production changed.
+            "check_csp_nonce.py": ["--base", csp_base, "--route", "/login"],
         }
         for name in scripts:
             proc = subprocess.run(
@@ -2159,9 +2523,9 @@ def neg_web_unit_tests_catch_broken_cookie() -> tuple[bool, str]:
     """The Vitest gate must be alive: a broken markup-cookie parser turns it red."""
     web = ROOT / "apps/web"
     node = os.environ.get("NODE") or shutil.which("node")
-    vitest = web / "node_modules/vitest/vitest.mjs"
-    if not node or not vitest.exists():
-        return False, "web/unit: node yoki vitest topilmadi — apps/web da `npm ci` kerak"
+    vitest = _find_vitest()
+    if not node or vitest is None:
+        return False, "web/unit: node yoki vitest topilmadi — `npm ci` kerak"
 
     def vitest_run() -> tuple[int, str]:
         proc = subprocess.run(
@@ -2195,6 +2559,441 @@ def neg_web_unit_tests_catch_broken_cookie() -> tuple[bool, str]:
     return True, "web/unit: buzuq cookie parse'ni Vitest tutdi (exit 1)"
 
 
+def neg_validation_rules_are_live() -> tuple[bool, str]:
+    """The zod layer must be alive: breaking a rule must turn its test red.
+
+    WHY: `lib/validation.ts` is a pure module — it has no UI and no network,
+    so the only thing that proves it still enforces anything is a sabotaged
+    rule that fails a test. A schema that silently accepts everything (a
+    dropped `superRefine`, an `EMAIL` regex weakened to `.*`) would keep the
+    whole suite green and let invalid input reach the server.
+
+    Three rules are checked, because each lives in a different place:
+      * `EMAIL` — module-level regex, used by `authSchema`;
+      * `PASSWORD_MIN` — exported constant, used by three schemas;
+      * `USERNAME` — module-level regex, used by `onboardingSchema`.
+
+    Any single one going dead is enough to make this case fail.
+    """
+    web = ROOT / "apps/web"
+    node = os.environ.get("NODE") or shutil.which("node")
+    vitest = _find_vitest()
+    if not node or vitest is None:
+        return False, "validation: node yoki vitest topilmadi — `npm ci` kerak"
+
+    def vitest_run() -> tuple[int, str]:
+        proc = subprocess.run(
+            [node, str(vitest), "run", "tests/validation.test.ts"],
+            cwd=SHARED,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+        return proc.returncode, (proc.stdout or "") + (proc.stderr or "")
+
+    # Precondition: a missing install or an already-red suite must not be
+    # read as "the mutation was caught".
+    code, out = vitest_run()
+    if code != 0:
+        return (
+            False,
+            f"validation: o'zgarmagan manbada ham yiqildi (exit {code}) — {out.strip()[-160:]}",
+        )
+
+    path = SHARED / "src/validation/index.ts"
+    text = path.read_bytes().decode("utf-8")
+    # Each mutation weakens exactly one rule to "accept anything".
+    sabotages = (
+        (
+            r"const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;",
+            "const EMAIL = /.*/;",
+            "email naqshi",
+        ),
+        (
+            "export const PASSWORD_MIN = 8;",
+            "export const PASSWORD_MIN = 1;",
+            "parol uzunligi",
+        ),
+        (
+            "const USERNAME = /^[a-zA-Z0-9_]{3,30}$/;",
+            "const USERNAME = /^.*$/;",
+            "taxallus naqshi",
+        ),
+    )
+    for old, new, label in sabotages:
+        if old not in text:
+            return False, f"validation: langar topilmadi — {label} ({old!r})"
+        with Mutation(path, old, new):
+            code, out = vitest_run()
+        if code == 0:
+            return (
+                False,
+                f"validation: {label} bo'shatilganini testlar O'TKAZDI (exit 0) — sxema o'lik",
+            )
+    return True, "validation: uchala qoida (email, parol, taxallus) ham tirik (exit 1)"
+
+
+def _shared_broken(rel: str, injected: str, label: str) -> tuple[bool, str]:
+    """Inject `injected` at the top of `rel`; check_shared_boundary must fail."""
+    path = ROOT / rel
+    if not path.exists():
+        return False, f"shared/{label}: {rel} topilmadi"
+    original = path.read_bytes().decode("utf-8")
+    path.write_bytes((injected + original).encode("utf-8"))
+    try:
+        code, out = run_check("shared_boundary")
+    finally:
+        path.write_bytes(original.encode("utf-8"))
+    if code != 1:
+        return False, f"shared/{label}: buzilish exit {code} berdi (1 kerak)"
+    if label not in out:
+        return False, f"shared/{label}: yiqildi, lekin boshqa sabab — {out.strip()[-160:]}"
+    return True, f"shared/{label}: tutildi (exit 1)"
+
+
+def neg_shared_alias_import() -> tuple[bool, str]:
+    """A shared module must not import app code through the `@/` alias."""
+    return _shared_broken(
+        "packages/shared/src/format.ts",
+        'import { t } from "@/i18n/messages";\n',
+        "alias",
+    )
+
+
+def neg_shared_escape_import() -> tuple[bool, str]:
+    """A relative import that climbs out of the package is the same violation."""
+    return _shared_broken(
+        "packages/shared/src/password.ts",
+        'import x from "../../apps/web/src/lib/site";\n',
+        "chiqadi",
+    )
+
+
+def neg_shared_bare_dependency() -> tuple[bool, str]:
+    """`react` in the shared package defeats the point of the split."""
+    return _shared_broken(
+        "packages/shared/src/password.ts",
+        'import React from "react";\nvoid React;\n',
+        "react",
+    )
+
+
+# ── bundle ──────────────────────────────────────────────────────────────
+
+
+def neg_bundle_budget_catches_overflow() -> tuple[bool, str]:
+    """The budget gate must actually fail when the bundle exceeds it.
+
+    WHY: `check_bundle_budget.py` can rots in two ways that both look
+    green. (1) The budget gets so loose that nothing ever trips it — the
+    gate is decoration. (2) `measure()` silently returns zeros (an empty
+    `static/` after a partial build), and `0 <= limit` passes for every
+    key. Tightening the budget below the measured size forces the first
+    path red; the positive control below forces the second.
+
+    Mutating the budget is the honest way to test this: the alternative
+    would be writing a fake 2 MB chunk into `.next/static`, which means
+    touching build output that CI caches and other checks read.
+    """
+    path = ROOT / "tools" / "check_bundle_budget.py"
+    text = path.read_bytes().decode("utf-8")
+    old = '"js_gzip": 1_100_000,'
+    if old not in text:
+        return False, "bundle: BUDGET da `js_gzip` qatori topilmadi"
+
+    # Positive control FIRST: on an untouched tree the gate must be green,
+    # otherwise "exit 1 under mutation" proves nothing (it may be broken).
+    code, out = run_check("bundle_budget")
+    if code == 2:
+        return False, "bundle: o'lchab bo'lmadi (exit 2) — build qilinmagan"
+    if code != 0:
+        return False, f"bundle: toza daraxtda ham yiqildi (exit {code}) — {out.strip()[-160:]}"
+
+    with Mutation(path, old, '"js_gzip": 500_000,'):
+        code, out = run_check("bundle_budget")
+    if code != 1:
+        return False, f"bundle: oshib ketgan byudjet exit {code} berdi (1 kerak)"
+    if "js_gzip" not in out:
+        return False, f"bundle: yiqildi, lekin sabab ko'rsatilmadi — {out.strip()[-160:]}"
+    return True, "bundle: byudjetdan oshgan hajm tutildi (exit 1)"
+
+
+def neg_bundle_budget_unbuilt_is_not_green() -> tuple[bool, str]:
+    """A missing build must be exit 2, never a silent "within budget".
+
+    THE TRAP THIS CLOSES: `measure()` sums file sizes. Point it at an empty
+    directory and the sum is 0, which passes every `got <= limit` check —
+    so a broken or absent build would print a confident green tick. The
+    guard is the `if not STATIC.is_dir()` / `if not js` pair; this case
+    proves both branches stay.
+    """
+    env = {**os.environ, "RW_BUNDLE_STATIC": str(ROOT / "tools" / "__no_such_build__")}
+    proc = subprocess.run(
+        [PY, "tools/check_bundle_budget.py"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        env=env,
+    )
+    out = (proc.stdout or "") + (proc.stderr or "")
+    if proc.returncode != 2:
+        return False, f"bundle: build yo'q bo'lsa exit {proc.returncode} berdi (2 kerak)"
+    if "✓" in out:
+        return False, f"bundle: build yo'q, lekin yashil belgi chiqdi — {out.strip()[-160:]}"
+    return True, "bundle: build yo'q bo'lsa exit 2 (jim yashil emas)"
+
+
+def neg_bundle_budget_empty_dir_is_not_green() -> tuple[bool, str]:
+    """An existing but empty `static/` must also be exit 2.
+
+    The sibling case above proves the "directory missing" branch. This one
+    proves the "directory present, no `.js` inside" branch — a partial
+    build leaves exactly that shape, and it is the more likely accident.
+    """
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as tmp:
+        env = {**os.environ, "RW_BUNDLE_STATIC": tmp}
+        proc = subprocess.run(
+            [PY, "tools/check_bundle_budget.py"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            env=env,
+        )
+        out = (proc.stdout or "") + (proc.stderr or "")
+    if proc.returncode != 2:
+        return False, f"bundle: bo'sh papka exit {proc.returncode} berdi (2 kerak)"
+    if "✓" in out:
+        return False, f"bundle: bo'sh papkada yashil belgi — {out.strip()[-160:]}"
+    return True, "bundle: bo'sh `static/` exit 2 (jim yashil emas)"
+
+
+def neg_bundle_budget_floor_is_live() -> tuple[bool, str]:
+    """The budget numbers must be able to trip — a huge limit is decoration.
+
+    Distinct from the overflow case: there the budget is tightened; here we
+    check the OPPOSITE failure, where somebody "fixes" a red build by
+    raising the limit to a number nothing can reach. Asserting the real
+    measurement sits within ~2x of the budget keeps the limit meaningful.
+    """
+    code, out = run([PY, "tools/check_bundle_budget.py", "--json"])
+    if code != 0:
+        return False, f"bundle: --json exit {code} — {out.strip()[-160:]}"
+    try:
+        stats = json.loads(out.strip())
+    except json.JSONDecodeError:
+        return False, f"bundle: --json JSON qaytarmadi — {out.strip()[-160:]}"
+
+    budget_path = ROOT / "tools" / "check_bundle_budget.py"
+    text = budget_path.read_bytes().decode("utf-8")
+    limits = dict(re.findall(r'"(\w+)":\s*(\d[\d_]*),', text))
+    limits = {k: int(v.replace("_", "")) for k, v in limits.items()}
+    for key in ("js_gzip", "css_gzip", "chunk_max"):
+        if key not in limits:
+            return False, f"bundle: BUDGET da `{key}` yo'q"
+        if stats[key] > limits[key] * 3:
+            return False, (
+                f"bundle: `{key}` byudjeti ma'nosiz keng — o'lchandi {stats[key]}, "
+                f"limit {limits[key]}"
+            )
+    return True, "bundle: byudjet o'lchovga nisbatan tor (o'lik emas)"
+
+
+# ── vizual regressiya (RW-ARCH-016) ─────────────────────────────────────
+#
+# ⚠️ Bu guruhning sababi — 2026-09-24 da topilgan HAQIQIY xato.
+#
+# `visual.spec.ts` baseline'larini "salbiy test o'tdi" deb e'lon qilgan edik:
+# `--rw-rank-grey` ni o'zgartirib, suite baribir 7/7 yashil bo'ldi va biz
+# buni "darvoza ishlayapti" deb o'qidik. Aslida o'sha token biz skrinshot
+# oladigan sahifalarda KO'RINMASDAN qolayotgan ekan — ya'ni mutatsiya
+# "o'lik" edi, darvoza emas. Keyin `--rw-ground` (fon) bilan qayta sinadik:
+# 12-29% piksel farqi chiqdi.
+#
+# Saboq: "test yashil bo'ldi" faqat mutatsiya KO'RINADIGAN bo'lsa dalil.
+# Shuning uchun bu yerda `--rw-ground` — sahifaning eng ko'rinadigan tokeni
+# — ataylab tanlanadi va piksel farqi SON bilan talab qilinadi.
+
+
+def _visual_base_url() -> str:
+    """Running web stack the visual suite points at (see playwright.config).
+
+    Returns "" when nothing is listening so the caller can skip with an
+    explicit reason instead of a false failure on a laptop with no stack.
+    """
+    import urllib.error
+    import urllib.request
+
+    base = os.environ.get("E2E_BASE_URL", "http://localhost:3400").rstrip("/")
+    try:
+        urllib.request.urlopen(base + "/", timeout=3)
+    except (urllib.error.URLError, OSError):
+        return ""
+    return base
+
+
+def _find_playwright() -> list[str] | None:
+    """Return an argv prefix that runs the Playwright CLI, or None.
+
+    Mirrors `_find_vitest`: npm workspaces hoist dev dependencies, so the
+    binary is under `tests/e2e/node_modules` here (that folder is its own
+    package, deliberately outside the workspace).
+    """
+    cli = ROOT / "tests" / "e2e" / "node_modules" / "@playwright" / "test" / "cli.js"
+    if not cli.exists():
+        return None
+    node = shutil.which("node")
+    if not node:
+        return None
+    return [node, str(cli)]
+
+
+def neg_csp_nonce_page_is_covered() -> tuple[bool, str]:
+    """Ijobiy nazorat: haqiqiy sahifada har bir bajariladigan skript nonce bilan.
+
+    O'lchov RENDER QILINGAN HTML'da — manba faylda emas. Sabab: `@source`
+    glob'idagi darsning aynan o'zi (2026-09-24) — matnni tekshiruvchi darvoza
+    o'lik yo'lni ko'rmagan edi. Bu yiqilsa, tuzatish qaytgan.
+    """
+    base = _visual_base_url()
+    if not base:
+        return False, "csp_nonce/ko'rildi: stack javob bermadi"
+    code, out = run_check("csp_nonce", "--base", base)
+    if code != 0:
+        return False, f"csp_nonce/ko'rildi: exit {code} (0 kerak) — {out.strip()[-180:]}"
+    return True, "csp_nonce/ko'rildi: haqiqiy sahifa to'liq qamrab olingan (exit 0)"
+
+
+def neg_csp_nonce_missing_is_caught() -> tuple[bool, str]:
+    """Bitta tegdan nonce tushsa tutilsinmi?
+
+    ⚠️ Mutatsiya HAQIQIY sahifada bajariladi (`--drop-nonce`), fixture'da emas.
+    Qayta qurish (`neg_visual_*` kabi) 2–4 daqiqa va bundan KO'PROQ isbotlamaydi:
+    nonce yo'qligini aniqlash — sof matn tekshiruvi, build esa o'sha matnni
+    qayta ishlab chiqaradi, xolos. Shuning uchun mutatsiya arzon, isbot esa
+    to'liq: darvoza haqiqiy sahifada haqiqatan yiqiladi.
+    """
+    base = _visual_base_url()
+    if not base:
+        return False, "csp_nonce/o'lik: stack javob bermadi"
+    code, out = run_check("csp_nonce", "--base", base, "--drop-nonce", "1")
+    if code != 1:
+        return False, f"csp_nonce/o'lik: buzilgan holat exit {code} berdi (1 kerak)"
+    if "noncesiz" not in out:
+        return False, f"csp_nonce/o'lik: yiqildi, lekin boshqa sabab — {out.strip()[-180:]}"
+    return True, "csp_nonce/o'lik: noncesiz skript tutildi (exit 1)"
+
+
+def neg_visual_regression_catches_color_drift() -> tuple[bool, str]:
+    """A visible colour change must turn the pixel diff red.
+
+    This is the non-vacuous proof for the whole `visual` project: if this
+    passes while the suite stays green, the baselines are decorative.
+    """
+    pw = _find_playwright()
+    if pw is None:
+        return False, "visual: playwright cli topilmadi (tests/e2e/node_modules)"
+    base = _visual_base_url()
+    if not base:
+        return False, "visual: web stack javob bermadi (E2E_BASE_URL)"
+
+    css = ROOT / "apps" / "web" / "src" / "app" / "theme.css"
+    text = css.read_bytes().decode("utf-8")
+    # `--rw-ground` — sahifa foni. `--rw-rank-grey` EMAS: u skrinshot
+    # olinadigan sahifalarda ko'rinmaydi (yuqoridagi izohga qarang).
+    anchor = "--rw-ground: #f9fafb;"
+    if anchor not in text:
+        return False, f"visual: fon tokeni langari topilmadi ({css.name})"
+
+    env = {**os.environ, "E2E_BASE_URL": base}
+    with Mutation(css, anchor, "--rw-ground: #bf3a6e;"):
+        # ⚠️ BUILD YETMAYDI — SERVER HAM QAYTA ISHGA TUSHISHI KERAK.
+        #
+        # `next start` chiqishni XOTIRADA ushlab turadi: yangi `.next`
+        # yozilsa ham, ishlab turgan jarayon eskisini berishda davom etadi.
+        # 2026-09-24: mutatsiyali build yozildi, lekin server toza
+        # versiyani ko'rsatdi va test "suite YASHIL — baseline o'lik" deb
+        # YOLG'ON qizil berdi. Ya'ni bayroq darvozada emas, o'lchovda edi.
+        #
+        # Shuning uchun: qayta build → eski serverni to'xtat → yangisini
+        # ko'tar → kut → test.
+        build = subprocess.run(
+            [*_npm_argv(), "run", "build"],
+            cwd=ROOT / "apps" / "web",
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            env={**env, "NEXT_PUBLIC_API_BASE": "http://localhost:8301/api/v1"},
+        )
+        if build.returncode != 0:
+            return False, f"visual: mutatsiya build'i yiqildi — {build.stdout[-160:]}"
+
+        _restart_web(base)
+        proc = subprocess.run(
+            [*pw, "test", "--project=visual", "--reporter=list"],
+            cwd=ROOT / "tests" / "e2e",
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            env=env,
+        )
+    # ⚠️ IKKI NARSA TIKLANADI — manba ham, XIZMAT ham.
+    #
+    # `Mutation` faqat `theme.css` ni qaytaradi. Build chiqishi esa oxirgi
+    # (MUTATSIYALANGAN) holatda qoladi, ishlab turgan server ham o'shani
+    # beradi. Natijada testdan KEYIN vizual suite 6/7 qizil bo'ladi va
+    # keyingi odam «darvoza buzuq» deb o'ylaydi.
+    #
+    # 2026-09-24 da aynan shu ikki marta sodir bo'ldi (avval build, keyin
+    # xizmat tiklanmagan edi). Shuning uchun tozalash shu yerda, bitta
+    # joyda: build → server qayta ko'tar.
+    _rebuild_clean(env)
+    _restart_web(base)
+    out = (proc.stdout or "") + (proc.stderr or "")
+    if proc.returncode == 0:
+        return False, (
+            "visual: fon rangi o'zgardi, lekin suite YASHIL — baseline o'lik "
+            "(piksel farqi o'lchanmadi)"
+        )
+    m = re.search(r"(\d+)\s+pixels?\s+\(ratio", out)
+    if not m:
+        return False, f"visual: qizil, lekin sabab piksel emas — {out.strip()[-160:]}"
+    return True, f"visual: fon o'zgarishi tutildi ({m.group(1)} piksel farq)"
+
+
+def neg_visual_baselines_exist() -> tuple[bool, str]:
+    """Every `toHaveScreenshot` argument must have a checked-in baseline.
+
+    Catches the exact bug found on 2026-09-24 from the other side: the
+    `profile.png` baseline existed but was a 404 page, and `--update` wrote
+    it without complaint. Missing file = CI writes a new one and stays
+    green, which is a silent pass.
+    """
+    spec = ROOT / "tests" / "e2e" / "visual" / "visual.spec.ts"
+    if not spec.exists():
+        return False, "visual: visual.spec.ts topilmadi"
+    text = spec.read_bytes().decode("utf-8")
+    names = set(re.findall(r'toHaveScreenshot\(\s*"([^"]+\.png)"', text))
+    if not names:
+        return False, "visual: spec'da `toHaveScreenshot(...png)` yo'q"
+    snap_dir = ROOT / "tests" / "e2e" / "visual" / "visual.spec.ts-snapshots"
+    missing = sorted(n for n in names if not (snap_dir / n).exists())
+    if missing:
+        return False, f"visual: baseline yetishmaydi — {', '.join(missing)}"
+    return True, f"visual: {len(names)} baseline joyida"
+
+
+# ── web_unit / validation ───────────────────────────────────────────────
+
+
 def _decision_broken(rel: str, old: str, new: str, rule: str) -> tuple[bool, str]:
     """Break one owner decision in `rel`; check_decisions must name that rule."""
     path = ROOT / rel
@@ -2216,6 +3015,162 @@ def neg_decisions_backup_offsite() -> tuple[bool, str]:
         'offsite="${RANKWANT_BACKUP_OFFSITE:-off}"',
         'offsite="${RANKWANT_BACKUP_OFFSITE:-auto}"',
         "zaxira faqat lokal",
+    )
+
+
+def neg_decisions_auto_deploy_contest_override() -> tuple[bool, str]:
+    """Avtomatik yo'lga oyna override'i qo'shilsa tutilsin (2026-09-24).
+
+    Qoida №1 endi odam qo'li bilan chetlab o'tiladi (`deploy.yml` →
+    `allow_live_contest=yes`, `deploy.sh` → `RANKWANT_ALLOW_LIVE_CONTEST`).
+    Sabab: sayt contest paytida yiqilsa, tuzatishning yagona yo'li — deploy.
+
+    ⚠️ Watcher'da esa odam YO'Q: u har daqiqada yuguradi, ya'ni override
+    u yerda bo'lsa jonli musobaqa paytida O'ZI deploy qilib verdikt va
+    reytingni buzardi. Bu JIM buziladigan joy — override qo'shilsa boshqa
+    hamma tekshiruv yashil qoladi.
+    """
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        'RANKWANT_LOCK_HELD=1 RANKWANT_ENV_FILE="$ENV_FILE"',
+        'RANKWANT_ALLOW_LIVE_CONTEST=1 RANKWANT_LOCK_HELD=1 RANKWANT_ENV_FILE="$ENV_FILE"',
+        "avtomatik yo'lda",
+    )
+
+
+def _css_sources_broken(rel: str, old: str, new: str, expect: str) -> tuple[bool, str]:
+    """Break one `@source` invariant in `rel`; check_css_sources must catch it."""
+    path = ROOT / rel
+    text = path.read_bytes().decode("utf-8")
+    if old not in text:
+        return False, f"css_sources/{expect}: langar topilmadi ({rel})"
+    with Mutation(path, old, new):
+        code, out = run_check("css_sources")
+    if code != 1:
+        return False, f"css_sources/{expect}: buzilgan holat exit {code} berdi (1 kerak)"
+    if expect not in out:
+        return False, f"css_sources/{expect}: yiqildi, lekin boshqa sabab — {out.strip()[-160:]}"
+    return True, f"css_sources/{expect}: tutildi (exit 1)"
+
+
+def neg_css_source_path_dead() -> tuple[bool, str]:
+    """`@source` yo'li o'lik bo'lsa tutilsin (2026-09-24).
+
+    Aynan shu holat yuz bergan: `auth.css` ning 11 yo'lidan 8 tasi ko'chib
+    ketgan papkalarga ishora qilardi (`components/auth`, `components/profile`,
+    ...). Eski qo'riqchi faqat `@source not "./(site/` MATNINI ko'rardi — ya'ni
+    yo'l yechilishini emas — va `features/{problems,profile}` klasslari
+    `/login` sheet'iga oqib chiqqan.
+    """
+    return _css_sources_broken(
+        "apps/web/src/app/auth.css",
+        '@source "../components/**/*.{ts,tsx}";',
+        '@source "../components-old/**/*.{ts,tsx}";',
+        "yechilmaydi",
+    )
+
+
+def neg_css_source_none_missing() -> tuple[bool, str]:
+    """`source(none)` tushib qolsa tutilsin.
+
+    Busiz avtomatik skan ochiq qoladi: `@source` ro'yxati bezakka aylanadi va
+    toraytirishni faqat `@source not` bajaradi — o'lik istisno esa sheet'ni
+    JIM kengaytiradi. Aynan jim sinf, shuning uchun qo'riqchi kerak.
+    """
+    return _css_sources_broken(
+        "apps/web/src/app/auth.css",
+        '@import "tailwindcss" source(none);',
+        '@import "tailwindcss";',
+        "source(none)",
+    )
+
+
+def neg_css_source_sweeps_site() -> tuple[bool, str]:
+    """Tor sheet `(site)` daraxtini qamrab olsa tutilsin.
+
+    `@source "./**"` butun `app/` ni skanerlaydi — ya'ni `(site)` ham kiradi va
+    LH-LOGIN-CSS o'lchovi (534 KiB / FCP 1.1–1.2 s) qaytadi.
+    """
+    return _css_sources_broken(
+        "apps/web/src/app/auth.css",
+        '@source "./(auth)/**/*.{ts,tsx}";',
+        '@source "./**/*.{ts,tsx}";',
+        "(site) daraxtini qamraydi",
+    )
+
+
+def _contract_broken(rel: str, old: str, new: str, expect: str) -> tuple[bool, str]:
+    """Break one customization-contract rule in `rel`; the gate must catch it."""
+    path = ROOT / rel
+    text = path.read_bytes().decode("utf-8")
+    if old not in text:
+        return False, f"customization/{expect}: langar topilmadi ({rel})"
+    with Mutation(path, old, new):
+        code, out = run_check("customization_contract")
+    if code != 1:
+        return False, f"customization/{expect}: buzilgan holat exit {code} berdi (1 kerak)"
+    if expect not in out:
+        return False, f"customization/{expect}: yiqildi, lekin boshqa sabab — {out.strip()[-170:]}"
+    return True, f"customization/{expect}: tutildi (exit 1)"
+
+
+def neg_customization_client_key_not_accepted() -> tuple[bool, str]:
+    """Klient yozadigan kalit serverda bo'lmasa tutilsinmi?
+
+    Aynan shu holat 2026-09-24 da yuz bergan: `themeToggle` klientda bor edi
+    (#244), serverning `CATALOG_KEYS` ida yo'q edi, va mavzu tugmasi uslubini
+    tanlash BUTUN `appearance` yozuvini 400 ga uchratardi. Mutatsiya —
+    kalitni ro'yxatdan olib tashlash, ya'ni nuqsonning o'zi.
+    """
+    return _contract_broken(
+        "apps/api/core/prefs.py",
+        '    "formStyle",\n    "themeToggle",\n)',
+        '    "formStyle",\n)',
+        "serverda yo'q",
+    )
+
+
+def neg_customization_test_list_stale() -> tuple[bool, str]:
+    """`test_customizer_yozuvi_toliq_qabul_qilinadi` ro'yxati eskisa tutilsinmi?
+
+    Ro'yxat QO'LDA yozilgan — serverdan hosil qilinsa test tavtologiyaga
+    aylanib, aynan o'sha sinfni o'tkazib yuborardi. Shuning uchun uning
+    to'liqligini shu darvoza tekshiradi. Aynan shu ro'yxat eskirgani uchun
+    nuqson o'tib ketgan edi.
+    """
+    return _contract_broken(
+        "apps/api/tests/test_prefs.py",
+        '            "themeToggle": "doira",\n',
+        "",
+        "ro'yxati eskirgan",
+    )
+
+
+def neg_customization_contract_constant_drift() -> tuple[bool, str]:
+    """Contract'dagi doimiy koddan farq qilsa tutilsinmi?
+
+    Hujjat eskirsa, u kod haqida yolg'on gapiradi — bugungi naqshning
+    (matn haqiqatdan uzilishi) aynan o'zi.
+    """
+    return _contract_broken(
+        "docs/08-technical-spec/customization-contract.md",
+        "schema_version: 2",
+        "schema_version: 1",
+        "hujjat eskirdi",
+    )
+
+
+def neg_customization_invariant_dropped() -> tuple[bool, str]:
+    """Invariant `CLAUDE.md` dan tushsa tutilsinmi?
+
+    Invariant contract'da qoladi, ya'ni hujjat to'liq ko'rinadi — lekin
+    agentlar o'qiydigan joydan yo'qoladi. Qoida aynan shuni tutadi.
+    """
+    return _contract_broken(
+        "CLAUDE.md",
+        "MUST NOT bypass customization validation",
+        "bypassing customization validation is acceptable",
+        "invariant yo'q",
     )
 
 
@@ -2587,10 +3542,15 @@ def neg_decisions_typecheck_js_tsc() -> tuple[bool, str]:
 
 
 def neg_decisions_types_node_26() -> tuple[bool, str]:
-    """`@types/node` 26 ga chiqsa tutilsin — runtime hali 22."""
+    """`@types/node` 26 ga chiqsa tutilsin — runtime hali 22.
+
+    ⚠️ Langar `apps/web/package.json` dagi ANIQ versiya satri. Uni bump
+    qilganda bu yer ham yangilanishi shart, aks holda test «langar
+    topilmadi» deb yiqiladi — qo'riqchi o'zini qo'riqlaydi.
+    """
     return _decision_broken(
         "apps/web/package.json",
-        '"@types/node": "22.20.3"',
+        '"@types/node": "22.20.4"',
         '"@types/node": "26.6.1"',
         "@types/node runtime bilan",
     )
@@ -2610,7 +3570,7 @@ def neg_decisions_eslint_is_nine() -> tuple[bool, str]:
     """ESLint 9 ga qaytsa tutilsin."""
     return _decision_broken(
         "apps/web/package.json",
-        '"eslint": "^10.10.0"',
+        '"eslint": "^10.11.0"',
         '"eslint": "^9.39.5"',
         "ESLint 10 typescript parser",
     )
@@ -3108,8 +4068,8 @@ def neg_decisions_runner_entrypoint_label_dropped() -> tuple[bool, str]:
 def neg_decisions_deploy_skips_web() -> tuple[bool, str]:
     return _decision_broken(
         "tools/deploy.sh",
+        "SERVICES=(api worker beat judge web realtime)",
         "SERVICES=(api worker beat judge web)",
-        "SERVICES=(api worker beat judge)",
         "deploy hamma servisni quradi",
     )
 
@@ -3145,7 +4105,7 @@ def neg_decisions_users_indexed() -> tuple[bool, str]:
 def neg_decisions_rank_numbered_token() -> tuple[bool, str]:
     """`--rw-rank-1` qaytsa tutilsin."""
     return _decision_broken(
-        "apps/web/src/app/globals.css",
+        "apps/web/src/app/theme.css",
         "--rw-rank-grey: #656e81;",
         "--rw-rank-1: #656e81;",
         "rank colour_group 7 token",
@@ -3155,7 +4115,7 @@ def neg_decisions_rank_numbered_token() -> tuple[bool, str]:
 def neg_decisions_rank_class_uses_level() -> tuple[bool, str]:
     """UserName `title.level` ga qaytsa tutilsin."""
     return _decision_broken(
-        "apps/web/src/components/UserName.tsx",
+        "apps/web/src/components/ui/Identity/UserName.tsx",
         "rw-rank-${title.colour_group}",
         "rw-rank-${title.level}",
         "rank colour_group 7 token",
@@ -3330,7 +4290,7 @@ def neg_decisions_uz_marked_as_fallback() -> tuple[bool, str]:
     # Missing content names must not copy another locale. Pointing
     # `source` at DEFAULT_LOCALE is the old fallback path.
     return _decision_broken(
-        "apps/web/src/i18n/messages.ts",
+        "packages/shared/src/i18n/core.ts",
         "return { text: nameProperty(row), locale: null, source: null };",
         "return { text: nameProperty(row), locale: null, source: DEFAULT_LOCALE };",
         "kontent qamrovi ko'rinadi",
@@ -3341,7 +4301,7 @@ def neg_decisions_content_source_locales_widened() -> tuple[bool, str]:
     # Adding a locale to the source list claims its content names are
     # translated. Only uz/ru/en have columns, so the list must not grow.
     return _decision_broken(
-        "apps/web/src/i18n/messages.ts",
+        "packages/shared/src/i18n/core.ts",
         'export const CONTENT_NAME_LOCALES = ["uz", "ru", "en"] as const;',
         'export const CONTENT_NAME_LOCALES = ["uz", "ru", "en", "kk"] as const;',
         "kontent qamrovi ko'rinadi",
@@ -3352,7 +4312,7 @@ def neg_decisions_content_marker_dropped() -> tuple[bool, str]:
     # The tag cloud: the name is rendered without the marker, so a `zh`
     # reader takes Uzbek for Chinese.
     return _decision_broken(
-        "apps/web/src/components/ArchiveSidebar.tsx",
+        "apps/web/src/components/layout/ArchiveSidebar.tsx",
         "<ContentName",
         "{localName",
         "kontent qamrovi ko'rinadi",
@@ -3363,7 +4323,7 @@ def neg_decisions_content_marker_dropped_in_activity() -> tuple[bool, str]:
     # Two call sites in one file: dropping either one must be caught, which is
     # why the rule counts render sites instead of just looking for the symbol.
     return _decision_broken(
-        "apps/web/src/components/profile/ActivityTabs.tsx",
+        "apps/web/src/features/profile/components/ActivityTabs.tsx",
         "<ContentName",
         "{localName",
         "kontent qamrovi ko'rinadi",
@@ -3374,7 +4334,7 @@ def neg_decisions_filter_chip_unmarked() -> tuple[bool, str]:
     # The topic filter chip: the flag is what carries "this name is Uzbek"
     # from the page into the shared `Option` component.
     return _decision_broken(
-        "apps/web/src/components/ProblemFilters.tsx",
+        "apps/web/src/features/problems/components/ProblemFilters.tsx",
         "fallback={root.fallback}",
         "fallback={false}",
         "kontent qamrovi ko'rinadi",
@@ -3385,7 +4345,7 @@ def neg_decisions_content_text_untranslated() -> tuple[bool, str]:
     # Native `<option>`: falling back to the untranslated form puts a bare
     # `uz` token in front of a reader who does not know what it means.
     return _decision_broken(
-        "apps/web/src/components/settings/SkillsSection.tsx",
+        "apps/web/src/features/account/components/SkillsSection.tsx",
         "contentNameText(s, locale)",
         "localName(s, locale)",
         "kontent qamrovi ko'rinadi",
@@ -3484,7 +4444,7 @@ _DECISIONS_SANDBOX_FILES = (
     # Difficulty range counts as one filter (2026-09-18): the badge reads
     # this file. Missing here, `check_decisions.py` exits 2 rather than
     # testing the rule.
-    "apps/web/src/components/ProblemFilters.tsx",
+    "apps/web/src/features/problems/components/ProblemFilters.tsx",
     # Brand in the header, 3-column footer (2026-09-19): the rule reads the
     # single-source `BrandMark`. Missing here, `check_decisions.py` exits 2.
     "apps/web/src/layout/BrandMark.tsx",
@@ -3495,13 +4455,21 @@ _DECISIONS_SANDBOX_FILES = (
     # Content coverage visible (2026-09-19): the source of truth for which
     # languages have content names, the shared marker, and every call site
     # that draws it. Missing here, `check_decisions.py` exits 2.
+    #
+    # RW-ARCH-013 moved the i18n mechanism into `packages/shared/src/i18n/`,
+    # so the coverage rule now reads core.ts instead of the messages shim.
+    "packages/shared/src/i18n/core.ts",
+    # The pure country tables the i18n rules cross-read; without them the
+    # sandbox copy cannot be read and the rule fails with exit 2.
+    "packages/shared/src/countries.ts",
+    "packages/shared/src/country-names.ts",
     "apps/web/src/i18n/messages.ts",
     "apps/web/src/components/ui/UzFallbackBadge.tsx",
-    "apps/web/src/components/ArchiveSidebar.tsx",
-    "apps/web/src/components/profile/AboutTab.tsx",
-    "apps/web/src/components/profile/TopicStrength.tsx",
-    "apps/web/src/components/profile/ActivityTabs.tsx",
-    "apps/web/src/components/settings/SkillsSection.tsx",
+    "apps/web/src/components/layout/ArchiveSidebar.tsx",
+    "apps/web/src/features/profile/components/AboutTab.tsx",
+    "apps/web/src/features/profile/components/TopicStrength.tsx",
+    "apps/web/src/features/profile/components/ActivityTabs.tsx",
+    "apps/web/src/features/account/components/SkillsSection.tsx",
     "apps/web/src/app/(site)/problems/page.tsx",
     # Locale in the URL (2026-09-19): the rule reads the single name source,
     # the pure precedence function and the server reader. Missing here,
@@ -3550,7 +4518,7 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/lib/theme/kit.ts",
     "apps/web/src/components/kit/CopyControl.tsx",
     "apps/web/src/components/kit/CommandPalette.tsx",
-    "apps/web/src/components/profile/ShareButton.tsx",
+    "apps/web/src/features/profile/components/ShareButton.tsx",
     # ?lang= self-canonical + hreflang (2026-09-20). Missing here,
     # `check_decisions.py` exits 2.
     "apps/web/src/i18n/locale-alternates.ts",
@@ -3582,8 +4550,8 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/api/core/migrations/0021_seed_staff_groups.py",
     # Rank colour groups (2026-09-20 HITL encode-167): 7 tokens, not 16.
     "apps/api/profiles/titles.py",
-    "apps/web/src/app/globals.css",
-    "apps/web/src/components/UserName.tsx",
+    "apps/web/src/app/theme.css",
+    "apps/web/src/components/ui/Identity/UserName.tsx",
     # owned_paths width (2026-09-20 HITL no-star-star). Missing here,
     # `check_decisions.py` exits 2 / import fails in the trial sandbox.
     "tools/owned_paths.py",
@@ -3928,7 +4896,7 @@ def neg_decisions_profile_kpi_value_step_lost() -> tuple[bool, str]:
 # ── The difficulty range counts as ONE filter (owner decision 2026-09-18) ──
 
 _DIFFICULTY_RULE = "diapazon bitta filtr"
-_FILTERS = "apps/web/src/components/ProblemFilters.tsx"
+_FILTERS = "apps/web/src/features/problems/components/ProblemFilters.tsx"
 _DIFFICULTY_DECL = (
     "const DIFFICULTY_KEYS: readonly string[] = [\n"
     '  "level",\n'
@@ -5063,9 +6031,12 @@ def neg_scope_api_triplet() -> tuple[bool, str]:
         return any(p == "apps/api" or p.startswith("apps/api/") for p in paths)
 
     scope = _load_deploy_scope().compute_scope("a", "b", changed=changed)
-    if scope != ["api", "worker", "beat"]:
-        return False, f"deploy_scope: api triplet emas — {scope}"
-    return True, "deploy_scope: api/worker/beat"
+    #: `realtime` ham AYNI obrazdan quriladi (`build: *api-build`), shuning
+    #: uchun api kodi o'zgarsa u ham yangilanishi shart — aks holda yangi
+    #: endpoint'lar mavjud bo'lmagan eski konteyner ishlab turaverardi.
+    if scope != ["api", "worker", "beat", "realtime"]:
+        return False, f"deploy_scope: api guruhi noto'g'ri — {scope}"
+    return True, "deploy_scope: api/worker/beat/realtime"
 
 
 def neg_scope_compose_rebuilds_all() -> tuple[bool, str]:
@@ -5073,7 +6044,7 @@ def neg_scope_compose_rebuilds_all() -> tuple[bool, str]:
         return "docker-compose.yml" in paths
 
     scope = _load_deploy_scope().compute_scope("a", "b", changed=changed)
-    if scope != ["api", "worker", "beat", "judge", "web"]:
+    if scope != ["api", "worker", "beat", "judge", "web", "realtime"]:
         return False, f"deploy_scope: compose hamma emas — {scope}"
     return True, "deploy_scope: compose — hamma servis"
 
@@ -5097,6 +6068,107 @@ def neg_ci_python_tools_skip_npm() -> tuple[bool, str]:
     if "tools_node" not in src or "NEGATIVE_SKIP_NODE" not in src:
         return False, "ci.yml: Python-only tools ham npm ci qiladi"
     return True, "ci.yml: Python-only tools npm ci qilmaydi"
+
+
+def _ci_step_key(step: dict[str, str], text: str) -> bool:
+    """`name:`/`if:`/`run:` kalitini qadamga yozadi. Boshqasi — `False`."""
+    for key in ("name", "if", "run"):
+        prefix = f"{key}: "
+        if text.startswith(prefix):
+            step[key] = text[len(prefix):].strip()
+            return True
+    return False
+
+
+def _ci_web_steps() -> list[dict[str, str]] | None:
+    """`ci.yml` ning `web` job'i qadamlari: `{name, run, if}`.
+
+    ⚠️ `yaml` ATAYLAB ishlatilmaydi. Web job'ning Python'ida `pyyaml`
+    YO'Q — na `pip install` qadami bor, na `tools/check_*.py` dan birortasi
+    uni import qiladi (`check_decisions.py` uni faqat IZOHDA tilga oladi,
+    Nightly'ning o'rnatishini tekshirib). Import qilinsa sinov
+    `ModuleNotFoundError` bilan yiqilardi — ya'ni qo'riqchi o'zini-o'zi
+    o'ldirardi. Shuning uchun qadamlar satr satr o'qiladi: `ci.yml` da
+    qadamlar 6 probel bilan boshlanadi, kalitlari 8 probelda.
+
+    ⚠️ Kalit `- ` qatorining O'ZIDA ham bo'lishi mumkin
+    (`      - if: ...` dan keyin `        run: npm ci`). Buni o'tkazib
+    yuborish qo'riqchi bor qadamni «qo'riqchisiz» deb ko'rsatardi va
+    sinov yolg'on qizarardi — o'lchandi.
+    """
+    text = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+    lines = text.replace("\r\n", "\n").split("\n")
+
+    start = None
+    for i, line in enumerate(lines):
+        if line == "  web:":
+            start = i + 1
+            break
+    if start is None:
+        return None
+    end = len(lines)
+    for i in range(start, len(lines)):
+        if re.match(r"^  [a-z_]+:$", lines[i]):
+            end = i
+            break
+
+    steps: list[dict[str, str]] = []
+    current: dict[str, str] | None = None
+    for line in lines[start:end]:
+        dash = re.match(r"^      - (.*)$", line)
+        if dash:
+            current = {"name": "", "run": "", "if": ""}
+            steps.append(current)
+            _ci_step_key(current, dash.group(1))
+            continue
+        if current is None:
+            continue
+        body = re.match(r"^        (.*)$", line)
+        if body:
+            _ci_step_key(current, body.group(1))
+            continue
+        # Ko'p qatorli `run: |` bloki — undan chuqurroq qatorlar.
+        if current["run"] in {"|", ">", "|-", ">-"} and re.match(r"^          \S", line):
+            current["run"] += "\n" + line.strip()
+    return steps
+
+
+def neg_ci_web_job_node_steps_guarded() -> tuple[bool, str]:
+    """Web job'ida node talab qiladigan HAR bir qadam qo'riqlanganmi?
+
+    ⚠️ Nega kerak (2026-09-24). Python-only `tools/` o'zgarganda Web
+    job'i uyg'onadi-yu, `Need Node?` false bo'ladi — `npm ci` qilinmaydi
+    (ataylab: 14–20 s). Ya'ni shu job ichida `npm`/`node` chaqiradigan
+    har bir qadam o'z qo'riqchisiga ega bo'lishi SHART, aks holda
+    `not found` bilan yiqiladi va sabab kodda emas, muhitda bo'ladi.
+
+    Ikki marta shu sinf uchradi:
+      · `Generated API types are current` — `openapi-typescript: not
+        found`, exit 127 (run 35969866974). Qo'riqchi qo'shildi;
+      · to'plamdagi node case'lari — `NODE_CASES` to'liq emas edi.
+
+    Qo'riqchi ikki shakldan biri bo'lishi mumkin: `steps.node.outputs.need`
+    (node bor) yoki `needs.filter.outputs.web` (web o'zgardi — node
+    baribir o'rnatiladi).
+    """
+    steps = _ci_web_steps()
+    if steps is None:
+        return False, "ci.yml: `web` job'i topilmadi"
+
+    unguarded: list[str] = []
+    for step in steps:
+        if not re.search(r"(^|\s)(npm|node|npx)\s", step["run"]):
+            continue
+        if "steps.node.outputs.need" in step["if"] or "needs.filter.outputs.web" in step["if"]:
+            continue
+        unguarded.append(step["name"] or step["run"].splitlines()[0][:40])
+
+    if unguarded:
+        return False, (
+            "ci.yml: Web job'ida node talab qiladigan qadam qo'riqchisiz — "
+            f"node bo'lmasa `not found` bilan yiqiladi: {unguarded}"
+        )
+    return True, "ci.yml: Web job'ining node qadamlari qo'riqlangan"
 
 
 def neg_hook_decisions_on_deploy_sh() -> tuple[bool, str]:
@@ -5573,6 +6645,54 @@ def stub_api(live: bool):
     thread.start()
     try:
         yield f"http://127.0.0.1:{server.server_port}/api/v1"
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
+class _StubWeb(http.server.BaseHTTPRequestHandler):
+    """Bitta sahifa: CSP sarlavhasidagi nonce teg bilan MOS."""
+
+    NONCE = "tor-oqim-fixture"
+
+    def do_GET(self) -> None:  # noqa: N802 — asosiy sinf shunday nomlaydi
+        body = (
+            "<!doctype html><html><head>"
+            f'<script nonce="{self.NONCE}">var a=1;</script>'
+            f'<script src="/i18n/uz.js" nonce="{self.NONCE}"></script>'
+            '<script type="application/ld+json">{{"@type":"Thing"}}</script>'
+            "</head><body>ok</body></html>"
+        ).encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header(
+            "Content-Security-Policy",
+            f"default-src 'self'; script-src 'self' 'nonce-{self.NONCE}' 'strict-dynamic'",
+        )
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def log_message(self, *args: object) -> None:
+        """Jurnal kerak emas — u hisobotni iflos qiladi."""
+
+
+@contextlib.contextmanager
+def stub_web():
+    """Vaqtinchalik sahifa — `check_csp_nonce.py` uchun fixture.
+
+    `check_csp_nonce.py` RENDER qilingan sahifani o'qiydi. Unga haqiqiy
+    stack berilsa, bu test o'z hukmini ishlab chiqarishga bog'lab qo'yardi;
+    fixture esa hukmni o'sha joyda qoldiradi — tekshiruvning O'Z chiqish
+    kodlashida. `ld+json` ataylab qo'shilgan: u bajarilmaydi, ya'ni
+    tekshiruv uni o'tkazib yuborishi kerak (aks holda fixture yolg'on
+    qizil berardi).
+    """
+    server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), _StubWeb)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        yield f"http://127.0.0.1:{server.server_port}"
     finally:
         server.shutdown()
         server.server_close()
@@ -6387,6 +7507,47 @@ def neg_check_metrics_passes() -> tuple[bool, str]:
     return True, "metrics/nazorat: toza holat o'tdi (exit 0)"
 
 
+def neg_node_cases_labels_exist() -> tuple[bool, str]:
+    """`NODE_CASES` dagi har bir yorliq registrda haqiqatan bormi?
+
+    ⚠️ Nega kerak (2026-09-24). `NODE_CASES` — SATR yorliqlari to'plami,
+    ya'ni uni kod emas, imlo bog'laydi. Yorliq xato terilsa yoki boshqa
+    joyda o'zgarsa, `skip_node_cases and label in NODE_CASES` shartli
+    HECH QACHON bajarilmaydi: test o'tkazib yuborilmaydi, node'siz
+    yugurib yiqiladi — yoki (teskari holatda) kerakli test jimgina
+    o'tkazib yuboriladi va qamrov ko'rinmasdan torayadi.
+
+    Ikkinchisi xavfliroq: hisobot «hammasi yashil» deydi, o'lchov esa
+    yo'q. Shuning uchun yorliqlar registrga solishtiriladi.
+
+    ⚠️ Bu tekshiruv yorliqni TO'G'RI tanlashni kafolatlamaydi — faqat
+    mavjudligini. Tanlovni CI o'zi o'lchaydi (`NEGATIVE_SKIP_NODE=1`),
+    o'sha paytda bu to'rttasi haqiqatan o'tkazib yuborilishi shart.
+    """
+    tree = ast.parse((ROOT / "tools" / "check_negative.py").read_text(encoding="utf-8"))
+    declared: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign) and any(
+            getattr(t, "id", "") == "NODE_CASES" for t in node.targets
+        ):
+            declared = {e.value for e in node.value.elts if isinstance(e, ast.Constant)}
+    registered: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.AnnAssign) and getattr(node.target, "id", "") == "CASES":
+            for group in node.value.elts:
+                for case in group.elts[1].elts:
+                    label = case.elts[0]
+                    if isinstance(label, ast.Constant):
+                        registered.add(label.value)
+
+    if not declared:
+        return False, "NODE_CASES topilmadi yoki bo'sh — o'tkazib yuborish ishlamaydi"
+    unknown = sorted(declared - registered)
+    if unknown:
+        return False, f"NODE_CASES da registrda yo'q yorliq: {unknown}"
+    return True, f"NODE_CASES: {len(declared)} yorliq, hammasi registrda bor"
+
+
 CASES: list[tuple[str, list[tuple[str, object]]]] = [
     (
         "i18n",
@@ -6544,12 +7705,84 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("tor oqimda qulamasin", neg_checker_survives_narrow_stdout),
             ("yangi branch darvozasiz qolmasin", neg_hook_gates_new_branch),
             ("notanish guruh yashil qolmasin", neg_negative_rejects_unknown_group),
+            ("NODE_CASES yorliqlari registrda bo'lsin", neg_node_cases_labels_exist),
+        ],
+    ),
+    (
+        "css_sources",
+        [
+            ("o'lik CSS skan yo'li tutilsin", neg_css_source_path_dead),
+            ("`source(none)` tushsa tutilsin", neg_css_source_none_missing),
+            ("tor sheet (site) ni qamrasa tutilsin", neg_css_source_sweeps_site),
+        ],
+    ),
+    (
+        "customization",
+        [
+            (
+                "klient kaliti serverda bo'lmasa tutilsin",
+                neg_customization_client_key_not_accepted,
+            ),
+            ("test ro'yxati eskisa tutilsin", neg_customization_test_list_stale),
+            (
+                "contract doimiysi eskisa tutilsin",
+                neg_customization_contract_constant_drift,
+            ),
+            (
+                "invariant CLAUDE.md dan tushsa tutilsin",
+                neg_customization_invariant_dropped,
+            ),
+        ],
+    ),
+    (
+        "fonts",
+        [
+            ("yo'q shrift fayli tutilsin", neg_fonts_missing_file_is_caught),
+            ("noto'g'ri weight tutilsin", neg_fonts_wrong_weight_is_caught),
+            ("`next/font/google` qaytmasin", neg_google_fonts_import_is_caught),
         ],
     ),
     (
         "web_unit",
         [
             ("buzuq cookie parse'ni Vitest tutsin", neg_web_unit_tests_catch_broken_cookie),
+        ],
+    ),
+    (
+        "validation",
+        [
+            ("email/parol/taxallus qoidalari tirik bo'lsin", neg_validation_rules_are_live),
+        ],
+    ),
+    (
+        "shared_boundary",
+        [
+            ("shared paket app alias'ini import qilmasin", neg_shared_alias_import),
+            ("shared paket tashqariga chiqmasin", neg_shared_escape_import),
+            ("shared paket react tortmasin", neg_shared_bare_dependency),
+        ],
+    ),
+    (
+        "bundle_budget",
+        [
+            ("byudjetdan oshgan hajm tutilsin", neg_bundle_budget_catches_overflow),
+            ("build yo'q — jim yashil emas", neg_bundle_budget_unbuilt_is_not_green),
+            ("bo'sh `static/` — jim yashil emas", neg_bundle_budget_empty_dir_is_not_green),
+            ("byudjet o'lik bo'lib qolmasin", neg_bundle_budget_floor_is_live),
+        ],
+    ),
+    (
+        "visual",
+        [
+            ("fon o'zgarishi piksel farqini bersin", neg_visual_regression_catches_color_drift),
+            ("har skrinshot uchun baseline bo'lsin", neg_visual_baselines_exist),
+        ],
+    ),
+    (
+        "csp_nonce",
+        [
+            ("haqiqiy sahifa to'liq qamrab olinsin", neg_csp_nonce_page_is_covered),
+            ("noncesiz skript tutilsin", neg_csp_nonce_missing_is_caught),
         ],
     ),
     (
@@ -6605,6 +7838,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         "decisions",
         [
             ("offsite standarti qaytsa tutilsin", neg_decisions_backup_offsite),
+            (
+                "avtomatik yo'lga contest override'i qo'shilsa tutilsin",
+                neg_decisions_auto_deploy_contest_override,
+            ),
             ("push guard uzilsa tutilsin", neg_decisions_push_guard_unwired),
             ("hosted runner qo'shilsa tutilsin", neg_decisions_hosted_runner),
             (
@@ -7201,6 +8438,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("compose hamma", neg_scope_compose_rebuilds_all),
             ("verify health", neg_deploy_verify_uses_health),
             ("tools npm ci ajratilgan", neg_ci_python_tools_skip_npm),
+            (
+                "Web job'ining node qadamlari qo'riqlangan",
+                neg_ci_web_job_node_steps_guarded,
+            ),
             ("deploy.sh da decisions", neg_hook_decisions_on_deploy_sh),
             ("kick schtasks", neg_kick_auto_deploy_runs_task),
         ],
@@ -7247,6 +8488,15 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
                 "ikkinchi runner yarim ochilsa tutilsin",
                 neg_after_reboot_second_runner_half_commissioned,
             ),
+        ],
+    ),
+    (
+        "a11y",
+        [
+            ("img da `alt` yo'q", neg_a11y_img_alt_missing),
+            ("ikonka-tugmada yorliq yo'q", neg_a11y_icon_button_unlabelled),
+            ("`div onClick` klaviaturasiz", neg_a11y_div_click_no_keyboard),
+            ("ha `button onClick` o'tadi", neg_a11y_interactive_tag_passes),
         ],
     ),
     (
@@ -7322,10 +8572,89 @@ def _extract_copy(dest: Path, raw: bytes) -> None:
 
     with tarfile.open(fileobj=io.BytesIO(raw), mode="r:") as archive:
         archive.extractall(dest, filter="data")
-    node_modules = ROOT / "apps/web/node_modules"
-    link = dest / "apps/web/node_modules"
-    if node_modules.is_dir() and not link.exists():
-        link.symlink_to(node_modules, target_is_directory=True)
+    # ⚠️ `node_modules` is symlinked, not copied — a copy would take minutes.
+    #
+    # TWO trees matter, and the ROOT one is the easy one to forget. This repo
+    # is an npm workspace, so `npm ci` hoists most packages to
+    # `node_modules/` and links the workspace packages into
+    # `node_modules/@rankwant/*`. `apps/web/node_modules` then holds only
+    # what did not hoist. Linking just the app-level tree left
+    # `@rankwant/shared` unresolvable, and every Node check died with:
+    #
+    #     Error [ERR_MODULE_NOT_FOUND]: Cannot find package
+    #     '@rankwant/shared' imported from .../src/i18n/messages.ts
+    #
+    # That is an environment gap, not a broken check, so the group reported
+    # "muhit tayyor emas, o'lchov yo'q" and the suite went red. Measured on
+    # the PR #249 CI run (2026-09-24).
+    #
+    # ⚠️⚠️ A symlinked `node_modules/@rankwant/shared` points BACK at the real
+    # `packages/shared` in the working tree. That is fine for reading, but
+    # several negative tests MUTATE files under `packages/shared` (the i18n
+    # runtime ones rewrite `src/i18n/core.ts`). With `--jobs N` the copies
+    # share that one real directory, so the mutations race: one worker
+    # restores the anchor while another is still asserting on it, the check
+    # sees a clean tree, exits 0, and the result reads as
+    # "tekshiruv buzuq holatni O'TKAZDI (exit 0) — u o'lik". Measured
+    # 2026-09-24: `--jobs 4` reported 2 false "dead check" failures that
+    # `--serial` and the single-group run both passed 20/20.
+    #
+    # So `packages/` is COPIED — it is a few hundred KB of source, and each
+    # worker needs its own writable copy. The symlink is re-pointed to the
+    # copy's own `packages/shared` rather than the working tree.
+    packages = ROOT / "packages"
+    if packages.is_dir() and not (dest / "packages").exists():
+        shutil.copytree(packages, dest / "packages", symlinks=True, dirs_exist_ok=True)
+
+    # ⚠️⚠️ `apps/web/.next` is SYMLINKED, and this one is not optional.
+    #
+    # The copy is made from `git archive HEAD`, so it contains ONLY tracked
+    # files. `.next/` is in `.gitignore` — correctly — which means the copy
+    # has no build output at all. The `bundle_budget` group measures that
+    # directory, so its positive control saw no `static/` and reported
+    # exit 2. The group then went red for a missing artifact, not a broken
+    # check. Measured on the PR #249 CI run (2026-09-24):
+    #
+    #     ✕ tor oqim: check_bundle_budget.py exit 2 berdi (0 kerak)
+    #     ✕ bundle: o'lchab bo'lmadi (exit 2) — build qilinmagan
+    #     ✕ bundle: --json exit 2 — ✗ Bundle: `apps/web/.next/static` yo'q
+    #
+    # That is the same class of environment gap as the `node_modules` case
+    # below: the gate is fine, the tree it was handed is not.
+    #
+    # Linking rather than copying is deliberate. A copy would be stale the
+    # moment the build reran, and it would be read 4 times over. The four
+    # workers only READ this tree, so one shared link is safe. The CI web
+    # job runs `npm run build` before the suite precisely so this exists.
+    web_next = ROOT / "apps" / "web" / ".next"
+    link = dest / "apps" / "web" / ".next"
+    if web_next.is_dir() and not link.exists():
+        link.parent.mkdir(parents=True, exist_ok=True)
+        link.symlink_to(web_next, target_is_directory=True)
+
+    for rel in ("apps/web/node_modules", "node_modules"):
+        source = ROOT / rel
+        link = dest / rel
+        if source.is_dir() and not link.exists():
+            link.parent.mkdir(parents=True, exist_ok=True)
+            if rel == "node_modules":
+                link.mkdir(parents=True, exist_ok=True)
+                # `node_modules/@rankwant/*` must resolve to THIS copy, not to
+                # the worker-shared working tree — see above.
+                for scope in list(source.glob("*")):
+                    target = link / scope.name
+                    if scope.name == "@rankwant":
+                        target.mkdir(parents=True, exist_ok=True)
+                        for workspace in list(scope.glob("*")):
+                            own = dest / "packages" / workspace.name
+                            (target / workspace.name).symlink_to(
+                                own if own.is_dir() else workspace,
+                                target_is_directory=True,
+                            )
+                    else:
+                        target.symlink_to(scope, target_is_directory=scope.is_dir())
+            else:
+                link.symlink_to(source, target_is_directory=True)
 
 
 def _run_groups_in_copy(groups: list[str], raw: bytes) -> tuple[int, str]:
@@ -7356,6 +8685,30 @@ def _run_groups_in_copy(groups: list[str], raw: bytes) -> tuple[int, str]:
 
 def _main_parallel(jobs: int) -> int:
     names = [name for name, _ in CASES]
+    # ⚠️ `visual` is EXCLUDED from the parallel fan-out, not merely skipped.
+    #
+    # Workers run `--serial <group>`, and passing a group name sets `only` to
+    # it — which turns the visual branch's "explicitly requested" condition
+    # TRUE. The precondition then runs, finds no Playwright CLI and no live
+    # stack, and fails the whole suite:
+    #
+    #     ✕ playwright cli topilmadi — `cd tests/e2e && npm ci` kerak
+    #     1/1 salbiy test YIQILDI — vizual darvoza o'lchanmadi.
+    #
+    # That is the opposite of the intent: the serial path deliberately SKIPS
+    # this group in a full run ("OG'IR guruh ... ataylab o'tkazib yuboriladi")
+    # because it needs `next build` plus a running stack. CI sets
+    # `NEGATIVE_JOBS: 4`, so the fan-out always hit it. Measured on the
+    # PR #249 CI run (2026-09-24).
+    #
+    # Keep it in the serial path as an open skip; it still runs for real via
+    # `--group visual` (nightly, `tools/ci_visual_gate.sh`).
+    #
+    # `csp_nonce` is here for the same reason with a smaller bill: it does not
+    # rebuild, but it must read a rendered page, and CI's negative step runs
+    # no stack — left in the fan-out it would report "o'lchanmadi" every run.
+    # It runs for real via `--group csp_nonce` (nightly, `tools/ci_csp_gate.sh`).
+    names = [name for name in names if name not in {"visual", "csp_nonce"}]
     workers = min(jobs, len(names))
     buckets: list[list[str]] = [[] for _ in range(workers)]
     for i, name in enumerate(names):
@@ -7374,6 +8727,8 @@ def _main_parallel(jobs: int) -> int:
                 sys.stdout.write("\n")
             if code != 0:
                 failures = code
+    print("  - O'TKAZIB YUBORILDI: visual guruhi — `next build` va stack talab qiladi "
+          "(`--group visual`, nightly)")
     return failures
 
 
@@ -7417,6 +8772,38 @@ def main(argv: list[str]) -> int:
             print("1/1 salbiy test YIQILDI — muhit tayyor emas, o'lchov yo'q.")
             return 1
 
+    # Visual — OG'IR guruh. U `next build` talab qiladi (~20 daqiqa) va
+    # ishlab turgan stack'ni ko'radi. Shuning uchun faqat ATAYLAB
+    # chaqirilganda (`--group visual`) yuritiladi; to'liq to'plamda
+    # ochiq aytib o'tkazib yuboriladi. `--group visual` berilganda esa
+    # old shart tekshiriladi va bajarilmasa OCHIQ yiqiladi — jimgina
+    # yashil bo'lib qolmaydi.
+    if selected & VISUAL_CASES:
+        if only == "visual":
+            reason = visual_precondition()
+            if reason:
+                print(f"  ✕ {reason}")
+                print()
+                print("1/1 salbiy test YIQILDI — vizual darvoza o'lchanmadi.")
+                return 1
+        else:
+            skipped.append("visual guruhi — `next build` talab qiladi (--group visual)")
+
+    # CSP nonce qamrovi — ishlab turgan stack'ni o'qiydi (qayta qurmaydi).
+    # `visual` bilan bir sinf: to'liq to'plamda ochiq o'tkazib yuboriladi,
+    # `--group csp_nonce` bilan esa old shart tekshiriladi va bajarilmasa
+    # OCHIQ yiqiladi — jimgina yashil bo'lib qolmaydi.
+    if selected & CSP_CASES:
+        if only == "csp_nonce":
+            reason = csp_nonce_precondition()
+            if reason:
+                print(f"  ✕ {reason}")
+                print()
+                print("1/1 salbiy test YIQILDI — CSP darvozasi o'lchanmadi.")
+                return 1
+        else:
+            skipped.append("csp_nonce guruhi — stack talab qiladi (--group csp_nonce)")
+
     # Monitor — WINDOWS darvozasi. Old shart mantig'i NODE bilan bir xil,
     # LEKIN yakuni boshqa: `powershell` faqat Windows'da bor, CI runner'i
     # esa Linux (o'lchandi). U yerda guruhni «yiqildi» deb ko'rsatish CI ni
@@ -7459,6 +8846,8 @@ def main(argv: list[str]) -> int:
         if only and only != checker:
             continue
         if skip_node_cases and checker == "web_unit":
+            continue
+        if checker == "visual" and only != "visual":
             continue
         if checker == "monitor" and any(row.startswith("monitor guruhi") for row in skipped):
             continue

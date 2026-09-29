@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1781 strings.**
+**1813 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -256,12 +256,14 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `footer.copyright` | © {year} RankWant. Barcha huquqlar himoyalangan. | © {year} RankWant. Barlıq huquqlar qorǵalǵan. |  |
 | `footer.terms` | Shartlar | Shártlar |  |
 | `footer.privacy` | Maxfiylik | Qupıyalıq |  |
+| `auth.usernameInvalid` | Taxallus faqat lotin harflari, raqamlar va pastki chiziqdan iborat bo'lsin | Laqab tek latın háripleri, sanlar hám astı sızıqtan ibarat bolıwı kerek |  |
 | `auth.usernameRequired` | Taxallus 3–30 belgi: bo'sh qolmasin | Laqab 3–30 belgi: bos qalmasın |  |
 | `auth.usernameHint` | 3–30 belgi: lotin harflari, raqam, nuqta, pastki chiziq, chiziqcha | 3–30 belgi: latın háripleri, san, noqat, astıńǵı sızıq, sızıqsha |  |
 | `auth.passwordHint` | Kamida 8 belgi. Faqat raqamdan iborat bo'lmasin. | Keminde 8 belgi. Tek sannan ibarat bolmasın. |  |
 | `auth.usernameFree` | Bu nom bo'sh | Bul at bos |  |
 | `auth.checking` | Tekshirilmoqda… | Tekserilip atır… |  |
 | `auth.passwordMatch` | Parollar mos | Paroller sáykes |  |
+| `auth.required` | Bu maydonni to'ldirishingiz kerak | Bul maydandı toltırıń |  |
 | `auth.emailInvalid` | Email manzili noto'g'ri | Email mánzili qáte |  |
 | `auth.strength1` | Juda zaif | Júdá álsiz |  |
 | `auth.strength2` | Zaif | Álsiz |  |
@@ -530,6 +532,31 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `verdict.RATE_LIMITED` | Juda tez yuborildi | Júdá tez jiberildi |  |
 | `verdict.DENIAL_OF_JUDGEMENT` | Tekshirib bo'lmadi | Tekserip bolmadı |  |
 | `attempts.allVerdicts` | Hamma verdikt | Barlıq verdikt |  |
+| `attempts.col.submitted` | Yuborilgan | Jiberilgen |  |
+| `attempts.col.runTime` | Ishlash vaqti | Orınlaw waqtı |  |
+| `attempts.col.codeSize` | Kod hajmi | Kod kólemi |  |
+| `attempts.col.contest` | Musobaqa | Jarıs |  |
+| `attempts.you` | Siz | Siz |  |
+| `attempts.firstSolver` | Birinchi yechim | Birinshi sheshken |  |
+| `attempts.queuedFor` | {seconds} s kutdi | Gezekte {seconds} s |  |
+| `attempts.failedAtTest` | {index}-test | {index}-test |  |
+| `attempts.sortLabel` | Saralash | Iretlew |  |
+| `attempts.searchLabel` | Foydalanuvchi qidirish | Paydalanıwshını izlew |  |
+| `attempts.searchPlaceholder` | Foydalanuvchi nomi… | Paydalanıwshı atı… |  |
+| `attempts.searchClear` | Qidiruvni tozalash | İzlewdı tazalaw |  |
+| `attempts.activeFilters` | {count} filtr faol | {count} filtr belsendi |  |
+| `attempts.clearFilters` | Filtrlarni tozalash | Filtrlardı tazalaw |  |
+| `attempts.onlyMineActive` | Faqat sizning urinishlaringiz | Tek sizdiń urınıslarıńız |  |
+| `attempts.onlyMineCancel` | Bekor qilish | Biykarlaw |  |
+| `attempts.total` | {count} urinish | {count} urınıs |  |
+| `attempts.totalFiltered` | Natija: {count}+ | Tabıldı: {count}+ |  |
+| `attempts.pageSize` | Sahifa o'lchami | Bet ólshemi |  |
+| `attempts.copySource` | Manba kodni nusxalash | Baslanǵısh kodtı kóshiriw |  |
+| `attempts.rowOpen` | Urinishni ochish | Urınıstı ashıw |  |
+| `attempts.loading` | Yuklanmoqda… | Júklenbekte… |  |
+| `attempts.emptyTitle` | Hali urinish yo'q | Ázirshe urınıs joq |  |
+| `attempts.emptyHint` | Birinchi bo'lib yuboring | Birinshi bolıp jiberiń |  |
+| `attempts.emptyFilteredTitle` | Bu filtrlarga mos urinish yo'q | Bul filtrlarǵa urınıs joq |  |
 | `error.already_answered` | Bu savolga allaqachon javob berdingiz | Bul sorawǵa aldın juwap berdińiz |  |
 | `error.already_finalized` | Allaqachon yakunlangan | Aldın tamamlanǵan |  |
 | `error.already_paid` | Bu allaqachon to'langan | Bul aldın tólengen |  |
@@ -538,6 +565,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `error.closed` | Topshirish muddati ochiq emas | Tapsırıw múddeti ashıq emes |  |
 | `error.contest_finished` | Musobaqa tugagan | Jarıs tamamlanǵan |  |
 | `error.dependency_unavailable` | Xizmat vaqtincha mavjud emas, birozdan keyin urinib ko'ring | Xızmet waqtınsha qol jetimsiz, azdan keyin urınıp kóriń |  |
+| `error.retry` | Qayta urinish | Qayta urınıw |  |
 | `error.error` | Nimadir noto'g'ri ketdi | Bir nárse qáte ketti |  |
 | `error.expired` | Muddati o'tib ketgan | Múddeti ótip ketken |  |
 | `error.finished` | Allaqachon tugagan | Aldın tamamlanǵan |  |
@@ -1436,6 +1464,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.title.moveUp` | Yuqoriga | Joqarıǵa |  |
 | `admin.title.moveDown` | Pastga | Tómenge |  |
 | `admin.title.remove` | Olib tashlash | Alıp taslaw |  |
+| `admin.title.prev` | Oldingi sahifa | Aldıńǵı bet |  |
+| `admin.title.next` | Keyingi sahifa | Keyingi bet |  |
 | `admin.title.roadmapComments` | Yo'l xaritasi izohlari | Jol kartası túsindirmeleri |  |
 | `admin.title.tournaments` | Chempionatlar | Chempionatlar |  |
 | `admin.title.broadcast` | Umumiy e'lon | Ulıwma xabarlama |  |
@@ -1522,6 +1552,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.editorialAvailable` | Yechim tahlili bor | Sheshim analizi bar |  |
 | `problem.testsNotReady` | Testlar tayyorlanmagan — yechim qabul qilinmaydi | Testler tayar emes — sheshimler qabıl etilmeydi |  |
 | `qvant.marathon` | Haftalik marafon | Háptelik marafon |  |
+| `submit.sourceRequired` | Yuborishdan oldin yechimingizni yozing yoki yuklang | Jiberiwden aldın sheshimińizdi jazıń yamasa júkleń |  |
+| `submit.sourceTooLong` | Manba kodi juda katta | Manba kodı júdá úlken |  |
 | `submit.solution` | Yechim | Sheshim |  |
 | `contest.ogAlt` | RankWant musobaqasi | RankWant kontesti |  |
 | `problem.ogAlt` | RankWant masalasi | RankWant máselesi |  |

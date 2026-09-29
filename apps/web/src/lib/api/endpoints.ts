@@ -2,7 +2,7 @@
  *  session live next to their domain types (`postJson`/`getJson` helpers). */
 
 import { get, type Paginated } from "./client";
-import type { AppearancePrefs } from "./account";
+import type { AppearancePrefs } from "@/features/account";
 import type {
   Calendar,
   ContestRow,
@@ -11,10 +11,10 @@ import type {
   RatingSeries,
   School,
   SolvedProblem,
-  TopicStrength,
+  TopicStrengthData,
   UserPublic,
   UserStats,
-} from "./users";
+} from "@/features/profile";
 import type {
   ArchiveProgress,
   Attempt,
@@ -26,8 +26,8 @@ import type {
   Solver,
   Topic,
   TopicSkill,
-} from "./problems";
-import { LANGUAGES_PATH } from "./problems";
+} from "@/features/problems";
+import { LANGUAGES_PATH } from "@/features/problems";
 import type {
   Arena,
   ArenaDetail,
@@ -42,7 +42,7 @@ import type {
   Tournament,
   TournamentDetail,
   TournamentStanding,
-} from "./contests";
+} from "@/features/contests";
 import type {
   Article,
   ArticleDetail,
@@ -59,7 +59,7 @@ import type {
   RoadmapItem,
   SystemUpdate,
 } from "./platform";
-import type { Marathon, Quest, ShopItem, Wallet } from "./qvant";
+import type { Marathon, Quest, ShopItem, Wallet } from "@/features/account";
 
 export const api = {
   // Mehmon bosh sahifasi raqamlari — serverda 60 s keshlanadi.
@@ -224,7 +224,7 @@ export const api = {
   ratingSeries: (username: string) =>
     get<RatingSeries>(`/users/${username}/rating-series/`, 30),
   userTopics: (username: string) =>
-    get<{ topics: TopicStrength[] }>(`/users/${username}/topics/`, 60),
+    get<{ topics: TopicStrengthData[] }>(`/users/${username}/topics/`, 60),
   userContests: (username: string, query = "") =>
     get<Paginated<ContestRow>>(`/users/${username}/contests/${query}`, 0),
   solvedPage: (username: string, query = "") =>

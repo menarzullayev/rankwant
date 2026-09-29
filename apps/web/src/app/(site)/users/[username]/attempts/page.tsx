@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { AttemptsTab } from "@/components/profile/AttemptsTab";
+import { AttemptsTab } from "@/features/profile";
 import { getLocale } from "@/i18n/server";
 import { tabMetadata } from "@/lib/profile.server";
 

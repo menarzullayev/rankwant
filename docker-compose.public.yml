@@ -12,6 +12,35 @@
 # bitta mashinada ishlaydigan ko'rsatuv nusxasi.
 # Mashina qayta yuklansa stack o'zi ko'tarilsin — aks holda sayt
 # jimgina o'chib qoladi.
+#
+# ⚠️⚠️ XAVFSIZLIK TO'SIG'I (2026-09-24) — bu fayl `rankwant` loyihasidagi
+# JONLI stack'ni boshqaradi, shuning uchun `.env.public` MAJBURIY.
+#
+# Nega kerak bo'ldi: komanda env-faylsiz yurgizilsa compose o'zgaruvchilarni
+# BO'SH qilib qo'yadi (`DJANGO_SECRET_KEY=`, `DJANGO_ALLOWED_HOSTS=`) va
+# `api` konteynerini QAYTA YARATADI. Django `ALLOWED_HOSTS` bo'sh bo'lsa
+# HAR so'rovga 400 beradi, healthcheck yiqiladi, api `unhealthy` bo'ladi,
+# sayt esa 503 «maintenance» ko'rsatadi. O'lchandi (2026-09-24):
+#
+#     rankwant-api-1   Up 2 minutes (unhealthy)
+#     django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header ...
+#     GET https://rankwant.uz/api/v1/health/  →  503
+#
+# Ya'ni bitta unutilgan `--env-file` jonli saytni yiqitadi. Compose fayli
+# buni O'ZI to'xtatadi: `:?` xato bilan chiqadi va konteynerga tegmaydi.
+#
+# To'g'ri chaqiruv (env-fayl ASOSIY checkout'da qoladi, worktree'da yo'q —
+# u `.gitignore` da):
+#   docker compose -p rankwant --env-file D:/Linux/Web_Projects/rankwant/.env.public \
+#     -f docker-compose.yml -f docker-compose.public.yml up -d --build --wait
+#
+# ⚠️ FAQAT `up`/`run`/`start`/`restart`/`create` uchun. `down`, `logs`,
+# `ps`, `exec` esa env-faylsiz ham ishlashi kerak (nosozlikni tekshirish
+# shoshilinch bo'ladi) — shuning uchun xato `up` ga bog'langan.
+x-env-guard: &env-guard
+  DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:?--env-file .env.public MAJBURIY — usiz jonli api secret-siz qayta yaratiladi}
+  DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:?--env-file .env.public MAJBURIY — bo'sh bo'lsa Django har so'rovga 400 qaytaradi va sayt 503 beradi}
+
 x-restart: &restart
   restart: unless-stopped
 
@@ -82,10 +111,26 @@ services:
     logging: *default-logging
     ports: !reset []
 
+  # ⚠️ ADR-0028 `judge-queue` ni qo'shdi, lekin bu overlay uni SANAMAGAN.
+  # Natijada unga `restart: unless-stopped` berilmadi va Docker sukuti
+  # (`no`) qoldi — qolgan HAMMA servisda `unless-stopped` bor.
+  #
+  # Oqibati: har mashina qayta yuklanishida `judge-queue` qaytmasdi,
+  # `judge` esa abadiy crash loop'da qolardi:
+  #   dial tcp: lookup judge-queue on 127.0.0.11:53: server misbehaving
+  #
+  # O'lchandi: 2026-09-25 (30 soat ishlamagan) va 2026-09-28 (yana).
+  # Ya'ni bir martalik emas — HAR qayta yuklashda takrorlanardi va
+  # sabab ko'rinmasdi, chunki qolgan konteynerlar sog'lom ko'rinadi.
+  judge-queue:
+    <<: *restart
+    logging: *default-logging
+
   migrate:
     logging: *default-logging
     environment:
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      # ⚠️ `*env-guard` — env-faylsiz `up` to'xtatiladi (fayl boshiga qarang).
+      <<: *env-guard
       DJANGO_DEBUG: "0"
 
   api:
@@ -94,10 +139,11 @@ services:
     # Faqat localhost: tashqariga Cloudflare Tunnel chiqaradi, port emas.
     ports: !override ['127.0.0.1:8301:8000']
     environment:
-      <<: [*email, *oauth, *turnstile, *throttle]
+      # ⚠️ Bu ikki kalit `x-env-guard` orqali keladi — ya'ni env-faylsiz
+      # `up` UMUMAN ishlamaydi (sababi fayl boshida). `djenv` bilan bu
+      # yerda takror yozilmaydi: bitta manba qoladi.
+      <<: [*env-guard, *email, *oauth, *turnstile, *throttle]
       DJANGO_DEBUG: "0"
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
-      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS}
       CORS_ALLOWED_ORIGINS: ${PUBLIC_ORIGIN}
       CSRF_TRUSTED_ORIGINS: ${PUBLIC_ORIGIN}
       # Cloudflare buni HAR so'rovda qayta yozadi, ya'ni mijoz
@@ -110,16 +156,32 @@ services:
     <<: *restart
     logging: *default-logging
     environment:
-      <<: *email
+      # ⚠️ `*env-guard` — env-faylsiz `up` to'xtatiladi (fayl boshiga qarang).
+      <<: [*env-guard, *email]
       DJANGO_DEBUG: "0"
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+
+  # SSE — ADR-0029. Port faqat localhost: tashqariga Cloudflare Tunnel
+  # chiqaradi va u `/api/v1/events/*` ni shu xizmatga yo'naltiradi.
+  # ⚠️ Tunnel qatori HOST darajasida (`/etc/cloudflared/config.yml`) —
+  # `docs/10-operations/realtime-runbook.md` da yozilgan.
+  realtime:
+    <<: *restart
+    logging: *default-logging
+    ports: !override ['127.0.0.1:8302:8001']
+    environment:
+      #: ⚠️ `*env-guard` SHART: `DJANGO_SECRET_KEY` bo'lmasa Django
+      #: umuman ko'tarilmaydi, ya'ni sessiya ham tekshirilmaydi.
+      <<: *env-guard
+      DJANGO_DEBUG: "0"
+      REALTIME_WORKERS: ${REALTIME_WORKERS:-1}
 
   beat:
     <<: *restart
     logging: *default-logging
     environment:
+      # ⚠️ `*env-guard` — env-faylsiz `up` to'xtatiladi (fayl boshiga qarang).
+      <<: *env-guard
       DJANGO_DEBUG: "0"
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
 
   web:
     <<: *restart
@@ -133,3 +195,9 @@ services:
   judge:
     <<: *restart
     logging: *default-logging
+    environment:
+      # ADR-0028: judge kaliti `.env.public` dan kelaydi (minio-init ham
+      # shu o'zgaruvchini o'qiydi — identitet ikki tomonda bir xil).
+      # Baza'ning statik dev qiymati boshqa kalit bilan rotatsiya
+      # qilinadigan bo'lsa ham shu yerdan Override qilinadi.
+      S3_SECRET: ${JUDGE_S3_SECRET:-judge-ro-dev}

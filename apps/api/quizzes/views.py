@@ -17,7 +17,7 @@ from quizzes.serializers import (
     QuizDetailSerializer,
     QuizResultSerializer,
     QuizSerializer,
-    SubmitSerializer,
+    QuizSubmitSerializer,
 )
 from quizzes.services import submit
 
@@ -52,11 +52,11 @@ class QuizViewSet(viewsets.ReadOnlyModelViewSet[Quiz]):
     def get_serializer_class(self):  # type: ignore[no-untyped-def]
         return QuizDetailSerializer if self.action == "retrieve" else QuizSerializer
 
-    @extend_schema(request=SubmitSerializer, responses={201: QuizResultSerializer})
+    @extend_schema(request=QuizSubmitSerializer, responses={201: QuizResultSerializer})
     @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
     def submit(self, request: Request, slug: str | None = None) -> Response:
         quiz = self.get_object()
-        serializer = SubmitSerializer(data=request.data)
+        serializer = QuizSubmitSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         assert isinstance(request.user, User)
 

@@ -28,6 +28,15 @@ class AttemptSerializer(serializers.ModelSerializer[Attempt]):
     #: (ADR-0020). ⚠️ `AttemptViewSet` `contest` ni `select_related` ga
     #: qo'shadi — usiz bu maydon har qatorga bitta so'rov qo'shardi.
     contest = serializers.SlugRelatedField[Contest](slug_field="slug", read_only=True)
+    #: Masalani BIRINCHI yechgan urinishmi. Qiymatni `AttemptViewSet`
+    #: annotatsiya qiladi (bitta subquery, har qator uchun emas).
+    #: `getattr` — chunki serializer `create` javobida ham ishlatiladi va
+    #: u yerda annotatsiya yo'q; `SerializerMethodField` o'rniga oddiy
+    #: `BooleanField` bo'lsa `AttributeError` berardi.
+    is_first_solver = serializers.SerializerMethodField()
+
+    def get_is_first_solver(self, obj: Attempt) -> bool:
+        return bool(getattr(obj, "is_first_solver", False))
 
     class Meta:
         model = Attempt
@@ -46,6 +55,7 @@ class AttemptSerializer(serializers.ModelSerializer[Attempt]):
             "created_at",
             "judged_at",
             "source_size",
+            "is_first_solver",
         ]
 
 

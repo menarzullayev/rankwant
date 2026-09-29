@@ -183,6 +183,8 @@ function ArenaRowPanel({
                 type="button"
                 onClick={() => move(i, -1)}
                 disabled={i === 0}
+                aria-label={t(locale, "admin.title.moveUp")}
+                title={t(locale, "admin.title.moveUp")}
                 className="rw-accent-ink disabled:opacity-30"
               >
                 ↑
@@ -191,6 +193,8 @@ function ArenaRowPanel({
                 type="button"
                 onClick={() => move(i, 1)}
                 disabled={i === ids.length - 1}
+                aria-label={t(locale, "admin.title.moveDown")}
+                title={t(locale, "admin.title.moveDown")}
                 className="rw-accent-ink disabled:opacity-30"
               >
                 ↓
@@ -198,6 +202,8 @@ function ArenaRowPanel({
               <button
                 type="button"
                 onClick={() => setIds(ids.filter((x) => x !== id))}
+                aria-label={t(locale, "admin.title.remove")}
+                title={t(locale, "admin.title.remove")}
                 className="rw-bad-ink"
               >
                 ✕

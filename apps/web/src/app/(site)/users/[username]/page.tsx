@@ -1,20 +1,20 @@
 import type { Route } from "next";
 import { redirect } from "next/navigation";
 
-import { ActivityHeatmap } from "@/components/profile/ActivityHeatmap";
-import { LanguageCards } from "@/components/profile/LanguageCards";
-import { ProblemMap } from "@/components/profile/ProblemMap";
-import { RatingChart } from "@/components/profile/RatingChart";
-import { RatingHistoryTable } from "@/components/profile/RatingHistoryTable";
-import { SectionHint } from "@/components/profile/SectionHint";
-import { SolvedOverview } from "@/components/profile/SolvedOverview";
-import { TopicStrength } from "@/components/profile/TopicStrength";
+import { ActivityHeatmap } from "@/features/profile";
+import { LanguageCards } from "@/features/profile";
+import { ProblemMap } from "@/features/profile";
+import { RatingChart } from "@/features/profile";
+import { RatingHistoryTable } from "@/features/profile";
+import { SectionHint } from "@/features/profile";
+import { SolvedOverview } from "@/features/profile";
+import { TopicStrength } from "@/features/profile";
 import { Card } from "@/components/ui/Card";
 import { t } from "@/i18n/messages";
 import { getLocale } from "@/i18n/server";
 import { api, type Calendar, type ProblemTile } from "@/lib/api";
 import { getWithSession } from "@/lib/api.server";
-import { dateKit } from "@/lib/format";
+import { dateKit } from "@rankwant/shared/format";
 
 type Props = {
   params: Promise<{ username: string }>;

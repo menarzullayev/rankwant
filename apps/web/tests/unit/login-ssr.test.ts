@@ -23,7 +23,7 @@ describe("login first paint is the form", () => {
   });
 
   it("AuthTabs is a server component and keeps next in the href", () => {
-    const tabs = src("../../src/components/auth/AuthTabs.tsx");
+    const tabs = src("../../src/features/auth/components/AuthTabs.tsx");
     expect(tabs).not.toMatch(/from ["']next\/navigation["']/);
     expect(tabs).not.toContain('"use client"');
     expect(tabs).toContain("if (next) query.set(\"next\", next)");
@@ -39,10 +39,10 @@ describe("login first paint is the form", () => {
   });
 
   it("AuthForm and ResetForm read query from props", () => {
-    const form = src("../../src/components/AuthForm.tsx");
+    const form = src("../../src/features/account/components/AuthForm.tsx");
     expect(form).not.toMatch(/useSearchParams/);
     expect(form).toContain("next?: string | null");
-    const reset = src("../../src/components/ResetForm.tsx");
+    const reset = src("../../src/features/account/components/ResetForm.tsx");
     expect(reset).not.toMatch(/useSearchParams/);
     expect(reset).toContain("token = \"\"");
   });

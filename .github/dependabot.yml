@@ -7,8 +7,22 @@ updates:
     directory: /apps/api
     schedule: { interval: weekly }
     open-pull-requests-limit: 5
+    ignore:
+      # Django 5.2 — LTS va ADR-0003 da ATAYLAB tanlangan (6.x rad
+      # etilgan: `requirements.txt` boshidagi izohga qarang). #282
+      # 6.1.1 taklif qilgan edi va yopildi.
+      - dependency-name: "django"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: npm
-    directory: /apps/web
+    # ⚠️ `/` — WORKSPACE ILDIZI, `/apps/web` emas. 2026-09-24 da
+    # `apps/web/package-lock.json` o'chirildi va root lockfile yagona
+    # haqiqat bo'ldi (CLAUDE.md shu sana). Lekin bu qator yangilanmagan
+    # edi: Dependabot `apps/web/package.json` ni tahrirlar, root
+    # `package-lock.json` esa tegilmasdi — natijada CI'da
+    #   `npm ci` ... Missing: @types/node@22.20.4 from lock file
+    # va PR yiqilardi. Ildizdan o'qilganda Dependabot lockfile'ni ham
+    # o'zi yangilaydi.
+    directory: /
     schedule: { interval: weekly }
     open-pull-requests-limit: 5
     ignore:
@@ -17,6 +31,13 @@ updates:
       # offered 26 while runtime was 22 — that is a false green under
       # `skipLibCheck`. Minors/patches on 22.x still come through.
       - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+      # `typescript@7` YAGONA paket qilinmaydi (2026-09-20 qarori):
+      # typecheck native `@typescript/native` orqali, JS API esa
+      # `@typescript/typescript6` orqali yuriladi. Shu sababli oddiy
+      # `typescript` paketini 7 ga ko'tarish qarorga ZID — #284 shunday
+      # taklif qilgan edi va yopildi.
+      - dependency-name: "typescript"
         update-types: ["version-update:semver-major"]
   - package-ecosystem: gomod
     directory: /services/judge-go

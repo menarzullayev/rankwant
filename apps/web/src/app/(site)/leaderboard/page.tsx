@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 import { Card } from "@/components/ui/Card";
 import { CountryFlag } from "@/components/ui/CountryFlag";
-import { UserName } from "@/components/UserName";
+import { UserName } from "@/components/ui/Identity";
 import {
   EmptyRow,
   TBody,

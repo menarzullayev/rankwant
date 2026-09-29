@@ -16,6 +16,21 @@ CHIQISH KODLARI (uchinchi holat ataylab ajratilgan):
   1 — faol contest/arena BOR: deploy taqiqlanadi
   2 — ANIQLANMADI: API javob bermadi
 
+⚠️ QARORNI CHAQIRUVCHI QABUL QILADI. Skript hech qachon o'zi
+«to'xta»/«davom et» demaydi — u faqat holatni aytadi. Sabab: bir xil
+1 kodi ikki xil vaziyatda uchraydi va javob har xil bo'ladi.
+
+⚠️ ATAYLAB CHETLAB O'TISH (2026-09-24, Saidakbar aka qarori). Qoida №1
+SAQLANADI (standart: 1 → deploy to'xtaydi), lekin odam qo'li bilan
+chetlab o'tish mumkin:
+  · `deploy.yml` → `allow_live_contest=yes` (standart `no`);
+  · `tools/deploy.sh` → `RANKWANT_ALLOW_LIVE_CONTEST=1`.
+Sabab: sayt contest paytida yiqilsa, tuzatishning yagona yo'li —
+deploy; yopiq darvoza tizimni qulflab qo'yardi.
+
+⚠️ `tools/auto_deploy.sh` override'ni BERMAYDI va bermasligi kerak:
+avtomatik yo'lda odam yo'q, ya'ni qoida №1 u yerda qat'iy qoladi.
+
 ⚠️ Nega 2 alohida: «javob bermadi» ni «0 ta» deb o'qish yolg'on yashil
 berardi va aynan sayt yiqilganda — ya'ni tuzatish deploy'i eng kerak
 bo'lgan paytda — darvoza eng ishonchsiz bo'lardi. Qarorni chaqiruvchi

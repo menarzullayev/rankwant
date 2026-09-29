@@ -17,6 +17,8 @@ kontrollerlarni o'zimiz delegatsiya qilamiz.
 
 from __future__ import annotations
 
+import os
+import socket
 import subprocess
 import tempfile
 from pathlib import Path
@@ -30,6 +32,69 @@ CONFIG_PATHS = [Path("/usr/local/etc/isolate"), Path("/usr/local/etc/isolate.con
 
 class PreflightError(RuntimeError):
     pass
+
+
+def _port_env(name: str, default: int) -> int:
+    """Butun sonli env; bo'sh/noto'g'ri qiymatda standart."""
+    raw = os.environ.get(name, "")
+    if not raw:
+        return default
+    try:
+        port = int(raw)
+    except ValueError as exc:
+        raise PreflightError(f"{name}: noto'g'ri port: {raw!r}") from exc
+    if not 0 < port < 65536:
+        raise PreflightError(f"{name}: noto'g'ri port: {raw!r}")
+    return port
+
+
+def check_network() -> None:
+    """ADR-0028: tarmoq chegarasi KOD bilan tekshiriladi — fail closed.
+
+    judge-go PreflightNetwork bilan bir xil shartnoma: TAQIQLANGAN
+    manzarga (postgres:5432, api:8000, + JUDGE_FORBIDDEN_HOSTS) ulanish
+    MUVAFFAQIYATLI bo'lsa — PreflightError (worker ishga tushmaydi).
+    Ulanish xatosi (refused/timeout/DNS yechilmadi) — chegara yopiq.
+    Gate: JUDGE_NET_PREFLIGHT=1 bo'lmasa — o'tkazib yuboriladi (compose'da
+    judge-net, internal: true bilan birga yoqiladi).
+    """
+    if os.environ.get("JUDGE_NET_PREFLIGHT") != "1":
+        return
+
+    postgres_host = os.environ.get("POSTGRES_HOST") or "postgres"
+    targets: dict[str, int] = {
+        postgres_host: _port_env("POSTGRES_PORT", 5432),
+        "api": _port_env("API_PORT", 8000),
+    }
+    extra = os.environ.get("JUDGE_FORBIDDEN_HOSTS", "")
+    for spec in extra.split(","):
+        spec = spec.strip()
+        if not spec:
+            continue
+        host, sep, port_str = spec.partition(":")
+        if not sep:
+            raise PreflightError(
+                f"JUDGE_FORBIDDEN_HOSTS: port bo'lmagan yozuv: {spec!r} (host:port kutilgan)"
+            )
+        try:
+            port = int(port_str)
+        except ValueError as exc:
+            raise PreflightError(f"JUDGE_FORBIDDEN_HOSTS: noto'g'ri port: {spec!r}") from exc
+        if not 0 < port < 65536:
+            raise PreflightError(f"JUDGE_FORBIDDEN_HOSTS: noto'g'ri port: {spec!r}")
+        targets[host] = port
+
+    for host, port in targets.items():
+        try:
+            sock = socket.create_connection((host, port), timeout=2)
+        except OSError:
+            # refused / timeout / DNS yechilmadi — chegara yopiq.
+            continue
+        sock.close()
+        raise PreflightError(
+            f"preflight: {host}:{port} ga ulanish MUVAFFAQIYATLI — tarmoq chegarasi buzilgan "
+            f"(judge {host} tarmog'ida bo'lmasligi kerak; ADR-0028: judge-net, internal: true)"
+        )
 
 
 def _prepare_cgroup() -> None:

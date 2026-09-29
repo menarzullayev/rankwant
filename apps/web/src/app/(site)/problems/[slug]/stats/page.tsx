@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 
-import { ProblemTabs } from "@/components/ProblemTabs";
+import { ProblemTabs } from "@/features/problems";
 import { Verdict } from "@/components/ui/Verdict";
 import { Card } from "@/components/ui/Card";
 import { fill, t } from "@/i18n/messages";
