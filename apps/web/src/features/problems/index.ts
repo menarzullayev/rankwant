@@ -5,6 +5,12 @@
  * Ichki tuzilma (`components/`, `api/`) — xususiy.
  */
 
+export { ProblemStatementCard } from "./components/ProblemStatementCard";
+
+export { StatementSectionNav } from "./components/StatementSectionNav";
+
+export { VerdictPresentationLayer } from "./components/VerdictPresentationLayer";
+
 export { Editorial } from "./components/Editorial";
 
 export { FavouriteToggle } from "./components/FavouriteToggle";
@@ -36,7 +42,7 @@ export { SampleTests } from "./components/SampleTests";
 
 export { SimilarProblems } from "./components/SimilarProblems";
 
-export { StatementSize } from "./components/StatementSize";
+export { StatementSize, StatementTextSizeControls } from "./components/StatementSize";
 
 export { TopicBadges } from "./components/TopicBadges";
 

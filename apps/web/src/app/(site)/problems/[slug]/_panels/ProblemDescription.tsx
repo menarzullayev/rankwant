@@ -2,17 +2,21 @@ import Link from "next/link";
 
 import { Attachments } from "@/features/submissions";
 import { Markdown } from "@/components/ui/Markdown";
-import { Editorial, ReportProblem } from "@/features/problems";
+import {
+  Editorial,
+  ProblemActions,
+  ProblemMetaAccordion,
+  ProblemSolveTimer,
+  ProblemStatementCard,
+  ReportProblem,
+  SampleTests,
+  StatementSectionNav,
+  StatementTextSizeControls,
+  VerdictPresentationLayer,
+} from "@/features/problems";
 import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { CopyButton } from "@/components/kit/CopyControl";
-import { ProblemActions } from "@/features/problems";
-import { ProblemMetaAccordion, ProblemSolveTimer } from "@/features/problems";
-import { ProblemStatementCard } from "@/features/problems/components/ProblemStatementCard";
-import { SampleTests } from "@/features/problems";
-import { StatementSectionNav } from "@/features/problems/components/StatementSectionNav";
-import { StatementTextSizeControls } from "@/features/problems/components/StatementSize";
-import { VerdictPresentationLayer } from "@/features/problems/components/VerdictPresentationLayer";
 import { fill, t, type Locale } from "@/i18n/messages";
 import type { ProblemDetail } from "@/lib/api";
 
