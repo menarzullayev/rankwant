@@ -1,9 +1,27 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
+
+const XL_QUERY = "(min-width: 1280px)";
+
+function subscribeWide(callback: () => void) {
+  const mq = window.matchMedia(XL_QUERY);
+  mq.addEventListener("change", callback);
+  return () => mq.removeEventListener("change", callback);
+}
+
+function readWide() {
+  return window.matchMedia(XL_QUERY).matches;
+}
 
 const SPLIT_KEY = "rw:problem-split-pct";
 const DEFAULT_SPLIT = 58;
@@ -34,14 +52,17 @@ function writeSplit(n: number) {
  * bo'linishi. `xl` dan yuqorida sudraladigan vertikal tutqich;
  * pastda matn to'liq kenglik, muharrir «Kod» FAB orqali ochiladi.
  */
+/** `render*` — har chaqiruv alohida daraxt; bitta React node ikki joyga
+ *  qo'yilsa ikkala shox ham DOM'da qoladi (2× Monaco, 2× sarlavha). */
 export function ProblemWorkspace({
-  statement,
-  editor,
+  renderStatement,
+  renderEditor,
 }: {
-  statement: React.ReactNode;
-  editor: React.ReactNode;
+  renderStatement: () => React.ReactNode;
+  renderEditor: () => React.ReactNode;
 }) {
   const locale = useLocale();
+  const wide = useSyncExternalStore(subscribeWide, readWide, () => false);
   const [splitPct, setSplitPct] = useState(readSplit);
   const [sheetOpen, setSheetOpen] = useState(false);
   const dragging = useRef(false);
@@ -73,17 +94,14 @@ export function ProblemWorkspace({
     };
   }, [onPointerMove]);
 
-  return (
-    <>
-      <div
-        ref={hostRef}
-        className="hidden min-w-0 items-start gap-0 xl:flex"
-      >
+  if (wide) {
+    return (
+      <div ref={hostRef} className="flex min-w-0 items-start gap-0">
         <div
           className="min-w-0 shrink-0 space-y-6"
           style={{ width: `${splitPct}%` }}
         >
-          {statement}
+          {renderStatement()}
         </div>
         <div
           role="separator"
@@ -115,13 +133,17 @@ export function ProblemWorkspace({
         >
           <span className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-[var(--rw-line)] group-hover:bg-[var(--rw-accent)] group-focus-visible:bg-[var(--rw-accent)]" />
         </div>
-        <div className="min-w-0 flex-1">{editor}</div>
+        <div className="min-w-0 flex-1">{renderEditor()}</div>
       </div>
+    );
+  }
 
-      <div className="min-w-0 space-y-6 xl:hidden">{statement}</div>
+  return (
+    <>
+      <div className="min-w-0 space-y-6">{renderStatement()}</div>
 
       <div
-        className={`fixed inset-x-0 bottom-0 z-40 max-h-[min(92vh,720px)] transform border-t rw-divider rw-panel-bg shadow-[0_-8px_32px_rgba(0,0,0,.12)] transition-transform duration-200 xl:hidden ${
+        className={`fixed inset-x-0 bottom-0 z-40 max-h-[min(92vh,720px)] transform border-t rw-divider rw-panel-bg shadow-[0_-8px_32px_rgba(0,0,0,.12)] transition-transform duration-200 ${
           sheetOpen ? "translate-y-0" : "translate-y-full"
         }`}
         aria-hidden={!sheetOpen}
@@ -139,7 +161,7 @@ export function ProblemWorkspace({
           </button>
         </div>
         <div className="max-h-[calc(min(92vh,720px)-3rem)] overflow-y-auto p-4">
-          {editor}
+          {renderEditor()}
         </div>
       </div>
 
@@ -147,7 +169,7 @@ export function ProblemWorkspace({
         <button
           type="button"
           aria-label={t(locale, "problem.closeEditor")}
-          className="fixed inset-0 z-30 bg-black/40 xl:hidden"
+          className="fixed inset-0 z-30 bg-black/40"
           onClick={() => setSheetOpen(false)}
         />
       )}
@@ -156,7 +178,7 @@ export function ProblemWorkspace({
         type="button"
         aria-expanded={sheetOpen}
         onClick={() => setSheetOpen((o) => !o)}
-        className="fixed bottom-20 right-4 z-30 inline-flex items-center gap-2 rw-radius-full rw-accent-bg px-4 py-2.5 text-theme-sm font-semibold rw-btn-label shadow-lg xl:hidden rw-focus-ring"
+        className="fixed bottom-20 right-4 z-30 inline-flex items-center gap-2 rw-radius-full rw-accent-bg px-4 py-2.5 text-theme-sm font-semibold rw-btn-label shadow-lg rw-focus-ring"
       >
         <span className="font-mono text-theme-base">&lt;/&gt;</span>
         {t(locale, "problem.openEditor")}

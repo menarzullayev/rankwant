@@ -119,7 +119,7 @@ export default async function ProblemPage({ params, searchParams }: Props) {
   if (tab === "description" || tab === "editorial") {
     return (
       <ProblemWorkspace
-        statement={
+        renderStatement={() => (
           <div className="min-w-0 space-y-6">
             <script
               type="application/ld+json"
@@ -154,8 +154,8 @@ export default async function ProblemPage({ params, searchParams }: Props) {
               />
             )}
           </div>
-        }
-        editor={
+        )}
+        renderEditor={() => (
           <SubmitPanel
             problem={slug}
             languages={problem.languages}
@@ -163,7 +163,7 @@ export default async function ProblemPage({ params, searchParams }: Props) {
             contest={contest}
             hasTests={problem.has_tests}
           />
-        }
+        )}
       />
     );
   }

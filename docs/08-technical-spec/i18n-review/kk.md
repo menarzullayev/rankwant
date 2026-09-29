@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1829 strings.**
+**1832 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -1582,6 +1582,9 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `submit.samplePick` | {order}-namuna | Sample {order} |  |
 | `submit.samplePassLog` | {order}-namuna mos keldi | Sample {order} matched |  |
 | `submit.sampleFailLog` | {order}-namuna mos kelmadi | Sample {order} did not match |  |
+| `submit.tabVerdict` | Natija | Result |  |
+| `submit.tabSamples` | Namunalar | Samples |  |
+| `submit.tabCustom` | O'z testim | Custom tests |  |
 | `submit.draftSavedLocally` | Qoralama shu brauzerda saqlanadi | Жоба осы браузерде сақталады |  |
 | `submit.loadFromFile` | Fayldan yuklash | Файлдан жүктеу |  |
 | `submit.nothingSubmitted` | Hali yuborilmadi. Kod yozing va «Yuborish» ni bosing. | Әзірге жіберілген жоқ. Код жазып, «Жіберу» түймесін басыңыз. |  |

@@ -502,11 +502,11 @@ export function SubmitPanel({
           <div className="flex gap-1">
             {(
               [
-                ["verdict", "Natija"],
+                ["verdict", t(locale, "submit.tabVerdict")],
                 ...(samples.length > 0
-                  ? ([["samples", "Namunalar"]] as const)
+                  ? ([["samples", t(locale, "submit.tabSamples")]] as const)
                   : []),
-                ["custom", "O'z testim"],
+                ["custom", t(locale, "submit.tabCustom")],
               ] as const
             ).map(([key, label]) => (
               <button
