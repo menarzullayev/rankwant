@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1813 strings.**
+**1829 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -1102,6 +1102,14 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.samples` | Namunalar | Mısalar |  |
 | `problem.sampleInput` | Kirish | Kiris |  |
 | `problem.sampleOutput` | Chiqish | Shıǵıs |  |
+| `problem.sampleAnswer` | Javob | Answer |  |
+| `problem.sampleRunHint` | Namunada sinash faqat kod panelidagi namuna konsolida — jadval faqat ko'rish va nusxalash uchun. | Run samples only from the code panel console — the table is for viewing and copy. |  |
+| `problem.tagsAndTopics` | Teglar va mavzular | Tags and topics |  |
+| `problem.splitResize` | Panellar kengligini o'zgartirish | Resize statement and editor panels |  |
+| `problem.openEditor` | Kod | Code |  |
+| `problem.closeEditor` | Yopish | Close |  |
+| `problem.solveTimer` | Yechish | Solve time |  |
+| `problem.roundTimer` | Raund | Round |  |
 | `problem.copy` | Nusxalash | Kóshiriw |  |
 | `problem.copied` | Nusxalandi | Kóshirildi |  |
 | `problem.copyFailed` | Nusxa olinmadi | Kóshirilmedi |  |
@@ -1566,6 +1574,14 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `submit.testsNotReadyBody` | Bu masalaning testlari hali tayyorlanmagan, shu sababli yechim qabul qilinmaydi. Matnni o'qib, o'zingiz uchun yechib ko'rishingiz mumkin — testlar qo'shilishi bilan yuborish ochiladi. | Bul máseleniń testleri ele tayar emes, sol sebepli sheshimler qabıl etilmeydi. Shártin oqıp, ózińiz sheship kóriwińiz múmkin — testler qosılǵanda jiberiw ashıladı. |  |
 | `submit.signInToSubmit` | Yuborish uchun kiring | Jiberiw ushın kiriń |  |
 | `submit.testOnSamples` | Namunada sinash | Mısallarda sınaw |  |
+| `submit.sampleConsoleLabel` | Namuna sinov konsoli | Sample test console |  |
+| `submit.sampleConsoleIdle` | Namuna natijalari (hali sinov yo'q) | Sample results (no run yet) |  |
+| `submit.sampleConsoleRunning` | Sinov yurmoqda… | Running… |  |
+| `submit.sampleConsoleReady` | Tayyor | Ready |  |
+| `submit.sampleResultsTitle` | Namuna natijalari | Sample results |  |
+| `submit.samplePick` | {order}-namuna | Sample {order} |  |
+| `submit.samplePassLog` | {order}-namuna mos keldi | Sample {order} matched |  |
+| `submit.sampleFailLog` | {order}-namuna mos kelmadi | Sample {order} did not match |  |
 | `submit.draftSavedLocally` | Qoralama shu brauzerda saqlanadi | Qaralama usı brauzerde saqlanadı |  |
 | `submit.loadFromFile` | Fayldan yuklash | Fayldan júklew |  |
 | `submit.nothingSubmitted` | Hali yuborilmadi. Kod yozing va «Yuborish» ni bosing. | Ele jiberilmegen. Kod jazıp, «Jiberiw» túymesin basıń. |  |

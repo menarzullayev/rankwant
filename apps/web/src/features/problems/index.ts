@@ -24,6 +24,12 @@ export { ProblemStatsPanel } from "./components/ProblemStatsPanel";
 
 export { ReportProblem } from "./components/ReportProblem";
 
+export { ProblemMetaAccordion } from "./components/ProblemMetaAccordion";
+
+export { ProblemSolveTimer } from "./components/ProblemSolveTimer";
+
+export { ProblemWorkspace } from "./components/ProblemWorkspace";
+
 export { SubmitPanel } from "./components/SubmitPanel";
 
 export { SampleTests } from "./components/SampleTests";
