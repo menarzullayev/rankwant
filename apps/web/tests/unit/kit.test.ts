@@ -127,9 +127,9 @@ describe("kit product surfaces", () => {
     expect(src("../../src/components/kit/TimeStamp.tsx")).toContain(
       'data-tip-kind="theme"',
     );
-    expect(src("../../src/app/(site)/problems/[slug]/page.tsx")).toContain(
-      'tone="hover"',
-    );
+    expect(
+      src("../../src/app/(site)/problems/[slug]/_panels/ProblemDescription.tsx"),
+    ).toContain('tone="hover"');
     expect(src("../../src/features/problems/components/SampleTests.tsx")).toContain(
       'tone="ghost"',
     );

@@ -4,31 +4,50 @@ import type { Route } from "next";
 import Link from "next/link";
 
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t } from "@/i18n/messages";
+import { t, type MessageKey } from "@/i18n/messages";
+import {
+  buildProblemTabHref,
+  PROBLEM_TABS,
+  type ProblemTab,
+} from "@/lib/problem-tabs";
+
+/** Tab → mavjud tarjima kaliti.
+ *
+ *  Yangi kalit qo'shilmaydi: to'rttasi allaqachon bor
+ *  (`statement`/`status`/`stats`/`solvers`), tahlil yorlig'i esa
+ *  `editorial.title` — 10 tilda ham tarjima qilingan. Yangi kalit
+ *  10 lug'atni qo'lda sinxronlashni talab qilardi (`check_i18n.py`).
+ */
+const LABEL: Record<ProblemTab, MessageKey> = {
+  description: "problem.tab.statement",
+  attempts: "problem.tab.status",
+  editorial: "editorial.title",
+  statistics: "problem.tab.stats",
+  solvers: "problem.tab.solvers",
+};
 
 /** Masala bo'limlari — KEP va RoboContest'dagi kabi sahifa tepasida.
  *
- * Pastki paneldagi tablardan farqi: bular butun sahifani almashtiradi
- * (matn + muharrir ↔ urinishlar ↔ statistika), pastdagilar esa faqat
- * ishchi holatni (natija, namuna, o'z testi). */
+ *  ROL TABLIST EMAS, va bu ataylab (`AuthTabs` dagi izoh bilan bir xil
+ *  sabab): panellar SERVER komponenti, ya'ni klient fokusni panelga
+ *  ko'chira olmaydi — yarim bajarilgan tablist (`←`/`→`, `tabpanel`
+ *  siz) ekran o'quvchini chalg'itardi.
+ *
+ *  O'rniga oddiy havola: har biri HAQIQIY manzil (`?tab=...`), ya'ni
+ *  o'rta tugma, yangi varaq va xatcho'p ishlaydi. Fokus oddiy Tab bilan
+ *  yuriladi (`rw-focus-ring`), `aria-current` esa qaysi biri tanlanganini
+ *  aytadi. `scroll={false}` — tab almashganda sahifa sakramaydi.
+ */
 export function ProblemTabs({
   slug,
   current,
+  contest,
 }: {
   slug: string;
-  current: "statement" | "status" | "stats" | "solvers";
+  current: ProblemTab;
+  contest?: string;
 }) {
   const locale = useLocale();
-  // Sarlavhalar endi KALIT: matn `t()` dan olinadi. Ilgari bu yerda
-  // o'zbekcha so'zlar to'g'ridan-to'g'ri turardi va matn qidiruvchi
-  // skaner ularni ko'rmasdi (JSX matni emas, massiv elementi edi) —
-  // shuning uchun ular uzoq vaqt e'tibordan chetda qoldi.
-  const tabs = [
-    ["statement", "problem.tab.statement", `/problems/${slug}`],
-    ["status", "problem.tab.status", `/problems/${slug}/status`],
-    ["stats", "problem.tab.stats", `/problems/${slug}/stats`],
-    ["solvers", "problem.tab.solvers", `/problems/${slug}/solvers`],
-  ] as const;
 
   return (
     <nav
@@ -36,18 +55,19 @@ export function ProblemTabs({
       className="rw-kit-tabs flex flex-wrap items-center gap-1 border-b rw-divider"
       data-kit-tabs="underline"
     >
-      {tabs.map(([key, labelKey, href]) => (
+      {PROBLEM_TABS.map((key) => (
         <Link
           key={key}
-          href={href as Route}
+          href={buildProblemTabHref(slug, key, { contest }) as Route}
+          scroll={false}
           aria-current={key === current ? "page" : undefined}
-          className={`-mb-px border-b-2 px-3 py-2 text-theme-sm font-medium transition ${
+          className={`-mb-px border-b-2 px-3 py-2 text-theme-sm font-medium transition rw-focus-ring ${
             key === current
               ? "rw-accent-line rw-accent-ink"
               : "border-transparent rw-dim rw-hover-strong"
           }`}
         >
-          {t(locale, labelKey)}
+          {t(locale, LABEL[key])}
         </Link>
       ))}
     </nav>

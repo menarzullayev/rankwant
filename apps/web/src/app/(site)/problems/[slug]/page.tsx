@@ -1,29 +1,36 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { Attachments } from "@/features/submissions";
-import { Markdown } from "@/components/ui/Markdown";
-import { ReportProblem } from "@/features/problems";
-import { SimilarProblems } from "@/features/problems";
-import { Badge, DifficultyBadge } from "@/components/ui/Badge";
-import { Card } from "@/components/ui/Card";
-import { Editorial } from "@/features/problems";
-import { CopyButton } from "@/components/kit/CopyControl";
-import { ProblemActions } from "@/features/problems";
-import { ProblemTabs } from "@/features/problems";
-import { SampleTests } from "@/features/problems";
-import { StatementSize } from "@/features/problems";
-import { SubmitPanel } from "@/features/problems";
 import { notFound } from "next/navigation";
-import { api, ApiError, type ProblemDetail } from "@/lib/api";
+
+import {
+  ProblemEditorialPanel,
+  ProblemSolversPanel,
+  ProblemStatsPanel,
+  ProblemTabs,
+  SubmitPanel,
+} from "@/features/problems";
+import { ProblemAttemptsPanel } from "./_panels/ProblemAttemptsPanel";
+import { ProblemDescription } from "./_panels/ProblemDescription";
+import { ApiError, type ProblemDetail } from "@/lib/api";
 import { getWithSession } from "@/lib/api.server";
 import { SITE_URL, jsonLd } from "@/lib/site";
 import { getLocale } from "@/i18n/server";
 import { localeAlternatesFor } from "@/i18n/locale-alternates.server";
 import { fill, t } from "@/i18n/messages";
+import { resolveProblemTab } from "@/lib/problem-tabs";
 
 type Props = {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ contest?: string }>;
+  searchParams: Promise<{
+    tab?: string | string[];
+    contest?: string;
+    cursor?: string;
+    verdict?: string;
+    language?: string;
+    mine?: string;
+    username?: string;
+    ordering?: string;
+    size?: string;
+  }>;
 };
 
 /** SSR + metadata — masala sahifalari qidiruvda topilishi kerak (ADR-0003). */
@@ -39,7 +46,9 @@ export async function generateMetadata({
   const { slug } = await params;
   const locale = await getLocale();
   try {
-    const problem = await api.problem(slug);
+    const problem = await getWithSession<ProblemDetail>(
+      `/problems/${slug}/`,
+    );
     const title = problem.code
       ? `#${String(problem.code).padStart(4, "0")} · ${problem.title}`
       : problem.title;
@@ -69,14 +78,30 @@ export async function generateMetadata({
   }
 }
 
+/** Masala bo'limlari — bitta manzil, beshta tab (`?tab=`).
+ *
+ *  Nega SERVERDA va `?tab=` bilan (auth sahifasi naqshi):
+ *  - har tab HAQIQIY manzil — ulashsa, yangilasa, Back/Forward da holat
+ *    saqlanadi; noto'g'ri qiymat `description` ga tushadi;
+ *  - almashish `<Link scroll={false}>` — to'liq qayta yuklash yo'q;
+ *  - faqat faol tabning ma'lumoti so'raladi (urinish/statistika/yechganlar
+ *    keraksiz yuklanmaydi), kesh `api.*` dagi kabi (`stats` 30 s);
+ *  - qo'shimcha klient holati yo'q — URL allaqachon holat.
+ *
+ *  `description` + `editorial` — ikki ustun (matn + muharrir, avvalgidek);
+ *  `attempts`/`statistics`/`solvers` — bir ustun (eski alohida sahifalar
+ *  kabi, muharrirsiz — Monaco keraksiz yuklanmaydi).
+ */
 export default async function ProblemPage({ params, searchParams }: Props) {
   const { slug } = await params;
   // Musobaqa sahifasidan kelgan bo'lsa urinish o'sha musobaqaga yoziladi —
   // aks holda jadval yangilanmasdi (`AttemptCreateSerializer.contest`).
-  const { contest } = await searchParams;
+  const query = await searchParams;
+  const { contest } = query;
+  const tab = resolveProblemTab(query.tab);
   const locale = await getLocale();
 
-  let problem;
+  let problem: ProblemDetail;
   try {
     problem = await getWithSession<ProblemDetail>(`/problems/${slug}/`);
   } catch (error) {
@@ -84,207 +109,97 @@ export default async function ProblemPage({ params, searchParams }: Props) {
     throw error;
   }
 
-  return (
-    // `min-w-0` bezak emas: grid farzandining standart `min-width: auto`
-    // uni MAZMUNIDAN kichik qilmaydi, ya'ni Monaco yoki keng jadval butun
-    // sahifani cho'zib yuboradi. O'lchandi — 412 px li telefonda sahifa
-    // 600 px bo'lib, yon tomonga siljirdi va tab tugmalarini bosib
-    // bo'lmasdi.
-    <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,560px)]">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: jsonLd({
-            "@context": "https://schema.org",
-            "@type": "LearningResource",
-            name: problem.title,
-            description: fill(t(locale, "problem.difficultyDescription"), {
-              title: problem.title,
-              difficulty: problem.difficulty,
+  const jsonLdDescription = fill(t(locale, "problem.difficultyDescription"), {
+    title: problem.title,
+    difficulty: problem.difficulty,
+  });
+
+  // Muharrirli ko'rinish — faqat yechish kontekstidagi tablarda.
+  if (tab === "description" || tab === "editorial") {
+    return (
+      <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,560px)]">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: jsonLd({
+              "@context": "https://schema.org",
+              "@type": "LearningResource",
+              name: problem.title,
+              description: jsonLdDescription,
+              url: `${SITE_URL}/problems/${slug}`,
+              educationalLevel: problem.level_label,
+              learningResourceType: "Problem",
+              inLanguage: locale,
+              isAccessibleForFree: true,
+              creator: { "@id": `${SITE_URL}/#organization` },
             }),
-            url: `${SITE_URL}/problems/${slug}`,
-            educationalLevel: problem.level_label,
-            learningResourceType: "Problem",
-            inLanguage: locale,
-            isAccessibleForFree: true,
-            creator: { "@id": `${SITE_URL}/#organization` },
-          }),
-        }}
-      />
-      <article className="min-w-0 space-y-6">
-        <ProblemTabs slug={slug} current="statement" />
+          }}
+        />
+        <div className="min-w-0 space-y-6">
+          <ProblemTabs slug={slug} current={tab} contest={contest} />
+          {tab === "description" ? (
+            <ProblemDescription
+              problem={problem}
+              slug={slug}
+              contest={contest}
+              locale={locale}
+            />
+          ) : (
+            <ProblemEditorialPanel
+              problem={problem}
+              slug={slug}
+              locale={locale}
+            />
+          )}
+        </div>
 
-        <header>
-          <div className="rw-kit-hover flex flex-wrap items-baseline gap-3">
-            {/* Ommaviy raqam — og'zaki muomala uchun ("431-masala"). */}
-            {problem.code !== null && (
-              <span className="font-mono text-theme-sm rw-faint tabular-nums">
-                #{String(problem.code).padStart(4, "0")}
-              </span>
-            )}
-            <h1 className="text-title-sm font-bold rw-strong">
-              {problem.title}
-            </h1>
-            <CopyButton text={slug} tone="hover" />
-          </div>
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            <DifficultyBadge value={problem.difficulty} />
-            <span
-              className={`level-${problem.level} text-theme-sm font-medium`}
-            >
-              {problem.level_label}
-            </span>
-            <Badge>
-              {t(locale, "problems.limits")}: {problem.time_limit_ms} ms,{" "}
-              {Math.round(problem.memory_limit_kb / 1024)} MB
-            </Badge>
-            {problem.partial_scoring && (
-              <Badge color="info">{t(locale, "problem.partialScoring")}</Badge>
-            )}
-            {!problem.has_tests && (
-              <Badge color="warning">{t(locale, "problem.testsPreparing")}</Badge>
-            )}
-            {problem.topics.map((topic) => (
-              <Badge key={topic} color="info">
-                {topic}
-              </Badge>
-            ))}
-          </div>
+        <SubmitPanel
+          problem={slug}
+          languages={problem.languages}
+          samples={problem.samples}
+          contest={contest}
+          hasTests={problem.has_tests}
+        />
+      </div>
+    );
+  }
 
-          {/* Yechilish foizi — masala qanchalik qiyinligini raqamdan
-              ko'ra aniqroq ko'rsatadi (RoboContest «Murakkablik», CF da
-              solve count). Urinish bo'lmasa foiz ma'nosiz. */}
-          <p className="mt-3 text-theme-sm rw-dim">
-            {problem.author && (
-              <>
-                {t(locale, "problem.author")}:{" "}
-                {problem.author.has_profile ? (
-                  <Link
-                    href={`/users/${problem.author.username}`}
-                    className="rw-link-hover"
-                  >
-                    {problem.author.display_name}
-                  </Link>
-                ) : (
-                  problem.author.display_name
-                )}{" "}
-                ·{" "}
-              </>
-            )}
-            {fill(t(locale, "problem.solvedAttempts"), {
-              solved: problem.solved_count,
-              attempts: problem.attempt_count,
-            })}
-            {problem.attempt_count > 0 &&
-              ` · ${fill(t(locale, "problem.successRate"), {
-                percent: Math.round(
-                  (problem.solved_count / problem.attempt_count) * 100,
-                ),
-              })}`}
-          </p>
-
-          <div className="mt-2">
-            <ProblemActions problem={problem} />
-          </div>
-        </header>
-
-        {contest && (
-          <p className="rw-radius-sm rw-accent-soft px-4 py-2.5 text-theme-sm rw-accent-ink">
-            {fill(t(locale, "problem.countedInContest"), { contest })}{" "}
-            <Link href={`/contests/${contest}`} className="underline">
-              {t(locale, "problem.backToContest")}
-            </Link>
-          </p>
-        )}
-
-        <Card>
-          <StatementSize>
-            <div className="space-y-5">
-              {problem.image && (
-                /* eslint-disable-next-line @next/next/no-img-element --
-                   rasm import qilingan arxivning tashqi domenida; uni
-                   `next/image` ga berish har bir manba uchun alohida
-                   `remotePatterns` yozishni talab qilardi. */
-                <img
-                  src={problem.image}
-                  alt=""
-                  className="w-full rw-radius-sm"
-                />
-              )}
-              <Markdown>{problem.statement}</Markdown>
-
-              {problem.input_format && (
-                <section>
-                  <h2 className="mb-1.5 text-theme-lg font-semibold rw-strong">
-                    {t(locale, "problem.inputFormat")}
-                  </h2>
-                  <Markdown>{problem.input_format}</Markdown>
-                </section>
-              )}
-
-              {problem.output_format && (
-                <section>
-                  <h2 className="mb-1.5 text-theme-lg font-semibold rw-strong">
-                    {t(locale, "problem.outputFormat")}
-                  </h2>
-                  <Markdown>{problem.output_format}</Markdown>
-                </section>
-              )}
-            </div>
-          </StatementSize>
-        </Card>
-
-        <SampleTests samples={problem.samples} />
-
-        {problem.note && (
-          <Card title={t(locale, "problem.comments")}>
-            <Markdown>{problem.note}</Markdown>
-          </Card>
-        )}
-
-        <Attachments items={problem.attachments} locale={locale} />
-
-        {problem.editorial_state.available && (
-          <Editorial
-            slug={slug}
-            text={problem.editorial}
-            state={problem.editorial_state}
-          />
-        )}
-
-        <SimilarProblems items={problem.similar} locale={locale} />
-
-        <ReportProblem slug={slug} />
-
-        {problem.source && (
-          <p className="text-theme-sm rw-faint">
-            {t(locale, "problem.source")}:{" "}
-            {problem.source_url ? (
-              <a
-                href={problem.source_url}
-                rel="noopener noreferrer"
-                className="underline"
-              >
-                {problem.source}
-              </a>
-            ) : (
-              problem.source
-            )}
-            {problem.source_rating !== null &&
-              ` · ${fill(t(locale, "problem.sourceRating"), {
-                rating: problem.source_rating,
-              })}`}
-          </p>
-        )}
-      </article>
-
-      <SubmitPanel
-        problem={slug}
-        languages={problem.languages}
-        samples={problem.samples}
-        contest={contest}
-        hasTests={problem.has_tests}
-      />
+  return (
+    <div className="space-y-6">
+      <ProblemTabs slug={slug} current={tab} contest={contest} />
+      {tab === "attempts" && (
+        <ProblemAttemptsPanel
+          problem={problem}
+          slug={slug}
+          query={{
+            cursor: one(query.cursor),
+            verdict: one(query.verdict),
+            language: one(query.language),
+            mine: one(query.mine),
+            username: one(query.username),
+            ordering: one(query.ordering),
+            size: one(query.size),
+          }}
+          locale={locale}
+        />
+      )}
+      {tab === "statistics" && (
+        <ProblemStatsPanel problem={problem} slug={slug} locale={locale} />
+      )}
+      {tab === "solvers" && (
+        <ProblemSolversPanel
+          problem={problem}
+          slug={slug}
+          ordering={one(query.ordering) ?? "first"}
+          locale={locale}
+        />
+      )}
     </div>
   );
+}
+
+/** Query qiymati bitta satr bo'lsa shuni, massiv bo'lsa BIRINCHISINI
+ *  qaytaradi (`login` sahifasidagi `one()` bilan bir xil sabab). */
+function one(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
 }
