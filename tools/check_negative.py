@@ -6379,8 +6379,8 @@ def neg_env_example_new_compose_var() -> tuple[bool, str]:
 def neg_env_example_new_setting() -> tuple[bool, str]:
     return _env_example_broken(
         "apps/api/config/settings.py",
-        'SECRET_KEY = env("DJANGO_SECRET_KEY")\n',
-        'SECRET_KEY = env("DJANGO_SECRET_KEY")\nPROBE_SETTING = env("NEW_PROBE_SETTING")\n',
+        'SECRET_KEY = env("DJANGO_SECRET_KEY", "dev-only-not-for-production")\n',
+        'SECRET_KEY = env("DJANGO_SECRET_KEY", "dev-only-not-for-production")\nPROBE_SETTING = env("NEW_PROBE_SETTING")\n',
         "NEW_PROBE_SETTING",
     )
 
@@ -8708,6 +8708,30 @@ def _main_parallel(jobs: int) -> int:
     # rebuild, but it must read a rendered page, and CI's negative step runs
     # no stack — left in the fan-out it would report "o'lchanmadi" every run.
     # It runs for real via `--group csp_nonce` (nightly, `tools/ci_csp_gate.sh`).
+    # CI runs each worker on a `git archive HEAD` copy: only COMMITTED files
+    # exist there. Groups whose tool/test files are still another work
+    # package's untracked work would hard-fail on "file not found" — the
+    # exact false red the WP1 group's precondition warns about (measured on
+    # PR #307, 2026-09-29: `test_ref_solution_verdicts.py yo'q`). Skip them
+    # OPENLY here — each lands with its own PR (WP1/WP5/WP6) and runs for
+    # real on the machine that owns the files (pre-push hook, nightly).
+    _UNCOMMITTED_GROUP_FILES = {
+        "neg_refsolution_gate": (
+            "apps/api/tests/regression/test_ref_solution_verdicts.py",
+            "apps/api/tests/test_problem_readiness.py",
+        ),
+        "neg_ai_boundary": ("tools/check_ai_boundary.py",),
+        "neg_architecture": ("tools/check_architecture.py",),
+    }
+    for gname, rels in _UNCOMMITTED_GROUP_FILES.items():
+        if all((ROOT / rel).exists() for rel in rels):
+            continue
+        missing = [rel for rel in rels if not (ROOT / rel).exists()]
+        print(
+            f"  - O'TKAZIB YUBORILDI: {gname} guruhi — commit qilinmagan fayllar "
+            f"yo'q ({', '.join(missing)}); o'z WP PR'i bilan keladi"
+        )
+        names = [name for name in names if name != gname]
     names = [name for name in names if name not in {"visual", "csp_nonce"}]
     workers = min(jobs, len(names))
     buckets: list[list[str]] = [[] for _ in range(workers)]
@@ -8815,13 +8839,26 @@ def main(argv: list[str]) -> int:
     # Readiness gate (WP1) — pytest konteynerda yuguradi. Old shart mantig'i
     # NODE bilan bir xil: muhit tayyor bo'lmasa «yiqildi» ni «tutdi» deb
     # o'qib bo'lmaydi, shuning uchun ochiq qizil.
+    # ⚠️ ISTISNO — test fayllarining o'zi commit qilinmagan bo'lsa (CI
+    # `git archive HEAD` nusxada yuradi — fan-out'dagi kabi), «muhit tayyor
+    # emas» EMAS, «guruh hali o'z PR'si bilan kelmagan» bo'ladi: ochiq
+    # skip, qizil emas (PR #307'da o'lchandi).
     if selected & API_CASE_LABELS:
-        reason = api_test_precondition()
-        if reason:
-            print(f"  ✕ {reason}")
-            print()
-            print("1/1 salbiy test YIQILDI — muhit tayyor emas, o'lchov yo'q.")
-            return 1
+        missing_case_files = [
+            rel for rel in API_CASE_FILES if not (ROOT / rel).exists()
+        ]
+        if missing_case_files:
+            print(
+                "  - O'TKAZIB YUBORILDI: readiness gate (WP1) — commit qilinmagan "
+                f"fayllar yo'q ({', '.join(missing_case_files)}); WP1 PR'i bilan keladi"
+            )
+        else:
+            reason = api_test_precondition()
+            if reason:
+                print(f"  ✕ {reason}")
+                print()
+                print("1/1 salbiy test YIQILDI — muhit tayyor emas, o'lchov yo'q.")
+                return 1
 
     if selected & MONITOR_CASES:
         reason = monitor_precondition()
