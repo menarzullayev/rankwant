@@ -85,9 +85,7 @@ class User(AbstractUser):
     #: Foydalanuvchi kelib chiqishi — North Star metrikalar uchun (WP3).
     #: `real` ro'yxatdan o'tgan; `demo` seed/stress; `imported` tashqi
     #: manba (Codeforces); `staff` xodim yoki superuser.
-    origin = models.CharField(
-        max_length=16, choices=Origin.choices, default=Origin.REAL
-    )
+    origin = models.CharField(max_length=16, choices=Origin.choices, default=Origin.REAL)
 
     #: Taqlidga qarshi shakl — `core.handles.skeleton`. `save()` da
     #: to'ldiriladi, ya'ni admin, staff API va seed'da bir xil ishlaydi.
