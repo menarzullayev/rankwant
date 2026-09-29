@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="uz" data-rw-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Namuna konsoli (combobox + IO) — 10 dizayn prototipi</title>
+<!--
+  Asos: sample-combobox-gallery #6 (Custom combobox ARIA).
+  Yetishmayotgan qism: alohida console — Sample test results + Input / Output / Answer.
+  Kontekst: pane-b yonida yoki ostida; statement-builder hozir faqat jadval ▶.
+-->
+<style>
+  :root, [data-rw-theme="light"] {
+    --dash-ground: #f9fafb; --dash-surface: #fff; --dash-line: #e4e7ec;
+    --dash-text: #1d2939; --dash-muted: #667085;
+    --dash-accent-ink: #3c66dc; --dash-accent-soft: #eef3ff; --dash-radius: 14px;
+  }
+  [data-rw-theme="dark"] {
+    --dash-ground: #0b0d12; --dash-surface: #141821; --dash-line: #232936;
+    --dash-text: #e6e9ef; --dash-muted: #9aa1b2;
+    --dash-accent-ink: #7ea4ff; --dash-accent-soft: rgba(91, 140, 255, .12);
+  }
+  .stmt {
+    --panel: #fff; --panel-2: #f7f3ff; --panel-3: #faf8ff;
+    --text: #4a2d75; --muted: #624f82; --faint: #6f5897;
+    --accent: #7c3aed; --accent-ink: #7936ea; --accent-fg: #fff; --accent-soft: #f1e9ff;
+    --line: #e3daf5; --r: 14px; --r-sm: 10px;
+    --ed-bg: #221a33; --ed-fg: #e8e3f5;
+    --mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+    --ok: #0f6e56; --ok-soft: #e1f5ee;
+    --err: #9f1239; --err-soft: #fce8ec;
+    --con-bg: #1a1528; --con-fg: #d8d0ea; --field-bg: #faf8ff;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+    font-size: 15px; line-height: 1.5; background: var(--dash-ground); color: var(--dash-text); }
+  .shell { max-width: 1240px; margin: 0 auto; padding: 28px 20px 64px; }
+  .head { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; align-items: flex-start; }
+  .head h1 { margin: 0; font-size: 24px; font-weight: 650; }
+  .head p { margin: 6px 0 0; font-size: 13px; color: var(--dash-muted); max-width: 72ch; }
+  .tools { margin-left: auto; display: flex; flex-wrap: wrap; gap: 8px; }
+  .seg { display: inline-flex; gap: 2px; padding: 3px; background: var(--dash-surface);
+    border: 1px solid var(--dash-line); border-radius: 10px; }
+  .seg button { font: inherit; font-size: 12px; font-weight: 600; border: 0; cursor: pointer;
+    padding: 6px 12px; border-radius: 7px; background: transparent; color: var(--dash-muted); }
+  .seg button.on { background: var(--dash-accent-ink); color: #fff; }
+  .pick-bar { position: sticky; top: 0; z-index: 20;
+    background: color-mix(in srgb, var(--dash-ground) 92%, transparent); backdrop-filter: blur(8px);
+    border: 1px solid var(--dash-line); border-radius: var(--dash-radius); padding: 12px 16px;
+    margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .pick-bar output { font-family: ui-monospace, Consolas, monospace; font-size: 12px;
+    color: var(--dash-accent-ink); background: var(--dash-accent-soft); padding: 4px 10px; border-radius: 8px; }
+  .note-ref { font-size: 12.5px; color: var(--dash-muted); margin-bottom: 20px; padding: 10px 14px;
+    background: var(--dash-surface); border: 1px solid var(--dash-line); border-radius: 10px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 18px; }
+  .card { background: var(--dash-surface); border: 1px solid var(--dash-line);
+    border-radius: var(--dash-radius); display: flex; flex-direction: column; overflow: hidden; }
+  .card.is-picked { outline: 2px solid var(--dash-accent-ink); outline-offset: 2px; }
+  .card-head { padding: 14px 16px 10px; border-bottom: 1px solid var(--dash-line); }
+  .card-head h2 { margin: 0; font-size: 15px; font-weight: 650; }
+  .card-head .tag { font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .04em; color: var(--dash-muted); display: inline-block; margin-top: 6px; }
+  .card-head p { margin: 8px 0 0; font-size: 12.5px; color: var(--dash-muted); line-height: 1.45; }
+  .preview-wrap { padding: 14px 16px 16px; flex: 1; min-width: 0; }
+  .card-foot { padding: 10px 16px 14px; border-top: 1px solid var(--dash-line);
+    display: flex; gap: 8px; align-items: center; }
+  .card-foot button { font: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
+    border-radius: 8px; padding: 7px 12px; border: 1px solid var(--dash-line); background: var(--dash-surface); }
+  .card-foot button.primary { background: var(--dash-accent-ink); color: #fff; border-color: transparent; }
+  .card-foot .hint { font-size: 11.5px; color: var(--dash-muted); margin-left: auto; }
+
+  .wrap { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden;
+    font-size: 12px; color: var(--text); }
+  .ed-mini { background: var(--ed-bg); color: var(--ed-fg); font-family: var(--mono); font-size: 11px;
+    padding: 8px 10px; min-height: 52px; white-space: pre; opacity: .92; }
+  .combo { position: relative; display: inline-block; }
+  .combo-btn { display: inline-flex; align-items: center; justify-content: space-between; gap: 8px;
+    min-width: 118px; min-height: 30px; padding: 0 10px; font: inherit; font-size: 12px; font-weight: 650;
+    color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
+  .combo-list { position: absolute; top: calc(100% + 4px); left: 0; min-width: 100%; margin: 0; padding: 4px;
+    list-style: none; background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(48,30,90,.14); z-index: 12; display: none; }
+  .combo.open .combo-list { display: block; }
+  .combo-list button { display: block; width: 100%; text-align: left; font: inherit; font-size: 12px;
+    border: 0; background: transparent; padding: 7px 10px; border-radius: 6px; cursor: pointer; color: var(--text); }
+  .combo-list button:hover, .combo-list button[aria-selected="true"] { background: var(--accent-soft); }
+  .run-btn { font: inherit; font-size: 12px; font-weight: 650; min-height: 30px; padding: 0 12px;
+    border-radius: 8px; border: 1px solid var(--line); background: var(--accent-soft); color: var(--accent-ink); cursor: pointer; }
+  .con-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 10px;
+    background: var(--panel-2); border-bottom: 1px solid var(--line); }
+  .con-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--faint); }
+  .con-sp { flex: 1; min-width: 4px; }
+  .status { font-size: 11px; font-weight: 650; padding: 3px 8px; border-radius: 999px; }
+  .status.idle { color: var(--faint); background: var(--panel-3); }
+  .status.run { color: var(--accent-ink); background: var(--accent-soft); }
+  .status.ok { color: var(--ok); background: var(--ok-soft); }
+  .status.bad { color: var(--err); background: var(--err-soft); }
+  .con-log { background: var(--con-bg); color: var(--con-fg); font-family: var(--mono); font-size: 10px;
+    line-height: 1.45; padding: 8px 10px; min-height: 44px; max-height: 72px; overflow: auto; white-space: pre-wrap; }
+  .con-log[data-st="idle"] { opacity: .55; }
+  .io-grid { display: grid; gap: 8px; padding: 8px 10px 10px; }
+  .io-grid.cols3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .io-grid.cols2 { grid-template-columns: 1fr 1fr; }
+  .field label { display: block; font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .04em; color: var(--faint); margin-bottom: 4px; }
+  .field pre, .field textarea { display: block; width: 100%; margin: 0; min-height: 52px; max-height: 72px;
+    overflow: auto; resize: none; border: 1px solid var(--line); border-radius: 8px; background: var(--field-bg);
+    font-family: var(--mono); font-size: 10px; line-height: 1.4; padding: 6px 8px; color: var(--text); }
+  .field.out-bad pre { border-color: color-mix(in srgb, var(--err) 40%, var(--line)); background: var(--err-soft); }
+  .field.out-ok pre { border-color: color-mix(in srgb, var(--ok) 35%, var(--line)); }
+  .tabs { display: flex; gap: 4px; padding: 6px 8px 0; background: var(--panel-2); border-bottom: 1px solid var(--line); }
+  .tabs button { font: inherit; font-size: 11px; font-weight: 650; border: 0; background: transparent;
+    padding: 6px 10px; border-radius: 8px 8px 0 0; color: var(--muted); cursor: pointer; }
+  .tabs button.on { background: var(--panel); color: var(--accent-ink); box-shadow: 0 -1px 0 var(--line); }
+  .tab-body { display: none; padding: 0; }
+  .tab-body.on { display: block; }
+  .split-io { display: grid; grid-template-columns: 1fr 1fr; min-height: 120px; }
+  .split-io > div { border-right: 1px solid var(--line); padding: 8px; }
+  .split-io > div:last-child { border-right: 0; }
+  details.con-acc summary { cursor: pointer; padding: 8px 10px; font-weight: 650; font-size: 12px;
+    background: var(--panel-2); border-top: 1px solid var(--line); list-style: none; }
+  details.con-acc summary::-webkit-details-marker { display: none; }
+  .v-split { display: grid; grid-template-rows: auto 1fr; }
+  .v-split .ed-mini { min-height: 40px; }
+  .h-split { display: grid; grid-template-columns: 42% 58%; min-height: 160px; }
+  .h-split .ed-mini { min-height: 100%; border-right: 1px solid var(--line); }
+  .pill-row { display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 10px; border-bottom: 1px solid var(--line); }
+  .pill-row span { font-size: 10px; font-weight: 650; padding: 2px 8px; border-radius: 999px; background: var(--panel-3); color: var(--faint); }
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(120%);
+    background: #2b2340; color: #fff; font-size: 13px; font-weight: 600;
+    padding: 10px 18px; border-radius: 10px; z-index: 100; transition: transform .22s ease; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="head">
+    <div>
+      <h1>Namuna konsoli — 10 prototip</h1>
+      <p>
+        Har variantda <strong>Custom combobox (ARIA listbox)</strong> + alohida panel:
+        <em>Sample test results</em> (console) va <em>Input / Output / Answer</em> maydonlari.
+        <a href="sample-combobox-gallery.html">Combobox gallery</a> ·
+        <a href="statement-builder.html">Builder</a>.
+      </p>
+    </div>
+    <div class="tools">
+      <div class="seg" role="group" aria-label="Sinash holati">
+        <button type="button" data-st="idle" class="on">Bo‘sh</button>
+        <button type="button" data-st="run">Ishlanmoqda</button>
+        <button type="button" data-st="ok">O‘tdi</button>
+        <button type="button" data-st="bad">Xato</button>
+      </div>
+      <div class="seg" role="group" aria-label="Mavzu">
+        <button type="button" data-theme="light" class="on">Yorug‘</button>
+        <button type="button" data-theme="dark">Qorong‘i</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="pick-bar">
+    <strong>Tanlangan variant:</strong>
+    <output id="picked">— hali tanlanmadi</output>
+  </div>
+
+  <p class="note-ref">
+    Comboboxni oching; holat almashtirgichi console matnini va Output rangini yangilaydi.
+    Tanlov: <code>localStorage</code> → <code>rw:sample-console-pick</code>.
+  </p>
+
+  <div class="grid" id="grid"></div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  var currentSt = "idle";
+  var SAMPLES = [
+    { n: 1, in: "5 3", exp: "8", got: "8", bad: "7" },
+    { n: 2, in: "100 200", exp: "300", got: "300", bad: "299" },
+    { n: 3, in: "0 0", exp: "0", got: "0", bad: "1" }
+  ];
+
+  var CARDS = [
+    { id: "1", name: "Standart stack — console + 3 ustun", tag: "P0 · RC/KEP",
+      desc: "Editor qisqa, pastda konsol sarlavhasi (combobox + Sinash), log, Input / Output / Answer grid." },
+    { id: "2", name: "Log birinchi — maydonlar pastda", tag: "ConsoleFirst",
+      desc: "Sample test results yuqorida to‘liq kenglik; IO uchlik pastda — oqim: avval log, keyin tafsilot." },
+    { id: "3", name: "Ingliz yorliqlari (Input / Output / Answer)", tag: "KEP labels",
+      desc: "Raqib uslubidagi aniq nomlar; Kirish/Chiqish o‘rniga inglizcha (prototip taqqoslash uchun)." },
+    { id: "4", name: "O‘zbek yorliqlari (Kirish / Chiqish / Javob)", tag: "RankWant i18n",
+      desc: "Production til siyosatiga yaqin — bir xil grid, mahalliy yorliqlar." },
+    { id: "5", name: "Tablar: Console | Namuna IO", tag: "Tabs",
+      desc: "Tor kartada joy tejash: log va maydonlar alohida tab; combobox har doim ko‘rinadi." },
+    { id: "6", name: "Yonma-yon: IO chap, log o‘ng", tag: "Split",
+      desc: "Input+Answer chap ustun, Output + test results o‘ngda — diff o‘qish oson." },
+    { id: "7", name: "Accordion (details) konsol", tag: "Collapse",
+      desc: "Editor katta; konsol yig‘ilgan ochiladi — mobil / tor balandlik uchun." },
+    { id: "8", name: "Diff: Output vs Answer", tag: "Compare",
+      desc: "Xato holatida Output va Answer yonma-yon; yashil/qizil chegaralar." },
+    { id: "9", name: "Combobox toolbar + faqat IO", tag: "ToolbarPick",
+      desc: "Namuna tanlovi editor qatorida; pastki panel faqat console + uch maydon." },
+    { id: "10", name: "Katta split (kod | konsol)", tag: "IDE",
+      desc: "40/60 gorizontal: chapda kod, o‘ngda to‘liq test harness (log + IO + compile strip)." }
+  ];
+
+  function statusText() {
+    if (currentSt === "idle") return { cls: "idle", t: "Tayyor" };
+    if (currentSt === "run") return { cls: "run", t: "Ishlanmoqda…" };
+    if (currentSt === "ok") return { cls: "ok", t: "Sample 1 passed · 32 ms" };
+    return { cls: "bad", t: "Wrong answer · sample 1" };
+  }
+
+  function logText() {
+    if (currentSt === "idle") return "Sample test results\n(hali sinov yo‘q)";
+    if (currentSt === "run") return "> Running sample 1…\n> Compiling…";
+    if (currentSt === "ok") return "> Sample 1\n> Verdict: OK\n> Time: 0.032 s\n> Memory: 1.2 MB";
+    return "> Sample 1\n> Verdict: WRONG_ANSWER\n> Stopped at test 1\n> See Output vs Answer below.";
+  }
+
+  function ioLabels(lang) {
+    if (lang === "en") return { in: "Input", out: "Output", ans: "Answer" };
+    return { in: "Kirish", out: "Chiqish", ans: "Javob" };
+  }
+
+  function comboBlock() {
+    var opts = SAMPLES.map(function (s) {
+      return '<li><button type="button" role="option" data-v="' + s.n + '"' +
+        (s.n === 1 ? ' aria-selected="true"' : "") + ">" + s.n + "-namuna</button></li>";
+    }).join("");
+    return '<div class="combo" data-combo="1">' +
+      '<button type="button" class="combo-btn" aria-haspopup="listbox" aria-expanded="false">' +
+      '<span class="combo-val">1-namuna</span><span aria-hidden="true">▾</span></button>' +
+      '<ul class="combo-list" role="listbox">' + opts + "</ul></div>" +
+      '<button type="button" class="run-btn">Sinash</button>';
+  }
+
+  function fieldBlock(labels, st) {
+    var s = SAMPLES[0];
+    var outCls = "field";
+    if (st === "ok") outCls += " out-ok";
+    if (st === "bad") outCls += " out-bad";
+    var outVal = st === "bad" ? s.bad : (st === "idle" ? "—" : s.got);
+    return '<div class="io-grid cols3">' +
+      '<div class="field"><label>' + labels.in + '</label><pre readonly>' + s.in + "</pre></div>" +
+      '<div class="' + outCls + '"><label>' + labels.out + '</label><pre readonly>' + outVal + "</pre></div>" +
+      '<div class="field"><label>' + labels.ans + '</label><pre readonly>' + s.exp + "</pre></div>" +
+      "</div>";
+  }
+
+  function consoleHead(extra) {
+    var st = statusText();
+    return '<div class="con-head">' +
+      (extra || "") +
+      '<span class="con-title">Sample test results</span>' +
+      '<span class="con-sp"></span>' +
+      '<span class="status ' + st.cls + '">' + st.t + "</span></div>";
+  }
+
+  function logBlock() {
+    return '<div class="con-log" data-st="' + currentSt + '">' + logText() + "</div>";
+  }
+
+  function miniEd() {
+    return '<div class="ed-mini">int main() {\n  // yechim\n  return 0;\n}</div>';
+  }
+
+  function build(id) {
+    var labels = ioLabels(id === "3" ? "en" : "uz");
+    var headCombo = comboBlock();
+    var st = currentSt;
+
+    switch (id) {
+      case "1":
+        return '<div class="wrap v1">' + miniEd() +
+          '<div class="con-head">' + headCombo +
+          '<span class="con-title" style="margin-left:4px">· Console</span><span class="con-sp"></span>' +
+          '<span class="status ' + statusText().cls + '">' + statusText().t + "</span></div>" +
+          logBlock() + fieldBlock(labels, st) + "</div>";
+      case "2":
+        return '<div class="wrap v2">' + miniEd() +
+          consoleHead(headCombo) + logBlock() +
+          '<div style="border-top:1px solid var(--line)">' + fieldBlock(labels, st) + "</div></div>";
+      case "3":
+        return '<div class="wrap v3">' + miniEd() +
+          consoleHead(headCombo) + logBlock() + fieldBlock(ioLabels("en"), st) + "</div>";
+      case "4":
+        return '<div class="wrap v4">' + miniEd() +
+          consoleHead(headCombo) + logBlock() + fieldBlock(ioLabels("uz"), st) + "</div>";
+      case "5":
+        return '<div class="wrap v5">' + miniEd() +
+          '<div class="con-head">' + headCombo + '<span class="con-sp"></span>' +
+          '<span class="status ' + statusText().cls + '">' + statusText().t + "</span></div>" +
+          '<div class="tabs" role="tablist">' +
+          '<button type="button" class="on" data-tab="log">Console</button>' +
+          '<button type="button" data-tab="io">Input / Output / Answer</button></div>' +
+          '<div class="tab-body on" data-pane="log">' + logBlock() + "</div>" +
+          '<div class="tab-body" data-pane="io">' + fieldBlock(labels, st) + "</div></div>";
+      case "6":
+        return '<div class="wrap v6">' + miniEd() +
+          '<div class="con-head">' + headCombo + '<span class="con-sp"></span>' +
+          '<span class="status ' + statusText().cls + '">' + statusText().t + "</span></div>" +
+          '<div class="split-io">' +
+          '<div><div class="field"><label>' + labels.in + '</label><pre>' + SAMPLES[0].in +
+          '</pre><label style="margin-top:8px">' + labels.ans + '</label><pre>' + SAMPLES[0].exp +
+          "</pre></div></div>" +
+          '<div><span class="con-title" style="display:block;margin-bottom:6px">Sample test results</span>' +
+          logBlock() + '<label style="display:block;margin-top:8px;font-size:10px;font-weight:700">' +
+          labels.out + '</label><pre style="margin:4px 0 0;border:1px solid var(--line);border-radius:8px;padding:6px;font-family:var(--mono);font-size:10px">' +
+          (st === "bad" ? SAMPLES[0].bad : (st === "idle" ? "—" : SAMPLES[0].got)) +
+          "</pre></div></div></div>";
+      case "7":
+        return '<div class="wrap v7">' + miniEd() +
+          '<details class="con-acc" open>' +
+          '<summary>Namuna konsoli · ' + statusText().t + "</summary>" +
+          '<div class="con-head" style="border-top:0">' + headCombo + "</div>" +
+          logBlock() + fieldBlock(labels, st) + "</details></div>";
+      case "8":
+        return '<div class="wrap v8">' + miniEd() +
+          consoleHead(headCombo) + logBlock() +
+          '<div class="io-grid cols2">' +
+          '<div class="field out-bad"><label>Output (got)</label><pre>' +
+          (st === "bad" ? SAMPLES[0].bad : SAMPLES[0].got) + "</pre></div>" +
+          '<div class="field out-ok"><label>Answer (expected)</label><pre>' + SAMPLES[0].exp +
+          "</pre></div></div></div>";
+      case "9":
+        return '<div class="wrap v9">' +
+          '<div class="con-head" style="border-bottom:1px solid var(--line)">' +
+          '<span style="font-weight:650">Yechim</span><span class="con-sp"></span>' + headCombo + "</div>" +
+          miniEd() +
+          '<div class="pill-row"><span>Console</span><span>IO fields</span></div>' +
+          logBlock() + fieldBlock(labels, st) + "</div>";
+      case "10":
+        return '<div class="wrap v10 h-split">' +
+          '<div class="ed-mini" style="min-height:168px">#include &lt;bits/stdc++.h&gt;\nint main() {\n  ios::sync_with_stdio(false);\n  // …\n}</div>' +
+          '<div><div class="con-head">' + headCombo +
+          '<span class="con-title">Sample test results</span><span class="con-sp"></span>' +
+          '<span class="status ' + statusText().cls + '">' + statusText().t + "</span></div>" +
+          logBlock() +
+          (st === "run" ? '<div class="con-log" style="min-height:28px;max-height:36px;background:#2a2038">Compiling…</div>' : "") +
+          fieldBlock(labels, st) + "</div></div>";
+    }
+    return "";
+  }
+
+  var grid = document.getElementById("grid");
+  CARDS.forEach(function (c) {
+    var art = document.createElement("article");
+    art.className = "card";
+    art.dataset.id = c.id;
+    art.dataset.name = c.name;
+    art.innerHTML =
+      '<div class="card-head"><h2>' + c.id + ". " + c.name + "</h2>" +
+      '<span class="tag">' + c.tag + "</span><p>" + c.desc + "</p></div>" +
+      '<div class="preview-wrap" data-preview="' + c.id + '"></div>' +
+      '<div class="card-foot"><button type="button" class="primary pick">Tanlash</button>' +
+      '<span class="hint">Combobox + holatni sinang</span></div>';
+    grid.appendChild(art);
+  });
+
+  function wireCombos(root) {
+    root.querySelectorAll(".combo").forEach(function (combo) {
+      var btn = combo.querySelector(".combo-btn");
+      var list = combo.querySelector(".combo-list");
+      if (!btn || !list) return;
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        root.querySelectorAll(".combo.open").forEach(function (x) {
+          if (x !== combo) x.classList.remove("open");
+        });
+        combo.classList.toggle("open");
+        btn.setAttribute("aria-expanded", combo.classList.contains("open") ? "true" : "false");
+      });
+      list.querySelectorAll("button").forEach(function (opt) {
+        opt.addEventListener("click", function (e) {
+          e.stopPropagation();
+          var v = opt.dataset.v;
+          var valEl = combo.querySelector(".combo-val");
+          if (valEl) valEl.textContent = v + "-namuna";
+          list.querySelectorAll("button").forEach(function (b) {
+            b.setAttribute("aria-selected", b === opt ? "true" : "false");
+          });
+          combo.classList.remove("open");
+          btn.setAttribute("aria-expanded", "false");
+        });
+      });
+    });
+    root.querySelectorAll(".tabs button[data-tab]").forEach(function (tabBtn) {
+      tabBtn.addEventListener("click", function () {
+        var wrap = tabBtn.closest(".wrap");
+        if (!wrap) return;
+        var tab = tabBtn.dataset.tab;
+        wrap.querySelectorAll(".tabs button").forEach(function (b) {
+          b.classList.toggle("on", b === tabBtn);
+        });
+        wrap.querySelectorAll(".tab-body").forEach(function (p) {
+          p.classList.toggle("on", p.dataset.pane === tab);
+        });
+      });
+    });
+  }
+
+  function paintAll() {
+    document.querySelectorAll("[data-preview]").forEach(function (w) {
+      w.innerHTML = build(w.getAttribute("data-preview"));
+      wireCombos(w);
+    });
+  }
+  paintAll();
+
+  document.addEventListener("click", function () {
+    document.querySelectorAll(".combo.open").forEach(function (c) {
+      c.classList.remove("open");
+      var b = c.querySelector(".combo-btn");
+      if (b) b.setAttribute("aria-expanded", "false");
+    });
+  });
+
+  document.querySelectorAll("[data-st]").forEach(function (b) {
+    if (!b.closest(".seg") || !b.dataset.st) return;
+    b.addEventListener("click", function () {
+      currentSt = b.dataset.st;
+      b.parentElement.querySelectorAll("button").forEach(function (x) {
+        x.classList.toggle("on", x === b);
+      });
+      paintAll();
+    });
+  });
+
+  document.querySelectorAll("[data-theme]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      b.parentElement.querySelectorAll("button").forEach(function (x) {
+        x.classList.toggle("on", x === b);
+      });
+      document.documentElement.setAttribute("data-rw-theme", b.dataset.theme);
+    });
+  });
+
+  var pickedOut = document.getElementById("picked");
+  var toast = document.getElementById("toast");
+  document.querySelectorAll(".card").forEach(function (card) {
+    var id = card.dataset.id;
+    card.querySelector(".pick").addEventListener("click", function () {
+      document.querySelectorAll(".card").forEach(function (c) { c.classList.remove("is-picked"); });
+      card.classList.add("is-picked");
+      pickedOut.textContent = "#" + id + " — " + card.dataset.name;
+      try { localStorage.setItem("rw:sample-console-pick", id); } catch (e) {}
+      toast.textContent = "Konsol varianti " + id + " tanlandi";
+      toast.classList.add("show");
+      setTimeout(function () { toast.classList.remove("show"); }, 1600);
+    });
+    try {
+      var saved = localStorage.getItem("rw:sample-console-pick");
+      if (saved === id) {
+        card.classList.add("is-picked");
+        pickedOut.textContent = "#" + saved + " — " + card.dataset.name;
+      }
+    } catch (e) {}
+  });
+})();
+</script>
+</body>
+</html>

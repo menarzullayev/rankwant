@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="uz" data-rw-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ovoz (▲▼) — 10 dizayn prototipi</title>
+<!--
+  Mustaqil prototip. Sevimlilar: tanlangan #6 (ikonka-only) barcha kartalarda namuna.
+  Ovoz: toggle (ikkinchi bosish olib tashlaydi) — ProblemActions.tsx bilan bir xil.
+-->
+<style>
+  :root,
+  [data-rw-theme="light"] {
+    --dash-ground: #f9fafb; --dash-surface: #fff; --dash-line: #e4e7ec;
+    --dash-text: #1d2939; --dash-muted: #667085;
+    --dash-accent-ink: #3c66dc; --dash-accent-soft: #eef3ff; --dash-radius: 14px;
+  }
+  [data-rw-theme="dark"] {
+    --dash-ground: #0b0d12; --dash-surface: #141821; --dash-line: #232936;
+    --dash-text: #e6e9ef; --dash-muted: #9aa1b2;
+    --dash-accent-ink: #7ea4ff; --dash-accent-soft: rgba(91, 140, 255, .12);
+  }
+  .stmt {
+    --ground: #ede4ff; --panel: #fff; --panel-2: #f7f3ff;
+    --text: #4a2d75; --muted: #624f82; --faint: #6f5897;
+    --accent: #7c3aed; --accent-ink: #7936ea; --accent-fg: #fff; --accent-soft: #f1e9ff;
+    --line: #e3daf5; --r-sm: 10px;
+    --ok: #0f6e56; --ok-soft: #e1f5ee;
+    --bad: #9f1239; --bad-soft: #ffe4e6; --bad-border: #fda4af;
+    --down-ink: #6b4c6a; --down-soft: #f3e8f2;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+    font-size: 15px; line-height: 1.5; background: var(--dash-ground); color: var(--dash-text); }
+  .shell { max-width: 1200px; margin: 0 auto; padding: 28px 20px 64px; }
+  .head { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 28px; align-items: flex-start; }
+  .head h1 { margin: 0; font-size: 24px; font-weight: 650; }
+  .head p { margin: 6px 0 0; font-size: 13px; color: var(--dash-muted); max-width: 62ch; }
+  .tools { margin-left: auto; display: flex; flex-wrap: wrap; gap: 8px; }
+  .seg { display: inline-flex; gap: 2px; padding: 3px; background: var(--dash-surface);
+    border: 1px solid var(--dash-line); border-radius: 10px; }
+  .seg button { font: inherit; font-size: 12px; font-weight: 600; border: 0; cursor: pointer;
+    padding: 6px 12px; border-radius: 7px; background: transparent; color: var(--dash-muted); }
+  .seg button.on { background: var(--dash-accent-ink); color: #fff; }
+  .pick-bar { position: sticky; top: 0; z-index: 20;
+    background: color-mix(in srgb, var(--dash-ground) 92%, transparent); backdrop-filter: blur(8px);
+    border: 1px solid var(--dash-line); border-radius: var(--dash-radius); padding: 12px 16px;
+    margin-bottom: 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .pick-bar output { font-family: ui-monospace, Consolas, monospace; font-size: 12px;
+    color: var(--dash-accent-ink); background: var(--dash-accent-soft); padding: 4px 10px; border-radius: 8px; }
+  .note-ref { font-size: 12.5px; color: var(--dash-muted); margin-bottom: 22px; padding: 10px 14px;
+    background: var(--dash-surface); border: 1px solid var(--dash-line); border-radius: 10px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 18px; }
+  .card { background: var(--dash-surface); border: 1px solid var(--dash-line);
+    border-radius: var(--dash-radius); display: flex; flex-direction: column; overflow: hidden; }
+  .card.is-picked { outline: 2px solid var(--dash-accent-ink); outline-offset: 2px; }
+  .card-head { padding: 14px 16px 10px; border-bottom: 1px solid var(--dash-line); }
+  .card-head h2 { margin: 0; font-size: 15px; font-weight: 650; }
+  .card-head .tag { display: inline-block; margin-top: 6px; font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .04em; color: var(--dash-muted); }
+  .card-head p { margin: 8px 0 0; font-size: 12.5px; color: var(--dash-muted); line-height: 1.45; }
+  .preview-wrap { padding: 14px 16px 16px; flex: 1; }
+  .preview { background: var(--ground); border: 1px solid var(--line); border-radius: 12px;
+    padding: 14px 16px 16px; min-height: 118px; color: var(--text); }
+  .preview .mini-title { font-size: 17px; font-weight: 700; margin: 0 0 10px; }
+  .preview .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+  .preview .faint { font-size: 12.5px; color: var(--faint); }
+  .card-foot { padding: 10px 16px 14px; border-top: 1px solid var(--dash-line);
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .card-foot button { font: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
+    border-radius: 8px; padding: 7px 12px; border: 1px solid var(--dash-line);
+    background: var(--dash-surface); color: var(--dash-text); }
+  .card-foot button.primary { background: var(--dash-accent-ink); color: #fff; border-color: transparent; }
+  .card-foot .hint { font-size: 11.5px; color: var(--dash-muted); margin-left: auto; }
+
+  /* Tanlangan sevimli #6 — barcha kartalarda */
+  .fav-ref {
+    width: 32px; height: 32px; border: 0; border-radius: 8px; cursor: default;
+    background: transparent; color: var(--faint); display: inline-flex;
+    align-items: center; justify-content: center; flex: none;
+  }
+  .fav-ref svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.6; }
+  .fav-ref.on { background: var(--accent); color: var(--accent-fg);
+    box-shadow: 0 2px 8px rgba(124, 58, 237, .35); }
+  .fav-ref.on svg { fill: currentColor; stroke: currentColor; }
+
+  /* Mehmon: ovozlar o‘chirilgan */
+  .preview.is-guest .vote-ui button { pointer-events: none; }
+  .preview.is-guest .vote-ui .v-up[disabled],
+  .preview.is-guest .vote-ui .v-down[disabled],
+  .preview.is-guest .vote-ui button:disabled {
+    color: var(--faint) !important; background: var(--panel-2) !important;
+    cursor: not-allowed !important; border: 1px dashed var(--line) !important;
+    opacity: 1 !important;
+  }
+
+  .vote-ui { display: inline-flex; align-items: center; gap: 4px; }
+  .vote-ui button { font: inherit; cursor: pointer; font-variant-numeric: tabular-nums; }
+  .vote-ui .ico { width: 16px; height: 16px; display: block; flex: none; }
+
+  /* 1 P0 */
+  .v1 .v-up, .v1 .v-down {
+    font-size: 13px; font-weight: 600; border: 0; background: transparent; color: var(--muted);
+    border-radius: var(--r-sm); padding: 0 9px; min-height: 28px;
+  }
+  .v1 .v-up:hover, .v1 .v-down:hover { background: var(--accent-soft); color: var(--accent-ink); }
+  .v1 .v-up[aria-pressed="true"], .v1 .v-down[aria-pressed="true"] {
+    color: var(--accent-ink); background: var(--accent-soft);
+  }
+
+  /* 2 Ikonka-only (fav #6 uslubi) */
+  .v2 .vote-ui { gap: 6px; }
+  .v2 .v-up, .v2 .v-down {
+    width: 32px; height: 32px; border: 0; border-radius: 8px; padding: 0;
+    background: transparent; color: var(--faint); display: inline-flex;
+    align-items: center; justify-content: center; position: relative;
+  }
+  .v2 .v-up svg, .v2 .v-down svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+  .v2 .v-up[aria-pressed="true"] {
+    background: var(--accent); color: var(--accent-fg);
+    box-shadow: 0 2px 8px rgba(124, 58, 237, .35);
+  }
+  .v2 .v-up[aria-pressed="true"] svg { fill: currentColor; stroke: currentColor; }
+  .v2 .v-down[aria-pressed="true"] {
+    background: var(--down-ink); color: #fff;
+    box-shadow: 0 2px 8px rgba(107, 76, 106, .35);
+  }
+  .v2 .v-down[aria-pressed="true"] svg { fill: currentColor; stroke: currentColor; }
+  .v2 .v-counts { font-size: 11px; font-weight: 650; color: var(--muted); line-height: 1.2;
+    display: flex; flex-direction: column; align-items: center; min-width: 28px; }
+  .v2 .v-counts span { font-variant-numeric: tabular-nums; }
+
+  /* 3 Ikonka + raqam ichida */
+  .v3 .vote-ui { gap: 4px; }
+  .v3 .v-up, .v3 .v-down {
+    display: inline-flex; align-items: center; gap: 4px; min-height: 32px;
+    padding: 0 10px; border: 1px solid var(--line); border-radius: var(--r-sm);
+    background: var(--panel); color: var(--muted); font-size: 12px; font-weight: 650;
+  }
+  .v3 .v-up svg, .v3 .v-down svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.2; }
+  .v3 .v-up[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-ink); }
+  .v3 .v-down[aria-pressed="true"] { border-color: var(--bad-border); background: var(--bad-soft); color: var(--bad); }
+
+  /* 4 Yashil / qizil faol */
+  .v4 .v-up, .v4 .v-down {
+    font-size: 13px; font-weight: 650; border: 0; background: transparent;
+    color: var(--muted); border-radius: var(--r-sm); padding: 0 10px; min-height: 30px;
+  }
+  .v4 .v-up[aria-pressed="true"] { color: var(--ok); background: var(--ok-soft); }
+  .v4 .v-down[aria-pressed="true"] { color: var(--bad); background: var(--bad-soft); }
+  .v4 .v-up:hover:not([aria-pressed="true"]), .v4 .v-down:hover:not([aria-pressed="true"]) {
+    background: var(--panel-2);
+  }
+
+  /* 5 Yagona kapsula */
+  .v5 .vote-ui {
+    border: 1px solid var(--line); border-radius: 999px; overflow: hidden;
+    background: var(--panel); gap: 0;
+  }
+  .v5 .v-up, .v5 .v-down {
+    border: 0; background: transparent; color: var(--muted);
+    font-size: 12px; font-weight: 650; padding: 0 12px; min-height: 34px;
+  }
+  .v5 .v-up { border-right: 1px solid var(--line); }
+  .v5 .v-up[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent-ink); }
+  .v5 .v-down[aria-pressed="true"] { background: var(--bad-soft); color: var(--bad); }
+
+  /* 6 Solid doira (up=binafsha, down=pushti) */
+  .v6 .vote-ui { gap: 8px; }
+  .v6 .v-up, .v6 .v-down {
+    width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line);
+    background: var(--panel); color: var(--faint); padding: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+  }
+  .v6 .v-up[aria-pressed="true"] {
+    border-color: var(--accent); background: var(--accent); color: var(--accent-fg);
+    box-shadow: 0 2px 10px rgba(124, 58, 237, .35);
+  }
+  .v6 .v-down[aria-pressed="true"] {
+    border-color: var(--bad-border); background: var(--bad); color: #fff;
+    box-shadow: 0 2px 10px rgba(159, 18, 57, .28);
+  }
+  .v6 .v-nums { font-size: 11px; color: var(--faint); text-align: center; line-height: 1.35;
+    font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  /* 7 Markazda ikkala son */
+  .v7 .vote-ui { gap: 2px; align-items: center; }
+  .v7 .v-mid {
+    font-size: 12px; font-weight: 650; color: var(--muted); padding: 0 6px;
+    font-variant-numeric: tabular-nums; min-width: 52px; text-align: center;
+  }
+  .v7 .v-up, .v7 .v-down {
+    width: 30px; height: 30px; border: 0; border-radius: 7px;
+    background: transparent; color: var(--faint); font-size: 13px; padding: 0;
+  }
+  .v7 .v-up[aria-pressed="true"], .v7 .v-down[aria-pressed="true"] {
+    background: var(--accent-soft); color: var(--accent-ink);
+  }
+
+  /* 8 Katta touch (40px) + SVG thumb */
+  .v8 .vote-ui { gap: 6px; }
+  .v8 .v-up, .v8 .v-down {
+    width: 40px; height: 40px; border: 1px solid var(--line); border-radius: 10px;
+    background: var(--panel); color: var(--muted); padding: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .v8 .v-up svg, .v8 .v-down svg { width: 20px; height: 20px; }
+  .v8 .v-up[aria-pressed="true"] { border-color: var(--ok); background: var(--ok-soft); color: var(--ok); }
+  .v8 .v-down[aria-pressed="true"] { border-color: var(--bad-border); background: var(--bad-soft); color: var(--bad); }
+  .v8 .v-labels { display: flex; flex-direction: column; gap: 2px; font-size: 11px;
+    font-weight: 650; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  /* 9 Pastki chiziq (yengil) */
+  .v9 .vote-ui { gap: 12px; }
+  .v9 .v-up, .v9 .v-down {
+    border: 0; background: none; color: var(--muted); font-size: 13px; font-weight: 600;
+    padding: 4px 2px; min-height: 28px;
+    border-bottom: 2px solid transparent; border-radius: 0;
+  }
+  .v9 .v-up[aria-pressed="true"] { color: var(--accent-ink); border-bottom-color: var(--accent); }
+  .v9 .v-down[aria-pressed="true"] { color: var(--bad); border-bottom-color: var(--bad); }
+
+  /* 10 Net skor + expand */
+  .v10 .vote-ui { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .v10 .v-net {
+    font-size: 13px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums;
+  }
+  .v10 .v-net.pos { color: var(--ok); }
+  .v10 .v-net.neg { color: var(--bad); }
+  .v10 .v-row { display: inline-flex; gap: 4px; }
+  .v10 .v-up, .v10 .v-down {
+    font-size: 11px; font-weight: 650; border: 1px solid var(--line); border-radius: 6px;
+    background: var(--panel-2); color: var(--muted); padding: 2px 8px; min-height: 26px;
+  }
+  .v10 .v-up[aria-pressed="true"], .v10 .v-down[aria-pressed="true"] {
+    border-color: var(--accent); color: var(--accent-ink); background: var(--accent-soft);
+  }
+
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(120%);
+    background: #2b2340; color: #fff; font-size: 13px; font-weight: 600;
+    padding: 10px 18px; border-radius: 10px; z-index: 100; transition: transform .22s ease; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="head">
+    <div>
+      <h1>Ovoz berish (▲▼) — 10 dizayn</h1>
+      <p>
+        Sevimlilar qatorida siz tanlagan <strong>#6 ikonka-only</strong> namuna sifatida qoldi.
+        Ovozlar: bosish toggle, faqat bitta yo‘nalish faol; qayta bosish ovozni olib tashlaydi.
+      </p>
+    </div>
+    <div class="tools">
+      <div class="seg" role="group" aria-label="Foydalanuvchi">
+        <button type="button" data-guest="0" class="on">Kirgan</button>
+        <button type="button" data-guest="1">Mehmon</button>
+      </div>
+      <div class="seg" role="group" aria-label="Mavzu">
+        <button type="button" data-theme="light" class="on">Yorug‘</button>
+        <button type="button" data-theme="dark">Qorong‘i</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="pick-bar">
+    <strong>Tanlangan ovoz varianti:</strong>
+    <output id="picked">— hali tanlanmadi</output>
+  </div>
+
+  <p class="note-ref">
+    Sevimlilar tanlovi: <strong>#6 Ikonka-only</strong> (binafsha to‘ldirish). Ovoz uchun ham shunga yaqin
+    <strong>#2</strong> va <strong>#6</strong> ni birinchi ko‘rib chiqing.
+  </p>
+
+  <div class="grid" id="grid"></div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+  var SVG_UP = '<svg viewBox="0 0 24 24"><path d="M12 4l7 7H5z"/></svg>';
+  var SVG_DOWN = '<svg viewBox="0 0 24 24"><path d="M12 20l-7-7h14z"/></svg>';
+  var SVG_THUP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 11v8a1 1 0 0 0 1 1h2v-9H8a1 1 0 0 0-1 1z"/><path d="M8 11V7a2 2 0 0 1 2-2h1l3 4 4 1v9h-6l-2-5H8z"/></svg>';
+  var SVG_THDN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 13V5a1 1 0 0 0-1-1h-2v9h2a1 1 0 0 0 1-1z"/><path d="M16 13v4a2 2 0 0 1-2 2h-1l-3-4-4-1v-9h6l2 5h2z"/></svg>';
+  var FAV_SVG = '<svg viewBox="0 0 24 24"><path d="M6 4h12v16l-6-4-6 4V4z"/></svg>';
+
+  var CARDS = [
+    { id: "1", name: "P0 — ▲ 12 ▼ 3 matn", tag: "Asos · statement-builder",
+      desc: "Hozirgi prototip: matn + raqam, faol = accent-soft." },
+    { id: "2", name: "Ikonka-only + vertikal sonlar", tag: "Sevimli #6 bilan juft",
+      desc: "32px tugmalar, o‘rtada ↑12 / ↓3. Faol = to‘liq binafsha / qora-binafsha." },
+    { id: "3", name: "Chegarali chip ichida ikonka + son", tag: "Aniq raqam",
+      desc: "Har tugmada ▲ va son bir qatorda. Faol: binafsha yoki pushti fon." },
+    { id: "4", name: "Yashil yoqdi / qizil yoqmadi", tag: "Semantik rang",
+      desc: "Matn ▲▼ saqlanadi; faol holat yashil yoki qizil (ovoz ma’nosi)." },
+    { id: "5", name: "Yagona kapsula (pill)", tag: "Bitta blok",
+      desc: "▲12 | ▼3 bitta yumaloq chegarada, o‘rtada chiziq." },
+    { id: "6", name: "Doira + ▲/▼ belgisi", tag: "Solid faol",
+      desc: "36px doira; faol up = binafsha, faol down = qizil. Sonlar tagida." },
+    { id: "7", name: "Markazda 12 · 3", tag: "Ixcham",
+      desc: "Yon tugmalar faqat strelka; ikkala son markazda." },
+    { id: "8", name: "Thumb 40px + sonlar yonida", tag: "Mobil touch",
+      desc: "Barmoq ikonkalari, yashil/qizil faol. WCAG 24×24 dan kattaroq." },
+    { id: "9", name: "Pastki chiziq (underline)", tag: "Yengil",
+      desc: "Fon yo‘q; faol = rang + pastki chiziq." },
+    { id: "10", name: "Net skor + kichik tugmalar", tag: "Reddit uslubi",
+      desc: "Yuqorida +9 (up−down); pastda kichik ▲12 ▼3." }
+  ];
+
+  function voteHtml(id) {
+    var v = "v" + id;
+    var wrap = function (inner) {
+      return '<div class="preview stmt"><p class="mini-title">Tarmoq modernizatsiyasi</p>' +
+        '<div class="actions">' +
+        '<span class="fav-ref on" aria-hidden="true" title="Sevimli #6">' + FAV_SVG + '</span>' +
+        '<span class="vote-ui ' + v + '">' + inner + '</span>' +
+        '<span class="faint">4.6 · 38 baho ★★★★☆</span></div></div>';
+    };
+    switch (id) {
+      case "1":
+        return wrap(
+          '<button type="button" class="v-up" aria-pressed="false">▲ <span class="n-up">12</span></button>' +
+          '<button type="button" class="v-down" aria-pressed="false">▼ <span class="n-down">3</span></button>'
+        );
+      case "2":
+        return wrap(
+          '<button type="button" class="v-up" aria-pressed="false" aria-label="Yoqdi — ▲ 12">' + SVG_UP + '</button>' +
+          '<span class="v-counts"><span class="n-up">12</span><span class="n-down">3</span></span>' +
+          '<button type="button" class="v-down" aria-pressed="false" aria-label="Yoqmadi — ▼ 3">' + SVG_DOWN + '</button>'
+        );
+      case "3":
+        return wrap(
+          '<button type="button" class="v-up" aria-pressed="false">' + SVG_UP + ' <span class="n-up">12</span></button>' +
+          '<button type="button" class="v-down" aria-pressed="false">' + SVG_DOWN + ' <span class="n-down">3</span></button>'
+        );
+      case "4":
+        return wrap(
+          '<button type="button" class="v-up" aria-pressed="false">▲ <span class="n-up">12</span></button>' +
+          '<button type="button" class="v-down" aria-pressed="false">▼ <span class="n-down">3</span></button>'
+        );
+      case "5":
+        return wrap(
+          '<button type="button" class="v-up" aria-pressed="false">▲ <span class="n-up">12</span></button>' +
+          '<button type="button" class="v-down" aria-pressed="false">▼ <span class="n-down">3</span></button>'
+        );
+      case "6":
+        return wrap(
+          '<div style="display:flex;flex-direction:column;align-items:center;gap:4px">' +
+          '<span class="vote-ui v6" style="gap:8px">' +
+          '<button type="button" class="v-up" aria-pressed="false" aria-label="Yoqdi">▲</button>' +
+          '<button type="button" class="v-down" aria-pressed="false" aria-label="Yoqmadi">▼</button>' +
+          '</span><span class="v-nums"><span class="n-up">12</span> · <span class="n-down">3</span></span></div>'
+        );
+      case "7":
+        return wrap(
+          '<button type="button" class="v-up" aria-pressed="false" aria-label="Yoqdi">▲</button>' +
+          '<span class="v-mid"><span class="n-up">12</span> · <span class="n-down">3</span></span>' +
+          '<button type="button" class="v-down" aria-pressed="false" aria-label="Yoqmadi">▼</button>'
+        );
+      case "8":
+        return wrap(
+          '<button type="button" class="v-up" aria-pressed="false">' + SVG_THUP + '</button>' +
+          '<span class="v-labels"><span>▲ <span class="n-up">12</span></span><span>▼ <span class="n-down">3</span></span></span>' +
+          '<button type="button" class="v-down" aria-pressed="false">' + SVG_THDN + '</button>'
+        );
+      case "9":
+        return wrap(
+          '<button type="button" class="v-up" aria-pressed="false">▲ <span class="n-up">12</span></button>' +
+          '<button type="button" class="v-down" aria-pressed="false">▼ <span class="n-down">3</span></button>'
+        );
+      case "10":
+        return wrap(
+          '<span class="v-net" data-net="">+9</span>' +
+          '<span class="v-row">' +
+          '<button type="button" class="v-up" aria-pressed="false">▲ <span class="n-up">12</span></button>' +
+          '<button type="button" class="v-down" aria-pressed="false">▼ <span class="n-down">3</span></button></span>'
+        );
+      default:
+        return wrap("");
+    }
+  }
+
+  var grid = document.getElementById("grid");
+  CARDS.forEach(function (c) {
+    var art = document.createElement("article");
+    art.className = "card v" + c.id;
+    art.dataset.id = c.id;
+    art.dataset.name = c.name;
+    art.innerHTML =
+      '<div class="card-head"><h2>' + c.id + ". " + c.name.split(" — ")[0] + '</h2>' +
+      '<span class="tag">' + c.tag + '</span><p>' + c.desc + '</p></div>' +
+      '<div class="preview-wrap">' + voteHtml(c.id) + '</div>' +
+      '<div class="card-foot">' +
+      '<button type="button" class="try">Sinash (↻ holat)</button>' +
+      '<button type="button" class="primary pick">Tanlash</button>' +
+      '<span class="hint">Bosish — haqiqiy toggle</span></div>';
+    grid.appendChild(art);
+  });
+
+  var root = document.documentElement;
+  var pickedOut = document.getElementById("picked");
+  var toast = document.getElementById("toast");
+  var guestMode = false;
+
+  document.querySelectorAll('[data-theme]').forEach(function (b) {
+    b.addEventListener("click", function () {
+      b.parentElement.querySelectorAll("button").forEach(function (x) {
+        x.classList.toggle("on", x === b);
+      });
+      root.setAttribute("data-rw-theme", b.dataset.theme);
+    });
+  });
+
+  document.querySelectorAll("[data-guest]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      guestMode = b.dataset.guest === "1";
+      b.parentElement.querySelectorAll("button").forEach(function (x) {
+        x.classList.toggle("on", x === b);
+      });
+      document.querySelectorAll(".preview").forEach(function (p) {
+        p.classList.toggle("is-guest", guestMode);
+      });
+      syncGuestDisabled();
+    });
+  });
+
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add("show");
+    setTimeout(function () { toast.classList.remove("show"); }, 1600);
+  }
+
+  function makeState(card) {
+    return { up: 12, down: 3, mine: 0 };
+  }
+
+  var states = new WeakMap();
+
+  function getState(card) {
+    if (!states.has(card)) states.set(card, makeState(card));
+    return states.get(card);
+  }
+
+  function paintNet(card, st) {
+    var net = card.querySelector(".v-net");
+    if (!net) return;
+    var n = st.up - st.down;
+    net.textContent = (n > 0 ? "+" : "") + n;
+    net.classList.toggle("pos", n > 0);
+    net.classList.toggle("neg", n < 0);
+  }
+
+  function paintLabels(card, st) {
+    card.querySelectorAll(".n-up").forEach(function (el) { el.textContent = st.up; });
+    card.querySelectorAll(".n-down").forEach(function (el) { el.textContent = st.down; });
+    var up = card.querySelector(".v-up");
+    var down = card.querySelector(".v-down");
+    if (up) {
+      up.setAttribute("aria-pressed", st.mine === 1 ? "true" : "false");
+      if (up.getAttribute("aria-label") || up.textContent.indexOf("▲") >= 0) {
+        up.setAttribute("aria-label", "Yoqdi — ▲ " + st.up);
+      }
+    }
+    if (down) {
+      down.setAttribute("aria-pressed", st.mine === -1 ? "true" : "false");
+      down.setAttribute("aria-label", "Yoqmadi — ▼ " + st.down);
+    }
+    paintNet(card, st);
+  }
+
+  function vote(card, dir) {
+    if (guestMode) return;
+    var st = getState(card);
+    var next = st.mine === dir ? 0 : dir;
+    if (st.mine === 1) st.up -= 1;
+    if (st.mine === -1) st.down -= 1;
+    if (next === 1) st.up += 1;
+    if (next === -1) st.down += 1;
+    st.mine = next;
+    paintLabels(card, st);
+  }
+
+  function cycle(card) {
+    var st = getState(card);
+    if (st.mine === 0) vote(card, 1);
+    else if (st.mine === 1) vote(card, -1);
+    else vote(card, -1);
+  }
+
+  function syncGuestDisabled() {
+    document.querySelectorAll(".card").forEach(function (card) {
+      card.querySelectorAll(".v-up, .v-down").forEach(function (b) {
+        b.disabled = guestMode;
+      });
+    });
+  }
+
+  document.querySelectorAll(".card").forEach(function (card) {
+    var id = card.dataset.id;
+    paintLabels(card, getState(card));
+
+    card.querySelector(".pick").addEventListener("click", function () {
+      document.querySelectorAll(".card").forEach(function (c) { c.classList.remove("is-picked"); });
+      card.classList.add("is-picked");
+      pickedOut.textContent = "#" + id + " — " + card.dataset.name;
+      try { localStorage.setItem("rw:vote-pick", id); } catch (e) {}
+      showToast("Ovoz varianti " + id + " tanlandi");
+    });
+
+    try {
+      var saved = localStorage.getItem("rw:vote-pick");
+      if (saved === id) {
+        card.classList.add("is-picked");
+        pickedOut.textContent = "#" + saved + " — " + card.dataset.name;
+      }
+    } catch (e) {}
+
+    var up = card.querySelector(".v-up");
+    var down = card.querySelector(".v-down");
+    if (up) up.addEventListener("click", function () { vote(card, 1); });
+    if (down) down.addEventListener("click", function () { vote(card, -1); });
+    card.querySelector(".try").addEventListener("click", function () { cycle(card); });
+  });
+
+  syncGuestDisabled();
+})();
+</script>
+</body>
+</html>

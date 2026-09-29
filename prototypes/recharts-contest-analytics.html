@@ -1,0 +1,1018 @@
+<!doctype html>
+<html lang="uz" data-rw-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RankWant — Contest Analytics (Recharts prototip)</title>
+
+<!--
+  RankWant · Recharts prototip
+  ────────────────────────────────────────────────────────────────────
+  Bu — mahsulot kodi EMAS. Alohida prototip: apps/web buildiga tegmaydi,
+  node_modules ishlamaydi, router yo'q. Bitta HTML fayl ochiladi va
+  ishlaydi.
+
+  Nima uchun CDN va nima uchun React 18:
+  · Recharts 3.10.1 UMD bundle'i `react`, `react-dom`, `react-is` ni
+    tashqaridan kutadi (define/require shoxlari). Ya'ni ular <script>
+    bo'lib UNDAN OLDIN turishi shart.
+  · React 19 da UMD build umuman yo'q (unpkg react@19 da `umd/`
+    papkasi 404) — shuning uchun React 18.3.1 UMD.
+  · Babel <script type="text/babel"> faqat klassik runtime bilan
+    ishlaydi. Bu loyihada `apps/web` esa `jsx: "react-jsx"` (avtomatik
+    runtime) ishlatadi. Prototipda bu farq qasddan qabul qilingan.
+
+  Sahnadagi o'zgarishlar: sarlavhadagi tugma yorug'/qorong'i mavzuni
+  almashtiradi, diagramma ostidagi segmented tugmalar esa ma'lumot
+  to'plamini almashtiradi.
+
+  Dizayn tokenlari: apps/web/src/app/globals.css -> [data-style="dashboard"]
+  bloki qo'lda ko'chirildi. Uslub nomlari (`rw-*`) mahsulot bilan bir xil,
+  lekin bu yerdagi nusxa mustaqil — prototip tizim fayllarini yuklamaydi.
+-->
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-is@18.3.1/umd/react-is.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/recharts@3.10.1/umd/Recharts.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone@7/babel.min.js" crossorigin></script>
+
+<style>
+/* ═══════════════════════════════════════════════════════════════════
+   Tokenlar — apps/web/src/app/globals.css, [data-style="dashboard"]
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root,
+[data-rw-theme="light"] {
+  --rw-ground: #f9fafb;
+  --rw-surface: #ffffff;
+  --rw-surface-2: #f2f4f7;
+  --rw-line: #e4e7ec;
+  --rw-text: #1d2939;
+  --rw-text-2: #475467;
+  --rw-muted: #5b6376;
+  --rw-faint: #636f85;
+  --rw-accent: #476dc7;
+  --rw-accent-fg: #ffffff;
+  --rw-accent-ink: #3c66dc;
+  --rw-accent-soft: #eef3ff;
+  --rw-ok-ink: #038249;    --rw-ok-soft: #ecfdf3;
+  --rw-warn-ink: #b54708;  --rw-warn-soft: #fffaeb;
+  --rw-bad-ink: #d42c1f;   --rw-bad-soft: #fef3f2;
+  --rw-chip: #f2f4f7;
+  --rw-hover: #f9fafb;
+  --rw-radius: 16px;
+  --rw-radius-sm: 8px;
+  --rw-shadow: 0 1px 2px rgba(16, 24, 40, .05);
+}
+
+[data-rw-theme="dark"] {
+  --rw-ground: #0b0d12;
+  --rw-surface: #141821;
+  --rw-surface-2: #1b202b;
+  --rw-line: #232936;
+  --rw-text: #e6e9ef;
+  --rw-text-2: #b9c2d0;
+  --rw-muted: #9aa1b2;
+  --rw-faint: #8c94a1;
+  --rw-accent: #7ea4ff;
+  --rw-accent-fg: #0b0d12;
+  --rw-accent-ink: #7ea4ff;
+  --rw-accent-soft: rgba(91, 140, 255, .12);
+  --rw-ok-ink: #4ade80;    --rw-ok-soft: rgba(74, 222, 128, .12);
+  --rw-warn-ink: #fdb022;  --rw-warn-soft: rgba(253, 176, 34, .12);
+  --rw-bad-ink: #f87171;   --rw-bad-soft: rgba(248, 113, 113, .12);
+  --rw-chip: rgba(255, 255, 255, .05);
+  --rw-hover: rgba(255, 255, 255, .03);
+  --rw-shadow: 0 1px 2px rgba(0, 0, 0, .4);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--rw-ground);
+  color: var(--rw-text);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Silliq almashish — prototipni ko'rsatishda rang sakrashi yoqimsiz. */
+body, .rw-panel, .rw-chip, .rw-seg {
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease;
+}
+
+.rw-shell { max-width: 1180px; margin: 0 auto; padding: 28px 20px 56px; }
+
+/* ── Sarlavha ─────────────────────────────────────────────────────── */
+.rw-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap; margin-bottom: 24px;
+}
+.rw-title { margin: 0; font-size: 24px; font-weight: 650; letter-spacing: -.01em; }
+.rw-sub { margin: 6px 0 0; font-size: 13px; color: var(--rw-muted); max-width: 62ch; line-height: 1.55; }
+.rw-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 11px; border-radius: 999px;
+  font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+  background: var(--rw-accent-soft); color: var(--rw-accent-ink);
+}
+
+/* ── Tugmalar ─────────────────────────────────────────────────────── */
+.rw-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 8px 13px; border-radius: var(--rw-radius-sm);
+  border: 1px solid var(--rw-line); background: var(--rw-surface);
+  color: var(--rw-text-2); font-size: 13px; font-weight: 500;
+  font-family: inherit; cursor: pointer;
+}
+.rw-btn:hover { background: var(--rw-hover); }
+.rw-btn:focus-visible { outline: none; box-shadow: 0 0 0 4px rgba(91, 140, 255, .18); }
+
+.rw-seg {
+  display: inline-flex; overflow: hidden;
+  border: 1px solid var(--rw-line); border-radius: var(--rw-radius-sm);
+  background: var(--rw-surface);
+}
+.rw-seg button {
+  padding: 7px 13px; border: 0; background: transparent; cursor: pointer;
+  color: var(--rw-muted); font-size: 12.5px; font-weight: 500; font-family: inherit;
+  white-space: nowrap;
+}
+.rw-seg button[aria-pressed="true"] { background: var(--rw-accent-soft); color: var(--rw-accent-ink); }
+.rw-seg button:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--rw-accent-ink); }
+
+/* ── To'r va kartalar ─────────────────────────────────────────────── */
+.rw-grid { display: grid; gap: 16px; }
+.rw-grid--stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.rw-grid--split { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); margin-top: 16px; }
+.rw-grid--trio { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 16px; }
+@media (max-width: 1000px) {
+  .rw-grid--stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rw-grid--split, .rw-grid--trio { grid-template-columns: minmax(0, 1fr); }
+}
+
+.rw-panel {
+  background: var(--rw-surface);
+  border: 1px solid var(--rw-line);
+  border-radius: var(--rw-radius);
+  box-shadow: var(--rw-shadow);
+  overflow: hidden;
+}
+.rw-panel__head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 15px 20px;
+  border-bottom: 1px solid var(--rw-line);
+}
+.rw-panel__title { margin: 0; font-size: 15px; font-weight: 600; }
+.rw-panel__hint { margin: 4px 0 0; font-size: 12px; color: var(--rw-faint); }
+.rw-panel__body { padding: 16px 20px 20px; }
+
+/* ── Ko'rsatkich kartasi ──────────────────────────────────────────── */
+.rw-stat { padding: 18px 20px; }
+.rw-stat__icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; margin-bottom: 14px;
+  border-radius: var(--rw-radius-sm);
+  background: var(--rw-accent-soft); color: var(--rw-accent-ink);
+  font-size: 17px;
+}
+.rw-stat__label { margin: 0; font-size: 13px; color: var(--rw-muted); }
+.rw-stat__value { margin: 4px 0 0; font-size: 27px; font-weight: 680; letter-spacing: -.02em; }
+.rw-stat__foot { display: flex; align-items: center; gap: 6px; margin-top: 7px; font-size: 12px; color: var(--rw-faint); }
+.rw-up { color: var(--rw-ok-ink); font-weight: 600; }
+.rw-down { color: var(--rw-bad-ink); font-weight: 600; }
+
+/* ── Legenda ──────────────────────────────────────────────────────── */
+.rw-legend { display: flex; flex-wrap: wrap; gap: 14px; padding-top: 12px; font-size: 12px; color: var(--rw-muted); }
+.rw-legend__item { display: inline-flex; align-items: center; gap: 6px; }
+.rw-swatch { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+
+/* ── Recharts tooltip ─────────────────────────────────────────────── */
+.rw-tip {
+  background: var(--rw-surface);
+  border: 1px solid var(--rw-line);
+  border-radius: var(--rw-radius-sm);
+  box-shadow: 0 12px 16px -4px rgba(16, 24, 40, .16), 0 4px 6px -2px rgba(16, 24, 40, .06);
+  padding: 9px 12px; font-size: 12px; line-height: 1.6;
+}
+.rw-tip__title { font-weight: 620; margin-bottom: 3px; }
+.rw-tip__row { display: flex; align-items: center; gap: 7px; color: var(--rw-text-2); }
+.rw-tip__val { margin-left: auto; font-variant-numeric: tabular-nums; font-weight: 600; color: var(--rw-text); }
+
+.rw-faint { color: var(--rw-faint); font-size: 12px; }
+
+/* O'qlar va to'r chiziqlari — Recharts o'z rangini prop orqali oladi,
+   shuning uchun bu yerdagi yagona ish shrift o'lchamidir. */
+.recharts-cartesian-axis-tick text { font-size: 11px; }
+</style>
+</head>
+
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+const { useState, useMemo } = React;
+const {
+  ResponsiveContainer, ComposedChart, Line, BarChart, Bar,
+  AreaChart, Area, PieChart, Pie, RadialBarChart, RadialBar,
+  Cell, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine,
+} = Recharts;
+
+/* ═══════════════════════════════════════════════════════════════════
+   1. MA'LUMOT
+   ═══════════════════════════════════════════════════════════════════
+
+   Bularning hammasi QO'LDA yozilgan namuna. Maqsad — komponentlarni
+   haqiqiy hajmda ko'rsatish, API'ni sinash emas. Haqiqiy prototipda
+   bu yerda `/rating/history/`, `/problems/skills/`, `/qvant/` javoblari
+   turardi.                                                          */
+
+/* Elo kamari: unvon chegaralari va shu chegaraga tushgan nuqtalar.
+   Recharts'da chegarani `ReferenceLine` `segment` bilan chizamiz — bu
+   aynan `RatingChart.tsx` dagi `data.bands` ning ekvivalenti. */
+const TITLE_BANDS = [
+  { code: "quark",      min: 0,    max: 1200, color: "rgba(140, 148, 161, .13)" },
+  { code: "atom",       min: 1200, max: 1400, color: "rgba(74, 222, 128, .11)" },
+  { code: "molecule",   min: 1400, max: 1600, color: "rgba(96, 165, 250, .11)" },
+  { code: "droplet",    min: 1600, max: 1800, color: "rgba(192, 132, 252, .11)" },
+  { code: "meteorite",  min: 1800, max: 2000, color: "rgba(233, 113, 15, .12)" },
+  { code: "comet",      min: 2000, max: 2200, color: "rgba(234, 109, 105, .13)" },
+];
+
+const TITLE_LABEL = {
+  quark: "Kvark", atom: "Atom", molecule: "Molekula", droplet: "Tomchi",
+  meteorite: "Meteorit", comet: "Kometa",
+};
+
+/* Musobaqa seriyasi — `rank`, `delta`, `before`/`after` maydonlari
+   `RatingPoint` bilan bir xil nomda (`lib/api.ts`). */
+const CONTEST_RATING = [
+  { at: "2026-02-08", label: "Fev 8",  before: 1420, after: 1388, delta: -32, rank: 214, title: "Round 41", forced: false },
+  { at: "2026-02-22", label: "Fev 22", before: 1388, after: 1441, delta:  53, rank: 178, title: "Round 42", forced: false },
+  { at: "2026-03-07", label: "Mar 7",  before: 1441, after: 1495, delta:  54, rank: 151, title: "Round 43", forced: false },
+  { at: "2026-03-21", label: "Mar 21", before: 1495, after: 1462, delta: -33, rank: 190, title: "Round 44", forced: false },
+  { at: "2026-04-04", label: "Apr 4",  before: 1462, after: 1528, delta:  66, rank: 133, title: "Round 45", forced: false },
+  { at: "2026-04-18", label: "Apr 18", before: 1528, after: 1596, delta:  68, rank: 112, title: "Round 46", forced: false },
+  { at: "2026-05-02", label: "May 2",  before: 1596, after: 1571, delta: -25, rank: 128, title: "Round 47", forced: false },
+  { at: "2026-05-16", label: "May 16", before: 1571, after: 1652, delta:  81, rank:  94, title: "Round 48", forced: false },
+  { at: "2026-06-06", label: "Iyun 6", before: 1652, after: 1620, delta: -32, rank: 109, title: "Round 49", forced: true  },
+  { at: "2026-06-20", label: "Iyun 20", before: 1620, after: 1704, delta:  84, rank:  78, title: "Round 50", forced: false },
+  { at: "2026-07-11", label: "Iyul 11", before: 1704, after: 1683, delta: -21, rank:  86, title: "Round 51", forced: false },
+  { at: "2026-08-01", label: "Avg 1",  before: 1683, after: 1761, delta:  78, rank:  64, title: "Round 52", forced: false },
+  { at: "2026-08-22", label: "Avg 22", before: 1761, after: 1748, delta: -13, rank:  70, title: "Round 53", forced: false },
+  { at: "2026-09-12", label: "Sen 12", before: 1748, after: 1826, delta:  78, rank:  51, title: "Round 54", forced: false },
+];
+
+/* Qiyinlik bo'yicha taqsimot — `task.status` ning ustunli ko'rinishi.
+   Ikkala seriya bitta toifada, ya'ni guruhlangan (`grouped`) ustunlar. */
+const DIFFICULTY_VS_ATTEMPTS = [
+  { level: "Boshlang'ich", solved: 148, attempts: 171 },
+  { level: "Asosiy",       solved:  96, attempts: 148 },
+  { level: "O'rta",        solved:  71, attempts: 149 },
+  { level: "Yaxshi",       solved:  38, attempts: 102 },
+  { level: "Qiyin",        solved:  19, attempts:  87 },
+  { level: "Ekspert",      solved:   7, attempts:  54 },
+  { level: "Master",       solved:   2, attempts:  31 },
+];
+
+/* Mavzu kuchi — `TopicStrength` ning yonma-yon ko'rinishi. Gorizontal
+   ustun, chunki mavzu nomlari uzun. */
+const TOPIC_STRENGTH = [
+  { topic: "Grafiklar",    rating: 1840, solved: 42, total: 48 },
+  { topic: "Dinamik",      rating: 1712, solved: 37, total: 46 },
+  { topic: "Sonlar",       rating: 1524, solved: 51, total: 55 },
+  { topic: "Satrlar",      rating: 1418, solved: 44, total: 52 },
+  { topic: "Saralash",     rating: 1266, solved: 39, total: 41 },
+  { topic: "Geometriya",   rating: 1180, solved: 22, total: 34 },
+  { topic: "Kombinatorika",rating:  946, solved: 14, total: 29 },
+];
+
+/* Qvant oqimi — kunlik topilgan va sarflangan. Ikkita maydon
+   (`earned`/`spent`) — bu stacked emas, ya'ni ikkalasi ham noldan
+   o'sadi va kesishadi. */
+const QVANT_FLOW = [
+  { day: "Du", earned: 120, spent:  40 },
+  { day: "Se", earned:  80, spent:  90 },
+  { day: "Ch", earned: 160, spent:  30 },
+  { day: "Pa", earned:  95, spent: 120 },
+  { day: "Ju", earned: 140, spent:  60 },
+  { day: "Sh", earned:  60, spent:  25 },
+  { day: "Ya", earned:  45, spent:  15 },
+];
+
+/* Verdikt taqsimoti — `Pie` uchun. Nomlar tarjima QILINMAYDI: Accepted,
+   Time Limit Exceeded va h.k. — xalqaro atamalar, `verdict.ts` dagi bilan
+   bir xil qoida. Nisbatlar o'ylab topilgan, lekin o'zaro izchil. */
+const VERDICTS = [
+  { name: "Accepted",             value: 381, key: "ac" },
+  { name: "Wrong Answer",         value: 214, key: "wa" },
+  { name: "Time Limit Exceeded",  value:  96, key: "tle" },
+  { name: "Runtime Error",        value:  52, key: "re" },
+  { name: "Compilation Error",    value:  31, key: "ce" },
+  { name: "Memory Limit Exceeded",value:  17, key: "mle" },
+];
+
+/* Faollik xaritasi uchun 12 hafta × 7 kun — bu yerda ustunli issiqlik
+   emas, oddiy ustun: Recharts'da heatmap yo'q, va uni `Bar` bilan
+   chizish 84 ta diagramma demak (sekin va ma'nosiz). */
+const ACTIVITY = Array.from({ length: 26 }, (_, i) => ({
+  week: `H${i + 1}`,
+  solved: [7, 12, 5, 19, 14, 9, 22, 17, 11, 6, 15, 24, 13, 8,
+           18, 21, 10, 16, 4, 20, 23, 12, 9, 17, 25, 14][i],
+}));
+
+/* ── Rang yordamchilari ───────────────────────────────────────────── */
+
+/* Verdikt ranglari `lib/theme/verdict.ts` mantig'iga yaqin: qabul —
+   yashil, chegaraviy — sariq, xato — qizil, tizim — kulrang. */
+const VERDICT_COLOR = {
+  ac:  "var(--rw-ok-ink)",
+  wa:  "var(--rw-bad-ink)",
+  tle: "var(--rw-warn-ink)",
+  re:  "var(--rw-bad-ink)",
+  ce:  "var(--rw-muted)",
+  mle: "var(--rw-warn-ink)",
+};
+
+const AXIS = { fill: "var(--rw-faint)", fontSize: 11 };
+const GRID = "var(--rw-line)";
+
+/* Recharts'da `stroke`/`fill` — SVG atributi, `var()` ishlaydi, lekin
+   ba'zi ichki hisob-kitoblar (masalan `Pie` yoylari) qiymatni to'g'ridan
+   to'g'ri o'qiydi. Shuning uchun yorug'/qorong'i rejim uchun ANIQ rang
+   olib, mavzu almashganda qayta render qilamiz. Aks holda `var(--x)`
+   SVG gradientlarida ba'zi brauzerlarda bo'sh chiqadi. */
+function useThemeTokens() {
+  const [theme, setTheme] = useState(() => {
+    const saved = window.localStorage.getItem("rw-proto-theme");
+    return saved === "light" || saved === "dark" ? saved : "dark";
+  });
+
+  React.useEffect(() => {
+    document.documentElement.setAttribute("data-rw-theme", theme);
+    window.localStorage.setItem("rw-proto-theme", theme);
+  }, [theme]);
+
+  const tokens = useMemo(() => {
+    const dark = theme === "dark";
+    return {
+      dark,
+      accent:   dark ? "#7ea4ff" : "#476dc7",
+      accentInk:dark ? "#7ea4ff" : "#3c66dc",
+      accentSoft: dark ? "rgba(91, 140, 255, .12)" : "#eef3ff",
+      ok:  dark ? "#4ade80" : "#038249",
+      warn:dark ? "#fdb022" : "#b54708",
+      bad: dark ? "#f87171" : "#d42c1f",
+      muted: dark ? "#9aa1b2" : "#5b6376",
+      faint: dark ? "#8c94a1" : "#636f85",
+      line: dark ? "#232936" : "#e4e7ec",
+      surface: dark ? "#141821" : "#ffffff",
+      text: dark ? "#e6e9ef" : "#1d2939",
+      rank: dark
+        ? ["#8b94a4", "#28a95e", "#16a2b1", "#6093eb", "#a681e7", "#e9710f", "#ea6d69"]
+        : ["#656e81", "#1e7e46", "#107884", "#1e67e3", "#834fde", "#af550b", "#d5231d"],
+    };
+  }, [theme]);
+
+  return [theme, setTheme, tokens];
+}
+
+/* ── Umumiy bo'laklar ─────────────────────────────────────────────── */
+
+function Card({ title, hint, action, children, bodyClass = "" }) {
+  return (
+    <section className="rw-panel">
+      {(title || action) && (
+        <div className="rw-panel__head">
+          <div>
+            {title && <h2 className="rw-panel__title">{title}</h2>}
+            {hint && <p className="rw-panel__hint">{hint}</p>}
+          </div>
+          {action}
+        </div>
+      )}
+      <div className={"rw-panel__body " + bodyClass}>{children}</div>
+    </section>
+  );
+}
+
+/* Tooltip — Recharts'ning standart qutisi emas, mahsulot uslubidagi
+   `content` funksiyasi. `payload` bo'sh bo'lsa chizmaydi: sichqoncha
+   to'r chizig'ida turganda bo'sh quti chiqmasin. */
+function RwTip({ active, payload, label, unit = "" }) {
+  if (!active || !payload || !payload.length) return null;
+  const head = payload[0] && payload[0].payload && payload[0].payload.tooltipTitle;
+  return (
+    <div className="rw-tip">
+      <div className="rw-tip__title">{head || label}</div>
+      {payload.map((p) => (
+        <div className="rw-tip__row" key={p.dataKey ?? p.name}>
+          <span className="rw-swatch" style={{ background: p.color || p.stroke || p.fill }} />
+          <span>{p.name}</span>
+          <span className="rw-tip__val">{p.value}{unit}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ⚠️ Recharts `<Legend>` BU SAHIFADA ISHLATILMAYDI — va buning sababi
+   o'lchov bilan topilgan.
+
+   Recharts 3.10.1'da `ResponsiveContainer` ichidagi `<Legend>` o'lcham
+   hisoblashni buzadi: SVG 14×14 px (Recharts ikonkasi) bo'lib qoladi,
+   ya'ni diagramma butunlay bo'sh chiqadi. O'lchandi — `DifficultySplit`
+   dan `<Legend>` olib tashlanganda SVG 14×14 → 327×260 bo'ldi, boshqa
+   hech narsa o'zgarmagan holda. Legend'i yo'q diagrammalar
+   (`VerdictDonut`, `TopicBars`, `WeeklyActivity`, `TitleBands`,
+   `RatingTrend`) boshidan to'g'ri chizilgan — ya'ni aybdor aynan
+   Legend.
+
+   Yechim: legendani diagrammadan TASHQARIDA, oddiy HTML bo'lib
+   chizamiz. Bu mahsulot kodidagi `.rw-legend` naqshiga ham mos —
+   `TopicStrength.tsx` va umuman RankWant panel(lar)i shunday qiladi.
+   Bonus: matn `t()` kalitlariga tayyor, SVG ichidagi `foreignObject`
+   kerak emas. */
+function ChartLegend({ items }) {
+  return (
+    <div className="rw-legend">
+      {items.map((it) => (
+        <span className="rw-legend__item" key={it.label}>
+          <span className="rw-swatch" style={{ background: it.color }} />
+          {it.label}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+/* Diagramma ramkasi: balandlik beriladi, `ResponsiveContainer` esa
+   ota-elementdan kenglikni oladi. */
+function ChartFrame({ height = 260, children }) {
+  return <div style={{ width: "100%", height }}>{children}</div>;
+}
+
+function StatCard({ icon, label, value, foot, tone }) {
+  return (
+    <div className="rw-panel rw-stat">
+      <div className="rw-stat__icon">{icon}</div>
+      <p className="rw-stat__label">{label}</p>
+      <p className="rw-stat__value">{value}</p>
+      {foot && (
+        <p className="rw-stat__foot">
+          <span className={tone === "up" ? "rw-up" : tone === "down" ? "rw-down" : ""}>{foot[0]}</span>
+          <span>{foot[1]}</span>
+        </p>
+      )}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   2. DIAGRAMMALAR
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Reyting tarixi: ComposedChart ───────────────────────────────
+   Nima uchun ComposedChart, Line emas: unvon chegaralari ham kerak.
+
+   ⚠️ Unvon kamarlari `ReferenceLine` bilan chizilmaydi — bu o'lchandi.
+   `ReferenceLine` faqat CHIZIQ tortadi (`stroke`), ya'ni ichini
+   bo'yay olmaydi; `strokeOpacity={0}`, `fill` va `segment` bilan
+   urinilganda faqat yorliq qoladi, bantoning o'zi ko'rinmaydi.
+   To'g'ri yo'l — orqada yashirin `Bar` qatlami: `Bar` ichini
+   bo'yaydi va `background` bilan Y o'qining butun kengligini oladi.
+
+   Shu sababli diagramma `ComposedChart` VA `Bar` bilan qurilgan:
+   Bar = fon bantosi, Line = haqiqiy ma'lumot.                       */
+function RatingTrend({ tk }) {
+  const [showBands, setShowBands] = useState(true);
+
+  /* Har bir nuqta uchun o'sha nuqtada qaysi unvon kamari turganini
+     hisoblaymiz. `Bar` shu maydonni bo'yaydi — ya'ni bantoning
+     chegarasi haqiqiy reyting qiymatidan kelib chiqadi, qo'lda
+     qo'yilgan to'rtburchak emas. */
+  const rows = useMemo(
+    () =>
+      CONTEST_RATING.map((p) => {
+        const band = TITLE_BANDS.find((b) => p.after >= b.min && p.after < b.max);
+        return {
+          ...p,
+          bandCode: band ? band.code : "above",
+          bandLabel: band ? TITLE_LABEL[band.code] : "Kometa+",
+          bandColor: band ? tk.rank[TITLE_BANDS.indexOf(band) % tk.rank.length] : tk.rank[6],
+        };
+      }),
+    [tk],
+  );
+
+  const dot = (props) => {
+    const { cx, cy, payload } = props;
+    if (cx == null || cy == null) return <g key={props.key} />;
+    const rejected = payload.delta < 0;
+    return (
+      <circle
+        key={props.key}
+        cx={cx}
+        cy={cy}
+        r={payload.forced ? 5 : 3.5}
+        fill={tk.surface}
+        stroke={payload.forced ? tk.warn : rejected ? tk.bad : tk.ok}
+        strokeWidth={2}
+      />
+    );
+  };
+
+  /* Bantoni ko'rsatish uchun `Bar` ning `background` i emas, haqiqiy
+     `Bar` kerak: `background` butun diagrammani bir xil rangga
+     bo'yardi. Shuning uchun har bir ustunga o'z rangi beriladi va
+     `yAxisId` bilan asosiy chizig'ga bog'lanadi. */
+  const BAND_BASE = 1300;
+  const banded = rows.map((r) => ({
+    ...r,
+    bandBottom: showBands ? Math.max(BAND_BASE, r.after - 55) : BAND_BASE,
+    bandHeight: showBands ? 110 : 0,
+  }));
+
+  return (
+    <Card
+      title="Elo reyting tarixi"
+      hint="Kontests kamari · boshlang'ich 1400 · birinchi 6 musobaqada o'zgarish 1.5×"
+      action={
+        <div className="rw-seg">
+          <button aria-pressed={showBands} onClick={() => setShowBands(true)}>Chegaralar</button>
+          <button aria-pressed={!showBands} onClick={() => setShowBands(false)}>Faqat chiziq</button>
+        </div>
+      }
+    >
+      <ChartFrame height={280}>
+        <ResponsiveContainer width="100%" height={280}>
+          <ComposedChart data={banded} margin={{ top: 14, right: 16, bottom: 4, left: -8 }}>
+            <CartesianGrid stroke={tk.line} strokeDasharray="2 4" vertical={false} />
+            <XAxis
+              dataKey="label"
+              tick={{ fill: tk.faint, fontSize: 11 }}
+              axisLine={{ stroke: tk.line }}
+              tickLine={false}
+            />
+            <YAxis
+              domain={[BAND_BASE, 2100]}
+              ticks={[1400, 1600, 1800, 2000]}
+              tick={{ fill: tk.faint, fontSize: 11 }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <Tooltip
+              content={<RwTip />}
+              cursor={{ stroke: tk.accent, strokeDasharray: "3 3" }}
+            />
+
+            {/* Fon bantosi: har bir nuqta ostidagi unvon rangi. `stackId`
+                ATAYLAB berilmagan — ustunlar ustma-ust emas, yonma-yon
+                sohalar (guruhlangan). Sezilarli bo'lishi uchun
+                shaffoflik past. */}
+            <Bar
+              dataKey="bandHeight"
+              name="Unvon"
+              fillOpacity={0.16}
+              isAnimationActive={false}
+              legendType="none"
+            >
+              {banded.map((r) => (
+                <Cell key={r.at} fill={r.bandColor} />
+              ))}
+            </Bar>
+
+            <Line
+              type="monotone"
+              dataKey="after"
+              name="Reyting"
+              stroke={tk.accent}
+              strokeWidth={2.4}
+              dot={dot}
+              activeDot={{ r: 6, fill: tk.accent, stroke: tk.surface, strokeWidth: 2 }}
+              isAnimationActive={true}
+              animationDuration={900}
+            />
+            <ReferenceLine y={1400} stroke={tk.muted} strokeDasharray="4 4"
+              label={{ value: "start 1400", position: "insideBottomRight",
+                       fill: tk.faint, fontSize: 10 }} />
+          </ComposedChart>
+        </ResponsiveContainer>
+      </ChartFrame>
+      <div className="rw-legend">
+        <span className="rw-legend__item"><span className="rw-swatch" style={{ background: tk.ok }} />Reyting o'sdi</span>
+        <span className="rw-legend__item"><span className="rw-swatch" style={{ background: tk.bad }} />Reyting tushdi</span>
+        <span className="rw-legend__item"><span className="rw-swatch" style={{ background: tk.warn }} />Majburiy qayta baholash</span>
+      </div>
+    </Card>
+  );
+}
+
+/* ── 2. Unvon chegaralari: gorizontal BarChart ──────────────────────
+   ⚠️ Bu diagramma ikki marta qayta yozildi va sababi muhim.
+
+   Birinchi urinish `Bar` + `stackId` bilan edi: ko'rinmas `base`
+   qatlami, ustiga `top`. Natijada FAQAT bitta ustun ko'rindi —
+   sabab `stackId` da har bir ustunning O'ZI ayricha stack bo'ladi,
+   ya'ni Y o'qida bitta kategoriya qoladi. Buni skrinshot ko'rsatdi.
+
+   To'g'ri yo'l: `base` prop'i. Recharts'da HAR BIR `Bar` elementi
+   `base` ni qabul qiladi — ustun `base` dan `base + value` gacha
+   chiziladi. Ya'ni kenglik `[min, max]` oralig'i bo'lib chiqadi.   */
+function TitleBands({ tk }) {
+  const rows = TITLE_BANDS.map((b) => ({
+    name: TITLE_LABEL[b.code],
+    min: b.min,
+    width: b.max - b.min,
+    range: b.min + "–" + b.max,
+  }));
+
+  return (
+    <Card
+      title="Unvon chegaralari"
+      hint="Har bir unvon qaysi reyting oralig'ini egallaydi · kenglik = oraliq uzunligi"
+    >
+      <ChartFrame height={230}>
+        <ResponsiveContainer width="100%" height={230}>
+          <BarChart data={rows} layout="vertical" margin={{ top: 4, right: 20, bottom: 4, left: 8 }}>
+            <CartesianGrid stroke={tk.line} strokeDasharray="2 4" horizontal={false} />
+            <XAxis
+              type="number" domain={[0, 2200]} ticks={[0, 600, 1200, 1600, 2000]}
+              tick={{ fill: tk.faint, fontSize: 11 }} axisLine={false} tickLine={false}
+            />
+            <YAxis
+              type="category" dataKey="name" width={76} tick={{ fill: tk.muted, fontSize: 12 }}
+              axisLine={false} tickLine={false}
+            />
+            <Tooltip content={<RwTip />} cursor={{ fill: tk.accentSoft }} />
+            {/* `base` — ustunning boshlanish nuqtasi. Recharts uni har
+                bir element uchun qabul qiladi, shuning uchun
+                guruhlash/stack kerak emas. */}
+            <Bar
+              dataKey="width" name="Oraliq kengligi" radius={[0, 5, 5, 0]}
+              barSize={20} base={rows.map((r) => r.min)}
+            >
+              {rows.map((r, i) => (
+                <Cell key={r.name} fill={tk.rank[i % tk.rank.length]} fillOpacity={0.8} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </ChartFrame>
+      <div className="rw-legend">
+        {rows.map((r, i) => (
+          <span className="rw-legend__item" key={r.name}>
+            <span className="rw-swatch" style={{ background: tk.rank[i % tk.rank.length] }} />
+            {r.name} · {r.range}
+          </span>
+        ))}
+      </div>
+    </Card>
+  );
+}
+
+/* ── 3. Qiyinlik taqsimoti: guruhlangan BarChart ────────────────────
+   Ikkala seriya ham "yechilgan" va "urinish" — bir xil o'lchov
+   birligida, ya'ni ustunlar yonma-yon bo'lishi to'g'ri. `stackId`
+   ISHLATILMAYDI: stack yig'indini ko'rsatadi, bu yerda esa taqqoslash
+   kerak.                                                             */
+function DifficultySplit({ tk }) {
+  return (
+    <Card
+      title="Qiyinlik bo'yicha"
+      hint="Har bir darajada yechilgan masala va umumiy urinish"
+    >
+      <ChartFrame height={260}>
+        <ResponsiveContainer width="100%" height={260}>
+          <BarChart data={DIFFICULTY_VS_ATTEMPTS} margin={{ top: 8, right: 12, bottom: 26, left: -10 }}>
+            <CartesianGrid stroke={tk.line} strokeDasharray="2 4" vertical={false} />
+            <XAxis
+              dataKey="level" tick={{ fill: tk.faint, fontSize: 10 }}
+              axisLine={{ stroke: tk.line }} tickLine={false}
+              angle={-30} textAnchor="end" height={64} interval={0}
+            />
+            <YAxis tick={{ fill: tk.faint, fontSize: 11 }} axisLine={false} tickLine={false} />
+            <Tooltip content={<RwTip />} cursor={{ fill: tk.accentSoft }} />
+            {/* `Legend` bu yerda YO'Q — sabab ChartLegend izohida. */}
+            <Bar dataKey="attempts" name="Urinishlar" fill={tk.accent} fillOpacity={0.22}
+                 stroke={tk.accent} strokeOpacity={0.55} strokeWidth={1}
+                 radius={[5, 5, 0, 0]} barSize={18} />
+            <Bar dataKey="solved" name="Yechilgan" fill={tk.accent}
+                 radius={[5, 5, 0, 0]} barSize={18} />
+          </BarChart>
+        </ResponsiveContainer>
+      </ChartFrame>
+      <ChartLegend
+        items={[
+          { label: "Urinishlar", color: tk.accent, soft: true },
+          { label: "Yechilgan", color: tk.accent },
+        ]}
+      />
+    </Card>
+  );
+}
+
+/* ── 4. Mavzu kuchi: gorizontal BarChart ────────────────────────────
+   Mavzu nomlari uzun, ya'ni vertikal ustunda o'qlar kesiladi.
+   Gorizontal joylashuvda `YAxis` kategoriya bo'ladi.                 */
+function TopicBars({ tk }) {
+  return (
+    <Card
+      title="Mavzu kuchi"
+      hint="Skills formulasi mavzu kesimida · yechilgan / jami"
+    >
+      <ChartFrame height={280}>
+        <ResponsiveContainer width="100%" height={280}>
+          <BarChart
+            data={TOPIC_STRENGTH} layout="vertical"
+            margin={{ top: 4, right: 44, bottom: 4, left: 18 }}
+          >
+            <CartesianGrid stroke={tk.line} strokeDasharray="2 4" horizontal={false} />
+            <XAxis type="number" domain={[0, 2000]} tick={{ fill: tk.faint, fontSize: 11 }}
+                   axisLine={false} tickLine={false} />
+            <YAxis type="category" dataKey="topic" width={96}
+                   tick={{ fill: tk.muted, fontSize: 12 }} axisLine={false} tickLine={false} />
+            <Tooltip content={<RwTip />} cursor={{ fill: tk.accentSoft }} />
+            <Bar dataKey="rating" name="Mavzu reytingi" radius={[0, 6, 6, 0]} barSize={16}>
+              {TOPIC_STRENGTH.map((row, i) => (
+                <Cell key={row.topic} fill={tk.rank[(i + 2) % tk.rank.length]} fillOpacity={0.85} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </ChartFrame>
+    </Card>
+  );
+}
+
+/* ── 5. Verdikt taqsimoti: donut PieChart ───────────────────────────
+   `Pie` da `innerRadius` berilsa donut bo'ladi. Markazdagi matn —
+   Recharts'da `label` bilan emas, ustiga qo'yilgan oddiy HTML (SVG
+   ichida absolyut joylashuv ishonchsiz).                             */
+function VerdictDonut({ tk }) {
+  const total = VERDICTS.reduce((sum, v) => sum + v.value, 0);
+  const accepted = VERDICTS.find((v) => v.key === "ac").value;
+
+  return (
+    <Card title="Verdikt taqsimoti" hint={"Jami urinish: " + total.toLocaleString("uz")}>
+      <div style={{ position: "relative" }}>
+        <ChartFrame height={250}>
+          <ResponsiveContainer width="100%" height={250}>
+            <PieChart>
+              <Pie
+                data={VERDICTS} dataKey="value" nameKey="name"
+                innerRadius={62} outerRadius={96} paddingAngle={2}
+                stroke={tk.surface} strokeWidth={2}
+                isAnimationActive={true} animationDuration={800}
+              >
+                {VERDICTS.map((v) => (
+                  <Cell key={v.key} fill={VERDICT_COLOR[v.key]} />
+                ))}
+              </Pie>
+              <Tooltip content={<RwTip />} />
+            </PieChart>
+          </ResponsiveContainer>
+        </ChartFrame>
+        {/* Markazdagi ko'rsatkich — diagramma ustidagi oddiy HTML. */}
+        <div style={{
+          position: "absolute", inset: 0, display: "flex",
+          flexDirection: "column", alignItems: "center", justifyContent: "center",
+          pointerEvents: "none",
+        }}>
+          <span style={{ fontSize: 26, fontWeight: 680, letterSpacing: "-.02em", color: tk.text }}>
+            {Math.round((accepted / total) * 100)}%
+          </span>
+          <span style={{ fontSize: 11, color: tk.faint }}>Accepted</span>
+        </div>
+      </div>
+      <div className="rw-legend">
+        {VERDICTS.map((v) => (
+          <span className="rw-legend__item" key={v.key}>
+            <span className="rw-swatch" style={{ background: VERDICT_COLOR[v.key] }} />
+            {v.name} · {v.value}
+          </span>
+        ))}
+      </div>
+    </Card>
+  );
+}
+
+/* ── 6. Qvant oqimi: AreaChart ──────────────────────────────────────
+   Kirim va chiqim kesishadi, ya'ni ikkita mustaqil `Area`. `stackId`
+   berilsa yig'indi chiqardi — bu yerda kerak emas.                   */
+function QvantFlow({ tk }) {
+  return (
+    <Card
+      title="Qvant oqimi"
+      hint="Haftalik · yashil — topilgan, sariq — sarflangan"
+    >
+      <ChartFrame height={230}>
+        <ResponsiveContainer width="100%" height={230}>
+          <AreaChart data={QVANT_FLOW} margin={{ top: 8, right: 14, bottom: 4, left: -12 }}>
+            <defs>
+              <linearGradient id="rwEarn" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={tk.ok} stopOpacity={0.65} />
+                <stop offset="100%" stopColor={tk.ok} stopOpacity={0.1} />
+              </linearGradient>
+              <linearGradient id="rwSpend" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={tk.warn} stopOpacity={0.5} />
+                <stop offset="100%" stopColor={tk.warn} stopOpacity={0.08} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid stroke={tk.line} strokeDasharray="2 4" vertical={false} />
+            <XAxis dataKey="day" tick={{ fill: tk.faint, fontSize: 11 }}
+                   axisLine={{ stroke: tk.line }} tickLine={false} />
+            <YAxis tick={{ fill: tk.faint, fontSize: 11 }} axisLine={false} tickLine={false} />
+            <Tooltip content={<RwTip unit=" Q" />} cursor={{ stroke: tk.accent, strokeDasharray: "3 3" }} />
+            {/* `Legend` bu yerda YO'Q — sabab ChartLegend izohida. */}
+            <Area type="monotone" dataKey="earned" name="Topilgan" stroke={tk.ok}
+                  strokeWidth={2} fill="url(#rwEarn)" />
+            <Area type="monotone" dataKey="spent" name="Sarflangan" stroke={tk.warn}
+                  strokeWidth={2} fill="url(#rwSpend)" />
+          </AreaChart>
+        </ResponsiveContainer>
+      </ChartFrame>
+      <ChartLegend
+        items={[
+          { label: "Topilgan", color: tk.ok },
+          { label: "Sarflangan", color: tk.warn },
+        ]}
+      />
+      <p className="rw-faint" style={{ marginTop: 8 }}>
+        Qvant balansi ataylab reytingga kirmaydi — aks holda do'konda xarid
+        qilish reytingni tushirardi.
+      </p>
+    </Card>
+  );
+}
+
+/* ── 7. Masala yechish halqasi: RadialBarChart ──────────────────────
+   Uchta ko'rsatkich bir halqada: yechilgan, qayta urinilgan,
+   tashlab ketilgan. `RadialBar` `dataKey` ni 0-100 foizda kutadi,
+   shuning uchun foiz OLDINDAN hisoblanadi.                           */
+function SolveRing({ tk }) {
+  const rows = [
+    { name: "Yechilgan",       value: 38, fill: tk.ok },
+    { name: "Qayta urinilgan", value: 27, fill: tk.warn },
+    { name: "Tashlab ketilgan",value: 14, fill: tk.bad },
+  ];
+
+  return (
+    <Card title="Masala yechish halqasi" hint="Oxirgi 30 kunlik siljuvchi oyna">
+      <ChartFrame height={250}>
+        <ResponsiveContainer width="100%" height={250}>
+          <RadialBarChart
+            data={rows} innerRadius="32%" outerRadius="96%"
+            startAngle={90} endAngle={-270}
+          >
+            <RadialBar dataKey="value" cornerRadius={8} background={{ fill: tk.line }} />
+            <Tooltip content={<RwTip unit="%" />} />
+            {/* `Legend` bu yerda YO'Q — sabab ChartLegend izohida. */}
+          </RadialBarChart>
+        </ResponsiveContainer>
+      </ChartFrame>
+      <ChartLegend items={rows.map((r) => ({ label: r.name + " · " + r.value + "%", color: r.fill }))} />
+      <p className="rw-faint" style={{ marginTop: 8 }}>
+        Yechilgan 38% · qayta urinilgan 27% · tashlab ketilgan 14%.
+        Qolgani — hali ochilmagan masalalar.
+      </p>
+    </Card>
+  );
+}
+
+/* ── 8. Haftalik faollik: BarChart + o'rtacha chizig'i ──────────────
+   `ReferenceLine` bu yerda o'rtachani ko'rsatadi — oddiy, lekin
+   diagramma "yaxshi hafta" ni darhol ko'rinadigan qiladi.            */
+function WeeklyActivity({ tk }) {
+  const avg = Math.round(ACTIVITY.reduce((s, d) => s + d.solved, 0) / ACTIVITY.length);
+
+  return (
+    <Card
+      title="Haftalik faollik"
+      hint={"Oxirgi 26 hafta · o'rtacha " + avg + " masala/hafta"}
+    >
+      <ChartFrame height={230}>
+        <ResponsiveContainer width="100%" height={230}>
+          <BarChart data={ACTIVITY} margin={{ top: 8, right: 12, bottom: 4, left: -14 }}>
+            <CartesianGrid stroke={tk.line} strokeDasharray="2 4" vertical={false} />
+            <XAxis dataKey="week" tick={{ fill: tk.faint, fontSize: 10 }}
+                   axisLine={{ stroke: tk.line }} tickLine={false} interval={3} />
+            <YAxis tick={{ fill: tk.faint, fontSize: 11 }} axisLine={false} tickLine={false} />
+            <Tooltip content={<RwTip />} cursor={{ fill: tk.accentSoft }} />
+            <ReferenceLine y={avg} stroke={tk.warn} strokeDasharray="4 4"
+              label={{ value: "o'rtacha " + avg, position: "insideTopRight",
+                       fill: tk.warn, fontSize: 10 }} />
+            <Bar dataKey="solved" name="Yechilgan masala" radius={[4, 4, 0, 0]}>
+              {ACTIVITY.map((d, i) => (
+                <Cell key={d.week} fill={tk.accent} fillOpacity={d.solved >= avg ? 0.95 : 0.45} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </ChartFrame>
+    </Card>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   3. SAHIFA
+   ═══════════════════════════════════════════════════════════════════ */
+
+function App() {
+  const [theme, setTheme, tk] = useThemeTokens();
+  const [range, setRange] = useState("12oy");
+
+  const ratingNow = CONTEST_RATING[CONTEST_RATING.length - 1].after;
+  const ratingDelta = ratingNow - CONTEST_RATING[0].before;
+
+  return (
+    <div className="rw-shell">
+      <header className="rw-head">
+        <div>
+          <h1 className="rw-title">
+            Contest Analytics{" "}
+            <span className="rw-badge">Recharts 3.10.1</span>
+          </h1>
+          <p className="rw-sub">
+            RankWant profilining diagramma qatlami uchun prototip. Tokenlar
+            mahsulotning <code>dashboard</code> uslubidan olingan; diagrammalar
+            esa Recharts komponentlari bilan chizilgan.
+          </p>
+        </div>
+        <button
+          className="rw-btn"
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          aria-label="Mavzuni almashtirish"
+        >
+          {theme === "dark" ? "☀ Yorug'" : "☾ Qorong'i"}
+        </button>
+      </header>
+
+      {/* Ko'rsatkich kartalari — diagramma emas, lekin sahifa ularsiz
+          yarim ko'rinadi: raqam kontekstsiz diagramma ham ma'nosiz. */}
+      <div className="rw-grid rw-grid--stats">
+        <StatCard
+          icon="◈" label="Kontests reytingi" value={ratingNow}
+          foot={[(ratingDelta > 0 ? "+" : "") + ratingDelta + " ", "shu mavsumda"]}
+          tone={ratingDelta > 0 ? "up" : "down"}
+        />
+        <StatCard icon="▲" label="Mavzu reytingi (Skills)" value="27 940"
+          foot={["+1 284 ", "30 kun ichida"]} tone="up" />
+        <StatCard icon="✦" label="Qvant balansi" value="1 940 Q"
+          foot={["+ 560 Q ", "shu hafta"]} tone="up" />
+        <StatCard icon="◎" label="Yechilgan masala" value="381"
+          foot={["57% ", "muvaffaqiyat"]} />
+      </div>
+
+      <div className="rw-grid rw-grid--split">
+        <RatingTrend tk={tk} />
+        <VerdictDonut tk={tk} />
+      </div>
+
+      <div className="rw-grid rw-grid--split">
+        <Card
+          title="Vaqt oralig'i"
+          hint="Sana filtri — diagrammalar bir xil oraliqda yangilanadi"
+          action={
+            <div className="rw-seg">
+              {["30kun", "6oy", "12oy", "hammasi"].map((r) => (
+                <button key={r} aria-pressed={range === r} onClick={() => setRange(r)}>
+                  {r}
+                </button>
+              ))}
+            </div>
+          }
+        >
+          <p className="rw-faint" style={{ marginTop: 0 }}>
+            Tanlangan oraliq: <strong style={{ color: tk.text }}>{range}</strong>.
+            Prototipda ma'lumot qat'iy — filtr faqat holatni saqlaydi, shuning
+            uchun Recharts qayta render qilishda animatsiyani qaytadan
+            o'ynatadi (<code>isAnimationActive</code>).
+          </p>
+        </Card>
+        <SolveRing tk={tk} />
+      </div>
+
+      <div className="rw-grid rw-grid--trio">
+        <DifficultySplit tk={tk} />
+        <TopicBars tk={tk} />
+        <QvantFlow tk={tk} />
+      </div>
+
+      <div style={{ marginTop: 16 }}>
+        <WeeklyActivity tk={tk} />
+      </div>
+
+      <div style={{ marginTop: 16 }}>
+        <TitleBands tk={tk} />
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
