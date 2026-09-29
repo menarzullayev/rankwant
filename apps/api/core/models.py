@@ -64,6 +64,12 @@ class User(AbstractUser):
     4 reyting boshidanoq modellashtiriladi, UI da fazali ochiladi — ADR-0006.
     """
 
+    class Origin(models.TextChoices):
+        REAL = "real", "Real"
+        DEMO = "demo", "Demo"
+        IMPORTED = "imported", "Imported"
+        STAFF = "staff", "Staff"
+
     class Locale(models.TextChoices):
         UZ = "uz", "O'zbekcha"
         KAA = "kaa", "Qaraqalpaqsha"
@@ -75,6 +81,13 @@ class User(AbstractUser):
         TR = "tr", "Türkçe"
         ZH = "zh", "中文"
         ES = "es", "Español"
+
+    #: Foydalanuvchi kelib chiqishi — North Star metrikalar uchun (WP3).
+    #: `real` ro'yxatdan o'tgan; `demo` seed/stress; `imported` tashqi
+    #: manba (Codeforces); `staff` xodim yoki superuser.
+    origin = models.CharField(
+        max_length=16, choices=Origin.choices, default=Origin.REAL
+    )
 
     #: Taqlidga qarshi shakl — `core.handles.skeleton`. `save()` da
     #: to'ldiriladi, ya'ni admin, staff API va seed'da bir xil ishlaydi.

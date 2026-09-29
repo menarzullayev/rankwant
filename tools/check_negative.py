@@ -1835,6 +1835,7 @@ def neg_checker_survives_narrow_stdout() -> tuple[bool, str]:
                 "--compose-status", str(compose),
             ],
             "check_after_reboot.py": ["--facts", str(facts)],
+            "check_metrics.py": ["--self-test"],
         }
         for name in scripts:
             proc = subprocess.run(
@@ -3055,12 +3056,23 @@ def neg_decisions_security_on_pr() -> tuple[bool, str]:
     )
 
 
-def neg_decisions_security_run_enabled() -> tuple[bool, str]:
+def neg_decisions_security_run_disabled() -> tuple[bool, str]:
+    """`if: false` qaytsa — Security yana o'chsa, tutilsin (D5)."""
     return _decision_broken(
         ".github/workflows/security.yml",
-        "    if: false\n",
+        "    name: Security checks\n    runs-on: ubuntu-latest\n",
+        "    name: Security checks\n    if: false\n    runs-on: ubuntu-latest\n",
+        "Security run yoqilgan",
+    )
+
+
+def neg_decisions_security_cron_removed() -> tuple[bool, str]:
+    """Kunlik cron olib tashlansa — avtomatik yurmay qolsa, tutilsin (D5)."""
+    return _decision_broken(
+        ".github/workflows/security.yml",
+        "  schedule:\n    - cron: '0 3 * * *'\n",
         "",
-        "Security run o'chiq",
+        "Security run yoqilgan",
     )
 
 
@@ -3069,7 +3081,7 @@ def neg_decisions_security_required_again() -> tuple[bool, str]:
         "tools/check_deploy_gate.py",
         'REQUIRED = ("CI",)',
         'REQUIRED = ("CI", "Security")',
-        "Security run o'chiq",
+        "Security run yoqilgan",
     )
 
 
@@ -5297,8 +5309,8 @@ def neg_env_example_new_compose_var() -> tuple[bool, str]:
 def neg_env_example_new_setting() -> tuple[bool, str]:
     return _env_example_broken(
         "apps/api/config/settings.py",
-        'SECRET_KEY = env("DJANGO_SECRET_KEY", "dev-only-not-for-production")\n',
-        'SECRET_KEY = env("DJANGO_SECRET_KEY", "dev-only-not-for-production")\n'
+        'SECRET_KEY = env("DJANGO_SECRET_KEY")\n',
+        'SECRET_KEY = env("DJANGO_SECRET_KEY")\n'
         'PROBE_SETTING = env("NEW_PROBE_SETTING")\n',
         "NEW_PROBE_SETTING",
     )
@@ -5946,6 +5958,331 @@ def neg_negative_rejects_unknown_group() -> tuple[bool, str]:
     return True, f"notanish guruh rad etildi (exit {code}), sabab aytildi"
 
 
+# ── App va AI chegarasi (D6 · D7) ─────────────────────────────────────
+#
+# Ikkala darvoza ham bugun "yashil", lekin ikkalasi ham STATIK: AI
+# qatlami deyarli bo'sh, arxitektura allowlist'i esa mavjud importlarni
+# grandfather qiladi. Ya'ni "hech qachon yiqilmaydigan tekshiruv"
+# bo'lish xavfi aynan shu yerda eng katta — shuning uchun har ikkalasiga
+# ham mutatsiya testi MAJBURIY.
+
+
+@contextlib.contextmanager
+def _temp_repo_file(path: Path, content: str) -> Iterator[None]:
+    """Vaqtinchalik repo fayli — yaratadi, oxirida O'CHIRADI.
+
+    `Mutation` MAVJUD faylni tahrirlaydi; yangi taqiqlangan import esa
+    YANGI faylni talab qiladi. Bayt darajasida yoziladi va istisno
+    bo'lsa ham `finally` da o'chiriladi — qolgan fayl keyingi yurishda
+    yolg'on qizil berardi.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(content.encode("utf-8"))
+    try:
+        yield
+    finally:
+        path.unlink(missing_ok=True)
+
+
+def _gate_catches(checker: str, label: str, path: Path, content: str) -> tuple[bool, str]:
+    """Old shart (toza holat yashil) → mutatsiya → darvoza `exit 1`.
+
+    ⚠️ Old shart SHART: yangi gate skripti mavjud bo'lmasa `exit != 0`
+    ni «buzuq holatni tutdi» deb o'qib, YOLG'ON YASHIL chiqardi. Bu
+    ayniqsa `tools/` hali commit qilinmagan holda `git archive` nusxasi
+    ustida ishlaganda muhim.
+    """
+    code, out = run_check(checker)
+    if code != 0:
+        return False, (
+            f"{label}: old shart — toza holatda ham exit {code}: {out.strip()[-120:]}"
+        )
+    with _temp_repo_file(path, content):
+        code, out = run_check(checker)
+    if code != 1:
+        return False, f"{label}: buzuq holatni O'TKAZDI (exit {code}) — darvoza o'lik"
+    return True, f"{label}: buzuq holatni tutdi (exit 1)"
+
+
+def neg_ai_boundary_model_import() -> tuple[bool, str]:
+    """AI qatlamiga Django model importi qo'shilsa — tutilsinmi?"""
+    probe = ROOT / "apps/api/ai/_neg_probe.py"
+    return _gate_catches(
+        "ai_boundary", "ai/model importi", probe, "from contests.models import Contest\n"
+    )
+
+
+def neg_ai_boundary_module_import() -> tuple[bool, str]:
+    """`from <app> import models` shakli (aylanib o'tish) — tutilsinmi?
+
+    QA topilmasi F1: `from contests.models import ...` tutilsa ham,
+    `from contests import models` o'tib ketardi.
+    """
+    probe = ROOT / "apps/api/ai/_neg_probe.py"
+    return _gate_catches(
+        "ai_boundary",
+        "ai/`from <app> import models`",
+        probe,
+        "from problems import models\n",
+    )
+
+
+def neg_ai_boundary_relative_import() -> tuple[bool, str]:
+    """`from . import models` shakli (nisbiy, aylanib o'tish) — tutilsinmi?"""
+    probe = ROOT / "apps/api/ai/_neg_probe.py"
+    return _gate_catches(
+        "ai_boundary", "ai/`from . import models`", probe, "from . import models\n"
+    )
+
+
+def neg_ai_boundary_database_url() -> tuple[bool, str]:
+    """AI qatlami `DATABASE_URL` ni o'qisa — tutilsinmi?"""
+    probe = ROOT / "apps/api/ai/_neg_probe.py"
+    return _gate_catches(
+        "ai_boundary",
+        "ai/DATABASE_URL",
+        probe,
+        'import os\n\nURL = os.environ["DATABASE_URL"]\n',
+    )
+
+
+def neg_ai_boundary_testdata_read() -> tuple[bool, str]:
+    """AI qatlami testdata o'qisa — tutilsinmi?"""
+    probe = ROOT / "apps/api/ai/_neg_probe.py"
+    return _gate_catches(
+        "ai_boundary",
+        "ai/testdata",
+        probe,
+        'import json\n\nCASES = json.loads(open("testdata/cases.json").read())\n',
+    )
+
+
+def neg_architecture_cross_app_import() -> tuple[bool, str]:
+    """Yangi taqiqlangan app-importi qo'shilsa — tutilsinmi?"""
+    probe = ROOT / "apps/api/ai/_neg_probe_arch.py"
+    return _gate_catches(
+        "architecture",
+        "arxitektura/yangi import",
+        probe,
+        "from judging.models import Attempt\n",
+    )
+
+
+def neg_architecture_stale_allowlist() -> tuple[bool, str]:
+    """Allowlist'da mavjud bo'lmagan yozuv qolsa — tutilsinmi (ratchet)?"""
+    path = ROOT / "tools/architecture-allowlist.txt"
+    text = path.read_bytes().decode("utf-8")
+    first = next(
+        (
+            line
+            for line in text.splitlines()
+            if line.strip() and not line.lstrip().startswith("#")
+        ),
+        None,
+    )
+    if first is None:
+        return False, "arxitektura/ratchet: allowlist bo'sh — langar topilmadi"
+    bogus = "nonexistent/probe.py:contests.models"
+    with Mutation(path, first, first + "\n" + bogus):
+        code, out = run_check("architecture")
+    if code != 1:
+        return False, f"arxitektura/ratchet: o'lik yozuv exit {code} berdi (1 kerak)"
+    if bogus not in out:
+        return False, "arxitektura/ratchet: yiqildi, lekin o'lik yozuvni ko'rsatmadi"
+    return True, "arxitektura/ratchet: o'lik allowlist yozuvi tutildi (exit 1)"
+
+
+# ── Content readiness gate (WP1 · D8 · D8-F) ──────────────────────────
+#
+# Ikki qavat, chunki bittasi yetmaydi: M-A sof funksiyani (kod yo'li),
+# M-B esa serializer'dan chetlab o'tgan yozuvni ham tutadi (`create_mirror`
+# kabi). Ikkalasi ham HAQIQIY pytest yurgizadi — aks holda «testlar ishga
+# tushmadi» ni «buzuq holatni tutdi» deb o'qib, yolg'on yashil olinardi
+# (xuddi `node` guruhi uchun `node_precondition` qanday ishlaydi).
+
+API_TEST_IMAGE = "rankwant-api-dev:audit"
+#: `apps/api/.venv` — Linux venv (Windows'da `bin/python` 0 bayt), runtime
+#: image'ida esa `pytest` yo'q. Shu image — yagona ishlaydigan muhit.
+API_TEST_PIP = "pip install -q -r requirements-dev.lock >/dev/null 2>&1"
+ECHO_CASE = (
+    "tests/regression/test_ref_solution_verdicts.py"
+    "::TestReferenceSolutionVerdicts::test_sample_echo_is_not_ac"
+)
+GATE_CASE = "tests/test_problem_readiness.py::TestGradedGate::test_graded_requires_validated"
+API_CASE_FILES = (
+    "apps/api/tests/regression/test_ref_solution_verdicts.py",
+    "apps/api/tests/test_problem_readiness.py",
+)
+#: Yorliqlar — `main()` da shu guruh tanlanganda old shart ishlashi uchun.
+API_CASE_LABELS = {
+    "S4 sharti olib tashlansa tutilsin",
+    "graded gate olib tashlansa tutilsin",
+}
+
+
+def run_api_tests(*node_ids: str) -> tuple[int, str]:
+    """`apps/api` testlarini konteynerda yurgizadi.
+
+    Repo `/repo` ga mount qilinadi, ya'ni `Mutation` yozgan o'zgarish
+    konteyner ichida ham kuchda. Windows yo'li (`D:\\...`) o'rniga
+    chiziqcha bilan beriladi — Git Bash va Docker CLI shu ko'rinishda
+    ishonchli ishlaydi (o'lchandi).
+    """
+    script = f"{API_TEST_PIP}; python -m pytest " + " ".join(node_ids)
+    return run(
+        [
+            "docker", "run", "--rm",
+            "-e", "DJANGO_SECRET_KEY=negative-test",
+            "-v", f"{str(ROOT).replace(chr(92), '/')}:/repo",
+            "-w", "/repo/apps/api",
+            API_TEST_IMAGE,
+            "sh", "-lc", script,
+        ]
+    )
+
+
+def api_test_precondition() -> str | None:
+    """Testlar o'zgarmagan manbada YASHIL bo'lishi shart.
+
+    Aks holda har qanday yiqilish (image yo'q, docker yo'q, import xatosi)
+    «buzuq holatni tutdi» bo'lib ko'rinadi — aynan yolg'on yashil.
+    """
+    for rel in API_CASE_FILES:
+        if not (ROOT / rel).exists():
+            return (
+                f"{rel} yo'q — `git archive` nusxasida yangi fayllar bo'lmaydi; "
+                "bu guruhni `--serial` bilan yurgizing"
+            )
+    if shutil.which("docker") is None:
+        return "docker topilmadi — api testlari yurgizilmadi"
+    code, _out = run(["docker", "image", "inspect", API_TEST_IMAGE])
+    if code != 0:
+        return f"{API_TEST_IMAGE} image'i yo'q — api testlari yurgizilmadi"
+    code, out = run_api_tests(ECHO_CASE, GATE_CASE)
+    if code != 0:
+        tail = " | ".join(out.strip().splitlines()[-3:])
+        return f"boshlang'ich yugurish yashil emas (exit {code}): {tail}"
+    return None
+
+
+def neg_refsolution_gate_echo_removed() -> tuple[bool, str]:
+    """M-A — S4 sharti olib tashlansa, `test_sample_echo_is_not_ac` qizil bo'ladimi?
+
+    Aynan shu shart `print('3 2 1')` ni o'tkazib yuborardi: olib tashlansa
+    namunani chop etgan dastur `AC` oladi, lekin holat baribir
+    `ref_solution_verified` ga o'tadi.
+    """
+    path = ROOT / "apps/api/problems/readiness.py"
+    with Mutation(path, "    if echo_verdict == Verdict.AC:", "    if False:"):
+        code, _out = run_api_tests(ECHO_CASE)
+    if code == 0:
+        return False, "gate/S4: S4 sharti olib tashlansa ham test yashil — gate o'lik"
+    return True, f"gate/S4: S4 sharti olib tashlansa test qizil (exit {code})"
+
+
+#: Ikkala qavat ham bir xil shartni yozadi — gate to'liq olib tashlanishi
+#: uchun ikkalasi ham mutatsiya qilinishi shart. Faqat serializer'nikini
+#: olib tashlash R8 ni qizil qilmaydi (o'lchandi): view qavati baribir
+#: 400 qaytaradi, ya'ni bitta qavat o'lik ekanini ko'rsatib bo'lmaydi.
+GATE_LAYERS = (
+    "apps/api/contests/staff_serializers.py",
+    "apps/api/contests/staff_views.py",
+)
+GATE_CONDITION = 'row["problem"].readiness != GRADED_READY'
+
+
+@contextlib.contextmanager
+def _gate_removed() -> Iterator[None]:
+    """Ikkala qavatdan readiness shartini vaqtincha olib tashlaydi."""
+    with Mutation(ROOT / GATE_LAYERS[0], GATE_CONDITION, "False"):
+        with Mutation(ROOT / GATE_LAYERS[1], GATE_CONDITION, "False"):
+            yield
+
+
+def neg_refsolution_gate_serializer_removed() -> tuple[bool, str]:
+    """M-B — graded gate olib tashlansa, R8 qizil bo'ladimi?
+
+    Bu qavat serializer'dan chetlab o'tadigan yo'llar (`create_mirror`
+    kabi) uchun ham ishlaydi: ularning hammasi shu shartga tayanadi.
+    """
+    with _gate_removed():
+        code, _out = run_api_tests(GATE_CASE)
+    if code == 0:
+        return False, "gate/graded: gate olib tashlansa ham R8 yashil — gate o'lik"
+    return True, f"gate/graded: gate olib tashlansa R8 qizil (exit {code})"
+
+
+# ── Metrics gate (WP3 · User.origin) ───────────────────────────────────
+
+METRICS_CASES = {
+    "North Star noto'g'ri origin bilan yiqiladi",
+    "g'ayritabiiy chegara bilan yiqiladi",
+    "toza holat o'tadi (nazorat)",
+}
+
+
+def metrics_precondition() -> str | None:
+    """check_metrics.py o'zgarmagan manbada exit 0 berishini talab qiladi.
+
+    `None` — hammasi joyida. Aks holda sabab qaytariladi.
+    """
+    import os
+
+    if not os.environ.get("DATABASE_URL"):
+        return "DATABASE_URL yo'q — metrics o'lchanmadi"
+    code, out = run_check("metrics")
+    if code == 127:
+        return "psycopg2 yo'q — metrics o'lchanmadi"
+    if code != 0:
+        first = out.strip().splitlines()[:3]
+        return (
+            f"metrics o'zgarmagan manbada ham yiqildi (exit {code}): "
+            f"{' | '.join(first)}"
+        )
+    return None
+
+
+def neg_check_metrics_wrong_origin() -> tuple[bool, str]:
+    """North Star query noto'g'ri origin ishlatsa — yiqiladimi?"""
+    path = ROOT / "tools/check_metrics.py"
+    old = "WHERE origin = 'real'"
+    new = "WHERE origin = 'not_real'"
+    if old not in path.read_bytes().decode("utf-8"):
+        return False, "metrics/wrong origin: langar topilmadi"
+    with Mutation(path, old, new):
+        code, out = run_check("metrics")
+    if code == 0:
+        return False, "metrics/wrong origin: buzuq query O'TKAZDI (exit 0) — darvoza o'lik"
+    if "0" not in out and "North Star" not in out:
+        return False, f"metrics/wrong origin: yiqildi, lekin sabab ko'rinmadi — {out.strip()[-160:]}"
+    return True, "metrics/wrong origin: buzuq query tutildi (exit 1)"
+
+
+def neg_check_metrics_impossible_threshold() -> tuple[bool, str]:
+    """G'ayritabiiy chegara (total > 999_999_999) qo'yilsa — yiqiladimi?"""
+    path = ROOT / "tools/check_metrics.py"
+    text = path.read_bytes().decode("utf-8")
+    old = 'if total == 0:\n            errors.append("Bazada umuman foydalanuvchi yo\'q")'
+    if old not in text:
+        return False, "metrics/impossible: langar topilmadi"
+    new = 'if total < 999_999_999:\n            errors.append("Bazada umuman foydalanuvchi yo\'q")'
+    with Mutation(path, old, new):
+        code, out = run_check("metrics")
+    if code == 0:
+        return False, "metrics/impossible: buzuq chegara O'TKAZDI (exit 0) — darvoza o'lik"
+    return True, "metrics/impossible: buzuq chegara tutildi (exit 1)"
+
+
+def neg_check_metrics_passes() -> tuple[bool, str]:
+    """Ijobiy nazorat: toza holatda check_metrics o'tsin."""
+    code, out = run_check("metrics")
+    if code != 0:
+        return False, f"metrics/nazorat: toza holat exit {code} berdi (0 kerak) — {out.strip()[-160:]}"
+    if "Barcha tekshiruvlar o'tdi" not in out:
+        return False, "metrics/nazorat: muvaffaqiyat xabari ko'rinmadi"
+    return True, "metrics/nazorat: toza holat o'tdi (exit 0)"
+
+
 CASES: list[tuple[str, list[tuple[str, object]]]] = [
     (
         "i18n",
@@ -6465,7 +6802,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("sinov label'i boshqa workflow'da tutilsin", neg_decisions_trial_label_scoped),
             ("sandbox o'qilgan hamma faylni nusxalaydi", neg_decisions_sandbox_covers_reads),
             ("Security PR'da qaytsa tutilsin", neg_decisions_security_on_pr),
-            ("Security job yoqilsa tutilsin", neg_decisions_security_run_enabled),
+            ("Security job o'chsa tutilsin", neg_decisions_security_run_disabled),
+            ("Security cron olinsa tutilsin", neg_decisions_security_cron_removed),
             ("Security darvozaga qaytsa tutilsin", neg_decisions_security_required_again),
             ("bosh sahifa CSS link'ga qaytsa tutilsin", neg_decisions_homepage_css_not_inlined),
             ("login to'liq globals.css ga qaytsa tutilsin", neg_decisions_login_full_globals),
@@ -6784,6 +7122,38 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("o'qib bo'lmagan bandlar — exit 2", neg_report_unreadable_attention),
         ],
     ),
+    (
+        "neg_ai_boundary",
+        [
+            ("DB model importi tutilsin", neg_ai_boundary_model_import),
+            ("`from <app> import models` tutilsin", neg_ai_boundary_module_import),
+            ("`from . import models` tutilsin", neg_ai_boundary_relative_import),
+            ("DATABASE_URL tutilsin", neg_ai_boundary_database_url),
+            ("testdata o'qish tutilsin", neg_ai_boundary_testdata_read),
+        ],
+    ),
+    (
+        "neg_architecture",
+        [
+            ("yangi app-importi tutilsin", neg_architecture_cross_app_import),
+            ("o'lik allowlist yozuvi tutilsin (ratchet)", neg_architecture_stale_allowlist),
+        ],
+    ),
+    (
+        "neg_refsolution_gate",
+        [
+            ("S4 sharti olib tashlansa tutilsin", neg_refsolution_gate_echo_removed),
+            ("graded gate olib tashlansa tutilsin", neg_refsolution_gate_serializer_removed),
+        ],
+    ),
+    (
+        "neg_check_metrics",
+        [
+            ("North Star noto'g'ri origin bilan yiqiladi", neg_check_metrics_wrong_origin),
+            ("g'ayritabiiy chegara bilan yiqiladi", neg_check_metrics_impossible_threshold),
+            ("toza holat o'tadi (nazorat)", neg_check_metrics_passes),
+        ],
+    ),
 ]
 
 
@@ -6921,6 +7291,17 @@ def main(argv: list[str]) -> int:
     # yuboriladi va hisobotning oxirida ko'rinadi. Windows'da — ya'ni
     # monitor haqiqatan ishlaydigan mashinada, pre-push hook'da — guruh
     # har doim ishlaydi.
+    # Readiness gate (WP1) — pytest konteynerda yuguradi. Old shart mantig'i
+    # NODE bilan bir xil: muhit tayyor bo'lmasa «yiqildi» ni «tutdi» deb
+    # o'qib bo'lmaydi, shuning uchun ochiq qizil.
+    if selected & API_CASE_LABELS:
+        reason = api_test_precondition()
+        if reason:
+            print(f"  ✕ {reason}")
+            print()
+            print("1/1 salbiy test YIQILDI — muhit tayyor emas, o'lchov yo'q.")
+            return 1
+
     if selected & MONITOR_CASES:
         reason = monitor_precondition()
         if reason:
@@ -6930,6 +7311,11 @@ def main(argv: list[str]) -> int:
                 print("1/1 salbiy test YIQILDI — Windows darvozasi o'lchanmadi.")
                 return 1
             skipped.append(f"monitor guruhi — {reason}")
+
+    if selected & METRICS_CASES:
+        reason = metrics_precondition()
+        if reason:
+            skipped.append(f"metrics guruhi — {reason}")
 
     # Tripwire for the 2026-09-16 class of bug: a sandbox that leaks into this
     # repository and rewrites its config or switches its branch.
@@ -6941,6 +7327,8 @@ def main(argv: list[str]) -> int:
         if skip_node_cases and checker == "web_unit":
             continue
         if checker == "monitor" and any(row.startswith("monitor guruhi") for row in skipped):
+            continue
+        if checker == "neg_check_metrics" and any(row.startswith("metrics guruhi") for row in skipped):
             continue
         for label, fn in cases:
             if skip_node_cases and label in NODE_CASES:
