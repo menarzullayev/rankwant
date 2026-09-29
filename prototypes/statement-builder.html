@@ -11,13 +11,15 @@
     --accent:#7c3aed; --accent-ink:#7936ea; --accent-fg:#fff; --accent-soft:#f1e9ff;
     --divider:#c9bce0; --line:#e3daf5;
     --ok:#0f6e56; --ok-soft:#e1f5ee; --warn:#854f0b; --warn-soft:#faeeda;
+    --err:#9f1239; --err-soft:#fce8ec;
     --r:16px; --r-sm:10px;
     --sans:ui-sans-serif,system-ui,"Segoe UI",sans-serif;
     --mono:ui-monospace,SFMono-Regular,Consolas,monospace;
   }
   *{box-sizing:border-box}
+  html,body{width:100%;max-width:100%;overflow-x:hidden}
   body{margin:0;background:#eef0f4;color:#1f2430;font-family:var(--sans);font-size:15px;line-height:1.55}
-  .shell{max-width:1280px;margin:0 auto;padding:26px 22px 70px}
+  .shell{max-width:none;width:100%;margin:0;padding:12px 14px 48px;box-sizing:border-box}
   /* the prototype draws a modal; the builder's own chrome must stay usable
      above it, otherwise selecting "Modal" traps the reviewer. */
   .bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px;
@@ -31,10 +33,10 @@
     background:#fff;border:1px solid #dfe1e8;border-radius:10px;padding:4px 12px}
   .rng input[type=range]{width:150px;height:24px;accent-color:#7c3aed}
   .rng b{font-family:var(--mono);font-size:12.5px;color:#2b2340;min-width:44px;text-align:right}
-  .viewport{background:#fff;border:1px solid #dfe1e8;border-radius:14px;overflow:hidden;margin:0 auto;transition:max-width .18s ease}
-  .viewport[data-w="desktop"]{max-width:100%}
-  .viewport[data-w="tablet"]{max-width:834px}
-  .viewport[data-w="mobile"]{max-width:390px}
+  .viewport{background:#fff;border:1px solid #dfe1e8;border-radius:12px;overflow:hidden;margin:0;width:100%;transition:max-width .18s ease}
+  .viewport[data-w="desktop"]{max-width:none}
+  .viewport[data-w="tablet"]{max-width:834px;margin-left:auto;margin-right:auto}
+  .viewport[data-w="mobile"]{max-width:390px;margin-left:auto;margin-right:auto}
   .caption{font-size:12.5px;color:#6b7280;text-align:center;margin:8px 0 20px}
   .log{background:#fff;border:1px solid #dfe1e8;border-radius:14px;padding:16px 18px}
   .log h2{font-size:14px;font-weight:600;margin:0 0 10px}
@@ -101,18 +103,52 @@
   /* ---- CHOICE 4: two priority-ordered header rows ---- */
   .head-1{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:9px}
   .head-2{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:15px}
-  .chip-limit{font-size:12.5px;font-weight:600;color:var(--warn);background:var(--warn-soft);
-    border-radius:999px;padding:4px 11px;white-space:nowrap}
-  /* ---- CHOICE 9: labelled, keyboard-reachable text-size control ---- */
+  /* limit #3 — stat #3 bilan bir xil ikonka qatori (problem-limits-gallery) */
+  .limit.limit-icons,.stat.stat-icons{display:inline-flex;flex-wrap:wrap;gap:10px;align-items:center;
+    font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .limit.limit-icons .item,.stat.stat-icons .item{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+  .limit.limit-icons svg,.stat.stat-icons svg{width:15px;height:15px;stroke:var(--faint);fill:none;
+    stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+  /* ---- CHOICE 9 + gallery #1 (statement-textsize-gallery): Matn A− px A+ ---- */
   .tsize{display:inline-flex;align-items:center;gap:5px}
   .tlabel{font-size:11.5px;color:var(--faint);letter-spacing:.03em}
   .tval{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:34px;text-align:center}
   .tbtn{min-width:32px;min-height:32px;display:inline-flex;align-items:center;justify-content:center;
-    font:inherit;font-size:12px;cursor:pointer;border:1px solid var(--line);background:var(--panel-2);
-    color:var(--muted);border-radius:5px}
+    font:inherit;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--line);
+    background:var(--panel-2);color:var(--muted);border-radius:5px}
   .tbtn:hover:not(:disabled){border-color:var(--accent);color:var(--accent-ink)}
   .tbtn:disabled{opacity:.45;cursor:not-allowed}
-  .stat{font-size:12.5px;color:var(--faint)}
+  .tbtn:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+  .runres.bad{color:#9f1239;background:#fce8ec;border-color:#f5c2cb}
+
+  /* ---- tags-similar-gallery #9 + #7: ikonka sarlavha + son badge ---- */
+  .problem-meta{margin-top:18px;display:flex;flex-direction:column;gap:8px}
+  .problem-meta details{border:1px solid var(--line);border-radius:var(--r-sm);background:var(--panel);overflow:hidden}
+  .problem-meta summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;
+    padding:10px 12px;font-weight:650;font-size:13px;color:var(--text)}
+  .problem-meta summary::-webkit-details-marker{display:none}
+  .problem-meta summary svg{width:16px;height:16px;stroke:var(--accent-ink);fill:none;
+    stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+  .problem-meta summary .meta-cnt{font-size:10px;font-weight:700;background:var(--panel-2);
+    border:1px solid var(--line);border-radius:999px;padding:2px 8px;color:var(--muted);margin-left:auto;
+    font-variant-numeric:tabular-nums}
+  .problem-meta .meta-body{padding:0 12px 12px}
+  .meta-chips{display:flex;flex-wrap:wrap;gap:6px}
+  .meta-chip{display:inline-flex;align-items:center;font-size:11.5px;font-weight:650;
+    padding:4px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);
+    border:1px solid color-mix(in srgb,var(--accent) 18%,var(--line));text-decoration:none}
+  .meta-chip.topic{background:var(--panel-2);color:var(--muted);border-color:var(--line);font-weight:600}
+  .sim-list{list-style:none;margin:0;padding:0}
+  .sim-list a{display:flex;align-items:center;gap:8px;padding:7px 0;color:var(--accent-ink);
+    text-decoration:none;font-weight:600;font-size:12.5px;border-bottom:1px solid var(--line)}
+  .sim-list li:last-child a{border-bottom:0}
+  .sim-list a:hover{text-decoration:underline}
+  .sim-list .sim-id{font-family:var(--mono);font-size:11px;color:var(--faint);font-weight:500;flex:none}
+  .sim-list .sim-title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sim-list .sim-diff{font-size:10px;font-weight:650;padding:2px 7px;border-radius:999px;flex:none}
+  .sim-list .sim-diff.ok{background:var(--ok-soft);color:var(--ok)}
+  .sim-list .sim-diff.warn{background:var(--warn-soft);color:var(--warn)}
+
   /* ---- CHOICE 5: sample table — flexible, per-cell copy ---- */
   .sec-label{font-size:13px;font-weight:600;margin:16px 0 9px}
   .samples{background:var(--panel-3);border:1px solid var(--line);border-radius:var(--r-sm);overflow:auto;
@@ -135,16 +171,7 @@
   .cp:hover{border-color:var(--accent);color:var(--accent-ink)}
   .cp.done{border-color:var(--ok);color:var(--ok)}
   .cp.fail{border-color:#a32d2d;color:#a32d2d}
-  /* ---- CHOICE 14: icon-only per-sample run, result inline ---- */
-  table.samples-t .th-run{width:40px}
-  table.samples-t td.run{padding:0;vertical-align:top}
-  .runbtn{width:26px;height:26px;margin:7px auto 0;border:1px solid var(--line);background:#fff;
-    border-radius:7px;color:var(--accent-ink);font-size:11px;line-height:1;cursor:pointer;
-    display:flex;align-items:center;justify-content:center}
-  .runbtn:hover{background:var(--accent-soft);border-color:var(--accent)}
-  .runres{margin:0 10px 8px;font-family:var(--mono);font-size:11.5px;color:var(--ok);
-    background:var(--ok-soft);border-radius:8px;padding:6px 9px}
-  .runres.bad{color:#a32d2d;background:#fcebeb}
+  /* Namunada sinash — faqat pane-b konsol (DECISION 2026-09-29) */
   .tab{padding:9px 14px;font-size:13.5px;font-weight:600;color:var(--faint);border-bottom:2px solid transparent}
   .tab.on{color:var(--accent-ink);border-bottom-color:var(--accent)}
   /* ---- CHOICE 11: the reader picks how sections are separated ---- */
@@ -161,34 +188,77 @@
   .bar2 .seg button.on{background:#2b2340;color:#fff}
   .log code{font-family:var(--mono);font-size:12px;background:var(--panel-2);
     border-radius:5px;padding:1px 5px}
-  /* ---- P0 parity: ProblemActions (page.tsx:187) ---- */
-  .actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;margin-top:12px;
+  /* ---- P0 parity: ProblemActions (page.tsx:187) ----
+     Vizual tanlovlar (gallery 2026-09-29): sevimli #6 ikonka-only,
+     ovoz #10 net skor, baho #6 oltin katak. Mantiq ProblemActions.tsx da. */
+  .actions{display:flex;align-items:center;flex-wrap:wrap;gap:10px 14px;margin-top:12px;
     font-size:13px;color:var(--muted)}
-  .actions button{font:inherit;font-size:13px;font-weight:600;border:0;background:transparent;
-    color:var(--muted);border-radius:var(--r-sm);padding:0 9px;min-height:28px;min-width:28px;
-    cursor:pointer}
-  .actions button:hover{background:var(--accent-soft);color:var(--accent-ink)}
-  /* a guest sees neither the favourite nor the stars, and the votes are
-     disabled — ProblemActions.tsx decides exactly this from `signedIn` */
+  .actions button{font:inherit;cursor:pointer}
   .actions .act-fav,.actions .stars{display:none}
-  .page[data-u="in"] .actions .act-fav{display:inline-flex;align-items:center;gap:5px}
-  .page[data-u="in"] .actions .stars{display:inline-flex;align-items:center}
-  .actions .votes{display:inline-flex;align-items:center;gap:2px}
-  .actions .act-vote{font-variant-numeric:tabular-nums}
-  .actions .act-vote[aria-pressed="true"]{color:var(--accent-ink);background:var(--accent-soft)}
-  /* disabled, yet still readable: WCAG 1.4.3 exempts inactive controls but
-     the audit does not, and weakening the gate to fit the code is the
-     wrong direction. Cursor + dashed edge carry the "disabled" cue. */
+  .page[data-u="in"] .actions .act-fav{display:inline-flex}
+  .page[data-u="in"] .actions .stars{display:inline-flex}
+  /* sevimli #6 — matn yo‘q, aria-label */
+  .actions .act-fav{
+    width:32px;height:32px;flex:none;border:0;border-radius:8px;padding:0;
+    background:transparent;color:var(--faint);align-items:center;justify-content:center;
+    transition:background .12s,color .12s,box-shadow .12s}
+  .actions .act-fav svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.6}
+  .actions .act-fav:hover{background:var(--accent-soft);color:var(--accent-ink)}
+  .actions .act-fav[aria-pressed="true"]{
+    background:var(--accent);color:var(--accent-fg);
+    box-shadow:0 2px 8px rgba(124,58,237,.35)}
+  .actions .act-fav[aria-pressed="true"] svg{fill:currentColor;stroke:currentColor}
+  /* ovoz #10 */
+  .actions .votes{display:inline-flex;flex-direction:column;align-items:flex-start;gap:4px}
+  .actions .v-net{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ok)}
+  .actions .v-net.neg{color:#9f1239}
+  .actions .v-row{display:inline-flex;gap:4px}
+  .actions .act-vote{
+    font-size:11px;font-weight:650;border:1px solid var(--line);border-radius:6px;
+    background:var(--panel-2);color:var(--muted);padding:2px 8px;min-height:26px;
+    font-variant-numeric:tabular-nums;transition:background .12s,border-color .12s,color .12s}
+  .actions .act-vote:hover:not(:disabled){
+    border-color:var(--accent);color:var(--accent-ink);background:var(--accent-soft)}
+  .actions .act-vote[aria-pressed="true"]{
+    border-color:var(--accent);color:var(--accent-ink);background:var(--accent-soft)}
   .actions .act-vote[disabled]{color:var(--faint);background:var(--panel-2);
     cursor:not-allowed;border:1px dashed var(--line)}
-  .actions .rating{display:inline-flex;align-items:center;gap:9px}
-  .actions .stars button{color:var(--faint);padding:0 3px;min-width:26px}
-  .actions .stars button.on{color:var(--accent-ink)}
-  /* ---- P0 parity: Editorial (page.tsx:247, ADR-0013) ---- */
-  .ed .ed-head{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:600}
-  .ed .ed-head .access{font-family:var(--mono);font-size:11.5px;font-weight:600;
-    color:var(--muted);background:var(--panel-2);border:1px solid var(--line);
-    border-radius:999px;padding:2px 9px}
+  /* baho #6 */
+  .actions .rating{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .actions .rating .faint{font-size:12.5px;color:var(--faint);font-variant-numeric:tabular-nums}
+  .actions .stars{align-items:center;gap:2px}
+  .actions .stars button{
+    font-size:14px;width:30px;height:30px;border:0;border-radius:8px;padding:0;
+    background:transparent;color:var(--faint);display:inline-flex;align-items:center;justify-content:center;
+    transition:background .12s,color .12s,border-color .12s}
+  .actions .stars button:hover:not(.on){background:var(--panel-2);color:var(--muted)}
+  .actions .stars button.on{
+    background:linear-gradient(180deg,#fff7e6,var(--warn-soft));color:var(--warn);
+    border:1px solid #e8c878}
+  .actions .stars button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+  /* ---- P0 parity: Editorial (page.tsx:247, ADR-0013) ----
+     solution-editorial-gallery #4: <details> + lampochka + Qvant badge ---- */
+  .ed{margin-top:18px}
+  .ed details{border:1px solid var(--line);border-radius:var(--r);background:var(--panel);overflow:hidden;
+    box-shadow:0 1px 2px rgba(48,30,90,.05),0 6px 16px rgba(48,30,90,.07)}
+  .ed summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;
+    padding:12px 14px;font-weight:650;font-size:15px;color:var(--text)}
+  .ed summary::-webkit-details-marker{display:none}
+  .ed summary svg{width:17px;height:17px;stroke:var(--accent-ink);fill:none;stroke-width:1.7;
+    stroke-linecap:round;stroke-linejoin:round;flex:none}
+  .ed .ed-badge-q{font-size:10px;font-weight:700;background:var(--warn-soft);color:var(--warn);
+    border:1px solid color-mix(in srgb,var(--warn) 30%,var(--line));border-radius:999px;
+    padding:2px 9px;margin-left:auto;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .page[data-ed="solved"] .ed .ed-badge-q,
+  .page[data-ed="closed"] .ed .ed-badge-q,
+  .page[data-ed="open"] .ed .ed-badge-q{background:var(--ok-soft);color:var(--ok);
+    border-color:color-mix(in srgb,var(--ok) 30%,var(--line))}
+  .page[data-u="guest"] .ed .ed-badge-q{background:var(--panel-2);color:var(--muted);
+    border-color:var(--line)}
+  .ed .access{font-family:var(--mono);font-size:11.5px;font-weight:600;
+    color:var(--muted);position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+    clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  .ed .ed-acc-body{padding:0 14px 14px}
   .ed .ed-anon,.ed .ed-locked,.ed .ed-closed,.ed .ed-open{display:none}
   .page[data-ed="locked"] .ed .ed-locked{display:block}
   .page[data-ed="solved"] .ed .ed-closed,
@@ -220,16 +290,92 @@
     border-radius:var(--r-sm);padding:14px;box-shadow:0 1px 2px rgba(48,30,90,.05),0 6px 16px rgba(48,30,90,.07)}
   #stmtcard[data-sec="card"] .sec + .sec{margin-top:10px}
   .code{background:#221a33;color:#e8e3f5;border-radius:var(--r-sm);padding:12px 14px;font-family:var(--mono);font-size:14px;line-height:1.6;white-space:pre;overflow:auto}
+  /* ---- code-editor-gallery #2 gutter + #5 toolbar (pane-b) ---- */
+  :root{--ed-bg:#221a33;--ed-fg:#e8e3f5;--ed-gutter:#2d2442}
+  .sol-editor{padding:0!important;gap:0!important;overflow:hidden}
+  .ed-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 12px;
+    background:var(--panel-2);border-bottom:1px solid var(--line);font-size:12px}
+  .ed-toolbar .ed-title{font-size:15px;font-weight:650;color:var(--text);margin:0}
+  .ed-toolbar .ed-lang{font-size:12px;font-weight:600;background:var(--accent-soft);color:var(--accent-ink);
+    border-radius:999px;padding:6px 12px;white-space:nowrap;min-height:32px;display:inline-flex;align-items:center}
+  .ed-toolbar-sp{flex:1;min-width:8px}
+  .ed-ico{width:32px;height:32px;border:1px solid var(--line);border-radius:8px;background:var(--panel);
+    color:var(--faint);font-size:14px;display:inline-flex;align-items:center;justify-content:center;
+    cursor:pointer;padding:0;font:inherit;line-height:1}
+  .ed-ico:hover{border-color:var(--accent);color:var(--accent-ink)}
+  .ed-ico:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+  /* upload-file-gallery #3: ikonka + «Yuklash» segmented tugma */
+  .ed-upload-split{display:inline-flex;align-items:stretch;border:1px solid var(--line);border-radius:8px;
+    overflow:hidden;background:var(--panel);cursor:pointer;min-height:32px;padding:0;font:inherit;line-height:1}
+  .ed-upload-split:hover{border-color:var(--accent)}
+  .ed-upload-split:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+  .ed-upload-split .ed-upload-ico{width:36px;flex:none;display:inline-flex;align-items:center;justify-content:center;
+    color:var(--faint);border-right:1px solid var(--line);background:var(--panel)}
+  .ed-upload-split .ed-upload-ico svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.7;
+    stroke-linecap:round;stroke-linejoin:round}
+  .ed-upload-split:hover .ed-upload-ico{color:var(--accent-ink)}
+  .ed-upload-split .ed-upload-label{font-size:12px;font-weight:650;color:var(--muted);padding:0 11px;
+    display:inline-flex;align-items:center;white-space:nowrap}
+  .ed-upload-split:hover .ed-upload-label{color:var(--accent-ink)}
+  .ed-toolbar-run{min-height:32px;padding:0 12px;font-size:13px}
+  .codebox{display:flex;min-height:230px;background:var(--ed-bg);border-radius:0}
+  .codebox .gutter{background:var(--ed-gutter);color:#8a7aa8;font-family:var(--mono);font-size:13px;
+    line-height:1.6;padding:12px 8px 12px 10px;text-align:right;user-select:none;
+    border-right:1px solid #3a3055;flex:none}
+  .codebox .gutter span{display:block}
+  .codebox .code-src{flex:1;min-width:0;margin:0;padding:12px 14px;overflow:auto;
+    font-family:var(--mono);font-size:14px;line-height:1.6;white-space:pre;color:var(--ed-fg);background:transparent}
+  .ed-foot{display:flex;gap:8px;padding:10px 14px 14px;align-items:center}
+  .ed-foot .btn-primary{flex:1}
+  .sol-editor .vbox{margin:0 14px 14px}
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:10px;font:inherit;font-size:13px;font-weight:600;padding:0 14px;min-height:38px;cursor:default}
   .btn-primary{background:var(--accent);color:var(--accent-fg)}
   .btn-quiet{background:transparent;color:var(--muted);border:1px solid var(--line)}
+
+  /* sample-console-gallery #3: KEP labels + ARIA combobox + alohida console */
+  .ed-sample-console{border-top:1px solid var(--line);background:var(--panel);font-size:12px}
+  .sc-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 12px;
+    background:var(--panel-2);border-bottom:1px solid var(--line)}
+  .sc-head .sc-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--faint)}
+  .sc-sp{flex:1;min-width:8px}
+  .sc-status{font-size:11px;font-weight:650;padding:3px 9px;border-radius:999px}
+  .sc-status[data-st="idle"]{color:var(--faint);background:var(--panel-3)}
+  .sc-status[data-st="run"]{color:var(--accent-ink);background:var(--accent-soft)}
+  .sc-status[data-st="ok"]{color:var(--ok);background:var(--ok-soft)}
+  .sc-status[data-st="bad"]{color:var(--err);background:var(--err-soft)}
+  .sc-combo{position:relative;display:inline-block}
+  .sc-combo-btn{display:inline-flex;align-items:center;justify-content:space-between;gap:8px;
+    min-width:118px;min-height:30px;padding:0 10px;font:inherit;font-size:12px;font-weight:650;
+    color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:8px;cursor:pointer}
+  .sc-combo-btn:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+  .sc-combo-list{position:absolute;top:calc(100% + 4px);left:0;min-width:100%;margin:0;padding:4px;list-style:none;
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    box-shadow:0 8px 24px rgba(48,30,90,.14);z-index:30;display:none}
+  .sc-combo.open .sc-combo-list{display:block}
+  .sc-combo-list button{display:block;width:100%;text-align:left;font:inherit;font-size:12px;border:0;
+    background:transparent;padding:7px 10px;border-radius:6px;cursor:pointer;color:var(--text)}
+  .sc-combo-list button:hover,.sc-combo-list button[aria-selected="true"]{background:var(--accent-soft)}
+  .sc-run{font:inherit;font-size:12px;font-weight:650;min-height:30px;padding:0 12px;border-radius:8px;
+    border:1px solid var(--line);background:var(--accent-soft);color:var(--accent-ink);cursor:pointer}
+  .sc-log{background:#1a1528;color:#d8d0ea;font-family:var(--mono);font-size:11px;line-height:1.45;
+    padding:8px 12px;min-height:52px;max-height:88px;overflow:auto;white-space:pre-wrap}
+  .sc-log[data-st="idle"]{opacity:.6}
+  .sc-io{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:8px 12px 12px}
+  .sc-field label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;
+    color:var(--faint);margin-bottom:4px}
+  .sc-field pre{display:block;width:100%;margin:0;min-height:56px;max-height:80px;overflow:auto;
+    border:1px solid var(--line);border-radius:8px;background:var(--panel-3);font-family:var(--mono);
+    font-size:11px;line-height:1.4;padding:6px 8px;color:var(--text);white-space:pre-wrap}
+  .sc-field.sc-out[data-st="ok"] pre{border-color:color-mix(in srgb,var(--ok) 35%,var(--line));background:var(--ok-soft)}
+  .sc-field.sc-out[data-st="bad"] pre{border-color:color-mix(in srgb,var(--err) 40%,var(--line));background:var(--err-soft)}
+  @media (max-width:520px){.sc-io{grid-template-columns:1fr}}
 
   /* ---- CHOICE 1: two columns with a draggable split ---- */
   .split{flex:1;display:flex;min-height:0}
   /* the split ratio is a variable, not an inline width: an inline style
      would beat the mobile rule below and squeeze the pane to 58% of a
      390px column (measured: 225px, ~20 characters per line) */
-  .pane-a{width:var(--split,58%);min-width:0;overflow:auto;padding:18px}
+  .pane-a{width:var(--split,58%);min-width:0;overflow:auto;padding:18px;position:relative}
   .pane-b{flex:1;min-width:0;overflow:auto;padding:18px;background:var(--panel-3);border-left:1px solid var(--line)}
   .handle{flex:none;width:8px;cursor:col-resize;background:transparent;position:relative;display:flex;align-items:center;justify-content:center}
   .handle::before{content:"";width:4px;height:44px;border-radius:2px;background:var(--divider);opacity:.65}
@@ -292,6 +438,25 @@
   /* no editor, no sheet to summon */
   .viewport:is([data-w="tablet"],[data-w="mobile"]) .split.collapsed ~ .kodfab{display:none}
   .kodfab .mono{font-family:var(--mono);font-size:12px;opacity:.9}
+  /* timer-stopwatch-gallery #6: FAB — sticky pastda, scroll bo‘ylab ko‘rinadi */
+  .rw-time-fab-anchor{position:sticky;bottom:12px;z-index:24;display:flex;justify-content:flex-end;
+    padding:0 6px;height:0;overflow:visible;margin-bottom:-46px;pointer-events:none}
+  .rw-time-fab{pointer-events:auto;display:inline-flex;align-items:center;gap:8px;padding:7px 13px 7px 10px;
+    border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;font:inherit;
+    box-shadow:0 4px 18px rgba(48,30,90,.14);min-height:42px;max-width:min(100%,220px)}
+  .rw-time-fab:hover{border-color:var(--accent)}
+  .rw-time-fab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .rw-time-fab .dot{width:7px;height:7px;border-radius:50%;background:var(--faint);flex:none}
+  .rw-time-fab.run .dot{background:var(--ok);animation:rw-time-pulse 1.2s ease infinite}
+  @keyframes rw-time-pulse{50%{opacity:.35}}
+  .rw-time-stack{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0}
+  .rw-time-row{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:12px;
+    font-weight:650;font-variant-numeric:tabular-nums;color:var(--text);letter-spacing:.02em}
+  .rw-time-row.sub{font-size:11px;font-weight:600;color:var(--muted)}
+  .rw-time-row.sub.warn{color:var(--warn)}
+  .rw-time-row.sub.bad{color:var(--err)}
+  .viewport[data-w="mobile"] .rw-time-fab-anchor{bottom:8px;margin-bottom:4px}
+  .viewport[data-w="mobile"] .rw-time-fab-anchor{padding-right:2px}
   /* ---- CHOICE 19 (M4): in-document navigation for a 4790px statement ----
      The topbar already sits outside the scroll area, so it is sticky for
      free; what the statement needed was a way to jump between sections. */
@@ -439,6 +604,20 @@
         <div class="split" id="split">
           <!-- ---------- A: statement ---------- -->
           <div class="pane-a">
+            <!-- timer-stopwatch-gallery #6: FAB (sticky past — uzoq statementda ham ko‘rinadi) -->
+            <div class="rw-time-fab-anchor">
+              <button type="button" class="rw-time-fab run" id="rwtimefab"
+                aria-label="Yechish vaqti va musobaqa taymeri"
+                title="Bosib pauza yoki davom ettirish">
+                <span class="dot" aria-hidden="true"></span>
+                <span class="rw-time-stack">
+                  <span class="rw-time-row"><span aria-hidden="true">⏱</span>
+                    <span id="rwtsw">00:00:00</span></span>
+                  <span class="rw-time-row sub" id="rwtcdrow"><span aria-hidden="true">⏳</span>
+                    <span id="rwtcd">01:15:00</span></span>
+                </span>
+              </button>
+            </div>
             <div class="vbox v-column" style="margin-bottom:14px">
               <div class="vcard">
                 <div class="vs-empty"><div class="vstate"><span>Hali yuborilmadi.<br>
@@ -478,9 +657,22 @@
               <span class="faint mono" style="font-size:12px">#0432</span>
               <span class="h-title">Tarmoq modernizatsiyasi</span>
               <span style="flex:1"></span>
-              <span class="chip-limit">2000 ms · 256 MB</span>
-              <span class="tsize" title="Matn o‘lchami · ⌘+ / ⌘−">
-                <span class="tlabel">Matn</span>
+              <span class="limit limit-icons" role="group"
+                aria-label="Vaqt cheklovi 2000 millisekund, xotira cheklovi 256 megabayt">
+                <span class="item">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/>
+                    <path d="M12 7v5l3 2"/></svg>
+                  <span>2000 ms</span>
+                </span>
+                <span class="item">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="6" width="16" height="12" rx="2"/>
+                    <path d="M8 10h8M8 14h5"/></svg>
+                  <span>256 MB</span>
+                </span>
+              </span>
+              <span class="tsize" role="group" aria-label="Matn o‘lchami"
+                title="Matn o‘lchami · ⌘+ / ⌘−">
+                <span class="tlabel" id="tsize-label">Matn</span>
                 <button type="button" class="tbtn" id="tminus"
                   aria-label="Matnni kichraytirish" title="Matnni kichraytirish · Ctrl −">A−</button>
                 <span class="tval" id="tval">16px</span>
@@ -495,7 +687,22 @@
               <span class="badge">DSU</span>
               <span class="badge">LCA</span>
               <span class="badge">offline so‘rovlar</span>
-              <span class="stat">127 yechdi · 891 urinish · 14%</span>
+              <span class="stat stat-icons" role="group"
+                aria-label="127 yechdi, 891 urinish, 14 foiz muvaffaqiyat">
+                <span class="item">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3"/>
+                    <path d="M6 20c0-3 2.5-5 6-5s6 2 6 5"/></svg>
+                  <span>127 yechdi</span>
+                </span>
+                <span class="item">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg>
+                  <span>891 urinish</span>
+                </span>
+                <span class="item">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M3 12h18"/></svg>
+                  <span>14%</span>
+                </span>
+              </span>
             </div>
             <!-- ---- P0 parity: ProblemActions (page.tsx:187) ----
                  The accessible name contains the visible text — the
@@ -503,12 +710,18 @@
                  Lighthouse): a screen-reader user could not say the number
                  they could see. -->
             <div class="actions" id="actions">
-              <button type="button" class="act-fav" id="fav" aria-pressed="false">☆ Sevimlilarga</button>
+              <button type="button" class="act-fav" id="fav" aria-pressed="false"
+                aria-label="Sevimlilarga" title="Sevimlilarga">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16l-6-4-6 4V4z"/></svg>
+              </button>
               <span class="votes" role="group" aria-label="Ovoz berish">
-                <button type="button" class="act-vote" id="vup" aria-pressed="false"
-                  aria-label="Yoqdi — ▲ 12" title="Masala yoqdimi?">▲ 12</button>
-                <button type="button" class="act-vote" id="vdown" aria-pressed="false"
-                  aria-label="Yoqmadi — ▼ 3" title="Masala yoqmadi">▼ 3</button>
+                <span class="v-net" id="vnet">+9</span>
+                <span class="v-row">
+                  <button type="button" class="act-vote" id="vup" aria-pressed="false"
+                    aria-label="Yoqdi — ▲ 12" title="Masala yoqdimi?">▲ <span class="n-up">12</span></button>
+                  <button type="button" class="act-vote" id="vdown" aria-pressed="false"
+                    aria-label="Yoqmadi — ▼ 3" title="Masala yoqmadi">▼ <span class="n-down">3</span></button>
+                </span>
               </span>
               <span class="rating">
                 <span class="faint" id="rsum">4.6 · 38 baho</span>
@@ -640,10 +853,10 @@
             </div>
             <!-- ---- CHOICE 5: sample table, flexible width, per-cell copy ---- -->
             <p class="sec-label" id="samples">Namunalar</p>
+            <p class="faint" style="font-size:12px;margin:-6px 0 10px">Sinash — o‘ng panel, kod ostidagi konsol.</p>
             <div class="samples">
               <table class="samples-t">
-                <thead><tr><th class="th-idx">#</th><th>Kirish</th><th>Chiqish</th>
-                  <th class="th-run" aria-label="Sinash">&#9654;</th></tr></thead>
+                <thead><tr><th class="th-idx">#</th><th>Kirish</th><th>Chiqish</th></tr></thead>
                 <tbody>
                   <tr>
                     <td class="idx">1</td>
@@ -658,11 +871,7 @@ S 1 3</pre>
                     <td><div class="cell"><pre class="io">5
 10</pre>
                       <button class="cp" title="Chiqishni nusxalash">⧉</button></div></td>
-                    <td class="run"><button class="runbtn" data-run="1"
-                    title="1-namunani sinash" aria-label="1-namunani sinash">&#9654;</button></td>
                 </tr>
-                  <tr class="runrow" data-for="1" hidden><td colspan="4" style="border-top:0;padding:0">
-                    <div class="runres">1-namuna: namunada o&#8216;tdi &#183; 0.03 s</div></td></tr>
                   <tr>
                     <td class="idx">2</td>
                     <td><div class="cell"><pre class="io">5 2
@@ -677,11 +886,7 @@ S 2 1</pre>
 -2
 7</pre>
                       <button class="cp" title="Chiqishni nusxalash">⧉</button></div></td>
-                    <td class="run"><button class="runbtn" data-run="2"
-                    title="2-namunani sinash" aria-label="2-namunani sinash">&#9654;</button></td>
                 </tr>
-                  <tr class="runrow" data-for="2" hidden><td colspan="4" style="border-top:0;padding:0">
-                    <div class="runres">2-namuna: namunada o&#8216;tdi &#183; 0.03 s</div></td></tr>
                   <tr>
                     <td class="idx">3</td>
                     <td><div class="cell"><pre class="io">3 4
@@ -696,11 +901,7 @@ S 2 1</pre>
                     <td><div class="cell"><pre class="io">6
 9</pre>
                       <button class="cp" title="Chiqishni nusxalash">⧉</button></div></td>
-                    <td class="run"><button class="runbtn" data-run="3"
-                    title="3-namunani sinash" aria-label="3-namunani sinash">&#9654;</button></td>
                 </tr>
-                  <tr class="runrow" data-for="3" hidden><td colspan="4" style="border-top:0;padding:0">
-                    <div class="runres">3-namuna: namunada o&#8216;tdi &#183; 0.03 s</div></td></tr>
                   <tr>
                     <td class="idx">4</td>
                     <td><div class="cell"><pre class="io">4 4
@@ -718,13 +919,51 @@ S 2 4</pre>
 10
 3</pre>
                       <button class="cp" title="Chiqishni nusxalash">⧉</button></div></td>
-                    <td class="run"><button class="runbtn" data-run="4"
-                    title="4-namunani sinash" aria-label="4-namunani sinash">&#9654;</button></td>
                 </tr>
-                  <tr class="runrow" data-for="4" hidden><td colspan="4" style="border-top:0;padding:0">
-                    <div class="runres bad">4-namuna: noto&#8216;g&#8216;ri javob &#183; 0.03 s &#183; 1-testda to&#8216;xtadi</div></td></tr>
                 </tbody>
               </table>
+            </div>
+
+            <div class="problem-meta" id="problem-meta">
+              <details>
+                <summary>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h10M4 17h7"/></svg>
+                  <span>Teglar va mavzular</span>
+                  <span class="meta-cnt" aria-label="8 ta element">8</span>
+                </summary>
+                <div class="meta-body">
+                  <div class="meta-chips" role="list">
+                    <span class="meta-chip" role="listitem">graf</span>
+                    <span class="meta-chip" role="listitem">DSU</span>
+                    <span class="meta-chip" role="listitem">LCA</span>
+                    <span class="meta-chip" role="listitem">offline so‘rovlar</span>
+                    <span class="meta-chip" role="listitem">bottleneck</span>
+                    <span class="meta-chip topic" role="listitem">Graf nazariyasi</span>
+                    <span class="meta-chip topic" role="listitem">Disjoint Set Union</span>
+                    <span class="meta-chip topic" role="listitem">LCA</span>
+                  </div>
+                </div>
+              </details>
+              <details>
+                <summary>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 1 7 0"/>
+                    <path d="M8 21l4-7 4 7"/><path d="M12 3v4"/></svg>
+                  <span>O‘xshash masalalar</span>
+                  <span class="meta-cnt" aria-label="4 ta masala">4</span>
+                </summary>
+                <div class="meta-body">
+                  <ul class="sim-list">
+                    <li><a href="#"><span class="sim-id">#0421</span><span class="sim-title">Eng keng yo‘l</span>
+                      <span class="sim-diff warn">Murakkab</span></a></li>
+                    <li><a href="#"><span class="sim-id">#0198</span><span class="sim-title">Dinamik bog‘lanish</span>
+                      <span class="sim-diff ok">O‘rta</span></a></li>
+                    <li><a href="#"><span class="sim-id">#0888</span><span class="sim-title">Yo‘llar va so‘rovlar</span>
+                      <span class="sim-diff warn">Murakkab</span></a></li>
+                    <li><a href="#"><span class="sim-id">#0103</span><span class="sim-title">Ikki nuqta orasidagi min</span>
+                      <span class="sim-diff ok">Oson</span></a></li>
+                  </ul>
+                </div>
+              </details>
             </div>
 
             <!-- ---- P0 parity: Editorial (page.tsx:247, ADR-0013) ----
@@ -734,21 +973,25 @@ S 2 4</pre>
                  serializer does not send the text while the gate is
                  closed, so the prototype must not have it in the
                  document either — frontend hiding protects nothing. -->
-            <div class="card ed" id="editorial">
-              <div class="ed-head">
-                <span>Yechim tahlili</span>
-                <span style="flex:1"></span>
-                <span class="access" id="edaccess" title="editorial_state.access">locked</span>
-              </div>
-              <p class="ed-anon faint" style="margin:8px 0 0">Tahlilni ko‘rish uchun
+            <div class="ed" id="editorial">
+              <details class="ed-acc" id="edacc">
+                <summary>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6"/><path d="M10 22h4"/>
+                    <path d="M12 2a7 7 0 0 0-4 12v2h8v-2a7 7 0 0 0-4-12z"/></svg>
+                  <span>Yechim tahlili</span>
+                  <span class="ed-badge-q" id="edbadge">30 Q</span>
+                  <span class="access" id="edaccess" title="editorial_state.access">locked</span>
+                </summary>
+                <div class="ed-acc-body">
+              <p class="ed-anon faint" style="margin:0 0 8px">Tahlilni ko‘rish uchun
                 <a href="#" class="ed-login">tizimga kiring</a>.</p>
               <div class="ed-locked">
-                <p class="faint" style="margin:8px 0 10px">Masalani yechganlarga tahlil
+                <p class="faint" style="margin:0 0 10px">Masalani yechganlarga tahlil
                   <b>bepul</b> ochiladi. Sabrsizlik uchun — <b>30 Qvant</b>.</p>
                 <button type="button" class="btn btn-quiet" id="edunlock">30 Qvantga ochish</button>
                 <span class="ed-err" id="ederr" role="status"></span>
               </div>
-              <p class="ed-closed faint" style="margin:8px 0 0">
+              <p class="ed-closed faint" style="margin:0">
                 <span class="ed-hint-solved">Masalani yechgansiz — tahlil bepul ochildi.</span>
                 <span class="ed-hint-open">Tahlil ochilgan.</span>
                 <button type="button" class="ed-toggle" id="edshow">Ko‘rsatish</button>
@@ -759,6 +1002,8 @@ S 2 4</pre>
                     aria-label="Tahlilni nusxalash">⧉</button></div>
                 <button type="button" class="ed-toggle" id="edhide">Yashirish</button>
               </div>
+                </div>
+              </details>
               <template id="edtext">
                 <p>Tarmoq — multi-graf: bir juftlik o‘rtasida bir nechta kanal bo‘lishi
                   mumkin. So‘rovga javob berish uchun ikki server o‘rtasidagi
@@ -790,13 +1035,25 @@ har so‘rovda: min(yo‘l(a, b))</div>
               tabindex="0" aria-label="Muharrir balandligini o‘zgartirish"
               aria-valuemin="40" aria-valuemax="92" aria-valuenow="62"
               title="Sudrab yoki ↑ ↓ bilan balandlikni o‘zgartiring"><i></i></div>
-            <div class="card" style="display:flex;flex-direction:column;gap:11px;min-height:100%">
-              <div style="display:flex;align-items:center;gap:9px">
-                <b style="font-size:15px">Yechim</b>
-                <span style="flex:1"></span>
-                <span class="badge" style="min-height:36px;padding:0 12px">C++ 23 ▾</span>
+            <div class="card sol-editor" style="display:flex;flex-direction:column;min-height:100%">
+              <div class="ed-toolbar" role="toolbar" aria-label="Kod muharriri">
+                <b class="ed-title">Yechim</b>
+                <span class="ed-lang">C++ 23 ▾</span>
+                <button type="button" class="ed-upload-split" id="edupload"
+                  aria-label="Kod faylini yuklash" title="Kod faylini yuklash">
+                  <span class="ed-upload-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 16V4"/>
+                    <path d="M8 8l4-4 4 4"/><path d="M4 20h16"/></svg></span>
+                  <span class="ed-upload-label">Yuklash</span>
+                </button>
+                <input type="file" id="edfile" hidden
+                  accept=".cpp,.cc,.cxx,.h,.hpp,.py,.java,.txt">
+                <button type="button" class="ed-ico" title="Nusxalash" aria-label="Nusxalash">⧉</button>
+                <button type="button" class="ed-ico" title="To‘liq ekran" aria-label="To‘liq ekran">⤢</button>
+                <span class="ed-toolbar-sp" aria-hidden="true"></span>
               </div>
-              <div class="code" style="min-height:230px">#include &lt;bits/stdc++.h&gt;
+              <div class="codebox">
+                <div class="gutter" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span></div>
+                <pre class="code-src">#include &lt;bits/stdc++.h&gt;
 using namespace std;
 
 int main() {
@@ -809,10 +1066,39 @@ int main() {
   // TODO: DSU + maximum spanning forest + LCA for bottleneck queries
 
   return 0;
-}</div>
-              <div style="display:flex;gap:8px;align-items:center">
-                <button class="btn btn-primary" id="submit" style="flex:1">Yuborish</button>
-                <span class="btn btn-quiet">Namunada sinash</span>
+}</pre>
+              </div>
+              <!-- sample-console-gallery #3: combobox + Sample test results + Input/Output/Answer -->
+              <section class="ed-sample-console" id="edsamplecon" aria-label="Namuna sinov konsoli">
+                <div class="sc-head">
+                  <div class="sc-combo" id="sccombo">
+                    <button type="button" class="sc-combo-btn" id="sccombbtn"
+                      aria-haspopup="listbox" aria-expanded="false" aria-controls="sccomblist">
+                      <span class="sc-combo-val" id="sccombval">1-namuna</span>
+                      <span aria-hidden="true">▾</span></button>
+                    <ul class="sc-combo-list" id="sccomblist" role="listbox" aria-label="Namuna tanlash">
+                      <li><button type="button" role="option" data-n="1" aria-selected="true">1-namuna</button></li>
+                      <li><button type="button" role="option" data-n="2">2-namuna</button></li>
+                      <li><button type="button" role="option" data-n="3">3-namuna</button></li>
+                      <li><button type="button" role="option" data-n="4">4-namuna</button></li>
+                    </ul>
+                  </div>
+                  <button type="button" class="sc-run" id="scrun">Namunada sinash</button>
+                  <span class="sc-title">Sample test results</span>
+                  <span class="sc-sp"></span>
+                  <span class="sc-status" id="scstatus" data-st="idle">Ready</span>
+                </div>
+                <div class="sc-log" id="sclog" data-st="idle" role="status">Sample test results
+(hali sinov yo‘q)</div>
+                <div class="sc-io">
+                  <div class="sc-field"><label for="scin">Input</label><pre id="scin"></pre></div>
+                  <div class="sc-field sc-out" id="scoutwrap" data-st="idle">
+                    <label for="scout">Output</label><pre id="scout">—</pre></div>
+                  <div class="sc-field"><label for="scans">Answer</label><pre id="scans"></pre></div>
+                </div>
+              </section>
+              <div class="ed-foot">
+                <button class="btn btn-primary" id="submit">Yuborish</button>
               </div>
               <div class="vbox v-tab">
                 <div class="vcard">
@@ -890,7 +1176,7 @@ int main() {
       <li class="done"><b>10.</b> Karta — <b>hairline + yumshoq soya</b></li>
       <li class="done"><b>11.</b> Bo‘limlararo ajratish — <b>foydalanuvchi almashtiradi (3 rejim)</b></li>
       <li class="done"><b>12.</b> Matn kengligi — <b>avtomatik (min(100ch, 100% - padding))</b></li>
-      <li class="done"><b>13.</b> Namuna harakati — <b>har namunada ikonka-Run, natija inline</b></li>
+      <li class="done"><b>13.</b> Namuna harakati — <b>faqat pane-b konsol</b> (2026-09-29: jadval ▶ olib tashlandi)</li>
       <li class="done"><b>14.</b> Yuborish tugmasi — <b>muharrir panelida (V1)</b>; mobil sticky qismi 19-bosqichda olib tashlandi</li>
       <li class="done"><b>15.</b> Natija ko‘rinishi — <b>foydalanuvchi almashtiradi (4 rejim: Tab / Ustun / Toast / Modal)</b></li>
       <li class="done"><b>16.</b> Bo‘sh / yuklanish — <b>matn + yo‘naltirish + spinner</b></li>
@@ -904,15 +1190,42 @@ int main() {
     <h2>P0 moslik — platforma kodi bilan tenglashtirish</h2>
     <ol>
       <li class="done"><b>Editorial</b> — ADR-0013 spoyler darvozasi
-        (<code>page.tsx:247</code>). To‘rt ko‘rinish holati; matn faqat darvoza
-        ochilganda hujjatga tushadi, chunki serializer uni boshqa holda umuman
-        yubormaydi.</li>
-      <li class="done"><b>Amallar paneli</b> — sevimli + ovoz ▲▼ + yulduzli baho
-        (<code>page.tsx:187</code>, <code>ProblemActions.tsx</code>). Mehmon
-        holatida sevimli va yulduz yashiriladi, ovozlar <code>disabled</code>.</li>
+        (<code>page.tsx:247</code>). UX: <code>solution-editorial-gallery.html</code>
+        <b>#4</b> — lampochka ikonka, <code>&lt;details&gt;</code>, badge
+        <em>30 Q</em> / <em>bepul</em> / <em>kirish</em>; matn <code>&lt;template&gt;</code> dan.
+        To‘rt ko‘rinish holati; P0 almashtirgich <code>data-ed</code> / <code>data-u</code>.</li>
+      <li class="done"><b>Amallar paneli</b> — sevimli + ovoz + baho
+        (<code>page.tsx:187</code>, <code>ProblemActions.tsx</code>).
+        Vizual: sevimli <b>#6</b> ikonka-only, ovoz <b>#10</b> net skor,
+        baho <b>#6</b> oltin katak (<code>prototypes/*-actions-gallery.html</code>).
+        Mehmon: sevimli va yulduz yashiriladi, ovozlar <code>disabled</code>.</li>
       <li class="done"><b>«Cheklovlar»</b> — endi alohida bo‘lim emas: modelda
         <code>constraints</code> maydoni yo‘q, cheklovlar <code>statement</code>
-        ichida keladi. Limitlar sarlavhada badge (<code>page.tsx:137-140</code>).</li>
+        ichida keladi. Limitlar <code>head-1</code> da <b>#3</b> ikonka + matn
+        (<code>problem-limits-gallery.html</code>; platforma matni:
+        <code>ProblemDescription.tsx</code>).</li>
+      <li class="done"><b>Statistika qatori</b> — <code>head-2</code> ichida
+        <b>#3</b> ikonka + matn (<code>problem-stats-gallery.html</code>).</li>
+      <li class="done"><b>Matn o‘lchami</b> — <code>head-1</code> da gallery
+        <b>#1 P0</b>: «Matn», A−/A+, px, 13–22 px qadam, Ctrl+/−
+        (<code>statement-textsize-gallery.html</code>; CHOICE 9).</li>
+      <li class="done"><b>Kod muharriri (pane-b)</b> — gallery
+        <b>#2</b> gutter + <b>#5</b> toolbar;
+        <b>upload-file #3</b> segmented «Yuklash» (til yonida)
+        (<code>code-editor-gallery.html</code>, <code>upload-file-gallery.html</code>).</li>
+      <li class="done"><b>Namuna konsoli (pane-b)</b> — gallery
+        <b>sample-console #3</b>: ARIA combobox, <em>Sample test results</em> log,
+        KEP yorliqlari <em>Input / Output / Answer</em>
+        (<code>sample-console-gallery.html</code>; jadval faqat Kirish/Chiqish + nusxa).</li>
+      <li class="done"><b>Teglar va o‘xshash masalalar</b> — namunalar dan keyin:
+        gallery <b>#9</b> ikonka sarlavha + <b>#7</b> son badge (8 / 4),
+        ikki <code>&lt;details&gt;</code> akordeon
+        (<code>tags-similar-gallery.html</code>).</li>
+      <li class="done"><b>Sekundomer / taymer</b> — gallery
+        <b>timer-stopwatch #6</b> suzuvchi chip: pane-a o‘ng past, sticky;
+        ⏱ yechish vaqti + ⏳ round teskari sanash (prototip demo);
+        chip <b>pane-a boshida sticky</b> — uzoq matnda o‘ng pastda qoladi
+        (<code>timer-stopwatch-gallery.html</code>).</li>
     </ol>
     <p class="faint" style="font-size:12.5px;margin:10px 0 0">
       <code>editorial_state.access</code> — 6 qiymat: <code>anonymous</code>,
@@ -1270,14 +1583,213 @@ int main() {
     if (window.ResizeObserver && vp) new ResizeObserver(syncFrame).observe(vp);
   })();
 
-  /* per-sample run (choice 14) - icon only, result inline */
+  /* ---- P0 parity: ProblemActions + Editorial (page.tsx:187 / :247) ----
   (function () {
-    document.querySelectorAll(".runbtn").forEach(function (b) {
-      b.addEventListener("click", function () {
-        var row = document.querySelector('.runrow[data-for="' + b.dataset.run + '"]');
-        if (row) row.hidden = !row.hidden;
+    var DATA = {
+      "1": {
+        in: "4 3\n1 2 10\n2 3 20\n3 4 5\n2\nS 1 4\nS 1 3",
+        ans: "5\n10", outOk: "5\n10", outBad: "5\n9"
+      },
+      "2": {
+        in: "5 2\n1 2 7\n3 4 9\n3\nS 1 4\nS 1 1\nS 2 1",
+        ans: "-1\n-2\n7", outOk: "-1\n-2\n7", outBad: "-1\n0\n7"
+      },
+      "3": {
+        in: "3 4\n1 2 5\n1 2 9\n2 3 4\n1 3 6\n2\nS 1 3\nS 2 1",
+        ans: "6\n9", outOk: "6\n9", outBad: "6\n8"
+      },
+      "4": {
+        in: "4 4\n1 2 3\n2 3 3\n3 4 3\n1 4 1\n4\nS 1 4\nU 4 10\nS 1 4\nS 2 4",
+        ans: "3\n10\n3", outOk: "3\n10\n3", outBad: "3\n9\n3"
+      }
+    };
+    var combo = document.getElementById("sccombo");
+    var combBtn = document.getElementById("sccombbtn");
+    var combVal = document.getElementById("sccombval");
+    var logEl = document.getElementById("sclog");
+    var statusEl = document.getElementById("scstatus");
+    var inEl = document.getElementById("scin");
+    var outEl = document.getElementById("scout");
+    var ansEl = document.getElementById("scans");
+    var outWrap = document.getElementById("scoutwrap");
+    var runBtn = document.getElementById("scrun");
+    if (!combo || !logEl) return;
+
+    var sample = "1";
+    var state = "idle";
+    var runTimer = null;
+
+    function paintFields() {
+      var d = DATA[sample];
+      if (!d) return;
+      inEl.textContent = d.in;
+      ansEl.textContent = d.ans;
+      if (state === "idle") {
+        outEl.textContent = "—";
+        outWrap.setAttribute("data-st", "idle");
+      } else if (state === "run") {
+        outEl.textContent = "…";
+        outWrap.setAttribute("data-st", "idle");
+      } else if (state === "ok") {
+        outEl.textContent = d.outOk;
+        outWrap.setAttribute("data-st", "ok");
+      } else {
+        outEl.textContent = d.outBad;
+        outWrap.setAttribute("data-st", "bad");
+      }
+    }
+
+    function paintLog() {
+      logEl.setAttribute("data-st", state);
+      if (state === "idle") {
+        statusEl.textContent = "Ready";
+        statusEl.setAttribute("data-st", "idle");
+        logEl.textContent = "Sample test results\n(hali sinov yo‘q)";
+        return;
+      }
+      if (state === "run") {
+        statusEl.textContent = "Running…";
+        statusEl.setAttribute("data-st", "run");
+        logEl.textContent = "> Running sample " + sample + "…\n> Compiling…";
+        return;
+      }
+      if (state === "ok") {
+        statusEl.textContent = "Sample " + sample + " passed · 32 ms";
+        statusEl.setAttribute("data-st", "ok");
+        logEl.textContent = "> Sample " + sample + "\n> Verdict: OK\n> Time: 0.032 s\n> Memory: 1.2 MB";
+        return;
+      }
+      statusEl.textContent = "Wrong answer · sample " + sample;
+      statusEl.setAttribute("data-st", "bad");
+      logEl.textContent = "> Sample " + sample + "\n> Verdict: WRONG_ANSWER\n> Stopped at test 1\n> See Output vs Answer below.";
+    }
+
+    function setSample(n) {
+      sample = String(n);
+      if (combVal) combVal.textContent = sample + "-namuna";
+      combo.querySelectorAll(".sc-combo-list button").forEach(function (b) {
+        b.setAttribute("aria-selected", b.dataset.n === sample ? "true" : "false");
+      });
+      state = "idle";
+      if (runTimer) clearTimeout(runTimer);
+      paintLog();
+      paintFields();
+    }
+
+    function runSample() {
+      if (runTimer) clearTimeout(runTimer);
+      state = "run";
+      paintLog();
+      paintFields();
+      var fail = sample === "4";
+      runTimer = setTimeout(function () {
+        state = fail ? "bad" : "ok";
+        paintLog();
+        paintFields();
+      }, 700);
+    }
+
+    window.rwPickSample = setSample;
+
+    combBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      combo.classList.toggle("open");
+      combBtn.setAttribute("aria-expanded", combo.classList.contains("open") ? "true" : "false");
+    });
+    combo.querySelectorAll(".sc-combo-list button").forEach(function (opt) {
+      opt.addEventListener("click", function (e) {
+        e.stopPropagation();
+        setSample(opt.dataset.n);
+        combo.classList.remove("open");
+        combBtn.setAttribute("aria-expanded", "false");
       });
     });
+    document.addEventListener("click", function () {
+      if (!combo.classList.contains("open")) return;
+      combo.classList.remove("open");
+      combBtn.setAttribute("aria-expanded", "false");
+    });
+
+    runBtn.addEventListener("click", runSample);
+    document.querySelectorAll(".mbtn.m-run").forEach(function (b) {
+      b.addEventListener("click", runSample);
+    });
+
+    setSample("1");
+  })();
+
+  /* timer-stopwatch-gallery #6 — floating chip: stopwatch + contest countdown */
+  (function () {
+    var fab = document.getElementById("rwtimefab");
+    var swEl = document.getElementById("rwtsw");
+    var cdEl = document.getElementById("rwtcd");
+    var cdRow = document.getElementById("rwtcdrow");
+    if (!fab || !swEl || !cdEl) return;
+
+    var swSec = 0;
+    var cdSec = 4500;
+    var running = true;
+    var tickId = null;
+
+    function pad2(n) { return String(n).padStart(2, "0"); }
+
+    function fmtSw(sec) {
+      var h = Math.floor(sec / 3600);
+      var m = Math.floor((sec % 3600) / 60);
+      var s = sec % 60;
+      if (h > 0) return pad2(h) + ":" + pad2(m) + ":" + pad2(s);
+      return pad2(m) + ":" + pad2(s);
+    }
+
+    function fmtCd(sec) {
+      if (sec < 0) sec = 0;
+      var h = Math.floor(sec / 3600);
+      var m = Math.floor((sec % 3600) / 60);
+      var s = sec % 60;
+      return pad2(h) + ":" + pad2(m) + ":" + pad2(s);
+    }
+
+    function paintCdStyle() {
+      cdRow.classList.remove("warn", "bad");
+      if (cdSec < 60) cdRow.classList.add("bad");
+      else if (cdSec < 300) cdRow.classList.add("warn");
+    }
+
+    function paint() {
+      swEl.textContent = fmtSw(swSec);
+      cdEl.textContent = fmtCd(cdSec);
+      paintCdStyle();
+      fab.classList.toggle("run", running);
+      fab.setAttribute("aria-pressed", running ? "false" : "true");
+    }
+
+    function tick() {
+      if (!running) return;
+      swSec += 1;
+      cdSec -= 1;
+      paint();
+    }
+
+    function startTick() {
+      if (tickId) return;
+      tickId = setInterval(tick, 1000);
+    }
+
+    function stopTick() {
+      if (!tickId) return;
+      clearInterval(tickId);
+      tickId = null;
+    }
+
+    fab.addEventListener("click", function () {
+      running = !running;
+      if (running) startTick();
+      else stopTick();
+      paint();
+    });
+
+    paint();
+    startTick();
   })();
 
   /* section-separation switcher (choice 11) — the reader decides */
@@ -1370,11 +1882,19 @@ int main() {
       if (!accessOut) return;
       var u = page.getAttribute("data-u");
       var ed = page.getAttribute("data-ed");
-      accessOut.textContent = u === "guest" ? "anonymous"
+      var access = u === "guest" ? "anonymous"
         : ed === "locked" ? "locked"
         : ed === "solved" ? "solved"
         : ed === "closed" ? "free"
         : "purchased";
+      accessOut.textContent = access;
+      var badge = document.getElementById("edbadge");
+      if (badge) {
+        if (u === "guest") badge.textContent = "kirish";
+        else if (ed === "locked") badge.textContent = "30 Q";
+        else if (ed === "open") badge.textContent = "bepul · ochiq";
+        else badge.textContent = "bepul";
+      }
     }
 
     /* ADR-0013: while the gate is closed the text is not in the document.
@@ -1382,11 +1902,13 @@ int main() {
     function fill() {
       if (!body) return;
       var open = page.getAttribute("data-ed") === "open";
+      var acc = document.getElementById("edacc");
       if (open && !body.firstChild && tpl) {
         body.appendChild(tpl.content.cloneNode(true));
       } else if (!open) {
         while (body.firstChild) body.removeChild(body.firstChild);
       }
+      if (acc && open) acc.open = true;
     }
 
     function setEd(v) {
@@ -1428,23 +1950,34 @@ int main() {
     var fav = document.getElementById("fav");
     var vup = document.getElementById("vup");
     var vdown = document.getElementById("vdown");
+    var vnet = document.getElementById("vnet");
     var stars = [].slice.call(document.querySelectorAll(".actions .stars button"));
     var rsum = document.getElementById("rsum");
     var counts = { up: 12, down: 3 };
     var mine = 0;
     var avg = 4.6, votes = 38, myScore = 0;
 
+    function paintNet() {
+      if (!vnet) return;
+      var n = counts.up - counts.down;
+      vnet.textContent = (n > 0 ? "+" : "") + n;
+      vnet.classList.toggle("neg", n < 0);
+    }
+
     function paintVotes() {
       if (vup) {
-        vup.textContent = "▲ " + counts.up;
+        var nu = vup.querySelector(".n-up");
+        if (nu) nu.textContent = counts.up;
         vup.setAttribute("aria-label", "Yoqdi — ▲ " + counts.up);
         vup.setAttribute("aria-pressed", String(mine === 1));
       }
       if (vdown) {
-        vdown.textContent = "▼ " + counts.down;
+        var nd = vdown.querySelector(".n-down");
+        if (nd) nd.textContent = counts.down;
         vdown.setAttribute("aria-label", "Yoqmadi — ▼ " + counts.down);
         vdown.setAttribute("aria-pressed", String(mine === -1));
       }
+      paintNet();
     }
 
     /* a second click on the same arrow removes the vote — the platform
@@ -1463,7 +1996,8 @@ int main() {
     if (fav) fav.addEventListener("click", function () {
       var on = fav.getAttribute("aria-pressed") !== "true";
       fav.setAttribute("aria-pressed", String(on));
-      fav.textContent = on ? "★ Sevimlilarda" : "☆ Sevimlilarga";
+      fav.setAttribute("aria-label", on ? "Sevimlilardan olib tashlash" : "Sevimlilarga");
+      fav.title = on ? "Sevimlilarda" : "Sevimlilarga";
     });
 
     function paintStars() {
@@ -1509,6 +2043,17 @@ int main() {
     paintStars();
     paintUser();
     setEd(page.getAttribute("data-ed"));
+
+    var edupload = document.getElementById("edupload");
+    var edfile = document.getElementById("edfile");
+    if (edupload && edfile) {
+      edupload.addEventListener("click", function () { edfile.click(); });
+      edfile.addEventListener("change", function () {
+        if (!edfile.files || !edfile.files[0]) return;
+        edupload.title = "Yuklandi: " + edfile.files[0].name;
+        edfile.value = "";
+      });
+    }
   })();
 
   /* collapse / expand the editor pane — the ratio is kept (choice 2) */
