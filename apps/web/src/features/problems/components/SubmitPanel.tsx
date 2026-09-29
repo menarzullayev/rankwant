@@ -37,6 +37,11 @@ import {
   type Sample,
 } from "@/lib/api";
 import CodeEditor from "./CodeEditor";
+import {
+  SampleTestConsole,
+  sampleConsoleIdleState,
+  type SampleConsoleState,
+} from "./SampleTestConsole";
 
 const MAX_SOURCE_BYTES = SOURCE_MAX_BYTES;
 
@@ -172,6 +177,12 @@ export function SubmitPanel({
   // Natija qaysi testniki — tab almashganda begona natija ko'rinmasin.
   const [runFor, setRunFor] = useState<number | null>(null);
   const [sampleResults, setSampleResults] = useState<SampleResult[]>([]);
+  const [selectedSample, setSelectedSample] = useState(
+    () => samples[0]?.order ?? 1,
+  );
+  const [consoleState, setConsoleState] = useState<SampleConsoleState>(() =>
+    sampleConsoleIdleState(locale),
+  );
 
   const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -313,40 +324,51 @@ export function SubmitPanel({
     });
   }
 
-  /** Namunalar ketma-ket yuritiladi va birinchi mos kelmaganda to'xtaydi:
-   * custom-test submit bilan bitta limitni bo'lishadi (6/daq), va xato
-   * odatda birinchi namunada ko'rinadi. */
-  async function runSamples() {
+  /** Tanlangan bitta namuna — konsol (prototip pane-b). */
+  async function runSelectedSample() {
     if (!language || busy) return;
+    const sample = samples.find((s) => s.order === selectedSample);
+    if (!sample) return;
     setError(null);
     setBusy(true);
     setTab("samples");
-    setSampleResults([]);
+    setConsoleState({
+      status: "running",
+      log: t(locale, "submit.sampleConsoleRunning"),
+      got: "—",
+      outputStatus: "idle",
+    });
     try {
-      for (const sample of samples) {
-        const created = await runCustomTest({
-          language,
-          source_code: source,
-          stdin: sample.input,
-        });
-        const finished = await waitForRun(created.id);
-        const ok =
-          finished.verdict === "AC" &&
-          normalise(finished.stdout) === normalise(sample.expected);
-        setSampleResults((current) => [
-          ...current,
-          {
-            order: sample.order,
-            ok,
-            got: finished.stdout,
-            expected: sample.expected,
-            verdict: finished.verdict,
-          },
-        ]);
-        if (!ok) break;
-      }
+      const created = await runCustomTest({
+        language,
+        source_code: source,
+        stdin: sample.input,
+      });
+      const finished = await waitForRun(created.id);
+      const ok =
+        finished.verdict === "AC" &&
+        normalise(finished.stdout) === normalise(sample.expected);
+      const got = finished.stdout || "—";
+      setSampleResults([
+        {
+          order: sample.order,
+          ok,
+          got,
+          expected: sample.expected,
+          verdict: finished.verdict,
+        },
+      ]);
+      setConsoleState({
+        status: ok ? "ok" : "bad",
+        log: ok
+          ? fill(t(locale, "submit.samplePassLog"), { order: sample.order })
+          : fill(t(locale, "submit.sampleFailLog"), { order: sample.order }),
+        got,
+        outputStatus: ok ? "ok" : "bad",
+      });
     } catch (caught) {
       setError(describe(caught));
+      setConsoleState(sampleConsoleIdleState(locale));
     } finally {
       setBusy(false);
     }
@@ -444,6 +466,16 @@ export function SubmitPanel({
           onChange={setSource}
         />
 
+        <SampleTestConsole
+          samples={samples}
+          selectedOrder={selectedSample}
+          onSelect={setSelectedSample}
+          onRun={runSelectedSample}
+          busy={busy}
+          disabled={!canSubmit || !source.trim()}
+          state={consoleState}
+        />
+
         {error && <p className="text-theme-sm rw-bad-ink">{error}</p>}
 
         <div className="flex flex-wrap items-center gap-2">
@@ -458,15 +490,6 @@ export function SubmitPanel({
             >
               {t(locale, "submit.signInToSubmit")}
             </Link>
-          )}
-          {samples.length > 0 && (
-            <Button
-              variant="outline"
-              onClick={runSamples}
-              disabled={!canSubmit || busy || !source.trim()}
-            >
-              {t(locale, "submit.testOnSamples")}
-            </Button>
           )}
           <span className="ml-auto text-theme-xs rw-faint">
             {t(locale, "submit.draftSavedLocally")}

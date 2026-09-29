@@ -2,11 +2,12 @@ import Link from "next/link";
 
 import { Attachments } from "@/features/submissions";
 import { Markdown } from "@/components/ui/Markdown";
-import { ReportProblem, SimilarProblems } from "@/features/problems";
+import { ReportProblem } from "@/features/problems";
 import { Badge, DifficultyBadge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { CopyButton } from "@/components/kit/CopyControl";
 import { ProblemActions } from "@/features/problems";
+import { ProblemMetaAccordion, ProblemSolveTimer } from "@/features/problems";
 import { SampleTests } from "@/features/problems";
 import { StatementSize } from "@/features/problems";
 import { fill, t, type Locale } from "@/i18n/messages";
@@ -31,6 +32,7 @@ export function ProblemDescription({
 }) {
   return (
     <article className="min-w-0 space-y-6">
+      <ProblemSolveTimer contest={contest} />
       <header>
         <div className="rw-kit-hover flex flex-wrap items-baseline gap-3">
           {problem.code !== null && (
@@ -56,11 +58,6 @@ export function ProblemDescription({
           {!problem.has_tests && (
             <Badge color="warning">{t(locale, "problem.testsPreparing")}</Badge>
           )}
-          {problem.topics.map((topic) => (
-            <Badge key={topic} color="info">
-              {topic}
-            </Badge>
-          ))}
         </div>
 
         <p className="mt-3 text-theme-sm rw-dim">
@@ -144,6 +141,13 @@ export function ProblemDescription({
       </Card>
 
       <SampleTests samples={problem.samples} />
+      <p className="text-theme-xs rw-faint">{t(locale, "problem.sampleRunHint")}</p>
+
+      <ProblemMetaAccordion
+        topics={problem.topics}
+        similar={problem.similar}
+        locale={locale}
+      />
 
       {problem.note && (
         <Card title={t(locale, "problem.comments")}>
@@ -152,8 +156,6 @@ export function ProblemDescription({
       )}
 
       <Attachments items={problem.attachments} locale={locale} />
-
-      <SimilarProblems items={problem.similar} locale={locale} />
 
       <ReportProblem slug={slug} />
 

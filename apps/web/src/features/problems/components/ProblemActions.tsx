@@ -85,11 +85,21 @@ export function ProblemActions({ problem }: { problem: ProblemDetail }) {
           type="button"
           onClick={toggleFavourite}
           aria-pressed={favourite}
-          className={`rw-radius-sm px-2.5 py-1 font-medium transition rw-hover-bg ${
+          aria-label={
+            favourite
+              ? t(locale, "problem.inFavourites")
+              : t(locale, "problem.addFavourite")
+          }
+          title={
+            favourite
+              ? t(locale, "problem.inFavourites")
+              : t(locale, "problem.addFavourite")
+          }
+          className={`inline-flex size-9 items-center justify-center rw-radius-sm text-theme-lg transition rw-hover-bg rw-focus-ring ${
             favourite ? "rw-accent-ink" : "rw-dim"
           }`}
         >
-          {t(locale, favourite ? "problem.inFavourites" : "problem.addFavourite")}
+          {favourite ? "♥" : "♡"}
         </button>
       )}
 

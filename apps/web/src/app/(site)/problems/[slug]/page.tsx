@@ -6,6 +6,7 @@ import {
   ProblemSolversPanel,
   ProblemStatsPanel,
   ProblemTabs,
+  ProblemWorkspace,
   SubmitPanel,
 } from "@/features/problems";
 import { ProblemAttemptsPanel } from "./_panels/ProblemAttemptsPanel";
@@ -117,50 +118,53 @@ export default async function ProblemPage({ params, searchParams }: Props) {
   // Muharrirli ko'rinish — faqat yechish kontekstidagi tablarda.
   if (tab === "description" || tab === "editorial") {
     return (
-      <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,560px)]">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: jsonLd({
-              "@context": "https://schema.org",
-              "@type": "LearningResource",
-              name: problem.title,
-              description: jsonLdDescription,
-              url: `${SITE_URL}/problems/${slug}`,
-              educationalLevel: problem.level_label,
-              learningResourceType: "Problem",
-              inLanguage: locale,
-              isAccessibleForFree: true,
-              creator: { "@id": `${SITE_URL}/#organization` },
-            }),
-          }}
-        />
-        <div className="min-w-0 space-y-6">
-          <ProblemTabs slug={slug} current={tab} contest={contest} />
-          {tab === "description" ? (
-            <ProblemDescription
-              problem={problem}
-              slug={slug}
-              contest={contest}
-              locale={locale}
+      <ProblemWorkspace
+        statement={
+          <div className="min-w-0 space-y-6">
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: jsonLd({
+                  "@context": "https://schema.org",
+                  "@type": "LearningResource",
+                  name: problem.title,
+                  description: jsonLdDescription,
+                  url: `${SITE_URL}/problems/${slug}`,
+                  educationalLevel: problem.level_label,
+                  learningResourceType: "Problem",
+                  inLanguage: locale,
+                  isAccessibleForFree: true,
+                  creator: { "@id": `${SITE_URL}/#organization` },
+                }),
+              }}
             />
-          ) : (
-            <ProblemEditorialPanel
-              problem={problem}
-              slug={slug}
-              locale={locale}
-            />
-          )}
-        </div>
-
-        <SubmitPanel
-          problem={slug}
-          languages={problem.languages}
-          samples={problem.samples}
-          contest={contest}
-          hasTests={problem.has_tests}
-        />
-      </div>
+            <ProblemTabs slug={slug} current={tab} contest={contest} />
+            {tab === "description" ? (
+              <ProblemDescription
+                problem={problem}
+                slug={slug}
+                contest={contest}
+                locale={locale}
+              />
+            ) : (
+              <ProblemEditorialPanel
+                problem={problem}
+                slug={slug}
+                locale={locale}
+              />
+            )}
+          </div>
+        }
+        editor={
+          <SubmitPanel
+            problem={slug}
+            languages={problem.languages}
+            samples={problem.samples}
+            contest={contest}
+            hasTests={problem.has_tests}
+          />
+        }
+      />
     );
   }
 
