@@ -18,7 +18,7 @@ function formatElapsed(ms: number) {
 export function ProblemSolveTimer({ contest }: { contest?: string }) {
   const locale = useLocale();
   const [started] = useState(() => Date.now());
-  const [now, setNow] = useState(Date.now());
+  const [now, setNow] = useState(started);
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000);
