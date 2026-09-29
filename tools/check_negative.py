@@ -3999,23 +3999,23 @@ def neg_decisions_security_on_pr() -> tuple[bool, str]:
     )
 
 
-def neg_decisions_security_run_disabled() -> tuple[bool, str]:
-    """`if: false` qaytsa — Security yana o'chsa, tutilsin (D5)."""
+def neg_decisions_security_run_enabled() -> tuple[bool, str]:
+    """`if: false` o'chsa — Security yana yugursa, tutilsin (D5)."""
     return _decision_broken(
         ".github/workflows/security.yml",
-        "    name: Security checks\n    runs-on: ubuntu-latest\n",
         "    name: Security checks\n    if: false\n    runs-on: ubuntu-latest\n",
-        "Security run yoqilgan",
+        "    name: Security checks\n    runs-on: ubuntu-latest\n",
+        "Security run o'chiq",
     )
 
 
-def neg_decisions_security_cron_removed() -> tuple[bool, str]:
-    """Kunlik cron olib tashlansa — avtomatik yurmay qolsa, tutilsin (D5)."""
+def neg_decisions_security_cron_restored() -> tuple[bool, str]:
+    """Cron qaytsa — avtomatik yugurish yoqilsa, tutilsin (D5)."""
     return _decision_broken(
         ".github/workflows/security.yml",
-        "  schedule:\n    - cron: '0 3 * * *'\n",
-        "",
-        "Security run yoqilgan",
+        "  workflow_dispatch:\n",
+        "  workflow_dispatch:\n  schedule:\n    - cron: '0 3 * * *'\n",
+        "Security run o'chiq",
     )
 
 
@@ -4024,7 +4024,7 @@ def neg_decisions_security_required_again() -> tuple[bool, str]:
         "tools/check_deploy_gate.py",
         'REQUIRED = ("CI",)',
         'REQUIRED = ("CI", "Security")',
-        "Security run yoqilgan",
+        "Security run o'chiq",
     )
 
 
@@ -8146,8 +8146,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("sinov label'i boshqa workflow'da tutilsin", neg_decisions_trial_label_scoped),
             ("sandbox o'qilgan hamma faylni nusxalaydi", neg_decisions_sandbox_covers_reads),
             ("Security PR'da qaytsa tutilsin", neg_decisions_security_on_pr),
-            ("Security job o'chsa tutilsin", neg_decisions_security_run_disabled),
-            ("Security cron olinsa tutilsin", neg_decisions_security_cron_removed),
+            ("Security job yoqilsa tutilsin", neg_decisions_security_run_enabled),
+            ("Security cron qaytsa tutilsin", neg_decisions_security_cron_restored),
             ("Security darvozaga qaytsa tutilsin", neg_decisions_security_required_again),
             ("bosh sahifa CSS link'ga qaytsa tutilsin", neg_decisions_homepage_css_not_inlined),
             ("login to'liq globals.css ga qaytsa tutilsin", neg_decisions_login_full_globals),
