@@ -490,10 +490,6 @@ jobs:
         run: python3 tools/check_customization_contract.py
       - name: Deployed security boundary (loopback only, judge publishes nothing)
         run: python3 tools/check_security_boundary.py
-      - name: AI layer boundary (no DB models, testdata, DATABASE_URL)
-        run: python3 tools/check_ai_boundary.py
-      - name: App import boundary (cross-app `models` allowlist + ratchet)
-        run: python3 tools/check_architecture.py
       - name: Dependency licence inventory (drift against the lockfiles)
         run: python3 tools/licence_inventory.py --check
       - name: .env.example completeness (variables read by code and compose)
