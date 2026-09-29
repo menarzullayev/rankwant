@@ -387,11 +387,7 @@
 <div class="shell">
   <div class="bar">
     <h1>Statement sahifasi — bosqichma-bosqich qurilish</h1>
-    <span class="pill">20 / 20</span>
-    <label class="rng">Radius
-      <input type="range" id="rad" min="0" max="28" step="2" value="16">
-      <b id="radval">16px</b>
-    </label>
+    <span class="pill">18 / 19</span>
     <div class="switch" role="group" aria-label="Qurilma kengligi">
       <button data-w="desktop" id="w-desktop" class="on" aria-pressed="true">Desktop 1440</button>
       <button data-w="tablet" id="w-tablet" aria-pressed="false">Planshet 834</button>
@@ -893,15 +889,14 @@ int main() {
       <li class="done"><b>9.</b> O‘lcham boshqaruvi — <b>sarlavhada + yorliq + klaviatura</b></li>
       <li class="done"><b>10.</b> Karta — <b>hairline + yumshoq soya</b></li>
       <li class="done"><b>11.</b> Bo‘limlararo ajratish — <b>foydalanuvchi almashtiradi (3 rejim)</b></li>
-      <li class="done"><b>12.</b> Radius — <b>slider (foydalanuvchi sozlaydi)</b></li>
-      <li class="done"><b>13.</b> Matn kengligi — <b>o‘lchov slider (foydalanuvchi sozlaydi)</b></li>
-      <li class="done"><b>14.</b> Namuna harakati — <b>har namunada ikonka-Run, natija inline</b></li>
-      <li class="done"><b>15.</b> Yuborish tugmasi — <b>muharrir panelida (V1)</b>; mobil sticky qismi 19-bosqichda olib tashlandi</li>
-      <li class="done"><b>16.</b> Natija ko‘rinishi — <b>foydalanuvchi almashtiradi (4 rejim: Tab / Ustun / Toast / Modal)</b></li>
-      <li class="done"><b>17.</b> Bo‘sh / yuklanish — <b>matn + yo‘naltirish + spinner</b></li>
-      <li class="done"><b>18.</b> Planshet (834px) — <b>avto-yig‘ish + pastdan varaq</b> (shart to‘liq kenglikda, muharrir chaqiriladi)</li>
-      <li class="done"><b>19.</b> Mobil (390px) — <b>varaq mexanizmi (M2) + bo‘lim navigatsiyasi (M4)</b>; pastdagi panel olib tashlandi</li>
-      <li class="done"><b>20.</b> Tegish maydoni va kontrast — <b>WCAG 2.5.8 (24×24) + AA (4.5:1)</b></li>
+      <li class="done"><b>12.</b> Matn kengligi — <b>avtomatik (min(100ch, 100% - padding))</b></li>
+      <li class="done"><b>13.</b> Namuna harakati — <b>har namunada ikonka-Run, natija inline</b></li>
+      <li class="done"><b>14.</b> Yuborish tugmasi — <b>muharrir panelida (V1)</b>; mobil sticky qismi 19-bosqichda olib tashlandi</li>
+      <li class="done"><b>15.</b> Natija ko‘rinishi — <b>foydalanuvchi almashtiradi (4 rejim: Tab / Ustun / Toast / Modal)</b></li>
+      <li class="done"><b>16.</b> Bo‘sh / yuklanish — <b>matn + yo‘naltirish + spinner</b></li>
+      <li class="done"><b>17.</b> Planshet (834px) — <b>avto-yig‘ish + pastdan varaq</b> (shart to‘liq kenglikda, muharrir chaqiriladi)</li>
+      <li class="done"><b>18.</b> Mobil (390px) — <b>varaq mexanizmi (M2) + bo‘lim navigatsiyasi (M4)</b>; pastdagi panel olib tashlandi</li>
+      <li class="done"><b>19.</b> Tegish maydoni va kontrast — <b>WCAG 2.5.8 (24×24) + AA (4.5:1)</b></li>
     </ol>
   </div>
 
@@ -1283,32 +1278,6 @@ int main() {
         if (row) row.hidden = !row.hidden;
       });
     });
-  })();
-
-  /* radius slider (choice 12) — a builder control, so the value can be
-     tried live before it is fixed. `--r` and `--r-sm` drive the prototype. */
-  (function () {
-    var rad = document.getElementById("rad");
-    var out = document.getElementById("radval");
-    var R_MIN = 0, R_MAX = 28, R_FALLBACK = 16;
-    // the slider bounds are UI; a stored value has to be clamped too,
-    // otherwise a bad value reaches the stylesheet as `NaNpx`
-    function clampR(v) {
-      var n = parseInt(v, 10);
-      if (!isFinite(n)) n = R_FALLBACK;
-      return Math.min(R_MAX, Math.max(R_MIN, n));
-    }
-    function paint(v) {
-      var n = clampR(v);
-      document.documentElement.style.setProperty("--r", n + "px");
-      document.documentElement.style.setProperty("--r-sm", Math.round(n * 0.625) + "px");
-      out.textContent = n + "px";
-      localStorage.setItem("rw:radius", String(n));
-    }
-    var saved = clampR(localStorage.getItem("rw:radius"));
-    rad.value = String(saved);
-    paint(saved);
-    rad.addEventListener("input", function () { paint(rad.value); });
   })();
 
   /* section-separation switcher (choice 11) — the reader decides */
