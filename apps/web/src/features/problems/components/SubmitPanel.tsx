@@ -336,7 +336,7 @@ export function SubmitPanel({
       status: "running",
       log: t(locale, "submit.sampleConsoleRunning"),
       got: "—",
-      outputStatus: "idle",
+      outputMatched: null,
     });
     try {
       const created = await runCustomTest({
@@ -359,12 +359,12 @@ export function SubmitPanel({
         },
       ]);
       setConsoleState({
-        status: ok ? "ok" : "bad",
+        status: "done",
         log: ok
           ? fill(t(locale, "submit.samplePassLog"), { order: sample.order })
           : fill(t(locale, "submit.sampleFailLog"), { order: sample.order }),
         got,
-        outputStatus: ok ? "ok" : "bad",
+        outputMatched: ok,
       });
     } catch (caught) {
       setError(describe(caught));

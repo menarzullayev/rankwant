@@ -9,10 +9,11 @@ import { fill, t } from "@/i18n/messages";
 import type { Sample } from "@/lib/api";
 
 export type SampleConsoleState = {
-  status: "idle" | "running" | "ok" | "bad";
+  status: "idle" | "running" | "done";
   log: string;
   got: string;
-  outputStatus: "idle" | "ok" | "bad";
+  /** `null` — hali taqqoslanmadi; `true`/`false` — mos / mos emas. */
+  outputMatched: boolean | null;
 };
 
 export function sampleConsoleIdleState(
@@ -22,7 +23,7 @@ export function sampleConsoleIdleState(
     status: "idle",
     log: t(locale, "submit.sampleConsoleIdle"),
     got: "—",
-    outputStatus: "idle",
+    outputMatched: null,
   };
 }
 
@@ -126,9 +127,9 @@ export function SampleTestConsole({
         <span className="ml-auto tabular-nums rw-faint">
           {busy ? (
             <Loading variant="dotsFade" label={t(locale, "submit.sampleConsoleRunning")} />
-          ) : state.status === "ok" ? (
+          ) : state.status === "done" && state.outputMatched === true ? (
             t(locale, "submit.matches")
-          ) : state.status === "bad" ? (
+          ) : state.status === "done" && state.outputMatched === false ? (
             t(locale, "submit.outputMismatch")
           ) : (
             t(locale, "submit.sampleConsoleReady")
@@ -152,13 +153,7 @@ export function SampleTestConsole({
           <SampleField
             label={t(locale, "problem.sampleOutput")}
             text={state.got}
-            highlight={
-              state.outputStatus === "ok"
-                ? "ok"
-                : state.outputStatus === "bad"
-                  ? "bad"
-                  : undefined
-            }
+            highlight={state.outputMatched}
           />
           <SampleField
             label={t(locale, "problem.sampleAnswer")}
@@ -177,14 +172,11 @@ function SampleField({
 }: {
   label: string;
   text: string;
-  highlight?: "ok" | "bad";
+  highlight?: boolean | null;
 }) {
-  const ring =
-    highlight === "ok"
-      ? "ring-1 ring-[var(--rw-ok)]"
-      : highlight === "bad"
-        ? "ring-1 ring-[var(--rw-bad)]"
-        : "";
+  let ring = "";
+  if (highlight === true) ring = "ring-1 ring-[var(--rw-ok)]";
+  if (highlight === false) ring = "ring-1 ring-[var(--rw-bad)]";
   return (
     <div className={`border-t sm:border-t-0 sm:border-l rw-divider p-2 ${ring}`}>
       <p className="mb-1 text-theme-2xs font-semibold uppercase tracking-wide rw-faint">
