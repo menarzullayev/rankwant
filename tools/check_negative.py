@@ -218,9 +218,7 @@ class Mutation:
             raise AssertionError(
                 f"salbiy test yasalmadi: {self.old!r} {self.path.name} da topilmadi"
             )
-        self.path.write_bytes(
-            self.original.replace(self.old, self.new, 1).encode("utf-8")
-        )
+        self.path.write_bytes(self.original.replace(self.old, self.new, 1).encode("utf-8"))
         return self
 
     def __exit__(self, *_exc: object) -> None:
@@ -261,10 +259,7 @@ def node_precondition() -> str | None:
         return f"node tekshiruvi ishga tushmadi — {NODE_MISSING}"
     if code != 0:
         first = out.strip().splitlines()[:3]
-        return (
-            "node tekshiruvi o'zgarmagan manbada ham yiqildi "
-            f"(exit {code}): {' | '.join(first)}"
-        )
+        return f"node tekshiruvi o'zgarmagan manbada ham yiqildi (exit {code}): {' | '.join(first)}"
     return None
 
 
@@ -583,9 +578,15 @@ def neg_docs_research_link_still_checked() -> tuple[bool, str]:
     with Mutation(path, text, broken):
         code, out = run_check("docs")
     if code == 0:
-        return False, "docs/research: buzuq havola O'TKAZILDI (exit 0) — istisno havolani ham o'chirgan"
+        return (
+            False,
+            "docs/research: buzuq havola O'TKAZILDI (exit 0) — istisno havolani ham o'chirgan",
+        )
     if not re.search(r"docs[\\/]research[\\/]README\.md: buzilgan havola", out):
-        return False, f"docs/research: exit {code}, lekin sabab tadqiqot havolasi emas — {out.strip()[-160:]}"
+        return (
+            False,
+            f"docs/research: exit {code}, lekin sabab tadqiqot havolasi emas — {out.strip()[-160:]}",
+        )
     return True, "docs/research: yozuvdagi buzuq havola tutildi (exit 1)"
 
 
@@ -600,12 +601,18 @@ def neg_docs_research_exemption_is_scoped() -> tuple[bool, str]:
     with Mutation(record, record_text, record_text.rstrip() + line):
         code, out = run_check("docs")
     if code != 0:
-        return False, f"docs/istisno: tadqiqot yozuvidagi kirill matn qizil qildi — {out.strip()[-160:]}"
+        return (
+            False,
+            f"docs/istisno: tadqiqot yozuvidagi kirill matn qizil qildi — {out.strip()[-160:]}",
+        )
     living_text = living.read_bytes().decode("utf-8")
     with Mutation(living, living_text, living_text.rstrip() + line):
         code, out = run_check("docs")
     if code == 0 or "kirill/lotin aralashuvi" not in out:
-        return False, "docs/istisno: tirik hujjatdagi aralash yozuv O'TKAZILDI — istisno keng ketgan"
+        return (
+            False,
+            "docs/istisno: tirik hujjatdagi aralash yozuv O'TKAZILDI — istisno keng ketgan",
+        )
     return True, "docs/istisno: faqat docs/research ozod, tirik hujjat tutildi"
 
 
@@ -649,7 +656,7 @@ def neg_api_english_uzbek_message() -> tuple[bool, str]:
     """An Uzbek API error message must fail the English-messages check."""
     path = ROOT / "apps/api/core/errors.py"
     old = 'message = "The submitted data is not valid"'
-    new = 'message = "Kiritilgan ma\'lumot noto\'g\'ri"'
+    new = "message = \"Kiritilgan ma'lumot noto'g'ri\""
     if old not in path.read_bytes().decode("utf-8"):
         return False, "api_english: langar topilmadi"
     with Mutation(path, old, new):
@@ -786,9 +793,7 @@ def neg_i18n_review_sheet_old_key() -> tuple[bool, str]:
     if not path.exists():
         return False, "i18n-review: `kk.md` topilmadi"
     text = path.read_bytes().decode("utf-8")
-    line = next(
-        (l for l in text.splitlines() if l.startswith("| `common.empty`")), None
-    )
+    line = next((l for l in text.splitlines() if l.startswith("| `common.empty`")), None)
     if line is None:
         return False, "i18n-review: `common.empty` qatori topilmadi"
     broken = text.replace(line, "| `empty` | x | y |  |", 1)
@@ -819,8 +824,7 @@ def neg_i18n_parity_does_not_mask() -> tuple[bool, str]:
         has_sheet = "eskirgan" in out
         if not (has_parity and has_sheet):
             return False, (
-                "i18n/paritet keyingi qoidani to'sdi — "
-                f"paritet={has_parity}, varaq={has_sheet}"
+                f"i18n/paritet keyingi qoidani to'sdi — paritet={has_parity}, varaq={has_sheet}"
             )
         return True, "i18n/paritet keyingi qoidalarni to'smaydi (exit 1)"
 
@@ -1552,9 +1556,7 @@ def neg_backup_truncated_archive() -> tuple[bool, str]:
         chopped.write_bytes(raw[: len(raw) // 2])
         code, out = _run_backup_verify(chopped)
         if code == 0:
-            return False, (
-                "backup/kesilgan: buzuq arxiv O'TKAZILDI (exit 0) — tekshiruv o'lik"
-            )
+            return False, ("backup/kesilgan: buzuq arxiv O'TKAZILDI (exit 0) — tekshiruv o'lik")
         if "gzip -t" not in out:
             return False, (
                 f"backup/kesilgan: yiqildi, lekin sabab ko'rinmadi — {out.strip()[:120]}"
@@ -1576,13 +1578,10 @@ def neg_backup_missing_trailer() -> tuple[bool, str]:
         code, out = _run_backup_verify(half)
         if code == 0:
             return False, (
-                "backup/chala: yakuniy qatorsiz dump O'TKAZILDI (exit 0) — "
-                "tekshiruv o'lik"
+                "backup/chala: yakuniy qatorsiz dump O'TKAZILDI (exit 0) — tekshiruv o'lik"
             )
         if "chala" not in out:
-            return False, (
-                f"backup/chala: yiqildi, lekin sabab ko'rinmadi — {out.strip()[:120]}"
-            )
+            return False, (f"backup/chala: yiqildi, lekin sabab ko'rinmadi — {out.strip()[:120]}")
         return True, "backup/chala: yakuniy qatorsiz dump tutildi (exit 1)"
 
 
@@ -1600,8 +1599,7 @@ def neg_backup_good_dump_passes() -> tuple[bool, str]:
         code, out = _run_backup_verify(good)
         if code != 0:
             return False, (
-                f"backup/butun: sog'lom dump exit {code} berdi (0 kerak) — "
-                f"{out.strip()[:120]}"
+                f"backup/butun: sog'lom dump exit {code} berdi (0 kerak) — {out.strip()[:120]}"
             )
         if "dump butun" not in out:
             return False, "backup/butun: tasdiq xabari ko'rinmadi"
@@ -1637,20 +1635,14 @@ MONITOR_CASES = {
 
 #: Hamma qatlam sog'lom.
 HTTP_HEALTHY = (
-    "public-web\t200\topen\n"
-    "public-api\t200\topen\n"
-    "origin-web\t200\topen\n"
-    "origin-api\t200\topen\n"
+    "public-web\t200\topen\npublic-api\t200\topen\norigin-web\t200\topen\norigin-api\t200\topen\n"
 )
 
 #: 2026-09-15 avariyasi: sahifa ochiladi, API yiqilgan. Origin porti TCP
 #: ulanishni QABUL QILADI, lekin HTTP 000 qaytaradi — aynan shu juftlik
 #: o'lgan host port ko'prigini boshqa hamma narsadan ajratadi.
 HTTP_API_ONLY_OUTAGE = (
-    "public-web\t200\topen\n"
-    "public-api\t503\topen\n"
-    "origin-web\t200\topen\n"
-    "origin-api\t000\topen\n"
+    "public-web\t200\topen\npublic-api\t503\topen\norigin-web\t200\topen\norigin-api\t000\topen\n"
 )
 
 
@@ -1740,9 +1732,7 @@ def monitor_precondition() -> str | None:
     code, out = _run_monitor(HTTP_HEALTHY)
     if code != 0:
         first = out.strip().splitlines()[:3]
-        return (
-            f"monitor.ps1 sog'lom holatda ham yiqildi (exit {code}): {' | '.join(first)}"
-        )
+        return f"monitor.ps1 sog'lom holatda ham yiqildi (exit {code}): {' | '.join(first)}"
     return None
 
 
@@ -1761,8 +1751,7 @@ def neg_monitor_api_only_outage() -> tuple[bool, str]:
     )
     if code == 0:
         return False, (
-            "monitor/API yolg'iz: sayt 200 bo'lgani uchun O'TKAZILDI (exit 0) — "
-            "monitor o'lik"
+            "monitor/API yolg'iz: sayt 200 bo'lgani uchun O'TKAZILDI (exit 0) — monitor o'lik"
         )
     if "DEAD BRIDGE" not in out:
         return False, (
@@ -1775,9 +1764,7 @@ def neg_monitor_api_only_outage() -> tuple[bool, str]:
             "monitor/API yolg'iz: dry-run emas — test haqiqiy konteynerni qayta "
             "ishga tushirishi mumkin edi"
         )
-    return True, (
-        "monitor/API yolg'iz: DEAD BRIDGE tutildi, faqat api konteyneri (exit 1)"
-    )
+    return True, ("monitor/API yolg'iz: DEAD BRIDGE tutildi, faqat api konteyneri (exit 1)")
 
 
 def neg_monitor_healthy_gate() -> tuple[bool, str]:
@@ -1810,9 +1797,7 @@ def neg_monitor_unreadable_is_not_green() -> tuple[bool, str]:
         unreadable="docker",
     )
     if code == 0:
-        return False, (
-            "monitor/o'qilmadi: exit 0 — o'lchanmagan qatlam «yashil» deb o'qildi"
-        )
+        return False, ("monitor/o'qilmadi: exit 0 — o'lchanmagan qatlam «yashil» deb o'qildi")
     if code != 2:
         return False, f"monitor/o'qilmadi: exit {code} (2 kerak edi)"
     if "UNMEASURED" not in out:
@@ -1841,9 +1826,7 @@ def neg_monitor_container_down_is_not_bridge() -> tuple[bool, str]:
     if "CONTAINER DOWN" not in out:
         return False, f"monitor/konteyner: qatlam nomi yo'q — {out.strip()[:160]}"
     if "DEAD BRIDGE" in out:
-        return False, (
-            "monitor/konteyner: to'xtagan konteyner «o'lgan ko'prik» deb o'qildi"
-        )
+        return False, ("monitor/konteyner: to'xtagan konteyner «o'lgan ko'prik» deb o'qildi")
     return True, "monitor/konteyner: CONTAINER DOWN ko'prikdan ajratildi (exit 1)"
 
 
@@ -1864,9 +1847,7 @@ def neg_monitor_app_down_is_not_restarted() -> tuple[bool, str]:
     if "APP DOWN" not in out:
         return False, f"monitor/ilova: qatlam nomi yo'q — {out.strip()[:160]}"
     if "restart" in out:
-        return False, (
-            "monitor/ilova: ichkarida javob yo'q, lekin restart qilishga urindi"
-        )
+        return False, ("monitor/ilova: ichkarida javob yo'q, lekin restart qilishga urindi")
     return True, "monitor/ilova: APP DOWN tutildi, restart QILINMADI (exit 1)"
 
 
@@ -1980,10 +1961,7 @@ def neg_picker_rejects_store_stub() -> tuple[bool, str]:
         stub.chmod(0o755)
         code, out = _run_picker([tmp])
     if code == 0:
-        return False, (
-            "picker/stub: Store stub'i TANLANDI (exit 0) — "
-            f"«{out.strip()[:60]}»"
-        )
+        return False, (f"picker/stub: Store stub'i TANLANDI (exit 0) — «{out.strip()[:60]}»")
     if code != 1:
         return False, f"picker/stub: exit {code} (1 kerak edi)"
     return True, "picker/stub: ishga tushmaydigan stub rad etildi (exit 1)"
@@ -2191,10 +2169,17 @@ def neg_checker_survives_narrow_stdout() -> tuple[bool, str]:
         compose.write_text("[]", encoding="utf-8")
         extra = {
             "check_deploy_gate.py": [
-                "--head", _GATE_SHA, "--main", _GATE_SHA, "--runs", str(runs),
-                "--compose-status", str(compose),
+                "--head",
+                _GATE_SHA,
+                "--main",
+                _GATE_SHA,
+                "--runs",
+                str(runs),
+                "--compose-status",
+                str(compose),
             ],
             "check_after_reboot.py": ["--facts", str(facts)],
+            "check_metrics.py": ["--self-test"],
             # `check_csp_nonce.py` reads a rendered page, so it needs a target.
             # The fixture keeps this case about encoding: pointed at the real
             # stack it would turn red whenever production changed.
@@ -2346,9 +2331,7 @@ def _sandbox_run(repo: Path, env: dict[str, str], *cmd: str) -> str:
     return proc.stdout.strip()
 
 
-def _sandbox_commit(
-    repo: Path, env: dict[str, str], identity: tuple[str, ...], name: str
-) -> str:
+def _sandbox_commit(repo: Path, env: dict[str, str], identity: tuple[str, ...], name: str) -> str:
     (repo / f"{name}.txt").write_text(f"{name}\n", encoding="utf-8")
     _sandbox_run(repo, env, "git", "add", "-A")
     _sandbox_run(repo, env, *identity, "commit", "-q", "-m", name)
@@ -2558,7 +2541,10 @@ def neg_web_unit_tests_catch_broken_cookie() -> tuple[bool, str]:
     # Precondition: without it a missing install would read as "caught".
     code, out = vitest_run()
     if code != 0:
-        return False, f"web/unit: o'zgarmagan manbada ham yiqildi (exit {code}) — {out.strip()[-160:]}"
+        return (
+            False,
+            f"web/unit: o'zgarmagan manbada ham yiqildi (exit {code}) — {out.strip()[-160:]}",
+        )
     path = web / "src/lib/prefs.ts"
     text = path.read_bytes().decode("utf-8")
     old = 'if (k === "s") out.statusStyle'
@@ -3251,8 +3237,7 @@ def neg_decisions_locale_code_restored() -> tuple[bool, str]:
     return _decision_broken(
         "apps/web/src/layout/LocaleSwitch.tsx",
         "      <Dropdown",
-        '      <span className="text-theme-xs sm:hidden">{currentCode}</span>\n'
-        "      <Dropdown",
+        '      <span className="text-theme-xs sm:hidden">{currentCode}</span>\n      <Dropdown',
         "tor ekran 320 px ga sig'adi",
     )
 
@@ -3281,8 +3266,8 @@ def neg_decisions_locale_label_in_name_lost() -> tuple[bool, str]:
     """
     return _decision_broken(
         "apps/web/src/layout/LocaleSwitch.tsx",
-        "aria-label={`${currentLabel} (${currentCode}) — ${t(locale, \"locale.switchLabel\")}`}",
-        "aria-label={`${currentCode} — ${t(locale, \"locale.switchLabel\")}`}",
+        'aria-label={`${currentLabel} (${currentCode}) — ${t(locale, "locale.switchLabel")}`}',
+        'aria-label={`${currentCode} — ${t(locale, "locale.switchLabel")}`}',
         "tor ekran 320 px ga sig'adi",
     )
 
@@ -3472,8 +3457,7 @@ def neg_decisions_deploy_backup_after_migrate() -> tuple[bool, str]:
     return _decision_broken(
         "tools/deploy.sh",
         'step "3/8 Migratsiyadan oldin zaxira (pg_dump)"',
-        '"${COMPOSE[@]}" run --rm migrate || true\n'
-        'step "3/8 Migratsiyadan oldin zaxira (pg_dump)"',
+        '"${COMPOSE[@]}" run --rm migrate || true\nstep "3/8 Migratsiyadan oldin zaxira (pg_dump)"',
         "avtomatik deploy xavfsiz",
     )
 
@@ -4016,10 +4000,21 @@ def neg_decisions_security_on_pr() -> tuple[bool, str]:
 
 
 def neg_decisions_security_run_enabled() -> tuple[bool, str]:
+    """`if: false` o'chsa — Security yana yugursa, tutilsin (D5)."""
     return _decision_broken(
         ".github/workflows/security.yml",
-        "    if: false\n",
-        "",
+        "    name: Security checks\n    if: false\n    runs-on: ubuntu-latest\n",
+        "    name: Security checks\n    runs-on: ubuntu-latest\n",
+        "Security run o'chiq",
+    )
+
+
+def neg_decisions_security_cron_restored() -> tuple[bool, str]:
+    """Cron qaytsa — avtomatik yugurish yoqilsa, tutilsin (D5)."""
+    return _decision_broken(
+        ".github/workflows/security.yml",
+        "  workflow_dispatch:\n",
+        "  workflow_dispatch:\n  schedule:\n    - cron: '0 3 * * *'\n",
         "Security run o'chiq",
     )
 
@@ -4708,9 +4703,7 @@ def neg_decisions_sandbox_covers_reads() -> tuple[bool, str]:
     # The sandbox copies the whole workflows directory with a glob, so
     # `ci.yml`/`deploy.yml` are staged even though no line names them. Read the
     # directory rather than assume it: that is what the sandbox itself does.
-    staged |= {
-        f".github/workflows/{p.name}" for p in (ROOT / ".github/workflows").glob("*.yml")
-    }
+    staged |= {f".github/workflows/{p.name}" for p in (ROOT / ".github/workflows").glob("*.yml")}
     missing = sorted(paths - staged)
     if missing:
         return False, f"decisions/sandbox: nusxalanmagan fayl(lar) — {', '.join(missing)}"
@@ -4917,9 +4910,7 @@ _DIFFICULTY_COUNT = (
     "      (key) => !DIFFICULTY_KEYS.includes(key) && params.get(key),\n"
     "    ).length + (DIFFICULTY_KEYS.some((key) => params.get(key)) ? 1 : 0);"
 )
-_NAIVE_COUNT = (
-    "  const activeCount = PANEL_KEYS.filter((key) => params.get(key)).length;"
-)
+_NAIVE_COUNT = "  const activeCount = PANEL_KEYS.filter((key) => params.get(key)).length;"
 
 
 def neg_decisions_difficulty_keys_declaration_removed() -> tuple[bool, str]:
@@ -4942,9 +4933,7 @@ def neg_decisions_difficulty_keys_missing_level() -> tuple[bool, str]:
 def neg_decisions_difficulty_count_ignores_keys() -> tuple[bool, str]:
     # The regression that actually shipped: count `PANEL_KEYS` entries again,
     # so one "Qiyin" chip reads "Filtrlar2" and the E2E spec goes red.
-    return _decision_broken(
-        _FILTERS, _DIFFICULTY_COUNT, _NAIVE_COUNT, _DIFFICULTY_RULE
-    )
+    return _decision_broken(_FILTERS, _DIFFICULTY_COUNT, _NAIVE_COUNT, _DIFFICULTY_RULE)
 
 
 def neg_decisions_difficulty_predicate_reverted() -> tuple[bool, str]:
@@ -5002,7 +4991,7 @@ def neg_decisions_footer_privacy_link_lost() -> tuple[bool, str]:
     return _decision_broken(
         _FOOTER,
         '        <IntentLink href="/privacy" className="rw-focus-ring hover:underline">\n'
-        "          {t(locale, \"footer.privacy\")}\n"
+        '          {t(locale, "footer.privacy")}\n'
         "        </IntentLink>\n",
         "",
         _BRAND_RULE,
@@ -5127,7 +5116,10 @@ def _boundary_broken(rel: str, old: str, new: str) -> tuple[bool, str]:
     with Mutation(path, old, new):
         code, out = run_check("security_boundary")
     if code != 1:
-        return False, f"chegara/{rel}: buzilgan chegara exit {code} berdi (1 kerak) — {out.strip()[-160:]}"
+        return (
+            False,
+            f"chegara/{rel}: buzilgan chegara exit {code} berdi (1 kerak) — {out.strip()[-160:]}",
+        )
     return True, f"chegara/{rel}: buzilgan chegara tutildi (exit 1)"
 
 
@@ -5179,9 +5171,7 @@ def neg_decisions_threat_model_deleted() -> tuple[bool, str]:
 
 def neg_decisions_threat_model_unlinked() -> tuple[bool, str]:
     """Indeks havolasi uzilsa tutilsin — hujjat bor, lekin topilmaydi."""
-    return _threat_model_broken(
-        _THREAT_MODEL_INDEX, "](threat-model.md)", "](threat-model-old.md)"
-    )
+    return _threat_model_broken(_THREAT_MODEL_INDEX, "](threat-model.md)", "](threat-model-old.md)")
 
 
 def neg_decisions_threat_model_risk_dropped() -> tuple[bool, str]:
@@ -5447,9 +5437,7 @@ def neg_decisions_security_suite_record_deleted() -> tuple[bool, str]:
 
 def neg_decisions_security_suite_reason_dropped() -> tuple[bool, str]:
     """Yozuvda `ISOLATION_CASES` bo'lmasa tutilsin — sabab isbotsiz qoladi."""
-    return _decision_broken(
-        _SEC_SUITE_RECORD, "ISOLATION_CASES", "ISOLATION_SET", _SEC_SUITE_RULE
-    )
+    return _decision_broken(_SEC_SUITE_RECORD, "ISOLATION_CASES", "ISOLATION_SET", _SEC_SUITE_RULE)
 
 
 def neg_decisions_security_suite_claim_restored() -> tuple[bool, str]:
@@ -5506,16 +5494,12 @@ _ADMINER_RECORD = "docs/research/2026-09-21-security-boundary/README.md"
 
 def neg_decisions_adminer_service_dropped() -> tuple[bool, str]:
     """Servis overlay'dan o'chsa tutilsin — vosita yana e'lon qilinmagan bo'ladi."""
-    return _decision_broken(
-        _ADMINER_TOOLS, "  adminer:", "  adminer-off:", _ADMINER_RULE
-    )
+    return _decision_broken(_ADMINER_TOOLS, "  adminer:", "  adminer-off:", _ADMINER_RULE)
 
 
 def neg_decisions_adminer_profile_dropped() -> tuple[bool, str]:
     """`profiles` tushsa tutilsin — `up -d` uni o'zi ko'tarib qo'yadi."""
-    return _decision_broken(
-        _ADMINER_TOOLS, "profiles: ['tools']", "profiles: []", _ADMINER_RULE
-    )
+    return _decision_broken(_ADMINER_TOOLS, "profiles: ['tools']", "profiles: []", _ADMINER_RULE)
 
 
 def neg_decisions_adminer_digest_unpinned() -> tuple[bool, str]:
@@ -5572,7 +5556,9 @@ def neg_decisions_adminer_unmeasured() -> tuple[bool, str]:
 def neg_decisions_adminer_missing_from_index() -> tuple[bool, str]:
     """Operatsiyalar indeksida qator yo'qolsa tutilsin — faylni topib bo'lmaydi."""
     return _decision_broken(
-        _ADMINER_OPS, "docker-compose.tools.yml", "docker-compose.helpers.yml",
+        _ADMINER_OPS,
+        "docker-compose.tools.yml",
+        "docker-compose.helpers.yml",
         _ADMINER_RULE,
     )
 
@@ -5625,8 +5611,12 @@ def _boundary_sandbox(drop: tuple[str, ...] = ()) -> tuple[int, str]:
     """
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
-        for rel in (*(f"tools/{n}" for n in ("check_security_boundary.py", "_console.py")),
-                    _BOUNDARY_BASE, _BOUNDARY_OVERLAY, _ADMINER_TOOLS):
+        for rel in (
+            *(f"tools/{n}" for n in ("check_security_boundary.py", "_console.py")),
+            _BOUNDARY_BASE,
+            _BOUNDARY_OVERLAY,
+            _ADMINER_TOOLS,
+        ):
             (root / rel).parent.mkdir(parents=True, exist_ok=True)
             (root / rel).write_bytes((ROOT / rel).read_bytes())
         for rel in drop:
@@ -5739,8 +5729,15 @@ def _gate_expect(
             dirty if isinstance(dirty, str) else json.dumps(dirty or []), encoding="utf-8"
         )
         got, out = run_check(
-            "deploy_gate", "--head", _GATE_SHA, "--main", main, "--runs", str(path),
-            "--compose-status", str(compose),
+            "deploy_gate",
+            "--head",
+            _GATE_SHA,
+            "--main",
+            main,
+            "--runs",
+            str(path),
+            "--compose-status",
+            str(compose),
         )
     if got != code:
         return False, f"deploy_gate/{label}: exit {got} ({code} kerak) — {out.strip()[-160:]}"
@@ -5780,9 +5777,24 @@ def _gate_scan(label: str, layout: str, code: int, needle: str) -> tuple[bool, s
         listed = root / "checkouts.json"
         listed.write_text(json.dumps([str(p) for p in paths]), encoding="utf-8")
         proc = subprocess.run(
-            [PY, "tools/check_deploy_gate.py", "--head", _GATE_SHA, "--main", _GATE_SHA,
-             "--runs", str(runs), "--checkouts", str(listed)],
-            cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace", env=env,
+            [
+                PY,
+                "tools/check_deploy_gate.py",
+                "--head",
+                _GATE_SHA,
+                "--main",
+                _GATE_SHA,
+                "--runs",
+                str(runs),
+                "--checkouts",
+                str(listed),
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            env=env,
         )
         got, out = proc.returncode, (proc.stdout or "") + (proc.stderr or "")
     if got != code:
@@ -5930,7 +5942,9 @@ def _timing_runnable(name: str) -> str:
 
 
 def neg_measure_deploy_no_volume_or_system_prune() -> tuple[bool, str]:
-    src = "\n".join(_timing_runnable(n) for n in ("deploy.sh", "deploy_timer.sh", "measure_deploy.sh"))
+    src = "\n".join(
+        _timing_runnable(n) for n in ("deploy.sh", "deploy_timer.sh", "measure_deploy.sh")
+    )
     if re.search(r"\bdocker\s+volume\s+prune\b", src):
         return False, "deploy_timing: docker volume prune — postgres/minio o'chadi"
     if re.search(r"\bdocker\s+system\s+prune\b", src):
@@ -5960,7 +5974,7 @@ def neg_deploy_no_cache_and_timers() -> tuple[bool, str]:
             "--no-cache",
             "RANKWANT_BUILD_NO_CACHE",
             "time_begin e2e",
-            'time_begin build',
+            "time_begin build",
             "time_begin dump",
             "time_begin migrate",
             "time_begin up",
@@ -5977,9 +5991,7 @@ def neg_deploy_no_cache_and_timers() -> tuple[bool, str]:
 def _load_deploy_scope():
     import importlib.util
 
-    spec = importlib.util.spec_from_file_location(
-        "deploy_scope", ROOT / "tools/deploy_scope.py"
-    )
+    spec = importlib.util.spec_from_file_location("deploy_scope", ROOT / "tools/deploy_scope.py")
     if spec is None or spec.loader is None:
         raise RuntimeError("deploy_scope.py yuklanmadi")
     mod = importlib.util.module_from_spec(spec)
@@ -5988,9 +6000,7 @@ def _load_deploy_scope():
 
 
 def neg_scope_docs_is_empty() -> tuple[bool, str]:
-    scope = _load_deploy_scope().compute_scope(
-        "a", "b", changed=lambda _o, _n, _p: False
-    )
+    scope = _load_deploy_scope().compute_scope("a", "b", changed=lambda _o, _n, _p: False)
     if scope:
         return False, f"deploy_scope: docs/tools bo'sh emas — {scope}"
     return True, "deploy_scope: docs/tools — bake yo'q"
@@ -6370,8 +6380,7 @@ def neg_env_example_new_setting() -> tuple[bool, str]:
     return _env_example_broken(
         "apps/api/config/settings.py",
         'SECRET_KEY = env("DJANGO_SECRET_KEY", "dev-only-not-for-production")\n',
-        'SECRET_KEY = env("DJANGO_SECRET_KEY", "dev-only-not-for-production")\n'
-        'PROBE_SETTING = env("NEW_PROBE_SETTING")\n',
+        'SECRET_KEY = env("DJANGO_SECRET_KEY", "dev-only-not-for-production")\nPROBE_SETTING = env("NEW_PROBE_SETTING")\n',
         "NEW_PROBE_SETTING",
     )
 
@@ -6479,7 +6488,9 @@ def neg_ci_disk_deploy_cleanup_removed() -> tuple[bool, str]:
     path = ROOT / ".github/workflows/deploy.yml"
     src = path.read_bytes().decode("utf-8")
     start = src.index("      - name: Clean old images")
-    end = src.index("      - name:", start + 10) if "      - name:" in src[start + 10 :] else len(src)
+    end = (
+        src.index("      - name:", start + 10) if "      - name:" in src[start + 10 :] else len(src)
+    )
     old = src[start:end]
     if not old.strip():
         return False, "ci_disk/deploy: langar topilmadi"
@@ -6789,7 +6800,10 @@ def neg_watchdog_restarts_confirmed_stall() -> tuple[bool, str]:
     # Positive control: without it every "left alone" case passes on a dead watchdog.
     code, out, _ = _watchdog([_wd_runner()], [_wd_job()], _WD_SUSPECT)
     if code != 0 or "restart qilinardi" not in out:
-        return False, f"watchdog/tasdiqlangan tiqilish: restart yo'q (exit {code}) — {out.strip()[-160:]}"
+        return (
+            False,
+            f"watchdog/tasdiqlangan tiqilish: restart yo'q (exit {code}) — {out.strip()[-160:]}",
+        )
     return True, "watchdog/tasdiqlangan tiqilish: restart qilinardi"
 
 
@@ -6800,7 +6814,10 @@ def neg_watchdog_first_sighting_waits() -> tuple[bool, str]:
     if "restart qilinardi" in out:
         return False, "watchdog/birinchi ko'rish: bitta tekshiruvdayoq restart qilindi"
     if code != 0 or "suspect_since" not in saved.get(_WD_RUNNER, {}):
-        return False, f"watchdog/birinchi ko'rish: shubha yozilmadi (exit {code}) — {out.strip()[-160:]}"
+        return (
+            False,
+            f"watchdog/birinchi ko'rish: shubha yozilmadi (exit {code}) — {out.strip()[-160:]}",
+        )
     return True, "watchdog/birinchi ko'rish: faqat shubha yozildi"
 
 
@@ -6815,7 +6832,10 @@ def neg_watchdog_fresh_job_left_alone() -> tuple[bool, str]:
     job = _wd_job(created_at="2026-09-17T13:37:00Z")
     code, out, _ = _watchdog([_wd_runner()], [job], _WD_SUSPECT)
     if code != 0 or "restart" in out:
-        return False, f"watchdog/yangi job: 60 s navbat tiqilish deb o'qildi (exit {code}) — {out.strip()[-160:]}"
+        return (
+            False,
+            f"watchdog/yangi job: 60 s navbat tiqilish deb o'qildi (exit {code}) — {out.strip()[-160:]}",
+        )
     return True, "watchdog/yangi job: 60 s navbat tiqilish deb o'qilmadi"
 
 
@@ -6823,7 +6843,10 @@ def neg_watchdog_foreign_labels_left_alone() -> tuple[bool, str]:
     job = _wd_job(labels=("self-hosted", "rankwant-container"))
     code, out, _ = _watchdog([_wd_runner()], [job], _WD_SUSPECT)
     if code != 0 or "restart" in out:
-        return False, f"watchdog/boshqa label: olmaydigan job uchun restart (exit {code}) — {out.strip()[-160:]}"
+        return (
+            False,
+            f"watchdog/boshqa label: olmaydigan job uchun restart (exit {code}) — {out.strip()[-160:]}",
+        )
     return True, "watchdog/boshqa label: bu runner olmaydigan job'ga tegilmadi"
 
 
@@ -6836,7 +6859,10 @@ def neg_watchdog_cooldown_holds() -> tuple[bool, str]:
     }
     code, out, _ = _watchdog([_wd_runner()], [_wd_job()], state)
     if code != 0 or "restart qilinardi" in out:
-        return False, f"watchdog/tanaffus: 5 daqiqada ikkinchi restart (exit {code}) — {out.strip()[-160:]}"
+        return (
+            False,
+            f"watchdog/tanaffus: 5 daqiqada ikkinchi restart (exit {code}) — {out.strip()[-160:]}",
+        )
     return True, "watchdog/tanaffus: 10 daqiqa ichida qayta restart qilinmadi"
 
 
@@ -6888,14 +6914,30 @@ def _ar_facts(**overrides: object) -> dict:
             {
                 "name": "nsn-pc-rankwant-container",
                 "status": "online",
-                "labels": [{"name": "self-hosted"}, {"name": "rankwant"}, {"name": "rankwant-container"}],
+                "labels": [
+                    {"name": "self-hosted"},
+                    {"name": "rankwant"},
+                    {"name": "rankwant-container"},
+                ],
             }
         ],
         "tasks": {
-            "RankWant CI Runner Watchdog": {"state": "Ready", "last_run": "2026-09-18T05:04:00.0000000Z"},
-            "RankWant CI Daily Report": {"state": "Ready", "last_run": "2026-09-18T03:00:00.0000000Z"},
-            "RankWant Monthly Backup": {"state": "Ready", "last_run": "2026-09-17T15:32:47.0000000Z"},
-            "RankWant Tunnel Monitor": {"state": "Ready", "last_run": "2026-09-18T05:05:00.0000000Z"},
+            "RankWant CI Runner Watchdog": {
+                "state": "Ready",
+                "last_run": "2026-09-18T05:04:00.0000000Z",
+            },
+            "RankWant CI Daily Report": {
+                "state": "Ready",
+                "last_run": "2026-09-18T03:00:00.0000000Z",
+            },
+            "RankWant Monthly Backup": {
+                "state": "Ready",
+                "last_run": "2026-09-17T15:32:47.0000000Z",
+            },
+            "RankWant Tunnel Monitor": {
+                "state": "Ready",
+                "last_run": "2026-09-18T05:05:00.0000000Z",
+            },
         },
         "boot": _AR_BOOT,
     }
@@ -6913,7 +6955,10 @@ def _after_reboot(facts: object) -> tuple[int, str]:
 def _after_reboot_expect(label: str, facts: object, wanted: int, needle: str) -> tuple[bool, str]:
     code, out = _after_reboot(facts)
     if code != wanted or needle not in out:
-        return False, f"after_reboot/{label}: exit {code} ({wanted} kerak), «{needle}» — {out.strip()[-160:]}"
+        return (
+            False,
+            f"after_reboot/{label}: exit {code} ({wanted} kerak), «{needle}» — {out.strip()[-160:]}",
+        )
     return True, f"after_reboot/{label}: tutildi (exit {code})"
 
 
@@ -6943,9 +6988,15 @@ def neg_after_reboot_tunnel_down() -> tuple[bool, str]:
 
 def neg_after_reboot_runner_without_label() -> tuple[bool, str]:
     runners = [
-        {"name": "nsn-pc-rankwant-container", "status": "online", "labels": [{"name": "rankwant-container"}]}
+        {
+            "name": "nsn-pc-rankwant-container",
+            "status": "online",
+            "labels": [{"name": "rankwant-container"}],
+        }
     ]
-    return _after_reboot_expect("runner rankwant label'siz", _ar_facts(runners=runners), 1, "GitHub runner")
+    return _after_reboot_expect(
+        "runner rankwant label'siz", _ar_facts(runners=runners), 1, "GitHub runner"
+    )
 
 
 def neg_after_reboot_watchdog_idle_since_boot() -> tuple[bool, str]:
@@ -6984,8 +7035,16 @@ def _report_notify(attention: object, mode: str = "print") -> tuple[int, str]:
             attention if isinstance(attention, str) else json.dumps(attention), encoding="utf-8"
         )
         return run(
-            [PY, "tools/runner_report.py", "--attention", str(path), "--notify", mode,
-             "--out", str(Path(tmp) / "daily-report.md")]
+            [
+                PY,
+                "tools/runner_report.py",
+                "--attention",
+                str(path),
+                "--notify",
+                mode,
+                "--out",
+                str(Path(tmp) / "daily-report.md"),
+            ]
         )
 
 
@@ -7000,7 +7059,10 @@ def neg_report_attention_notifies() -> tuple[bool, str]:
 def neg_report_quiet_without_attention() -> tuple[bool, str]:
     code, out = _report_notify([])
     if code != 0 or "<toast" in out:
-        return False, f"runner_report/tinch kun: exit {code}, bildirishnoma chiqdi — {out.strip()[-160:]}"
+        return (
+            False,
+            f"runner_report/tinch kun: exit {code}, bildirishnoma chiqdi — {out.strip()[-160:]}",
+        )
     return True, "runner_report/tinch kun: bildirishnoma chiqmadi (exit 0)"
 
 
@@ -7030,7 +7092,10 @@ def neg_report_escapes_markup() -> tuple[bool, str]:
 def neg_report_unreadable_attention() -> tuple[bool, str]:
     code, out = _report_notify("{not json", mode="print")
     if code != 2 or "o'qilmadi" not in out:
-        return False, f"runner_report/o'qib bo'lmagan bandlar: exit {code} (2 kerak) — {out.strip()[-160:]}"
+        return (
+            False,
+            f"runner_report/o'qib bo'lmagan bandlar: exit {code} (2 kerak) — {out.strip()[-160:]}",
+        )
     return True, "runner_report/o'qib bo'lmagan bandlar: exit 2"
 
 
@@ -7058,12 +7123,388 @@ def neg_negative_rejects_unknown_group() -> tuple[bool, str]:
     code, out = run([PY, "tools/check_negative.py", "nosuchgroup"])
     if code == 0:
         return False, (
-            "notanish guruh YASHIL qoldi (exit 0) — "
-            f"o'lchov yo'q, hisobot: {out.strip()[-80:]}"
+            f"notanish guruh YASHIL qoldi (exit 0) — o'lchov yo'q, hisobot: {out.strip()[-80:]}"
         )
     if "noma'lum guruh" not in out:
         return False, f"notanish guruh to'xtadi (exit {code}), lekin sabab ko'rinmadi"
     return True, f"notanish guruh rad etildi (exit {code}), sabab aytildi"
+
+
+# ── App va AI chegarasi (D6 · D7) ─────────────────────────────────────
+#
+# Ikkala darvoza ham bugun "yashil", lekin ikkalasi ham STATIK: AI
+# qatlami deyarli bo'sh, arxitektura allowlist'i esa mavjud importlarni
+# grandfather qiladi. Ya'ni "hech qachon yiqilmaydigan tekshiruv"
+# bo'lish xavfi aynan shu yerda eng katta — shuning uchun har ikkalasiga
+# ham mutatsiya testi MAJBURIY.
+
+
+@contextlib.contextmanager
+def _temp_repo_file(path: Path, content: str) -> Iterator[None]:
+    """Vaqtinchalik repo fayli — yaratadi, oxirida O'CHIRADI.
+
+    `Mutation` MAVJUD faylni tahrirlaydi; yangi taqiqlangan import esa
+    YANGI faylni talab qiladi. Bayt darajasida yoziladi va istisno
+    bo'lsa ham `finally` da o'chiriladi — qolgan fayl keyingi yurishda
+    yolg'on qizil berardi.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(content.encode("utf-8"))
+    try:
+        yield
+    finally:
+        path.unlink(missing_ok=True)
+
+
+def _gate_catches(checker: str, label: str, path: Path, content: str) -> tuple[bool, str]:
+    """Old shart (toza holat yashil) → mutatsiya → darvoza `exit 1`.
+
+    ⚠️ Old shart SHART: yangi gate skripti mavjud bo'lmasa `exit != 0`
+    ni «buzuq holatni tutdi» deb o'qib, YOLG'ON YASHIL chiqardi. Bu
+    ayniqsa `tools/` hali commit qilinmagan holda `git archive` nusxasi
+    ustida ishlaganda muhim.
+    """
+    code, out = run_check(checker)
+    if code != 0:
+        return False, (f"{label}: old shart — toza holatda ham exit {code}: {out.strip()[-120:]}")
+    with _temp_repo_file(path, content):
+        code, out = run_check(checker)
+    if code != 1:
+        return False, f"{label}: buzuq holatni O'TKAZDI (exit {code}) — darvoza o'lik"
+    return True, f"{label}: buzuq holatni tutdi (exit 1)"
+
+
+def neg_ai_boundary_model_import() -> tuple[bool, str]:
+    """AI qatlamiga Django model importi qo'shilsa — tutilsinmi?"""
+    probe = ROOT / "apps/api/ai/_neg_probe.py"
+    return _gate_catches(
+        "ai_boundary", "ai/model importi", probe, "from contests.models import Contest\n"
+    )
+
+
+def neg_ai_boundary_module_import() -> tuple[bool, str]:
+    """`from <app> import models` shakli (aylanib o'tish) — tutilsinmi?
+
+    QA topilmasi F1: `from contests.models import ...` tutilsa ham,
+    `from contests import models` o'tib ketardi.
+    """
+    probe = ROOT / "apps/api/ai/_neg_probe.py"
+    return _gate_catches(
+        "ai_boundary",
+        "ai/`from <app> import models`",
+        probe,
+        "from problems import models\n",
+    )
+
+
+def neg_ai_boundary_relative_import() -> tuple[bool, str]:
+    """`from . import models` shakli (nisbiy, aylanib o'tish) — tutilsinmi?"""
+    probe = ROOT / "apps/api/ai/_neg_probe.py"
+    return _gate_catches(
+        "ai_boundary", "ai/`from . import models`", probe, "from . import models\n"
+    )
+
+
+def neg_ai_boundary_database_url() -> tuple[bool, str]:
+    """AI qatlami `DATABASE_URL` ni o'qisa — tutilsinmi?"""
+    probe = ROOT / "apps/api/ai/_neg_probe.py"
+    return _gate_catches(
+        "ai_boundary",
+        "ai/DATABASE_URL",
+        probe,
+        'import os\n\nURL = os.environ["DATABASE_URL"]\n',
+    )
+
+
+def neg_ai_boundary_testdata_read() -> tuple[bool, str]:
+    """AI qatlami testdata o'qisa — tutilsinmi?"""
+    probe = ROOT / "apps/api/ai/_neg_probe.py"
+    return _gate_catches(
+        "ai_boundary",
+        "ai/testdata",
+        probe,
+        'import json\n\nCASES = json.loads(open("testdata/cases.json").read())\n',
+    )
+
+
+def neg_architecture_cross_app_import() -> tuple[bool, str]:
+    """Yangi taqiqlangan app-importi qo'shilsa — tutilsinmi?"""
+    probe = ROOT / "apps/api/ai/_neg_probe_arch.py"
+    return _gate_catches(
+        "architecture",
+        "arxitektura/yangi import",
+        probe,
+        "from judging.models import Attempt\n",
+    )
+
+
+def neg_architecture_stale_allowlist() -> tuple[bool, str]:
+    """Allowlist'da mavjud bo'lmagan yozuv qolsa — tutilsinmi (ratchet)?"""
+    path = ROOT / "tools/architecture-allowlist.txt"
+    text = path.read_bytes().decode("utf-8")
+    first = next(
+        (line for line in text.splitlines() if line.strip() and not line.lstrip().startswith("#")),
+        None,
+    )
+    if first is None:
+        return False, "arxitektura/ratchet: allowlist bo'sh — langar topilmadi"
+    bogus = "nonexistent/probe.py:contests.models"
+    with Mutation(path, first, first + "\n" + bogus):
+        code, out = run_check("architecture")
+    if code != 1:
+        return False, f"arxitektura/ratchet: o'lik yozuv exit {code} berdi (1 kerak)"
+    if bogus not in out:
+        return False, "arxitektura/ratchet: yiqildi, lekin o'lik yozuvni ko'rsatmadi"
+    return True, "arxitektura/ratchet: o'lik allowlist yozuvi tutildi (exit 1)"
+
+
+# ── Content readiness gate (WP1 · D8 · D8-F) ──────────────────────────
+#
+# Ikki qavat, chunki bittasi yetmaydi: M-A sof funksiyani (kod yo'li),
+# M-B esa serializer'dan chetlab o'tgan yozuvni ham tutadi (`create_mirror`
+# kabi). Ikkalasi ham HAQIQIY pytest yurgizadi — aks holda «testlar ishga
+# tushmadi» ni «buzuq holatni tutdi» deb o'qib, yolg'on yashil olinardi
+# (xuddi `node` guruhi uchun `node_precondition` qanday ishlaydi).
+
+API_TEST_IMAGE = "rankwant-api-dev:audit"
+#: `apps/api/.venv` — Linux venv (Windows'da `bin/python` 0 bayt), runtime
+#: image'ida esa `pytest` yo'q. Shu image — yagona ishlaydigan muhit.
+API_TEST_PIP = "pip install -q -r requirements-dev.lock >/dev/null 2>&1"
+ECHO_CASE = (
+    "tests/regression/test_ref_solution_verdicts.py"
+    "::TestReferenceSolutionVerdicts::test_sample_echo_is_not_ac"
+)
+GATE_CASE = "tests/test_problem_readiness.py::TestGradedGate::test_graded_requires_validated"
+API_CASE_FILES = (
+    "apps/api/tests/regression/test_ref_solution_verdicts.py",
+    "apps/api/tests/test_problem_readiness.py",
+)
+#: Yorliqlar — `main()` da shu guruh tanlanganda old shart ishlashi uchun.
+API_CASE_LABELS = {
+    "S4 sharti olib tashlansa tutilsin",
+    "graded gate olib tashlansa tutilsin",
+}
+
+
+def run_api_tests(*node_ids: str) -> tuple[int, str]:
+    """`apps/api` testlarini konteynerda yurgizadi.
+
+    Repo `/repo` ga mount qilinadi, ya'ni `Mutation` yozgan o'zgarish
+    konteyner ichida ham kuchda. Windows yo'li (`D:\\...`) o'rniga
+    chiziqcha bilan beriladi — Git Bash va Docker CLI shu ko'rinishda
+    ishonchli ishlaydi (o'lchandi).
+    """
+    script = f"{API_TEST_PIP}; python -m pytest " + " ".join(node_ids)
+    return run(
+        [
+            "docker",
+            "run",
+            "--rm",
+            "-e",
+            "DJANGO_SECRET_KEY=negative-test",
+            "-v",
+            f"{str(ROOT).replace(chr(92), '/')}:/repo",
+            "-w",
+            "/repo/apps/api",
+            API_TEST_IMAGE,
+            "sh",
+            "-lc",
+            script,
+        ]
+    )
+
+
+def api_test_precondition() -> str | None:
+    """Testlar o'zgarmagan manbada YASHIL bo'lishi shart.
+
+    Aks holda har qanday yiqilish (image yo'q, docker yo'q, import xatosi)
+    «buzuq holatni tutdi» bo'lib ko'rinadi — aynan yolg'on yashil.
+    """
+    for rel in API_CASE_FILES:
+        if not (ROOT / rel).exists():
+            return (
+                f"{rel} yo'q — `git archive` nusxasida yangi fayllar bo'lmaydi; "
+                "bu guruhni `--serial` bilan yurgizing"
+            )
+    if shutil.which("docker") is None:
+        return "docker topilmadi — api testlari yurgizilmadi"
+    code, _out = run(["docker", "image", "inspect", API_TEST_IMAGE])
+    if code != 0:
+        return f"{API_TEST_IMAGE} image'i yo'q — api testlari yurgizilmadi"
+    code, out = run_api_tests(ECHO_CASE, GATE_CASE)
+    if code != 0:
+        tail = " | ".join(out.strip().splitlines()[-3:])
+        return f"boshlang'ich yugurish yashil emas (exit {code}): {tail}"
+    return None
+
+
+def neg_refsolution_gate_echo_removed() -> tuple[bool, str]:
+    """M-A — S4 sharti olib tashlansa, `test_sample_echo_is_not_ac` qizil bo'ladimi?
+
+    Aynan shu shart `print('3 2 1')` ni o'tkazib yuborardi: olib tashlansa
+    namunani chop etgan dastur `AC` oladi, lekin holat baribir
+    `ref_solution_verified` ga o'tadi.
+    """
+    path = ROOT / "apps/api/problems/readiness.py"
+    with Mutation(path, "    if echo_verdict == Verdict.AC:", "    if False:"):
+        code, _out = run_api_tests(ECHO_CASE)
+    if code == 0:
+        return False, "gate/S4: S4 sharti olib tashlansa ham test yashil — gate o'lik"
+    return True, f"gate/S4: S4 sharti olib tashlansa test qizil (exit {code})"
+
+
+#: Ikkala qavat ham bir xil shartni yozadi — gate to'liq olib tashlanishi
+#: uchun ikkalasi ham mutatsiya qilinishi shart. Faqat serializer'nikini
+#: olib tashlash R8 ni qizil qilmaydi (o'lchandi): view qavati baribir
+#: 400 qaytaradi, ya'ni bitta qavat o'lik ekanini ko'rsatib bo'lmaydi.
+GATE_LAYERS = (
+    "apps/api/contests/staff_serializers.py",
+    "apps/api/contests/staff_views.py",
+)
+GATE_CONDITION = 'row["problem"].readiness != GRADED_READY'
+
+
+@contextlib.contextmanager
+def _gate_removed() -> Iterator[None]:
+    """Ikkala qavatdan readiness shartini vaqtincha olib tashlaydi."""
+    with Mutation(ROOT / GATE_LAYERS[0], GATE_CONDITION, "False"):
+        with Mutation(ROOT / GATE_LAYERS[1], GATE_CONDITION, "False"):
+            yield
+
+
+def neg_refsolution_gate_serializer_removed() -> tuple[bool, str]:
+    """M-B — graded gate olib tashlansa, R8 qizil bo'ladimi?
+
+    Bu qavat serializer'dan chetlab o'tadigan yo'llar (`create_mirror`
+    kabi) uchun ham ishlaydi: ularning hammasi shu shartga tayanadi.
+    """
+    with _gate_removed():
+        code, _out = run_api_tests(GATE_CASE)
+    if code == 0:
+        return False, "gate/graded: gate olib tashlansa ham R8 yashil — gate o'lik"
+    return True, f"gate/graded: gate olib tashlansa R8 qizil (exit {code})"
+
+
+# ── Metrics gate (WP3 · User.origin) ───────────────────────────────────
+
+METRICS_CASES = {
+    "North Star noto'g'ri origin bilan yiqiladi",
+    "g'ayritabiiy chegara bilan yiqiladi",
+    "toza holat o'tadi (nazorat)",
+}
+
+
+def metrics_precondition() -> str | None:
+    """check_metrics.py o'zgarmagan manbada exit 0 berishi va mutatsiyalar
+    uchun kamida bitta `origin='real'` foydalanuvchi bo'lishini talab qiladi.
+
+    `None` — hammasi joyida. Aks holda sabab qaytariladi.
+
+    ⚠️ Ikki qatlam (2026-09-29 QA'da o'lchandi):
+
+    1. Precondition `--allow-empty` bilan yuradi — CI **test** bazasi
+       migrate qilingan, lekin seed'siz bo'lishi mumkin; bunday bazada
+       darvoza o'zi yashil. Mutatsiyalar esa bayroqsiz yuradi: ularning
+       ma'nosi "buzilgan kod yiqiladimi" — va ular "North Star = 0"
+       mezonini buzadi, bu esa faqat bazada kamida bitta `real` user
+       bo'lganda exit 1 beradi.
+    2. Shuning uchun precondition kichik seed qiladi (agar baza bo'sh bo'lsa):
+       bitta `origin='real'` user. Haqiqiy muhitda user allaqachon bor —
+       qadam no-op. Seed faqat TEST bazasining o'ziga yoziladi.
+    """
+    import os
+
+    if not os.environ.get("DATABASE_URL"):
+        return "DATABASE_URL yo'q — metrics o'lchanmadi"
+    code, out = run_check("metrics", "--allow-empty")
+    if code == 127:
+        return "psycopg yo'q — metrics o'lchanmadi"
+    if code != 0:
+        first = out.strip().splitlines()[:3]
+        return f"metrics o'zgarmagan manbada ham yiqildi (exit {code}): {' | '.join(first)}"
+
+    # Mutatsiyalar uchun kamida bitta real user kerak (yuqoridagi izoh).
+    if "North Star (real users): 0" in out:
+        seed_sql = (
+            "INSERT INTO core_user (username, email, password, origin, "
+            "is_active, date_joined) VALUES ('neg_metrics_seed', '', '', 'real', true, now())"
+        )
+        seed_code, seed_out = run(
+            [
+                PY,
+                "-c",
+                (
+                    "import os; import psycopg; "
+                    "from urllib.parse import urlparse; p=urlparse(os.environ['DATABASE_URL']); "
+                    "c=psycopg.connect(host=p.hostname or 'localhost', dbname=p.path.lstrip('/'), "
+                    "user=p.username, password=p.password, port=p.port or 5432); "
+                    "cur=c.cursor(); cur.execute(" + repr(seed_sql) + "); "
+                    "c.commit(); print('seeded 1 real user')"
+                ),
+            ]
+        )
+        if seed_code != 0:
+            return (
+                f"metrics seed qilib bo'lmadi — mutatsiyalar ma'nosisiz: {seed_out.strip()[-140:]}"
+            )
+        code, out = run_check("metrics", "--allow-empty")
+        if code != 0:
+            first = out.strip().splitlines()[:3]
+            return f"metrics seed'dan keyin ham yiqildi (exit {code}): {' | '.join(first)}"
+    return None
+
+
+def neg_check_metrics_wrong_origin() -> tuple[bool, str]:
+    """North Star query noto'g'ri origin ishlatsa — yiqiladimi?"""
+    path = ROOT / "tools/check_metrics.py"
+    old = "WHERE origin = 'real'"
+    new = "WHERE origin = 'not_real'"
+    if old not in path.read_bytes().decode("utf-8"):
+        return False, "metrics/wrong origin: langar topilmadi"
+    with Mutation(path, old, new):
+        code, out = run_check("metrics")
+    if code == 0:
+        return False, "metrics/wrong origin: buzuq query O'TKAZDI (exit 0) — darvoza o'lik"
+    tail = out.strip()[-160:]
+    if "0" not in out and "North Star" not in out:
+        return False, f"metrics/wrong origin: yiqildi, lekin sabab ko'rinmadi — {tail}"
+    return True, "metrics/wrong origin: buzuq query tutildi (exit 1)"
+
+
+def neg_check_metrics_impossible_threshold() -> tuple[bool, str]:
+    """G'ayritabiiy chegara: har qanday bazani "bo'sh" deb kechirsin.
+
+    Langar — oddiy qator (apostrofsiz): `Mutation` aniq matn topishi
+    shart (2026-09-29 QA: ko'p qatorli langar topilmadi — test o'lik edi).
+    """
+    path = ROOT / "tools/check_metrics.py"
+    old = "if north_star == 0 and not args.allow_empty:"
+    new = "if north_star >= 0 and not args.allow_empty:"
+    text = path.read_bytes().decode("utf-8")
+    if old not in text:
+        return False, "metrics/impossible: langar topilmadi"
+    with Mutation(path, old, new):
+        code, _out = run_check("metrics")
+    if code == 0:
+        return False, "metrics/impossible: buzuq chegara O'TKAZDI (exit 0) — darvoza o'lik"
+    return True, "metrics/impossible: buzuq chegara tutildi (exit 1)"
+
+
+def neg_check_metrics_passes() -> tuple[bool, str]:
+    """Ijobiy nazorat: toza holatda check_metrics o'tsin.
+
+    Precondition real user seed qilgan bo'lishi shart — shu sababli bu
+    yurish bayroqsiz: `North Star = 0` va `total = 0` mezonlari ham
+    sinanadi (bazada kamida bitta real user bor).
+    """
+    code, out = run_check("metrics")
+    tail = out.strip()[-160:]
+    if code != 0:
+        msg = f"metrics/nazorat: toza holat exit {code} berdi (0 kerak) — {tail}"
+        return False, msg
+    if "Barcha tekshiruvlar o'tdi" not in out:
+        return False, "metrics/nazorat: muvaffaqiyat xabari ko'rinmadi"
+    return True, "metrics/nazorat: toza holat o'tdi (exit 0)"
 
 
 def neg_node_cases_labels_exist() -> tuple[bool, str]:
@@ -7416,7 +7857,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("qarorlar jadvali o'chsa tutilsin", neg_decisions_table_removed),
             ("endonim tor ekranda chegarasiz qolsa tutilsin", neg_decisions_locale_label_unbounded),
             ("tor ekranda til kodi qaytsa tutilsin", neg_decisions_locale_code_restored),
-            ("panel tor ekranda viewport'ga bog'lanmasa tutilsin", neg_decisions_locale_panel_not_anchored),
+            (
+                "panel tor ekranda viewport'ga bog'lanmasa tutilsin",
+                neg_decisions_locale_panel_not_anchored,
+            ),
             (
                 "`aria-label` ko'rinadigan endonimni yo'qotsa tutilsin",
                 neg_decisions_locale_label_in_name_lost,
@@ -7703,6 +8147,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("sandbox o'qilgan hamma faylni nusxalaydi", neg_decisions_sandbox_covers_reads),
             ("Security PR'da qaytsa tutilsin", neg_decisions_security_on_pr),
             ("Security job yoqilsa tutilsin", neg_decisions_security_run_enabled),
+            ("Security cron qaytsa tutilsin", neg_decisions_security_cron_restored),
             ("Security darvozaga qaytsa tutilsin", neg_decisions_security_required_again),
             ("bosh sahifa CSS link'ga qaytsa tutilsin", neg_decisions_homepage_css_not_inlined),
             ("login to'liq globals.css ga qaytsa tutilsin", neg_decisions_login_full_globals),
@@ -7722,14 +8167,35 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("KPI to'ri 3 ustunga qaytsa tutilsin", neg_decisions_kpi_grid_3up_creeps_back),
             ("KPI raqami pog'onasi yo'qolsa tutilsin", neg_decisions_kpi_card_value_step_lost),
             ("KPI raqam prop'i e'tiborsiz qolsa tutilsin", neg_decisions_kpi_value_prop_ignored),
-            ("profil `lg` da ikki ustunga qaytsa tutilsin", neg_decisions_profile_two_columns_at_lg),
+            (
+                "profil `lg` da ikki ustunga qaytsa tutilsin",
+                neg_decisions_profile_two_columns_at_lg,
+            ),
             ("profil to'ri `2xl` da qolsa tutilsin", neg_decisions_profile_kpi_stuck_at_2xl),
-            ("profil to'rida eskirgan `xl` pog'onasi qolsa tutilsin", neg_decisions_profile_kpi_step_redundant),
-            ("profil raqami pog'onasi yo'qolsa tutilsin", neg_decisions_profile_kpi_value_step_lost),
-            ("diapazon kalitlari doimiysi o'chirilsa tutilsin", neg_decisions_difficulty_keys_declaration_removed),
-            ("diapazon doimiysidan `level` tushib qolsa tutilsin", neg_decisions_difficulty_keys_missing_level),
-            ("diapazon yana kalit bo'yicha sanalsa tutilsin", neg_decisions_difficulty_count_ignores_keys),
-            ("diapazon predikati doimiyni tashlasa tutilsin", neg_decisions_difficulty_predicate_reverted),
+            (
+                "profil to'rida eskirgan `xl` pog'onasi qolsa tutilsin",
+                neg_decisions_profile_kpi_step_redundant,
+            ),
+            (
+                "profil raqami pog'onasi yo'qolsa tutilsin",
+                neg_decisions_profile_kpi_value_step_lost,
+            ),
+            (
+                "diapazon kalitlari doimiysi o'chirilsa tutilsin",
+                neg_decisions_difficulty_keys_declaration_removed,
+            ),
+            (
+                "diapazon doimiysidan `level` tushib qolsa tutilsin",
+                neg_decisions_difficulty_keys_missing_level,
+            ),
+            (
+                "diapazon yana kalit bo'yicha sanalsa tutilsin",
+                neg_decisions_difficulty_count_ignores_keys,
+            ),
+            (
+                "diapazon predikati doimiyni tashlasa tutilsin",
+                neg_decisions_difficulty_predicate_reverted,
+            ),
             ("header brendi o'chirilsa tutilsin", neg_decisions_header_brand_removed),
             ("sidebar brendi qaytsa tutilsin", neg_decisions_sidebar_brand_back),
             ("footer bitta ustunga tushsa tutilsin", neg_decisions_footer_single_column),
@@ -7992,7 +8458,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
     (
         "runner_watchdog",
         [
-            ("tasdiqlangan tiqilish restart qilinadi (nazorat)", neg_watchdog_restarts_confirmed_stall),
+            (
+                "tasdiqlangan tiqilish restart qilinadi (nazorat)",
+                neg_watchdog_restarts_confirmed_stall,
+            ),
             ("bitta tekshiruv restart qilmaydi", neg_watchdog_first_sighting_waits),
             ("band runner'ga tegilmaydi", neg_watchdog_busy_runner_left_alone),
             ("yangi job tiqilish emas", neg_watchdog_fresh_job_left_alone),
@@ -8010,9 +8479,15 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("baza healthy emas — tutilsin", neg_after_reboot_database_not_healthy),
             ("tunnel o'lik — tutilsin", neg_after_reboot_tunnel_down),
             ("runner production label'siz — tutilsin", neg_after_reboot_runner_without_label),
-            ("watchdog reboot'dan keyin yurmagan — tutilsin", neg_after_reboot_watchdog_idle_since_boot),
+            (
+                "watchdog reboot'dan keyin yurmagan — tutilsin",
+                neg_after_reboot_watchdog_idle_since_boot,
+            ),
             ("o'qib bo'lmagan faktlar — exit 2", neg_after_reboot_unreadable_facts),
-            ("ikkinchi runner yarim ochilsa tutilsin", neg_after_reboot_second_runner_half_commissioned),
+            (
+                "ikkinchi runner yarim ochilsa tutilsin",
+                neg_after_reboot_second_runner_half_commissioned,
+            ),
         ],
     ),
     (
@@ -8032,6 +8507,38 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("--notify off jim qoladi", neg_report_notify_off_is_silent),
             ("`<` va `&` qochiriladi", neg_report_escapes_markup),
             ("o'qib bo'lmagan bandlar — exit 2", neg_report_unreadable_attention),
+        ],
+    ),
+    (
+        "neg_ai_boundary",
+        [
+            ("DB model importi tutilsin", neg_ai_boundary_model_import),
+            ("`from <app> import models` tutilsin", neg_ai_boundary_module_import),
+            ("`from . import models` tutilsin", neg_ai_boundary_relative_import),
+            ("DATABASE_URL tutilsin", neg_ai_boundary_database_url),
+            ("testdata o'qish tutilsin", neg_ai_boundary_testdata_read),
+        ],
+    ),
+    (
+        "neg_architecture",
+        [
+            ("yangi app-importi tutilsin", neg_architecture_cross_app_import),
+            ("o'lik allowlist yozuvi tutilsin (ratchet)", neg_architecture_stale_allowlist),
+        ],
+    ),
+    (
+        "neg_refsolution_gate",
+        [
+            ("S4 sharti olib tashlansa tutilsin", neg_refsolution_gate_echo_removed),
+            ("graded gate olib tashlansa tutilsin", neg_refsolution_gate_serializer_removed),
+        ],
+    ),
+    (
+        "neg_check_metrics",
+        [
+            ("North Star noto'g'ri origin bilan yiqiladi", neg_check_metrics_wrong_origin),
+            ("g'ayritabiiy chegara bilan yiqiladi", neg_check_metrics_impossible_threshold),
+            ("toza holat o'tadi (nazorat)", neg_check_metrics_passes),
         ],
     ),
 ]
@@ -8201,6 +8708,30 @@ def _main_parallel(jobs: int) -> int:
     # rebuild, but it must read a rendered page, and CI's negative step runs
     # no stack — left in the fan-out it would report "o'lchanmadi" every run.
     # It runs for real via `--group csp_nonce` (nightly, `tools/ci_csp_gate.sh`).
+    # CI runs each worker on a `git archive HEAD` copy: only COMMITTED files
+    # exist there. Groups whose tool/test files are still another work
+    # package's untracked work would hard-fail on "file not found" — the
+    # exact false red the WP1 group's precondition warns about (measured on
+    # PR #307, 2026-09-29: `test_ref_solution_verdicts.py yo'q`). Skip them
+    # OPENLY here — each lands with its own PR (WP1/WP5/WP6) and runs for
+    # real on the machine that owns the files (pre-push hook, nightly).
+    _UNCOMMITTED_GROUP_FILES = {
+        "neg_refsolution_gate": (
+            "apps/api/tests/regression/test_ref_solution_verdicts.py",
+            "apps/api/tests/test_problem_readiness.py",
+        ),
+        "neg_ai_boundary": ("tools/check_ai_boundary.py",),
+        "neg_architecture": ("tools/check_architecture.py",),
+    }
+    for gname, rels in _UNCOMMITTED_GROUP_FILES.items():
+        if all((ROOT / rel).exists() for rel in rels):
+            continue
+        missing = [rel for rel in rels if not (ROOT / rel).exists()]
+        print(
+            f"  - O'TKAZIB YUBORILDI: {gname} guruhi — commit qilinmagan fayllar "
+            f"yo'q ({', '.join(missing)}); o'z WP PR'i bilan keladi"
+        )
+        names = [name for name in names if name != gname]
     names = [name for name in names if name not in {"visual", "csp_nonce"}]
     workers = min(jobs, len(names))
     buckets: list[list[str]] = [[] for _ in range(workers)]
@@ -8250,10 +8781,7 @@ def main(argv: list[str]) -> int:
     # tekshiramiz — mutatsiya ichida qilsak, «ishga tushmadi» ni
     # «buzuq holatni tutdi» deb o'qib qo'yardik.
     selected = {
-        label
-        for checker, cases in CASES
-        if not only or checker == only
-        for label, _ in cases
+        label for checker, cases in CASES if not only or checker == only for label, _ in cases
     }
     skipped: list[str] = []
     skip_node_cases = os.environ.get("NEGATIVE_SKIP_NODE") == "1"
@@ -8308,6 +8836,30 @@ def main(argv: list[str]) -> int:
     # yuboriladi va hisobotning oxirida ko'rinadi. Windows'da — ya'ni
     # monitor haqiqatan ishlaydigan mashinada, pre-push hook'da — guruh
     # har doim ishlaydi.
+    # Readiness gate (WP1) — pytest konteynerda yuguradi. Old shart mantig'i
+    # NODE bilan bir xil: muhit tayyor bo'lmasa «yiqildi» ni «tutdi» deb
+    # o'qib bo'lmaydi, shuning uchun ochiq qizil.
+    # ⚠️ ISTISNO — test fayllarining o'zi commit qilinmagan bo'lsa (CI
+    # `git archive HEAD` nusxada yuradi — fan-out'dagi kabi), «muhit tayyor
+    # emas» EMAS, «guruh hali o'z PR'si bilan kelmagan» bo'ladi: ochiq
+    # skip, qizil emas (PR #307'da o'lchandi).
+    if selected & API_CASE_LABELS:
+        missing_case_files = [
+            rel for rel in API_CASE_FILES if not (ROOT / rel).exists()
+        ]
+        if missing_case_files:
+            print(
+                "  - O'TKAZIB YUBORILDI: readiness gate (WP1) — commit qilinmagan "
+                f"fayllar yo'q ({', '.join(missing_case_files)}); WP1 PR'i bilan keladi"
+            )
+        else:
+            reason = api_test_precondition()
+            if reason:
+                print(f"  ✕ {reason}")
+                print()
+                print("1/1 salbiy test YIQILDI — muhit tayyor emas, o'lchov yo'q.")
+                return 1
+
     if selected & MONITOR_CASES:
         reason = monitor_precondition()
         if reason:
@@ -8317,6 +8869,11 @@ def main(argv: list[str]) -> int:
                 print("1/1 salbiy test YIQILDI — Windows darvozasi o'lchanmadi.")
                 return 1
             skipped.append(f"monitor guruhi — {reason}")
+
+    if selected & METRICS_CASES:
+        reason = metrics_precondition()
+        if reason:
+            skipped.append(f"metrics guruhi — {reason}")
 
     # Tripwire for the 2026-09-16 class of bug: a sandbox that leaks into this
     # repository and rewrites its config or switches its branch.
@@ -8330,6 +8887,10 @@ def main(argv: list[str]) -> int:
         if checker == "visual" and only != "visual":
             continue
         if checker == "monitor" and any(row.startswith("monitor guruhi") for row in skipped):
+            continue
+        if checker == "neg_check_metrics" and any(
+            row.startswith("metrics guruhi") for row in skipped
+        ):
             continue
         for label, fn in cases:
             if skip_node_cases and label in NODE_CASES:
@@ -8364,9 +8925,7 @@ def main(argv: list[str]) -> int:
             print(f"  - O'TKAZIB YUBORILDI: {row}")
         print()
     if failures:
-        print(
-            f"{len(failures)}/{total} salbiy test YIQILDI — tekshiruv o'lik bo'lishi mumkin:"
-        )
+        print(f"{len(failures)}/{total} salbiy test YIQILDI — tekshiruv o'lik bo'lishi mumkin:")
         for row in failures:
             print(f"  - {row}")
         return 1
