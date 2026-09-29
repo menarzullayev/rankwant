@@ -42,6 +42,11 @@ import {
   sampleConsoleIdleState,
   type SampleConsoleState,
 } from "./SampleTestConsole";
+import { AttemptVerdictPanel } from "./AttemptVerdictPanel";
+import {
+  useProblemSolve,
+  useVerdictLayoutMode,
+} from "./problem-solve-context";
 
 const MAX_SOURCE_BYTES = SOURCE_MAX_BYTES;
 
@@ -157,6 +162,8 @@ export function SubmitPanel({
 }) {
   const locale = useLocale();
   const { user, ready } = useSession();
+  const solve = useProblemSolve();
+  const [verdictLayout] = useVerdictLayoutMode();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>("verdict");
@@ -324,54 +331,95 @@ export function SubmitPanel({
     });
   }
 
-  /** Tanlangan bitta namuna — konsol (prototip pane-b). */
-  async function runSelectedSample() {
-    if (!language || busy) return;
-    const sample = samples.find((s) => s.order === selectedSample);
-    if (!sample) return;
-    setError(null);
-    setBusy(true);
-    setTab("samples");
-    setConsoleState({
-      status: "running",
-      log: t(locale, "submit.sampleConsoleRunning"),
-      got: "—",
-      outputMatched: null,
-    });
-    try {
-      const created = await runCustomTest({
-        language,
-        source_code: source,
-        stdin: sample.input,
-      });
-      const finished = await waitForRun(created.id);
-      const ok =
-        finished.verdict === "AC" &&
-        normalise(finished.stdout) === normalise(sample.expected);
-      const got = finished.stdout || "—";
-      setSampleResults([
-        {
-          order: sample.order,
-          ok,
-          got,
-          expected: sample.expected,
-          verdict: finished.verdict,
-        },
-      ]);
+  /** Tanlangan yoki jadvaldagi namuna — konsol + inline qator (prototip). */
+  const runSampleByOrder = useCallback(
+    async (order: number) => {
+      if (!language || busy) return;
+      const sample = samples.find((s) => s.order === order);
+      if (!sample) return;
+      setSelectedSample(order);
+      setError(null);
+      setBusy(true);
+      solve?.setSubmitBusy(true);
+      setTab("samples");
+      solve?.setInlineSample(order, { status: "running" });
       setConsoleState({
-        status: "done",
-        log: ok
-          ? fill(t(locale, "submit.samplePassLog"), { order: sample.order })
-          : fill(t(locale, "submit.sampleFailLog"), { order: sample.order }),
-        got,
-        outputMatched: ok,
+        status: "running",
+        log: t(locale, "submit.sampleConsoleRunning"),
+        got: "—",
+        outputMatched: null,
       });
-    } catch (caught) {
-      setError(describe(caught));
-      setConsoleState(sampleConsoleIdleState(locale));
-    } finally {
-      setBusy(false);
-    }
+      try {
+        const created = await runCustomTest({
+          language,
+          source_code: source,
+          stdin: sample.input,
+        });
+        const finished = await waitForRun(created.id);
+        const ok =
+          finished.verdict === "AC" &&
+          normalise(finished.stdout) === normalise(sample.expected);
+        const got = finished.stdout || "—";
+        const log = ok
+          ? fill(t(locale, "submit.samplePassLog"), { order: sample.order })
+          : fill(t(locale, "submit.sampleFailLog"), { order: sample.order });
+        setSampleResults([
+          {
+            order: sample.order,
+            ok,
+            got,
+            expected: sample.expected,
+            verdict: finished.verdict,
+          },
+        ]);
+        setConsoleState({
+          status: "done",
+          log,
+          got,
+          outputMatched: ok,
+        });
+        solve?.setInlineSample(order, {
+          status: "done",
+          ok,
+          message: log,
+        });
+      } catch (caught) {
+        setError(describe(caught));
+        setConsoleState(sampleConsoleIdleState(locale));
+        solve?.setInlineSample(order, { status: "idle" });
+      } finally {
+        setBusy(false);
+        solve?.setSubmitBusy(false);
+      }
+    },
+    [
+      language,
+      busy,
+      samples,
+      source,
+      locale,
+      solve,
+    ],
+  );
+
+  useEffect(() => {
+    if (!solve) return;
+    solve.registerRunSample((order) => {
+      void runSampleByOrder(order);
+    });
+    return () => solve.registerRunSample(null);
+  }, [solve, runSampleByOrder]);
+
+  useEffect(() => {
+    solve?.setAttempt(attempt);
+  }, [attempt, solve]);
+
+  useEffect(() => {
+    solve?.setSubmitBusy(busy);
+  }, [busy, solve]);
+
+  async function runSelectedSample() {
+    await runSampleByOrder(selectedSample);
   }
 
   function pollCustom(id: number, tries: number) {
@@ -502,11 +550,11 @@ export function SubmitPanel({
           <div className="flex gap-1">
             {(
               [
-                ["verdict", "Natija"],
+                ["verdict", t(locale, "submit.tabVerdict")],
                 ...(samples.length > 0
-                  ? ([["samples", "Namunalar"]] as const)
+                  ? ([["samples", t(locale, "submit.tabSamples")]] as const)
                   : []),
-                ["custom", "O'z testim"],
+                ["custom", t(locale, "submit.tabCustom")],
               ] as const
             ).map(([key, label]) => (
               <button
@@ -525,7 +573,18 @@ export function SubmitPanel({
           </div>
         }
       >
-        {tab === "verdict" && <VerdictView attempt={attempt} locale={locale} />}
+        {tab === "verdict" &&
+          (verdictLayout === "tab" ? (
+            <AttemptVerdictPanel
+              attempt={attempt}
+              pending={busy && (!attempt || isPendingVerdict(attempt.verdict))}
+              locale={locale}
+            />
+          ) : (
+            <p className="text-theme-sm rw-faint">
+              {t(locale, "submit.verdictShownElsewhere")}
+            </p>
+          ))}
         {tab === "samples" && (
           <SamplesView
             locale={locale}
@@ -603,68 +662,6 @@ function EditorTools({
   );
 }
 
-function VerdictView({
-  attempt,
-  locale,
-}: {
-  attempt: AttemptDetail | null;
-  locale: Locale;
-}) {
-  if (!attempt)
-    return (
-      <p className="text-theme-sm rw-faint">
-        {t(locale, "submit.nothingSubmitted")}
-      </p>
-    );
-
-  return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap items-center gap-3">
-        <Verdict verdict={attempt.verdict} />
-        {!isPendingVerdict(attempt.verdict) && (
-          <span className="text-theme-sm rw-dim">
-            {attempt.time_ms} ms · {Math.round(attempt.memory_kb / 1024)} MB
-            {attempt.score > 0 && ` · ${attempt.score} ball`}
-          </span>
-        )}
-        {attempt.failed_test_index !== null && (
-          <span className="text-theme-sm rw-bad-ink">
-            {attempt.failed_test_index}-testda to&apos;xtadi
-          </span>
-        )}
-      </div>
-
-      {attempt.compile_output && (
-        <pre className="max-h-56 overflow-auto rw-radius-sm rw-field-bg p-3 text-theme-xs rw-dim-2">
-          {attempt.compile_output}
-        </pre>
-      )}
-
-      {attempt.test_results.length > 0 && (
-        <div className="flex flex-wrap gap-1">
-          {attempt.test_results.map((test) => (
-            <span
-              key={test.index}
-              title={fill(t(locale, "submit.testTooltip"), {
-                index: test.index,
-                verdict: test.verdict,
-                time: test.time_ms,
-              })}
-              className={`flex size-7 items-center justify-center rw-radius-sm text-theme-xs font-medium ${
-                test.verdict === "AC"
-                  ? "rw-ok-soft rw-ok-ink"
-                  : "rw-bad-soft rw-bad-ink"
-              }`}
-            >
-              {test.index}
-            </span>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
 const MAX_TESTS = 8;
 
 function CustomView({
@@ -716,7 +713,7 @@ function CustomView({
               index === active ? "rw-accent-soft rw-accent-ink" : "rw-dim"
             }`}
           >
-            Test {index + 1}
+            {fill(t(locale, "submit.customTestTab"), { index: index + 1 })}
           </button>
         ))}
         {tests.length < MAX_TESTS && (
@@ -736,14 +733,14 @@ function CustomView({
             aria-label={fill(t(locale, "submit.removeTest"), { index: active + 1 })}
             className={`${tab} ml-auto rw-faint`}
           >
-            O&apos;chirish
+            {t(locale, "submit.removeCustomTest")}
           </button>
         )}
       </div>
 
       <label className="block">
         <span className="mb-1.5 block text-theme-sm font-medium rw-strong">
-          Kiritma (stdin)
+          {t(locale, "submit.stdinLabel")}
         </span>
         <textarea
           value={tests[active] ?? ""}

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1829 strings.**
+**1858 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -1103,11 +1103,33 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.sampleInput` | Kirish | Вуруд |  |
 | `problem.sampleOutput` | Chiqish | Баромад |  |
 | `problem.sampleAnswer` | Javob | Answer |  |
-| `problem.sampleRunHint` | Namunada sinash faqat kod panelidagi namuna konsolida — jadval faqat ko'rish va nusxalash uchun. | Run samples only from the code panel console — the table is for viewing and copy. |  |
+| `problem.sampleRunHint` | Namunalarda sinash uchun jadvaldagi ▶ yoki muharrir panelidagi namuna konsolidan foydalaning. | Baroi sanjish ▶-ro dar jadval ё konsoli muharrir istifoda barед. |  |
 | `problem.tagsAndTopics` | Teglar va mavzular | Tags and topics |  |
 | `problem.splitResize` | Panellar kengligini o'zgartirish | Resize statement and editor panels |  |
 | `problem.openEditor` | Kod | Code |  |
 | `problem.closeEditor` | Yopish | Close |  |
+| `problem.collapseEditor` | Muharrirni yig‘ish | Collapse editor |  |
+| `problem.expandEditor` | Muharrirni ko‘rsatish | Show editor |  |
+| `problem.sheetResize` | Muharrir balandligini o‘zgartirish | Resize editor sheet height |  |
+| `problem.statementSizeLabel` | Matn | Text |  |
+| `problem.statementSizeHint` | Masala matni o‘lchami | Statement text size |  |
+| `problem.sectionMode.label` | Bo‘limlar ajratilishi | Section spacing |  |
+| `problem.sectionMode.space` | Bo‘shliq | Space |  |
+| `problem.sectionMode.line` | Chiziq | Line |  |
+| `problem.sectionMode.card` | Karta | Card |  |
+| `problem.sectionNav.label` | Shart bo‘limlari | Statement sections |  |
+| `problem.sectionNav.statement` | Tavsif | Statement |  |
+| `problem.sectionNav.input` | Kirish | Input |  |
+| `problem.sectionNav.output` | Chiqish | Output |  |
+| `problem.sectionNav.notes` | Izohlar | Izohlar |  |
+| `problem.sectionNav.samples` | Namunalar | Samples |  |
+| `problem.sectionNav.editorial` | Tahlil | Тahlili hal |  |
+| `problem.sampleRun` | {order}-namunani sinash | Run sample {order} |  |
+| `problem.verdictLayout.label` | Natija ko‘rinishi | Result layout |  |
+| `problem.verdictLayout.tab` | Yorliq | Tab |  |
+| `problem.verdictLayout.column` | Ustun | Column |  |
+| `problem.verdictLayout.toast` | Qisqa xabar | Xabar |  |
+| `problem.verdictLayout.modal` | Oyna | Panjara |  |
 | `problem.solveTimer` | Yechish | Solve time |  |
 | `problem.roundTimer` | Raund | Round |  |
 | `problem.copy` | Nusxalash | Нусхабардорӣ |  |
@@ -1582,12 +1604,19 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `submit.samplePick` | {order}-namuna | Sample {order} |  |
 | `submit.samplePassLog` | {order}-namuna mos keldi | Sample {order} matched |  |
 | `submit.sampleFailLog` | {order}-namuna mos kelmadi | Sample {order} did not match |  |
+| `submit.tabVerdict` | Natija | Result |  |
+| `submit.tabSamples` | Namunalar | Samples |  |
+| `submit.tabCustom` | O'z testim | Custom tests |  |
 | `submit.draftSavedLocally` | Qoralama shu brauzerda saqlanadi | Лоиҳа дар ҳамин браузер нигоҳ дошта мешавад |  |
 | `submit.loadFromFile` | Fayldan yuklash | Аз файл бор кардан |  |
 | `submit.nothingSubmitted` | Hali yuborilmadi. Kod yozing va «Yuborish» ni bosing. | Ҳанӯз чизе супорида нашудааст. Код нависед ва «Супоридан»-ро пахш кунед. |  |
+| `submit.verdictShownElsewhere` | Natija tanlangan joyda ko‘rsatiladi (ustun, toast yoki modal). | The result is shown in the layout you selected (column, toast, or modal). |  |
 | `submit.testTooltip` | {index}: {verdict} · {time} ms | {index}: {verdict} · {time} мс |  |
 | `submit.addTest` | Test qo'shish | Илова кардани тест |  |
 | `submit.removeTest` | Test {index} ni o'chirish | Нест кардани тести {index} |  |
+| `submit.customTestTab` | Test {index} | Sanji {index} |  |
+| `submit.stdinLabel` | Kiritma (stdin) | Вуруд (stdin) |  |
+| `submit.removeCustomTest` | O'chirish | Нест кардан |  |
 | `submit.run` | Ishga tushirish | Иҷро кардан |  |
 | `submit.testsSavedLocally` | Testlar shu brauzerda saqlanadi | Тестҳо дар ҳамин браузер нигоҳ дошта мешаванд |  |
 | `submit.runningSamples` | Namunalar yuritilmoqda… | Намунаҳо иҷро мешаванд… |  |

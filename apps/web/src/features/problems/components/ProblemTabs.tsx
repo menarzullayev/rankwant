@@ -10,6 +10,9 @@ import {
   PROBLEM_TABS,
   type ProblemTab,
 } from "@/lib/problem-tabs";
+import { StatementSectionModeToggle } from "./StatementSectionMode";
+import { VerdictLayoutModeToggle } from "./VerdictLayoutMode";
+import { useProblemWorkspace } from "./problem-workspace-context";
 
 /** Tab → mavjud tarjima kaliti.
  *
@@ -42,34 +45,64 @@ export function ProblemTabs({
   slug,
   current,
   contest,
+  showStatementChrome = false,
 }: {
   slug: string;
   current: ProblemTab;
   contest?: string;
+  /** Tavsif tabida — bo‘lim ajratish va muharrir yig‘ish (prototip). */
+  showStatementChrome?: boolean;
 }) {
   const locale = useLocale();
+  const workspace = useProblemWorkspace();
 
   return (
-    <nav
-      aria-label={t(locale, "problem.tabsLabel")}
-      className="rw-kit-tabs flex flex-wrap items-center gap-1 border-b rw-divider"
-      data-kit-tabs="underline"
-    >
-      {PROBLEM_TABS.map((key) => (
-        <Link
-          key={key}
-          href={buildProblemTabHref(slug, key, { contest }) as Route}
-          scroll={false}
-          aria-current={key === current ? "page" : undefined}
-          className={`-mb-px border-b-2 px-3 py-2 text-theme-sm font-medium transition rw-focus-ring ${
-            key === current
-              ? "rw-accent-line rw-accent-ink"
-              : "border-transparent rw-dim rw-hover-strong"
-          }`}
-        >
-          {t(locale, LABEL[key])}
-        </Link>
-      ))}
-    </nav>
+    <div className="flex flex-wrap items-end justify-between gap-2 border-b rw-divider">
+      <nav
+        aria-label={t(locale, "problem.tabsLabel")}
+        className="rw-kit-tabs flex flex-wrap items-center gap-1"
+        data-kit-tabs="underline"
+      >
+        {PROBLEM_TABS.map((key) => (
+          <Link
+            key={key}
+            href={buildProblemTabHref(slug, key, { contest }) as Route}
+            scroll={false}
+            aria-current={key === current ? "page" : undefined}
+            className={`-mb-px border-b-2 px-3 py-2 text-theme-sm font-medium transition rw-focus-ring ${
+              key === current
+                ? "rw-accent-line rw-accent-ink"
+                : "border-transparent rw-dim rw-hover-strong"
+            }`}
+          >
+            {t(locale, LABEL[key])}
+          </Link>
+        ))}
+      </nav>
+      {showStatementChrome && (
+        <div className="mb-1 flex flex-wrap items-center gap-2 pb-1">
+          {current === PROBLEM_TABS[0] && (
+            <>
+              <StatementSectionModeToggle />
+              <VerdictLayoutModeToggle />
+            </>
+          )}
+          {workspace && (
+            <button
+              type="button"
+              className="rw-radius-sm border rw-divider px-2.5 py-1 text-theme-xs font-semibold rw-dim rw-hover-bg rw-focus-ring"
+              aria-pressed={workspace.editorCollapsed}
+              onClick={() =>
+                workspace.setEditorCollapsed(!workspace.editorCollapsed)
+              }
+            >
+              {workspace.editorCollapsed
+                ? t(locale, "problem.expandEditor")
+                : t(locale, "problem.collapseEditor")}
+            </button>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
