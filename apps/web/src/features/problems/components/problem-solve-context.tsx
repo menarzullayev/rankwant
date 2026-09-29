@@ -12,6 +12,8 @@ import {
 
 import type { AttemptDetail } from "@/lib/api";
 
+import type { runSampleCallback } from "./problem-solve-types";
+
 export type SampleInlineState =
   | { status: "idle" }
   | { status: "running" }
@@ -61,13 +63,11 @@ export function useVerdictLayoutMode(): [
   return [mode, writeLayout];
 }
 
-type RunSampleFn = (order: number) => void | Promise<void>;
-
 type ProblemSolveContextValue = {
   inlineSamples: Record<number, SampleInlineState>;
   setInlineSample: (order: number, state: SampleInlineState) => void;
   runSample: (order: number) => void;
-  registerRunSample: (fn: RunSampleFn | null) => void;
+  registerRunSample: (fn: runSampleCallback | null) => void;
   attempt: AttemptDetail | null;
   setAttempt: (a: AttemptDetail | null) => void;
   submitBusy: boolean;
@@ -91,7 +91,7 @@ export function ProblemSolveProvider({
   const [attempt, setAttempt] = useState<AttemptDetail | null>(null);
   const [submitBusy, setSubmitBusy] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const runSampleRef = useRef<RunSampleFn | null>(null);
+  const runSampleRef = useRef<runSampleCallback | null>(null);
 
   const setInlineSample = useCallback(
     (order: number, state: SampleInlineState) => {
@@ -100,7 +100,7 @@ export function ProblemSolveProvider({
     [],
   );
 
-  const registerRunSample = useCallback((fn: RunSampleFn | null) => {
+  const registerRunSample = useCallback((fn: runSampleCallback | null) => {
     runSampleRef.current = fn;
   }, []);
 
