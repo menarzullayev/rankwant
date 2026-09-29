@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1832 strings.**
+**1858 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -1103,11 +1103,33 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.sampleInput` | Kirish | Кириш |  |
 | `problem.sampleOutput` | Chiqish | Чыгуу |  |
 | `problem.sampleAnswer` | Javob | Answer |  |
-| `problem.sampleRunHint` | Namunada sinash faqat kod panelidagi namuna konsolida — jadval faqat ko'rish va nusxalash uchun. | Run samples only from the code panel console — the table is for viewing and copy. |  |
+| `problem.sampleRunHint` | Namunalarda sinash uchun jadvaldagi ▶ yoki muharrir panelidagi namuna konsolidan foydalaning. | Namunada sinash uchun jadvaldagi ▶ yoki muharrir panelidan koldonuń. |  |
 | `problem.tagsAndTopics` | Teglar va mavzular | Tags and topics |  |
 | `problem.splitResize` | Panellar kengligini o'zgartirish | Resize statement and editor panels |  |
 | `problem.openEditor` | Kod | Code |  |
 | `problem.closeEditor` | Yopish | Close |  |
+| `problem.collapseEditor` | Muharrirni yig‘ish | Collapse editor |  |
+| `problem.expandEditor` | Muharrirni ko‘rsatish | Show editor |  |
+| `problem.sheetResize` | Muharrir balandligini o‘zgartirish | Resize editor sheet height |  |
+| `problem.statementSizeLabel` | Matn | Text |  |
+| `problem.statementSizeHint` | Masala matni o‘lchami | Statement text size |  |
+| `problem.sectionMode.label` | Bo‘limlar ajratilishi | Section spacing |  |
+| `problem.sectionMode.space` | Bo‘shliq | Space |  |
+| `problem.sectionMode.line` | Chiziq | Line |  |
+| `problem.sectionMode.card` | Karta | Card |  |
+| `problem.sectionNav.label` | Shart bo‘limlari | Statement sections |  |
+| `problem.sectionNav.statement` | Tavsif | Statement |  |
+| `problem.sectionNav.input` | Kirish | Input |  |
+| `problem.sectionNav.output` | Chiqish | Output |  |
+| `problem.sectionNav.notes` | Izohlar | Izohlar |  |
+| `problem.sectionNav.samples` | Namunalar | Samples |  |
+| `problem.sectionNav.editorial` | Tahlil | Чечим талдаması |  |
+| `problem.sampleRun` | {order}-namunani sinash | Run sample {order} |  |
+| `problem.verdictLayout.label` | Natija ko‘rinishi | Result layout |  |
+| `problem.verdictLayout.tab` | Yorliq | Bet |  |
+| `problem.verdictLayout.column` | Ustun | Column |  |
+| `problem.verdictLayout.toast` | Qisqa xabar | Qisqa bildiruu |  |
+| `problem.verdictLayout.modal` | Oyna | Termin |  |
 | `problem.solveTimer` | Yechish | Solve time |  |
 | `problem.roundTimer` | Raund | Round |  |
 | `problem.copy` | Nusxalash | Көчүрүү |  |
@@ -1588,9 +1610,13 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `submit.draftSavedLocally` | Qoralama shu brauzerda saqlanadi | Долбоор ушул браузерде сакталат |  |
 | `submit.loadFromFile` | Fayldan yuklash | Файлдан жүктөө |  |
 | `submit.nothingSubmitted` | Hali yuborilmadi. Kod yozing va «Yuborish» ni bosing. | Азырынча эч нерсе жөнөтүлгөн жок. Код жазып, «Жөнөтүү» баскычын басыңыз. |  |
+| `submit.verdictShownElsewhere` | Natija tanlangan joyda ko‘rsatiladi (ustun, toast yoki modal). | The result is shown in the layout you selected (column, toast, or modal). |  |
 | `submit.testTooltip` | {index}: {verdict} · {time} ms | {index}: {verdict} · {time} мс |  |
 | `submit.addTest` | Test qo'shish | Тест кошуу |  |
 | `submit.removeTest` | Test {index} ni o'chirish | Тест {index} өчүрүү |  |
+| `submit.customTestTab` | Test {index} | Тест {index} |  |
+| `submit.stdinLabel` | Kiritma (stdin) | Киргизүү (stdin) |  |
+| `submit.removeCustomTest` | O'chirish | Өчүрүү |  |
 | `submit.run` | Ishga tushirish | Иштетүү |  |
 | `submit.testsSavedLocally` | Testlar shu brauzerda saqlanadi | Тесттер ушул браузерде сакталат |  |
 | `submit.runningSamples` | Namunalar yuritilmoqda… | Мисалдар аткарылууда… |  |

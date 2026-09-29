@@ -118,53 +118,60 @@ export default async function ProblemPage({ params, searchParams }: Props) {
   // Muharrirli ko'rinish — faqat yechish kontekstidagi tablarda.
   if (tab === "description" || tab === "editorial") {
     return (
-      <ProblemWorkspace
-        renderStatement={() => (
-          <div className="min-w-0 space-y-6">
-            <script
-              type="application/ld+json"
-              dangerouslySetInnerHTML={{
-                __html: jsonLd({
-                  "@context": "https://schema.org",
-                  "@type": "LearningResource",
-                  name: problem.title,
-                  description: jsonLdDescription,
-                  url: `${SITE_URL}/problems/${slug}`,
-                  educationalLevel: problem.level_label,
-                  learningResourceType: "Problem",
-                  inLanguage: locale,
-                  isAccessibleForFree: true,
-                  creator: { "@id": `${SITE_URL}/#organization` },
-                }),
-              }}
-            />
-            <ProblemTabs slug={slug} current={tab} contest={contest} />
-            {tab === "description" ? (
-              <ProblemDescription
-                problem={problem}
+      <>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: jsonLd({
+              "@context": "https://schema.org",
+              "@type": "LearningResource",
+              name: problem.title,
+              description: jsonLdDescription,
+              url: `${SITE_URL}/problems/${slug}`,
+              educationalLevel: problem.level_label,
+              learningResourceType: "Problem",
+              inLanguage: locale,
+              isAccessibleForFree: true,
+              creator: { "@id": `${SITE_URL}/#organization` },
+            }),
+          }}
+        />
+        <ProblemWorkspace
+          statement={
+            <div className="min-w-0 space-y-6">
+              <ProblemTabs
                 slug={slug}
+                current={tab}
                 contest={contest}
-                locale={locale}
+                showStatementChrome
               />
-            ) : (
-              <ProblemEditorialPanel
-                problem={problem}
-                slug={slug}
-                locale={locale}
-              />
-            )}
-          </div>
-        )}
-        renderEditor={() => (
-          <SubmitPanel
-            problem={slug}
-            languages={problem.languages}
-            samples={problem.samples}
-            contest={contest}
-            hasTests={problem.has_tests}
-          />
-        )}
-      />
+              {tab === "description" ? (
+                <ProblemDescription
+                  problem={problem}
+                  slug={slug}
+                  contest={contest}
+                  locale={locale}
+                />
+              ) : (
+                <ProblemEditorialPanel
+                  problem={problem}
+                  slug={slug}
+                  locale={locale}
+                />
+              )}
+            </div>
+          }
+          editor={
+            <SubmitPanel
+              problem={slug}
+              languages={problem.languages}
+              samples={problem.samples}
+              contest={contest}
+              hasTests={problem.has_tests}
+            />
+          }
+        />
+      </>
     );
   }
 
