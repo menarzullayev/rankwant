@@ -83,15 +83,18 @@
   .faint{color:var(--faint)}
   .h-title{font-size:26px;font-weight:700;letter-spacing:-.01em}
   /* ---- CHOICE 6: statement body 16px / 1.7 ---- */
-  /* ---- CHOICE 13: prose measure, set by the slider ---- */
-  .sec p{font-size:var(--stmt-size,16px);line-height:1.7;max-width:var(--measure,498px);margin:0 0 12px}
+  /* ---- CHOICE 13: prose measure — adaptive to container width ----
+     Max 100ch (≈100 belgining o‘qilishi oson chegarasi), lekin
+     sahifa daraz bo‘lsa container kengligiga sig‘adi (padding hisoblanib).
+     Slider yo‘q — avtomatik. */
+  .sec p{font-size:var(--stmt-size,16px);line-height:1.7;max-width:min(100ch, calc(100% - 32px));margin:0 0 12px}
   .sec p:last-child{margin-bottom:0}
-  .sec ul,.sec ol{font-size:var(--stmt-size,16px);line-height:1.7;max-width:var(--measure,498px);
+  .sec ul,.sec ol{font-size:var(--stmt-size,16px);line-height:1.7;max-width:min(100ch, calc(100% - 32px));
     margin:0 0 12px;padding-left:22px}
   .sec li{margin-bottom:6px}
   .sec b,.sec i,.sec sub{font-size:inherit}
   .note-inline{background:var(--panel-3);border-left:3px solid var(--accent);border-radius:0 var(--r-sm) var(--r-sm) 0;
-    padding:11px 14px;font-size:15px;line-height:1.65;max-width:var(--measure,498px)}
+    padding:11px 14px;font-size:15px;line-height:1.65;max-width:min(100ch, calc(100% - 32px))}
   .h-sub{font-size:16px;font-weight:600;margin:18px 0 5px}
   .kbd{font-family:var(--mono);font-size:12px;background:var(--panel-2);border:1px solid var(--line);border-radius:5px;padding:2px 6px;color:var(--muted);white-space:nowrap}
   .tabs{display:flex;gap:2px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-bottom:14px}
@@ -388,10 +391,6 @@
     <label class="rng">Radius
       <input type="range" id="rad" min="0" max="28" step="2" value="16">
       <b id="radval">16px</b>
-    </label>
-    <label class="rng">O‘lchov
-      <input type="range" id="meas" min="45" max="100" step="5" value="70">
-      <b id="measval">70 belgi</b>
     </label>
     <div class="switch" role="group" aria-label="Qurilma kengligi">
       <button data-w="desktop" id="w-desktop" class="on" aria-pressed="true">Desktop 1440</button>
@@ -1310,35 +1309,6 @@ int main() {
     rad.value = String(saved);
     paint(saved);
     rad.addEventListener("input", function () { paint(rad.value); });
-  })();
-
-  /* measure slider (choice 13) — 96 chars fit in 683px at 16px, so
-     1 char ≈ 7.11px there. The character count is the stable input; the
-     pixel value is derived, so it has to follow the statement size. */
-  (function () {
-    var el = document.getElementById("meas");
-    var out = document.getElementById("measval");
-    var page = document.getElementById("page");
-    var PX_PER_CHAR_AT_16 = 683 / 96;
-    var C_MIN = 45, C_MAX = 100, C_FALLBACK = 70;
-    function clampC(v) {
-      var n = parseInt(v, 10);
-      if (!isFinite(n)) n = C_FALLBACK;
-      return Math.min(C_MAX, Math.max(C_MIN, n));
-    }
-    function paint(v) {
-      var chars = clampC(v);
-      var size = parseFloat(page.style.getPropertyValue("--stmt-size")) || 16;
-      var px = chars * PX_PER_CHAR_AT_16 * (size / 16);
-      document.documentElement.style.setProperty("--measure", Math.round(px) + "px");
-      out.textContent = chars + " belgi";
-      localStorage.setItem("rw:measure", String(chars));
-    }
-    var saved = clampC(localStorage.getItem("rw:measure"));
-    el.value = String(saved);
-    paint(saved);
-    el.addEventListener("input", function () { paint(el.value); });
-    document.addEventListener("rw:textsize", function () { paint(el.value); });
   })();
 
   /* section-separation switcher (choice 11) — the reader decides */
