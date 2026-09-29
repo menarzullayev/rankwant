@@ -13,8 +13,9 @@ class Verdict(models.TextChoices):
     TLE = "TLE", "Time Limit Exceeded"
     MLE = "MLE", "Memory Limit Exceeded"
     OLE = "OLE", "Output Limit Exceeded"
-    #: LEGACY — judge endi chiqarmaydi, o'rniga `RE_SIGNAL`/`RE_EXIT`.
+    #: O'LIK — LEGACY: judge endi chiqarmaydi, o'rniga `RE_SIGNAL`/`RE_EXIT`.
     #: Bazadagi eski qatorlar uchun qoladi (o'lchandi: 18 163 ta).
+    #: So'nggi marta: RE_SIGNAL/RE_EXIT ajratishdan oldin (M10 migratsiya).
     RE = "RE", "Runtime Error"
     RE_SIGNAL = "RE_SIGNAL", "Runtime Error (signal)"
     RE_EXIT = "RE_EXIT", "Runtime Error (chiqish kodi)"
@@ -33,8 +34,14 @@ class Verdict(models.TextChoices):
     IDLENESS = "IDLENESS", "Idleness Limit Exceeded"
     SECURITY_VIOLATION = "SECURITY_VIOLATION", "Xavfsizlik qoidasi buzildi"
     CHECKER_ERROR = "CHECKER_ERROR", "Checker xatosi"
+    #: O'LIK — judge CHIQARMAYDI: `rejudge` buyrug'i yoki hack dvigateli
+    #: eski natijani bekor qilganini ko'rsatish uchun qo'yadi.
     TESTING_ABORTED = "TESTING_ABORTED", "Tekshiruv bekor qilindi"
+    #: O'LIK — judge CHIQARMAYDI: API throttle (submit limiti) urilganda
+    #: `AttemptViewSet.throttled` qo'yadi (tarixda iz qolishi uchun).
     RATE_LIMITED = "RATE_LIMITED", "Submit limiti"
+    #: O'LIK — judge CHIQARMAYDI: `reap_stuck` vazifasi ish yo'qolganini
+    #: aniqlaganda qo'yadi (infra hodisasi, foydalanuvchi aybi emas).
     DENIAL_OF_JUDGEMENT = "DENIAL_OF_JUDGEMENT", "Infra nosozligi"
 
 
