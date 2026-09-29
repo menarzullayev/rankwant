@@ -81,7 +81,7 @@ export function ProblemTabs({
       </nav>
       {showStatementChrome && (
         <div className="mb-1 flex flex-wrap items-center gap-2 pb-1">
-          {current === "description" && (
+          {current === PROBLEM_TABS[0] && (
             <>
               <StatementSectionModeToggle />
               <VerdictLayoutModeToggle />
