@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Statement sahifasi — bosqichma-bosqich qurilish</title>
+<style>
+  :root{
+    --ground:#ede4ff; --panel:#fff; --panel-2:#f7f3ff; --panel-3:#faf8ff;
+    --text:#4a2d75; --text-2:#5d3d89; --muted:#624f82; --faint:#6f5897;
+    --accent:#7c3aed; --accent-ink:#7936ea; --accent-fg:#fff; --accent-soft:#f1e9ff;
+    --divider:#c9bce0; --line:#e3daf5;
+    --ok:#0f6e56; --ok-soft:#e1f5ee; --warn:#854f0b; --warn-soft:#faeeda;
+    --r:16px; --r-sm:10px;
+    --sans:ui-sans-serif,system-ui,"Segoe UI",sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#eef0f4;color:#1f2430;font-family:var(--sans);font-size:15px;line-height:1.55}
+  .shell{max-width:1280px;margin:0 auto;padding:26px 22px 70px}
+  /* the prototype draws a modal; the builder's own chrome must stay usable
+     above it, otherwise selecting "Modal" traps the reviewer. */
+  .bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px;
+    position:relative;z-index:70}
+  .bar h1{font-size:19px;font-weight:600;margin:0}
+  .pill{font-size:12px;font-weight:600;background:#2b2340;color:#fff;border-radius:999px;padding:4px 11px}
+  .switch{display:flex;gap:4px;margin-left:auto;background:#fff;border:1px solid #dfe1e8;border-radius:10px;padding:3px}
+  .switch button{font:inherit;font-size:12.5px;border:0;background:transparent;padding:5px 11px;border-radius:7px;cursor:pointer;color:#4a4f5e}
+  .switch button.on{background:#2b2340;color:#fff}
+  .rng{display:flex;align-items:center;gap:9px;font-size:12.5px;color:#4a4f5e;
+    background:#fff;border:1px solid #dfe1e8;border-radius:10px;padding:4px 12px}
+  .rng input[type=range]{width:150px;height:24px;accent-color:#7c3aed}
+  .rng b{font-family:var(--mono);font-size:12.5px;color:#2b2340;min-width:44px;text-align:right}
+  .viewport{background:#fff;border:1px solid #dfe1e8;border-radius:14px;overflow:hidden;margin:0 auto;transition:max-width .18s ease}
+  .viewport[data-w="desktop"]{max-width:100%}
+  .viewport[data-w="tablet"]{max-width:834px}
+  .viewport[data-w="mobile"]{max-width:390px}
+  .caption{font-size:12.5px;color:#6b7280;text-align:center;margin:8px 0 20px}
+  .log{background:#fff;border:1px solid #dfe1e8;border-radius:14px;padding:16px 18px}
+  .log h2{font-size:14px;font-weight:600;margin:0 0 10px}
+  .log ol{margin:0;padding-left:20px;font-size:13.5px}
+  .log li{margin-bottom:5px}
+  .log .done{color:#2b2340}.log .done b{color:var(--accent-ink)}
+  .log .now{color:var(--accent-ink);font-weight:600}
+  .log .now i{font-style:normal}
+  .log .todo{color:#9aa0ae}
+
+  /* ===== statement page ===== */
+  .page{background:var(--ground);color:var(--text);min-height:660px;display:flex}
+  .page *{box-sizing:border-box}
+  /* an author `display` beats the UA [hidden] rule — keep the attribute honest */
+  [hidden]{display:none!important}
+  /* ---- CHOICE 3: thin icon rail (56px) replaces the 230px sidebar ---- */
+  .rail{width:56px;flex:none;background:#fff;border-right:1px solid var(--line);
+    display:flex;flex-direction:column;align-items:center;gap:3px;padding:12px 0}
+  .rail-item{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+    color:var(--text-2);position:relative;cursor:default}
+  .rail-item svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.6;
+    stroke-linecap:round;stroke-linejoin:round}
+  .rail-item.on{background:var(--accent-soft);color:var(--accent-ink)}
+  .rail-item:hover{background:var(--panel-2)}
+  .rail-item::after{content:attr(title);position:absolute;left:47px;top:50%;transform:translateY(-50%);
+    background:#2b2340;color:#fff;font-size:12px;padding:5px 9px;border-radius:7px;white-space:nowrap;
+    opacity:0;pointer-events:none;transition:opacity .12s;z-index:5}
+  .rail-item:hover::after{opacity:1}
+  .rail-sep{width:24px;height:1px;background:var(--line);margin:6px 0}
+  .body{flex:1;min-width:0;display:flex;flex-direction:column}
+  .topbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:11px 18px;background:#fff;border-bottom:1px solid var(--line)}
+  .badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:3px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);white-space:nowrap}
+  .badge.b-ok{background:var(--ok-soft);color:var(--ok)}
+  /* ---- CHOICE 10: hairline + soft shadow (measured panel/ground 1.23:1) ---- */
+  .card{background:var(--panel);border-radius:var(--r);padding:16px;
+    border:1px solid var(--line);
+    box-shadow:0 1px 2px rgba(48,30,90,.05),0 6px 16px rgba(48,30,90,.07)}
+  /* ---- CHOICE 7: code and samples at 14px / 1.6 ---- */
+  .mono{font-family:var(--mono)}
+  .sec .mono{font-size:14px}
+  /* ---- CHOICE 8: inline math — chip, same size as the body ---- */
+  /* KaTeX is not available offline; this mimics its metrics. */
+  .math{font-family:"Cambria Math",Cambria,Georgia,serif;font-style:italic;font-size:1em;
+    background:var(--accent-soft);color:var(--accent-ink);border-radius:5px;padding:1px 5px}
+  .math .sup{font-size:.72em;font-style:normal;vertical-align:.42em}
+  .faint{color:var(--faint)}
+  .h-title{font-size:26px;font-weight:700;letter-spacing:-.01em}
+  /* ---- CHOICE 6: statement body 16px / 1.7 ---- */
+  /* ---- CHOICE 13: prose measure, set by the slider ---- */
+  .sec p{font-size:var(--stmt-size,16px);line-height:1.7;max-width:var(--measure,498px);margin:0 0 12px}
+  .sec p:last-child{margin-bottom:0}
+  .sec ul,.sec ol{font-size:var(--stmt-size,16px);line-height:1.7;max-width:var(--measure,498px);
+    margin:0 0 12px;padding-left:22px}
+  .sec li{margin-bottom:6px}
+  .sec b,.sec i,.sec sub{font-size:inherit}
+  .note-inline{background:var(--panel-3);border-left:3px solid var(--accent);border-radius:0 var(--r-sm) var(--r-sm) 0;
+    padding:11px 14px;font-size:15px;line-height:1.65;max-width:var(--measure,498px)}
+  .h-sub{font-size:16px;font-weight:600;margin:18px 0 5px}
+  .kbd{font-family:var(--mono);font-size:12px;background:var(--panel-2);border:1px solid var(--line);border-radius:5px;padding:2px 6px;color:var(--muted);white-space:nowrap}
+  .tabs{display:flex;gap:2px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-bottom:14px}
+  /* ---- CHOICE 4: two priority-ordered header rows ---- */
+  .head-1{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:9px}
+  .head-2{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:15px}
+  .chip-limit{font-size:12.5px;font-weight:600;color:var(--warn);background:var(--warn-soft);
+    border-radius:999px;padding:4px 11px;white-space:nowrap}
+  /* ---- CHOICE 9: labelled, keyboard-reachable text-size control ---- */
+  .tsize{display:inline-flex;align-items:center;gap:5px}
+  .tlabel{font-size:11.5px;color:var(--faint);letter-spacing:.03em}
+  .tval{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:34px;text-align:center}
+  .tbtn{min-width:32px;min-height:32px;display:inline-flex;align-items:center;justify-content:center;
+    font:inherit;font-size:12px;cursor:pointer;border:1px solid var(--line);background:var(--panel-2);
+    color:var(--muted);border-radius:5px}
+  .tbtn:hover:not(:disabled){border-color:var(--accent);color:var(--accent-ink)}
+  .tbtn:disabled{opacity:.45;cursor:not-allowed}
+  .stat{font-size:12.5px;color:var(--faint)}
+  /* ---- CHOICE 5: sample table — flexible, per-cell copy ---- */
+  .sec-label{font-size:13px;font-weight:600;margin:16px 0 9px}
+  .samples{background:var(--panel-3);border:1px solid var(--line);border-radius:var(--r-sm);overflow:auto;
+    box-shadow:0 1px 2px rgba(48,30,90,.04)}
+  table.samples-t{width:100%;border-collapse:collapse;table-layout:fixed}
+  table.samples-t th{background:var(--panel-2);color:var(--faint);font-size:11px;font-weight:600;
+    text-transform:uppercase;letter-spacing:.05em;text-align:left;padding:7px 12px}
+  table.samples-t .th-idx{width:40px}
+  table.samples-t th + th,table.samples-t td + td{border-left:1px solid var(--line)}
+  table.samples-t tr + tr td{border-top:1px solid var(--line)}
+  table.samples-t td{padding:0;vertical-align:top}
+  table.samples-t td.idx{padding:10px 12px;font-family:var(--mono);font-size:12px;color:var(--faint)}
+  table.samples-t td.lead{width:auto;padding:8px 12px;color:var(--text)}
+  table.samples-t .cell.plain{padding-right:12px}
+  .cell{position:relative;padding:9px 36px 9px 12px;min-height:42px}
+  .cell .io{margin:0;font-family:var(--mono);font-size:14px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+  .cp{position:absolute;top:7px;right:7px;width:26px;height:26px;border:1px solid var(--line);background:#fff;
+    border-radius:7px;color:var(--faint);font-size:12px;line-height:1;cursor:pointer;
+    display:flex;align-items:center;justify-content:center}
+  .cp:hover{border-color:var(--accent);color:var(--accent-ink)}
+  .cp.done{border-color:var(--ok);color:var(--ok)}
+  .cp.fail{border-color:#a32d2d;color:#a32d2d}
+  /* ---- CHOICE 14: icon-only per-sample run, result inline ---- */
+  table.samples-t .th-run{width:40px}
+  table.samples-t td.run{padding:0;vertical-align:top}
+  .runbtn{width:26px;height:26px;margin:7px auto 0;border:1px solid var(--line);background:#fff;
+    border-radius:7px;color:var(--accent-ink);font-size:11px;line-height:1;cursor:pointer;
+    display:flex;align-items:center;justify-content:center}
+  .runbtn:hover{background:var(--accent-soft);border-color:var(--accent)}
+  .runres{margin:0 10px 8px;font-family:var(--mono);font-size:11.5px;color:var(--ok);
+    background:var(--ok-soft);border-radius:8px;padding:6px 9px}
+  .runres.bad{color:#a32d2d;background:#fcebeb}
+  .tab{padding:9px 14px;font-size:13.5px;font-weight:600;color:var(--faint);border-bottom:2px solid transparent}
+  .tab.on{color:var(--accent-ink);border-bottom-color:var(--accent)}
+  /* ---- CHOICE 11: the reader picks how sections are separated ---- */
+  .seg{display:inline-flex;gap:2px;background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:2px}
+  .seg button{font:inherit;font-size:11.5px;font-weight:600;border:0;background:transparent;color:var(--faint);
+    padding:5px 10px;border-radius:7px;cursor:pointer;min-height:26px}
+  .seg button.on{background:#fff;color:var(--accent-ink);box-shadow:0 1px 2px rgba(48,30,90,.08)}
+  /* ---- P0 parity: builder chrome for the new platform states ---- */
+  .bar2{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-6px 0 16px;
+    position:relative;z-index:70;font-size:12.5px;color:#4a4f5e}
+  .bar2 .lbl{font-weight:600;color:#2b2340}
+  .bar2 .seg{background:#fff;border-color:#dfe1e8}
+  .bar2 .seg button{color:#4a4f5e;min-height:26px}
+  .bar2 .seg button.on{background:#2b2340;color:#fff}
+  .log code{font-family:var(--mono);font-size:12px;background:var(--panel-2);
+    border-radius:5px;padding:1px 5px}
+  /* ---- P0 parity: ProblemActions (page.tsx:187) ---- */
+  .actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;margin-top:12px;
+    font-size:13px;color:var(--muted)}
+  .actions button{font:inherit;font-size:13px;font-weight:600;border:0;background:transparent;
+    color:var(--muted);border-radius:var(--r-sm);padding:0 9px;min-height:28px;min-width:28px;
+    cursor:pointer}
+  .actions button:hover{background:var(--accent-soft);color:var(--accent-ink)}
+  /* a guest sees neither the favourite nor the stars, and the votes are
+     disabled — ProblemActions.tsx decides exactly this from `signedIn` */
+  .actions .act-fav,.actions .stars{display:none}
+  .page[data-u="in"] .actions .act-fav{display:inline-flex;align-items:center;gap:5px}
+  .page[data-u="in"] .actions .stars{display:inline-flex;align-items:center}
+  .actions .votes{display:inline-flex;align-items:center;gap:2px}
+  .actions .act-vote{font-variant-numeric:tabular-nums}
+  .actions .act-vote[aria-pressed="true"]{color:var(--accent-ink);background:var(--accent-soft)}
+  /* disabled, yet still readable: WCAG 1.4.3 exempts inactive controls but
+     the audit does not, and weakening the gate to fit the code is the
+     wrong direction. Cursor + dashed edge carry the "disabled" cue. */
+  .actions .act-vote[disabled]{color:var(--faint);background:var(--panel-2);
+    cursor:not-allowed;border:1px dashed var(--line)}
+  .actions .rating{display:inline-flex;align-items:center;gap:9px}
+  .actions .stars button{color:var(--faint);padding:0 3px;min-width:26px}
+  .actions .stars button.on{color:var(--accent-ink)}
+  /* ---- P0 parity: Editorial (page.tsx:247, ADR-0013) ---- */
+  .ed .ed-head{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:600}
+  .ed .ed-head .access{font-family:var(--mono);font-size:11.5px;font-weight:600;
+    color:var(--muted);background:var(--panel-2);border:1px solid var(--line);
+    border-radius:999px;padding:2px 9px}
+  .ed .ed-anon,.ed .ed-locked,.ed .ed-closed,.ed .ed-open{display:none}
+  .page[data-ed="locked"] .ed .ed-locked{display:block}
+  .page[data-ed="solved"] .ed .ed-closed,
+  .page[data-ed="closed"] .ed .ed-closed{display:block}
+  .page[data-ed="open"] .ed .ed-open{display:block}
+  .ed .ed-hint-solved{display:none}
+  .page[data-ed="solved"] .ed .ed-hint-solved{display:inline}
+  .page[data-ed="solved"] .ed .ed-hint-open{display:none}
+  /* guest overrides every signed-in state — same specificity, later wins */
+  .page[data-u="guest"] .ed .ed-anon{display:block}
+  .page[data-u="guest"] .ed .ed-locked,
+  .page[data-u="guest"] .ed .ed-closed,
+  .page[data-u="guest"] .ed .ed-open{display:none}
+  .ed .ed-toggle{font:inherit;font-size:13px;font-weight:600;border:0;background:transparent;
+    color:var(--accent-ink);cursor:pointer;min-height:28px;padding:0 9px;border-radius:var(--r-sm)}
+  .ed .ed-toggle:hover{background:var(--accent-soft)}
+  /* the login link needs a 24x24 box like every other target */
+  .ed .ed-login{display:inline-block;min-height:24px;padding:2px 1px;color:var(--accent-ink)}
+  .ed .ed-err{color:#a32d2d;font-size:13px}
+  .ed .ed-text p:first-child{margin-top:0}
+  .ed .ed-text p:last-child{margin-bottom:0}
+  /* constraints belong to the statement, not to a section of their own */
+  .sub-limits{margin-top:16px}
+  .sec + .sec{margin-top:16px}
+  .sec .h-sub{margin-top:0}
+  #stmtcard[data-sec="line"] .sec + .sec{border-top:1px solid var(--line);padding-top:14px}
+  #stmtcard[data-sec="card"]{background:transparent;border:0;box-shadow:none;padding:0}
+  #stmtcard[data-sec="card"] .sec{background:var(--panel);border:1px solid var(--line);
+    border-radius:var(--r-sm);padding:14px;box-shadow:0 1px 2px rgba(48,30,90,.05),0 6px 16px rgba(48,30,90,.07)}
+  #stmtcard[data-sec="card"] .sec + .sec{margin-top:10px}
+  .code{background:#221a33;color:#e8e3f5;border-radius:var(--r-sm);padding:12px 14px;font-family:var(--mono);font-size:14px;line-height:1.6;white-space:pre;overflow:auto}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:10px;font:inherit;font-size:13px;font-weight:600;padding:0 14px;min-height:38px;cursor:default}
+  .btn-primary{background:var(--accent);color:var(--accent-fg)}
+  .btn-quiet{background:transparent;color:var(--muted);border:1px solid var(--line)}
+
+  /* ---- CHOICE 1: two columns with a draggable split ---- */
+  .split{flex:1;display:flex;min-height:0}
+  /* the split ratio is a variable, not an inline width: an inline style
+     would beat the mobile rule below and squeeze the pane to 58% of a
+     390px column (measured: 225px, ~20 characters per line) */
+  .pane-a{width:var(--split,58%);min-width:0;overflow:auto;padding:18px}
+  .pane-b{flex:1;min-width:0;overflow:auto;padding:18px;background:var(--panel-3);border-left:1px solid var(--line)}
+  .handle{flex:none;width:8px;cursor:col-resize;background:transparent;position:relative;display:flex;align-items:center;justify-content:center}
+  .handle::before{content:"";width:4px;height:44px;border-radius:2px;background:var(--divider);opacity:.65}
+  .handle:hover::before,.handle.drag::before{background:var(--accent);opacity:1}
+  /* ---- CHOICE 2: collapse the editor pane ---- */
+  .collapse{font:inherit;font-size:12.5px;font-weight:600;background:transparent;color:var(--muted);
+    border:1px solid var(--line);border-radius:9px;padding:6px 11px;cursor:pointer;min-height:34px;
+    white-space:nowrap}
+  .collapse:hover{border-color:var(--accent);color:var(--accent-ink)}
+  .split.collapsed .pane-b,.split.collapsed .handle{display:none}
+  .split.collapsed .pane-a{width:100%!important}
+  /* provisional responsive behaviour — decided in step 18/19 */
+  .viewport[data-w="mobile"] .split{flex-direction:column}
+  .viewport[data-w="mobile"] .pane-a{width:auto;overflow:visible}
+  .viewport[data-w="mobile"] .pane-b{border-left:0;border-top:1px solid var(--line)}
+  .viewport[data-w="mobile"] .handle{display:none}
+  .viewport[data-w="mobile"] .rail{display:none}
+
+  /* ---- CHOICE 18 + 19: the editor is a summoned sheet on tablet AND mobile ----
+     The statement keeps the full measure at both widths; the editor rises
+     from the bottom edge and can be dragged. Tablet: rail 48px, frame
+     1112px, sheet 62%. Mobile: no rail, frame 844px, sheet 92%. */
+  .viewport:is([data-w="tablet"],[data-w="mobile"]) .page{min-height:0;overflow:hidden}
+  .viewport[data-w="tablet"] .page{height:1112px}
+  .viewport[data-w="mobile"] .page{height:844px}
+  .viewport:is([data-w="tablet"],[data-w="mobile"]) .body{position:relative;min-height:0}
+  .viewport[data-w="tablet"] .rail{width:48px}
+  .viewport:is([data-w="tablet"],[data-w="mobile"]) .split{position:relative}
+  .viewport:is([data-w="tablet"],[data-w="mobile"]) .pane-a{width:100%!important;overflow:auto}
+  .viewport:is([data-w="tablet"],[data-w="mobile"]) .handle{display:none}
+  .viewport:is([data-w="tablet"],[data-w="mobile"]) .pane-b{
+    position:absolute;left:0;right:0;bottom:0;flex:none;z-index:40;
+    background:var(--panel);border-left:0;border-top:2px solid var(--accent);
+    border-radius:16px 16px 0 0;
+    box-shadow:0 -8px 26px rgba(48,30,90,.20);
+    transform:translateY(101%);transition:transform .22s ease}
+  /* one stored --sheet-h, clamped per device: a tablet drag must not
+     produce a 92% sheet on a phone, nor a 62% one on a tablet */
+  .viewport[data-w="tablet"] .pane-b{height:var(--sheet-h,62%);min-height:40%;max-height:92%}
+  .viewport[data-w="mobile"] .pane-b{height:var(--sheet-h,92%);min-height:55%;max-height:96%}
+  .viewport:is([data-w="tablet"],[data-w="mobile"]) .split.sheet-open .pane-b{transform:none}
+  /* drag affordance — sticky so it stays put while the editor scrolls */
+  .grab{display:none}
+  .viewport:is([data-w="tablet"],[data-w="mobile"]) .grab{
+    display:flex;align-items:center;justify-content:center;
+    position:sticky;top:0;z-index:2;height:22px;
+    margin:-18px -18px 10px;cursor:row-resize;background:var(--panel)}
+  .viewport:is([data-w="tablet"],[data-w="mobile"]) .grab i{width:44px;height:4px;border-radius:2px;
+    background:var(--divider);opacity:.7}
+  .viewport:is([data-w="tablet"],[data-w="mobile"]) .grab:hover i{background:var(--accent);opacity:1}
+  /* the summon button — it rides just above the sheet when the sheet is open */
+  .kodfab{display:none}
+  .viewport:is([data-w="tablet"],[data-w="mobile"]) .kodfab{
+    display:inline-flex;align-items:center;gap:7px;position:absolute;
+    right:16px;bottom:16px;z-index:50;
+    background:var(--accent);color:var(--accent-fg);border:0;border-radius:11px;
+    font:inherit;font-size:13px;font-weight:600;padding:0 16px;min-height:44px;cursor:pointer;
+    box-shadow:0 5px 16px rgba(76,29,149,.32);transition:bottom .22s ease}
+  .viewport:is([data-w="tablet"],[data-w="mobile"]) .split.sheet-open ~ .kodfab{bottom:calc(var(--sheet-h,62%) + 10px)}
+  /* no editor, no sheet to summon */
+  .viewport:is([data-w="tablet"],[data-w="mobile"]) .split.collapsed ~ .kodfab{display:none}
+  .kodfab .mono{font-family:var(--mono);font-size:12px;opacity:.9}
+  /* ---- CHOICE 19 (M4): in-document navigation for a 4790px statement ----
+     The topbar already sits outside the scroll area, so it is sticky for
+     free; what the statement needed was a way to jump between sections. */
+  .sec-chips{display:none}
+  .viewport[data-w="mobile"] .sec-chips{
+    display:flex;gap:6px;overflow-x:auto;position:sticky;top:0;z-index:12;
+    padding:7px 0 8px;margin:0 0 10px;background:var(--ground);
+    border-bottom:1px solid var(--line);scrollbar-width:none}
+  .sec-chips::-webkit-scrollbar{display:none}
+  .sec-chips button{
+    flex:none;font:inherit;font-size:11.5px;font-weight:600;cursor:pointer;
+    background:var(--panel);color:var(--muted);border:1px solid var(--line);
+    border-radius:999px;padding:5px 11px;min-height:30px;white-space:nowrap}
+  .sec-chips button.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+  /* ---- CHOICE 15: mobile sticky action bar (desktop keeps the editor's) ---- */
+  /* ---- CHOICE 16: the reader picks how the verdict is shown ---- */
+  .vmodes{display:inline-flex;gap:2px;background:var(--panel-2);border:1px solid var(--line);
+    border-radius:9px;padding:2px;margin-left:auto}
+  .vmodes button{font:inherit;font-size:11px;font-weight:600;border:0;background:transparent;color:var(--faint);
+    padding:4px 8px;border-radius:7px;cursor:pointer;min-height:24px}
+  .vmodes button.on{background:#fff;color:var(--accent-ink);box-shadow:0 1px 2px rgba(48,30,90,.08)}
+  .vbox{display:none}
+  .page[data-vm="tab"] .vbox.v-tab{display:block}
+  .page[data-vm="column"] .vbox.v-column{display:block}
+  .page[data-vm="toast"] .vbox.v-toast{display:flex}
+  .page[data-vm="modal"] .vbox.v-modal{display:flex}
+  /* ---- the verdict STATE drives every presentation mode, not just Tab ----
+     `!important` on purpose: each mode's `.vcard` rule sets its own display,
+     and a state layer has to win over it. */
+  .vs-empty,.vs-loading,.vs-done{display:none!important}
+  .page[data-vs="empty"] .vs-empty{display:block!important}
+  .page[data-vs="loading"] .vs-loading{display:flex!important}
+  .page[data-vs="done"] .vs-done{display:block!important}
+  .page[data-vs="done"] .v-toast .vs-done{display:flex!important;gap:9px;align-items:center}
+  .page[data-vs="empty"] .v-toast .vs-empty,
+  .page[data-vs="loading"] .v-toast .vs-loading{display:flex!important;gap:9px;align-items:center}
+  /* ---- CHOICE 17: empty state with guidance, loading with a spinner ---- */
+  .vstate{display:flex;align-items:center;gap:9px;justify-content:center;padding:14px 8px;
+    font-size:13px;color:var(--muted);text-align:center}
+  .vstate b{color:var(--text)}
+  .vstate .kbd{font-family:var(--mono);font-size:11.5px;background:var(--panel-2);border:1px solid var(--line);
+    border-radius:5px;padding:1px 6px;color:var(--muted)}
+  .spinner{width:15px;height:15px;border:2px solid var(--line);border-top-color:var(--accent);
+    border-radius:50%;animation:spin .8s linear infinite;flex:none}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px;
+    box-shadow:0 1px 2px rgba(48,30,90,.05),0 6px 16px rgba(48,30,90,.07)}
+  .vhead{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .vpill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;
+    background:var(--ok-soft);color:var(--ok);border-radius:999px;padding:4px 11px}
+  .vmeta{font-family:var(--mono);font-size:11.5px;font-weight:400}
+  table.vtests{width:100%;border-collapse:collapse;margin-top:10px;table-layout:fixed}
+  table.vtests th{background:var(--panel-2);color:var(--faint);font-size:10.5px;font-weight:600;
+    text-transform:uppercase;letter-spacing:.05em;text-align:left;padding:5px 9px}
+  table.vtests td{padding:5px 9px;border-top:1px solid var(--line);font-family:var(--mono);font-size:12px}
+  table.vtests td.ok{color:var(--ok)}
+  .v-toast{position:sticky;bottom:14px;z-index:30;justify-content:center}
+  .v-toast .vcard{background:#2b2340;border-color:#2b2340;color:#fff;display:flex;gap:9px;align-items:center;
+    box-shadow:0 10px 26px rgba(30,20,60,.35);max-width:420px}
+  .v-toast .vpill{background:rgba(143,216,192,.16);color:#8fd8c0}
+  .v-toast .vmeta{color:#cfc7e6}
+  /* --frame-l / --frame-r are kept in sync with the frame's edges, so the
+     backdrop covers the device and not the browser window. */
+  .v-modal{position:fixed;top:0;bottom:0;left:var(--frame-l,0);right:var(--frame-r,0);
+    z-index:60;background:rgba(30,20,60,.42);align-items:center;justify-content:center;padding:20px}
+  .v-modal .vcard{max-width:520px;width:100%;max-height:calc(100vh - 40px);overflow:auto}
+  .vclose{font:inherit;font-size:13px;line-height:1;border:0;background:transparent;
+    color:var(--faint);cursor:pointer;margin-left:auto;min-width:32px;min-height:32px;
+    border-radius:8px;display:inline-flex;align-items:center;justify-content:center}
+  .vclose:hover{background:var(--panel-2);color:var(--text)}
+  .vclose:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+  .mobilebar{display:none}
+  .viewport[data-w="mobile"] .mobilebar{display:flex;gap:8px;align-items:center;
+    position:sticky;bottom:0;z-index:20;background:#fff;border-top:1px solid var(--line);
+    padding:10px 12px;box-shadow:0 -4px 14px rgba(48,30,90,.10)}
+  /* CHOICE 19 (M2): with the editor one tap away the bar only duplicated
+     the submit button and cost 56px of an 844px screen. */
+  .viewport[data-w="mobile"] .mobilebar{display:none}
+  /* ...and the collapse toggle becomes a TRAP on mobile: the action bar is
+     gone, so a collapsed editor would have no way back (the summon button
+     hides itself while collapsed). The sheet is the mobile editor model, so
+     the toggle has nothing to do here. The Ctrl-K hint goes with it — it
+     costs a whole wrapped line on a 390px bar. */
+  .viewport[data-w="mobile"] .topbar #collapse,
+  .viewport[data-w="mobile"] .topbar .kbd{display:none}
+  .mobilebar .mbtn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:10px;
+    font:inherit;font-size:13px;font-weight:600;min-height:40px;cursor:pointer}
+  .mobilebar .m-run{flex:1;background:transparent;color:var(--muted);border:1px solid var(--line)}
+  .mobilebar .m-sub{flex:2;background:var(--accent);color:var(--accent-fg)}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="bar">
+    <h1>Statement sahifasi — bosqichma-bosqich qurilish</h1>
+    <span class="pill">20 / 20</span>
+    <label class="rng">Radius
+      <input type="range" id="rad" min="0" max="28" step="2" value="16">
+      <b id="radval">16px</b>
+    </label>
+    <label class="rng">O‘lchov
+      <input type="range" id="meas" min="45" max="100" step="5" value="70">
+      <b id="measval">70 belgi</b>
+    </label>
+    <div class="switch" role="group" aria-label="Qurilma kengligi">
+      <button data-w="desktop" id="w-desktop" class="on" aria-pressed="true">Desktop 1440</button>
+      <button data-w="tablet" id="w-tablet" aria-pressed="false">Planshet 834</button>
+      <button data-w="mobile" id="w-mobile" aria-pressed="false">Mobil 390</button>
+    </div>
+  </div>
+
+  <div class="bar2">
+    <span class="lbl">P0 moslik</span>
+    <span class="seg" id="seguser" role="group" aria-label="Foydalanuvchi holati">
+      <button data-u="in" class="on" aria-pressed="true" title="Tizimga kirgan">Kirgan</button>
+      <button data-u="guest" aria-pressed="false" title="Mehmon — faqat o‘qish">Mehmon</button>
+    </span>
+    <span class="seg" id="seged" role="group" aria-label="Tahlil holati">
+      <button data-ed="locked" class="on" aria-pressed="true" title="Ochilmagan — narx ko‘rinadi">Qulf</button>
+      <button data-ed="solved" aria-pressed="false" title="Masalani yechgan — bepul">Yechgan</button>
+      <button data-ed="closed" aria-pressed="false" title="Ochilgan, matn yopiq">Yopiq</button>
+      <button data-ed="open" aria-pressed="false" title="Ochilgan, matn ko‘rinadi">Ochiq</button>
+    </span>
+    <span class="seg" id="segbal" role="group" aria-label="Qvant balansi">
+      <button data-bal="12" class="on" aria-pressed="true" title="Yetarli emas — 402 yo‘li">12 Qvant</button>
+      <button data-bal="90" aria-pressed="false" title="Yetarli — ochiladi">90 Qvant</button>
+    </span>
+  </div>
+  <div class="viewport" data-w="desktop" id="vp">
+    <div class="page" data-vm="tab" data-vs="empty" data-u="in" data-ed="locked" id="page">
+      <!-- ---- CHOICE 3: thin icon rail instead of the 230px sidebar ---- -->
+      <nav class="rail">
+        <div class="rail-item on" title="Masalalar"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg></div>
+        <div class="rail-item" title="Urinishlar"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg></div>
+        <div class="rail-item" title="Testlar"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></div>
+        <div class="rail-sep"></div>
+        <div class="rail-item" title="Musobaqalar"><svg viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M5 6H3v2a3 3 0 0 0 3 3M19 6h2v2a3 3 0 0 1-3 3M10 17h4M9 20h6"/></svg></div>
+        <div class="rail-item" title="Arena"><svg viewBox="0 0 24 24"><path d="M14 4l6 6-3 3-6-6zM10 20l-6-6 3-3 6 6z"/></svg></div>
+        <div class="rail-item" title="Duel"><svg viewBox="0 0 24 24"><circle cx="8" cy="8" r="3"/><circle cx="16" cy="8" r="3"/><path d="M3 20c0-3 2-5 5-5s5 2 5 5M11 20c0-3 2-5 5-5s5 2 5 5"/></svg></div>
+        <div class="rail-sep"></div>
+        <div class="rail-item" title="Reyting"><svg viewBox="0 0 24 24"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg></div>
+      </nav>
+      <div class="body">
+        <div class="topbar">
+          <b style="font-size:14px">RankWant</b>
+          <span class="faint" style="font-size:13px">Masalalar</span>
+          <span style="flex:1"></span>
+          <span class="kbd">Ctrl K</span>
+          <button class="collapse" id="collapse">⟨ Yig‘ish</button>
+          <span class="badge" style="min-height:34px;padding:0 13px">Kirish</span>
+        </div>
+
+        <div class="split" id="split">
+          <!-- ---------- A: statement ---------- -->
+          <div class="pane-a">
+            <div class="vbox v-column" style="margin-bottom:14px">
+              <div class="vcard">
+                <div class="vs-empty"><div class="vstate"><span>Hali yuborilmadi.<br>
+                  Kod yozing va <span class="kbd">Yuborish</span> ni bosing.</span></div></div>
+                <div class="vs-loading"><div class="vstate"><span class="spinner"></span>
+                  <span><b>Navbatda</b> &#183; 2-o&#8216;rinda &#183; judge-go</span></div></div>
+                <div class="vs-done">
+                <div class="vhead"><span class="vpill">&#10003; Qabul qilindi <span class="vmeta">10/10 test &#183; 12 ms &#183; 1.2 MB &#183; C++ 23</span></span></div>
+                <table class="vtests">
+                  <thead><tr><th style="width:36px">#</th><th>Verdict</th><th>Vaqt</th><th>Xotira</th><th>Baho</th></tr></thead>
+                  <tbody><tr><td>1</td><td class="ok">OK</td><td>2 ms</td><td>1.1 MB</td><td>1/1</td></tr>
+                    <tr><td>2</td><td class="ok">OK</td><td>3 ms</td><td>1.2 MB</td><td>1/1</td></tr>
+                    <tr><td>3</td><td class="ok">OK</td><td>1 ms</td><td>1.0 MB</td><td>1/1</td></tr>
+                    <tr><td>4</td><td class="ok">OK</td><td>4 ms</td><td>1.2 MB</td><td>1/1</td></tr></tbody>
+                </table>
+                </div>
+              </div>
+            </div>
+            <div class="tabs">
+              <span class="tab on">Tavsif</span><span class="tab">Urinishlar</span>
+              <span class="tab">Statistika</span><span class="tab">Yechganlar</span>
+              <span style="flex:1"></span>
+              <span class="vmodes" id="vmodes" role="group" aria-label="Natija ko‘rinishi" style="align-self:center">
+                <button data-vm="tab" class="on" title="Muharrir panelidagi tabda">Tab</button>
+                <button data-vm="column" title="Asosiy ustunda, to‘liq kenglikda">Ustun</button>
+                <button data-vm="toast" title="Qisqa xabar">Toast</button>
+                <button data-vm="modal" title="To‘liq ekran">Modal</button>
+              </span>
+              <span class="seg" id="segsec" role="group" aria-label="Bo‘limlar ajratilishi" style="align-self:center">
+                <button data-sec="space" class="on" title="Bo‘shliq bilan ajratish">Bo‘shliq</button>
+                <button data-sec="line" title="Chiziq bilan ajratish">Chiziq</button>
+                <button data-sec="card" title="Har bo‘lim alohida karta">Karta</button>
+              </span>
+            </div>
+            <!-- ---- CHOICE 4: two rows, priority-ordered ---- -->
+            <div class="head-1">
+              <span class="faint mono" style="font-size:12px">#0432</span>
+              <span class="h-title">Tarmoq modernizatsiyasi</span>
+              <span style="flex:1"></span>
+              <span class="chip-limit">2000 ms · 256 MB</span>
+              <span class="tsize" title="Matn o‘lchami · ⌘+ / ⌘−">
+                <span class="tlabel">Matn</span>
+                <button type="button" class="tbtn" id="tminus"
+                  aria-label="Matnni kichraytirish" title="Matnni kichraytirish · Ctrl −">A−</button>
+                <span class="tval" id="tval">16px</span>
+                <button type="button" class="tbtn" id="tplus"
+                  aria-label="Matnni kattalashtirish" title="Matnni kattalashtirish · Ctrl +">A+</button>
+              </span>
+            </div>
+            <div class="head-2">
+              <span class="badge">2100</span>
+              <span class="badge b-ok">Murakkab</span>
+              <span class="badge">graf</span>
+              <span class="badge">DSU</span>
+              <span class="badge">LCA</span>
+              <span class="badge">offline so‘rovlar</span>
+              <span class="stat">127 yechdi · 891 urinish · 14%</span>
+            </div>
+            <!-- ---- P0 parity: ProblemActions (page.tsx:187) ----
+                 The accessible name contains the visible text — the
+                 platform learned this the hard way (WCAG 2.5.3, caught by
+                 Lighthouse): a screen-reader user could not say the number
+                 they could see. -->
+            <div class="actions" id="actions">
+              <button type="button" class="act-fav" id="fav" aria-pressed="false">☆ Sevimlilarga</button>
+              <span class="votes" role="group" aria-label="Ovoz berish">
+                <button type="button" class="act-vote" id="vup" aria-pressed="false"
+                  aria-label="Yoqdi — ▲ 12" title="Masala yoqdimi?">▲ 12</button>
+                <button type="button" class="act-vote" id="vdown" aria-pressed="false"
+                  aria-label="Yoqmadi — ▼ 3" title="Masala yoqmadi">▼ 3</button>
+              </span>
+              <span class="rating">
+                <span class="faint" id="rsum">4.6 · 38 baho</span>
+                <span class="stars" role="group" aria-label="Masalaga baho">
+                  <button type="button" data-score="1" aria-label="1 ball bilan baholash">★</button>
+                  <button type="button" data-score="2" aria-label="2 ball bilan baholash">★</button>
+                  <button type="button" data-score="3" aria-label="3 ball bilan baholash">★</button>
+                  <button type="button" data-score="4" aria-label="4 ball bilan baholash">★</button>
+                  <button type="button" data-score="5" aria-label="5 ball bilan baholash">★</button>
+                </span>
+              </span>
+            </div>
+            <p class="sec-chips" role="group" aria-label="Shart bo‘limlari">
+              <button type="button" data-jump="sec-desc" class="on">Tavsif</button>
+              <button type="button" data-jump="sec-in">Kirish</button>
+              <button type="button" data-jump="sec-out">Chiqish</button>
+              <button type="button" data-jump="sec-limits">Cheklovlar</button>
+              <button type="button" data-jump="sec-notes">Izohlar</button>
+              <button type="button" data-jump="samples">Namunalar</button>
+            </p>
+            <div class="card" id="stmtcard" data-sec="space">
+              <section class="sec" id="sec-desc">
+                <p>«RankWant» telekommunikatsiya kompaniyasi mamlakat bo‘ylab
+                  <b>N</b> ta serverdan iborat tarmoqni modernizatsiya qilmoqda. Serverlar
+                  <b>1</b> dan <b>N</b> gacha butun sonlar bilan raqamlangan. Serverlar o‘rtasida
+                  <b>M</b> ta ikki tomonlama aloqa kanali mavjud bo‘lib, <i>i</i>-kanal
+                  <b>u</b><sub>i</sub> va <b>v</b><sub>i</sub> serverlarini bog‘laydi va uning
+                  o‘tkazuvchanligi <b>w</b><sub>i</sub> megabit/sekundga teng.</p>
+
+                <p>Tarmoqda bir vaqtning o‘zida bir nechta kanal bir xil juftlikni bog‘lashi
+                  mumkin (multi-graf), ba’zi serverlar esa umuman bog‘lanmagan bo‘lishi mumkin.
+                  Kanallar o‘zaro <b>yo‘l</b> hosil qiladi: yo‘l — bu serverlar ketma-ketligi
+                  bo‘lib, qo‘shni serverlar o‘rtasida kanal mavjud va hech bir server ikki marta
+                  uchramaydi.</p>
+
+                <p><b>Yo‘lning o‘tkazuvchanligi</b> deb o‘sha yo‘ldagi kanallar
+                  o‘tkazuvchanliklarining eng kichigiga aytiladi. Masalan, o‘tkazuvchanliklari
+                  <span class="mono">12</span>, <span class="mono">7</span> va
+                  <span class="mono">20</span> bo‘lgan uchta kanaldan iborat yo‘lning
+                  o‘tkazuvchanligi <span class="mono">7</span> ga teng.</p>
+
+                <p>Muhandislar ikki turdagi amalni bajaradi. <b>Yangilash</b> amalida
+                  <i>k</i>-kanalning o‘tkazuvchanligi yangi <b>x</b> qiymatiga o‘zgartiriladi.
+                  <b>So‘rov</b> amalida <b>a</b> va <b>b</b> serverlari beriladi va ular o‘rtasidagi
+                  barcha yo‘llar ichidan o‘tkazuvchanligi <b>eng katta</b> bo‘lganini topish talab
+                  qilinadi — bu adabiyotda <i>eng keng yo‘l</i> (bottleneck path) deb ataladi.</p>
+
+                <p>Dastlabki holatda kanallar kiritilish tartibida raqamlanadi: birinchi kiritilgan
+                  kanal <span class="mono">1</span>-raqamli, ikkinchisi <span class="mono">2</span>-raqamli
+                  va hokazo. Yangilash amali kanal raqamini <b>o‘zgartirmaydi</b> — ya’ni
+                  raqamlar butun masala davomida barqaror qoladi.</p>
+
+                <div class="note-inline">
+                  <b>Diqqat.</b> Agar <b>a = b</b> bo‘lsa, javob <b>cheksiz katta</b> deb
+                  hisoblanadi va u <span class="mono">-2</span> ko‘rinishida chiqariladi. Agar
+                  <b>a</b> va <b>b</b> o‘rtasida umuman yo‘l bo‘lmasa, javob
+                  <span class="mono">-1</span> bo‘ladi.
+                </div>
+
+                <!-- P0 parity (gaps 5.1): the model has no `constraints`
+                     field — constraints arrive inside `statement`, so this
+                     is part of the description, not a section of its own.
+                     The time/memory limits stay a header badge, which is
+                     where page.tsx puts them. -->
+                <div class="sub-limits" id="sec-limits">
+                  <div class="h-sub">Cheklovlar</div>
+                  <div class="samples"><table class="samples-t">
+                    <thead><tr><th>Cheklov</th><th>Qiymat</th></tr></thead>
+                    <tbody>
+                      <tr><td class="lead">Serverlar soni</td>
+                        <td><div class="cell plain"><span class="math">1 ≤ N ≤ 200 000</span></div></td></tr>
+                      <tr><td class="lead">Kanallar soni</td>
+                        <td><div class="cell plain"><span class="math">0 ≤ M ≤ 200 000</span></div></td></tr>
+                      <tr><td class="lead">Amallar soni</td>
+                        <td><div class="cell plain"><span class="math">1 ≤ Q ≤ 200 000</span></div></td></tr>
+                      <tr><td class="lead">O‘tkazuvchanlik</td>
+                        <td><div class="cell plain"><span class="math">1 ≤ w, x ≤ 10<span class="sup">9</span></span></div></td></tr>
+                    </tbody>
+                  </table></div>
+                </div>
+              </section>
+
+              <section class="sec" id="sec-in">
+                <div class="h-sub">Kiruvchi ma’lumot</div>
+                <p>Birinchi qatorda ikkita butun son — <b>N</b> (serverlar soni) va <b>M</b>
+                  (kanallar soni), bitta probel bilan ajratilgan.</p>
+                <p>Keyingi <b>M</b> ta qatorning har birida uchta butun son: <b>u</b><sub>i</sub>,
+                  <b>v</b><sub>i</sub>, <b>w</b><sub>i</sub> — <i>i</i>-kanal bog‘laydigan
+                  serverlar va uning o‘tkazuvchanligi. Kanallar aynan shu tartibda raqamlanadi.</p>
+                <p>Keyingi qatorda bitta butun son — <b>Q</b> (amallar soni).</p>
+                <p>Keyingi <b>Q</b> ta qatorning har biri quyidagi ikki shakldan birida bo‘ladi:</p>
+                <ul>
+                  <li><span class="mono">U k x</span> — <i>k</i>-kanalning o‘tkazuvchanligini
+                    <b>x</b> ga o‘zgartirish (<span class="mono">1 ≤ k ≤ M</span>);</li>
+                  <li><span class="mono">S a b</span> — <b>a</b> va <b>b</b> serverlari
+                    o‘rtasidagi eng keng yo‘lni topish.</li>
+                </ul>
+                <p>Barcha sonlar butun. Qatorlar orasida bo‘sh qatorlar bo‘lmaydi.</p>
+              </section>
+
+              <section class="sec" id="sec-out">
+                <div class="h-sub">Chiquvchi ma’lumot</div>
+                <p>Har bir <span class="mono">S</span> amali uchun <b>alohida qatorda</b> bitta butun
+                  son chiqaring:</p>
+                <ul>
+                  <li>eng keng yo‘lning o‘tkazuvchanligi;</li>
+                  <li><span class="mono">-2</span> — agar <b>a = b</b> bo‘lsa;</li>
+                  <li><span class="mono">-1</span> — agar <b>a</b> va <b>b</b> o‘rtasida
+                    yo‘l mavjud bo‘lmasa.</li>
+                </ul>
+                <p><span class="mono">U</span> amallari hech narsa chiqarmaydi. Javoblar kiritilish
+                  tartibida chiqarilishi shart.</p>
+              </section>
+
+              <section class="sec" id="sec-notes">
+                <div class="h-sub">Izohlar</div>
+                <ol>
+                  <li><b>Multi-graf.</b> Bir juftlik o‘rtasida bir nechta kanal bo‘lishi mumkin;
+                    ularning hammasi alohida kanal sifatida hisobga olinadi va har biri o‘z
+                    raqamiga ega.</li>
+                  <li><b>Izolyatsiya.</b> Ayrim serverlar hech qanday kanalga ulanmagan bo‘lishi
+                    mumkin — ularga so‘rov kelsa javob <span class="mono">-1</span>.</li>
+                  <li><b>Murakkablik.</b> Yechim <span class="math">O((N + M + Q) log N)</span> dan
+                    sekin ishlamasligi kerak; <span class="math">O(Q · M)</span> yechim vaqt
+                    chegarasidan o‘tmaydi.</li>
+                  <li><b>Xotira.</b> 256 MB — grafning to‘liq matritsasini saqlash mumkin emas.</li>
+                </ol>
+              </section>
+            </div>
+            <!-- ---- CHOICE 5: sample table, flexible width, per-cell copy ---- -->
+            <p class="sec-label" id="samples">Namunalar</p>
+            <div class="samples">
+              <table class="samples-t">
+                <thead><tr><th class="th-idx">#</th><th>Kirish</th><th>Chiqish</th>
+                  <th class="th-run" aria-label="Sinash">&#9654;</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td class="idx">1</td>
+                    <td><div class="cell"><pre class="io">4 3
+1 2 10
+2 3 20
+3 4 5
+2
+S 1 4
+S 1 3</pre>
+                      <button class="cp" title="Kirishni nusxalash">⧉</button></div></td>
+                    <td><div class="cell"><pre class="io">5
+10</pre>
+                      <button class="cp" title="Chiqishni nusxalash">⧉</button></div></td>
+                    <td class="run"><button class="runbtn" data-run="1"
+                    title="1-namunani sinash" aria-label="1-namunani sinash">&#9654;</button></td>
+                </tr>
+                  <tr class="runrow" data-for="1" hidden><td colspan="4" style="border-top:0;padding:0">
+                    <div class="runres">1-namuna: namunada o&#8216;tdi &#183; 0.03 s</div></td></tr>
+                  <tr>
+                    <td class="idx">2</td>
+                    <td><div class="cell"><pre class="io">5 2
+1 2 7
+3 4 9
+3
+S 1 4
+S 1 1
+S 2 1</pre>
+                      <button class="cp" title="Kirishni nusxalash">⧉</button></div></td>
+                    <td><div class="cell"><pre class="io">-1
+-2
+7</pre>
+                      <button class="cp" title="Chiqishni nusxalash">⧉</button></div></td>
+                    <td class="run"><button class="runbtn" data-run="2"
+                    title="2-namunani sinash" aria-label="2-namunani sinash">&#9654;</button></td>
+                </tr>
+                  <tr class="runrow" data-for="2" hidden><td colspan="4" style="border-top:0;padding:0">
+                    <div class="runres">2-namuna: namunada o&#8216;tdi &#183; 0.03 s</div></td></tr>
+                  <tr>
+                    <td class="idx">3</td>
+                    <td><div class="cell"><pre class="io">3 4
+1 2 5
+1 2 9
+2 3 4
+1 3 6
+2
+S 1 3
+S 2 1</pre>
+                      <button class="cp" title="Kirishni nusxalash">⧉</button></div></td>
+                    <td><div class="cell"><pre class="io">6
+9</pre>
+                      <button class="cp" title="Chiqishni nusxalash">⧉</button></div></td>
+                    <td class="run"><button class="runbtn" data-run="3"
+                    title="3-namunani sinash" aria-label="3-namunani sinash">&#9654;</button></td>
+                </tr>
+                  <tr class="runrow" data-for="3" hidden><td colspan="4" style="border-top:0;padding:0">
+                    <div class="runres">3-namuna: namunada o&#8216;tdi &#183; 0.03 s</div></td></tr>
+                  <tr>
+                    <td class="idx">4</td>
+                    <td><div class="cell"><pre class="io">4 4
+1 2 3
+2 3 3
+3 4 3
+1 4 1
+4
+S 1 4
+U 4 10
+S 1 4
+S 2 4</pre>
+                      <button class="cp" title="Kirishni nusxalash">⧉</button></div></td>
+                    <td><div class="cell"><pre class="io">3
+10
+3</pre>
+                      <button class="cp" title="Chiqishni nusxalash">⧉</button></div></td>
+                    <td class="run"><button class="runbtn" data-run="4"
+                    title="4-namunani sinash" aria-label="4-namunani sinash">&#9654;</button></td>
+                </tr>
+                  <tr class="runrow" data-for="4" hidden><td colspan="4" style="border-top:0;padding:0">
+                    <div class="runres bad">4-namuna: noto&#8216;g&#8216;ri javob &#183; 0.03 s &#183; 1-testda to&#8216;xtadi</div></td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- ---- P0 parity: Editorial (page.tsx:247, ADR-0013) ----
+                 The spoiler gate, not a paywall. Solved / staff get in
+                 free, everyone else pays `editorial_price` Qvant, guests
+                 see a login prompt. The body lives in a <template>: the
+                 serializer does not send the text while the gate is
+                 closed, so the prototype must not have it in the
+                 document either — frontend hiding protects nothing. -->
+            <div class="card ed" id="editorial">
+              <div class="ed-head">
+                <span>Yechim tahlili</span>
+                <span style="flex:1"></span>
+                <span class="access" id="edaccess" title="editorial_state.access">locked</span>
+              </div>
+              <p class="ed-anon faint" style="margin:8px 0 0">Tahlilni ko‘rish uchun
+                <a href="#" class="ed-login">tizimga kiring</a>.</p>
+              <div class="ed-locked">
+                <p class="faint" style="margin:8px 0 10px">Masalani yechganlarga tahlil
+                  <b>bepul</b> ochiladi. Sabrsizlik uchun — <b>30 Qvant</b>.</p>
+                <button type="button" class="btn btn-quiet" id="edunlock">30 Qvantga ochish</button>
+                <span class="ed-err" id="ederr" role="status"></span>
+              </div>
+              <p class="ed-closed faint" style="margin:8px 0 0">
+                <span class="ed-hint-solved">Masalani yechgansiz — tahlil bepul ochildi.</span>
+                <span class="ed-hint-open">Tahlil ochilgan.</span>
+                <button type="button" class="ed-toggle" id="edshow">Ko‘rsatish</button>
+              </p>
+              <div class="ed-open">
+                <div class="cell"><div class="ed-text" id="edbody"></div>
+                  <button class="cp" id="edcopy" title="Tahlilni nusxalash"
+                    aria-label="Tahlilni nusxalash">⧉</button></div>
+                <button type="button" class="ed-toggle" id="edhide">Yashirish</button>
+              </div>
+              <template id="edtext">
+                <p>Tarmoq — multi-graf: bir juftlik o‘rtasida bir nechta kanal bo‘lishi
+                  mumkin. So‘rovga javob berish uchun ikki server o‘rtasidagi
+                  <b>eng keng yo‘l</b>ni topish kerak. Kanallar soni <span class="mono">M</span>,
+                  amallar soni <span class="mono">Q</span> — ikkalasi ham
+                  <span class="mono">200 000</span> gacha, shuning uchun har so‘rovda grafni
+                  qaytadan ko‘rish <span class="mono">O(Q · M)</span> vaqt chegarasidan o‘tmaydi.</p>
+                <p>Kalit kuzatuv: eng keng yo‘l <b>maksimal qamrov daraxti</b> ustida
+                  yechiladi. Daraxt qurilgach ikki server orasidagi eng keng yo‘l — o‘sha
+                  daraxtdagi yagona yo‘l, javob esa uning minimumi. Yangilash uchun
+                  daraxt kesimida LCA va segment daraxti ishlatiladi.</p>
+                <p>Diqqat: Dijkstra bu yerda <b>noto‘g‘ri</b> javob beradi — u eng qisqa
+                  yo‘lni topadi, masala esa eng keng yo‘lni so‘raydi.</p>
+                <div class="code">Kruskal(M) -> daraxt
+LCA + yo‘ldagi minimum
+har so‘rovda: min(yo‘l(a, b))</div>
+              </template>
+            </div>
+          </div>
+
+          <div class="handle" id="handle" role="separator" aria-orientation="vertical"
+            tabindex="0" aria-label="Panellar kengligini o‘zgartirish"
+            aria-valuemin="34" aria-valuemax="80" aria-valuenow="58"
+            title="Sudrab yoki ← → bilan o‘lchamni o‘zgartiring"></div>
+
+          <!-- ---------- B: solution ---------- -->
+          <div class="pane-b" id="pane-b">
+            <div class="grab" id="grab" role="separator" aria-orientation="horizontal"
+              tabindex="0" aria-label="Muharrir balandligini o‘zgartirish"
+              aria-valuemin="40" aria-valuemax="92" aria-valuenow="62"
+              title="Sudrab yoki ↑ ↓ bilan balandlikni o‘zgartiring"><i></i></div>
+            <div class="card" style="display:flex;flex-direction:column;gap:11px;min-height:100%">
+              <div style="display:flex;align-items:center;gap:9px">
+                <b style="font-size:15px">Yechim</b>
+                <span style="flex:1"></span>
+                <span class="badge" style="min-height:36px;padding:0 12px">C++ 23 ▾</span>
+              </div>
+              <div class="code" style="min-height:230px">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+  ios::sync_with_stdio(false);
+  cin.tie(nullptr);
+
+  int n, m;
+  cin &gt;&gt; n &gt;&gt; m;
+
+  // TODO: DSU + maximum spanning forest + LCA for bottleneck queries
+
+  return 0;
+}</div>
+              <div style="display:flex;gap:8px;align-items:center">
+                <button class="btn btn-primary" id="submit" style="flex:1">Yuborish</button>
+                <span class="btn btn-quiet">Namunada sinash</span>
+              </div>
+              <div class="vbox v-tab">
+                <div class="vcard">
+                  <div class="vs-empty"><div class="vstate"><span>Hali yuborilmadi.<br>
+                  Kod yozing va <span class="kbd">Yuborish</span> ni bosing.</span></div></div>
+                  <div class="vs-loading"><div class="vstate"><span class="spinner"></span>
+                  <span><b>Navbatda</b> &#183; 2-o&#8216;rinda &#183; judge-go</span></div></div>
+                  <div class="vs-done">
+                    <div class="vhead"><span class="vpill">&#10003; Qabul qilindi
+                      <span class="vmeta">10/10 test &#183; 12 ms &#183; 1.2 MB &#183; C++ 23</span></span></div>
+                    <table class="vtests">
+                      <thead><tr><th style="width:36px">#</th><th>Verdict</th><th>Vaqt</th></tr></thead>
+                      <tbody><tr><td>1</td><td class="ok">OK</td><td>2 ms</td></tr>
+                        <tr><td>2</td><td class="ok">OK</td><td>3 ms</td></tr>
+                        <tr><td>3</td><td class="ok">OK</td><td>1 ms</td></tr></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="vbox v-toast" style="padding:0 18px 14px">
+          <div class="vcard">
+            <div class="vs-empty"><span class="vmeta">Hali yuborilmadi</span></div>
+            <div class="vs-loading"><span class="spinner"></span><span class="vmeta">Navbatda &#183; 2-o&#8216;rinda</span></div>
+            <div class="vs-done"><span class="vpill">&#10003; Qabul qilindi</span>
+              <span class="vmeta">10/10 test &#183; 12 ms</span></div>
+          </div>
+        </div>
+        <div class="vbox v-modal" id="vmodal" role="dialog" aria-modal="true"
+          aria-labelledby="vmodaltitle">
+          <div class="vcard">
+            <div class="vhead"><span class="vpill" id="vmodaltitle">Hali yuborilmadi</span>
+              <button type="button" class="vclose" id="vclose"
+                aria-label="Natijani yopish" title="Yopish · Esc">&#10005;</button></div>
+            <div class="vs-empty"><div class="vstate"><span>Hali yuborilmadi.<br>
+                  Kod yozing va <span class="kbd">Yuborish</span> ni bosing.</span></div></div>
+            <div class="vs-loading"><div class="vstate"><span class="spinner"></span>
+                  <span><b>Navbatda</b> &#183; 2-o&#8216;rinda &#183; judge-go</span></div></div>
+            <div class="vs-done">
+            <table class="vtests">
+              <thead><tr><th style="width:36px">#</th><th>Verdict</th><th>Vaqt</th><th>Xotira</th></tr></thead>
+              <tbody><tr><td>1</td><td class="ok">OK</td><td>2 ms</td><td>1.1 MB</td></tr>
+                <tr><td>2</td><td class="ok">OK</td><td>3 ms</td><td>1.2 MB</td></tr>
+                <tr><td>3</td><td class="ok">OK</td><td>1 ms</td><td>1.0 MB</td></tr></tbody>
+            </table>
+            </div>
+          </div>
+        </div>
+        <button class="kodfab" id="kodfab" aria-expanded="false" aria-controls="pane-b">
+          <span class="mono">&lt;/&gt;</span> Kod
+        </button>
+        <div class="mobilebar">
+          <button class="mbtn m-run">Namunada sinash</button>
+          <button class="mbtn m-sub">Yuborish</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="caption">1–19 tanlov qo‘llandi. <b>Planshet va mobil</b>da muharrir pastdan varaq bo‘lib chiqadi — «&lt;/&gt; Kod» tugmasini bosing; mobil­da ustidagi chiplar bo‘limlar orasida sakraydi.</div>
+
+  <div class="log">
+    <h2>Qarorlar jurnali — 20 bosqich</h2>
+    <ol>
+      <li class="done"><b>1.</b> Tuzilma — <b>ikki ustun + o‘lchami o‘zgaradigan split</b></li>
+      <li class="done"><b>2.</b> Split — <b>58/42 + yig‘ish tugmasi</b></li>
+      <li class="done"><b>3.</b> Chrome — <b>yupqa rels (56px), ikonka + tooltip</b></li>
+      <li class="done"><b>4.</b> Sarlavha — <b>ikki qator, ustuvorlik bilan</b></li>
+      <li class="done"><b>5.</b> Namuna — <b>jadval, har katakda nusxalash tugmasi</b></li>
+      <li class="done"><b>6.</b> Tipografiya — <b>16px / 1.7</b></li>
+      <li class="done"><b>7.</b> Kod shrifti — <b>14px / 1.6</b></li>
+      <li class="done"><b>8.</b> Inline matematika — <b>chip</b></li>
+      <li class="done"><b>9.</b> O‘lcham boshqaruvi — <b>sarlavhada + yorliq + klaviatura</b></li>
+      <li class="done"><b>10.</b> Karta — <b>hairline + yumshoq soya</b></li>
+      <li class="done"><b>11.</b> Bo‘limlararo ajratish — <b>foydalanuvchi almashtiradi (3 rejim)</b></li>
+      <li class="done"><b>12.</b> Radius — <b>slider (foydalanuvchi sozlaydi)</b></li>
+      <li class="done"><b>13.</b> Matn kengligi — <b>o‘lchov slider (foydalanuvchi sozlaydi)</b></li>
+      <li class="done"><b>14.</b> Namuna harakati — <b>har namunada ikonka-Run, natija inline</b></li>
+      <li class="done"><b>15.</b> Yuborish tugmasi — <b>muharrir panelida (V1)</b>; mobil sticky qismi 19-bosqichda olib tashlandi</li>
+      <li class="done"><b>16.</b> Natija ko‘rinishi — <b>foydalanuvchi almashtiradi (4 rejim: Tab / Ustun / Toast / Modal)</b></li>
+      <li class="done"><b>17.</b> Bo‘sh / yuklanish — <b>matn + yo‘naltirish + spinner</b></li>
+      <li class="done"><b>18.</b> Planshet (834px) — <b>avto-yig‘ish + pastdan varaq</b> (shart to‘liq kenglikda, muharrir chaqiriladi)</li>
+      <li class="done"><b>19.</b> Mobil (390px) — <b>varaq mexanizmi (M2) + bo‘lim navigatsiyasi (M4)</b>; pastdagi panel olib tashlandi</li>
+      <li class="done"><b>20.</b> Tegish maydoni va kontrast — <b>WCAG 2.5.8 (24×24) + AA (4.5:1)</b></li>
+    </ol>
+  </div>
+
+  <div class="log">
+    <h2>P0 moslik — platforma kodi bilan tenglashtirish</h2>
+    <ol>
+      <li class="done"><b>Editorial</b> — ADR-0013 spoyler darvozasi
+        (<code>page.tsx:247</code>). To‘rt ko‘rinish holati; matn faqat darvoza
+        ochilganda hujjatga tushadi, chunki serializer uni boshqa holda umuman
+        yubormaydi.</li>
+      <li class="done"><b>Amallar paneli</b> — sevimli + ovoz ▲▼ + yulduzli baho
+        (<code>page.tsx:187</code>, <code>ProblemActions.tsx</code>). Mehmon
+        holatida sevimli va yulduz yashiriladi, ovozlar <code>disabled</code>.</li>
+      <li class="done"><b>«Cheklovlar»</b> — endi alohida bo‘lim emas: modelda
+        <code>constraints</code> maydoni yo‘q, cheklovlar <code>statement</code>
+        ichida keladi. Limitlar sarlavhada badge (<code>page.tsx:137-140</code>).</li>
+    </ol>
+    <p class="faint" style="font-size:12.5px;margin:10px 0 0">
+      <code>editorial_state.access</code> — 6 qiymat: <code>anonymous</code>,
+      <code>staff</code>, <code>solved</code>, <code>purchased</code>,
+      <code>locked</code>, <code>free</code>. Almashtirgichda: Mehmon →
+      <code>anonymous</code> · Qulf → <code>locked</code> · Yechgan →
+      <code>solved</code> · Yopiq → <code>free</code> · Ochiq →
+      <code>purchased</code>.</p>
+  </div>
+</div>
+<script>
+  (function () {
+    var vp = document.getElementById("vp");
+    var buttons = document.querySelectorAll(".switch button");
+    function pick(active) {
+      buttons.forEach(function (b) {
+        var on = b === active;
+        b.classList.toggle("on", on);
+        b.setAttribute("aria-pressed", String(on));
+      });
+      vp.setAttribute("data-w", active.dataset.w);
+    }
+    buttons.forEach(function (b) {
+      b.addEventListener("click", function () { pick(b); });
+    });
+    var current = document.querySelector(".switch button.on");
+    if (current) pick(current);
+  })();
+
+  /* draggable split — the ratio is remembered (choice 1) */
+  (function () {
+    var split = document.getElementById('split');
+    var handle = document.getElementById('handle');
+    var left = document.querySelector('.pane-a');
+    var ratio = parseFloat(localStorage.getItem('rw:split') || '58');
+    function apply() { split.style.setProperty('--split', ratio + '%'); }
+    apply();
+    handle.addEventListener('mousedown', function (e) {
+      e.preventDefault();
+      handle.classList.add('drag');
+      var move = function (ev) {
+        var r = split.getBoundingClientRect();
+        ratio = Math.min(80, Math.max(34, ((ev.clientX - r.left) / r.width) * 100));
+        apply();
+      };
+      var up = function () {
+        handle.classList.remove('drag');
+        document.removeEventListener('mousemove', move);
+        document.removeEventListener('mouseup', up);
+        localStorage.setItem('rw:split', ratio.toFixed(1));
+      };
+      document.addEventListener('mousemove', move);
+      document.addEventListener('mouseup', up);
+    });
+  })();
+
+  /* submit state machine (choice 17): empty -> loading -> done.
+     The state lives on #page, so EVERY presentation mode follows it —
+     before this only the Tab mode did, and the other three showed a
+     hard-coded "Qabul qilindi" before anything had been submitted. */
+  (function () {
+    var page = document.getElementById("page");
+    var btn = document.getElementById("submit");
+    if (!btn || !page) return;
+    var timer = null;
+    var TITLES = { empty: "Hali yuborilmadi", loading: "Tekshirilmoqda", done: "Natija" };
+    function setState(s) {
+      page.setAttribute("data-vs", s);
+      var title = document.getElementById("vmodaltitle");
+      if (title) title.textContent = TITLES[s] || TITLES.done;
+    }
+    setState("empty");
+    btn.addEventListener("click", function () {
+      // a second click must restart the wait, not race the first timer
+      if (timer) clearTimeout(timer);
+      setState("loading");
+      timer = setTimeout(function () { timer = null; setState("done"); }, 1400);
+    });
+  })();
+
+  /* choice 18: tablet (834px) — summon the editor as a bottom sheet.
+     The height lives in --sheet-h on #page so it cannot leak into desktop. */
+  (function () {
+    var page = document.getElementById("page");
+    var split = document.getElementById("split");
+    var fab = document.getElementById("kodfab");
+    var grab = document.getElementById("grab");
+    if (!fab || !page) return;
+
+    var saved = localStorage.getItem("rw:sheet");
+    if (saved) page.style.setProperty("--sheet-h", saved);
+
+    function paint(on) {
+      split.classList.toggle("sheet-open", on);
+      fab.setAttribute("aria-expanded", on ? "true" : "false");
+      fab.innerHTML = on
+        ? '<span class="mono">&lt;/&gt;</span> Yopish'
+        : '<span class="mono">&lt;/&gt;</span> Kod';
+    }
+    paint(false);
+
+    fab.addEventListener("click", function () {
+      paint(!split.classList.contains("sheet-open"));
+    });
+
+    // the collapse toggle owns the editor pane, so it owns the sheet too
+    document.addEventListener("rw:collapse", function (e) {
+      if (e.detail) paint(false);
+    });
+
+    if (grab) {
+      grab.addEventListener("mousedown", function (e) {
+        e.preventDefault();
+        var box = split.getBoundingClientRect();
+        var move = function (ev) {
+          var h = ((box.bottom - ev.clientY) / box.height) * 100;
+          h = Math.min(92, Math.max(40, h));
+          page.style.setProperty("--sheet-h", h.toFixed(1) + "%");
+        };
+        var up = function () {
+          document.removeEventListener("mousemove", move);
+          document.removeEventListener("mouseup", up);
+          localStorage.setItem("rw:sheet", page.style.getPropertyValue("--sheet-h"));
+        };
+        document.addEventListener("mousemove", move);
+        document.addEventListener("mouseup", up);
+      });
+    }
+  })();
+
+  /* text-size control (choice 9). Until now the A-/+ affordances were
+     decorative: no handler, no keyboard, and the readout had no id. */
+  (function () {
+    var page = document.getElementById("page");
+    var minus = document.getElementById("tminus");
+    var plus = document.getElementById("tplus");
+    var out = document.getElementById("tval");
+    if (!page || !minus || !plus || !out) return;
+    var MIN = 13, MAX = 22, cur = 16;
+
+    function paint(n) {
+      cur = Math.min(MAX, Math.max(MIN, n));
+      page.style.setProperty("--stmt-size", cur + "px");
+      out.textContent = cur + "px";
+      document.dispatchEvent(new CustomEvent("rw:textsize", { detail: cur }));
+      minus.disabled = cur <= MIN;
+      plus.disabled = cur >= MAX;
+      localStorage.setItem("rw:textsize", String(cur));
+    }
+    paint(parseInt(localStorage.getItem("rw:textsize") || "16", 10));
+    minus.addEventListener("click", function () { paint(cur - 1); });
+    plus.addEventListener("click", function () { paint(cur + 1); });
+    document.addEventListener("keydown", function (e) {
+      if (!e.ctrlKey && !e.metaKey) return;
+      if (e.key === "+" || e.key === "=") { e.preventDefault(); paint(cur + 1); }
+      else if (e.key === "-" || e.key === "_") { e.preventDefault(); paint(cur - 1); }
+    });
+  })();
+
+  /* per-cell copy (choice 5). The buttons existed but had no handler. */
+  (function () {
+    function legacy(text) {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.top = "-1000px";
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      document.body.removeChild(ta);
+      return ok;
+    }
+    document.querySelectorAll(".cp").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var cell = btn.closest(".cell");
+        var body = cell ? (cell.querySelector(".io, .ed-text") || cell) : null;
+        var text = body ? body.textContent : "";
+        var settle = function (ok) {
+          btn.classList.remove("done", "fail");
+          btn.classList.add(ok ? "done" : "fail");
+          var glyph = ok ? "\u2713" : "!";
+          btn.textContent = glyph;
+          btn.title = ok ? "Nusxalandi" : "Nusxalab bo\u2018lmadi \u2014 qo\u2018lda belgilang";
+          setTimeout(function () {
+            btn.classList.remove("done", "fail");
+            btn.textContent = "\u29c9";
+            btn.title = "Nusxalash";
+          }, 1200);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(
+            function () { settle(true); },
+            function () { settle(legacy(text)); }
+          );
+        } else {
+          settle(legacy(text));
+        }
+      });
+    });
+  })();
+
+  /* the drag handles answer to the keyboard too (WCAG 2.1.1).
+     A drag-only affordance has no keyboard equivalent otherwise. */
+  (function () {
+    var left = document.querySelector(".pane-a");
+    var split = document.getElementById("split");
+    var handle = document.getElementById("handle");
+    var grab = document.getElementById("grab");
+    var page = document.getElementById("page");
+    var clamp = function (v, lo, hi) { return Math.min(hi, Math.max(lo, v)); };
+
+    function keyed(el, read, step, write) {
+      if (!el) return;
+      el.addEventListener("keydown", function (e) {
+        var v = step(e.key, read());
+        if (v === null) return;
+        e.preventDefault();
+        write(v);
+      });
+    }
+
+    if (handle && left) {
+      var readSplit = function () { return parseFloat(localStorage.getItem("rw:split") || "58"); };
+      var writeSplit = function (v) {
+        split.style.setProperty("--split", v + "%");
+        handle.setAttribute("aria-valuenow", String(Math.round(v)));
+        localStorage.setItem("rw:split", v.toFixed(1));
+      };
+      handle.setAttribute("aria-valuenow", String(Math.round(readSplit())));
+      keyed(handle, readSplit, function (k, cur) {
+        if (k === "ArrowLeft") return clamp(cur - 2, 34, 80);
+        if (k === "ArrowRight") return clamp(cur + 2, 34, 80);
+        if (k === "Home") return 34;
+        if (k === "End") return 80;
+        return null;
+      }, writeSplit);
+    }
+
+    if (grab && page) {
+      var readSheet = function () {
+        return parseFloat((page.style.getPropertyValue("--sheet-h") || "62%").replace("%", ""));
+      };
+      var writeSheet = function (v) {
+        page.style.setProperty("--sheet-h", v + "%");
+        grab.setAttribute("aria-valuenow", String(Math.round(v)));
+        localStorage.setItem("rw:sheet", v + "%");
+      };
+      keyed(grab, readSheet, function (k, cur) {
+        /* the grab is the sheet's top edge: up means taller */
+        if (k === "ArrowUp") return clamp(cur + 2, 40, 92);
+        if (k === "ArrowDown") return clamp(cur - 2, 40, 92);
+        if (k === "Home") return 40;
+        if (k === "End") return 92;
+        return null;
+      }, writeSheet);
+    }
+  })();
+
+  /* verdict presentation switcher (choice 16). The modal needs a way out:
+     a close button, Escape, and a backdrop click. Closing returns to the last
+     inline mode rather than leaving the reader with nothing. */
+  (function () {
+    var page = document.getElementById("page");
+    var seg = document.getElementById("vmodes");
+    var modal = document.getElementById("vmodal");
+    var close = document.getElementById("vclose");
+    // a stored value is input, not truth: an unknown mode used to leave the
+    // page with no verdict view at all (data-vm matched no .vbox rule)
+    var MODES = ["tab", "column", "toast", "modal"];
+    var INLINE = ["tab", "column", "toast"];
+    function asMode(v, fallback) { return MODES.indexOf(v) >= 0 ? v : fallback; }
+    function asInline(v) { return INLINE.indexOf(v) >= 0 ? v : "tab"; }
+    var inline = asInline(localStorage.getItem("rw:verdictInline"));
+
+    function paint(mode) {
+      page.setAttribute("data-vm", mode);
+      if (mode !== "modal") {
+        inline = mode;
+        localStorage.setItem("rw:verdictInline", mode);
+      }
+      seg.querySelectorAll("button").forEach(function (b) {
+        b.classList.toggle("on", b.dataset.vm === mode);
+      });
+      setBackgroundInert(mode === "modal");
+      localStorage.setItem("rw:verdict", mode);
+    }
+
+    function dismiss() {
+      if (page.getAttribute("data-vm") !== "modal") return;
+      paint(inline);
+      var back = seg.querySelector('button[data-vm="' + inline + '"]');
+      if (back) back.focus();
+    }
+
+    /* A dialog that claims `aria-modal` must actually hold the focus:
+       the background goes inert, and Tab cycles inside the dialog. */
+    var bg = [];
+    function collectBackground() {
+      if (bg.length || !page) return;
+      page.querySelectorAll(":scope > .rail, :scope > .body > *").forEach(function (el) {
+        if (el !== modal) bg.push(el);
+      });
+    }
+    function setBackgroundInert(on) {
+      collectBackground();
+      bg.forEach(function (el) {
+        if (on) el.setAttribute("inert", ""); else el.removeAttribute("inert");
+      });
+    }
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Tab" || !modal || page.getAttribute("data-vm") !== "modal") return;
+      var f = [].slice.call(modal.querySelectorAll(
+        'button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])'
+      )).filter(function (el) { return el.offsetHeight > 0; });
+      if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (!modal.contains(document.activeElement)) { e.preventDefault(); first.focus(); return; }
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+
+    paint(asMode(localStorage.getItem("rw:verdict"), "tab"));
+
+    seg.querySelectorAll("button").forEach(function (b) {
+      b.addEventListener("click", function () {
+        paint(b.dataset.vm);
+        if (b.dataset.vm === "modal" && close) close.focus();
+      });
+    });
+
+    if (close) close.addEventListener("click", dismiss);
+    if (modal) {
+      modal.addEventListener("click", function (e) {
+        if (e.target === modal) dismiss();
+      });
+    }
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") dismiss();
+    });
+
+    /* the overlay is pinned to the frame's edges, so they have to be measured
+       and kept current when the device width or the window changes */
+    var vp = document.getElementById("vp");
+    function syncFrame() {
+      if (!vp) return;
+      var r = vp.getBoundingClientRect();
+      var root = document.documentElement.style;
+      root.setProperty("--frame-l", Math.round(r.left) + "px");
+      root.setProperty("--frame-r", Math.round(window.innerWidth - r.right) + "px");
+    }
+    syncFrame();
+    window.addEventListener("resize", syncFrame);
+    if (window.ResizeObserver && vp) new ResizeObserver(syncFrame).observe(vp);
+  })();
+
+  /* per-sample run (choice 14) - icon only, result inline */
+  (function () {
+    document.querySelectorAll(".runbtn").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var row = document.querySelector('.runrow[data-for="' + b.dataset.run + '"]');
+        if (row) row.hidden = !row.hidden;
+      });
+    });
+  })();
+
+  /* radius slider (choice 12) — a builder control, so the value can be
+     tried live before it is fixed. `--r` and `--r-sm` drive the prototype. */
+  (function () {
+    var rad = document.getElementById("rad");
+    var out = document.getElementById("radval");
+    var R_MIN = 0, R_MAX = 28, R_FALLBACK = 16;
+    // the slider bounds are UI; a stored value has to be clamped too,
+    // otherwise a bad value reaches the stylesheet as `NaNpx`
+    function clampR(v) {
+      var n = parseInt(v, 10);
+      if (!isFinite(n)) n = R_FALLBACK;
+      return Math.min(R_MAX, Math.max(R_MIN, n));
+    }
+    function paint(v) {
+      var n = clampR(v);
+      document.documentElement.style.setProperty("--r", n + "px");
+      document.documentElement.style.setProperty("--r-sm", Math.round(n * 0.625) + "px");
+      out.textContent = n + "px";
+      localStorage.setItem("rw:radius", String(n));
+    }
+    var saved = clampR(localStorage.getItem("rw:radius"));
+    rad.value = String(saved);
+    paint(saved);
+    rad.addEventListener("input", function () { paint(rad.value); });
+  })();
+
+  /* measure slider (choice 13) — 96 chars fit in 683px at 16px, so
+     1 char ≈ 7.11px there. The character count is the stable input; the
+     pixel value is derived, so it has to follow the statement size. */
+  (function () {
+    var el = document.getElementById("meas");
+    var out = document.getElementById("measval");
+    var page = document.getElementById("page");
+    var PX_PER_CHAR_AT_16 = 683 / 96;
+    var C_MIN = 45, C_MAX = 100, C_FALLBACK = 70;
+    function clampC(v) {
+      var n = parseInt(v, 10);
+      if (!isFinite(n)) n = C_FALLBACK;
+      return Math.min(C_MAX, Math.max(C_MIN, n));
+    }
+    function paint(v) {
+      var chars = clampC(v);
+      var size = parseFloat(page.style.getPropertyValue("--stmt-size")) || 16;
+      var px = chars * PX_PER_CHAR_AT_16 * (size / 16);
+      document.documentElement.style.setProperty("--measure", Math.round(px) + "px");
+      out.textContent = chars + " belgi";
+      localStorage.setItem("rw:measure", String(chars));
+    }
+    var saved = clampC(localStorage.getItem("rw:measure"));
+    el.value = String(saved);
+    paint(saved);
+    el.addEventListener("input", function () { paint(el.value); });
+    document.addEventListener("rw:textsize", function () { paint(el.value); });
+  })();
+
+  /* section-separation switcher (choice 11) — the reader decides */
+  (function () {
+    var card = document.getElementById("stmtcard");
+    var seg = document.getElementById("segsec");
+    var SECS = ["space", "line", "card"];
+    function asSec(v) { return SECS.indexOf(v) >= 0 ? v : "space"; }
+    function paint(mode) {
+      mode = asSec(mode);
+      card.setAttribute("data-sec", mode);
+      seg.querySelectorAll("button").forEach(function (b) {
+        b.classList.toggle("on", b.dataset.sec === mode);
+      });
+      localStorage.setItem("rw:sections", mode);
+    }
+    paint(localStorage.getItem("rw:sections"));
+    seg.querySelectorAll("button").forEach(function (b) {
+      b.addEventListener("click", function () { paint(b.dataset.sec); });
+    });
+  })();
+
+  /* in-document navigation for the long statement (choice 19, M4).
+     The chips are display:none outside mobile, so this is harmless at other
+     widths — and at desktop the pane does not scroll, so scrollTop stays 0. */
+  (function () {
+    var chips = document.querySelector(".sec-chips");
+    var pane = document.querySelector(".pane-a");
+    if (!chips || !pane) return;
+    var buttons = [].slice.call(chips.querySelectorAll("button"));
+
+    function mark(id) {
+      buttons.forEach(function (b) { b.classList.toggle("on", b.dataset.jump === id); });
+    }
+    function jump(id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      // 44px clears the sticky chips bar itself
+      pane.scrollTop += el.getBoundingClientRect().top - pane.getBoundingClientRect().top - 44;
+      mark(id);
+    }
+    buttons.forEach(function (b) {
+      b.addEventListener("click", function () { jump(b.dataset.jump); });
+    });
+
+    /* keep the active chip in step with the scroll position */
+    if (!window.IntersectionObserver) return;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) mark(e.target.id); });
+    }, { root: pane, rootMargin: "0px 0px -75% 0px" });
+    buttons.forEach(function (b) {
+      var el = document.getElementById(b.dataset.jump);
+      if (el) io.observe(el);
+    });
+  })();
+
+  /* ---- P0 parity: ProblemActions + Editorial (page.tsx:187 / :247) ----
+     Every state lives on #page, next to data-vm and data-vs, so the CSS
+     decides what is visible and nothing has to be repeated per view. */
+  (function () {
+    var page = document.getElementById("page");
+    if (!page) return;
+    var accessOut = document.getElementById("edaccess");
+    var body = document.getElementById("edbody");
+    var tpl = document.getElementById("edtext");
+    var err = document.getElementById("ederr");
+    var unlock = document.getElementById("edunlock");
+    var PRICE = 30;
+    var bal = 12;
+    var lastAccess = "closed";
+
+    function seg(id, attr, cb) {
+      var box = document.getElementById(id);
+      if (!box) return;
+      var btns = [].slice.call(box.querySelectorAll("button"));
+      btns.forEach(function (b) {
+        b.addEventListener("click", function () {
+          btns.forEach(function (o) {
+            var on = o === b;
+            o.classList.toggle("on", on);
+            o.setAttribute("aria-pressed", String(on));
+          });
+          cb(b.dataset[attr]);
+        });
+      });
+    }
+
+    /* access is the enum the serializer sends; the switcher maps onto it */
+    function paintAccess() {
+      if (!accessOut) return;
+      var u = page.getAttribute("data-u");
+      var ed = page.getAttribute("data-ed");
+      accessOut.textContent = u === "guest" ? "anonymous"
+        : ed === "locked" ? "locked"
+        : ed === "solved" ? "solved"
+        : ed === "closed" ? "free"
+        : "purchased";
+    }
+
+    /* ADR-0013: while the gate is closed the text is not in the document.
+       Cloning from the <template> is what "the API sent it" looks like. */
+    function fill() {
+      if (!body) return;
+      var open = page.getAttribute("data-ed") === "open";
+      if (open && !body.firstChild && tpl) {
+        body.appendChild(tpl.content.cloneNode(true));
+      } else if (!open) {
+        while (body.firstChild) body.removeChild(body.firstChild);
+      }
+    }
+
+    function setEd(v) {
+      page.setAttribute("data-ed", v);
+      if (v !== "open" && unlock) {
+        unlock.disabled = false;
+        unlock.textContent = PRICE + " Qvantga ochish";
+        if (err) err.textContent = "";
+      }
+      paintAccess();
+      fill();
+    }
+
+    var show = document.getElementById("edshow");
+    var hide = document.getElementById("edhide");
+    if (show) show.addEventListener("click", function () {
+      lastAccess = page.getAttribute("data-ed");
+      setEd("open");
+    });
+    if (hide) hide.addEventListener("click", function () {
+      setEd(lastAccess === "open" ? "closed" : lastAccess);
+    });
+
+    if (unlock) unlock.addEventListener("click", function () {
+      if (unlock.disabled) return;
+      if (bal < PRICE) {
+        /* the 402 branch: Editorial.tsx shows exactly this message */
+        if (err) err.textContent = "Hisobingizda " + bal +
+          " Qvant bor — kerak " + PRICE + ". Balansni almashtiring.";
+        return;
+      }
+      if (err) err.textContent = "";
+      unlock.disabled = true;
+      unlock.textContent = "Ochilmoqda…";
+      setTimeout(function () { setEd("open"); }, 700);
+    });
+
+    /* --- ProblemActions --- */
+    var fav = document.getElementById("fav");
+    var vup = document.getElementById("vup");
+    var vdown = document.getElementById("vdown");
+    var stars = [].slice.call(document.querySelectorAll(".actions .stars button"));
+    var rsum = document.getElementById("rsum");
+    var counts = { up: 12, down: 3 };
+    var mine = 0;
+    var avg = 4.6, votes = 38, myScore = 0;
+
+    function paintVotes() {
+      if (vup) {
+        vup.textContent = "▲ " + counts.up;
+        vup.setAttribute("aria-label", "Yoqdi — ▲ " + counts.up);
+        vup.setAttribute("aria-pressed", String(mine === 1));
+      }
+      if (vdown) {
+        vdown.textContent = "▼ " + counts.down;
+        vdown.setAttribute("aria-label", "Yoqmadi — ▼ " + counts.down);
+        vdown.setAttribute("aria-pressed", String(mine === -1));
+      }
+    }
+
+    /* a second click on the same arrow removes the vote — the platform
+       sends 0 in that case (ProblemActions.tsx vote()) */
+    function vote(v) {
+      var next = mine === v ? 0 : v;
+      if (mine === 1) counts.up -= 1;
+      if (mine === -1) counts.down -= 1;
+      if (next === 1) counts.up += 1;
+      if (next === -1) counts.down += 1;
+      mine = next;
+      paintVotes();
+    }
+    if (vup) vup.addEventListener("click", function () { vote(1); });
+    if (vdown) vdown.addEventListener("click", function () { vote(-1); });
+    if (fav) fav.addEventListener("click", function () {
+      var on = fav.getAttribute("aria-pressed") !== "true";
+      fav.setAttribute("aria-pressed", String(on));
+      fav.textContent = on ? "★ Sevimlilarda" : "☆ Sevimlilarga";
+    });
+
+    function paintStars() {
+      stars.forEach(function (b) {
+        b.classList.toggle("on", myScore > 0 && Number(b.dataset.score) <= myScore);
+      });
+      if (rsum) {
+        rsum.textContent = votes > 0
+          ? avg.toFixed(1) + " · " + votes + " baho"
+          : "Hali baho yo‘q";
+      }
+    }
+    stars.forEach(function (b) {
+      b.addEventListener("click", function () {
+        var s = Number(b.dataset.score);
+        var old = myScore;
+        if (old === 0) { avg = (avg * votes + s) / (votes + 1); votes += 1; }
+        else { avg = (avg * votes - old + s) / votes; }
+        myScore = s;
+        paintStars();
+      });
+    });
+
+    function paintUser() {
+      var guest = page.getAttribute("data-u") === "guest";
+      [vup, vdown].forEach(function (b) {
+        if (!b) return;
+        if (!b.dataset.tip) b.dataset.tip = b.title || "";
+        b.disabled = guest;
+        b.title = guest ? "Ovoz berish uchun tizimga kiring" : b.dataset.tip;
+      });
+      paintAccess();
+    }
+
+    seg("seguser", "u", function (v) {
+      page.setAttribute("data-u", v);
+      paintUser();
+    });
+    seg("seged", "ed", function (v) { setEd(v); });
+    seg("segbal", "bal", function (v) { bal = Number(v); });
+
+    paintVotes();
+    paintStars();
+    paintUser();
+    setEd(page.getAttribute("data-ed"));
+  })();
+
+  /* collapse / expand the editor pane — the ratio is kept (choice 2) */
+  (function () {
+    var split = document.getElementById('split');
+    var btn = document.getElementById('collapse');
+    var collapsed = localStorage.getItem('rw:editor') === 'collapsed';
+    function paint() {
+      split.classList.toggle('collapsed', collapsed);
+      btn.textContent = collapsed ? '⟩ Muharrirni ochish' : '⟨ Yig‘ish';
+      btn.setAttribute('aria-expanded', String(!collapsed));
+      localStorage.setItem('rw:editor', collapsed ? 'collapsed' : 'open');
+      // a collapsed editor has no sheet: leaving `sheet-open` behind made
+      // the summon button claim the sheet was open while it was display:none
+      document.dispatchEvent(new CustomEvent('rw:collapse', { detail: collapsed }));
+    }
+    paint();
+    btn.addEventListener('click', function () { collapsed = !collapsed; paint(); });
+  })();
+</script>
+</body>
+</html>
