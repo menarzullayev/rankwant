@@ -9,6 +9,7 @@ import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { fill, t } from "@/i18n/messages";
 import { VERDICT_FILTERS } from "@/lib/api";
+import { buildAttemptsHref } from "@/lib/problem-tabs";
 
 /** Sahifa o'lchami variantlari (S14). Backend `page_size` ni allaqachon
  *  qabul qiladi (`max_page_size=100`), ya'ni bu qo'shimcha API ishi
@@ -70,9 +71,8 @@ export function AttemptFilters({
 
   const href = useCallback(
     (next: Record<string, string | undefined>): Route => {
-      const params = new URLSearchParams();
-      //: `cursor` har filtr o'zgarishida tashlanadi: eski kursor yangi
-      //: ro'yxatning boshqa joyiga ishora qilardi.
+      //: `cursor` har filtr o'zgarishida tashlanadi (`buildAttemptsHref`
+      //: ichida): eski kursor yangi ro'yxatning boshqa joyiga ishora qilardi.
       const merged = {
         verdict,
         language,
@@ -83,10 +83,7 @@ export function AttemptFilters({
         cursor: undefined,
         ...next,
       };
-      for (const [key, value] of Object.entries(merged)) {
-        if (value) params.set(key, value);
-      }
-      return `/problems/${slug}/status${params.size ? `?${params}` : ""}` as Route;
+      return buildAttemptsHref(slug, merged) as Route;
     },
     [language, mine, ordering, size, slug, username, verdict],
   );
@@ -191,7 +188,7 @@ export function AttemptFilters({
         {activeCount > 0 && (
           <div className="flex flex-wrap items-center gap-2 text-theme-xs rw-faint">
             <span>{fill(t(locale, "attempts.activeFilters"), { count: activeCount })}</span>
-            <Link href={`/problems/${slug}/status` as Route} className="rw-accent-ink">
+            <Link href={buildAttemptsHref(slug, {}) as Route} className="rw-accent-ink">
               {t(locale, "attempts.clearFilters")}
             </Link>
           </div>

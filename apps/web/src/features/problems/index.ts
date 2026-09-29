@@ -11,10 +11,16 @@ export { FavouriteToggle } from "./components/FavouriteToggle";
 
 export { ProblemActions } from "./components/ProblemActions";
 
+export { ProblemEditorialPanel } from "./components/ProblemEditorialPanel";
+
 export { ProblemFilters } from "./components/ProblemFilters";
 export type { FilterTopic } from "./components/ProblemFilters";
 
 export { ProblemTabs } from "./components/ProblemTabs";
+
+export { ProblemSolversPanel } from "./components/ProblemSolversPanel";
+
+export { ProblemStatsPanel } from "./components/ProblemStatsPanel";
 
 export { ReportProblem } from "./components/ReportProblem";
 

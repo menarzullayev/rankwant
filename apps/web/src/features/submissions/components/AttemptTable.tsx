@@ -12,6 +12,7 @@ import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { dateTime, fill, t } from "@/i18n/messages";
 import { API_BASE, type Attempt } from "@/lib/api";
+import { buildAttemptsHref } from "@/lib/problem-tabs";
 
 /** Saralanadigan ustun → API `ordering` maydoni.
  *
@@ -92,17 +93,10 @@ export function AttemptTable({
 
   const href = useCallback(
     (next: Record<string, string | undefined>) => {
-      const params = new URLSearchParams();
-      // `cursor` ATAYLAB tashlanadi: tartib o'zgarsa eski kursor boshqa
-      // qatorga ishora qiladi va sahifa ro'yxat o'rtasidan ochilardi.
-      for (const [key, value] of Object.entries({
-        ...query,
-        cursor: undefined,
-        ...next,
-      })) {
-        if (value) params.set(key, value);
-      }
-      return `/problems/${slug}/status${params.size ? `?${params}` : ""}` as Route;
+      // `cursor` ATAYLAB tashlanadi (`buildAttemptsHref` ichida): tartib
+      // o'zgarsa eski kursor boshqa qatorga ishora qiladi va sahifa
+      // ro'yxat o'rtasidan ochilardi.
+      return buildAttemptsHref(slug, { ...query, ...next }) as Route;
     },
     [query, slug],
   );
