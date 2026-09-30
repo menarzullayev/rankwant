@@ -8732,11 +8732,16 @@ def _main_parallel(jobs: int) -> int:
             f"yo'q ({', '.join(missing)}); o'z WP PR'i bilan keladi"
         )
         names = [name for name in names if name != gname]
-    names = [
-        name
-        for name in names
-        if name not in {"visual", "csp_nonce", "neg_refsolution_gate"}
-    ]
+    names = [name for name in names if name not in {"visual", "csp_nonce"}]
+    # `readiness` — `visual` bilan bir sinf, LEKIN uni yuqoridagi
+    # `_UNCOMMITTED_GROUP_FILES` allaqachon chiqarib tashlagan bo'lishi
+    # mumkin (case fayllari hali o'z PR'i bilan kelmagan). O'shanda ikkinchi
+    # qator ortiqcha bo'lardi, shuning uchun faqat ro'yxatda qolgan bo'lsa
+    # aytamiz.
+    if "neg_refsolution_gate" in names:
+        names = [name for name in names if name != "neg_refsolution_gate"]
+        print("  - O'TKAZIB YUBORILDI: readiness guruhi — `rankwant-api-dev:audit` talab "
+              "qiladi (`--group neg_refsolution_gate`, nightly)")
     workers = min(jobs, len(names))
     buckets: list[list[str]] = [[] for _ in range(workers)]
     for i, name in enumerate(names):
@@ -8757,8 +8762,6 @@ def _main_parallel(jobs: int) -> int:
                 failures = code
     print("  - O'TKAZIB YUBORILDI: visual guruhi — `next build` va stack talab qiladi "
           "(`--group visual`, nightly)")
-    print("  - O'TKAZIB YUBORILDI: readiness guruhi — `rankwant-api-dev:audit` talab "
-          "qiladi (`--group neg_refsolution_gate`, nightly)")
     return failures
 
 
