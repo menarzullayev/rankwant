@@ -128,5 +128,11 @@ ratings/services.py:contests.models
 ratings/services.py:duels.models
 ratings/services.py:judging.models
 ratings/services.py:notifications.models
+# `realtime` (ADR 0029) — SSE hodisalari `Attempt` holatini e'lon qiladi,
+# ya'ni `judging.models` bu modul uchun haqiqiy bog'liqlik. Yuqoridagi 15 ta
+# `*:judging.models` yozuvi bilan bir xil naqsh; ro'yxatga qo'shilmagani
+# sabab gate `exit 1` berardi (o'lchandi 2026-09-30).
+realtime/asgi.py:judging.models
+realtime/events.py:judging.models
 tournaments/services.py:contests.models
 tournaments/staff_serializers.py:contests.models
