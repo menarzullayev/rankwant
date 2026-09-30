@@ -8,6 +8,7 @@ from rest_framework import serializers
 
 from contests.models import Contest, ContestProblem
 from problems.models import Problem
+from problems.readiness import GRADED_READY, graded_gate_error
 
 
 class StaffContestProblemSerializer(serializers.ModelSerializer[ContestProblem]):
@@ -75,4 +76,11 @@ class StaffContestProblemListSerializer(serializers.Serializer[Any]):
         slugs = [row["problem"].pk for row in value]
         if len(slugs) != len(set(slugs)):
             raise serializers.ValidationError("A problem cannot be added twice")
+        # D8-F (ADR-0037, ADR 0049) — only `validated` content enters a graded
+        # contest. This is the first of two layers; `staff_views.py` repeats
+        # the same condition, so removing either one alone does not open the
+        # gate (`check_negative.py`'s mutation proof removes both).
+        for row in value:
+            if row["problem"].readiness != GRADED_READY:
+                raise serializers.ValidationError(graded_gate_error(row["problem"]))
         return value

@@ -21,6 +21,7 @@ from contests.staff_serializers import (
 from core.openapi_docs import crud_summaries
 from core.permissions import StaffOps
 from core.staff import StaffViewSet
+from problems.readiness import GRADED_READY, graded_gate_error
 
 
 @crud_summaries(
@@ -62,6 +63,19 @@ class StaffContestViewSet(StaffViewSet):
             data = request.data if isinstance(request.data, dict) else {"problems": request.data}
             serializer = StaffContestProblemListSerializer(data=data)
             serializer.is_valid(raise_exception=True)
+            # D8-F (ADR-0037, ADR 0049) — the SECOND layer. `staff_serializers`
+            # already refuses this; the view refuses it again so that removing
+            # either layer alone does not open the gate (the mutation proof in
+            # `check_negative.py` takes out both).
+            #
+            # ⚠️ Checked BEFORE the transaction: a rejection must not leave the
+            # existing rows deleted.
+            for row in serializer.validated_data["problems"]:
+                if row["problem"].readiness != GRADED_READY:
+                    return Response(
+                        {"detail": graded_gate_error(row["problem"])},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
             with transaction.atomic():
                 ContestProblem.objects.filter(contest=contest).delete()
                 ContestProblem.objects.bulk_create(

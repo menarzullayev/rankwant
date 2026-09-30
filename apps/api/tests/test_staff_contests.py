@@ -13,6 +13,7 @@ from contests.models import Contest, ContestProblem, Standing
 from core.models import User
 from judging.models import Attempt
 from judging.verdicts import Verdict
+from problems.models import Problem
 
 
 @pytest.fixture
@@ -150,6 +151,18 @@ class TestStaffContestCrud:
         assert not Contest.objects.filter(slug=contest.slug).exists()
 
 
+def _gradable(problem: Problem) -> Problem:
+    """Make a problem eligible for a graded contest.
+
+    D8-F (ADR-0037, ADR 0049): only `validated` content may be attached. The
+    shared fixtures model other states on purpose, so a test that wants to
+    attach one says so explicitly instead of relying on the fixture.
+    """
+    problem.readiness = Problem.Readiness.VALIDATED
+    problem.save(update_fields=["readiness"])
+    return problem
+
+
 @pytest.mark.django_db
 class TestStaffContestProblems:
     def test_get_joriy_royxat(self, staff, contest) -> None:
@@ -159,7 +172,7 @@ class TestStaffContestProblems:
     def test_put_toliq_almashtiradi(self, staff, contest, hard_problem) -> None:
         r = staff.put(
             reverse("staff-contest-problems", args=[contest.slug]),
-            [{"problem": hard_problem.slug, "index_letter": "B", "points": 200}],
+            [{"problem": _gradable(hard_problem).slug, "index_letter": "B", "points": 200}],
             format="json",
         )
         assert r.status_code == 200, r.json()
@@ -176,8 +189,8 @@ class TestStaffContestProblems:
             reverse("staff-contest-problems", args=[contest.slug]),
             {
                 "problems": [
-                    {"problem": problem.slug, "index_letter": "A"},
-                    {"problem": hard_problem.slug, "index_letter": "B"},
+                    {"problem": _gradable(problem).slug, "index_letter": "A"},
+                    {"problem": _gradable(hard_problem).slug, "index_letter": "B"},
                 ]
             },
             format="json",
