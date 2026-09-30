@@ -262,7 +262,7 @@ class Command(BaseCommand):
         storage.ensure_bucket()
 
         for slug, title, difficulty, topic_slugs, statement, tests in PROBLEMS:
-            problem_defaults: dict = {
+            problem_defaults: dict[str, Any] = {
                 "title": title,
                 "statement": f"## {title}\n\n{statement}"
                 if statement

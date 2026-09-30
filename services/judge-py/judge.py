@@ -5,7 +5,8 @@ from __future__ import annotations
 import re
 import shutil
 import time
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 import protocol as P
 from io_answer import classify_answer, reset_io_artifacts, write_test_input_file

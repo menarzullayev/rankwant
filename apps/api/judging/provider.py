@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 import uuid
 from dataclasses import dataclass, field
-from typing import Any, Protocol
+from typing import Any, Protocol, cast
 
 from django.conf import settings
 
@@ -106,7 +106,8 @@ class RedisJudgeProvider:
         raw = self._redis.rpop(settings.JUDGE_RESULTS_KEY)
         if raw is None:
             return None
-        return json.loads(raw)  # type: ignore[arg-type]
+        parsed: dict[str, Any] = json.loads(cast(str | bytes | bytearray, raw))
+        return parsed
 
 
 class InMemoryJudgeProvider:

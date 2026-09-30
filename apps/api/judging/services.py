@@ -27,8 +27,24 @@ def build_job(attempt: Attempt, *, validate_input: bool = False) -> JudgeJob:
     sof isrof bo'lardi. `True` faqat kiritma ISHONCHSIZ bo'lganda — hack
     testi kabi.
     """
-    problem = attempt.problem
-    language = attempt.language
+    return build_standalone_job(
+        attempt.problem,
+        attempt.source_code,
+        attempt.language,
+        attempt_id=attempt.pk,
+        validate_input=validate_input,
+    )
+
+
+def build_standalone_job(
+    problem: Problem,
+    source: str,
+    language: Language,
+    *,
+    attempt_id: int = 0,
+    validate_input: bool = False,
+) -> JudgeJob:
+    """Judge job without persisting an Attempt — readiness probes, etc."""
 
     tests: list[dict[str, Any]] = [
         {
@@ -95,9 +111,9 @@ def build_job(attempt: Attempt, *, validate_input: bool = False) -> JudgeJob:
 
     return JudgeJob(
         job_id=new_job_id(),
-        attempt_id=attempt.pk,
+        attempt_id=attempt_id,
         language=language.judge_spec(),
-        source=attempt.source_code,
+        source=source,
         limits={
             "compile_time_ms": language.compile_time_ms,
             "time_ms": time_ms,
