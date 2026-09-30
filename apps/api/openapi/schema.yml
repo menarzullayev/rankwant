@@ -7349,6 +7349,166 @@ paths:
           description: ''
         '204':
           description: No response body
+  /api/v1/staff/problems/{slug}/release-checklist/:
+    get:
+      operationId: staff_problems_release_checklist_retrieve
+      description: |-
+        «Nega nashr qilib bo'lmaydi?» — har gate uchun holat va sabab.
+
+        Barqaror kodlar (`STATEMENT_INCOMPLETE`, `TEST_GROUP_MISSING`, ...)
+        qaytadi, ya'ni mijoz matn bo'yicha emas kod bo'yicha taniydi.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffProblem'
+          description: ''
+  /api/v1/staff/problems/{slug}/revisions/:
+    get:
+      operationId: staff_problems_revisions_retrieve
+      description: YANGI revision yaratish — mavjud nashr qilingan surat o'zgarmaydi.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffProblem'
+          description: ''
+    post:
+      operationId: staff_problems_revisions_create
+      description: YANGI revision yaratish — mavjud nashr qilingan surat o'zgarmaydi.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffProblem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffProblem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffProblem'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffProblem'
+          description: ''
+  /api/v1/staff/problems/{slug}/revisions/{id}/freeze/:
+    post:
+      operationId: staff_problems_revisions_freeze_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffProblem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffProblem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffProblem'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffProblem'
+          description: ''
+  /api/v1/staff/problems/{slug}/revisions/{id}/publish/:
+    post:
+      operationId: staff_problems_revisions_publish_create
+      description: 'Nashr: barcha gate o''tishi shart, aks holda 400 + sabablar.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffProblem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffProblem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffProblem'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffProblem'
+          description: ''
   /api/v1/staff/problems/{slug}/tests/:
     get:
       operationId: staff_problems_tests_list
@@ -12305,6 +12465,28 @@ components:
         * `female` - Female
         * `non_binary` - Non-binary
         * `prefer_not` - Prefer not to say
+    GroupEnum:
+      enum:
+      - sample
+      - minimal
+      - boundary
+      - special
+      - random
+      - adversarial
+      - maximum
+      - stress
+      - unclassified
+      type: string
+      description: |-
+        * `sample` - Namuna
+        * `minimal` - Minimal
+        * `boundary` - Chegara
+        * `special` - Alohida holat
+        * `random` - Tasodifiy
+        * `adversarial` - Qarshi
+        * `maximum` - Maksimal
+        * `stress` - Stress
+        * `unclassified` - Tasniflanmagan
     Hack:
       type: object
       properties:
@@ -18125,6 +18307,21 @@ components:
           format: int64
         is_sample:
           type: boolean
+        group:
+          allOf:
+          - $ref: '#/components/schemas/GroupEnum'
+          description: |-
+            Semantik toifa; nashr talabi `problems/testgroups.py` da.
+
+            * `sample` - Namuna
+            * `minimal` - Minimal
+            * `boundary` - Chegara
+            * `special` - Alohida holat
+            * `random` - Tasodifiy
+            * `adversarial` - Qarshi
+            * `maximum` - Maksimal
+            * `stress` - Stress
+            * `unclassified` - Tasniflanmagan
         points:
           type: integer
           maximum: 9223372036854775807
@@ -18693,11 +18890,17 @@ components:
           minimum: 1
         input:
           type: string
+          maxLength: 8388608
         expected:
           type: string
+          maxLength: 8388608
         is_sample:
           type: boolean
           default: false
+        group:
+          oneOf:
+          - $ref: '#/components/schemas/GroupEnum'
+          - $ref: '#/components/schemas/BlankEnum'
         points:
           type: integer
           minimum: 0

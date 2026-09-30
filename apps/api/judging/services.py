@@ -13,6 +13,7 @@ from django.utils import timezone
 from judging.models import Attempt, AttemptTestResult, CustomRun
 from judging.provider import JudgeJob, get_provider, new_job_id
 from judging.verdicts import ALERTING, API_ONLY, Verdict
+from problems import testgroups
 from problems.models import Language, Problem, ProblemLanguage, TestCase, Validator
 
 log = logging.getLogger(__name__)
@@ -46,6 +47,9 @@ def build_standalone_job(
 ) -> JudgeJob:
     """Judge job without persisting an Attempt — readiness probes, etc."""
 
+    # `STRESS` testlari baholashga KIRMAYDI (PROMPT_0 §3 · ADR 0051): ular
+    # kalibrlash dalili — sekin yechimni ataylab TLE qiladi. Baholansa har
+    # bir oddiy yechim yiqilardi. Siyosat bitta joyda: `testgroups.py`.
     tests: list[dict[str, Any]] = [
         {
             "index": t.order,
@@ -54,7 +58,9 @@ def build_standalone_job(
             "subtask": t.subtask_id or 0,
             "points": t.points,
         }
-        for t in TestCase.objects.filter(problem=problem).order_by("order")
+        for t in TestCase.objects.filter(problem=problem)
+        .exclude(group__in=testgroups.NON_JUDGED_GROUPS)
+        .order_by("order")
     ]
 
     subtasks = [

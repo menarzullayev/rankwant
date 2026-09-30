@@ -22,6 +22,14 @@ log = logging.getLogger(__name__)
 #: aks holda noto'g'ri belgilangan katta test butun sahifani cho'ktirardi.
 MAX_SAMPLE_BYTES = 16 * 1024
 SAMPLES_TTL = 3600
+#: Bitta test fayli uchun chegara (kirish va chiqish alohida).
+#:
+#: ⚠️ 2026-09-30 gacha yuklashda chegara UMUMAN yo'q edi: `TestCaseUpload`
+#: maydonlari oddiy `CharField` bo'lib, DRF ularni cheklamaydi. Ya'ni staff
+#: hisobidan bitta so'rov bilan S3 ni to'ldirish mumkin edi. 8 MiB eng katta
+#: qonuniy testdan ancha yuqori (n = 200 000 uchun odatda 1–4 MB), lekin
+#: tasodifiy yuklashni to'xtatadi.
+MAX_TEST_BYTES = 8 * 1024 * 1024
 #: Nosozlik NATIJASI qisqa keshlanadi. Uni bir soat saqlash MinIO bir
 #: soniya uzilganda ham sahifani bir soatga namunasiz qoldirardi
 #: (o'lchandi: saqlash qaytgach ham `samples` 0 bo'lib qoldi).

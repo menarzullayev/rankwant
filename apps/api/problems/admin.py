@@ -8,7 +8,7 @@ from problems.models import Language, Problem, Subtask, TestCase, Topic
 class TestCaseInline(admin.TabularInline):
     model = TestCase
     extra = 1
-    fields = ("order", "input_ref", "output_ref", "is_sample", "points", "subtask")
+    fields = ("order", "input_ref", "output_ref", "is_sample", "group", "points", "subtask")
 
 
 class SubtaskInline(admin.TabularInline):

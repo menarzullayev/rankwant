@@ -23,10 +23,11 @@ from rest_framework.response import Response
 from core.openapi_docs import crud_summaries
 from core.permissions import STAFF_GROUP_OPS, StaffOps, has_staff_group
 from core.staff import SessionOnly, StaffViewSet
-from problems import storage
+from problems import release, storage
 from problems.models import (
     Problem,
     ProblemReport,
+    ProblemRevision,
     ReferenceSolution,
     TestCase,
     Topic,
@@ -36,6 +37,7 @@ from problems.staff_serializers import (
     StaffProblemReportSerializer,
     StaffProblemSerializer,
     StaffReferenceSolutionSerializer,
+    StaffRevisionSerializer,
     StaffTestCaseSerializer,
     StaffTopicSerializer,
     StaffValidatorSerializer,
@@ -167,6 +169,9 @@ class StaffProblemViewSet(StaffViewSet):
                 "input_ref": input_ref,
                 "output_ref": output_ref,
                 "is_sample": data["is_sample"],
+                # Serializer `is_sample` bilan moslashtiradi (ADR 0051):
+                # `group` bu yerda qayta hisoblanmaydi, bitta manba qoladi.
+                "group": data["group"],
                 "points": data["points"],
             },
         )
@@ -174,6 +179,60 @@ class StaffProblemViewSet(StaffViewSet):
             StaffTestCaseSerializer(test).data,
             status=status.HTTP_201_CREATED if created else status.HTTP_200_OK,
         )
+
+    @action(detail=True, methods=["get"], url_path="release-checklist")
+    def release_checklist(self, request: Request, slug: str | None = None) -> Response:
+        """«Nega nashr qilib bo'lmaydi?» — har gate uchun holat va sabab.
+
+        Barqaror kodlar (`STATEMENT_INCOMPLETE`, `TEST_GROUP_MISSING`, ...)
+        qaytadi, ya'ni mijoz matn bo'yicha emas kod bo'yicha taniydi.
+        """
+        return Response(release.release_payload(self.get_object()))
+
+    @action(detail=True, methods=["get", "post"], url_path="revisions")
+    def revisions(self, request: Request, slug: str | None = None) -> Response:
+        """YANGI revision yaratish — mavjud nashr qilingan surat o'zgarmaydi."""
+        problem = self.get_object()
+        if request.method == "GET":
+            rows = problem.revisions.all()
+            return Response(StaffRevisionSerializer(rows, many=True).data)
+        revision = release.create_revision(problem, actor=request.user)
+        return Response(StaffRevisionSerializer(revision).data, status=status.HTTP_201_CREATED)
+
+    def _revision(self, request: Request, slug: str | None, pk: str) -> ProblemRevision:
+        problem = self.get_object()
+        revision = problem.revisions.filter(pk=pk).first()
+        if revision is None:
+            from rest_framework.exceptions import NotFound
+
+            raise NotFound("Revision not found")
+        #: `.first()` — `Any`; mypy uchun aniq tur kerak.
+        row: ProblemRevision = revision
+        return row
+
+    @action(
+        detail=True,
+        methods=["post"],
+        url_path=r"revisions/(?P<pk>\d+)/freeze",
+    )
+    def freeze(self, request: Request, slug: str | None = None, pk: str = "") -> Response:
+        revision = self._revision(request, slug, pk)
+        release.freeze_revision(revision)
+        return Response(StaffRevisionSerializer(revision).data)
+
+    @action(
+        detail=True,
+        methods=["post"],
+        url_path=r"revisions/(?P<pk>\d+)/publish",
+    )
+    def publish(self, request: Request, slug: str | None = None, pk: str = "") -> Response:
+        """Nashr: barcha gate o'tishi shart, aks holda 400 + sabablar."""
+        problem = self.get_object()
+        revision = self._revision(request, slug, pk)
+        release.freeze_revision(revision)
+        release.assert_publishable(problem)
+        release.publish_revision(revision)
+        return Response(StaffRevisionSerializer(revision).data)
 
     def _program(self, request: Request, model: Any, serializer_class: Any) -> Response:
         """Masalaga biriktirilgan bitta dasturni boshqaradi.

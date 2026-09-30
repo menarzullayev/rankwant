@@ -228,6 +228,21 @@ class Problem(TimeStampedModel):
         default=Readiness.DRAFT,
         db_index=True,
     )
+    #: Hozir nashr qilingan revision (ADR 0052). `null` — hech qachon nashr
+    #: qilinmagan. Ommaviy API shu revisionni ko'rsatadi, ishchi nusxani
+    #: emas: ya'ni tahrir davom etsa ham o'quvchi barqaror paketni ko'radi.
+    current_revision = models.ForeignKey(
+        "ProblemRevision",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    #: Checker qachon tekshirilgani (PROMPT_0 §2/§9). Buzuq checker eng
+    #: yomon holat: u to'g'ri yechimni rad qiladi yoki xatoni o'tkazib
+    #: yuboradi va natija «nima bo'lganda ham» noto'g'ri bo'ladi.
+    #: `null` — tekshirilmagan.
+    checker_verified_at = models.DateTimeField(null=True, blank=True)
 
     class IoMode(models.TextChoices):
         STDIO = "stdio", "Stdin/stdout"
@@ -399,6 +414,33 @@ class TestCase(models.Model):
         #: va nega qayta tekshirilgani shu ustundan ko'rinadi.
         HACK = "hack", "Hack"
 
+    class Group(models.TextChoices):
+        """Testning SEMANTIK toifasi — `origin` dan butunlay boshqa o'q.
+
+        `origin` — test QAYERDAN kelgan (muallif yoki hack).
+        `group`  — test NIMANI tekshiradi (namuna, chegara, tasodifiy...).
+
+        Ikkisi bir-birini almashtirmaydi: muallif yozgan chegara testi
+        `origin=author, group=boundary`; hack'dan kelgan test esa
+        `origin=hack, group=adversarial`.
+
+        Siyosat (ko'rinish, nashr talabi) — `problems/testgroups.py` da.
+        Modelda faqat tasnif turadi, qarorlar bitta joyda.
+        """
+
+        SAMPLE = "sample", "Namuna"
+        MINIMAL = "minimal", "Minimal"
+        BOUNDARY = "boundary", "Chegara"
+        SPECIAL = "special", "Alohida holat"
+        RANDOM = "random", "Tasodifiy"
+        ADVERSARIAL = "adversarial", "Qarshi"
+        MAXIMUM = "maximum", "Maksimal"
+        STRESS = "stress", "Stress"
+        #: Faqat KO'CHIRISH holati: 2026-09-30 gacha yozilgan testlarda tasnif
+        #: yo'q edi. Nashr darvozasi buni «tasniflanmagan» deb qaraydi, ya'ni
+        #: yangi kontent bu qiymatni ishlatmasligi kerak.
+        UNCLASSIFIED = "unclassified", "Tasniflanmagan"
+
     problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name="tests")
     order = models.PositiveIntegerField()
     input_ref = models.CharField(max_length=500)
@@ -409,11 +451,21 @@ class TestCase(models.Model):
         Subtask, null=True, blank=True, on_delete=models.SET_NULL, related_name="tests"
     )
     origin = models.CharField(max_length=8, choices=Origin.choices, default=Origin.AUTHOR)
+    group = models.CharField(
+        max_length=16,
+        choices=Group.choices,
+        default=Group.UNCLASSIFIED,
+        help_text="Semantik toifa; nashr talabi `problems/testgroups.py` da.",
+    )
 
     class Meta:
         ordering: ClassVar = ["order"]
         constraints: ClassVar = [
             models.UniqueConstraint(fields=["problem", "order"], name="uniq_test_order")
+        ]
+        indexes: ClassVar = [
+            # Nashr darvozasi va judge siyosati guruh bo'yicha so'raydi.
+            models.Index(fields=["problem", "group"], name="test_problem_group_idx"),
         ]
 
     def __str__(self) -> str:
@@ -495,6 +547,11 @@ class Validator(UpdatedModel):
     problem = models.OneToOneField(Problem, on_delete=models.CASCADE, related_name="validator")
     language = models.ForeignKey(Language, on_delete=models.PROTECT, related_name="validators")
     source = models.TextField()
+    #: Validator ishonchli dastur, lekin KIRITMASI ishonchsiz — u cheksiz
+    #: aylanib qolishi mumkin. Shuning uchun tasdiqlash majburiy:
+    #: tekshirilmagan validator bilan hack oqimini ochib bo'lmaydi.
+    #: `null` — hali tasdiqlanmagan (nashr darvozasi shuni ko'radi).
+    verified_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self) -> str:
         return f"validator · {self.problem.slug}"
@@ -665,3 +722,173 @@ class ProblemReport(models.Model):
 
     def __str__(self) -> str:
         return f"{self.problem.slug}: {self.reason} ({self.status})"
+
+
+# ── Judge muhiti va kalibrlash — PROMPT_0 §5 ──────────────────────────
+
+
+class JudgeEnvironment(TimeStampedModel):
+    """Yechim qaysi judge muhitida o'lchanganini bildiradi.
+
+    Limitlar «muallif kompyuterida» tanlanmasligi kerak: judge serverining
+    apparati, kompilyator versiyasi va sandbox sozlamasi natijaga ta'sir
+    qiladi. Shuning uchun har bir revision qaysi muhitda kalibrlanganini
+    biladi — qayta judge qilinganda natijalar qaysi sharoitda olinganini
+    aniqlash mumkin bo'ladi.
+    """
+
+    key = models.CharField(max_length=64, unique=True)
+    version = models.CharField(max_length=32)
+    image = models.CharField(max_length=200, blank=True)
+    architecture = models.CharField(max_length=32, blank=True)
+    metadata = models.JSONField(default=dict, blank=True)
+
+    class Meta:
+        ordering: ClassVar = ["key"]
+        verbose_name_plural = "judge environments"
+
+    def __str__(self) -> str:
+        return f"{self.key} ({self.version})"
+
+
+class LimitCalibration(TimeStampedModel):
+    """Bitta revision uchun limit o'lchovi — xom natija va yakuniy qaror.
+
+    Limit shunchaki qo'lda yozilgan son bo'lib qolmasligi kerak (§5):
+    etalon yechim vakillik testlarida yurgiziladi, xom o'lchov saqlanadi,
+    keyin xavfsizlik koeffitsienti qo'llanib yakuniy limit chiqadi. Ya'ni
+    «nega 2 sekund?» degan savolga javob bazada turadi, xotirada emas.
+    """
+
+    revision = models.ForeignKey(
+        "problems.ProblemRevision", on_delete=models.CASCADE, related_name="calibrations"
+    )
+    language = models.ForeignKey(Language, null=True, blank=True, on_delete=models.SET_NULL)
+    #: Xom o'lchovlar: `{"wall_ms": ..., "peak_kb": ..., "tests": n}`.
+    measurements = models.JSONField(default=dict)
+    safety_factor = models.FloatField(default=2.0)
+    time_limit_ms = models.PositiveIntegerField()
+    memory_limit_kb = models.PositiveIntegerField()
+    measured_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering: ClassVar = ["-measured_at"]
+
+    def __str__(self) -> str:
+        return f"{self.revision} {self.time_limit_ms}ms/{self.memory_limit_kb}kb"
+
+
+# ── Yechim rollari — PROMPT_0 §4 ──────────────────────────────────────
+
+
+class SolutionRole(models.TextChoices):
+    """Yechim NIMA UCHUN yozilgani.
+
+    Etalon yagona artefakt emas, **to'g'rilik dalili**: brute-force bilan
+    differensial solishtirish, alternativa bilan mustaqil tekshirish,
+    ataylab xato yechim bilan testlarning kuchini o'lchash. Shuning uchun
+    rol — yechimning ajralmas qismi, izoh emas.
+    """
+
+    REFERENCE = "reference", "Etalon"
+    BRUTE_FORCE = "brute_force", "Brute-force"
+    ALTERNATIVE = "alternative", "Alternativa"
+    SLOW = "slow", "Sekin (TLE kutiladi)"
+    WRONG = "wrong", "Xato (WA kutiladi)"
+
+
+class ProblemSolution(TimeStampedModel):
+    """Rol bilan belgilangan yechim (ADR 0052).
+
+    `ReferenceSolution` — bu modelning `role=reference` holati. U saqlanadi:
+    hack oqimi va readiness harness'i unga tayanadi, ya'ni uni ko'chirish
+    ishlayotgan yo'lni buzardi. Ikkisi bir xil artefaktning ikki ko'rinishi
+    emas — `ReferenceSolution` MANBA, bu esa TO'PLAM: bitta masalada bir
+    nechta rol bo'lishi mumkin.
+    """
+
+    problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name="solutions")
+    role = models.CharField(max_length=16, choices=SolutionRole.choices)
+    language = models.ForeignKey(Language, null=True, blank=True, on_delete=models.SET_NULL)
+    source = models.TextField(blank=True)
+    #: Rol bo'yicha KUTILGAN natija. `wrong`/`slow` uchun dalil shu maydonsiz
+    #: ma'nosiz: «xato yechim xato bo'ldi» hech narsani isbotlamaydi,
+    #: «aynan shu testda WA bo'ldi» isbotlaydi.
+    expected_verdict = models.CharField(max_length=8, blank=True)
+    #: `wrong`/`slow` qaysi test guruhida yiqilishi kutiladi.
+    target_group = models.CharField(max_length=16, blank=True)
+    note = models.TextField(blank=True)
+
+    class Meta:
+        ordering: ClassVar = ["role", "pk"]
+        constraints: ClassVar = [
+            models.UniqueConstraint(fields=["problem", "role"], name="uniq_solution_role"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.problem.slug}:{self.role}"
+
+
+# ── Versiyalangan masala paketi — PROMPT_0 §10 ────────────────────────
+
+
+class RevisionStatus(models.TextChoices):
+    DRAFT = "draft", "Qoralama"
+    VALIDATING = "validating", "Tekshirilmoqda"
+    READY = "ready", "Tayyor"
+    FROZEN = "frozen", "Muzlatilgan"
+    PUBLISHED = "published", "Nashr qilingan"
+    DEPRECATED = "deprecated", "Eskirgan"
+
+
+class ProblemRevision(TimeStampedModel):
+    """Masala paketining MUZLATILGAN surati (ADR 0052).
+
+    ⚠️ `Problem.readiness` bilan aralashtirmang — ular ORTOGONAL:
+
+      `readiness`  — kontent sifati: S1–S4 bajarilganmi? Bitta ishchi nusxa
+                     ustida ishlaydi va o'zgarib turadi.
+      `ProblemRevision` — qaysi test/checker/limit bilan NASHR qilingan?
+                     Muzlatilgandan keyin O'ZGARMAYDI.
+
+    Kanonik oqim bitta: `readiness=VALIDATED` → revision freeze → publish.
+    Ya'ni yangi qatlam mavjud lifecycle'ni KENGAYTIRADI, uning o'rnini
+    bosmaydi va parallel state machine yaratmaydi.
+    """
+
+    problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name="revisions")
+    version = models.PositiveIntegerField()
+    status = models.CharField(
+        max_length=12, choices=RevisionStatus.choices, default=RevisionStatus.DRAFT
+    )
+    #: Butun paket surati: statement, testlar, limitlar, checker, validator,
+    #: interactor, editorial, yechimlar. JSON — revision yaxlit o'qiladi,
+    #: alohida so'rovlar uchun emas; test matni S3 da qoladi.
+    package = models.JSONField(default=dict)
+    #: `package` ning SHA-256 i — muzlatish paytida yoziladi. Keyinchalik
+    #: artefakt o'zgarsa, mismatch shu yerda aniqlanadi.
+    package_hash = models.CharField(max_length=64, blank=True)
+    judge_environment = models.ForeignKey(
+        JudgeEnvironment, null=True, blank=True, on_delete=models.SET_NULL
+    )
+    created_by = models.ForeignKey("core.User", null=True, blank=True, on_delete=models.SET_NULL)
+    frozen_at = models.DateTimeField(null=True, blank=True)
+    published_at = models.DateTimeField(null=True, blank=True)
+    #: Nega bu revision nashr qilinmagan — oxirgi tekshiruv natijasi.
+    gate_report = models.JSONField(default=list, blank=True)
+
+    class Meta:
+        ordering: ClassVar = ["problem", "-version"]
+        constraints: ClassVar = [
+            models.UniqueConstraint(fields=["problem", "version"], name="uniq_revision_version"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.problem.slug} r{self.version} ({self.status})"
+
+    #: Muzlatilgandan keyin paket o'zgarmaydi.
+    FROZEN_STATUSES: ClassVar = frozenset({RevisionStatus.FROZEN, RevisionStatus.PUBLISHED})
+
+    @property
+    def is_frozen(self) -> bool:
+        return self.status in self.FROZEN_STATUSES
