@@ -47,8 +47,19 @@ def markdown_files() -> list[Path]:
         # nusxasi, ya'ni `tools/check_docs.py` ning o'zi ham ichida bo'ladi;
         # skanerlansa o'sha nusxadagi misol matnlar haqiqiy muammo bo'lib
         # ko'rinadi va darvoza doim qizil bo'ladi.
+        # `graphify-out/` — `graphify update .` chiqargan graf hisoboti.
+        # U ham hosila nusxa: `GRAPH_REPORT.md` ichida repo matni takrorlanadi,
+        # ya'ni o'sha yerdagi aralash yozuv haqiqiy hujjat xatosi emas.
         if not any(
-            part in {".git", "node_modules", ".venv", "test-results", "playwright-report", ".claude"}
+            part in {
+                ".git",
+                "node_modules",
+                ".venv",
+                "test-results",
+                "playwright-report",
+                ".claude",
+                "graphify-out",
+            }
             for part in p.parts
         )
         # `i18n-review/` — ikki tilli jadval: bir qatorda o'zbekcha (lotin)
