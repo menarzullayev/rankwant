@@ -17,6 +17,7 @@ from typing import Any
 
 import pytest
 from django.core.exceptions import ValidationError
+from django.test import override_settings
 from django.urls import reverse
 from rest_framework.test import APIClient
 
@@ -263,3 +264,35 @@ class TestGradedGate:
         assert not ContestProblem.objects.filter(contest=empty_contest).exists()
         legacy.refresh_from_db()
         assert legacy.is_public is True  # the gate never touches visibility
+
+
+@pytest.mark.django_db
+class TestStagedRollout:
+    """ADR 0050 — with the flag off the gates report instead of rejecting.
+
+    The default stays `True`: the rules are the spec and the classes above
+    prove they fire. Production runs with `0` until the content is promoted,
+    and these two tests pin that the override actually relaxes the gates
+    rather than silently doing nothing.
+    """
+
+    def test_default_is_enforcing(self) -> None:
+        from django.conf import settings
+
+        assert settings.READINESS_ENFORCE is True
+
+    @override_settings(READINESS_ENFORCE=False)
+    def test_graded_gate_only_reports(self, staff, draft, empty_contest) -> None:
+        response = staff.put(
+            reverse("staff-contest-problems", args=[empty_contest.slug]),
+            [{"problem": draft.slug, "index_letter": "A"}],
+            format="json",
+        )
+        assert response.status_code == 200, response.json()
+        assert ContestProblem.objects.filter(contest=empty_contest).count() == 1
+
+    @override_settings(READINESS_ENFORCE=False)
+    def test_transition_only_reports(self, draft) -> None:
+        draft.readiness = Problem.Readiness.VALIDATED
+        draft.full_clean()  # would raise with the flag on — see R10 above
+        assert draft.readiness == Problem.Readiness.VALIDATED

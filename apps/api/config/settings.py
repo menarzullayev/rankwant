@@ -346,6 +346,20 @@ SPECTACULAR_SETTINGS = {
     "SCHEMA_PATH_PREFIX": "/api/v1",
 }
 
+# ── Kontent tayyorligi — ADR-0037, ADR 0049, ADR 0050 ────────────────
+# Readiness darvozalari (S1/S2 o'tish qo'riqchilari va graded-contest
+# sharti) `problems.readiness` da yozilgan va `Problem.clean()` hamda
+# contest serializer/view qatlamlarida majburlanadi.
+#
+# ⚠️ Standart — MAJBURLASH (True): qoidalar shunday yozilgan, testlar ham
+# shuni kutadi. Ishlab turgan bazada esa `validated` masala YO'Q
+# (o'lchandi 2026-09-30: 1 225 `legacy_unverified`, 867 `draft`,
+# 4 `needs_review`, **0 `validated`**), ya'ni majburlash har qanday
+# contest'ga masala qo'shishni rad etardi. Shu sababli production
+# vaqtincha `READINESS_ENFORCE=0` bilan yuradi — darvoza rad etmaydi,
+# faqat WARNING yozadi. Kontent yetilgach bayroq olib tashlanadi.
+READINESS_ENFORCE = env_bool("READINESS_ENFORCE", True)
+
 # ── Judge — ADR-0004 ─────────────────────────────────────────────────
 # Judge navbati ALOHIDA Redis'da (ADR-0028): judge konteyneri faqat
 # `judge-net` (internal) tarmog'ida, sessiya/broker Redis'iga tarmoq

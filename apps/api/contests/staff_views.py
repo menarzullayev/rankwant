@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import ClassVar
 
 from django.db import transaction
@@ -21,7 +22,9 @@ from contests.staff_serializers import (
 from core.openapi_docs import crud_summaries
 from core.permissions import StaffOps
 from core.staff import StaffViewSet
-from problems.readiness import GRADED_READY, graded_gate_error
+from problems.readiness import GRADED_READY, enforcing, graded_gate_error
+
+log = logging.getLogger(__name__)
 
 
 @crud_summaries(
@@ -72,8 +75,13 @@ class StaffContestViewSet(StaffViewSet):
             # existing rows deleted.
             for row in serializer.validated_data["problems"]:
                 if row["problem"].readiness != GRADED_READY:
+                    message = graded_gate_error(row["problem"])
+                    # ADR 0050 — staged rollout: report while the flag is off.
+                    if not enforcing():
+                        log.warning("readiness gate NOT enforced: %s", message)
+                        continue
                     return Response(
-                        {"detail": graded_gate_error(row["problem"])},
+                        {"detail": message},
                         status=status.HTTP_400_BAD_REQUEST,
                     )
             with transaction.atomic():
