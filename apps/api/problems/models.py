@@ -341,8 +341,32 @@ class Problem(TimeStampedModel):
     def clean(self) -> None:
         from django.core.exceptions import ValidationError
 
+        from problems.readiness import assert_transition, requirement_error
+
         if self.difficulty % DIFFICULTY_STEP:
             raise ValidationError({"difficulty": f"Value must be a multiple of {DIFFICULTY_STEP}"})
+
+        # ADR 0049 — R10: readiness moves one step at a time, and every step
+        # has a condition (S1/S2/S3). The previous value comes from the
+        # DATABASE: `full_clean()` sees the in-memory target, not where the
+        # row currently sits.
+        #
+        # Order matters. The transition is checked FIRST, so a jump such as
+        # `draft -> validated` is reported as "is not allowed" rather than as
+        # whichever condition happens to be unmet.
+        previous = self._stored_readiness()
+        if previous is not None:
+            assert_transition(previous, self.readiness)
+
+        error = requirement_error(self, self.readiness)
+        if error:
+            raise ValidationError({"readiness": error})
+
+    def _stored_readiness(self) -> str | None:
+        """The readiness this row currently has in the database, or `None`."""
+        if self.pk is None:
+            return None
+        return Problem.objects.filter(pk=self.pk).values_list("readiness", flat=True).first()
 
 
 class Subtask(models.Model):
