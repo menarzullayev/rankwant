@@ -120,3 +120,14 @@ ci-cd.log
 # Fayl qayta yuklab olinadi, yo'qolsa hech narsa buzilmaydi.
 .sync-cache/
 apps/api/.sync-cache/
+
+# Cursor'ning graphify qoidasi — `graphify install` yozadi va lokal
+# `graphify-out/` grafga ishora qiladi (u ham ignore qilingan). Har ish
+# joyida qayta yaratiladi. Jamoaning o'z qoidasi
+# (`.cursor/rules/parallel-agents.mdc`) esa tracked bo'lib qoladi.
+.cursor/rules/graphify.mdc
+
+# Bir martalik "Quyosh tizimi" galereyasi (index.html + planets/*.svg).
+# Mahsulot kodi ham, prototip ham emas — RankWant'ga aloqasi yo'q.
+index.html
+planets/
