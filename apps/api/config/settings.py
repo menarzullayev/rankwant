@@ -230,7 +230,9 @@ CORS_ALLOW_CREDENTIALS = True
 # autentifikatsiyalangan so'rov «CSRF Failed: Origin checking failed»
 # bo'lardi. Standart — CORS ro'yxati bilan bir xil.
 CSRF_TRUSTED_ORIGINS = [
-    o.strip() for o in env("CSRF_TRUSTED_ORIGINS", ",".join(CORS_ALLOWED_ORIGINS)).split(",") if o.strip()
+    o.strip()
+    for o in env("CSRF_TRUSTED_ORIGINS", ",".join(CORS_ALLOWED_ORIGINS)).split(",")
+    if o.strip()
 ]
 
 # ── DRF ──────────────────────────────────────────────────────────────

@@ -299,7 +299,13 @@ async def _events(scope: dict[str, Any]) -> None:
 
     try:
         await pubsub.subscribe(*channels)
-        await send({"type": "http.response.start", "status": 200, "headers": list(_HEADERS) + list(_cors_headers(scope))})
+        await send(
+            {
+                "type": "http.response.start",
+                "status": 200,
+                "headers": list(_HEADERS) + list(_cors_headers(scope)),
+            }
+        )
 
         async def write(chunk: str) -> None:
             await send({"type": "http.response.body", "body": chunk.encode(), "more_body": True})
@@ -421,9 +427,7 @@ async def _attempt_events(scope: dict[str, Any], attempt_id: int) -> None:
     from judging.models import Attempt
 
     allowed = await sync_to_async(
-        lambda: Attempt.objects.filter(pk=attempt_id)
-        .filter(user_id=user_id)
-        .exists(),
+        lambda: Attempt.objects.filter(pk=attempt_id).filter(user_id=user_id).exists(),
         thread_sensitive=True,
     )()
     if not allowed:
@@ -506,7 +510,9 @@ async def _attempt_events(scope: dict[str, Any], attempt_id: int) -> None:
                 _stats["redis_errors"] += 1
                 items = []
                 channel_gap = False
-            replayed = [item for item in items if item.get("data", {}).get("attempt_id") == attempt_id]
+            replayed = [
+                item for item in items if item.get("data", {}).get("attempt_id") == attempt_id
+            ]
             gap = channel_gap
             replayed.sort(key=lambda item: item["id"])
             for item in replayed:

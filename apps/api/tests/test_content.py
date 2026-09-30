@@ -16,7 +16,8 @@ from content.models import Article, ArticleProblemLink, Roadmap, RoadmapStep
 from judging.models import Attempt
 from judging.services import apply_result
 from problems import storage
-from problems.models import Problem, TestCase as ProblemTestCase
+from problems.models import Problem
+from problems.models import TestCase as ProblemTestCase
 
 
 @pytest.mark.django_db
@@ -342,7 +343,9 @@ class TestSeedDemo:
         first = ProblemTestCase.objects.get(problem__slug="a-plus-b", order=1)
         assert first.input_ref.startswith("s3://")
         assert ProblemTestCase.objects.filter(problem__slug="a-plus-b", is_sample=True).count() == 5
-        assert ProblemTestCase.objects.filter(problem__slug="a-plus-b", is_sample=False).count() == 95
+        assert (
+            ProblemTestCase.objects.filter(problem__slug="a-plus-b", is_sample=False).count() == 95
+        )
         assert ProblemTestCase.objects.filter(problem__slug="a-plus-b").count() == 100
         assert Problem.objects.get(slug="a-plus-b").io_mode == Problem.IoMode.BOTH
         assert "tests/a-plus-b/100.in" in self.uploaded

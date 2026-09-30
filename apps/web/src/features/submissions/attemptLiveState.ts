@@ -44,7 +44,9 @@ export function reduceLiveState(
   }
 
   if (event === "compilation_finished") {
-    next.phase = data.ok ? "running" : prev.phase;
+    if (data.ok) {
+      next.phase = "running";
+    }
     if (typeof data.verdict === "string") next.verdict = data.verdict;
     return next;
   }

@@ -9,7 +9,6 @@ import secrets
 from datetime import timedelta
 from typing import Any
 
-from core.cache import cache_delete
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
@@ -18,6 +17,7 @@ from arena.models import ArenaQuestion, ArenaRound
 from classroom.models import Assignment, Classroom, ClassroomMember
 from content.models import Article, Roadmap, RoadmapStep
 from contests.models import Contest, ContestProblem
+from core.cache import cache_delete
 from core.models import User
 from duels.models import Duel
 from hackathons.models import Hackathon
@@ -263,18 +263,18 @@ class Command(BaseCommand):
 
         for slug, title, difficulty, topic_slugs, statement, tests in PROBLEMS:
             problem_defaults: dict = {
-                    "title": title,
-                    "statement": f"## {title}\n\n{statement}"
-                    if statement
-                    else f"## {title}\n\n_Matn hali yozilmagan._",
-                    "input_format": FORMATS.get(slug, ("", "", ""))[0],
-                    "output_format": FORMATS.get(slug, ("", "", ""))[1],
-                    "note": FORMATS.get(slug, ("", "", ""))[2],
-                    "difficulty": difficulty,
-                    "is_public": True,
-                    "time_limit_ms": 1000,
-                    "memory_limit_kb": 262144,
-                }
+                "title": title,
+                "statement": f"## {title}\n\n{statement}"
+                if statement
+                else f"## {title}\n\n_Matn hali yozilmagan._",
+                "input_format": FORMATS.get(slug, ("", "", ""))[0],
+                "output_format": FORMATS.get(slug, ("", "", ""))[1],
+                "note": FORMATS.get(slug, ("", "", ""))[2],
+                "difficulty": difficulty,
+                "is_public": True,
+                "time_limit_ms": 1000,
+                "memory_limit_kb": 262144,
+            }
             if slug == "a-plus-b":
                 problem_defaults["io_mode"] = Problem.IoMode.BOTH
             problem, _ = Problem.objects.update_or_create(
