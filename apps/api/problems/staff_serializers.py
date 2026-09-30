@@ -139,9 +139,12 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
                 self.instance.tests.values_list("group", flat=True)
             )
             if missing:
-                labels = ", ".join(testgroups.group_label(g) for g in missing)
+                # API xabarlari inglizcha (`check_api_english` darvozasi).
+                # Guruh NOMI emas, kaliti yoziladi: kalit barqaror, nom esa
+                # tarjima qilinadi — xato kodi mashina o'qiydigan bo'lishi
+                # kerak (PROMPT_0 §9: stable error codes).
                 raise serializers.ValidationError(
-                    {"is_public": f"TEST_GROUP_MISSING: {labels} testi yo'q"}
+                    {"is_public": f"TEST_GROUP_MISSING: {', '.join(missing)}"}
                 )
         return attrs
 
