@@ -46,6 +46,7 @@ ALLOWED_CROSS = {
     ("problems", "profile"): "`UserTitle` tipi — endi `lib/identity` dan qayta eksport",
     ("hackathons", "profile"): "`UserTitle` tipi — endi `lib/identity` dan qayta eksport",
     ("submissions", "hackathons"): "`HackPanel` — urinish sahifasiga singib ketgan (mahsulot juftligi)",
+    ("problems", "submissions"): "`AttemptLiveProgress` — yuborish paneli real vaqt (mahsulot juftligi)",
     ("account", "auth"): "`Turnstile` — xavfsizlik vidjeti, forma bilan birga ishlaydi",
 }
 

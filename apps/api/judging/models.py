@@ -38,6 +38,9 @@ class Attempt(models.Model):
     time_ms = models.PositiveIntegerField(default=0)
     memory_kb = models.PositiveIntegerField(default=0)
     failed_test_index = models.PositiveIntegerField(null=True, blank=True)
+    #: Judge hozir qaysi testni bajarayotgani (1-based). Faqat RUNNING
+    #: davomida to'ldiriladi; yakuniy verdiktda tozalanadi.
+    running_test_index = models.PositiveIntegerField(null=True, blank=True)
     compile_output = models.TextField(blank=True)
     #: Judge telemetriyasi: worker, sandbox, queue_wait_ms, total_ms.
     #: `latency_ms` umumiy kechikishni beradi, bu esa sababini —

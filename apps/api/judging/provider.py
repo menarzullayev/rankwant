@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 import uuid
 from dataclasses import dataclass, field
-from typing import Any, Protocol
+from typing import Any, Protocol, cast
 
 from django.conf import settings
 
@@ -39,6 +39,8 @@ class JudgeJob:
     #: va bosqichga bog'laydi.
     hack_id: int = 0
     hack_stage: str = ""
+    #: Masala I/O rejimi — judge `input.txt` yozadi va `output.txt` ni tekshiradi.
+    io: dict[str, Any] | None = None
 
     def to_json(self) -> str:
         # ⚠️ Yangi maydon shu lug'atga ham QO'SHILISHI shart. Dataclass'ga
@@ -60,6 +62,7 @@ class JudgeJob:
                 "validate_input": self.validate_input,
                 "hack_id": self.hack_id,
                 "hack_stage": self.hack_stage,
+                "io": self.io,
             }
         )
 
@@ -67,6 +70,7 @@ class JudgeJob:
 class JudgeProvider(Protocol):
     def submit(self, job: JudgeJob) -> str: ...
     def poll(self, timeout: int = 1) -> dict[str, Any] | None: ...
+    def poll_nowait(self) -> dict[str, Any] | None: ...
     #: Navbatda kutayotgan ishlar soni. Qotib qolgan urinishni
     #: yo'qolganidan ajratish uchun kerak: navbat bo'sh bo'lsa, hali
     #: javob kelmagan ish haqiqatan yo'qolgan.
@@ -98,6 +102,13 @@ class RedisJudgeProvider:
         payload: dict[str, Any] = json.loads(item[1])  # type: ignore[index]
         return payload
 
+    def poll_nowait(self) -> dict[str, Any] | None:
+        raw = self._redis.rpop(settings.JUDGE_RESULTS_KEY)
+        if raw is None:
+            return None
+        parsed: dict[str, Any] = json.loads(cast(str | bytes | bytearray, raw))
+        return parsed
+
 
 class InMemoryJudgeProvider:
     """Testlar uchun — navbat o'rniga ro'yxat."""
@@ -114,6 +125,9 @@ class InMemoryJudgeProvider:
         return len(self.jobs)
 
     def poll(self, timeout: int = 1) -> dict[str, Any] | None:
+        return self.results.pop(0) if self.results else None
+
+    def poll_nowait(self) -> dict[str, Any] | None:
         return self.results.pop(0) if self.results else None
 
 

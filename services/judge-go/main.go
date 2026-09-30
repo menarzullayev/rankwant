@@ -110,7 +110,15 @@ func main() {
 			continue
 		}
 
-		res := judge(ctx, &job, tests)
+		res := judge(ctx, &job, tests, func(msg map[string]any) {
+			payload, err := json.Marshal(msg)
+			if err != nil {
+				return
+			}
+			if err := rdb.LPush(context.Background(), resultsKey, payload).Err(); err != nil {
+				log.Warn("oraliq hodisa yuborilmadi", "kind", msg["kind"], "err", err)
+			}
+		})
 		res.Meta.QueueWaitMS = time.Since(received).Milliseconds() - res.Meta.TotalMS
 		if res.Meta.QueueWaitMS < 0 {
 			res.Meta.QueueWaitMS = 0

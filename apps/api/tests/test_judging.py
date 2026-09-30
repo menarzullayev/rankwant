@@ -13,9 +13,9 @@ from rest_framework.test import APIClient
 
 from judging.models import Attempt, AttemptTestResult
 from judging.provider import JudgeJob
-from judging.services import apply_result, build_job
+from judging.services import apply_attempt_progress, apply_result, build_job
 from judging.verdicts import Verdict
-from problems.models import Validator
+from problems.models import Problem, Validator
 from ratings.models import RatingHistory, UserSolvedProblem
 
 
@@ -96,6 +96,19 @@ class TestSubmit:
         assert job.limits["time_ms"] == problem.time_limit_ms
         assert job.limits["memory_kb"] == problem.memory_limit_kb
         assert job.language["code"] == language.code
+
+    def test_io_mode_both_yuboriladi(self, user, problem, language) -> None:
+        problem.io_mode = Problem.IoMode.BOTH
+        problem.save(update_fields=["io_mode"])
+        attempt = Attempt.objects.create(
+            user=user, problem=problem, language=language, source_code="x"
+        )
+        payload = json.loads(build_job(attempt).to_json())
+        assert payload["io"] == {
+            "mode": "both",
+            "input_file": "input.txt",
+            "output_file": "output.txt",
+        }
 
 
 @pytest.mark.django_db
@@ -574,13 +587,13 @@ def test_drain_results_bosh_navbatda_darhol_tugaydi(db, memory_judge) -> None:
     from judging.tasks import drain_results
 
     calls = {"n": 0}
-    original = memory_judge.poll
+    original = memory_judge.poll_nowait
 
-    def counting(timeout: int = 1):
+    def counting():
         calls["n"] += 1
-        return original(timeout)
+        return original()
 
-    memory_judge.poll = counting  # type: ignore[method-assign]
+    memory_judge.poll_nowait = counting  # type: ignore[method-assign]
 
     assert drain_results() == 0
     assert calls["n"] == 1, "bo'sh navbatda bitta o'qish yetarli"
@@ -880,3 +893,208 @@ class TestAttemptOrdering:
         Usiz `OrderingFilter` har so'rovga `core_user` join qo'shardi.
         """
         assert self._times(problem, "user__username") == self._times(problem)
+
+
+@pytest.mark.django_db
+def test_apply_attempt_progress(db, problem, user, language) -> None:
+    attempt = Attempt.objects.create(
+        user=user,
+        problem=problem,
+        language=language,
+        source_code="x",
+        verdict=Verdict.PENDING,
+    )
+    row = apply_attempt_progress(
+        {
+            "kind": "progress",
+            "attempt_id": attempt.pk,
+            "running_test_index": 45,
+            "verdict": Verdict.RUNNING,
+        }
+    )
+    attempt.refresh_from_db()
+    assert row is not None
+    assert attempt.verdict == Verdict.RUNNING
+    assert attempt.running_test_index == 45
+
+
+@pytest.mark.django_db
+def test_apply_result_running_test_index_tozalanadi(db, problem, user, language) -> None:
+    attempt = Attempt.objects.create(
+        user=user,
+        problem=problem,
+        language=language,
+        source_code="x",
+        verdict=Verdict.PENDING,
+    )
+    apply_attempt_progress(
+        {
+            "kind": "progress",
+            "attempt_id": attempt.pk,
+            "running_test_index": 12,
+            "verdict": Verdict.RUNNING,
+        }
+    )
+    apply_result({"attempt_id": attempt.pk, "verdict": Verdict.AC})
+    attempt.refresh_from_db()
+    assert attempt.verdict == Verdict.AC
+    assert attempt.running_test_index is None
+
+
+@pytest.mark.django_db
+def test_apply_result_non_terminal_verdict_ignored(db, problem, user, language) -> None:
+    attempt = Attempt.objects.create(
+        user=user,
+        problem=problem,
+        language=language,
+        source_code="x",
+        verdict=Verdict.AC,
+        score=100,
+    )
+    assert apply_result({"attempt_id": attempt.pk, "verdict": Verdict.RUNNING}) is None
+    attempt.refresh_from_db()
+    assert attempt.verdict == Verdict.AC
+    assert attempt.score == 100
+
+
+@pytest.mark.django_db
+def test_drain_results_progress_yozadi(db, problem, user, language, monkeypatch) -> None:
+    from judging.provider import InMemoryJudgeProvider, set_provider
+    from judging.tasks import drain_results
+
+    provider = InMemoryJudgeProvider()
+    set_provider(provider)
+    attempt = Attempt.objects.create(
+        user=user,
+        problem=problem,
+        language=language,
+        source_code="x",
+        verdict=Verdict.PENDING,
+    )
+    provider.results.append(
+        {
+            "kind": "progress",
+            "attempt_id": attempt.pk,
+            "running_test_index": 7,
+            "verdict": Verdict.RUNNING,
+        }
+    )
+    published: list[str] = []
+
+    def _capture(_attempt: Attempt) -> None:
+        published.append("progress")
+
+    monkeypatch.setattr("judging.tasks.publish_attempt_progress", _capture)
+
+    assert drain_results(max_items=1) == 0
+    attempt.refresh_from_db()
+    assert attempt.running_test_index == 7
+    assert published == ["progress"]
+    set_provider(None)
+
+
+@pytest.mark.django_db
+def test_drain_test_finished_yozadi(db, problem, user, language, monkeypatch) -> None:
+    from judging.provider import InMemoryJudgeProvider, set_provider
+    from judging.tasks import drain_results
+
+    provider = InMemoryJudgeProvider()
+    set_provider(provider)
+    attempt = Attempt.objects.create(
+        user=user,
+        problem=problem,
+        language=language,
+        source_code="x",
+        verdict=Verdict.PENDING,
+    )
+    provider.results.append(
+        {
+            "kind": "test_finished",
+            "attempt_id": attempt.pk,
+            "test_index": 2,
+            "verdict": Verdict.AC,
+            "time_ms": 11,
+            "memory_kb": 22,
+        }
+    )
+    published: list[str] = []
+
+    def _capture(_attempt, **kwargs: object) -> None:
+        published.append("test_finished")
+
+    monkeypatch.setattr("judging.tasks.publish_test_finished", _capture)
+
+    drain_results(max_items=1)
+    attempt.refresh_from_db()
+    assert attempt.verdict == Verdict.RUNNING
+    assert attempt.running_test_index == 2
+    row = attempt.test_results.get(index=2)
+    assert row.verdict == Verdict.AC
+    assert row.time_ms == 11
+    assert published == ["test_finished"]
+    set_provider(None)
+
+
+@pytest.mark.django_db
+def test_enqueue_queued_hodisasi(
+    db, problem, user, language, monkeypatch, django_capture_on_commit_callbacks
+) -> None:
+    from judging.provider import InMemoryJudgeProvider, set_provider
+    from judging.services import enqueue
+
+    provider = InMemoryJudgeProvider()
+    set_provider(provider)
+    attempt = Attempt.objects.create(
+        user=user,
+        problem=problem,
+        language=language,
+        source_code="x",
+        verdict=Verdict.PENDING,
+    )
+    published: list[int] = []
+
+    def _capture(row: Attempt) -> None:
+        published.append(row.pk)
+
+    monkeypatch.setattr("realtime.events.publish_attempt_queued", _capture)
+
+    with django_capture_on_commit_callbacks(execute=True):
+        enqueue(attempt)
+    assert published == [attempt.pk]
+    set_provider(None)
+
+
+@pytest.mark.django_db
+def test_drain_compilation_started_yozadi(db, problem, user, language, monkeypatch) -> None:
+    from judging.provider import InMemoryJudgeProvider, set_provider
+    from judging.tasks import drain_results
+
+    provider = InMemoryJudgeProvider()
+    set_provider(provider)
+    attempt = Attempt.objects.create(
+        user=user,
+        problem=problem,
+        language=language,
+        source_code="x",
+        verdict=Verdict.PENDING,
+    )
+    provider.results.append(
+        {
+            "kind": "compilation_started",
+            "attempt_id": attempt.pk,
+            "total_tests": 100,
+        }
+    )
+    published: list[tuple[str, int]] = []
+
+    def _capture(row: Attempt, total: int) -> None:
+        published.append(("compilation_started", total))
+
+    monkeypatch.setattr("judging.tasks.publish_compilation_started", _capture)
+
+    drain_results(max_items=1)
+    attempt.refresh_from_db()
+    assert attempt.verdict == Verdict.RUNNING
+    assert (attempt.judge_meta or {}).get("total_tests") == 100
+    assert published == [("compilation_started", 100)]
+    set_provider(None)

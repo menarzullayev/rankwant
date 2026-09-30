@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/Card";
 import { fill, t, type Locale } from "@/i18n/messages";
 import {
   AttemptFilters,
-  AttemptLive,
+  AttemptLiveProvider,
   AttemptTable,
 } from "@/features/submissions";
 import { api, type ProblemDetail } from "@/lib/api";
@@ -96,8 +96,8 @@ export async function ProblemAttemptsPanel({
   };
 
   return (
+    <AttemptLiveProvider problem={slug}>
     <div className="space-y-6">
-      <AttemptLive problem={slug} />
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <h1 className="text-title-sm font-bold rw-strong">
           {problem.code !== null && (
@@ -187,5 +187,6 @@ export async function ProblemAttemptsPanel({
         </Card>
       )}
     </div>
+    </AttemptLiveProvider>
   );
 }

@@ -63,7 +63,7 @@ LANGUAGES = [
         "compile_cmd": [
             "/bin/sh",
             "-c",
-            "nasm -f elf64 -o /box/prog.o {src} && ld -o {bin} /box/prog.o",
+            "nasm -f elf64 -o /box/prog.o {src} && ld -no-pie -o {bin} /box/prog.o",
         ],
         "run_cmd": ["{bin}"],
         "process_limit": 1,

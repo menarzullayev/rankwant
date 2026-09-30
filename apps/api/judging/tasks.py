@@ -9,8 +9,21 @@ from celery import shared_task
 
 from judging.models import Attempt
 from judging.provider import get_provider
-from judging.services import apply_custom_result, apply_result
-from realtime.events import publish_verdict
+from judging.services import (
+    apply_attempt_progress,
+    apply_compilation_finished,
+    apply_compilation_started,
+    apply_custom_result,
+    apply_result,
+    apply_test_finished,
+)
+from realtime.events import (
+    publish_attempt_progress,
+    publish_compilation_finished,
+    publish_compilation_started,
+    publish_test_finished,
+    publish_verdict,
+)
 
 log = logging.getLogger(__name__)
 
@@ -36,10 +49,43 @@ def drain_results(max_items: int = 500) -> int:
     provider = get_provider()
     applied = 0
     for _ in range(max_items):
-        result = provider.poll(timeout=1)
+        result = provider.poll_nowait()
         if result is None:
             break
         try:
+            kind = result.get("kind")
+            if kind == "progress":
+                progress_attempt = apply_attempt_progress(result)
+                if progress_attempt is not None:
+                    publish_attempt_progress(progress_attempt)
+                continue
+            if kind == "compilation_started":
+                row = apply_compilation_started(result)
+                if row is not None:
+                    total = int(result.get("total_tests") or 0)
+                    publish_compilation_started(row, total)
+                continue
+            if kind == "compilation_finished":
+                row = apply_compilation_finished(result)
+                if row is not None:
+                    publish_compilation_finished(
+                        row,
+                        ok=bool(result.get("ok")),
+                        compile_output=str(result.get("compile_output") or ""),
+                        verdict=result.get("verdict"),
+                    )
+                continue
+            if kind == "test_finished":
+                row = apply_test_finished(result)
+                if row is not None:
+                    publish_test_finished(
+                        row,
+                        test_index=int(result["test_index"]),
+                        verdict=str(result.get("verdict") or ""),
+                        time_ms=int(result.get("time_ms") or 0),
+                        memory_kb=int(result.get("memory_kb") or 0),
+                    )
+                continue
             # Uch xil natija egasi bor, shuning uchun tur aniq e'lon
             # qilinadi: aks holda birinchi tarmoq turini butun o'zgaruvchiga
             # yopishtirib qo'yardi.

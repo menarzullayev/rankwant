@@ -119,7 +119,7 @@ func subst(args []string, src, bin string) []string {
 }
 
 // judge — bitta job ni to'liq bajaradi.
-func judge(ctx context.Context, job *Job, tests *store) *Result {
+func judge(ctx context.Context, job *Job, tests *store, emit Emit) *Result {
 	t0 := time.Now()
 	res := &Result{JobID: job.JobID, AttemptID: job.AttemptID, CustomRunID: job.CustomRunID,
 		HackID: job.HackID, HackStage: job.HackStage,
@@ -173,6 +173,13 @@ func judge(ctx context.Context, job *Job, tests *store) *Result {
 	}
 	res.Meta.SandboxSetupMS = time.Since(setupStart).Milliseconds()
 
+	totalTests := len(job.Tests)
+	if job.Mode != "custom" && totalTests > 0 {
+		pushEmit(emit, job.AttemptID, "compilation_started", map[string]any{
+			"total_tests": totalTests,
+		})
+	}
+
 	// ── Kompilyatsiya ───────────────────────────────────────────────
 	if len(job.Language.Compile) > 0 {
 		cl := job.Limits
@@ -196,14 +203,28 @@ func judge(ctx context.Context, job *Job, tests *store) *Result {
 		}
 		if out.Timeout {
 			res.Verdict, res.CompileOutput = VCTimeout, compilerOutput(out)
+			pushEmit(emit, job.AttemptID, "compilation_finished", map[string]any{
+				"ok":             false,
+				"verdict":        res.Verdict,
+				"compile_output": res.CompileOutput,
+			})
 			res.Meta.TotalMS = time.Since(t0).Milliseconds()
 			return res
 		}
 		if out.ExitCode != 0 {
 			res.Verdict, res.CompileOutput = VCE, compilerOutput(out)
+			pushEmit(emit, job.AttemptID, "compilation_finished", map[string]any{
+				"ok":             false,
+				"verdict":        res.Verdict,
+				"compile_output": res.CompileOutput,
+			})
 			res.Meta.TotalMS = time.Since(t0).Milliseconds()
 			return res
 		}
+	}
+
+	if job.Mode != "custom" && totalTests > 0 {
+		pushEmit(emit, job.AttemptID, "compilation_finished", map[string]any{"ok": true})
 	}
 
 	runCmd := subst(job.Language.Run, "/box/"+src, "/box/prog")
@@ -260,10 +281,17 @@ func judge(ctx context.Context, job *Job, tests *store) *Result {
 	scoreSum := 0
 
 	for _, test := range job.Tests {
+		emitProgress(emit, job.AttemptID, test.Index)
 		// Havola yechilmasa IE qaytaramiz. Ilgari bo'sh test bilan davom
 		// etilardi va HAR submission WA olardi — sabab ko'rinmasdan.
 		if err := resolve(ctx, &test, tests); err != nil {
 			slog.Error("test ma'lumotini olish", "job", job.JobID, "test", test.Index, "err", err)
+			worst = VIE
+			break
+		}
+		resetIOArtifacts(work, job.IO)
+		if err := writeTestInputFile(work, test, job.IO); err != nil {
+			slog.Error("test input faylini yozish", "job", job.JobID, "test", test.Index, "err", err)
 			worst = VIE
 			break
 		}
@@ -272,7 +300,7 @@ func judge(ctx context.Context, job *Job, tests *store) *Result {
 			worst = VIE
 			break
 		}
-		v := classify(out, test, job.Limits)
+		v := classifyAnswer(out, test, job.Limits, work, job.IO)
 
 		// ⚠️ `RE_SIGNAL` — kam uchraydigan va tushunarsiz holat: dastur
 		// kutilmaganda signal bilan o'ladi. 2026-09-17 da `04-idleness`
@@ -317,6 +345,9 @@ func judge(ctx context.Context, job *Job, tests *store) *Result {
 			maxMem = out.PeakKB
 		}
 		res.PerTest = append(res.PerTest, TestResult{
+			Index: test.Index, Verdict: v, TimeMS: out.CPUMs,
+			MemoryKB: out.PeakKB, Stdout: stdout})
+		emitTestFinished(emit, job.AttemptID, TestResult{
 			Index: test.Index, Verdict: v, TimeMS: out.CPUMs,
 			MemoryKB: out.PeakKB, Stdout: stdout})
 

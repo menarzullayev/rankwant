@@ -52,6 +52,13 @@ class Subtask:
 
 
 @dataclass
+class IO:
+    mode: str = ""
+    input_file: str = ""
+    output_file: str = ""
+
+
+@dataclass
 class Job:
     job_id: str
     language: dict[str, Any]
@@ -77,9 +84,11 @@ class Job:
     #: qaytariladi va API javobni to'g'ri hack va bosqichga bog'laydi.
     hack_id: int = 0
     hack_stage: str = ""
+    io: IO = field(default_factory=IO)
 
     @classmethod
     def from_json(cls, raw: dict[str, Any]) -> Job:
+        io_raw = raw.get("io") or {}
         return cls(
             job_id=raw["job_id"],
             language=raw["language"],
@@ -97,6 +106,11 @@ class Job:
             validate_input=bool(raw.get("validate_input", False)),
             hack_id=int(raw.get("hack_id") or 0),
             hack_stage=str(raw.get("hack_stage") or ""),
+            io=IO(
+                mode=str(io_raw.get("mode") or ""),
+                input_file=str(io_raw.get("input_file") or ""),
+                output_file=str(io_raw.get("output_file") or ""),
+            ),
         )
 
 

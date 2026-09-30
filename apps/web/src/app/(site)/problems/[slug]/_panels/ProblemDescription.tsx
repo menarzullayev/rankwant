@@ -19,6 +19,7 @@ import { Card } from "@/components/ui/Card";
 import { CopyButton } from "@/components/kit/CopyControl";
 import { fill, t, type Locale } from "@/i18n/messages";
 import type { ProblemDetail } from "@/lib/api";
+import { stripDuplicateStatementHeading } from "@/lib/statement-body";
 
 /** Tavsif tab paneli — mavjud masala matni va metadata.
  *
@@ -36,6 +37,11 @@ export function ProblemDescription({
   contest?: string;
   locale: Locale;
 }) {
+  const statementBody = stripDuplicateStatementHeading(
+    problem.statement,
+    problem.title,
+  );
+
   return (
     <article className="min-w-0 space-y-6">
       <ProblemSolveTimer contest={contest} />
@@ -106,7 +112,7 @@ export function ProblemDescription({
           </p>
         )}
 
-        <div className="mt-2">
+        <div>
           <ProblemActions problem={problem} />
         </div>
       </header>
@@ -134,7 +140,7 @@ export function ProblemDescription({
                 className="w-full rw-radius-sm"
               />
             )}
-            <Markdown>{problem.statement}</Markdown>
+            <Markdown>{statementBody}</Markdown>
 
             {problem.input_format && (
               <section id="problem-input-format">

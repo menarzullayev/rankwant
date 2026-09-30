@@ -5,15 +5,25 @@ from __future__ import annotations
 import re
 import shutil
 import time
+from collections.abc import Callable
 from typing import Any
 
 import protocol as P
+from io_answer import classify_answer, reset_io_artifacts, write_test_input_file
 from protocol import Job, JudgeMetaDict, Limits, ResultDict, RunOutcome, Test
 from sandbox import Box, IsolateError, run_sandboxed
 
 BOX_ID = 0
 #: RLIMIT_NOFILE for compilers — judge-go `compileOpenFiles`.
 COMPILE_OPEN_FILES = 256
+
+Emit = Callable[[dict[str, Any]], None] | None
+
+
+def _push(emit: Emit, attempt_id: int, kind: str, **fields: Any) -> None:
+    if emit is None or attempt_id <= 0:
+        return
+    emit({"kind": kind, "attempt_id": attempt_id, **fields})
 
 
 def normalise(s: str) -> str:
@@ -88,7 +98,11 @@ def classify(out: RunOutcome, test: Test, lim: Limits) -> str:
     return P.RE
 
 
-def judge(job: Job) -> ResultDict:
+def judge(
+    job: Job,
+    emit: Emit = None,
+    on_progress: Callable[[int, int], None] | None = None,
+) -> ResultDict:
     t0 = time.monotonic()
     meta: JudgeMetaDict = {
         "worker": "judge-py",
@@ -152,6 +166,10 @@ def judge(job: Job) -> ResultDict:
             box.put(src, job.source)
             meta["sandbox_setup_ms"] = int((time.monotonic() - setup) * 1000)
 
+            total_tests = len(job.tests)
+            if job.mode != "custom" and total_tests > 0 and job.attempt_id:
+                _push(emit, job.attempt_id, "compilation_started", total_tests=total_tests)
+
             # ── Kompilyatsiya ──────────────────────────────────────
             compile_cmd = job.language.get("compile")
             if compile_cmd:
@@ -170,13 +188,32 @@ def judge(job: Job) -> ResultDict:
                 if out.timeout:
                     result["verdict"] = P.COMPILE_TIMEOUT
                     result["compile_output"] = out.stderr
+                    _push(
+                        emit,
+                        job.attempt_id,
+                        "compilation_finished",
+                        ok=False,
+                        verdict=result["verdict"],
+                        compile_output=result["compile_output"],
+                    )
                     meta["total_ms"] = int((time.monotonic() - t0) * 1000)
                     return result
                 if out.exit_code != 0:
                     result["verdict"] = P.CE
                     result["compile_output"] = out.stderr
+                    _push(
+                        emit,
+                        job.attempt_id,
+                        "compilation_finished",
+                        ok=False,
+                        verdict=result["verdict"],
+                        compile_output=result["compile_output"],
+                    )
                     meta["total_ms"] = int((time.monotonic() - t0) * 1000)
                     return result
+
+            if job.mode != "custom" and total_tests > 0 and job.attempt_id:
+                _push(emit, job.attempt_id, "compilation_finished", ok=True)
 
             # ── Testlar ────────────────────────────────────────────
             run_cmd = subst(job.language["run"], src, "prog")
@@ -187,10 +224,27 @@ def judge(job: Job) -> ResultDict:
             by_group: dict[int, list[int]] = {}
             failed_group: set[int] = set()
             for test in job.tests:
+                if job.attempt_id:
+                    _push(
+                        emit,
+                        job.attempt_id,
+                        "progress",
+                        running_test_index=test.index,
+                        verdict="RUNNING",
+                    )
+                    if on_progress:
+                        on_progress(job.attempt_id, test.index)
+                io_mode = job.io.mode or "stdio"
+                work = ""
+                if io_mode != "stdio":
+                    assert box.path is not None
+                    work = str(box.path)
+                    reset_io_artifacts(work, job.io)
+                    write_test_input_file(work, test, job.io)
                 out = run_sandboxed(
                     box, run_cmd, test.input, job.limits, wall_limit, open_files=open_files
                 )
-                verdict = classify(out, test, job.limits)
+                verdict = classify_answer(out, test, job.limits, work, job.io)
                 max_cpu = max(max_cpu, out.cpu_ms)
                 max_mem = max(max_mem, out.peak_kb)
                 result["per_test"].append(
@@ -201,6 +255,16 @@ def judge(job: Job) -> ResultDict:
                         "memory_kb": out.peak_kb,
                     }
                 )
+                if job.attempt_id:
+                    _push(
+                        emit,
+                        job.attempt_id,
+                        "test_finished",
+                        test_index=test.index,
+                        verdict=verdict,
+                        time_ms=out.cpu_ms,
+                        memory_kb=out.peak_kb,
+                    )
                 if verdict == P.AC:
                     passed += 1
                     by_group.setdefault(test.subtask, []).append(test.points)

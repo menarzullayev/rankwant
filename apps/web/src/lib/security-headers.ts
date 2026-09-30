@@ -33,6 +33,38 @@
  *  mumkin, lekin kod bajarmaydi).
  */
 
+/** Brauzer loopback preview — web alohida portda, API `:8301` (see `api-base.ts`).
+ *  Production build (`docker compose` `:8300` yoki `next start`) ham shu yerda
+ *  ochiladi; `NODE_ENV === "production"` bo'lsa ham CSP ga API origin kerak. */
+export function isLoopbackPreviewHost(host: string): boolean {
+  if (!host) return false;
+  const lower = host.toLowerCase();
+  if (lower === "web" || lower.startsWith("web:")) return false;
+  if (lower === "api" || lower.startsWith("api:")) return false;
+  return /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(lower);
+}
+
+/** Local split-stack dev: web `:8310` / `:8300`, API `:8301`.
+ *  `connect-src 'self'` blocks `fetch` to the API origin — login fails with
+ *  "TypeError: Failed to fetch" and CSP console errors. */
+function devApiConnectOrigins(): string[] {
+  const origins = new Set<string>([
+    "http://127.0.0.1:8301",
+    "http://localhost:8301",
+    "http://127.0.0.1:8302",
+    "http://localhost:8302",
+  ]);
+  const base = process.env.NEXT_PUBLIC_API_BASE;
+  if (base) {
+    try {
+      origins.add(new URL(base).origin);
+    } catch {
+      /* ignore malformed env */
+    }
+  }
+  return [...origins];
+}
+
 /** CSP uchun `nonce` yasaydi — kriptografik tasodifiy, base64. */
 export function makeNonce(): string {
   const bytes = new Uint8Array(16);
@@ -55,6 +87,7 @@ export function contentSecurityPolicy(
   nonce: string,
   dev: boolean,
   secure: boolean,
+  loopbackSplitStack = false,
 ): string {
   const scriptSrc = [
     "'self'",
@@ -69,6 +102,7 @@ export function contentSecurityPolicy(
 
   const connectSrc = ["'self'"];
   if (dev) connectSrc.push("ws:", "wss:");
+  if (dev || loopbackSplitStack) connectSrc.push(...devApiConnectOrigins());
 
   const directives: Record<string, string[]> = {
     "default-src": ["'self'"],
@@ -90,6 +124,7 @@ export function contentSecurityPolicy(
     // `frame-ancestors 'none'` — `X-Frame-Options: DENY` ning zamonaviy
     // shakli, clickjacking'ga qarshi.
     "frame-ancestors": ["'none'"],
+    "worker-src": ["'self'", "blob:"],
   };
 
   const parts = Object.entries(directives).map(([k, v]) => `${k} ${v.join(" ")}`);

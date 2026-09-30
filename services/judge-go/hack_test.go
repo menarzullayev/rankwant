@@ -18,7 +18,7 @@ func TestJudgeEchoesHackRouting(t *testing.T) {
 	job.HackID = 42
 	job.HackStage = "reference"
 
-	res := judge(context.Background(), job, nil)
+	res := judge(context.Background(), job, nil, nil)
 
 	if res.HackID != 42 || res.HackStage != "reference" {
 		t.Fatalf("natijada hack_id=%d hack_stage=%q — 42/\"reference\" kutilgan",
@@ -34,7 +34,7 @@ func TestJudgeLeavesHackRoutingEmptyForPlainJob(t *testing.T) {
 	job := validatedJob("1 2\n")
 	job.ValidateInput = false
 
-	res := judge(context.Background(), job, nil)
+	res := judge(context.Background(), job, nil, nil)
 
 	if res.HackID != 0 || res.HackStage != "" {
 		t.Fatalf("hack maydonlari to'ldirilgan: %d %q", res.HackID, res.HackStage)

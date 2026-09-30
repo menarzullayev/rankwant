@@ -8,6 +8,7 @@ from urllib.parse import urlsplit, urlunsplit
 
 import pytest
 from django.conf import settings
+from django.db.models import Max
 from django.db.models.signals import post_save
 from django.test import override_settings
 from django.utils import timezone
@@ -153,12 +154,15 @@ def problem(db) -> Problem:
     testsiz fixture haqiqiy masalani ifodalamaydi. Tartib raqami ataylab
     katta: namuna testlar qo'shadigan fixture'lar 1-dan boshlanadi.
     """
+    next_code = (Problem.objects.aggregate(m=Max("code"))["m"] or 0) + 1
     created = Problem.objects.create(
         slug="a-plus-b",
         title="A+B",
         statement="a va b ni qo'shing",
         difficulty=800,
         is_public=True,
+        code=next_code,
+        readiness=Problem.Readiness.LEGACY_UNVERIFIED,
     )
     TestCase.objects.create(
         problem=created, order=10, input_ref="s3://x/10.in", output_ref="s3://x/10.out"

@@ -218,7 +218,7 @@ func TestRejectionMessage(t *testing.T) {
 func TestJudgeValidatesEveryInputBeforeSubmission(t *testing.T) {
 	calls := fakeSandbox(t, rejectsZero)
 
-	res := judge(context.Background(), validatedJob("1 2\n", "0 3\n", "1 2\n"), nil)
+	res := judge(context.Background(), validatedJob("1 2\n", "0 3\n", "1 2\n"), nil, nil)
 
 	if res.Verdict != VWrongTest {
 		t.Fatalf("verdict %s, kutilgan %s", res.Verdict, VWrongTest)
@@ -253,7 +253,7 @@ func TestJudgeValidatesEveryInputBeforeSubmission(t *testing.T) {
 func TestJudgeValidInputsReachSubmission(t *testing.T) {
 	calls := fakeSandbox(t, rejectsZero)
 
-	res := judge(context.Background(), validatedJob("1 2\n", "1 2\n"), nil)
+	res := judge(context.Background(), validatedJob("1 2\n", "1 2\n"), nil, nil)
 
 	if res.Verdict != VAC {
 		t.Fatalf("verdict %s, kutilgan AC: %s", res.Verdict, res.CompileOutput)
@@ -280,7 +280,7 @@ func TestJudgeFailsClosedWithoutValidator(t *testing.T) {
 	job := validatedJob("1 2\n")
 	job.Validator = nil
 
-	res := judge(context.Background(), job, nil)
+	res := judge(context.Background(), job, nil, nil)
 
 	if res.Verdict != VIE || !strings.Contains(res.CompileOutput, "validator") {
 		t.Fatalf("verdict %s (%q) — bayroq bor, dastur yo'q: IE kutilgan", res.Verdict, res.CompileOutput)
@@ -295,7 +295,7 @@ func TestJudgeValidatesInteractiveInputs(t *testing.T) {
 	job := validatedJob("0 7\n")
 	job.Checker = Checker{Type: "interactive", Interactor: pyProgram("import sys\n")}
 
-	res := judge(context.Background(), job, nil)
+	res := judge(context.Background(), job, nil, nil)
 
 	// Interactive tarmoq erta qaytadi: bosqich undan keyin tursa, bayroq
 	// jimgina e'tiborsiz qolardi.
@@ -312,7 +312,7 @@ func TestJudgeSkipsValidatorWhenNotRequested(t *testing.T) {
 	job := validatedJob("0 3\n")
 	job.ValidateInput = false
 
-	res := judge(context.Background(), job, nil)
+	res := judge(context.Background(), job, nil, nil)
 
 	// Masalaning o'z testlari muallifniki — ularni har yuborishda qayta
 	// tekshirish isrof.
@@ -332,7 +332,7 @@ func TestJudgeValidatorInfrastructureErrorIsIE(t *testing.T) {
 		return &runOutcome{Stdout: "3\n"}, nil
 	})
 
-	res := judge(context.Background(), validatedJob("1 2\n"), nil)
+	res := judge(context.Background(), validatedJob("1 2\n"), nil, nil)
 
 	// Validator ishlamagani hacker aybi emas: WRONG_TEST uning testini
 	// nohaq «yaroqsiz» deb belgilardi.

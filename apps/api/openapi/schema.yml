@@ -11428,6 +11428,12 @@ components:
           minimum: 0
           format: int64
           nullable: true
+        running_test_index:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
         created_at:
           type: string
           format: date-time
@@ -11513,6 +11519,12 @@ components:
           minimum: 0
           format: int64
         failed_test_index:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+        running_test_index:
           type: integer
           maximum: 9223372036854775807
           minimum: 0

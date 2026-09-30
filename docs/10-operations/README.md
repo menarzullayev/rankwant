@@ -11,6 +11,7 @@ canonical checkout is **restore-when-idle**.
 har chegara uchun, **qabul qilingan risklar** (A-1…A-8) sababi va qayta ko'rish
 sharti bilan, locked dizayndan chetlanishlar, ochiq bandlar launch gate'larga
 bog'langan. Inglizcha — asosiy o'quvchi tashqi auditor.
+✅ **Local dev (web rebuildsiz):** [local-dev.md](local-dev.md) — `tools/dev-local.ps1` / `next dev` `:8310`, Docker faqat backend.
 
 Nima **hozir** bilinadi: deploy topologiyasi, siyosatlar va incident turlari — ular arxitektura va ADR'lardan kelib chiqadi.
 Nima **hali bilinmaydi**: hosting provayderi, real narxlar.

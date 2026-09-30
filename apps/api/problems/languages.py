@@ -356,7 +356,7 @@ LANGUAGES: list[dict[str, Any]] = [
         "compile": [
             "/bin/sh",
             "-c",
-            "nasm -f elf64 -o /box/prog.o {src} && ld -o {bin} /box/prog.o",
+            "nasm -f elf64 -o /box/prog.o {src} && ld -no-pie -o {bin} /box/prog.o",
         ],
         "run": ["{bin}"],
         "processes": 1,

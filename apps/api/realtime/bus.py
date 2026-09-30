@@ -34,11 +34,13 @@ USER_CHANNEL = "rw:rt:user:{user_id}"
 #: ochiq ulanishda hujjatni oqim orqali tashish chekka kesh bergan narsani
 #: qimmatlashtiradi.
 STANDINGS_CHANNEL = "rw:rt:standings:{contest_id}"
+#: Masala urinishlari jadvali — faqat versiya/belgi (manba kod yo'q).
+PROBLEM_CHANNEL = "rw:rt:problem:{slug}"
 
 #: Replay buferining chuqurligi va umri. Chuqurligi qayta ulanish
-#: oynasidan kelib chiqadi: mijoz odatda soniyalarda qaytadi, 50 hodisa
-#: esa gavjum musobaqada ham shu oynani qoplaydi.
-REPLAY_MAX = 50
+#: oynasidan kelib chiqadi: 100 test progress + verdict bir urinishda ham sig'adi.
+# 100+ test progress + verdict — qayta ulanishda indeks sakrashini oldini oladi.
+REPLAY_MAX = 256
 REPLAY_TTL_S = 300
 
 
@@ -48,6 +50,10 @@ def user_channel(user_id: int) -> str:
 
 def standings_channel(contest_id: int) -> str:
     return STANDINGS_CHANNEL.format(contest_id=contest_id)
+
+
+def problem_channel(slug: str) -> str:
+    return PROBLEM_CHANNEL.format(slug=slug)
 
 
 def _client() -> Redis:

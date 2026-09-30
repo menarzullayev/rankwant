@@ -12,11 +12,12 @@ import {
   type ProblemDetail,
 } from "@/lib/api";
 
-const SCORES = [1, 2, 3, 4, 5];
+const SCORES = [1, 2, 3, 4, 5] as const;
 
-/** Sevimlilar va masalaga baho — RoboContest sahifasida ikkalasi ham
- * bor. Baho muallif uchun ham, masala tanlayotgan solver uchun ham
- * signal; sevimlilar uzun arxivda yo'qotmaslik uchun. */
+const actionBtn =
+  "inline-flex min-h-7 min-w-7 items-center justify-center rw-radius-sm px-2.5 text-theme-sm font-semibold transition rw-hover-bg rw-focus-ring";
+
+/** Sevimlilar va masalaga baho — prototip `.actions` (P0) bilan mos. */
 export function ProblemActions({ problem }: { problem: ProblemDetail }) {
   const { user, ready } = useSession();
   const locale = useLocale();
@@ -26,11 +27,13 @@ export function ProblemActions({ problem }: { problem: ProblemDetail }) {
   const [votes, setVotes] = useState(problem.votes);
   const [busy, setBusy] = useState(false);
 
+  const ratingSummaryId = `problem-rating-${problem.slug}`;
+
   async function toggleFavourite() {
     if (busy) return;
     const next = !favourite;
     setBusy(true);
-    setFav(next); // optimistik — tugma darhol javob berishi kerak
+    setFav(next);
     try {
       await setFavourite(problem.slug, next);
     } catch {
@@ -48,75 +51,70 @@ export function ProblemActions({ problem }: { problem: ProblemDetail }) {
       setMine(result.my_rating);
       setRating({ average: result.average, count: result.count });
     } catch {
-      // Baho saqlanmadi — mavjud holat o'zgarmaydi.
+      // keep prior state
     } finally {
       setBusy(false);
     }
   }
 
-  /** Ovoz — bir bosish. Yulduzli bahodan farqi shunda: yulduz masalaning
-   * SIFATINI o'lchaydi va o'ylashni talab qiladi, ovoz esa «yoqdimi?»
-   * degan oddiy savolga javob va shu sababli ancha ko'p yig'iladi. */
   async function vote(value: -1 | 1) {
     if (busy) return;
     setBusy(true);
     try {
-      // Ikkinchi marta bosish ovozni olib tashlaydi.
       setVotes(
         await voteProblem(problem.slug, votes.mine === value ? 0 : value),
       );
     } catch {
-      // Ovoz saqlanmadi — mavjud holat o'zgarmaydi.
+      // keep prior state
     } finally {
       setBusy(false);
     }
   }
 
   const signedIn = ready && !!user;
-  const voteStyle = (active: boolean) =>
-    `rw-radius-sm px-2 py-1 font-medium tabular-nums transition rw-hover-bg ${
-      active ? "rw-accent-ink" : "rw-dim"
+
+  const voteClass = (active: boolean, disabled: boolean) =>
+    `${actionBtn} tabular-nums ${
+      disabled
+        ? "cursor-not-allowed border border-dashed rw-line rw-panel-2 rw-faint"
+        : active
+          ? "rw-accent-ink rw-accent-soft"
+          : "rw-dim"
     }`;
 
   return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-theme-sm">
+    <div
+      className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-theme-sm rw-dim"
+      data-problem-actions=""
+    >
       {signedIn && (
         <button
           type="button"
           onClick={toggleFavourite}
           aria-pressed={favourite}
-          aria-label={
-            favourite
-              ? t(locale, "problem.inFavourites")
-              : t(locale, "problem.addFavourite")
-          }
-          title={
-            favourite
-              ? t(locale, "problem.inFavourites")
-              : t(locale, "problem.addFavourite")
-          }
-          className={`inline-flex size-9 items-center justify-center rw-radius-sm text-theme-lg transition rw-hover-bg rw-focus-ring ${
-            favourite ? "rw-accent-ink" : "rw-dim"
+          className={`${actionBtn} gap-1.5 ${
+            favourite ? "rw-accent-ink rw-accent-soft" : "rw-dim"
           }`}
         >
-          {favourite ? "♥" : "♡"}
+          {favourite
+            ? t(locale, "problem.inFavourites")
+            : t(locale, "problem.addFavourite")}
         </button>
       )}
 
-      <div className="flex items-center gap-0.5">
+      <span
+        className="inline-flex items-center gap-0.5"
+        role="group"
+        aria-label={`${t(locale, "problem.voteUp")}, ${t(locale, "problem.voteDown")}`}
+      >
         <button
           type="button"
           onClick={() => vote(1)}
           disabled={!signedIn}
           aria-pressed={votes.mine === 1}
-          // ⚠️ Ko'rinadigan matn — `▲ 12`. Ilgari `aria-label="Yoqdi"`
-          // edi, ya'ni ovoz bilan boshqaradigan foydalanuvchi ekranda
-          // ko'rgan raqamni ayta olmasdi (WCAG 2.5.3, «Label in Name»).
-          // Lighthouse tutdi: `label-content-name-mismatch`. Endi nom
-          // ko'rinadigan matnni O'Z ICHIGA OLADI.
           aria-label={`${t(locale, "problem.voteUp")} — ▲ ${votes.up}`}
           title={t(locale, "problem.voteUpTitle")}
-          className={voteStyle(votes.mine === 1)}
+          className={voteClass(votes.mine === 1, !signedIn)}
         >
           ▲ {votes.up}
         </button>
@@ -127,14 +125,14 @@ export function ProblemActions({ problem }: { problem: ProblemDetail }) {
           aria-pressed={votes.mine === -1}
           aria-label={`${t(locale, "problem.voteDown")} — ▼ ${votes.down}`}
           title={t(locale, "problem.voteDownTitle")}
-          className={voteStyle(votes.mine === -1)}
+          className={voteClass(votes.mine === -1, !signedIn)}
         >
           ▼ {votes.down}
         </button>
-      </div>
+      </span>
 
-      <div className="flex items-center gap-1.5">
-        <span className="rw-faint">
+      <span className="inline-flex flex-wrap items-center gap-2.5">
+        <span id={ratingSummaryId} className="rw-faint tabular-nums">
           {rating.average !== null
             ? fill(t(locale, "problem.ratingSummary"), {
                 average: rating.average,
@@ -143,23 +141,31 @@ export function ProblemActions({ problem }: { problem: ProblemDetail }) {
             : t(locale, "problem.ratingEmpty")}
         </span>
         {signedIn && (
-          <span className="flex items-center">
-            {SCORES.map((score) => (
-              <button
-                key={score}
-                type="button"
-                onClick={() => rate(score)}
-                aria-label={fill(t(locale, "problem.rateWith"), { score })}
-                className={`px-0.5 transition ${
-                  mine !== null && score <= mine ? "rw-accent-ink" : "rw-faint"
-                }`}
-              >
-                ★
-              </button>
-            ))}
+          <span
+            className="inline-flex items-center"
+            role="group"
+            aria-labelledby={ratingSummaryId}
+          >
+            {SCORES.map((score) => {
+              const on = mine !== null && score <= mine;
+              return (
+                <button
+                  key={score}
+                  type="button"
+                  onClick={() => rate(score)}
+                  aria-pressed={on}
+                  aria-label={fill(t(locale, "problem.rateWith"), { score })}
+                  className={`min-h-7 min-w-[26px] px-0.5 text-theme-base transition rw-focus-ring ${
+                    on ? "rw-accent-ink" : "rw-faint rw-hover-bg"
+                  }`}
+                >
+                  ★
+                </button>
+              );
+            })}
           </span>
         )}
-      </div>
+      </span>
     </div>
   );
 }

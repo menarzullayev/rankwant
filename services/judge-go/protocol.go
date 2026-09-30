@@ -100,6 +100,17 @@ type Checker struct {
 	Program *TrustedProgram `json:"program,omitempty"`
 }
 
+// IO — masala kiritish/chiqish usuli (Robocontest uslubidagi fayl nomlari).
+//
+//	mode stdio: faqat stdin/stdout (odatiy)
+//	mode both: input.txt yoziladi, javob stdout YOKI output.txt orqali qabul qilinadi
+//	mode file: faqat output.txt (input.txt ham beriladi)
+type IO struct {
+	Mode       string `json:"mode,omitempty"`
+	InputFile  string `json:"input_file,omitempty"`
+	OutputFile string `json:"output_file,omitempty"`
+}
+
 type Job struct {
 	JobID     string `json:"job_id"`
 	AttemptID int64  `json:"attempt_id"`
@@ -111,6 +122,7 @@ type Job struct {
 	Tests       []Test    `json:"tests"`
 	Checker     Checker   `json:"checker"`
 	Subtasks    []Subtask `json:"subtasks,omitempty"`
+	IO          IO        `json:"io,omitempty"`
 	// acm | ioi | custom.
 	// custom: chiqish kutilgan javob bilan SOLISHTIRILMAYDI — foydalanuvchi
 	// o'z stdin'i bilan kodini sinab ko'ryapti (PRD P0-4).

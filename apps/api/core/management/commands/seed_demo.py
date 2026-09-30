@@ -17,12 +17,13 @@ from arena.models import ArenaQuestion, ArenaRound
 from classroom.models import Assignment, Classroom, ClassroomMember
 from content.models import Article, Roadmap, RoadmapStep
 from contests.models import Contest, ContestProblem
+from core.cache import cache_delete
 from core.models import User
 from duels.models import Duel
 from hackathons.models import Hackathon
 from problems import storage
 from problems.languages import LANGUAGES, row_values
-from problems.models import Language, Problem, TestCase, Topic
+from problems.models import Language, Problem, ProblemLanguage, TestCase, Topic
 from quizzes.models import Choice, Question, Quiz, QuizQuestion
 from tournaments.models import Tournament, TournamentStage
 
@@ -33,6 +34,43 @@ TOPICS = [
     ("graphs", "Graflar"),
     ("greedy", "Ochko'zlik"),
 ]
+
+#: Masala bo'yicha sahifada ko'rinadigan namuna testlar soni (qolganlari yashirin).
+SAMPLE_TESTS: dict[str, int] = {
+    "a-plus-b": 5,
+}
+
+_APLUS_B_LIMIT = 1_000_000_000
+
+
+def build_aplus_b_tests() -> list[tuple[str, str]]:
+    """A+B demo: 100 tests (5 sample + 95 hidden), deterministic."""
+    head: list[tuple[str, str]] = [
+        ("1 2\n", "3\n"),
+        ("100 -40\n", "60\n"),
+        ("0 0\n", "0\n"),
+        ("5 7\n", "12\n"),
+        ("-1 1\n", "0\n"),
+        ("1000000000 1000000000\n", "2000000000\n"),
+    ]
+    tests = list(head)
+    for n in range(94):
+        a, b = _aplus_b_det_pair(n)
+        tests.append((f"{a} {b}\n", f"{a + b}\n"))
+    if len(tests) != 100:
+        raise RuntimeError(f"a-plus-b tests: expected 100, got {len(tests)}")
+    return tests
+
+
+def _aplus_b_det_pair(n: int) -> tuple[int, int]:
+    """Spread ``a``, ``b`` across [-1e9, 1e9] for hidden tests 7..100."""
+    x = (1_103_515_245 * (n + 17) + 12_345) & 0x7FFF_FFFF
+    y = (1_103_515_245 * (n + 17_001) + 54_321) & 0x7FFF_FFFF
+    span = 2 * _APLUS_B_LIMIT + 1
+    a = x % span - _APLUS_B_LIMIT
+    b = y % span - _APLUS_B_LIMIT
+    return a, b
+
 
 #: (slug, sarlavha, qiyinlik, mavzular, matn, [(kirish, chiqish), ...])
 #:
@@ -45,7 +83,7 @@ PROBLEMS = [
         800,
         ["implementation"],
         "Bitta qatorda ikkita butun son `a` va `b` berilgan.\n\nUlarning yig'indisini chiqaring.",
-        [("1 2\n", "3\n"), ("100 -40\n", "60\n"), ("0 0\n", "0\n")],
+        build_aplus_b_tests(),
     ),
     (
         "juft-toq",
@@ -224,24 +262,28 @@ class Command(BaseCommand):
         storage.ensure_bucket()
 
         for slug, title, difficulty, topic_slugs, statement, tests in PROBLEMS:
+            problem_defaults: dict[str, Any] = {
+                "title": title,
+                "statement": f"## {title}\n\n{statement}"
+                if statement
+                else f"## {title}\n\n_Matn hali yozilmagan._",
+                "input_format": FORMATS.get(slug, ("", "", ""))[0],
+                "output_format": FORMATS.get(slug, ("", "", ""))[1],
+                "note": FORMATS.get(slug, ("", "", ""))[2],
+                "difficulty": difficulty,
+                "is_public": True,
+                "time_limit_ms": 1000,
+                "memory_limit_kb": 262144,
+            }
+            if slug == "a-plus-b":
+                problem_defaults["io_mode"] = Problem.IoMode.BOTH
             problem, _ = Problem.objects.update_or_create(
                 slug=slug,
-                defaults={
-                    "title": title,
-                    "statement": f"## {title}\n\n{statement}"
-                    if statement
-                    else f"## {title}\n\n_Matn hali yozilmagan._",
-                    "input_format": FORMATS.get(slug, ("", "", ""))[0],
-                    "output_format": FORMATS.get(slug, ("", "", ""))[1],
-                    "note": FORMATS.get(slug, ("", "", ""))[2],
-                    "difficulty": difficulty,
-                    "is_public": True,
-                    "time_limit_ms": 1000,
-                    "memory_limit_kb": 262144,
-                },
+                defaults=problem_defaults,
             )
             problem.topics.set([topics[s] for s in topic_slugs])
 
+            sample_count = SAMPLE_TESTS.get(slug, 1)
             for i, (test_in, test_out) in enumerate(tests, start=1):
                 TestCase.objects.update_or_create(
                     problem=problem,
@@ -249,9 +291,20 @@ class Command(BaseCommand):
                     defaults={
                         "input_ref": storage.put_test_data(f"tests/{slug}/{i}.in", test_in),
                         "output_ref": storage.put_test_data(f"tests/{slug}/{i}.out", test_out),
-                        "is_sample": i == 1,
+                        "is_sample": i <= sample_count,
                     },
                 )
+            problem.tests.filter(order__gt=len(tests)).delete()
+            cache_delete(storage.samples_cache_key(slug))
+            if slug == "a-plus-b":
+                julia = Language.objects.filter(code="julia113").first()
+                if julia is not None:
+                    # Julia 1.13 JIT baseline exceeds the default 256 MiB on A+B.
+                    ProblemLanguage.objects.update_or_create(
+                        problem=problem,
+                        language=julia,
+                        defaults={"memory_limit_kb": 524288},
+                    )
 
         if not User.objects.filter(username="admin").exists():
             User.objects.create_superuser("admin", "admin@rankwant.uz", "admin12345")

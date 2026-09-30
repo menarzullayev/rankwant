@@ -16,6 +16,7 @@ from content.models import Article, ArticleProblemLink, Roadmap, RoadmapStep
 from judging.models import Attempt
 from judging.services import apply_result
 from problems import storage
+from problems.models import Problem
 from problems.models import TestCase as ProblemTestCase
 
 
@@ -341,6 +342,14 @@ class TestSeedDemo:
         assert self.uploaded["tests/a-plus-b/1.out"] == "3\n"
         first = ProblemTestCase.objects.get(problem__slug="a-plus-b", order=1)
         assert first.input_ref.startswith("s3://")
+        assert ProblemTestCase.objects.filter(problem__slug="a-plus-b", is_sample=True).count() == 5
+        assert (
+            ProblemTestCase.objects.filter(problem__slug="a-plus-b", is_sample=False).count() == 95
+        )
+        assert ProblemTestCase.objects.filter(problem__slug="a-plus-b").count() == 100
+        assert Problem.objects.get(slug="a-plus-b").io_mode == Problem.IoMode.BOTH
+        assert "tests/a-plus-b/100.in" in self.uploaded
+        assert "tests/a-plus-b/100.out" in self.uploaded
 
     def test_testsiz_masalada_soxta_ref_yoq(self) -> None:
         """Yozilmagan masalaga soxta test qo'yilsa, u har doim WA berardi."""

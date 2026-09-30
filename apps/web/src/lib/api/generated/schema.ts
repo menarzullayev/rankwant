@@ -5290,6 +5290,8 @@ export interface components {
             memory_kb?: number;
             /** Format: int64 */
             failed_test_index?: number | null;
+            /** Format: int64 */
+            running_test_index?: number | null;
             /** Format: date-time */
             readonly created_at: string;
             /** Format: date-time */
@@ -5320,6 +5322,8 @@ export interface components {
             memory_kb?: number;
             /** Format: int64 */
             failed_test_index?: number | null;
+            /** Format: int64 */
+            running_test_index?: number | null;
             /** Format: date-time */
             readonly created_at: string;
             /** Format: date-time */

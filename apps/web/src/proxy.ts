@@ -19,6 +19,7 @@ import { SITE_URL } from "@/lib/site";
 import {
   SECURITY_HEADERS,
   contentSecurityPolicy,
+  isLoopbackPreviewHost,
   makeNonce,
 } from "@/lib/security-headers";
 
@@ -96,8 +97,27 @@ function rememberLocale(response: NextResponse, locale: Locale): void {
   });
 }
 
+const DEV_REALTIME = "http://127.0.0.1:8302";
+
+/** Split-stack dev: SSE `:8302` ga tunnel — `next.config` rewrite trailing-slash
+ *  bilan 404 berishi mumkin, shuning uchun middleware rewrite. */
+function devRealtimeRewrite(request: NextRequest, host: string): NextResponse | null {
+  if (process.env.NODE_ENV !== "development" || !isLoopbackPreviewHost(host)) {
+    return null;
+  }
+  const path = request.nextUrl.pathname;
+  if (path !== "/api/v1/events" && path !== "/api/v1/events/" && !path.startsWith("/api/v1/realtime/")) {
+    return null;
+  }
+  const upstreamPath = path === "/api/v1/events" ? "/api/v1/events/" : path;
+  const dest = new URL(`${upstreamPath}${request.nextUrl.search}`, DEV_REALTIME);
+  return NextResponse.rewrite(dest);
+}
+
 export function proxy(request: NextRequest): NextResponse {
   const host = request.headers.get("host") ?? "";
+  const realtime = devRealtimeRewrite(request, host);
+  if (realtime) return realtime;
   // Faqat haqiqiy ommaviy sayt (https): lokal va CI build'larda yo'naltirish yo'q.
   const boshqa_domen =
     canonical.protocol === "https:" &&
@@ -224,7 +244,12 @@ export function proxy(request: NextRequest): NextResponse {
   }
   response.headers.set(
     "Content-Security-Policy",
-    contentSecurityPolicy(nonce, process.env.NODE_ENV !== "production", secure),
+    contentSecurityPolicy(
+      nonce,
+      process.env.NODE_ENV !== "production",
+      secure,
+      isLoopbackPreviewHost(host),
+    ),
   );
   return response;
 }
