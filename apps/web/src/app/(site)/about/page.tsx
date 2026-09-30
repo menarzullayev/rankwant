@@ -2,8 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import { Card } from "@/components/ui/Card";
-import { AboutJourney } from "@/features/about/server";
-import { SystemGuide } from "@/features/about/components/SystemGuide";
+import { AboutJourney, SystemGuide } from "@/features/about/server";
 import { getLocale } from "@/i18n/server";
 import { t } from "@/i18n/messages";
 import { api } from "@/lib/api";
