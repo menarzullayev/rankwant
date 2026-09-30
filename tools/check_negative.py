@@ -2698,7 +2698,7 @@ def neg_bundle_budget_catches_overflow() -> tuple[bool, str]:
     """
     path = ROOT / "tools" / "check_bundle_budget.py"
     text = path.read_bytes().decode("utf-8")
-    old = '"js_gzip": 1_100_000,'
+    old = '"js_gzip": 4_424_000,'
     if old not in text:
         return False, "bundle: BUDGET da `js_gzip` qatori topilmadi"
 
