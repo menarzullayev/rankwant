@@ -88,6 +88,21 @@ tools/.update-sync.json
 # natijalari. Bir martalik ish qurollari — repoga tushmasin.
 .tmp/
 
+# graphify graf chiqishi (`graphify update .` yozadi). Hosila artefakt:
+# `graph.json` (22 MB) ichida repo matnining nusxasi bor — ya'ni commit
+# qilinsa repo o'z nusxasini ko'taradi. `tools/check_docs.py` ham uni
+# skanerlab, o'sha nusxadagi aralash yozuvni haqiqiy xato deb o'qidi.
+graphify-out/
+
+# Judge sinov artefaktlari. `.tmp/` papka qoidasi yuqorida, lekin bular
+# `.tmp-` PREFIKSI bilan yoziladi va u qoidaga tushmaydi (o'lchandi:
+# `.tmp-judge-go` — `go build` chiqishi, 26 MB).
+.tmp-*
+
+# freebuff asbobining belgisi va mahalliy preview server logi
+.freebuff/
+.preview-server.log
+
 # Domen/brend nomi tanlash tahlili (2026-09-14). Bir martalik ish quroli:
 # skriptlar, nomzodlar ro'yxati va hisobotlar. Mahsulot kodi emas.
 tools/naming/
