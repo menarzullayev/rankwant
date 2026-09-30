@@ -205,7 +205,7 @@ class StaffProblemViewSet(StaffViewSet):
         if revision is None:
             from rest_framework.exceptions import NotFound
 
-            raise NotFound("revision topilmadi")
+            raise NotFound("Revision not found")
         #: `.first()` — `Any`; mypy uchun aniq tur kerak.
         row: ProblemRevision = revision
         return row

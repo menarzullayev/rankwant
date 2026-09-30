@@ -175,9 +175,7 @@ class TestReleaseChecklist:
         problem = _problem("rel-fail", 7108)
         payload = release.release_payload(problem)
         assert payload["can_publish"] is False
-        assert {row["code"] for row in payload["failed"]} == set(
-            release.blocking_codes(problem)
-        )
+        assert {row["code"] for row in payload["failed"]} == set(release.blocking_codes(problem))
 
 
 # ── §10 Revision va immutability ──────────────────────────────────────
@@ -274,9 +272,7 @@ class TestRevision:
 class TestReleaseApi:
     def test_checklist_endpoint_answers_why(self, staff_client) -> None:
         problem = _problem("api-why", 7116)
-        response = staff_client.get(
-            f"/api/v1/staff/problems/{problem.slug}/release-checklist/"
-        )
+        response = staff_client.get(f"/api/v1/staff/problems/{problem.slug}/release-checklist/")
         assert response.status_code == 200, response.json()
         body = response.json()
         assert body["can_publish"] is False
@@ -284,9 +280,7 @@ class TestReleaseApi:
 
     def test_revision_endpoint_creates_and_freezes(self, staff_client) -> None:
         problem = _problem("api-rev", 7117)
-        created = staff_client.post(
-            f"/api/v1/staff/problems/{problem.slug}/revisions/"
-        )
+        created = staff_client.post(f"/api/v1/staff/problems/{problem.slug}/revisions/")
         assert created.status_code == 201, created.json()
         revision_id = created.json()["id"]
 
@@ -299,9 +293,7 @@ class TestReleaseApi:
 
     def test_publish_endpoint_refuses_an_incomplete_package(self, staff_client) -> None:
         problem = _problem("api-pub-fail", 7118)
-        created = staff_client.post(
-            f"/api/v1/staff/problems/{problem.slug}/revisions/"
-        )
+        created = staff_client.post(f"/api/v1/staff/problems/{problem.slug}/revisions/")
         revision_id = created.json()["id"]
         response = staff_client.post(
             f"/api/v1/staff/problems/{problem.slug}/revisions/{revision_id}/publish/"
