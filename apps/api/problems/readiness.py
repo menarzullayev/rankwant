@@ -150,19 +150,36 @@ def requirement_error(problem: Problem, target: str) -> str | None:
     return None
 
 
+def enforcing() -> bool:
+    """Is the staged rollout finished? (ADR 0050)
+
+    The rules below are the spec and the acceptance tests expect them to
+    reject. Production cannot take the rejection yet: the live database has
+    **no** problem in `GRADED_READY`, so enforcing would refuse every problem
+    attachment to a contest. Until the content is promoted it runs with
+    `READINESS_ENFORCE=0` and the gates report instead of blocking.
+    """
+    from django.conf import settings
+
+    return bool(getattr(settings, "READINESS_ENFORCE", True))
+
+
+def gate(message: str) -> None:
+    """Enforce the rule, or report it while the rollout is on (ADR 0050)."""
+    if enforcing():
+        raise ValidationError({"readiness": message})
+    log.warning("readiness gate NOT enforced (READINESS_ENFORCE=0): %s", message)
+
+
 def assert_transition(current: str, target: str) -> None:
     """Reject a jump the state machine does not allow (R10)."""
     if current == target:
         return
     allowed = ALLOWED.get(current, frozenset())
     if target not in allowed:
-        raise ValidationError(
-            {
-                "readiness": (
-                    f"'{current}' -> '{target}' is not allowed: readiness moves one step "
-                    f"at a time ({', '.join(sorted(allowed)) or 'no transition'})"
-                )
-            }
+        gate(
+            f"'{current}' -> '{target}' is not allowed: readiness moves one step "
+            f"at a time ({', '.join(sorted(allowed)) or 'no transition'})"
         )
 
 

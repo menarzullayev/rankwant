@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 from rest_framework import serializers
 
 from contests.models import Contest, ContestProblem
 from problems.models import Problem
-from problems.readiness import GRADED_READY, graded_gate_error
+from problems.readiness import GRADED_READY, enforcing, graded_gate_error
+
+log = logging.getLogger(__name__)
 
 
 class StaffContestProblemSerializer(serializers.ModelSerializer[ContestProblem]):
@@ -82,5 +85,10 @@ class StaffContestProblemListSerializer(serializers.Serializer[Any]):
         # gate (`check_negative.py`'s mutation proof removes both).
         for row in value:
             if row["problem"].readiness != GRADED_READY:
-                raise serializers.ValidationError(graded_gate_error(row["problem"]))
+                message = graded_gate_error(row["problem"])
+                # ADR 0050 — staged rollout: report while the flag is off.
+                if not enforcing():
+                    log.warning("readiness gate NOT enforced: %s", message)
+                    continue
+                raise serializers.ValidationError(message)
         return value

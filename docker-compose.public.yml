@@ -153,6 +153,11 @@ services:
       # tunnel chiqaradi — demak Cloudflare'ni chetlab o'tib bo'lmaydi.
       TRUSTED_CLIENT_IP_HEADER: HTTP_CF_CONNECTING_IP
       GUNICORN_WORKERS: ${GUNICORN_WORKERS:-4}
+      # ADR 0050 — staged rollout. `1` (standart) readiness darvozalarini
+      # majburlaydi; `0` faqat WARNING yozadi. Jonli bazada `validated` masala
+      # yo'q, shuning uchun production `0` bilan yuradi — kontent yetilgach
+      # olib tashlanadi.
+      READINESS_ENFORCE: ${READINESS_ENFORCE:-1}
 
   worker:
     <<: *restart

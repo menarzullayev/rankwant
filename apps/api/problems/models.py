@@ -341,7 +341,7 @@ class Problem(TimeStampedModel):
     def clean(self) -> None:
         from django.core.exceptions import ValidationError
 
-        from problems.readiness import assert_transition, requirement_error
+        from problems.readiness import assert_transition, gate, requirement_error
 
         if self.difficulty % DIFFICULTY_STEP:
             raise ValidationError({"difficulty": f"Value must be a multiple of {DIFFICULTY_STEP}"})
@@ -360,7 +360,7 @@ class Problem(TimeStampedModel):
 
         error = requirement_error(self, self.readiness)
         if error:
-            raise ValidationError({"readiness": error})
+            gate(error)
 
     def _stored_readiness(self) -> str | None:
         """The readiness this row currently has in the database, or `None`."""
