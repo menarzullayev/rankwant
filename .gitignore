@@ -65,6 +65,10 @@ apps/api/staticfiles/
 # uses requirements.lock), and while it was tracked every run showed up as a
 # change. The interpreter is pinned by apps/api/.python-version instead.
 apps/api/uv.lock
+# Celery beat writes its schedule file into the CWD (`/app`). While the code is
+# baked into the image that stays inside the container, but `docker-compose.dev.yml`
+# binds ./apps/api over /app, so the file lands in the working tree instead.
+apps/api/celerybeat-schedule
 apps/web/.next/
 apps/web/node_modules/
 
