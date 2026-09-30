@@ -398,6 +398,17 @@ S3_KEY = os.environ.get("S3_KEY", "")
 S3_SECRET = os.environ.get("S3_SECRET", "")
 S3_REGION = os.environ.get("S3_REGION", "us-east-1")
 
+#: So'rov tanasining yuqori chegarasi. Django standarti — 2.5 MB.
+#:
+#: ⚠️ O'lchandi 2026-09-30: bu standart `storage.MAX_TEST_BYTES` (8 MiB) dan
+#: PAST edi, ya'ni haqiqiy chegara shu bo'lib qolgan va KATTA QONUNIY test
+#: umuman yuklanmasdi — so'rov bizning aniq 400 javobimizni emas,
+#: `RequestDataTooBig` ni olardi (n = 200 000 uchun test odatda 1–4 MB).
+#: Endi Django — orqa qo'riqchi, biznes chegara esa `MAX_TEST_BYTES`:
+#: foydalanuvchi sababni aniq ko'radi. 16 MiB — bitta test fayli (8 MiB)
+#: ustidan ikki barobar zaxira.
+DATA_UPLOAD_MAX_MEMORY_SIZE = 16 * 1024 * 1024
+
 # Email — bitta provayder emas, ZANJIR (`core.mailer`). Bepul planlarning
 # kunlik kvotasi kichik, shuning uchun birinchisi «kvota tugadi» desa
 # keyingisi yuboradi. Kaliti yo'q provayder o'zi tushib qoladi.

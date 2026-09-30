@@ -336,7 +336,22 @@ class TestTestsizOmmagaChiqmaydi:
     def test_testi_borni_chiqarish_mumkin(self, staff_client, db) -> None:
         p = Problem.objects.create(slug="testli", title="Testli", difficulty=800)
         ProblemTestCase.objects.create(
-            problem=p, order=1, input_ref="s3://x/1.in", output_ref="s3://x/1.out"
+            problem=p,
+            order=1,
+            input_ref="s3://x/1.in",
+            output_ref="s3://x/1.out",
+            group=ProblemTestCase.Group.BOUNDARY,
+        )
+        # ADR 0051 — nashr uchun chegara VA maksimal testi majburiy
+        # (`testgroups.REQUIRED_GROUPS`). Bitta tasnifsiz test endi
+        # yetmaydi: release checklist §9 «edge case, boundary va maksimal
+        # testlar mavjud» ni so'raydi.
+        ProblemTestCase.objects.create(
+            problem=p,
+            order=2,
+            input_ref="s3://x/2.in",
+            output_ref="s3://x/2.out",
+            group=ProblemTestCase.Group.MAXIMUM,
         )
 
         r = staff_client.patch(

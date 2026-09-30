@@ -399,6 +399,33 @@ class TestCase(models.Model):
         #: va nega qayta tekshirilgani shu ustundan ko'rinadi.
         HACK = "hack", "Hack"
 
+    class Group(models.TextChoices):
+        """Testning SEMANTIK toifasi — `origin` dan butunlay boshqa o'q.
+
+        `origin` — test QAYERDAN kelgan (muallif yoki hack).
+        `group`  — test NIMANI tekshiradi (namuna, chegara, tasodifiy...).
+
+        Ikkisi bir-birini almashtirmaydi: muallif yozgan chegara testi
+        `origin=author, group=boundary`; hack'dan kelgan test esa
+        `origin=hack, group=adversarial`.
+
+        Siyosat (ko'rinish, nashr talabi) — `problems/testgroups.py` da.
+        Modelda faqat tasnif turadi, qarorlar bitta joyda.
+        """
+
+        SAMPLE = "sample", "Namuna"
+        MINIMAL = "minimal", "Minimal"
+        BOUNDARY = "boundary", "Chegara"
+        SPECIAL = "special", "Alohida holat"
+        RANDOM = "random", "Tasodifiy"
+        ADVERSARIAL = "adversarial", "Qarshi"
+        MAXIMUM = "maximum", "Maksimal"
+        STRESS = "stress", "Stress"
+        #: Faqat KO'CHIRISH holati: 2026-09-30 gacha yozilgan testlarda tasnif
+        #: yo'q edi. Nashr darvozasi buni «tasniflanmagan» deb qaraydi, ya'ni
+        #: yangi kontent bu qiymatni ishlatmasligi kerak.
+        UNCLASSIFIED = "unclassified", "Tasniflanmagan"
+
     problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name="tests")
     order = models.PositiveIntegerField()
     input_ref = models.CharField(max_length=500)
@@ -409,11 +436,21 @@ class TestCase(models.Model):
         Subtask, null=True, blank=True, on_delete=models.SET_NULL, related_name="tests"
     )
     origin = models.CharField(max_length=8, choices=Origin.choices, default=Origin.AUTHOR)
+    group = models.CharField(
+        max_length=16,
+        choices=Group.choices,
+        default=Group.UNCLASSIFIED,
+        help_text="Semantik toifa; nashr talabi `problems/testgroups.py` da.",
+    )
 
     class Meta:
         ordering: ClassVar = ["order"]
         constraints: ClassVar = [
             models.UniqueConstraint(fields=["problem", "order"], name="uniq_test_order")
+        ]
+        indexes: ClassVar = [
+            # Nashr darvozasi va judge siyosati guruh bo'yicha so'raydi.
+            models.Index(fields=["problem", "group"], name="test_problem_group_idx"),
         ]
 
     def __str__(self) -> str:

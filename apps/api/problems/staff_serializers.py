@@ -6,6 +6,7 @@ from typing import Any
 
 from rest_framework import serializers
 
+from problems import readiness, testgroups
 from problems.models import (
     DIFFICULTY_STEP,
     Language,
@@ -16,6 +17,7 @@ from problems.models import (
     Topic,
     Validator,
 )
+from problems.storage import MAX_TEST_BYTES
 
 
 class StaffTopicSerializer(serializers.ModelSerializer[Topic]):
@@ -128,6 +130,19 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
                     "a program that prints the sample would be accepted"
                 }
             )
+        # Guruh talabi (PROMPT_0 §3 · §9). Faqat E'LON QILISH paytida va
+        # faqat `READINESS_ENFORCE` yoqilganda: 2026-09-30 gacha yozilgan
+        # 2 096 masalada tasnif yo'q, ya'ni majburlash ularni tahrirlashni
+        # ham to'sib qo'yardi. Sabab `readiness.enforcing()` docstringida.
+        if elon_qilinyapti and readiness.enforcing():
+            missing = testgroups.missing_required_groups(
+                self.instance.tests.values_list("group", flat=True)
+            )
+            if missing:
+                labels = ", ".join(testgroups.group_label(g) for g in missing)
+                raise serializers.ValidationError(
+                    {"is_public": f"TEST_GROUP_MISSING: {labels} testi yo'q"}
+                )
         return attrs
 
     def validate_difficulty(self, value: int) -> int:
@@ -140,7 +155,15 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
 class StaffTestCaseSerializer(serializers.ModelSerializer[TestCase]):
     class Meta:
         model = TestCase
-        fields = ["id", "order", "is_sample", "points", "input_ref", "output_ref"]
+        fields = [
+            "id",
+            "order",
+            "is_sample",
+            "group",
+            "points",
+            "input_ref",
+            "output_ref",
+        ]
 
 
 class _ProblemProgramSerializer(serializers.ModelSerializer):  # type: ignore[type-arg]
@@ -190,11 +213,62 @@ class StaffReferenceSolutionSerializer(_ProblemProgramSerializer):
         read_only_fields = ["updated_at"]
 
 
+def _check_size(value: str, field: str) -> str:
+    """Test fayli hajmini BAYT bo'yicha tekshiradi.
+
+    DRF `max_length` BELGINI sanaydi, chegara esa baytda qo'yilgan (S3 va
+    judge baytni ko'radi). UTF-8 da belgi != bayt, ya'ni `max_length` yolg'iz
+    o'zi yetarli emas.
+    """
+    size = len(value.encode("utf-8"))
+    if size > MAX_TEST_BYTES:
+        raise serializers.ValidationError(f"{field} is {size} bytes; the limit is {MAX_TEST_BYTES}")
+    return value
+
+
 class TestCaseUploadSerializer(serializers.Serializer[Any]):
     """Test matni S3 ga ketadi, DB da faqat havola qoladi (05-domain-model)."""
 
     order = serializers.IntegerField(min_value=1)
-    input = serializers.CharField(allow_blank=True, trim_whitespace=False)
-    expected = serializers.CharField(allow_blank=True, trim_whitespace=False)
+    input = serializers.CharField(
+        allow_blank=True, trim_whitespace=False, max_length=MAX_TEST_BYTES
+    )
+    expected = serializers.CharField(
+        allow_blank=True, trim_whitespace=False, max_length=MAX_TEST_BYTES
+    )
     is_sample = serializers.BooleanField(default=False)
+    #: Bo'sh qoldirilsa `testgroups.DEFAULT_GROUP` (`unclassified`) qo'yiladi —
+    #: ya'ni «hali tasniflanmagan». Tasodifiy deb yozish yolg'on bo'lardi.
+    group = serializers.ChoiceField(
+        choices=TestCase.Group.choices, required=False, allow_blank=True
+    )
     points = serializers.IntegerField(min_value=0, default=0)
+
+    def validate_input(self, value: str) -> str:
+        return _check_size(value, "input")
+
+    def validate_expected(self, value: str) -> str:
+        return _check_size(value, "expected")
+
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        """`is_sample` va `group=SAMPLE` bir-biriga zid bo'lmasin.
+
+        Namuna test ommaviy ko'rinadi (shartdagi misol). Ya'ni
+        `group=sample` ni `is_sample=False` bilan qo'yish testni yashirin
+        qoldirib, uni tasnif bo'yicha ommaviy deb ko'rsatardi — ikki manba
+        ikki xil gapirardi. Shuning uchun bittasi ikkinchisini belgilaydi.
+        """
+        group = attrs.get("group") or ""
+        if attrs.get("is_sample"):
+            if group and group != TestCase.Group.SAMPLE:
+                raise serializers.ValidationError(
+                    {"group": "A sample test must be in the sample group"}
+                )
+            attrs["group"] = TestCase.Group.SAMPLE
+        elif group == TestCase.Group.SAMPLE:
+            raise serializers.ValidationError(
+                {"group": "The sample group is reserved for `is_sample` tests"}
+            )
+        elif not group:
+            attrs["group"] = testgroups.DEFAULT_GROUP
+        return attrs

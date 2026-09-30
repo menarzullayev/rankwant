@@ -167,6 +167,9 @@ class StaffProblemViewSet(StaffViewSet):
                 "input_ref": input_ref,
                 "output_ref": output_ref,
                 "is_sample": data["is_sample"],
+                # Serializer `is_sample` bilan moslashtiradi (ADR 0051):
+                # `group` bu yerda qayta hisoblanmaydi, bitta manba qoladi.
+                "group": data["group"],
                 "points": data["points"],
             },
         )
