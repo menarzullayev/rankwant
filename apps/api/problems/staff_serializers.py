@@ -6,12 +6,13 @@ from typing import Any
 
 from rest_framework import serializers
 
-from problems import readiness, testgroups
+from problems import readiness, release, testgroups
 from problems.models import (
     DIFFICULTY_STEP,
     Language,
     Problem,
     ProblemReport,
+    ProblemRevision,
     ReferenceSolution,
     TestCase,
     Topic,
@@ -167,6 +168,32 @@ class StaffTestCaseSerializer(serializers.ModelSerializer[TestCase]):
             "input_ref",
             "output_ref",
         ]
+
+
+class StaffRevisionSerializer(serializers.ModelSerializer[ProblemRevision]):
+    """Masala paketining muzlatilgan surati (ADR 0052)."""
+
+    integrity_ok = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ProblemRevision
+        fields = [
+            "id",
+            "version",
+            "status",
+            "package_hash",
+            "integrity_ok",
+            "judge_environment",
+            "frozen_at",
+            "published_at",
+            "gate_report",
+            "created_at",
+        ]
+        read_only_fields = fields
+
+    def get_integrity_ok(self, obj: ProblemRevision) -> bool:
+        """Paket xeshi buzilmaganmi — artefakt o'zgarganmi (§8 · §10)."""
+        return bool(obj.package_hash) and release.verify_package(obj)
 
 
 class _ProblemProgramSerializer(serializers.ModelSerializer):  # type: ignore[type-arg]

@@ -17,6 +17,19 @@ class Attempt(models.Model):
     problem = models.ForeignKey(
         "problems.Problem", on_delete=models.CASCADE, related_name="attempts"
     )
+    #: Natija QAYSI revision asosida olingani (ADR 0052).
+    #:
+    #: ⚠️ Bu maydon `null` bo'lishi mumkin va shunday qoladi: 2026-09-30
+    #: gacha olingan urinishlar qaysi paketda yurgizilganini bilib
+    #: bo'lmaydi — ularni «birinchi revision» deb yozish tarixni
+    #: o'ylab topish bo'lardi. Yangi urinishlarda to'ldiriladi.
+    problem_revision = models.ForeignKey(
+        "problems.ProblemRevision",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="attempts",
+    )
     contest = models.ForeignKey(
         "contests.Contest",
         null=True,
