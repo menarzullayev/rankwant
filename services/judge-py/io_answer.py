@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from judge import classify
 from protocol import IO, Limits, RunOutcome, Test
 
 DEFAULT_INPUT = "input.txt"
@@ -40,6 +39,8 @@ def write_test_input_file(work: str, test: Test, io: IO) -> None:
 
 
 def classify_answer(out: RunOutcome, test: Test, lim: Limits, work: str, io: IO) -> str:
+    from judge import classify
+
     mode = _io_mode(io)
     if mode == "stdio":
         return classify(out, test, lim)

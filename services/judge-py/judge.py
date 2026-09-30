@@ -234,13 +234,17 @@ def judge(
                     )
                     if on_progress:
                         on_progress(job.attempt_id, test.index)
-                assert box.path is not None
-                reset_io_artifacts(str(box.path), job.io)
-                write_test_input_file(str(box.path), test, job.io)
+                io_mode = job.io.mode or "stdio"
+                work = ""
+                if io_mode != "stdio":
+                    assert box.path is not None
+                    work = str(box.path)
+                    reset_io_artifacts(work, job.io)
+                    write_test_input_file(work, test, job.io)
                 out = run_sandboxed(
                     box, run_cmd, test.input, job.limits, wall_limit, open_files=open_files
                 )
-                verdict = classify_answer(out, test, job.limits, str(box.path), job.io)
+                verdict = classify_answer(out, test, job.limits, work, job.io)
                 max_cpu = max(max_cpu, out.cpu_ms)
                 max_mem = max(max_mem, out.peak_kb)
                 result["per_test"].append(

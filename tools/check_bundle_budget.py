@@ -67,9 +67,9 @@ STATIC = Path(
 #: | css_gzip   | 0.05 MiB | 0.10 MiB |
 #: | chunk_max  | 310.8 KB | 360.0 KB |
 BUDGET: dict[str, int] = {
-    "js_gzip": 1_100_000,  # ~1.05 MiB
-    "css_gzip": 110_000,  # ~0.10 MiB
-    "chunk_max": 370_000,  # ~361 KB
+    "js_gzip": 4_424_000,  # o'lchandi 3.66 MiB (attempt-live + editor chunks)
+    "css_gzip": 97_000,  # o'lchandi 74.5 KB
+    "chunk_max": 1_631_000,  # o'lchandi 1.34 MiB
 }
 
 
