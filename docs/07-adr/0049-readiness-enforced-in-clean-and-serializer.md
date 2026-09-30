@@ -60,6 +60,35 @@ Shu sababli darvozaning **xatti-harakati** alohida probe bilan o'lchandi (4/4): 
 
 Uch fayldagi o'zgarish bir commit'da qaytariladi. Sxema o'zgarmaydi, migratsiya yo'q.
 
+## 6a. ⚠️ Joriy etishdan OLDIN o'qilishi shart
+
+**Bu o'zgarish production'da hozircha ishlatilmasligi kerak.** Sabab — o'lchandi
+2026-09-30, ishlab turgan baza:
+
+| readiness | masalalar |
+| --- | --- |
+| `legacy_unverified` | 1 225 |
+| `draft` | 867 |
+| `needs_review` | 4 |
+| **`validated`** | **0** |
+
+Ya'ni `GRADED_READY` ga mos keladigan masala **bitta ham yo'q**, demak darvoza
+**har qanday** contest'ga masala qo'shishni rad etadi (`400`). Kod `main` da,
+lekin **deploy qilinmagan** — va kontent `validated` ga ko'chirilmaguncha
+deploy qilinmasligi kerak.
+
+`validated` ga chiqish yo'li bor: `manage.py verify_readiness` (S3/S4 judge
+harness'i bilan) va `manage.py backfill_readiness` (audit). Lekin 2 096 masalani
+`validated` ga ko'chirish — **alohida ish**, va u kontent tayyorligi bilan
+bog'liq (yashirin testlar, checker turlari, etalon yechimlar). Tartib:
+
+1. Kontentni `validated` ga ko'chirish (yoki darvozani bosqichma-bosqich
+   joriy etish: avval faqat ogohlantirish, keyin rad etish).
+2. Shundan keyingina deploy.
+
+Shu sababli bu ADR **hujjat sifatida** yozildi: kod tayyor, joriy etish sharti
+bajarilmagan.
+
 ## 7. Tasdiq
 
 - `apps/api/tests/test_problem_readiness.py` to'liq yashil (11 test).
