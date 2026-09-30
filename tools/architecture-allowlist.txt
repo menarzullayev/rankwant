@@ -1,0 +1,138 @@
+# App chegarasi allowlist — D7 (grandfather + ratchet).
+#
+# Qoida: bir app boshqa app'ning `models` modulini import qilmasin
+# (`from <boshqa_app>.models import ...` / `import <boshqa_app>.models`).
+# Istisno: `migrations/`, `tests/` va `core` (umumiy poydevor — unga
+# tayanish ruxsat). Batafsil: tools/check_architecture.py.
+#
+# Format: <nisbiy/yol.py>:<import qilingan modul>
+#   (yo'l `apps/api/` ga nisbatan; modul `X.models` ko'rinishida)
+#
+# ⚠️ Bu ro'yxat faqat QISQARADI (ratchet): importni tuzatsangiz, yozuvni
+#    shu yerdan O'CHIRING — aks holda gate `exit 1` beradi.
+# ⚠️ AI qatlami `apps/api/ai/` ham qamrovda (D6 -> D7 ketma-ket shart);
+#    bugun u toza, ya'ni allowlist'da uning yozuvi YO'Q.
+#
+# Bugungi buzilishlar: assurance hisoboti 4 ta namuna ko'rsatgan
+# (arena/services.py:15, judging/serializers.py:8-9, ratings/services.py:12,284,371,
+# classroom/serializers.py:8), to'liq skan esa 111 ta topdi — hammasi shu yerda.
+#
+# jami: 111
+
+arena/services.py:quizzes.models
+arena/services.py:qvant.models
+arena/staff_serializers.py:quizzes.models
+blog/tasks.py:notifications.models
+classroom/serializers.py:problems.models
+classroom/services.py:ratings.models
+classroom/views.py:problems.models
+content/serializers.py:problems.models
+content/staff_serializers.py:problems.models
+content/views.py:ratings.models
+contests/certificates.py:judging.models
+contests/management/commands/seed_contest_scale.py:judging.models
+contests/management/commands/seed_contest_scale.py:problems.models
+contests/services.py:hacks.models
+contests/services.py:judging.models
+contests/staff_serializers.py:problems.models
+core/account.py:contests.models
+core/account.py:duels.models
+core/account.py:judging.models
+core/account.py:notifications.models
+core/account.py:problems.models
+core/account.py:profiles.models
+core/account.py:quizzes.models
+core/account.py:qvant.models
+core/account.py:ratings.models
+core/management/commands/seed_demo.py:arena.models
+core/management/commands/seed_demo.py:classroom.models
+core/management/commands/seed_demo.py:content.models
+core/management/commands/seed_demo.py:contests.models
+core/management/commands/seed_demo.py:duels.models
+core/management/commands/seed_demo.py:hackathons.models
+core/management/commands/seed_demo.py:problems.models
+core/management/commands/seed_demo.py:quizzes.models
+core/management/commands/seed_demo.py:tournaments.models
+core/management/commands/seed_stress.py:judging.models
+core/management/commands/seed_stress.py:problems.models
+core/management/commands/seed_stress.py:ratings.models
+core/serializers.py:notifications.models
+core/serializers.py:problems.models
+core/serializers.py:ratings.models
+core/staff_views.py:notifications.models
+core/staff_views.py:qvant.models
+core/tasks.py:notifications.models
+core/usernames.py:qvant.models
+core/views.py:arena.models
+core/views.py:content.models
+core/views.py:contests.models
+core/views.py:duels.models
+core/views.py:hackathons.models
+core/views.py:judging.models
+core/views.py:problems.models
+core/views.py:ratings.models
+core/views.py:tournaments.models
+duels/services.py:judging.models
+duels/services.py:notifications.models
+duels/services.py:problems.models
+duels/services.py:qvant.models
+duels/services.py:ratings.models
+hackathons/services.py:notifications.models
+hacks/serializers.py:contests.models
+hacks/serializers.py:judging.models
+hacks/serializers.py:problems.models
+hacks/services.py:contests.models
+hacks/services.py:judging.models
+hacks/services.py:notifications.models
+hacks/services.py:problems.models
+hacks/services.py:qvant.models
+hacks/services.py:ratings.models
+hacks/tasks.py:contests.models
+hacks/views.py:contests.models
+hacks/views.py:judging.models
+hacks/views.py:problems.models
+judging/serializers.py:contests.models
+judging/serializers.py:hacks.models
+judging/serializers.py:problems.models
+judging/services.py:problems.models
+judging/views.py:problems.models
+problems/filters.py:judging.models
+problems/filters.py:ratings.models
+problems/management/commands/remap_difficulty.py:ratings.models
+problems/recommend.py:ratings.models
+problems/views.py:judging.models
+problems/views.py:qvant.models
+problems/views.py:ratings.models
+profiles/achievements.py:qvant.models
+profiles/achievements.py:ratings.models
+profiles/public.py:classroom.models
+profiles/public.py:contests.models
+profiles/public.py:problems.models
+profiles/public.py:qvant.models
+profiles/public.py:ratings.models
+profiles/stats.py:contests.models
+profiles/stats.py:judging.models
+profiles/stats.py:problems.models
+profiles/stats.py:ratings.models
+profiles/views.py:contests.models
+quizzes/serializers.py:problems.models
+quizzes/services.py:qvant.models
+quizzes/staff_serializers.py:arena.models
+quizzes/staff_serializers.py:problems.models
+qvant/marathon.py:problems.models
+qvant/marathon.py:ratings.models
+qvant/services.py:judging.models
+qvant/services.py:notifications.models
+qvant/services.py:ratings.models
+ratings/services.py:contests.models
+ratings/services.py:duels.models
+ratings/services.py:judging.models
+ratings/services.py:notifications.models
+# `realtime` (ADR 0029) — SSE hodisalari `Attempt` holatini e'lon qiladi,
+# ya'ni `judging.models` bu modul uchun haqiqiy bog'liqlik. Yuqoridagi 15 ta
+# `*:judging.models` yozuvi bilan bir xil naqsh; ro'yxatga qo'shilmagani
+# sabab gate `exit 1` berardi (o'lchandi 2026-09-30).
+realtime/asgi.py:judging.models
+realtime/events.py:judging.models
+tournaments/services.py:contests.models
+tournaments/staff_serializers.py:contests.models
