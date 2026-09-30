@@ -27,7 +27,7 @@
     "@rankwant/shared": "*",
     "country-flag-icons": "^1.6.20",
     "katex": "^0.18.9",
-    "monaco-editor": "^0.55.1",
+    "monaco-editor": "^0.57.0",
     "next": "^16.3.6",
     "react": "19.3.0",
     "react-dom": "19.3.0",
