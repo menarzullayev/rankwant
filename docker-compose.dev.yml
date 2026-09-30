@@ -1,0 +1,155 @@
+# Development-only overlay: run the API from the working tree, no rebuild.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --wait api
+#
+# WHY THIS FILE EXISTS: `api`, `worker`, `beat`, `realtime` and `migrate` all
+# build from the `x-api-build` anchor, and `apps/api/Dockerfile` bakes the
+# source into the image (`COPY . .`). So every single .py edit needed
+# `docker compose build` + recreate — a build-and-recreate cycle for a change
+# that takes seconds to type. This overlay bind-mounts the host tree over
+# `/app` instead, so the container reads exactly the files the editor writes.
+#
+# WHY MOUNTING ALL OF `/app` IS SAFE HERE: the Dockerfile installs
+# requirements into system site-packages, NOT into `/app`. Measured inside
+# `rankwant-api:latest`: `python -c "import sys; print(sys.prefix)"` →
+# `/usr/local`, while the code sits at `/app`. Replacing `/app` therefore
+# swaps code only; the installed packages survive untouched.
+#
+# ⚠️ DEV ONLY — NEVER USE THIS IN PRODUCTION:
+#   * `docker-compose.public.yml` (and CI) must keep the BAKED source. The
+#     image carries the `org.rankwant.git-sha` label and
+#     `tools/check_deploy.sh` reads that label to detect a stale deploy. With
+#     a bind mount the label would keep describing the old build while the
+#     container serves different code — the check would silently pass on a
+#     mismatched deployment.
+#   * `manage.py runserver` is Django's development server: single process,
+#     no worker supervision, no hardening.
+#   * This overlay forces `DJANGO_DEBUG=1`.
+#
+# COMPOSING WITH THE OTHER OVERLAYS: this file only touches `api`, `worker`,
+# `beat`, `realtime`, `migrate` (volumes + command) — it does not move `web`,
+# so it stacks with `docker-compose.dev-local.yml` (host `next dev` +
+# CORS/CSRF origins). Put it LAST: nothing else here sets `command:`, but
+# `docker-compose.public.yml` sets `DJANGO_DEBUG=0` and would win if it came
+# after this file.
+#
+#   docker compose -p rankwant --env-file .env.public \
+#     -f docker-compose.yml -f docker-compose.public.yml \
+#     -f docker-compose.dev-local.yml -f docker-compose.dev.yml \
+#     up -d --no-build --wait postgres redis minio judge-queue \
+#     migrate api worker beat judge realtime
+#
+# `--no-build` is correct with this overlay: the whole point is that the
+# image does not need rebuilding when only .py files changed. Rebuild once
+# when `apps/api/requirements.lock` changes — the bind mount cannot install
+# packages for you.
+
+services:
+  api:
+    # `runserver`, not gunicorn: it ships Django's StatReloader, which polls
+    # file mtimes once per second. That matters on this host — Docker Desktop
+    # bind mounts of Windows paths do not reliably forward inotify events, but
+    # mtime polling always sees the edit. `gunicorn --reload` prefers inotify
+    # and is therefore the weaker choice here.
+    #
+    # Measured on this host — file edited at 20:03:57Z, three seconds later:
+    #   /app/manage.py changed, reloading.
+    #   Django version 5.2.17, using settings 'config.settings'
+    # i.e. `docker compose ... logs -f api` shows a fresh startup banner per
+    # edit, and no `docker compose build` is involved.
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      # Host working tree → container code. Read-write on purpose:
+      # `makemigrations` has to write new migration files back onto the host.
+      - ./apps/api:/app
+      # ⚠️ STATICFILES — the one trap in this overlay. Build-time
+      # `collectstatic` writes to `/app/staticfiles`, i.e. INSIDE `/app`, so
+      # the bind mount above replaces it with the host directory. The host
+      # has none (measured: `apps/api/staticfiles` is absent; .gitignore has
+      # it at lines 45 and 63), so `/app/staticfiles` comes up EMPTY.
+      #
+      # Fix: mount an empty NAMED VOLUME on top of that bind-mounted subpath.
+      # Docker seeds a fresh volume with whatever the image has at that path,
+      # so the baked assets survive. Measured with DJANGO_DEBUG=0 (the only
+      # mode where it matters — see below):
+      #   bind mount only            → GET /static/admin/css/base.css → 404
+      #   bind mount + named volume  → GET /static/admin/css/base.css → 200
+      #
+      # Two measured facts that shape this, both from `rankwant-api:latest`:
+      #   * `settings.py` sets STATICFILES_STORAGE = whitenoise...Compressed-
+      #     ManifestStaticFilesStorage, but Django 5.2 no longer reads that
+      #     setting (removed in 5.1): the effective backend is plain
+      #     `StaticFilesStorage`. So there is NO `staticfiles.json` manifest
+      #     that Whitenoise could blow up on — the failure is 404s, never a
+      #     startup crash, which is exactly why it is easy to miss.
+      #   * With DEBUG=1 Whitenoise turns on `autorefresh` and serves through
+      #     the staticfiles FINDERS, so an empty STATIC_ROOT accidentally
+      #     still works. With DEBUG=0 it serves from STATIC_ROOT only and
+      #     every /static/* 404s. Since `docker-compose.public.yml` sets
+      #     DEBUG=0, never rely on the DEBUG=1 accident.
+      #
+      # Escape hatch: a named volume is seeded ONCE. If admin CSS ever looks
+      # stale after an image rebuild, drop it so it is re-seeded:
+      #   docker volume rm <project>_api-staticfiles
+      - api-staticfiles:/app/staticfiles
+    environment:
+      # Explicit, because `docker-compose.public.yml` sets `0` and the daily
+      # `tools/dev-local.*` scripts compose that file. Dev overlay means dev.
+      DJANGO_DEBUG: "1"
+
+  realtime:
+    # ⚠️ NO `--reload` HERE — deliberately. `uvicorn --reload` is unusable at
+    # this repo's size on a Windows bind mount, and the numbers below are
+    # measured (QA), not guessed:
+    #   * `watchfiles` is not in requirements.lock, so uvicorn falls back to
+    #     `uvicorn/supervisors/statreload.py::StatReload`;
+    #   * `iter_py_files()` rglob-walks 5833 .py files (21.73 s) and `stat()`s
+    #     every one of them (6.74 s) → **28.46 s for a single poll**;
+    #   * `restart()` then clears `self.mtimes`, so the NEXT change needs ~2
+    #     full polls again;
+    #   * measured reload latency after an edit: 45–60 s (`api` does it in
+    #     ~7 s), and a 12 s edit-and-restore test produced NO reload at all.
+    # Installing `watchfiles` would not rescue it: that switches to inotify,
+    # and inotify is exactly what does not propagate over Windows bind mounts
+    # — the same reason `api` runs Django's StatReloader instead.
+    #
+    # So the rule here is the same as for `worker`/`beat` below:
+    #   docker compose -f docker-compose.yml -f docker-compose.dev.yml restart realtime
+    # Measured on this host: healthy again in 2 s — an order of magnitude
+    # faster than waiting for a reloader that needs 45–60 s.
+    #
+    # The base command (`uvicorn ... --workers ${REALTIME_WORKERS:-1}`) is left
+    # in place on purpose: not duplicating it here means dev cannot drift out
+    # of sync with docker-compose.yml, and REALTIME_WORKERS still applies if a
+    # dev sets it. (`--reload` and `--workers` are mutually exclusive anyway.)
+    volumes:
+      - ./apps/api:/app
+      - api-staticfiles:/app/staticfiles
+    environment:
+      DJANGO_DEBUG: "1"
+
+  # ⚠️ Celery has NO auto-reload: `worker` and `beat` import tasks once and
+  # keep them (`celery --autoreload` existed only up to Celery 3). The mount
+  # still pays off — after editing a task module:
+  #   docker compose -f docker-compose.yml -f docker-compose.dev.yml restart worker beat
+  # picks up the new source in about a second, with no image rebuild. Without
+  # the mount the same edit costs a full `build` + recreate.
+  worker:
+    volumes:
+      - ./apps/api:/app
+
+  beat:
+    volumes:
+      - ./apps/api:/app
+
+  # One-shot migration runner. Mounted so `migrate` applies the migrations
+  # that are on disk right now, not the ones baked into the image — the stale
+  # `migrate` image trap is documented on the service in docker-compose.yml.
+  migrate:
+    volumes:
+      - ./apps/api:/app
+
+volumes:
+  # Holds the image's baked `/app/staticfiles` so the `/app` bind mount cannot
+  # shadow it. Content comes from the image on first creation (see note above).
+  api-staticfiles:
