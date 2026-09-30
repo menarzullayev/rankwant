@@ -609,3 +609,44 @@ jobs:
           CELERY_EAGER: '1'
         run: pytest -n 4 --cov --cov-report=term-missing
         working-directory: apps/api
+
+  #: Readiness gate (WP1 · D8 · D8-F · ADR-0037) — `check_negative.py` ning
+  #: api guruhi. U pytest'ni `rankwant-api-dev:audit` ICHIDA yuritadi, ya'ni
+  #: image kerak. Per-PR `web` job buni qila olmaydi: byudjeti 3 daqiqa va
+  #: image umuman yo'q — shu sabab guruh o'sha yerda ochiq skip qilinadi
+  #: (ADR 0048). Yagona yuritadigan joy — shu job.
+  #:
+  #: ⚠️ O'z job'i ATAYLAB, `latency` bilan bir mantiq: boshqa guruhga
+  #: bog'langan darvoza aloqasiz sababdan qizil bo'lardi.
+  readiness:
+    name: Readiness — content gates (WP1 · ADR-0037)
+    runs-on: ubuntu-latest
+    # ⚠️ More than 3 minutes — a DELIBERATE exception, like `load` and
+    # `latency`: the api image is built here, then the dev image on top of
+    # it. A 3-minute cap makes the job a guaranteed red.
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - name: API image
+        # Context `apps/api` — the same one compose uses (`x-api-build`).
+        # Built here rather than through `ci_stack.sh` because the group
+        # needs only the image, not a running stack.
+        run: docker build -t rankwant-api:readiness apps/api
+      - name: Dev image with the test dependencies
+        # `tools/ci.Dockerfile` takes the repo ROOT as its context (it copies
+        # `apps/api/requirements-dev.lock`) and the api image as its base.
+        run: |
+          docker build -f tools/ci.Dockerfile \
+            --build-arg BASE=rankwant-api:readiness \
+            -t rankwant-api-dev:audit .
+      - name: Readiness group — WP1 · ADR-0037
+        # While the group's case files are not committed the group reports an
+        # explicit skip — "the group has not arrived with its PR yet" is not
+        # "the environment is broken". Once the files land, a missing image or
+        # a red baseline becomes a hard failure here.
+        run: python3 tools/check_negative.py --group neg_refsolution_gate
+      - name: Clean images
+        if: always()
+        run: |
+          docker rmi -f rankwant-api:readiness rankwant-api-dev:audit || true
+          docker builder prune -f || true

@@ -8733,6 +8733,15 @@ def _main_parallel(jobs: int) -> int:
         )
         names = [name for name in names if name != gname]
     names = [name for name in names if name not in {"visual", "csp_nonce"}]
+    # `readiness` — `visual` bilan bir sinf, LEKIN uni yuqoridagi
+    # `_UNCOMMITTED_GROUP_FILES` allaqachon chiqarib tashlagan bo'lishi
+    # mumkin (case fayllari hali o'z PR'i bilan kelmagan). O'shanda ikkinchi
+    # qator ortiqcha bo'lardi, shuning uchun faqat ro'yxatda qolgan bo'lsa
+    # aytamiz.
+    if "neg_refsolution_gate" in names:
+        names = [name for name in names if name != "neg_refsolution_gate"]
+        print("  - O'TKAZIB YUBORILDI: readiness guruhi — `rankwant-api-dev:audit` talab "
+              "qiladi (`--group neg_refsolution_gate`, nightly)")
     workers = min(jobs, len(names))
     buckets: list[list[str]] = [[] for _ in range(workers)]
     for i, name in enumerate(names):
@@ -8836,9 +8845,13 @@ def main(argv: list[str]) -> int:
     # yuboriladi va hisobotning oxirida ko'rinadi. Windows'da — ya'ni
     # monitor haqiqatan ishlaydigan mashinada, pre-push hook'da — guruh
     # har doim ishlaydi.
-    # Readiness gate (WP1) — pytest konteynerda yuguradi. Old shart mantig'i
-    # NODE bilan bir xil: muhit tayyor bo'lmasa «yiqildi» ni «tutdi» deb
-    # o'qib bo'lmaydi, shuning uchun ochiq qizil.
+    # Readiness gate (WP1 · ADR-0037) — pytest konteynerda yuguradi, ya'ni
+    # `rankwant-api-dev:audit` image'ini talab qiladi. Uni per-PR CI qura
+    # olmaydi: web job byudjeti 3 daqiqa, image esa u yerda umuman yo'q.
+    # Shuning uchun guruh `visual` va `csp_nonce` bilan BIR SINF: to'liq
+    # to'plamda ochiq o'tkazib yuboriladi, `--group neg_refsolution_gate`
+    # bilan esa old shart tekshiriladi va bajarilmasa OCHIQ yiqiladi.
+    # Guruhni Nightly yuritadi (`nightly.yml` → `readiness` job, ADR 0048).
     # ⚠️ ISTISNO — test fayllarining o'zi commit qilinmagan bo'lsa (CI
     # `git archive HEAD` nusxada yuradi — fan-out'dagi kabi), «muhit tayyor
     # emas» EMAS, «guruh hali o'z PR'si bilan kelmagan» bo'ladi: ochiq
@@ -8848,17 +8861,22 @@ def main(argv: list[str]) -> int:
             rel for rel in API_CASE_FILES if not (ROOT / rel).exists()
         ]
         if missing_case_files:
-            print(
-                "  - O'TKAZIB YUBORILDI: readiness gate (WP1) — commit qilinmagan "
-                f"fayllar yo'q ({', '.join(missing_case_files)}); WP1 PR'i bilan keladi"
+            skipped.append(
+                "readiness gate (WP1) — commit qilinmagan fayllar yo'q "
+                f"({', '.join(missing_case_files)}); WP1 PR'i bilan keladi"
             )
-        else:
+        elif only == "neg_refsolution_gate":
             reason = api_test_precondition()
             if reason:
                 print(f"  ✕ {reason}")
                 print()
                 print("1/1 salbiy test YIQILDI — muhit tayyor emas, o'lchov yo'q.")
                 return 1
+        else:
+            skipped.append(
+                "readiness guruhi — `rankwant-api-dev:audit` talab qiladi "
+                "(nightly, --group neg_refsolution_gate)"
+            )
 
     if selected & MONITOR_CASES:
         reason = monitor_precondition()
@@ -8890,6 +8908,14 @@ def main(argv: list[str]) -> int:
             continue
         if checker == "neg_check_metrics" and any(
             row.startswith("metrics guruhi") for row in skipped
+        ):
+            continue
+        # `readiness` — `visual` bilan bir sinf: per-PR to'plamda yuritilmaydi
+        # (image kerak), faqat `--group neg_refsolution_gate` yurgizadi.
+        # Guard bo'lmasa skip xabari chiqadi-yu, case'lar baribir yurib,
+        # o'lik yashil yoki soxta qizil beradi.
+        if checker == "neg_refsolution_gate" and any(
+            row.startswith("readiness") for row in skipped
         ):
             continue
         for label, fn in cases:
