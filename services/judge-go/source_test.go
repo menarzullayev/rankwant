@@ -72,7 +72,7 @@ func TestJudgeWritesSourceUnderLanguageFile(t *testing.T) {
 		return &runOutcome{Stdout: "3\n"}, nil
 	})
 
-	res := judge(context.Background(), kotlinJob(), nil)
+	res := judge(context.Background(), kotlinJob(), nil, nil)
 
 	if res.Verdict != VAC {
 		t.Fatalf("verdict %s, AC expected (compile output %q)", res.Verdict, res.CompileOutput)
@@ -101,7 +101,7 @@ func TestJudgeRefusesUnsafeSourceFile(t *testing.T) {
 	job := kotlinJob()
 	job.Language.SourceFile = "../main.kt"
 
-	res := judge(context.Background(), job, nil)
+	res := judge(context.Background(), job, nil, nil)
 
 	if res.Verdict != VIE {
 		t.Fatalf("verdict %s, IE expected", res.Verdict)

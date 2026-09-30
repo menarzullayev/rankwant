@@ -62,7 +62,7 @@ func TestJudgeCarriesProcSelfAndCompilerFiles(t *testing.T) {
 	job := kotlinJob()
 	job.Language.ProcSelf = true
 
-	if res := judge(context.Background(), job, nil); res.Verdict != VAC {
+	if res := judge(context.Background(), job, nil, nil); res.Verdict != VAC {
 		t.Fatalf("verdict %s, AC expected", res.Verdict)
 	}
 	compile, run := (*calls)[0].lim, (*calls)[1].lim
@@ -91,7 +91,7 @@ func TestJudgeCarriesLanguageOpenFiles(t *testing.T) {
 		job := kotlinJob()
 		job.Language.OpenFiles = want.language
 
-		judge(context.Background(), job, nil)
+		judge(context.Background(), job, nil, nil)
 
 		if got := (*calls)[0].lim.OpenFiles; got != want.compile {
 			t.Fatalf("language %d: compile OpenFiles %d, %d expected", want.language, got, want.compile)
@@ -107,7 +107,7 @@ func TestJudgeKeepsProcMaskedWithoutProcSelf(t *testing.T) {
 		return &runOutcome{Stdout: "3\n"}, nil
 	})
 
-	judge(context.Background(), kotlinJob(), nil)
+	judge(context.Background(), kotlinJob(), nil, nil)
 
 	for i, c := range *calls {
 		if c.lim.ProcSelf {
@@ -121,7 +121,7 @@ func TestValidatorCarriesProcSelf(t *testing.T) {
 	job := validatedJob("1 2\n")
 	job.Validator.ProcSelf = true
 
-	judge(context.Background(), job, nil)
+	judge(context.Background(), job, nil, nil)
 
 	validator, submission := partition(*calls)
 	if len(validator) == 0 || !validator[0].lim.ProcSelf {

@@ -20,11 +20,18 @@ export function AttemptVerdictPanel({
   locale: Locale;
   compact?: boolean;
 }) {
+  const runningLabel = (a: AttemptDetail) => {
+    if (a.verdict === "RUNNING" && a.running_test_index != null) {
+      return fill(t(locale, "submit.runningTest"), { n: a.running_test_index });
+    }
+    return t(locale, "submit.running");
+  };
+
   if (pending && (!attempt || isPendingVerdict(attempt.verdict))) {
     return (
       <div className="flex items-center justify-center gap-2 py-4 text-theme-sm rw-dim">
         <Loading />
-        <span>{t(locale, "submit.running")}</span>
+        <span>{attempt ? runningLabel(attempt) : t(locale, "submit.running")}</span>
       </div>
     );
   }
@@ -41,7 +48,7 @@ export function AttemptVerdictPanel({
     return (
       <div className="flex items-center justify-center gap-2 py-4 text-theme-sm rw-dim">
         <Loading />
-        <span>{t(locale, "submit.running")}</span>
+        <span>{runningLabel(attempt)}</span>
       </div>
     );
   }

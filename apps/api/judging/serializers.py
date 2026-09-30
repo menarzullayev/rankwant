@@ -52,6 +52,7 @@ class AttemptSerializer(serializers.ModelSerializer[Attempt]):
             "time_ms",
             "memory_kb",
             "failed_test_index",
+            "running_test_index",
             "created_at",
             "judged_at",
             "source_size",

@@ -1,15 +1,25 @@
 /** Transport: base URL, pagination envelope, `ApiError` and the fetch helpers. */
 
+import { publicApiBase, resolveBrowserApiBase, resolveBrowserRealtimeBase, serverApiBase } from "@/lib/api-base";
+
 /**
  * Brauzer va server bir xil manzildan foydalana olmaydi: brauzer host'dagi
  * `localhost:8000` ni ko'radi, konteyner ichidagi SSR esa u yerda hech
  * nima topmaydi (ECONNREFUSED). Shuning uchun server tomon uchun alohida
  * ichki manzil — sozlanmasa, ommaviy manzilga qaytadi.
+ *
+ * Brauzerda loopback preview (`127.0.0.1:8300`) uchun qarang `api-base.ts`.
  */
 export const API_BASE =
-  (typeof window === "undefined"
-    ? process.env.API_BASE_INTERNAL || process.env.NEXT_PUBLIC_API_BASE
-    : process.env.NEXT_PUBLIC_API_BASE) ?? "http://localhost:8000/api/v1";
+  typeof window === "undefined"
+    ? serverApiBase()
+    : resolveBrowserApiBase(process.env.NEXT_PUBLIC_API_BASE, window.location);
+
+/** SSE / realtime report — split-stack dev'da `:8302`, aks holda `API_BASE`. */
+export const REALTIME_BASE =
+  typeof window === "undefined"
+    ? serverApiBase()
+    : resolveBrowserRealtimeBase(process.env.NEXT_PUBLIC_API_BASE, window.location);
 
 import { log } from "@/lib/log";
 

@@ -142,6 +142,8 @@ ga o'giradi. O'lchangan farq: 14m54s → 1m57s.
 
 ## Preview
 
+Kundalik ish uchun **web rebuildsiz** rejim: [local-dev.md](docs/10-operations/local-dev.md) — `powershell -File tools/dev-local.ps1` → UI `http://127.0.0.1:8310/`.
+
 ```bash
 docker compose -p rankwant --env-file .env.public -f docker-compose.yml -f docker-compose.public.yml up -d --build --wait
 ```

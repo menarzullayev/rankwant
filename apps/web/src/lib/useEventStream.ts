@@ -2,13 +2,20 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { API_BASE } from "@/lib/api";
+import { REALTIME_BASE } from "@/lib/api/client";
 
 /** Ulanish holati. `fallback` — oqim ishlamayapti, mijoz polling'da. */
 export type StreamState = "connecting" | "open" | "fallback";
 
 /** Server hodisalari — `realtime/events.py` bilan AYNAN bir xil bo'lishi shart. */
 export const EVENT_VERDICT = "verdict";
+export const EVENT_ATTEMPT_FINISHED = "attempt_finished";
+export const EVENT_ATTEMPT_PROGRESS = "attempt_progress";
+export const EVENT_ATTEMPT_QUEUED = "attempt_queued";
+export const EVENT_TEST_STARTED = "test_started";
+export const EVENT_COMPILATION_STARTED = "compilation_started";
+export const EVENT_COMPILATION_FINISHED = "compilation_finished";
+export const EVENT_TEST_FINISHED = "test_finished";
 export const EVENT_STANDINGS = "standings";
 /** Server replay buferi yetmaganini aytadi — holatni REST dan qayta o'qish kerak. */
 export const EVENT_RESYNC = "resync";
@@ -41,12 +48,16 @@ const FALLBACK: StreamState = "fallback";
 export function useEventStream({
   onEvent,
   contest,
+  problem,
+  attempt,
   enabled = true,
 }: {
-  /** Hodisa keldi — chaqiruvchi holatni yangilaydi. */
-  onEvent: (name: string, data: unknown) => void;
-  /** Ixtiyoriy: jadval kanaliga ham obuna bo'lish. */
+  /** Hodisa keldi — `eventId` replay dedup uchun (Last-Event-ID). */
+  onEvent: (name: string, data: unknown, meta?: { eventId?: string }) => void;
   contest?: number;
+  problem?: string;
+  /** Faqat shu urinish hodisalari (`/attempts/{id}/events/`). */
+  attempt?: number;
   enabled?: boolean;
 }): StreamState {
   const [state, setState] = useState<StreamState>("connecting");
@@ -71,7 +82,7 @@ export function useEventStream({
     //: ketadi, va javob kutilmaydi.
     try {
       const body = JSON.stringify({ reconnects, delivered: delivered.current });
-      void fetch(`${API_BASE}/realtime/report/`, {
+      void fetch(`${REALTIME_BASE}/realtime/report/`, {
         method: "POST",
         credentials: "include",
         keepalive: true,
@@ -86,12 +97,30 @@ export function useEventStream({
   useEffect(() => {
     if (!enabled || !supported) return;
 
-    const url = contest
-      ? `${API_BASE}/events/?contest=${contest}`
-      : `${API_BASE}/events/`;
+    const url =
+      attempt !== undefined
+        ? `${REALTIME_BASE}/attempts/${attempt}/events/`
+        : (() => {
+            const params = new URLSearchParams();
+            if (contest !== undefined) params.set("contest", String(contest));
+            if (problem) params.set("problem", problem);
+            const qs = params.toString();
+            return qs ? `${REALTIME_BASE}/events/?${qs}` : `${REALTIME_BASE}/events/`;
+          })();
     const source = new EventSource(url, { withCredentials: true });
 
-    const names = [EVENT_VERDICT, EVENT_STANDINGS, EVENT_RESYNC];
+    const names = [
+      EVENT_VERDICT,
+      EVENT_ATTEMPT_QUEUED,
+      EVENT_ATTEMPT_PROGRESS,
+      EVENT_TEST_STARTED,
+      EVENT_COMPILATION_STARTED,
+      EVENT_COMPILATION_FINISHED,
+      EVENT_TEST_FINISHED,
+      EVENT_ATTEMPT_FINISHED,
+      EVENT_STANDINGS,
+      EVENT_RESYNC,
+    ];
     const listeners = names.map((name) => {
       const listener = (event: MessageEvent<string>) => {
         delivered.current += 1;
@@ -101,7 +130,8 @@ export function useEventStream({
         } catch {
           data = null; // buzuq yuk butun oqimni to'xtatmasin
         }
-        handler.current(name, data);
+        const eventId = event.lastEventId || undefined;
+        handler.current(name, data, eventId ? { eventId } : undefined);
       };
       source.addEventListener(name, listener as EventListener);
       return [name, listener] as const;
@@ -134,7 +164,7 @@ export function useEventStream({
       }
       source.close();
     };
-  }, [contest, enabled, report, supported]);
+  }, [attempt, contest, enabled, problem, report, supported]);
 
   //: ⚠️ Hosilaviy holat, `setState` emas: qo'llab-quvvatlanmasa yoki
   //: o'chirilgan bo'lsa — samarani umuman ishga tushirmasdan

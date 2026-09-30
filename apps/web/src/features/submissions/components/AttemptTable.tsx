@@ -7,12 +7,15 @@ import { useCallback, useMemo, useState } from "react";
 
 import { SortHeader, TBody, TD, TH, THead, Table, type SortDirection } from "@/components/ui/Table";
 import { UserName } from "@/components/ui/Identity";
+import { Loading } from "@/components/ui/Loading";
 import { Verdict } from "@/components/ui/Verdict";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { dateTime, fill, t } from "@/i18n/messages";
+import { dateTime, fill, t, type Locale } from "@/i18n/messages";
+import { mergeAttemptRow, useAttemptLiveOptional, AttemptLiveProgress } from "@/features/submissions";
 import { API_BASE, type Attempt } from "@/lib/api";
 import { buildAttemptsHref } from "@/lib/problem-tabs";
+import { isPendingVerdict } from "@/lib/theme/verdict";
 
 /** Saralanadigan ustun → API `ordering` maydoni.
  *
@@ -59,6 +62,16 @@ function nextOrdering(column: SortColumn, current: string | undefined): string {
   return current === `-${field}` ? field : `-${field}`;
 }
 
+function runningHint(locale: Locale, row: Attempt): string | null {
+  if (row.verdict === "RUNNING" && row.running_test_index != null) {
+    return fill(t(locale, "submit.runningTest"), { n: row.running_test_index });
+  }
+  if (row.verdict === "RUNNING") {
+    return t(locale, "submit.running");
+  }
+  return null;
+}
+
 export function AttemptTable({
   slug,
   rows,
@@ -75,6 +88,7 @@ export function AttemptTable({
   const locale = useLocale();
   const { user } = useSession();
   const router = useRouter();
+  const live = useAttemptLiveOptional();
   const [focusIndex, setFocusIndex] = useState(0);
 
   /** Manba kodni nusxalash huquqi. Backend baribir tekshiradi (IDOR),
@@ -163,7 +177,16 @@ export function AttemptTable({
       </THead>
       <TBody>
         {rows.map((row, index) => {
-          const waited = queueSeconds(row);
+          const display = mergeAttemptRow(
+            row,
+            live?.getPatch(row.id, {
+              verdict: row.verdict,
+              running_test_index: row.running_test_index,
+            }),
+          );
+          const waited = queueSeconds(display);
+          const progressHint = runningHint(locale, display);
+          const showProgress = isPendingVerdict(display.verdict);
           return (
             <tr
               key={row.id}
@@ -251,16 +274,31 @@ export function AttemptTable({
               </TD>
 
               <TD>
-                <span className="inline-flex flex-wrap items-center gap-1.5">
-                  <Verdict verdict={row.verdict} />
-                  {row.failed_test_index !== null && (
-                    <span className="rw-faint text-theme-xs">
-                      {fill(t(locale, "attempts.failedAtTest"), {
-                        index: row.failed_test_index,
-                      })}
-                    </span>
+                <span className="inline-flex flex-col gap-2">
+                  <span className="inline-flex flex-wrap items-center gap-1.5">
+                    <Verdict verdict={display.verdict} />
+                    {showProgress && (
+                      <span className="inline-flex items-center gap-1 text-theme-xs rw-dim">
+                        <Loading className="scale-75" />
+                        {progressHint}
+                      </span>
+                    )}
+                    {display.failed_test_index !== null && (
+                      <span className="rw-faint text-theme-xs">
+                        {fill(t(locale, "attempts.failedAtTest"), {
+                          index: display.failed_test_index,
+                        })}
+                      </span>
+                    )}
+                    {canSeeSource(row.username) && <CopySource id={row.id} />}
+                  </span>
+                  {showProgress && live?.getLiveState(row.id) && (
+                    <AttemptLiveProgress
+                      attemptId={row.id}
+                      state={live.getLiveState(row.id)!}
+                      compact
+                    />
                   )}
-                  {canSeeSource(row.username) && <CopySource id={row.id} />}
                 </span>
               </TD>
 

@@ -7,7 +7,13 @@ const config: NextConfig = {
   // SSR — masala va maqola sahifalari SEO uchun serverda render qilinadi
   // (ADR-0003 dagi Next.js tanlovining asosiy sababi).
   reactStrictMode: true,
+  // SSE `/api/v1/events/` — 308 `/events` ga EventSource'da qo'shimcha ulanish.
+  skipTrailingSlashRedirect: true,
   typedRoutes: true,  // Next 16 da experimental dan chiqdi
+  // Headless UI Combobox uses an external-store machine. Turbopack dev
+  // (2026-09-30, Next 16.3.6) can serve a bundle where `openCombobox`
+  // never updates `aria-expanded` — production/webpack builds are fine.
+  transpilePackages: ["@headlessui/react"],
   // Next `next dev` da apps/web/CLAUDE.md va AGENTS.md ni o'zi yozadi.
   // Repoda o'z ko'rsatmalarimiz bor — generatsiya ularni jimgina
   // almashtirib yuborishi mumkin.
@@ -51,6 +57,22 @@ const config: NextConfig = {
   // Owner HITL 2026-09-20: first lever toward Performance 100.
   experimental: {
     inlineCss: true,
+  },
+  async rewrites() {
+    if (process.env.NODE_ENV !== "development") return [];
+    const rt = "http://127.0.0.1:8302";
+    return [
+      { source: "/api/v1/events", destination: `${rt}/api/v1/events` },
+      { source: "/api/v1/events/", destination: `${rt}/api/v1/events/` },
+      {
+        source: "/api/v1/attempts/:id/events/",
+        destination: `${rt}/api/v1/attempts/:id/events/`,
+      },
+      {
+        source: "/api/v1/realtime/:path*",
+        destination: `${rt}/api/v1/realtime/:path*`,
+      },
+    ];
   },
 };
 

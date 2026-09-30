@@ -23,6 +23,24 @@ import { Status } from "@/components/ui/Status";
 import { Verdict } from "@/components/ui/Verdict";
 import { editorLanguage, starterSource } from "@/lib/editor-language";
 import { isPendingVerdict } from "@/lib/theme/verdict";
+import {
+  EVENT_ATTEMPT_PROGRESS,
+  EVENT_ATTEMPT_QUEUED,
+  EVENT_ATTEMPT_FINISHED,
+  EVENT_COMPILATION_FINISHED,
+  EVENT_COMPILATION_STARTED,
+  EVENT_RESYNC,
+  EVENT_TEST_FINISHED,
+  EVENT_TEST_STARTED,
+  EVENT_VERDICT,
+  useEventStream,
+} from "@/lib/useEventStream";
+import { AttemptLiveProgress } from "@/features/submissions/components/AttemptLiveProgress";
+import {
+  emptyLiveState,
+  reduceLiveState,
+  type AttemptLiveState,
+} from "@/features/submissions/attemptLiveState";
 import { useSession } from "@/context/SessionContext";
 import { ApiError } from "@/lib/api";
 import { fieldErrors, SOURCE_MAX_BYTES, sourceSchema } from "@rankwant/shared/validation";
@@ -69,7 +87,7 @@ const MAX_SOURCE_BYTES = SOURCE_MAX_BYTES;
 const PANEL =
   "min-w-0 space-y-4 xl:sticky xl:top-20 xl:max-h-[calc(100vh-5.5rem)] xl:overflow-y-auto";
 
-/** Verdikt uchun SSE yo'q (musobaqa jadvalidan farqli) — pollinglaymiz.
+/** Verdikt uchun SSE (ADR-0029) + polling zaxirasi — oqim uzilsa ham yangilanadi.
  * Birinchi soniyalarda tez, keyin siyrak: kompilyatsiya + testlar odatda
  * 1–3 s, lekin navbat band bo'lsa uzoq kutish ham bo'ladi. */
 const POLL_FAST_MS = 800;
@@ -192,6 +210,67 @@ export function SubmitPanel({
   );
 
   const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const watchAttemptId = useRef<number | null>(null);
+  const seenStreamEventIds = useRef(new Set<string>());
+  const [streamAttemptId, setStreamAttemptId] = useState<number | undefined>();
+  const [liveSubmit, setLiveSubmit] = useState<AttemptLiveState>(() => emptyLiveState());
+
+  const finishAttempt = useCallback((next: AttemptDetail) => {
+    setAttempt(next);
+    if (!isPendingVerdict(next.verdict)) {
+      setBusy(false);
+      if (next.verdict === "AC") playSuccess();
+    }
+  }, []);
+
+  const refreshWatchAttempt = useCallback(
+    (id: number) => {
+      fetchAttempt(id).then(finishAttempt).catch(() => setBusy(false));
+    },
+    [finishAttempt],
+  );
+
+  useEventStream({
+    enabled: ready && !!user && busy && streamAttemptId !== undefined,
+    attempt: streamAttemptId,
+    onEvent: (name, data, meta) => {
+      const id = watchAttemptId.current;
+      if (id === null) return;
+      if (meta?.eventId) {
+        if (seenStreamEventIds.current.has(meta.eventId)) return;
+        seenStreamEventIds.current.add(meta.eventId);
+        if (seenStreamEventIds.current.size > 4096) {
+          seenStreamEventIds.current.clear();
+        }
+      }
+      if (name === EVENT_RESYNC) {
+        refreshWatchAttempt(id);
+        return;
+      }
+      const payload = data as { attempt_id?: number } | null;
+      if (payload?.attempt_id !== id) return;
+      const liveEvents = [
+        EVENT_ATTEMPT_QUEUED,
+        EVENT_ATTEMPT_PROGRESS,
+        EVENT_TEST_STARTED,
+        EVENT_COMPILATION_STARTED,
+        EVENT_COMPILATION_FINISHED,
+        EVENT_TEST_FINISHED,
+        EVENT_VERDICT,
+        EVENT_ATTEMPT_FINISHED,
+      ];
+      if (liveEvents.includes(name)) {
+        setLiveSubmit((prev) =>
+          reduceLiveState(prev, name, data as Record<string, unknown>),
+        );
+      }
+      if (name === EVENT_VERDICT || name === EVENT_ATTEMPT_FINISHED) {
+        refreshWatchAttempt(id);
+      } else if (name === EVENT_TEST_FINISHED) {
+        refreshWatchAttempt(id);
+      }
+    },
+  });
 
   // Tanlangan til qurilmada eslab qolinadi — har masalada qayta
   // tanlash asosiy oqimdagi eng ko'p takrorlanadigan ortiqcha qadam.
@@ -254,12 +333,9 @@ export function SubmitPanel({
       () => {
         fetchAttempt(id)
           .then((next) => {
-            setAttempt(next);
+            finishAttempt(next);
             if (isPendingVerdict(next.verdict) && tries < POLL_LIMIT) {
               poll(id, tries + 1);
-            } else {
-              setBusy(false);
-              if (next.verdict === "AC") playSuccess();
             }
           })
           .catch(() => setBusy(false));
@@ -296,6 +372,9 @@ export function SubmitPanel({
     setError(null);
     setBusy(true);
     setTab("verdict");
+    setLiveSubmit(emptyLiveState());
+    seenStreamEventIds.current.clear();
+    setStreamAttemptId(undefined);
     try {
       const created = await submitAttempt({
         problem,
@@ -303,7 +382,13 @@ export function SubmitPanel({
         source_code: source,
         ...(contest ? { contest } : {}),
       });
-      setAttempt({ ...created, test_results: [] });
+      watchAttemptId.current = created.id;
+      setStreamAttemptId(created.id);
+      setAttempt({
+        ...created,
+        running_test_index: created.running_test_index ?? null,
+        test_results: [],
+      });
       poll(created.id, 0);
     } catch (caught) {
       setError(describe(caught));
@@ -575,11 +660,17 @@ export function SubmitPanel({
       >
         {tab === "verdict" &&
           (verdictLayout === "tab" ? (
-            <AttemptVerdictPanel
-              attempt={attempt}
-              pending={busy && (!attempt || isPendingVerdict(attempt.verdict))}
-              locale={locale}
-            />
+            <div className="space-y-3">
+              {attempt?.id != null &&
+                (busy || isPendingVerdict(attempt?.verdict ?? "PENDING")) && (
+                  <AttemptLiveProgress attemptId={attempt.id} state={liveSubmit} />
+                )}
+              <AttemptVerdictPanel
+                attempt={attempt}
+                pending={busy && (!attempt || isPendingVerdict(attempt.verdict))}
+                locale={locale}
+              />
+            </div>
           ) : (
             <p className="text-theme-sm rw-faint">
               {t(locale, "submit.verdictShownElsewhere")}

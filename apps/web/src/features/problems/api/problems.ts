@@ -179,6 +179,8 @@ export type Attempt = {
   time_ms: number;
   memory_kb: number;
   failed_test_index: number | null;
+  /** Judge hozir qaysi testni bajarayotgani (RUNNING). Yakuniy verdiktda null. */
+  running_test_index: number | null;
   created_at: string;
   judged_at: string | null;
   /** Yuborilgan manba uzunligi, belgi. Kodning o'zi emas. */

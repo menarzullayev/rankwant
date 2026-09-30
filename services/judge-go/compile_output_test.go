@@ -14,7 +14,7 @@ import (
 func compileFails(t *testing.T, out *runOutcome) *Result {
 	t.Helper()
 	fakeSandbox(t, func(sandboxCall) (*runOutcome, error) { return out, nil })
-	return judge(context.Background(), kotlinJob(), nil)
+	return judge(context.Background(), kotlinJob(), nil, nil)
 }
 
 func TestCompileErrorOnStdoutIsReported(t *testing.T) {

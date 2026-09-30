@@ -1,0 +1,31 @@
+# Local development — UI on the host (`next dev`), not the `web` container.
+#
+# Backend stack stays in Docker (same data as preview). Use:
+#   tools/dev-local.ps1   (Windows)
+#   tools/dev-local.sh    (Git Bash / Linux)
+#
+# Optional: bring back Docker web for parity checks:
+#   docker compose ... --profile docker-web up -d web
+
+services:
+  web:
+    profiles: ["docker-web"]
+
+  api:
+    environment:
+      # Host `next dev` — fixed ports; custom port qo'shing shu ro'yxatga.
+      CORS_ALLOWED_ORIGINS: >-
+        ${PUBLIC_ORIGIN},http://127.0.0.1:8300,http://localhost:8300,
+        http://127.0.0.1:8310,http://localhost:8310,
+        http://127.0.0.1:8312,http://localhost:8312
+      CSRF_TRUSTED_ORIGINS: >-
+        ${PUBLIC_ORIGIN},http://127.0.0.1:8300,http://localhost:8300,
+        http://127.0.0.1:8310,http://localhost:8310,
+        http://127.0.0.1:8312,http://localhost:8312
+
+  realtime:
+    environment:
+      CORS_ALLOWED_ORIGINS: >-
+        ${PUBLIC_ORIGIN},http://127.0.0.1:8300,http://localhost:8300,
+        http://127.0.0.1:8310,http://localhost:8310,
+        http://127.0.0.1:8312,http://localhost:8312

@@ -80,9 +80,14 @@ def main() -> int:
             log.error("job parse qilinmadi: %s", exc)
             continue
 
+        def emit(msg: dict[str, object]) -> None:
+            rdb.lpush(RESULTS_KEY, json.dumps(msg))
+
+        emit_cb = emit if job.attempt_id else None
+
         result: ResultDict
         try:
-            result = judge(job)
+            result = judge(job, emit=emit_cb)
         except Exception:
             # Worker BITTA job tufayli to'xtamasligi kerak. Lekin natijasiz
             # ham qoldirmaymiz: API PENDING holatda abadiy kutib qolardi.

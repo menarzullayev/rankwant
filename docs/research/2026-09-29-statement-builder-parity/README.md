@@ -27,7 +27,7 @@ Status legend: **done** | **partial** | **missing** | **n/a** (platform differs 
 | Tablet/mobile bottom sheet + Kod FAB | 17–18 | `ProblemWorkspace` | done |
 | Mobile section jump chips | 18 M4 | `StatementSectionNav` | done |
 | WCAG targets | 19 | kit + a11y checks | ongoing |
-| ProblemActions fav/votes/stars | P0 | `ProblemActions.tsx` | done |
+| ProblemActions fav/votes/stars | P0 | `ProblemActions.tsx` | done (prototip matn/tugma uslubi) |
 | Editorial gate | P0 | inline on description + tab | done |
 | Limits in header badge | P0 | `Badge` in header | done |
 | Constraints inside statement | P0 | `Markdown` statement body | data-dependent |
@@ -51,7 +51,7 @@ Width matrix (2026-09-29, `a-plus-b`): **390** — section jump chips + Code FAB
 
 **Note:** 8300 was refreshed via `docker compose … build web && up -d --no-deps web` from uncommitted parity sources; merge PR #310 so the image survives the next deploy from `main`.
 
-**Gate (durability):** commit parity files, merge, and deploy web from `main` — ad-hoc local rebuild is verification only.
+**Gate (durability):** merged via PR [#310](https://github.com/menarzullayev/rankwant/pull/310) (squash). Preview/production **web** image updates on the next deploy from `main` (auto-deploy watcher ~1 min after merge).
 
 Dev SSR against loopback API: set `API_BASE_INTERNAL=http://127.0.0.1:8301/api/v1` and use `npx next dev -p 8310` (not `npm run dev`, which pins port 3000). Loopback SSR uses `node:http` + `Host: localhost` in `api.server.ts`.
 

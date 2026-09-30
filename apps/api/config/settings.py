@@ -220,7 +220,7 @@ CACHES = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    o for o in env("CORS_ALLOWED_ORIGINS", "http://localhost:3000").split(",") if o
+    o.strip() for o in env("CORS_ALLOWED_ORIGINS", "http://localhost:3000").split(",") if o.strip()
 ]
 CORS_ALLOW_CREDENTIALS = True
 
@@ -230,7 +230,7 @@ CORS_ALLOW_CREDENTIALS = True
 # autentifikatsiyalangan so'rov «CSRF Failed: Origin checking failed»
 # bo'lardi. Standart — CORS ro'yxati bilan bir xil.
 CSRF_TRUSTED_ORIGINS = [
-    o for o in env("CSRF_TRUSTED_ORIGINS", ",".join(CORS_ALLOWED_ORIGINS)).split(",") if o
+    o.strip() for o in env("CSRF_TRUSTED_ORIGINS", ",".join(CORS_ALLOWED_ORIGINS)).split(",") if o.strip()
 ]
 
 # ── DRF ──────────────────────────────────────────────────────────────
@@ -432,7 +432,8 @@ TELEGRAM_CLIENT_SECRET = env("TELEGRAM_CLIENT_SECRET")
 CELERY_BEAT_SCHEDULE = {
     "drain-judge-results": {
         "task": "judging.drain_results",
-        "schedule": 2.0,
+        # Progress oqimi judge tezligiga yaqin bo'lishi uchun tez-tez bo'shatiladi.
+        "schedule": 0.5,
     },
     # Judge yiqilsa navbatdan olingan ish yo'qoladi — urinish abadiy
     # PENDING bo'lib qolmasin.

@@ -100,6 +100,10 @@ export function Dropdown({
 }) {
   const locale = useLocale();
   const [query, setQuery] = useState("");
+  /** Turbopack dev (Next 16.3) can leave Headless `comboboxState` closed while
+   *  the input is focused — `static` keeps options in the DOM so the list still
+   *  opens. Production builds do not need this, but the flag is harmless. */
+  const [optionsPinned, setOptionsPinned] = useState(false);
   const [inner, setInner] = useState(value ?? defaultValue ?? "");
   const current = value !== undefined ? value : inner;
   const selected = options.find((option) => option.value === current);
@@ -126,7 +130,10 @@ export function Dropdown({
         if (value === undefined) setInner(code);
         onChange?.(code);
       }}
-      onClose={() => setQuery("")}
+      onClose={() => {
+        setQuery("");
+        setOptionsPinned(false);
+      }}
     >
       <Label
         className={
@@ -163,8 +170,13 @@ export function Dropdown({
           }
           onChange={(event) => setQuery(event.target.value)}
           onFocus={(event) => {
+            setOptionsPinned(true);
             event.currentTarget.select();
             onOpen?.();
+          }}
+          onBlur={() => {
+            // Let option `mousedown` run before we unpin the static panel.
+            requestAnimationFrame(() => setOptionsPinned(false));
           }}
           placeholder={searchLabel}
           className={
@@ -189,6 +201,7 @@ export function Dropdown({
 
       <ComboboxOptions
         {...(optionsStyle || header ? {} : { anchor: ANCHOR.field })}
+        static={optionsPinned}
         modal={false}
         style={optionsStyle}
         className={`z-[200] max-h-72 overflow-y-auto rw-radius border rw-line rw-surface p-1.5 rw-shadow [--anchor-gap:4px] [--anchor-max-height:18rem] ${

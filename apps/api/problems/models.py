@@ -210,6 +210,37 @@ class Problem(TimeStampedModel):
     checker_type = models.CharField(
         max_length=16, choices=Checker.choices, default=Checker.STANDARD
     )
+
+    class Readiness(models.TextChoices):
+        DRAFT = "draft", "Qoralama"
+        NEEDS_TESTS = "needs_tests", "Test kerak"
+        HAS_HIDDEN_TESTS = "has_hidden_tests", "Yashirin test bor"
+        CHECKER_VALIDATED = "checker_validated", "Checker tekshirilgan"
+        REF_SOLUTION_VERIFIED = "ref_solution_verified", "Etalon tekshirilgan"
+        VALIDATED = "validated", "Tasdiqlangan"
+        LEGACY_UNVERIFIED = "legacy_unverified", "Arxiv (tekshirilmagan)"
+        BLOCKED = "blocked", "Bloklangan"
+        NEEDS_REVIEW = "needs_review", "Ko'rik kerak"
+
+    readiness = models.CharField(
+        max_length=24,
+        choices=Readiness.choices,
+        default=Readiness.DRAFT,
+        db_index=True,
+    )
+
+    class IoMode(models.TextChoices):
+        STDIO = "stdio", "Stdin/stdout"
+        #: Robocontest uslubi: `input.txt` dan o'qiydi, `output.txt` ga yozadi;
+        #: stdin/stdout yechimlari ham o'tadi (judge ikkala javobni tekshiradi).
+        BOTH = "both", "Stdin/stdout yoki fayl"
+
+    io_mode = models.CharField(
+        max_length=8,
+        choices=IoMode.choices,
+        default=IoMode.STDIO,
+        help_text="both: input.txt/output.txt ham, stdin/stdout ham qabul qilinadi.",
+    )
     interactor_source = models.TextField(blank=True)
     interactor_language = models.ForeignKey(
         Language, null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
@@ -260,6 +291,7 @@ class Problem(TimeStampedModel):
         ordering: ClassVar = ["difficulty", "slug"]
         indexes: ClassVar = [
             models.Index(fields=["is_public", "difficulty"], name="problem_public_diff"),
+            models.Index(fields=["readiness", "is_public"], name="problem_readiness_pub"),
         ]
 
     def __str__(self) -> str:

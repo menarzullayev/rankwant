@@ -86,10 +86,9 @@ export function LocaleSwitch() {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [optimistic, setOptimistic] = useState<string | null>(null);
-  if (optimistic !== null && optimistic === (auto ? AUTO : locale)) {
-    setOptimistic(null);
-  }
-  const current: string = optimistic ?? (auto ? AUTO : locale);
+  const settled = auto ? AUTO : locale;
+  const current: string =
+    optimistic !== null && optimistic !== settled ? optimistic : settled;
   const shown: Locale = current === AUTO ? locale : (current as Locale);
   const currentLabel = LOCALE_NAMES[shown];
   const currentCode = current === AUTO ? locale : current;

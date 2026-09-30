@@ -1,7 +1,5 @@
 import type { MetadataRoute } from "next";
 
-import { SITE_URL } from "@/lib/site";
-
 /** PWA manifesti — telefonga "bosh ekranga qo'shish" uchun.
  *
  * Ikonkalar bu yerda YARATILMAYDI: ular `tools/brand.py` bilan bitta
@@ -26,7 +24,9 @@ export default function manifest(): MetadataRoute.Manifest {
     background_color: "#102038",
     theme_color: "#102038",
     lang: "uz",
-    id: SITE_URL,
+    // Same-origin path — `https://rankwant.uz` id on `127.0.0.1` dev triggers
+    // "property id ignored, should be same origin as document".
+    id: "/",
     icons: [
       {
         src: "/brand/mark-192.png",

@@ -90,6 +90,33 @@ class TestPublish:
         monkeypatch.setattr(bus, "_client", boom)
         assert bus.publish("rw:rt:user:1", "verdict", {"a": 1}) is None
 
+    def test_publish_verdict_also_attempt_finished(
+        self, monkeypatch: pytest.MonkeyPatch, db, problem, user, language
+    ) -> None:
+        from judging.models import Attempt
+        from judging.verdicts import Verdict
+        from realtime.events import EVENT_ATTEMPT_FINISHED, EVENT_VERDICT, publish_verdict
+
+        attempt = Attempt.objects.create(
+            user=user,
+            problem=problem,
+            language=language,
+            source_code="x",
+            verdict=Verdict.AC,
+        )
+        seen: list[str] = []
+
+        def _capture(_ch: str, event: str, _payload: dict[str, Any]) -> int:
+            seen.append(event)
+            return 1
+
+        monkeypatch.setattr(bus, "publish", _capture)
+        publish_verdict(attempt)
+        assert EVENT_VERDICT in seen
+        assert EVENT_ATTEMPT_FINISHED in seen
+        assert seen.count(EVENT_VERDICT) == 2  # user + problem channel
+        assert seen.count(EVENT_ATTEMPT_FINISHED) == 2
+
 
 def _run(client: FakeRedis, last_id: int) -> tuple[list[dict[str, Any]], bool]:
     """`replay_after` ni sinxron testdan chaqiradi.
@@ -98,3 +125,17 @@ def _run(client: FakeRedis, last_id: int) -> tuple[list[dict[str, Any]], bool]:
     bu test CI'da qo'shimcha plagin talab qilmaydi.
     """
     return asyncio.run(bus.replay_after(client, "rw:rt:user:1", last_id))
+
+
+class TestPayloadAttemptId:
+    def test_payload_attempt_id_ochiladi(self) -> None:
+        from realtime.asgi import _payload_attempt_id
+
+        raw = json.dumps({"id": 1, "event": "verdict", "data": {"attempt_id": 42}})
+        assert _payload_attempt_id(raw) == 42
+
+    def test_payload_attempt_id_bosh(self) -> None:
+        from realtime.asgi import _payload_attempt_id
+
+        assert _payload_attempt_id("not-json") is None
+        assert _payload_attempt_id(json.dumps({"data": {}})) is None

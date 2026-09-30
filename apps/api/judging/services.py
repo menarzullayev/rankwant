@@ -85,6 +85,14 @@ def build_job(attempt: Attempt, *, validate_input: bool = False) -> JudgeJob:
     time_ms = (override.time_limit_ms if override else None) or problem.time_limit_ms
     memory_kb = (override.memory_limit_kb if override else None) or problem.memory_limit_kb
 
+    io: dict[str, Any] | None = None
+    if problem.io_mode == Problem.IoMode.BOTH:
+        io = {
+            "mode": "both",
+            "input_file": "input.txt",
+            "output_file": "output.txt",
+        }
+
     return JudgeJob(
         job_id=new_job_id(),
         attempt_id=attempt.pk,
@@ -105,6 +113,7 @@ def build_job(attempt: Attempt, *, validate_input: bool = False) -> JudgeJob:
         mode="ioi" if subtasks else "acm",
         validator=validator,
         validate_input=validate_input,
+        io=io,
     )
 
 
@@ -117,8 +126,20 @@ def enqueue(attempt: Attempt) -> str:
     """
     Problem.objects.filter(pk=attempt.problem_id).update(attempt_count=F("attempt_count") + 1)
     job = build_job(attempt)
-    get_provider().submit(job)
-    return job.job_id
+    job_id = get_provider().submit(job)
+
+    attempt_id = attempt.pk
+
+    def _notify() -> None:
+        row = Attempt.objects.select_related("problem", "user").filter(pk=attempt_id).first()
+        if row is None:
+            return
+        from realtime.events import publish_attempt_queued
+
+        publish_attempt_queued(row)
+
+    transaction.on_commit(_notify)
+    return job_id
 
 
 #: Custom test uchun cheklovlar — masala limitlari yo'q, shuning uchun
@@ -212,6 +233,13 @@ def apply_result(result: dict[str, Any]) -> Attempt | None:
         return None
 
     verdict = _verdict_of(result)
+    if verdict in (Verdict.PENDING, Verdict.RUNNING):
+        log.debug(
+            "apply_result: non-terminal verdict %s ignored (kind=%s)",
+            verdict,
+            result.get("kind"),
+        )
+        return None
     accept_revoked = attempt.verdict == Verdict.AC and verdict != Verdict.AC
     if accept_revoked:
         log.info("attempt %s verdicti o'zgardi: AC → %s", attempt_id, verdict)
@@ -221,6 +249,7 @@ def apply_result(result: dict[str, Any]) -> Attempt | None:
     attempt.time_ms = int(result.get("time_ms") or 0)
     attempt.memory_kb = int(result.get("memory_kb") or 0)
     attempt.failed_test_index = result.get("failed_test_index")
+    attempt.running_test_index = None
     attempt.compile_output = result.get("compile_output") or ""
     attempt.judge_meta = result.get("judge_meta") or {}
     attempt.judged_at = timezone.now()
@@ -257,7 +286,109 @@ def apply_result(result: dict[str, Any]) -> Attempt | None:
 
     if attempt.contest_id:
         _schedule_standings_rebuild(attempt.contest_id)
+    _clear_progress_throttle(attempt.pk)
     return attempt
+
+
+#: SSE spamini kamaytirish — bir xil test indeksi uchun qayta nashr yo'q.
+_progress_last_index: dict[int, int] = {}
+
+
+def _clear_progress_throttle(attempt_id: int) -> None:
+    _progress_last_index.pop(attempt_id, None)
+
+
+def apply_attempt_progress(result: dict[str, Any]) -> Attempt | None:
+    """Judge test bosqichidagi oraliq holat (kind=progress).
+
+    Tranzaksiyasiz yangilash — yo'qolgan progress foydalanuvchiga zarar
+    qilmaydi; keyingi progress yoki yakuniy verdikt REST/SSE orqali keladi.
+    """
+    attempt_id = result.get("attempt_id")
+    if not attempt_id:
+        return None
+    idx = int(result.get("running_test_index") or 0)
+    if idx <= 0:
+        return None
+
+    updated = Attempt.objects.filter(
+        pk=attempt_id,
+        verdict__in=[Verdict.PENDING, Verdict.RUNNING],
+    ).update(verdict=Verdict.RUNNING, running_test_index=idx)
+    if not updated:
+        return None
+
+    last = _progress_last_index.get(int(attempt_id))
+    if last == idx:
+        return None
+
+    _progress_last_index[int(attempt_id)] = idx
+    return Attempt.objects.select_related("problem", "user").filter(pk=attempt_id).first()
+
+
+def _merge_judge_meta(attempt_id: int, patch: dict[str, Any]) -> dict[str, Any]:
+    row = Attempt.objects.filter(pk=attempt_id).values_list("judge_meta", flat=True).first()
+    meta = dict(row or {})
+    meta.update(patch)
+    return meta
+
+
+def apply_compilation_started(result: dict[str, Any]) -> Attempt | None:
+    attempt_id = result.get("attempt_id")
+    if not attempt_id:
+        return None
+    total = int(result.get("total_tests") or 0)
+    meta = _merge_judge_meta(
+        int(attempt_id),
+        {"phase": "compiling", "total_tests": total},
+    )
+    updated = Attempt.objects.filter(
+        pk=attempt_id,
+        verdict__in=[Verdict.PENDING, Verdict.RUNNING],
+    ).update(verdict=Verdict.RUNNING, judge_meta=meta)
+    if not updated:
+        return None
+    return Attempt.objects.select_related("problem", "user").filter(pk=attempt_id).first()
+
+
+def apply_compilation_finished(result: dict[str, Any]) -> Attempt | None:
+    attempt_id = result.get("attempt_id")
+    if not attempt_id:
+        return None
+    ok = bool(result.get("ok"))
+    phase = "running" if ok else "failed"
+    meta = _merge_judge_meta(int(attempt_id), {"phase": phase})
+    fields: dict[str, Any] = {"judge_meta": meta}
+    if not ok and result.get("compile_output"):
+        fields["compile_output"] = str(result.get("compile_output") or "")[:8192]
+    Attempt.objects.filter(
+        pk=attempt_id,
+        verdict__in=[Verdict.PENDING, Verdict.RUNNING],
+    ).update(**fields)
+    return Attempt.objects.select_related("problem", "user").filter(pk=attempt_id).first()
+
+
+def apply_test_finished(result: dict[str, Any]) -> Attempt | None:
+    attempt_id = result.get("attempt_id")
+    if not attempt_id:
+        return None
+    idx = int(result.get("test_index") or 0)
+    if idx <= 0:
+        return None
+    verdict = str(result.get("verdict") or Verdict.IE)
+    time_ms = int(result.get("time_ms") or 0)
+    memory_kb = int(result.get("memory_kb") or 0)
+    AttemptTestResult.objects.update_or_create(
+        attempt_id=attempt_id,
+        index=idx,
+        defaults={"verdict": verdict, "time_ms": time_ms, "memory_kb": memory_kb},
+    )
+    meta = _merge_judge_meta(int(attempt_id), {"phase": "running"})
+    Attempt.objects.filter(
+        pk=attempt_id,
+        verdict__in=[Verdict.PENDING, Verdict.RUNNING],
+    ).update(verdict=Verdict.RUNNING, running_test_index=idx, judge_meta=meta)
+    return Attempt.objects.select_related("problem", "user").filter(pk=attempt_id).first()
 
 
 #: Contest spike'da 500 submit/10s bo'ladi. Har verdictda to'liq qayta
