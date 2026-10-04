@@ -3108,6 +3108,26 @@ def neg_decisions_clay_single_environment_again() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_signed_in_home_dropped() -> tuple[bool, str]:
+    """The early return goes: signed-in visitors fall back to the guest page."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/page.tsx",
+        "      <SignedInHome",
+        "      <SignedOutHome",
+        "shaxsiy panelni olmaydi",
+    )
+
+
+def neg_decisions_signed_in_home_viewport_prefetch() -> tuple[bool, str]:
+    """The dashboard starts prefetching every visible link again."""
+    return _decision_broken(
+        "apps/web/src/features/home/components/SignedInHome.tsx",
+        'import type { Route } from "next";',
+        'import type { Route } from "next";\nimport Link from "next/link";',
+        "ko'rinishi bilan prefetch qiladi",
+    )
+
+
 def _css_sources_broken(rel: str, old: str, new: str, expect: str) -> tuple[bool, str]:
     """Break one `@source` invariant in `rel`; check_css_sources must catch it."""
     path = ROOT / rel
@@ -4640,6 +4660,8 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/features/auth/components/AuthShell.tsx",
     # Clay dark palette (2026-10-05): the rule reads the style catalogue.
     "apps/web/src/layout/styles.ts",
+    # Signed-in home dashboard (2026-10-05).
+    "apps/web/src/features/home/components/SignedInHome.tsx",
     "apps/web/src/app/(auth)/layout.tsx",
     "apps/web/src/app/(site)/layout.tsx",
     # Security run disabled (2026-09-21): the rule reads REQUIRED.
@@ -7917,6 +7939,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
                 neg_decisions_auto_deploy_contest_override,
             ),
             ("push guard uzilsa tutilsin", neg_decisions_push_guard_unwired),
+            ("kirgan foydalanuvchi paneli olib tashlansa tutilsin", neg_decisions_signed_in_home_dropped),
+            ("panel ko'rinish-prefetch qilsa tutilsin", neg_decisions_signed_in_home_viewport_prefetch),
             ("clay qorong'i palitrasi olib tashlansa tutilsin", neg_decisions_clay_dark_block_removed),
             ("clay yana bir muhitli bo'lsa tutilsin", neg_decisions_clay_single_environment_again),
             ("kirish sahifasiga sayt chrome'i qaytsa tutilsin", neg_decisions_sign_in_gets_site_chrome_back),

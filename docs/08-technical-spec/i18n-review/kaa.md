@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1986 strings.**
+**1997 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -404,8 +404,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `about.io.title` | Matn oqimi (stdin / stdout) | Standard I/O (stdin / stdout) |  |
 | `about.io.hint` | RankWant masalalarida kiritma va chiqish standart oqim orqali. Namuna — ikkita butun sonning yig'indisi (A + B). | RankWant problems use standard input and output. Sample: sum of two integers (A + B). |  |
 | `about.io.tabsLabel` | Kirish/chiqish usuli | I/O style |  |
-| `about.io.kind.stdio` | Stdin / stdout | Stdin / stdout |  |
-| `about.io.kind.file` | input.txt / output.txt | input.txt / output.txt |  |
+| `about.io.kind.stdio` | Stdin / stdout | Standart kiritiw / shıǵıw |  |
+| `about.io.kind.file` | input.txt / output.txt | input.txt / output.txt faylları |  |
 | `about.io.file.title` | Fayl oqimi (input.txt / output.txt) | File I/O (input.txt / output.txt) |  |
 | `about.io.file.hint` | input.txt dan ikkita butun sonni o'qing, yig'indini output.txt ga yozing (ortiqcha probel yoki qatorsiz). | Read two integers from input.txt and write the sum to output.txt (no extra spaces or lines). |  |
 | `about.sampleMissing` | Bu til uchun namuna hali qo'shilmagan. Masala shartidagi kirish/chiqish formatiga rioya qiling. | No sample snippet for this language yet. Follow the problem's I/O format. |  |
@@ -661,7 +661,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `attempts.col.codeSize` | Kod hajmi | Kod kólemi |  |
 | `attempts.col.contest` | Musobaqa | Jarıs |  |
 | `attempts.liveTestsProgress` | Ko'rsatilgan testlar: {done} / {total} | Kórsetilgen testler: {done} / {total} |  |
-| `attempts.liveTestLabel` | Test {index} | Test {index} |  |
+| `attempts.liveTestLabel` | Test {index} | Sinov {index} |  |
 | `attempts.you` | Siz | Siz |  |
 | `attempts.firstSolver` | Birinchi yechim | Birinshi sheshken |  |
 | `attempts.queuedFor` | {seconds} s kutdi | Gezekte {seconds} s |  |
@@ -1750,7 +1750,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `submit.matches` | mos | sáykes |  |
 | `submit.outputMismatch` | chiqish mos emas | shıǵıs sáykes emes |  |
 | `submit.running` | yuritilmoqda… | orınlanbaqta… |  |
-| `submit.compiling` | Kompilyatsiya… | Kompilyatsiya… |  |
+| `submit.compiling` | Kompilyatsiya… | Kompilyatsiyalanba… |  |
 | `submit.runningTest` | #{n}-test yuritilmoqda… | #{n}-test… |  |
 | `submit.allSamplesPass` | Barcha namunalar mos — yuborishingiz mumkin | Barlıq mısallar sáykes — jiberiwińiz múmkin |  |
 | `submit.yourOutput` | Sizning chiqishingiz | Siziń shıǵısıńız |  |
@@ -2007,3 +2007,14 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `overlay.sample.popover` | Yon tasdiq | Janında |  |
 | `overlay.sample.hold` | Bosib turish | Basıp turıw |  |
 | `overlay.sample.cmdk` | Buyruq | Buyrıq |  |
+| `home.continue` | Davom etish | Dawam etiw |  |
+| `home.openProblem` | Masalani ochish | Máseleni ashıw |  |
+| `home.myRatings` | Mening reytinglarim | Meniń reytinglerim |  |
+| `home.rankPlace` | {rank}-o'rin | {rank}-orın |  |
+| `home.bestRating` | Eng yuqori: {value} | Eń joqarı: {value} |  |
+| `home.activity` | Faollik tarixi | Belsendilik tariyxı |  |
+| `home.noActivity` | Hali urinish yo'q | Házirshe urınıw joq |  |
+| `home.learningPath` | O'rganish yo'li | Úyreniw jolı |  |
+| `home.stepsDone` | {done} / {total} qadam | {done} / {total} qádem |  |
+| `home.contest` | Musobaqa | Jarıs |  |
+| `home.noUpcomingContest` | Yaqin musobaqa e'lon qilinmagan | Jaqın jarıs járiyalanbaǵan |  |

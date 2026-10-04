@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1986 strings.**
+**1997 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -404,8 +404,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `about.io.title` | Matn oqimi (stdin / stdout) | Standard I/O (stdin / stdout) |  |
 | `about.io.hint` | RankWant masalalarida kiritma va chiqish standart oqim orqali. Namuna — ikkita butun sonning yig'indisi (A + B). | RankWant problems use standard input and output. Sample: sum of two integers (A + B). |  |
 | `about.io.tabsLabel` | Kirish/chiqish usuli | I/O style |  |
-| `about.io.kind.stdio` | Stdin / stdout | Stdin / stdout |  |
-| `about.io.kind.file` | input.txt / output.txt | input.txt / output.txt |  |
+| `about.io.kind.stdio` | Stdin / stdout | Вуруди / хуруҷи стандартӣ |  |
+| `about.io.kind.file` | input.txt / output.txt | Файлҳои input.txt / output.txt |  |
 | `about.io.file.title` | Fayl oqimi (input.txt / output.txt) | File I/O (input.txt / output.txt) |  |
 | `about.io.file.hint` | input.txt dan ikkita butun sonni o'qing, yig'indini output.txt ga yozing (ortiqcha probel yoki qatorsiz). | Read two integers from input.txt and write the sum to output.txt (no extra spaces or lines). |  |
 | `about.sampleMissing` | Bu til uchun namuna hali qo'shilmagan. Masala shartidagi kirish/chiqish formatiga rioya qiling. | No sample snippet for this language yet. Follow the problem's I/O format. |  |
@@ -2007,3 +2007,14 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `overlay.sample.popover` | Yon tasdiq | Дар паҳлӯ |  |
 | `overlay.sample.hold` | Bosib turish | Нигоҳ доштан |  |
 | `overlay.sample.cmdk` | Buyruq | Фармон |  |
+| `home.continue` | Davom etish | Идома додан |  |
+| `home.openProblem` | Masalani ochish | Кушодани масъала |  |
+| `home.myRatings` | Mening reytinglarim | Рейтингҳои ман |  |
+| `home.rankPlace` | {rank}-o'rin | Ҷойи {rank} |  |
+| `home.bestRating` | Eng yuqori: {value} | Баландтарин: {value} |  |
+| `home.activity` | Faollik tarixi | Таърихи фаъолият |  |
+| `home.noActivity` | Hali urinish yo'q | Ҳанӯз кӯшиш нест |  |
+| `home.learningPath` | O'rganish yo'li | Роҳи омӯзиш |  |
+| `home.stepsDone` | {done} / {total} qadam | {done} / {total} қадам |  |
+| `home.contest` | Musobaqa | Мусобиқа |  |
+| `home.noUpcomingContest` | Yaqin musobaqa e'lon qilinmagan | Мусобиқаи наздик эълон нашудааст |  |

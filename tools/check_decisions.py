@@ -1844,6 +1844,23 @@ def clay_follows_dark_mode() -> str | None:
     return None
 
 
+def signed_in_home_is_the_dashboard() -> str | None:
+    """2026-10-05: a signed-in visitor gets the personal dashboard.
+
+    The page returns `SignedInHome` before the guest markup, so the guest
+    page (CDN-cached, guarded by the homepage decisions) is untouched. The
+    dashboard keeps the homepage prefetch decision: links prefetch on
+    intent, so it must not import `next/link` directly.
+    """
+    page = read("apps/web/src/app/(site)/page.tsx")
+    if "if (me) {" not in page or "<SignedInHome" not in page:
+        return "page.tsx: kirgan foydalanuvchi shaxsiy panelni olmaydi"
+    home = read("apps/web/src/features/home/components/SignedInHome.tsx")
+    if re.search(r"""from ["']next/link["']""", home):
+        return "SignedInHome.tsx: `next/link` — havolalar ko'rinishi bilan prefetch qiladi"
+    return None
+
+
 def docker_disk_stays_bounded() -> str | None:
     """2026-09-20: log 10m/3, builder GC 5GB, SHA teg yo'q, prune tasdiq'dan keyin.
 
@@ -2599,6 +2616,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("bosh sahifa CSS inline", homepage_css_is_inlined),
     ("bosh sahifa CF email-decode yo'q", homepage_skips_cf_email_decode),
     ("login yupqa auth.css", login_uses_narrow_auth_css),
+    ("kirgan foydalanuvchi bosh sahifasi — shaxsiy panel", signed_in_home_is_the_dashboard),
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),
     ("kirish sahifasi o'z-o'ziga yetarli", sign_in_page_is_self_contained),
     ("customization invariantlari", customization_invariants_are_written),
