@@ -2,11 +2,13 @@ from __future__ import annotations
 
 from typing import Any, Never
 
-from django.db.models import BooleanField, Case, QuerySet, Value, When
+from django.db.models import BooleanField, Case, Count, QuerySet, Value, When
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import mixins, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -189,6 +191,39 @@ class AttemptViewSet(
         # yerdagi `order_by` esa sukut: kursor pozitsiyasi shu maydondan
         # olinadi, shuning uchun ikkisi ajralib ketmasligi kerak.
         return qs.order_by("-created_at")
+
+    @extend_schema(
+        summary="Foydalanuvchining masalalar bo'yicha urinishlar soni",
+        parameters=[
+            OpenApiParameter("username", str, required=True),
+            OpenApiParameter("problems", str, required=True, description="Comma-separated slugs."),
+        ],
+        responses={200: OpenApiTypes.OBJECT},
+    )
+    @action(detail=False, methods=["get"], pagination_class=None)
+    def counts(self, request: Request) -> Response:
+        """How many times one user submitted to each of a few problems.
+
+        The list is cursor-paginated and carries no total, so a feed that
+        folds attempts into one line per problem cannot count them from a
+        page: it would print the page size. The attempts themselves are
+        public, so their count is too.
+        """
+        username = request.query_params.get("username", "")
+        slugs = [s for s in request.query_params.get("problems", "").split(",") if s]
+        if not username or not slugs:
+            return Response({})
+        rows = (
+            Attempt.objects.filter(
+                user__username=username, problem__slug__in=slugs[: self.COUNTS_MAX]
+            )
+            .values_list("problem__slug")
+            .annotate(n=Count("pk"))
+        )
+        return Response(dict(rows))
+
+    #: Slugs one `counts` call answers; the feed asks for a handful.
+    COUNTS_MAX = 20
 
     def get_serializer_class(self):  # type: ignore[no-untyped-def]
         if self.action == "create":
