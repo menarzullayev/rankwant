@@ -1799,6 +1799,31 @@ def schema_change_wakes_web_job() -> str | None:
     return None
 
 
+def sign_in_page_is_self_contained() -> str | None:
+    """2026-10-04: `/login` is a two-column page without the site chrome.
+
+    The site header and footer are not drawn on it, so `AuthShell` must carry
+    what they carried: the language switch and the Terms/Privacy links
+    (ADR-0016). Its brand panel must stay static — decision 18 dropped an
+    earlier split screen because its panel rendered live API data and came
+    up empty when the API was down.
+    """
+    shell = read("apps/web/src/layout/AppShell.tsx")
+    full = re.search(r"const FULL = \[([^\]]*)\]", shell)
+    if not full or '"/login"' not in full.group(1):
+        return "AppShell.tsx: `/login` FULL ro'yxatida emas — sayt header/footer'i qaytadi"
+    auth = read("apps/web/src/features/auth/components/AuthShell.tsx")
+    if "lg:grid-cols-" not in auth:
+        return "AuthShell.tsx: ikki ustunli tuzilma yo'q"
+    if "<LocaleSwitch" not in auth:
+        return "AuthShell.tsx: til tanlagich yo'q — header'siz sahifada til almashmaydi"
+    if 'href="/terms"' not in auth or 'href="/privacy"' not in auth:
+        return "AuthShell.tsx: Shartlar/Maxfiylik havolasi yo'q (ADR-0016)"
+    if re.search(r"""from ["']@/lib/api["']""", auth) or "fetch(" in auth:
+        return "AuthShell.tsx: brend paneli API'ga bog'liq — panel statik bo'lishi shart"
+    return None
+
+
 def docker_disk_stays_bounded() -> str | None:
     """2026-09-20: log 10m/3, builder GC 5GB, SHA teg yo'q, prune tasdiq'dan keyin.
 
@@ -2554,6 +2579,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("bosh sahifa CSS inline", homepage_css_is_inlined),
     ("bosh sahifa CF email-decode yo'q", homepage_skips_cf_email_decode),
     ("login yupqa auth.css", login_uses_narrow_auth_css),
+    ("kirish sahifasi o'z-o'ziga yetarli", sign_in_page_is_self_contained),
     ("customization invariantlari", customization_invariants_are_written),
     ("Security run o'chiq", security_run_is_disabled),
     ("judge latency Nightly'da", judge_latency_gate_is_nightly),

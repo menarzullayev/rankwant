@@ -3058,6 +3058,36 @@ def neg_decisions_openapi_check_step_dropped() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_sign_in_gets_site_chrome_back() -> tuple[bool, str]:
+    """`/login` leaves FULL: the site header and footer return around it."""
+    return _decision_broken(
+        "apps/web/src/layout/AppShell.tsx",
+        'const FULL = ["/login", "/register", "/reset-password"];',
+        'const FULL = ["/register", "/reset-password"];',
+        "FULL ro'yxatida emas",
+    )
+
+
+def neg_decisions_sign_in_loses_locale_switch() -> tuple[bool, str]:
+    """No header and no switch: a visitor cannot change the language."""
+    return _decision_broken(
+        "apps/web/src/features/auth/components/AuthShell.tsx",
+        "          <LocaleSwitch />\n",
+        "",
+        "til tanlagich yo'q",
+    )
+
+
+def neg_decisions_sign_in_panel_calls_api() -> tuple[bool, str]:
+    """The brand panel starts depending on the API again (decision 18)."""
+    return _decision_broken(
+        "apps/web/src/features/auth/components/AuthShell.tsx",
+        'import { getLocale } from "@/i18n/server";',
+        'import { getLocale } from "@/i18n/server";\nimport { api } from "@/lib/api";',
+        "panel statik bo'lishi shart",
+    )
+
+
 def _css_sources_broken(rel: str, old: str, new: str, expect: str) -> tuple[bool, str]:
     """Break one `@source` invariant in `rel`; check_css_sources must catch it."""
     path = ROOT / rel
@@ -4586,6 +4616,8 @@ _DECISIONS_SANDBOX_FILES = (
     # Login thin auth.css (2026-09-21). Missing here, the sandbox copy
     # cannot be read and `check_decisions.py` exits 2.
     "apps/web/src/app/auth.css",
+    # Two-column sign-in page (2026-10-04): the rule reads the shell too.
+    "apps/web/src/features/auth/components/AuthShell.tsx",
     "apps/web/src/app/(auth)/layout.tsx",
     "apps/web/src/app/(site)/layout.tsx",
     # Security run disabled (2026-09-21): the rule reads REQUIRED.
@@ -7863,6 +7895,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
                 neg_decisions_auto_deploy_contest_override,
             ),
             ("push guard uzilsa tutilsin", neg_decisions_push_guard_unwired),
+            ("kirish sahifasiga sayt chrome'i qaytsa tutilsin", neg_decisions_sign_in_gets_site_chrome_back),
+            ("kirish sahifasida til tanlagich yo'qolsa tutilsin", neg_decisions_sign_in_loses_locale_switch),
+            ("kirish paneli API'ga bog'lansa tutilsin", neg_decisions_sign_in_panel_calls_api),
             ("web filtri sxemani unutsa tutilsin", neg_decisions_schema_filter_dropped),
             ("openapi:check qadami olib tashlansa tutilsin", neg_decisions_openapi_check_step_dropped),
             ("hosted runner qo'shilsa tutilsin", neg_decisions_hosted_runner),

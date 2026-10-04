@@ -56,6 +56,14 @@ const BARE = [
   "/onboarding",
 ];
 
+/** Routes that draw their own full-screen layout (HITL 2026-10-04): the
+ *  two-column sign-in page. No site header, no footer, no page gutter —
+ *  `AuthShell` carries the brand link, the language switch and the legal
+ *  links itself. The redirecting addresses are listed for the same reason
+ *  as in `BARE`: `usePathname()` still reports the old path while the
+ *  redirect is in flight. */
+const FULL = ["/login", "/register", "/reset-password"];
+
 /** Sahifalar SERVER komponenti bo'lib qoladi — bu yerga `children` sifatida
  * uzatiladi, ya'ni SSR (ADR-0003 dagi SEO sababi) buzilmaydi. */
 function Shell({ children }: { children: React.ReactNode }) {
@@ -69,6 +77,7 @@ function Shell({ children }: { children: React.ReactNode }) {
   const navShape = clampNavShape(appearance.navShape);
   const pathname = usePathname();
   const bare = BARE.includes(pathname);
+  const full = FULL.includes(pathname);
   const wide = isExpanded || isHovered;
   const sidenav = navMode === "sidenav" && !bare;
 
@@ -116,7 +125,7 @@ function Shell({ children }: { children: React.ReactNode }) {
             : ""
         }
       >
-        {navMode === "topnav" && !bare ? (
+        {full ? null : navMode === "topnav" && !bare ? (
           <AppTopNav shape={navShape} />
         ) : (
           <AppHeader />
@@ -131,10 +140,13 @@ function Shell({ children }: { children: React.ReactNode }) {
         {/* Kenglik `--rw-content-width` dan (D48) — sozlagichda erkin
             tanlanadi. Tailwind sinfi qotib qolgan edi va katta monitorda
             odam o'qish uchun tor/keng qilib o'zgartira olmasdi. */}
-        <main id="main" className="rw-content mx-auto p-4 md:p-6">
+        <main
+          id="main"
+          className={full ? undefined : "rw-content mx-auto p-4 md:p-6"}
+        >
           {children}
         </main>
-        <AppFooter />
+        {!full && <AppFooter />}
       </div>
     </div>
   );

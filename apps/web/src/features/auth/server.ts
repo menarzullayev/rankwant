@@ -6,6 +6,5 @@
  *
  *  Mijoz komponentlari uchun — `@/features/auth`. */
 
-export { AuthProof } from "./components/AuthProof";
 export { AuthShell } from "./components/AuthShell";
 export { AuthTabs } from "./components/AuthTabs";

@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Suspense } from "react";
 
 import { AuthForm } from "@/features/account";
-import { AuthProof, AuthShell, AuthTabs } from "@/features/auth/server";
+import { AuthShell, AuthTabs } from "@/features/auth/server";
 import { ResetForm } from "@/features/account";
-import { Card } from "@/components/ui/Card";
 import { fetchProviders } from "@/lib/api";
 import { parseTab, DEFAULT_TAB, type TabId } from "@/lib/auth-tabs";
 import { isSignedIn } from "@/lib/server-session";
@@ -13,16 +11,10 @@ import { safeNext } from "@/lib/site";
 import { getLocale } from "@/i18n/server";
 import { t, type MessageKey } from "@/i18n/messages";
 
-/** Bo'lim → karta sarlavhasi.
- *
- *  Kirishda sarlavha YO'Q (`null`): forma qisqa va maydonlar o'zi nima
- *  ekanini aytadi, sarlavha esa «Kirish» bo'lib tugma matnini
- *  takrorlardi. Ro'yxatda sarlavha «Hisob yaratish» — u QILINAYOTGAN
- *  ishni aytadi, tugma esa amalni, ya'ni takror yo'q. */
-const TITLE: Record<TabId, MessageKey | null> = {
-  // Ilgari `null` edi: kirish bo'limida ko'rinadigan sarlavha yo'q edi va
-  // sahifani faqat `document.title` nomlardi — ekran o'quvchi kartaning
-  // nima ekanini aytolmasdi, ro'yxat bo'limida esa sarlavha bor edi.
+/** Tab → page heading. Every tab has one: it is the page's `<h1>`, and it
+ *  says what is being done ("Create account") while the button says the
+ *  action. */
+const TITLE: Record<TabId, MessageKey> = {
   login: "auth.login",
   register: "auth.createAccount",
   "reset-password": "reset.title",
@@ -59,7 +51,7 @@ export async function generateMetadata({
   const [locale, tab] = [await getLocale(), tabOf(params)];
   const title = TITLE[tab];
   return {
-    title: t(locale, title ?? "auth.login"),
+    title: t(locale, title),
     //: Tiklash bo'limida tokenli havola bo'lishi mumkin — qidiruvda
     //: kerak emas. Kirish va ro'yxat esa indekslanadi (SEO).
     // Omit the key instead of setting it to `undefined`: Next merges metadata
@@ -68,10 +60,10 @@ export async function generateMetadata({
   };
 }
 
-/** Uch bo'lim, bitta markazlashgan karta (1 va 18-qarorlar).
+/** Three tabs on one address, drawn in the two-column `AuthShell`.
  *
- *  Ildiz manzil — `/login`. `?tab=` bo'lmasa kirish ochiladi, ya'ni
- *  `/login` ni yoddan yozgan odam ham to'g'ri joyga tushadi. */
+ *  `/login` is the root: without `?tab=` the sign-in form opens, so a
+ *  typed-from-memory `/login` lands in the right place. */
 export default async function AuthPage({
   searchParams,
 }: {
@@ -86,39 +78,29 @@ export default async function AuthPage({
   if (await isSignedIn()) redirect((safeNext(nextOf(params)) ?? "/") as never);
 
   const [locale, auth] = await Promise.all([getLocale(), fetchProviders()]);
-  const title = TITLE[tab];
 
   return (
     <AuthShell>
-      <Card title={title ? t(locale, title) : undefined}>
-        {/* Query (`next`, `link`, `social`, `token`) SERVERDA o'qiladi.
-            Klient search-params hooki butun kartani Suspense fallback
-            ga tiqib, avval «Yuklanmoqda», keyin formani chizardi —
-            768 px register Lighthouse LCP 4.2 s / CLS 0.202
-            edi (2026-09-21). */}
-        <AuthTabs active={tab} next={nextOf(params)} />
-        {tab === "reset-password" ? (
-          <ResetForm token={one(params.token) ?? ""} />
-        ) : (
-          <AuthForm
-            mode={tab === "register" ? "register" : "login"}
-            providers={auth.providers}
-            turnstileSiteKey={auth.turnstile_site_key}
-            next={nextOf(params)}
-            link={one(params.link)}
-            social={one(params.social)}
-          />
-        )}
-        {/* Ijtimoiy dalil (12-qaror). `api.stats()` formani
-            bloklamasin — shu sabab `Suspense`. Karta `justify-center`
-            da, shuning uchun joy OLDINDAN band: kelgan satr kartani
-            pastdan ochib CLS yasamasin. */}
-        <div className="min-h-[4.5rem]">
-          <Suspense fallback={null}>
-            <AuthProof />
-          </Suspense>
-        </div>
-      </Card>
+      <h1 className="mb-5 text-2xl font-bold rw-strong">
+        {t(locale, TITLE[tab])}
+      </h1>
+      {/* The query (`next`, `link`, `social`, `token`) is read on the
+          SERVER. A client search-params hook pushed the whole form into a
+          Suspense fallback: "Loading" first, then the form — 768 px
+          register measured LCP 4.2 s / CLS 0.202 (2026-09-21). */}
+      <AuthTabs active={tab} next={nextOf(params)} />
+      {tab === "reset-password" ? (
+        <ResetForm token={one(params.token) ?? ""} />
+      ) : (
+        <AuthForm
+          mode={tab === "register" ? "register" : "login"}
+          providers={auth.providers}
+          turnstileSiteKey={auth.turnstile_site_key}
+          next={nextOf(params)}
+          link={one(params.link)}
+          social={one(params.social)}
+        />
+      )}
     </AuthShell>
   );
 }

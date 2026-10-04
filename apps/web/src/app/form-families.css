@@ -16,6 +16,16 @@
   padding: 0 14px;
 }
 
+/* iOS Safari zooms the whole page when a focused control's font is under
+   16 px, and does not zoom back. The fields are 14 px (`text-theme-sm`),
+   so every form on a phone jumped on first tap. Touch pointers only:
+   the desktop density is unchanged. */
+@media (pointer: coarse) {
+  .rw-fm-inp {
+    font-size: 16px;
+  }
+}
+
 textarea.rw-fm-inp {
   height: auto;
   min-height: 4.6rem;

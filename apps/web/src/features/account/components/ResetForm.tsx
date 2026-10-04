@@ -50,7 +50,7 @@ function Request() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-4">
+    <form method="post" onSubmit={onSubmit} className="flex flex-col gap-4">
       <p className="text-theme-sm rw-dim">{t(locale, "reset.intro")}</p>
       <Field
         label={t(locale, "reset.loginHint")}
@@ -131,7 +131,7 @@ function SetNew({ token }: { token: string }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-4">
+    <form method="post" onSubmit={onSubmit} className="flex flex-col gap-4">
       <p className="text-theme-sm rw-dim">{t(locale, "reset.newIntro")}</p>
       <Field
         label={t(locale, "auth.password")}
