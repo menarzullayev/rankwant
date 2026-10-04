@@ -22,7 +22,7 @@ import {
   type UserPublic,
 } from "@/lib/api";
 import { getSessionUser, getWithSession } from "@/lib/api.server";
-import { SignedInHome } from "@/features/home/components/SignedInHome";
+import { SignedInHome } from "./_home/SignedInHome";
 
 /** Kirgan foydalanuvchi uchun «qayerdan davom etaman» savoliga javob:
  * avval tugallanmagan urinish, bo'lmasa tavsiya. Mehmonga `null`. */
