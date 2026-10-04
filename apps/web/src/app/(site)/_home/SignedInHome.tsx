@@ -151,16 +151,17 @@ function duration(contest: Contest, locale: Locale): string {
   return parts.filter(Boolean).join(" ");
 }
 
-/** Attempts on the same problem in a row are one line of the feed: a
- *  hundred submissions to one problem are one thing that happened. */
-function groupAttempts(attempts: Attempt[]): { latest: Attempt; count: number }[] {
-  const groups: { latest: Attempt; count: number }[] = [];
-  for (const attempt of attempts) {
-    const last = groups[groups.length - 1];
-    if (last && last.latest.problem === attempt.problem) last.count += 1;
-    else groups.push({ latest: attempt, count: 1 });
-  }
-  return groups;
+/** One line of the feed per problem — its latest attempt. A hundred
+ *  submissions to one problem are one thing that happened.
+ *
+ *  The list arrives newest first, so the first attempt seen for a problem
+ *  is its latest. How many there were is NOT counted here: this is one page
+ *  of a cursor-paginated list, and counting it printed the page size
+ *  ("25 attempts" for a problem with over a hundred, measured live
+ *  2026-10-05). The count comes from `/attempts/counts/`. */
+function latestPerProblem(attempts: Attempt[]): Attempt[] {
+  const seen = new Set<string>();
+  return attempts.filter((a) => !seen.has(a.problem) && seen.add(a.problem));
 }
 
 function person(user: UserPublic): PersonRow {
@@ -254,22 +255,25 @@ export async function SignedInHome({
   ]);
 
   const contest = featuredContest(contests);
-  const groups = groupAttempts(attempts?.results ?? []);
+  const latest = latestPerProblem(attempts?.results ?? []).slice(0, FEED);
+  const slugs = latest.map((a) => a.problem);
   // The attempt carries the problem's slug; the feed shows its title.
   // A title that cannot be read falls back to the slug.
-  const slugs = [...new Set(groups.slice(0, FEED).map((g) => g.latest.problem))];
-  const titles = new Map(
-    await Promise.all(
+  const [titles, counts] = await Promise.all([
+    Promise.all(
       slugs.map(async (slug) => {
         const problem = await api.problem(slug).catch(() => null);
         return [slug, problem?.title ?? slug] as const;
       }),
-    ),
-  );
+    ).then((rows) => new Map(rows)),
+    slugs.length > 0
+      ? api.attemptCounts(me.username, slugs).catch((): Record<string, number> => ({}))
+      : ({} as Record<string, number>),
+  ]);
   const stamp = (value: string) => dateTime(value, locale, { timeZone: ZONE });
 
   const feed = [
-    ...groups.map(({ latest, count }) => ({
+    ...latest.map((latest) => ({
       key: `a${latest.id}`,
       at: latest.created_at,
       body: (
@@ -290,9 +294,11 @@ export async function SignedInHome({
               </>
             )}
           </span>
-          {count > 1 && (
+          {(counts[latest.problem] ?? 0) > 1 && (
             <span className="text-theme-xs rw-dim">
-              {fill(t(locale, "home.attemptCount"), { count: String(count) })}
+              {fill(t(locale, "home.attemptCount"), {
+                count: String(counts[latest.problem]),
+              })}
             </span>
           )}
         </>
@@ -300,7 +306,7 @@ export async function SignedInHome({
     })),
     ...events
       // A solve already shows as its attempt line.
-      .filter((e) => !(e.kind === "solved" && groups.some((g) => g.latest.problem === e.ref_id)))
+      .filter((e) => !(e.kind === "solved" && slugs.includes(e.ref_id)))
       .map((e) => ({
         key: `e${e.id}`,
         at: e.created_at,

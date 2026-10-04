@@ -289,6 +289,31 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/attempts/counts/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Foydalanuvchining masalalar bo'yicha urinishlar soni
+         * @description How many times one user submitted to each of a few problems.
+         *
+         *     The list is cursor-paginated and carries no total, so a feed that
+         *     folds attempts into one line per problem cannot count them from a
+         *     page: it would print the page size. The attempts themselves are
+         *     public, so their count is too.
+         */
+        get: operations["attempts_counts_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/{provider}/callback/": {
         parameters: {
             query?: never;
@@ -9529,6 +9554,31 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AttemptDetail"];
+                };
+            };
+        };
+    };
+    attempts_counts_retrieve: {
+        parameters: {
+            query: {
+                /** @description Comma-separated slugs. */
+                problems: string;
+                username: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
         };

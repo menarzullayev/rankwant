@@ -197,6 +197,25 @@ class TestListFields:
         assert row["solved_steps"] == 1
         assert row["next_step"]["order"] == 2
 
+    def test_sarlavhasiz_qadam_masala_nomini_oladi(self, problem) -> None:
+        roadmap = Roadmap.objects.create(slug="boshlash", title="Boshlash", is_published=True)
+        RoadmapStep.objects.create(roadmap=roadmap, order=1, problem=problem)
+        row = APIClient().get(reverse("roadmap-list")).json()[0]
+        assert row["next_step"]["title"] == problem.title
+
+    def test_urinishlar_soni_sahifaga_bogliq_emas(self, user, problem, language) -> None:
+        """Thirty attempts are thirty, though the list returns 25 a page."""
+        other = User.objects.create_user(username="vali", password="Parol!12345")
+        for author, n in ((user, 30), (other, 2)):
+            Attempt.objects.bulk_create(
+                Attempt(user=author, problem=problem, language=language, source_code="x")
+                for _ in range(n)
+            )
+        url = reverse("attempt-counts")
+        query = {"username": user.username, "problems": f"{problem.slug},yoq"}
+        assert APIClient().get(url, query).json() == {problem.slug: 30}
+        assert APIClient().get(url, {"username": user.username}).json() == {}
+
     def test_hammasi_yechilgan_yolda_keyingi_qadam_yoq(self, user, problem) -> None:
         roadmap = Roadmap.objects.create(slug="boshlash", title="Boshlash", is_published=True)
         RoadmapStep.objects.create(roadmap=roadmap, order=1, problem=problem)

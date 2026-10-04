@@ -74,6 +74,13 @@ export const api = {
   topUsers: (field: string) =>
     get<Paginated<UserPublic>>(`/users/?ordering=-${field}&page_size=3`, 60),
   qvantTop: () => get<QvantTop[]>("/qvant/top/", 60),
+  /** One user's attempt count per problem. The attempts list is
+   *  cursor-paginated and has no total, so a page cannot be counted. */
+  attemptCounts: (username: string, slugs: string[]) =>
+    get<Record<string, number>>(
+      `/attempts/counts/?username=${encodeURIComponent(username)}&problems=${slugs.map(encodeURIComponent).join(",")}`,
+      0,
+    ),
   problems: (query = "") => get<Paginated<Problem>>(`/problems/${query}`),
   problem: (slug: string) => get<ProblemDetail>(`/problems/${slug}/`),
   contests: () => get<Paginated<Contest>>("/contests/"),

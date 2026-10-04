@@ -93,7 +93,12 @@ class RoadmapListSerializer(serializers.ModelSerializer[Roadmap]):
         )
         for step in steps[done_upto + 1 :]:
             if step.problem_id is None or step.problem_id not in solved:
-                return dict(RoadmapStepSerializer(step).data)
+                data = dict(RoadmapStepSerializer(step).data)
+                # A step's own title is optional; without one it is named
+                # after what it links to, not after that thing's slug.
+                linked = step.problem or step.article
+                data["title"] = step.title or (linked.title if linked else "")
+                return data
         return None
 
     class Meta:
