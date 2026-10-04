@@ -3038,6 +3038,26 @@ def neg_decisions_auto_deploy_contest_override() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_schema_filter_dropped() -> tuple[bool, str]:
+    """The web path filter forgets the schema again (the #318 failure)."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "web:   ['apps/web/**', 'packages/**', 'apps/api/openapi/schema.yml']",
+        "web:   ['apps/web/**', 'packages/**']",
+        "Web job'i uyg'onmaydi",
+    )
+
+
+def neg_decisions_openapi_check_step_dropped() -> tuple[bool, str]:
+    """The job wakes up but no longer compares the generated types."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "run: npm run openapi:check",
+        "run: true",
+        "openapi:check qadami yo'q",
+    )
+
+
 def _css_sources_broken(rel: str, old: str, new: str, expect: str) -> tuple[bool, str]:
     """Break one `@source` invariant in `rel`; check_css_sources must catch it."""
     path = ROOT / rel
@@ -7843,6 +7863,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
                 neg_decisions_auto_deploy_contest_override,
             ),
             ("push guard uzilsa tutilsin", neg_decisions_push_guard_unwired),
+            ("web filtri sxemani unutsa tutilsin", neg_decisions_schema_filter_dropped),
+            ("openapi:check qadami olib tashlansa tutilsin", neg_decisions_openapi_check_step_dropped),
             ("hosted runner qo'shilsa tutilsin", neg_decisions_hosted_runner),
             (
                 "runner compose'da rankwant label'i tushsa tutilsin",

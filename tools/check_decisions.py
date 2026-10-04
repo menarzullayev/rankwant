@@ -1778,6 +1778,27 @@ def deploy_skips_non_image_bake() -> str | None:
     return None
 
 
+def schema_change_wakes_web_job() -> str | None:
+    """2026-10-04: a schema.yml change must run the web job's types check.
+
+    `apps/web/src/lib/api/generated/schema.ts` is generated from
+    `apps/api/openapi/schema.yml`. The path filter woke the web job only for
+    `apps/web/**`, so #318 changed the schema, skipped the job, and left
+    `main` green with types 226 lines stale. Four unrelated web PRs then
+    failed on `openapi:check`.
+    """
+    ci = read(".github/workflows/ci.yml")
+    line = next(
+        (ln for ln in ci.splitlines() if ln.strip().startswith("web:") and "'apps/web/**'" in ln),
+        "",
+    )
+    if "'apps/api/openapi/schema.yml'" not in line:
+        return "ci.yml: schema.yml o'zgarsa Web job'i uyg'onmaydi"
+    if "run: npm run openapi:check" not in ci:
+        return "ci.yml: openapi:check qadami yo'q"
+    return None
+
+
 def docker_disk_stays_bounded() -> str | None:
     """2026-09-20: log 10m/3, builder GC 5GB, SHA teg yo'q, prune tasdiq'dan keyin.
 
@@ -2515,6 +2536,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("staff guruhlari va obyekt mualliflari", roles_groups_and_object_authors),
     ("avtomatik deploy xavfsiz", deploy_automation_is_safe),
     ("docs/tools obraz qurilmasin", deploy_skips_non_image_bake),
+    ("sxema o'zgarsa web tiplari tekshiriladi", schema_change_wakes_web_job),
     ("docker disk chegaralangan", docker_disk_stays_bounded),
     ("TypeScript 7 yonma-yon", typescript_side_by_side),
     ("@types/node runtime bilan", types_node_tracks_runtime),

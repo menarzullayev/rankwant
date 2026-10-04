@@ -71,7 +71,12 @@ jobs:
             api:   ['apps/api/**']
             # RW-ARCH-013: `packages/shared` is imported by the web app, so a
             # change there has to run the web gates (typecheck/build/tests).
-            web:   ['apps/web/**', 'packages/**']
+            #
+            # `apps/api/openapi/schema.yml` is an input of the web job too:
+            # `schema.ts` is generated from it. Without it an API-only PR
+            # skipped this job, and #318 left `main` with stale types that
+            # every later web PR then failed on (measured 2026-10-04).
+            web:   ['apps/web/**', 'packages/**', 'apps/api/openapi/schema.yml']
             judge: ['services/**']
             code:  ['apps/**', 'packages/**', 'services/**', 'tools/**', 'tests/**', 'docker-compose*.yml']
             # When the checks themselves change, the job that runs them
