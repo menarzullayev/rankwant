@@ -302,10 +302,11 @@ export function readBackgrounds(): RGB[] {
 /** Joriy muhit qorong'imi — O'LCHANGAN fon yorqinligidan.
  *
  *  ⚠️ `<html>` dagi `dark` klassi bu yerda ISHLATILMAYDI: bir muhitli
- *  uslublarda (`dual: false` — `clay`, `terminal`, `aurora`…) u yolg'on
- *  gapiradi. `clay` da `dark` klassi turibdi, lekin uning barcha fonlari
- *  YORUG' (`--rw-ground: #ede4ff`), chunki `[data-style="clay"].dark`
- *  bloki umuman yo'q.
+ *  uslublarda (`dual: false` — `neu`, `terminal`, `aurora`…) u yolg'on
+ *  gapiradi. O'lchangan misol `clay` edi (2026-10-05 gacha bir muhitli):
+ *  `dark` klassi turardi, lekin barcha fonlari YORUG' edi
+ *  (`--rw-ground: #ede4ff`), chunki `[data-style="clay"].dark` bloki
+ *  yo'q edi. Bir muhitli qolgan uslublarda bu hamon shunday.
  *
  *  Bu o'lchov bilan topilgan xato edi: klassga qarab chip qorong'i
  *  qilinardi, fonlar esa yorug' qolardi, natijada yorug' va qorong'i

@@ -68,7 +68,9 @@ const BRAND: Record<Provider, string> = {
   // `rw-divider`, not `rw-line`: `--rw-line` is transparent in the `clay`
   // style, so a white button on a near-white ground had no visible edge.
   google: "border rw-divider bg-white text-[#1f1f1f]",
-  github: "bg-[#1f2328] text-white",
+  // The edge only shows in dark mode: #1f2328 on a dark ground has no
+  // outline of its own. In light mode the border stays transparent.
+  github: "border border-transparent bg-[#1f2328] text-white dark:border-[var(--rw-divider)]",
   telegram: "bg-[#1a77a4] text-white",
 };
 

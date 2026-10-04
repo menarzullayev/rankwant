@@ -2,7 +2,7 @@
  *
  * CSS tomoni — `globals.css` dagi `[data-style="..."]` bloklari; bu yerda
  * faqat ro'yxat va yorug'/qorong'u qo'llab-quvvatlashi turadi. `dual: false`
- * uslublar bitta muhitga mo'ljallangan (terminal qorong'u, gil yorug'), shu
+ * uslublar bitta muhitga mo'ljallangan (terminal qorong'u, neu yorug'), shu
  * sababli ularda tema tugmasi ko'rsatilmaydi.
  *
  * ⚠️ `label` va `hint` EMAS, `labelKey`/`hintKey`: ilgari bu yerda tayyor
@@ -91,7 +91,10 @@ export const STYLES: StyleDef[] = [
     id: "clay",
     labelKey: "style.clay.label",
     hintKey: "style.clay.hint",
-    dual: false,
+    // Dual since 2026-10-05: clay is the factory style and the default
+    // mode is `system`, so it has to follow a dark-mode device. The
+    // trailing tag keeps this line unique for `check_negative.py`.
+    dual: true, // clay
   },
   {
     id: "aurora",
