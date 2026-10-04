@@ -353,6 +353,10 @@ def apply_contest_ratings(contest) -> int:  # type: ignore[no-untyped-def]
         users, ["rating_contest", "rated_contest_count", "max_rating_contest"], batch_size=500
     )
     RatingHistory.objects.bulk_create(histories, batch_size=500)
+    # `bulk_create` sends no `post_save`, so the feed is told directly.
+    from profiles import activity
+
+    activity.record_ratings(histories)
     try:
         Notification.objects.bulk_create(notes, batch_size=500)
     except Exception:

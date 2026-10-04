@@ -1,5 +1,7 @@
 /** Platform-wide: stats, search, notifications, updates and the public roadmap. */
 
+import type { UserTitle } from "@/lib/identity";
+
 import { deleteJson, getJson, postJson, type Paginated } from "./client";
 
 export type PlatformStats = {
@@ -8,6 +10,46 @@ export type PlatformStats = {
   contests: number;
   attempts: number;
   statement_locales: string[];
+};
+
+/** One local day of `/stats/daily/` — the home page's 14-day chart. */
+export type DailyStats = {
+  date: string;
+  new_users: number;
+  active_users: number;
+  attempts: number;
+};
+
+/** `/presence/` — who opened the site today, most recent first. */
+export type Presence = {
+  today: number;
+  online: number;
+  results: {
+    username: string;
+    display_name: string;
+    avatar_url: string;
+    title: UserTitle | null;
+    last_seen: string;
+    online: boolean;
+  }[];
+};
+
+/** A row of `/me/activity/`. `data` is what the feed prints for that kind. */
+export type HomeEvent = {
+  id: number;
+  kind: "solved" | "rating" | "qvant" | "contest";
+  ref_type: string;
+  ref_id: string;
+  data: Record<string, string | number | null>;
+  created_at: string;
+};
+
+/** A row of the public Qvant top list. */
+export type QvantTop = {
+  username: string;
+  display_name: string;
+  avatar_url: string;
+  balance: number;
 };
 
 export type Notification = {

@@ -22,13 +22,15 @@ import {
   type UserPublic,
 } from "@/lib/api";
 import { getSessionUser, getWithSession } from "@/lib/api.server";
-import { SignedInHome } from "./_home/SignedInHome";
+import { SignedInHome, type ResumeTarget } from "./_home/SignedInHome";
 
 /** Kirgan foydalanuvchi uchun «qayerdan davom etaman» savoliga javob:
- * avval tugallanmagan urinish, bo'lmasa tavsiya. Mehmonga `null`. */
+ * avval tugallanmagan urinish, bo'lmasa tavsiya. Mehmonga `null`.
+ * `attempted` separates the two: a pending attempt has been tried, a
+ * recommendation has not. */
 async function resumeTarget(
   me: UserPublic | null,
-): Promise<{ slug: string; title: string } | null> {
+): Promise<ResumeTarget | null> {
   if (!me) return null;
 
   const attempts = await getWithSession<Paginated<Attempt>>(
@@ -40,14 +42,28 @@ async function resumeTarget(
     const problem = await api
       .problem(pending.problem)
       .catch((): ProblemDetail | null => null);
-    if (problem) return { slug: problem.slug, title: problem.title };
+    if (problem) {
+      return {
+        slug: problem.slug,
+        title: problem.title,
+        difficulty: problem.difficulty,
+        attempted: true,
+      };
+    }
   }
 
   const recommended = await getWithSession<Recommendation>(
     "/problems/recommendation/",
   ).catch(() => null);
   const first = recommended?.results[0];
-  return first ? { slug: first.slug, title: first.title } : null;
+  return first
+    ? {
+        slug: first.slug,
+        title: first.title,
+        difficulty: first.difficulty,
+        attempted: false,
+      }
+    : null;
 }
 
 /** Yordamchi bo'lim yiqilsa — bo'sh ro'yxat, lekin sahifa ochiladi.

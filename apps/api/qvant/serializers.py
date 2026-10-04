@@ -72,3 +72,19 @@ class InventorySerializer(serializers.ModelSerializer[UserInventory]):
 
 class PurchaseSerializer(serializers.Serializer[dict[str, Any]]):
     item = serializers.SlugField()
+
+
+class QvantTopSerializer(serializers.ModelSerializer[QvantWallet]):
+    """A row of the public Qvant top list (HITL 2026-10-05).
+
+    The balance is public here by the owner's decision; the ledger behind
+    it (`/qvant/transactions/`) stays private to its user.
+    """
+
+    username = serializers.CharField(source="user.username", read_only=True)
+    display_name = serializers.CharField(source="user.display_name", read_only=True)
+    avatar_url = serializers.CharField(source="user.avatar_url", read_only=True)
+
+    class Meta:
+        model = QvantWallet
+        fields = ["username", "display_name", "avatar_url", "balance"]

@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from typing import Any
+
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from content.models import Article, ArticleProblemLink, Roadmap, RoadmapStep
@@ -73,6 +76,25 @@ class RoadmapListSerializer(serializers.ModelSerializer[Roadmap]):
         )
 
     step_count = serializers.IntegerField(read_only=True, default=0)
+    next_step = serializers.SerializerMethodField()
+
+    @extend_schema_field(RoadmapStepSerializer(allow_null=True))
+    def get_next_step(self, roadmap: Roadmap) -> dict[str, Any] | None:
+        """The first step whose problem this reader has not solved.
+
+        A step without a problem (an article) has nothing to mark it done,
+        so it is the next step only until a later problem is solved — the
+        same rule `solved_steps` counts by. A guest gets the first step.
+        """
+        solved = self.context.get("solved_problem_ids") or set()
+        steps = sorted(roadmap.steps.all(), key=lambda step: step.order)
+        done_upto = max(
+            (i for i, step in enumerate(steps) if step.problem_id in solved), default=-1
+        )
+        for step in steps[done_upto + 1 :]:
+            if step.problem_id is None or step.problem_id not in solved:
+                return dict(RoadmapStepSerializer(step).data)
+        return None
 
     class Meta:
         model = Roadmap
@@ -83,6 +105,7 @@ class RoadmapListSerializer(serializers.ModelSerializer[Roadmap]):
             "locale",
             "step_count",
             "solved_steps",
+            "next_step",
         ]
 
 

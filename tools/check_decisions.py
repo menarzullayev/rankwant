@@ -1855,9 +1855,33 @@ def signed_in_home_is_the_dashboard() -> str | None:
     page = read("apps/web/src/app/(site)/page.tsx")
     if "if (me) {" not in page or "<SignedInHome" not in page:
         return "page.tsx: kirgan foydalanuvchi shaxsiy panelni olmaydi"
-    home = read("apps/web/src/app/(site)/_home/SignedInHome.tsx")
-    if re.search(r"""from ["']next/link["']""", home):
-        return "SignedInHome.tsx: `next/link` — havolalar ko'rinishi bilan prefetch qiladi"
+    # Every file of the dashboard, not only the entry: the lists of people
+    # (top users, today's visitors) render dozens of links in sibling files.
+    for name in ("SignedInHome.tsx", "Person.tsx", "TopUsers.tsx", "NewsCarousel.tsx"):
+        source = read("apps/web/src/app/(site)/_home/" + name)
+        if re.search(r"""from ["']next/link["']""", source):
+            return f"{name}: `next/link` — havolalar ko'rinishi bilan prefetch qiladi"
+    return None
+
+
+def home_presence_reads_sessions() -> str | None:
+    """2026-10-05: «bugun faol» ro'yxati shu saytdagi sessiyadan o'qiladi.
+
+    `User.last_seen_at` ni Codeforces sinxronizatsiyasi ham yozadi (o'sha
+    odamning CODEFORCES'ga oxirgi kirishi), ya'ni u ustundan o'qilsa
+    saytni hech qachon ochmagan odamlar «bugun faol» bo'lib chiqardi.
+    `online` ni yashirgan foydalanuvchi ro'yxatga kirmaydi — profil
+    sahifasi bu tanlovga allaqachon rioya qiladi.
+    """
+    views = read("apps/api/core/views.py")
+    match = re.search(r"^class PresenceView\(.*?(?=^class |^@extend_schema)", views, re.S | re.M)
+    if not match:
+        return "core/views.py: PresenceView topilmadi"
+    body = match.group(0)
+    if "UserSession.objects" not in body:
+        return "PresenceView: `UserSession` o'qilmaydi — Codeforces tashrifi «bugun faol» bo'lib chiqadi"
+    if '"online" not in' not in body:
+        return "PresenceView: `online` maxfiylik tanlovi hisobga olinmaydi"
     return None
 
 
@@ -2617,6 +2641,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("bosh sahifa CF email-decode yo'q", homepage_skips_cf_email_decode),
     ("login yupqa auth.css", login_uses_narrow_auth_css),
     ("kirgan foydalanuvchi bosh sahifasi — shaxsiy panel", signed_in_home_is_the_dashboard),
+    ("bugun faol ro'yxati sessiyadan o'qiladi", home_presence_reads_sessions),
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),
     ("kirish sahifasi o'z-o'ziga yetarli", sign_in_page_is_self_contained),
     ("customization invariantlari", customization_invariants_are_written),

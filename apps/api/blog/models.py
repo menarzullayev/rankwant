@@ -27,6 +27,9 @@ class Post(TimeStampedModel):
     title = models.CharField(max_length=200)
     summary = models.CharField(max_length=300, blank=True)
     body = models.TextField(help_text="Markdown")
+    #: Cover image for the home page carousel. A URL, not an upload: posts
+    #: are written by staff, and the image is served from wherever it lives.
+    cover_url = models.URLField(max_length=500, blank=True)
     locale = models.CharField(max_length=2, default="uz")
 
     author = models.ForeignKey(

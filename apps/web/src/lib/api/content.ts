@@ -5,6 +5,8 @@ export type Post = {
   kind: string;
   title: string;
   summary: string;
+  /** Cover image for the home page carousel; empty when the post has none. */
+  cover_url: string;
   author: string | null;
   published_at: string;
 };
@@ -42,6 +44,17 @@ export type Roadmap = {
   step_count: number;
   /** Traektoriyaning nechta masalasi yechilgan (mehmonda 0). */
   solved_steps: number;
+  /** The first step this reader has not done; `null` when the path is finished. */
+  next_step: RoadmapNextStep | null;
+};
+
+export type RoadmapNextStep = {
+  order: number;
+  title: string;
+  /** Slug of the linked article or problem; a step has at most one of each. */
+  article: string | null;
+  problem: string | null;
+  is_optional: boolean;
 };
 
 export type Choice = { id: number; order: number; text: string };

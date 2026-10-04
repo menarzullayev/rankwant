@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1997 strings.**
+**2025 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -2018,3 +2018,31 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `home.stepsDone` | {done} / {total} qadam | {done} / {total} кадам |  |
 | `home.contest` | Musobaqa | Мелдеш |  |
 | `home.noUpcomingContest` | Yaqin musobaqa e'lon qilinmagan | Жакынкы мелдеш жарыялана элек |  |
+| `home.notAttempted` | hali urinish yo'q | азырынча аракет жок |  |
+| `home.attempted` | urinish bor | аракет бар |  |
+| `home.starts` | Boshlanishi | Башталышы |  |
+| `home.duration` | Davomiyligi | Узактыгы |  |
+| `home.hours` | {n} soat | {n} саат |  |
+| `home.minutes` | {n} daq | {n} мүн |  |
+| `home.practiceArchive` | Arxivdan mashq | Архивден машыгуу |  |
+| `home.openContest` | Musobaqani ochish | Мелдешти ачуу |  |
+| `home.howRated` | {name} reytingi qanday hisoblanadi | {name} рейтинги кантип эсептелет |  |
+| `home.noTitle` | Unvon hali berilmagan | Наам азырынча берилген жок |  |
+| `home.attemptCount` | {count} urinish | {count} аракет |  |
+| `home.event.solved` | Masala yechildi | Маселе чечилди |  |
+| `home.event.contest` | Musobaqaga yozildi | Мелдешке катталды |  |
+| `home.nextStep` | {n}-qadam | {n}-кадам |  |
+| `home.startStep` | Boshlash | Баштоо |  |
+| `home.pathDone` | Yo'l tugallandi | Жол аяктады |  |
+| `home.topBy` | Reyting turi | Рейтинг түрү |  |
+| `home.emptyTop` | Bu ro'yxat hozircha bo'sh | Бул тизме азырынча бош |  |
+| `home.readPost` | O'qish | Окуу |  |
+| `home.prevPost` | Oldingi yangilik | Мурунку жаңылык |  |
+| `home.nextPost` | Keyingi yangilik | Кийинки жаңылык |  |
+| `home.platformActivity` | Platforma faolligi | Платформанын активдүүлүгү |  |
+| `home.last14` | So'nggi 14 kun | Акыркы 14 күн |  |
+| `home.newUsers` | Yangi foydalanuvchilar | Жаңы колдонуучулар |  |
+| `home.activeUsers` | Faol foydalanuvchilar | Активдүү колдонуучулар |  |
+| `home.activeToday` | Bugun faol foydalanuvchilar | Бүгүн активдүү колдонуучулар |  |
+| `home.onlineNow` | Hozir onlayn: {count} | Азыр онлайн: {count} |  |
+| `home.nobodyToday` | Bugun hali hech kim kirmadi | Бүгүн азырынча эч ким кирген жок |  |

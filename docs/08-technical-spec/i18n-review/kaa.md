@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1997 strings.**
+**2025 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2018,3 +2018,31 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `home.stepsDone` | {done} / {total} qadam | {done} / {total} qádem |  |
 | `home.contest` | Musobaqa | Jarıs |  |
 | `home.noUpcomingContest` | Yaqin musobaqa e'lon qilinmagan | Jaqın jarıs járiyalanbaǵan |  |
+| `home.notAttempted` | hali urinish yo'q | ele urınıw joq |  |
+| `home.attempted` | urinish bor | urınıw bar |  |
+| `home.starts` | Boshlanishi | Baslanıwı |  |
+| `home.duration` | Davomiyligi | Dawamlılıǵı |  |
+| `home.hours` | {n} soat | {n} saat |  |
+| `home.minutes` | {n} daq | {n} min |  |
+| `home.practiceArchive` | Arxivdan mashq | Arxivten shınıǵıw |  |
+| `home.openContest` | Musobaqani ochish | Jarıstı ashıw |  |
+| `home.howRated` | {name} reytingi qanday hisoblanadi | {name} reytingi qalay esaplanadı |  |
+| `home.noTitle` | Unvon hali berilmagan | Ataq ele berilmegen |  |
+| `home.attemptCount` | {count} urinish | {count} urınıw |  |
+| `home.event.solved` | Masala yechildi | Másele sheshildi |  |
+| `home.event.contest` | Musobaqaga yozildi | Jarısqa jazıldı |  |
+| `home.nextStep` | {n}-qadam | {n}-qádem |  |
+| `home.startStep` | Boshlash | Baslaw |  |
+| `home.pathDone` | Yo'l tugallandi | Jol tamamlandı |  |
+| `home.topBy` | Reyting turi | Reyting túri |  |
+| `home.emptyTop` | Bu ro'yxat hozircha bo'sh | Bul dizim házirshe bos |  |
+| `home.readPost` | O'qish | Oqıw |  |
+| `home.prevPost` | Oldingi yangilik | Aldınǵı jańalıq |  |
+| `home.nextPost` | Keyingi yangilik | Keyingi jańalıq |  |
+| `home.platformActivity` | Platforma faolligi | Platforma belsendiligi |  |
+| `home.last14` | So'nggi 14 kun | Sońǵı 14 kún |  |
+| `home.newUsers` | Yangi foydalanuvchilar | Jańa paydalanıwshılar |  |
+| `home.activeUsers` | Faol foydalanuvchilar | Belsendi paydalanıwshılar |  |
+| `home.activeToday` | Bugun faol foydalanuvchilar | Búgin belsendi paydalanıwshılar |  |
+| `home.onlineNow` | Hozir onlayn: {count} | Házir onlayn: {count} |  |
+| `home.nobodyToday` | Bugun hali hech kim kirmadi | Búgin ele hesh kim kirmedi |  |
