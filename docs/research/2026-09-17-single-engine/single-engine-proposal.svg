@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 680 487" role="img" aria-labelledby="proposal-title proposal-desc">
+  <title id="proposal-title">RankWant: bitta Docker Engine taklifi</title>
+  <desc id="proposal-desc">Hali joriy qilinmagan variant: Windows ichida WSL2 qoladi. Docker Desktop yagona Linux Engine sifatida jonli RankWant, Linux runner va CI test konteynerlarini boshqaradi. Umumiy Docker socket runnerga live tizimni boshqarish huquqini ham beradi. Ubuntu-24.04, uning Engine B si va eski WSL keepalive mexanizmlari faqat tasdiq, backup va sinovlardan keyin olib tashlanadi.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+  <g font-family="Segoe UI, Arial, sans-serif" font-weight="400">
+    <text x="40" y="40" fill="#E8E8E4" font-size="15" font-weight="500">Muhokama varianti — hali joriy qilinmagan</text>
+    <rect x="40" y="62" width="600" height="310" rx="18" fill="none" stroke="#888780" stroke-width="0.5"/>
+    <text x="60" y="87" fill="#D3D1C7" font-size="14" font-weight="500">Windows · WSL2 qoladi</text>
+    <rect x="210" y="112" width="260" height="60" rx="10" fill="#0C447C" stroke="#85B7EB" stroke-width="0.5"/>
+    <text x="340" y="132" text-anchor="middle" dominant-baseline="central" fill="#B5D4F4" font-size="14" font-weight="500">Docker Desktop</text>
+    <text x="340" y="152" text-anchor="middle" dominant-baseline="central" fill="#B5D4F4" font-size="13">Bitta Linux Engine</text>
+    <path d="M285 172V202H187V230" fill="none" stroke="#85B7EB" stroke-width="0.5" marker-end="url(#arrow)"/>
+    <path d="M395 172V202H493V230" fill="none" stroke="#FAC775" stroke-width="0.5" marker-end="url(#arrow)"/>
+    <rect x="65" y="230" width="244" height="68" rx="10" fill="#0C447C" stroke="#85B7EB" stroke-width="0.5"/>
+    <text x="187" y="253" text-anchor="middle" dominant-baseline="central" fill="#B5D4F4" font-size="14" font-weight="500">Jonli RankWant</text>
+    <text x="187" y="276" text-anchor="middle" dominant-baseline="central" fill="#B5D4F4" font-size="13">Baza · fayllar · ilova</text>
+    <rect x="371" y="230" width="244" height="68" rx="10" fill="#633806" stroke="#FAC775" stroke-width="0.5"/>
+    <text x="493" y="253" text-anchor="middle" dominant-baseline="central" fill="#FAEEDA" font-size="14" font-weight="500">Runner + CI konteynerlari</text>
+    <text x="493" y="276" text-anchor="middle" dominant-baseline="central" fill="#FAC775" font-size="13">Faqat ishonchli workflow’lar</text>
+    <text x="340" y="333" text-anchor="middle" fill="#FAC775" font-size="13">Umumiy Docker socket → live’ni boshqarish huquqi</text>
+    <text x="340" y="353" text-anchor="middle" fill="#D3D1C7" font-size="12">Project nomlari xavfsizlik devori emas</text>
+    <rect x="40" y="397" width="600" height="70" rx="10" fill="#2C2C2A" stroke="#888780" stroke-width="0.5" stroke-dasharray="4 4"/>
+    <text x="340" y="420" text-anchor="middle" dominant-baseline="central" fill="#D3D1C7" font-size="14" font-weight="500">Tasdiq va sinovlardan keyin olib tashlanadi</text>
+    <text x="340" y="445" text-anchor="middle" dominant-baseline="central" fill="#D3D1C7" font-size="13">Ubuntu-24.04 + Engine B + eski WSL keepalive’lar</text>
+  </g>
+</svg>
