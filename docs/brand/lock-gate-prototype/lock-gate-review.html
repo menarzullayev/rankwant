@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RankWant · LOCK-GATE review (prototip)</title>
+  <style>
+    :root {
+      --ink: #102038;
+      --ink-soft: #3a4a63;
+      --crest-blue: #44a0fc;
+      --crest-mid: #1074dc;
+      --crest-navy: #102038;
+      --ui-accent: #4470e6;
+      --ui-accent-bright: #5b8cff;
+      --paper: #f5f5f5;
+      --line: #d8dde6;
+      --bad: #b42318;
+      --ok: #067647;
+      --warn-bg: #fff8e6;
+      --warn-border: #e6c200;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.45;
+      font-size: 14px;
+    }
+    .banner {
+      background: var(--warn-bg);
+      border-bottom: 2px solid var(--warn-border);
+      padding: 12px 20px;
+      font-size: 13px;
+    }
+    .banner strong { display: block; font-size: 15px; margin-bottom: 4px; }
+    header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+    header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+    header p { color: var(--ink-soft); margin-top: 6px; max-width: 72ch; }
+    main { max-width: 1100px; margin: 0 auto; padding: 24px 20px 48px; }
+    section {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 20px;
+    }
+    section h2 {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-soft);
+      margin-bottom: 4px;
+    }
+    section h3 {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .gate-id {
+      font-family: ui-monospace, monospace;
+      font-size: 11px;
+      color: var(--ui-accent);
+      font-weight: 600;
+    }
+    .hint { font-size: 12px; color: var(--ink-soft); margin-bottom: 14px; }
+    .row { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; }
+    .cell {
+      text-align: center;
+      font-size: 11px;
+      color: var(--ink-soft);
+    }
+    .cell img, .cell .crest-box {
+      display: block;
+      margin: 0 auto 6px;
+    }
+    .cell img.raster {
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+    .crest-box {
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+    }
+    .bg-light { background: #ffffff; border: 1px solid var(--line); }
+    .bg-gray { background: #e8eaed; }
+    .bg-dark { background: var(--crest-navy); }
+    .bg-blue { background: var(--ui-accent); }
+    .wordmark {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .wordmark .w { color: var(--ui-accent); }
+    .mock-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+    .mock-header.dark { background: #14171c; border-color: #2a3140; }
+    .mock-header.dark .wordmark { color: #f0f2f5; }
+    .mock-footer {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+    .tagline { font-size: 12px; color: var(--ink-soft); margin-top: 6px; max-width: 18rem; }
+    table.colors {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    table.colors th, table.colors td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+    table.colors th { background: #f8f9fb; font-weight: 600; }
+    .swatch {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      vertical-align: middle;
+      margin-right: 6px;
+      border: 1px solid rgba(0,0,0,.12);
+    }
+    .og-wrap {
+      max-width: 100%;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+    }
+    .og-wrap img { width: 100%; display: block; height: auto; }
+    .avatar-row { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+    .avatar {
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid var(--line);
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .avatar img {
+      width: 88%;
+      height: 88%;
+      object-fit: contain;
+    }
+    .clear-space-demo {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      margin: 0 auto;
+    }
+    .clear-space-demo .pad {
+      position: absolute;
+      inset: 0;
+      border: 2px dashed var(--ui-accent);
+      border-radius: 4px;
+      opacity: 0.7;
+    }
+    .clear-space-demo .mark {
+      position: absolute;
+      left: 8.6%;
+      top: 8.6%;
+      width: 82.8%;
+      height: 82.8%;
+    }
+    .dont-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+    }
+    .dont-card {
+      border: 1px solid #f5c2c0;
+      background: #fff5f5;
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--bad);
+      font-weight: 600;
+    }
+    .dont-card .mark-wrap {
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+    .dont-card img { width: 56px; height: 56px; }
+    .dont-card.skew img { transform: skewX(-18deg); }
+    .dont-card.rotate img { transform: rotate(25deg); }
+    .dont-card.stretch img { transform: scaleX(1.45); }
+    .dont-card.hue img { filter: hue-rotate(120deg) saturate(2); }
+    .dont-card.shadow img { filter: drop-shadow(4px 6px 0 #000); }
+    .compare {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+    .compare .cell { min-width: 80px; }
+    .cf-bars {
+      display: flex;
+      gap: 3px;
+      align-items: flex-end;
+      justify-content: center;
+      height: 32px;
+      margin: 0 auto 6px;
+    }
+    .cf-bars span { width: 7px; border-radius: 1px; }
+    .usage-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .usage-table th, .usage-table td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+    .usage-table th { background: #f8f9fb; }
+    .mono-row { display: flex; gap: 16px; flex-wrap: wrap; }
+    .mono-panel {
+      flex: 1;
+      min-width: 200px;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .mono-panel.dark { background: #14171c; }
+    .mono-panel.light { background: #fff; border: 1px solid var(--line); }
+    .mono-panel img { width: 96px; height: 96px; }
+    .mock-at-320 { width: 320px; max-width: 100%; }
+    .mock-at-wide { width: min(768px, 100%); }
+    .mock-at-320 .wm-wide { display: none; }
+    .mock-at-320 .wm-narrow { display: inline; }
+    .mock-at-wide .wm-narrow { display: none; }
+    .mock-at-wide .wm-wide { display: inline; }
+    footer.note {
+      font-size: 12px;
+      color: var(--ink-soft);
+      text-align: center;
+      padding: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="banner">
+    <strong>PROTOTIP — vizual tasdiq uchun</strong>
+    Bu sahifa LOCK-GATE checklistini ko‘rish uchun. Production assetlarni o‘zgartirmaydi.
+    Monochrome SVG va lockup faqat <code>lock-gate-prototype/</code> ichida.
+    Ochish: repo ildizida <code>python -m http.server 8765</code>, keyin
+    <code>http://127.0.0.1:8765/docs/brand/lock-gate-prototype/lock-gate-review.html</code>
+    (<code>file://</code> ba'zi brauzerlarda yo'llarni buzadi).
+  </div>
+
+  <header>
+    <h1>RankWant brend · LOCK-GATE review</h1>
+    <p>
+      Har bo‘lim <code>LOCK-GATE.md</code> bandiga mos. O‘lchamlarni ko‘z bilan baholang:
+      A1 mezon — 16px da «ikki cho‘qqi + nuqta», «uchburchik + quyosh» emas.
+    </p>
+  </header>
+
+  <main>
+    <!-- A1 A2 -->
+    <section id="a-size">
+      <p class="gate-id">A1 · A2 · C2</p>
+      <h3>Crest o‘lchamlari (wordmarksiz)</h3>
+      <p class="hint">
+        16–32: production raster (<code>favicon.ico</code>, <code>mark-32.png</code>) — brauzer tabiga yaqin.
+        SVG ni 16px da ko‘rsatish noto‘g‘ri (vektor silliq masshtablanadi, favicon emas).
+      </p>
+      <div class="row">
+        <div class="cell">
+          <img class="raster" src="../../../apps/web/public/favicon.ico" width="16" height="16" alt="16 favicon" />
+          16 favicon
+        </div>
+        <div class="cell">
+          <img class="raster" src="../../../apps/web/public/brand/mark-32.png" width="24" height="24" alt="24" />
+          24 (32 PNG ↓)
+        </div>
+        <div class="cell">
+          <img class="raster" src="../../../apps/web/public/brand/mark-32.png" width="32" height="32" alt="32" />
+          32 PNG
+        </div>
+        <div class="cell">
+          <img src="../../../apps/web/public/brand/mark-96.png" width="48" height="48" alt="48" />
+          48 (96 ↓)
+        </div>
+        <div class="cell">
+          <img src="../../../apps/web/public/brand/mark-96.png" width="64" height="64" alt="64" />
+          64
+        </div>
+        <div class="cell">
+          <img src="../../../apps/web/public/brand/mark-96.png" width="96" height="96" alt="96" />
+          96
+        </div>
+        <div class="cell">
+          <img src="../../../apps/web/public/brand/mark-180.png" width="128" height="128" alt="180" />
+          180
+        </div>
+        <div class="cell">
+          <img src="../../../apps/web/public/brand/mark-512.png" width="128" height="128" alt="512" />
+          512 ↓
+        </div>
+      </div>
+    </section>
+
+    <!-- A3 -->
+    <section id="a-wordmark">
+      <p class="gate-id">A3 · C2</p>
+      <h3>Wordmark (Crestsiz) — header simulyatsiyasi</h3>
+      <p class="hint">320px: monogram <strong>R</strong>; keng: Rank<strong class="w" style="color:var(--ui-accent)">Want</strong> (BrandMark responsive).</p>
+      <div style="display:grid; gap:12px;">
+        <div class="mock-header mock-at-320">
+          <span class="wordmark">
+            <span class="wm-narrow w">R</span>
+            <span class="wm-wide">Rank<span class="w">Want</span></span>
+          </span>
+          <span style="font-size:11px;color:var(--ink-soft)">320px konteyner</span>
+        </div>
+        <div class="mock-header mock-at-wide">
+          <span class="wordmark wm-wide">Rank<span class="w">Want</span></span>
+          <span style="font-size:11px;color:var(--ink-soft)">768px konteyner</span>
+        </div>
+        <div class="mock-footer">
+          <p class="wordmark">Rank<span class="w">Want</span></p>
+          <p class="tagline">O'zbekistonlik dasturchilar uchun CP/OJ platformasi</p>
+          <p class="hint" style="margin-top:8px;margin-bottom:0;">Footer / auth — Crest yo‘q</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- A4 -->
+    <section id="a-compare">
+      <p class="gate-id">A4</p>
+      <h3>Ajralish (32px qator — vizual nazorat)</h3>
+      <p class="hint">Rasmiy raqobatchi logotiplari emas; shakl eslatmalari. Siz «chalkashmaydi» deb baholang.</p>
+      <div class="compare">
+        <div class="cell">
+          <div class="cf-bars" aria-hidden="true">
+            <span style="height:28px;background:#f0ad4e"></span>
+            <span style="height:22px;background:#5bc0de"></span>
+            <span style="height:16px;background:#d9534f"></span>
+          </div>
+          CF ustun
+        </div>
+        <div class="cell">
+          <div style="font-size:22px;font-weight:800;color:var(--ui-accent);margin-bottom:6px;">RW</div>
+          RW monogram
+        </div>
+        <div class="cell">
+          <img src="../../../apps/web/public/brand/mark-32.png" width="32" height="32" alt="RankWant" />
+          RankWant Crest
+        </div>
+      </div>
+    </section>
+
+    <!-- B1 B2 -->
+    <section id="b-contrast">
+      <p class="gate-id">B1 · B2</p>
+      <h3>Fonlar</h3>
+      <div class="row">
+        <div class="cell bg-light" style="padding:16px;border-radius:8px;">
+          <img src="../mark-crest.svg" width="64" height="64" alt="" />
+          light + crest
+        </div>
+        <div class="cell bg-gray" style="padding:16px;border-radius:8px;">
+          <img src="../mark-crest.svg" width="64" height="64" alt="" />
+          gray
+        </div>
+        <div class="cell bg-dark" style="padding:16px;border-radius:8px;">
+          <img src="../../../apps/web/public/brand/mark-crest-dark.svg" width="64" height="64" alt="" />
+          dark + crest-dark
+        </div>
+        <div class="cell bg-blue" style="padding:16px;border-radius:8px;">
+          <img src="crest-white.svg" width="64" height="64" alt="" />
+          accent fon + white proto
+        </div>
+      </div>
+      <p class="hint" style="margin-top:12px;">PWA <code>theme_color</code>: <span class="swatch" style="background:#102038"></span>#102038</p>
+    </section>
+
+    <!-- B3 -->
+    <section id="b-og">
+      <p class="gate-id">B3 · C5</p>
+      <h3>OG / ijtimoiy (production)</h3>
+      <div class="og-wrap">
+        <img src="../../../apps/web/public/brand/og-default.png" width="1200" height="630" alt="og-default" />
+      </div>
+      <p class="hint" style="margin-top:10px;">Taklif lockup (prototip SVG):</p>
+      <img src="lockup-horizontal.svg" alt="Lockup prototip" style="width:100%;max-width:480px;height:auto;display:block;margin-top:8px;" />
+    </section>
+
+    <!-- B4 -->
+    <section id="b-avatar">
+      <p class="gate-id">B4</p>
+      <h3>Avatar crop (1:1)</h3>
+      <div class="avatar-row">
+        <div class="cell">
+          <div class="avatar" style="width:48px;height:48px;">
+            <img src="../../../apps/web/public/brand/mark-512.png" alt="" />
+          </div>
+          48
+        </div>
+        <div class="cell">
+          <div class="avatar" style="width:96px;height:96px;">
+            <img src="../../../apps/web/public/brand/mark-512.png" alt="" />
+          </div>
+          96
+        </div>
+        <div class="cell">
+          <div class="avatar" style="width:256px;height:256px;">
+            <img src="../../../apps/web/public/brand/mark-512.png" alt="" />
+          </div>
+          256
+        </div>
+      </div>
+      <p class="hint">Nuqta va cho‘qqilar kesilmasligi kerak.</p>
+    </section>
+
+    <!-- B5 -->
+    <section id="b-mono">
+      <p class="gate-id">B5 (Variant A prototip)</p>
+      <h3>Monochrome Crest</h3>
+      <div class="mono-row">
+        <div class="mono-panel light">
+          <img src="crest-black.svg" width="96" height="96" alt="" />
+          <p style="margin-top:8px;font-size:12px;">crest-black.svg</p>
+        </div>
+        <div class="mono-panel dark">
+          <img src="crest-white.svg" width="96" height="96" alt="" />
+          <p style="margin-top:8px;font-size:12px;color:#aaa;">crest-white.svg</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- C1 -->
+    <section id="c-clear">
+      <p class="gate-id">C1</p>
+      <h3>Clear space (taklif: r ≈ 4.3% canvas)</h3>
+      <p class="hint">Nuqta radiusi 44.1 @1024 — atrofida kamida shu qadar bo‘sh joy.</p>
+      <div class="clear-space-demo">
+        <div class="pad" title="minimum clear space"></div>
+        <img class="mark" src="../mark-crest.svg" alt="" />
+      </div>
+    </section>
+
+    <!-- C3 -->
+    <section id="c-colors">
+      <p class="gate-id">C3</p>
+      <h3>Crest ↔ UI rang (mapping taklifi)</h3>
+      <table class="colors">
+        <thead>
+          <tr><th>Token</th><th>Crest (SVG)</th><th>UI (web)</th><th>Eslatma</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Primary bright</td>
+            <td><span class="swatch" style="background:#44A0FC"></span>#44A0FC</td>
+            <td><span class="swatch" style="background:#5b8cff"></span>#5b8cff (--rw-accent)</td>
+            <td>Belgi va interfeys <strong>alohida</strong> — birlashtirmaslik yoki keyin sync</td>
+          </tr>
+          <tr>
+            <td>Mid</td>
+            <td><span class="swatch" style="background:#1074DC"></span>#1074DC</td>
+            <td>—</td>
+            <td>Faqat Crest facet</td>
+          </tr>
+          <tr>
+            <td>Structural</td>
+            <td><span class="swatch" style="background:#102038"></span>#102038</td>
+            <td>PWA theme, matn</td>
+            <td>Umumiy navy</td>
+          </tr>
+          <tr>
+            <td>Wordmark accent</td>
+            <td>—</td>
+            <td><span class="swatch" style="background:#4470e6"></span>#4470e6 (--rw-accent-ink)</td>
+            <td>«Want» matni</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- C4 -->
+    <section id="c-dont">
+      <p class="gate-id">C4</p>
+      <h3>Do-not-use (namuna — qilmaslik)</h3>
+      <div class="dont-grid">
+        <div class="dont-card skew"><div class="mark-wrap"><img src="../mark-crest.svg" alt="" /></div>❌ distort</div>
+        <div class="dont-card rotate"><div class="mark-wrap"><img src="../mark-crest.svg" alt="" /></div>❌ rotate</div>
+        <div class="dont-card stretch"><div class="mark-wrap"><img src="../mark-crest.svg" alt="" /></div>❌ stretch</div>
+        <div class="dont-card hue"><div class="mark-wrap"><img src="../mark-crest.svg" alt="" /></div>❌ recolor</div>
+        <div class="dont-card shadow"><div class="mark-wrap"><img src="../mark-crest.svg" alt="" /></div>❌ shadow</div>
+      </div>
+    </section>
+
+    <!-- C5 -->
+    <section id="c-usage">
+      <p class="gate-id">C5</p>
+      <h3>Ishlatish xaritasi</h3>
+      <table class="usage-table">
+        <thead><tr><th>Muhit</th><th>Primitive</th><th>Asset</th></tr></thead>
+        <tbody>
+          <tr><td>Header / topnav</td><td>Wordmark</td><td>BrandMark.tsx</td></tr>
+          <tr><td>Footer / auth</td><td>Wordmark</td><td>Matn + accent</td></tr>
+          <tr><td>Favicon</td><td>Crest</td><td>favicon.ico</td></tr>
+          <tr><td>PWA</td><td>Crest</td><td>mark-192/512.png</td></tr>
+          <tr><td>OG / share</td><td>Lockup</td><td>og-default.png (+ lockup prototip)</td></tr>
+          <tr><td>Email avatar (kelajak)</td><td>Crest</td><td>bimi.svg</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer class="note">
+    Tasdiqdan keyin: natijani <code>LOCK-GATE.md</code> da belgilang;
+    monochrome/lockup qabul qilinsa — <code>tools/brand.py</code> va hujjatga kiritish alohida PR.
+  </footer>
+</body>
+</html>
