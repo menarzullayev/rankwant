@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1986 strings.**
+**1997 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -404,8 +404,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `about.io.title` | Matn oqimi (stdin / stdout) | Standard I/O (stdin / stdout) |  |
 | `about.io.hint` | RankWant masalalarida kiritma va chiqish standart oqim orqali. Namuna — ikkita butun sonning yig'indisi (A + B). | RankWant problems use standard input and output. Sample: sum of two integers (A + B). |  |
 | `about.io.tabsLabel` | Kirish/chiqish usuli | I/O style |  |
-| `about.io.kind.stdio` | Stdin / stdout | Stdin / stdout |  |
-| `about.io.kind.file` | input.txt / output.txt | input.txt / output.txt |  |
+| `about.io.kind.stdio` | Stdin / stdout | Стандартты енгізу / шығару |  |
+| `about.io.kind.file` | input.txt / output.txt | input.txt / output.txt файлдары |  |
 | `about.io.file.title` | Fayl oqimi (input.txt / output.txt) | File I/O (input.txt / output.txt) |  |
 | `about.io.file.hint` | input.txt dan ikkita butun sonni o'qing, yig'indini output.txt ga yozing (ortiqcha probel yoki qatorsiz). | Read two integers from input.txt and write the sum to output.txt (no extra spaces or lines). |  |
 | `about.sampleMissing` | Bu til uchun namuna hali qo'shilmagan. Masala shartidagi kirish/chiqish formatiga rioya qiling. | No sample snippet for this language yet. Follow the problem's I/O format. |  |
@@ -2007,3 +2007,14 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `overlay.sample.popover` | Yon tasdiq | Қасынан |  |
 | `overlay.sample.hold` | Bosib turish | Басып тұру |  |
 | `overlay.sample.cmdk` | Buyruq | Команда |  |
+| `home.continue` | Davom etish | Жалғастыру |  |
+| `home.openProblem` | Masalani ochish | Есепті ашу |  |
+| `home.myRatings` | Mening reytinglarim | Менің рейтингтерім |  |
+| `home.rankPlace` | {rank}-o'rin | {rank}-орын |  |
+| `home.bestRating` | Eng yuqori: {value} | Ең жоғары: {value} |  |
+| `home.activity` | Faollik tarixi | Белсенділік тарихы |  |
+| `home.noActivity` | Hali urinish yo'q | Әзірге талпыныс жоқ |  |
+| `home.learningPath` | O'rganish yo'li | Оқу жолы |  |
+| `home.stepsDone` | {done} / {total} qadam | {done} / {total} қадам |  |
+| `home.contest` | Musobaqa | Жарыс |  |
+| `home.noUpcomingContest` | Yaqin musobaqa e'lon qilinmagan | Жақын жарыс жарияланбаған |  |

@@ -7,7 +7,7 @@ import { Card, StatCard } from "@/components/ui/Card";
 import { TBody, TD, TH, THead, TR, Table } from "@/components/ui/Table";
 import { UpdateKindBadge } from "@/features/updates";
 import { getLocale } from "@/i18n/server";
-import { date, dateTime, fill, t } from "@/i18n/messages";
+import { date, dateTime, t } from "@/i18n/messages";
 import { Icon } from "@/components/ui/Icon";
 import {
   api,
@@ -22,6 +22,7 @@ import {
   type UserPublic,
 } from "@/lib/api";
 import { getSessionUser, getWithSession } from "@/lib/api.server";
+import { SignedInHome } from "@/features/home/components/SignedInHome";
 
 /** Kirgan foydalanuvchi uchun «qayerdan davom etaman» savoliga javob:
  * avval tugallanmagan urinish, bo'lmasa tavsiya. Mehmonga `null`. */
@@ -101,6 +102,25 @@ export default async function Home() {
   const me = await getSessionUser<UserPublic>();
   const resume = await resumeTarget(me);
 
+  // A signed-in visitor gets the personal dashboard (HITL 2026-10-05).
+  // The markup below stays the guest page: it is what the CDN caches and
+  // what the homepage decisions in `check_decisions.py` guard.
+  if (me) {
+    return (
+      <SignedInHome
+        locale={locale}
+        me={me}
+        resume={resume}
+        stats={stats}
+        contests={contests.results}
+        users={users.results}
+        roadmaps={roadmaps}
+        updates={updates}
+        posts={posts}
+      />
+    );
+  }
+
   const soon = upcoming(contests.results);
   const top = users.results.slice(0, 5);
 
@@ -108,43 +128,22 @@ export default async function Home() {
     <div className="space-y-6">
       <section className="rw-radius border rw-line rw-surface px-6 py-10 rw-shadow">
         <h1 className="text-title-sm font-bold rw-strong">
-          {me
-            ? fill(t(locale, "home.greeting"), {
-                name: me.display_name || me.username,
-              })
-            : "RankWant"}
+          RankWant
         </h1>
         <p className="mt-3 max-w-2xl text-theme-sm rw-dim">
-          {me
-            ? t(locale, "home.resumeHint")
-            : t(locale, "home.ratingHint")}
+          {t(locale, "home.ratingHint")}
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
-          {resume ? (
-            <ButtonLink intent href={{ pathname: `/problems/${resume.slug}` }}>
-              Davom etish · {resume.title}
-            </ButtonLink>
-          ) : (
-            <ButtonLink
-              intent
-              href={me ? "/problems" : ("/login?tab=register" as Route)}
-            >
-              {me ? t(locale, "nav.problems") : t(locale, "home.start")}
-            </ButtonLink>
-          )}
-          <ButtonLink
-            intent
-            href={resume ? "/problems" : "/contests"}
-            variant="outline"
-          >
-            {resume ? t(locale, "nav.problems") : t(locale, "nav.contests")}
+          <ButtonLink intent href={"/login?tab=register" as Route}>
+            {t(locale, "home.start")}
+          </ButtonLink>
+          <ButtonLink intent href="/contests" variant="outline">
+            {t(locale, "nav.contests")}
           </ButtonLink>
         </div>
-        {!me && (
-          <p className="mt-4 text-theme-xs rw-faint">
-            {t(locale, "home.guestHint")}
-          </p>
-        )}
+        <p className="mt-4 text-theme-xs rw-faint">
+          {t(locale, "home.guestHint")}
+        </p>
       </section>
 
       {/* lg da 4 ustun: 1024–1279 px da 2+2 qolsa, 4 karta ikki qatorni

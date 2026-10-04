@@ -2089,6 +2089,17 @@ export const uz = {
   "overlay.sample.popover": "Yon tasdiq",
   "overlay.sample.hold": "Bosib turish",
   "overlay.sample.cmdk": "Buyruq",
+  "home.continue": "Davom etish",
+  "home.openProblem": "Masalani ochish",
+  "home.myRatings": "Mening reytinglarim",
+  "home.rankPlace": "{rank}-o'rin",
+  "home.bestRating": "Eng yuqori: {value}",
+  "home.activity": "Faollik tarixi",
+  "home.noActivity": "Hali urinish yo'q",
+  "home.learningPath": "O'rganish yo'li",
+  "home.stepsDone": "{done} / {total} qadam",
+  "home.contest": "Musobaqa",
+  "home.noUpcomingContest": "Yaqin musobaqa e'lon qilinmagan",
 } as const;
 
 export type MessageKey = keyof typeof uz;
