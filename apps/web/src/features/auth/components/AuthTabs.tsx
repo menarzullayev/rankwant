@@ -62,7 +62,10 @@ export async function AuthTabs({
           const query = new URLSearchParams({ tab });
           if (next) query.set("next", next);
           return (
-            <li key={tab} className="min-w-0">
+            // `flex-1`: `.rw-kit-tabs` is `display: flex`, which wins over
+            // `grid-cols-2` above — each `li` was as wide as its label
+            // (58 px and 128 px in a 376 px row, measured 2026-10-04).
+            <li key={tab} className="min-w-0 flex-1">
               <Link
                 //: `typedRoutes` faqat STATIK marshrut qismini
                 //: tekshiradi: `/login` + `?tab=…` — ruxsat etilgan

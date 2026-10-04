@@ -33,6 +33,13 @@ const PROVIDER_LABEL = {
 
 type Provider = keyof typeof PROVIDER_LABEL;
 
+/** Inputs that can carry their own error. `terms_accepted` is a checkbox
+ *  with no note slot, so its message stays in the form-level alert. */
+type FieldName = "identifier" | "email" | "password" | "password2";
+
+const bad = (text: string | undefined): FieldStatus | undefined =>
+  text ? { kind: "bad", text } : undefined;
+
 /** Brend nomi — tarjima qilinmaydi (Codeforces ham «Div. 2» ni
  *  tarjima qilmaydi). Matn shu yerda turadi, to'liq nomi esa
  *  `aria-label` da. */
@@ -58,7 +65,9 @@ const PROVIDER_ORDER: Provider[] = ["telegram", "google", "github"];
  *  yorqinlik tushirildi — `#1a77a4` = 4.95:1. Dizayn tokenlaridagi
  *  `--rw-accent` bilan bir xil yondashuv. */
 const BRAND: Record<Provider, string> = {
-  google: "border rw-line bg-white text-[#1f1f1f]",
+  // `rw-divider`, not `rw-line`: `--rw-line` is transparent in the `clay`
+  // style, so a white button on a near-white ground had no visible edge.
+  google: "border rw-divider bg-white text-[#1f1f1f]",
   github: "bg-[#1f2328] text-white",
   telegram: "bg-[#1a77a4] text-white",
 };
@@ -118,6 +127,10 @@ export function AuthForm({
   //: bo'yicha ajratiladi: DRF maydon xatosida `code` har doim
   //: `"invalid"` bo'ladi va uni sabab bilan chalkashtirib bo'lmaydi.
   const [blocked, setBlocked] = useState<{ kind: "email" } | null>(null);
+  //: Client-side validation errors, shown ON the field (`aria-invalid` +
+  //: note). They used to collapse into one alert under the form, which
+  //: said what was wrong but not where.
+  const [invalid, setInvalid] = useState<Partial<Record<FieldName, string>>>({});
   //: «Forma boshlandi» hodisasi BIR MARTA yuboriladi (qaror 17). Har
   //: fokusda yuborilsa funnel shishib ketardi va raqam ma'nosini
   //: yo'qotardi.
@@ -174,15 +187,22 @@ export function AuthForm({
               password: payload.password ?? "",
             }),
           );
-    const first =
-      mode === "register"
-        ? (issues.email ?? issues.password ?? issues.password2 ?? issues.terms_accepted)
-        : (issues.identifier ?? issues.password);
+    const order: FieldName[] =
+      mode === "register" ? ["email", "password", "password2"] : ["identifier", "password"];
+    const failed = order.filter((name) => issues[name]);
+    const first = failed.length ? issues[failed[0]] : issues.terms_accepted;
     if (first) {
-      setError(t(locale, first));
+      setInvalid(
+        Object.fromEntries(failed.map((name) => [name, t(locale, issues[name]!)])),
+      );
+      // Field errors sit on their fields; only the consent rule, which has
+      // no field note, is said in the form-level alert.
+      if (!failed.length) setError(t(locale, first));
+      else event.currentTarget.querySelector<HTMLInputElement>(`[name="${failed[0]}"]`)?.focus();
       track("auth.form_error", { mode, reason: first });
       return;
     }
+    setInvalid({});
     delete payload.password2;
 
     setBusy(true);
@@ -279,7 +299,7 @@ export function AuthForm({
       aria-pressed={visible}
       aria-label={t(locale, "auth.togglePassword")}
       title={t(locale, "auth.togglePassword")}
-      className="grid h-9 w-9 place-items-center rw-radius-sm rw-dim transition hover:rw-strong rw-focus-ring"
+      className="grid h-11 w-11 place-items-center rw-radius-sm rw-dim transition hover:rw-strong rw-focus-ring"
     >
       {visible ? <Icon name="action.eyeOff" /> : <Icon name="action.eye" />}
     </button>
@@ -304,7 +324,12 @@ export function AuthForm({
         // maydonini `autoFocus` bilan ochadi — ya'ni sahifaning OCHILISHI
         // «boshlandi» deb yozilardi va funnel niyatni emas, ko'rishlarni
         // sanardi (2026-09-18 da o'lchandi).
+        // POST, not the default GET: before hydration (or with JS off) a
+        // native submit would put `?identifier=…&password=…` in the URL,
+        // and from there in history and server logs.
+        method="post"
         onInput={() => {
+          if (Object.keys(invalid).length) setInvalid({});
           if (started.current) return;
           started.current = true;
           track("auth.form_started", { mode });
@@ -332,7 +357,9 @@ export function AuthForm({
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            status={emailStatus}
+            autoCapitalize="none"
+            spellCheck={false}
+            status={bad(invalid.email) ?? emailStatus}
           />
         ) : (
           <Field
@@ -343,7 +370,11 @@ export function AuthForm({
             // Parol menejeri ham nom, ham email saqlashi mumkin —
             // `username` ikkalasini qamrab oladi.
             autoComplete="username"
+            // A handle is not prose: no leading capital, no red squiggle.
+            autoCapitalize="none"
+            spellCheck={false}
             hint={t(locale, "auth.identifierHint")}
+            status={bad(invalid.identifier)}
           />
         )}
         <Field
@@ -358,6 +389,7 @@ export function AuthForm({
           // Qoida BO'SH maydonda turadi; birinchi harfdan keyin uning
           // o'rnini kuch chizig'i egallaydi — bir vaqtda bitta satr.
           hint={mode === "register" && !pass ? t(locale, "auth.passwordHint") : undefined}
+          status={bad(invalid.password)}
           trailing={eye}
         />
         {mode === "register" && <Strength value={pass} />}
@@ -370,7 +402,7 @@ export function AuthForm({
             autoComplete="new-password"
             value={pass2}
             onChange={(e) => setPass2(e.target.value)}
-            status={matchStatus}
+            status={bad(invalid.password2) ?? matchStatus}
           />
         )}
 
@@ -395,6 +427,9 @@ export function AuthForm({
           <div className="-mt-1 flex flex-wrap items-center justify-between gap-2">
             <Checkbox
               name="remember"
+              // `py-3`: the label is the tap target, and a bare 20 px row is
+              // under the 24 px minimum (WCAG 2.5.8).
+              className="py-3"
               checked={remember}
               onChange={(e) => setRemember(e.target.checked)}
             >
@@ -402,7 +437,7 @@ export function AuthForm({
             </Checkbox>
             <Link
               href={"/login?tab=reset-password" as Route}
-              className="text-theme-sm rw-accent-ink underline"
+              className="inline-flex min-h-11 items-center text-theme-sm rw-accent-ink underline rw-focus-ring"
             >
               {t(locale, "auth.forgot")}
             </Link>
@@ -413,9 +448,10 @@ export function AuthForm({
           /* Rozilik: shartlar MAJBURIY, marketing IXTIYORIY (qaror 13).
              Ikkalasi alohida — GDPR shartlar roziligi bilan marketing
              roziligini birlashtirishga ruxsat bermaydi. */
-          <div className="flex flex-col gap-2.5">
+          <div className="flex flex-col">
             <Checkbox
               name="terms_accepted"
+              className="py-3"
               checked={terms}
               onChange={(e) => setTerms(e.target.checked)}
               required
@@ -426,6 +462,7 @@ export function AuthForm({
             </Checkbox>
             <Checkbox
               name="marketing_opt_in"
+              className="py-3"
               checked={marketing}
               onChange={(e) => setMarketing(e.target.checked)}
             >
@@ -735,7 +772,7 @@ function LinkAccount({ provider }: { provider: string }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-4">
+    <form method="post" onSubmit={onSubmit} className="flex flex-col gap-4">
       <p className="text-theme-sm rw-strong">{t(locale, "auth.linkTitle")}</p>
       <p className="text-theme-sm rw-dim">
         {t(locale, "auth.linkBody")} ({provider})

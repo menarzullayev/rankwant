@@ -63,6 +63,10 @@ export function Field({
   return (
     <label className={FM_CTL} htmlFor={fieldId}>
       <span className={FM_LAB}>{label}</span>
+      {/* The positioned box holds ONLY the input and its button. It used
+          to hold the note as well, so `inset-y-0` centred the button on
+          input + note: with a hint under the password field the eye sat
+          12 px low, on the border (measured 2026-10-04). */}
       <span className="relative block">
         <input
           id={fieldId}
@@ -72,10 +76,12 @@ export function Field({
           {...props}
         />
         {trailing && (
-          <span className="absolute inset-y-0 right-1 flex items-center">
+          <span className="absolute inset-y-0 right-0 flex items-center">
             {trailing}
           </span>
         )}
+      </span>
+      <span className="block">
         {(hint || status) && (
           <span
             id={noteId}
