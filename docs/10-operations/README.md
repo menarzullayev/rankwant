@@ -11,6 +11,7 @@ canonical checkout is **restore-when-idle**.
 har chegara uchun, **qabul qilingan risklar** (A-1…A-8) sababi va qayta ko'rish
 sharti bilan, locked dizayndan chetlanishlar, ochiq bandlar launch gate'larga
 bog'langan. Inglizcha — asosiy o'quvchi tashqi auditor.
+✅ **Host layout (2026-10-04):** [host-layout.md](host-layout.md) — repodan tashqaridagi hamma joy: vazifalar, zaxira papkasi, Docker volume'lar, tunnel, agent papkalari.
 ✅ **Local dev (web rebuildsiz):** [local-dev.md](local-dev.md) — `tools/dev-local.ps1` / `next dev` `:8310`, Docker faqat backend.
 
 Nima **hozir** bilinadi: deploy topologiyasi, siyosatlar va incident turlari — ular arxitektura va ADR'lardan kelib chiqadi.
@@ -627,10 +628,10 @@ qoplaydi — oylik jadvalda bu SHART: usiz o'tkazib yuborilgan kun butun bir
 oyga cho'ziladi (mashina dual-boot, Windows kunlab ko'tarilmasligi mumkin).
 
 ```powershell
-$repo = 'C:\Users\nsn\project\cp\rankwant'
+$repo = 'D:\Linux\Web_Projects\rankwant'
 $bash = 'C:\Program Files\Git\bin\bash.exe'
-$dest = '/c/Users/nsn/backups/rankwant'
-$inner = "RANKWANT_BACKUP_DIR=$dest RANKWANT_BACKUP_KEEP=95 '/c/Users/nsn/project/cp/rankwant/tools/backup.sh' >> $dest/backup.log 2>&1"
+$dest = '/d/Windows/backups/rankwant'
+$inner = "RANKWANT_BACKUP_DIR=$dest RANKWANT_BACKUP_KEEP=95 '/d/Linux/Web_Projects/rankwant/tools/backup.sh' >> $dest/backup.log 2>&1"
 $action = New-ScheduledTaskAction -Execute 'C:\WINDOWS\System32\conhost.exe' `
   -Argument ('--headless "' + $bash + '" -lc "' + $inner + '"') -WorkingDirectory $repo
 # Har 30 kunda: `-Daily -DaysInterval 30` — «-Monthly» EMAS, u kun
