@@ -128,7 +128,7 @@ node/web	@nodelib/fs.scandir	2.1.5	dev	MIT
 node/web	@nodelib/fs.stat	2.0.5	dev	MIT
 node/web	@nodelib/fs.walk	1.2.8	dev	MIT
 node/web	@nolyfill/is-core-module	1.0.39	dev	MIT
-node/web	@oxc-project/types	0.151.0	dev	MIT
+node/web	@oxc-project/types	0.152.0	dev	MIT
 node/web	@rankwant/shared	?	runtime	UNKNOWN
 node/web	@react-aria/focus	3.22.1	runtime	Apache-2.0
 node/web	@react-aria/interactions	3.28.1	runtime	Apache-2.0
@@ -136,21 +136,21 @@ node/web	@react-types/shared	3.36.1	runtime	Apache-2.0
 node/web	@redocly/ajv	8.11.2	dev	MIT
 node/web	@redocly/config	0.22.0	dev	MIT
 node/web	@redocly/openapi-core	1.34.20	dev	MIT
-node/web	@rolldown/binding-android-arm-eabi	1.2.10	dev	MIT
-node/web	@rolldown/binding-android-arm64	1.2.10	dev	MIT
-node/web	@rolldown/binding-darwin-arm64	1.2.10	dev	MIT
-node/web	@rolldown/binding-darwin-x64	1.2.10	dev	MIT
-node/web	@rolldown/binding-freebsd-x64	1.2.10	dev	MIT
-node/web	@rolldown/binding-linux-arm-gnueabihf	1.2.10	dev	MIT
-node/web	@rolldown/binding-linux-arm64-gnu	1.2.10	dev	MIT
-node/web	@rolldown/binding-linux-arm64-musl	1.2.10	dev	MIT
-node/web	@rolldown/binding-linux-ppc64-gnu	1.2.10	dev	MIT
-node/web	@rolldown/binding-linux-s390x-gnu	1.2.10	dev	MIT
-node/web	@rolldown/binding-linux-x64-gnu	1.2.10	dev	MIT
-node/web	@rolldown/binding-linux-x64-musl	1.2.10	dev	MIT
-node/web	@rolldown/binding-openharmony-arm64	1.2.10	dev	MIT
-node/web	@rolldown/binding-win32-arm64-msvc	1.2.10	dev	MIT
-node/web	@rolldown/binding-win32-x64-msvc	1.2.10	dev	MIT
+node/web	@rolldown/binding-android-arm-eabi	1.2.12	dev	MIT
+node/web	@rolldown/binding-android-arm64	1.2.12	dev	MIT
+node/web	@rolldown/binding-darwin-arm64	1.2.12	dev	MIT
+node/web	@rolldown/binding-darwin-x64	1.2.12	dev	MIT
+node/web	@rolldown/binding-freebsd-x64	1.2.12	dev	MIT
+node/web	@rolldown/binding-linux-arm-gnueabihf	1.2.12	dev	MIT
+node/web	@rolldown/binding-linux-arm64-gnu	1.2.12	dev	MIT
+node/web	@rolldown/binding-linux-arm64-musl	1.2.12	dev	MIT
+node/web	@rolldown/binding-linux-ppc64-gnu	1.2.12	dev	MIT
+node/web	@rolldown/binding-linux-s390x-gnu	1.2.12	dev	MIT
+node/web	@rolldown/binding-linux-x64-gnu	1.2.12	dev	MIT
+node/web	@rolldown/binding-linux-x64-musl	1.2.12	dev	MIT
+node/web	@rolldown/binding-openharmony-arm64	1.2.12	dev	MIT
+node/web	@rolldown/binding-win32-arm64-msvc	1.2.12	dev	MIT
+node/web	@rolldown/binding-win32-x64-msvc	1.2.12	dev	MIT
 node/web	@rolldown/pluginutils	1.0.1	dev	MIT
 node/web	@rtsao/scc	1.1.0	dev	MIT
 node/web	@swc/helpers	0.5.23	runtime	Apache-2.0
@@ -180,16 +180,16 @@ node/web	@types/react-dom	19.3.0	dev	MIT
 node/web	@types/trusted-types	2.0.7	runtime	MIT
 node/web	@types/unist	3.0.3	runtime	MIT
 node/web	@types/unist	2.0.11	runtime	MIT
-node/web	@typescript-eslint/eslint-plugin	8.70.1	dev	MIT
-node/web	@typescript-eslint/parser	8.70.1	dev	MIT
-node/web	@typescript-eslint/project-service	8.70.1	dev	MIT
-node/web	@typescript-eslint/scope-manager	8.70.1	dev	MIT
-node/web	@typescript-eslint/tsconfig-utils	8.70.1	dev	MIT
-node/web	@typescript-eslint/type-utils	8.70.1	dev	MIT
-node/web	@typescript-eslint/types	8.70.1	dev	MIT
-node/web	@typescript-eslint/typescript-estree	8.70.1	dev	MIT
-node/web	@typescript-eslint/utils	8.70.1	dev	MIT
-node/web	@typescript-eslint/visitor-keys	8.70.1	dev	MIT
+node/web	@typescript-eslint/eslint-plugin	8.71.0	dev	MIT
+node/web	@typescript-eslint/parser	8.71.0	dev	MIT
+node/web	@typescript-eslint/project-service	8.71.0	dev	MIT
+node/web	@typescript-eslint/scope-manager	8.71.0	dev	MIT
+node/web	@typescript-eslint/tsconfig-utils	8.71.0	dev	MIT
+node/web	@typescript-eslint/type-utils	8.71.0	dev	MIT
+node/web	@typescript-eslint/types	8.71.0	dev	MIT
+node/web	@typescript-eslint/typescript-estree	8.71.0	dev	MIT
+node/web	@typescript-eslint/utils	8.71.0	dev	MIT
+node/web	@typescript-eslint/visitor-keys	8.71.0	dev	MIT
 node/web	@typescript/native	7.0.2	dev	Apache-2.0
 node/web	@typescript/old	6.0.3	dev	Apache-2.0
 node/web	@typescript/typescript-darwin-arm64	7.0.2	runtime	Apache-2.0
@@ -221,8 +221,8 @@ node/web	@unrs/resolver-binding-wasm32-wasi	1.12.2	dev	MIT
 node/web	@unrs/resolver-binding-win32-arm64-msvc	1.12.2	dev	MIT
 node/web	@unrs/resolver-binding-win32-ia32-msvc	1.12.2	dev	MIT
 node/web	@unrs/resolver-binding-win32-x64-msvc	1.12.2	dev	MIT
-node/web	@vitest/mocker	5.0.1	dev	MIT
-node/web	@vitest/spy	5.0.1	dev	MIT
+node/web	@vitest/mocker	5.0.3	dev	MIT
+node/web	@vitest/spy	5.0.3	dev	MIT
 node/web	acorn	8.18.0	dev	MIT
 node/web	acorn-jsx	5.3.2	dev	MIT
 node/web	agent-base	7.1.4	dev	MIT
@@ -411,7 +411,7 @@ node/web	hookified	1.15.1	dev	MIT
 node/web	hookified	2.2.0	dev	MIT
 node/web	html-url-attributes	3.0.1	runtime	MIT
 node/web	https-proxy-agent	7.0.6	dev	MIT
-node/web	ignore	7.0.10	dev	MIT
+node/web	ignore	7.0.12	dev	MIT
 node/web	ignore	5.3.2	dev	MIT
 node/web	import-fresh	3.3.1	dev	MIT
 node/web	imurmurhash	0.1.4	dev	MIT
@@ -467,7 +467,7 @@ node/web	json5	1.0.2	dev	MIT
 node/web	jsx-ast-utils	3.3.5	dev	MIT
 node/web	katex	0.16.47	runtime	MIT
 node/web	katex	0.16.47	runtime	MIT
-node/web	katex	0.18.9	runtime	MIT
+node/web	katex	0.18.10	runtime	MIT
 node/web	keyv	4.5.4	dev	MIT
 node/web	keyv	5.6.0	dev	MIT
 node/web	language-subtag-registry	0.3.23	dev	CC0-1.0
@@ -562,7 +562,7 @@ node/web	minimatch	3.1.5	dev	ISC
 node/web	minimatch	3.1.5	dev	ISC
 node/web	minimatch	10.2.6	dev	ISC
 node/web	minimist	1.2.8	dev	MIT
-node/web	monaco-editor	0.56.0	runtime	MIT
+node/web	monaco-editor	0.57.0	runtime	MIT
 node/web	ms	2.1.3	runtime	MIT
 node/web	nanoid	3.3.19	runtime	MIT
 node/web	napi-postinstall	0.3.4	dev	MIT
@@ -625,7 +625,7 @@ node/web	resolve	2.0.0-next.7	dev	MIT
 node/web	resolve-from	4.0.0	dev	MIT
 node/web	resolve-pkg-maps	1.0.0	dev	MIT
 node/web	reusify	1.1.0	dev	MIT
-node/web	rolldown	1.2.10	dev	MIT
+node/web	rolldown	1.2.12	dev	MIT
 node/web	run-parallel	1.2.0	dev	MIT
 node/web	safe-array-concat	1.1.4	dev	MIT
 node/web	safe-push-apply	1.0.0	dev	MIT
@@ -646,12 +646,10 @@ node/web	side-channel	1.1.1	dev	MIT
 node/web	side-channel-list	1.0.1	dev	MIT
 node/web	side-channel-map	1.0.1	dev	MIT
 node/web	side-channel-weakmap	1.0.2	dev	MIT
-node/web	siginfo	2.0.0	dev	ISC
-node/web	simple-icons	16.32.0	runtime	CC0-1.0
+node/web	simple-icons	16.33.0	runtime	CC0-1.0
 node/web	source-map-js	1.2.1	runtime	BSD-3-Clause
 node/web	space-separated-tokens	2.0.2	runtime	MIT
 node/web	stable-hash	0.0.5	dev	MIT
-node/web	stackback	0.0.2	dev	MIT
 node/web	state-local	1.0.7	runtime	MIT
 node/web	std-env	4.2.0	dev	MIT
 node/web	stop-iteration-iterator	1.1.0	dev	MIT
@@ -690,7 +688,7 @@ node/web	typed-array-byte-offset	1.0.5	dev	MIT
 node/web	typed-array-length	1.0.8	dev	MIT
 node/web	typescript	6.0.2	dev	Apache-2.0
 node/web	typescript	5.9.3	dev	Apache-2.0
-node/web	typescript-eslint	8.70.1	dev	MIT
+node/web	typescript-eslint	8.71.0	dev	MIT
 node/web	unbox-primitive	1.1.0	dev	MIT
 node/web	undici-types	6.21.0	dev	MIT
 node/web	unified	11.0.5	runtime	MIT
@@ -709,15 +707,15 @@ node/web	use-sync-external-store	1.7.0	runtime	MIT
 node/web	vfile	6.0.3	runtime	MIT
 node/web	vfile-location	5.0.3	runtime	MIT
 node/web	vfile-message	4.0.3	runtime	MIT
-node/web	vite	8.3.0	dev	MIT
-node/web	vitest	5.0.1	dev	MIT
+node/web	vite	8.3.2	dev	MIT
+node/web	vitest	5.0.3	dev	MIT
 node/web	web-namespaces	2.0.1	runtime	MIT
 node/web	which	2.0.2	dev	ISC
 node/web	which-boxed-primitive	1.1.1	dev	MIT
 node/web	which-builtin-type	1.2.1	dev	MIT
 node/web	which-collection	1.0.2	dev	MIT
 node/web	which-typed-array	1.1.24	dev	MIT
-node/web	why-is-node-running	2.3.0	dev	MIT
+node/web	why-is-node-running	3.2.1	dev	MIT
 node/web	word-wrap	1.2.5	dev	MIT
 node/web	yallist	3.1.1	dev	ISC
 node/web	yaml-ast-parser	0.0.43	dev	Apache-2.0
@@ -744,7 +742,7 @@ python/api	django-filter	26.1	runtime	BSD License
 python/api	djangorestframework	3.18.1	runtime	BSD-3-Clause
 python/api	drf-spectacular	0.30.0	runtime	BSD-3-Clause
 python/api	fonttools	4.65.0	runtime	MIT
-python/api	fpdf2	2.8.8	runtime	LGPL-3.0-only
+python/api	fpdf2	2.8.9	runtime	LGPL-3.0-only
 python/api	gunicorn	26.2.0	runtime	MIT
 python/api	h11	0.16.0	runtime	MIT
 python/api	inflection	0.5.1	runtime	MIT
@@ -755,8 +753,8 @@ python/api	kombu	5.6.2	runtime	BSD-3-Clause
 python/api	packaging	26.3	runtime	Apache-2.0 OR BSD-2-Clause
 python/api	pillow	12.3.0	runtime	MIT-CMU
 python/api	prompt-toolkit	3.0.53	runtime	BSD License
-python/api	psycopg	3.3.5	runtime	LGPL-3.0-only
-python/api	psycopg-binary	3.3.5	runtime	LGPL-3.0-only
+python/api	psycopg	3.3.6	runtime	LGPL-3.0-only
+python/api	psycopg-binary	3.3.6	runtime	LGPL-3.0-only
 python/api	python-dateutil	2.9.0.post0	runtime	Dual License
 python/api	pyyaml	6.0.3	runtime	MIT
 python/api	redis	8.1.0	runtime	MIT
@@ -766,7 +764,6 @@ python/api	s3transfer	0.19.2	runtime	Apache License 2.0
 python/api	segno	1.6.6	runtime	BSD License
 python/api	six	1.17.0	runtime	MIT
 python/api	sqlparse	0.6.0	runtime	BSD License
-python/api	typing-extensions	4.16.0	runtime	PSF-2.0
 python/api	tzdata	2026.3	runtime	Apache-2.0
 python/api	tzlocal	5.4.4	runtime	MIT
 python/api	uritemplate	4.2.0	runtime	BSD 3-Clause OR Apache-2.0
@@ -808,7 +805,7 @@ python/api-dev	factory-boy	3.3.3	dev	MIT
 python/api-dev	faker	40.38.0	dev	MIT License
 python/api-dev	filelock	3.32.6	dev	MIT
 python/api-dev	fonttools	4.65.0	dev	MIT
-python/api-dev	fpdf2	2.8.8	dev	LGPL-3.0-only
+python/api-dev	fpdf2	2.8.9	dev	LGPL-3.0-only
 python/api-dev	gunicorn	26.2.0	dev	MIT
 python/api-dev	h11	0.16.0	dev	MIT
 python/api-dev	hypothesis	6.168.3	dev	MPL-2.0
@@ -837,8 +834,8 @@ python/api-dev	pip-requirements-parser	32.0.1	dev	MIT
 python/api-dev	platformdirs	4.11.8	dev	MIT
 python/api-dev	pluggy	1.6.0	dev	MIT
 python/api-dev	prompt-toolkit	3.0.53	dev	BSD License
-python/api-dev	psycopg	3.3.5	dev	LGPL-3.0-only
-python/api-dev	psycopg-binary	3.3.5	dev	LGPL-3.0-only
+python/api-dev	psycopg	3.3.6	dev	LGPL-3.0-only
+python/api-dev	psycopg-binary	3.3.6	dev	LGPL-3.0-only
 python/api-dev	py-serializable	2.1.0	dev	Apache-2.0
 python/api-dev	pygments	2.21.0	dev	BSD-2-Clause
 python/api-dev	pyparsing	3.3.2	dev	MIT
