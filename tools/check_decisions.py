@@ -1824,6 +1824,26 @@ def sign_in_page_is_self_contained() -> str | None:
     return None
 
 
+def clay_follows_dark_mode() -> str | None:
+    """2026-10-05: the factory style has a dark palette and is marked dual.
+
+    Clay is the default style and the default mode is `system`. Without a
+    `[data-style="clay"].dark` block a dark-mode device got the `dark` class
+    and `color-scheme: dark` on a page whose every surface stayed light. The
+    two halves must move together: the block without `dual: true` leaves the
+    mode switch hidden, `dual: true` without the block offers a switch that
+    changes nothing.
+    """
+    css = read("apps/web/src/app/theme.css")
+    if '[data-style="clay"].dark {' not in css:
+        return "theme.css: `clay` uchun `.dark` palitra yo'q"
+    styles = read("apps/web/src/layout/styles.ts")
+    clay = re.search(r'id: "clay",(.*?)\},', styles, re.S)
+    if not clay or "dual: true" not in clay.group(1):
+        return "styles.ts: `clay` `dual: true` emas — rejim tugmasi ko'rinmaydi"
+    return None
+
+
 def docker_disk_stays_bounded() -> str | None:
     """2026-09-20: log 10m/3, builder GC 5GB, SHA teg yo'q, prune tasdiq'dan keyin.
 
@@ -2579,6 +2599,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("bosh sahifa CSS inline", homepage_css_is_inlined),
     ("bosh sahifa CF email-decode yo'q", homepage_skips_cf_email_decode),
     ("login yupqa auth.css", login_uses_narrow_auth_css),
+    ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),
     ("kirish sahifasi o'z-o'ziga yetarli", sign_in_page_is_self_contained),
     ("customization invariantlari", customization_invariants_are_written),
     ("Security run o'chiq", security_run_is_disabled),

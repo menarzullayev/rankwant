@@ -762,6 +762,48 @@
   --rw-rank-red: #c1201a;
 }
 
+/* Clay, dark (2026-10-05). Clay is the factory style and the default mode
+   is `system`, so a dark-mode device got the `dark` class and
+   `color-scheme: dark` on a page whose every surface stayed light. The
+   palette keeps the hue (violet clay) and turns the lightness around:
+   deep ground, raised surfaces a step lighter, inks light enough for AA
+   on all of them. `--rw-accent` is unchanged — white on #7c3aed is 5.70:1
+   in both modes — and the link ink is a lighter violet, because #7936ea
+   on a dark surface is under 3:1. */
+[data-style="clay"].dark {
+  --rw-ground: #130d21;
+  --rw-surface: #1e1632;
+  --rw-surface-2: #281d42;
+  --rw-divider: #9580bf;
+  --rw-shadow: 0 14px 28px rgba(0, 0, 0, .45),
+               inset 0 -6px 12px rgba(0, 0, 0, .28),
+               inset 0 6px 10px rgba(255, 255, 255, .05);
+  --rw-text: #efe8ff;
+  --rw-text-2: #dccff7;
+  --rw-muted: #bcaede;
+  --rw-faint: #ab9bd0;
+  --rw-accent-ink: #c9afff;
+  --rw-accent-soft: #2c2147;
+  --rw-ok-ink: #5fd6a4;   --rw-ok-soft: #12382b;
+  --rw-warn-ink: #f0c36a; --rw-warn-soft: #3a2c0e;
+  --rw-bad-ink: #ff9dbd;  --rw-bad-soft: #3d1528;
+  --rw-chip: #3a1c33;
+  --rw-hover: #281d42;
+  --rw-field: #150f26;
+  --rw-btn-shadow: 0 8px 16px rgba(0, 0, 0, .45),
+                   inset 0 -4px 8px rgba(60, 20, 140, .35),
+                   inset 0 3px 6px rgba(255, 255, 255, .18);
+  --rw-level-1: #ab9bd0; --rw-level-2: #5fd6a4; --rw-level-3: #7fb0ff;
+  --rw-level-4: #c9afff; --rw-level-5: #ff9dbd;
+  --rw-rank-grey: #a3abba;
+  --rw-rank-green: #4cc47d;
+  --rw-rank-cyan: #3fc3d2;
+  --rw-rank-blue: #7fa8f5;
+  --rw-rank-violet: #b99af0;
+  --rw-rank-orange: #f29a4a;
+  --rw-rank-red: #ff8d88;
+}
+
 /* ── Aurora: qorong'u fonda xiralashgan rangli dog'lar. ── */
 [data-style="aurora"] {
   --rw-ground: #07070f;

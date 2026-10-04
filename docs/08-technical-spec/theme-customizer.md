@@ -123,9 +123,10 @@ stayed hidden.
 Determine the environment from the **measured ground luminance**, never
 from the `dark` class on `<html>`.
 
-Six of the twelve styles are single-environment (`dual: false`), so they
-have no `[data-style="x"].dark` block. On `clay` the `dark` class is
-present while every background is light. Reading the class produced a dark
+Five of the twelve styles are single-environment (`dual: false`), so they
+have no `[data-style="x"].dark` block. On such a style the `dark` class is
+present while every background is light — measured on `clay`, which was
+single-environment until 2026-10-05. Reading the class produced a dark
 chip against light backgrounds, no ink could clear the set, and the
 fallback silently collapsed `--rw-accent-ink` onto `--rw-accent` — links
 rendered at 2.74:1.

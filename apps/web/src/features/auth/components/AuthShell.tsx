@@ -38,9 +38,11 @@ export async function AuthShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="grid min-h-screen lg:grid-cols-[5fr_6fr]">
-      {/* Panel colours are the page's own text/ground pair, swapped: that
-          pair is already contrast-checked in every style, light or dark. */}
-      <aside className="hidden flex-col justify-between gap-8 bg-[var(--rw-text)] p-12 text-[var(--rw-ground)] lg:flex">
+      {/* Light: the page's own text/ground pair, swapped. Dark: a raised
+          surface with the normal text colour — swapped there, the panel
+          would be the brightest thing on a dark page. Both pairs are
+          contrast-checked in every style. */}
+      <aside className="hidden flex-col justify-between gap-8 bg-[var(--rw-text)] p-12 text-[var(--rw-ground)] lg:flex dark:bg-[var(--rw-surface-2)] dark:text-[var(--rw-text)]">
         <Link
           href="/"
           className="self-start text-2xl font-bold rw-radius-sm rw-focus-ring"
