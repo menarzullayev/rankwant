@@ -77,6 +77,10 @@ function featuredContest(contests: Contest[]): Contest | null {
 /** The signed-in home page (HITL 2026-10-05): what the visitor was doing
  *  and where they stand, before anything about the site.
  *
+ *  It lives beside the page, not under `features/`: it composes several
+ *  features (updates, profile, contests), and one feature importing
+ *  another is what `tools/check_features.py` forbids.
+ *
  *  Every block reads an endpoint that already exists. A block whose data is
  *  missing is left out — it never renders a placeholder or a zero that
  *  would read as a fact.

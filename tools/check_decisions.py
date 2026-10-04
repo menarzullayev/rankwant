@@ -1855,7 +1855,7 @@ def signed_in_home_is_the_dashboard() -> str | None:
     page = read("apps/web/src/app/(site)/page.tsx")
     if "if (me) {" not in page or "<SignedInHome" not in page:
         return "page.tsx: kirgan foydalanuvchi shaxsiy panelni olmaydi"
-    home = read("apps/web/src/features/home/components/SignedInHome.tsx")
+    home = read("apps/web/src/app/(site)/_home/SignedInHome.tsx")
     if re.search(r"""from ["']next/link["']""", home):
         return "SignedInHome.tsx: `next/link` — havolalar ko'rinishi bilan prefetch qiladi"
     return None

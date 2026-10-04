@@ -3121,7 +3121,7 @@ def neg_decisions_signed_in_home_dropped() -> tuple[bool, str]:
 def neg_decisions_signed_in_home_viewport_prefetch() -> tuple[bool, str]:
     """The dashboard starts prefetching every visible link again."""
     return _decision_broken(
-        "apps/web/src/features/home/components/SignedInHome.tsx",
+        "apps/web/src/app/(site)/_home/SignedInHome.tsx",
         'import type { Route } from "next";',
         'import type { Route } from "next";\nimport Link from "next/link";',
         "ko'rinishi bilan prefetch qiladi",
@@ -4661,7 +4661,7 @@ _DECISIONS_SANDBOX_FILES = (
     # Clay dark palette (2026-10-05): the rule reads the style catalogue.
     "apps/web/src/layout/styles.ts",
     # Signed-in home dashboard (2026-10-05).
-    "apps/web/src/features/home/components/SignedInHome.tsx",
+    "apps/web/src/app/(site)/_home/SignedInHome.tsx",
     "apps/web/src/app/(auth)/layout.tsx",
     "apps/web/src/app/(site)/layout.tsx",
     # Security run disabled (2026-09-21): the rule reads REQUIRED.
