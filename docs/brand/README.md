@@ -1,5 +1,8 @@
 # Brend aktivlari
 
+Crest + Wordmarkni **locked** deb e'lon qilishdan oldin:
+[`LOCK-GATE.md`](LOCK-GATE.md) (acceptance checklist va PASS/FAIL).
+
 ## Logotip — bitta manba
 
 [`mark-crest.svg`](mark-crest.svg) — **haqiqat manbai**. U
