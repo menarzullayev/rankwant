@@ -3715,6 +3715,79 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/staff/problems/{slug}/release-checklist/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description «Nega nashr qilib bo'lmaydi?» — har gate uchun holat va sabab.
+         *
+         *     Barqaror kodlar (`STATEMENT_INCOMPLETE`, `TEST_GROUP_MISSING`, ...)
+         *     qaytadi, ya'ni mijoz matn bo'yicha emas kod bo'yicha taniydi.
+         */
+        get: operations["staff_problems_release_checklist_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/staff/problems/{slug}/revisions/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description YANGI revision yaratish — mavjud nashr qilingan surat o'zgarmaydi. */
+        get: operations["staff_problems_revisions_retrieve"];
+        put?: never;
+        /** @description YANGI revision yaratish — mavjud nashr qilingan surat o'zgarmaydi. */
+        post: operations["staff_problems_revisions_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/staff/problems/{slug}/revisions/{id}/freeze/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["staff_problems_revisions_freeze_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/staff/problems/{slug}/revisions/{id}/publish/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Nashr: barcha gate o'tishi shart, aks holda 400 + sabablar. */
+        post: operations["staff_problems_revisions_publish_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/staff/problems/{slug}/tests/": {
         parameters: {
             query?: never;
@@ -5648,6 +5721,19 @@ export interface components {
          * @enum {string}
          */
         GenderEnum: "male" | "female" | "non_binary" | "prefer_not";
+        /**
+         * @description * `sample` - Namuna
+         *     * `minimal` - Minimal
+         *     * `boundary` - Chegara
+         *     * `special` - Alohida holat
+         *     * `random` - Tasodifiy
+         *     * `adversarial` - Qarshi
+         *     * `maximum` - Maksimal
+         *     * `stress` - Stress
+         *     * `unclassified` - Tasniflanmagan
+         * @enum {string}
+         */
+        GroupEnum: "sample" | "minimal" | "boundary" | "special" | "random" | "adversarial" | "maximum" | "stress" | "unclassified";
         Hack: {
             readonly id: number;
             readonly hacker: string;
@@ -8412,6 +8498,20 @@ export interface components {
             /** Format: int64 */
             order: number;
             is_sample?: boolean;
+            /**
+             * @description Semantik toifa; nashr talabi `problems/testgroups.py` da.
+             *
+             *     * `sample` - Namuna
+             *     * `minimal` - Minimal
+             *     * `boundary` - Chegara
+             *     * `special` - Alohida holat
+             *     * `random` - Tasodifiy
+             *     * `adversarial` - Qarshi
+             *     * `maximum` - Maksimal
+             *     * `stress` - Stress
+             *     * `unclassified` - Tasniflanmagan
+             */
+            group?: components["schemas"]["GroupEnum"];
             /** Format: int64 */
             points?: number;
             input_ref: string;
@@ -8649,6 +8749,7 @@ export interface components {
             expected: string;
             /** @default false */
             is_sample: boolean;
+            group?: components["schemas"]["GroupEnum"] | components["schemas"]["BlankEnum"];
             /** @default 0 */
             points: number;
         };
@@ -14835,6 +14936,131 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    staff_problems_release_checklist_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffProblem"];
+                };
+            };
+        };
+    };
+    staff_problems_revisions_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffProblem"];
+                };
+            };
+        };
+    };
+    staff_problems_revisions_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StaffProblem"];
+                "application/x-www-form-urlencoded": components["schemas"]["StaffProblem"];
+                "multipart/form-data": components["schemas"]["StaffProblem"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffProblem"];
+                };
+            };
+        };
+    };
+    staff_problems_revisions_freeze_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StaffProblem"];
+                "application/x-www-form-urlencoded": components["schemas"]["StaffProblem"];
+                "multipart/form-data": components["schemas"]["StaffProblem"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffProblem"];
+                };
+            };
+        };
+    };
+    staff_problems_revisions_publish_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StaffProblem"];
+                "application/x-www-form-urlencoded": components["schemas"]["StaffProblem"];
+                "multipart/form-data": components["schemas"]["StaffProblem"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffProblem"];
+                };
             };
         };
     };
