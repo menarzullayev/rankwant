@@ -54,7 +54,7 @@ drf-spectacular==0.30.0
     # via -r requirements.txt
 fonttools==4.65.0
     # via fpdf2
-fpdf2==2.8.8
+fpdf2==2.8.9
     # via -r requirements.txt
 gunicorn==26.2.0
     # via -r requirements.txt
@@ -78,9 +78,9 @@ pillow==12.3.0
     # via fpdf2
 prompt-toolkit==3.0.53
     # via click-repl
-psycopg==3.3.5
+psycopg==3.3.6
     # via -r requirements.txt
-psycopg-binary==3.3.5
+psycopg-binary==3.3.6
     # via psycopg
 python-dateutil==2.9.0.post0
     # via
@@ -106,10 +106,6 @@ six==1.17.0
     # via python-dateutil
 sqlparse==0.6.0
     # via django
-typing-extensions==4.16.0
-    # via
-    #   psycopg
-    #   referencing
 tzdata==2026.3
     # via
     #   django

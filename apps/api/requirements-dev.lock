@@ -90,7 +90,7 @@ filelock==3.32.6
     # via cachecontrol
 fonttools==4.65.0
     # via fpdf2
-fpdf2==2.8.8
+fpdf2==2.8.9
     # via -r requirements.txt
 gunicorn==26.2.0
     # via -r requirements.txt
@@ -158,9 +158,9 @@ pluggy==1.6.0
     #   pytest-cov
 prompt-toolkit==3.0.53
     # via click-repl
-psycopg==3.3.5
+psycopg==3.3.6
     # via -r requirements.txt
-psycopg-binary==3.3.5
+psycopg-binary==3.3.6
     # via psycopg
 py-serializable==2.1.0
     # via cyclonedx-python-lib
@@ -228,13 +228,10 @@ types-pyyaml==6.0.12.20260906
     #   djangorestframework-stubs
 typing-extensions==4.16.0
     # via
-    #   cyclonedx-python-lib
     #   django-stubs
     #   django-stubs-ext
     #   djangorestframework-stubs
     #   mypy
-    #   psycopg
-    #   referencing
 tzdata==2026.4
     # via
     #   django
