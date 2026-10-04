@@ -56,7 +56,7 @@ Har band: **PASS** yoki **FAIL** + qisqa dalil (fayl yo'li, screenshot nomi, san
 | C3 | **Crest ↔ UI rang:** jadval — Crest hex (`#44A0FC`, `#1074DC`, `#102038`) va `--rw-accent*` alohida yoki mapping bilan; bitta sahifada | ☐ |
 | C4 | **Do-not-use** (kamida 5 ta): distort, rotate, alohida facetlarni ajratish, gradient qo‘shish, Crest ranglarini ixtiyoriy almashtirish | ☐ |
 | C5 | **Ishlatish xaritasi** tasdiqlangan: header/auth/footer → wordmark; favicon/PWA/BIMI → Crest; OG → lockup (matn + belgi) | ☐ |
-| C6 | Dalillar arxivi | `docs/brand/lock-gate-evidence/` (screenshot matrix, sana, commit SHA) — gate yopilish PRida | ☐ |
+| C6 | **Dalillar arxivi:** `docs/brand/lock-gate-evidence/` (screenshot matrix, sana, commit SHA) — gate yopilish PRida | ☐ |
 
 ---
 
