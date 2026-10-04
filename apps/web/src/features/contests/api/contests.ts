@@ -20,6 +20,8 @@ export type Contest = {
   /** Ochiq faza qachon yopiladi; `null` — bunday faza yo'q. Oyna vaqt
    *  bo'yicha ochilib yopiladi, ya'ni mijoz buni o'zi hisoblay olmaydi. */
   hack_open_until: string | null;
+  /** Registrations. Counted once for the whole list, not per row. */
+  participant_count: number;
 };
 
 export type ContestProblem = {

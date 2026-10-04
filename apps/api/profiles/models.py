@@ -263,3 +263,33 @@ class UserAchievement(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user_id}:{self.code}"
+
+
+class ActivityEvent(CreatedModel):
+    """One thing that happened to a user — the signed-in home page's feed.
+
+    Written by `profiles.activity` when the source row is created. `data`
+    carries what the feed prints (a title, a delta), so reading the feed
+    never joins back to the source tables.
+    """
+
+    class Kind(models.TextChoices):
+        SOLVED = "solved", "Masala yechildi"
+        RATING = "rating", "Reyting o'zgardi"
+        QVANT = "qvant", "Qvant"
+        CONTEST = "contest", "Musobaqaga yozildi"
+
+    user = models.ForeignKey("core.User", on_delete=models.CASCADE, related_name="activity_events")
+    kind = models.CharField(max_length=16, choices=Kind.choices)
+    ref_type = models.CharField(max_length=24, blank=True)
+    ref_id = models.CharField(max_length=120, blank=True)
+    data = models.JSONField(default=dict, blank=True)
+
+    class Meta:
+        ordering: ClassVar = ["-created_at", "-pk"]
+        indexes: ClassVar = [
+            models.Index(fields=["user", "-created_at"], name="activity_event_feed"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.user_id}:{self.kind}"

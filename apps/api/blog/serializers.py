@@ -10,7 +10,16 @@ class PostListSerializer(serializers.ModelSerializer[Post]):
 
     class Meta:
         model = Post
-        fields = ["slug", "kind", "title", "summary", "locale", "author", "published_at"]
+        fields = [
+            "slug",
+            "kind",
+            "title",
+            "summary",
+            "cover_url",
+            "locale",
+            "author",
+            "published_at",
+        ]
 
 
 class PostDetailSerializer(PostListSerializer):

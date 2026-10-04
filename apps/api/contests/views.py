@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from django.db.models import QuerySet
+from django.db.models import Count, QuerySet
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from drf_spectacular.types import OpenApiTypes
@@ -58,7 +58,13 @@ STANDINGS_TOP = 500
 class ContestViewSet(viewsets.ReadOnlyModelViewSet[Contest]):
     permission_classes = [AllowAny]
     lookup_field = "slug"
-    queryset = Contest.objects.filter(is_public=True).prefetch_related("problems__problem")
+    queryset = (
+        Contest.objects.filter(is_public=True)
+        .prefetch_related("problems__problem")
+        .annotate(participant_count=Count("registrations", distinct=True))
+        # An aggregate drops `Meta.ordering`; without this the pages would shuffle.
+        .order_by("-start_at")
+    )
 
     def get_serializer_class(self):  # type: ignore[no-untyped-def]
         return ContestDetailSerializer if self.action == "retrieve" else ContestSerializer

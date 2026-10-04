@@ -2366,6 +2366,25 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/me/activity/:
+    get:
+      operationId: me_activity_list
+      description: The signed-in user's own events, newest first (`profiles.activity`).
+      summary: Mening faollik hodisalarim
+      tags:
+      - me
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityEvent'
+          description: ''
   /api/v1/me/avatar/:
     post:
       operationId: me_avatar_create
@@ -3585,6 +3604,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/PostDetail'
           description: ''
+  /api/v1/presence/:
+    get:
+      operationId: presence_retrieve
+      description: |-
+        Who was here today, most recent first, and who is here now.
+
+        Read from `UserSession`, not `User.last_seen_at`: the Codeforces sync
+        writes that column from somebody's last visit to *Codeforces*, so it
+        would list people who have never opened this site.
+
+        A user who hid `online` in their privacy settings is left out — the
+        profile page already honours that choice (`profiles.public`).
+      summary: Bugun faol foydalanuvchilar
+      tags:
+      - presence
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Presence'
+          description: ''
   /api/v1/problems/:
     get:
       operationId: problems_list
@@ -4508,6 +4551,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Inventory'
+          description: ''
+  /api/v1/qvant/top/:
+    get:
+      operationId: qvant_top_list
+      description: |-
+        The largest balances. Read-only: the balance itself is only ever
+        written through the ledger (ADR-0002).
+      summary: Qvant bo'yicha yetakchilar
+      tags:
+      - qvant
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/QvantTop'
           description: ''
   /api/v1/qvant/transactions/:
     get:
@@ -9823,6 +9886,33 @@ paths:
       responses:
         '200':
           description: Platforma statistikasi
+  /api/v1/stats/daily/:
+    get:
+      operationId: stats_daily_list
+      description: |-
+        The last 14 days, one row per day — the home page's activity chart.
+
+        Three series: accounts registered, distinct users who submitted, and
+        attempts. Imported accounts are left out of `new_users`: they were
+        created by a sync, not by somebody signing up, and one import day would
+        flatten every other day to zero.
+
+        Days are local (`TIME_ZONE`), and a day with nothing still gets a row —
+        a missing day would silently shift the chart's x axis.
+      summary: Kunlik statistika
+      tags:
+      - stats
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DailyStats'
+          description: ''
   /api/v1/teams/{id}/:
     delete:
       operationId: teams_destroy
@@ -11140,6 +11230,41 @@ paths:
           description: No response body
 components:
   schemas:
+    ActivityEvent:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        kind:
+          $ref: '#/components/schemas/ActivityEventKindEnum'
+        ref_type:
+          type: string
+          maxLength: 24
+        ref_id:
+          type: string
+          maxLength: 120
+        data: {}
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - kind
+    ActivityEventKindEnum:
+      enum:
+      - solved
+      - rating
+      - qvant
+      - contest
+      type: string
+      description: |-
+        * `solved` - Masala yechildi
+        * `rating` - Reyting o'zgardi
+        * `qvant` - Qvant
+        * `contest` - Musobaqaga yozildi
     AnalyticsBatch:
       type: object
       description: |-
@@ -11964,6 +12089,10 @@ components:
           type: string
           format: date-time
           readOnly: true
+        participant_count:
+          type: integer
+          readOnly: true
+          default: 0
       required:
       - end_at
       - hack_open_until
@@ -11971,6 +12100,7 @@ components:
       - is_frozen
       - is_hack_open
       - is_running
+      - participant_count
       - slug
       - start_at
       - title
@@ -12020,6 +12150,10 @@ components:
           type: string
           format: date-time
           readOnly: true
+        participant_count:
+          type: integer
+          readOnly: true
+          default: 0
         description:
           type: string
         problems:
@@ -12034,6 +12168,7 @@ components:
       - is_frozen
       - is_hack_open
       - is_running
+      - participant_count
       - problems
       - slug
       - start_at
@@ -12131,6 +12266,24 @@ components:
       required:
       - language
       - source_code
+    DailyStats:
+      type: object
+      description: One day of `/stats/daily/`.
+      properties:
+        date:
+          type: string
+          format: date
+        new_users:
+          type: integer
+        active_users:
+          type: integer
+        attempts:
+          type: integer
+      required:
+      - active_users
+      - attempts
+      - date
+      - new_users
     Duel:
       type: object
       properties:
@@ -15134,6 +15287,13 @@ components:
         summary:
           type: string
           maxLength: 300
+        cover_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 500
+          - type: string
+            maxLength: 0
         body:
           type: string
           description: Markdown
@@ -15795,6 +15955,13 @@ components:
         summary:
           type: string
           maxLength: 300
+        cover_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 500
+          - type: string
+            maxLength: 0
         locale:
           type: string
           maxLength: 2
@@ -15838,6 +16005,13 @@ components:
         summary:
           type: string
           maxLength: 300
+        cover_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 500
+          - type: string
+            maxLength: 0
         locale:
           type: string
           maxLength: 2
@@ -15852,6 +16026,48 @@ components:
       - author
       - slug
       - title
+    Presence:
+      type: object
+      description: '`/presence/` — who was here today.'
+      properties:
+        today:
+          type: integer
+        online:
+          type: integer
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PresenceUser'
+      required:
+      - online
+      - results
+      - today
+    PresenceUser:
+      type: object
+      properties:
+        username:
+          type: string
+        display_name:
+          type: string
+        avatar_url:
+          type: string
+        title:
+          allOf:
+          - $ref: '#/components/schemas/UserTitle'
+          nullable: true
+          readOnly: true
+        last_seen:
+          type: string
+          format: date-time
+        online:
+          type: boolean
+      required:
+      - avatar_url
+      - display_name
+      - last_seen
+      - online
+      - title
+      - username
     ProblemDetail:
       type: object
       properties:
@@ -16427,6 +16643,32 @@ components:
             type: integer
       required:
       - answers
+    QvantTop:
+      type: object
+      description: |-
+        A row of the public Qvant top list (HITL 2026-10-05).
+
+        The balance is public here by the owner's decision; the ledger behind
+        it (`/qvant/transactions/`) stays private to its user.
+      properties:
+        username:
+          type: string
+          readOnly: true
+        display_name:
+          type: string
+          readOnly: true
+        avatar_url:
+          type: string
+          readOnly: true
+        balance:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+      required:
+      - avatar_url
+      - display_name
+      - username
     RateProblem:
       type: object
       properties:
@@ -16678,12 +16920,18 @@ components:
             masalalar esa `UserSolvedProblem` da. Slug to'plamini viewset bitta
             so'rovda tayyorlaydi.
           readOnly: true
+        next_step:
+          allOf:
+          - $ref: '#/components/schemas/RoadmapStep'
+          nullable: true
+          readOnly: true
         steps:
           type: array
           items:
             $ref: '#/components/schemas/RoadmapStep'
           readOnly: true
       required:
+      - next_step
       - slug
       - solved_steps
       - step_count
@@ -16817,7 +17065,13 @@ components:
             masalalar esa `UserSolvedProblem` da. Slug to'plamini viewset bitta
             so'rovda tayyorlaydi.
           readOnly: true
+        next_step:
+          allOf:
+          - $ref: '#/components/schemas/RoadmapStep'
+          nullable: true
+          readOnly: true
       required:
+      - next_step
       - slug
       - solved_steps
       - step_count
@@ -17563,6 +17817,13 @@ components:
         summary:
           type: string
           maxLength: 300
+        cover_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 500
+          - type: string
+            maxLength: 0
         body:
           type: string
           description: Markdown

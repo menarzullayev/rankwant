@@ -26,6 +26,8 @@ class ContestSerializer(serializers.ModelSerializer[Contest]):
     #: topa olmasdi: oyna vaqt bo'yicha ochiladi va yopiladi.
     is_hack_open = serializers.BooleanField(read_only=True)
     hack_open_until = serializers.DateTimeField(read_only=True)
+    #: Registrations, annotated by the viewset — one COUNT for the whole list.
+    participant_count = serializers.IntegerField(read_only=True, default=0)
 
     class Meta:
         model = Contest
@@ -44,6 +46,7 @@ class ContestSerializer(serializers.ModelSerializer[Contest]):
             "hack_room",
             "is_hack_open",
             "hack_open_until",
+            "participant_count",
         ]
 
 

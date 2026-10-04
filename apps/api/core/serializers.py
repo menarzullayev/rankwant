@@ -993,3 +993,29 @@ class SchoolSerializer(serializers.ModelSerializer[School]):
     class Meta:
         model = School
         fields = ["id", "name", "kind", "region", "district", "city", "members"]
+
+
+class DailyStatsSerializer(serializers.Serializer[Any]):
+    """One day of `/stats/daily/`."""
+
+    date = serializers.DateField()
+    new_users = serializers.IntegerField()
+    active_users = serializers.IntegerField()
+    attempts = serializers.IntegerField()
+
+
+class PresenceUserSerializer(serializers.Serializer[Any]):
+    username = serializers.CharField()
+    display_name = serializers.CharField()
+    avatar_url = serializers.CharField()
+    title = TitleField()
+    last_seen = serializers.DateTimeField()
+    online = serializers.BooleanField()
+
+
+class PresenceSerializer(serializers.Serializer[Any]):
+    """`/presence/` — who was here today."""
+
+    today = serializers.IntegerField()
+    online = serializers.IntegerField()
+    results = PresenceUserSerializer(many=True)

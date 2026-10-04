@@ -292,6 +292,10 @@ class User(AbstractUser):
         indexes: ClassVar = [
             models.Index(fields=["-rating_skills"], name="user_skills_desc"),
             models.Index(fields=["-rating_contest"], name="user_contest_desc"),
+            # Home page top lists (2026-10-05): each tab sorts ~1M rows.
+            models.Index(fields=["-rating_activity"], name="user_activity_desc"),
+            models.Index(fields=["-rating_challenges"], name="user_challenges_desc"),
+            models.Index(fields=["-streak_count"], name="user_streak_desc"),
         ]
         constraints: ClassVar = [
             # `Aziz` va `aziz` bir xil nom. Serializerdagi tekshiruv

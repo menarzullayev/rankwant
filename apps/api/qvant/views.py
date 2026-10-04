@@ -18,11 +18,19 @@ from core.models import User
 from core.openapi_docs import crud_summaries
 from core.pagination import TimeCursorPagination
 from qvant import ledger, quests
-from qvant.models import QvantQuest, QvantTransaction, ShopItem, UserInventory, UserQuestCompletion
+from qvant.models import (
+    QvantQuest,
+    QvantTransaction,
+    QvantWallet,
+    ShopItem,
+    UserInventory,
+    UserQuestCompletion,
+)
 from qvant.serializers import (
     InventorySerializer,
     PurchaseSerializer,
     QuestSerializer,
+    QvantTopSerializer,
     ShopItemSerializer,
     TransactionSerializer,
     WalletSerializer,
@@ -44,6 +52,25 @@ class WalletView(APIView):
         data["earned_today"] = ledger.earned_today(request.user)
         data["remaining_today"] = ledger.remaining_today(request.user)
         return Response(data)
+
+
+@extend_schema(summary="Qvant bo'yicha yetakchilar")
+class TopView(APIView):
+    """The largest balances. Read-only: the balance itself is only ever
+    written through the ledger (ADR-0002)."""
+
+    permission_classes = [AllowAny]
+    authentication_classes: list[Any] = []
+    LIMIT = 10
+
+    @extend_schema(responses={200: QvantTopSerializer(many=True)})
+    def get(self, request: Request) -> Response:
+        wallets = (
+            QvantWallet.objects.filter(user__is_active=True, balance__gt=0)
+            .select_related("user")
+            .order_by("-balance", "pk")[: self.LIMIT]
+        )
+        return Response(QvantTopSerializer(wallets, many=True).data)
 
 
 @crud_summaries(one="tranzaksiya", many="tranzaksiyalar", only=("list", "retrieve"))

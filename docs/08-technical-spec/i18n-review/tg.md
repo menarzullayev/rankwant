@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**1997 strings.**
+**2025 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -2018,3 +2018,31 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `home.stepsDone` | {done} / {total} qadam | {done} / {total} қадам |  |
 | `home.contest` | Musobaqa | Мусобиқа |  |
 | `home.noUpcomingContest` | Yaqin musobaqa e'lon qilinmagan | Мусобиқаи наздик эълон нашудааст |  |
+| `home.notAttempted` | hali urinish yo'q | ҳанӯз кӯшиш нест |  |
+| `home.attempted` | urinish bor | кӯшиш ҳаст |  |
+| `home.starts` | Boshlanishi | Оғоз |  |
+| `home.duration` | Davomiyligi | Давомнокӣ |  |
+| `home.hours` | {n} soat | {n} соат |  |
+| `home.minutes` | {n} daq | {n} дақ |  |
+| `home.practiceArchive` | Arxivdan mashq | Машқ аз бойгонӣ |  |
+| `home.openContest` | Musobaqani ochish | Кушодани мусобиқа |  |
+| `home.howRated` | {name} reytingi qanday hisoblanadi | Рейтинги {name} чӣ тавр ҳисоб мешавад |  |
+| `home.noTitle` | Unvon hali berilmagan | Унвон ҳанӯз дода нашудааст |  |
+| `home.attemptCount` | {count} urinish | {count} кӯшиш |  |
+| `home.event.solved` | Masala yechildi | Масъала ҳал шуд |  |
+| `home.event.contest` | Musobaqaga yozildi | Ба мусобиқа сабт шуд |  |
+| `home.nextStep` | {n}-qadam | Қадами {n} |  |
+| `home.startStep` | Boshlash | Оғоз кардан |  |
+| `home.pathDone` | Yo'l tugallandi | Роҳ анҷом ёфт |  |
+| `home.topBy` | Reyting turi | Навъи рейтинг |  |
+| `home.emptyTop` | Bu ro'yxat hozircha bo'sh | Ин рӯйхат ҳоло холӣ аст |  |
+| `home.readPost` | O'qish | Хондан |  |
+| `home.prevPost` | Oldingi yangilik | Хабари қаблӣ |  |
+| `home.nextPost` | Keyingi yangilik | Хабари навбатӣ |  |
+| `home.platformActivity` | Platforma faolligi | Фаъолияти платформа |  |
+| `home.last14` | So'nggi 14 kun | 14 рӯзи охир |  |
+| `home.newUsers` | Yangi foydalanuvchilar | Корбарони нав |  |
+| `home.activeUsers` | Faol foydalanuvchilar | Корбарони фаъол |  |
+| `home.activeToday` | Bugun faol foydalanuvchilar | Корбарони фаъоли имрӯз |  |
+| `home.onlineNow` | Hozir onlayn: {count} | Ҳоло онлайн: {count} |  |
+| `home.nobodyToday` | Bugun hali hech kim kirmadi | Имрӯз ҳанӯз касе ворид нашудааст |  |

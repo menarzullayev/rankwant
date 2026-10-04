@@ -21,6 +21,7 @@ urlpatterns = [
         name="me-external-connected",
     ),
     path("me/teams/", views.MyTeamsView.as_view(), name="me-teams"),
+    path("me/activity/", views.MyActivityView.as_view(), name="me-activity"),
     path("teams/join/", views.TeamJoinView.as_view(), name="team-join"),
     path("teams/<int:pk>/", views.TeamDetailView.as_view(), name="team-detail"),
     path("teams/<int:pk>/refresh-code/", views.TeamRefreshView.as_view(), name="team-refresh"),

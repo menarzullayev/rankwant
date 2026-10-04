@@ -13,6 +13,7 @@ from profiles.catalog import TECHNOLOGIES
 from profiles.models import (
     BADGE_COLOR,
     BADGE_TEXT_MAX,
+    ActivityEvent,
     Education,
     ExternalProfile,
     Skill,
@@ -215,3 +216,9 @@ class TeamCreateSerializer(serializers.Serializer[None]):
 class TeamJoinSerializer(serializers.Serializer[None]):
     #: Kod yoki to'liq havola.
     code = serializers.CharField(max_length=300)
+
+
+class ActivityEventSerializer(serializers.ModelSerializer[ActivityEvent]):
+    class Meta:
+        model = ActivityEvent
+        fields = ["id", "kind", "ref_type", "ref_id", "data", "created_at"]

@@ -3128,6 +3128,36 @@ def neg_decisions_signed_in_home_viewport_prefetch() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_home_person_viewport_prefetch() -> tuple[bool, str]:
+    """A sibling file of the dashboard prefetches on sight — dozens of people."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/_home/Person.tsx",
+        'import type { Route } from "next";',
+        'import type { Route } from "next";\nimport Link from "next/link";',
+        "Person.tsx: `next/link`",
+    )
+
+
+def neg_decisions_presence_reads_last_seen_at() -> tuple[bool, str]:
+    """Presence falls back to the column the Codeforces sync also writes."""
+    return _decision_broken(
+        "apps/api/core/views.py",
+        "UserSession.objects.filter(last_seen__gte=midnight, user__is_active=True)",
+        "User.objects.filter(last_seen_at__gte=midnight, is_active=True)",
+        "Codeforces tashrifi",
+    )
+
+
+def neg_decisions_presence_ignores_privacy() -> tuple[bool, str]:
+    """Somebody who hid their online status is listed anyway."""
+    return _decision_broken(
+        "apps/api/core/views.py",
+        'if "online" not in (user.hidden_fields or [])',
+        "if user.is_active",
+        "maxfiylik tanlovi hisobga olinmaydi",
+    )
+
+
 def _css_sources_broken(rel: str, old: str, new: str, expect: str) -> tuple[bool, str]:
     """Break one `@source` invariant in `rel`; check_css_sources must catch it."""
     path = ROOT / rel
@@ -4662,6 +4692,9 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/layout/styles.ts",
     # Signed-in home dashboard (2026-10-05).
     "apps/web/src/app/(site)/_home/SignedInHome.tsx",
+    "apps/web/src/app/(site)/_home/Person.tsx",
+    "apps/web/src/app/(site)/_home/TopUsers.tsx",
+    "apps/web/src/app/(site)/_home/NewsCarousel.tsx",
     "apps/web/src/app/(auth)/layout.tsx",
     "apps/web/src/app/(site)/layout.tsx",
     # Security run disabled (2026-09-21): the rule reads REQUIRED.
@@ -7940,6 +7973,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ),
             ("push guard uzilsa tutilsin", neg_decisions_push_guard_unwired),
             ("kirgan foydalanuvchi paneli olib tashlansa tutilsin", neg_decisions_signed_in_home_dropped),
+            ("panel yonidagi fayl ko'rinish-prefetch qilsa tutilsin", neg_decisions_home_person_viewport_prefetch),
+            ("bugun faol ro'yxati last_seen_at dan o'qisa tutilsin", neg_decisions_presence_reads_last_seen_at),
+            ("bugun faol ro'yxati maxfiylikni e'tiborsiz qoldirsa tutilsin", neg_decisions_presence_ignores_privacy),
             ("panel ko'rinish-prefetch qilsa tutilsin", neg_decisions_signed_in_home_viewport_prefetch),
             ("clay qorong'i palitrasi olib tashlansa tutilsin", neg_decisions_clay_dark_block_removed),
             ("clay yana bir muhitli bo'lsa tutilsin", neg_decisions_clay_single_environment_again),

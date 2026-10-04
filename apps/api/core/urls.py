@@ -23,6 +23,10 @@ urlpatterns = [
     path("slo/", views.SloView.as_view(), name="slo"),
     path("appearance/", views.SiteAppearanceView.as_view(), name="site-appearance"),
     path("stats/", views.PlatformStatsView.as_view(), name="platform-stats"),
+    path("stats/daily/", views.DailyStatsView.as_view(), name="platform-stats-daily"),
+    # Not under `users/`: that prefix takes a username, and one called
+    # `online` would lose its profile to this route.
+    path("presence/", views.PresenceView.as_view(), name="presence"),
     path("calendar/", views.CalendarView.as_view(), name="calendar"),
     path("search/", views.SearchView.as_view(), name="search"),
     path("auth/register/", views.RegisterView.as_view(), name="register"),

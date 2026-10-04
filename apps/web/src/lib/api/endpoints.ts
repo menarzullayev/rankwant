@@ -53,8 +53,11 @@ import type {
   Roadmap,
 } from "./content";
 import type {
+  DailyStats,
   Notification,
   PlatformStats,
+  Presence,
+  QvantTop,
   RoadmapComment,
   RoadmapItem,
   SystemUpdate,
@@ -64,6 +67,13 @@ import type { Marathon, Quest, ShopItem, Wallet } from "@/features/account";
 export const api = {
   // Mehmon bosh sahifasi raqamlari — serverda 60 s keshlanadi.
   stats: () => get<PlatformStats>("/stats/", 60),
+  // The home page chart: 14 local days, cached for ten minutes on the server.
+  statsDaily: () => get<DailyStats[]>("/stats/daily/", 600),
+  presence: () => get<Presence>("/presence/", 30),
+  /** Top three by one stored column — the home page's top tabs. */
+  topUsers: (field: string) =>
+    get<Paginated<UserPublic>>(`/users/?ordering=-${field}&page_size=3`, 60),
+  qvantTop: () => get<QvantTop[]>("/qvant/top/", 60),
   problems: (query = "") => get<Paginated<Problem>>(`/problems/${query}`),
   problem: (slug: string) => get<ProblemDetail>(`/problems/${slug}/`),
   contests: () => get<Paginated<Contest>>("/contests/"),

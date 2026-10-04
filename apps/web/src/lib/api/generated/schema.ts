@@ -1450,6 +1450,26 @@ export interface paths {
         patch: operations["me_partial_update"];
         trace?: never;
     };
+    "/api/v1/me/activity/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Mening faollik hodisalarim
+         * @description The signed-in user's own events, newest first (`profiles.activity`).
+         */
+        get: operations["me_activity_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/avatar/": {
         parameters: {
             query?: never;
@@ -2049,6 +2069,33 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/presence/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Bugun faol foydalanuvchilar
+         * @description Who was here today, most recent first, and who is here now.
+         *
+         *     Read from `UserSession`, not `User.last_seen_at`: the Codeforces sync
+         *     writes that column from somebody's last visit to *Codeforces*, so it
+         *     would list people who have never opened this site.
+         *
+         *     A user who hid `online` in their privacy settings is left out — the
+         *     profile page already honours that choice (`profiles.public`).
+         */
+        get: operations["presence_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/problems/": {
         parameters: {
             query?: never;
@@ -2598,6 +2645,27 @@ export interface paths {
          * @description Do'kon — ADR-0002: v1 da faqat kosmetika va qulaylik.
          */
         post: operations["qvant_shop_purchase_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/qvant/top/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Qvant bo'yicha yetakchilar
+         * @description The largest balances. Read-only: the balance itself is only ever
+         *     written through the ledger (ADR-0002).
+         */
+        get: operations["qvant_top_list"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -4490,6 +4558,34 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/stats/daily/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Kunlik statistika
+         * @description The last 14 days, one row per day — the home page's activity chart.
+         *
+         *     Three series: accounts registered, distinct users who submitted, and
+         *     attempts. Imported accounts are left out of `new_users`: they were
+         *     created by a sync, not by somebody signing up, and one import day would
+         *     flatten every other day to zero.
+         *
+         *     Days are local (`TIME_ZONE`), and a day with nothing still gets a row —
+         *     a missing day would silently shift the chart's x axis.
+         */
+        get: operations["stats_daily_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/teams/{id}/": {
         parameters: {
             query?: never;
@@ -5198,6 +5294,23 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        ActivityEvent: {
+            readonly id: number;
+            kind: components["schemas"]["ActivityEventKindEnum"];
+            ref_type?: string;
+            ref_id?: string;
+            data?: unknown;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        /**
+         * @description * `solved` - Masala yechildi
+         *     * `rating` - Reyting o'zgardi
+         *     * `qvant` - Qvant
+         *     * `contest` - Musobaqaga yozildi
+         * @enum {string}
+         */
+        ActivityEventKindEnum: "solved" | "rating" | "qvant" | "contest";
         /**
          * @description Hodisalar partiyasi.
          *
@@ -5515,6 +5628,8 @@ export interface components {
             readonly is_hack_open: boolean;
             /** Format: date-time */
             readonly hack_open_until: string;
+            /** @default 0 */
+            readonly participant_count: number;
         };
         ContestDetail: {
             slug: string;
@@ -5538,6 +5653,8 @@ export interface components {
             readonly is_hack_open: boolean;
             /** Format: date-time */
             readonly hack_open_until: string;
+            /** @default 0 */
+            readonly participant_count: number;
             description?: string;
             readonly problems: components["schemas"]["ContestProblem"][];
         };
@@ -5577,6 +5694,14 @@ export interface components {
             source_code: string;
             /** @default  */
             stdin: string;
+        };
+        /** @description One day of `/stats/daily/`. */
+        DailyStats: {
+            /** Format: date */
+            date: string;
+            new_users: number;
+            active_users: number;
+            attempts: number;
         };
         Duel: {
             slug: string;
@@ -7178,6 +7303,7 @@ export interface components {
             kind?: components["schemas"]["PostKindEnum"];
             title?: string;
             summary?: string;
+            cover_url?: string;
             /** @description Markdown */
             body?: string;
             locale?: string;
@@ -7485,6 +7611,7 @@ export interface components {
             kind?: components["schemas"]["PostKindEnum"];
             title: string;
             summary?: string;
+            cover_url?: string;
             locale?: string;
             readonly author: string;
             /** Format: date-time */
@@ -7504,10 +7631,26 @@ export interface components {
             kind?: components["schemas"]["PostKindEnum"];
             title: string;
             summary?: string;
+            cover_url?: string;
             locale?: string;
             readonly author: string;
             /** Format: date-time */
             published_at?: string | null;
+        };
+        /** @description `/presence/` — who was here today. */
+        Presence: {
+            today: number;
+            online: number;
+            results: components["schemas"]["PresenceUser"][];
+        };
+        PresenceUser: {
+            username: string;
+            display_name: string;
+            avatar_url: string;
+            readonly title: components["schemas"]["UserTitle"] | null;
+            /** Format: date-time */
+            last_seen: string;
+            online: boolean;
         };
         ProblemDetail: {
             slug: string;
@@ -7747,6 +7890,19 @@ export interface components {
                 [key: string]: number;
             };
         };
+        /**
+         * @description A row of the public Qvant top list (HITL 2026-10-05).
+         *
+         *     The balance is public here by the owner's decision; the ledger behind
+         *     it (`/qvant/transactions/`) stays private to its user.
+         */
+        QvantTop: {
+            readonly username: string;
+            readonly display_name: string;
+            readonly avatar_url: string;
+            /** Format: int64 */
+            balance?: number;
+        };
         RateProblem: {
             score: number;
         };
@@ -7861,6 +8017,7 @@ export interface components {
              *     so'rovda tayyorlaydi.
              */
             readonly solved_steps: number;
+            readonly next_step: components["schemas"]["RoadmapStep"] | null;
             readonly steps: components["schemas"]["RoadmapStep"][];
         };
         /** @description Ochiq o'qish — mehmon ham ko'radi. */
@@ -7926,6 +8083,7 @@ export interface components {
              *     so'rovda tayyorlaydi.
              */
             readonly solved_steps: number;
+            readonly next_step: components["schemas"]["RoadmapStep"] | null;
         };
         RoadmapStep: {
             /** Format: int64 */
@@ -8218,6 +8376,7 @@ export interface components {
             kind?: components["schemas"]["PostKindEnum"];
             title: string;
             summary?: string;
+            cover_url?: string;
             /** @description Markdown */
             body: string;
             locale?: string;
@@ -10938,6 +11097,25 @@ export interface operations {
             };
         };
     };
+    me_activity_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActivityEvent"][];
+                };
+            };
+        };
+    };
     me_avatar_create: {
         parameters: {
             query?: never;
@@ -11954,6 +12132,25 @@ export interface operations {
             };
         };
     };
+    presence_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Presence"];
+                };
+            };
+        };
+    };
     problems_list: {
         parameters: {
             query?: {
@@ -12677,6 +12874,25 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Inventory"];
+                };
+            };
+        };
+    };
+    qvant_top_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QvantTop"][];
                 };
             };
         };
@@ -16984,6 +17200,25 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    stats_daily_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DailyStats"][];
+                };
             };
         };
     };

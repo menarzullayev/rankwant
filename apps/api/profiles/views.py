@@ -25,6 +25,7 @@ from profiles import achievements, external, public, stats, teams
 from profiles.catalog import TECHNOLOGIES
 from profiles.models import (
     MAX_SKILL_BADGES,
+    ActivityEvent,
     Education,
     ExternalProfile,
     Follow,
@@ -36,6 +37,7 @@ from profiles.models import (
     WorkExperience,
 )
 from profiles.serializers import (
+    ActivityEventSerializer,
     EducationSerializer,
     ExternalInSerializer,
     ExternalOutSerializer,
@@ -306,6 +308,22 @@ class ActivityView(APIView):
         if not public.field_visible(user, _viewer(request), "activity"):
             return Response({"results": [], "next_before": None, "hidden": True})
         return Response(public.activity(user, before=before))
+
+
+class MyActivityView(APIView):
+    """The signed-in user's own events, newest first (`profiles.activity`)."""
+
+    permission_classes = [IsAuthenticated]
+    LIMIT = 20
+
+    @extend_schema(
+        summary="Mening faollik hodisalarim",
+        responses={200: ActivityEventSerializer(many=True)},
+    )
+    def get(self, request: Request) -> Response:
+        assert isinstance(request.user, User)
+        rows = ActivityEvent.objects.filter(user=request.user)[: self.LIMIT]
+        return Response(ActivityEventSerializer(rows, many=True).data)
 
 
 class AchievementsView(APIView):

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 import secrets
-from datetime import timedelta
+from datetime import datetime, time, timedelta
 from typing import Any
 
 import redis
@@ -15,7 +15,8 @@ from django.contrib.auth import login as django_login
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import connection
-from django.db.models import Q, QuerySet
+from django.db.models import Count, Max, Q, QuerySet
+from django.db.models.functions import TruncDate
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
@@ -35,7 +36,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from contests.models import Contest
-from core import account, handles, oauth, recovery, usernames, verification
+from core import account, handles, oauth, recovery, sessions, usernames, verification
 from core.cache import cache_get, cache_set
 from core.models import (
     AnalyticsEvent,
@@ -45,6 +46,7 @@ from core.models import (
     SocialAccount,
     User,
     UsernameHistory,
+    UserSession,
 )
 from core.openapi_docs import crud_summaries
 from core.pagination import StandardPagination, TimeCursorPagination
@@ -54,11 +56,13 @@ from core.serializers import (
     ApiTokenCreateSerializer,
     ApiTokenSerializer,
     ClientLogSerializer,
+    DailyStatsSerializer,
     EmailVerifySerializer,
     LoginSerializer,
     MeSerializer,
     PasswordResetConfirmSerializer,
     PasswordResetRequestSerializer,
+    PresenceSerializer,
     RegisterSerializer,
     SocialLinkSerializer,
     UsernameCheckSerializer,
@@ -68,6 +72,7 @@ from core.tasks import queue, send_email_verify, send_password_reset
 from core.throttling import ResilientScopedRateThrottle
 from judging.models import Attempt
 from problems.models import Problem
+from profiles.titles import user_title
 
 MAX_TOKEN_LIFETIME = timedelta(days=365)
 
@@ -207,6 +212,117 @@ class PlatformStatsView(APIView):
             }
             cache_set("platform-stats", stats, self.CACHE_S)
         return Response(stats)
+
+
+@extend_schema(summary="Kunlik statistika")
+class DailyStatsView(APIView):
+    """The last 14 days, one row per day — the home page's activity chart.
+
+    Three series: accounts registered, distinct users who submitted, and
+    attempts. Imported accounts are left out of `new_users`: they were
+    created by a sync, not by somebody signing up, and one import day would
+    flatten every other day to zero.
+
+    Days are local (`TIME_ZONE`), and a day with nothing still gets a row —
+    a missing day would silently shift the chart's x axis.
+    """
+
+    permission_classes = [AllowAny]
+    authentication_classes: list[Any] = []
+    DAYS = 14
+    CACHE_S = 600
+
+    @extend_schema(responses={200: DailyStatsSerializer(many=True)})
+    def get(self, request: Request) -> Response:
+        rows = cache_get("platform-stats-daily")
+        if rows is None:
+            today = timezone.localdate()
+            first = today - timedelta(days=self.DAYS - 1)
+            since = timezone.make_aware(datetime.combine(first, time.min))
+            joined = dict(
+                User.objects.filter(date_joined__gte=since)
+                .exclude(origin=User.Origin.IMPORTED)
+                .annotate(day=TruncDate("date_joined"))
+                .values_list("day")
+                .annotate(n=Count("pk"))
+            )
+            attempts = {
+                day: (total, users)
+                for day, total, users in Attempt.objects.filter(created_at__gte=since)
+                .annotate(day=TruncDate("created_at"))
+                .values_list("day")
+                .annotate(n=Count("pk"), users=Count("user", distinct=True))
+            }
+            rows = []
+            for offset in range(self.DAYS):
+                day = first + timedelta(days=offset)
+                total, users = attempts.get(day, (0, 0))
+                rows.append(
+                    {
+                        "date": day.isoformat(),
+                        "new_users": joined.get(day, 0),
+                        "active_users": users,
+                        "attempts": total,
+                    }
+                )
+            cache_set("platform-stats-daily", rows, self.CACHE_S)
+        return Response(rows)
+
+
+@extend_schema(summary="Bugun faol foydalanuvchilar")
+class PresenceView(APIView):
+    """Who was here today, most recent first, and who is here now.
+
+    Read from `UserSession`, not `User.last_seen_at`: the Codeforces sync
+    writes that column from somebody's last visit to *Codeforces*, so it
+    would list people who have never opened this site.
+
+    A user who hid `online` in their privacy settings is left out — the
+    profile page already honours that choice (`profiles.public`).
+    """
+
+    permission_classes = [AllowAny]
+    authentication_classes: list[Any] = []
+    LIMIT = 60
+    CACHE_S = 30
+
+    @extend_schema(responses={200: PresenceSerializer})
+    def get(self, request: Request) -> Response:
+        payload = cache_get("presence-today")
+        if payload is None:
+            now = timezone.now()
+            midnight = timezone.make_aware(datetime.combine(timezone.localdate(), time.min))
+            seen = (
+                UserSession.objects.filter(last_seen__gte=midnight, user__is_active=True)
+                .values("user")
+                .annotate(at=Max("last_seen"))
+            )
+            last = {row["user"]: row["at"] for row in seen}
+            users = [
+                user
+                for user in User.objects.filter(pk__in=last)
+                if "online" not in (user.hidden_fields or [])
+            ]
+            users.sort(key=lambda user: last[user.pk], reverse=True)
+            window = timedelta(seconds=sessions.ONLINE_WINDOW)
+            rows = [
+                {
+                    "username": user.username,
+                    "display_name": user.display_name,
+                    "avatar_url": user.avatar_url,
+                    "title": user_title(user),
+                    "last_seen": last[user.pk].isoformat(),
+                    "online": now - last[user.pk] < window,
+                }
+                for user in users
+            ]
+            payload = {
+                "today": len(rows),
+                "online": sum(1 for row in rows if row["online"]),
+                "results": rows[: self.LIMIT],
+            }
+            cache_set("presence-today", payload, self.CACHE_S)
+        return Response(payload)
 
 
 @extend_schema(summary="Faoliyat kalendari")
@@ -722,7 +838,9 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet[User]):
     ordering_fields = [
         "rating_skills",
         "rating_contest",
+        "rating_activity",
         "rating_challenges",
+        "streak_count",
         "solved_count",
         "date_joined",
     ]

@@ -15,6 +15,7 @@ class StaffPostSerializer(serializers.ModelSerializer[Post]):
             "kind",
             "title",
             "summary",
+            "cover_url",
             "body",
             "locale",
             "author",
