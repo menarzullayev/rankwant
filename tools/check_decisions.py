@@ -1990,6 +1990,37 @@ def settings_controls_are_44px() -> str | None:
     return None
 
 
+def dependabot_locks_are_recompiled() -> str | None:
+    """2026-10-05: Dependabot PR'ida API lock'lari avtomatik qayta yasaladi.
+
+    Dependabot `requirements*.txt` ni tahrirlaydi, image esa
+    `requirements.lock` dan quriladi (`uv pip compile`, u bu formatni
+    bilmaydi) ⇒ PR yashil o'tadi, runtime esa o'zgarmaydi.
+
+    Qo'riqlanadigan to'rt narsa:
+    - yechish (resolve) bosqichi yozish huquqisiz: u manba paketni qurishi,
+      ya'ni begona kodni bajarishi mumkin;
+    - lock'lar image bilan bir xil Python uchun (3.12) yasaladi — boshqa
+      versiyada shartli bog'liqliklar (`typing-extensions`) tushib qoladi;
+    - push'dan keyin CI ochiq ishga tushiriladi: workflow tokeni bilan
+      qilingan push CI'ni uyg'otmaydi va PR tekshiruvsiz qolardi.
+    """
+    workflow = read(".github/workflows/dependabot-locks.yml")
+    match = re.search(r"^  compile:\n(.*?)^  commit:\n", workflow, re.S | re.M)
+    if not match:
+        return "dependabot-locks.yml: `compile` va `commit` job'lari topilmadi"
+    if re.search(r"^\s+[a-z-]+: write\s*$", match.group(1), re.M):
+        return "dependabot-locks.yml: `compile` job'ida yozish huquqi bor — begona kod token bilan ishlaydi"
+    if workflow.count("--python-version 3.12") < 2:
+        return "dependabot-locks.yml: lock'lar Python 3.12 uchun yasalmaydi"
+    if "gh workflow run ci.yml" not in workflow:
+        return "dependabot-locks.yml: push'dan keyin CI ishga tushirilmaydi — PR tekshiruvsiz qoladi"
+    for name in ("requirements.lock", "requirements-dev.lock"):
+        if "--python-version 3.12" not in read("apps/api/" + name).split("\n", 2)[1]:
+            return f"apps/api/{name}: lock Python 3.12 uchun yasalmagan (sarlavhaga qarang)"
+    return None
+
+
 def docker_disk_stays_bounded() -> str | None:
     """2026-09-20: log 10m/3, builder GC 5GB, SHA teg yo'q, prune tasdiq'dan keyin.
 
@@ -2751,6 +2782,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("sozlamalar tugmalari 44 px", settings_controls_are_44px),
     ("kirgan foydalanuvchi header'i sig'adi", signed_in_header_fits),
     ("SECRET_KEY standart qiymatsiz", secret_key_has_no_fallback),
+    ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),
     ("kirish sahifasi o'z-o'ziga yetarli", sign_in_page_is_self_contained),
     ("customization invariantlari", customization_invariants_are_written),
