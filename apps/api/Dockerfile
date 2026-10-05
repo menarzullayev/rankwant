@@ -42,7 +42,11 @@ ARG BUILT_AT=unknown
 LABEL org.rankwant.git-sha=$GIT_SHA
 LABEL org.rankwant.built-at=$BUILT_AT
 
-RUN python manage.py collectstatic --noinput || true
+# Settings refuse to load without a secret key (ADR-0044). `collectstatic`
+# signs nothing, so a build-only value is enough — and without it the
+# `|| true` below would swallow the failure and ship an image with no
+# static files.
+RUN DJANGO_SECRET_KEY=build-only-not-a-secret python manage.py collectstatic --noinput || true
 
 # DIQQAT: bu konteynerda foydalanuvchi kodi ISHLAMAYDI.
 # Judge alohida hostda — 06-architecture 🔒 xavfsizlik chegarasi.

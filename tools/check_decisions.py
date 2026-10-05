@@ -1940,6 +1940,29 @@ def signed_in_header_fits() -> str | None:
     return None
 
 
+def secret_key_has_no_fallback() -> str | None:
+    """2026-10-05 (ADR-0044, D5): `DJANGO_SECRET_KEY` siz Django ishga tushmaydi.
+
+    Ma'lum standart sir bilan ko'tarilgan jarayon har sessiya, CSRF va PAT
+    tokenni ommaviy kalit bilan imzolaydi. Qaror 2026-09-29 da qabul
+    qilingan, testi kodga kirgan, qo'riqchining o'zi esa yo'q edi —
+    Nightly shu sabab qizil turardi.
+
+    Ikkinchi yarmi — image qurilishi: `collectstatic` sozlamalarni yuklaydi
+    va `|| true` uning yiqilishini YUTADI, ya'ni kalitsiz qurilgan image
+    statik fayllarsiz, lekin «muvaffaqiyatli» chiqardi.
+    """
+    settings = read("apps/api/config/settings.py")
+    if 'SECRET_KEY = env("DJANGO_SECRET_KEY")\n' not in settings:
+        return "settings.py: `SECRET_KEY` standart qiymatga ega — sirsiz ishga tushadi"
+    if "raise ImproperlyConfigured(" not in settings:
+        return "settings.py: `DJANGO_SECRET_KEY` yo'qligida xato ko'tarilmaydi"
+    dockerfile = read("apps/api/Dockerfile")
+    if not re.search(r"^RUN DJANGO_SECRET_KEY=\S+ python manage\.py collectstatic", dockerfile, re.M):
+        return "apps/api/Dockerfile: `collectstatic` kalitsiz — image statik fayllarsiz quriladi"
+    return None
+
+
 def docker_disk_stays_bounded() -> str | None:
     """2026-09-20: log 10m/3, builder GC 5GB, SHA teg yo'q, prune tasdiq'dan keyin.
 
@@ -2699,6 +2722,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("bugun faol ro'yxati sessiyadan o'qiladi", home_presence_reads_sessions),
     ("sozlamalar: olti bo'lim va 14 kunlik o'chirish", settings_six_sections_and_grace),
     ("kirgan foydalanuvchi header'i sig'adi", signed_in_header_fits),
+    ("SECRET_KEY standart qiymatsiz", secret_key_has_no_fallback),
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),
     ("kirish sahifasi o'z-o'ziga yetarli", sign_in_page_is_self_contained),
     ("customization invariantlari", customization_invariants_are_written),

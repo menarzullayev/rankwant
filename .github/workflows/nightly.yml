@@ -607,6 +607,8 @@ jobs:
           DATABASE_URL: postgres://postgres:postgres@localhost:${{ job.services.postgres.ports['5432'] }}/rankwant_test
           REDIS_URL: redis://localhost:${{ job.services.redis.ports['6379'] }}/0
           CELERY_EAGER: '1'
+          # Settings fail fast without it (ADR-0044); a throwaway value.
+          DJANGO_SECRET_KEY: ci-django-secret
         run: pytest -n 4 --cov --cov-report=term-missing
         working-directory: apps/api
 

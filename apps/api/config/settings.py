@@ -8,6 +8,8 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+from django.core.exceptions import ImproperlyConfigured
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -19,7 +21,16 @@ def env_bool(key: str, default: bool = False) -> bool:
     return env(key, str(default)).lower() in {"1", "true", "yes"}
 
 
-SECRET_KEY = env("DJANGO_SECRET_KEY", "dev-only-not-for-production")
+# No fallback (ADR-0044, decision D5). A known default signs every session,
+# CSRF token and PAT with a public key, so a process that starts without the
+# variable must not start at all. Local runs and tests set a throwaway value;
+# `docker-compose.public.yml` refuses to come up without the real one.
+SECRET_KEY = env("DJANGO_SECRET_KEY")
+if not SECRET_KEY:
+    raise ImproperlyConfigured(
+        "DJANGO_SECRET_KEY is not set. Export it before starting Django; "
+        "for local work any throwaway value will do."
+    )
 DEBUG = env_bool("DJANGO_DEBUG", True)
 
 #: Django admin paneli. Loyihaning O'Z admin UI si bor (`/admin` web'da,
