@@ -18,7 +18,7 @@ export default function AppHeader() {
     (n) => pathname === n.href || pathname.startsWith(`${n.href}/`),
   );
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b rw-divider rw-chrome px-4 md:px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-1.5 border-b rw-divider rw-chrome px-2 min-[360px]:gap-2 min-[360px]:px-3 sm:gap-3 sm:px-4 md:px-6">
       {/* 40x40 — header'dagi boshqa tugmalar bilan bir o'lchamda.
           Ilgari bosiladigan maydon faqat ikonka kattaligida edi: 20x20,
           ya'ni WCAG 2.5.8 (AA) talab qilgan 24x24 dan ham kichik.

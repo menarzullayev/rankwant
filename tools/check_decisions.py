@@ -1922,6 +1922,24 @@ def settings_six_sections_and_grace() -> str | None:
     return None
 
 
+def signed_in_header_fits() -> str | None:
+    """2026-10-05: kirgan foydalanuvchi header'i 320 px dan boshlab sig'adi.
+
+    Kirgan odamning o'ng klasteri mehmonnikidan uzun (qo'ng'iroq, Qvant,
+    streak, hisob tugmasi) va u QISQARMAYDI (`shrink-0`). O'lchandi
+    (lokal, 2026-10-05): 390 px da 541 px kerak edi, 640 px da hujjat
+    751 px, 768 px da 900 px; 1024 px da qidiruv maydoni Qvant ostida
+    qolardi. Uch pog'ona shuni ushlab turadi — biri qaytsa toshish qaytadi.
+    """
+    if 'user ? "hidden xl:flex" : "flex"' not in read("apps/web/src/layout/HeaderActions.tsx"):
+        return "HeaderActions.tsx: kirgan foydalanuvchida uch tugma `xl` dan oldin ko'rinadi — header toshadi"
+    if read("apps/web/src/layout/HeaderStatus.tsx").count("hidden md:flex") != 2:
+        return "HeaderStatus.tsx: Qvant/streak `md` dan oldin ko'rinadi — 640 px da header toshadi"
+    if "truncate xl:inline" not in read("apps/web/src/layout/UserMenu.tsx"):
+        return "UserMenu.tsx: ism `xl` dan oldin ko'rinadi — 768 px da header toshadi"
+    return None
+
+
 def docker_disk_stays_bounded() -> str | None:
     """2026-09-20: log 10m/3, builder GC 5GB, SHA teg yo'q, prune tasdiq'dan keyin.
 
@@ -2680,6 +2698,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("kirgan foydalanuvchi bosh sahifasi — shaxsiy panel", signed_in_home_is_the_dashboard),
     ("bugun faol ro'yxati sessiyadan o'qiladi", home_presence_reads_sessions),
     ("sozlamalar: olti bo'lim va 14 kunlik o'chirish", settings_six_sections_and_grace),
+    ("kirgan foydalanuvchi header'i sig'adi", signed_in_header_fits),
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),
     ("kirish sahifasi o'z-o'ziga yetarli", sign_in_page_is_self_contained),
     ("customization invariantlari", customization_invariants_are_written),

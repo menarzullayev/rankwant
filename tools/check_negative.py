@@ -3208,6 +3208,36 @@ def neg_decisions_settings_section_added() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_header_trio_back_at_md() -> tuple[bool, str]:
+    """The three extra buttons show for a signed-in user from `md` again."""
+    return _decision_broken(
+        "apps/web/src/layout/HeaderActions.tsx",
+        'user ? "hidden xl:flex" : "flex"',
+        'user ? "hidden md:flex" : "flex"',
+        "uch tugma `xl` dan oldin ko'rinadi",
+    )
+
+
+def neg_decisions_header_pills_back_at_sm() -> tuple[bool, str]:
+    """Qvant and streak come back at `sm`."""
+    return _decision_broken(
+        "apps/web/src/layout/HeaderStatus.tsx",
+        "hidden md:flex",
+        "hidden sm:flex",
+        "640 px da header toshadi",
+    )
+
+
+def neg_decisions_header_name_back_at_sm() -> tuple[bool, str]:
+    """The account name is shown from `sm` again."""
+    return _decision_broken(
+        "apps/web/src/layout/UserMenu.tsx",
+        "truncate xl:inline",
+        "truncate sm:inline",
+        "768 px da header toshadi",
+    )
+
+
 def _css_sources_broken(rel: str, old: str, new: str, expect: str) -> tuple[bool, str]:
     """Break one `@source` invariant in `rel`; check_css_sources must catch it."""
     path = ROOT / rel
@@ -4745,6 +4775,10 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/app/(site)/_home/Person.tsx",
     "apps/web/src/app/(site)/_home/TopUsers.tsx",
     "apps/web/src/app/(site)/_home/NewsCarousel.tsx",
+    # Signed-in header (2026-10-05).
+    "apps/web/src/layout/HeaderActions.tsx",
+    "apps/web/src/layout/HeaderStatus.tsx",
+    "apps/web/src/layout/UserMenu.tsx",
     # Settings redesign (2026-10-05).
     "apps/api/config/settings.py",
     "apps/web/src/features/account/components/SettingsShell.tsx",
@@ -8028,6 +8062,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ),
             ("push guard uzilsa tutilsin", neg_decisions_push_guard_unwired),
             ("kirgan foydalanuvchi paneli olib tashlansa tutilsin", neg_decisions_signed_in_home_dropped),
+            ("header uch tugmasi md ga qaytsa tutilsin", neg_decisions_header_trio_back_at_md),
+            ("header Qvant/streak sm ga qaytsa tutilsin", neg_decisions_header_pills_back_at_sm),
+            ("header ismi sm ga qaytsa tutilsin", neg_decisions_header_name_back_at_sm),
             ("sozlamalarda tanlash ro'yxati qaytsa tutilsin", neg_decisions_settings_dropdown_returns),
             ("hisob darhol o'chirilsa tutilsin", neg_decisions_settings_delete_is_immediate),
             ("o'chirish vazifasi jadvaldan tushsa tutilsin", neg_decisions_settings_finalize_unscheduled),

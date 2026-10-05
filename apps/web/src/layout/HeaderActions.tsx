@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 
 import { CustomizerTrigger } from "@/components/customizer/CustomizerTrigger";
+import { useSession } from "@/context/SessionContext";
 import { UpdatesBell } from "@/features/updates";
 import { CUSTOMIZER_ENABLED } from "@/lib/theme/flag";
 
@@ -30,15 +31,25 @@ import UserMenu from "./UserMenu";
 export default function HeaderActions() {
   const pathname = usePathname();
   const auth = pathname === "/login";
+  const { user } = useSession();
 
   return (
-    <div className="ml-auto flex min-w-0 items-center gap-2">
+    <div className="ml-auto flex min-w-0 items-center gap-1 min-[360px]:gap-1.5 sm:gap-2">
       {!auth && <SearchBox />}
-      <div className="relative z-20 flex shrink-0 items-center gap-2">
+      <div className="relative z-20 flex shrink-0 items-center gap-1 min-[360px]:gap-1.5 sm:gap-2">
         <HeaderStatus />
-        <UpdatesBell />
-        {!auth && CUSTOMIZER_ENABLED && <CustomizerTrigger />}
-        {!auth && <ThemeToggle />}
+        {/* Signed in, the cluster also carries the notification bell and the
+            account button, and it does not shrink. Measured at 390 px
+            (2026-10-05): it needed 541 px — the search button sat on top of
+            the bell and the account button was 73 px off screen. Below `xl`
+            these three give way; each has another door (the sidebar's
+            "Changes", the floating appearance tab, the customizer). A guest's
+            header is shorter and keeps them at every width. */}
+        <div className={`items-center gap-1 min-[360px]:gap-1.5 sm:gap-2 ${user ? "hidden xl:flex" : "flex"}`}>
+          <UpdatesBell />
+          {!auth && CUSTOMIZER_ENABLED && <CustomizerTrigger />}
+          {!auth && <ThemeToggle />}
+        </div>
         <LocaleSwitch />
         <UserMenu />
       </div>
