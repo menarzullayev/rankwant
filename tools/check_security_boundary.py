@@ -49,6 +49,9 @@ FORBIDDEN_JUDGE_ENV = ("DATABASE_URL", "DJANGO_SECRET_KEY", "POSTGRES_PASSWORD")
 #: The judge still carries an `S3_SECRET` key — the scoped `judge-ro` user —
 #: so the guard is on the value, not the key.
 ROOT_SECRET_VALUE = "devdevdev"
+#: Since ADR-0044 the root password reaches compose through this variable,
+#: so a judge env that names it carries the root secret just the same.
+ROOT_SECRET_VARIABLE = "MINIO_ROOT_PASSWORD"
 
 #: Every published port must be bound here. The Cloudflare Tunnel is the only
 #: way in; a host-wide binding would bypass the tunnel and the edge rules.
@@ -315,7 +318,10 @@ def main() -> int:
         # Judge KALITI bo'lishi shart (`judge-ro` useri) — taqiqlangan
         # narsa ROOT QIYMATI (A-2, ADR-0028; `check_compose.py` bilan bir
         # qoida, ikki haqiqat manbasi emas — bitta qiymat, ikki qatlam).
-        if ROOT_SECRET_VALUE in _env_values(judge):
+        judge_values = _env_values(judge)
+        if ROOT_SECRET_VALUE in judge_values or any(
+            ROOT_SECRET_VARIABLE in str(value) for value in judge_values
+        ):
             problems.append(
                 "judge env'da root MinIO paroli bor (A-2, ADR-0028) — "
                 "faqat `judge-ro` useri bo'lishi kerak"
