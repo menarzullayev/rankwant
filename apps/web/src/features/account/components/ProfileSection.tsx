@@ -367,7 +367,7 @@ export function CosmeticsCard() {
                   </span>
                 </span>
                 <Button
-                  className="h-9 px-3"
+                  className="h-11 px-4"
                   disabled={item.owned || buy.busy}
                   onClick={() =>
                     buy.run(async () => {
@@ -411,7 +411,7 @@ export function CosmeticsCard() {
             </span>
             <Button
               variant={entry.is_equipped ? "outline" : "primary"}
-              className="h-9 px-3"
+              className="h-11 px-4"
               disabled={action.busy}
               aria-pressed={entry.is_equipped}
               onClick={() =>

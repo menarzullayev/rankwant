@@ -3258,6 +3258,16 @@ def neg_decisions_collectstatic_without_key() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_settings_small_button_returns() -> tuple[bool, str]:
+    """A 36 px button comes back in a settings tab."""
+    return _decision_broken(
+        "apps/web/src/features/account/components/SocialAccounts.tsx",
+        'className="h-11 px-4"',
+        'className="h-9 px-3"',
+        "36 px li tugma qaytgan",
+    )
+
+
 def _css_sources_broken(rel: str, old: str, new: str, expect: str) -> tuple[bool, str]:
     """Break one `@source` invariant in `rel`; check_css_sources must catch it."""
     path = ROOT / rel
@@ -4802,6 +4812,13 @@ _DECISIONS_SANDBOX_FILES = (
     # Secret-key guard (2026-10-05).
     "apps/api/Dockerfile",
     # Settings redesign (2026-10-05).
+    "apps/web/src/features/account/components/SkillsSection.tsx",
+    "apps/web/src/features/account/components/SocialAccounts.tsx",
+    "apps/web/src/features/account/components/CareerSection.tsx",
+    "apps/web/src/features/account/components/TeamsSection.tsx",
+    "apps/web/src/features/account/components/ProfileSection.tsx",
+    "apps/web/src/features/account/components/SecuritySection.tsx",
+    "apps/web/src/features/account/components/AppearanceSection.tsx",
     "apps/api/config/settings.py",
     "apps/web/src/features/account/components/SettingsShell.tsx",
     "apps/web/src/features/account/components/sections.ts",
@@ -8084,6 +8101,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ),
             ("push guard uzilsa tutilsin", neg_decisions_push_guard_unwired),
             ("kirgan foydalanuvchi paneli olib tashlansa tutilsin", neg_decisions_signed_in_home_dropped),
+            ("sozlamalarda kichik tugma qaytsa tutilsin", neg_decisions_settings_small_button_returns),
             ("SECRET_KEY standart qiymati qaytsa tutilsin", neg_decisions_secret_key_fallback_returns),
             ("collectstatic kalitsiz qolsa tutilsin", neg_decisions_collectstatic_without_key),
             ("header uch tugmasi md ga qaytsa tutilsin", neg_decisions_header_trio_back_at_md),

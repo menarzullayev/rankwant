@@ -102,7 +102,7 @@ export function SocialAccounts() {
               {connected.has(p) ? (
                 <Button
                   variant="outline"
-                  className="h-9 px-3"
+                  className="h-11 px-4"
                   busy={busy === p}
                   onClick={() => disconnect(p)}
                 >
@@ -111,7 +111,7 @@ export function SocialAccounts() {
               ) : (
                 <a
                   href={`/api/v1/auth/${p}/start/`}
-                  className="inline-flex h-9 items-center rw-radius-sm border rw-line px-3 text-theme-sm font-medium rw-strong transition rw-hover-bg rw-focus-ring"
+                  className="inline-flex h-11 items-center rw-radius-sm border rw-line px-4 text-theme-sm font-medium rw-strong transition rw-hover-bg rw-focus-ring"
                 >
                   {t(locale, "settings.socialConnect")}
                 </a>
