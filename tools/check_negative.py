@@ -6619,8 +6619,8 @@ def neg_env_example_new_compose_var() -> tuple[bool, str]:
 def neg_env_example_new_setting() -> tuple[bool, str]:
     return _env_example_broken(
         "apps/api/config/settings.py",
-        'SECRET_KEY = env("DJANGO_SECRET_KEY", "dev-only-not-for-production")\n',
-        'SECRET_KEY = env("DJANGO_SECRET_KEY", "dev-only-not-for-production")\nPROBE_SETTING = env("NEW_PROBE_SETTING")\n',
+        'SECRET_KEY = env("DJANGO_SECRET_KEY")\n',
+        'SECRET_KEY = env("DJANGO_SECRET_KEY")\nPROBE_SETTING = env("NEW_PROBE_SETTING")\n',
         "NEW_PROBE_SETTING",
     )
 
