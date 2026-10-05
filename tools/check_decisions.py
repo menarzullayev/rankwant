@@ -1963,6 +1963,33 @@ def secret_key_has_no_fallback() -> str | None:
     return None
 
 
+SETTINGS_CONTROL_FILES = (
+    "apps/web/src/features/account/components/CareerSection.tsx",
+    "apps/web/src/features/account/components/SkillsSection.tsx",
+    "apps/web/src/features/account/components/TeamsSection.tsx",
+    "apps/web/src/features/account/components/ProfileSection.tsx",
+    "apps/web/src/features/account/components/SecuritySection.tsx",
+    "apps/web/src/features/account/components/SocialAccounts.tsx",
+    "apps/web/src/features/account/components/AppearanceSection.tsx",
+)
+
+
+def settings_controls_are_44px() -> str | None:
+    """2026-10-05: sozlamalar tablaridagi tugmalar 44 px dan kichik emas.
+
+    Olti tab eski komponentlarda qolgan edi: 36 px li tugmalar (`h-9`) va
+    32 px li «o'chirish» belgilari (`size-8`). Telefonda bular barmoq
+    uchun kichik nishon (WCAG 2.5.8 — eng kami 24, tavsiya 44).
+    """
+    for rel in SETTINGS_CONTROL_FILES:
+        source = read(rel)
+        if re.search(r"\bh-9\b", source):
+            return f"{rel}: `h-9` — 36 px li tugma qaytgan"
+        if re.search(r"\bsize-8 (?:shrink-0 )?items-center", source):
+            return f"{rel}: `size-8` — 32 px li belgi-tugma qaytgan"
+    return None
+
+
 def dependabot_locks_are_recompiled() -> str | None:
     """2026-10-05: Dependabot PR'ida API lock'lari avtomatik qayta yasaladi.
 
@@ -2756,6 +2783,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("kirgan foydalanuvchi bosh sahifasi — shaxsiy panel", signed_in_home_is_the_dashboard),
     ("bugun faol ro'yxati sessiyadan o'qiladi", home_presence_reads_sessions),
     ("sozlamalar: olti bo'lim va 14 kunlik o'chirish", settings_six_sections_and_grace),
+    ("sozlamalar tugmalari 44 px", settings_controls_are_44px),
     ("kirgan foydalanuvchi header'i sig'adi", signed_in_header_fits),
     ("SECRET_KEY standart qiymatsiz", secret_key_has_no_fallback),
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),

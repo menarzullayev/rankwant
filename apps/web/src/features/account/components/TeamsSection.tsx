@@ -92,7 +92,7 @@ function TeamCard({ team, onChange }: { team: Team; onChange: () => void }) {
           {owner && (
             <Button
               variant="outline"
-              className="h-9 px-3"
+              className="h-11 px-4"
               title={t(locale, "settings.teamRefreshHint")}
               disabled={action.busy}
               onClick={() => act(() => postJson(`/teams/${team.id}/refresh-code/`, {}))}
@@ -113,7 +113,7 @@ function TeamCard({ team, onChange }: { team: Team; onChange: () => void }) {
         {owner && (
           <Button
             variant="outline"
-            className="h-9 px-3 rw-bad-ink"
+            className="h-11 px-4 rw-bad-ink"
             disabled={action.busy}
             onClick={() => {
               void (async () => {

@@ -111,7 +111,7 @@ function SkillsCard() {
                   type="button"
                   onClick={() => setEdited(rows.filter((_, j) => j !== i))}
                   aria-label={`${t(locale, "settings.remove")}: ${label(row.skill)}`}
-                  className="flex size-8 shrink-0 items-center justify-center rw-radius-sm rw-dim transition rw-hover-bg rw-focus-ring"
+                  className="flex size-11 shrink-0 items-center justify-center rw-radius-sm rw-dim transition rw-hover-bg rw-focus-ring"
                 >
                   <Icon name="nav.close" className="size-4" />
                 </button>
@@ -192,7 +192,7 @@ function TechCard() {
                           : [...current, tech.slug],
                       )
                     }
-                    className={`flex h-9 items-center gap-2 rw-radius-sm border px-3 text-theme-sm transition rw-focus-ring disabled:opacity-50 ${
+                    className={`flex h-11 items-center gap-2 rw-radius-sm border px-3 text-theme-sm transition rw-focus-ring disabled:opacity-50 ${
                       on ? "rw-accent-line rw-accent-soft" : "rw-line rw-dim-2 rw-hover-bg"
                     }`}
                   >
@@ -261,12 +261,12 @@ function BadgesCard() {
         <>
           <ul className="mt-4 space-y-4">
             {rows.map((row, i) => (
-              <li key={i} className="relative rw-radius border rw-line p-4 pr-12">
+              <li key={i} className="relative rw-radius border rw-line p-4 pr-14">
                 <button
                   type="button"
                   onClick={() => setEdited(rows.filter((_, j) => j !== i))}
                   aria-label={`${t(locale, "settings.remove")}: ${row.text}`}
-                  className="absolute right-2 top-2 flex size-8 items-center justify-center rw-radius-sm rw-dim transition rw-hover-bg rw-focus-ring"
+                  className="absolute right-1 top-1 flex size-11 items-center justify-center rw-radius-sm rw-dim transition rw-hover-bg rw-focus-ring"
                 >
                   <Icon name="nav.close" className="size-4" />
                 </button>

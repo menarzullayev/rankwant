@@ -64,12 +64,12 @@ function RowsCard<T extends CareerRow>({
         <>
           <ul className="space-y-4">
             {rows.map((row, i) => (
-              <li key={i} className="relative rw-radius border rw-line p-4 pr-12">
+              <li key={i} className="relative rw-radius border rw-line p-4 pr-14">
                 <button
                   type="button"
                   onClick={() => setEdited(rows.filter((_, j) => j !== i))}
                   aria-label={`${t(locale, "settings.remove")}: ${cell(row, first)}`}
-                  className="absolute right-2 top-2 flex size-8 items-center justify-center rw-radius-sm rw-dim transition rw-hover-bg rw-focus-ring"
+                  className="absolute right-1 top-1 flex size-11 items-center justify-center rw-radius-sm rw-dim transition rw-hover-bg rw-focus-ring"
                 >
                   <Icon name="nav.close" className="size-4" />
                 </button>
