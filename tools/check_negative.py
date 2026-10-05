@@ -3840,8 +3840,8 @@ def neg_decisions_types_node_26() -> tuple[bool, str]:
     """
     return _decision_broken(
         "apps/web/package.json",
-        '"@types/node": "22.20.4"',
-        '"@types/node": "26.6.1"',
+        '"@types/node": "22.',
+        '"@types/node": "26.',
         "@types/node runtime bilan",
     )
 
