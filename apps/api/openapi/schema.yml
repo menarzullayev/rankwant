@@ -3190,10 +3190,45 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedNotificationList'
           description: ''
+  /api/v1/notifications/{id}/:
+    delete:
+      operationId: notifications_destroy
+      summary: bildirishnomani o'chirish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this notification.
+        required: true
+      tags:
+      - notifications
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/notifications/clear-read/:
+    post:
+      operationId: notifications_clear_read_create
+      summary: O'qilganlarni o'chirish
+      tags:
+      - notifications
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationUpdated'
+          description: ''
   /api/v1/notifications/mark-read/:
     post:
       operationId: notifications_mark_read_create
-      summary: Hammasini o'qilgan deb belgilash
+      summary: O'qilgan deb belgilash
       tags:
       - notifications
       requestBody:
@@ -3212,7 +3247,71 @@ paths:
       - cookieAuth: []
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationUpdated'
+          description: ''
+  /api/v1/notifications/mark-seen/:
+    post:
+      operationId: notifications_mark_seen_create
+      summary: Qo'ng'iroq ochildi — hammasi ko'rilgan
+      tags:
+      - notifications
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationUpdated'
+          description: ''
+  /api/v1/notifications/mark-unread/:
+    post:
+      operationId: notifications_mark_unread_create
+      summary: O'qilmagan qilish
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationIds'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NotificationIds'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NotificationIds'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationUpdated'
+          description: ''
+  /api/v1/notifications/summary/:
+    get:
+      operationId: notifications_summary_retrieve
+      summary: Qo'ng'iroq va tablar uchun sonlar
+      tags:
+      - notifications
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationSummary'
+          description: ''
   /api/v1/notifications/unread_count/:
     get:
       operationId: notifications_unread_count_retrieve
@@ -14032,6 +14131,10 @@ components:
           maxLength: 200
         body:
           type: string
+        code:
+          type: string
+          maxLength: 48
+        params: {}
         ref_type:
           type: string
           maxLength: 24
@@ -14051,6 +14154,16 @@ components:
       - is_read
       - kind
       - title
+    NotificationIds:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: integer
+          maxItems: 200
+      required:
+      - ids
     NotificationKindEnum:
       enum:
       - rating_changed
@@ -14071,6 +14184,33 @@ components:
         * `duel` - Duel
         * `hack` - Hack
         * `system` - Tizim
+    NotificationSummary:
+      type: object
+      properties:
+        total:
+          type: integer
+        unread:
+          type: integer
+        unseen:
+          type: integer
+          description: Unread and not yet shown in the bell
+        kinds:
+          type: array
+          items:
+            type: string
+          description: Kinds present
+      required:
+      - kinds
+      - total
+      - unread
+      - unseen
+    NotificationUpdated:
+      type: object
+      properties:
+        updated:
+          type: integer
+      required:
+      - updated
     OrganizerContest:
       type: object
       description: |-

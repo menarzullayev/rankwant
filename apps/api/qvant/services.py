@@ -69,8 +69,8 @@ def on_first_accepted(user: User) -> dict[str, object]:
         notify(
             user,
             Notification.Kind.STREAK_MILESTONE,
-            f"{current} kunlik streak!",
-            body="Streak yutug'i uchun Qvant qo'shildi.",
+            code="streak",
+            params={"days": current},
             ref_type="streak",
             ref_id=str(current),
         )

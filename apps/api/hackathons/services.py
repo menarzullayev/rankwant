@@ -40,7 +40,9 @@ def score(judge: User, entry: HackathonSubmission, value: int, feedback: str = "
     notify(
         entry.user,
         Notification.Kind.SYSTEM,
-        f"Hackathon score: {value}/100",
+        code="hackathon_scored",
+        params={"score": value},
+        # The judge's own words — shown as written, in every language.
         body=feedback[:200],
         ref_type="hackathon",
         ref_id=entry.hackathon.slug,

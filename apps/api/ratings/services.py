@@ -99,12 +99,12 @@ def recalc_skills(
             notify(
                 user,
                 Notification.Kind.PROBLEM_RERATED,
-                f"Skills reytingingiz {new_value - before:+d} ga o'zgardi",
-                body=(
-                    f"Siz yechgan masala qayta baholandi. "
-                    f"Skills: {before} → {new_value}. Bu sizning harakatingiz "
-                    f"emas — masala qiyinligi statistika asosida yangilandi."
-                ),
+                code="problem_rerated",
+                params={
+                    "delta": f"{new_value - before:+d}",
+                    "before": before,
+                    "after": new_value,
+                },
                 ref_type="problem",
                 ref_id=ref_id,
             )
@@ -303,6 +303,7 @@ def apply_contest_ratings(contest) -> int:  # type: ignore[no-untyped-def]
     seeds = formulas.contest_seeds(ratings)
 
     from notifications.models import Notification
+    from notifications.services import announce, compose
 
     # 10 000 ishtirokchida qatorma-qator yozish 30 000 so'rov beradi va
     # ularning hammasi BITTA tranzaksiyada 10 000 user qatorini qulflab
@@ -339,11 +340,17 @@ def apply_contest_ratings(contest) -> int:  # type: ignore[no-untyped-def]
                 )
             )
         notes.append(
-            Notification(
-                user=user,
-                kind=Notification.Kind.CONTEST_RESULT,
-                title=f"{contest.title}: {standing.rank}-o'rin, reyting {after - before:+d}",
-                body=f"Contests reytingi: {before} → {after}",
+            compose(
+                user,
+                Notification.Kind.CONTEST_RESULT,
+                code="contest_result",
+                params={
+                    "contest": contest.title,
+                    "rank": standing.rank,
+                    "delta": f"{after - before:+d}",
+                    "before": before,
+                    "after": after,
+                },
                 ref_type="contest",
                 ref_id=contest.slug,
             )
@@ -358,7 +365,7 @@ def apply_contest_ratings(contest) -> int:  # type: ignore[no-untyped-def]
 
     activity.record_ratings(histories)
     try:
-        Notification.objects.bulk_create(notes, batch_size=500)
+        announce(Notification.objects.bulk_create(notes, batch_size=500))
     except Exception:
         # Bildirishnoma reytingni ushlab qolmasligi kerak (notifications.notify).
         log.exception("contest %s natijalari e'lon qilinmadi", contest.slug)

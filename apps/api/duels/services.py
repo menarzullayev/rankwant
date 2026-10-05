@@ -108,8 +108,12 @@ def accept(opponent: User, duel: Duel) -> Duel:
     notify(
         duel.challenger,
         Notification.Kind.DUEL,
-        f"{opponent.username} chaqirig'ingizni qabul qildi",
-        body=f"«{duel.title}» {timezone.localtime(duel.start_at):%d.%m %H:%M} da boshlanadi.",
+        code="duel_accepted",
+        params={
+            "user": opponent.username,
+            "duel": duel.title,
+            "start_at": duel.start_at.isoformat(),
+        },
         ref_type="duel",
         ref_id=duel.slug,
     )
@@ -145,8 +149,8 @@ def staff_cancel(duel: Duel) -> Duel:
             notify(
                 user,
                 Notification.Kind.DUEL,
-                "Duel administrator tomonidan bekor qilindi",
-                body=f"«{duel.title}» o'tkazilmaydi.",
+                code="duel_cancelled",
+                params={"duel": duel.title},
                 ref_type="duel",
                 ref_id=duel.slug,
             )
@@ -243,12 +247,18 @@ def finalize(duel: Duel) -> bool:
     from qvant.models import QvantTransaction
 
     for user in (a, b):
-        outcome = "durang" if winner is None else ("g'alaba" if winner == user else "mag'lubiyat")
+        outcome = "duel_draw" if winner is None else ("duel_won" if winner == user else "duel_lost")
         notify(
             user,
             Notification.Kind.DUEL,
-            f"Duel tugadi: {outcome}",
-            body=f"«{duel.title}» — {a.username} {a_solved} : {b_solved} {b.username}",
+            code=outcome,
+            params={
+                "duel": duel.title,
+                "a": a.username,
+                "a_solved": a_solved,
+                "b": b.username,
+                "b_solved": b_solved,
+            },
             ref_type="duel",
             ref_id=duel.slug,
         )
