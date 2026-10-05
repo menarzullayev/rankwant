@@ -14,6 +14,31 @@ whole combination in one click. The result is stored on the account, so it
 follows the user to another device, and on the device, so it applies before
 hydration without a flash.
 
+## Panel layout (2026-10-05)
+
+The Appearance tab reads top to bottom:
+
+1. **Quick row** — mode, style (four chips and «All»), accent (seven
+   swatches and the style's own colour), text size. No accordion.
+2. **Team templates** — eight cards, always visible. A card's preview is
+   drawn from the style's own tokens (`data-style` on the preview box),
+   so it cannot drift from what the template applies.
+3. **More** — the groups of D61, in this order: colour and style, type,
+   layout, my templates. A closed group shows its current value.
+4. **Advanced** — the six kit families (D48, D51), last and set apart.
+
+Still five groups, and a closed one still unmounts (CUST-100). What
+changed from D61 and D65: every group may be closed, and a new browser
+tab starts that way — the quick row and the templates are the first
+screen. `rw:cz-group` stores `none` for that state.
+
+Settings → Appearance shows a summary of what is applied (template,
+mode, style, accent, text size) and opens the panel. It does not edit
+appearance: the panel stays the only writer.
+
+On a phone the panel is a sheet with two stops (55% and 90%), reached
+from the account menu; on a touch screen its targets are 44 px.
+
 ## Kit-family writer (D48)
 
 Contestant **Appearance → Interfeys** is the only UI that writes kit-family

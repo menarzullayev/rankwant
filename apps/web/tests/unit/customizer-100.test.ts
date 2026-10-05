@@ -6,7 +6,13 @@ import { describe, expect, it } from "vitest";
 
 import { Group } from "@/components/customizer/Group";
 import { KIT_FAMILY_KEYS, LAYOUT_CHIP_KEYS } from "@/components/customizer/chrome";
-import { clampGroup, DEFAULT_GROUP, GROUP_SESSION_KEY } from "@/components/customizer/group-session";
+import {
+  clampGroup,
+  DEFAULT_GROUP,
+  GROUP_SESSION_KEY,
+  readGroup,
+  writeGroup,
+} from "@/components/customizer/group-session";
 import { clampTab, DEFAULT_TAB, TAB_SESSION_KEY } from "@/components/customizer/tab-session";
 import { nextTab } from "@/components/customizer/tabs";
 
@@ -106,6 +112,56 @@ describe("CUST-100 contestant customizer", () => {
     expect(appearance.indexOf("<VerdictSection")).toBeGreaterThan(systemAt);
     expect(appearance.indexOf("<IconPackSection")).toBeGreaterThan(systemAt);
     expect(appearance).toContain("D61");
+  });
+
+  it("puts the quick row and the templates above every group", () => {
+    const quickAt = appearance.indexOf("data-cz-quick");
+    const templatesAt = appearance.indexOf("<TemplatesSection />");
+    const firstGroupAt = appearance.indexOf("<Group");
+    expect(quickAt).toBeGreaterThan(-1);
+    expect(templatesAt).toBeGreaterThan(quickAt);
+    expect(firstGroupAt).toBeGreaterThan(templatesAt);
+    // Mode, style, accent, size - in the quick row, before the templates.
+    for (const part of ["<ThemeSection />", "<QuickStyleSection />", "<AccentSwatches compact />", "<QuickSizeSection />"]) {
+      const at = appearance.indexOf(part);
+      expect(at).toBeGreaterThan(quickAt);
+      expect(at).toBeLessThan(templatesAt);
+    }
+    // Kit families come last, as the advanced group.
+    expect(appearance.indexOf('id="system"')).toBeGreaterThan(appearance.indexOf('id="look"'));
+    expect(appearance).toContain("customizer.group.advanced");
+  });
+
+  it("draws a template card from the style's own tokens", () => {
+    expect(appearance).toContain("data-style={item.style}");
+    expect(appearance).toContain("data-cz-preview");
+    expect(appearance).not.toMatch(/#[0-9a-fA-F]{6}/);
+  });
+
+  it("lets every group be closed, and starts a new tab that way", () => {
+    expect(readGroup()).toBeNull();
+    writeGroup("layout");
+    expect(readGroup()).toBe("layout");
+    writeGroup(null);
+    expect(readGroup()).toBeNull();
+  });
+
+  it("shows what is inside a closed group", () => {
+    const closed = renderToStaticMarkup(
+      createElement(Group, { id: "type", title: "Type", summary: "Inter · 100%", open: false, onOpen() {} }),
+    );
+    expect(closed).toContain("Inter · 100%");
+    const opened = renderToStaticMarkup(
+      createElement(Group, { id: "type", title: "Type", summary: "Inter · 100%", open: true, onOpen() {} }),
+    );
+    expect(opened).not.toContain("Inter · 100%");
+  });
+
+  it("summarises the applied appearance in settings without editing it", () => {
+    expect(settings).toContain("data-appearance-summary");
+    expect(settings).toContain("settings.currentTemplate");
+    expect(settings).not.toContain("setAppearance");
+    expect(settings).not.toContain("applyTemplate");
   });
 
   it("labels swatches; demos that stay in the panel skip the tab order", () => {

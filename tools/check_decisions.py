@@ -2052,6 +2052,33 @@ def customizer_reachable_on_a_phone() -> str | None:
     return None
 
 
+def customizer_quick_row_first() -> str | None:
+    """2026-10-05: sozlagichda tez qator va shablonlar akkordeonlardan oldin.
+
+    Eng ko'p ishlatiladigan to'rt boshqaruv (rejim, uslub, rang, matn
+    o'lchami) har doim ko'rinadi; nozik sozlamalar (kit oilalari) oxirida.
+    Sozlamalar sahifasi faqat xulosa ko'rsatadi — yozish yo'li bitta.
+    """
+    tab = read("apps/web/src/components/customizer/AppearanceTab.tsx")
+    quick = tab.find("data-cz-quick")
+    templates = tab.find("<TemplatesSection />")
+    group = tab.find("<Group")
+    if quick < 0 or not quick < templates < group:
+        return "AppearanceTab.tsx: tez qator va shablonlar akkordeonlardan oldin emas"
+    if tab.find('id="system"') < tab.find('id="look"'):
+        return "AppearanceTab.tsx: «Kengaytirilgan» oxirida emas — nozik sozlamalar asosiy oqimga qaytgan"
+    if "data-style={item.style}" not in tab:
+        return "AppearanceTab.tsx: shablon preview'i uslub tokenlaridan chizilmaydi"
+    if "let memory: GroupId | null = null;" not in read("apps/web/src/components/customizer/group-session.ts"):
+        return "group-session.ts: yangi tab yopiq guruhlar bilan boshlanmaydi"
+    settings = read("apps/web/src/features/account/components/AppearanceSection.tsx")
+    if "data-appearance-summary" not in settings:
+        return "AppearanceSection.tsx: sozlamalarda joriy ko'rinish xulosasi yo'q"
+    if "setAppearance" in settings or "applyTemplate" in settings:
+        return "AppearanceSection.tsx: sozlamalar sahifasi ko'rinishni o'zi yozadi — ikkinchi yozish yo'li"
+    return None
+
+
 def docker_disk_stays_bounded() -> str | None:
     """2026-09-20: log 10m/3, builder GC 5GB, SHA teg yo'q, prune tasdiq'dan keyin.
 
@@ -2812,6 +2839,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("sozlamalar: olti bo'lim va 14 kunlik o'chirish", settings_six_sections_and_grace),
     ("sozlamalar tugmalari 44 px", settings_controls_are_44px),
     ("sozlagich telefonda yaqin", customizer_reachable_on_a_phone),
+    ("sozlagich: tez qator birinchi", customizer_quick_row_first),
     ("kirgan foydalanuvchi header'i sig'adi", signed_in_header_fits),
     ("SECRET_KEY standart qiymatsiz", secret_key_has_no_fallback),
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),

@@ -3358,6 +3358,46 @@ def neg_decisions_customizer_touch_rule_orphaned() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_customizer_quick_row_dropped() -> tuple[bool, str]:
+    """The quick row loses its hook: the controls go back into accordions."""
+    return _decision_broken(
+        "apps/web/src/components/customizer/AppearanceTab.tsx",
+        "        data-cz-quick\n",
+        "",
+        "akkordeonlardan oldin emas",
+    )
+
+
+def neg_decisions_customizer_preview_hardcoded() -> tuple[bool, str]:
+    """A template card stops taking its colours from the style."""
+    return _decision_broken(
+        "apps/web/src/components/customizer/AppearanceTab.tsx",
+        "data-style={item.style}",
+        "",
+        "uslub tokenlaridan chizilmaydi",
+    )
+
+
+def neg_decisions_customizer_group_opens_by_default() -> tuple[bool, str]:
+    """A new tab opens a group again and pushes the quick row's neighbours down."""
+    return _decision_broken(
+        "apps/web/src/components/customizer/group-session.ts",
+        "let memory: GroupId | null = null;",
+        "let memory: GroupId | null = DEFAULT_GROUP;",
+        "yopiq guruhlar bilan boshlanmaydi",
+    )
+
+
+def neg_decisions_settings_writes_appearance() -> tuple[bool, str]:
+    """The settings page grows its own appearance writer."""
+    return _decision_broken(
+        "apps/web/src/features/account/components/AppearanceSection.tsx",
+        "  const { setOpen, appearance, template } = useCustomizer();",
+        "  const { setOpen, appearance, template, setAppearance } = useCustomizer();",
+        "ikkinchi yozish yo'li",
+    )
+
+
 def neg_decisions_deplocks_wrong_python() -> tuple[bool, str]:
     """A lock compiled for another Python drops conditional dependencies."""
     return _decision_broken(
@@ -4912,6 +4952,8 @@ _DECISIONS_SANDBOX_FILES = (
     # Secret-key guard (2026-10-05).
     "apps/api/Dockerfile",
     # Customizer on a phone (2026-10-05).
+    "apps/web/src/components/customizer/AppearanceTab.tsx",
+    "apps/web/src/components/customizer/group-session.ts",
     "apps/web/src/components/customizer/Customizer.tsx",
     "apps/web/src/app/globals.css",
     # Settings redesign (2026-10-05).
@@ -8208,6 +8250,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("lock yechish job'i yoza olsa tutilsin", neg_decisions_deplocks_compile_can_write),
             ("lock push'dan keyin CI yurmasa tutilsin", neg_decisions_deplocks_ci_not_started),
             ("lock boshqa Python uchun yasalsa tutilsin", neg_decisions_deplocks_wrong_python),
+            ("tez qator olib tashlansa tutilsin", neg_decisions_customizer_quick_row_dropped),
+            ("shablon preview'i tokensiz qolsa tutilsin", neg_decisions_customizer_preview_hardcoded),
+            ("guruh yana ochiq boshlansa tutilsin", neg_decisions_customizer_group_opens_by_default),
+            ("sozlamalar ko'rinishni yozsa tutilsin", neg_decisions_settings_writes_appearance),
             ("menyudan sozlagich qatori olinsa tutilsin", neg_decisions_customizer_row_dropped),
             ("mobil varaq bir pog'onaga qaytsa tutilsin", neg_decisions_customizer_sheet_one_stop),
             ("44 px qoidasi ilgaksiz qolsa tutilsin", neg_decisions_customizer_touch_rule_orphaned),
