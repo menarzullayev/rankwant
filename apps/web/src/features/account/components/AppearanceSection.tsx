@@ -94,7 +94,7 @@ export function AppearanceSection() {
             />
             <Button
               variant="outline"
-              className="h-9 px-3"
+              className="h-11 px-4"
               onClick={() => playSuccess({ force: true })}
             >
               {t(locale, "settings.soundTry")}

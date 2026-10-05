@@ -3258,6 +3258,16 @@ def neg_decisions_collectstatic_without_key() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_settings_small_button_returns() -> tuple[bool, str]:
+    """A 36 px button comes back in a settings tab."""
+    return _decision_broken(
+        "apps/web/src/features/account/components/SocialAccounts.tsx",
+        'className="h-11 px-4"',
+        'className="h-9 px-3"',
+        "36 px li tugma qaytgan",
+    )
+
+
 def neg_decisions_deplocks_compile_can_write() -> tuple[bool, str]:
     """The job that resolves packages is handed a write token."""
     return _decision_broken(
@@ -4832,6 +4842,13 @@ _DECISIONS_SANDBOX_FILES = (
     # Secret-key guard (2026-10-05).
     "apps/api/Dockerfile",
     # Settings redesign (2026-10-05).
+    "apps/web/src/features/account/components/SkillsSection.tsx",
+    "apps/web/src/features/account/components/SocialAccounts.tsx",
+    "apps/web/src/features/account/components/CareerSection.tsx",
+    "apps/web/src/features/account/components/TeamsSection.tsx",
+    "apps/web/src/features/account/components/ProfileSection.tsx",
+    "apps/web/src/features/account/components/SecuritySection.tsx",
+    "apps/web/src/features/account/components/AppearanceSection.tsx",
     "apps/api/config/settings.py",
     "apps/web/src/features/account/components/SettingsShell.tsx",
     "apps/web/src/features/account/components/sections.ts",
@@ -8114,6 +8131,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ),
             ("push guard uzilsa tutilsin", neg_decisions_push_guard_unwired),
             ("kirgan foydalanuvchi paneli olib tashlansa tutilsin", neg_decisions_signed_in_home_dropped),
+            ("sozlamalarda kichik tugma qaytsa tutilsin", neg_decisions_settings_small_button_returns),
             ("lock yechish job'i yoza olsa tutilsin", neg_decisions_deplocks_compile_can_write),
             ("lock push'dan keyin CI yurmasa tutilsin", neg_decisions_deplocks_ci_not_started),
             ("lock boshqa Python uchun yasalsa tutilsin", neg_decisions_deplocks_wrong_python),
