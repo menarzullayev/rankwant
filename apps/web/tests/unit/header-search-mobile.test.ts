@@ -20,6 +20,6 @@ describe("H3 mobile search-icon", () => {
     expect(search).not.toMatch(/w-64/);
     expect(search).toContain("fixed inset-x-3");
     expect(search).not.toContain("} relative md:block");
-    expect(search).toContain('className="pointer-events-none"');
+    expect(search).toContain('className="pointer-events-none size-5"');
   });
 });
