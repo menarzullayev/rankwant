@@ -87,10 +87,10 @@ export default function UserMenu() {
         className="flex h-10 items-center gap-2 rw-radius-sm border rw-line px-3 text-theme-sm font-medium rw-strong transition rw-hover-bg"
       >
         <Icon name="user.profile" className="size-4 shrink-0" />
-        <span className="hidden max-w-[8rem] truncate sm:inline">{name}</span>
+        <span className="hidden max-w-[8rem] truncate xl:inline">{name}</span>
         <Icon
           name="nav.expandDown"
-          className={`size-4 shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`hidden size-4 shrink-0 transition-transform sm:block ${open ? "rotate-180" : ""}`}
         />
       </button>
       {open && (

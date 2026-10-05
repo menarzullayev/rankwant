@@ -42,12 +42,12 @@ export default function HeaderStatus() {
 
   return (
     <div className="flex items-center gap-2">
-      <IntentLink href="/qvant" className={`${pill} hidden sm:flex`} title="Qvant">
+      <IntentLink href="/qvant" className={`${pill} hidden md:flex`} title="Qvant">
         <Icon name="shop.coin" className="size-4 rw-accent-ink" />
         {balance ?? "…"}
       </IntentLink>
       <span
-        className={`${pill} hidden sm:flex`}
+        className={`${pill} hidden md:flex`}
         title={`${user.streak_count} ${t(locale, "header.streak")}`}
       >
         <Icon name="ranking.streak" className="size-4 rw-warn-ink" />
