@@ -154,7 +154,10 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           read -r -a FILES <<< "$GENERATED"
           git add -- "${FILES[@]}"
-          git commit -m "chore(deps): recompile the API locks"
+          # `[dependabot skip]`: without it Dependabot treats the branch as
+          # edited by someone else and stops rebasing it; with it, it
+          # force-pushes over this commit and this workflow runs again.
+          git commit -m "chore(deps): recompile the API locks" -m "[dependabot skip]"
           git push origin "HEAD:${BRANCH}"
       - name: Start CI on the new commit
         env:

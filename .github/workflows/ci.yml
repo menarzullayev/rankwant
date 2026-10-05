@@ -56,12 +56,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 2
     outputs:
-      api: ${{ steps.filter.outputs.api }}
-      web: ${{ steps.filter.outputs.web }}
-      judge: ${{ steps.filter.outputs.judge }}
-      code: ${{ steps.filter.outputs.code }}
-      tools: ${{ steps.filter.outputs.tools }}
-      tools_node: ${{ steps.filter.outputs.tools_node }}
+      # A manual run with `run_all` answers for every path. The input used
+      # to be declared and never read: the jobs started, but each step
+      # gated on a path output was skipped, so the web job ran its
+      # negative tests without the build they measure (2026-10-05).
+      api: ${{ steps.filter.outputs.api == 'true' || (github.event_name == 'workflow_dispatch' && inputs.run_all) }}
+      web: ${{ steps.filter.outputs.web == 'true' || (github.event_name == 'workflow_dispatch' && inputs.run_all) }}
+      judge: ${{ steps.filter.outputs.judge == 'true' || (github.event_name == 'workflow_dispatch' && inputs.run_all) }}
+      code: ${{ steps.filter.outputs.code == 'true' || (github.event_name == 'workflow_dispatch' && inputs.run_all) }}
+      tools: ${{ steps.filter.outputs.tools == 'true' || (github.event_name == 'workflow_dispatch' && inputs.run_all) }}
+      tools_node: ${{ steps.filter.outputs.tools_node == 'true' || (github.event_name == 'workflow_dispatch' && inputs.run_all) }}
     steps:
       - uses: actions/checkout@v7
       - uses: dorny/paths-filter@v4
