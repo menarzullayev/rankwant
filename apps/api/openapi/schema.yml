@@ -4858,8 +4858,32 @@ paths:
   /api/v1/search/:
     get:
       operationId: search_retrieve
-      description: Header qidiruvi — har turdan bir nechta natija, tez.
+      description: |-
+        Site search — the palette and the results page read the same endpoint.
+
+        Without `type` the answer is the top few of every type that matched;
+        with it, one page of that type. Either way `counts` covers all types.
+        The engine and its ranking live in `core.search`.
       summary: Global qidiruv
+      parameters:
+      - in: query
+        name: limit
+        schema:
+          type: integer
+      - in: query
+        name: offset
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+        description: Query, at least two characters
+      - in: query
+        name: type
+        schema:
+          type: string
+        description: all (default) or one result type
       tags:
       - search
       security:
@@ -4868,7 +4892,11 @@ paths:
       - {}
       responses:
         '200':
-          description: Qidiruv natijalari
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+          description: ''
   /api/v1/skills/catalog/:
     get:
       operationId: skills_catalog_list
@@ -18078,6 +18106,84 @@ components:
       description: |-
         * `acm` - ACM/ICPC
         * `ioi` - IOI
+    SearchGroup:
+      type: object
+      properties:
+        type:
+          type: string
+        count:
+          type: integer
+        fuzzy:
+          type: boolean
+          description: Nothing matched exactly; these are near misses
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchHit'
+      required:
+      - count
+      - fuzzy
+      - results
+      - type
+    SearchHit:
+      type: object
+      description: One search result. Only `type`, `kind`, `key` and `title` are always
+        there.
+      properties:
+        type:
+          type: string
+          description: problem, user, topic, contest, learn or news
+        kind:
+          type: string
+        key:
+          type: string
+          description: Slug, username or id — whatever the page URL takes
+        title:
+          type: string
+        subtitle:
+          type: string
+        title_ru:
+          type: string
+        title_en:
+          type: string
+        code:
+          type: integer
+          nullable: true
+        meta:
+          type: integer
+          description: Difficulty, rating or minutes
+        date:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - key
+      - kind
+      - title
+      - type
+    SearchResponse:
+      type: object
+      properties:
+        q:
+          type: string
+        type:
+          type: string
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchGroup'
+        counts:
+          type: object
+          additionalProperties:
+            type: integer
+        total:
+          type: integer
+      required:
+      - counts
+      - groups
+      - q
+      - total
+      - type
     SectionEnum:
       enum:
       - core

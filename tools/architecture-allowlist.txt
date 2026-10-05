@@ -17,7 +17,7 @@
 # (arena/services.py:15, judging/serializers.py:8-9, ratings/services.py:12,284,371,
 # classroom/serializers.py:8), to'liq skan esa 111 ta topdi — hammasi shu yerda.
 #
-# jami: 112
+# jami: 111
 
 arena/services.py:quizzes.models
 arena/services.py:qvant.models
@@ -64,7 +64,6 @@ core/staff_views.py:qvant.models
 core/tasks.py:notifications.models
 core/usernames.py:qvant.models
 core/views.py:arena.models
-core/views.py:content.models
 core/views.py:contests.models
 core/views.py:duels.models
 core/views.py:hackathons.models

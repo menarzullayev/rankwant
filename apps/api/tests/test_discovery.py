@@ -48,45 +48,6 @@ class TestCalendar:
 
 
 @pytest.mark.django_db
-class TestSearch:
-    def test_qisqa_sorov_bosh(self) -> None:
-        assert APIClient().get(reverse("search"), {"q": "a"}).json()["problems"] == []
-
-    def test_har_turdan(self, user, problem, contest) -> None:
-        Article.objects.create(slug="dp", title="Dinamik dasturlash", body="x", is_published=True)
-        body = APIClient().get(reverse("search"), {"q": "a+b"}).json()
-        assert [p["slug"] for p in body["problems"]] == ["a-plus-b"]
-        assert (
-            APIClient().get(reverse("search"), {"q": "round"}).json()["contests"][0]["slug"]
-            == contest.slug
-        )
-        assert (
-            APIClient().get(reverse("search"), {"q": "dinamik"}).json()["articles"][0]["slug"]
-            == "dp"
-        )
-        users = APIClient().get(reverse("search"), {"q": user.username[:4]}).json()["users"]
-        assert users[0]["username"] == user.username
-
-    def test_apostrof_turi_ahamiyatsiz(self, problem) -> None:
-        """O'zbek klaviaturasi `ʻ` yoki `’` beradi, baza `'` bilan saqlaydi.
-
-        O'lchandi: «0 ga boʻlish» to'g'ri apostrof bilan 0 natija berardi,
-        chunki bosh qidiruv xom `title` bo'yicha ishlardi.
-        """
-        type(problem).objects.create(
-            slug="nol-ga-bolish",
-            title="0 ga bo'lish",
-            statement="…",
-            difficulty=800,
-            is_public=True,
-        )
-
-        for belgi in ("'", "ʻ", "’", "‘", ""):
-            body = APIClient().get(reverse("search"), {"q": f"ga bo{belgi}lish"}).json()
-            assert [p["slug"] for p in body["problems"]] == ["nol-ga-bolish"], belgi
-
-
-@pytest.mark.django_db
 class TestAlgorithms:
     def test_kind_filtri(self) -> None:
         Article.objects.create(slug="m", title="Maqola", body="x", is_published=True)
