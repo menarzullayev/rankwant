@@ -789,7 +789,6 @@ python/api-dev	click	8.5.0	dev	BSD-3-Clause
 python/api-dev	click-didyoumean	0.3.1	dev	MIT
 python/api-dev	click-plugins	1.1.1.2	dev	New BSD
 python/api-dev	click-repl	0.3.0	dev	MIT
-python/api-dev	colorama	0.4.6	dev	BSD License
 python/api-dev	coverage	7.16.1	dev	Apache-2.0
 python/api-dev	cyclonedx-python-lib	11.12.0	dev	Apache-2.0
 python/api-dev	defusedxml	0.7.1	dev	PSFL
@@ -851,7 +850,7 @@ python/api-dev	referencing	0.37.0	dev	MIT
 python/api-dev	requests	2.34.2	dev	Apache-2.0
 python/api-dev	rich	15.0.0	dev	MIT
 python/api-dev	rpds-py	2026.6.3	dev	MIT
-python/api-dev	ruff	0.16.9	dev	MIT
+python/api-dev	ruff	0.16.10	dev	MIT
 python/api-dev	s3transfer	0.19.2	dev	Apache License 2.0
 python/api-dev	segno	1.6.6	dev	BSD License
 python/api-dev	six	1.17.0	dev	MIT
@@ -870,7 +869,7 @@ python/api-dev	vine	5.1.0	dev	BSD
 python/api-dev	wcwidth	0.8.3	dev	MIT
 python/api-dev	whitenoise	6.12.0	dev	MIT
 python/judge-py	ast-serialize	0.11.0	runtime	MIT
-python/judge-py	colorama	0.4.6	runtime	BSD License
+python/judge-py	colorama	0.4.6	runtime	UNKNOWN
 python/judge-py	iniconfig	2.3.0	runtime	MIT
 python/judge-py	librt	0.15.0	runtime	MIT
 python/judge-py	mypy	2.3.1	runtime	MIT
