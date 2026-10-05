@@ -130,6 +130,28 @@ def _on_contest(sender: Any, instance: Any, created: bool, **kwargs: Any) -> Non
     )
 
 
+def _on_quest(sender: Any, instance: Any, created: bool, **kwargs: Any) -> None:
+    if not created:
+        return
+    quest = instance.quest
+    _write(
+        [
+            ActivityEvent(
+                user_id=instance.user_id,
+                kind=Kind.QUEST,
+                ref_type="quest",
+                ref_id=quest.code,
+                data={
+                    "title_uz": quest.title_uz,
+                    "title_ru": quest.title_ru,
+                    "title_en": quest.title_en,
+                    "awarded": instance.awarded,
+                },
+            )
+        ]
+    )
+
+
 def connect() -> None:
     """Called once from `ProfilesConfig.ready`.
 
@@ -141,5 +163,6 @@ def connect() -> None:
         ("ratings.UserSolvedProblem", _on_solved, "activity-solved"),
         ("qvant.QvantTransaction", _on_qvant, "activity-qvant"),
         ("contests.ContestRegistration", _on_contest, "activity-contest"),
+        ("qvant.UserQuestCompletion", _on_quest, "activity-quest"),
     ):
         post_save.connect(receiver, sender=model, dispatch_uid=uid)

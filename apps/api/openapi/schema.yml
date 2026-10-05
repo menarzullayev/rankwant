@@ -11344,12 +11344,14 @@ components:
       - rating
       - qvant
       - contest
+      - quest
       type: string
       description: |-
         * `solved` - Masala yechildi
         * `rating` - Reyting o'zgardi
         * `qvant` - Qvant
         * `contest` - Musobaqaga yozildi
+        * `quest` - Vazifa bajarildi
     AnalyticsBatch:
       type: object
       description: |-
