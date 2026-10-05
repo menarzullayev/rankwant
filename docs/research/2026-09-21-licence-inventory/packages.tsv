@@ -728,8 +728,8 @@ python/api	amqp	5.3.1	runtime	BSD
 python/api	asgiref	3.12.1	runtime	BSD-3-Clause
 python/api	attrs	26.1.0	runtime	MIT
 python/api	billiard	4.2.4	runtime	BSD
-python/api	boto3	1.43.103	runtime	Apache-2.0
-python/api	botocore	1.43.103	runtime	Apache-2.0
+python/api	boto3	1.43.108	runtime	Apache-2.0
+python/api	botocore	1.43.108	runtime	Apache-2.0
 python/api	celery	5.6.3	runtime	BSD-3-Clause
 python/api	click	8.5.0	runtime	BSD-3-Clause
 python/api	click-didyoumean	0.3.1	runtime	MIT
@@ -779,8 +779,8 @@ python/api-dev	ast-serialize	0.11.2	dev	MIT
 python/api-dev	attrs	26.1.0	dev	MIT
 python/api-dev	billiard	4.2.4	dev	BSD
 python/api-dev	boolean-py	5.0	dev	BSD-2-Clause
-python/api-dev	boto3	1.43.103	dev	Apache-2.0
-python/api-dev	botocore	1.43.103	dev	Apache-2.0
+python/api-dev	boto3	1.43.108	dev	Apache-2.0
+python/api-dev	botocore	1.43.108	dev	Apache-2.0
 python/api-dev	cachecontrol	0.14.4	dev	Apache-2.0
 python/api-dev	celery	5.6.3	dev	BSD-3-Clause
 python/api-dev	certifi	2026.7.22	dev	MPL-2.0
