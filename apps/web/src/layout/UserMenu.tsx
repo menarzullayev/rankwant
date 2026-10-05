@@ -6,16 +6,24 @@ import { useEffect, useRef, useState } from "react";
 import { IntentLink } from "@/components/ui/IntentLink";
 import { Can } from "@/components/kit/Can";
 
+import { useCustomizer } from "@/context/CustomizerContext";
 import { useSession } from "@/context/SessionContext";
+import { useStyle } from "@/context/StyleContext";
+import { useTheme } from "@/context/ThemeContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
 import { Icon } from "@/components/ui/Icon";
 import { postJson } from "@/lib/api";
+import { CUSTOMIZER_ENABLED } from "@/lib/theme/flag";
+import { isDual, type StyleId } from "./styles";
 
 export default function UserMenu() {
   const locale = useLocale();
   const { user, ready, clear } = useSession();
   const [open, setOpen] = useState(false);
+  const customizer = useCustomizer();
+  const { theme, toggleTheme } = useTheme();
+  const { style } = useStyle();
   const box = useRef<HTMLDivElement>(null);
 
   async function logout() {
@@ -121,6 +129,45 @@ export default function UserMenu() {
               {t(locale, "settings.title")}
             </IntentLink>
           </li>
+          {/* Below `xl` the header has no room for the appearance button
+              and the theme switch once a visitor is signed in, and the
+              floating tab starts at `lg` — on a phone the panel was four
+              steps away, through settings (measured 2026-10-05). */}
+          {CUSTOMIZER_ENABLED && (
+            <li role="none" className="xl:hidden">
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setOpen(false);
+                  customizer.setOpen(true);
+                }}
+                className={item}
+              >
+                <Icon name="system.palette" className="size-4 shrink-0" />
+                {t(locale, "settings.nav.appearance")}
+              </button>
+            </li>
+          )}
+          {isDual(style as StyleId) && (
+            <li role="none" className="xl:hidden">
+              <button
+                type="button"
+                role="menuitem"
+                onClick={(event) => {
+                  setOpen(false);
+                  toggleTheme({ x: event.clientX, y: event.clientY });
+                }}
+                className={item}
+              >
+                <Icon
+                  name={theme === "dark" ? "system.light" : "system.dark"}
+                  className="size-4 shrink-0"
+                />
+                {t(locale, theme === "dark" ? "theme.light" : "theme.dark")}
+              </button>
+            </li>
+          )}
           <Can perm="staff">
             <li role="none">
               <IntentLink

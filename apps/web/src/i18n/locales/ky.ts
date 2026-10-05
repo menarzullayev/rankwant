@@ -26,6 +26,8 @@ export const ky: Record<MessageKey, string> = {
   "customizer.title": "Көрүнүш ырастоочусу",
   "customizer.short": "Көрүнүш",
   "customizer.close": "Жабуу",
+  "customizer.expand": "Чоңойтуу",
+  "customizer.collapse": "Кичирейтүү",
   "customizer.tab.a11y": "Жеткиликтүүлүк",
   "customizer.templates": "Даяр шаблондор",
   "customizer.templateModified": "Шаблон өзгөртүлгөн",

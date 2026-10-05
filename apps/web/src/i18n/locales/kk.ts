@@ -26,6 +26,8 @@ export const kk: Record<MessageKey, string> = {
   "customizer.title": "Көрініс реттеушісі",
   "customizer.short": "Көрініс",
   "customizer.close": "Жабу",
+  "customizer.expand": "Үлкейту",
+  "customizer.collapse": "Кішірейту",
   "customizer.tab.a11y": "Қолжетімділік",
   "customizer.templates": "Дайын үлгілер",
   "customizer.templateModified": "Үлгі өзгертілген",
