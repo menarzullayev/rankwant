@@ -16,3 +16,18 @@
     min-width: 2.75rem;
   }
 }
+
+/* A notification that has just arrived fades in from the accent tint. */
+@keyframes rw-notif-arrive {
+  from {
+    background-color: color-mix(in srgb, var(--rw-accent) 26%, transparent);
+  }
+}
+.rw-notif-new {
+  animation: rw-notif-arrive 1.4s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rw-notif-new {
+    animation: none;
+  }
+}

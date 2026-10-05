@@ -2222,6 +2222,32 @@ def site_search_is_one_engine() -> str | None:
     return None
 
 
+def notifications_inbox_contract() -> str | None:
+    """2026-10-06: bildirishnomalar — ko'rildi/o'qildi, jonli kanal, bitta matn manbasi.
+
+    Qo'ng'iroq ochilganda xabar «ko'rilgan» bo'ladi, «o'qilgan» emas; yangi
+    xabar tranzaksiya commit bo'lgach e'lon qilinadi; oqimdagi jonli hodisa
+    SSE ko'rinishida yuboriladi; yashirin tab oqim ushlamaydi; server
+    matnlari web lug'atidan ko'chiriladi va CI ularning mosligini tekshiradi.
+    """
+    if "export_notification_messages.py --check" not in read(".github/workflows/ci.yml"):
+        return "ci.yml: bildirishnoma matnlari tekshirilmaydi — server katalogi web lug'atidan ajralib ketadi"
+    services = read("apps/api/notifications/services.py")
+    if "    transaction.on_commit(publish)\n" not in services:
+        return "notifications/services.py: e'lon commit'dan oldin ketadi — obunachi hali ko'rinmaydigan qatorni so'raydi"
+    if "len(pointers) > ANNOUNCE_MAX" not in services:
+        return "notifications/services.py: ommaviy jo'natma chegarasiz e'lon qilinadi — har qabul qiluvchiga bitta Redis so'rovi"
+    asgi = read("apps/api/realtime/asgi.py")
+    if "await write(raw)" in asgi or asgi.count("frame = _live_frame(raw)") != 2:
+        return "realtime/asgi.py: jonli hodisa SSE ramkasisiz yuboriladi — brauzer uni hodisa deb tanimaydi"
+    bell = read("apps/web/src/components/notifications/NotificationBell.tsx")
+    if "if (summary.unseen > 0) markSeen();" not in bell or "readAll()" in bell:
+        return "NotificationBell.tsx: panel ochilishi ko'rilgan deb belgilamaydi (yoki o'zi o'qilgan qilib qo'yadi)"
+    if "enabled: signedIn && visible" not in read("apps/web/src/context/NotificationsContext.tsx"):
+        return "NotificationsContext.tsx: yashirin tab ham oqim ushlaydi — foydalanuvchiga 5 ulanish chegarasi bor"
+    return None
+
+
 def docker_disk_stays_bounded() -> str | None:
     """2026-09-20: log 10m/3, builder GC 5GB, SHA teg yo'q, prune tasdiq'dan keyin.
 
@@ -2984,6 +3010,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("sozlagich telefonda yaqin", customizer_reachable_on_a_phone),
     ("jamoa sahifasi boshqariladi", team_page_is_managed_data),
     ("qidiruv bitta dvigatel", site_search_is_one_engine),
+    ("bildirishnomalar shartnomasi", notifications_inbox_contract),
     ("mehmon header'i har tilda sig'adi", guest_header_fits_every_locale),
     ("Nightly stendi production bilan mos", nightly_stack_matches_production),
     ("sozlagich: tez qator birinchi", customizer_quick_row_first),

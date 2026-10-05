@@ -501,6 +501,8 @@ jobs:
         run: python3 tools/check_security_boundary.py
       - name: Dependency licence inventory (drift against the lockfiles)
         run: python3 tools/licence_inventory.py --check
+      - name: Notification wording (the API catalogue matches the web dictionaries)
+        run: python3 tools/export_notification_messages.py --check
       - name: .env.example completeness (variables read by code and compose)
         run: python3 tools/check_env_example.py
 

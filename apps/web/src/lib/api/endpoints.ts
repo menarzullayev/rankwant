@@ -56,7 +56,6 @@ import type {
 } from "./content";
 import type {
   DailyStats,
-  Notification,
   PlatformStats,
   Presence,
   QvantTop,
@@ -137,7 +136,6 @@ export const api = {
     ),
   shop: () => get<ShopItem[]>("/qvant/shop/", 30),
   // Bildirishnomalar shaxsiy va tez o'zgaradi — keshlanmaydi
-  notifications: () => get<Paginated<Notification>>("/notifications/", 0),
   recommendations: () => get<Recommendation>("/problems/recommendation/", 0),
   posts: () => get<Paginated<Post>>("/posts/"),
   // The team page: small, public, edited rarely — a minute of cache.

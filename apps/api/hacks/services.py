@@ -693,19 +693,21 @@ def _notify(hack: Hack) -> None:
     from notifications.services import notify
 
     slug = hack.problem.slug
-    labels: dict[str, str] = {
-        Hack.Status.SUCCESSFUL: f"Hack succeeded — {slug}",
-        Hack.Status.UNSUCCESSFUL: f"Hack failed — {slug}",
-        Hack.Status.INVALID_INPUT: f"Hack test is invalid — {slug}",
-        Hack.Status.GENERATOR_CRASHED: f"Generator crashed — {slug}",
-        Hack.Status.IGNORED: f"Hack was ignored — {slug}",
+    codes: dict[str, str] = {
+        Hack.Status.SUCCESSFUL: "hack_succeeded",
+        Hack.Status.UNSUCCESSFUL: "hack_failed",
+        Hack.Status.INVALID_INPUT: "hack_invalid",
+        Hack.Status.GENERATOR_CRASHED: "hack_crashed",
+        Hack.Status.IGNORED: "hack_ignored",
     }
-    title = labels.get(hack.status)
-    if title:
+    code = codes.get(hack.status)
+    if code:
         notify(
             hack.hacker,
             Notification.Kind.HACK,
-            title,
+            code=code,
+            params={"problem": slug},
+            # The judge's detail line — technical text, not translated.
             body=hack.detail,
             ref_type="hack",
             ref_id=str(hack.pk),
@@ -714,8 +716,8 @@ def _notify(hack: Hack) -> None:
         notify(
             hack.defender_attempt.user,
             Notification.Kind.HACK,
-            f"Yechimingiz hack qilindi — {slug}",
-            body=f"Yangi testda {hack.defender_verdict}",
+            code="hack_received",
+            params={"problem": slug, "verdict": hack.defender_verdict},
             ref_type="attempt",
             ref_id=str(hack.defender_attempt_id),
         )

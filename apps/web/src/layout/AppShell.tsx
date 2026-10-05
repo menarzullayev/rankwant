@@ -14,6 +14,7 @@ import { PrefsSync } from "@/context/PrefsSync";
 import { SessionProvider } from "@/context/SessionContext";
 import { StyleProvider } from "@/context/StyleContext";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { NotificationsProvider } from "@/context/NotificationsContext";
 import { UpdatesProvider } from "@/context/UpdatesContext";
 import type { AppearancePrefs, Me } from "@/lib/api";
 import { OverlayProvider } from "@/components/overlay/OverlayHost";
@@ -187,9 +188,11 @@ export default function AppShell({
                   Kit fayli qoladi — clipboard toast shartnomasi uchun. */}
               <PrefsSync />
               <UpdatesProvider>
-                <SidebarProvider>
-                  <Shell>{children}</Shell>
-                </SidebarProvider>
+                <NotificationsProvider>
+                  <SidebarProvider>
+                    <Shell>{children}</Shell>
+                  </SidebarProvider>
+                </NotificationsProvider>
               </UpdatesProvider>
               {/* Suzuvchi tugma va panel — `Shell` dan tashqarida, chunki
                   ular sahifa tuzilishiga bog'liq emas va `bare` sahifalarda

@@ -32,9 +32,20 @@ class Notification(models.Model):
     #: yuz berganda foydalanuvchi tilida yoziladi.
     title = models.CharField(max_length=200)
     body = models.TextField(blank=True)
+    #: What happened, as a key (`duel_accepted`), and the values it carries.
+    #: The site draws the message from these in the language it is read in;
+    #: `title`/`body` above stay as the text in the recipient's language at
+    #: the time of the event — the fallback, and what Telegram received.
+    #: Empty for free text (a staff message, a post's own title).
+    code = models.CharField(max_length=48, blank=True)
+    params = models.JSONField(default=dict, blank=True)
     ref_type = models.CharField(max_length=24, blank=True)
     ref_id = models.CharField(max_length=64, blank=True)
     read_at = models.DateTimeField(null=True, blank=True)
+    #: Set when the bell was opened with this row in the list. Seen is not
+    #: read: the badge on the bell counts what has not been seen, the list
+    #: keeps marking what has not been opened.
+    seen_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
 
     class Meta:

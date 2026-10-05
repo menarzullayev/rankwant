@@ -3608,6 +3608,75 @@ def neg_decisions_search_palette_unmounted() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_notif_wording_unchecked() -> tuple[bool, str]:
+    """CI no longer compares the API catalogue with the web dictionaries."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "        run: python3 tools/export_notification_messages.py --check\n",
+        "        run: python3 tools/export_notification_messages.py\n",
+        "server katalogi web lug'atidan ajralib ketadi",
+    )
+
+
+def neg_decisions_notif_announced_before_commit() -> tuple[bool, str]:
+    """A new notification is published before its transaction commits."""
+    return _decision_broken(
+        "apps/api/notifications/services.py",
+        "    transaction.on_commit(publish)\n",
+        "    publish()\n",
+        "e'lon commit'dan oldin ketadi",
+    )
+
+
+def neg_decisions_notif_live_event_unframed() -> tuple[bool, str]:
+    """A live stream event is written to the client as raw JSON again."""
+    return _decision_broken(
+        "apps/api/realtime/asgi.py",
+        "            await write(frame)\n",
+        "            await write(raw)\n",
+        "SSE ramkasisiz yuboriladi",
+    )
+
+
+def neg_decisions_notif_bell_marks_read() -> tuple[bool, str]:
+    """Opening the bell marks everything read instead of seen."""
+    return _decision_broken(
+        "apps/web/src/components/notifications/NotificationBell.tsx",
+        "    if (summary.unseen > 0) markSeen();\n",
+        "    list.readAll();\n",
+        "ko'rilgan deb belgilamaydi",
+    )
+
+
+def neg_decisions_notif_hidden_tab_holds_stream() -> tuple[bool, str]:
+    """A hidden tab keeps its stream open."""
+    return _decision_broken(
+        "apps/web/src/context/NotificationsContext.tsx",
+        "enabled: signedIn && visible",
+        "enabled: signedIn",
+        "yashirin tab ham oqim ushlaydi",
+    )
+
+
+def neg_notification_catalogue_stale() -> tuple[bool, str]:
+    """The API's notification wording drifts from the web dictionaries.
+
+    The gate is `export_notification_messages.py --check`; this proves it
+    notices a sentence that differs by a single word.
+    """
+    path = ROOT / "apps/api/notifications/message_catalog.py"
+    old = '"title": "{days} kunlik streak!",'
+    if old not in path.read_bytes().decode("utf-8"):
+        return False, "bildirishnoma katalogi: langar topilmadi (message_catalog.py)"
+    with Mutation(path, old, '"title": "{days} kun!",'):
+        code, out = run([PY, "tools/export_notification_messages.py", "--check"])
+    if code != 1:
+        return False, f"bildirishnoma katalogi: eskirgan katalog exit {code} berdi (1 kerak)"
+    if "eskirgan" not in out:
+        return False, f"bildirishnoma katalogi: yiqildi, lekin boshqa sabab — {out.strip()[-160:]}"
+    return True, "bildirishnoma katalogi: eskirgan holat tutildi (exit 1)"
+
+
 def neg_decisions_deplocks_wrong_python() -> tuple[bool, str]:
     """A lock compiled for another Python drops conditional dependencies."""
     return _decision_broken(
@@ -5165,6 +5234,11 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/features/problems/components/SampleTests.tsx",
     "apps/api/core/management/commands/seed_demo.py",
     "tools/ci.Dockerfile.dockerignore",
+    # Notifications (2026-10-06).
+    "apps/api/notifications/services.py",
+    "apps/api/realtime/asgi.py",
+    "apps/web/src/components/notifications/NotificationBell.tsx",
+    "apps/web/src/context/NotificationsContext.tsx",
     # Site search (2026-10-05).
     "apps/api/core/search.py",
     "apps/api/core/migrations/0031_search_trigram.py",
@@ -8480,6 +8554,12 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("qidiruv foydalanuvchilarni skanerlasa tutilsin", neg_decisions_search_scans_users),
             ("qidiruv indeksi jadvalni qulflasa tutilsin", neg_decisions_search_index_locks_table),
             ("qidiruv paneli ochilmasa tutilsin", neg_decisions_search_palette_unmounted),
+            ("bildirishnoma matni tekshirilmasa tutilsin", neg_decisions_notif_wording_unchecked),
+            ("bildirishnoma commit'dan oldin e'lon qilinsa tutilsin", neg_decisions_notif_announced_before_commit),
+            ("jonli hodisa ramkasiz ketsa tutilsin", neg_decisions_notif_live_event_unframed),
+            ("qo'ng'iroq o'zi o'qilgan qilsa tutilsin", neg_decisions_notif_bell_marks_read),
+            ("yashirin tab oqim ushlasa tutilsin", neg_decisions_notif_hidden_tab_holds_stream),
+            ("bildirishnoma katalogi eskirsa tutilsin", neg_notification_catalogue_stale),
             ("xulosa serverda chizilsa tutilsin", neg_decisions_settings_summary_drawn_on_server),
             ("oxirgi shablon eslanmasa tutilsin", neg_decisions_last_template_not_remembered),
             ("DB paroli yana qattiq yozilsa tutilsin", neg_decisions_db_password_hardcoded_again),
