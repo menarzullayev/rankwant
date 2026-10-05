@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2076 strings.**
+**2077 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -54,6 +54,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.tab.a11y` | Qulaylik | Дастрасӣ |  |
 | `customizer.templates` | Tayyor shablonlar | Қолибҳои омода |  |
 | `customizer.templateModified` | Shablon o'zgartirilgan | Қолиб тағйир ёфт |  |
+| `customizer.templateRevert` | «{name}» ga qaytish | Бозгашт ба «{name}» |  |
 | `customizer.theme` | Mavzu | Мавзӯъ |  |
 | `customizer.themeFixed` | Bu uslub faqat bitta muhitga chizilgan — mavzu unga moslashadi. | Ин услуб танҳо барои як муҳит кашида шудааст — мавзӯъ ба он мутобиқ мешавад. |  |
 | `customizer.themeToggle` | Mavzu tugmasi | Тугмаи мавзӯъ |  |

@@ -38,6 +38,7 @@ export const ru: Record<MessageKey, string> = {
   "customizer.tab.a11y": "Доступность",
   "customizer.templates": "Готовые шаблоны",
   "customizer.templateModified": "Шаблон изменён",
+  "customizer.templateRevert": "Вернуться к «{name}»",
   "customizer.theme": "Тема",
   "customizer.themeFixed": "Этот стиль нарисован только для одной среды — тема подстроится.",
   "customizer.themeToggle": "Кнопка темы",

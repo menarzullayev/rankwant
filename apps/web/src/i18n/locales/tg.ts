@@ -38,6 +38,7 @@ export const tg: Record<MessageKey, string> = {
   "customizer.tab.a11y": "Дастрасӣ",
   "customizer.templates": "Қолибҳои омода",
   "customizer.templateModified": "Қолиб тағйир ёфт",
+  "customizer.templateRevert": "Бозгашт ба «{name}»",
   "customizer.theme": "Мавзӯъ",
   "customizer.themeFixed": "Ин услуб танҳо барои як муҳит кашида шудааст — мавзӯъ ба он мутобиқ мешавад.",
   "customizer.themeToggle": "Тугмаи мавзӯъ",

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2076 strings.**
+**2077 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -54,6 +54,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.tab.a11y` | Qulaylik | Қолжетімділік |  |
 | `customizer.templates` | Tayyor shablonlar | Дайын үлгілер |  |
 | `customizer.templateModified` | Shablon o'zgartirilgan | Үлгі өзгертілген |  |
+| `customizer.templateRevert` | «{name}» ga qaytish | «{name}» үлгісіне қайту |  |
 | `customizer.theme` | Mavzu | Тақырып |  |
 | `customizer.themeFixed` | Bu uslub faqat bitta muhitga chizilgan — mavzu unga moslashadi. | Бұл стиль бір ортаға ғана салынған — тақырып соған бейімделеді. |  |
 | `customizer.themeToggle` | Mavzu tugmasi | Тақырып түймесі |  |

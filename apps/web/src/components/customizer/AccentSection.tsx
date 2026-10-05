@@ -16,6 +16,11 @@ import { Section } from "./Group";
  *  the colour group — at 352 px they take three rows, too many for the top. */
 const QUICK_HUES = [0, 38, 140, 170, 215, 262, 320];
 
+/** The quick row's swatches keep to one line below `lg` (see `QUICK_ROW`
+ *  in `AppearanceTab`; repeated here because that file imports this one). */
+const QUICK_SWATCHES =
+  "flex gap-2 max-lg:-mx-1 max-lg:flex-nowrap max-lg:overflow-x-auto max-lg:px-1 max-lg:py-1 lg:flex-wrap";
+
 /** Swatches: one press applies a colour. `compact` is the quick row. */
 export function AccentSwatches({ compact = false }: { compact?: boolean }) {
   const locale = useLocale();
@@ -32,9 +37,9 @@ export function AccentSwatches({ compact = false }: { compact?: boolean }) {
 
   return (
     <Section title={t(locale, "customizer.accent")}>
-      <ul className="flex flex-wrap gap-2">
+      <ul className={compact ? QUICK_SWATCHES : "flex flex-wrap gap-2"}>
         {SWATCHES.filter((swatch) => !compact || QUICK_HUES.includes(swatch.hue)).map((swatch) => (
-          <li key={`${swatch.hue}-${swatch.sat}`}>
+          <li key={`${swatch.hue}-${swatch.sat}`} className="shrink-0">
             <button
               type="button"
               aria-label={t(locale, swatch.nameKey)}

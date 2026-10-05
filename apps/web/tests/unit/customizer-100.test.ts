@@ -13,6 +13,11 @@ import {
   readGroup,
   writeGroup,
 } from "@/components/customizer/group-session";
+import {
+  findTemplate,
+  readLastTemplateId,
+  writeLastTemplate,
+} from "@/components/customizer/last-template";
 import { clampTab, DEFAULT_TAB, TAB_SESSION_KEY } from "@/components/customizer/tab-session";
 import { nextTab } from "@/components/customizer/tabs";
 
@@ -144,6 +149,34 @@ describe("CUST-100 contestant customizer", () => {
     expect(readGroup()).toBe("layout");
     writeGroup(null);
     expect(readGroup()).toBeNull();
+  });
+
+  it("offers the way back to the template applied last, from session memory", () => {
+    const last = src("../../src/components/customizer/last-template.ts");
+    expect(appearance).toContain("customizer.templateRevert");
+    expect(appearance).toContain("writeLastTemplate(item.id)");
+    expect(last).toContain("sessionStorage.setItem");
+    expect(last).not.toMatch(/localStorage\.(get|set)Item/);
+    expect(findTemplate("day")?.style).toBe("flat");
+    expect(findTemplate("gone")).toBeNull();
+    expect(findTemplate(null)).toBeNull();
+    writeLastTemplate("night");
+    expect(readLastTemplateId()).toBe("night");
+  });
+
+  it("keeps the quick row to single lines below lg", () => {
+    expect(appearance).toContain("max-lg:flex-nowrap max-lg:overflow-x-auto");
+    expect(src("../../src/components/customizer/AccentSection.tsx")).toContain(
+      "compact ? QUICK_SWATCHES",
+    );
+  });
+
+  it("names the applied accent in settings instead of computing a hex", () => {
+    expect(settings).toContain('"var(--rw-accent)"');
+    expect(settings).not.toContain("accentToHex");
+    // Device state: drawn after hydration, never by the server.
+    expect(settings).toContain("{hydrated ? row.value : NBSP}");
+    expect(settings).toContain("{hydrated && row.swatch ? (");
   });
 
   it("shows what is inside a closed group", () => {

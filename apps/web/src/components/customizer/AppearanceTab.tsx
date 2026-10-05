@@ -62,6 +62,12 @@ import { DENSITIES, chip, type GroupId } from "./chrome";
 import { Group, Section } from "./Group";
 import { SavedTemplates } from "./SavedTemplates";
 import { readGroup, subscribeGroup, writeGroup } from "./group-session";
+import {
+  findTemplate,
+  readLastTemplateId,
+  subscribeLastTemplate,
+  writeLastTemplate,
+} from "./last-template";
 
 /** The four styles offered without opening a group. The current style
  *  takes the last seat when it is not one of them. */
@@ -74,6 +80,12 @@ const FONT_NAMES: Record<string, string> = {
   "dm-sans": "DM Sans",
   lexend: "Lexend",
 };
+
+/** Chips and swatches of the quick row: one sideways-scrolling line below
+ *  `lg`, wrapping where the panel is a desktop column. The padding keeps
+ *  focus rings inside the scroll box. */
+export const QUICK_ROW =
+  "flex gap-2 max-lg:-mx-1 max-lg:flex-nowrap max-lg:overflow-x-auto max-lg:px-1 max-lg:py-1 lg:flex-wrap";
 
 const pair = (first: string, second: string) =>
   [first, second].filter(Boolean).join(" · ");
@@ -212,7 +224,9 @@ function QuickStyleSection() {
     : [...QUICK_STYLES.slice(0, 3), current];
   return (
     <Section title={t(locale, "customizer.style")}>
-      <div className="flex flex-wrap gap-2">
+      {/* One row that scrolls sideways on a phone, where a chip is 44 px
+          tall and two rows cost 100 px of a 55% sheet. */}
+      <div className={QUICK_ROW}>
         {ids.map((id) => {
           const def = STYLES.find((item) => item.id === id);
           if (!def) return null;
@@ -222,7 +236,7 @@ function QuickStyleSection() {
               type="button"
               aria-pressed={current === id}
               onClick={() => setAppearance({ style: id })}
-              className={chip(current === id)}
+              className={`${chip(current === id)} shrink-0`}
             >
               {t(locale, def.labelKey as MessageKey)}
             </button>
@@ -236,7 +250,7 @@ function QuickStyleSection() {
               document.getElementById("rw-cz-color")?.scrollIntoView({ block: "nearest" }),
             );
           }}
-          className={chip(false)}
+          className={`${chip(false)} shrink-0`}
         >
           {t(locale, "customizer.allStyles")}
         </button>
@@ -250,21 +264,23 @@ function QuickSizeSection() {
   const { appearance, setAppearance } = useCustomizer();
   const value = clampSize(appearance.size);
   return (
-    <Section title={t(locale, "customizer.size")}>
-      <label className="block text-theme-xs rw-faint">
-        <span className="tabular-nums">{value}%</span>
-        <input
-          type="range"
-          min={SIZE_MIN}
-          max={SIZE_MAX}
-          step={SIZE_STEP}
-          value={value}
-          aria-label={t(locale, "customizer.size")}
-          onChange={(event) => setAppearance({ size: Number(event.target.value) })}
-          className="mt-1 w-full"
-        />
-      </label>
-    </Section>
+    <section>
+      {/* Title and value share a line: the row is one slider. */}
+      <div className="flex items-baseline justify-between gap-3">
+        <h4 className="text-theme-sm font-semibold rw-strong">{t(locale, "customizer.size")}</h4>
+        <span className="text-theme-xs rw-faint tabular-nums">{percent(value)}</span>
+      </div>
+      <input
+        type="range"
+        min={SIZE_MIN}
+        max={SIZE_MAX}
+        step={SIZE_STEP}
+        value={value}
+        aria-label={t(locale, "customizer.size")}
+        onChange={(event) => setAppearance({ size: Number(event.target.value) })}
+        className="mt-1 w-full"
+      />
+    </section>
   );
 }
 
@@ -272,11 +288,29 @@ function TemplatesSection() {
   const locale = useLocale();
   const { applyTemplate, template } = useCustomizer();
   const { theme } = useTheme();
+  const lastId = useSyncExternalStore(subscribeLastTemplate, readLastTemplateId, () => null);
+  const last = findTemplate(lastId);
+  const apply = (item: (typeof TEMPLATES)[number]) => {
+    applyTemplate(item);
+    writeLastTemplate(item.id);
+  };
   return (
     <Section title={t(locale, "customizer.templates")}>
       {template ? null : (
-        <p className="mb-2 rw-radius-sm rw-warn-soft px-2 py-1 text-theme-xs">
-          {t(locale, "customizer.templateModified")}
+        <p className="mb-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 rw-radius-sm rw-warn-soft px-2 py-1 text-theme-xs">
+          <span>{t(locale, "customizer.templateModified")}</span>
+          {last ? (
+            <button
+              type="button"
+              onClick={() => apply(last)}
+              className="font-medium underline underline-offset-2 rw-focus-ring"
+            >
+              {t(locale, "customizer.templateRevert").replace(
+                "{name}",
+                t(locale, `customizer.template.${last.id}`),
+              )}
+            </button>
+          ) : null}
         </p>
       )}
       <ul className="grid grid-cols-2 gap-2">
@@ -289,7 +323,7 @@ function TemplatesSection() {
               <button
                 type="button"
                 aria-pressed={template?.id === item.id}
-                onClick={() => applyTemplate(item)}
+                onClick={() => apply(item)}
                 className={`grid w-full gap-1.5 rw-radius-sm border p-1.5 text-start text-theme-sm transition rw-focus-ring ${
                   template?.id === item.id ? "rw-accent-line" : "rw-line rw-hover-bg"
                 }`}
