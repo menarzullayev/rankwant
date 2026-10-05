@@ -3,6 +3,7 @@
 
 import { get, type Paginated } from "./client";
 import type { TeamPayload } from "@/components/team/types";
+import type { SearchResponse } from "@/lib/search/model";
 import type { AppearancePrefs } from "@/features/account";
 import type {
   Calendar,
@@ -141,6 +142,11 @@ export const api = {
   posts: () => get<Paginated<Post>>("/posts/"),
   // The team page: small, public, edited rarely — a minute of cache.
   team: () => get<TeamPayload>("/team/", 60),
+  // The results page. Uncached: a query is as good as unique.
+  search: (query: string, type: string, limit: number, offset: number) =>
+    get<SearchResponse>(
+      `/search/?${new URLSearchParams({ q: query, type, limit: String(limit), offset: String(offset) }).toString()}`,
+    ),
   post: (slug: string) => get<PostDetail>(`/posts/${slug}/`),
   // Updates — ochiq arxiv, mehmon ham ko'radi (qaror 8-savol). Har yozuv
   // doimiy havola oladi, chunki Telegram kanal va Codeforces blog shunga

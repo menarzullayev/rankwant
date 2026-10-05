@@ -2879,7 +2879,11 @@ export interface paths {
         };
         /**
          * Global qidiruv
-         * @description Header qidiruvi — har turdan bir nechta natija, tez.
+         * @description Site search — the palette and the results page read the same endpoint.
+         *
+         *     Without `type` the answer is the top few of every type that matched;
+         *     with it, one page of that type. Either way `counts` covers all types.
+         *     The engine and its ranking live in `core.search`.
          */
         get: operations["search_retrieve"];
         put?: never;
@@ -8453,6 +8457,39 @@ export interface components {
          * @enum {string}
          */
         ScoringTypeEnum: "acm" | "ioi";
+        SearchGroup: {
+            type: string;
+            count: number;
+            /** @description Nothing matched exactly; these are near misses */
+            fuzzy: boolean;
+            results: components["schemas"]["SearchHit"][];
+        };
+        /** @description One search result. Only `type`, `kind`, `key` and `title` are always there. */
+        SearchHit: {
+            /** @description problem, user, topic, contest, learn or news */
+            type: string;
+            kind: string;
+            /** @description Slug, username or id — whatever the page URL takes */
+            key: string;
+            title: string;
+            subtitle?: string;
+            title_ru?: string;
+            title_en?: string;
+            code?: number | null;
+            /** @description Difficulty, rating or minutes */
+            meta?: number;
+            /** Format: date-time */
+            date?: string | null;
+        };
+        SearchResponse: {
+            q: string;
+            type: string;
+            groups: components["schemas"]["SearchGroup"][];
+            counts: {
+                [key: string]: number;
+            };
+            total: number;
+        };
         /**
          * @description * `core` - Asosiy jamoa
          *     * `contributor` - Hissa qo'shgan
@@ -13572,19 +13609,27 @@ export interface operations {
     };
     search_retrieve: {
         parameters: {
-            query?: never;
+            query?: {
+                limit?: number;
+                offset?: number;
+                /** @description Query, at least two characters */
+                q?: string;
+                /** @description all (default) or one result type */
+                type?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description Qidiruv natijalari */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["SearchResponse"];
+                };
             };
         };
     };

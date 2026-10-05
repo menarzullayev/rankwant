@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2113 strings.**
+**2144 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2134,3 +2134,34 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `home.activeToday` | Bugun faol foydalanuvchilar | Búgin belsendi paydalanıwshılar |  |
 | `home.onlineNow` | Hozir onlayn: {count} | Házir onlayn: {count} |  |
 | `home.nobodyToday` | Bugun hali hech kim kirmadi | Búgin ele hesh kim kirmedi |  |
+| `search.title` | Qidiruv | Izlew |  |
+| `search.placeholder` | Masala, foydalanuvchi, sahifa yoki buyruq… | Másele, paydalanıwshı, bet yamasa buyrıq… |  |
+| `search.placeholderPage` | Nimani qidiramiz? | Neni izleymiz? |  |
+| `search.submit` | Qidirish | Izlew |  |
+| `search.typeLabel` | Natija turi | Nátiyje túri |  |
+| `search.results` | Natijalar | Nátiyjeler |  |
+| `search.type.all` | Hammasi | Hámmesi |  |
+| `search.type.problem` | Masalalar | Máseleler |  |
+| `search.type.user` | Foydalanuvchilar | Paydalanıwshılar |  |
+| `search.type.topic` | Mavzular | Temalar |  |
+| `search.type.contest` | Musobaqalar | Jarıslar |  |
+| `search.type.learn` | O'qish | Oqıw |  |
+| `search.type.news` | Yangiliklar | Jańalıqlar |  |
+| `search.type.page` | Sahifalar | Betler |  |
+| `search.type.cmd` | Buyruqlar | Buyrıqlar |  |
+| `search.recent` | So'nggi qidiruvlar | Sońǵı izlewler |  |
+| `search.quick` | Tez o'tish | Tez ótiw |  |
+| `search.fuzzy` | {label} · o'xshash natijalar | {label} · uqsas nátiyjeler |  |
+| `search.seeAll` | «{q}» bo'yicha barcha natijalar | «{q}» boyınsha barlıq nátiyjeler |  |
+| `search.count` | {n} ta natija | {n} nátiyje |  |
+| `search.empty` | «{q}» bo'yicha hech narsa topilmadi | «{q}» boyınsha hesh nárse tabılmadı |  |
+| `search.emptyHint` | Imloni tekshiring yoki boshqa turni tanlang. | Jazılıwın tekseriń yamasa basqa túrdi tańlań. |  |
+| `search.minChars` | Kamida 2 ta belgi yozing | Keminde 2 belgi jazıń |  |
+| `search.loading` | Qidirilmoqda… | Izlenbekte… |  |
+| `search.failed` | Qidiruv ishlamadi. Birozdan so'ng qayta urinib ko'ring. | Izlew islemedi. Azǵanadan soń qayta urınıp kóriń. |  |
+| `search.hintMove` | yurish | júriw |  |
+| `search.hintOpen` | ochish | ashıw |  |
+| `search.hintType` | keyingi tur | keyingi túr |  |
+| `search.resultsFor` | «{q}» bo'yicha natijalar | «{q}» boyınsha nátiyjeler |  |
+| `search.topicProblems` | Shu mavzudagi masalalar | Usı tema boyınsha máseleler |  |
+| `search.unit` | natija | nátiyje |  |

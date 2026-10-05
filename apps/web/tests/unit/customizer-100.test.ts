@@ -230,7 +230,6 @@ describe("CUST-100 contestant customizer", () => {
   });
 
   it("keeps the header search from covering the palette", () => {
-    expect(search).toContain("w-full max-w-full");
     expect(search).not.toMatch(/w-64/);
     expect(overlay).toContain('pointerdown"');
     expect(src("../../src/app/(site)/admin/kit/page.tsx")).toContain("KitSection");

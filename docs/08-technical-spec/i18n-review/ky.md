@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2113 strings.**
+**2144 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -2134,3 +2134,34 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `home.activeToday` | Bugun faol foydalanuvchilar | Бүгүн активдүү колдонуучулар |  |
 | `home.onlineNow` | Hozir onlayn: {count} | Азыр онлайн: {count} |  |
 | `home.nobodyToday` | Bugun hali hech kim kirmadi | Бүгүн азырынча эч ким кирген жок |  |
+| `search.title` | Qidiruv | Издөө |  |
+| `search.placeholder` | Masala, foydalanuvchi, sahifa yoki buyruq… | Маселе, колдонуучу, барак же буйрук… |  |
+| `search.placeholderPage` | Nimani qidiramiz? | Эмнени издейбиз? |  |
+| `search.submit` | Qidirish | Издөө |  |
+| `search.typeLabel` | Natija turi | Натыйжанын түрү |  |
+| `search.results` | Natijalar | Натыйжалар |  |
+| `search.type.all` | Hammasi | Баары |  |
+| `search.type.problem` | Masalalar | Маселелер |  |
+| `search.type.user` | Foydalanuvchilar | Колдонуучулар |  |
+| `search.type.topic` | Mavzular | Темалар |  |
+| `search.type.contest` | Musobaqalar | Мелдештер |  |
+| `search.type.learn` | O'qish | Окуу |  |
+| `search.type.news` | Yangiliklar | Жаңылыктар |  |
+| `search.type.page` | Sahifalar | Барактар |  |
+| `search.type.cmd` | Buyruqlar | Буйруктар |  |
+| `search.recent` | So'nggi qidiruvlar | Акыркы издөөлөр |  |
+| `search.quick` | Tez o'tish | Тез өтүү |  |
+| `search.fuzzy` | {label} · o'xshash natijalar | {label} · окшош натыйжалар |  |
+| `search.seeAll` | «{q}» bo'yicha barcha natijalar | «{q}» боюнча бардык натыйжалар |  |
+| `search.count` | {n} ta natija | {n} натыйжа |  |
+| `search.empty` | «{q}» bo'yicha hech narsa topilmadi | «{q}» боюнча эч нерсе табылган жок |  |
+| `search.emptyHint` | Imloni tekshiring yoki boshqa turni tanlang. | Жазылышын текшериңиз же башка түрдү тандаңыз. |  |
+| `search.minChars` | Kamida 2 ta belgi yozing | Кеминде 2 белги жазыңыз |  |
+| `search.loading` | Qidirilmoqda… | Изделүүдө… |  |
+| `search.failed` | Qidiruv ishlamadi. Birozdan so'ng qayta urinib ko'ring. | Издөө иштеген жок. Бир аздан кийин кайра аракет кылыңыз. |  |
+| `search.hintMove` | yurish | жылуу |  |
+| `search.hintOpen` | ochish | ачуу |  |
+| `search.hintType` | keyingi tur | кийинки түр |  |
+| `search.resultsFor` | «{q}» bo'yicha natijalar | «{q}» боюнча натыйжалар |  |
+| `search.topicProblems` | Shu mavzudagi masalalar | Ушул темадагы маселелер |  |
+| `search.unit` | natija | натыйжа |  |
