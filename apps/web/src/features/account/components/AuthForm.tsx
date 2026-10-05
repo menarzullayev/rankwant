@@ -487,10 +487,17 @@ export function AuthForm({
               // o'qib chiqardi.
               <>
                 {" "}
-                {t(locale, "auth.throttledWait").replace(
-                  "{seconds}",
-                  String(retryAfter),
-                )}
+                {/* A failed-sign-in lock can last an hour; "3412 s" is
+                    not something a person can use. */}
+                {retryAfter >= 120
+                  ? t(locale, "auth.throttledWaitMinutes").replace(
+                      "{minutes}",
+                      String(Math.ceil(retryAfter / 60)),
+                    )
+                  : t(locale, "auth.throttledWait").replace(
+                      "{seconds}",
+                      String(retryAfter),
+                    )}
               </>
             )}
           </Status>

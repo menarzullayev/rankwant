@@ -1225,6 +1225,7 @@ export const ky: Record<MessageKey, string> = {
   "auth.emailTaken": "Бул email ээленген. Кирүү же сырсөздү кайра коюу мүмкүн.",
   "auth.usernameTaken": "Бул колдонуучу аты ээленген. Башкасын тандаңыз.",
   "auth.throttledWait": "Өтө көп аракет. {seconds} секунддан кийин кайталаңыз.",
+  "auth.throttledWaitMinutes": "Өтө көп аракет. {minutes} мүнөттөн кийин кайталаңыз.",
   "auth.step2ProfileTitle": "Лакабыңызды тандаңыз",
   "auth.socialProof": "{count} иштеп чыгуучу рейтинг үчүн мелдешет",
   "auth.contestInvite": "AtCoder жана Codeforces жыйынтыктарыңызды кошуңуз — рейтинг так болот.",

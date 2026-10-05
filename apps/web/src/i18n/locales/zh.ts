@@ -1222,6 +1222,7 @@ export const zh: Record<MessageKey, string> = {
   "auth.emailTaken": "该邮箱已被占用，可以登录或重置密码。",
   "auth.usernameTaken": "该用户名已被占用，请换一个。",
   "auth.throttledWait": "尝试过于频繁，请在 {seconds} 秒后重试。",
+  "auth.throttledWaitMinutes": "尝试过于频繁，请在 {minutes} 分钟后重试。",
   "auth.step2ProfileTitle": "选择用户名",
   "auth.socialProof": "{count} 位开发者正在争夺排名",
   "auth.contestInvite": "添加你的 AtCoder 和 Codeforces 成绩，排名会更准确。",

@@ -1225,6 +1225,7 @@ export const en: Record<MessageKey, string> = {
   "auth.emailTaken": "This email is already taken. You can sign in or reset the password.",
   "auth.usernameTaken": "This username is taken. Pick another one.",
   "auth.throttledWait": "Too many attempts. Try again in {seconds}s.",
+  "auth.throttledWaitMinutes": "Too many attempts. Try again in {minutes} min.",
   "auth.step2ProfileTitle": "Choose your username",
   "auth.socialProof": "{count} developers compete for the rating",
   "auth.contestInvite": "Add your AtCoder and Codeforces results — your rating will be more accurate.",

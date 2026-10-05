@@ -1226,6 +1226,7 @@ export const tg: Record<MessageKey, string> = {
   "auth.emailTaken": "Ин email банд аст. Метавонед дароед ё рамзро барқарор кунед.",
   "auth.usernameTaken": "Ин номи корбар банд аст. Дигареро интихоб кунед.",
   "auth.throttledWait": "Кӯшишҳо аз ҳад зиёд. Баъди {seconds} сония такрор кунед.",
+  "auth.throttledWaitMinutes": "Кӯшишҳо аз ҳад зиёд. Баъди {minutes} дақиқа такрор кунед.",
   "auth.step2ProfileTitle": "Тахаллуси худро интихоб кунед",
   "auth.socialProof": "{count} барномасоз барои рейтинг рақобат мекунанд",
   "auth.contestInvite": "Натиҷаҳои AtCoder ва Codeforces-ро илова кунед — рейтинг дақиқтар мешавад.",

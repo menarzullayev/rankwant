@@ -314,6 +314,12 @@ REST_FRAMEWORK = {
         # shuning uchun chegara o'sha portlashdan yuqori, lekin bot uchun
         # foydasiz darajada past.
         "register": os.environ.get("THROTTLE_REGISTER", "40/hour"),
+        # Failed sign-ins only (`core/login_guard.py`), not sign-ins: a class
+        # behind one address signs in thirty times at the start of a lesson.
+        # Per address — one machine trying many accounts; per account — many
+        # machines trying one.
+        "login_ip": os.environ.get("THROTTLE_LOGIN_IP", "20/hour"),
+        "login_account": os.environ.get("THROTTLE_LOGIN_ACCOUNT", "10/hour"),
         # Taxallus bandligini tekshirish yozayotganda chaqiriladi, ya'ni
         # limit odam yozish tezligiga mos bo'lishi kerak. Ayni paytda u
         # nomlarni sanab chiqish yo'li ham — soatlik chegara shuni to'sadi.

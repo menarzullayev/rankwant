@@ -1225,6 +1225,7 @@ export const tr: Record<MessageKey, string> = {
   "auth.emailTaken": "Bu e-posta zaten kullanılıyor. Giriş yapabilir veya parolayı sıfırlayabilirsiniz.",
   "auth.usernameTaken": "Bu kullanıcı adı alınmış. Başka bir tane seçin.",
   "auth.throttledWait": "Çok fazla deneme. {seconds} saniye sonra tekrar deneyin.",
+  "auth.throttledWaitMinutes": "Çok fazla deneme. {minutes} dakika sonra tekrar deneyin.",
   "auth.step2ProfileTitle": "Kullanıcı adınızı seçin",
   "auth.socialProof": "{count} geliştirici reyting için yarışıyor",
   "auth.contestInvite": "AtCoder ve Codeforces sonuçlarınızı ekleyin — reytinginiz daha doğru olur.",

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2075 strings.**
+**2076 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -1217,6 +1217,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.emailTaken` | Bu email allaqachon band. Kirish yoki parolni tiklash mumkin. | Ин email банд аст. Метавонед дароед ё рамзро барқарор кунед. |  |
 | `auth.usernameTaken` | Bu foydalanuvchi nomi band. Boshqasini tanlang. | Ин номи корбар банд аст. Дигареро интихоб кунед. |  |
 | `auth.throttledWait` | Juda tez-tez urinyapsiz. {seconds} soniyadan keyin qayta urinib ko'ring. | Кӯшишҳо аз ҳад зиёд. Баъди {seconds} сония такрор кунед. |  |
+| `auth.throttledWaitMinutes` | Juda ko'p urinish. {minutes} daqiqadan keyin qayta urinib ko'ring. | Кӯшишҳо аз ҳад зиёд. Баъди {minutes} дақиқа такрор кунед. |  |
 | `auth.step2ProfileTitle` | Taxallusni tanlang | Тахаллуси худро интихоб кунед |  |
 | `auth.socialProof` | {count} ta dasturchi reyting uchun bellashadi | {count} барномасоз барои рейтинг рақобат мекунанд |  |
 | `auth.contestInvite` | AtCoder va Codeforcesdagi natijangizni qo'shing — reyting aniqroq bo'ladi. | Натиҷаҳои AtCoder ва Codeforces-ро илова кунед — рейтинг дақиқтар мешавад. |  |

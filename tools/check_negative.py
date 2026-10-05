@@ -3408,6 +3408,26 @@ def neg_decisions_account_menu_rows_shrink() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_login_failures_not_counted() -> tuple[bool, str]:
+    """A wrong password is no longer counted, so no bucket ever fills."""
+    return _decision_broken(
+        "apps/api/core/views.py",
+        "            login_guard.record_failure(request, identifier)\n",
+        "",
+        "chegara hech qachon to'lmaydi",
+    )
+
+
+def neg_decisions_login_account_bucket_dropped() -> tuple[bool, str]:
+    """Only the address is limited: many machines can try one account."""
+    return _decision_broken(
+        "apps/api/config/settings.py",
+        '"login_account": os.environ.get("THROTTLE_LOGIN_ACCOUNT"',
+        '"login_account_off": os.environ.get("THROTTLE_LOGIN_ACCOUNT_OFF"',
+        "ikki idishidan biri yo'q",
+    )
+
+
 def neg_decisions_deplocks_wrong_python() -> tuple[bool, str]:
     """A lock compiled for another Python drops conditional dependencies."""
     return _decision_broken(
@@ -8260,6 +8280,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("lock yechish job'i yoza olsa tutilsin", neg_decisions_deplocks_compile_can_write),
             ("lock push'dan keyin CI yurmasa tutilsin", neg_decisions_deplocks_ci_not_started),
             ("lock boshqa Python uchun yasalsa tutilsin", neg_decisions_deplocks_wrong_python),
+            ("noto'g'ri urinish sanalmasa tutilsin", neg_decisions_login_failures_not_counted),
+            ("hisob idishi olib tashlansa tutilsin", neg_decisions_login_account_bucket_dropped),
             ("hisob menyusi qatori kichraysa tutilsin", neg_decisions_account_menu_rows_shrink),
             ("tez qator olib tashlansa tutilsin", neg_decisions_customizer_quick_row_dropped),
             ("shablon preview'i tokensiz qolsa tutilsin", neg_decisions_customizer_preview_hardcoded),
