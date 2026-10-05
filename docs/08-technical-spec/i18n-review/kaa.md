@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2075 strings.**
+**2076 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -1217,6 +1217,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.emailTaken` | Bu email allaqachon band. Kirish yoki parolni tiklash mumkin. | Bul email allaqashan bánt. Kiriw yamasa paroldi tiklew múmkin. |  |
 | `auth.usernameTaken` | Bu foydalanuvchi nomi band. Boshqasini tanlang. | Bul paydalanıwshı atı bánt. Basqasın tańlań. |  |
 | `auth.throttledWait` | Juda tez-tez urinyapsiz. {seconds} soniyadan keyin qayta urinib ko'ring. | Júdá tez-tez urınıp atırsız. {seconds} sekundtan keyin qayta urınıń. |  |
+| `auth.throttledWaitMinutes` | Juda ko'p urinish. {minutes} daqiqadan keyin qayta urinib ko'ring. | Júdá kóp urınıw. {minutes} minuttan keyin qayta urınıń. |  |
 | `auth.step2ProfileTitle` | Taxallusni tanlang | Laqabıńızdı tańlań |  |
 | `auth.socialProof` | {count} ta dasturchi reyting uchun bellashadi | {count} dana baǵdarlamashı reyting ushın bellesedi |  |
 | `auth.contestInvite` | AtCoder va Codeforcesdagi natijangizni qo'shing — reyting aniqroq bo'ladi. | AtCoder hám Codeforcesdaǵı nátiyjelerińizdi qosıń — reyting anıǵıraq boladı. |  |

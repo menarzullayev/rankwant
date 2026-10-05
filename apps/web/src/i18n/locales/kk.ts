@@ -1226,6 +1226,7 @@ export const kk: Record<MessageKey, string> = {
   "auth.emailTaken": "Бұл email бос емес. Кіруге немесе құпия сөзді қалпына келтіруге болады.",
   "auth.usernameTaken": "Бұл пайдаланушы аты бос емес. Басқасын таңдаңыз.",
   "auth.throttledWait": "Тым көп әрекет. {seconds} секундтан кейін қайталаңыз.",
+  "auth.throttledWaitMinutes": "Тым көп әрекет. {minutes} минуттан кейін қайталаңыз.",
   "auth.step2ProfileTitle": "Лақабыңызды таңдаңыз",
   "auth.socialProof": "{count} әзірлеуші рейтинг үшін сайысады",
   "auth.contestInvite": "AtCoder және Codeforces нәтижелеріңізді қосыңыз — рейтинг дәлірек болады.",

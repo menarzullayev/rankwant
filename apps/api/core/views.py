@@ -36,7 +36,16 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from contests.models import Contest
-from core import account, handles, oauth, recovery, sessions, usernames, verification
+from core import (
+    account,
+    handles,
+    login_guard,
+    oauth,
+    recovery,
+    sessions,
+    usernames,
+    verification,
+)
 from core.cache import cache_get, cache_set
 from core.models import (
     AnalyticsEvent,
@@ -599,12 +608,21 @@ class LoginView(APIView):
         # so'rovda tekshiradi. `@` belgisiga qarab shoxlash xato
         # bo'lardi: email'da `@` bo'lmasligi ham mumkin va nomda ham
         # uchraydi (masalan `ali@2007`).
+        identifier = serializer.validated_data["identifier"]
+        # Refused BEFORE the password is checked: a full bucket has to stop
+        # the right guess too, or the limit only slows the guessing down.
+        wait = login_guard.retry_after(request, identifier)
+        if wait is not None:
+            raise exceptions.Throttled(
+                wait=wait, detail="Too many failed sign-ins — try again later"
+            )
         user = django_authenticate(
             request,
-            username=serializer.validated_data["identifier"],
+            username=identifier,
             password=serializer.validated_data["password"],
         )
         if user is None:
+            login_guard.record_failure(request, identifier)
             # Matn ikkala holatda BIR XIL: «bunday hisob yo'q» va «parol
             # noto'g'ri» ni ajratib ko'rsatish mavjud nomlarni sanab
             # chiqish yo'li bo'lardi (ADR-0015).

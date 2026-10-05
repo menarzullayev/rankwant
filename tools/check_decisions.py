@@ -2089,6 +2089,30 @@ def customizer_quick_row_first() -> str | None:
     return None
 
 
+def failed_sign_ins_are_limited() -> str | None:
+    """2026-10-05: noto'g'ri kirish urinishlari manzil va hisob bo'yicha cheklanadi.
+
+    `LoginView` da alohida chegara yo'q edi: parolni terib ko'rishni faqat
+    umumiy `anon` chegarasi (1500/soat) to'xtatardi. Faqat MUVAFFAQIYATSIZ
+    urinish sanaladi (bitta manzil ortidagi sinf o'ttiz marta kiradi).
+    Tekshiruv paroldan OLDIN turadi — aks holda to'g'ri taxmin baribir o'tardi.
+    """
+    views = read("apps/api/core/views.py")
+    start = views.find("class LoginView(APIView):")
+    block = views[start : views.find("\nclass ", start + 1)]
+    check = block.find("login_guard.retry_after(request, identifier)")
+    auth = block.find("django_authenticate(")
+    if check < 0 or auth < 0 or check > auth:
+        return "core/views.py: kirish chegarasi parol tekshiruvidan oldin emas — to'g'ri taxmin o'tib ketadi"
+    if "login_guard.record_failure(request, identifier)" not in block:
+        return "core/views.py: noto'g'ri urinish sanalmaydi — chegara hech qachon to'lmaydi"
+    settings = read("apps/api/config/settings.py")
+    for scope in ('"login_ip": os.environ.get("THROTTLE_LOGIN_IP"', '"login_account": os.environ.get("THROTTLE_LOGIN_ACCOUNT"'):
+        if scope not in settings:
+            return "config/settings.py: kirish chegarasining ikki idishidan biri yo'q (manzil va hisob)"
+    return None
+
+
 def docker_disk_stays_bounded() -> str | None:
     """2026-09-20: log 10m/3, builder GC 5GB, SHA teg yo'q, prune tasdiq'dan keyin.
 
@@ -2852,6 +2876,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("sozlagich: tez qator birinchi", customizer_quick_row_first),
     ("kirgan foydalanuvchi header'i sig'adi", signed_in_header_fits),
     ("SECRET_KEY standart qiymatsiz", secret_key_has_no_fallback),
+    ("noto'g'ri kirish urinishlari cheklangan", failed_sign_ins_are_limited),
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),
     ("kirish sahifasi o'z-o'ziga yetarli", sign_in_page_is_self_contained),

@@ -1225,6 +1225,7 @@ export const ru: Record<MessageKey, string> = {
   "auth.emailTaken": "Этот email уже занят. Можно войти или сбросить пароль.",
   "auth.usernameTaken": "Это имя пользователя занято. Выберите другое.",
   "auth.throttledWait": "Слишком много попыток. Повторите через {seconds} с.",
+  "auth.throttledWaitMinutes": "Слишком много попыток. Повторите через {minutes} мин.",
   "auth.step2ProfileTitle": "Выберите ник",
   "auth.socialProof": "{count} разработчиков соревнуются за рейтинг",
   "auth.contestInvite": "Добавьте результаты с AtCoder и Codeforces — рейтинг будет точнее.",

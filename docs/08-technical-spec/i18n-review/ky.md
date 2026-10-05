@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2075 strings.**
+**2076 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -1217,6 +1217,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `auth.emailTaken` | Bu email allaqachon band. Kirish yoki parolni tiklash mumkin. | Бул email ээленген. Кирүү же сырсөздү кайра коюу мүмкүн. |  |
 | `auth.usernameTaken` | Bu foydalanuvchi nomi band. Boshqasini tanlang. | Бул колдонуучу аты ээленген. Башкасын тандаңыз. |  |
 | `auth.throttledWait` | Juda tez-tez urinyapsiz. {seconds} soniyadan keyin qayta urinib ko'ring. | Өтө көп аракет. {seconds} секунддан кийин кайталаңыз. |  |
+| `auth.throttledWaitMinutes` | Juda ko'p urinish. {minutes} daqiqadan keyin qayta urinib ko'ring. | Өтө көп аракет. {minutes} мүнөттөн кийин кайталаңыз. |  |
 | `auth.step2ProfileTitle` | Taxallusni tanlang | Лакабыңызды тандаңыз |  |
 | `auth.socialProof` | {count} ta dasturchi reyting uchun bellashadi | {count} иштеп чыгуучу рейтинг үчүн мелдешет |  |
 | `auth.contestInvite` | AtCoder va Codeforcesdagi natijangizni qo'shing — reyting aniqroq bo'ladi. | AtCoder жана Codeforces жыйынтыктарыңызды кошуңуз — рейтинг так болот. |  |

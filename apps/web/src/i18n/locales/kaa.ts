@@ -1225,6 +1225,7 @@ export const kaa: Record<MessageKey, string> = {
   "auth.emailTaken": "Bul email allaqashan bánt. Kiriw yamasa paroldi tiklew múmkin.",
   "auth.usernameTaken": "Bul paydalanıwshı atı bánt. Basqasın tańlań.",
   "auth.throttledWait": "Júdá tez-tez urınıp atırsız. {seconds} sekundtan keyin qayta urınıń.",
+  "auth.throttledWaitMinutes": "Júdá kóp urınıw. {minutes} minuttan keyin qayta urınıń.",
   "auth.step2ProfileTitle": "Laqabıńızdı tańlań",
   "auth.socialProof": "{count} dana baǵdarlamashı reyting ushın bellesedi",
   "auth.contestInvite": "AtCoder hám Codeforcesdaǵı nátiyjelerińizdi qosıń — reyting anıǵıraq boladı.",

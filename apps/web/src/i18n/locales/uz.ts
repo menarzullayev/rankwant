@@ -1236,6 +1236,7 @@ export const uz = {
   "auth.emailTaken": "Bu email allaqachon band. Kirish yoki parolni tiklash mumkin.",
   "auth.usernameTaken": "Bu foydalanuvchi nomi band. Boshqasini tanlang.",
   "auth.throttledWait": "Juda tez-tez urinyapsiz. {seconds} soniyadan keyin qayta urinib ko'ring.",
+  "auth.throttledWaitMinutes": "Juda ko'p urinish. {minutes} daqiqadan keyin qayta urinib ko'ring.",
   "auth.step2ProfileTitle": "Taxallusni tanlang",
   "auth.socialProof": "{count} ta dasturchi reyting uchun bellashadi",
   "auth.contestInvite": "AtCoder va Codeforcesdagi natijangizni qo'shing — reyting aniqroq bo'ladi.",

@@ -1225,6 +1225,7 @@ export const es: Record<MessageKey, string> = {
   "auth.emailTaken": "Este correo ya está en uso. Puedes iniciar sesión o restablecer la contraseña.",
   "auth.usernameTaken": "Este usuario ya está ocupado. Elige otro.",
   "auth.throttledWait": "Demasiados intentos. Vuelve a intentarlo en {seconds} s.",
+  "auth.throttledWaitMinutes": "Demasiados intentos. Vuelve a intentarlo en {minutes} min.",
   "auth.step2ProfileTitle": "Elige tu usuario",
   "auth.socialProof": "{count} desarrolladores compiten por el ranking",
   "auth.contestInvite": "Añade tus resultados de AtCoder y Codeforces — tu ranking será más preciso.",
