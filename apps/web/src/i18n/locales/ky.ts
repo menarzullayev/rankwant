@@ -38,6 +38,7 @@ export const ky: Record<MessageKey, string> = {
   "customizer.tab.a11y": "Жеткиликтүүлүк",
   "customizer.templates": "Даяр шаблондор",
   "customizer.templateModified": "Шаблон өзгөртүлгөн",
+  "customizer.templateRevert": "«{name}» калыбына кайтуу",
   "customizer.theme": "Тема",
   "customizer.themeFixed": "Бул стиль бир чөйрөгө гана тартылган — тема ошого ылайыкташат.",
   "customizer.themeToggle": "Тема баскычы",

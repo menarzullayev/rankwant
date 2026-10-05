@@ -42,6 +42,7 @@ export const uz = {
   "customizer.tab.a11y": "Qulaylik",
   "customizer.templates": "Tayyor shablonlar",
   "customizer.templateModified": "Shablon o'zgartirilgan",
+  "customizer.templateRevert": "«{name}» ga qaytish",
   "customizer.theme": "Mavzu",
   "customizer.themeFixed": "Bu uslub faqat bitta muhitga chizilgan — mavzu unga moslashadi.",
   "customizer.themeToggle": "Mavzu tugmasi",

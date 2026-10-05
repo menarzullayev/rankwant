@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2076 strings.**
+**2077 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -54,6 +54,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.tab.a11y` | Qulaylik | Qolaylıq |  |
 | `customizer.templates` | Tayyor shablonlar | Tayın shablonlar |  |
 | `customizer.templateModified` | Shablon o'zgartirilgan | Shablon ózgertilgen |  |
+| `customizer.templateRevert` | «{name}» ga qaytish | «{name}» ǵa qaytıw |  |
 | `customizer.theme` | Mavzu | Tema |  |
 | `customizer.themeFixed` | Bu uslub faqat bitta muhitga chizilgan — mavzu unga moslashadi. | Bul usıl tek bir ortalıqqa sızılǵan — tema oǵan maslasadı. |  |
 | `customizer.themeToggle` | Mavzu tugmasi | Tema túymesi |  |

@@ -2084,6 +2084,12 @@ def customizer_quick_row_first() -> str | None:
     settings = read("apps/web/src/features/account/components/AppearanceSection.tsx")
     if "data-appearance-summary" not in settings:
         return "AppearanceSection.tsx: sozlamalarda joriy ko'rinish xulosasi yo'q"
+    if "{hydrated ? row.value : NBSP}" not in settings:
+        return "AppearanceSection.tsx: xulosa serverda chiziladi — qurilma holati hisobdan farq qilsa gidratsiya xatosi"
+    if "accentToHex" in settings:
+        return "AppearanceSection.tsx: xulosa hex hisoblaydi — ekrandagi rangdan farq qiladigan kod ko'rsatiladi"
+    if "writeLastTemplate(item.id)" not in tab:
+        return "AppearanceTab.tsx: qo'llangan shablon eslab qolinmaydi — «shablonga qaytish» ishlamaydi"
     if "setAppearance" in settings or "applyTemplate" in settings:
         return "AppearanceSection.tsx: sozlamalar sahifasi ko'rinishni o'zi yozadi — ikkinchi yozish yo'li"
     return None

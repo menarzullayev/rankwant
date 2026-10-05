@@ -3498,6 +3498,26 @@ def neg_decisions_samples_scroll_box_not_positioned() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_settings_summary_drawn_on_server() -> tuple[bool, str]:
+    """The summary of device state is rendered by the server again."""
+    return _decision_broken(
+        "apps/web/src/features/account/components/AppearanceSection.tsx",
+        "{hydrated ? row.value : NBSP}",
+        "{row.value}",
+        "gidratsiya xatosi",
+    )
+
+
+def neg_decisions_last_template_not_remembered() -> tuple[bool, str]:
+    """Applying a template no longer records it, so there is no way back."""
+    return _decision_broken(
+        "apps/web/src/components/customizer/AppearanceTab.tsx",
+        "    writeLastTemplate(item.id);\n",
+        "",
+        "«shablonga qaytish» ishlamaydi",
+    )
+
+
 def neg_decisions_db_password_hardcoded_again() -> tuple[bool, str]:
     """The database password is written into the compose file again."""
     return _decision_broken(
@@ -8374,6 +8394,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("lock yechish job'i yoza olsa tutilsin", neg_decisions_deplocks_compile_can_write),
             ("lock push'dan keyin CI yurmasa tutilsin", neg_decisions_deplocks_ci_not_started),
             ("lock boshqa Python uchun yasalsa tutilsin", neg_decisions_deplocks_wrong_python),
+            ("xulosa serverda chizilsa tutilsin", neg_decisions_settings_summary_drawn_on_server),
+            ("oxirgi shablon eslanmasa tutilsin", neg_decisions_last_template_not_remembered),
             ("DB paroli yana qattiq yozilsa tutilsin", neg_decisions_db_password_hardcoded_again),
             ("ommaviy stack standartga tushsa tutilsin", neg_decisions_public_stack_falls_back),
             ("mehmon mavzu tugmasi erta qaytsa tutilsin", neg_decisions_guest_theme_switch_returns_early),

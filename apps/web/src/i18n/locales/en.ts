@@ -38,6 +38,7 @@ export const en: Record<MessageKey, string> = {
   "customizer.tab.a11y": "Accessibility",
   "customizer.templates": "Ready templates",
   "customizer.templateModified": "Template modified",
+  "customizer.templateRevert": "Back to {name}",
   "customizer.theme": "Theme",
   "customizer.themeFixed": "This style is drawn for one environment only — the theme follows it.",
   "customizer.themeToggle": "Theme button",

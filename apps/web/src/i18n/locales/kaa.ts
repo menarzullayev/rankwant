@@ -38,6 +38,7 @@ export const kaa: Record<MessageKey, string> = {
   "customizer.tab.a11y": "Qolaylıq",
   "customizer.templates": "Tayın shablonlar",
   "customizer.templateModified": "Shablon ózgertilgen",
+  "customizer.templateRevert": "«{name}» ǵa qaytıw",
   "customizer.theme": "Tema",
   "customizer.themeFixed": "Bul usıl tek bir ortalıqqa sızılǵan — tema oǵan maslasadı.",
   "customizer.themeToggle": "Tema túymesi",

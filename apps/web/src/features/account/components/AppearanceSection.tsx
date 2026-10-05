@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState, useSyncExternalStore, useTransition } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -14,12 +14,17 @@ import { LOCALES, LOCALE_NAMES, t, type MessageKey } from "@/i18n/messages";
 import { STYLES } from "@/layout/styles";
 import { patchJson, type ThemeEffect, type UiPrefs } from "@/lib/api";
 import { announcePrefs, playSuccess, rememberPrefs } from "@/lib/prefs";
-import { accentToHex } from "@/lib/theme/color";
+import { SWATCHES } from "@/components/customizer/chrome";
 import { clampSize } from "@/lib/theme/typography";
 import { FormRadios } from "@/components/form/FormKit";
 import { Check, Hint, Select, Status, useAction } from "./section-kit";
 
 const EFFECTS: ThemeEffect[] = ["none", "fade", "circle", "curtain"];
+/** The applied accent, whatever produced it. */
+const ACCENT_TOKEN = "var(--rw-accent)";
+const noSubscribe = () => () => {};
+/** Keeps a cell's height while its value is not drawn yet. */
+const NBSP = " ";
 
 /** Til, ovoz va effekt — ko'rinish esa bitta joyda: customizer.
  *
@@ -35,14 +40,29 @@ export function AppearanceSection() {
   const action = useAction();
   const [pending, startTransition] = useTransition();
   const [local, setLocal] = useState<UiPrefs>({});
+  // The summary is what THIS DEVICE applies, and the server does not know
+  // it: the mode is device state, and the appearance on a device can be
+  // ahead of the account. Measured 2026-10-05: the server printed "Tizim"
+  // and "100%" where the device had "Yorug' rejim" and "110%", and React
+  // reported a hydration mismatch. So the values are drawn once the page
+  // is hydrated; until then the cells keep their size and stay empty.
+  const hydrated = useSyncExternalStore(
+    noSubscribe,
+    () => true,
+    () => false,
+  );
   if (!user) return null;
 
   const prefs = { ...user.ui_prefs, ...local };
   const sound = prefs.sound ?? false;
   const effect = prefs.effect ?? "fade";
   const styleDef = STYLES.find((item) => item.id === style);
-  const accentHex = appearance.accent
-    ? accentToHex(appearance.accent.hue, appearance.accent.sat)
+  // The accent is stored as hue and saturation; what is painted is that
+  // hue at whatever lightness passes contrast. A hex made here would name
+  // a colour that is not on screen (measured: field #1d64c9, page
+  // #1f6bd6), so the summary shows the token and the colour's name.
+  const accentName = appearance.accent
+    ? SWATCHES.find((swatch) => swatch.hue === appearance.accent?.hue)?.nameKey
     : null;
   const summary: { label: string; value: string; swatch?: string }[] = [
     {
@@ -58,8 +78,12 @@ export function AppearanceSection() {
     },
     {
       label: t(locale, "customizer.accent"),
-      value: accentHex ?? t(locale, "customizer.accentDefault"),
-      swatch: accentHex ?? undefined,
+      value: !appearance.accent
+        ? t(locale, "customizer.accentDefault")
+        : accentName
+          ? t(locale, accentName)
+          : t(locale, "customizer.accentCustom"),
+      swatch: ACCENT_TOKEN,
     },
     { label: t(locale, "customizer.size"), value: `${clampSize(appearance.size)}%` },
   ];
@@ -98,14 +122,14 @@ export function AppearanceSection() {
             <div key={row.label} className="min-w-0 rw-radius-sm border rw-line px-3 py-2">
               <dt className="truncate text-theme-xs rw-faint">{row.label}</dt>
               <dd className="mt-0.5 flex items-center gap-1.5 text-theme-sm font-medium rw-strong">
-                {row.swatch ? (
+                {hydrated && row.swatch ? (
                   <span
                     aria-hidden="true"
                     className="size-3 shrink-0 rounded-full border rw-line"
                     style={{ background: row.swatch }}
                   />
                 ) : null}
-                <span className="truncate">{row.value}</span>
+                <span className="truncate">{hydrated ? row.value : NBSP}</span>
               </dd>
             </div>
           ))}

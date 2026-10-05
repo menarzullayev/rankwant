@@ -36,6 +36,11 @@ Settings → Appearance shows a summary of what is applied (template,
 mode, style, accent, text size) and opens the panel. It does not edit
 appearance: the panel stays the only writer.
 
+The template applied last is kept for the tab (`rw:cz-template`, session
+only, like `rw:cz-group`), so a modified template offers the way back.
+The settings summary is device state and is drawn after hydration; it
+names the accent and shows the applied token, not a computed hex.
+
 On a phone the panel is a sheet with two stops (55% and 90%), reached
 from the account menu; on a touch screen its targets are 44 px.
 

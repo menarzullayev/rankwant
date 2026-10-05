@@ -38,6 +38,7 @@ export const tr: Record<MessageKey, string> = {
   "customizer.tab.a11y": "Erişilebilirlik",
   "customizer.templates": "Hazır şablonlar",
   "customizer.templateModified": "Şablon değiştirildi",
+  "customizer.templateRevert": "{name} şablonuna dön",
   "customizer.theme": "Tema",
   "customizer.themeFixed": "Bu stil tek bir ortam için çizildi — tema ona uyar.",
   "customizer.themeToggle": "Tema düğmesi",

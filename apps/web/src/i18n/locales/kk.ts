@@ -38,6 +38,7 @@ export const kk: Record<MessageKey, string> = {
   "customizer.tab.a11y": "Қолжетімділік",
   "customizer.templates": "Дайын үлгілер",
   "customizer.templateModified": "Үлгі өзгертілген",
+  "customizer.templateRevert": "«{name}» үлгісіне қайту",
   "customizer.theme": "Тақырып",
   "customizer.themeFixed": "Бұл стиль бір ортаға ғана салынған — тақырып соған бейімделеді.",
   "customizer.themeToggle": "Тақырып түймесі",

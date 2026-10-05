@@ -38,6 +38,7 @@ export const zh: Record<MessageKey, string> = {
   "customizer.tab.a11y": "无障碍",
   "customizer.templates": "预设模板",
   "customizer.templateModified": "模板已修改",
+  "customizer.templateRevert": "恢复为{name}",
   "customizer.theme": "主题",
   "customizer.themeFixed": "该样式只针对一种环境绘制——主题会跟随它。",
   "customizer.themeToggle": "主题按钮",
