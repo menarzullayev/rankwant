@@ -32,3 +32,13 @@ describe("contentSecurityPolicy connect-src", () => {
     expect(csp).not.toContain("ws:");
   });
 });
+
+describe("contentSecurityPolicy frame-src", () => {
+  it("lets the Turnstile check be framed, and nothing else", () => {
+    // Without the directive `default-src 'self'` blocks the frame: the
+    // widget yields no token and the API refuses every sign-up.
+    const csp = contentSecurityPolicy("test-nonce", false, true);
+    expect(csp).toContain("frame-src https://challenges.cloudflare.com;");
+    expect(csp).toContain("frame-ancestors 'none'");
+  });
+});

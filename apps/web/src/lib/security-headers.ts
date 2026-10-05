@@ -65,6 +65,9 @@ function devApiConnectOrigins(): string[] {
   return [...origins];
 }
 
+/** The only third-party origin allowed to be framed. */
+export const TURNSTILE_ORIGIN = "https://challenges.cloudflare.com";
+
 /** CSP uchun `nonce` yasaydi — kriptografik tasodifiy, base64. */
 export function makeNonce(): string {
   const bytes = new Uint8Array(16);
@@ -125,6 +128,13 @@ export function contentSecurityPolicy(
     // shakli, clickjacking'ga qarshi.
     "frame-ancestors": ["'none'"],
     "worker-src": ["'self'", "blob:"],
+    // Cloudflare Turnstile draws its check in a frame from this origin. With
+    // no `frame-src`, `default-src 'self'` applied and the frame was blocked:
+    // the widget produced no token and every sign-up was refused with
+    // "Verification token is missing" (measured on the live site, 2026-10-05,
+    // the first time the keys were set). The script itself needs no entry —
+    // it is loaded by a nonced script under `'strict-dynamic'`.
+    "frame-src": [TURNSTILE_ORIGIN],
   };
 
   const parts = Object.entries(directives).map(([k, v]) => `${k} ${v.join(" ")}`);
