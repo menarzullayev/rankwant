@@ -267,7 +267,16 @@ if [ "$CHECK_ONLY" -ne 1 ]; then
     printf '%s⚠ --skip-ci-gate: main CI tekshirilmadi — faqat Saidakbar akaning aniq ruxsati bilan%s\n' "$Y" "$N"
   else
     GATE_PY="$(bash tools/pick-python.sh 2>/dev/null)" || die "Python topilmadi — deploy darvozasi o'lchanmadi"
-    "$GATE_PY" tools/check_deploy_gate.py || die "deploy darvozasi yopiq — main CI yashil emas yoki o'lchanmadi"
+    # ⚠️ Darvoza yopiq bo'lsa ALOHIDA kod (75, `EX_TEMPFAIL`), `die` emas.
+    # Bu yerda hali hech narsa o'zgarmagan: na build, na migratsiya. Watcher
+    # shu kodni «yiqildi» emas, «hali tayyor emas» deb o'qiydi. O'lchandi
+    # (2026-10-05): watcher'ning o'z tekshiruvi o'tdi, shu qatordagi ikkinchi
+    # so'rov esa tarmoq uzilishiga tushdi (`read tcp … api.github.com`) — va
+    # hech narsa qilmagan yurish 30 daqiqalik to'siq qo'ydi.
+    if ! "$GATE_PY" tools/check_deploy_gate.py; then
+      printf '%s✗ deploy darvozasi yopiq — main CI yashil emas yoki o'"'"'lchanmadi%s\n' "$R" "$N"
+      exit 75
+    fi
   fi
   time_finish gate
 fi
