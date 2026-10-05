@@ -278,6 +278,7 @@ class ActivityEvent(CreatedModel):
         RATING = "rating", "Reyting o'zgardi"
         QVANT = "qvant", "Qvant"
         CONTEST = "contest", "Musobaqaga yozildi"
+        QUEST = "quest", "Vazifa bajarildi"
 
     user = models.ForeignKey("core.User", on_delete=models.CASCADE, related_name="activity_events")
     kind = models.CharField(max_length=16, choices=Kind.choices)

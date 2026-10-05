@@ -5378,9 +5378,10 @@ export interface components {
          *     * `rating` - Reyting o'zgardi
          *     * `qvant` - Qvant
          *     * `contest` - Musobaqaga yozildi
+         *     * `quest` - Vazifa bajarildi
          * @enum {string}
          */
-        ActivityEventKindEnum: "solved" | "rating" | "qvant" | "contest";
+        ActivityEventKindEnum: "solved" | "rating" | "qvant" | "contest" | "quest";
         /**
          * @description Hodisalar partiyasi.
          *

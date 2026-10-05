@@ -7,6 +7,7 @@ list, and the three fields the dashboard reads from existing lists.
 from __future__ import annotations
 
 from datetime import timedelta
+from typing import Any
 
 import pytest
 from django.urls import reverse
@@ -237,3 +238,71 @@ class TestListFields:
         )
         row = APIClient().get(reverse("post-list")).json()["results"][0]
         assert row["cover_url"] == "https://example.com/a.png"
+
+
+@pytest.mark.django_db
+class TestProfileFeedFromEvents:
+    """`/users/<name>/activity/` reads `ActivityEvent` and keeps its old shape."""
+
+    def _feed(self, user: User) -> list[dict[str, Any]]:
+        body: dict[str, Any] = (
+            APIClient().get(reverse("user-activity", args=[user.username])).json()
+        )
+        rows: list[dict[str, Any]] = body["results"]
+        return rows
+
+    def test_musobaqa_reytingi(self, user) -> None:
+        RatingHistory.objects.create(
+            user=user,
+            rating_type="contest",
+            value_before=1400,
+            value_after=1450,
+            delta=50,
+            reason="contest",
+            ref_type="contest",
+            ref_id="r1",
+            rank=3,
+        )
+        (row,) = self._feed(user)
+        assert {k: row[k] for k in ("type", "ref", "delta", "value_after", "rank")} == {
+            "type": "contest",
+            "ref": "r1",
+            "delta": 50,
+            "value_after": 1450,
+            "rank": 3,
+        }
+
+    def test_vazifa(self, user) -> None:
+        from qvant.models import QvantQuest, UserQuestCompletion
+
+        quest = QvantQuest.objects.create(
+            code="kunlik", type="daily", title_uz="Kunlik", title_en="Daily", reward=5
+        )
+        UserQuestCompletion.objects.create(user=user, quest=quest, period_key="k", awarded=5)
+        (row,) = self._feed(user)
+        assert (row["type"], row["code"], row["title_uz"], row["awarded"]) == (
+            "quest",
+            "kunlik",
+            "Kunlik",
+            5,
+        )
+        # The home feed leaves it out: it shows there as the Qvant it paid.
+        assert _login(user).get(reverse("me-activity")).json() == []
+
+    def test_faqat_qiyin_va_ommaviy_masala(self, user, problem, hard_problem) -> None:
+        UserSolvedProblem.objects.create(user=user, problem=problem, difficulty_at_solve=800)
+        UserSolvedProblem.objects.create(user=user, problem=hard_problem, difficulty_at_solve=2000)
+        rows = self._feed(user)
+        assert [(r["type"], r["ref"], r["difficulty"]) for r in rows] == [
+            ("hard_solve", hard_problem.slug, 2000)
+        ]
+
+        hard_problem.is_public = False
+        hard_problem.save(update_fields=["is_public"])
+        assert self._feed(user) == []
+
+    def test_boshqa_hodisalar_profilga_chiqmaydi(self, user) -> None:
+        """Qvant and registrations are the owner's own feed, not the public one."""
+        ledger.credit(user, 5, QvantTransaction.Reason.ADMIN, respect_cap=False)
+        ContestRegistration.objects.create(contest=_contest(), user=user)
+        assert self._feed(user) == []

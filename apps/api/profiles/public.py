@@ -10,6 +10,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from typing import Any
 
+from django.db.models import Q
 from django.utils import timezone
 
 from core import sessions
@@ -165,62 +166,83 @@ def build_profile(user: User, viewer: User | None) -> dict[str, Any]:
 
 
 def activity(user: User, *, before: datetime | None = None, limit: int = 30) -> dict[str, Any]:
-    """Voqealar lentasi: musobaqa, bajarilgan vazifa, qiyin masala.
+    """The profile's feed: contests, finished quests, hard problems.
 
-    Uch jadvaldan yig'iladi va vaqt bo'yicha birlashtiriladi. Keyingi
-    sahifa — oxirgi voqea vaqtidan oldingilar (`next_before`).
+    Read from `ActivityEvent` (2026-10-05), the same table the home page
+    reads. It used to be put together from three tables on every request;
+    the two feeds then had two definitions of "what happened", and a new
+    kind of event had to be taught to both.
+
+    The response keeps its shape — `type` is `contest`, `quest` or
+    `hard_solve` — so the profile page did not have to change.
+
+    The next page is everything before the last event of this one
+    (`next_before`). A hard solve of a problem that is no longer public is
+    dropped after the page is cut, so a page can come back shorter than
+    `limit` and still have a next one.
     """
-    from qvant.models import UserQuestCompletion
-    from ratings.models import RatingHistory, UserSolvedProblem
+    from profiles.models import ActivityEvent
 
-    contests = RatingHistory.objects.filter(user=user, reason=RatingHistory.Reason.CONTEST)
-    quests = UserQuestCompletion.objects.filter(user=user).select_related("quest")
-    solves = UserSolvedProblem.objects.filter(
-        user=user, difficulty_at_solve__gte=HARD_FROM, problem__is_public=True
-    ).select_related("problem")
+    rows = ActivityEvent.objects.filter(user=user).filter(
+        Q(kind=ActivityEvent.Kind.RATING, data__reason="contest")
+        | Q(kind=ActivityEvent.Kind.QUEST)
+        | Q(kind=ActivityEvent.Kind.SOLVED, data__difficulty__gte=HARD_FROM)
+    )
     if before is not None:
-        contests = contests.filter(created_at__lt=before)
-        quests = quests.filter(completed_at__lt=before)
-        solves = solves.filter(first_ac_at__lt=before)
+        rows = rows.filter(created_at__lt=before)
+    page = list(rows[:limit])
 
-    events: list[dict[str, Any]] = [
-        {
-            "type": "contest",
-            "at": row.created_at,
-            "ref": row.ref_id,
-            "delta": row.delta,
-            "value_after": row.value_after,
-            "rank": row.rank,
-        }
-        for row in contests.order_by("-created_at")[:limit]
-    ]
-    events += [
-        {
-            "type": "quest",
-            "at": row.completed_at,
-            "code": row.quest.code,
-            "title_uz": row.quest.title_uz,
-            "title_ru": row.quest.title_ru,
-            "title_en": row.quest.title_en,
-            "awarded": row.awarded,
-        }
-        for row in quests.order_by("-completed_at")[:limit]
-    ]
-    events += [
-        {
-            "type": "hard_solve",
-            "at": row.first_ac_at,
-            "ref": row.problem.slug,
-            "title": row.problem.title,
-            "difficulty": row.difficulty_at_solve,
-        }
-        for row in solves.order_by("-first_ac_at")[:limit]
-    ]
-    events.sort(key=lambda e: e["at"], reverse=True)
-    page = events[:limit]
+    solved = [row.ref_id for row in page if row.kind == ActivityEvent.Kind.SOLVED]
+    # Visibility is read now, not copied into the event: a problem can be
+    # withdrawn after it was solved.
+    public = (
+        set(
+            user.solved.filter(problem__slug__in=solved, problem__is_public=True).values_list(
+                "problem__slug", flat=True
+            )
+        )
+        if solved
+        else set()
+    )
+
+    events: list[dict[str, Any]] = []
+    for row in page:
+        if row.kind == ActivityEvent.Kind.RATING:
+            events.append(
+                {
+                    "type": "contest",
+                    "at": row.created_at,
+                    "ref": row.ref_id,
+                    "delta": row.data.get("delta"),
+                    "value_after": row.data.get("after"),
+                    "rank": row.data.get("rank"),
+                }
+            )
+        elif row.kind == ActivityEvent.Kind.QUEST:
+            events.append(
+                {
+                    "type": "quest",
+                    "at": row.created_at,
+                    "code": row.ref_id,
+                    "title_uz": row.data.get("title_uz", ""),
+                    "title_ru": row.data.get("title_ru", ""),
+                    "title_en": row.data.get("title_en", ""),
+                    "awarded": row.data.get("awarded"),
+                }
+            )
+        elif row.ref_id in public:
+            events.append(
+                {
+                    "type": "hard_solve",
+                    "at": row.created_at,
+                    "ref": row.ref_id,
+                    "title": row.data.get("title", ""),
+                    "difficulty": row.data.get("difficulty"),
+                }
+            )
     return {
-        "results": page,
-        "next_before": page[-1]["at"].isoformat() if len(page) == limit else None,
+        "results": events,
+        "next_before": page[-1].created_at.isoformat() if len(page) == limit else None,
     }
 
 

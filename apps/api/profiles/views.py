@@ -323,7 +323,10 @@ class MyActivityView(APIView):
     )
     def get(self, request: Request) -> Response:
         assert isinstance(request.user, User)
-        rows = ActivityEvent.objects.filter(user=request.user)[: self.LIMIT]
+        # A finished quest already shows here as the Qvant it paid.
+        rows = ActivityEvent.objects.filter(user=request.user).exclude(
+            kind=ActivityEvent.Kind.QUEST
+        )[: self.LIMIT]
         return Response(ActivityEventSerializer(rows, many=True).data)
 
 
