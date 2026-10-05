@@ -69,8 +69,15 @@ export default function UserMenu() {
         href={"/login?tab=login" as Route}
         className="flex h-10 items-center gap-2 whitespace-nowrap rw-radius-sm rw-accent-bg px-4 text-theme-sm font-medium text-white transition"
       >
-        <Icon name="user.profile" className="size-4" />
-        {t(locale, "auth.login")}
+        {/* Below 360 px the icon gives way to the word. */}
+        <Icon name="user.profile" className="size-4 max-[359px]:hidden" />
+        {/* The longest label is Tajik, 97 px. Below `md` it is cut at
+            56 px: measured 2026-10-05, the Tajik header was 352 px wide on
+            a 320 px screen and 673 px on a 640 px one. The other nine
+            labels are shorter than the cap and are not touched. */}
+        <span className="max-w-[3.5rem] truncate md:max-w-none">
+          {t(locale, "auth.login")}
+        </span>
       </IntentLink>
     );
   }

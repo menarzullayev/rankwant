@@ -292,6 +292,36 @@ class TestSeedDemo:
         assert Duel.objects.filter(status=Duel.Status.OPEN).count() == 1  # idempotent
         assert Article.objects.filter(kind=Article.Kind.ALGORITHM).count() == 1
 
+    def test_a_plus_b_is_open_to_every_active_language(self) -> None:
+        """A memory override for one language must not shut the others out.
+
+        ⚠️ Regression (2026-10-05). A `ProblemLanguage` row is permission
+        as well as an override. The seed wrote one row — Julia's memory
+        limit — and A+B became a Julia-only problem: on production (1 of 35
+        active languages) and in Nightly, where a C++ submission got 400.
+        """
+        from judging.serializers import AttemptCreateSerializer
+        from problems.models import Language, Problem, ProblemLanguage
+
+        call_command("seed_demo", verbosity=0)
+
+        problem = Problem.objects.get(slug="a-plus-b")
+        active = set(Language.objects.filter(is_active=True).values_list("code", flat=True))
+        assert active, "the migrations seed languages"
+        listed = set(
+            ProblemLanguage.objects.filter(problem=problem).values_list("language__code", flat=True)
+        )
+        assert listed == active
+        for code in ("cpp23", "py313", "java21"):
+            serializer = AttemptCreateSerializer(
+                data={"problem": "a-plus-b", "language": code, "source_code": "x"}
+            )
+            assert serializer.is_valid(), (code, serializer.errors)
+        # The override itself survives.
+        julia = ProblemLanguage.objects.filter(problem=problem, language__code="julia113").first()
+        if julia is not None:
+            assert julia.memory_limit_kb == 524288
+
     def test_standart_holatda_jonli_oyna_yoq(self) -> None:
         """Standart seed jonli contest/arena yaratmaydi.
 

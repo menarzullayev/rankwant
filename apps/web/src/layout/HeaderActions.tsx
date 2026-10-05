@@ -47,8 +47,19 @@ export default function HeaderActions() {
             header is shorter and keeps them at every width. */}
         <div className={`items-center gap-1 min-[360px]:gap-1.5 sm:gap-2 ${user ? "hidden xl:flex" : "flex"}`}>
           <UpdatesBell />
-          {!auth && CUSTOMIZER_ENABLED && <CustomizerTrigger />}
-          {!auth && <ThemeToggle />}
+          {/* A guest's header has to fit 320 px (owner decision). Measured
+              2026-10-05 at 375 px it was 377 px wide in Uzbek and 385 px in
+              English: the theme switch arrived after that decision was
+              measured. The switch now starts at `md` — the mode is the first
+              control of the appearance panel — and the panel button at
+              390 px (with it the English header was 368 px at 360 px and
+              the Tajik one 384 px at 375 px).
+              `contents`, not `flex`: the wrappers must not become boxes of
+              their own inside the row. */}
+          <span className="hidden min-[390px]:contents">
+            {!auth && CUSTOMIZER_ENABLED && <CustomizerTrigger />}
+          </span>
+          <span className="hidden md:contents">{!auth && <ThemeToggle />}</span>
         </div>
         <LocaleSwitch />
         <UserMenu />

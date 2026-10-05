@@ -1,0 +1,8 @@
+# Build context for `tools/ci.Dockerfile` only (BuildKit reads
+# `<Dockerfile>.dockerignore` before the root `.dockerignore`).
+#
+# The root file is written for the web image and drops `apps/api/`, so this
+# Dockerfile's one COPY failed in Nightly: "/apps/api/requirements-dev.lock":
+# not found (measured 2026-10-05). The image needs exactly that one file.
+*
+!apps/api/requirements-dev.lock

@@ -297,13 +297,22 @@ class Command(BaseCommand):
             problem.tests.filter(order__gt=len(tests)).delete()
             cache_delete(storage.samples_cache_key(slug))
             if slug == "a-plus-b":
-                julia = Language.objects.filter(code="julia113").first()
-                if julia is not None:
-                    # Julia 1.13 JIT baseline exceeds the default 256 MiB on A+B.
+                # Julia 1.13 JIT baseline exceeds the default 256 MiB on A+B.
+                #
+                # ⚠️ A `ProblemLanguage` row is also PERMISSION: once a problem
+                # has one, only the listed languages are accepted. A lone
+                # Julia row made A+B a Julia-only problem — measured
+                # 2026-10-05 on production (1 of 35 active languages) and in
+                # Nightly, where C++ submissions got 400 and the submit
+                # panel offered Julia alone. So the override is written
+                # together with a plain row for every other active language.
+                for language in Language.objects.filter(is_active=True):
                     ProblemLanguage.objects.update_or_create(
                         problem=problem,
-                        language=julia,
-                        defaults={"memory_limit_kb": 524288},
+                        language=language,
+                        defaults={
+                            "memory_limit_kb": 524288 if language.code == "julia113" else None
+                        },
                     )
 
         if not User.objects.filter(username="admin").exists():

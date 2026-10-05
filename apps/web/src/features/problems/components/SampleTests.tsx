@@ -38,7 +38,11 @@ export function SampleTests({ samples }: { samples: Sample[] }) {
 
   return (
     <Card title={t(locale, "problem.samples")} bodyClassName="p-0">
-      <div className="min-w-0 overflow-x-auto">
+      {/* `relative`: the table holds `sr-only` labels, which are absolutely
+          positioned. Without a positioned ancestor here they escape the
+          scroll box and widen the PAGE - measured 2026-10-05 at 375 px:
+          document 553 px wide, one 1 px span at x=552. */}
+      <div className="relative min-w-0 overflow-x-auto">
         <table className="w-full min-w-[34rem] table-fixed">
           <thead>
             <tr className="border-b rw-divider">
