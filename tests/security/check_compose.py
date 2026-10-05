@@ -42,6 +42,9 @@ BOTH_NETWORKS = ("minio", "judge-queue")
 #: `check_security_boundary.py` kalitlarni tekshiradi, bu esa QIYMATNI:
 #: ochiq repodagi root parol judge env'ida qayta paydo bo'lsa qizaradi.
 ROOT_SECRET_VALUE = "devdevdev"
+#: Since ADR-0044 the root password reaches compose through this variable,
+#: so a judge env that names it carries the root secret just the same.
+ROOT_SECRET_VARIABLE = "MINIO_ROOT_PASSWORD"
 
 
 def main() -> int:
@@ -78,7 +81,9 @@ def main() -> int:
         for key in FORBIDDEN:
             if key in keys:
                 problems.append(f"{name} servisiga {key} berilgan")
-        if ROOT_SECRET_VALUE in values:
+        if ROOT_SECRET_VALUE in values or any(
+            ROOT_SECRET_VARIABLE in str(value) for value in values
+        ):
             problems.append(
                 f"{name} env'da root MinIO paroli bor (A-2, ADR-0028) — "
                 "judge faqat `judge-ro` userini ko'radi"

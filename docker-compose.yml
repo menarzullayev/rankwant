@@ -40,7 +40,7 @@ services:
     environment:
       POSTGRES_DB: rankwant
       POSTGRES_USER: rankwant
-      POSTGRES_PASSWORD: dev
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev}
     ports: ['5432:5432']
     volumes: ['pgdata:/var/lib/postgresql/data']
     healthcheck:
@@ -97,7 +97,7 @@ services:
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: rankwant
-      MINIO_ROOT_PASSWORD: devdevdev
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-devdevdev}
     # ADR-0028: `minio-init` `service_healthy` bilan kutadi — usiz compose
     # «container … has no healthcheck configured» deydi va stack ko'tarilmaydi
     # (izolyatsiya stack'ida o'lchandi 2026-09-24). Health endpoint auth
@@ -150,7 +150,7 @@ services:
       JUDGE_S3_SECRET: ${JUDGE_S3_SECRET:-judge-ro-dev}
       S3_BUCKET: rankwant
       MINIO_ROOT_USER: rankwant
-      MINIO_ROOT_PASSWORD: devdevdev
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-devdevdev}
     volumes: ['./compose/minio-init:/init:ro']
     depends_on:
       minio: { condition: service_healthy }
@@ -173,7 +173,7 @@ services:
     build: *api-build
     command: ['python', 'manage.py', 'migrate', '--no-input']
     environment:
-      DATABASE_URL: postgres://rankwant:dev@postgres:5432/rankwant
+      DATABASE_URL: postgres://rankwant:${POSTGRES_PASSWORD:-dev}@postgres:5432/rankwant
       # Django refuses to start without one (ADR-0044). A throwaway default
       # for the local and CI stacks only: `docker-compose.public.yml`
       # replaces it and fails without the real value.
@@ -182,7 +182,7 @@ services:
       S3_ENDPOINT: http://minio:9000
       S3_BUCKET: rankwant
       S3_KEY: rankwant
-      S3_SECRET: devdevdev
+      S3_SECRET: ${MINIO_ROOT_PASSWORD:-devdevdev}
     restart: 'no'
     depends_on:
       postgres: { condition: service_healthy }
@@ -191,7 +191,7 @@ services:
     logging: *default-logging
     build: *api-build
     environment:
-      DATABASE_URL: postgres://rankwant:dev@postgres:5432/rankwant
+      DATABASE_URL: postgres://rankwant:${POSTGRES_PASSWORD:-dev}@postgres:5432/rankwant
       # Django refuses to start without one (ADR-0044). A throwaway default
       # for the local and CI stacks only: `docker-compose.public.yml`
       # replaces it and fails without the real value.
@@ -203,7 +203,7 @@ services:
       S3_ENDPOINT: http://minio:9000
       S3_BUCKET: rankwant
       S3_KEY: rankwant
-      S3_SECRET: devdevdev
+      S3_SECRET: ${MINIO_ROOT_PASSWORD:-devdevdev}
       DJANGO_DEBUG: "1"
       CORS_ALLOWED_ORIGINS: http://localhost:3000
       GUNICORN_WORKERS: ${GUNICORN_WORKERS:-4}
@@ -235,7 +235,7 @@ services:
     #: ko'chirish kerak.
     command: uvicorn config.asgi:application --host 0.0.0.0 --port 8001 --workers ${REALTIME_WORKERS:-1}
     environment:
-      DATABASE_URL: postgres://rankwant:dev@postgres:5432/rankwant
+      DATABASE_URL: postgres://rankwant:${POSTGRES_PASSWORD:-dev}@postgres:5432/rankwant
       # Django refuses to start without one (ADR-0044). A throwaway default
       # for the local and CI stacks only: `docker-compose.public.yml`
       # replaces it and fails without the real value.
@@ -264,7 +264,7 @@ services:
     build: *api-build
     command: ['celery', '-A', 'config', 'worker', '-l', 'info', '--concurrency', '2']
     environment:
-      DATABASE_URL: postgres://rankwant:dev@postgres:5432/rankwant
+      DATABASE_URL: postgres://rankwant:${POSTGRES_PASSWORD:-dev}@postgres:5432/rankwant
       # Django refuses to start without one (ADR-0044). A throwaway default
       # for the local and CI stacks only: `docker-compose.public.yml`
       # replaces it and fails without the real value.
@@ -275,7 +275,7 @@ services:
       S3_ENDPOINT: http://minio:9000
       S3_BUCKET: rankwant
       S3_KEY: rankwant
-      S3_SECRET: devdevdev
+      S3_SECRET: ${MINIO_ROOT_PASSWORD:-devdevdev}
     depends_on:
       redis: { condition: service_healthy }
       migrate: { condition: service_completed_successfully }
@@ -285,7 +285,7 @@ services:
     build: *api-build
     command: ['celery', '-A', 'config', 'beat', '-l', 'info']
     environment:
-      DATABASE_URL: postgres://rankwant:dev@postgres:5432/rankwant
+      DATABASE_URL: postgres://rankwant:${POSTGRES_PASSWORD:-dev}@postgres:5432/rankwant
       # Django refuses to start without one (ADR-0044). A throwaway default
       # for the local and CI stacks only: `docker-compose.public.yml`
       # replaces it and fails without the real value.
@@ -296,7 +296,7 @@ services:
       S3_ENDPOINT: http://minio:9000
       S3_BUCKET: rankwant
       S3_KEY: rankwant
-      S3_SECRET: devdevdev
+      S3_SECRET: ${MINIO_ROOT_PASSWORD:-devdevdev}
     depends_on:
       redis: { condition: service_healthy }
       migrate: { condition: service_completed_successfully }

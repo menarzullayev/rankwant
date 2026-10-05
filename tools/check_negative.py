@@ -3518,6 +3518,26 @@ def neg_decisions_last_template_not_remembered() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_db_password_hardcoded_again() -> tuple[bool, str]:
+    """The database password is written into the compose file again."""
+    return _decision_broken(
+        "docker-compose.yml",
+        "      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev}\n",
+        "      POSTGRES_PASSWORD: dev\n",
+        "sir qattiq yozilgan",
+    )
+
+
+def neg_decisions_public_stack_falls_back() -> tuple[bool, str]:
+    """The public stack accepts a default for the storage root password."""
+    return _decision_broken(
+        "docker-compose.public.yml",
+        "${MINIO_ROOT_PASSWORD:?",
+        "${MINIO_ROOT_PASSWORD:-devdevdev}${X:-",
+        "ommaviy stack standart sir bilan ko'tariladi",
+    )
+
+
 def neg_decisions_deplocks_wrong_python() -> tuple[bool, str]:
     """A lock compiled for another Python drops conditional dependencies."""
     return _decision_broken(
@@ -8376,6 +8396,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("lock boshqa Python uchun yasalsa tutilsin", neg_decisions_deplocks_wrong_python),
             ("xulosa serverda chizilsa tutilsin", neg_decisions_settings_summary_drawn_on_server),
             ("oxirgi shablon eslanmasa tutilsin", neg_decisions_last_template_not_remembered),
+            ("DB paroli yana qattiq yozilsa tutilsin", neg_decisions_db_password_hardcoded_again),
+            ("ommaviy stack standartga tushsa tutilsin", neg_decisions_public_stack_falls_back),
             ("mehmon mavzu tugmasi erta qaytsa tutilsin", neg_decisions_guest_theme_switch_returns_early),
             ("kirish yorlig'i cheksiz qolsa tutilsin", neg_decisions_sign_in_label_uncapped),
             ("seed A+B ni bitta tilga yopsa tutilsin", neg_decisions_seed_restricts_a_plus_b),

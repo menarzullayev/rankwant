@@ -2158,6 +2158,26 @@ def nightly_stack_matches_production() -> str | None:
     return None
 
 
+def public_stack_requires_its_secrets() -> str | None:
+    """2026-10-05 (ADR-0044): ommaviy stack o'ziga berilmagan sir bilan ko'tarilmaydi.
+
+    DB paroli (`dev`) va MinIO root paroli (`devdevdev`) compose'da qattiq
+    yozilgan edi va `docker-compose.public.yml` ularni almashtirmasdi —
+    ya'ni production ham o'sha qiymatlarda ishlardi. Endi qiymatlar env'dan
+    keladi; lokal va CI stack bazaviy fayldagi dev qiymatga tushadi,
+    ommaviy zanjirda esa `:?` bo'sh qiymatni xato qiladi.
+    """
+    base = read("docker-compose.yml")
+    for literal in ("PASSWORD: dev\n", "rankwant:dev@", "PASSWORD: devdevdev", "S3_SECRET: devdevdev"):
+        if literal in base:
+            return f"docker-compose.yml: sir qattiq yozilgan (`{literal.strip()}`) — env orqali kelmaydi"
+    public = read("docker-compose.public.yml")
+    for name in ("POSTGRES_PASSWORD", "MINIO_ROOT_PASSWORD", "JUDGE_S3_SECRET"):
+        if "${" + name + ":?" not in public:
+            return f"docker-compose.public.yml: `{name}` majburiy emas — ommaviy stack standart sir bilan ko'tariladi"
+    return None
+
+
 def docker_disk_stays_bounded() -> str | None:
     """2026-09-20: log 10m/3, builder GC 5GB, SHA teg yo'q, prune tasdiq'dan keyin.
 
@@ -2923,6 +2943,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("sozlagich: tez qator birinchi", customizer_quick_row_first),
     ("kirgan foydalanuvchi header'i sig'adi", signed_in_header_fits),
     ("SECRET_KEY standart qiymatsiz", secret_key_has_no_fallback),
+    ("ommaviy stack sirlarini talab qiladi", public_stack_requires_its_secrets),
     ("noto'g'ri kirish urinishlari cheklangan", failed_sign_ins_are_limited),
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),
