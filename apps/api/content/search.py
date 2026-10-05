@@ -10,7 +10,8 @@ for _kind in (Article.Kind.ARTICLE, Article.Kind.ALGORITHM):
             kind=str(_kind),
             queryset=lambda kind=_kind: Article.objects.filter(is_published=True, kind=kind),  # type: ignore[misc]
             primary="title",
-            secondary=("summary",),
+            secondary=("summary", "body"),
+            excerpt=("body",),
             order=("difficulty", "pk"),
             hit=lambda article: {
                 "key": article.slug,
@@ -27,6 +28,8 @@ register(
         kind="roadmap",
         queryset=lambda: Roadmap.objects.filter(is_published=True),
         primary="title",
+        secondary=("description",),
+        excerpt=("description",),
         order=("order", "pk"),
         hit=lambda roadmap: {"key": roadmap.slug, "title": roadmap.title},
     )

@@ -22,6 +22,7 @@ from rest_framework.permissions import SAFE_METHODS
 from rest_framework.throttling import (
     AnonRateThrottle,
     ScopedRateThrottle,
+    SimpleRateThrottle,
     UserRateThrottle,
 )
 
@@ -129,3 +130,35 @@ class ResilientUserRateThrottle(
 class ResilientScopedRateThrottle(TrustedClientIdent, CacheOutageTolerant, ScopedRateThrottle):
     """`submit` kabi nomlangan cheklovlar uchun — ular ham xuddi shu
     sarlavha bilan chetlab o'tilardi."""
+
+
+class SearchRateThrottle(
+    TrustedClientIdent, InternalRenderRate, CacheOutageTolerant, ScopedRateThrottle
+):
+    """The site search has a budget of its own.
+
+    Every request reaches the database, and the endpoint is open to
+    anyone. The general limits (1500/hour for a guest) were its only
+    brake: measured 2026-10-06, forty requests in a row all answered 200.
+
+    A server-side render of `/search` arrives from a private address with
+    no client header; it is counted by the general internal limit and
+    skipped here, or every visitor of that page would share one bucket.
+    """
+
+    scope = "search"
+    scope_internal = None
+
+    def allow_request(self, request: Any, view: Any) -> bool:
+        # `ScopedRateThrottle` reads the scope from the view; this class
+        # names it itself, so a view only has to list the throttle.
+        if self._is_internal(request):
+            return True
+        self.rate = self.get_rate()
+        self.num_requests, self.duration = self.parse_rate(self.rate)
+        try:
+            return bool(SimpleRateThrottle.allow_request(self, request, view))
+        except Exception:
+            # The cache is down: reading goes on (see `CacheOutageTolerant`).
+            log.warning("throttle keshi yiqildi: %s %s", request.method, request.path)
+            return True

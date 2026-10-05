@@ -319,6 +319,9 @@ REST_FRAMEWORK = {
         # behind one address signs in thirty times at the start of a lesson.
         # Per address — one machine trying many accounts; per account — many
         # machines trying one.
+        # The site search: one request per pause in typing. A fast typist
+        # makes a few per second for a moment; a script makes them all day.
+        "search": os.environ.get("THROTTLE_SEARCH", "90/min"),
         "login_ip": os.environ.get("THROTTLE_LOGIN_IP", "20/hour"),
         "login_account": os.environ.get("THROTTLE_LOGIN_ACCOUNT", "10/hour"),
         # Taxallus bandligini tekshirish yozayotganda chaqiriladi, ya'ni
