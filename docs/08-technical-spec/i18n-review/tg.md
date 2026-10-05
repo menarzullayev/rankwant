@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2113 strings.**
+**2144 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -2134,3 +2134,34 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `home.activeToday` | Bugun faol foydalanuvchilar | Корбарони фаъоли имрӯз |  |
 | `home.onlineNow` | Hozir onlayn: {count} | Ҳоло онлайн: {count} |  |
 | `home.nobodyToday` | Bugun hali hech kim kirmadi | Имрӯз ҳанӯз касе ворид нашудааст |  |
+| `search.title` | Qidiruv | Ҷустуҷӯ |  |
+| `search.placeholder` | Masala, foydalanuvchi, sahifa yoki buyruq… | Масъала, корбар, саҳифа ё фармон… |  |
+| `search.placeholderPage` | Nimani qidiramiz? | Чиро меҷӯем? |  |
+| `search.submit` | Qidirish | Ҷустан |  |
+| `search.typeLabel` | Natija turi | Навъи натиҷа |  |
+| `search.results` | Natijalar | Натиҷаҳо |  |
+| `search.type.all` | Hammasi | Ҳама |  |
+| `search.type.problem` | Masalalar | Масъалаҳо |  |
+| `search.type.user` | Foydalanuvchilar | Корбарон |  |
+| `search.type.topic` | Mavzular | Мавзӯъҳо |  |
+| `search.type.contest` | Musobaqalar | Мусобиқаҳо |  |
+| `search.type.learn` | O'qish | Омӯзиш |  |
+| `search.type.news` | Yangiliklar | Хабарҳо |  |
+| `search.type.page` | Sahifalar | Саҳифаҳо |  |
+| `search.type.cmd` | Buyruqlar | Фармонҳо |  |
+| `search.recent` | So'nggi qidiruvlar | Ҷустуҷӯҳои охирин |  |
+| `search.quick` | Tez o'tish | Гузариши зуд |  |
+| `search.fuzzy` | {label} · o'xshash natijalar | {label} · натиҷаҳои монанд |  |
+| `search.seeAll` | «{q}» bo'yicha barcha natijalar | Ҳамаи натиҷаҳо барои «{q}» |  |
+| `search.count` | {n} ta natija | {n} натиҷа |  |
+| `search.empty` | «{q}» bo'yicha hech narsa topilmadi | Барои «{q}» чизе ёфт нашуд |  |
+| `search.emptyHint` | Imloni tekshiring yoki boshqa turni tanlang. | Имлоро санҷед ё навъи дигарро интихоб кунед. |  |
+| `search.minChars` | Kamida 2 ta belgi yozing | Ҳадди ақал 2 аломат нависед |  |
+| `search.loading` | Qidirilmoqda… | Ҷустуҷӯ… |  |
+| `search.failed` | Qidiruv ishlamadi. Birozdan so'ng qayta urinib ko'ring. | Ҷустуҷӯ кор накард. Пас аз лаҳзае боз кӯшиш кунед. |  |
+| `search.hintMove` | yurish | ҳаракат |  |
+| `search.hintOpen` | ochish | кушодан |  |
+| `search.hintType` | keyingi tur | навъи навбатӣ |  |
+| `search.resultsFor` | «{q}» bo'yicha natijalar | Натиҷаҳо барои «{q}» |  |
+| `search.topicProblems` | Shu mavzudagi masalalar | Масъалаҳои ин мавзӯъ |  |
+| `search.unit` | natija | натиҷа |  |

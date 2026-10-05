@@ -10,7 +10,13 @@ class CoreConfig(AppConfig):
         # qilinishi bilanoq `OpenApiAuthenticationExtension` o'zini
         # topadi. Busiz har view uchun "could not resolve authenticator"
         # ogohlantirishi chiqadi (o'lchandi 2026-09-24: 138 tadan 114).
+        # Every app describes what it offers the site search in its own
+        # `search.py`; importing them fills the registry in `core.search`.
+        from django.utils.module_loading import autodiscover_modules
+
         from core import schema_extensions  # noqa: F401
+
+        autodiscover_modules("search")
 
         # Guruh permission'lari migrate TUGAGACH paydo bo'ladi
         # (`auth_permission` post_migrate'da yaratiladi), shuning uchun

@@ -46,6 +46,7 @@ from core import (
     usernames,
     verification,
 )
+from core import search as site_search
 from core.cache import cache_get, cache_set
 from core.models import (
     AnalyticsEvent,
@@ -73,6 +74,7 @@ from core.serializers import (
     PasswordResetRequestSerializer,
     PresenceSerializer,
     RegisterSerializer,
+    SearchResponseSerializer,
     SocialLinkSerializer,
     UsernameCheckSerializer,
     UserPublicSerializer,
@@ -408,54 +410,36 @@ def _parse_date(raw: str | None) -> Any:
 
 @extend_schema(summary="Global qidiruv")
 class SearchView(APIView):
-    """Header qidiruvi — har turdan bir nechta natija, tez."""
+    """Site search — the palette and the results page read the same endpoint.
+
+    Without `type` the answer is the top few of every type that matched;
+    with it, one page of that type. Either way `counts` covers all types.
+    The engine and its ranking live in `core.search`.
+    """
 
     permission_classes = [AllowAny]
-    PER_TYPE = 5
 
-    @extend_schema(responses={200: OpenApiResponse(description="Qidiruv natijalari")})
+    @extend_schema(
+        parameters=[
+            OpenApiParameter("q", str, description="Query, at least two characters"),
+            OpenApiParameter("type", str, description="all (default) or one result type"),
+            OpenApiParameter("limit", int),
+            OpenApiParameter("offset", int),
+        ],
+        responses={200: SearchResponseSerializer},
+    )
     def get(self, request: Request) -> Response:
-        from content.models import Article
-        from problems.models import normalize_search
-
-        q = (request.query_params.get("q") or "").strip()
-        if len(q) < 2:
-            return Response({"q": q, "problems": [], "users": [], "articles": [], "contests": []})
-        n = self.PER_TYPE
-        # Masala arxivi allaqachon shunday qidiradi (problems.filters), bu
-        # yerda esa xom `title` bo'yicha edi: o'zbek klaviaturasi `ʻ` yoki
-        # `’` beradi, baza `'` bilan saqlanadi va «0 ga boʻlish» hech narsa
-        # topmasdi — o'lchandi, to'g'ri apostrof bilan 0 natija.
-        needle = normalize_search(q)
-        return Response(
-            {
-                "q": q,
-                "problems": [
-                    {"slug": p.slug, "title": p.title, "difficulty": p.difficulty}
-                    for p in Problem.objects.filter(is_public=True, title_search__icontains=needle)[
-                        :n
-                    ]
-                ],
-                "users": [
-                    {
-                        "username": u.username,
-                        "display_name": u.display_name,
-                        "rating_skills": u.rating_skills,
-                    }
-                    for u in User.objects.filter(is_active=True).filter(
-                        Q(username__icontains=q) | Q(display_name__icontains=q)
-                    )[:n]
-                ],
-                "articles": [
-                    {"slug": a.slug, "title": a.title, "kind": a.kind}
-                    for a in Article.objects.filter(is_published=True, title__icontains=q)[:n]
-                ],
-                "contests": [
-                    {"slug": c.slug, "title": c.title, "start_at": c.start_at}
-                    for c in Contest.objects.filter(is_public=True, title__icontains=q)[:n]
-                ],
-            }
+        params = request.query_params
+        kind_of = params.get("type") or "all"
+        single = kind_of in site_search.TYPES
+        limit = site_search.clamp(
+            params.get("limit"),
+            site_search.PAGE_LIMIT_DEFAULT if single else site_search.GROUP_LIMIT_DEFAULT,
+            1,
+            site_search.PAGE_LIMIT_MAX if single else site_search.GROUP_LIMIT_MAX,
         )
+        offset = site_search.clamp(params.get("offset"), 0, 0, site_search.OFFSET_MAX)
+        return Response(site_search.search(params.get("q") or "", kind_of, limit, offset))
 
 
 @extend_schema_view(post=extend_schema(summary="Ro'yxatdan o'tish"))

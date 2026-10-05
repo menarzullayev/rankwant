@@ -3568,6 +3568,46 @@ def neg_decisions_team_staff_route_opened() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_search_bypasses_engine() -> tuple[bool, str]:
+    """The search endpoint answers without the shared engine."""
+    return _decision_broken(
+        "apps/api/core/views.py",
+        'return Response(site_search.search(params.get("q") or "", kind_of, limit, offset))',
+        'return Response({"q": params.get("q") or "", "groups": []})',
+        "bitta dvigatel qoidasi buzildi",
+    )
+
+
+def neg_decisions_search_scans_users() -> tuple[bool, str]:
+    """The user source is no longer marked large, so short needles scan the table."""
+    return _decision_broken(
+        "apps/api/core/search.py",
+        "        large=True,\n",
+        "",
+        "to'liq skanerlaydi",
+    )
+
+
+def neg_decisions_search_index_locks_table() -> tuple[bool, str]:
+    """The trigram index is built with a plain CREATE INDEX."""
+    return _decision_broken(
+        "apps/api/core/migrations/0031_search_trigram.py",
+        "CREATE INDEX CONCURRENTLY IF NOT EXISTS",
+        "CREATE INDEX IF NOT EXISTS",
+        "CONCURRENTLY emas",
+    )
+
+
+def neg_decisions_search_palette_unmounted() -> tuple[bool, str]:
+    """The header button no longer opens the palette."""
+    return _decision_broken(
+        "apps/web/src/layout/SearchBox.tsx",
+        "{open && <SearchPalette onClose={close} />}",
+        "",
+        "yagona qidiruv panelini ochmaydi",
+    )
+
+
 def neg_decisions_deplocks_wrong_python() -> tuple[bool, str]:
     """A lock compiled for another Python drops conditional dependencies."""
     return _decision_broken(
@@ -5125,6 +5165,10 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/features/problems/components/SampleTests.tsx",
     "apps/api/core/management/commands/seed_demo.py",
     "tools/ci.Dockerfile.dockerignore",
+    # Site search (2026-10-05).
+    "apps/api/core/search.py",
+    "apps/api/core/migrations/0031_search_trigram.py",
+    "apps/web/src/layout/SearchBox.tsx",
     # Team page (2026-10-05).
     "apps/api/team/views.py",
     "apps/api/team/serializers.py",
@@ -8432,6 +8476,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("jamoa sahifasi qoralama bersa tutilsin", neg_decisions_team_page_shows_drafts),
             ("jamoa rasmi tekshirilmasa tutilsin", neg_decisions_team_photo_unchecked),
             ("jamoa xodim yo'li ochilsa tutilsin", neg_decisions_team_staff_route_opened),
+            ("qidiruv dvigateldan o'tmasa tutilsin", neg_decisions_search_bypasses_engine),
+            ("qidiruv foydalanuvchilarni skanerlasa tutilsin", neg_decisions_search_scans_users),
+            ("qidiruv indeksi jadvalni qulflasa tutilsin", neg_decisions_search_index_locks_table),
+            ("qidiruv paneli ochilmasa tutilsin", neg_decisions_search_palette_unmounted),
             ("xulosa serverda chizilsa tutilsin", neg_decisions_settings_summary_drawn_on_server),
             ("oxirgi shablon eslanmasa tutilsin", neg_decisions_last_template_not_remembered),
             ("DB paroli yana qattiq yozilsa tutilsin", neg_decisions_db_password_hardcoded_again),

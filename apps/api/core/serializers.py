@@ -1027,3 +1027,35 @@ class PresenceSerializer(serializers.Serializer[Any]):
     today = serializers.IntegerField()
     online = serializers.IntegerField()
     results = PresenceUserSerializer(many=True)
+
+
+class SearchHitSerializer(serializers.Serializer[Any]):
+    """One search result. Only `type`, `kind`, `key` and `title` are always there."""
+
+    #: Not a ChoiceField: its enum would take the schema name `TypeEnum`
+    #: from an existing component and rename that one.
+    type = serializers.CharField(help_text="problem, user, topic, contest, learn or news")
+    kind = serializers.CharField()
+    key = serializers.CharField(help_text="Slug, username or id — whatever the page URL takes")
+    title = serializers.CharField()
+    subtitle = serializers.CharField(required=False)
+    title_ru = serializers.CharField(required=False)
+    title_en = serializers.CharField(required=False)
+    code = serializers.IntegerField(required=False, allow_null=True)
+    meta = serializers.IntegerField(required=False, help_text="Difficulty, rating or minutes")
+    date = serializers.DateTimeField(required=False, allow_null=True)
+
+
+class SearchGroupSerializer(serializers.Serializer[Any]):
+    type = serializers.CharField()
+    count = serializers.IntegerField()
+    fuzzy = serializers.BooleanField(help_text="Nothing matched exactly; these are near misses")
+    results = SearchHitSerializer(many=True)
+
+
+class SearchResponseSerializer(serializers.Serializer[Any]):
+    q = serializers.CharField(allow_blank=True)
+    type = serializers.CharField()
+    groups = SearchGroupSerializer(many=True)
+    counts = serializers.DictField(child=serializers.IntegerField())
+    total = serializers.IntegerField()

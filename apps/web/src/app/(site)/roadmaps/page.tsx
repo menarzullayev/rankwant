@@ -25,7 +25,7 @@ export default async function RoadmapsPage() {
       </header>
       <ul className="grid gap-4 md:grid-cols-2">
         {roadmaps.map((r) => (
-          <li key={r.slug}>
+          <li key={r.slug} id={r.slug} className="scroll-mt-24">
             <ListCard
               href="/learn"
               title={r.title}

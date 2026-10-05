@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2113 strings.**
+**2144 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -2134,3 +2134,34 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `home.activeToday` | Bugun faol foydalanuvchilar | Бүгін белсенді пайдаланушылар |  |
 | `home.onlineNow` | Hozir onlayn: {count} | Қазір онлайн: {count} |  |
 | `home.nobodyToday` | Bugun hali hech kim kirmadi | Бүгін әлі ешкім кірген жоқ |  |
+| `search.title` | Qidiruv | Іздеу |  |
+| `search.placeholder` | Masala, foydalanuvchi, sahifa yoki buyruq… | Есеп, пайдаланушы, бет немесе пәрмен… |  |
+| `search.placeholderPage` | Nimani qidiramiz? | Нені іздейміз? |  |
+| `search.submit` | Qidirish | Іздеу |  |
+| `search.typeLabel` | Natija turi | Нәтиже түрі |  |
+| `search.results` | Natijalar | Нәтижелер |  |
+| `search.type.all` | Hammasi | Барлығы |  |
+| `search.type.problem` | Masalalar | Есептер |  |
+| `search.type.user` | Foydalanuvchilar | Пайдаланушылар |  |
+| `search.type.topic` | Mavzular | Тақырыптар |  |
+| `search.type.contest` | Musobaqalar | Жарыстар |  |
+| `search.type.learn` | O'qish | Оқу |  |
+| `search.type.news` | Yangiliklar | Жаңалықтар |  |
+| `search.type.page` | Sahifalar | Беттер |  |
+| `search.type.cmd` | Buyruqlar | Пәрмендер |  |
+| `search.recent` | So'nggi qidiruvlar | Соңғы іздеулер |  |
+| `search.quick` | Tez o'tish | Жылдам өту |  |
+| `search.fuzzy` | {label} · o'xshash natijalar | {label} · ұқсас нәтижелер |  |
+| `search.seeAll` | «{q}» bo'yicha barcha natijalar | «{q}» бойынша барлық нәтижелер |  |
+| `search.count` | {n} ta natija | {n} нәтиже |  |
+| `search.empty` | «{q}» bo'yicha hech narsa topilmadi | «{q}» бойынша ештеңе табылмады |  |
+| `search.emptyHint` | Imloni tekshiring yoki boshqa turni tanlang. | Жазылуын тексеріңіз немесе басқа түрді таңдаңыз. |  |
+| `search.minChars` | Kamida 2 ta belgi yozing | Кемінде 2 таңба жазыңыз |  |
+| `search.loading` | Qidirilmoqda… | Ізделуде… |  |
+| `search.failed` | Qidiruv ishlamadi. Birozdan so'ng qayta urinib ko'ring. | Іздеу істемеді. Сәлден соң қайталап көріңіз. |  |
+| `search.hintMove` | yurish | жылжу |  |
+| `search.hintOpen` | ochish | ашу |  |
+| `search.hintType` | keyingi tur | келесі түр |  |
+| `search.resultsFor` | «{q}» bo'yicha natijalar | «{q}» бойынша нәтижелер |  |
+| `search.topicProblems` | Shu mavzudagi masalalar | Осы тақырыптағы есептер |  |
+| `search.unit` | natija | нәтиже |  |

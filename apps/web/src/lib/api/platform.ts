@@ -200,14 +200,6 @@ export type RoadmapComment = {
 
 export type RoadmapVoteResult = { voted: boolean; vote_count: number };
 
-export type SearchResult = {
-  q: string;
-  problems: { slug: string; title: string; difficulty: number }[];
-  users: { username: string; display_name: string; rating_skills: number }[];
-  articles: { slug: string; title: string; kind: string }[];
-  contests: { slug: string; title: string; start_at: string }[];
-};
-
 /** O'qilmagan o'zgarishlar — qo'ng'iroq paneli uchun.
  *
  *  Faqat KIRGAN foydalanuvchi chaqirsin: endpoint `IsAuthenticated`

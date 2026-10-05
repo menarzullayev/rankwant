@@ -2199,6 +2199,29 @@ def team_page_is_managed_data() -> str | None:
     return None
 
 
+def site_search_is_one_engine() -> str | None:
+    """2026-10-05: sayt qidiruvi — bitta dvigatel, bitta panel.
+
+    Har tur bir xil katlanadi va tartiblanadi (`core.search`); foydalanuvchilar
+    jadvali (~974k qator) hech qachon to'liq skanerlanmaydi; indeks jadvalni
+    yozishga qulflamasdan quriladi; header yagona panelni ochadi.
+    """
+    if "site_search.search(" not in read("apps/api/core/views.py"):
+        return "core/views.py: qidiruv endpoint'i `core.search` dvigatelidan o'tmaydi — bitta dvigatel qoidasi buzildi"
+    engine = read("apps/api/core/search.py")
+    if "        large=True,\n" not in engine:
+        return "core/search.py: foydalanuvchilar manbasi `large` emas — qisqa so'rov ~974k qatorni to'liq skanerlaydi"
+    if '_total=Window(Count("pk"))' not in engine:
+        return "core/search.py: sanash sahifa so'rovidan ajraldi — alohida COUNT ketma-ket skanerga tushadi (o'lchandi: 320 ms)"
+    migration = read("apps/api/core/migrations/0031_search_trigram.py")
+    if "CREATE INDEX CONCURRENTLY" not in migration or "FOLD_PG.format(" not in migration:
+        return "core/migrations/0031: trigram indeks CONCURRENTLY emas yoki ifodasi so'rovniki bilan bir manbadan emas"
+    box = read("apps/web/src/layout/SearchBox.tsx")
+    if "{open && <SearchPalette onClose={close} />}" not in box or "/search/?" in box:
+        return "SearchBox.tsx: header yagona qidiruv panelini ochmaydi (yoki o'z so'rovini yuboradi)"
+    return None
+
+
 def docker_disk_stays_bounded() -> str | None:
     """2026-09-20: log 10m/3, builder GC 5GB, SHA teg yo'q, prune tasdiq'dan keyin.
 
@@ -2960,6 +2983,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("sozlamalar tugmalari 44 px", settings_controls_are_44px),
     ("sozlagich telefonda yaqin", customizer_reachable_on_a_phone),
     ("jamoa sahifasi boshqariladi", team_page_is_managed_data),
+    ("qidiruv bitta dvigatel", site_search_is_one_engine),
     ("mehmon header'i har tilda sig'adi", guest_header_fits_every_locale),
     ("Nightly stendi production bilan mos", nightly_stack_matches_production),
     ("sozlagich: tez qator birinchi", customizer_quick_row_first),

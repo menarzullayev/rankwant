@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
-import re
 from typing import Any, ClassVar
 
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import IntegrityError, models, transaction
 
 from core.bases import CreatedModel, TimeStampedModel, UpdatedModel
+
+# Re-exported: the filters and two data migrations import it from here.
+from core.search import normalize_search as normalize_search
 
 #: Same rule the judge enforces (services/judge-go/judge.go `sourceFileName`):
 #: a bare name with an extension, so it can never point outside the work dir.
@@ -33,19 +35,6 @@ DIFFICULTY_LEVELS: tuple[tuple[int, str, str], ...] = (
     (2700, "expert", "Ekspert"),
     (10**9, "master", "Master"),
 )
-
-
-#: O'zbek lotinida apostrof besh xil belgi bilan yoziladi va import
-#: qilingan sarlavhalarda beshalasi ham uchraydi (`'` 414, backtick 7,
-#: `’` 2, `‘` 1, `ʻ` 1). Qidiruvda ular FARQLANMASLIGI kerak:
-#: «yig'indi» va «yigindi» bir xil natija berishi shart.
-_APOSTROPHES = "'’ʻ‘`´"
-_APOSTROPHE_RE = re.compile(f"[{re.escape(_APOSTROPHES)}]")
-
-
-def normalize_search(text: str) -> str:
-    """Qidiruv uchun matnni bir ko'rinishga keltiradi."""
-    return " ".join(_APOSTROPHE_RE.sub("", text).lower().split())
 
 
 def difficulty_level(value: int) -> tuple[str, str]:
