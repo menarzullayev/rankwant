@@ -1732,6 +1732,14 @@ def deploy_automation_is_safe() -> str | None:
         )
     if 'lock_hash "container:$name"' not in read("tools/check_deploy.sh"):
         return "check_deploy.sh: `requirements.lock` solishtirilmaydi — bog'liqlik yangilanishi deploy qilinmaydi"
+    deploy_sh = read("tools/deploy.sh")
+    watcher_sh = read("tools/auto_deploy.sh")
+    if not re.search(r"check_deploy_gate\.py; then\n[^\n]*\n\s+exit 75\n", deploy_sh):
+        return "deploy.sh: yopiq darvoza alohida kod (75) bermaydi — tarmoq uzilishi «yiqildi» bo'lib ko'rinadi"
+    if not re.search(r'"\$deploy_rc" -eq 75 \]; then\n[^\n]*\n\s+rm -f "\$STATE"', watcher_sh):
+        return "auto_deploy.sh: darvoza kodi (75) to'siqni olib tashlamaydi — 30 daqiqa bekor kutiladi"
+    if "|| rotate_log\n" not in watcher_sh:
+        return "auto_deploy.sh: log aylantirilmaydi — fayl cheksiz o'sadi"
     return None
 
 

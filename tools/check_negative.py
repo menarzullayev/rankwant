@@ -3428,6 +3428,36 @@ def neg_decisions_login_account_bucket_dropped() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_deploy_gate_dies_plain() -> tuple[bool, str]:
+    """A closed gate inside deploy.sh looks like a failed deploy again."""
+    return _decision_broken(
+        "tools/deploy.sh",
+        "      exit 75\n",
+        "      exit 1\n",
+        "tarmoq uzilishi «yiqildi» bo'lib ko'rinadi",
+    )
+
+
+def neg_decisions_watcher_keeps_backoff_on_gate() -> tuple[bool, str]:
+    """The watcher keeps its 30-minute barrier after a run that changed nothing."""
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        'if [ "$deploy_rc" -eq 75 ]; then',
+        'if [ "$deploy_rc" -eq 175 ]; then',
+        "30 daqiqa bekor kutiladi",
+    )
+
+
+def neg_decisions_watcher_log_unbounded() -> tuple[bool, str]:
+    """The watcher's log is never rotated."""
+    return _decision_broken(
+        "tools/auto_deploy.sh",
+        "|| rotate_log\n",
+        "|| true\n",
+        "fayl cheksiz o'sadi",
+    )
+
+
 def neg_decisions_deplocks_wrong_python() -> tuple[bool, str]:
     """A lock compiled for another Python drops conditional dependencies."""
     return _decision_broken(
@@ -4357,8 +4387,8 @@ def neg_decisions_signin_label_wraps() -> tuple[bool, str]:
 def neg_decisions_deploy_gate_unwired() -> tuple[bool, str]:
     return _decision_broken(
         "tools/deploy.sh",
-        "tools/check_deploy_gate.py ||",
-        "tools/check_deploy_gate_off.py ||",
+        "tools/check_deploy_gate.py; then",
+        "tools/check_deploy_gate_off.py; then",
         "deploy faqat yashil main'dan",
     )
 
@@ -8282,6 +8312,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("lock boshqa Python uchun yasalsa tutilsin", neg_decisions_deplocks_wrong_python),
             ("noto'g'ri urinish sanalmasa tutilsin", neg_decisions_login_failures_not_counted),
             ("hisob idishi olib tashlansa tutilsin", neg_decisions_login_account_bucket_dropped),
+            ("deploy darvozasi oddiy xato bersa tutilsin", neg_decisions_deploy_gate_dies_plain),
+            ("watcher darvozada to'siq qoldirsa tutilsin", neg_decisions_watcher_keeps_backoff_on_gate),
+            ("watcher logi aylanmasa tutilsin", neg_decisions_watcher_log_unbounded),
             ("hisob menyusi qatori kichraysa tutilsin", neg_decisions_account_menu_rows_shrink),
             ("tez qator olib tashlansa tutilsin", neg_decisions_customizer_quick_row_dropped),
             ("shablon preview'i tokensiz qolsa tutilsin", neg_decisions_customizer_preview_hardcoded),

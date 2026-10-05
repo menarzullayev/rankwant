@@ -83,6 +83,9 @@ ENV_FILE="${RANKWANT_AUTO_DEPLOY_ENV:-$LIVE_DIR/.env.public}"
 # Holat fayli: oxirgi urinish (qayta urinish to'sig'i shundan hisoblanadi).
 STATE="${RANKWANT_AUTO_DEPLOY_STATE:-$HOME/.rankwant-auto-deploy-state}"
 BACKOFF="${RANKWANT_AUTO_DEPLOY_BACKOFF:-1800}"
+# Log: vazifa shu skriptning chiqishini aynan shu faylga yo'naltiradi.
+LOG_FILE="${RANKWANT_AUTO_DEPLOY_LOG:-$LIVE_DIR/.handoff/auto-deploy.log}"
+LOG_MAX="${RANKWANT_AUTO_DEPLOY_LOG_MAX:-5242880}"
 
 DRY_RUN=0
 STATUS_ONLY=0
@@ -96,6 +99,22 @@ for arg in "$@"; do
 done
 
 log()  { printf '[%s] %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$1"; }
+
+# Log aylantirish: fayl `LOG_MAX` dan (standart 5 MiB) oshsa, nusxasi
+# `<log>.1` ga olinadi va fayl bo'shatiladi. Bitta zaxira — o'lchangan
+# o'sish ~100 KB/kun, ya'ni 5 MiB ~50 kun.
+# ⚠️ `mv` EMAS: fayl shu jarayonning stdout'i sifatida ochiq turadi va
+# Windows ochiq faylni qayta nomlashga yo'l qo'ymaydi. Nusxa + bo'shatish
+# ochiq (append) deskriptor bilan ishlaydi. Xato bo'lsa jim o'tiladi —
+# log deploy'ni to'xtatmasin.
+rotate_log() {
+  [ -f "$LOG_FILE" ] || return 0
+  local size
+  size="$(wc -c < "$LOG_FILE" 2>/dev/null | tr -d '[:space:]')"
+  [ -n "$size" ] && [ "$size" -gt "$LOG_MAX" ] || return 0
+  cp -f "$LOG_FILE" "$LOG_FILE.1" 2>/dev/null && : > "$LOG_FILE" 2>/dev/null || return 0
+  log "log aylantirildi ($size bayt → ${LOG_FILE##*/}.1)"
+}
 die()  { printf '%s✗ %s%s\n' "$R" "$1" "$N"; exit 1; }
 
 # ⚠️ STDIN'ni majburan ochamiz. Task Scheduler → `conhost.exe --headless`
@@ -176,6 +195,8 @@ if [ "$STATUS_ONLY" -eq 1 ]; then
   printf 'env mavjudmi  : %s\n' "$env_state"
   exit 0
 fi
+
+[ "$STATUS_ONLY" -eq 1 ] || [ "$DRY_RUN" -eq 1 ] || rotate_log
 
 # ── 1. Qulf ──────────────────────────────────────────────────────────
 # Deploy bilan bir xil qulf. Band bo'lsa bu XATO EMAS — boshqa deploy
@@ -323,9 +344,20 @@ log "deploy boshlandi (target ${TARGET:0:7})"
 # «✗ boshqa deploy ishlayapti (auto-deploy pid 1303)»). `1` — «qulf
 # chaqiruvchida», `deploy.sh` `mkdir`/`trap` ni o'tkazib yuboradi,
 # qulfni esa watcher'ning `trap` i bo'shatadi.
-if RANKWANT_LOCK_HELD=1 RANKWANT_ENV_FILE="$ENV_FILE" \
-    RANKWANT_DEPLOY_SCOPE="$SCOPE" bash tools/deploy.sh --yes; then
+RANKWANT_LOCK_HELD=1 RANKWANT_ENV_FILE="$ENV_FILE" \
+  RANKWANT_DEPLOY_SCOPE="$SCOPE" bash tools/deploy.sh --yes
+deploy_rc=$?
+if [ "$deploy_rc" -eq 0 ]; then
   log "deploy tugadi: ${TARGET:0:12}"
+  rm -f "$STATE"
+  exit 0
+fi
+# 75 — `deploy.sh` o'z darvozasida to'xtadi, ya'ni HECH NARSA o'zgarmagan
+# (build ham, migratsiya ham boshlanmagan). Bu nosozlik emas: yuqoridagi
+# tekshiruv bilan uning orasida CI holati o'zgargan yoki GitHub javob
+# bermagan. To'siq olib tashlanadi — keyingi daqiqa qayta urinadi.
+if [ "$deploy_rc" -eq 75 ]; then
+  log "darvoza deploy ichida yopildi (exit 75) — hech narsa o'zgarmadi, to'siq YO'Q"
   rm -f "$STATE"
   exit 0
 fi
