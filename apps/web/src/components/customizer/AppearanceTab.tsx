@@ -57,81 +57,221 @@ import {
   themeToggleToEffect,
 } from "@/lib/theme/toggle";
 
-import { AccentSection } from "./AccentSection";
-import { DENSITIES, chip } from "./chrome";
+import { AccentSection, AccentSwatches } from "./AccentSection";
+import { DENSITIES, chip, type GroupId } from "./chrome";
 import { Group, Section } from "./Group";
 import { SavedTemplates } from "./SavedTemplates";
-import { DEFAULT_GROUP, readGroup, subscribeGroup, writeGroup } from "./group-session";
+import { readGroup, subscribeGroup, writeGroup } from "./group-session";
 
+/** The four styles offered without opening a group. The current style
+ *  takes the last seat when it is not one of them. */
+const QUICK_STYLES: StyleId[] = ["clay", "dashboard", "flat", "material"];
+
+const FONT_NAMES: Record<string, string> = {
+  inter: "Inter",
+  jakarta: "Plus Jakarta",
+  roboto: "Roboto",
+  "dm-sans": "DM Sans",
+  lexend: "Lexend",
+};
+
+const pair = (first: string, second: string) =>
+  [first, second].filter(Boolean).join(" · ");
+const percent = (value: number) => `${value}%`;
+const pixels = (value: number) => `${value} px`;
+
+/** Quick row, templates, then the detail groups (2026-10-05).
+ *
+ *  The four controls people reach for most — mode, style, accent, text
+ *  size — sit above everything and need no accordion. Team templates are
+ *  always visible too. The five groups of D61 remain, in a new order:
+ *  colour, type, layout, saved templates, and the kit families last,
+ *  set apart as "advanced". */
 export function AppearanceTab() {
   const locale = useLocale();
   // D65: last accordion lives in sessionStorage, not the account.
-  const group = useSyncExternalStore(subscribeGroup, readGroup, () => DEFAULT_GROUP);
+  const group = useSyncExternalStore(subscribeGroup, readGroup, () => null);
+  const { appearance } = useCustomizer();
+  const toggle = (id: GroupId) => writeGroup(group === id ? null : id);
+  const style = STYLES.find((item) => item.id === (appearance.style ?? "clay"));
+  const navMode = NAV_MODES.find(
+    (item) => item.id === (appearance.navMode ?? DEFAULT_NAV_MODE),
+  );
+  // The custom-colour form keeps the colour being tried in its own state.
+  // A swatch in the quick row changes the applied colour from outside, so
+  // the form restarts from it instead of showing the old trial.
+  const accentKey = appearance.accent
+    ? `${appearance.accent.hue}-${appearance.accent.sat}`
+    : "style";
+  // What a closed group holds, so a value can be read without opening it.
+  const colorSummary = pair(
+    style ? t(locale, style.labelKey as MessageKey) : "",
+    t(locale, `customizer.density.${appearance.density ?? "comfortable"}`),
+  );
+  const typeSummary = pair(
+    appearance.font ? FONT_NAMES[appearance.font] : t(locale, "customizer.font.default"),
+    percent(clampSize(appearance.size)),
+  );
+  const layoutSummary = pair(
+    navMode ? t(locale, navMode.labelKey) : "",
+    pixels(clampWidth(appearance.width)),
+  );
   return (
-    <div className="space-y-4">
-      <Group
-        id="look"
-        title={t(locale, "customizer.group.look")}
-        open={group === "look"}
-        onOpen={writeGroup}
-      >
-        <TemplatesSection />
-        <SavedTemplates />
-      </Group>
-      <Group
-        id="color"
-        title={t(locale, "customizer.group.color")}
-        open={group === "color"}
-        onOpen={writeGroup}
+    <div className="space-y-5">
+      <section
+        aria-label={t(locale, "customizer.quick")}
+        data-cz-quick
+        className="space-y-3 rw-radius border rw-line p-3"
       >
         <ThemeSection />
-        <ThemeToggleSection />
-        <StyleSection />
-        <AccentSection />
-      </Group>
-      <Group
-        id="type"
-        title={t(locale, "customizer.group.type")}
-        open={group === "type"}
-        onOpen={writeGroup}
-      >
-        <FontSection />
-        <SizeSection />
-        <DensitySection />
-      </Group>
-      <Group
-        id="layout"
-        title={t(locale, "customizer.group.layout")}
-        open={group === "layout"}
-        onOpen={writeGroup}
-      >
-        {/* D61: Tartib = personal chrome only (D50/D53/D58). */}
-        <NavSection />
-        <NavShapeSection />
-        <WidthSection />
-        <LookSection />
-      </Group>
-      <Group
-        id="system"
-        title={t(locale, "customizer.group.system")}
-        open={group === "system"}
-        onOpen={writeGroup}
-      >
-        {/* D48+D51: contestant writes kit families via SelectField, not chips. */}
-        <VerdictSection />
-        <StatusSection />
-        <LoadingSection />
-        <OverlaySection />
-        <FormSection />
-        <IconPackSection />
-      </Group>
+        <QuickStyleSection />
+        <AccentSwatches compact />
+        <QuickSizeSection />
+      </section>
+
+      <TemplatesSection />
+
+      <div>
+        <p className="mb-1 text-theme-xs font-semibold tracking-wide rw-faint uppercase">
+          {t(locale, "customizer.details")}
+        </p>
+        <Group
+          id="color"
+          title={t(locale, "customizer.group.color")}
+          summary={colorSummary}
+          open={group === "color"}
+          onOpen={toggle}
+        >
+          <StyleSection />
+          <DensitySection />
+          <AccentSwatches />
+          <AccentSection key={accentKey} />
+          <ThemeToggleSection />
+        </Group>
+        <Group
+          id="type"
+          title={t(locale, "customizer.group.type")}
+          summary={typeSummary}
+          open={group === "type"}
+          onOpen={toggle}
+        >
+          <FontSection />
+          <SizeSection />
+        </Group>
+        <Group
+          id="layout"
+          title={t(locale, "customizer.group.layout")}
+          summary={layoutSummary}
+          open={group === "layout"}
+          onOpen={toggle}
+        >
+          {/* D61: Tartib = personal chrome only (D50/D53/D58). */}
+          <NavSection />
+          <NavShapeSection />
+          <WidthSection />
+          <LookSection />
+        </Group>
+        <Group
+          id="look"
+          title={t(locale, "customizer.myTemplates")}
+          open={group === "look"}
+          onOpen={toggle}
+        >
+          <SavedTemplates />
+        </Group>
+      </div>
+
+      <div className="rw-radius border border-dashed rw-line px-3">
+        <Group
+          id="system"
+          title={t(locale, "customizer.group.advanced")}
+          summary={t(locale, "customizer.advancedHint")}
+          open={group === "system"}
+          onOpen={toggle}
+          flush
+        >
+          {/* D48+D51: contestant writes kit families via SelectField, not chips. */}
+          <VerdictSection />
+          <StatusSection />
+          <LoadingSection />
+          <OverlaySection />
+          <FormSection />
+          <IconPackSection />
+        </Group>
+      </div>
     </div>
+  );
+}
+
+function QuickStyleSection() {
+  const locale = useLocale();
+  const { appearance, setAppearance } = useCustomizer();
+  const current = (appearance.style ?? "clay") as StyleId;
+  const ids = QUICK_STYLES.includes(current)
+    ? QUICK_STYLES
+    : [...QUICK_STYLES.slice(0, 3), current];
+  return (
+    <Section title={t(locale, "customizer.style")}>
+      <div className="flex flex-wrap gap-2">
+        {ids.map((id) => {
+          const def = STYLES.find((item) => item.id === id);
+          if (!def) return null;
+          return (
+            <button
+              key={id}
+              type="button"
+              aria-pressed={current === id}
+              onClick={() => setAppearance({ style: id })}
+              className={chip(current === id)}
+            >
+              {t(locale, def.labelKey as MessageKey)}
+            </button>
+          );
+        })}
+        <button
+          type="button"
+          onClick={() => {
+            writeGroup("color");
+            requestAnimationFrame(() =>
+              document.getElementById("rw-cz-color")?.scrollIntoView({ block: "nearest" }),
+            );
+          }}
+          className={chip(false)}
+        >
+          {t(locale, "customizer.allStyles")}
+        </button>
+      </div>
+    </Section>
+  );
+}
+
+function QuickSizeSection() {
+  const locale = useLocale();
+  const { appearance, setAppearance } = useCustomizer();
+  const value = clampSize(appearance.size);
+  return (
+    <Section title={t(locale, "customizer.size")}>
+      <label className="block text-theme-xs rw-faint">
+        <span className="tabular-nums">{value}%</span>
+        <input
+          type="range"
+          min={SIZE_MIN}
+          max={SIZE_MAX}
+          step={SIZE_STEP}
+          value={value}
+          aria-label={t(locale, "customizer.size")}
+          onChange={(event) => setAppearance({ size: Number(event.target.value) })}
+          className="mt-1 w-full"
+        />
+      </label>
+    </Section>
   );
 }
 
 function TemplatesSection() {
   const locale = useLocale();
   const { applyTemplate, template } = useCustomizer();
+  const { theme } = useTheme();
   return (
     <Section title={t(locale, "customizer.templates")}>
       {template ? null : (
@@ -140,29 +280,51 @@ function TemplatesSection() {
         </p>
       )}
       <ul className="grid grid-cols-2 gap-2">
-        {TEMPLATES.map((item) => (
-          <li key={item.id}>
-            <button
-              type="button"
-              aria-pressed={template?.id === item.id}
-              onClick={() => applyTemplate(item)}
-              className={`w-full rw-radius-sm border px-3 py-2 text-start text-theme-sm transition rw-focus-ring ${
-                template?.id === item.id ? "rw-accent-line" : "rw-line rw-hover-bg"
-              }`}
-            >
-              <span className="block truncate font-medium rw-strong">
-                {t(locale, `customizer.template.${item.id}`)}
-              </span>
-                <span className="block truncate text-theme-xs rw-faint">
-                {t(
-                  locale,
-                  (STYLES.find((style) => style.id === item.style)?.labelKey ??
-                    "customizer.style") as MessageKey,
-                )}
-              </span>
-            </button>
-          </li>
-        ))}
+        {TEMPLATES.map((item) => {
+          // A template that follows the system is drawn in the mode on
+          // screen now, which is the mode it would be applied in.
+          const dark = item.theme === "dark" || (item.theme !== "light" && theme === "dark");
+          return (
+            <li key={item.id}>
+              <button
+                type="button"
+                aria-pressed={template?.id === item.id}
+                onClick={() => applyTemplate(item)}
+                className={`grid w-full gap-1.5 rw-radius-sm border p-1.5 text-start text-theme-sm transition rw-focus-ring ${
+                  template?.id === item.id ? "rw-accent-line" : "rw-line rw-hover-bg"
+                }`}
+              >
+                {/* The preview takes its colours from the style's own
+                    tokens: `data-style` scopes them to this box, so the
+                    card cannot drift from what the template applies. */}
+                <span
+                  aria-hidden="true"
+                  data-style={item.style}
+                  data-cz-preview
+                  className={`${dark ? "dark " : ""}block h-14 overflow-hidden rounded-md border rw-line rw-ground-bg p-1.5`}
+                >
+                  <span className="block h-1.5 w-1/2 rounded-full bg-current opacity-70 rw-strong" />
+                  <span className="mt-1.5 flex h-6 items-center gap-1.5 rounded rw-surface px-1.5">
+                    <span className="block h-2.5 w-5 rounded-sm rw-accent-bg" />
+                    <span className="block h-1.5 w-2/5 rounded-full bg-current opacity-50 rw-dim" />
+                  </span>
+                </span>
+                <span className="min-w-0 px-0.5">
+                  <span className="block truncate font-medium rw-strong">
+                    {t(locale, `customizer.template.${item.id}`)}
+                  </span>
+                  <span className="block truncate text-theme-xs rw-faint">
+                    {t(
+                      locale,
+                      (STYLES.find((style) => style.id === item.style)?.labelKey ??
+                        "customizer.style") as MessageKey,
+                    )}
+                  </span>
+                </span>
+              </button>
+            </li>
+          );
+        })}
       </ul>
     </Section>
   );
@@ -432,13 +594,7 @@ function SizeSection() {
 function FontSection() {
   const locale = useLocale();
   const { appearance, setAppearance } = useCustomizer();
-  const NAMES: Record<string, string> = {
-    inter: "Inter",
-    jakarta: "Plus Jakarta",
-    roboto: "Roboto",
-    "dm-sans": "DM Sans",
-    lexend: "Lexend",
-  };
+  const NAMES = FONT_NAMES;
   const FONTS: (string | null)[] = [null, "inter", "jakarta", "roboto", "dm-sans", "lexend"];
   const body = appearance.font ?? null;
   const heading = appearance.fontHeading ?? null;

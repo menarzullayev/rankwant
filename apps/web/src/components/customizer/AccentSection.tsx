@@ -12,6 +12,72 @@ import { Icon } from "@/components/ui/Icon";
 import { SWATCHES } from "./chrome";
 import { Section } from "./Group";
 
+/** Hues of the quick row: seven that are far apart. All fourteen are in
+ *  the colour group — at 352 px they take three rows, too many for the top. */
+const QUICK_HUES = [0, 38, 140, 170, 215, 262, 320];
+
+/** Swatches: one press applies a colour. `compact` is the quick row. */
+export function AccentSwatches({ compact = false }: { compact?: boolean }) {
+  const locale = useLocale();
+  const { appearance, setAppearance, preview } = useCustomizer();
+  const [failure, setFailure] = useState<AccentError | null>(null);
+  const current = appearance.accent
+    ? preview(appearance.accent.hue, appearance.accent.sat)
+    : null;
+
+  const apply = (patch: Parameters<typeof setAppearance>[0]) => {
+    const result = setAppearance(patch);
+    setFailure(result.ok ? null : (result.error ?? null));
+  };
+
+  return (
+    <Section title={t(locale, "customizer.accent")}>
+      <ul className="flex flex-wrap gap-2">
+        {SWATCHES.filter((swatch) => !compact || QUICK_HUES.includes(swatch.hue)).map((swatch) => (
+          <li key={`${swatch.hue}-${swatch.sat}`}>
+            <button
+              type="button"
+              aria-label={t(locale, swatch.nameKey)}
+              aria-pressed={appearance.accent?.hue === swatch.hue}
+              onClick={() => apply({ accent: { hue: swatch.hue, sat: swatch.sat } })}
+              style={{ background: `hsl(${swatch.hue} ${swatch.sat}% 45%)` }}
+              className={`size-7 rounded-full border-2 transition rw-focus-ring ${
+                appearance.accent?.hue === swatch.hue ? "rw-accent-line" : "border-transparent"
+              }`}
+            />
+          </li>
+        ))}
+        <li>
+          <button
+            type="button"
+            aria-pressed={!appearance.accent}
+            onClick={() => apply({ accent: null })}
+            className={`flex size-7 items-center justify-center rounded-full border-2 text-theme-xs rw-dim-2 rw-field-bg rw-focus-ring ${
+              appearance.accent ? "rw-divide" : "rw-accent-line"
+            }`}
+            title={t(locale, "customizer.accentDefault")}
+            aria-label={t(locale, "customizer.accentDefault")}
+          >
+            <Icon name="action.confirm" className="size-3.5" />
+          </button>
+        </li>
+      </ul>
+      {!compact && current && current.ink !== null && (
+        <p className="mt-2 text-theme-xs rw-faint tabular-nums">
+          {t(locale, "customizer.accentCurrent")}: {current.ink.toFixed(2)}:1
+        </p>
+      )}
+      {failure && (
+        <p role="alert" className="mt-2 rw-radius-sm rw-bad-soft px-2 py-1 text-theme-xs">
+          {errorText(locale, failure, "")}
+        </p>
+      )}
+    </Section>
+  );
+}
+
+/** A colour of the visitor's own: hex or hue and saturation, measured
+ *  before it can be applied. The swatches live in `AccentSwatches`. */
 export function AccentSection() {
   const locale = useLocale();
   const { appearance, setAppearance, preview } = useCustomizer();
@@ -23,9 +89,6 @@ export function AccentSection() {
   const trial = preview(hue, sat);
   const ok = passes(trial.button) && passes(trial.ink);
   const gate = ok ? null : accentGateKind(trial);
-  const current = appearance.accent
-    ? preview(appearance.accent.hue, appearance.accent.sat)
-    : trial;
 
   const apply = (patch: Parameters<typeof setAppearance>[0]) => {
     const result = setAppearance(patch);
@@ -33,42 +96,8 @@ export function AccentSection() {
   };
 
   return (
-    <Section title={t(locale, "customizer.accent")}>
-      <ul className="mb-3 flex flex-wrap gap-2">
-        {SWATCHES.map((swatch) => (
-          <li key={`${swatch.hue}-${swatch.sat}`}>
-            <button
-              type="button"
-              aria-label={t(locale, swatch.nameKey)}
-              aria-pressed={appearance.accent?.hue === swatch.hue}
-              onClick={() => {
-                setHue(swatch.hue);
-                setSat(swatch.sat);
-                setHex(accentToHex(swatch.hue, swatch.sat));
-                apply({ accent: { hue: swatch.hue, sat: swatch.sat } });
-              }}
-              style={{ background: `hsl(${swatch.hue} ${swatch.sat}% 45%)` }}
-              className={`size-8 rounded-full border-2 transition ${
-                appearance.accent?.hue === swatch.hue ? "rw-accent-line" : "border-transparent"
-              }`}
-            />
-          </li>
-        ))}
-        <li>
-          <button
-            type="button"
-            aria-pressed={!appearance.accent}
-            onClick={() => apply({ accent: null })}
-            className="flex size-8 items-center justify-center rounded-full border rw-line text-theme-xs rw-dim-2"
-            title={t(locale, "customizer.accentDefault")}
-            aria-label={t(locale, "customizer.accentDefault")}
-          >
-            <Icon name="action.confirm" className="size-3.5" />
-          </button>
-        </li>
-      </ul>
-
-      <label className="mt-3 block text-theme-xs rw-faint">
+    <Section title={t(locale, "customizer.accentCustom")}>
+      <label className="block text-theme-xs rw-faint">
         {t(locale, "customizer.hex")}
         <div className="mt-1 flex items-center gap-2">
           <input
@@ -155,11 +184,6 @@ export function AccentSection() {
       >
         {t(locale, "customizer.accentApply")}
       </button>
-      {appearance.accent && current.ink !== null && (
-        <p className="mt-2 text-theme-xs rw-faint">
-          {t(locale, "customizer.accentCurrent")}: {current.ink.toFixed(2)}:1
-        </p>
-      )}
     </Section>
   );
 }

@@ -10,7 +10,6 @@ import { t } from "@/i18n/messages";
 import { exportAppearance, importAppearance } from "@/lib/theme/share";
 import { Icon } from "@/components/ui/Icon";
 
-import { Section } from "./Group";
 
 export function SavedTemplates() {
   const locale = useLocale();
@@ -54,7 +53,7 @@ export function SavedTemplates() {
   }
 
   return (
-    <Section title={t(locale, "customizer.myTemplates")}>
+    <div>
       <CopyButton
         text={shareLink()}
         tone="text"
@@ -176,6 +175,6 @@ export function SavedTemplates() {
           </button>
         </form>
       )}
-    </Section>
+    </div>
   );
 }
