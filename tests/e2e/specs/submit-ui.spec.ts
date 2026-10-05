@@ -24,10 +24,20 @@ const PROBLEM = "/problems/a-plus-b";
  */
 const sameOrigin = new URL(API, SITE).origin === new URL(SITE).origin;
 
+/** On a phone the solve panel is a bottom sheet that starts closed, and a
+ *  closed sheet is `aria-hidden` — its heading and controls are not in the
+ *  accessibility tree. The spec looked for them without opening it, so the
+ *  `mobile` project failed on a page that worked (measured 2026-10-05). */
+async function openSolvePanel(page: import("@playwright/test").Page) {
+  const opener = page.getByRole("button", { name: /Kod$/, expanded: false });
+  if (await opener.isVisible().catch(() => false)) await opener.click();
+}
+
 test("mehmonga panel ko'rinadi, lekin yuborish kirishni talab qiladi", async ({
   page,
 }) => {
   await page.goto(PROBLEM);
+  await openSolvePanel(page);
 
   await expect(page.getByRole("heading", { name: "Yechim" })).toBeVisible();
   // Tillar serverda olinadi — mehmon ham ko'radi (SSR).
@@ -69,6 +79,7 @@ test("kirgan foydalanuvchi yuborish va sinab ko'rishni oladi", async ({
   expect(login.ok()).toBeTruthy();
 
   await page.goto(PROBLEM);
+  await openSolvePanel(page);
 
   await expect(page.getByRole("button", { name: "Yuborish" })).toBeVisible();
   await expect(

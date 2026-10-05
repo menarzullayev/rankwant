@@ -21,7 +21,7 @@ import { Dropdown } from "@/components/ui/Dropdown";
 import { Loading } from "@/components/ui/Loading";
 import { Status } from "@/components/ui/Status";
 import { Verdict } from "@/components/ui/Verdict";
-import { editorLanguage, starterSource } from "@/lib/editor-language";
+import { defaultLanguage, editorLanguage, starterSource } from "@/lib/editor-language";
 import { isPendingVerdict } from "@/lib/theme/verdict";
 import {
   EVENT_ATTEMPT_PROGRESS,
@@ -280,7 +280,7 @@ export function SubmitPanel({
     pickedLanguage ??
     (storedLanguage && languages.some((l) => l.code === storedLanguage)
       ? storedLanguage
-      : (languages[0]?.code ?? ""));
+      : defaultLanguage(languages));
 
   function pickLanguage(code: string) {
     setPickedLanguage(code);
