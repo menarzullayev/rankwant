@@ -177,7 +177,7 @@ export function TeamAdmin() {
   useEffect(() => {
     let alive = true;
     staff
-      .list<{ results: Department[] }>("/staff/team/departments/", { page_size: 100, ordering: "order" })
+      .list<Department>("/staff/team/departments/", { page_size: 100, ordering: "order" })
       .then((page) => {
         if (alive) setDepartments(page.results);
       })
