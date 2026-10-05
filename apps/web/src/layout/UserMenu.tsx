@@ -79,7 +79,7 @@ export default function UserMenu() {
   // yonma-yon turib 390px ni yeb qo'masin.
   const name = user.display_name || user.username;
   const item =
-    "flex w-full items-center gap-2 px-3 py-2 text-start text-theme-sm rw-strong transition rw-hover-bg";
+    "flex min-h-11 w-full items-center gap-2 px-3 py-2 text-start text-theme-sm rw-strong transition rw-hover-bg";
 
   return (
     <div ref={box} className="relative">

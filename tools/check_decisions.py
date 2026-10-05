@@ -2039,6 +2039,8 @@ def customizer_reachable_on_a_phone() -> str | None:
     menu = read("apps/web/src/layout/UserMenu.tsx")
     if "customizer.setOpen(true)" not in menu:
         return "UserMenu.tsx: hisob menyusida sozlagich qatori yo'q — telefonda panel to'rt qadamda"
+    if '"flex min-h-11 w-full items-center' not in menu:
+        return "UserMenu.tsx: hisob menyusi qatorlari 44 px emas"
     if "toggleTheme(" not in menu:
         return "UserMenu.tsx: hisob menyusida mavzu qatori yo'q — telefonda almashtirgich qolmaydi"
     shell = read("apps/web/src/components/customizer/Customizer.tsx")
