@@ -114,7 +114,7 @@ export default function SearchBox() {
         data-tip-kind="flip"
         className="flex size-10 shrink-0 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg md:hidden"
       >
-        <Icon name="action.search" className="pointer-events-none" />
+        <Icon name="action.search" className="pointer-events-none size-5" />
       </button>
       <div
         id="rw-header-search"
