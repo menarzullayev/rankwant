@@ -102,6 +102,11 @@ services:
     <<: *restart
     logging: *default-logging
     ports: !reset []
+    environment:
+      # ADR-0044: the public stack does not start on a secret it was not
+      # given. The base file keeps the dev value for the local and CI
+      # stacks; `:?` here makes a missing value fatal for this chain only.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD .env.public da yo'q (ADR-0044)}
   redis:
     <<: *restart
     logging: *default-logging
@@ -110,6 +115,8 @@ services:
     <<: *restart
     logging: *default-logging
     ports: !reset []
+    environment:
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD .env.public da yo'q (ADR-0044)}
 
   # ⚠️ ADR-0028 `judge-queue` ni qo'shdi, lekin bu overlay uni SANAMAGAN.
   # Natijada unga `restart: unless-stopped` berilmadi va Docker sukuti
@@ -207,4 +214,4 @@ services:
       # shu o'zgaruvchini o'qiydi — identitet ikki tomonda bir xil).
       # Baza'ning statik dev qiymati boshqa kalit bilan rotatsiya
       # qilinadigan bo'lsa ham shu yerdan Override qilinadi.
-      S3_SECRET: ${JUDGE_S3_SECRET:-judge-ro-dev}
+      S3_SECRET: ${JUDGE_S3_SECRET:?JUDGE_S3_SECRET .env.public da yo'q (ADR-0044)}
