@@ -4367,8 +4367,8 @@ def neg_decisions_signin_label_wraps() -> tuple[bool, str]:
 def neg_decisions_deploy_gate_unwired() -> tuple[bool, str]:
     return _decision_broken(
         "tools/deploy.sh",
-        "tools/check_deploy_gate.py ||",
-        "tools/check_deploy_gate_off.py ||",
+        "tools/check_deploy_gate.py; then",
+        "tools/check_deploy_gate_off.py; then",
         "deploy faqat yashil main'dan",
     )
 
