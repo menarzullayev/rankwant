@@ -139,3 +139,43 @@ class TestPayloadAttemptId:
 
         assert _payload_attempt_id("not-json") is None
         assert _payload_attempt_id(json.dumps({"data": {}})) is None
+
+
+class TestLiveFrame:
+    """A live message reaches the browser as an SSE event, not as raw JSON."""
+
+    def test_a_bus_message_becomes_an_sse_frame(self) -> None:
+        import json
+
+        from realtime.asgi import _live_frame
+
+        raw = json.dumps({"id": 7, "event": "notification", "data": {"id": 40, "kind": "duel"}})
+        frame = _live_frame(raw)
+        assert frame is not None
+        lines = frame.split("\n")
+        assert lines[0] == "id: 7"
+        assert lines[1] == "event: notification"
+        assert json.loads(lines[2].removeprefix("data: ")) == {"id": 40, "kind": "duel"}
+        # The blank line is what ends an event; without it nothing fires.
+        assert frame.endswith("\n\n")
+
+    def test_the_live_and_the_replayed_frame_are_the_same(self) -> None:
+        import json
+
+        from realtime.asgi import _frame, _live_frame
+
+        item = {"id": 3, "event": "verdict", "data": {"attempt_id": 1}}
+        assert _live_frame(json.dumps(item)) == _frame(item)
+
+    def test_a_malformed_message_is_skipped(self) -> None:
+        from realtime.asgi import _live_frame
+
+        assert _live_frame("not json") is None
+        assert _live_frame('{"id": 1}') is None
+
+    def test_no_stream_loop_writes_a_raw_message(self) -> None:
+        from pathlib import Path
+
+        source = (Path(__file__).resolve().parents[1] / "realtime/asgi.py").read_text("utf-8")
+        assert "await write(raw)" not in source
+        assert source.count("frame = _live_frame(raw)") == 2

@@ -22,7 +22,7 @@ const CHIP =
 export function NotificationCenter() {
   const locale = useLocale();
   const { user, ready } = useSession();
-  const { summary, live, markSeen } = useNotifications();
+  const { summary, channel, markSeen } = useNotifications();
   const [unread, setUnread] = useState(false);
   const [kind, setKind] = useState<string | null>(null);
   const signedIn = ready && user !== null;
@@ -75,7 +75,7 @@ export function NotificationCenter() {
     <div className="mx-auto w-full max-w-3xl space-y-4">
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
         {heading}
-        <LiveMark live={live} locale={locale} />
+        <LiveMark channel={channel} locale={locale} />
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-x-3 border-b rw-divider">

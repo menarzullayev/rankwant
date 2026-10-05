@@ -97,7 +97,7 @@ function Panel({
   onClose: (returnFocus: boolean) => void;
 }) {
   const locale = useLocale();
-  const { summary, live } = useNotifications();
+  const { summary, channel } = useNotifications();
   const [unread, setUnread] = useState(false);
   const panel = useRef<HTMLDivElement>(null);
   const list = useNotificationList({ unread, kind: null, size: PANEL_SIZE, active: true });
@@ -206,7 +206,7 @@ function Panel({
       )}
       <UndoBar what={list.undoable} locale={locale} onUndo={list.undo} />
       <div className="flex shrink-0 items-center justify-between gap-2 border-t rw-divider py-1 pr-2 pl-4">
-        <LiveMark live={live} locale={locale} />
+        <LiveMark channel={channel} locale={locale} />
         <Link
           href={"/notifications" as Route}
           onClick={() => onClose(false)}

@@ -165,6 +165,15 @@ describe("the bell and the live channel", () => {
     expect(context).toContain("window.setInterval(changed, POLL_MS)");
   });
 
+  it("claims neither live nor polling before the page has hydrated", () => {
+    // The server has no EventSource; reporting its fallback would not
+    // match the browser's first render.
+    expect(context).toContain("channel: mounted ? stream : CONNECTING,");
+    expect(src("../../src/components/notifications/parts.tsx")).toContain(
+      'if (channel === "connecting") return null;',
+    );
+  });
+
   it("draws the same states in the panel and on the page", () => {
     const center = src("../../src/components/notifications/NotificationCenter.tsx");
     expect(bell).toContain("<Feed");

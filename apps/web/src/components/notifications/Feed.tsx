@@ -65,7 +65,7 @@ export function Feed({
     return total === 0 || !filtered ? (
       <StateBox icon="notification.bell" title={t(locale, "notif.emptyTitle")} body={t(locale, "notif.emptyBody")} />
     ) : (
-      <StateBox icon="action.confirm" title={t(locale, "notif.caughtUpTitle")} body={t(locale, "notif.caughtUpBody")} />
+      <StateBox icon="status.ok" title={t(locale, "notif.caughtUpTitle")} body={t(locale, "notif.caughtUpBody")} />
     );
   }
 

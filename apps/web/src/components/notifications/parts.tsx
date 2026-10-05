@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { Icon } from "@/components/ui/Icon";
 import { t, type Locale } from "@/i18n/messages";
+import type { StreamState } from "@/lib/useEventStream";
 import {
   notificationHref,
   notificationIcon,
@@ -92,7 +93,7 @@ export function NotificationRow({
           title={toggleLabel}
           className={ICON_BUTTON}
         >
-          <Icon name={row.is_read ? "notification.bell" : "action.confirm"} className="size-4" />
+          <Icon name={row.is_read ? "notification.badgeNew" : "notification.bellRead"} className="size-4" />
         </button>
         {onRemove && (
           <button
@@ -102,7 +103,7 @@ export function NotificationRow({
             title={t(locale, "notif.delete")}
             className={ICON_BUTTON}
           >
-            <Icon name="nav.close" className="size-4" />
+            <Icon name="action.delete" className="size-4" />
           </button>
         )}
       </div>
@@ -152,8 +153,12 @@ export function ListSkeleton({ rows, label }: { rows: number; label: string }) {
   );
 }
 
-/** Whether the list updates by itself, and how. */
-export function LiveMark({ live, locale }: { live: boolean; locale: Locale }) {
+/** Whether the list updates by itself, and how. While the channel is
+ *  still connecting nothing is shown — "refreshes every minute" for the
+ *  first moment of every page would be a false alarm. */
+export function LiveMark({ channel, locale }: { channel: StreamState; locale: Locale }) {
+  if (channel === "connecting") return null;
+  const live = channel === "open";
   return (
     <span className="inline-flex items-center gap-1.5 text-theme-xs whitespace-nowrap rw-dim">
       <span

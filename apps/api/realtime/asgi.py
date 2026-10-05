@@ -353,7 +353,10 @@ async def _events(scope: dict[str, Any]) -> None:
                 _stats["heartbeats"] += 1
                 await _heartbeat_slot(client, user_id)
                 continue
-            await write(raw)
+            frame = _live_frame(raw)
+            if frame is None:
+                continue
+            await write(frame)
             delivered += 1
             _stats["events_delivered"] += 1
             if delivered >= MAX_EVENTS_PER_CONNECTION:
@@ -395,6 +398,24 @@ async def _events(scope: dict[str, Any]) -> None:
 def _frame(item: dict[str, Any]) -> str:
     payload = json.dumps(item["data"], ensure_ascii=False)
     return f"id: {item['id']}\nevent: {item['event']}\ndata: {payload}\n\n"
+
+
+def _live_frame(raw: str) -> str | None:
+    """A message off the bus as an SSE frame, or `None` if it is not one.
+
+    The bus carries the same JSON envelope the replay buffer stores
+    (`{"id", "event", "data"}`). It used to be written to the client as it
+    came — no `event:`, no `data:`, no blank line — which a browser's
+    `EventSource` does not recognise as an event at all. Measured
+    2026-10-06 by reading the raw stream: a published notification
+    arrived as `{"id": 40, "event": "notification", …}: ping` and no
+    listener fired. Only replayed events (after a reconnect) were framed.
+    """
+    try:
+        return _frame(json.loads(raw))
+    except (TypeError, ValueError, KeyError):
+        # A malformed message must not end the stream for everyone else.
+        return None
 
 
 def _payload_attempt_id(raw: str) -> int | None:
@@ -540,7 +561,10 @@ async def _attempt_events(scope: dict[str, Any], attempt_id: int) -> None:
                 _stats["heartbeats"] += 1
                 await _heartbeat_slot(client, user_id)
                 continue
-            await write(raw)
+            frame = _live_frame(raw)
+            if frame is None:
+                continue
+            await write(frame)
             delivered += 1
             _stats["events_delivered"] += 1
             if delivered >= MAX_EVENTS_PER_CONNECTION:

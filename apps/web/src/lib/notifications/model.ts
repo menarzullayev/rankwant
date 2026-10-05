@@ -141,13 +141,13 @@ export function notificationHref(row: Notification): string | null {
 
 const ICONS: Record<string, string> = {
   contest_result: "ranking.trophy",
-  rating_changed: "nav.leaderboard",
-  problem_rerated: "nav.leaderboard",
-  duel: "contest.flag",
+  rating_changed: "ranking.chartLine",
+  problem_rerated: "ranking.chartLine",
+  duel: "contest.duel",
   hack: "status.warning",
-  quest_awarded: "action.confirm",
+  quest_awarded: "status.ok",
   streak_milestone: "ranking.streak",
-  system: "notification.bell",
+  system: "notification.announce",
 };
 
 export function notificationIcon(kind: string): string {

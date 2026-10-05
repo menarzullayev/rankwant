@@ -16,7 +16,12 @@ import {
   POLL_MS,
   type NotificationSummary,
 } from "@/lib/notifications/model";
-import { EVENT_NOTIFICATION, EVENT_RESYNC, useEventStream } from "@/lib/useEventStream";
+import {
+  EVENT_NOTIFICATION,
+  EVENT_RESYNC,
+  useEventStream,
+  type StreamState,
+} from "@/lib/useEventStream";
 
 /** The bell's numbers and the signal that the lists should be re-read.
  *
@@ -28,10 +33,14 @@ import { EVENT_NOTIFICATION, EVENT_RESYNC, useEventStream } from "@/lib/useEvent
  *  and the rows are always read again over REST. A missed event costs a
  *  late refresh, never a wrong number.
  */
+const CONNECTING: StreamState = "connecting";
+
 type NotificationsState = {
   summary: NotificationSummary;
-  /** The stream is connected; otherwise the counts refresh once a minute. */
-  live: boolean;
+  /** `open` — changes arrive by themselves; `fallback` — the counts are
+   *  re-read once a minute; `connecting` — not known yet, so nothing is
+   *  claimed either way. */
+  channel: StreamState;
   /** Bumps whenever open lists should read their first page again. */
   tick: number;
   refresh: () => Promise<void>;
@@ -65,9 +74,21 @@ function useVisible(): boolean {
   );
 }
 
+const never = () => () => undefined;
+
+/** False on the server and for the hydrating render, true afterwards. */
+function useMounted(): boolean {
+  return useSyncExternalStore(
+    never,
+    () => true,
+    () => false,
+  );
+}
+
 export function NotificationsProvider({ children }: { children: React.ReactNode }) {
   const { user, ready } = useSession();
   const visible = useVisible();
+  const mounted = useMounted();
   const [summary, setSummary] = useState<NotificationSummary>(EMPTY_SUMMARY);
   const [tick, setTick] = useState(0);
   const signedIn = ready && user !== null;
@@ -90,7 +111,6 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
     [changed],
   );
   const stream = useEventStream({ onEvent, enabled: signedIn && visible });
-  const live = stream === "open";
 
   // On sign-in, and every time the tab comes back: whatever happened while
   // it was hidden arrived on no stream. A guest asks nothing — the
@@ -121,7 +141,10 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
     <NotificationsContext.Provider
       value={{
         summary: signedIn ? summary : EMPTY_SUMMARY,
-        live,
+        // The server has no `EventSource` and would report a fallback the
+        // browser's first render does not agree with (a hydration error,
+        // measured 2026-10-06).
+        channel: mounted ? stream : CONNECTING,
         tick,
         refresh,
         adjust,
