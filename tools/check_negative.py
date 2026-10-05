@@ -3282,8 +3282,8 @@ def neg_decisions_deplocks_ci_not_started() -> tuple[bool, str]:
     """The locks are pushed and no CI run follows."""
     return _decision_broken(
         ".github/workflows/dependabot-locks.yml",
-        'run: gh workflow run ci.yml --ref "$BRANCH" -f run_all=true',
-        'run: echo "pushed"',
+        '          gh workflow run ci.yml --ref "$BRANCH" -f run_all=true',
+        '          echo "pushed"',
         "PR tekshiruvsiz qoladi",
     )
 
@@ -3305,6 +3305,16 @@ def neg_decisions_deplocks_blocks_rebase() -> tuple[bool, str]:
         ' -m "[dependabot skip]"',
         "",
         "rebase qilmay qo'yadi",
+    )
+
+
+def neg_decisions_deplocks_run_not_approved() -> tuple[bool, str]:
+    """The lock commit's own CI run is left waiting for approval."""
+    return _decision_broken(
+        ".github/workflows/dependabot-locks.yml",
+        'actions/runs/${run_id}/approve"',
+        'actions/runs/${run_id}"',
+        "PR BLOCKED holatida qoladi",
     )
 
 
@@ -8155,6 +8165,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("lock yechish job'i yoza olsa tutilsin", neg_decisions_deplocks_compile_can_write),
             ("lock push'dan keyin CI yurmasa tutilsin", neg_decisions_deplocks_ci_not_started),
             ("lock boshqa Python uchun yasalsa tutilsin", neg_decisions_deplocks_wrong_python),
+            ("kutayotgan CI tasdiqlanmasa tutilsin", neg_decisions_deplocks_run_not_approved),
             ("CI run_all o'qilmasa tutilsin", neg_decisions_ci_run_all_ignored),
             ("lock commit'i rebase'ni to'ssa tutilsin", neg_decisions_deplocks_blocks_rebase),
             ("SECRET_KEY standart qiymati qaytsa tutilsin", neg_decisions_secret_key_fallback_returns),
