@@ -29,8 +29,16 @@ const sameOrigin = new URL(API, SITE).origin === new URL(SITE).origin;
  *  accessibility tree. The spec looked for them without opening it, so the
  *  `mobile` project failed on a page that worked (measured 2026-10-05). */
 async function openSolvePanel(page: import("@playwright/test").Page) {
+  // Where the panel is already on the page there is nothing to open. The
+  // first version clicked whenever the button was "visible", and WebKit's
+  // desktop project spent the whole test timeout on that click (Nightly
+  // 37317906757): the button is in the DOM there but not actionable.
+  const heading = page.getByRole("heading", { name: "Yechim" });
+  if (await heading.isVisible().catch(() => false)) return;
   const opener = page.getByRole("button", { name: /Kod$/, expanded: false });
-  if (await opener.isVisible().catch(() => false)) await opener.click();
+  if (await opener.isVisible().catch(() => false)) {
+    await opener.click({ timeout: 5000 });
+  }
 }
 
 test("mehmonga panel ko'rinadi, lekin yuborish kirishni talab qiladi", async ({
