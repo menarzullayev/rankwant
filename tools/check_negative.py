@@ -3458,6 +3458,46 @@ def neg_decisions_watcher_log_unbounded() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_guest_theme_switch_returns_early() -> tuple[bool, str]:
+    """The theme switch is back in a guest's header on a phone."""
+    return _decision_broken(
+        "apps/web/src/layout/HeaderActions.tsx",
+        '<span className="hidden md:contents">{!auth && <ThemeToggle />}</span>',
+        "{!auth && <ThemeToggle />}",
+        "mavzu almashtirgich `md` dan oldin ko'rinadi",
+    )
+
+
+def neg_decisions_sign_in_label_uncapped() -> tuple[bool, str]:
+    """The longest sign-in label is free to widen the header again."""
+    return _decision_broken(
+        "apps/web/src/layout/UserMenu.tsx",
+        '<span className="max-w-[3.5rem] truncate md:max-w-none">',
+        "<span>",
+        "kirish yorlig'i chegaralanmagan",
+    )
+
+
+def neg_decisions_seed_restricts_a_plus_b() -> tuple[bool, str]:
+    """The demo seed writes one language row and shuts the others out."""
+    return _decision_broken(
+        "apps/api/core/management/commands/seed_demo.py",
+        "for language in Language.objects.filter(is_active=True):",
+        'for language in Language.objects.filter(code="julia113"):',
+        "masala faqat o'sha tilga ochiladi",
+    )
+
+
+def neg_decisions_samples_scroll_box_not_positioned() -> tuple[bool, str]:
+    """The samples table lets its hidden labels widen the page."""
+    return _decision_broken(
+        "apps/web/src/features/problems/components/SampleTests.tsx",
+        '<div className="relative min-w-0 overflow-x-auto">',
+        '<div className="min-w-0 overflow-x-auto">',
+        "`sr-only` yorliq sahifani kengaytiradi",
+    )
+
+
 def neg_decisions_deplocks_wrong_python() -> tuple[bool, str]:
     """A lock compiled for another Python drops conditional dependencies."""
     return _decision_broken(
@@ -5011,6 +5051,10 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/layout/UserMenu.tsx",
     # Secret-key guard (2026-10-05).
     "apps/api/Dockerfile",
+    # Nightly reds (2026-10-05).
+    "apps/web/src/features/problems/components/SampleTests.tsx",
+    "apps/api/core/management/commands/seed_demo.py",
+    "tools/ci.Dockerfile.dockerignore",
     # Customizer on a phone (2026-10-05).
     "apps/web/src/components/customizer/AppearanceTab.tsx",
     "apps/web/src/components/customizer/group-session.ts",
@@ -8310,6 +8354,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("lock yechish job'i yoza olsa tutilsin", neg_decisions_deplocks_compile_can_write),
             ("lock push'dan keyin CI yurmasa tutilsin", neg_decisions_deplocks_ci_not_started),
             ("lock boshqa Python uchun yasalsa tutilsin", neg_decisions_deplocks_wrong_python),
+            ("mehmon mavzu tugmasi erta qaytsa tutilsin", neg_decisions_guest_theme_switch_returns_early),
+            ("kirish yorlig'i cheksiz qolsa tutilsin", neg_decisions_sign_in_label_uncapped),
+            ("seed A+B ni bitta tilga yopsa tutilsin", neg_decisions_seed_restricts_a_plus_b),
+            ("namunalar qutisi pozitsiyasiz qolsa tutilsin", neg_decisions_samples_scroll_box_not_positioned),
             ("noto'g'ri urinish sanalmasa tutilsin", neg_decisions_login_failures_not_counted),
             ("hisob idishi olib tashlansa tutilsin", neg_decisions_login_account_bucket_dropped),
             ("deploy darvozasi oddiy xato bersa tutilsin", neg_decisions_deploy_gate_dies_plain),

@@ -2113,6 +2113,45 @@ def failed_sign_ins_are_limited() -> str | None:
     return None
 
 
+def guest_header_fits_every_locale() -> str | None:
+    """2026-10-05: mehmon header'i 320 px dan boshlab o'nta tilda ham sig'adi.
+
+    Nightly o'lchadi: 375 px da header 377 px (o'zbekcha). Jonli saytda
+    inglizcha 385 px, tojikcha 320 px ekranda 352 px. «320 px ga sig'adi»
+    qarori faqat o'zbekcha o'lchangan edi va mavzu almashtirgich undan
+    keyin qo'shilgan.
+    """
+    actions = read("apps/web/src/layout/HeaderActions.tsx")
+    if '<span className="hidden min-[390px]:contents">' not in actions:
+        return "HeaderActions.tsx: sozlagich tugmasi 390 px dan oldin ko'rinadi — mehmon header'i toshadi"
+    if '<span className="hidden md:contents">{!auth && <ThemeToggle />}</span>' not in actions:
+        return "HeaderActions.tsx: mavzu almashtirgich `md` dan oldin ko'rinadi — mehmon header'i toshadi"
+    if '<span className="max-w-[3.5rem] truncate md:max-w-none">' not in read("apps/web/src/layout/UserMenu.tsx"):
+        return "UserMenu.tsx: kirish yorlig'i chegaralanmagan — eng uzun tarjima (tg) header'ni toshiradi"
+    return None
+
+
+def nightly_stack_matches_production() -> str | None:
+    """2026-10-05: Nightly'ni qizartirgan uch nuqson qaytmasin.
+
+    - A+B ga yozilgan bitta `ProblemLanguage` qatori (Julia xotira limiti)
+      masalani FAQAT Julia'ga ochardi — jonli saytda ham;
+    - namunalar jadvalidagi `sr-only` yorliq aylantirish qutisidan chiqib,
+      sahifani telefonda 553 px ga kengaytirardi;
+    - `tools/ci.Dockerfile` ildiz `.dockerignore` tufayli o'z yagona
+      faylini topa olmasdi.
+    """
+    seed = read("apps/api/core/management/commands/seed_demo.py")
+    if "for language in Language.objects.filter(is_active=True):" not in seed:
+        return "seed_demo.py: A+B ga bitta til qatori yoziladi — masala faqat o'sha tilga ochiladi"
+    if '<div className="relative min-w-0 overflow-x-auto">' not in read("apps/web/src/features/problems/components/SampleTests.tsx"):
+        return "SampleTests.tsx: aylantirish qutisi `relative` emas — `sr-only` yorliq sahifani kengaytiradi"
+    ignore = ROOT / "tools/ci.Dockerfile.dockerignore"
+    if not ignore.exists() or "!apps/api/requirements-dev.lock" not in ignore.read_text(encoding="utf-8"):
+        return "tools/ci.Dockerfile.dockerignore: dev lock kontekstga kirmaydi — Readiness obrazi qurilmaydi"
+    return None
+
+
 def docker_disk_stays_bounded() -> str | None:
     """2026-09-20: log 10m/3, builder GC 5GB, SHA teg yo'q, prune tasdiq'dan keyin.
 
@@ -2873,6 +2912,8 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("sozlamalar: olti bo'lim va 14 kunlik o'chirish", settings_six_sections_and_grace),
     ("sozlamalar tugmalari 44 px", settings_controls_are_44px),
     ("sozlagich telefonda yaqin", customizer_reachable_on_a_phone),
+    ("mehmon header'i har tilda sig'adi", guest_header_fits_every_locale),
+    ("Nightly stendi production bilan mos", nightly_stack_matches_production),
     ("sozlagich: tez qator birinchi", customizer_quick_row_first),
     ("kirgan foydalanuvchi header'i sig'adi", signed_in_header_fits),
     ("SECRET_KEY standart qiymatsiz", secret_key_has_no_fallback),

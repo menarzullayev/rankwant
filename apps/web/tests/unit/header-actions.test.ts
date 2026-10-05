@@ -42,4 +42,9 @@ describe("H1 HeaderActions", () => {
     expect(actions).toContain("CUSTOMIZER_ENABLED && <CustomizerTrigger");
     expect(actions).toContain("{!auth && <ThemeToggle");
   });
+
+  it("lets a guest's header fit 320 px: the panel button from 390, the theme switch from md", () => {
+    expect(actions).toContain('<span className="hidden min-[390px]:contents">');
+    expect(actions).toContain('<span className="hidden md:contents">{!auth && <ThemeToggle />}</span>');
+  });
 });

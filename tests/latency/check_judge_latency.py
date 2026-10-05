@@ -102,7 +102,16 @@ def request(path: str, data: dict | None = None, cookie: str = "") -> tuple:
         if token and body:
             req.add_header("X-CSRFToken", token)
             req.add_header("Referer", url)
-    with urllib.request.urlopen(req, timeout=30) as resp:
+    try:
+        resp = urllib.request.urlopen(req, timeout=30)
+    except urllib.error.HTTPError as error:
+        # The body says WHY. Without it Nightly showed a bare "HTTP Error
+        # 400" and the cause (the problem had become Julia-only) took a
+        # separate investigation to find.
+        detail = error.read().decode(errors="replace")[:500]
+        print(f"✗ {req.get_method()} {path} → HTTP {error.code}: {detail}", file=sys.stderr)
+        raise
+    with resp:
         raw = resp.read().decode()
         parsed = json.loads(raw) if raw.startswith(("{", "[")) else raw
         return parsed, resp.headers.get_all("Set-Cookie") or []
