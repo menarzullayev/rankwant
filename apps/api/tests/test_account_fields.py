@@ -86,6 +86,7 @@ def test_anonymize_clears_every_personal_field() -> None:
         device_fingerprint="ab" * 32,
         duel_ready_until=now,
         last_seen_at=now,
+        deletion_requested_at=now,
     )
     before = {name: getattr(user, name) for name in account.CLEARED_FIELDS}
 

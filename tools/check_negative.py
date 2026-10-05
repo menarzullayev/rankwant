@@ -3238,6 +3238,26 @@ def neg_decisions_header_name_back_at_sm() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_secret_key_fallback_returns() -> tuple[bool, str]:
+    """The settings accept a known default secret again."""
+    return _decision_broken(
+        "apps/api/config/settings.py",
+        'SECRET_KEY = env("DJANGO_SECRET_KEY")\n',
+        'SECRET_KEY = env("DJANGO_SECRET_KEY", "dev-only-not-for-production")\n',
+        "sirsiz ishga tushadi",
+    )
+
+
+def neg_decisions_collectstatic_without_key() -> tuple[bool, str]:
+    """The image build runs `collectstatic` with no key, and `|| true` hides it."""
+    return _decision_broken(
+        "apps/api/Dockerfile",
+        "RUN DJANGO_SECRET_KEY=build-only-not-a-secret python manage.py collectstatic",
+        "RUN python manage.py collectstatic",
+        "statik fayllarsiz quriladi",
+    )
+
+
 def _css_sources_broken(rel: str, old: str, new: str, expect: str) -> tuple[bool, str]:
     """Break one `@source` invariant in `rel`; check_css_sources must catch it."""
     path = ROOT / rel
@@ -4779,6 +4799,8 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/layout/HeaderActions.tsx",
     "apps/web/src/layout/HeaderStatus.tsx",
     "apps/web/src/layout/UserMenu.tsx",
+    # Secret-key guard (2026-10-05).
+    "apps/api/Dockerfile",
     # Settings redesign (2026-10-05).
     "apps/api/config/settings.py",
     "apps/web/src/features/account/components/SettingsShell.tsx",
@@ -6597,8 +6619,8 @@ def neg_env_example_new_compose_var() -> tuple[bool, str]:
 def neg_env_example_new_setting() -> tuple[bool, str]:
     return _env_example_broken(
         "apps/api/config/settings.py",
-        'SECRET_KEY = env("DJANGO_SECRET_KEY", "dev-only-not-for-production")\n',
-        'SECRET_KEY = env("DJANGO_SECRET_KEY", "dev-only-not-for-production")\nPROBE_SETTING = env("NEW_PROBE_SETTING")\n',
+        'SECRET_KEY = env("DJANGO_SECRET_KEY")\n',
+        'SECRET_KEY = env("DJANGO_SECRET_KEY")\nPROBE_SETTING = env("NEW_PROBE_SETTING")\n',
         "NEW_PROBE_SETTING",
     )
 
@@ -8062,6 +8084,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ),
             ("push guard uzilsa tutilsin", neg_decisions_push_guard_unwired),
             ("kirgan foydalanuvchi paneli olib tashlansa tutilsin", neg_decisions_signed_in_home_dropped),
+            ("SECRET_KEY standart qiymati qaytsa tutilsin", neg_decisions_secret_key_fallback_returns),
+            ("collectstatic kalitsiz qolsa tutilsin", neg_decisions_collectstatic_without_key),
             ("header uch tugmasi md ga qaytsa tutilsin", neg_decisions_header_trio_back_at_md),
             ("header Qvant/streak sm ga qaytsa tutilsin", neg_decisions_header_pills_back_at_sm),
             ("header ismi sm ga qaytsa tutilsin", neg_decisions_header_name_back_at_sm),

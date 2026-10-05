@@ -174,6 +174,10 @@ services:
     command: ['python', 'manage.py', 'migrate', '--no-input']
     environment:
       DATABASE_URL: postgres://rankwant:dev@postgres:5432/rankwant
+      # Django refuses to start without one (ADR-0044). A throwaway default
+      # for the local and CI stacks only: `docker-compose.public.yml`
+      # replaces it and fails without the real value.
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-dev-only-not-for-production}
       REDIS_URL: redis://redis:6379/0
       S3_ENDPOINT: http://minio:9000
       S3_BUCKET: rankwant
@@ -188,6 +192,10 @@ services:
     build: *api-build
     environment:
       DATABASE_URL: postgres://rankwant:dev@postgres:5432/rankwant
+      # Django refuses to start without one (ADR-0044). A throwaway default
+      # for the local and CI stacks only: `docker-compose.public.yml`
+      # replaces it and fails without the real value.
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-dev-only-not-for-production}
       REDIS_URL: redis://redis:6379/0
       # ADR-0028: navbat alohida `judge-queue` Redis'da — api navbatga yozadi,
       # sessiya/kesh esa `REDIS_URL`da qoladi.
@@ -228,6 +236,10 @@ services:
     command: uvicorn config.asgi:application --host 0.0.0.0 --port 8001 --workers ${REALTIME_WORKERS:-1}
     environment:
       DATABASE_URL: postgres://rankwant:dev@postgres:5432/rankwant
+      # Django refuses to start without one (ADR-0044). A throwaway default
+      # for the local and CI stacks only: `docker-compose.public.yml`
+      # replaces it and fails without the real value.
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-dev-only-not-for-production}
       #: Sessiya `cached_db` — Redis'dan o'qiladi, ya'ni auth ishlaydi.
       REDIS_URL: redis://redis:6379/0
       DJANGO_DEBUG: "1"
@@ -253,6 +265,10 @@ services:
     command: ['celery', '-A', 'config', 'worker', '-l', 'info', '--concurrency', '2']
     environment:
       DATABASE_URL: postgres://rankwant:dev@postgres:5432/rankwant
+      # Django refuses to start without one (ADR-0044). A throwaway default
+      # for the local and CI stacks only: `docker-compose.public.yml`
+      # replaces it and fails without the real value.
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-dev-only-not-for-production}
       REDIS_URL: redis://redis:6379/0
       # ADR-0028: `drain_results` natijalarni `judge-queue`dan o'qiydi.
       JUDGE_QUEUE_URL: redis://judge-queue:6379/0
@@ -270,6 +286,10 @@ services:
     command: ['celery', '-A', 'config', 'beat', '-l', 'info']
     environment:
       DATABASE_URL: postgres://rankwant:dev@postgres:5432/rankwant
+      # Django refuses to start without one (ADR-0044). A throwaway default
+      # for the local and CI stacks only: `docker-compose.public.yml`
+      # replaces it and fails without the real value.
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-dev-only-not-for-production}
       REDIS_URL: redis://redis:6379/0
       # ADR-0028: navbat signal (SLO `judge_queue`) ham `judge-queue`da.
       JUDGE_QUEUE_URL: redis://judge-queue:6379/0

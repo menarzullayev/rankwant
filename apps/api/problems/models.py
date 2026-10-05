@@ -150,7 +150,14 @@ class ProblemCodeSequence(models.Model):
         if counter is None:
             counter = cls.objects.create(value=0)
             counter = cls.objects.select_for_update().get(pk=counter.pk)
-        counter.value += 1
+        # Never below a code that already exists. A code can be set without
+        # this counter (an import, the admin, a fixture); the counter then
+        # hands out a number that is taken, and the caller's retry cannot
+        # help — its savepoint rolls this increment back, so every attempt
+        # gets the same number (measured: four identical UNIQUE failures,
+        # then "masala raqamini berib bo'lmadi").
+        taken = Problem.objects.aggregate(top=models.Max("code"))["top"] or 0
+        counter.value = max(counter.value, taken) + 1
         counter.save(update_fields=["value"])
         return counter.value
 

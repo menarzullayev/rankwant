@@ -94,6 +94,9 @@ CLEARED_FIELDS: tuple[str, ...] = (
 #: `terms_accepted_at` records what the person agreed to, and the plan fields
 #: are a billing record.
 KEPT_FIELDS: tuple[str, ...] = (
+    # Where the account came from (real, demo, imported, staff) — a label the
+    # platform set, not something the person told us.
+    "origin",
     "id",
     "last_login",
     "is_superuser",

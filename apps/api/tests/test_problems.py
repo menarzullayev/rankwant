@@ -206,6 +206,23 @@ class TestProblemCode:
         # Teshik qoladi — bu ataylab: tarqalgan raqam boshqa masalaga o'tmasin.
         assert third.code == first + 2
 
+    def test_qolda_berilgan_raqamdan_keyin_ham_raqam_beriladi(self, db) -> None:
+        """A code set past the counter must not block the next publish.
+
+        The counter used to hand out a number that was already taken; the
+        retry rolled its own increment back, so every attempt got the same
+        number and the publish failed with "masala raqamini berib bo'lmadi".
+        """
+        from problems.models import Problem
+
+        Problem.objects.create(
+            slug="import", title="Import", statement="…", difficulty=800, is_public=True, code=7
+        )
+        fresh = Problem.objects.create(
+            slug="yangi", title="Yangi", statement="…", difficulty=800, is_public=True
+        )
+        assert fresh.code == 8
+
     def test_qayta_saqlash_raqamni_ozgartirmaydi(self, db, problem) -> None:
         original = problem.code
         problem.title = "Boshqa nom"
