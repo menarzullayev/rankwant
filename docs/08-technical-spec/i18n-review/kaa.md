@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2077 strings.**
+**2113 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -1417,6 +1417,42 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.section.articles` | Maqolalar | Maqalalar |  |
 | `admin.section.roadmaps` | Traektoriya | Traektoriya |  |
 | `admin.section.posts` | Yangiliklar | Jańalıqlar |  |
+| `admin.section.team` | Jamoa | Komanda |  |
+| `admin.team.members` | A'zolar | Aǵzalar |  |
+| `admin.team.roles` | Lavozimlar | Lawazımlar |  |
+| `admin.team.departments` | Bo'limlar | Bólimler |  |
+| `admin.team.department` | Bo'lim | Bólim |  |
+| `admin.team.badge` | Belgi | Belgishe |  |
+| `admin.team.badgeHelp` | Avatardagi qisqa belgi: CEO, API | Avatardaǵı qısqa belgishe: CEO, API |  |
+| `admin.team.hue` | Rang tusi (0–359) | Reń túsi (0–359) |  |
+| `admin.team.tone` | Holat rangi | Jaǵday reńi |  |
+| `admin.team.tone.ok` | Yashil | Jasıl |  |
+| `admin.team.tone.warn` | Sariq | Sarı reń |  |
+| `admin.team.section` | Guruh | Topar |  |
+| `admin.team.section.core` | Asosiy jamoa | Tiykarǵı komanda |  |
+| `admin.team.section.contributor` | Hissa qo'shgan | Úles qosqan |  |
+| `admin.team.photoHelp` | Sayt yo'li (/team/ism.jpg) yoki https:// havola | Sayt jolı (/team/name.jpg) yamasa https:// siltemesi |  |
+| `admin.team.telegram` | Telegram havolasi | Telegram siltemesi |  |
+| `admin.team.linkedin` | LinkedIn havolasi | LinkedIn siltemesi |  |
+| `admin.team.instagram` | Instagram havolasi | Instagram siltemesi |  |
+| `admin.team.website` | Shaxsiy sayt | Jeke sayt |  |
+| `admin.team.holdsAllRoles` | Barcha lavozimlar egasi | Barlıq lawazımlar iyesi |  |
+| `admin.team.holdsAllRolesHelp` | Sahifadagi hazil lavozimlar shu a'zoga tegishli. Faqat bitta a'zo. | Bettegi házil lawazımlar usı aǵzaǵa tiyisli. Tek bir aǵza. |  |
+| `admin.team.title.uz` | Lavozim (uz) | Lawazım (uz) |  |
+| `admin.team.title.ru` | Lavozim (ru) | Lawazım (ru) |  |
+| `admin.team.title.en` | Lavozim (en) | Lawazım (en) |  |
+| `admin.team.about.uz` | Tavsif (uz) | Sıpatlama (uz) |  |
+| `admin.team.about.ru` | Tavsif (ru) | Sıpatlama (ru) |  |
+| `admin.team.about.en` | Tavsif (en) | Sıpatlama (en) |  |
+| `admin.team.reports.uz` | Kimga hisobot beradi (uz) | Kimge esap beredi (uz) |  |
+| `admin.team.reports.ru` | Kimga hisobot beradi (ru) | Kimge esap beredi (ru) |  |
+| `admin.team.reports.en` | Kimga hisobot beradi (en) | Kimge esap beredi (en) |  |
+| `admin.team.status.uz` | Holat (uz) | Jaǵday (uz) |  |
+| `admin.team.status.ru` | Holat (ru) | Jaǵday (ru) |  |
+| `admin.team.status.en` | Holat (en) | Jaǵday (en) |  |
+| `admin.team.context.uz` | Kasbiy ma'lumot (uz) | Kásiplik maǵlıwmat (uz) |  |
+| `admin.team.context.ru` | Kasbiy ma'lumot (ru) | Kásiplik maǵlıwmat (ru) |  |
+| `admin.team.context.en` | Kasbiy ma'lumot (en) | Kásiplik maǵlıwmat (en) |  |
 | `admin.section.updates` | O'zgarishlar | Ózgerisler |  |
 | `admin.section.platformRoadmap` | Yo'l xaritasi | Jol kartası |  |
 | `admin.section.roadmapComments` | Reja izohlari | Karta pikirleri |  |

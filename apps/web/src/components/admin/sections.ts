@@ -18,6 +18,7 @@ export const ADMIN_SECTIONS = [
   { href: "/admin/articles", labelKey: "admin.section.articles" },
   { href: "/admin/roadmaps", labelKey: "admin.section.roadmaps" },
   { href: "/admin/posts", labelKey: "admin.section.posts" },
+  { href: "/admin/team", labelKey: "admin.section.team" },
   // Changelog va yo'l xaritasi: o'tmish va kelajak — shuning uchun yonma-yon.
   // ⚠️ "Traektoriya" (`/admin/roadmaps`) BOSHQA narsa — ta'lim yo'li.
   { href: "/admin/updates", labelKey: "admin.section.updates" },

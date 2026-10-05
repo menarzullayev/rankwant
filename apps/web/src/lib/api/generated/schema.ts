@@ -4311,6 +4311,120 @@ export interface paths {
         patch: operations["staff_shop_items_partial_update"];
         trace?: never;
     };
+    "/api/v1/staff/team/departments/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** jamoa bo'limlari ro'yxati */
+        get: operations["staff_team_departments_list"];
+        put?: never;
+        /** Yangi jamoa bo'limi yaratish */
+        post: operations["staff_team_departments_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/staff/team/departments/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Bitta jamoa bo'limi */
+        get: operations["staff_team_departments_retrieve"];
+        /** jamoa bo'limini yangilash */
+        put: operations["staff_team_departments_update"];
+        post?: never;
+        /** jamoa bo'limini o'chirish */
+        delete: operations["staff_team_departments_destroy"];
+        options?: never;
+        head?: never;
+        /** jamoa bo'limini qisman yangilash */
+        patch: operations["staff_team_departments_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/staff/team/members/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** jamoa a'zolari ro'yxati */
+        get: operations["staff_team_members_list"];
+        put?: never;
+        /** Yangi jamoa a'zosi yaratish */
+        post: operations["staff_team_members_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/staff/team/members/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Bitta jamoa a'zosi */
+        get: operations["staff_team_members_retrieve"];
+        /** jamoa a'zosini yangilash */
+        put: operations["staff_team_members_update"];
+        post?: never;
+        /** jamoa a'zosini o'chirish */
+        delete: operations["staff_team_members_destroy"];
+        options?: never;
+        head?: never;
+        /** jamoa a'zosini qisman yangilash */
+        patch: operations["staff_team_members_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/staff/team/roles/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** jamoa lavozimlari ro'yxati */
+        get: operations["staff_team_roles_list"];
+        put?: never;
+        /** Yangi jamoa lavozimi yaratish */
+        post: operations["staff_team_roles_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/staff/team/roles/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Bitta jamoa lavozimi */
+        get: operations["staff_team_roles_retrieve"];
+        /** jamoa lavozimini yangilash */
+        put: operations["staff_team_roles_update"];
+        post?: never;
+        /** jamoa lavozimini o'chirish */
+        delete: operations["staff_team_roles_destroy"];
+        options?: never;
+        head?: never;
+        /** jamoa lavozimini qisman yangilash */
+        patch: operations["staff_team_roles_partial_update"];
+        trace?: never;
+    };
     "/api/v1/staff/topics/": {
         parameters: {
             query?: never;
@@ -4648,6 +4762,26 @@ export interface paths {
          *     a missing day would silently shift the chart's x axis.
          */
         get: operations["stats_daily_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/team/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Jamoa sahifasi
+         * @description What the public `/team` page draws. Drafts are left out.
+         */
+        get: operations["team_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6942,6 +7076,51 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["StaffSystemUpdate"][];
         };
+        PaginatedStaffTeamDepartmentList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["StaffTeamDepartment"][];
+        };
+        PaginatedStaffTeamMemberList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["StaffTeamMember"][];
+        };
+        PaginatedStaffTeamRoleList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["StaffTeamRole"][];
+        };
         PaginatedStaffTestCaseList: {
             /** @example 123 */
             count: number;
@@ -7603,6 +7782,67 @@ export interface components {
             /** Format: date-time */
             readonly updated_at?: string;
         };
+        PatchedStaffTeamDepartment: {
+            readonly id?: number;
+            name_uz?: string;
+            name_ru?: string;
+            name_en?: string;
+            /** Format: int64 */
+            order?: number;
+            readonly role_count?: number;
+        };
+        PatchedStaffTeamMember: {
+            readonly id?: number;
+            section?: components["schemas"]["SectionEnum"];
+            name?: string;
+            title_uz?: string;
+            title_ru?: string;
+            title_en?: string;
+            context_uz?: string;
+            context_ru?: string;
+            context_en?: string;
+            photo_url?: string;
+            telegram_url?: string;
+            github_url?: string;
+            linkedin_url?: string;
+            instagram_url?: string;
+            website_url?: string;
+            holds_all_roles?: boolean;
+            /** Format: int64 */
+            order?: number;
+            is_published?: boolean;
+            /** Format: date-time */
+            readonly created_at?: string;
+            /** Format: date-time */
+            readonly updated_at?: string;
+        };
+        PatchedStaffTeamRole: {
+            readonly id?: number;
+            department?: number;
+            title_uz?: string;
+            title_ru?: string;
+            title_en?: string;
+            about_uz?: string;
+            about_ru?: string;
+            about_en?: string;
+            reports_to_uz?: string;
+            reports_to_ru?: string;
+            reports_to_en?: string;
+            status_uz?: string;
+            status_ru?: string;
+            status_en?: string;
+            badge?: string;
+            hue?: number;
+            tone?: components["schemas"]["ToneEnum"];
+            /** Format: int64 */
+            order?: number;
+            readonly department_name?: string;
+            is_published?: boolean;
+            /** Format: date-time */
+            readonly created_at?: string;
+            /** Format: date-time */
+            readonly updated_at?: string;
+        };
         PatchedStaffTopic: {
             readonly id?: number;
             slug?: string;
@@ -8214,6 +8454,12 @@ export interface components {
          */
         ScoringTypeEnum: "acm" | "ioi";
         /**
+         * @description * `core` - Asosiy jamoa
+         *     * `contributor` - Hissa qo'shgan
+         * @enum {string}
+         */
+        SectionEnum: "core" | "contributor";
+        /**
          * @description * `XS` - XS
          *     * `S` - S
          *     * `M` - M
@@ -8725,6 +8971,67 @@ export interface components {
             /** Format: date-time */
             readonly updated_at: string;
         };
+        StaffTeamDepartment: {
+            readonly id: number;
+            name_uz: string;
+            name_ru?: string;
+            name_en?: string;
+            /** Format: int64 */
+            order?: number;
+            readonly role_count: number;
+        };
+        StaffTeamMember: {
+            readonly id: number;
+            section?: components["schemas"]["SectionEnum"];
+            name: string;
+            title_uz: string;
+            title_ru?: string;
+            title_en?: string;
+            context_uz?: string;
+            context_ru?: string;
+            context_en?: string;
+            photo_url?: string;
+            telegram_url?: string;
+            github_url?: string;
+            linkedin_url?: string;
+            instagram_url?: string;
+            website_url?: string;
+            holds_all_roles?: boolean;
+            /** Format: int64 */
+            order?: number;
+            is_published?: boolean;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+        };
+        StaffTeamRole: {
+            readonly id: number;
+            department: number;
+            title_uz: string;
+            title_ru?: string;
+            title_en?: string;
+            about_uz: string;
+            about_ru?: string;
+            about_en?: string;
+            reports_to_uz?: string;
+            reports_to_ru?: string;
+            reports_to_en?: string;
+            status_uz?: string;
+            status_ru?: string;
+            status_en?: string;
+            badge?: string;
+            hue?: number;
+            tone?: components["schemas"]["ToneEnum"];
+            /** Format: int64 */
+            order?: number;
+            readonly department_name: string;
+            is_published?: boolean;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+        };
         StaffTestCase: {
             readonly id: number;
             /** Format: int64 */
@@ -8968,6 +9275,61 @@ export interface components {
             /** Format: date-time */
             readonly joined_at: string;
         };
+        /** @description The whole page in one response: it is small and always read together. */
+        TeamPage: {
+            departments: components["schemas"]["TeamPageDepartment"][];
+            roles: components["schemas"]["TeamPageRole"][];
+            members: components["schemas"]["TeamPageMember"][];
+        };
+        TeamPageDepartment: {
+            readonly id: number;
+            name_uz: string;
+            name_ru?: string;
+            name_en?: string;
+            /** Format: int64 */
+            order?: number;
+        };
+        TeamPageMember: {
+            readonly id: number;
+            section?: components["schemas"]["SectionEnum"];
+            name: string;
+            title_uz: string;
+            title_ru?: string;
+            title_en?: string;
+            context_uz?: string;
+            context_ru?: string;
+            context_en?: string;
+            photo_url?: string;
+            telegram_url?: string;
+            github_url?: string;
+            linkedin_url?: string;
+            instagram_url?: string;
+            website_url?: string;
+            holds_all_roles?: boolean;
+            /** Format: int64 */
+            order?: number;
+        };
+        TeamPageRole: {
+            readonly id: number;
+            department: number;
+            title_uz: string;
+            title_ru?: string;
+            title_en?: string;
+            about_uz: string;
+            about_ru?: string;
+            about_en?: string;
+            reports_to_uz?: string;
+            reports_to_ru?: string;
+            reports_to_en?: string;
+            status_uz?: string;
+            status_ru?: string;
+            status_en?: string;
+            badge?: string;
+            hue?: number;
+            tone?: components["schemas"]["ToneEnum"];
+            /** Format: int64 */
+            order?: number;
+        };
         /**
          * @description * `owner` - Egasi
          *     * `member` - A'zo
@@ -8994,6 +9356,12 @@ export interface components {
          * @enum {string}
          */
         TierEnum: "gold" | "silver" | "bronze" | "top10" | "participant";
+        /**
+         * @description * `ok` - Yaxshi
+         *     * `warn` - Diqqat
+         * @enum {string}
+         */
+        ToneEnum: "ok" | "warn";
         Topic: {
             slug: string;
             name_uz: string;
@@ -16534,6 +16902,462 @@ export interface operations {
             };
         };
     };
+    staff_team_departments_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedStaffTeamDepartmentList"];
+                };
+            };
+        };
+    };
+    staff_team_departments_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StaffTeamDepartment"];
+                "application/x-www-form-urlencoded": components["schemas"]["StaffTeamDepartment"];
+                "multipart/form-data": components["schemas"]["StaffTeamDepartment"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffTeamDepartment"];
+                };
+            };
+        };
+    };
+    staff_team_departments_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this department. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffTeamDepartment"];
+                };
+            };
+        };
+    };
+    staff_team_departments_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this department. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StaffTeamDepartment"];
+                "application/x-www-form-urlencoded": components["schemas"]["StaffTeamDepartment"];
+                "multipart/form-data": components["schemas"]["StaffTeamDepartment"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffTeamDepartment"];
+                };
+            };
+        };
+    };
+    staff_team_departments_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this department. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    staff_team_departments_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this department. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedStaffTeamDepartment"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedStaffTeamDepartment"];
+                "multipart/form-data": components["schemas"]["PatchedStaffTeamDepartment"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffTeamDepartment"];
+                };
+            };
+        };
+    };
+    staff_team_members_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedStaffTeamMemberList"];
+                };
+            };
+        };
+    };
+    staff_team_members_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StaffTeamMember"];
+                "application/x-www-form-urlencoded": components["schemas"]["StaffTeamMember"];
+                "multipart/form-data": components["schemas"]["StaffTeamMember"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffTeamMember"];
+                };
+            };
+        };
+    };
+    staff_team_members_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this member. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffTeamMember"];
+                };
+            };
+        };
+    };
+    staff_team_members_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this member. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StaffTeamMember"];
+                "application/x-www-form-urlencoded": components["schemas"]["StaffTeamMember"];
+                "multipart/form-data": components["schemas"]["StaffTeamMember"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffTeamMember"];
+                };
+            };
+        };
+    };
+    staff_team_members_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this member. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    staff_team_members_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this member. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedStaffTeamMember"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedStaffTeamMember"];
+                "multipart/form-data": components["schemas"]["PatchedStaffTeamMember"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffTeamMember"];
+                };
+            };
+        };
+    };
+    staff_team_roles_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedStaffTeamRoleList"];
+                };
+            };
+        };
+    };
+    staff_team_roles_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StaffTeamRole"];
+                "application/x-www-form-urlencoded": components["schemas"]["StaffTeamRole"];
+                "multipart/form-data": components["schemas"]["StaffTeamRole"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffTeamRole"];
+                };
+            };
+        };
+    };
+    staff_team_roles_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this role. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffTeamRole"];
+                };
+            };
+        };
+    };
+    staff_team_roles_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this role. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StaffTeamRole"];
+                "application/x-www-form-urlencoded": components["schemas"]["StaffTeamRole"];
+                "multipart/form-data": components["schemas"]["StaffTeamRole"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffTeamRole"];
+                };
+            };
+        };
+    };
+    staff_team_roles_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this role. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    staff_team_roles_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this role. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedStaffTeamRole"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedStaffTeamRole"];
+                "multipart/form-data": components["schemas"]["PatchedStaffTeamRole"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffTeamRole"];
+                };
+            };
+        };
+    };
     staff_topics_list: {
         parameters: {
             query?: {
@@ -17362,6 +18186,25 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DailyStats"][];
+                };
+            };
+        };
+    };
+    team_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeamPage"];
                 };
             };
         };

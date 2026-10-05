@@ -2,6 +2,7 @@
  *  session live next to their domain types (`postJson`/`getJson` helpers). */
 
 import { get, type Paginated } from "./client";
+import type { TeamPayload } from "@/components/team/types";
 import type { AppearancePrefs } from "@/features/account";
 import type {
   Calendar,
@@ -138,6 +139,8 @@ export const api = {
   notifications: () => get<Paginated<Notification>>("/notifications/", 0),
   recommendations: () => get<Recommendation>("/problems/recommendation/", 0),
   posts: () => get<Paginated<Post>>("/posts/"),
+  // The team page: small, public, edited rarely — a minute of cache.
+  team: () => get<TeamPayload>("/team/", 60),
   post: (slug: string) => get<PostDetail>(`/posts/${slug}/`),
   // Updates — ochiq arxiv, mehmon ham ko'radi (qaror 8-savol). Har yozuv
   // doimiy havola oladi, chunki Telegram kanal va Codeforces blog shunga

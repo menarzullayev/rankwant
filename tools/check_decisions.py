@@ -2178,6 +2178,27 @@ def public_stack_requires_its_secrets() -> str | None:
     return None
 
 
+def team_page_is_managed_data() -> str | None:
+    """2026-10-05: «Jamoa» sahifasi admin paneldan boshqariladi.
+
+    A'zolar, bo'limlar va lavozimlar bazada (`team` ilovasi); ommaviy
+    endpoint faqat nashr qilinganini beradi, yozish faqat kontent xodimiga
+    ochiq, rasm manzili esa brauzer bajaradigan narsa bo'la olmaydi.
+    """
+    views = read("apps/api/team/views.py")
+    if views.count("is_published=True") < 3:
+        return "team/views.py: ommaviy sahifa qoralamalarni ham beradi (a'zo, lavozim yoki bo'lim)"
+    serializers = read("apps/api/team/serializers.py")
+    if 'value.startswith("https://")' not in serializers or "return clean_photo(value)" not in serializers:
+        return "team/serializers.py: rasm manzili tekshirilmaydi — `javascript:` yoki `http://` o'tib ketadi"
+    if read("apps/api/team/staff_views.py").count("permission_classes = [StaffContent]") < 3:
+        return "team/staff_views.py: jamoa ro'yxatlaridan biri kontent xodimi huquqisiz ochiq"
+    page = read("apps/web/src/app/(site)/team/page.tsx")
+    if "api.team().catch(() => null)" not in page:
+        return "team/page.tsx: API yiqilsa sahifa xato ekraniga aylanadi"
+    return None
+
+
 def docker_disk_stays_bounded() -> str | None:
     """2026-09-20: log 10m/3, builder GC 5GB, SHA teg yo'q, prune tasdiq'dan keyin.
 
@@ -2938,6 +2959,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("sozlamalar: olti bo'lim va 14 kunlik o'chirish", settings_six_sections_and_grace),
     ("sozlamalar tugmalari 44 px", settings_controls_are_44px),
     ("sozlagich telefonda yaqin", customizer_reachable_on_a_phone),
+    ("jamoa sahifasi boshqariladi", team_page_is_managed_data),
     ("mehmon header'i har tilda sig'adi", guest_header_fits_every_locale),
     ("Nightly stendi production bilan mos", nightly_stack_matches_production),
     ("sozlagich: tez qator birinchi", customizer_quick_row_first),
