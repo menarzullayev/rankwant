@@ -3278,6 +3278,26 @@ def neg_decisions_deplocks_ci_not_started() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_ci_run_all_ignored() -> tuple[bool, str]:
+    """A manual CI run declares `run_all` and no job reads it."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        " || (github.event_name == 'workflow_dispatch' && inputs.run_all)",
+        "",
+        "qo'lda yurishda build o'tkazib yuboriladi",
+    )
+
+
+def neg_decisions_deplocks_blocks_rebase() -> tuple[bool, str]:
+    """The lock commit makes Dependabot give up on its own branch."""
+    return _decision_broken(
+        ".github/workflows/dependabot-locks.yml",
+        ' -m "[dependabot skip]"',
+        "",
+        "rebase qilmay qo'yadi",
+    )
+
+
 def neg_decisions_deplocks_wrong_python() -> tuple[bool, str]:
     """A lock compiled for another Python drops conditional dependencies."""
     return _decision_broken(
@@ -8117,6 +8137,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("lock yechish job'i yoza olsa tutilsin", neg_decisions_deplocks_compile_can_write),
             ("lock push'dan keyin CI yurmasa tutilsin", neg_decisions_deplocks_ci_not_started),
             ("lock boshqa Python uchun yasalsa tutilsin", neg_decisions_deplocks_wrong_python),
+            ("CI run_all o'qilmasa tutilsin", neg_decisions_ci_run_all_ignored),
+            ("lock commit'i rebase'ni to'ssa tutilsin", neg_decisions_deplocks_blocks_rebase),
             ("SECRET_KEY standart qiymati qaytsa tutilsin", neg_decisions_secret_key_fallback_returns),
             ("collectstatic kalitsiz qolsa tutilsin", neg_decisions_collectstatic_without_key),
             ("header uch tugmasi md ga qaytsa tutilsin", neg_decisions_header_trio_back_at_md),

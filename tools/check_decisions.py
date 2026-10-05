@@ -1986,6 +1986,10 @@ def dependabot_locks_are_recompiled() -> str | None:
         return "dependabot-locks.yml: `compile` job'ida yozish huquqi bor — begona kod token bilan ishlaydi"
     if workflow.count("--python-version 3.12") < 2:
         return "dependabot-locks.yml: lock'lar Python 3.12 uchun yasalmaydi"
+    if read(".github/workflows/ci.yml").count("&& inputs.run_all)") < 6:
+        return "ci.yml: `run_all` o'qilmaydi — qo'lda yurishda build o'tkazib yuboriladi"
+    if '-m "[dependabot skip]"' not in workflow:
+        return "dependabot-locks.yml: commit `[dependabot skip]` siz — Dependabot branch'ni rebase qilmay qo'yadi"
     if "gh workflow run ci.yml" not in workflow:
         return "dependabot-locks.yml: push'dan keyin CI ishga tushirilmaydi — PR tekshiruvsiz qoladi"
     for name in ("requirements.lock", "requirements-dev.lock"):
