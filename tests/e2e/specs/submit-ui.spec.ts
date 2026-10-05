@@ -29,15 +29,21 @@ const sameOrigin = new URL(API, SITE).origin === new URL(SITE).origin;
  *  accessibility tree. The spec looked for them without opening it, so the
  *  `mobile` project failed on a page that worked (measured 2026-10-05). */
 async function openSolvePanel(page: import("@playwright/test").Page) {
-  // Where the panel is already on the page there is nothing to open. The
-  // first version clicked whenever the button was "visible", and WebKit's
-  // desktop project spent the whole test timeout on that click (Nightly
-  // 37317906757): the button is in the DOM there but not actionable.
+  // The server cannot know the width, so before hydration the page is in
+  // its phone layout — sheet closed, button shown — and a desktop then
+  // switches to the split view. A single look catches whichever state the
+  // engine happens to be in: WebKit's desktop project saw the button, and
+  // the click waited for an element that was already going away (Nightly
+  // 37317906757 and 37319261377). So the helper watches until the panel is
+  // there, pressing the button only while it stays pressable.
   const heading = page.getByRole("heading", { name: "Yechim" });
-  if (await heading.isVisible().catch(() => false)) return;
   const opener = page.getByRole("button", { name: /Kod$/, expanded: false });
-  if (await opener.isVisible().catch(() => false)) {
-    await opener.click({ timeout: 5000 });
+  for (let attempt = 0; attempt < 30; attempt += 1) {
+    if (await heading.isVisible().catch(() => false)) return;
+    if (await opener.isVisible().catch(() => false)) {
+      await opener.click({ timeout: 1000 }).catch(() => {});
+    }
+    await page.waitForTimeout(300);
   }
 }
 
