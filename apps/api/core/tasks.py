@@ -153,3 +153,14 @@ def warn_email_quota() -> str:
 
     log.info("kvota ogohlantirildi: %s yangi / %s xodim — %s", yaratildi, len(xodimlar), matn)
     return "ok"
+
+
+@shared_task(name="core.finalize_deletions")
+def finalize_deletions() -> int:
+    """Carries out account deletions whose grace period has run out."""
+    from core import account
+
+    count = account.finalize_due_deletions()
+    if count:
+        log.info("accounts anonymized after the grace period: %s", count)
+    return count

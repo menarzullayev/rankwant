@@ -168,6 +168,8 @@ export type Me = {
   first_name_en: string;
   last_name_en: string;
   email_verified: boolean;
+  /** When a requested deletion takes effect; `null` when none is pending. */
+  deletion_scheduled_for: string | null;
   social: string[];
   has_password: boolean;
   avatar_url: string;

@@ -2,7 +2,7 @@
 
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -13,6 +13,7 @@ import { dateTime, fill, t } from "@/i18n/messages";
 import { deleteJson, postJson, type SessionRow } from "@/lib/api";
 import { fieldErrors, passwordChangeSchema } from "@rankwant/shared/validation";
 import { Hint, Loading, Status, useAction, useLoad } from "./section-kit";
+import { SocialAccounts } from "./SocialAccounts";
 
 function PasswordCard({ onChanged }: { onChanged: () => void }) {
   const locale = useLocale();
@@ -338,8 +339,13 @@ export function SecuritySection() {
   const [version, setVersion] = useState(0);
   return (
     <>
-      <PasswordCard onChanged={() => setVersion((v) => v + 1)} />
+      {/* The address first: an unverified one is the thing to fix here. */}
       <EmailCard />
+      <PasswordCard onChanged={() => setVersion((v) => v + 1)} />
+      {/* Sign-in methods belong with the password, not with profile links. */}
+      <Suspense>
+        <SocialAccounts />
+      </Suspense>
       <SessionsCard version={version} />
     </>
   );

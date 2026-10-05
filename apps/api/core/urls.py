@@ -98,6 +98,7 @@ urlpatterns = [
     ),
     path("me/", views.MeView.as_view(), name="me"),
     path("me/export/", views.MeExportView.as_view(), name="me-export"),
+    path("me/restore/", views.MeRestoreView.as_view(), name="me-restore"),
     path("me/password/", account_views.PasswordChangeView.as_view(), name="me-password"),
     path("me/email/", account_views.EmailChangeView.as_view(), name="me-email"),
     path("me/username/", account_views.UsernameChangeView.as_view(), name="me-username"),

@@ -135,6 +135,8 @@ UNTRANSLATED_OK: dict[str, set[str]] = {
         # «Profil banneri» — ikkala so'z ham o'zlashma, qaraqalpoqchada
         # ham o'zbekchadagi kabi yoziladi.
         "profile.cfBanner",
+        "settings.channelEmail",
+        "settings.privacy.titlePhoto",
         "customizer.nav",
         # "Tuman" qaraqalpoqchada ham, o'zbekchada ham bir xil yoziladi.
         "customizer.pattern.mesh",

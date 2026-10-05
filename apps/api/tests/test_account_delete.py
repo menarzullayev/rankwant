@@ -12,6 +12,7 @@ from rest_framework.test import APIClient
 from contests.models import Contest, Standing
 from core import account, usernames
 from core.models import ApiToken, User, UsernameHistory
+from core.tasks import finalize_deletions
 from judging.models import Attempt, CustomRun
 from notifications.models import Notification
 from problems.models import Favourite
@@ -138,14 +139,61 @@ class TestDeleteEndpoint:
 
         r = c.delete(reverse("me"), {"password": "Parol!12345"}, format="json")
 
-        assert r.status_code == 204
+        # Scheduled, not done: the account is untouched for 14 days.
+        assert r.status_code == 202
+        full_user.refresh_from_db()
+        assert not account.is_anonymized(full_user)
+        assert full_user.is_active
+        due = account.deletion_due_at(full_user)
+        assert due is not None
+        assert r.json()["deletion_scheduled_for"] == due.isoformat()
+        assert c.get(reverse("me")).json()["deletion_scheduled_for"] == due.isoformat()
+
+    def test_muddat_otmaguncha_ochmaydi(self, full_user) -> None:
+        account.schedule_deletion(full_user)
+        User.objects.filter(pk=full_user.pk).update(
+            deletion_requested_at=timezone.now() - account.DELETION_GRACE + timedelta(hours=1)
+        )
+        assert finalize_deletions() == 0
+        full_user.refresh_from_db()
+        assert not account.is_anonymized(full_user)
+
+    def test_muddat_otgach_ochadi(self, full_user) -> None:
+        account.schedule_deletion(full_user)
+        User.objects.filter(pk=full_user.pk).update(
+            deletion_requested_at=timezone.now() - account.DELETION_GRACE - timedelta(minutes=1)
+        )
+        assert finalize_deletions() == 1
         full_user.refresh_from_db()
         assert account.is_anonymized(full_user)
+        assert full_user.deletion_requested_at is None
+        # A second run finds nothing: the anonymized account is not due again.
+        assert finalize_deletions() == 0
 
-    def test_profil_sahifasi_yopiladi(self, full_user) -> None:
+    def test_bekor_qilish(self, full_user) -> None:
         c = APIClient()
         c.force_authenticate(user=full_user)
         c.delete(reverse("me"), {"password": "Parol!12345"}, format="json")
+
+        assert c.post(reverse("me-restore")).status_code == 204
+        full_user.refresh_from_db()
+        assert full_user.deletion_requested_at is None
+        assert c.get(reverse("me")).json()["deletion_scheduled_for"] is None
+
+    def test_qayta_sorov_muddatni_surmaydi(self, full_user) -> None:
+        """A second request must not push the date back."""
+        first = account.schedule_deletion(full_user)
+        assert account.schedule_deletion(full_user) == first
+
+    def test_bekor_qilish_mehmonga_yopiq(self) -> None:
+        assert APIClient().post(reverse("me-restore")).status_code in (401, 403)
+
+    def test_profil_sahifasi_yopiladi(self, full_user) -> None:
+        account.schedule_deletion(full_user)
+        User.objects.filter(pk=full_user.pk).update(
+            deletion_requested_at=timezone.now() - account.DELETION_GRACE - timedelta(minutes=1)
+        )
+        finalize_deletions()
 
         full_user.refresh_from_db()
         r = APIClient().get(reverse("user-detail", args=[full_user.username]))

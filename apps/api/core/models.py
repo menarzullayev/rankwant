@@ -287,6 +287,10 @@ class User(AbstractUser):
     device_fingerprint = models.CharField(max_length=64, blank=True)
     #: Open for random duel matchmaking until this moment.
     duel_ready_until = models.DateTimeField(null=True, blank=True)
+    #: Set when the owner asks to delete the account. The account is
+    #: anonymized `core.account.DELETION_GRACE` later; until then signing in
+    #: and cancelling restores it untouched.
+    deletion_requested_at = models.DateTimeField(null=True, blank=True, db_index=True)
 
     class Meta(AbstractUser.Meta):  # type: ignore[name-defined,misc]
         indexes: ClassVar = [

@@ -14,15 +14,22 @@ izi bor, o'zi yo'q.
 
 from __future__ import annotations
 
+from datetime import datetime, timedelta
 from typing import Any
 
 from django.db import transaction
 from django.db.models import Q
+from django.utils import timezone
 
 from core.models import ApiToken, User
 
 #: `neytron_` (stress sinovi) bilan to'qnashmaydi: `startswith` boshqa.
 PREFIX = "neytrino"
+
+#: How long a deletion request waits before it is carried out (owner's
+#: decision, 2026-10-05). Anonymization cannot be undone, and until now one
+#: password — or one stolen session with it — was enough to trigger it.
+DELETION_GRACE = timedelta(days=14)
 
 #: Personal data that `anonymize` clears and `export` returns. Every `User`
 #: field is listed here or in `KEPT_FIELDS`, and `tests/test_account_fields.py`
@@ -77,6 +84,7 @@ CLEARED_FIELDS: tuple[str, ...] = (
     "message_min_rating",
     "device_fingerprint",
     "duel_ready_until",
+    "deletion_requested_at",
     "last_seen_at",
     # ADR-0026: a profile banner is uploaded content, like `avatar_url`.
     "title_photo_url",
@@ -226,6 +234,7 @@ def anonymize(user: User) -> None:
     user.message_min_rating = None
     user.device_fingerprint = ""
     user.duel_ready_until = None
+    user.deletion_requested_at = None
     user.last_seen_at = None
     # ADR-0026: the banner is uploaded content, so it is cleared and its
     # stored file removed, exactly like the avatar above.
@@ -240,6 +249,39 @@ def anonymize(user: User) -> None:
         avatars.delete(old_avatar)
     if old_title_photo:
         avatars.delete(old_title_photo)
+
+
+def deletion_due_at(user: User) -> datetime | None:
+    """When a requested deletion takes effect; `None` when none is pending."""
+    if user.deletion_requested_at is None:
+        return None
+    return user.deletion_requested_at + DELETION_GRACE
+
+
+def schedule_deletion(user: User) -> datetime:
+    """Starts the grace period. Asking again does not restart the clock —
+    otherwise a second click would quietly push the date back."""
+    if user.deletion_requested_at is None:
+        user.deletion_requested_at = timezone.now()
+        user.save(update_fields=["deletion_requested_at"])
+    return user.deletion_requested_at + DELETION_GRACE
+
+
+def cancel_deletion(user: User) -> None:
+    if user.deletion_requested_at is not None:
+        user.deletion_requested_at = None
+        user.save(update_fields=["deletion_requested_at"])
+
+
+def finalize_due_deletions() -> int:
+    """Anonymizes every account whose grace period has run out."""
+    cutoff = timezone.now() - DELETION_GRACE
+    due = User.objects.filter(deletion_requested_at__lte=cutoff, is_active=True)
+    count = 0
+    for user in due.iterator():
+        anonymize(user)
+        count += 1
+    return count
 
 
 def is_anonymized(user: User) -> bool:
@@ -300,6 +342,7 @@ def export(user: User) -> dict[str, Any]:
             "message_min_rating": user.message_min_rating,
             "device_fingerprint": user.device_fingerprint,
             "duel_ready_until": user.duel_ready_until,
+            "deletion_requested_at": user.deletion_requested_at,
             "hidden_fields": user.hidden_fields,
             "pinned_achievements": user.pinned_achievements,
             "ui_prefs": user.ui_prefs,

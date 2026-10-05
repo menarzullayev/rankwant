@@ -291,6 +291,8 @@ REST_FRAMEWORK = {
         # 470 ta hack yuborgani muhokama qilingan (ADR-0020 § Cheklov).
         "hack": os.environ.get("THROTTLE_HACK", "10/min"),
         "export": os.environ.get("THROTTLE_EXPORT", "3/hour"),
+        # A refresh asks Codeforces, AtCoder or LeetCode on the user's behalf.
+        "external_refresh": os.environ.get("THROTTLE_EXTERNAL_REFRESH", "20/hour"),
         # Asosiy cheklov `PasswordResetToken` da (hisobga 3/soat, IP'ga
         # 10/soat) — bu esa endpointning O'ZINI himoya qiladi: kimdir
         # mavjud bo'lmagan loginlar ro'yxatini yuborib bazani qidirmasin.
@@ -483,6 +485,12 @@ CELERY_BEAT_SCHEDULE = {
     "reap-stuck-hacks": {
         "task": "hacks.reap_stuck",
         "schedule": 300.0,
+    },
+    # Account deletion waits 14 days (`core.account.DELETION_GRACE`); an hour
+    # of slack on top of that changes nothing for the owner.
+    "finalize-account-deletions": {
+        "task": "core.finalize_deletions",
+        "schedule": 3600.0,
     },
     "finalize-due-arena": {
         "task": "arena.finalize_due",

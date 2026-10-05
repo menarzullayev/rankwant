@@ -3158,6 +3158,56 @@ def neg_decisions_presence_ignores_privacy() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_settings_dropdown_returns() -> tuple[bool, str]:
+    """The select above every section comes back on a phone."""
+    return _decision_broken(
+        "apps/web/src/features/account/components/SettingsShell.tsx",
+        "            <SaveBar />",
+        "            <Dropdown />\n            <SaveBar />",
+        "bo'lim tanlash ro'yxati qaytgan",
+    )
+
+
+def neg_decisions_settings_delete_is_immediate() -> tuple[bool, str]:
+    """`DELETE /me/` anonymizes at once again — no way back."""
+    return _decision_broken(
+        "apps/api/core/views.py",
+        "        due = account.schedule_deletion(user)",
+        "        account.anonymize(user)\n        due = timezone.now()",
+        "14 kunlik kutish yo'q",
+    )
+
+
+def neg_decisions_settings_finalize_unscheduled() -> tuple[bool, str]:
+    """Nothing carries the deletion out once the grace period ends."""
+    return _decision_broken(
+        "apps/api/config/settings.py",
+        '"task": "core.finalize_deletions"',
+        '"task": "core.send_email"',
+        "o'chirish hech qachon bajarilmaydi",
+    )
+
+
+def neg_decisions_settings_backfill_reads_all_columns() -> tuple[bool, str]:
+    """Migration 0028 selects every column of the live model again."""
+    return _decision_broken(
+        "apps/api/core/management/commands/backfill_origin.py",
+        'User.objects.order_by("pk").only(',
+        'User.objects.order_by("pk").defer(',
+        "0028 ni sindiradi",
+    )
+
+
+def neg_decisions_settings_section_added() -> tuple[bool, str]:
+    """A seventh section appears beside the six."""
+    return _decision_broken(
+        "apps/web/src/features/account/components/sections.ts",
+        '    id: "hisob",',
+        '    id: "jamoalar",',
+        "sections.ts: bo'limlar",
+    )
+
+
 def _css_sources_broken(rel: str, old: str, new: str, expect: str) -> tuple[bool, str]:
     """Break one `@source` invariant in `rel`; check_css_sources must catch it."""
     path = ROOT / rel
@@ -4695,6 +4745,11 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/app/(site)/_home/Person.tsx",
     "apps/web/src/app/(site)/_home/TopUsers.tsx",
     "apps/web/src/app/(site)/_home/NewsCarousel.tsx",
+    # Settings redesign (2026-10-05).
+    "apps/api/config/settings.py",
+    "apps/web/src/features/account/components/SettingsShell.tsx",
+    "apps/web/src/features/account/components/sections.ts",
+    "apps/api/core/management/commands/backfill_origin.py",
     "apps/web/src/app/(auth)/layout.tsx",
     "apps/web/src/app/(site)/layout.tsx",
     # Security run disabled (2026-09-21): the rule reads REQUIRED.
@@ -7973,6 +8028,11 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ),
             ("push guard uzilsa tutilsin", neg_decisions_push_guard_unwired),
             ("kirgan foydalanuvchi paneli olib tashlansa tutilsin", neg_decisions_signed_in_home_dropped),
+            ("sozlamalarda tanlash ro'yxati qaytsa tutilsin", neg_decisions_settings_dropdown_returns),
+            ("hisob darhol o'chirilsa tutilsin", neg_decisions_settings_delete_is_immediate),
+            ("o'chirish vazifasi jadvaldan tushsa tutilsin", neg_decisions_settings_finalize_unscheduled),
+            ("backfill barcha ustunni o'qisa tutilsin", neg_decisions_settings_backfill_reads_all_columns),
+            ("sozlamalar bo'limi o'zgarsa tutilsin", neg_decisions_settings_section_added),
             ("panel yonidagi fayl ko'rinish-prefetch qilsa tutilsin", neg_decisions_home_person_viewport_prefetch),
             ("bugun faol ro'yxati last_seen_at dan o'qisa tutilsin", neg_decisions_presence_reads_last_seen_at),
             ("bugun faol ro'yxati maxfiylikni e'tiborsiz qoldirsa tutilsin", neg_decisions_presence_ignores_privacy),

@@ -5,12 +5,12 @@ import { useState } from "react";
 
 import { FormBox } from "@/components/form/FormKit";
 import { InfoMark } from "@/components/kit/FormExtras";
-import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
 import { patchJson, type NotifyPrefs } from "@/lib/api";
+import { useSaveSlot } from "./SaveBar";
 import { Hint, Status, useAction } from "./section-kit";
 
 /** `notifications.models.Notification.Kind` — musobaqa natijasi birinchi:
@@ -38,10 +38,8 @@ export function NotificationsSection() {
   const { user, reload } = useSession();
   const action = useAction();
   const [edited, setEdited] = useState<NotifyPrefs | null>(null);
-  if (!user) return null;
-
-  const prefs = edited ?? user.notify_prefs ?? {};
-  const telegram = user.social.includes("telegram");
+  const prefs = edited ?? user?.notify_prefs ?? {};
+  const telegram = user?.social.includes("telegram") ?? false;
   // Standart: saytda — ha, Telegram'da — yo'q (`notifications.services`).
   const value = (kind: string, channel: Channel) =>
     prefs[kind]?.[channel] ?? channel === "site";
@@ -53,13 +51,17 @@ export function NotificationsSection() {
     });
   }
 
-  async function save() {
+  const save = async () => {
     const ok = await action.run(async () => {
       await patchJson("/me/", { notify_prefs: prefs });
       await reload();
     });
     if (ok) setEdited(null);
-  }
+    return ok;
+  };
+  useSaveSlot(edited !== null, save, () => setEdited(null));
+
+  if (!user) return null;
 
   const channelLabel = (channel: Channel) =>
     t(locale, channel === "site" ? "settings.channelSite" : "settings.channelTelegram");
@@ -86,6 +88,14 @@ export function NotificationsSection() {
                   {channelLabel(channel)}
                 </th>
               ))}
+              {/* Not built yet: the column is drawn so the table does not
+                  change shape when it is, and says so instead of promising. */}
+              <th scope="col" className="px-3 py-2 text-center font-medium rw-dim">
+                {t(locale, "settings.channelEmail")}{" "}
+                <span className="rw-radius-sm rw-accent-soft px-2 py-0.5 text-theme-xs">
+                  {t(locale, "settings.soon")}
+                </span>
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y rw-divide">
@@ -105,6 +115,15 @@ export function NotificationsSection() {
                     />
                   </td>
                 ))}
+                <td className="px-3 py-3 text-center">
+                  <FormBox
+                    shape="switch"
+                    checked={false}
+                    disabled
+                    readOnly
+                    aria-label={`${t(locale, `settings.kind.${kind}`)} — ${t(locale, "settings.channelEmail")}`}
+                  />
+                </td>
               </tr>
             ))}
           </tbody>
@@ -116,17 +135,13 @@ export function NotificationsSection() {
         ) : (
           <>
             {t(locale, "settings.telegramMissing")}{" "}
-            <Link href="/settings/ijtimoiy" className="rw-accent-ink hover:underline">
-              {t(locale, "settings.nav.social")}
+            <Link href="/settings/xavfsizlik" className="rw-accent-ink hover:underline">
+              {t(locale, "settings.nav.security")}
             </Link>
           </>
         )}
       </p>
-      <p className="mt-1 text-theme-xs rw-faint">{t(locale, "settings.channelEmailSoon")}</p>
-      <div className="mt-4 flex flex-wrap items-center gap-3">
-        <Button busy={action.busy} disabled={edited === null} onClick={save}>
-          {t(locale, "settings.save")}
-        </Button>
+      <div className="mt-4">
         <Status error={action.error} done={action.done} />
       </div>
     </Card>

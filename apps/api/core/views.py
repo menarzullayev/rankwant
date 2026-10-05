@@ -785,9 +785,17 @@ class MeView(generics.RetrieveUpdateDestroyAPIView[User]):
         if profile_is_complete(user):
             on_profile_completed(user)
 
-    @extend_schema(request=AccountDeleteSerializer, responses={204: None})
+    @extend_schema(
+        request=AccountDeleteSerializer,
+        responses={202: OpenApiResponse(description="Deletion scheduled")},
+    )
     def delete(self, request: Request, *args: Any, **kwargs: Any) -> Response:
-        """Hisobni o'chiradi — anonimlashtirish orqali (`core.account`)."""
+        """Schedules the account for deletion (`core.account`).
+
+        Nothing is removed here. The account is anonymized
+        `account.DELETION_GRACE` later by `core.finalize_deletions`; until
+        then the owner stays signed in and `POST /me/restore/` undoes it.
+        """
         user = self.get_object()
         serializer = AccountDeleteSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -795,8 +803,23 @@ class MeView(generics.RetrieveUpdateDestroyAPIView[User]):
         # oladi: qaytarib bo'lmaydigan amal uchun bir marta tasdiq shart.
         if not user.check_password(serializer.validated_data["password"]):
             raise exceptions.ValidationError({"password": "Password is wrong"})
-        account.anonymize(user)
-        logout(request)
+        due = account.schedule_deletion(user)
+        return Response(
+            {"deletion_scheduled_for": due.isoformat()}, status=status.HTTP_202_ACCEPTED
+        )
+
+
+@extend_schema(summary="Hisobni o'chirishni bekor qilish")
+class MeRestoreView(APIView):
+    """Cancels a pending deletion. No password: it removes nothing, and the
+    person who wants the account back may be the one who forgot it."""
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(request=None, responses={204: None})
+    def post(self, request: Request) -> Response:
+        assert isinstance(request.user, User)
+        account.cancel_deletion(request.user)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -1380,11 +1403,11 @@ class SocialCallbackView(APIView):
                 else None
             )
             if owner is None:
-                return redirect(f"{home}/settings/ijtimoiy?social=error")
+                return redirect(f"{home}/settings/xavfsizlik?social=error")
             if link is not None and link.user_id != owner.pk:
                 # Bitta provayder hisobi ikki joyda tura olmaydi —
                 # modeldagi `uniq_social_uid` shuni talab qiladi.
-                return redirect(f"{home}/settings/ijtimoiy?social=taken")
+                return redirect(f"{home}/settings/xavfsizlik?social=taken")
             SocialAccount.objects.update_or_create(
                 user=owner,
                 provider=ident.provider,
@@ -1399,7 +1422,7 @@ class SocialCallbackView(APIView):
                 owner.email_verified_at = timezone.now()
                 owner.save(update_fields=["email_verified_at"])
             record_social_consent(owner)
-            return redirect(f"{home}/settings/ijtimoiy?social=linked")
+            return redirect(f"{home}/settings/xavfsizlik?social=linked")
 
         if link is not None:
             # Rasm va taxallus yangilanadi — ulangan hisobdan olinganda eskisi chiqmasin.
