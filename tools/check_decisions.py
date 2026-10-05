@@ -1730,6 +1730,8 @@ def deploy_automation_is_safe() -> str | None:
             "tools/deploy.sh: oyna override'i (`RANKWANT_ALLOW_LIVE_CONTEST`) "
             "yo'q — contest paytida shoshilinch tuzatish deploy'i qulflanadi"
         )
+    if 'lock_hash "container:$name"' not in read("tools/check_deploy.sh"):
+        return "check_deploy.sh: `requirements.lock` solishtirilmaydi — bog'liqlik yangilanishi deploy qilinmaydi"
     return None
 
 

@@ -238,6 +238,23 @@ py_tree_hash() {
   fi
 }
 
+# `lock_hash TARGET` — image qaysi paketlar bilan qurilganini aytadigan
+# fayl (`requirements.lock`), `\r` siz.
+#
+# ⚠️ Nega alohida: yuqoridagi tekshiruvlar faqat `.py` fayllarni ko'radi.
+# O'lchandi (2026-10-05): `main` da lock `boto3==1.43.108`, jonli image'da
+# `1.43.103`, skript esa «Hamma konteyner joriy kodda» dedi — ya'ni faqat
+# bog'liqlikni yangilaydigan merge (Dependabot) production'ga yetib
+# bormasdi, keyingi kod o'zgarishigacha.
+lock_hash() {
+  if [ "$1" = "host" ]; then
+    tr -d '\r' < apps/api/requirements.lock | sha256sum | cut -d' ' -f1
+  else
+    docker exec "${1#container:}" sh -c \
+      'tr -d "\r" < /app/requirements.lock | sha256sum | cut -d" " -f1' 2>/dev/null
+  fi
+}
+
 # `py_file_list` — host tomonidagi NUL ajratilgan ro'yxat (tartiblangan).
 py_file_list() {
   find . -name '*.py' -not -path '*/__pycache__/*' -not -path '*/.*/*' \
@@ -315,6 +332,14 @@ check_inventory() {
         <(py_hashes "container:$name") | awk '{print $NF}')"
       n_diff="$(printf '%s\n' "$diff_list" | grep -c .)"
       note="$n_diff fayl MAZMUNI farq qiladi — $(printf '%s\n' "$diff_list" | head -1)"
+    else
+      # Kod bir xil — paketlar ham bir xilmi? Konteynerdan o'qilmagan
+      # (bo'sh) xesh farq deb sanalmaydi: aks holda o'qish nosozligi har
+      # yurishda deploy chaqirardi.
+      lock_ctr="$(lock_hash "container:$name")"
+      if [ -n "$lock_ctr" ] && [ "$(lock_hash host)" != "$lock_ctr" ]; then
+        note="requirements.lock farq qiladi — image eski paketlar bilan qurilgan"
+      fi
     fi
   fi
 

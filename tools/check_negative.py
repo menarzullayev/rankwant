@@ -3318,6 +3318,16 @@ def neg_decisions_deplocks_run_not_approved() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_deploy_ignores_lock() -> tuple[bool, str]:
+    """A merge that only changes installed packages is never deployed."""
+    return _decision_broken(
+        "tools/check_deploy.sh",
+        'lock_ctr="$(lock_hash "container:$name")"',
+        'lock_ctr=""',
+        "bog'liqlik yangilanishi deploy qilinmaydi",
+    )
+
+
 def neg_decisions_deplocks_wrong_python() -> tuple[bool, str]:
     """A lock compiled for another Python drops conditional dependencies."""
     return _decision_broken(
@@ -8165,6 +8175,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("lock yechish job'i yoza olsa tutilsin", neg_decisions_deplocks_compile_can_write),
             ("lock push'dan keyin CI yurmasa tutilsin", neg_decisions_deplocks_ci_not_started),
             ("lock boshqa Python uchun yasalsa tutilsin", neg_decisions_deplocks_wrong_python),
+            ("deploy lock farqini ko'rmasa tutilsin", neg_decisions_deploy_ignores_lock),
             ("kutayotgan CI tasdiqlanmasa tutilsin", neg_decisions_deplocks_run_not_approved),
             ("CI run_all o'qilmasa tutilsin", neg_decisions_ci_run_all_ignored),
             ("lock commit'i rebase'ni to'ssa tutilsin", neg_decisions_deplocks_blocks_rebase),
