@@ -79,6 +79,7 @@ INSTALLED_APPS = [
     "tournaments",
     "hackathons",
     "profiles",
+    "team",
 ]
 
 MIDDLEWARE = [

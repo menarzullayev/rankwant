@@ -8983,6 +8983,534 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/staff/team/departments/:
+    get:
+      operationId: staff_team_departments_list
+      summary: jamoa bo'limlari ro'yxati
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffTeamDepartmentList'
+          description: ''
+    post:
+      operationId: staff_team_departments_create
+      summary: Yangi jamoa bo'limi yaratish
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffTeamDepartment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffTeamDepartment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffTeamDepartment'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffTeamDepartment'
+          description: ''
+  /api/v1/staff/team/departments/{id}/:
+    get:
+      operationId: staff_team_departments_retrieve
+      summary: Bitta jamoa bo'limi
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this department.
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffTeamDepartment'
+          description: ''
+    put:
+      operationId: staff_team_departments_update
+      summary: jamoa bo'limini yangilash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this department.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffTeamDepartment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffTeamDepartment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffTeamDepartment'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffTeamDepartment'
+          description: ''
+    patch:
+      operationId: staff_team_departments_partial_update
+      summary: jamoa bo'limini qisman yangilash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this department.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffTeamDepartment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffTeamDepartment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffTeamDepartment'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffTeamDepartment'
+          description: ''
+    delete:
+      operationId: staff_team_departments_destroy
+      summary: jamoa bo'limini o'chirish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this department.
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/staff/team/members/:
+    get:
+      operationId: staff_team_members_list
+      summary: jamoa a'zolari ro'yxati
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffTeamMemberList'
+          description: ''
+    post:
+      operationId: staff_team_members_create
+      summary: Yangi jamoa a'zosi yaratish
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffTeamMember'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffTeamMember'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffTeamMember'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffTeamMember'
+          description: ''
+  /api/v1/staff/team/members/{id}/:
+    get:
+      operationId: staff_team_members_retrieve
+      summary: Bitta jamoa a'zosi
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this member.
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffTeamMember'
+          description: ''
+    put:
+      operationId: staff_team_members_update
+      summary: jamoa a'zosini yangilash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this member.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffTeamMember'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffTeamMember'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffTeamMember'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffTeamMember'
+          description: ''
+    patch:
+      operationId: staff_team_members_partial_update
+      summary: jamoa a'zosini qisman yangilash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this member.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffTeamMember'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffTeamMember'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffTeamMember'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffTeamMember'
+          description: ''
+    delete:
+      operationId: staff_team_members_destroy
+      summary: jamoa a'zosini o'chirish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this member.
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/staff/team/roles/:
+    get:
+      operationId: staff_team_roles_list
+      summary: jamoa lavozimlari ro'yxati
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffTeamRoleList'
+          description: ''
+    post:
+      operationId: staff_team_roles_create
+      summary: Yangi jamoa lavozimi yaratish
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffTeamRole'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffTeamRole'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffTeamRole'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffTeamRole'
+          description: ''
+  /api/v1/staff/team/roles/{id}/:
+    get:
+      operationId: staff_team_roles_retrieve
+      summary: Bitta jamoa lavozimi
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this role.
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffTeamRole'
+          description: ''
+    put:
+      operationId: staff_team_roles_update
+      summary: jamoa lavozimini yangilash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this role.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffTeamRole'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffTeamRole'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffTeamRole'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffTeamRole'
+          description: ''
+    patch:
+      operationId: staff_team_roles_partial_update
+      summary: jamoa lavozimini qisman yangilash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this role.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffTeamRole'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffTeamRole'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffTeamRole'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffTeamRole'
+          description: ''
+    delete:
+      operationId: staff_team_roles_destroy
+      summary: jamoa lavozimini o'chirish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this role.
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/v1/staff/topics/:
     get:
       operationId: staff_topics_list
@@ -9997,6 +10525,24 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/DailyStats'
+          description: ''
+  /api/v1/team/:
+    get:
+      operationId: team_retrieve
+      description: What the public `/team` page draws. Drafts are left out.
+      summary: Jamoa sahifasi
+      tags:
+      - team
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamPage'
           description: ''
   /api/v1/teams/{id}/:
     delete:
@@ -14551,6 +15097,75 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/StaffSystemUpdate'
+    PaginatedStaffTeamDepartmentList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffTeamDepartment'
+    PaginatedStaffTeamMemberList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffTeamMember'
+    PaginatedStaffTeamRoleList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffTeamRole'
     PaginatedStaffTestCaseList:
       type: object
       required:
@@ -15896,6 +16511,184 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SystemUpdateTranslation'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedStaffTeamDepartment:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name_uz:
+          type: string
+          maxLength: 80
+        name_ru:
+          type: string
+          maxLength: 80
+        name_en:
+          type: string
+          maxLength: 80
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        role_count:
+          type: integer
+          readOnly: true
+    PatchedStaffTeamMember:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        section:
+          $ref: '#/components/schemas/SectionEnum'
+        name:
+          type: string
+          maxLength: 120
+        title_uz:
+          type: string
+          maxLength: 120
+        title_ru:
+          type: string
+          maxLength: 120
+        title_en:
+          type: string
+          maxLength: 120
+        context_uz:
+          type: string
+          maxLength: 200
+        context_ru:
+          type: string
+          maxLength: 200
+        context_en:
+          type: string
+          maxLength: 200
+        photo_url:
+          type: string
+          maxLength: 500
+        telegram_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        github_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        linkedin_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        instagram_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        website_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        holds_all_roles:
+          type: boolean
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        is_published:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedStaffTeamRole:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        department:
+          type: integer
+        title_uz:
+          type: string
+          maxLength: 120
+        title_ru:
+          type: string
+          maxLength: 120
+        title_en:
+          type: string
+          maxLength: 120
+        about_uz:
+          type: string
+          maxLength: 300
+        about_ru:
+          type: string
+          maxLength: 300
+        about_en:
+          type: string
+          maxLength: 300
+        reports_to_uz:
+          type: string
+          maxLength: 120
+        reports_to_ru:
+          type: string
+          maxLength: 120
+        reports_to_en:
+          type: string
+          maxLength: 120
+        status_uz:
+          type: string
+          maxLength: 60
+        status_ru:
+          type: string
+          maxLength: 60
+        status_en:
+          type: string
+          maxLength: 60
+        badge:
+          type: string
+          maxLength: 8
+        hue:
+          type: integer
+          maximum: 359
+          minimum: 0
+        tone:
+          $ref: '#/components/schemas/ToneEnum'
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        department_name:
+          type: string
+          readOnly: true
+        is_published:
+          type: boolean
         created_at:
           type: string
           format: date-time
@@ -17285,6 +18078,14 @@ components:
       description: |-
         * `acm` - ACM/ICPC
         * `ioi` - IOI
+    SectionEnum:
+      enum:
+      - core
+      - contributor
+      type: string
+      description: |-
+        * `core` - Asosiy jamoa
+        * `contributor` - Hissa qo'shgan
     ShirtSizeEnum:
       enum:
       - XS
@@ -18651,6 +19452,202 @@ components:
       - released_at
       - title
       - updated_at
+    StaffTeamDepartment:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name_uz:
+          type: string
+          maxLength: 80
+        name_ru:
+          type: string
+          maxLength: 80
+        name_en:
+          type: string
+          maxLength: 80
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        role_count:
+          type: integer
+          readOnly: true
+      required:
+      - id
+      - name_uz
+      - role_count
+    StaffTeamMember:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        section:
+          $ref: '#/components/schemas/SectionEnum'
+        name:
+          type: string
+          maxLength: 120
+        title_uz:
+          type: string
+          maxLength: 120
+        title_ru:
+          type: string
+          maxLength: 120
+        title_en:
+          type: string
+          maxLength: 120
+        context_uz:
+          type: string
+          maxLength: 200
+        context_ru:
+          type: string
+          maxLength: 200
+        context_en:
+          type: string
+          maxLength: 200
+        photo_url:
+          type: string
+          maxLength: 500
+        telegram_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        github_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        linkedin_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        instagram_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        website_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        holds_all_roles:
+          type: boolean
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        is_published:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+      - title_uz
+      - updated_at
+    StaffTeamRole:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        department:
+          type: integer
+        title_uz:
+          type: string
+          maxLength: 120
+        title_ru:
+          type: string
+          maxLength: 120
+        title_en:
+          type: string
+          maxLength: 120
+        about_uz:
+          type: string
+          maxLength: 300
+        about_ru:
+          type: string
+          maxLength: 300
+        about_en:
+          type: string
+          maxLength: 300
+        reports_to_uz:
+          type: string
+          maxLength: 120
+        reports_to_ru:
+          type: string
+          maxLength: 120
+        reports_to_en:
+          type: string
+          maxLength: 120
+        status_uz:
+          type: string
+          maxLength: 60
+        status_ru:
+          type: string
+          maxLength: 60
+        status_en:
+          type: string
+          maxLength: 60
+        badge:
+          type: string
+          maxLength: 8
+        hue:
+          type: integer
+          maximum: 359
+          minimum: 0
+        tone:
+          $ref: '#/components/schemas/ToneEnum'
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        department_name:
+          type: string
+          readOnly: true
+        is_published:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - about_uz
+      - created_at
+      - department
+      - department_name
+      - id
+      - title_uz
+      - updated_at
     StaffTestCase:
       type: object
       properties:
@@ -19230,6 +20227,190 @@ components:
       - joined_at
       - title
       - username
+    TeamPage:
+      type: object
+      description: 'The whole page in one response: it is small and always read together.'
+      properties:
+        departments:
+          type: array
+          items:
+            $ref: '#/components/schemas/TeamPageDepartment'
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/TeamPageRole'
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/TeamPageMember'
+      required:
+      - departments
+      - members
+      - roles
+    TeamPageDepartment:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name_uz:
+          type: string
+          maxLength: 80
+        name_ru:
+          type: string
+          maxLength: 80
+        name_en:
+          type: string
+          maxLength: 80
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+      required:
+      - id
+      - name_uz
+    TeamPageMember:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        section:
+          $ref: '#/components/schemas/SectionEnum'
+        name:
+          type: string
+          maxLength: 120
+        title_uz:
+          type: string
+          maxLength: 120
+        title_ru:
+          type: string
+          maxLength: 120
+        title_en:
+          type: string
+          maxLength: 120
+        context_uz:
+          type: string
+          maxLength: 200
+        context_ru:
+          type: string
+          maxLength: 200
+        context_en:
+          type: string
+          maxLength: 200
+        photo_url:
+          type: string
+          maxLength: 500
+        telegram_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        github_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        linkedin_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        instagram_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        website_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+        holds_all_roles:
+          type: boolean
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+      required:
+      - id
+      - name
+      - title_uz
+    TeamPageRole:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        department:
+          type: integer
+        title_uz:
+          type: string
+          maxLength: 120
+        title_ru:
+          type: string
+          maxLength: 120
+        title_en:
+          type: string
+          maxLength: 120
+        about_uz:
+          type: string
+          maxLength: 300
+        about_ru:
+          type: string
+          maxLength: 300
+        about_en:
+          type: string
+          maxLength: 300
+        reports_to_uz:
+          type: string
+          maxLength: 120
+        reports_to_ru:
+          type: string
+          maxLength: 120
+        reports_to_en:
+          type: string
+          maxLength: 120
+        status_uz:
+          type: string
+          maxLength: 60
+        status_ru:
+          type: string
+          maxLength: 60
+        status_en:
+          type: string
+          maxLength: 60
+        badge:
+          type: string
+          maxLength: 8
+        hue:
+          type: integer
+          maximum: 359
+          minimum: 0
+        tone:
+          $ref: '#/components/schemas/ToneEnum'
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+      required:
+      - about_uz
+      - department
+      - id
+      - title_uz
     TeamRoleEnum:
       enum:
       - owner
@@ -19280,6 +20461,14 @@ components:
         * `bronze` - 3-o'rin
         * `top10` - Eng yaxshi 10%
         * `participant` - Ishtirokchi
+    ToneEnum:
+      enum:
+      - ok
+      - warn
+      type: string
+      description: |-
+        * `ok` - Yaxshi
+        * `warn` - Diqqat
     Topic:
       type: object
       properties:

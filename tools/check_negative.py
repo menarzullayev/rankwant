@@ -3538,6 +3538,36 @@ def neg_decisions_public_stack_falls_back() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_team_page_shows_drafts() -> tuple[bool, str]:
+    """The public team page hands out unpublished members."""
+    return _decision_broken(
+        "apps/api/team/views.py",
+        '"members": Member.objects.filter(is_published=True),',
+        '"members": Member.objects.all(),',
+        "qoralamalarni ham beradi",
+    )
+
+
+def neg_decisions_team_photo_unchecked() -> tuple[bool, str]:
+    """A member's photo address is stored without being checked."""
+    return _decision_broken(
+        "apps/api/team/serializers.py",
+        "        return clean_photo(value)\n",
+        "        return value\n",
+        "rasm manzili tekshirilmaydi",
+    )
+
+
+def neg_decisions_team_staff_route_opened() -> tuple[bool, str]:
+    """One of the team lists drops the content-staff permission."""
+    return _decision_broken(
+        "apps/api/team/staff_views.py",
+        "    permission_classes = [StaffContent]\n    queryset = Member.objects.all()",
+        "    queryset = Member.objects.all()",
+        "kontent xodimi huquqisiz ochiq",
+    )
+
+
 def neg_decisions_deplocks_wrong_python() -> tuple[bool, str]:
     """A lock compiled for another Python drops conditional dependencies."""
     return _decision_broken(
@@ -5095,6 +5125,11 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/features/problems/components/SampleTests.tsx",
     "apps/api/core/management/commands/seed_demo.py",
     "tools/ci.Dockerfile.dockerignore",
+    # Team page (2026-10-05).
+    "apps/api/team/views.py",
+    "apps/api/team/serializers.py",
+    "apps/api/team/staff_views.py",
+    "apps/web/src/app/(site)/team/page.tsx",
     # Customizer on a phone (2026-10-05).
     "apps/web/src/components/customizer/AppearanceTab.tsx",
     "apps/web/src/components/customizer/group-session.ts",
@@ -8394,6 +8429,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("lock yechish job'i yoza olsa tutilsin", neg_decisions_deplocks_compile_can_write),
             ("lock push'dan keyin CI yurmasa tutilsin", neg_decisions_deplocks_ci_not_started),
             ("lock boshqa Python uchun yasalsa tutilsin", neg_decisions_deplocks_wrong_python),
+            ("jamoa sahifasi qoralama bersa tutilsin", neg_decisions_team_page_shows_drafts),
+            ("jamoa rasmi tekshirilmasa tutilsin", neg_decisions_team_photo_unchecked),
+            ("jamoa xodim yo'li ochilsa tutilsin", neg_decisions_team_staff_route_opened),
             ("xulosa serverda chizilsa tutilsin", neg_decisions_settings_summary_drawn_on_server),
             ("oxirgi shablon eslanmasa tutilsin", neg_decisions_last_template_not_remembered),
             ("DB paroli yana qattiq yozilsa tutilsin", neg_decisions_db_password_hardcoded_again),

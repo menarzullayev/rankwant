@@ -46,7 +46,9 @@ export type FieldDef = {
   type?: FieldType;
   required?: boolean;
   helpKey?: MessageKey;
-  options?: { value: string; labelKey: MessageKey }[];
+  /** `labelKey` for a fixed choice; `label` for one read from the API (a
+   *  department's name), which has no key to translate. */
+  options?: { value: string; labelKey?: MessageKey; label?: string }[];
   /** Tahrirda o'zgartirib bo'lmaydi (masalan slug) */
   readonlyOnEdit?: boolean;
   rows?: number;
@@ -347,7 +349,7 @@ export function CrudPage<T extends Row>({
                           : []),
                         ...(f.options ?? []).map((o) => ({
                           value: o.value,
-                          label: t(locale, o.labelKey),
+                          label: o.label ?? (o.labelKey ? t(locale, o.labelKey) : o.value),
                         })),
                       ]}
                     />

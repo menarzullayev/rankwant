@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2077 strings.**
+**2113 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -1417,6 +1417,42 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.section.articles` | Maqolalar | Мақалалар |  |
 | `admin.section.roadmaps` | Traektoriya | Траектория |  |
 | `admin.section.posts` | Yangiliklar | Жаңалықтар |  |
+| `admin.section.team` | Jamoa | Команда |  |
+| `admin.team.members` | A'zolar | Мүшелер |  |
+| `admin.team.roles` | Lavozimlar | Лауазымдар |  |
+| `admin.team.departments` | Bo'limlar | Бөлімдер |  |
+| `admin.team.department` | Bo'lim | Бөлім |  |
+| `admin.team.badge` | Belgi | Белгі |  |
+| `admin.team.badgeHelp` | Avatardagi qisqa belgi: CEO, API | Аватардағы қысқа белгі: CEO, API |  |
+| `admin.team.hue` | Rang tusi (0–359) | Реңк (0–359) |  |
+| `admin.team.tone` | Holat rangi | Күй түсі |  |
+| `admin.team.tone.ok` | Yashil | Жасыл |  |
+| `admin.team.tone.warn` | Sariq | Сары |  |
+| `admin.team.section` | Guruh | Топ |  |
+| `admin.team.section.core` | Asosiy jamoa | Негізгі команда |  |
+| `admin.team.section.contributor` | Hissa qo'shgan | Үлес қосушы |  |
+| `admin.team.photoHelp` | Sayt yo'li (/team/ism.jpg) yoki https:// havola | Сайт жолы (/team/name.jpg) немесе https:// сілтемесі |  |
+| `admin.team.telegram` | Telegram havolasi | Telegram сілтемесі |  |
+| `admin.team.linkedin` | LinkedIn havolasi | LinkedIn сілтемесі |  |
+| `admin.team.instagram` | Instagram havolasi | Instagram сілтемесі |  |
+| `admin.team.website` | Shaxsiy sayt | Жеке сайт |  |
+| `admin.team.holdsAllRoles` | Barcha lavozimlar egasi | Барлық лауазым иесі |  |
+| `admin.team.holdsAllRolesHelp` | Sahifadagi hazil lavozimlar shu a'zoga tegishli. Faqat bitta a'zo. | Беттегі әзіл лауазымдар осы мүшеге тиесілі. Тек бір мүше. |  |
+| `admin.team.title.uz` | Lavozim (uz) | Лауазым (uz) |  |
+| `admin.team.title.ru` | Lavozim (ru) | Лауазым (ru) |  |
+| `admin.team.title.en` | Lavozim (en) | Лауазым (en) |  |
+| `admin.team.about.uz` | Tavsif (uz) | Сипаттама (uz) |  |
+| `admin.team.about.ru` | Tavsif (ru) | Сипаттама (ru) |  |
+| `admin.team.about.en` | Tavsif (en) | Сипаттама (en) |  |
+| `admin.team.reports.uz` | Kimga hisobot beradi (uz) | Кімге есеп береді (uz) |  |
+| `admin.team.reports.ru` | Kimga hisobot beradi (ru) | Кімге есеп береді (ru) |  |
+| `admin.team.reports.en` | Kimga hisobot beradi (en) | Кімге есеп береді (en) |  |
+| `admin.team.status.uz` | Holat (uz) | Күй (uz) |  |
+| `admin.team.status.ru` | Holat (ru) | Күй (ru) |  |
+| `admin.team.status.en` | Holat (en) | Күй (en) |  |
+| `admin.team.context.uz` | Kasbiy ma'lumot (uz) | Кәсіби мәлімет (uz) |  |
+| `admin.team.context.ru` | Kasbiy ma'lumot (ru) | Кәсіби мәлімет (ru) |  |
+| `admin.team.context.en` | Kasbiy ma'lumot (en) | Кәсіби мәлімет (en) |  |
 | `admin.section.updates` | O'zgarishlar | Өзгерістер |  |
 | `admin.section.platformRoadmap` | Yo'l xaritasi | Жол картасы |  |
 | `admin.section.roadmapComments` | Reja izohlari | Картаға түсініктемелер |  |

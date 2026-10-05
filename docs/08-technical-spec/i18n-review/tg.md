@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2077 strings.**
+**2113 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -1417,6 +1417,42 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `admin.section.articles` | Maqolalar | Мақолаҳо |  |
 | `admin.section.roadmaps` | Traektoriya | Траектория |  |
 | `admin.section.posts` | Yangiliklar | Хабарҳо |  |
+| `admin.section.team` | Jamoa | Даста |  |
+| `admin.team.members` | A'zolar | Аъзоён |  |
+| `admin.team.roles` | Lavozimlar | Вазифаҳо |  |
+| `admin.team.departments` | Bo'limlar | Шуъбаҳо |  |
+| `admin.team.department` | Bo'lim | Шуъба |  |
+| `admin.team.badge` | Belgi | Нишона |  |
+| `admin.team.badgeHelp` | Avatardagi qisqa belgi: CEO, API | Нишонаи кӯтоҳ дар аватар: CEO, API |  |
+| `admin.team.hue` | Rang tusi (0–359) | Тобиши ранг (0–359) |  |
+| `admin.team.tone` | Holat rangi | Ранги ҳолат |  |
+| `admin.team.tone.ok` | Yashil | Сабз |  |
+| `admin.team.tone.warn` | Sariq | Зард |  |
+| `admin.team.section` | Guruh | Гурӯҳ |  |
+| `admin.team.section.core` | Asosiy jamoa | Дастаи асосӣ |  |
+| `admin.team.section.contributor` | Hissa qo'shgan | Саҳмгузор |  |
+| `admin.team.photoHelp` | Sayt yo'li (/team/ism.jpg) yoki https:// havola | Роҳи сайт (/team/name.jpg) ё пайванди https:// |  |
+| `admin.team.telegram` | Telegram havolasi | Пайванди Telegram |  |
+| `admin.team.linkedin` | LinkedIn havolasi | Пайванди LinkedIn |  |
+| `admin.team.instagram` | Instagram havolasi | Пайванди Instagram |  |
+| `admin.team.website` | Shaxsiy sayt | Сайти шахсӣ |  |
+| `admin.team.holdsAllRoles` | Barcha lavozimlar egasi | Соҳиби ҳамаи вазифаҳо |  |
+| `admin.team.holdsAllRolesHelp` | Sahifadagi hazil lavozimlar shu a'zoga tegishli. Faqat bitta a'zo. | Вазифаҳои шӯхии саҳифа ба ҳамин аъзо тааллуқ доранд. Танҳо як аъзо. |  |
+| `admin.team.title.uz` | Lavozim (uz) | Вазифа (uz) |  |
+| `admin.team.title.ru` | Lavozim (ru) | Вазифа (ru) |  |
+| `admin.team.title.en` | Lavozim (en) | Вазифа (en) |  |
+| `admin.team.about.uz` | Tavsif (uz) | Тавсиф (uz) |  |
+| `admin.team.about.ru` | Tavsif (ru) | Тавсиф (ru) |  |
+| `admin.team.about.en` | Tavsif (en) | Тавсиф (en) |  |
+| `admin.team.reports.uz` | Kimga hisobot beradi (uz) | Ба кӣ ҳисобот медиҳад (uz) |  |
+| `admin.team.reports.ru` | Kimga hisobot beradi (ru) | Ба кӣ ҳисобот медиҳад (ru) |  |
+| `admin.team.reports.en` | Kimga hisobot beradi (en) | Ба кӣ ҳисобот медиҳад (en) |  |
+| `admin.team.status.uz` | Holat (uz) | Ҳолат (uz) |  |
+| `admin.team.status.ru` | Holat (ru) | Ҳолат (ru) |  |
+| `admin.team.status.en` | Holat (en) | Ҳолат (en) |  |
+| `admin.team.context.uz` | Kasbiy ma'lumot (uz) | Маълумоти касбӣ (uz) |  |
+| `admin.team.context.ru` | Kasbiy ma'lumot (ru) | Маълумоти касбӣ (ru) |  |
+| `admin.team.context.en` | Kasbiy ma'lumot (en) | Маълумоти касбӣ (en) |  |
 | `admin.section.updates` | O'zgarishlar | Тағйиротҳо |  |
 | `admin.section.platformRoadmap` | Yo'l xaritasi | Харитаи роҳ |  |
 | `admin.section.roadmapComments` | Reja izohlari | Шарҳҳо ба харита |  |
