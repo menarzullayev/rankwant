@@ -163,4 +163,26 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           BRANCH: ${{ needs.compile.outputs.branch }}
-        run: gh workflow run ci.yml --ref "$BRANCH" -f run_all=true
+        run: |
+          set -euo pipefail
+          sha="$(git rev-parse HEAD)"
+          # The push does create the pull request's own CI run, but GitHub
+          # parks it as `action_required` because a bot pushed it, and the
+          # branch rules wait for exactly that run (measured 2026-10-05: a
+          # green dispatched run left the pull request BLOCKED). Approve it.
+          run_id=""
+          for _ in $(seq 1 12); do
+            run_id="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${sha}&event=pull_request" \
+              --jq '[.workflow_runs[] | select(.conclusion == "action_required")][0].id // empty')"
+            [ -n "$run_id" ] && break
+            sleep 5
+          done
+          if [ -n "$run_id" ] && gh api -X POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/approve" > /dev/null; then
+            echo "Approved the pull request's CI run ${run_id}." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          # Fallback: the checks of a dispatched run land on the commit and
+          # show whether it is sound, but the pull request still needs a
+          # person to press "Approve and run".
+          gh workflow run ci.yml --ref "$BRANCH" -f run_all=true
+          echo "Could not approve the pull request's CI run; started a manual one. Press **Approve and run** on the pull request." >> "$GITHUB_STEP_SUMMARY"

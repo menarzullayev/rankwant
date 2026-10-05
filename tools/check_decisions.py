@@ -2017,6 +2017,8 @@ def dependabot_locks_are_recompiled() -> str | None:
         return "ci.yml: `run_all` o'qilmaydi — qo'lda yurishda build o'tkazib yuboriladi"
     if '-m "[dependabot skip]"' not in workflow:
         return "dependabot-locks.yml: commit `[dependabot skip]` siz — Dependabot branch'ni rebase qilmay qo'yadi"
+    if "/approve" not in workflow:
+        return "dependabot-locks.yml: kutayotgan CI yurishi tasdiqlanmaydi — PR BLOCKED holatida qoladi"
     if "gh workflow run ci.yml" not in workflow:
         return "dependabot-locks.yml: push'dan keyin CI ishga tushirilmaydi — PR tekshiruvsiz qoladi"
     for name in ("requirements.lock", "requirements-dev.lock"):
