@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2144 strings.**
+**2198 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2165,3 +2165,57 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `search.resultsFor` | «{q}» bo'yicha natijalar | «{q}» boyınsha nátiyjeler |  |
 | `search.topicProblems` | Shu mavzudagi masalalar | Usı tema boyınsha máseleler |  |
 | `search.unit` | natija | nátiyje |  |
+| `notif.all` | Hammasi | Hámmesi |  |
+| `notif.markAll` | Hammasini o'qildi | Hámmesin oqıldı |  |
+| `notif.seeAll` | Barcha bildirishnomalar | Barlıq bildirispeler |  |
+| `notif.today` | Bugun | Búgin |  |
+| `notif.yesterday` | Kecha | Keshe |  |
+| `notif.earlier` | Oldinroq | Aldınıraq |  |
+| `notif.live` | Jonli | Janlı |  |
+| `notif.polling` | Har daqiqada yangilanadi | Hár minutta jańalanadı |  |
+| `notif.emptyTitle` | Hozircha bildirishnoma yo'q | Házirshe bildirispe joq |  |
+| `notif.emptyBody` | Musobaqa natijasi, duel taklifi yoki reyting o'zgarishi shu yerda ko'rinadi. | Jarıs nátiyjesi, duel usınısı yamasa reyting ózgerisi usı jerde kórinedi. |  |
+| `notif.caughtUpTitle` | Hammasi o'qilgan | Hámmesi oqılǵan |  |
+| `notif.caughtUpBody` | Yangi xabar kelganda shu yerda paydo bo'ladi. | Jańa xabar kelgende usı jerde payda boladı. |  |
+| `notif.errorTitle` | Bildirishnomalar yuklanmadi | Bildirispeler júklenbedi |  |
+| `notif.errorBody` | Aloqani tekshirib, qayta urinib ko'ring. | Baylanıstı tekserip, qayta urınıp kóriń. |  |
+| `notif.retry` | Qayta urinish | Qayta urınıw |  |
+| `notif.guestTitle` | Bildirishnomalar uchun kiring | Bildirispeler ushın kiriń |  |
+| `notif.guestBody` | Hisobingizga kirsangiz, natija va takliflar shu yerda ko'rinadi. | Akkauntıńızǵa kirseńiz, nátiyje hám usınıslar usı jerde kórinedi. |  |
+| `notif.signIn` | Kirish | Kiriw |  |
+| `notif.more` | Yana ko'rsatish | Jáne kórsetiw |  |
+| `notif.clearRead` | O'qilganlarni tozalash | Oqılǵanlardı tazalaw |  |
+| `notif.deleted` | Bildirishnoma o'chirildi | Bildirispe óshirildi |  |
+| `notif.cleared` | O'qilgan bildirishnomalar tozalandi | Oqılǵan bildirispeler tazalandı |  |
+| `notif.undo` | Qaytarish | Qaytarıw |  |
+| `notif.markRead` | O'qildi deb belgilash | Oqıldı dep belgilew |  |
+| `notif.markUnread` | O'qilmagan qilish | Oqılmaǵan qılıw |  |
+| `notif.delete` | O'chirish | Óshiriw |  |
+| `notif.unreadCount` | {n} ta o'qilmagan | {n} oqılmaǵan |  |
+| `notif.filterLabel` | Tur bo'yicha | Túri boyınsha |  |
+| `notif.settings` | Sozlash | Sazlaw |  |
+| `notif.failed` | Amal bajarilmadi. Qayta urinib ko'ring. | Ámel orınlanbadı. Qayta urınıp kóriń. |  |
+| `notif.msg.duel_accepted.title` | {user} chaqirig'ingizni qabul qildi | {user} shaqırıǵıńızdı qabıl etti |  |
+| `notif.msg.duel_accepted.body` | «{duel}» {start_at} da boshlanadi. | «{duel}» {start_at} da baslanadı. |  |
+| `notif.msg.duel_cancelled.title` | Duel administrator tomonidan bekor qilindi | Duel administrator tárepinen biykar etildi |  |
+| `notif.msg.duel_cancelled.body` | «{duel}» o'tkazilmaydi. | «{duel}» ótkerilmeydi. |  |
+| `notif.msg.duel_won.title` | Duel tugadi: g'alaba | Duel tamamlandı: jeńis |  |
+| `notif.msg.duel_won.body` | «{duel}» — hisob: {a} {a_solved} : {b_solved} {b} | «{duel}» — esap: {a} {a_solved} : {b_solved} {b} |  |
+| `notif.msg.duel_lost.title` | Duel tugadi: mag'lubiyat | Duel tamamlandı: jeńilis |  |
+| `notif.msg.duel_lost.body` | «{duel}» — hisob: {a} {a_solved} : {b_solved} {b} | «{duel}» — esap: {a} {a_solved} : {b_solved} {b} |  |
+| `notif.msg.duel_draw.title` | Duel tugadi: durang | Duel tamamlandı: teń |  |
+| `notif.msg.duel_draw.body` | «{duel}» — hisob: {a} {a_solved} : {b_solved} {b} | «{duel}» — esap: {a} {a_solved} : {b_solved} {b} |  |
+| `notif.msg.hackathon_scored.title` | Xakaton bahosi: {score}/100 | Xakaton bahası: {score}/100 |  |
+| `notif.msg.hack_succeeded.title` | Hack muvaffaqiyatli — {problem} | Hack tabıslı — {problem} |  |
+| `notif.msg.hack_failed.title` | Hack muvaffaqiyatsiz — {problem} | Hack tabıssız — {problem} |  |
+| `notif.msg.hack_invalid.title` | Hack testi yaroqsiz — {problem} | Hack testi jaramsız — {problem} |  |
+| `notif.msg.hack_crashed.title` | Generator yiqildi — {problem} | Generator qulap tústi — {problem} |  |
+| `notif.msg.hack_ignored.title` | Hack hisobga olinmadi — {problem} | Hack esapqa alınbadı — {problem} |  |
+| `notif.msg.hack_received.title` | Yechimingiz hack qilindi — {problem} | Sheshimińiz hack qılındı — {problem} |  |
+| `notif.msg.hack_received.body` | Yangi testda verdikt: {verdict} | Jańa testte verdikt: {verdict} |  |
+| `notif.msg.streak.title` | {days} kunlik streak! | {days} kúnlik streak! |  |
+| `notif.msg.streak.body` | Streak yutug'i uchun Qvant qo'shildi. | Streak jetiskenligi ushın Qvant qosıldı. |  |
+| `notif.msg.problem_rerated.title` | Skills reytingingiz {delta} ga o'zgardi | Skills reytingińiz {delta} ge ózgerdi |  |
+| `notif.msg.problem_rerated.body` | Siz yechgan masala qayta baholandi. Skills: {before} → {after}. Bu sizning harakatingiz emas — masala qiyinligi statistika asosida yangilandi. | Siz sheshken másele qayta bahalandı. Skills: {before} → {after}. Bul sizdiń háreketińiz emes — másele qıyınlıǵı statistika tiykarında jańalandı. |  |
+| `notif.msg.contest_result.title` | {contest}: {rank}-o'rin, reyting {delta} | {contest}: {rank}-orın, reyting {delta} |  |
+| `notif.msg.contest_result.body` | Contests reytingi: {before} → {after} | Contests reytingi: {before} → {after}. |  |

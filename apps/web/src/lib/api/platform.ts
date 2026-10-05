@@ -52,14 +52,7 @@ export type QvantTop = {
   balance: number;
 };
 
-export type Notification = {
-  id: number;
-  kind: string;
-  title: string;
-  body: string;
-  is_read: boolean;
-  created_at: string;
-};
+export type { Notification, NotificationSummary } from "@/lib/notifications/model";
 
 /** Updates — platforma o'zgarishlari (changelog).
  *

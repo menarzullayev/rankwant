@@ -17,6 +17,8 @@ export const EVENT_COMPILATION_STARTED = "compilation_started";
 export const EVENT_COMPILATION_FINISHED = "compilation_finished";
 export const EVENT_TEST_FINISHED = "test_finished";
 export const EVENT_STANDINGS = "standings";
+/** A notification was created for this user — `notifications.services`. */
+export const EVENT_NOTIFICATION = "notification";
 /** Server replay buferi yetmaganini aytadi — holatni REST dan qayta o'qish kerak. */
 export const EVENT_RESYNC = "resync";
 
@@ -119,6 +121,7 @@ export function useEventStream({
       EVENT_TEST_FINISHED,
       EVENT_ATTEMPT_FINISHED,
       EVENT_STANDINGS,
+      EVENT_NOTIFICATION,
       EVENT_RESYNC,
     ];
     const listeners = names.map((name) => {

@@ -1939,6 +1939,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/notifications/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** bildirishnomani o'chirish */
+        delete: operations["notifications_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/clear-read/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** O'qilganlarni o'chirish */
+        post: operations["notifications_clear_read_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/notifications/mark-read/": {
         parameters: {
             query?: never;
@@ -1948,8 +1982,59 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Hammasini o'qilgan deb belgilash */
+        /** O'qilgan deb belgilash */
         post: operations["notifications_mark_read_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/mark-seen/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Qo'ng'iroq ochildi — hammasi ko'rilgan */
+        post: operations["notifications_mark_seen_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/mark-unread/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** O'qilmagan qilish */
+        post: operations["notifications_mark_unread_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/summary/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Qo'ng'iroq va tablar uchun sonlar */
+        get: operations["notifications_summary_retrieve"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -6381,11 +6466,16 @@ export interface components {
             kind: components["schemas"]["NotificationKindEnum"];
             title: string;
             body?: string;
+            code?: string;
+            params?: unknown;
             ref_type?: string;
             ref_id?: string;
             readonly is_read: boolean;
             /** Format: date-time */
             readonly created_at: string;
+        };
+        NotificationIds: {
+            ids: number[];
         };
         /**
          * @description * `rating_changed` - Reyting o'zgardi
@@ -6399,6 +6489,17 @@ export interface components {
          * @enum {string}
          */
         NotificationKindEnum: "rating_changed" | "problem_rerated" | "contest_result" | "quest_awarded" | "streak_milestone" | "duel" | "hack" | "system";
+        NotificationSummary: {
+            total: number;
+            unread: number;
+            /** @description Unread and not yet shown in the bell */
+            unseen: number;
+            /** @description Kinds present */
+            kinds: string[];
+        };
+        NotificationUpdated: {
+            updated: number;
+        };
         /**
          * @description Organizator ko'radigan maydonlar.
          *
@@ -12322,6 +12423,46 @@ export interface operations {
             };
         };
     };
+    notifications_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this notification. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    notifications_clear_read_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationUpdated"];
+                };
+            };
+        };
+    };
     notifications_mark_read_create: {
         parameters: {
             query?: never;
@@ -12337,12 +12478,76 @@ export interface operations {
             };
         };
         responses: {
-            /** @description No response body */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["NotificationUpdated"];
+                };
+            };
+        };
+    };
+    notifications_mark_seen_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationUpdated"];
+                };
+            };
+        };
+    };
+    notifications_mark_unread_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NotificationIds"];
+                "application/x-www-form-urlencoded": components["schemas"]["NotificationIds"];
+                "multipart/form-data": components["schemas"]["NotificationIds"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationUpdated"];
+                };
+            };
+        };
+    };
+    notifications_summary_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationSummary"];
+                };
             };
         };
     };

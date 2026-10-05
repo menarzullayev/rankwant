@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2144 strings.**
+**2198 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -2165,3 +2165,57 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `search.resultsFor` | «{q}» bo'yicha natijalar | Натиҷаҳо барои «{q}» |  |
 | `search.topicProblems` | Shu mavzudagi masalalar | Масъалаҳои ин мавзӯъ |  |
 | `search.unit` | natija | натиҷа |  |
+| `notif.all` | Hammasi | Ҳама |  |
+| `notif.markAll` | Hammasini o'qildi | Ҳамаро хондашуда қайд кардан |  |
+| `notif.seeAll` | Barcha bildirishnomalar | Ҳамаи огоҳиномаҳо |  |
+| `notif.today` | Bugun | Имрӯз |  |
+| `notif.yesterday` | Kecha | Дирӯз |  |
+| `notif.earlier` | Oldinroq | Пештар |  |
+| `notif.live` | Jonli | Зинда |  |
+| `notif.polling` | Har daqiqada yangilanadi | Ҳар дақиқа нав мешавад |  |
+| `notif.emptyTitle` | Hozircha bildirishnoma yo'q | Ҳоло огоҳинома нест |  |
+| `notif.emptyBody` | Musobaqa natijasi, duel taklifi yoki reyting o'zgarishi shu yerda ko'rinadi. | Натиҷаи мусобиқа, даъват ба дуэл ё тағйири рейтинг дар ин ҷо намоён мешавад. |  |
+| `notif.caughtUpTitle` | Hammasi o'qilgan | Ҳама хонда шудааст |  |
+| `notif.caughtUpBody` | Yangi xabar kelganda shu yerda paydo bo'ladi. | Огоҳиномаи нав дар ин ҷо пайдо мешавад. |  |
+| `notif.errorTitle` | Bildirishnomalar yuklanmadi | Огоҳиномаҳо бор нашуданд |  |
+| `notif.errorBody` | Aloqani tekshirib, qayta urinib ko'ring. | Пайвастро санҷед ва боз кӯшиш кунед. |  |
+| `notif.retry` | Qayta urinish | Такрор |  |
+| `notif.guestTitle` | Bildirishnomalar uchun kiring | Барои дидани огоҳиномаҳо ворид шавед |  |
+| `notif.guestBody` | Hisobingizga kirsangiz, natija va takliflar shu yerda ko'rinadi. | Пас аз воридшавӣ натиҷаҳо ва даъватҳо дар ин ҷо намоён мешаванд. |  |
+| `notif.signIn` | Kirish | Даромадан |  |
+| `notif.more` | Yana ko'rsatish | Боз нишон додан |  |
+| `notif.clearRead` | O'qilganlarni tozalash | Хондашудаҳоро тоза кардан |  |
+| `notif.deleted` | Bildirishnoma o'chirildi | Огоҳинома нест карда шуд |  |
+| `notif.cleared` | O'qilgan bildirishnomalar tozalandi | Огоҳиномаҳои хондашуда тоза шуданд |  |
+| `notif.undo` | Qaytarish | Баргардонидан |  |
+| `notif.markRead` | O'qildi deb belgilash | Хондашуда қайд кардан |  |
+| `notif.markUnread` | O'qilmagan qilish | Нохонда кардан |  |
+| `notif.delete` | O'chirish | Нест кардан |  |
+| `notif.unreadCount` | {n} ta o'qilmagan | {n} нохонда |  |
+| `notif.filterLabel` | Tur bo'yicha | Аз рӯи навъ |  |
+| `notif.settings` | Sozlash | Танзим |  |
+| `notif.failed` | Amal bajarilmadi. Qayta urinib ko'ring. | Амал иҷро нашуд. Боз кӯшиш кунед. |  |
+| `notif.msg.duel_accepted.title` | {user} chaqirig'ingizni qabul qildi | {user} даъвати шуморо қабул кард |  |
+| `notif.msg.duel_accepted.body` | «{duel}» {start_at} da boshlanadi. | «{duel}» {start_at} оғоз мешавад. |  |
+| `notif.msg.duel_cancelled.title` | Duel administrator tomonidan bekor qilindi | Дуэлро маъмур бекор кард |  |
+| `notif.msg.duel_cancelled.body` | «{duel}» o'tkazilmaydi. | «{duel}» баргузор намешавад. |  |
+| `notif.msg.duel_won.title` | Duel tugadi: g'alaba | Дуэл анҷом ёфт: ғалаба |  |
+| `notif.msg.duel_won.body` | «{duel}» — hisob: {a} {a_solved} : {b_solved} {b} | «{duel}» — ҳисоб: {a} {a_solved} : {b_solved} {b} |  |
+| `notif.msg.duel_lost.title` | Duel tugadi: mag'lubiyat | Дуэл анҷом ёфт: шикаст |  |
+| `notif.msg.duel_lost.body` | «{duel}» — hisob: {a} {a_solved} : {b_solved} {b} | «{duel}» — ҳисоб: {a} {a_solved} : {b_solved} {b} |  |
+| `notif.msg.duel_draw.title` | Duel tugadi: durang | Дуэл анҷом ёфт: мусовӣ |  |
+| `notif.msg.duel_draw.body` | «{duel}» — hisob: {a} {a_solved} : {b_solved} {b} | «{duel}» — ҳисоб: {a} {a_solved} : {b_solved} {b} |  |
+| `notif.msg.hackathon_scored.title` | Xakaton bahosi: {score}/100 | Баҳои хакатон: {score}/100 |  |
+| `notif.msg.hack_succeeded.title` | Hack muvaffaqiyatli — {problem} | Ҳак муваффақ шуд — {problem} |  |
+| `notif.msg.hack_failed.title` | Hack muvaffaqiyatsiz — {problem} | Ҳак муваффақ нашуд — {problem} |  |
+| `notif.msg.hack_invalid.title` | Hack testi yaroqsiz — {problem} | Тести ҳак нодуруст аст — {problem} |  |
+| `notif.msg.hack_crashed.title` | Generator yiqildi — {problem} | Генератор аз кор монд — {problem} |  |
+| `notif.msg.hack_ignored.title` | Hack hisobga olinmadi — {problem} | Ҳак ба ҳисоб гирифта нашуд — {problem} |  |
+| `notif.msg.hack_received.title` | Yechimingiz hack qilindi — {problem} | Ҳалли шумо шикаста шуд — {problem} |  |
+| `notif.msg.hack_received.body` | Yangi testda verdikt: {verdict} | Вердикт дар тести нав: {verdict} |  |
+| `notif.msg.streak.title` | {days} kunlik streak! | Силсилаи {days}-рӯза! |  |
+| `notif.msg.streak.body` | Streak yutug'i uchun Qvant qo'shildi. | Барои дастоварди силсила Qvant илова шуд. |  |
+| `notif.msg.problem_rerated.title` | Skills reytingingiz {delta} ga o'zgardi | Рейтинги Skills-и шумо {delta} тағйир ёфт |  |
+| `notif.msg.problem_rerated.body` | Siz yechgan masala qayta baholandi. Skills: {before} → {after}. Bu sizning harakatingiz emas — masala qiyinligi statistika asosida yangilandi. | Масъалае, ки шумо ҳал кардед, аз нав баҳогузорӣ шуд. Skills: {before} → {after}. Ин амали шумо нест — душвории масъала аз рӯи омор нав шуд. |  |
+| `notif.msg.contest_result.title` | {contest}: {rank}-o'rin, reyting {delta} | {contest}: ҷойи {rank}, рейтинг {delta} |  |
+| `notif.msg.contest_result.body` | Contests reytingi: {before} → {after} | Рейтинги Contests: {before} → {after} |  |
