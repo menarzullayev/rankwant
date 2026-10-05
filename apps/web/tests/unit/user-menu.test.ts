@@ -26,6 +26,8 @@ describe("H4 overflow-you", () => {
 
   it("opens the appearance panel and switches the theme below xl", () => {
     expect(menu).toContain("customizer.setOpen(true)");
+    // Every row is a 44 px target.
+    expect(menu).toContain('"flex min-h-11 w-full items-center');
     expect(menu).toContain("toggleTheme(");
     expect(menu.match(/<li role="none" className="xl:hidden">/g)).toHaveLength(2);
   });

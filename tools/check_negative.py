@@ -3398,6 +3398,16 @@ def neg_decisions_settings_writes_appearance() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_account_menu_rows_shrink() -> tuple[bool, str]:
+    """The account menu's rows go back to 36 px."""
+    return _decision_broken(
+        "apps/web/src/layout/UserMenu.tsx",
+        '"flex min-h-11 w-full items-center',
+        '"flex w-full items-center',
+        "hisob menyusi qatorlari 44 px emas",
+    )
+
+
 def neg_decisions_deplocks_wrong_python() -> tuple[bool, str]:
     """A lock compiled for another Python drops conditional dependencies."""
     return _decision_broken(
@@ -8250,6 +8260,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("lock yechish job'i yoza olsa tutilsin", neg_decisions_deplocks_compile_can_write),
             ("lock push'dan keyin CI yurmasa tutilsin", neg_decisions_deplocks_ci_not_started),
             ("lock boshqa Python uchun yasalsa tutilsin", neg_decisions_deplocks_wrong_python),
+            ("hisob menyusi qatori kichraysa tutilsin", neg_decisions_account_menu_rows_shrink),
             ("tez qator olib tashlansa tutilsin", neg_decisions_customizer_quick_row_dropped),
             ("shablon preview'i tokensiz qolsa tutilsin", neg_decisions_customizer_preview_hardcoded),
             ("guruh yana ochiq boshlansa tutilsin", neg_decisions_customizer_group_opens_by_default),
