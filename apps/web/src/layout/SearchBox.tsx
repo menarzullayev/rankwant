@@ -44,10 +44,12 @@ export default function SearchBox() {
     return () => document.removeEventListener("keydown", onKey);
   }, []);
 
-  const close = useCallback(() => {
+  const close = useCallback((leaving?: boolean) => {
     setOpen(false);
-    // Focus goes back to where it came from, as a dialog owes.
-    requestAnimationFrame(() => trigger.current?.focus());
+    // Focus goes back to where it came from, as a dialog owes — unless a
+    // result was opened: the new page takes over, and a focused trigger
+    // would greet it with its tooltip.
+    if (!leaving) requestAnimationFrame(() => trigger.current?.focus());
   }, []);
 
   return (

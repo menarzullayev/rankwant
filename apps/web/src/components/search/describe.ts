@@ -10,8 +10,10 @@ export type HitText = {
 };
 
 const DAY: Intl.DateTimeFormatOptions = {
-  day: "numeric",
-  month: "short",
+  // Numeric on purpose: browsers without Uzbek month names print a
+  // short month as "M10" (measured 2026-10-05).
+  day: "2-digit",
+  month: "2-digit",
   year: "numeric",
   // The site's day is Tashkent's; a server render in UTC would be a day
   // behind for anything published after 19:00.

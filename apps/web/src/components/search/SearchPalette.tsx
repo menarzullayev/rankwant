@@ -76,7 +76,12 @@ const KBD = "rw-radius-sm border rw-line px-1.5 py-0.5 font-mono text-theme-xs r
  *  (`aria-activedescendant`): arrows move, Enter opens, Tab steps through
  *  the types, Escape closes. That also makes the dialog its own focus trap.
  */
-export function SearchPalette({ onClose }: { onClose: () => void }) {
+export function SearchPalette({
+  onClose,
+}: {
+  /** `leaving` — the page is about to change, so focus has nowhere to return. */
+  onClose: (leaving?: boolean) => void;
+}) {
   const locale = useLocale();
   const router = useRouter();
   const overlay = useOverlay();
@@ -140,7 +145,7 @@ export function SearchPalette({ onClose }: { onClose: () => void }) {
   const sections = useMemo<Section[]>(() => {
     const go = (href: string, remember = true) => () => {
       if (remember && askable) rememberRecent(query);
-      onClose();
+      onClose(true);
       router.push(href as Route);
     };
 
@@ -190,7 +195,8 @@ export function SearchPalette({ onClose }: { onClose: () => void }) {
         icon: "system.palette",
         hint: "",
         run: () => {
-          onClose();
+          // The panel takes the focus from here.
+          onClose(true);
           setCustomizerOpen(true);
         },
       });
@@ -277,6 +283,8 @@ export function SearchPalette({ onClose }: { onClose: () => void }) {
 
     if (remote && data) {
       for (const group of data.groups) {
+        // A single type that matched nothing still comes back as a group.
+        if (group.results.length === 0) continue;
         const label = t(locale, `search.type.${group.type}`);
         const counted = `${label} · ${group.count}`;
         out.push({
@@ -394,7 +402,7 @@ export function SearchPalette({ onClose }: { onClose: () => void }) {
         if (current) current.run();
         else if (remote && askable) {
           rememberRecent(query);
-          onClose();
+          onClose(true);
           router.push(searchHref(query, type) as Route);
         }
         break;
@@ -469,7 +477,7 @@ export function SearchPalette({ onClose }: { onClose: () => void }) {
           <button
             type="button"
             tabIndex={-1}
-            onClick={onClose}
+            onClick={() => onClose()}
             aria-label={t(locale, "nav.close")}
             className="flex size-11 shrink-0 items-center justify-center rw-radius-sm rw-dim-2 rw-hover-bg rw-focus-ring"
           >
