@@ -75,6 +75,9 @@ WEB = ROOT / "apps/web/src"
 SKIP_PARTS = {"node_modules", ".next", "__tests__", "generated"}
 DEFERRED = (
     "content/legal.ts",
+    # The team page's jokes (2026-10-05) — content in uz/ru/en, like the
+    # legal texts; the other locales read the Uzbek text.
+    "content/team.ts",
     "lib/country-names.ts",
     "lib/regions.ts",
     "opengraph-image.tsx",
