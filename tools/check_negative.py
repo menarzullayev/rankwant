@@ -3328,6 +3328,36 @@ def neg_decisions_deploy_ignores_lock() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_customizer_row_dropped() -> tuple[bool, str]:
+    """The account menu loses its door to the appearance panel."""
+    return _decision_broken(
+        "apps/web/src/layout/UserMenu.tsx",
+        "customizer.setOpen(true);",
+        "",
+        "telefonda panel to'rt qadamda",
+    )
+
+
+def neg_decisions_customizer_sheet_one_stop() -> tuple[bool, str]:
+    """The phone sheet goes back to a single height."""
+    return _decision_broken(
+        "apps/web/src/components/customizer/Customizer.tsx",
+        'tall ? "max-h-[90dvh]" : "max-h-[55dvh]"',
+        '"max-h-[55dvh]"',
+        "ikki pog'onali emas",
+    )
+
+
+def neg_decisions_customizer_touch_rule_orphaned() -> tuple[bool, str]:
+    """The 44 px rule stays in the stylesheet but nothing carries its hook."""
+    return _decision_broken(
+        "apps/web/src/components/customizer/Customizer.tsx",
+        "          data-customizer\n",
+        "",
+        "44 px qoidasi hech narsaga tegmaydi",
+    )
+
+
 def neg_decisions_deplocks_wrong_python() -> tuple[bool, str]:
     """A lock compiled for another Python drops conditional dependencies."""
     return _decision_broken(
@@ -4881,6 +4911,9 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/layout/UserMenu.tsx",
     # Secret-key guard (2026-10-05).
     "apps/api/Dockerfile",
+    # Customizer on a phone (2026-10-05).
+    "apps/web/src/components/customizer/Customizer.tsx",
+    "apps/web/src/app/globals.css",
     # Settings redesign (2026-10-05).
     "apps/web/src/features/account/components/SkillsSection.tsx",
     "apps/web/src/features/account/components/SocialAccounts.tsx",
@@ -8175,6 +8208,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("lock yechish job'i yoza olsa tutilsin", neg_decisions_deplocks_compile_can_write),
             ("lock push'dan keyin CI yurmasa tutilsin", neg_decisions_deplocks_ci_not_started),
             ("lock boshqa Python uchun yasalsa tutilsin", neg_decisions_deplocks_wrong_python),
+            ("menyudan sozlagich qatori olinsa tutilsin", neg_decisions_customizer_row_dropped),
+            ("mobil varaq bir pog'onaga qaytsa tutilsin", neg_decisions_customizer_sheet_one_stop),
+            ("44 px qoidasi ilgaksiz qolsa tutilsin", neg_decisions_customizer_touch_rule_orphaned),
             ("deploy lock farqini ko'rmasa tutilsin", neg_decisions_deploy_ignores_lock),
             ("kutayotgan CI tasdiqlanmasa tutilsin", neg_decisions_deplocks_run_not_approved),
             ("CI run_all o'qilmasa tutilsin", neg_decisions_ci_run_all_ignored),

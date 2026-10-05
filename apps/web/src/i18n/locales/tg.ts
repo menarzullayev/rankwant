@@ -26,6 +26,8 @@ export const tg: Record<MessageKey, string> = {
   "customizer.title": "Танзими намуд",
   "customizer.short": "Намуд",
   "customizer.close": "Пӯшидан",
+  "customizer.expand": "Калон кардан",
+  "customizer.collapse": "Хурд кардан",
   "customizer.tab.a11y": "Дастрасӣ",
   "customizer.templates": "Қолибҳои омода",
   "customizer.templateModified": "Қолиб тағйир ёфт",

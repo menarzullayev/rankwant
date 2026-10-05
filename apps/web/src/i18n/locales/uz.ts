@@ -30,6 +30,8 @@ export const uz = {
   "customizer.title": "Ko'rinish sozlagichi",
   "customizer.short": "Ko'rinish",
   "customizer.close": "Yopish",
+  "customizer.expand": "Kattalashtirish",
+  "customizer.collapse": "Kichraytirish",
   "customizer.tab.a11y": "Qulaylik",
   "customizer.templates": "Tayyor shablonlar",
   "customizer.templateModified": "Shablon o'zgartirilgan",

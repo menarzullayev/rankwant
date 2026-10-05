@@ -23,4 +23,10 @@ describe("H4 overflow-you", () => {
     expect(menu).toContain('role="menu"');
     expect(menu).not.toContain("sm:flex");
   });
+
+  it("opens the appearance panel and switches the theme below xl", () => {
+    expect(menu).toContain("customizer.setOpen(true)");
+    expect(menu).toContain("toggleTheme(");
+    expect(menu.match(/<li role="none" className="xl:hidden">/g)).toHaveLength(2);
+  });
 });
