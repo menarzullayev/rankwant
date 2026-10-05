@@ -9,6 +9,7 @@ import {
   hitHref,
   parseQuery,
   rankLocal,
+  sameHit,
   searchHref,
   SERVER_TYPES,
   type SearchHit,
@@ -115,6 +116,20 @@ describe("result links", () => {
     expect(hitHref(hit({ type: "news", kind: "update", key: "12" }))).toBe("/updates/12");
   });
 
+  it("sends the new kinds to their pages", () => {
+    expect(hitHref(hit({ type: "news", kind: "plan", key: "7" }))).toBe("/platform-roadmap/7");
+    // A translated title leads to the same entry as the original.
+    expect(hitHref(hit({ type: "news", kind: "update_translation", key: "12" }))).toBe("/updates/12");
+    expect(hitHref(hit({ type: "shop", kind: "shop_item", key: "oltin-ramka" }))).toBe("/qvant");
+  });
+
+  it("recognises the top hit inside its group", () => {
+    const top = hit({ key: "toliq-qism-graf" });
+    expect(sameHit(top, hit({ key: "toliq-qism-graf" }))).toBe(true);
+    expect(sameHit(top, hit({ key: "boshqa" }))).toBe(false);
+    expect(sameHit(top, hit({ type: "user", kind: "user", key: "toliq-qism-graf" }))).toBe(false);
+  });
+
   it("builds the results page address without the defaults", () => {
     expect(searchHref("dp")).toBe("/search?q=dp");
     expect(searchHref("a b", "user", 3)).toBe("/search?q=a+b&type=user&page=3");
@@ -132,6 +147,35 @@ describe("recent searches", () => {
     const many = Array.from({ length: RECENT_LIMIT }, (_, index) => `so'rov ${index}`);
     expect(pushRecent(many, "yangi")).toHaveLength(RECENT_LIMIT);
     expect(pushRecent(many, "a")).toBe(many);
+  });
+});
+
+describe("what the comparison with other platforms added", () => {
+  const palette = src("../../src/components/search/SearchPalette.tsx");
+  const page = src("../../src/app/(site)/search/page.tsx");
+  const describe_ = src("../../src/components/search/describe.ts");
+
+  it("shows the top hit once, above the groups", () => {
+    expect(palette).toContain('label: t(locale, "search.top")');
+    expect(palette).toContain("group.results.filter((hit) => !sameHit(hit, top))");
+    expect(page).toContain("group.results.filter((hit) => !sameHit(hit, top))");
+  });
+
+  it("quotes the text a body match was found in", () => {
+    expect(describe_).toContain("hit.snippet ? { ...plain, subtitle: hit.snippet, quoted: true }");
+    expect(palette).toContain("<Highlight text={option.subtitle} query={query} />");
+    expect(page).toContain("<Highlight text={text.subtitle} query={query} />");
+  });
+
+  it("says so when the server asks to slow down", () => {
+    expect(palette).toContain("response.status === THROTTLED");
+    expect(palette).toContain('response.headers.get("Retry-After")');
+    expect(page).toContain("error.status === THROTTLED");
+    expect(page).toContain('t(locale, "search.throttledWait")');
+  });
+
+  it("offers matching sections of the site on the results page too", () => {
+    expect(page).toContain("NAV.map((item) => ({ label: t(locale, item.key), href: item.href }))");
   });
 });
 

@@ -26,7 +26,9 @@ import {
   MIN_QUERY,
   parseQuery,
   prefixOf,
+  sameHit,
   searchHref,
+  type SearchHit,
   type SearchResponse,
   type SearchType,
 } from "@/lib/search/model";
@@ -50,6 +52,8 @@ type Option = {
   meta: string;
   /** Mark the matched part of the title. */
   marked: boolean;
+  /** The subtitle is a quotation from the text: mark the match in it. */
+  quoted?: boolean;
   run: () => void;
 };
 
@@ -62,7 +66,16 @@ type Section = {
 
 type LocalItem = { id: string; label: string; icon: string; hint: string; run: () => void };
 
-type Answer = { key: string; type: SearchType; data: SearchResponse | null };
+type Answer = {
+  key: string;
+  type: SearchType;
+  data: SearchResponse | null;
+  /** Seconds the server asked us to wait (429); `-1` — it was not that. */
+  wait: number;
+};
+
+/** The server's "too many requests". */
+const THROTTLED = 429;
 
 const CHIP =
   "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border px-3 text-theme-sm whitespace-nowrap transition rw-focus-ring [@media(pointer:coarse)]:h-11";
@@ -94,7 +107,7 @@ export function SearchPalette({
   const [chip, setChip] = useState<SearchType>("all");
   const [selected, setSelected] = useState(0);
   const [recent, setRecent] = useState<string[]>(readRecent);
-  const [answer, setAnswer] = useState<Answer>({ key: "", type: "all", data: null });
+  const [answer, setAnswer] = useState<Answer>({ key: "", type: "all", data: null, wait: -1 });
   const input = useRef<HTMLInputElement>(null);
 
   const { query, type, prefixed } = parseQuery(raw, chip);
@@ -112,12 +125,20 @@ export function SearchPalette({
         params.set("limit", String(SINGLE));
       }
       fetch(`${API_BASE}/search/?${params.toString()}`, { signal: controller.signal })
-        .then((response) =>
-          response.ok ? response.json() : Promise.reject(new Error(String(response.status))),
-        )
-        .then((data: SearchResponse) => setAnswer({ key: requestKey, type, data }))
+        .then(async (response) => {
+          if (response.status === THROTTLED) {
+            const wait = Number(response.headers.get("Retry-After")) || 0;
+            setAnswer({ key: requestKey, type, data: null, wait });
+            return;
+          }
+          if (!response.ok) throw new Error(String(response.status));
+          const data = (await response.json()) as SearchResponse;
+          setAnswer({ key: requestKey, type, data, wait: -1 });
+        })
         .catch(() => {
-          if (!controller.signal.aborted) setAnswer({ key: requestKey, type, data: null });
+          if (!controller.signal.aborted) {
+            setAnswer({ key: requestKey, type, data: null, wait: -1 });
+          }
         });
     }, DEBOUNCE_MS);
     return () => {
@@ -137,7 +158,8 @@ export function SearchPalette({
 
   const settled = answer.key === requestKey;
   const pending = requestKey !== "" && !settled;
-  const failed = requestKey !== "" && settled && answer.data === null;
+  const throttled = requestKey !== "" && settled && answer.wait >= 0;
+  const failed = requestKey !== "" && settled && answer.data === null && !throttled;
   // While the next answer is on its way the last one of the same type
   // stays: an empty list between two keystrokes reads as "nothing found".
   const data = requestKey !== "" && answer.type === type ? answer.data : null;
@@ -281,10 +303,33 @@ export function SearchPalette({
       return out;
     }
 
+    const hitOption = (hit: SearchHit, marked: boolean): Option => {
+      const text = describeHit(hit, locale);
+      return {
+        id: `hit-${hit.type}-${hit.kind}-${hit.key}`,
+        icon: hitIcon(hit),
+        title: text.title,
+        subtitle: text.subtitle,
+        meta: text.meta,
+        marked,
+        quoted: text.quoted,
+        run: go(hitHref(hit)),
+      };
+    };
+    const top = remote && data ? data.top : null;
+    if (top) {
+      out.push({
+        key: "top",
+        label: t(locale, "search.top"),
+        options: [{ ...hitOption(top, true), id: "top-hit" }],
+      });
+    }
     if (remote && data) {
       for (const group of data.groups) {
+        // The top hit is shown once, on top — not again in its group.
+        const results = top ? group.results.filter((hit) => !sameHit(hit, top)) : group.results;
         // A single type that matched nothing still comes back as a group.
-        if (group.results.length === 0) continue;
+        if (results.length === 0) continue;
         const label = t(locale, `search.type.${group.type}`);
         const counted = `${label} · ${group.count}`;
         out.push({
@@ -294,18 +339,7 @@ export function SearchPalette({
             type === "all" && group.count > group.results.length
               ? { label: t(locale, "search.type.all"), run: () => pick(group.type) }
               : undefined,
-          options: group.results.map((hit) => {
-            const text = describeHit(hit, locale);
-            return {
-              id: `hit-${hit.type}-${hit.kind}-${hit.key}`,
-              icon: hitIcon(hit),
-              title: text.title,
-              subtitle: text.subtitle,
-              meta: text.meta,
-              marked: !group.fuzzy,
-              run: go(hitHref(hit)),
-            };
-          }),
+          options: results.map((hit) => hitOption(hit, !group.fuzzy)),
         });
       }
     }
@@ -425,7 +459,12 @@ export function SearchPalette({
   const needMore = remote && type !== "all" && !askable;
   let status = "";
   if (pending) status = t(locale, "search.loading");
-  else if (failed) status = t(locale, "search.failed");
+  else if (throttled) {
+    status =
+      answer.wait > 0
+        ? fill(t(locale, "search.throttledWait"), { n: answer.wait })
+        : t(locale, "search.throttled");
+  } else if (failed) status = t(locale, "search.failed");
   else if (needMore) status = t(locale, "search.minChars");
   else if (empty) status = fill(t(locale, "search.empty"), { q: query });
   else if (data) status = fill(t(locale, "search.count"), { n: data.total });
@@ -580,7 +619,11 @@ export function SearchPalette({
                       </span>
                       {option.subtitle && (
                         <span className="block truncate text-theme-xs rw-dim">
-                          {option.subtitle}
+                          {option.quoted ? (
+                            <Highlight text={option.subtitle} query={query} />
+                          ) : (
+                            option.subtitle
+                          )}
                         </span>
                       )}
                     </span>
@@ -600,7 +643,7 @@ export function SearchPalette({
           {empty && (
             <div className="px-4 py-10 text-center">
               <p className="text-theme-sm rw-strong">{status}</p>
-              {!pending && !failed && !needMore && (
+              {!pending && !failed && !throttled && !needMore && (
                 <p className="mt-1 text-theme-xs rw-dim">{t(locale, "search.emptyHint")}</p>
               )}
             </div>

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2198 strings.**
+**2202 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -2219,3 +2219,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `notif.msg.problem_rerated.body` | Siz yechgan masala qayta baholandi. Skills: {before} → {after}. Bu sizning harakatingiz emas — masala qiyinligi statistika asosida yangilandi. | Масъалае, ки шумо ҳал кардед, аз нав баҳогузорӣ шуд. Skills: {before} → {after}. Ин амали шумо нест — душвории масъала аз рӯи омор нав шуд. |  |
 | `notif.msg.contest_result.title` | {contest}: {rank}-o'rin, reyting {delta} | {contest}: ҷойи {rank}, рейтинг {delta} |  |
 | `notif.msg.contest_result.body` | Contests reytingi: {before} → {after} | Рейтинги Contests: {before} → {after} |  |
+| `search.type.shop` | Do'kon | Мағоза |  |
+| `search.top` | Eng mos natija | Мувофиқтарин натиҷа |  |
+| `search.throttled` | Juda ko'p so'rov. Birozdan keyin qayta urinib ko'ring. | Дархостҳо аз ҳад зиёд. Пас аз лаҳзае боз кӯшиш кунед. |  |
+| `search.throttledWait` | Juda ko'p so'rov. {n} soniyadan keyin qayta urinib ko'ring. | Дархостҳо аз ҳад зиёд. Пас аз {n} сония боз кӯшиш кунед. |  |

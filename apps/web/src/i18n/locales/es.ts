@@ -2251,4 +2251,8 @@ export const es: Record<MessageKey, string> = {
   "notif.msg.problem_rerated.body": "Un problema que resolviste fue reevaluado. Skills: {before} → {after}. No fue una acción tuya: la dificultad se actualizó según las estadísticas.",
   "notif.msg.contest_result.title": "{contest}: puesto {rank}, rating {delta}",
   "notif.msg.contest_result.body": "Rating de Contests: {before} → {after}",
+  "search.type.shop": "Tienda",
+  "search.top": "Mejor coincidencia",
+  "search.throttled": "Demasiadas solicitudes. Inténtalo de nuevo en un momento.",
+  "search.throttledWait": "Demasiadas solicitudes. Inténtalo de nuevo en {n} s.",
 };

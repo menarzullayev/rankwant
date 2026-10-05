@@ -2252,4 +2252,8 @@ export const kk: Record<MessageKey, string> = {
   "notif.msg.problem_rerated.body": "Сіз шешкен есеп қайта бағаланды. Skills: {before} → {after}. Бұл сіздің әрекетіңіз емес — есеп қиындығы статистика бойынша жаңартылды.",
   "notif.msg.contest_result.title": "{contest}: {rank}-орын, рейтинг {delta}",
   "notif.msg.contest_result.body": "Contests рейтингі: {before} → {after}",
+  "search.type.shop": "Дүкен",
+  "search.top": "Ең сәйкес нәтиже",
+  "search.throttled": "Сұраулар тым көп. Сәлден соң қайталап көріңіз.",
+  "search.throttledWait": "Сұраулар тым көп. {n} секундтан соң қайталап көріңіз.",
 };

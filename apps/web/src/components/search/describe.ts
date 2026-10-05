@@ -3,8 +3,11 @@ import { kindLabelKey, type SearchHit } from "@/lib/search/model";
 
 export type HitText = {
   title: string;
-  /** Second line: what the hit is, and when or by whom. */
+  /** Second line: what the hit is, and when or by whom — or, for a match
+   *  found inside a long text, the words around it. */
   subtitle: string;
+  /** The second line is that quotation: the match in it is marked. */
+  quoted: boolean;
   /** Right-hand number: difficulty or rating. */
   meta: string;
 };
@@ -26,40 +29,50 @@ function joined(...parts: (string | null | undefined)[]): string {
 
 /** The words a hit is shown with — the palette and the results page agree. */
 export function describeHit(hit: SearchHit, locale: Locale): HitText {
+  const plain = describePlain(hit, locale);
+  // Found only inside the text: the quotation explains the result better
+  // than its section name does.
+  return hit.snippet ? { ...plain, subtitle: hit.snippet, quoted: true } : plain;
+}
+
+function describePlain(hit: SearchHit, locale: Locale): HitText {
   const kindKey = kindLabelKey(hit);
   const kind = kindKey ? t(locale, kindKey) : "";
   const when = hit.date ? date(hit.date, locale, DAY) : "";
+  const quoted = false;
+  const named = () =>
+    topicName(
+      {
+        slug: hit.key,
+        name_uz: hit.title,
+        name_ru: hit.title_ru ?? "",
+        name_en: hit.title_en ?? "",
+      },
+      locale,
+    );
   switch (hit.type) {
     case "problem":
       return {
         title: hit.title,
         subtitle: hit.code ? `#${hit.code}` : "",
         meta: hit.meta ? String(hit.meta) : "",
+        quoted,
       };
     case "user":
       return {
         title: `@${hit.key}`,
         subtitle: hit.subtitle ?? "",
         meta: hit.meta ? String(hit.meta) : "",
+        quoted,
       };
     case "topic":
-      return {
-        title: topicName(
-          {
-            slug: hit.key,
-            name_uz: hit.title,
-            name_ru: hit.title_ru ?? "",
-            name_en: hit.title_en ?? "",
-          },
-          locale,
-        ),
-        subtitle: t(locale, "search.topicProblems"),
-        meta: "",
-      };
+      return { title: named(), subtitle: t(locale, "search.topicProblems"), meta: "", quoted };
+    case "shop":
+      return { title: named(), subtitle: kind, meta: hit.meta ? String(hit.meta) : "", quoted };
     case "contest":
     case "news":
-      return { title: hit.title, subtitle: joined(kind, when), meta: "" };
+      return { title: hit.title, subtitle: joined(kind, when), meta: "", quoted };
     case "learn":
-      return { title: hit.title, subtitle: joined(kind, hit.subtitle), meta: "" };
+      return { title: hit.title, subtitle: joined(kind, hit.subtitle), meta: "", quoted };
   }
 }

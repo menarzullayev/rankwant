@@ -8574,6 +8574,8 @@ export interface components {
             key: string;
             title: string;
             subtitle?: string;
+            /** @description The words around a match found only in a long text */
+            snippet?: string;
             title_ru?: string;
             title_en?: string;
             code?: number | null;
@@ -8585,6 +8587,8 @@ export interface components {
         SearchResponse: {
             q: string;
             type: string;
+            /** @description The one result the query names outright, if any */
+            top: components["schemas"]["SearchHit"] | null;
             groups: components["schemas"]["SearchGroup"][];
             counts: {
                 [key: string]: number;

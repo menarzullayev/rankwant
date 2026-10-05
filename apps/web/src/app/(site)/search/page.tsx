@@ -7,13 +7,16 @@ import { Icon } from "@/components/ui/Icon";
 import { Pager } from "@/components/ui/Pager";
 import { fill, t, type Locale } from "@/i18n/messages";
 import { getLocale } from "@/i18n/server";
-import { api } from "@/lib/api";
+import { NAV } from "@/layout/nav";
+import { api, ApiError } from "@/lib/api";
 import {
+  filterLocal,
   foldText,
   hitHref,
   hitIcon,
   isServerType,
   MIN_QUERY,
+  sameHit,
   searchHref,
   SERVER_TYPES,
   type SearchGroup,
@@ -27,6 +30,10 @@ const MIXED = 10;
 const PAGE_SIZE = 20;
 /** The API stops paging here (`core.search.OFFSET_MAX`). */
 const MAX_OFFSET = 500;
+/** The server's "too many requests". */
+const THROTTLED = 429;
+/** Sections of the site offered next to the results. */
+const PAGES = 4;
 
 export async function generateMetadata(): Promise<Metadata> {
   // Result pages are as many as there are queries; none belongs in an index.
@@ -53,7 +60,9 @@ function Row({ hit, query, locale, marked }: { hit: SearchHit; query: string; lo
             {marked ? <Highlight text={text.title} query={query} /> : text.title}
           </span>
           {text.subtitle && (
-            <span className="block truncate text-theme-xs rw-dim">{text.subtitle}</span>
+            <span className={`block text-theme-xs rw-dim ${text.quoted ? "line-clamp-2" : "truncate"}`}>
+              {text.quoted ? <Highlight text={text.subtitle} query={query} /> : text.subtitle}
+            </span>
           )}
         </span>
         {text.meta && <span className="shrink-0 font-mono text-theme-xs rw-dim">{text.meta}</span>}
@@ -67,12 +76,17 @@ function Section({
   query,
   locale,
   mixed,
+  top,
 }: {
   group: SearchGroup;
   query: string;
   locale: Locale;
   mixed: boolean;
+  /** Shown above the groups already; left out of its own group. */
+  top: SearchHit | null;
 }) {
+  const rows = top ? group.results.filter((hit) => !sameHit(hit, top)) : group.results;
+  if (rows.length === 0) return null;
   const label = t(locale, `search.type.${group.type}`);
   const heading = group.fuzzy
     ? fill(t(locale, "search.fuzzy"), { label })
@@ -91,7 +105,7 @@ function Section({
         )}
       </div>
       <ul className="space-y-2">
-        {group.results.map((hit) => (
+        {rows.map((hit) => (
           <Row
             key={`${hit.kind}-${hit.key}`}
             hit={hit}
@@ -120,11 +134,28 @@ export default async function SearchPage({
   const askable = foldText(query).length >= MIN_QUERY;
 
   const single = type !== "all";
+  // `-1`: not refused. Otherwise the seconds the server asked us to wait.
+  let wait = -1;
   const data = askable
     ? await api
         .search(query, type, single ? PAGE_SIZE : MIXED, single ? (page - 1) * PAGE_SIZE : 0)
-        .catch(() => null)
+        .catch((error: unknown) => {
+          if (error instanceof ApiError && error.status === THROTTLED) wait = error.retryAfter;
+          return null;
+        })
     : null;
+  const throttled = wait >= 0;
+  // The one result the query names outright is shown once, above the rest.
+  const top = data && page === 1 ? data.top : null;
+  // Sections of the site that match — the first page of the mixed view
+  // only: they are a way out of the search, not results to page through.
+  const sections =
+    askable && !single
+      ? filterLocal(
+          NAV.map((item) => ({ label: t(locale, item.key), href: item.href })),
+          query,
+        ).slice(0, PAGES)
+      : [];
 
   const tabs: ("all" | ServerType)[] = ["all", ...SERVER_TYPES];
   const count = (tab: "all" | ServerType) =>
@@ -190,8 +221,43 @@ export default async function SearchPage({
       {!askable && <p className="py-10 text-center text-theme-sm rw-dim">{t(locale, "search.minChars")}</p>}
       {askable && !data && (
         <p role="alert" className="py-10 text-center text-theme-sm rw-dim">
-          {t(locale, "search.failed")}
+          {throttled
+            ? wait > 0
+              ? fill(t(locale, "search.throttledWait"), { n: wait })
+              : t(locale, "search.throttled")
+            : t(locale, "search.failed")}
         </p>
+      )}
+
+      {top && (
+        <section className="space-y-2">
+          <h2 className="text-theme-xs font-semibold tracking-wide rw-faint uppercase">
+            {t(locale, "search.top")}
+          </h2>
+          <ul className="space-y-2">
+            <Row hit={top} query={query} locale={locale} marked />
+          </ul>
+        </section>
+      )}
+
+      {sections.length > 0 && (
+        <section className="space-y-2">
+          <h2 className="text-theme-xs font-semibold tracking-wide rw-faint uppercase">
+            {t(locale, "search.type.page")}
+          </h2>
+          <ul className="flex flex-wrap gap-2">
+            {sections.map((item) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href as Route}
+                  className="inline-flex h-11 items-center rounded-full border rw-divider rw-surface px-4 text-theme-sm rw-strong transition rw-hover-bg rw-focus-ring"
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
       {data && (single ? !group || group.results.length === 0 : data.groups.length === 0) && (
         <div className="py-10 text-center">
@@ -201,12 +267,12 @@ export default async function SearchPage({
       )}
 
       {data && !single && data.groups.map((item) => (
-        <Section key={item.type} group={item} query={query} locale={locale} mixed />
+        <Section key={item.type} group={item} query={query} locale={locale} mixed top={top} />
       ))}
 
       {group && group.results.length > 0 && (
         <>
-          <Section group={group} query={query} locale={locale} mixed={false} />
+          <Section group={group} query={query} locale={locale} mixed={false} top={top} />
           {!group.fuzzy && (
             <Pager
               locale={locale}

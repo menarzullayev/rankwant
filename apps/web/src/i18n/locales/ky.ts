@@ -2251,4 +2251,8 @@ export const ky: Record<MessageKey, string> = {
   "notif.msg.problem_rerated.body": "Сиз чечкен маселе кайра бааланды. Skills: {before} → {after}. Бул сиздин аракетиңиз эмес — маселенин татаалдыгы статистика боюнча жаңыланды.",
   "notif.msg.contest_result.title": "{contest}: {rank}-орун, рейтинг {delta}",
   "notif.msg.contest_result.body": "Contests рейтинги: {before} → {after}",
+  "search.type.shop": "Дүкөн",
+  "search.top": "Эң туура келген натыйжа",
+  "search.throttled": "Суроолор өтө көп. Бир аздан кийин кайра аракет кылыңыз.",
+  "search.throttledWait": "Суроолор өтө көп. {n} секунддан кийин кайра аракет кылыңыз.",
 };

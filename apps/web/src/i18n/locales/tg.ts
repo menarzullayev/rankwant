@@ -2252,4 +2252,8 @@ export const tg: Record<MessageKey, string> = {
   "notif.msg.problem_rerated.body": "Масъалае, ки шумо ҳал кардед, аз нав баҳогузорӣ шуд. Skills: {before} → {after}. Ин амали шумо нест — душвории масъала аз рӯи омор нав шуд.",
   "notif.msg.contest_result.title": "{contest}: ҷойи {rank}, рейтинг {delta}",
   "notif.msg.contest_result.body": "Рейтинги Contests: {before} → {after}",
+  "search.type.shop": "Мағоза",
+  "search.top": "Мувофиқтарин натиҷа",
+  "search.throttled": "Дархостҳо аз ҳад зиёд. Пас аз лаҳзае боз кӯшиш кунед.",
+  "search.throttledWait": "Дархостҳо аз ҳад зиёд. Пас аз {n} сония боз кӯшиш кунед.",
 };
