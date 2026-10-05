@@ -1,0 +1,163 @@
+name: Dependabot locks
+
+# Dependabot edits `apps/api/requirements*.txt` but cannot write the files
+# the image is built from: `requirements.lock` and `requirements-dev.lock`
+# are compiled by `uv pip compile`, a format it does not know. Such a pull
+# request passes CI and changes nothing at runtime — Docker still installs
+# the old versions (measured 2026-09-28, eight pull requests). This workflow
+# recompiles the locks on the pull request's own branch.
+#
+# Two jobs, on purpose:
+#   compile  resolves packages. Resolution may build a source distribution,
+#            which runs that package's code, so this job holds no write
+#            token and hands its result over as an artifact.
+#   commit   has `contents: write`, runs no package code, and only copies
+#            the generated files in and pushes.
+#
+# `pull_request_target`, not `pull_request`: a Dependabot run of the latter
+# gets a read-only token. The workflow file itself is always the one on
+# `main`; only the two requirement files are read from the pull request.
+#
+# A push made with the workflow token starts no CI run, so the last step
+# starts one itself (`ci.yml` has `workflow_dispatch`). Its checks land on
+# the new commit, which is where the branch rules look.
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+    paths:
+      - apps/api/requirements.txt
+      - apps/api/requirements-dev.txt
+  # For a pull request opened before this workflow existed.
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: "Number of a Dependabot pull request"
+        required: true
+        type: number
+
+permissions: {}
+
+env:
+  # Every file this workflow writes; nothing else is committed.
+  GENERATED: >-
+    apps/api/requirements.lock
+    apps/api/requirements-dev.lock
+    docs/research/2026-09-21-licence-inventory/README.md
+    docs/research/2026-09-21-licence-inventory/packages.tsv
+
+concurrency:
+  group: dependabot-locks-${{ github.event.pull_request.number || inputs.pr }}
+  cancel-in-progress: true
+
+jobs:
+  compile:
+    name: Compile locks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      branch: ${{ steps.pr.outputs.branch }}
+      changed: ${{ steps.diff.outputs.changed }}
+    steps:
+      - name: Resolve the pull request
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ github.event.pull_request.number || inputs.pr }}
+        run: |
+          set -euo pipefail
+          gh api "repos/${GITHUB_REPOSITORY}/pulls/${NUMBER}" > pr.json
+          author="$(jq -r .user.login pr.json)"
+          repo="$(jq -r .head.repo.full_name pr.json)"
+          # Only Dependabot's own branches in this repository: the next job
+          # pushes to the branch named here.
+          if [ "$author" != "dependabot[bot]" ] || [ "$repo" != "$GITHUB_REPOSITORY" ]; then
+            echo "::error::#${NUMBER} is not a Dependabot pull request of this repository (${author}, ${repo})"
+            exit 1
+          fi
+          echo "branch=$(jq -r .head.ref pr.json)" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ steps.pr.outputs.branch }}
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v10
+      - name: uv pip compile
+        working-directory: apps/api
+        run: |
+          set -euo pipefail
+          uv pip compile requirements.txt -o requirements.lock --python-version 3.12 --quiet
+          uv pip compile requirements-dev.txt -o requirements-dev.lock --python-version 3.12 --quiet
+      # A bump can pull in a package the inventory has never seen, and
+      # `licence_inventory.py --check` then fails CI on the pull request.
+      # The inventory reads licences from installed metadata, so the dev
+      # lock (a superset of the runtime one) is installed into a scratch
+      # environment first.
+      - name: Regenerate the licence inventory
+        run: |
+          set -euo pipefail
+          uv venv .licence-venv --python 3.12 --quiet
+          uv pip install -r apps/api/requirements-dev.lock --python .licence-venv --quiet
+          python3 tools/licence_inventory.py --venv .licence-venv
+      - name: Did anything change?
+        id: diff
+        run: |
+          read -r -a FILES <<< "$FILES"
+          if git diff --quiet -- "${FILES[@]}"; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Locks and inventory already match the requirement files." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git diff --stat -- "${FILES[@]}" >> "$GITHUB_STEP_SUMMARY"
+          fi
+        shell: bash
+        env:
+          FILES: ${{ env.GENERATED }}
+      - uses: actions/upload-artifact@v7
+        if: steps.diff.outputs.changed == 'true'
+        with:
+          name: locks
+          path: |
+            apps/api/requirements.lock
+            apps/api/requirements-dev.lock
+            docs/research/2026-09-21-licence-inventory/README.md
+            docs/research/2026-09-21-licence-inventory/packages.tsv
+          retention-days: 1
+
+  commit:
+    name: Commit locks
+    needs: compile
+    if: needs.compile.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.compile.outputs.branch }}
+      - uses: actions/download-artifact@v8
+        with:
+          name: locks
+          # The artifact keeps paths from the files' common root — the
+          # repository root.
+          path: .
+      - name: Commit and push
+        env:
+          BRANCH: ${{ needs.compile.outputs.branch }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          read -r -a FILES <<< "$GENERATED"
+          git add -- "${FILES[@]}"
+          git commit -m "chore(deps): recompile the API locks"
+          git push origin "HEAD:${BRANCH}"
+      - name: Start CI on the new commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ needs.compile.outputs.branch }}
+        run: gh workflow run ci.yml --ref "$BRANCH" -f run_all=true

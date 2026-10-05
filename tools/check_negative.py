@@ -3258,6 +3258,36 @@ def neg_decisions_collectstatic_without_key() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_deplocks_compile_can_write() -> tuple[bool, str]:
+    """The job that resolves packages is handed a write token."""
+    return _decision_broken(
+        ".github/workflows/dependabot-locks.yml",
+        "      contents: read\n      pull-requests: read\n",
+        "      contents: write\n      pull-requests: read\n",
+        "begona kod token bilan ishlaydi",
+    )
+
+
+def neg_decisions_deplocks_ci_not_started() -> tuple[bool, str]:
+    """The locks are pushed and no CI run follows."""
+    return _decision_broken(
+        ".github/workflows/dependabot-locks.yml",
+        'run: gh workflow run ci.yml --ref "$BRANCH" -f run_all=true',
+        'run: echo "pushed"',
+        "PR tekshiruvsiz qoladi",
+    )
+
+
+def neg_decisions_deplocks_wrong_python() -> tuple[bool, str]:
+    """A lock compiled for another Python drops conditional dependencies."""
+    return _decision_broken(
+        "apps/api/requirements.lock",
+        "#    uv pip compile requirements.txt -o requirements.lock --python-version 3.12",
+        "#    uv pip compile requirements.txt -o requirements.lock",
+        "lock Python 3.12 uchun yasalmagan",
+    )
+
+
 def _css_sources_broken(rel: str, old: str, new: str, expect: str) -> tuple[bool, str]:
     """Break one `@source` invariant in `rel`; check_css_sources must catch it."""
     path = ROOT / rel
@@ -8084,6 +8114,9 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ),
             ("push guard uzilsa tutilsin", neg_decisions_push_guard_unwired),
             ("kirgan foydalanuvchi paneli olib tashlansa tutilsin", neg_decisions_signed_in_home_dropped),
+            ("lock yechish job'i yoza olsa tutilsin", neg_decisions_deplocks_compile_can_write),
+            ("lock push'dan keyin CI yurmasa tutilsin", neg_decisions_deplocks_ci_not_started),
+            ("lock boshqa Python uchun yasalsa tutilsin", neg_decisions_deplocks_wrong_python),
             ("SECRET_KEY standart qiymati qaytsa tutilsin", neg_decisions_secret_key_fallback_returns),
             ("collectstatic kalitsiz qolsa tutilsin", neg_decisions_collectstatic_without_key),
             ("header uch tugmasi md ga qaytsa tutilsin", neg_decisions_header_trio_back_at_md),

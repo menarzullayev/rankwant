@@ -764,6 +764,7 @@ python/api	s3transfer	0.19.2	runtime	Apache License 2.0
 python/api	segno	1.6.6	runtime	BSD License
 python/api	six	1.17.0	runtime	MIT
 python/api	sqlparse	0.6.0	runtime	BSD License
+python/api	typing-extensions	4.16.0	runtime	PSF-2.0
 python/api	tzdata	2026.3	runtime	Apache-2.0
 python/api	tzlocal	5.4.4	runtime	MIT
 python/api	uritemplate	4.2.0	runtime	BSD 3-Clause OR Apache-2.0
