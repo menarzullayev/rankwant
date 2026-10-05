@@ -5,3 +5,14 @@
 @import "./form-families.css";
 @import "./kit.css";
 @import "./theme-toggle.css";
+
+/* Customizer on a touch screen: 44 px targets. A mouse keeps the compact
+   32-36 px controls - the panel is 352 px wide on a desktop and would grow
+   by about a quarter. Measured 2026-10-05 at 375 px: 14 of 23 controls
+   were under 44 px. */
+@media (pointer: coarse) {
+  [data-customizer] :is(button, [role="tab"], [role="combobox"]) {
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+  }
+}

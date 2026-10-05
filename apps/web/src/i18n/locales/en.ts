@@ -26,6 +26,8 @@ export const en: Record<MessageKey, string> = {
   "customizer.title": "Appearance customizer",
   "customizer.short": "Appearance",
   "customizer.close": "Close",
+  "customizer.expand": "Expand",
+  "customizer.collapse": "Collapse",
   "customizer.tab.a11y": "Accessibility",
   "customizer.templates": "Ready templates",
   "customizer.templateModified": "Template modified",

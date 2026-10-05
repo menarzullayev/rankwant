@@ -26,6 +26,8 @@ export const ru: Record<MessageKey, string> = {
   "customizer.title": "Настройка вида",
   "customizer.short": "Вид",
   "customizer.close": "Закрыть",
+  "customizer.expand": "Развернуть",
+  "customizer.collapse": "Свернуть",
   "customizer.tab.a11y": "Доступность",
   "customizer.templates": "Готовые шаблоны",
   "customizer.templateModified": "Шаблон изменён",

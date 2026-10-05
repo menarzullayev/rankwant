@@ -26,6 +26,8 @@ export const zh: Record<MessageKey, string> = {
   "customizer.title": "外观定制器",
   "customizer.short": "外观",
   "customizer.close": "关闭",
+  "customizer.expand": "展开",
+  "customizer.collapse": "收起",
   "customizer.tab.a11y": "无障碍",
   "customizer.templates": "预设模板",
   "customizer.templateModified": "模板已修改",

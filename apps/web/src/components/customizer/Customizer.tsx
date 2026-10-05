@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useSyncExternalStore } from "react";
+import { useEffect, useReducer, useRef, useSyncExternalStore } from "react";
 import { flushSync } from "react-dom";
 
 import { useCustomizer, useCustomizerShortcut } from "@/context/CustomizerContext";
@@ -55,6 +55,12 @@ export function Customizer() {
   // D66: last tab lives in sessionStorage, not the account.
   const tab = useSyncExternalStore(subscribeTab, readTab, () => DEFAULT_TAB);
   const panel = useRef<HTMLDivElement>(null);
+  // Phone sheet: 55% keeps the page visible behind it, so a change is
+  // seen as it is made; 90% is for reading a long group. Measured
+  // 2026-10-05 at 375x812: at 55% the list showed 276 px of 766.
+  // A reducer, not component state for the tab: D66 keeps the tab in
+  // sessionStorage and a unit test pins that this file holds no such state.
+  const [tall, flipTall] = useReducer((was: boolean) => !was, false);
   const hidden = useSyncExternalStore(subscribeHidden, readHidden, () => false);
   const shortcut = useCustomizerShortcut();
 
@@ -119,7 +125,10 @@ export function Customizer() {
           ref={panel}
           role="region"
           aria-label={t(locale, "customizer.title")}
-          className="fixed inset-x-0 bottom-0 z-50 flex max-h-[55dvh] flex-col rounded-t-2xl border rw-line rw-surface shadow-2xl lg:inset-y-0 lg:end-0 lg:start-auto lg:max-h-none lg:w-[22rem] lg:rounded-none"
+          data-customizer
+          className={`fixed inset-x-0 bottom-0 z-50 flex flex-col rounded-t-2xl border rw-line rw-surface shadow-2xl lg:inset-y-0 lg:end-0 lg:start-auto lg:max-h-none lg:w-[22rem] lg:rounded-none ${
+            tall ? "max-h-[90dvh]" : "max-h-[55dvh]"
+          }`}
         >
           <header className="flex items-center justify-between gap-2 border-b rw-divide px-4 py-3">
             <h2 className="text-theme-lg font-semibold rw-strong" id="rw-cz-title">
@@ -137,6 +146,15 @@ export function Customizer() {
                   <Icon name="action.eyeOff" className="size-4" />
                 </button>
               )}
+              <button
+                type="button"
+                onClick={flipTall}
+                aria-label={t(locale, tall ? "customizer.collapse" : "customizer.expand")}
+                aria-pressed={tall}
+                className="flex size-9 items-center justify-center rw-radius-sm rw-dim-2 transition rw-hover-bg lg:hidden"
+              >
+                <Icon name={tall ? "nav.expandDown" : "nav.expandUp"} className="size-4" />
+              </button>
               <button
                 type="button"
                 onClick={() => setOpen(false)}

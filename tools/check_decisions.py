@@ -2029,6 +2029,29 @@ def dependabot_locks_are_recompiled() -> str | None:
     return None
 
 
+def customizer_reachable_on_a_phone() -> str | None:
+    """2026-10-05: telefonda sozlagich yaqin, varaq ikki pog'onali, nishonlar 44 px.
+
+    Kirgan foydalanuvchida header tugmasi `xl` dan, suzuvchi yorliq `lg`
+    dan ko'rinadi ⇒ 1024 px dan torda panel faqat sozlamalar orqali, to'rt
+    qadamda ochilardi; mavzu almashtirgich esa umuman yo'q edi.
+    """
+    menu = read("apps/web/src/layout/UserMenu.tsx")
+    if "customizer.setOpen(true)" not in menu:
+        return "UserMenu.tsx: hisob menyusida sozlagich qatori yo'q — telefonda panel to'rt qadamda"
+    if "toggleTheme(" not in menu:
+        return "UserMenu.tsx: hisob menyusida mavzu qatori yo'q — telefonda almashtirgich qolmaydi"
+    shell = read("apps/web/src/components/customizer/Customizer.tsx")
+    if 'tall ? "max-h-[90dvh]" : "max-h-[55dvh]"' not in shell:
+        return "Customizer.tsx: mobil varaq ikki pog'onali emas (55% / 90%)"
+    css = read("apps/web/src/app/globals.css")
+    if not re.search(r"@media \(pointer: coarse\) \{\s*\[data-customizer\]", css):
+        return "globals.css: sensorli qurilmada sozlagich nishonlari 44 px emas"
+    if "data-customizer\n" not in shell:
+        return "Customizer.tsx: `data-customizer` yo'q — 44 px qoidasi hech narsaga tegmaydi"
+    return None
+
+
 def docker_disk_stays_bounded() -> str | None:
     """2026-09-20: log 10m/3, builder GC 5GB, SHA teg yo'q, prune tasdiq'dan keyin.
 
@@ -2788,6 +2811,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("bugun faol ro'yxati sessiyadan o'qiladi", home_presence_reads_sessions),
     ("sozlamalar: olti bo'lim va 14 kunlik o'chirish", settings_six_sections_and_grace),
     ("sozlamalar tugmalari 44 px", settings_controls_are_44px),
+    ("sozlagich telefonda yaqin", customizer_reachable_on_a_phone),
     ("kirgan foydalanuvchi header'i sig'adi", signed_in_header_fits),
     ("SECRET_KEY standart qiymatsiz", secret_key_has_no_fallback),
     ("Dependabot lock'lari qayta yasaladi", dependabot_locks_are_recompiled),

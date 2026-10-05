@@ -26,6 +26,8 @@ export const kaa: Record<MessageKey, string> = {
   "customizer.title": "Kórinis sazlaǵıshı",
   "customizer.short": "Kórinis",
   "customizer.close": "Jabıw",
+  "customizer.expand": "Úlkeytiw",
+  "customizer.collapse": "Kishireytiw",
   "customizer.tab.a11y": "Qolaylıq",
   "customizer.templates": "Tayın shablonlar",
   "customizer.templateModified": "Shablon ózgertilgen",

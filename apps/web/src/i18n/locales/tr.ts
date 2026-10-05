@@ -26,6 +26,8 @@ export const tr: Record<MessageKey, string> = {
   "customizer.title": "Görünüm özelleştirici",
   "customizer.short": "Görünüm",
   "customizer.close": "Kapat",
+  "customizer.expand": "Genişlet",
+  "customizer.collapse": "Daralt",
   "customizer.tab.a11y": "Erişilebilirlik",
   "customizer.templates": "Hazır şablonlar",
   "customizer.templateModified": "Şablon değiştirildi",
