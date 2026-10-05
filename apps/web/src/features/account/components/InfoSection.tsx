@@ -1,6 +1,10 @@
 "use client";
 
+import type { Route } from "next";
+import Link from "next/link";
 import { useState } from "react";
+
+import { FormBox } from "@/components/form/FormKit";
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -19,6 +23,7 @@ import {
 } from "@/lib/api";
 import { GRADE_GROUPS, gradeLabel, isGradeCode } from "@rankwant/shared/grades";
 import { REGION_CODES, districtOptions, regionName } from "@rankwant/shared/regions";
+import { SavedForm, useSaveSlot } from "./SaveBar";
 import { Check, Hint, Select, Status, useAction } from "./section-kit";
 import { SchoolField } from "./SchoolField";
 
@@ -39,46 +44,108 @@ const SHIRT_EU: ShirtSizeEu[] = [
 const GENDERS: Gender[] = ["male", "female", "non_binary", "prefer_not"];
 const MAX_SITES = 5;
 
-export function InfoSection() {
+/** What a visitor can be shown, in the order the profile shows it. Each key
+ *  is one entry of `hidden_fields`; the label says what switching it ON does. */
+const PRIVACY_ROWS: { field: PrivacyField; label: MessageKey }[] = [
+  { field: "country", label: "settings.country" },
+  { field: "school", label: "settings.school" },
+  { field: "grade", label: "settings.grade" },
+  { field: "birth_date", label: "settings.birthDate" },
+  { field: "gender", label: "settings.gender" },
+  { field: "website", label: "settings.website" },
+  { field: "email", label: "settings.email" },
+  { field: "coach", label: "settings.privacy.coach" },
+  { field: "social", label: "settings.privacy.social" },
+  { field: "online", label: "settings.privacy.online" },
+  { field: "activity", label: "settings.privacy.activity" },
+  { field: "heatmap", label: "settings.privacy.heatmap" },
+  { field: "recent_ac", label: "settings.privacy.recentAc" },
+  { field: "title_photo", label: "settings.privacy.titlePhoto" },
+];
+
+/** Who sees what — one table instead of a checkbox under each field
+ *  (decision of 2026-10-05). Scattered through a 34-field form, the
+ *  fourteen switches gave no picture of the profile as a visitor gets it. */
+export function PrivacyCard() {
+  const locale = useLocale();
+  const { user, reload } = useSession();
+  const action = useAction();
+  const [hidden, setHidden] = useState<PrivacyField[] | null>(null);
+  const current = hidden ?? user?.hidden_fields ?? [];
+
+  const save = async () => {
+    const ok = await action.run(async () => {
+      await patchJson("/me/", { hidden_fields: current });
+      await reload();
+    });
+    if (ok) setHidden(null);
+    return ok;
+  };
+  useSaveSlot(hidden !== null, save, () => setHidden(null));
+  if (!user) return null;
+
   return (
-    <>
-      <DetailsCard />
-      <DeliveryCard />
-    </>
+    <Card
+      title={t(locale, "settings.privacy.title")}
+      action={
+        <Link
+          href={`/users/${user.username}` as Route}
+          className="text-theme-sm rw-accent-ink hover:underline"
+        >
+          {t(locale, "settings.privacy.preview")}
+        </Link>
+      }
+    >
+      <Hint>{t(locale, "settings.privacy.hint")}</Hint>
+      <ul className="mt-4 divide-y rw-divide">
+        {PRIVACY_ROWS.filter((row) => row.field !== "email" || user.email).map((row) => {
+          const shown = !current.includes(row.field);
+          const label = t(locale, row.label);
+          return (
+            <li key={row.field} className="flex items-center justify-between gap-4 py-3">
+              <span className="min-w-0">
+                <span className="block text-theme-sm font-medium rw-strong">{label}</span>
+                <span className="block text-theme-xs rw-dim">
+                  {t(locale, shown ? "settings.privacy.shown" : "settings.privacy.hidden")}
+                </span>
+              </span>
+              <FormBox
+                shape="switch"
+                checked={shown}
+                aria-label={label}
+                onChange={(event) =>
+                  setHidden(
+                    event.target.checked
+                      ? current.filter((item) => item !== row.field)
+                      : [...current, row.field],
+                  )
+                }
+              />
+            </li>
+          );
+        })}
+      </ul>
+      <div className="mt-3">
+        <Status error={action.error} done={action.done} />
+      </div>
+    </Card>
   );
 }
 
-function DetailsCard() {
+export function DetailsCard() {
   const locale = useLocale();
   const { user, reload } = useSession();
   const action = useAction();
   const [country, setCountry] = useState<string | null>(null);
-  const [hidden, setHidden] = useState<PrivacyField[] | null>(null);
   const [region, setRegion] = useState<string | null>(null);
   const [sites, setSites] = useState<string[] | null>(null);
   if (!user) return null;
 
   const currentCountry = country ?? user.country;
-  const currentHidden = hidden ?? user.hidden_fields;
   const today = new Date().toISOString().slice(0, 10);
   const urls =
     sites ??
     (user.websites?.length ? user.websites : user.website ? [user.website] : [""]);
-
-  function visibility(field: PrivacyField, label?: string) {
-    return (
-      <Check
-        label={label ?? t(locale, "settings.showOnProfile")}
-        checked={!currentHidden.includes(field)}
-        onChange={(event) => {
-          const next = event.target.checked
-            ? currentHidden.filter((item) => item !== field)
-            : [...currentHidden, field];
-          setHidden(next);
-        }}
-      />
-    );
-  }
 
   async function save(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -99,16 +166,17 @@ function DetailsCard() {
         phone: text("phone"),
         shirt_size: text("shirt_size"),
         shirt_size_eu: text("shirt_size_eu"),
-        hidden_fields: currentHidden,
       });
       await reload();
     });
-    if (ok) {
-      setCountry(null);
-      setHidden(null);
-      setRegion(null);
-      setSites(null);
-    }
+    if (ok) clear();
+    return ok;
+  }
+
+  function clear() {
+    setCountry(null);
+    setRegion(null);
+    setSites(null);
   }
 
   const regionDefault = currentCountry === user.country ? user.region : "";
@@ -120,7 +188,12 @@ function DetailsCard() {
   return (
     <Card title={t(locale, "settings.info")}>
       <Hint>{t(locale, "settings.infoHint")}</Hint>
-      <form onSubmit={save} className="mt-5 flex flex-col gap-6">
+      <SavedForm
+        onSubmit={save}
+        onReset={clear}
+        dirty={country !== null || sites !== null}
+        className="mt-5 flex flex-col gap-6"
+      >
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <CountrySelect
@@ -132,7 +205,6 @@ function DetailsCard() {
                 setRegion(null);
               }}
             />
-            {visibility("country")}
           </div>
           {currentCountry === "UZ" ? (
             <Select
@@ -201,7 +273,6 @@ function DetailsCard() {
               initialName={user.school_ref ? user.school_name : user.school}
               initialId={user.school_ref}
             />
-            {visibility("school")}
           </div>
           <div className="space-y-2">
             <Select
@@ -222,7 +293,6 @@ function DetailsCard() {
                 ),
               ]}
             />
-            {visibility("grade")}
           </div>
           <div className="space-y-2">
             <Select
@@ -238,7 +308,6 @@ function DetailsCard() {
                 })),
               ]}
             />
-            {visibility("gender", t(locale, "settings.showGender"))}
           </div>
           <div className="space-y-2 sm:col-span-2">
             <p className="text-theme-sm font-medium rw-strong">{t(locale, "settings.websites")}</p>
@@ -277,7 +346,6 @@ function DetailsCard() {
                 {t(locale, "settings.addWebsite")}
               </Button>
             )}
-            {visibility("website")}
           </div>
           <div className="space-y-2">
             <Field
@@ -289,7 +357,6 @@ function DetailsCard() {
               max={today}
               autoComplete="bday"
             />
-            {visibility("birth_date")}
           </div>
           <div className="space-y-2">
             <Field
@@ -322,24 +389,14 @@ function DetailsCard() {
           />
         </div>
 
-        {user.email && visibility("email", t(locale, "settings.showEmail"))}
-        {visibility("online", t(locale, "settings.showOnline"))}
-        {visibility("coach", t(locale, "settings.showCoach"))}
-        {visibility("social", t(locale, "settings.showSocial"))}
-        {visibility("activity", t(locale, "settings.showActivity"))}
-        {visibility("heatmap", t(locale, "settings.showHeatmap"))}
-        {visibility("recent_ac", t(locale, "settings.showRecentAc"))}
 
         <Status error={action.error} done={action.done} />
-        <Button type="submit" busy={action.busy} className="self-start">
-          {t(locale, "settings.save")}
-        </Button>
-      </form>
+      </SavedForm>
     </Card>
   );
 }
 
-function DeliveryCard() {
+export function DeliveryCard() {
   const locale = useLocale();
   const { user, reload } = useSession();
   const action = useAction();
@@ -353,7 +410,7 @@ function DeliveryCard() {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const text = (name: string) => String(form.get(name) ?? "").trim();
-    await action.run(async () => {
+    return action.run(async () => {
       await patchJson("/me/", {
         postal_recipient: text("postal_recipient"),
         postal_country: currentCountry,
@@ -400,7 +457,13 @@ function DeliveryCard() {
   return (
     <Card title={t(locale, "settings.delivery")}>
       <Hint>{t(locale, "settings.deliveryHint")}</Hint>
-      <form key={formKey} onSubmit={save} className="mt-5 flex flex-col gap-6">
+      <SavedForm
+        key={formKey}
+        onSubmit={save}
+        onReset={() => setCountry(null)}
+        dirty={country !== null}
+        className="mt-5 flex flex-col gap-6"
+      >
         <div className="grid gap-4 lg:grid-cols-2">
           <fieldset className="space-y-3">
             <legend className="text-theme-sm font-medium rw-strong">
@@ -486,20 +549,16 @@ function DeliveryCard() {
           done={action.done || erase.done}
           text={erase.done ? t(locale, "settings.deliveryErased") : undefined}
         />
-        <div className="flex flex-wrap gap-3">
-          <Button type="submit" busy={action.busy} className="self-start">
-            {t(locale, "settings.save")}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            busy={erase.busy}
-            onClick={clear}
-          >
-            {t(locale, "settings.deliveryErase")}
-          </Button>
-        </div>
-      </form>
+        <Button
+          type="button"
+          variant="outline"
+          busy={erase.busy}
+          onClick={clear}
+          className="self-start"
+        >
+          {t(locale, "settings.deliveryErase")}
+        </Button>
+      </SavedForm>
     </Card>
   );
 }

@@ -21,6 +21,7 @@ from contests.models import Standing
 from core.models import User
 from core.pagination import StandardPagination
 from core.tasks import queue
+from core.throttling import ResilientScopedRateThrottle
 from profiles import achievements, external, public, stats, teams
 from profiles.catalog import TECHNOLOGIES
 from profiles.models import (
@@ -410,6 +411,30 @@ class FollowListView(generics.ListAPIView[User]):
 
 
 @extend_schema(summary="Ulangan ijtimoiy hisoblar")
+class MyExternalRefreshView(APIView):
+    """Re-reads one external profile's rating now.
+
+    The rating is otherwise fetched only when the handle changes, so a
+    profile that improved elsewhere stayed stale until it was retyped.
+    """
+
+    permission_classes = [IsAuthenticated]
+    throttle_classes = [ResilientScopedRateThrottle]
+    throttle_scope = "external_refresh"
+
+    @extend_schema(
+        summary="Tashqi profil reytingini yangilash",
+        request=None,
+        responses={202: ExternalOutSerializer, 404: None},
+    )
+    def post(self, request: Request, kind: str) -> Response:
+        profile = get_object_or_404(ExternalProfile, user=_me(request), kind=kind)
+        if profile.kind not in external.FETCHERS:
+            raise exceptions.ValidationError({"kind": "This platform has no rating to refresh"})
+        queue(refresh_external, profile.pk)
+        return Response(ExternalOutSerializer(profile).data, status=status.HTTP_202_ACCEPTED)
+
+
 class MyConnectedView(APIView):
     """Ulangan hisobdagi taxallus — Telegram va GitHub havolasini bir bosishda to'ldirish."""
 

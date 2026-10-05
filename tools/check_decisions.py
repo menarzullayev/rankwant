@@ -1885,6 +1885,43 @@ def home_presence_reads_sessions() -> str | None:
     return None
 
 
+def settings_six_sections_and_grace() -> str | None:
+    """2026-10-05: sozlamalar olti bo'lim, bitta saqlash paneli, 14 kunlik o'chirish.
+
+    Uch narsa JIM qaytishi mumkin, shuning uchun qo'riqlanadi:
+
+    - telefonda har bo'lim tepasidagi tanlash ro'yxati (`<Dropdown`) —
+      o'lchangan nuqson shu edi: ro'yxat ham, select ham birga chiqardi;
+    - `DELETE /me/` ning darhol anonimlashtirishi — amal qaytarilmaydi,
+      egasi 14 kunlik kutishni tanlagan;
+    - muddati o'tgan so'rovlarni bajaradigan beat vazifasi — usiz hisob
+      «kutilmoqda» holatida abadiy qolardi.
+
+    To'rtinchisi — migratsiya tuzog'i: `0028` `backfill_origin` buyrug'ini
+    JONLI model bilan chaqiradi. So'rov ustunlarni cheklamasa, `User` ga
+    qo'shilgan har yangi maydon bo'sh bazada migratsiyani sindiradi
+    (o'lchandi: `no such column: core_user.deletion_requested_at`).
+    """
+    sections = read("apps/web/src/features/account/components/sections.ts")
+    wanted = ("profil", "ommaviy", "malumotlar", "xavfsizlik", "bildirishnomalar", "hisob")
+    found = tuple(re.findall(r'^    id: "(\w+)",', sections, re.M))
+    if found != wanted:
+        return f"sections.ts: bo'limlar {found} — kutilgan {wanted}"
+    if "<Dropdown" in read("apps/web/src/features/account/components/SettingsShell.tsx"):
+        return "SettingsShell.tsx: `<Dropdown` — telefonda bo'lim tanlash ro'yxati qaytgan"
+    views = read("apps/api/core/views.py")
+    match = re.search(r"def delete\(self, request: Request, \*args.*?(?=^class |^@extend_schema)", views, re.S | re.M)
+    if not match:
+        return "core/views.py: MeView.delete topilmadi"
+    if "account.schedule_deletion(user)" not in match.group(0) or "anonymize(" in match.group(0):
+        return "MeView.delete: hisob darhol anonimlashtiriladi — 14 kunlik kutish yo'q"
+    if '"task": "core.finalize_deletions"' not in read("apps/api/config/settings.py"):
+        return "settings.py: `core.finalize_deletions` beat jadvalida yo'q — o'chirish hech qachon bajarilmaydi"
+    if ".only(" not in read("apps/api/core/management/commands/backfill_origin.py"):
+        return "backfill_origin.py: so'rov barcha ustunlarni o'qiydi — yangi `User` maydoni 0028 ni sindiradi"
+    return None
+
+
 def docker_disk_stays_bounded() -> str | None:
     """2026-09-20: log 10m/3, builder GC 5GB, SHA teg yo'q, prune tasdiq'dan keyin.
 
@@ -2642,6 +2679,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("login yupqa auth.css", login_uses_narrow_auth_css),
     ("kirgan foydalanuvchi bosh sahifasi — shaxsiy panel", signed_in_home_is_the_dashboard),
     ("bugun faol ro'yxati sessiyadan o'qiladi", home_presence_reads_sessions),
+    ("sozlamalar: olti bo'lim va 14 kunlik o'chirish", settings_six_sections_and_grace),
     ("clay qorong'i rejimga ergashadi", clay_follows_dark_mode),
     ("kirish sahifasi o'z-o'ziga yetarli", sign_in_page_is_self_contained),
     ("customization invariantlari", customization_invariants_are_written),

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2025 strings.**
+**2066 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -554,6 +554,47 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `common.empty` | Hozircha bo'sh | Ҳоло холӣ |  |
 | `common.emptyHint` | Bu yerda hozircha hech narsa yo'q. Keyinroq qayta ko'ring. | Дар ин ҷо ҳанӯз чизе нест. Баъдтар боз оед. |  |
 | `settings.title` | Sozlamalar | Танзимот |  |
+| `settings.nav.public` | Ommaviy sahifa | Саҳифаи оммавӣ |  |
+| `settings.nav.privacy` | Shaxsiy ma'lumot va maxfiylik | Маълумоти шахсӣ ва махфият |  |
+| `settings.nav.notifyLook` | Bildirishnomalar va ko'rinish | Огоҳиномаҳо ва намуд |  |
+| `settings.tab.external` | Tashqi profillar | Профилҳои берунӣ |  |
+| `settings.tab.cosmetics` | Bezaklar | Ороишҳо |  |
+| `settings.tab.privacy` | Maxfiylik | Махфият |  |
+| `settings.navHint.profile` | Rasm, ism, taxallus | Акс, ном, тахаллус |  |
+| `settings.navHint.public` | Tashqi profillar, ko'nikmalar, jamoalar | Профилҳои берунӣ, маҳоратҳо, дастаҳо |  |
+| `settings.navHint.privacy` | Kim nimani ko'radi | Кӣ чиро мебинад |  |
+| `settings.navHint.security` | Parol, pochta, qurilmalar | Парол, почта, дастгоҳҳо |  |
+| `settings.navHint.notify` | Xabarlar, til, ovoz | Паёмҳо, забон, овоз |  |
+| `settings.navHint.account` | Eksport, o'chirish | Содирот, ҳазф |  |
+| `settings.navHint.unverified` | Pochta tasdiqlanmagan | Почта тасдиқ нашудааст |  |
+| `settings.navHint.deleting` | O'chirish kutilmoqda | Ҳазф интизор аст |  |
+| `settings.name` | Ism | Ном |  |
+| `settings.unsaved` | Saqlanmagan o'zgarishlar | Тағйироти захиранашуда |  |
+| `settings.unsavedCount` | Saqlanmagan o'zgarishlar: {count} | Тағйироти захиранашуда: {count} |  |
+| `settings.discard` | Bekor qilish | Бекор кардан |  |
+| `settings.channelEmail` | Pochta | Почта |  |
+| `settings.soon` | tez orada | ба наздикӣ |  |
+| `settings.privacy.title` | Kim nimani ko'radi | Кӣ чиро мебинад |  |
+| `settings.privacy.hint` | Yoqilgan maydon ommaviy profilda ko'rinadi. Pochta standart holatda yashirin. | Майдони фаъол дар профили оммавӣ намоён аст. Почта ба таври пешфарз пинҳон аст. |  |
+| `settings.privacy.preview` | Profilim boshqalarga qanday ko'rinadi | Профили ман ба дигарон чӣ гуна намоён аст |  |
+| `settings.privacy.shown` | Profilda ko'rinadi | Дар профил намоён |  |
+| `settings.privacy.hidden` | Faqat sizga | Танҳо ба шумо |  |
+| `settings.privacy.coach` | Murabbiy | Мураббӣ |  |
+| `settings.privacy.social` | Ijtimoiy havolalar | Пайвандҳои иҷтимоӣ |  |
+| `settings.privacy.online` | Onlayn holat va oxirgi faollik | Ҳолати онлайн ва фаъолияти охирин |  |
+| `settings.privacy.activity` | Faoliyat lentasi | Лентаи фаъолият |  |
+| `settings.privacy.heatmap` | Faollik xaritasi | Харитаи фаъолият |  |
+| `settings.privacy.recentAc` | Yechilgan masalalar xaritasi | Харитаи масъалаҳои ҳалшуда |  |
+| `settings.privacy.titlePhoto` | Profil banneri | Баннери профил |  |
+| `settings.externalRefresh` | Yangilash | Навсозӣ |  |
+| `settings.externalAdd` | Yana qo'shish | Боз илова кардан |  |
+| `settings.externalUpdated` | yangilangan: {time} | навсозӣ шуд: {time} |  |
+| `settings.deletePending` | Hisob {date} da o'chiriladi — {days} kun qoldi. | Ҳисоб {date} ҳазф мешавад — {days} рӯз монд. |  |
+| `settings.deleteCancel` | O'chirishni bekor qilish | Бекор кардани ҳазф |  |
+| `settings.deleteGrace` | So'rovdan keyin hisob 14 kun kutadi. Shu vaqt ichida o'chirishni bekor qilishingiz mumkin. | Пас аз дархост ҳисоб 14 рӯз интизор мешавад. Дар ин муддат ҳазфро бекор кардан мумкин аст. |  |
+| `settings.deleteRestoreHint` | Bekor qilinsa, hisob hech narsa yo'qotmasdan avvalgi holatiga qaytadi. | Агар бекор шавад, ҳисоб бе талафот ба ҳолати пешина бармегардад. |  |
+| `settings.deleteStart` | O'chirishni boshlash | Оғози ҳазф |  |
+| `settings.deleteConfirmGrace` | Hisob 14 kundan keyin o'chiriladi. Shu vaqt ichida bekor qilish mumkin. Davom etasizmi? | Ҳисоб пас аз 14 рӯз ҳазф мешавад. Дар ин муддат бекор кардан мумкин аст. Идома медиҳед? |  |
 | `settings.export` | Ma'lumotni yuklab olish | Боргирии маълумот |  |
 | `settings.exportHint` | Profil, yechimlar, reyting tarixi va Qvant amallari — bitta JSON fayl. | Профил, ҳалҳо, таърихи рейтинг ва амалиёти Qvant — як файли JSON. |  |
 | `settings.exportAction` | Yuklab olish | Боргирӣ |  |

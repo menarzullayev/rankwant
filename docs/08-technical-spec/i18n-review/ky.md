@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2025 strings.**
+**2066 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -554,6 +554,47 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `common.empty` | Hozircha bo'sh | Азырынча бош |  |
 | `common.emptyHint` | Bu yerda hozircha hech narsa yo'q. Keyinroq qayta ko'ring. | Бул жерде азырынча эч нерсе жок. Кийинчерээк кайра көрүңүз. |  |
 | `settings.title` | Sozlamalar | Жөндөөлөр |  |
+| `settings.nav.public` | Ommaviy sahifa | Ачык барак |  |
+| `settings.nav.privacy` | Shaxsiy ma'lumot va maxfiylik | Жеке маалымат жана купуялуулук |  |
+| `settings.nav.notifyLook` | Bildirishnomalar va ko'rinish | Билдирмелер жана көрүнүш |  |
+| `settings.tab.external` | Tashqi profillar | Тышкы профилдер |  |
+| `settings.tab.cosmetics` | Bezaklar | Жасалгалар |  |
+| `settings.tab.privacy` | Maxfiylik | Купуялуулук |  |
+| `settings.navHint.profile` | Rasm, ism, taxallus | Сүрөт, аты, лакап ат |  |
+| `settings.navHint.public` | Tashqi profillar, ko'nikmalar, jamoalar | Тышкы профилдер, көндүмдөр, командалар |  |
+| `settings.navHint.privacy` | Kim nimani ko'radi | Ким эмнени көрөт |  |
+| `settings.navHint.security` | Parol, pochta, qurilmalar | Сырсөз, почта, түзмөктөр |  |
+| `settings.navHint.notify` | Xabarlar, til, ovoz | Кабарлар, тил, үн |  |
+| `settings.navHint.account` | Eksport, o'chirish | Экспорт, өчүрүү |  |
+| `settings.navHint.unverified` | Pochta tasdiqlanmagan | Почта ырасталган эмес |  |
+| `settings.navHint.deleting` | O'chirish kutilmoqda | Өчүрүү күтүлүүдө |  |
+| `settings.name` | Ism | Аты |  |
+| `settings.unsaved` | Saqlanmagan o'zgarishlar | Сакталбаган өзгөртүүлөр |  |
+| `settings.unsavedCount` | Saqlanmagan o'zgarishlar: {count} | Сакталбаган өзгөртүүлөр: {count} |  |
+| `settings.discard` | Bekor qilish | Жокко чыгаруу |  |
+| `settings.channelEmail` | Pochta | Почта |  |
+| `settings.soon` | tez orada | жакында |  |
+| `settings.privacy.title` | Kim nimani ko'radi | Ким эмнени көрөт |  |
+| `settings.privacy.hint` | Yoqilgan maydon ommaviy profilda ko'rinadi. Pochta standart holatda yashirin. | Күйгүзүлгөн талаа ачык профилде көрүнөт. Почта демейки боюнча жашыруун. |  |
+| `settings.privacy.preview` | Profilim boshqalarga qanday ko'rinadi | Профилим башкаларга кандай көрүнөт |  |
+| `settings.privacy.shown` | Profilda ko'rinadi | Профилде көрүнөт |  |
+| `settings.privacy.hidden` | Faqat sizga | Сизге гана |  |
+| `settings.privacy.coach` | Murabbiy | Машыктыруучу |  |
+| `settings.privacy.social` | Ijtimoiy havolalar | Социалдык шилтемелер |  |
+| `settings.privacy.online` | Onlayn holat va oxirgi faollik | Онлайн абалы жана акыркы активдүүлүк |  |
+| `settings.privacy.activity` | Faoliyat lentasi | Активдүүлүк тасмасы |  |
+| `settings.privacy.heatmap` | Faollik xaritasi | Активдүүлүк картасы |  |
+| `settings.privacy.recentAc` | Yechilgan masalalar xaritasi | Чечилген маселелер картасы |  |
+| `settings.privacy.titlePhoto` | Profil banneri | Профиль баннери |  |
+| `settings.externalRefresh` | Yangilash | Жаңылоо |  |
+| `settings.externalAdd` | Yana qo'shish | Дагы кошуу |  |
+| `settings.externalUpdated` | yangilangan: {time} | жаңыланган: {time} |  |
+| `settings.deletePending` | Hisob {date} da o'chiriladi — {days} kun qoldi. | Аккаунт {date} күнү өчүрүлөт — {days} күн калды. |  |
+| `settings.deleteCancel` | O'chirishni bekor qilish | Өчүрүүнү жокко чыгаруу |  |
+| `settings.deleteGrace` | So'rovdan keyin hisob 14 kun kutadi. Shu vaqt ichida o'chirishni bekor qilishingiz mumkin. | Сурамдан кийин аккаунт 14 күн күтөт. Бул убакытта өчүрүүнү жокко чыгарууга болот. |  |
+| `settings.deleteRestoreHint` | Bekor qilinsa, hisob hech narsa yo'qotmasdan avvalgi holatiga qaytadi. | Жокко чыгарылса, аккаунт эч нерсе жоготпой мурунку абалына кайтат. |  |
+| `settings.deleteStart` | O'chirishni boshlash | Өчүрүүнү баштоо |  |
+| `settings.deleteConfirmGrace` | Hisob 14 kundan keyin o'chiriladi. Shu vaqt ichida bekor qilish mumkin. Davom etasizmi? | Аккаунт 14 күндөн кийин өчүрүлөт. Бул убакытта жокко чыгарууга болот. Улантасызбы? |  |
 | `settings.export` | Ma'lumotni yuklab olish | Маалыматты жүктөп алуу |  |
 | `settings.exportHint` | Profil, yechimlar, reyting tarixi va Qvant amallari — bitta JSON fayl. | Профиль, чечимдер, рейтинг тарыхы жана Qvant операциялары — бир JSON файл. |  |
 | `settings.exportAction` | Yuklab olish | Жүктөп алуу |  |

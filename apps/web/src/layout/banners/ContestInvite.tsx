@@ -18,7 +18,7 @@ import { t } from "@/i18n/messages";
  * `WelcomeNotice` bilan bir vaqtda chiqmaydi: u `welcome=1` ni,
  * bu `welcome=2` ni kutadi va 2-qadam `1` ni `2` ga almashtiradi.
  *
- * Havola `settings/ijtimoiy` ga — ATAYLAB shu bo'lim, chunki
+ * Havola `settings/ommaviy` ga — ATAYLAB shu bo'lim, chunki
  * Codeforces/AtCoder tutqichlari aynan o'sha yerda kiritiladi
  * (`settings/SocialSection.tsx` dagi `{ kind: "codeforces" }` va
  * `{ kind: "atcoder" }`). 2-qadam tugagach odam allaqachon shu
@@ -36,7 +36,7 @@ export function ContestInvite() {
       <div className="rw-content mx-auto flex flex-wrap items-center justify-center gap-3">
         <span>{t(locale, "auth.contestInvite")}</span>
         <Link
-          href={"/settings/ijtimoiy" as Route}
+          href={"/settings/ommaviy" as Route}
           className="underline rw-focus-ring"
         >
           {t(locale, "auth.contestInviteCta")}

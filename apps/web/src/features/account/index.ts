@@ -16,7 +16,6 @@ export { CareerSection } from "./components/CareerSection";
 export { EmailVerify } from "./components/EmailVerify";
 
 
-export { InfoSection } from "./components/InfoSection";
 
 export { NotificationsSection } from "./components/NotificationsSection";
 
@@ -32,7 +31,13 @@ export { SchoolField } from "./components/SchoolField";
 
 export { SecuritySection } from "./components/SecuritySection";
 
-export { SECTIONS, isSection, type SectionId } from "./components/sections";
+export {
+  SECTIONS,
+  isSection,
+  legacyTarget,
+  tabOf,
+  type SectionId,
+} from "./components/sections";
 
 export { SettingsShell } from "./components/SettingsShell";
 

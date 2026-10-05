@@ -20,7 +20,7 @@ import { SITE_URL } from "@/lib/site";
 import { Hint, Loading, Status, useAction, useLoad } from "./section-kit";
 
 const inviteLink = (team: Team) =>
-  `${SITE_URL}/settings/jamoalar?join=${encodeURIComponent(team.join_code)}`;
+  `${SITE_URL}/settings/ommaviy?tab=jamoalar&join=${encodeURIComponent(team.join_code)}`;
 
 function TeamCard({ team, onChange }: { team: Team; onChange: () => void }) {
   const locale = useLocale();

@@ -9,6 +9,7 @@ import { useLocale } from "@/i18n/LocaleProvider";
 import { t, type Locale } from "@/i18n/messages";
 import { Icon } from "@/components/ui/Icon";
 import { putJson, type Education, type WorkRow } from "@/lib/api";
+import { useSaveSlot } from "./SaveBar";
 import { Check, Loading, Select, Status, useAction, useLoad } from "./section-kit";
 
 type CareerRow = Education | WorkRow;
@@ -47,13 +48,13 @@ function RowsCard<T extends CareerRow>({
     setEdited(rows.map((row, j) => (j === i ? { ...row, ...part } : row)));
   }
 
-  async function save() {
-    const filled = rows.filter((row) => cell(row, first).trim());
-    await action.run(async () => {
+  const save = () =>
+    action.run(async () => {
+      const filled = rows.filter((row) => cell(row, first).trim());
       loaded.setData(await putJson<T[]>(path, filled));
       setEdited(null);
     });
-  }
+  useSaveSlot(edited !== null, save, () => setEdited(null));
 
   return (
     <Card title={title}>
@@ -174,9 +175,6 @@ function RowsCard<T extends CareerRow>({
                 {addLabel}
               </Button>
             )}
-            <Button busy={action.busy} disabled={edited === null} onClick={save}>
-              {t(locale, "settings.save")}
-            </Button>
             <Status error={action.error || loaded.error} done={action.done} />
           </div>
         </>

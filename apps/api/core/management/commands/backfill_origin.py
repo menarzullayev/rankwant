@@ -88,7 +88,18 @@ class Command(BaseCommand):
             User.Origin.STAFF: 0,
         }
 
-        qs: QuerySet[User] = User.objects.order_by("pk")
+        # Only the columns `classify` reads. Migration 0028 runs this command
+        # against whatever schema exists at that point, so a plain queryset
+        # would SELECT every column the model has today — and fail on a fresh
+        # database as soon as a later migration adds one.
+        qs: QuerySet[User] = User.objects.order_by("pk").only(
+            "username",
+            "password",
+            "is_staff",
+            "is_superuser",
+            "terms_accepted_at",
+            "origin",
+        )
         total = qs.count()
 
         if dry_run:

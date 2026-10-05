@@ -1466,7 +1466,11 @@ export interface paths {
         post?: never;
         /**
          * Hisobni o'chirish (anonimlashtirish)
-         * @description Hisobni o'chiradi — anonimlashtirish orqali (`core.account`).
+         * @description Schedules the account for deletion (`core.account`).
+         *
+         *     Nothing is removed here. The account is anonymized
+         *     `account.DELETION_GRACE` later by `core.finalize_deletions`; until
+         *     then the owner stays signed in and `POST /me/restore/` undoes it.
          */
         delete: operations["me_destroy"];
         options?: never;
@@ -1627,6 +1631,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/external/{kind}/refresh/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Tashqi profil reytingini yangilash
+         * @description Re-reads one external profile's rating now.
+         *
+         *     The rating is otherwise fetched only when the handle changes, so a
+         *     profile that improved elsewhere stayed stale until it was retyped.
+         */
+        post: operations["me_external_refresh_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/external/connected/": {
         parameters: {
             query?: never;
@@ -1634,10 +1661,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * Ulangan ijtimoiy hisoblar
-         * @description Ulangan hisobdagi taxallus — Telegram va GitHub havolasini bir bosishda to'ldirish.
-         */
+        /** @description Ulangan hisobdagi taxallus — Telegram va GitHub havolasini bir bosishda to'ldirish. */
         get: operations["me_external_connected_retrieve"];
         put?: never;
         post?: never;
@@ -1669,6 +1693,27 @@ export interface paths {
          *     sababi — kimdir hisobga kirib olgani.
          */
         post: operations["me_password_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/restore/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Hisobni o'chirishni bekor qilish
+         * @description Cancels a pending deletion. No password: it removes nothing, and the
+         *     person who wants the account back may be the one who forgot it.
+         */
+        post: operations["me_restore_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -6108,6 +6153,7 @@ export interface components {
             first_name_en?: string;
             last_name_en?: string;
             readonly email_verified: boolean;
+            readonly deletion_scheduled_for: string | null;
             readonly social: string[];
             readonly has_password: boolean;
             /** Format: uri */
@@ -7138,6 +7184,7 @@ export interface components {
             first_name_en?: string;
             last_name_en?: string;
             readonly email_verified?: boolean;
+            readonly deletion_scheduled_for?: string | null;
             readonly social?: string[];
             readonly has_password?: boolean;
             /** Format: uri */
@@ -11113,8 +11160,8 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description No response body */
-            204: {
+            /** @description Deletion scheduled */
+            202: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -11363,6 +11410,34 @@ export interface operations {
             };
         };
     };
+    me_external_refresh_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                kind: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExternalOut"];
+                };
+            };
+            /** @description No response body */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     me_external_connected_retrieve: {
         parameters: {
             query?: never;
@@ -11395,6 +11470,24 @@ export interface operations {
                 "multipart/form-data": components["schemas"]["PasswordChange"];
             };
         };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    me_restore_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description No response body */
             204: {

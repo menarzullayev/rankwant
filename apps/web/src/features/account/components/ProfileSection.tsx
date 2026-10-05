@@ -22,6 +22,7 @@ import {
   type ShopItem,
 } from "@/lib/api";
 import { SLOT_OF } from "@/lib/cosmetics";
+import { SavedForm } from "./SaveBar";
 import { Hint, Status, TextArea, useAction, useLoad } from "./section-kit";
 
 const PROVIDERS: Record<string, string> = {
@@ -148,7 +149,7 @@ function AboutCard() {
   async function save(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
-    await action.run(async () => {
+    return action.run(async () => {
       await patchJson("/me/", {
         display_name: String(form.get("display_name") ?? "").trim(),
         first_name: String(form.get("first_name") ?? "").trim(),
@@ -162,8 +163,8 @@ function AboutCard() {
   }
 
   return (
-    <Card title={t(locale, "settings.nav.profile")}>
-      <form onSubmit={save} className="flex flex-col gap-4">
+    <Card title={t(locale, "settings.name")}>
+      <SavedForm onSubmit={save} className="flex flex-col gap-4">
         <Field
           label={t(locale, "auth.displayName")}
           name="display_name"
@@ -212,10 +213,7 @@ function AboutCard() {
           rows={4}
         />
         <Status error={action.error} done={action.done} />
-        <Button type="submit" busy={action.busy} className="self-start">
-          {t(locale, "settings.save")}
-        </Button>
-      </form>
+      </SavedForm>
     </Card>
   );
 }
@@ -330,7 +328,7 @@ type InventoryEntry = {
   item: { code: string; category: string; title_uz: string };
 };
 
-function CosmeticsCard() {
+export function CosmeticsCard() {
   const locale = useLocale();
   const inventory = useLoad<InventoryEntry[] | Paginated<InventoryEntry>>(
     "/qvant/inventory/",
@@ -446,7 +444,6 @@ export function ProfileSection() {
       <AvatarCard />
       <AboutCard />
       <UsernameCard />
-      <CosmeticsCard />
     </>
   );
 }

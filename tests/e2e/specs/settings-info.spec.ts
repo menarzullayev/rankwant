@@ -36,7 +36,8 @@ test("ma'lumotlar va profil formasi yangi maydonlarni saqlaydi", async ({ page }
   await info.locator('input[name="phone"]').fill("+998 90 123 45 67");
   await info.locator('select[name="grade"]').selectOption("b2");
   await info.locator('select[name="shirt_size"]').selectOption("L");
-  await info.locator('button[type="submit"]').click();
+  // One bar saves the page (2026-10-05); the forms have no button of their own.
+  await page.locator("[data-save-bar] button").last().click();
   await expect
     .poll(async () => {
       const row = await me();
@@ -48,7 +49,7 @@ test("ma'lumotlar va profil formasi yangi maydonlarni saqlaydi", async ({ page }
   const profile = page.locator('form:has(input[name="first_name"])');
   await profile.locator('input[name="first_name"]').fill("Ali");
   await profile.locator('input[name="last_name"]').fill("Valiyev");
-  await profile.locator('button[type="submit"]').click();
+  await page.locator("[data-save-bar] button").last().click();
   await expect
     .poll(async () => {
       const row = await me();

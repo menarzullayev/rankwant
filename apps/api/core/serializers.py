@@ -10,7 +10,7 @@ from django.db import IntegrityError
 from django.utils import timezone
 from rest_framework import serializers
 
-from core import handles, prefs, turnstile, usernames
+from core import account, handles, prefs, turnstile, usernames
 from core.models import (
     MAX_WEBSITES,
     PRIVACY_FIELDS,
@@ -200,6 +200,13 @@ class MeSerializer(serializers.ModelSerializer[User]):
     def get_social(self, obj: User) -> list[str]:
         return sorted(obj.social_accounts.values_list("provider", flat=True))
 
+    #: When a requested deletion takes effect; `null` when none is pending.
+    deletion_scheduled_for = serializers.SerializerMethodField()
+
+    def get_deletion_scheduled_for(self, obj: User) -> str | None:
+        due = account.deletion_due_at(obj)
+        return due.isoformat() if due else None
+
     def get_has_password(self, obj: User) -> bool:
         return obj.has_usable_password()
 
@@ -242,6 +249,7 @@ class MeSerializer(serializers.ModelSerializer[User]):
             "first_name_en",
             "last_name_en",
             "email_verified",
+            "deletion_scheduled_for",
             "social",
             "has_password",
             "avatar_url",

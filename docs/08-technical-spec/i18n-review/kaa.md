@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2025 strings.**
+**2066 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -554,6 +554,47 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `common.empty` | Hozircha bo'sh | Házirshe bos |  |
 | `common.emptyHint` | Bu yerda hozircha hech narsa yo'q. Keyinroq qayta ko'ring. | Bul jerde ázirshe hesh nársе joq. Keyinirek qayta kóriń. |  |
 | `settings.title` | Sozlamalar | Sazlawlar |  |
+| `settings.nav.public` | Ommaviy sahifa | Ǵalabalıq bet |  |
+| `settings.nav.privacy` | Shaxsiy ma'lumot va maxfiylik | Jeke maǵlıwmat hám qupıyalıq |  |
+| `settings.nav.notifyLook` | Bildirishnomalar va ko'rinish | Xabarlandırıwlar hám kórinis |  |
+| `settings.tab.external` | Tashqi profillar | Sırtqı profiller |  |
+| `settings.tab.cosmetics` | Bezaklar | Bezewler |  |
+| `settings.tab.privacy` | Maxfiylik | Qupıyalıq |  |
+| `settings.navHint.profile` | Rasm, ism, taxallus | Súwret, at, laqap |  |
+| `settings.navHint.public` | Tashqi profillar, ko'nikmalar, jamoalar | Sırtqı profiller, kónlikpeler, komandalar |  |
+| `settings.navHint.privacy` | Kim nimani ko'radi | Kim neni kóredi |  |
+| `settings.navHint.security` | Parol, pochta, qurilmalar | Parol, pochta, qurılmalar |  |
+| `settings.navHint.notify` | Xabarlar, til, ovoz | Xabarlar, til, dawıs |  |
+| `settings.navHint.account` | Eksport, o'chirish | Eksport, óshiriw |  |
+| `settings.navHint.unverified` | Pochta tasdiqlanmagan | Pochta tastıyıqlanbaǵan |  |
+| `settings.navHint.deleting` | O'chirish kutilmoqda | Óshiriw kútilmekte |  |
+| `settings.name` | Ism | At |  |
+| `settings.unsaved` | Saqlanmagan o'zgarishlar | Saqlanbaǵan ózgerisler |  |
+| `settings.unsavedCount` | Saqlanmagan o'zgarishlar: {count} | Saqlanbaǵan ózgerisler: {count} |  |
+| `settings.discard` | Bekor qilish | Biykar etiw |  |
+| `settings.channelEmail` | Pochta | Pochta |  |
+| `settings.soon` | tez orada | tez arada |  |
+| `settings.privacy.title` | Kim nimani ko'radi | Kim neni kóredi |  |
+| `settings.privacy.hint` | Yoqilgan maydon ommaviy profilda ko'rinadi. Pochta standart holatda yashirin. | Qosılǵan maydan ǵalabalıq profilde kórinedi. Pochta ádette jasırın. |  |
+| `settings.privacy.preview` | Profilim boshqalarga qanday ko'rinadi | Profilim basqalarǵa qalay kórinedi |  |
+| `settings.privacy.shown` | Profilda ko'rinadi | Profilde kórinedi |  |
+| `settings.privacy.hidden` | Faqat sizga | Tek sizge |  |
+| `settings.privacy.coach` | Murabbiy | Trener |  |
+| `settings.privacy.social` | Ijtimoiy havolalar | Sociallıq siltemeler |  |
+| `settings.privacy.online` | Onlayn holat va oxirgi faollik | Onlayn halat hám sońǵı belsendilik |  |
+| `settings.privacy.activity` | Faoliyat lentasi | Iskerlik lentası |  |
+| `settings.privacy.heatmap` | Faollik xaritasi | Belsendilik kartası |  |
+| `settings.privacy.recentAc` | Yechilgan masalalar xaritasi | Sheshilgen máseleler kartası |  |
+| `settings.privacy.titlePhoto` | Profil banneri | Profil banneri |  |
+| `settings.externalRefresh` | Yangilash | Jańalaw |  |
+| `settings.externalAdd` | Yana qo'shish | Jáne qosıw |  |
+| `settings.externalUpdated` | yangilangan: {time} | jańalanǵan: {time} |  |
+| `settings.deletePending` | Hisob {date} da o'chiriladi — {days} kun qoldi. | Akkaunt {date} kúni óshiriledi — {days} kún qaldı. |  |
+| `settings.deleteCancel` | O'chirishni bekor qilish | Óshiriwdi biykar etiw |  |
+| `settings.deleteGrace` | So'rovdan keyin hisob 14 kun kutadi. Shu vaqt ichida o'chirishni bekor qilishingiz mumkin. | Soraw jiberilgennen keyin akkaunt 14 kún kútedi. Usı waqıtta óshiriwdi biykar etiwińiz múmkin. |  |
+| `settings.deleteRestoreHint` | Bekor qilinsa, hisob hech narsa yo'qotmasdan avvalgi holatiga qaytadi. | Biykar etilse, akkaunt hesh nárse joǵaltpay aldınǵı halatına qaytadı. |  |
+| `settings.deleteStart` | O'chirishni boshlash | Óshiriwdi baslaw |  |
+| `settings.deleteConfirmGrace` | Hisob 14 kundan keyin o'chiriladi. Shu vaqt ichida bekor qilish mumkin. Davom etasizmi? | Akkaunt 14 kúnnen keyin óshiriledi. Usı waqıtta biykar etiw múmkin. Dawam etesiz be? |  |
 | `settings.export` | Ma'lumotni yuklab olish | Maǵlıwmatlardı júklep alıw |  |
 | `settings.exportHint` | Profil, yechimlar, reyting tarixi va Qvant amallari — bitta JSON fayl. | Profil, sheshimler, reyting tariyxı hám Qvant ámelleri — bir JSON fayl. |  |
 | `settings.exportAction` | Yuklab olish | Júklep alıw |  |

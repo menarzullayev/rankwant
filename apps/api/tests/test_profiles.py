@@ -475,3 +475,32 @@ class TestBildirishnomaKanallari:
 
         assert send_telegram(telegramli.pk, "Salom") == "sent"
         assert yuborilgan == [{"chat_id": 100, "text": "Salom", "disable_web_page_preview": True}]
+
+
+@pytest.mark.django_db
+class TestExternalRefresh:
+    def _client(self, user: User) -> APIClient:
+        client = APIClient()
+        client.force_authenticate(user)
+        return client
+
+    def test_reytingli_platforma_navbatga_qoyiladi(self, user, monkeypatch) -> None:
+        from profiles import views
+
+        queued: list[int] = []
+        monkeypatch.setattr(views, "queue", lambda task, pk: queued.append(pk))
+        profile = ExternalProfile.objects.create(user=user, kind="codeforces", handle="tourist")
+        r = self._client(user).post(reverse("me-external-refresh", args=["codeforces"]))
+        assert r.status_code == 202
+        assert queued == [profile.pk]
+
+    def test_reytingsiz_platforma_rad(self, user) -> None:
+        ExternalProfile.objects.create(user=user, kind="github", handle="octocat")
+        r = self._client(user).post(reverse("me-external-refresh", args=["github"]))
+        assert r.status_code == 400
+
+    def test_boshqaning_profili_topilmaydi(self, user) -> None:
+        other = User.objects.create_user(username="vali", password="Parol!12345")
+        ExternalProfile.objects.create(user=other, kind="codeforces", handle="tourist")
+        r = self._client(user).post(reverse("me-external-refresh", args=["codeforces"]))
+        assert r.status_code == 404

@@ -16,6 +16,11 @@ urlpatterns = [
     path("me/skill-badges/", views.MySkillBadgesView.as_view(), name="me-skill-badges"),
     path("me/external/", views.MyExternalView.as_view(), name="me-external"),
     path(
+        "me/external/<str:kind>/refresh/",
+        views.MyExternalRefreshView.as_view(),
+        name="me-external-refresh",
+    ),
+    path(
         "me/external/connected/",
         views.MyConnectedView.as_view(),
         name="me-external-connected",

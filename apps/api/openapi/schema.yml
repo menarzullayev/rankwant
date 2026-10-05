@@ -2393,7 +2393,12 @@ paths:
           description: ''
     delete:
       operationId: me_destroy
-      description: Hisobni o'chiradi — anonimlashtirish orqali (`core.account`).
+      description: |-
+        Schedules the account for deletion (`core.account`).
+
+        Nothing is removed here. The account is anonymized
+        `account.DELETION_GRACE` later by `core.finalize_deletions`; until
+        then the owner stays signed in and `POST /me/restore/` undoes it.
       summary: Hisobni o'chirish (anonimlashtirish)
       tags:
       - me
@@ -2401,8 +2406,8 @@ paths:
       - bearerAuth: []
       - cookieAuth: []
       responses:
-        '204':
-          description: No response body
+        '202':
+          description: Deletion scheduled
   /api/v1/me/activity/:
     get:
       operationId: me_activity_list
@@ -2637,12 +2642,40 @@ paths:
                 items:
                   $ref: '#/components/schemas/ExternalOut'
           description: ''
+  /api/v1/me/external/{kind}/refresh/:
+    post:
+      operationId: me_external_refresh_create
+      description: |-
+        Re-reads one external profile's rating now.
+
+        The rating is otherwise fetched only when the handle changes, so a
+        profile that improved elsewhere stayed stale until it was retyped.
+      summary: Tashqi profil reytingini yangilash
+      parameters:
+      - in: path
+        name: kind
+        schema:
+          type: string
+        required: true
+      tags:
+      - me
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalOut'
+          description: ''
+        '404':
+          description: No response body
   /api/v1/me/external/connected/:
     get:
       operationId: me_external_connected_retrieve
       description: Ulangan hisobdagi taxallus — Telegram va GitHub havolasini bir
         bosishda to'ldirish.
-      summary: Ulangan ijtimoiy hisoblar
       tags:
       - me
       security:
@@ -2679,6 +2712,21 @@ paths:
             schema:
               $ref: '#/components/schemas/PasswordChange'
         required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/me/restore/:
+    post:
+      operationId: me_restore_create
+      description: |-
+        Cancels a pending deletion. No password: it removes nothing, and the
+        person who wants the account back may be the one who forgot it.
+      summary: Hisobni o'chirishni bekor qilish
+      tags:
+      - me
       security:
       - bearerAuth: []
       - cookieAuth: []
@@ -13173,6 +13221,10 @@ components:
         email_verified:
           type: boolean
           readOnly: true
+        deletion_scheduled_for:
+          type: string
+          nullable: true
+          readOnly: true
         social:
           type: array
           items:
@@ -13313,6 +13365,7 @@ components:
       required:
       - avatar_url
       - date_joined
+      - deletion_scheduled_for
       - email
       - email_verified
       - has_password
@@ -14893,6 +14946,10 @@ components:
           maxLength: 150
         email_verified:
           type: boolean
+          readOnly: true
+        deletion_scheduled_for:
+          type: string
+          nullable: true
           readOnly: true
         social:
           type: array

@@ -18,6 +18,7 @@ import {
   type Technology,
 } from "@/lib/api";
 import { BrandIcon, TECH_ICONS } from "@/lib/tech-icons";
+import { useSaveSlot } from "./SaveBar";
 import { Hint, Loading, Select, Status, useAction, useLoad } from "./section-kit";
 
 /** `profiles/views.py` dagi `MAX_ROWS` bilan bir xil. */
@@ -60,12 +61,12 @@ function SkillsCard() {
     return found ? localName(found, locale) : slug;
   };
 
-  async function save() {
-    await action.run(async () => {
+  const save = () =>
+    action.run(async () => {
       mine.setData(await putJson<MySkill[]>("/me/skills/", rows));
       setEdited(null);
     });
-  }
+  useSaveSlot(edited !== null, save, () => setEdited(null));
 
   const loading = (!catalog.data || !mine.data) && !(catalog.error || mine.error);
 
@@ -135,9 +136,6 @@ function SkillsCard() {
             </div>
           )}
           <div className="mt-4 flex flex-wrap items-center gap-3">
-            <Button busy={action.busy} disabled={edited === null} onClick={save}>
-              {t(locale, "settings.save")}
-            </Button>
             <Status
               error={action.error || catalog.error || mine.error}
               done={action.done}
@@ -158,12 +156,12 @@ function TechCard() {
   const current = picked ?? (mine.data ?? []).map((row) => row.slug);
   const full = current.length >= MAX_ROWS;
 
-  async function save() {
-    await action.run(async () => {
+  const save = () =>
+    action.run(async () => {
       mine.setData(await putJson<Technology[]>("/me/technologies/", current));
       setPicked(null);
     });
-  }
+  useSaveSlot(picked !== null, save, () => setPicked(null));
 
   return (
     <Card title={t(locale, "settings.technologies")}>
@@ -206,9 +204,6 @@ function TechCard() {
             })}
           </ul>
           <div className="mt-4 flex flex-wrap items-center gap-3">
-            <Button busy={action.busy} disabled={picked === null} onClick={save}>
-              {t(locale, "settings.save")}
-            </Button>
             <span className="text-theme-sm rw-faint">
               {fill(t(locale, "settings.selected"), {
                 count: current.length,
@@ -247,13 +242,13 @@ function BadgesCard() {
     setEdited(rows.map((row, j) => (j === i ? { ...row, ...part } : row)));
   }
 
-  async function save() {
-    const filled = rows.filter((row) => row.text.trim());
-    await action.run(async () => {
+  const save = () =>
+    action.run(async () => {
+      const filled = rows.filter((row) => row.text.trim());
       loaded.setData(await putJson<SkillBadge[]>("/me/skill-badges/", filled));
       setEdited(null);
     });
-  }
+  useSaveSlot(edited !== null, save, () => setEdited(null));
 
   return (
     <Card title={t(locale, "settings.badges")}>
@@ -320,9 +315,6 @@ function BadgesCard() {
                 {t(locale, "settings.addBadge")}
               </Button>
             )}
-            <Button busy={action.busy} disabled={edited === null} onClick={save}>
-              {t(locale, "settings.save")}
-            </Button>
             <Status error={action.error || loaded.error} done={action.done} />
           </div>
         </>
