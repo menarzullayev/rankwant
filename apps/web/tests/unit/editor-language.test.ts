@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   LANGUAGE_FAMILIES,
+  defaultLanguage,
   editorLanguage,
   languageFamily,
   starterSource,
@@ -96,5 +97,23 @@ describe("starterSource", () => {
     expect(starterSource("py313")).toBe("");
     expect(starterSource("js24")).toBe("");
     expect(starterSource("zz1")).toBe("");
+  });
+});
+
+describe("defaultLanguage", () => {
+  const codes = (...list: string[]) => list.map((code) => ({ code }));
+
+  it("offers C++ first, not whatever sorts first by name", () => {
+    expect(defaultLanguage(codes("ada14", "cpp23", "julia113", "py313"))).toBe("cpp23");
+  });
+
+  it("falls through the preferred order when a problem leaves some out", () => {
+    expect(defaultLanguage(codes("ada14", "java21", "py313"))).toBe("py313");
+    expect(defaultLanguage(codes("ada14", "java21"))).toBe("java21");
+  });
+
+  it("keeps the list's own first language when none of the preferred is allowed", () => {
+    expect(defaultLanguage(codes("julia113", "rust"))).toBe("julia113");
+    expect(defaultLanguage([])).toBe("");
   });
 });
