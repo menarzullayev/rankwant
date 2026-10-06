@@ -22,6 +22,11 @@ import re
 import sys
 from pathlib import Path
 
+# A piped Windows stdout is `cp1252` and dies on the first `✓`; see `_console.py`.
+import _console
+
+_console.force_utf8()
+
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "apps/web/src"
 THEME = SRC / "app/theme.css"
