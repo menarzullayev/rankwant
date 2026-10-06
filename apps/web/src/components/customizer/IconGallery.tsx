@@ -29,7 +29,7 @@ export function IconGallery() {
           : fill(t(locale, "customizer.iconGalleryShow"), { n: total })}
       </button>
       {open && (
-        <div className="mt-3 max-h-[420px] space-y-4 overflow-y-auto rw-radius-sm border rw-divider p-3">
+        <div className="mt-3 max-h-[420px] space-y-4 rw-scroll-y rw-scroll-trap rw-radius-sm border rw-divider p-3">
           {groups.map(([domain, keys]) => (
             <div key={domain}>
               <div className="mb-1 text-theme-xs rw-faint">

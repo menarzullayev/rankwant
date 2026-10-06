@@ -3492,8 +3492,8 @@ def neg_decisions_samples_scroll_box_not_positioned() -> tuple[bool, str]:
     """The samples table lets its hidden labels widen the page."""
     return _decision_broken(
         "apps/web/src/features/problems/components/SampleTests.tsx",
-        '<div className="relative min-w-0 overflow-x-auto">',
-        '<div className="min-w-0 overflow-x-auto">',
+        '<div className="relative min-w-0 rw-scroll-x">',
+        '<div className="min-w-0 rw-scroll-x">',
         "`sr-only` yorliq sahifani kengaytiradi",
     )
 
@@ -3764,6 +3764,101 @@ def neg_decisions_attempts_guest_opens_the_stream() -> tuple[bool, str]:
         "    enabled: Boolean(user),\n",
         "",
         "mehmon ham oqimga ulanadi",
+    )
+
+
+def _scroll_broken(rel: str, old: str, new: str, expect: str) -> tuple[bool, str]:
+    """Break one scroll invariant in `rel`; check_scroll must catch it."""
+    path = ROOT / rel
+    text = path.read_bytes().decode("utf-8")
+    if old not in text:
+        return False, f"scroll/{expect}: langar topilmadi ({rel})"
+    with Mutation(path, old, new):
+        code, out = run_check("scroll")
+    if code != 1:
+        return False, f"scroll/{expect}: buzilgan holat exit {code} berdi (1 kerak)"
+    if expect not in out:
+        return False, f"scroll/{expect}: yiqildi, lekin boshqa sabab — {out.strip()[-160:]}"
+    return True, f"scroll/{expect}: tutildi (exit 1)"
+
+
+def neg_scroll_raw_class() -> tuple[bool, str]:
+    """A scroll box is written by hand again."""
+    return _scroll_broken(
+        "apps/web/src/components/ui/Table.tsx",
+        "min-w-0 rw-scroll-x rw-focus-ring",
+        "min-w-0 overflow-x-auto",
+        "raw `overflow-*-auto`",
+    )
+
+
+def neg_scroll_body_locked_by_hand() -> tuple[bool, str]:
+    """An overlay locks the page with its own copy of the code."""
+    return _scroll_broken(
+        "apps/web/src/layout/AppShell.tsx",
+        "    return lockBodyScroll();\n",
+        "    document.body.style.overflow = \"hidden\";\n",
+        "sets `style.overflow`",
+    )
+
+
+def neg_scroll_into_view_by_hand() -> tuple[bool, str]:
+    """A component scrolls an element into view on its own."""
+    return _scroll_broken(
+        "apps/web/src/components/search/SearchPalette.tsx",
+        "    if (current) revealElement(current.id);\n",
+        "    if (current) document.getElementById(current.id)?.scrollIntoView();\n",
+        "calls `scrollIntoView`",
+    )
+
+
+def neg_scroll_utility_dropped() -> tuple[bool, str]:
+    """A scroll utility disappears from the theme."""
+    return _scroll_broken(
+        "apps/web/src/app/theme.css",
+        "@utility rw-scroll-trap {",
+        "@utility rw-scroll-trap-off {",
+        "`@utility rw-scroll-trap` is missing",
+    )
+
+
+def neg_decisions_scroll_gate_unwired() -> tuple[bool, str]:
+    """The scroll check no longer runs in CI."""
+    return _decision_broken(
+        ".github/workflows/ci.yml",
+        "        run: python3 tools/check_scroll.py\n",
+        "        run: true\n",
+        "`check_scroll.py` yurmaydi",
+    )
+
+
+def neg_decisions_table_not_keyboard_scrollable() -> tuple[bool, str]:
+    """The table box loses its tab stop."""
+    return _decision_broken(
+        "apps/web/src/components/ui/Table.tsx",
+        "    <div tabIndex={0} className=\"min-w-0 rw-scroll-x rw-focus-ring\">\n",
+        "    <div className=\"min-w-0 rw-scroll-x rw-focus-ring\">\n",
+        "tab to'xtash joyi yo'q",
+    )
+
+
+def neg_decisions_attempt_filters_not_sticky() -> tuple[bool, str]:
+    """The filter bar slides under the header again."""
+    return _decision_broken(
+        "apps/web/src/features/submissions/components/AttemptFilters.tsx",
+        "        className=\"sticky top-16 z-20 -mx-1 -mt-4 space-y-1.5 px-1 py-2\"\n",
+        "        className=\"sticky top-0 z-20 -mx-1 space-y-1.5 px-1 py-2\"\n",
+        "sarlavha ostiga yopishmaydi",
+    )
+
+
+def neg_decisions_not_found_unstyled() -> tuple[bool, str]:
+    """The 404 page loses its stylesheet."""
+    return _decision_broken(
+        "apps/web/src/app/not-found.tsx",
+        "import \"./globals.css\";\n",
+        "",
+        "uslub faylisiz chiziladi",
     )
 
 
@@ -5334,6 +5429,11 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/features/problems/components/SampleTests.tsx",
     "apps/api/core/management/commands/seed_demo.py",
     "tools/ci.Dockerfile.dockerignore",
+    # Scroll (2026-10-06).
+    "apps/web/src/components/ui/Table.tsx",
+    "apps/web/src/features/submissions/components/AttemptFilters.tsx",
+    "apps/web/src/app/not-found.tsx",
+    "apps/web/src/lib/scroll.ts",
     # Attempts feed (2026-10-06).
     "apps/web/src/app/(site)/attempts/page.tsx",
     "apps/web/src/app/(site)/problems/[slug]/_panels/ProblemAttemptsPanel.tsx",
@@ -5572,7 +5672,7 @@ def neg_decisions_drawer_escape_lost() -> tuple[bool, str]:
 
 def neg_decisions_drawer_scroll_lock_lost() -> tuple[bool, str]:
     return _decision_broken(
-        "apps/web/src/layout/AppShell.tsx",
+        "apps/web/src/lib/scroll.ts",
         'document.body.style.overflow = "hidden";',
         'document.body.style.overflow = "auto";',
         "mobil panel foydalanishga yaroqli",
@@ -8516,6 +8616,15 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
         ],
     ),
     (
+        "scroll",
+        [
+            ("xom scroll klassi tutilsin", neg_scroll_raw_class),
+            ("qo'lda sahifa qulfi tutilsin", neg_scroll_body_locked_by_hand),
+            ("qo'lda scrollIntoView tutilsin", neg_scroll_into_view_by_hand),
+            ("yo'qolgan utility tutilsin", neg_scroll_utility_dropped),
+        ],
+    ),
+    (
         "css_sources",
         [
             ("o'lik CSS skan yo'li tutilsin", neg_css_source_path_dead),
@@ -8677,6 +8786,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("tab «meniki»ni sessiyasiz so'rasa tutilsin", neg_decisions_attempts_tab_mine_without_session),
             ("mehmonga hammaning urinishi chiqsa tutilsin", neg_decisions_attempts_mine_for_a_guest),
             ("mehmon oqimga ulansa tutilsin", neg_decisions_attempts_guest_opens_the_stream),
+            ("scroll tekshiruvi CI'dan uzilsa tutilsin", neg_decisions_scroll_gate_unwired),
+            ("jadval klaviaturada surilmasa tutilsin", neg_decisions_table_not_keyboard_scrollable),
+            ("filtr qatori yopishmasa tutilsin", neg_decisions_attempt_filters_not_sticky),
+            ("404 uslubsiz chiqsa tutilsin", neg_decisions_not_found_unstyled),
             ("xulosa serverda chizilsa tutilsin", neg_decisions_settings_summary_drawn_on_server),
             ("oxirgi shablon eslanmasa tutilsin", neg_decisions_last_template_not_remembered),
             ("DB paroli yana qattiq yozilsa tutilsin", neg_decisions_db_password_hardcoded_again),

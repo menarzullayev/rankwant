@@ -8,6 +8,7 @@ import { useLocale } from "@/i18n/LocaleProvider";
 import { t, type MessageKey } from "@/i18n/messages";
 import { STYLES, isDual, type StyleId } from "@/layout/styles";
 import { FormSeg3, FormStepper } from "@/components/kit/FormExtras";
+import { revealElement } from "@/lib/scroll";
 import { TEMPLATES } from "@/lib/theme/templates";
 import {
   LINE_HEIGHT_MAX,
@@ -85,7 +86,7 @@ const FONT_NAMES: Record<string, string> = {
  *  `lg`, wrapping where the panel is a desktop column. The padding keeps
  *  focus rings inside the scroll box. */
 export const QUICK_ROW =
-  "flex gap-2 max-lg:-mx-1 max-lg:flex-nowrap max-lg:overflow-x-auto max-lg:px-1 max-lg:py-1 lg:flex-wrap";
+  "flex gap-2 max-lg:-mx-1 max-lg:flex-nowrap max-lg:rw-scroll-x rw-snap-x max-lg:px-1 max-lg:py-1 lg:flex-wrap";
 
 const pair = (first: string, second: string) =>
   [first, second].filter(Boolean).join(" · ");
@@ -246,9 +247,7 @@ function QuickStyleSection() {
           type="button"
           onClick={() => {
             writeGroup("color");
-            requestAnimationFrame(() =>
-              document.getElementById("rw-cz-color")?.scrollIntoView({ block: "nearest" }),
-            );
+            requestAnimationFrame(() => revealElement("rw-cz-color"));
           }}
           className={`${chip(false)} shrink-0`}
         >

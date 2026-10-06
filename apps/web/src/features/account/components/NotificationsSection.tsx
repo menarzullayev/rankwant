@@ -76,7 +76,7 @@ export function NotificationsSection() {
       }
     >
       <Hint>{t(locale, "settings.notifyHint")}</Hint>
-      <div className="mt-4 overflow-x-auto">
+      <div className="mt-4 rw-scroll-x">
         <table className="w-full text-theme-sm">
           <thead>
             <tr className="border-b rw-divider">

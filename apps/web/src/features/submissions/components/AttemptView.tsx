@@ -149,7 +149,7 @@ export function AttemptView({ id }: { id: number }) {
         </dl>
 
         {data.compile_output && (
-          <pre className="mt-4 max-h-56 overflow-auto rw-radius-sm rw-field-bg p-3 text-theme-xs rw-dim-2">
+          <pre tabIndex={0} className="mt-4 max-h-56 rw-scroll rw-radius-sm rw-field-bg p-3 text-theme-xs rw-dim-2">
             {data.compile_output}
           </pre>
         )}
@@ -182,7 +182,7 @@ export function AttemptView({ id }: { id: number }) {
       <Card title={t(locale, "attempt.source")}>
         {data.source_code ? (
           <CodeCopy text={data.source_code} filename={data.language_name || data.language}>
-            <pre className="max-h-[32rem] overflow-auto rw-radius-sm rw-field-bg p-3 font-mono text-theme-xs rw-strong">
+            <pre tabIndex={0} className="max-h-[32rem] rw-scroll rw-radius-sm rw-field-bg p-3 font-mono text-theme-xs rw-strong">
               <code>
                 {tokens.map((token, index) =>
                   token.kind === "plain" ? (

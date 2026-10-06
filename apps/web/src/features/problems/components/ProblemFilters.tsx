@@ -507,7 +507,7 @@ function TopicOptions({
           className="mb-1.5 h-8 w-full rw-radius-sm border rw-line rw-field-bg px-2.5 text-theme-sm rw-strong rw-focus-line rw-fm-inp"
         />
       )}
-      <div className="max-h-64 space-y-2 overflow-y-auto">
+      <div className="max-h-64 space-y-2 rw-scroll-y rw-scroll-trap">
         {visibleRoots.map((root) => {
           const children = childrenOf(root.slug).filter(
             (child) => match(child) || selected.includes(child.slug),

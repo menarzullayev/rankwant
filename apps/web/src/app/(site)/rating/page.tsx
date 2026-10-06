@@ -66,7 +66,7 @@ function Section({
 function Formula({ children }: { children: React.ReactNode }) {
   return (
     <pre
-      className="overflow-x-auto rounded p-3 text-xs"
+      className="rw-scroll-x rounded p-3 text-xs"
       style={{ background: "var(--bg)", color: "var(--text)" }}
     >
       <code>{children}</code>

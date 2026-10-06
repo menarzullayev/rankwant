@@ -1,5 +1,6 @@
 "use client";
 
+import { revealElement } from "@/lib/scroll";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { t } from "@/i18n/messages";
 
@@ -25,7 +26,7 @@ export function StatementSectionNav({
   const locale = useLocale();
 
   function scrollTo(id: string) {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    revealElement(id, { smooth: true, block: "start" });
   }
 
   let jumps: SectionJump[] = [...JUMPS];
@@ -36,7 +37,7 @@ export function StatementSectionNav({
     <p
       role="group"
       aria-label={t(locale, "problem.sectionNav.label")}
-      className="sticky top-16 z-10 -mx-1 mb-3 flex gap-1.5 overflow-x-auto border-b rw-divider bg-[var(--rw-ground)] py-2 xl:hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      className="sticky top-16 z-10 -mx-1 mb-3 flex gap-1.5 rw-scroll-x rw-snap-x border-b rw-divider bg-[var(--rw-ground)] py-2 xl:hidden"
     >
       {jumps.map(({ id, key }) => (
         <button

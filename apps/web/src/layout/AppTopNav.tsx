@@ -321,7 +321,7 @@ export default function AppTopNav({
         role={isMobileOpen ? "dialog" : undefined}
         aria-modal={isMobileOpen || undefined}
         aria-label={t(locale, "nav.main")}
-        className="max-h-[70vh] overflow-y-auto border-t rw-divider rw-surface px-4 py-3 lg:hidden"
+        className="max-h-[70vh] rw-scroll-y rw-scroll-trap border-t rw-divider rw-surface px-4 py-3 lg:hidden"
       >
         {NAV_GROUPS.map((group) => (
           <div key={group.key} className="mb-3">

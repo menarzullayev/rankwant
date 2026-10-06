@@ -148,7 +148,7 @@ export function EmailQuotaPanel() {
       {picker}
 
       <Card>
-        <div className="overflow-x-auto">
+        <div className="rw-scroll-x">
           <table className="w-full text-theme-sm">
             <thead>
               <tr className="text-left rw-dim">

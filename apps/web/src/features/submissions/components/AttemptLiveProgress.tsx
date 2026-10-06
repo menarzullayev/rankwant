@@ -56,7 +56,7 @@ export function AttemptLiveProgress({
         )}
       </div>
       {indices.length > 0 && (
-        <ul className={`grid gap-1 ${compact ? "max-h-32 overflow-y-auto" : "max-h-48 overflow-y-auto"}`}>
+        <ul className={`grid gap-1 ${compact ? "max-h-32 rw-scroll-y" : "max-h-48 rw-scroll-y"}`}>
           {indices.map((index) => {
             const row = state.tests[index];
             return (

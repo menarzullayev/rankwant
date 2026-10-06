@@ -78,7 +78,7 @@ export function VerdictPresentationLayer({
         aria-modal="true"
         aria-label={t(locale, "submit.tabVerdict")}
       >
-        <div className="max-h-[min(520px,90vh)] w-full max-w-lg overflow-auto rw-radius-md border rw-divider rw-panel-bg p-4 shadow-xl">
+        <div className="max-h-[min(520px,90vh)] w-full max-w-lg rw-scroll rw-radius-md border rw-divider rw-panel-bg p-4 shadow-xl">
           <div className="mb-3 flex justify-end">
             <button
               type="button"

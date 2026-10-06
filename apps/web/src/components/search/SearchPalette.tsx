@@ -31,6 +31,7 @@ import {
   type SearchResponse,
   type SearchType,
 } from "@/lib/search/model";
+import { lockBodyScroll, revealElement } from "@/lib/scroll";
 import { clearRecent, readRecent, rememberRecent } from "@/lib/search/recent";
 import { CUSTOMIZER_ENABLED } from "@/lib/theme/flag";
 
@@ -147,13 +148,7 @@ export function SearchPalette({
   }, [requestKey, query, type]);
 
   // The page behind must not scroll under the dialog.
-  useEffect(() => {
-    const before = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = before;
-    };
-  }, []);
+  useEffect(() => lockBodyScroll(), []);
 
   const settled = answer.key === requestKey;
   const pending = requestKey !== "" && !settled;
@@ -397,7 +392,7 @@ export function SearchPalette({
   const current = options[index];
 
   useEffect(() => {
-    if (current) document.getElementById(current.id)?.scrollIntoView({ block: "nearest" });
+    if (current) revealElement(current.id);
   }, [current]);
 
   function choose(next: SearchType) {
@@ -527,7 +522,7 @@ export function SearchPalette({
         <div
           role="group"
           aria-label={t(locale, "search.typeLabel")}
-          className="flex shrink-0 gap-2 overflow-x-auto border-b rw-line px-3 py-2"
+          className="flex shrink-0 gap-2 rw-scroll-x rw-snap-x border-b rw-line px-3 py-2"
         >
           {SEARCH_TYPES.map((item) => (
             <button
@@ -555,7 +550,7 @@ export function SearchPalette({
           role="listbox"
           aria-label={t(locale, "search.results")}
           aria-busy={pending}
-          className="min-h-0 flex-1 overflow-y-auto p-2"
+          className="min-h-0 flex-1 rw-scroll-y rw-scroll-trap p-2"
         >
           {sections.map((section) => (
             <ul key={section.key} role="group" aria-label={section.label || undefined}>

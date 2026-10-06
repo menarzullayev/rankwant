@@ -1180,6 +1180,51 @@
   scrollbar-width: none;
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   SCROLL — one vocabulary for every box that scrolls.
+   Raw `overflow-*-auto` classes are rejected (`tools/check_scroll.py`);
+   the script half lives in `lib/scroll.ts`. The scrollbar itself is the
+   Chiziq overlay further down.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Sideways: a wide table, a chip row. `contain` keeps a sideways swipe
+   that reaches the end from turning into the browser's "back". */
+@utility rw-scroll-x {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+/* Up and down inside the page. The wheel passes on to the page at the
+   end — a code block must not trap someone scrolling past it. */
+@utility rw-scroll-y {
+  overflow-y: auto;
+}
+@utility rw-scroll {
+  overflow: auto;
+  overscroll-behavior-x: contain;
+}
+/* For a layer above the page (menu, drawer, palette): the wheel stays
+   inside, the page behind does not move when the list runs out. */
+@utility rw-scroll-trap {
+  overscroll-behavior: contain;
+}
+/* A row of chips comes to rest on a chip, not across one. `proximity`:
+   it helps a stop that is close and never fights a long flick. */
+@utility rw-snap-x {
+  scroll-snap-type: x proximity;
+  & > * {
+    scroll-snap-align: start;
+  }
+}
+
+:root {
+  --rw-header-h: 4rem;
+}
+/* A jump to an anchor, or to a field that failed validation, lands
+   below the sticky header instead of under it. */
+html {
+  scroll-padding-top: calc(var(--rw-header-h) + 0.75rem);
+}
+
 /* Qiyinlik darajalari — 04-prd § qiyinlik shkalasi ranglari */
 
 .menu-item-inactive:hover { background: var(--rw-hover); color: var(--rw-text); }

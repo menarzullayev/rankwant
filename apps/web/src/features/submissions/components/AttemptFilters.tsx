@@ -137,7 +137,11 @@ export function AttemptFilters({
     "rw-radius-sm rw-field-bg min-h-9 border rw-divider px-2.5 py-1 text-theme-xs rw-strong";
   const signedIn = ready && Boolean(user);
 
+  // Two siblings, not one wrapper: a sticky box only travels inside its
+  // parent, and wrapped in a box of its own height the bar had nowhere
+  // to stick — it scrolled away with the page (measured 2026-10-06).
   return (
+    <>
     <div className="space-y-2">
       {/* The feed's first question is "whose attempts": everyone's or
           mine. On a problem's tab the same switch is a chip further down. */}
@@ -211,11 +215,13 @@ export function AttemptFilters({
         </span>
       </div>
 
+    </div>
+
       {/* Yopishqoq (S09): 891 qatorli sahifada filtr ekrandan chiqib
           ketsa, foydalanuvchi uni esdan chiqaradi va «nega ro'yxat
           g'alati?» degan savol qoladi. */}
       <div
-        className="sticky top-0 z-20 -mx-1 space-y-1.5 px-1 py-2"
+        className="sticky top-16 z-20 -mx-1 -mt-4 space-y-1.5 px-1 py-2"
         style={{ background: "var(--rw-ground)" }}
       >
         <div className="flex flex-wrap items-center gap-1.5">
@@ -254,6 +260,6 @@ export function AttemptFilters({
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }

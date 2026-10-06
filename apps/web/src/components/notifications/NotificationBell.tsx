@@ -10,6 +10,7 @@ import { useNotifications } from "@/context/NotificationsContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { fill, t } from "@/i18n/messages";
 import { PANEL_SIZE, type Notification } from "@/lib/notifications/model";
+import { lockBodyScroll } from "@/lib/scroll";
 
 import { Feed } from "./Feed";
 import { ICON_BUTTON, LiveMark, Tabs, TEXT_LINK, UndoBar } from "./parts";
@@ -128,11 +129,7 @@ function Panel({
   // Full screen on a phone: the page behind must not scroll under it.
   useEffect(() => {
     if (anchor) return;
-    const before = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = before;
-    };
+    return lockBodyScroll();
   }, [anchor]);
 
   function open(row: Notification) {
@@ -184,7 +181,7 @@ function Panel({
           onChange={setUnread}
         />
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className="min-h-0 flex-1 rw-scroll-y rw-scroll-trap">
         <Feed
           status={list.status}
           items={list.items}

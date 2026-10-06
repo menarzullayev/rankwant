@@ -111,7 +111,7 @@ export async function ProblemSolversPanel({
           }
           bodyClassName="p-0"
         >
-          <div className="overflow-x-auto">
+          <div className="rw-scroll-x">
             <table className="w-full">
               <thead>
                 <tr className="border-b rw-divider">

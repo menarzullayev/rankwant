@@ -22,7 +22,7 @@ function Cell({ text, label }: { text: string; label: string }) {
   return (
     <td className="border-l rw-divider px-2 py-1.5 align-top">
       <div className="flex items-start gap-1">
-        <pre className="min-w-0 grow overflow-auto rw-radius-sm rw-field-bg p-2 font-mono text-theme-xs rw-strong [max-height:14rem]">
+        <pre tabIndex={0} className="min-w-0 grow rw-scroll rw-radius-sm rw-field-bg p-2 font-mono text-theme-xs rw-strong [max-height:14rem]">
           {text}
         </pre>
         <CopyButton text={text} tone="ghost" label={label} />
@@ -42,7 +42,7 @@ export function SampleTests({ samples }: { samples: Sample[] }) {
           positioned. Without a positioned ancestor here they escape the
           scroll box and widen the PAGE - measured 2026-10-05 at 375 px:
           document 553 px wide, one 1 px span at x=552. */}
-      <div className="relative min-w-0 overflow-x-auto">
+      <div className="relative min-w-0 rw-scroll-x">
         <table className="w-full min-w-[34rem] table-fixed">
           <thead>
             <tr className="border-b rw-divider">

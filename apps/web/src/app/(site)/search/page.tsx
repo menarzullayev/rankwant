@@ -197,7 +197,7 @@ export default async function SearchPage({
       </form>
 
       {data && data.total > 0 && (
-        <nav aria-label={t(locale, "search.typeLabel")} className="flex gap-2 overflow-x-auto py-1">
+        <nav aria-label={t(locale, "search.typeLabel")} className="flex gap-2 rw-scroll-x rw-snap-x py-1">
           {tabs
             .filter((tab) => tab === type || count(tab) > 0)
             .map((tab) => (
