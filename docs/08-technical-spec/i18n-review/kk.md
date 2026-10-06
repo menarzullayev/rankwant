@@ -1280,36 +1280,36 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `problem.samples` | Namunalar | Мысалдар |  |
 | `problem.sampleInput` | Kirish | Кіріс |  |
 | `problem.sampleOutput` | Chiqish | Шығыс |  |
-| `problem.sampleAnswer` | Javob | Answer |  |
+| `problem.sampleAnswer` | Javob | Жауап |  |
 | `problem.sampleRunHint` | Namunalarda sinash uchun jadvaldagi ▶ yoki muharrir panelidagi namuna konsolidan foydalaning. | Namunada sinash uchun jadvaldagi ▶ yoki muharrir panelidan paydalanıń. |  |
-| `problem.tagsAndTopics` | Teglar va mavzular | Tags and topics |  |
-| `problem.splitResize` | Panellar kengligini o'zgartirish | Resize statement and editor panels |  |
-| `problem.openEditor` | Kod | Code |  |
-| `problem.closeEditor` | Yopish | Close |  |
-| `problem.collapseEditor` | Muharrirni yig‘ish | Collapse editor |  |
-| `problem.expandEditor` | Muharrirni ko‘rsatish | Show editor |  |
-| `problem.sheetResize` | Muharrir balandligini o‘zgartirish | Resize editor sheet height |  |
-| `problem.statementSizeLabel` | Matn | Text |  |
-| `problem.statementSizeHint` | Masala matni o‘lchami | Statement text size |  |
-| `problem.sectionMode.label` | Bo‘limlar ajratilishi | Section spacing |  |
-| `problem.sectionMode.space` | Bo‘shliq | Space |  |
-| `problem.sectionMode.line` | Chiziq | Line |  |
-| `problem.sectionMode.card` | Karta | Card |  |
-| `problem.sectionNav.label` | Shart bo‘limlari | Statement sections |  |
-| `problem.sectionNav.statement` | Tavsif | Statement |  |
-| `problem.sectionNav.input` | Kirish | Input |  |
-| `problem.sectionNav.output` | Chiqish | Output |  |
+| `problem.tagsAndTopics` | Teglar va mavzular | Тегтер мен тақырыптар |  |
+| `problem.splitResize` | Panellar kengligini o'zgartirish | Шарт пен редактор панельдерінің өлшемін өзгерту |  |
+| `problem.openEditor` | Kod | Код |  |
+| `problem.closeEditor` | Yopish | Жабу |  |
+| `problem.collapseEditor` | Muharrirni yig‘ish | Редакторды жию |  |
+| `problem.expandEditor` | Muharrirni ko‘rsatish | Редакторды көрсету |  |
+| `problem.sheetResize` | Muharrir balandligini o‘zgartirish | Редактор панелінің биіктігін өзгерту |  |
+| `problem.statementSizeLabel` | Matn | Мәтін |  |
+| `problem.statementSizeHint` | Masala matni o‘lchami | Шарт мәтінінің өлшемі |  |
+| `problem.sectionMode.label` | Bo‘limlar ajratilishi | Бөлімдер аралығы |  |
+| `problem.sectionMode.space` | Bo‘shliq | Аралық |  |
+| `problem.sectionMode.line` | Chiziq | Сызық |  |
+| `problem.sectionMode.card` | Karta | Карта |  |
+| `problem.sectionNav.label` | Shart bo‘limlari | Шарт бөлімдері |  |
+| `problem.sectionNav.statement` | Tavsif | Шарт |  |
+| `problem.sectionNav.input` | Kirish | Кіріс |  |
+| `problem.sectionNav.output` | Chiqish | Шығыс |  |
 | `problem.sectionNav.notes` | Izohlar | Eskertpeler |  |
-| `problem.sectionNav.samples` | Namunalar | Samples |  |
+| `problem.sectionNav.samples` | Namunalar | Мысалдар |  |
 | `problem.sectionNav.editorial` | Tahlil | Шешім талдауы |  |
-| `problem.sampleRun` | {order}-namunani sinash | Run sample {order} |  |
-| `problem.verdictLayout.label` | Natija ko‘rinishi | Result layout |  |
+| `problem.sampleRun` | {order}-namunani sinash | {order}-мысалды іске қосу |  |
+| `problem.verdictLayout.label` | Natija ko‘rinishi | Нәтиженің орналасуы |  |
 | `problem.verdictLayout.tab` | Yorliq | Bet |  |
-| `problem.verdictLayout.column` | Ustun | Column |  |
+| `problem.verdictLayout.column` | Ustun | Баған |  |
 | `problem.verdictLayout.toast` | Qisqa xabar | Qisqa habar |  |
 | `problem.verdictLayout.modal` | Oyna | Termin |  |
-| `problem.solveTimer` | Yechish | Solve time |  |
-| `problem.roundTimer` | Raund | Round |  |
+| `problem.solveTimer` | Yechish | Шешу уақыты |  |
+| `problem.roundTimer` | Raund | Раунд |  |
 | `problem.copy` | Nusxalash | Көшіру |  |
 | `problem.copied` | Nusxalandi | Көшірілді |  |
 | `problem.copyFailed` | Nusxa olinmadi | Көшірілмеді |  |
@@ -1810,21 +1810,21 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `submit.testsNotReadyBody` | Bu masalaning testlari hali tayyorlanmagan, shu sababli yechim qabul qilinmaydi. Matnni o'qib, o'zingiz uchun yechib ko'rishingiz mumkin — testlar qo'shilishi bilan yuborish ochiladi. | Бұл есептің тесттері әлі дайын емес, сондықтан шешімдер қабылданбайды. Шартын оқып, өзіңіз шеше аласыз — тесттер қосылғанда жіберу ашылады. |  |
 | `submit.signInToSubmit` | Yuborish uchun kiring | Жіберу үшін кіріңіз |  |
 | `submit.testOnSamples` | Namunada sinash | Мысалдарда тексеру |  |
-| `submit.sampleConsoleLabel` | Namuna sinov konsoli | Sample test console |  |
-| `submit.sampleConsoleIdle` | Namuna natijalari (hali sinov yo'q) | Sample results (no run yet) |  |
-| `submit.sampleConsoleRunning` | Sinov yurmoqda… | Running… |  |
-| `submit.sampleConsoleReady` | Tayyor | Ready |  |
-| `submit.sampleResultsTitle` | Namuna natijalari | Sample results |  |
-| `submit.samplePick` | {order}-namuna | Sample {order} |  |
-| `submit.samplePassLog` | {order}-namuna mos keldi | Sample {order} matched |  |
-| `submit.sampleFailLog` | {order}-namuna mos kelmadi | Sample {order} did not match |  |
-| `submit.tabVerdict` | Natija | Result |  |
-| `submit.tabSamples` | Namunalar | Samples |  |
-| `submit.tabCustom` | O'z testim | Custom tests |  |
+| `submit.sampleConsoleLabel` | Namuna sinov konsoli | Мысал тесттерінің консолі |  |
+| `submit.sampleConsoleIdle` | Namuna natijalari (hali sinov yo'q) | Мысал нәтижелері (әлі іске қосылмаған) |  |
+| `submit.sampleConsoleRunning` | Sinov yurmoqda… | Орындалуда… |  |
+| `submit.sampleConsoleReady` | Tayyor | Дайын |  |
+| `submit.sampleResultsTitle` | Namuna natijalari | Мысал нәтижелері |  |
+| `submit.samplePick` | {order}-namuna | {order}-мысал |  |
+| `submit.samplePassLog` | {order}-namuna mos keldi | {order}-мысал сәйкес келді |  |
+| `submit.sampleFailLog` | {order}-namuna mos kelmadi | {order}-мысал сәйкес келмеді |  |
+| `submit.tabVerdict` | Natija | Нәтиже |  |
+| `submit.tabSamples` | Namunalar | Мысалдар |  |
+| `submit.tabCustom` | O'z testim | Өз тесттерім |  |
 | `submit.draftSavedLocally` | Qoralama shu brauzerda saqlanadi | Жоба осы браузерде сақталады |  |
 | `submit.loadFromFile` | Fayldan yuklash | Файлдан жүктеу |  |
 | `submit.nothingSubmitted` | Hali yuborilmadi. Kod yozing va «Yuborish» ni bosing. | Әзірге жіберілген жоқ. Код жазып, «Жіберу» түймесін басыңыз. |  |
-| `submit.verdictShownElsewhere` | Natija tanlangan joyda ko‘rsatiladi (ustun, toast yoki modal). | The result is shown in the layout you selected (column, toast, or modal). |  |
+| `submit.verdictShownElsewhere` | Natija tanlangan joyda ko‘rsatiladi (ustun, toast yoki modal). | Нәтиже сіз таңдаған орналасуда көрсетіледі (баған, toast немесе modal). |  |
 | `submit.testTooltip` | {index}: {verdict} · {time} ms | {index}: {verdict} · {time} мс |  |
 | `submit.addTest` | Test qo'shish | Тест қосу |  |
 | `submit.removeTest` | Test {index} ni o'chirish | Тест {index} өшіру |  |
@@ -1991,19 +1991,19 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `customizer.pattern.diagonal` | Diagonal | Диагональ |  |
 | `customizer.pattern.mesh` | Tuman | Тұман |  |
 | `customizer.patternHint` | Kontent orqasida turadi va matnni to'smaydi. | Мазмұнның артында тұрады және мәтінді жаппайды. |  |
-| `customizer.verdict` | Natija ko'rinishi | Result style |  |
-| `verdict.style.auto` | Avtomatik | Automatic |  |
-| `verdict.style.autoHint` | Shaklni ekranga qarab tanlaydi: telefonda doira, planshetda ikonka, kompyuterda to'liq nom. | Picks the shape by screen: circle on phone, icon on tablet, full name on desktop. |  |
-| `verdict.style.badge` | Faqat nishon | Badge only |  |
-| `verdict.style.badgeHint` | Rangli nishonda qisqa kod. Ixcham — zich jadvallar uchun. | Short code on a coloured pill. Compact — for dense tables. |  |
+| `customizer.verdict` | Natija ko'rinishi | Нәтиже стилі |  |
+| `verdict.style.auto` | Avtomatik | Автоматты |  |
+| `verdict.style.autoHint` | Shaklni ekranga qarab tanlaydi: telefonda doira, planshetda ikonka, kompyuterda to'liq nom. | Пішінді экранға қарай таңдайды: телефонда дөңгелек, планшетте белгіше, компьютерде толық атау. |  |
+| `verdict.style.badge` | Faqat nishon | Тек белгі |  |
+| `verdict.style.badgeHint` | Rangli nishonda qisqa kod. Ixcham — zich jadvallar uchun. | Түрлі түсті белгідегі қысқа код. Ықшам — тығыз кестелер үшін. |  |
 | `verdict.style.plain` | Faqat ikonka | Тек қана белгіше |  |
 | `verdict.style.plainHint` | Faqat ikonka, rangsiz. Eng izchil ko'rinish — lekin holat darhol sezilmaydi. | Тек қана белгіше, түссіз. Ең біркелкі көрініс, бірақ күйі бірден байқалмайды. |  |
-| `verdict.style.icon` | Ikonka va rang | Icon + colour |  |
-| `verdict.style.iconHint` | Ikonka, qisqa kod va natija rangi. Eng tez o'qiladi. | Icon, short code and result colour. Reads fastest. |  |
-| `verdict.style.full` | Ikonka, rang va nom | Icon + colour + name |  |
-| `verdict.style.fullHint` | To'liq natija nomi izohi bilan. Ko'proq joy egallaydi. | Full result name with an explanation. Takes more room. |  |
-| `verdict.style.circle` | Doira va ikonka | Circle + icon |  |
-| `verdict.style.circleHint` | To'ldirilgan doirada oq ikonka. Eng kichik — mobil va tor qatorlar uchun. | Filled circle with a white icon. Smallest — for mobile and tight rows. |  |
+| `verdict.style.icon` | Ikonka va rang | Белгіше + түс |  |
+| `verdict.style.iconHint` | Ikonka, qisqa kod va natija rangi. Eng tez o'qiladi. | Белгіше, қысқа код және нәтиже түсі. Ең тез оқылады. |  |
+| `verdict.style.full` | Ikonka, rang va nom | Белгіше + түс + атау |  |
+| `verdict.style.fullHint` | To'liq natija nomi izohi bilan. Ko'proq joy egallaydi. | Түсіндірмесі бар толық нәтиже атауы. Көбірек орын алады. |  |
+| `verdict.style.circle` | Doira va ikonka | Дөңгелек + белгіше |  |
+| `verdict.style.circleHint` | To'ldirilgan doirada oq ikonka. Eng kichik — mobil va tor qatorlar uchun. | Толтырылған дөңгелектегі ақ белгіше. Ең кішісі — мобильді және тар жолдар үшін. |  |
 | `verdict.style.dot` | Nuqta va kod | Нүкте мен код |  |
 | `verdict.style.dotHint` | Rangli nuqta va qisqa kod. Jadvaldan yengilroq — log ro'yxatlari uchun. | Түсті нүкте және қысқа код. Кестеден жеңіл — лог тізімдері үшін. |  |
 | `verdict.style.box` | Chegara va ikonka | Жиек және белгіше |  |
@@ -2012,19 +2012,19 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `verdict.style.barHint` | Chap tomonda rangli chiziq, yonida ikonka va to'liq nom. Ogohlantirishlar uchun. | Сол жақта түсті жолақ, қасында белгіше мен толық атау. Ескертулер үшін. |  |
 | `verdict.style.percent` | Ikonka va foiz | Белгіше және пайыз |  |
 | `verdict.style.percentHint` | Ikonka, qisqa kod va natija foizi. Baholash va qisman natijalar uchun. | Белгіше, қысқа код және нәтиже пайызы. Бағалау және ішінара нәтижелер үшін. |  |
-| `verdict.style.card` | Katta karta | Large card |  |
-| `verdict.style.cardHint` | Katta ikonka izohi bilan. Masala sahifasidagi natija paneli uchun. | Big icon with a description. For the result panel on a problem page. |  |
-| `verdict.hint.AC` | Barcha testlar o'tdi | All tests passed |  |
-| `verdict.hint.WA` | Javob kutilganiga mos emas | Output does not match |  |
-| `verdict.hint.TLE` | Belgilangan vaqtdan uzoq ishladi | Ran longer than allowed |  |
-| `verdict.hint.MLE` | Belgilangan xotiradan ko'p ishlatdi | Used more memory than allowed |  |
-| `verdict.hint.RE` | Dastur ishlash paytida to'xtadi | Program crashed while running |  |
-| `verdict.hint.CE` | Kod kompilyatsiya bo'lmadi | Code did not compile |  |
-| `verdict.hint.PE` | Ortiqcha bo'sh joy yoki qator | Extra spaces or line breaks |  |
+| `verdict.style.card` | Katta karta | Үлкен карта |  |
+| `verdict.style.cardHint` | Katta ikonka izohi bilan. Masala sahifasidagi natija paneli uchun. | Сипаттамасы бар үлкен белгіше. Есеп бетіндегі нәтиже панелі үшін. |  |
+| `verdict.hint.AC` | Barcha testlar o'tdi | Барлық тесттен өтті |  |
+| `verdict.hint.WA` | Javob kutilganiga mos emas | Шығыс сәйкес келмейді |  |
+| `verdict.hint.TLE` | Belgilangan vaqtdan uzoq ishladi | Рұқсат етілгеннен ұзақ жұмыс істеді |  |
+| `verdict.hint.MLE` | Belgilangan xotiradan ko'p ishlatdi | Рұқсат етілгеннен көп жад жұмсады |  |
+| `verdict.hint.RE` | Dastur ishlash paytida to'xtadi | Бағдарлама жұмыс кезінде құлады |  |
+| `verdict.hint.CE` | Kod kompilyatsiya bo'lmadi | Код компиляциядан өтпеді |  |
+| `verdict.hint.PE` | Ortiqcha bo'sh joy yoki qator | Артық бос орын немесе жол үзілімі |  |
 | `verdict.hint.HACKED` | Qabul qilingan yechim boshqa ishtirokchining to'g'ri testida yiqildi | Қабылданған шешім басқа қатысушының дұрыс тестінде құлады |  |
-| `verdict.hint.OLE` | Juda ko'p ma'lumot chiqardi | Printed too much output |  |
-| `verdict.hint.IE` | Tekshiruvchi xatosi — sizda emas | Judge error, not your fault |  |
-| `verdict.hint.PD` | Navbatda kutilmoqda | Waiting in the queue |  |
+| `verdict.hint.OLE` | Juda ko'p ma'lumot chiqardi | Тым көп дерек шығарды |  |
+| `verdict.hint.IE` | Tekshiruvchi xatosi — sizda emas | Тексеруші қатесі, сіздің кінәңіз емес |  |
+| `verdict.hint.PD` | Navbatda kutilmoqda | Кезекте күтуде |  |
 | `customizer.exportFile` | Faylga saqlash | Файлға сақтау |  |
 | `customizer.importFile` | Fayldan yuklash | Файлдан жүктеу |  |
 | `customizer.importError.parse` | Fayl to'g'ri JSON emas. | Файл дұрыс JSON емес. |  |
