@@ -1,0 +1,53 @@
+{
+  "id": "28-scorer-partial",
+  "title": "Scorer — to'liq bo'lmagan ball PARTIAL",
+  "measures": "checker son qaytaradi; 100 dan past ball AC emas",
+  "language": {
+    "code": "py312",
+    "compile": null,
+    "run": [
+      "python3",
+      "{src}"
+    ]
+  },
+  "source": "s = int(input())\nprint(s)\nprint(*[1] * s)\n",
+  "limits": {
+    "compile_time_ms": 10000,
+    "time_ms": 1000,
+    "memory_kb": 262144,
+    "output_kb": 65536,
+    "processes": 1
+  },
+  "tests": [
+    {
+      "index": 1,
+      "input": "30\n",
+      "expected": "3\n"
+    },
+    {
+      "index": 2,
+      "input": "50\n",
+      "expected": "2\n"
+    }
+  ],
+  "expect_verdict": "PARTIAL",
+  "must_hold": [
+    "30 ta va 50 ta tanga: 100*3//30 = 10 va 100*2//50 = 4, o'rtachasi 7",
+    "2026-10-07 gacha verdict AC edi"
+  ],
+  "mode": "acm",
+  "implemented": true,
+  "checker": {
+    "type": "scorer",
+    "program": {
+      "code": "py312",
+      "compile": null,
+      "run": [
+        "python3",
+        "{src}"
+      ],
+      "source": "\"\"\"Scorer: pay the amount with coins 1, 5, 10, 25 - fewer coins, higher score.\"\"\"\nimport sys\n\namount = int(open(sys.argv[1]).read().split()[0])\nbest = int(open(sys.argv[3]).read().split()[0])\ntry:\n    tokens = list(map(int, open(sys.argv[2]).read().split()))\nexcept ValueError:\n    print(0)\n    sys.exit(0)\nif not tokens or tokens[0] != len(tokens) - 1 or tokens[0] < 1:\n    print(0)\n    sys.exit(0)\ncoins = tokens[1:]\nif any(c not in (1, 5, 10, 25) for c in coins) or sum(coins) != amount:\n    print(0)\n    sys.exit(0)\nprint(100 * best // len(coins))\n"
+    }
+  },
+  "expect_score": 7
+}

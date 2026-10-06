@@ -13,6 +13,7 @@ from __future__ import annotations
 from typing import Any, NamedTuple
 
 from problems import testgroups
+from problems.evaluation import EVALUATION_MODE_INVALID, evaluation_error
 from problems.models import (
     Problem,
     ProblemRevision,
@@ -125,6 +126,19 @@ def checker_gate(problem: Problem) -> Gate:
     return Gate(CHECKER_NOT_VERIFIED, True)
 
 
+def evaluation_gate(problem: Problem) -> Gate:
+    """The `io_mode` / `checker_type` pair must be one the judge implements.
+
+    A verified checker is not enough: `both` with a special checker hands
+    that checker an empty answer whenever the solution writes `output.txt`.
+    The rules and their proof are in `problems/evaluation.py`.
+    """
+    error = evaluation_error(problem)
+    if error:
+        return Gate(EVALUATION_MODE_INVALID, False, error)
+    return Gate(EVALUATION_MODE_INVALID, True)
+
+
 # ── §5 Limitlar ───────────────────────────────────────────────────────
 
 
@@ -173,6 +187,7 @@ GATES = (
     validator_gate,
     reference_gate,
     checker_gate,
+    evaluation_gate,
     limits_gate,
     review_gate,
     revision_gate,

@@ -6,7 +6,7 @@ from typing import Any
 
 from rest_framework import serializers
 
-from problems import readiness, release, testgroups
+from problems import evaluation, readiness, release, testgroups
 from problems.models import (
     DIFFICULTY_STEP,
     Language,
@@ -111,6 +111,23 @@ class StaffProblemSerializer(serializers.ModelSerializer[Problem]):
         javob masala sahifasida ochiq turadi, ya'ni uni bosib chiqargan
         dastur AC oladi. O'lchandi: `3-ta-son` ga `print('3 2 1')` — AC.
         """
+        # An `io_mode` / `checker_type` pair the judge cannot grade is refused
+        # here, when it is typed — not at the first submission. `io_mode` is
+        # not editable through this API, so it is read from the row (a new
+        # problem starts as `stdio`).
+        checker_type = attrs.get(
+            "checker_type", getattr(self.instance, "checker_type", Problem.Checker.STANDARD)
+        )
+        io_mode = getattr(self.instance, "io_mode", Problem.IoMode.STDIO)
+        has_subtasks = self.instance is not None and self.instance.subtasks.exists()
+        error = evaluation.combination_error(io_mode, checker_type) or evaluation.subtask_error(
+            checker_type, has_subtasks
+        )
+        if error:
+            raise serializers.ValidationError(
+                {"checker_type": f"{evaluation.EVALUATION_MODE_INVALID}: {error}"}
+            )
+
         ommaviy = attrs.get("is_public", getattr(self.instance, "is_public", False))
         if not ommaviy or self.instance is None:
             # Yangi yozuv qoralama sifatida yaratiladi; ommaviy bo'lishi

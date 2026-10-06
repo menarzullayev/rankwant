@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2238 strings.**
+**2243 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -419,6 +419,11 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `about.io.file.title` | Fayl oqimi (input.txt / output.txt) | Fayl arqalı kirgiziw/shıǵarıw (input.txt / output.txt) |  |
 | `about.io.file.hint` | input.txt dan ikkita butun sonni o'qing, yig'indini output.txt ga yozing (ortiqcha probel yoki qatorsiz). | input.txt faylınan eki pútin sandı oqıń hám qosındını output.txt faylına jazıń (artıqsha bos orın yamasa qatarsız). |  |
 | `about.sampleMissing` | Bu til uchun namuna hali qo'shilmagan. Masala shartidagi kirish/chiqish formatiga rioya qiling. | Bul til ushın úlgi kod ele joq. Máseledegi kirgiziw/shıǵarıw formatına ámel etiń. |  |
+| `about.eval.title` | Javob qanday tekshiriladi | Juwap qalay tekseriledi |  |
+| `about.eval.standard` | Oddiy tekshiruv: chiqishingiz kutilgan javob bilan solishtiriladi. Farq faqat bo'shliq yoki qator bo'linishida bo'lsa — PE, boshqa farqda — WA. | Ápiwayı tekseriw: shıǵısıńız kútilgen juwap penen salıstırıladı. Ayırma tek bos orın yamasa qatar bóliniwinde bolsa — PE, basqa ayırmada — WA. |  |
+| `about.eval.special` | Maxsus tekshiruvchi: to'g'ri javob bir nechta bo'lishi mumkin bo'lgan masalada javobingizni muallif yozgan dastur tekshiradi. Shartga mos har qanday javob qabul qilinadi. | Arnawlı tekseriwshi: durıs juwap bir neshe bolıwı múmkin máselede juwabıńızdı avtor jazǵan programma tekseredi. Shártke sáykes hár qanday juwap qabıl etiledi. |  |
+| `about.eval.interactive` | Interaktiv masala: dasturingiz hakam dasturi bilan suhbatlashadi — savol yozadi, javobini o'qiydi. Har yozuvdan keyin chiqish buferini bo'shating (flush), aks holda hukm IDLENESS bo'ladi. | Interaktiv másele: programmańız tóreshi programması menen sóylesedi — soraw jazadı, juwabın oqıydı. Hár jazıwdan keyin shıǵıs buferin bosatıń (flush), bolmasa húkim IDLENESS boladı. |  |
+| `about.eval.scorer` | Ballik masala: har test 0 dan 100 gacha baholanadi, yakuniy ball — ularning o'rtachasi. 100 ball — AC; 100 dan kam, lekin noldan katta — PARTIAL (masala yechilgan hisoblanmaydi). | Ballı másele: hár test 0 den 100 ge shekem bahalanadı, juwmaqlawshı ball — olardıń ortashası. 100 ball — AC; 100 den kem, biraq nolden úlken — PARTIAL (másele sheshilgen dep esaplanbaydı). |  |
 | `about.judge.title` | Tizim qanday ishlaydi | Tekseriw qalay isleydi |  |
 | `about.judge.body` | Har bir yuborilgan yechim izolyatsiya qilingan sandbox'da kompilyatsiya qilinadi va masaladagi barcha yashirin testlardan o'tkaziladi (ACM rejimi: birinchi muvaffaqiyatsiz testda tekshiruv to'xtaydi). Barcha testlar o'tgandagina yechim qabul qilinadi (AC). Vaqt va xotira chegaralari har test uchun alohida qo'llaniladi. | Hár bir jiberilgen sheshim izolyaciyalanǵan sandbox ishinde kompilyaciyalanadı hám barlıq jasırın testlerde iske túsiriledi (ACM rejimi: birinshi ótpegen testte toqtaydı). Sheshim tek barlıq testler ótkende ǵana qabıl etiledi. Waqıt hám yad shekleri hár bir test ushın bólek qollanıladı. |  |
 | `about.notes.title` | Muhim eslatmalar | Áhmiyetli eskertpeler |  |

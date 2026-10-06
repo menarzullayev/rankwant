@@ -318,7 +318,7 @@ func judge(ctx context.Context, job *Job, tests *store, emit Emit) *Result {
 		}
 		// Chiqish to'g'ri kelgan bo'lsa (dastur normal tugadi), yakuniy
 		// so'z checkerniki: tenglik solishtiruvi maxsus masalada noto'g'ri.
-		if useChecker && (v == VAC || v == VWA) {
+		if useChecker && checkerDecides(v) {
 			cv, err := runChecker(ctx, work, checkerCmd, job.Checker.Type,
 				test.Input, out.Stdout, test.Expected)
 			if err != nil {
@@ -372,6 +372,7 @@ func judge(ctx context.Context, job *Job, tests *store, emit Emit) *Result {
 		// Mutlaq ball: testlar bo'yicha o'rtacha. Boshqalarning yechimiga
 		// bog'liq emas, ya'ni qayta hisoblash zanjiri yo'q.
 		res.Score = scoreSum / len(job.Tests)
+		worst = scorerVerdict(worst, res.Score)
 	} else {
 		res.Score = score(job, passed, byGroup, failedGroup)
 	}
@@ -385,6 +386,37 @@ func judge(ctx context.Context, job *Job, tests *store, emit Emit) *Result {
 	res.Verdict = worst
 	res.Meta.TotalMS = time.Since(t0).Milliseconds()
 	return res
+}
+
+// checkerDecides — with an external checker, which pre-verdicts go to it.
+//
+// `classify` compares the output with the jury's answer; on a `special` or
+// `scorer` problem that comparison is only a way to know the program ran
+// to the end, and the checker has the last word. `PE` belongs here too:
+// it means "the same tokens, laid out differently", and until 2026-10-07
+// it was returned as it stood, so a correct answer printed one number per
+// line instead of space-separated was rejected without the checker ever
+// seeing it. Resource and runtime verdicts (TLE, MLE, RE…) are not the
+// checker's business.
+func checkerDecides(v string) bool {
+	return v == VAC || v == VWA || v == VPE
+}
+
+// scorerVerdict — the verdict of a `scorer` run whose tests all returned
+// a positive score.
+//
+// A scorer grades quality from 0 to 100, and every test with a positive
+// score is "AC" on its own. Left at that, a solution scoring 30 on every
+// test came back `AC` with score 30 — and `AC` is what the platform counts
+// as solved. `AC` now means the full score; anything between is `PARTIAL`.
+func scorerVerdict(worst string, score int) string {
+	if worst != VAC || score >= 100 {
+		return worst
+	}
+	if score > 0 {
+		return VPartial
+	}
+	return VWA
 }
 
 // classify — bitta test natijasini verdictga aylantiradi.

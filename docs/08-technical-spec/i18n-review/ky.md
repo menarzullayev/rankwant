@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2238 strings.**
+**2243 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -419,6 +419,11 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `about.io.file.title` | Fayl oqimi (input.txt / output.txt) | Файл аркылуу киргизүү/чыгаруу (input.txt / output.txt) |  |
 | `about.io.file.hint` | input.txt dan ikkita butun sonni o'qing, yig'indini output.txt ga yozing (ortiqcha probel yoki qatorsiz). | input.txt файлынан эки бүтүн санды окуп, суммасын output.txt файлына жазыңыз (ашыкча боштук же сапсыз). |  |
 | `about.sampleMissing` | Bu til uchun namuna hali qo'shilmagan. Masala shartidagi kirish/chiqish formatiga rioya qiling. | Бул тил үчүн үлгү азырынча жок. Маселенин киргизүү/чыгаруу форматын сактаңыз. |  |
+| `about.eval.title` | Javob qanday tekshiriladi | Жооп кантип текшерилет |  |
+| `about.eval.standard` | Oddiy tekshiruv: chiqishingiz kutilgan javob bilan solishtiriladi. Farq faqat bo'shliq yoki qator bo'linishida bo'lsa — PE, boshqa farqda — WA. | Жөнөкөй текшерүү: чыгарууңуз күтүлгөн жооп менен салыштырылат. Айырма боштукта же сап бөлүнүшүндө гана болсо — PE, башка айырмада — WA. |  |
+| `about.eval.special` | Maxsus tekshiruvchi: to'g'ri javob bir nechta bo'lishi mumkin bo'lgan masalada javobingizni muallif yozgan dastur tekshiradi. Shartga mos har qanday javob qabul qilinadi. | Атайын текшергич: туура жооп бир нече болушу мүмкүн болгон маселеде жообуңузду автор жазган программа текшерет. Шартка туура келген ар кандай жооп кабыл алынат. |  |
+| `about.eval.interactive` | Interaktiv masala: dasturingiz hakam dasturi bilan suhbatlashadi — savol yozadi, javobini o'qiydi. Har yozuvdan keyin chiqish buferini bo'shating (flush), aks holda hukm IDLENESS bo'ladi. | Интерактивдүү маселе: программаңыз калыс программасы менен сүйлөшөт — суроо жазат, жообун окуйт. Ар бир жазуудан кийин чыгаруу буферин бошотуңуз (flush), болбосо өкүм IDLENESS болот. |  |
+| `about.eval.scorer` | Ballik masala: har test 0 dan 100 gacha baholanadi, yakuniy ball — ularning o'rtachasi. 100 ball — AC; 100 dan kam, lekin noldan katta — PARTIAL (masala yechilgan hisoblanmaydi). | Упайлуу маселе: ар бир тест 0дөн 100гө чейин бааланат, жыйынтык упай — алардын орточосу. 100 упай — AC; 100дөн аз, бирок нөлдөн көп — PARTIAL (маселе чечилген деп эсептелбейт). |  |
 | `about.judge.title` | Tizim qanday ishlaydi | Текшерүү кантип иштейт |  |
 | `about.judge.body` | Har bir yuborilgan yechim izolyatsiya qilingan sandbox'da kompilyatsiya qilinadi va masaladagi barcha yashirin testlardan o'tkaziladi (ACM rejimi: birinchi muvaffaqiyatsiz testda tekshiruv to'xtaydi). Barcha testlar o'tgandagina yechim qabul qilinadi (AC). Vaqt va xotira chegaralari har test uchun alohida qo'llaniladi. | Ар бир жөнөтүлгөн чечим обочолонгон sandbox ичинде компиляцияланып, бардык жашыруун тесттерде иштетилет (ACM режими: биринчи өтпөгөн тестте текшерүү токтойт). Бардык тесттер өткөндө гана чечим кабыл алынат. Убакыт жана эс тутум чектөөлөрү ар бир тестке өзүнчө колдонулат. |  |
 | `about.notes.title` | Muhim eslatmalar | Маанилүү эскертүүлөр |  |

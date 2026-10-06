@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2238 strings.**
+**2243 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -419,6 +419,11 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `about.io.file.title` | Fayl oqimi (input.txt / output.txt) | Вуруд/хуруҷи файлӣ (input.txt / output.txt) |  |
 | `about.io.file.hint` | input.txt dan ikkita butun sonni o'qing, yig'indini output.txt ga yozing (ortiqcha probel yoki qatorsiz). | Аз input.txt ду адади бутунро хонед ва ҳосили ҷамъро ба output.txt нависед (бе фосила ё сатри зиёдатӣ). |  |
 | `about.sampleMissing` | Bu til uchun namuna hali qo'shilmagan. Masala shartidagi kirish/chiqish formatiga rioya qiling. | Барои ин забон ҳоло намуна нест. Ба формати вуруд/хуруҷи масъала риоя кунед. |  |
+| `about.eval.title` | Javob qanday tekshiriladi | Ҷавоб чӣ гуна санҷида мешавад |  |
+| `about.eval.standard` | Oddiy tekshiruv: chiqishingiz kutilgan javob bilan solishtiriladi. Farq faqat bo'shliq yoki qator bo'linishida bo'lsa — PE, boshqa farqda — WA. | Санҷиши оддӣ: баромади шумо бо ҷавоби интизорӣ муқоиса мешавад. Агар фарқ танҳо дар фосила ё шикасти сатр бошад — PE, дар дигар ҳолат — WA. |  |
+| `about.eval.special` | Maxsus tekshiruvchi: to'g'ri javob bir nechta bo'lishi mumkin bo'lgan masalada javobingizni muallif yozgan dastur tekshiradi. Shartga mos har qanday javob qabul qilinadi. | Санҷишгари махсус: дар масъалае, ки якчанд ҷавоби дуруст дорад, ҷавоби шуморо барномаи навиштаи муаллиф месанҷад. Ҳар ҷавобе, ки ба шарт мувофиқ аст, қабул мешавад. |  |
+| `about.eval.interactive` | Interaktiv masala: dasturingiz hakam dasturi bilan suhbatlashadi — savol yozadi, javobini o'qiydi. Har yozuvdan keyin chiqish buferini bo'shating (flush), aks holda hukm IDLENESS bo'ladi. | Масъалаи интерактивӣ: барномаи шумо бо барномаи довар гуфтугӯ мекунад — савол менависад ва ҷавобро мехонад. Пас аз ҳар навиштан буфери баромадро холӣ кунед (flush), вагарна ҳукм IDLENESS мешавад. |  |
+| `about.eval.scorer` | Ballik masala: har test 0 dan 100 gacha baholanadi, yakuniy ball — ularning o'rtachasi. 100 ball — AC; 100 dan kam, lekin noldan katta — PARTIAL (masala yechilgan hisoblanmaydi). | Масъалаи холдор: ҳар тест аз 0 то 100 баҳо мегирад, холи ниҳоӣ — миёнаи онҳо. 100 хол — AC; аз 100 кам, вале аз сифр зиёд — PARTIAL (масъала ҳалшуда ҳисоб намешавад). |  |
 | `about.judge.title` | Tizim qanday ishlaydi | Санҷиш чӣ гуна кор мекунад |  |
 | `about.judge.body` | Har bir yuborilgan yechim izolyatsiya qilingan sandbox'da kompilyatsiya qilinadi va masaladagi barcha yashirin testlardan o'tkaziladi (ACM rejimi: birinchi muvaffaqiyatsiz testda tekshiruv to'xtaydi). Barcha testlar o'tgandagina yechim qabul qilinadi (AC). Vaqt va xotira chegaralari har test uchun alohida qo'llaniladi. | Ҳар ҳали фиристодашуда дар sandbox-и ҷудошуда компилятсия ва бо ҳамаи тестҳои пинҳон иҷро мешавад (реҷаи ACM: дар аввалин тести ноком санҷиш қатъ мешавад). Ҳал танҳо вақте қабул мешавад, ки ҳамаи тестҳо гузаранд. Маҳдудиятҳои вақт ва хотира барои ҳар тест алоҳида амал мекунанд. |  |
 | `about.notes.title` | Muhim eslatmalar | Эзоҳҳои муҳим |  |

@@ -36,6 +36,16 @@ const PRACTICES: MessageKey[] = [
 
 const NOTES: MessageKey[] = ["about.notes.io", "about.notes.cpp", "about.notes.java"];
 
+/** The four ways an answer is graded - one line each. A problem uses
+ *  exactly one of them, and which one decides what a solver has to do
+ *  (flush after every write, or expect a score instead of a yes/no). */
+const EVALUATION: MessageKey[] = [
+  "about.eval.standard",
+  "about.eval.special",
+  "about.eval.interactive",
+  "about.eval.scorer",
+];
+
 /** The page is shared under its own title, sentence and address. It used
  *  to go out with the site's description and `og:url` of the home page
  *  (measured 2026-10-06). */
@@ -134,6 +144,12 @@ export default async function AboutPage() {
 
           <GuideSection id="judge" title={t(locale, "about.judge.title")} anchorLabel={anchorLabel}>
             <p className="text-theme-sm rw-dim whitespace-pre-line">{t(locale, "about.judge.body")}</p>
+            <h3 className="mt-4 text-theme-sm font-semibold rw-strong">{t(locale, "about.eval.title")}</h3>
+            <ul className="mt-2 list-disc space-y-2 pl-5 text-theme-sm rw-dim">
+              {EVALUATION.map((key) => (
+                <li key={key}>{t(locale, key)}</li>
+              ))}
+            </ul>
             <p className="mt-3 border-t rw-divider pt-3 text-theme-sm rw-dim">
               {t(locale, "about.ratingTeaser")}{" "}
               <Link href="/rating" className="font-medium rw-accent-ink hover:underline">

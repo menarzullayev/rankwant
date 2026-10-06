@@ -416,6 +416,16 @@ export const es: Record<MessageKey, string> = {
     "Lee dos enteros de input.txt y escribe la suma en output.txt (sin espacios ni líneas de más).",
   "about.sampleMissing":
     "Aún no hay un ejemplo para este lenguaje. Sigue el formato de E/S del problema.",
+  "about.eval.title":
+    "Cómo se comprueba una respuesta",
+  "about.eval.standard":
+    "Comprobación estándar: tu salida se compara con la respuesta esperada. Si solo difieren espacios o saltos de línea es PE; cualquier otra diferencia es WA.",
+  "about.eval.special":
+    "Comprobador propio: cuando un problema admite varias respuestas correctas, un programa escrito por el autor revisa la tuya. Se acepta cualquier respuesta que cumpla el enunciado.",
+  "about.eval.interactive":
+    "Problema interactivo: tu programa conversa con el programa del juez: escribe una pregunta y lee la respuesta. Vacía el búfer de salida (flush) tras cada escritura; de lo contrario el veredicto es IDLENESS.",
+  "about.eval.scorer":
+    "Problema con puntuación: cada prueba se califica de 0 a 100 y la nota final es la media. 100 es AC; menos de 100 pero más de cero es PARTIAL (el problema no cuenta como resuelto).",
   "about.judge.title": "Cómo funciona la evaluación",
   "about.judge.body":
     "Cada envío se compila y se ejecuta en un sandbox aislado contra todos los tests ocultos (modo ACM: se detiene en el primer test fallido). Solo se acepta si pasan todos los tests. Los límites de tiempo y memoria se aplican por test.",

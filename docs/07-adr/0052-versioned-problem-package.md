@@ -63,6 +63,8 @@ paket emas.
 - Barqaror kodlar: `STATEMENT_INCOMPLETE`, `TEST_GROUP_MISSING`,
   `VALIDATOR_NOT_VERIFIED`, `REFERENCE_FAILED`, `CHECKER_NOT_VERIFIED`,
   `LIMITS_NOT_CALIBRATED`, `REVIEW_REQUIRED`, `REVISION_NOT_FROZEN`.
+  2026-10-07 dan to'qqizinchisi: `EVALUATION_MODE_INVALID` — judge bajara
+  olmaydigan `io_mode` + `checker_type` birikmasi (`problems/evaluation.py`).
 
 ### Ma'lum chegaralar (hal qilinmagan)
 
