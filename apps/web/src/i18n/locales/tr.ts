@@ -2263,4 +2263,7 @@ export const tr: Record<MessageKey, string> = {
   "attempt.testsPassed": "{total} testten {passed} geçti",
   "attempt.toProblem": "Probleme git",
   "attempt.editResubmit": "Düzenle ve yeniden gönder",
+  "footer.resources": "Kaynaklar",
+  "footer.telegram": "Telegram kanalı",
+  "footer.opensNewTab": "(yeni sekmede açılır)",
 };

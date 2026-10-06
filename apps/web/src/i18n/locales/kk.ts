@@ -2264,4 +2264,7 @@ export const kk: Record<MessageKey, string> = {
   "attempt.testsPassed": "{total} тесттің {passed}-і өтті",
   "attempt.toProblem": "Есепке өту",
   "attempt.editResubmit": "Өңдеп, қайта жіберу",
+  "footer.resources": "Ресурстар",
+  "footer.telegram": "Telegram арнасы",
+  "footer.opensNewTab": "(жаңа қойындыда ашылады)",
 };

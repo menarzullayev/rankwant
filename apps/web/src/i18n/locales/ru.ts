@@ -2263,4 +2263,7 @@ export const ru: Record<MessageKey, string> = {
   "attempt.testsPassed": "Пройдено {passed} из {total}",
   "attempt.toProblem": "К задаче",
   "attempt.editResubmit": "Изменить и отправить снова",
+  "footer.resources": "Ресурсы",
+  "footer.telegram": "Telegram-канал",
+  "footer.opensNewTab": "(откроется в новой вкладке)",
 };

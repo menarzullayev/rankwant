@@ -2263,4 +2263,7 @@ export const es: Record<MessageKey, string> = {
   "attempt.testsPassed": "{passed} de {total} superadas",
   "attempt.toProblem": "Ir al problema",
   "attempt.editResubmit": "Editar y reenviar",
+  "footer.resources": "Recursos",
+  "footer.telegram": "Canal de Telegram",
+  "footer.opensNewTab": "(se abre en una pestaña nueva)",
 };

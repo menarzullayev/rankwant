@@ -2263,4 +2263,7 @@ export const kaa: Record<MessageKey, string> = {
   "attempt.testsPassed": "{passed} / {total} ótti",
   "attempt.toProblem": "Máselege ótiw",
   "attempt.editResubmit": "Ózgertip qayta jiberiw",
+  "footer.resources": "Derekler",
+  "footer.telegram": "Telegram kanalı",
+  "footer.opensNewTab": "(jańa aynada ashıladı)",
 };
