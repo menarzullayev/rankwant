@@ -635,6 +635,27 @@ class UserSession(CreatedModel):
         return f"{self.user_id}:{self.session_key[:6]}"
 
 
+class NavSeen(models.Model):
+    """When a user last opened a side-menu section (`core.nav_badges`).
+
+    One row per user and section — a watermark, not a row per entry read:
+    "new since you were last here" is a count of what was published after
+    `seen_at`. Written only when a section with such a badge is opened.
+    """
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="nav_seen")
+    section = models.CharField(max_length=24)
+    seen_at = models.DateTimeField()
+
+    class Meta:
+        constraints: ClassVar = [
+            models.UniqueConstraint(fields=["user", "section"], name="uniq_nav_seen"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.user_id}:{self.section}"
+
+
 class AnalyticsEvent(CreatedModel):
     """Funnel hodisasi — auth oqimini o'lchash uchun (qaror 17).
 

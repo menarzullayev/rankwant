@@ -2266,4 +2266,9 @@ export const kaa: Record<MessageKey, string> = {
   "footer.resources": "Derekler",
   "footer.telegram": "Telegram kanalı",
   "footer.opensNewTab": "(jańa aynada ashıladı)",
+  "nav.badge.todo": "{count} is kútip tur",
+  "nav.badge.unread": "{count} oqılmaǵan",
+  "nav.badge.new": "{count} jańa",
+  "nav.badge.live": "házir janlı",
+  "nav.badge.liveShort": "janlı",
 };

@@ -2266,4 +2266,9 @@ export const tr: Record<MessageKey, string> = {
   "footer.resources": "Kaynaklar",
   "footer.telegram": "Telegram kanalı",
   "footer.opensNewTab": "(yeni sekmede açılır)",
+  "nav.badge.todo": "{count} iş bekliyor",
+  "nav.badge.unread": "{count} okunmamış",
+  "nav.badge.new": "{count} yeni",
+  "nav.badge.live": "şu an canlı",
+  "nav.badge.liveShort": "canlı",
 };

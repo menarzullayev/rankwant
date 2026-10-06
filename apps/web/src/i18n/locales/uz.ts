@@ -2316,6 +2316,11 @@ export const uz = {
   "footer.resources": "Resurslar",
   "footer.telegram": "Telegram kanali",
   "footer.opensNewTab": "(yangi oynada ochiladi)",
+  "nav.badge.todo": "{count} ta ish kutyapti",
+  "nav.badge.unread": "{count} ta o'qilmagan",
+  "nav.badge.new": "{count} ta yangi",
+  "nav.badge.live": "hozir jonli",
+  "nav.badge.liveShort": "jonli",
 } as const;
 
 export type MessageKey = keyof typeof uz;

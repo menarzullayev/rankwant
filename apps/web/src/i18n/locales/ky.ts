@@ -2266,4 +2266,9 @@ export const ky: Record<MessageKey, string> = {
   "footer.resources": "Булактар",
   "footer.telegram": "Telegram каналы",
   "footer.opensNewTab": "(жаңы өтмөктө ачылат)",
+  "nav.badge.todo": "{count} иш күтүп турат",
+  "nav.badge.unread": "{count} окулбаган",
+  "nav.badge.new": "{count} жаңы",
+  "nav.badge.live": "азыр түз",
+  "nav.badge.liveShort": "түз",
 };

@@ -1,5 +1,6 @@
 /** Platform-wide: stats, search, notifications, updates and the public roadmap. */
 
+import type { components } from "./generated/schema";
 import type { UserTitle } from "@/lib/identity";
 
 import { deleteJson, getJson, postJson, type Paginated } from "./client";
@@ -52,7 +53,10 @@ export type QvantTop = {
   balance: number;
 };
 
-export type { Notification, NotificationSummary } from "@/lib/notifications/model";
+export type {
+  Notification,
+  NotificationSummary,
+} from "@/lib/notifications/model";
 
 /** Updates — platforma o'zgarishlari (changelog).
  *
@@ -141,11 +145,7 @@ export type UpdateUnread = { count: number; actionable: number };
  *  ikki manzil adashtiradi.
  */
 export type RoadmapStatus =
-  | "suggested"
-  | "planned"
-  | "in_progress"
-  | "released"
-  | "declined";
+  "suggested" | "planned" | "in_progress" | "released" | "declined";
 
 /** Kanban ustunlari tartibi — `apps/api/roadmap/models.py` `COLUMNS` bilan
  *  bir xil. `declined` ATAYLAB yo'q: u ro'yxatda bor, lekin ustun emas
@@ -204,6 +204,18 @@ export const fetchUpdateUnread = (query = "") =>
 
 export const fetchUpdateUnreadCount = () =>
   getJson<UpdateUnread>("/updates/unread-count/");
+
+/** One side-menu badge; a section with nothing to show is absent. */
+export type NavBadge = components["schemas"]["NavBadge"];
+export type NavBadges = components["schemas"]["NavBadges"];
+
+/** Signed-in users only (401 for a guest — see `NavBadgesContext`). */
+export const fetchNavBadges = () => getJson<NavBadges>("/me/nav-badges/");
+
+/** The section's list was opened: its "unread" / "new" badge starts over.
+ *  Answers with the fresh list. */
+export const markNavSeen = (section: string) =>
+  postJson<NavBadges>("/me/nav-badges/seen/", { section });
 
 /** O'qilgan deb belgilash. `ids` berilmasa — hammasi ("Hammasi o'qildi"). */
 export const markUpdatesRead = (ids?: number[]) =>

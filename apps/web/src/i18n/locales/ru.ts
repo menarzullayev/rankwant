@@ -2266,4 +2266,9 @@ export const ru: Record<MessageKey, string> = {
   "footer.resources": "Ресурсы",
   "footer.telegram": "Telegram-канал",
   "footer.opensNewTab": "(откроется в новой вкладке)",
+  "nav.badge.todo": "ждут действия: {count}",
+  "nav.badge.unread": "непрочитанных: {count}",
+  "nav.badge.new": "новых: {count}",
+  "nav.badge.live": "идёт сейчас",
+  "nav.badge.liveShort": "идёт",
 };

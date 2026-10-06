@@ -1671,6 +1671,53 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/nav-badges/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Yon menyu belgilari
+         * @description What the side menu marks for the signed-in user (`core.nav_badges`).
+         *
+         *     One request for every section: work waiting (`todo`), something
+         *     running now (`live`), entries published since the section was last
+         *     opened (`unread`, `new`). A section with nothing to show is absent.
+         */
+        get: operations["me_nav_badges_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/nav-badges/seen/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Yon menyu bo'limi ko'rildi
+         * @description The user opened a section: its `unread` / `new` badge starts over.
+         *
+         *     `todo` and `live` badges are not cleared by looking - they follow the
+         *     work and the clock - so naming one of those sections is a 400.
+         */
+        post: operations["me_nav_badges_seen_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/password/": {
         parameters: {
             query?: never;
@@ -6468,6 +6515,20 @@ export interface components {
          * @enum {string}
          */
         ModuleEnum: "problems" | "contests" | "arena" | "judge" | "ratings" | "qvant" | "profile" | "classroom" | "quizzes" | "content" | "design" | "core";
+        /** @description One side-menu badge. Sections with nothing to show are left out. */
+        NavBadge: {
+            section: string;
+            /** @description todo | live | unread | new */
+            kind: string;
+            count: number;
+        };
+        NavBadgeSeen: {
+            section: string;
+        };
+        /** @description `/me/nav-badges/` — what the side menu marks for this user. */
+        NavBadges: {
+            badges: components["schemas"]["NavBadge"][];
+        };
         Notification: {
             readonly id: number;
             kind: components["schemas"]["NotificationKindEnum"];
@@ -11971,6 +12032,50 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    me_nav_badges_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NavBadges"];
+                };
+            };
+        };
+    };
+    me_nav_badges_seen_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NavBadgeSeen"];
+                "application/x-www-form-urlencoded": components["schemas"]["NavBadgeSeen"];
+                "multipart/form-data": components["schemas"]["NavBadgeSeen"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NavBadges"];
+                };
             };
         };
     };

@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2213 strings.**
+**2218 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2234,3 +2234,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `footer.resources` | Resurslar | Derekler |  |
 | `footer.telegram` | Telegram kanali | Telegram kanalı |  |
 | `footer.opensNewTab` | (yangi oynada ochiladi) | (jańa aynada ashıladı) |  |
+| `nav.badge.todo` | {count} ta ish kutyapti | {count} is kútip tur |  |
+| `nav.badge.unread` | {count} ta o'qilmagan | {count} oqılmaǵan |  |
+| `nav.badge.new` | {count} ta yangi | {count} jańa |  |
+| `nav.badge.live` | hozir jonli | házir janlı |  |
+| `nav.badge.liveShort` | jonli | janlı |  |

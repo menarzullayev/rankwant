@@ -2267,4 +2267,9 @@ export const kk: Record<MessageKey, string> = {
   "footer.resources": "Ресурстар",
   "footer.telegram": "Telegram арнасы",
   "footer.opensNewTab": "(жаңа қойындыда ашылады)",
+  "nav.badge.todo": "{count} іс күтіп тұр",
+  "nav.badge.unread": "{count} оқылмаған",
+  "nav.badge.new": "{count} жаңа",
+  "nav.badge.live": "қазір тікелей",
+  "nav.badge.liveShort": "тікелей",
 };

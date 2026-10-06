@@ -2265,4 +2265,9 @@ export const en: Record<MessageKey, string> = {
   "footer.resources": "Resources",
   "footer.telegram": "Telegram channel",
   "footer.opensNewTab": "(opens in a new tab)",
+  "nav.badge.todo": "{count} waiting for you",
+  "nav.badge.unread": "{count} unread",
+  "nav.badge.new": "{count} new",
+  "nav.badge.live": "live now",
+  "nav.badge.liveShort": "live",
 };

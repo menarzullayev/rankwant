@@ -2263,4 +2263,9 @@ export const zh: Record<MessageKey, string> = {
   "footer.resources": "资源",
   "footer.telegram": "Telegram 频道",
   "footer.opensNewTab": "（在新标签页中打开）",
+  "nav.badge.todo": "{count} 项待处理",
+  "nav.badge.unread": "{count} 条未读",
+  "nav.badge.new": "{count} 个新内容",
+  "nav.badge.live": "正在进行",
+  "nav.badge.liveShort": "进行中",
 };
