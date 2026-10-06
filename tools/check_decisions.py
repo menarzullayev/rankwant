@@ -2326,6 +2326,34 @@ def side_menu_keeps_its_sections() -> str | None:
     return None
 
 
+def side_menu_badges_are_one_request() -> str | None:
+    """2026-10-06: yon menyu belgilari - bitta so'rov, to'rt tur.
+
+    «O'zgarishlar» soni har o'qilgan yozuvga bitta qator saqlaydi; shu usul
+    1 229 masala yoki har bo'limga yoyilsa jadval foydalanuvchilar soniga
+    ko'paytiriladi. Shuning uchun: bitta endpoint, har bo'lim o'z
+    hisoblagichini ro'yxatdan o'tkazadi, «yangi» turi bo'limga bitta vaqt
+    belgisini saqlaydi.
+    """
+    if 'autodiscover_modules("nav_badges")' not in read("apps/api/core/apps.py"):
+        return "core/apps.py: bo'limlarning `nav_badges.py` fayllari yuklanmaydi - belgilar bo'sh chiqadi"
+    if 'name="uniq_nav_seen"' not in read("apps/api/core/models.py"):
+        return "core/models.py: `NavSeen` bo'limga bitta qator emas - har yozuvga qator qaytdi"
+    if "floor = max(EPOCH, user.date_joined)" not in read("apps/api/core/nav_badges.py"):
+        return "core/nav_badges.py: boshlang'ich nuqta yo'q - eski hisob hamma narsani «yangi» deb ko'radi"
+    if read("apps/web/src/context/NavBadgesContext.tsx").count("if (!signedIn) return;") < 2:
+        return "NavBadgesContext.tsx: mehmon uchun ham so'rov ketadi (401 va keshlangan sahifada ortiqcha yuk)"
+    lib = read("apps/web/src/lib/nav-badges.ts")
+    start = lib.index("export const SEEN_ON_VISIT")
+    seen = lib[start : lib.index("]);", start)]
+    for section in ("duels", "classroom", "contests", "arena", "tournaments", "hackathons"):
+        if f'"{section}"' in seen:
+            return f"nav-badges.ts: `{section}` belgisi bo'limni ochish bilan o'chadi - u ish yoki holat, o'qilmagan emas"
+    if '{said && <span className="sr-only">{said}</span>}' not in read("apps/web/src/layout/AppSidebar.tsx"):
+        return "AppSidebar.tsx: belgi ekran o'quvchiga aytilmaydi (faqat son yoki nuqta)"
+    return None
+
+
 def scroll_is_one_vocabulary() -> str | None:
     """2026-10-06: scroll — bitta lug'at, bitta modul.
 
@@ -3134,6 +3162,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("urinishlar lentasi umumiy jadvalda", attempts_feed_is_the_shared_table),
     ("scroll bitta lug'atda", scroll_is_one_vocabulary),
     ("yon menyu bo'limlari ajralib turadi", side_menu_keeps_its_sections),
+    ("yon menyu belgilari bitta so'rovda", side_menu_badges_are_one_request),
     ("sanalar sayt zonasida", dates_are_written_in_the_site_zone),
     ("mehmon header'i har tilda sig'adi", guest_header_fits_every_locale),
     ("Nightly stendi production bilan mos", nightly_stack_matches_production),

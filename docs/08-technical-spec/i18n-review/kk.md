@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2213 strings.**
+**2218 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -2234,3 +2234,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `footer.resources` | Resurslar | Ресурстар |  |
 | `footer.telegram` | Telegram kanali | Telegram арнасы |  |
 | `footer.opensNewTab` | (yangi oynada ochiladi) | (жаңа қойындыда ашылады) |  |
+| `nav.badge.todo` | {count} ta ish kutyapti | {count} іс күтіп тұр |  |
+| `nav.badge.unread` | {count} ta o'qilmagan | {count} оқылмаған |  |
+| `nav.badge.new` | {count} ta yangi | {count} жаңа |  |
+| `nav.badge.live` | hozir jonli | қазір тікелей |  |
+| `nav.badge.liveShort` | jonli | тікелей |  |

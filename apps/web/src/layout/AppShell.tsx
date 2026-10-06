@@ -4,10 +4,7 @@ import { useEffect } from "react";
 
 import { usePathname } from "next/navigation";
 
-import {
-  CustomizerProvider,
-  useCustomizer,
-} from "@/context/CustomizerContext";
+import { CustomizerProvider, useCustomizer } from "@/context/CustomizerContext";
 import { SidebarProvider, useSidebar } from "@/context/SidebarContext";
 import { clampNavMode, clampNavShape } from "./nav-config";
 import { PrefsSync } from "@/context/PrefsSync";
@@ -16,6 +13,7 @@ import { StyleProvider } from "@/context/StyleContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { NotificationsProvider } from "@/context/NotificationsContext";
 import { UpdatesProvider } from "@/context/UpdatesContext";
+import { NavBadgesProvider } from "@/context/NavBadgesContext";
 import type { AppearancePrefs, Me } from "@/lib/api";
 import { OverlayProvider } from "@/components/overlay/OverlayHost";
 import { startChiziq } from "@/lib/chiziq";
@@ -143,7 +141,9 @@ function Shell({ children }: { children: React.ReactNode }) {
             odam o'qish uchun tor/keng qilib o'zgartira olmasdi. */}
         <main
           id="main"
-          className={full ? undefined : "rw-content mx-auto w-full flex-1 p-4 md:p-6"}
+          className={
+            full ? undefined : "rw-content mx-auto w-full flex-1 p-4 md:p-6"
+          }
         >
           {children}
         </main>
@@ -188,11 +188,13 @@ export default function AppShell({
                   Kit fayli qoladi — clipboard toast shartnomasi uchun. */}
               <PrefsSync />
               <UpdatesProvider>
-                <NotificationsProvider>
-                  <SidebarProvider>
-                    <Shell>{children}</Shell>
-                  </SidebarProvider>
-                </NotificationsProvider>
+                <NavBadgesProvider>
+                  <NotificationsProvider>
+                    <SidebarProvider>
+                      <Shell>{children}</Shell>
+                    </SidebarProvider>
+                  </NotificationsProvider>
+                </NavBadgesProvider>
               </UpdatesProvider>
               {/* Suzuvchi tugma va panel — `Shell` dan tashqarida, chunki
                   ular sahifa tuzilishiga bog'liq emas va `bare` sahifalarda

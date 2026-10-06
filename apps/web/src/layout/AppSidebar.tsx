@@ -6,11 +6,20 @@ import { IntentLink } from "@/components/ui/IntentLink";
 import { usePathname } from "next/navigation";
 
 import { useSidebar } from "@/context/SidebarContext";
-import { useUpdates } from "@/context/UpdatesContext";
+import { useNavBadges } from "@/context/NavBadgesContext";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { t } from "@/i18n/messages";
+import { fill, t } from "@/i18n/messages";
+import { badgeText } from "@/lib/nav-badges";
 import { Icon } from "@/components/ui/Icon";
 import { NAV_GROUPS } from "./nav";
+
+/** The sentence behind each kind of badge (`{count}` is filled in). */
+const BADGE_SAYS = {
+  todo: "nav.badge.todo",
+  unread: "nav.badge.unread",
+  new: "nav.badge.new",
+  live: "nav.badge.live",
+} as const;
 
 export default function AppSidebar() {
   const {
@@ -21,7 +30,7 @@ export default function AppSidebar() {
     closeMobileSidebar,
     toggleSidebar,
   } = useSidebar();
-  const { count } = useUpdates();
+  const badges = useNavBadges();
   const pathname = usePathname();
   const locale = useLocale();
 
@@ -130,18 +139,26 @@ export default function AppSidebar() {
               {group.items.map(({ href, key, iconKey }) => {
                 const active =
                   pathname === href || pathname.startsWith(`${href}/`);
-                // O'qilmagan o'zgarishlar chipi (qaror 6). Son
-                // `UpdatesProvider` dan keladi — header belgisi ham o'sha
-                // holatni ko'rsatadi, ya'ni ikki joyda ikki xil raqam
-                // chiqmaydi.
-                const unread = href === "/updates" ? count : 0;
+                // The badge (`NavBadgesContext`): work waiting, something
+                // live, or entries published since the last visit. The
+                // changelog's count comes through the same map, so the
+                // header bell and this chip still show one number.
+                const badge = badges[href];
+                const label = t(locale, key);
+                // What the chip means, in words: the chip itself is a
+                // number or a dot, which says nothing to a screen reader.
+                const said = badge
+                  ? fill(t(locale, BADGE_SAYS[badge.kind]), {
+                      count: badge.count,
+                    })
+                  : null;
                 return (
                   <li key={href}>
                     <IntentLink
                       href={href}
                       onClick={closeMobileSidebar}
                       aria-current={active ? "page" : undefined}
-                      title={t(locale, key)}
+                      title={said ? `${label} — ${said}` : label}
                       className={`menu-item group relative ${
                         active ? "menu-item-active" : "menu-item-inactive"
                       } ${wide ? "" : "justify-center"}`}
@@ -154,18 +171,23 @@ export default function AppSidebar() {
                             : "menu-item-icon-inactive"
                         }`}
                       />
-                      {wide && (
-                        <span className="truncate">{t(locale, key)}</span>
+                      {wide && <span className="truncate">{label}</span>}
+                      {badge && (
+                        // The collapsed rail has no room for a number:
+                        // the same badge becomes a corner dot (CSS).
+                        <span
+                          className="rw-nav-badge"
+                          data-kind={badge.kind}
+                          data-rail={wide ? undefined : ""}
+                          aria-hidden="true"
+                        >
+                          {wide &&
+                            (badge.kind === "live"
+                              ? t(locale, "nav.badge.liveShort")
+                              : badgeText(badge.count))}
+                        </span>
                       )}
-                      {unread > 0 &&
-                        (wide ? (
-                          <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-theme-2xs font-semibold rw-accent-bg">
-                            {unread > 99 ? "99+" : unread}
-                          </span>
-                        ) : (
-                          // Yig'ilgan panelda matn yo'q — nuqta yetarli.
-                          <span className="absolute top-1.5 right-1.5 size-2 rounded-full rw-accent-bg" />
-                        ))}
+                      {said && <span className="sr-only">{said}</span>}
                     </IntentLink>
                   </li>
                 );

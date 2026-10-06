@@ -3892,6 +3892,56 @@ def neg_decisions_side_menu_sections_collapse() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_nav_badges_not_discovered() -> tuple[bool, str]:
+    """The apps' badge modules are never imported: every badge is silently gone."""
+    return _decision_broken(
+        "apps/api/core/apps.py",
+        'autodiscover_modules("nav_badges")',
+        "pass",
+        "belgilar bo'sh chiqadi",
+    )
+
+
+def neg_decisions_nav_badges_no_floor() -> tuple[bool, str]:
+    """An account from last year sees everything ever published as new."""
+    return _decision_broken(
+        "apps/api/core/nav_badges.py",
+        "floor = max(EPOCH, user.date_joined)",
+        "floor = user.date_joined",
+        "boshlang'ich nuqta yo'q",
+    )
+
+
+def neg_decisions_nav_badges_asked_for_a_guest() -> tuple[bool, str]:
+    """The provider requests badges before it knows there is a user."""
+    return _decision_broken(
+        "apps/web/src/context/NavBadgesContext.tsx",
+        "    if (!signedIn) return;\n    const section = sectionOf(pathname);",
+        "    const section = sectionOf(pathname);",
+        "mehmon uchun ham so'rov ketadi",
+    )
+
+
+def neg_decisions_nav_badge_todo_cleared_by_a_visit() -> tuple[bool, str]:
+    """An invitation stops being marked because its page was opened."""
+    return _decision_broken(
+        "apps/web/src/lib/nav-badges.ts",
+        'new Set([\n  "blog",\n',
+        'new Set([\n  "blog",\n  "duels",\n',
+        "`duels` belgisi bo'limni ochish bilan o'chadi",
+    )
+
+
+def neg_decisions_nav_badge_not_spoken() -> tuple[bool, str]:
+    """The chip is a number or a dot and nothing says what it means."""
+    return _decision_broken(
+        "apps/web/src/layout/AppSidebar.tsx",
+        '{said && <span className="sr-only">{said}</span>}',
+        "",
+        "belgi ekran o'quvchiga aytilmaydi",
+    )
+
+
 def neg_decisions_dates_lose_their_zone() -> tuple[bool, str]:
     """The date helpers format in the zone of whatever machine renders."""
     return _decision_broken(
@@ -5491,6 +5541,11 @@ _DECISIONS_SANDBOX_FILES = (
     "tools/ci.Dockerfile.dockerignore",
     # Attempt dates (2026-10-06).
     "apps/web/src/features/submissions/components/AttemptTable.tsx",
+    # Side-menu badges (2026-10-06).
+    "apps/api/core/nav_badges.py",
+    "apps/api/core/apps.py",
+    "apps/web/src/context/NavBadgesContext.tsx",
+    "apps/web/src/lib/nav-badges.ts",
     # Scroll (2026-10-06).
     "apps/web/src/components/ui/Table.tsx",
     "apps/web/src/features/submissions/components/AttemptFilters.tsx",
@@ -8875,6 +8930,11 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("404 uslubsiz chiqsa tutilsin", neg_decisions_not_found_unstyled),
             ("yon menyu moslashmay qolsa tutilsin", neg_decisions_side_menu_stops_adapting),
             ("yon menyu bo'limlari yopishsa tutilsin", neg_decisions_side_menu_sections_collapse),
+            ("belgi modullari yuklanmasa tutilsin", neg_decisions_nav_badges_not_discovered),
+            ("belgilarda boshlang'ich nuqta yo'qolsa tutilsin", neg_decisions_nav_badges_no_floor),
+            ("mehmonga belgi so'ralsa tutilsin", neg_decisions_nav_badges_asked_for_a_guest),
+            ("ish belgisi tashrif bilan o'chsa tutilsin", neg_decisions_nav_badge_todo_cleared_by_a_visit),
+            ("belgi aytilmasa tutilsin", neg_decisions_nav_badge_not_spoken),
             ("sana zonasiz qolsa tutilsin", neg_decisions_dates_lose_their_zone),
             ("bitta sana yordamchisi zonasiz qolsa tutilsin", neg_decisions_one_date_helper_skips_the_zone),
             ("urinish sanasi til bo'yicha formatlansa tutilsin", neg_decisions_attempt_date_in_viewer_locale),

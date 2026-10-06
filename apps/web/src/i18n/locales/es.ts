@@ -2266,4 +2266,9 @@ export const es: Record<MessageKey, string> = {
   "footer.resources": "Recursos",
   "footer.telegram": "Canal de Telegram",
   "footer.opensNewTab": "(se abre en una pestaña nueva)",
+  "nav.badge.todo": "{count} pendientes",
+  "nav.badge.unread": "{count} sin leer",
+  "nav.badge.new": "{count} nuevos",
+  "nav.badge.live": "en vivo ahora",
+  "nav.badge.liveShort": "en vivo",
 };

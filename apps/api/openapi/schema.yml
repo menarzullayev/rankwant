@@ -2684,6 +2684,61 @@ paths:
       responses:
         '200':
           description: No response body
+  /api/v1/me/nav-badges/:
+    get:
+      operationId: me_nav_badges_retrieve
+      description: |-
+        What the side menu marks for the signed-in user (`core.nav_badges`).
+
+        One request for every section: work waiting (`todo`), something
+        running now (`live`), entries published since the section was last
+        opened (`unread`, `new`). A section with nothing to show is absent.
+      summary: Yon menyu belgilari
+      tags:
+      - me
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NavBadges'
+          description: ''
+  /api/v1/me/nav-badges/seen/:
+    post:
+      operationId: me_nav_badges_seen_create
+      description: |-
+        The user opened a section: its `unread` / `new` badge starts over.
+
+        `todo` and `live` badges are not cleared by looking - they follow the
+        work and the clock - so naming one of those sections is a 400.
+      summary: Yon menyu bo'limi ko'rildi
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NavBadgeSeen'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NavBadgeSeen'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NavBadgeSeen'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NavBadges'
+          description: ''
   /api/v1/me/password/:
     post:
       operationId: me_password_create
@@ -14148,6 +14203,39 @@ components:
         * `content` - Kontent
         * `design` - Dizayn
         * `core` - Umumiy
+    NavBadge:
+      type: object
+      description: One side-menu badge. Sections with nothing to show are left out.
+      properties:
+        section:
+          type: string
+        kind:
+          type: string
+          description: todo | live | unread | new
+        count:
+          type: integer
+      required:
+      - count
+      - kind
+      - section
+    NavBadgeSeen:
+      type: object
+      properties:
+        section:
+          type: string
+          maxLength: 24
+      required:
+      - section
+    NavBadges:
+      type: object
+      description: '`/me/nav-badges/` — what the side menu marks for this user.'
+      properties:
+        badges:
+          type: array
+          items:
+            $ref: '#/components/schemas/NavBadge'
+      required:
+      - badges
     Notification:
       type: object
       properties:

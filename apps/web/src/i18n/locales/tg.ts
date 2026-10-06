@@ -2267,4 +2267,9 @@ export const tg: Record<MessageKey, string> = {
   "footer.resources": "Захираҳо",
   "footer.telegram": "Канали Telegram",
   "footer.opensNewTab": "(дар равзанаи нав кушода мешавад)",
+  "nav.badge.todo": "{count} кор интизор аст",
+  "nav.badge.unread": "{count} нохонда",
+  "nav.badge.new": "{count} нав",
+  "nav.badge.live": "ҳозир зинда",
+  "nav.badge.liveShort": "зинда",
 };

@@ -17,6 +17,8 @@ class CoreConfig(AppConfig):
         from core import schema_extensions  # noqa: F401
 
         autodiscover_modules("search")
+        # The same for side-menu badges (`core.nav_badges`).
+        autodiscover_modules("nav_badges")
 
         # Guruh permission'lari migrate TUGAGACH paydo bo'ladi
         # (`auth_permission` post_migrate'da yaratiladi), shuning uchun
