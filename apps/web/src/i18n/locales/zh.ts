@@ -415,6 +415,16 @@ export const zh: Record<MessageKey, string> = {
     "从 input.txt 读入两个整数，将它们的和写入 output.txt（不要有多余的空格或换行）。",
   "about.sampleMissing":
     "该语言暂无示例代码。请遵循题目的输入输出格式。",
+  "about.eval.title":
+    "答案如何评判",
+  "about.eval.standard":
+    "标准比对：你的输出与标准答案逐项比较。仅空格或换行不同为 PE，其他不同为 WA。",
+  "about.eval.special":
+    "特殊评测器：当题目有多个正确答案时，由出题人编写的程序检查你的答案。任何满足题意的答案都会被接受。",
+  "about.eval.interactive":
+    "交互题：你的程序与评测程序对话——写出询问并读取回复。每次输出后请刷新缓冲区（flush），否则结果为 IDLENESS。",
+  "about.eval.scorer":
+    "计分题：每个测试点按 0 到 100 评分，最终得分为平均值。100 分为 AC；低于 100 但大于零为 PARTIAL（不算通过该题）。",
   "about.judge.title": "评测方式",
   "about.judge.body":
     "每次提交都会在隔离的沙箱中编译，并在全部隐藏测试点上运行（ACM 模式：遇到第一个未通过的测试点即停止）。只有通过所有测试点才算通过。时间和内存限制按每个测试点分别计算。",

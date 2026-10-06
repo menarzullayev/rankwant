@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -91,8 +92,28 @@ func runInteractive(ctx context.Context, work string, job *Job,
 		_ = subToInt.Close() // submission tugadi — interactor EOF ko'rsin
 	}()
 
-	subErrRun := sub.Wait()
-	itErrRun := interactor.Wait()
+	// Which side stopped first decides who is to blame (see
+	// `interactiveVerdict`), so the two are awaited side by side.
+	subDone := make(chan error, 1)
+	itDone := make(chan error, 1)
+	go func() { subDone <- sub.Wait() }()
+	go func() { itDone <- interactor.Wait() }()
+	var subErrRun, itErrRun error
+	interactorFirst := false
+	select {
+	case subErrRun = <-subDone:
+		itErrRun = <-itDone
+	case itErrRun = <-itDone:
+		interactorFirst = true
+		if itErrRun != nil {
+			// The dialogue is over and lost. The solution does not know:
+			// its output goes to this process, not to the interactor, so
+			// nothing tells it to stop — and once it has written more than
+			// a pipe holds it blocks until the wall clock runs out.
+			cancel()
+		}
+		subErrRun = <-subDone
+	}
 	wall := time.Since(start).Milliseconds()
 
 	cpuUsec := cg.readInt("cpu.stat", "usage_usec")
@@ -104,19 +125,39 @@ func runInteractive(ctx context.Context, work string, job *Job,
 		PeakKB: peak / 1024,
 	}
 
+	timedOut := errors.Is(runCtx.Err(), context.DeadlineExceeded)
+	return interactiveVerdict(timedOut, outcome.CPUMs, int64(job.Limits.TimeMS),
+		subErrRun, itErrRun, interactorFirst), outcome, nil
+}
+
+// interactiveVerdict — the verdict of one dialogue, from how its two sides ended.
+//
+// The order matters and so does who stopped first. A rejected dialogue is
+// a wrong answer whatever became of the solution afterwards: it was
+// stopped by the judge (see the `cancel()` above) or ran on into the end
+// of its input. Until 2026-10-07 the solution was left running, and one
+// that kept writing after being rejected filled its pipe and was reported
+// as IDLENESS five seconds later. A solution that dies on its own, before
+// the interactor has said anything, is still a runtime error.
+func interactiveVerdict(timedOut bool, cpuMs, limitMs int64, subErr, itErr error,
+	interactorFirst bool) string {
+
 	switch {
-	case runCtx.Err() != nil && outcome.CPUMs*4 < int64(job.Limits.TimeMS):
-		// Wall tugadi, CPU sarflanmadi → ikkalasi bir-birini kutgan.
-		return VIdle, outcome, nil
-	case outcome.CPUMs > int64(job.Limits.TimeMS):
-		return VTLE, outcome, nil
-	case subErrRun != nil && !strings.Contains(subErrRun.Error(), "exit status"):
-		return VIE, outcome, nil
-	case subErrRun != nil:
-		return VRE, outcome, nil
-	case itErrRun == nil:
-		return VAC, outcome, nil
+	case timedOut && cpuMs*4 < limitMs:
+		// The wall clock ran out with the CPU idle: each side waited for
+		// the other. The usual cause is a question that was never flushed.
+		return VIdle
+	case cpuMs > limitMs:
+		return VTLE
+	case interactorFirst && itErr != nil:
+		return VWA
+	case subErr != nil && !strings.Contains(subErr.Error(), "exit status"):
+		return VIE
+	case subErr != nil:
+		return VRE
+	case itErr == nil:
+		return VAC
 	default:
-		return VWA, outcome, nil
+		return VWA
 	}
 }

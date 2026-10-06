@@ -87,6 +87,11 @@ class AttemptDetailSerializer(AttemptSerializer):
     tests_total = serializers.SerializerMethodField()
 
     def get_tests_total(self, obj: Attempt) -> int:
+        # An interactive problem is judged as one dialogue: its tests are
+        # not run, so there is no "N of M passed" to show. Without this an
+        # accepted attempt read "0 of 3 passed" (measured 2026-10-07).
+        if obj.problem.checker_type == "interactive":
+            return 0
         return obj.problem.tests.count()
 
     class Meta(AttemptSerializer.Meta):

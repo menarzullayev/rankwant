@@ -137,13 +137,14 @@ class TestReleaseChecklist:
     def test_all_gates_are_reported(self) -> None:
         problem = _problem("rel-all", 7105)
         report = release.release_report(problem)
-        assert len(report) == 8
+        assert len(report) == 9
         assert {g.code for g in report} == {
             release.STATEMENT_INCOMPLETE,
             release.TEST_GROUP_MISSING,
             release.VALIDATOR_NOT_VERIFIED,
             release.REFERENCE_FAILED,
             release.CHECKER_NOT_VERIFIED,
+            release.EVALUATION_MODE_INVALID,
             release.LIMITS_NOT_CALIBRATED,
             release.REVIEW_REQUIRED,
             release.REVISION_NOT_FROZEN,

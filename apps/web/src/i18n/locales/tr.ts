@@ -416,6 +416,16 @@ export const tr: Record<MessageKey, string> = {
     "input.txt dosyasından iki tam sayı okuyun ve toplamı output.txt dosyasına yazın (fazladan boşluk veya satır olmadan).",
   "about.sampleMissing":
     "Bu dil için henüz örnek kod yok. Problemin girdi/çıktı biçimine uyun.",
+  "about.eval.title":
+    "Cevap nasıl denetlenir",
+  "about.eval.standard":
+    "Standart denetim: çıktınız beklenen cevapla karşılaştırılır. Fark yalnızca boşluk veya satır sonundaysa PE, başka bir farkta WA verilir.",
+  "about.eval.special":
+    "Özel denetleyici: birden fazla doğru cevabı olabilen problemde cevabınızı yazarın yazdığı program denetler. Koşula uyan her cevap kabul edilir.",
+  "about.eval.interactive":
+    "Etkileşimli problem: programınız hakem programıyla konuşur — soru yazar, cevabını okur. Her yazmadan sonra çıktı tamponunu boşaltın (flush), yoksa karar IDLENESS olur.",
+  "about.eval.scorer":
+    "Puanlı problem: her test 0 ile 100 arasında değerlendirilir, sonuç bunların ortalamasıdır. 100 puan AC; 100'den az ama sıfırdan büyük puan PARTIAL olur (problem çözülmüş sayılmaz).",
   "about.judge.title": "Değerlendirme nasıl çalışır",
   "about.judge.body":
     "Her gönderim yalıtılmış bir korumalı ortamda (sandbox) derlenir ve tüm gizli testlerde çalıştırılır (ACM modu: ilk başarısız testte durur). Yalnızca her test geçilirse kabul edilir. Süre ve bellek sınırları her test için ayrı uygulanır.",

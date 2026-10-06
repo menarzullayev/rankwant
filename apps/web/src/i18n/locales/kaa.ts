@@ -416,6 +416,16 @@ export const kaa: Record<MessageKey, string> = {
     "input.txt faylınan eki pútin sandı oqıń hám qosındını output.txt faylına jazıń (artıqsha bos orın yamasa qatarsız).",
   "about.sampleMissing":
     "Bul til ushın úlgi kod ele joq. Máseledegi kirgiziw/shıǵarıw formatına ámel etiń.",
+  "about.eval.title":
+    "Juwap qalay tekseriledi",
+  "about.eval.standard":
+    "Ápiwayı tekseriw: shıǵısıńız kútilgen juwap penen salıstırıladı. Ayırma tek bos orın yamasa qatar bóliniwinde bolsa — PE, basqa ayırmada — WA.",
+  "about.eval.special":
+    "Arnawlı tekseriwshi: durıs juwap bir neshe bolıwı múmkin máselede juwabıńızdı avtor jazǵan programma tekseredi. Shártke sáykes hár qanday juwap qabıl etiledi.",
+  "about.eval.interactive":
+    "Interaktiv másele: programmańız tóreshi programması menen sóylesedi — soraw jazadı, juwabın oqıydı. Hár jazıwdan keyin shıǵıs buferin bosatıń (flush), bolmasa húkim IDLENESS boladı.",
+  "about.eval.scorer":
+    "Ballı másele: hár test 0 den 100 ge shekem bahalanadı, juwmaqlawshı ball — olardıń ortashası. 100 ball — AC; 100 den kem, biraq nolden úlken — PARTIAL (másele sheshilgen dep esaplanbaydı).",
   "about.judge.title": "Tekseriw qalay isleydi",
   "about.judge.body":
     "Hár bir jiberilgen sheshim izolyaciyalanǵan sandbox ishinde kompilyaciyalanadı hám barlıq jasırın testlerde iske túsiriledi (ACM rejimi: birinshi ótpegen testte toqtaydı). Sheshim tek barlıq testler ótkende ǵana qabıl etiledi. Waqıt hám yad shekleri hár bir test ushın bólek qollanıladı.",

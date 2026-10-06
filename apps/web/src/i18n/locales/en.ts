@@ -417,6 +417,16 @@ export const en: Record<MessageKey, string> = {
     "Read two integers from input.txt and write the sum to output.txt (no extra spaces or lines).",
   "about.sampleMissing":
     "No sample snippet for this language yet. Follow the problem's I/O format.",
+  "about.eval.title":
+    "How an answer is checked",
+  "about.eval.standard":
+    "Standard check: your output is compared with the expected answer. A difference only in spaces or line breaks is PE, any other difference is WA.",
+  "about.eval.special":
+    "Custom checker: when a problem has more than one correct answer, a program written by the author checks yours. Any answer that satisfies the statement is accepted.",
+  "about.eval.interactive":
+    "Interactive problem: your program talks to the judge's program — it writes a question and reads the reply. Flush the output after every write, otherwise the verdict is IDLENESS.",
+  "about.eval.scorer":
+    "Scored problem: every test is graded from 0 to 100 and the final score is their mean. 100 is AC; less than 100 but more than zero is PARTIAL (the problem does not count as solved).",
   "about.judge.title": "How judging works",
   "about.judge.body":
     "Each submission is compiled and run in an isolated sandbox against all hidden tests (ACM mode: stop at the first failing test). Accepted only if every test passes. Time and memory limits apply per test.",

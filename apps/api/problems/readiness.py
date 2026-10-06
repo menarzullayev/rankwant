@@ -140,6 +140,14 @@ def requirement_error(problem: Problem, target: str) -> str | None:
     needs_reference = {Readiness.REF_SOLUTION_VERIFIED, Readiness.VALIDATED}
     if target in needs_tests and not has_hidden_test(problem):
         return "S1: the problem needs at least one hidden (non-sample) test"
+    if target in needs_checker:
+        # S2 is "this problem can be graded at all": a complete checker is
+        # one half, a pair of modes the judge implements is the other.
+        from problems.evaluation import evaluation_error
+
+        invalid = evaluation_error(problem)
+        if invalid:
+            return f"S2: {invalid}"
     if target in needs_checker and not checker_ready(problem):
         return (
             f"S2: checker type '{problem.checker_type}' is incomplete — "

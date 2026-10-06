@@ -2425,6 +2425,34 @@ def scroll_is_one_vocabulary() -> str | None:
     return None
 
 
+def evaluation_paths_are_proven() -> str | None:
+    """2026-10-07: special checker, interactive va scorer haqiqiy judge'da isbotlangan.
+
+    O'lchandi (haqiqiy stack, 12 yuborish): eski judge uchtasini noto'g'ri
+    baholardi - boshqacha formatlangan to'g'ri javob `PE` (checker
+    chaqirilmasdi), scorer'da 70 va 25 ball `AC`. Bu yo'llarni unit testlar
+    ko'rmaydi: ular sandbox, checker jarayoni va pipe'larni almashtiradi.
+    """
+    judge = read("services/judge-go/judge.go")
+    if "	return v == VAC || v == VWA || v == VPE\n" not in judge:
+        return "judge.go: `PE` dastlabki verdikti checker'ga yetmaydi - boshqacha formatlangan to'g'ri javob rad etiladi"
+    if "		worst = scorerVerdict(worst, res.Score)\n" not in judge:
+        return "judge.go: scorer balli verdiktga aylanmaydi - 100 dan kam ball `AC` bo'lib qoladi"
+    if "			cancel()\n" not in read("services/judge-go/interactive.go"):
+        return "interactive.go: rad etilgan yechim to'xtatilmaydi - `WA` o'rniga `IDLENESS`"
+    if "    evaluation_gate,\n" not in read("apps/api/problems/release.py"):
+        return "release.py: tekshiruv turi darvozasi nashr zanjirida yo'q"
+    if "evaluation.combination_error(io_mode, checker_type)" not in read("apps/api/problems/staff_serializers.py"):
+        return "staff_serializers.py: yaroqsiz `io_mode` + `checker_type` birikmasi saqlashda rad etilmaydi"
+    nightly = read(".github/workflows/nightly.yml")
+    if (
+        "            python manage.py seed_reference_problems\n" not in nightly
+        or "            --profile evaluation run --rm evaluation\n" not in nightly
+    ):
+        return "nightly.yml: tekshiruv yo'llari haqiqiy judge'da yurmaydi (`evaluation` profili)"
+    return None
+
+
 def dates_are_written_in_the_site_zone() -> str | None:
     """2026-10-06: sana yordamchilari standart holatda sayt zonasida yozadi.
 
@@ -3218,6 +3246,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("yon menyu bo'limlari ajralib turadi", side_menu_keeps_its_sections),
     ("yon menyu belgilari bitta so'rovda", side_menu_badges_are_one_request),
     ("sanalar sayt zonasida", dates_are_written_in_the_site_zone),
+    ("tekshiruv yo'llari haqiqiy judge'da isbotlangan", evaluation_paths_are_proven),
     ("mehmon header'i har tilda sig'adi", guest_header_fits_every_locale),
     ("Nightly stendi production bilan mos", nightly_stack_matches_production),
     ("sozlagich: tez qator birinchi", customizer_quick_row_first),

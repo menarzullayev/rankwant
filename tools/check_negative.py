@@ -4042,6 +4042,66 @@ def neg_decisions_nav_badge_not_spoken() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_checker_never_sees_a_format_difference() -> tuple[bool, str]:
+    """A `PE` pre-verdict stops before the special checker again."""
+    return _decision_broken(
+        "services/judge-go/judge.go",
+        "	return v == VAC || v == VWA || v == VPE\n",
+        "	return v == VAC || v == VWA\n",
+        "`PE` dastlabki verdikti checker'ga yetmaydi",
+    )
+
+
+def neg_decisions_scorer_score_is_not_a_verdict() -> tuple[bool, str]:
+    """A scorer solution below 100 is accepted again."""
+    return _decision_broken(
+        "services/judge-go/judge.go",
+        "		worst = scorerVerdict(worst, res.Score)\n",
+        "",
+        "scorer balli verdiktga aylanmaydi",
+    )
+
+
+def neg_decisions_rejected_solution_left_running() -> tuple[bool, str]:
+    """The judge no longer stops a solution its interactor rejected."""
+    return _decision_broken(
+        "services/judge-go/interactive.go",
+        "			cancel()\n",
+        "",
+        "rad etilgan yechim to'xtatilmaydi",
+    )
+
+
+def neg_decisions_evaluation_gate_dropped() -> tuple[bool, str]:
+    """The release pipeline stops checking the evaluation mode."""
+    return _decision_broken(
+        "apps/api/problems/release.py",
+        "    evaluation_gate,\n",
+        "",
+        "tekshiruv turi darvozasi nashr zanjirida yo'q",
+    )
+
+
+def neg_decisions_invalid_combination_can_be_saved() -> tuple[bool, str]:
+    """The staff API accepts a checker on a file-I/O problem again."""
+    return _decision_broken(
+        "apps/api/problems/staff_serializers.py",
+        "evaluation.combination_error(io_mode, checker_type)",
+        "None",
+        "saqlashda rad etilmaydi",
+    )
+
+
+def neg_decisions_evaluation_paths_leave_nightly() -> tuple[bool, str]:
+    """The reference problems are no longer judged for real."""
+    return _decision_broken(
+        ".github/workflows/nightly.yml",
+        "            --profile evaluation run --rm evaluation\n",
+        "            --profile latency run --rm latency\n",
+        "tekshiruv yo'llari haqiqiy judge'da yurmaydi",
+    )
+
+
 def neg_decisions_dates_lose_their_zone() -> tuple[bool, str]:
     """The date helpers format in the zone of whatever machine renders."""
     return _decision_broken(
@@ -5749,6 +5809,10 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/features/about/components/GuideSection.tsx",
     "apps/web/src/features/about/sections.ts",
     "apps/web/src/app/(site)/about/page.tsx",
+    "services/judge-go/judge.go",
+    "services/judge-go/interactive.go",
+    "apps/api/problems/release.py",
+    "apps/api/problems/staff_serializers.py",
 )
 
 
@@ -9040,6 +9104,12 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("tab «meniki»ni sessiyasiz so'rasa tutilsin", neg_decisions_attempts_tab_mine_without_session),
             ("mehmonga hammaning urinishi chiqsa tutilsin", neg_decisions_attempts_mine_for_a_guest),
             ("mehmon oqimga ulansa tutilsin", neg_decisions_attempts_guest_opens_the_stream),
+            ("checker format farqini ko'rmasa tutilsin", neg_decisions_checker_never_sees_a_format_difference),
+            ("scorer balli verdikt bo'lmasa tutilsin", neg_decisions_scorer_score_is_not_a_verdict),
+            ("rad etilgan yechim to'xtatilmasa tutilsin", neg_decisions_rejected_solution_left_running),
+            ("tekshiruv turi darvozasi tushsa tutilsin", neg_decisions_evaluation_gate_dropped),
+            ("yaroqsiz birikma saqlansa tutilsin", neg_decisions_invalid_combination_can_be_saved),
+            ("tekshiruv yo'llari Nightly'dan chiqsa tutilsin", neg_decisions_evaluation_paths_leave_nightly),
             ("scroll tekshiruvi CI'dan uzilsa tutilsin", neg_decisions_scroll_gate_unwired),
             ("jadval klaviaturada surilmasa tutilsin", neg_decisions_table_not_keyboard_scrollable),
             ("filtr qatori yopishmasa tutilsin", neg_decisions_attempt_filters_not_sticky),

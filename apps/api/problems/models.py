@@ -357,6 +357,14 @@ class Problem(TimeStampedModel):
         if self.difficulty % DIFFICULTY_STEP:
             raise ValidationError({"difficulty": f"Value must be a multiple of {DIFFICULTY_STEP}"})
 
+        # The Django admin can set `io_mode`; the staff API cannot. Both
+        # must refuse a pair of modes the judge does not implement.
+        from problems.evaluation import combination_error
+
+        invalid = combination_error(self.io_mode, self.checker_type)
+        if invalid:
+            raise ValidationError({"checker_type": invalid})
+
         # ADR 0049 — R10: readiness moves one step at a time, and every step
         # has a condition (S1/S2/S3). The previous value comes from the
         # DATABASE: `full_clean()` sees the in-memory target, not where the

@@ -180,6 +180,29 @@ Bake-off'da ishlatiladigan qism (to'liq 20 ta: [08](../../docs/08-technical-spec
 dastur (`RE_SIGNAL`) va o'zi nolga teng bo'lmagan kod bilan chiqqan
 dastur (`RE_EXIT`) ajratildi (DMOJ modeli).
 
+## Tekshiruv turlari — verdikt qayerdan keladi
+
+`checker.type` to'rtta qiymatdan biri. Har biri uchun haqiqiy masala va
+kutilgan verdiktlar jadvali bor (`apps/api/problems/reference_problems.py`);
+`tests/evaluation/check_evaluation_paths.py` ularni haqiqiy judge'da yuboradi.
+
+| Tur | Kim hal qiladi | Qoidalar |
+| --- | --- | --- |
+| `standard` | judge'ning o'z solishtiruvi | tokenlar teng, formatlash boshqa — `PE` |
+| `special` | `checker <input> <output> <answer>`, stdout `ok` / boshqa | Dastlabki solishtiruv `AC`, `WA` **yoki `PE`** bersa ham checker chaqiriladi: formatni u hal qiladi |
+| `scorer` | o'sha chaqiruv, stdout — 0…100 | Yakuniy ball — testlar o'rtachasi. 100 — `AC`; 0 < ball < 100 — `PARTIAL`; 0 — `WA` |
+| `interactive` | interactor'ning chiqish kodi (0 — qabul) | **Bitta** dialog; `tests` va fayl I/O ishlatilmaydi. Interactor rad etib chiqsa — `WA`, yechim shundan keyin nima bo'lganidan qat'i nazar (judge uni to'xtatadi). Yechim interactor'dan oldin o'zi yiqilsa — `RE_*` |
+
+2026-10-07 gacha uchta holat noto'g'ri baholanardi: `special`/`scorer` da
+boshqacha formatlangan to'g'ri javob `PE` olardi (checker chaqirilmasdi);
+`scorer` da har testda 100 dan kam olgan yechim `AC` bo'lardi; interactor rad
+etgandan keyin yozishda davom etgan yechim `IDLENESS` yoki `RE` olardi.
+
+`io_mode = both` (stdout **yoki** `output.txt`) faqat `standard` bilan
+ishlaydi: checker va interactor faylga yozilgan javobni ko'rmaydi. API bu
+birikmani saqlashda ham, nashr darvozasida ham rad etadi
+(`problems/evaluation.py`).
+
 ## Vaqt o'lchash — muhim farq
 
 - `time_ms` — **CPU vaqti** (user + sys), wall clock emas.
