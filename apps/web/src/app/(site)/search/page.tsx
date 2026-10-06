@@ -11,11 +11,10 @@ import { NAV } from "@/layout/nav";
 import { api, ApiError } from "@/lib/api";
 import {
   filterLocal,
-  foldText,
   hitHref,
   hitIcon,
+  isAskable,
   isServerType,
-  MIN_QUERY,
   sameHit,
   searchHref,
   SERVER_TYPES,
@@ -131,7 +130,7 @@ export default async function SearchPage({
   const type: "all" | ServerType = isServerType(requested) ? requested : ALL;
   const wanted = Number.parseInt(first(raw.page), 10);
   const page = Math.min(Math.max(1, Number.isFinite(wanted) ? wanted : 1), MAX_OFFSET / PAGE_SIZE + 1);
-  const askable = foldText(query).length >= MIN_QUERY;
+  const askable = isAskable(query);
 
   const single = type !== "all";
   // `-1`: not refused. Otherwise the seconds the server asked us to wait.
@@ -179,7 +178,8 @@ export default async function SearchPage({
             type="search"
             name="q"
             defaultValue={query}
-            minLength={MIN_QUERY}
+            // One character is enough for a problem's number (`7`).
+            minLength={1}
             maxLength={80}
             required
             autoComplete="off"
@@ -259,7 +259,8 @@ export default async function SearchPage({
           </ul>
         </section>
       )}
-      {data && (single ? !group || group.results.length === 0 : data.groups.length === 0) && (
+      {/* A matching section of the site is an answer too. */}
+      {data && sections.length === 0 && (single ? !group || group.results.length === 0 : data.groups.length === 0) && (
         <div className="py-10 text-center">
           <p className="text-theme-sm rw-strong">{fill(t(locale, "search.empty"), { q: query })}</p>
           <p className="mt-1 text-theme-xs rw-dim">{t(locale, "search.emptyHint")}</p>

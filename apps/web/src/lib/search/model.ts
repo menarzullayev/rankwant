@@ -62,6 +62,13 @@ export type SearchResponse = {
 /** Shortest query the server answers. */
 export const MIN_QUERY = 2;
 
+/** Whether the server has anything to say to this query. Two characters
+ *  at least — except a number, which names a problem even at one digit. */
+export function isAskable(query: string): boolean {
+  const folded = foldText(query);
+  return folded.length >= MIN_QUERY || /^#?\d+$/.test(folded);
+}
+
 export function isServerType(value: string): value is ServerType {
   return (SERVER_TYPES as readonly string[]).includes(value);
 }
@@ -148,7 +155,8 @@ export function parseQuery(
   raw: string,
   chip: SearchType,
 ): { query: string; type: SearchType; prefixed: boolean } {
-  const scoped = PREFIXES[raw[0] ?? ""];
+  // `#12` is a problem's number as it is printed, not the topic "12".
+  const scoped = /^#\d+$/.test(raw.trim()) ? undefined : PREFIXES[raw[0] ?? ""];
   if (scoped) return { query: raw.slice(1).trim(), type: scoped, prefixed: true };
   return { query: raw.trim(), type: chip, prefixed: false };
 }

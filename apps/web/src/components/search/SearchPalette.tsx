@@ -19,11 +19,10 @@ import { API_BASE } from "@/lib/api";
 import {
   SEARCH_TYPES,
   filterLocal,
-  foldText,
   hitHref,
   hitIcon,
+  isAskable,
   isServerType,
-  MIN_QUERY,
   parseQuery,
   prefixOf,
   sameHit,
@@ -112,7 +111,7 @@ export function SearchPalette({
 
   const { query, type, prefixed } = parseQuery(raw, chip);
   const remote = type === "all" || isServerType(type);
-  const askable = foldText(query).length >= MIN_QUERY;
+  const askable = isAskable(query);
   const requestKey = remote && askable ? `${type}|${query}` : "";
 
   useEffect(() => {

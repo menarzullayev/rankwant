@@ -71,6 +71,29 @@ class TestProblemNumber:
         )
         assert keys(find("1519", type="problem"), "problem") == ["toliq-qism-graf", "yil-1519"]
 
+    def test_a_one_digit_number_is_answered_by_the_lookup_alone(self, db) -> None:
+        """`7` is too short to match as text, but it names a problem."""
+        Problem.objects.create(
+            slug="yettinchi",
+            title="Yettinchi",
+            statement="x",
+            difficulty=800,
+            is_public=True,
+            code=7,
+        )
+        Problem.objects.create(
+            slug="sarlavhada-7", title="7 ta son", statement="x", difficulty=800, is_public=True
+        )
+        for query in ("7", "#7"):
+            body = find(query)
+            assert keys(body, "problem") == ["yettinchi"], query
+            assert body["top"]["key"] == "yettinchi"
+            assert [group["type"] for group in body["groups"]] == ["problem"]
+
+    def test_one_letter_is_still_not_a_query(self, numbered) -> None:
+        assert find("t")["total"] == 0
+        assert find("#")["total"] == 0
+
     def test_a_hidden_problem_is_not_found_by_its_number(self, db) -> None:
         Problem.objects.create(slug="yopiq", title="Yopiq", statement="x", difficulty=800, code=77)
         assert find("77")["counts"]["problem"] == 0

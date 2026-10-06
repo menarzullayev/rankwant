@@ -7,6 +7,7 @@ import {
   foldText,
   highlight,
   hitHref,
+  isAskable,
   parseQuery,
   rankLocal,
   sameHit,
@@ -94,6 +95,11 @@ describe("query prefixes", () => {
     expect(parseQuery(">mavzu", "all")).toEqual({ query: "mavzu", type: "cmd", prefixed: true });
   });
 
+  it("reads #12 as a problem number, not as the topic prefix", () => {
+    expect(parseQuery("#12", "all")).toEqual({ query: "#12", type: "all", prefixed: false });
+    expect(parseQuery("#dp", "all").type).toBe("topic");
+  });
+
   it("otherwise keeps the chip", () => {
     expect(parseQuery(" dp ", "learn")).toEqual({ query: "dp", type: "learn", prefixed: false });
   });
@@ -121,6 +127,14 @@ describe("result links", () => {
     // A translated title leads to the same entry as the original.
     expect(hitHref(hit({ type: "news", kind: "update_translation", key: "12" }))).toBe("/updates/12");
     expect(hitHref(hit({ type: "shop", kind: "shop_item", key: "oltin-ramka" }))).toBe("/qvant");
+  });
+
+  it("asks the server about a one-digit problem number, not about one letter", () => {
+    expect(isAskable("7")).toBe(true);
+    expect(isAskable("#7")).toBe(true);
+    expect(isAskable("t")).toBe(false);
+    expect(isAskable("#")).toBe(false);
+    expect(isAskable("dp")).toBe(true);
   });
 
   it("recognises the top hit inside its group", () => {

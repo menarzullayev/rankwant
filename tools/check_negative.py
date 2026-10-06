@@ -3677,6 +3677,46 @@ def neg_notification_catalogue_stale() -> tuple[bool, str]:
     return True, "bildirishnoma katalogi: eskirgan holat tutildi (exit 1)"
 
 
+def neg_decisions_search_unthrottled() -> tuple[bool, str]:
+    """The search endpoint loses its own rate limit."""
+    return _decision_broken(
+        "apps/api/core/views.py",
+        "ResilientUserRateThrottle, SearchRateThrottle]",
+        "ResilientUserRateThrottle]",
+        "o'z tezlik chegarasi yo'q",
+    )
+
+
+def neg_decisions_search_large_table_unguarded() -> tuple[bool, str]:
+    """A punctuation-only needle is sent to the user table again."""
+    return _decision_broken(
+        "apps/api/core/search.py",
+        "        if not _askable(source, needle):\n            continue\n",
+        "",
+        "katta jadval himoyasi yo'q",
+    )
+
+
+def neg_decisions_search_top_hit_guesses() -> tuple[bool, str]:
+    """The top hit is taken from a fuzzy group."""
+    return _decision_broken(
+        "apps/api/core/search.py",
+        "if rows and not fuzzy and offset == 0 and rows[0][0] <= 0:",
+        "if rows and offset == 0:",
+        "taxminiy mosdan ham olinadi",
+    )
+
+
+def neg_decisions_search_number_lookup_gone() -> tuple[bool, str]:
+    """A problem is no longer found by its number."""
+    return _decision_broken(
+        "apps/api/problems/search.py",
+        "        exact=by_number,\n",
+        "",
+        "masala raqami bo'yicha topilmaydi",
+    )
+
+
 def neg_decisions_deplocks_wrong_python() -> tuple[bool, str]:
     """A lock compiled for another Python drops conditional dependencies."""
     return _decision_broken(
@@ -5234,6 +5274,8 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/features/problems/components/SampleTests.tsx",
     "apps/api/core/management/commands/seed_demo.py",
     "tools/ci.Dockerfile.dockerignore",
+    # Search parity (2026-10-06).
+    "apps/api/problems/search.py",
     # Notifications (2026-10-06).
     "apps/api/notifications/services.py",
     "apps/api/realtime/asgi.py",
@@ -8560,6 +8602,10 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("qo'ng'iroq o'zi o'qilgan qilsa tutilsin", neg_decisions_notif_bell_marks_read),
             ("yashirin tab oqim ushlasa tutilsin", neg_decisions_notif_hidden_tab_holds_stream),
             ("bildirishnoma katalogi eskirsa tutilsin", neg_notification_catalogue_stale),
+            ("qidiruv chegarasiz qolsa tutilsin", neg_decisions_search_unthrottled),
+            ("qidiruv katta jadvalni skanerlasa tutilsin", neg_decisions_search_large_table_unguarded),
+            ("eng mos natija taxmin bo'lsa tutilsin", neg_decisions_search_top_hit_guesses),
+            ("masala raqami topilmasa tutilsin", neg_decisions_search_number_lookup_gone),
             ("xulosa serverda chizilsa tutilsin", neg_decisions_settings_summary_drawn_on_server),
             ("oxirgi shablon eslanmasa tutilsin", neg_decisions_last_template_not_remembered),
             ("DB paroli yana qattiq yozilsa tutilsin", neg_decisions_db_password_hardcoded_again),

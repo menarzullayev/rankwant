@@ -194,10 +194,11 @@ def _askable(source: Source, needle: str) -> bool:
     return sum(char.isalnum() for char in needle) >= LARGE_MIN_ALNUM
 
 
-def _matches(source: Source, needle: str) -> QuerySet[Any]:
+def _matches(source: Source, needle: str, lookup_only: bool = False) -> QuerySet[Any]:
     queryset, names = _annotated(source)
-    condition = _condition(source, names, needle)
     lookup = source.exact(needle) if source.exact else None
+    # A needle too short to match as text (`7`) can still name a row.
+    condition = Q(pk__in=[]) if lookup_only else _condition(source, names, needle)
     whens = []
     if lookup is not None:
         condition |= lookup
@@ -279,22 +280,24 @@ def _to_hit(source: Source, row: Any, needle: str = "") -> dict[str, Any]:
     return hit
 
 
-def _group(kind_of: str, needle: str, limit: int, offset: int) -> dict[str, Any]:
+def _group(
+    kind_of: str, needle: str, limit: int, offset: int, lookup_only: bool = False
+) -> dict[str, Any]:
     """One type's page: merged across its sources, rank first."""
-    found = sources(kind_of)
+    found = [s for s in sources(kind_of) if s.exact or not lookup_only]
     count = 0
     rows: list[tuple[int, int, int, Source, Any]] = []
     for index, source in enumerate(found):
         if not _askable(source, needle):
             continue
-        matches = _matches(source, needle)
+        matches = _matches(source, needle, lookup_only)
         page = list(matches[: offset + limit])
         # An offset past the end returns no row to read the total from.
         count += page[0]._total if page else (matches.count() if offset else 0)
         for position, row in enumerate(page):
             rows.append((row._rank, index, position, source, row))
     fuzzy = False
-    if count == 0 and offset == 0:
+    if count == 0 and offset == 0 and not lookup_only:
         for index, source in enumerate(found):
             for position, row in enumerate(_fuzzy(source, needle, limit)):
                 rows.append((round((1 - row._sim) * 1000), index, position, source, row))
@@ -346,13 +349,16 @@ def search(
         "counts": dict.fromkeys(TYPES, 0),
         "total": 0,
     }
-    if len(needle) < MIN_QUERY:
+    # One character is not a text query — but `7` or `#7` is a problem's
+    # number, and those are worth answering with the lookup alone.
+    lookup_only = len(needle) < MIN_QUERY
+    if lookup_only and not needle.removeprefix("#").isdigit():
         return empty
     groups = [
-        _group(name, needle, limit, offset if name == kind_of else 0)
+        _group(name, needle, limit, offset if name == kind_of else 0, lookup_only)
         if not single or name == kind_of
         # Another tab: only its count is needed, so ask for a single row.
-        else _group(name, needle, 1, 0)
+        else _group(name, needle, 1, 0, lookup_only)
         for name in TYPES
     ]
     counts = {group["type"]: group["count"] for group in groups}
