@@ -119,19 +119,22 @@ export function initialsOf(name: string): string {
 
 /** A person as a portrait: the photo fills the card, the name and title sit
  *  on a dark fade at the bottom, the links in the top corner. Without a
- *  photo the card shows the initials on the accent colour. */
+ *  photo the card shows the initials on the accent colour.
+ *
+ *  `plain` is the photo alone: the serious view writes the name and the
+ *  links beside it, and the caption repeated both. */
 export function PersonCard({
   member,
   locale,
   alt,
   website,
-  large = false,
+  plain = false,
 }: {
   member: TeamMember;
   locale: TeamLocale;
   alt: string;
   website: string;
-  large?: boolean;
+  plain?: boolean;
 }) {
   const title = localized(member, "title", locale);
   const context = localized(member, "context", locale);
@@ -159,16 +162,18 @@ export function PersonCard({
           {initialsOf(member.name)}
         </span>
       )}
-      <div className="absolute end-3 top-3">
-        <SocialLinks member={member} website={website} overlay />
-      </div>
-      <div className="bg-gradient-to-t from-black/85 via-black/55 to-transparent px-4 pt-16 pb-4 text-white">
-        <h3 className={`leading-tight font-bold ${large ? "text-title-sm" : "text-theme-xl"}`}>
-          {member.name}
-        </h3>
-        <p className="mt-1 text-theme-sm font-medium opacity-95">{title}</p>
-        {context ? <p className="mt-1 text-theme-xs opacity-85">{context}</p> : null}
-      </div>
+      {plain ? null : (
+        <>
+          <div className="absolute end-3 top-3">
+            <SocialLinks member={member} website={website} overlay />
+          </div>
+          <div className="bg-gradient-to-t from-black/85 via-black/55 to-transparent px-4 pt-16 pb-4 text-white">
+            <h3 className="text-theme-xl leading-tight font-bold">{member.name}</h3>
+            <p className="mt-1 text-theme-sm font-medium opacity-95">{title}</p>
+            {context ? <p className="mt-1 text-theme-xs opacity-85">{context}</p> : null}
+          </div>
+        </>
+      )}
     </article>
   );
 }

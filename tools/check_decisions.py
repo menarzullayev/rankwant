@@ -2213,6 +2213,32 @@ def team_page_is_managed_data() -> str | None:
     return None
 
 
+def team_page_is_compact() -> str | None:
+    """2026-10-06: «Jamoa» sahifasi ixcham ro'yxat (HITL: B varianti).
+
+    O'lchandi (jonli sayt): telefonda 12 ekran; 24 ta bir xil `h2`; 48 ta
+    havola ikki manzilga; yopishqoq panel jiddiy kartani yopardi; ulashilganda
+    sayt nomi va bosh sahifa manzili chiqardi.
+    """
+    directory = read("apps/web/src/components/team/TeamDirectory.tsx")
+    if 'if (!whole && index >= FIRST_WIDE) fold = "hidden";' not in directory:
+        return "TeamDirectory.tsx: ro'yxat qisqartirilmagan yoki yashirin lavozimlar sahifadan chiqarilgan"
+    if '{localized(role, "title", locale)}\n                          </h2>' not in directory:
+        return "TeamDirectory.tsx: karta sarlavhasi lavozim emas - 24 ta bir xil `h2` qaytdi"
+    if directory.count("<SocialLinks") != 1:
+        return "TeamDirectory.tsx: havolalar yana har kartada (yoki jiddiy ko'rinishdan yo'qolgan)"
+    if "sticky" in directory:
+        return "TeamDirectory.tsx: boshqaruv paneli yana yopishqoq - jiddiy kartani yopadi"
+    if "        {serious ? null : (\n          <>" not in directory:
+        return "TeamDirectory.tsx: jiddiy ko'rinishda filtr va qidiruv chiziladi"
+    page = read("apps/web/src/app/(site)/team/page.tsx")
+    if "<div lang={locale}" not in page:
+        return "team/page.tsx: matn tili aytilmagan - turkcha sahifada o'zbekcha «i» «İ» bo'ladi"
+    if "url: alternates.canonical," not in page:
+        return "team/page.tsx: ulashilganda sahifa o'z manzilini aytmaydi"
+    return None
+
+
 def site_search_is_one_engine() -> str | None:
     """2026-10-05: sayt qidiruvi — bitta dvigatel, bitta panel.
 
@@ -3156,6 +3182,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("sozlamalar tugmalari 44 px", settings_controls_are_44px),
     ("sozlagich telefonda yaqin", customizer_reachable_on_a_phone),
     ("jamoa sahifasi boshqariladi", team_page_is_managed_data),
+    ("jamoa sahifasi ixcham", team_page_is_compact),
     ("qidiruv bitta dvigatel", site_search_is_one_engine),
     ("bildirishnomalar shartnomasi", notifications_inbox_contract),
     ("qidiruv chegaralangan va aniq", site_search_is_bounded_and_exact),

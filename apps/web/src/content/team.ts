@@ -37,11 +37,24 @@ export type TeamText = {
   all: string;
   search: string;
   serious: string;
+  seriousHeading: string;
+  seriousLede: string;
+  viewLabel: string;
+  viewFun: string;
+  viewSerious: string;
+  allDepartments: string;
+  /** `{count}` is replaced. */
+  showMore: string;
+  /** `{name}` is replaced. */
+  ownerCardTitle: string;
+  ownerCardText: string;
+  /** `{roles}` is replaced. */
+  metaTitle: string;
+  /** `{roles}` and `{departments}` are replaced. */
+  metaDescription: string;
   /** `{roles}` and `{people}` are replaced. */
   count: string;
   empty: string;
-  more: string;
-  less: string;
   detail: readonly [string, string][];
   reportsTo: string;
   soloText: string;
@@ -68,10 +81,20 @@ export const TEAM_TEXT: Record<TeamLocale, TeamText> = {
     all: "Hammasi",
     search: "Lavozim qidirish",
     serious: "Jiddiy rejim",
+    seriousHeading: "RankWant'ni kim quryapti",
+    seriousLede: "Bitta odam. Quyida — hazilsiz.",
+    viewLabel: "Ko'rinish",
+    viewFun: "Hazil",
+    viewSerious: "Jiddiy",
+    allDepartments: "Barcha bo'limlar",
+    showMore: "Yana {count} ta lavozimni ko'rsatish",
+    ownerCardTitle: "Bularning hammasi — {name}",
+    ownerCardText: "Hazilsiz ko'rinish, havolalar va aloqa",
+    metaTitle: "Jamoa — {roles} lavozim, 1 inson",
+    metaDescription:
+      "RankWant'ni kim quryapti: {departments} bo'lim, {roles} lavozim va ularning hammasini egallagan bitta odam.",
     count: "{roles} ta lavozim ko'rsatilmoqda · ularni egallagan odamlar soni: {people}",
     empty: "Bunday lavozim hali ochilmagan. Ochilsa, kim egallashi ma'lum.",
-    more: "Batafsil",
-    less: "Yopish",
     detail: [
       ["Jamoadagi hamkasblari", "o'zi"],
       ["Ta'til", "rejalashtirilmoqda (har yili)"],
@@ -79,7 +102,7 @@ export const TEAM_TEXT: Record<TeamLocale, TeamText> = {
     ],
     reportsTo: "Hisobot beradi",
     soloText:
-      "RankWant — bir kishi tomonidan qurilayotgan platforma: backend, frontend, judge, dizayn va kontent bitta qo'lda. Yuqoridagi lavozimlar hazil, ish esa haqiqiy.",
+      "RankWant — bir kishi tomonidan qurilayotgan platforma: backend, frontend, judge, dizayn va kontent bitta qo'lda. Bu sahifadagi lavozimlar — hazil, ish esa haqiqiy.",
     soloCount: "1 kishi, hazilsiz.",
     coreTitle: "Asosiy jamoa",
     contributorsTitle: "Loyihaga hissa qo'shganlar",
@@ -101,10 +124,20 @@ export const TEAM_TEXT: Record<TeamLocale, TeamText> = {
     all: "Все",
     search: "Найти должность",
     serious: "Серьёзный режим",
+    seriousHeading: "Кто делает RankWant",
+    seriousLede: "Один человек. Ниже — без шуток.",
+    viewLabel: "Вид",
+    viewFun: "Шутка",
+    viewSerious: "Серьёзно",
+    allDepartments: "Все отделы",
+    showMore: "Показать ещё должностей: {count}",
+    ownerCardTitle: "Всё это — {name}",
+    ownerCardText: "Вид без шуток, ссылки и контакты",
+    metaTitle: "Команда — должностей: {roles}, человек: 1",
+    metaDescription:
+      "Кто делает RankWant: отделов — {departments}, должностей — {roles}, и один человек, который занимает их все.",
     count: "Показано должностей: {roles} · людей, которые их занимают: {people}",
     empty: "Такой должности пока нет. Если появится — известно, кто её займёт.",
-    more: "Подробнее",
-    less: "Свернуть",
     detail: [
       ["Коллеги по команде", "он сам"],
       ["Отпуск", "планируется (каждый год)"],
@@ -112,7 +145,7 @@ export const TEAM_TEXT: Record<TeamLocale, TeamText> = {
     ],
     reportsTo: "Подчиняется",
     soloText:
-      "RankWant — платформа, которую строит один человек: бэкенд, фронтенд, judge, дизайн и контент в одних руках. Должности выше — шутка, а работа настоящая.",
+      "RankWant — платформа, которую строит один человек: бэкенд, фронтенд, judge, дизайн и контент в одних руках. Должности на этой странице — шутка, а работа настоящая.",
     soloCount: "1 человек, без шуток.",
     coreTitle: "Основная команда",
     contributorsTitle: "Те, кто помог проекту",
@@ -134,10 +167,20 @@ export const TEAM_TEXT: Record<TeamLocale, TeamText> = {
     all: "All",
     search: "Find a role",
     serious: "Serious mode",
+    seriousHeading: "Who builds RankWant",
+    seriousLede: "One person. Below, without the jokes.",
+    viewLabel: "View",
+    viewFun: "Joke",
+    viewSerious: "Serious",
+    allDepartments: "All departments",
+    showMore: "Show {count} more roles",
+    ownerCardTitle: "All of these are {name}",
+    ownerCardText: "The view without the jokes, links and contact",
+    metaTitle: "Team — {roles} roles, 1 human",
+    metaDescription:
+      "Who builds RankWant: {departments} departments, {roles} roles and the one person who holds them all.",
     count: "Showing {roles} roles · people holding them: {people}",
     empty: "No such role yet. If it opens, we know who gets it.",
-    more: "Details",
-    less: "Close",
     detail: [
       ["Teammates", "himself"],
       ["Holiday", "being planned (every year)"],
@@ -145,7 +188,7 @@ export const TEAM_TEXT: Record<TeamLocale, TeamText> = {
     ],
     reportsTo: "Reports to",
     soloText:
-      "RankWant is built by one person: backend, frontend, judge, design and content in one pair of hands. The roles above are a joke; the work is real.",
+      "RankWant is built by one person: backend, frontend, judge, design and content in one pair of hands. The roles on this page are a joke; the work is real.",
     soloCount: "1 person, no jokes.",
     coreTitle: "Core team",
     contributorsTitle: "People who helped the project",

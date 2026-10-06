@@ -3538,6 +3538,56 @@ def neg_decisions_public_stack_falls_back() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_team_roles_dropped_from_page() -> tuple[bool, str]:
+    """The folded roles are cut out of the page instead of hidden."""
+    return _decision_broken(
+        "apps/web/src/components/team/TeamDirectory.tsx",
+        'if (!whole && index >= FIRST_WIDE) fold = "hidden";',
+        "if (!whole && index >= FIRST_WIDE) return null;",
+        "ro'yxat qisqartirilmagan yoki yashirin lavozimlar",
+    )
+
+
+def neg_decisions_team_card_heading_is_the_name() -> tuple[bool, str]:
+    """Every card is headed by the same name again."""
+    return _decision_broken(
+        "apps/web/src/components/team/TeamDirectory.tsx",
+        '{localized(role, "title", locale)}\n                          </h2>',
+        "{owner.name}\n                          </h2>",
+        "karta sarlavhasi lavozim emas",
+    )
+
+
+def neg_decisions_team_toolbar_sticks() -> tuple[bool, str]:
+    """The toolbar is pinned and covers the serious card again."""
+    return _decision_broken(
+        "apps/web/src/components/team/TeamDirectory.tsx",
+        '<div className="flex flex-wrap items-end gap-2 lg:items-center">',
+        '<div className="sticky top-16 flex flex-wrap items-end gap-2 lg:items-center">',
+        "boshqaruv paneli yana yopishqoq",
+    )
+
+
+def neg_decisions_team_text_language_unsaid() -> tuple[bool, str]:
+    """The page stops saying which language its sentences are in."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/team/page.tsx",
+        "<div lang={locale} ",
+        "<div ",
+        "matn tili aytilmagan",
+    )
+
+
+def neg_decisions_team_shared_as_the_home_page() -> tuple[bool, str]:
+    """A shared link no longer names the page it came from."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/team/page.tsx",
+        "      url: alternates.canonical,\n",
+        "",
+        "sahifa o'z manzilini aytmaydi",
+    )
+
+
 def neg_decisions_team_page_shows_drafts() -> tuple[bool, str]:
     """The public team page hands out unpublished members."""
     return _decision_broken(
@@ -5643,6 +5693,7 @@ _DECISIONS_SANDBOX_FILES = (
     # Boundary record (2026-09-21): the `adminer` rule reads § 6 to prove the
     # divergence got a dated resolution rather than a silent deletion.
     "docs/research/2026-09-21-security-boundary/README.md",
+    "apps/web/src/components/team/TeamDirectory.tsx",
 )
 
 
@@ -8905,6 +8956,11 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("jamoa sahifasi qoralama bersa tutilsin", neg_decisions_team_page_shows_drafts),
             ("jamoa rasmi tekshirilmasa tutilsin", neg_decisions_team_photo_unchecked),
             ("jamoa xodim yo'li ochilsa tutilsin", neg_decisions_team_staff_route_opened),
+            ("jamoa lavozimlari sahifadan chiqsa tutilsin", neg_decisions_team_roles_dropped_from_page),
+            ("jamoa kartasi ism bilan boshlansa tutilsin", neg_decisions_team_card_heading_is_the_name),
+            ("jamoa paneli yopishsa tutilsin", neg_decisions_team_toolbar_sticks),
+            ("jamoa matni tili aytilmasa tutilsin", neg_decisions_team_text_language_unsaid),
+            ("jamoa bosh sahifa bo'lib ulashilsa tutilsin", neg_decisions_team_shared_as_the_home_page),
             ("qidiruv dvigateldan o'tmasa tutilsin", neg_decisions_search_bypasses_engine),
             ("qidiruv foydalanuvchilarni skanerlasa tutilsin", neg_decisions_search_scans_users),
             ("qidiruv indeksi jadvalni qulflasa tutilsin", neg_decisions_search_index_locks_table),
