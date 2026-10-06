@@ -8,7 +8,8 @@ import {
   AttemptLiveProvider,
   AttemptTable,
 } from "@/features/submissions";
-import { api, type ProblemDetail } from "@/lib/api";
+import { api, type Attempt, type Paginated, type ProblemDetail } from "@/lib/api";
+import { getWithSession } from "@/lib/api.server";
 import { buildAttemptsHref } from "@/lib/problem-tabs";
 
 /** Sahifa o'lchami — backend `max_page_size` (100) dan oshmasin.
@@ -62,12 +63,18 @@ export async function ProblemAttemptsPanel({
   if (size) filters.set("page_size", size);
   const apiQuery = filters.toString();
 
-  const page = await api.problemAttempts(
-    slug,
-    [apiQuery, cursor ? `cursor=${encodeURIComponent(cursor)}` : ""]
-      .filter(Boolean)
-      .join("&"),
-  );
+  const pageQuery = [apiQuery, cursor ? `cursor=${encodeURIComponent(cursor)}` : ""]
+    .filter(Boolean)
+    .join("&");
+  // "Only mine" is a question about the session, and the plain SSR helper
+  // sends no cookie: asked through it, the filter was silently ignored
+  // and the tab kept listing everybody.
+  const page =
+    mine === "true"
+      ? await getWithSession<Paginated<Attempt>>(
+          `/attempts/?problem=${encodeURIComponent(slug)}&${pageQuery}`,
+        )
+      : await api.problemAttempts(slug, pageQuery);
 
   const nextCursor = page.next
     ? new URL(page.next).searchParams.get("cursor")
@@ -116,7 +123,7 @@ export async function ProblemAttemptsPanel({
 
       <AttemptFilters
         slug={slug}
-        languages={problem.languages.map((l) => l.code)}
+        languages={problem.languages.map(({ code, name }) => ({ code, name }))}
         verdict={verdict}
         language={language}
         mine={mine === "true"}

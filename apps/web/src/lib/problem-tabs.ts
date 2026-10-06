@@ -99,6 +99,25 @@ export function buildAttemptsHref(
   return `/problems/${slug}?${params}`;
 }
 
+/** The attempts list an attempt table lives on: a problem's tab when
+ *  `slug` is given, the site-wide feed (`/attempts`) otherwise. One
+ *  builder for both, so the table and its filters cannot disagree about
+ *  where they are. `cursor` is dropped for the same reason as above.
+ */
+export function buildAttemptListHref(
+  slug: string | undefined,
+  filters: Record<string, string | undefined>,
+): string {
+  if (slug) return buildAttemptsHref(slug, filters);
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(filters)) {
+    if (key === "cursor") continue;
+    if (value) params.set(key, value);
+  }
+  const query = params.toString();
+  return query ? `/attempts?${query}` : "/attempts";
+}
+
 /** Yechganlar saralash havolasi (`tab=solvers` har doim ichida). */
 export function buildSolversHref(slug: string, ordering: string): string {
   return `/problems/${slug}?tab=solvers&ordering=${encodeURIComponent(ordering)}`;

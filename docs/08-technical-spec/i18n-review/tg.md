@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2202 strings.**
+**2210 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -2223,3 +2223,11 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `search.top` | Eng mos natija | Мувофиқтарин натиҷа |  |
 | `search.throttled` | Juda ko'p so'rov. Birozdan keyin qayta urinib ko'ring. | Дархостҳо аз ҳад зиёд. Пас аз лаҳзае боз кӯшиш кунед. |  |
 | `search.throttledWait` | Juda ko'p so'rov. {n} soniyadan keyin qayta urinib ko'ring. | Дархостҳо аз ҳад зиёд. Пас аз {n} сония боз кӯшиш кунед. |  |
+| `attempts.scopeAll` | Hammasi | Ҳама |  |
+| `attempts.scopeMine` | Mening urinishlarim | Кӯшишҳои ман |  |
+| `attempts.problemLabel` | Masala bo'yicha filtr | Филтр аз рӯи масъала |  |
+| `attempts.problemPlaceholder` | Masala raqami yoki slug… | Рақами масъала ё slug… |  |
+| `attempt.tests` | Testlar | Тестҳо |  |
+| `attempt.testsPassed` | {passed} / {total} o'tdi | {passed} аз {total} гузашт |  |
+| `attempt.toProblem` | Masalaga o'tish | Ба масъала гузаштан |  |
+| `attempt.editResubmit` | Tahrirlab qayta yuborish | Таҳрир ва аз нав фиристодан |  |

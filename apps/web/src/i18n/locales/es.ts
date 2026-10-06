@@ -2255,4 +2255,12 @@ export const es: Record<MessageKey, string> = {
   "search.top": "Mejor coincidencia",
   "search.throttled": "Demasiadas solicitudes. Inténtalo de nuevo en un momento.",
   "search.throttledWait": "Demasiadas solicitudes. Inténtalo de nuevo en {n} s.",
+  "attempts.scopeAll": "Todos",
+  "attempts.scopeMine": "Mis intentos",
+  "attempts.problemLabel": "Filtrar por problema",
+  "attempts.problemPlaceholder": "Número de problema o slug…",
+  "attempt.tests": "Pruebas",
+  "attempt.testsPassed": "{passed} de {total} superadas",
+  "attempt.toProblem": "Ir al problema",
+  "attempt.editResubmit": "Editar y reenviar",
 };

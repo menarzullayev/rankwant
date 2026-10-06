@@ -2271,6 +2271,30 @@ def site_search_is_bounded_and_exact() -> str | None:
     return None
 
 
+def attempts_feed_is_the_shared_table() -> str | None:
+    """2026-10-06: urinishlar lentasi — masala tabi bilan bitta jadval.
+
+    Codeforces va KEP bilan taqqoslashda topilganlar: `/attempts` filtrsiz,
+    sahifalashsiz xom jadval edi; til ichki kalit bilan ko'rsatilardi;
+    «faqat meniki» SSR'da cookie'siz so'ralib, hammaning urinishlarini
+    qaytarardi; mehmon oqimga ulanib 401 olardi.
+    """
+    feed = read("apps/web/src/app/(site)/attempts/page.tsx")
+    if "            <AttemptTable rows={page.results} ordering={ordering} query={tableQuery} />\n" not in feed:
+        return "attempts/page.tsx: lenta umumiy `AttemptTable` dan chizilmaydi — ikki jadval yana ajralib ketadi"
+    if "      ? getWithSession<Paginated<Attempt>>(`/attempts/?${requestQuery}`)\n" not in feed:
+        return "attempts/page.tsx: «mening urinishlarim» sessiyasiz so'raladi — hammaning urinishlari chiqadi"
+    if "      ? await getWithSession<Paginated<Attempt>>(\n" not in read("apps/web/src/app/(site)/problems/[slug]/_panels/ProblemAttemptsPanel.tsx"):
+        return "ProblemAttemptsPanel.tsx: «faqat meniki» sessiyasiz so'raladi — filtr jim e'tiborsiz qoladi"
+    if "            qs = qs.filter(user=user) if user.is_authenticated else qs.none()\n" not in read("apps/api/judging/views.py"):
+        return "judging/views.py: mehmonga `mine` filtri hammaning urinishlarini qaytaradi"
+    if "    enabled: Boolean(user),\n" not in read("apps/web/src/features/submissions/components/AttemptLiveProvider.tsx"):
+        return "AttemptLiveProvider.tsx: mehmon ham oqimga ulanadi — har tashrifda 401 va qayta urinish"
+    if '"language_name",' not in read("apps/api/judging/serializers.py"):
+        return "judging/serializers.py: urinish qatorida til nomi yo'q — sahifa ichki kalitni ko'rsatadi"
+    return None
+
+
 def docker_disk_stays_bounded() -> str | None:
     """2026-09-20: log 10m/3, builder GC 5GB, SHA teg yo'q, prune tasdiq'dan keyin.
 
@@ -3035,6 +3059,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("qidiruv bitta dvigatel", site_search_is_one_engine),
     ("bildirishnomalar shartnomasi", notifications_inbox_contract),
     ("qidiruv chegaralangan va aniq", site_search_is_bounded_and_exact),
+    ("urinishlar lentasi umumiy jadvalda", attempts_feed_is_the_shared_table),
     ("mehmon header'i har tilda sig'adi", guest_header_fits_every_locale),
     ("Nightly stendi production bilan mos", nightly_stack_matches_production),
     ("sozlagich: tez qator birinchi", customizer_quick_row_first),

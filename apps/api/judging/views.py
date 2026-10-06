@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Never
 
-from django.db.models import BooleanField, Case, Count, QuerySet, Value, When
+from django.db.models import BooleanField, Case, Count, Q, QuerySet, Value, When
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from drf_spectacular.types import OpenApiTypes
@@ -146,7 +146,15 @@ class AttemptViewSet(
             # urinishlarini skanerlab, keyin saralab 26 tasini oladi.
             # O'lchandi (50 852 urinishli masala): 86.4 ms → 2.2 ms,
             # 156 881 bufer sahifasi o'rniga bir nechta.
-            problem_ids = Problem.objects.filter(slug=problem).values("pk")[:1]
+            # A number names a problem too (`12`, `#12`): the feed's filter
+            # takes what a person types, and nobody types a slug.
+            number = problem.removeprefix("#")
+            wanted = Problem.objects.filter(slug=problem)
+            if number.isdigit() and len(number) <= 9:
+                wanted = Problem.objects.filter(
+                    Q(slug=problem) | Q(code=int(number), is_public=True)
+                )
+            problem_ids = wanted.values("pk")[:1]
             qs = qs.filter(problem_id=problem_ids)
             #: «Birinchi yechim» nishoni (S06). BITTA subquery butun
             #: sahifa uchun. `Exists()` bilan yozilsa u har qatorga
@@ -184,8 +192,12 @@ class AttemptViewSet(
         language = params.get("language")
         if language:
             qs = qs.filter(language__code=language)
-        if params.get("mine") in ("true", "1") and self.request.user.is_authenticated:
-            qs = qs.filter(user=self.request.user)
+        if params.get("mine") in ("true", "1"):
+            # A guest has no attempts. Ignoring the filter instead answered
+            # "mine" with everybody's — a signed-out tab, or a server-side
+            # request that lost its cookie, showed a list that looked right.
+            user = self.request.user
+            qs = qs.filter(user=user) if user.is_authenticated else qs.none()
 
         # Tartibni SAHIFALAGICH qo'yadi (`AttemptCursorPagination`), bu
         # yerdagi `order_by` esa sukut: kursor pozitsiyasi shu maydondan

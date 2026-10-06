@@ -388,6 +388,7 @@ export function SubmitPanel({
         ...created,
         running_test_index: created.running_test_index ?? null,
         test_results: [],
+        tests_total: 0,
       });
       poll(created.id, 0);
     } catch (caught) {

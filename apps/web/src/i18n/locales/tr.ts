@@ -2255,4 +2255,12 @@ export const tr: Record<MessageKey, string> = {
   "search.top": "En iyi eşleşme",
   "search.throttled": "Çok fazla istek. Biraz sonra yeniden deneyin.",
   "search.throttledWait": "Çok fazla istek. {n} saniye sonra yeniden deneyin.",
+  "attempts.scopeAll": "Herkes",
+  "attempts.scopeMine": "Benim denemelerim",
+  "attempts.problemLabel": "Probleme göre filtre",
+  "attempts.problemPlaceholder": "Problem numarası veya slug…",
+  "attempt.tests": "Testler",
+  "attempt.testsPassed": "{total} testten {passed} geçti",
+  "attempt.toProblem": "Probleme git",
+  "attempt.editResubmit": "Düzenle ve yeniden gönder",
 };

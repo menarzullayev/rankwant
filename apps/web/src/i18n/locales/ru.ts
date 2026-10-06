@@ -2255,4 +2255,12 @@ export const ru: Record<MessageKey, string> = {
   "search.top": "Лучшее совпадение",
   "search.throttled": "Слишком много запросов. Попробуйте чуть позже.",
   "search.throttledWait": "Слишком много запросов. Повторите через {n} с.",
+  "attempts.scopeAll": "Все",
+  "attempts.scopeMine": "Мои попытки",
+  "attempts.problemLabel": "Фильтр по задаче",
+  "attempts.problemPlaceholder": "Номер задачи или slug…",
+  "attempt.tests": "Тесты",
+  "attempt.testsPassed": "Пройдено {passed} из {total}",
+  "attempt.toProblem": "К задаче",
+  "attempt.editResubmit": "Изменить и отправить снова",
 };

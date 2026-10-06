@@ -2254,4 +2254,12 @@ export const en: Record<MessageKey, string> = {
   "search.top": "Best match",
   "search.throttled": "Too many requests. Try again in a moment.",
   "search.throttledWait": "Too many requests. Try again in {n} s.",
+  "attempts.scopeAll": "Everyone",
+  "attempts.scopeMine": "My attempts",
+  "attempts.problemLabel": "Filter by problem",
+  "attempts.problemPlaceholder": "Problem number or slug…",
+  "attempt.tests": "Tests",
+  "attempt.testsPassed": "{passed} of {total} passed",
+  "attempt.toProblem": "Go to problem",
+  "attempt.editResubmit": "Edit and resubmit",
 };

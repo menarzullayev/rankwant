@@ -12444,10 +12444,20 @@ components:
         problem:
           type: string
           readOnly: true
+        problem_title:
+          type: string
+          readOnly: true
+        problem_code:
+          type: integer
+          nullable: true
+          readOnly: true
         contest:
           type: string
           readOnly: true
         language:
+          type: string
+          readOnly: true
+        language_name:
           type: string
           readOnly: true
         verdict:
@@ -12501,7 +12511,10 @@ components:
       - id
       - is_first_solver
       - language
+      - language_name
       - problem
+      - problem_code
+      - problem_title
       - user_title
       - username
     AttemptCreate:
@@ -12540,10 +12553,20 @@ components:
         problem:
           type: string
           readOnly: true
+        problem_title:
+          type: string
+          readOnly: true
+        problem_code:
+          type: integer
+          nullable: true
+          readOnly: true
         contest:
           type: string
           readOnly: true
         language:
+          type: string
+          readOnly: true
+        language_name:
           type: string
           readOnly: true
         verdict:
@@ -12600,15 +12623,22 @@ components:
           items:
             $ref: '#/components/schemas/AttemptTestResult'
           readOnly: true
+        tests_total:
+          type: integer
+          readOnly: true
       required:
       - contest
       - created_at
       - id
       - is_first_solver
       - language
+      - language_name
       - problem
+      - problem_code
+      - problem_title
       - source_code
       - test_results
+      - tests_total
       - user_title
       - username
     AttemptTestResult:

@@ -2252,4 +2252,12 @@ export const zh: Record<MessageKey, string> = {
   "search.top": "最佳匹配",
   "search.throttled": "请求过多,请稍后再试。",
   "search.throttledWait": "请求过多,请在 {n} 秒后重试。",
+  "attempts.scopeAll": "全部",
+  "attempts.scopeMine": "我的提交",
+  "attempts.problemLabel": "按题目筛选",
+  "attempts.problemPlaceholder": "题号或 slug…",
+  "attempt.tests": "测试",
+  "attempt.testsPassed": "通过 {passed} / {total}",
+  "attempt.toProblem": "前往题目",
+  "attempt.editResubmit": "编辑并重新提交",
 };

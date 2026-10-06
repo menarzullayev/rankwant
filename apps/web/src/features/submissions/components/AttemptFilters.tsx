@@ -9,7 +9,7 @@ import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { fill, t } from "@/i18n/messages";
 import { VERDICT_FILTERS } from "@/lib/api";
-import { buildAttemptsHref } from "@/lib/problem-tabs";
+import { buildAttemptListHref } from "@/lib/problem-tabs";
 
 /** Sahifa o'lchami variantlari (S14). Backend `page_size` ni allaqachon
  *  qabul qiladi (`max_page_size=100`), ya'ni bu qo'shimcha API ishi
@@ -37,16 +37,20 @@ export function AttemptFilters({
   language,
   mine,
   username,
+  problem,
   size,
   ordering,
   activeCount,
 }: {
-  slug: string;
-  languages: string[];
+  /** The problem whose tab this is; left out on the site-wide feed. */
+  slug?: string;
+  languages: { code: string; name: string }[];
   verdict?: string;
   language?: string;
   mine: boolean;
   username?: string;
+  /** Feed only: the problem filter, as typed (a number or a slug). */
+  problem?: string;
   size?: string;
   ordering?: string;
   /** Nechta filtr faol — ko'rsatkich uchun. */
@@ -78,15 +82,34 @@ export function AttemptFilters({
         language,
         mine: mine ? "true" : undefined,
         username,
+        problem: slug ? undefined : problem,
         ordering,
         size,
         cursor: undefined,
         ...next,
       };
-      return buildAttemptsHref(slug, merged) as Route;
+      return buildAttemptListHref(slug, merged) as Route;
     },
-    [language, mine, ordering, size, slug, username, verdict],
+    [language, mine, ordering, problem, size, slug, username, verdict],
   );
+
+  // The same debounce as the user search, for the feed's problem filter.
+  const [problemDraft, setProblemDraft] = useState(problem ?? "");
+  const problemSynced = useRef(problem ?? "");
+  useEffect(() => {
+    if ((problem ?? "") !== problemSynced.current) {
+      problemSynced.current = problem ?? "";
+      setProblemDraft(problem ?? "");
+    }
+  }, [problem]);
+  useEffect(() => {
+    if (slug || problemDraft === (problem ?? "")) return;
+    const timer = window.setTimeout(() => {
+      problemSynced.current = problemDraft;
+      router.push(href({ problem: problemDraft.trim() || undefined }));
+    }, SEARCH_DEBOUNCE_MS);
+    return () => window.clearTimeout(timer);
+  }, [href, problem, problemDraft, router, slug]);
 
   //: Qidiruv — debounce bilan, URL orqali (S10). Mijozda filtrlash
   //: MUMKIN EMAS: ro'yxat kursorli, ya'ni faqat joriy 25 qator ichida
@@ -100,13 +123,35 @@ export function AttemptFilters({
     return () => window.clearTimeout(timer);
   }, [draft, href, router, username]);
 
+  const scope = (active: boolean) =>
+    `rw-radius-sm inline-flex min-h-9 items-center px-3 text-theme-xs font-medium transition rw-focus-ring ${
+      active ? "rw-surface rw-strong" : "rw-dim"
+    }`;
+
   const chip = (active: boolean) =>
     `rw-radius-sm px-2.5 py-1 text-theme-xs font-medium transition ${
       active ? "rw-accent-soft rw-accent-ink" : "rw-dim rw-hover-bg"
     }`;
 
+  const field =
+    "rw-radius-sm rw-field-bg min-h-9 border rw-divider px-2.5 py-1 text-theme-xs rw-strong";
+  const signedIn = ready && Boolean(user);
+
   return (
     <div className="space-y-2">
+      {/* The feed's first question is "whose attempts": everyone's or
+          mine. On a problem's tab the same switch is a chip further down. */}
+      {!slug && signedIn && (
+        <div className="inline-flex rw-radius-sm rw-field-bg p-0.5">
+          <Link href={href({ mine: undefined })} className={scope(!mine)} aria-current={!mine}>
+            {t(locale, "attempts.scopeAll")}
+          </Link>
+          <Link href={href({ mine: "true" })} className={scope(mine)} aria-current={mine}>
+            {t(locale, "attempts.scopeMine")}
+          </Link>
+        </div>
+      )}
+
       <div className="flex flex-wrap items-center gap-2">
         <label className="flex items-center gap-2">
           <span className="sr-only">{t(locale, "attempts.searchLabel")}</span>
@@ -115,9 +160,42 @@ export function AttemptFilters({
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
             placeholder={t(locale, "attempts.searchPlaceholder")}
-            className="rw-radius-sm rw-field-bg w-44 border rw-divider px-2.5 py-1 text-theme-xs rw-strong"
+            className={`${field} w-44`}
           />
         </label>
+
+        {!slug && (
+          <label className="flex items-center gap-2">
+            <span className="sr-only">{t(locale, "attempts.problemLabel")}</span>
+            <input
+              type="search"
+              value={problemDraft}
+              onChange={(event) => setProblemDraft(event.target.value)}
+              placeholder={t(locale, "attempts.problemPlaceholder")}
+              className={`${field} w-48`}
+            />
+          </label>
+        )}
+
+        {languages.length > 1 && (
+          <label className="flex items-center gap-2">
+            <span className="sr-only">{t(locale, "attempts.language")}</span>
+            {/* A list, not chips: thirty-five languages as chips were four
+                rows of internal codes above the table. */}
+            <select
+              value={language ?? ""}
+              onChange={(event) => router.push(href({ language: event.target.value || undefined }))}
+              className={`${field} max-w-[14rem]`}
+            >
+              <option value="">{t(locale, "filter.allLanguages")}</option>
+              {languages.map((item) => (
+                <option key={item.code} value={item.code}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
 
         <span className="ml-auto flex items-center gap-1.5">
           <span className="rw-faint text-theme-xs">{t(locale, "attempts.pageSize")}</span>
@@ -154,25 +232,7 @@ export function AttemptFilters({
             </Link>
           ))}
 
-          {languages.length > 1 && (
-            <>
-              <span className="mx-1 rw-faint">·</span>
-              <Link href={href({ language: undefined })} className={chip(!language)}>
-                {t(locale, "filter.allLanguages")}
-              </Link>
-              {languages.map((code) => (
-                <Link
-                  key={code}
-                  href={href({ language: code })}
-                  className={chip(language === code)}
-                >
-                  {code}
-                </Link>
-              ))}
-            </>
-          )}
-
-          {ready && user && (
+          {slug && signedIn && (
             <Link
               href={href({ mine: mine ? undefined : "true" })}
               className={`ml-auto ${chip(mine)}`}
@@ -188,7 +248,7 @@ export function AttemptFilters({
         {activeCount > 0 && (
           <div className="flex flex-wrap items-center gap-2 text-theme-xs rw-faint">
             <span>{fill(t(locale, "attempts.activeFilters"), { count: activeCount })}</span>
-            <Link href={buildAttemptsHref(slug, {}) as Route} className="rw-accent-ink">
+            <Link href={buildAttemptListHref(slug, {}) as Route} className="rw-accent-ink">
               {t(locale, "attempts.clearFilters")}
             </Link>
           </div>

@@ -23,7 +23,13 @@ class AttemptSerializer(serializers.ModelSerializer[Attempt]):
     #: `title` emas — urinish qatorida u masala nomi bilan adashtirilardi.
     user_title = TitleField(source="user")
     problem = serializers.SlugRelatedField[Problem](slug_field="slug", read_only=True)
+    #: What a reader recognises the problem by. The slug stays the key; a
+    #: hidden problem keeps its title to itself (the slug was always shown).
+    problem_title = serializers.SerializerMethodField()
+    problem_code = serializers.SerializerMethodField()
     language = serializers.SlugRelatedField[Language](slug_field="code", read_only=True)
+    #: `C++23 (GCC 14)`, not `cpp23`: the code is an internal key.
+    language_name = serializers.CharField(source="language.name", read_only=True)
     #: Hack yuzasi masalani qaysi musobaqada lock qilishni shundan biladi
     #: (ADR-0020). ⚠️ `AttemptViewSet` `contest` ni `select_related` ga
     #: qo'shadi — usiz bu maydon har qatorga bitta so'rov qo'shardi.
@@ -38,6 +44,12 @@ class AttemptSerializer(serializers.ModelSerializer[Attempt]):
     def get_is_first_solver(self, obj: Attempt) -> bool:
         return bool(getattr(obj, "is_first_solver", False))
 
+    def get_problem_title(self, obj: Attempt) -> str:
+        return obj.problem.title if obj.problem.is_public else ""
+
+    def get_problem_code(self, obj: Attempt) -> int | None:
+        return obj.problem.code if obj.problem.is_public else None
+
     class Meta:
         model = Attempt
         fields = [
@@ -45,8 +57,11 @@ class AttemptSerializer(serializers.ModelSerializer[Attempt]):
             "username",
             "user_title",
             "problem",
+            "problem_title",
+            "problem_code",
             "contest",
             "language",
+            "language_name",
             "verdict",
             "score",
             "time_ms",
@@ -62,9 +77,21 @@ class AttemptSerializer(serializers.ModelSerializer[Attempt]):
 
 class AttemptDetailSerializer(AttemptSerializer):
     test_results = AttemptTestResultSerializer(many=True, read_only=True)
+    #: How many tests the problem has. `test_results` stops at the first
+    #: failure, so "1 of 100 passed" needs the total from the problem.
+    tests_total = serializers.SerializerMethodField()
+
+    def get_tests_total(self, obj: Attempt) -> int:
+        return obj.problem.tests.count()
 
     class Meta(AttemptSerializer.Meta):
-        fields = [*AttemptSerializer.Meta.fields, "source_code", "compile_output", "test_results"]
+        fields = [
+            *AttemptSerializer.Meta.fields,
+            "source_code",
+            "compile_output",
+            "test_results",
+            "tests_total",
+        ]
 
 
 def _virtual_window_open(registration: ContestRegistration) -> bool:

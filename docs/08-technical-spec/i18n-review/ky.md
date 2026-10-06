@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2202 strings.**
+**2210 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -2223,3 +2223,11 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `search.top` | Eng mos natija | Эң туура келген натыйжа |  |
 | `search.throttled` | Juda ko'p so'rov. Birozdan keyin qayta urinib ko'ring. | Суроолор өтө көп. Бир аздан кийин кайра аракет кылыңыз. |  |
 | `search.throttledWait` | Juda ko'p so'rov. {n} soniyadan keyin qayta urinib ko'ring. | Суроолор өтө көп. {n} секунддан кийин кайра аракет кылыңыз. |  |
+| `attempts.scopeAll` | Hammasi | Баары |  |
+| `attempts.scopeMine` | Mening urinishlarim | Менин аракеттерим |  |
+| `attempts.problemLabel` | Masala bo'yicha filtr | Маселе боюнча чыпка |  |
+| `attempts.problemPlaceholder` | Masala raqami yoki slug… | Маселенин номери же slug… |  |
+| `attempt.tests` | Testlar | Тесттер |  |
+| `attempt.testsPassed` | {passed} / {total} o'tdi | {total} тесттин {passed} өттү |  |
+| `attempt.toProblem` | Masalaga o'tish | Маселеге өтүү |  |
+| `attempt.editResubmit` | Tahrirlab qayta yuborish | Оңдоп, кайра жөнөтүү |  |
