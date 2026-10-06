@@ -79,7 +79,6 @@ Compose project `rankwant` (stack) and `rankwant-runner` (CI runners).
 | --- | --- |
 | Volumes | `rankwant_pgdata`, `rankwant_miniodata`, `rankwant_api_cache`, `rankwant-ci-work`, `rankwant-ci-work-2`, `rankwant-ci-cache` |
 | Networks | `rankwant_default`, `rankwant_judge-net`, `rankwant-runner_default` |
-| Outside compose | `rankwant-postgres-mcp` (database access for agents) |
 
 `rankwant_pgdata` and `rankwant_miniodata` are the production data. They
 live inside the Docker Desktop VHDX and move only through backup and restore.
