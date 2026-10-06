@@ -90,7 +90,7 @@ export default async function LeaderboardPage({ searchParams }: Props) {
                       taqsimoti ko'zga tashlanadi (qaror: hamma joyda).
                       Yashirilgan mamlakatda `country` bo'sh keladi va
                       `CountryFlag` hech narsa chizmaydi. */}
-                  <span className="flex items-center gap-2">
+                  <span className="flex items-center gap-2 max-[359px]:break-all">
                     <CountryFlag code={u.country} />
                     <UserName username={u.username} name={u.display_name} title={u.title} locale={locale} />
                   </span>

@@ -227,7 +227,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
               <TH className="hidden @xl:table-cell">{t(locale, "problems.difficulty")}</TH>
               {/* Statistika ustunlari tor ekranda yig'iladi — nom, raqam va
                 qiyinlik telefonda ham ko'rinib turishi kerak. */}
-              <TH align="center" className="hidden @xl:table-cell">
+              <TH align="center" className="hidden @3xl:table-cell">
                 ★
               </TH>
               <TH align="center" className="hidden @3xl:table-cell">
@@ -239,7 +239,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
               <TH align="right" className="hidden @xl:table-cell">
                 {t(locale, "problems.solved")}
               </TH>
-              <TH align="right" className="hidden @3xl:table-cell">
+              <TH align="right" className="hidden @xl:table-cell">
                 %
               </TH>
               {me && (
@@ -324,7 +324,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
                       </span>
                     </div>
                   </TD>
-                  <TD align="center" className="hidden @xl:table-cell">
+                  <TD align="center" className="hidden @3xl:table-cell">
                     {p.rating.average === null ? (
                       <span className="rw-faint">—</span>
                     ) : (
@@ -341,13 +341,13 @@ export default async function ProblemsPage({ searchParams }: Props) {
                   </TD>
                   <TD
                     align="center"
-                    className="hidden tabular-nums text-theme-xs rw-dim-2 lg:table-cell"
+                    className="hidden tabular-nums text-theme-xs rw-dim-2 @3xl:table-cell"
                   >
                     <span title={`${p.likes_count} / ${p.dislikes_count}`}>
                       +{p.likes_count}
                     </span>
                   </TD>
-                  <TD className="hidden max-w-28 truncate text-theme-xs rw-faint xl:table-cell">
+                  <TD className="hidden max-w-28 truncate text-theme-xs rw-faint @4xl:table-cell">
                     {p.author ? (
                       p.author.has_profile ? (
                         <Link
@@ -365,13 +365,13 @@ export default async function ProblemsPage({ searchParams }: Props) {
                   </TD>
                   <TD
                     align="right"
-                    className="hidden rw-faint tabular-nums sm:table-cell"
+                    className="hidden rw-faint tabular-nums @xl:table-cell"
                   >
                     {p.solved_count}
                   </TD>
                   <TD
                     align="right"
-                    className="hidden rw-faint tabular-nums lg:table-cell"
+                    className="hidden rw-faint tabular-nums @xl:table-cell"
                   >
                     {p.success_rate === null ? "—" : `${p.success_rate}%`}
                   </TD>

@@ -21,7 +21,7 @@ function Row({ solver, locale }: { solver: Solver; locale: Locale }) {
       <td className="px-5 py-2.5">
         <Link
           href={`/users/${solver.username}`}
-          className="font-medium rw-strong rw-link-hover"
+          className="font-medium rw-strong rw-link-hover max-[359px]:break-all"
         >
           {solver.username}
         </Link>

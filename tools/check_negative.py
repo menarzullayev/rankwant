@@ -3822,6 +3822,16 @@ def neg_scroll_utility_dropped() -> tuple[bool, str]:
     )
 
 
+def neg_scroll_table_columns_out_of_step() -> tuple[bool, str]:
+    """A cell goes back to following the window while its header follows the table."""
+    return _scroll_broken(
+        "apps/web/src/app/(site)/problems/page.tsx",
+        'className="hidden rw-faint tabular-nums @xl:table-cell"',
+        'className="hidden rw-faint tabular-nums lg:table-cell"',
+        "table columns follow two rules at once",
+    )
+
+
 def neg_decisions_scroll_gate_unwired() -> tuple[bool, str]:
     """The scroll check no longer runs in CI."""
     return _decision_broken(
@@ -8642,6 +8652,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("qo'lda sahifa qulfi tutilsin", neg_scroll_body_locked_by_hand),
             ("qo'lda scrollIntoView tutilsin", neg_scroll_into_view_by_hand),
             ("yo'qolgan utility tutilsin", neg_scroll_utility_dropped),
+            ("sarlavha va katak ikki qoidada bo'lsa tutilsin", neg_scroll_table_columns_out_of_step),
         ],
     ),
     (
