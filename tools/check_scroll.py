@@ -41,6 +41,13 @@ RAW_SCRIPT = (
     (re.compile(r"\.scrollIntoView\("), "calls `scrollIntoView` — use `revealElement()`"),
     (re.compile(r"\bscroll-smooth\b|scroll-behavior\s*:\s*smooth"), "forces smooth scrolling — ask for it through `revealElement({ smooth: true })`"),
 )
+#: One table, one rule for showing a column. A header that follows the
+#: table's width (`@xl:table-cell`) over a cell that follows the window's
+#: (`lg:table-cell`) leaves the columns out of step — shipped once
+#: (2026-10-06): the problems table drew five headers over eight cells.
+CONTAINER_CELL = re.compile(r"@[a-z0-9\[\].]+:table-cell")
+VIEWPORT_CELL = re.compile(r"(?<![@\w\]])(?:sm|md|lg|xl|2xl):table-cell")
+
 UTILITIES = ("rw-scroll-x", "rw-scroll-y", "rw-scroll", "rw-scroll-trap", "rw-snap-x")
 
 
@@ -61,6 +68,12 @@ def problems() -> list[str]:
         rel = path.relative_to(SRC).as_posix()
         if "/generated/" in rel:
             continue
+        whole = path.read_text(encoding="utf-8")
+        if CONTAINER_CELL.search(whole) and VIEWPORT_CELL.search(whole):
+            found.append(
+                f"{rel}: table columns follow two rules at once "
+                f"(`@…:table-cell` and `{VIEWPORT_CELL.search(whole).group(0)}`) — headers and cells fall out of step"
+            )
         for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
             stripped = line.strip()
             if stripped.startswith(("//", "*", "/*", "{/*")):

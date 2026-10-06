@@ -39,7 +39,7 @@ export function TH({
 }) {
   return (
     <th
-      className={`px-4 py-3 text-theme-xs font-medium rw-dim uppercase 
+      className={`px-2 py-3 @xl:px-4 text-theme-xs font-medium rw-dim uppercase 
  ${align === "right" ? "text-right" : align === "center" ? "text-center" : "text-left"} ${className}`}
     >
       {children}
@@ -103,7 +103,7 @@ export function SortHeader({
     <th
       scope="col"
       aria-sort={active ? ARIA_SORT[direction] : undefined}
-      className={`px-4 py-3 text-theme-xs font-medium rw-dim uppercase ${alignCls} ${className}`}
+      className={`px-2 py-3 @xl:px-4 text-theme-xs font-medium rw-dim uppercase ${alignCls} ${className}`}
     >
       {onSort ? (
         <button
@@ -155,7 +155,7 @@ export function TD({
 }) {
   return (
     <td
-      className={`px-4 py-3 text-theme-sm rw-strong 
+      className={`px-2 py-3 @xl:px-4 text-theme-sm rw-strong 
  ${align === "right" ? "text-right" : align === "center" ? "text-center" : "text-left"}
  ${className}`}
     >
