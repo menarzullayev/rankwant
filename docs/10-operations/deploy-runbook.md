@@ -375,7 +375,7 @@ Hisobot `.handoff/deploy-timing/` ostida. Bosqichlar va nima qimmat:
 [deploy-timing tadqiqoti](../research/2026-09-20-deploy-timing/README.md).
 
 ⚠️ **Docker daemon (bir martalik).** `tools/docker-daemon.json` ni
-`%USERPROFILE%\.docker\daemon.json` ga qo'ying: builder GC 5 GB, json-file
+`%USERPROFILE%\.docker\daemon.json` ga qo'ying: builder GC 10 GB, json-file
 10m×3. O'zgarish **Docker Desktop qayta ishga tushganda** kuchga kiradi
 (qisqa sayt tanaffusi). Compose'dagi `logging:` qayta yaratilgan
 konteynerlarga darhol tushadi, daemon restart'siz.

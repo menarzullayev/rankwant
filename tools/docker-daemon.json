@@ -1,7 +1,7 @@
 {
   "builder": {
     "gc": {
-      "defaultKeepStorage": "5GB",
+      "defaultKeepStorage": "10GB",
       "enabled": true
     }
   },

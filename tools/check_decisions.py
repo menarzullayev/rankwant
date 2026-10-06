@@ -2296,7 +2296,10 @@ def attempts_feed_is_the_shared_table() -> str | None:
 
 
 def docker_disk_stays_bounded() -> str | None:
-    """2026-09-20: log 10m/3, builder GC 5GB, SHA teg yo'q, prune tasdiq'dan keyin.
+    """2026-09-20: log 10m/3, builder GC, SHA teg yo'q, prune tasdiq'dan keyin.
+
+    2026-10-06: GC chegarasi 10 GB, va deploy'dan keyin build cache TO'LIQ
+    tozalanadi — chegaraning o'zi ushlab turmadi (69.6 GB, 36 soatda).
 
     O'lchandi: docker_data.vhdx 5 kunda 40 GB → 132 GB. Ildiz — cheksiz
     json-file log, 20 GB builder cache, har deploy'dagi SHA teglar.
@@ -2316,20 +2319,18 @@ def docker_disk_stays_bounded() -> str | None:
             return f"{rel}: logging {n} ta (kamida {min_logging} servis kerak)"
 
     daemon = read("tools/docker-daemon.json")
-    if '"defaultKeepStorage": "5GB"' not in daemon:
-        return "tools/docker-daemon.json: builder GC 5GB emas"
+    if '"defaultKeepStorage": "10GB"' not in daemon:
+        return "tools/docker-daemon.json: builder GC 10GB emas"
     if '"max-size": "10m"' not in daemon or '"max-file": "3"' not in daemon:
         return "tools/docker-daemon.json: json-file 10m/3 emas"
 
     prune = read("tools/prune_docker_disk.sh")
     if "docker image prune -f" not in prune:
         return "tools/prune_docker_disk.sh: `docker image prune -f` yo'q"
-    if "docker builder prune -f" not in prune:
-        return "tools/prune_docker_disk.sh: `docker builder prune -f` yo'q"
+    if "\ndocker builder prune -af >/dev/null || true\n" not in prune:
+        return "tools/prune_docker_disk.sh: build cache to'liq tozalanmaydi — `-f` ning o'zi 0 bayt bo'shatadi"
     if "docker volume prune" in prune:
         return "tools/prune_docker_disk.sh: volume prune — postgres/minio o'chadi"
-    if "docker builder prune -af" in prune or "docker builder prune --all" in prune:
-        return "tools/prune_docker_disk.sh: builder prune --all joriy cache ni ham o'chiradi"
     if not re.search(
         r"rankwant/\(api\|worker\|beat\|judge\|web\|migrate\):",
         prune,

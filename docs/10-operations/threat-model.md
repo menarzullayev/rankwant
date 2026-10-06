@@ -186,7 +186,7 @@ boundary.** See § 9.
 | S | Unauthorised deploy | host watcher + `check_deploy_gate.py` require a green `main`; `deploy.lock`; `.env.public` is gitignored | the host is a single operator workstation |
 | T | Malicious commit reaching production | every change goes through a PR; ruleset `23667814` blocks force-push and deletion on `main`; `push_guard` hook blocks direct pushes | `required_approving_review_count: 0` — a PR is required but **no second reviewer** |
 | I | Secret leakage into git | `.env.public` gitignored; `gitleaks` exists in `security.yml` — which is **disabled** | **open** — A-3: secret scanning runs nowhere |
-| D | Disk exhaustion | image pruning, log rotation, builder GC 5 GB (`docker_disk_stays_bounded`) | the deploy log itself is not rotated |
+| D | Disk exhaustion | image pruning, log rotation, builder GC 10 GB and a full build-cache prune after every deploy (`docker_disk_stays_bounded`) | the deploy log itself is not rotated |
 | E | Container escape reaching the DB host | see ⑦ | **open** |
 
 ## 8. Accepted risks
