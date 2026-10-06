@@ -51,8 +51,10 @@ test("leaderboard to'rtala reytingni ko'rsatadi", async ({ page }) => {
   const narrow = (page.viewportSize()?.width ?? 0) < 768;
   for (const name of ["Skills", "Contests", "Activity", "Challenges"]) {
     const exact = !narrow || name === "Skills";
+    // `visible`: on a narrow table the column header is still in the DOM,
+    // hidden, and comes first — the line under the name is the one to find.
     await expect(
-      page.locator("main").getByText(name, { exact }).first(),
+      page.locator("main").getByText(name, { exact }).filter({ visible: true }).first(),
     ).toBeVisible();
   }
 });
