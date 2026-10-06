@@ -2309,7 +2309,7 @@ def scroll_is_one_vocabulary() -> str | None:
     """
     if "        run: python3 tools/check_scroll.py\n" not in read(".github/workflows/ci.yml"):
         return "ci.yml: `check_scroll.py` yurmaydi — xom scroll konteyner jim qaytadi"
-    if "    <div tabIndex={0} className=\"min-w-0 rw-scroll-x rw-focus-ring\">\n" not in read("apps/web/src/components/ui/Table.tsx"):
+    if "    <div tabIndex={0} className=\"@container min-w-0 rw-scroll-x rw-focus-ring\">\n" not in read("apps/web/src/components/ui/Table.tsx"):
         return "Table.tsx: jadval qutisida tab to'xtash joyi yo'q — klaviatura bilan yon tomonga surilmaydi"
     if "        className=\"sticky top-16 z-20 -mx-1 -mt-4 space-y-1.5 px-1 py-2\"\n" not in read("apps/web/src/features/submissions/components/AttemptFilters.tsx"):
         return "AttemptFilters.tsx: filtr qatori sarlavha ostiga yopishmaydi (`sticky top-16`)"
