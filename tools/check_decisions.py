@@ -2309,6 +2309,23 @@ def attempts_feed_is_the_shared_table() -> str | None:
     return None
 
 
+def side_menu_keeps_its_sections() -> str | None:
+    """2026-10-06: yon menyu bo'sh joyni avval bo'limlar orasiga beradi.
+
+    O'lchandi (jonli sayt): birinchi ixchamlash 1100 px dan past har ekranda
+    hammasini birdan toraytirardi - 1080 px da 58 px yetishmovchilik uchun
+    280 px olinardi, bo'limlar orasi 4-10 px, sarlavha ostida 2 px.
+    """
+    css = read("apps/web/src/app/theme.css")
+    if "--rw-nav-spare: calc(100vh - 45.125rem);" not in css:
+        return "theme.css: yon menyu ekran balandligiga moslashmaydi (`--rw-nav-spare` yo'q)"
+    if "@media (min-width: 1024px) and (max-height: 1100px) and (pointer: fine)" in css:
+        return "theme.css: yon menyu yana pog'onali ixchamlashda - bo'limlar yopishib qoladi"
+    if "0.625rem + clamp(0rem, var(--rw-nav-spare) / 4, 0.375rem)" not in css:
+        return "theme.css: bo'limlar orasi 10 px dan boshlanmaydi yoki bo'sh joyni birinchi olmaydi"
+    return None
+
+
 def scroll_is_one_vocabulary() -> str | None:
     """2026-10-06: scroll — bitta lug'at, bitta modul.
 
@@ -3116,6 +3133,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("qidiruv chegaralangan va aniq", site_search_is_bounded_and_exact),
     ("urinishlar lentasi umumiy jadvalda", attempts_feed_is_the_shared_table),
     ("scroll bitta lug'atda", scroll_is_one_vocabulary),
+    ("yon menyu bo'limlari ajralib turadi", side_menu_keeps_its_sections),
     ("sanalar sayt zonasida", dates_are_written_in_the_site_zone),
     ("mehmon header'i har tilda sig'adi", guest_header_fits_every_locale),
     ("Nightly stendi production bilan mos", nightly_stack_matches_production),
