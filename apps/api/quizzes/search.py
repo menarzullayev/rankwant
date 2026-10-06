@@ -9,6 +9,8 @@ register(
         kind="quiz",
         queryset=lambda: Quiz.objects.filter(is_published=True),
         primary="title",
+        secondary=("description",),
+        excerpt=("description",),
         order=("-created_at", "pk"),
         hit=lambda row: {"key": row.slug, "title": row.title},
     )

@@ -2251,4 +2251,8 @@ export const kaa: Record<MessageKey, string> = {
   "notif.msg.problem_rerated.body": "Siz sheshken másele qayta bahalandı. Skills: {before} → {after}. Bul sizdiń háreketińiz emes — másele qıyınlıǵı statistika tiykarında jańalandı.",
   "notif.msg.contest_result.title": "{contest}: {rank}-orın, reyting {delta}",
   "notif.msg.contest_result.body": "Contests reytingi: {before} → {after}.",
+  "search.type.shop": "Dúkan",
+  "search.top": "Eń sáykes nátiyje",
+  "search.throttled": "Júdá kóp soraw. Azǵanadan soń qayta urınıp kóriń.",
+  "search.throttledWait": "Júdá kóp soraw. {n} sekundtan soń qayta urınıp kóriń.",
 };

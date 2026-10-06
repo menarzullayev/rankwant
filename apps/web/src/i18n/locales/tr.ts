@@ -2251,4 +2251,8 @@ export const tr: Record<MessageKey, string> = {
   "notif.msg.problem_rerated.body": "Çözdüğünüz bir soru yeniden değerlendirildi. Skills: {before} → {after}. Bu sizin işleminiz değil — sorunun zorluğu istatistiklere göre güncellendi.",
   "notif.msg.contest_result.title": "{contest}: {rank}. sıra, puan {delta}",
   "notif.msg.contest_result.body": "Contests puanı: {before} → {after}",
+  "search.type.shop": "Mağaza",
+  "search.top": "En iyi eşleşme",
+  "search.throttled": "Çok fazla istek. Biraz sonra yeniden deneyin.",
+  "search.throttledWait": "Çok fazla istek. {n} saniye sonra yeniden deneyin.",
 };

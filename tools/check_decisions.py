@@ -2248,6 +2248,29 @@ def notifications_inbox_contract() -> str | None:
     return None
 
 
+def site_search_is_bounded_and_exact() -> str | None:
+    """2026-10-06: qidiruv — o'z chegarasi, aniq moslik, katta jadval himoyasi.
+
+    Robocontest va KEP bilan taqqoslashda topilgan kamchiliklar: endpoint
+    ochiq va chegarasiz edi; masala raqami bo'yicha topilmasdi; «eng mos
+    natija» yo'q edi; tinish belgilaridan iborat so'rov ~974k qatorli
+    foydalanuvchilar jadvalini skanerlardi.
+    """
+    views = read("apps/api/core/views.py")
+    if "ResilientUserRateThrottle, SearchRateThrottle]" not in views:
+        return "core/views.py: qidiruv endpoint'ida o'z tezlik chegarasi yo'q — har so'rov bazaga boradi"
+    if '"search": os.environ.get("THROTTLE_SEARCH"' not in read("apps/api/config/settings.py"):
+        return "config/settings.py: `search` throttle stavkasi yo'q — chegara ishga tushganda yiqiladi"
+    engine = read("apps/api/core/search.py")
+    if "        if not _askable(source, needle):\n            continue\n" not in engine:
+        return "core/search.py: katta jadval himoyasi yo'q — `%%` kabi so'rov foydalanuvchilarni to'liq skanerlaydi"
+    if "if rows and not fuzzy and offset == 0 and rows[0][0] <= 0:" not in engine:
+        return "core/search.py: «eng mos natija» taxminiy mosdan ham olinadi — u faqat aniq moslik bo'lishi shart"
+    if "        exact=by_number,\n" not in read("apps/api/problems/search.py"):
+        return "problems/search.py: masala raqami bo'yicha topilmaydi (`1519`, `#1519`)"
+    return None
+
+
 def docker_disk_stays_bounded() -> str | None:
     """2026-09-20: log 10m/3, builder GC 5GB, SHA teg yo'q, prune tasdiq'dan keyin.
 
@@ -3011,6 +3034,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("jamoa sahifasi boshqariladi", team_page_is_managed_data),
     ("qidiruv bitta dvigatel", site_search_is_one_engine),
     ("bildirishnomalar shartnomasi", notifications_inbox_contract),
+    ("qidiruv chegaralangan va aniq", site_search_is_bounded_and_exact),
     ("mehmon header'i har tilda sig'adi", guest_header_fits_every_locale),
     ("Nightly stendi production bilan mos", nightly_stack_matches_production),
     ("sozlagich: tez qator birinchi", customizer_quick_row_first),

@@ -68,8 +68,21 @@ PAGE_LIMIT_MAX = 50
 #: Deep pages are not a search use case and each one costs a larger sort.
 OFFSET_MAX = 500
 
+#: A large source is only asked when the needle carries at least this many
+#: letters or digits. Measured on the live table (2026-10-06): `%%` and
+#: `__` took 273 ms where an ordinary query takes 40–60 — punctuation
+#: yields no trigram, so the index cannot narrow anything.
+LARGE_MIN_ALNUM = 2
+
+#: Rank of an exact lookup (a problem's number, typed as it is printed).
+RANK_EXACT_LOOKUP = -1
+#: Rank of a match found only in a secondary field (a summary, a body).
+RANK_SECONDARY = 4
+#: Characters of context kept on each side of a match inside a body.
+SNIPPET_RADIUS = 48
+
 #: Chips, in the order the palette shows them.
-TYPES = ("problem", "user", "topic", "contest", "learn", "news")
+TYPES = ("problem", "user", "topic", "contest", "learn", "news", "shop")
 
 
 def normalize_search(text: str) -> str:
@@ -128,6 +141,12 @@ class Source:
     large: bool = False
     #: Tie-break after the rank.
     order: tuple[str, ...] = ("pk",)
+    #: A lookup that is not text matching: given the needle, a `Q` for the
+    #: row it names outright (a problem by its number), or `None`.
+    exact: Callable[[str], Q | None] | None = None
+    #: Secondary fields long enough to be worth quoting from. A match found
+    #: only there is shown with the sentence around it.
+    excerpt: tuple[str, ...] = ()
 
 
 _SOURCES: list[Source] = []
@@ -168,18 +187,33 @@ def _condition(source: Source, names: Iterable[str], needle: str) -> Q:
     return condition
 
 
-def _matches(source: Source, needle: str) -> QuerySet[Any]:
+def _askable(source: Source, needle: str) -> bool:
+    """Whether this source can answer the needle without scanning itself."""
+    if not source.large:
+        return True
+    return sum(char.isalnum() for char in needle) >= LARGE_MIN_ALNUM
+
+
+def _matches(source: Source, needle: str, lookup_only: bool = False) -> QuerySet[Any]:
     queryset, names = _annotated(source)
+    lookup = source.exact(needle) if source.exact else None
+    # A needle too short to match as text (`7`) can still name a row.
+    condition = Q(pk__in=[]) if lookup_only else _condition(source, names, needle)
+    whens = []
+    if lookup is not None:
+        condition |= lookup
+        whens.append(When(lookup, then=Value(RANK_EXACT_LOOKUP)))
     rank = Case(
+        *whens,
         When(_s=needle, then=Value(0)),
         When(_s__startswith=needle, then=Value(1)),
         When(_s__contains=f" {needle}", then=Value(2)),
         When(_s__contains=needle, then=Value(3)),
-        default=Value(4),
+        default=Value(RANK_SECONDARY),
         output_field=IntegerField(),
     )
     matched: QuerySet[Any] = (
-        queryset.filter(_condition(source, names, needle))
+        queryset.filter(condition)
         # The count rides on the page query. A separate `COUNT(*) … LIMIT`
         # was measured on a million users (2026-10-05): the planner
         # overestimates `LIKE '%abc%'`, picks a sequential scan for the
@@ -202,35 +236,87 @@ def _fuzzy(source: Source, needle: str, limit: int) -> list[Any]:
     )
 
 
-def _to_hit(source: Source, row: Any) -> dict[str, Any]:
-    return {"type": source.type, "kind": source.kind, **source.hit(row)}
+def excerpt(text: str, needle: str) -> str:
+    """The words around the first place `needle` occurs in `text`.
+
+    Matching is done on the folded text, the cut on the original: the two
+    differ in length wherever an apostrophe was dropped, so every folded
+    character remembers where it came from.
+    """
+    folded: list[str] = []
+    origin: list[int] = []
+    for index, char in enumerate(text):
+        if char in APOSTROPHES:
+            continue
+        for lowered in char.lower():
+            folded.append(" " if lowered.isspace() else lowered)
+            origin.append(index)
+    at = "".join(folded).find(needle)
+    if at < 0:
+        return ""
+    start = origin[at]
+    end = origin[at + len(needle) - 1] + 1
+    left = max(0, start - SNIPPET_RADIUS)
+    right = min(len(text), end + SNIPPET_RADIUS)
+    # Do not start or stop in the middle of a word.
+    if left > 0:
+        left = text.find(" ", left, start) + 1 or left
+    if right < len(text):
+        right = text.rfind(" ", end, right) if text.rfind(" ", end, right) > end else right
+    body = " ".join(text[left:right].split())
+    return ("…" if left > 0 else "") + body + ("…" if right < len(text) else "")
 
 
-def _group(kind_of: str, needle: str, limit: int, offset: int) -> dict[str, Any]:
+def _to_hit(source: Source, row: Any, needle: str = "") -> dict[str, Any]:
+    hit = {"type": source.type, "kind": source.kind, **source.hit(row)}
+    # Found only in a long text: say where, or the title alone would not
+    # explain why this result is here.
+    if needle and getattr(row, "_rank", None) == RANK_SECONDARY:
+        for field in source.excerpt:
+            quoted = excerpt(str(getattr(row, field, "") or ""), needle)
+            if quoted:
+                hit["snippet"] = quoted
+                break
+    return hit
+
+
+def _group(
+    kind_of: str, needle: str, limit: int, offset: int, lookup_only: bool = False
+) -> dict[str, Any]:
     """One type's page: merged across its sources, rank first."""
-    found = sources(kind_of)
+    found = [s for s in sources(kind_of) if s.exact or not lookup_only]
     count = 0
     rows: list[tuple[int, int, int, Source, Any]] = []
     for index, source in enumerate(found):
-        matches = _matches(source, needle)
+        if not _askable(source, needle):
+            continue
+        matches = _matches(source, needle, lookup_only)
         page = list(matches[: offset + limit])
         # An offset past the end returns no row to read the total from.
         count += page[0]._total if page else (matches.count() if offset else 0)
         for position, row in enumerate(page):
             rows.append((row._rank, index, position, source, row))
     fuzzy = False
-    if count == 0 and offset == 0:
+    if count == 0 and offset == 0 and not lookup_only:
         for index, source in enumerate(found):
             for position, row in enumerate(_fuzzy(source, needle, limit)):
                 rows.append((round((1 - row._sim) * 1000), index, position, source, row))
         fuzzy = bool(rows)
         count = len(rows)
     rows.sort(key=lambda item: item[:3])
+    # The one result the needle names outright — an exact lookup or an
+    # exact title. Never a guess: a fuzzy group has no best.
+    best = None
+    if rows and not fuzzy and offset == 0 and rows[0][0] <= 0:
+        best = _to_hit(rows[0][3], rows[0][4])
     return {
         "type": kind_of,
         "count": count,
         "fuzzy": fuzzy,
-        "results": [_to_hit(source, row) for _, _, _, source, row in rows[offset : offset + limit]],
+        "results": [
+            _to_hit(source, row, needle) for _, _, _, source, row in rows[offset : offset + limit]
+        ],
+        "_best": best,
     }
 
 
@@ -258,22 +344,31 @@ def search(
     empty: dict[str, Any] = {
         "q": query.strip()[:MAX_QUERY],
         "type": kind_of if single else "all",
+        "top": None,
         "groups": [],
         "counts": dict.fromkeys(TYPES, 0),
         "total": 0,
     }
-    if len(needle) < MIN_QUERY:
+    # One character is not a text query — but `7` or `#7` is a problem's
+    # number, and those are worth answering with the lookup alone.
+    lookup_only = len(needle) < MIN_QUERY
+    if lookup_only and not needle.removeprefix("#").isdigit():
         return empty
     groups = [
-        _group(name, needle, limit, offset if name == kind_of else 0)
+        _group(name, needle, limit, offset if name == kind_of else 0, lookup_only)
         if not single or name == kind_of
         # Another tab: only its count is needed, so ask for a single row.
-        else _group(name, needle, 1, 0)
+        else _group(name, needle, 1, 0, lookup_only)
         for name in TYPES
     ]
     counts = {group["type"]: group["count"] for group in groups}
     shown = [g for g in groups if (g["type"] == kind_of if single else g["results"])]
-    return {**empty, "groups": shown, "counts": counts, "total": sum(counts.values())}
+    # In the order of `TYPES`: a problem's number beats a user who happens
+    # to be called the same thing.
+    top = next((g["_best"] for g in shown if g["_best"]), None)
+    for group in groups:
+        del group["_best"]
+    return {**empty, "top": top, "groups": shown, "counts": counts, "total": sum(counts.values())}
 
 
 def _users() -> QuerySet[Any]:

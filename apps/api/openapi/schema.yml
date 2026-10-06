@@ -18282,6 +18282,9 @@ components:
           type: string
         subtitle:
           type: string
+        snippet:
+          type: string
+          description: The words around a match found only in a long text
         title_ru:
           type: string
         title_en:
@@ -18308,6 +18311,11 @@ components:
           type: string
         type:
           type: string
+        top:
+          allOf:
+          - $ref: '#/components/schemas/SearchHit'
+          nullable: true
+          description: The one result the query names outright, if any
         groups:
           type: array
           items:
@@ -18322,6 +18330,7 @@ components:
       - counts
       - groups
       - q
+      - top
       - total
       - type
     SectionEnum:

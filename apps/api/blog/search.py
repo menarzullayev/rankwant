@@ -9,7 +9,8 @@ register(
         kind="post",
         queryset=lambda: Post.objects.filter(is_published=True),
         primary="title",
-        secondary=("summary",),
+        secondary=("summary", "body"),
+        excerpt=("body",),
         order=("-published_at", "pk"),
         hit=lambda post: {
             "key": post.slug,

@@ -1039,6 +1039,9 @@ class SearchHitSerializer(serializers.Serializer[Any]):
     key = serializers.CharField(help_text="Slug, username or id — whatever the page URL takes")
     title = serializers.CharField()
     subtitle = serializers.CharField(required=False)
+    snippet = serializers.CharField(
+        required=False, help_text="The words around a match found only in a long text"
+    )
     title_ru = serializers.CharField(required=False)
     title_en = serializers.CharField(required=False)
     code = serializers.IntegerField(required=False, allow_null=True)
@@ -1056,6 +1059,9 @@ class SearchGroupSerializer(serializers.Serializer[Any]):
 class SearchResponseSerializer(serializers.Serializer[Any]):
     q = serializers.CharField(allow_blank=True)
     type = serializers.CharField()
+    top = SearchHitSerializer(
+        allow_null=True, help_text="The one result the query names outright, if any"
+    )
     groups = SearchGroupSerializer(many=True)
     counts = serializers.DictField(child=serializers.IntegerField())
     total = serializers.IntegerField()

@@ -2250,4 +2250,8 @@ export const en: Record<MessageKey, string> = {
   "notif.msg.problem_rerated.body": "A problem you solved was re-rated. Skills: {before} → {after}. This was not your action — the difficulty was updated from statistics.",
   "notif.msg.contest_result.title": "{contest}: place {rank}, rating {delta}",
   "notif.msg.contest_result.body": "Contests rating: {before} → {after}",
+  "search.type.shop": "Shop",
+  "search.top": "Best match",
+  "search.throttled": "Too many requests. Try again in a moment.",
+  "search.throttledWait": "Too many requests. Try again in {n} s.",
 };

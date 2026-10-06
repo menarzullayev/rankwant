@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2198 strings.**
+**2202 strings.**
 
 | Key | Uzbek (source) | Kyrgyz | Review |
 | --- | --- | --- | --- |
@@ -2219,3 +2219,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `notif.msg.problem_rerated.body` | Siz yechgan masala qayta baholandi. Skills: {before} → {after}. Bu sizning harakatingiz emas — masala qiyinligi statistika asosida yangilandi. | Сиз чечкен маселе кайра бааланды. Skills: {before} → {after}. Бул сиздин аракетиңиз эмес — маселенин татаалдыгы статистика боюнча жаңыланды. |  |
 | `notif.msg.contest_result.title` | {contest}: {rank}-o'rin, reyting {delta} | {contest}: {rank}-орун, рейтинг {delta} |  |
 | `notif.msg.contest_result.body` | Contests reytingi: {before} → {after} | Contests рейтинги: {before} → {after} |  |
+| `search.type.shop` | Do'kon | Дүкөн |  |
+| `search.top` | Eng mos natija | Эң туура келген натыйжа |  |
+| `search.throttled` | Juda ko'p so'rov. Birozdan keyin qayta urinib ko'ring. | Суроолор өтө көп. Бир аздан кийин кайра аракет кылыңыз. |  |
+| `search.throttledWait` | Juda ko'p so'rov. {n} soniyadan keyin qayta urinib ko'ring. | Суроолор өтө көп. {n} секунддан кийин кайра аракет кылыңыз. |  |

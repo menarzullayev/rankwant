@@ -2248,4 +2248,8 @@ export const zh: Record<MessageKey, string> = {
   "notif.msg.problem_rerated.body": "你解出的一道题被重新评级。Skills:{before} → {after}。这不是你的操作 — 题目难度根据统计数据更新。",
   "notif.msg.contest_result.title": "{contest}:第 {rank} 名,评分 {delta}",
   "notif.msg.contest_result.body": "Contests 评分:{before} → {after}",
+  "search.type.shop": "商店",
+  "search.top": "最佳匹配",
+  "search.throttled": "请求过多,请稍后再试。",
+  "search.throttledWait": "请求过多,请在 {n} 秒后重试。",
 };

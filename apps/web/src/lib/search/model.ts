@@ -8,7 +8,15 @@
  */
 
 /** Result types the API serves, in chip order. */
-export const SERVER_TYPES = ["problem", "user", "topic", "contest", "learn", "news"] as const;
+export const SERVER_TYPES = [
+  "problem",
+  "user",
+  "topic",
+  "contest",
+  "learn",
+  "news",
+  "shop",
+] as const;
 export type ServerType = (typeof SERVER_TYPES)[number];
 
 /** Types that never leave the browser. */
@@ -24,6 +32,8 @@ export type SearchHit = {
   key: string;
   title: string;
   subtitle?: string;
+  /** The words around a match that was found only in a long text. */
+  snippet?: string;
   title_ru?: string;
   title_en?: string;
   code?: number | null;
@@ -41,6 +51,9 @@ export type SearchGroup = {
 export type SearchResponse = {
   q: string;
   type: "all" | ServerType;
+  /** The one result the query names outright (a problem number, an exact
+   *  username) — or `null`; never a guess. */
+  top: SearchHit | null;
   groups: SearchGroup[];
   counts: Record<ServerType, number>;
   total: number;
@@ -48,6 +61,13 @@ export type SearchResponse = {
 
 /** Shortest query the server answers. */
 export const MIN_QUERY = 2;
+
+/** Whether the server has anything to say to this query. Two characters
+ *  at least — except a number, which names a problem even at one digit. */
+export function isAskable(query: string): boolean {
+  const folded = foldText(query);
+  return folded.length >= MIN_QUERY || /^#?\d+$/.test(folded);
+}
 
 export function isServerType(value: string): value is ServerType {
   return (SERVER_TYPES as readonly string[]).includes(value);
@@ -135,7 +155,8 @@ export function parseQuery(
   raw: string,
   chip: SearchType,
 ): { query: string; type: SearchType; prefixed: boolean } {
-  const scoped = PREFIXES[raw[0] ?? ""];
+  // `#12` is a problem's number as it is printed, not the topic "12".
+  const scoped = /^#\d+$/.test(raw.trim()) ? undefined : PREFIXES[raw[0] ?? ""];
   if (scoped) return { query: raw.slice(1).trim(), type: scoped, prefixed: true };
   return { query: raw.trim(), type: chip, prefixed: false };
 }
@@ -161,7 +182,12 @@ export function hitHref(hit: SearchHit): string {
       if (hit.kind === "roadmap") return `/roadmaps#${key}`;
       return `/learn/${key}`;
     case "news":
-      return hit.kind === "update" ? `/updates/${key}` : `/blog/${key}`;
+      if (hit.kind === "plan") return `/platform-roadmap/${key}`;
+      // A translated title leads to the same entry as the original.
+      return hit.kind === "post" ? `/blog/${key}` : `/updates/${key}`;
+    case "shop":
+      // The shop is one page; an item has no address of its own.
+      return "/qvant";
   }
 }
 
@@ -177,6 +203,9 @@ const KIND_LABELS: Record<string, string> = {
   quiz: "nav.quizzes",
   post: "nav.blog",
   update: "nav.updates",
+  update_translation: "nav.updates",
+  plan: "nav.platformRoadmap",
+  shop_item: "nav.shop",
 };
 
 export function kindLabelKey(hit: SearchHit): string | null {
@@ -197,6 +226,9 @@ const ICONS: Record<string, string> = {
   quiz: "nav.quiz",
   post: "content.article",
   update: "notification.changelog",
+  update_translation: "notification.changelog",
+  plan: "content.roadmap",
+  shop_item: "shop.store",
 };
 
 export function hitIcon(hit: SearchHit): string {
@@ -210,4 +242,9 @@ export function searchHref(query: string, type: SearchType = "all", page = 1): s
   if (isServerType(type)) params.set("type", type);
   if (page > 1) params.set("page", String(page));
   return `/search?${params.toString()}`;
+}
+
+/** Whether two hits are the same thing (the top hit also sits in its group). */
+export function sameHit(a: SearchHit, b: SearchHit): boolean {
+  return a.type === b.type && a.kind === b.kind && a.key === b.key;
 }

@@ -2301,6 +2301,10 @@ export const uz = {
   "notif.msg.problem_rerated.body": "Siz yechgan masala qayta baholandi. Skills: {before} → {after}. Bu sizning harakatingiz emas — masala qiyinligi statistika asosida yangilandi.",
   "notif.msg.contest_result.title": "{contest}: {rank}-o'rin, reyting {delta}",
   "notif.msg.contest_result.body": "Contests reytingi: {before} → {after}",
+  "search.type.shop": "Do'kon",
+  "search.top": "Eng mos natija",
+  "search.throttled": "Juda ko'p so'rov. Birozdan keyin qayta urinib ko'ring.",
+  "search.throttledWait": "Juda ko'p so'rov. {n} soniyadan keyin qayta urinib ko'ring.",
 } as const;
 
 export type MessageKey = keyof typeof uz;

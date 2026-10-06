@@ -2251,4 +2251,8 @@ export const ru: Record<MessageKey, string> = {
   "notif.msg.problem_rerated.body": "Решённая вами задача переоценена. Skills: {before} → {after}. Это не ваше действие — сложность задачи обновлена по статистике.",
   "notif.msg.contest_result.title": "{contest}: {rank}-е место, рейтинг {delta}",
   "notif.msg.contest_result.body": "Рейтинг Contests: {before} → {after}",
+  "search.type.shop": "Магазин",
+  "search.top": "Лучшее совпадение",
+  "search.throttled": "Слишком много запросов. Попробуйте чуть позже.",
+  "search.throttledWait": "Слишком много запросов. Повторите через {n} с.",
 };

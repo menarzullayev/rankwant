@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2198 strings.**
+**2202 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2219,3 +2219,7 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `notif.msg.problem_rerated.body` | Siz yechgan masala qayta baholandi. Skills: {before} → {after}. Bu sizning harakatingiz emas — masala qiyinligi statistika asosida yangilandi. | Siz sheshken másele qayta bahalandı. Skills: {before} → {after}. Bul sizdiń háreketińiz emes — másele qıyınlıǵı statistika tiykarında jańalandı. |  |
 | `notif.msg.contest_result.title` | {contest}: {rank}-o'rin, reyting {delta} | {contest}: {rank}-orın, reyting {delta} |  |
 | `notif.msg.contest_result.body` | Contests reytingi: {before} → {after} | Contests reytingi: {before} → {after}. |  |
+| `search.type.shop` | Do'kon | Dúkan |  |
+| `search.top` | Eng mos natija | Eń sáykes nátiyje |  |
+| `search.throttled` | Juda ko'p so'rov. Birozdan keyin qayta urinib ko'ring. | Júdá kóp soraw. Azǵanadan soń qayta urınıp kóriń. |  |
+| `search.throttledWait` | Juda ko'p so'rov. {n} soniyadan keyin qayta urinib ko'ring. | Júdá kóp soraw. {n} sekundtan soń qayta urınıp kóriń. |  |

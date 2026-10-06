@@ -80,7 +80,12 @@ from core.serializers import (
     UserPublicSerializer,
 )
 from core.tasks import queue, send_email_verify, send_password_reset
-from core.throttling import ResilientScopedRateThrottle
+from core.throttling import (
+    ResilientAnonRateThrottle,
+    ResilientScopedRateThrottle,
+    ResilientUserRateThrottle,
+    SearchRateThrottle,
+)
 from judging.models import Attempt
 from problems.models import Problem
 from profiles.titles import user_title
@@ -418,6 +423,8 @@ class SearchView(APIView):
     """
 
     permission_classes = [AllowAny]
+    # The general limits stay; the search adds its own, tighter one.
+    throttle_classes = [ResilientAnonRateThrottle, ResilientUserRateThrottle, SearchRateThrottle]
 
     @extend_schema(
         parameters=[
