@@ -2318,6 +2318,22 @@ def scroll_is_one_vocabulary() -> str | None:
     return None
 
 
+def dates_are_written_in_the_site_zone() -> str | None:
+    """2026-10-06: sana yordamchilari standart holatda sayt zonasida yozadi.
+
+    O'lchandi (jonli sayt): `dateTime` / `date` / `time` zonani belgilamasdi —
+    web server (UTC) Toshkent vaqti bilan 14:56 da qilingan urinishni
+    «9:56 AM» deb chizardi; klient komponentda brauzer uni qayta chizib,
+    React gidratsiya xatosini (#418) berardi.
+    """
+    core = read("packages/shared/src/i18n/core.ts")
+    if "  return { timeZone: DISPLAY_TIME_ZONE, ...options };\n" not in core:
+        return "i18n/core.ts: sana yordamchilari zonasiz — server UTC vaqtini chizadi, klientda gidratsiya xatosi"
+    if core.count("zoned(options)") != 3:
+        return "i18n/core.ts: `dateTime`, `date` va `time` ning hammasi `zoned()` dan o'tmaydi"
+    return None
+
+
 def docker_disk_stays_bounded() -> str | None:
     """2026-09-20: log 10m/3, builder GC, SHA teg yo'q, prune tasdiq'dan keyin.
 
@@ -3085,6 +3101,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("qidiruv chegaralangan va aniq", site_search_is_bounded_and_exact),
     ("urinishlar lentasi umumiy jadvalda", attempts_feed_is_the_shared_table),
     ("scroll bitta lug'atda", scroll_is_one_vocabulary),
+    ("sanalar sayt zonasida", dates_are_written_in_the_site_zone),
     ("mehmon header'i har tilda sig'adi", guest_header_fits_every_locale),
     ("Nightly stendi production bilan mos", nightly_stack_matches_production),
     ("sozlagich: tez qator birinchi", customizer_quick_row_first),

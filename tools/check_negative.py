@@ -3862,6 +3862,26 @@ def neg_decisions_not_found_unstyled() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_dates_lose_their_zone() -> tuple[bool, str]:
+    """The date helpers format in the zone of whatever machine renders."""
+    return _decision_broken(
+        "packages/shared/src/i18n/core.ts",
+        "  return { timeZone: DISPLAY_TIME_ZONE, ...options };\n",
+        "  return { ...options };\n",
+        "sana yordamchilari zonasiz",
+    )
+
+
+def neg_decisions_one_date_helper_skips_the_zone() -> tuple[bool, str]:
+    """One of the three helpers goes back to raw options."""
+    return _decision_broken(
+        "packages/shared/src/i18n/core.ts",
+        "toLocaleTimeString(intlLocale(locale), zoned(options))",
+        "toLocaleTimeString(intlLocale(locale), options)",
+        "hammasi `zoned()` dan o'tmaydi",
+    )
+
+
 def neg_decisions_deplocks_wrong_python() -> tuple[bool, str]:
     """A lock compiled for another Python drops conditional dependencies."""
     return _decision_broken(
@@ -8790,6 +8810,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("jadval klaviaturada surilmasa tutilsin", neg_decisions_table_not_keyboard_scrollable),
             ("filtr qatori yopishmasa tutilsin", neg_decisions_attempt_filters_not_sticky),
             ("404 uslubsiz chiqsa tutilsin", neg_decisions_not_found_unstyled),
+            ("sana zonasiz qolsa tutilsin", neg_decisions_dates_lose_their_zone),
+            ("bitta sana yordamchisi zonasiz qolsa tutilsin", neg_decisions_one_date_helper_skips_the_zone),
             ("xulosa serverda chizilsa tutilsin", neg_decisions_settings_summary_drawn_on_server),
             ("oxirgi shablon eslanmasa tutilsin", neg_decisions_last_template_not_remembered),
             ("DB paroli yana qattiq yozilsa tutilsin", neg_decisions_db_password_hardcoded_again),
