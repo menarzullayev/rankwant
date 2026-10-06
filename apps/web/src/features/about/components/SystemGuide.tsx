@@ -207,25 +207,38 @@ export function SystemGuide({ languages }: { languages: GuideLanguage[] }) {
         <Table>
           <THead>
             <TH className="w-10">{t(locale, "about.verdicts.col.num")}</TH>
-            <TH className="min-w-[8rem]">{t(locale, "about.verdicts.col.status")}</TH>
-            <TH className="min-w-[12rem]">{t(locale, "about.verdicts.col.event")}</TH>
-            <TH className="min-w-[12rem]">{t(locale, "about.verdicts.col.cause")}</TH>
-            <TH className="min-w-[14rem]">{t(locale, "about.verdicts.col.example")}</TH>
+            <TH className="hidden min-w-[8rem] @3xl:table-cell">{t(locale, "about.verdicts.col.status")}</TH>
+            <TH className="@3xl:min-w-[12rem]">{t(locale, "about.verdicts.col.event")}</TH>
+            <TH className="hidden min-w-[12rem] @3xl:table-cell">{t(locale, "about.verdicts.col.cause")}</TH>
+            <TH className="hidden min-w-[14rem] @3xl:table-cell">{t(locale, "about.verdicts.col.example")}</TH>
           </THead>
           <TBody>
             {ABOUT_VERDICT_ORDER.map((key, i) => (
                 <TR key={key}>
                   <TD className="rw-faint align-top">{i + 1}</TD>
-                  <TD className="align-top">
+                  <TD className="hidden align-top @3xl:table-cell">
                     <Verdict verdict={key} variant="full" />
                   </TD>
-                  <TD className="text-theme-sm rw-dim align-top">
+                  <TD className="text-theme-sm rw-dim align-top [overflow-wrap:anywhere]">
+                    {/* A verdict code is one unbreakable word up to 166 px
+                        wide. On a narrow table it sits above the text
+                        instead of holding a column of its own. */}
+                    <span className="mb-1 block @3xl:hidden">
+                      <Verdict verdict={key} variant="badge" />
+                    </span>
                     {t(locale, verdictGuideKey("event", key))}
+                    {/* Cause and example, when their columns do not fit. */}
+                    <span className="mt-1 block @3xl:hidden">
+                      {t(locale, verdictGuideKey("cause", key))}
+                    </span>
+                    <span className="mt-1 block rw-faint @3xl:hidden">
+                      {t(locale, verdictGuideKey("example", key))}
+                    </span>
                   </TD>
-                  <TD className="text-theme-sm rw-dim align-top">
+                  <TD className="hidden text-theme-sm rw-dim align-top @3xl:table-cell">
                     {t(locale, verdictGuideKey("cause", key))}
                   </TD>
-                  <TD className="text-theme-sm rw-faint align-top">
+                  <TD className="hidden text-theme-sm rw-faint align-top @3xl:table-cell">
                     {t(locale, verdictGuideKey("example", key))}
                   </TD>
                 </TR>

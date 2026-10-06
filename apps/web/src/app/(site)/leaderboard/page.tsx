@@ -72,12 +72,12 @@ export default async function LeaderboardPage({ searchParams }: Props) {
             <TH>#</TH>
             <TH>{t(locale, "standings.user")}</TH>
             <TH align="right">{t(locale, "leaderboard.skills")}</TH>
-            <TH align="right">{t(locale, "leaderboard.contest")}</TH>
+            <TH align="right" className="hidden @xl:table-cell">{t(locale, "leaderboard.contest")}</TH>
             {/* Activity — ADR-0006 fazali ochilish, Phase 1 da yoqildi */}
-            <TH align="right">{t(locale, "leaderboard.activity")}</TH>
+            <TH align="right" className="hidden @xl:table-cell">{t(locale, "leaderboard.activity")}</TH>
             {/* Challenges — Phase 3, duel qurilgach ochildi */}
-            <TH align="right">{t(locale, "leaderboard.challenges")}</TH>
-            <TH align="right">{t(locale, "leaderboard.streak")}</TH>
+            <TH align="right" className="hidden @xl:table-cell">{t(locale, "leaderboard.challenges")}</TH>
+            <TH align="right" className="hidden @xl:table-cell">{t(locale, "leaderboard.streak")}</TH>
           </THead>
           <TBody>
             {data.results.map((u, i) => (
@@ -94,14 +94,23 @@ export default async function LeaderboardPage({ searchParams }: Props) {
                     <CountryFlag code={u.country} />
                     <UserName username={u.username} name={u.display_name} title={u.title} locale={locale} />
                   </span>
+                  {/* The four columns a narrow table hides, as one line. */}
+                  <span className="mt-1 block text-theme-xs rw-faint tabular-nums @xl:hidden">
+                    {[
+                      `${t(locale, "leaderboard.contest")} ${u.rating_contest}`,
+                      `${t(locale, "leaderboard.activity")} ${u.rating_activity}`,
+                      `${t(locale, "leaderboard.challenges")} ${u.rating_challenges}`,
+                      `${t(locale, "leaderboard.streak")} ${u.streak_count}`,
+                    ].join(" · ")}
+                  </span>
                 </TD>
                 <TD align="right" className="font-semibold rw-strong">
                   {u.rating_skills}
                 </TD>
-                <TD align="right">{u.rating_contest}</TD>
-                <TD align="right">{u.rating_activity}</TD>
-                <TD align="right">{u.rating_challenges}</TD>
-                <TD align="right" className="rw-faint">
+                <TD align="right" className="hidden @xl:table-cell">{u.rating_contest}</TD>
+                <TD align="right" className="hidden @xl:table-cell">{u.rating_activity}</TD>
+                <TD align="right" className="hidden @xl:table-cell">{u.rating_challenges}</TD>
+                <TD align="right" className="hidden rw-faint @xl:table-cell">
                   {u.streak_count}
                 </TD>
               </TR>
