@@ -224,7 +224,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
             <THead>
               <TH>#</TH>
               <TH>{t(locale, "problems.name")}</TH>
-              <TH>{t(locale, "problems.difficulty")}</TH>
+              <TH className="hidden @xl:table-cell">{t(locale, "problems.difficulty")}</TH>
               {/* Statistika ustunlari tor ekranda yig'iladi — nom, raqam va
                 qiyinlik telefonda ham ko'rinib turishi kerak. */}
               <TH align="center" className="hidden @xl:table-cell">
@@ -305,8 +305,18 @@ export default async function ProblemsPage({ searchParams }: Props) {
                       )}
                     </div>
                     <TopicBadges topics={p.topics} solved={p.is_solved} />
+                    {/* A narrow table is two columns: the number and this
+                        cell. What the hidden columns said comes down here,
+                        so a phone reads the row without scrolling sideways. */}
+                    <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 @xl:hidden">
+                      <DifficultyBadge value={p.difficulty} />
+                      <span className={`level-${p.level} text-theme-xs`}>{p.level_label}</span>
+                      <span className="text-theme-xs rw-faint tabular-nums">
+                        {t(locale, "problems.solved")} {p.solved_count}
+                      </span>
+                    </div>
                   </TD>
-                  <TD>
+                  <TD className="hidden @xl:table-cell">
                     <div className="flex items-center gap-2">
                       <DifficultyBadge value={p.difficulty} />
                       <span className={`level-${p.level} text-theme-xs`}>

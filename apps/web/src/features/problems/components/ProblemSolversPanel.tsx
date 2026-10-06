@@ -25,21 +25,25 @@ function Row({ solver, locale }: { solver: Solver; locale: Locale }) {
         >
           {solver.username}
         </Link>
+        {/* The columns a narrow table hides, as one line. */}
+        <span className="mt-0.5 block text-theme-xs rw-faint tabular-nums @xl:hidden">
+          {solver.language} · {t(locale, "col.attempt")} {solver.attempts}
+        </span>
       </td>
-      <td className="px-3 py-2.5 rw-dim">{solver.language}</td>
+      <td className="hidden px-3 py-2.5 rw-dim @xl:table-cell">{solver.language}</td>
       <td className="px-3 py-2.5 text-right rw-dim tabular-nums">
         {solver.time_ms} ms
       </td>
-      <td className="hidden px-3 py-2.5 text-right rw-faint tabular-nums sm:table-cell">
+      <td className="hidden px-3 py-2.5 text-right rw-faint tabular-nums @2xl:table-cell">
         {Math.round(solver.memory_kb / 1024)} MB
       </td>
       <td className="px-3 py-2.5 text-right rw-dim tabular-nums">
         {solver.code_length}
       </td>
-      <td className="px-3 py-2.5 text-right rw-faint tabular-nums">
+      <td className="hidden px-3 py-2.5 text-right rw-faint tabular-nums @xl:table-cell">
         {solver.attempts}
       </td>
-      <td className="hidden px-5 py-2.5 text-right rw-faint md:table-cell">
+      <td className="hidden px-5 py-2.5 text-right rw-faint @3xl:table-cell">
         <time dateTime={solver.solved_at}>
           {date(solver.solved_at, locale)}
         </time>
@@ -111,21 +115,21 @@ export async function ProblemSolversPanel({
           }
           bodyClassName="p-0"
         >
-          <div className="rw-scroll-x">
+          <div className="@container rw-scroll-x">
             <table className="w-full">
               <thead>
                 <tr className="border-b rw-divider">
                   <th className="px-5 py-2 text-left text-theme-xs font-medium rw-faint">
                     {t(locale, "standings.user")}
                   </th>
-                  <th className="px-3 py-2 text-left text-theme-xs font-medium rw-faint">
+                  <th className="hidden px-3 py-2 text-left text-theme-xs font-medium rw-faint @xl:table-cell">
                     {t(locale, "attempts.language")}
                   </th>
                   <th className={th}>{t(locale, "col.time")}</th>
-                  <th className={`${th} hidden sm:table-cell`}>{t(locale, "col.memory")}</th>
+                  <th className={`${th} hidden @2xl:table-cell`}>{t(locale, "col.memory")}</th>
                   <th className={th}>{t(locale, "problem.solvers.codeColumn")}</th>
-                  <th className={th}>{t(locale, "col.attempt")}</th>
-                  <th className={`${th} hidden px-5 md:table-cell`}>{t(locale, "profile.date")}</th>
+                  <th className={`${th} hidden @xl:table-cell`}>{t(locale, "col.attempt")}</th>
+                  <th className={`${th} hidden px-5 @3xl:table-cell`}>{t(locale, "profile.date")}</th>
                 </tr>
               </thead>
               <tbody className="rw-divide divide-y">

@@ -20,7 +20,7 @@ export function RatingHistoryTable({ rows, locale }: { rows: RatingChange[]; loc
           <TH>{t(locale, "profile.ratingColumn")}</TH>
           <TH align="right">{t(locale, "profile.change")}</TH>
           <TH>{t(locale, "profile.reason")}</TH>
-          <TH align="right">{t(locale, "profile.date")}</TH>
+          <TH align="right" className="hidden @sm:table-cell">{t(locale, "profile.date")}</TH>
         </THead>
         <TBody>
           {rows.map((row, i) => (
@@ -36,8 +36,12 @@ export function RatingHistoryTable({ rows, locale }: { rows: RatingChange[]; loc
                 {t(locale, `profile.reason.${row.reason}`)}
                 {row.rank !== null && ` · #${row.rank}`}
                 {row.ref_id && ` · ${row.ref_id}`}
+                {/* The date column, when the table is too narrow for it. */}
+                <span className="mt-0.5 block text-theme-xs rw-faint @sm:hidden">
+                  {formatDate(row.created_at, locale)}
+                </span>
               </TD>
-              <TD align="right" className="rw-faint">
+              <TD align="right" className="hidden rw-faint @sm:table-cell">
                 {formatDate(row.created_at, locale)}
               </TD>
             </TR>
