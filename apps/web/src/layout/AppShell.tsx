@@ -116,12 +116,15 @@ function Shell({ children }: { children: React.ReactNode }) {
           onClick={closeMobileSidebar}
         />
       )}
+      {/* A column as tall as the screen, with `main` taking the slack: on
+          a short page the footer sits at the bottom of the window instead
+          of hanging under the content with empty ground below it. */}
       <div
-        className={
+        className={`${full ? "" : "flex min-h-screen flex-col"} ${
           sidenav
             ? `transition-all duration-300 ${wide ? "lg:ml-[260px]" : "lg:ml-[86px]"}`
             : ""
-        }
+        }`}
       >
         {full ? null : navMode === "topnav" && !bare ? (
           <AppTopNav shape={navShape} />
@@ -140,7 +143,7 @@ function Shell({ children }: { children: React.ReactNode }) {
             odam o'qish uchun tor/keng qilib o'zgartira olmasdi. */}
         <main
           id="main"
-          className={full ? undefined : "rw-content mx-auto p-4 md:p-6"}
+          className={full ? undefined : "rw-content mx-auto w-full flex-1 p-4 md:p-6"}
         >
           {children}
         </main>

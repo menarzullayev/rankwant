@@ -2260,4 +2260,7 @@ export const zh: Record<MessageKey, string> = {
   "attempt.testsPassed": "通过 {passed} / {total}",
   "attempt.toProblem": "前往题目",
   "attempt.editResubmit": "编辑并重新提交",
+  "footer.resources": "资源",
+  "footer.telegram": "Telegram 频道",
+  "footer.opensNewTab": "（在新标签页中打开）",
 };

@@ -2313,6 +2313,9 @@ export const uz = {
   "attempt.testsPassed": "{passed} / {total} o'tdi",
   "attempt.toProblem": "Masalaga o'tish",
   "attempt.editResubmit": "Tahrirlab qayta yuborish",
+  "footer.resources": "Resurslar",
+  "footer.telegram": "Telegram kanali",
+  "footer.opensNewTab": "(yangi oynada ochiladi)",
 } as const;
 
 export type MessageKey = keyof typeof uz;

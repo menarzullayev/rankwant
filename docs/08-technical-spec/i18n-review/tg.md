@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2210 strings.**
+**2213 strings.**
 
 | Key | Uzbek (source) | Tajik | Review |
 | --- | --- | --- | --- |
@@ -2231,3 +2231,6 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `attempt.testsPassed` | {passed} / {total} o'tdi | {passed} аз {total} гузашт |  |
 | `attempt.toProblem` | Masalaga o'tish | Ба масъала гузаштан |  |
 | `attempt.editResubmit` | Tahrirlab qayta yuborish | Таҳрир ва аз нав фиристодан |  |
+| `footer.resources` | Resurslar | Захираҳо |  |
+| `footer.telegram` | Telegram kanali | Канали Telegram |  |
+| `footer.opensNewTab` | (yangi oynada ochiladi) | (дар равзанаи нав кушода мешавад) |  |

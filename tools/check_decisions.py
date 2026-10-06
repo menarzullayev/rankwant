@@ -1012,11 +1012,21 @@ def brand_in_header_and_footer_columns() -> str | None:
             "(qaror 22)"
         )
     footer = read(APP_FOOTER)
-    if "lg:grid-cols-[1fr_auto_auto]" not in footer:
+    # 2026-10-06: the footer was redesigned on the owner's request — a band
+    # of its own, the brand from `BrandMark`, and three labelled link groups
+    # (product, resources, contact) instead of one list.
+    if "lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))]" not in footer:
         return (
-            f"{APP_FOOTER}: footer uch ustunga bo'linmagan — brend, "
-            "platforma havolalari va aloqa alohida ustunlarda (qaror 22)"
+            f"{APP_FOOTER}: footer guruhlarga bo'linmagan — brend, platforma, "
+            "resurslar va aloqa alohida ustunlarda (qaror 22, 2026-10-06)"
         )
+    if "<BrandMark variant=\"full\"" not in footer:
+        return f"{APP_FOOTER}: brend `BrandMark` dan emas — wordmark yana nusxalangan (qaror 22)"
+    if footer.count("<nav aria-labelledby=") != 3:
+        return f"{APP_FOOTER}: uchta nomlangan havola guruhi (`<nav aria-labelledby>`) yo'q"
+    # Twice: the link row and the wordmark link.
+    if footer.count("[@media(pointer:coarse)]:min-h-11") < 2:
+        return f"{APP_FOOTER}: havolalar sensorli ekranda 44 px emas"
     for key in ("footer.copyright", "footer.terms", "footer.privacy"):
         if key not in footer:
             return (

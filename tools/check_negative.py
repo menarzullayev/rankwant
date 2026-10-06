@@ -5916,8 +5916,28 @@ def neg_decisions_footer_single_column() -> tuple[bool, str]:
     # brand block — the 3-column structure the owner chose is gone.
     return _decision_broken(
         _FOOTER,
-        "lg:grid-cols-[1fr_auto_auto]",
+        "lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))]",
         "lg:grid-cols-1",
+        _BRAND_RULE,
+    )
+
+
+def neg_decisions_footer_wordmark_copied() -> tuple[bool, str]:
+    # The footer draws its own wordmark again instead of the single source.
+    return _decision_broken(
+        _FOOTER,
+        '<BrandMark variant="full" className={BRAND} />',
+        '<p className="text-lg font-bold">RankWant</p>',
+        _BRAND_RULE,
+    )
+
+
+def neg_decisions_footer_links_too_small_to_tap() -> tuple[bool, str]:
+    # The 44 px row under a finger goes away: ten untappable links again.
+    return _decision_broken(
+        _FOOTER,
+        " [@media(pointer:coarse)]:min-h-11",
+        "",
         _BRAND_RULE,
     )
 
@@ -5927,9 +5947,9 @@ def neg_decisions_footer_privacy_link_lost() -> tuple[bool, str]:
     # reachable from the footer (ADR-0016), so the legal row is load-bearing.
     return _decision_broken(
         _FOOTER,
-        '        <IntentLink href="/privacy" className="rw-focus-ring hover:underline">\n'
-        '          {t(locale, "footer.privacy")}\n'
-        "        </IntentLink>\n",
+        '              <IntentLink href="/privacy" className={LINK}>\n'
+        '                {t(locale, "footer.privacy")}\n'
+        "              </IntentLink>\n",
         "",
         _BRAND_RULE,
     )
@@ -9227,6 +9247,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("sidebar brendi qaytsa tutilsin", neg_decisions_sidebar_brand_back),
             ("footer bitta ustunga tushsa tutilsin", neg_decisions_footer_single_column),
             ("footer privacy havolasi yo'qolsa tutilsin", neg_decisions_footer_privacy_link_lost),
+            ("footer wordmark nusxalansa tutilsin", neg_decisions_footer_wordmark_copied),
+            ("footer havolalari kichraysa tutilsin", neg_decisions_footer_links_too_small_to_tap),
             (
                 "footer Telegram o'zgarsa tutilsin",
                 neg_decisions_footer_telegram_changed,

@@ -2264,4 +2264,7 @@ export const tg: Record<MessageKey, string> = {
   "attempt.testsPassed": "{passed} аз {total} гузашт",
   "attempt.toProblem": "Ба масъала гузаштан",
   "attempt.editResubmit": "Таҳрир ва аз нав фиристодан",
+  "footer.resources": "Захираҳо",
+  "footer.telegram": "Канали Telegram",
+  "footer.opensNewTab": "(дар равзанаи нав кушода мешавад)",
 };

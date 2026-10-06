@@ -2262,4 +2262,7 @@ export const en: Record<MessageKey, string> = {
   "attempt.testsPassed": "{passed} of {total} passed",
   "attempt.toProblem": "Go to problem",
   "attempt.editResubmit": "Edit and resubmit",
+  "footer.resources": "Resources",
+  "footer.telegram": "Telegram channel",
+  "footer.opensNewTab": "(opens in a new tab)",
 };

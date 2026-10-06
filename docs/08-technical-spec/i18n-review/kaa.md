@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2210 strings.**
+**2213 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2231,3 +2231,6 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `attempt.testsPassed` | {passed} / {total} o'tdi | {passed} / {total} ótti |  |
 | `attempt.toProblem` | Masalaga o'tish | Máselege ótiw |  |
 | `attempt.editResubmit` | Tahrirlab qayta yuborish | Ózgertip qayta jiberiw |  |
+| `footer.resources` | Resurslar | Derekler |  |
+| `footer.telegram` | Telegram kanali | Telegram kanalı |  |
+| `footer.opensNewTab` | (yangi oynada ochiladi) | (jańa aynada ashıladı) |  |
