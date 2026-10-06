@@ -163,7 +163,7 @@ export function starterSource(code: string): string {
  *  allows it. The list comes sorted by name, and with thirty-five
  *  languages the first one is Ada (measured 2026-10-05 on production and
  *  in Nightly) — not what somebody opening A+B expects. */
-const PREFERRED_LANGUAGES = ["cpp23", "py313", "java21"];
+export const PREFERRED_LANGUAGES = ["cpp23", "py313", "java21"];
 
 export function defaultLanguage(languages: { code: string }[]): string {
   const preferred = PREFERRED_LANGUAGES.find((code) =>
