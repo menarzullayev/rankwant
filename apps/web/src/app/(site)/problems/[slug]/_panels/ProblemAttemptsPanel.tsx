@@ -123,7 +123,10 @@ export async function ProblemAttemptsPanel({
 
       <AttemptFilters
         slug={slug}
-        languages={problem.languages.map(({ code, name }) => ({ code, name }))}
+        languages={problem.languages.map(({ code, name, version }) => ({
+          code,
+          name: `${name} ${version}`.trim(),
+        }))}
         verdict={verdict}
         language={language}
         mine={mine === "true"}

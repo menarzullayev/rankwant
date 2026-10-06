@@ -28,8 +28,10 @@ class AttemptSerializer(serializers.ModelSerializer[Attempt]):
     problem_title = serializers.SerializerMethodField()
     problem_code = serializers.SerializerMethodField()
     language = serializers.SlugRelatedField[Language](slug_field="code", read_only=True)
-    #: `C++23 (GCC 14)`, not `cpp23`: the code is an internal key.
-    language_name = serializers.CharField(source="language.name", read_only=True)
+    #: `C++ 23`, not `cpp23`: the code is an internal key. Name and version
+    #: are separate columns (`C++` + `23`, `Ada` + `(GNAT 14)`); the name
+    #: alone would show two Pythons and two C's as one.
+    language_name = serializers.SerializerMethodField()
     #: Hack yuzasi masalani qaysi musobaqada lock qilishni shundan biladi
     #: (ADR-0020). ⚠️ `AttemptViewSet` `contest` ni `select_related` ga
     #: qo'shadi — usiz bu maydon har qatorga bitta so'rov qo'shardi.
@@ -43,6 +45,9 @@ class AttemptSerializer(serializers.ModelSerializer[Attempt]):
 
     def get_is_first_solver(self, obj: Attempt) -> bool:
         return bool(getattr(obj, "is_first_solver", False))
+
+    def get_language_name(self, obj: Attempt) -> str:
+        return f"{obj.language.name} {obj.language.version}".strip()
 
     def get_problem_title(self, obj: Attempt) -> str:
         return obj.problem.title if obj.problem.is_public else ""
