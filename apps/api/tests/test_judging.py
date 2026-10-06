@@ -1132,7 +1132,13 @@ class TestAttemptFeedRow:
         assert row["problem_title"] == problem.title
         assert row["problem_code"] == 12
         assert row["language"] == language.code
-        assert row["language_name"] == language.name
+        assert row["language_name"] == f"{language.name} {language.version}".strip()
+
+    def test_the_language_name_carries_its_version(self, attempt, language) -> None:
+        language.name, language.version = "C++", "23"
+        language.save(update_fields=["name", "version"])
+        (row,) = self._rows()
+        assert row["language_name"] == "C++ 23"
 
     def test_a_hidden_problem_keeps_its_title(self, attempt, problem) -> None:
         problem.is_public = False

@@ -103,7 +103,10 @@ export default async function AttemptsPage({ searchParams }: { searchParams: Pro
         <h1 className="text-title-sm font-bold rw-strong">{t(locale, "attempts.title")}</h1>
 
         <AttemptFilters
-          languages={(languages?.results ?? []).map(({ code, name }) => ({ code, name }))}
+          languages={(languages?.results ?? []).map(({ code, name, version }) => ({
+            code,
+            name: `${name} ${version}`.trim(),
+          }))}
           verdict={verdict}
           language={language}
           mine={mine}
