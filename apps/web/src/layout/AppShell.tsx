@@ -19,6 +19,7 @@ import { UpdatesProvider } from "@/context/UpdatesContext";
 import type { AppearancePrefs, Me } from "@/lib/api";
 import { OverlayProvider } from "@/components/overlay/OverlayHost";
 import { startChiziq } from "@/lib/chiziq";
+import { lockBodyScroll } from "@/lib/scroll";
 import AppFooter from "./AppFooter";
 import AppHeader from "./AppHeader";
 import {
@@ -94,11 +95,7 @@ function Shell({ children }: { children: React.ReactNode }) {
   // ostida siljib ketardi.
   useEffect(() => {
     if (!isMobileOpen) return;
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = previous;
-    };
+    return lockBodyScroll();
   }, [isMobileOpen]);
 
   return (

@@ -165,7 +165,7 @@ describe("CUST-100 contestant customizer", () => {
   });
 
   it("keeps the quick row to single lines below lg", () => {
-    expect(appearance).toContain("max-lg:flex-nowrap max-lg:overflow-x-auto");
+    expect(appearance).toContain("max-lg:flex-nowrap max-lg:rw-scroll-x");
     expect(src("../../src/components/customizer/AccentSection.tsx")).toContain(
       "compact ? QUICK_SWATCHES",
     );

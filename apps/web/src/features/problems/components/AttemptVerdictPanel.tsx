@@ -69,13 +69,13 @@ export function AttemptVerdictPanel({
       </div>
 
       {attempt.compile_output && (
-        <pre className="max-h-56 overflow-auto rw-radius-sm rw-field-bg p-3 text-theme-xs rw-dim-2">
+        <pre tabIndex={0} className="max-h-56 rw-scroll rw-radius-sm rw-field-bg p-3 text-theme-xs rw-dim-2">
           {attempt.compile_output}
         </pre>
       )}
 
       {attempt.test_results.length > 0 && !compact && (
-        <div className="overflow-x-auto">
+        <div className="rw-scroll-x">
           <table className="w-full min-w-[20rem] table-fixed text-left text-theme-xs">
             <thead>
               <tr className="border-b rw-divider rw-faint">

@@ -58,7 +58,7 @@ function languageLabel(lang: GuideLanguage): string {
 function CodeBlock({ code, language }: { code: string; language: string }) {
   return (
     <pre
-      className="overflow-x-auto rounded-md border rw-divider bg-[var(--rw-surface-2)] p-4 font-mono text-theme-xs leading-relaxed rw-strong"
+      className="rw-scroll-x rounded-md border rw-divider bg-[var(--rw-surface-2)] p-4 font-mono text-theme-xs leading-relaxed rw-strong"
       tabIndex={0}
     >
       <code className={`language-${language}`}>{code}</code>
@@ -94,7 +94,7 @@ export function SystemGuide({ languages }: { languages: GuideLanguage[] }) {
             <div
               role="tablist"
               aria-label={t(locale, "about.compilers.tabsLabel")}
-              className="flex max-h-48 flex-wrap gap-2 overflow-y-auto pb-1"
+              className="flex max-h-48 flex-wrap gap-2 rw-scroll-y pb-1"
             >
               {sorted.map((lang) => {
                 const selected = lang.code === (current?.code ?? "");
@@ -203,7 +203,7 @@ export function SystemGuide({ languages }: { languages: GuideLanguage[] }) {
 
       <Card title={t(locale, "about.verdicts.title")}>
         <p className="mb-4 text-theme-sm rw-dim">{t(locale, "about.verdicts.intro")}</p>
-        <div className="overflow-x-auto">
+        <div className="rw-scroll-x">
         <Table>
           <THead>
             <TH className="w-10">{t(locale, "about.verdicts.col.num")}</TH>

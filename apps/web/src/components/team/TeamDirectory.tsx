@@ -113,7 +113,7 @@ export function TeamDirectory({
         <div
           role="group"
           aria-label={text.filterLabel}
-          className="flex min-w-0 flex-1 gap-2 overflow-x-auto py-1"
+          className="flex min-w-0 flex-1 gap-2 rw-scroll-x rw-snap-x py-1"
         >
           <button type="button" aria-pressed={dept === ALL} onClick={() => pick(ALL)} className={chip(dept === ALL)}>
             {text.all}

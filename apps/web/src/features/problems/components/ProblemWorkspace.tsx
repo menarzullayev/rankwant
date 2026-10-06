@@ -271,7 +271,7 @@ export function ProblemWorkspace({
               </button>
             </div>
             <div
-              className="overflow-y-auto p-4"
+              className="rw-scroll-y p-4"
               style={{ maxHeight: `calc(${sheetHPct}vh - 4.5rem)` }}
             >
               {editor}

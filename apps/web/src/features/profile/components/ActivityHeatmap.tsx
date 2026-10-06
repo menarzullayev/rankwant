@@ -105,7 +105,7 @@ export function ActivityHeatmap({
         )}
       </div>
       <div
-        className="relative overflow-x-auto"
+        className="relative rw-scroll-x"
         data-tip={busy ? "…" : undefined}
         data-tip-kind={busy ? SKELETON_TIP : undefined}
       >

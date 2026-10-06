@@ -182,7 +182,7 @@ function SampleField({
       <p className="mb-1 text-theme-2xs font-semibold uppercase tracking-wide rw-faint">
         {label}
       </p>
-      <pre className="max-h-40 overflow-auto rw-radius-sm rw-field-bg p-2 font-mono text-theme-xs rw-strong whitespace-pre-wrap break-words">
+      <pre tabIndex={0} className="max-h-40 rw-scroll rw-radius-sm rw-field-bg p-2 font-mono text-theme-xs rw-strong whitespace-pre-wrap break-words">
         {text || "—"}
       </pre>
     </div>

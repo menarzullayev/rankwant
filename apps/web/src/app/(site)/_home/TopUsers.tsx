@@ -33,7 +33,7 @@ export function TopUsers({
 
   return (
     <div className="space-y-4">
-      <div className="overflow-x-auto">
+      <div className="rw-scroll-x">
         <Segmented
           value={current.key}
           onChange={setActive}

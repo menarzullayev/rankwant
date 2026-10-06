@@ -85,7 +85,7 @@ const MAX_SOURCE_BYTES = SOURCE_MAX_BYTES;
 // yuboradi. O'lchandi: 412 px li telefonda masala sahifasi 600 px
 // bo'lib, yon tomonga siljirdi va tab tugmalarini bosib bo'lmasdi.
 const PANEL =
-  "min-w-0 space-y-4 xl:sticky xl:top-20 xl:max-h-[calc(100vh-5.5rem)] xl:overflow-y-auto";
+  "min-w-0 space-y-4 xl:sticky xl:top-20 xl:max-h-[calc(100vh-5.5rem)] xl:rw-scroll-y";
 
 /** Verdikt uchun SSE (ADR-0029) + polling zaxirasi — oqim uzilsa ham yangilanadi.
  * Birinchi soniyalarda tez, keyin siyrak: kompilyatsiya + testlar odatda
@@ -863,13 +863,13 @@ function CustomView({
             )}
           </div>
           {run.compile_output && (
-            <pre className="max-h-40 overflow-auto rw-radius-sm rw-field-bg p-3 text-theme-xs rw-bad-ink">
+            <pre tabIndex={0} className="max-h-40 rw-scroll rw-radius-sm rw-field-bg p-3 text-theme-xs rw-bad-ink">
               {run.compile_output}
             </pre>
           )}
           <div>
             <p className="mb-1 text-theme-xs rw-faint">{t(locale, "col.output")}</p>
-            <pre className="max-h-56 overflow-auto rw-radius-sm rw-field-bg p-3 text-theme-xs rw-strong">
+            <pre tabIndex={0} className="max-h-56 rw-scroll rw-radius-sm rw-field-bg p-3 text-theme-xs rw-strong">
               {run.stdout || "—"}
             </pre>
           </div>
@@ -932,13 +932,13 @@ function SamplesView({
             <p className="mb-1 text-theme-xs rw-faint">
               {t(locale, "submit.yourOutput")}
             </p>
-            <pre className="max-h-48 overflow-auto rw-radius-sm rw-field-bg p-3 font-mono text-theme-xs rw-bad-ink">
+            <pre tabIndex={0} className="max-h-48 rw-scroll rw-radius-sm rw-field-bg p-3 font-mono text-theme-xs rw-bad-ink">
               {failed.got || "—"}
             </pre>
           </div>
           <div className="min-w-0">
             <p className="mb-1 text-theme-xs rw-faint">{t(locale, "submit.expected")}</p>
-            <pre className="max-h-48 overflow-auto rw-radius-sm rw-field-bg p-3 font-mono text-theme-xs rw-strong">
+            <pre tabIndex={0} className="max-h-48 rw-scroll rw-radius-sm rw-field-bg p-3 font-mono text-theme-xs rw-strong">
               {failed.expected}
             </pre>
           </div>

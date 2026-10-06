@@ -404,6 +404,11 @@ jobs:
       - name: Accessibility (static rules)
         if: steps.check.outputs.ready == 'true'
         run: python3 tools/check_a11y.py
+      # Scroll boxes are written one way (2026-10-06): the shared
+      # utilities and `lib/scroll.ts`, never raw `overflow-*-auto`.
+      - name: Scroll vocabulary
+        if: steps.check.outputs.ready == 'true'
+        run: python3 tools/check_scroll.py
       # Sxemadan generatsiya qilingan TS tiplar eskirgan bo'lsa — qizil.
       # `openapi/schema.yml` o'zgargan-u `schema.ts` yangilanmagan bo'lsa,
       # mijoz tiplari jimgina noto'g'ri bo'lib qolardi.

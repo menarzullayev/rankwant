@@ -19,7 +19,7 @@ const QUICK_HUES = [0, 38, 140, 170, 215, 262, 320];
 /** The quick row's swatches keep to one line below `lg` (see `QUICK_ROW`
  *  in `AppearanceTab`; repeated here because that file imports this one). */
 const QUICK_SWATCHES =
-  "flex gap-2 max-lg:-mx-1 max-lg:flex-nowrap max-lg:overflow-x-auto max-lg:px-1 max-lg:py-1 lg:flex-wrap";
+  "flex gap-2 max-lg:-mx-1 max-lg:flex-nowrap max-lg:rw-scroll-x rw-snap-x max-lg:px-1 max-lg:py-1 lg:flex-wrap";
 
 /** Swatches: one press applies a colour. `compact` is the quick row. */
 export function AccentSwatches({ compact = false }: { compact?: boolean }) {

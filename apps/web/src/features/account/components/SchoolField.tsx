@@ -56,7 +56,7 @@ export function SchoolField({
       />
       <input type="hidden" name="school_ref" value={id ?? ""} />
       {visible.length > 0 && (
-        <ul className="absolute inset-x-0 z-20 mt-1 max-h-64 overflow-y-auto rw-radius-sm border rw-line rw-surface rw-shadow">
+        <ul className="absolute inset-x-0 z-20 mt-1 max-h-64 rw-scroll-y rw-scroll-trap rw-radius-sm border rw-line rw-surface rw-shadow">
           {visible.map((school) => (
             <li key={school.id}>
               <button

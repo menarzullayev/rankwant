@@ -204,7 +204,7 @@ export function Dropdown({
         static={optionsPinned}
         modal={false}
         style={optionsStyle}
-        className={`z-[200] max-h-72 overflow-y-auto rw-radius border rw-line rw-surface p-1.5 rw-shadow [--anchor-gap:4px] [--anchor-max-height:18rem] ${
+        className={`z-[200] max-h-72 rw-scroll-y rw-scroll-trap rw-radius border rw-line rw-surface p-1.5 rw-shadow [--anchor-gap:4px] [--anchor-max-height:18rem] ${
           optionsClassName ??
           (header
             ? "absolute top-full right-0 mt-1 w-64"

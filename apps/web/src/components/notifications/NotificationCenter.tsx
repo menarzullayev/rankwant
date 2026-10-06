@@ -108,7 +108,7 @@ export function NotificationCenter() {
         <div
           role="group"
           aria-label={t(locale, "notif.filterLabel")}
-          className="flex gap-2 overflow-x-auto py-1"
+          className="flex gap-2 rw-scroll-x rw-snap-x py-1"
         >
           <button
             type="button"

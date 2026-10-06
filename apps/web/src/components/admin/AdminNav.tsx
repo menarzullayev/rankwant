@@ -12,7 +12,7 @@ export function AdminNav() {
   const pathname = usePathname();
   const locale = useLocale();
   return (
-    <nav className="no-scrollbar -mx-1 flex gap-1 overflow-x-auto pb-1">
+    <nav className="no-scrollbar -mx-1 flex gap-1 rw-scroll-x rw-snap-x pb-1">
       {ADMIN_SECTIONS.map((s) => {
         const active = pathname === s.href || pathname.startsWith(`${s.href}/`);
         return (

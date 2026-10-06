@@ -725,7 +725,11 @@ def mobile_drawer_is_accessible() -> str | None:
     if 'event.key === "Escape"' not in read(SIDEBAR_CONTEXT):
         return f"{SIDEBAR_CONTEXT}: `Esc` ochiq mobil panelni yopmaydi"
 
-    if 'document.body.style.overflow = "hidden"' not in read(APP_SHELL):
+    # The lock itself lives in `lib/scroll.ts` since 2026-10-06 (counted,
+    # shared with the search palette and the notification panel).
+    if "    return lockBodyScroll();\n" not in read(APP_SHELL) or (
+        'document.body.style.overflow = "hidden"' not in read("apps/web/src/lib/scroll.ts")
+    ):
         return f"{APP_SHELL}: panel ochiq ekan orqa fon scroll'i qulflanmagan"
     if "if (!isMobileOpen) return;" not in read(APP_SHELL):
         return (
@@ -2150,7 +2154,7 @@ def nightly_stack_matches_production() -> str | None:
     seed = read("apps/api/core/management/commands/seed_demo.py")
     if "for language in Language.objects.filter(is_active=True):" not in seed:
         return "seed_demo.py: A+B ga bitta til qatori yoziladi — masala faqat o'sha tilga ochiladi"
-    if '<div className="relative min-w-0 overflow-x-auto">' not in read("apps/web/src/features/problems/components/SampleTests.tsx"):
+    if '<div className="relative min-w-0 rw-scroll-x">' not in read("apps/web/src/features/problems/components/SampleTests.tsx"):
         return "SampleTests.tsx: aylantirish qutisi `relative` emas — `sr-only` yorliq sahifani kengaytiradi"
     ignore = ROOT / "tools/ci.Dockerfile.dockerignore"
     if not ignore.exists() or "!apps/api/requirements-dev.lock" not in ignore.read_text(encoding="utf-8"):
@@ -2292,6 +2296,25 @@ def attempts_feed_is_the_shared_table() -> str | None:
         return "AttemptLiveProvider.tsx: mehmon ham oqimga ulanadi — har tashrifda 401 va qayta urinish"
     if '"language_name",' not in read("apps/api/judging/serializers.py"):
         return "judging/serializers.py: urinish qatorida til nomi yo'q — sahifa ichki kalitni ko'rsatadi"
+    return None
+
+
+def scroll_is_one_vocabulary() -> str | None:
+    """2026-10-06: scroll — bitta lug'at, bitta modul.
+
+    O'lchandi: 33 faylda 44 ta scroll konteyner, har biri xom
+    `overflow-*-auto` bilan; uchta qatlam sahifani uch nusxa kod bilan
+    qulflardi; keng jadvalni klaviatura bilan surib bo'lmasdi; urinishlar
+    filtri yopishmasdi; 404 sahifasi uslubsiz chiqardi.
+    """
+    if "        run: python3 tools/check_scroll.py\n" not in read(".github/workflows/ci.yml"):
+        return "ci.yml: `check_scroll.py` yurmaydi — xom scroll konteyner jim qaytadi"
+    if "    <div tabIndex={0} className=\"min-w-0 rw-scroll-x rw-focus-ring\">\n" not in read("apps/web/src/components/ui/Table.tsx"):
+        return "Table.tsx: jadval qutisida tab to'xtash joyi yo'q — klaviatura bilan yon tomonga surilmaydi"
+    if "        className=\"sticky top-16 z-20 -mx-1 -mt-4 space-y-1.5 px-1 py-2\"\n" not in read("apps/web/src/features/submissions/components/AttemptFilters.tsx"):
+        return "AttemptFilters.tsx: filtr qatori sarlavha ostiga yopishmaydi (`sticky top-16`)"
+    if "import \"./globals.css\";\n" not in read("apps/web/src/app/not-found.tsx"):
+        return "not-found.tsx: 404 sahifasi uslub faylisiz chiziladi"
     return None
 
 
@@ -3061,6 +3084,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("bildirishnomalar shartnomasi", notifications_inbox_contract),
     ("qidiruv chegaralangan va aniq", site_search_is_bounded_and_exact),
     ("urinishlar lentasi umumiy jadvalda", attempts_feed_is_the_shared_table),
+    ("scroll bitta lug'atda", scroll_is_one_vocabulary),
     ("mehmon header'i har tilda sig'adi", guest_header_fits_every_locale),
     ("Nightly stendi production bilan mos", nightly_stack_matches_production),
     ("sozlagich: tez qator birinchi", customizer_quick_row_first),
