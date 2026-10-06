@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Disk: SHA teglar, dangling obrazlar, ishlatilmayotgan build cache.
+# Disk: SHA teglar, dangling obrazlar, build cache.
 #
 # NEGA: 2026-09-15..20 da `docker_data.vhdx` 40 GB → 132 GB. Har deploy
 # `rankwant/<svc>:<sha12>` tegini qoldirardi; VHDX prune'dan keyin ham
@@ -58,7 +58,11 @@ ok "rankwant-build-* obrazlar: ${build_removed}"
 docker image prune -f >/dev/null || true
 ok "dangling obrazlar prune qilindi"
 
-# 4. Ishlatilmayotgan build cache. `--all` YO'Q: joriy qurilish
-# layerlari keyingi deploy'ni isitadi; yuqori chegara daemon'da 5 GB.
-docker builder prune -f >/dev/null || true
-ok "ishlatilmayotgan builder cache prune qilindi"
+# 4. Build cache — hammasi (`-a`). Measured 2026-10-06: the cache reached
+# 69.6 GB in 36 hours (each web build leaves a ~1 GB `npm ci` layer) and
+# C: was down to 9.3 GB free. Nothing short of this removed it: the
+# daemon's GC limit did not hold it, `docker builder prune -f` freed 0 B
+# and so did `--max-used-space 10GB`. The price is a cold build on the
+# next deploy. Images and volumes are not touched.
+docker builder prune -af >/dev/null || true
+ok "builder cache tozalandi"

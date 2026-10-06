@@ -4254,8 +4254,18 @@ def neg_decisions_builder_gc_20gb() -> tuple[bool, str]:
     """Builder GC 20 GB ga qaytsa tutilsin."""
     return _decision_broken(
         "tools/docker-daemon.json",
-        '"defaultKeepStorage": "5GB"',
+        '"defaultKeepStorage": "10GB"',
         '"defaultKeepStorage": "20GB"',
+        "docker disk chegaralangan",
+    )
+
+
+def neg_decisions_build_cache_kept_after_deploy() -> tuple[bool, str]:
+    """The post-deploy prune goes back to the form that frees nothing."""
+    return _decision_broken(
+        "tools/prune_docker_disk.sh",
+        "\ndocker builder prune -af >/dev/null || true\n",
+        "\ndocker builder prune -f >/dev/null || true\n",
         "docker disk chegaralangan",
     )
 
@@ -8816,6 +8826,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
                 "builder GC 20 GB ga qaytsa tutilsin",
                 neg_decisions_builder_gc_20gb,
             ),
+            ("build cache deploy'dan keyin qolsa tutilsin", neg_decisions_build_cache_kept_after_deploy),
             (
                 "typescript o'zi 7 bo'lsa tutilsin",
                 neg_decisions_typescript_is_seven,
