@@ -10,7 +10,11 @@ export function Table({ children }: { children: React.ReactNode }) {
     // O'lchandi: 412 px li telefonda arxiv 629 px bo'lib ketardi.
     // `tabIndex`: a table wider than its box has to scroll from the
     // keyboard too; without a tab stop the arrow keys have nothing to move.
-    <div tabIndex={0} className="min-w-0 rw-scroll-x rw-focus-ring">
+    // `@container`: a column is shown when the TABLE has room for it, not
+    // when the window is wide. The same table sits next to a 284 px side
+    // menu on a laptop and alone on a tablet — measured 2026-10-06: at
+    // 1024 px it had 674 px and scrolled, at 768 px it had 700 px and fitted.
+    <div tabIndex={0} className="@container min-w-0 rw-scroll-x rw-focus-ring">
       <table className="min-w-full text-left">{children}</table>
     </div>
   );

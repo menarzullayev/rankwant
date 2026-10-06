@@ -227,19 +227,19 @@ export default async function ProblemsPage({ searchParams }: Props) {
               <TH>{t(locale, "problems.difficulty")}</TH>
               {/* Statistika ustunlari tor ekranda yig'iladi — nom, raqam va
                 qiyinlik telefonda ham ko'rinib turishi kerak. */}
-              <TH align="center" className="hidden md:table-cell">
+              <TH align="center" className="hidden @xl:table-cell">
                 ★
               </TH>
-              <TH align="center" className="hidden lg:table-cell">
+              <TH align="center" className="hidden @3xl:table-cell">
                 {t(locale, "problems.likes")}
               </TH>
-              <TH className="hidden xl:table-cell">
+              <TH className="hidden @4xl:table-cell">
                 {t(locale, "problems.author")}
               </TH>
-              <TH align="right" className="hidden sm:table-cell">
+              <TH align="right" className="hidden @xl:table-cell">
                 {t(locale, "problems.solved")}
               </TH>
-              <TH align="right" className="hidden lg:table-cell">
+              <TH align="right" className="hidden @3xl:table-cell">
                 %
               </TH>
               {me && (
@@ -314,7 +314,7 @@ export default async function ProblemsPage({ searchParams }: Props) {
                       </span>
                     </div>
                   </TD>
-                  <TD align="center" className="hidden md:table-cell">
+                  <TD align="center" className="hidden @xl:table-cell">
                     {p.rating.average === null ? (
                       <span className="rw-faint">—</span>
                     ) : (

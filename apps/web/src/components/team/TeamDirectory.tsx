@@ -109,11 +109,13 @@ export function TeamDirectory({
 
   return (
     <div data-team-directory>
-      <div className="sticky top-16 z-10 -mx-1 flex flex-wrap items-center gap-3 px-1 py-3 rw-ground-bg">
+      {/* Sticky from `md` only: twelve wrapped chips are three or four rows on
+          a phone, and a bar that tall would cover a third of the screen. */}
+      <div className="z-10 -mx-1 flex flex-wrap items-center gap-3 px-1 py-3 rw-ground-bg md:sticky md:top-16">
         <div
           role="group"
           aria-label={text.filterLabel}
-          className="flex min-w-0 flex-1 gap-2 rw-scroll-x rw-snap-x py-1"
+          className="flex min-w-0 flex-1 flex-wrap gap-2 py-1"
         >
           <button type="button" aria-pressed={dept === ALL} onClick={() => pick(ALL)} className={chip(dept === ALL)}>
             {text.all}

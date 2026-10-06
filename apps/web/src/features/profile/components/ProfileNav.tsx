@@ -36,7 +36,10 @@ export function ProfileNav({ username }: { username: string }) {
     // scroller joy yemaydi, shuning uchun nativ `thin` yo'l yo'q.
     <nav
       aria-label={t(locale, "profile.sections")}
-      className="rw-kit-tabs shadow-[inset_0_-1px_0_var(--rw-divider)]"
+      // The tab style is the viewer's (kit), and its `scroll` variant keeps
+      // one line. Here the tabs wrap instead: half the sections were off
+      // screen on a phone (434 px hidden, measured 2026-10-06).
+      className="rw-kit-tabs !flex-wrap !overflow-x-visible shadow-[inset_0_-1px_0_var(--rw-divider)]"
       data-kit-tabs="scroll"
     >
       {PROFILE_TABS.map((tab) => {

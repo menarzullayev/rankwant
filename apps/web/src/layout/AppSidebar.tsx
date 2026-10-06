@@ -110,7 +110,7 @@ export default function AppSidebar() {
 
       <nav
         id="rw-sidenav"
-        className="no-scrollbar flex-1 rw-scroll-y rw-scroll-trap pb-6"
+        className="rw-sidenav-list no-scrollbar flex-1 rw-scroll-y rw-scroll-trap pb-6"
       >
         {NAV_GROUPS.map((group) => (
           <div key={group.key} className="mb-5">

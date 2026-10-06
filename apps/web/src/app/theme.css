@@ -1219,6 +1219,49 @@
 :root {
   --rw-header-h: 4rem;
 }
+/* The side menu on a laptop. Twenty-one rows at the comfortable height
+   need 1 074 px; an 860 px screen leaves 796, so 278 px sat below the
+   fold on every page (measured 2026-10-06). With a mouse and a short
+   screen the rows tighten until the whole menu is visible. A touch
+   screen keeps the tall rows — the drawer scrolls instead. */
+@media (min-width: 1024px) and (max-height: 1100px) and (pointer: fine) {
+  .rw-sidenav-list {
+    padding-bottom: 0.5rem;
+  }
+  .rw-sidenav-list > div {
+    margin-bottom: 0.625rem;
+  }
+  .rw-sidenav-list > div > p {
+    margin-bottom: 0.125rem;
+  }
+  .rw-sidenav-list ul {
+    gap: 0.125rem;
+  }
+  .rw-sidenav-list .menu-item {
+    padding-block: 0.25rem;
+  }
+}
+@media (min-width: 1024px) and (max-height: 800px) and (pointer: fine) {
+  .rw-sidenav-list > div {
+    margin-bottom: 0.375rem;
+  }
+  .rw-sidenav-list ul {
+    gap: 0;
+  }
+  .rw-sidenav-list .menu-item {
+    padding-block: 0.1875rem;
+  }
+}
+
+@media (min-width: 1024px) and (max-height: 740px) and (pointer: fine) {
+  .rw-sidenav-list > div {
+    margin-bottom: 0.25rem;
+  }
+  .rw-sidenav-list .menu-item {
+    padding-block: 0.125rem;
+  }
+}
+
 /* A jump to an anchor, or to a field that failed validation, lands
    below the sticky header instead of under it. */
 html {

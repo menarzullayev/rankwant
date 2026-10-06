@@ -3836,8 +3836,8 @@ def neg_decisions_table_not_keyboard_scrollable() -> tuple[bool, str]:
     """The table box loses its tab stop."""
     return _decision_broken(
         "apps/web/src/components/ui/Table.tsx",
-        "    <div tabIndex={0} className=\"min-w-0 rw-scroll-x rw-focus-ring\">\n",
-        "    <div className=\"min-w-0 rw-scroll-x rw-focus-ring\">\n",
+        "    <div tabIndex={0} className=\"@container min-w-0 rw-scroll-x rw-focus-ring\">\n",
+        "    <div className=\"@container min-w-0 rw-scroll-x rw-focus-ring\">\n",
         "tab to'xtash joyi yo'q",
     )
 

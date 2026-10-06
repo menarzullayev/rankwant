@@ -94,7 +94,7 @@ export function SystemGuide({ languages }: { languages: GuideLanguage[] }) {
             <div
               role="tablist"
               aria-label={t(locale, "about.compilers.tabsLabel")}
-              className="flex max-h-48 flex-wrap gap-2 rw-scroll-y pb-1"
+              className="flex flex-wrap gap-2 pb-1"
             >
               {sorted.map((lang) => {
                 const selected = lang.code === (current?.code ?? "");
