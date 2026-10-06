@@ -13,7 +13,8 @@ from __future__ import annotations
 from typing import Any, NamedTuple
 
 from problems import testgroups
-from problems.evaluation import EVALUATION_MODE_INVALID, evaluation_error
+from problems.evaluation import EVALUATION_MODE_INVALID as EVALUATION_MODE_INVALID
+from problems.evaluation import evaluation_error
 from problems.models import (
     Problem,
     ProblemRevision,
