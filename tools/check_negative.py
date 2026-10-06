@@ -3882,6 +3882,16 @@ def neg_decisions_dates_lose_their_zone() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_attempt_date_in_viewer_locale() -> tuple[bool, str]:
+    """The attempts table formats its date in the viewer's locale again."""
+    return _decision_broken(
+        "apps/web/src/features/submissions/components/AttemptTable.tsx",
+        "                  {numericStamp(row.created_at)}",
+        "                  {new Date(row.created_at).toLocaleString(locale)}",
+        "server va brauzer ICU'si har xil chizadi",
+    )
+
+
 def neg_decisions_one_date_helper_skips_the_zone() -> tuple[bool, str]:
     """One of the three helpers goes back to raw options."""
     return _decision_broken(
@@ -5459,6 +5469,8 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/features/problems/components/SampleTests.tsx",
     "apps/api/core/management/commands/seed_demo.py",
     "tools/ci.Dockerfile.dockerignore",
+    # Attempt dates (2026-10-06).
+    "apps/web/src/features/submissions/components/AttemptTable.tsx",
     # Scroll (2026-10-06).
     "apps/web/src/components/ui/Table.tsx",
     "apps/web/src/features/submissions/components/AttemptFilters.tsx",
@@ -8843,6 +8855,7 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("404 uslubsiz chiqsa tutilsin", neg_decisions_not_found_unstyled),
             ("sana zonasiz qolsa tutilsin", neg_decisions_dates_lose_their_zone),
             ("bitta sana yordamchisi zonasiz qolsa tutilsin", neg_decisions_one_date_helper_skips_the_zone),
+            ("urinish sanasi til bo'yicha formatlansa tutilsin", neg_decisions_attempt_date_in_viewer_locale),
             ("xulosa serverda chizilsa tutilsin", neg_decisions_settings_summary_drawn_on_server),
             ("oxirgi shablon eslanmasa tutilsin", neg_decisions_last_template_not_remembered),
             ("DB paroli yana qattiq yozilsa tutilsin", neg_decisions_db_password_hardcoded_again),

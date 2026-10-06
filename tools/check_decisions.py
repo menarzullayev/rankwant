@@ -2341,6 +2341,11 @@ def dates_are_written_in_the_site_zone() -> str | None:
         return "i18n/core.ts: sana yordamchilari zonasiz — server UTC vaqtini chizadi, klientda gidratsiya xatosi"
     if core.count("zoned(options)") != 3:
         return "i18n/core.ts: `dateTime`, `date` va `time` ning hammasi `zoned()` dan o'tmaydi"
+    # A client component that is also server-rendered must not format a date
+    # in the viewer's locale: Node has `uz` date data, the browser does not.
+    table = read("apps/web/src/features/submissions/components/AttemptTable.tsx")
+    if table.count("numericStamp(row.created_at)") != 2:
+        return "AttemptTable.tsx: sana til bo'yicha formatlanadi — server va brauzer ICU'si har xil chizadi (gidratsiya xatosi)"
     return None
 
 

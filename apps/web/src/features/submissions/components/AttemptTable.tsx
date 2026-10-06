@@ -5,13 +5,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 
+import { numericStamp } from "@rankwant/shared/format";
+
 import { SortHeader, TBody, TD, TH, THead, Table, type SortDirection } from "@/components/ui/Table";
 import { UserName } from "@/components/ui/Identity";
 import { Loading } from "@/components/ui/Loading";
 import { Verdict } from "@/components/ui/Verdict";
 import { useSession } from "@/context/SessionContext";
 import { useLocale } from "@/i18n/LocaleProvider";
-import { dateTime, fill, t, type Locale } from "@/i18n/messages";
+import { fill, t, type Locale } from "@/i18n/messages";
 import { mergeAttemptRow, useAttemptLiveOptional, AttemptLiveProgress } from "@/features/submissions";
 import { API_BASE, type Attempt } from "@/lib/api";
 import { buildAttemptListHref } from "@/lib/problem-tabs";
@@ -245,7 +247,7 @@ export function AttemptTable({
 
               <TD className="hidden @2xl:table-cell">
                 <time dateTime={row.created_at} className="rw-dim-2">
-                  {dateTime(row.created_at, locale)}
+                  {numericStamp(row.created_at)}
                 </time>
                 {waited !== null && (
                   <span className="block text-theme-xs rw-faint">
@@ -294,7 +296,7 @@ export function AttemptTable({
                       .join(" · ")}
                   </span>
                   {[
-                    dateTime(row.created_at, locale),
+                    numericStamp(row.created_at),
                     row.language_name || row.language,
                     showProgress ? null : `${row.time_ms} ms`,
                     showProgress ? null : `${Math.round(row.memory_kb / 1024)} MB`,
