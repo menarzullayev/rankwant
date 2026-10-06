@@ -5759,8 +5759,11 @@ export interface components {
             readonly username: string;
             readonly user_title: components["schemas"]["UserTitle"] | null;
             readonly problem: string;
+            readonly problem_title: string;
+            readonly problem_code: number | null;
             readonly contest: string;
             readonly language: string;
+            readonly language_name: string;
             verdict?: components["schemas"]["VerdictEnum"];
             /** Format: int64 */
             score?: number;
@@ -5791,8 +5794,11 @@ export interface components {
             readonly username: string;
             readonly user_title: components["schemas"]["UserTitle"] | null;
             readonly problem: string;
+            readonly problem_title: string;
+            readonly problem_code: number | null;
             readonly contest: string;
             readonly language: string;
+            readonly language_name: string;
             verdict?: components["schemas"]["VerdictEnum"];
             /** Format: int64 */
             score?: number;
@@ -5814,6 +5820,7 @@ export interface components {
             source_code: string;
             compile_output?: string;
             readonly test_results: components["schemas"]["AttemptTestResult"][];
+            readonly tests_total: number;
         };
         AttemptTestResult: {
             /** Format: int64 */

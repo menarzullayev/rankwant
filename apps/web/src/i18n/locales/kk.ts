@@ -2256,4 +2256,12 @@ export const kk: Record<MessageKey, string> = {
   "search.top": "Ең сәйкес нәтиже",
   "search.throttled": "Сұраулар тым көп. Сәлден соң қайталап көріңіз.",
   "search.throttledWait": "Сұраулар тым көп. {n} секундтан соң қайталап көріңіз.",
+  "attempts.scopeAll": "Барлығы",
+  "attempts.scopeMine": "Менің әрекеттерім",
+  "attempts.problemLabel": "Есеп бойынша сүзгі",
+  "attempts.problemPlaceholder": "Есеп нөмірі немесе slug…",
+  "attempt.tests": "Тесттер",
+  "attempt.testsPassed": "{total} тесттің {passed}-і өтті",
+  "attempt.toProblem": "Есепке өту",
+  "attempt.editResubmit": "Өңдеп, қайта жіберу",
 };

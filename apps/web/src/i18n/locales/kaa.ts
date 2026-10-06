@@ -2255,4 +2255,12 @@ export const kaa: Record<MessageKey, string> = {
   "search.top": "Eń sáykes nátiyje",
   "search.throttled": "Júdá kóp soraw. Azǵanadan soń qayta urınıp kóriń.",
   "search.throttledWait": "Júdá kóp soraw. {n} sekundtan soń qayta urınıp kóriń.",
+  "attempts.scopeAll": "Hámmesi",
+  "attempts.scopeMine": "Meniń urınıwlarım",
+  "attempts.problemLabel": "Másele boyınsha filtr",
+  "attempts.problemPlaceholder": "Másele nomeri yamasa slug…",
+  "attempt.tests": "Testler",
+  "attempt.testsPassed": "{passed} / {total} ótti",
+  "attempt.toProblem": "Máselege ótiw",
+  "attempt.editResubmit": "Ózgertip qayta jiberiw",
 };

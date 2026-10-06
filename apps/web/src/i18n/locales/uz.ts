@@ -2305,6 +2305,14 @@ export const uz = {
   "search.top": "Eng mos natija",
   "search.throttled": "Juda ko'p so'rov. Birozdan keyin qayta urinib ko'ring.",
   "search.throttledWait": "Juda ko'p so'rov. {n} soniyadan keyin qayta urinib ko'ring.",
+  "attempts.scopeAll": "Hammasi",
+  "attempts.scopeMine": "Mening urinishlarim",
+  "attempts.problemLabel": "Masala bo'yicha filtr",
+  "attempts.problemPlaceholder": "Masala raqami yoki slug…",
+  "attempt.tests": "Testlar",
+  "attempt.testsPassed": "{passed} / {total} o'tdi",
+  "attempt.toProblem": "Masalaga o'tish",
+  "attempt.editResubmit": "Tahrirlab qayta yuborish",
 } as const;
 
 export type MessageKey = keyof typeof uz;

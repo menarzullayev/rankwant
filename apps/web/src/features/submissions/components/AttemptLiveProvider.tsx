@@ -12,6 +12,8 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 
+import { useSession } from "@/context/SessionContext";
+
 import {
   type AttemptLiveEventPayload,
   type AttemptLivePatch,
@@ -68,10 +70,13 @@ export function AttemptLiveProvider({
   problem,
   children,
 }: {
-  problem: string;
+  /** A problem's channel. Left out on the site-wide feed, where only the
+   *  viewer's own verdicts arrive live and the rest comes with the poll. */
+  problem?: string;
   children: ReactNode;
 }) {
   const router = useRouter();
+  const { user } = useSession();
   const [patches, setPatches] = useState<Record<number, AttemptLivePatch>>({});
   const [liveById, setLiveById] = useState<Record<number, AttemptLiveState>>({});
   const seenEventIds = useRef(new Set<string>());
@@ -96,7 +101,10 @@ export function AttemptLiveProvider({
   );
 
   useEffect(() => {
-    const poll = window.setInterval(() => scheduleRefresh(REFRESH_DEBOUNCE_MS), POLL_MS);
+    // A tab nobody is looking at does not re-read the list.
+    const poll = window.setInterval(() => {
+      if (document.visibilityState === "visible") scheduleRefresh(REFRESH_DEBOUNCE_MS);
+    }, POLL_MS);
     return () => window.clearInterval(poll);
   }, [scheduleRefresh]);
 
@@ -139,13 +147,16 @@ export function AttemptLiveProvider({
   const matchesProblem = useCallback(
     (data: unknown) => {
       const payload = data as AttemptLiveEventPayload | null;
-      return !payload?.problem || payload.problem === problem;
+      return !problem || !payload?.problem || payload.problem === problem;
     },
     [problem],
   );
 
   useEventStream({
     problem,
+    // The stream answers a guest with 401 (ADR-0029) — a console error on
+    // every visit and a retry loop behind it. Guests get the poll alone.
+    enabled: Boolean(user),
     onEvent: (name, data, meta) => {
       if (name === EVENT_RESYNC) {
         scheduleRefresh(REFRESH_DEBOUNCE_MS);

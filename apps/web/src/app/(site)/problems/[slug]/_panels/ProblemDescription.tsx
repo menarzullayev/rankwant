@@ -26,6 +26,14 @@ import { stripDuplicateStatementHeading } from "@/lib/statement-body";
  *  Eski `/problems/[slug]` sahifasidan ko'chirilgan. P0 tahlil endi
  *  tavsif tabida namunalar ostida ham (`Editorial`), alohida tab saqlanadi.
  */
+/** Solvers per attempt, in percent. A handful of solvers against a
+ *  thousand attempts rounds to `0`, which reads as "nobody solved it"
+ *  right next to the solved count — so a non-zero share never shows as 0. */
+function successPercent(solved: number, attempts: number): string {
+  const percent = Math.round((solved / attempts) * 100);
+  return solved > 0 && percent === 0 ? "<1" : String(percent);
+}
+
 export function ProblemDescription({
   problem,
   slug,
@@ -89,9 +97,7 @@ export function ProblemDescription({
             })}
             {problem.attempt_count > 0 &&
               ` · ${fill(t(locale, "problem.successRate"), {
-                percent: Math.round(
-                  (problem.solved_count / problem.attempt_count) * 100,
-                ),
+                percent: successPercent(problem.solved_count, problem.attempt_count),
               })}`}
           </span>
         </div>

@@ -2255,4 +2255,12 @@ export const ky: Record<MessageKey, string> = {
   "search.top": "Эң туура келген натыйжа",
   "search.throttled": "Суроолор өтө көп. Бир аздан кийин кайра аракет кылыңыз.",
   "search.throttledWait": "Суроолор өтө көп. {n} секунддан кийин кайра аракет кылыңыз.",
+  "attempts.scopeAll": "Баары",
+  "attempts.scopeMine": "Менин аракеттерим",
+  "attempts.problemLabel": "Маселе боюнча чыпка",
+  "attempts.problemPlaceholder": "Маселенин номери же slug…",
+  "attempt.tests": "Тесттер",
+  "attempt.testsPassed": "{total} тесттин {passed} өттү",
+  "attempt.toProblem": "Маселеге өтүү",
+  "attempt.editResubmit": "Оңдоп, кайра жөнөтүү",
 };

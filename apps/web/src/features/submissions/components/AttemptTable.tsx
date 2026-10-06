@@ -14,8 +14,8 @@ import { useLocale } from "@/i18n/LocaleProvider";
 import { dateTime, fill, t, type Locale } from "@/i18n/messages";
 import { mergeAttemptRow, useAttemptLiveOptional, AttemptLiveProgress } from "@/features/submissions";
 import { API_BASE, type Attempt } from "@/lib/api";
-import { buildAttemptsHref } from "@/lib/problem-tabs";
-import { isPendingVerdict } from "@/lib/theme/verdict";
+import { buildAttemptListHref } from "@/lib/problem-tabs";
+import { isPendingVerdict, verdictOf } from "@/lib/theme/verdict";
 
 /** Saralanadigan ustun → API `ordering` maydoni.
  *
@@ -45,6 +45,9 @@ const DESC: SortDirection = "desc";
  *  normal holatda sud darhol boshlanadi va raqam shovqin bo'lardi. */
 const QUEUE_MIN_SECONDS = 0.5;
 
+/** No value yet. */
+const DASH = "—";
+
 function queueSeconds(row: Attempt): number | null {
   if (!row.judged_at) return null;
   const waited = (Date.parse(row.judged_at) - Date.parse(row.created_at)) / 1000;
@@ -72,13 +75,28 @@ function runningHint(locale: Locale, row: Attempt): string | null {
   return null;
 }
 
+/** `#0012 Tub sonlar`, or the slug for a problem that keeps its title. */
+function problemName(row: Attempt): string {
+  const title = row.problem_title || row.problem;
+  return row.problem_code !== null
+    ? `#${String(row.problem_code).padStart(4, "0")} ${title}`
+    : title;
+}
+
+function verdictName(locale: Locale, verdict: string): string {
+  const known = verdictOf(verdict);
+  return known ? t(locale, known.labelKey) : verdict;
+}
+
 export function AttemptTable({
   slug,
   rows,
   ordering,
   query,
 }: {
-  slug: string;
+  /** The problem whose tab this is. Left out on the site-wide feed,
+   *  where every row names its own problem instead. */
+  slug?: string;
   rows: Attempt[];
   /** Joriy `?ordering=` qiymati (berilmasa — standart tartib). */
   ordering?: string;
@@ -110,7 +128,7 @@ export function AttemptTable({
       // `cursor` ATAYLAB tashlanadi (`buildAttemptsHref` ichida): tartib
       // o'zgarsa eski kursor boshqa qatorga ishora qiladi va sahifa
       // ro'yxat o'rtasidan ochilardi.
-      return buildAttemptsHref(slug, { ...query, ...next }) as Route;
+      return buildAttemptListHref(slug, { ...query, ...next }) as Route;
     },
     [query, slug],
   );
@@ -156,6 +174,7 @@ export function AttemptTable({
         <TH className="hidden sm:table-cell">{t(locale, "attempts.col.submitted")}</TH>
         <TH className="hidden sm:table-cell">{t(locale, "attempts.language")}</TH>
         <TH>{t(locale, "standings.user")}</TH>
+        {!slug && <TH className="hidden sm:table-cell">{t(locale, "problems.name")}</TH>}
         <TH>{t(locale, "attempts.verdict")}</TH>
         <SortHeader {...sortProps("runTime")} align="right" className="hidden sm:table-cell">
           {t(locale, "attempts.col.runTime")}
@@ -237,7 +256,7 @@ export function AttemptTable({
                 )}
               </TD>
 
-              <TD className="hidden rw-dim sm:table-cell">{row.language}</TD>
+              <TD className="hidden rw-dim sm:table-cell">{row.language_name || row.language}</TD>
 
               <TD>
                 <span className="inline-flex items-center gap-1.5">
@@ -259,11 +278,26 @@ export function AttemptTable({
                     YASHIRILMAYDI, shu yerga ko'chadi: hech narsa
                     yo'qolmaydi. `sm` dan yuqorida ko'rinmaydi. */}
                 <span className="mt-0.5 block text-theme-xs rw-faint sm:hidden">
+                  {/* The verdict mark can be a bare colour on a phone
+                      (D56), so its name is spelled out here too. */}
+                  <span className="block rw-dim">
+                    {[
+                      !slug ? problemName(row) : null,
+                      verdictName(locale, display.verdict),
+                      display.failed_test_index !== null
+                        ? fill(t(locale, "attempts.failedAtTest"), {
+                            index: display.failed_test_index,
+                          })
+                        : null,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </span>
                   {[
                     dateTime(row.created_at, locale),
-                    row.language,
-                    `${row.time_ms} ms`,
-                    `${Math.round(row.memory_kb / 1024)} MB`,
+                    row.language_name || row.language,
+                    showProgress ? null : `${row.time_ms} ms`,
+                    showProgress ? null : `${Math.round(row.memory_kb / 1024)} MB`,
                     `${row.source_size} B`,
                     showContest ? row.contest : null,
                     showScore && row.score > 0 ? String(row.score) : null,
@@ -272,6 +306,19 @@ export function AttemptTable({
                     .join(" · ")}
                 </span>
               </TD>
+
+              {!slug && (
+                <TD className="hidden sm:table-cell">
+                  <Link href={`/problems/${row.problem}` as Route} className="rw-link-hover">
+                    {row.problem_code !== null && (
+                      <span className="mr-1.5 font-mono text-theme-xs rw-faint tabular-nums">
+                        #{String(row.problem_code).padStart(4, "0")}
+                      </span>
+                    )}
+                    {row.problem_title || row.problem}
+                  </Link>
+                </TD>
+              )}
 
               <TD>
                 <span className="inline-flex flex-col gap-2">
@@ -284,7 +331,7 @@ export function AttemptTable({
                       </span>
                     )}
                     {display.failed_test_index !== null && (
-                      <span className="rw-faint text-theme-xs">
+                      <span className="hidden rw-faint text-theme-xs sm:inline">
                         {fill(t(locale, "attempts.failedAtTest"), {
                           index: display.failed_test_index,
                         })}
@@ -302,11 +349,13 @@ export function AttemptTable({
                 </span>
               </TD>
 
+              {/* An attempt still being judged has no time or memory yet;
+                  `0 ms` would read as a measurement. */}
               <TD align="right" className="hidden rw-faint tabular-nums sm:table-cell">
-                {row.time_ms} ms
+                {showProgress ? DASH : `${row.time_ms} ms`}
               </TD>
               <TD align="right" className="hidden rw-faint tabular-nums md:table-cell">
-                {Math.round(row.memory_kb / 1024)} MB
+                {showProgress ? DASH : `${Math.round(row.memory_kb / 1024)} MB`}
               </TD>
               <TD align="right" className="hidden rw-faint tabular-nums lg:table-cell">
                 {row.source_size} B

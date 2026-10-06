@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2202 strings.**
+**2210 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -2223,3 +2223,11 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `search.top` | Eng mos natija | Eń sáykes nátiyje |  |
 | `search.throttled` | Juda ko'p so'rov. Birozdan keyin qayta urinib ko'ring. | Júdá kóp soraw. Azǵanadan soń qayta urınıp kóriń. |  |
 | `search.throttledWait` | Juda ko'p so'rov. {n} soniyadan keyin qayta urinib ko'ring. | Júdá kóp soraw. {n} sekundtan soń qayta urınıp kóriń. |  |
+| `attempts.scopeAll` | Hammasi | Hámmesi |  |
+| `attempts.scopeMine` | Mening urinishlarim | Meniń urınıwlarım |  |
+| `attempts.problemLabel` | Masala bo'yicha filtr | Másele boyınsha filtr |  |
+| `attempts.problemPlaceholder` | Masala raqami yoki slug… | Másele nomeri yamasa slug… |  |
+| `attempt.tests` | Testlar | Testler |  |
+| `attempt.testsPassed` | {passed} / {total} o'tdi | {passed} / {total} ótti |  |
+| `attempt.toProblem` | Masalaga o'tish | Máselege ótiw |  |
+| `attempt.editResubmit` | Tahrirlab qayta yuborish | Ózgertip qayta jiberiw |  |

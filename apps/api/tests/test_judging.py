@@ -563,8 +563,10 @@ class TestAttemptFilters:
 
     def test_faqat_meniki(self, history, problem, user, other_user) -> None:
         client = APIClient()
-        # Mehmonda «meniki» ma'nosiz — filtr qo'llanmaydi.
-        assert len(self.query(client, problem, mine="true")) == 3
+        # A guest has no attempts of their own. The filter used to be
+        # ignored here, which is how a server-side request without its
+        # cookie showed everybody's attempts under "only mine".
+        assert self.query(client, problem, mine="true") == set()
 
         client.force_authenticate(user)
         assert {row[0] for row in self.query(client, problem, mine="true")} == {user.username}
@@ -1098,3 +1100,78 @@ def test_drain_compilation_started_yozadi(db, problem, user, language, monkeypat
     assert (attempt.judge_meta or {}).get("total_tests") == 100
     assert published == [("compilation_started", 100)]
     set_provider(None)
+
+
+@pytest.mark.django_db
+class TestAttemptFeedRow:
+    """What the attempts feed needs to be readable without a second request."""
+
+    @pytest.fixture
+    def attempt(self, user, problem, language) -> Attempt:
+        return Attempt.objects.create(
+            user=user,
+            problem=problem,
+            language=language,
+            source_code="int main(){}",
+            verdict=Verdict.AC,
+            judged_at=timezone.now(),
+        )
+
+    def _rows(self, **params: str) -> list[dict]:
+        r = APIClient().get(reverse("attempt-list"), params)
+        assert r.status_code == 200
+        rows: list[dict] = r.json()["results"]
+        return rows
+
+    def test_row_names_the_problem_and_the_language(self, attempt, problem, language) -> None:
+        problem.is_public = True
+        problem.code = 12
+        problem.save(update_fields=["is_public", "code"])
+        (row,) = self._rows()
+        assert row["problem"] == problem.slug
+        assert row["problem_title"] == problem.title
+        assert row["problem_code"] == 12
+        assert row["language"] == language.code
+        assert row["language_name"] == language.name
+
+    def test_a_hidden_problem_keeps_its_title(self, attempt, problem) -> None:
+        problem.is_public = False
+        problem.code = 12
+        problem.save(update_fields=["is_public", "code"])
+        (row,) = self._rows()
+        assert row["problem_title"] == ""
+        assert row["problem_code"] is None
+
+    def test_the_problem_filter_takes_a_number(self, attempt, problem) -> None:
+        problem.is_public = True
+        problem.code = 12
+        problem.save(update_fields=["is_public", "code"])
+        assert [row["id"] for row in self._rows(problem="12")] == [attempt.pk]
+        assert [row["id"] for row in self._rows(problem="#12")] == [attempt.pk]
+        assert self._rows(problem="13") == []
+
+    def test_a_hidden_problem_is_not_found_by_its_number(self, attempt, problem) -> None:
+        problem.is_public = False
+        problem.code = 12
+        problem.save(update_fields=["is_public", "code"])
+        assert self._rows(problem="12") == []
+
+    def test_detail_counts_the_problems_tests(self, attempt) -> None:
+        r = APIClient().get(reverse("attempt-detail", args=[attempt.pk]))
+        assert r.status_code == 200
+        assert r.json()["tests_total"] == attempt.problem.tests.count()
+
+    def test_mine_is_empty_for_a_guest(self, attempt) -> None:
+        """Not everybody's attempts: a guest has none of their own."""
+        assert self._rows(mine="true") == []
+
+    def test_mine_lists_only_the_viewers_attempts(
+        self, attempt, user, other_user, problem, language
+    ) -> None:
+        Attempt.objects.create(
+            user=other_user, problem=problem, language=language, source_code="x", verdict=Verdict.AC
+        )
+        client = APIClient()
+        client.force_authenticate(user)
+        rows = client.get(reverse("attempt-list"), {"mine": "true"}).json()["results"]
+        assert [row["id"] for row in rows] == [attempt.pk]

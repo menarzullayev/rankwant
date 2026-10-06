@@ -170,10 +170,15 @@ export type Attempt = {
   username: string;
   user_title: UserTitle | null;
   problem: string;
+  /** Empty for a hidden problem — show the slug then. */
+  problem_title: string;
+  problem_code: number | null;
   /** Musobaqa slug'i — musobaqadan tashqarida `null`. Hack yuzasi
    *  masalani qaysi musobaqada lock qilishni shundan biladi. */
   contest: string | null;
   language: string;
+  /** `C++23 (GCC 14)` — what to show; `language` is the key. */
+  language_name: string;
   verdict: string;
   score: number;
   time_ms: number;
@@ -214,6 +219,8 @@ export type AttemptDetail = Attempt & {
   source_code?: string;
   compile_output?: string;
   test_results: TestResult[];
+  /** Tests the problem has; `test_results` stops at the first failure. */
+  tests_total: number;
 };
 
 export type CustomRun = {

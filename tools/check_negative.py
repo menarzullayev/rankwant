@@ -3717,6 +3717,56 @@ def neg_decisions_search_number_lookup_gone() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_attempts_feed_own_table() -> tuple[bool, str]:
+    """The feed draws its own table again."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/attempts/page.tsx",
+        "            <AttemptTable rows={page.results} ordering={ordering} query={tableQuery} />\n",
+        "            <Table />\n",
+        "umumiy `AttemptTable` dan chizilmaydi",
+    )
+
+
+def neg_decisions_attempts_feed_mine_without_session() -> tuple[bool, str]:
+    """The feed asks for my attempts without the session."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/attempts/page.tsx",
+        "      ? getWithSession<Paginated<Attempt>>(`/attempts/?${requestQuery}`)\n",
+        "      ? api.attemptsQuery(`?${requestQuery}`)\n",
+        "sessiyasiz so'raladi — hammaning",
+    )
+
+
+def neg_decisions_attempts_tab_mine_without_session() -> tuple[bool, str]:
+    """The problem tab asks for my attempts without the session."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/problems/[slug]/_panels/ProblemAttemptsPanel.tsx",
+        "      ? await getWithSession<Paginated<Attempt>>(\n",
+        "      ? await plain<Paginated<Attempt>>(\n",
+        "filtr jim e'tiborsiz qoladi",
+    )
+
+
+def neg_decisions_attempts_mine_for_a_guest() -> tuple[bool, str]:
+    """A guest asking for their attempts gets everybody's."""
+    return _decision_broken(
+        "apps/api/judging/views.py",
+        "            qs = qs.filter(user=user) if user.is_authenticated else qs.none()\n",
+        "            qs = qs.filter(user=user) if user.is_authenticated else qs\n",
+        "mehmonga `mine` filtri",
+    )
+
+
+def neg_decisions_attempts_guest_opens_the_stream() -> tuple[bool, str]:
+    """A guest connects to the event stream."""
+    return _decision_broken(
+        "apps/web/src/features/submissions/components/AttemptLiveProvider.tsx",
+        "    enabled: Boolean(user),\n",
+        "",
+        "mehmon ham oqimga ulanadi",
+    )
+
+
 def neg_decisions_deplocks_wrong_python() -> tuple[bool, str]:
     """A lock compiled for another Python drops conditional dependencies."""
     return _decision_broken(
@@ -5274,6 +5324,12 @@ _DECISIONS_SANDBOX_FILES = (
     "apps/web/src/features/problems/components/SampleTests.tsx",
     "apps/api/core/management/commands/seed_demo.py",
     "tools/ci.Dockerfile.dockerignore",
+    # Attempts feed (2026-10-06).
+    "apps/web/src/app/(site)/attempts/page.tsx",
+    "apps/web/src/app/(site)/problems/[slug]/_panels/ProblemAttemptsPanel.tsx",
+    "apps/web/src/features/submissions/components/AttemptLiveProvider.tsx",
+    "apps/api/judging/views.py",
+    "apps/api/judging/serializers.py",
     # Search parity (2026-10-06).
     "apps/api/problems/search.py",
     # Notifications (2026-10-06).
@@ -8606,6 +8662,11 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("qidiruv katta jadvalni skanerlasa tutilsin", neg_decisions_search_large_table_unguarded),
             ("eng mos natija taxmin bo'lsa tutilsin", neg_decisions_search_top_hit_guesses),
             ("masala raqami topilmasa tutilsin", neg_decisions_search_number_lookup_gone),
+            ("lenta o'z jadvalini chizsa tutilsin", neg_decisions_attempts_feed_own_table),
+            ("lenta «meniki»ni sessiyasiz so'rasa tutilsin", neg_decisions_attempts_feed_mine_without_session),
+            ("tab «meniki»ni sessiyasiz so'rasa tutilsin", neg_decisions_attempts_tab_mine_without_session),
+            ("mehmonga hammaning urinishi chiqsa tutilsin", neg_decisions_attempts_mine_for_a_guest),
+            ("mehmon oqimga ulansa tutilsin", neg_decisions_attempts_guest_opens_the_stream),
             ("xulosa serverda chizilsa tutilsin", neg_decisions_settings_summary_drawn_on_server),
             ("oxirgi shablon eslanmasa tutilsin", neg_decisions_last_template_not_remembered),
             ("DB paroli yana qattiq yozilsa tutilsin", neg_decisions_db_password_hardcoded_again),

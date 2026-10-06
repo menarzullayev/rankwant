@@ -2256,4 +2256,12 @@ export const tg: Record<MessageKey, string> = {
   "search.top": "Мувофиқтарин натиҷа",
   "search.throttled": "Дархостҳо аз ҳад зиёд. Пас аз лаҳзае боз кӯшиш кунед.",
   "search.throttledWait": "Дархостҳо аз ҳад зиёд. Пас аз {n} сония боз кӯшиш кунед.",
+  "attempts.scopeAll": "Ҳама",
+  "attempts.scopeMine": "Кӯшишҳои ман",
+  "attempts.problemLabel": "Филтр аз рӯи масъала",
+  "attempts.problemPlaceholder": "Рақами масъала ё slug…",
+  "attempt.tests": "Тестҳо",
+  "attempt.testsPassed": "{passed} аз {total} гузашт",
+  "attempt.toProblem": "Ба масъала гузаштан",
+  "attempt.editResubmit": "Таҳрир ва аз нав фиристодан",
 };
