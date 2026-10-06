@@ -3872,6 +3872,26 @@ def neg_decisions_not_found_unstyled() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_side_menu_stops_adapting() -> tuple[bool, str]:
+    """The menu no longer reads the height of the screen."""
+    return _decision_broken(
+        "apps/web/src/app/theme.css",
+        "--rw-nav-spare: calc(100vh - 45.125rem);",
+        "--rw-nav-spare: 0rem;",
+        "ekran balandligiga moslashmaydi",
+    )
+
+
+def neg_decisions_side_menu_sections_collapse() -> tuple[bool, str]:
+    """Sections start 4 px apart again instead of 10."""
+    return _decision_broken(
+        "apps/web/src/app/theme.css",
+        "0.625rem + clamp(0rem, var(--rw-nav-spare) / 4, 0.375rem)",
+        "0.25rem + clamp(0rem, var(--rw-nav-spare) / 4, 0.375rem)",
+        "bo'limlar orasi 10 px dan boshlanmaydi",
+    )
+
+
 def neg_decisions_dates_lose_their_zone() -> tuple[bool, str]:
     """The date helpers format in the zone of whatever machine renders."""
     return _decision_broken(
@@ -8853,6 +8873,8 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("jadval klaviaturada surilmasa tutilsin", neg_decisions_table_not_keyboard_scrollable),
             ("filtr qatori yopishmasa tutilsin", neg_decisions_attempt_filters_not_sticky),
             ("404 uslubsiz chiqsa tutilsin", neg_decisions_not_found_unstyled),
+            ("yon menyu moslashmay qolsa tutilsin", neg_decisions_side_menu_stops_adapting),
+            ("yon menyu bo'limlari yopishsa tutilsin", neg_decisions_side_menu_sections_collapse),
             ("sana zonasiz qolsa tutilsin", neg_decisions_dates_lose_their_zone),
             ("bitta sana yordamchisi zonasiz qolsa tutilsin", neg_decisions_one_date_helper_skips_the_zone),
             ("urinish sanasi til bo'yicha formatlansa tutilsin", neg_decisions_attempt_date_in_viewer_locale),
