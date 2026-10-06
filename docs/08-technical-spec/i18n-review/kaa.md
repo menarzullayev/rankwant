@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2218 strings.**
+**2238 strings.**
 
 | Key | Uzbek (source) | Karakalpak | Review |
 | --- | --- | --- | --- |
@@ -441,8 +441,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `about.practices.fastIo` | Katta kiritmada tilning tez I/O usullaridan foydalaning. | Use fast I/O for large input in your language. |  |
 | `about.practices.debug` | Mantiqni lokal debug qiling; keyin tozalangan kodni yuboring. | Debug locally, then submit clean code. |  |
 | `about.practices.readAll` | Shart, izohlar va cheklovlarni oxirigacha o'qing. | Read the full statement, notes, and limits. |  |
-| `about.verdicts.title` | Yechim holati kodlari (24 ta) | Verdict codes (24) |  |
-| `about.verdicts.intro` | Platformada 24 ta verdict kodi bor. Jadvalda har biri: nima degani, nima qilish kerak va oddiy misol. | The platform defines 24 verdict codes. Each row explains the meaning, what to do, and a simple example. |  |
+| `about.verdicts.title` | Yechim holati kodlari ({count} ta) | Verdict codes ({count}) |  |
+| `about.verdicts.intro` | Platformada {count} ta verdict kodi bor. Jadvalda har biri: nima degani, nima qilish kerak va oddiy misol. | The platform defines {count} verdict codes. Each row explains the meaning, what to do, and a simple example. |  |
 | `about.verdicts.col.num` | № | # |  |
 | `about.verdicts.col.status` | Holati | Status |  |
 | `about.verdicts.col.event` | Tushuntirish | Meaning |  |
@@ -2239,3 +2239,23 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `nav.badge.new` | {count} ta yangi | {count} jańa |  |
 | `nav.badge.live` | hozir jonli | házir janlı |  |
 | `nav.badge.liveShort` | jonli | janlı |  |
+| `about.journey.title` | Platforma yo'li | Platforma jolı |  |
+| `about.toc.label` | Mundarija | Mazmunı |  |
+| `about.toc.submit` | Yuborish | Jiberiw |  |
+| `about.toc.languages` | Tillar | Tiller |  |
+| `about.toc.verdicts` | Holat kodlari | Halat kodları |  |
+| `about.toc.practices` | Amaliyotlar | Ámeliyatlar |  |
+| `about.toc.judge` | Tizim | Sistema |  |
+| `about.cta.solve` | Birinchi masalani yechish | Birinshi máseleni sheshiw |  |
+| `about.anchor` | Bo'lim havolasi | Bólim siltemesi |  |
+| `about.lang.other` | Boshqa til ({count}) | Basqa til ({count}) |  |
+| `about.lang.count` | {count} ta til | {count} til |  |
+| `about.verdicts.search` | Kod yoki so'z: TLE, xotira… | Kod yamasa sóz: TLE, yad… |  |
+| `about.verdicts.searchLabel` | Holat kodini qidirish | Halat kodın izlew |  |
+| `about.verdicts.groupLabel` | Guruh bo'yicha saralash | Topar boyınsha saralaw |  |
+| `about.verdicts.group.all` | Hammasi | Barlıǵı |  |
+| `about.verdicts.group.common` | Ko'p uchraydigan | Kóp ushırasatuǵın |  |
+| `about.verdicts.group.flow` | Jarayon holatlari | Process halatları |  |
+| `about.verdicts.group.system` | Kam uchraydigan va tizim | Siyrek hám sistemalıq |  |
+| `about.verdicts.found` | {count} ta kod | {count} kod |  |
+| `about.verdicts.none` | Bunday kod topilmadi. | Bunday kod tabılmadı. |  |

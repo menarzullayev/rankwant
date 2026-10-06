@@ -2239,6 +2239,32 @@ def team_page_is_compact() -> str | None:
     return None
 
 
+def about_page_is_one_searchable_page() -> str | None:
+    """2026-10-07: «Qanday ishlaydi» - bitta sahifa, mundarija bilan (HITL: B).
+
+    O'lchandi: 35 til `role="tab"` edi, tanlanmaganlari `tabIndex={-1}` va
+    strelka tugmalari uchun kod yo'q - 34 til klaviaturaga yopiq; standart til
+    alifbo bo'yicha birinchisi (Ada); bo'limlarda langar yo'q; ulashilganda
+    sayt tavsifi va bosh sahifa manzili chiqardi.
+    """
+    languages = read("apps/web/src/features/about/components/LanguageGuide.tsx")
+    if "useState(() => defaultLanguage(sorted))" not in languages:
+        return "LanguageGuide.tsx: namuna alifbo bo'yicha birinchi tilda ochiladi (Ada), muharrir ochadigan tilda emas"
+    if 'role="tab"' in languages or "aria-pressed={language.code === current.code}" not in languages:
+        return "LanguageGuide.tsx: tillar yana `role=\"tab\"` - klaviatura bilan boshqa tilga o'tib bo'lmaydi"
+    if '<details className="group">' not in read("apps/web/src/features/about/components/VerdictGuide.tsx"):
+        return "VerdictGuide.tsx: yopiq kodlar sahifadan chiqarilgan - qidiruv tizimi va «sahifadan topish» ko'rmaydi"
+    if "<section id={id} aria-labelledby={heading}" not in read("apps/web/src/features/about/components/GuideSection.tsx"):
+        return "GuideSection.tsx: bo'limda langar yo'q - `/about#verdicts` havolasi ishlamaydi"
+    sections = read("apps/web/src/features/about/sections.ts")
+    for anchor in ("journey", "submit", "languages", "verdicts", "practices", "judge"):
+        if f'{{ id: "{anchor}", ' not in sections:
+            return f"about/sections.ts: `#{anchor}` langari o'zgargan - ulashilgan havolalar sinadi"
+    if "url: alternates.canonical," not in read("apps/web/src/app/(site)/about/page.tsx"):
+        return "about/page.tsx: ulashilganda sahifa o'z manzilini aytmaydi"
+    return None
+
+
 def site_search_is_one_engine() -> str | None:
     """2026-10-05: sayt qidiruvi — bitta dvigatel, bitta panel.
 
@@ -3183,6 +3209,7 @@ RULES: list[tuple[str, Callable[[], str | None]]] = [
     ("sozlagich telefonda yaqin", customizer_reachable_on_a_phone),
     ("jamoa sahifasi boshqariladi", team_page_is_managed_data),
     ("jamoa sahifasi ixcham", team_page_is_compact),
+    ("qanday ishlaydi sahifasi qidiriladigan", about_page_is_one_searchable_page),
     ("qidiruv bitta dvigatel", site_search_is_one_engine),
     ("bildirishnomalar shartnomasi", notifications_inbox_contract),
     ("qidiruv chegaralangan va aniq", site_search_is_bounded_and_exact),

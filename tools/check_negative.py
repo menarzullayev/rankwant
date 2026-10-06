@@ -3588,6 +3588,56 @@ def neg_decisions_team_shared_as_the_home_page() -> tuple[bool, str]:
     )
 
 
+def neg_decisions_about_opens_on_the_first_language() -> tuple[bool, str]:
+    """The sample opens on whatever sorts first, which is Ada."""
+    return _decision_broken(
+        "apps/web/src/features/about/components/LanguageGuide.tsx",
+        "useState(() => defaultLanguage(sorted))",
+        'useState(() => sorted[0]?.code ?? "")',
+        "namuna alifbo bo'yicha birinchi tilda ochiladi",
+    )
+
+
+def neg_decisions_about_languages_are_tabs_again() -> tuple[bool, str]:
+    """The picker goes back to roles a keyboard cannot move through."""
+    return _decision_broken(
+        "apps/web/src/features/about/components/LanguageGuide.tsx",
+        "              aria-pressed={language.code === current.code}\n",
+        '              role="tab"\n              tabIndex={-1}\n',
+        "klaviatura bilan boshqa tilga o'tib bo'lmaydi",
+    )
+
+
+def neg_decisions_about_closed_verdicts_leave_the_page() -> tuple[bool, str]:
+    """A closed code is no longer in the document at all."""
+    return _decision_broken(
+        "apps/web/src/features/about/components/VerdictGuide.tsx",
+        '<details className="group">',
+        '<div className="group">',
+        "yopiq kodlar sahifadan chiqarilgan",
+    )
+
+
+def neg_decisions_about_anchor_renamed() -> tuple[bool, str]:
+    """A shared link to a section stops landing on it."""
+    return _decision_broken(
+        "apps/web/src/features/about/sections.ts",
+        '{ id: "verdicts", ',
+        '{ id: "holatlar", ',
+        "`#verdicts` langari o'zgargan",
+    )
+
+
+def neg_decisions_about_shared_as_the_home_page() -> tuple[bool, str]:
+    """A shared link no longer names the page it came from."""
+    return _decision_broken(
+        "apps/web/src/app/(site)/about/page.tsx",
+        "      url: alternates.canonical,\n",
+        "",
+        "sahifa o'z manzilini aytmaydi",
+    )
+
+
 def neg_decisions_team_page_shows_drafts() -> tuple[bool, str]:
     """The public team page hands out unpublished members."""
     return _decision_broken(
@@ -5694,6 +5744,11 @@ _DECISIONS_SANDBOX_FILES = (
     # divergence got a dated resolution rather than a silent deletion.
     "docs/research/2026-09-21-security-boundary/README.md",
     "apps/web/src/components/team/TeamDirectory.tsx",
+    "apps/web/src/features/about/components/LanguageGuide.tsx",
+    "apps/web/src/features/about/components/VerdictGuide.tsx",
+    "apps/web/src/features/about/components/GuideSection.tsx",
+    "apps/web/src/features/about/sections.ts",
+    "apps/web/src/app/(site)/about/page.tsx",
 )
 
 
@@ -8956,6 +9011,11 @@ CASES: list[tuple[str, list[tuple[str, object]]]] = [
             ("jamoa sahifasi qoralama bersa tutilsin", neg_decisions_team_page_shows_drafts),
             ("jamoa rasmi tekshirilmasa tutilsin", neg_decisions_team_photo_unchecked),
             ("jamoa xodim yo'li ochilsa tutilsin", neg_decisions_team_staff_route_opened),
+            ("namuna birinchi tilda ochilsa tutilsin", neg_decisions_about_opens_on_the_first_language),
+            ("tillar yana tab bo'lsa tutilsin", neg_decisions_about_languages_are_tabs_again),
+            ("yopiq hukmlar sahifadan chiqsa tutilsin", neg_decisions_about_closed_verdicts_leave_the_page),
+            ("langar o'zgarsa tutilsin", neg_decisions_about_anchor_renamed),
+            ("qanday ishlaydi bosh sahifa bo'lib ulashilsa tutilsin", neg_decisions_about_shared_as_the_home_page),
             ("jamoa lavozimlari sahifadan chiqsa tutilsin", neg_decisions_team_roles_dropped_from_page),
             ("jamoa kartasi ism bilan boshlansa tutilsin", neg_decisions_team_card_heading_is_the_name),
             ("jamoa paneli yopishsa tutilsin", neg_decisions_team_toolbar_sticks),

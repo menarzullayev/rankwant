@@ -17,7 +17,7 @@ it and it will be copied into the dictionary.
 
 Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 
-**2218 strings.**
+**2238 strings.**
 
 | Key | Uzbek (source) | Kazakh | Review |
 | --- | --- | --- | --- |
@@ -441,8 +441,8 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `about.practices.fastIo` | Katta kiritmada tilning tez I/O usullaridan foydalaning. | Use fast I/O for large input in your language. |  |
 | `about.practices.debug` | Mantiqni lokal debug qiling; keyin tozalangan kodni yuboring. | Debug locally, then submit clean code. |  |
 | `about.practices.readAll` | Shart, izohlar va cheklovlarni oxirigacha o'qing. | Read the full statement, notes, and limits. |  |
-| `about.verdicts.title` | Yechim holati kodlari (24 ta) | Verdict codes (24) |  |
-| `about.verdicts.intro` | Platformada 24 ta verdict kodi bor. Jadvalda har biri: nima degani, nima qilish kerak va oddiy misol. | The platform defines 24 verdict codes. Each row explains the meaning, what to do, and a simple example. |  |
+| `about.verdicts.title` | Yechim holati kodlari ({count} ta) | Verdict codes ({count}) |  |
+| `about.verdicts.intro` | Platformada {count} ta verdict kodi bor. Jadvalda har biri: nima degani, nima qilish kerak va oddiy misol. | The platform defines {count} verdict codes. Each row explains the meaning, what to do, and a simple example. |  |
 | `about.verdicts.col.num` | № | # |  |
 | `about.verdicts.col.status` | Holati | Status |  |
 | `about.verdicts.col.event` | Tushuntirish | Meaning |  |
@@ -2239,3 +2239,23 @@ Regenerate with `python tools/export_i18n_review.py --prefix ""` (every key).
 | `nav.badge.new` | {count} ta yangi | {count} жаңа |  |
 | `nav.badge.live` | hozir jonli | қазір тікелей |  |
 | `nav.badge.liveShort` | jonli | тікелей |  |
+| `about.journey.title` | Platforma yo'li | Платформа жолы |  |
+| `about.toc.label` | Mundarija | Мазмұны |  |
+| `about.toc.submit` | Yuborish | Жіберу |  |
+| `about.toc.languages` | Tillar | Тілдер |  |
+| `about.toc.verdicts` | Holat kodlari | Күй кодтары |  |
+| `about.toc.practices` | Amaliyotlar | Тәжірибелер |  |
+| `about.toc.judge` | Tizim | Жүйе |  |
+| `about.cta.solve` | Birinchi masalani yechish | Бірінші есепті шешу |  |
+| `about.anchor` | Bo'lim havolasi | Бөлім сілтемесі |  |
+| `about.lang.other` | Boshqa til ({count}) | Басқа тіл ({count}) |  |
+| `about.lang.count` | {count} ta til | {count} тіл |  |
+| `about.verdicts.search` | Kod yoki so'z: TLE, xotira… | Код немесе сөз: TLE, жад… |  |
+| `about.verdicts.searchLabel` | Holat kodini qidirish | Күй кодын іздеу |  |
+| `about.verdicts.groupLabel` | Guruh bo'yicha saralash | Топ бойынша сүзу |  |
+| `about.verdicts.group.all` | Hammasi | Барлығы |  |
+| `about.verdicts.group.common` | Ko'p uchraydigan | Жиі кездесетін |  |
+| `about.verdicts.group.flow` | Jarayon holatlari | Тексеру күйлері |  |
+| `about.verdicts.group.system` | Kam uchraydigan va tizim | Сирек және жүйелік |  |
+| `about.verdicts.found` | {count} ta kod | {count} код |  |
+| `about.verdicts.none` | Bunday kod topilmadi. | Мұндай код табылмады. |  |
