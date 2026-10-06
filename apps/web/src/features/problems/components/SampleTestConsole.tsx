@@ -16,6 +16,8 @@ export type SampleConsoleState = {
   outputMatched: boolean | null;
 };
 
+const IDLE: SampleConsoleState["status"] = "idle";
+
 export function sampleConsoleIdleState(
   locale: Parameters<typeof t>[0],
 ): SampleConsoleState {
@@ -64,6 +66,7 @@ export function SampleTestConsole({
   }, [open]);
 
   if (samples.length === 0) return null;
+  const idle = state.status === IDLE;
 
   return (
     <section
@@ -137,14 +140,23 @@ export function SampleTestConsole({
         </span>
       </div>
 
+      {/* The log line stays a live region from the start; before the first
+          run it is visually hidden, so the run is still announced. */}
       <p
-        className="border-b rw-divider px-3 py-2 font-mono text-theme-xs rw-dim"
+        className={
+          idle
+            ? "sr-only"
+            : "border-b rw-divider px-3 py-2 font-mono text-theme-xs rw-dim"
+        }
         role="status"
       >
         {state.log}
       </p>
 
-      {selected && (
+      {/* Input, output and answer appear with the first run. Before it
+          they were three empty boxes that pushed the panel 125 px past
+          the screen (measured 2026-10-06: 1 024 px of panel in 772). */}
+      {selected && !idle && (
         <div className="grid gap-0 sm:grid-cols-3">
           <SampleField
             label={t(locale, "problem.sampleInput")}

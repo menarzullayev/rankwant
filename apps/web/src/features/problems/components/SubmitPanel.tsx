@@ -85,7 +85,10 @@ const MAX_SOURCE_BYTES = SOURCE_MAX_BYTES;
 // yuboradi. O'lchandi: 412 px li telefonda masala sahifasi 600 px
 // bo'lib, yon tomonga siljirdi va tab tugmalarini bosib bo'lmasdi.
 const PANEL =
-  "min-w-0 space-y-4 xl:sticky xl:top-20 xl:max-h-[calc(100vh-5.5rem)] xl:rw-scroll-y";
+  // The editor takes what the screen leaves: 100vh minus the header and
+  // everything else in the panel (35.25rem, measured). The panel then
+  // fits without a scrollbar of its own on a laptop screen.
+  "min-w-0 space-y-4 xl:sticky xl:top-20 xl:max-h-[calc(100vh-5.5rem)] xl:rw-scroll-y xl:[--rw-editor-h:clamp(240px,calc(100vh-35.25rem),640px)]";
 
 /** Verdikt uchun SSE (ADR-0029) + polling zaxirasi — oqim uzilsa ham yangilanadi.
  * Birinchi soniyalarda tez, keyin siyrak: kompilyatsiya + testlar odatda
